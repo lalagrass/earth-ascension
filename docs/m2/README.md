@@ -11,6 +11,6 @@
 - [30 seed 實驗結果](../../artifacts/m2-experiments.md)
 - [自然事件、公平性、效能與 Chrome 驗收補測](../../artifacts/m2-acceptance-gaps.md)
 - [Grok bot／Claude 的 M2 PR 貢獻與我方審核計畫](contribution-review-plan.md)
-- [下一里程碑 M3 探索提案，尚未開工](../m3/discovery.md)
+- [下一里程碑 M3 規劃入口，尚未開工](../m3/README.md)
 
 原始需求與現況：[Project Genesis](../PROJECT_GENESIS.md)、[M1 驗收覆蓋](../acceptance-coverage.md)、[M1 實驗](../../artifacts/experiments.md)、[M1 Retro](../review-retro.md)。

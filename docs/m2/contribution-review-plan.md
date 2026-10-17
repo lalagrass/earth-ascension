@@ -33,4 +33,4 @@
 
 ## 合併與進入下一里程碑的門檻
 
-優先解決 #2、#8／#1、#9／#4、#10／#11 的明確契約，再重跑 A1–A10。#3 是否屬 M2 release blocker 由實際儲存／操作需求決定；#5、#6、#7、#12 依相應 PR 證據逐條關閉。PR review 通過不等於 M2 已完整驗收；`implementation-review-retro.md` 的未決項需有處置與理由。M3 僅有[探索提案](../m3/discovery.md)，不因 M2 issue 開 PR 就自動開始。
+優先解決 #2、#8／#1、#9／#4、#10／#11 的明確契約，再重跑 A1–A10。#3 是否屬 M2 release blocker 由實際儲存／操作需求決定；#5、#6、#7、#12 依相應 PR 證據逐條關閉。PR review 通過不等於 M2 已完整驗收；`implementation-review-retro.md` 的未決項需有處置與理由。M3 仍只有[規劃提案](../m3/README.md)，不因 M2 issue 開 PR 就自動開始。

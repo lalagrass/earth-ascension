@@ -1,6 +1,6 @@
 # 貢獻 Earth Ascension
 
-這份指南供 Grok bot、Claude、人類貢獻者與審核者共用。產品現況、啟動及基本測試見 [README](README.md)；M2 的具體 issue 分組和審核順序見[貢獻計畫](docs/m2/contribution-review-plan.md)。目前 M3 只有[探索提案](docs/m3/discovery.md)，不是實作任務。
+這份指南供 Grok bot、Claude、人類貢獻者與審核者共用。產品現況、啟動及基本測試見 [README](README.md)；M2 的具體 issue 分組和審核順序見[貢獻計畫](docs/m2/contribution-review-plan.md)。目前 [M3](docs/m3/README.md)只有規劃，不是實作任務。
 
 ## 開工前協調
 

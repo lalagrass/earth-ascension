@@ -4,7 +4,7 @@
 
 ## 協作與貢獻
 
-Grok bot、Claude 與其他貢獻者請先讀 [CONTRIBUTING.md](CONTRIBUTING.md)；AI 工具另讀 [AGENTS.md](AGENTS.md)，Claude 可從 [CLAUDE.md](CLAUDE.md) 進入同一套指引。從最新 `dev` 開短分支、以小型 PR 回到 `dev`，由維護者審核後決定合併；不要直接改 `main`。M2 issue 的重複項、建議分工與審核順序見 [M2 貢獻計畫](docs/m2/contribution-review-plan.md)。Issue 的修法及數值門檻是待核對提案，PR 請附重現、版本／舊檔影響及對應驗收證據。M3 目前只有[探索提案](docs/m3/discovery.md)。
+Grok bot、Claude 與其他貢獻者請先讀 [CONTRIBUTING.md](CONTRIBUTING.md)；AI 工具另讀 [AGENTS.md](AGENTS.md)，Claude 可從 [CLAUDE.md](CLAUDE.md) 進入同一套指引。從最新 `dev` 開短分支、以小型 PR 回到 `dev`，由維護者審核後決定合併；不要直接改 `main`。M2 issue 的重複項、建議分工與審核順序見 [M2 貢獻計畫](docs/m2/contribution-review-plan.md)。Issue 的修法及數值門檻是待核對提案，PR 請附重現、版本／舊檔影響及對應驗收證據。[M3 下一里程碑](docs/m3/README.md)目前只有規劃，尚未實作。
 
 ## 啟動
 
