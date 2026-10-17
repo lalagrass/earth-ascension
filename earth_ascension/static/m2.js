@@ -23,8 +23,8 @@ function m2Observer(p) {
     const pts = Math.round((v - base[k]) * 100), sources = (p.profile_changes || []).filter(c => c.dimension === k).map(c => `第 ${c.month} 月 ${source(c.event_id)}`).join('、');
     return `<div class="event">${esc(k)} ${pts > 0 ? '+' : ''}${pts} 個百分點（創角 ${Math.round(base[k] * 100)}% → 現在 ${Math.round(v * 100)}%）<small>來源：${sources}</small></div>`;
   }).join('') || '<p>相對創角值尚無變化。</p>';
-  const death = p.alive ? null : world.events.find(e => e.kind === '死亡' && String(e.actor) === String(p.id));
-  const choose = goal.type === 'legacy_custom' && p.player && viewMonth === null ?
+  const death = p.alive ? null : world.events.find(e => e.kind === '死亡' && [e.actor, e.subject].some(x => x !== undefined && x !== null && String(x) === String(p.id)));
+  const choose = goal.type === 'legacy_custom' && p.player && p.alive && viewMonth === null ?
     `<p>舊存檔自訂目標「${esc(goal.label)}」已保留原文；目前以中性步驟運作，尚無專屬規則。可改選：</p>
      <select id="legacy-goal">${['穩定生活','探索靈氣','建立關係','累積財富','服務社群'].map(x => `<option>${x}</option>`).join('')}</select>
      <button class="button secondary" id="choose-goal">確認目標</button>` : '';
