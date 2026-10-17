@@ -1,7 +1,7 @@
 [project]
 name = "earth-ascension"
-version = "0.1.0"
-description = "Earth Ascension M1 local monthly world simulation"
+version = "0.2.0"
+description = "Earth Ascension local monthly world simulation (M2 Living Characters; M1 legacy saves supported)"
 requires-python = ">=3.12"
 dependencies = []
 
