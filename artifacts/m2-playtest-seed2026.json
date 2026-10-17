@@ -1,0 +1,3567 @@
+{
+  "goal_history": [
+    {
+      "id": "g:101:0",
+      "label": "探索靈氣",
+      "progress": 6,
+      "review_month": 8,
+      "started_month": 0,
+      "status": "completed",
+      "stop_reason": "target_reached",
+      "target": 6,
+      "trigger_event_id": null,
+      "type": "探索靈氣"
+    },
+    {
+      "id": "g:101:8",
+      "label": "穩定生活",
+      "parent_goal_id": "g:101:0",
+      "progress": 4,
+      "review_month": 12,
+      "started_month": 8,
+      "status": "replaced",
+      "stop_reason": "review_switch",
+      "target": 4,
+      "transition_kind": "complete_rest",
+      "trigger_event_id": "m2:8:942",
+      "type": "穩定生活"
+    },
+    {
+      "id": "g:101:12",
+      "label": "累積財富",
+      "parent_goal_id": "g:101:8",
+      "progress": 8,
+      "review_month": 24,
+      "started_month": 12,
+      "status": "completed",
+      "stop_reason": "target_reached",
+      "target": 6,
+      "transition_kind": "rest_exit",
+      "trigger_event_id": null,
+      "type": "累積財富"
+    },
+    {
+      "id": "g:101:24",
+      "label": "穩定生活",
+      "parent_goal_id": "g:101:12",
+      "progress": 4,
+      "review_month": 28,
+      "started_month": 24,
+      "status": "replaced",
+      "stop_reason": "review_switch",
+      "target": 4,
+      "transition_kind": "complete_rest",
+      "trigger_event_id": "m2:24:2910",
+      "type": "穩定生活"
+    },
+    {
+      "id": "g:101:28",
+      "label": "探索靈氣",
+      "parent_goal_id": "g:101:24",
+      "progress": 8,
+      "review_month": 36,
+      "started_month": 28,
+      "status": "completed",
+      "stop_reason": "target_reached",
+      "target": 6,
+      "transition_kind": "rest_exit",
+      "trigger_event_id": null,
+      "type": "探索靈氣"
+    },
+    {
+      "id": "g:101:36",
+      "label": "穩定生活",
+      "parent_goal_id": "g:101:28",
+      "progress": 4,
+      "review_month": 40,
+      "started_month": 36,
+      "status": "replaced",
+      "stop_reason": "review_switch",
+      "target": 4,
+      "transition_kind": "complete_rest",
+      "trigger_event_id": "m2:36:4383",
+      "type": "穩定生活"
+    },
+    {
+      "id": "g:101:40",
+      "label": "服務社群",
+      "parent_goal_id": "g:101:36",
+      "progress": 6,
+      "review_month": 56,
+      "started_month": 40,
+      "status": "completed",
+      "stop_reason": "target_reached",
+      "target": 6,
+      "transition_kind": "rest_exit",
+      "trigger_event_id": null,
+      "type": "服務社群"
+    },
+    {
+      "id": "g:101:56",
+      "label": "穩定生活",
+      "parent_goal_id": "g:101:40",
+      "progress": 4,
+      "review_month": 60,
+      "started_month": 56,
+      "status": "replaced",
+      "stop_reason": "review_switch",
+      "target": 4,
+      "transition_kind": "complete_rest",
+      "trigger_event_id": "m2:56:6783",
+      "type": "穩定生活"
+    }
+  ],
+  "goal_reviews": [
+    {
+      "basis": "profile_baseline",
+      "cause_event_ids": [],
+      "chosen": "累積財富",
+      "contributions": [],
+      "decisive_event_ids": [],
+      "event_id": "m2:12:1452",
+      "excluded": [
+        "探索靈氣"
+      ],
+      "goal_id": "g:101:8",
+      "month": 12,
+      "outcome": "轉向",
+      "reason": "review_month",
+      "scores": {
+        "建立關係": 1.38,
+        "服務社群": 1.44,
+        "穩定生活": 1.2,
+        "累積財富": 1.7
+      }
+    },
+    {
+      "basis": "profile_baseline",
+      "cause_event_ids": [],
+      "chosen": "探索靈氣",
+      "contributions": [],
+      "decisive_event_ids": [],
+      "event_id": "m2:28:3415",
+      "excluded": [
+        "累積財富"
+      ],
+      "goal_id": "g:101:24",
+      "month": 28,
+      "outcome": "轉向",
+      "reason": "review_month",
+      "scores": {
+        "建立關係": 1.38,
+        "探索靈氣": 1.81,
+        "服務社群": 1.44,
+        "穩定生活": 1.2
+      }
+    },
+    {
+      "basis": "profile_baseline",
+      "cause_event_ids": [],
+      "chosen": "服務社群",
+      "contributions": [],
+      "decisive_event_ids": [],
+      "event_id": "m2:40:4866",
+      "excluded": [
+        "探索靈氣"
+      ],
+      "goal_id": "g:101:36",
+      "month": 40,
+      "outcome": "轉向",
+      "reason": "review_month",
+      "scores": {
+        "建立關係": 1.38,
+        "服務社群": 1.44,
+        "穩定生活": 1.2,
+        "累積財富": 0.9
+      }
+    },
+    {
+      "basis": "profile_baseline",
+      "cause_event_ids": [],
+      "chosen": "探索靈氣",
+      "contributions": [
+        {
+          "candidate": "建立關係",
+          "delta": 0.25,
+          "event_id": "m2:52:6300",
+          "kind": "關係",
+          "observed_month": 52
+        }
+      ],
+      "decisive_event_ids": [],
+      "event_id": "m2:60:7258",
+      "excluded": [
+        "服務社群"
+      ],
+      "goal_id": "g:101:56",
+      "month": 60,
+      "outcome": "轉向",
+      "reason": "review_month",
+      "scores": {
+        "建立關係": 1.64,
+        "探索靈氣": 1.81,
+        "穩定生活": 1.2,
+        "累積財富": 0.9
+      }
+    }
+  ],
+  "initial_profile": {
+    "外向": 0.6,
+    "安全": 0.6,
+    "探索": 0.6,
+    "盡責": 0.6,
+    "穩定": 0.6,
+    "親和": 0.6,
+    "開放": 0.6,
+    "關懷": 0.6
+  },
+  "month_0_hash_after_creation": "11c9616681a2e564b7cac62e8e4240c7f3f32a712bf7db358b479a0551d2475c",
+  "month_60_hash": "c973d08e6bf239d6c374649332c88c1f3115ce4113d8265c683b785e56db4692",
+  "months": [
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:0",
+      "health": 79,
+      "memory_event_ids": [],
+      "month": 1,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:0",
+      "noise": {
+        "休息": 0.498,
+        "修習": -0.015,
+        "學習": -0.547,
+        "工作": 0.824,
+        "研究": -0.465,
+        "社交": -0.488
+      },
+      "outcome_event_ids": [
+        "m2:1:102"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 0,
+      "scores": {
+        "休息": 1.7,
+        "修習": 1.026,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.066,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 113
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:0",
+      "health": 79,
+      "memory_event_ids": [],
+      "month": 2,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:0",
+      "noise": {
+        "休息": 0.672,
+        "修習": 0.79,
+        "學習": 0.487,
+        "工作": -0.737,
+        "研究": 0.765,
+        "社交": -0.882
+      },
+      "outcome_event_ids": [
+        "m2:2:209"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 1,
+      "scores": {
+        "休息": 1.745,
+        "修習": 1.019,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.059,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 101
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:0",
+      "health": 79,
+      "memory_event_ids": [],
+      "month": 3,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:0",
+      "noise": {
+        "休息": 0.525,
+        "修習": -0.746,
+        "學習": -0.26,
+        "工作": 0.461,
+        "研究": 0.289,
+        "社交": -0.575
+      },
+      "outcome_event_ids": [
+        "m2:3:322",
+        "m2:3:321"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 2,
+      "scores": {
+        "休息": 1.745,
+        "修習": 1.038,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.078,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 89
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:0",
+      "health": 79,
+      "memory_event_ids": [
+        "m2:3:321"
+      ],
+      "month": 4,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:0",
+      "noise": {
+        "休息": -0.135,
+        "修習": -0.376,
+        "學習": -0.501,
+        "工作": -0.27,
+        "研究": -0.439,
+        "社交": 0.41
+      },
+      "outcome_event_ids": [
+        "m2:4:449"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 3,
+      "scores": {
+        "休息": 1.745,
+        "修習": 1.074,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.464,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 77
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:0",
+      "health": 78,
+      "memory_event_ids": [
+        "m2:3:321"
+      ],
+      "month": 5,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:0",
+      "noise": {
+        "休息": -0.528,
+        "修習": -0.776,
+        "學習": 0.516,
+        "工作": 0.89,
+        "研究": -0.521,
+        "社交": 0.383
+      },
+      "outcome_event_ids": [
+        "m2:5:563"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 3,
+      "scores": {
+        "休息": 1.745,
+        "修習": 1.103,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.493,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 91
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:0",
+      "health": 78,
+      "memory_event_ids": [
+        "m2:3:321"
+      ],
+      "month": 6,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:0",
+      "noise": {
+        "休息": 0.277,
+        "修習": -0.246,
+        "學習": 0.057,
+        "工作": -0.447,
+        "研究": 0.27,
+        "社交": 0.207
+      },
+      "outcome_event_ids": [
+        "m2:6:675"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 4,
+      "scores": {
+        "休息": 1.79,
+        "修習": 1.095,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.485,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 79
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:0",
+      "health": 78,
+      "memory_event_ids": [
+        "m2:3:321"
+      ],
+      "month": 7,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:0",
+      "noise": {
+        "休息": 0.131,
+        "修習": 0.853,
+        "學習": -0.526,
+        "工作": -0.048,
+        "研究": -0.714,
+        "社交": 0.592
+      },
+      "outcome_event_ids": [
+        "m2:7:785"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 5,
+      "scores": {
+        "休息": 1.79,
+        "修習": 1.098,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.488,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 67
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:0",
+      "health": 78,
+      "memory_event_ids": [
+        "m2:3:321"
+      ],
+      "month": 8,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:8",
+      "noise": {
+        "休息": -0.143,
+        "修習": 0.185,
+        "學習": 0.887,
+        "工作": -0.682,
+        "研究": 0.7,
+        "社交": 0.68
+      },
+      "outcome_event_ids": [
+        "m2:8:942",
+        "m2:8:941",
+        "m2:8:943"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 0,
+      "scores": {
+        "休息": 1.79,
+        "修習": 1.096,
+        "學習": 2.1,
+        "工作": 3.4,
+        "研究": 3.486,
+        "社交": 2.18
+      },
+      "target": 4,
+      "wealth": 55
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:8",
+      "health": 77,
+      "memory_event_ids": [
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "month": 9,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:8",
+      "noise": {
+        "休息": 0.62,
+        "修習": 0.102,
+        "學習": 0.424,
+        "工作": 0.158,
+        "研究": -0.326,
+        "社交": -0.669
+      },
+      "outcome_event_ids": [
+        "m2:9:1054"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 1,
+      "scores": {
+        "休息": 1.79,
+        "修習": 1.102,
+        "學習": 2.1,
+        "工作": 3.85,
+        "研究": 2.792,
+        "社交": 2.18
+      },
+      "target": 4,
+      "wealth": 70
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:8",
+      "health": 76,
+      "memory_event_ids": [
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "month": 10,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:8",
+      "noise": {
+        "休息": -0.864,
+        "修習": 0.703,
+        "學習": 0.867,
+        "工作": -0.502,
+        "研究": 0.067,
+        "社交": 0.027
+      },
+      "outcome_event_ids": [
+        "m2:10:1160"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 2,
+      "scores": {
+        "休息": 1.835,
+        "修習": 1.135,
+        "學習": 2.1,
+        "工作": 3.85,
+        "研究": 2.825,
+        "社交": 2.18
+      },
+      "target": 4,
+      "wealth": 86
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:8",
+      "health": 76,
+      "memory_event_ids": [
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "month": 11,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:8",
+      "noise": {
+        "休息": -0.619,
+        "修習": -0.011,
+        "學習": -0.242,
+        "工作": -0.27,
+        "研究": 0.767,
+        "社交": 0.675
+      },
+      "outcome_event_ids": [
+        "m2:11:1269",
+        "m2:11:1268"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 3,
+      "scores": {
+        "休息": 1.88,
+        "修習": 1.148,
+        "學習": 2.1,
+        "工作": 2.85,
+        "研究": 2.838,
+        "社交": 2.18
+      },
+      "target": 4,
+      "wealth": 74
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:8",
+      "health": 75,
+      "memory_event_ids": [
+        "m2:11:1268",
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "month": 12,
+      "month_end_goal": "累積財富",
+      "month_end_goal_id": "g:101:12",
+      "noise": {
+        "休息": -0.529,
+        "修習": -0.127,
+        "學習": 0.274,
+        "工作": -0.456,
+        "研究": -0.695,
+        "社交": -0.6
+      },
+      "outcome_event_ids": [
+        "m2:12:1451",
+        "m2:12:1452"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 0,
+      "scores": {
+        "休息": 1.88,
+        "修習": 1.162,
+        "學習": 2.1,
+        "工作": 3.85,
+        "研究": 3.202,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 91
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "累積財富",
+      "decision_goal_id": "g:101:12",
+      "health": 74,
+      "memory_event_ids": [
+        "m2:11:1268",
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "month": 13,
+      "month_end_goal": "累積財富",
+      "month_end_goal_id": "g:101:12",
+      "noise": {
+        "休息": -0.801,
+        "修習": -0.055,
+        "學習": -0.629,
+        "工作": -0.119,
+        "研究": 0.055,
+        "社交": 0.126
+      },
+      "outcome_event_ids": [
+        "m2:13:1561"
+      ],
+      "plan_step": "累積工作收入",
+      "progress": 1,
+      "scores": {
+        "休息": 1.925,
+        "修習": 1.159,
+        "學習": 2.1,
+        "工作": 3.45,
+        "研究": 3.199,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 109
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "累積財富",
+      "decision_goal_id": "g:101:12",
+      "health": 74,
+      "memory_event_ids": [
+        "m2:11:1268",
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "month": 14,
+      "month_end_goal": "累積財富",
+      "month_end_goal_id": "g:101:12",
+      "noise": {
+        "休息": -0.2,
+        "修習": 0.737,
+        "學習": 0.177,
+        "工作": -0.452,
+        "研究": -0.214,
+        "社交": 0.221
+      },
+      "outcome_event_ids": [
+        "m2:14:1672",
+        "m2:14:1671"
+      ],
+      "plan_step": "累積工作收入",
+      "progress": 1,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.174,
+        "學習": 2.1,
+        "工作": 3.45,
+        "研究": 3.214,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 97
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "累積財富",
+      "decision_goal_id": "g:101:12",
+      "health": 73,
+      "memory_event_ids": [
+        "m2:14:1671",
+        "m2:11:1268",
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "month": 15,
+      "month_end_goal": "累積財富",
+      "month_end_goal_id": "g:101:12",
+      "noise": {
+        "休息": 0.899,
+        "修習": 0.867,
+        "學習": 0.248,
+        "工作": 0.866,
+        "研究": 0.414,
+        "社交": -0.662
+      },
+      "outcome_event_ids": [
+        "m2:15:1780"
+      ],
+      "plan_step": "累積工作收入",
+      "progress": 2,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.168,
+        "學習": 2.1,
+        "工作": 3.45,
+        "研究": 3.564,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 116
+    },
+    {
+      "action": "社交",
+      "alive": true,
+      "decision_goal": "累積財富",
+      "decision_goal_id": "g:101:12",
+      "health": 73,
+      "memory_event_ids": [
+        "m2:14:1671",
+        "m2:11:1268",
+        "m2:8:941"
+      ],
+      "month": 16,
+      "month_end_goal": "累積財富",
+      "month_end_goal_id": "g:101:12",
+      "noise": {
+        "休息": -0.514,
+        "修習": -0.482,
+        "學習": 0.373,
+        "工作": -0.793,
+        "研究": -0.492,
+        "社交": 0.637
+      },
+      "outcome_event_ids": [
+        "m2:16:1940",
+        "m2:16:1941"
+      ],
+      "plan_step": "累積工作收入",
+      "progress": 2,
+      "scores": {
+        "休息": 2.015,
+        "修習": 1.181,
+        "學習": 2.1,
+        "工作": 3.45,
+        "研究": 3.227,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 109
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "累積財富",
+      "decision_goal_id": "g:101:12",
+      "health": 72,
+      "memory_event_ids": [
+        "m2:14:1671",
+        "m2:11:1268",
+        "m2:8:941"
+      ],
+      "month": 17,
+      "month_end_goal": "累積財富",
+      "month_end_goal_id": "g:101:12",
+      "noise": {
+        "休息": -0.023,
+        "修習": 0.285,
+        "學習": -0.52,
+        "工作": 0.12,
+        "研究": -0.382,
+        "社交": 0.626
+      },
+      "outcome_event_ids": [
+        "m2:17:2050"
+      ],
+      "plan_step": "累積工作收入",
+      "progress": 3,
+      "scores": {
+        "休息": 2.015,
+        "修習": 1.169,
+        "學習": 2.1,
+        "工作": 3.45,
+        "研究": 3.215,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 129
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "累積財富",
+      "decision_goal_id": "g:101:12",
+      "health": 72,
+      "memory_event_ids": [
+        "m2:14:1671",
+        "m2:11:1268",
+        "m2:8:941"
+      ],
+      "month": 18,
+      "month_end_goal": "累積財富",
+      "month_end_goal_id": "g:101:12",
+      "noise": {
+        "休息": 0.813,
+        "修習": -0.435,
+        "學習": -0.295,
+        "工作": -0.385,
+        "研究": 0.052,
+        "社交": -0.306
+      },
+      "outcome_event_ids": [
+        "m2:18:2165"
+      ],
+      "plan_step": "累積工作收入",
+      "progress": 3,
+      "scores": {
+        "休息": 2.06,
+        "修習": 1.197,
+        "學習": 2.1,
+        "工作": 3.45,
+        "研究": 3.243,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 117
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "累積財富",
+      "decision_goal_id": "g:101:12",
+      "health": 71,
+      "memory_event_ids": [
+        "m2:14:1671",
+        "m2:11:1268",
+        "m2:8:941"
+      ],
+      "month": 19,
+      "month_end_goal": "累積財富",
+      "month_end_goal_id": "g:101:12",
+      "noise": {
+        "休息": 0.349,
+        "修習": 0.06,
+        "學習": 0.797,
+        "工作": 0.234,
+        "研究": -0.583,
+        "社交": 0.191
+      },
+      "outcome_event_ids": [
+        "m2:19:2274"
+      ],
+      "plan_step": "累積工作收入",
+      "progress": 4,
+      "scores": {
+        "休息": 2.06,
+        "修習": 1.216,
+        "學習": 2.1,
+        "工作": 3.45,
+        "研究": 3.262,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 138
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "累積財富",
+      "decision_goal_id": "g:101:12",
+      "health": 70,
+      "memory_event_ids": [
+        "m2:14:1671",
+        "m2:11:1268",
+        "m2:8:941"
+      ],
+      "month": 20,
+      "month_end_goal": "累積財富",
+      "month_end_goal_id": "g:101:12",
+      "noise": {
+        "休息": 0.611,
+        "修習": -0.56,
+        "學習": -0.185,
+        "工作": 0.829,
+        "研究": 0.054,
+        "社交": 0.549
+      },
+      "outcome_event_ids": [
+        "m2:20:2419"
+      ],
+      "plan_step": "累積工作收入",
+      "progress": 5,
+      "scores": {
+        "休息": 2.105,
+        "修習": 1.223,
+        "學習": 2.1,
+        "工作": 3.45,
+        "研究": 3.269,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 160
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "累積財富",
+      "decision_goal_id": "g:101:12",
+      "health": 69,
+      "memory_event_ids": [
+        "m2:14:1671",
+        "m2:11:1268"
+      ],
+      "month": 21,
+      "month_end_goal": "累積財富",
+      "month_end_goal_id": "g:101:12",
+      "noise": {
+        "休息": -0.489,
+        "修習": 0.654,
+        "學習": 0.373,
+        "工作": -0.279,
+        "研究": -0.473,
+        "社交": 0.069
+      },
+      "outcome_event_ids": [
+        "m2:21:2529"
+      ],
+      "plan_step": "累積工作收入",
+      "progress": 6,
+      "scores": {
+        "休息": 2.15,
+        "修習": 1.237,
+        "學習": 2.1,
+        "工作": 3.45,
+        "研究": 2.933,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 183
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "累積財富",
+      "decision_goal_id": "g:101:12",
+      "health": 69,
+      "memory_event_ids": [
+        "m2:14:1671",
+        "m2:11:1268"
+      ],
+      "month": 22,
+      "month_end_goal": "累積財富",
+      "month_end_goal_id": "g:101:12",
+      "noise": {
+        "休息": 0.384,
+        "修習": -0.103,
+        "學習": 0.587,
+        "工作": 0.043,
+        "研究": 0.675,
+        "社交": -0.72
+      },
+      "outcome_event_ids": [
+        "m2:22:2638"
+      ],
+      "plan_step": "累積工作收入",
+      "progress": 6,
+      "scores": {
+        "休息": 2.195,
+        "修習": 1.273,
+        "學習": 2.1,
+        "工作": 3.45,
+        "研究": 2.969,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 171
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "累積財富",
+      "decision_goal_id": "g:101:12",
+      "health": 68,
+      "memory_event_ids": [
+        "m2:14:1671",
+        "m2:11:1268"
+      ],
+      "month": 23,
+      "month_end_goal": "累積財富",
+      "month_end_goal_id": "g:101:12",
+      "noise": {
+        "休息": 0.586,
+        "修習": -0.507,
+        "學習": -0.24,
+        "工作": -0.074,
+        "研究": -0.265,
+        "社交": 0.894
+      },
+      "outcome_event_ids": [
+        "m2:23:2747"
+      ],
+      "plan_step": "累積工作收入",
+      "progress": 7,
+      "scores": {
+        "休息": 2.195,
+        "修習": 1.275,
+        "學習": 2.1,
+        "工作": 3.45,
+        "研究": 2.971,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 195
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "累積財富",
+      "decision_goal_id": "g:101:12",
+      "health": 67,
+      "memory_event_ids": [
+        "m2:14:1671"
+      ],
+      "month": 24,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:24",
+      "noise": {
+        "休息": 0.809,
+        "修習": 0.33,
+        "學習": 0.197,
+        "工作": 0.596,
+        "研究": 0.431,
+        "社交": -0.827
+      },
+      "outcome_event_ids": [
+        "m2:24:2910",
+        "m2:24:2911"
+      ],
+      "plan_step": "累積工作收入",
+      "progress": 0,
+      "scores": {
+        "休息": 2.24,
+        "修習": 1.269,
+        "學習": 2.1,
+        "工作": 3.45,
+        "研究": 2.615,
+        "社交": 2.18
+      },
+      "target": 4,
+      "wealth": 220
+    },
+    {
+      "action": "學習",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:24",
+      "health": 67,
+      "memory_event_ids": [
+        "m2:14:1671"
+      ],
+      "month": 25,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:24",
+      "noise": {
+        "休息": -0.245,
+        "修習": -0.525,
+        "學習": 0.769,
+        "工作": -0.596,
+        "研究": 0.148,
+        "社交": -0.53
+      },
+      "outcome_event_ids": [
+        "m2:25:3021"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 1,
+      "scores": {
+        "休息": 2.285,
+        "修習": 1.288,
+        "學習": 2.1,
+        "工作": 2.85,
+        "研究": 2.634,
+        "社交": 2.18
+      },
+      "target": 4,
+      "wealth": 209
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:24",
+      "health": 66,
+      "memory_event_ids": [
+        "m2:14:1671"
+      ],
+      "month": 26,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:24",
+      "noise": {
+        "休息": -0.349,
+        "修習": -0.141,
+        "學習": -0.029,
+        "工作": 0.761,
+        "研究": 0.049,
+        "社交": -0.848
+      },
+      "outcome_event_ids": [
+        "m2:26:3134"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 2,
+      "scores": {
+        "休息": 2.285,
+        "修習": 1.315,
+        "學習": 2.1,
+        "工作": 2.85,
+        "研究": 2.661,
+        "社交": 2.18
+      },
+      "target": 4,
+      "wealth": 236
+    },
+    {
+      "action": "休息",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:24",
+      "health": 74,
+      "memory_event_ids": [],
+      "month": 27,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:24",
+      "noise": {
+        "休息": 0.818,
+        "修習": 0.417,
+        "學習": 0.167,
+        "工作": -0.59,
+        "研究": -0.213,
+        "社交": 0.409
+      },
+      "outcome_event_ids": [
+        "m2:27:3245"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 3,
+      "scores": {
+        "休息": 2.33,
+        "修習": 1.314,
+        "學習": 2.1,
+        "工作": 2.85,
+        "研究": 2.31,
+        "社交": 2.18
+      },
+      "target": 4,
+      "wealth": 229
+    },
+    {
+      "action": "社交",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:24",
+      "health": 74,
+      "memory_event_ids": [],
+      "month": 28,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:28",
+      "noise": {
+        "休息": -0.422,
+        "修習": 0.843,
+        "學習": 0.072,
+        "工作": 0.003,
+        "研究": -0.005,
+        "社交": 0.75
+      },
+      "outcome_event_ids": [
+        "m2:28:3414",
+        "m2:28:3415"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 0,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.318,
+        "學習": 2.1,
+        "工作": 2.85,
+        "研究": 2.314,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 222
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:28",
+      "health": 74,
+      "memory_event_ids": [],
+      "month": 29,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:28",
+      "noise": {
+        "休息": 0.628,
+        "修習": 0.324,
+        "學習": -0.216,
+        "工作": 0.441,
+        "研究": -0.111,
+        "社交": 0.06
+      },
+      "outcome_event_ids": [
+        "m2:29:3529"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 1,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.337,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.383,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 210
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:28",
+      "health": 74,
+      "memory_event_ids": [],
+      "month": 30,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:28",
+      "noise": {
+        "休息": -0.522,
+        "修習": 0.238,
+        "學習": 0.73,
+        "工作": 0.588,
+        "研究": 0.023,
+        "社交": -0.548
+      },
+      "outcome_event_ids": [
+        "m2:30:3643"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 2,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.34,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.386,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 198
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:28",
+      "health": 74,
+      "memory_event_ids": [],
+      "month": 31,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:28",
+      "noise": {
+        "休息": 0.022,
+        "修習": -0.254,
+        "學習": 0.611,
+        "工作": -0.032,
+        "研究": -0.135,
+        "社交": -0.474
+      },
+      "outcome_event_ids": [
+        "m2:31:3754"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 3,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.36,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.406,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 186
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:28",
+      "health": 74,
+      "memory_event_ids": [],
+      "month": 32,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:28",
+      "noise": {
+        "休息": 0.831,
+        "修習": 0.774,
+        "學習": -0.577,
+        "工作": 0.355,
+        "研究": 0.118,
+        "社交": 0.616
+      },
+      "outcome_event_ids": [
+        "m2:32:3902",
+        "m2:32:3901"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 4,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.381,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.427,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 174
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:28",
+      "health": 74,
+      "memory_event_ids": [
+        "m2:32:3901"
+      ],
+      "month": 33,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:28",
+      "noise": {
+        "休息": -0.134,
+        "修習": -0.796,
+        "學習": 0.876,
+        "工作": 0.391,
+        "研究": -0.616,
+        "社交": 0.471
+      },
+      "outcome_event_ids": [
+        "m2:33:4010",
+        "m2:33:4009"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 5,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.41,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.806,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 162
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:28",
+      "health": 74,
+      "memory_event_ids": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "month": 34,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:28",
+      "noise": {
+        "休息": 0.295,
+        "修習": -0.257,
+        "學習": 0.857,
+        "工作": 0.824,
+        "研究": -0.332,
+        "社交": 0.201
+      },
+      "outcome_event_ids": [
+        "m2:34:4121"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 6,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.441,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 4.187,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 150
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:28",
+      "health": 74,
+      "memory_event_ids": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "month": 35,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:28",
+      "noise": {
+        "休息": 0.561,
+        "修習": -0.675,
+        "學習": 0.317,
+        "工作": -0.881,
+        "研究": 0.128,
+        "社交": 0.502
+      },
+      "outcome_event_ids": [
+        "m2:35:4232"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 7,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.475,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 4.221,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 138
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "探索靈氣",
+      "decision_goal_id": "g:101:28",
+      "health": 74,
+      "memory_event_ids": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "month": 36,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:36",
+      "noise": {
+        "休息": -0.831,
+        "修習": 0.892,
+        "學習": -0.623,
+        "工作": 0.495,
+        "研究": 0.8,
+        "社交": 0.707
+      },
+      "outcome_event_ids": [
+        "m2:36:4383",
+        "m2:36:4384"
+      ],
+      "plan_step": "累積研究紀錄",
+      "progress": 0,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.486,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 4.232,
+        "社交": 2.18
+      },
+      "target": 4,
+      "wealth": 126
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:36",
+      "health": 74,
+      "memory_event_ids": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "month": 37,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:36",
+      "noise": {
+        "休息": -0.571,
+        "修習": 0.567,
+        "學習": 0.584,
+        "工作": -0.513,
+        "研究": -0.003,
+        "社交": 0.372
+      },
+      "outcome_event_ids": [
+        "m2:37:4492"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 1,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.505,
+        "學習": 2.1,
+        "工作": 2.85,
+        "研究": 3.201,
+        "社交": 2.18
+      },
+      "target": 4,
+      "wealth": 114
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:36",
+      "health": 74,
+      "memory_event_ids": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "month": 38,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:36",
+      "noise": {
+        "休息": -0.109,
+        "修習": -0.173,
+        "學習": 0.649,
+        "工作": -0.29,
+        "研究": -0.438,
+        "社交": 0.465
+      },
+      "outcome_event_ids": [
+        "m2:38:4601"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 2,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.5,
+        "學習": 2.1,
+        "工作": 2.85,
+        "研究": 3.196,
+        "社交": 2.18
+      },
+      "target": 4,
+      "wealth": 102
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:36",
+      "health": 74,
+      "memory_event_ids": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "month": 39,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:36",
+      "noise": {
+        "休息": -0.6,
+        "修習": -0.783,
+        "學習": 0.556,
+        "工作": -0.612,
+        "研究": 0.563,
+        "社交": -0.364
+      },
+      "outcome_event_ids": [
+        "m2:39:4708"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 3,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.49,
+        "學習": 2.1,
+        "工作": 2.85,
+        "研究": 3.186,
+        "社交": 2.18
+      },
+      "target": 4,
+      "wealth": 90
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:36",
+      "health": 74,
+      "memory_event_ids": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "month": 40,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": 0.726,
+        "修習": -0.483,
+        "學習": 0.282,
+        "工作": 0.026,
+        "研究": -0.215,
+        "社交": 0.561
+      },
+      "outcome_event_ids": [
+        "m2:40:4865",
+        "m2:40:4866"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 0,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.509,
+        "學習": 2.1,
+        "工作": 2.85,
+        "研究": 3.205,
+        "社交": 2.18
+      },
+      "target": 6,
+      "wealth": 78
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 74,
+      "memory_event_ids": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "month": 41,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": -0.51,
+        "修習": 0.631,
+        "學習": 0.276,
+        "工作": 0.622,
+        "研究": 0.827,
+        "社交": 0.368
+      },
+      "outcome_event_ids": [
+        "m2:41:4976"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 0,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.536,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.232,
+        "社交": 2.63
+      },
+      "target": 6,
+      "wealth": 66
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 73,
+      "memory_event_ids": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "month": 42,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": -0.842,
+        "修習": -0.263,
+        "學習": 0.567,
+        "工作": 0.099,
+        "研究": -0.184,
+        "社交": 0.03
+      },
+      "outcome_event_ids": [
+        "m2:42:5085"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 0,
+      "scores": {
+        "休息": 1.97,
+        "修習": 1.554,
+        "學習": 2.1,
+        "工作": 3.4,
+        "研究": 3.25,
+        "社交": 2.63
+      },
+      "target": 6,
+      "wealth": 94
+    },
+    {
+      "action": "社交",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 73,
+      "memory_event_ids": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "month": 43,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": -0.308,
+        "修習": 0.031,
+        "學習": 0.89,
+        "工作": -0.601,
+        "研究": -0.663,
+        "社交": 0.54
+      },
+      "outcome_event_ids": [
+        "m2:43:5193",
+        "m2:43:5194"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 1,
+      "scores": {
+        "休息": 2.015,
+        "修習": 1.549,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.245,
+        "社交": 2.63
+      },
+      "target": 6,
+      "wealth": 87
+    },
+    {
+      "action": "社交",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 73,
+      "memory_event_ids": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "month": 44,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": 0.486,
+        "修習": -0.224,
+        "學習": 0.491,
+        "工作": -0.375,
+        "研究": -0.498,
+        "社交": 0.666
+      },
+      "outcome_event_ids": [
+        "m2:44:5342"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 2,
+      "scores": {
+        "休息": 2.015,
+        "修習": 1.564,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 3.26,
+        "社交": 2.63
+      },
+      "target": 6,
+      "wealth": 80
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 72,
+      "memory_event_ids": [
+        "m2:33:4009"
+      ],
+      "month": 45,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": -0.625,
+        "修習": -0.349,
+        "學習": -0.472,
+        "工作": 0.106,
+        "研究": -0.813,
+        "社交": -0.622
+      },
+      "outcome_event_ids": [
+        "m2:45:5450"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 2,
+      "scores": {
+        "休息": 2.015,
+        "修習": 1.6,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 2.946,
+        "社交": 2.63
+      },
+      "target": 6,
+      "wealth": 109
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 72,
+      "memory_event_ids": [],
+      "month": 46,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": 0.052,
+        "修習": -0.371,
+        "學習": 0.01,
+        "工作": 0.42,
+        "研究": 0.27,
+        "社交": -0.025
+      },
+      "outcome_event_ids": [
+        "m2:46:5558"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 2,
+      "scores": {
+        "休息": 2.06,
+        "修習": 1.614,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 2.61,
+        "社交": 2.63
+      },
+      "target": 6,
+      "wealth": 97
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 72,
+      "memory_event_ids": [],
+      "month": 47,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": 0.182,
+        "修習": -0.391,
+        "學習": 0.197,
+        "工作": -0.215,
+        "研究": -0.189,
+        "社交": -0.584
+      },
+      "outcome_event_ids": [
+        "m2:47:5667"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 2,
+      "scores": {
+        "休息": 2.06,
+        "修習": 1.648,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 2.644,
+        "社交": 2.63
+      },
+      "target": 6,
+      "wealth": 85
+    },
+    {
+      "action": "休息",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 80,
+      "memory_event_ids": [],
+      "month": 48,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": 0.869,
+        "修習": -0.743,
+        "學習": 0.655,
+        "工作": 0.322,
+        "研究": -0.22,
+        "社交": -0.664
+      },
+      "outcome_event_ids": [
+        "m2:48:5820"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 2,
+      "scores": {
+        "休息": 2.06,
+        "修習": 1.637,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 2.633,
+        "社交": 2.63
+      },
+      "target": 6,
+      "wealth": 78
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 80,
+      "memory_event_ids": [],
+      "month": 49,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": -0.385,
+        "修習": 0.091,
+        "學習": 0.695,
+        "工作": 0.324,
+        "研究": 0.18,
+        "社交": -0.304
+      },
+      "outcome_event_ids": [
+        "m2:49:5929"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 2,
+      "scores": {
+        "休息": 1.7,
+        "修習": 1.664,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 2.66,
+        "社交": 2.63
+      },
+      "target": 6,
+      "wealth": 66
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 79,
+      "memory_event_ids": [],
+      "month": 50,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": -0.213,
+        "修習": 0.795,
+        "學習": 0.794,
+        "工作": -0.331,
+        "研究": -0.506,
+        "社交": 0.041
+      },
+      "outcome_event_ids": [
+        "m2:50:6037"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 2,
+      "scores": {
+        "休息": 1.7,
+        "修習": 1.664,
+        "學習": 2.1,
+        "工作": 3.4,
+        "研究": 2.66,
+        "社交": 2.63
+      },
+      "target": 6,
+      "wealth": 96
+    },
+    {
+      "action": "社交",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 79,
+      "memory_event_ids": [],
+      "month": 51,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": -0.317,
+        "修習": -0.078,
+        "學習": -0.19,
+        "工作": -0.637,
+        "研究": 0.04,
+        "社交": 0.164
+      },
+      "outcome_event_ids": [
+        "m2:51:6147"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 3,
+      "scores": {
+        "休息": 1.745,
+        "修習": 1.655,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 2.651,
+        "社交": 2.63
+      },
+      "target": 6,
+      "wealth": 89
+    },
+    {
+      "action": "社交",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 79,
+      "memory_event_ids": [],
+      "month": 52,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": 0.309,
+        "修習": 0.319,
+        "學習": 0.008,
+        "工作": 0.704,
+        "研究": 0.198,
+        "社交": 0.867
+      },
+      "outcome_event_ids": [
+        "m2:52:6299",
+        "m2:52:6300"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 4,
+      "scores": {
+        "休息": 1.745,
+        "修習": 1.649,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 2.645,
+        "社交": 2.63
+      },
+      "target": 6,
+      "wealth": 82
+    },
+    {
+      "action": "社交",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 79,
+      "memory_event_ids": [
+        "m2:52:6300"
+      ],
+      "month": 53,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": -0.733,
+        "修習": 0.533,
+        "學習": 0.431,
+        "工作": -0.579,
+        "研究": -0.843,
+        "社交": 0.774
+      },
+      "outcome_event_ids": [
+        "m2:53:6408"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 5,
+      "scores": {
+        "休息": 1.745,
+        "修習": 1.664,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 2.66,
+        "社交": 2.88
+      },
+      "target": 6,
+      "wealth": 75
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 79,
+      "memory_event_ids": [
+        "m2:52:6300"
+      ],
+      "month": 54,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": 0.721,
+        "修習": -0.146,
+        "學習": -0.457,
+        "工作": -0.425,
+        "研究": 0.479,
+        "社交": -0.444
+      },
+      "outcome_event_ids": [
+        "m2:54:6516"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 5,
+      "scores": {
+        "休息": 1.745,
+        "修習": 1.664,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 2.66,
+        "社交": 2.88
+      },
+      "target": 6,
+      "wealth": 63
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 78,
+      "memory_event_ids": [
+        "m2:52:6300"
+      ],
+      "month": 55,
+      "month_end_goal": "服務社群",
+      "month_end_goal_id": "g:101:40",
+      "noise": {
+        "休息": -0.304,
+        "修習": 0.405,
+        "學習": 0.55,
+        "工作": 0.167,
+        "研究": 0.682,
+        "社交": -0.066
+      },
+      "outcome_event_ids": [
+        "m2:55:6622"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 5,
+      "scores": {
+        "休息": 1.745,
+        "修習": 1.664,
+        "學習": 2.1,
+        "工作": 3.4,
+        "研究": 2.66,
+        "社交": 2.88
+      },
+      "target": 6,
+      "wealth": 94
+    },
+    {
+      "action": "社交",
+      "alive": true,
+      "decision_goal": "服務社群",
+      "decision_goal_id": "g:101:40",
+      "health": 78,
+      "memory_event_ids": [
+        "m2:52:6300"
+      ],
+      "month": 56,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:56",
+      "noise": {
+        "休息": -0.018,
+        "修習": 0.534,
+        "學習": 0.467,
+        "工作": -0.51,
+        "研究": -0.642,
+        "社交": -0.082
+      },
+      "outcome_event_ids": [
+        "m2:56:6783",
+        "m2:56:6784"
+      ],
+      "plan_step": "參與社區互動",
+      "progress": 0,
+      "scores": {
+        "休息": 1.79,
+        "修習": 1.664,
+        "學習": 2.1,
+        "工作": 2.4,
+        "研究": 2.66,
+        "社交": 2.88
+      },
+      "target": 4,
+      "wealth": 87
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:56",
+      "health": 77,
+      "memory_event_ids": [
+        "m2:52:6300"
+      ],
+      "month": 57,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:56",
+      "noise": {
+        "休息": 0.038,
+        "修習": -0.016,
+        "學習": -0.324,
+        "工作": 0.497,
+        "研究": 0.475,
+        "社交": -0.763
+      },
+      "outcome_event_ids": [
+        "m2:57:6891"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 1,
+      "scores": {
+        "休息": 1.79,
+        "修習": 1.664,
+        "學習": 2.1,
+        "工作": 2.85,
+        "研究": 2.66,
+        "社交": 2.44
+      },
+      "target": 4,
+      "wealth": 119
+    },
+    {
+      "action": "工作",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:56",
+      "health": 76,
+      "memory_event_ids": [
+        "m2:52:6300"
+      ],
+      "month": 58,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:56",
+      "noise": {
+        "休息": 0.367,
+        "修習": -0.71,
+        "學習": 0.233,
+        "工作": -0.316,
+        "研究": -0.574,
+        "社交": -0.149
+      },
+      "outcome_event_ids": [
+        "m2:58:6998"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 2,
+      "scores": {
+        "休息": 1.835,
+        "修習": 1.664,
+        "學習": 2.1,
+        "工作": 2.85,
+        "研究": 2.66,
+        "社交": 2.44
+      },
+      "target": 4,
+      "wealth": 152
+    },
+    {
+      "action": "研究",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:56",
+      "health": 76,
+      "memory_event_ids": [
+        "m2:52:6300"
+      ],
+      "month": 59,
+      "month_end_goal": "穩定生活",
+      "month_end_goal_id": "g:101:56",
+      "noise": {
+        "休息": -0.746,
+        "修習": -0.792,
+        "學習": -0.175,
+        "工作": 0.453,
+        "研究": 0.815,
+        "社交": -0.374
+      },
+      "outcome_event_ids": [
+        "m2:59:7105"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 3,
+      "scores": {
+        "休息": 1.88,
+        "修習": 1.664,
+        "學習": 2.1,
+        "工作": 2.85,
+        "研究": 2.66,
+        "社交": 2.44
+      },
+      "target": 4,
+      "wealth": 140
+    },
+    {
+      "action": "社交",
+      "alive": true,
+      "decision_goal": "穩定生活",
+      "decision_goal_id": "g:101:56",
+      "health": 76,
+      "memory_event_ids": [
+        "m2:52:6300"
+      ],
+      "month": 60,
+      "month_end_goal": "探索靈氣",
+      "month_end_goal_id": "g:101:60",
+      "noise": {
+        "休息": 0.724,
+        "修習": -0.777,
+        "學習": 0.752,
+        "工作": -0.408,
+        "研究": -0.876,
+        "社交": 0.745
+      },
+      "outcome_event_ids": [
+        "m2:60:7257",
+        "m2:60:7258"
+      ],
+      "plan_step": "維持工作與生計",
+      "progress": 0,
+      "scores": {
+        "休息": 1.88,
+        "修習": 1.664,
+        "學習": 2.1,
+        "工作": 2.85,
+        "研究": 2.66,
+        "社交": 2.44
+      },
+      "target": 6,
+      "wealth": 133
+    }
+  ],
+  "player_id": 101,
+  "player_input": {
+    "answers": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "budget": 30,
+    "district": "學園",
+    "goal": "探索靈氣",
+    "name": "測試旅人",
+    "traits": {
+      "悟性": 6,
+      "意志": 6,
+      "感知": 6,
+      "根骨": 6,
+      "社交": 6
+    }
+  },
+  "referenced_events": [
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 20，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:1:102",
+      "kind": "行動",
+      "month": 1,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:2:209",
+      "kind": "行動",
+      "month": 2,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "fact_id": "practice_basis",
+        "finding": "靈氣觀測紀錄 #7"
+      },
+      "event_id": "m2:3:321",
+      "kind": "發現",
+      "month": 3,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "研究",
+        "outcome": "取得靈氣觀測紀錄 #7，支出 5",
+        "target": null
+      },
+      "event_id": "m2:3:322",
+      "kind": "行動",
+      "month": 3,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:3:321"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:4:449",
+      "kind": "行動",
+      "month": 4,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:3:321"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 21，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:5:563",
+      "kind": "行動",
+      "month": 5,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:3:321"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:6:675",
+      "kind": "行動",
+      "month": 6,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:3:321"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:7:785",
+      "kind": "行動",
+      "month": 7,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "fact_id": "practice_basis",
+        "finding": "靈氣觀測紀錄 #18"
+      },
+      "event_id": "m2:8:941",
+      "kind": "發現",
+      "month": 8,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:3:321"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "取得靈氣觀測紀錄 #18，支出 5",
+        "target": null
+      },
+      "event_id": "m2:8:942",
+      "kind": "行動",
+      "month": 8,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:8:942"
+      ],
+      "effects": {
+        "goal_id": "g:101:0"
+      },
+      "event_id": "m2:8:943",
+      "kind": "目標完成",
+      "month": 8,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 22，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:9:1054",
+      "kind": "行動",
+      "month": 9,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 23，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:10:1160",
+      "kind": "行動",
+      "month": 10,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "fact_id": "practice_basis",
+        "finding": "靈氣觀測紀錄 #25"
+      },
+      "event_id": "m2:11:1268",
+      "kind": "發現",
+      "month": 11,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "取得靈氣觀測紀錄 #25，支出 5",
+        "target": null
+      },
+      "event_id": "m2:11:1269",
+      "kind": "行動",
+      "month": 11,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:11:1268",
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 24，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:12:1451",
+      "kind": "行動",
+      "month": 12,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "basis": "profile_baseline",
+        "goal_id": "g:101:12",
+        "parent_goal_id": "g:101:8",
+        "reason": "review_month"
+      },
+      "event_id": "m2:12:1452",
+      "kind": "目標轉向",
+      "month": 12,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:11:1268",
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 25，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:13:1561",
+      "kind": "行動",
+      "month": 13,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "fact_id": "practice_basis",
+        "finding": "靈氣觀測紀錄 #30"
+      },
+      "event_id": "m2:14:1671",
+      "kind": "發現",
+      "month": 14,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:11:1268",
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "取得靈氣觀測紀錄 #30，支出 5",
+        "target": null
+      },
+      "event_id": "m2:14:1672",
+      "kind": "行動",
+      "month": 14,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:14:1671",
+        "m2:11:1268",
+        "m2:8:941",
+        "m2:3:321"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 26，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:15:1780",
+      "kind": "行動",
+      "month": 15,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:14:1671",
+        "m2:11:1268",
+        "m2:8:941"
+      ],
+      "effects": {
+        "action": "社交",
+        "outcome": "與 曾哲庭 交流，信任增加",
+        "target": 17
+      },
+      "event_id": "m2:16:1940",
+      "kind": "行動",
+      "month": 16,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:3:321"
+      ],
+      "effects": {
+        "shared_fact_id": "practice_basis",
+        "trust": 11
+      },
+      "event_id": "m2:16:1941",
+      "kind": "關係",
+      "month": 16,
+      "target": 17
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:14:1671",
+        "m2:11:1268",
+        "m2:8:941"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 27，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:17:2050",
+      "kind": "行動",
+      "month": 17,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:14:1671",
+        "m2:11:1268",
+        "m2:8:941"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:18:2165",
+      "kind": "行動",
+      "month": 18,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:14:1671",
+        "m2:11:1268",
+        "m2:8:941"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 28，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:19:2274",
+      "kind": "行動",
+      "month": 19,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:14:1671",
+        "m2:11:1268",
+        "m2:8:941"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 29，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:20:2419",
+      "kind": "行動",
+      "month": 20,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:14:1671",
+        "m2:11:1268"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 30，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:21:2529",
+      "kind": "行動",
+      "month": 21,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:14:1671",
+        "m2:11:1268"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "同區成果競爭未獲優先紀錄，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:22:2638",
+      "kind": "行動",
+      "month": 22,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:14:1671",
+        "m2:11:1268"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 31，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:23:2747",
+      "kind": "行動",
+      "month": 23,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:14:1671"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 32，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:24:2910",
+      "kind": "行動",
+      "month": 24,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:24:2910"
+      ],
+      "effects": {
+        "goal_id": "g:101:12"
+      },
+      "event_id": "m2:24:2911",
+      "kind": "目標完成",
+      "month": 24,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:14:1671"
+      ],
+      "effects": {
+        "action": "學習",
+        "outcome": "工作技能提升，支出 4",
+        "target": null
+      },
+      "event_id": "m2:25:3021",
+      "kind": "行動",
+      "month": 25,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:14:1671"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 34，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:26:3134",
+      "kind": "行動",
+      "month": 26,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "休息",
+        "outcome": "健康恢復 8",
+        "target": null
+      },
+      "event_id": "m2:27:3245",
+      "kind": "行動",
+      "month": 27,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "社交",
+        "outcome": "與 吳妤哲 交流，信任增加",
+        "target": 7
+      },
+      "event_id": "m2:28:3414",
+      "kind": "行動",
+      "month": 28,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "basis": "profile_baseline",
+        "goal_id": "g:101:28",
+        "parent_goal_id": "g:101:24",
+        "reason": "review_month"
+      },
+      "event_id": "m2:28:3415",
+      "kind": "目標轉向",
+      "month": 28,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:29:3529",
+      "kind": "行動",
+      "month": 29,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "研究",
+        "outcome": "同區成果競爭未獲優先紀錄，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:30:3643",
+      "kind": "行動",
+      "month": 30,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "研究",
+        "outcome": "同區成果競爭未獲優先紀錄，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:31:3754",
+      "kind": "行動",
+      "month": 31,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "fact_id": "practice_basis",
+        "finding": "靈氣觀測紀錄 #94"
+      },
+      "event_id": "m2:32:3901",
+      "kind": "發現",
+      "month": 32,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "研究",
+        "outcome": "取得靈氣觀測紀錄 #94，支出 5",
+        "target": null
+      },
+      "event_id": "m2:32:3902",
+      "kind": "行動",
+      "month": 32,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "fact_id": "practice_basis",
+        "finding": "靈氣觀測紀錄 #96"
+      },
+      "event_id": "m2:33:4009",
+      "kind": "發現",
+      "month": 33,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:32:3901"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "取得靈氣觀測紀錄 #96，支出 5",
+        "target": null
+      },
+      "event_id": "m2:33:4010",
+      "kind": "行動",
+      "month": 33,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:34:4121",
+      "kind": "行動",
+      "month": 34,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:35:4232",
+      "kind": "行動",
+      "month": 35,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:36:4383",
+      "kind": "行動",
+      "month": 36,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:36:4383"
+      ],
+      "effects": {
+        "goal_id": "g:101:28"
+      },
+      "event_id": "m2:36:4384",
+      "kind": "目標完成",
+      "month": 36,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:37:4492",
+      "kind": "行動",
+      "month": 37,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:38:4601",
+      "kind": "行動",
+      "month": 38,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:39:4708",
+      "kind": "行動",
+      "month": 39,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:40:4865",
+      "kind": "行動",
+      "month": 40,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "basis": "profile_baseline",
+        "goal_id": "g:101:40",
+        "parent_goal_id": "g:101:36",
+        "reason": "review_month"
+      },
+      "event_id": "m2:40:4866",
+      "kind": "目標轉向",
+      "month": 40,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:41:4976",
+      "kind": "行動",
+      "month": 41,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 35，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:42:5085",
+      "kind": "行動",
+      "month": 42,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "effects": {
+        "action": "社交",
+        "outcome": "與 鄭宇祐 交流，信任增加",
+        "target": 52
+      },
+      "event_id": "m2:43:5193",
+      "kind": "行動",
+      "month": 43,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:3:321"
+      ],
+      "effects": {
+        "shared_fact_id": "practice_basis",
+        "trust": 14
+      },
+      "event_id": "m2:43:5194",
+      "kind": "關係",
+      "month": 43,
+      "target": 52
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:33:4009",
+        "m2:32:3901"
+      ],
+      "effects": {
+        "action": "社交",
+        "outcome": "與 曾涵妤 交流，信任增加",
+        "target": 97
+      },
+      "event_id": "m2:44:5342",
+      "kind": "行動",
+      "month": 44,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:33:4009"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 36，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:45:5450",
+      "kind": "行動",
+      "month": 45,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:46:5558",
+      "kind": "行動",
+      "month": 46,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:47:5667",
+      "kind": "行動",
+      "month": 47,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "休息",
+        "outcome": "健康恢復 8",
+        "target": null
+      },
+      "event_id": "m2:48:5820",
+      "kind": "行動",
+      "month": 48,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:49:5929",
+      "kind": "行動",
+      "month": 49,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 37，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:50:6037",
+      "kind": "行動",
+      "month": 50,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "社交",
+        "outcome": "與 鄭宇祐 交流，信任增加",
+        "target": 52
+      },
+      "event_id": "m2:51:6147",
+      "kind": "行動",
+      "month": 51,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "action": "社交",
+        "outcome": "與 鄭宇祐 交流，信任增加",
+        "target": 52
+      },
+      "event_id": "m2:52:6299",
+      "kind": "行動",
+      "month": 52,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:52:6299"
+      ],
+      "effects": {
+        "shared_fact_id": null,
+        "trust": 36
+      },
+      "event_id": "m2:52:6300",
+      "kind": "關係",
+      "month": 52,
+      "target": 52
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:52:6300"
+      ],
+      "effects": {
+        "action": "社交",
+        "outcome": "與 鄭宇祐 交流，信任增加",
+        "target": 52
+      },
+      "event_id": "m2:53:6408",
+      "kind": "行動",
+      "month": 53,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:52:6300"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:54:6516",
+      "kind": "行動",
+      "month": 54,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:52:6300"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 38，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:55:6622",
+      "kind": "行動",
+      "month": 55,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:52:6300"
+      ],
+      "effects": {
+        "action": "社交",
+        "outcome": "與 鄭宇祐 交流，信任增加",
+        "target": 52
+      },
+      "event_id": "m2:56:6783",
+      "kind": "行動",
+      "month": 56,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:56:6783"
+      ],
+      "effects": {
+        "goal_id": "g:101:40"
+      },
+      "event_id": "m2:56:6784",
+      "kind": "目標完成",
+      "month": 56,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:52:6300"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 39，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:57:6891",
+      "kind": "行動",
+      "month": 57,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:52:6300"
+      ],
+      "effects": {
+        "action": "工作",
+        "outcome": "收入 40，工作技能提升",
+        "target": null
+      },
+      "event_id": "m2:58:6998",
+      "kind": "行動",
+      "month": 58,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:52:6300"
+      ],
+      "effects": {
+        "action": "研究",
+        "outcome": "未取得可重現結果，研究技能提升，支出 5",
+        "target": null
+      },
+      "event_id": "m2:59:7105",
+      "kind": "行動",
+      "month": 59,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [
+        "m2:52:6300"
+      ],
+      "effects": {
+        "action": "社交",
+        "outcome": "與 鄭宇祐 交流，信任增加",
+        "target": 52
+      },
+      "event_id": "m2:60:7257",
+      "kind": "行動",
+      "month": 60,
+      "target": null
+    },
+    {
+      "actor": 101,
+      "causes": [],
+      "effects": {
+        "basis": "profile_baseline",
+        "goal_id": "g:101:60",
+        "parent_goal_id": "g:101:56",
+        "reason": "review_month"
+      },
+      "event_id": "m2:60:7258",
+      "kind": "目標轉向",
+      "month": 60,
+      "target": null
+    }
+  ],
+  "rules_version": "0.2.2",
+  "sample_kind": "synthetic project QA; not a user's save",
+  "seed": 2026,
+  "source_commit": "e92cee6b889f49b0ccbddf6881b32bed8637086c"
+}

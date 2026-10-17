@@ -11,6 +11,7 @@
 - [P0 實作驗收與回顧](implementation-review-retro.md)
 - [30 seed 實驗結果](../../artifacts/m2-experiments.md)
 - [自然事件、公平性、效能與 Chrome 驗收補測](../../artifacts/m2-acceptance-gaps.md)
+- [0.2.2 單一人物 1–60 月試玩紀錄與貢獻者審查問題](../../artifacts/m2-playtest-review-2026-10-17.md)
 - [Grok bot／Claude 的 M2 PR 貢獻與我方審核計畫](contribution-review-plan.md)
 - [下一里程碑 M3 規劃入口，尚未開工](../m3/README.md)
 
