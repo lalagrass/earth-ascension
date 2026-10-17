@@ -18,8 +18,8 @@ M2_0_2_0_SEED7_MONTH24 = "8d607fede2c0bbd77574df2bcce59fda4132592af671217bed9181
 M2_0_2_1_SEED7_MONTH0 = "6c00f73ead3cdc69ea71657daa715838aa94052248a6e505158c2c7be713b71b"
 M2_0_2_1_SEED7_MONTH24 = "e1d97f8483c0e2f805f21b96627578fff767cd8d637a5e682ef373b133732ecc"
 # 0.2.2 baseline (#8 goal review: rest phase + re-evaluation); RNG_NAMESPACE is still 0.2.0, new draw purpose "goal-review".
-M2_0_2_2_SEED7_MONTH0 = "596f82fc5455f7c6d5b5dcc7716b1e23e55cce1000a1f4ec9e6aad150f41c42a"
-M2_0_2_2_SEED7_MONTH24 = "cac9ee388690a8063f7709603ce7af0bc6e05f5d6eba5672825a45a27a1acf5a"
+M2_0_2_2_SEED7_MONTH0 = "3bedf4be189aecaa48787eae4369c80c0c15e81de21f4e174c034e4cb2b1b203"
+M2_0_2_2_SEED7_MONTH24 = "d2f4cb620e156c653b1e934d39bf3a703891975f76a3386379155a63ef245e71"
 # A 0.2.1 SQLite save created by the 0.2.1 code (dev @ 255855e) and advanced to months 24 and 25 by that same code.
 M2_0_2_1_STORE_MONTH24 = "236b3b9e41bcfdb68f2a3fe8bbe4f19911ab3ef26ffc1ded811fb10bcec6b0b5"
 M2_0_2_1_STORE_MONTH25 = "40491fb46499e06b79f2a387ab9b76548b0413a6b461a593d84d8fc61c62d587"

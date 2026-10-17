@@ -478,7 +478,7 @@ class GoalReviewTests(unittest.TestCase):
 
         def scores(**profile):
             p["profile_current"] = {**{k: 0.0 for k in m2_module.PROFILE_KEYS}, **profile}
-            return m2_module._goal_review_scores(p, p["goals"][0], None, 10, 9, {}, set())
+            return m2_module._goal_review_scores(p, p["goals"][0], None, 10, 9, {}, set())[0]
 
         base = scores()
         expected = {"探索": {"探索靈氣": 1.0}, "開放": {"探索靈氣": .5}, "外向": {"建立關係": 1.0},
@@ -500,7 +500,7 @@ class GoalReviewTests(unittest.TestCase):
         lookup = {}
 
         def scores():
-            return m2_module._goal_review_scores(p, p["goals"][0], None, 10, 9, lookup, set())
+            return m2_module._goal_review_scores(p, p["goals"][0], None, 10, 9, lookup, set())[0]
 
         base = scores()
         for kind, month in (("發現", 5), ("目標受挫", 6), ("關係挫折", 7)):
@@ -515,6 +515,99 @@ class GoalReviewTests(unittest.TestCase):
         self.assertEqual(after["穩定生活"], base["穩定生活"])
         p["memories_v2"] = []
         self.assertEqual(scores(), base)  # remove the experience and the explanation disappears
+
+    def _sourced_review(self, kinds, same_month_kind=None, seed=7, **profile):
+        """Person 1 rests with a review due in month 1 and holds sourced memories of the given kinds."""
+        world = self._due_rest_world(seed, **profile)
+        p = world["people"]["1"]
+        ids = {}
+        for kind in kinds:
+            event = _event(world, kind, 1, kind)
+            event["month"] = 0
+            _remember(p, event, 2)
+            ids[kind] = event["event_id"]
+        advance(world)
+        review = world["people"]["1"]["goal_reviews"][-1]
+        moved = next((e for e in world["events"] if e["event_id"] == review["event_id"]), None)
+        return world, review, moved, ids
+
+    def test_transition_event_cites_the_sourced_events_that_actually_scored(self):
+        profile = {"探索": .6, "開放": .6}
+        world, review, moved, ids = self._sourced_review(("發現", "目標完成"), **profile)
+        self.assertEqual(review["chosen"], "探索靈氣")
+        # 目標完成 does not feed any candidate score, so it is neither a contribution nor a cause
+        self.assertEqual([c["event_id"] for c in review["contributions"]], [ids["發現"]])
+        self.assertEqual(review["contributions"][0]["candidate"], "探索靈氣")
+        self.assertAlmostEqual(review["contributions"][0]["delta"], .3)
+        self.assertEqual((review["cause_event_ids"], review["basis"]), ([ids["發現"]], "memory"))
+        self.assertEqual((moved["causes"], moved["effects"]["basis"]), ([ids["發現"]], "memory"))
+        self.assertNotIn(ids["目標完成"], moved["causes"])
+        validate(world)
+        # counterfactual: without the sourced memory the same person has no memory cause at all
+        world2, review2, moved2, _ = self._sourced_review(("目標完成",), **profile)
+        self.assertEqual((review2["contributions"], review2["cause_event_ids"], review2["basis"]), ([], [], "profile_baseline"))
+        self.assertEqual((moved2["causes"], moved2["effects"]["basis"]), ([], "profile_baseline"))
+
+    def test_a_setback_that_removes_a_rival_is_cited_only_when_it_decided_the_outcome(self):
+        profile = {"外向": .6, "探索": .6}
+        decisive_seen, idle_seen = 0, 0
+        for seed in range(80):
+            world, review, moved, ids = self._sourced_review(("關係挫折",), seed=seed, **profile)
+            event_id = ids["關係挫折"]
+            self.assertEqual({c["candidate"]: c["delta"] for c in review["contributions"]}, {"建立關係": -.4, "服務社群": -.2})
+            if review["chosen"] == "探索靈氣" and review["decisive_event_ids"] == [event_id]:
+                decisive_seen += 1
+                self.assertEqual(moved["causes"], [event_id])
+            elif not review["decisive_event_ids"]:
+                idle_seen += 1
+                self.assertEqual(review["cause_event_ids"], [])  # the setback only lowered rivals and changed nothing
+                if moved:
+                    self.assertEqual(moved["causes"], [])
+        self.assertTrue(decisive_seen and idle_seen, (decisive_seen, idle_seen))
+
+    def test_events_of_the_deciding_month_never_become_causes(self):
+        world = self._due_rest_world(7, **{"探索": .6, "開放": .6})
+        world["month"] = 0
+        advance(world)  # month 1 review; the person's own month-1 events exist but cannot have scored
+        review = world["people"]["1"]["goal_reviews"][-1]
+        month1 = {e["event_id"] for e in world["events"] if e["month"] == 1}
+        used = {c["event_id"] for c in review["contributions"]}
+        self.assertFalse(used & month1)
+        self.assertFalse(set(review["cause_event_ids"]) & month1)
+
+    def test_decisive_means_removing_the_event_changes_the_choice(self):
+        noise = {"探索靈氣": 0.0, "服務社群": 0.0, "穩定生活": 0.0}
+        contributions = [{"event_id": "m2:1:1", "candidate": "探索靈氣", "delta": .3},
+                         {"event_id": "m2:1:2", "candidate": "穩定生活", "delta": .05}]
+        # explore (1.3, of which .3 comes from m2:1:1) beats service (1.1); without m2:1:1 it would lose
+        scores = {"探索靈氣": 1.3, "服務社群": 1.1, "穩定生活": .5}
+        self.assertEqual(m2_module._review_choice(scores, noise, contributions), "探索靈氣")
+        self.assertEqual(m2_module._review_choice(scores, noise, contributions, "m2:1:1"), "服務社群")
+        self.assertEqual(m2_module._review_choice(scores, noise, contributions, "m2:1:2"), "探索靈氣")
+        # a clear winner stays the winner even without the event, so that event is not decisive
+        scores["探索靈氣"] = 1.9
+        self.assertEqual(m2_module._review_choice(scores, noise, contributions, "m2:1:1"), "探索靈氣")
+
+    def test_rest_progress_is_the_current_review_window_and_never_exceeds_its_target(self):
+        world = new_world(0)
+        seen = set()
+        for _ in range(60):
+            advance(world)
+            for p in world["people"].values():
+                goal = p["goals"][0]
+                if p["alive"] and goal["type"] == "穩定生活":
+                    self.assertEqual(goal["target"], m2_module.REST_WINDOW_MONTHS)
+                    self.assertLessEqual(goal["progress"], goal["target"])
+                    self.assertEqual(goal["progress"], world["month"] - (p["plan"]["review_month"] - goal["target"]))
+                    seen.add(goal["progress"])
+        # month-end values: 0 right after a stay/entry, then 1..3; the review month itself ends in a stay (0) or an exit
+        self.assertEqual(seen, {0, 1, 2, 3})
+        old = new_world(0, "0.2.1")
+        for _ in range(60):
+            advance(old)
+        self.assertTrue(all(p["goals"][0]["target"] % 6 == 0 and "goal_reviews" not in p
+                            for p in old["people"].values() if p["goals"][0]["type"] == "穩定生活"),
+                        "0.2.1 keeps its original +6 rest target and gets no goal_reviews")
 
     def test_goal_review_cannot_use_events_of_the_deciding_month(self):
         world = self._due_rest_world(7, **{"探索": 1.0})
