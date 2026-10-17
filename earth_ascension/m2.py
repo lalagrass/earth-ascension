@@ -437,6 +437,7 @@ def validate(world):
     if len(ids) != len(set(ids)) or None in ids:
         raise ValueError("事件 ID 重複或缺失")
     known_ids = set(ids)
+    event_months = {e["event_id"]: e["month"] for e in world["events"]}
     known_or_none = known_ids | {None}
     for p in world["people"].values():
         validate_traits(p["traits"], p["budget"])
@@ -464,6 +465,9 @@ def validate(world):
         if any(change["event_id"] not in known_ids or abs(change["after"] - change["before"]) > .020001
                for change in p["profile_changes"]):
             raise ValueError("人格變化無來源或幅度過大")
+        if any(change["month"] != event_months[change["event_id"]] or change["month"] > world["month"]
+               for change in p["profile_changes"]):
+            raise ValueError("人格變化月份與來源事件不符或在未來")
         if _profile_window_excess(p["profile_changes"]) > PROFILE_WINDOW_CAP + .000001:
             raise ValueError("人格 12 個月累積變化過大")
         decision = p["last_decision"]
