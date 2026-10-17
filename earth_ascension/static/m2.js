@@ -23,15 +23,17 @@ function m2Observer(p) {
     const pts = Math.round((v - base[k]) * 100), sources = (p.profile_changes || []).filter(c => c.dimension === k).map(c => `第 ${c.month} 月 ${source(c.event_id)}`).join('、');
     return `<div class="event">${esc(k)} ${pts > 0 ? '+' : ''}${pts} 個百分點（創角 ${Math.round(base[k] * 100)}% → 現在 ${Math.round(v * 100)}%）<small>來源：${sources}</small></div>`;
   }).join('') || '<p>相對創角值尚無變化。</p>';
-  const choose = goal.type === 'legacy_custom' && p.player && viewMonth === null ?
+  const death = p.alive ? null : world.events.find(e => e.kind === '死亡' && [e.actor, e.subject].some(x => x !== undefined && x !== null && String(x) === String(p.id)));
+  const choose = goal.type === 'legacy_custom' && p.player && p.alive && viewMonth === null ?
     `<p>舊存檔自訂目標「${esc(goal.label)}」已保留原文；目前以中性步驟運作，尚無專屬規則。可改選：</p>
      <select id="legacy-goal">${['穩定生活','探索靈氣','建立關係','累積財富','服務社群'].map(x => `<option>${x}</option>`).join('')}</select>
      <button class="button secondary" id="choose-goal">確認目標</button>` : '';
   return `<div class="layout" style="grid-template-columns:260px 1fr"><div class="card"><h3>城市人物</h3>${personSelect()}</div><div>
     <div class="card"><div class="eyebrow">${p.player?'PLAYER CHARACTER':'AUTONOMOUS NPC'} · ID ${p.id}</div><h2>${esc(p.name)}</h2>
     <p>${p.age} 歲 · ${esc(p.job)} · ${esc(p.district)} · ${p.alive?'在世':'已故'}</p>
-    <span class="pill">長期目標：${esc(goal.label)}</span><span class="pill">狀態：${esc(goal.status)}</span><span class="pill">需求：${esc(p.need)}</span>
-    <p>進度 ${goal.progress}/${goal.target} · 下次檢查第 ${p.plan.review_month} 月 · 下一步 ${esc(p.plan.step)}</p>${choose}
+    <span class="pill">${p.alive ? '長期目標' : '離世時的長期目標'}：${esc(goal.label)}</span><span class="pill">狀態：${p.alive ? esc(goal.status) : '已故'}</span><span class="pill">需求：${esc(p.need)}</span>
+    ${p.alive ? `<p>進度 ${goal.progress}/${goal.target} · 下次檢查第 ${p.plan.review_month} 月 · 下一步 ${esc(p.plan.step)}</p>`
+      : `<p>進度 ${goal.progress}/${goal.target} · ${death ? `第 ${death.month} 月離世 · 來源 ${source(death.event_id)}` : '離世事件來源不在目前快照'}；目標不再檢查或推進。</p>`}${choose}
     <div class="grid" style="grid-template-columns:repeat(3,1fr)">${stat('健康',p.health,'/100')}${stat('財富',p.wealth,'資源單位')}${stat('生命經過',p.months_lived,'個月')}</div></div>
     <div class="layout"><div class="card"><h3>能力 / 技能</h3>${Object.entries(p.traits).map(([k,v]) => `<div class="barrow"><span>${esc(k)}</span><div class="bar"><b style="width:${v*10}%"></b></div><span>${v}</span></div>`).join('')}
     <p>${Object.entries(p.skills).map(([k,v]) => `<span class="pill">${esc(k)} ${v}</span>`).join('')}</p></div>
