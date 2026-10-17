@@ -74,7 +74,7 @@ def experience_pair(seed):
     p = affected["people"]["1"]
     event = _event(affected, "關係挫折", 1, "與熟人交流受挫", target=target,
                    effects={"trust_delta": -30}, important=True)
-    _remember(p, event, 3)
+    _remember(p, event, 3, RULES_VERSION)
     edge = p["relationships_v2"].setdefault(str(target), {"trust": 20, "last_event_id": None, "last_interaction_month": None})
     edge["trust"] = max(0, edge["trust"] - 30)
     edge["last_event_id"] = event["event_id"]
@@ -100,9 +100,9 @@ def memory_probes(seed):
         w["month"] = 6
         p = w["people"]["1"]
         event = _event(w, kind, 1, f"固定驗收事件：{kind}", important=True)
-        _remember(p, event, 3)
+        _remember(p, event, 3, RULES_VERSION)
         irrelevant = _event(w, "工作", 1, "無關工作記錄")
-        _remember(p, irrelevant, 1)
+        _remember(p, irrelevant, 1, RULES_VERSION)
         for probe_month in (12, 18):
             snap = copy.deepcopy(w)
             snap["month"] = probe_month - 1

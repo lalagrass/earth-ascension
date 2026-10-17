@@ -8,9 +8,12 @@ from pathlib import Path
 from earth_ascension.m2 import _event, _remember, advance, new_world
 from earth_ascension.store import Store
 
+# Historical 0.2.0 review evidence (m2-issue-audit-raw.json): pin the 0.2.0 rules, including the eviction fixture.
+RULES_VERSION = "0.2.0"
+
 
 def main():
-    world = new_world(7)
+    world = new_world(7, RULES_VERSION)
     for _ in range(60):
         advance(world)
     living = [p for p in world["people"].values() if p["alive"]]
@@ -19,21 +22,21 @@ def main():
              for p in living]
     total_drift = [sum(abs(p["profile_current"][k] - p["profile_base"][k])
                        for k in p["profile_current"]) for p in living]
-    fixture = new_world(7)
+    fixture = new_world(7, RULES_VERSION)
     fixture["month"] = 13
     p = fixture["people"]["1"]
     p["memories_v2"] = []
     for i in range(24):
         e = _event(fixture, "發現", 1, f"old {i}", important=True)
         e["month"] = 0
-        _remember(p, e, 3)
+        _remember(p, e, 3, RULES_VERSION)
     fresh = _event(fixture, "關係挫折", 1, "new setback", important=True)
-    _remember(p, fresh, 2)
+    _remember(p, fresh, 2, RULES_VERSION)
     with tempfile.TemporaryDirectory() as d:
         db_path = Path(d) / "issue-audit.sqlite3"
         store = Store(db_path)
         with store._connect() as db:
-            state, digest = store._encode(new_world(7))
+            state, digest = store._encode(new_world(7, RULES_VERSION))
             db.execute("UPDATE snapshots SET state=? WHERE month=0", (state,))
             db.execute("UPDATE meta SET value=? WHERE key='state_hash:0'", (digest,))
         sizes = {}
