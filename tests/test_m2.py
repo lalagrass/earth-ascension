@@ -4,9 +4,11 @@ import json
 import sqlite3
 import tempfile
 import unittest
+from unittest import mock
 from contextlib import closing
 from pathlib import Path
 
+from earth_ascension import m2 as m2_module
 from earth_ascension.engine import initial_world
 from earth_ascension.m2 import (_change_profile, _event, _intent, _remember, advance, canonical_hash, draw,
                                 new_world, validate)
@@ -167,6 +169,48 @@ class M2Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             advance(world)
         self.assertEqual(canonical_hash(world), digest)
+
+    def test_rules_version_bump_keeps_rng_namespace(self):
+        def run():
+            world = new_world(7)
+            for _ in range(6):
+                advance(world)
+            for key in ("version", "rules_version"):
+                world.pop(key)
+            return world
+
+        baseline = run()
+        bumped_rules = {("0.2.1", "0.2.1", m2_module.SCHEMA_VERSION, "m2_rules")}
+        with mock.patch.object(m2_module, "M2_VERSION", "0.2.1"), \
+                mock.patch.object(m2_module, "COMPATIBLE", bumped_rules):
+            bumped = run()
+        self.assertEqual(bumped["aura"], baseline["aura"])
+        self.assertEqual(canonical_hash(bumped), canonical_hash(baseline))
+        with mock.patch.object(m2_module, "RNG_NAMESPACE", "reshuffled"):
+            reshuffled = run()
+        self.assertNotEqual(reshuffled["aura"], baseline["aura"])
+
+    def test_store_keeps_unknown_m2_saves_on_m2_path(self):
+        cases = ({"version": "0.2.1", "rules_version": "0.2.1"}, {"schema_version": 3},
+                 {"policy_mode": "unknown"})
+        for change in cases:
+            with self.subTest(change=change), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "world.sqlite3"
+                Store(path)
+                with closing(sqlite3.connect(path)) as db:
+                    world = json.loads(db.execute("SELECT state FROM snapshots WHERE month=0").fetchone()[0])
+                    world.update(change)
+                    db.execute("UPDATE snapshots SET state=? WHERE month=0", (json.dumps(world, ensure_ascii=False),))
+                    db.commit()
+                store = Store(path)
+                before = store.read()
+                self.assertTrue(m2_module.is_m2_world(before))
+                with self.assertRaisesRegex(ValueError, "M2 規則或資料版本不相容"):
+                    store.advance(0)
+                self.assertEqual(store.read(), before)
+
+    def test_m1_save_without_markers_stays_on_m1_path(self):
+        self.assertFalse(m2_module.is_m2_world(initial_world(7)))
 
     def test_compatibility_projections_must_agree(self):
         for field in ("goal", "profile", "relations"):
