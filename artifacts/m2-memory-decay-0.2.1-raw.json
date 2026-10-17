@@ -1,5 +1,5 @@
 {
- "base_rules_version": "0.2.1",
+ "rules_version": "0.2.1",
  "seeds": [
   0,
   1,
@@ -35,7 +35,7 @@
  "months": 60,
  "min_weight": 0.05,
  "weight_profiles": {
-  "cutoff_0_2_1": {
+  "cutoff": {
    "weight_sum": 12.0,
    "first_age": 1,
    "last_age": 12,
@@ -83,7 +83,7 @@
   }
  },
  "groups": {
-  "cutoff_0_2_1": [
+  "cutoff": [
    {
     "seed": 0,
     "hash": "79ad5fcc0ab3dd7c40aa9f2651087aec6df26d6a35ea05f46452a17b7b9ae5bb",
@@ -181,6 +181,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -330,6 +333,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -478,6 +484,9 @@
       "穩定生活": 95
      }
     },
+    "goal_switches": 75,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -624,6 +633,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -775,6 +787,9 @@
       "穩定生活": 94
      }
     },
+    "goal_switches": 74,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -921,6 +936,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -1067,6 +1085,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -1211,6 +1232,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -1354,6 +1378,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -1503,6 +1530,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -1649,6 +1679,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -1796,6 +1829,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -1944,6 +1980,9 @@
       "穩定生活": 94
      }
     },
+    "goal_switches": 74,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -2091,6 +2130,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -2239,6 +2281,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -2389,6 +2434,9 @@
       "穩定生活": 95
      }
     },
+    "goal_switches": 75,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -2536,6 +2584,9 @@
       "穩定生活": 95
      }
     },
+    "goal_switches": 75,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -2683,6 +2734,9 @@
       "穩定生活": 94
      }
     },
+    "goal_switches": 74,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -2830,6 +2884,9 @@
       "穩定生活": 95
      }
     },
+    "goal_switches": 75,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -2979,6 +3036,9 @@
       "穩定生活": 92
      }
     },
+    "goal_switches": 72,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -3126,6 +3186,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -3274,6 +3337,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -3423,6 +3489,9 @@
       "穩定生活": 93
      }
     },
+    "goal_switches": 73,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -3569,6 +3638,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -3716,6 +3788,9 @@
       "穩定生活": 95
      }
     },
+    "goal_switches": 75,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -3862,6 +3937,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -4012,6 +4090,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -4161,6 +4242,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -4309,6 +4393,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -4457,6 +4544,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -4585,6 +4675,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -4690,6 +4783,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -4800,6 +4896,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -4904,6 +5003,9 @@
       "穩定生活": 100
      }
     },
+    "goal_switches": 80,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -5014,6 +5116,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -5117,6 +5222,9 @@
       "穩定生活": 100
      }
     },
+    "goal_switches": 80,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -5225,6 +5333,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -5331,6 +5442,9 @@
       "穩定生活": 100
      }
     },
+    "goal_switches": 80,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -5436,6 +5550,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -5542,6 +5659,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -5652,6 +5772,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -5755,6 +5878,9 @@
       "穩定生活": 100
      }
     },
+    "goal_switches": 80,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -5866,6 +5992,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -5973,6 +6102,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -6078,6 +6210,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -6186,6 +6321,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -6295,6 +6433,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -6405,6 +6546,9 @@
       "穩定生活": 95
      }
     },
+    "goal_switches": 75,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -6511,6 +6655,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -6618,6 +6765,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -6726,6 +6876,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -6832,6 +6985,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -6941,6 +7097,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -7046,6 +7205,9 @@
       "穩定生活": 100
      }
     },
+    "goal_switches": 80,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -7156,6 +7318,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -7260,6 +7425,9 @@
       "穩定生活": 100
      }
     },
+    "goal_switches": 80,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -7366,6 +7534,9 @@
       "穩定生活": 100
      }
     },
+    "goal_switches": 80,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -7469,6 +7640,9 @@
       "穩定生活": 100
      }
     },
+    "goal_switches": 80,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -7577,6 +7751,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -7685,6 +7862,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -7837,6 +8017,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -8005,6 +8188,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -8175,6 +8361,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -8345,6 +8534,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -8516,6 +8708,9 @@
       "穩定生活": 94
      }
     },
+    "goal_switches": 74,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -8686,6 +8881,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -8854,6 +9052,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -9021,6 +9222,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -9187,6 +9391,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -9355,6 +9562,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -9525,6 +9735,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -9694,6 +9907,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -9865,6 +10081,9 @@
       "穩定生活": 95
      }
     },
+    "goal_switches": 75,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -10034,6 +10253,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -10204,6 +10426,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -10376,6 +10601,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -10546,6 +10774,9 @@
       "穩定生活": 94
      }
     },
+    "goal_switches": 74,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -10716,6 +10947,9 @@
       "穩定生活": 94
      }
     },
+    "goal_switches": 74,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -10886,6 +11120,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -11056,6 +11293,9 @@
       "穩定生活": 91
      }
     },
+    "goal_switches": 71,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -11226,6 +11466,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -11397,6 +11640,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -11569,6 +11815,9 @@
       "穩定生活": 95
      }
     },
+    "goal_switches": 75,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -11739,6 +11988,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -11909,6 +12161,9 @@
       "穩定生活": 95
      }
     },
+    "goal_switches": 75,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -12082,6 +12337,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -12252,6 +12510,9 @@
       "穩定生活": 100
      }
     },
+    "goal_switches": 80,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -12424,6 +12685,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -12595,6 +12859,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -12766,6 +13033,9 @@
       "穩定生活": 95
      }
     },
+    "goal_switches": 75,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -12942,6 +13212,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -13115,6 +13388,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -13289,6 +13565,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -13463,6 +13742,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -13638,6 +13920,9 @@
       "穩定生活": 94
      }
     },
+    "goal_switches": 74,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -13812,6 +14097,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -13984,6 +14272,9 @@
       "穩定生活": 95
      }
     },
+    "goal_switches": 75,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -14155,6 +14446,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -14325,6 +14619,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -14497,6 +14794,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -14671,6 +14971,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -14844,6 +15147,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -15020,6 +15326,9 @@
       "穩定生活": 94
      }
     },
+    "goal_switches": 74,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -15193,6 +15502,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -15367,6 +15679,9 @@
       "穩定生活": 99
      }
     },
+    "goal_switches": 79,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -15543,6 +15858,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -15717,6 +16035,9 @@
       "穩定生活": 94
      }
     },
+    "goal_switches": 74,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -15891,6 +16212,9 @@
       "穩定生活": 93
      }
     },
+    "goal_switches": 73,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -16065,6 +16389,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -16240,6 +16567,9 @@
       "穩定生活": 90
      }
     },
+    "goal_switches": 70,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -16414,6 +16744,9 @@
       "穩定生活": 96
      }
     },
+    "goal_switches": 76,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -16589,6 +16922,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -16765,6 +17101,9 @@
       "穩定生活": 94
      }
     },
+    "goal_switches": 74,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -16939,6 +17278,9 @@
       "穩定生活": 97
      }
     },
+    "goal_switches": 77,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -17113,6 +17455,9 @@
       "穩定生活": 95
      }
     },
+    "goal_switches": 75,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -17288,6 +17633,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -17464,6 +17812,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -17641,6 +17992,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -17816,6 +18170,9 @@
       "穩定生活": 98
      }
     },
+    "goal_switches": 78,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {
@@ -17991,6 +18348,9 @@
       "穩定生活": 95
      }
     },
+    "goal_switches": 75,
+    "person_months": 6000,
+    "goal_reviews": {},
     "trace_violations": 0,
     "probes": {
      "6": {

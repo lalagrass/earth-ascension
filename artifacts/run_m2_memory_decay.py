@@ -1,15 +1,19 @@
 """Read-only #2 experiment: does a floored monthly decay of memory weight beat the 12-month hard cutoff?
 
 Candidates exist only inside this script. Each one is an isolated copy of `earth_ascension.m2` whose
-`_intent` memory block reads a weight function instead of the hard `MEMORY_EFFECT_MONTHS` cutoff; the
-real module, rules version, RNG namespace and every committed raw stay untouched. The copy is checked
-first: with the cutoff weight it must reproduce the real module's canonical hash on every seed.
+memory reads (`_intent` action scores and, from 0.2.2, `_goal_review_scores`) use a weight function
+instead of the hard `MEMORY_EFFECT_MONTHS` cutoff; the real module, rules versions, RNG namespace and
+every committed raw stay untouched. The copy is checked first: with the cutoff weight it must reproduce
+the real module's canonical hash under the same rules version on every seed.
 
 Paired design: development seeds 0–29 only (30–39 are held out for the maintainer), 100 NPC × 60
 months, same seed → same initial resources, personalities, goals and exogenous draws for every group.
 
-Rerun: `PYTHONPATH=. python3 artifacts/run_m2_memory_decay.py` (writes m2-memory-decay-raw.json).
+Each rules version is an explicit, separate run with its own raw (`m2-memory-decay-<version>-raw.json`):
+0.2.1 is the historical baseline (absorbing rest goal), 0.2.2 the current one (#8 goal review).
+Rerun: `PYTHONPATH=. python3 artifacts/run_m2_memory_decay.py --rules-version 0.2.2` (and 0.2.1).
 """
+import argparse
 import copy
 import json
 import statistics as st
@@ -21,9 +25,10 @@ from earth_ascension import m2
 
 SEEDS = range(30)  # development seeds; never 30–39 (held out, #2)
 MONTHS = 60
+RULES_VERSIONS = ("0.2.1", "0.2.2")
 MIN_WEIGHT = .05  # candidate floor: a weight below this scores nothing
 PROBE_AGES = (6, 12, 18, 24)
-# Memory kinds that move a decision score in 0.2.1, and the action they move.
+# Memory kinds that move an action score (0.2.1 and 0.2.2), and the action they move.
 EFFECT = {"發現": "研究", "關係": "社交", "關係挫折": "社交", "目標受挫": "研究"}
 BASE = Path(__file__).parent
 
@@ -41,7 +46,7 @@ def decay_weight(half_life):
 
 # name -> (weight function, ablation)
 GROUPS = {
-    "cutoff_0_2_1": (cutoff_weight, None),
+    "cutoff": (cutoff_weight, None),  # the rules version's own 12-month cutoff
     "no_memory": (cutoff_weight, "no_memory"),
     "halflife_8_3": (decay_weight(8.3), None),
     "halflife_9_1": (decay_weight(9.1), None),  # discrete weight sum closest to the cutoff's 12
@@ -57,6 +62,17 @@ NEW_BLOCK = """        age = month - memory["observed_month"]
             continue
 """
 INCREMENTS = ('scores["研究"] += .35', 'scores["社交"] += .25', 'scores["社交"] -= .6', 'scores["研究"] -= .4')
+# 0.2.2 goal review reads memory with the same cutoff; a candidate decays it the same way.
+OLD_REVIEW = """        if month - memory["observed_month"] > MEMORY_EFFECT_MONTHS:
+            continue
+        for candidate, delta in effects.get(event["kind"], ()):
+"""
+NEW_REVIEW = """        w = _memory_weight(month - memory["observed_month"])
+        if w <= 0:
+            continue
+        for candidate, delta in effects.get(event["kind"], ()):
+            delta = delta * w
+"""
 
 
 def weight_profile(weight):
@@ -73,6 +89,8 @@ def patched_module(weight):
     for increment in INCREMENTS:
         assert source.count(increment) == 1, increment
         source = source.replace(increment, increment + " * w")
+    assert source.count(OLD_REVIEW) == 1, "m2._goal_review_scores memory block changed; update this experiment"
+    source = source.replace(OLD_REVIEW, NEW_REVIEW)
     module = types.ModuleType("m2_memory_decay_candidate")
     module.__package__ = "earth_ascension"
     module.__file__ = m2.__file__
@@ -86,7 +104,7 @@ def rank(intent, action):
     return order.index(action) + 1 if action in order else None
 
 
-def run(seed, weight, ablation):
+def run(seed, rules_version, weight, ablation):
     mod = patched_module(weight)
     original = mod._intent
     stats = {"actions_by_year": defaultdict(Counter), "hits_by_kind": Counter(), "hits_by_age": Counter(),
@@ -126,18 +144,30 @@ def run(seed, weight, ablation):
         return intent
 
     mod._intent = traced
-    world = mod.new_world(seed)
+    world = mod.new_world(seed, rules_version)
     if ablation:
         world["ablation"] = ablation
     discoveries = Counter()
     goals = {}
+    goal_ids = {k: p["goals"][0]["id"] for k, p in world["people"].items()}
+    switches = person_months = 0
     for _ in range(MONTHS):
+        alive_before = [k for k, p in world["people"].items() if p["alive"]]
         for event in mod.advance(world):
             if event["kind"] == "發現":
                 discoveries[(world["month"] - 1) // 12 + 1] += 1
+        for k in alive_before:
+            person_months += 1
+            gid = world["people"][k]["goals"][0]["id"]
+            switches += gid != goal_ids[k]
+            goal_ids[k] = gid
         if world["month"] in (24, 36, 48, 60):
             living = [p for p in world["people"].values() if p["alive"]]
             goals[world["month"]] = dict(sorted(Counter(p["goals"][0]["type"] for p in living).items()))
+    reviews = Counter()
+    for p in world["people"].values():
+        for r in p.get("goal_reviews", []):
+            reviews[f"{r['outcome']}/{r['basis']}"] += 1
     probes = {}
     for age, rows in stats["probes"].items():
         probes[age] = {"n": len(rows),
@@ -152,11 +182,12 @@ def run(seed, weight, ablation):
             "hits_by_age": dict(sorted(stats["hits_by_age"].items())),
             "research_with_discovery_memory": stats["research_with_discovery_memory"],
             "discoveries_by_year": dict(sorted(discoveries.items())), "goals": goals,
+            "goal_switches": switches, "person_months": person_months, "goal_reviews": dict(sorted(reviews.items())),
             "trace_violations": stats["trace_violations"], "probes": probes}
 
 
-def official_hash(seed):
-    world = m2.new_world(seed)
+def official_hash(seed, rules_version):
+    world = m2.new_world(seed, rules_version)
     for _ in range(MONTHS):
         m2.advance(world)
     return m2.canonical_hash(world)
@@ -169,7 +200,7 @@ def share(counter, action):
 
 def summarize(results):
     lines = []
-    base = {r["seed"]: r for r in results["cutoff_0_2_1"]}
+    base = {r["seed"]: r for r in results["cutoff"]}
     for name, runs in results.items():
         all_actions = Counter()
         yearly = defaultdict(list)
@@ -197,6 +228,16 @@ def summarize(results):
         lines.append(f"research choices citing a discovery memory: {sum(r['research_with_discovery_memory'] for r in runs)}; "
                      f"discoveries/seed by year: {[round(st.mean(r['discoveries_by_year'].get(y, 0) for r in runs), 1) for y in range(1, 6)]}")
         lines.append(f"trace violations: {sum(r['trace_violations'] for r in runs)}")
+        for month in (24, 36, 48, 60):
+            top = [max(r["goals"][month].values()) / sum(r["goals"][month].values()) for r in runs]
+            rest = [r["goals"][month].get("穩定生活", 0) / sum(r["goals"][month].values()) for r in runs]
+            lines.append(f"month {month}: max single-goal share median {st.median(top):.1%} max {max(top):.1%}; "
+                         f"穩定生活 median {st.median(rest):.1%}")
+        reviews = Counter()
+        for r in runs:
+            reviews.update(r["goal_reviews"])
+        lines.append(f"goal switches per person-month {sum(r['goal_switches'] for r in runs) / sum(r['person_months'] for r in runs):.2%}; "
+                     f"reviews {dict(sorted(reviews.items()))}")
         for age in PROBE_AGES:
             n = sum(r["probes"][age]["n"] for r in runs)
             if n:
@@ -214,18 +255,21 @@ def summarize(results):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--rules-version", choices=RULES_VERSIONS, required=True)
+    rules_version = parser.parse_args().rules_version
     profiles = {name: weight_profile(weight) if ablation is None else {"weight_sum": 0, "note": "memory ablated"}
                 for name, (weight, ablation) in GROUPS.items()}
     results = {}
     for name, (weight, ablation) in GROUPS.items():
-        results[name] = [run(seed, weight, ablation) for seed in SEEDS]
+        results[name] = [run(seed, rules_version, weight, ablation) for seed in SEEDS]
         print(f"{name} done", flush=True)
-    for r in results["cutoff_0_2_1"]:
-        assert r["hash"] == official_hash(r["seed"]), (r["seed"], "patched cutoff differs from the real m2 module")
-    print("patched cutoff reproduces the real 0.2.1 module on every seed", flush=True)
-    raw = {"base_rules_version": m2.M2_VERSION, "seeds": list(SEEDS), "months": MONTHS, "min_weight": MIN_WEIGHT,
+    for r in results["cutoff"]:
+        assert r["hash"] == official_hash(r["seed"], rules_version), (r["seed"], "patched cutoff differs from the real m2 module")
+    print(f"patched cutoff reproduces the real {rules_version} module on every seed", flush=True)
+    raw = {"rules_version": rules_version, "seeds": list(SEEDS), "months": MONTHS, "min_weight": MIN_WEIGHT,
            "weight_profiles": profiles, "groups": results}
-    (BASE / "m2-memory-decay-raw.json").write_text(json.dumps(raw, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    (BASE / f"m2-memory-decay-{rules_version}-raw.json").write_text(json.dumps(raw, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(json.dumps(profiles, ensure_ascii=False))
     print(summarize(results))
 
