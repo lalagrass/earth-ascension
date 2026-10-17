@@ -1,0 +1,9 @@
+[project]
+name = "earth-ascension"
+version = "0.1.0"
+description = "Earth Ascension M1 local monthly world simulation"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+earth-ascension = "earth_ascension.server:main"
