@@ -12,7 +12,9 @@ const questions=[
 let world=null,tab='overview',selected=101,viewMonth=null,flash='',personFilter='all',personDistrict='',personSearch='',advancing=false,stopRequested=false;
 const answerPresets={neutral:[3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],scholar:[5,4,3,3,4,5,2,3,5,4,3,3,4,5,3,3],builder:[3,5,3,3,5,2,5,3,3,5,3,3,5,2,5,3],community:[3,3,5,5,4,3,4,5,3,3,5,5,4,3,4,5]};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmt=e=>`<div class="event" ${e.event_id?`id="event-${esc(e.event_id)}"`:''}>${esc(e.text)}<small>第 ${e.month} 月 · ${esc(e.kind)} · 原因：${esc((e.causes||[]).join('、'))}</small></div>`;
+// 目標完成事件的文字沒有目標名；顯示時由 effects.goal_id 查人物的 goals／goal_history，查不到就維持原文字（不改儲存的事件）。
+const eventText=e=>{let id=e.kind==='目標完成'&&e.effects&&e.effects.goal_id,p=id&&world.people[String(e.subject??e.actor)],g=p&&[...(p.goal_history||[]),...(p.goals||[])].find(x=>x.id===id),n=g&&(g.label||g.type);return n?`${e.text}「${n}」`:e.text};
+const fmt=e=>`<div class="event" ${e.event_id?`id="event-${esc(e.event_id)}"`:''}>${esc(eventText(e))}<small>第 ${e.month} 月 · ${esc(e.kind)} · 原因：${esc((e.causes||[]).join('、'))}</small></div>`;
 async function api(path,opt){let r=await fetch(path,opt);let v=await r.json();if(!r.ok)throw Error(v.error||'操作失敗');return v}
 async function load(month=null){world=await api('/api/world'+(month===null?'':'?month='+month));viewMonth=month;flash='';document.getElementById('notice').innerHTML='';render()}
 function notice(s,bad=false){flash=`<div class="notice ${bad?'error':''}">${esc(s)}</div>`;document.getElementById('notice').innerHTML=flash}

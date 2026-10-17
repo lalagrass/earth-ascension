@@ -5,7 +5,7 @@ function m2Observer(p) {
   const goal = p.goals[0], decision = p.last_decision;
   const memories = (p.memories_v2 || []).slice(0, 12).map(m => {
     const e = eventById.get(m.event_id);
-    return e ? `<div class="event">${esc(e.text)}<small>第 ${e.month} 月 · ${esc(e.kind)} · 來源 ${source(e.event_id)}</small></div>` : '';
+    return e ? `<div class="event">${esc(eventText(e))}<small>第 ${e.month} 月 · ${esc(e.kind)} · 來源 ${source(e.event_id)}</small></div>` : '';
   }).join('') || '<p>尚無有來源的關鍵記憶。</p>';
   const legacy = (p.legacy_memories || []).slice(0, 6).map(m =>
     `<div class="event">${esc(typeof m === 'string' ? m : JSON.stringify(m))}<small>legacy_unstructured · 舊版未記錄可驗證來源</small></div>`).join('');
