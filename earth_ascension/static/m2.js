@@ -5,7 +5,8 @@ function m2Observer(p) {
   const source = (id, withMonth = true) => {
     if (!id) return '尚無事件來源';
     const e = eventById.get(id);
-    const label = e ? (withMonth ? `第 ${e.month} 月 · ${e.kind}` : e.kind) : id;
+    if (!e) return `<span title="找不到對應事件">${esc(id)}</span>`;
+    const label = withMonth ? `第 ${e.month} 月 · ${e.kind}` : e.kind;
     return `<button class="person" data-event="${esc(id)}" title="${esc(id)}">${esc(label)} ↗</button>`;
   };
   const goal = p.goals[0], decision = p.last_decision;
