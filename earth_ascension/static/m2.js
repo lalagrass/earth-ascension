@@ -39,7 +39,7 @@ function m2Observer(p) {
     `<p>舊存檔自訂目標「${esc(goal.label)}」已保留原文；目前以中性步驟運作，尚無專屬規則。可改選：</p>
      <select id="legacy-goal">${['穩定生活','探索靈氣','建立關係','累積財富','服務社群'].map(x => `<option>${x}</option>`).join('')}</select>
      <button class="button secondary" id="choose-goal">確認目標</button>` : '';
-  return `<div class="layout" style="grid-template-columns:260px 1fr"><div class="card"><h3>城市人物</h3>${personSelect()}</div><div>
+  return `<div class="layout side"><div class="card"><h3>城市人物</h3>${personSelect()}</div><div>
     <div class="card"><div class="eyebrow">${p.player?'PLAYER CHARACTER':'AUTONOMOUS NPC'} · ID ${p.id}</div><h2>${esc(p.name)}</h2>
     <p>${p.age} 歲 · ${esc(p.job)} · ${esc(p.district)} · ${p.alive?'在世':'已故'}</p>
     <span class="pill">${p.alive ? '長期目標' : '離世時的長期目標'}：${esc(goal.label)}</span><span class="pill">狀態：${p.alive ? esc(goal.status) : '已故'}</span><span class="pill">需求：${esc(p.need)}</span>
