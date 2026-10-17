@@ -1,0 +1,812 @@
+[
+  {
+    "seed": 97,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 131,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 163,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 183,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 201,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 217,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 315,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 345,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 358,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 369,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 401,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 438,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 457,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 458,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 470,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 478,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 495,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 499,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 573,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 586,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 648,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 651,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 656,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 680,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 681,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 685,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 690,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 694,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  },
+  {
+    "seed": 705,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    }
+  },
+  {
+    "seed": 709,
+    "normal": {
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      },
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      }
+    },
+    "swapped": {
+      "logical-B": {
+        "action": "研究",
+        "resolution": "accepted",
+        "discovered": true
+      },
+      "logical-A": {
+        "action": "研究",
+        "resolution": "research_contested",
+        "discovered": false
+      }
+    }
+  }
+]

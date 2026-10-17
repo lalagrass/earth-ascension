@@ -1,0 +1,23 @@
+{
+  "seed": 7,
+  "month": 60,
+  "living": 100,
+  "goal_distribution": {
+    "穩定生活": 99,
+    "探索靈氣": 1
+  },
+  "active_memories": 587,
+  "memory_older_than_12": 504,
+  "fresh_importance2_retained_in_full_old3_fixture": false,
+  "max_dimension_drift": 0.030000000000000027,
+  "mean_max_dimension_drift": 0.009000000000000005,
+  "max_total_drift": 0.030000000000000027,
+  "mean_total_drift": 0.009500000000000005,
+  "people_with_profile_changes": 69,
+  "snapshot_bytes": {
+    "12": 1183859,
+    "36": 3037957,
+    "60": 4779629
+  },
+  "sqlite_bytes": 158076928
+}
