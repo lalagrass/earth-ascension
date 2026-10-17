@@ -21,7 +21,7 @@ M3 認領時先看[任務表與依賴](docs/m3/contribution-plan.md)：標為「
 
 - 對應 issue、base `dev` SHA、問題的最小重現、採用的方案與捨棄方案。
 - 改動檔案及影響的 [A1–A10 驗收](docs/m2/acceptance.md)；規則／schema／RNG、M1／M2 存檔與 canonical hash 的預期影響。
-- 具體可重跑的測試命令與結果。基本檢查：`python3 -m unittest discover -s tests -v`、`node --check earth_ascension/static/m2.js`、`git diff --check`。若改行為，提供固定 seed 配對、多 seed 結果及失敗 seed；若改 UI，附真實瀏覽器操作；若改儲存，附遷移及回放測試。
+- 具體可重跑的測試命令與結果。基本檢查：`python3 -m unittest discover -s tests -v`、`node --check earth_ascension/static/m2.js`、`git diff --check`。這三項由 [CI](.github/workflows/test.yml) 在 Python 3.12／3.13／3.14 自動執行；`tests/test_golden.py` 鎖住固定 seed 的 canonical hash，若改動有意改變回放，PR 須說明原因並更新該檔常數。若改行為，提供固定 seed 配對、多 seed 結果及失敗 seed；若改 UI，附真實瀏覽器操作；若改儲存，附遷移及回放測試。
 - 失敗條件、未解風險及需維護者決策的問題。大型原始輸出可連到可重跑腳本與摘要；是否將新大型資料納入 Git 先討論。
 
 可用 [PR 模板](.github/pull_request_template.md)填寫。另一位貢獻者可複核，審核者逐項核對證據，回覆「可合併／須修改／等待產品決策」；作者更新後再審，最後由維護者決定是否合併。共用 GitHub 帳號下的自我留言不算平台上的獨立核准。PR 被合併後，下一個作者須基於新的 `dev` 重跑受影響的驗收。
