@@ -210,36 +210,40 @@ def evaluate_candidate_transition(person):
     if not completed:
         return None
     skills = person["skills"]
+    specialist_note = "專業職稱（研究員／工程師／醫護／教師）須另具領域進修或組織正式任命事件，僅憑通用技能不直接授職（待決策）"
     for goal_rec in completed:
         gtype = goal_rec["type"]
         ev_id = completion_events[goal_rec["id"]]
         if gtype == "探索靈氣" and skills["研究"] >= 12:
             disc_ids = [k["source_event_id"] for k in person["knowledge_v2"] if k["fact_id"] == "practice_basis"][:1]
-            return {"job": "研究員", "org_id": 1, "org_name": "市立新現象研究所",
+            return {"candidate_role": "研究成員（候選）", "org_id": 1, "org_name": "市立新現象研究所",
                     "trigger_goal_id": goal_rec["id"], "trigger_event_ids": [ev_id] + disc_ids,
-                    "criterion": "完成「探索靈氣」目標（目標完成事件）且研究技能 ≥ 12"}
+                    "criterion": "完成「探索靈氣」目標（目標完成事件）且研究技能 ≥ 12（待校準）",
+                    "specialist_note": specialist_note}
         if gtype == "累積財富" and skills["工作"] >= 12:
-            return {"job": "工程師" if person["district"] == "工業灣" else "商務",
-                    "org_id": 3, "org_name": "灣區產業協會",
+            return {"candidate_role": "實務成員（候選）", "org_id": 3, "org_name": "灣區產業協會",
                     "trigger_goal_id": goal_rec["id"], "trigger_event_ids": [ev_id],
-                    "criterion": "完成「累積財富」目標（目標完成事件）且工作技能 ≥ 12"}
+                    "criterion": "完成「累積財富」目標（目標完成事件）且工作技能 ≥ 12（待校準）",
+                    "specialist_note": specialist_note}
         if gtype == "服務社群" and (skills["社交"] + skills["工作"]) >= 12:
-            org_id, org_name, job = (
-                (2, "河港醫療聯盟", "醫護") if person["district"] == "河港"
-                else (5, "學園教育網", "教師") if person["district"] == "學園"
-                else (4, "舊城互助會", "服務業")
+            org_id, org_name = (
+                (2, "河港醫療聯盟") if person["district"] == "河港"
+                else (5, "學園教育網") if person["district"] == "學園"
+                else (4, "舊城互助會")
             )
-            return {"job": job, "org_id": org_id, "org_name": org_name,
+            return {"candidate_role": "社區成員（候選）", "org_id": org_id, "org_name": org_name,
                     "trigger_goal_id": goal_rec["id"], "trigger_event_ids": [ev_id],
-                    "criterion": "完成「服務社群」目標（目標完成事件）且（社交＋工作技能）≥ 12"}
+                    "criterion": "完成「服務社群」目標（目標完成事件）且（社交＋工作技能）≥ 12（待校準）",
+                    "specialist_note": specialist_note}
         if gtype == "建立關係" and skills["社交"] >= 12:
-            org_id, org_name, job = (
-                (5, "學園教育網", "行政") if person["district"] == "學園"
-                else (4, "舊城互助會", "行政")
+            org_id, org_name = (
+                (5, "學園教育網") if person["district"] == "學園"
+                else (4, "舊城互助會")
             )
-            return {"job": job, "org_id": org_id, "org_name": org_name,
+            return {"candidate_role": "協力成員（候選）", "org_id": org_id, "org_name": org_name,
                     "trigger_goal_id": goal_rec["id"], "trigger_event_ids": [ev_id],
-                    "criterion": "完成「建立關係」目標（目標完成事件）且社交技能 ≥ 12"}
+                    "criterion": "完成「建立關係」目標（目標完成事件）且社交技能 ≥ 12（待校準）",
+                    "specialist_note": specialist_note}
     return None
 
 
