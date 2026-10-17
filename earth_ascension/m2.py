@@ -15,6 +15,8 @@ COMPATIBLE = {(M2_VERSION, M2_VERSION, SCHEMA_VERSION, "m2_rules")}
 ACTIONS = ("工作", "學習", "社交", "休息", "研究", "修習")
 PROFILE_KEYS = ("開放", "盡責", "外向", "親和", "穩定", "探索", "安全", "關懷")
 PROFILE_WINDOW_MONTHS = 12
+MEMORY_LIMIT = 24
+MEMORY_EFFECT_MONTHS = 12  # a memory older than this no longer changes decision scores
 PROFILE_WINDOW_CAP = .10  # A5 candidate cap (待校準); checked per dimension over any 12 consecutive months
 
 
@@ -133,8 +135,15 @@ def _remember(person, event, importance=2):
     person["memories_v2"].append({"event_id": event["event_id"], "observed_month": event["month"],
                                   "source": "experienced", "importance": importance,
                                   "expiry_or_review_month": event["month"] + 24})
-    person["memories_v2"] = sorted(person["memories_v2"],
-                                   key=lambda x: (-x["importance"], -x["observed_month"], x["event_id"]))[:24]
+    memories = sorted(person["memories_v2"], key=lambda x: (-x["importance"], -x["observed_month"], x["event_id"]))
+    if len(memories) > MEMORY_LIMIT:
+        # Evict memories past their decision window before any still-effective one; the source
+        # event stays in world events and the chronicle, so nothing becomes untraceable.
+        keep = {m["event_id"] for m in sorted(memories, key=lambda x: (
+            event["month"] - x["observed_month"] > MEMORY_EFFECT_MONTHS,
+            -x["importance"], -x["observed_month"], x["event_id"]))[:MEMORY_LIMIT]}
+        memories = [m for m in memories if m["event_id"] in keep]
+    person["memories_v2"] = memories
 
 
 def _visible_memories(person, event_lookup, month):
@@ -168,7 +177,7 @@ def _intent(person, snapshot, month, event_lookup):
     memory_ids = []
     for memory, event in ([] if snapshot.get("ablation") == "no_memory" else _visible_memories(p, event_lookup, snapshot["month"])):
         age = month - memory["observed_month"]
-        if age > 12:
+        if age > MEMORY_EFFECT_MONTHS:
             continue
         if event["kind"] == "發現":
             scores["研究"] += .35
@@ -460,7 +469,7 @@ def validate(world):
     known_or_none = known_ids | {None}
     for p in world["people"].values():
         validate_traits(p["traits"], p["budget"])
-        if not 0 <= p["health"] <= 100 or p["wealth"] < 0 or len(p["memories_v2"]) > 24:
+        if not 0 <= p["health"] <= 100 or p["wealth"] < 0 or len(p["memories_v2"]) > MEMORY_LIMIT:
             raise ValueError("人物狀態越界")
         if len(p["goals"]) != 1 or p["goals"][0]["status"] != "active":
             raise ValueError("活躍目標無效")

@@ -80,6 +80,31 @@ class M2Tests(unittest.TestCase):
         self.assertAlmostEqual(without_memory["scores"]["社交"] - with_memory["scores"]["社交"], .6)
         self.assertEqual(with_memory["memory_event_ids"], [event["event_id"]])
 
+    def test_full_memory_evicts_inert_memories_before_effective_ones(self):
+        world = new_world(12)
+        person = world["people"]["1"]
+        for _ in range(m2_module.MEMORY_LIMIT):
+            _remember(person, _event(world, "發現", 1, "早年發現", important=True), 3)
+        world["month"] = m2_module.MEMORY_EFFECT_MONTHS + 1
+        setback = _event(world, "關係挫折", 1, "近期關係挫折", target=2, important=True)
+        _remember(person, setback)
+        kept = [m["event_id"] for m in person["memories_v2"]]
+        self.assertEqual(len(kept), m2_module.MEMORY_LIMIT)
+        self.assertIn(setback["event_id"], kept)
+        lookup = {e["event_id"]: e for e in world["events"]}
+        self.assertIn(setback["event_id"], _intent(person, world, world["month"] + 1, lookup)["memory_event_ids"])
+        validate(world)
+
+    def test_full_memory_keeps_effective_important_memories(self):
+        world = new_world(12)
+        person = world["people"]["1"]
+        world["month"] = 5
+        recent = [_event(world, "發現", 1, "近期發現", important=True) for _ in range(m2_module.MEMORY_LIMIT)]
+        for event in recent:
+            _remember(person, event, 3)
+        _remember(person, _event(world, "關係挫折", 1, "較不重要", target=2, important=True))
+        self.assertEqual({m["event_id"] for m in person["memories_v2"]}, {e["event_id"] for e in recent})
+
     def _drift(self, world, person, months, dimension="外向", step=.02):
         """Apply genuine event-sourced profile changes through the engine's own _change_profile.
 
