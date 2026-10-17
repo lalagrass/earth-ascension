@@ -8,7 +8,7 @@ from contextlib import closing
 from pathlib import Path
 
 from earth_ascension.engine import initial_world
-from earth_ascension.m2 import (_event, _intent, _remember, advance, canonical_hash, draw,
+from earth_ascension.m2 import (_change_profile, _event, _intent, _remember, advance, canonical_hash, draw,
                                 new_world, validate)
 from earth_ascension.store import Store
 
@@ -77,6 +77,86 @@ class M2Tests(unittest.TestCase):
         without_memory = _intent(base["people"]["1"], base, 1, lookup)
         self.assertAlmostEqual(without_memory["scores"]["社交"] - with_memory["scores"]["社交"], .6)
         self.assertEqual(with_memory["memory_event_ids"], [event["event_id"]])
+
+    def _drift(self, world, person, months, dimension="外向", step=.02):
+        """Apply genuine event-sourced profile changes through the engine's own _change_profile.
+
+        Each source event is created in its own month (world["month"] is advanced to it), so the
+        resulting world stays valid; months must be ascending.
+        """
+        for month in months:
+            world["month"] = month
+            event = _event(world, "關係", int(person["id"]), "測試用人格經歷", important=True)
+            _change_profile(person, dimension, step, event)
+
+    def test_profile_drift_within_12_month_cap_passes(self):
+        world = new_world(5)
+        person = world["people"]["1"]
+        person["profile_current"]["外向"] = person["profile"]["外向"] = .30
+        self._drift(world, person, [1, 2, 3, 4, 5], step=.02)  # exactly 0.10 within one window
+        self.assertAlmostEqual(sum(c["after"] - c["before"] for c in person["profile_changes"]), .10)
+        event_months = {e["event_id"]: e["month"] for e in world["events"]}
+        self.assertTrue(all(c["month"] == event_months[c["event_id"]] <= world["month"]
+                            for c in person["profile_changes"]))
+        validate(world)
+
+    def test_profile_drift_over_12_month_cap_rejected(self):
+        world = new_world(5)
+        person = world["people"]["1"]
+        person["profile_current"]["外向"] = person["profile"]["外向"] = .30
+        self._drift(world, person, [1, 2, 3, 4, 5, 6], step=.02)  # each change <= 0.02 but 0.12 in 12 months
+        with self.assertRaisesRegex(ValueError, "累積"):
+            validate(world)
+
+    def test_profile_drift_cap_window_boundary(self):
+        # Five 0.02 changes in months 1-5 fill the window. A sixth change 12 months after the
+        # first (month 13) falls outside every window that holds month 1, so it is allowed;
+        # a sixth change at month 12 shares the month 1-12 window and must be rejected.
+        for sixth_month, allowed in ((13, True), (12, False)):
+            world = new_world(5)
+            person = world["people"]["1"]
+            person["profile_current"]["外向"] = person["profile"]["外向"] = .30
+            self._drift(world, person, [1, 2, 3, 4, 5, sixth_month], step=.02)
+            if allowed:
+                validate(world)
+            else:
+                with self.assertRaisesRegex(ValueError, "累積"):
+                    validate(world)
+
+    def test_profile_change_month_must_match_source_event_and_not_be_future(self):
+        def drifted_world():
+            world = new_world(5)
+            person = world["people"]["1"]
+            person["profile_current"]["外向"] = person["profile"]["外向"] = .30
+            self._drift(world, person, [1, 2, 3, 4, 5, 6], step=.02)
+            return world, person
+
+        world, person = drifted_world()
+        with self.assertRaisesRegex(ValueError, "累積"):  # months 1-6 are honest: 0.12 is rejected for the cap
+            validate(world)
+
+        # Review counterexample: only the sixth change's month is rewritten (to 100) while its
+        # source event is still month 6 and world.month is 6. Must not slip past the cap check.
+        world, person = drifted_world()
+        self.assertEqual(world["month"], 6)
+        person["profile_changes"][5]["month"] = 100
+        with self.assertRaisesRegex(ValueError, "月份"):
+            validate(world)
+
+        # A month that differs from the source event's month (but is not in the future) is rejected.
+        world, person = drifted_world()
+        person["profile_changes"][5]["month"] = 5
+        with self.assertRaisesRegex(ValueError, "月份"):
+            validate(world)
+
+        # A change that matches its source event but lies after world.month is rejected.
+        world, person = drifted_world()
+        person["profile_changes"].pop()
+        person["profile_changes"][-1]["month"] = 7
+        next(e for e in world["events"] if e["event_id"] == person["profile_changes"][-1]["event_id"])["month"] = 7
+        world["month"] = 6
+        with self.assertRaisesRegex(ValueError, "月份"):
+            validate(world)
 
     def test_unknown_rules_version_rejected_without_mutation(self):
         world = new_world(1)
