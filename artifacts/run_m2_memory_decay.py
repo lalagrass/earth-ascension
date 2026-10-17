@@ -37,6 +37,10 @@ def cutoff_weight(age):
     return 1.0 if age <= m2.MEMORY_EFFECT_MONTHS else 0.0
 
 
+def no_weight(age):
+    return 0.0
+
+
 def decay_weight(half_life):
     def weight(age):
         w = .5 ** (age / half_life)
@@ -47,7 +51,9 @@ def decay_weight(half_life):
 # name -> (weight function, ablation)
 GROUPS = {
     "cutoff": (cutoff_weight, None),  # the rules version's own 12-month cutoff
-    "no_memory": (cutoff_weight, "no_memory"),
+    # Full ablation: `_intent` skips memory via the ablation flag; the 0.2.2 goal review does not read that
+    # flag, so its memory weight is zero too.
+    "no_memory": (no_weight, "no_memory"),
     "halflife_8_3": (decay_weight(8.3), None),
     "halflife_9_1": (decay_weight(9.1), None),  # discrete weight sum closest to the cutoff's 12
 }
@@ -168,6 +174,8 @@ def run(seed, rules_version, weight, ablation):
     for p in world["people"].values():
         for r in p.get("goal_reviews", []):
             reviews[f"{r['outcome']}/{r['basis']}"] += 1
+            if r["decisive_event_ids"]:
+                reviews[f"{r['outcome']}/decisive"] += 1
     probes = {}
     for age, rows in stats["probes"].items():
         probes[age] = {"n": len(rows),
