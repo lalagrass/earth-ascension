@@ -93,7 +93,7 @@ def main():
     p2 = sum(1 for v in person_goals.values() if sum(len(e["sb"]) for e in v) >= 2)
     total_sb = sum(len(e["sb"]) for e in explore)
 
-    out = ["# #9：探索靈氣「目標受挫」在規則 0.2.2 的配對量測（唯讀）", "",
+    out = ["# #9：探索靈氣「目標受挫」在規則 0.2.2 的多 seed 唯讀量測", "",
            f"開發 seed 0–29、各 100 NPC×60 月（{people} 人）。唯讀：不改規則、不調參、不以消除受挫事件為目標、不碰 seed 30 以上；"
            f"可重現：seed 0 再跑一次受挫與逐月行動完全相同＝{same}。這是描述，不判定 A3／A4。", ""]
 
@@ -131,6 +131,7 @@ def main():
     got = [w for w in wait if w is not None]
     out += ["## 3. 研究恢復與完成", "",
             f"- 研究行動占比：受挫目標第一次受挫前 {research_share(pre)}、受挫後 {research_share(post)}；未受挫的探索目標全期 {research_share([r for e in without for r in e['rows']])}。",
+            "  （受挫前後是同一批目標的前後比較，且「受挫」本身依賴停滯，有選擇偏誤；這是描述，**不是**任何修復或規則的效果。）",
             f"- 第一次受挫後到下一次研究行動的月數：中位 {statistics.median(got):.0f}、平均 {mean(got):.2f}、最長 {max(got)}；受挫後從未再研究（到目標結束或 60 月）的目標 {wait.count(None)}（{pct(wait.count(None), len(with_sb))}）。" if got else "- 受挫後沒有任何恢復資料。", "",
             "| 探索目標群 | 目標數 | 已完成 | 仍進行中（含 60 月截斷） | 人物已死 | 已完成者平均決策月數 |", "|---|---|---|---|---|---|"]
     for label, group in (("至少受挫一次", with_sb), ("從未受挫", without)):
