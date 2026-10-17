@@ -3,6 +3,7 @@
 基準：`dev` 的 M1 commit `cb8927cafdedccd5a1bff0199f20275ae031ad07`，2026-10-17 查核遠端。下列文件保留事前規劃；後續使用者已批准 P0 實作。現況及缺口見[實作驗收與回顧](implementation-review-retro.md)。
 
 - [產品需求與非目標](prd.md)
+- [#8 目標延伸與轉向設計提案](goal-evolution.md)
 - [技術方案、資料版本與決策流程](technical-design.md)
 - [驗收實驗與門檻](acceptance.md)
 - [有限 Sprint backlog、依賴、風險與決策](backlog.md)
