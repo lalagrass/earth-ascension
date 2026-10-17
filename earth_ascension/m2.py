@@ -23,9 +23,16 @@ def draw(seed, month, actor, purpose, target=""):
     return random.Random(int.from_bytes(hashlib.sha256(key.encode()).digest()[:8], "big"))
 
 
+M2_MARKERS = ("schema_version", "rules_version", "policy_mode")
+
+
 def is_m2_world(world):
-    """True for any M2-format save, including rules versions this code may reject."""
-    return world.get("schema_version") == SCHEMA_VERSION and world.get("policy_mode") == "m2_rules"
+    """True for any save carrying M2 version markers, even ones this code rejects.
+
+    M1 saves have none of these keys, so anything else goes to the M2 validator and is refused
+    there explicitly instead of falling into the M1 engine.
+    """
+    return any(key in world for key in M2_MARKERS)
 
 
 def _check_compatible(world):

@@ -190,20 +190,27 @@ class M2Tests(unittest.TestCase):
             reshuffled = run()
         self.assertNotEqual(reshuffled["aura"], baseline["aura"])
 
-    def test_store_keeps_newer_m2_save_on_m2_path(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "world.sqlite3"
-            Store(path)
-            with closing(sqlite3.connect(path)) as db:
-                world = json.loads(db.execute("SELECT state FROM snapshots WHERE month=0").fetchone()[0])
-                world["version"] = world["rules_version"] = "0.2.1"
-                db.execute("UPDATE snapshots SET state=? WHERE month=0", (json.dumps(world, ensure_ascii=False),))
-                db.commit()
-            store = Store(path)
-            self.assertTrue(m2_module.is_m2_world(store.read()))
-            with self.assertRaisesRegex(ValueError, "M2 規則或資料版本不相容"):
-                store.advance(0)
-            self.assertEqual(store.read()["month"], 0)
+    def test_store_keeps_unknown_m2_saves_on_m2_path(self):
+        cases = ({"version": "0.2.1", "rules_version": "0.2.1"}, {"schema_version": 3},
+                 {"policy_mode": "unknown"})
+        for change in cases:
+            with self.subTest(change=change), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "world.sqlite3"
+                Store(path)
+                with closing(sqlite3.connect(path)) as db:
+                    world = json.loads(db.execute("SELECT state FROM snapshots WHERE month=0").fetchone()[0])
+                    world.update(change)
+                    db.execute("UPDATE snapshots SET state=? WHERE month=0", (json.dumps(world, ensure_ascii=False),))
+                    db.commit()
+                store = Store(path)
+                before = store.read()
+                self.assertTrue(m2_module.is_m2_world(before))
+                with self.assertRaisesRegex(ValueError, "M2 規則或資料版本不相容"):
+                    store.advance(0)
+                self.assertEqual(store.read(), before)
+
+    def test_m1_save_without_markers_stays_on_m1_path(self):
+        self.assertFalse(m2_module.is_m2_world(initial_world(7)))
 
     def test_compatibility_projections_must_agree(self):
         for field in ("goal", "profile", "relations"):
