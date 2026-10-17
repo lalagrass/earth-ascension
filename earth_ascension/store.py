@@ -53,7 +53,7 @@ class Store:
 
     @staticmethod
     def _encode(world):
-        if world["version"] == m2.M2_VERSION:
+        if m2.is_m2_world(world):
             state = json.dumps(world, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
             return state, hashlib.sha256(state.encode()).hexdigest()
         return json.dumps(world, ensure_ascii=False), None
@@ -74,19 +74,19 @@ class Store:
             db.execute("BEGIN IMMEDIATE")
             world = self._load(db)
             self._validate(world)
-            if world["version"] == m2.M2_VERSION and goal not in m2.GOALS:
+            if m2.is_m2_world(world) and goal not in m2.GOALS:
                 raise ValueError("M2 新人物須選擇既有五類目標；舊版自訂目標可由遷移保留")
             if sum(p["player"] for p in world["people"].values()) >= 3:
                 raise ValueError("最多投放 3 名玩家人物")
             pid = world["next_id"]
             world["next_id"] += 1
             person = make_person(pid, name, district, traits, budget, profile, goal, 20, "學生", True)
-            if world["version"] == m2.M2_VERSION:
+            if m2.is_m2_world(world):
                 m2.upgrade_person(person, world)
             world["people"][str(pid)] = person
             event = {"month": world["month"], "kind": "投放", "subject": pid,
                      "text": f"{name} 於 {district} 投放世界", "causes": [f"玩家創建；能力模式 {budget} 點"], "important": True}
-            if world["version"] == m2.M2_VERSION:
+            if m2.is_m2_world(world):
                 event.update({"event_id": f"m2:{world['month']}:{len(world['events'])}", "actor": pid,
                               "target": None, "effects": {"budget": budget}, "causal_event_ids": []})
             world["events"].append(event)
@@ -94,7 +94,7 @@ class Store:
             self._validate(world)
             state, digest = self._encode(world)
             db.execute("UPDATE snapshots SET state=? WHERE month=?", (state, world["month"]))
-            if world["version"] == m2.M2_VERSION:
+            if m2.is_m2_world(world):
                 db.execute("INSERT OR REPLACE INTO meta VALUES (?,?)", (f"state_hash:{world['month']}", digest))
             db.execute("INSERT INTO events(month,kind,subject,payload) VALUES (?,?,?,?)",
                        (world["month"], event["kind"], pid, json.dumps(event, ensure_ascii=False)))
@@ -107,11 +107,11 @@ class Store:
         with self._connect() as db:
             db.execute("BEGIN IMMEDIATE")
             world = self._load(db)
-            if world.get("version") != m2.M2_VERSION:
+            if not m2.is_m2_world(world):
                 self._validate(world)
             if world["month"] != expected_month:
                 raise ValueError(f"世界已在第 {world['month']} 月；請重新載入後再推進")
-            events = m2.advance(world) if world["version"] == m2.M2_VERSION else advance(world)
+            events = m2.advance(world) if m2.is_m2_world(world) else advance(world)
             month = world["month"]
             state, digest = self._encode(world)
             db.execute("INSERT INTO snapshots VALUES (?,?)", (month, state))
@@ -119,7 +119,7 @@ class Store:
                 db.execute("INSERT INTO events(month,kind,subject,payload) VALUES (?,?,?,?)",
                            (month, event["kind"], event["subject"], json.dumps(event, ensure_ascii=False)))
             db.execute("UPDATE meta SET value=? WHERE key='current_month'", (str(month),))
-            if world["version"] == m2.M2_VERSION:
+            if m2.is_m2_world(world):
                 db.execute("INSERT INTO meta VALUES (?,?)", (f"state_hash:{month}", digest))
             db.commit()
             return world, events
@@ -131,7 +131,7 @@ class Store:
             db.execute("BEGIN IMMEDIATE")
             world = self._load(db)
             self._validate(world)
-            if world["version"] != m2.M2_VERSION or world["month"] != expected_month:
+            if not m2.is_m2_world(world) or world["month"] != expected_month:
                 raise ValueError("世界版本或月份已變更，請重新載入")
             person = world["people"].get(str(person_id))
             if not person or not person["player"] or person["goals"][0]["type"] != "legacy_custom":
@@ -162,7 +162,7 @@ class Store:
 
     @staticmethod
     def _validate(world):
-        if world.get("version") == m2.M2_VERSION:
+        if m2.is_m2_world(world):
             m2.validate(world)
         else:
             validate_world(world)

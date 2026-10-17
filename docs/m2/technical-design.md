@@ -39,7 +39,9 @@ M1 以全局 `world.knowledge >= 2` 解鎖所有人的修習；M2 規則必須�
 
 ## 隨機數、版本與回放
 
-保留 M1 `m1_legacy` 引擎及其 RNG 行為供舊快照原樣回放；M2 使用隔離的隨機流：`seed/rules_version/month/actor_id/purpose[/target_id]` 作 hash 鍵，行動選擇、對象、成功、衝突分別取流。新增某類抽樣不應改動不相關抽樣。序列化須固定鍵順序、事件順序與數值量化規則；比較完整 canonical state hash，不只比較敘事文字。相同 seed、初始快照、模式及規則版本重現；**不承諾 M1 與 M2 在相同 seed 下產生相同未來**。每月保存 `state_hash`、規則／schema 版本及必要 decision trace；歷史快照不可原地重算。
+三種版本各自獨立（[#10](https://github.com/lalagrass/earth-ascension/issues/10)）：`schema_version` 是存檔資料格式；`rules_version`（與相容投影 `version`）是行為規則；`RNG_NAMESPACE` 是程式常數，只決定亂數鍵，除非刻意重洗所有抽樣否則不改。程式以 `m2.COMPATIBLE` 明列可載入與推進的組合，其他一律拒絕；`Store` 以 `schema_version` 與 `policy_mode` 判斷 M1／M2 路徑，所以較新規則版的 M2 存檔會被 M2 路徑明確拒絕，不會誤走 M1。規則升版後舊存檔是沿用舊規則續玩還是明確遷移，尚待維護者決定。
+
+保留 M1 `m1_legacy` 引擎及其 RNG 行為供舊快照原樣回放；M2 使用隔離的隨機流：`seed/rng_namespace/month/actor_id/purpose[/target_id]` 作 hash 鍵，行動選擇、對象、成功、衝突分別取流。新增某類抽樣不應改動不相關抽樣。序列化須固定鍵順序、事件順序與數值量化規則；比較完整 canonical state hash，不只比較敘事文字。相同 seed、初始快照、模式及規則版本重現；**不承諾 M1 與 M2 在相同 seed 下產生相同未來**。每月保存 `state_hash`、規則／schema 版本及必要 decision trace；歷史快照不可原地重算。
 
 ## 舊存檔與遷移
 
