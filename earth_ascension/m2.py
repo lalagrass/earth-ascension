@@ -6,7 +6,12 @@ import random
 
 from .engine import DISTRICTS, GOALS, initial_world, validate_traits
 
-M2_VERSION = "0.2.0"
+M2_VERSION = "0.2.0"  # rules version written to new and migrated worlds
+SCHEMA_VERSION = 2
+# Independent of the rules version: bump only to deliberately reshuffle every draw.
+RNG_NAMESPACE = "0.2.0"
+# (version, rules_version, schema_version, policy_mode) this code can load and advance.
+COMPATIBLE = {(M2_VERSION, M2_VERSION, SCHEMA_VERSION, "m2_rules")}
 ACTIONS = ("工作", "學習", "社交", "休息", "研究", "修習")
 PROFILE_KEYS = ("開放", "盡責", "外向", "親和", "穩定", "探索", "安全", "關懷")
 PROFILE_WINDOW_MONTHS = 12
@@ -14,8 +19,26 @@ PROFILE_WINDOW_CAP = .10  # A5 candidate cap (待校準); checked per dimension 
 
 
 def draw(seed, month, actor, purpose, target=""):
-    key = f"{seed}:{M2_VERSION}:{month}:{actor}:{purpose}:{target}"
+    key = f"{seed}:{RNG_NAMESPACE}:{month}:{actor}:{purpose}:{target}"
     return random.Random(int.from_bytes(hashlib.sha256(key.encode()).digest()[:8], "big"))
+
+
+M2_MARKERS = ("schema_version", "rules_version", "policy_mode")
+
+
+def is_m2_world(world):
+    """True for any save carrying M2 version markers, even ones this code rejects.
+
+    M1 saves have none of these keys, so anything else goes to the M2 validator and is refused
+    there explicitly instead of falling into the M1 engine.
+    """
+    return any(key in world for key in M2_MARKERS)
+
+
+def _check_compatible(world):
+    key = (world.get("version"), world.get("rules_version"), world.get("schema_version"), world.get("policy_mode"))
+    if key not in COMPATIBLE:
+        raise ValueError("M2 規則或資料版本不相容")
 
 
 def canonical_hash(world):
@@ -76,7 +99,7 @@ def upgrade_world(old):
     world = copy.deepcopy(old)
     world["version"] = M2_VERSION
     world["rules_version"] = M2_VERSION
-    world["schema_version"] = 2
+    world["schema_version"] = SCHEMA_VERSION
     world["policy_mode"] = "m2_rules"
     for index, event in enumerate(world["events"]):
         event["event_id"] = f"legacy:{index}"
@@ -178,7 +201,7 @@ def _intent(person, snapshot, month, event_lookup):
             "known_fact_ids": [k["fact_id"] for k in p["knowledge_v2"]],
             "constraints": [] if known else ["修習需要本人已知的可修習基礎"],
             "plan_step": p["plan"]["step"], "relationship_event_ids": [],
-            "rng_draw_key": f"{snapshot['seed']}:{M2_VERSION}:{month}:{p['id']}:choice"}
+            "rng_draw_key": f"{snapshot['seed']}:{RNG_NAMESPACE}:{month}:{p['id']}:choice"}
 
 
 def _change_profile(person, key, amount, event):
@@ -233,9 +256,7 @@ def _progress(person, intent, world, event):
 
 
 def advance(world):
-    if (world.get("version") != M2_VERSION or world.get("rules_version") != M2_VERSION
-            or world.get("schema_version") != 2 or world.get("policy_mode") != "m2_rules"):
-        raise ValueError("M2 規則或資料版本不相容")
+    _check_compatible(world)
     month = world["month"] + 1
     world["month"] = month
     for district in DISTRICTS:
@@ -426,9 +447,7 @@ def _profile_window_excess(changes):
 
 
 def validate(world):
-    if (world.get("version") != M2_VERSION or world.get("rules_version") != M2_VERSION
-            or world.get("schema_version") != 2 or world.get("policy_mode") != "m2_rules"):
-        raise ValueError("M2 規則或資料版本不相容")
+    _check_compatible(world)
     if world["month"] < 0 or world["background_population"] < 0 or set(world["aura"]) != set(DISTRICTS):
         raise ValueError("世界時間、人口或區域無效")
     if any(not 0 <= aura <= 1 for aura in world["aura"].values()) or any(o["resources"] < 0 for o in world["organizations"].values()):
