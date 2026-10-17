@@ -489,7 +489,10 @@ def main():
             pop[arm] = pop_stat
             for pkey, pstat in player_stat.items():
                 players[pkey][arm] = pstat
-    print(json.dumps({"population_dev30": pop, "player_paths": players}, ensure_ascii=False, indent=2))
+    payload = {"population_dev30": pop, "player_paths": players}
+    raw_path = Path(__file__).resolve().parent / "m2-skill-paired-experiment-raw.json"
+    raw_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
