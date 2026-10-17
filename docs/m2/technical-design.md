@@ -1,6 +1,6 @@
 # M2 技術方案 — 最小可追溯人物模型
 
-狀態：設計選擇，尚未實作；具體欄位／常數以 [驗收](acceptance.md)和首輪校準為準。基於 M1 的 [`engine.py`](../../earth_ascension/engine.py)、[`store.py`](../../earth_ascension/store.py) 與 [`server.py`](../../earth_ascension/server.py)。研究依據見[研究紀錄](research.md)。
+狀態：事前設計紀錄；實作差異、測量與未完成驗收見[實作驗收與回顧](implementation-review-retro.md)。具體欄位／常數以 [驗收](acceptance.md)和首輪校準為準。基於 M1 的 [`engine.py`](../../earth_ascension/engine.py)、[`store.py`](../../earth_ascension/store.py) 與 [`server.py`](../../earth_ascension/server.py)。研究依據見[研究紀錄](research.md)。
 
 ## M1 接點與限制
 

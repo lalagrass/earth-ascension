@@ -11,6 +11,7 @@ from .store import Store
 def serve(db_path, host="127.0.0.1", port=8765):
     store = Store(db_path)
     html = (Path(__file__).parent / "static" / "index.html").read_bytes()
+    m2_js = (Path(__file__).parent / "static" / "m2.js").read_bytes()
 
     class Handler(BaseHTTPRequestHandler):
         def _reply(self, status, body, content_type="application/json; charset=utf-8"):
@@ -26,6 +27,8 @@ def serve(db_path, host="127.0.0.1", port=8765):
             parsed = urlparse(self.path)
             if parsed.path == "/":
                 return self._reply(200, html, "text/html; charset=utf-8")
+            if parsed.path == "/m2.js":
+                return self._reply(200, m2_js, "text/javascript; charset=utf-8")
             if parsed.path == "/api/world":
                 try:
                     q = parse_qs(parsed.query)
@@ -36,7 +39,7 @@ def serve(db_path, host="127.0.0.1", port=8765):
             self._reply(404, {"error": "找不到頁面"})
 
         def do_POST(self):
-            if self.path not in ("/api/advance", "/api/characters"):
+            if self.path not in ("/api/advance", "/api/characters", "/api/goal"):
                 return self._reply(404, {"error": "找不到操作"})
             origin = self.headers.get("Origin")
             if origin and origin != f"http://{host}:{port}":
@@ -49,6 +52,9 @@ def serve(db_path, host="127.0.0.1", port=8765):
                 if self.path == "/api/advance":
                     world, events = store.advance(data.get("expected_month"))
                     return self._reply(200, {"world": world, "events": events})
+                if self.path == "/api/goal":
+                    return self._reply(200, store.set_legacy_goal(data.get("person_id"), data.get("goal"),
+                                                                 data.get("expected_month")))
                 return self._reply(201, store.create_character(data))
             except (ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
                 self._reply(400, {"error": str(exc)})

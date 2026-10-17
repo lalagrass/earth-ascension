@@ -1,0 +1,48 @@
+/* M2 observer extension. All displayed causes come from saved world events. */
+function m2Observer(p) {
+  const eventById = new Map(world.events.filter(e => e.event_id).map(e => [e.event_id, e]));
+  const source = id => id ? `<button class="person" data-event="${esc(id)}">${esc(id)} ↗</button>` : '尚無事件來源';
+  const goal = p.goals[0], decision = p.last_decision;
+  const memories = (p.memories_v2 || []).slice(0, 12).map(m => {
+    const e = eventById.get(m.event_id);
+    return e ? `<div class="event">${esc(e.text)}<small>第 ${e.month} 月 · ${esc(e.kind)} · 來源 ${source(e.event_id)}</small></div>` : '';
+  }).join('') || '<p>尚無有來源的關鍵記憶。</p>';
+  const legacy = (p.legacy_memories || []).slice(0, 6).map(m =>
+    `<div class="event">${esc(typeof m === 'string' ? m : JSON.stringify(m))}<small>legacy_unstructured · 舊版未記錄可驗證來源</small></div>`).join('');
+  const relations = Object.entries(p.relationships_v2 || {}).sort((a,b) => b[1].trust-a[1].trust).slice(0, 8).map(([id, edge]) =>
+    `<div class="event">${esc(world.people[id]?.name || id)} · 信任 ${edge.trust}<small>最近互動：${source(edge.last_event_id)}</small></div>`
+  ).join('') || '<p>尚無互動關係。</p>';
+  const reason = decision ? `<p><strong>${esc(decision.action)}</strong> · ${esc(p.last_action?.outcome || '')}</p>
+    <p>決策當時目標 ${esc(decision.goal_label)}（${decision.goal_progress}/${decision.goal_target}）；當時計畫步驟 ${esc(decision.plan_step)}；可行行動 ${esc(decision.feasible.join('、'))}；當時已知事實 ${esc(decision.known_fact_ids.join('、') || '尚無')}。</p>
+    <p>結算 ${esc(decision.resolution)}；限制 ${esc(decision.constraints.join('、') || '無')}；社交對象 ${esc(decision.target ? (world.people[String(decision.target)]?.name || decision.target) : '無')}。</p>
+    <p>基礎分數：${Object.entries(decision.scores).map(([k,v]) => `${esc(k)} ${v}`).join('、')}；選擇波動：${Object.entries(decision.noise).map(([k,v]) => `${esc(k)} ${v}`).join('、')}。</p>
+    <p>引用記憶：${decision.memory_event_ids.map(source).join('、') || '無'}；結果事件：${decision.outcome_event_ids.map(source).join('、')}。</p>`
+    : '<p>尚未行動；推進一個月後可檢視決策。</p>';
+  const choose = goal.type === 'legacy_custom' && p.player && viewMonth === null ?
+    `<p>舊存檔自訂目標「${esc(goal.label)}」已保留原文；目前以中性步驟運作，尚無專屬規則。可改選：</p>
+     <select id="legacy-goal">${['穩定生活','探索靈氣','建立關係','累積財富','服務社群'].map(x => `<option>${x}</option>`).join('')}</select>
+     <button class="button secondary" id="choose-goal">確認目標</button>` : '';
+  return `<div class="layout" style="grid-template-columns:260px 1fr"><div class="card"><h3>城市人物</h3>${personSelect()}</div><div>
+    <div class="card"><div class="eyebrow">${p.player?'PLAYER CHARACTER':'AUTONOMOUS NPC'} · ID ${p.id}</div><h2>${esc(p.name)}</h2>
+    <p>${p.age} 歲 · ${esc(p.job)} · ${esc(p.district)} · ${p.alive?'在世':'已故'}</p>
+    <span class="pill">長期目標：${esc(goal.label)}</span><span class="pill">狀態：${esc(goal.status)}</span><span class="pill">需求：${esc(p.need)}</span>
+    <p>進度 ${goal.progress}/${goal.target} · 下次檢查第 ${p.plan.review_month} 月 · 下一步 ${esc(p.plan.step)}</p>${choose}
+    <div class="grid" style="grid-template-columns:repeat(3,1fr)">${stat('健康',p.health,'/100')}${stat('財富',p.wealth,'資源單位')}${stat('生命經過',p.months_lived,'個月')}</div></div>
+    <div class="layout"><div class="card"><h3>能力 / 技能</h3>${Object.entries(p.traits).map(([k,v]) => `<div class="barrow"><span>${esc(k)}</span><div class="bar"><b style="width:${v*10}%"></b></div><span>${v}</span></div>`).join('')}
+    <p>${Object.entries(p.skills).map(([k,v]) => `<span class="pill">${esc(k)} ${v}</span>`).join('')}</p></div>
+    <div class="card"><h3>人格 / 價值</h3>${Object.entries(p.profile_current).map(([k,v]) => `<span class="pill">${esc(k)} ${Math.round(v*100)}%</span>`).join('')}
+    <p>經歷變化 ${p.profile_changes.length} 次；創角值保存在歷史中。</p><h3>定向關係</h3>${relations}</div></div>
+    <div class="card" style="margin-top:18px"><h3>最近行動 · 為什麼他這樣做？</h3>${reason}<h3>關鍵記憶與來源</h3>${memories}${legacy ? `<h3>舊版記憶</h3>${legacy}` : ''}</div>
+    </div></div>`;
+}
+
+document.addEventListener('click', async event => {
+  if (event.target?.id !== 'choose-goal') return;
+  const person = currentPerson();
+  try {
+    await api('/api/goal', {method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({person_id:person.id, goal:document.getElementById('legacy-goal').value, expected_month:world.month})});
+    await load();
+    notice('舊目標已明確改選。');
+  } catch (error) { notice(error.message, true); }
+});
