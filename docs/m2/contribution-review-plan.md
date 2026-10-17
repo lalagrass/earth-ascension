@@ -4,6 +4,21 @@
 
 合併紀錄：[#14](https://github.com/lalagrass/earth-ascension/pull/14) 的 CI／固定 seed golden tests 已入 `dev`（`4f88bd7`）；[#13](https://github.com/lalagrass/earth-ascension/pull/13) 的 A5 十二個月人格變化驗證已入 `dev`（`03efe01`）。兩者各自通過當時適用的審核與測試；A5 候選上限仍待完整校準，#12 其餘驗收及 M2 A1–A10 不因此視為完成。
 
+## 下一輪佇列（2026-10-17）
+
+此表記錄已公開的認領與下一個**建議**交接，非指派或完成宣告；每次開始前重新查 issue、PR 與最新 `dev`。同一 GitHub 帳號下，實際主筆以 issue 留言為準。
+
+| 階段 | 可並行工作 | 合併與交接條件 |
+|---|---|---|
+| 現在 | Claude 在 [#10](https://github.com/lalagrass/earth-ascension/issues/10) 認領版本／RNG 解耦，已開 [PR #17](https://github.com/lalagrass/earth-ascension/pull/17)；Grok bot 在 [#5](https://github.com/lalagrass/earth-ascension/issues/5) 認領人格卡片可觀測性，已開 [PR #16](https://github.com/lalagrass/earth-ascension/pull/16)。 | #10 此步不得改舊存檔、規則結果或 golden hash；#5 只改顯示，驗證事件連結與歷史月。各自按最新 head 審核；兩者可任意先後合併。 |
+| 接著：M2 P0 | [#2](https://github.com/lalagrass/earth-ascension/issues/2) 記憶名額與有效期、[#1／#8](https://github.com/lalagrass/earth-ascension/issues/8) 目標塌縮、[#4／#9](https://github.com/lalagrass/earth-ascension/issues/9) 受挫重規劃依序做小 PR。 | 先有 #10 的版本基礎；#2、#8、#9 都可能改 `m2.py`，同時只能有一個進入實作／待合併狀態。下一位可先準備唯讀分析與測試設計，待前一 PR 合併後換基底。各 PR 重跑相關 A2／A4、M1、固定 seed 和多 seed；不可為達分布門檻強迫故事事件。 |
+| 平行契約／驗收 | [#11](https://github.com/lalagrass/earth-ascension/issues/11) 先交輸入與不可變快照 RFC；[#12](https://github.com/lalagrass/earth-ascension/issues/12) 補 A4 分母與 A6 身份交換的證據、A8 真實瀏覽器操作；[#6](https://github.com/lalagrass/earth-ascension/issues/6) 的遷移修正等 #10／#11 契約。 | #11 的實作要等輸入語義、舊檔與 hash 對照表定稿；#12 不把 0／0 當通過，也不重報 #13／#14 已處理的子項。#6 不與 #11 同時改 `store.py`。 |
+| M2 收斂 | [#3](https://github.com/lalagrass/earth-ascension/issues/3) 先量測與提案；重跑 [A1–A10](acceptance.md) 的事前矩陣，更新[實作回顧](implementation-review-retro.md)與失敗 seed。 | 30 個開發 seed 加 10 個保留 seed、100 NPC×60 月、M1／M2 舊檔、回放、Dashboard、效能與 Chrome 證據齊全後才提 M2 milestone 驗收；候選門檻不得事後改成通過。 |
+
+版本方向先鎖一條原則：**舊 0.2.0 存檔不可被靜默改標為新規則續玩**。#10 第一個 PR 僅拆開版本識別與 RNG 流，維持現有 hash；後續真的改規則時，優先提出「來源唯讀、複製到新路徑、記錄來源 hash 與版本、明示遷移結果」的方案。若遷移尚未可驗證，就清楚拒絕跨規則續玩，仍保留舊快照查閱與原版本回放途徑。這個選擇需在 #10 後續 PR 以實際舊檔測試落實，不把多版本集合等同多版本規則引擎。
+
+#11 的設計預設以追加式玩家輸入及明確生效月份為起點，讓已封存快照和 hash 保持不可變；RFC 要比較修訂鏈方案的操作與遷移成本，特別交代「當月建立人物後立即可見」與「下一月才參與決策」的 UI 語義。未定稿前不改 `store.py`，也不把 M1 既有行為默默改掉。
+
 ## 工作方式
 
 1. Grok bot 與 Claude 各自從**最新 `dev`** 建短分支，對應一組不互相踩檔的 issue。Issue 裡的修法與新數值門檻是提案，PR 須先列出選用方案、被捨棄方案與相容性代價；不能把 issue 描述直接當核准規格。
