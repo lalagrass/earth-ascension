@@ -142,7 +142,7 @@ class Store:
             previous = copy.deepcopy(person["goals"][0])
             previous.update(status="reselected", stop_reason="player_reselected")
             person["goal_history"].append(previous)
-            m2._remember(person, event, 2)
+            m2._remember(person, event, 2, world["rules_version"])
             person["goal"] = goal
             new_goal = m2._goal(person, goal)
             new_goal.update({"id": f"g:{person_id}:{world['month']}:{len(world['events'])}",

@@ -8,10 +8,12 @@ from earth_ascension.m2 import _intent, advance, canonical_hash, new_world, vali
 
 KINDS = {"發現": "研究", "關係挫折": "社交", "目標受挫": "研究"}
 BASE = Path(__file__).parent
+# Historical 0.2.0 acceptance evidence: hashes are locked in m2-experiments-raw.json, so pin the 0.2.0 rules.
+RULES_VERSION = "0.2.0"
 
 
 def run(seed, ablation=None):
-    world = new_world(seed)
+    world = new_world(seed, RULES_VERSION)
     if ablation:
         world["ablation"] = ablation
     due = defaultdict(list)

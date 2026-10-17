@@ -14,6 +14,8 @@ from pathlib import Path
 from earth_ascension.m2 import advance, canonical_hash, new_world
 
 BASE = Path(__file__).parent
+# Historical 0.2.0 acceptance evidence: hashes are locked in m2-experiments-raw.json, so pin the 0.2.0 rules.
+RULES_VERSION = "0.2.0"
 TYPES = ("穩定生活", "探索靈氣", "建立關係", "累積財富", "服務社群")
 CHECK_MONTHS = (0, 8, 12, 24, 36, 48, 60)
 LINES = (.60, .90)  # 60% is #8's proposed (uncalibrated) line; 90% is a near-total collapse reference
@@ -25,7 +27,7 @@ def q(values, p):
 
 
 def run(seed, ablation=None):
-    world = new_world(seed)
+    world = new_world(seed, RULES_VERSION)
     if ablation:
         world["ablation"] = ablation
     shares, living_by_month = {}, {}

@@ -80,6 +80,48 @@ class M2Tests(unittest.TestCase):
         self.assertAlmostEqual(without_memory["scores"]["社交"] - with_memory["scores"]["社交"], .6)
         self.assertEqual(with_memory["memory_event_ids"], [event["event_id"]])
 
+    def _fill_memory_then_setback(self, setback_month, rules_version=m2_module.M2_VERSION):
+        world = new_world(12)
+        world["version"] = world["rules_version"] = rules_version
+        person = world["people"]["1"]
+        for _ in range(m2_module.MEMORY_LIMIT):
+            _remember(person, _event(world, "發現", 1, "早年發現", important=True), 3, rules_version)
+        world["month"] = setback_month
+        setback = _event(world, "關係挫折", 1, "近期關係挫折", target=2, important=True)
+        _remember(person, setback, 2, rules_version)
+        validate(world)
+        lookup = {e["event_id"]: e for e in world["events"]}
+        next_decision = _intent(person, world, setback_month + 1, lookup)
+        return person, setback, next_decision
+
+    def test_full_memory_evicts_inert_memories_before_effective_ones(self):
+        # Month 12 is the boundary: month-0 memories are inert for the month-13 decision that follows.
+        for month in (m2_module.MEMORY_EFFECT_MONTHS, m2_module.MEMORY_EFFECT_MONTHS + 1):
+            with self.subTest(month=month):
+                person, setback, next_decision = self._fill_memory_then_setback(month)
+                self.assertEqual(len(person["memories_v2"]), m2_module.MEMORY_LIMIT)
+                self.assertIn(setback["event_id"], [m["event_id"] for m in person["memories_v2"]])
+                self.assertEqual(next_decision["memory_event_ids"], [setback["event_id"]])
+
+    def test_full_memory_keeps_still_effective_memories_one_month_before_boundary(self):
+        person, setback, next_decision = self._fill_memory_then_setback(m2_module.MEMORY_EFFECT_MONTHS - 1)
+        self.assertNotIn(setback["event_id"], [m["event_id"] for m in person["memories_v2"]])
+        self.assertEqual(len(next_decision["memory_event_ids"]), m2_module.MEMORY_LIMIT)
+
+    def test_rules_0_2_0_keep_original_eviction(self):
+        person, setback, _ = self._fill_memory_then_setback(m2_module.MEMORY_EFFECT_MONTHS, "0.2.0")
+        self.assertNotIn(setback["event_id"], [m["event_id"] for m in person["memories_v2"]])
+
+    def test_full_memory_keeps_effective_important_memories(self):
+        world = new_world(12)
+        person = world["people"]["1"]
+        world["month"] = 5
+        recent = [_event(world, "發現", 1, "近期發現", important=True) for _ in range(m2_module.MEMORY_LIMIT)]
+        for event in recent:
+            _remember(person, event, 3)
+        _remember(person, _event(world, "關係挫折", 1, "較不重要", target=2, important=True))
+        self.assertEqual({m["event_id"] for m in person["memories_v2"]}, {e["event_id"] for e in recent})
+
     def _drift(self, world, person, months, dimension="外向", step=.02):
         """Apply genuine event-sourced profile changes through the engine's own _change_profile.
 
@@ -180,8 +222,8 @@ class M2Tests(unittest.TestCase):
             return world
 
         baseline = run()
-        bumped_rules = {("0.2.1", "0.2.1", m2_module.SCHEMA_VERSION, "m2_rules")}
-        with mock.patch.object(m2_module, "M2_VERSION", "0.2.1"), \
+        bumped_rules = {("0.2.99", "0.2.99", m2_module.SCHEMA_VERSION, "m2_rules")}
+        with mock.patch.object(m2_module, "M2_VERSION", "0.2.99"), \
                 mock.patch.object(m2_module, "COMPATIBLE", bumped_rules):
             bumped = run()
         self.assertEqual(bumped["aura"], baseline["aura"])
@@ -191,7 +233,7 @@ class M2Tests(unittest.TestCase):
         self.assertNotEqual(reshuffled["aura"], baseline["aura"])
 
     def test_store_keeps_unknown_m2_saves_on_m2_path(self):
-        cases = ({"version": "0.2.1", "rules_version": "0.2.1"}, {"schema_version": 3},
+        cases = ({"version": "0.2.99", "rules_version": "0.2.99"}, {"schema_version": 3},
                  {"policy_mode": "unknown"})
         for change in cases:
             with self.subTest(change=change), tempfile.TemporaryDirectory() as tmp:
@@ -208,6 +250,13 @@ class M2Tests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "M2 規則或資料版本不相容"):
                     store.advance(0)
                 self.assertEqual(store.read(), before)
+
+    def test_new_world_rules_version_is_explicit_and_checked(self):
+        self.assertEqual(new_world(3)["rules_version"], m2_module.M2_VERSION)
+        old = new_world(3, "0.2.0")
+        self.assertEqual((old["version"], old["rules_version"]), ("0.2.0", "0.2.0"))
+        with self.assertRaises(ValueError):
+            new_world(3, "0.2.99")
 
     def test_m1_save_without_markers_stays_on_m1_path(self):
         self.assertFalse(m2_module.is_m2_world(initial_world(7)))
@@ -314,7 +363,7 @@ class M2Tests(unittest.TestCase):
             Store.migrate_copy(source, target)
             self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), digest)
             m2 = Store(target)
-            self.assertEqual(m2.read()["version"], "0.2.0")
+            self.assertEqual(m2.read()["version"], m2_module.M2_VERSION)
             self.assertEqual(m2.read(0)["version"], "0.1.0")
             person = m2.read()["people"]["101"]
             self.assertEqual(person["goals"][0]["type"], "legacy_custom")
@@ -350,7 +399,7 @@ class M2Tests(unittest.TestCase):
                 self.assertEqual(original, hashlib.sha256(source.read_bytes()).hexdigest())
                 upgraded = Store(target)
                 self.assertEqual(upgraded.read()["month"], checkpoint)
-                self.assertEqual(upgraded.read()["version"], "0.2.0")
+                self.assertEqual(upgraded.read()["version"], m2_module.M2_VERSION)
                 if checkpoint:
                     self.assertEqual(upgraded.read(0)["version"], "0.1.0")
                 upgraded.advance(checkpoint)

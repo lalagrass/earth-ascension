@@ -6,15 +6,20 @@ import random
 
 from .engine import DISTRICTS, GOALS, initial_world, validate_traits
 
-M2_VERSION = "0.2.0"  # rules version written to new and migrated worlds
+M2_VERSION = "0.2.1"  # rules version written to new and migrated worlds
 SCHEMA_VERSION = 2
 # Independent of the rules version: bump only to deliberately reshuffle every draw.
 RNG_NAMESPACE = "0.2.0"
 # (version, rules_version, schema_version, policy_mode) this code can load and advance.
-COMPATIBLE = {(M2_VERSION, M2_VERSION, SCHEMA_VERSION, "m2_rules")}
+# 0.2.0 saves keep replaying under 0.2.0 rules; see RULES_0_2_0_EVICTION.
+COMPATIBLE = {(version, version, SCHEMA_VERSION, "m2_rules") for version in ("0.2.0", M2_VERSION)}
+# 0.2.0 trimmed full memory by importance alone, even dropping still-effective memories (#2).
+RULES_0_2_0_EVICTION = {"0.2.0"}
 ACTIONS = ("工作", "學習", "社交", "休息", "研究", "修習")
 PROFILE_KEYS = ("開放", "盡責", "外向", "親和", "穩定", "探索", "安全", "關懷")
 PROFILE_WINDOW_MONTHS = 12
+MEMORY_LIMIT = 24
+MEMORY_EFFECT_MONTHS = 12  # a memory older than this no longer changes decision scores
 PROFILE_WINDOW_CAP = .10  # A5 candidate cap (待校準); checked per dimension over any 12 consecutive months
 
 
@@ -92,13 +97,18 @@ def upgrade_person(person, world):
     return person
 
 
-def upgrade_world(old):
-    """Upgrade a copied M1 snapshot. Earlier snapshots stay untouched in the database."""
+def upgrade_world(old, rules_version=None):
+    """Upgrade a copied M1 snapshot. Earlier snapshots stay untouched in the database.
+
+    rules_version (default M2_VERSION) is only for reproducing historical runs, e.g. the locked 0.2.0
+    acceptance evidence; validate() rejects any version outside COMPATIBLE.
+    """
     if old.get("version") != "0.1.0":
         raise ValueError("只接受 M1 0.1.0 存檔")
+    rules_version = rules_version or M2_VERSION
     world = copy.deepcopy(old)
-    world["version"] = M2_VERSION
-    world["rules_version"] = M2_VERSION
+    world["version"] = rules_version
+    world["rules_version"] = rules_version
     world["schema_version"] = SCHEMA_VERSION
     world["policy_mode"] = "m2_rules"
     for index, event in enumerate(world["events"]):
@@ -114,8 +124,8 @@ def upgrade_world(old):
     return world
 
 
-def new_world(seed=2026):
-    return upgrade_world(initial_world(seed))
+def new_world(seed=2026, rules_version=None):
+    return upgrade_world(initial_world(seed), rules_version)
 
 
 def _event(world, kind, actor, text, causes=(), target=None, effects=None, important=False):
@@ -129,12 +139,20 @@ def _event(world, kind, actor, text, causes=(), target=None, effects=None, impor
     return event
 
 
-def _remember(person, event, importance=2):
+def _remember(person, event, importance=2, rules_version=M2_VERSION):
     person["memories_v2"].append({"event_id": event["event_id"], "observed_month": event["month"],
                                   "source": "experienced", "importance": importance,
                                   "expiry_or_review_month": event["month"] + 24})
-    person["memories_v2"] = sorted(person["memories_v2"],
-                                   key=lambda x: (-x["importance"], -x["observed_month"], x["event_id"]))[:24]
+    memories = sorted(person["memories_v2"], key=lambda x: (-x["importance"], -x["observed_month"], x["event_id"]))
+    if len(memories) > MEMORY_LIMIT and rules_version not in RULES_0_2_0_EVICTION:
+        # Evict memories that can no longer affect the next decision (made in month + 1) before any
+        # still-effective one; the source event stays in world events and the chronicle.
+        next_decision = event["month"] + 1
+        keep = {m["event_id"] for m in sorted(memories, key=lambda x: (
+            next_decision - x["observed_month"] > MEMORY_EFFECT_MONTHS,
+            -x["importance"], -x["observed_month"], x["event_id"]))[:MEMORY_LIMIT]}
+        memories = [m for m in memories if m["event_id"] in keep]
+    person["memories_v2"] = memories[:MEMORY_LIMIT]
 
 
 def _visible_memories(person, event_lookup, month):
@@ -168,7 +186,7 @@ def _intent(person, snapshot, month, event_lookup):
     memory_ids = []
     for memory, event in ([] if snapshot.get("ablation") == "no_memory" else _visible_memories(p, event_lookup, snapshot["month"])):
         age = month - memory["observed_month"]
-        if age > 12:
+        if age > MEMORY_EFFECT_MONTHS:
             continue
         if event["kind"] == "發現":
             scores["研究"] += .35
@@ -241,7 +259,7 @@ def _progress(person, intent, world, event):
                               "review_month": world["month"] + 4, "last_progress_month": world["month"]}
             completed = _event(world, "目標完成", person["id"], f"{person['name']} 完成階段目標", [event["event_id"]],
                                effects={"goal_id": goal["id"]}, important=True)
-            _remember(person, completed, 3)
+            _remember(person, completed, 3, world["rules_version"])
             return [completed["event_id"]]
         else:
             person["plan"]["review_month"] = world["month"] + 4
@@ -249,7 +267,7 @@ def _progress(person, intent, world, event):
             if world["month"] - person["plan"]["last_progress_month"] >= 4 and goal["type"] == "探索靈氣":
                 setback = _event(world, "目標受挫", person["id"], f"{person['name']} 的研究計畫停滯",
                                  [event["event_id"]], effects={"goal_id": goal["id"]}, important=True)
-                _remember(person, setback)
+                _remember(person, setback, 2, world["rules_version"])
                 person["plan"]["action"] = "工作" if person["wealth"] < 75 else "學習"
                 return [setback["event_id"]]
     return []
@@ -358,7 +376,7 @@ def advance(world):
                                    effects={"fact_id": "practice_basis", "finding": finding}, important=True)
                 p["knowledge_v2"].append({"fact_id": "practice_basis", "source_event_id": discovery["event_id"],
                                           "learned_month": month, "confidence": 1.0})
-                _remember(p, discovery, 3)
+                _remember(p, discovery, 3, world["rules_version"])
                 p["experience_counts"]["research"] += 1
                 if p["experience_counts"]["research"] % 4 == 0 and world.get("ablation") != "no_personality_drift":
                     _change_profile(p, "探索", .01, discovery)
@@ -379,7 +397,7 @@ def advance(world):
         if death:
             p["alive"] = False
             death_event = _event(world, "死亡", p["id"], f"{p['name']} 離世", effects={"health": p["health"], "age": p["age"]}, important=True)
-            _remember(p, death_event, 3)
+            _remember(p, death_event, 3, world["rules_version"])
         decision = {**intent, "resolution": "research_contested" if p["id"] in qualified - winners else "accepted",
                     "outcome_event_ids": []}
         event = _event(world, "行動", p["id"], f"{p['name']}：{action}；{outcome}",
@@ -399,8 +417,8 @@ def advance(world):
                 decision["outcome_event_ids"].append(relation_event["event_id"])
                 decision["relationship_event_ids"].append(relation_event["event_id"])
                 if relation_event["important"]:
-                    _remember(p, relation_event)
-                    _remember(other, relation_event, 1)
+                    _remember(p, relation_event, 2, world["rules_version"])
+                    _remember(other, relation_event, 1, world["rules_version"])
             other["chronicle"].append(relation_event)
             p["relationships_v2"][str(target)]["last_event_id"] = relation_event["event_id"]
             other["relationships_v2"][str(p["id"])]["last_event_id"] = relation_event["event_id"]
@@ -460,7 +478,7 @@ def validate(world):
     known_or_none = known_ids | {None}
     for p in world["people"].values():
         validate_traits(p["traits"], p["budget"])
-        if not 0 <= p["health"] <= 100 or p["wealth"] < 0 or len(p["memories_v2"]) > 24:
+        if not 0 <= p["health"] <= 100 or p["wealth"] < 0 or len(p["memories_v2"]) > MEMORY_LIMIT:
             raise ValueError("人物狀態越界")
         if len(p["goals"]) != 1 or p["goals"][0]["status"] != "active":
             raise ValueError("活躍目標無效")

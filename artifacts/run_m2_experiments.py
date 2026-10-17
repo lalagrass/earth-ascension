@@ -14,6 +14,8 @@ from earth_ascension.m2 import (_event, _intent, _remember, advance, canonical_h
 from earth_ascension.store import Store
 
 SEEDS = range(30)
+# Historical 0.2.0 acceptance evidence: this script writes the locked m2-experiments-raw.json, so pin the 0.2.0 rules.
+RULES_VERSION = "0.2.0"
 
 
 def run(world, months, focal="1"):
@@ -48,7 +50,7 @@ def run(world, months, focal="1"):
 def persona_pair(seed):
     data = []
     for social in (True, False):
-        w = new_world(seed)
+        w = new_world(seed, RULES_VERSION)
         p = w["people"]["1"]
         p["profile_current"].update({"外向": .95 if social else .05, "關懷": .95 if social else .05,
                                      "探索": .05 if social else .95, "開放": .05 if social else .95})
@@ -60,7 +62,7 @@ def persona_pair(seed):
 
 
 def experience_pair(seed):
-    original = new_world(seed)
+    original = new_world(seed, RULES_VERSION)
     focal = original["people"]["1"]
     focal["goal"] = "建立關係"
     focal["goals"][0].update(type="建立關係", label="建立關係")
@@ -72,7 +74,7 @@ def experience_pair(seed):
     p = affected["people"]["1"]
     event = _event(affected, "關係挫折", 1, "與熟人交流受挫", target=target,
                    effects={"trust_delta": -30}, important=True)
-    _remember(p, event, 3)
+    _remember(p, event, 3, RULES_VERSION)
     edge = p["relationships_v2"].setdefault(str(target), {"trust": 20, "last_event_id": None, "last_interaction_month": None})
     edge["trust"] = max(0, edge["trust"] - 30)
     edge["last_event_id"] = event["event_id"]
@@ -94,13 +96,13 @@ def memory_probes(seed):
     kinds = ("發現", "關係挫折", "目標受挫")
     results = []
     for kind in kinds:
-        w = new_world(seed)
+        w = new_world(seed, RULES_VERSION)
         w["month"] = 6
         p = w["people"]["1"]
         event = _event(w, kind, 1, f"固定驗收事件：{kind}", important=True)
-        _remember(p, event, 3)
+        _remember(p, event, 3, RULES_VERSION)
         irrelevant = _event(w, "工作", 1, "無關工作記錄")
-        _remember(p, irrelevant, 1)
+        _remember(p, irrelevant, 1, RULES_VERSION)
         for probe_month in (12, 18):
             snap = copy.deepcopy(w)
             snap["month"] = probe_month - 1
@@ -118,7 +120,7 @@ def memory_probes(seed):
 
 
 def full_run(seed, ablation=None):
-    w = new_world(seed)
+    w = new_world(seed, RULES_VERSION)
     if ablation:
         w["ablation"] = ablation
     actions, no_benefit, plan_alignment = run(w, 60)
@@ -141,7 +143,7 @@ def store_perf(seed, legacy=False):
         store = Store(path)
         if seed != 2026 or legacy:
             with store._connect() as db:
-                w = initial_world(seed) if legacy else new_world(seed)
+                w = initial_world(seed) if legacy else new_world(seed, RULES_VERSION)
                 db.execute("UPDATE snapshots SET state=? WHERE month=0", (json.dumps(w, ensure_ascii=False),))
         started = perf_counter()
         for month in range(60):
