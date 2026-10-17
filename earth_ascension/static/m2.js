@@ -18,6 +18,11 @@ function m2Observer(p) {
     <p>基礎分數：${Object.entries(decision.scores).map(([k,v]) => `${esc(k)} ${v}`).join('、')}；選擇波動：${Object.entries(decision.noise).map(([k,v]) => `${esc(k)} ${v}`).join('、')}。</p>
     <p>引用記憶：${decision.memory_event_ids.map(source).join('、') || '無'}；結果事件：${decision.outcome_event_ids.map(source).join('、')}。</p>`
     : '<p>尚未行動；推進一個月後可檢視決策。</p>';
+  const base = p.profile_base || {};
+  const drift = Object.entries(p.profile_current).filter(([k, v]) => k in base && Math.round((v - base[k]) * 100) !== 0).map(([k, v]) => {
+    const pts = Math.round((v - base[k]) * 100), sources = (p.profile_changes || []).filter(c => c.dimension === k).map(c => `第 ${c.month} 月 ${source(c.event_id)}`).join('、');
+    return `<div class="event">${esc(k)} ${pts > 0 ? '+' : ''}${pts} 個百分點（創角 ${Math.round(base[k] * 100)}% → 現在 ${Math.round(v * 100)}%）<small>來源：${sources}</small></div>`;
+  }).join('') || '<p>相對創角值尚無變化。</p>';
   const choose = goal.type === 'legacy_custom' && p.player && viewMonth === null ?
     `<p>舊存檔自訂目標「${esc(goal.label)}」已保留原文；目前以中性步驟運作，尚無專屬規則。可改選：</p>
      <select id="legacy-goal">${['穩定生活','探索靈氣','建立關係','累積財富','服務社群'].map(x => `<option>${x}</option>`).join('')}</select>
@@ -31,7 +36,7 @@ function m2Observer(p) {
     <div class="layout"><div class="card"><h3>能力 / 技能</h3>${Object.entries(p.traits).map(([k,v]) => `<div class="barrow"><span>${esc(k)}</span><div class="bar"><b style="width:${v*10}%"></b></div><span>${v}</span></div>`).join('')}
     <p>${Object.entries(p.skills).map(([k,v]) => `<span class="pill">${esc(k)} ${v}</span>`).join('')}</p></div>
     <div class="card"><h3>人格 / 價值</h3>${Object.entries(p.profile_current).map(([k,v]) => `<span class="pill">${esc(k)} ${Math.round(v*100)}%</span>`).join('')}
-    <p>經歷變化 ${p.profile_changes.length} 次；創角值保存在歷史中。</p><h3>定向關係</h3>${relations}</div></div>
+    <p>經歷變化 ${p.profile_changes.length} 次；以下為相對創角值的變化。</p>${drift}<h3>定向關係</h3>${relations}</div></div>
     <div class="card" style="margin-top:18px"><h3>最近行動 · 為什麼他這樣做？</h3>${reason}<h3>關鍵記憶與來源</h3>${memories}${legacy ? `<h3>舊版記憶</h3>${legacy}` : ''}</div>
     </div></div>`;
 }
