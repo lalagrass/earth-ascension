@@ -1,11 +1,17 @@
 /* M2 observer extension. All displayed causes come from saved world events. */
 function m2Observer(p) {
   const eventById = new Map(world.events.filter(e => e.event_id).map(e => [e.event_id, e]));
-  const source = id => id ? `<button class="person" data-event="${esc(id)}">${esc(id)} ↗</button>` : '尚無事件來源';
+  // Label sources by what they are (月份 · 種類); the internal event id stays in data-event and the tooltip.
+  const source = (id, withMonth = true) => {
+    if (!id) return '尚無事件來源';
+    const e = eventById.get(id);
+    const label = e ? (withMonth ? `第 ${e.month} 月 · ${e.kind}` : e.kind) : id;
+    return `<button class="person" data-event="${esc(id)}" title="${esc(id)}">${esc(label)} ↗</button>`;
+  };
   const goal = p.goals[0], decision = p.last_decision;
   const memories = (p.memories_v2 || []).slice(0, 12).map(m => {
     const e = eventById.get(m.event_id);
-    return e ? `<div class="event">${esc(e.text)}<small>第 ${e.month} 月 · ${esc(e.kind)} · 來源 ${source(e.event_id)}</small></div>` : '';
+    return e ? `<div class="event">${esc(e.text)}<small>第 ${e.month} 月 · ${esc(e.kind)} · 來源 ${source(e.event_id, false)}</small></div>` : '';
   }).join('') || '<p>尚無有來源的關鍵記憶。</p>';
   const legacy = (p.legacy_memories || []).slice(0, 6).map(m =>
     `<div class="event">${esc(typeof m === 'string' ? m : JSON.stringify(m))}<small>legacy_unstructured · 舊版未記錄可驗證來源</small></div>`).join('');
@@ -25,13 +31,13 @@ function m2Observer(p) {
     const causes = (r.cause_event_ids && r.cause_event_ids.length) ? r.cause_event_ids.map(source).join('、') : '無決定性記憶事件';
     const contribs = (r.contributions && r.contributions.length)
       ? ` · 記憶加權：${r.contributions.map(c => `${esc(c.candidate)} ${c.delta > 0 ? '+' : ''}${c.delta}（${source(c.event_id)}）`).join('、')}` : '';
-    return `<div class="event">第 ${r.month} 月 · ${esc(r.outcome)} → <strong>${esc(r.chosen)}</strong>${r.event_id ? ` · 轉向事件 ${source(r.event_id)}` : ''}<small>依據：${basisLabel} · 剛完成排除：${excluded} · 候選分數：${scores} · 決定來源：${causes}${contribs}</small></div>`;
+    return `<div class="event">第 ${r.month} 月 · ${esc(r.outcome)} → <strong>${esc(r.chosen)}</strong>${r.event_id ? ` · 轉向事件 ${source(r.event_id, false)}` : ''}<small>依據：${basisLabel} · 剛完成排除：${excluded} · 候選分數：${scores} · 決定來源：${causes}${contribs}</small></div>`;
   }).join('') || '<p>尚無休整期目標評估紀錄。</p>') : '';
   const pendingReview = goal.type !== '穩定生活' && goal.type !== 'legacy_custom' && goal.progress >= goal.target
     ? `（已達標，待第 ${p.plan.review_month} 月檢查結算）` : '';
   const base = p.profile_base || {};
   const drift = Object.entries(p.profile_current).filter(([k, v]) => k in base && Math.round((v - base[k]) * 100) !== 0).map(([k, v]) => {
-    const pts = Math.round((v - base[k]) * 100), sources = (p.profile_changes || []).filter(c => c.dimension === k).map(c => `第 ${c.month} 月 ${source(c.event_id)}`).join('、');
+    const pts = Math.round((v - base[k]) * 100), sources = (p.profile_changes || []).filter(c => c.dimension === k).map(c => `第 ${c.month} 月 ${source(c.event_id, false)}`).join('、');
     return `<div class="event">${esc(k)} ${pts > 0 ? '+' : ''}${pts} 個百分點（創角 ${Math.round(base[k] * 100)}% → 現在 ${Math.round(v * 100)}%）<small>來源：${sources}</small></div>`;
   }).join('') || '<p>相對創角值尚無變化。</p>';
   const death = p.alive ? null : world.events.find(e => e.kind === '死亡' && [e.actor, e.subject].some(x => x !== undefined && x !== null && String(x) === String(p.id)));
@@ -44,7 +50,7 @@ function m2Observer(p) {
     <p>${p.age} 歲 · ${esc(p.job)} · ${esc(p.district)} · ${p.alive?'在世':'已故'}</p>
     <span class="pill">${p.alive ? '長期目標' : '離世時的長期目標'}：${esc(goal.label)}</span><span class="pill">狀態：${p.alive ? esc(goal.status) : '已故'}</span><span class="pill">需求：${esc(p.need)}</span>
     ${p.alive ? `<p>進度 ${goal.progress}/${goal.target}${pendingReview} · 下次檢查第 ${p.plan.review_month} 月 · 下一步 ${esc(p.plan.step)}</p>`
-      : `<p>進度 ${goal.progress}/${goal.target} · ${death ? `第 ${death.month} 月離世 · 來源 ${source(death.event_id)}` : '離世事件來源不在目前快照'}；目標不再檢查或推進。</p>`}${choose}
+      : `<p>進度 ${goal.progress}/${goal.target} · ${death ? `第 ${death.month} 月離世 · 來源 ${source(death.event_id, false)}` : '離世事件來源不在目前快照'}；目標不再檢查或推進。</p>`}${choose}
     <div class="grid" style="grid-template-columns:repeat(3,1fr)">${stat('健康',p.health,'/100')}${stat('財富',p.wealth,'資源單位')}${stat('生命經過',p.months_lived,'個月')}</div></div>
     <div class="layout"><div class="card"><h3>能力 / 技能</h3>${Object.entries(p.traits).map(([k,v]) => `<div class="barrow"><span>${esc(k)}</span><div class="bar"><b style="width:${v*10}%"></b></div><span>${v}</span></div>`).join('')}
     <p>${Object.entries(p.skills).map(([k,v]) => `<span class="pill">${esc(k)} ${v}</span>`).join('')}</p></div>
