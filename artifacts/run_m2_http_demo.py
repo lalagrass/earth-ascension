@@ -26,7 +26,7 @@ def main():
     js_status, js = get("/m2.js")
     world = json.loads(get("/api/world")[1])
     assert html_status == js_status == 200 and b"m2Observer" in js and b"/m2.js" in html
-    assert world["version"] == "0.2.0" and world["month"] == 0
+    assert world["version"] == "0.2.1" and world["month"] == 0
     payload = {"name": "端到端驗收", "district": "學園", "goal": "探索靈氣", "budget": 30,
                "traits": {"根骨": 5, "悟性": 8, "意志": 6, "感知": 7, "社交": 4}, "answers": [3]*16}
     created, person = post("/api/characters", payload)
