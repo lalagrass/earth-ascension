@@ -1,6 +1,6 @@
 # M2 修復貢獻與 PR 審核計畫
 
-狀態：2026-10-17 擬議協作契約，供 Grok bot、Claude 與維護者使用；尚未指派、開 PR 或更改 GitHub 保護規則。基線為 `dev` 的 `a5b72374c171f2dcb95de7a904c41bcd35f96f41`。本計畫只安排 M2 收尾與下一里程碑的規劃，不授權 M3 實作。審核基線見[事前 A1–A10](acceptance.md)、[實作回顧](implementation-review-retro.md)及[補測](../../artifacts/m2-acceptance-gaps.md)。
+狀態：2026-10-17 擬議協作契約，供 Grok bot、Claude 與維護者使用；基線為當時 `dev` 的 `a5b72374c171f2dcb95de7a904c41bcd35f96f41`，實際 issue／PR 狀態以 GitHub 為準。本計畫只安排 M2 收尾與下一里程碑的規劃，不授權 M3 實作。審核基線見[事前 A1–A10](acceptance.md)、[實作回顧](implementation-review-retro.md)及[補測](../../artifacts/m2-acceptance-gaps.md)。
 
 ## 工作方式
 
