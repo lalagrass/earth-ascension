@@ -2,12 +2,14 @@
 
 狀態：2026-10-17 擬議協作契約，供 Grok bot、Claude 與維護者使用；基線為當時 `dev` 的 `a5b72374c171f2dcb95de7a904c41bcd35f96f41`，實際 issue／PR 狀態以 GitHub 為準。本計畫只安排 M2 收尾與下一里程碑的規劃，不授權 M3 實作。審核基線見[事前 A1–A10](acceptance.md)、[實作回顧](implementation-review-retro.md)及[補測](../../artifacts/m2-acceptance-gaps.md)。
 
+合併紀錄：[#14](https://github.com/lalagrass/earth-ascension/pull/14) 的 CI／固定 seed golden tests 已入 `dev`（`4f88bd7`）；[#13](https://github.com/lalagrass/earth-ascension/pull/13) 的 A5 十二個月人格變化驗證已入 `dev`（`03efe01`）。兩者各自通過當時適用的審核與測試；A5 候選上限仍待完整校準，#12 其餘驗收及 M2 A1–A10 不因此視為完成。
+
 ## 工作方式
 
 1. Grok bot 與 Claude 各自從**最新 `dev`** 建短分支，對應一組不互相踩檔的 issue。Issue 裡的修法與新數值門檻是提案，PR 須先列出選用方案、被捨棄方案與相容性代價；不能把 issue 描述直接當核准規格。
 2. 每個 PR 指向 `dev`，標出 issue、基準 SHA、改動檔案、影響的 A1–A10、規則／schema／RNG 版本是否變動、舊存檔處理、同 seed canonical hash 的預期差異，以及可重跑命令與原始／摘要結果。大規模規則調整與儲存格式改造分 PR。不要把 12 個 issue 塞成一次合併。
-3. 我方先做唯讀獨立 review：確認重現、差異範圍、隨機數與舊檔契約、樣本及混淆控制、M1 回歸、Chrome 關鍵路徑。發現阻擋則要求作者改 PR；由維護者在證據齊全後決定合併。未完成的候選門檻只標記未通過或待校準，不因 PR 改寫歷史基線。
-4. 合併順序依契約與衝突面決定；每次合併後作者須重新基於最新 `dev` 跑受影響矩陣。維護者不直接在 `dev` 修作者的 issue；也不在 review 時替作者補一套未經比較的產品規則。
+3. PO／Tech Lead 依 [合併規則](../../CONTRIBUTING.md#審核合併與發布權限)獨立 review：確認重現、差異範圍、隨機數與舊檔契約、樣本及混淆控制、M1 回歸、Chrome 關鍵路徑。阻擋項交作者改 PR；已定契約且證據齊全的修復可直接 squash merge 到 `dev`。未完成的候選門檻只標記未通過或待校準，不因 PR 改寫歷史基線。
+4. 合併順序依契約與衝突面決定；每次合併後作者須重新基於最新 `dev` 跑受影響矩陣。審核者不直接在 `dev` 修作者的 issue；也不在 review 時替作者補一套未經比較的產品規則。
 
 ## 建議分工與依賴
 
