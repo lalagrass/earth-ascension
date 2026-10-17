@@ -6,15 +6,23 @@ import random
 
 from .engine import DISTRICTS, GOALS, initial_world, validate_traits
 
-M2_VERSION = "0.2.1"  # rules version written to new and migrated worlds
+M2_VERSION = "0.2.2"  # rules version written to new and migrated worlds
 SCHEMA_VERSION = 2
 # Independent of the rules version: bump only to deliberately reshuffle every draw.
 RNG_NAMESPACE = "0.2.0"
 # (version, rules_version, schema_version, policy_mode) this code can load and advance.
 # 0.2.0 saves keep replaying under 0.2.0 rules; see RULES_0_2_0_EVICTION.
-COMPATIBLE = {(version, version, SCHEMA_VERSION, "m2_rules") for version in ("0.2.0", M2_VERSION)}
+COMPATIBLE = {(version, version, SCHEMA_VERSION, "m2_rules") for version in ("0.2.0", "0.2.1", M2_VERSION)}
 # 0.2.0 trimmed full memory by importance alone, even dropping still-effective memories (#2).
 RULES_0_2_0_EVICTION = {"0.2.0"}
+# 0.2.2 (#8): a completed goal leads to a rest phase that is re-evaluated at every review month instead of
+# absorbing the person forever. 0.2.0 and 0.2.1 saves keep the old funnel byte for byte.
+GOAL_REVIEW_RULES = {"0.2.2"}
+REST_GOAL = "穩定生活"
+REVIEW_GOALS = ("探索靈氣", "建立關係", "累積財富", "服務社群", REST_GOAL)
+GOAL_REVIEW_OUTCOMES = ("留任休整", "轉向")
+GOAL_REVIEW_NOISE = .35
+REST_WINDOW_MONTHS = 4  # one review window; the displayed rest progress counts months inside the current window
 ACTIONS = ("工作", "學習", "社交", "休息", "研究", "修習")
 PROFILE_KEYS = ("開放", "盡責", "外向", "親和", "穩定", "探索", "安全", "關懷")
 PROFILE_WINDOW_MONTHS = 12
@@ -80,6 +88,10 @@ def upgrade_person(person, world):
     person["profile_base"] = copy.deepcopy(person["profile"])
     person["profile_current"] = copy.deepcopy(person["profile"])
     person["profile_changes"] = []
+    if world["rules_version"] in GOAL_REVIEW_RULES:
+        person["goal_reviews"] = []
+        if goal["type"] == REST_GOAL:
+            goal["target"] = REST_WINDOW_MONTHS
     person["experience_counts"] = {"research": 0, "social": 0}
     person["memories_v2"] = []
     person["legacy_memories"] = list(person["memories"])
@@ -232,13 +244,99 @@ def _change_profile(person, key, amount, event):
                                            "before": before, "after": after, "event_id": event["event_id"]})
 
 
-def _progress(person, intent, world, event):
+def _goal_review_scores(frozen, goal, parent_type, month, snapshot_month, event_lookup, excluded):
+    """Score candidate goals from the person's own month-start snapshot only (no event of this month).
+
+    Returns (scores, contributions). Each contribution names the sourced event that moved one candidate's
+    score and by how much; only candidates that actually took part in the review are listed.
+    """
+    f = frozen["profile_current"]
+    known = any(k["fact_id"] == "practice_basis" for k in frozen["knowledge_v2"])
+    scores = {
+        "探索靈氣": .6 + f["探索"] + f["開放"]*.5 + (.3 if known else 0),
+        "建立關係": .6 + f["外向"] + f["關懷"]*.3,
+        "累積財富": .6 + f["盡責"]*.5 + (.8 if frozen["wealth"] < 75 else 0),
+        "服務社群": .6 + f["關懷"] + f["親和"]*.4,
+        REST_GOAL: .9 + f["安全"]*.5 + (.6 if frozen["health"] < 50 else 0),
+    }
+    effects = {"發現": (("探索靈氣", .3),), "關係": (("建立關係", .25),),
+               "關係挫折": (("建立關係", -.4), ("服務社群", -.2)), "目標受挫": (("探索靈氣", -.4),)}
+    contributions = []
+    for memory, event in _visible_memories(frozen, event_lookup, snapshot_month):
+        if month - memory["observed_month"] > MEMORY_EFFECT_MONTHS:
+            continue
+        for candidate, delta in effects.get(event["kind"], ()):
+            if candidate in excluded:
+                continue
+            scores[candidate] += delta
+            contributions.append({"event_id": event["event_id"], "kind": event["kind"], "candidate": candidate,
+                                  "delta": delta, "observed_month": memory["observed_month"]})
+    return {k: v for k, v in scores.items() if k not in excluded}, contributions
+
+
+def _review_choice(scores, noise, contributions, skip_event=None):
+    noisy = {k: scores[k] + noise[k] - sum(c["delta"] for c in contributions
+                                           if c["event_id"] == skip_event and c["candidate"] == k) for k in scores}
+    return max(noisy, key=lambda k: (noisy[k], -REVIEW_GOALS.index(k)))
+
+
+def _review_rest(person, goal, world, frozen, event_lookup):
+    """Re-evaluate a rest goal at its review month: keep resting or move to one of the five known goals."""
+    month = world["month"]
+    parent = next((g for g in person["goal_history"] if g["id"] == goal.get("parent_goal_id")), None)
+    # Repeating the label of the goal that was just completed would be a new id with no new mechanics.
+    excluded = {parent["type"]} if parent else set()
+    scores, contributions = _goal_review_scores(frozen, goal, parent and parent["type"], month, month - 1, event_lookup, excluded)
+    rng = draw(world["seed"], month, person["id"], "goal-review")
+    noise = {k: rng.uniform(-GOAL_REVIEW_NOISE, GOAL_REVIEW_NOISE) for k in REVIEW_GOALS if k in scores}
+    chosen = _review_choice(scores, noise, contributions)
+    # A sourced event is a cause only if it raised the chosen candidate or removing it would change the result.
+    contributing = list(dict.fromkeys(c["event_id"] for c in contributions))
+    decisive = [e for e in contributing if _review_choice(scores, noise, contributions, e) != chosen]
+    causes = [e for e in contributing if e in decisive or any(
+        c["event_id"] == e and c["candidate"] == chosen and c["delta"] > 0 for c in contributions)]
+    trace = {"month": month, "goal_id": goal["id"], "outcome": "留任休整" if chosen == REST_GOAL else "轉向",
+             "chosen": chosen, "reason": "review_month", "excluded": sorted(excluded),
+             "scores": {k: round(v, 3) for k, v in scores.items()}, "contributions": contributions,
+             "decisive_event_ids": decisive, "cause_event_ids": causes,
+             "basis": "memory" if causes else "profile_baseline", "event_id": None}
+    person["goal_reviews"].append(trace)
+    if chosen == REST_GOAL:
+        goal["review_month"] = person["plan"]["review_month"] = month + 4
+        goal["progress"] = 0
+        return []
+    goal["status"] = "replaced"
+    goal["stop_reason"] = "review_switch"
+    person["goal_history"].append(copy.deepcopy(goal))
+    new_goal = _goal(person, chosen)
+    new_goal.update({"id": f"g:{person['id']}:{month}", "started_month": month, "review_month": month + 4,
+                     "parent_goal_id": goal["id"], "transition_kind": "rest_exit"})
+    person["goals"] = [new_goal]
+    person["goal"] = chosen
+    person["plan"] = {"goal_id": new_goal["id"], "step": _step_label(chosen), "action": _step(chosen),
+                      "review_month": month + 4, "last_progress_month": month}
+    moved = _event(world, "目標轉向", person["id"], f"{person['name']} 休整後選擇新目標「{chosen}」", causes,
+                   effects={"goal_id": new_goal["id"], "parent_goal_id": goal["id"], "reason": "review_month",
+                            "basis": trace["basis"]}, important=True)
+    trace["event_id"] = moved["event_id"]
+    return [moved["event_id"]]
+
+
+def _progress(person, intent, world, event, frozen=None, event_lookup=None):
     goal = person["goals"][0]
     progress_action = _step(goal["type"])
+    rest_window = goal["type"] == REST_GOAL and world["rules_version"] in GOAL_REVIEW_RULES
     if goal["type"] != "legacy_custom" and intent["action"] == progress_action:
-        goal["progress"] += 1
+        if not rest_window:
+            goal["progress"] += 1
         person["plan"]["last_progress_month"] = world["month"]
+    if rest_window:
+        # Rest has no work target: progress is the months elapsed in the current review window (0..window).
+        goal["target"] = REST_WINDOW_MONTHS
+        goal["progress"] = min(REST_WINDOW_MONTHS, max(0, world["month"] - (person["plan"]["review_month"] - REST_WINDOW_MONTHS)))
     if world["month"] >= person["plan"]["review_month"]:
+        if goal["type"] == REST_GOAL and world["rules_version"] in GOAL_REVIEW_RULES:
+            return _review_rest(person, goal, world, frozen, event_lookup)
         if goal["progress"] >= goal["target"]:
             if goal["type"] == "穩定生活":
                 goal["target"] += 6
@@ -253,6 +351,8 @@ def _progress(person, intent, world, event):
             next_goal["started_month"] = world["month"]
             next_goal["review_month"] = world["month"] + 4
             next_goal["trigger_event_id"] = event["event_id"]
+            if world["rules_version"] in GOAL_REVIEW_RULES:
+                next_goal.update({"parent_goal_id": goal["id"], "transition_kind": "complete_rest", "target": REST_WINDOW_MONTHS})
             person["goals"] = [next_goal]
             person["goal"] = "穩定生活"
             person["plan"] = {"goal_id": next_goal["id"], "step": _step_label("穩定生活"), "action": "工作",
@@ -436,7 +536,7 @@ def advance(world):
                             "aura_observed": snapshot["aura"][p["district"]] if p["traits"]["感知"] >= 6 else "未察覺",
                             "scores": intent["scores"]}, "outcome": outcome}
         if p["alive"]:
-            decision["outcome_event_ids"].extend(_progress(p, intent, world, event))
+            decision["outcome_event_ids"].extend(_progress(p, intent, world, event, snapshot["people"][str(p["id"])], event_lookup))
     for org in world["organizations"].values():
         researchers = [world["people"][str(i)] for i in org["members"] if world["people"][str(i)]["alive"]]
         progress = sum(p["skills"]["研究"] for p in researchers) // 30
@@ -462,6 +562,24 @@ def _profile_window_excess(changes):
         for start, _ in steps:
             worst = max(worst, sum(x for month, x in steps if start <= month < start + PROFILE_WINDOW_MONTHS))
     return worst
+
+
+def _validate_goal_review(person, known_ids, month):
+    goal_ids = [g["id"] for g in person["goal_history"]] + [person["goals"][0]["id"]]
+    if len(goal_ids) != len(set(goal_ids)):
+        raise ValueError("目標 ID 重複")
+    for goal in person["goal_history"] + person["goals"]:
+        if goal.get("parent_goal_id") is not None and goal["parent_goal_id"] not in goal_ids:
+            raise ValueError("目標前任不存在")
+    for review in person["goal_reviews"]:
+        if (review["month"] > month or review["outcome"] not in GOAL_REVIEW_OUTCOMES or review["chosen"] not in REVIEW_GOALS
+                or review["goal_id"] not in goal_ids or review["event_id"] not in known_ids | {None}
+                or (review["outcome"] == "轉向") != (review["event_id"] is not None)):
+            raise ValueError("目標評估紀錄無效")
+        used = {c["event_id"] for c in review["contributions"]}
+        if (not used <= known_ids or not set(review["decisive_event_ids"]) <= used or not set(review["cause_event_ids"]) <= used
+                or any(c["candidate"] not in review["scores"] for c in review["contributions"])):
+            raise ValueError("目標評估來源無效")
 
 
 def validate(world):
@@ -499,6 +617,8 @@ def validate(world):
             raise ValueError("關係投影不一致")
         if p["goals"][0]["trigger_event_id"] not in known_or_none:
             raise ValueError("目標來源不存在")
+        if world["rules_version"] in GOAL_REVIEW_RULES:
+            _validate_goal_review(p, known_ids, world["month"])
         if any(change["event_id"] not in known_ids or abs(change["after"] - change["before"]) > .020001
                for change in p["profile_changes"]):
             raise ValueError("人格變化無來源或幅度過大")
