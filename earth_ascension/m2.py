@@ -9,6 +9,8 @@ from .engine import DISTRICTS, GOALS, initial_world, validate_traits
 M2_VERSION = "0.2.0"
 ACTIONS = ("工作", "學習", "社交", "休息", "研究", "修習")
 PROFILE_KEYS = ("開放", "盡責", "外向", "親和", "穩定", "探索", "安全", "關懷")
+PROFILE_WINDOW_MONTHS = 12
+PROFILE_WINDOW_CAP = .10  # A5 candidate cap (待校準); checked per dimension over any 12 consecutive months
 
 
 def draw(seed, month, actor, purpose, target=""):
@@ -411,6 +413,18 @@ def advance(world):
     return [e for e in world["events"] if e["month"] == month and e.get("event_id", "").startswith("m2:")]
 
 
+def _profile_window_excess(changes):
+    """Largest per-dimension sum of |change| within any PROFILE_WINDOW_MONTHS consecutive months."""
+    worst = 0.0
+    by_dimension = {}
+    for change in changes:
+        by_dimension.setdefault(change["dimension"], []).append((change["month"], abs(change["after"] - change["before"])))
+    for steps in by_dimension.values():
+        for start, _ in steps:
+            worst = max(worst, sum(x for month, x in steps if start <= month < start + PROFILE_WINDOW_MONTHS))
+    return worst
+
+
 def validate(world):
     if (world.get("version") != M2_VERSION or world.get("rules_version") != M2_VERSION
             or world.get("schema_version") != 2 or world.get("policy_mode") != "m2_rules"):
@@ -450,6 +464,8 @@ def validate(world):
         if any(change["event_id"] not in known_ids or abs(change["after"] - change["before"]) > .020001
                for change in p["profile_changes"]):
             raise ValueError("人格變化無來源或幅度過大")
+        if _profile_window_excess(p["profile_changes"]) > PROFILE_WINDOW_CAP + .000001:
+            raise ValueError("人格 12 個月累積變化過大")
         decision = p["last_decision"]
         if decision and any(event_id not in known_ids for event_id in
                             decision["memory_event_ids"] + decision["outcome_event_ids"] + decision["relationship_event_ids"]):
