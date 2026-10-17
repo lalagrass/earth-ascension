@@ -251,6 +251,13 @@ class M2Tests(unittest.TestCase):
                     store.advance(0)
                 self.assertEqual(store.read(), before)
 
+    def test_new_world_rules_version_is_explicit_and_checked(self):
+        self.assertEqual(new_world(3)["rules_version"], m2_module.M2_VERSION)
+        old = new_world(3, "0.2.0")
+        self.assertEqual((old["version"], old["rules_version"]), ("0.2.0", "0.2.0"))
+        with self.assertRaises(ValueError):
+            new_world(3, "0.2.99")
+
     def test_m1_save_without_markers_stays_on_m1_path(self):
         self.assertFalse(m2_module.is_m2_world(initial_world(7)))
 

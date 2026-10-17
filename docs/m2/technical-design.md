@@ -41,7 +41,7 @@ M1 以全局 `world.knowledge >= 2` 解鎖所有人的修習；M2 規則必須�
 
 三種版本各自獨立（[#10](https://github.com/lalagrass/earth-ascension/issues/10)）：`schema_version` 是存檔資料格式；`rules_version`（與相容投影 `version`）是行為規則；`RNG_NAMESPACE` 是程式常數，只決定亂數鍵，除非刻意重洗所有抽樣否則不改。程式以 `m2.COMPATIBLE` 明列可載入與推進的組合，其他一律拒絕；`Store` 只要存檔帶有任一 M2 版本標記（`schema_version`、`rules_version`、`policy_mode`）就走 M2 路徑，所以未來 schema、較新規則版或異常模式的存檔都由 M2 validator 明確拒絕，不會誤走 M1；只有完全沒有這些標記的 M1 存檔走 M1 路徑。規則升版後，0.2.0 存檔不得靜默改標續玩；優先採來源唯讀的複製式明確遷移，遷移完成前清楚拒絕跨規則續玩。
 
-規則版紀錄：`0.2.1`（[#2](https://github.com/lalagrass/earth-ascension/issues/2)）只改記憶名額已滿時的淘汰順序，先淘汰對下一次決策已無作用的記憶。0.2.0 存檔不改標，繼續以 0.2.0 規則推進（`m2.RULES_0_2_0_EVICTION`），所以其回放與原 golden hash 不變；新建或由 M1 遷移的世界使用 0.2.1，另有自己的 golden 基線。`RNG_NAMESPACE` 不變。
+規則版紀錄：`0.2.1`（[#2](https://github.com/lalagrass/earth-ascension/issues/2)）只改記憶名額已滿時的淘汰順序，先淘汰對下一次決策已無作用的記憶。0.2.0 存檔不改標，繼續以 0.2.0 規則推進（`m2.RULES_0_2_0_EVICTION`），所以其回放與原 golden hash 不變；新建或由 M1 遷移的世界使用 0.2.1，另有自己的 golden 基線。`RNG_NAMESPACE` 不變。鎖定 0.2.0 hash 的歷史驗收腳本（`run_m2_experiments.py`、`run_m2_goal_funnel.py`、`run_m2_acceptance_gaps.py`）以 `new_world(seed, "0.2.0")` 明確選 0.2.0 規則，原 raw 不改寫；0.2.1 的新驗收基線須另外標版。`tests/test_golden.py` 另鎖一個由 0.2.0 程式建立並推進到月 24、再續推到月 25 的真實 SQLite 存檔 hash。
 
 保留 M1 `m1_legacy` 引擎及其 RNG 行為供舊快照原樣回放；M2 使用隔離的隨機流：`seed/rng_namespace/month/actor_id/purpose[/target_id]` 作 hash 鍵，行動選擇、對象、成功、衝突分別取流。新增某類抽樣不應改動不相關抽樣。序列化須固定鍵順序、事件順序與數值量化規則；比較完整 canonical state hash，不只比較敘事文字。相同 seed、初始快照、模式及規則版本重現；**不承諾 M1 與 M2 在相同 seed 下產生相同未來**。每月保存 `state_hash`、規則／schema 版本及必要 decision trace；歷史快照不可原地重算。
 

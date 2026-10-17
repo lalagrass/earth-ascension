@@ -97,13 +97,18 @@ def upgrade_person(person, world):
     return person
 
 
-def upgrade_world(old):
-    """Upgrade a copied M1 snapshot. Earlier snapshots stay untouched in the database."""
+def upgrade_world(old, rules_version=None):
+    """Upgrade a copied M1 snapshot. Earlier snapshots stay untouched in the database.
+
+    rules_version (default M2_VERSION) is only for reproducing historical runs, e.g. the locked 0.2.0
+    acceptance evidence; validate() rejects any version outside COMPATIBLE.
+    """
     if old.get("version") != "0.1.0":
         raise ValueError("只接受 M1 0.1.0 存檔")
+    rules_version = rules_version or M2_VERSION
     world = copy.deepcopy(old)
-    world["version"] = M2_VERSION
-    world["rules_version"] = M2_VERSION
+    world["version"] = rules_version
+    world["rules_version"] = rules_version
     world["schema_version"] = SCHEMA_VERSION
     world["policy_mode"] = "m2_rules"
     for index, event in enumerate(world["events"]):
@@ -119,8 +124,8 @@ def upgrade_world(old):
     return world
 
 
-def new_world(seed=2026):
-    return upgrade_world(initial_world(seed))
+def new_world(seed=2026, rules_version=None):
+    return upgrade_world(initial_world(seed), rules_version)
 
 
 def _event(world, kind, actor, text, causes=(), target=None, effects=None, important=False):
