@@ -43,6 +43,8 @@ M1 以全局 `world.knowledge >= 2` 解鎖所有人的修習；M2 規則必須�
 
 規則版紀錄：`0.2.1`（[#2](https://github.com/lalagrass/earth-ascension/issues/2)）只改記憶名額已滿時的淘汰順序，先淘汰對下一次決策已無作用的記憶。0.2.0 存檔不改標，繼續以 0.2.0 規則推進（`m2.RULES_0_2_0_EVICTION`），所以其回放與原 golden hash 不變；新建或由 M1 遷移的世界使用 0.2.1，另有自己的 golden 基線。`RNG_NAMESPACE` 不變。鎖定 0.2.0 hash 的歷史驗收腳本（`run_m2_experiments.py`、`run_m2_goal_funnel.py`、`run_m2_acceptance_gaps.py`）以 `new_world(seed, "0.2.0")` 明確選 0.2.0 規則，原 raw 不改寫；0.2.1 的新驗收基線須另外標版。`tests/test_golden.py` 另鎖一個由 0.2.0 程式建立並推進到月 24、再續推到月 25 的真實 SQLite 存檔 hash。
 
+`0.2.2`（[#8](https://github.com/lalagrass/earth-ascension/issues/8)／[#1](https://github.com/lalagrass/earth-ascension/issues/1)）只改「目標完成後」：完成的目標仍轉入「穩定生活」，但它是**休整**，到每個檢查月（4 個月）從現有五類目標（含繼續休整）重新評估，不再自動延長；剛完成的那個類型不列入候選（同標籤重開沒有新的機制）。評分只讀月初凍結快照中本人的人格、財富、健康、已知事實與有來源的記憶，本月結算事件最早下月可用；平手與擾動使用新的 RNG purpose `goal-review`（`RNG_NAMESPACE` 不變）。每次評估寫入 `goal_reviews`（月份、候選分數、結果、原因碼 `review_month`、轉向事件 ID），轉向產生 `目標轉向` 事件，新目標帶 `parent_goal_id` 與 `transition_kind`（`complete_rest`／`rest_exit`）。0.2.0／0.2.1 存檔不改標、不新增欄位，繼續以原規則回放；`tests/test_golden.py` 鎖定三版基線。休整長度、評分權重與候選池是初版選擇，未校準；#9 的受挫短計畫與 #4 的目標規則表不在此版。
+
 保留 M1 `m1_legacy` 引擎及其 RNG 行為供舊快照原樣回放；M2 使用隔離的隨機流：`seed/rng_namespace/month/actor_id/purpose[/target_id]` 作 hash 鍵，行動選擇、對象、成功、衝突分別取流。新增某類抽樣不應改動不相關抽樣。序列化須固定鍵順序、事件順序與數值量化規則；比較完整 canonical state hash，不只比較敘事文字。相同 seed、初始快照、模式及規則版本重現；**不承諾 M1 與 M2 在相同 seed 下產生相同未來**。每月保存 `state_hash`、規則／schema 版本及必要 decision trace；歷史快照不可原地重算。
 
 ## 舊存檔與遷移

@@ -224,7 +224,8 @@ class M2Tests(unittest.TestCase):
         baseline = run()
         bumped_rules = {("0.2.99", "0.2.99", m2_module.SCHEMA_VERSION, "m2_rules")}
         with mock.patch.object(m2_module, "M2_VERSION", "0.2.99"), \
-                mock.patch.object(m2_module, "COMPATIBLE", bumped_rules):
+                mock.patch.object(m2_module, "COMPATIBLE", bumped_rules), \
+                mock.patch.object(m2_module, "GOAL_REVIEW_RULES", {"0.2.99"}):
             bumped = run()
         self.assertEqual(bumped["aura"], baseline["aura"])
         self.assertEqual(canonical_hash(bumped), canonical_hash(baseline))
@@ -440,6 +441,180 @@ class M2Tests(unittest.TestCase):
                 store.create_character({"name": "新角色", "district": "學園", "goal": "無規則的自訂目標", "budget": 30,
                                         "traits": {"根骨": 5, "悟性": 8, "意志": 6, "感知": 7, "社交": 4}, "answers": [3]*16})
             self.assertEqual(store.read()["next_id"], 101)
+
+
+class GoalReviewTests(unittest.TestCase):
+    """#8 / rules 0.2.2: a completed goal leads to a rest phase that is re-evaluated, not an absorbing state."""
+
+    @staticmethod
+    def _due_rest_world(seed, **profile):
+        """Person 1 rests with a review due next month; fixed wealth/health; the given profile and nothing else."""
+        world = new_world(seed)
+        p = world["people"]["1"]
+        base = {key: 0.0 for key in m2_module.PROFILE_KEYS}
+        base.update(profile)
+        for key in ("profile", "profile_base", "profile_current"):
+            p[key] = dict(base)
+        p["wealth"], p["health"] = 200, 100
+        rest = m2_module._goal(p, "穩定生活")
+        p["goals"], p["goal"] = [rest], "穩定生活"
+        p["plan"] = {"goal_id": rest["id"], "step": "維持工作與生計", "action": "工作", "review_month": 1, "last_progress_month": 0}
+        return world
+
+    def test_same_ability_different_personality_chooses_differently(self):
+        results = {}
+        for name, profile in (("explorer", {"探索": 1.0, "開放": 1.0}), ("carer", {"關懷": 1.0, "親和": 1.0})):
+            world = self._due_rest_world(7, **profile)
+            advance(world)
+            results[name] = world["people"]["1"]["goal_reviews"][-1]
+        self.assertEqual(results["explorer"]["chosen"], "探索靈氣")
+        self.assertEqual(results["carer"]["chosen"], "服務社群")
+        self.assertEqual({r["month"] for r in results.values()}, {1})
+        self.assertTrue(all(r["reason"] == "review_month" and r["outcome"] == "轉向" for r in results.values()))
+
+    def test_each_personality_dimension_moves_only_its_own_candidate_scores(self):
+        world = self._due_rest_world(7)
+        p = world["people"]["1"]
+
+        def scores(**profile):
+            p["profile_current"] = {**{k: 0.0 for k in m2_module.PROFILE_KEYS}, **profile}
+            return m2_module._goal_review_scores(p, p["goals"][0], None, 10, 9, {}, set())
+
+        base = scores()
+        expected = {"探索": {"探索靈氣": 1.0}, "開放": {"探索靈氣": .5}, "外向": {"建立關係": 1.0},
+                    "關懷": {"建立關係": .3, "服務社群": 1.0}, "親和": {"服務社群": .4}, "盡責": {"累積財富": .5},
+                    "安全": {"穩定生活": .5}}
+        for dimension, deltas in expected.items():
+            raised = scores(**{dimension: 1.0})
+            for goal, base_score in base.items():
+                self.assertAlmostEqual(raised[goal] - base_score, deltas.get(goal, 0.0), msg=f"{dimension}->{goal}")
+        p["wealth"] = 10  # needing money raises the wealth candidate; poor health raises resting
+        self.assertAlmostEqual(scores()["累積財富"] - base["累積財富"], .8)
+        p["wealth"], p["health"] = 200, 40
+        self.assertAlmostEqual(scores()["穩定生活"] - base["穩定生活"], .6)
+
+    def test_same_personality_different_experience_changes_scores_only_by_visible_sourced_memories(self):
+        world = self._due_rest_world(7, **{"探索": .5, "開放": .5, "外向": .5, "關懷": .5, "親和": .5})
+        p = world["people"]["1"]
+        world["month"] = 10
+        lookup = {}
+
+        def scores():
+            return m2_module._goal_review_scores(p, p["goals"][0], None, 10, 9, lookup, set())
+
+        base = scores()
+        for kind, month in (("發現", 5), ("目標受挫", 6), ("關係挫折", 7)):
+            event = _event(world, kind, 1, kind)
+            event["month"] = month
+            lookup[event["event_id"]] = event
+            _remember(p, event, 2)
+        after = scores()
+        self.assertAlmostEqual(after["探索靈氣"], base["探索靈氣"] + .3 - .4)
+        self.assertAlmostEqual(after["建立關係"], base["建立關係"] - .4)
+        self.assertAlmostEqual(after["服務社群"], base["服務社群"] - .2)
+        self.assertEqual(after["穩定生活"], base["穩定生活"])
+        p["memories_v2"] = []
+        self.assertEqual(scores(), base)  # remove the experience and the explanation disappears
+
+    def test_goal_review_cannot_use_events_of_the_deciding_month(self):
+        world = self._due_rest_world(7, **{"探索": 1.0})
+        seen = []
+        real = m2_module._goal_review_scores
+
+        def spy(frozen, goal, parent_type, month, snapshot_month, event_lookup, excluded):
+            seen.append((month, snapshot_month, {e["month"] for e in event_lookup.values()}))
+            return real(frozen, goal, parent_type, month, snapshot_month, event_lookup, excluded)
+
+        with mock.patch.object(m2_module, "_goal_review_scores", spy):
+            advance(world)
+        month, snapshot_month, event_months = seen[0]
+        self.assertEqual((month, snapshot_month), (1, 0))
+        self.assertTrue(all(m <= snapshot_month for m in event_months))
+        # an event recorded in the deciding month, even a 發現 for the same person, is not in the lookup
+        self.assertTrue(any(e["month"] == 1 for e in world["events"]))
+
+    def test_completion_leads_to_rest_then_review_leaves_without_repeating_the_completed_label(self):
+        world = new_world(7)
+        found = None
+        for _ in range(60):
+            advance(world)
+            for p in world["people"].values():
+                ids = {g["id"] for g in p["goal_history"] if g.get("transition_kind") == "complete_rest"}
+                if any(g.get("transition_kind") == "rest_exit" and g["parent_goal_id"] in ids for g in p["goal_history"] + p["goals"]):
+                    found = p
+                    break
+            if found:
+                break
+        self.assertIsNotNone(found)
+        history = found["goal_history"] + found["goals"]
+        by_id = {g["id"]: g for g in history}
+        rest, moved = next((g, c) for g in history if g.get("transition_kind") == "complete_rest"
+                           for c in history if c.get("parent_goal_id") == g["id"])
+        self.assertEqual((rest["type"], by_id[rest["parent_goal_id"]]["status"]), ("穩定生活", "completed"))
+        self.assertEqual(moved["transition_kind"], "rest_exit")
+        self.assertNotEqual(moved["type"], by_id[rest["parent_goal_id"]]["type"])
+        self.assertEqual(by_id[rest["id"]]["status"], "replaced")
+        review = next(r for r in found["goal_reviews"] if r["goal_id"] == rest["id"] and r["outcome"] == "轉向")
+        event = next(e for e in world["events"] if e["event_id"] == review["event_id"])
+        self.assertEqual((event["kind"], event["effects"]["parent_goal_id"], event["month"]), ("目標轉向", rest["id"], review["month"]))
+        self.assertIn(by_id[rest["parent_goal_id"]]["type"], review["excluded"])
+        validate(world)
+
+    def test_rest_is_not_absorbing_in_0_2_2_but_is_in_0_2_1(self):
+        def rest_share(version):
+            world = new_world(11, version)
+            for _ in range(40):
+                advance(world)
+            people = [p for p in world["people"].values() if p["alive"]]
+            return sum(p["goals"][0]["type"] == "穩定生活" for p in people) / len(people), world
+        old_share, old = rest_share("0.2.1")
+        new_share, new = rest_share("0.2.2")
+        self.assertGreater(old_share, .85)
+        self.assertLess(new_share, .5)
+        self.assertNotIn("goal_reviews", next(iter(old["people"].values())))
+        self.assertTrue(any(p["goal_reviews"] for p in new["people"].values()))
+
+    def test_same_seed_same_version_is_deterministic(self):
+        a, b = new_world(23), new_world(23)
+        for _ in range(30):
+            advance(a)
+            advance(b)
+        self.assertEqual(canonical_hash(a), canonical_hash(b))
+
+    def test_validate_rejects_forged_goal_review_records(self):
+        world = new_world(7)
+        for _ in range(24):
+            advance(world)
+        person = next(p for p in world["people"].values() if p["goal_reviews"])
+        for forge in (lambda r: r.update(event_id="m2:99:99", outcome="轉向"),
+                      lambda r: r.update(outcome="留任休整", event_id=world["events"][0]["event_id"]),
+                      lambda r: r.update(goal_id="g:no:such"),
+                      lambda r: r.update(month=world["month"] + 1),
+                      lambda r: r.update(chosen="古武")):
+            with self.subTest(forge=forge):
+                bad = copy.deepcopy(world)
+                forge(bad["people"][str(person["id"])]["goal_reviews"][0])
+                with self.assertRaises(ValueError):
+                    validate(bad)
+        bad = copy.deepcopy(world)
+        goal = bad["people"][str(person["id"])]["goals"][0]
+        goal["parent_goal_id"] = "g:no:such"
+        with self.assertRaises(ValueError):
+            validate(bad)
+        bad = copy.deepcopy(world)
+        target = bad["people"][str(person["id"])]
+        target["goal_history"].append(copy.deepcopy(target["goals"][0]))
+        with self.assertRaises(ValueError):
+            validate(bad)
+
+    def test_old_rules_versions_do_not_get_goal_review_fields(self):
+        for version in ("0.2.0", "0.2.1"):
+            world = new_world(5, version)
+            for _ in range(12):
+                advance(world)
+            self.assertFalse(any("goal_reviews" in p for p in world["people"].values()), version)
+            self.assertFalse(any(g.get("transition_kind") for p in world["people"].values()
+                                 for g in p["goal_history"] + p["goals"]), version)
 
 
 if __name__ == "__main__":
