@@ -4,7 +4,7 @@
 
 ## 目前可以做什麼
 
-專案擁有人已於 2026-10-18 在本對話批准 D1–D5 與 14 天切片 SG-01～SG-12，見 [批准紀錄](docs/DECISIONS_AND_SOURCES.md)。不得再次把這些任務標成「等待產品批准」。實際任務尚未認領；開始前完成 issue／主筆／base dev SHA 登記及依賴檢查。SG-13 真人試玩需後續安排，SG-14～17 與發布仍未授權。
+專案擁有人已於 2026-10-18 在本對話批准 D1–D5 與 14 天切片 SG-01～SG-12，見 [批准紀錄](docs/DECISIONS_AND_SOURCES.md)。不得再次把這些任務標成「等待產品批准」。SG-01 已由 Grok Bot 在 #71 認領，其餘實作任務以各 issue 登記為準；開始前完成 issue／主筆／base dev SHA 登記及依賴檢查。SG-13 真人試玩需後續安排，SG-14～17 與發布仍未授權。
 
 - 實際主筆、issue、base dev SHA、修改檔案、依賴與驗收證據必須寫入 PR，採根目錄 PR 模板。
 - 新程式限制於 `sect-chronicle/`。不要改 `earth_ascension/`、`guwu-game/`、`sect_ascension/`，不要將原型檔案整批搬入。

@@ -34,8 +34,8 @@ M1/M2 是遊戲引擎開發順序，不能解讀為主專案同名 milestone。�
 | ID／工作 | 依賴 | 建議主筆角色／估量 | 修改檔案邊界 | 完成判準 |
 |---|---|---|---|---|
 | SG-00 確認產品與建立追蹤 | 無 | PO＋維護者／S | 本包 docs、issue 草稿 | 記錄 D1–D5 的決策者、日期、理由；核對最新 dev；每 issue 主筆、base SHA、檔案、DoD 明確；未批准者保持 Blocked |
-| SG-01 專案骨架、schema、RNG | 00 | 引擎／M | js/state.js、rng.js；test/state、rng；開發說明 | Node 可載入；characterOptions（只驗結構與型別，使用先宣告的暫定常數，不凍結數值）、主角／師父 ID、兩人 roster、候選另存與故事欄位（含 joinSlotIndex、defensePrepPoints）納入版本化新局與驗證；拒絕壞資料與未知版本；固定 RNG 向量；canonical hash 定義與首份 fixture |
-| SG-02 資料與五行規則 | 01 | 系統設計／M | js/rules.js；test/rules；docs/RULES.md（新增） | 列全成本／產出／工期／容量／修行／心境／突破公式與取整；五行四鄰計算；資料描述均有效果或明確純敘事；兩人開局供應可達首丹房；凍結模板等預算、加點上限、性格枚舉（取代 SG-01 暫定常數並升 ruleVersion）、靈氣階段倍率、援村成本表與守山備戰點換算（候選）；SG-02 只管數值表與規則，事件資料屬 SG-02A |
+| SG-01 專案骨架、schema、RNG | 00 | 引擎／M | js/state.js、rng.js；test/state、rng；開發說明 | Node 可載入；characterOptions（驗證結構、型別及暫定常數約束，使用先宣告的暫定常數，不凍結數值）、主角／師父 ID、兩人 roster、候選另存與故事欄位（含 joinSlotIndex）納入版本化新局與驗證；拒絕壞資料與未知版本；固定 RNG 向量；canonical hash 定義與首份 fixture |
+| SG-02 資料與五行規則 | 01 | 系統設計／M | js/rules.js；test/rules；docs/RULES.md（新增） | 列全成本／產出／工期／容量／修行／心境／突破公式與取整；五行四鄰計算；資料描述均有效果或明確純敘事；兩人開局供應可達首丹房；凍結模板等預算、加點上限、性格枚舉（取代 SG-01 暫定常數並升 ruleVersion）、靈氣階段倍率、援村成本表；SG-02 只管數值表與規則，事件資料屬 SG-02A |
 | SG-02A 第一章內容與事件契約 | 02 | 系統／敘事／M | js/story-data.js（新增）、docs/RULES.md；test/story-data | 定義復甦、求援、一次性物資、兩次固定招募、獸患／立派事件 ID、條件、選項與副作用；性格事件文案資料與映射（不含數值、不改效率）；使用 SG-02 的數值表，不重複定義；無自動成功／師父死亡；不含劇情 runtime |
 | SG-03 指令、日課與時段結算 | 02、02A | 引擎／L | js/commands.js、engine.js；test/commands、engine | 新值回傳；失敗不改世界／RNG；重送不重扣；輪候與凍結快照；兩人搶最後材料不負庫存；單步與批次相同；未入隊角色不可排課；事件選擇可重送且不重領獎 |
 | SG-04 建造、煉丹與 CLI 切片 | 03 | 引擎／M | js/engine.js；test/production；tools/smoke.js（新增） | 無丹房不能煉丹；工期、工作位、材料皆生效；完工次格可用；CLI 42 格含首爐丹，輸出種子與摘要 |

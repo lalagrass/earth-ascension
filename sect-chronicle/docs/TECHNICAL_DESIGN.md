@@ -27,7 +27,7 @@
 
 World 至少包含：`schemaVersion`、`ruleVersion`、`rngVersion`、`seed`、`slotIndex`、`phase`、`revision`、`rngState`、`resources`、`tiles`、`disciples`、`jobs`、`reservations`、`pendingEvents`、`commandLog`、`eventLog`、`scenarioId`、`characterOptions`、`protagonistId`、`masterId`、`story`。
 
-`story` 至少含已完成援村紀錄、已觸發事件 ID、候選邀請狀態／已接受 ID 與各自的 `joinSlotIndex`、`defensePrepPoints`（守山備戰點，候選定義見 OPENING_REVISION）、organisationStatus（dojo／sectFounded／foundingDeferred）。靈氣階段由 slotIndex 與規則表推導；不另存會失步的手動階段。disciples 起始只含師徒兩人，候選另存；僅 active roster 可參與結算。故事欄位與角色設定皆納入 canonical state。
+`story` 至少含已完成援村紀錄、已觸發事件 ID、候選邀請狀態／已接受 ID 與各自的 `joinSlotIndex`、organisationStatus（dojo／sectFounded／foundingDeferred）。靈氣階段由 slotIndex 與規則表推導；不另存會失步的手動階段。disciples 起始只含師徒兩人，候選另存；僅 active roster 可參與結算。故事欄位與角色設定皆納入 canonical state。
 
 - `slotIndex` 從 0 起算；day = floor(slotIndex/3)+1，part = slotIndex%3。14 天情境結算完第 42 格後轉 awaitingChoice（獸患）；選陣結算後才轉 ending，之間不得再 advance；日期顯示停在第 14 天，不能出現可玩的第 15 天。
 - phase：planning → resolving → planning／awaitingChoice／ending。resolving 是同步原子運算，UI 不可中途存部分狀態。
@@ -41,7 +41,7 @@ World 至少包含：`schemaVersion`、`ruleVersion`、`rngVersion`、`seed`、`
 
 command 封套：`id`、`expectedRevision`、`type`、`payload`。成功結果含 `ok/state/events`；拒絕含 `ok:false/code/reason`，世界、RNG 與 revision 不變。重送已接受 id 回傳已處理結果，不重複扣款；過期 revision 明確拒絕，由 UI 刷新後重試。
 
-角色選項在建世界前驗證，模板／點數非法不建立部分世界；同 seed 還須同角色設定才能比較回放。分界：SG-01 的 `state.js` 只驗證結構與型別（欄位齊全、`templateId` 為已宣告字串、三屬性為整數、點數不為負且總和等於已宣告預算、兩軸性格為已宣告枚舉），使用先宣告的暫定常數 `CHARACTER_OPTION_LIMITS`；SG-02 才凍結模板預算、加點上限與性格枚舉的正式數值並升 ruleVersion。
+角色選項在建世界前驗證，模板／點數非法不建立部分世界；同 seed 還須同角色設定才能比較回放。分界：SG-01 的 `state.js` 驗證結構、型別及暫定常數約束（欄位齊全、`templateId` 為已宣告字串、三屬性為整數、點數不為負且總和等於已宣告預算、兩軸性格為已宣告枚舉），使用先宣告的暫定常數 `CHARACTER_OPTION_LIMITS`；SG-02 才凍結模板預算、加點上限與性格枚舉的正式數值並升 ruleVersion。
 
 類型：assignSlot、setDailyTemplate、queueBuild、cancelQueuedJob、queueCraft、queueBreakthrough、setDefense、chooseEvent、acceptCandidate（穩定候選 ID）。援村使用日課任務，不另開即時產出 API。新局／匯入由 storage/app 層驗證後整體替換。除明確的事件選擇外，資源與成長只在 advance 結算；排隊本身不產生成果。
 

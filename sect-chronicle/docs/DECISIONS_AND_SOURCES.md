@@ -30,12 +30,12 @@
 
 文件設計版本為 0.2；新增 SG-02A／04A 並修訂 01～12 的 DoD。細部數值與模板映射須記錄來源、凍結候選表後驗證，未驗收不改成已通過。完整範圍與接手順序見 [OPENING_REVISION.md](OPENING_REVISION.md)。
 
-### D6 實作層決定（2026-10-18，使用者轉達的定案）
+### D6 實作分工與整合澄清（2026-10-18）
 
 - 實際主筆登記為「Grok Bot（古武修行遊戲 agent）」，與 Codex 共用同一 GitHub 帳號，非獨立審核。文件修訂追蹤於 [#72](https://github.com/lalagrass/earth-ascension/issues/72)，SG-01 追蹤於 [#71](https://github.com/lalagrass/earth-ascension/issues/71)。
-- SG-01 只驗證 characterOptions 的結構與型別，用先宣告的暫定常數；SG-02 才凍結模板預算、加點上限、性格枚舉並升 ruleVersion。
+- SG-01 驗證 characterOptions 的結構、型別及暫定常數約束，用先宣告的暫定常數；SG-02 才凍結模板預算、加點上限、性格枚舉並升 ruleVersion。
 - 學徒入隊時點：以 `joinSlotIndex`（接受當下尚未結算的 slotIndex）為準，見 TECHNICAL_DESIGN。
-- 「守山」平日行動：候選定義為不產出的備戰姿態（見 OPENING_REVISION），**待專案擁有人確認**；所有數值為候選。
+- 「守山」平日備戰點是另案未批准提案（見 OPENING_REVISION），不納入本次 schema、規則或 UI；不阻擋 D6 實作。第 14 天危機布陣維持已批准範圍。
 
 ## 來源觀察與整合風險
 
