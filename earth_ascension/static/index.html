@@ -12,7 +12,7 @@ const questions=[
 let world=null,tab='overview',selected=101,viewMonth=null,flash='',personFilter='all',personDistrict='',personSearch='',advancing=false,stopRequested=false;
 const answerPresets={neutral:[3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],scholar:[5,4,3,3,4,5,2,3,5,4,3,3,4,5,3,3],builder:[3,5,3,3,5,2,5,3,3,5,3,3,5,2,5,3],community:[3,3,5,5,4,3,4,5,3,3,5,5,4,3,4,5]};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmt=e=>`<div class="event" ${e.event_id?`id="event-${esc(e.event_id)}"`:''}>${esc(e.text)}<small>第 ${e.month} 月 · ${esc(e.kind)} · 原因：${esc((e.causes||[]).join('、'))}</small></div>`;
+const fmt=e=>`<div class="event" ${e.event_id?`id="event-${esc(e.event_id)}"`:''}>${esc(e.text)}<small>第 ${e.month} 月 · ${esc(e.kind)} · ${typeof m2ActionMemorySummary==='function'&&e.event_id&&e.kind==='行動'?m2ActionMemorySummary(e):'原因：'+esc((e.causes||[]).join('、'))}</small></div>`;
 async function api(path,opt){let r=await fetch(path,opt);let v=await r.json();if(!r.ok)throw Error(v.error||'操作失敗');return v}
 async function load(month=null){world=await api('/api/world'+(month===null?'':'?month='+month));viewMonth=month;flash='';document.getElementById('notice').innerHTML='';render()}
 function notice(s,bad=false){flash=`<div class="notice ${bad?'error':''}">${esc(s)}</div>`;document.getElementById('notice').innerHTML=flash}
