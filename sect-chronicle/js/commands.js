@@ -22,11 +22,13 @@
   let Rules;
   let State;
   let StoryData;
+  let Story;
   if (typeof module === 'object' && module && module.exports) {
     Rules = require('./rules.js');
     State = require('./state.js');
     StoryData = require('./story-data.js');
-    module.exports = factory(Rules, State, StoryData);
+    Story = require('./story.js');
+    module.exports = factory(Rules, State, StoryData, Story);
   } else {
     Rules = root.SectChronicle && root.SectChronicle.Rules;
     if (!Rules) throw new Error('commands.js 需要先載入 js/rules.js（以及 js/rng.js）');
@@ -34,20 +36,24 @@
     if (!State) throw new Error('commands.js 需要先載入 js/state.js（在 js/rules.js 之後）');
     StoryData = root.SectChronicle.StoryData;
     if (!StoryData) throw new Error('commands.js 需要先載入 js/story-data.js（在 js/state.js 之後、本檔之前）');
-    root.SectChronicle.Commands = factory(Rules, State, StoryData);
+    Story = root.SectChronicle.Story;
+    if (!Story) throw new Error('commands.js 需要先載入 js/story.js（在 js/story-data.js 之後、本檔之前）');
+    root.SectChronicle.Commands = factory(Rules, State, StoryData, Story);
   }
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (Rules, State, StoryData) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (Rules, State, StoryData, Story) {
   'use strict';
 
-  const SUPPORTED_COMMANDS = Object.freeze(['assignSlot', 'setDailyTemplate', 'chooseEvent', 'queueBuild', 'queueCraft', 'cancelQueuedJob']);
+  const SUPPORTED_COMMANDS = Object.freeze([
+    'assignSlot', 'setDailyTemplate', 'chooseEvent', 'queueBuild', 'queueCraft', 'cancelQueuedJob', 'queueAid', 'acceptCandidate',
+  ]);
   const DEFERRED_COMMANDS = Object.freeze({
-    queueBreakthrough: 'SG-05', setDefense: 'SG-06', acceptCandidate: 'SG-04A',
+    queueBreakthrough: 'SG-05', setDefense: 'SG-06',
   });
   const SUPPORTED_ACTIONS = Object.freeze(['gather-material', 'gather-herb', 'cultivate', 'rest', 'tune-mind']);
   // build／brew 需要地塊、工程或配方等明確目標，因此只能由 queueBuild／queueCraft 建立的 job 驅動，不能排入課表。
-  const JOB_ACTIONS = Object.freeze({ build: 'queueBuild', brew: 'queueCraft' });
+  const JOB_ACTIONS = Object.freeze({ build: 'queueBuild', brew: 'queueCraft', aid: 'queueAid' });
   const DEFERRED_ACTIONS = Object.freeze({
-    aid: 'SG-04A', breakthrough: 'SG-05', support: 'SG-05',
+    breakthrough: 'SG-05', support: 'SG-05',
   });
   const SUPPORTED_EFFECTS = Object.freeze(['showAidPrompt', 'setInvitationStatus']);
   const ID_MAX_LENGTH = 64;
@@ -89,6 +95,8 @@
     if (world.schedule.overrides.some((o) => bad(o.action))) {
       return { ok: false, code: 'unsupported_scheduled_action', reason: '課表覆寫含本版尚未支援的行動', path: 'schedule.overrides' };
     }
+    const story = Story.validateWorld(world);
+    if (!story.ok) return story;
     return { ok: true };
   }
 
@@ -353,9 +361,42 @@
     return { drafts: [{ type: 'jobCancelled', jobId: job.id }] };
   }
 
+  // ---------- SG-04A：援村排隊與固定招募 ----------
+  function doQueueAid(world, next, payload) {
+    if (!sameKeys(payload, ['discipleId', 'optionId']) || typeof payload.discipleId !== 'string' || typeof payload.optionId !== 'string') {
+      return { error: reject('bad_payload', 'queueAid 需要恰好 discipleId、optionId（字串）') };
+    }
+    if (world.phase !== 'planning') return { error: reject('not_planning', `目前階段是 ${world.phase}，只有 planning 可以排援村`) };
+    const found = findMember(world, payload.discipleId);
+    if (found.error) return { error: found.error };
+    if (!has(Rules.AID_OPTIONS, payload.optionId)) return { error: reject('unknown_aid_option', `未知援村選項：${payload.optionId}`) };
+    if (!Rules.aidAvailable(world.slotIndex)) {
+      return { error: reject('aid_locked', `第 ${Rules.AID_AVAILABLE_FROM_SLOT} 格（日 4 初兆）起才有人求援，目前第 ${world.slotIndex} 格`) };
+    }
+    if (Story.completedAidJob(world)) return { error: reject('aid_completed', '村口的籬笆已經修好，不能再援村（只有一次）') };
+    const job = addJob(next, 'aid', payload.discipleId, { aidId: Rules.AID_ID, optionId: payload.optionId });
+    return { drafts: [{ type: 'jobQueued', jobId: job.id, kind: 'aid', discipleId: job.discipleId, target: cloneJson(job.target) }] };
+  }
+
+  function doAcceptCandidate(world, next, payload) {
+    if (!sameKeys(payload, ['candidateId']) || typeof payload.candidateId !== 'string') {
+      return { error: reject('bad_payload', 'acceptCandidate 需要恰好 candidateId（字串）') };
+    }
+    const id = payload.candidateId;
+    if (!State.CANDIDATE_IDS.includes(id)) return { error: reject('unknown_candidate', `未知候選：${id}`) };
+    if (world.phase !== 'planning') return { error: reject('not_planning', `目前階段是 ${world.phase}，只有 planning 可以接受入隊`) };
+    // 第 42 格起 phase 只可能是 awaitingChoice／ending（State 驗證保證），所以「危機後不再接受入隊」由上一行的 not_planning 保證。
+    const status = world.story.invitations[id].status;
+    if (status === 'accepted') return { error: reject('already_accepted', `${id} 已入隊`) };
+    if (status !== 'invited' && status !== 'deferred') return { error: reject('candidate_not_invited', `${id} 尚未被邀請（目前 ${status}）`) };
+    // 隊伍上限四人是結構性的：只有兩名固定候選，加上師父與主角，所以不需要（也到不了）額外的名額檢查。
+    return { drafts: [Story.addApprentice(next, id)] };
+  }
+
   const HANDLERS = {
     assignSlot: doAssignSlot, setDailyTemplate: doSetDailyTemplate, chooseEvent: doChooseEvent,
     queueBuild: doQueueBuild, queueCraft: doQueueCraft, cancelQueuedJob: doCancelQueuedJob,
+    queueAid: doQueueAid, acceptCandidate: doAcceptCandidate,
   };
 
   // ---------- dispatch ----------

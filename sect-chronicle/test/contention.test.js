@@ -7,6 +7,7 @@ const Rules = require('../js/rules.js');
 const State = require('../js/state.js');
 const C = require('../js/commands.js');
 const E = require('../js/engine.js');
+const { withDoneAid, withInvitation } = require('./helpers.js');
 
 const clone = (x) => JSON.parse(JSON.stringify(x));
 const M = State.MASTER_ID;
@@ -52,10 +53,9 @@ function threeWorld() {
   const w = world('cont-three');
   w.slotIndex = 20;
   w.revision = 20;
-  w.story.rescues = [{ id: Rules.AID_ID, completedSlotIndex: 12, rewardClaimed: true }];
-  w.story.triggeredEventIds = ['evt-phase-faint', 'evt-phase-omen', 'evt-village-plea', 'evt-aid-complete', 'evt-phase-manifest', 'evt-invite-cand-1', 'evt-invite-cand-2'];
-  w.story.invitations['cand-1'] = { status: 'accepted', joinSlotIndex: 20 };
-  w.disciples.push({ id: A, role: 'apprentice', attributes: { rootBone: 3, comprehension: 3, craft: 3 }, stamina: 100, mind: 60, cultivation: 0, injury: 0, joinSlotIndex: 20 });
+  w.story.triggeredEventIds = ['evt-phase-faint', 'evt-phase-omen', 'evt-village-plea', 'evt-phase-manifest', 'evt-invite-cand-2'];
+  withDoneAid(w, 12);
+  withInvitation(w, 'cand-1', 'accepted', 20);
   // 本 fixture 由測試直接構造；新欄位（seatWaits、templateTiles）已含在 newWorld 的預設中
   const v = C.validateEngineWorld(w);
   assert.deepEqual(v, { ok: true }, JSON.stringify(v));
@@ -354,14 +354,14 @@ test('R1：連續落選會累計到 2 以上並超越只落選 1 格的人；位
   const w = threeWorld();
   const tile = bestTile(w, 'spiritTerrace').id;
   w.jobs.push({
-    id: 'job-0001', kind: 'build', discipleId: M, status: 'done', queuedSlotIndex: 10, waited: 0,
-    startSlotIndex: 10, slotsDone: 2, completedSlotIndex: 11, cancelledSlotIndex: null,
+    id: 'job-0002', kind: 'build', discipleId: M, status: 'done', queuedSlotIndex: 12, waited: 0, // job-0001 是 threeWorld 的已完成援村
+    startSlotIndex: 12, slotsDone: 2, completedSlotIndex: 13, cancelledSlotIndex: null,
     target: { facilityType: 'spiritTerrace', tileId: tile },
   });
   assert.deepEqual(C.validateEngineWorld(w), { ok: true });
   let cur = w;
   for (const id of [M, P, A]) cur = plan(cur, id, 'cultivate');
-  const seat = 'facility:job-0001';
+  const seat = 'facility:job-0002';
   cur = step(cur); // 全部 waited 0：ID 最小的 cand-1 得位
   assert.equal(res(cur, A).seat, seat);
   assert.deepEqual(cur.seatWaits, [{ discipleId: M, seat, waited: 1 }, { discipleId: P, seat, waited: 1 }]);

@@ -93,12 +93,12 @@ canonical state 包含世界與 RNG、排隊及待選事件，排除播放倍率
 
 本節是 SG-03 對 §2–3 的細部落實；與 [DEVELOPMENT.md](DEVELOPMENT.md) 一致，且以後者與測試為準。
 
-- **模組**：`js/commands.js`（`dispatch`、世界的引擎層驗證、課表查詢）與 `js/engine.js`（`advance`、仲裁、意圖、故事 facts）。載入順序 rng → rules → state → story-data → commands → engine。
+- **模組**：`js/commands.js`（`dispatch`、世界的引擎層驗證、課表查詢）與 `js/engine.js`（`advance`、仲裁、意圖、故事 facts）。載入順序 rng → rules → state → story-data → story → commands → engine（SG-04A 起加入 `story.js`）。
 - **schema 2**：新增 `schedule`（`templates`＋排序的 `overrides`）；`commandLog`、`eventLog`、`pendingEvents` 有固定項目格式與序號連續性驗證。舊 schema 存檔明確拒絕、不遷移。
 - **去重與 revision**：同 id 重送先於 revision 檢查；回傳的是已處理結果與目前世界，不倒退。被拒絕的命令不寫紀錄。revision：命令成功 +1、每結算一格 +1。
 - **結算／仲裁**：每格從格初快照計算所有效果；仲裁以「等待較久、其次穩定 ID」排序，參與者／工作位／成本整批成功或失敗，失敗轉明示休養。本包沒有持久的等待計數與工作位（SG-04 隨 `jobs`／`reservations` 定義），現階段所有意圖 `waited = 0`。
 - **停止**：待選事件（slot 8→9 求援、41→42 危機）使 phase 轉 `awaitingChoice`，批次立即停止；危機與 ending 的結算由 SG-06 接入。
-- **事件資料**：引擎只消費 `story-data.js` 的 `dueEvents`／`validateChoice`／宣告的效果；對尚未有 runtime 的效果（援村發獎、危機佈陣、結局）一律明確拒絕。
+- **事件資料**：引擎只消費 `story-data.js` 的 `dueEvents`／`validateChoice`／宣告的效果；對尚未有 runtime 的效果（危機佈陣、結局）一律明確拒絕；援村發獎與邀請提示自 SG-04A 起由引擎結算（見 §10）。
 - **不使用 RNG**：本包的行動都是確定性公式，`rngState` 全程不變。
 
 ## 9. SG-04 實作契約（工程、預約與持久輪候）
@@ -114,3 +114,14 @@ canonical state 包含世界與 RNG、排隊及待選事件，排除播放倍率
 - **工作位輪候**：設施位與「每個資源點各自 2 位」都用同一個 `arbitrate`；等待值存在 `seatWaits`（每人至多一筆：位、連續落選格數），取得位或改要別的位時重置；採集的目標地塊由課表指定（`tileId`／`tileIds`），未指定取該資源種類排序最前的點。
 - **第 42 格**：未完工的工作保持 active，不假完工；之後如何處理由 SG-06 決定。
 - **版本**：schemaVersion 3（`seatWaits`、`schedule.templateTiles` 在 PR #91 審查修正中併入尚未合併的 schema 3，不另升版）；ruleVersion 2、rngVersion 1 不變；不消耗 RNG。
+
+## 10. SG-04A 實作契約（復甦、援村與固定招募）
+
+與 [DEVELOPMENT.md](DEVELOPMENT.md)「SG-04A 新增」一致，且以後者與測試為準。
+
+- **援村是 job**：`queueAid` 排入 `kind:'aid'` 的 job，走 §9 的原子預約、持久輪候與明示休養備案；工期 1 格（同格開工並完工）、工作位 `aid:village-fence`（容量 1）。完工後在同一個提交內記錄 `rescues` 並一次性發獎，去重鍵＝`evt-aid-complete` 的登記＋rescues；其餘排隊中的援村 job 同一提交取消，不留孤兒、不重複發獎。提示（求援待選）本身不發任何東西。
+- **故事結算順序**：每格提交後先處理「已發生的結算」（援村完成，任何格），日末／最後一格才升起待選事件；待選事件一次一個、處理後重新推導（固定點迴圈，上限 16），使 cand-1 → cand-2 在同一日末依序提示、各一次。第 42 格危機優先於邀請，不推第 43 格。
+- **招募**：`chooseEvent` 只設 `invited`／`deferred`；`acceptCandidate` 在 planning 才能把候選加入隊伍，`joinSlotIndex`＝接受當下尚未結算的 slotIndex，不補發。候選屬性取自 `story.js` 的 `CANDIDATE_PROFILES`（引用 `rules.js` 既有模板，待遊戲 PO 核對）。
+- **一致性**：`Story.validateWorld` 在每次 `dispatch`／`advance` 前核對 rescues ↔ 完成的援村 job ↔ 事件登記、邀請進度 ↔ 事件登記、學徒屬性來源；存檔仍是 schema 3。
+- **版本**：schemaVersion 3、ruleVersion 2、rngVersion 1、contentVersion 1 不變（無新頂層欄位）；不消耗 RNG。是否另升 schema 版本屬產品決策，見 PR 說明。
+- **不在本任務**：突破／支援（SG-05）、危機結算／ending／立派（SG-06）、storage／UI／forecast。

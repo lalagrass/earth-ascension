@@ -377,14 +377,15 @@ test('build／brew 不可排入課表：use_job_command；基礎行動不受影�
   rejected(w, cmd(w, 'assignSlot', { discipleId: M, slotIndex: 0, action: 'build' }), 'use_job_command');
   rejected(w, cmd(w, 'assignSlot', { discipleId: M, slotIndex: 0, action: 'brew' }), 'use_job_command');
   rejected(w, cmd(w, 'setDailyTemplate', { discipleId: M, parts: ['build', 'rest', 'rest'] }), 'use_job_command');
-  for (const a of ['aid', 'breakthrough', 'support']) {
+  rejected(w, cmd(w, 'assignSlot', { discipleId: M, slotIndex: 0, action: 'aid' }), 'use_job_command'); // SG-04A：援村也是 job（queueAid）
+  for (const a of ['breakthrough', 'support']) {
     rejected(w, cmd(w, 'assignSlot', { discipleId: M, slotIndex: 0, action: a }), 'not_supported_yet');
   }
   for (const a of ['gather-material', 'cultivate', 'rest', 'tune-mind']) {
     assert.equal(C.dispatch(w, cmd(w, 'assignSlot', { discipleId: M, slotIndex: 0, action: a })).ok, true, a);
   }
-  assert.deepEqual([...C.SUPPORTED_COMMANDS].sort(), ['assignSlot', 'cancelQueuedJob', 'chooseEvent', 'queueBuild', 'queueCraft', 'setDailyTemplate']);
-  for (const t of ['queueBreakthrough', 'setDefense', 'acceptCandidate']) {
+  assert.deepEqual([...C.SUPPORTED_COMMANDS].sort(), ['acceptCandidate', 'assignSlot', 'cancelQueuedJob', 'chooseEvent', 'queueAid', 'queueBuild', 'queueCraft', 'setDailyTemplate']);
+  for (const t of ['queueBreakthrough', 'setDefense']) {
     rejected(w, cmd(w, t, {}), 'not_supported_yet');
   }
 });
@@ -955,7 +956,7 @@ test('瀏覽器載入順序：commands／engine 在 vm 中與 Node 結果相同�
     for (const f of names) vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', f), 'utf8'), ctx, { filename: f });
     return ctx;
   };
-  const ctx = load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'commands.js', 'engine.js']);
+  const ctx = load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'commands.js', 'engine.js']);
   const B = ctx.SectChronicle;
   let w = B.State.newWorld('vm-seed').state;
   const r = B.Commands.dispatch(w, { id: 'v1', expectedRevision: 0, type: 'queueBuild', payload: { discipleId: M, facilityType: ALCH, tileId: 't-0-1' } });
@@ -966,7 +967,8 @@ test('瀏覽器載入順序：commands／engine 在 vm 中與 Node 結果相同�
   n = step(n, 3).state;
   assert.equal(B.State.hashWorld(w), hash(n));
   assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'commands.js', 'engine.js']), /story-data\.js/);
-  assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'engine.js']), /commands\.js/);
+  assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'commands.js', 'engine.js']), /story\.js/);
+  assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'engine.js']), /commands\.js/);
 });
 
 test('生產全程確定性：不消耗 RNG、不用牆鐘', () => {
