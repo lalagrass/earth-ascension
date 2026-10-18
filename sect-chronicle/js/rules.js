@@ -35,6 +35,20 @@
   // ---------- 版本與取整契約 ----------
   // 1 = SG-01 暫定值；2 = SG-02 凍結的候選規則基線。schemaVersion／rngVersion 不因此改變。
   const RULE_VERSION = 3; // SG-05（D7-A）：修為封頂 100；數值表沒有改動
+  // RT 世界的 ruleVersion。不取代 RULE_VERSION：slot 世界、story-data 與 golden 仍是 3。
+  // 4 只新增下面的時間常數與無上限階段查表，既有數值表與 0..42 公式結果不變。
+  const RT_RULE_VERSION = 4;
+  const TICKS_PER_SLOT = 60;
+  const SLOTS_PER_DAY = 3;
+  const TICKS_PER_DAY = TICKS_PER_SLOT * SLOTS_PER_DAY;
+  const STEP_TICKS = 6;
+  const DOJO = freeze({ r: 2, c: 2 });
+  const VILLAGE_GATE = freeze({ r: 2, c: -1 });
+  const REST_BELOW_STAMINA = 60;
+  const REST_AT_INJURY = 30;
+  const ASK_EXPIRY_TICKS = 180;
+  const WAIT_RECHECK_TICKS = 60;
+  const OBSERVATION_TICKS = 2700;
   const BASIS_POINTS = 10000;
   const ROUNDING_MODE = 'floor';
 
@@ -193,11 +207,16 @@
     { id: 'surge', label: '獸患升溫', startSlot: 30, cultivationBp: 18000, herbYield: 5, threatLevel: 3 }, // 日 11
   ]);
   const MAX_SLOT_INDEX = 42;
+  // slotEq 不設 42 上限。第 11 天（slotEq ≥ 30）之後停在獸患升溫。slot 引擎仍走 phaseAt。
+  function phaseAtEq(slotEq) {
+    intIn('slotEq', slotEq, 0, Number.MAX_SAFE_INTEGER);
+    let current = SPIRIT_PHASES[0];
+    for (const p of SPIRIT_PHASES) if (slotEq >= p.startSlot) current = p;
+    return current;
+  }
   function phaseAt(slotIndex) {
     intIn('slotIndex', slotIndex, 0, MAX_SLOT_INDEX);
-    let current = SPIRIT_PHASES[0];
-    for (const p of SPIRIT_PHASES) if (slotIndex >= p.startSlot) current = p;
-    return current;
+    return phaseAtEq(slotIndex);
   }
 
   // ---------- 體力／心境／傷勢與屬性係數 ----------
@@ -229,14 +248,13 @@
   // 修行 = 基礎 × 階段 × 悟性 × 功法契合 × 地塊 × 體力 × 心境 × 傷勢；
   // 以 BigInt 精確相乘、總倍率夾 3.0、最後 floor 一次、至少 1。純計算，不消耗 RNG。
   // techniqueFitBp 目前沒有狀態欄位提供來源，預設 10000（無加成）；性格不是輸入。
-  function cultivationGain(input) {
-    const slotIndex = intIn('slotIndex', input.slotIndex, 0, MAX_SLOT_INDEX);
+  function cultivationGainFrom(input, phase) {
     const tile = input.tileMultiplierBp === undefined ? BASIS_POINTS : input.tileMultiplierBp;
     intIn('tileMultiplierBp', tile, PLACEMENT_MIN_BP, PLACEMENT_MAX_BP);
     const fit = input.techniqueFitBp === undefined ? BASIS_POINTS : input.techniqueFitBp;
     intIn('techniqueFitBp', fit, TECHNIQUE_FIT_MIN_BP, TECHNIQUE_FIT_MAX_BP);
     const factors = [
-      { id: 'phase', bp: phaseAt(slotIndex).cultivationBp },
+      { id: 'phase', bp: phase.cultivationBp },
       { id: 'comprehension', bp: comprehensionBp(input.comprehension) },
       { id: 'techniqueFit', bp: fit },
       { id: 'tile', bp: tile },
@@ -258,6 +276,14 @@
       minimumApplied: raw < CULTIVATION_MIN_GAIN, factors,
     };
   }
+  function cultivationGain(input) {
+    const slotIndex = intIn('slotIndex', input.slotIndex, 0, MAX_SLOT_INDEX);
+    return cultivationGainFrom(input, phaseAt(slotIndex));
+  }
+  function cultivationGainAtEq(input) {
+    const slotEq = intIn('slotEq', input.slotEq, 0, Number.MAX_SAFE_INTEGER);
+    return cultivationGainFrom(input, phaseAtEq(slotEq));
+  }
 
   // ---------- 資源來源／用途 ----------
   // 靈石在 14 天切片沒有來源也沒有用途（欄位只為 schema 相容保留）；聲望只由援村獲得，不是耗材。
@@ -269,16 +295,23 @@
   // ---------- 採集 ----------
   const MATERIAL_BASE_YIELD = 4;
   // 採集 = 基礎 × 技藝 × 體力（悟性與性格不參與）。靈草基礎量依階段；日 1 鎖定。
-  function gatherYield(input) {
-    const slotIndex = intIn('slotIndex', input.slotIndex, 0, MAX_SLOT_INDEX);
+  function gatherYieldFrom(input, phase) {
     let base;
     if (input.resource === 'spiritMaterial') base = MATERIAL_BASE_YIELD;
-    else if (input.resource === 'spiritHerb') base = phaseAt(slotIndex).herbYield;
+    else if (input.resource === 'spiritHerb') base = phase.herbYield;
     else throw new RangeError(`不可採集的資源：${String(input.resource)}`);
     const c = craftBp(input.craft);
     const s = staminaBp(input.stamina);
     if (base === 0) return { amount: 0, locked: true };
     return { amount: Math.floor((base * c * s) / (BASIS_POINTS * BASIS_POINTS)), locked: false };
+  }
+  function gatherYield(input) {
+    const slotIndex = intIn('slotIndex', input.slotIndex, 0, MAX_SLOT_INDEX);
+    return gatherYieldFrom(input, phaseAt(slotIndex));
+  }
+  function gatherYieldAtEq(input) {
+    const slotEq = intIn('slotEq', input.slotEq, 0, Number.MAX_SAFE_INTEGER);
+    return gatherYieldFrom(input, phaseAtEq(slotEq));
   }
 
   // ---------- 煉丹 ----------
@@ -394,9 +427,13 @@
     free: { label: '徒手協助', cost: {}, reward: { spiritMaterial: 3, spiritHerb: 2, reputation: 1 } },
     supplied: { label: '備料協助', cost: { spiritMaterial: 4 }, reward: { spiritMaterial: 8, spiritHerb: 5, reputation: 2 } },
   });
+  function aidAvailableEq(slotEq) {
+    intIn('slotEq', slotEq, 0, Number.MAX_SAFE_INTEGER);
+    return slotEq >= AID_AVAILABLE_FROM_SLOT;
+  }
   function aidAvailable(slotIndex) {
     intIn('slotIndex', slotIndex, 0, MAX_SLOT_INDEX);
-    return slotIndex >= AID_AVAILABLE_FROM_SLOT;
+    return aidAvailableEq(slotIndex);
   }
   function aidReward(optionId) {
     if (typeof optionId !== 'string' || !Object.prototype.hasOwnProperty.call(AID_OPTIONS, optionId)) {
@@ -421,21 +458,23 @@
 
   return {
     CULTIVATION_CAP, capCultivationGain,
-    RULE_VERSION, BASIS_POINTS, ROUNDING_MODE, mulBp,
+    RULE_VERSION, RT_RULE_VERSION, BASIS_POINTS, ROUNDING_MODE, mulBp,
+    TICKS_PER_SLOT, SLOTS_PER_DAY, TICKS_PER_DAY, STEP_TICKS, DOJO, VILLAGE_GATE,
+    REST_BELOW_STAMINA, REST_AT_INJURY, ASK_EXPIRY_TICKS, WAIT_RECHECK_TICKS, OBSERVATION_TICKS,
     CHARACTER_OPTION_LIMITS, MASTER_ATTRIBUTES, START_VALUES, VALUE_LIMITS,
     ELEMENTS, GENERATES, OVERCOMES, relation, PLACEMENT_BP, PLACEMENT_MIN_BP, PLACEMENT_MAX_BP,
     FACILITIES, BUILD_WORKERS, DEMOLISH_REFUND_BP, demolishRefund,
     MAP_SIZE, TERRAIN, initialTiles, neighborIds, evaluateFacilityPlacement,
-    SPIRIT_PHASES, MAX_SLOT_INDEX, phaseAt,
+    SPIRIT_PHASES, MAX_SLOT_INDEX, phaseAt, phaseAtEq,
     staminaBp, mindBp, injuryBp, comprehensionBp, rootBoneBp, craftBp,
-    CULTIVATION_BASE, CULTIVATION_TOTAL_CAP_BP, CULTIVATION_MIN_GAIN, cultivationGain,
-    RESOURCE_SOURCES, RESOURCE_SINKS, MATERIAL_BASE_YIELD, gatherYield,
+    CULTIVATION_BASE, CULTIVATION_TOTAL_CAP_BP, CULTIVATION_MIN_GAIN, cultivationGain, cultivationGainAtEq,
+    RESOURCE_SOURCES, RESOURCE_SINKS, MATERIAL_BASE_YIELD, gatherYield, gatherYieldAtEq,
     RECIPES, BREW_MIN_OUTPUT, brewOutput,
     ACTIONS, REST_WILD, REST_RESIDENCE, restRecovery, applyRest, applyActionCost,
     BREAKTHROUGH_THRESHOLD, MAX_BREAKTHROUGHS_PER_DISCIPLE, BREAKTHROUGH_CHANCE_CAP_BP,
     BREAKTHROUGH_FAIL_KEEP_BP, BREAKTHROUGH_FAIL_INJURY,
     canAttemptBreakthrough, breakthroughChance, breakthroughFailure,
-    AID_ID, AID_DURATION_SLOTS, AID_WORKERS, AID_AVAILABLE_FROM_SLOT, AID_OPTIONS, aidAvailable, aidReward,
+    AID_ID, AID_DURATION_SLOTS, AID_WORKERS, AID_AVAILABLE_FROM_SLOT, AID_OPTIONS, aidAvailable, aidAvailableEq, aidReward,
     steadyStateWorkShareBp, PURE_NARRATIVE_FIELDS,
   };
 });

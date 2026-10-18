@@ -670,6 +670,37 @@ test('瀏覽器一般 script 載入 rules.js 後與 Node 結果相同', () => {
   const B = ctx.SectChronicle.Rules;
   assert.ok(B);
   assert.equal(B.RULE_VERSION, 3);
+  assert.equal(B.RT_RULE_VERSION, 4);
   assert.deepEqual(clone(B.initialTiles()), clone(R.initialTiles()));
   assert.equal(B.cultivationGain({ slotIndex: 0, comprehension: 5, stamina: 100, mind: 60, injury: 0 }).gain, 12);
+});
+
+test('RT 時間常數與無上限階段查表；slot 的 0..42 結果不變', () => {
+  assert.equal(R.RULE_VERSION, 3);
+  assert.equal(R.RT_RULE_VERSION, 4);
+  assert.equal(R.TICKS_PER_SLOT, 60);
+  assert.equal(R.SLOTS_PER_DAY, 3);
+  assert.equal(R.TICKS_PER_DAY, 180);
+  assert.equal(R.STEP_TICKS, 6);
+  assert.deepEqual(R.DOJO, { r: 2, c: 2 });
+  assert.deepEqual(R.VILLAGE_GATE, { r: 2, c: -1 });
+  assert.equal(R.OBSERVATION_TICKS, 2700);
+  assert.throws(() => R.phaseAt(43), RangeError);
+  assert.equal(R.phaseAtEq(45).id, 'surge');
+  assert.equal(R.phaseAtEq(45).cultivationBp, 18000);
+  assert.equal(R.phaseAtEq(45).herbYield, 5);
+  const body = { comprehension: 4, stamina: 80, mind: 60, injury: 0, craft: 3 };
+  for (let slot = 0; slot <= 42; slot += 1) {
+    assert.equal(R.phaseAtEq(slot).id, R.phaseAt(slot).id);
+    assert.equal(
+      R.cultivationGainAtEq(Object.assign({ slotEq: slot }, body)).gain,
+      R.cultivationGain(Object.assign({ slotIndex: slot }, body)).gain,
+    );
+    assert.equal(
+      R.gatherYieldAtEq({ slotEq: slot, resource: 'spiritMaterial', craft: body.craft, stamina: body.stamina }).amount,
+      R.gatherYield({ slotIndex: slot, resource: 'spiritMaterial', craft: body.craft, stamina: body.stamina }).amount,
+    );
+    assert.equal(R.aidAvailableEq(slot), R.aidAvailable(slot));
+  }
+  assert.equal(R.aidAvailableEq(45), true);
 });

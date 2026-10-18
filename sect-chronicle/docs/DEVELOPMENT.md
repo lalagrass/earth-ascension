@@ -1,6 +1,6 @@
-# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05）
+# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05／RT-01）
 
-**目前新方向（尚未實作）**：D8可暫停即時自主生活，見[REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)及RT-00 #99（D9 P1–P4已批准凍結：[RT00_CONTRACT.md](RT00_CONTRACT.md)，文件待整合／postCI）；戰鬥#98延後。下方是已合入的slot引擎／SG-05紀錄，不能把自動連續advance或動畫插值宣稱成即時移動／自主生活。新RT時間、工作、自主預設／人工覆寫及P4=B已凍結，文件合dev／postCI後進RT-01；舊回歸／golden保留。
+**目前新方向**：D8 可暫停即時自主生活，見 [REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)。RT-00 契約已合入 dev（#101；P1–P4 已批准，見 [RT00_CONTRACT.md](RT00_CONTRACT.md)）。RT-01 已實作即時世界、正式手動指令、移動與工作（`js/realtime.js`）。自主決策、突破詢問、瀏覽器存檔與播放控制器是 RT-02～RT-05，本包沒有。戰鬥 #98 延後。下方 slot 引擎紀錄仍然有效；舊回歸與 golden 保留。slot 的自動連續 advance 不是即時移動，也不是無人介入的自主生活。
 
 本文件隨程式更新；runtime紀錄只描述已存在且已驗證的事。尚未實作的模組見 [TECHNICAL_DESIGN](TECHNICAL_DESIGN.md)。
 
@@ -13,16 +13,18 @@ node --test sect-chronicle/test/*.test.js     # Node 24 不要用目錄參數
 node sect-chronicle/tools/update-fixtures.js  # 僅在有意改版本時重產 fixture，並在 PR 說明差異
 node sect-chronicle/tools/smoke.js --seed demo # 首爐丹冒煙：兩人零材料 → 建丹房 → 首爐丹 → 第 42 格危機待選
 node sect-chronicle/tools/smoke.js --seed demo --breakthrough pill-support # SG-05：再加上主角修為滿 100 後排突破（plain｜pill｜pill-support）
+node sect-chronicle/tools/rt-replay.js --matrix       # RT-01：rt-dev-000..019 × 2700 tick；不要加 --ticks
+node sect-chronicle/tools/rt-replay.js --seed rt-dev-000
 ```
 
 根目錄檢查（CONTRIBUTING／AGENTS 指定）：`python3 -m unittest discover -s tests -v`、`node --check earth_ascension/static/m2.js`、`git diff --check`。
 
 ## 模組載入策略
 
-`js/rng.js`、`js/rules.js`、`js/state.js`、`js/story-data.js`、`js/story.js`、`js/progression.js`、`js/commands.js`、`js/engine.js` 是無框架的 UMD 風格腳本：
+`js/rng.js`、`js/rules.js`、`js/state.js`、`js/story-data.js`、`js/story.js`、`js/progression.js`、`js/commands.js`、`js/engine.js`、`js/realtime.js` 是無框架的 UMD 風格腳本：
 
 - Node：`require('./js/state.js')`（state 會自行 require rng 與 rules；`rules.js` 是葉節點，不 require 任何模組，因此沒有 state↔rules 循環）。
-- 瀏覽器：依序以一般 `<script>` 載入 `js/rng.js` → `js/rules.js` → `js/state.js` → `js/story-data.js` → `js/story.js` → `js/progression.js` → `js/commands.js` → `js/engine.js`；API 掛在 `globalThis.SectChronicle.Rng`／`.Rules`／`.State`／`.StoryData`／`.Story`／`.Progression`／`.Commands`／`.Engine`（`progression.js` 只依賴 rng、rules，須早於 commands）。漏載任何前置檔時，後面的檔案會丟出指名該檔的錯誤。Node 只需 `require('./js/engine.js')`（逐層 require 前置檔，沒有循環：rules←state←story-data←story←commands←engine；progression 只依賴 rng、rules，由 commands 與 engine 引用）。不需建置、不使用 ES module，`file://` 也能載入（儲存相容性另計，見技術設計）。
+- 瀏覽器：依序以一般 `<script>` 載入 `js/rng.js` → `js/rules.js` → `js/state.js` → `js/story-data.js` → `js/story.js` → `js/progression.js` → `js/commands.js` → `js/engine.js` → `js/realtime.js`；API 掛在 `globalThis.SectChronicle.Rng`／`.Rules`／`.State`／`.StoryData`／`.Story`／`.Progression`／`.Commands`／`.Engine`／`.Realtime`（`progression.js` 只依賴 rng、rules，須早於 commands；`realtime.js` 在 engine 之後）。漏載任何前置檔時，後面的檔案會丟出指名該檔的錯誤。Node 只需 `require('./js/engine.js')` 或 `require('./js/realtime.js')`（逐層 require 前置檔，沒有循環：rules←state←story-data←story←commands←engine；progression 只依賴 rng、rules；realtime 讀取引擎，引擎不讀 realtime）。不需建置、不使用 ES module，`file://` 也能載入（儲存相容性另計，見技術設計；RT 瀏覽器存檔屬 RT-03）。
 
 ## 版本
 
@@ -31,6 +33,26 @@ node sect-chronicle/tools/smoke.js --seed demo --breakthrough pill-support # SG-
 | schemaVersion | 4 | 世界狀態欄位與驗證規則；SG-03 由 1 升為 2（`schedule`、log 格式），SG-04 升為 3（固定 25 格 `tiles`、新增 `inventory`、`jobs`／`reservations` 內容契約），**SG-05 升為 4**（弟子 `breakthroughs`、修為上限 100、突破 job 與 `outcome`）。schemaVersion 1～3 存檔回傳 `unknown_schema_version`，原資料不變，不遷移（D7-D） |
 | ruleVersion | 3 | SG-01 暫定值 1 → SG-02 凍結的候選規則基線 2 → **SG-05 升為 3**（D7-A：`CULTIVATION_CAP`／`capCultivationGain`，數值表不變；唯一來源是 `js/rules.js`）；數值表見 [RULES.md](RULES.md) |
 | rngVersion | 1 | cyrb128 播種＋sfc32，丟棄前 15 筆；`nextInt` 為拒絕抽樣 |
+
+Slot 世界維持上表。RT 世界是另一組身份：schemaVersion 5、ruleVersion 4（`Rules.RT_RULE_VERSION`，不取代 `RULE_VERSION`）、rngVersion 1、scenarioId `life-rt`。其他組合回 `mode_mismatch` 或明確的未知版本碼，不靜默換算。合法的舊 slot 三元組從 RT 入口回 `old_mode_unsupported`，原檔不改寫（P4=B）。
+
+## SG-RT-01 新增（即時世界、移動與工作）
+
+公開 API 在 `js/realtime.js`。成功回傳新狀態，不改輸入；失敗回 `{ok:false, code, reason}`。`Engine.advance`／`Commands.dispatch` 遇到 RT 世界回 `wrong_mode`；`Realtime.advanceTicks`／`Realtime.dispatch` 遇到 slot 世界回 `wrong_mode`。
+
+- `createWorld(seed, characterOptions?)` → `{ok:true, state}`。預設角色選項與 slot 相同。建局只建立 RNG，不抽樣。
+- `dispatch(world, {id, expectedRevision, type, payload})` 接受 `orderActivity`、`cancelManualOrder`、`setGoals`、`setPolicy`。同 id 同內容回 `duplicate:true` 且不增 revision；同 id 不同內容是 `command_id_conflict`。拒絕的命令不寫 `commandLog`。手動活動只下給主角。`setGoals`／`setPolicy` 只驗證並保存，不排程。
+- `advanceTicks(world, n)` → `{ok, state, events, advancedTicks, stopReason, error?}`。`n` 必須是正整數，沒有 42 格上限。`stopReason` 為 `completed`、`breakthroughResolved`（本批停在結算後的 tick，世界可以繼續）或 `error`。
+- `validateWorld`、`serializeState`、`parseState`、`hashWorld` 沿用 `state.js` 的 canonical 與 SHA-256。`serializeState` 先驗證，不合法就丟 `TypeError`。`parseState` 不寫檔。
+- `pathBetween` 先行後列；村口 `(2,-1)` 只經 `(2,0)`。`arbitrateDepartures` 包住 `Engine.arbitrate`，落敗者帶休養備案。
+
+時間：1 格 60 tick、1 日 180 tick、一格路 6 tick。效果在工作單位完成時用單位開始的快照結算一次。趕路不耗體力與心境，但占人和時間。到達那一 tick 不算工作。可中斷活動（採集、修行、休養、調心）取消時丟掉未完成的單位；承諾（建造、煉丹、援村、突破、支援）開工後不能被覆寫，趕路仍可在走完一步時取消並全額退料。材料、工作位或人不夠時，閒置者轉成一次明示休養。滿修為或已成功提升的修行，在每個新單位開始前改為休養，不雙重結算。突破必須明示 `usePill` 與 `supporterId`（`false`／`null` 不能省略）。用丹在出發時預約 1 顆，不夠就失敗且不抽樣、不降級。結算只抽樣一次。成功保持修為 100 且最多一次；失敗落到 70 並傷勢 +15。
+
+`rt-manual-core-v1`（`tools/rt-replay.js`）用 20 個 seed 各跑 2700 tick 的固定手動腳本。它不讀未來 RNG，也不啟動自主規劃。跨越 2520 tick 不會產生舊的危機或結局。這只證明引擎契約：不要求每個 seed 都突破成功，也不要求與舊 slot 相同的經濟，更不是可玩 UI 或平衡結論。
+
+採用：一個 RT 引擎、出發時原子預約、可中斷活動丟掉未完成單位、承諾待執行保留完整用丹與支援者、D7-C 轉休養、突破只停當前批次、P4=B 拒絕舊檔且不改寫。不採用：把 slot 的 `RULE_VERSION` 改成 4、雙模式續玩、舊檔換算、在本包做自主循環。
+
+已知未做：`autonomy.wait` 必須是 null；`breakthroughAsks` 與 `pendingEvents` 必須是空的；沒有詢問逾時、招募、瀏覽器存檔、播放速度或離線追趕。那些屬 RT-02～RT-05。
 
 ## SG-02 新增的契約
 

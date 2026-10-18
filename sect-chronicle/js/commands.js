@@ -432,7 +432,12 @@
   };
 
   // ---------- dispatch ----------
+  function looksLikeRt(world) {
+    return isRecord(world) && (world.scenarioId === 'life-rt' || world.schemaVersion === 5);
+  }
+
   function dispatch(world, command) {
+    if (looksLikeRt(world)) return reject('wrong_mode', 'RT 世界必須使用即時引擎的 dispatch；slot 指令不處理、不改輸入');
     const wv = validateEngineWorld(world);
     if (!wv.ok) return reject('invalid_world', `世界不合法：${wv.code}：${wv.reason}`);
     const env = checkEnvelope(command);

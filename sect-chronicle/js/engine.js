@@ -559,7 +559,12 @@
   }
 
   // ---------- advance ----------
+  function looksLikeRt(world) {
+    return isRecord(world) && (world.scenarioId === 'life-rt' || world.schemaVersion === 5);
+  }
+
   function advance(world, slots = 1) {
+    if (looksLikeRt(world)) return reject('wrong_mode', 'RT 世界必須使用 advanceTicks；slot 引擎不推進、不改輸入');
     if (!isInt(slots) || slots < 1 || slots > MAX_BATCH) return reject('bad_slots', `slots 必須是 1 到 ${MAX_BATCH} 的整數`);
     const wv = Commands.validateEngineWorld(world);
     if (!wv.ok) return reject('invalid_world', `世界不合法：${wv.code}：${wv.reason}`);
