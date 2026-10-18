@@ -4,7 +4,7 @@
 
 ## 協作與貢獻
 
-Grok bot、Claude 與其他貢獻者請先讀 [CONTRIBUTING.md](CONTRIBUTING.md)；AI 工具另讀 [AGENTS.md](AGENTS.md)，Claude 可從 [CLAUDE.md](CLAUDE.md) 進入同一套指引。從最新 `dev` 開短分支、以小型 PR 回到 `dev`；PO／Tech Lead 審核通過且證據齊全後可直接合併，`main` 僅在 milestone 驗收與發布決策後更新，詳見[合併規則](CONTRIBUTING.md#審核合併與發布權限)。M2 issue 的重複項、建議分工與審核順序見 [M2 貢獻計畫](docs/m2/contribution-review-plan.md)。Issue 的修法及數值門檻是待核對提案，PR 請附重現、版本／舊檔影響及對應驗收證據。[M3 協作任務表](docs/m3/contribution-plan.md)列出文件任務、目前審查狀態與受阻的實作；M3 程式尚未開工。跨里程碑順序與待決策事項見 [PO 協作入口 #67](https://github.com/lalagrass/earth-ascension/issues/67)；認領與審查的最新狀態以各 issue／PR 為準。
+Grok bot、Claude 與其他貢獻者請先讀 [CONTRIBUTING.md](CONTRIBUTING.md)；AI 工具另讀 [AGENTS.md](AGENTS.md)，Claude 可從 [CLAUDE.md](CLAUDE.md) 進入同一套指引。從最新 `dev` 開短分支、以小型 PR 回到 `dev`；Earth／遊戲 PO 各自準備審查，Earth PO 兼任共用 queue owner，證據齊全後統一合併，`main` 僅在 milestone 驗收與發布決策後更新，詳見[合併規則](CONTRIBUTING.md#審核合併與發布權限)。M2 issue 的重複項、建議分工與審核順序見 [M2 貢獻計畫](docs/m2/contribution-review-plan.md)。Issue 的修法及數值門檻是待核對提案，PR 請附重現、版本／舊檔影響及對應驗收證據。[M3 協作任務表](docs/m3/contribution-plan.md)列出文件任務、目前審查狀態與受阻的實作；M3 程式尚未開工。跨里程碑順序與待決策事項見 [PO 協作入口 #67](https://github.com/lalagrass/earth-ascension/issues/67)；認領與審查的最新狀態以各 issue／PR 為準。
 
 ## 啟動
 
