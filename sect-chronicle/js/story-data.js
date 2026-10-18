@@ -318,7 +318,7 @@
     const e = getEvent(eventId);
     if (!e) return { ok: false, code: 'unknown_event', reason: `未知事件：${String(eventId)}` };
     if (!e.pending) return { ok: false, code: 'not_pending', reason: `事件 ${eventId} 不是待選事件` };
-    if (!e.options.some((o) => o.id === optionId)) {
+    if (!Array.isArray(e.options) || !e.options.some((o) => isObj(o) && o.id === optionId)) {
       return { ok: false, code: 'unknown_option', reason: `事件 ${eventId} 沒有選項 ${String(optionId)}` };
     }
     return { ok: true };
@@ -410,6 +410,83 @@
     return null;
   }
 
+  const OPTION_KEYS = ['id', 'label', 'effects'];
+  const TRIGGER_KEYS = ['all', 'slotAtLeast', 'rescueCompleted', 'aidCompleted', 'eventTriggered', 'candidateStatus', 'crisisOutcome'];
+  const badEvent = (reason, path) => fail('bad_event', reason, path);
+
+  // 事件與選項的形狀；缺漏或錯型別一律明確失敗，不當成空陣列略過。
+  function validateEventShape(e, p) {
+    if (!KINDS.includes(e.kind)) return badEvent(`未知事件類型：${String(e.kind)}`, `${p}.kind`);
+    if (!Number.isInteger(e.priority)) return badEvent('priority 必須是整數', `${p}.priority`);
+    if (typeof e.pending !== 'boolean') return badEvent('pending 必須是布林', `${p}.pending`);
+    if (!isObj(e.text)) return badEvent('text 必須是物件', `${p}.text`);
+    if (has(e, 'claims') && !(Array.isArray(e.claims) && e.claims.every((c) => typeof c === 'string'))) return badEvent('claims 必須是字串陣列', `${p}.claims`);
+    if (has(e, 'narrativeOnly') && typeof e.narrativeOnly !== 'boolean') return badEvent('narrativeOnly 必須是布林', `${p}.narrativeOnly`);
+    if (e.pending) {
+      if (!Array.isArray(e.options) || e.options.length === 0) return badEvent(`待選事件 ${e.id} 必須有非空 options 陣列`, `${p}.options`);
+      if (has(e, 'effects')) return badEvent('待選事件的效果必須放在選項裡', `${p}.effects`);
+    } else {
+      if (has(e, 'options')) return badEvent(`非待選事件 ${e.id} 不得有 options`, `${p}.options`);
+      if (has(e, 'effects') ? !Array.isArray(e.effects) : (e.kind === 'aidCompletion' || e.kind === 'ending')) {
+        return badEvent(`事件 ${e.id} 的 effects 必須是陣列`, `${p}.effects`);
+      }
+    }
+    if (e.pending) {
+      for (let j = 0; j < e.options.length; j += 1) {
+        const o = e.options[j];
+        const op = `${p}.options[${j}]`;
+        if (!isObj(o)) return badEvent('選項必須是物件', op);
+        for (const k of Object.keys(o)) if (!OPTION_KEYS.includes(k)) return badEvent(`選項含未知欄位：${k}`, `${op}.${k}`);
+        if (!Array.isArray(o.effects)) return badEvent('選項的 effects 必須是陣列（沒有效果請用空陣列）', `${op}.effects`);
+      }
+    }
+    return null;
+  }
+
+  // 觸發樹：每層剛好一個已知操作子、值型別正確、引用解得開；通過者保證 evaluateTrigger 不會拋錯。
+  function validateTrigger(t, path) {
+    const bad = (reason, at = path) => fail('bad_trigger', reason, at);
+    if (!isObj(t)) return bad('trigger 必須是物件');
+    const keys = Object.keys(t);
+    if (keys.length !== 1) return bad('trigger 每層必須剛好一個條件');
+    const k = keys[0];
+    const v = t[k];
+    const at = `${path}.${k}`;
+    if (!TRIGGER_KEYS.includes(k)) return bad(`未知觸發條件：${k}`, at);
+    switch (k) {
+      case 'all': {
+        if (!Array.isArray(v) || v.length === 0) return bad('all 必須是非空陣列', at);
+        for (let i = 0; i < v.length; i += 1) {
+          const r = validateTrigger(v[i], `${at}[${i}]`);
+          if (r) return r;
+        }
+        return null;
+      }
+      case 'slotAtLeast': {
+        if (!isObj(v)) return bad('slotAtLeast 必須是引用物件', at);
+        const ks = Object.keys(v).sort().join(',');
+        if (ks !== 'rule' && ks !== 'field,phase') return bad('引用只能是 { rule } 或 { phase, field }', at);
+        try { resolveRef(v); } catch (err) { return fail('bad_ref', err.message, at); }
+        return null;
+      }
+      case 'rescueCompleted':
+      case 'aidCompleted':
+        return typeof v === 'boolean' ? null : bad(`${k} 必須是布林`, at);
+      case 'eventTriggered':
+        return typeof v === 'string' ? null : bad('eventTriggered 必須是事件 ID 字串', at);
+      case 'candidateStatus': {
+        if (!isObj(v) || Object.keys(v).sort().join(',') !== 'candidateId,is') return bad('candidateStatus 必須剛好有 candidateId 與 is', at);
+        if (typeof v.candidateId !== 'string' || !State.CANDIDATE_IDS.includes(v.candidateId)) return fail('unknown_candidate', `觸發引用未知候選人：${String(v.candidateId)}`, `${at}.candidateId`);
+        if (!State.INVITATION_STATUSES.includes(v.is)) return bad(`不合法的邀請狀態：${String(v.is)}`, `${at}.is`);
+        return null;
+      }
+      case 'crisisOutcome':
+        return v === 'victory' || v === 'defeat' ? null : bad('crisisOutcome 只能是 victory 或 defeat', at);
+      default:
+        return bad(`未知觸發條件：${k}`, at);
+    }
+  }
+
   function validateEffect(eff, path, ev) {
     if (!isObj(eff) || !has(EFFECT_TYPES, eff.type)) return fail('unknown_effect', `未知效果：${isObj(eff) ? String(eff.type) : String(eff)}`, path);
     if ((eff.type === 'grantAidReward' || eff.type === 'recordRescue') && ev.kind !== 'aidCompletion') {
@@ -470,6 +547,8 @@
       const p = `$.events[${i}]`;
       if (!isObj(e)) return fail('unknown_field', '事件必須是物件', p);
       for (const k of Object.keys(e)) if (!EVENT_KEYS.includes(k)) return fail('unknown_field', `事件含未知欄位：${k}`, `${p}.${k}`);
+      const shape = validateEventShape(e, p);
+      if (shape) return shape;
       if (!isText(e.id) || ids.has(e.id)) return fail('duplicate_id', `事件 ID 缺漏或重複：${String(e.id)}`, `${p}.id`);
       ids.add(e.id);
       if (!isText(e.onceKey) || onceKeys.has(e.onceKey)) return fail('duplicate_once_key', `onceKey 缺漏或重複：${String(e.onceKey)}`, `${p}.onceKey`);
@@ -508,13 +587,17 @@
       if (Array.isArray(t)) {
         for (let i = 0; i < t.length; i += 1) { const r = refEvent(t[i], `${path}[${i}]`); if (r) return r; }
       } else if (isObj(t)) {
-        if (has(t, 'eventTriggered') && !ids.has(t.eventTriggered)) return fail('bad_ref', `觸發引用未知事件：${String(t.eventTriggered)}`, `${path}.eventTriggered`);
+        if (has(t, 'eventTriggered') && typeof t.eventTriggered === 'string' && !ids.has(t.eventTriggered)) return fail('bad_ref', `觸發引用未知事件：${String(t.eventTriggered)}`, `${path}.eventTriggered`);
         for (const k of Object.keys(t)) { const r = refEvent(t[k], `${path}.${k}`); if (r) return r; }
       }
       return null;
     };
     for (let i = 0; i < events.length; i += 1) {
       const r = refEvent(events[i].trigger, `$.events[${i}].trigger`);
+      if (r) return r;
+    }
+    for (let i = 0; i < events.length; i += 1) {
+      const r = validateTrigger(events[i].trigger, `$.events[${i}].trigger`);
       if (r) return r;
     }
 

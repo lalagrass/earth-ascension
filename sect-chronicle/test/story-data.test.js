@@ -151,6 +151,89 @@ test('驗證器：性格兩軸與四組合都必須有文案', () => {
   assert.equal(mutated((d) => { d.templates['dojo-apprentice'].origin = 'legacy-prototype'; }).code, 'template_mismatch');
 });
 
+test('驗證器：觸發樹必須結構正確且能被 evaluateTrigger 評估（PR #84 R1）', () => {
+  const inv1 = (d) => evOf(d, 'evt-invite-cand-1');
+  const csIdx = (d) => inv1(d).trigger.all.findIndex((t) => 'candidateStatus' in t);
+  // 反例 1：candidateStatus 指向不存在的候選人，舊驗證器回 ok，但招募會靜默消失
+  const r1 = mutated((d) => { inv1(d).trigger.all[csIdx(d)].candidateStatus.candidateId = 'cand-3'; });
+  assert.equal(r1.code, 'unknown_candidate');
+  assert.match(r1.path, /candidateStatus/);
+  // 反例 2：未知操作子（舊驗證器回 ok，evaluateTrigger 卻拋 RangeError）
+  const r2 = mutated((d) => { inv1(d).trigger = { rescueComplete: true }; });
+  assert.equal(r2.code, 'bad_trigger');
+  assert.match(r2.path, /trigger/);
+  // 其餘結構錯誤
+  const bad = (fn) => { const r = mutated(fn); assert.equal(r.code, 'bad_trigger', JSON.stringify(r)); assert.match(r.path, /trigger/); return r; };
+  bad((d) => { delete inv1(d).trigger; });
+  bad((d) => { inv1(d).trigger = null; });
+  bad((d) => { inv1(d).trigger = {}; });
+  bad((d) => { inv1(d).trigger = { rescueCompleted: true, aidCompleted: true }; });
+  bad((d) => { inv1(d).trigger = { all: [] }; });
+  bad((d) => { inv1(d).trigger = { all: 'x' }; });
+  bad((d) => { inv1(d).trigger.all.push({ slotAtLeast: 5 }); });
+  bad((d) => { inv1(d).trigger.all.push({ slotAtLeast: {} }); });
+  bad((d) => { inv1(d).trigger.all[0] = { rescueCompleted: 'yes' }; });
+  bad((d) => { inv1(d).trigger.all[0] = { aidCompleted: 1 }; });
+  bad((d) => { inv1(d).trigger.all.push({ eventTriggered: 5 }); });
+  bad((d) => { inv1(d).trigger.all[csIdx(d)].candidateStatus.is = 'maybe'; });
+  bad((d) => { delete inv1(d).trigger.all[csIdx(d)].candidateStatus.is; });
+  bad((d) => { inv1(d).trigger.all[csIdx(d)].candidateStatus.extra = 1; });
+  bad((d) => { inv1(d).trigger.all[csIdx(d)].candidateStatus = 'cand-1'; });
+  bad((d) => { evOf(d, 'evt-ending-victory').trigger = { crisisOutcome: 'draw' }; });
+  bad((d) => { evOf(d, 'evt-ending-victory').trigger = { crisisOutcome: null }; });
+  // 巢狀 all 內的錯誤也要抓到
+  bad((d) => { inv1(d).trigger = { all: [{ all: [{ nope: true }] }] }; });
+  // 通過驗證的觸發樹，在任何合法 facts 下都不得拋錯
+  const sample = [];
+  for (const slotIndex of [0, 9, 18, 30, 42]) {
+    for (const rescueCompleted of [false, true]) {
+      for (const outcome of [null, 'victory', 'defeat']) {
+        sample.push(facts({
+          slotIndex, rescueCompleted, aidCompleted: rescueCompleted, crisisOutcome: outcome,
+          invitations: { 'cand-1': { status: 'invited' }, 'cand-2': { status: 'locked' } },
+        }));
+      }
+    }
+  }
+  for (const e of SD.STORY_DATA.events) for (const f of sample) assert.doesNotThrow(() => SD.evaluateTrigger(e.trigger, f), e.id);
+});
+
+test('驗證器：事件形狀——待選事件必須有非空 options，每個選項形狀完整（PR #84 R2）', () => {
+  const inv1 = (d) => evOf(d, 'evt-invite-cand-1');
+  const bad = (fn) => { const r = mutated(fn); assert.equal(r.code, 'bad_event', JSON.stringify(r)); assert.ok(typeof r.path === 'string' && r.path.startsWith('$.events['), r.path); return r; };
+  // 反例：刪除待選事件的 options，舊驗證器回 ok
+  bad((d) => { delete inv1(d).options; });
+  bad((d) => { inv1(d).options = []; });
+  bad((d) => { inv1(d).options = 'x'; });
+  bad((d) => { inv1(d).options = {}; });
+  bad((d) => { inv1(d).options[0] = null; });
+  bad((d) => { delete inv1(d).options[0].effects; });
+  bad((d) => { inv1(d).options[0].effects = 'none'; });
+  bad((d) => { inv1(d).options[0].extra = true; });
+  bad((d) => { inv1(d).pending = 'yes'; });
+  bad((d) => { delete inv1(d).pending; });
+  bad((d) => { evOf(d, 'evt-aid-complete').effects = 'x'; });
+  bad((d) => { delete evOf(d, 'evt-aid-complete').effects; });
+  // 非待選事件不得帶 options（會變成永遠無法選擇的選項）
+  bad((d) => { evOf(d, 'evt-phase-faint').options = [{ id: 'opt-x', label: '好', effects: [] }]; });
+  bad((d) => { evOf(d, 'evt-phase-faint').effects = {}; });
+  bad((d) => { inv1(d).priority = 1.5; });
+  bad((d) => { inv1(d).kind = 'mystery'; });
+  bad((d) => { inv1(d).text = 'x'; });
+  bad((d) => { inv1(d).claims = 'herbLocked'; });
+  bad((d) => { inv1(d).narrativeOnly = 'yes'; });
+  // 正常資料回歸：每個待選事件都有選項，且 validateChoice／describeEvent 對它們都可用
+  for (const e of SD.STORY_DATA.events.filter((x) => x.pending)) {
+    assert.ok(Array.isArray(e.options) && e.options.length > 0, e.id);
+    for (const o of e.options) {
+      assert.deepEqual(SD.validateChoice(e.id, o.id), { ok: true });
+      assert.ok(Array.isArray(o.effects));
+    }
+    assert.equal(SD.describeEvent(e.id, { risk: 'bold', bond: 'caring' }).options.length, e.options.length);
+  }
+  assert.deepEqual(SD.validateStoryData(), { ok: true });
+});
+
 test('驗證器：ruleVersion 不符與未知頂層欄位明確拒絕', () => {
   assert.equal(mutated((d) => { d.requiresRuleVersion = 1; }).code, 'rule_version_mismatch');
   assert.equal(mutated((d) => { d.defensePrepPoints = 3; }).code, 'unknown_field');
