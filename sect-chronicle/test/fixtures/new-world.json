@@ -1,21 +1,21 @@
 {
   "note": "由 tools/update-fixtures.js 產生；改動須在 PR 說明原因（schema／ruleVersion／rngVersion 變更）。",
   "schemaVersion": 1,
-  "ruleVersion": 1,
+  "ruleVersion": 2,
   "rngVersion": 1,
   "cases": [
     {
       "name": "default-options",
       "seed": "sg-fixture-001",
       "scenarioId": "slice-14",
-      "hash": "5417976511c1c484343b142d7389feb5f6812a884376b3100bed78295158c103",
+      "hash": "55ef823b45127e743e07efd68d88e953fe936758de1a4433267a4eddd9d25af7",
       "rngState": [
         404485772,
         2862608940,
         3896799601,
         3484339430
       ],
-      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":1,\"craft\":1,\"rootBone\":1},\"personality\":{\"bond\":\"independent\",\"risk\":\"cautious\"},\"templateId\":\"dojo-apprentice\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":5,\"craft\":3,\"rootBone\":4},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"dojo-apprentice\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[404485772,2862608940,3896799601,3484339430],\"rngVersion\":1,\"ruleVersion\":1,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"sg-fixture-001\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
+      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":1,\"craft\":1,\"rootBone\":1},\"personality\":{\"bond\":\"independent\",\"risk\":\"cautious\"},\"templateId\":\"dojo-apprentice\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":5,\"craft\":3,\"rootBone\":4},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"dojo-apprentice\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[404485772,2862608940,3896799601,3484339430],\"rngVersion\":1,\"ruleVersion\":2,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"sg-fixture-001\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
     },
     {
       "name": "herb-child-balanced-cautious-independent",
@@ -33,14 +33,14 @@
           "bond": "independent"
         }
       },
-      "hash": "9a8a4fe3ac97629873b25a0034907083ce3442a786be996ce11a2d9b8582060e",
+      "hash": "3b3f6ff52e553bb66d9f43423929ce189ea89073a800c03cd442299590e5bfd3",
       "rngState": [
         3591081689,
         2858822491,
         3689412544,
         27721078
       ],
-      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":1,\"craft\":1,\"rootBone\":1},\"personality\":{\"bond\":\"independent\",\"risk\":\"cautious\"},\"templateId\":\"herb-child\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":4,\"craft\":5,\"rootBone\":3},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"herb-child\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[3591081689,2858822491,3689412544,27721078],\"rngVersion\":1,\"ruleVersion\":1,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"sg-fixture-002\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
+      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":1,\"craft\":1,\"rootBone\":1},\"personality\":{\"bond\":\"independent\",\"risk\":\"cautious\"},\"templateId\":\"herb-child\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":4,\"craft\":5,\"rootBone\":3},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"herb-child\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[3591081689,2858822491,3689412544,27721078],\"rngVersion\":1,\"ruleVersion\":2,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"sg-fixture-002\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
     },
     {
       "name": "farmer-child-root-heavy-bold-caring",
@@ -58,14 +58,14 @@
           "bond": "caring"
         }
       },
-      "hash": "a3a2db5624624fb58b9f60a04cd0dfb08fe2159e213b37b3111c6ca7a15c6d68",
+      "hash": "dbd469e9a025ef9178242f12464555c099d9ee874ae81420a42be33105e7133a",
       "rngState": [
         2564235176,
         3158910125,
         68958815,
         1441702587
       ],
-      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":1,\"craft\":0,\"rootBone\":2},\"personality\":{\"bond\":\"caring\",\"risk\":\"bold\"},\"templateId\":\"farmer-child\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":3,\"craft\":3,\"rootBone\":6},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"farmer-child\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[2564235176,3158910125,68958815,1441702587],\"rngVersion\":1,\"ruleVersion\":1,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"sg-fixture-003\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
+      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":1,\"craft\":0,\"rootBone\":2},\"personality\":{\"bond\":\"caring\",\"risk\":\"bold\"},\"templateId\":\"farmer-child\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":3,\"craft\":3,\"rootBone\":6},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"farmer-child\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[2564235176,3158910125,68958815,1441702587],\"rngVersion\":1,\"ruleVersion\":2,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"sg-fixture-003\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
     },
     {
       "name": "dojo-apprentice-craft-heavy-cautious-caring",
@@ -83,14 +83,14 @@
           "bond": "caring"
         }
       },
-      "hash": "11c1c6969739c91c5567aeb1171e3358ccc257c7986397734427d26647ca31cf",
+      "hash": "a4b269dd1611fc6cd56cd283fd2f09fa7a6b846b56bddd79cf51819b5519255a",
       "rngState": [
         4026283517,
         3871316208,
         3182057924,
         64242555
       ],
-      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":0,\"craft\":3,\"rootBone\":0},\"personality\":{\"bond\":\"caring\",\"risk\":\"cautious\"},\"templateId\":\"dojo-apprentice\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":4,\"craft\":5,\"rootBone\":3},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"dojo-apprentice\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[4026283517,3871316208,3182057924,64242555],\"rngVersion\":1,\"ruleVersion\":1,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"sg-fixture-004\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
+      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":0,\"craft\":3,\"rootBone\":0},\"personality\":{\"bond\":\"caring\",\"risk\":\"cautious\"},\"templateId\":\"dojo-apprentice\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":4,\"craft\":5,\"rootBone\":3},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"dojo-apprentice\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[4026283517,3871316208,3182057924,64242555],\"rngVersion\":1,\"ruleVersion\":2,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"sg-fixture-004\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
     },
     {
       "name": "same-seed-other-personality",
@@ -108,40 +108,40 @@
           "bond": "independent"
         }
       },
-      "hash": "037d25b170a1a5db3ca3c0dab19318d2bdaa73b4c4b6ed02aaab4d68534b3fa0",
+      "hash": "4fd17e51676198556b186e672454c1a4321a7dc4c504fc60af5f566cc7c7b0d4",
       "rngState": [
         404485772,
         2862608940,
         3896799601,
         3484339430
       ],
-      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":1,\"craft\":1,\"rootBone\":1},\"personality\":{\"bond\":\"independent\",\"risk\":\"bold\"},\"templateId\":\"dojo-apprentice\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":5,\"craft\":3,\"rootBone\":4},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"dojo-apprentice\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[404485772,2862608940,3896799601,3484339430],\"rngVersion\":1,\"ruleVersion\":1,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"sg-fixture-001\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
+      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":1,\"craft\":1,\"rootBone\":1},\"personality\":{\"bond\":\"independent\",\"risk\":\"bold\"},\"templateId\":\"dojo-apprentice\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":5,\"craft\":3,\"rootBone\":4},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"dojo-apprentice\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[404485772,2862608940,3896799601,3484339430],\"rngVersion\":1,\"ruleVersion\":2,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"sg-fixture-001\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
     },
     {
       "name": "non-ascii-seed",
       "seed": "é世界",
       "scenarioId": "slice-14",
-      "hash": "b18024a55a064a9749812473007e813cba1e1980d8e166f91349689b8a5280bf",
+      "hash": "10b4236e44dd08450aa1c534c77e584df5ccc81f2badcfe82bed5d17db160d31",
       "rngState": [
         3998974430,
         308531520,
         3192233997,
         3255100970
       ],
-      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":1,\"craft\":1,\"rootBone\":1},\"personality\":{\"bond\":\"independent\",\"risk\":\"cautious\"},\"templateId\":\"dojo-apprentice\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":5,\"craft\":3,\"rootBone\":4},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"dojo-apprentice\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[3998974430,308531520,3192233997,3255100970],\"rngVersion\":1,\"ruleVersion\":1,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"é世界\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
+      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":1,\"craft\":1,\"rootBone\":1},\"personality\":{\"bond\":\"independent\",\"risk\":\"cautious\"},\"templateId\":\"dojo-apprentice\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":5,\"craft\":3,\"rootBone\":4},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"dojo-apprentice\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[3998974430,308531520,3192233997,3255100970],\"rngVersion\":1,\"ruleVersion\":2,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"é世界\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
     },
     {
       "name": "balance-seed-000",
       "seed": "sg-bal-000",
       "scenarioId": "slice-14",
-      "hash": "afad01d5a181290b59ed51be89db1bf5290969187160bb91e60d0b2c94100ad1",
+      "hash": "d3911d1ee2d5680cbcb62ebf9f99a18718ad7b187225bf49307f7d0d3c2a6355",
       "rngState": [
         1943446717,
         513253585,
         849673914,
         4194613283
       ],
-      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":1,\"craft\":1,\"rootBone\":1},\"personality\":{\"bond\":\"independent\",\"risk\":\"cautious\"},\"templateId\":\"dojo-apprentice\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":5,\"craft\":3,\"rootBone\":4},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"dojo-apprentice\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[1943446717,513253585,849673914,4194613283],\"rngVersion\":1,\"ruleVersion\":1,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"sg-bal-000\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
+      "canonical": "{\"candidates\":[{\"id\":\"cand-1\",\"order\":1},{\"id\":\"cand-2\",\"order\":2}],\"characterOptions\":{\"allocation\":{\"comprehension\":1,\"craft\":1,\"rootBone\":1},\"personality\":{\"bond\":\"independent\",\"risk\":\"cautious\"},\"templateId\":\"dojo-apprentice\"},\"commandLog\":[],\"disciples\":[{\"attributes\":{\"comprehension\":5,\"craft\":5,\"rootBone\":5},\"cultivation\":0,\"id\":\"disc-master\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"master\",\"stamina\":100},{\"attributes\":{\"comprehension\":5,\"craft\":3,\"rootBone\":4},\"cultivation\":0,\"id\":\"disc-protagonist\",\"injury\":0,\"joinSlotIndex\":0,\"mind\":60,\"role\":\"protagonist\",\"stamina\":100,\"templateId\":\"dojo-apprentice\"}],\"eventLog\":[],\"jobs\":[],\"masterId\":\"disc-master\",\"pendingEvents\":[],\"phase\":\"planning\",\"protagonistId\":\"disc-protagonist\",\"reservations\":[],\"resources\":{\"reputation\":0,\"spiritHerb\":0,\"spiritMaterial\":0,\"spiritStone\":0},\"revision\":0,\"rngState\":[1943446717,513253585,849673914,4194613283],\"rngVersion\":1,\"ruleVersion\":2,\"scenarioId\":\"slice-14\",\"schemaVersion\":1,\"seed\":\"sg-bal-000\",\"slotIndex\":0,\"story\":{\"invitations\":{\"cand-1\":{\"joinSlotIndex\":null,\"status\":\"locked\"},\"cand-2\":{\"joinSlotIndex\":null,\"status\":\"locked\"}},\"organisationStatus\":\"dojo\",\"rescues\":[],\"triggeredEventIds\":[]},\"tiles\":[]}"
     }
   ]
 }
