@@ -1,10 +1,10 @@
 # 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05）
 
-**目前新方向（尚未實作）**：D8可暫停即時自主生活，見[REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)及RT-00 #99；戰鬥#98延後。下方是已合入的slot引擎／SG-05紀錄，不能把自動連續advance或動畫插值宣稱成即時移動／自主生活。新RT時間、工作、自主目標／人工覆寫與版本相容先在RT-00凍結，舊回歸／golden保留。
+**目前新方向（尚未實作）**：D8可暫停即時自主生活，見[REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)及RT-00 #99（D9 P1–P4已批准凍結：[RT00_CONTRACT.md](RT00_CONTRACT.md)，文件待整合／postCI）；戰鬥#98延後。下方是已合入的slot引擎／SG-05紀錄，不能把自動連續advance或動畫插值宣稱成即時移動／自主生活。新RT時間、工作、自主預設／人工覆寫及P4=B已凍結，文件合dev／postCI後進RT-01；舊回歸／golden保留。
 
 本文件隨程式更新；runtime紀錄只描述已存在且已驗證的事。尚未實作的模組見 [TECHNICAL_DESIGN](TECHNICAL_DESIGN.md)。
 
-**SG-05（已實作，待遊戲 PO 審查）**：[SG05_HANDOFF.md](SG05_HANDOFF.md)含D7決策與接手包，追蹤#95／#93；實作與驗證見下方「SG-05 新增」。版本表已更新為 schema4／rule3／rng1。瀏覽器儲存提示由 SG-07 實作。
+**SG-05（已實作並合入dev，PR #97）**：[SG05_HANDOFF.md](SG05_HANDOFF.md)含D7決策與接手包，追蹤#95／#93；實作與驗證見下方「SG-05 新增」。版本表已更新為 schema4／rule3／rng1。瀏覽器儲存提示由 SG-07 實作。
 
 ## 執行測試
 
