@@ -32,7 +32,8 @@ def run(seed):
     rows = []            # known-practice decision months: (action, best_gap_to_practice, noiseless_gap, margin_needed)
     practice_health = []
     research_months = []  # (base chance, skill before, example term)
-    ever_known = {}
+    ever_known = {}      # 月初修習可選（有決策機會）的第一個月
+    acquired = {}        # 60 月內取得 practice_basis（knowledge_v2）的月份；含取得後尚無決策機會者
     known_curve = {}
     practice_count = Counter()
     work_income_by_skill = []
@@ -63,12 +64,15 @@ def run(seed):
                 research_months.append((base, sk["研究"], term, min(.55, base + term)))
             if action == "工作":
                 work_income_by_skill.append((sk["工作"], 13 + p["traits"]["意志"] + sk["工作"]))
-        known_curve[month] = sum(1 for k in ever_known) / len(world["people"])
+        for k, p in world["people"].items():
+            if k not in acquired and any(f["fact_id"] == "practice_basis" for f in p["knowledge_v2"]):
+                acquired[k] = month
+        known_curve[month] = len(acquired) / len(world["people"])
         if month in SKILL_MONTHS:
             skills_at[month] = [dict(p["skills"]) for p in world["people"].values() if p["alive"]]
     return {"seed": seed, "hash": canonical_hash(world), "skills": skills_at, "rows": rows, "ph": practice_health,
             "research": research_months, "known_curve": known_curve, "practice_count": practice_count,
-            "ever_known": ever_known, "income": work_income_by_skill}
+            "ever_known": ever_known, "acquired": acquired, "income": work_income_by_skill}
 
 
 def q(values, f):
@@ -129,12 +133,17 @@ def render(results):
             f"| 不含噪音的基準分差（非修習最高 − 修習；負值＝基準分上修習領先） | {q(base_gaps, .1):.2f} | {q(base_gaps, .5):.2f} | {q(base_gaps, .9):.2f} | {min(base_gaps):.2f} |", "",
             f"基準分上修習領先（差 < 0）的人月：{sum(1 for g in base_gaps if g < 0)}（{pct(sum(1 for g in base_gaps if g < 0), len(base_gaps))}）；"
             f"噪音區間 ±0.9，若基準差大於 1.8，修習在任何噪音抽樣下都不可能勝出：基準差 > 1.8 的人月 {sum(1 for g in base_gaps if g > 1.8)}（{pct(sum(1 for g in base_gaps if g > 1.8), len(base_gaps))}）。", ""]
-    n_people = sum(len(r["ever_known"]) for r in results)
     total_people = 100 * len(results)
-    never = sum(1 for r in results for k in r["ever_known"] if r["practice_count"].get(k, 0) == 0)
+    n_acq = sum(len(r["acquired"]) for r in results)
+    never_acq = sum(1 for r in results for k in r["acquired"] if r["practice_count"].get(k, 0) == 0)
+    n_opp = sum(len(r["ever_known"]) for r in results)
+    never_opp = sum(1 for r in results for k in r["ever_known"] if r["practice_count"].get(k, 0) == 0)
+    late = n_acq - n_opp
     out += ["## 4. 誰解鎖了修習", "",
-            f"60 月內曾解鎖修習（取得 `practice_basis`）的人：{n_people}／{total_people}（{pct(n_people, total_people)}）；"
-            f"其中 60 月內從未選過修習：{never}（{pct(never, n_people)}）。",
+            f"60 月內取得 `practice_basis`（`knowledge_v2` 有此事實）的人：{n_acq}／{total_people}（{pct(n_acq, total_people)}）；"
+            f"其中 60 月內從未選過修習：{never_acq}（{pct(never_acq, n_acq)}）。",
+            f"另一個口徑「60 月內曾有修習決策機會」（月初 `last_decision.feasible` 含修習）：{n_opp}／{total_people}（{pct(n_opp, total_people)}）；"
+            f"其中從未選過修習：{never_opp}（{pct(never_opp, n_opp)}）。兩者差 {late} 人，都是在第 60 月結算才取得、已沒有下一次決策（seed/person = 10/13、11/60、13/4、14/27、19/8）；第 3 節的分母以決策機會為準。累計曲線以取得月份計，故比舊版（以首次決策機會月份計）早約一個月。",
             "逐月累計解鎖比例（跨 seed 中位）：" + "、".join(
                 f"月 {m} {100 * statistics.median(r['known_curve'][m] for r in results):.0f}%" for m in (6, 12, 24, 36, 60)) + "。", "",
             "## 5. 限制與沒做的事", "",
