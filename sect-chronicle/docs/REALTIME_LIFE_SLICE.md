@@ -1,6 +1,8 @@
 # D8：可暫停的即時自主生活試玩
 
-狀態：**D8方向與D9 P1–P4細部契約均已由擁有人批准；凍結文件PR #101待合dev／postCI，runtime／UI尚未實作、未驗收**。權威凍結契約見[RT00_CONTRACT.md](RT00_CONTRACT.md)，批准來源與取捨見[決策紀錄D9](DECISIONS_AND_SOURCES.md#d9rt-00-p1p4-產品契約凍結2026-10-18)。Grok CLI接續Grok Bot原[#93](https://github.com/lalagrass/earth-ascension/issues/93)認領；[#99](https://github.com/lalagrass/earth-ascension/issues/99)在文件合入／postCI後完成，遊戲PO建立RT-01工作包。戰鬥[#98](https://github.com/lalagrass/earth-ascension/issues/98)延後，不阻擋生活試玩。
+D10最新排程優先於下方D8／D9歷史接手描述：RT-02V→RT-03→RT-04→RT-05。RT-02V只交觀察與播放子集，不改P1–P4，不等#128架構文件、不加入#116–122實作。文件前置合dev／postCI後下一位agent可認領#129；不重問產品批准。
+
+狀態：**D8／D9已批准，RT-00～02已合dev／postCI。D10已批准先做RT-02V觀察版，viewer／存讀／完整UI仍待交付**。最新工作包[#129](https://github.com/lalagrass/earth-ascension/issues/129)與[接手文件](RT02V_HANDOFF.md)開放待認領；Grok額度用盡，不再指定其接續。權威凍結契約見[RT00_CONTRACT.md](RT00_CONTRACT.md)，批准來源與取捨見[決策紀錄D9](DECISIONS_AND_SOURCES.md#d9rt-00-p1p4-產品契約凍結2026-10-18)。RT-00～02原主筆為Grok Bot／Grok CLI；[#99](https://github.com/lalagrass/earth-ascension/issues/99)與#107已完成，下一位依#129認領。戰鬥[#98](https://github.com/lalagrass/earth-ascension/issues/98)延後，不阻擋生活試玩。
 
 ## 擁有人批准與優先關係
 
@@ -41,11 +43,12 @@ D8取代D2「早午晚一格一行動」作為新試玩模式的權威時間契�
 | SG-RT-00 時間／移動／工作／自主契約 | D8文件合dev＋postCI；Grok CLI接續，#99 | P1–P4已批准並凍結；API／生命週期／版本與P4=B，保留完整及詢問時間線；文件合dev／postCI後完成 |
 | SG-RT-01 即時世界與移動／工作 | RT-00凍結並合入 | 單一固定步進、暫停／恢復、真移動與工作工量／原子預約；現有生活行動可由公開API跑，不先做戰鬥或大量美術 |
 | SG-RT-02 規則式自主與玩家覆寫 | RT-01合入；同檔串行 | 初始目標／政策驅動供應、工作與恢復；人工主角指派／改目標優先權清楚；事件不永久卡住，有限內容耗盡後維持日常 |
-| SG-RT-03 正式存讀與因果資料 | RT-02合入；沿SG-07／08責任 | 新局、版本／壞檔／quota與原檔保留；旅行／工作／自主中途續玩；當前目標、下一工作原因、進度與缺口可查，預估純度不變 |
+| SG-RT-02V 唯讀生活觀察版 | RT-02及D10文件合入／postCI；#129開放待認領 | 正式新局、地圖／人物移動工作／既有原因、D9暫停／倍率／背景控制；真實瀏覽器2700tick觀察，無存讀或工作編輯 |
+| SG-RT-03 正式存讀與因果資料 | RT-02V合入／postCI；沿SG-07／08責任 | 新局、版本／壞檔／quota與原檔保留；旅行／工作／自主中途續玩；當前目標、下一工作原因、進度與缺口可查，預估純度不變 |
 | SG-RT-04 最小生活介面 | RT-03合入；沿SG-09責任 | 開局設定、可見角色移動與工作、暫停／倍率、修改主角工作／目標、庫存／建設／修行／招募及存讀可操作；無參數localhost可開始，主要流程鍵盤可用 |
 | SG-RT-05 實際生活試玩 | RT-04合入；沿SG-10生活部分 | 瀏覽器無人介入一段完整生活＋暫停介入一段，記真實操作／環境／版本／時間／截圖／失敗／啟動方式，交擁有人試玩；不以debug注入冒充操作 |
 
-每包小PR、遊戲PO審查、Earth PO唯一queue owner合dev、post-merge CI後原Grok接下一包；不需擁有人逐包重貼總prompt、不自行合併或派多agent。尚未細拆的包在前置完成時由PO建立必要子issue；RT-00 #99只待凍結文件整合；成功後正式實作接手包為RT-01，由#93追蹤最新issue。
+每包小PR、遊戲PO審查、Earth PO唯一queue owner合dev、post-merge CI後已登記的接手者再接下一包；不需擁有人逐包重貼總prompt、不自行合併或派多agent。尚未細拆的包在前置完成時由PO建立必要子issue；RT-00～02已完成；下一實作接手包為RT-02V #129，Grok額度用盡後維持開放待認領，由#93追蹤最新issue。
 
 獸患後續候選BL-D04（巡山／清除隱患可推遲，放任按基線逼近，擴張引入新區域風險）記於[FUTURE_BACKLOG.md](FUTURE_BACKLOG.md)，具體公式／日期未定，不加入本次生活runtime。
 

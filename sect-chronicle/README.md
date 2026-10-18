@@ -1,8 +1,10 @@
 # 門派修行錄（Sect Chronicle）整合開發提案
 
-**目前開發方向：D8可暫停即時自主生活（已批准、尚未交付）**。先讓角色在初始條件／目標設定後自行移動、工作、恢復與發展，玩家可暫停改主角工作／目標；戰鬥延後。[最新範圍與接手prompt](docs/REALTIME_LIFE_SLICE.md)、[第一包RT-00 #99](https://github.com/lalagrass/earth-ascension/issues/99)。D9 P1–P4已批准並[凍結契約](docs/RT00_CONTRACT.md)，文件合dev／postCI後接RT-01；目前已有SG-05以前的slot純引擎／CLI，還沒有可玩的即時生活UI；下方早期提案狀態與戰鬥先行不代表最新排程。
+**最新交接（D10，2026-10-19）**：RT-02 #108已合dev0875d116、postCI39161730112五項成功；目前只有自主純引擎，沒有可玩UI。擁有人已批准先做[RT-02V觀察版 #129](https://github.com/lalagrass/earth-ascension/issues/129)，讀[接手文件](docs/RT02V_HANDOFF.md)。Grok額度用盡，工作包開放待認領；本次排程文件合dev／postCI後即可登記接手，不重問產品批准。順序改為RT-02V→03→04→05。以下早期提案、SG-01及RT-00接手描述只作歷史；最新任務狀態以[#93](https://github.com/lalagrass/earth-ascension/issues/93)為準。
 
-歷史提案狀態：14天切片已批准；SG-05以前slot工程已部分交付，詳DEVELOPMENT。最新D8即時自主生活仍未實作／驗收。日期：2026-10-18（Asia/Taipei）。主筆：Codex。
+**目前開發方向：D8可暫停即時自主生活。** RT-01手動核心與RT-02自主已交付；下一包是D10的唯讀觀察／播放。完整主角工作／目標編輯、瀏覽器存讀與生活試玩仍在後續RT-03～05，戰鬥延後。權威規則見[RT00_CONTRACT](docs/RT00_CONTRACT.md)，批准紀錄見[DECISIONS_AND_SOURCES](docs/DECISIONS_AND_SOURCES.md)。
+
+歷史提案為已批准的14天切片；28天擴充、真人研究與發布未完成也未隨D10批准。原型與SG-00來源記錄保留，歷史接手提示不代表目前待辦。
 
 一句話：從師父與主角兩人的村莊道館出發，在靈氣復甦中修行、援村與收徒，抵禦獸患，讓道館成為能保護村莊的門派。
 
@@ -40,10 +42,4 @@
 
 ## 目前進度
 
-| 交付 | 狀態 |
-|---|---|
-| 整合設計、架構、任務、驗收、接手文件 | D1–D5、D6（設計 0.2）與 SG-01～12（含 02A／04A）已批准；0.2 修訂追蹤於 #72／PR #73，合併狀態以 GitHub 為準 |
-| 新引擎、介面、存檔與測試 | 未開始 |
-| 平衡數據、真人試玩、發布 | 未開始 |
-
-下一位先核對 #69 的實際完成紀錄與交接工作區，再認領 SG-01，不重做已完成的 SG-00。Earth／遊戲兩位 agent 的隔離範圍與啟動提示見並行接手計畫；SG-14 起維持未授權。
+任務狀態以[總單#93](https://github.com/lalagrass/earth-ascension/issues/93)與已合PR／postCI為準。歷史slot SG-01～05及RT-00～02已交付；RT-02V #129開放待認領，viewer、瀏覽器存讀、完整UI、真人試玩與發布尚未完成。下一位接#129，不重做SG-00／01或RT-02修正。Earth／遊戲隔離原則保留；Claude #128架構文件不阻擋viewer，SG-14起仍未授權。

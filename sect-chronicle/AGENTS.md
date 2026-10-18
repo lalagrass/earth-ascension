@@ -1,5 +1,15 @@
 # Coding agent 接手入口
 
+## D10下一工作包：RT-02V開放待認領（優先於下方歷史prompt）
+
+擁有人已於2026-10-19明確選「先做 viewer（建議）」，並因Grok額度用盡要求保持開放待接手。批准來源見[決策D10](docs/DECISIONS_AND_SOURCES.md)。**不要再指定Grok或自行啟動其他agent；核心實作仍一次只有一位已登記主筆。**
+
+RT-02 #107／PR #108已合dev0875d116且postCI39161730112五項成功。下一包為[RT-02V #129](https://github.com/lalagrass/earth-ascension/issues/129)，讀[RT02V_HANDOFF](docs/RT02V_HANDOFF.md)。本排程／交接文件合dev且postCI成功後可認領，無新的產品待決；保護原worktree／未提交修改，從最新dev建短分支、記實際身份／base／檔案，不重做已完成R1–R4。
+
+順序：RT-02V觀察版→RT-03存讀／因果資料→RT-04完整介入UI→RT-05試玩。觀察版只做正式新局、地圖／角色工作／既有原因與D9播放控制，不改規則／schema／RNG、不存讀、不改主角工作／目標。真實瀏覽器固定seed2700tick與控制器邊界驗證，未改引擎矩陣證據復用。
+
+Claude #128三份架構文件有獨立主筆邊界；不寫其檔案，也不等待架構提案才做viewer。下方指定Grok、RT-03先行及RT-00／01尚待開工文字是歷史接手提示，以本節與#129最新狀態為準。
+
 ## D9凍結接續（2026-10-18，優先於下方歷史prompt）
 
 擁有人已批准P1–P4，權威[RT00_CONTRACT.md](docs/RT00_CONTRACT.md)與[批准紀錄D9](docs/DECISIONS_AND_SOURCES.md#d9rt-00-p1p4-產品契約凍結2026-10-18)。不重問已批時間／移動／取消／自主預設及舊檔B。Grok CLI接續Grok Bot原#93認領；#99凍結文件合dev與postCI後，由遊戲PO建立RT-01 issue／prompt。不要重做RT-00、先寫RT-02～05或把文件批准當實作通過。

@@ -1,5 +1,23 @@
 # 決策、來源與風險
 
+## D10：viewer 前移與 RT-02V 觀察版（2026-10-19）
+
+決策者：專案擁有人；Codex遊戲PO轉錄。本聊天詢問下一包採#110唯讀viewer或維持RT-03存讀先行時，擁有人明確選擇：
+
+> 先做 viewer（建議）
+
+隨後補充：
+
+> grok is also has no more quota, keep this open for taking
+
+採用順序：**RT-02 → RT-02V唯讀生活觀察版 → RT-03正式存讀／因果資料 → RT-04完整介入UI → RT-05生活試玩**。RT-02V提早交付原RT-04的地圖／角色工作顯示與播放控制器；代價是第一次只能觀察，不能改主角工作／目標或存讀。正式UI可沿用，不能把觀察版算成RT-03／04／05完成。
+
+RT-02 #107／PR #108已合dev `0875d116e774cf2b53c6c36d160465b460302b1d`，postCI39161730112五jobs成功；這是自主純引擎完成，不是可玩UI。下一工作包[#129](https://github.com/lalagrass/earth-ascension/issues/129)與[接手文件](RT02V_HANDOFF.md)保持**開放待認領**；Grok額度用盡，不再預指派給Grok，也不自動啟動或指派其他agent。接手者只等本排程文件合dev／postCI，不再等產品批准。
+
+D9 P1–P4、R1–R4、tick順序、版本life-rt/schema5/rule4/rng1與P4=B不變。1×每秒4tick、1/2/4倍及背景暫停先在觀察版驗；render只讀，控制器只呼叫正式API。只以真實入口觀察固定seed2700tick，不加存檔或工作編輯。完整scope／DoD見接手文件。
+
+Claude #128只做既有Stage A設計文件，可平行且不阻擋viewer；#116–122架構／RNG／存檔提案沒有因此獲准實作。保留原工作區與未提交修改，不重設分支。以下D9／D8為批准當時紀錄，舊排程以本D10覆蓋，歷史驗收結論不改寫。
+
 ## D9：RT-00 P1–P4 產品契約凍結（2026-10-18）
 
 決策者：專案擁有人；產品凍結主筆Codex遊戲PO。批准來源為本聊天直接原話：

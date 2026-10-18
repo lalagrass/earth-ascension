@@ -1,8 +1,17 @@
 # Milestone 與 task backlog
 
-## D8目前執行順序：生活試玩優先
+## D10目前執行順序：先交唯讀生活觀察版
 
-最新批准與任務表以[REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)為準。Grok CLI接續Grok Bot沿#93，[RT-00 #99](https://github.com/lalagrass/earth-ascension/issues/99)接手：RT-00契約→RT-01即時移動／工作→RT-02自主與玩家覆寫→RT-03存讀／因果資料→RT-04生活UI→RT-05實際生活試玩。每包合dev與postCI後續下一包；D9 P1–P4已批准並在RT00_CONTRACT凍結，含舊檔B；只待文件PR #101合dev／postCI後，遊戲PO建RT-01 issue接續，不重問已批取捨。
+最新批准見[決策D10](DECISIONS_AND_SOURCES.md)與[REALTIME_LIFE_SLICE](REALTIME_LIFE_SLICE.md)。RT-00～02已逐包合dev／postCI，RT-02 #108的dev為0875d116。擁有人已選「先做 viewer」，下一包[RT-02V #129](https://github.com/lalagrass/earth-ascension/issues/129)開放待認領，讀[RT02V_HANDOFF](RT02V_HANDOFF.md)。Grok額度用盡，不再指定其自動接續。
+
+順序：**RT-02V觀察／播放→RT-03存讀／因果資料→RT-04完整介入UI→RT-05生活試玩**。每包合dev與postCI後再接下一包；D9數值、語義及舊檔B不變，不重問產品批准。Claude #128只做獨立Stage A文件，不阻擋viewer或併入runtime。
+
+| RT-02V task | 交付 | gate |
+|---|---|---|
+| V-01 | 正式新局、地圖與角色工作／事件／原因 | 只讀正式world，無造產出或規則副本 |
+| V-02 | D9暫停／1/2/4倍／背景暫停 | 控制器餵tick、render純讀，突破返回正確續推 |
+| V-03 | localhost入口、真實瀏覽器2700tick／控制器證據 | 沒有存讀或主角工作編輯，不算RT-04／05完成 |
+
 
 SG-05 #95／PR #97已完成（dev407c299及postCI）；SG-06 #98延後，不再阻擋生活交付。SG-07／08／09／10的適用責任接入RT-03～05，下表原05→06→07順序與完整戰鬥SG-M2退出條件作歷史／後續參考，不是新生活依賴。新生活gate是「無人介入可持續生活＋暫停改主角工作／目標＋真移動／工作＋存讀＋可操作UI」，不要求戰鬥或假立派；跨14天繼續生活不等於批准28天新內容。
 

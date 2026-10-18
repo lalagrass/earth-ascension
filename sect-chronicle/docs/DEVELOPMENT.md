@@ -1,4 +1,8 @@
-# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05／RT-01）
+# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05／RT-01／RT-02；RT-02V規劃）
+
+## D10下一包（已批准，viewer尚未實作）
+
+RT-02 #108已合dev0875d116且postCI成功。擁有人已選先做[RT-02V #129](https://github.com/lalagrass/earth-ascension/issues/129)，完整範圍與prompt見[RT02V_HANDOFF](RT02V_HANDOFF.md)。Grok額度用盡，本包開放待認領；排程文件合dev／postCI後接手。先交觀察／播放，正式存讀與玩家介入仍在RT-03／04，整體試玩RT-05；下方runtime紀錄不代表viewer已存在，尚無viewer啟動命令。
 
 **目前新方向**：D8 可暫停即時自主生活，見 [REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)。RT-00 契約已合入 dev（#101；P1–P4 已批准，見 [RT00_CONTRACT.md](RT00_CONTRACT.md)）。RT-01 已實作即時世界、正式手動指令、移動與工作。RT-02 接上自主決策、政策／目標的無人介入，以及不凍結世界的詢問（`js/autonomy.js`、`js/realtime.js`）。瀏覽器存檔與播放控制器仍是 RT-03～RT-05。戰鬥 #98 延後。下方 slot 引擎紀錄仍然有效；舊回歸與 golden 保留。slot 的自動連續 advance 不是即時移動。
 

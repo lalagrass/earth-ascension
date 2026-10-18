@@ -1,6 +1,6 @@
 # SG-RT-00：可暫停即時自主生活凍結契約
 
-狀態：**2026-10-18 擁有人已批准 P1–P4；產品契約凍結，PR #101 待整合。RT runtime／UI 尚未實作、未驗收**。追蹤[#99](https://github.com/lalagrass/earth-ascension/issues/99)與總單[#93](https://github.com/lalagrass/earth-ascension/issues/93)，上位方向是[D8：REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)，批准原話與取捨見[決策紀錄 D9](DECISIONS_AND_SOURCES.md#d9rt-00-p1p4-產品契約凍結2026-10-18)。
+狀態：**D9 P1–P4已凍結；RT-00～02已合dev／postCI。2026-10-19 D10批准先做RT-02V觀察版；viewer／存讀／完整UI尚未交付。** 最新接手見[RT02V_HANDOFF](RT02V_HANDOFF.md)與[#129](https://github.com/lalagrass/earth-ascension/issues/129)；實作主筆開放待認領，不再指定額度用盡的Grok。追蹤[#99](https://github.com/lalagrass/earth-ascension/issues/99)與總單[#93](https://github.com/lalagrass/earth-ascension/issues/93)，上位方向是[D8：REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)，批准原話與取捨見[決策紀錄 D9](DECISIONS_AND_SOURCES.md#d9rt-00-p1p4-產品契約凍結2026-10-18)。
 
 - 實際主筆：Grok Bot 初稿；Grok CLI 接續完成 R1–R4 修訂；Codex 遊戲 PO 依擁有人本次批准回填凍結決策。共用 GitHub 帳號不是獨立平台 approval。
 - Base：dev `c46003421c9ed35a0a2666cc64cd4a9fa47d2153`；PO 凍結修訂接續 Grok CLI head `31c0a7f214c71e8a2aa81e0b200585c13c5c2f93`。本 PR 只改遊戲文件，不改 runtime、fixture、CI。
@@ -28,14 +28,14 @@
 | D-RT-12 | ask 不凍結，180 tick 逾期稍後；突破詢問再等180 tick後可重問 | P3／RT-02 |
 | D-RT-13 | **B：RT入口拒絕舊slot存檔並保留原檔；不轉換、不做舊模式續玩UI；歷史引擎／golden／20seed×42保留** | P4／RT-01、03 |
 | D-RT-14 | 15日＝2700 tick，含完整14日2520 tick及跨界 | P1／適用RT驗收 |
-| D-RT-15 | 1×每秒4 tick，1/2/4倍；背景自動暫停、回前景仍暫停、讀檔先暫停，不離線補算 | P1／RT-04，非世界欄位 |
+| D-RT-15 | 1×每秒4 tick，1/2/4倍；背景自動暫停、回前景仍暫停、讀檔先暫停，不離線補算 | P1／D10 RT-02V先交播放，RT-04沿用；非世界欄位 |
 | D-RT-16 | completed／breakthroughResolved／error；ask不產生needsDecision，不凍結世界 | 技術契約／RT-01 |
 
 ### 決策責任與開工條件
 
 四組產品取捨已全數定案。P1 時間尺度讓一日約45秒、14日10.5分鐘（不含暫停）；P2 用時間承擔趕路／中斷成本，不增加體力成本；P3 先驗證有界內容的自主循環，內容耗盡後不假造無限成長；P4 省下雙模式介面／轉換工作，代價是舊開發進度不能在 RT 入口續玩。未採選項與來源保留在相應段落。
 
-RT-01 只等待本凍結文件合 dev 且 post-merge CI 成功，不再等待產品批准。之後 RT-02→03→04→05 仍逐包合 dev／postCI，再接依賴包，不代表可一次擴寫全部引擎／UI。Grok CLI 為單一核心主筆，遊戲 PO 審查、Earth PO 唯一整合負責人。
+RT-00～02已逐包完成。依D10，下一順序改為RT-02V→03→04→05，仍逐包合dev／postCI再接依賴包，不代表一次擴寫全部引擎／UI。RT-02V開放待認領，遊戲PO審查、Earth PO唯一整合；不自動指定或啟動agent。
 
 技術複核沿既有契約：tick 內處理順序、同 tick 仲裁排序、突破抽樣時點、設施於完工後下一個決策點可用、快照取單位開工時。進一步欄位／錯誤碼細化在實作 issue 記錄，不改已批玩法或舊數值。
 
@@ -74,6 +74,8 @@ RT 需要的規則改動（記入 ruleVersion，見 §5）：`Rules.phaseAt(slot
 同 tick 內的結果與角色處理順序無關：決策讀的是 `t` 開始的快照；任何會產生分歧的並列都有固定排序鍵（角色 id、活動 id）。**RNG 只在突破完成時消耗**（§2.6），自主決策與仲裁**不抽樣、不偷讀 RNG 狀態**。
 
 ### 1.4 暫停、恢復、倍率、背景頁籤（【凍結】D-RT-15）
+
+D10將本節播放子集前移到RT-02V；RT-04沿用控制器並加玩家介入，讀檔先暫停仍由RT-03／04接入。技術值與世界／控制器邊界不變。
 
 - 暫停＝控制器不呼叫 `advanceTicks`；世界沒有「暫停中」狀態。暫停時 `clock.tick`、位置、工作進度、資源、庫存、`rngState` 皆不變。倍率（1×／2×／4×）只決定控制器每個真實時間片呼叫幾個 tick，不進世界、不進 canonical、不進 hash。
 - 暫停中可 `dispatch` 命令：驗證與記錄照常（`expectedRevision`／命令 id 去重），只改「意圖類」欄位（手動命令、目標、政策，見 §2.5、§3.4），**不產生任何成果**；意圖在恢復後的第一個 `step` 的階段 2 生效。
@@ -523,10 +525,10 @@ B 是本次明確定案，不是自動沿用 D7。RT-01 落實新世界／版本
 
 ## 9. 分包開工條件與尚未驗證項
 
-**P1–P4全數已批准，不再等待產品定案。** RT-00文件合dev且post-merge CI成功後，遊戲PO建立RT-01工作包，由Grok CLI從該版最新dev開短分支登記base、範圍與檔案。RT-02等前置RT-01合dev／postCI；RT-03→04→05依序。播放設定、預設自主與舊檔B均已批准，不能再被當成待擁有人選擇。
+**P1–P4與D10 viewer前移均已批准，不重問。** RT-02已隨#108合dev0875d116且postCI成功；RT-02V #129只等本次排程／交接文件合dev及postCI，之後RT-03→04→05依序。接手者從最新dev建短分支、登記身份／base／檔案；Grok額度用盡，本包保持開放待認領。
 
-RT-01範圍＝§1、§2、§5.1–5.4的固定步進／移動／工作／手動指令／驗證核心與新RT fixture；須提供正式引擎狀態的最小canonical／序列化續玩證據以驗證高風險時間／schema，RT-03再接瀏覽器儲存／匯入UI／因果selectors。RT-02才接自主決策、goals／policy行為及§4.5詢問資料；RT-01不先寫進slot故事表或把預設自主宣稱已交付。RT-04才做播放／背景／暫停操作UI。本輪無runtime變更。
+RT-01範圍＝§1、§2、§5.1–5.4的固定步進／移動／工作／手動指令／驗證核心與新RT fixture；須提供正式引擎狀態的最小canonical／序列化續玩證據以驗證高風險時間／schema，RT-03再接瀏覽器儲存／匯入UI／因果selectors。RT-02才接自主決策、goals／policy行為及§4.5詢問資料；RT-01不先寫進slot故事表或把預設自主宣稱已交付。D10將播放／背景／暫停與唯讀地圖工作顯示前移RT-02V；RT-04再交完整開局、工作／目標編輯及事件選擇。本文件修訂無runtime變更。
 
-高風險核心接受前：20seed×2700tick的**RT-01適用手動指令回放**（含跨2520邊界、旅行／工作／pending／突破停點、單步／分批／存讀一致），以及歷史20seed×42格／golden／必要CI。RT-02接自主後才跑本契約§6.4完整無人介入／ask／自訂政策矩陣，不提前冒稱自主通過；UI／瀏覽器在RT-04／05驗收。日常迭代仍相關測試優先，必要3/5seed，復用未受影響證據，完整輸出落檔。
+高風險核心接受前：20seed×2700tick的**RT-01適用手動指令回放**（含跨2520邊界、旅行／工作／pending／突破停點、單步／分批／存讀一致），以及歷史20seed×42格／golden／必要CI。RT-02接自主後才跑本契約§6.4完整無人介入／ask／自訂政策矩陣，不提前冒稱自主通過；RT-02V先驗觀察／播放，完整介入UI／試玩仍在RT-04／05驗收。日常迭代仍相關測試優先，必要3/5seed，復用未受影響證據，完整輸出落檔。
 
-尚未驗證：時間與移動對14日內首丹／援村／收徒／滿100／突破可達性的影響；自主門檻／目標優先序產能；詢問與初始授權的玩家理解；UI及真人樂趣。均維持未驗收，失敗不事後改樣本／視窗或把候選結果說成事前通過。RT引用舊story資料的明確配對／錯誤碼可在實作issue細化，不需重選P1–P4；不得放寬到任意版本。
+原RT-00待評估項包含時間／移動產能、自主節奏、初始授權理解與真人樂趣。RT-01／02已完成的工程／矩陣證據見DEVELOPMENT及#107結案；手排時間不變成實測門檻，UI理解與真人樂趣仍未驗收，失敗不事後改樣本／視窗。RT引用舊story資料的明確配對／錯誤碼可在實作issue細化，不需重選P1–P4；不得放寬到任意版本。
