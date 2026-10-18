@@ -85,11 +85,11 @@ const queueAlchemy = (w, who = M, tile) => send(w, 'queueBuild', { discipleId: w
 
 // ---------- 資料契約 ----------
 
-test('新局：固定 25 格地圖、空 inventory／jobs／reservations；schema 3、rule 2、rng 1', () => {
+test('新局：固定 25 格地圖、空 inventory／jobs／reservations；schema 4、rule 3、rng 1', () => {
   const w = world();
-  assert.equal(w.schemaVersion, 3);
-  assert.equal(State.SCHEMA_VERSION, 3);
-  assert.equal(w.ruleVersion, 2);
+  assert.equal(w.schemaVersion, 4);
+  assert.equal(State.SCHEMA_VERSION, 4);
+  assert.equal(w.ruleVersion, 3);
   assert.equal(w.rngVersion, 1);
   assert.deepEqual(w.tiles, Rules.initialTiles());
   assert.equal(w.tiles.length, 25);
@@ -99,11 +99,11 @@ test('新局：固定 25 格地圖、空 inventory／jobs／reservations；schem
   assert.deepEqual(Object.keys(w.inventory), Object.keys(Rules.RECIPES));
 });
 
-test('schema 2 存檔（SG-03 歷史 golden）被明確拒絕，輸入不變；與 schema 3 的差異只有 schemaVersion、tiles、inventory、seatWaits、schedule.templateTiles', () => {
+test('schema 2 存檔（SG-03 歷史 golden）被明確拒絕，輸入不變；與 schema 4 的差異只有 ruleVersion、schemaVersion、disciples.breakthroughs、tiles、inventory、seatWaits、schedule.templateTiles', () => {
   const old = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.schema2-rule2.json'), 'utf8'));
   const cur = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.json'), 'utf8'));
   assert.equal(old.schemaVersion, 2);
-  assert.equal(cur.schemaVersion, 3);
+  assert.equal(cur.schemaVersion, 4);
   assert.equal(old.cases.length, cur.cases.length);
   for (let i = 0; i < old.cases.length; i += 1) {
     const a = JSON.parse(old.cases[i].canonical);
@@ -115,12 +115,14 @@ test('schema 2 存檔（SG-03 歷史 golden）被明確拒絕，輸入不變；�
     assert.equal(JSON.stringify(a), before);
     assert.notEqual(old.cases[i].hash, cur.cases[i].hash);
     assert.deepEqual(old.cases[i].rngState, cur.cases[i].rngState, 'rngState 不變');
-    a.schemaVersion = 3;
+    a.schemaVersion = 4;
+    a.ruleVersion = 3;
+    for (const d of a.disciples) d.breakthroughs = 0;
     a.tiles = Rules.initialTiles();
     a.inventory = { 'breakthrough-pill': 0 };
     a.schedule.templateTiles = {};
     a.seatWaits = [];
-    assert.deepEqual(b, a, `${cur.cases[i].name}：除 schemaVersion、tiles、inventory、seatWaits、schedule.templateTiles 外完全相同`);
+    assert.deepEqual(b, a, `${cur.cases[i].name}：除 ruleVersion、schemaVersion、breakthroughs、tiles、inventory、seatWaits、schedule.templateTiles 外完全相同`);
   }
 });
 
@@ -379,13 +381,13 @@ test('build／brew 不可排入課表：use_job_command；基礎行動不受影�
   rejected(w, cmd(w, 'setDailyTemplate', { discipleId: M, parts: ['build', 'rest', 'rest'] }), 'use_job_command');
   rejected(w, cmd(w, 'assignSlot', { discipleId: M, slotIndex: 0, action: 'aid' }), 'use_job_command'); // SG-04A：援村也是 job（queueAid）
   for (const a of ['breakthrough', 'support']) {
-    rejected(w, cmd(w, 'assignSlot', { discipleId: M, slotIndex: 0, action: a }), 'not_supported_yet');
+    rejected(w, cmd(w, 'assignSlot', { discipleId: M, slotIndex: 0, action: a }), 'use_job_command'); // SG-05：由 queueBreakthrough 驅動
   }
   for (const a of ['gather-material', 'cultivate', 'rest', 'tune-mind']) {
     assert.equal(C.dispatch(w, cmd(w, 'assignSlot', { discipleId: M, slotIndex: 0, action: a })).ok, true, a);
   }
-  assert.deepEqual([...C.SUPPORTED_COMMANDS].sort(), ['acceptCandidate', 'assignSlot', 'cancelQueuedJob', 'chooseEvent', 'queueAid', 'queueBuild', 'queueCraft', 'setDailyTemplate']);
-  for (const t of ['queueBreakthrough', 'setDefense']) {
+  assert.deepEqual([...C.SUPPORTED_COMMANDS].sort(), ['acceptCandidate', 'assignSlot', 'cancelQueuedJob', 'chooseEvent', 'queueAid', 'queueBreakthrough', 'queueBuild', 'queueCraft', 'setDailyTemplate']);
+  for (const t of ['setDefense']) {
     rejected(w, cmd(w, t, {}), 'not_supported_yet');
   }
 });
@@ -914,7 +916,7 @@ test('smoke CLI：--seed 輸出摘要 JSON 並以 0 結束；摘要含版本、�
   assert.equal(r.status, 0, r.stderr);
   const out = JSON.parse(r.stdout);
   assert.equal(out.seed, 'cli-seed');
-  assert.deepEqual(out.versions, { schema: 3, rule: 2, rng: 1 });
+  assert.deepEqual(out.versions, { schema: 4, rule: 3, rng: 1 });
   assert.equal(out.strategy, Smoke.STRATEGY_VERSION);
   assert.equal(out.final.slotIndex, 42);
   assert.equal(out.final.phase, 'awaitingChoice');
@@ -956,7 +958,7 @@ test('瀏覽器載入順序：commands／engine 在 vm 中與 Node 結果相同�
     for (const f of names) vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', f), 'utf8'), ctx, { filename: f });
     return ctx;
   };
-  const ctx = load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'commands.js', 'engine.js']);
+  const ctx = load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'progression.js', 'commands.js', 'engine.js']);
   const B = ctx.SectChronicle;
   let w = B.State.newWorld('vm-seed').state;
   const r = B.Commands.dispatch(w, { id: 'v1', expectedRevision: 0, type: 'queueBuild', payload: { discipleId: M, facilityType: ALCH, tileId: 't-0-1' } });
@@ -968,7 +970,7 @@ test('瀏覽器載入順序：commands／engine 在 vm 中與 Node 結果相同�
   assert.equal(B.State.hashWorld(w), hash(n));
   assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'commands.js', 'engine.js']), /story-data\.js/);
   assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'commands.js', 'engine.js']), /story\.js/);
-  assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'engine.js']), /commands\.js/);
+  assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'progression.js', 'engine.js']), /commands\.js/);
 });
 
 test('生產全程確定性：不消耗 RNG、不用牆鐘', () => {

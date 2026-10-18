@@ -32,22 +32,22 @@ function withApprentice() {
   w.disciples.push({
     id: 'cand-1', role: 'apprentice',
     attributes: { rootBone: 3, comprehension: 3, craft: 3 },
-    stamina: 100, mind: 60, cultivation: 0, injury: 0, joinSlotIndex: 20,
+    stamina: 100, mind: 60, cultivation: 0, injury: 0, joinSlotIndex: 20, breakthroughs: 0,
   });
   return w;
 }
 
-test('版本常數：SG-04 schema 3、SG-02 凍結 ruleVersion 2、rng 1', () => {
-  assert.equal(S.SCHEMA_VERSION, 3);
-  assert.equal(S.RULE_VERSION, 2);
+test('版本常數：SG-05 schema 4、ruleVersion 3（D7 修為封頂）、rng 1', () => {
+  assert.equal(S.SCHEMA_VERSION, 4);
+  assert.equal(S.RULE_VERSION, 3);
   assert.equal(S.RNG_VERSION, Rng.RNG_VERSION);
   assert.equal(S.SCENARIOS['slice-14'].totalSlots, 42);
 });
 
 test('預設新局：欄位齊全、師徒兩人、候選另存、story 初值', () => {
   const w = world('seed-a');
-  assert.equal(w.schemaVersion, 3);
-  assert.equal(w.ruleVersion, 2);
+  assert.equal(w.schemaVersion, 4);
+  assert.equal(w.ruleVersion, 3);
   assert.deepEqual(w.schedule, { templates: {}, overrides: [], templateTiles: {} });
   assert.deepEqual(w.seatWaits, []);
   assert.equal(w.rngVersion, 1);
@@ -344,7 +344,7 @@ test('roster 一致性：身分、重複 ID、學徒須有已接受邀請、上�
   // 無已接受邀請的學徒
   assert.equal(mk((w) => {
     w.disciples.push({ id: 'cand-1', role: 'apprentice', attributes: { rootBone: 3, comprehension: 3, craft: 3 },
-      stamina: 100, mind: 60, cultivation: 0, injury: 0, joinSlotIndex: 0 });
+      stamina: 100, mind: 60, cultivation: 0, injury: 0, joinSlotIndex: 0, breakthroughs: 0 });
   }).ok, false);
   // 已接受邀請但沒有學徒
   assert.equal(mk((w) => { w.story.invitations['cand-1'] = { status: 'accepted', joinSlotIndex: 0 }; }).ok, false);
@@ -353,12 +353,12 @@ test('roster 一致性：身分、重複 ID、學徒須有已接受邀請、上�
   const two = withApprentice();
   two.story.invitations['cand-2'] = { status: 'accepted', joinSlotIndex: 21 };
   two.disciples.push({ id: 'cand-2', role: 'apprentice', attributes: { rootBone: 2, comprehension: 4, craft: 3 },
-    stamina: 100, mind: 60, cultivation: 0, injury: 0, joinSlotIndex: 21 });
+    stamina: 100, mind: 60, cultivation: 0, injury: 0, joinSlotIndex: 21, breakthroughs: 0 });
   assert.deepEqual(S.validateWorld(two), { ok: true });
   // 超過四人
   const five = clone(two);
   five.disciples.push({ id: 'cand-3', role: 'apprentice', attributes: { rootBone: 2, comprehension: 4, craft: 3 },
-    stamina: 100, mind: 60, cultivation: 0, injury: 0, joinSlotIndex: 21 });
+    stamina: 100, mind: 60, cultivation: 0, injury: 0, joinSlotIndex: 21, breakthroughs: 0 });
   assert.equal(S.validateWorld(five).ok, false);
 });
 
@@ -448,8 +448,8 @@ test('canonical 不排除任何影響世界的欄位：改動任一頂層欄位 
   const w = withApprentice();
   const base = S.hashWorld(w);
   const changers = {
-    schemaVersion: (x) => { x.schemaVersion = 4; },
-    ruleVersion: (x) => { x.ruleVersion = 3; },
+    schemaVersion: (x) => { x.schemaVersion = 5; },
+    ruleVersion: (x) => { x.ruleVersion = 4; },
     rngVersion: (x) => { x.rngVersion = 2; },
     seed: (x) => { x.seed = 'other'; },
     slotIndex: (x) => { x.slotIndex += 1; },
@@ -554,7 +554,7 @@ test('瀏覽器載入策略：一般 script 載入後取得相同結果（無 mo
   }
   const B = ctx.SectChronicle;
   assert.ok(B && B.Rng && B.Rules && B.State, '應掛在 SectChronicle 命名空間');
-  assert.equal(B.State.RULE_VERSION, 2);
+  assert.equal(B.State.RULE_VERSION, 3);
   const r = B.State.newWorld('seed-a');
   assert.equal(r.ok, true);
   assert.equal(B.State.hashWorld(r.state), S.hashWorld(world('seed-a')));
@@ -838,11 +838,12 @@ test('SG-02 的 schema 1／ruleVersion 2 golden 也被明確拒絕、輸入不�
   }
 });
 
-test('SG-04 升 schema 3 後，每個固定 seed 與 schema 1／rule 2 golden 的差異只有 schemaVersion、schedule、tiles 與 inventory', () => {
+test('SG-05 升 schema 4／rule 3 後，每個固定 seed 與 schema 1／rule 2 golden 的差異只有 ruleVersion、schemaVersion、schedule、tiles、inventory 與 disciples.breakthroughs', () => {
   const fx = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.json'), 'utf8'));
-  assert.equal(fx.schemaVersion, 3);
+  assert.equal(fx.schemaVersion, 4);
   assert.equal(fx.cases.length, legacyS1R2.cases.length);
-  assert.equal(legacyS1R2.ruleVersion, fx.ruleVersion);
+  assert.equal(legacyS1R2.ruleVersion, 2);
+  assert.equal(fx.ruleVersion, 3);
   assert.equal(legacyS1R2.rngVersion, fx.rngVersion);
   for (let i = 0; i < legacyS1R2.cases.length; i++) {
     const o = legacyS1R2.cases[i];
@@ -854,18 +855,20 @@ test('SG-04 升 schema 3 後，每個固定 seed 與 schema 1／rule 2 golden �
     const a = JSON.parse(o.canonical);
     const b = JSON.parse(n.canonical);
     assert.equal(a.schemaVersion, 1);
-    assert.equal(b.schemaVersion, 3);
+    assert.equal(b.schemaVersion, 4);
     assert.deepEqual(b.schedule, { templates: {}, overrides: [], templateTiles: {} });
-    a.schemaVersion = 3;
+    a.schemaVersion = 4;
+    a.ruleVersion = 3;
+    for (const d of a.disciples) d.breakthroughs = 0;
     a.schedule = { templates: {}, overrides: [], templateTiles: {} };
     a.seatWaits = [];
     a.tiles = Rules.initialTiles();
     a.inventory = { 'breakthrough-pill': 0 };
-    assert.deepEqual(b, a, `${o.name}：除 schemaVersion、schedule、tiles、inventory 外世界內容完全相同`);
+    assert.deepEqual(b, a, `${o.name}：除 ruleVersion、schemaVersion、schedule、tiles、inventory、disciples.breakthroughs 外世界內容完全相同`);
   }
 });
 
-test('升版後每個固定 seed 與 SG-01 golden（schema 1／rule 1）的差異只有 ruleVersion、schemaVersion、schedule、tiles 與 inventory', () => {
+test('升版後每個固定 seed 與 SG-01 golden（schema 1／rule 1）的差異只有 ruleVersion、schemaVersion、schedule、tiles、inventory 與 disciples.breakthroughs', () => {
   const fx = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.json'), 'utf8'));
   assert.equal(fx.cases.length, legacy.cases.length);
   assert.equal(legacy.rngVersion, fx.rngVersion);
@@ -877,8 +880,9 @@ test('升版後每個固定 seed 與 SG-01 golden（schema 1／rule 1）的差�
     const a = JSON.parse(o.canonical);
     const b = JSON.parse(n.canonical);
     assert.equal(a.ruleVersion, 1);
-    a.ruleVersion = 2;
-    a.schemaVersion = 3;
+    a.ruleVersion = 3;
+    a.schemaVersion = 4;
+    for (const d of a.disciples) d.breakthroughs = 0;
     a.schedule = { templates: {}, overrides: [], templateTiles: {} };
     a.seatWaits = [];
     a.tiles = Rules.initialTiles();

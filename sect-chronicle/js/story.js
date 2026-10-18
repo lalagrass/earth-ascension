@@ -122,7 +122,7 @@
     world.disciples.push({
       id: candidateId, role: 'apprentice', attributes: profileAttributes(candidateId),
       stamina: Rules.START_VALUES.stamina, mind: Rules.START_VALUES.mind,
-      cultivation: Rules.START_VALUES.cultivation, injury: Rules.START_VALUES.injury, joinSlotIndex,
+      cultivation: Rules.START_VALUES.cultivation, injury: Rules.START_VALUES.injury, joinSlotIndex, breakthroughs: 0,
     });
     world.disciples.sort((a, b) => {
       const rank = { master: 0, protagonist: 1, apprentice: 2 };

@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 'use strict';
 /*
- * SG-04／SG-04A：冒煙 CLI。`node sect-chronicle/tools/smoke.js --seed <seed> [--template <id>]
- *   [--aid none|free|supplied] [--aid-from <slot>] [--recruit 0|1|2] [--accept-delay <slots>]`
+ * SG-04／SG-04A／SG-05：冒煙 CLI。`node sect-chronicle/tools/smoke.js --seed <seed> [--template <id>]
+ *   [--aid none|free|supplied] [--aid-from <slot>] [--recruit 0|1|2] [--accept-delay <slots>]
+ *   [--breakthrough none|plain|pill|pill-support]`
  *   不帶 --aid／--aid-from／--recruit／--accept-delay 時跑 SG-04 的 first-furnace-v1（零材料首爐丹路線，行為不變）；
- *   帶任一個就跑故事路線 village-recruit-v1（見下）。
+ *   帶任一個就跑故事路線 village-recruit-v1（見下）；帶 --breakthrough（非 none）則在故事路線之上加突破策略 breakthrough-v1。
  *
  * 只用公開的 State.newWorld／Commands.dispatch／Engine.advance：不直接補資源、改工期或注入完工設施。
  * 策略 first-furnace-v1（只讀玩家可見的世界狀態，不偷看 RNG；本包沒有任何隨機）：
@@ -17,6 +18,9 @@
  *   acceptCandidate（--accept-delay 0＝選完下一個規劃步就接受；>0＝選「讓我再想想」，過 N 格再接受延後的候選），其餘選「再想想」；
  *   第 42 格危機待選就停止（邀請不會在第 42 格升起）。成功條件：沒有命令被拒、停在第 42 格危機待選、有首爐丹、
  *   有援村（若要求）、實際入隊者恰為「被邀請且要求入隊」者；摘要列出援村完成與獎勵、邀請選擇、入隊格、最終階段、hash 與未驗證項。
+ * 突破策略 breakthrough-v1（SG-05，在上面的路線之上；只用公開 API）：主角修為滿 100 且尚未成功提升、沒有排隊中的突破時（第 41 格前）排
+ *   queueBreakthrough：plain＝不用丹不要支援；pill＝庫存有丹就用；pill-support＝有丹就用，並請師父支援。失敗（修為 70）後照常修行，滿 100 再排；
+ *   成功後不再排。機率與結果由引擎抽樣（策略不偷看 RNG）；摘要列出每次嘗試的機率、roll 與結果。結果只是 seed＋策略的產物，不是平衡結論。
  * 失敗（沒有首爐丹、沒走到危機待選、命令被拒、故事路線未達成）以非零結束；退出碼：0 成功、1 策略失敗、2 用法錯誤。
  */
 const Rules = require('../js/rules.js');
@@ -26,14 +30,17 @@ const Engine = require('../js/engine.js');
 
 const STRATEGY_VERSION = 'first-furnace-v1';
 const STORY_STRATEGY_VERSION = 'village-recruit-v1';
+const BREAKTHROUGH_STRATEGY_VERSION = 'breakthrough-v1';
 const AID_OPTIONS = Object.freeze(['none', 'free', 'supplied']);
+const BREAKTHROUGH_MODES = Object.freeze(['none', 'plain', 'pill', 'pill-support']);
 const NOT_IMPLEMENTED = Object.freeze([
   '候選初始屬性的產品取值（引用 rules.js 既有模板，待遊戲 PO 核對）；真人試玩與平衡（援村獎勵與入隊時機只是策略結果）',
-  '突破與支援（SG-05）：丹藥只入庫，沒有任何消耗或 buff',
+  '突破成功率、嘗試次數與時機只是策略與 seed 的結果，不是平衡或真人試玩結論；下一境條件未定，沒有第二境（SG-05／D7）',
   '獸患結算、立派／暫緩 ending（SG-06）：停在第 42 格危機待選',
   'storage／UI／forecast（SG-07 之後）',
 ]);
 const REST_BELOW = 35;
+const btMode = (route) => (route && route.breakthrough) || 'none'; // 沒給＝不排突破（SG-04A 路線的呼叫端不用改）
 const clone = (x) => JSON.parse(JSON.stringify(x));
 
 // 讓 20 個 seed 的主角設定真的不同：模板輪換、配點取第 floor(i/3) 個合法組合、性格輪換。
@@ -106,6 +113,15 @@ function decide(world, route, memo) {
     && world.resources.spiritHerb >= recipe.cost.spiritHerb && world.resources.spiritMaterial >= recipe.cost.spiritMaterial) {
     cmds.push({ type: 'queueCraft', payload: { discipleId: free[0].id, recipeId: 'breakthrough-pill', facilityJobId: alchemy.id } });
   }
+  if (btMode(route) !== 'none' && world.slotIndex < 41) {
+    const p = world.disciples.find((d) => d.id === State.PROTAGONIST_ID);
+    const pending = world.jobs.some((j) => j.kind === 'breakthrough' && j.status === 'queued' && j.discipleId === p.id);
+    if (p.cultivation === Rules.CULTIVATION_CAP && p.breakthroughs === 0 && !pending && !isBusy(world, p.id)) {
+      const usePill = btMode(route) !== 'plain' && world.inventory['breakthrough-pill'] > 0;
+      const supporterId = btMode(route) === 'pill-support' && !isBusy(world, State.MASTER_ID) ? State.MASTER_ID : null;
+      cmds.push({ type: 'queueBreakthrough', payload: { discipleId: p.id, usePill, supporterId } });
+    }
+  }
   for (const d of world.disciples) {
     if (isBusy(world, d.id)) continue;
     const want = desiredAction(world, d, ctx);
@@ -138,13 +154,28 @@ function storySummary(world, route, choices) {
   };
 }
 
+function breakthroughSummary(world, route) {
+  const attempts = world.jobs.filter((j) => j.kind === 'breakthrough' && j.status === 'done').map((j) => ({
+    jobId: j.id, discipleId: j.discipleId, slotIndex: j.completedSlotIndex, usePill: j.target.usePill, supporterId: j.target.supporterId,
+    chanceBp: j.outcome.chanceBp, roll: j.outcome.roll, result: j.outcome.result,
+  }));
+  return {
+    mode: btMode(route),
+    attempts: attempts.length,
+    successes: attempts.filter((a) => a.result === 'success').length,
+    firstAttemptSlot: attempts.length ? attempts[0].slotIndex : null,
+    list: attempts,
+    cultivation: Object.fromEntries(world.disciples.map((d) => [d.id, { cultivation: d.cultivation, breakthroughs: d.breakthroughs }])),
+  };
+}
+
 function summarize(seed, world, script, extra) {
   const eventsOf = (type) => world.eventLog.filter((e) => e.type === type);
   const pill = eventsOf('jobCompleted').find((e) => e.kind === 'craft');
   const summary = {
     seed,
     versions: { schema: State.SCHEMA_VERSION, rule: State.RULE_VERSION, rng: State.RNG_VERSION },
-    strategy: extra && extra.story ? STORY_STRATEGY_VERSION : STRATEGY_VERSION,
+    strategy: extra && extra.breakthrough ? BREAKTHROUGH_STRATEGY_VERSION : extra && extra.story ? STORY_STRATEGY_VERSION : STRATEGY_VERSION,
     commands: script.filter((s) => s.type === 'dispatch').length,
     firstPillSlot: pill ? pill.readySlotIndex : null,
     firstPillDay: pill ? Math.floor(pill.readySlotIndex / 3) + 1 : null,
@@ -175,6 +206,7 @@ function fail(seed, world, script, error) {
 function routeProblem(world, route) {
   if (route.aid !== 'none' && world.story.rescues.length !== 1) return `要求援村（${route.aid}）但沒有完成`;
   if (route.aid === 'none' && world.story.rescues.length !== 0) return '不援村的路線卻有援村紀錄';
+  if (btMode(route) !== 'none' && !world.jobs.some((j) => j.kind === 'breakthrough' && j.status === 'done')) return `要求突破（${btMode(route)}）但沒有任何一次突破開工`;
   for (const [i, id] of State.CANDIDATE_IDS.entries()) {
     const raised = world.story.triggeredEventIds.includes(`evt-invite-${id}`);
     const status = world.story.invitations[id].status;
@@ -250,13 +282,16 @@ function runStrategy(options) {
     states.push(world);
     n += 1;
   }
-  const summary = summarize(seed, world, script, route ? { story: storySummary(world, route, choices) } : undefined);
+  const extra = route ? { story: storySummary(world, route, choices) } : undefined;
+  if (route && btMode(route) !== 'none') extra.breakthrough = breakthroughSummary(world, route);
+  const summary = summarize(seed, world, script, extra);
   if (route) {
     const problem = routeProblem(world, route);
     if (problem) return Object.assign(fail(seed, world, script, problem), { states });
   }
   if (world.slotIndex !== 42) return Object.assign(fail(seed, world, script, `停在第 ${world.slotIndex} 格而不是 42`), { states });
-  if (summary.firstPillSlot === null || world.inventory['breakthrough-pill'] < 1) {
+  const pillUsed = world.jobs.some((j) => j.kind === 'breakthrough' && j.status === 'done' && j.target.usePill);
+  if (summary.firstPillSlot === null || (world.inventory['breakthrough-pill'] < 1 && !pillUsed)) {
     return Object.assign(fail(seed, world, script, '沒有製出首爐丹'), { states });
   }
   return { ok: true, finalWorld: world, script, states, summary };
@@ -298,7 +333,7 @@ function parseArgs(argv) {
   const out = {};
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
-    if (['--seed', '--template', '--aid', '--aid-from', '--recruit', '--accept-delay'].includes(a) && i + 1 < argv.length) {
+    if (['--seed', '--template', '--aid', '--aid-from', '--recruit', '--accept-delay', '--breakthrough'].includes(a) && i + 1 < argv.length) {
       out[a.slice(2)] = argv[i + 1];
       i += 1;
     } else {
@@ -312,14 +347,16 @@ function parseArgs(argv) {
     return null;
   };
   if (out.aid !== undefined && !AID_OPTIONS.includes(out.aid)) return { error: `--aid 必須是 ${AID_OPTIONS.join('｜')}` };
+  if (out.breakthrough !== undefined && !BREAKTHROUGH_MODES.includes(out.breakthrough)) return { error: `--breakthrough 必須是 ${BREAKTHROUGH_MODES.join('｜')}` };
   const bad = intOpt('aid-from', 0, 42) || intOpt('recruit', 0, 2) || intOpt('accept-delay', 0, 42);
   if (bad) return { error: bad };
-  if (['aid', 'aid-from', 'recruit', 'accept-delay'].some((k) => out[k] !== undefined)) {
+  if (['aid', 'aid-from', 'recruit', 'accept-delay', 'breakthrough'].some((k) => out[k] !== undefined)) {
     out.route = {
       aid: out.aid === undefined ? 'none' : out.aid,
       aidFrom: out['aid-from'] === undefined ? Rules.AID_AVAILABLE_FROM_SLOT : Number(out['aid-from']),
       recruit: out.recruit === undefined ? 0 : Number(out.recruit),
       acceptDelay: out['accept-delay'] === undefined ? 0 : Number(out['accept-delay']),
+      breakthrough: out.breakthrough === undefined ? 'none' : out.breakthrough,
     };
   }
   return out;
@@ -328,7 +365,7 @@ function parseArgs(argv) {
 function main(argv) {
   const args = parseArgs(argv);
   if (args.error) {
-    process.stderr.write(`${args.error}\n用法：node sect-chronicle/tools/smoke.js --seed <seed> [--template <id>] [--aid none|free|supplied] [--aid-from <slot>] [--recruit 0|1|2] [--accept-delay <slots>]\n`);
+    process.stderr.write(`${args.error}\n用法：node sect-chronicle/tools/smoke.js --seed <seed> [--template <id>] [--aid none|free|supplied] [--aid-from <slot>] [--recruit 0|1|2] [--accept-delay <slots>] [--breakthrough none|plain|pill|pill-support]\n`);
     return 2;
   }
   const characterOptions = args.template === undefined ? undefined : {
@@ -345,4 +382,4 @@ function main(argv) {
 
 if (require.main === module) process.exitCode = main(process.argv.slice(2));
 
-module.exports = { STRATEGY_VERSION, STORY_STRATEGY_VERSION, NOT_IMPLEMENTED, optionsForIndex, runStrategy, replay, replayFrom, decide, main };
+module.exports = { STRATEGY_VERSION, STORY_STRATEGY_VERSION, BREAKTHROUGH_STRATEGY_VERSION, NOT_IMPLEMENTED, optionsForIndex, runStrategy, replay, replayFrom, decide, main };
