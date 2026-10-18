@@ -1,33 +1,36 @@
 /*
  * SG-01：版本化世界狀態（schema）、角色設定驗證、canonical hash 與整數取整契約。
  *
- * 範圍界線（設計 0.2／issue #71）：
+ * 範圍界線（設計 0.2／issue #71、#81）：
  * - 只定義「狀態長什麼樣、怎樣才算合法」；不含規則、指令、結算引擎、UI。
- * - characterOptions 只驗證結構、型別與下方暫定常數的約束，使用下方「先宣告的暫定常數」CHARACTER_OPTION_LIMITS 與
- *   PROVISIONAL_*。SG-02 才凍結正式的模板預算／加點上限／性格枚舉與初始數值，移入 js/rules.js
- *   並升 RULE_VERSION；屆時 fixture 的變化須在 PR 說明，不可只換常數。
+ * - 模板預算／加點上限／性格枚舉、師父屬性、起始數值、ruleVersion 與取整契約的權威來源是 js/rules.js（SG-02 凍結）；
+ *   本檔只引用，不再保留第二份定義，避免兩份常數漂移。
  * - 所有數值皆為整數；狀態中不得有小數、NaN、undefined。倍率用基點，取整一律 floor。
- * - 載入策略：Node 以 CommonJS；瀏覽器先載入 js/rng.js 再載入本檔（一般 <script>），
+ * - 載入策略：Node 以 CommonJS；瀏覽器依序載入 js/rng.js、js/rules.js 再載入本檔（一般 <script>），
  *   掛在 globalThis.SectChronicle.State。
  */
 (function (root, factory) {
   'use strict';
   let Rng;
+  let Rules;
   if (typeof module === 'object' && module && module.exports) {
     Rng = require('./rng.js');
-    module.exports = factory(Rng);
+    Rules = require('./rules.js');
+    module.exports = factory(Rng, Rules);
   } else {
     Rng = root.SectChronicle && root.SectChronicle.Rng;
     if (!Rng) throw new Error('state.js 需要先載入 js/rng.js');
-    root.SectChronicle.State = factory(Rng);
+    Rules = root.SectChronicle.Rules;
+    if (!Rules) throw new Error('state.js 需要先載入 js/rules.js（在 js/rng.js 之後、本檔之前）');
+    root.SectChronicle.State = factory(Rng, Rules);
   }
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (Rng) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (Rng, Rules) {
   'use strict';
 
   // ---------- 版本與常數 ----------
   const SCHEMA_VERSION = 1;
-  // 1 = SG-01 暫定規則常數；SG-02 凍結正式數值時升版。
-  const RULE_VERSION = 1;
+  // ruleVersion 的唯一來源是 js/rules.js（1 = SG-01 暫定值；2 = SG-02 凍結的候選規則基線）。
+  const RULE_VERSION = Rules.RULE_VERSION;
   const RNG_VERSION = Rng.RNG_VERSION;
 
   const SCENARIOS = Object.freeze({ 'slice-14': Object.freeze({ totalSlots: 42 }) });
@@ -44,21 +47,8 @@
   const SEED_MAX_LENGTH = 64;
   const ATTRIBUTES = Object.freeze(['rootBone', 'comprehension', 'craft']); // 根骨、悟性、技藝
 
-  // 暫定常數（SG-02 凍結）：三個模板總和相同（9）、自由配點 3、最終單項 1..6。
-  const CHARACTER_OPTION_LIMITS = Object.freeze({
-    templates: Object.freeze({
-      'herb-child': Object.freeze({ rootBone: 2, comprehension: 3, craft: 4 }), // 採藥童
-      'farmer-child': Object.freeze({ rootBone: 4, comprehension: 2, craft: 3 }), // 農家子
-      'dojo-apprentice': Object.freeze({ rootBone: 3, comprehension: 4, craft: 2 }), // 道館學徒
-    }),
-    freePoints: 3,
-    attributeMin: 1,
-    attributeMax: 6,
-    personality: Object.freeze({
-      risk: Object.freeze(['cautious', 'bold']), // 謹慎／果敢
-      bond: Object.freeze(['independent', 'caring']), // 獨立／重情
-    }),
-  });
+  // 模板預算、加點上限、性格枚舉由 js/rules.js 凍結；這裡只是同一個物件的引用。
+  const CHARACTER_OPTION_LIMITS = Rules.CHARACTER_OPTION_LIMITS;
 
   const DEFAULT_CHARACTER_OPTIONS = Object.freeze({
     templateId: 'dojo-apprentice',
@@ -66,9 +56,9 @@
     personality: Object.freeze({ risk: 'cautious', bond: 'independent' }),
   });
 
-  // 暫定初始值（SG-02 凍結）。
-  const PROVISIONAL_MASTER_ATTRIBUTES = Object.freeze({ rootBone: 5, comprehension: 5, craft: 5 });
-  const PROVISIONAL_START = Object.freeze({ stamina: 100, mind: 60, cultivation: 0, injury: 0 });
+  // 師父屬性與起始數值同樣取自 js/rules.js。
+  const MASTER_ATTRIBUTES = Rules.MASTER_ATTRIBUTES;
+  const START_VALUES = Rules.START_VALUES;
   const RESOURCE_KEYS = Object.freeze(['spiritMaterial', 'spiritHerb', 'spiritStone', 'reputation']);
 
   const TOP_LEVEL_FIELDS = Object.freeze([
@@ -81,18 +71,10 @@
   // canonical 不排除任何影響世界的欄位；播放倍率、畫面、動畫、牆鐘本來就不在世界內。
   const CANONICAL_EXCLUDED_FIELDS = Object.freeze([]);
 
-  // ---------- 整數取整契約 ----------
-  const BASIS_POINTS = 10000;
-  const ROUNDING_MODE = 'floor';
-
-  function mulBp(value, bp) {
-    if (!Number.isInteger(value) || !Number.isInteger(bp)) {
-      throw new TypeError('mulBp 只接受整數');
-    }
-    const product = value * bp;
-    if (!Number.isSafeInteger(product)) throw new RangeError('mulBp 乘積超出安全整數');
-    return Math.floor(product / BASIS_POINTS) + 0; // + 0 把 -0 正規化成 0
-  }
+  // ---------- 整數取整契約（權威定義在 js/rules.js） ----------
+  const BASIS_POINTS = Rules.BASIS_POINTS;
+  const ROUNDING_MODE = Rules.ROUNDING_MODE;
+  const mulBp = Rules.mulBp;
 
   // ---------- 小工具 ----------
   function fail(code, reason, where) {
@@ -237,12 +219,12 @@
       tiles: [],
       disciples: [
         Object.assign({
-          id: MASTER_ID, role: 'master', attributes: { ...PROVISIONAL_MASTER_ATTRIBUTES },
-        }, PROVISIONAL_START, { joinSlotIndex: 0 }),
+          id: MASTER_ID, role: 'master', attributes: { ...MASTER_ATTRIBUTES },
+        }, START_VALUES, { joinSlotIndex: 0 }),
         Object.assign({
           id: PROTAGONIST_ID, role: 'protagonist', templateId: options.templateId,
           attributes: deriveProtagonistAttributes(options),
-        }, PROVISIONAL_START, { joinSlotIndex: 0 }),
+        }, START_VALUES, { joinSlotIndex: 0 }),
       ],
       candidates: CANDIDATE_IDS.map((id, i) => ({ id, order: i + 1 })),
       jobs: [],

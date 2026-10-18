@@ -36,9 +36,9 @@ function withApprentice() {
   return w;
 }
 
-test('版本常數為整數；SG-01 的 ruleVersion 是暫定值', () => {
+test('版本常數：schema 1、SG-02 凍結 ruleVersion 2、rng 1', () => {
   assert.equal(S.SCHEMA_VERSION, 1);
-  assert.equal(S.RULE_VERSION, 1);
+  assert.equal(S.RULE_VERSION, 2);
   assert.equal(S.RNG_VERSION, Rng.RNG_VERSION);
   assert.equal(S.SCENARIOS['slice-14'].totalSlots, 42);
 });
@@ -46,7 +46,7 @@ test('版本常數為整數；SG-01 的 ruleVersion 是暫定值', () => {
 test('預設新局：欄位齊全、師徒兩人、候選另存、story 初值', () => {
   const w = world('seed-a');
   assert.equal(w.schemaVersion, 1);
-  assert.equal(w.ruleVersion, 1);
+  assert.equal(w.ruleVersion, 2);
   assert.equal(w.rngVersion, 1);
   assert.equal(w.seed, 'seed-a');
   assert.equal(w.scenarioId, 'slice-14');
@@ -444,7 +444,7 @@ test('canonical 不排除任何影響世界的欄位：改動任一頂層欄位 
   const base = S.hashWorld(w);
   const changers = {
     schemaVersion: (x) => { x.schemaVersion = 2; },
-    ruleVersion: (x) => { x.ruleVersion = 2; },
+    ruleVersion: (x) => { x.ruleVersion = 3; },
     rngVersion: (x) => { x.rngVersion = 2; },
     seed: (x) => { x.seed = 'other'; },
     slotIndex: (x) => { x.slotIndex += 1; },
@@ -540,20 +540,30 @@ test('整數取整契約：基點倍率、全程 floor、拒絕非整數', () =>
 
 test('瀏覽器載入策略：一般 script 載入後取得相同結果（無 module／require）', () => {
   const ctx = vm.createContext({});
-  for (const f of ['rng.js', 'state.js']) {
+  for (const f of ['rng.js', 'rules.js', 'state.js']) {
     const src = fs.readFileSync(path.join(__dirname, '..', 'js', f), 'utf8');
     vm.runInContext(src, ctx, { filename: f });
   }
   const B = ctx.SectChronicle;
-  assert.ok(B && B.Rng && B.State, '應掛在 SectChronicle 命名空間');
+  assert.ok(B && B.Rng && B.Rules && B.State, '應掛在 SectChronicle 命名空間');
+  assert.equal(B.State.RULE_VERSION, 2);
   const r = B.State.newWorld('seed-a');
   assert.equal(r.ok, true);
   assert.equal(B.State.hashWorld(r.state), S.hashWorld(world('seed-a')));
   assert.deepEqual([...B.Rng.create('sg-vector-1')], Rng.create('sg-vector-1'));
 });
 
+test('瀏覽器若漏載 rules.js，state.js 給出明確錯誤而不是靜默壞掉', () => {
+  const ctx = vm.createContext({});
+  vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', 'rng.js'), 'utf8'), ctx);
+  assert.throws(
+    () => vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', 'state.js'), 'utf8'), ctx),
+    /rules\.js/,
+  );
+});
+
 test('權威程式碼不使用 Math.random、牆鐘、Date', () => {
-  for (const f of ['rng.js', 'state.js']) {
+  for (const f of ['rng.js', 'rules.js', 'state.js']) {
     const src = fs.readFileSync(path.join(__dirname, '..', 'js', f), 'utf8')
       .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
     assert.equal(/Math\.random|Date\.now|new Date|performance\.now/.test(src), false, f);
@@ -675,7 +685,7 @@ test('正常 JSON record 仍被接受：巢狀、陣列、null 原型物件、�
 
 test('跨 realm（vm）建立的 JSON record 被接受，跨 realm 的 Map 仍被拒絕', () => {
   const ctx = vm.createContext({});
-  for (const f of ['rng.js', 'state.js']) {
+  for (const f of ['rng.js', 'rules.js', 'state.js']) {
     vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', f), 'utf8'), ctx, { filename: f });
   }
   const B = ctx.SectChronicle.State;
@@ -778,4 +788,71 @@ test('物件屬性 getter 同樣不被呼叫；普通稠密與跨 realm 陣列�
   const back = S.parseState(S.serializeState(good));
   assert.equal(back.ok, true);
   assert.equal(S.hashWorld(back.state), h1);
+});
+
+// ---------- SG-02：ruleVersion 1 → 2 的升版影響 ----------
+
+const legacy = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.v1.json'), 'utf8'));
+
+test('舊版（ruleVersion 1）存檔被明確拒絕、原資料不被修改或默默重解', () => {
+  assert.equal(legacy.ruleVersion, 1);
+  for (const c of legacy.cases) {
+    const before = c.canonical;
+    const r = S.parseState(c.canonical);
+    assert.equal(r.ok, false, c.name);
+    assert.equal(r.code, 'unknown_rule_version', c.name);
+    assert.ok(r.reason.includes('ruleVersion'), r.reason);
+    assert.equal(c.canonical, before, '輸入字串不變');
+    const obj = JSON.parse(c.canonical);
+    const snapshot = clone(obj);
+    assert.equal(S.validateWorld(obj).code, 'unknown_rule_version', c.name);
+    assert.deepEqual(obj, snapshot, '輸入物件不變（沒有被就地升版）');
+    assert.throws(() => S.serializeState(obj), TypeError, c.name);
+  }
+});
+
+test('升版後每個固定 seed 與舊 golden 的差異只有 ruleVersion 一個欄位', () => {
+  const fx = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.json'), 'utf8'));
+  assert.equal(fx.cases.length, legacy.cases.length);
+  assert.equal(legacy.schemaVersion, fx.schemaVersion);
+  assert.equal(legacy.rngVersion, fx.rngVersion);
+  for (let i = 0; i < legacy.cases.length; i++) {
+    const o = legacy.cases[i];
+    const n = fx.cases[i];
+    assert.equal(n.name, o.name);
+    assert.equal(n.seed, o.seed);
+    assert.deepEqual(n.rngState, o.rngState, `${o.name}：RNG 狀態（原向量）不變`);
+    assert.notEqual(n.hash, o.hash, `${o.name}：hash 必然不同`);
+    const a = JSON.parse(o.canonical);
+    const b = JSON.parse(n.canonical);
+    assert.equal(a.ruleVersion, 1);
+    assert.equal(b.ruleVersion, 2);
+    a.ruleVersion = 2;
+    assert.deepEqual(b, a, `${o.name}：除 ruleVersion 外世界內容完全相同`);
+    // 舊 hash 本身也可重算，證明 golden 沒被動過
+    assert.equal(S.sha256Hex(o.canonical), o.hash, o.name);
+  }
+});
+
+test('升版後的合法設定仍可存讀且 hash 不變；ruleVersion 只有 rules.js 一個來源', () => {
+  for (const t of Object.keys(L.templates)) {
+    for (const risk of L.personality.risk) for (const bond of L.personality.bond) {
+      const w = world('upgrade-seed', optionsFor(t, { rootBone: 1, comprehension: 1, craft: 1 }, { risk, bond }));
+      const back = S.parseState(S.serializeState(w));
+      assert.equal(back.ok, true);
+      assert.equal(S.hashWorld(back.state), S.hashWorld(w));
+      assert.equal(w.ruleVersion, require('../js/rules.js').RULE_VERSION);
+    }
+  }
+});
+
+test('新局的起始數值與師父屬性取自 rules.js 的凍結表', () => {
+  const Rules = require('../js/rules.js');
+  const w = world('rules-link');
+  const m = w.disciples.find((d) => d.id === S.MASTER_ID);
+  assert.deepEqual(m.attributes, Rules.MASTER_ATTRIBUTES);
+  for (const d of w.disciples) {
+    for (const k of ['stamina', 'mind', 'cultivation', 'injury']) assert.equal(d[k], Rules.START_VALUES[k], `${d.id}.${k}`);
+  }
+  assert.deepEqual(w.resources, { spiritMaterial: 0, spiritHerb: 0, spiritStone: 0, reputation: 0 }, '從零材料開局');
 });
