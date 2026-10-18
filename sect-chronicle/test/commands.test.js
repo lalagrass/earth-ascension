@@ -75,13 +75,13 @@ test('commands.js 不用 RNG／牆鐘／eval，只 require rules、state、story
     .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   assert.equal(/Math\.random|Date\.now|new Date|performance\.now|nextInt|nextUint32|eval\(|new Function/.test(src), false);
   const requires = [...src.matchAll(/require\('([^']+)'\)/g)].map((m) => m[1]).sort();
-  assert.deepEqual(requires, ['./rules.js', './state.js', './story-data.js', './story.js']);
+  assert.deepEqual(requires, ['./progression.js', './rules.js', './state.js', './story-data.js', './story.js']);
   const load = (names) => {
     const ctx = vm.createContext({});
     for (const f of names) vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', f), 'utf8'), ctx, { filename: f });
     return ctx;
   };
-  const ctx = load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'commands.js']);
+  const ctx = load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'progression.js', 'commands.js']);
   const B = ctx.SectChronicle.Commands;
   assert.ok(B);
   const w = world();
@@ -90,17 +90,18 @@ test('commands.js 不用 RNG／牆鐘／eval，只 require rules、state、story
   assert.equal(State.hashWorld(r.state), hash(C.dispatch(w, cmd('c-1', 0, 'assignSlot', { discipleId: State.PROTAGONIST_ID, slotIndex: 0, action: 'cultivate' })).state));
   assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'commands.js']), /story-data\.js/);
   assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'commands.js']), /story\.js/);
+  assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'commands.js']), /progression\.js/);
   assert.throws(() => load(['rng.js', 'rules.js', 'commands.js']), /state\.js/);
   assert.throws(() => load(['rng.js', 'commands.js']), /rules\.js/);
 });
 
 test('已支援與尚未支援的命令／行動清單明確且互不重疊，並對應後續任務', () => {
-  assert.deepEqual([...C.SUPPORTED_COMMANDS].sort(), ['acceptCandidate', 'assignSlot', 'cancelQueuedJob', 'chooseEvent', 'queueAid', 'queueBuild', 'queueCraft', 'setDailyTemplate']);
-  assert.deepEqual(Object.keys(C.DEFERRED_COMMANDS).sort(), ['queueBreakthrough', 'setDefense']);
+  assert.deepEqual([...C.SUPPORTED_COMMANDS].sort(), ['acceptCandidate', 'assignSlot', 'cancelQueuedJob', 'chooseEvent', 'queueAid', 'queueBreakthrough', 'queueBuild', 'queueCraft', 'setDailyTemplate']);
+  assert.deepEqual(Object.keys(C.DEFERRED_COMMANDS).sort(), ['setDefense']);
   for (const t of C.SUPPORTED_COMMANDS) assert.equal(t in C.DEFERRED_COMMANDS, false);
   assert.deepEqual([...C.SUPPORTED_ACTIONS].sort(), ['cultivate', 'gather-herb', 'gather-material', 'rest', 'tune-mind']);
-  assert.deepEqual(Object.keys(C.DEFERRED_ACTIONS).sort(), ['breakthrough', 'support']);
-  assert.deepEqual(C.JOB_ACTIONS, { build: 'queueBuild', brew: 'queueCraft', aid: 'queueAid' });
+  assert.deepEqual(Object.keys(C.DEFERRED_ACTIONS).sort(), []); // SG-05：breakthrough／support 已由 queueBreakthrough 驅動
+  assert.deepEqual(C.JOB_ACTIONS, { build: 'queueBuild', brew: 'queueCraft', aid: 'queueAid', breakthrough: 'queueBreakthrough', support: 'queueBreakthrough' });
   for (const a of [...C.SUPPORTED_ACTIONS, ...Object.keys(C.DEFERRED_ACTIONS), ...Object.keys(C.JOB_ACTIONS)]) assert.ok(a in Rules.ACTIONS, a);
   assert.equal(C.SUPPORTED_ACTIONS.length + Object.keys(C.DEFERRED_ACTIONS).length + Object.keys(C.JOB_ACTIONS).length, Object.keys(Rules.ACTIONS).length);
 });
@@ -133,7 +134,7 @@ test('不合法的世界被明確拒絕（invalid_world），不嘗試修補', (
 test('未知命令 unknown_command；後續任務的命令 not_supported_yet 並指出負責任務，世界不變', () => {
   const w = world();
   assertRejected(w, cmd('c', 0, 'castSpell', {}), 'unknown_command');
-  const owners = { queueBreakthrough: 'SG-05', setDefense: 'SG-06' };
+  const owners = { setDefense: 'SG-06' };
   for (const [type, owner] of Object.entries(owners)) {
     const r = assertRejected(w, cmd(`c-${type}`, 0, type, { anything: 1 }), 'not_supported_yet');
     assert.ok(r.reason.includes(owner), r.reason);
@@ -339,7 +340,7 @@ test('順序：世界驗證 → 封套 → 去重 → revision → 命令類型 
   assertRejected(w, cmd('c-9', 0, 'castSpell', {}), 'stale_revision');
   assertRejected(w, cmd('c-9', 1, 'castSpell', {}), 'unknown_command');
   // 命令類型在命令內容之前
-  assertRejected(w, cmd('c-9', 1, 'queueBreakthrough', { garbage: true }), 'not_supported_yet');
+  assertRejected(w, cmd('c-9', 1, 'setDefense', { garbage: true }), 'not_supported_yet');
   // 封套在去重之前
   assertRejected(w, cmd('c-1', -1, 'assignSlot', { discipleId: P, slotIndex: 3, action: 'rest' }), 'bad_command');
 });
@@ -505,8 +506,8 @@ test('payloadHash 與 key 順序無關，對不同內容不同', () => {
   assert.match(a, /^[0-9a-f]{64}$/);
 });
 
-test('命令層不改版本：ruleVersion 2／schema 3／rng 1，story-data 內容版本不變', () => {
-  assert.equal(State.RULE_VERSION, 2);
-  assert.equal(State.SCHEMA_VERSION, 3);
+test('命令層版本：ruleVersion 3／schema 4（SG-05 D7）／rng 1，story-data 內容版本不變', () => {
+  assert.equal(State.RULE_VERSION, 3);
+  assert.equal(State.SCHEMA_VERSION, 4);
   assert.equal(SD.STORY_DATA.requiresRuleVersion, Rules.RULE_VERSION);
 });

@@ -509,7 +509,7 @@ test('函式不修改輸入、不消耗 RNG；未知事件／選項 ID 明確拒
 
 test('story-data 本身不影響世界版本：ruleVersion 不變，新局不含任何事件／選項字串', () => {
   // SG-02A 時 schemaVersion 為 1；SG-03 為了課表與紀錄格式升為 2（與本檔資料無關），這裡只鎖 ruleVersion
-  assert.equal(State.RULE_VERSION, 2);
+  assert.equal(State.RULE_VERSION, 3);
   assert.equal(SD.STORY_DATA.requiresRuleVersion, State.RULE_VERSION);
   const w = State.newWorld('sg-02a-check').state;
   assert.equal(JSON.stringify(w).includes('evt-'), false);

@@ -1,18 +1,18 @@
-# 規則表（SG-02，ruleVersion 2）
+# 規則表（SG-02，ruleVersion 3）
 
 狀態：**候選規則基線**，供首次規則實驗前凍結。數值來自設計 0.2 的候選設定與本文件的推導；**沒有任何真人試玩或多 seed 平衡實驗**，不代表平衡、樂趣或完整引擎已驗證。權威實作是 [`js/rules.js`](../js/rules.js)，測試是 [`test/rules.test.js`](../test/rules.test.js)；本文件與程式不一致時以程式與測試為準，並應修正本文件。改動任何數值都必須升 `RULE_VERSION`（v2 尚未合入 dev 時，PO 複核要求的修正直接併入 v2 基線並在 PR 說明；一旦合入就以升版處理）。
 
 範圍：只有數值表與純計算。**不含**指令、排程、扣款、時段結算、RNG 抽樣、事件資料（SG-02A）、突破／援村 runtime（SG-05／04A）、UI、儲存。守山／`defensePrepPoints` 是未批准的另案，不採用。
 
-## SG-05 已批准變更（D7，尚未實作）
+## SG-05 已批准變更（D7，已於 SG-05 實作；ruleVersion 3）
 
-本文件其餘ruleVersion 2數值／公式是目前程式基線；以下[D7](DECISIONS_AND_SOURCES.md#d7sg-05-修為與突破處置已批准2026-10-18)是SG-05必須落實的新契約，不能因舊程式允許累積超過100而忽略。文件PR不升執行版本、不重產fixture。
+本文件其餘數值／公式沿ruleVersion 2不變；以下[D7](DECISIONS_AND_SOURCES.md#d7sg-05-修為與突破處置已批准2026-10-18)已由SG-05實作（ruleVersion升為3只因新增`CULTIVATION_CAP`與`capCultivationGain`，沒有改任何數值）。實作細節與驗證見[DEVELOPMENT](DEVELOPMENT.md)「SG-05 新增」。
 
 - 修為範圍0..100。格初未滿且未成功提升時，先算既有`cultivationGain`，再按剩餘空間限制實際收益；96＋14→100（實得4），仍扣一次修行體力／心境。最少1是公式原始收益規則，不保證封頂後仍加1。
 - 格初已滿100或已成功提升，修行轉明示休養，沿既有容量／輪候，只套一次休養效果，不扣修行成本、不占聚靈台、不擲RNG；不改永久課表，不自動突破或其他工作。
 - 突破須滿100且未成功提升。成功保留100並記錄提升；每人最多一次成功提升，不能以100誤判為可再次突破。失敗仍保留70%（100→70）、傷勢+15並受既有上限限制；可恢復再試。已有成功率、費用與抽樣契約不變。
 - 成功後本切片不再增修為。保留100可供未來承接，下一境條件未定；不先增加第二境公式或戰力倍率。
-- 實作時rule／schema均升版，從當前rule2／schema3向上（預期rule3／schema4，開工核對是否已占用）；rng1／content1不因本決策升版。舊開發存檔一律明確拒絕並保留，不自動遷移／截斷／補值；歷史golden不覆寫。SG-07再接上不覆蓋原檔、可備份／匯出與重開提示的儲存介面。
+- 實作：rule2→3、schema3→4（開工核對最新dev，未被占用）；rng1／content1不因本決策升版。舊開發存檔一律明確拒絕並保留，不自動遷移／截斷／補值；歷史golden不覆寫。SG-07再接上不覆蓋原檔、可備份／匯出與重開提示的儲存介面。
 
 ## 1. 版本
 
@@ -22,7 +22,7 @@
 | ruleVersion | 2 | SG-01 的暫定值 1 → SG-02 凍結值 2 |
 | rngVersion | 1 | 不變：RNG 演算法與向量不動；rules.js 完全不消耗 RNG |
 
-升版影響：`state.js` 只接受 ruleVersion 2。ruleVersion 1 的存檔以 `unknown_rule_version` 明確拒絕，不就地升版、不默默重解（測試：`舊版（ruleVersion 1）存檔被明確拒絕…`）；本版不提供遷移（設計 D4：新遊戲新存檔）。固定 seed fixture 的 7 個 hash 全部改變，原因只有一個：canonical 狀態中的 `ruleVersion` 欄位由 1 變 2。測試以 `test/fixtures/new-world.v1.json`（SG-01 的歷史 golden，不再重產）逐案證明：除 `ruleVersion` 外世界內容與 rngState 完全相同。當時新局的 `tiles` 仍是空陣列，因此世界狀態資料沒有其他變化（SG-04 起，新局的 `tiles` 採用 rules.js 的 25 格版型，見 DEVELOPMENT.md；本檔數值未變）。
+升版影響（SG-02 當時；SG-05 起 `state.js` 只接受 ruleVersion 3）：`state.js` 只接受 ruleVersion 2。ruleVersion 1 的存檔以 `unknown_rule_version` 明確拒絕，不就地升版、不默默重解（測試：`舊版（ruleVersion 1）存檔被明確拒絕…`）；本版不提供遷移（設計 D4：新遊戲新存檔）。固定 seed fixture 的 7 個 hash 全部改變，原因只有一個：canonical 狀態中的 `ruleVersion` 欄位由 1 變 2。測試以 `test/fixtures/new-world.v1.json`（SG-01 的歷史 golden，不再重產）逐案證明：除 `ruleVersion` 外世界內容與 rngState 完全相同。當時新局的 `tiles` 仍是空陣列，因此世界狀態資料沒有其他變化（SG-04 起，新局的 `tiles` 採用 rules.js 的 25 格版型，見 DEVELOPMENT.md；本檔數值未變）。
 
 ## 2. 單位與取整
 
@@ -119,7 +119,7 @@
 
 **行動消耗**：採集靈材／靈草 體力 −15；修行 −10、心境 −3；調心 −5、心境 +12；建造 −15；煉丹 −10；援村 −15；突破 −20、心境 −5；支援突破 −10。體力、心境夾在 0..100；體力不足不禁止行動，只降效（上表）。
 
-**突破**：修為 ≥100 才可嘗試；每人最多一次境界提升。成功率（基點）＝ 5000 ＋ 支援者 1500 ＋ 丹 2000 ＋ 心境≥60 的 500，上限 9500；抽樣由 SG-05 以單一 RNG 完成。失敗保留 70% 修為（floor），傷勢 +15，無永久死亡。
+**突破**：修為 ≥100 才可嘗試；每人最多一次境界提升。成功率（基點）＝ 5000 ＋ 支援者 1500 ＋ 丹 2000 ＋ 心境≥60 的 500，上限 9500；抽樣由 SG-05 以單一 RNG 完成（每個開工的突破一次 `Rng.nextInt(state, 10000)`，`roll < chanceBp` 成功）。修為上限 100；成功保留 100 並記一次提升。失敗保留 70% 修為（floor），傷勢 +15，無永久死亡。
 
 **援村**（`village-fence`）：日 4（slot 9）起開放；占 1 人 1 格（D6：一人一格）；一次性獎勵，兩種做法互斥、合計只能領一次。
 
@@ -167,7 +167,7 @@
 
 ## 10. 第一章事件契約（SG-02A，資料與驗證）
 
-資料在 `js/story-data.js`（`SectChronicle.StoryData`，內容版本 1，要求 ruleVersion 2）。它只是**宣告式資料＋驗證**；沒有 advance、指令、去重、存讀或 UI。本章的時點、數字都不在資料裡複製，而是引用本文件第 5～7 章對應的 `rules.js` 常數（`{rule: 名稱}`、`{phase, field}`）。
+資料在 `js/story-data.js`（`SectChronicle.StoryData`，內容版本 1，要求 ruleVersion 3）。它只是**宣告式資料＋驗證**；沒有 advance、指令、去重、存讀或 UI。本章的時點、數字都不在資料裡複製，而是引用本文件第 5～7 章對應的 `rules.js` 常數（`{rule: 名稱}`、`{phase, field}`）。
 
 ### 10.1 事件表
 

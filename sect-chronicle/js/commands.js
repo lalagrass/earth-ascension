@@ -5,7 +5,8 @@
  * - 本版支援 assignSlot、setDailyTemplate（採集可指定 tileId／tileIds 資源點）、chooseEvent（SG-03），以及 queueBuild、queueCraft、cancelQueuedJob（SG-04）。
  *   queueBuild／queueCraft 只「排隊」：不推時間、不扣材料、不發成果；真正的開工（原子預約、扣一次成本）發生在
  *   engine.js 的格初。build／brew 不可排入課表（use_job_command），只由 job 驅動。
- *   其餘命令（queueBreakthrough／setDefense／acceptCandidate）與行動（aid／breakthrough／support）一律回
+ *   SG-04A 加入 queueAid／acceptCandidate；SG-05 加入 queueBreakthrough（只排隊，開工、扣丹與抽樣在 engine.js 格初）。
+ *   aid／breakthrough／support 與 build／brew 一樣只由 job 驅動（use_job_command）。尚未支援的命令（setDefense，SG-06）回
  *   not_supported_yet 並指出負責的後續任務，不假成功、不直接發資源。
  * - chooseEvent 的選項效果只取自 story-data.js 的宣告（玩家不能傳入 effects）。目前只執行 showAidPrompt（提示）
  *   與 setInvitationStatus（只改邀請狀態，不新增角色）；submitFormation（SG-06）等一律尚未支援。
@@ -14,7 +15,7 @@
  *   → ④ expectedRevision → ⑤ 命令類型已知／已支援 → ⑥ 各命令的 payload、phase、內容驗證與套用。
  *   被拒絕的命令不改世界、RNG、revision，也不寫 commandLog（拒絕不佔用 id）。
  * - 成功的命令 revision 恰好 +1，並寫入 commandLog 與 eventLog（序號連續）。
- * - 載入策略：Node 以 CommonJS；瀏覽器依序載入 rng.js、rules.js、state.js、story-data.js 再載入本檔，
+ * - 載入策略：Node 以 CommonJS；瀏覽器依序載入 rng.js、rules.js、state.js、story-data.js、story.js、progression.js 再載入本檔，
  *   掛在 globalThis.SectChronicle.Commands。
  */
 (function (root, factory) {
@@ -23,12 +24,14 @@
   let State;
   let StoryData;
   let Story;
+  let Progression;
   if (typeof module === 'object' && module && module.exports) {
     Rules = require('./rules.js');
     State = require('./state.js');
     StoryData = require('./story-data.js');
     Story = require('./story.js');
-    module.exports = factory(Rules, State, StoryData, Story);
+    Progression = require('./progression.js');
+    module.exports = factory(Rules, State, StoryData, Story, Progression);
   } else {
     Rules = root.SectChronicle && root.SectChronicle.Rules;
     if (!Rules) throw new Error('commands.js 需要先載入 js/rules.js（以及 js/rng.js）');
@@ -38,23 +41,25 @@
     if (!StoryData) throw new Error('commands.js 需要先載入 js/story-data.js（在 js/state.js 之後、本檔之前）');
     Story = root.SectChronicle.Story;
     if (!Story) throw new Error('commands.js 需要先載入 js/story.js（在 js/story-data.js 之後、本檔之前）');
-    root.SectChronicle.Commands = factory(Rules, State, StoryData, Story);
+    Progression = root.SectChronicle.Progression;
+    if (!Progression) throw new Error('commands.js 需要先載入 js/progression.js（在 js/rules.js 之後、本檔之前）');
+    root.SectChronicle.Commands = factory(Rules, State, StoryData, Story, Progression);
   }
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (Rules, State, StoryData, Story) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (Rules, State, StoryData, Story, Progression) {
   'use strict';
 
   const SUPPORTED_COMMANDS = Object.freeze([
     'assignSlot', 'setDailyTemplate', 'chooseEvent', 'queueBuild', 'queueCraft', 'cancelQueuedJob', 'queueAid', 'acceptCandidate',
+    'queueBreakthrough',
   ]);
   const DEFERRED_COMMANDS = Object.freeze({
-    queueBreakthrough: 'SG-05', setDefense: 'SG-06',
+    setDefense: 'SG-06',
   });
   const SUPPORTED_ACTIONS = Object.freeze(['gather-material', 'gather-herb', 'cultivate', 'rest', 'tune-mind']);
   // build／brew 需要地塊、工程或配方等明確目標，因此只能由 queueBuild／queueCraft 建立的 job 驅動，不能排入課表。
-  const JOB_ACTIONS = Object.freeze({ build: 'queueBuild', brew: 'queueCraft', aid: 'queueAid' });
-  const DEFERRED_ACTIONS = Object.freeze({
-    breakthrough: 'SG-05', support: 'SG-05',
+  const JOB_ACTIONS = Object.freeze({ build: 'queueBuild', brew: 'queueCraft', aid: 'queueAid', breakthrough: 'queueBreakthrough', support: 'queueBreakthrough',
   });
+  const DEFERRED_ACTIONS = Object.freeze({});
   const SUPPORTED_EFFECTS = Object.freeze(['showAidPrompt', 'setInvitationStatus']);
   const ID_MAX_LENGTH = 64;
 
@@ -97,6 +102,8 @@
     }
     const story = Story.validateWorld(world);
     if (!story.ok) return story;
+    const progression = Progression.validateWorld(world);
+    if (!progression.ok) return progression;
     return { ok: true };
   }
 
@@ -393,10 +400,35 @@
     return { drafts: [Story.addApprentice(next, id)] };
   }
 
+  // ---------- SG-05：突破排隊（只排隊；開工、扣丹、抽樣都在 engine.js 格初） ----------
+  function doQueueBreakthrough(world, next, payload) {
+    if (!sameKeys(payload, ['discipleId', 'usePill', 'supporterId']) || typeof payload.discipleId !== 'string'
+      || typeof payload.usePill !== 'boolean' || !(payload.supporterId === null || typeof payload.supporterId === 'string')) {
+      return { error: reject('bad_payload', 'queueBreakthrough 需要恰好 discipleId（字串）、usePill（布林）、supporterId（字串或 null）') };
+    }
+    if (world.phase !== 'planning') return { error: reject('not_planning', `目前階段是 ${world.phase}，只有 planning 可以排突破`) };
+    const found = findMember(world, payload.discipleId);
+    if (found.error) return { error: found.error };
+    if (payload.supporterId !== null) {
+      const sup = findMember(world, payload.supporterId);
+      if (sup.error) return { error: sup.error };
+      if (payload.supporterId === payload.discipleId) return { error: reject('self_support', '不能支援自己的突破') };
+    }
+    const e = Progression.eligibility(found.member);
+    if (!e.ok) return { error: reject(e.code, e.reason) };
+    if (world.jobs.some((j) => j.kind === 'breakthrough' && j.status === 'queued' && j.discipleId === payload.discipleId)) {
+      return { error: reject('breakthrough_pending', `${payload.discipleId} 已有排隊中的突破；先取消才能改排`) };
+    }
+    // 丹藥數量不在排隊時檢查：由開工仲裁決定（同丹競爭落選不扣費）。
+    const job = addJob(next, 'breakthrough', payload.discipleId, { usePill: payload.usePill, supporterId: payload.supporterId });
+    job.outcome = null;
+    return { drafts: [{ type: 'jobQueued', jobId: job.id, kind: 'breakthrough', discipleId: job.discipleId, target: cloneJson(job.target) }] };
+  }
+
   const HANDLERS = {
     assignSlot: doAssignSlot, setDailyTemplate: doSetDailyTemplate, chooseEvent: doChooseEvent,
     queueBuild: doQueueBuild, queueCraft: doQueueCraft, cancelQueuedJob: doCancelQueuedJob,
-    queueAid: doQueueAid, acceptCandidate: doAcceptCandidate,
+    queueAid: doQueueAid, acceptCandidate: doAcceptCandidate, queueBreakthrough: doQueueBreakthrough,
   };
 
   // ---------- dispatch ----------

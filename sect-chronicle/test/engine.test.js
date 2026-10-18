@@ -60,19 +60,19 @@ test('engine.js 不用 RNG／牆鐘／eval，只 require commands、rules、stat
     .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   assert.equal(/Math\.random|Date\.now|new Date|performance\.now|nextInt|nextUint32|eval\(|new Function/.test(src), false);
   assert.deepEqual([...src.matchAll(/require\('([^']+)'\)/g)].map((m) => m[1]).sort(),
-    ['./commands.js', './rules.js', './state.js', './story-data.js', './story.js']);
+    ['./commands.js', './progression.js', './rules.js', './state.js', './story-data.js', './story.js']);
   const load = (names) => {
     const ctx = vm.createContext({});
     for (const f of names) vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', f), 'utf8'), ctx, { filename: f });
     return ctx;
   };
-  const ctx = load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'commands.js', 'engine.js']);
+  const ctx = load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'progression.js', 'commands.js', 'engine.js']);
   const B = ctx.SectChronicle.Engine;
   assert.ok(B);
   const r = B.advance(world(), 3);
   assert.equal(r.ok, true);
   assert.equal(hash(r.state), hash(E.advance(world(), 3).state), '瀏覽器載入與 Node 結果相同');
-  assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'engine.js']), /commands\.js/);
+  assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'progression.js', 'engine.js']), /commands\.js/);
   assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'commands.js', 'engine.js']), /story\.js/);
 });
 
@@ -282,6 +282,7 @@ test('階段事件與可見階段在 slot 0／9／18／30 的第一格採用；�
     for (const e of cur.eventLog) if (e.type === 'story' && !(e.eventId in firstSlot)) firstSlot[e.eventId] = e.slotIndex;
   };
   for (let guard = 0; guard < 60 && w.slotIndex < 42; guard++) {
+    disc(w, M).cultivation = 0; // SG-05 起修為封頂 100：每格歸零（合法狀態）才能逐格對照未封頂的階段收益
     const pre = clone(disc(w, M));
     const s = w.slotIndex;
     const r = E.advance(w, 1);
@@ -543,7 +544,7 @@ test('引擎推進後的世界可存讀；schema 1 世界被拒絕；版本與 f
   old.schemaVersion = 1;
   assert.equal(State.parseState(JSON.stringify(old)).code, 'unknown_schema_version');
   assert.equal(E.advance(old, 1).code, 'invalid_world');
-  assert.equal(State.SCHEMA_VERSION, 3);
-  assert.equal(State.RULE_VERSION, 2);
+  assert.equal(State.SCHEMA_VERSION, 4);
+  assert.equal(State.RULE_VERSION, 3);
   assert.equal(State.RNG_VERSION, 1);
 });

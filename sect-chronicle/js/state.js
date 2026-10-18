@@ -4,6 +4,8 @@
  * SG-03：schemaVersion 升為 2，新增 `schedule`（課表）並為 commandLog／eventLog／pendingEvents 定義項目格式。
  * SG-04：schemaVersion 升為 3：tiles 固定為 `Rules.initialTiles()` 的 25 格；新增 `inventory`（丹藥庫存）；
  *   jobs（建造／煉丹工作，含持久輪候值）與 reservations（進行中工作的預約）有完整內容契約與一致性驗證。
+ * SG-05：schemaVersion 升為 4：弟子新增 `breakthroughs`（0｜1，成功提升次數）、修為上限 100；新 job 種類 `breakthrough`
+ *   （done 時多一個 `outcome`）。schema 3 及更舊檔一律由版本檢查明確拒絕，不遷移。
  *
  * 範圍界線（設計 0.2／issue #71、#81）：
  * - 只定義「狀態長什麼樣、怎樣才算合法」；不含規則、指令、結算引擎、UI。
@@ -33,8 +35,9 @@
 
   // ---------- 版本與常數 ----------
   // 1 = SG-01；2 = SG-03 新增 schedule（課表）並定義 commandLog／eventLog／pendingEvents 項目格式；
-  // 3 = SG-04 固定 25 格地圖、新增 inventory、定義 jobs／reservations。
-  const SCHEMA_VERSION = 3;
+  // 3 = SG-04 固定 25 格地圖、新增 inventory、定義 jobs／reservations（SG-04A 加性擴充 aid job）；
+  // 4 = SG-05（D7）弟子新增 breakthroughs、修為上限 100、新增 breakthrough job（done 時多一個 outcome 欄位）。
+  const SCHEMA_VERSION = 4;
   // ruleVersion 的唯一來源是 js/rules.js（1 = SG-01 暫定值；2 = SG-02 凍結的候選規則基線）。
   const RULE_VERSION = Rules.RULE_VERSION;
   const RNG_VERSION = Rng.RNG_VERSION;
@@ -226,11 +229,11 @@
       disciples: [
         Object.assign({
           id: MASTER_ID, role: 'master', attributes: { ...MASTER_ATTRIBUTES },
-        }, START_VALUES, { joinSlotIndex: 0 }),
+        }, START_VALUES, { joinSlotIndex: 0, breakthroughs: 0 }),
         Object.assign({
           id: PROTAGONIST_ID, role: 'protagonist', templateId: options.templateId,
           attributes: deriveProtagonistAttributes(options),
-        }, START_VALUES, { joinSlotIndex: 0 }),
+        }, START_VALUES, { joinSlotIndex: 0, breakthroughs: 0 }),
       ],
       candidates: CANDIDATE_IDS.map((id, i) => ({ id, order: i + 1 })),
       jobs: [],
@@ -290,7 +293,7 @@
     const where = `disciples[${i}]`;
     if (!isPlainObject(d)) return fail('bad_type', `${where} 必須是物件`, where);
     const isProtagonist = d.role === 'protagonist';
-    const keys = ['id', 'role', 'attributes', 'stamina', 'mind', 'cultivation', 'injury', 'joinSlotIndex'];
+    const keys = ['id', 'role', 'attributes', 'stamina', 'mind', 'cultivation', 'injury', 'joinSlotIndex', 'breakthroughs'];
     if (isProtagonist) keys.push('templateId');
     if (!sameKeys(d, keys)) return fail('bad_value', `${where} 欄位不符（需 ${keys.join('、')}）`, where);
     if (typeof d.id !== 'string' || d.id.length === 0) return fail('bad_type', `${where}.id 必須是非空字串`, where);
@@ -303,6 +306,15 @@
     }
     for (const k of ['stamina', 'mind', 'cultivation', 'injury', 'joinSlotIndex']) {
       if (!isNonNegInt(d[k])) return fail('bad_value', `${where}.${k} 必須是非負整數`, where);
+    }
+    if (d.cultivation > Rules.CULTIVATION_CAP) {
+      return fail('bad_value', `${where}.cultivation 不得超過上限 ${Rules.CULTIVATION_CAP}（D7-A）`, where);
+    }
+    if (d.breakthroughs !== 0 && d.breakthroughs !== 1) {
+      return fail('bad_value', `${where}.breakthroughs 必須是 0 或 1（本切片每人最多一次成功提升）`, where);
+    }
+    if (d.breakthroughs === 1 && d.cultivation !== Rules.CULTIVATION_CAP) {
+      return fail('inconsistent_progression', `${where} 已成功提升者修為必須保留 ${Rules.CULTIVATION_CAP}`, where);
     }
     if (d.joinSlotIndex > w.slotIndex) {
       return fail('inconsistent_roster', `${where}.joinSlotIndex 不得晚於目前 slotIndex`, where);
@@ -460,12 +472,18 @@
 
 
   // ---------- SG-04：地圖、庫存、工作（jobs）與預約（reservations） ----------
-  const JOB_KINDS = Object.freeze(['build', 'craft', 'aid']);
+  const JOB_KINDS = Object.freeze(['build', 'craft', 'aid', 'breakthrough']);
   const JOB_STATUSES = Object.freeze(['queued', 'active', 'done', 'cancelled']);
   const JOB_KEYS = Object.freeze([
     'id', 'kind', 'discipleId', 'status', 'queuedSlotIndex', 'waited', 'startSlotIndex', 'slotsDone',
     'completedSlotIndex', 'cancelledSlotIndex', 'target',
   ]);
+  // 突破 job 多一個 outcome（done 前為 null）；其餘種類沒有這個欄位。
+  const BREAKTHROUGH_JOB_KEYS = Object.freeze([...JOB_KEYS, 'outcome']);
+  const OUTCOME_KEYS = Object.freeze([
+    'result', 'mindAtStart', 'chanceBp', 'roll', 'cultivationBefore', 'cultivationAfter', 'injuryBefore', 'injuryAfter',
+  ]);
+  const BREAKTHROUGH_DURATION_SLOTS = 1; // 突破占一格：同格開工、同格完成，沒有跨格預約
   const RESERVATION_KEYS = Object.freeze(['jobId', 'discipleId', 'seat', 'startSlotIndex', 'slotsTotal', 'paid', 'output']);
   const OUTPUT_KEYS = Object.freeze(['itemId', 'amount', 'staminaAtStart', 'craft', 'multiplierBp']);
   const jobIdOf = (index) => `job-${String(index + 1).padStart(4, '0')}`;
@@ -474,10 +492,13 @@
 
   function jobDuration(job) {
     if (job.kind === 'aid') return Rules.AID_DURATION_SLOTS;
+    if (job.kind === 'breakthrough') return BREAKTHROUGH_DURATION_SLOTS;
     return job.kind === 'build' ? Rules.FACILITIES[job.target.facilityType].durationSlots : Rules.RECIPES[job.target.recipeId].durationSlots;
   }
+  // 資源成本；突破的丹藥在 inventory，不在 resources，所以這裡是空物件（丹由引擎在開工時原子扣除）。
   function jobCost(job) {
     if (job.kind === 'aid') return Rules.AID_OPTIONS[job.target.optionId].cost;
+    if (job.kind === 'breakthrough') return {};
     return job.kind === 'build' ? Rules.FACILITIES[job.target.facilityType].cost : Rules.RECIPES[job.target.recipeId].cost;
   }
 
@@ -506,10 +527,12 @@
     const tileById = new Map(w.tiles.map((t) => [t.id, t]));
     const builds = []; // 未取消的 build job
     const activeByWorker = new Set();
+    const pendingBreakthrough = new Set();
     let prevQueued = 0;
     for (let i = 0; i < w.jobs.length; i++) {
       const j = w.jobs[i];
-      if (!sameKeys(j, JOB_KEYS)) return fail('bad_value', `${where(i)} 欄位不符（需 ${JOB_KEYS.join('、')}）`, where(i));
+      const jobKeys = isPlainObject(j) && j.kind === 'breakthrough' ? BREAKTHROUGH_JOB_KEYS : JOB_KEYS;
+      if (!sameKeys(j, jobKeys)) return fail('bad_value', `${where(i)} 欄位不符（需 ${jobKeys.join('、')}）`, where(i));
       if (j.id !== jobIdOf(i)) return bad(i, `${where(i)}.id 必須是依序編號 ${jobIdOf(i)}`);
       if (typeof j.kind !== 'string' || !JOB_KINDS.includes(j.kind)) return fail('bad_value', `${where(i)}.kind 未知`, where(i));
       if (typeof j.status !== 'string' || !JOB_STATUSES.includes(j.status)) return fail('bad_value', `${where(i)}.status 未知`, where(i));
@@ -535,6 +558,29 @@
         const tile = typeof t.tileId === 'string' ? tileById.get(t.tileId) : undefined;
         if (!tile || !Rules.TERRAIN[tile.terrain].buildable) return bad(i, `${where(i)}.target.tileId 必須是可建地塊`);
         if (j.status !== 'cancelled') builds.push(j);
+      } else if (j.kind === 'breakthrough') {
+        if (!sameKeys(t, ['usePill', 'supporterId'])) return fail('bad_value', `${where(i)}.target 必須恰好含 usePill、supporterId`, where(i));
+        if (typeof t.usePill !== 'boolean') return fail('bad_value', `${where(i)}.target.usePill 必須是布林`, where(i));
+        if (t.supporterId !== null && (typeof t.supporterId !== 'string' || t.supporterId === j.discipleId || !byDisciple.has(t.supporterId))) {
+          return bad(i, `${where(i)}.target.supporterId 必須是 null 或另一位在隊角色`);
+        }
+        if (t.supporterId !== null && byDisciple.get(t.supporterId).joinSlotIndex > j.queuedSlotIndex) {
+          return bad(i, `${where(i)}.target.supporterId ${t.supporterId} 在排隊格之後才入隊，不能支援此突破`);
+        }
+        if (j.status === 'queued') {
+          if (pendingBreakthrough.has(j.discipleId)) return bad(i, `${j.discipleId} 同時有多個排隊中的突破`);
+          pendingBreakthrough.add(j.discipleId);
+        }
+        const o = j.outcome;
+        if (j.status !== 'done') {
+          if (o !== null) return bad(i, `${where(i)}.outcome 在完成前必須是 null`);
+        } else {
+          if (!isPlainObject(o) || !sameKeys(o, OUTCOME_KEYS)) return fail('bad_value', `${where(i)}.outcome 必須恰好含 ${OUTCOME_KEYS.join('、')}`, where(i));
+          if (o.result !== 'success' && o.result !== 'failure') return fail('bad_value', `${where(i)}.outcome.result 必須是 success 或 failure`, where(i));
+          for (const k of OUTCOME_KEYS.slice(1)) {
+            if (!isNonNegInt(o[k])) return fail('bad_value', `${where(i)}.outcome.${k} 必須是非負整數`, where(i));
+          }
+        }
       } else if (j.kind === 'aid') {
         if (!sameKeys(t, ['aidId', 'optionId'])) return fail('bad_value', `${where(i)}.target 必須恰好含 aidId、optionId`, where(i));
         if (t.aidId !== Rules.AID_ID) return fail('bad_value', `${where(i)}.target.aidId 必須是 ${Rules.AID_ID}`, where(i));
@@ -980,7 +1026,7 @@
   }
 
   return {
-    SCHEMA_VERSION, RULE_VERSION, RNG_VERSION, SCENARIOS, PHASES, ORGANISATION_STATUSES,
+    SCHEMA_VERSION, RULE_VERSION, RNG_VERSION, BREAKTHROUGH_DURATION_SLOTS, SCENARIOS, PHASES, ORGANISATION_STATUSES,
     INVITATION_STATUSES, ACTION_IDS, MASTER_ID, PROTAGONIST_ID, CANDIDATE_IDS, MAX_ROSTER,
     CHARACTER_OPTION_LIMITS, DEFAULT_CHARACTER_OPTIONS, CANONICAL_EXCLUDED_FIELDS,
     BASIS_POINTS, ROUNDING_MODE,
