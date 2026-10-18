@@ -101,7 +101,37 @@
     return r;
   }
 
-  const isPlainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+  // JSON record：只接受普通物件（含 null 原型與跨 realm 的 Object）。Map／Set／Date／RegExp／Error、
+  // class 實例、型別陣列、Symbol 鍵、不可列舉屬性、getter 一律不是，因為序列化會靜默遺失它們。
+  const objectToString = Object.prototype.toString;
+  function isJsonRecord(v) {
+    if (v === null || typeof v !== 'object' || Array.isArray(v)) return false;
+    if (objectToString.call(v) !== '[object Object]') return false;
+    const proto = Object.getPrototypeOf(v);
+    if (proto !== null) {
+      // 必須是某個 realm 的 Object.prototype：其原型為 null，且自有 hasOwnProperty。
+      if (Object.getPrototypeOf(proto) !== null || !Object.prototype.hasOwnProperty.call(proto, 'hasOwnProperty')) return false;
+    }
+    if (Object.getOwnPropertySymbols(v).length > 0) return false;
+    const names = Object.getOwnPropertyNames(v);
+    if (names.length !== Object.keys(v).length) return false;
+    for (const k of names) {
+      const d = Object.getOwnPropertyDescriptor(v, k);
+      if (!('value' in d)) return false;
+    }
+    return true;
+  }
+  // 陣列必須是稠密的普通陣列：無空洞、無額外屬性、無 Symbol 鍵。
+  function isJsonArray(v) {
+    if (!Array.isArray(v)) return false;
+    if (Object.getOwnPropertySymbols(v).length > 0) return false;
+    if (Object.getOwnPropertyNames(v).length !== v.length + 1) return false;
+    for (let i = 0; i < v.length; i++) {
+      if (!Object.prototype.hasOwnProperty.call(v, i)) return false;
+    }
+    return true;
+  }
+  const isPlainObject = isJsonRecord;
   const isInt = (v) => typeof v === 'number' && Number.isSafeInteger(v) && !Object.is(v, -0);
   const isNonNegInt = (v) => isInt(v) && v >= 0;
   const hasOwn = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
@@ -243,6 +273,7 @@
       return isInt(v) ? null : fail('non_integer', `${where} 必須是安全整數（含不得為 -0、NaN、小數）`, where);
     }
     if (Array.isArray(v)) {
+      if (!isJsonArray(v)) return fail('bad_type', `${where} 不是稠密的 JSON 陣列（有空洞或額外屬性）`, where);
       for (let i = 0; i < v.length; i++) {
         const r = walkJson(v[i], `${where}[${i}]`, depth + 1);
         if (r) return r;
@@ -250,6 +281,9 @@
       return null;
     }
     if (typeof v === 'object') {
+      if (!isJsonRecord(v)) {
+        return fail('bad_type', `${where} 不是 JSON 物件（Map／Set／Date／class 實例等會在序列化時靜默遺失內容）`, where);
+      }
       for (const k of Object.keys(v)) {
         const r = walkJson(v[k], `${where}.${k}`, depth + 1);
         if (r) return r;
@@ -492,7 +526,13 @@
         if (!isInt(value)) throw new TypeError(`canonical 只接受安全整數，收到 ${String(value)}`);
         return String(value);
       case 'object': {
-        if (Array.isArray(value)) return `[${value.map(canonicalize).join(',')}]`;
+        if (Array.isArray(value)) {
+          if (!isJsonArray(value)) throw new TypeError('canonical 不接受稀疏陣列或帶額外屬性的陣列');
+          return `[${value.map(canonicalize).join(',')}]`;
+        }
+        if (!isJsonRecord(value)) {
+          throw new TypeError('canonical 只接受 JSON 物件，不接受 Map／Set／Date／class 實例等');
+        }
         const keys = Object.keys(value).sort();
         return `{${keys.map((k) => `${JSON.stringify(k)}:${canonicalize(value[k])}`).join(',')}}`;
       }
@@ -576,7 +616,11 @@
   }
 
   // ---------- 存讀（純函式；真正的 localStorage 屬 SG-07） ----------
+  // 先驗證再輸出：不合法的 world（resolving、未知版本、非 JSON 資料…）不得被序列化，
+  // 避免呼叫端（SG-07）把未驗證的字串當成已通過驗證的存檔。
   function serializeState(world) {
+    const v = validateWorld(world);
+    if (!v.ok) throw new TypeError(`serializeState 拒絕不合法的世界狀態：${v.code}：${v.reason}`);
     return canonicalize(world);
   }
 

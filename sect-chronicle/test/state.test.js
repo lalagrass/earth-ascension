@@ -576,3 +576,137 @@ test('固定 seed fixture：hash 與 rngState 與已提交檔案相同', () => {
     assert.equal(S.canonicalize(r.state), c.canonical, c.name);
   }
 });
+
+// ---------- PR #74 審查 R1：非 JSON 物件不得被靜默接受 ----------
+
+class Custom { constructor() { this.a = 1; } }
+function nonJsonSamples() {
+  const nonEnum = {};
+  Object.defineProperty(nonEnum, 'hidden', { value: 1, enumerable: false });
+  const sym = { a: 1 };
+  sym[Symbol('s')] = 2;
+  const accessor = {};
+  Object.defineProperty(accessor, 'x', { get() { return 1; }, enumerable: true });
+  const sparse = [1, , 3]; // eslint-disable-line no-sparse-arrays
+  const arrExtra = [1, 2];
+  arrExtra.note = 'x';
+  return {
+    Map: new Map([['cost', 99]]),
+    Set: new Set([1]),
+    Date: new Date(0),
+    RegExp: /x/,
+    Error: new Error('x'),
+    class實例: new Custom(),
+    Uint8Array: new Uint8Array(2),
+    WeakMap: new WeakMap(),
+    Promise: Promise.resolve(1),
+    不可列舉屬性: nonEnum,
+    Symbol鍵: sym,
+    getter: accessor,
+    稀疏陣列: sparse,
+    陣列額外屬性: arrExtra,
+  };
+}
+
+test('審查 R1 重現：jobs 內含 Map 的 world 被 validateWorld 拒絕，序列化也不會靜默遺失', () => {
+  const w = world('review-json');
+  w.jobs = [{ id: 'job-1', payload: new Map([['cost', 99]]) }];
+  const rngBefore = [...w.rngState];
+  const r = S.validateWorld(w);
+  assert.equal(r.ok, false);
+  assert.equal(r.code, 'bad_type');
+  assert.match(r.reason, /JSON/);
+  assert.deepEqual(w.rngState, rngBefore, '拒絕時 RNG 不變');
+  assert.throws(() => S.serializeState(w), TypeError);
+  assert.throws(() => S.hashWorld(w), TypeError, 'hash 不可與空物件相同');
+  const other = world('review-json');
+  other.jobs = [{ id: 'job-1', payload: {} }];
+  assert.equal(S.validateWorld(other).ok, true);
+});
+
+test('各種非 JSON 值放在任何位置都被拒絕（巢狀、頂層欄位、story、disciples）', () => {
+  const places = {
+    jobs巢狀: (w, v) => { w.jobs = [{ id: 'j', deep: { list: [v] } }]; },
+    reservations: (w, v) => { w.reservations = [{ id: 'r', v }]; },
+    pendingEvents: (w, v) => { w.phase = 'awaitingChoice'; w.pendingEvents = [{ id: 'e', v }]; },
+    eventLog: (w, v) => { w.eventLog = [{ id: 'l', v }]; },
+    resources整個: (w, v) => { w.resources = v; },
+    story整個: (w, v) => { w.story = v; },
+    story內: (w, v) => { w.story.rescues = [v]; },
+    disciple: (w, v) => { w.disciples[0] = v; },
+    characterOptions: (w, v) => { w.characterOptions.allocation = v; },
+  };
+  for (const [vname, v] of Object.entries(nonJsonSamples())) {
+    for (const [pname, put] of Object.entries(places)) {
+      const w = world('review-json');
+      put(w, v);
+      const r = S.validateWorld(w);
+      assert.equal(r.ok, false, `${vname} @ ${pname}`);
+    }
+    // 內層位置必須因「非 JSON」被拒絕，而不是因別的原因巧合失敗
+    const w = world('review-json');
+    w.jobs = [{ id: 'j', deep: { list: [v] } }];
+    const r = S.validateWorld(w);
+    assert.equal(r.code, 'bad_type', vname);
+  }
+});
+
+test('canonicalize 與 serializeState 對非 JSON 值丟 TypeError，而不是輸出空物件', () => {
+  for (const [name, v] of Object.entries(nonJsonSamples())) {
+    assert.throws(() => S.canonicalize({ a: v }), TypeError, name);
+    assert.throws(() => S.canonicalize([v]), TypeError, name);
+  }
+  assert.throws(() => S.canonicalize({ a: [1, , 3] }), TypeError); // eslint-disable-line no-sparse-arrays
+});
+
+test('正常 JSON record 仍被接受：巢狀、陣列、null 原型物件、空物件', () => {
+  const w = world('review-json');
+  const nullProto = Object.create(null);
+  nullProto.k = 1;
+  w.jobs = [{ id: 'j1', payload: { list: [1, 2, { z: [] }], empty: {}, nothing: null, flag: true, s: '字串' } },
+    { id: 'j2', payload: nullProto }];
+  assert.deepEqual(S.validateWorld(w), { ok: true });
+  assert.equal(S.canonicalize(nullProto), '{"k":1}');
+  const r = S.parseState(S.serializeState(w));
+  assert.equal(r.ok, true);
+  assert.equal(S.hashWorld(r.state), S.hashWorld(w), '合法 state 存讀 hash 不變');
+  assert.deepEqual(r.state.jobs[0].payload, w.jobs[0].payload);
+});
+
+test('跨 realm（vm）建立的 JSON record 被接受，跨 realm 的 Map 仍被拒絕', () => {
+  const ctx = vm.createContext({});
+  for (const f of ['rng.js', 'state.js']) {
+    vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', f), 'utf8'), ctx, { filename: f });
+  }
+  const B = ctx.SectChronicle.State;
+  const foreignRecord = vm.runInContext('({ a: [1, { b: 2 }], c: {} })', ctx);
+  const foreignMap = vm.runInContext('new Map([["x", 1]])', ctx);
+  // vm 內的狀態含主 realm 的物件，反之亦然
+  const w1 = B.newWorld('seed-a').state;
+  w1.jobs = [{ id: 'j', payload: { a: [1, { b: 2 }], c: {} } }];
+  assert.equal(B.validateWorld(w1).ok, true);
+  const w2 = world('seed-a');
+  w2.jobs = [{ id: 'j', payload: foreignRecord }];
+  assert.equal(S.validateWorld(w2).ok, true);
+  assert.equal(S.canonicalize(foreignRecord), '{"a":[1,{"b":2}],"c":{}}');
+  const w3 = world('seed-a');
+  w3.jobs = [{ id: 'j', payload: foreignMap }];
+  assert.equal(S.validateWorld(w3).ok, false);
+  assert.throws(() => S.canonicalize(foreignMap), TypeError);
+  const w4 = B.newWorld('seed-a').state;
+  w4.jobs = [{ id: 'j', payload: new Map() }];
+  assert.equal(B.validateWorld(w4).ok, false);
+});
+
+test('serializeState 先驗證：不合法 world（resolving、未知版本、非 JSON）拒絕輸出', () => {
+  const resolving = world();
+  resolving.phase = 'resolving';
+  assert.throws(() => S.serializeState(resolving), (e) => e instanceof TypeError && /phase_not_persistable/.test(e.message));
+  const badVersion = world();
+  badVersion.schemaVersion = 9;
+  assert.throws(() => S.serializeState(badVersion), (e) => e instanceof TypeError && /unknown_schema_version/.test(e.message));
+  assert.throws(() => S.serializeState(null), TypeError);
+  const ok = world();
+  assert.equal(typeof S.serializeState(ok), 'string');
+  assert.equal(S.parseState(S.serializeState(ok)).ok, true);
+});
