@@ -460,7 +460,7 @@
 
 
   // ---------- SG-04：地圖、庫存、工作（jobs）與預約（reservations） ----------
-  const JOB_KINDS = Object.freeze(['build', 'craft']);
+  const JOB_KINDS = Object.freeze(['build', 'craft', 'aid']);
   const JOB_STATUSES = Object.freeze(['queued', 'active', 'done', 'cancelled']);
   const JOB_KEYS = Object.freeze([
     'id', 'kind', 'discipleId', 'status', 'queuedSlotIndex', 'waited', 'startSlotIndex', 'slotsDone',
@@ -473,9 +473,11 @@
   const isNullOrNonNeg = (v) => v === null || isNonNegInt(v);
 
   function jobDuration(job) {
+    if (job.kind === 'aid') return Rules.AID_DURATION_SLOTS;
     return job.kind === 'build' ? Rules.FACILITIES[job.target.facilityType].durationSlots : Rules.RECIPES[job.target.recipeId].durationSlots;
   }
   function jobCost(job) {
+    if (job.kind === 'aid') return Rules.AID_OPTIONS[job.target.optionId].cost;
     return job.kind === 'build' ? Rules.FACILITIES[job.target.facilityType].cost : Rules.RECIPES[job.target.recipeId].cost;
   }
 
@@ -533,6 +535,10 @@
         const tile = typeof t.tileId === 'string' ? tileById.get(t.tileId) : undefined;
         if (!tile || !Rules.TERRAIN[tile.terrain].buildable) return bad(i, `${where(i)}.target.tileId 必須是可建地塊`);
         if (j.status !== 'cancelled') builds.push(j);
+      } else if (j.kind === 'aid') {
+        if (!sameKeys(t, ['aidId', 'optionId'])) return fail('bad_value', `${where(i)}.target 必須恰好含 aidId、optionId`, where(i));
+        if (t.aidId !== Rules.AID_ID) return fail('bad_value', `${where(i)}.target.aidId 必須是 ${Rules.AID_ID}`, where(i));
+        if (typeof t.optionId !== 'string' || !hasOwn(Rules.AID_OPTIONS, t.optionId)) return fail('bad_value', `${where(i)}.target.optionId 未知`, where(i));
       } else {
         if (!sameKeys(t, ['recipeId', 'facilityJobId'])) return fail('bad_value', `${where(i)}.target 必須恰好含 recipeId、facilityJobId`, where(i));
         if (typeof t.recipeId !== 'string' || !hasOwn(Rules.RECIPES, t.recipeId)) return fail('bad_value', `${where(i)}.target.recipeId 未知`, where(i));

@@ -12,6 +12,7 @@ const State = require('../js/state.js');
 const SD = require('../js/story-data.js');
 const C = require('../js/commands.js');
 const E = require('../js/engine.js');
+const { withDoneAid, withInvitation } = require('./helpers.js');
 
 const clone = (x) => JSON.parse(JSON.stringify(x));
 const deepFreeze = (o) => {
@@ -59,19 +60,20 @@ test('engine.js 不用 RNG／牆鐘／eval，只 require commands、rules、stat
     .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   assert.equal(/Math\.random|Date\.now|new Date|performance\.now|nextInt|nextUint32|eval\(|new Function/.test(src), false);
   assert.deepEqual([...src.matchAll(/require\('([^']+)'\)/g)].map((m) => m[1]).sort(),
-    ['./commands.js', './rules.js', './state.js', './story-data.js']);
+    ['./commands.js', './rules.js', './state.js', './story-data.js', './story.js']);
   const load = (names) => {
     const ctx = vm.createContext({});
     for (const f of names) vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', f), 'utf8'), ctx, { filename: f });
     return ctx;
   };
-  const ctx = load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'commands.js', 'engine.js']);
+  const ctx = load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'commands.js', 'engine.js']);
   const B = ctx.SectChronicle.Engine;
   assert.ok(B);
   const r = B.advance(world(), 3);
   assert.equal(r.ok, true);
   assert.equal(hash(r.state), hash(E.advance(world(), 3).state), '瀏覽器載入與 Node 結果相同');
-  assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'engine.js']), /commands\.js/);
+  assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'engine.js']), /commands\.js/);
+  assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'commands.js', 'engine.js']), /story\.js/);
 });
 
 // ---------- 仲裁核心（純函式） ----------
@@ -494,15 +496,14 @@ test('引擎不會產生它不支援的故事事件：可達世界的 facts 不�
   }
 });
 
-test('引擎遇到無法處理的故事事件（援村已完成但發獎未接入）：回 unsupported_story_effect、世界不變', () => {
+test('援村紀錄與工作／獎勵不一致的世界一律 invalid_world，不被推進（SG-04A 起援村由引擎結算，不再有「發獎未接入」）', () => {
   const w = world('eng-unsupported');
   w.slotIndex = 12;
   w.revision = 12;
-  w.story.rescues = [{ id: Rules.AID_ID, completedSlotIndex: 12, rewardClaimed: false }];
+  w.story.rescues = [{ id: Rules.AID_ID, completedSlotIndex: 11, rewardClaimed: false }];
   w.story.triggeredEventIds = ['evt-phase-faint', 'evt-phase-omen', 'evt-village-plea'];
-  assert.deepEqual(C.validateEngineWorld(w), { ok: true });
-  const r = rejectedAdvance(w, 1, 'unsupported_story_effect');
-  assert.match(r.reason, /SG-04A/);
+  assert.deepEqual(State.validateWorld(w), { ok: true });
+  rejectedAdvance(w, 1, 'invalid_world');
 });
 
 // ---------- roster ----------
@@ -511,10 +512,9 @@ test('學徒從 joinSlotIndex 起才結算；候選與未入隊者永不出現�
   const w = world('eng-roster');
   w.slotIndex = 20;
   w.revision = 20;
-  w.story.rescues = [{ id: Rules.AID_ID, completedSlotIndex: 12, rewardClaimed: true }];
-  w.story.triggeredEventIds = ['evt-phase-faint', 'evt-phase-omen', 'evt-village-plea', 'evt-aid-complete', 'evt-phase-manifest', 'evt-invite-cand-1'];
-  w.story.invitations['cand-1'] = { status: 'accepted', joinSlotIndex: 20 };
-  w.disciples.push({ id: 'cand-1', role: 'apprentice', attributes: { rootBone: 3, comprehension: 3, craft: 3 }, stamina: 100, mind: 60, cultivation: 0, injury: 0, joinSlotIndex: 20 });
+  w.story.triggeredEventIds = ['evt-phase-faint', 'evt-phase-omen', 'evt-village-plea', 'evt-phase-manifest'];
+  withDoneAid(w, 12);
+  withInvitation(w, 'cand-1', 'accepted', 20);
   assert.deepEqual(C.validateEngineWorld(w), { ok: true });
   const s = send(w, 'a', 'assignSlot', { discipleId: 'cand-1', slotIndex: 20, action: 'gather-material' });
   const r = step(s).state;

@@ -1,4 +1,4 @@
-# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04）
+# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A）
 
 本文件隨程式更新；只記錄已存在且已驗證的事。尚未實作的模組見 [TECHNICAL_DESIGN](TECHNICAL_DESIGN.md)。
 
@@ -14,10 +14,10 @@ node sect-chronicle/tools/smoke.js --seed demo # 首爐丹冒煙：兩人零材�
 
 ## 模組載入策略
 
-`js/rng.js`、`js/rules.js`、`js/state.js`、`js/story-data.js`、`js/commands.js`、`js/engine.js` 是無框架的 UMD 風格腳本：
+`js/rng.js`、`js/rules.js`、`js/state.js`、`js/story-data.js`、`js/story.js`、`js/commands.js`、`js/engine.js` 是無框架的 UMD 風格腳本：
 
 - Node：`require('./js/state.js')`（state 會自行 require rng 與 rules；`rules.js` 是葉節點，不 require 任何模組，因此沒有 state↔rules 循環）。
-- 瀏覽器：依序以一般 `<script>` 載入 `js/rng.js` → `js/rules.js` → `js/state.js` → `js/story-data.js` → `js/commands.js` → `js/engine.js`；API 掛在 `globalThis.SectChronicle.Rng`／`.Rules`／`.State`／`.StoryData`／`.Commands`／`.Engine`。漏載任何前置檔時，後面的檔案會丟出指名該檔的錯誤。Node 只需 `require('./js/engine.js')`（逐層 require 前置檔，沒有循環：rules←state←story-data←commands←engine）。不需建置、不使用 ES module，`file://` 也能載入（儲存相容性另計，見技術設計）。
+- 瀏覽器：依序以一般 `<script>` 載入 `js/rng.js` → `js/rules.js` → `js/state.js` → `js/story-data.js` → `js/story.js` → `js/commands.js` → `js/engine.js`；API 掛在 `globalThis.SectChronicle.Rng`／`.Rules`／`.State`／`.StoryData`／`.Story`／`.Commands`／`.Engine`。漏載任何前置檔時，後面的檔案會丟出指名該檔的錯誤。Node 只需 `require('./js/engine.js')`（逐層 require 前置檔，沒有循環：rules←state←story-data←story←commands←engine）。不需建置、不使用 ES module，`file://` 也能載入（儲存相容性另計，見技術設計）。
 
 ## 版本
 
@@ -73,7 +73,7 @@ node sect-chronicle/tools/smoke.js --seed demo # 首爐丹冒煙：兩人零材�
 
 **資料欄位**：`commandLog` 項目 `{seq,id,type,payloadHash,revisionBefore,revisionAfter,eventSeqs}`；`eventLog` 項目至少 `{seq,type,slotIndex}`（本版類型：`slotAssigned`、`templateSet`、`eventChosen`、`aidPromptShown`、`invitationStatusSet`、`story`、`slotResolved`、`dayReport`、`eventRaised`）；`pendingEvents` 項目 `{id, raisedSlotIndex}`；`jobs`／`reservations` 仍留給 SG-04，本包保持空。
 
-**本包可結算的行動**：`gather-material`、`gather-herb`、`cultivate`、`rest`、`tune-mind`（公式全部取自 `rules.js`，沒有隨機，因此整條 42 格路徑 `rngState` 保持原值）。**不支援（明確回 `not_supported_yet`）**：命令 `acceptCandidate`（SG-04A）、`queueBreakthrough`（SG-05）、`setDefense`（SG-06）；行動 `aid`（SG-04A）、`breakthrough`／`support`（SG-05）。`build`／`brew` 自 SG-04 起由 job 驅動（見下節），不可排入課表（`use_job_command`）。
+**本包可結算的行動**：`gather-material`、`gather-herb`、`cultivate`、`rest`、`tune-mind`（公式全部取自 `rules.js`，沒有隨機，因此整條 42 格路徑 `rngState` 保持原值）。**不支援（明確回 `not_supported_yet`）**：命令 `queueBreakthrough`（SG-05）、`setDefense`（SG-06）；行動 `breakthrough`／`support`（SG-05）。`build`／`brew`／`aid` 由 job 驅動（SG-04／SG-04A，見下節），不可排入課表（`use_job_command`）；`acceptCandidate` 自 SG-04A 起已支援。
 
 **尚未驗證**：自然援村完成與發獎、招募入隊（`acceptCandidate`）、建造／煉丹工期、突破、危機結算與 ending、storage／UI、forecast；引擎遇到需要它們的故事事件回 `unsupported_story_effect`。20 seed × 42 格只證明核心路徑走到危機待選，不證明獸患結局，也不是完整 AC-C13／AC-C15。
 
@@ -105,11 +105,36 @@ node sect-chronicle/tools/smoke.js --seed demo # 首爐丹冒煙：兩人零材�
 
 **CLI**：`node sect-chronicle/tools/smoke.js --seed <seed> [--template <id>]` 只用公開 `newWorld`／`dispatch`／`advance`，策略版本 `first-furnace-v1`；輸出 seed、版本、策略、命令數、首丹 slot／day（`firstPillSlot`＝丹藥首次在庫的 slotIndex）、最終 slot／phase／待選、資源與丹藥、job 與等待摘要、hash 與未實作項；退出碼 0 成功、1 策略失敗、2 用法錯誤。
 
-**已驗證（`test/production.test.js` 與更新的既有測試）**：schema 3 的資料契約與壞資料拒絕；三個命令的成功／拒絕／重送；開工扣一次、占人工期、完工次格可用；材料不足與工作位的整批拒絕、持久輪候、參與者互斥；聚靈台／居所／丹房倍率與位滿備案；煉丹產出取開工快照；生產中途的 serialize／parse；20 個 seed × 42 格在單步、3 格、42 格批次下 hash 相同且都製出首爐丹；CLI。**已知限制**：job 之間先排隊者的 `waited` 必然不小於後排隊者，所以 job 層的優先翻轉仍只由純 `arbitrate` 測試涵蓋；設施位與資源點位的持久輪候則有生產路徑測試（`test/contention.test.js`：師父／主角輪流得聚靈台位、三人爭同一點、改去另一點、存讀、批次、陣列排序）。被配位拒絕的採集轉休養備案時不再另配居所位。**未驗證**：援村發獎／招募（SG-04A）、突破與丹藥消耗（SG-05）、獸患結算與 ending（SG-06）、storage／UI、AC-C13／C15、SG-M1、真人試玩；也未做平衡實驗（首丹時點只是本策略的一個結果，不是設計目標）。
+**已驗證（`test/production.test.js` 與更新的既有測試）**：schema 3 的資料契約與壞資料拒絕；三個命令的成功／拒絕／重送；開工扣一次、占人工期、完工次格可用；材料不足與工作位的整批拒絕、持久輪候、參與者互斥；聚靈台／居所／丹房倍率與位滿備案；煉丹產出取開工快照；生產中途的 serialize／parse；20 個 seed × 42 格在單步、3 格、42 格批次下 hash 相同且都製出首爐丹；CLI。**已知限制**：job 之間先排隊者的 `waited` 必然不小於後排隊者，所以 job 層的優先翻轉仍只由純 `arbitrate` 測試涵蓋；設施位與資源點位的持久輪候則有生產路徑測試（`test/contention.test.js`：師父／主角輪流得聚靈台位、三人爭同一點、改去另一點、存讀、批次、陣列排序）。被配位拒絕的採集轉休養備案時不再另配居所位。**未驗證**：突破與丹藥消耗（SG-05）、獸患結算與 ending（SG-06）、storage／UI、AC-C13／C15、SG-M1、真人試玩；也未做平衡實驗（首丹時點只是本策略的一個結果，不是設計目標）。
+
+## SG-04A 新增（復甦、援村與固定招募）
+
+**範圍**：援村行動與一次性獎勵、兩名固定學徒的邀請與入隊、第 42 格危機優先。不含突破與支援（SG-05）、危機結算／ending／立派（SG-06）、storage／UI／forecast。**版本不變**：schemaVersion 3、ruleVersion 2、rngVersion 1、story contentVersion 1（沒有新頂層欄位；`rules.js`、`story-data.js` 不動；`new-world.json` 不變）；不消耗 RNG。
+
+**模組**：新增 `js/story.js`（純邏輯：故事 facts、下一個到期事件、援村結算、取消落選援村、入隊、引擎層一致性、候選初始屬性來源）。載入順序 rng → rules → state → story-data → **story** → commands → engine；Node 逐層 require，沒有循環（story 不 require commands／engine）。
+
+**命令**
+- `queueAid { discipleId, optionId }`：`optionId` 是 `AID_OPTIONS` 的 `free`（零材料）或 `supplied`（`cost` 在格初快照一次扣）。援村是 job（`kind:'aid'`，target `{aidId:'village-fence', optionId}`），沿用 SG-04 的原子預約、持久 `waited` 與被拒時的明示休養備案。工期 `AID_DURATION_SLOTS`（1），所以同格開工並完工；體力取 `ACTIONS.aid`；工作位 `aid:village-fence` 容量 `AID_WORKERS`（1）。錯誤：`bad_payload`、`not_planning`、`unknown_disciple`／`candidate_not_member`、`unknown_aid_option`、`aid_locked`（第 9 格前）、`aid_completed`。`aid` 不可排入課表（`use_job_command`）。
+- `acceptCandidate { candidateId }`：只在 planning、狀態 `invited` 或 `deferred`。第 42 格起 phase 只可能是待選／ending，所以危機後不再接受入隊由 `not_planning` 保證；隊伍上限四人是結構性的（只有兩名固定候選）。寫入 `invitations[id] = {status:'accepted', joinSlotIndex: world.slotIndex}`（接受當下尚未結算的格）並加入學徒；不耗 RNG、不發資源、不補發之前的產出。錯誤：`bad_payload`、`unknown_candidate`、`not_planning`、`already_accepted`、`candidate_not_invited`。同 id 重送回原結果（`duplicate:true`），新 id 再接受同一人被拒、revision 不變。`chooseEvent` 的邀請選項仍只改 `invited`／`deferred`，不直接入隊；待選時須先回 planning 才能接受。
+
+**狀態轉移與去重**
+- 援村：queued → done（同格）→ **同一提交**內記錄 `rescues[{id, completedSlotIndex, rewardClaimed:true}]` 並發 `Rules.aidReward(optionId)`；去重鍵＝`triggeredEventIds` 的 `evt-aid-complete`＋rescues（`reward:village-fence`）。求援提示（`showAidPrompt`）不發獎也不鎖定選項。完成後其餘排隊中的援村 job 在同一提交取消（`jobCancelled`，`reason:'aid_taken'`；取消格內的落選不計入 `waited`）。
+- 邀請：locked → invited／deferred（`chooseEvent`）→ accepted（`acceptCandidate`）；`evt-invite-cand-N` 登記在 `triggeredEventIds` 保證每位只提示一次。
+- 引擎層一致性（`Story.validateWorld`，由 `Commands.validateEngineWorld` 呼叫）：rescues ↔ 已完成援村 job（完成格、`rewardClaimed`）↔ `evt-aid-complete` 必須一致；最多一個完成的援村、完成後不得有排隊中的援村；有邀請進度必須有對應事件；固定學徒屬性必須取自 `CANDIDATE_PROFILES`。
+
+**事件優先序（每格提交後的固定點迴圈，上限 16 輪）**：援村完成（任何格）先於所有待選提示；待選提示只在日末／最後一格升起，依 story-data 的優先序（危機 > cand-1 > cand-2 > 求援），**一次一個、處理後重新推導**，所以 cand-2 緊接 cand-1 且各提示一次。第 42 格危機優先：邀請不再提示（也不標為已觸發）；不推第 43 格，危機中 `acceptCandidate` 回 `not_planning`。階段事件仍在格初處理，時點不變。
+
+**候選初始屬性來源（待遊戲 PO 核對）**：最終 dev 沒有凍結的學徒屬性表，故只引用 `rules.js` 既有模板、不新增數值——cand-1（偏生產）＝`herb-child` 2/3/4、cand-2（偏護村）＝`farmer-child` 4/2/3；體力／心境／修為／傷勢取 `START_VALUES`，無配點、無成長。只有 `story.js` 的 `CANDIDATE_PROFILES` 一張表；若 PO 另訂來源只改這張表與對應測試。
+
+**手工 fixture**：`test/helpers.js` 提供 `withDoneAid`、`apprentice`、`withInvitation`；`commands`／`contention`／`engine` 測試的援村與學徒 fixture 改走它（援村紀錄現在必須有對應的完成 job）。`aid` 行動與 `acceptCandidate` 命令不再回 `not_supported_yet`。
+
+**冒煙**：`tools/smoke.js` 保留 `first-furnace-v1`（不帶旗標時行為不變），新增故事路線 `village-recruit-v1`：`--aid none|free|supplied`、`--aid-from <slot>`、`--recruit 0|1|2`、`--accept-delay <slots>`。摘要含援村完成與獎勵、邀請選擇、入隊格、最終階段、hash、未驗證項；失敗以非零結束（1 策略失敗、2 用法錯誤）；只用公開 `State.newWorld`／`Commands.dispatch`／`Engine.advance`。
+
+**已驗證（`test/story.test.js` 與更新的既有測試）**：queueAid 驗證與零材料／備料援村（含費用原子預約、同格採集不能支付、材料恰好／不足）；同格多人與不同選項競爭（等待較久者勝、落選取消、只發一份獎）；與建造互斥；重送／新 id 重複；邊界 8/9、17/18、29/30 的階段事件與修行收益、逐格／批次／每格存讀一致；援村早於日 7、晚於日 7、最後一格；cand-1 然後 cand-2 各一次；acceptCandidate 驗證與 `joinSlotIndex`、延後接受、四人上限；入隊前不是勞動力；0／1／2 人路線都到危機待選且危機中不可接受；各待選／中途狀態的 serialize／parse；壞資料各自被拒；21 seed × 42 格故事矩陣（兩兩配對覆蓋表由測試計算驗證）在單步／3 格／42 格批次下 hash 相同；CLI。**未驗證**：候選初始屬性的產品取值（只是引用現有模板）、突破與支援（SG-05）、獸患結算／ending／立派（SG-06）、storage／UI、AC-C13 除狀態外的部分、真人試玩、平衡（援村獎勵與入隊時機只是策略結果，不是設計目標）。
 
 ## 尚未實作
 
-援村發獎與固定招募入隊（SG-04A）、突破與支援（SG-05）、危機結算與 ending（SG-06）、storage、UI、forecast。丹藥只入庫，沒有任何消耗或 buff。
+突破與支援（SG-05）、危機結算與 ending（SG-06）、storage、UI、forecast。丹藥只入庫，沒有任何消耗或 buff。
 
 ## fixture
 

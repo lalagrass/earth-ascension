@@ -11,6 +11,7 @@ const Rules = require('../js/rules.js');
 const State = require('../js/state.js');
 const SD = require('../js/story-data.js');
 const C = require('../js/commands.js');
+const { withDoneAid, withInvitation } = require('./helpers.js');
 
 const clone = (x) => JSON.parse(JSON.stringify(x));
 const deepFreeze = (o) => {
@@ -42,9 +43,7 @@ function pendingWorld(pendingIds, slotIndex, extra = {}) {
   return w;
 }
 function rescuedStory(w) {
-  w.story.rescues = [{ id: Rules.AID_ID, completedSlotIndex: 12, rewardClaimed: true }];
-  w.story.triggeredEventIds.push('evt-aid-complete');
-  return w;
+  return withDoneAid(w, 12);
 }
 // 手工建立「第 20 格已收 cand-1」的中途世界
 function withApprentice() {
@@ -52,11 +51,7 @@ function withApprentice() {
   w.slotIndex = 20;
   w.revision = 20;
   rescuedStory(w);
-  w.story.invitations['cand-1'] = { status: 'accepted', joinSlotIndex: 20 };
-  w.disciples.push({
-    id: 'cand-1', role: 'apprentice', attributes: { rootBone: 3, comprehension: 3, craft: 3 },
-    stamina: 100, mind: 60, cultivation: 0, injury: 0, joinSlotIndex: 20,
-  });
+  withInvitation(w, 'cand-1', 'accepted', 20);
   assert.deepEqual(C.validateEngineWorld(w), { ok: true });
   return w;
 }
@@ -80,13 +75,13 @@ test('commands.js 不用 RNG／牆鐘／eval，只 require rules、state、story
     .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   assert.equal(/Math\.random|Date\.now|new Date|performance\.now|nextInt|nextUint32|eval\(|new Function/.test(src), false);
   const requires = [...src.matchAll(/require\('([^']+)'\)/g)].map((m) => m[1]).sort();
-  assert.deepEqual(requires, ['./rules.js', './state.js', './story-data.js']);
+  assert.deepEqual(requires, ['./rules.js', './state.js', './story-data.js', './story.js']);
   const load = (names) => {
     const ctx = vm.createContext({});
     for (const f of names) vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', f), 'utf8'), ctx, { filename: f });
     return ctx;
   };
-  const ctx = load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'commands.js']);
+  const ctx = load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'story.js', 'commands.js']);
   const B = ctx.SectChronicle.Commands;
   assert.ok(B);
   const w = world();
@@ -94,17 +89,18 @@ test('commands.js 不用 RNG／牆鐘／eval，只 require rules、state、story
   assert.equal(r.ok, true);
   assert.equal(State.hashWorld(r.state), hash(C.dispatch(w, cmd('c-1', 0, 'assignSlot', { discipleId: State.PROTAGONIST_ID, slotIndex: 0, action: 'cultivate' })).state));
   assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'commands.js']), /story-data\.js/);
+  assert.throws(() => load(['rng.js', 'rules.js', 'state.js', 'story-data.js', 'commands.js']), /story\.js/);
   assert.throws(() => load(['rng.js', 'rules.js', 'commands.js']), /state\.js/);
   assert.throws(() => load(['rng.js', 'commands.js']), /rules\.js/);
 });
 
 test('已支援與尚未支援的命令／行動清單明確且互不重疊，並對應後續任務', () => {
-  assert.deepEqual([...C.SUPPORTED_COMMANDS].sort(), ['assignSlot', 'cancelQueuedJob', 'chooseEvent', 'queueBuild', 'queueCraft', 'setDailyTemplate']);
-  assert.deepEqual(Object.keys(C.DEFERRED_COMMANDS).sort(), ['acceptCandidate', 'queueBreakthrough', 'setDefense']);
+  assert.deepEqual([...C.SUPPORTED_COMMANDS].sort(), ['acceptCandidate', 'assignSlot', 'cancelQueuedJob', 'chooseEvent', 'queueAid', 'queueBuild', 'queueCraft', 'setDailyTemplate']);
+  assert.deepEqual(Object.keys(C.DEFERRED_COMMANDS).sort(), ['queueBreakthrough', 'setDefense']);
   for (const t of C.SUPPORTED_COMMANDS) assert.equal(t in C.DEFERRED_COMMANDS, false);
   assert.deepEqual([...C.SUPPORTED_ACTIONS].sort(), ['cultivate', 'gather-herb', 'gather-material', 'rest', 'tune-mind']);
-  assert.deepEqual(Object.keys(C.DEFERRED_ACTIONS).sort(), ['aid', 'breakthrough', 'support']);
-  assert.deepEqual(C.JOB_ACTIONS, { build: 'queueBuild', brew: 'queueCraft' });
+  assert.deepEqual(Object.keys(C.DEFERRED_ACTIONS).sort(), ['breakthrough', 'support']);
+  assert.deepEqual(C.JOB_ACTIONS, { build: 'queueBuild', brew: 'queueCraft', aid: 'queueAid' });
   for (const a of [...C.SUPPORTED_ACTIONS, ...Object.keys(C.DEFERRED_ACTIONS), ...Object.keys(C.JOB_ACTIONS)]) assert.ok(a in Rules.ACTIONS, a);
   assert.equal(C.SUPPORTED_ACTIONS.length + Object.keys(C.DEFERRED_ACTIONS).length + Object.keys(C.JOB_ACTIONS).length, Object.keys(Rules.ACTIONS).length);
 });
@@ -137,17 +133,14 @@ test('不合法的世界被明確拒絕（invalid_world），不嘗試修補', (
 test('未知命令 unknown_command；後續任務的命令 not_supported_yet 並指出負責任務，世界不變', () => {
   const w = world();
   assertRejected(w, cmd('c', 0, 'castSpell', {}), 'unknown_command');
-  const owners = { queueBreakthrough: 'SG-05', setDefense: 'SG-06', acceptCandidate: 'SG-04A' };
+  const owners = { queueBreakthrough: 'SG-05', setDefense: 'SG-06' };
   for (const [type, owner] of Object.entries(owners)) {
     const r = assertRejected(w, cmd(`c-${type}`, 0, type, { anything: 1 }), 'not_supported_yet');
     assert.ok(r.reason.includes(owner), r.reason);
   }
-  // acceptCandidate 即使世界與 payload 合法也不假成功：候選不會入隊、不會發資源
-  const aw = pendingWorld(['evt-invite-cand-1'], 18);
-  rescuedStory(aw);
-  aw.phase = 'planning';
-  aw.pendingEvents = [];
-  assertRejected(aw, cmd('c-acc', aw.revision, 'acceptCandidate', { candidateId: 'cand-1' }), 'not_supported_yet');
+  // acceptCandidate 與 queueAid 自 SG-04A 起已支援（見 story.test.js），不再是 not_supported_yet
+  for (const type of ['acceptCandidate', 'queueAid']) assert.equal(C.SUPPORTED_COMMANDS.includes(type), true);
+  assertRejected(w, cmd('c-acc', 0, 'acceptCandidate', { candidateId: 'cand-1' }), 'candidate_not_invited');
 });
 
 // ---------- assignSlot ----------
@@ -221,6 +214,7 @@ test('assignSlot 拒絕：未知／候選／未加入角色、已結算格、超
     const r = assertRejected(w, a({ discipleId: P, slotIndex: 1, action }), 'not_supported_yet');
     assert.ok(r.reason.includes(owner), r.reason);
   }
+  assertRejected(w, a({ discipleId: P, slotIndex: 1, action: 'aid' }), 'use_job_command');
   // 階段鎖定：靈草在日 4（slot 9）前不可採；slot 8 拒絕、slot 9 接受
   assertRejected(w, a({ discipleId: P, slotIndex: 8, action: 'gather-herb' }), 'action_locked');
   assert.equal(C.dispatch(w, a({ discipleId: P, slotIndex: 9, action: 'gather-herb' })).ok, true);
@@ -275,7 +269,7 @@ test('setDailyTemplate：設定、取代、清除；本版支援的行動才可�
   bad({ discipleId: P }, 'bad_payload');
   bad({ discipleId: P, parts: ['rest', 'rest', 'teleport'] }, 'unknown_action');
   bad({ discipleId: P, parts: ['rest', 'build', 'rest'] }, 'use_job_command');
-  bad({ discipleId: P, parts: ['rest', 'aid', 'rest'] }, 'not_supported_yet');
+  bad({ discipleId: P, parts: ['rest', 'aid', 'rest'] }, 'use_job_command');
   bad({ discipleId: 'cand-1', parts: ['rest', 'rest', 'rest'] }, 'candidate_not_member');
   bad({ discipleId: 'ghost', parts: ['rest', 'rest', 'rest'] }, 'unknown_disciple');
   bad({ discipleId: P, parts: ['rest', 'rest', 'rest'], extra: 1 }, 'bad_payload');
@@ -435,7 +429,7 @@ test('chooseEvent 沒有待選（planning／ending）回 no_pending_event', () =
   e.revision = 42;
   e.phase = 'ending';
   e.story.organisationStatus = 'sectFounded';
-  e.story.rescues = [{ id: Rules.AID_ID, completedSlotIndex: 12, rewardClaimed: true }];
+  withDoneAid(e, 12);
   assert.deepEqual(State.validateWorld(e), { ok: true });
   assertRejected(e, cmd('c', 42, 'chooseEvent', { eventId: 'evt-ending-victory', optionId: 'opt-x' }), 'no_pending_event');
 });

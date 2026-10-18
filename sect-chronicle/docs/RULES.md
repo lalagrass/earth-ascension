@@ -183,7 +183,7 @@
 
 `showAidPrompt`、`setInvitationStatus`（只能設 invited／deferred，accepted 只由 `acceptCandidate` 設定）、`grantAidReward`、`recordRescue`、`submitFormation`、`setOrganisationStatus`（只能 sectFounded／foundingDeferred）、`displayLabel`（`worldChange: false`，首席弟子只是顯示）。`grantAidReward`／`recordRescue` 只能出現在 `evt-aid-complete`，邀請事件不能給資源或改屬性。
 
-### 10.3 宣告的契約（尚未有 runtime 執行）
+### 10.3 宣告的契約（SG-04A 起由 `js/story.js`、`commands.js`、`engine.js` 執行；實作契約見 DEVELOPMENT.md「SG-04A 新增」）
 
 - 援村：占 `AID_WORKERS` 人 `AID_DURATION_SLOTS` 格；獎勵只發一次（去重鍵 `reward:village-fence`，兩種援村選項共用）；收徒不給獎勵。
 - 招募：每名候選只提示一次、不重複詢問；選擇後回 planning；`acceptCommand` 只在 planning、`joinSlotIndex`＝接受當下的 slotIndex、不補發；slotIndex ≥ `MAX_SLOT_INDEX` 時拒絕；加入前不產生勞動、支援或戰力；任何人數都能走到危機。人數上限唯一來源是 `State.MAX_ROSTER`。

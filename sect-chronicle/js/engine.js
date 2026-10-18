@@ -24,13 +24,15 @@
   let Rules;
   let State;
   let StoryData;
+  let Story;
   let Commands;
   if (typeof module === 'object' && module && module.exports) {
     Rules = require('./rules.js');
     State = require('./state.js');
     StoryData = require('./story-data.js');
+    Story = require('./story.js');
     Commands = require('./commands.js');
-    module.exports = factory(Rules, State, StoryData, Commands);
+    module.exports = factory(Rules, State, StoryData, Story, Commands);
   } else {
     Rules = root.SectChronicle && root.SectChronicle.Rules;
     if (!Rules) throw new Error('engine.js 需要先載入 js/rules.js（以及 js/rng.js）');
@@ -38,11 +40,13 @@
     if (!State) throw new Error('engine.js 需要先載入 js/state.js');
     StoryData = root.SectChronicle.StoryData;
     if (!StoryData) throw new Error('engine.js 需要先載入 js/story-data.js');
+    Story = root.SectChronicle.Story;
+    if (!Story) throw new Error('engine.js 需要先載入 js/story.js（在 js/story-data.js 之後、js/commands.js 之前）');
     Commands = root.SectChronicle.Commands;
-    if (!Commands) throw new Error('engine.js 需要先載入 js/commands.js（在 js/story-data.js 之後、本檔之前）');
-    root.SectChronicle.Engine = factory(Rules, State, StoryData, Commands);
+    if (!Commands) throw new Error('engine.js 需要先載入 js/commands.js（在 js/story.js 之後、本檔之前）');
+    root.SectChronicle.Engine = factory(Rules, State, StoryData, Story, Commands);
   }
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (Rules, State, StoryData, Commands) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (Rules, State, StoryData, Story, Commands) {
   'use strict';
 
   const MAX_BATCH = 42;
@@ -133,21 +137,10 @@
     return { settled, remaining: result.remaining };
   }
 
-  // ---------- 故事 facts ----------
-  const OUTCOME_BY_STATUS = { dojo: null, sectFounded: 'victory', foundingDeferred: 'defeat' };
-  function factsFor(world) {
-    const rescued = world.story.rescues.length > 0;
-    return {
-      slotIndex: world.slotIndex,
-      rescueCompleted: rescued,
-      aidCompleted: rescued,
-      triggeredEventIds: [...world.story.triggeredEventIds],
-      crisisOutcome: OUTCOME_BY_STATUS[world.story.organisationStatus],
-      invitations: Object.fromEntries(State.CANDIDATE_IDS.map((id) => [id, { status: world.story.invitations[id].status }])),
-    };
-  }
+  // ---------- 故事 facts（SG-04A 起由 story.js 推導） ----------
+  const factsFor = Story.factsFor;
 
-  const KIND_OWNER = { aidCompletion: 'SG-04A', invitation: 'SG-04A', ending: 'SG-06', crisis: 'SG-06' };
+  const KIND_OWNER = { ending: 'SG-06', crisis: 'SG-06' };
   function unsupportedStory(ev) {
     return reject('unsupported_story_effect', `故事事件 ${ev.id}（${ev.kind}）需要 ${KIND_OWNER[ev.kind] || '後續任務'} 的 runtime，本版不假成功，世界不變`);
   }
@@ -241,6 +234,8 @@
     return { intents: out, waits };
   }
 
+  const JOB_ACTION_OF = { build: 'build', craft: 'brew', aid: 'aid' };
+
   // ---------- 效果（全部以格初快照計算） ----------
   function computeEffect(snapshot, slotIndex, intent) {
     const d = snapshot.disciples.find((x) => x.id === intent.discipleId);
@@ -273,6 +268,7 @@
       }
       case 'build':
       case 'brew':
+      case 'aid':
         after = Object.assign(after, Rules.applyActionCost(intent.action, d));
         break;
       default:
@@ -310,12 +306,14 @@
           continue;
         }
         seats = { [State.facilitySeat(fac.id)]: 1 };
+      } else if (job.kind === 'aid') {
+        seats = { [Story.AID_SEAT]: 1 };
       }
       requests.push({
         id: job.id, discipleId: job.discipleId, waited: job.waited, cost: { ...State.jobCost(job) }, seats, participants: [job.discipleId],
       });
     }
-    const seatCaps = {};
+    const seatCaps = { [Story.AID_SEAT]: Rules.AID_WORKERS };
     for (const j of snapshot.jobs) {
       if (j.kind === 'build' && j.status === 'done' && j.target.facilityType === 'alchemyRoom') {
         const used = snapshot.reservations.filter((r) => r.seat === State.facilitySeat(j.id)).length;
@@ -326,6 +324,24 @@
     for (const d of arb.denied) denied.push({ jobId: d.id, code: d.code, reason: d.reason });
     denied.sort((x, y) => byIdAsc(x.jobId, y.jobId));
     return { granted: arb.granted.map((id) => byId.get(id)).sort((x, y) => byIdAsc(x.id, y.id)), denied };
+  }
+
+  // 故事事件迴圈：一次處理一個、處理後重新推導（援村完成 → 邀請 → 下一位邀請），上限 Story.MAX_STORY_ITERATIONS 防無限迴圈。
+  function settleStory(next, s, allowPending, events) {
+    for (let i = 0; i < Story.MAX_STORY_ITERATIONS; i += 1) {
+      const due = Story.nextDueEvent(next, allowPending);
+      if (!due) return null;
+      if (due.unsupported) return unsupportedStory(due.unsupported);
+      const ev = due.event;
+      if (ev.kind === 'aidCompletion') {
+        for (const d of Story.settleAidCompletion(next)) events.push(Commands.appendEvent(next, d));
+      } else {
+        next.pendingEvents.push({ id: ev.id, raisedSlotIndex: s + 1 });
+        next.story.triggeredEventIds.push(ev.id);
+        events.push(Commands.appendEvent(next, { type: 'eventRaised', slotIndex: s + 1, eventId: ev.id }));
+      }
+    }
+    return reject('story_loop', `故事事件在 ${Story.MAX_STORY_ITERATIONS} 輪內沒有收斂，已拒絕`);
   }
 
   // ---------- 單格結算 ----------
@@ -369,7 +385,7 @@
       if (!dn) return i;
       return {
         id: i.id, discipleId: i.discipleId, action: 'rest', source: 'job-denied', waited: 0, cost: {}, seats: {}, participants: [i.discipleId],
-        fallback: { from: dn.job.kind === 'build' ? 'build' : 'brew', reason: dn.code, jobId: dn.job.id },
+        fallback: { from: JOB_ACTION_OF[dn.job.kind], reason: dn.code, jobId: dn.job.id },
       };
     });
     const seated = assignSeats(snapshot, freeIntents);
@@ -382,7 +398,7 @@
       let intent;
       const extra = {};
       if (j) {
-        const action = j.job.kind === 'build' ? 'build' : 'brew';
+        const action = JOB_ACTION_OF[j.job.kind];
         intent = { discipleId: d.id, action, source: 'job' };
         const done = j.job.slotsDone + 1 >= State.jobDuration(j.job);
         extra.job = { id: j.job.id, kind: j.job.kind, phase: done ? 'completed' : j.phase };
@@ -455,25 +471,22 @@
         jobEvents.push(ev);
       }
     }
+    const aidDone = jobEvents.some((e) => e.type === 'jobCompleted' && e.kind === 'aid');
+    const cancelledAid = aidDone ? Story.cancelOtherAidJobs(next, s, new Set(jobPlan.denied.map((d) => d.jobId))) : [];
     next.reservations.sort((x, y) => byIdAsc(x.jobId, y.jobId));
     next.slotIndex = s + 1;
     next.revision = world.revision + 1;
     events.push(Commands.appendEvent(next, { type: 'slotResolved', slotIndex: s, day, part: s % 3, results, denied: jobPlan.denied }));
     for (const e of jobEvents) events.push(Commands.appendEvent(next, e));
+    for (const e of cancelledAid) events.push(Commands.appendEvent(next, e));
 
-    // ⑦ 日末日報與待選事件（以本格已提交的結果判斷）
+    // ⑦ 故事結算（以本格已提交的結果判斷）：援村完成立刻記錄並發獎（任何格）；待選事件只在日末／最後一格升起。
+    const storyErr = settleStory(next, s, false, events);
+    if (storyErr) return { error: storyErr };
     if ((s + 1) % 3 === 0 || s + 1 === total) {
       events.push(Commands.appendEvent(next, { type: 'dayReport', slotIndex: s, day, resources: cloneJson(next.resources), inventory: cloneJson(next.inventory) }));
-      for (const id of StoryData.dueEvents(factsFor(next))) {
-        const ev = StoryData.getEvent(id);
-        if (ev.pending) {
-          next.pendingEvents.push({ id, raisedSlotIndex: s + 1 });
-          next.story.triggeredEventIds.push(id);
-          events.push(Commands.appendEvent(next, { type: 'eventRaised', slotIndex: s + 1, eventId: id }));
-        } else if (ev.kind !== 'phase') {
-          return { error: unsupportedStory(ev) };
-        }
-      }
+      const dayErr = settleStory(next, s, true, events);
+      if (dayErr) return { error: dayErr };
       if (next.pendingEvents.length > 0) next.phase = 'awaitingChoice';
     }
 
