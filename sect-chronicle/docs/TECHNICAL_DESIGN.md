@@ -2,7 +2,7 @@
 
 ## 最新D8時間與權威契約（優先於下方slot基線）
 
-[REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)規定可暫停即時自主生活，RT-00 #99先凍結細節；目前runtime仍是schema4／rule3的slot模式。新RT用單一整數simulation tick，真移動／工作工量／恢復與自主決策共用時鐘；render只展示，暫停下令不推進世界或RNG。不得同時套slot與tick產出。位置、路徑／工作進度、目標／初始政策、人工覆寫與決策順序納入正式狀態／存讀／回放；自主策略只讀可見資訊並走正式命令。跨第14天不觸發尚未實作戰鬥的永久待選。
+[REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)規定可暫停即時自主生活，RT-00 #99先凍結細節（提案見[RT00_CONTRACT.md](RT00_CONTRACT.md)，待定案）；目前runtime仍是schema4／rule3的slot模式。新RT用單一整數simulation tick，真移動／工作工量／恢復與自主決策共用時鐘；render只展示，暫停下令不推進世界或RNG。不得同時套slot與tick產出。位置、路徑／工作進度、目標／初始政策、人工覆寫與決策順序納入正式狀態／存讀／回放；自主策略只讀可見資訊並走正式命令。跨第14天不觸發尚未實作戰鬥的永久待選。
 
 本節明確取代下方§6「不模擬行走時間」對新RT的限制；舊slot契約／API／joinSlotIndex與golden作為歷史回歸，新時間引用、預約／取消／覆寫及schema／rule／scenario、舊檔策略先在RT-00提出並定案。不默默將舊slotIndex當tick或套D7拒絕策略。詳細底線與驗收以D8文件為準，未交付不宣稱已存在。
 

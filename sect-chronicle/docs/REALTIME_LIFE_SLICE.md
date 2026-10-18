@@ -1,6 +1,6 @@
 # D8：可暫停的即時自主生活試玩
 
-狀態：**方向已由擁有人批准，細部契約待SG-RT-00定案；尚未實作／驗收**。日期2026-10-18；文件主筆Codex遊戲PO，原Grok依[#93](https://github.com/lalagrass/earth-ascension/issues/93)連續接續，第一包[#99](https://github.com/lalagrass/earth-ascension/issues/99)。戰鬥[#98](https://github.com/lalagrass/earth-ascension/issues/98)延後，不是生活試玩前置。
+狀態：**方向已由擁有人批准，細部契約待SG-RT-00定案；尚未實作／驗收**。RT-00的集中提案（六項契約、候選與待決清單、兩條時間線）見[RT00_CONTRACT.md](RT00_CONTRACT.md)，等遊戲PO整理、擁有人定案後才凍結。日期2026-10-18；文件主筆Codex遊戲PO，原Grok依[#93](https://github.com/lalagrass/earth-ascension/issues/93)連續接續，第一包[#99](https://github.com/lalagrass/earth-ascension/issues/99)。戰鬥[#98](https://github.com/lalagrass/earth-ascension/issues/98)延後，不是生活試玩前置。
 
 ## 擁有人批准與優先關係
 
