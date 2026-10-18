@@ -1,4 +1,4 @@
-# 開發說明（SG-01／SG-02／SG-02A／SG-03）
+# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04）
 
 本文件隨程式更新；只記錄已存在且已驗證的事。尚未實作的模組見 [TECHNICAL_DESIGN](TECHNICAL_DESIGN.md)。
 
@@ -7,6 +7,7 @@
 ```sh
 node --test sect-chronicle/test/*.test.js     # Node 24 不要用目錄參數
 node sect-chronicle/tools/update-fixtures.js  # 僅在有意改版本時重產 fixture，並在 PR 說明差異
+node sect-chronicle/tools/smoke.js --seed demo # 首爐丹冒煙：兩人零材料 → 建丹房 → 首爐丹 → 第 42 格危機待選
 ```
 
 根目錄檢查（CONTRIBUTING／AGENTS 指定）：`python3 -m unittest discover -s tests -v`、`node --check earth_ascension/static/m2.js`、`git diff --check`。
@@ -22,7 +23,7 @@ node sect-chronicle/tools/update-fixtures.js  # 僅在有意改版本時重產 f
 
 | 項目 | 值 | 說明 |
 |---|---|---|
-| schemaVersion | 2 | 世界狀態欄位與驗證規則；SG-03 由 1 升為 2（新增 `schedule`，並定義 `commandLog`／`eventLog`／`pendingEvents` 項目格式）。schemaVersion 1 存檔回傳 `unknown_schema_version`，原資料不變，不遷移 |
+| schemaVersion | 3 | 世界狀態欄位與驗證規則；SG-03 由 1 升為 2（`schedule`、log 格式），**SG-04 升為 3**（固定 25 格 `tiles`、新增 `inventory`、`jobs`／`reservations` 內容契約）。schemaVersion 1、2 存檔回傳 `unknown_schema_version`，原資料不變，不遷移 |
 | ruleVersion | 2 | SG-01 暫定值 1 → **SG-02 凍結的候選規則基線 2**（唯一來源是 `js/rules.js`）；數值表見 [RULES.md](RULES.md) |
 | rngVersion | 1 | cyrb128 播種＋sfc32，丟棄前 15 筆；`nextInt` 為拒絕抽樣 |
 
@@ -31,7 +32,7 @@ node sect-chronicle/tools/update-fixtures.js  # 僅在有意改版本時重產 f
 - `js/rules.js`：規則表與純計算（五行／地圖／設施、靈氣階段、修行、採集、煉丹、休養、突破、援村〔占一人一格〕、休養穩態比率估算）。全部純函式、不消耗 RNG；細節與數值見 [RULES.md](RULES.md)。
 - `CHARACTER_OPTION_LIMITS`、師父屬性、起始數值、`RULE_VERSION`、`BASIS_POINTS`／`mulBp` 的權威定義移到 `rules.js`；`state.js` 只持有同一物件／函式的引用，沒有第二份定義。
 - `state.js` 只接受 ruleVersion 2；ruleVersion 1 存檔回傳 `unknown_rule_version`，原資料不變，不提供遷移。
-- 新局 `tiles` 仍為空陣列；`rules.initialTiles()` 提供固定版型，等 SG-04 建局時採用（本包不改 schema）。
+- 新局 `tiles` 在 SG-02 時為空陣列；自 SG-04（schema 3）起，新局採用 `rules.initialTiles()` 的固定 25 格版型。
 
 ## SG-01 提供的契約
 
@@ -72,16 +73,48 @@ node sect-chronicle/tools/update-fixtures.js  # 僅在有意改版本時重產 f
 
 **資料欄位**：`commandLog` 項目 `{seq,id,type,payloadHash,revisionBefore,revisionAfter,eventSeqs}`；`eventLog` 項目至少 `{seq,type,slotIndex}`（本版類型：`slotAssigned`、`templateSet`、`eventChosen`、`aidPromptShown`、`invitationStatusSet`、`story`、`slotResolved`、`dayReport`、`eventRaised`）；`pendingEvents` 項目 `{id, raisedSlotIndex}`；`jobs`／`reservations` 仍留給 SG-04，本包保持空。
 
-**本包可結算的行動**：`gather-material`、`gather-herb`、`cultivate`、`rest`、`tune-mind`（公式全部取自 `rules.js`，沒有隨機，因此整條 42 格路徑 `rngState` 保持原值）。**不支援（明確回 `not_supported_yet`）**：命令 `acceptCandidate`（SG-04A）、`queueBuild`／`cancelQueuedJob`／`queueCraft`（SG-04）、`queueBreakthrough`（SG-05）、`setDefense`（SG-06）；行動 `build`／`brew`（SG-04）、`aid`（SG-04A）、`breakthrough`／`support`（SG-05）。
+**本包可結算的行動**：`gather-material`、`gather-herb`、`cultivate`、`rest`、`tune-mind`（公式全部取自 `rules.js`，沒有隨機，因此整條 42 格路徑 `rngState` 保持原值）。**不支援（明確回 `not_supported_yet`）**：命令 `acceptCandidate`（SG-04A）、`queueBreakthrough`（SG-05）、`setDefense`（SG-06）；行動 `aid`（SG-04A）、`breakthrough`／`support`（SG-05）。`build`／`brew` 自 SG-04 起由 job 驅動（見下節），不可排入課表（`use_job_command`）。
 
 **尚未驗證**：自然援村完成與發獎、招募入隊（`acceptCandidate`）、建造／煉丹工期、突破、危機結算與 ending、storage／UI、forecast；引擎遇到需要它們的故事事件回 `unsupported_story_effect`。20 seed × 42 格只證明核心路徑走到危機待選，不證明獸患結局，也不是完整 AC-C13／AC-C15。
 
+## SG-04 新增（建造、煉丹、工作位與持久輪候）
+
+命令（皆只在 `planning` 可用，只「排隊」：不推時間、不扣材料、不發成果；命令封套、去重與 revision 順序沿用 SG-03）：
+
+| 命令 | payload | 錯誤碼（依序） |
+|---|---|---|
+| `queueBuild` | `{discipleId, facilityType, tileId}` | `bad_payload`、`not_planning`、`unknown_disciple`／`candidate_not_member`、`unknown_facility`／`unknown_tile`／`not_buildable`、`facility_limit`、`tile_occupied` |
+| `queueCraft` | `{discipleId, recipeId, facilityJobId}` | `bad_payload`、`not_planning`、角色同上、`unknown_recipe`、`unknown_job`、`wrong_facility`、`facility_cancelled` |
+| `cancelQueuedJob` | `{jobId}` | `bad_payload`、`not_planning`、`unknown_job`、`job_not_queued`（已開始／完成／取消皆不可：不倒帶、不退款、不拆建築） |
+
+`assignSlot`／`setDailyTemplate` 排入 `build`／`brew` 回 `use_job_command`。
+
+**採集的資源點目標（PR #91 R3）**：`assignSlot` 可加選用的 `tileId`，`setDailyTemplate` 可加選用的 `tileIds`（三個地塊 ID 或 `null`，只有採集格可非 null）。地塊必須存在（`unknown_tile`）且資源種類與行動相符（`wrong_terrain`：`gather-material`→material、`gather-herb`→herb）；非採集行動帶地塊、形狀錯誤回 `bad_payload`。沒指定時，結算使用該資源種類排序最前的資源點（`t-0-0`／`t-2-0`），是穩定預設而不是「任選有空位的點」。每個資源點各自有 `Rules.TERRAIN.workSlots`（2）個位，不同點互不借用。存放：覆寫項目多選用的 `tileId`；範本的地塊在 `schedule.templateTiles`（角色 → 長度 3 陣列）；重設／清除範本即清除舊目標。沒有 `tileId` 的舊形狀仍有效，canonical 不含該鍵。`facility_limit` 與 `tile_occupied` 把排隊、施工中與已完工的工程都算進去；取消的工程不算，ID 不重用。
+
+**資料（schema 3）**：`tiles`＝`Rules.initialTiles()` 的 25 格；`inventory`＝`{ 'breakthrough-pill': n }`；`jobs`（`job-0001`… 依序、不刪除）項目 `{id, kind, discipleId, status, queuedSlotIndex, waited, startSlotIndex, slotsDone, completedSlotIndex, cancelledSlotIndex, target}`，`status` ∈ queued／active／done／cancelled，`target` 為 `{facilityType, tileId}`（build）或 `{recipeId, facilityJobId}`（craft）；`reservations`＝每個 active job 一筆 `{jobId, discipleId, seat, startSlotIndex, slotsTotal, paid, output}`。設施不另存欄位：已完工設施＝`status:'done'` 的 build job。`seatWaits`（依 `discipleId` 排序、每人至多一筆）＝`{discipleId, seat, waited}`：該角色對聚靈台／居所／某資源點的位已連續落選 `waited` 格（見下）；`schedule` 另含 `templateTiles`。`state.js` 的 validator 檢查 shape、引用、狀態一致性（`slotsDone = slotIndex − startSlotIndex`、`waited ≤ 排隊後經過格數`、完工格＝開工＋工期−1、煉丹開工格晚於丹房完工格）、設施上限／地塊互斥、每人至多一個 active job、工作位上限，並用 `rules.js` 重算 reservation 的成本、倍率與產出。
+
+**每格順序（在 SG-03 之上擴充，仍是格初快照 → 仲裁 → 一次提交）**：
+
+1. 有 active reservation 的角色強制繼續做該工作，課表在這格被忽略；不參與仲裁。
+2. 其餘角色的 queued job 是開工請求：先剔除 `participant_busy`、`facility_missing`、`facility_not_ready`，其餘走 `arbitrate`（等待較久優先、其次 job ID；參與者＋工作位＋成本整批成敗）。資源取格初快照，**同格採集的產出不能支付本格新工作**。成功者開工那格扣一次成本、建立 reservation，本格即算第 1 格工期；失敗者 `waited +1`、不扣任何東西，原因寫入 `slotResolved.denied[]`。**開工失敗的明示休養備案（R2）**：被拒、且本格沒有進行中或成功開工的另一個 job 的角色，這格只執行一次休養（`action:'rest'`、`source:'job-denied'`、`fallback:{from:'build'|'brew', reason:<拒絕碼>, jobId}`），不照原課表（例如不會採集）；一人多個被拒 job 時原因取 job ID 最前者；已有進行中／成功的 job 者只執行該 job，不再休養。
+3. 沒有 job 的角色依課表行動（含上述休養備案）；聚靈台修行位（1）、居所休養位（2）、**每個資源點各自的工作位（2）**固定輪候配位。**持久輪候（R1）**：對同一個位連續落選 N 格，`seatWaits` 記 `waited = N`，下一格以此仲裁（等待較久優先、同分 ID 較小者先）；取得位、改要別的位或別的行動、位不再存在時紀錄消失（重置，不累積舊債）。配不到的修行／休養回明示的野外版本（`seatFallback`），採集配不到沿用休養備案（`fallback:{from, reason:'no_seat'}`，不再另配居所位）。倍率來自 `Rules.evaluateFacilityPlacement`，只讀格初已完工的設施。
+4. 一次提交：建造每格 `Rules.ACTIONS.build` 體力、煉丹每格 `brew` 體力；完工（`status:'done'`）在最後工期格末；**該格沒有使用收益，次格格初才可用**。煉丹產出在開工格以格初快照（開工者體力、技藝、丹房放置倍率）算出並存在 reservation，完工時一次發入 `inventory`。
+5. 第 42 格待選時未完工的 job 保持 `active`，不提早完工；沒有新增強制休息或「禁止疲憊工作」規則。
+
+事件：`jobQueued`、`jobCancelled`（命令）、`jobStarted`（含 `paid`、煉丹的 `output`）、`jobCompleted`（含 `readySlotIndex`、煉丹的 `output.basis`）；`slotResolved` 新增 `denied[]` 與結果的 `job`／`seat`／`multiplierBp`／`seatFallback`；`dayReport` 帶 `inventory`。全程確定性，不消耗 RNG。
+
+**CLI**：`node sect-chronicle/tools/smoke.js --seed <seed> [--template <id>]` 只用公開 `newWorld`／`dispatch`／`advance`，策略版本 `first-furnace-v1`；輸出 seed、版本、策略、命令數、首丹 slot／day（`firstPillSlot`＝丹藥首次在庫的 slotIndex）、最終 slot／phase／待選、資源與丹藥、job 與等待摘要、hash 與未實作項；退出碼 0 成功、1 策略失敗、2 用法錯誤。
+
+**已驗證（`test/production.test.js` 與更新的既有測試）**：schema 3 的資料契約與壞資料拒絕；三個命令的成功／拒絕／重送；開工扣一次、占人工期、完工次格可用；材料不足與工作位的整批拒絕、持久輪候、參與者互斥；聚靈台／居所／丹房倍率與位滿備案；煉丹產出取開工快照；生產中途的 serialize／parse；20 個 seed × 42 格在單步、3 格、42 格批次下 hash 相同且都製出首爐丹；CLI。**已知限制**：job 之間先排隊者的 `waited` 必然不小於後排隊者，所以 job 層的優先翻轉仍只由純 `arbitrate` 測試涵蓋；設施位與資源點位的持久輪候則有生產路徑測試（`test/contention.test.js`：師父／主角輪流得聚靈台位、三人爭同一點、改去另一點、存讀、批次、陣列排序）。被配位拒絕的採集轉休養備案時不再另配居所位。**未驗證**：援村發獎／招募（SG-04A）、突破與丹藥消耗（SG-05）、獸患結算與 ending（SG-06）、storage／UI、AC-C13／C15、SG-M1、真人試玩；也未做平衡實驗（首丹時點只是本策略的一個結果，不是設計目標）。
+
 ## 尚未實作
 
-建造／煉丹的 runtime（SG-04）、援村發獎與固定招募入隊（SG-04A）、突破（SG-05）、危機結算與 ending（SG-06）、storage、UI、forecast。`tiles`、`jobs`、`reservations` 此時只驗證型別，內容契約由後續任務定義並視需要升版本。
+援村發獎與固定招募入隊（SG-04A）、突破與支援（SG-05）、危機結算與 ending（SG-06）、storage、UI、forecast。丹藥只入庫，沒有任何消耗或 buff。
 
 ## fixture
 
 `test/fixtures/new-world.json` 保存固定 seed＋角色設定的 canonical 字串、hash 與 rngState。改動 schema／ruleVersion／rngVersion 時 hash 必然改變；PR 必須逐項解釋原因，不可只換常數。SG-02 升到 ruleVersion 2 時，7 個 hash 全部改變，唯一差異是 `ruleVersion` 欄位；`test/fixtures/new-world.v1.json` 保存 SG-01 的歷史 golden（永不重產），測試逐案證明差異只有這個欄位、rngState 不變。
 
 SG-03 升到 schemaVersion 2：`test/fixtures/new-world.json` 以 schema 2 重產（7 個 hash 全部改變，唯一差異是 `schemaVersion` 與新增的 `schedule`，rngState 不變）；SG-02 時的 schema 1／ruleVersion 2 golden 搬到 `test/fixtures/new-world.schema1-rule2.json`（歷史 golden，永不重產，案例資料與先前的 `new-world.json` 相同，只在最上方加一段說明欄位）。測試逐案證明兩者差異，並證明 `new-world.v1.json`（SG-01）與新版的差異也只有 `ruleVersion`、`schemaVersion` 與 `schedule`。
+
+SG-04 升到 schemaVersion 3：`test/fixtures/new-world.json` 以 schema 3 重產（7 個 hash 全部改變，唯一差異是 `schemaVersion`、固定 25 格 `tiles`、新增的 `inventory`、`seatWaits`（空陣列）與 `schedule.templateTiles`（空物件），rngState 不變）；SG-03 的 schema 2／ruleVersion 2 golden 搬到 `test/fixtures/new-world.schema2-rule2.json`（歷史 golden，永不重產，案例資料與先前的 `new-world.json` 相同，只在最上方加一段說明欄位）。測試證明 schema 2 golden 以 `unknown_schema_version` 被拒，並逐案證明它與較舊的 `new-world.schema1-rule2.json`、`new-world.v1.json` 和新版的差異只在版本與新增欄位（`schedule`、`tiles`、`inventory`，v1 另有 `ruleVersion`）。
