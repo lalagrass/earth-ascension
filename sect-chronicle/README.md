@@ -18,6 +18,10 @@
 6. [Agent 接手入口](AGENTS.md)：如何認領、第一個工作包、交付格式。
 7. [雙 agent 與 worktree 接手計畫](docs/PARALLEL_HANDOFF.md)：分工、啟動前置、可直接貼上的指令。
 
+## 未來構想（不納入目前切片）
+
+[生活、輕功與領地防衛 backlog](docs/FUTURE_BACKLOG.md) 對應 [#75](https://github.com/lalagrass/earth-ascension/issues/75)，僅收錄供未來再評估或其他專案使用。未排程、未批准實作，不增加 14 天切片任務或依賴。
+
 ## 交付範圍與授權
 
 使用者已於 2026-10-18 批准 D1–D5、14 天切片及 SG-01～SG-12。文件整合已由 Codex 認領 [SG-00 #69](https://github.com/lalagrass/earth-ascension/issues/69)，在獨立文件 worktree 進行；未啟動其他 agent，未改原型程式。SG 實作主筆待認領，不以角色代號冒充已指派。
