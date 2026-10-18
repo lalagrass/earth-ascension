@@ -1,6 +1,9 @@
 /*
  * SG-01：版本化世界狀態（schema）、角色設定驗證、canonical hash 與整數取整契約。
  *
+ * SG-03：schemaVersion 升為 2，新增 `schedule`（課表）並為 commandLog／eventLog／pendingEvents 定義項目格式；
+ *   jobs／reservations 仍只驗型別（SG-04 才定義）。
+ *
  * 範圍界線（設計 0.2／issue #71、#81）：
  * - 只定義「狀態長什麼樣、怎樣才算合法」；不含規則、指令、結算引擎、UI。
  * - 模板預算／加點上限／性格枚舉、師父屬性、起始數值、ruleVersion 與取整契約的權威來源是 js/rules.js（SG-02 凍結）；
@@ -28,7 +31,8 @@
   'use strict';
 
   // ---------- 版本與常數 ----------
-  const SCHEMA_VERSION = 1;
+  // 1 = SG-01；2 = SG-03 新增 schedule（課表）並定義 commandLog／eventLog／pendingEvents 項目格式。
+  const SCHEMA_VERSION = 2;
   // ruleVersion 的唯一來源是 js/rules.js（1 = SG-01 暫定值；2 = SG-02 凍結的候選規則基線）。
   const RULE_VERSION = Rules.RULE_VERSION;
   const RNG_VERSION = Rng.RNG_VERSION;
@@ -64,7 +68,7 @@
   const TOP_LEVEL_FIELDS = Object.freeze([
     'schemaVersion', 'ruleVersion', 'rngVersion', 'seed', 'slotIndex', 'phase', 'revision', 'rngState',
     'resources', 'tiles', 'disciples', 'candidates', 'jobs', 'reservations', 'pendingEvents',
-    'commandLog', 'eventLog', 'scenarioId', 'characterOptions', 'protagonistId', 'masterId', 'story',
+    'commandLog', 'eventLog', 'scenarioId', 'characterOptions', 'protagonistId', 'masterId', 'story', 'schedule',
   ]);
   const ARRAY_FIELDS = Object.freeze(['tiles', 'jobs', 'reservations', 'commandLog', 'eventLog']);
 
@@ -242,6 +246,7 @@
         invitations: Object.fromEntries(CANDIDATE_IDS.map((id) => [id, { status: 'locked', joinSlotIndex: null }])),
         organisationStatus: 'dojo',
       },
+      schedule: { templates: {}, overrides: [] },
     };
     const check = validateWorld(state);
     if (!check.ok) throw new Error(`newWorld 產生了不合法狀態：${check.code} ${check.reason}`);
@@ -378,6 +383,92 @@
     return null;
   }
 
+  const HEX64 = /^[0-9a-f]{64}$/;
+  const ACTION_IDS = Object.freeze(Object.keys(Rules.ACTIONS));
+
+  // 課表：templates（角色 → 三個行動）與 overrides（單格覆寫，依 slotIndex、discipleId 排序以保證 canonical 唯一）。
+  // 這裡只驗結構與引用；哪些行動「本版已支援」由 commands.js 決定。
+  function validateSchedule(w, total) {
+    const sc = w.schedule;
+    if (!isPlainObject(sc) || !sameKeys(sc, ['templates', 'overrides'])) {
+      return fail('bad_value', 'schedule 必須恰好含 templates 與 overrides', 'schedule');
+    }
+    const byId = new Map(w.disciples.map((d) => [d.id, d]));
+    if (!isPlainObject(sc.templates)) return fail('bad_type', 'schedule.templates 必須是物件', 'schedule.templates');
+    for (const id of Object.keys(sc.templates)) {
+      if (!byId.has(id)) return fail('bad_value', `schedule.templates 含不在隊的角色：${id}`, 'schedule.templates');
+      const t = sc.templates[id];
+      if (!Array.isArray(t) || t.length !== 3 || !t.every((a) => typeof a === 'string' && ACTION_IDS.includes(a))) {
+        return fail('bad_value', `schedule.templates.${id} 必須是三個已知行動 ID`, 'schedule.templates');
+      }
+    }
+    if (!Array.isArray(sc.overrides)) return fail('bad_type', 'schedule.overrides 必須是陣列', 'schedule.overrides');
+    let prev = null;
+    for (const o of sc.overrides) {
+      if (!isPlainObject(o) || !sameKeys(o, ['discipleId', 'slotIndex', 'action'])) {
+        return fail('bad_value', 'schedule.overrides 項目必須恰好含 discipleId、slotIndex、action', 'schedule.overrides');
+      }
+      const d = typeof o.discipleId === 'string' ? byId.get(o.discipleId) : undefined;
+      if (!d) return fail('bad_value', `schedule.overrides 含不在隊的角色：${String(o.discipleId)}`, 'schedule.overrides');
+      if (!isNonNegInt(o.slotIndex) || o.slotIndex >= total) {
+        return fail('bad_value', `schedule.overrides.slotIndex 必須是 0 到 ${total - 1} 的整數`, 'schedule.overrides');
+      }
+      if (o.slotIndex < d.joinSlotIndex) {
+        return fail('inconsistent_roster', `${d.id} 在加入前（第 ${d.joinSlotIndex} 格）不得有排課`, 'schedule.overrides');
+      }
+      if (typeof o.action !== 'string' || !ACTION_IDS.includes(o.action)) {
+        return fail('bad_value', `schedule.overrides.action 未知：${String(o.action)}`, 'schedule.overrides');
+      }
+      if (prev && (prev.slotIndex > o.slotIndex || (prev.slotIndex === o.slotIndex && prev.discipleId >= o.discipleId))) {
+        return fail('bad_value', 'schedule.overrides 必須依 slotIndex、discipleId 嚴格遞增（無重複）', 'schedule.overrides');
+      }
+      prev = o;
+    }
+    return null;
+  }
+
+  // 命令紀錄與事件紀錄：序號連續、revision 一致，才能做冪等重送與回放核對。
+  function validateLogs(w) {
+    const log = w.commandLog;
+    const ev = w.eventLog;
+    if (w.revision < log.length) return fail('inconsistent_log', 'revision 不得小於已接受命令數', 'commandLog');
+    const ids = new Set();
+    let prevAfter = 0;
+    for (let i = 0; i < log.length; i++) {
+      const c = log[i];
+      const where = `commandLog[${i}]`;
+      if (!sameKeys(c, ['seq', 'id', 'type', 'payloadHash', 'revisionBefore', 'revisionAfter', 'eventSeqs'])) {
+        return fail('bad_value', `${where} 欄位不符`, where);
+      }
+      if (c.seq !== i + 1) return fail('inconsistent_log', `${where}.seq 必須連續（應為 ${i + 1}）`, where);
+      if (typeof c.id !== 'string' || c.id.length === 0) return fail('bad_type', `${where}.id 必須是非空字串`, where);
+      if (ids.has(c.id)) return fail('duplicate_id', `命令 ID 重複：${c.id}`, where);
+      ids.add(c.id);
+      if (typeof c.type !== 'string' || c.type.length === 0) return fail('bad_type', `${where}.type 必須是非空字串`, where);
+      if (typeof c.payloadHash !== 'string' || !HEX64.test(c.payloadHash)) return fail('bad_value', `${where}.payloadHash 必須是 64 位小寫十六進位`, where);
+      if (!isNonNegInt(c.revisionBefore) || c.revisionAfter !== c.revisionBefore + 1) {
+        return fail('inconsistent_log', `${where}.revisionAfter 必須是 revisionBefore + 1`, where);
+      }
+      if (c.revisionBefore < prevAfter || c.revisionAfter > w.revision) {
+        return fail('inconsistent_log', `${where} 的 revision 與前後紀錄或世界不一致`, where);
+      }
+      prevAfter = c.revisionAfter;
+      if (!Array.isArray(c.eventSeqs) || !c.eventSeqs.every((q) => isNonNegInt(q) && q >= 1 && q <= ev.length)) {
+        return fail('bad_value', `${where}.eventSeqs 必須是指向 eventLog 的序號陣列`, where);
+      }
+    }
+    for (let i = 0; i < ev.length; i++) {
+      const e = ev[i];
+      const where = `eventLog[${i}]`;
+      if (e.seq !== i + 1) return fail('inconsistent_log', `${where}.seq 必須連續（應為 ${i + 1}）`, where);
+      if (typeof e.type !== 'string' || e.type.length === 0) return fail('bad_type', `${where}.type 必須是非空字串`, where);
+      if (!isNonNegInt(e.slotIndex) || e.slotIndex > w.slotIndex) {
+        return fail('bad_value', `${where}.slotIndex 必須是不晚於目前格的非負整數`, where);
+      }
+    }
+    return null;
+  }
+
   function validateWorld(w) {
     if (!isPlainObject(w)) return fail('not_object', '世界狀態必須是物件');
     const versionChecks = [
@@ -434,6 +525,12 @@
       if (!isPlainObject(e) || typeof e.id !== 'string' || e.id.length === 0) {
         return fail('bad_type', 'pendingEvents 項目必須是含非空字串 id 的物件', 'pendingEvents');
       }
+      if (!sameKeys(e, ['id', 'raisedSlotIndex'])) {
+        return fail('bad_value', 'pendingEvents 項目必須恰好含 id 與 raisedSlotIndex', 'pendingEvents');
+      }
+      if (!isNonNegInt(e.raisedSlotIndex) || e.raisedSlotIndex > w.slotIndex) {
+        return fail('bad_value', 'pendingEvents.raisedSlotIndex 必須是不晚於目前格的非負整數', 'pendingEvents');
+      }
       if (seenPending.has(e.id)) return fail('duplicate_id', `待選事件重複：${e.id}`, 'pendingEvents');
       seenPending.add(e.id);
     }
@@ -472,6 +569,10 @@
     }
     const storyErr = validateStory(w);
     if (storyErr) return storyErr;
+    const scheduleErr = validateSchedule(w, total);
+    if (scheduleErr) return scheduleErr;
+    const logErr = validateLogs(w);
+    if (logErr) return logErr;
 
     const org = w.story.organisationStatus;
     if (w.phase === 'planning') {
@@ -622,7 +723,7 @@
 
   return {
     SCHEMA_VERSION, RULE_VERSION, RNG_VERSION, SCENARIOS, PHASES, ORGANISATION_STATUSES,
-    INVITATION_STATUSES, MASTER_ID, PROTAGONIST_ID, CANDIDATE_IDS, MAX_ROSTER,
+    INVITATION_STATUSES, ACTION_IDS, MASTER_ID, PROTAGONIST_ID, CANDIDATE_IDS, MAX_ROSTER,
     CHARACTER_OPTION_LIMITS, DEFAULT_CHARACTER_OPTIONS, CANONICAL_EXCLUDED_FIELDS,
     BASIS_POINTS, ROUNDING_MODE,
     newWorld, validateCharacterOptions, validateWorld, rosterAt,

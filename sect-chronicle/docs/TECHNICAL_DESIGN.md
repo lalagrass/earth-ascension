@@ -88,3 +88,15 @@ canonical state 包含世界與 RNG、排隊及待選事件，排除播放倍率
 採用 [D6 契約](OPENING_REVISION.md)。接受候選是可回放指令，入隊以 `joinSlotIndex`（接受當下尚未結算的 `slotIndex`，即下一次 advance 要結算的那格）為準，從該格起可排課與結算；禁止對 `joinSlotIndex` 之前已結算的格補發產出；`phase` 非 planning（含 awaitingChoice 的獸患待選與 ending）時 `acceptCandidate` 回傳拒絕。事件獎勵與入隊以已處理 ID 去重，存讀檔須保存待選狀態與已處理狀態。
 
 若骨架尚未實作，直接以新結構建立首版；若已存在可用存檔／fixture，先列 schema／ruleVersion 影響，提出有測試的遷移或明確拒絕並保留原檔，不假設沒有玩家存檔。不得為套新劇情靜默刪除角色或將失敗結局變成成功。
+
+## 8. SG-03 實作契約（細部）
+
+本節是 SG-03 對 §2–3 的細部落實；與 [DEVELOPMENT.md](DEVELOPMENT.md) 一致，且以後者與測試為準。
+
+- **模組**：`js/commands.js`（`dispatch`、世界的引擎層驗證、課表查詢）與 `js/engine.js`（`advance`、仲裁、意圖、故事 facts）。載入順序 rng → rules → state → story-data → commands → engine。
+- **schema 2**：新增 `schedule`（`templates`＋排序的 `overrides`）；`commandLog`、`eventLog`、`pendingEvents` 有固定項目格式與序號連續性驗證。舊 schema 存檔明確拒絕、不遷移。
+- **去重與 revision**：同 id 重送先於 revision 檢查；回傳的是已處理結果與目前世界，不倒退。被拒絕的命令不寫紀錄。revision：命令成功 +1、每結算一格 +1。
+- **結算／仲裁**：每格從格初快照計算所有效果；仲裁以「等待較久、其次穩定 ID」排序，參與者／工作位／成本整批成功或失敗，失敗轉明示休養。本包沒有持久的等待計數與工作位（SG-04 隨 `jobs`／`reservations` 定義），現階段所有意圖 `waited = 0`。
+- **停止**：待選事件（slot 8→9 求援、41→42 危機）使 phase 轉 `awaitingChoice`，批次立即停止；危機與 ending 的結算由 SG-06 接入。
+- **事件資料**：引擎只消費 `story-data.js` 的 `dueEvents`／`validateChoice`／宣告的效果；對尚未有 runtime 的效果（援村發獎、危機佈陣、結局）一律明確拒絕。
+- **不使用 RNG**：本包的行動都是確定性公式，`rngState` 全程不變。
