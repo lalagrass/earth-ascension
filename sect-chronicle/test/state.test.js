@@ -36,8 +36,8 @@ function withApprentice() {
   return w;
 }
 
-test('版本常數：schema 1、SG-02 凍結 ruleVersion 2、rng 1', () => {
-  assert.equal(S.SCHEMA_VERSION, 1);
+test('版本常數：SG-03 schema 2、SG-02 凍結 ruleVersion 2、rng 1', () => {
+  assert.equal(S.SCHEMA_VERSION, 2);
   assert.equal(S.RULE_VERSION, 2);
   assert.equal(S.RNG_VERSION, Rng.RNG_VERSION);
   assert.equal(S.SCENARIOS['slice-14'].totalSlots, 42);
@@ -45,8 +45,9 @@ test('版本常數：schema 1、SG-02 凍結 ruleVersion 2、rng 1', () => {
 
 test('預設新局：欄位齊全、師徒兩人、候選另存、story 初值', () => {
   const w = world('seed-a');
-  assert.equal(w.schemaVersion, 1);
+  assert.equal(w.schemaVersion, 2);
   assert.equal(w.ruleVersion, 2);
+  assert.deepEqual(w.schedule, { templates: {}, overrides: [] });
   assert.equal(w.rngVersion, 1);
   assert.equal(w.seed, 'seed-a');
   assert.equal(w.scenarioId, 'slice-14');
@@ -248,7 +249,7 @@ test('缺欄位／型別錯誤／非物件', () => {
   }
   const required = ['schemaVersion', 'ruleVersion', 'rngVersion', 'seed', 'slotIndex', 'phase', 'revision',
     'rngState', 'resources', 'tiles', 'disciples', 'candidates', 'jobs', 'reservations', 'pendingEvents',
-    'commandLog', 'eventLog', 'scenarioId', 'characterOptions', 'protagonistId', 'masterId', 'story'];
+    'commandLog', 'eventLog', 'scenarioId', 'characterOptions', 'protagonistId', 'masterId', 'story', 'schedule'];
   for (const k of required) {
     const w = world();
     delete w[k];
@@ -306,10 +307,10 @@ test('slotIndex ≤ 42，且 phase 與 slotIndex／待選事件一致', () => {
   assert.equal(mk((w) => { w.slotIndex = 41; w.revision = 41; }).ok, true);
   // awaitingChoice 需有待選事件；planning 不得有待選事件
   assert.equal(mk((w) => { w.phase = 'awaitingChoice'; }).ok, false);
-  assert.equal(mk((w) => { w.pendingEvents = [{ id: 'evt-x' }]; }).ok, false);
-  assert.equal(mk((w) => { w.phase = 'awaitingChoice'; w.pendingEvents = [{ id: 'evt-x' }]; }).ok, true);
+  assert.equal(mk((w) => { w.pendingEvents = [{ id: 'evt-x', raisedSlotIndex: 0 }]; }).ok, false);
+  assert.equal(mk((w) => { w.phase = 'awaitingChoice'; w.pendingEvents = [{ id: 'evt-x', raisedSlotIndex: 0 }]; }).ok, true);
   // 獸患待選：slotIndex = 42、awaitingChoice
-  assert.equal(mk((w) => { w.slotIndex = 42; w.revision = 42; w.phase = 'awaitingChoice'; w.pendingEvents = [{ id: 'crisis-beast' }]; }).ok, true);
+  assert.equal(mk((w) => { w.slotIndex = 42; w.revision = 42; w.phase = 'awaitingChoice'; w.pendingEvents = [{ id: 'crisis-beast', raisedSlotIndex: 42 }]; }).ok, true);
   // resolving 不可被保存
   const r = mk((w) => { w.phase = 'resolving'; });
   assert.equal(r.ok, false);
@@ -443,7 +444,7 @@ test('canonical 不排除任何影響世界的欄位：改動任一頂層欄位 
   const w = withApprentice();
   const base = S.hashWorld(w);
   const changers = {
-    schemaVersion: (x) => { x.schemaVersion = 2; },
+    schemaVersion: (x) => { x.schemaVersion = 3; },
     ruleVersion: (x) => { x.ruleVersion = 3; },
     rngVersion: (x) => { x.rngVersion = 2; },
     seed: (x) => { x.seed = 'other'; },
@@ -457,9 +458,10 @@ test('canonical 不排除任何影響世界的欄位：改動任一頂層欄位 
     candidates: (x) => { x.candidates.reverse(); },
     jobs: (x) => { x.jobs.push({ id: 'j' }); },
     reservations: (x) => { x.reservations.push({ id: 'r' }); },
-    pendingEvents: (x) => { x.pendingEvents.push({ id: 'e' }); },
+    pendingEvents: (x) => { x.pendingEvents.push({ id: 'e', raisedSlotIndex: 0 }); },
     commandLog: (x) => { x.commandLog.push({ id: 'c' }); },
     eventLog: (x) => { x.eventLog.push({ id: 'l' }); },
+    schedule: (x) => { x.schedule.templates[S.MASTER_ID] = ['rest', 'rest', 'rest']; },
     scenarioId: (x) => { x.scenarioId = 'slice-28'; },
     characterOptions: (x) => { x.characterOptions.personality.risk = 'bold'; },
     protagonistId: (x) => { x.protagonistId = 'p2'; },
@@ -639,7 +641,7 @@ test('各種非 JSON 值放在任何位置都被拒絕（巢狀、頂層欄位�
     jobs巢狀: (w, v) => { w.jobs = [{ id: 'j', deep: { list: [v] } }]; },
     reservations: (w, v) => { w.reservations = [{ id: 'r', v }]; },
     pendingEvents: (w, v) => { w.phase = 'awaitingChoice'; w.pendingEvents = [{ id: 'e', v }]; },
-    eventLog: (w, v) => { w.eventLog = [{ id: 'l', v }]; },
+    eventLog: (w, v) => { w.eventLog = [{ seq: 1, type: 't', slotIndex: 0, v }]; },
     resources整個: (w, v) => { w.resources = v; },
     story整個: (w, v) => { w.story = v; },
     story內: (w, v) => { w.story.rescues = [v]; },
@@ -800,24 +802,44 @@ test('舊版（ruleVersion 1）存檔被明確拒絕、原資料不被修改或�
     const before = c.canonical;
     const r = S.parseState(c.canonical);
     assert.equal(r.ok, false, c.name);
-    assert.equal(r.code, 'unknown_rule_version', c.name);
-    assert.ok(r.reason.includes('ruleVersion'), r.reason);
+    // SG-03 起 schemaVersion 先於 ruleVersion 檢查；舊檔兩者都不符，一律明確拒絕
+    assert.equal(r.code, 'unknown_schema_version', c.name);
+    assert.ok(r.reason.includes('schemaVersion'), r.reason);
     assert.equal(c.canonical, before, '輸入字串不變');
     const obj = JSON.parse(c.canonical);
     const snapshot = clone(obj);
-    assert.equal(S.validateWorld(obj).code, 'unknown_rule_version', c.name);
+    assert.equal(S.validateWorld(obj).code, 'unknown_schema_version', c.name);
     assert.deepEqual(obj, snapshot, '輸入物件不變（沒有被就地升版）');
     assert.throws(() => S.serializeState(obj), TypeError, c.name);
   }
 });
 
-test('升版後每個固定 seed 與舊 golden 的差異只有 ruleVersion 一個欄位', () => {
+const legacyS1R2 = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.schema1-rule2.json'), 'utf8'));
+
+test('SG-02 的 schema 1／ruleVersion 2 golden 也被明確拒絕、輸入不變，且 golden 沒被動過', () => {
+  assert.equal(legacyS1R2.schemaVersion, 1);
+  assert.equal(legacyS1R2.ruleVersion, 2);
+  for (const c of legacyS1R2.cases) {
+    const obj = JSON.parse(c.canonical);
+    const snapshot = clone(obj);
+    const r = S.parseState(c.canonical);
+    assert.equal(r.ok, false, c.name);
+    assert.equal(r.code, 'unknown_schema_version', c.name);
+    assert.deepEqual(obj, snapshot);
+    assert.equal(S.validateWorld(obj).code, 'unknown_schema_version', c.name);
+    assert.throws(() => S.serializeState(obj), TypeError, c.name);
+    assert.equal(S.sha256Hex(c.canonical), c.hash, `${c.name}：歷史 hash 可重算`);
+  }
+});
+
+test('SG-03 升 schema 2 後，每個固定 seed 與 schema 1／rule 2 golden 的差異只有 schemaVersion 與新增的 schedule', () => {
   const fx = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.json'), 'utf8'));
-  assert.equal(fx.cases.length, legacy.cases.length);
-  assert.equal(legacy.schemaVersion, fx.schemaVersion);
-  assert.equal(legacy.rngVersion, fx.rngVersion);
-  for (let i = 0; i < legacy.cases.length; i++) {
-    const o = legacy.cases[i];
+  assert.equal(fx.schemaVersion, 2);
+  assert.equal(fx.cases.length, legacyS1R2.cases.length);
+  assert.equal(legacyS1R2.ruleVersion, fx.ruleVersion);
+  assert.equal(legacyS1R2.rngVersion, fx.rngVersion);
+  for (let i = 0; i < legacyS1R2.cases.length; i++) {
+    const o = legacyS1R2.cases[i];
     const n = fx.cases[i];
     assert.equal(n.name, o.name);
     assert.equal(n.seed, o.seed);
@@ -825,11 +847,31 @@ test('升版後每個固定 seed 與舊 golden 的差異只有 ruleVersion 一�
     assert.notEqual(n.hash, o.hash, `${o.name}：hash 必然不同`);
     const a = JSON.parse(o.canonical);
     const b = JSON.parse(n.canonical);
+    assert.equal(a.schemaVersion, 1);
+    assert.equal(b.schemaVersion, 2);
+    assert.deepEqual(b.schedule, { templates: {}, overrides: [] });
+    a.schemaVersion = 2;
+    a.schedule = { templates: {}, overrides: [] };
+    assert.deepEqual(b, a, `${o.name}：除 schemaVersion 與 schedule 外世界內容完全相同`);
+  }
+});
+
+test('升版後每個固定 seed 與 SG-01 golden（schema 1／rule 1）的差異只有 ruleVersion、schemaVersion 與 schedule', () => {
+  const fx = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.json'), 'utf8'));
+  assert.equal(fx.cases.length, legacy.cases.length);
+  assert.equal(legacy.rngVersion, fx.rngVersion);
+  for (let i = 0; i < legacy.cases.length; i++) {
+    const o = legacy.cases[i];
+    const n = fx.cases[i];
+    assert.equal(n.name, o.name);
+    assert.deepEqual(n.rngState, o.rngState, `${o.name}：RNG 狀態（原向量）不變`);
+    const a = JSON.parse(o.canonical);
+    const b = JSON.parse(n.canonical);
     assert.equal(a.ruleVersion, 1);
-    assert.equal(b.ruleVersion, 2);
     a.ruleVersion = 2;
-    assert.deepEqual(b, a, `${o.name}：除 ruleVersion 外世界內容完全相同`);
-    // 舊 hash 本身也可重算，證明 golden 沒被動過
+    a.schemaVersion = 2;
+    a.schedule = { templates: {}, overrides: [] };
+    assert.deepEqual(b, a, o.name);
     assert.equal(S.sha256Hex(o.canonical), o.hash, o.name);
   }
 });
@@ -855,4 +897,99 @@ test('新局的起始數值與師父屬性取自 rules.js 的凍結表', () => {
     for (const k of ['stamina', 'mind', 'cultivation', 'injury']) assert.equal(d[k], Rules.START_VALUES[k], `${d.id}.${k}`);
   }
   assert.deepEqual(w.resources, { spiritMaterial: 0, spiritHerb: 0, spiritStone: 0, reputation: 0 }, '從零材料開局');
+});
+
+// ---------- SG-03：schedule／commandLog／eventLog／pendingEvents 的內容契約 ----------
+
+const HASH_A = 'a'.repeat(64);
+function midWorld() {
+  const w = withApprentice(); // slotIndex 21、revision 21、cand-1 於第 20 格加入
+  w.eventLog = [{ seq: 1, type: 'commandAccepted', slotIndex: 3 }, { seq: 2, type: 'commandAccepted', slotIndex: 4 }];
+  w.commandLog = [
+    { seq: 1, id: 'c-1', type: 'assignSlot', payloadHash: HASH_A, revisionBefore: 3, revisionAfter: 4, eventSeqs: [1] },
+    { seq: 2, id: 'c-2', type: 'setDailyTemplate', payloadHash: HASH_A, revisionBefore: 4, revisionAfter: 5, eventSeqs: [2] },
+  ];
+  w.schedule = {
+    templates: { [S.MASTER_ID]: ['cultivate', 'rest', 'tune-mind'], 'cand-1': ['gather-material', 'rest', 'rest'] },
+    overrides: [
+      { discipleId: S.MASTER_ID, slotIndex: 22, action: 'rest' },
+      { discipleId: S.PROTAGONIST_ID, slotIndex: 22, action: 'cultivate' },
+      { discipleId: 'cand-1', slotIndex: 25, action: 'gather-herb' },
+    ],
+  };
+  return w;
+}
+const bad = (fn, code) => {
+  const w = midWorld();
+  fn(w);
+  const before = clone(w);
+  const r = S.validateWorld(w);
+  assert.equal(r.ok, false, JSON.stringify(r));
+  if (code) assert.equal(r.code, code, JSON.stringify(r));
+  assert.deepEqual(w, before, '驗證不修改輸入');
+  return r;
+};
+
+test('合法的中途世界（課表、命令紀錄、事件紀錄）通過驗證並可存讀、hash 不變', () => {
+  const w = midWorld();
+  assert.deepEqual(S.validateWorld(w), { ok: true });
+  const back = S.parseState(S.serializeState(w));
+  assert.equal(back.ok, true);
+  assert.equal(S.hashWorld(back.state), S.hashWorld(w));
+});
+
+test('schedule 驗證：結構、引用、排序、加入前不得排課', () => {
+  bad((w) => { delete w.schedule; }, 'missing_field');
+  bad((w) => { w.schedule = []; });
+  bad((w) => { w.schedule.extra = 1; });
+  bad((w) => { w.schedule.templates = []; });
+  bad((w) => { w.schedule.templates['cand-2'] = ['rest', 'rest', 'rest']; });
+  bad((w) => { w.schedule.templates[S.MASTER_ID] = ['rest', 'rest']; });
+  bad((w) => { w.schedule.templates[S.MASTER_ID] = ['rest', 'rest', 'teleport']; });
+  bad((w) => { w.schedule.templates[S.MASTER_ID] = ['rest', 'rest', 5]; });
+  bad((w) => { w.schedule.overrides = {}; });
+  bad((w) => { w.schedule.overrides[0] = null; });
+  bad((w) => { w.schedule.overrides[0].extra = 1; });
+  bad((w) => { w.schedule.overrides[0].discipleId = 'cand-2'; });
+  bad((w) => { w.schedule.overrides[0].slotIndex = 42; });
+  bad((w) => { w.schedule.overrides[0].slotIndex = -1; });
+  bad((w) => { w.schedule.overrides[0].slotIndex = 22.5; });
+  bad((w) => { w.schedule.overrides[0].action = 'teleport'; });
+  bad((w) => { w.schedule.overrides.reverse(); }); // 未排序
+  bad((w) => { w.schedule.overrides.push({ ...w.schedule.overrides[2] }); }); // 重複
+  bad((w) => { w.schedule.overrides[2] = { discipleId: 'cand-1', slotIndex: 19, action: 'rest' }; w.schedule.overrides.sort((a, b) => a.slotIndex - b.slotIndex); }, 'inconsistent_roster');
+});
+
+test('commandLog 驗證：序號連續、ID 唯一、revision 銜接、eventSeqs 指向 eventLog', () => {
+  bad((w) => { w.commandLog[1].seq = 5; }, 'inconsistent_log');
+  bad((w) => { w.commandLog[1].id = 'c-1'; }, 'duplicate_id');
+  bad((w) => { w.commandLog[0].id = ''; });
+  bad((w) => { w.commandLog[0].type = 7; });
+  bad((w) => { w.commandLog[0].payloadHash = 'xyz'; });
+  bad((w) => { w.commandLog[0].payloadHash = 'A'.repeat(64); });
+  bad((w) => { w.commandLog[0].revisionAfter = 9; }, 'inconsistent_log');
+  bad((w) => { w.commandLog[1].revisionBefore = 2; w.commandLog[1].revisionAfter = 3; }, 'inconsistent_log'); // 倒退
+  bad((w) => { w.commandLog[1].revisionBefore = 30; w.commandLog[1].revisionAfter = 31; }, 'inconsistent_log'); // 超過世界 revision
+  bad((w) => { w.revision = 1; }, 'inconsistent_log');
+  bad((w) => { w.commandLog[0].eventSeqs = [3]; });
+  bad((w) => { w.commandLog[0].eventSeqs = [0]; });
+  bad((w) => { w.commandLog[0].eventSeqs = 'x'; });
+  bad((w) => { delete w.commandLog[0].eventSeqs; });
+  bad((w) => { w.commandLog[0].extra = true; });
+});
+
+test('eventLog 與 pendingEvents 驗證', () => {
+  bad((w) => { w.eventLog[1].seq = 9; }, 'inconsistent_log');
+  bad((w) => { w.eventLog[0].type = ''; });
+  bad((w) => { delete w.eventLog[0].type; });
+  bad((w) => { w.eventLog[0].slotIndex = 22; }); // 晚於目前格
+  bad((w) => { w.eventLog[0].slotIndex = -1; });
+  bad((w) => { w.phase = 'awaitingChoice'; w.pendingEvents = [{ id: 'evt-x' }]; });
+  bad((w) => { w.phase = 'awaitingChoice'; w.pendingEvents = [{ id: 'evt-x', raisedSlotIndex: 22 }]; });
+  bad((w) => { w.phase = 'awaitingChoice'; w.pendingEvents = [{ id: 'evt-x', raisedSlotIndex: 3, extra: 1 }]; });
+  bad((w) => { w.phase = 'awaitingChoice'; w.pendingEvents = [{ id: 'evt-x', raisedSlotIndex: 1.5 }]; });
+  const ok = midWorld();
+  ok.phase = 'awaitingChoice';
+  ok.pendingEvents = [{ id: 'evt-x', raisedSlotIndex: 21 }];
+  assert.deepEqual(S.validateWorld(ok), { ok: true });
 });
