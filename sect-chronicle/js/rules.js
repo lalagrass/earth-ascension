@@ -379,7 +379,7 @@
 
   // ---------- 援村（零材料入口、一次性獎勵） ----------
   const AID_ID = 'village-fence';
-  const AID_DURATION_SLOTS = 2;
+  const AID_DURATION_SLOTS = 1; // D6（OPENING_REVISION §3、GDD §4）：援村占一人一格
   const AID_WORKERS = 1;
   const AID_AVAILABLE_FROM_SLOT = SPIRIT_PHASES[1].startSlot; // 日 4 初兆起有人求援
   const AID_OPTIONS = freeze({
@@ -397,16 +397,13 @@
     return { ...AID_OPTIONS[optionId].reward };
   }
 
-  // ---------- 兩人產能上界（休養占比） ----------
-  // 只以體力收支估算「最多可工作幾格」，忽略體力分段降效與心境，因此是上界，不是引擎結果。
-  function workDutyBp(input) {
+  // ---------- 休養穩態比率（估算，不是上界） ----------
+  // 穩態比率＝恢復量／(恢復量＋每工作格體力消耗)。假設：無限期重複「工作 n 格、休養 1 格」、不計初始體力、
+  // 不計體力分段降效與心境。規則允許體力 0 時繼續工作（只降效），所以這不是任何有限期內「可工作格數」的上界。
+  function steadyStateWorkShareBp(input) {
     intIn('workStaminaCost', input.workStaminaCost, 1, VALUE_LIMITS.staminaMax);
     const gain = restRecovery(input).stamina;
     return Math.floor((gain * BASIS_POINTS) / (gain + input.workStaminaCost));
-  }
-  function workSlotUpperBound(input) {
-    intIn('slots', input.slots, 1, MAX_SLOT_INDEX);
-    return Math.floor((input.slots * workDutyBp(input)) / BASIS_POINTS);
   }
 
   // 資料描述中「純敘事、沒有效果」的欄位明示在此；其餘欄位皆參與計算。
@@ -430,6 +427,6 @@
     BREAKTHROUGH_FAIL_KEEP_BP, BREAKTHROUGH_FAIL_INJURY,
     canAttemptBreakthrough, breakthroughChance, breakthroughFailure,
     AID_ID, AID_DURATION_SLOTS, AID_WORKERS, AID_AVAILABLE_FROM_SLOT, AID_OPTIONS, aidAvailable, aidReward,
-    workDutyBp, workSlotUpperBound, PURE_NARRATIVE_FIELDS,
+    steadyStateWorkShareBp, PURE_NARRATIVE_FIELDS,
   };
 });

@@ -28,7 +28,7 @@ node sect-chronicle/tools/update-fixtures.js  # 僅在有意改版本時重產 f
 
 ## SG-02 新增的契約
 
-- `js/rules.js`：規則表與純計算（五行／地圖／設施、靈氣階段、修行、採集、煉丹、休養、突破、援村、兩人產能上界）。全部純函式、不消耗 RNG；細節與數值見 [RULES.md](RULES.md)。
+- `js/rules.js`：規則表與純計算（五行／地圖／設施、靈氣階段、修行、採集、煉丹、休養、突破、援村〔占一人一格〕、休養穩態比率估算）。全部純函式、不消耗 RNG；細節與數值見 [RULES.md](RULES.md)。
 - `CHARACTER_OPTION_LIMITS`、師父屬性、起始數值、`RULE_VERSION`、`BASIS_POINTS`／`mulBp` 的權威定義移到 `rules.js`；`state.js` 只持有同一物件／函式的引用，沒有第二份定義。
 - `state.js` 只接受 ruleVersion 2；ruleVersion 1 存檔回傳 `unknown_rule_version`，原資料不變，不提供遷移。
 - 新局 `tiles` 仍為空陣列；`rules.initialTiles()` 提供固定版型，等 SG-04 建局時採用（本包不改 schema）。

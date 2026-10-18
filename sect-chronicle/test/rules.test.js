@@ -467,10 +467,10 @@ test('突破：門檻 100、成功率分項、失敗保留 70% 並產生可療�
 
 // ---------- 援村 ----------
 
-test('援村：零材料入口、一次性獎勵、日 4 起開放', () => {
+test('援村：零材料入口、一人一格（D6）、一次性獎勵、日 4 起開放', () => {
   assert.deepEqual(Object.keys(R.AID_OPTIONS).sort(), ['free', 'supplied']);
   assert.equal(R.AID_ID, 'village-fence');
-  assert.equal(R.AID_DURATION_SLOTS, 2);
+  assert.equal(R.AID_DURATION_SLOTS, 1, 'D6：援村占一人一格');
   assert.equal(R.AID_WORKERS, 1);
   assert.deepEqual(R.AID_OPTIONS.free, { label: '徒手協助', cost: {}, reward: { spiritMaterial: 3, spiritHerb: 2, reputation: 1 } });
   assert.deepEqual(R.AID_OPTIONS.supplied, { label: '備料協助', cost: { spiritMaterial: 4 }, reward: { spiritMaterial: 8, spiritHerb: 5, reputation: 2 } });
@@ -488,19 +488,45 @@ test('援村：零材料入口、一次性獎勵、日 4 起開放', () => {
 
 // ---------- 兩人開局產能與可達性 ----------
 
-test('兩人產能上界：休養占比與可工作格數（手算）', () => {
-  // 野外休養：根骨 3 → 28；工作消耗 15 → 工作占比 28/43＝6511.6→6511；42 格 → 27
-  assert.equal(R.workDutyBp({ rootBone: 3, workStaminaCost: 15 }), 6511);
-  // 根骨 5 → 31；31/46＝6739.1→6739；42×6739/10000＝28.3→28
-  assert.equal(R.workDutyBp({ rootBone: 5, workStaminaCost: 15 }), 6739);
-  assert.equal(R.workDutyBp({ rootBone: 3, workStaminaCost: 15, atResidence: true, residenceMultiplierBp: 12000 }), 7727); // 51/66
-  assert.equal(R.workSlotUpperBound({ rootBone: 3, workStaminaCost: 15, slots: 42 }), 27);
-  assert.equal(R.workSlotUpperBound({ rootBone: 5, workStaminaCost: 15, slots: 42 }), 28);
+test('休養穩態比率只是穩態估算：不是有限期工作格數上界（反例：從 100 體力連續工作 42 格合法）', () => {
+  // 穩態比率＝恢復量／(恢復量＋工作消耗)：根骨 3 → 28/43＝6511.6→6511；根骨 5 → 31/46＝6739.1→6739；
+  // 居所（根骨 3、倍率 12000）→ 51/66＝7727.2→7727。假設：無限期重複、每工作格消耗 15、每休養格恢復固定、
+  // 不計初始 100 體力、不計降效。它不描述任何有限期的可工作格數。
+  assert.equal(R.steadyStateWorkShareBp({ rootBone: 3, workStaminaCost: 15 }), 6511);
+  assert.equal(R.steadyStateWorkShareBp({ rootBone: 5, workStaminaCost: 15 }), 6739);
+  assert.equal(R.steadyStateWorkShareBp({ rootBone: 3, workStaminaCost: 15, atResidence: true, residenceMultiplierBp: 12000 }), 7727);
+  // 舊名稱與「上界」函式已移除，避免被當成規則或上限
+  assert.equal('workSlotUpperBound' in R, false);
+  assert.equal('workDutyBp' in R, false);
+  // 真實反例：師父（根骨 5、技藝 5）從 100 體力連續 42 格採靈材。規則不禁止疲憊工作，只降效。
+  // 體力序列 100,85,70,55,40,25,10,0,0…；每格產量（4×1.05×體力係數，floor）：
+  //   格 0–2（≥60）4×3＝12；格 3–4（30..59→0.8）3×2＝6；格 5–41（體力 25、10、0…→0.5）2×37＝74；合計 92。
+  let values = { stamina: 100, mind: 60 };
+  let total = 0;
+  let worked = 0;
+  const staminaLog = [];
+  for (let slot = 0; slot < 42; slot++) {
+    staminaLog.push(values.stamina);
+    total += R.gatherYield({ resource: 'spiritMaterial', slotIndex: slot, craft: 5, stamina: values.stamina }).amount;
+    values = R.applyActionCost('gather-material', values);
+    worked += 1;
+  }
+  assert.deepEqual(staminaLog.slice(0, 9), [100, 85, 70, 55, 40, 25, 10, 0, 0]);
+  assert.equal(total, 92);
+  assert.equal(worked, 42, '42 格全部合法工作');
+  assert.ok(worked > Math.floor((42 * 6739) / 10000), '穩態比率換算的 28 格不是上界');
 });
 
-// 迷你步進器：只用 rules.js 的公式驗證「兩人從零材料走到首座丹房與首爐丹」的數值可達性。
-// 它不是引擎：沒有指令、輪候、事件，也不消耗 RNG；排程是人工寫死的假設。
-function simulateTwoPerson(plan, opts = {}) {
+// 迷你步進器：只用 rules.js 的公式，檢查「兩人從零材料走到首座丹房與首爐丹」的數值可達性。
+// 它不是引擎：沒有指令、輪候、事件，也不消耗 RNG；排程是人工假設，沒有任何「體力不足就強制休息」之類的額外規則。
+// 假設（SG-03／04 可能重新定義，這裡只是選一個明確的）：
+//   * 丹房蓋在 ALCHEMY_TILE，倍率由 evaluateFacilityPlacement 取得；
+//   * 多格工作（煉丹 2 格）的產量取「開工那一格格初」的工作者體力；同時另算「最後一格格初」體力作敏感度對照。
+const ALCHEMY_TILE = 't-0-1'; // 真實版型上丹房倍率最高的可建格（11500）
+function simulateTwoPerson(plan) {
+  const placement = R.evaluateFacilityPlacement(R.initialTiles(), ALCHEMY_TILE, 'alchemyRoom');
+  assert.equal(placement.ok, true);
+  const alchemyBp = placement.multiplierBp;
   const people = [
     { name: 'master', ...R.MASTER_ATTRIBUTES, ...R.START_VALUES },
     { name: 'protagonist', ...(() => {
@@ -509,28 +535,25 @@ function simulateTwoPerson(plan, opts = {}) {
     })() },
   ];
   const res = { spiritMaterial: 0, spiritHerb: 0, spiritStone: 0, reputation: 0 };
-  const tileBp = opts.alchemyBp || 10000;
-  const timeline = { roomUsableFrom: null, firstPillSlot: null, minResource: 0, minStamina: 100, notes: [] };
-  let build = null; // {left, owner}
+  const timeline = {
+    alchemyBp, roomUsableFrom: null, firstPillSlot: null, minResource: 0,
+    brewStartStamina: null, brewLastSlotStamina: null, staminaAtSlotStart: [[], []], pillsAtStart: 0, pillsAtLast: 0,
+  };
+  let build = null;
   let brew = null;
   let pills = 0;
-  const assertRes = () => {
-    for (const k of Object.keys(res)) {
-      assert.ok(Number.isSafeInteger(res[k]) && res[k] >= 0, `資源 ${k} 為 ${res[k]}`);
-      timeline.minResource = Math.min(timeline.minResource, res[k]);
-    }
-  };
+  const recipe = R.RECIPES['breakthrough-pill'];
   for (let slot = 0; slot < plan.length; slot++) {
     for (let i = 0; i < 2; i++) {
       const p = people[i];
-      let act = plan[slot][i];
-      if (p.stamina < 30 && !['build', 'brew'].includes(act) && !(build && build.owner === i) && !(brew && brew.owner === i)) act = 'rest';
+      const act = plan[slot][i];
+      timeline.staminaAtSlotStart[i].push(p.stamina);
       const v = { stamina: p.stamina, mind: p.mind };
       if (act === 'rest') {
         Object.assign(p, R.applyRest({ stamina: p.stamina, mind: p.mind, injury: p.injury, rootBone: p.rootBone }));
       } else if (act === 'gather-material' || act === 'gather-herb') {
-        const y = R.gatherYield({ resource: act === 'gather-material' ? 'spiritMaterial' : 'spiritHerb', slotIndex: slot, craft: p.craft, stamina: p.stamina });
-        res[act === 'gather-material' ? 'spiritMaterial' : 'spiritHerb'] += y.amount;
+        const key = act === 'gather-material' ? 'spiritMaterial' : 'spiritHerb';
+        res[key] += R.gatherYield({ resource: key, slotIndex: slot, craft: p.craft, stamina: p.stamina }).amount;
         Object.assign(p, R.applyActionCost(act, v));
       } else if (act === 'cultivate') {
         p.cultivation += R.cultivationGain({ slotIndex: slot, comprehension: p.comprehension, stamina: p.stamina, mind: p.mind, injury: p.injury }).gain;
@@ -539,52 +562,74 @@ function simulateTwoPerson(plan, opts = {}) {
         if (!build && timeline.roomUsableFrom === null) {
           assert.ok(res.spiritMaterial >= R.FACILITIES.alchemyRoom.cost.spiritMaterial, `slot ${slot} 開工時材料不足`);
           res.spiritMaterial -= R.FACILITIES.alchemyRoom.cost.spiritMaterial;
-          build = { left: R.FACILITIES.alchemyRoom.durationSlots, owner: i };
+          build = { left: R.FACILITIES.alchemyRoom.durationSlots };
         }
         Object.assign(p, R.applyActionCost('build', v));
       } else if (act === 'brew') {
-        if (!brew && timeline.roomUsableFrom !== null && slot >= timeline.roomUsableFrom) {
-          const c = R.RECIPES['breakthrough-pill'].cost;
-          assert.ok(res.spiritHerb >= c.spiritHerb && res.spiritMaterial >= c.spiritMaterial, `slot ${slot} 煉丹材料不足`);
-          res.spiritHerb -= c.spiritHerb; res.spiritMaterial -= c.spiritMaterial;
-          brew = { left: R.RECIPES['breakthrough-pill'].durationSlots, owner: i };
+        if (!brew) {
+          assert.ok(timeline.roomUsableFrom !== null && slot >= timeline.roomUsableFrom, `slot ${slot} 丹房尚未可用`);
+          assert.ok(res.spiritHerb >= recipe.cost.spiritHerb && res.spiritMaterial >= recipe.cost.spiritMaterial, `slot ${slot} 煉丹材料不足`);
+          res.spiritHerb -= recipe.cost.spiritHerb; res.spiritMaterial -= recipe.cost.spiritMaterial;
+          brew = { left: recipe.durationSlots, owner: i, startStamina: p.stamina, lastStamina: null };
         }
+        brew.lastStamina = p.stamina; // 持續更新，完工時即最後一格格初的體力
         Object.assign(p, R.applyActionCost('brew', v));
       } else {
         throw new Error(`未知排程 ${act}`);
       }
-      timeline.minStamina = Math.min(timeline.minStamina, p.stamina);
     }
-    // 本格結束：工程／煉丹倒數（完工次格才可用）
     if (build) { build.left -= 1; if (build.left === 0) { timeline.roomUsableFrom = slot + 1; build = null; } }
     if (brew) {
       brew.left -= 1;
       if (brew.left === 0) {
-        const o = R.brewOutput({ recipeId: 'breakthrough-pill', craft: people[brew.owner].craft, stamina: 100, tileMultiplierBp: tileBp });
-        pills += o.amount; timeline.firstPillSlot = timeline.firstPillSlot ?? slot + 1; brew = null;
+        const owner = people[brew.owner];
+        const out = (stamina) => R.brewOutput({ recipeId: 'breakthrough-pill', craft: owner.craft, stamina, tileMultiplierBp: alchemyBp }).amount;
+        timeline.brewStartStamina = brew.startStamina;
+        timeline.brewLastSlotStamina = brew.lastStamina;
+        timeline.pillsAtStart = out(brew.startStamina);
+        timeline.pillsAtLast = out(brew.lastStamina);
+        pills += timeline.pillsAtStart;
+        timeline.firstPillSlot = timeline.firstPillSlot ?? slot + 1;
+        brew = null;
       }
     }
-    assertRes();
+    for (const k of Object.keys(res)) {
+      assert.ok(Number.isSafeInteger(res[k]) && res[k] >= 0, `資源 ${k} 為 ${res[k]}`);
+      timeline.minResource = Math.min(timeline.minResource, res[k]);
+    }
   }
   return { people, res, pills, timeline };
 }
 
-test('兩人零材料開局：只靠免費採集與休養走到首座丹房與首爐丹（數值可達性，非引擎）', () => {
+test('兩人零材料開局：免費採集與休養走到首座丹房與首爐丹（真實體力、真實放置；數值可達性，非引擎）', () => {
   const G = 'gather-material'; const H = 'gather-herb'; const C = 'cultivate'; const B = 'build'; const Y = 'brew'; const Z = 'rest';
   const plan = [
-    [G, G], [G, G], [B, G], [B, Z], [B, G], // 第 0–4 格：兩格採集 14 靈材，師父第 2 格開工丹房（扣 12），第 4 格完工
-    [Z, C], [C, Z], [Z, C], [C, Z],        // 第 5–8 格：丹房第 5 格起可用；靈草在日 4 前鎖定，改以休養與修行
-    [H, H], [Y, H], [Y, C], [C, Z],         // 第 9 格（日 4）靈草解鎖；師父第 10–11 格煉丹
+    [G, G], [G, G], [B, G], [B, Z], [B, G],
+    [Z, C], [C, Z], [Z, C], [C, Z],
+    [H, H], [Y, H], [Y, C], [C, Z],
   ];
   const r = simulateTwoPerson(plan);
-  assert.equal(r.timeline.roomUsableFrom, 5, '丹房完工次格（第 5 格＝日 2 晚）可用');
-  assert.equal(r.timeline.minResource, 0, '全程無負庫存');
-  assert.equal(r.timeline.firstPillSlot, 12, '首爐丹在第 11 格結算後取得，第 12 格可用');
-  assert.equal(r.pills >= 1, true);
-  // 日 1 的修行有可見進步（第 6 格前沒有靈氣加成的情況也 >0）
-  assert.ok(r.people[1].cultivation > 0);
-  // 免費路徑從 0 資源起：第一個動作就是不需材料的採集
-  assert.deepEqual(plan[0], ['gather-material', 'gather-material']);
+  const t = r.timeline;
+  assert.equal(t.alchemyBp, 11500, '丹房蓋在 t-0-1，倍率來自 evaluateFacilityPlacement');
+  assert.equal(t.roomUsableFrom, 5, '丹房第 4 格完工、第 5 格起可用');
+  assert.equal(t.minResource, 0, '全程無負庫存');
+  // 師父體力（格初）：100,85,70,55,40,25,56,46,77,67,52,42,32 —— 第 10 格開工 52、第 11 格 42
+  assert.deepEqual(t.staminaAtSlotStart[0], [100, 85, 70, 55, 40, 25, 56, 46, 77, 67, 52, 42, 32]);
+  assert.equal(t.brewStartStamina, 52);
+  assert.equal(t.brewLastSlotStamina, 42);
+  // 產量手算：2 × 技藝 1.05 × 體力係數 × 倍率 1.15；體力 52（0.8）＝1.932→1；體力 42（0.8）同為 1
+  assert.equal(t.pillsAtStart, 1);
+  assert.equal(t.pillsAtLast, 1, '不論取開工或最後一格的體力，結論相同：1 顆');
+  assert.equal(r.pills, 1);
+  assert.equal(t.firstPillSlot, 12, '第 11 格結算後取得，第 12 格可用');
+  // 敏感度：要得到 2 顆需要開工體力 ≥60（2×1.05×1.0×1.15＝2.415→2）；59 即降為 1（1.932→1）
+  const out = (stamina) => R.brewOutput({ recipeId: 'breakthrough-pill', craft: 5, stamina, tileMultiplierBp: 11500 }).amount;
+  assert.equal(out(60), 2);
+  assert.equal(out(59), 1);
+  // 預設倍率 10000 在這份體力下也是 1 顆（2×1.05×0.8＝1.68→1）：放置沒有改變結論
+  assert.equal(R.brewOutput({ recipeId: 'breakthrough-pill', craft: 5, stamina: 52, tileMultiplierBp: 10000 }).amount, 1);
+  assert.ok(r.people[1].cultivation > 0, '日 1 起修行有進步');
+  assert.deepEqual(plan[0], ['gather-material', 'gather-material'], '第一個動作就是不需材料的採集');
 });
 
 test('零材料援村入口可行，且兩人在日 4 前不需要靈草就能蓋好丹房', () => {
