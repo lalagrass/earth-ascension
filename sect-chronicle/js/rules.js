@@ -1,5 +1,5 @@
 /*
- * SG-02：規則表與純計算（ruleVersion 2）。
+ * SG-02：規則表與純計算（SG-02 凍結 ruleVersion 2；SG-05 升為 3：只新增修為上限 100 的常數與函式，數值表不變）。
  *
  * 範圍界線（設計 0.2／issue #81）：
  * - 只放「數值表」與「純規則查詢／計算」：模板與角色上限、五行與地圖、設施、靈氣階段、採集／建造／煉丹／修行／
@@ -34,7 +34,7 @@
 
   // ---------- 版本與取整契約 ----------
   // 1 = SG-01 暫定值；2 = SG-02 凍結的候選規則基線。schemaVersion／rngVersion 不因此改變。
-  const RULE_VERSION = 2;
+  const RULE_VERSION = 3; // SG-05（D7-A）：修為封頂 100；數值表沒有改動
   const BASIS_POINTS = 10000;
   const ROUNDING_MODE = 'floor';
 
@@ -358,6 +358,14 @@
   const BREAKTHROUGH_CHANCE_CAP_BP = 9500;
   const BREAKTHROUGH_FAIL_KEEP_BP = 7000;
   const BREAKTHROUGH_FAIL_INJURY = 15;
+  // D7-A：切片修為 0..100。實得＝min(公式收益, 100−格初修為)，溢出捨棄；呼叫端仍付一格正常修行成本。
+  const CULTIVATION_CAP = BREAKTHROUGH_THRESHOLD;
+  function capCultivationGain(cultivation, gain) {
+    intIn('cultivation', cultivation, 0, CULTIVATION_CAP);
+    intIn('gain', gain, 0, Number.MAX_SAFE_INTEGER);
+    const applied = Math.min(gain, CULTIVATION_CAP - cultivation);
+    return { applied, overflow: gain - applied };
+  }
   function canAttemptBreakthrough(cultivation) {
     intIn('cultivation', cultivation, 0, Number.MAX_SAFE_INTEGER);
     return cultivation >= BREAKTHROUGH_THRESHOLD;
@@ -412,6 +420,7 @@
   ]);
 
   return {
+    CULTIVATION_CAP, capCultivationGain,
     RULE_VERSION, BASIS_POINTS, ROUNDING_MODE, mulBp,
     CHARACTER_OPTION_LIMITS, MASTER_ATTRIBUTES, START_VALUES, VALUE_LIMITS,
     ELEMENTS, GENERATES, OVERCOMES, relation, PLACEMENT_BP, PLACEMENT_MIN_BP, PLACEMENT_MAX_BP,

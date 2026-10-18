@@ -23,7 +23,7 @@ function withDoneAid(w, completedSlotIndex = 12, optionId = 'free', discipleId =
 function apprentice(candidateId, joinSlotIndex) {
   return {
     id: candidateId, role: 'apprentice', attributes: Story.profileAttributes(candidateId),
-    stamina: 100, mind: 60, cultivation: 0, injury: 0, joinSlotIndex,
+    stamina: 100, mind: 60, cultivation: 0, injury: 0, joinSlotIndex, breakthroughs: 0,
   };
 }
 

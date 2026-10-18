@@ -5,7 +5,8 @@
  * 範圍界線（issue #85、#90、設計 0.2、TECHNICAL_DESIGN §3、§9）：
  * - 本版可結算的行動：gather-material、gather-herb、cultivate、rest、tune-mind，以及由 job 驅動的 build、brew
  *   （公式全部取自 rules.js，沒有隨機，因此不消耗 RNG；rngState 在整個 42 格路徑中保持原值）。
- *   aid／breakthrough／support、援村發獎、招募入隊、危機結算與 ending 屬 SG-04A／05／06；引擎遇到需要它們的故事事件時
+ *   SG-04A 加入援村與招募；SG-05 加入修為封頂、突破（job，唯一的 RNG 消費者：每個開工的突破一次邏輯抽樣）與支援。
+ *   危機結算與 ending 屬 SG-06；引擎遇到需要它們的故事事件時
  *   回 unsupported_story_effect，不假成功。丹藥只入庫，沒有消耗或 buff。
  * - 工作：有 active reservation 的角色續做該工作（課表被忽略）；queued job 在格初走 arbitrate 開工請求
  *   （參與者＋工作位＋成本整批成敗；成功才扣一次成本並建立 reservation，失敗只累計 waited，且該角色這格只做一次
@@ -25,14 +26,16 @@
   let State;
   let StoryData;
   let Story;
+  let Progression;
   let Commands;
   if (typeof module === 'object' && module && module.exports) {
     Rules = require('./rules.js');
     State = require('./state.js');
     StoryData = require('./story-data.js');
     Story = require('./story.js');
+    Progression = require('./progression.js');
     Commands = require('./commands.js');
-    module.exports = factory(Rules, State, StoryData, Story, Commands);
+    module.exports = factory(Rules, State, StoryData, Story, Commands, Progression);
   } else {
     Rules = root.SectChronicle && root.SectChronicle.Rules;
     if (!Rules) throw new Error('engine.js 需要先載入 js/rules.js（以及 js/rng.js）');
@@ -44,9 +47,11 @@
     if (!Story) throw new Error('engine.js 需要先載入 js/story.js（在 js/story-data.js 之後、js/commands.js 之前）');
     Commands = root.SectChronicle.Commands;
     if (!Commands) throw new Error('engine.js 需要先載入 js/commands.js（在 js/story.js 之後、本檔之前）');
-    root.SectChronicle.Engine = factory(Rules, State, StoryData, Story, Commands);
+    Progression = root.SectChronicle.Progression;
+    if (!Progression) throw new Error('engine.js 需要先載入 js/progression.js（在 js/rules.js 之後、js/commands.js 之前）');
+    root.SectChronicle.Engine = factory(Rules, State, StoryData, Story, Commands, Progression);
   }
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (Rules, State, StoryData, Story, Commands) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (Rules, State, StoryData, Story, Commands, Progression) {
   'use strict';
 
   const MAX_BATCH = 42;
@@ -158,6 +163,11 @@
         // 採集一定落在某個資源點：課表指定的地塊；沒指定就用該資源種類排序最前的點（穩定預設）。
         intent.tileId = sched.tileId || world.tiles.find((t) => t.terrain === State.GATHER_TERRAIN[sched.action]).id;
       }
+      if (sched.action === 'cultivate') {
+        // D7-C：格初已滿 100 或已成功提升的修行意圖，在配位前轉為帶原因的休養（不占聚靈台、不扣修行成本、不改課表）。
+        const why = Progression.cultivationBlock(d);
+        if (why) Object.assign(intent, { action: 'rest', fallback: { from: 'cultivate', reason: why } });
+      }
       if (sched.action === 'gather-herb') {
         const g = Rules.gatherYield({ slotIndex, resource: 'spiritHerb', craft: d.attributes.craft, stamina: Rules.VALUE_LIMITS.staminaMax });
         if (g.locked) Object.assign(intent, { action: 'rest', fallback: { from: 'gather-herb', reason: 'locked' } });
@@ -234,10 +244,11 @@
     return { intents: out, waits };
   }
 
-  const JOB_ACTION_OF = { build: 'build', craft: 'brew', aid: 'aid' };
+  const JOB_ACTION_OF = { build: 'build', craft: 'brew', aid: 'aid', breakthrough: 'breakthrough' };
+  const PILL = 'breakthrough-pill';
 
   // ---------- 效果（全部以格初快照計算） ----------
-  function computeEffect(snapshot, slotIndex, intent) {
+  function computeEffect(snapshot, slotIndex, intent, extra) {
     const d = snapshot.disciples.find((x) => x.id === intent.discipleId);
     const delta = { stamina: 0, mind: 0, injury: 0, cultivation: 0, spiritMaterial: 0, spiritHerb: 0 };
     const a = d.attributes;
@@ -253,7 +264,10 @@
       case 'cultivate': {
         const input = { slotIndex, comprehension: a.comprehension, stamina: d.stamina, mind: d.mind, injury: d.injury };
         if (intent.seat) input.tileMultiplierBp = intent.multiplierBp;
-        delta.cultivation = Rules.cultivationGain(input).gain;
+        // D7-A：實得 min(公式收益, 100−格初修為)；溢出捨棄並記錄，仍付一格正常修行成本。
+        const capped = Rules.capCultivationGain(d.cultivation, Rules.cultivationGain(input).gain);
+        delta.cultivation = capped.applied;
+        if (capped.overflow > 0) extra.cultivationOverflow = capped.overflow;
         after = Object.assign(after, Rules.applyActionCost('cultivate', d));
         break;
       }
@@ -269,8 +283,16 @@
       case 'build':
       case 'brew':
       case 'aid':
+      case 'support':
         after = Object.assign(after, Rules.applyActionCost(intent.action, d));
         break;
+      case 'breakthrough': {
+        // 結果已在開工時以格初快照抽樣；這裡只把它換成這格的變化（成功修為不變，失敗 100→70、傷勢 +15）。
+        const o = intent.outcome;
+        after = Object.assign(after, Rules.applyActionCost('breakthrough', d), { injury: o.injuryAfter });
+        delta.cultivation = o.cultivationAfter - d.cultivation;
+        break;
+      }
       default:
         throw new RangeError(`引擎不支援的行動：${intent.action}`);
     }
@@ -295,6 +317,18 @@
         continue;
       }
       let seats = {};
+      let participants = [job.discipleId];
+      let cost = { ...State.jobCost(job) };
+      if (job.kind === 'breakthrough') {
+        // 本人＋可選支援者＋可選一枚丹整批預約；支援者在進行中預約裡就不能支援。
+        const sup = job.target.supporterId;
+        if (sup !== null && busy.has(sup)) {
+          denied.push({ jobId: job.id, code: 'participant_busy', reason: `${sup} 這一格已被進行中的工作占用，無法支援` });
+          continue;
+        }
+        if (sup !== null) participants = [job.discipleId, sup];
+        if (job.target.usePill) cost = { [PILL]: 1 };
+      }
       if (job.kind === 'craft') {
         const fac = byId.get(job.target.facilityJobId);
         if (fac.status === 'cancelled') {
@@ -310,7 +344,7 @@
         seats = { [Story.AID_SEAT]: 1 };
       }
       requests.push({
-        id: job.id, discipleId: job.discipleId, waited: job.waited, cost: { ...State.jobCost(job) }, seats, participants: [job.discipleId],
+        id: job.id, discipleId: job.discipleId, waited: job.waited, cost, seats, participants,
       });
     }
     const seatCaps = { [Story.AID_SEAT]: Rules.AID_WORKERS };
@@ -320,7 +354,7 @@
         seatCaps[State.facilitySeat(j.id)] = Math.max(0, Rules.FACILITIES.alchemyRoom.workSlots - used);
       }
     }
-    const arb = arbitrate({ requests, resources: snapshot.resources, seats: seatCaps });
+    const arb = arbitrate({ requests, resources: { ...snapshot.resources, [PILL]: snapshot.inventory[PILL] }, seats: seatCaps });
     for (const d of arb.denied) denied.push({ jobId: d.id, code: d.code, reason: d.reason });
     denied.sort((x, y) => byIdAsc(x.jobId, y.jobId));
     return { granted: arb.granted.map((id) => byId.get(id)).sort((x, y) => byIdAsc(x.id, y.id)), denied };
@@ -372,6 +406,17 @@
       jobOf.set(r.discipleId, { job, phase: 'working' });
     }
     for (const job of jobPlan.granted) jobOf.set(job.discipleId, { job, phase: 'started' });
+    // 突破：支援者占自己的一格；每個開工的突破依穩定 job ID 順序作一次邏輯抽樣（讀格初快照）。
+    const btResult = new Map();
+    let rngState = world.rngState;
+    for (const job of jobPlan.granted) {
+      if (job.kind !== 'breakthrough') continue;
+      if (job.target.supporterId !== null) jobOf.set(job.target.supporterId, { job, phase: 'support' });
+      const subject = snapshot.disciples.find((x) => x.id === job.discipleId);
+      const r = Progression.resolve(subject, { pill: job.target.usePill, supporter: job.target.supporterId !== null }, rngState);
+      rngState = r.rngState;
+      btResult.set(job.id, r);
+    }
 
     // 其餘角色依課表行動；設施位與資源點位固定輪候配位
     // 開工請求被拒、又沒有其他進行中／成功工作的角色：這格只做一次有原因的明示休養（不照原課表）。
@@ -398,14 +443,15 @@
       let intent;
       const extra = {};
       if (j) {
-        const action = JOB_ACTION_OF[j.job.kind];
+        const action = j.phase === 'support' ? 'support' : JOB_ACTION_OF[j.job.kind];
         intent = { discipleId: d.id, action, source: 'job' };
+        if (action === 'breakthrough') intent.outcome = btResult.get(j.job.id).outcome;
         const done = j.job.slotsDone + 1 >= State.jobDuration(j.job);
-        extra.job = { id: j.job.id, kind: j.job.kind, phase: done ? 'completed' : j.phase };
+        extra.job = { id: j.job.id, kind: j.job.kind, phase: j.phase === 'support' ? 'support' : done ? 'completed' : j.phase };
       } else {
         intent = intentOf.get(d.id);
       }
-      const delta = computeEffect(snapshot, s, intent);
+      const delta = computeEffect(snapshot, s, intent, extra);
       const r = { discipleId: intent.discipleId, action: intent.action, source: intent.source, delta };
       if (intent.fallback) r.fallback = intent.fallback;
       if (intent.tileId) r.tileId = intent.tileId;
@@ -428,11 +474,14 @@
     const jobEvents = [];
     for (const d of jobPlan.denied) next.jobs.find((j) => j.id === d.jobId).waited += 1;
     for (const [discipleId, { job: snapJob, phase }] of jobOf) {
+      if (phase === 'support') continue; // 支援者只有自己這格的效果；job 由突破本人驅動
       const job = next.jobs.find((x) => x.id === snapJob.id);
       const duration = State.jobDuration(job);
       if (phase === 'started') {
         const cost = State.jobCost(job);
         for (const k of Object.keys(cost)) next.resources[k] -= cost[k];
+        const paidPill = job.kind === 'breakthrough' && job.target.usePill;
+        if (paidPill) next.inventory[PILL] -= 1; // 與開工同一提交；扣到 0 仍套用已預約的加成
         job.status = 'active';
         job.startSlotIndex = s;
         job.slotsDone = 1;
@@ -450,7 +499,7 @@
           };
         }
         next.reservations.push({ jobId: job.id, discipleId, seat, startSlotIndex: s, slotsTotal: duration, paid: { ...cost }, output });
-        jobEvents.push({ type: 'jobStarted', slotIndex: s, jobId: job.id, kind: job.kind, discipleId, paid: { ...cost }, ...(output ? { output: cloneJson(output) } : {}) });
+        jobEvents.push({ type: 'jobStarted', slotIndex: s, jobId: job.id, kind: job.kind, discipleId, paid: { ...cost, ...(paidPill ? { [PILL]: 1 } : {}) }, ...(output ? { output: cloneJson(output) } : {}) });
       } else {
         job.slotsDone += 1;
       }
@@ -460,6 +509,17 @@
         const idx = next.reservations.findIndex((r) => r.jobId === job.id);
         const res = next.reservations[idx];
         next.reservations.splice(idx, 1);
+        if (job.kind === 'breakthrough') {
+          const r = btResult.get(job.id);
+          job.outcome = cloneJson(r.outcome);
+          if (r.outcome.result === 'success') next.disciples.find((x) => x.id === discipleId).breakthroughs = 1;
+          jobEvents.push({
+            type: 'breakthroughResolved', slotIndex: s, jobId: job.id, discipleId, supporterId: job.target.supporterId, pill: job.target.usePill,
+            mindAtStart: r.outcome.mindAtStart, chanceBp: r.outcome.chanceBp, items: cloneJson(r.items), roll: r.outcome.roll, result: r.outcome.result,
+            cultivationBefore: r.outcome.cultivationBefore, cultivationAfter: r.outcome.cultivationAfter,
+            injuryBefore: r.outcome.injuryBefore, injuryAfter: r.outcome.injuryAfter,
+          });
+        }
         const ev = { type: 'jobCompleted', slotIndex: s, jobId: job.id, kind: job.kind, discipleId, readySlotIndex: s + 1 };
         if (job.kind === 'craft') {
           next.inventory[res.output.itemId] += res.output.amount;
@@ -474,6 +534,7 @@
     const aidDone = jobEvents.some((e) => e.type === 'jobCompleted' && e.kind === 'aid');
     const cancelledAid = aidDone ? Story.cancelOtherAidJobs(next, s, new Set(jobPlan.denied.map((d) => d.jobId))) : [];
     next.reservations.sort((x, y) => byIdAsc(x.jobId, y.jobId));
+    next.rngState = rngState;
     next.slotIndex = s + 1;
     next.revision = world.revision + 1;
     events.push(Commands.appendEvent(next, { type: 'slotResolved', slotIndex: s, day, part: s % 3, results, denied: jobPlan.denied }));

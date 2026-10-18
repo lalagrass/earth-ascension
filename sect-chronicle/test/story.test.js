@@ -418,6 +418,7 @@ test('復甦邊界 8/9、17/18、29/30：修行收益逐格對照 rules.js，階
   let cur = w;
   const expected = new Map();
   for (let s = 0; s < 36 && cur.slotIndex < 36; s += 1) {
+    disc(cur, P).cultivation = 0; // SG-05 起修為封頂 100：每格歸零（合法狀態）才能逐格對照未封頂的階段收益
     const d = disc(cur, P);
     const at = cur.slotIndex;
     const input = { slotIndex: at, comprehension: d.attributes.comprehension, stamina: d.stamina, mind: d.mind, injury: d.injury };
@@ -665,7 +666,7 @@ test('smoke CLI 故事路線：摘要含援村完成與獎勵、邀請選擇、�
   assert.equal(r.status, 0, r.stderr);
   const out = JSON.parse(r.stdout);
   assert.equal(out.strategy, Smoke.STORY_STRATEGY_VERSION);
-  assert.deepEqual(out.versions, { schema: 3, rule: 2, rng: 1 });
+  assert.deepEqual(out.versions, { schema: 4, rule: 3, rng: 1 });
   assert.equal(out.story.aid.completed, true);
   assert.deepEqual(out.story.aid.reward, Rules.aidReward('supplied'));
   assert.equal(out.story.aid.completedSlotIndex, 9);

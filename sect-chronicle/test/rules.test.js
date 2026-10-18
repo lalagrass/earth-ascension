@@ -19,8 +19,8 @@ const clone = (x) => JSON.parse(JSON.stringify(x));
 
 // ---------- 版本與取整契約 ----------
 
-test('ruleVersion 凍結為 2；基點與 floor 取整契約', () => {
-  assert.equal(R.RULE_VERSION, 2);
+test('ruleVersion 為 3（SG-05 D7-A 修為封頂；數值表沒改）；基點與 floor 取整契約', () => {
+  assert.equal(R.RULE_VERSION, 3);
   assert.equal(R.BASIS_POINTS, 10000);
   assert.equal(R.ROUNDING_MODE, 'floor');
   assert.equal(R.mulBp(7, 15000), 10); // 10.5 → 10
@@ -669,7 +669,7 @@ test('瀏覽器一般 script 載入 rules.js 後與 Node 結果相同', () => {
   vm.runInContext(src, ctx, { filename: 'rules.js' });
   const B = ctx.SectChronicle.Rules;
   assert.ok(B);
-  assert.equal(B.RULE_VERSION, 2);
+  assert.equal(B.RULE_VERSION, 3);
   assert.deepEqual(clone(B.initialTiles()), clone(R.initialTiles()));
   assert.equal(B.cultivationGain({ slotIndex: 0, comprehension: 5, stamina: 100, mind: 60, injury: 0 }).gain, 12);
 });
