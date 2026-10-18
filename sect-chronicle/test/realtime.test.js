@@ -418,6 +418,51 @@ test('壞 commandLog、錯位與非法屬性在載入時被拒絕，合法相鄰
   assert.equal(Realtime.parseState(JSON.stringify(legal)).ok, true);
 });
 
+test('巢狀 story 容器與待執行指令的靜態形狀在載入時被拒絕，合法待執行仍可續', () => {
+  const fresh = world('rt-load-nested');
+  const rescues = JSON.parse(Realtime.serializeState(fresh));
+  rescues.story.rescues = null;
+  const rescueResult = Realtime.parseState(JSON.stringify(rescues));
+  assert.equal(rescueResult.ok, false);
+  assert.equal(rescueResult.code, 'bad_type');
+
+  const triggered = JSON.parse(Realtime.serializeState(fresh));
+  triggered.story.triggeredEventIds = null;
+  const triggeredResult = Realtime.parseState(JSON.stringify(triggered));
+  assert.equal(triggeredResult.ok, false);
+  assert.equal(triggeredResult.code, 'bad_type');
+
+  const pending = order(world('rt-load-pending'), 'gather-material', { tileId: 't-0-0' }, 1);
+  const pendingText = Realtime.serializeState(pending);
+  const loaded = Realtime.parseState(pendingText);
+  assert.equal(loaded.ok, true, loaded.reason);
+  const continued = advance(loaded.state, 1).state;
+  const gather = continued.activities.find((a) => a.kind === 'gather-material');
+  assert.equal(gather.status, 'traveling');
+
+  const nullTarget = JSON.parse(pendingText);
+  hero(nullTarget).manualOrder.target = null;
+  const nullResult = Realtime.parseState(JSON.stringify(nullTarget));
+  assert.equal(nullResult.ok, false);
+  assert.equal(nullResult.code, 'bad_value');
+
+  const missingTile = JSON.parse(pendingText);
+  hero(missingTile).manualOrder.target = { tileId: 'missing' };
+  const missingResult = Realtime.parseState(JSON.stringify(missingTile));
+  assert.equal(missingResult.ok, false);
+  assert.equal(missingResult.code, 'bad_value');
+
+  const poor = order(world('rt-load-poor-build'), 'build', { facilityType: 'alchemyRoom', tileId: 't-0-1' }, 3);
+  assert.equal(poor.resources.spiritMaterial, 0);
+  const poorLoaded = Realtime.parseState(Realtime.serializeState(poor));
+  assert.equal(poorLoaded.ok, true, poorLoaded.reason);
+  const rested = advance(poorLoaded.state, 1).state;
+  const rest = activity(rested, hero(rested).activityId);
+  assert.equal(rest.kind, 'rest');
+  assert.equal(rest.fallback.reason, 'insufficient_resource');
+  assert.ok(rested.resources.spiritMaterial >= 0);
+});
+
 test('空窗推進 2700 tick 跨過第 14 日，沒有危機或結局', () => {
   const idle = advance(world('rt-idle'), 2700);
   assert.equal(idle.stopReason, 'completed');

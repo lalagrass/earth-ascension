@@ -455,17 +455,8 @@
       return fail('bad_type', 'reservations、seatWaits、pendingEvents 必須是陣列');
     }
     if (w.pendingEvents.length !== 0) return fail('not_supported', '待選事件屬 RT-02；RT 世界不能出現 awaitingChoice', 'pendingEvents');
-    if (!isRecord(w.story) || !isRecord(w.story.breakthroughAsks) || Object.keys(w.story.breakthroughAsks).length !== 0) {
-      return fail('not_supported', '突破詢問資料屬 RT-02', 'story.breakthroughAsks');
-    }
-    if (w.story.organisationStatus !== 'dojo') return fail('inconsistent_state', 'RT 世界沒有結局', 'story.organisationStatus');
-    const seenRescue = new Set();
-    for (const rescue of w.story.rescues) {
-      if (!isRecord(rescue) || rescue.rewardClaimed !== true || seenRescue.has(rescue.id)) {
-        return fail('inconsistent_state', '援村紀錄不合法', 'story.rescues');
-      }
-      seenRescue.add(rescue.id);
-    }
+    const storyErr = validateStory(w.story);
+    if (storyErr) return storyErr;
     for (const e of w.eventLog) {
       if (!isRecord(e) || !isNonNeg(e.seq) || !isNonNeg(e.tick) || e.tick > w.clock.tick) {
         return fail('bad_event', '事件 tick 不能晚於已提交時鐘', 'eventLog');
@@ -599,6 +590,51 @@
     return PAID_KEYS.some((k) => paid[k] > 0);
   }
 
+  function validateStory(story) {
+    if (!isRecord(story)) return fail('bad_type', 'story 必須是物件', 'story');
+    if (!Array.isArray(story.rescues)) return fail('bad_type', 'story.rescues 必須是陣列', 'story.rescues');
+    if (!Array.isArray(story.triggeredEventIds)) return fail('bad_type', 'story.triggeredEventIds 必須是陣列', 'story.triggeredEventIds');
+    for (const id of story.triggeredEventIds) {
+      if (typeof id !== 'string' || id.length === 0) {
+        return fail('bad_value', 'story.triggeredEventIds 必須是非空字串', 'story.triggeredEventIds');
+      }
+    }
+    if (!isRecord(story.invitations)) return fail('bad_type', 'story.invitations 必須是物件', 'story.invitations');
+    if (!isRecord(story.breakthroughAsks)) return fail('bad_type', 'story.breakthroughAsks 必須是物件', 'story.breakthroughAsks');
+    if (Object.keys(story.breakthroughAsks).length !== 0) {
+      return fail('not_supported', '突破詢問資料屬 RT-02', 'story.breakthroughAsks');
+    }
+    if (story.organisationStatus !== 'dojo') return fail('inconsistent_state', 'RT 世界沒有結局', 'story.organisationStatus');
+    const seenRescue = new Set();
+    for (const rescue of story.rescues) {
+      if (!isRecord(rescue) || typeof rescue.id !== 'string' || rescue.id.length === 0 || rescue.rewardClaimed !== true || seenRescue.has(rescue.id)) {
+        return fail('inconsistent_state', '援村紀錄不合法', 'story.rescues');
+      }
+      seenRescue.add(rescue.id);
+    }
+    return null;
+  }
+
+  function orderStructureError(world, kind, target, units, where) {
+    if (!isRecord(target) || !targetShape(kind, target)) {
+      return fail('bad_value', `${where} 的 target 形狀與種類不符`, where);
+    }
+    if (kind === 'build' && !has(Rules.FACILITIES, target.facilityType)) {
+      return fail('bad_value', `${where} 的設施不存在`, where);
+    }
+    if (kind === 'brew' && !has(Rules.RECIPES, target.recipeId)) {
+      return fail('bad_value', `${where} 的配方不存在`, where);
+    }
+    const fixed = fixedUnits(kind, target);
+    if (fixed !== null && units !== fixed) {
+      return fail('bad_value', `${where} 的單位數與固定工量不符`, where);
+    }
+    if ((kind === 'gather-material' || kind === 'gather-herb' || kind === 'build') && !tileById(world, target.tileId)) {
+      return fail('bad_value', `${where} 指向未知地塊 ${target.tileId}`, where);
+    }
+    return null;
+  }
+
   function validateManualOrder(world, d, where) {
     const m = d.manualOrder;
     if (m === null) return null;
@@ -607,9 +643,24 @@
     const keys = m.kind === 'breakthrough' ? base.concat(['usePill', 'supporterId']) : base;
     if (!sameKeys(m, keys)) return fail('bad_value', `${where}.manualOrder 欄位與種類不符`, where);
     if (m.status !== 'pending' && m.status !== 'active') return fail('bad_value', `${where}.manualOrder.status 不合法`, where);
+    if (!ORDER_KINDS.includes(m.kind)) return fail('bad_value', `${where}.manualOrder.kind 不合法`, where);
+    if (!isInt(m.units) || m.units < 1) return fail('bad_value', `${where}.manualOrder.units 必須是正整數`, where);
+    if (typeof m.commandId !== 'string' || m.commandId.length === 0) return fail('bad_value', `${where}.manualOrder.commandId 不合法`, where);
+    if (!isNonNeg(m.requestedTick) || m.requestedTick > world.clock.tick) {
+      return fail('bad_value', `${where}.manualOrder.requestedTick 不合法`, where);
+    }
+    if (!(m.activityId === null || typeof m.activityId === 'string')) {
+      return fail('bad_value', `${where}.manualOrder.activityId 不合法`, where);
+    }
+    const shape = orderStructureError(world, m.kind, m.target, m.units, `${where}.manualOrder`);
+    if (shape) return shape;
     if (m.kind === 'breakthrough') {
       if (typeof m.usePill !== 'boolean' || !(m.supporterId === null || typeof m.supporterId === 'string')) {
         return fail('bad_breakthrough', `${where}.manualOrder 的用丹與支援者必須是明確值`, where);
+      }
+      if (m.supporterId !== null) {
+        if (m.supporterId === d.id) return fail('bad_value', `${where}.manualOrder 不能支援自己`, where);
+        if (!disciple(world, m.supporterId)) return fail('bad_value', `${where}.manualOrder 的支援者不存在`, where);
       }
     }
     if (d.role !== 'protagonist') return fail('bad_value', '手動指令只屬於主角', where);
