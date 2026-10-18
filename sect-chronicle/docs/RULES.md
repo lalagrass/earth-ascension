@@ -154,3 +154,46 @@
 證明（規則層級，AC 對照）：AC-C10 的「描述逐項對應真實公式」只對本包資料成立；AC-C11 的模板等預算、負點／超額／未知枚舉拒絕、性格不改效率、設定可存讀與 hash 一致（與 SG-01 驗證一起）；AC-C12 的階段邊界（日 4／7／11 第一格、不倒退、每階段有可核對差異）；AC-C13 的零材料援村入口與無招募前置死鎖（僅數值層）。
 
 不證明：AC-C10／11／12 整條、AC-C13 的招募流程、AC-C14、AC-C15、SG-M1；需要後續 runtime（SG-03／04／04A／05／06）、UI 與真人試玩。**數值是否好玩或平衡完全未驗證。**
+
+## 10. 第一章事件契約（SG-02A，資料與驗證）
+
+資料在 `js/story-data.js`（`SectChronicle.StoryData`，內容版本 1，要求 ruleVersion 2）。它只是**宣告式資料＋驗證**；沒有 advance、指令、去重、存讀或 UI。本章的時點、數字都不在資料裡複製，而是引用本文件第 5～7 章對應的 `rules.js` 常數（`{rule: 名稱}`、`{phase, field}`）。
+
+### 10.1 事件表
+
+「時點」欄是從規則推得的 slotIndex（0～42）邊界，測試逐一驗證前一格不觸發、該格觸發。
+
+| 事件 ID | 類型 | 觸發（引用） | 時點 | 待選 | 選項 → 宣告效果 | 一次性鍵 | 後續消費者 |
+|---|---|---|---|---|---|---|---|
+| `evt-phase-faint` | 階段 | `SPIRIT_PHASES.faint.startSlot` | 0 | 否 | — | `phase:faint` | SG-03 |
+| `evt-phase-omen` | 階段 | `SPIRIT_PHASES.omen.startSlot` | 8→9 | 否 | — | `phase:omen` | SG-03 |
+| `evt-phase-manifest` | 階段 | `SPIRIT_PHASES.manifest.startSlot` | 17→18 | 否 | — | `phase:manifest` | SG-03 |
+| `evt-phase-surge` | 階段 | `SPIRIT_PHASES.surge.startSlot` | 29→30 | 否 | — | `phase:surge` | SG-03 |
+| `evt-village-plea` | 求援 | `AID_AVAILABLE_FROM_SLOT` 且尚未完成援村 | 8→9 | 是 | `opt-aid-accept` → `showAidPrompt`；`opt-aid-later` → 無 | `plea:village-fence` | SG-04A |
+| `evt-aid-complete` | 援村完成 | `aidCompleted` | — | 否 | `grantAidReward`＋`recordRescue`（同一去重鍵） | `aid:village-fence` | SG-04A |
+| `evt-invite-cand-1` | 邀請 | 已援村、`manifest.startSlot`、cand-1 為 locked | 17→18 | 是 | 確認 → `setInvitationStatus invited`；稍後 → `deferred` | `invite:cand-1` | SG-03／04A |
+| `evt-invite-cand-2` | 邀請 | 同上，且 `evt-invite-cand-1` 已出現 | 18 起 | 是 | 同上 | `invite:cand-2` | SG-03／04A |
+| `evt-beast-crisis` | 危機 | `MAX_SLOT_INDEX` | 41→42 | 是 | `opt-crisis-submit` → `submitFormation`（內容由 SG-06 擁有） | `crisis:beast` | SG-06 |
+| `evt-ending-victory` | 結局 | 危機結果 `victory` | — | 否 | `setOrganisationStatus sectFounded`＋`displayLabel chief-disciple`（僅顯示） | `ending:victory` | SG-06 |
+| `evt-ending-defeat` | 結局 | 危機結果 `defeat` | — | 否 | `setOrganisationStatus foundingDeferred` | `ending:defeat` | SG-06 |
+
+同一格多個事件時依 `priority` 由大到小、再依 ID 排序（`dueEvents`）：危機高於所有邀請；cand-1 高於 cand-2；援村完成高於求援與階段事件。
+
+### 10.2 效果詞彙
+
+`showAidPrompt`、`setInvitationStatus`（只能設 invited／deferred，accepted 只由 `acceptCandidate` 設定）、`grantAidReward`、`recordRescue`、`submitFormation`、`setOrganisationStatus`（只能 sectFounded／foundingDeferred）、`displayLabel`（`worldChange: false`，首席弟子只是顯示）。`grantAidReward`／`recordRescue` 只能出現在 `evt-aid-complete`，邀請事件不能給資源或改屬性。
+
+### 10.3 宣告的契約（尚未有 runtime 執行）
+
+- 援村：占 `AID_WORKERS` 人 `AID_DURATION_SLOTS` 格；獎勵只發一次（去重鍵 `reward:village-fence`，兩種援村選項共用）；收徒不給獎勵。
+- 招募：每名候選只提示一次、不重複詢問；選擇後回 planning；`acceptCommand` 只在 planning、`joinSlotIndex`＝接受當下的 slotIndex、不補發；slotIndex ≥ `MAX_SLOT_INDEX` 時拒絕；加入前不產生勞動、支援或戰力；任何人數都能走到危機。人數上限唯一來源是 `State.MAX_ROSTER`。
+- 危機：slotIndex ≥ `MAX_SLOT_INDEX` 時優先於邀請，只結算一次，結算後進入結局，沒有第 43 格。
+- 師父：維持師父身分；沒有腳本化死亡、失蹤或傳位。
+
+### 10.4 描述與規則的連結
+
+事件文字不含數字。階段事件以 `claims`（如 `herbLocked`、`herbUnlocked`、`cultivationBoost`、`threatRises`）宣告可核對的陳述，驗證器對照 `SPIRIT_PHASES` 檢查是否為真（與前一階段比較）；其他事件標 `narrativeOnly`，表示文字只是氛圍、不暗示任何數值。性格（`personalityNote`／`describeEvent`）只改文字提示，不改選項、觸發或效果。
+
+### 10.5 本章證明與不證明
+
+證明：資料結構、ID／一次性鍵唯一、引用都解得開、文字無數字、claims 與規則一致、效果值落在 state 合法枚舉內、候選人只有 cand-1／cand-2、階段／危機邊界與優先順序、性格四組合都有文案、版本與新世界不受影響。不證明：advance、去重、存讀、快轉、招募流程、戰鬥、UI，也不是 AC-C10～C15 的整體通過，更不是 SG-M1。

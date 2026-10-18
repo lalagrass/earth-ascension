@@ -1,4 +1,4 @@
-# 開發說明（SG-01／SG-02）
+# 開發說明（SG-01／SG-02／SG-02A）
 
 本文件隨程式更新；只記錄已存在且已驗證的事。尚未實作的模組見 [TECHNICAL_DESIGN](TECHNICAL_DESIGN.md)。
 
@@ -45,9 +45,16 @@ node sect-chronicle/tools/update-fixtures.js  # 僅在有意改版本時重產 f
 - 取整契約：倍率用基點（10000＝1.0），`mulBp(n, bp)` 全程 `Math.floor`，負數向下取整；複合倍率只在最後取整一次（見 RULES.md）。
 - `serializeState`／`parseState` 為純函式，不碰 localStorage（SG-07）。`serializeState` 會先 `validateWorld`，不合法的 world（resolving、未知版本、非 JSON 資料）丟 `TypeError`，不輸出字串；`canonicalize`／`hashWorld` 本身只保證 JSON 子集，呼叫端若要保存仍應走 `serializeState`／`parseState`。
 
+## SG-02A 新增（內容資料）
+
+- `js/story-data.js`：第一章事件、效果詞彙、契約、性格文案與驗證／查詢函式（`validateStoryData`、`dueEvents`、`evaluateTrigger`、`validateChoice`、`personalityNote`、`describeEvent`）。純資料＋純函式，不用 RNG、牆鐘或 eval；Node 只 require `rules.js` 與 `state.js`。
+- 瀏覽器載入順序：`rng.js` → `rules.js` → `state.js` → `story-data.js`；漏載會丟出指名檔案的錯誤。
+- **版本不變**：schemaVersion 1、ruleVersion 2、rngVersion 1；內容尚未接進世界狀態，新世界不含事件字串，既有 golden 不受影響。內容自身有 `contentVersion`（1）並要求 `ruleVersion` 2。
+- 事件表與契約見 [RULES.md](RULES.md) 第 10 章。
+
 ## 尚未實作（SG-03 起）
 
-指令、時段結算、建造／煉丹的 runtime、復甦與援村流程、突破、危機、storage、UI、事件資料（SG-02A）。這些欄位（如 `tiles`、`jobs`）此時只驗證型別，內容契約由後續任務定義並視需要升版本。
+指令、時段結算、建造／煉丹的 runtime、復甦與援村流程、突破、危機、storage、UI；事件資料的 runtime 消費（去重、觸發時機、存讀）。這些欄位（如 `tiles`、`jobs`）此時只驗證型別，內容契約由後續任務定義並視需要升版本。
 
 ## fixture
 
