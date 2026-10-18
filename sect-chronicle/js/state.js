@@ -1,8 +1,9 @@
 /*
  * SG-01：版本化世界狀態（schema）、角色設定驗證、canonical hash 與整數取整契約。
  *
- * SG-03：schemaVersion 升為 2，新增 `schedule`（課表）並為 commandLog／eventLog／pendingEvents 定義項目格式；
- *   jobs／reservations 仍只驗型別（SG-04 才定義）。
+ * SG-03：schemaVersion 升為 2，新增 `schedule`（課表）並為 commandLog／eventLog／pendingEvents 定義項目格式。
+ * SG-04：schemaVersion 升為 3：tiles 固定為 `Rules.initialTiles()` 的 25 格；新增 `inventory`（丹藥庫存）；
+ *   jobs（建造／煉丹工作，含持久輪候值）與 reservations（進行中工作的預約）有完整內容契約與一致性驗證。
  *
  * 範圍界線（設計 0.2／issue #71、#81）：
  * - 只定義「狀態長什麼樣、怎樣才算合法」；不含規則、指令、結算引擎、UI。
@@ -31,8 +32,9 @@
   'use strict';
 
   // ---------- 版本與常數 ----------
-  // 1 = SG-01；2 = SG-03 新增 schedule（課表）並定義 commandLog／eventLog／pendingEvents 項目格式。
-  const SCHEMA_VERSION = 2;
+  // 1 = SG-01；2 = SG-03 新增 schedule（課表）並定義 commandLog／eventLog／pendingEvents 項目格式；
+  // 3 = SG-04 固定 25 格地圖、新增 inventory、定義 jobs／reservations。
+  const SCHEMA_VERSION = 3;
   // ruleVersion 的唯一來源是 js/rules.js（1 = SG-01 暫定值；2 = SG-02 凍結的候選規則基線）。
   const RULE_VERSION = Rules.RULE_VERSION;
   const RNG_VERSION = Rng.RNG_VERSION;
@@ -68,7 +70,7 @@
   const TOP_LEVEL_FIELDS = Object.freeze([
     'schemaVersion', 'ruleVersion', 'rngVersion', 'seed', 'slotIndex', 'phase', 'revision', 'rngState',
     'resources', 'tiles', 'disciples', 'candidates', 'jobs', 'reservations', 'pendingEvents',
-    'commandLog', 'eventLog', 'scenarioId', 'characterOptions', 'protagonistId', 'masterId', 'story', 'schedule',
+    'commandLog', 'eventLog', 'scenarioId', 'characterOptions', 'protagonistId', 'masterId', 'story', 'schedule', 'inventory', 'seatWaits',
   ]);
   const ARRAY_FIELDS = Object.freeze(['tiles', 'jobs', 'reservations', 'commandLog', 'eventLog']);
 
@@ -220,7 +222,7 @@
       revision: 0,
       rngState: Rng.create(seed),
       resources: Object.fromEntries(RESOURCE_KEYS.map((k) => [k, 0])),
-      tiles: [],
+      tiles: Rules.initialTiles(),
       disciples: [
         Object.assign({
           id: MASTER_ID, role: 'master', attributes: { ...MASTER_ATTRIBUTES },
@@ -246,7 +248,9 @@
         invitations: Object.fromEntries(CANDIDATE_IDS.map((id) => [id, { status: 'locked', joinSlotIndex: null }])),
         organisationStatus: 'dojo',
       },
-      schedule: { templates: {}, overrides: [] },
+      schedule: { templates: {}, overrides: [], templateTiles: {} },
+      inventory: Object.fromEntries(Object.keys(Rules.RECIPES).map((k) => [k, 0])),
+      seatWaits: [],
     };
     const check = validateWorld(state);
     if (!check.ok) throw new Error(`newWorld 產生了不合法狀態：${check.code} ${check.reason}`);
@@ -388,10 +392,21 @@
 
   // 課表：templates（角色 → 三個行動）與 overrides（單格覆寫，依 slotIndex、discipleId 排序以保證 canonical 唯一）。
   // 這裡只驗結構與引用；哪些行動「本版已支援」由 commands.js 決定。
+  // 採集行動可指定資源點：地塊必須存在，且資源種類與行動相符；非採集行動不得帶地塊。
+  const GATHER_TERRAIN = Object.freeze({ 'gather-material': 'material', 'gather-herb': 'herb' });
+  function gatherTileProblem(w, action, tileId) {
+    if (!hasOwn(GATHER_TERRAIN, action)) return `行動 ${String(action)} 不是採集，不能指定資源點`;
+    if (typeof tileId !== 'string') return '資源點必須是字串地塊 ID';
+    const tile = w.tiles.find((t) => t.id === tileId);
+    if (!tile) return `未知地塊：${tileId}`;
+    if (tile.terrain !== GATHER_TERRAIN[action]) return `地塊 ${tileId} 是 ${tile.terrain}，行動 ${action} 需要 ${GATHER_TERRAIN[action]}`;
+    return null;
+  }
+
   function validateSchedule(w, total) {
     const sc = w.schedule;
-    if (!isPlainObject(sc) || !sameKeys(sc, ['templates', 'overrides'])) {
-      return fail('bad_value', 'schedule 必須恰好含 templates 與 overrides', 'schedule');
+    if (!isPlainObject(sc) || !sameKeys(sc, ['templates', 'overrides', 'templateTiles'])) {
+      return fail('bad_value', 'schedule 必須恰好含 templates、overrides 與 templateTiles', 'schedule');
     }
     const byId = new Map(w.disciples.map((d) => [d.id, d]));
     if (!isPlainObject(sc.templates)) return fail('bad_type', 'schedule.templates 必須是物件', 'schedule.templates');
@@ -402,11 +417,23 @@
         return fail('bad_value', `schedule.templates.${id} 必須是三個已知行動 ID`, 'schedule.templates');
       }
     }
+    if (!isPlainObject(sc.templateTiles)) return fail('bad_type', 'schedule.templateTiles 必須是物件', 'schedule.templateTiles');
+    for (const id of Object.keys(sc.templateTiles)) {
+      const t = sc.templates[id];
+      const tt = sc.templateTiles[id];
+      if (!t) return fail('bad_value', `schedule.templateTiles 的角色沒有範本：${id}`, 'schedule.templateTiles');
+      if (!Array.isArray(tt) || tt.length !== 3) return fail('bad_value', `schedule.templateTiles.${id} 必須是長度 3 的陣列`, 'schedule.templateTiles');
+      for (let k = 0; k < 3; k++) {
+        if (tt[k] === null) continue;
+        const why = gatherTileProblem(w, t[k], tt[k]);
+        if (why) return fail('bad_value', `schedule.templateTiles.${id}[${k}]：${why}`, 'schedule.templateTiles');
+      }
+    }
     if (!Array.isArray(sc.overrides)) return fail('bad_type', 'schedule.overrides 必須是陣列', 'schedule.overrides');
     let prev = null;
     for (const o of sc.overrides) {
-      if (!isPlainObject(o) || !sameKeys(o, ['discipleId', 'slotIndex', 'action'])) {
-        return fail('bad_value', 'schedule.overrides 項目必須恰好含 discipleId、slotIndex、action', 'schedule.overrides');
+      if (!isPlainObject(o) || !(sameKeys(o, ['discipleId', 'slotIndex', 'action']) || sameKeys(o, ['discipleId', 'slotIndex', 'action', 'tileId']))) {
+        return fail('bad_value', 'schedule.overrides 項目必須恰好含 discipleId、slotIndex、action（採集可加 tileId）', 'schedule.overrides');
       }
       const d = typeof o.discipleId === 'string' ? byId.get(o.discipleId) : undefined;
       if (!d) return fail('bad_value', `schedule.overrides 含不在隊的角色：${String(o.discipleId)}`, 'schedule.overrides');
@@ -419,10 +446,225 @@
       if (typeof o.action !== 'string' || !ACTION_IDS.includes(o.action)) {
         return fail('bad_value', `schedule.overrides.action 未知：${String(o.action)}`, 'schedule.overrides');
       }
+      if (hasOwn(o, 'tileId')) {
+        const why = gatherTileProblem(w, o.action, o.tileId);
+        if (why) return fail('bad_value', `schedule.overrides.tileId：${why}`, 'schedule.overrides');
+      }
       if (prev && (prev.slotIndex > o.slotIndex || (prev.slotIndex === o.slotIndex && prev.discipleId >= o.discipleId))) {
         return fail('bad_value', 'schedule.overrides 必須依 slotIndex、discipleId 嚴格遞增（無重複）', 'schedule.overrides');
       }
       prev = o;
+    }
+    return null;
+  }
+
+
+  // ---------- SG-04：地圖、庫存、工作（jobs）與預約（reservations） ----------
+  const JOB_KINDS = Object.freeze(['build', 'craft']);
+  const JOB_STATUSES = Object.freeze(['queued', 'active', 'done', 'cancelled']);
+  const JOB_KEYS = Object.freeze([
+    'id', 'kind', 'discipleId', 'status', 'queuedSlotIndex', 'waited', 'startSlotIndex', 'slotsDone',
+    'completedSlotIndex', 'cancelledSlotIndex', 'target',
+  ]);
+  const RESERVATION_KEYS = Object.freeze(['jobId', 'discipleId', 'seat', 'startSlotIndex', 'slotsTotal', 'paid', 'output']);
+  const OUTPUT_KEYS = Object.freeze(['itemId', 'amount', 'staminaAtStart', 'craft', 'multiplierBp']);
+  const jobIdOf = (index) => `job-${String(index + 1).padStart(4, '0')}`;
+  const facilitySeat = (facilityJobId) => `facility:${facilityJobId}`;
+  const isNullOrNonNeg = (v) => v === null || isNonNegInt(v);
+
+  function jobDuration(job) {
+    return job.kind === 'build' ? Rules.FACILITIES[job.target.facilityType].durationSlots : Rules.RECIPES[job.target.recipeId].durationSlots;
+  }
+  function jobCost(job) {
+    return job.kind === 'build' ? Rules.FACILITIES[job.target.facilityType].cost : Rules.RECIPES[job.target.recipeId].cost;
+  }
+
+  function validateTiles(w) {
+    if (!Array.isArray(w.tiles) || canonicalize(w.tiles) !== canonicalize(Rules.initialTiles())) {
+      return fail('bad_value', 'tiles 必須恰為 rules.initialTiles() 的固定 25 格地圖', 'tiles');
+    }
+    return null;
+  }
+
+  function validateInventory(w) {
+    const keys = Object.keys(Rules.RECIPES);
+    if (!isPlainObject(w.inventory) || !sameKeys(w.inventory, keys)) {
+      return fail('bad_value', `inventory 必須恰好含 ${keys.join('、')}`, 'inventory');
+    }
+    for (const k of keys) {
+      if (!isNonNegInt(w.inventory[k])) return fail('bad_value', `inventory.${k} 必須是非負整數`, 'inventory');
+    }
+    return null;
+  }
+
+  function validateJobs(w) {
+    const where = (i) => `jobs[${i}]`;
+    const bad = (i, reason) => fail('inconsistent_jobs', reason, where(i));
+    const byDisciple = new Map(w.disciples.map((d) => [d.id, d]));
+    const tileById = new Map(w.tiles.map((t) => [t.id, t]));
+    const builds = []; // 未取消的 build job
+    const activeByWorker = new Set();
+    let prevQueued = 0;
+    for (let i = 0; i < w.jobs.length; i++) {
+      const j = w.jobs[i];
+      if (!sameKeys(j, JOB_KEYS)) return fail('bad_value', `${where(i)} 欄位不符（需 ${JOB_KEYS.join('、')}）`, where(i));
+      if (j.id !== jobIdOf(i)) return bad(i, `${where(i)}.id 必須是依序編號 ${jobIdOf(i)}`);
+      if (typeof j.kind !== 'string' || !JOB_KINDS.includes(j.kind)) return fail('bad_value', `${where(i)}.kind 未知`, where(i));
+      if (typeof j.status !== 'string' || !JOB_STATUSES.includes(j.status)) return fail('bad_value', `${where(i)}.status 未知`, where(i));
+      if (typeof j.discipleId !== 'string') return fail('bad_type', `${where(i)}.discipleId 必須是字串`, where(i));
+      const worker = byDisciple.get(j.discipleId);
+      if (!worker) return bad(i, `${where(i)}.discipleId 不在隊：${j.discipleId}`);
+      for (const k of ['queuedSlotIndex', 'waited', 'slotsDone']) {
+        if (!isNonNegInt(j[k])) return fail('bad_value', `${where(i)}.${k} 必須是非負整數`, where(i));
+      }
+      for (const k of ['startSlotIndex', 'completedSlotIndex', 'cancelledSlotIndex']) {
+        if (!isNullOrNonNeg(j[k])) return fail('bad_value', `${where(i)}.${k} 必須是非負整數或 null`, where(i));
+      }
+      if (j.queuedSlotIndex > w.slotIndex || j.queuedSlotIndex < prevQueued || j.queuedSlotIndex < worker.joinSlotIndex) {
+        return bad(i, `${where(i)}.queuedSlotIndex 必須不晚於目前格、不早於前一個 job 與角色加入格`);
+      }
+      prevQueued = j.queuedSlotIndex;
+      // target
+      const t = j.target;
+      if (!isPlainObject(t)) return fail('bad_type', `${where(i)}.target 必須是物件`, where(i));
+      if (j.kind === 'build') {
+        if (!sameKeys(t, ['facilityType', 'tileId'])) return fail('bad_value', `${where(i)}.target 必須恰好含 facilityType、tileId`, where(i));
+        if (typeof t.facilityType !== 'string' || !hasOwn(Rules.FACILITIES, t.facilityType)) return fail('bad_value', `${where(i)}.target.facilityType 未知`, where(i));
+        const tile = typeof t.tileId === 'string' ? tileById.get(t.tileId) : undefined;
+        if (!tile || !Rules.TERRAIN[tile.terrain].buildable) return bad(i, `${where(i)}.target.tileId 必須是可建地塊`);
+        if (j.status !== 'cancelled') builds.push(j);
+      } else {
+        if (!sameKeys(t, ['recipeId', 'facilityJobId'])) return fail('bad_value', `${where(i)}.target 必須恰好含 recipeId、facilityJobId`, where(i));
+        if (typeof t.recipeId !== 'string' || !hasOwn(Rules.RECIPES, t.recipeId)) return fail('bad_value', `${where(i)}.target.recipeId 未知`, where(i));
+        const fac = typeof t.facilityJobId === 'string' ? w.jobs.slice(0, i).find((x) => x.id === t.facilityJobId) : undefined;
+        if (!fac || fac.kind !== 'build' || fac.target.facilityType !== 'alchemyRoom') {
+          return bad(i, `${where(i)}.target.facilityJobId 必須指向較早排入的丹房工程`);
+        }
+      }
+      // 狀態一致性
+      const duration = jobDuration(j);
+      const waitedCap = (j.startSlotIndex !== null ? j.startSlotIndex : j.cancelledSlotIndex !== null ? j.cancelledSlotIndex : w.slotIndex) - j.queuedSlotIndex;
+      if (j.waited > Math.max(0, waitedCap)) return bad(i, `${where(i)}.waited 不得超過自排隊起經過的格數`);
+      if (j.status === 'queued') {
+        if (j.startSlotIndex !== null || j.slotsDone !== 0 || j.completedSlotIndex !== null || j.cancelledSlotIndex !== null) {
+          return bad(i, `${where(i)} 為 queued 時不得有開工／進度／完工／取消紀錄`);
+        }
+      } else if (j.status === 'cancelled') {
+        if (j.startSlotIndex !== null || j.slotsDone !== 0 || j.completedSlotIndex !== null
+          || j.cancelledSlotIndex === null || j.cancelledSlotIndex < j.queuedSlotIndex || j.cancelledSlotIndex > w.slotIndex) {
+          return bad(i, `${where(i)} 為 cancelled 時必須有合理的取消格，且從未開工`);
+        }
+      } else {
+        if (j.startSlotIndex === null || j.startSlotIndex < j.queuedSlotIndex || j.cancelledSlotIndex !== null) {
+          return bad(i, `${where(i)} 開工格不得早於排隊格，且不得有取消紀錄`);
+        }
+        if (j.status === 'active') {
+          if (j.completedSlotIndex !== null || j.slotsDone !== w.slotIndex - j.startSlotIndex || j.slotsDone < 1 || j.slotsDone >= duration) {
+            return bad(i, `${where(i)} 為 active 時進度必須等於已結算格數（1..${duration - 1}）且未完工`);
+          }
+          if (activeByWorker.has(j.discipleId)) return bad(i, `${j.discipleId} 同時有多個進行中的工作`);
+          activeByWorker.add(j.discipleId);
+        } else {
+          if (j.slotsDone !== duration || j.completedSlotIndex !== j.startSlotIndex + duration - 1 || j.completedSlotIndex >= w.slotIndex) {
+            return bad(i, `${where(i)} 為 done 時進度必須等於工期，完工格＝開工格＋工期−1，且已結算`);
+          }
+        }
+        if (j.kind === 'craft') {
+          const fac = w.jobs.find((x) => x.id === j.target.facilityJobId);
+          if (fac.status !== 'done' || fac.completedSlotIndex >= j.startSlotIndex) {
+            return bad(i, `${where(i)} 煉丹開工格必須晚於丹房完工格（完工次格才可用）`);
+          }
+        }
+      }
+    }
+    // 設施上限與地塊互斥（含排隊／施工／已完工）
+    const tilesUsed = new Set();
+    const counts = {};
+    for (const b of builds) {
+      if (tilesUsed.has(b.target.tileId)) return fail('inconsistent_jobs', `同一地塊不可有兩個工程：${b.target.tileId}`, 'jobs');
+      tilesUsed.add(b.target.tileId);
+      counts[b.target.facilityType] = (counts[b.target.facilityType] || 0) + 1;
+      if (counts[b.target.facilityType] > Rules.FACILITIES[b.target.facilityType].maxCount) {
+        return fail('inconsistent_jobs', `設施 ${b.target.facilityType} 超過上限 ${Rules.FACILITIES[b.target.facilityType].maxCount}`, 'jobs');
+      }
+    }
+    const seatUse = {};
+    for (const j of w.jobs) {
+      if (j.status === 'active' && j.kind === 'craft') {
+        const fac = w.jobs.find((x) => x.id === j.target.facilityJobId);
+        seatUse[fac.id] = (seatUse[fac.id] || 0) + 1;
+        if (seatUse[fac.id] > Rules.FACILITIES[fac.target.facilityType].workSlots) {
+          return fail('inconsistent_jobs', `設施工作位超過 ${Rules.FACILITIES[fac.target.facilityType].workSlots}`, 'jobs');
+        }
+      }
+    }
+    return null;
+  }
+
+  // 工作位持久輪候：每個角色至多一筆「對某個位已連續落選 waited 格」。取得位、改做別的事或位失效時紀錄消失。
+  function validateSeatWaits(w) {
+    const bad = (i, reason) => fail('inconsistent_seat_waits', reason, `seatWaits[${i}]`);
+    if (!Array.isArray(w.seatWaits)) return fail('bad_type', 'seatWaits 必須是陣列', 'seatWaits');
+    const members = new Set(w.disciples.map((d) => d.id));
+    let prev = null;
+    for (let i = 0; i < w.seatWaits.length; i++) {
+      const r = w.seatWaits[i];
+      if (!isPlainObject(r) || !sameKeys(r, ['discipleId', 'seat', 'waited'])) {
+        return fail('bad_value', 'seatWaits 項目必須恰好含 discipleId、seat、waited', `seatWaits[${i}]`);
+      }
+      if (typeof r.discipleId !== 'string' || !members.has(r.discipleId)) return bad(i, `seatWaits[${i}].discipleId 必須是在隊角色`);
+      if (!isNonNegInt(r.waited) || r.waited < 1 || r.waited > w.slotIndex) return bad(i, `seatWaits[${i}].waited 必須是 1 到 slotIndex（${w.slotIndex}）的整數`);
+      if (prev !== null && prev >= r.discipleId) return bad(i, 'seatWaits 必須依 discipleId 嚴格遞增（每人至多一筆）');
+      prev = r.discipleId;
+      if (typeof r.seat !== 'string') return bad(i, `seatWaits[${i}].seat 必須是字串`);
+      let ok = false;
+      if (r.seat.startsWith('facility:')) {
+        const j = w.jobs.find((x) => 'facility:' + x.id === r.seat);
+        ok = !!j && j.kind === 'build' && j.status === 'done' && (j.target.facilityType === 'spiritTerrace' || j.target.facilityType === 'residence');
+      } else if (r.seat.startsWith('tile:')) {
+        const t = w.tiles.find((x) => 'tile:' + x.id === r.seat);
+        ok = !!t && (t.terrain === 'material' || t.terrain === 'herb');
+      }
+      if (!ok) return bad(i, `seatWaits[${i}].seat 必須是已完工的聚靈台／居所，或資源點：${r.seat}`);
+    }
+    return null;
+  }
+
+  function validateReservations(w) {
+    const where = (i) => `reservations[${i}]`;
+    const bad = (i, reason) => fail('inconsistent_jobs', reason, where(i));
+    const active = w.jobs.filter((j) => j.status === 'active');
+    for (const r of w.reservations) {
+      if (!sameKeys(r, RESERVATION_KEYS)) return fail('bad_value', `reservations 項目欄位不符（需 ${RESERVATION_KEYS.join('、')}）`, 'reservations');
+    }
+    if (w.reservations.length !== active.length) {
+      return fail('inconsistent_jobs', 'reservations 必須與進行中（active）的 job 一一對應', 'reservations');
+    }
+    for (let i = 0; i < active.length; i++) {
+      const j = active[i];
+      const r = w.reservations[i];
+      if (r.jobId !== j.id) return bad(i, `${where(i)}.jobId 必須依 job 順序對應進行中的工作 ${j.id}`);
+      if (r.discipleId !== j.discipleId) return bad(i, `${where(i)}.discipleId 必須與 job 相同`);
+      if (r.startSlotIndex !== j.startSlotIndex) return bad(i, `${where(i)}.startSlotIndex 必須與 job 相同`);
+      if (r.slotsTotal !== jobDuration(j)) return bad(i, `${where(i)}.slotsTotal 必須等於工期`);
+      if (!isPlainObject(r.paid) || canonicalize(r.paid) !== canonicalize(jobCost(j))) return bad(i, `${where(i)}.paid 必須等於開工時一次扣掉的成本`);
+      if (j.kind === 'build') {
+        if (r.seat !== null || r.output !== null) return bad(i, `${where(i)} 建造沒有工作位與產出`);
+        continue;
+      }
+      const facJob = w.jobs.find((x) => x.id === j.target.facilityJobId);
+      if (r.seat !== facilitySeat(facJob.id)) return bad(i, `${where(i)}.seat 必須是 ${facilitySeat(facJob.id)}`);
+      const o = r.output;
+      if (!isPlainObject(o) || !sameKeys(o, OUTPUT_KEYS)) return fail('bad_value', `${where(i)}.output 欄位不符`, where(i));
+      const worker = w.disciples.find((d) => d.id === j.discipleId);
+      const mult = Rules.evaluateFacilityPlacement(w.tiles, facJob.target.tileId, 'alchemyRoom').multiplierBp;
+      let expected = null;
+      if (isNonNegInt(o.staminaAtStart) && o.staminaAtStart <= Rules.VALUE_LIMITS.staminaMax) {
+        expected = Rules.brewOutput({ recipeId: j.target.recipeId, craft: worker.attributes.craft, stamina: o.staminaAtStart, tileMultiplierBp: mult }).amount;
+      }
+      if (o.itemId !== j.target.recipeId || o.craft !== worker.attributes.craft || o.multiplierBp !== mult || expected === null || o.amount !== expected) {
+        return bad(i, `${where(i)}.output 必須與開工格格初快照用 rules.js 重算的結果一致`);
+      }
     }
     return null;
   }
@@ -519,6 +761,10 @@
         if (!isPlainObject(w[k][i])) return fail('bad_type', `${k}[${i}] 必須是物件`, k);
       }
     }
+    const tilesErr = validateTiles(w);
+    if (tilesErr) return tilesErr;
+    const invErr = validateInventory(w);
+    if (invErr) return invErr;
     if (!Array.isArray(w.pendingEvents)) return fail('bad_type', 'pendingEvents 必須是陣列', 'pendingEvents');
     const seenPending = new Set();
     for (const e of w.pendingEvents) {
@@ -571,6 +817,12 @@
     if (storyErr) return storyErr;
     const scheduleErr = validateSchedule(w, total);
     if (scheduleErr) return scheduleErr;
+    const jobsErr = validateJobs(w);
+    if (jobsErr) return jobsErr;
+    const resvErr = validateReservations(w);
+    if (resvErr) return resvErr;
+    const waitsErr = validateSeatWaits(w);
+    if (waitsErr) return waitsErr;
     const logErr = validateLogs(w);
     if (logErr) return logErr;
 
@@ -726,7 +978,7 @@
     INVITATION_STATUSES, ACTION_IDS, MASTER_ID, PROTAGONIST_ID, CANDIDATE_IDS, MAX_ROSTER,
     CHARACTER_OPTION_LIMITS, DEFAULT_CHARACTER_OPTIONS, CANONICAL_EXCLUDED_FIELDS,
     BASIS_POINTS, ROUNDING_MODE,
-    newWorld, validateCharacterOptions, validateWorld, rosterAt,
+    newWorld, validateCharacterOptions, validateWorld, rosterAt, jobIdOf, jobDuration, jobCost, facilitySeat, GATHER_TERRAIN, gatherTileProblem,
     canonicalize, sha256Hex, hashWorld, serializeState, parseState, mulBp,
   };
 });

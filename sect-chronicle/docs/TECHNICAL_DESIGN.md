@@ -100,3 +100,17 @@ canonical state 包含世界與 RNG、排隊及待選事件，排除播放倍率
 - **停止**：待選事件（slot 8→9 求援、41→42 危機）使 phase 轉 `awaitingChoice`，批次立即停止；危機與 ending 的結算由 SG-06 接入。
 - **事件資料**：引擎只消費 `story-data.js` 的 `dueEvents`／`validateChoice`／宣告的效果；對尚未有 runtime 的效果（援村發獎、危機佈陣、結局）一律明確拒絕。
 - **不使用 RNG**：本包的行動都是確定性公式，`rngState` 全程不變。
+
+## 9. SG-04 實作契約（工程、預約與持久輪候）
+
+與 [DEVELOPMENT.md](DEVELOPMENT.md)「SG-04 新增」一致，且以後者與測試為準。
+
+- **工作模型**：`jobs` 是只增不刪的工作紀錄（queued → active → done，或 queued → cancelled），`reservations` 是進行中工作的預約（每個 active job 一筆），已完工設施＝done 的 build job；工作位以字串鍵表示（`facility:<jobId>`、`terrain:material|herb`），容量取自 `rules.js`。
+- **原子預約**：開工請求在格初快照上走同一個 `arbitrate`，參與者、工作位與整批成本一起成敗；成功才扣一次成本並建立預約，失敗不扣任何東西、只累計輪候。進行中的工作靠 reservation 跨格續行，不重扣、不重新仲裁。
+- **持久輪候**：`waited` 存在 job 上，每個「已排隊但該格沒開工」的格 +1，存讀與回放後相同；SG-03 時固定為 0 的意圖等待值，在這裡首次有真實來源。
+- **完工次格可用**：設施與煉丹的使用資格一律由「格初快照中 status 已是 done」決定，所以完工格本身沒有收益；validator 也要求煉丹開工格晚於丹房完工格。
+- **產出快照**：煉丹產出在開工格以格初快照算出（開工者體力、技藝、丹房放置倍率）並保存在 reservation，完工時發放；這是對 RULES.md「多格工作取哪一格體力」的明確選擇（取開工格），依據（`output.basis`）留在事件與預約中。
+- **衝突規則**：預約中的角色忽略課表；開工被拒的角色（沒有其他進行中／成功的 job）這格只做一次有原因的明示休養備案（§3 第 4 步），不照原課表；所以不會同一人同格兩份效果。
+- **工作位輪候**：設施位與「每個資源點各自 2 位」都用同一個 `arbitrate`；等待值存在 `seatWaits`（每人至多一筆：位、連續落選格數），取得位或改要別的位時重置；採集的目標地塊由課表指定（`tileId`／`tileIds`），未指定取該資源種類排序最前的點。
+- **第 42 格**：未完工的工作保持 active，不假完工；之後如何處理由 SG-06 決定。
+- **版本**：schemaVersion 3（`seatWaits`、`schedule.templateTiles` 在 PR #91 審查修正中併入尚未合併的 schema 3，不另升版）；ruleVersion 2、rngVersion 1 不變；不消耗 RNG。
