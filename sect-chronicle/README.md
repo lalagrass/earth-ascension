@@ -1,6 +1,6 @@
 # 門派修行錄（Sect Chronicle）整合開發提案
 
-**目前開發方向：D8可暫停即時自主生活（已批准、尚未交付）**。先讓角色在初始條件／目標設定後自行移動、工作、恢復與發展，玩家可暫停改主角工作／目標；戰鬥延後。[最新範圍與接手prompt](docs/REALTIME_LIFE_SLICE.md)、[第一包RT-00 #99](https://github.com/lalagrass/earth-ascension/issues/99)。目前已有SG-05以前的slot純引擎／CLI，還沒有可玩的即時生活UI；下方早期提案狀態與戰鬥先行不代表最新排程。
+**目前開發方向：D8可暫停即時自主生活（已批准、尚未交付）**。先讓角色在初始條件／目標設定後自行移動、工作、恢復與發展，玩家可暫停改主角工作／目標；戰鬥延後。[最新範圍與接手prompt](docs/REALTIME_LIFE_SLICE.md)、[第一包RT-00 #99](https://github.com/lalagrass/earth-ascension/issues/99)。D9 P1–P4已批准並[凍結契約](docs/RT00_CONTRACT.md)，文件合dev／postCI後接RT-01；目前已有SG-05以前的slot純引擎／CLI，還沒有可玩的即時生活UI；下方早期提案狀態與戰鬥先行不代表最新排程。
 
 歷史提案狀態：14天切片已批准；SG-05以前slot工程已部分交付，詳DEVELOPMENT。最新D8即時自主生活仍未實作／驗收。日期：2026-10-18（Asia/Taipei）。主筆：Codex。
 
@@ -36,7 +36,7 @@
 
 工作目錄觀察 HEAD：`6fc98a9530c9075981a7edbbd0e3ac4d82c129ee`。這不是已核對的最新遠端 dev SHA。來源快照見決策文件。
 
-後續程式開工須依根目錄 [CONTRIBUTING.md](../CONTRIBUTING.md) 認領 issue、核對最新 dev、建短分支並向 dev 提 PR。本文 SG 系列是獨立遊戲任務，不代表主專案 M3 獲准實作。設計數值皆為候選值。SG-00 產品決策已完成；文件主筆 Codex 已於 #69 登記，核對的 base dev SHA 為 `fbbd3f3770f2eacf1528fb3b3beb5108c8d90910`。SG-00 已完成：文件 PR #70 於 `7510a8b` 合入 dev，#69 已關閉。設計 0.2（D6）修訂以 SG-00b 文件 PR 獨立審核，合併後 SG-01 以含 0.2 文件的 dev 為基底。依賴完成的任務可在認領後開始，不再要求重複產品批准。
+後續程式開工須依根目錄 [CONTRIBUTING.md](../CONTRIBUTING.md) 認領 issue、核對最新 dev、建短分支並向 dev 提 PR。本文 SG 系列是獨立遊戲任務，不代表主專案 M3 獲准實作。下方早期設計的候選數值須依後續決策覆蓋；D9凍結的RT值已批准，並非待選。SG-00 產品決策已完成；文件主筆 Codex 已於 #69 登記，核對的 base dev SHA 為 `fbbd3f3770f2eacf1528fb3b3beb5108c8d90910`。SG-00 已完成：文件 PR #70 於 `7510a8b` 合入 dev，#69 已關閉。設計 0.2（D6）修訂以 SG-00b 文件 PR 獨立審核，合併後 SG-01 以含 0.2 文件的 dev 為基底。依賴完成的任務可在認領後開始，不再要求重複產品批准。
 
 ## 目前進度
 
