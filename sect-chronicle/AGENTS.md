@@ -2,6 +2,10 @@
 
 先讀根目錄 [AGENTS.md](../AGENTS.md)、[CONTRIBUTING.md](../CONTRIBUTING.md) 與本資料夾 [README](README.md)。此處補充獨立遊戲契約，不覆蓋根目錄規則。
 
+## 協調與整合
+
+遊戲 PO 為另一個 Astra 聊天，管理 SG 產品範圍、任務、驗收與試玩；Earth PO 兼任唯一共用合併佇列負責人。作者／遊戲 PO 將 ready PR 與審查證據交到 [#67](https://github.com/lalagrass/earth-ascension/issues/67)，由 queue owner 依根目錄 CONTRIBUTING 整合到 dev。各 PO 不互相指派另一產品的實作；本次更新不變更既有產品批准。
+
 ## 目前可以做什麼
 
 專案擁有人已於 2026-10-18 在本對話批准 D1–D5 與 14 天切片 SG-01～SG-12，見 [批准紀錄](docs/DECISIONS_AND_SOURCES.md)。不得再次把這些任務標成「等待產品批准」。SG-01 已由 Grok Bot 在 #71 認領，其餘實作任務以各 issue 登記為準；開始前完成 issue／主筆／base dev SHA 登記及依賴檢查。SG-13 真人試玩需後續安排，SG-14～17 與發布仍未授權。
@@ -40,4 +44,4 @@ D6「道館成為門派」已由專案擁有人批准，見 [OPENING_REVISION.md
 
 ## 檢查
 
-文件階段：相對連結、任務依賴、狀態與數值來源、`git diff --check`。程式階段另跑新增的 Node 測試與相關瀏覽器驗證，以及根目錄要求的 `python3 -m unittest discover -s tests -v`、`node --check earth_ascension/static/m2.js`、`git diff --check`。原型回歸可用 `node --test guwu-game/test/*.test.js`（Node 24 下不要使用目錄作為測試參數）。新增未追蹤文件仍需額外掃描空白，因為 git diff 不涵蓋它們。
+文件階段：相對連結、任務依賴、狀態與數值來源、`git diff --check`。程式階段另跑 `node --test sect-chronicle/test/*.test.js` 與相關瀏覽器驗證（共用 CI 的 `game-test` 在 Node 22／24 執行；SG-01 尚未交付時的 bootstrap 訊息不是遊戲驗收），以及根目錄要求的 `python3 -m unittest discover -s tests -v`、`node --check earth_ascension/static/m2.js`、`git diff --check`。原型回歸可用 `node --test guwu-game/test/*.test.js`（Node 24 下不要使用目錄作為測試參數）。新增未追蹤文件仍需額外掃描空白，因為 git diff 不涵蓋它們。
