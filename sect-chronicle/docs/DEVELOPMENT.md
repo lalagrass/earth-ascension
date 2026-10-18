@@ -1,6 +1,8 @@
 # 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A）
 
-本文件隨程式更新；只記錄已存在且已驗證的事。尚未實作的模組見 [TECHNICAL_DESIGN](TECHNICAL_DESIGN.md)。
+本文件隨程式更新；runtime紀錄只描述已存在且已驗證的事。尚未實作的模組見 [TECHNICAL_DESIGN](TECHNICAL_DESIGN.md)。
+
+**SG-05接續入口（已批准、尚未實作）**：[SG05_HANDOFF.md](SG05_HANDOFF.md)含D7決策與可貼prompt，追蹤#95／#93。上限100、成功保留100並記境界、滿／成功後修行轉明示休養、升版拒絕舊開發檔且保留原檔已定案，無須重問。下方版本表仍是目前dev實作（schema3／rule2／rng1），不是D7交付證明；SG-05實作PR才更新執行版本與fixture，SG-07才實作瀏覽器儲存提示。
 
 ## 執行測試
 

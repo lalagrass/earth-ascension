@@ -1,6 +1,6 @@
 # Milestone 與 task backlog
 
-狀態：D1–D5 與 SG-01～SG-12 已於 2026-10-18 獲專案擁有人批准；SG-00 文件整合已由 Codex 認領 [#69](https://github.com/lalagrass/earth-ascension/issues/69)；SG-01 的實際主筆已於 #71 登記為 Grok Bot（與 Codex 共用 GitHub 帳號，非獨立審核），其餘 SG-02 起尚未指派；未完成任一實作 task。前綴 SG 避免與主專案 M1–M3 混淆。以下路徑皆相對 `sect-chronicle/`。
+狀態：D1–D5 與 SG-01～SG-12 已於 2026-10-18 獲專案擁有人批准；SG-00 文件整合已由 Codex 認領 [#69](https://github.com/lalagrass/earth-ascension/issues/69)；SG-01 的實際主筆已於 #71 登記為 Grok Bot（與 Codex 共用 GitHub 帳號，非獨立審核），其後實際認領與完成以各issue／PR為準；截至dev `dacce66`，SG-04A #92／PR #94已合入且post-merge CI成功，SG-05由同一Grok Bot依#93／#95接續，本次D7文件不代表SG-05已實作。前綴 SG 避免與主專案 M1–M3 混淆。以下路徑皆相對 `sect-chronicle/`。
 
 ## 設計 0.2 修訂
 
@@ -9,7 +9,7 @@
 ## 授權與實際狀態
 
 - SG-00：產品決策已完成；最新 dev 基底與文件主筆已登記於 #69；文件合併及遊戲工作區交接仍依 #69 的完成證據判定，不以本表自動宣稱 SG-M0 完成。
-- SG-01～12：範圍已授權；尚未認領，依賴未完成的任務為 Waiting dependency，非 Waiting product approval。
+- SG-01～12：範圍已授權；實際認領／進度以各issue為準。Grok Bot已在#93認領連續至SG-10；SG-05的D7已批准，工作包／prompt見[SG05_HANDOFF.md](SG05_HANDOFF.md)及#95，待文件前置合入與post-merge CI成功後接續。其他依賴未完成的任務為Waiting dependency，不是重問既有產品批准。
 - SG-13：真人試玩待安排；SG-M3 只有工程部分 11～12 在本次批准範圍，不能在無真人資料時宣稱 M3 完成。
 - SG-14～17／SG-M4～M5：未授權；真人試玩後另行判定，不得先做 28 天內容。
 - [雙 agent 接手計畫](PARALLEL_HANDOFF.md) 定義 Earth／遊戲兩個專案的隔離，並不代表已有主筆認領；遊戲由一位 agent 依序接手，Gemini 本輪不參與。
@@ -29,7 +29,7 @@ M1/M2 是遊戲引擎開發順序，不能解讀為主專案同名 milestone。�
 
 ## 任務表
 
-估量 S≈半日至一日、M≈一至兩日、L≈兩至三日的有效工程工作；只是切分尺度，不是 agent 執行時間承諾。超過 L 拆子 issue。所有測試證據均待執行。
+估量 S≈半日至一日、M≈一至兩日、L≈兩至三日的有效工程工作；只是切分尺度，不是 agent 執行時間承諾。超過 L 拆子 issue。下表是事前DoD；實際已完成證據依各issue／PR，D7新增驗收仍待SG-05執行。
 
 | ID／工作 | 依賴 | 建議主筆角色／估量 | 修改檔案邊界 | 完成判準 |
 |---|---|---|---|---|
@@ -40,9 +40,9 @@ M1/M2 是遊戲引擎開發順序，不能解讀為主專案同名 milestone。�
 | SG-03 指令、日課與時段結算 | 02、02A | 引擎／L | js/commands.js、engine.js；test/commands、engine | 新值回傳；失敗不改世界／RNG；重送不重扣；輪候與凍結快照；兩人搶最後材料不負庫存；單步與批次相同；未入隊角色不可排課；事件選擇可重送且不重領獎 |
 | SG-04 建造、煉丹與 CLI 切片 | 03 | 引擎／M | js/engine.js；test/production；tools/smoke.js（新增） | 無丹房不能煉丹；工期、工作位、材料皆生效；完工次格可用；CLI 42 格含首爐丹，輸出種子與摘要 |
 | SG-04A 復甦、援村與固定招募流程 | 04、02A | 引擎／M | js/story.js（新增）、engine.js；test/story；tools/smoke.js | 靈氣按格界切換並影響真實產出；援村占格、獎勵一次；兩人可增至四人；延後招募不消失／不重彈；入隊記 `joinSlotIndex`，自該（接受當下尚未結算的）格起工作、不補發先前產出；未援助仍可走到危機 |
-| SG-05 培養、支援與突破 | 04A | 引擎／M | js/progression.js、engine.js；test/progression | 修為上限、心境與傷勢可恢復；突破占格；丹與支援原子預約；恰好足夠材料也有加成；成功／失敗均有因果事件；師父支援占本人時段；公式含當期靈氣，無免費師父 buff |
+| SG-05 培養、支援與突破 | 04A | 引擎／M | js/progression.js、engine.js；test/progression | 依D7修為上限100、溢出不存但照扣該格成本；成功保留100並另記提升、每人最多一次成功；已滿／成功後修行轉明示休養；失敗70與傷勢可恢復再試；突破占格、丹與支援原子預約，恰好一丹仍有加成；成功／失敗因果可查；靈氣影響修為增長、不加新突破率；升rule／schema、拒絕舊開發檔且保留原檔；驗收與prompt見SG05_HANDOFF.md |
 | SG-06 危機與切片結局 | 05 | 戰鬥系統／M | js/combat.js、rules.js、engine.js；test/combat | 獸患預告、選陣、一次結算；第 42 格後先待選再 ending，無第 43 格；勝利立派／主角為首席，失敗暫緩；兩人亦可失敗結局；戰報可核對貢獻 |
-| SG-07 存檔／讀檔／新局 | 04A | 儲存／M | js/storage.js；test/storage | 獨立 key；所有版本檢查；保留備份；quota 不假報成功；未知與損壞檔可匯出；fresh seed／角色設定正確；復甦與招募邊界續玩不重領／重入隊；續玩 RNG 相同 |
+| SG-07 存檔／讀檔／新局 | 04A | 儲存／M | js/storage.js；test/storage | 獨立 key；核對SG-05最終schema／rule與D7舊開發檔拒絕策略；保留原檔與備份、提示重開、不自動遷移；quota 不假報成功；未知與損壞檔可匯出；fresh seed／角色設定正確；復甦與招募邊界續玩不重領／重入隊；續玩 RNG 相同 |
 | SG-08 因果 view 與預估 | 05、06 | view／M | js/view.js、forecast.js；test/view、forecast | 日課缺口、工作位等待、風水／靈氣分項、故事目標與日報；預覽無副作用；確定情境等於結算，隨機情境標明假設 |
 | SG-09 最小可玩 UI | 06、07、08 | 前端／L | index.html、style.css、js/ui.js、art.js | 主角模板／有限加點／性格建立、兩至四人三格日課、候選面板、5×5 地圖、工程、倍率、事件、結局與存讀；初次無參數載入可玩；鍵盤可完成主要流程 |
 | SG-10 完整切片整合 | 09 | QA／M | test/integration；tools/ui-smoke（新增）、docs/PLAYTEST_LOG.md（新增） | 用實際 UI 建立主角、完成援村收徒與一局；另測延後收徒；故事邊界保存重載；檢查單步／快轉；console 無錯；記錄環境、操作與截圖，不只呼叫 debug API |
