@@ -2,6 +2,13 @@
 function m2Observer(p) {
   const eventById = new Map(world.events.filter(e => e.event_id).map(e => [e.event_id, e]));
   const source = id => id ? `<button class="person" data-event="${esc(id)}">${esc(id)} ↗</button>` : '尚無事件來源';
+  // Same fact learned from several events is stored once per source; show each fact once (with the source count).
+  const FACT_LABELS = { practice_basis: '已知可修習基礎' };
+  const knownFacts = ids => {
+    const counts = new Map();
+    (ids || []).forEach(id => counts.set(id, (counts.get(id) || 0) + 1));
+    return [...counts].map(([id, n]) => `${esc(FACT_LABELS[id] || id)}${n > 1 ? `（${n} 個來源）` : ''}`).join('、') || '尚無';
+  };
   const goal = p.goals[0], decision = p.last_decision;
   const memories = (p.memories_v2 || []).slice(0, 12).map(m => {
     const e = eventById.get(m.event_id);
@@ -13,7 +20,7 @@ function m2Observer(p) {
     `<div class="event">${esc(world.people[id]?.name || id)} · 信任 ${edge.trust}<small>最近互動：${source(edge.last_event_id)}</small></div>`
   ).join('') || '<p>尚無互動關係。</p>';
   const reason = decision ? `<p><strong>${esc(decision.action)}</strong> · ${esc(p.last_action?.outcome || '')}</p>
-    <p>決策當時目標 ${esc(decision.goal_label)}（${decision.goal_progress}/${decision.goal_target}${decision.goal_id !== goal.id ? `；月末已轉為「${esc(goal.label)}」` : ''}）；當時計畫步驟 ${esc(decision.plan_step)}；可行行動 ${esc(decision.feasible.join('、'))}；當時已知事實 ${esc(decision.known_fact_ids.join('、') || '尚無')}。</p>
+    <p>決策當時目標 ${esc(decision.goal_label)}（${decision.goal_progress}/${decision.goal_target}${decision.goal_id !== goal.id ? `；月末已轉為「${esc(goal.label)}」` : ''}）；當時計畫步驟 ${esc(decision.plan_step)}；可行行動 ${esc(decision.feasible.join('、'))}；當時已知事實 ${knownFacts(decision.known_fact_ids)}。</p>
     <p>結算 ${esc(decision.resolution)}；限制 ${esc(decision.constraints.join('、') || '無')}；社交對象 ${esc(decision.target ? (world.people[String(decision.target)]?.name || decision.target) : '無')}。</p>
     <p>基礎分數：${Object.entries(decision.scores).map(([k,v]) => `${esc(k)} ${v}`).join('、')}；選擇波動：${Object.entries(decision.noise).map(([k,v]) => `${esc(k)} ${v}`).join('、')}。</p>
     <p>引用記憶：${decision.memory_event_ids.map(source).join('、') || '無'}；結果事件：${decision.outcome_event_ids.map(source).join('、')}。</p>`
