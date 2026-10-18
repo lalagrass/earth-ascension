@@ -23,13 +23,13 @@ function m2Observer(p) {
     <p>決策當時目標 ${esc(decision.goal_label)}（${decision.goal_progress}/${decision.goal_target}${decision.goal_id !== goal.id ? `；月末已轉為「${esc(goal.label)}」` : ''}）；當時計畫步驟 ${esc(decision.plan_step)}；可行行動 ${esc(decision.feasible.join('、'))}；當時已知事實 ${esc(decision.known_fact_ids.join('、') || '尚無')}。</p>
     <p>結算 ${esc(decision.resolution)}；限制 ${esc(decision.constraints.join('、') || '無')}；社交對象 ${esc(decision.target ? (world.people[String(decision.target)]?.name || decision.target) : '無')}。</p>
     <p>基礎分數：${Object.entries(decision.scores).map(([k,v]) => `${esc(k)} ${v}`).join('、')}；選擇波動：${Object.entries(decision.noise).map(([k,v]) => `${esc(k)} ${v}`).join('、')}。</p>
-    <p>引用記憶：${decision.memory_event_ids.map(source).join('、') || '無'}；結果事件：${decision.outcome_event_ids.map(source).join('、')}。</p>`
+    <p>引用記憶：${decision.memory_event_ids.map(id => source(id)).join('、') || '無'}；結果事件：${decision.outcome_event_ids.map(id => source(id)).join('、')}。</p>`
     : '<p>尚未行動；推進一個月後可檢視決策。</p>';
   const reviews = Array.isArray(p.goal_reviews) ? (p.goal_reviews.slice().reverse().map(r => {
     const scores = Object.entries(r.scores || {}).map(([k, v]) => `${esc(k)} ${v}`).join('、');
     const excluded = (r.excluded && r.excluded.length) ? r.excluded.map(esc).join('、') : '無';
     const basisLabel = r.basis === 'memory' ? '關鍵記憶驅動 (memory)' : '人格與處境基線 (profile_baseline)';
-    const causes = (r.cause_event_ids && r.cause_event_ids.length) ? r.cause_event_ids.map(source).join('、') : '無決定性記憶事件';
+    const causes = (r.cause_event_ids && r.cause_event_ids.length) ? r.cause_event_ids.map(id => source(id)).join('、') : '無決定性記憶事件';
     const contribs = (r.contributions && r.contributions.length)
       ? ` · 記憶加權：${r.contributions.map(c => `${esc(c.candidate)} ${c.delta > 0 ? '+' : ''}${c.delta}（${source(c.event_id)}）`).join('、')}` : '';
     return `<div class="event">第 ${r.month} 月 · ${esc(r.outcome)} → <strong>${esc(r.chosen)}</strong>${r.event_id ? ` · 轉向事件 ${source(r.event_id, false)}` : ''}<small>依據：${basisLabel} · 剛完成排除：${excluded} · 候選分數：${scores} · 決定來源：${causes}${contribs}</small></div>`;
