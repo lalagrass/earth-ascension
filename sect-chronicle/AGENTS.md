@@ -6,6 +6,10 @@
 
 遊戲 PO 為另一個 Astra 聊天，管理 SG 產品範圍、任務、驗收與試玩；Earth PO 兼任唯一共用合併佇列負責人。作者／遊戲 PO 將 ready PR 與審查證據交到 [#67](https://github.com/lalagrass/earth-ascension/issues/67)，由 queue owner 依根目錄 CONTRIBUTING 整合到 dev。各 PO 不互相指派另一產品的實作；本次更新不變更既有產品批准。
 
+## 如何提出建議
+
+依 [提案與溝通流程](docs/AGENT_PROPOSALS.md) 分流並使用其中 issue／留言格式：任務內實作選擇留原 issue；改玩法、語義或範圍另開 Proposal；未來靈感先留 #75。**非阻擋建議記錄後繼續已批准且已認領工作**，不擅加 DoD／依賴；真正阻擋只停受影響部分，說明最小所需決策與可繼續項目。無回覆不等於批准，已批准範圍不重問。決策回填 issue 並同步必要文件；每次標明實際身份，共用帳號不當成獨立審核。ready PR 依上節交 #67，不自行合併。
+
 ## 目前可以做什麼
 
 專案擁有人已於 2026-10-18 在本對話批准 D1–D5 與 14 天切片 SG-01～SG-12，見 [批准紀錄](docs/DECISIONS_AND_SOURCES.md)。不得再次把這些任務標成「等待產品批准」。SG-01 已由 Grok Bot 在 #71 認領，其餘實作任務以各 issue 登記為準；開始前完成 issue／主筆／base dev SHA 登記及依賴檢查。SG-13 真人試玩需後續安排，SG-14～17 與發布仍未授權。
