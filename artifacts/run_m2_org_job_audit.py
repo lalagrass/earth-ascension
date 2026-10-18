@@ -8,6 +8,7 @@ Does not touch holdout seeds (>= 30) and does not modify any engine/m2/store cod
 """
 import copy
 import json
+import statistics
 import sys
 from pathlib import Path
 
@@ -125,6 +126,10 @@ def audit_part1_org_events():
             if first_diverge is None and m2.canonical_hash(w_base) != m2.canonical_hash(w_cf):
                 first_diverge = month
 
+            # Map non-org events to normalized identity to compare memory sequences rigorously
+            base_id_to_norm = {e["event_id"]: (e["month"], e["kind"], e["actor"], e["text"]) for e in w_base["events"]}
+            cf_id_to_norm = {e["event_id"]: (e["month"], e["kind"], e["actor"], e["text"]) for e in w_cf["events"] if e["kind"] != "組織"}
+
             for pid in w_base["people"]:
                 pb = w_base["people"][pid]
                 pc = w_cf["people"][pid]
@@ -132,9 +137,9 @@ def audit_part1_org_events():
                     action_mismatch = True
                 if pb["goals"][0]["type"] != pc["goals"][0]["type"] or pb["goals"][0]["progress"] != pc["goals"][0]["progress"]:
                     goal_mismatch = True
-                # Compare memory observed_month + importance sequence
-                mb = [(m["observed_month"], m["importance"]) for m in pb["memories_v2"]]
-                mc = [(m["observed_month"], m["importance"]) for m in pc["memories_v2"]]
+                # Compare memory observed_month + importance + normalized event identity sequence
+                mb = [(m["observed_month"], m["importance"], base_id_to_norm.get(m["event_id"])) for m in pb["memories_v2"]]
+                mc = [(m["observed_month"], m["importance"], cf_id_to_norm.get(m["event_id"])) for m in pc["memories_v2"]]
                 if mb != mc:
                     memory_mismatch = True
 
@@ -252,6 +257,7 @@ def audit_part2_player_paths():
     for key, spec in PLAYER_PROFILES.items():
         qualified_seeds = 0
         first_qualified_months = []
+        qualified_records = []
         final_skills_sum = {"工作": 0, "研究": 0, "社交": 0, "修習": 0}
         completed_goals_total = 0
         setback_goals_total = 0
@@ -273,6 +279,12 @@ def audit_part2_player_paths():
                 if first_transition is not None:
                     qualified_seeds += 1
                     first_qualified_months.append(first_transition["month"])
+                    qualified_records.append({
+                        "seed": seed,
+                        "month": first_transition["month"],
+                        "criterion": first_transition["criterion"],
+                        "trigger_event_ids": first_transition["trigger_event_ids"],
+                    })
                 for sk, val in p["skills"].items():
                     final_skills_sum[sk] += val
                 completed_goals_total += sum(1 for g in p["goal_history"] if g.get("stop_reason") == "target_reached")
@@ -304,11 +316,12 @@ def audit_part2_player_paths():
         results[key] = {
             "qualified_seeds_out_of_30": qualified_seeds,
             "first_qualified_month_median": (
-                sorted(first_qualified_months)[len(first_qualified_months) // 2] if first_qualified_months else None
+                statistics.median(first_qualified_months) if first_qualified_months else None
             ),
             "first_qualified_month_range": (
                 [min(first_qualified_months), max(first_qualified_months)] if first_qualified_months else None
             ),
+            "qualified_cases": qualified_records,
             "mean_final_skills": {k: round(v / len(DEV_SEEDS), 1) for k, v in final_skills_sum.items()},
             "mean_completed_goals": round(completed_goals_total / len(DEV_SEEDS), 2),
             "mean_setback_goals": round(setback_goals_total / len(DEV_SEEDS), 2),
