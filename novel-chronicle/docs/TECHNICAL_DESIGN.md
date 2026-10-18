@@ -90,16 +90,21 @@ flowchart LR
 ```js
 // 提案介面（#125）
 validateStory(story)                 // → { ok } 或 { ok:false, code, where }；載入時跑一次
-newState(story)                      // → 初始狀態（start 節點、旗標 initial、空歷史）
+newState(story)                      // → { state, passed }：start 節點、旗標 initial、空歷史，再經 settle
 available(story, state)              // → [{ choiceId, label, enabled, reason? }]，給 UI 用
-choose(story, state, input)          // input = { nodeId, choiceId, seq }
-  // → { ok:true, state, applied:[...effects], duplicate:false }
-  // → { ok:true, state, duplicate:true }          同一 seq＋同一 choice 重送：回目前狀態，不再套效果
+choose(story, state, input)          // input = { nodeId, choiceId, seq }；套效果、移到 next，再經 settle
+  // → { ok:true, state, passed:[nodeId...], applied:[...effects], duplicate:false }
+  // → { ok:true, state, passed:[], duplicate:true }   同一 seq＋同一 choice 重送：回目前狀態，不再套效果
   // → { ok:false, code, reason }                  不改輸入
-advance(story, state)                // 接續節點往下走到下一個選擇或結局節點
 ```
 
-拒絕碼（提案）：`ended`、`stale_node`（`input.nodeId ≠ state.nodeId`）、`unknown_choice`、`prerequisite_unmet`、`seq_conflict`（同 seq 不同 choice）、`seq_gap`（seq 不是 `history.length + 1`）。
+**正規化（settle）**：`newState` 與 `choose` 結尾都跑同一個內部步驟——只要目前節點是接續節點，就沿 `next` 往下走，直到選擇節點或結局節點；到結局節點時設 `ended`。走過的接續節點依序放在 `passed`，給 UI 顯示正文。因此：
+
+- **對外可見的 `state.nodeId` 永遠是選擇節點或結局節點**；不存在停在接續節點上的合法狀態，也沒有獨立的 `advance` 操作。
+- 讀者在 `passed` 正文之間翻頁，是 UI 的閱讀位置，不進故事狀態、不進存檔；重新整理後從目前的選擇節點開始顯示（可重顯最後一段 `passed`，由 #126 決定）。
+- settle 最多走「節點總數」步；超過即回 `continuation_cycle` 錯誤、不改輸入。正常情況下不會發生，因為 `validateStory` 已拒絕只由接續節點構成的循環（§7 圖檢查）。含選擇節點的循環（例如可重訪的場景）不受此限，因為每一圈都要讀者選一次。
+
+拒絕碼（提案）：`ended`、`continuation_cycle`、`stale_node`（`input.nodeId ≠ state.nodeId`）、`unknown_choice`、`prerequisite_unmet`、`seq_conflict`（同 seq 不同 choice）、`seq_gap`（seq 不是 `history.length + 1`）。
 
 責任分配：
 
@@ -107,20 +112,22 @@ advance(story, state)                // 接續節點往下走到下一個選擇�
 |---|---|---|
 | runner | 驗證故事包、驗證前置條件、拒絕重複／過期／不合法選擇、**每個選擇只套一次效果**（以 `seq` 保證）、產生新狀態 | 不讀 DOM、不讀時鐘、不抽亂數、不讀正文 |
 | 存檔 adapter | 封套、版本檢查、寫入與失敗回復（§5） | 不改故事狀態內容 |
-| reader UI | 顯示正文、`available()` 的結果、回顧；把使用者點擊轉成 `{ nodeId, choiceId, seq }` | 不算後果、不改旗標、不決定可選性 |
+| reader UI | 顯示 `passed` 與目前節點的正文、`available()` 的結果、回顧；管理接續正文之間的翻頁位置；把使用者點擊轉成 `{ nodeId, choiceId, seq }` | 不算後果、不改旗標、不決定可選性、不自行沿 `next` 推進故事狀態 |
 
-連點兩次同一選項 → 第二次帶同一 `seq`，回 `duplicate: true`，效果不重複；舊分頁送來的過期選擇 → `stale_node`。
+連點兩次同一選項 → 第二次帶同一 `seq`，回 `duplicate: true`，效果不重複。**`stale_node`／`seq_*` 只對「傳入的那一份 state」成立**：同一分頁中，基於已被取代的畫面送出的請求會被拒絕；但 runner 是純函式，不知道別的分頁有沒有存過更新的狀態。跨分頁的保護屬於存檔 adapter，見 §5.4。
 
 ### 3.1 範例轉移（臨時內容）
 
 ```text
+// 假設 c1-tell.next = 'c1-shared'（接續）→ 'c2-meet'（接續）→ 'c2-choice'（選擇節點）
 state0 = { nodeId:'c1-open', flags:{trustNeighbor:0, springChanged:false, promisedRecords:false}, history:[], ended:null }
 choose(story, state0, { nodeId:'c1-open', choiceId:'c1-tell', seq:1 })
-→ ok, applied = [add trustNeighbor +1, set springChanged true]
-state1 = { nodeId:'c1-shared', flags:{trustNeighbor:1, springChanged:true, promisedRecords:false},
+→ ok, applied = [add trustNeighbor +1, set springChanged true], passed = ['c1-shared', 'c2-meet']
+state1 = { nodeId:'c2-choice', flags:{trustNeighbor:1, springChanged:true, promisedRecords:false},
            history:[{seq:1,nodeId:'c1-open',choiceId:'c1-tell'}], ended:null }
-choose(story, state1, { nodeId:'c1-open', choiceId:'c1-tell', seq:1 })   // 重送
-→ ok, duplicate:true, state 不變
+choose(story, state1, { nodeId:'c1-open', choiceId:'c1-tell', seq:1 })   // 同分頁重送
+→ ok, duplicate:true, passed = [], state 不變
+// 重播：newState → choose(c1-tell, seq 1) 得到的 state 與 state1 相同，因為兩者都經同一個 settle
 ```
 
 ## 4. 後果、回呼與讀者可知的事實
@@ -154,15 +161,23 @@ choose(story, state1, { nodeId:'c1-open', choiceId:'c1-tell', seq:1 })   // 重�
 | `schemaVersion` 未知（大於支援） | 同上；不猜、不升級 |
 | `storyId` 不符 | 同上（這不是本故事的存檔） |
 | `contentVersion` 不同 | **待 #123 決定**（§8）；runner 預設拒絕並保留原檔 |
-| 結構合法 | **重播驗證**：從 `newState` 依 `history` 逐一 `choose`，結果必須與存檔 `state` 完全相同，才採用；否則視為損壞 |
+| 結構合法 | **重播驗證**：從 `newState` 依 `history` 逐一 `choose`（兩者都含 §3 的 settle），結果必須與存檔 `state` 完全相同，才採用；否則視為損壞 |
 
-重播驗證是免費的完整性檢查：故事狀態完全由歷史決定，所以「存檔中途讀回」與「從頭照同一歷史走」必然相同，不同就代表存檔或內容不一致。
+重播驗證是免費的完整性檢查：故事狀態完全由歷史加上同一個確定性的 settle 決定，所以「存檔中途讀回」與「從頭照同一歷史走」必然相同，不同就代表存檔或內容不一致。正常遊玩與重播走的是同一組函式，不會出現「正常存的檔被重播判為損壞」。
 
 ### 5.3 寫入與重開
 
 - 每次成功 `choose` 後存檔：先組封套並自我驗證（重播），再寫入；寫入失敗（quota、權限）時**不改記憶體中的狀態**、保留舊存檔，UI 顯示「未保存」，不能把失敗當成已保存。
 - 寫新存檔前把舊值複製到 `novel-chronicle-save-v1:backup`，成功後才覆蓋主 key。
 - **開始新故事**需要明確確認；確認後舊存檔先移到 backup，新故事第一次保存成功後才清。
+
+### 5.4 多分頁：單一權威寫入者（切片範圍）
+
+**同時在兩個分頁遊玩同一個存檔不在本切片支援範圍。** 純 runner 無法偵測另一分頁的保存，所以 adapter 只提供以下有限保護，不加通用鎖或服務：
+
+- 寫入前**重讀主 key**：若主 key 的 `history` 不是本分頁新 `history` 的前綴（另一分頁已走了不同的選擇，或走得更遠），拒絕寫入、保留主 key 原值，UI 顯示「另一個分頁已更新這份故事，請重新載入」。這擋住最常見的「舊分頁覆寫新存檔」。
+- 監聽 `storage` 事件：主 key 被其他分頁改動後，本分頁標記為過期、停用選項，直到使用者重新載入。
+- localStorage 沒有比較後寫入的原子操作，兩個分頁在同一瞬間寫入仍可能互相覆蓋；這是已知限制，不宣稱已防護。若 #127 發現讀者實際會多分頁閱讀，再另提方案。
 - **繼續**：重新整理頁面時讀主 key，停在存檔的節點。
 
 ## 6. 決定性
@@ -176,8 +191,8 @@ choose(story, state1, { nodeId:'c1-open', choiceId:'c1-tell', seq:1 })   // 重�
 | 工作 | 本設計提供的介面 | 必要檢查 |
 |---|---|---|
 | #124 內容 | §2 節點／選項／旗標形狀；`acknowledges` | 三條以上不同路徑走查（含平凡路徑）；圖檢查報告 |
-| #125 runner＋存檔 | §3 `validateStory`／`newState`／`available`／`choose`／`advance`；§5 adapter | 轉移單測（效果只套一次、重送、過期、前置不滿足、結局後拒絕）；**圖檢查**（所有 `next` 存在、所有旗標已宣告、所有節點從 start 可達、非結局節點都有出路、每個結局至少一條路徑可達、每個選項在某條路徑上可選、匯流節點 `acknowledges` 覆蓋分歧選擇）；**存檔測試**（往返、壞 JSON、未知 schema、`storyId`／`contentVersion` 不符、checksum 不符、重播不等、寫入失敗保留舊檔） |
-| #126 reader | 只呼叫 `available`／`choose`／adapter | 真實瀏覽器：完整讀完三章、重新整理續讀、新故事需確認且不誤刪、鍵盤操作與焦點、手機寬度 |
+| #125 runner＋存檔 | §3 `validateStory`／`newState`／`available`／`choose`（含 settle）；§5 adapter | 轉移單測（效果只套一次、同分頁重送、過期、前置不滿足、結局後拒絕、settle 走過多個接續節點後停在選擇／結局節點、`passed` 順序）；**圖檢查**（所有 `next` 存在、所有旗標已宣告、所有節點從 start 可達、非結局節點都有出路、**沒有只由接續節點構成的循環**、每個結局至少一條路徑可達、每個選項在某條路徑上可選、匯流節點 `acknowledges` 覆蓋分歧選擇）；**存檔測試**（往返、壞 JSON、未知 schema、`storyId`／`contentVersion` 不符、checksum 不符、重播不等、接續節點後保存再讀回仍合法、寫入失敗保留舊檔、主 key 已被另一分頁推進時拒絕寫入） |
+| #126 reader | 只呼叫 `newState`／`available`／`choose`／adapter | 真實瀏覽器：完整讀完三章、重新整理續讀、第二分頁改動後本分頁停用選項、新故事需確認且不誤刪、鍵盤操作與焦點、手機寬度 |
 | #127 讀者驗證 | 歷史與 `readerKnown` 旗標可作回顧 | 記錄實際 build／路徑／人數；作者走查不等於獨立讀者回饋 |
 | CI | `node --test novel-chronicle/test/*.test.js` | 需要另開共用 CI claim 加 `novel-test` job，且在 #125 被接受前完成（[邊界文件 §7](../../docs/architecture/PORTFOLIO_BOUNDARIES.md#7-ci-責任)） |
 
@@ -205,5 +220,6 @@ novel-chronicle/
 | 不可選的選項要不要顯示 | 隱藏／顯示並寫理由 | runner 兩者都支援；只影響 UI |
 | 選擇節奏 | 只在章節交界／場景中也有 | 不影響資料形狀（節點的 `chapter` 欄位已足夠） |
 | 內容改版後舊存檔 | A 拒絕並提供重開（預設）／B 若歷史中每個選擇在新內容仍合法就重播接上／C 保留舊內容包讓舊檔照舊讀完 | A 最簡單；B 需要選項 id 永不改義；C 需要同時載入多個內容版本 |
+| 多分頁同時遊玩 | 不支援（預設，§5.4）／支援 | 支援需要跨分頁協調設計，非本切片 |
 | 重開／多存檔位 | 單一存檔＋backup（預設）／多個存檔位 | 多存檔位要改 key 規則與 UI |
 | 讀完後 | 回到開頭重玩不同路徑／保留結局紀錄 | 結局紀錄是另一個 key，不進故事狀態 |
