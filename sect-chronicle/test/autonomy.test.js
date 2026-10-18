@@ -113,6 +113,34 @@ test('靈草未解鎖時，還能修行的人去修行；滿修為且不能突�
   assert.equal(planned.assignments.find((a) => a.discipleId === 'full').reason, 'blocked:herb_locked');
 });
 
+test('目標順序先於工作種類：能煉丹就不先建下一座', () => {
+  function planned(goals) {
+    return Autonomy.plan(snapshot({
+      tick: 600,
+      resources: { spiritMaterial: 10, spiritHerb: 6, spiritStone: 0, reputation: 0 },
+      facilitiesDone: { alchemyRoom: true },
+      buildOpen: { alchemyRoom: 1 },
+      seats: Object.assign(
+        Object.fromEntries(Rules.initialTiles().filter((t) => Rules.TERRAIN[t.terrain].buildable).map((t) => [`build:${t.id}`, 1])),
+        { 'work:alchemyRoom': 1, 'aid:village': 1 },
+      ),
+      goals,
+      disciples: [disciple(MID, { attributes: { craft: 5 } })],
+    }));
+  }
+  const brewFirst = planned([
+    { id: 'first', kind: 'stockPills', count: 1 },
+    { id: 'second', kind: 'buildFacility', facilityType: 'residence' },
+  ]);
+  assert.equal(brewFirst.assignments[0].kind, 'brew');
+  const buildFirst = planned([
+    { id: 'first', kind: 'buildFacility', facilityType: 'residence' },
+    { id: 'second', kind: 'stockPills', count: 1 },
+  ]);
+  assert.equal(buildFirst.assignments[0].kind, 'build');
+  assert.equal(buildFirst.assignments[0].target.facilityType, 'residence');
+});
+
 test('手動請求的 priority 先於等待更久的自主請求；缺欄仍按等待值', () => {
   const ranked = Engine.arbitrate({
     requests: [
@@ -159,6 +187,79 @@ test('手動鎖不被自主抢走；體力不足時先正式休養', () => {
   assert.equal(rest.kind, 'rest');
   assert.equal(rest.origin, 'auto');
   assert.equal(w.activities.filter((a) => a.kind === 'build').length, 0);
+});
+
+test('工作完成的同一 tick 不開下一件，材料要等下一 tick', () => {
+  const w = drive(world('rt02-po-review'), 180);
+  const byDisc = new Map();
+  for (const act of w.activities) {
+    if (!byDisc.has(act.discipleId)) byDisc.set(act.discipleId, []);
+    byDisc.get(act.discipleId).push(act);
+  }
+  for (const list of byDisc.values()) {
+    const ordered = list.filter((a) => a.departTick !== null).sort((a, b) => a.departTick - b.departTick || (a.id < b.id ? -1 : 1));
+    for (let i = 1; i < ordered.length; i += 1) {
+      const prev = ordered[i - 1];
+      const next = ordered[i];
+      if (prev.completedTick === null) continue;
+      const converted = next.fallback && next.departTick + 1 === prev.completedTick;
+      if (converted) continue;
+      assert.ok(
+        next.departTick >= prev.completedTick,
+        `${prev.id} 在 ${prev.completedTick} 完成，${next.id} 卻在 ${next.departTick} 出發`,
+      );
+    }
+  }
+});
+
+test('承諾型建造中同意突破會留下 pending，完工後才用凍結的丹與支援者', () => {
+  let w = must(world('rt-promise-ask'), 'setPolicy', { policy: Realtime.ASK_POLICY });
+  w = must(w, 'setGoals', { goals: [] });
+  w.resources.spiritMaterial = 30;
+  w.inventory[PILL] = 1;
+  w.disciples.forEach((d) => { d.cultivation = 100; });
+  w = must(w, 'orderActivity', {
+    discipleId: PID, kind: 'build', target: { facilityType: 'residence', tileId: 't-2-2' }, units: 2,
+  });
+  w = drive(w, 1);
+  const build = w.activities.find((a) => a.discipleId === PID && a.kind === 'build');
+  assert.equal(build.status, 'working');
+  assert.equal(Realtime.validateWorld(w).ok, true);
+  const event = w.pendingEvents.find((e) => e.discipleId === PID);
+  w = must(w, 'chooseEvent', { eventId: event.id, optionId: 'opt-breakthrough-agree' });
+  assert.equal(w.story.breakthroughAsks[PID].lastDisposition, 'agree');
+  assert.equal(hero(w).manualOrder.kind, 'breakthrough');
+  assert.equal(hero(w).manualOrder.status, 'pending');
+  assert.equal(hero(w).manualOrder.usePill, true);
+  assert.equal(hero(w).manualOrder.supporterId, MID);
+  assert.equal(w.activities.find((a) => a.id === build.id).status, 'working');
+  w = must(w, 'setPolicy', { policy: Object.assign({}, Realtime.ASK_POLICY, { breakthroughPill: 'never', breakthroughSupport: 'never' }) });
+  const frozen = { usePill: hero(w).manualOrder.usePill, supporterId: hero(w).manualOrder.supporterId };
+  const loaded = Realtime.parseState(Realtime.serializeState(w));
+  assert.equal(loaded.ok, true, loaded.reason);
+  w = loaded.state;
+  assert.equal(hero(w).manualOrder.usePill, frozen.usePill);
+  assert.equal(hero(w).manualOrder.supporterId, frozen.supporterId);
+  const rngBefore = JSON.stringify(w.rngState);
+  let started = null;
+  for (let i = 0; i < 200 && !started; i += 1) {
+    w = drive(w, 1);
+    started = w.activities.find((a) => a.kind === 'breakthrough' && a.discipleId === PID && a.status !== 'cancelled');
+  }
+  assert.ok(started, '承諾結束後沒有開始突破');
+  assert.equal(started.usePill, true);
+  assert.equal(started.supporterId, MID);
+  assert.equal(JSON.stringify(w.rngState), rngBefore);
+  assert.equal(w.inventory[PILL], 0);
+  let resolved = w;
+  for (let i = 0; i < 80 && resolved.clock.tick === w.clock.tick; i += 1) {
+    const step = Realtime.advanceTicks(resolved, 80);
+    assert.equal(step.ok, true, step.reason);
+    resolved = step.state;
+    if (step.stopReason === 'breakthroughResolved') break;
+  }
+  assert.equal(resolved.eventLog.filter((e) => e.type === 'breakthroughResolved' && e.discipleId === PID).length, 1);
+  assert.notEqual(JSON.stringify(resolved.rngState), rngBefore);
 });
 
 test('同一 tick 不會把同一座丹房派給兩個人', () => {
@@ -298,6 +399,15 @@ test('未知事件、重複詢問與帶 onceKey 的待選不能載入', () => {
   dup.pendingEvents.push(ask, Object.assign({}, ask));
   dup.story.breakthroughAsks[PID] = { generation: 1, openEventId: ask.id, lastDisposition: null, cooldownUntilTick: null };
   assert.equal(Realtime.parseState(JSON.stringify(dup)).ok, false);
+});
+
+test('回放 until 停在突破結果的 tick，而不是下一個固定檢查點', () => {
+  const baseline = Auto.play(0, 'full');
+  assert.equal(baseline.ok, true, baseline.reason);
+  assert.equal(typeof baseline.breakthroughTick, 'number');
+  const mid = Auto.play(0, 'step', { until: baseline.breakthroughTick });
+  assert.equal(mid.ok, true, mid.reason);
+  assert.equal(mid.clock, baseline.breakthroughTick);
 });
 
 test('rt-auto-life-v1：20 seed × 2700 tick，三種政策、分塊、存讀與一次固定介入', { timeout: 600000 }, () => {

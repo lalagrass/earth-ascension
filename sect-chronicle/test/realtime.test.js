@@ -668,6 +668,45 @@ test('滿修為轉休養、用丹失敗不抽樣、承諾中的突破選項跨�
   assert.equal(hero(started).breakthroughs, 1);
 });
 
+test('支援者先到道館時等待，不把還在路上的突破者改成開工', () => {
+  let w = quiet(world('rt-partner-wait'));
+  w = must(w, 'setPolicy', {
+    policy: Object.assign({}, Realtime.DEFAULT_POLICY, { breakthrough: 'off' }),
+  });
+  hero(w).cultivation = 100;
+  hero(w).pos = { r: 0, c: 0 };
+  const master = w.disciples[0];
+  master.cultivation = 100;
+  master.pos = { r: 2, c: 1 };
+  assert.equal(Realtime.validateWorld(w).ok, true, Realtime.validateWorld(w).reason);
+  w = order(w, 'breakthrough', {}, 1, { usePill: false, supporterId: MID });
+  let support = null;
+  let breaker = null;
+  for (let i = 0; i < 40 && !(support && support.pathIndex === support.path.length); i += 1) {
+    w = advance(w, 1).state;
+    support = w.activities.find((a) => a.kind === 'support');
+    breaker = w.activities.find((a) => a.kind === 'breakthrough');
+  }
+  assert.equal(Realtime.validateWorld(w).ok, true, Realtime.validateWorld(w).reason);
+  assert.ok(support.path.length < breaker.path.length);
+  assert.equal(support.partnerWait, true);
+  assert.equal(support.status, 'traveling');
+  assert.equal(support.workTicks, 0);
+  assert.equal(breaker.status, 'traveling');
+  assert.ok(breaker.pathIndex < breaker.path.length);
+  assert.equal(breaker.workTicks, 0);
+  for (let i = 0; i < 80 && breaker.status !== 'working'; i += 1) {
+    w = advance(w, 1).state;
+    support = w.activities.find((a) => a.id === support.id);
+    breaker = w.activities.find((a) => a.id === breaker.id);
+  }
+  assert.equal(breaker.status, 'working');
+  assert.equal(support.status, 'working');
+  assert.equal(breaker.workTicks, 0);
+  assert.equal(support.workTicks, 0);
+  assert.equal(w.clock.tick, breaker.startTick);
+});
+
 test('支援者若已在活動中，突破落敗並休養，不會雙重開工', () => {
   const w = world('rt-busy');
   hero(w).cultivation = 100;

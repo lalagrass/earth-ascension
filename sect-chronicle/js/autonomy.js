@@ -138,89 +138,137 @@
     let pillsFree = snapshot.pillsFree;
     let breakthroughOpen = !!snapshot.openBreakthrough;
     const policy = snapshot.policy;
-    const buildJob = { taken: false, facilityType: null, tileId: null, units: 0 };
-    const brewJob = { taken: false };
-    const aidJob = { taken: false, optionId: null };
-    let gatherMaterial = 0;
-    let gatherHerb = 0;
+    const buildClaimed = {};
+    let brewClaimed = false;
+    let aidClaimed = false;
+    let pledgedMat = 0;
+    let pledgedHerb = 0;
+    let heldMat = 0;
     let herbBlocked = false;
     let alchemyReady = !!snapshot.facilitiesDone.alchemyRoom;
-
-    for (const goal of snapshot.goals) {
-      if (goal.kind === 'buildFacility') {
-        const spec = Rules.FACILITIES[goal.facilityType];
-        const open = snapshot.buildOpen[goal.facilityType] || 0;
-        if (open >= spec.maxCount || buildJob.facilityType) continue;
-        const cost = spec.cost.spiritMaterial || 0;
-        const tileId = bestBuildTile(tiles, goal.facilityType);
-        if (!tileId) continue;
-        if (material >= cost) {
-          buildJob.facilityType = goal.facilityType;
-          buildJob.tileId = tileId;
-          buildJob.units = spec.durationSlots;
-          material -= cost;
-          if (goal.facilityType === 'alchemyRoom') alchemyReady = false;
-        } else {
-          gatherMaterial += cost - material;
-          material = 0;
-        }
-      } else if (goal.kind === 'stockPills') {
-        if (pills >= goal.count) continue;
-        const recipe = Rules.RECIPES[PILL];
-        const needMat = recipe.cost.spiritMaterial || 0;
-        const needHerb = recipe.cost.spiritHerb || 0;
-        const seatFree = !snapshot.brewInFlight && (seats['work:alchemyRoom'] || 0) > 0;
-        if (!snapshot.facilitiesDone.alchemyRoom) {
-          // 丹房未完工時，缺的是前面的建造，不把靈草未解鎖當成這個人無路可走。
-        } else if (alchemyReady && seatFree && material >= needMat && herb >= needHerb && !brewJob.pending) {
-          brewJob.pending = true;
-          material -= needMat;
-          herb -= needHerb;
-          pills += Rules.BREW_MIN_OUTPUT;
-        } else if (seatFree || !snapshot.brewInFlight) {
-          if (herb < needHerb) {
-            if (herbUnlocked) {
-              gatherHerb += needHerb - herb;
-              herb = 0;
-            } else herbBlocked = true;
-          }
-          if (material < needMat) {
-            gatherMaterial += needMat - material;
-            material = 0;
-          }
-        } else if (material >= needMat && (herb >= needHerb || !herbUnlocked)) {
-          // 進行中的爐已占丹房。材料夠下一爐就先做後面的目標；不夠才補採。
-        } else {
-          if (herb < needHerb) {
-            if (herbUnlocked) {
-              gatherHerb += needHerb - herb;
-              herb = 0;
-            } else herbBlocked = true;
-          }
-          if (material < needMat) {
-            gatherMaterial += needMat - material;
-            material = 0;
-          }
-        }
-      } else if (goal.kind === 'aid') {
-        if (snapshot.aidDone || snapshot.aidInFlight || aidJob.optionId) continue;
-        if (!Rules.aidAvailableEq(slotEq)) continue;
-        if (policy.aid === 'auto-free') aidJob.optionId = 'free';
-        else if (policy.aid === 'auto-supplied') {
-          const cost = Rules.AID_OPTIONS.supplied.cost.spiritMaterial || 0;
-          if (material >= cost) {
-            aidJob.optionId = 'supplied';
-            material -= cost;
-          } else {
-            gatherMaterial += cost - material;
-            material = 0;
-          }
-        }
-      }
-    }
-
     const taken = new Set();
     const assignments = [];
+
+    function freeMat() {
+      return material - heldMat;
+    }
+    function takeSeat(key) {
+      if ((seats[key] || 0) < 1) return false;
+      seats[key] -= 1;
+      return true;
+    }
+    function gather(disciple, resource) {
+      const terrain = resource === 'spiritMaterial' ? 'material' : 'herb';
+      const tileId = nearestTile(disciple.pos, tiles, terrain, seats);
+      const amount = tileId ? unitYield(disciple, resource, slotEq) : 0;
+      if (!tileId || amount <= 0) return null;
+      seats[`gather:${tileId}`] -= 1;
+      const kind = resource === 'spiritMaterial' ? 'gather-material' : 'gather-herb';
+      return { made: request(disciple.id, kind, { tileId }, 1), amount };
+    }
+    // 依目標順序找這個人現在做得到的第一件事。前面的目標被進行中的工作覆蓋、或被靈草鎖住時，才往後看。
+    function serve(disciple) {
+      for (const goal of snapshot.goals) {
+        if (goal.kind === 'buildFacility') {
+          const spec = Rules.FACILITIES[goal.facilityType];
+          if (!spec) continue;
+          const open = (snapshot.buildOpen[goal.facilityType] || 0) + (buildClaimed[goal.facilityType] || 0);
+          if (open >= spec.maxCount) continue;
+          const cost = spec.cost.spiritMaterial || 0;
+          const tileId = bestBuildTile(tiles, goal.facilityType);
+          if (!tileId) continue;
+          if (freeMat() >= cost && takeSeat(`build:${tileId}`)) {
+            material -= cost;
+            buildClaimed[goal.facilityType] = (buildClaimed[goal.facilityType] || 0) + 1;
+            if (goal.facilityType === 'alchemyRoom') alchemyReady = false;
+            return request(disciple.id, 'build', { facilityType: goal.facilityType, tileId }, spec.durationSlots);
+          }
+          if (material + pledgedMat < cost) {
+            heldMat = Math.max(heldMat, Math.min(cost, material));
+            const got = gather(disciple, 'spiritMaterial');
+            if (got) {
+              pledgedMat += got.amount;
+              return got.made;
+            }
+          }
+          continue;
+        }
+        if (goal.kind === 'stockPills') {
+          if (pills >= goal.count) continue;
+          if (!snapshot.facilitiesDone.alchemyRoom || !alchemyReady) continue;
+          const recipe = Rules.RECIPES[PILL];
+          const needMat = recipe.cost.spiritMaterial || 0;
+          const needHerb = recipe.cost.spiritHerb || 0;
+          const flying = snapshot.brewInFlight || brewClaimed;
+          const matCovered = freeMat() + pledgedMat >= needMat;
+          const herbCovered = herb + pledgedHerb >= needHerb;
+          if (flying && pills + Rules.BREW_MIN_OUTPUT >= goal.count && matCovered && (herbCovered || !herbUnlocked)) continue;
+          if (!flying && (seats['work:alchemyRoom'] || 0) >= 1 && freeMat() >= needMat && herb >= needHerb) {
+            takeSeat('work:alchemyRoom');
+            material -= needMat;
+            herb -= needHerb;
+            pills += Rules.BREW_MIN_OUTPUT;
+            brewClaimed = true;
+            return request(disciple.id, 'brew', { recipeId: PILL }, recipe.durationSlots);
+          }
+          if (herb < needHerb && !herbUnlocked) {
+            herbBlocked = true;
+            continue;
+          }
+          if (!herbCovered) {
+            const got = gather(disciple, 'spiritHerb');
+            if (got) {
+              pledgedHerb += got.amount;
+              if (heldMat < needMat) heldMat = needMat;
+              return got.made;
+            }
+          }
+          if (!matCovered) {
+            const got = gather(disciple, 'spiritMaterial');
+            if (got) {
+              pledgedMat += got.amount;
+              return got.made;
+            }
+          }
+          continue;
+        }
+        if (goal.kind === 'aid') {
+          if (snapshot.aidDone || snapshot.aidInFlight || aidClaimed) continue;
+          if (!Rules.aidAvailableEq(slotEq)) continue;
+          if (policy.aid !== 'auto-free' && policy.aid !== 'auto-supplied') continue;
+          const cost = policy.aid === 'auto-supplied' ? (Rules.AID_OPTIONS.supplied.cost.spiritMaterial || 0) : 0;
+          if (policy.aid === 'auto-supplied' && freeMat() < cost) {
+            if (freeMat() + pledgedMat < cost) {
+              const got = gather(disciple, 'spiritMaterial');
+              if (got) {
+                pledgedMat += got.amount;
+                return got.made;
+              }
+            }
+            continue;
+          }
+          if (!takeSeat('aid:village')) continue;
+          if (cost > 0) material -= cost;
+          aidClaimed = true;
+          return request(disciple.id, 'aid', { optionId: policy.aid === 'auto-free' ? 'free' : 'supplied' }, 1);
+        }
+        if ((goal.kind === 'cultivateTo100' || goal.kind === 'breakthrough') && goalFor(goal, disciple.id)) {
+          if (!breakthroughOpen && goal.kind === 'breakthrough' && policy.breakthrough === 'auto' && canBreak(disciple)) {
+            const usePill = policy.breakthroughPill === 'use' && pillsFree >= 1;
+            const supporterId = policy.breakthroughSupport === 'auto'
+              ? pickSupporter(snapshot.disciples, disciple.id, taken)
+              : null;
+            if (usePill) pillsFree -= 1;
+            if (supporterId) taken.add(supporterId);
+            breakthroughOpen = true;
+            return request(disciple.id, 'breakthrough', {}, 1, { usePill, supporterId });
+          }
+          if (goal.kind === 'cultivateTo100' && canCultivate(disciple)) return request(disciple.id, 'cultivate', {}, 1);
+        }
+      }
+      return null;
+    }
+
     const candidates = snapshot.disciples.filter((d) => d.decide).slice().sort(byId);
     for (const disciple of candidates) {
       if (taken.has(disciple.id)) continue;
@@ -229,55 +277,8 @@
         taken.add(disciple.id);
         continue;
       }
-      let made = null;
-      if (buildJob.facilityType && !buildJob.taken) {
-        const key = `build:${buildJob.tileId}`;
-        if ((seats[key] || 0) >= 1) {
-          made = request(disciple.id, 'build', { facilityType: buildJob.facilityType, tileId: buildJob.tileId }, buildJob.units);
-          buildJob.taken = true;
-          seats[key] -= 1;
-        }
-      } else if (brewJob.pending && !brewJob.taken && (seats['work:alchemyRoom'] || 0) >= 1) {
-        made = request(disciple.id, 'brew', { recipeId: PILL }, Rules.RECIPES[PILL].durationSlots);
-        brewJob.taken = true;
-        seats['work:alchemyRoom'] -= 1;
-      } else if (aidJob.optionId && !aidJob.taken && (seats['aid:village'] || 0) >= 1) {
-        made = request(disciple.id, 'aid', { optionId: aidJob.optionId }, 1);
-        aidJob.taken = true;
-        seats['aid:village'] -= 1;
-      } else if (gatherMaterial > 0) {
-        const tileId = nearestTile(disciple.pos, tiles, 'material', seats);
-        const amount = tileId ? unitYield(disciple, 'spiritMaterial', slotEq) : 0;
-        if (tileId && amount > 0) {
-          made = request(disciple.id, 'gather-material', { tileId }, 1);
-          seats[`gather:${tileId}`] -= 1;
-          gatherMaterial -= amount;
-        }
-      } else if (gatherHerb > 0 && herbUnlocked) {
-        const tileId = nearestTile(disciple.pos, tiles, 'herb', seats);
-        const amount = tileId ? unitYield(disciple, 'spiritHerb', slotEq) : 0;
-        if (tileId && amount > 0) {
-          made = request(disciple.id, 'gather-herb', { tileId }, 1);
-          seats[`gather:${tileId}`] -= 1;
-          gatherHerb -= amount;
-        }
-      }
-      if (!made && !breakthroughOpen) {
-        const wantsBreak = snapshot.goals.some((g) => g.kind === 'breakthrough' && goalFor(g, disciple.id));
-        if (wantsBreak && policy.breakthrough === 'auto' && canBreak(disciple)) {
-          const usePill = policy.breakthroughPill === 'use' && pillsFree >= 1;
-          const supporterId = policy.breakthroughSupport === 'auto'
-            ? pickSupporter(snapshot.disciples, disciple.id, taken)
-            : null;
-          made = request(disciple.id, 'breakthrough', {}, 1, { usePill, supporterId });
-          if (usePill) pillsFree -= 1;
-          if (supporterId) taken.add(supporterId);
-          breakthroughOpen = true;
-        }
-      }
-      if (!made && canCultivate(disciple)) {
-        made = request(disciple.id, 'cultivate', {}, 1);
-      }
+      let made = serve(disciple);
+      if (!made && canCultivate(disciple)) made = request(disciple.id, 'cultivate', {}, 1);
       if (made) {
         assignments.push(made);
         taken.add(disciple.id);
@@ -285,7 +286,7 @@
         assignments.push({
           discipleId: disciple.id,
           type: 'wait',
-          reason: waitReason(disciple, { tick, herbBlocked: herbBlocked && (gatherHerb > 0 || herbBlocked) }),
+          reason: waitReason(disciple, { tick, herbBlocked }),
         });
         taken.add(disciple.id);
       }

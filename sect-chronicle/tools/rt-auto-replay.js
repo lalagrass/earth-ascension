@@ -131,8 +131,9 @@ function checkpointProblem(world) {
   }
   for (const disciple of world.disciples) {
     if (disciple.joinTick > world.clock.tick) return `${disciple.id} 的 joinTick 晚於現在`;
-    const busy = disciple.activityId !== null || disciple.autonomy.wait !== null || disciple.manualOrder !== null;
-    if (disciple.joinTick <= world.clock.tick && !busy) return `${disciple.id} 沒有活動、等待或手動鎖`;
+    const justFinished = world.activities.some((a) => a.discipleId === disciple.id && a.completedTick === world.clock.tick);
+    const busy = disciple.activityId !== null || disciple.autonomy.wait !== null || disciple.manualOrder !== null || justFinished;
+    if (disciple.joinTick <= world.clock.tick && !busy) return `${disciple.id} 沒有活動、等待、手動鎖，也不是剛完成`;
     if (disciple.activityId !== null && disciple.autonomy.wait !== null) return `${disciple.id} 同時有活動與等待`;
   }
   const text = Realtime.serializeState(world);
@@ -147,6 +148,7 @@ function play(index, mode, opts = {}) {
   const commands = opts.commands || [];
   const stops = new Set(CHECKPOINTS);
   stops.add(HORIZON);
+  if (opts.until != null) stops.add(opts.until);
   for (const cmd of commands) stops.add(cmd.tick);
   const plan = [...stops].sort((a, b) => a - b);
   let world = opts.world || null;
@@ -242,8 +244,8 @@ function resumeChecks(index, full) {
   if (full.breakthroughTick !== null) ticks.push(full.breakthroughTick);
   for (const tick of ticks) {
     const mid = tick === HORIZON ? full : play(index, 'step', { until: tick });
-    if (!mid.ok) {
-      problems.push({ seed: seedName(index), tick, reason: mid.reason });
+    if (!mid.ok || mid.clock !== tick) {
+      problems.push({ seed: seedName(index), tick, reason: mid.ok ? `停在 ${mid.clock}，不是 ${tick}` : mid.reason });
       continue;
     }
     let text;

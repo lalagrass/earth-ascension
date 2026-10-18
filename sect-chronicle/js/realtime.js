@@ -1022,13 +1022,8 @@
     events.push(...plan.events);
     collectAutonomy(world, plan.requests, events, decided, worldSignature(world));
     resolveBatch(world, events, plan.requests);
-    let stop = null;
-    const progressed = new Set();
-    stop = progressMovers(world, events, t, null, progressed) || stop;
-    const late = [];
-    collectAutonomy(world, late, events, decided, worldSignature(world), true);
-    resolveBatch(world, events, late);
-    stop = progressMovers(world, events, t, progressed, null) || stop;
+    // 本 tick 完成的產出與空出來的人，留到下一 tick 的階段 2 才決策（RT00 §1.3）。
+    const stop = progressMovers(world, events, t, null, null) || null;
     if (t % Rules.TICKS_PER_DAY === Rules.TICKS_PER_DAY - 1) {
       events.push(pushEvent(world, {
         type: 'dayReport', day: Math.floor(t / Rules.TICKS_PER_DAY) + 1,
@@ -1474,6 +1469,15 @@
         const other = partnerActivity(world, act);
         if (other && other.partnerWait) beginWork(world, act, t + 1);
         return { events };
+      }
+      // 支援者先到道館時只標記等待，不把還在路上的突破者改成開工（§2.3）。
+      if (act.kind === 'support') {
+        const other = partnerActivity(world, act);
+        if (other && other.pathIndex < other.path.length) {
+          act.partnerWait = true;
+          act.arriveTick = t + 1;
+          return { events };
+        }
       }
       beginWork(world, act, t + 1);
       return { events };
@@ -2209,8 +2213,11 @@
 
   function agreeBlock(world, d) {
     if (!Progression.eligibility(d).ok) return 'not_eligible';
-    if (d.manualOrder) return 'manual_lock';
-    if (world.activities.some((a) => a.kind === 'breakthrough' && (a.status === 'traveling' || a.status === 'working'))) return 'breakthrough_pending';
+    // 正在做的承諾工作不是資格失效。同意改成 pending，等該活動結束再用凍結欄位（§4.5）。
+    if (d.manualOrder && d.manualOrder.kind === 'breakthrough') return 'breakthrough_pending';
+    if (world.activities.some((a) => a.kind === 'breakthrough' && (a.status === 'traveling' || a.status === 'working'))) {
+      return 'breakthrough_pending';
+    }
     return null;
   }
 
@@ -2294,12 +2301,11 @@
     };
   }
 
-  function collectAutonomy(world, requests, events, decided, signature, endFill) {
+  function collectAutonomy(world, requests, events, decided, signature) {
     const decideIds = new Set();
     for (const d of world.disciples) {
       if (d.joinTick > world.clock.tick || d.activityId !== null || d.manualOrder !== null || decided.has(d.id)) continue;
-      if (endFill && d.autonomy.wait !== null) continue;
-      if (!endFill && d.autonomy.wait && world.clock.tick < d.autonomy.wait.recheckTick && d.autonomy.wait.signature === signature) continue;
+      if (d.autonomy.wait && world.clock.tick < d.autonomy.wait.recheckTick && d.autonomy.wait.signature === signature) continue;
       decideIds.add(d.id);
     }
     if (decideIds.size === 0) return;
