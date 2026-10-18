@@ -18,6 +18,10 @@
 6. [Agent 接手入口](AGENTS.md)：如何認領、第一個工作包、交付格式。
 7. [雙 agent 與 worktree 接手計畫](docs/PARALLEL_HANDOFF.md)：分工、啟動前置、可直接貼上的指令。
 
+## 提案與溝通
+
+[Agent 提案流程與 issue 格式](docs/AGENT_PROPOSALS.md)：Issue 留正式紀錄、聊天討論決策、PR 交付。非阻擋建議不暫停目前已認領工作；待定產品選項不先實作。
+
 ## 未來構想（不納入目前切片）
 
 [生活、輕功與領地防衛 backlog](docs/FUTURE_BACKLOG.md) 對應 [#75](https://github.com/lalagrass/earth-ascension/issues/75)，僅收錄供未來再評估或其他專案使用。未排程、未批准實作，不增加 14 天切片任務或依賴。
