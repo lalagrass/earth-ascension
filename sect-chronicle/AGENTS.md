@@ -18,6 +18,10 @@
 
 D6「道館成為門派」已由專案擁有人批准，見 [OPENING_REVISION.md](docs/OPENING_REVISION.md)。按設計 0.2 開發，不再沿用四人開局或開局掌門。先核對本地文件差異、#71 與既有 PR 進度，補缺而非重寫。SG-02A／04A 已在批准的 14 天切片範圍內；28 天仍未授權。
 
+## 未來構想不是實作指派
+
+[FUTURE_BACKLOG.md](docs/FUTURE_BACKLOG.md)／[#75](https://github.com/lalagrass/earth-ascension/issues/75) 僅供未來評估，BL 項目未排程、未批准實作。不要在 SG-01～12（含 02A／04A）加入生活能力、移動收益、輕功、靈材科技或領地巡防，也不要預留其 schema／API。現行 D6 靈氣復甦與獸患契約照常開發；此 backlog 不新增依賴、不阻擋切片。SG-13 真人試玩後仍須專案擁有人另行批准個別項目。
+
 ## 第一個接手工作包
 
 1. 讀 README 與 [雙 agent 接手計畫](docs/PARALLEL_HANDOFF.md)，核對已批准的 14 天範圍。
