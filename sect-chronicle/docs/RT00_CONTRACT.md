@@ -1,16 +1,16 @@
 # SG-RT-00：可暫停即時自主生活契約（集中提案）
 
-狀態：**提案／待遊戲PO整理、擁有人定案；尚未實作、未驗收**。追蹤[#99](https://github.com/lalagrass/earth-ascension/issues/99)與總單[#93](https://github.com/lalagrass/earth-ascension/issues/93)，上位文件是[D8：REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)。
+狀態：**提案／待遊戲 PO 整理、擁有人定案；已按 PR #101 審查修訂；尚未實作、未驗收。候選與作者建議都不是批准**。追蹤[#99](https://github.com/lalagrass/earth-ascension/issues/99)與總單[#93](https://github.com/lalagrass/earth-ascension/issues/93)，上位文件是[D8：REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)。
 
-- 實際主筆：**Grok Bot (與 Codex 共用同一 GitHub 帳號，非獨立審核)**，依使用者 Yuying Chen 對 #93 的明確指派與其後確認的 RT 新順序。
-- Base：dev `c46003421c9ed35a0a2666cc64cd4a9fa47d2153`（#100 合入後，post-merge CI 39120861204 成功）。本包只改 `sect-chronicle/docs/`，不改 runtime、fixture、CI。
+- 實際主筆：**Grok CLI，接續 Grok Bot**（與 Codex 共用同一 GitHub 帳號，非獨立審核）。初稿由 Grok Bot 依使用者 Yuying Chen 對 #93 的指派交付；本輪只修 [PR #101](https://github.com/lalagrass/earth-ascension/pull/101) 審查的四項契約缺口與決策責任，不改 runtime、fixture、CI。
+- Base：dev `c46003421c9ed35a0a2666cc64cd4a9fa47d2153`（#100 合入後，post-merge CI 39120861204 成功）。本包只改 `sect-chronicle/docs/`。
 - 讀法：**【現值】**＝已在程式／規則文件，附來源；**【候選】**＝本提案列出的選項；**【建議】**＝作者推薦，不是決定；**【待決】D-RT-nn**＝需遊戲PO整理、擁有人（或指定的技術複核）定案才能凍結。標【待決】的數字**不得**寫進程式當常數。
 - 不重問：即時、自主、暫停可改主角工作／目標、戰鬥延後、不接付費模型（D8 已批准）。不做：戰鬥、巡山、輕功、尋路／碰撞／負重、生活屬性成長、需求條、第二境、28 天內容、新生活能力。
 - 沒有世界實驗：下方所有數字不是引擎輸出。時間線與預算是「以 `rules.js` 純函式核對單位收益的手排推演」，只證明契約可以被明確執行，不證明平衡、樂趣或 RT 引擎正確。
 
 ## 0. 總覽與待決清單
 
-六項契約（§1–§6）各自可獨立審查；§7 是兩條完整時間線；§8 是與歷史／D6／D7 的關係；§9 是 RT-01 開工前要凍結的清單與未驗證項。
+六項契約（§1–§6）各自可獨立審查；§7 是兩條完整時間線，加上突破詢問的兩條短時間線；§8 是與歷史／D6／D7 的關係；§9 是分階段凍結清單與未驗證項。候選在擁有人定案前不得寫進程式。
 
 | 編號 | 要定案的事 | 候選 | 作者建議 | 影響 |
 |---|---|---|---|---|
@@ -23,7 +23,7 @@
 | D-RT-07 | 手動覆寫打斷「可打斷工作」時未完成單位 | **捨棄（不扣不給）**／保留進度 | 捨棄 | 覆寫成本、去重 |
 | D-RT-08 | 自主的疲勞門檻 | 體力<**60**／體力<30 | **<60**（維持 100% 效率區） | 工時比、恢復節奏 |
 | D-RT-09 | 預設自主目標清單與優先序、需求估算 | 見 §3.3 | §3.3 預設表 | 無人介入的實際發展 |
-| D-RT-10 | 目標耗盡後的日常維持 | **A：只修行至 100／休養／等待新目標（無新常數）**／B：採集到庫存上限（新數值） | A | 跨第 14 天行為、庫存增長 |
+| D-RT-10 | 目標耗盡後的日常維持 | **A：未提升者修行到 100；要恢復就走正式休養，穩定後才進入無效果等待（無新常數）**／B：採集到庫存上限（新數值） | A | 跨第 14 天行為、庫存增長 |
 | D-RT-11 | 初始政策預設（援村、收徒、突破／丹／支援） | 見 §4.1 | §4.1「安穩發展」 | 授權邊界 |
 | D-RT-12 | `ask` 政策的待選事件是否凍結世界 | 凍結等點擊（現行）／**不凍結，逾期自動選「稍後」** | 不凍結，逾期 1 日（180 tick） | 無人介入不被卡住 |
 | D-RT-13 | 舊 slot 存檔相容 | **A：舊檔原樣讀取、續玩於舊 slot 模式；RT 是新 scenario／schema**／B：拒絕（同 D7）／C：轉換匯入 | A（C 只列為日後可選匯入，不是本系列範圍） | schema／rule 版本、驗證碼、舊 golden |
@@ -31,9 +31,20 @@
 | D-RT-15 | 播放：1× 每秒幾 tick；背景頁籤 | 2／**4**／6；**自動暫停**／限額補算 | 4 tick/秒；背景自動暫停；讀檔先暫停 | UI／試玩時長 |
 | D-RT-16 | 批次推進的停止條件 | 見 §1.5 | §1.5 | 玩家可介入點、回放一致 |
 
-可由技術複核直接記錄（不需產品決策、已寫入契約）：tick 內處理順序（§1.3）、同 tick 仲裁排序、突破抽樣時點與順序（§2.6）、設施完工後可用時點（完工世界 tick 起）、產出體力快照取工作開工時（§2.4）。
+### 決策責任與凍結時點
 
-**需要產品定案的新語義**只有 D-RT-01、02、04、08、10、11、12、13、14（其餘是技術選擇，作者推薦，PO 複核即可）。
+下表的作者建議只供遊戲 PO 整理，不是批准。請合成四包交給擁有人，不要拆成 16 題。已批准的即時、自主、暫停改主角工作／目標、戰鬥延後，以及 D6／D7（含 [D7-C 明示轉休養](DECISIONS_AND_SOURCES.md#d7sg-05-修為與突破處置已批准2026-10-18)）不在這四包裡重問。
+
+| 包 | 包含 | 為何要擁有人看 | 不晚於 |
+|---|---|---|---|
+| 時間與試玩節奏 | D-RT-01、02、03、14、15 | 一段幾個 tick、走一格多快、道館與村口放哪、觀察窗多長、離開頁面或讀檔後世界進不進，會改玩家感覺到的一天與趕路 | 01、02、03、14 在 RT-01 前。15 在 RT-04 前；RT-01 不得把「每秒幾個 tick」寫進世界 |
+| 工作誠信 | D-RT-04、06、07 | 移動耗不耗體、何時扣料與退款、打斷進行中的單位要不要留進度，會改玩家能否白跑、退料或中斷刷收益 | RT-01 前 |
+| 無人介入的授權邊界 | D-RT-08、09、10、11、12 | 多累才休養、預設先做哪些目標、目標做完之後做什麼、援村／收徒／突破的許可、詢問會不會把世界停住 | RT-02 前。若 D-RT-12 改選「凍結等點擊」，RT-01 的 `needsDecision` 會出現，這包就要提前到 RT-01 前定案。建議路徑是不凍結 |
+| 舊檔 | D-RT-13 | 舊 schema4／rule3 是原樣續玩、拒絕，還是轉換匯入 | RT-01 前 |
+
+D-RT-05（單位完成時一次套用舊整數公式）與 D-RT-16（批次停止條件）不單列成新的擁有人題。05 是為了不發明新取整，沿用已批准公式；16 的 `breakthroughResolved` 沿 SG-05 R1，`needsDecision` 只在授權邊界包選了凍結時才存在。兩項仍寫在契約裡，遊戲 PO 複核時可一併看。若要把 05 改成逐 tick 比例，才升級為產品題。
+
+可由技術複核記錄、不請擁有人重選：tick 內處理順序（§1.3）、同 tick 仲裁排序、突破抽樣時點與順序（§2.6）、設施自完工後下一個決策點起可用（§2.3）、體力／心境快照取該單位開工時（§2.2）。
 
 ## 1. 世界時間
 
@@ -42,7 +53,7 @@
 - 世界時鐘 `clock.tick`：非負整數，＝「已完整處理的 tick 數」。`tick = t` 的世界代表時間 `t` 之前的 tick 都已提交。世界不存牆鐘、播放倍率、暫停旗標或畫面幀數。
 - 常數（**待決** D-RT-01，下表以建議值 60 為例）：`TICKS_PER_SLOT = 60`、`SLOTS_PER_DAY = 3【現值】`（GAME_DESIGN §3）、`TICKS_PER_DAY = 180`。
 - 對應：`slotEq(t) = floor(t / 60)`（舊 slotIndex 的等價物，只用來查舊規則表）；`day(t) = floor(t / 180) + 1`；`part(t) = slotEq(t) mod 3`（0 早、1 午、2 晚）。介面只顯示「第 N 天 早／午／晚」與段內進度，**不發明時鐘時間**；tick 不是秒。
-- 為何 60：可被 2、3、4、5、6、10、12、15、20、30 整除，移動速度與單位工作量都落在整數；一日 180、14 日 2520、15 日 2700 tick，20 seed 的完整視窗約 54,000 tick 步，純 JS 可行。12 太粗（走一格 1–2 tick 難以區分遠近）；480（一段＝8 小時、一分鐘一 tick）可行，但每個 seed 的 15 日視窗要多 8 倍的 tick 步（約 21.6 萬步），對 RT-01～05 的測試成本沒有對應收益。
+- 為何 60：可被 2、3、4、5、6、10、12、15、20、30 整除，移動速度與單位工作量都落在整數；一日 180、14 日 2520、15 日 2700 tick，20 seed 的完整視窗約 54,000 tick 步，純 JS 可行。12 太粗（走一格 1–2 tick 難以區分遠近）；480（一段＝8 小時、一分鐘一 tick）可行，但每個 seed 的 15 日視窗是 15×3×480＝21,600 tick 步（建議值 2,700 步的 8 倍），對 RT-01～05 的測試成本沒有對應收益。
 
 ### 1.2 時間驅動的舊內容換算（【現值】來源 rules.js／story-data.js）
 
@@ -62,7 +73,7 @@ RT 需要的規則改動（記入 ruleVersion，見 §5）：`Rules.phaseAt(slot
 
 `advanceTicks(world, n)` 逐 tick 執行 `step`；`step` 處理 `t = world.clock.tick`，完成後 `tick = t + 1`、`revision + 1`（revision 的完整規則見 §5.3）。每個 tick 的順序固定：
 
-1. **到期事件**：到達 tick `t` 的階段切換、故事事件（求援、邀請）→ 依 §4 的政策自動處理或進入待選；`ask` 逾期事件在此依政策預設解決。
+1. **到期事件**：到達 tick `t` 的階段切換、故事事件（求援、邀請、§4.5 突破詢問）→ 依 §4 的政策自動處理或進入待選；`ask` 逾期在此依政策預設解決。建議路徑不凍結世界，也不進入 `awaitingChoice`。
 2. **預約仲裁**：以「tick `t` 開始時的世界快照」（含前一 tick 已提交的產出）收集請求——手動命令（優先類 0）→ 政策動作 → 自主決策（優先類 1，只對閒置、無手動鎖的角色）——整批以 SG-04 的 `arbitrate()` 語意（參與者＋工作位＋成本整批成敗）判定；同類內依「已等待 tick 數 desc、請求 id asc」。拒絕者記原因與 `waited`，**同 tick 不再重試**。
 3. **推進**：所有已預約的活動各推進 1 tick（移動走完一步、工作量 +1）；工作單位在本 tick 末端完成者，其效果在本 tick 提交，**下一 tick 起才可被他人／自己的決策看到**。
 4. **提交與驗證**：`clock.tick = t + 1`；事件以 `tick = t` 記錄；一致性驗證（§5.4）。
@@ -123,7 +134,9 @@ RT 世界以統一的 `activities[]` 取代 slot 世界的「課表意圖＋jobs
 - **工作單位（unit）**＝`TICKS_PER_SLOT` 個工作 tick＝舊的「一格」。每種活動的總工量＝舊 `durationSlots × 60`：採集／修行／休養／調心／援村／突破 1 單位；聚靈台、居所 2；丹房 3（`FACILITIES.*.durationSlots`）；凝氣丹 2（`RECIPES.*.durationSlots`）；突破 1（`BREAKTHROUGH_DURATION_SLOTS`）。
 - 採集／修行／休養可以是「重複 n 單位」的單一活動（n≥1，中途可被打斷，見 §2.5），避免每單位重走路；建造、煉丹、援村、突破的 n 固定。
 - **效果在單位完成時一次套用**（【待決】D-RT-05）：用該單位**開工 tick 的快照**（體力／心境／傷勢、`slotEq(開工 tick)` 的階段、設施倍率）呼叫與 slot 引擎同一組純函式（`gatherYield`、`cultivationGain`＋`capCultivationGain`、`applyRest`、`applyActionCost`…），體力／心境成本同時扣除，沒有逐 tick 比例、沒有新取整。多單位的 `brew` 產出用**第一單位開工快照**一次結算於完成時（RULES §7 把「多格工作取哪一格體力」留給引擎；本契約定案為第一單位，並使預估在開工時可算）。
-- 修行：在聚靈台完工且取得其 1 個工作位時，於聚靈台格工作並套放置倍率；否則在道館做「野外版」（倍率 10000），沿 `assignSeats` 語意。休養：居所完工且取得 2 個休養位之一時在居所格，否則在道館野外休養（免費、永遠可用）。滿 100 修為或已成功突破者的修行意圖不排（D7-C）；自主與手動命令都以 `cultivationBlock` 拒絕並說明。
+- 修行：在聚靈台完工且取得其 1 個工作位時，於聚靈台格工作並套放置倍率；否則在道館做「野外版」（倍率 10000），沿 `assignSeats` 語意。休養：居所完工且取得 2 個休養位之一時在居所格，否則在道館野外休養（免費、永遠可用）。
+- **D7-C 明示轉休養**（已批准，見 [D7](DECISIONS_AND_SOURCES.md#d7sg-05-修為與突破處置已批准2026-10-18)，不是新候選）：請求 tick 的快照上，修為已滿 100 或已成功提升時，**已經形成的修行意圖**在配位前改為正式 `rest` 活動。`Progression.cultivationBlock` 只提供原因：已成功提升優先，回 `breakthrough_done`；否則滿 100 回 `cultivation_full`。活動帶 `fallback: { from: 'cultivate', reason }`。有居所空位則走居所休養位與輪候，否則道館野外休養。不占聚靈台、不扣修行的體力／心境、不加修為、不多發一份效果，也不改排突破、採集或支援。這不是拒絕：`orderActivity` 接受該指令，`manualOrder.kind` 仍記 `cultivate`，階段 2 才轉成休養請求，不回 `cultivationBlock` 錯誤。轉換看執行當下快照；其間若突破失敗已掉到 70，就照常修行。
+- **與自主選擇分開**：決策函式可以根本不輸出修行（§3.3：政策 `auto` 時改排突破，`ask` 時不排、改由 §4.5 詢問，`off` 或已無需求則等到恢復條件也不成立才進入等待）。那是「沒有修行意圖」。一旦意圖是修行，且快照已滿或已提升，只能走上一條 fallback。
 
 | 活動 | 地點 | 工作位（沿 SG-04 容量） | 預約的成本 | 單位效果來源 |
 |---|---|---|---|---|
@@ -146,13 +159,13 @@ RT 世界以統一的 `activities[]` 取代 slot 世界的「課表意圖＋jobs
 4. **取消／被覆寫**（`cancelled`）：
    - 尚未開始工作（`traveling`）：**全額退還**預約成本、釋放，沒有任何產出——淨效果為零，不能刷收益。
    - 工作中且為**可打斷**活動（採集／修行／休養／調心）：已完成的單位保留；**進行中的單位進度捨棄、不扣成本、不給產出**（【待決】D-RT-07）。
-   - 工作中且為**承諾型**活動（build、brew、aid、breakthrough/support）：**不可取消或覆寫**（沿 SG-04「已開始不可倒帶」）。手動命令被接受但標記 `pending`，待該活動結束後立即生效；介面顯示「將於 tick X 完成後執行」。
+   - 工作中且為**承諾型**活動（build、brew、aid、breakthrough/support）：**不可取消或覆寫**（沿 SG-04「已開始不可倒帶」）。手動命令被接受但標記 `pending`，保存 §2.5 的完整 payload，待該活動結束後按該 payload 生效，不改讀當時的政策；介面顯示「將於 tick X 完成後執行」。
 5. **完成後**：角色閒置，下一 tick 的階段 2 由手動鎖或自主決策接手；沒有「完成即白站」的空檔 tick（同 tick 末端完成，下一 tick 決策並出發）。
 6. **設施可用時點**：建造完成單位在 tick `t` 提交，`tick = t + 1` 的階段 2 起該設施可被預約（舊制是「完工次格」，等價於下一個決策點）。未完工不可預約（`facility_not_ready`，同 SG-04）。
 
 ### 2.4 互斥與去重（沿原規則，不新增）
 
-- 同一角色同一時刻只有一個活動（含移動、支援）；同一工作位同時不超過容量；材料不會因並行預約變負；同 tick 爭搶依 §1.3 的排序，落敗者不扣費、不抽樣、記 `waited` 並由自主改做明示備案（休養或等待）。
+- 同一角色同一時刻只有一個活動（含移動、支援）；同一工作位同時不超過容量；材料不會因並行預約變負；同 tick 爭搶依 §1.3 的排序，落敗者不扣費、不抽樣、記 `waited`。該 tick 沒有其他活動的角色，改做一次正式 `rest`，`fallback: { from: <原 kind>, reason: <拒絕碼> }`（沿 SG-04 明示休養備案），事件原因寫 `rest:job-denied`。不在 `wait` 裡回復。休養單位結束後的下一次決策才可以再等或再請。
 - 去重：命令 `id` 與 `expectedRevision` 規則同現行（同 id 同內容重送回原結果；不同內容拒絕）；手動請求每次只產生一個活動；活動 id `act-0001…` 依序編號；一次性獎勵（援村、收徒、突破成功）沿既有去重鍵；`done`／`cancelled` 的活動不可再被推進或再發獎。
 - 沒有 slot＋tick 雙重收益：RT 世界沒有 `schedule`、沒有 `slotResolved`，活動是唯一產出來源（驗證拒絕同時帶兩套欄位的世界）。
 
@@ -162,20 +175,33 @@ RT 世界以統一的 `activities[]` 取代 slot 世界的「課表意圖＋jobs
 
 | 命令 | payload | 說明 |
 |---|---|---|
-| `orderActivity` | `{ discipleId, kind, target, units?, supporterId?, usePill? }` | 對**指定角色**下手動指令。`target` 依 kind：`tileId`、`facilityType＋tileId`、`recipeId`、`optionId`。接受時只記錄 `manualOrder`（`pending`），階段 2 才轉請求。成功後該角色進入**手動鎖**（自主不為其決策） |
+| `orderActivity` | 見下方完整形狀 | 對**指定角色**下手動指令。接受時把驗證過的完整 payload 寫入 `manualOrder`（`pending`），階段 2 才轉請求。成功後該角色進入**手動鎖**（自主不為其決策） |
 | `cancelManualOrder` | `{ discipleId }` | 取消手動鎖並讓角色恢復自主（承諾型活動不中斷，待其結束後恢復） |
 | `setGoals` | `{ goals }` | 取代整份目標清單（§3.2）；不打斷進行中的活動 |
 | `setPolicy` | `{ policy }` | 取代政策（§4.1）；對之後的事件／決策生效，不回溯已處理事件 |
 | `chooseEvent`、`acceptCandidate` | 沿現行 | 手動處理待選事件／收徒（政策也走同一驗證） |
 
+`orderActivity` 的 payload 在接受時驗證並凍結。`target` 依 kind：採集 `{ tileId }`；建造 `{ facilityType, tileId }`；煉丹 `{ recipeId }`；援村 `{ optionId: 'free'|'supplied' }`；修行、休養、調心、突破為 `{}`。`units` 省略時為 1；建造／煉丹／援村／突破的單位數固定，傳了不同值就拒絕。
+
+突破另有兩個與 `target` 平級的欄位，缺欄不等於 false／null：
+
+| 欄位 | 手動突破 | 其他 kind |
+|---|---|---|
+| `usePill` | 必須是布林。`true` 表示出發預約時扣 1 枚丹，庫存不足則整批落選、不扣、不抽樣、不改成無丹。`false` 表示不用丹 | 必須缺席。寫了就 `bad_payload` |
+| `supporterId` | 必須是已存在的角色 id，或明確的 `null`（不帶支援者）。有 id 時，預約仍重驗入隊與空閒；不合格就整批落選，不換成別人 | 必須缺席 |
+
+自主或政策產生的突破請求不走這個手動封包，但在決策／同意的那個 tick 就把 `usePill` 與 `supporterId` 寫成同樣的明確值，再放進活動；之後空著的欄位不存在。`setPolicy` 只影響之後新的決策與新的同意，不改已接受的 `manualOrder`、已排隊或進行中的活動。`commandLog` 對接受的命令保存這份完整 payload（含 `false` 與 `null`），不存成會丟掉這兩欄的摘要。被拒絕的命令仍不寫 `commandLog`。
+
+因此：暫停時下達突破、在承諾型工作結束前一直 `pending`、或在 `pending` 期間存讀，恢復後仍按原指令扣丹、綁定原支援者。驗收見 §6.4。
+
 - **主角優先權**：玩家只能下手動指令給**主角**（D8「改主角工作／目標」）；其他角色維持自主，但玩家可 `setGoals` 影響全隊需求。（【建議】先限主角；開放全隊手動屬擴充，需 PO 另行批准。）
 - **生效時點**：暫停期間接受 → 恢復後第一個 `step` 階段 2 生效；執行中接受 → 下一個 `step` 階段 2 生效。承諾型活動則排到其結束。可打斷活動的捨棄規則見 §2.3-4。
-- **手動鎖的結束**：手動活動 `done`、指令失效（資源／工作位／前置不再成立，記 `invalid` 與原因，**不退化成別的活動**）、玩家 `cancelManualOrder`，三者之一。結束的同 tick 末端，下一 tick 階段 2 自主恢復決策，並產生可見事件 `autonomyResumed { discipleId, reason }`。
+- **手動鎖的結束**：手動活動 `done`、指令失效（資源／工作位／前置不再成立，記 `invalid` 與原因，不改做另一種工作）、玩家 `cancelManualOrder`，三者之一。結束的同 tick 末端，下一 tick 階段 2 自主恢復決策，並產生可見事件 `autonomyResumed { discipleId, reason }`。D7-C 不是失效：修行指令仍接受，活動改為休養（§2.2），休養完成後才結束手動鎖。仲裁落選後的那一次休養備案（§2.4）也不是改去做另一項工作。
 - **不被 AI 覆寫、不重送刷進度**：手動鎖期間自主不為該角色發任何命令；自主命令 id 固定格式 `auto-{tick}-{discipleId}-{n}`，同一 `(tick, discipleId)` 至多一個；手動命令被拒絕或 `invalid` 不會自動重試。
 
 ### 2.6 突破（D7 保留）
 
-- 手動或自主以 `orderActivity{kind:'breakthrough', discipleId, usePill, supporterId}` 排：本人須修為 100 且未成功提升（`Progression.eligibility`，同 D7）；至多一個排隊／進行中的突破；支援者須在突破請求 tick 前已入隊（`joinTick ≤ 請求 tick`，沿 SG-05 R2）。
+- 手動、同意詢問或自主排突破時，請求上都已有明確的 `usePill`（布林）與 `supporterId`（id 或 `null`），來源見 §2.5 與 §4.5。本人須修為 100 且未成功提升（`Progression.eligibility`，同 D7）；至多一個排隊／進行中的突破；支援者須在突破請求 tick 前已入隊（`joinTick ≤ 請求 tick`，沿 SG-05 R2）。預約讀的是這份凍結欄位，不讀當下政策。
 - 預約（出發時）整批原子：本人＋支援者＋可選一枚丹；任何一方忙碌或丹不足整批落選且**不扣丹、不抽樣**。支援者得到派生 `support` 活動（前往道館，占其工作，體力 −10），不能兼工。
 - 開工：雙方都到道館後的下一 tick。工作 1 單位。**完成時（單位末端）抽樣一次** `Rng.nextInt(state, 10000)`，同 tick 多個突破依活動 id 排序抽樣；機率用開工 tick 的心境快照（`Rules.breakthroughChance`，現值）。結果規則不變：成功修為保留 100、`breakthroughs = 1`；失敗 100→70、傷勢 +15；成本照舊（本人體力 −20、心境 −5）。`outcome` 欄位沿 SG-05（`result、mindAtStart、chanceBp、roll、cultivationBefore/After、injuryBefore/After`）。
 - 突破結果提交後 `advanceTicks` 以 `breakthroughResolved` 停止（§1.5）。
@@ -217,10 +243,10 @@ RT 世界以統一的 `activities[]` 取代 slot 世界的「課表意圖＋jobs
   - `buildFacility`：設施尚未排入 → 材料足夠就請求 `build`（出發即預約扣料）；材料不足則產生**靈材需求** = 成本 − 庫存 − 進行中預期產出。
   - `stockPills`：庫存 < count → 丹房已完工且材料夠一爐（靈草 6＋靈材 2）→ `brew`；否則產生靈草／靈材需求（靈草階段未解鎖時**不產生**靈草需求，這個目標暫時 `blocked(herb_locked)`，不空等也不亂走）。每爐預期產出以 `BREW_MIN_OUTPUT = 1` 保守計；完成後重新判斷，已達標就不再開下一爐。
   - `aid`：政策允許、`tick ≥ 540`、未完成、無進行中 → 請求 `aid`（`auto-free` 徒手；`auto-supplied` 材料夠才做，不足則產生靈材需求）。
-  - `cultivateTo100`／`breakthrough`：修為 < 100 且未提升 → `cultivate`；修為 100 且未提升且政策允許 → 請求 `breakthrough`（丹與支援者依政策與庫存／在隊人員）。
+  - `cultivateTo100`／`breakthrough`：修為 < 100 且未提升 → `cultivate`。修為 100 且未提升且政策 `auto` → 請求 `breakthrough`，並在這個決策 tick 把 `usePill`、`supporterId` 寫成明確的布林與 id 或 `null`。政策 `ask` → 不請求突破，詢問由 §4.5 在階段 1 開啟。政策 `off` 或已成功提升 → 不請求修行，也不請求突破。決策函式不對已滿或已提升者輸出 `cultivate`；若仍輸出，由 §2.2 轉成休養，不得改道成突破。
   - 資源需求以「該角色現在體力的預期單位產出」（`gatherYield` 等純函式）估算，**依角色 id 順序**逐一分配到需求被覆蓋為止；採集地點取距離最近、工作位有空者，同距取 tile id 小者。
 - **R3 保底進度**：沒有任何目標需求可服務，且修為 < 100 且未提升 → 修行。
-- **R4 等待**：其他情況 → `wait { reason, sinceTick }`，原因可讀（`goals_done`、`blocked:herb_locked`、`blocked:no_seat`、`blocked:cultivation_full`…）。不排任何活動、不發命令。
+- **R4 等待**：其他情況 → `wait { reason, sinceTick }`，原因可讀（`goals_done`、`blocked:herb_locked`、`breakthrough_ask_open`、`breakthrough_later`、`cultivation_full`）。不排活動、不移動、不發命令、不呼叫 `applyRest`，也不改體力、心境、傷勢或庫存。人留在當下格子。R1 先處理恢復，所以進入等待時恢復條件不成立。等待期間若新目標或復查使恢復條件成立，必須先離開等待，再走正式活動。
 
 **重新判斷的時機**（避免忙迴圈與抖動）：只有「閒置」角色才判斷；可打斷活動只在**單位邊界**重新判斷；承諾型活動完成前不判斷；`wait` 角色只在世界簽章改變（庫存、設施、位置、階段、名單、目標／政策修訂、事件）或每 `TICKS_PER_SLOT` 個 tick 復查；每角色每 tick 至多一次決策、至多發一個請求；被拒絕的請求同 tick 不重發，下一 tick 看到 `waited` 後自然落到恢復或等待。
 
@@ -242,7 +268,7 @@ RT 世界以統一的 `activities[]` 取代 slot 世界的「課表意圖＋jobs
 |---|---|---|
 | `aid` | `auto-free`／`auto-supplied`／`ask`／`off` | 村口求援：自動以徒手（零成本）或備料（靈材 4）援村、詢問、或不援村 |
 | `recruit` | `auto-accept`／`ask`／`off` | 邀請出現時自動 `acceptCandidate`、詢問、或不收（候選維持 `deferred`，玩家日後仍可接受） |
-| `breakthrough` | `auto`／`ask`／`off` | 修為 100 且未提升時自動排突破、詢問、或不排 |
+| `breakthrough` | `auto`／`ask`／`off` | 修為 100 且未提升時自動排突破、詢問（§4.5）、或不排。沒有 `never` |
 | `breakthroughPill` | `use`／`never` | 有庫存丹就用／不用 |
 | `breakthroughSupport` | `auto`／`never` | 有閒置同門就支援／不支援 |
 
@@ -255,28 +281,78 @@ RT 世界以統一的 `activities[]` 取代 slot 世界的「課表意圖＋jobs
 | 階段事件（`evt-phase-*`） | 只寫入事件日誌的**通知**，不待選、不需點擊 |
 | 村口求援 `evt-village-plea` | `aid` 政策自動處理；`ask` 時成為待選通知（見下） |
 | 邀請 `evt-invite-cand-1/2` | `recruit` 政策自動接受（`acceptCandidate`，`joinTick`＝處理 tick，不補發產出）；`ask` 見下 |
+| 突破詢問 | 不是舊故事表裡的事件。`breakthrough: ask` 走 §4.5，不進入 slot 的 `awaitingChoice` |
 | 危機／結局 | **不觸發** |
 
-`ask` 的待選事件【待決】D-RT-12：**建議不凍結世界**——事件掛在 `pendingEvents`，玩家可隨時 `chooseEvent`；超過 `ASK_EXPIRY_TICKS`（建議 180＝一日）仍未處理則自動採「稍後」選項（零成本、不改世界資源，候選維持 `deferred`／援村維持可做），並寫 `askExpired`。這讓「無人介入」在任何政策下都不會被一次點擊卡死，同時**不替玩家做有成本的決定**。替代方案（凍結世界等點擊，同現行 awaitingChoice）會讓無人介入驗收在第一個 `ask` 事件永遠停住，不採。
+`ask` 的待選事件【待決】D-RT-12：**建議不凍結世界**——事件掛在 `pendingEvents`，玩家可隨時 `chooseEvent`；超過 `ASK_EXPIRY_TICKS`（建議 180＝一日）仍未處理則自動採「稍後」選項（零成本、不改世界資源；援村維持可做，候選維持 `deferred`，突破詢問進入 §4.5 的 cooldown），並寫 `askExpired`。這讓「無人介入」在任何政策下都不會被一次點擊卡死，同時不替玩家做有成本的決定。替代方案（凍結世界等點擊，同現行 `awaitingChoice`）會讓無人介入驗收在第一個 `ask` 事件停住，不採。突破詢問的同意、逾期、去重與重新詢問不沿用這段的舊事件 id，見 §4.5。
 
 ### 4.3 安全後續（每一種停滯都有可讀去向）
 
 | 情況 | 行為 | 可見原因 |
 |---|---|---|
-| 缺材料／缺靈草 | 產生採集需求並去採；階段未解鎖則 `blocked(herb_locked)` 並做其他目標或修行 | 目標卡片「缺 N」 |
-| 疲勞／傷勢 | R1 休養（永遠可用） | `rest: low_stamina／injury` |
-| 滿 100 修為 | 不再修行（D7-C）；政策允許則排突破，否則 `wait: cultivation_full` | 同左 |
-| 無工作位 | 預約落選記 `waited`，改做休養或等待；下一 tick 重新看（工作位釋放後獲得，輪候 `waited` 優先） | `denied: no_seat` |
-| 丹不足／無支援者 | 突破不使用丹／支援（依政策）或等待丹出爐；不空轉 | `blocked: no_pill` |
-| 目標耗盡 | 見 §4.4 | `goals_done` |
+| 缺材料／缺靈草 | 產生採集需求並去採；階段未解鎖則該目標 `blocked(herb_locked)`，改做其他目標或修行 | 目標卡片「缺 N」 |
+| 疲勞／傷勢達 R1 | 正式 `rest` 活動（含必要移動與工時），不是等待 | `rest:low_stamina`／`rest:injury` |
+| 收到修行意圖，且快照已滿 100 或已成功提升 | D7-C：該意圖轉正式休養活動（§2.2），不拒絕 | `fallback.from = cultivate`，reason `cultivation_full` 或 `breakthrough_done` |
+| 自主看到滿 100 且未提升 | 不輸出修行。`auto` 排突破；`ask` 走 §4.5；`off` 則在沒有恢復需求時進入無效果等待 | `breakthrough` 請求，或 `wait: cultivation_full` |
+| 無工作位 | 落選記 `waited`，該 tick 改做一次正式休養；工作位釋放後下一決策再請，輪候 `waited` 優先 | `denied: no_seat`，接著 `rest:job-denied` |
+| 丹不足／無支援者 | 只在該次請求的凍結欄位就是不用丹／不支援時，才無丹或無人突破。凍結要丹或指定支援者而資格不夠：整批落選，不改寫欄位、不空轉 | `insufficient_resource` 或 `participant_busy` |
+| 目標耗盡 | 先處理恢復與未完成的突破，穩定後才等待（§4.4） | 休養活動，或 `wait: goals_done` |
 
-無重試忙迴圈（§3.3）；無永久死鎖：每個角色每個 tick 不是「有活動」就是「有原因的等待」，並有復查 tick；工作位與材料只在預約成功時占用，取消／完成時釋放。
+無重試忙迴圈（§3.3、§4.5）；無永久死鎖：每個角色每個 tick 不是「有活動」就是「有原因的等待」，並有復查 tick；工作位與材料只在預約成功時占用，取消／完成時釋放。等待不負責恢復。
 
 ### 4.4 目標耗盡與日常維持（【待決】D-RT-10）
 
-- **建議 A**：目標全部完成後，未提升者繼續修行到 100、再依政策排突破；之後所有人 `wait: goals_done`（在道館野外休養恢復到穩定，不發新命令、不增加庫存）。世界繼續走 tick，**不終局、不卡**，玩家隨時 `setGoals` 開新目標。**不引入新常數**，也不假造無限內容；代價是「放著不管」到一個點之後只剩休養。
-- 替代 B：維持模式持續採集／煉丹到庫存上限 N（新數值，例如靈材 ×、靈草 ×，需 PO／擁有人定值；且需決定丹與庫存上限的用途）。能產生較多「日常感」但新增數值與無用庫存，**不建議在第一版**。
-- 無論 A／B，跨第 14 天邊界（tick 2520）世界都只是繼續；第 11 天起的階段固定為「獸患升溫」（§1.2），沒有獸患事件、沒有立派／敗局。
+休養活動和等待是兩種狀態，不能同時成立（§5.4）。休養會移動、占位、消耗工作 tick，並在單位完成時呼叫 `applyRest`。等待不移動、不占位、不發命令、不產生效果；人留在進入等待的那一格，體力、心境、傷勢與庫存都不因等待本身改變。
+
+- **建議 A**（仍是候選）：目標全部完成後，尚未提升者繼續修行到 100，再依政策排突破或詢問。除此之外只允許下面的轉移，不引入新常數，也不假造無限內容。
+  1. 恢復條件成立（§3.3 R1）→ 先離開等待或閒置，走正式 `rest`（含前往居所或道館的移動）。來源是 `rest:low_stamina` 或 `rest:injury`。
+  2. 收到修行意圖且已滿或已提升 → 只走 §2.2 的 D7-C 休養，不進入「邊等邊恢復」。
+  3. 恢復條件不成立，也沒有可執行的突破或詢問動作 → 進入 `wait`，原因 `goals_done`。不回道館，不在道館野外暗中休養。
+  4. 復查（世界簽章改變，或每 `TICKS_PER_SLOT`）若恢復條件再次成立，先結束等待再開始休養。休養單位完成後若仍然沒有需求，重新進入 `goals_done` 等待。
+- 世界繼續走 tick，不終局、不卡。玩家隨時 `setGoals`；新目標在下一次決策生效，不從等待裡直接產出。代價是「放著不管」到恢復穩定之後，角色停在原地，直到有新目標或再次需要休養。
+- 替代 B：維持模式持續採集／煉丹到庫存上限 N（新數值，需 PO／擁有人定值，並決定這些庫存的用途）。能多一點日常感，但新增數值。不建議在第一版，也不是本輪可自行批准的方案。
+- 無論 A／B，跨第 14 天邊界（tick 2520）世界都只是繼續；第 11 天起的階段固定為「獸患升溫」（§1.2），沒有獸患事件、沒有立派／敗局。禁止的寫法是：`wait: goals_done` 同時又在道館野外把體力回復。那樣會繞過統一的活動結算。
+
+### 4.5 突破詢問（`breakthrough: ask`）
+
+現行 `story-data.js`（contentVersion 1）沒有突破待選事件，而且 slot 契約是「待選就 `awaitingChoice`、停止 advance」。RT 不把突破詢問塞進那張 slot 表，也不靠 `phase: awaitingChoice`。詢問是 RT 擴充資料，由 RT-02 照本節加入；本 PR 不改 `story-data.js`。slot 載入器若看到 `kind: breakthroughAsk` 必須拒絕。
+
+**靜態模板**（只存在於 RT 擴充，不進 `slice-14`）：
+
+| 欄位 | 值 |
+|---|---|
+| 模板 id | `evt-breakthrough-ask` |
+| kind | `breakthroughAsk` |
+| pending | true |
+| narrativeOnly | true（正文不得含數字） |
+| 選項 | `opt-breakthrough-agree`「現在突破」，唯一效果 `{ type: 'orderBreakthrough' }`；`opt-breakthrough-later`「稍後再說」，`effects: []` |
+| 正文 | 標題「可以嘗試突破了」。內文只說明修為到了這一境的門口，可現在突破或先放著 |
+
+`orderBreakthrough` 不是資源發放，也不是新玩法。它只表示同意時改走與 `orderActivity` 相同的正式請求。效果上不帶 `usePill`／`supporterId`；`chooseEvent` 的 payload 仍只有 `eventId` 與 `optionId`，玩家不能夾帶丹或支援者。
+
+**實例**掛在 `pendingEvents`，每個角色至多一筆未關閉：`id = evt-breakthrough-ask/${discipleId}/${generation}`，並存 `discipleId`、`generation`（從 1 起）、`raisedTick`、`expiresTick = raisedTick + ASK_EXPIRY_TICKS`。`story.breakthroughAsks[discipleId]` 記 `generation`、`openEventId`、`lastDisposition`（`agree`／`later`／`expired`／`agree_invalid`）、`cooldownUntilTick`。沒有這筆紀錄＝從未詢問。
+
+**開啟**在 tick 階段 1，先處理逾期，再開新詢問。條件是政策 `breakthrough === 'ask'`、`Progression.eligibility` 通過、該角色沒有未關閉詢問、沒有 pending 或進行中的突破、也沒有手動突破指令，且 cooldown 已過。同一 tick 同一角色至多一筆。人正在做別的活動也可以詢問：詢問不是活動，不占工作位，也不暫停其他人。
+
+**去重**：已有 `openEventId` 就不再掛。不用全局 `onceKey` 把此人永久問死；此 kind 帶 slot 用的一次性 `onceKey` 則驗證失敗。實例 id 重複，或同一角色兩筆未關閉，載入直接拒絕。
+
+**同意**可用 `chooseEvent`，暫停或進行中皆可。暫停不推進 `expiresTick`。
+
+1. 關閉這筆詢問。不抽 RNG。
+2. 用選擇當下的快照重驗資格。已不滿 100、已成功提升，或已有突破在排隊 → 不建立指令，`lastDisposition = agree_invalid`，原因寫進事件，`cooldownUntilTick = 處理 tick + ASK_EXPIRY_TICKS`。
+3. 資格仍在：`lastDisposition = agree`。依選擇當下的政策寫成明確值，凍結進 `manualOrder`（§2.5）。其後 `setPolicy` 不改寫。`breakthroughPill === 'use'` 且還有至少 1 枚未被預約的丹 → `usePill: true`，否則 `false`。`breakthroughSupport === 'auto'` → `supporterId` 取已入隊、非本人、當下閒置、id 最小者，沒有則 `null`。政策值 `never` 寫成 `false` 或 `null`，不是缺欄。
+4. 這份 `manualOrder` 走 §2.3。丹在出發預約時才扣；支援者仍須符合 `joinTick` 與空閒，否則整批落選、不扣丹、不抽樣、不換人。落選同樣記 `agree_invalid` 並進入 cooldown，避免下一 tick 再掛同一問。
+5. 角色若正在承諾型活動，指令保持 `pending`，直到該活動結束仍用這份凍結欄位。
+
+**稍後與逾期**相同：零資源變化、不建立突破、不回復體力。`lastDisposition` 為 `later` 或 `expired`，`cooldownUntilTick = 處理 tick + ASK_EXPIRY_TICKS`。逾期在階段 1 處理並寫 `askExpired`。建議路徑不設 `awaitingChoice`，也不讓 `advanceTicks` 停在 `needsDecision`。
+
+**重新詢問**：cooldown 結束後若仍符合開啟條件，`generation + 1` 再開一筆。成功突破後資格不再成立，不再詢問。失敗掉到 70 之後，在再次滿 100 之前不詢問；再次符合時新開一代，不必再吃「稍後」那段 cooldown（中間隔著的是修行）。cooldown 與逾期都沿用 `ASK_EXPIRY_TICKS`，不另設常數。
+
+**自主**：政策為 `ask` 時，決策函式不輸出 `breakthrough`。詢問開著、人已恢復、又沒有別的需求 → `wait`，原因 `breakthrough_ask_open`。稍後或逾期的 cooldown 內、同樣無其他需求 → `wait`，原因 `breakthrough_later`。兩種等待都不移動、不 `applyRest`。需要恢復時仍先走 R1 的正式休養，詢問可以同時掛著。
+
+**驗證邊界**（RT-02 加資料時必須滿足；本 PR 只寫契約）：模板是待選，且 options 恰好上面兩項；稍後效果為空；同意只有 `orderBreakthrough`；`narrativeOnly` 與現有「claims 或 narrativeOnly 恰好其一」一致；正文無數字；不引用危機、結局或 slot 觸發；`chooseEvent` 對未知 id、已關閉實例，或對不上 `discipleId`／`generation` 的選擇拒絕，且世界不變。slot 的效果詞彙不新增 `orderBreakthrough`。
+
+兩條短時間線見 §7.3、§7.4。
 
 ## 5. 資料與相容
 
@@ -298,18 +374,21 @@ RT 世界以統一的 `activities[]` 取代 slot 世界的「課表意圖＋jobs
 
 - `clock: { tick }`。
 - `policy`、`goals[]`、`goalsRevision`（§3、§4）。
-- 每位弟子新增：`pos { r, c }`、`activityId`（null｜`act-nnnn`）、`manualOrder`（null｜`{ seq, status: pending|active, kind, target, units, requestedTick }`）、`autonomy { decisionSeq, wait: null | { reason, sinceTick, recheckTick } }`；`joinSlotIndex` 改 `joinTick`（舊欄位不存在於 RT 世界）。
-- `activities[]`：`{ id, discipleId, kind, target, units, unitsDone, workTicks, status, origin: manual|auto|policy, requestedTick, departTick, arriveTick, startTick, completedTick, waited, paid, snapshot, outcome, partner }`；`snapshot` 存工作開工時的體力／心境／傷勢（效果與預估使用）；`outcome` 只有突破（欄位同 SG-05）；`partner` 為突破／支援的對方 id。
+- 每位弟子新增：`pos { r, c }`、`activityId`（null｜`act-nnnn`）、`manualOrder`、`autonomy { decisionSeq, wait: null | { reason, sinceTick, recheckTick } }`；`joinSlotIndex` 改 `joinTick`（舊欄位不存在於 RT 世界）。`manualOrder` 為 null，或 `{ seq, commandId, status: pending|active, kind, target, units, requestedTick, usePill?, supporterId? }`。`usePill` 與 `supporterId` 只在 `kind === 'breakthrough'` 時出現，而且必須出現：前者是布林，後者是 id 或 `null`。其他 kind 帶了這兩欄就拒絕。缺欄不得在載入時補成 `false`。
+- `activities[]`：`{ id, discipleId, kind, target, units, unitsDone, workTicks, status, origin: manual|auto|policy, manualSeq, requestedTick, departTick, arriveTick, startTick, completedTick, waited, paid, snapshot, fallback, usePill, supporterId, outcome, partner }`。`snapshot` 存工作開工時的體力／心境／傷勢。`fallback` 為 null，或 `{ from, reason }`（D7-C 或仲裁落選後的休養）。突破活動的 `usePill` 為布林、`supporterId` 為 id 或 `null`，並與 `paid` 裡的丹一致；其他活動不帶這兩欄。`outcome` 只有突破（欄位同 SG-05）；`partner` 為突破／支援的對方 id。
+- `story.breakthroughAsks`：`{ [discipleId]: { generation, openEventId, lastDisposition, cooldownUntilTick } }`，語意見 §4.5。沒有出現的角色＝從未詢問。
 - `reservations[]`（工作位與參與者）、`seatWaits[]`（沿 SG-04 輪候）。
-- **沒有**：`slotIndex`、`schedule`、`jobs`（舊）、`phase: awaitingChoice` 的凍結語意（`ask` 僅 `pendingEvents`，§4.2）。
+- **沒有**：`slotIndex`、`schedule`、`jobs`（舊）、`phase: awaitingChoice` 的凍結語意（`ask` 僅 `pendingEvents`，§4.2、§4.5）。
 
 ### 5.3 revision 與命令
 
-沿現行 `expectedRevision`／命令 id 規則。revision 在**每個已提交 tick**（`step`）與**每個被接受的命令**各 +1，因此依舊畫面下的命令在世界前進後會被明確拒絕（與 slot 引擎「每格 +1」同語意）；暫停期間接受的命令只遞增 revision，不遞增 tick。被拒絕的命令不寫 `commandLog`、不改世界。`commandLog` 記 `origin`（`manual／auto／policy`）、tick、id、payload 摘要。
+沿現行 `expectedRevision`／命令 id 規則。revision 在**每個已提交 tick**（`step`）與**每個被接受的命令**各 +1，因此依舊畫面下的命令在世界前進後會被明確拒絕（與 slot 引擎「每格 +1」同語意）；暫停期間接受的命令只遞增 revision，不遞增 tick。被拒絕的命令不寫 `commandLog`、不改世界。`commandLog` 記 `origin`（`manual／auto／policy`）、tick、id，以及接受時的完整 payload。突破必須能從日誌讀回 `usePill` 與 `supporterId`，`false` 和 `null` 都要留著，不能改成摘要。
 
 ### 5.4 一致性驗證（必須拒絕的壞狀態，草案）
 
 位置在棋盤＋村口範圍內、與活動／移動進度相容；`tick` 非負整數；每位弟子至多一個活動；活動 `unitsDone ≤ units`、`workTicks` 與 `unitsDone` 吻合；`traveling` 的 `arriveTick` 與出發 tick／位置／速度吻合；`done` 的活動不得仍占工作位／參與者；工作位占用不超容量；庫存／資源非負；`paid` 與重算成本一致（`done`／`cancelled` 退款帳平）；突破 `outcome` 可由 `rules.js` 重算（沿 SG-05）；`breakthroughs` 等於成功突破活動數；成功者修為 = 100；支援者 `joinTick ≤` 請求 tick；`manualOrder` 與 `activities` 引用一致；`autonomy.wait` 與 `activityId` 互斥；事件 `tick` 單調、`revision` 與已提交 tick／命令數吻合；不得同時含 slot 欄位。違反一律回明確碼並保持輸入不變。
+
+另須拒絕：突破的 `manualOrder` 或活動缺 `usePill`／`supporterId`，或把缺欄補成 `false`；非突破卻帶這兩欄；`usePill: true` 但 `paid` 沒有扣到 1 枚丹，或 `usePill: false` 卻扣了丹；`fallback` 存在時活動不是 `rest`，或 D7-C 的 `manualOrder.kind` 不是 `cultivate`；`wait` 非空的同一段 tick 內出現 `applyRest` 或體力／心境／傷勢變化，且沒有對應的 `rest` 單位完成事件；同一角色兩筆未關閉的突破詢問，或詢問實例對不上 `breakthroughAsks`；RT 世界出現 `awaitingChoice`。等待期間的位置必須保持不變。
 
 ### 5.5 canonical、hash、存讀與續玩
 
@@ -362,14 +441,18 @@ RT 世界以統一的 `activities[]` 取代 slot 世界的「課表意圖＋jobs
 ### 6.4 RT 驗收矩陣（【待決】D-RT-14 觀察窗；凍結提案）
 
 - **觀察窗**：`OBSERVATION_TICKS = 2700`（15 日，含 14 日邊界 tick 2520 並多走一日）。檢查點：540（草藥解鎖／援村開放）、1080（邀請可出現）、1800（獸患階段起）、2520（舊危機邊界；RT 不觸發）、2700（窗末）。窗長與換算先凍結，不事後縮短。
-- **seed／情境**：至少 20 seed `rt-dev-000..019`（字串 seed）；`characterOptions` 沿 smoke 的 `optionsForIndex(i)` 輪替模板／配點；政策輪替：「安穩發展」10、「全部詢問」5、自訂（援村 off／收徒 ask／突破 never／丹 never 等）5；無人介入為主，另有暫停介入腳本（固定 tick 下命令，seed 內以字串決定，不用世界 RNG）。
+- **seed／情境**：至少 20 seed `rt-dev-000..019`（字串 seed）；`characterOptions` 沿 smoke 的 `optionsForIndex(i)` 輪替模板／配點；政策輪替：「安穩發展」10、「全部詢問」5、自訂（援村 `off`／收徒 `ask`／突破 `off`／丹 `never`／支援 `never` 等）5。`breakthrough` 的合法值只有 `auto`／`ask`／`off`，沒有 `never`。無人介入為主，另有暫停介入腳本（固定 tick 下命令，seed 內以字串決定，不用世界 RNG）。
 - **每個檢查點的不變式**：資源／庫存非負；位置合法；每位已入隊弟子「有活動」或「有原因的等待」；預設政策下不凍結（無 `awaitingChoice`）；`ask` 事件逾期後自動「稍後」；`validateWorld` 通過；序列化往返 hash 相同；沒有 slot 欄位；沒有 ending。
 - **等價性**：同 seed、同 tick 命令序列：逐 tick＝切塊（3、60、180、變動長度模擬 render 頻率）＝一次到終點，世界 hash 與 `rngState` 一致；不同播放倍率（控制器餵 tick 的方式不同）一致；任意隨機選定的 tick（含旅行中、工作中、`manualOrder pending`、突破停點）存讀後續玩一致。
 - **正向行為**：暫停零進度（`tick`、位置、`workTicks`、資源、`rngState` 全不變，只有 revision／commandLog／意圖欄位變）；真移動耗時（未到不工作、旅行中不兼採集／建造／支援）；人工覆寫（可打斷活動的捨棄規則、承諾型 `pending`、手動鎖與 `autonomyResumed`）；資源與座位互斥（同 tick 爭搶只合法者開工）；取消／重送／改令不刷收益（`traveling` 取消淨零、`done` 不可再發獎）；突破去重與一次成功上限；收徒 `joinTick` 前不勞動／不支援。
+- **D7-C 手動修行**（兩種都要，都不是 `cultivationBlock` 拒絕）：①修為已 100、尚未成功提升，玩家下 `cultivate` → 指令接受，活動為 `rest`，`fallback.reason = cultivation_full`；不扣修行的體力／心境，修為仍是 100，不占聚靈台，不多一份效果。②已成功提升後再下同樣指令 → 同樣轉休養，`reason = breakthrough_done`，不排第二次突破、不加修為。兩種都走休養的工時、容量與輪候。
+- **pending 突破存讀**：暫停時對主角下突破，`usePill: true`、`supporterId` 為某一已入隊角色；接著 `setPolicy` 把丹與支援改成 `never`；在承諾型工作結束前把世界 `serializeState`／`parseState`。恢復後預約仍扣 1 枚丹並綁定原支援者，不按新政重算。對照組 `usePill: false`、`supporterId: null` 則不扣丹、不綁人，即使政策是 `use`／`auto` 且庫存有丹。缺欄的手動突破在接受時就是 `bad_payload`，世界不變。
+- **突破詢問**：照 §7.3、§7.4。全程 `ask` 且無人選擇時，世界不進入 `awaitingChoice`，同一角色不會每個復查 tick 各掛一筆；逾期是稍後，不扣丹。暫停後同意一次：重驗資格，凍結當下的丹與支援者，成功後不再詢問。
+- **休養與等待**：建議 A 下，目標耗盡且恢復條件已不成立時，`activityId === null`、`autonomy.wait.reason === goals_done`，連續 `TICKS_PER_SLOT` 個 tick 的位置、體力、心境、傷勢與庫存不變。若復查時恢復條件成立，下一次決策必須先出現 `rest` 活動，`applyRest` 只記在該單位完成的事件上，不能記在 `wait` 上。跨 tick 2520 仍滿足「有活動或有原因的等待」且二者互斥。
 - **舊世界**：`slice-14`（schema4／rule3）全部既有測試、golden、20 seed×42 格**原樣保留並通過**；舊檔在 RT 載入器下走舊分流或明確拒絕不合法組合；不要求 RT 與舊 slot 的經濟結果相同，也不把舊通過搬成 RT 通過。
 - 成本：沿[分層測試政策](../../docs/testing-policy.md)：RT-01～04 的日常迭代先跑相關單測與 3／5 seed；時間／schema／結算屬高風險，**接受前跑完整 20 seed 窗**與 CI，完整輸出落檔，只報命令、exit、head／base／版本、seed／策略／時長與失敗。
 
-## 7. 兩條事件時間線（手排示意）
+## 7. 事件時間線（手排示意）
 
 共同設定：S＝6、TICKS_PER_SLOT＝60、道館 (2,2)、預設政策「安穩發展」、預設目標、預設主角（4／5／3）。tick＝世界時鐘值；「做 X」均指**預約成功**後出發。數值由 `rules.js` 純函式核對，**不是引擎輸出**。
 
@@ -411,17 +494,46 @@ RT 世界以統一的 `activities[]` 取代 slot 世界的「課表意圖＋jobs
 | 8 | 344 | 手動活動 `done`：釋放工作位、手動鎖結束；事件 `autonomyResumed { reason:'manual-done' }`。下一 tick 階段 2：體力 40 < 60 → R1 休養（往道館 24 tick）。**沒有重複領取**：`act-xxxx` 已 `done` 不可再推進；主角不會「補做」被捨棄的修行單位 |
 | 9 | 之後 | 師父不受影響（丹房 tick 330 照常完工）；`setGoals` 若在暫停時改過，只在角色下一次決策才影響行為，不打斷任何進行中活動 |
 
-承諾型例子：（在時間線 A 上）若玩家在 tick 700 對**正在煉丹**的主角下手動命令，命令被接受為 `pending`，介面顯示「將於 tick 798 完成後執行」，煉丹不被打斷、不退料、不刷成果。
+承諾型例子：（在時間線 A 上）若玩家在 tick 700 對**正在煉丹**的主角下手動命令，命令被接受為 `pending`，介面顯示「將於 tick 798 完成後執行」，煉丹不被打斷、不退料、不刷成果。若該命令是突破，`pending` 上的 `usePill`／`supporterId` 按 §2.5 原樣保留到 798 之後。
+
+### 7.3 短時間線：全部詢問、無人介入
+
+政策三項都是 `ask`，丹 `use`、支援 `auto`。這裡只寫突破詢問，不重排 §7.1。數字仍是契約推演，不是引擎輸出。
+
+| tick | 事件 |
+|---|---|
+| T | 主角修為 100、尚未提升、沒有活動。階段 1 開啟 `evt-breakthrough-ask/主角/1`，`expiresTick = T+180`。世界不凍結，其他人照常工作。階段 2 不排突破。體力未低於休養門檻、傷勢也未達休養線，又沒有其他需求 → `wait`，原因 `breakthrough_ask_open`。`activityId` 為空，體力不變 |
+| T+180 | 無人選擇。階段 1 逾期＝稍後：不扣丹、不綁支援、不抽樣、不回復。`cooldownUntilTick = T+360`。等待原因改為 `breakthrough_later` |
+| T+360 | cooldown 結束，人仍滿 100、政策仍是 `ask` → 開啟 generation 2。不是每個復查 tick 各掛一筆 |
+
+### 7.4 短時間線：暫停後批准一次突破
+
+接 §7.3 的 tick T。假設當時還有 1 枚未被預約的丹，以及一名已入隊且閒置的同門。
+
+| tick | 事件 |
+|---|---|
+| T+10 | 玩家暫停。`tick` 仍是 T+10，詢問不逾期。`chooseEvent` 選同意。重驗仍滿 100；凍結 `usePill: true` 與該同門的 `supporterId`，`lastDisposition = agree`。接著 `setPolicy` 把丹與支援改成 `never`，不改這份 `manualOrder` |
+| T+10 | 存讀。pending 仍是同意當下的丹與支援者 |
+| 恢復後的第一個 step | 預約成功才扣 1 枚丹並綁定該支援者，不按 `never` 重算。完成時抽樣一次。成功後不再詢問。若恢復時丹已被別人預約，整批落選，不改成無丹突破，並進入 cooldown |
 
 ## 8. 與歷史、D6、D7 的關係
 
 - 保留：D6 師徒兩人開局、復甦階段、援村後兩名固定學徒（`joinTick` 才工作）、無永久死亡、單一 JS 權威引擎與單一版本 RNG；D7 修為上限 100、突破成功保留 100、最多一次成功、失敗 70%／傷勢 +15、結果去重、舊 slot 引擎、歷史 golden 與 20 seed×42 格測試。
+- D7-C 在 RT 仍是明示轉休養（§2.2），不是把滿修為或已提升的修行意圖拒絕掉。自主另選突破或等待，和「已經收到修行意圖之後的 fallback」是兩件事。
+- 休養活動與等待分開（§4.4）。等待不回復。這不改 D7 的數值。
 - 取代（僅新 RT 模式）：D2「一格一行動」作為權威時間契約、「行走只做動畫」、SG-06 先行的順序。
 - 不做：戰鬥、獸患、立派／敗局、第二境、28 天內容、巡山／輕功、生活屬性成長、需求條、付費模型、尋路／碰撞／負重、全隊手動排程、歷史存檔自動轉換（C 選項）。
 - 不改任何舊數值；不覆寫舊 fixture／golden。
 
 ## 9. 給 RT-01 的凍結清單與未驗證項
 
-**凍結後 RT-01 才開工**：D-RT-01～16 的定案（至少 01、02、03、04、05、06、07、08、13、14 必須在 RT-01 前定案；09、10、11、12 影響 RT-02，必須在 RT-02 前定案；15、16 影響 RT-04／RT-01 的停止條件）。RT-01 範圍＝§1、§2、§5.1–5.4 的 runtime 與公開 API、`advanceTicks`、手動命令、驗證器與對應測試／fixture；不含自主（RT-02）、儲存介面（RT-03）、UI（RT-04）。
+**分階段凍結。不是 16 項全部定案才准寫 RT-01。** 候選在定案前都不得寫進程式當常數。分組與理由見 §0。
+
+- RT-01 開工：本文件已合入 dev、該次 post-merge CI 成功，且時間包的 D-RT-01、02、03、14、工作誠信包的 04、06、07、舊檔包的 13 已定案。D-RT-05 沿「單位完成時一次套用」實作，D-RT-16 沿 §1.5 實作，二者不另等一題批准。D-RT-15 的播放數字不進 RT-01，也不得寫進世界。
+- RT-02 開工：RT-01 已合入且 post-merge CI 成功，且授權邊界包的 08、09、10、11、12 已定案。若 12 改選凍結世界，則改列 RT-01 的開工條件，本文件須先改 `needsDecision`。
+- RT-04 開工：RT-03 已合入且 post-merge CI 成功，且 D-RT-15 已定案。RT-03 不新增上述產品題。
+- 某一包未定案時，只停依賴它的實作。本輪之後 RT-01 仍然受阻。不把作者建議當成擁有人已批准。
+
+RT-01 範圍＝§1、§2、§5.1–5.4 的 runtime 與公開 API、`advanceTicks`、手動命令、驗證器與對應測試／fixture；不含自主（RT-02）、儲存介面（RT-03）、UI（RT-04）。§4.5 的詢問資料隨 RT-02，不在 RT-01 先寫進 slot 故事表。
 
 **本包未驗證／未決**：①所有 RT 新常數的最終值（§6.2）與其對 14 日內可達性的影響——只有手排推演（§6.3、§7），沒有引擎、沒有 seed 量測；②「首批丹之後」（收徒、修行至 100、突破）在 15 日內是否可達；③自主預設表與 R1 門檻對產能的取捨；④`ask` 逾期策略與預設政策是否符合擁有人對「未授權決定」的界線；⑤story-data 的 RT 引用方式（`requiresRuleVersion` 的配對寫法）；⑥舊檔選項 A 的長期維護成本；⑦UI 預估顯示與暫停編輯流程屬 RT-04；⑧真人試玩屬 RT-05。**未宣稱任何驗收項通過**；`ACCEPTANCE.md`／D8 驗收仍為未通過。
