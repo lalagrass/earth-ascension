@@ -141,6 +141,28 @@ test('目標順序先於工作種類：能煉丹就不先建下一座', () => {
   assert.equal(buildFirst.assignments[0].target.facilityType, 'residence');
 });
 
+test('突破排在前面且修為未滿時先修行，不先做後面的居所', () => {
+  function kinds(goals) {
+    let w = world('rt02-goal-prerequisite');
+    w = must(w, 'setGoals', { goals });
+    const next = Realtime.advanceTicks(w, 1);
+    assert.equal(next.ok, true, next.reason || (next.error && next.error.reason));
+    assert.equal(Realtime.validateWorld(next.state).ok, true, Realtime.validateWorld(next.state).reason);
+    return next.state.activities.map((a) => a.kind);
+  }
+  const breakFirst = kinds([
+    { id: 'first', kind: 'breakthrough', discipleId: 'all' },
+    { id: 'second', kind: 'buildFacility', facilityType: 'residence' },
+  ]);
+  assert.deepEqual(breakFirst, ['cultivate', 'cultivate']);
+  const buildFirst = kinds([
+    { id: 'first', kind: 'buildFacility', facilityType: 'residence' },
+    { id: 'second', kind: 'breakthrough', discipleId: 'all' },
+  ]);
+  assert.ok(buildFirst.length > 0);
+  assert.ok(buildFirst.every((kind) => kind !== 'cultivate'), buildFirst.join());
+});
+
 test('手動請求的 priority 先於等待更久的自主請求；缺欄仍按等待值', () => {
   const ranked = Engine.arbitrate({
     requests: [

@@ -253,6 +253,8 @@
           return request(disciple.id, 'aid', { optionId: policy.aid === 'auto-free' ? 'free' : 'supplied' }, 1);
         }
         if ((goal.kind === 'cultivateTo100' || goal.kind === 'breakthrough') && goalFor(goal, disciple.id)) {
+          // 未滿且未提升時，突破目標的前置就是修行，後面的建造不能插隊（§3.3 R2）。
+          if (canCultivate(disciple)) return request(disciple.id, 'cultivate', {}, 1);
           if (!breakthroughOpen && goal.kind === 'breakthrough' && policy.breakthrough === 'auto' && canBreak(disciple)) {
             const usePill = policy.breakthroughPill === 'use' && pillsFree >= 1;
             const supporterId = policy.breakthroughSupport === 'auto'
@@ -263,7 +265,6 @@
             breakthroughOpen = true;
             return request(disciple.id, 'breakthrough', {}, 1, { usePill, supporterId });
           }
-          if (goal.kind === 'cultivateTo100' && canCultivate(disciple)) return request(disciple.id, 'cultivate', {}, 1);
         }
       }
       return null;
