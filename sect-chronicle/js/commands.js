@@ -2,7 +2,7 @@
  * SG-03：指令層（dispatch）。驗證並套用玩家命令；不推進時間、不產生成果、不消耗 RNG。
  *
  * 範圍界線（issue #85、#90、設計 0.2）：
- * - 本版支援 assignSlot、setDailyTemplate、chooseEvent（SG-03），以及 queueBuild、queueCraft、cancelQueuedJob（SG-04）。
+ * - 本版支援 assignSlot、setDailyTemplate（採集可指定 tileId／tileIds 資源點）、chooseEvent（SG-03），以及 queueBuild、queueCraft、cancelQueuedJob（SG-04）。
  *   queueBuild／queueCraft 只「排隊」：不推時間、不扣材料、不發成果；真正的開工（原子預約、扣一次成本）發生在
  *   engine.js 的格初。build／brew 不可排入課表（use_job_command），只由 job 驅動。
  *   其餘命令（queueBreakthrough／setDefense／acceptCandidate）與行動（aid／breakthrough／support）一律回
@@ -95,9 +95,14 @@
   // 某角色在某格的行動：覆寫 > 範本 > 預設休養（明示的備案，不是假成功）。
   function scheduledAction(world, discipleId, slotIndex) {
     const o = world.schedule.overrides.find((x) => x.discipleId === discipleId && x.slotIndex === slotIndex);
-    if (o) return { action: o.action, source: 'override' };
+    // 採集若指定了資源點，結果多一個 tileId；沒指定時不出現（由引擎取穩定預設點）。
+    if (o) return has(o, 'tileId') ? { action: o.action, source: 'override', tileId: o.tileId } : { action: o.action, source: 'override' };
     const t = world.schedule.templates[discipleId];
-    if (t) return { action: t[slotIndex % 3], source: 'template' };
+    if (t) {
+      const tt = world.schedule.templateTiles[discipleId];
+      const tile = tt ? tt[slotIndex % 3] : null;
+      return tile ? { action: t[slotIndex % 3], source: 'template', tileId: tile } : { action: t[slotIndex % 3], source: 'template' };
+    }
     return { action: 'rest', source: 'default' };
   }
 
@@ -150,7 +155,13 @@
 
   // ---------- 各命令（回傳 { error } 或 { next, drafts }；next 是已修改的工作複本） ----------
   function doAssignSlot(world, next, payload) {
-    if (!sameKeys(payload, ['discipleId', 'slotIndex', 'action'])) return { error: reject('bad_payload', 'assignSlot 需要恰好 discipleId、slotIndex、action') };
+    const withTile = has(payload, 'tileId');
+    if (!sameKeys(payload, withTile ? ['discipleId', 'slotIndex', 'action', 'tileId'] : ['discipleId', 'slotIndex', 'action'])) {
+      return { error: reject('bad_payload', 'assignSlot 需要恰好 discipleId、slotIndex、action（採集可加 tileId）') };
+    }
+    if (withTile && (typeof payload.tileId !== 'string' || typeof payload.action !== 'string' || !has(State.GATHER_TERRAIN, payload.action))) {
+      return { error: reject('bad_payload', 'tileId 必須是字串，且只能搭配 gather-material／gather-herb') };
+    }
     if (typeof payload.discipleId !== 'string' || !isInt(payload.slotIndex) || !(payload.action === null || typeof payload.action === 'string')) {
       return { error: reject('bad_payload', 'discipleId 必須是字串、slotIndex 必須是整數、action 必須是字串或 null') };
     }
@@ -169,22 +180,49 @@
         });
         if (g.locked) return { error: reject('action_locked', `第 ${payload.slotIndex} 格尚無靈草可採（靈氣階段鎖定）`) };
       }
+      if (withTile) {
+        const bad2 = tileError(world, payload.action, payload.tileId);
+        if (bad2) return { error: bad2 };
+      }
     }
     const ov = next.schedule.overrides.filter((o) => !(o.discipleId === payload.discipleId && o.slotIndex === payload.slotIndex));
-    if (payload.action !== null) ov.push({ discipleId: payload.discipleId, slotIndex: payload.slotIndex, action: payload.action });
+    if (payload.action !== null) {
+      const o = { discipleId: payload.discipleId, slotIndex: payload.slotIndex, action: payload.action };
+      if (withTile) o.tileId = payload.tileId;
+      ov.push(o);
+    }
     sortOverrides(ov);
     next.schedule.overrides = ov;
     return {
-      drafts: [{ type: 'slotAssigned', discipleId: payload.discipleId, targetSlotIndex: payload.slotIndex, action: payload.action }],
+      drafts: [{ type: 'slotAssigned', discipleId: payload.discipleId, targetSlotIndex: payload.slotIndex, action: payload.action, ...(withTile ? { tileId: payload.tileId } : {}) }],
     };
   }
 
+  // 採集的資源點目標：地塊必須存在，且資源種類與行動相符（每個點各自有容量，見 engine.js）。
+  function tileError(world, action, tileId) {
+    const tile = world.tiles.find((t) => t.id === tileId);
+    if (!tile) return reject('unknown_tile', `未知地塊：${tileId}`);
+    if (tile.terrain !== State.GATHER_TERRAIN[action]) {
+      return reject('wrong_terrain', `地塊 ${tileId} 是 ${tile.terrain}，行動 ${action} 需要 ${State.GATHER_TERRAIN[action]}`);
+    }
+    return null;
+  }
+
   function doSetDailyTemplate(world, next, payload) {
-    if (!sameKeys(payload, ['discipleId', 'parts'])) return { error: reject('bad_payload', 'setDailyTemplate 需要恰好 discipleId、parts') };
+    const withTiles = has(payload, 'tileIds');
+    if (!sameKeys(payload, withTiles ? ['discipleId', 'parts', 'tileIds'] : ['discipleId', 'parts'])) {
+      return { error: reject('bad_payload', 'setDailyTemplate 需要恰好 discipleId、parts（採集可加 tileIds）') };
+    }
     const parts = payload.parts;
     if (typeof payload.discipleId !== 'string'
       || !(parts === null || (Array.isArray(parts) && parts.length === 3 && parts.every((p) => typeof p === 'string')))) {
       return { error: reject('bad_payload', 'discipleId 必須是字串；parts 必須是三個行動 ID 或 null') };
+    }
+    const tileIds = withTiles ? payload.tileIds : null;
+    if (withTiles) {
+      const shapeOk = parts !== null && Array.isArray(tileIds) && tileIds.length === 3
+        && tileIds.every((t, k) => t === null || (typeof t === 'string' && has(State.GATHER_TERRAIN, parts[k])));
+      if (!shapeOk) return { error: reject('bad_payload', 'tileIds 必須搭配 parts，是三個字串或 null，且只有採集格可以指定地塊') };
     }
     if (world.phase !== 'planning') return { error: reject('not_planning', `目前階段是 ${world.phase}，只有 planning 可以排課`) };
     const found = findMember(world, payload.discipleId);
@@ -194,11 +232,21 @@
         const bad = checkAction(a);
         if (bad) return { error: bad };
       }
+      if (withTiles) {
+        for (let k = 0; k < 3; k++) {
+          if (tileIds[k] === null) continue;
+          const bad2 = tileError(world, parts[k], tileIds[k]);
+          if (bad2) return { error: bad2 };
+        }
+      }
       next.schedule.templates[payload.discipleId] = [...parts];
+      if (withTiles && tileIds.some((t) => t !== null)) next.schedule.templateTiles[payload.discipleId] = [...tileIds];
+      else delete next.schedule.templateTiles[payload.discipleId];
     } else {
       delete next.schedule.templates[payload.discipleId];
+      delete next.schedule.templateTiles[payload.discipleId];
     }
-    return { drafts: [{ type: 'templateSet', discipleId: payload.discipleId, parts: parts === null ? null : [...parts] }] };
+    return { drafts: [{ type: 'templateSet', discipleId: payload.discipleId, parts: parts === null ? null : [...parts], ...(withTiles ? { tileIds: [...tileIds] } : {}) }] };
   }
 
   function doChooseEvent(world, next, payload) {

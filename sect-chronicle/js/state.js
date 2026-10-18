@@ -70,7 +70,7 @@
   const TOP_LEVEL_FIELDS = Object.freeze([
     'schemaVersion', 'ruleVersion', 'rngVersion', 'seed', 'slotIndex', 'phase', 'revision', 'rngState',
     'resources', 'tiles', 'disciples', 'candidates', 'jobs', 'reservations', 'pendingEvents',
-    'commandLog', 'eventLog', 'scenarioId', 'characterOptions', 'protagonistId', 'masterId', 'story', 'schedule', 'inventory',
+    'commandLog', 'eventLog', 'scenarioId', 'characterOptions', 'protagonistId', 'masterId', 'story', 'schedule', 'inventory', 'seatWaits',
   ]);
   const ARRAY_FIELDS = Object.freeze(['tiles', 'jobs', 'reservations', 'commandLog', 'eventLog']);
 
@@ -248,8 +248,9 @@
         invitations: Object.fromEntries(CANDIDATE_IDS.map((id) => [id, { status: 'locked', joinSlotIndex: null }])),
         organisationStatus: 'dojo',
       },
-      schedule: { templates: {}, overrides: [] },
+      schedule: { templates: {}, overrides: [], templateTiles: {} },
       inventory: Object.fromEntries(Object.keys(Rules.RECIPES).map((k) => [k, 0])),
+      seatWaits: [],
     };
     const check = validateWorld(state);
     if (!check.ok) throw new Error(`newWorld 產生了不合法狀態：${check.code} ${check.reason}`);
@@ -391,10 +392,21 @@
 
   // 課表：templates（角色 → 三個行動）與 overrides（單格覆寫，依 slotIndex、discipleId 排序以保證 canonical 唯一）。
   // 這裡只驗結構與引用；哪些行動「本版已支援」由 commands.js 決定。
+  // 採集行動可指定資源點：地塊必須存在，且資源種類與行動相符；非採集行動不得帶地塊。
+  const GATHER_TERRAIN = Object.freeze({ 'gather-material': 'material', 'gather-herb': 'herb' });
+  function gatherTileProblem(w, action, tileId) {
+    if (!hasOwn(GATHER_TERRAIN, action)) return `行動 ${String(action)} 不是採集，不能指定資源點`;
+    if (typeof tileId !== 'string') return '資源點必須是字串地塊 ID';
+    const tile = w.tiles.find((t) => t.id === tileId);
+    if (!tile) return `未知地塊：${tileId}`;
+    if (tile.terrain !== GATHER_TERRAIN[action]) return `地塊 ${tileId} 是 ${tile.terrain}，行動 ${action} 需要 ${GATHER_TERRAIN[action]}`;
+    return null;
+  }
+
   function validateSchedule(w, total) {
     const sc = w.schedule;
-    if (!isPlainObject(sc) || !sameKeys(sc, ['templates', 'overrides'])) {
-      return fail('bad_value', 'schedule 必須恰好含 templates 與 overrides', 'schedule');
+    if (!isPlainObject(sc) || !sameKeys(sc, ['templates', 'overrides', 'templateTiles'])) {
+      return fail('bad_value', 'schedule 必須恰好含 templates、overrides 與 templateTiles', 'schedule');
     }
     const byId = new Map(w.disciples.map((d) => [d.id, d]));
     if (!isPlainObject(sc.templates)) return fail('bad_type', 'schedule.templates 必須是物件', 'schedule.templates');
@@ -405,11 +417,23 @@
         return fail('bad_value', `schedule.templates.${id} 必須是三個已知行動 ID`, 'schedule.templates');
       }
     }
+    if (!isPlainObject(sc.templateTiles)) return fail('bad_type', 'schedule.templateTiles 必須是物件', 'schedule.templateTiles');
+    for (const id of Object.keys(sc.templateTiles)) {
+      const t = sc.templates[id];
+      const tt = sc.templateTiles[id];
+      if (!t) return fail('bad_value', `schedule.templateTiles 的角色沒有範本：${id}`, 'schedule.templateTiles');
+      if (!Array.isArray(tt) || tt.length !== 3) return fail('bad_value', `schedule.templateTiles.${id} 必須是長度 3 的陣列`, 'schedule.templateTiles');
+      for (let k = 0; k < 3; k++) {
+        if (tt[k] === null) continue;
+        const why = gatherTileProblem(w, t[k], tt[k]);
+        if (why) return fail('bad_value', `schedule.templateTiles.${id}[${k}]：${why}`, 'schedule.templateTiles');
+      }
+    }
     if (!Array.isArray(sc.overrides)) return fail('bad_type', 'schedule.overrides 必須是陣列', 'schedule.overrides');
     let prev = null;
     for (const o of sc.overrides) {
-      if (!isPlainObject(o) || !sameKeys(o, ['discipleId', 'slotIndex', 'action'])) {
-        return fail('bad_value', 'schedule.overrides 項目必須恰好含 discipleId、slotIndex、action', 'schedule.overrides');
+      if (!isPlainObject(o) || !(sameKeys(o, ['discipleId', 'slotIndex', 'action']) || sameKeys(o, ['discipleId', 'slotIndex', 'action', 'tileId']))) {
+        return fail('bad_value', 'schedule.overrides 項目必須恰好含 discipleId、slotIndex、action（採集可加 tileId）', 'schedule.overrides');
       }
       const d = typeof o.discipleId === 'string' ? byId.get(o.discipleId) : undefined;
       if (!d) return fail('bad_value', `schedule.overrides 含不在隊的角色：${String(o.discipleId)}`, 'schedule.overrides');
@@ -421,6 +445,10 @@
       }
       if (typeof o.action !== 'string' || !ACTION_IDS.includes(o.action)) {
         return fail('bad_value', `schedule.overrides.action 未知：${String(o.action)}`, 'schedule.overrides');
+      }
+      if (hasOwn(o, 'tileId')) {
+        const why = gatherTileProblem(w, o.action, o.tileId);
+        if (why) return fail('bad_value', `schedule.overrides.tileId：${why}`, 'schedule.overrides');
       }
       if (prev && (prev.slotIndex > o.slotIndex || (prev.slotIndex === o.slotIndex && prev.discipleId >= o.discipleId))) {
         return fail('bad_value', 'schedule.overrides 必須依 slotIndex、discipleId 嚴格遞增（無重複）', 'schedule.overrides');
@@ -569,6 +597,35 @@
           return fail('inconsistent_jobs', `設施工作位超過 ${Rules.FACILITIES[fac.target.facilityType].workSlots}`, 'jobs');
         }
       }
+    }
+    return null;
+  }
+
+  // 工作位持久輪候：每個角色至多一筆「對某個位已連續落選 waited 格」。取得位、改做別的事或位失效時紀錄消失。
+  function validateSeatWaits(w) {
+    const bad = (i, reason) => fail('inconsistent_seat_waits', reason, `seatWaits[${i}]`);
+    if (!Array.isArray(w.seatWaits)) return fail('bad_type', 'seatWaits 必須是陣列', 'seatWaits');
+    const members = new Set(w.disciples.map((d) => d.id));
+    let prev = null;
+    for (let i = 0; i < w.seatWaits.length; i++) {
+      const r = w.seatWaits[i];
+      if (!isPlainObject(r) || !sameKeys(r, ['discipleId', 'seat', 'waited'])) {
+        return fail('bad_value', 'seatWaits 項目必須恰好含 discipleId、seat、waited', `seatWaits[${i}]`);
+      }
+      if (typeof r.discipleId !== 'string' || !members.has(r.discipleId)) return bad(i, `seatWaits[${i}].discipleId 必須是在隊角色`);
+      if (!isNonNegInt(r.waited) || r.waited < 1 || r.waited > w.slotIndex) return bad(i, `seatWaits[${i}].waited 必須是 1 到 slotIndex（${w.slotIndex}）的整數`);
+      if (prev !== null && prev >= r.discipleId) return bad(i, 'seatWaits 必須依 discipleId 嚴格遞增（每人至多一筆）');
+      prev = r.discipleId;
+      if (typeof r.seat !== 'string') return bad(i, `seatWaits[${i}].seat 必須是字串`);
+      let ok = false;
+      if (r.seat.startsWith('facility:')) {
+        const j = w.jobs.find((x) => 'facility:' + x.id === r.seat);
+        ok = !!j && j.kind === 'build' && j.status === 'done' && (j.target.facilityType === 'spiritTerrace' || j.target.facilityType === 'residence');
+      } else if (r.seat.startsWith('tile:')) {
+        const t = w.tiles.find((x) => 'tile:' + x.id === r.seat);
+        ok = !!t && (t.terrain === 'material' || t.terrain === 'herb');
+      }
+      if (!ok) return bad(i, `seatWaits[${i}].seat 必須是已完工的聚靈台／居所，或資源點：${r.seat}`);
     }
     return null;
   }
@@ -764,6 +821,8 @@
     if (jobsErr) return jobsErr;
     const resvErr = validateReservations(w);
     if (resvErr) return resvErr;
+    const waitsErr = validateSeatWaits(w);
+    if (waitsErr) return waitsErr;
     const logErr = validateLogs(w);
     if (logErr) return logErr;
 
@@ -919,7 +978,7 @@
     INVITATION_STATUSES, ACTION_IDS, MASTER_ID, PROTAGONIST_ID, CANDIDATE_IDS, MAX_ROSTER,
     CHARACTER_OPTION_LIMITS, DEFAULT_CHARACTER_OPTIONS, CANONICAL_EXCLUDED_FIELDS,
     BASIS_POINTS, ROUNDING_MODE,
-    newWorld, validateCharacterOptions, validateWorld, rosterAt, jobIdOf, jobDuration, jobCost, facilitySeat,
+    newWorld, validateCharacterOptions, validateWorld, rosterAt, jobIdOf, jobDuration, jobCost, facilitySeat, GATHER_TERRAIN, gatherTileProblem,
     canonicalize, sha256Hex, hashWorld, serializeState, parseState, mulBp,
   };
 });

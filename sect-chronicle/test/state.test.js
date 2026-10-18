@@ -48,7 +48,8 @@ test('預設新局：欄位齊全、師徒兩人、候選另存、story 初值',
   const w = world('seed-a');
   assert.equal(w.schemaVersion, 3);
   assert.equal(w.ruleVersion, 2);
-  assert.deepEqual(w.schedule, { templates: {}, overrides: [] });
+  assert.deepEqual(w.schedule, { templates: {}, overrides: [], templateTiles: {} });
+  assert.deepEqual(w.seatWaits, []);
   assert.equal(w.rngVersion, 1);
   assert.equal(w.seed, 'seed-a');
   assert.equal(w.scenarioId, 'slice-14');
@@ -458,6 +459,7 @@ test('canonical 不排除任何影響世界的欄位：改動任一頂層欄位 
     resources: (x) => { x.resources.spiritHerb += 1; },
     tiles: (x) => { x.tiles[0].element = 'metal'; },
     inventory: (x) => { x.inventory['breakthrough-pill'] += 1; },
+    seatWaits: (x) => { x.seatWaits.push({ discipleId: S.MASTER_ID, seat: 'tile:t-0-0', waited: 1 }); },
     disciples: (x) => { x.disciples[0].stamina -= 1; },
     candidates: (x) => { x.candidates.reverse(); },
     jobs: (x) => { x.jobs.push({ id: 'j' }); },
@@ -853,9 +855,10 @@ test('SG-04 升 schema 3 後，每個固定 seed 與 schema 1／rule 2 golden �
     const b = JSON.parse(n.canonical);
     assert.equal(a.schemaVersion, 1);
     assert.equal(b.schemaVersion, 3);
-    assert.deepEqual(b.schedule, { templates: {}, overrides: [] });
+    assert.deepEqual(b.schedule, { templates: {}, overrides: [], templateTiles: {} });
     a.schemaVersion = 3;
-    a.schedule = { templates: {}, overrides: [] };
+    a.schedule = { templates: {}, overrides: [], templateTiles: {} };
+    a.seatWaits = [];
     a.tiles = Rules.initialTiles();
     a.inventory = { 'breakthrough-pill': 0 };
     assert.deepEqual(b, a, `${o.name}：除 schemaVersion、schedule、tiles、inventory 外世界內容完全相同`);
@@ -876,7 +879,8 @@ test('升版後每個固定 seed 與 SG-01 golden（schema 1／rule 1）的差�
     assert.equal(a.ruleVersion, 1);
     a.ruleVersion = 2;
     a.schemaVersion = 3;
-    a.schedule = { templates: {}, overrides: [] };
+    a.schedule = { templates: {}, overrides: [], templateTiles: {} };
+    a.seatWaits = [];
     a.tiles = Rules.initialTiles();
     a.inventory = { 'breakthrough-pill': 0 };
     assert.deepEqual(b, a, o.name);
@@ -924,6 +928,7 @@ function midWorld() {
       { discipleId: S.PROTAGONIST_ID, slotIndex: 22, action: 'cultivate' },
       { discipleId: 'cand-1', slotIndex: 25, action: 'gather-herb' },
     ],
+    templateTiles: {},
   };
   return w;
 }

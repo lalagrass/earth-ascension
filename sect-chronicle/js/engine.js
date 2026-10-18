@@ -8,8 +8,9 @@
  *   aid／breakthrough／support、援村發獎、招募入隊、危機結算與 ending 屬 SG-04A／05／06；引擎遇到需要它們的故事事件時
  *   回 unsupported_story_effect，不假成功。丹藥只入庫，沒有消耗或 buff。
  * - 工作：有 active reservation 的角色續做該工作（課表被忽略）；queued job 在格初走 arbitrate 開工請求
- *   （參與者＋工作位＋成本整批成敗；成功才扣一次成本並建立 reservation，失敗只累計 waited）。資源取格初快照，
- *   同格採集不能支付本格新工作。完工在最後工期格末；設施與煉丹次格才可用。
+ *   （參與者＋工作位＋成本整批成敗；成功才扣一次成本並建立 reservation，失敗只累計 waited，且該角色這格只做一次
+ *   有原因的明示休養，不照原課表）。資源取格初快照，同格採集不能支付本格新工作。完工在最後工期格末；設施與煉丹次格才可用。
+ * - 工作位：聚靈台（1）、居所休養（2）、每個資源點各自 2 位；等待值存在 world.seatWaits（連續落選格數，取得位或改要別的位時重置）。
  * - advance 是同步原子運算：輸入世界不被修改；任何失敗都回 { ok:false, code, reason }，世界不變。
  * - 每格固定順序：①待選／ending／情境長度檢查 → ②依即將結算的 slotIndex 寫入一次性階段事件 → ③從課表建立意圖
  *   → ④仲裁（等待較久優先、其次穩定 ID；整批一起成功或失敗；失敗轉明示休養）→ ⑤在同一個格初快照計算效果
@@ -160,6 +161,10 @@
         id: `slot${slotIndex}:${d.id}`, discipleId: d.id, action: sched.action, source: sched.source,
         waited: 0, cost: {}, seats: {}, participants: [d.id],
       };
+      if (sched.action === 'gather-material' || sched.action === 'gather-herb') {
+        // 採集一定落在某個資源點：課表指定的地塊；沒指定就用該資源種類排序最前的點（穩定預設）。
+        intent.tileId = sched.tileId || world.tiles.find((t) => t.terrain === State.GATHER_TERRAIN[sched.action]).id;
+      }
       if (sched.action === 'gather-herb') {
         const g = Rules.gatherYield({ slotIndex, resource: 'spiritHerb', craft: d.attributes.craft, stamina: Rules.VALUE_LIMITS.staminaMax });
         if (g.locked) Object.assign(intent, { action: 'rest', fallback: { from: 'gather-herb', reason: 'locked' } });
@@ -172,21 +177,24 @@
   function readyFacility(snapshot, facilityType) {
     return snapshot.jobs.find((j) => j.kind === 'build' && j.status === 'done' && j.target.facilityType === facilityType) || null;
   }
-  const terrainSeatKey = (terrain) => `terrain:${terrain}`;
-  function terrainCapacity(snapshot, terrain) {
-    return snapshot.tiles.filter((t) => t.terrain === terrain).length * Rules.TERRAIN[terrain].workSlots;
-  }
+  const tileSeatKey = (tileId) => `tile:${tileId}`;
   function placementBp(snapshot, facilityJob) {
     return Rules.evaluateFacilityPlacement(snapshot.tiles, facilityJob.target.tileId, facilityJob.target.facilityType).multiplierBp;
   }
 
-  // 不需要 job 的基礎行動可能要一個「位」：聚靈台修行位、居所休養位、資源點工作位。固定輪候配位（等待較久、其次穩定 ID），
-  // 配不到位：修行／休養回明示的野外版本（seatFallback），採集沿用休養備案。回傳原意圖的複本，附上 seat／multiplierBp。
+  // 不需要 job 的基礎行動可能要一個「位」：聚靈台修行位、居所休養位、「某一個」資源點的工作位（每點各自 Rules.TERRAIN.workSlots）。
+  // 固定輪候配位（等待較久、其次穩定 ID）。等待來自 world.seatWaits：同一個位連續落選 N 格 → 下一格 waited = N；
+  // 取得位、改要別的位／別的行動時重置。配不到位：修行／休養回明示的野外版本（seatFallback），採集沿用休養備案。
+  // 回傳 { intents: 原意圖的複本（附 seat／multiplierBp）, waits: 新的 seatWaits（依 discipleId 排序） }。
   function assignSeats(snapshot, intents) {
     const caps = {};
     const wants = new Map();
     const terrace = readyFacility(snapshot, 'spiritTerrace');
     const residence = readyFacility(snapshot, 'residence');
+    const priorWait = (discipleId, key) => {
+      const r = snapshot.seatWaits.find((x) => x.discipleId === discipleId);
+      return r && r.seat === key ? r.waited : 0;
+    };
     for (const i of intents) {
       let key = null;
       if (i.action === 'cultivate' && terrace) {
@@ -196,37 +204,41 @@
         key = State.facilitySeat(residence.id);
         caps[key] = Rules.FACILITIES.residence.restSlots;
       } else if (i.action === 'gather-material' || i.action === 'gather-herb') {
-        const terrain = i.action === 'gather-material' ? 'material' : 'herb';
-        key = terrainSeatKey(terrain);
-        caps[key] = terrainCapacity(snapshot, terrain);
+        const tile = snapshot.tiles.find((t) => t.id === i.tileId);
+        key = tileSeatKey(tile.id);
+        caps[key] = Rules.TERRAIN[tile.terrain].workSlots;
       }
       if (key) wants.set(i.id, key);
     }
     const arb = arbitrate({
       requests: intents.filter((i) => wants.has(i.id)).map((i) => ({
-        id: i.id, discipleId: i.discipleId, waited: i.waited, cost: {}, seats: { [wants.get(i.id)]: 1 }, participants: [i.discipleId],
+        id: i.id, discipleId: i.discipleId, waited: priorWait(i.discipleId, wants.get(i.id)), cost: {}, seats: { [wants.get(i.id)]: 1 }, participants: [i.discipleId],
       })),
       resources: {},
       seats: caps,
     });
     const deniedIds = new Set(arb.denied.map((d) => d.id));
-    return intents.map((i) => {
-      const out = cloneJson(i);
+    const waits = [];
+    const out = intents.map((i) => {
+      const o = cloneJson(i);
       const key = wants.get(i.id);
-      if (!key) return out;
+      if (!key) return o;
       if (deniedIds.has(i.id)) {
+        waits.push({ discipleId: i.discipleId, seat: key, waited: priorWait(i.discipleId, key) + 1 });
         if (i.action === 'gather-material' || i.action === 'gather-herb') {
-          Object.assign(out, { action: 'rest', fallback: { from: i.action, reason: 'no_seat' } });
+          Object.assign(o, { action: 'rest', fallback: { from: i.action, reason: 'no_seat' } });
         } else {
-          out.seatFallback = { seat: key, reason: 'no_seat' };
+          o.seatFallback = { seat: key, reason: 'no_seat' };
         }
-        return out;
+        return o;
       }
-      out.seat = key;
-      if (i.action === 'cultivate') out.multiplierBp = placementBp(snapshot, terrace);
-      if (i.action === 'rest') out.multiplierBp = placementBp(snapshot, residence);
-      return out;
+      o.seat = key;
+      if (i.action === 'cultivate') o.multiplierBp = placementBp(snapshot, terrace);
+      if (i.action === 'rest') o.multiplierBp = placementBp(snapshot, residence);
+      return o;
     });
+    waits.sort((x, y) => byIdAsc(x.discipleId, y.discipleId));
+    return { intents: out, waits };
   }
 
   // ---------- 效果（全部以格初快照計算） ----------
@@ -346,9 +358,23 @@
     for (const job of jobPlan.granted) jobOf.set(job.discipleId, { job, phase: 'started' });
 
     // 其餘角色依課表行動；設施位與資源點位固定輪候配位
-    const freeIntents = planIntents(next, s).filter((i) => !jobOf.has(i.discipleId));
+    // 開工請求被拒、又沒有其他進行中／成功工作的角色：這格只做一次有原因的明示休養（不照原課表）。
+    const deniedBy = new Map();
+    for (const d of jobPlan.denied) {
+      const job = snapshot.jobs.find((j) => j.id === d.jobId);
+      if (!jobOf.has(job.discipleId) && !deniedBy.has(job.discipleId)) deniedBy.set(job.discipleId, { job, code: d.code });
+    }
+    const freeIntents = planIntents(next, s).filter((i) => !jobOf.has(i.discipleId)).map((i) => {
+      const dn = deniedBy.get(i.discipleId);
+      if (!dn) return i;
+      return {
+        id: i.id, discipleId: i.discipleId, action: 'rest', source: 'job-denied', waited: 0, cost: {}, seats: {}, participants: [i.discipleId],
+        fallback: { from: dn.job.kind === 'build' ? 'build' : 'brew', reason: dn.code, jobId: dn.job.id },
+      };
+    });
     const seated = assignSeats(snapshot, freeIntents);
-    const intentOf = new Map(seated.map((i) => [i.discipleId, i]));
+    next.seatWaits = seated.waits;
+    const intentOf = new Map(seated.intents.map((i) => [i.discipleId, i]));
 
     // ⑤ 在格初快照上計算所有效果
     const results = State.rosterAt(snapshot, s).map((d) => {
@@ -366,6 +392,7 @@
       const delta = computeEffect(snapshot, s, intent);
       const r = { discipleId: intent.discipleId, action: intent.action, source: intent.source, delta };
       if (intent.fallback) r.fallback = intent.fallback;
+      if (intent.tileId) r.tileId = intent.tileId;
       if (intent.seat) r.seat = intent.seat;
       if (intent.multiplierBp !== undefined) r.multiplierBp = intent.multiplierBp;
       if (intent.seatFallback) r.seatFallback = intent.seatFallback;

@@ -99,7 +99,7 @@ test('新局：固定 25 格地圖、空 inventory／jobs／reservations；schem
   assert.deepEqual(Object.keys(w.inventory), Object.keys(Rules.RECIPES));
 });
 
-test('schema 2 存檔（SG-03 歷史 golden）被明確拒絕，輸入不變；與 schema 3 的差異只有 schemaVersion、tiles、inventory', () => {
+test('schema 2 存檔（SG-03 歷史 golden）被明確拒絕，輸入不變；與 schema 3 的差異只有 schemaVersion、tiles、inventory、seatWaits、schedule.templateTiles', () => {
   const old = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.schema2-rule2.json'), 'utf8'));
   const cur = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.json'), 'utf8'));
   assert.equal(old.schemaVersion, 2);
@@ -118,7 +118,9 @@ test('schema 2 存檔（SG-03 歷史 golden）被明確拒絕，輸入不變；�
     a.schemaVersion = 3;
     a.tiles = Rules.initialTiles();
     a.inventory = { 'breakthrough-pill': 0 };
-    assert.deepEqual(b, a, `${cur.cases[i].name}：除 schemaVersion、tiles、inventory 外完全相同`);
+    a.schedule.templateTiles = {};
+    a.seatWaits = [];
+    assert.deepEqual(b, a, `${cur.cases[i].name}：除 schemaVersion、tiles、inventory、seatWaits、schedule.templateTiles 外完全相同`);
   }
 });
 
@@ -503,8 +505,9 @@ test('材料不足：整批拒絕、不部分扣費、原因可見、輪候累�
   assert.equal(r.state.jobs[0].status, 'queued');
   assert.equal(r.state.jobs[0].waited, 1);
   assert.equal(r.state.reservations.length, 0);
-  assert.equal(result(r.state, M).action, 'gather-material', '被拒的工作回到課表行動，不是第二份效果');
-  assert.equal(result(r.state, M).delta.spiritMaterial > 0, true);
+  assert.equal(result(r.state, M).action, 'rest', '被拒的工作轉成明示休養備案（PR #91 R2），不照原課表採集');
+  assert.deepEqual(result(r.state, M).fallback, { from: 'build', reason: 'insufficient_resource', jobId: 'job-0001' });
+  assert.equal(result(r.state, M).delta.spiritMaterial, 0);
   // 繼續採集，直到足夠後自動開工（同格採集不能支付本格工作：開工發生在資源已存在的下一格）
   let cur = r.state;
   let startedAt = null;
@@ -552,7 +555,8 @@ test('最後一份材料／同一人兩個工作：只有合格者成功、無�
   assert.equal(r.state.jobs[1].waited, 1);
   assert.equal(lastResolved(r.state).denied[0].code, 'insufficient_resource');
   assert.ok(Object.values(r.state.resources).every((v) => v >= 0));
-  assert.deepEqual([result(r.state, P).action, result(r.state, P).source], ['rest', 'default'], '被拒的主角照自己的課表（預設休養）行動一次');
+  assert.equal(result(r.state, P).action, 'rest');
+  assert.deepEqual(result(r.state, P).fallback, { from: 'build', reason: 'insufficient_resource', jobId: 'job-0002' }, '被拒的主角只執行一次有原因的休養備案');
   // 材料 = 6：丹房放不下（被拒），較後的聚靈台放得下 → 不被前者阻擋
   let v = clone(WITH_MATERIAL());
   v.resources.spiritMaterial = 6;
