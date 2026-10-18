@@ -61,7 +61,7 @@ node sect-chronicle/tools/smoke.js --seed demo --breakthrough pill-support # SG-
 公開 API（全部回傳新值、不修改輸入；深凍結的世界也可執行；失敗回 `{ok:false, code, reason}` 且世界、RNG、revision 不變）：
 
 - `Commands.dispatch(world, {id, expectedRevision, type, payload})` → `{ok:true, duplicate, state, events}`。
-- `Engine.advance(world, slots = 1)` → `{ok:true, state, events, advanced, stopReason, error?}`；`stopReason` 為 `completed`、`pendingEvent`（遇到待選立即停，`advanced` 是實際推進的格數）或 `error`（批次中途遇到不支援的故事事件，已推進的格數保留）。
+- `Engine.advance(world, slots = 1)` → `{ok:true, state, events, advanced, stopReason, error?}`；`stopReason` 為 `completed`、`pendingEvent`（遇到待選立即停，`advanced` 是實際推進的格數）、`breakthroughResolved`（SG-05：本格有突破結果——成功或失敗——已完整提交，批次停在下一格，讓玩家調整；同格有待選事件時 `pendingEvent` 優先）或 `error`（批次中途遇到不支援的故事事件，已推進的格數保留）。
 - `Engine.arbitrate({requests, resources, seats})`、`Engine.settleIntents(intents, supply)`：純仲裁；`Engine.planIntents`、`Engine.factsFor`；`Commands.validateEngineWorld`、`Commands.scheduledAction`、`Commands.payloadHash`。
 
 **命令處理順序**（有測試）：①世界驗證（`invalid_world`）→②封套形狀（`bad_command`）→③同 id 重送：同 type＋payload 回已處理結果（`duplicate:true`，回傳目前世界、不增 revision、不重複紀錄、不覆蓋較新世界），異內容 `command_id_conflict` →④`expectedRevision`（`stale_revision`／`revision_ahead`）→⑤命令類型（`unknown_command`／`not_supported_yet`）→⑥各命令的 payload（`bad_payload`）、phase、內容驗證與套用。被拒絕的命令不寫 `commandLog`（不佔用 id）。成功的命令 revision 恰好 +1，並寫入 `commandLog`（序號連續、含 payload hash）與 `eventLog`。
@@ -152,7 +152,7 @@ node sect-chronicle/tools/smoke.js --seed demo --breakthrough pill-support # SG-
 - 開工（格初快照，與既有 job 同一仲裁）：參與者＝本人＋支援者，成本＝可選一枚丹，整批成敗；落選（`insufficient_resource`／`participant_busy`）不扣丹、不抽樣、本人這格明示休養並記 `waited`。支援者占自己的一格（`support`，體力 −10），不能兼工作。突破占一格，同格開工同格完成。恰好一丹扣到 0 仍套用加成。
 - 抽樣：每個真正開工的突破恰好一次邏輯抽樣 `Rng.nextInt(state, 10000)`，依 job ID 順序；機率讀格初心境（扣行動心境前）。成功：修為保留 100、`breakthroughs=1`；失敗：100→70、傷勢 +15（夾上限 100）；主角 −20 體力／−5 心境。可恢復並再修至 100 後重試；每人最多一次**成功**提升。
 - 修行：實得 `min(公式收益, 100−格初修為)`，仍付一格修行成本；格初已滿 100 或已提升者的修行意圖在配位前轉明示休養（不占聚靈台、不扣修行成本、不改課表）。
-- 一致性（`Commands.validateEngineWorld`）：outcome 的機率／結果／前後修為傷勢可由 `rules.js` 重算；`breakthroughs` 必須等於成功突破 job 數；排隊中的突破其本人必須修為 100 且未成功；同人至多一個排隊中突破。
+- 一致性（`Commands.validateEngineWorld`）：outcome 的機率／結果／前後修為傷勢可由 `rules.js` 重算；`breakthroughs` 必須等於成功突破 job 數；排隊中的突破其本人必須修為 100 且未成功；同人至多一個排隊中突破。支援者必須在突破排隊格當時或之前已入隊（`joinSlotIndex ≤ queuedSlotIndex`，入隊當格可支援；對 queued 與 done 都檢查，不必重播 eventLog）。
 
 **RNG**：突破是 rngVersion 1 的第一個消費者（之前整條 42 格路徑 `rngState` 不變）。沒有突破的路徑 `rngState` 仍保持初值。
 

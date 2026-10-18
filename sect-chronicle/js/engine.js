@@ -17,6 +17,8 @@
  *   → ④仲裁（等待較久優先、其次穩定 ID；整批一起成功或失敗；失敗轉明示休養）→ ⑤在同一個格初快照計算效果
  *   → ⑥一次提交（資源、角色狀態、slotIndex／revision +1、事件）→ ⑦日末日報與待選事件（援村求援、獸患危機），
  *   有待選事件就轉 awaitingChoice 並停止批次。
+ * - advance 批次停止原因：pendingEvent（待選事件，優先）、breakthroughResolved（本格有突破結果，已完整提交，停在下一格）、
+ *   completed、error。
  * - 載入策略：Node 以 CommonJS；瀏覽器依序載入 rng.js、rules.js、state.js、story-data.js、commands.js 再載入本檔，
  *   掛在 globalThis.SectChronicle.Engine。
  */
@@ -581,6 +583,11 @@
       advanced += 1;
       if (w.phase !== 'planning') {
         stopReason = 'pendingEvent';
+        break;
+      }
+      // 突破結果（成功或失敗）已在本格原子提交：停在下一格讓玩家調整；待選事件仍優先（上面已處理）。
+      if (r.events.some((e) => e.type === 'breakthroughResolved')) {
+        stopReason = 'breakthroughResolved';
         break;
       }
     }

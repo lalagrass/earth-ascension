@@ -14,6 +14,7 @@ const State = require('../js/state.js');
 const C = require('../js/commands.js');
 const E = require('../js/engine.js');
 const Progression = require('../js/progression.js');
+const { withDoneAid, withInvitation } = require('./helpers.js');
 
 const clone = (x) => JSON.parse(JSON.stringify(x));
 const M = State.MASTER_ID;
@@ -704,6 +705,123 @@ test('20 seed × 42 格：封頂、成功鎖定、失敗重試；單步＝3 格�
   assert.ok(successes > 0 && failures > 0, `成功 ${successes}／失敗 ${failures} 都必須出現`);
   assert.ok(pillsUsed > 0 && supported > 0 && overflowRows > 0, `丹 ${pillsUsed}／支援 ${supported}／溢出 ${overflowRows}`);
   assert.deepEqual([...blocked].sort(), ['breakthrough_done', 'cultivation_full']);
+});
+
+// ---------- 審查修正 R1／R2（PR #97 review） ----------
+
+test('R1：突破結果提交後 advance 批次停在下一格（成功與失敗都一樣），不越過結果', () => {
+  for (const wantSuccess of [true, false]) {
+    const seed = seedFor(5500, wantSuccess);
+    for (const batch of [1, 3, 42]) {
+      const w0 = queue(ready(seed), P);
+      const r = step(w0, batch);
+      assert.equal(r.advanced, 1, `${wantSuccess}/${batch}`);
+      assert.equal(r.stopReason, 'breakthroughResolved');
+      assert.equal(r.state.slotIndex, 1);
+      assert.equal(r.state.phase, 'planning');
+      assert.equal(r.state.jobs[0].outcome.result, wantSuccess ? 'success' : 'failure');
+      assert.equal(evs(r.state, 'breakthroughResolved').length, 1);
+      assert.equal(valid(r.state).ok, true);
+      // 玩家可在停點調整；再推進不會重複停（沒有新的突破結果）
+      const more = step(r.state, 2);
+      assert.equal(more.advanced, 2);
+      assert.equal(more.stopReason, 'completed');
+    }
+  }
+});
+
+test('R1：同格兩個突破一起原子提交後只停一次；落選（沒丹）的突破不算結果、不停止', () => {
+  const seed = seedFor(5500, true);
+  let w = ready(seed, [M, P]);
+  w = queue(w, M, false, null);
+  w = queue(w, P, false, null);
+  const r = step(w, 3);
+  assert.equal(r.advanced, 1);
+  assert.equal(r.stopReason, 'breakthroughResolved');
+  assert.equal(r.state.jobs.filter((j) => j.kind === 'breakthrough' && j.status === 'done').length, 2);
+  assert.equal(evs(r.state, 'breakthroughResolved').length, 2);
+
+  const denied = queue(ready(seed), P, true, null); // 沒有丹：開工仲裁落選，沒有結果
+  assert.equal(denied.inventory[PILL], 0);
+  const d = step(denied, 3);
+  assert.equal(d.advanced, 3);
+  assert.equal(d.stopReason, 'completed');
+  assert.equal(evs(d.state, 'breakthroughResolved').length, 0);
+});
+
+test('R1：待選事件優先於突破停止原因；結果仍已完整提交', () => {
+  // 先找出不排突破時第一個待選事件所在的格
+  let probe = ready('r1-pe');
+  for (const id of [M, P]) probe = send(probe, 'setDailyTemplate', { discipleId: id, parts: ['rest', 'rest', 'rest'] });
+  const pe = step(probe, 42);
+  assert.equal(pe.stopReason, 'pendingEvent');
+  const lastSlot = pe.state.slotIndex - 1;
+  let w = probe;
+  if (lastSlot > 0) w = step(w, lastSlot).state;
+  assert.equal(w.slotIndex, lastSlot);
+  disc(w, P).cultivation = 100;
+  w = queue(w, P);
+  const r = step(w, 3);
+  assert.equal(r.advanced, 1);
+  assert.equal(r.stopReason, 'pendingEvent');
+  assert.equal(r.state.phase, 'awaitingChoice');
+  assert.equal(evs(r.state, 'breakthroughResolved').length, 1);
+  assert.equal(r.state.jobs[0].status, 'done');
+  assert.equal(valid(r.state).ok, true);
+});
+
+// 讓 P 的突破帶支援者 cand-1：先正式排隊並讓它保持 queued（沒丹落選），或正式完成；之後把 cand-1 以指定 joinSlotIndex 放進隊伍。
+function supporterWorld(joinSlotIndex, { done }) {
+  const seed = seedFor(5500, true);
+  let w = ready(seed);
+  w = queue(w, P, !done, M); // done:false → 要丹但沒丹，永遠 queued
+  w = step(w, done ? 1 : 2).state;
+  w = withDoneAid(w, 0, 'free', M); // 邀請進度需要已完成的援村紀錄（援村人選與突破無關）
+  w = withInvitation(w, 'cand-1', 'accepted', joinSlotIndex);
+  return w;
+}
+const tamperSupporter = (w) => {
+  const x = clone(w);
+  x.jobs[0].target.supporterId = 'cand-1';
+  return x;
+};
+const roundTrips = (w) => {
+  try { return State.parseState(State.serializeState(w)).ok; } catch (e) { return false; } // serialize 對不合法世界會直接丟錯＝拒絕
+};
+
+test('R2：支援者入隊格晚於突破排隊格一律拒絕（queued、done；State、engine、存讀三層）', () => {
+  for (const done of [true, false]) {
+    const late = tamperSupporter(supporterWorld(done ? 1 : 2, { done }));
+    assert.equal(late.jobs[0].status, done ? 'done' : 'queued');
+    assert.ok(late.jobs[0].queuedSlotIndex < disc(late, 'cand-1').joinSlotIndex);
+    assert.equal(State.validateWorld(late).ok, false, `State done=${done}`);
+    assert.equal(valid(late).ok, false, `engine done=${done}`);
+    assert.equal(roundTrips(late), false, `parse done=${done}`);
+    // 對照：同一世界、支援者入隊格不晚於排隊格（0）→ 接受
+    const ok = tamperSupporter(supporterWorld(0, { done }));
+    assert.equal(State.validateWorld(ok).ok, true, `control State done=${done}`);
+    assert.equal(valid(ok).ok, true, `control engine done=${done}`);
+    assert.equal(roundTrips(ok), true);
+  }
+});
+
+test('R2：合法入隊當格就能支援（排隊格＝入隊格）；邊界前一格不行', () => {
+  let w = ready(seedFor(5500, true));
+  w = step(w, 2).state;                     // 第 2 格開始
+  w = withDoneAid(w, 1, 'free', M);
+  w = withInvitation(w, 'cand-1', 'accepted', 2);
+  const q = queue(w, P, false, 'cand-1');   // 排隊格 2 ＝ 入隊格 2
+  assert.equal(valid(q).ok, true);
+  assert.equal(roundTrips(q), true);
+  const r = step(q, 1);
+  assert.equal(r.state.jobs.find((j) => j.kind === 'breakthrough').status, 'done');
+  assert.equal(valid(r.state).ok, true);
+  assert.equal(roundTrips(r.state), true);
+  const early = clone(q);
+  disc(early, 'cand-1').joinSlotIndex = 2;
+  early.story.invitations['cand-1'].joinSlotIndex = 2;
+  early.jobs.find((j) => j.kind === 'breakthrough').queuedSlotIndex = 1; // 排隊格早一格（仍不早於前一個 job）
+  assert.equal(State.validateWorld(early).ok, false);
 });
 
 test('存讀不重抽、不重升：中途存檔重載後續算與不中斷一致', () => {

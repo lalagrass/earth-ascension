@@ -564,6 +564,9 @@
         if (t.supporterId !== null && (typeof t.supporterId !== 'string' || t.supporterId === j.discipleId || !byDisciple.has(t.supporterId))) {
           return bad(i, `${where(i)}.target.supporterId 必須是 null 或另一位在隊角色`);
         }
+        if (t.supporterId !== null && byDisciple.get(t.supporterId).joinSlotIndex > j.queuedSlotIndex) {
+          return bad(i, `${where(i)}.target.supporterId ${t.supporterId} 在排隊格之後才入隊，不能支援此突破`);
+        }
         if (j.status === 'queued') {
           if (pendingBreakthrough.has(j.discipleId)) return bad(i, `${j.discipleId} 同時有多個排隊中的突破`);
           pendingBreakthrough.add(j.discipleId);
