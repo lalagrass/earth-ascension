@@ -1,0 +1,535 @@
+{
+  "population_dev30": {
+    "baseline": {
+      "total_person_months": 180000,
+      "action_shares_pct": {
+        "工作": 36.81,
+        "學習": 8.07,
+        "社交": 22.9,
+        "休息": 3.76,
+        "研究": 28.34,
+        "修習": 0.11
+      },
+      "action_counts": {
+        "工作": 66258,
+        "學習": 14531,
+        "社交": 41224,
+        "休息": 6774,
+        "研究": 51019,
+        "修習": 194
+      },
+      "known_person_months": 109876,
+      "known_practice_months": 194,
+      "known_practice_rate_pct": 0.18,
+      "known_users_ever_pct": 91.0,
+      "practice_users_ever_count": 166,
+      "practice_users_of_known_pct": 6.08,
+      "discoveries_per_seed": 227.73,
+      "research_contested_per_seed": 263.6,
+      "social_setbacks_per_seed": 82.4,
+      "social_shares_per_seed": 41.43,
+      "social_milestones_per_seed": 120.0,
+      "research_streak_ge13_people": 94,
+      "research_streak_ge13_pct": 3.13,
+      "research_streak_max": 25,
+      "mean_final_health_alive": 73.92,
+      "final_alive_per_seed": 100.0
+    },
+    "arm_r": {
+      "total_person_months": 180000,
+      "action_shares_pct": {
+        "工作": 36.76,
+        "學習": 8.05,
+        "社交": 22.79,
+        "休息": 3.76,
+        "研究": 28.53,
+        "修習": 0.1
+      },
+      "action_counts": {
+        "工作": 66169,
+        "學習": 14499,
+        "社交": 41018,
+        "休息": 6774,
+        "研究": 51354,
+        "修習": 186
+      },
+      "known_person_months": 109897,
+      "known_practice_months": 186,
+      "known_practice_rate_pct": 0.17,
+      "known_users_ever_pct": 90.8,
+      "practice_users_ever_count": 157,
+      "practice_users_of_known_pct": 5.76,
+      "discoveries_per_seed": 238.53,
+      "research_contested_per_seed": 339.43,
+      "social_setbacks_per_seed": 82.17,
+      "social_shares_per_seed": 41.17,
+      "social_milestones_per_seed": 119.83,
+      "research_streak_ge13_people": 101,
+      "research_streak_ge13_pct": 3.37,
+      "research_streak_max": 27,
+      "mean_final_health_alive": 73.72,
+      "final_alive_per_seed": 100.0
+    },
+    "arm_s": {
+      "total_person_months": 180000,
+      "action_shares_pct": {
+        "工作": 36.42,
+        "學習": 7.87,
+        "社交": 23.95,
+        "休息": 3.68,
+        "研究": 27.99,
+        "修習": 0.1
+      },
+      "action_counts": {
+        "工作": 65553,
+        "學習": 14165,
+        "社交": 43108,
+        "休息": 6621,
+        "研究": 50379,
+        "修習": 174
+      },
+      "known_person_months": 109738,
+      "known_practice_months": 174,
+      "known_practice_rate_pct": 0.16,
+      "known_users_ever_pct": 90.37,
+      "practice_users_ever_count": 147,
+      "practice_users_of_known_pct": 5.42,
+      "discoveries_per_seed": 227.0,
+      "research_contested_per_seed": 259.2,
+      "social_setbacks_per_seed": 63.83,
+      "social_shares_per_seed": 41.73,
+      "social_milestones_per_seed": 121.03,
+      "research_streak_ge13_people": 100,
+      "research_streak_ge13_pct": 3.33,
+      "research_streak_max": 25,
+      "mean_final_health_alive": 73.66,
+      "final_alive_per_seed": 100.0
+    },
+    "arm_p": {
+      "total_person_months": 180000,
+      "action_shares_pct": {
+        "工作": 36.31,
+        "學習": 7.79,
+        "社交": 22.56,
+        "休息": 4.0,
+        "研究": 27.53,
+        "修習": 1.82
+      },
+      "action_counts": {
+        "工作": 65355,
+        "學習": 14013,
+        "社交": 40606,
+        "休息": 7206,
+        "研究": 49549,
+        "修習": 3271
+      },
+      "known_person_months": 110027,
+      "known_practice_months": 3271,
+      "known_practice_rate_pct": 2.97,
+      "known_users_ever_pct": 91.13,
+      "practice_users_ever_count": 1286,
+      "practice_users_of_known_pct": 47.04,
+      "discoveries_per_seed": 225.93,
+      "research_contested_per_seed": 252.53,
+      "social_setbacks_per_seed": 80.93,
+      "social_shares_per_seed": 40.97,
+      "social_milestones_per_seed": 119.53,
+      "research_streak_ge13_people": 92,
+      "research_streak_ge13_pct": 3.07,
+      "research_streak_max": 25,
+      "mean_final_health_alive": 72.34,
+      "final_alive_per_seed": 100.0
+    },
+    "arm_rsp": {
+      "total_person_months": 180000,
+      "action_shares_pct": {
+        "工作": 35.93,
+        "學習": 7.59,
+        "社交": 23.39,
+        "休息": 3.91,
+        "研究": 27.43,
+        "修習": 1.75
+      },
+      "action_counts": {
+        "工作": 64670,
+        "學習": 13669,
+        "社交": 42093,
+        "休息": 7042,
+        "研究": 49380,
+        "修習": 3146
+      },
+      "known_person_months": 110075,
+      "known_practice_months": 3146,
+      "known_practice_rate_pct": 2.86,
+      "known_users_ever_pct": 90.63,
+      "practice_users_ever_count": 1289,
+      "practice_users_of_known_pct": 47.41,
+      "discoveries_per_seed": 236.4,
+      "research_contested_per_seed": 320.6,
+      "social_setbacks_per_seed": 62.4,
+      "social_shares_per_seed": 41.03,
+      "social_milestones_per_seed": 120.1,
+      "research_streak_ge13_people": 96,
+      "research_streak_ge13_pct": 3.2,
+      "research_streak_max": 27,
+      "mean_final_health_alive": 71.97,
+      "final_alive_per_seed": 100.0
+    }
+  },
+  "player_paths": {
+    "scholar": {
+      "baseline": {
+        "dev30_mean_actions": {
+          "工作": 19.03,
+          "學習": 4.37,
+          "社交": 2.47,
+          "休息": 1.13,
+          "研究": 33.0,
+          "修習": 0.0
+        },
+        "dev30_mean_discoveries": 5.5,
+        "dev30_research_streak_ge13_seeds": 4,
+        "dev30_practice_active_seeds": 0,
+        "dev30_mean_final_health": 62.4,
+        "seed2026": {
+          "actions": {
+            "工作": 21,
+            "學習": 4,
+            "社交": 0,
+            "休息": 0,
+            "研究": 35,
+            "修習": 0
+          },
+          "discoveries": 7,
+          "longest_research_streak": 8,
+          "final_skills": {
+            "工作": 26,
+            "研究": 35,
+            "社交": 0,
+            "修習": 0
+          },
+          "final_health": 59,
+          "final_wealth": 121,
+          "completed_goals": 5
+        }
+      },
+      "arm_r": {
+        "dev30_mean_actions": {
+          "工作": 18.73,
+          "學習": 4.17,
+          "社交": 2.17,
+          "休息": 1.33,
+          "研究": 33.6,
+          "修習": 0.0
+        },
+        "dev30_mean_discoveries": 6.3,
+        "dev30_research_streak_ge13_seeds": 4,
+        "dev30_practice_active_seeds": 0,
+        "dev30_mean_final_health": 61.6,
+        "seed2026": {
+          "actions": {
+            "工作": 21,
+            "學習": 4,
+            "社交": 0,
+            "休息": 0,
+            "研究": 35,
+            "修習": 0
+          },
+          "discoveries": 8,
+          "longest_research_streak": 8,
+          "final_skills": {
+            "工作": 26,
+            "研究": 35,
+            "社交": 0,
+            "修習": 0
+          },
+          "final_health": 59,
+          "final_wealth": 121,
+          "completed_goals": 5
+        }
+      },
+      "arm_s": {
+        "dev30_mean_actions": {
+          "工作": 18.8,
+          "學習": 4.3,
+          "社交": 2.73,
+          "休息": 1.13,
+          "研究": 33.03,
+          "修習": 0.0
+        },
+        "dev30_mean_discoveries": 5.6,
+        "dev30_research_streak_ge13_seeds": 4,
+        "dev30_practice_active_seeds": 0,
+        "dev30_mean_final_health": 62.2,
+        "seed2026": {
+          "actions": {
+            "工作": 21,
+            "學習": 4,
+            "社交": 0,
+            "休息": 0,
+            "研究": 35,
+            "修習": 0
+          },
+          "discoveries": 7,
+          "longest_research_streak": 8,
+          "final_skills": {
+            "工作": 26,
+            "研究": 35,
+            "社交": 0,
+            "修習": 0
+          },
+          "final_health": 59,
+          "final_wealth": 121,
+          "completed_goals": 5
+        }
+      },
+      "arm_p": {
+        "dev30_mean_actions": {
+          "工作": 18.97,
+          "學習": 4.17,
+          "社交": 2.4,
+          "休息": 1.23,
+          "研究": 32.87,
+          "修習": 0.37
+        },
+        "dev30_mean_discoveries": 5.57,
+        "dev30_research_streak_ge13_seeds": 5,
+        "dev30_practice_active_seeds": 8,
+        "dev30_mean_final_health": 62.1,
+        "seed2026": {
+          "actions": {
+            "工作": 21,
+            "學習": 4,
+            "社交": 0,
+            "休息": 0,
+            "研究": 35,
+            "修習": 0
+          },
+          "discoveries": 7,
+          "longest_research_streak": 8,
+          "final_skills": {
+            "工作": 26,
+            "研究": 35,
+            "社交": 0,
+            "修習": 0
+          },
+          "final_health": 59,
+          "final_wealth": 121,
+          "completed_goals": 5
+        }
+      },
+      "arm_rsp": {
+        "dev30_mean_actions": {
+          "工作": 18.4,
+          "學習": 3.73,
+          "社交": 2.37,
+          "休息": 1.43,
+          "研究": 33.67,
+          "修習": 0.4
+        },
+        "dev30_mean_discoveries": 6.63,
+        "dev30_research_streak_ge13_seeds": 5,
+        "dev30_practice_active_seeds": 8,
+        "dev30_mean_final_health": 60.0,
+        "seed2026": {
+          "actions": {
+            "工作": 21,
+            "學習": 4,
+            "社交": 0,
+            "休息": 0,
+            "研究": 35,
+            "修習": 0
+          },
+          "discoveries": 9,
+          "longest_research_streak": 8,
+          "final_skills": {
+            "工作": 26,
+            "研究": 35,
+            "社交": 0,
+            "修習": 0
+          },
+          "final_health": 59,
+          "final_wealth": 121,
+          "completed_goals": 5
+        }
+      }
+    },
+    "neutral": {
+      "baseline": {
+        "dev30_mean_actions": {
+          "工作": 19.33,
+          "學習": 1.93,
+          "社交": 12.5,
+          "休息": 1.5,
+          "研究": 24.73,
+          "修習": 0.0
+        },
+        "dev30_mean_discoveries": 3.6,
+        "dev30_research_streak_ge13_seeds": 0,
+        "dev30_practice_active_seeds": 0,
+        "dev30_mean_final_health": 72.4,
+        "seed2026": {
+          "actions": {
+            "工作": 17,
+            "學習": 4,
+            "社交": 18,
+            "休息": 1,
+            "研究": 20,
+            "修習": 0
+          },
+          "discoveries": 3,
+          "longest_research_streak": 6,
+          "final_skills": {
+            "工作": 22,
+            "研究": 20,
+            "社交": 18,
+            "修習": 0
+          },
+          "final_health": 71,
+          "final_wealth": 51,
+          "completed_goals": 4
+        }
+      },
+      "arm_r": {
+        "dev30_mean_actions": {
+          "工作": 19.53,
+          "學習": 1.8,
+          "社交": 12.0,
+          "休息": 1.6,
+          "研究": 25.07,
+          "修習": 0.0
+        },
+        "dev30_mean_discoveries": 4.23,
+        "dev30_research_streak_ge13_seeds": 0,
+        "dev30_practice_active_seeds": 0,
+        "dev30_mean_final_health": 72.9,
+        "seed2026": {
+          "actions": {
+            "工作": 17,
+            "學習": 4,
+            "社交": 18,
+            "休息": 1,
+            "研究": 20,
+            "修習": 0
+          },
+          "discoveries": 3,
+          "longest_research_streak": 6,
+          "final_skills": {
+            "工作": 22,
+            "研究": 20,
+            "社交": 18,
+            "修習": 0
+          },
+          "final_health": 71,
+          "final_wealth": 51,
+          "completed_goals": 4
+        }
+      },
+      "arm_s": {
+        "dev30_mean_actions": {
+          "工作": 19.3,
+          "學習": 1.93,
+          "社交": 12.7,
+          "休息": 1.3,
+          "研究": 24.77,
+          "修習": 0.0
+        },
+        "dev30_mean_discoveries": 3.67,
+        "dev30_research_streak_ge13_seeds": 0,
+        "dev30_practice_active_seeds": 0,
+        "dev30_mean_final_health": 70.8,
+        "seed2026": {
+          "actions": {
+            "工作": 17,
+            "學習": 4,
+            "社交": 18,
+            "休息": 1,
+            "研究": 20,
+            "修習": 0
+          },
+          "discoveries": 3,
+          "longest_research_streak": 6,
+          "final_skills": {
+            "工作": 22,
+            "研究": 20,
+            "社交": 18,
+            "修習": 0
+          },
+          "final_health": 71,
+          "final_wealth": 51,
+          "completed_goals": 4
+        }
+      },
+      "arm_p": {
+        "dev30_mean_actions": {
+          "工作": 19.17,
+          "學習": 1.9,
+          "社交": 12.37,
+          "休息": 1.47,
+          "研究": 24.47,
+          "修習": 0.63
+        },
+        "dev30_mean_discoveries": 3.67,
+        "dev30_research_streak_ge13_seeds": 0,
+        "dev30_practice_active_seeds": 16,
+        "dev30_mean_final_health": 70.1,
+        "seed2026": {
+          "actions": {
+            "工作": 17,
+            "學習": 3,
+            "社交": 18,
+            "休息": 1,
+            "研究": 20,
+            "修習": 1
+          },
+          "discoveries": 3,
+          "longest_research_streak": 6,
+          "final_skills": {
+            "工作": 21,
+            "研究": 20,
+            "社交": 18,
+            "修習": 1
+          },
+          "final_health": 69,
+          "final_wealth": 55,
+          "completed_goals": 4
+        }
+      },
+      "arm_rsp": {
+        "dev30_mean_actions": {
+          "工作": 19.3,
+          "學習": 1.8,
+          "社交": 12.03,
+          "休息": 1.43,
+          "研究": 24.9,
+          "修習": 0.53
+        },
+        "dev30_mean_discoveries": 4.3,
+        "dev30_research_streak_ge13_seeds": 0,
+        "dev30_practice_active_seeds": 13,
+        "dev30_mean_final_health": 69.9,
+        "seed2026": {
+          "actions": {
+            "工作": 17,
+            "學習": 3,
+            "社交": 18,
+            "休息": 1,
+            "研究": 20,
+            "修習": 1
+          },
+          "discoveries": 3,
+          "longest_research_streak": 6,
+          "final_skills": {
+            "工作": 21,
+            "研究": 20,
+            "社交": 18,
+            "修習": 1
+          },
+          "final_health": 69,
+          "final_wealth": 55,
+          "completed_goals": 4
+        }
+      }
+    }
+  }
+}
