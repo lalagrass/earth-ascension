@@ -29,3 +29,33 @@ jobs:
       - name: Whitespace errors in the change
         if: github.event_name == 'pull_request'
         run: git diff --check origin/${{ github.base_ref }}...HEAD
+
+  game-test:
+    name: Game tests (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["22", "24"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Sect Chronicle Node tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The CI gate lands before SG-01. Docs alone are not a game test pass.
+          if [[ ! -d sect-chronicle/js && ! -d sect-chronicle/test ]]; then
+            echo "::notice::SG-01 not delivered: no game code/tests yet (bootstrap only)."
+            echo "SG-01 not delivered; game tests did not run (bootstrap only)." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          shopt -s nullglob
+          game_tests=(sect-chronicle/test/*.test.js)
+          if (( ${#game_tests[@]} == 0 )); then
+            echo "::error::Game code/test directory exists but no *.test.js files were found."
+            exit 1
+          fi
+          node --test "${game_tests[@]}"
