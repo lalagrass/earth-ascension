@@ -64,6 +64,10 @@ SG-07 可在 SG-04A 後與 05/06 分開開發，但必須依賴已合併的 sche
 
 [生活、輕功與領地防衛構想](FUTURE_BACKLOG.md) 連到 [#75](https://github.com/lalagrass/earth-ascension/issues/75)。BL-L01～BL-X01 是構想識別碼，全部未排程、未批准實作；不插入上方 SG 關鍵路徑，不改 SG-01～12（含 02A／04A）的 DoD 或依賴。待現有切片與 SG-13 真人觀察後另評估，需專案擁有人明確批准才可建立實作工作包；不自動綁定 28 天擴充，也可保留給其他專案。
 
+## 建議與產品提案入口
+
+工作包 issue 使用下方格式；建議／產品提案使用 [AGENT_PROPOSALS.md](AGENT_PROPOSALS.md) 的分流與格式。非阻擋提案不加到現有 task 的 DoD 或依賴，不拖停已批准工作；待決策只阻擋明確受影響部分。提案批准後才安排文件同步及實作認領，ready PR 交共用佇列 #67。
+
 ## Issue 可複製格式
 
 標題：`[SG-XX] 任務名`
