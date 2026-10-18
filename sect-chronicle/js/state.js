@@ -121,13 +121,15 @@
     }
     return true;
   }
-  // 陣列必須是稠密的普通陣列：無空洞、無額外屬性、無 Symbol 鍵。
+  // 陣列必須是稠密的普通陣列：無空洞、無額外屬性、無 Symbol 鍵、元素皆為可列舉的資料屬性（無 accessor）。
   function isJsonArray(v) {
     if (!Array.isArray(v)) return false;
     if (Object.getOwnPropertySymbols(v).length > 0) return false;
     if (Object.getOwnPropertyNames(v).length !== v.length + 1) return false;
     for (let i = 0; i < v.length; i++) {
-      if (!Object.prototype.hasOwnProperty.call(v, i)) return false;
+      // 只讀 descriptor，不讀值：accessor 的 getter／setter 絕不能被執行。
+      const d = Object.getOwnPropertyDescriptor(v, i);
+      if (!d || !('value' in d) || !d.enumerable) return false;
     }
     return true;
   }

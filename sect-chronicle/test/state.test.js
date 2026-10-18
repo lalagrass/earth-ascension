@@ -710,3 +710,72 @@ test('serializeState 先驗證：不合法 world（resolving、未知版本、�
   assert.equal(typeof S.serializeState(ok), 'string');
   assert.equal(S.parseState(S.serializeState(ok)).ok, true);
 });
+
+// ---------- PR #74 複核 R1 剩餘：陣列元素 accessor 不得被呼叫 ----------
+
+function arrayWithAccessor(kind, onGet) {
+  const arr = [];
+  if (kind === 'getter') {
+    Object.defineProperty(arr, '0', { enumerable: true, configurable: true, get() { return onGet(); } });
+  } else if (kind === 'setter-only') {
+    Object.defineProperty(arr, '0', { enumerable: true, configurable: true, set() { onGet(); } });
+  } else if (kind === 'getter-中間') {
+    arr.push(1, 2);
+    Object.defineProperty(arr, '2', { enumerable: true, configurable: true, get() { return onGet(); } });
+  }
+  return arr;
+}
+
+test('複核 R1 重現：陣列元素 getter 被拒絕、getter 呼叫 0 次、輸入與 RNG 不變、hash 不再不穩定', () => {
+  for (const kind of ['getter', 'setter-only', 'getter-中間']) {
+    let calls = 0;
+    const w = world('array-getter');
+    w.jobs = [{ id: 'j', payload: arrayWithAccessor(kind, () => { calls++; return calls; }) }];
+    const rngBefore = [...w.rngState];
+    const r = S.validateWorld(w);
+    assert.equal(r.ok, false, kind);
+    assert.equal(r.code, 'bad_type', kind);
+    assert.throws(() => S.hashWorld(w), TypeError, kind);
+    assert.throws(() => S.serializeState(w), TypeError, kind);
+    assert.throws(() => S.canonicalize(w.jobs), TypeError, kind);
+    assert.equal(calls, 0, `${kind}：getter／setter 不得被呼叫`);
+    assert.deepEqual(w.rngState, rngBefore, kind);
+  }
+});
+
+test('getter 若會改動 rngState，validateWorld 也不得執行它', () => {
+  const w = world('array-getter');
+  const before = [...w.rngState];
+  const payload = [];
+  Object.defineProperty(payload, '0', {
+    enumerable: true,
+    get() { w.rngState[0] = (w.rngState[0] + 1) >>> 0; return 1; },
+  });
+  w.jobs = [{ id: 'j', payload }];
+  assert.equal(S.validateWorld(w).ok, false);
+  assert.deepEqual(w.rngState, before);
+  assert.throws(() => S.canonicalize(w), TypeError);
+  assert.deepEqual(w.rngState, before);
+});
+
+test('物件屬性 getter 同樣不被呼叫；普通稠密與跨 realm 陣列仍可存讀且 hash 一致', () => {
+  let calls = 0;
+  const rec = {};
+  Object.defineProperty(rec, 'x', { enumerable: true, get() { calls++; return 1; } });
+  const w = world('array-getter');
+  w.jobs = [{ id: 'j', payload: rec }];
+  assert.equal(S.validateWorld(w).ok, false);
+  assert.throws(() => S.canonicalize(rec), TypeError);
+  assert.equal(calls, 0);
+
+  const ctx = vm.createContext({});
+  const foreignArr = vm.runInContext('[1, [2, { a: [3] }], []]', ctx);
+  const good = world('array-getter');
+  good.jobs = [{ id: 'j', payload: [1, [2, { a: [3] }], []] }, { id: 'k', payload: foreignArr }];
+  assert.deepEqual(S.validateWorld(good), { ok: true });
+  const h1 = S.hashWorld(good);
+  assert.equal(S.hashWorld(good), h1, '同一 world 連續 hash 必須相同');
+  const back = S.parseState(S.serializeState(good));
+  assert.equal(back.ok, true);
+  assert.equal(S.hashWorld(back.state), h1);
+});
