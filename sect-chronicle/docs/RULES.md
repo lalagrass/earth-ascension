@@ -12,7 +12,7 @@
 | ruleVersion | 2 | SG-01 的暫定值 1 → SG-02 凍結值 2 |
 | rngVersion | 1 | 不變：RNG 演算法與向量不動；rules.js 完全不消耗 RNG |
 
-升版影響：`state.js` 只接受 ruleVersion 2。ruleVersion 1 的存檔以 `unknown_rule_version` 明確拒絕，不就地升版、不默默重解（測試：`舊版（ruleVersion 1）存檔被明確拒絕…`）；本版不提供遷移（設計 D4：新遊戲新存檔）。固定 seed fixture 的 7 個 hash 全部改變，原因只有一個：canonical 狀態中的 `ruleVersion` 欄位由 1 變 2。測試以 `test/fixtures/new-world.v1.json`（SG-01 的歷史 golden，不再重產）逐案證明：除 `ruleVersion` 外世界內容與 rngState 完全相同。新局的 `tiles` 仍是空陣列（地圖版型在 rules.js，等 SG-04 建局時採用），因此世界狀態資料沒有其他變化。
+升版影響：`state.js` 只接受 ruleVersion 2。ruleVersion 1 的存檔以 `unknown_rule_version` 明確拒絕，不就地升版、不默默重解（測試：`舊版（ruleVersion 1）存檔被明確拒絕…`）；本版不提供遷移（設計 D4：新遊戲新存檔）。固定 seed fixture 的 7 個 hash 全部改變，原因只有一個：canonical 狀態中的 `ruleVersion` 欄位由 1 變 2。測試以 `test/fixtures/new-world.v1.json`（SG-01 的歷史 golden，不再重產）逐案證明：除 `ruleVersion` 外世界內容與 rngState 完全相同。當時新局的 `tiles` 仍是空陣列，因此世界狀態資料沒有其他變化（SG-04 起，新局的 `tiles` 採用 rules.js 的 25 格版型，見 DEVELOPMENT.md；本檔數值未變）。
 
 ## 2. 單位與取整
 

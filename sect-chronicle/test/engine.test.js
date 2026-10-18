@@ -543,7 +543,7 @@ test('引擎推進後的世界可存讀；schema 1 世界被拒絕；版本與 f
   old.schemaVersion = 1;
   assert.equal(State.parseState(JSON.stringify(old)).code, 'unknown_schema_version');
   assert.equal(E.advance(old, 1).code, 'invalid_world');
-  assert.equal(State.SCHEMA_VERSION, 2);
+  assert.equal(State.SCHEMA_VERSION, 3);
   assert.equal(State.RULE_VERSION, 2);
   assert.equal(State.RNG_VERSION, 1);
 });
