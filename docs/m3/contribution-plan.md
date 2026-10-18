@@ -1,6 +1,6 @@
 # M3 協作與可認領任務
 
-狀態：2026-10-17 的**規劃與認領規則**；[M3 追蹤 issue #18](https://github.com/lalagrass/earth-ascension/issues/18) 與 D1–D4 文件任務已建立，**尚未指派主筆，也不授權 M3 程式實作**。產品範圍與驗收以 [Creator Directions 提案](creator-briefs.md)為準；[組織演化](discovery.md)仍是備選，不與本輪混做。M2 的[未結驗收](../m2/implementation-review-retro.md)及[修復 PR 審核計畫](../m2/contribution-review-plan.md)先於 M3 開工。
+狀態：2026-10-18 的**規劃與文件審查快照**；[M3 追蹤 issue #18](https://github.com/lalagrass/earth-ascension/issues/18) 的 D2 已合入，D1／D3／D4 已提交待審，**不授權 M3 程式實作**。動態認領與判定以 issue／PR 為準，跨里程碑順序見 [PO 入口 #67](https://github.com/lalagrass/earth-ascension/issues/67)。產品範圍與驗收以 [Creator Directions 提案](creator-briefs.md)為準；[組織演化](discovery.md)仍是備選，不與本輪混做。M2 的[未結驗收](../m2/implementation-review-retro.md)及[修復 PR 審核計畫](../m2/contribution-review-plan.md)先於 M3 開工。
 
 ## 認領與審核契約
 
@@ -11,7 +11,18 @@
 
 認領留言可直接用：「主筆：Grok bot／Claude／人類；範圍：D1 等單一項目；預計檔案：…；依賴／待決策：…；base dev SHA：…；預計 PR：…」。開 draft PR 時回填連結；若需改動已被另一主筆認領的契約，先在兩筆 issue 說清先後順序。
 
-## 現在可認領：只做文件或驗收設計
+## 文件交付與目前審查狀態
+
+| 任務 | 2026-10-18 狀態 | 交接重點 |
+|---|---|---|
+| D1 #19 | Antigravity (Gemini) 已提交 [PR #62](https://github.com/lalagrass/earth-ascension/pull/62)，待審。 | 檢查語料、盲評與未校準門檻；確認題原文留在公開 repo 外。 |
+| D2 #20 | [PR #30](https://github.com/lalagrass/earth-ascension/pull/30) 已合入，issue 已關閉。 | [行動與證據盤點](action-evidence-inventory.md)作其他文件依據；候選方向仍待產品批准。 |
+| D3 #21 | Antigravity (Gemini) 已提交 [PR #63](https://github.com/lalagrass/earth-ascension/pull/63)，待審。 | 對齊 D1／D2／D4，區分工作完成度、證據與結果；檢查歷史及待生效輸入。 |
+| D4 #22 | Antigravity (Gemini) 已提交 [PR #64](https://github.com/lalagrass/earth-ascension/pull/64)，待審。 | 對齊 #10／#11；RFC 的選項不宣稱為已實作或已批准契約。 |
+
+現有任務由原作者修正；重新開放或新增認領須由 issue 明確交接。文件的合入判準與 I1–I5 的開工條件分開判定。
+
+## 文件與驗收設計的範圍
 
 這四項互不替對方定產品規則；主筆提交的是可供決策的選項與證據。維護者最後把相容結論併回 [M3 提案](creator-briefs.md)。不得在這些 PR 夾帶 M3 程式、資料遷移或付費模型呼叫。
 
