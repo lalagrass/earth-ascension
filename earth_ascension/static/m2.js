@@ -48,14 +48,17 @@ function m2Observer(p) {
   const relations = Object.entries(p.relationships_v2 || {}).sort((a,b) => b[1].trust-a[1].trust).slice(0, 8).map(([id, edge]) =>
     `<div class="event">${esc(world.people[id]?.name || id)} · 信任 ${edge.trust}<small>最近互動：${source(edge.last_event_id)}</small></div>`
   ).join('') || '<p>尚無互動關係。</p>';
+  // Decision card: only link sources that exist in this snapshot; otherwise show plain text (#53 review).
+  const sourceIfPresent = id => !id ? '尚無事件來源'
+    : eventById.has(id) ? source(id) : `<span title="找不到對應事件">${esc(id)}（不在目前快照）</span>`;
   const decisionMemories = decision
-    ? (decision.memory_event_ids.map(id => `${source(id)}${m2MemoryEffectNote(eventById.get(id), decision.action)}`).join('、') || '無')
+    ? (decision.memory_event_ids.map(id => `${sourceIfPresent(id)}${m2MemoryEffectNote(eventById.get(id), decision.action)}`).join('、') || '無')
     : '無';
   const reason = decision ? `<p><strong>${esc(decision.action)}</strong> · ${esc(p.last_action?.outcome || '')}</p>
     <p>決策當時目標 ${esc(decision.goal_label)}（${decision.goal_progress}/${decision.goal_target}${decision.goal_id !== goal.id ? `；月末已轉為「${esc(goal.label)}」` : ''}）；當時計畫步驟 ${esc(decision.plan_step)}；可行行動 ${esc(decision.feasible.join('、'))}；當時已知事實 ${esc(decision.known_fact_ids.join('、') || '尚無')}。</p>
     <p>結算 ${esc(decision.resolution)}；限制 ${esc(decision.constraints.join('、') || '無')}；社交對象 ${esc(decision.target ? (world.people[String(decision.target)]?.name || decision.target) : '無')}。</p>
     <p>基礎分數：${Object.entries(decision.scores).map(([k,v]) => `${esc(k)} ${v}`).join('、')}；選擇波動：${Object.entries(decision.noise).map(([k,v]) => `${esc(k)} ${v}`).join('、')}。</p>
-    <p>影響當月候選評分的記憶：${decisionMemories}；結果事件：${decision.outcome_event_ids.map(source).join('、')}。</p>`
+    <p>影響當月候選評分的記憶：${decisionMemories}；結果事件：${decision.outcome_event_ids.map(sourceIfPresent).join('、')}。</p>`
     : '<p>尚未行動；推進一個月後可檢視決策。</p>';
   const reviews = Array.isArray(p.goal_reviews) ? (p.goal_reviews.slice().reverse().map(r => {
     const scores = Object.entries(r.scores || {}).map(([k, v]) => `${esc(k)} ${v}`).join('、');
