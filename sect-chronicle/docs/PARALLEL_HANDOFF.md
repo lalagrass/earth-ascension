@@ -1,5 +1,7 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+**D8最新交接優先**：[REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)與RT-00 #99／總單#93取代下方從SG-01或先SG-06的舊啟動prompt。仍由原Grok單一核心agent串行，Earth PO唯一整合負責人；Gemini不參與。戰鬥延後，先交可暫停即時自主生活的契約、核心、存讀、UI與試玩；不因即時改造同時派多agent搶engine。
+
 更新：2026-10-18。使用者澄清：並行是「一位開發上層 Earth 模擬、一位開發下層遊戲」，不是兩位一起拆 SG 任務。Gemini quota 已用完，本輪不參與；任何任務與審核不得依賴 Gemini。產品分工已由擁有人於同日指定：Earth PO（Codex，本 PO 聊天）管理 Earth 並兼任唯一共用合併佇列負責人；另一個 Astra 聊天為遊戲 PO。開發主筆仍以各 issue 的實際認領為準。
 
 ## 1. 建議：同一 repo，兩個分開的 worktree
