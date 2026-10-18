@@ -3,7 +3,7 @@
  *
  * 範圍界線（設計 0.2／issue #71）：
  * - 只定義「狀態長什麼樣、怎樣才算合法」；不含規則、指令、結算引擎、UI。
- * - characterOptions 只驗證結構與型別，使用下方「先宣告的暫定常數」CHARACTER_OPTION_LIMITS 與
+ * - characterOptions 只驗證結構、型別與下方暫定常數的約束，使用下方「先宣告的暫定常數」CHARACTER_OPTION_LIMITS 與
  *   PROVISIONAL_*。SG-02 才凍結正式的模板預算／加點上限／性格枚舉與初始數值，移入 js/rules.js
  *   並升 RULE_VERSION；屆時 fixture 的變化須在 PR 說明，不可只換常數。
  * - 所有數值皆為整數；狀態中不得有小數、NaN、undefined。倍率用基點，取整一律 floor。
@@ -227,7 +227,6 @@
         triggeredEventIds: [],
         invitations: Object.fromEntries(CANDIDATE_IDS.map((id) => [id, { status: 'locked', joinSlotIndex: null }])),
         organisationStatus: 'dojo',
-        defensePrepPoints: 0,
       },
     };
     const check = validateWorld(state);
@@ -301,14 +300,11 @@
   function validateStory(w) {
     const s = w.story;
     if (!isPlainObject(s)) return fail('bad_type', 'story 必須是物件', 'story');
-    if (!sameKeys(s, ['rescues', 'triggeredEventIds', 'invitations', 'organisationStatus', 'defensePrepPoints'])) {
+    if (!sameKeys(s, ['rescues', 'triggeredEventIds', 'invitations', 'organisationStatus'])) {
       return fail('bad_value', 'story 欄位不符', 'story');
     }
     if (!ORGANISATION_STATUSES.includes(s.organisationStatus)) {
       return fail('bad_value', 'story.organisationStatus 未知', 'story.organisationStatus');
-    }
-    if (!isNonNegInt(s.defensePrepPoints)) {
-      return fail('bad_value', 'story.defensePrepPoints 必須是非負整數', 'story.defensePrepPoints');
     }
     if (!Array.isArray(s.triggeredEventIds)) return fail('bad_type', 'story.triggeredEventIds 必須是陣列', 'story.triggeredEventIds');
     const seenEvt = new Set();

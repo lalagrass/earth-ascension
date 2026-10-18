@@ -29,9 +29,9 @@ node sect-chronicle/tools/update-fixtures.js  # 僅在有意改版本時重產 f
 ## SG-01 提供的契約
 
 - `newWorld(seed, scenarioId?, characterOptions?)` → `{ok:true,state}` 或 `{ok:false,code,reason}`；失敗不建立部分世界。`scenarioId` 預設 `slice-14`（42 格）。建局不消耗 RNG。
-- `characterOptions` 為 `{templateId, allocation:{rootBone,comprehension,craft}, personality:{risk,bond}}`。**SG-01 只驗證結構與型別**，數值來自先宣告的暫定常數 `CHARACTER_OPTION_LIMITS`（三模板基底總和相同、自由配點 3、單項最終 1..6、`risk`＝cautious／bold、`bond`＝independent／caring）。SG-02 才凍結正式數值並升 ruleVersion。性格不改任何屬性或效率欄位。
+- `characterOptions` 為 `{templateId, allocation:{rootBone,comprehension,craft}, personality:{risk,bond}}`。**SG-01 驗證結構、型別及暫定常數約束**（欄位齊全、整數、不為負、總和等於暫定預算、單項在暫定上下限內、枚舉值），數值來自先宣告的暫定常數 `CHARACTER_OPTION_LIMITS`（三模板基底總和相同、自由配點 3、單項最終 1..6、`risk`＝cautious／bold、`bond`＝independent／caring）。SG-02 才凍結正式數值並升 ruleVersion。性格不改任何屬性或效率欄位。
 - 狀態：師父（`disc-master`）與主角（`disc-protagonist`）兩人開局；候選 `cand-1`、`cand-2` 另存於 `candidates`，在接受前不在 `disciples`，不參與結算。`rosterAt(world, slotIndex)` 只回傳 `joinSlotIndex ≤ slotIndex` 的角色。
-- `story`：`rescues`（援村紀錄）、`triggeredEventIds`、`invitations`（locked／invited／deferred／accepted 與 `joinSlotIndex`）、`organisationStatus`（dojo／sectFounded／foundingDeferred）、`defensePrepPoints`（守山備戰點，候選定義，待確認）。
+- `story`：`rescues`（援村紀錄）、`triggeredEventIds`、`invitations`（locked／invited／deferred／accepted 與 `joinSlotIndex`）、`organisationStatus`（dojo／sectFounded／foundingDeferred）。平日「守山」備戰點屬另案未批准提案，**不在 schema 內**。
 - `phase`：planning、awaitingChoice、ending 可保存；`resolving` 為同步原子運算，不可保存。`slotIndex` 0..42；42 之後必須先 awaitingChoice（獸患待選），結算後才 ending，沒有第 43 格；立派／暫緩只能出現在 ending。
 - `validateWorld` 對壞資料與未知版本回傳明確 `code`／`reason`／`path`，不修改輸入。所有數值必須是安全整數（拒絕小數、NaN、-0）。
 - canonical：`canonicalize` 遞迴排序 key 的 JSON；`hashWorld` 為 SHA-256 十六進位（純 JS 實作，與 Node crypto 交叉核對）。`CANONICAL_EXCLUDED_FIELDS` 為空：不排除任何欄位，包含 `characterOptions` 與 `story`。

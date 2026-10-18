@@ -73,7 +73,6 @@ test('預設新局：欄位齊全、師徒兩人、候選另存、story 初值',
       'cand-2': { status: 'locked', joinSlotIndex: null },
     },
     organisationStatus: 'dojo',
-    defensePrepPoints: 0,
   });
   assert.deepEqual(S.validateWorld(w), { ok: true });
   for (const d of w.disciples) assert.equal(d.joinSlotIndex, 0);
@@ -286,7 +285,6 @@ test('數值必須是安全整數：小數、NaN、Infinity、負值、-0 一律
     (w) => { w.resources.reputation = 0.1; },
     (w) => { w.disciples[0].stamina = 50.5; },
     (w) => { w.disciples[0].injury = -1; },
-    (w) => { w.story.defensePrepPoints = -1; },
     (w) => { w.revision = -0; },
     (w) => { w.revision = 2 ** 53; },
   ];
@@ -466,7 +464,7 @@ test('canonical 不排除任何影響世界的欄位：改動任一頂層欄位 
     characterOptions: (x) => { x.characterOptions.personality.risk = 'bold'; },
     protagonistId: (x) => { x.protagonistId = 'p2'; },
     masterId: (x) => { x.masterId = 'm2'; },
-    story: (x) => { x.story.defensePrepPoints += 1; },
+    story: (x) => { x.story.triggeredEventIds.push('evt-z'); },
   };
   assert.deepEqual(Object.keys(changers).sort(), Object.keys(w).sort(), '每個欄位都要有測試');
   for (const [k, fn] of Object.entries(changers)) {
