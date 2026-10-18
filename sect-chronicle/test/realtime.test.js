@@ -323,6 +323,101 @@ test('普通活動可覆寫趕路；已經開工的承諾取消只放開手動�
   assert.ok(w.activities.some((a) => a.kind === 'build' && a.status === 'done'));
 });
 
+test('聚靈台跨過 100 後，休養改走回道館，不留在原格', () => {
+  let w = world('rt-d7c-terrace');
+  w = runOrder(w, 'gather-material', { tileId: 't-0-0' }, 4);
+  w = runOrder(w, 'build', { facilityType: 'spiritTerrace', tileId: 't-0-1' }, 2);
+  w = runOrder(w, 'rest', {}, 2);
+  w = order(w, 'cultivate', {}, 20);
+  let guard = 0;
+  let rest = null;
+  while (!rest) {
+    assert.ok(++guard < 4000, `沒有轉成移動休養，tick ${w.clock.tick}`);
+    w = advance(w, 1).state;
+    rest = w.activities.find((a) => a.kind === 'rest' && a.fallback && a.fallback.reason === 'cultivation_full' && a.status !== 'done');
+  }
+  assert.deepEqual(rest.originPos, { r: 0, c: 1 });
+  assert.deepEqual(rest.dest, { r: 2, c: 2 });
+  assert.equal(rest.path.length, 3);
+  assert.equal(rest.seatKey, null);
+  const cultivated = w.activities.filter((a) => a.kind === 'cultivate' && a.status === 'done');
+  assert.ok(cultivated.some((a) => a.unitsDone >= 1));
+  assert.equal(hero(w).cultivation, 100);
+  assert.equal(Realtime.validateWorld(w).ok, true);
+  const depart = rest.departTick;
+  while (w.clock.tick < depart + 18) w = advance(w, 1).state;
+  assert.deepEqual(hero(w).pos, { r: 2, c: 2 });
+  const arrived = w.activities.find((a) => a.fallback && a.fallback.reason === 'cultivation_full');
+  assert.equal(arrived.status, 'working');
+  assert.equal(w.reservations.some((r) => r.seats['work:spiritTerrace']), false);
+});
+
+test('覆寫 pending 後取消，新指令不會再啟動', () => {
+  let w = order(world('rt-cancel-replacement'), 'gather-material', { tileId: 't-0-0' }, 2);
+  w = advance(w, 1).state;
+  w = order(w, 'rest', {}, 1);
+  w = must(w, 'cancelManualOrder', { discipleId: PID }, 'cancel-rest');
+  assert.equal(hero(w).manualOrder, null);
+  const again = dispatch(w, 'cancelManualOrder', { discipleId: PID }, 'cancel-rest');
+  assert.equal(again.ok, true);
+  assert.equal(again.duplicate, true);
+  const saved = Realtime.serializeState(w);
+  const loaded = Realtime.parseState(saved);
+  assert.equal(loaded.ok, true, loaded.reason);
+  w = advance(loaded.state, 7).state;
+  assert.equal(w.clock.tick, 8);
+  assert.equal(hero(w).manualOrder, null);
+  assert.equal(w.activities.some((a) => a.kind === 'rest'), false);
+  const gather = w.activities.find((a) => a.kind === 'gather-material');
+  assert.equal(gather.status, 'cancelled');
+  assert.equal(gather.refunded, true);
+  assert.equal(w.resources.spiritMaterial, 0);
+  const fresh = world('rt-cancel-replacement');
+  const unknownBuild = dispatch(deepFreeze(clone(fresh)), 'orderActivity', {
+    discipleId: PID, kind: 'build', target: { facilityType: 'unknown', tileId: 't-0-1' }, units: 1,
+  });
+  assert.equal(unknownBuild.ok, false);
+  assert.equal(unknownBuild.code, 'bad_payload');
+  const unknownRecipe = dispatch(deepFreeze(clone(fresh)), 'orderActivity', {
+    discipleId: PID, kind: 'brew', target: { recipeId: 'unknown' }, units: 1,
+  });
+  assert.equal(unknownRecipe.ok, false);
+  assert.equal(unknownRecipe.code, 'bad_payload');
+  assert.equal(canon(fresh), canon(world('rt-cancel-replacement')));
+});
+
+test('壞 commandLog、錯位與非法屬性在載入時被拒絕，合法相鄰存檔仍可續', () => {
+  const fresh = world('rt-load-guard');
+  const brokenLog = JSON.parse(Realtime.serializeState(fresh));
+  brokenLog.commandLog = null;
+  const logResult = Realtime.parseState(JSON.stringify(brokenLog));
+  assert.equal(logResult.ok, false);
+  assert.equal(logResult.code, 'bad_type');
+  assert.equal(Realtime.parseState(Realtime.serializeState(fresh)).ok, true);
+
+  let w = order(world('rt-load-pos'), 'gather-material', { tileId: 't-0-0' }, 2);
+  w = advance(w, 6).state;
+  assert.deepEqual(hero(w).pos, { r: 1, c: 2 });
+  const text = Realtime.serializeState(w);
+  const moved = JSON.parse(text);
+  hero(moved).pos = { r: 4, c: 4 };
+  const rejected = Realtime.parseState(JSON.stringify(moved));
+  assert.equal(rejected.ok, false);
+  assert.equal(rejected.code, 'inconsistent_state');
+  const kept = Realtime.parseState(text);
+  assert.equal(kept.ok, true, kept.reason);
+  const next = advance(kept.state, 6).state;
+  assert.deepEqual(hero(next).pos, { r: 0, c: 2 });
+
+  const attrs = JSON.parse(Realtime.serializeState(world('rt-load-attr')));
+  hero(attrs).attributes.craft = 0;
+  const badAttr = Realtime.parseState(JSON.stringify(attrs));
+  assert.equal(badAttr.ok, false);
+  assert.equal(badAttr.code, 'bad_value');
+  const legal = JSON.parse(Realtime.serializeState(world('rt-load-attr')));
+  assert.equal(Realtime.parseState(JSON.stringify(legal)).ok, true);
+});
+
 test('空窗推進 2700 tick 跨過第 14 日，沒有危機或結局', () => {
   const idle = advance(world('rt-idle'), 2700);
   assert.equal(idle.stopReason, 'completed');
@@ -477,8 +572,8 @@ test('支援者若已在活動中，突破落敗並休養，不會雙重開工',
   master.activityId = 'act-0001';
   w.activities.push({
     id: 'act-0001', discipleId: MID, kind: 'rest', target: {}, units: 1, unitsDone: 0, workTicks: 0,
-    status: 'traveling', origin: 'manual', manualSeq: null, requestedTick: 0, departTick: 0,
-    arriveTick: null, startTick: null, completedTick: null, waited: 0,
+    status: 'working', origin: 'manual', manualSeq: null, requestedTick: 0, departTick: 0,
+    arriveTick: 0, startTick: 0, completedTick: null, waited: 0,
     paid: { spiritMaterial: 0, spiritHerb: 0, spiritStone: 0, reputation: 0, pills: 0 },
     refunded: false, snapshot: null, anchorSnapshot: null, fallback: null,
     originPos: { r: 2, c: 2 }, dest: { r: 2, c: 2 }, path: [], pathIndex: 0, stepTicks: 0,

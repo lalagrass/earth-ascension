@@ -319,6 +319,8 @@
     if (!isRecord(w.clock) || !sameKeys(w.clock, ['tick']) || !isNonNeg(w.clock.tick)) {
       return fail('bad_clock', 'clock 只能是 { tick } 非負整數', 'clock');
     }
+    if (!Array.isArray(w.commandLog)) return fail('bad_type', 'commandLog 必須是陣列', 'commandLog');
+    if (!Array.isArray(w.eventLog)) return fail('bad_type', 'eventLog 必須是陣列', 'eventLog');
     if (!isNonNeg(w.revision) || w.revision !== w.clock.tick + w.commandLog.length) {
       return fail('inconsistent_revision', 'revision 必須等於已提交 tick 數加已接受命令數', 'revision');
     }
@@ -361,6 +363,8 @@
       if (!isInt(d.cultivation) || d.cultivation < 0 || d.cultivation > 100) return fail('bad_value', `${where}.cultivation 超出 0..100`, where);
       if (d.breakthroughs !== 0 && d.breakthroughs !== 1) return fail('bad_value', `${where}.breakthroughs 只能是 0 或 1`, where);
       if (!isNonNeg(d.joinTick) || d.joinTick > w.clock.tick) return fail('bad_value', `${where}.joinTick 晚於現在`, where);
+      const attrErr = validateAttributes(d, where);
+      if (attrErr) return attrErr;
       const orderErr = validateManualOrder(w, d, where);
       if (orderErr) return orderErr;
     }
@@ -430,6 +434,10 @@
         if (!isNonNeg(a.pathIndex) || a.pathIndex > a.path.length) return fail('bad_position', `${where}.pathIndex 不合法`, where);
         if (!isInt(a.stepTicks) || a.stepTicks < 0 || a.stepTicks >= STEP) return fail('bad_position', `${where}.stepTicks 不合法`, where);
       }
+      if (a.status === 'traveling' || a.status === 'working') {
+        const progressErr = activeProgressError(w, a);
+        if (progressErr) return progressErr;
+      }
     }
     for (const d of w.disciples) {
       const n = successes.get(d.id) || 0;
@@ -471,7 +479,6 @@
       if (w.eventLog[i].seq !== i + 1) return fail('inconsistent_log', 'eventLog.seq 必須連續', 'eventLog');
       if (i > 0 && w.eventLog[i].tick < w.eventLog[i - 1].tick) return fail('bad_event', '事件 tick 必須單調', 'eventLog');
     }
-    if (!Array.isArray(w.commandLog)) return fail('bad_type', 'commandLog 必須是陣列', 'commandLog');
     for (let i = 0; i < w.commandLog.length; i += 1) {
       const c = w.commandLog[i];
       const where = `commandLog[${i}]`;
@@ -496,6 +503,21 @@
     }
     const opt = State.validateCharacterOptions(w.characterOptions);
     if (!opt.ok) return opt;
+    const hero = w.disciples.find((d) => d.role === 'protagonist');
+    const base = Rules.CHARACTER_OPTION_LIMITS.templates[opt.value.templateId];
+    const expectedAttr = {
+      rootBone: base.rootBone + opt.value.allocation.rootBone,
+      comprehension: base.comprehension + opt.value.allocation.comprehension,
+      craft: base.craft + opt.value.allocation.craft,
+    };
+    if (!hero || hero.templateId !== opt.value.templateId) {
+      return fail('inconsistent_roster', '主角 templateId 與 characterOptions 不一致', 'disciples');
+    }
+    for (const a of ['rootBone', 'comprehension', 'craft']) {
+      if (hero.attributes[a] !== expectedAttr[a]) {
+        return fail('inconsistent_roster', `主角 ${a} 與 characterOptions 推導值不一致`, 'disciples');
+      }
+    }
     for (const rsv of w.reservations) {
       if (!isRecord(rsv) || !actIds.has(rsv.activityId)) return fail('bad_value', '預約指向不存在的活動', 'reservations');
       const a = w.activities.find((x) => x.id === rsv.activityId);
@@ -508,8 +530,69 @@
           return fail('inconsistent_state', `${a.id} 進行中卻沒有預約`, 'reservations');
         }
       }
+      if (a.seatKey !== null) {
+        const rsv = w.reservations.find((r) => r.activityId === a.id);
+        if (!rsv || !isRecord(rsv.seats) || rsv.seats[a.seatKey] !== 1) {
+          return fail('inconsistent_state', `${a.id} 的工作位與預約不一致`, 'reservations');
+        }
+      }
     }
     return { ok: true };
+  }
+
+  function validateAttributes(d, where) {
+    const names = ['rootBone', 'comprehension', 'craft'];
+    if (!isRecord(d.attributes) || !sameKeys(d.attributes, names)) {
+      return fail('bad_value', `${where}.attributes 必須恰好含根骨、悟性、技藝`, where);
+    }
+    const lim = Rules.CHARACTER_OPTION_LIMITS;
+    for (const a of names) {
+      if (!isInt(d.attributes[a]) || d.attributes[a] < lim.attributeMin || d.attributes[a] > lim.attributeMax) {
+        return fail('bad_value', `${where}.attributes.${a} 必須是 ${lim.attributeMin}..${lim.attributeMax} 的整數`, where);
+      }
+    }
+    if (d.role === 'master') {
+      for (const a of names) {
+        if (d.attributes[a] !== Rules.MASTER_ATTRIBUTES[a]) {
+          return fail('inconsistent_roster', `${where} 師父的 ${a} 必須是規則表的 ${Rules.MASTER_ATTRIBUTES[a]}`, where);
+        }
+      }
+    }
+    return null;
+  }
+
+  function activeProgressError(world, act) {
+    const tick = world.clock.tick;
+    if (!isNonNeg(act.departTick) || act.departTick > tick) {
+      return fail('inconsistent_state', `${act.id} 的出發 tick 與時鐘不合`, act.id);
+    }
+    const elapsed = tick - act.departTick;
+    const span = act.path.length * STEP;
+    if (act.status === 'traveling' && !act.partnerWait) {
+      if (span === 0 || elapsed < 1 || elapsed >= span
+        || act.pathIndex !== Math.floor(elapsed / STEP) || act.stepTicks !== elapsed % STEP
+        || act.arriveTick !== null || act.startTick !== null) {
+        return fail('inconsistent_state', `${act.id} 的趕路進度與出發 tick、路線長度不合`, act.id);
+      }
+    } else if (act.pathIndex !== act.path.length || act.stepTicks !== 0 || act.arriveTick !== act.departTick + span) {
+      return fail('inconsistent_state', `${act.id} 的到達進度與路線、出發 tick 不合`, act.id);
+    } else if (act.partnerWait && elapsed < span) {
+      return fail('inconsistent_state', `${act.id} 尚未走完卻在等同伴`, act.id);
+    } else if (act.status === 'working') {
+      if (!isNonNeg(act.startTick) || act.startTick < act.arriveTick || act.startTick > tick || act.workTicks !== tick - act.startTick) {
+        return fail('inconsistent_state', `${act.id} 的工時與開工 tick 不合`, act.id);
+      }
+    }
+    const d = disciple(world, act.discipleId);
+    if (d && d.activityId === act.id) {
+      let expected = act.dest;
+      if (act.pathIndex === 0) expected = act.originPos;
+      else if (act.pathIndex < act.path.length) expected = act.path[act.pathIndex - 1];
+      if (!samePos(d.pos, expected)) {
+        return fail('inconsistent_state', `${d.id} 的位置與 ${act.id} 的路線進度不一致`, d.id);
+      }
+    }
+    return null;
   }
 
   function paidPositive(paid) {
@@ -576,6 +659,13 @@
     if (!isRecord(payload.target)) return { error: reject('bad_payload', 'orderActivity 需要 target 物件') };
     const units = payload.units === undefined ? 1 : payload.units;
     if (!isInt(units) || units < 1) return { error: reject('bad_payload', 'units 必須是正整數') };
+    if (!targetShape(kind, payload.target)) return { error: reject('bad_payload', `${kind} 的 target 形狀不對`) };
+    if (kind === 'build' && !has(Rules.FACILITIES, payload.target.facilityType)) {
+      return { error: reject('bad_payload', '未知設施') };
+    }
+    if (kind === 'brew' && !has(Rules.RECIPES, payload.target.recipeId)) {
+      return { error: reject('bad_payload', '未知配方') };
+    }
     const fixed = fixedUnits(kind, payload.target);
     if (fixed !== null && units !== fixed) return { error: reject('bad_payload', `${kind} 的單位數固定為 ${fixed}`) };
     const out = { discipleId: payload.discipleId, kind, target: clone(payload.target), units };
@@ -756,6 +846,11 @@
       return { events: [{ type: 'manualLockReleased', discipleId: d.id, reason: 'promise-continues' }] };
     }
     if (act && (act.status === 'traveling' || INTERRUPTIBLE.has(act.kind))) {
+      const replacement = d.manualOrder.status === 'pending' && d.manualOrder.activityId === null && d.manualOrder.seq !== act.manualSeq;
+      if (replacement) {
+        d.manualOrder = null;
+        d.autonomy.resumeReason = 'manual-cancelled';
+      }
       act.halt = act.status === 'traveling' ? 'step' : 'drop';
       return { events: [{ type: 'cancelArmed', discipleId: d.id, activityId: act.id, halt: act.halt }] };
     }
@@ -1320,7 +1415,11 @@
     if (act.workTicks % TICK === 0) {
       if (act.kind === 'cultivate') {
         const block = Progression.cultivationBlock(d);
-        if (block) convertCultivateToRest(world, act, block);
+        if (block) {
+          const turned = convertCultivateToRest(world, act, block, t);
+          events.push(...turned.events);
+          if (turned.split) return { events };
+        }
       }
       act.snapshot = takeSnapshot(d, t);
       if (act.kind === 'brew' && act.anchorSnapshot === null) act.anchorSnapshot = clone(act.snapshot);
@@ -1362,14 +1461,68 @@
     other.workTicks = act.workTicks;
     other.snapshot = other.snapshot || takeSnapshot(disciple(world, other.discipleId), world.clock.tick);
   }
-  function convertCultivateToRest(world, act, block) {
-    act.kind = 'rest';
-    act.fallback = { from: 'cultivate', reason: block };
-    if (act.seatKey === 'work:spiritTerrace') {
-      act.seatKey = null;
-      const rsv = world.reservations.find((r) => r.activityId === act.id);
-      if (rsv) rsv.seats = {};
+  function convertCultivateToRest(world, act, block, t) {
+    const d = disciple(world, act.discipleId);
+    const fallback = { from: 'cultivate', reason: block };
+    const restOrder = {
+      seq: d.manualOrder ? d.manualOrder.seq : act.manualSeq,
+      commandId: d.manualOrder ? d.manualOrder.commandId : act.id,
+      status: 'pending',
+      kind: 'rest',
+      target: {},
+      units: Math.max(1, act.units - act.unitsDone),
+      requestedTick: t,
+      activityId: null,
+    };
+    const seat = chooseSeat(world, d, 'rest', restOrder, fallback);
+    let dest = destinationFor(world, 'rest', {}, seat.seatKey);
+    const cap = seatPool(world, new Set([act.id]));
+    if (seat.seatKey && (cap[seat.seatKey] || 0) < 1) {
+      seat.seatKey = null;
+      seat.seats = {};
+      dest = dojo();
     }
+    if (samePos(d.pos, dest) && (act.seatKey || null) === (seat.seatKey || null)) {
+      act.kind = 'rest';
+      act.fallback = fallback;
+      act.target = {};
+      return { split: false, events: [] };
+    }
+    if (act.unitsDone > 0) {
+      act.units = act.unitsDone;
+      act.workTicks = act.unitsDone * TICK;
+      act.status = 'done';
+    } else {
+      act.status = 'cancelled';
+      act.refunded = true;
+      act.workTicks = 0;
+    }
+    act.completedTick = t + 1;
+    act.halt = null;
+    releaseReservation(world, act);
+    if (d.activityId === act.id) d.activityId = null;
+    if (!d.manualOrder) d.manualOrder = restOrder;
+    d.manualOrder.kind = 'cultivate';
+    const events = startGranted(world, {
+      id: `d7c-${act.id}`,
+      discipleId: d.id,
+      waited: 0,
+      cost: zeroPaid(),
+      seats: seat.seats,
+      participants: [d.id],
+      kind: 'rest',
+      order: Object.assign({}, d.manualOrder, { kind: 'cultivate', units: restOrder.units, target: {} }),
+      fallback,
+      seatKey: seat.seatKey,
+      dest,
+      forced: true,
+    });
+    const rest = activeOf(world, d.id);
+    if (rest && (rest.status === 'traveling' || rest.status === 'working')) {
+      const stepped = progressActivity(world, rest, t);
+      events.push(...stepped.events);
+    }
+    return { split: true, events };
   }
   function takeSnapshot(d, tick) {
     return { stamina: d.stamina, mind: d.mind, injury: d.injury, cultivation: d.cultivation, slotEq: slotEqOf(tick) };
