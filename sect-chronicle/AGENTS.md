@@ -46,6 +46,10 @@ D6「道館成為門派」已由專案擁有人批准，見 [OPENING_REVISION.md
 - 完成與未完成判準；不可只報測試數量。
 - 下一個可認領任務、依賴與需產品判定的地方。
 
+## 測試 seed 與成本
+
+依共用 [分層測試政策](../docs/testing-policy.md) 執行開發 3 seed／一般局部行為 PR 5 seed 冒煙；完整單測與 CI 保留。AC-C01 與未來獲准階段的 SG-15 樣本不縮減，正式量測與高風險變更立即升級完整適用矩陣。未交付的流程不能宣稱已測；完整輸出落檔，agent 優先讀摘要與失敗案例。
+
 ## 檢查
 
 文件階段：相對連結、任務依賴、狀態與數值來源、`git diff --check`。程式階段另跑 `node --test sect-chronicle/test/*.test.js` 與相關瀏覽器驗證（共用 CI 的 `game-test` 在 Node 22／24 執行；SG-01 尚未交付時的 bootstrap 訊息不是遊戲驗收），以及根目錄要求的 `python3 -m unittest discover -s tests -v`、`node --check earth_ascension/static/m2.js`、`git diff --check`。原型回歸可用 `node --test guwu-game/test/*.test.js`（Node 24 下不要使用目錄作為測試參數）。新增未追蹤文件仍需額外掃描空白，因為 git diff 不涵蓋它們。

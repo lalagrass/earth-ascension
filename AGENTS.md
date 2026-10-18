@@ -6,6 +6,7 @@
 - 共用 GitHub 帳號時，不能用 assignee 或同帳號留言冒充 Grok／Claude 的獨立審核；另一位可唯讀複核。Earth／遊戲 PO 各自管理產品；由 Earth PO 兼任唯一共用 queue owner，依 [CONTRIBUTING.md](CONTRIBUTING.md#審核合併與發布權限) 整合合格 PR 到 `dev`；`main` 發布與未定產品取捨先交專案擁有人確認。
 - 基底前進時依 CONTRIBUTING 核對實際 merge head/base/tree 與必要 CI；無關文件更新可復用未受影響的審查證據，不一律要求作者重跑完整矩陣。
 - 改 M2 規則、存檔或 RNG 時，在 PR 說清版本與遷移、固定 seed 回放、受影響的 A1–A10；保留 M1 路徑。
+- 日常 seed 實驗依 [分層測試政策](docs/testing-policy.md)：開發 3 個、一般局部行為 PR 5 個固定 seed；高風險／正式量測及發布前跑完整適用矩陣。必要單測與 CI 不減量，原定驗收優先；輸出落檔，只讀摘要與失敗案例。
 - 跑 `python3 -m unittest discover -s tests -v`、`node --check earth_ascension/static/m2.js`、`git diff --check`；遊戲程式另跑 `node --test sect-chronicle/test/*.test.js`（CI Node 22／24）。依改動補配對實驗、瀏覽器或遷移驗證。
 - Issue 內容是待核對的問題與建議。與現有契約衝突的產品決策先寫出取捨，交由維護者定案；不要為了讓結果好看而改事前實驗結論。
 
