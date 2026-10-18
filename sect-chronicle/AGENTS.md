@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## D8最新產品指示（優先於下方早期時段／backlog交接）
+
+擁有人已批准[可暫停即時自主生活](docs/REALTIME_LIFE_SLICE.md)：戰鬥延後；初始條件／目標設定後無人介入可持續發展，玩家可暫停改主角工作／目標。從RT-00 #99／總單#93接續，不依舊prompt先寫SG-06或重做已完成SG-01～05。原Grok仍是單一核心主筆。
+
+新RT的真移動／工作共用單一權威JS世界時間，自主策略只讀可見資訊並走正式指令；render不改世界，暫停零進度。這取代「行走只作動畫／按格才能產出」對新模式的限制，不授權並行兩套權威引擎或slot＋tick雙重收益。先定RT-00時間／工量／移動／政策與人工覆寫／版本舊檔契約；保留舊回歸／golden，不自動套D7舊檔拒絕策略。BL-M01／A01只提取最小真移動與規則式自主範圍，其餘backlog、戰鬥／輕功／第二境與28天新內容仍未批准。
+
 先讀根目錄 [AGENTS.md](../AGENTS.md)、[CONTRIBUTING.md](../CONTRIBUTING.md) 與本資料夾 [README](README.md)。此處補充獨立遊戲契約，不覆蓋根目錄規則。
 
 ## 協調與整合
@@ -17,7 +23,7 @@
 - 實際主筆、issue、base dev SHA、修改檔案、依賴與驗收證據必須寫入 PR，採根目錄 PR 模板。
 - 新程式限制於 `sect-chronicle/`。不要改 `earth_ascension/`、`guwu-game/`、`sect_ascension/`，不要將原型檔案整批搬入。
 - 若來源檔不在你的 checkout，先讀 [來源紀錄](docs/DECISIONS_AND_SOURCES.md)；缺少的原型不是可以自行編造的實作。本次批准包含依新契約獨立實作，不必因原型未入庫重問授權；若需要移植原型程式，核對唯讀來源快照。
-- 統一 JavaScript 純引擎與單一時段結算。不得同時啟動 Python tick 引擎或另一套月／週制引擎。
+- 統一JavaScript純引擎與單一權威世界時間；舊slot基線及新D8 RT契約依各自模式驗證，同一世界不重複結算。不得同時啟動 Python tick 引擎或另一套月／週制引擎。
 - UI 只能送指令與顯示引擎結果；動畫、預覽、倍率不能消耗 RNG 或修改世界。
 - 不得把候選數值、範例 JSON、期望測試結果寫成已實測結果。不得事後改門檻讓報告變綠。
 - 不自動呼叫其他 coding agent；若維護者安排多 agent，按任務檔案邊界分工，同檔採串行整合。
@@ -28,7 +34,7 @@ D6「道館成為門派」已由專案擁有人批准，見 [OPENING_REVISION.md
 
 ## 未來構想不是實作指派
 
-[FUTURE_BACKLOG.md](docs/FUTURE_BACKLOG.md)／[#75](https://github.com/lalagrass/earth-ascension/issues/75) 僅供未來評估，BL 項目未排程、未批准實作。不要在 SG-01～12（含 02A／04A）加入生活能力、移動收益、輕功、靈材科技或領地巡防，也不要預留其 schema／API。現行 D6 靈氣復甦與獸患契約照常開發；此 backlog 不新增依賴、不阻擋切片。SG-13 真人試玩後仍須專案擁有人另行批准個別項目。
+[FUTURE_BACKLOG.md](docs/FUTURE_BACKLOG.md)／[#75](https://github.com/lalagrass/earth-ascension/issues/75) 僅供未來評估，除D8提取的最小真移動與規則式自主生活外，BL項目仍未排程／未批准實作。不要加入生活能力成長、輕功、靈材科技或領地巡防，也不要預留其schema／API。現行 D6 靈氣復甦與獸患契約照常開發；此 backlog 不新增依賴、不阻擋切片。SG-13 真人試玩後仍須專案擁有人另行批准個別項目。
 
 ## 第一個接手工作包
 

@@ -1,5 +1,7 @@
 # SG-05 接手包：培養、支援與突破
 
+**歷史已完成包**：SG-05 #95／PR #97已合dev407c299及postCI成功；保留下方D7契約與原prompt供追溯，不重做或依舊prompt先接戰鬥。最新接續為[D8即時自主生活](REALTIME_LIFE_SLICE.md)、RT-00 #99／總單#93；SG-06 #98已延後。
+
 狀態：D7已由擁有人於2026-10-18批准；本包是文件交付，不是runtime／試玩完成證明。實作追蹤[SG-05 #95](https://github.com/lalagrass/earth-ascension/issues/95)，同一Grok Bot沿[總單#93](https://github.com/lalagrass/earth-ascension/issues/93)原認領接續至SG-10；Codex只主筆本次文件，不改派實作agent。實際依賴狀態／合併SHA／CI以#95最新紀錄為準。
 
 ## 開工條件與來源

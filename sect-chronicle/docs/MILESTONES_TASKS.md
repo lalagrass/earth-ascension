@@ -1,6 +1,12 @@
 # Milestone 與 task backlog
 
-狀態：D1–D5 與 SG-01～SG-12 已於 2026-10-18 獲專案擁有人批准；SG-00 文件整合已由 Codex 認領 [#69](https://github.com/lalagrass/earth-ascension/issues/69)；SG-01 的實際主筆已於 #71 登記為 Grok Bot（與 Codex 共用 GitHub 帳號，非獨立審核），其後實際認領與完成以各issue／PR為準；截至dev `dacce66`，SG-04A #92／PR #94已合入且post-merge CI成功，SG-05由同一Grok Bot依#93／#95接續，本次D7文件不代表SG-05已實作。前綴 SG 避免與主專案 M1–M3 混淆。以下路徑皆相對 `sect-chronicle/`。
+## D8目前執行順序：生活試玩優先
+
+最新批准與任務表以[REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)為準。原Grok沿#93，從[RT-00 #99](https://github.com/lalagrass/earth-ascension/issues/99)接手：RT-00契約→RT-01即時移動／工作→RT-02自主與玩家覆寫→RT-03存讀／因果資料→RT-04生活UI→RT-05實際生活試玩。每包合dev與postCI後續下一包；所需新數值／相容語義在RT-00集中定案，不重問即時自主方向。
+
+SG-05 #95／PR #97已完成（dev407c299及postCI）；SG-06 #98延後，不再阻擋生活交付。SG-07／08／09／10的適用責任接入RT-03～05，下表原05→06→07順序與完整戰鬥SG-M2退出條件作歷史／後續參考，不是新生活依賴。新生活gate是「無人介入可持續生活＋暫停改主角工作／目標＋真移動／工作＋存讀＋可操作UI」，不要求戰鬥或假立派；跨14天繼續生活不等於批准28天新內容。
+
+狀態：D1–D5 與 SG-01～SG-12 已於 2026-10-18 獲專案擁有人批准；SG-00 文件整合已由 Codex 認領 [#69](https://github.com/lalagrass/earth-ascension/issues/69)；SG-01 的實際主筆已於 #71 登記為 Grok Bot（與 Codex 共用 GitHub 帳號，非獨立審核），其後實際認領與完成以各issue／PR為準；截至dev407c299，SG-05 #95／PR #97已合入且post-merge CI成功；原Grok接續D8 RT-00 #99，本次文件不代表即時自主生活已實作。前綴 SG 避免與主專案 M1–M3 混淆。以下路徑皆相對 `sect-chronicle/`。
 
 ## 設計 0.2 修訂
 
