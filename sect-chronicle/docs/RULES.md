@@ -4,6 +4,16 @@
 
 範圍：只有數值表與純計算。**不含**指令、排程、扣款、時段結算、RNG 抽樣、事件資料（SG-02A）、突破／援村 runtime（SG-05／04A）、UI、儲存。守山／`defensePrepPoints` 是未批准的另案，不採用。
 
+## SG-05 已批准變更（D7，尚未實作）
+
+本文件其餘ruleVersion 2數值／公式是目前程式基線；以下[D7](DECISIONS_AND_SOURCES.md#d7sg-05-修為與突破處置已批准2026-10-18)是SG-05必須落實的新契約，不能因舊程式允許累積超過100而忽略。文件PR不升執行版本、不重產fixture。
+
+- 修為範圍0..100。格初未滿且未成功提升時，先算既有`cultivationGain`，再按剩餘空間限制實際收益；96＋14→100（實得4），仍扣一次修行體力／心境。最少1是公式原始收益規則，不保證封頂後仍加1。
+- 格初已滿100或已成功提升，修行轉明示休養，沿既有容量／輪候，只套一次休養效果，不扣修行成本、不占聚靈台、不擲RNG；不改永久課表，不自動突破或其他工作。
+- 突破須滿100且未成功提升。成功保留100並記錄提升；每人最多一次成功提升，不能以100誤判為可再次突破。失敗仍保留70%（100→70）、傷勢+15並受既有上限限制；可恢復再試。已有成功率、費用與抽樣契約不變。
+- 成功後本切片不再增修為。保留100可供未來承接，下一境條件未定；不先增加第二境公式或戰力倍率。
+- 實作時rule／schema均升版，從當前rule2／schema3向上（預期rule3／schema4，開工核對是否已占用）；rng1／content1不因本決策升版。舊開發存檔一律明確拒絕並保留，不自動遷移／截斷／補值；歷史golden不覆寫。SG-07再接上不覆蓋原檔、可備份／匯出與重開提示的儲存介面。
+
 ## 1. 版本
 
 | 項目 | 值 | 說明 |
@@ -12,7 +22,7 @@
 | ruleVersion | 2 | SG-01 的暫定值 1 → SG-02 凍結值 2 |
 | rngVersion | 1 | 不變：RNG 演算法與向量不動；rules.js 完全不消耗 RNG |
 
-升版影響：`state.js` 只接受 ruleVersion 2。ruleVersion 1 的存檔以 `unknown_rule_version` 明確拒絕，不就地升版、不默默重解（測試：`舊版（ruleVersion 1）存檔被明確拒絕…`）；本版不提供遷移（設計 D4：新遊戲新存檔）。固定 seed fixture 的 7 個 hash 全部改變，原因只有一個：canonical 狀態中的 `ruleVersion` 欄位由 1 變 2。測試以 `test/fixtures/new-world.v1.json`（SG-01 的歷史 golden，不再重產）逐案證明：除 `ruleVersion` 外世界內容與 rngState 完全相同。新局的 `tiles` 仍是空陣列（地圖版型在 rules.js，等 SG-04 建局時採用），因此世界狀態資料沒有其他變化。
+升版影響：`state.js` 只接受 ruleVersion 2。ruleVersion 1 的存檔以 `unknown_rule_version` 明確拒絕，不就地升版、不默默重解（測試：`舊版（ruleVersion 1）存檔被明確拒絕…`）；本版不提供遷移（設計 D4：新遊戲新存檔）。固定 seed fixture 的 7 個 hash 全部改變，原因只有一個：canonical 狀態中的 `ruleVersion` 欄位由 1 變 2。測試以 `test/fixtures/new-world.v1.json`（SG-01 的歷史 golden，不再重產）逐案證明：除 `ruleVersion` 外世界內容與 rngState 完全相同。當時新局的 `tiles` 仍是空陣列，因此世界狀態資料沒有其他變化（SG-04 起，新局的 `tiles` 採用 rules.js 的 25 格版型，見 DEVELOPMENT.md；本檔數值未變）。
 
 ## 2. 單位與取整
 
@@ -183,7 +193,7 @@
 
 `showAidPrompt`、`setInvitationStatus`（只能設 invited／deferred，accepted 只由 `acceptCandidate` 設定）、`grantAidReward`、`recordRescue`、`submitFormation`、`setOrganisationStatus`（只能 sectFounded／foundingDeferred）、`displayLabel`（`worldChange: false`，首席弟子只是顯示）。`grantAidReward`／`recordRescue` 只能出現在 `evt-aid-complete`，邀請事件不能給資源或改屬性。
 
-### 10.3 宣告的契約（尚未有 runtime 執行）
+### 10.3 宣告的契約（SG-04A 起由 `js/story.js`、`commands.js`、`engine.js` 執行；實作契約見 DEVELOPMENT.md「SG-04A 新增」）
 
 - 援村：占 `AID_WORKERS` 人 `AID_DURATION_SLOTS` 格；獎勵只發一次（去重鍵 `reward:village-fence`，兩種援村選項共用）；收徒不給獎勵。
 - 招募：每名候選只提示一次、不重複詢問；選擇後回 planning；`acceptCommand` 只在 planning、`joinSlotIndex`＝接受當下的 slotIndex、不補發；slotIndex ≥ `MAX_SLOT_INDEX` 時拒絕；加入前不產生勞動、支援或戰力；任何人數都能走到危機。人數上限唯一來源是 `State.MAX_ROSTER`。

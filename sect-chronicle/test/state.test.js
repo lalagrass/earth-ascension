@@ -10,6 +10,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const Rng = require('../js/rng.js');
 const S = require('../js/state.js');
+const Rules = require('../js/rules.js');
 
 const clone = (x) => JSON.parse(JSON.stringify(x));
 const world = (seed = 'seed-a', opts) => {
@@ -36,8 +37,8 @@ function withApprentice() {
   return w;
 }
 
-test('版本常數：SG-03 schema 2、SG-02 凍結 ruleVersion 2、rng 1', () => {
-  assert.equal(S.SCHEMA_VERSION, 2);
+test('版本常數：SG-04 schema 3、SG-02 凍結 ruleVersion 2、rng 1', () => {
+  assert.equal(S.SCHEMA_VERSION, 3);
   assert.equal(S.RULE_VERSION, 2);
   assert.equal(S.RNG_VERSION, Rng.RNG_VERSION);
   assert.equal(S.SCENARIOS['slice-14'].totalSlots, 42);
@@ -45,9 +46,10 @@ test('版本常數：SG-03 schema 2、SG-02 凍結 ruleVersion 2、rng 1', () =>
 
 test('預設新局：欄位齊全、師徒兩人、候選另存、story 初值', () => {
   const w = world('seed-a');
-  assert.equal(w.schemaVersion, 2);
+  assert.equal(w.schemaVersion, 3);
   assert.equal(w.ruleVersion, 2);
-  assert.deepEqual(w.schedule, { templates: {}, overrides: [] });
+  assert.deepEqual(w.schedule, { templates: {}, overrides: [], templateTiles: {} });
+  assert.deepEqual(w.seatWaits, []);
   assert.equal(w.rngVersion, 1);
   assert.equal(w.seed, 'seed-a');
   assert.equal(w.scenarioId, 'slice-14');
@@ -62,9 +64,11 @@ test('預設新局：欄位齊全、師徒兩人、候選另存、story 初值',
   assert.deepEqual(w.disciples.map((d) => [d.id, d.role]),
     [[S.MASTER_ID, 'master'], [S.PROTAGONIST_ID, 'protagonist']]);
   assert.deepEqual(w.candidates.map((c) => c.id), ['cand-1', 'cand-2']);
-  for (const k of ['tiles', 'jobs', 'reservations', 'pendingEvents', 'commandLog', 'eventLog']) {
+  for (const k of ['jobs', 'reservations', 'pendingEvents', 'commandLog', 'eventLog']) {
     assert.deepEqual(w[k], [], k);
   }
+  assert.equal(w.tiles.length, 25, 'SG-04 起新局帶固定 25 格地圖');
+  assert.deepEqual(w.inventory, { 'breakthrough-pill': 0 });
   assert.deepEqual(w.resources, { spiritMaterial: 0, spiritHerb: 0, spiritStone: 0, reputation: 0 });
   assert.deepEqual(w.story, {
     rescues: [],
@@ -444,7 +448,7 @@ test('canonical 不排除任何影響世界的欄位：改動任一頂層欄位 
   const w = withApprentice();
   const base = S.hashWorld(w);
   const changers = {
-    schemaVersion: (x) => { x.schemaVersion = 3; },
+    schemaVersion: (x) => { x.schemaVersion = 4; },
     ruleVersion: (x) => { x.ruleVersion = 3; },
     rngVersion: (x) => { x.rngVersion = 2; },
     seed: (x) => { x.seed = 'other'; },
@@ -453,7 +457,9 @@ test('canonical 不排除任何影響世界的欄位：改動任一頂層欄位 
     revision: (x) => { x.revision += 1; },
     rngState: (x) => { x.rngState[3] ^= 1; },
     resources: (x) => { x.resources.spiritHerb += 1; },
-    tiles: (x) => { x.tiles.push({ id: 't' }); },
+    tiles: (x) => { x.tiles[0].element = 'metal'; },
+    inventory: (x) => { x.inventory['breakthrough-pill'] += 1; },
+    seatWaits: (x) => { x.seatWaits.push({ discipleId: S.MASTER_ID, seat: 'tile:t-0-0', waited: 1 }); },
     disciples: (x) => { x.disciples[0].stamina -= 1; },
     candidates: (x) => { x.candidates.reverse(); },
     jobs: (x) => { x.jobs.push({ id: 'j' }); },
@@ -620,9 +626,9 @@ function nonJsonSamples() {
   };
 }
 
-test('審查 R1 重現：jobs 內含 Map 的 world 被 validateWorld 拒絕，序列化也不會靜默遺失', () => {
+test('審查 R1 重現：eventLog 項目內含 Map 的 world 被 validateWorld 拒絕，序列化也不會靜默遺失', () => {
   const w = world('review-json');
-  w.jobs = [{ id: 'job-1', payload: new Map([['cost', 99]]) }];
+  w.eventLog = [{ seq: 1, type: 'x', slotIndex: 0, payload: new Map([['cost', 99]]) }];
   const rngBefore = [...w.rngState];
   const r = S.validateWorld(w);
   assert.equal(r.ok, false);
@@ -632,7 +638,7 @@ test('審查 R1 重現：jobs 內含 Map 的 world 被 validateWorld 拒絕，�
   assert.throws(() => S.serializeState(w), TypeError);
   assert.throws(() => S.hashWorld(w), TypeError, 'hash 不可與空物件相同');
   const other = world('review-json');
-  other.jobs = [{ id: 'job-1', payload: {} }];
+  other.eventLog = [{ seq: 1, type: 'x', slotIndex: 0, payload: {} }];
   assert.equal(S.validateWorld(other).ok, true);
 });
 
@@ -675,14 +681,14 @@ test('正常 JSON record 仍被接受：巢狀、陣列、null 原型物件、�
   const w = world('review-json');
   const nullProto = Object.create(null);
   nullProto.k = 1;
-  w.jobs = [{ id: 'j1', payload: { list: [1, 2, { z: [] }], empty: {}, nothing: null, flag: true, s: '字串' } },
-    { id: 'j2', payload: nullProto }];
+  w.eventLog = [{ seq: 1, type: 'x', slotIndex: 0, payload: { list: [1, 2, { z: [] }], empty: {}, nothing: null, flag: true, s: '字串' } },
+    { seq: 2, type: 'x', slotIndex: 0, payload: nullProto }];
   assert.deepEqual(S.validateWorld(w), { ok: true });
   assert.equal(S.canonicalize(nullProto), '{"k":1}');
   const r = S.parseState(S.serializeState(w));
   assert.equal(r.ok, true);
   assert.equal(S.hashWorld(r.state), S.hashWorld(w), '合法 state 存讀 hash 不變');
-  assert.deepEqual(r.state.jobs[0].payload, w.jobs[0].payload);
+  assert.deepEqual(r.state.eventLog[0].payload, w.eventLog[0].payload);
 });
 
 test('跨 realm（vm）建立的 JSON record 被接受，跨 realm 的 Map 仍被拒絕', () => {
@@ -695,18 +701,18 @@ test('跨 realm（vm）建立的 JSON record 被接受，跨 realm 的 Map 仍�
   const foreignMap = vm.runInContext('new Map([["x", 1]])', ctx);
   // vm 內的狀態含主 realm 的物件，反之亦然
   const w1 = B.newWorld('seed-a').state;
-  w1.jobs = [{ id: 'j', payload: { a: [1, { b: 2 }], c: {} } }];
+  w1.eventLog = [{ seq: 1, type: 'x', slotIndex: 0, payload: { a: [1, { b: 2 }], c: {} } }];
   assert.equal(B.validateWorld(w1).ok, true);
   const w2 = world('seed-a');
-  w2.jobs = [{ id: 'j', payload: foreignRecord }];
+  w2.eventLog = [{ seq: 1, type: 'x', slotIndex: 0, payload: foreignRecord }];
   assert.equal(S.validateWorld(w2).ok, true);
   assert.equal(S.canonicalize(foreignRecord), '{"a":[1,{"b":2}],"c":{}}');
   const w3 = world('seed-a');
-  w3.jobs = [{ id: 'j', payload: foreignMap }];
+  w3.eventLog = [{ seq: 1, type: 'x', slotIndex: 0, payload: foreignMap }];
   assert.equal(S.validateWorld(w3).ok, false);
   assert.throws(() => S.canonicalize(foreignMap), TypeError);
   const w4 = B.newWorld('seed-a').state;
-  w4.jobs = [{ id: 'j', payload: new Map() }];
+  w4.eventLog = [{ seq: 1, type: 'x', slotIndex: 0, payload: new Map() }];
   assert.equal(B.validateWorld(w4).ok, false);
 });
 
@@ -742,14 +748,14 @@ test('複核 R1 重現：陣列元素 getter 被拒絕、getter 呼叫 0 次、�
   for (const kind of ['getter', 'setter-only', 'getter-中間']) {
     let calls = 0;
     const w = world('array-getter');
-    w.jobs = [{ id: 'j', payload: arrayWithAccessor(kind, () => { calls++; return calls; }) }];
+    w.eventLog = [{ seq: 1, type: 'x', slotIndex: 0, payload: arrayWithAccessor(kind, () => { calls++; return calls; }) }];
     const rngBefore = [...w.rngState];
     const r = S.validateWorld(w);
     assert.equal(r.ok, false, kind);
     assert.equal(r.code, 'bad_type', kind);
     assert.throws(() => S.hashWorld(w), TypeError, kind);
     assert.throws(() => S.serializeState(w), TypeError, kind);
-    assert.throws(() => S.canonicalize(w.jobs), TypeError, kind);
+    assert.throws(() => S.canonicalize(w.eventLog), TypeError, kind);
     assert.equal(calls, 0, `${kind}：getter／setter 不得被呼叫`);
     assert.deepEqual(w.rngState, rngBefore, kind);
   }
@@ -763,7 +769,7 @@ test('getter 若會改動 rngState，validateWorld 也不得執行它', () => {
     enumerable: true,
     get() { w.rngState[0] = (w.rngState[0] + 1) >>> 0; return 1; },
   });
-  w.jobs = [{ id: 'j', payload }];
+  w.eventLog = [{ seq: 1, type: 'x', slotIndex: 0, payload }];
   assert.equal(S.validateWorld(w).ok, false);
   assert.deepEqual(w.rngState, before);
   assert.throws(() => S.canonicalize(w), TypeError);
@@ -775,7 +781,7 @@ test('物件屬性 getter 同樣不被呼叫；普通稠密與跨 realm 陣列�
   const rec = {};
   Object.defineProperty(rec, 'x', { enumerable: true, get() { calls++; return 1; } });
   const w = world('array-getter');
-  w.jobs = [{ id: 'j', payload: rec }];
+  w.eventLog = [{ seq: 1, type: 'x', slotIndex: 0, payload: rec }];
   assert.equal(S.validateWorld(w).ok, false);
   assert.throws(() => S.canonicalize(rec), TypeError);
   assert.equal(calls, 0);
@@ -783,7 +789,7 @@ test('物件屬性 getter 同樣不被呼叫；普通稠密與跨 realm 陣列�
   const ctx = vm.createContext({});
   const foreignArr = vm.runInContext('[1, [2, { a: [3] }], []]', ctx);
   const good = world('array-getter');
-  good.jobs = [{ id: 'j', payload: [1, [2, { a: [3] }], []] }, { id: 'k', payload: foreignArr }];
+  good.eventLog = [{ seq: 1, type: 'x', slotIndex: 0, payload: [1, [2, { a: [3] }], []] }, { seq: 2, type: 'x', slotIndex: 0, payload: foreignArr }];
   assert.deepEqual(S.validateWorld(good), { ok: true });
   const h1 = S.hashWorld(good);
   assert.equal(S.hashWorld(good), h1, '同一 world 連續 hash 必須相同');
@@ -832,9 +838,9 @@ test('SG-02 的 schema 1／ruleVersion 2 golden 也被明確拒絕、輸入不�
   }
 });
 
-test('SG-03 升 schema 2 後，每個固定 seed 與 schema 1／rule 2 golden 的差異只有 schemaVersion 與新增的 schedule', () => {
+test('SG-04 升 schema 3 後，每個固定 seed 與 schema 1／rule 2 golden 的差異只有 schemaVersion、schedule、tiles 與 inventory', () => {
   const fx = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.json'), 'utf8'));
-  assert.equal(fx.schemaVersion, 2);
+  assert.equal(fx.schemaVersion, 3);
   assert.equal(fx.cases.length, legacyS1R2.cases.length);
   assert.equal(legacyS1R2.ruleVersion, fx.ruleVersion);
   assert.equal(legacyS1R2.rngVersion, fx.rngVersion);
@@ -848,15 +854,18 @@ test('SG-03 升 schema 2 後，每個固定 seed 與 schema 1／rule 2 golden �
     const a = JSON.parse(o.canonical);
     const b = JSON.parse(n.canonical);
     assert.equal(a.schemaVersion, 1);
-    assert.equal(b.schemaVersion, 2);
-    assert.deepEqual(b.schedule, { templates: {}, overrides: [] });
-    a.schemaVersion = 2;
-    a.schedule = { templates: {}, overrides: [] };
-    assert.deepEqual(b, a, `${o.name}：除 schemaVersion 與 schedule 外世界內容完全相同`);
+    assert.equal(b.schemaVersion, 3);
+    assert.deepEqual(b.schedule, { templates: {}, overrides: [], templateTiles: {} });
+    a.schemaVersion = 3;
+    a.schedule = { templates: {}, overrides: [], templateTiles: {} };
+    a.seatWaits = [];
+    a.tiles = Rules.initialTiles();
+    a.inventory = { 'breakthrough-pill': 0 };
+    assert.deepEqual(b, a, `${o.name}：除 schemaVersion、schedule、tiles、inventory 外世界內容完全相同`);
   }
 });
 
-test('升版後每個固定 seed 與 SG-01 golden（schema 1／rule 1）的差異只有 ruleVersion、schemaVersion 與 schedule', () => {
+test('升版後每個固定 seed 與 SG-01 golden（schema 1／rule 1）的差異只有 ruleVersion、schemaVersion、schedule、tiles 與 inventory', () => {
   const fx = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.json'), 'utf8'));
   assert.equal(fx.cases.length, legacy.cases.length);
   assert.equal(legacy.rngVersion, fx.rngVersion);
@@ -869,8 +878,11 @@ test('升版後每個固定 seed 與 SG-01 golden（schema 1／rule 1）的差�
     const b = JSON.parse(n.canonical);
     assert.equal(a.ruleVersion, 1);
     a.ruleVersion = 2;
-    a.schemaVersion = 2;
-    a.schedule = { templates: {}, overrides: [] };
+    a.schemaVersion = 3;
+    a.schedule = { templates: {}, overrides: [], templateTiles: {} };
+    a.seatWaits = [];
+    a.tiles = Rules.initialTiles();
+    a.inventory = { 'breakthrough-pill': 0 };
     assert.deepEqual(b, a, o.name);
     assert.equal(S.sha256Hex(o.canonical), o.hash, o.name);
   }
@@ -916,6 +928,7 @@ function midWorld() {
       { discipleId: S.PROTAGONIST_ID, slotIndex: 22, action: 'cultivate' },
       { discipleId: 'cand-1', slotIndex: 25, action: 'gather-herb' },
     ],
+    templateTiles: {},
   };
   return w;
 }
