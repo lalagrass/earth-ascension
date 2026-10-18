@@ -2,7 +2,9 @@
 'use strict';
 /*
  * SG-RT-01：rt-manual-core-v1。
- * 20 個固定 seed（rt-dev-000..019）各跑 2700 tick。指令在下達當下就能從規則算出，不看未來 RNG，也沒有自主規劃。
+ * 這是 RT-01 的歷史手動腳本，不是 RT-02 的無人介入驗收。自主生活開啟後，同一份指令的 hash 與突破 tick
+ * 會和當時的報告不同；不要把這份輸出當成自主通過。驗收見 tools/rt-auto-replay.js（rt-auto-life-v1）。
+ * 20 個固定 seed（rt-dev-000..019）各跑 2700 tick。指令在下達當下就能從規則算出，不看未來 RNG。
  * 角色輪替與 tools/smoke.js 的 optionsForIndex 相同。只有非預設政策才在 tick 0 先 setPolicy。
  *
  * 主角指令（時間是完成後的 clock.tick）：

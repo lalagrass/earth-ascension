@@ -97,7 +97,13 @@
     const busy = new Set();
     const granted = [];
     const denied = [];
-    const order = [...input.requests].sort((a, b) => (b.waited - a.waited) || byIdAsc(a.id, b.id));
+    const priorityOf = (r) => (has(r, 'priority') ? r.priority : 0);
+    for (const r of input.requests) {
+      if (!isNonNeg(priorityOf(r))) throw new RangeError(`請求 ${r.id} 的 priority 必須是非負整數`);
+    }
+    // priority 缺席視為 0。slot 請求不帶這個欄位，排序與以前相同。
+    // RT 用 0 表示手動、1 表示自主：類別先於等待值（RT00 §1.3）。
+    const order = [...input.requests].sort((a, b) => (priorityOf(a) - priorityOf(b)) || (b.waited - a.waited) || byIdAsc(a.id, b.id));
     for (const r of order) {
       let fail = null;
       const clash = r.participants.find((p) => busy.has(p));

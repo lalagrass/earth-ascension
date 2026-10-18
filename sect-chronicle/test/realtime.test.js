@@ -13,6 +13,7 @@ const Progression = require('../js/progression.js');
 const Rng = require('../js/rng.js');
 const Smoke = require('../tools/smoke.js');
 const Replay = require('../tools/rt-replay.js');
+const Story = require('../js/story.js');
 
 const PID = State.PROTAGONIST_ID;
 const MID = State.MASTER_ID;
@@ -61,15 +62,56 @@ function order(w, kind, target, units, extra, id) {
   return must(w, 'orderActivity', Object.assign({ discipleId: PID, kind, target, units }, extra || {}), id);
 }
 
+function quiet(w) {
+  return must(w, 'setGoals', { goals: [] });
+}
+
+// 自主會在手動工作結束後立刻補下一件事。這裡只等「這一筆」手動指令或它留下的手動活動，
+// 不等到角色永遠閒置。沒有手動指令時，若當下還有手動來源的活動（承諾取消後續做），就等到它結束。
 function untilIdle(w, limit = 8000) {
+  const startOrder = hero(w).manualOrder;
+  const seq = startOrder ? startOrder.seq : null;
+  const startAct = hero(w).activityId;
   let guard = 0;
-  while (hero(w).activityId || hero(w).manualOrder) {
+  while (true) {
+    const h = hero(w);
+    const act = h.activityId ? w.activities.find((a) => a.id === h.activityId) : null;
+    const orderLive = seq !== null && h.manualOrder && h.manualOrder.seq === seq;
+    const seqAct = seq !== null && act && act.manualSeq === seq;
+    const promise = seq === null && startAct && act && act.id === startAct && act.origin === 'manual';
+    if (!orderLive && !seqAct && !promise) break;
     assert.ok(++guard < limit, `活動沒有結束，tick ${w.clock.tick}`);
     const step = advance(w, 1);
     w = step.state;
     if (step.stopReason === 'breakthroughResolved') break;
   }
   return w;
+}
+
+function drive(w, n) {
+  let left = n;
+  let state = w;
+  while (left > 0) {
+    const step = Realtime.advanceTicks(state, left);
+    assert.equal(step.ok, true, (step.error && step.error.reason) || step.reason);
+    assert.notEqual(step.stopReason, 'error', step.error && step.error.reason);
+    assert.ok(step.advancedTicks >= 1, `tick ${state.clock.tick} 沒有前進`);
+    state = step.state;
+    left -= step.advancedTicks;
+  }
+  return state;
+}
+
+function firstSuccess() {
+  for (let i = 0; i < 16; i += 1) {
+    let w = quiet(world(`bt-success-${i}`));
+    w = must(w, 'setPolicy', { policy: Object.assign({}, Realtime.DEFAULT_POLICY, { breakthrough: 'off' }) });
+    hero(w).cultivation = 100;
+    w = order(w, 'breakthrough', {}, 1, { usePill: false, supporterId: null });
+    w = advance(w, 80).state;
+    if (hero(w).breakthroughs === 1 && hero(w).cultivation === 100) return w;
+  }
+  assert.fail('樣本 seed 都沒有成功突破');
 }
 
 function runOrder(w, kind, target, units, extra) {
@@ -79,7 +121,7 @@ function runOrder(w, kind, target, units, extra) {
 let richCache = null;
 function richWorld() {
   if (richCache) return clone(richCache);
-  let w = world('rt-rich');
+  let w = quiet(world('rt-rich'));
   w = runOrder(w, 'gather-material', { tileId: 't-0-0' }, 6);
   assert.ok(w.resources.spiritMaterial >= 12, '六次採集應夠蓋丹房');
   w = runOrder(w, 'build', { facilityType: 'alchemyRoom', tileId: 't-0-1' }, 3);
@@ -191,11 +233,14 @@ test('目標與政策只保存；不自動開工，非法值不改世界', () =>
   assert.equal(w.goalsRevision, 1);
   w = must(w, 'setPolicy', { policy: Replay.CUSTOM_POLICY });
   assert.equal(w.policy.breakthrough, 'off');
+  assert.equal(hero(w).activityId, null);
+  assert.equal(w.activities.length, 0);
   const moved = advance(w, 5);
   assert.equal(moved.state.clock.tick, 5);
-  assert.equal(hero(moved.state).activityId, null);
-  assert.equal(moved.state.activities.length, 0);
   assert.equal(w.clock.tick, 0);
+  const heroAct = activity(moved.state, hero(moved.state).activityId);
+  assert.equal(heroAct.origin, 'auto');
+  assert.equal(heroAct.kind, 'cultivate');
 });
 
 test('缺欄、固定工期、鎖定與非主角都拒絕，且不改輸入', () => {
@@ -263,25 +308,33 @@ test('兩人爭工作位、參與者與資源時，落敗者帶休養備案', ()
 });
 
 test('趕路取消在步邊界退回材料；可中斷的半個單位不產出', () => {
-  let w = runOrder(world('rt-cancel'), 'gather-material', { tileId: 't-0-0' }, 6);
+  let w = runOrder(quiet(world('rt-cancel')), 'gather-material', { tileId: 't-0-0' }, 6);
   const packed = w.resources.spiritMaterial;
   assert.ok(packed >= 12);
+  // 採集結束後自主會先去休養。建造要等那段趕路在步邊界停下才出發。
   w = order(w, 'build', { facilityType: 'alchemyRoom', tileId: 't-0-2' }, 3);
-  w = advance(w, 1).state;
-  assert.equal(activity(w, hero(w).activityId).status, 'traveling');
-  assert.equal(w.resources.spiritMaterial, packed - 12);
-  w = must(w, 'cancelManualOrder', { discipleId: PID });
   let guard = 0;
-  while (w.activities.some((a) => a.kind === 'build' && a.status === 'traveling')) {
+  let trip = null;
+  while (!trip) {
+    assert.ok(++guard < 40, `建造沒有出發，tick ${w.clock.tick}`);
+    w = advance(w, 1).state;
+    const act = activity(w, hero(w).activityId);
+    if (act && act.kind === 'build' && act.status === 'traveling') trip = act;
+  }
+  assert.equal(w.resources.spiritMaterial, packed - 12);
+  const firstStep = clone(trip.path[0]);
+  w = must(w, 'cancelManualOrder', { discipleId: PID });
+  guard = 0;
+  while (w.activities.some((a) => a.id === trip.id && a.status === 'traveling')) {
     assert.ok(++guard < 8);
     w = advance(w, 1).state;
   }
-  const built = w.activities.find((a) => a.kind === 'build');
+  const built = w.activities.find((a) => a.id === trip.id);
   assert.equal(built.status, 'cancelled');
   assert.equal(built.refunded, true);
   assert.equal(w.resources.spiritMaterial, packed);
-  assert.deepEqual(hero(w).pos, { r: 0, c: 1 });
-  let fresh = order(world('rt-partial'), 'gather-material', { tileId: 't-0-0' }, 6);
+  assert.deepEqual(hero(w).pos, firstStep);
+  let fresh = order(quiet(world('rt-partial')), 'gather-material', { tileId: 't-0-0' }, 6);
   fresh = advance(fresh, 100).state;
   // 趕路 24 tick，工作從 clock 24 起；clock 100 時已完成 1 單位（起始體力 100、技藝 3 → 3）。
   assert.equal(fresh.resources.spiritMaterial, 3);
@@ -291,11 +344,11 @@ test('趕路取消在步邊界退回材料；可中斷的半個單位不產出',
   const gather = fresh.activities.filter((a) => a.kind === 'gather-material').pop();
   assert.equal(gather.status, 'done');
   assert.equal(gather.units, 1);
-  assert.equal(hero(fresh).activityId, null);
+  assert.notEqual(hero(fresh).manualOrder && hero(fresh).manualOrder.kind, 'gather-material');
 });
 
 test('普通活動可覆寫趕路；已經開工的承諾取消只放開手動鎖', () => {
-  let w = order(world('rt-overwrite'), 'gather-material', { tileId: 't-0-0' }, 2);
+  let w = order(quiet(world('rt-overwrite')), 'gather-material', { tileId: 't-0-0' }, 2);
   w = advance(w, 1).state;
   w = order(w, 'rest', {}, 1);
   let guard = 0;
@@ -305,7 +358,7 @@ test('普通活動可覆寫趕路；已經開工的承諾取消只放開手動�
   }
   assert.equal(w.activities.find((a) => a.kind === 'gather-material').status, 'cancelled');
   assert.equal(w.resources.spiritMaterial, 0);
-  w = runOrder(world('rt-promise'), 'gather-material', { tileId: 't-0-0' }, 6);
+  w = runOrder(quiet(world('rt-promise')), 'gather-material', { tileId: 't-0-0' }, 6);
   const packed = w.resources.spiritMaterial;
   w = order(w, 'build', { facilityType: 'alchemyRoom', tileId: 't-0-1' }, 3);
   guard = 0;
@@ -324,12 +377,20 @@ test('普通活動可覆寫趕路；已經開工的承諾取消只放開手動�
 });
 
 test('聚靈台跨過 100 後，休養改走回道館，不留在原格', () => {
-  let w = world('rt-d7c-terrace');
+  let w = quiet(world('rt-d7c-terrace'));
+  w = must(w, 'setPolicy', { policy: Object.assign({}, Realtime.DEFAULT_POLICY, { breakthrough: 'off' }) });
   w = runOrder(w, 'gather-material', { tileId: 't-0-0' }, 4);
   w = runOrder(w, 'build', { facilityType: 'spiritTerrace', tileId: 't-0-1' }, 2);
   w = runOrder(w, 'rest', {}, 2);
-  w = order(w, 'cultivate', {}, 20);
+  // 聚靈台只有一個工位。師尊修為封頂且不自動突破後會讓出座位，主角這筆長修行才進得去。
+  w.disciples.find((d) => d.id === MID).cultivation = 100;
   let guard = 0;
+  while (w.activities.some((a) => (a.status === 'traveling' || a.status === 'working') && a.seatKey === 'work:spiritTerrace' && a.discipleId !== PID)) {
+    assert.ok(++guard < 200, `聚靈台沒有空出來，tick ${w.clock.tick}`);
+    w = advance(w, 1).state;
+  }
+  w = order(w, 'cultivate', {}, 20);
+  guard = 0;
   let rest = null;
   while (!rest) {
     assert.ok(++guard < 4000, `沒有轉成移動休養，tick ${w.clock.tick}`);
@@ -353,7 +414,7 @@ test('聚靈台跨過 100 後，休養改走回道館，不留在原格', () => 
 });
 
 test('覆寫 pending 後取消，新指令不會再啟動', () => {
-  let w = order(world('rt-cancel-replacement'), 'gather-material', { tileId: 't-0-0' }, 2);
+  let w = order(quiet(world('rt-cancel-replacement')), 'gather-material', { tileId: 't-0-0' }, 2);
   w = advance(w, 1).state;
   w = order(w, 'rest', {}, 1);
   w = must(w, 'cancelManualOrder', { discipleId: PID }, 'cancel-rest');
@@ -464,21 +525,19 @@ test('巢狀 story 容器與待執行指令的靜態形狀在載入時被拒絕�
 });
 
 test('空窗推進 2700 tick 跨過第 14 日，沒有危機或結局', () => {
-  const idle = advance(world('rt-idle'), 2700);
-  assert.equal(idle.stopReason, 'completed');
-  assert.equal(idle.advancedTicks, 2700);
-  assert.equal(idle.state.clock.tick, 2700);
-  assert.equal(idle.state.revision, 2700);
-  assert.equal(idle.state.story.organisationStatus, 'dojo');
-  assert.equal(idle.state.eventLog.some((e) => e.type === 'ending' || e.type === 'evt-beast-crisis'), false);
+  const idle = drive(world('rt-idle'), 2700);
+  assert.equal(idle.clock.tick, 2700);
+  assert.equal(idle.revision, idle.clock.tick + idle.commandLog.length);
+  assert.equal(idle.story.organisationStatus, 'dojo');
+  assert.equal(idle.eventLog.some((e) => e.type === 'ending' || e.type === 'evt-beast-crisis'), false);
   assert.deepEqual(
-    idle.state.eventLog.filter((e) => e.type === 'phaseNotice').map((e) => [e.tick, e.phaseId]),
+    idle.eventLog.filter((e) => e.type === 'phaseNotice').map((e) => [e.tick, e.phaseId]),
     [[540, 'omen'], [1080, 'manifest'], [1800, 'surge']],
   );
-  assert.equal(idle.state.eventLog.filter((e) => e.type === 'dayReport').length, 15);
+  assert.equal(idle.eventLog.filter((e) => e.type === 'dayReport').length, 15);
   let stepped = world('rt-idle');
   for (let i = 0; i < 2700; i += 1) stepped = advance(stepped, 1).state;
-  assert.equal(Realtime.hashWorld(stepped), Realtime.hashWorld(idle.state));
+  assert.equal(Realtime.hashWorld(stepped), Realtime.hashWorld(idle));
 });
 
 test('滿修為轉休養、用丹失敗不抽樣、承諾中的突破選項跨過政策與存檔', () => {
@@ -593,21 +652,59 @@ test('滿修為轉休養、用丹失敗不抽樣、承諾中的突破選項跨�
     assert.equal(hero(w).cultivation, 100);
     assert.equal(hero(w).breakthroughs, 1);
   }
-  const succeeded = Replay.play(0, 'full');
-  assert.equal(succeeded.ok, true, succeeded.reason);
-  assert.equal(succeeded.breakthroughs, 1);
-  assert.equal(succeeded.cultivation, 100);
-  const second = dispatch(succeeded.world, 'orderActivity', {
+  const succeeded = firstSuccess();
+  assert.equal(hero(succeeded).breakthroughs, 1);
+  assert.equal(hero(succeeded).cultivation, 100);
+  const second = dispatch(succeeded, 'orderActivity', {
     discipleId: PID, kind: 'breakthrough', target: {}, units: 1, usePill: false, supporterId: null,
   });
   assert.equal(second.code, 'already_breakthrough');
-  const again = order(succeeded.world, 'cultivate', {}, 1);
+  const again = order(succeeded, 'cultivate', {}, 1);
   const started = advance(again, 1).state;
   const restAct = activity(started, hero(started).activityId);
   assert.equal(restAct.kind, 'rest');
   assert.equal(restAct.fallback.reason, 'breakthrough_done');
   assert.equal(hero(started).cultivation, 100);
   assert.equal(hero(started).breakthroughs, 1);
+});
+
+test('支援者先到道館時等待，不把還在路上的突破者改成開工', () => {
+  let w = quiet(world('rt-partner-wait'));
+  w = must(w, 'setPolicy', {
+    policy: Object.assign({}, Realtime.DEFAULT_POLICY, { breakthrough: 'off' }),
+  });
+  hero(w).cultivation = 100;
+  hero(w).pos = { r: 0, c: 0 };
+  const master = w.disciples[0];
+  master.cultivation = 100;
+  master.pos = { r: 2, c: 1 };
+  assert.equal(Realtime.validateWorld(w).ok, true, Realtime.validateWorld(w).reason);
+  w = order(w, 'breakthrough', {}, 1, { usePill: false, supporterId: MID });
+  let support = null;
+  let breaker = null;
+  for (let i = 0; i < 40 && !(support && support.pathIndex === support.path.length); i += 1) {
+    w = advance(w, 1).state;
+    support = w.activities.find((a) => a.kind === 'support');
+    breaker = w.activities.find((a) => a.kind === 'breakthrough');
+  }
+  assert.equal(Realtime.validateWorld(w).ok, true, Realtime.validateWorld(w).reason);
+  assert.ok(support.path.length < breaker.path.length);
+  assert.equal(support.partnerWait, true);
+  assert.equal(support.status, 'traveling');
+  assert.equal(support.workTicks, 0);
+  assert.equal(breaker.status, 'traveling');
+  assert.ok(breaker.pathIndex < breaker.path.length);
+  assert.equal(breaker.workTicks, 0);
+  for (let i = 0; i < 80 && breaker.status !== 'working'; i += 1) {
+    w = advance(w, 1).state;
+    support = w.activities.find((a) => a.id === support.id);
+    breaker = w.activities.find((a) => a.id === breaker.id);
+  }
+  assert.equal(breaker.status, 'working');
+  assert.equal(support.status, 'working');
+  assert.equal(breaker.workTicks, 0);
+  assert.equal(support.workTicks, 0);
+  assert.equal(w.clock.tick, breaker.startTick);
 });
 
 test('支援者若已在活動中，突破落敗並休養，不會雙重開工', () => {
@@ -637,9 +734,14 @@ test('支援者若已在活動中，突破落敗並休養，不會雙重開工',
 });
 
 test('請求 tick 早於入隊 tick 的支援者在開工時被拒絕', () => {
-  let w = advance(world('rt-join'), 5).state;
+  let w = quiet(world('rt-join'));
+  w = advance(w, 5).state;
+  const attrs = Story.profileAttributes('cand-1');
+  w.story.invitations['cand-1'] = { status: 'accepted', joinTick: 5 };
+  w.story.triggeredEventIds.push(Story.inviteEventId('cand-1'));
   w.disciples.push({
-    id: 'cand-1', role: 'apprentice', attributes: { rootBone: 3, comprehension: 3, craft: 3 },
+    id: 'cand-1', role: 'apprentice', templateId: 'herb-child',
+    attributes: { rootBone: attrs.rootBone, comprehension: attrs.comprehension, craft: attrs.craft },
     stamina: 100, mind: 60, cultivation: 0, injury: 0, joinTick: 5, breakthroughs: 0,
     pos: { r: 2, c: 2 }, activityId: null, manualOrder: null,
     autonomy: { decisionSeq: 0, wait: null, resumeReason: null },
@@ -653,8 +755,8 @@ test('請求 tick 早於入隊 tick 的支援者在開工時被拒絕', () => {
   const step = advance(w, 1).state;
   assert.equal(step.eventLog.some((e) => e.type === 'manualInvalid'), true);
   assert.equal(hero(step).manualOrder, null);
-  assert.equal(hero(step).activityId, null);
-  assert.equal(step.disciples[2].activityId, null);
+  assert.equal(step.activities.some((a) => a.kind === 'support' || a.kind === 'breakthrough'), false);
+  assert.equal(step.disciples[2].id, 'cand-1');
   assert.deepEqual(step.rngState, w.rngState);
 });
 
@@ -699,17 +801,8 @@ test('新局 fixture 與 createWorld 的正式存檔一致，且不是舊 slot g
   assert.notEqual(parsed.state.schemaVersion, JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'new-world.json'), 'utf8')).schemaVersion);
 });
 
-test('rt-manual-core-v1：20 seed × 2700 tick，分塊、突破後續與存讀 hash 相同', { timeout: 240000 }, () => {
-  const result = Replay.replayMatrix();
-  assert.equal(result.ok, true, JSON.stringify(result.failures, null, 2));
-  assert.equal(result.rows.length, 20);
-  assert.deepEqual(result.rows.map((r) => [r.cultivation, r.breakthroughs, r.injury, r.material]), [
-    [100, 1, 0, 8], [70, 0, 15, 8], [70, 0, 15, 8], [100, 1, 0, 8], [70, 0, 15, 8],
-    [70, 0, 15, 8], [70, 0, 15, 8], [100, 1, 0, 8], [70, 0, 15, 4], [100, 1, 0, 8],
-    [100, 1, 0, 4], [100, 1, 0, 8], [100, 1, 0, 8], [100, 1, 0, 8], [100, 1, 0, 4],
-    [100, 1, 0, 8], [70, 0, 15, 8], [100, 1, 0, 2], [70, 0, 15, 8], [70, 0, 15, 4],
-  ]);
-  assert.ok(result.rows.some((r) => r.breakthroughs === 0));
-  assert.ok(result.rows.some((r) => r.breakthroughs === 1));
-  assert.equal(result.rows.every((r) => r.breakthroughTick === 2148), true);
+test('rt-manual-core-v1 仍是 RT-01 的歷史手動腳本，不是本包的無人介入驗收', () => {
+  assert.equal(Replay.SCRIPT_ID, 'rt-manual-core-v1');
+  assert.equal(Replay.commandsFor(0).some((c) => c.type === 'orderActivity' && c.payload.kind === 'breakthrough'), true);
+  assert.equal(Replay.HORIZON, 2700);
 });

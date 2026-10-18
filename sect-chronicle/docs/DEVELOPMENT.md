@@ -1,6 +1,6 @@
 # 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05／RT-01）
 
-**目前新方向**：D8 可暫停即時自主生活，見 [REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)。RT-00 契約已合入 dev（#101；P1–P4 已批准，見 [RT00_CONTRACT.md](RT00_CONTRACT.md)）。RT-01 已實作即時世界、正式手動指令、移動與工作（`js/realtime.js`）。自主決策、突破詢問、瀏覽器存檔與播放控制器是 RT-02～RT-05，本包沒有。戰鬥 #98 延後。下方 slot 引擎紀錄仍然有效；舊回歸與 golden 保留。slot 的自動連續 advance 不是即時移動，也不是無人介入的自主生活。
+**目前新方向**：D8 可暫停即時自主生活，見 [REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)。RT-00 契約已合入 dev（#101；P1–P4 已批准，見 [RT00_CONTRACT.md](RT00_CONTRACT.md)）。RT-01 已實作即時世界、正式手動指令、移動與工作。RT-02 接上自主決策、政策／目標的無人介入，以及不凍結世界的詢問（`js/autonomy.js`、`js/realtime.js`）。瀏覽器存檔與播放控制器仍是 RT-03～RT-05。戰鬥 #98 延後。下方 slot 引擎紀錄仍然有效；舊回歸與 golden 保留。slot 的自動連續 advance 不是即時移動。
 
 本文件隨程式更新；runtime紀錄只描述已存在且已驗證的事。尚未實作的模組見 [TECHNICAL_DESIGN](TECHNICAL_DESIGN.md)。
 
@@ -13,18 +13,21 @@ node --test sect-chronicle/test/*.test.js     # Node 24 不要用目錄參數
 node sect-chronicle/tools/update-fixtures.js  # 僅在有意改版本時重產 fixture，並在 PR 說明差異
 node sect-chronicle/tools/smoke.js --seed demo # 首爐丹冒煙：兩人零材料 → 建丹房 → 首爐丹 → 第 42 格危機待選
 node sect-chronicle/tools/smoke.js --seed demo --breakthrough pill-support # SG-05：再加上主角修為滿 100 後排突破（plain｜pill｜pill-support）
-node sect-chronicle/tools/rt-replay.js --matrix       # RT-01：rt-dev-000..019 × 2700 tick；不要加 --ticks
+node sect-chronicle/tools/rt-replay.js --matrix       # RT-01 歷史手動腳本 rt-manual-core-v1；不是 RT-02 驗收
 node sect-chronicle/tools/rt-replay.js --seed rt-dev-000
+node sect-chronicle/tools/rt-auto-replay.js --matrix   # RT-02：rt-auto-life-v1，20 seed × 2700，含分塊與一次固定介入
+node sect-chronicle/tools/rt-auto-replay.js --seed rt-dev-000
+node sect-chronicle/tools/rt-auto-replay.js --intervention
 ```
 
 根目錄檢查（CONTRIBUTING／AGENTS 指定）：`python3 -m unittest discover -s tests -v`、`node --check earth_ascension/static/m2.js`、`git diff --check`。
 
 ## 模組載入策略
 
-`js/rng.js`、`js/rules.js`、`js/state.js`、`js/story-data.js`、`js/story.js`、`js/progression.js`、`js/commands.js`、`js/engine.js`、`js/realtime.js` 是無框架的 UMD 風格腳本：
+`js/rng.js`、`js/rules.js`、`js/state.js`、`js/story-data.js`、`js/story.js`、`js/progression.js`、`js/commands.js`、`js/engine.js`、`js/autonomy.js`、`js/realtime.js` 是無框架的 UMD 風格腳本：
 
 - Node：`require('./js/state.js')`（state 會自行 require rng 與 rules；`rules.js` 是葉節點，不 require 任何模組，因此沒有 state↔rules 循環）。
-- 瀏覽器：依序以一般 `<script>` 載入 `js/rng.js` → `js/rules.js` → `js/state.js` → `js/story-data.js` → `js/story.js` → `js/progression.js` → `js/commands.js` → `js/engine.js` → `js/realtime.js`；API 掛在 `globalThis.SectChronicle.Rng`／`.Rules`／`.State`／`.StoryData`／`.Story`／`.Progression`／`.Commands`／`.Engine`／`.Realtime`（`progression.js` 只依賴 rng、rules，須早於 commands；`realtime.js` 在 engine 之後）。漏載任何前置檔時，後面的檔案會丟出指名該檔的錯誤。Node 只需 `require('./js/engine.js')` 或 `require('./js/realtime.js')`（逐層 require 前置檔，沒有循環：rules←state←story-data←story←commands←engine；progression 只依賴 rng、rules；realtime 讀取引擎，引擎不讀 realtime）。不需建置、不使用 ES module，`file://` 也能載入（儲存相容性另計，見技術設計；RT 瀏覽器存檔屬 RT-03）。
+- 瀏覽器：依序以一般 `<script>` 載入 `js/rng.js` → `js/rules.js` → `js/state.js` → `js/story-data.js` → `js/story.js` → `js/progression.js` → `js/commands.js` → `js/engine.js` → `js/autonomy.js` → `js/realtime.js`；API 掛在 `globalThis.SectChronicle.Rng`／`.Rules`／`.State`／`.StoryData`／`.Story`／`.Progression`／`.Commands`／`.Engine`／`.Autonomy`／`.Realtime`（`progression.js` 只依賴 rng、rules，須早於 commands；`autonomy.js` 只依賴 rules，須早於 realtime；`realtime.js` 在 engine 與 autonomy 之後）。漏載任何前置檔時，後面的檔案會丟出指名該檔的錯誤。Node 只需 `require('./js/engine.js')` 或 `require('./js/realtime.js')`（逐層 require 前置檔，沒有循環：rules←state←story-data←story←commands←engine；progression 只依賴 rng、rules；autonomy 只依賴 rules；realtime 讀取引擎與 autonomy，兩邊都不讀 realtime）。不需建置、不使用 ES module，`file://` 也能載入（儲存相容性另計，見技術設計；RT 瀏覽器存檔屬 RT-03）。
 
 ## 版本
 
@@ -48,11 +51,23 @@ Slot 世界維持上表。RT 世界是另一組身份：schemaVersion 5、ruleVe
 
 時間：1 格 60 tick、1 日 180 tick、一格路 6 tick。效果在工作單位完成時用單位開始的快照結算一次。趕路不耗體力與心境，但占人和時間。到達那一 tick 不算工作。可中斷活動（採集、修行、休養、調心）取消時丟掉未完成的單位；承諾（建造、煉丹、援村、突破、支援）開工後不能被覆寫，趕路仍可在走完一步時取消並全額退料。已經取代舊趕路的 pending，若在下一步前取消，新指令不會再啟動。材料、工作位或人不夠時，閒置者轉成一次明示休養。滿修為或已成功提升的修行，在每個新單位開始前改為休養，不雙重結算；人若不在休養目的地（有空位的居所，否則道館），已完成的修行保留並釋放原工作位，再正式走過去。未知設施、未知配方、`commandLog` 與 story 巢狀容器在讀內容前回明確錯誤；待執行手動指令同時核對種類、target、單位數與引用的地塊、設施、配方、支援者，材料不夠或座位被占仍留到執行時轉休養，不當成壞存檔。正式載入會拒絕與路線進度不一致的位置，以及超出 1..6 或與角色設定不一致的屬性。突破必須明示 `usePill` 與 `supporterId`（`false`／`null` 不能省略）。用丹在出發時預約 1 顆，不夠就失敗且不抽樣、不降級。結算只抽樣一次。成功保持修為 100 且最多一次；失敗落到 70 並傷勢 +15。
 
-`rt-manual-core-v1`（`tools/rt-replay.js`）用 20 個 seed 各跑 2700 tick 的固定手動腳本。它不讀未來 RNG，也不啟動自主規劃。跨越 2520 tick 不會產生舊的危機或結局。這只證明引擎契約：不要求每個 seed 都突破成功，也不要求與舊 slot 相同的經濟，更不是可玩 UI 或平衡結論。
+`rt-manual-core-v1`（`tools/rt-replay.js`）是 RT-01 留下的固定手動腳本。自主生活開啟之後，同一份指令不再得到當時的 hash 或「每個 seed 都在 tick 2148 突破」。那個工具仍可跑，但不是本包的無人介入驗收。
 
-採用：一個 RT 引擎、出發時原子預約、可中斷活動丟掉未完成單位、承諾待執行保留完整用丹與支援者、D7-C 轉休養、突破只停當前批次、P4=B 拒絕舊檔且不改寫。不採用：把 slot 的 `RULE_VERSION` 改成 4、雙模式續玩、舊檔換算、在本包做自主循環。
+採用：一個 RT 引擎、出發時原子預約、可中斷活動丟掉未完成單位、承諾待執行保留完整用丹與支援者、D7-C 轉休養、突破只停當前批次、P4=B 拒絕舊檔且不改寫。不採用：把 slot 的 `RULE_VERSION` 改成 4、雙模式續玩、舊檔換算。
 
-已知未做：`autonomy.wait` 必須是 null；`breakthroughAsks` 與 `pendingEvents` 必須是空的；沒有詢問逾時、招募、瀏覽器存檔、播放速度或離線追趕。那些屬 RT-02～RT-05。
+## SG-RT-02 新增（自主生活與非凍結詢問）
+
+`Autonomy.plan(snapshot)` 只讀快照與 `rules.js`，不抽 RNG、不寫世界。`realtime.js` 在每個 tick 的階段 1 處理逾期與新詢問，再用同一條 `Engine.arbitrate` 先排手動（priority 0）、再排自主（priority 1）。等待寫在 `autonomy.wait`，形狀是 `{reason, sinceTick, recheckTick, signature}`。`signature` 是契約 §3.3 復查用的技術細化：它是決策當下的 sha256，不含時鐘、revision、decisionSeq；載入時不要求它等於存檔當下的世界，因為移動和產出發生在決策之後。原因不變時保留 `sinceTick`，不另寫一筆事件。
+
+已接受的自主命令寫入 `commandLog`，`origin` 為 `auto` 或 `policy`，`revision` 仍是已提交 tick 數加已接受命令數。等待和仲裁落選後的休養備案不寫命令。玩家的 `orderActivity` 仍只下給主角；同意突破詢問會把凍結好的 `manualOrder` 放在該角色身上，之後 `setPolicy` 不改這份用丹與支援者。`chooseEvent` 的 payload 只有 `eventId` 與 `optionId`。`acceptCandidate` 的 payload 只有 `candidateId`。
+
+詢問掛在 `pendingEvents`，180 tick 未選就自動「稍後」：不扣資源、不進入 `awaitingChoice`、不讓 `advanceTicks` 停在 `needsDecision`。突破詢問的模板在 `Realtime.BREAKTHROUGH_ASK`，不進 `story-data.js`。正文不含數字。
+
+工作在 tick 末端完成後，人、工作位和產出都留到下一 tick 的階段 2 才進入下一次決策。完成當下不再另開一次仲裁，也不把新工作推進一步。剛完成、下一 tick 才會被分派的邊界可以存檔，不是停滯；等待本身仍然沒有回復效果。滿修為把進行中的修行改成休養時，新的休養在同一個 tick 走一步，讓路線和時鐘一致。這是同一意圖的轉換，不是另一次決策。目標依玩家給的順序服務最前面可執行的需求，不把建造固定排在煉丹前面。突破排在前面而修為未滿時，先修行，不把後面的居所插進來。正在承諾型工作時同意突破，凍結丹與支援者為 pending，等該工作結束再預約。
+
+`rt-auto-life-v1`（`tools/rt-auto-replay.js`）跑 `rt-dev-000..019` × 2700 tick。0–9 用開局的安穩發展，10–14 全部詢問，15–19 為援村 off／收徒 ask／突破 off／丹 never／支援 never。分塊與存讀續玩要和逐步的 hash、RNG 相同。另有一份固定在 tick 48 下休養的介入腳本 `rt-auto-intervention-v1`。契約 §6.3 的手排時間是說明，不是這份工具的預期 hash。
+
+尚未在本包：瀏覽器存檔、播放與暫停 UI、離線追趕。那些屬 RT-03～RT-05。
 
 ## SG-02 新增的契約
 

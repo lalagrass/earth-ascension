@@ -1,9 +1,9 @@
 /*
- * SG-RT-01：即時世界、移動與工作核心。
+ * SG-RT-01／RT-02：即時世界、移動、工作與自主生活。
  *
  * 一個 RT 世界只由本模組推進。slot 的 Engine.advance／Commands.dispatch 對 RT 世界回 wrong_mode；
- * advanceTicks 對 slot 世界回 wrong_mode。不實作自主決策、突破詢問、瀏覽器存檔或播放控制器。
- * setGoals／setPolicy 只驗證並保存凍結形狀。效果沿用 rules.js 純函式，在工作單位完成時結算一次。
+ * advanceTicks 對 slot 世界回 wrong_mode。自主決策在 autonomy.js，只產出正式請求；突破詢問不進 story-data.js。
+ * 沒有瀏覽器存檔或播放控制器。效果沿用 rules.js 純函式，在工作單位完成時結算一次。
  */
 (function (root, factory) {
   'use strict';
@@ -13,6 +13,8 @@
   let Progression;
   let Engine;
   let Story;
+  let Autonomy;
+  let StoryData;
   if (typeof module === 'object' && module && module.exports) {
     Rng = require('./rng.js');
     Rules = require('./rules.js');
@@ -20,7 +22,9 @@
     Progression = require('./progression.js');
     Engine = require('./engine.js');
     Story = require('./story.js');
-    module.exports = factory(Rng, Rules, State, Progression, Engine, Story);
+    Autonomy = require('./autonomy.js');
+    StoryData = require('./story-data.js');
+    module.exports = factory(Rng, Rules, State, Progression, Engine, Story, Autonomy, StoryData);
   } else {
     const ns = root.SectChronicle || {};
     Rng = ns.Rng;
@@ -29,12 +33,14 @@
     Progression = ns.Progression;
     Engine = ns.Engine;
     Story = ns.Story;
-    if (!Rng || !Rules || !State || !Progression || !Engine || !Story) {
-      throw new Error('realtime.js 需要先載入 rng、rules、state、story-data、story、progression、commands、engine');
+    Autonomy = ns.Autonomy;
+    StoryData = ns.StoryData;
+    if (!Rng || !Rules || !State || !Progression || !Engine || !Story || !Autonomy || !StoryData) {
+      throw new Error('realtime.js 需要先載入 rng、rules、state、story-data、story、progression、commands、engine、autonomy');
     }
-    ns.Realtime = factory(Rng, Rules, State, Progression, Engine, Story);
+    ns.Realtime = factory(Rng, Rules, State, Progression, Engine, Story, Autonomy, StoryData);
   }
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (Rng, Rules, State, Progression, Engine, Story) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (Rng, Rules, State, Progression, Engine, Story, Autonomy, StoryData) {
   'use strict';
 
   const SCHEMA_VERSION = 5;
@@ -351,7 +357,8 @@
       if (!isRecord(d.autonomy) || !sameKeys(d.autonomy, ['decisionSeq', 'wait', 'resumeReason'])) {
         return fail('bad_value', `${where}.autonomy 欄位不合法`, where);
       }
-      if (d.autonomy.wait !== null) return fail('not_supported', '等待狀態屬 RT-02，本包拒絕非空 wait', `${where}.autonomy.wait`);
+      const waitErr = validateWait(d.autonomy.wait, `${where}.autonomy.wait`);
+      if (waitErr) return waitErr;
       if (d.autonomy.resumeReason !== null && typeof d.autonomy.resumeReason !== 'string') {
         return fail('bad_value', `${where}.autonomy.resumeReason 不合法`, where);
       }
@@ -383,6 +390,8 @@
       const keys = expectedActivityKeys(a.kind);
       if (!sameKeys(a, keys)) return fail('bad_value', `${where} 欄位與種類 ${a.kind} 不符`, where);
       if (!['traveling', 'working', 'done', 'cancelled'].includes(a.status)) return fail('bad_value', `${where}.status 不合法`, where);
+      if (!['manual', 'auto', 'policy'].includes(a.origin)) return fail('bad_value', `${where}.origin 不合法`, where);
+      if (!(a.manualSeq === null || isNonNeg(a.manualSeq))) return fail('bad_value', `${where}.manualSeq 不合法`, where);
       if (!isNonNeg(a.units) || a.units < 1 || !isNonNeg(a.unitsDone) || a.unitsDone > a.units) {
         return fail('bad_work', `${where} 單位數不合法`, where);
       }
@@ -448,15 +457,21 @@
         if (!a || a.discipleId !== d.id || (a.status !== 'traveling' && a.status !== 'working')) {
           return fail('inconsistent_state', `${d.id}.activityId 沒有對應的進行中活動`, 'disciples');
         }
+        if (a.requestedTick < d.joinTick) return fail('inconsistent_state', `${d.id} 在入隊前就有活動`, d.id);
       }
     }
     if (openBreakthroughs > 1) return fail('inconsistent_state', '同時最多一個進行中的突破', 'activities');
     if (!Array.isArray(w.reservations) || !Array.isArray(w.seatWaits) || !Array.isArray(w.pendingEvents)) {
       return fail('bad_type', 'reservations、seatWaits、pendingEvents 必須是陣列');
     }
-    if (w.pendingEvents.length !== 0) return fail('not_supported', '待選事件屬 RT-02；RT 世界不能出現 awaitingChoice', 'pendingEvents');
+    const pendingErr = validatePending(w);
+    if (pendingErr) return pendingErr;
     const storyErr = validateStory(w.story);
     if (storyErr) return storyErr;
+    const askErr = validateBreakthroughAsks(w);
+    if (askErr) return askErr;
+    const rosterErr = validateApprentices(w);
+    if (rosterErr) return rosterErr;
     for (const e of w.eventLog) {
       if (!isRecord(e) || !isNonNeg(e.seq) || !isNonNeg(e.tick) || e.tick > w.clock.tick) {
         return fail('bad_event', '事件 tick 不能晚於已提交時鐘', 'eventLog');
@@ -477,7 +492,9 @@
       if (c.revisionAfter !== c.revisionBefore + 1 || c.revisionBefore !== c.tick + i) {
         return fail('inconsistent_log', `${where} 的 revision 與 tick 不合`, where);
       }
-      if (c.origin !== 'manual' || !isRecord(c.payload)) return fail('bad_value', `${where} 必須保存完整 payload`, where);
+      if (!['manual', 'auto', 'policy'].includes(c.origin) || !isRecord(c.payload)) {
+        return fail('bad_value', `${where} 必須保存完整 payload 與 manual／auto／policy 來源`, where);
+      }
       if (c.payloadHash !== State.sha256Hex(State.canonicalize({ type: c.type, payload: c.payload }))) {
         return fail('inconsistent_log', `${where}.payloadHash 與 payload 不符`, where);
       }
@@ -601,10 +618,32 @@
     }
     if (!isRecord(story.invitations)) return fail('bad_type', 'story.invitations 必須是物件', 'story.invitations');
     if (!isRecord(story.breakthroughAsks)) return fail('bad_type', 'story.breakthroughAsks 必須是物件', 'story.breakthroughAsks');
-    if (Object.keys(story.breakthroughAsks).length !== 0) {
-      return fail('not_supported', '突破詢問資料屬 RT-02', 'story.breakthroughAsks');
-    }
     if (story.organisationStatus !== 'dojo') return fail('inconsistent_state', 'RT 世界沒有結局', 'story.organisationStatus');
+    if (!sameKeys(story.invitations, State.CANDIDATE_IDS)) {
+      return fail('bad_value', '邀請必須恰好是兩名固定候選', 'story.invitations');
+    }
+    for (const id of State.CANDIDATE_IDS) {
+      const inv = story.invitations[id];
+      if (!isRecord(inv) || !sameKeys(inv, ['status', 'joinTick'])) {
+        return fail('bad_value', `${id} 的邀請欄位必須是 status 與 joinTick`, `story.invitations.${id}`);
+      }
+      if (!['locked', 'invited', 'deferred', 'accepted'].includes(inv.status)) {
+        return fail('bad_value', `${id} 的邀請狀態不合法`, `story.invitations.${id}`);
+      }
+      if (inv.status === 'accepted') {
+        if (!isNonNeg(inv.joinTick)) return fail('bad_value', `${id} 入隊必須有 joinTick`, `story.invitations.${id}`);
+      } else if (inv.joinTick !== null) {
+        return fail('bad_value', `${id} 尚未入隊，joinTick 必須是 null`, `story.invitations.${id}`);
+      }
+      if (inv.status !== 'locked' && !story.triggeredEventIds.includes(Story.inviteEventId(id))) {
+        return fail('inconsistent_story', `${id} 的邀請已推進但事件未登記`, 'story.triggeredEventIds');
+      }
+    }
+    const seenTriggered = new Set();
+    for (const id of story.triggeredEventIds) {
+      if (seenTriggered.has(id)) return fail('bad_value', `事件 ${id} 重複登記`, 'story.triggeredEventIds');
+      seenTriggered.add(id);
+    }
     const seenRescue = new Set();
     for (const rescue of story.rescues) {
       if (!isRecord(rescue) || typeof rescue.id !== 'string' || rescue.id.length === 0 || rescue.rewardClaimed !== true || seenRescue.has(rescue.id)) {
@@ -663,7 +702,7 @@
         if (!disciple(world, m.supporterId)) return fail('bad_value', `${where}.manualOrder 的支援者不存在`, where);
       }
     }
-    if (d.role !== 'protagonist') return fail('bad_value', '手動指令只屬於主角', where);
+    if (d.role !== 'protagonist' && m.kind !== 'breakthrough') return fail('bad_value', '手動指令只屬於主角', where);
     if (m.activityId !== null && m.activityId !== d.activityId && m.status === 'active') {
       return fail('inconsistent_state', `${where}.manualOrder 與活動不一致`, where);
     }
@@ -795,6 +834,8 @@
     else if (command.type === 'cancelManualOrder') drafts = doCancel(world, payload);
     else if (command.type === 'setGoals') drafts = doGoals(world, payload);
     else if (command.type === 'setPolicy') drafts = doPolicy(world, payload);
+    else if (command.type === 'chooseEvent') drafts = doChoose(world, payload);
+    else if (command.type === 'acceptCandidate') drafts = doAccept(world, payload);
     else return { error: reject('unknown_command', `未知命令：${command.type}`) };
     if (drafts.error) return drafts;
     const events = drafts.events.map((d) => pushEvent(world, d));
@@ -967,6 +1008,7 @@
     if (prev !== phase.id && (t === 540 || t === 1080 || t === 1800)) {
       events.push(pushEvent(world, { type: 'phaseNotice', phaseId: phase.id }));
     }
+    settleStory(world, events);
     for (const d of world.disciples) {
       if (d.autonomy.resumeReason && d.manualOrder === null) {
         events.push(pushEvent(world, { type: 'autonomyResumed', discipleId: d.id, reason: d.autonomy.resumeReason }));
@@ -975,56 +1017,13 @@
       d.autonomy.resumeReason = null;
     }
     dropArmed(world, events);
+    const decided = new Set();
     const plan = collectRequests(world);
     events.push(...plan.events);
-    const batch = plan.requests;
-    if (batch.length > 0) {
-      const pool = resourcePool(world);
-      const ignore = new Set(batch.map((r) => r.previousActivityId).filter(Boolean));
-      const seats = seatPool(world, ignore);
-      const requests = batch.map((r) => ({
-        id: r.id, discipleId: r.discipleId, waited: r.waited, cost: r.cost, seats: r.seats, participants: r.participants,
-      }));
-      // 仲裁看不到「已在做別的活動」的人。先用更高等待的空請求占住他們，支援者忙碌才會變成 participant_busy，而不是雙重開工。
-      for (const d of world.disciples) {
-        if (!d.activityId || ignore.has(d.activityId)) continue;
-        const busy = world.activities.find((a) => a.id === d.activityId);
-        if (!busy || (busy.status !== 'traveling' && busy.status !== 'working')) continue;
-        requests.push({
-          id: `busy-${d.id}`, discipleId: d.id, waited: Number.MAX_SAFE_INTEGER, cost: {}, seats: {}, participants: [d.id],
-        });
-      }
-      const arb = Engine.arbitrate({ requests, resources: pool, seats });
-      const denied = new Map(arb.denied.map((d) => [d.id, d]));
-      for (const req of batch) {
-        if (denied.has(req.id)) {
-          const why = denied.get(req.id);
-          if (req.switching) {
-            req.orderOwner.manualOrder = null;
-            events.push(pushEvent(world, { type: 'manualInvalid', discipleId: req.discipleId, reason: why.code }));
-          } else {
-            events.push(...startRestFallback(world, req, why.code));
-          }
-        } else {
-          if (req.previousActivityId) {
-            const old = world.activities.find((a) => a.id === req.previousActivityId);
-            if (old && (old.status === 'traveling' || old.status === 'working')) abandonPartial(world, old, 'overwrite');
-            if (req.orderOwner.manualOrder === null) req.orderOwner.manualOrder = req.order;
-            req.orderOwner.autonomy.resumeReason = null;
-          }
-          events.push(...startGranted(world, req));
-        }
-      }
-    }
-    let stop = null;
-    const movers = activeActivities(world)
-      .filter((a) => a.kind !== 'support' || a.status === 'traveling')
-      .sort((a, b) => (a.id < b.id ? -1 : 1));
-    for (const act of movers) {
-      const ev = progressActivity(world, act, t);
-      events.push(...ev.events);
-      if (ev.stopReason) stop = ev.stopReason;
-    }
+    collectAutonomy(world, plan.requests, events, decided, worldSignature(world));
+    resolveBatch(world, events, plan.requests);
+    // 本 tick 完成的產出與空出來的人，留到下一 tick 的階段 2 才決策（RT00 §1.3）。
+    const stop = progressMovers(world, events, t, null, null) || null;
     if (t % Rules.TICKS_PER_DAY === Rules.TICKS_PER_DAY - 1) {
       events.push(pushEvent(world, {
         type: 'dayReport', day: Math.floor(t / Rules.TICKS_PER_DAY) + 1,
@@ -1098,6 +1097,9 @@
       }
       built.request.switching = !!act;
       built.request.orderOwner = d;
+      built.request.priority = 0;
+      built.request.autonomous = false;
+      built.request.origin = 'manual';
       if (act) built.request.previousActivityId = act.id;
       requests.push(built.request);
     }
@@ -1268,7 +1270,11 @@
       synthetic.seats = {};
       synthetic.dest = dojo();
     }
-    d.manualOrder = req.order;
+    const dropOrder = req.autonomous === true || req.keepOrder === false;
+    if (!dropOrder) d.manualOrder = req.order;
+    synthetic.autonomous = dropOrder;
+    synthetic.origin = dropOrder ? 'auto' : 'manual';
+    synthetic.keepOrder = !dropOrder;
     return startGranted(world, synthetic);
   }
 
@@ -1286,14 +1292,16 @@
     const origin = clone(d.pos);
     const path = pathBetween(origin, req.dest);
     const started = world.clock.tick;
+    const autonomous = req.autonomous === true;
+    const originName = req.origin || (autonomous ? 'auto' : 'manual');
     const activity = baseActivity({
       id: actId(world.activities.length + 1),
       discipleId: d.id,
       kind: req.kind,
       target: clone(req.order.target || {}),
       units: req.order.units,
-      origin: 'manual',
-      manualSeq: req.order.seq,
+      origin: originName,
+      manualSeq: autonomous ? null : req.order.seq,
       requestedTick: req.order.requestedTick,
       departTick: started,
       waited: req.waited,
@@ -1318,12 +1326,14 @@
     }
     world.activities.push(activity);
     d.activityId = activity.id;
-    d.manualOrder = req.forced ? d.manualOrder : req.order;
-    d.manualOrder.status = 'active';
-    d.manualOrder.activityId = activity.id;
-    if (req.fallback && req.order.kind === 'cultivate') {
-      d.manualOrder.kind = 'cultivate';
+    if (autonomous || req.keepOrder === false) d.manualOrder = null;
+    else if (!req.forced) d.manualOrder = req.order;
+    if (d.manualOrder) {
+      d.manualOrder.status = 'active';
+      d.manualOrder.activityId = activity.id;
+      if (req.fallback && req.order.kind === 'cultivate') d.manualOrder.kind = 'cultivate';
     }
+    d.autonomy.wait = null;
     if (req.seatKey) {
       world.seatWaits = world.seatWaits.filter((s) => !(s.discipleId === d.id && s.seatKey === req.seatKey));
     }
@@ -1337,7 +1347,7 @@
         kind: 'support',
         target: { breakthroughId: activity.id },
         units: 1,
-        origin: 'manual',
+        origin: originName,
         manualSeq: null,
         requestedTick: activity.requestedTick,
         departTick: started,
@@ -1359,6 +1369,7 @@
       activity.partnerActivityId = support.id;
       world.activities.push(support);
       sup.activityId = support.id;
+      sup.autonomy.wait = null;
       if (activity.partnerWait || support.partnerWait || support.status === 'traveling' || activity.status === 'traveling') {
         if (activity.status === 'working' && support.status !== 'working') {
           activity.status = 'traveling';
@@ -1428,7 +1439,7 @@
     releaseReservation(world, activity);
   }
 
-  function progressActivity(world, act, t) {
+  function progressActivity(world, act, t, record) {
     const events = [];
     if (act.status === 'done' || act.status === 'cancelled') return { events };
     if (act.kind === 'support' && act.status === 'working') return { events };
@@ -1459,6 +1470,15 @@
         if (other && other.partnerWait) beginWork(world, act, t + 1);
         return { events };
       }
+      // 支援者先到道館時只標記等待，不把還在路上的突破者改成開工（§2.3）。
+      if (act.kind === 'support') {
+        const other = partnerActivity(world, act);
+        if (other && other.pathIndex < other.path.length) {
+          act.partnerWait = true;
+          act.arriveTick = t + 1;
+          return { events };
+        }
+      }
       beginWork(world, act, t + 1);
       return { events };
     }
@@ -1467,7 +1487,7 @@
       if (act.kind === 'cultivate') {
         const block = Progression.cultivationBlock(d);
         if (block) {
-          const turned = convertCultivateToRest(world, act, block, t);
+          const turned = convertCultivateToRest(world, act, block, t, record);
           events.push(...turned.events);
           if (turned.split) return { events };
         }
@@ -1512,7 +1532,7 @@
     other.workTicks = act.workTicks;
     other.snapshot = other.snapshot || takeSnapshot(disciple(world, other.discipleId), world.clock.tick);
   }
-  function convertCultivateToRest(world, act, block, t) {
+  function convertCultivateToRest(world, act, block, t, record) {
     const d = disciple(world, act.discipleId);
     const fallback = { from: 'cultivate', reason: block };
     const restOrder = {
@@ -1552,8 +1572,9 @@
     act.halt = null;
     releaseReservation(world, act);
     if (d.activityId === act.id) d.activityId = null;
-    if (!d.manualOrder) d.manualOrder = restOrder;
-    d.manualOrder.kind = 'cultivate';
+    if (!d.manualOrder && act.origin === 'manual') d.manualOrder = restOrder;
+    if (d.manualOrder) d.manualOrder.kind = 'cultivate';
+    const manual = act.origin === 'manual';
     const events = startGranted(world, {
       id: `d7c-${act.id}`,
       discipleId: d.id,
@@ -1562,16 +1583,21 @@
       seats: seat.seats,
       participants: [d.id],
       kind: 'rest',
-      order: Object.assign({}, d.manualOrder, { kind: 'cultivate', units: restOrder.units, target: {} }),
+      order: Object.assign({}, d.manualOrder || restOrder, { kind: manual ? 'cultivate' : 'rest', units: restOrder.units, target: {} }),
       fallback,
       seatKey: seat.seatKey,
       dest,
       forced: true,
+      autonomous: !manual,
+      origin: manual ? 'manual' : act.origin,
+      keepOrder: manual,
     });
     const rest = activeOf(world, d.id);
     if (rest && (rest.status === 'traveling' || rest.status === 'working')) {
-      const stepped = progressActivity(world, rest, t);
+      // 這一筆是本 tick 才拆出來的。這裡推進一次後記入 record，同 tick 後半段不再推進。
+      const stepped = progressActivity(world, rest, t, record);
       events.push(...stepped.events);
+      if (record) record.add(rest.id);
     }
     return { split: true, events };
   }
@@ -1743,8 +1769,686 @@
     return { granted: result.granted.slice(), denied, remaining: result.remaining };
   }
 
+  // §4.5 的靜態模板只活在 RT。不寫進 story-data.js，slot 的效果詞彙也不加 orderBreakthrough。
+  const BREAKTHROUGH_ASK = Object.freeze({
+    id: 'evt-breakthrough-ask',
+    kind: 'breakthroughAsk',
+    pending: true,
+    narrativeOnly: true,
+    text: Object.freeze({
+      title: '可以嘗試突破了',
+      body: '修為到了這一境的門口。可以現在嘗試，也可以先放著。',
+    }),
+    options: Object.freeze([
+      Object.freeze({
+        id: 'opt-breakthrough-agree',
+        label: '現在突破',
+        effects: Object.freeze([Object.freeze({ type: 'orderBreakthrough' })]),
+      }),
+      Object.freeze({ id: 'opt-breakthrough-later', label: '稍後再說', effects: Object.freeze([]) }),
+    ]),
+  });
+  const WAIT_FIELDS = Object.freeze(['reason', 'sinceTick', 'recheckTick', 'signature']);
+  const ASK_FIELDS = Object.freeze(['generation', 'openEventId', 'lastDisposition', 'cooldownUntilTick']);
+  const DISPOSITIONS = new Set(['agree', 'later', 'expired', 'agree_invalid']);
+
+  function breakthroughTemplateError() {
+    const t = BREAKTHROUGH_ASK;
+    if (t.pending !== true || t.narrativeOnly !== true || has(t, 'onceKey') || has(t, 'claims')) {
+      return fail('bad_value', '突破詢問模板必須是待選、narrativeOnly，且不能有 onceKey 或 claims', 'breakthroughAsk');
+    }
+    if (t.options.length !== 2 || t.options[0].id !== 'opt-breakthrough-agree' || t.options[1].id !== 'opt-breakthrough-later') {
+      return fail('bad_value', '突破詢問選項必須恰好是同意與稍後', 'breakthroughAsk');
+    }
+    const agree = t.options[0].effects;
+    const later = t.options[1].effects;
+    if (agree.length !== 1 || agree[0].type !== 'orderBreakthrough' || Object.keys(agree[0]).length !== 1 || later.length !== 0) {
+      return fail('bad_value', '同意只有效果 orderBreakthrough，稍後沒有效果', 'breakthroughAsk');
+    }
+    if (/\d/.test(`${t.text.title}${t.text.body}`)) return fail('bad_value', '突破詢問正文不能含數字', 'breakthroughAsk');
+    return null;
+  }
+
+  function validateWait(wait, where) {
+    if (wait === null) return null;
+    if (!isRecord(wait) || !sameKeys(wait, WAIT_FIELDS)) return fail('bad_value', `${where} 欄位必須是原因、起點、復查與簽章`, where);
+    if (!Autonomy.WAIT_REASONS.includes(wait.reason)) return fail('bad_value', `${where}.reason 不合法`, where);
+    if (!isNonNeg(wait.sinceTick) || !isNonNeg(wait.recheckTick) || wait.recheckTick < wait.sinceTick) {
+      return fail('bad_value', `${where} 的 tick 不合法`, where);
+    }
+    if (typeof wait.signature !== 'string' || !/^[0-9a-f]{64}$/.test(wait.signature)) {
+      return fail('bad_value', `${where}.signature 必須是 sha256`, where);
+    }
+    return null;
+  }
+
+  function validatePending(world) {
+    const ids = new Set();
+    for (let i = 0; i < world.pendingEvents.length; i += 1) {
+      const ev = world.pendingEvents[i];
+      const where = `pendingEvents[${i}]`;
+      if (!isRecord(ev)) return fail('bad_type', `${where} 必須是物件`, where);
+      if (has(ev, 'onceKey')) return fail('bad_value', `${where} 不能帶 onceKey`, where);
+      if (has(ev, 'phase') || ev.phase === 'awaitingChoice') return fail('mixed_mode', 'RT 待選不能進入 awaitingChoice', where);
+      if (typeof ev.id !== 'string' || ids.has(ev.id)) return fail('bad_value', `${where} id 重複或不合法`, where);
+      ids.add(ev.id);
+      if (!isNonNeg(ev.raisedTick) || ev.raisedTick > world.clock.tick || ev.expiresTick !== ev.raisedTick + Rules.ASK_EXPIRY_TICKS) {
+        return fail('bad_value', `${where} 的提起與逾期 tick 不合法`, where);
+      }
+      if (ev.kind === 'plea') {
+        if (!sameKeys(ev, ['id', 'templateId', 'kind', 'raisedTick', 'expiresTick'])) return fail('bad_value', `${where} 欄位不合法`, where);
+        if (ev.id !== 'evt-village-plea' || ev.templateId !== ev.id) return fail('bad_value', `${where} 不是村口求援`, where);
+        if (!world.story.triggeredEventIds.includes(ev.id)) return fail('inconsistent_story', '求援待選沒有登記已觸發', where);
+      } else if (ev.kind === 'invitation') {
+        if (!sameKeys(ev, ['id', 'templateId', 'kind', 'candidateId', 'raisedTick', 'expiresTick'])) {
+          return fail('bad_value', `${where} 欄位不合法`, where);
+        }
+        if (!State.CANDIDATE_IDS.includes(ev.candidateId) || ev.id !== Story.inviteEventId(ev.candidateId) || ev.templateId !== ev.id) {
+          return fail('bad_value', `${where} 不是固定邀請`, where);
+        }
+        if (!world.story.triggeredEventIds.includes(ev.id)) return fail('inconsistent_story', '邀請待選沒有登記已觸發', where);
+        if (world.story.invitations[ev.candidateId].status !== 'invited') {
+          return fail('inconsistent_story', '邀請待選時狀態必須是 invited', where);
+        }
+      } else if (ev.kind === 'breakthroughAsk') {
+        if (!sameKeys(ev, ['id', 'templateId', 'kind', 'discipleId', 'generation', 'raisedTick', 'expiresTick'])) {
+          return fail('bad_value', `${where} 欄位不合法`, where);
+        }
+        if (ev.templateId !== BREAKTHROUGH_ASK.id || !isInt(ev.generation) || ev.generation < 1) {
+          return fail('bad_value', `${where} 的突破詢問模板或世代不合法`, where);
+        }
+        if (ev.id !== `evt-breakthrough-ask/${ev.discipleId}/${ev.generation}`) {
+          return fail('bad_value', `${where} 的 id 與角色、世代不符`, where);
+        }
+      } else return fail('bad_value', `${where} 種類不合法`, where);
+    }
+    return null;
+  }
+
+  function validateBreakthroughAsks(world) {
+    const tmpl = breakthroughTemplateError();
+    if (tmpl) return tmpl;
+    const asks = world.story.breakthroughAsks;
+    const openBy = new Map();
+    for (const ev of world.pendingEvents) {
+      if (ev.kind !== 'breakthroughAsk') continue;
+      if (openBy.has(ev.discipleId)) return fail('bad_value', `${ev.discipleId} 有兩筆未關閉的突破詢問`, 'pendingEvents');
+      openBy.set(ev.discipleId, ev);
+    }
+    for (const id of Object.keys(asks)) {
+      const where = `story.breakthroughAsks.${id}`;
+      if (!disciple(world, id)) return fail('bad_value', `${where} 的角色不存在`, where);
+      const rec = asks[id];
+      if (!isRecord(rec) || !sameKeys(rec, ASK_FIELDS)) return fail('bad_value', `${where} 欄位不合法`, where);
+      if (!isInt(rec.generation) || rec.generation < 1) return fail('bad_value', `${where}.generation 必須從 1 起`, where);
+      if (!(rec.openEventId === null || typeof rec.openEventId === 'string')) return fail('bad_value', `${where}.openEventId 不合法`, where);
+      if (!(rec.lastDisposition === null || DISPOSITIONS.has(rec.lastDisposition))) {
+        return fail('bad_value', `${where}.lastDisposition 不合法`, where);
+      }
+      if (!(rec.cooldownUntilTick === null || isNonNeg(rec.cooldownUntilTick))) {
+        return fail('bad_value', `${where}.cooldownUntilTick 不合法`, where);
+      }
+      const expected = `evt-breakthrough-ask/${id}/${rec.generation}`;
+      const ev = openBy.get(id);
+      if (rec.openEventId !== null) {
+        if (rec.lastDisposition !== null || rec.openEventId !== expected || !ev || ev.id !== rec.openEventId || ev.generation !== rec.generation) {
+          return fail('inconsistent_story', `${id} 的未關閉詢問對不上實例`, where);
+        }
+      } else if (ev) {
+        return fail('inconsistent_story', `${id} 有未關閉詢問但紀錄已關閉`, where);
+      } else if (rec.lastDisposition === null) {
+        return fail('bad_value', `${where} 關閉後必須有處置`, where);
+      }
+    }
+    for (const [id, ev] of openBy) {
+      const rec = asks[id];
+      if (!rec || rec.openEventId !== ev.id) return fail('inconsistent_story', '詢問實例對不上 breakthroughAsks', 'pendingEvents');
+    }
+    return null;
+  }
+
+  function validateApprentices(world) {
+    const accepted = State.CANDIDATE_IDS.filter((id) => world.story.invitations[id].status === 'accepted');
+    const extras = world.disciples.slice(2);
+    if (extras.length !== accepted.length) return fail('inconsistent_roster', '學徒人數與已接受的邀請不符', 'disciples');
+    for (let i = 0; i < extras.length; i += 1) {
+      const d = extras[i];
+      const id = accepted[i];
+      const where = `disciples[${i + 2}]`;
+      if (d.id !== id || d.role !== 'apprentice') return fail('inconsistent_roster', `${where} 必須是已接受的 ${id}`, where);
+      const profile = Story.CANDIDATE_PROFILES[id];
+      if (d.templateId !== profile.templateId) return fail('inconsistent_roster', `${id} 的模板必須是 ${profile.templateId}`, where);
+      const attrs = Story.profileAttributes(id);
+      for (const key of ['rootBone', 'comprehension', 'craft']) {
+        if (d.attributes[key] !== attrs[key]) return fail('inconsistent_roster', `${id} 的 ${key} 必須取自固定模板`, where);
+      }
+      if (d.joinTick !== world.story.invitations[id].joinTick) return fail('inconsistent_roster', `${id} 的 joinTick 與邀請不符`, where);
+    }
+    return null;
+  }
+
+  function worldSignature(world) {
+    const done = world.activities
+      .filter((a) => a.kind === 'build' && a.status === 'done')
+      .map((a) => a.target.facilityType);
+    const body = {
+      positions: world.disciples.map((d) => ({ id: d.id, r: d.pos.r, c: d.pos.c })),
+      resources: world.resources,
+      inventory: world.inventory,
+      facilities: [...new Set(done)].sort(),
+      phaseId: Rules.phaseAtEq(slotEqOf(world.clock.tick)).id,
+      roster: world.disciples.map((d) => ({ id: d.id, joinTick: d.joinTick })),
+      goalsRevision: world.goalsRevision,
+      policy: world.policy,
+      eventLogLength: world.eventLog.length,
+      invitations: Object.fromEntries(State.CANDIDATE_IDS.map((id) => [id, world.story.invitations[id].status])),
+      rescues: world.story.rescues.length,
+      pending: world.pendingEvents.map((e) => e.id).slice().sort(),
+      asks: world.story.breakthroughAsks,
+    };
+    return State.sha256Hex(State.canonicalize(body));
+  }
+
+  function logInternal(world, spec) {
+    const before = world.revision;
+    const payload = clone(spec.payload);
+    world.commandLog.push({
+      seq: world.commandLog.length + 1,
+      id: spec.id,
+      type: spec.type,
+      origin: spec.origin,
+      tick: world.clock.tick,
+      payload,
+      payloadHash: State.sha256Hex(State.canonicalize({ type: spec.type, payload })),
+      revisionBefore: before,
+      revisionAfter: before + 1,
+      eventSeqs: spec.eventSeqs.slice(),
+    });
+    world.revision = before + 1;
+  }
+
+  function closePending(world, id) {
+    world.pendingEvents = world.pendingEvents.filter((e) => e.id !== id);
+  }
+
+  function pillsUnreserved(world) {
+    let n = world.inventory[PILL_ID];
+    for (const a of activeActivities(world)) if (a.kind === 'breakthrough' && a.usePill) n -= 1;
+    for (const d of world.disciples) {
+      if (d.manualOrder && d.manualOrder.kind === 'breakthrough' && d.manualOrder.status === 'pending' && d.manualOrder.usePill) n -= 1;
+    }
+    return n;
+  }
+
+  function idleSupporter(world, selfId) {
+    const ids = world.disciples
+      .filter((d) => d.id !== selfId && d.joinTick <= world.clock.tick && d.activityId === null && d.manualOrder === null)
+      .map((d) => d.id)
+      .sort();
+    return ids.length > 0 ? ids[0] : null;
+  }
+
+  function placeApprentice(world, row) {
+    const order = State.CANDIDATE_IDS;
+    let at = world.disciples.length;
+    for (let i = 2; i < world.disciples.length; i += 1) {
+      if (order.indexOf(world.disciples[i].id) > order.indexOf(row.id)) {
+        at = i;
+        break;
+      }
+    }
+    world.disciples.splice(at, 0, row);
+  }
+
+  function acceptJoin(world, id, sink, origin) {
+    const eventId = Story.inviteEventId(id);
+    if (!world.story.triggeredEventIds.includes(eventId)) world.story.triggeredEventIds.push(eventId);
+    const inv = world.story.invitations[id];
+    inv.status = 'accepted';
+    inv.joinTick = world.clock.tick;
+    closePending(world, eventId);
+    const profile = Story.CANDIDATE_PROFILES[id];
+    const row = blankDisciple(id, 'apprentice', Story.profileAttributes(id), profile.templateId);
+    row.joinTick = world.clock.tick;
+    placeApprentice(world, row);
+    const draft = { type: 'candidateAccepted', candidateId: id, joinTick: world.clock.tick };
+    if (origin === 'policy') {
+      const ev = pushEvent(world, draft);
+      logInternal(world, {
+        id: `policy-${world.clock.tick}-accept-${id}`,
+        type: 'acceptCandidate',
+        origin: 'policy',
+        payload: { candidateId: id },
+        eventSeqs: [ev.seq],
+      });
+      sink.push(ev);
+    } else sink.push(draft);
+  }
+
+  function expirePending(world, events) {
+    const due = world.pendingEvents.filter((e) => world.clock.tick >= e.expiresTick);
+    for (const ev of due) {
+      closePending(world, ev.id);
+      if (ev.kind === 'invitation') {
+        const inv = world.story.invitations[ev.candidateId];
+        if (inv.status === 'invited') inv.status = 'deferred';
+      } else if (ev.kind === 'breakthroughAsk') {
+        const rec = world.story.breakthroughAsks[ev.discipleId];
+        if (rec && rec.openEventId === ev.id) {
+          rec.openEventId = null;
+          rec.lastDisposition = 'expired';
+          rec.cooldownUntilTick = world.clock.tick + Rules.ASK_EXPIRY_TICKS;
+        }
+      }
+      events.push(pushEvent(world, { type: 'askExpired', eventId: ev.id, kind: ev.kind }));
+    }
+  }
+
+  function raisePlea(world) {
+    if (world.policy.aid !== 'ask') return;
+    if (world.clock.tick < Rules.AID_AVAILABLE_FROM_SLOT * TICK) return;
+    if (world.story.rescues.some((r) => r.id === Rules.AID_ID)) return;
+    if (world.story.triggeredEventIds.includes('evt-village-plea')) return;
+    if (world.pendingEvents.some((e) => e.id === 'evt-village-plea')) return;
+    world.story.triggeredEventIds.push('evt-village-plea');
+    world.pendingEvents.push({
+      id: 'evt-village-plea',
+      templateId: 'evt-village-plea',
+      kind: 'plea',
+      raisedTick: world.clock.tick,
+      expiresTick: world.clock.tick + Rules.ASK_EXPIRY_TICKS,
+    });
+  }
+
+  function raiseInvites(world, events) {
+    const phase = Rules.phaseAtEq(slotEqOf(world.clock.tick)).id;
+    if (phase !== 'manifest' && phase !== 'surge') return;
+    if (!world.story.rescues.some((r) => r.id === Rules.AID_ID)) return;
+    for (const id of State.CANDIDATE_IDS) {
+      const inv = world.story.invitations[id];
+      if (inv.status !== 'locked') continue;
+      if (id === 'cand-2' && !world.story.triggeredEventIds.includes(Story.inviteEventId('cand-1'))) continue;
+      const eventId = Story.inviteEventId(id);
+      world.story.triggeredEventIds.push(eventId);
+      if (world.policy.recruit === 'auto-accept') acceptJoin(world, id, events, 'policy');
+      else if (world.policy.recruit === 'ask') {
+        inv.status = 'invited';
+        world.pendingEvents.push({
+          id: eventId,
+          templateId: eventId,
+          kind: 'invitation',
+          candidateId: id,
+          raisedTick: world.clock.tick,
+          expiresTick: world.clock.tick + Rules.ASK_EXPIRY_TICKS,
+        });
+      } else inv.status = 'deferred';
+    }
+  }
+
+  function raiseBreakthroughAsks(world, events) {
+    for (const d of world.disciples) {
+      const rec = world.story.breakthroughAsks[d.id];
+      if (rec && !rec.openEventId && rec.cooldownUntilTick !== null && !Progression.eligibility(d).ok) {
+        rec.cooldownUntilTick = null;
+      }
+    }
+    if (world.policy.breakthrough !== 'ask') return;
+    for (const d of world.disciples) {
+      if (d.joinTick > world.clock.tick) continue;
+      if (!Progression.eligibility(d).ok) continue;
+      const rec = world.story.breakthroughAsks[d.id];
+      if (rec && rec.openEventId) continue;
+      if (rec && rec.cooldownUntilTick !== null && world.clock.tick < rec.cooldownUntilTick) continue;
+      if (d.manualOrder && d.manualOrder.kind === 'breakthrough') continue;
+      if (world.activities.some((a) => a.discipleId === d.id && a.kind === 'breakthrough' && (a.status === 'traveling' || a.status === 'working'))) continue;
+      const generation = rec ? rec.generation + 1 : 1;
+      const id = `evt-breakthrough-ask/${d.id}/${generation}`;
+      world.pendingEvents.push({
+        id,
+        templateId: BREAKTHROUGH_ASK.id,
+        kind: 'breakthroughAsk',
+        discipleId: d.id,
+        generation,
+        raisedTick: world.clock.tick,
+        expiresTick: world.clock.tick + Rules.ASK_EXPIRY_TICKS,
+      });
+      world.story.breakthroughAsks[d.id] = {
+        generation, openEventId: id, lastDisposition: null, cooldownUntilTick: null,
+      };
+      events.push(pushEvent(world, { type: 'breakthroughAskOpened', discipleId: d.id, eventId: id, generation }));
+    }
+  }
+
+  function settleStory(world, events) {
+    expirePending(world, events);
+    raisePlea(world);
+    raiseInvites(world, events);
+    raiseBreakthroughAsks(world, events);
+  }
+
+  function optionOf(ev, optionId) {
+    if (ev.kind === 'breakthroughAsk') return BREAKTHROUGH_ASK.options.find((o) => o.id === optionId) || null;
+    const src = StoryData.getEvent(ev.templateId);
+    if (!src || !Array.isArray(src.options)) return null;
+    return src.options.find((o) => o.id === optionId) || null;
+  }
+
+  function closedAsk(world, eventId) {
+    return Object.keys(world.story.breakthroughAsks).some((id) => {
+      const rec = world.story.breakthroughAsks[id];
+      return rec.openEventId === null && eventId === `evt-breakthrough-ask/${id}/${rec.generation}`;
+    });
+  }
+
+  function doChoose(world, payload) {
+    if (!isRecord(payload) || !sameKeys(payload, ['eventId', 'optionId'])) {
+      return { error: reject('bad_payload', 'chooseEvent 只能有 eventId 與 optionId') };
+    }
+    if (typeof payload.eventId !== 'string' || typeof payload.optionId !== 'string') {
+      return { error: reject('bad_payload', 'eventId 與 optionId 必須是字串') };
+    }
+    const ev = world.pendingEvents.find((e) => e.id === payload.eventId);
+    if (!ev) {
+      if (closedAsk(world, payload.eventId)) return { error: reject('closed_event', '這筆詢問已經關閉') };
+      return { error: reject('unknown_event', `沒有待選事件 ${payload.eventId}`) };
+    }
+    const option = optionOf(ev, payload.optionId);
+    if (!option) return { error: reject('unknown_option', `事件 ${ev.id} 沒有選項 ${payload.optionId}`) };
+    if (ev.kind === 'breakthroughAsk') return chooseBreakthrough(world, ev, option);
+    if (ev.kind === 'plea') return chooseStory(world, ev, option, null);
+    if (ev.kind === 'invitation') return chooseStory(world, ev, option, ev.candidateId);
+    return { error: reject('unknown_event', '不支援的待選事件') };
+  }
+
+  function chooseStory(world, ev, option, candidateId) {
+    closePending(world, ev.id);
+    if (candidateId) {
+      const inv = world.story.invitations[candidateId];
+      const later = option.id.endsWith('-later');
+      if (later && inv.status === 'invited') inv.status = 'deferred';
+    }
+    return { events: [{ type: 'eventChosen', eventId: ev.id, optionId: option.id }] };
+  }
+
+  function chooseBreakthrough(world, ev, option) {
+    const rec = world.story.breakthroughAsks[ev.discipleId];
+    const d = disciple(world, ev.discipleId);
+    if (!rec || !d || rec.openEventId !== ev.id || rec.generation !== ev.generation) {
+      return { error: reject('closed_event', '詢問與角色或世代不一致') };
+    }
+    closePending(world, ev.id);
+    rec.openEventId = null;
+    if (option.id === 'opt-breakthrough-later') {
+      rec.lastDisposition = 'later';
+      rec.cooldownUntilTick = world.clock.tick + Rules.ASK_EXPIRY_TICKS;
+      return { events: [{ type: 'eventChosen', eventId: ev.id, optionId: option.id, disposition: 'later' }] };
+    }
+    const block = agreeBlock(world, d);
+    if (block) {
+      rec.lastDisposition = 'agree_invalid';
+      rec.cooldownUntilTick = world.clock.tick + Rules.ASK_EXPIRY_TICKS;
+      return { events: [{ type: 'eventChosen', eventId: ev.id, optionId: option.id, disposition: 'agree_invalid', reason: block }] };
+    }
+    const usePill = world.policy.breakthroughPill === 'use' && pillsUnreserved(world) >= 1;
+    const supporterId = world.policy.breakthroughSupport === 'auto' ? idleSupporter(world, d.id) : null;
+    d.manualOrder = {
+      seq: world.commandLog.length + 1,
+      commandId: `agree-${ev.id}`,
+      status: 'pending',
+      kind: 'breakthrough',
+      target: {},
+      units: 1,
+      requestedTick: world.clock.tick,
+      activityId: null,
+      usePill,
+      supporterId,
+    };
+    d.autonomy.wait = null;
+    rec.lastDisposition = 'agree';
+    rec.cooldownUntilTick = null;
+    return {
+      events: [{ type: 'eventChosen', eventId: ev.id, optionId: option.id, disposition: 'agree', usePill, supporterId }],
+    };
+  }
+
+  function agreeBlock(world, d) {
+    if (!Progression.eligibility(d).ok) return 'not_eligible';
+    // 正在做的承諾工作不是資格失效。同意改成 pending，等該活動結束再用凍結欄位（§4.5）。
+    if (d.manualOrder && d.manualOrder.kind === 'breakthrough') return 'breakthrough_pending';
+    if (world.activities.some((a) => a.kind === 'breakthrough' && (a.status === 'traveling' || a.status === 'working'))) {
+      return 'breakthrough_pending';
+    }
+    return null;
+  }
+
+  function doAccept(world, payload) {
+    if (!isRecord(payload) || !sameKeys(payload, ['candidateId']) || typeof payload.candidateId !== 'string') {
+      return { error: reject('bad_payload', 'acceptCandidate 只能有 candidateId') };
+    }
+    const id = payload.candidateId;
+    if (!State.CANDIDATE_IDS.includes(id)) return { error: reject('unknown_candidate', `沒有候選 ${id}`) };
+    const inv = world.story.invitations[id];
+    if (inv.status === 'accepted') return { error: reject('already_accepted', `${id} 已經入隊`) };
+    if (inv.status !== 'invited' && inv.status !== 'deferred') return { error: reject('not_invited', `${id} 尚未被邀請`) };
+    const events = [];
+    acceptJoin(world, id, events, 'manual');
+    return { events };
+  }
+
+  function rememberWaitAssignment(world, d, reason, events, bucket) {
+    const prev = d.autonomy.wait;
+    const same = !!(prev && prev.reason === reason);
+    if (!same) events.push(pushEvent(world, { type: 'autonomyWait', discipleId: d.id, reason }));
+    bucket.push({ disciple: d, reason, sinceTick: same ? prev.sinceTick : world.clock.tick, bump: !same });
+  }
+
+  function decisionSnapshot(world, decideIds) {
+    const tick = world.clock.tick;
+    const inbound = { spiritMaterial: 0, spiritHerb: 0, pills: 0 };
+    for (const a of activeActivities(world)) {
+      if (a.kind === 'gather-material' || a.kind === 'gather-herb') {
+        const who = disciple(world, a.discipleId);
+        const resource = a.kind === 'gather-material' ? 'spiritMaterial' : 'spiritHerb';
+        const amount = Rules.gatherYieldAtEq({
+          slotEq: slotEqOf(tick), resource, craft: who.attributes.craft, stamina: who.stamina,
+        }).amount;
+        inbound[resource] += (a.units - a.unitsDone) * amount;
+      } else if (a.kind === 'brew') inbound.pills += Rules.BREW_MIN_OUTPUT;
+    }
+    let reserved = 0;
+    for (const a of activeActivities(world)) if (a.kind === 'breakthrough' && a.usePill) reserved += 1;
+    const facilitiesDone = {};
+    const buildOpen = {};
+    for (const type of Object.keys(Rules.FACILITIES)) {
+      facilitiesDone[type] = !!doneBuild(world, type);
+      buildOpen[type] = openBuildCount(world, type);
+    }
+    return {
+      tick,
+      tiles: world.tiles,
+      resources: world.resources,
+      pills: world.inventory[PILL_ID],
+      pillsFree: world.inventory[PILL_ID] - reserved,
+      inbound,
+      seats: seatPool(world, new Set()),
+      facilitiesDone,
+      buildOpen,
+      brewInFlight: activeActivities(world).some((a) => a.kind === 'brew'),
+      aidInFlight: activeActivities(world).some((a) => a.kind === 'aid'),
+      aidDone: world.story.rescues.some((r) => r.id === Rules.AID_ID),
+      openBreakthrough: world.activities.some((a) => a.kind === 'breakthrough' && (a.status === 'traveling' || a.status === 'working'))
+        || world.disciples.some((d) => d.manualOrder && d.manualOrder.kind === 'breakthrough'),
+      goals: world.goals,
+      policy: world.policy,
+      disciples: world.disciples.map((d) => {
+        const ask = world.story.breakthroughAsks[d.id];
+        return {
+          id: d.id,
+          attributes: { craft: d.attributes.craft },
+          stamina: d.stamina,
+          injury: d.injury,
+          cultivation: d.cultivation,
+          breakthroughs: d.breakthroughs,
+          pos: { r: d.pos.r, c: d.pos.c },
+          joined: d.joinTick <= tick,
+          idle: d.activityId === null,
+          manualLock: d.manualOrder !== null,
+          decide: decideIds.has(d.id),
+          askOpen: !!(ask && ask.openEventId),
+          askCooldownUntil: ask && ask.cooldownUntilTick !== null && ask.cooldownUntilTick !== undefined ? ask.cooldownUntilTick : null,
+        };
+      }),
+    };
+  }
+
+  function collectAutonomy(world, requests, events, decided, signature) {
+    const decideIds = new Set();
+    for (const d of world.disciples) {
+      if (d.joinTick > world.clock.tick || d.activityId !== null || d.manualOrder !== null || decided.has(d.id)) continue;
+      if (d.autonomy.wait && world.clock.tick < d.autonomy.wait.recheckTick && d.autonomy.wait.signature === signature) continue;
+      decideIds.add(d.id);
+    }
+    if (decideIds.size === 0) return;
+    const planned = Autonomy.plan(decisionSnapshot(world, decideIds));
+    const waits = [];
+    for (const assignment of planned.assignments) {
+      const d = disciple(world, assignment.discipleId);
+      decided.add(d.id);
+      if (assignment.type === 'wait') {
+        rememberWaitAssignment(world, d, assignment.reason, events, waits);
+        continue;
+      }
+      const order = {
+        seq: null,
+        commandId: `auto-${world.clock.tick}-${d.id}-1`,
+        status: 'pending',
+        kind: assignment.kind,
+        target: clone(assignment.target),
+        units: assignment.units,
+        requestedTick: world.clock.tick,
+        activityId: null,
+      };
+      if (assignment.kind === 'breakthrough') {
+        order.usePill = assignment.usePill === true;
+        order.supporterId = assignment.supporterId === undefined ? null : assignment.supporterId;
+      }
+      const built = buildDeparture(world, d, order, null);
+      if (built.invalid) {
+        const reason = built.invalid.code === 'blocked' && assignment.kind === 'gather-herb' ? 'blocked:herb_locked' : 'goals_done';
+        rememberWaitAssignment(world, d, reason, events, waits);
+        continue;
+      }
+      built.request.switching = false;
+      built.request.orderOwner = d;
+      built.request.priority = 1;
+      built.request.autonomous = true;
+      built.request.origin = 'auto';
+      built.request.logCommand = true;
+      built.request.keepOrder = false;
+      requests.push(built.request);
+    }
+    const signed = worldSignature(world);
+    for (const row of waits) {
+      row.disciple.autonomy.wait = {
+        reason: row.reason,
+        sinceTick: row.sinceTick,
+        recheckTick: world.clock.tick + Rules.WAIT_RECHECK_TICKS,
+        signature: signed,
+      };
+      if (row.bump) row.disciple.autonomy.decisionSeq += 1;
+    }
+  }
+
+  function resolveBatch(world, events, batch) {
+    if (batch.length === 0) return;
+    const ignore = new Set(batch.map((r) => r.previousActivityId).filter(Boolean));
+    const requests = batch.map((r) => ({
+      id: r.id,
+      discipleId: r.discipleId,
+      waited: r.waited,
+      cost: r.cost,
+      seats: r.seats,
+      participants: r.participants,
+      priority: r.priority,
+    }));
+    for (const d of world.disciples) {
+      if (!d.activityId || ignore.has(d.activityId)) continue;
+      const busy = world.activities.find((a) => a.id === d.activityId);
+      if (!busy || (busy.status !== 'traveling' && busy.status !== 'working')) continue;
+      requests.push({
+        id: `busy-${d.id}`, discipleId: d.id, waited: Number.MAX_SAFE_INTEGER, cost: {}, seats: {}, participants: [d.id],
+      });
+    }
+    const arb = Engine.arbitrate({ requests, resources: resourcePool(world), seats: seatPool(world, ignore) });
+    const denied = new Map(arb.denied.map((d) => [d.id, d]));
+    for (const req of batch) {
+      if (denied.has(req.id)) {
+        const why = denied.get(req.id);
+        if (req.switching) {
+          req.orderOwner.manualOrder = null;
+          events.push(pushEvent(world, { type: 'manualInvalid', discipleId: req.discipleId, reason: why.code }));
+          continue;
+        }
+        const agree = req.order && req.order.kind === 'breakthrough' && String(req.order.commandId || '').startsWith('agree-');
+        if (agree) {
+          const rec = world.story.breakthroughAsks[req.discipleId];
+          if (rec) {
+            rec.lastDisposition = 'agree_invalid';
+            rec.openEventId = null;
+            rec.cooldownUntilTick = world.clock.tick + Rules.ASK_EXPIRY_TICKS;
+          }
+          req.keepOrder = false;
+          req.autonomous = true;
+          req.origin = 'auto';
+          events.push(pushEvent(world, { type: 'breakthroughAskInvalid', discipleId: req.discipleId, reason: why.code }));
+        }
+        events.push(...startRestFallback(world, req, why.code));
+        continue;
+      }
+      if (req.previousActivityId) {
+        const old = world.activities.find((a) => a.id === req.previousActivityId);
+        if (old && (old.status === 'traveling' || old.status === 'working')) abandonPartial(world, old, 'overwrite');
+        if (!req.autonomous && req.orderOwner.manualOrder === null) req.orderOwner.manualOrder = req.order;
+        req.orderOwner.autonomy.resumeReason = null;
+      }
+      const started = startGranted(world, req);
+      events.push(...started);
+      if (req.logCommand) {
+        const payload = {
+          discipleId: req.discipleId, kind: req.kind, target: clone(req.order.target || {}), units: req.order.units,
+        };
+        if (req.kind === 'breakthrough') {
+          payload.usePill = req.order.usePill;
+          payload.supporterId = req.order.supporterId;
+        }
+        logInternal(world, {
+          id: req.order.commandId,
+          type: 'autoAssign',
+          origin: req.origin || 'auto',
+          payload,
+          eventSeqs: started.map((e) => e.seq),
+        });
+      }
+    }
+  }
+
+  function progressMovers(world, events, t, already, record) {
+    let stop = null;
+    const movers = activeActivities(world)
+      .filter((a) => a.kind !== 'support' || a.status === 'traveling')
+      .filter((a) => !(already && already.has(a.id)))
+      .sort((a, b) => (a.id < b.id ? -1 : 1));
+    for (const act of movers) {
+      if (record) record.add(act.id);
+      const ev = progressActivity(world, act, t, record);
+      events.push(...ev.events);
+      if (ev.stopReason) stop = ev.stopReason;
+    }
+    return stop;
+  }
+
   return Object.freeze({
-    SCHEMA_VERSION, RULE_VERSION, RNG_VERSION, SCENARIO_ID, DEFAULT_POLICY, ASK_POLICY,
+    SCHEMA_VERSION, RULE_VERSION, RNG_VERSION, SCENARIO_ID, DEFAULT_POLICY, ASK_POLICY, BREAKTHROUGH_ASK,
     createWorld, validateWorld, hashWorld, serializeState, parseState, dispatch, advanceTicks,
     pathBetween, arbitrateDepartures,
   });
