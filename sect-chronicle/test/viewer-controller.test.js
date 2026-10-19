@@ -169,33 +169,80 @@ test('播放中單幀空檔過長時只計入上限，不一次補一大批 tick
   assert.equal(ctl.world.clock.tick, got);
 });
 
-test('advanceTicks 出錯時停在上一個合法世界並顯示錯誤，不再推進', () => {
+// 假引擎：推到 failAt 這個 tick 時失敗。和正式 advanceTicks 一樣，advancedTicks 只算失敗前已提交的 tick；
+// 回傳的 state 故意帶著失敗 tick 的改動（時鐘多一格、資源被改），控制器不能採用。
+function failingAt(failAt) {
   let calls = 0;
-  const broken = Object.assign({}, Realtime, {
+  const api = Object.assign({}, Realtime, {
     advanceTicks(world, n) {
       calls += 1;
-      if (calls < 3) return Realtime.advanceTicks(world, n);
-      const r = Realtime.advanceTicks(world, 1);
-      return Object.assign({}, r, { stopReason: 'error', error: { code: 'invalid_world', reason: '測試注入' } });
+      const t = world.clock.tick;
+      if (t + n <= failAt) return Realtime.advanceTicks(world, n);
+      let state = world;
+      let done = 0;
+      while (state.clock.tick < failAt) {
+        const r = Realtime.advanceTicks(state, failAt - state.clock.tick);
+        state = r.state;
+        done += r.advancedTicks;
+      }
+      const dirty = JSON.parse(JSON.stringify(state));
+      dirty.clock.tick += 1;
+      dirty.resources.spiritMaterial += 99;
+      return { ok: true, state: dirty, events: [], advancedTicks: done, stopReason: 'error', error: { code: 'invalid_world', reason: '測試注入' } };
     },
   });
-  const ctl = started(1, broken);
-  assert.equal(ctl.advance(10), 10);
-  assert.equal(ctl.advance(10), 10);
-  const last = ctl.world;
-  assert.equal(ctl.advance(10), 0);
+  return { api, calls: () => calls };
+}
+
+test('批次中途出錯：保留已提交的成功前綴，停在最後合法 tick，不採用失敗 tick 的狀態', () => {
+  const fake = failingAt(2);
+  const ctl = started(1, fake.api);
+  assert.equal(ctl.advance(4), 2, '要求 4 tick，前 2 tick 已提交');
   const s = ctl.snapshot();
   assert.equal(s.mode, 'error');
-  assert.equal(s.world, last, '出錯那一批的狀態不採用');
-  assert.deepEqual(s.error, { code: 'invalid_world', reason: '測試注入', tick: 20 });
+  assert.equal(s.world.clock.tick, 2);
+  assert.equal(Realtime.hashWorld(s.world), refHash(2), '停在成功前綴，和直接推進 2 tick 相同');
+  assert.deepEqual(s.error, { code: 'invalid_world', reason: '測試注入', kind: 'failed', committedTicks: 2, tick: 2 });
+  assert.equal(s.totals.ticks, 2);
+  assert.deepEqual(s.lastStep, { requested: 4, advanced: 2, stops: ['completed'] });
+  // 出錯後不再推進，也不能繼續播放。
+  const before = fake.calls();
   assert.equal(run(ctl, 0, 5000, 50), 0);
-  assert.equal(ctl.toggle(), false);
   assert.equal(ctl.advance(5), 0);
+  assert.equal(ctl.toggle(), false);
+  assert.equal(fake.calls(), before);
+});
+
+test('批次中途出錯也能跨過突破停批：前綴裡的 breakthroughResolved 照常續推', () => {
+  // rt-dev-000 第一次突破停在 tick 1176；在它之後幾個 tick 失敗，前綴要跨過那次停批。
+  const failAt = 1180;
+  const fake = failingAt(failAt);
+  const ctl = started(1, fake.api);
+  assert.equal(ctl.advance(1100), 1100);
+  assert.equal(ctl.advance(200), failAt - 1100);
+  const s = ctl.snapshot();
+  assert.equal(s.world.clock.tick, failAt);
+  assert.equal(Realtime.hashWorld(s.world), refHash(failAt));
+  assert.equal(s.error.committedTicks, failAt - 1100);
+  assert.ok(s.lastStep.stops.includes('breakthroughResolved'));
+});
+
+test('出錯在批次第一個 tick，或引擎直接拒絕：世界都不動，錯誤標明種類', () => {
+  const ctl = started(1, failingAt(0).api);
+  assert.equal(ctl.advance(3), 0);
+  let s = ctl.snapshot();
+  assert.equal(s.world.clock.tick, 0);
+  assert.equal(Realtime.hashWorld(s.world), refHash(0));
+  assert.equal(s.error.kind, 'failed');
+  assert.equal(s.error.committedTicks, 0);
 
   const rejecting = Object.assign({}, Realtime, { advanceTicks: () => ({ ok: false, code: 'bad_ticks', reason: '拒絕' }) });
   const ctl2 = started(1, rejecting);
+  const world = ctl2.world;
   assert.equal(ctl2.advance(3), 0);
-  assert.equal(ctl2.snapshot().error.code, 'bad_ticks');
+  s = ctl2.snapshot();
+  assert.equal(s.world, world);
+  assert.deepEqual(s.error, { code: 'bad_ticks', reason: '拒絕', kind: 'rejected', committedTicks: 0, tick: 0 });
 });
 
 test('不合法 seed 不建立世界，也不能開始', () => {

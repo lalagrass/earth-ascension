@@ -387,7 +387,8 @@
     dom.events.innerHTML = renderEvents(model);
     const err = ctl.error;
     dom.error.hidden = !err;
-    dom.error.textContent = err ? `世界停在 tick ${err.tick}：${err.code}：${err.reason}。不會繼續推進；重新整理頁面會開新局。` : '';
+    const how = err && err.kind === 'rejected' ? '引擎拒絕推進，這一批沒有任何 tick' : `出錯前同一批已提交 ${err ? err.committedTicks : 0} tick，畫面保留到此`;
+    dom.error.textContent = err ? `世界停在 tick ${err.tick}（${how}）：${err.code}：${err.reason}。不會繼續推進；重新整理頁面會開新局。` : '';
   }
 
   return Object.freeze({ describe, render, eventText, renderSettings, WAIT_LABELS, FALLBACK_LABELS });

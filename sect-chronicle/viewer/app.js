@@ -100,7 +100,7 @@
       snapshot: () => {
         const s = ctl.snapshot();
         return {
-          mode: s.mode, speed: s.speed, autoPaused: s.autoPaused, error: s.error, totals: s.totals, lastStep: s.lastStep,
+          mode: s.mode, seed: s.seed, speed: s.speed, autoPaused: s.autoPaused, error: s.error, totals: s.totals, lastStep: s.lastStep,
           tick: s.world ? s.world.clock.tick : null,
           hash: s.world ? ns.Realtime.hashWorld(s.world) : null,
           rngState: s.world ? s.world.rngState.slice() : null,

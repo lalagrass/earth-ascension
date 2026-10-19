@@ -5,6 +5,7 @@
  * 牆鐘時間只決定「這一幀要餵幾個 tick」：1× 每秒 4 tick，2×／4× 只是乘上倍率（D9）。
  * 暫停、背景與 render 都不推進世界；背景會自動暫停並清掉待補的時間，回前景仍暫停，恢復時不追趕離線時長。
  * breakthroughResolved 只結束一次 API 批次，控制器在同一幀把剩下的 tick 繼續餵完。
+ * 批次中途出錯時保留已提交的成功前綴，停在最後合法的 tick，不再推進。
  */
 (function (root, factory) {
   'use strict';
@@ -133,30 +134,63 @@
       while (left > 0) {
         const r = Realtime.advanceTicks(world, left);
         if (!r || r.ok !== true) {
-          return fail(r ? { code: r.code, reason: r.reason } : { code: 'no_result', reason: 'advanceTicks 沒有回傳結果' }, advanced, n, stops);
+          // 拒絕：這一批一個 tick 都沒推進，世界維持呼叫前的樣子。
+          const err = r ? { code: r.code, reason: r.reason } : { code: 'no_result', reason: 'advanceTicks 沒有回傳結果' };
+          return fail(Object.assign(err, { kind: 'rejected', committedTicks: 0 }), n, advanced, stops);
         }
         totals.batches += 1;
         if (r.stopReason === 'error') {
-          // 出錯的 tick 不採用：世界留在上一個合法狀態，畫面顯示錯誤，不再推進。
-          return fail(r.error || { code: 'error', reason: '未說明的錯誤' }, advanced, n, stops);
+          // 批次中途失敗：advancedTicks 是失敗前已提交的 tick（RT00 §1.5 保留）。回傳的 state 可能帶著失敗那個 tick 的改動，
+          // 不直接採用；改用同一個公開 API 從批次起點重推這段成功前綴，停在最後一個合法邊界。
+          const done = r.advancedTicks;
+          if (!Number.isSafeInteger(done) || done < 0 || done >= left) {
+            return fail({ code: 'bad_advance', reason: `出錯批次回報 ${String(done)} tick（要求 ${left}）`, kind: 'failed', committedTicks: 0 }, n, advanced, stops);
+          }
+          const prefix = replayPrefix(done, stops);
+          advanced += prefix;
+          left -= prefix;
+          const err = r.error || { code: 'error', reason: '未說明的錯誤' };
+          if (prefix !== done) {
+            return fail({ code: 'prefix_mismatch', reason: `出錯前已提交 ${done} tick，重推只得到 ${prefix} tick（原錯誤 ${err.code}：${err.reason}）`, kind: 'failed', committedTicks: prefix }, n, advanced, stops);
+          }
+          return fail({ code: err.code, reason: err.reason, kind: 'failed', committedTicks: done }, n, advanced, stops);
         }
         if (!Number.isSafeInteger(r.advancedTicks) || r.advancedTicks < 1 || r.advancedTicks > left) {
-          return fail({ code: 'bad_advance', reason: `advanceTicks 回報 ${String(r.advancedTicks)} tick（要求 ${left}）` }, advanced, n, stops);
+          return fail({ code: 'bad_advance', reason: `advanceTicks 回報 ${String(r.advancedTicks)} tick（要求 ${left}）`, kind: 'failed', committedTicks: 0 }, n, advanced, stops);
         }
-        world = r.state;
+        commit(r, stops);
         left -= r.advancedTicks;
         advanced += r.advancedTicks;
-        totals.ticks += r.advancedTicks;
-        stops.push(r.stopReason);
-        if (r.stopReason === 'breakthroughResolved') totals.breakthroughStops += 1;
       }
       lastStep = { requested: n, advanced, stops };
       return advanced;
     }
 
-    function fail(err, advanced, requested, stops) {
+    function commit(r, stops) {
+      world = r.state;
+      totals.ticks += r.advancedTicks;
+      stops.push(r.stopReason);
+      if (r.stopReason === 'breakthroughResolved') totals.breakthroughStops += 1;
+    }
+
+    // 從目前世界重推 k 個 tick，只採用正常結束的批次；回傳實際採用的 tick 數。
+    function replayPrefix(k, stops) {
+      let got = 0;
+      while (got < k) {
+        const r = Realtime.advanceTicks(world, k - got);
+        if (!r || r.ok !== true || r.stopReason === 'error') break;
+        if (!Number.isSafeInteger(r.advancedTicks) || r.advancedTicks < 1 || r.advancedTicks > k - got) break;
+        totals.batches += 1;
+        commit(r, stops);
+        got += r.advancedTicks;
+      }
+      return got;
+    }
+
+    // 停在目前（最後合法的）世界。tick 是下一個要跑、也就是失敗的那個 tick。
+    function fail(err, requested, advanced, stops) {
       mode = 'error';
-      error = { code: err.code, reason: err.reason, tick: world.clock.tick };
+      error = { code: err.code, reason: err.reason, kind: err.kind, committedTicks: err.committedTicks, tick: world.clock.tick };
       lastStep = { requested, advanced, stops };
       resetClock();
       return advanced;

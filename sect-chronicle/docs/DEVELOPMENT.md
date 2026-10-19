@@ -87,24 +87,29 @@ python3 -m http.server 8765 --directory sect-chronicle
 `viewer/index.html` 依上方「模組載入策略」的順序載入 `../js/` 十支 UMD 腳本，再載 `viewer/controller.js`、`viewer/view.js`、`viewer/app.js`。也可以直接用 `file://` 開。
 
 - **開局**：預填 seed `rt-dev-000`（可改；不合法時顯示 `bad_seed` 且不能開始）。開始前顯示 `createWorld` 給的安穩發展政策與目標順序，按「開始」或 Enter 才確認並播放。角色選項用引擎預設，不做模板配點或政策編輯。
-- **播放**（`controller.js`，無 DOM，可在 Node 測試）：只呼叫 `Realtime.createWorld` 與 `Realtime.advanceTicks`。1× 每秒 4 tick，2×／4× 只乘倍率。牆鐘時間換成 tick 後才推進，單幀最多計 250 ms，卡頓或節流不會補一大批。`breakthroughResolved` 只結束一次 API 批次，控制器在同一幀把剩下的量繼續推完。`stopReason: 'error'` 或 `ok:false` 時不採用出錯那一批，世界停在上一個合法狀態，畫面顯示錯誤碼、原因與 tick，之後不再推進。過了 2700 tick 世界照常繼續，畫面只標示已過觀察期。
+- **播放**（`controller.js`，無 DOM，可在 Node 測試）：只呼叫 `Realtime.createWorld` 與 `Realtime.advanceTicks`。1× 每秒 4 tick，2×／4× 只乘倍率。牆鐘時間換成 tick 後才推進，單幀最多計 250 ms，卡頓或節流不會補一大批。`breakthroughResolved` 只結束一次 API 批次，控制器在同一幀把剩下的量繼續推完。`ok:false` 是拒絕，世界不動。`stopReason: 'error'` 時，同一批在失敗前已提交的 `advancedTicks` 個 tick 保留（RT00 §1.5）；回傳的 state 可能帶著失敗 tick 的改動，所以不直接採用，而是從批次起點用同一個公開 API 重推這段成功前綴，停在最後合法的 tick。畫面顯示錯誤碼、原因、停住的 tick 與該批已提交的 tick 數，之後不再推進。過了 2700 tick 世界照常繼續，畫面只標示已過觀察期。
 - **暫停與背景**：空白鍵暫停／繼續，鍵 1／2／4 換倍速。`visibilitychange` 轉為 hidden 時，播放中就自動暫停並丟掉未換成 tick 的時間；回到前景仍是暫停，按繼續後第一幀只重設時間基準，不追趕背景或暫停期間的牆鐘時間。
 - **畫面**（`view.js`）：`describe(world)` 把正式世界讀成畫面資料，不寫世界、不讀 RNG，也不另算產出。5×5 地圖加村口、道館、地形與五行、已完工或建造中的設施、人物所在格；人物的工作或趕路進度、體力／心境／修為／傷勢、突破次數；庫存、凝氣丹與設施；最近 40 筆事件；`pendingEvents` 只列出不能操作。人物狀態分四種：活動（含 `fallback` 的來源與原因）、`autonomy.wait`（原因碼與復查 tick）、未入隊，以及剛完成工作、下一 tick 才決策的「待決策」。同名學徒在名字後加 id，地圖標記用「徒1／徒2」。點人物只改畫面選取。
 - **限制**：觀察版沒有保存，重新整理就開新局；沒有 localStorage、匯入匯出或假存檔按鈕。不能下工作、改目標或政策，也不回應詢問；詢問照既有 180 tick 逾期流程處理。RT-03 存讀、RT-04 完整介入 UI、RT-05 試玩都不在本包。
 
 採用：控制器與畫面分檔，控制器不碰 DOM，方便在 Node 用假時鐘測倍速、暫停、背景與續推；`app.js` 只接 DOM、`requestAnimationFrame` 與 `visibilitychange`。單幀上限 250 ms，讓分頁節流或長卡頓都不會變成追趕。不採用：在 viewer 內複製規則或預測產出、用 `setInterval` 固定 tick（背景節流時會漂移）、離線追趕、debug 注入完成世界。
 
-**已驗證**：`test/viewer-controller.test.js`（10 項）以假時鐘確認 1×／2×／4× 每秒 4／8／16 tick、不合法倍速不改設定；以 `rt-dev-000` 確認 1× 逐幀 300 tick、4× 不規則幀距 1300 tick（跨第一次突破）與一次 2700 tick 的 hash、`rngState` 都和直接推進相同；突破停批後剩餘 tick 照算、跨 2520 後可繼續；開局、暫停與 render 不推進；背景自動暫停、回前景仍暫停、恢復不追趕；單幀長空檔只計上限；`advanceTicks` 出錯時停在上一個合法世界；不合法 seed；開局政策與目標、待決策、移動與等待原因、地圖人物位置。真實瀏覽器紀錄見下段。
+**已驗證**：`test/viewer-controller.test.js`（12 項）以假時鐘確認 1×／2×／4× 每秒 4／8／16 tick、不合法倍速不改設定；以 `rt-dev-000` 確認 1× 逐幀 300 tick、4× 不規則幀距 1300 tick（跨第一次突破）與一次 2700 tick 的 hash、`rngState` 都和直接推進相同；突破停批後剩餘 tick 照算、跨 2520 後可繼續；開局、暫停與 render 不推進；背景自動暫停、回前景仍暫停、恢復不追趕；單幀長空檔只計上限；批次中途出錯時保留成功前綴並停在最後合法 tick（含前綴跨過突破停批），第一個 tick 就出錯或引擎拒絕時世界不動；不合法 seed；開局政策與目標、待決策、移動與等待原因、地圖人物位置。真實瀏覽器紀錄見下段。
 
-**真實瀏覽器**：`tools/viewer-browser-check.js`（需另裝 Playwright；用法見檔頭）從正式入口操作，不注入世界。2026-10-19 在 Playwright 1.56.1／headless Chromium 141.0.7390.37、Node 22 下，對本分支 base `6b61a0f` 加上 viewer 檔案跑一次，exit 0，牆鐘約 196 秒，console 0 行：
+**真實瀏覽器**：`tools/viewer-browser-check.js`（需另裝 Playwright；用法見檔頭）從正式入口操作，不注入世界。開局、倍速、暫停 hash、背景處理、播到 2700、最終 hash 一致、人物狀態種類與 console 無錯誤都是斷言，任何一項不成立就在紀錄最後寫 FAIL 並以非零結束；另有總時限，停播不會永遠等待。2026-10-19 在 Playwright 1.56.1／headless Chromium 141.0.7390.37、Node 22 下跑一次，PASS、exit 0，牆鐘約 200 秒，console 0 行：
 
-- 開局畫面列出安穩發展政策與六項目標；停在開局 1.5 秒仍是 tick 0；Enter 開始。
-- 鍵 1／2／4 各播 5 秒：20／40／80 tick。
+- 開局畫面列出安穩發展政策與六項目標；開局世界 hash 等於 `createWorld('rt-dev-000')`；停在開局 1.5 秒仍是 tick 0；Enter 開始。
+- 鍵 1／2／4 各播約 5 秒：20／40／80 tick。
 - 空白鍵暫停 3.5 秒並點選人物：tick 141 不動，hash 相同。
-- 背景：headless 與 Xvfb 下最小化視窗或切分頁，Chromium 都不會把頁面變成 hidden（實測），所以腳本在頁面內把 `document.hidden` 設成背景值並送出 `visibilitychange`，走 `app.js` 的正式處理器。背景 5 秒自動暫停、tick 156 不動；回前景 3 秒仍暫停；按繼續後 1 秒推進 16 tick，沒有追趕。真實分頁切換仍需有視窗管理器的桌面瀏覽器再看一次。
-- 4× 播到 tick 2702（截圖停在 2700 後暫停時多了 2 tick），經過 5 次 `breakthroughResolved` 停批，都在同一幀續推。頁面 hash `af6c74e6…` 與 Node 直接推進到同一 tick 的 hash 相同。
-- 每 250 ms 取樣人物狀態，見到移動中、工作中（採集、建造、煉丹、援村、修行、休養、突破、支援突破）、待決策與等待（`goals_done`）。
-- 截圖：開局、暫停選取、背景、第 4 天、收徒後、第一次突破後、過 2520、2700。完整紀錄是輸出目錄的 `run2700.log`，不入庫。
+- 背景：headless 與 Xvfb 下最小化視窗或切分頁，Chromium 都不會把頁面變成 hidden（實測），所以腳本在頁面內把 `document.hidden` 設成背景值並送出 `visibilitychange`，走 `app.js` 的正式處理器。背景 5 秒自動暫停、tick 157 不動；回前景 3 秒仍暫停；按繼續後 1 秒推進 15 tick，沒有追趕。這是模擬事件，不算真實分頁切換的驗收。
+- 4× 播到 tick 2704 後暫停，1 秒後仍是 2704；途中 5 次 `breakthroughResolved` 停批都在同一幀續推。頁面 hash `5fe0a144…` 與 Node 直接推進到同一 tick 的 hash 相同。
+- 取樣到移動中、各種工作中、休養、待決策與等待（`goals_done`）。待決策只持續 1 tick，取樣不保證抓到，所以只記錄、不當失敗條件。
+
+反例（同一支腳本，`VIEWER_URL` 指向故意壞掉的頁面）都以 exit 1 結束，紀錄最後一行是 FAIL：
+- 頁面一直回報 `mode: 'error'`、tick 0：`FAIL 開局畫面：mode=error …`。
+- 正式 viewer 但引擎在 tick 1000 回報錯誤：畫面停在 tick 1000（保留成功前綴），`FAIL 播放途中停了：tick 1000，mode=error …`。
+
+截圖與完整紀錄在輸出目錄，不入庫。
 
 **未驗證**：桌面瀏覽器的真實背景切換、其他 seed 與政策的畫面（本包沒有政策編輯器）、真人試玩與手感。
 
