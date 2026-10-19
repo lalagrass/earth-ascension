@@ -388,8 +388,54 @@
     const err = ctl.error;
     dom.error.hidden = !err;
     const how = err && err.kind === 'rejected' ? '引擎拒絕推進，這一批沒有任何 tick' : `出錯前同一批已提交 ${err ? err.committedTicks : 0} tick，畫面保留到此`;
-    dom.error.textContent = err ? `世界停在 tick ${err.tick}（${how}）：${err.code}：${err.reason}。不會繼續推進；重新整理頁面會開新局。` : '';
+    dom.error.textContent = err ? `世界停在 tick ${err.tick}（${how}）：${err.code}：${err.reason}。不會繼續推進；可以保存這個最後合法的世界，或開新局。` : '';
   }
 
-  return Object.freeze({ describe, render, eventText, renderSettings, WAIT_LABELS, FALLBACK_LABELS });
+  // ---------- SG-RT-03a：保存狀態與存檔清單（純字串，不碰 storage） ----------
+
+  const SLOT_LABELS = Object.freeze({ a: '槽 A', b: '槽 B' });
+
+  // status 是 Storage.createSession().status(world) 的結果。
+  function saveStatusText(status) {
+    if (!status.canWrite) return { kind: 'unavailable', text: '本地保存不可用（此瀏覽器沒有 localStorage 或 Web Locks）：可以玩、匯入與匯出，但不會自動保存' };
+    const saved = status.saved ? `已保存到 tick ${status.saved.tick}` : '這個世界還沒保存過';
+    if (status.stopped) return { kind: 'stopped', text: `尚未保存（${saved}）。自動保存已停止：${status.stopped.reason}（${status.stopped.code}）` };
+    if (status.busy) return { kind: 'busy', text: `保存中…（${saved}）` };
+    if (status.dirty) return { kind: 'dirty', text: `尚未保存（${saved}）` };
+    return { kind: 'saved', text: `已保存：tick ${status.saved.tick}` };
+  }
+
+  function slotSummary(slot) {
+    if (slot.raw === null) return { ok: false, empty: true, text: '空' };
+    const r = slot.result;
+    if (!r.ok) return { ok: false, empty: false, text: `無法讀取：${r.code}：${r.reason}` };
+    const e = r.envelope;
+    return { ok: true, empty: false, text: `seed ${r.world.seed}・tick ${e.tick}（第 ${Math.floor(e.tick / 180) + 1} 天）・保存於 ${e.savedAt}`, tick: e.tick };
+  }
+
+  // inspection 是 store.inspect()／open() 的結果；canWrite 決定按鈕是「接續」還是「唯讀載入」。
+  function renderSavePanel(inspection) {
+    if (inspection.state === 'unavailable') return '<p class="hint">本地保存不可用：可以從檔案匯入。</p>';
+    if (inspection.state === 'empty') return '<p class="hint">這個瀏覽器還沒有存檔。</p>';
+    const rows = ['a', 'b'].map((s) => {
+      const sum = slotSummary(inspection.slots[s]);
+      const tag = inspection.active === s ? '（目前）' : '';
+      return `<li>${esc(SLOT_LABELS[s])}${tag}：${esc(sum.text)}</li>`;
+    }).join('');
+    const ptr = inspection.pointer && inspection.pointer.result && !inspection.pointer.result.ok && inspection.pointer.raw !== null
+      ? `<p class="error-inline">存檔指標損壞：${esc(inspection.pointer.result.reason)}</p>` : '';
+    if (inspection.state === 'ok') {
+      const how = inspection.canWrite ? '讀取並在此分頁接續保存' : '唯讀載入（不會保存）';
+      return `<ul class="plain">${rows}</ul><button type="button" id="load-saved">${how}</button>`;
+    }
+    const restore = ['a', 'b'].filter((s) => slotSummary(inspection.slots[s]).ok)
+      .map((s) => `<button type="button" data-restore="${s}">恢復${esc(SLOT_LABELS[s])}</button>`).join('');
+    const raws = [['pointer', '指標'], ['a', SLOT_LABELS.a], ['b', SLOT_LABELS.b]]
+      .filter(([k]) => (k === 'pointer' ? inspection.pointer && inspection.pointer.raw !== null : inspection.slots[k].raw !== null))
+      .map(([k, l]) => `<button type="button" data-export-raw="${k}">匯出${esc(l)}原始資料</button>`).join('');
+    return `<p class="error-inline">存檔無法直接讀取，沒有改動任何資料。請先匯出原始資料，再選擇要恢復的槽。</p>${ptr}
+      <ul class="plain">${rows}</ul><div class="buttons">${raws}${inspection.canWrite ? restore : ''}</div>`;
+  }
+
+  return Object.freeze({ describe, render, eventText, renderSettings, saveStatusText, renderSavePanel, WAIT_LABELS, FALLBACK_LABELS });
 });

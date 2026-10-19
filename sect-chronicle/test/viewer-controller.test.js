@@ -294,3 +294,63 @@ test('畫面資料：開局政策與目標可見，剛空出來的人顯示待�
   const placed = end.map.flat().flatMap((c) => c.people || []);
   assert.deepEqual(placed.sort(), end.people.filter((p) => p.joined).map((p) => p.id).sort());
 });
+
+// SG-RT-03a：保存點只在幀末依實際推進範圍通知，不切批次。
+test('保存點：跨日看推進範圍、突破停批續推後、播放中暫停或轉背景；load 保持暫停', () => {
+  assert.equal(Controller.TICKS_PER_DAY, Rules.TICKS_PER_DAY);
+  const calls = [];
+  const ctl = Controller.createController(Realtime, { onSavePoint: (reasons) => calls.push({ tick: ctl.world.clock.tick, reasons }) });
+  assert.equal(ctl.load(refWorld(170)).ok, true);
+  assert.equal(ctl.mode, 'paused');
+  assert.equal(ctl.world.clock.tick, 170);
+  assert.deepEqual(calls, [], 'load 不觸發保存');
+
+  ctl.advance(15); // 170 → 185：跨過 180，落點不是 180
+  assert.deepEqual(calls.pop(), { tick: 185, reasons: ['day'] });
+  assert.equal(Realtime.hashWorld(ctl.world), refHash(185), '保存點不改變推進');
+  ctl.advance(10); // 185 → 195：沒有跨日
+  assert.deepEqual(calls, []);
+  ctl.load(refWorld(356));
+  ctl.advance(4); // 356 → 360：落點剛好是日界
+  assert.deepEqual(calls.pop(), { tick: 360, reasons: ['day'] });
+
+  ctl.load(refWorld(1170));
+  ctl.advance(10); // 1176 突破停批，同一幀續推到 1180 後才通知
+  assert.deepEqual(calls.pop(), { tick: 1180, reasons: ['breakthrough'] });
+  assert.equal(Realtime.hashWorld(ctl.world), refHash(1180));
+
+  assert.equal(ctl.resume(), true);
+  assert.equal(ctl.pause(), true);
+  assert.deepEqual(calls.pop(), { tick: 1180, reasons: ['pause'] });
+  assert.equal(ctl.pause(), false);
+  assert.equal(ctl.hide(), false);
+  assert.deepEqual(calls, [], '已暫停時再暫停或轉背景不重複通知');
+  ctl.resume();
+  assert.equal(ctl.hide(), true);
+  assert.deepEqual(calls.pop(), { tick: 1180, reasons: ['pause'] });
+
+  const bad = ctl.load({ not: 'a world' });
+  assert.equal(bad.ok, false);
+  assert.equal(ctl.world.clock.tick, 1180, '不合法的世界不替換');
+});
+
+test('保存點：批次中途出錯時只在成功前綴跨日才通知，世界是最後合法 tick', () => {
+  const calls = [];
+  const failing = {
+    createWorld: Realtime.createWorld,
+    validateWorld: Realtime.validateWorld,
+    advanceTicks(world, n) {
+      const target = 182;
+      if (world.clock.tick + n <= target) return Realtime.advanceTicks(world, n);
+      const ok = Realtime.advanceTicks(world, target - world.clock.tick);
+      return { ok: true, state: ok.state, events: [], advancedTicks: target - world.clock.tick, stopReason: 'error', error: { code: 'boom', reason: 'x' } };
+    },
+  };
+  const ctl = Controller.createController(failing, { onSavePoint: (reasons) => calls.push({ tick: ctl.world.clock.tick, reasons }) });
+  ctl.load(refWorld(176));
+  ctl.advance(10);
+  assert.equal(ctl.mode, 'error');
+  assert.equal(ctl.world.clock.tick, 182);
+  assert.deepEqual(calls, [{ tick: 182, reasons: ['day'] }]);
+  assert.equal(Realtime.hashWorld(ctl.world), refHash(182));
+});
