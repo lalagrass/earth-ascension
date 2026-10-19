@@ -621,6 +621,10 @@
     insufficient_resource: '資源不足', no_seat: '沒有空位', participant_busy: '參與者忙碌', facility_missing: '設施未建',
     facility_not_ready: '設施未完工', cultivation_full: '修為已滿', breakthrough_done: '已突破過',
   };
+  const INVALID_WHY = {
+    blocked: '還沒開放', already_done: '已經完成', facility_exists: '已有這種設施', not_ready: '修為未滿',
+    already_breakthrough: '已突破過', breakthrough_pending: '已有進行中的突破', unknown_disciple: '找不到支援者',
+  };
   const STAT_NAMES = { stamina: '體力', mind: '心境', cultivation: '修為', injury: '傷勢' };
   const RES_NAMES = { spiritMaterial: '靈材', spiritHerb: '靈草', spiritStone: '靈石', reputation: '聲望' };
   function feedback(before, after, events) {
@@ -637,6 +641,10 @@
         if (parts.length) pulse(e.discipleId, parts.slice(0, 2).join(' '), '#d6f5c9');
       } else if (e.type === 'activityDeparted') {
         const act = after.activities.find((a) => a.id === e.activityId);
+        if (act && act.origin === 'manual' && !act.fallback) {
+          const name = Rules.ACTIONS[act.kind] ? Rules.ACTIONS[act.kind].label : (act.kind === 'build' ? '建造' : act.kind);
+          toast(`主角開始執行你下的令：${name}。`, 'ok');
+        }
         if (act && act.fallback) {
           const from = Rules.ACTIONS[act.fallback.from] ? Rules.ACTIONS[act.fallback.from].label : (act.fallback.from === 'build' ? '建造' : act.fallback.from);
           const why = FALLBACK_WHY[act.fallback.reason] || act.fallback.reason;
@@ -644,7 +652,7 @@
           if (act.origin === 'manual') toast(`你下的「${from}」沒辦法開工（${why}），這次先改成休養；做完回到自主。`, 'bad');
         }
       } else if (e.type === 'manualInvalid') {
-        toast(`你下的令失效了：${e.reason}；回到自主。`, 'bad');
+        toast(`你下的令沒辦法執行（${FALLBACK_WHY[e.reason] || INVALID_WHY[e.reason] || '條件已經不成立'}），已取消，回到自主。`, 'bad');
       } else if (e.type === 'activityDone' && e.kind === 'build') {
         const act = after.activities.find((a) => a.id === e.activityId);
         banner(`${Rules.FACILITIES[act.target.facilityType].label} 完工`);
@@ -917,6 +925,13 @@
     setHtml($('events'), `<h4>最近事件</h4><ol reversed>${m.events.slice(0, 30).map((e) => `<li>[第 ${Math.floor(e.tick / Rules.TICKS_PER_DAY) + 1} 天] ${esc(e.text)}</li>`).join('')}</ol>`);
   }
 
+  // 所有選人路徑（場景、人物卡、[ ] 鍵）都走這裡；開著的選單依新人物重畫，不留舊人物的按鈕狀態。
+  function selectPerson(id) {
+    if (!id || ui.selected === id) return;
+    ui.selected = id;
+    if (ui.menu) renderMenu();
+  }
+
   function openMenu(target, sx, sy) {
     if (sim.mode === 'playing' && ui.pauseOnMenu) {
       setMode('paused');
@@ -945,7 +960,7 @@
       <p class="sub">${spec.info.map(esc).join(' ')}</p>
       ${spec.who ? `<p class="who">${esc(spec.who)}</p>` : ''}
       ${ui.autoPausedForMenu ? '<p class="sub">（已自動暫停；下令或關閉後繼續）</p>' : ''}
-      <ul>${spec.actions.length ? spec.actions.map((a, i) => `<li><button type="button" data-act="${i}" class="${a.warn ? 'warn' : ''}" ${a.disabled || !isProt ? 'disabled' : ''}>
+      <ul>${spec.actions.length ? spec.actions.map((a, i) => `<li><button type="button" data-act="${i}" data-main="${esc(a.main)}" class="${a.warn ? 'warn' : ''}" ${a.disabled || !isProt ? 'disabled' : ''}>
         <span class="main">${esc(a.main)}</span>
         <span class="why">${esc(a.disabled || (a.warn ? `${a.why}；${a.warn}` : a.why))}</span>
       </button></li>`).join('') : '<li class="sub">這裡現在沒有可下的令。</li>'}</ul>`;
@@ -1020,8 +1035,7 @@
       return;
     }
     if (target.kind === 'person') {
-      ui.selected = target.id;
-      closeMenu(true);
+      selectPerson(target.id);
       return;
     }
     openMenu(target, sx, sy);
@@ -1037,7 +1051,7 @@
   document.addEventListener('click', (ev) => {
     const person = ev.target.closest('[data-person]');
     if (person) {
-      ui.selected = person.dataset.person;
+      selectPerson(person.dataset.person);
       return;
     }
     const sp = ev.target.closest('[data-speed]');
@@ -1060,14 +1074,18 @@
       return;
     }
     const act = ev.target.closest('[data-act]');
-    if (act) {
-      const spec = $('menu')._spec;
+    if (act && ui.menu) {
+      // 送出前依「現在」的選取與世界重算一次，不信任畫面上可能過時的按鈕
+      const spec = actionsFor(ui.menu.target);
       const a = spec.actions[Number(act.dataset.act)];
-      const ok = send('orderActivity', a.payload, `已下令：主角${a.main}。目前這一步結束後開始，自主不會覆寫，做完回到自主。`);
-      if (ok) {
-        ui.selected = sim.world.protagonistId;
-        closeMenu(true);
+      const isProt = !ui.selected || ui.selected === sim.world.protagonistId;
+      if (!a || a.main !== act.dataset.main || a.disabled || !isProt) {
+        renderMenu();
+        toast('選單已依目前選的人物更新，請再選一次。', 'bad');
+        return;
       }
+      const ok = send('orderActivity', a.payload, `已接受：主角${a.main}。在排隊，目前這一步結束後開工；開工或改成休養時會再告訴你。`);
+      if (ok) closeMenu(true);
     }
   });
   $('toggle').addEventListener('click', () => {
@@ -1085,7 +1103,7 @@
       refreshTop();
     } else if (ev.key === '[' || ev.key === ']') {
       const i = joined.indexOf(ui.selected);
-      ui.selected = joined[(i + (ev.key === ']' ? 1 : joined.length - 1)) % joined.length];
+      selectPerson(joined[(i + (ev.key === ']' ? 1 : joined.length - 1)) % joined.length]);
     } else if (ev.key === 'Escape') {
       closeMenu(true);
     } else if (ev.target === canvas && ev.key.startsWith('Arrow')) {
