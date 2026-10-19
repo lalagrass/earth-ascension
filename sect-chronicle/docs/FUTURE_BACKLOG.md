@@ -1,4 +1,4 @@
-# 未來構想 backlog：生活、輕功、領地防衛與角色自主行動
+# 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
 ## D8有限範圍已提入目前規劃
 
@@ -15,6 +15,8 @@
 - 先完成現有切片與 SG-13 真人觀察，再由專案擁有人決定是否啟動個別評估／原型。試玩完成、#75 存在、文件合併或 BL 編號都不構成實作授權。
 - 28 天擴充、Earth M3、其他專案開發均未因此獲准；無實作主筆指派。Gemini 本輪不參與。
 - 將來獲准的項目另建單一範圍 issue，記錄決策、主筆、最新 dev SHA、依賴、檔案、版本／遷移與驗收；其餘項目繼續留在 backlog。不得把整份清單交給 agent 一次實作。
+
+2026-10-19 補充的門派經營／開源方案評估見[本輪研究收錄](#門派經營與開源方案參考)。它不增加目前 14 天切片或 RT-03～05 的依賴／DoD；既有 D8／D9 的最小自主、移動及預約不因列入研究而退回未批准。
 
 ## 體驗目標與可行性判斷
 
@@ -125,3 +127,65 @@ D6現行性格只影響事件建議與文字，不影響效率且不剝奪玩家
 必要反例包含：零材料、無工作位、全員疲勞、多人搶料、支援與生產互斥、手動改課、取消／重送、存讀、單步與快轉結果一致。沒有真人證據前不定義「性格看得出來」或「更省操作」已通過。
 
 待決策：自主是否可按角色開關、手動指令保持多久、多格工作何時能改派、急迫需求是提醒還是可中斷指令、性格權重與玩家方針如何衝突。現在不需回答；先留backlog。
+
+## 門派經營與開源方案參考
+
+2026-10-19 評估收錄，實際整理：Codex（遊戲 PO）。來源：擁有人提供學院／大亨模板、Project Porcupine、行為樹、4X 與 Godot／Unity 工具建議，要求 review 並收進 backlog。追蹤 [#75](https://github.com/lalagrass/earth-ascension/issues/75)，復用原則沿 [#145](https://github.com/lalagrass/earth-ascension/issues/145)；目前 2.5D 研究見 [UI_2_5D_PROPOSAL](UI_2_5D_PROPOSAL.md)／[#142](https://github.com/lalagrass/earth-ascension/issues/142)。本輪只核對文件、公開 repo 與授權聲明，沒有安裝、移植、購買、效能量測或新原型。
+
+**狀態：未來再評估／未排程／未批准實作，無實作主筆指派。** 不影響當前 14 天切片、[#136](https://github.com/lalagrass/earth-ascension/issues/136) 接續包及 #138～140；不加入其前置／DoD，不把研究表整批交 coding agent 開發。不批准換 Godot／Unity、多人手動指揮、床位／飢餓需求、外交戰爭、科技樹或新存檔欄位；28 天擴充、Earth M3 與付費採購授權不變。
+
+### 評估結論與須修正的說法
+
+值得保留的是「宗門內部生活」與「大地圖經營」兩個尺度，以及設施名額、角色意圖、導航、內容資料分開設計的思路。這是對本作的設計建議，不是已查證《天下霸圖》原作內部用了這四個模組，也不表示只有這四個模組就足夠。
+
+- **商業模板確實存在，但無法據此推定市場來源。** [Unity 商店的 Tycoon 模板例子](https://assetstore.unity.com/packages/templates/packs/idle-farmer-game-tycoon-template-236665)證明這類資產有供應；未取得市場樣本或作者證據前，不採用「絕大多數雷同手遊都買模板」的結論，也不推定開羅或特定作品使用某模板。來稿的泛稱 kit／school／hospital starter 尚未逐項定位產品，保留為搜尋方向。
+- **參考架構與可直接整合分開。** Unity C#、Godot 與 Kotlin／LibGDX 專案對目前 JS 世界都不是直接套件。研究工作流有價值；搬程式涉及 API、版本、授權與確定性，不稱「幾乎無縫搬用」。
+- **等角視角不等於導航規則。** 畫面投影、Y 排序只影響呈現；A* 解決可通行圖上的路線，不能自動解決排隊、公平性、床位預約、多人碰撞或死鎖。這些需各自的規則與證據。
+- **「一兩週跑通」只是未驗證估計。** 新專案的灰盒可能很小；現有產品還有暫停、人工覆寫、容量競爭、確定性及存讀相容成本。沒有範圍與實測前不列時程承諾。
+- **UI 效能須用同場景驗證。** ListView 虛擬化可作候選；沒有配對量測，不接受「UI Toolkit 一定遠勝 UGUI」「幾百人不卡」或某引擎必然更快的說法。
+
+### 與目前實作如何接軌
+
+目前 [`realtime.js`](../js/realtime.js) 已有權威 tick、活動／路線、`reservations`／`seatWaits`、主角手動命令及固定路徑規則；[`autonomy.js`](../js/autonomy.js) 已有只讀快照、輸出正式請求的純決策。這是有限場景的已交付基礎，不等於完整房間、床位、障礙尋路或需求生活模擬。後續先盤點並擴充必要差異，不重造第二套 Job System 或自主引擎。
+
+概念邊界可沿「意圖產生 → 同一權威引擎檢查／仲裁容量與資源 → 旅行／工作／完成 → 唯讀投影」；行為樹只能產生意圖，觀察者通知不能代替預約交易。新導航若改路線與耗時，須先決定規則版本、重播／RNG及旅行中存檔相容；不能只在 renderer 換 A* 或讓畫面繞路偷偷改收益。JSON／Resource／ScriptableObject 是內容載體，不能直接替代已驗證的權威存檔格式。
+
+### 可獨立保留的未來項目
+
+以下 ID 是構想編號，不是已批准 milestone；順序僅為未來評估建議。
+
+| ID | 希望驗證的體驗／範圍 | 建議與主要取捨 | 最小研究出口與排程 |
+|---|---|---|---|
+| BL-S01 | 房間／設施互動點：床位、練功位、工坊位；弟子自動找位或排隊 | 先沿既有容量／預約盤點；比較抽象名額與可見站位。新增床位、房間、隊列公平／離隊規則是未來玩法，不先補 schema | 首次生活試玩後，紙上走「兩人搶一位→等待→釋放／取消／改派」；比較是否比現有等待更清楚，不先做食堂全系統 |
+| BL-S02 | 作息／需求與工作選擇，參考 BT／HFSM | 延伸 BL-A01～A04；先比較現有規則決策、狀態機、行為樹的可解釋性與維護成本。排程、需求、性格與玩家覆寫分開，不把框架當成需求系統 | 空閒時可申請獨立文件研究；列一條日常流程及中斷／恢復表。性格行為、飢餓與新作息仍另批，不重做 D8 最小自主 |
+| BL-S03 | 房門、障礙與可達性；多人通行與等候的可讀性 | 延伸 BL-M01／D02，先固定格點與確定破同分；A* 與局部避讓／門禁各自評估。顯示擁擠不自動授權實體碰撞 | 有可變障礙／室內需求後再排；紙上驗證路被堵、目的地取消、多人堵門、無路可走，以及舊路線存檔策略 |
+| BL-S04 | 武功、配方、設施等內容的資料驅動定義 | 優先既有 JS／JSON 定義與驗證，將可編輯內容和世界狀態分開。資料 ID、版本、錯誤定位及內容遷移比選 Unity／Godot 資料類別更先 | 內容增加到改表困難時，再選一種現有定義做文件對照；不預建通用編輯器、mod 平台或新存檔 schema |
+| BL-W01 | 分舵／領地、外交勢力、科技與大地圖切換 | 參考 Freeciv／FreeOrion／Unciv 的概念與資訊層級，連 BL-D01～D04／#104；屬大型擴充，不能由 2.5D 偏好推成 4X 立項 | RT-05及真人回饋後再評估；先一張「村莊→外圍據點」紙上循環與資源／人員去向，不直接移植回合制經濟或開戰爭 |
+| BL-U01 | 大型弟子名冊、篩選排序、資產總覽及場景／大圖切換 | 先解少量人物可讀性，未來按規模再評估虛擬列表與增量更新。列表純讀，不加第二條世界時間；不照搬 Kotlin／Unity UI | 達到實際名冊閱讀／輸入瓶頸後，用同資料量比較載入、輸入延遲、render成本與記憶體；門檻待定，不跑世界長矩陣證明 UI 效能 |
+
+Godot／Unity 遷移及商業模板採購另外保留為**遠期技術／產品選項**，不是上述項目的共同前置。只有現有 web 路徑出現可重現且無法合理解決的缺口、或決定另做產品時，才提出範圍、重用比例、橋接／重寫、發行平台、存讀、驗證與總成本比較；由擁有人另定。現在沿既有 JS 引擎與 #139 的視覺 adapter 評估接續。
+
+### 候選與一手來源核對
+
+核對日 2026-10-19。以下為來源快照與研究用途，**全部未採用**；「授權」僅轉述專案聲明，不代表整包素材可任意使用。候選真正採用時再鎖精確版本／commit、逐檔 license、依賴與整合成本；不同檔案及第三方內容可能有例外。
+
+| 候選／來源 | 本輪核對與限制 | 對本作的建議 |
+|---|---|---|
+| [Project Porcupine 原 repo](https://github.com/TeamPorcupine/ProjectPorcupine)／[移轉 repo](https://github.com/OrderOfThePorcupine/ProjectPorcupine) | 原 README 宣告已移轉；移轉版 README 仍列 Unity 2017.4.22。程式原則 GPLv3、非程式素材原則 CC BY-NC-SA 3.0；原始教學 MIT 是另一份來源，不能把社群整包當 MIT | S01／S03 的歷史架構研究；不認定需求／作息／排隊完整成熟，後續須逐功能看碼，不搬素材或直接移植 |
+| [Fluid Behavior Tree](https://github.com/ashblue/fluid-behavior-tree) | Unity C#、MIT；本輪預設分支 head `2781317`，提交日 2025-02-03；這是快照，不等於已驗相容最新版 Unity | S02 比較 BT 的一個候選；不是本 JS 決策的可直接替換套件，是否需要 BT 尚待研究 |
+| [Freeciv](https://github.com/freeciv/freeciv) | GPLv2 COPYING；本輪 head `03c46b8`，提交日 2026-10-19。以回合制帝國經營為參考，不預設其 UI／經濟能直接映射即時生活 | W01 的勢力／資源／內容資料概念；採碼需另查個別授權與架構適配 |
+| [FreeOrion](https://github.com/freeorion/freeorion)／[授權聲明](https://github.com/freeorion/freeorion/blob/master/default/COPYING) | 本輪 head `b3028f9`，提交日 2026-10-18。程式 GPLv2；創作素材 CC BY-SA 3.0；內容腳本另有 GPLv2／CC BY-SA 說明及第三方例外 | W01 的策略資訊研究，不能概括整包同一授權，也不視為可移植宗門成品 |
+| [Unciv](https://github.com/yairm210/Unciv) | Kotlin／LibGDX；本輪 head `9c626dc`，提交日 2026-10-19。程式原則 MPL-2.0，另有 CC0 程式例外，媒體有多種授權，README 指向 Credits | U01／W01 的名冊、城市與視角資訊組織研究；不將 Kotlin UI 整套搬入 browser |
+| Godot [Control](https://docs.godotengine.org/en/stable/classes/class_control.html)、[TileMap](https://docs.godotengine.org/en/stable/classes/class_tilemap.html)、[AStarGrid2D](https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html)、[Y-sort](https://docs.godotengine.org/en/stable/classes/class_canvasitem.html#class-canvasitem-property-y-sort-enabled) | 有 UI／格點導航／排序能力，但目前 stable 已將 TileMap 標為 deprecated，建議 TileMapLayer。Y-sort 仍需正確層級／原點；狀態機或 BT 外掛不是一套未具名的「內建完整 AI」 | 保留原生引擎工具鏈選項；不以此要求現有遊戲遷移；若後續選外掛需補具名 repo、版本及license |
+| Unity [ListView](https://docs.unity.com/en-us/engine/6000.3/manual/uitoolkits/uielements/uie-element-ref/uie-uxml-element-list-view) | 官方提供元素回收／虛擬化，足以作 U01 技術概念來源；沒有本作與 UGUI 配對量測 | 優先研究同能力的現有 web 實作；來稿 TinySplendor/RecyclerViewController 公開 API 回 404，未能核實，不列可採用依賴，也不以 Google 搜尋連結當 repo |
+| [A* Pathfinding Project](https://arongranberg.com/astar/freevspro)、[Behavior Designer](https://opsive.com/assets/behavior-designer/)、[NodeCanvas](https://nodecanvas.paradoxnotion.com/) | 是 Unity 工具產品；A* 有 Free／Pro 區別，BT 產品有商店採購路徑。免費版本不代表開源；尋路也不包含本作名額／排隊仲裁 | 放在付費工具比較候選；未核對個別 EULA／版本／席位與本作適配，不購買或導入，不混列為免費開源依賴 |
+
+### 留給未來研究者的最小工作包
+
+空閒時可先向遊戲 PO 確認認領**一個**研究題，做文件與紙上流程即可，不從核心工作自動轉派；本輪尚未建立／指派新實作 issue。先讀 #75、#145、#136 與最新 dev 的現有能力，記真實身份、base SHA、範圍及一手來源。
+
+1. 以 S01／S02 為優先候選：畫出找工作→預約→旅行→執行→釋放／取消與玩家覆寫流程，列「已存在／需 UI 表達／需新玩法」三類；不要先造共用 framework。
+2. 只選最接近需求的一至兩個方案，記來源版本、維護／license、可重用部分、適配缺口及保留現況的成本。無法核實的套件與市場說法明標未證實。
+3. 出口是一份短取捨與建議：沿用／薄整合／必要自建／延後／不採用。若建議新原型，再列最小範圍及驗證，由擁有人／PO按權責另定；沒有原型或測量就不填完成、效能或週期承諾。
+
+後續若批准實作，再按影響補容量競爭／取消／無路等反例與固定 seed、暫停／倍率／存讀一致性；研究文件本身不跑長 seed 矩陣。大地圖與引擎遷移更後面，不能為了研究而拖延當前生活試玩。
