@@ -2,6 +2,8 @@
 
 **最新交接（D10，2026-10-19）**：RT-02 #108已合dev0875d116、postCI39161730112五項成功；目前只有自主純引擎，沒有可玩UI。擁有人已批准先做[RT-02V觀察版 #129](https://github.com/lalagrass/earth-ascension/issues/129)，讀[接手文件](docs/RT02V_HANDOFF.md)。Grok額度用盡，工作包開放待認領；本次排程文件合dev／postCI後即可登記接手，不重問產品批准。順序改為RT-02V→03→04→05。以下早期提案、SG-01及RT-00接手描述只作歷史；最新任務狀態以[#93](https://github.com/lalagrass/earth-ascension/issues/93)為準。
 
+**RT-02V 觀察版 viewer（#129）**：在 repo 根目錄跑 `python3 -m http.server 8765 --directory sect-chronicle`，瀏覽器開 <http://localhost:8765/viewer/>。只能看正式世界自主生活與播放控制（暫停、1／2／4 倍），沒有保存，重新整理會開新局。細節與限制見 [DEVELOPMENT](docs/DEVELOPMENT.md#sg-rt-02v-新增唯讀生活觀察版)。
+
 **目前開發方向：D8可暫停即時自主生活。** RT-01手動核心與RT-02自主已交付；下一包是D10的唯讀觀察／播放。完整主角工作／目標編輯、瀏覽器存讀與生活試玩仍在後續RT-03～05，戰鬥延後。權威規則見[RT00_CONTRACT](docs/RT00_CONTRACT.md)，批准紀錄見[DECISIONS_AND_SOURCES](docs/DECISIONS_AND_SOURCES.md)。
 
 歷史提案為已批准的14天切片；28天擴充、真人研究與發布未完成也未隨D10批准。原型與SG-00來源記錄保留，歷史接手提示不代表目前待辦。
