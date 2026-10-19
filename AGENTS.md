@@ -3,6 +3,7 @@
 先讀 [CONTRIBUTING.md](CONTRIBUTING.md) 與目標 issue；M2 的分工及依賴見 [docs/m2/contribution-review-plan.md](docs/m2/contribution-review-plan.md)，M3 的可認領文件工作與阻擋條件見 [docs/m3/contribution-plan.md](docs/m3/contribution-plan.md)。Grok bot、Claude 和其他 AI 使用同一份貢獻契約，避免各自維護衝突的規則。
 
 - 只做已確認認領或指派的 issue／PR 範圍；在 issue 與 PR 明寫實際主筆身份、修改檔案和 base SHA。從最新 `dev` 建分支，PR 指向 `dev`。M3 的文件工作不授權 M3 實作；標為受阻的任務不能先寫程式。
+- 認領依 [期限與接手規則](CONTRIBUTING.md#認領期限與接手)：預設 4 小時，有具體進度才續期；額度不足可立即釋出，到期可登記接手。每次恢復／推送前重讀最新認領，保護原成果；已完整交付待審不因等待過期，過期不解除產品／依賴阻擋。
 - 共用 GitHub 帳號時，不能用 assignee 或同帳號留言冒充 Grok／Claude 的獨立審核；另一位可唯讀複核。Earth／遊戲 PO 各自管理產品；由 Earth PO 兼任唯一共用 queue owner，依 [CONTRIBUTING.md](CONTRIBUTING.md#審核合併與發布權限) 整合合格 PR 到 `dev`；`main` 發布與未定產品取捨先交專案擁有人確認。
 - 基底前進時依 CONTRIBUTING 核對實際 merge head/base/tree 與必要 CI；無關文件更新可復用未受影響的審查證據，不一律要求作者重跑完整矩陣。
 - 改 M2 規則、存檔或 RNG 時，在 PR 說清版本與遷移、固定 seed 回放、受影響的 A1–A10；保留 M1 路徑。
