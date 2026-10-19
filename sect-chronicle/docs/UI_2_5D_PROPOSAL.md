@@ -1,8 +1,10 @@
 # 2.5D 生活場景研究（#142 第一輪）
 
-實際主筆：Claude。Base：`dev` `4a8888e`。本文與 [`docs/ui-research/`](ui-research/) 只新增研究檔，不改 viewer、引擎、存檔或測試。
+實際主筆：Claude。Base：`dev` `9688e45`（#141 合入後；研究從 `4a8888e` 開始，期間只多了 #141）。本文與 [`docs/ui-research/`](ui-research/) 只新增研究檔，不改 viewer、引擎、存檔或測試。
 
 ## 先看這個（約 5 分鐘）
+
+不想在本機開伺服器的話，擁有人可以直接打開[單檔版原型](https://claude.ai/artifact/Ckx6S73BgqvTsjNB6Rz114)（私人連結；內容和 repo 這份相同，引擎內嵌自 dev `4a8888e`，和目前 dev 的引擎一致）。本機做法：
 
 1. 在 repo 根目錄執行 `python3 -m http.server 8765 --directory sect-chronicle`。
 2. 打開 <http://localhost:8765/docs/ui-research/prototype.html>。布局 B 也可以直接用 `?layout=b` 打開，頁首有切換鈕。
@@ -150,7 +152,7 @@ renderer adapter：地面 → 建築與人物依腳底深度排序 → 泡泡／
   - 選師父後開道館選單，可用按鈕 0 個，並顯示只給主角的說明。
   - 布局 B 用地點清單對空地下令建造。靈材不夠，約 2.6 秒後顯示「你下的『建造』沒辦法開工（資源不足），這次先改成休養」。
   - 4× 播到 tick 1145 附近後截圖兩版草圖。
-  - console 0 行。截圖腳本不在 repo（研究不加工具），結果只記在這裡。
+  - console 0 行。合入 #141 後的 `9688e45` 上重跑同一條流程，結果相同。截圖腳本不在 repo（研究不加工具），結果只記在這裡。
 - 繪圖耗時：原型內唯讀的 `protoPerf()` 記最近 240 幀。量測環境為 headless Chromium、1280×800、4× 播放約 70 秒。結果：繪圖平均 0.92 ms、p95 1.5 ms；推進平均 1.09 ms、p95 4.7 ms。只是這台機器的一次紀錄，不是 gate。
 - 無人介入時間線：在 `sect-chronicle/` 下用 Node 跑 `Realtime.createWorld('rt-dev-000')`，`advanceTicks` 推到 2700，列出 `activityDone`（建造、煉丹、援村）、`phaseNotice`、`candidateAccepted`、`breakthroughResolved`、`autonomyWait` 的 tick。沒有跑 seed 矩陣。
 - **未驗證**：擁有人實際操作感受、觸控裝置、Safari／Firefox、Canvas 內容對螢幕閱讀器的呈現、PixiJS／Phaser 同場景效能。
