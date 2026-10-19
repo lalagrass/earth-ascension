@@ -1,6 +1,12 @@
 # 門派修行錄（Sect Chronicle）整合開發提案
 
-狀態：**14 天切片已批准，尚未實作／尚未驗收**。日期：2026-10-18（Asia/Taipei）。主筆：Codex。
+**最新交接（D10，2026-10-19）**：RT-02 #108已合dev0875d116、postCI39161730112五項成功；目前只有自主純引擎，沒有可玩UI。擁有人已批准先做[RT-02V觀察版 #129](https://github.com/lalagrass/earth-ascension/issues/129)，讀[接手文件](docs/RT02V_HANDOFF.md)。Grok額度用盡，工作包開放待認領；本次排程文件合dev／postCI後即可登記接手，不重問產品批准。順序改為RT-02V→03→04→05。以下早期提案、SG-01及RT-00接手描述只作歷史；最新任務狀態以[#93](https://github.com/lalagrass/earth-ascension/issues/93)為準。
+
+**RT-02V 觀察版 viewer（#129）**：在 repo 根目錄跑 `python3 -m http.server 8765 --directory sect-chronicle`，瀏覽器開 <http://localhost:8765/viewer/>。看正式世界自主生活與播放控制（暫停、1／2／4 倍）。RT-03a 起世界存在瀏覽器（暫停、每日、突破後自動保存，可立即保存、讀取、匯入匯出與備份恢復）。細節與限制見 [DEVELOPMENT](docs/DEVELOPMENT.md#sg-rt-02v-新增唯讀生活觀察版) 與 [存讀](docs/DEVELOPMENT.md#sg-rt-03a-新增正式存讀)。
+
+**目前開發方向：D8可暫停即時自主生活。** RT-01手動核心與RT-02自主已交付；下一包是D10的唯讀觀察／播放。完整主角工作／目標編輯、瀏覽器存讀與生活試玩仍在後續RT-03～05，戰鬥延後。權威規則見[RT00_CONTRACT](docs/RT00_CONTRACT.md)，批准紀錄見[DECISIONS_AND_SOURCES](docs/DECISIONS_AND_SOURCES.md)。
+
+歷史提案為已批准的14天切片；28天擴充、真人研究與發布未完成也未隨D10批准。原型與SG-00來源記錄保留，歷史接手提示不代表目前待辦。
 
 一句話：從師父與主角兩人的村莊道館出發，在靈氣復甦中修行、援村與收徒，抵禦獸患，讓道館成為能保護村莊的門派。
 
@@ -34,14 +40,8 @@
 
 工作目錄觀察 HEAD：`6fc98a9530c9075981a7edbbd0e3ac4d82c129ee`。這不是已核對的最新遠端 dev SHA。來源快照見決策文件。
 
-後續程式開工須依根目錄 [CONTRIBUTING.md](../CONTRIBUTING.md) 認領 issue、核對最新 dev、建短分支並向 dev 提 PR。本文 SG 系列是獨立遊戲任務，不代表主專案 M3 獲准實作。設計數值皆為候選值。SG-00 產品決策已完成；文件主筆 Codex 已於 #69 登記，核對的 base dev SHA 為 `fbbd3f3770f2eacf1528fb3b3beb5108c8d90910`。SG-00 已完成：文件 PR #70 於 `7510a8b` 合入 dev，#69 已關閉。設計 0.2（D6）修訂以 SG-00b 文件 PR 獨立審核，合併後 SG-01 以含 0.2 文件的 dev 為基底。依賴完成的任務可在認領後開始，不再要求重複產品批准。
+後續程式開工須依根目錄 [CONTRIBUTING.md](../CONTRIBUTING.md) 認領 issue、核對最新 dev、建短分支並向 dev 提 PR。本文 SG 系列是獨立遊戲任務，不代表主專案 M3 獲准實作。下方早期設計的候選數值須依後續決策覆蓋；D9凍結的RT值已批准，並非待選。SG-00 產品決策已完成；文件主筆 Codex 已於 #69 登記，核對的 base dev SHA 為 `fbbd3f3770f2eacf1528fb3b3beb5108c8d90910`。SG-00 已完成：文件 PR #70 於 `7510a8b` 合入 dev，#69 已關閉。設計 0.2（D6）修訂以 SG-00b 文件 PR 獨立審核，合併後 SG-01 以含 0.2 文件的 dev 為基底。依賴完成的任務可在認領後開始，不再要求重複產品批准。
 
 ## 目前進度
 
-| 交付 | 狀態 |
-|---|---|
-| 整合設計、架構、任務、驗收、接手文件 | D1–D5、D6（設計 0.2）與 SG-01～12（含 02A／04A）已批准；0.2 修訂追蹤於 #72／PR #73，合併狀態以 GitHub 為準 |
-| 新引擎、介面、存檔與測試 | 未開始 |
-| 平衡數據、真人試玩、發布 | 未開始 |
-
-下一位先核對 #69 的實際完成紀錄與交接工作區，再認領 SG-01，不重做已完成的 SG-00。Earth／遊戲兩位 agent 的隔離範圍與啟動提示見並行接手計畫；SG-14 起維持未授權。
+任務狀態以[總單#93](https://github.com/lalagrass/earth-ascension/issues/93)與已合PR／postCI為準。歷史slot SG-01～05及RT-00～02已交付；RT-02V #129開放待認領，viewer、瀏覽器存讀、完整UI、真人試玩與發布尚未完成。下一位接#129，不重做SG-00／01或RT-02修正。Earth／遊戲隔離原則保留；Claude #128架構文件不阻擋viewer，SG-14起仍未授權。

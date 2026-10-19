@@ -4,6 +4,14 @@ on:
   pull_request:
   push:
     branches: [dev, main]
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "dev: quick checks; full: quick checks plus the full RT acceptance matrix"
+        type: choice
+        options: [full, dev]
+        default: full
+        required: true
 
 jobs:
   test:
@@ -44,10 +52,22 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Sect Chronicle Node tests
         shell: bash
+        env:
+          CI_EVENT: ${{ github.event_name }}
+          CI_PROFILE: ${{ inputs.profile }}
+          FULL_ACCEPTANCE: ${{ github.base_ref == 'main' || github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.profile == 'full') }}
         run: |
           set -euo pipefail
+          if [[ "$CI_EVENT" == workflow_dispatch && "$CI_PROFILE" != dev && "$CI_PROFILE" != full ]]; then
+            echo "::error::Unknown test profile."
+            exit 2
+          fi
           # The CI gate lands before SG-01. Docs alone are not a game test pass.
           if [[ ! -d sect-chronicle/js && ! -d sect-chronicle/test ]]; then
+            if [[ "$FULL_ACCEPTANCE" == true ]]; then
+              echo "::error::Full acceptance requires delivered game code and tests."
+              exit 1
+            fi
             echo "::notice::SG-01 not delivered: no game code/tests yet (bootstrap only)."
             echo "SG-01 not delivered; game tests did not run (bootstrap only)." >> "$GITHUB_STEP_SUMMARY"
             exit 0
@@ -58,4 +78,16 @@ jobs:
             echo "::error::Game code/test directory exists but no *.test.js files were found."
             exit 1
           fi
+          echo "Running dev unit, golden and focused integration checks."
           node --test "${game_tests[@]}"
+          if [[ "$FULL_ACCEPTANCE" == true ]]; then
+            acceptance_tests=(sect-chronicle/test/acceptance/*.test.js)
+            if (( ${#acceptance_tests[@]} == 0 )); then
+              echo "::error::Full acceptance requested but no acceptance tests were found."
+              exit 1
+            fi
+            node --test "${acceptance_tests[@]}"
+            echo "Game profile: full (dev checks + full RT acceptance passed)." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Game profile: dev (unit/golden/focused checks passed; full RT matrix NOT RUN)." >> "$GITHUB_STEP_SUMMARY"
+          fi

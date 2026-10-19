@@ -33,11 +33,15 @@ M3 認領時先看[任務表與依賴](docs/m3/contribution-plan.md)：標為「
 - 同月競爭要檢查凍結快照、結算順序與身份交換；儲存改造要保留歷史來源及可回放性。不要以個別 seed 或單次速度代替分布。
 - 既有 M2 P0 尚未完全驗收。不要因為測試綠燈就宣稱整個 milestone 完成，也不要把待校準的候選門檻改寫成事前已通過。
 
+## 分層測試與成本
+
+遵守 [分層測試政策](docs/testing-policy.md)：開發冒煙預設 3 個固定 seed，一般局部行為 PR 預設 5 個；正式分布／效能結論及原定實驗須在接受前完成完整樣本，發布前完成完整適用驗收。Earth高風險仍按原完整驗收要求。SG一般dev使用快驗層，20seed×2700tick長矩陣在main PR／main push或手動full執行；改RNG／結算／存檔時仍補受影響的針對性反例與相容證據，有回歸疑慮提前擴驗。這不減少必要單測、golden 或 CI。文件變更不另跑世界 seed 實驗；證據復用與輸出摘要優先，不能縮小既有報告樣本或事後改門檻。
+
 ## 提交 PR 時附上
 
 - 對應 issue、base `dev` SHA、問題的最小重現、採用的方案與捨棄方案。
 - 改動檔案及影響的 [A1–A10 驗收](docs/m2/acceptance.md)；規則／schema／RNG、M1／M2 存檔與 canonical hash 的預期影響。
-- 具體可重跑的測試命令與結果。基本檢查：`python3 -m unittest discover -s tests -v`、`node --check earth_ascension/static/m2.js`、`git diff --check`。這三項由 [CI](.github/workflows/test.yml) 在 Python 3.12／3.13／3.14 自動執行；另有 `game-test` 在 Node 22／24 執行 `node --test sect-chronicle/test/*.test.js`。SG-01 尚未合入且遊戲 `js/`、`test/` 都不存在時，CI 會明示 bootstrap 未交付，不宣稱遊戲測試通過；任一目錄出現後必須找到測試檔，缺測試或測試失敗即失敗。遊戲測試通過不代表其玩法驗收完成。`tests/test_golden.py` 鎖住固定 seed 的 canonical hash，若改動有意改變回放，PR 須說明原因並更新該檔常數。若改行為，提供固定 seed 配對、多 seed 結果及失敗 seed；若改 UI，附真實瀏覽器操作；若改儲存，附遷移及回放測試。
+- 具體可重跑的測試命令與結果。基本檢查：`python3 -m unittest discover -s tests -v`、`node --check earth_ascension/static/m2.js`、`git diff --check`。這三項由 [CI](.github/workflows/test.yml) 在 Python 3.12／3.13／3.14 自動執行；另有 `game-test` 在 Node 22／24 執行快驗 `node --test sect-chronicle/test/*.test.js`；main PR／main push及手動full另跑 `node --test sect-chronicle/test/acceptance/*.test.js` 的完整RT矩陣。dev快驗通過不等於完整驗收。SG-01 尚未合入且遊戲 `js/`、`test/` 都不存在時，CI 會明示 bootstrap 未交付，不宣稱遊戲測試通過；任一目錄出現後必須找到測試檔，缺測試或測試失敗即失敗。遊戲測試通過不代表其玩法驗收完成。`tests/test_golden.py` 鎖住固定 seed 的 canonical hash，若改動有意改變回放，PR 須說明原因並更新該檔常數。若改行為，提供固定 seed 配對、多 seed 結果及失敗 seed；若改 UI，附真實瀏覽器操作；若改儲存，附遷移及回放測試。
 - 失敗條件、未解風險及需維護者決策的問題。大型原始輸出可連到可重跑腳本與摘要；是否將新大型資料納入 Git 先討論。
 
 可用 [PR 模板](.github/pull_request_template.md)填寫。另一位貢獻者可複核；共用 GitHub 帳號下的自我留言不算平台上的獨立核准。審核結論為「可合併／須修改／等待產品決策」，附可重現證據；作者更新後按**新的 head** 重審。

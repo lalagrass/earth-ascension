@@ -1,8 +1,18 @@
-# 規則表（SG-02，ruleVersion 2）
+# 規則表（SG-02，ruleVersion 3）
 
 狀態：**候選規則基線**，供首次規則實驗前凍結。數值來自設計 0.2 的候選設定與本文件的推導；**沒有任何真人試玩或多 seed 平衡實驗**，不代表平衡、樂趣或完整引擎已驗證。權威實作是 [`js/rules.js`](../js/rules.js)，測試是 [`test/rules.test.js`](../test/rules.test.js)；本文件與程式不一致時以程式與測試為準，並應修正本文件。改動任何數值都必須升 `RULE_VERSION`（v2 尚未合入 dev 時，PO 複核要求的修正直接併入 v2 基線並在 PR 說明；一旦合入就以升版處理）。
 
 範圍：只有數值表與純計算。**不含**指令、排程、扣款、時段結算、RNG 抽樣、事件資料（SG-02A）、突破／援村 runtime（SG-05／04A）、UI、儲存。守山／`defensePrepPoints` 是未批准的另案，不採用。
+
+## SG-05 已批准變更（D7，已於 SG-05 實作；ruleVersion 3）
+
+本文件其餘數值／公式沿ruleVersion 2不變；以下[D7](DECISIONS_AND_SOURCES.md#d7sg-05-修為與突破處置已批准2026-10-18)已由SG-05實作（ruleVersion升為3只因新增`CULTIVATION_CAP`與`capCultivationGain`，沒有改任何數值）。實作細節與驗證見[DEVELOPMENT](DEVELOPMENT.md)「SG-05 新增」。
+
+- 修為範圍0..100。格初未滿且未成功提升時，先算既有`cultivationGain`，再按剩餘空間限制實際收益；96＋14→100（實得4），仍扣一次修行體力／心境。最少1是公式原始收益規則，不保證封頂後仍加1。
+- 格初已滿100或已成功提升，修行轉明示休養，沿既有容量／輪候，只套一次休養效果，不扣修行成本、不占聚靈台、不擲RNG；不改永久課表，不自動突破或其他工作。
+- 突破須滿100且未成功提升。成功保留100並記錄提升；每人最多一次成功提升，不能以100誤判為可再次突破。失敗仍保留70%（100→70）、傷勢+15並受既有上限限制；可恢復再試。已有成功率、費用與抽樣契約不變。
+- 成功後本切片不再增修為。保留100可供未來承接，下一境條件未定；不先增加第二境公式或戰力倍率。
+- 實作：rule2→3、schema3→4（開工核對最新dev，未被占用）；rng1／content1不因本決策升版。舊開發存檔一律明確拒絕並保留，不自動遷移／截斷／補值；歷史golden不覆寫。SG-07再接上不覆蓋原檔、可備份／匯出與重開提示的儲存介面。
 
 ## 1. 版本
 
@@ -12,7 +22,7 @@
 | ruleVersion | 2 | SG-01 的暫定值 1 → SG-02 凍結值 2 |
 | rngVersion | 1 | 不變：RNG 演算法與向量不動；rules.js 完全不消耗 RNG |
 
-升版影響：`state.js` 只接受 ruleVersion 2。ruleVersion 1 的存檔以 `unknown_rule_version` 明確拒絕，不就地升版、不默默重解（測試：`舊版（ruleVersion 1）存檔被明確拒絕…`）；本版不提供遷移（設計 D4：新遊戲新存檔）。固定 seed fixture 的 7 個 hash 全部改變，原因只有一個：canonical 狀態中的 `ruleVersion` 欄位由 1 變 2。測試以 `test/fixtures/new-world.v1.json`（SG-01 的歷史 golden，不再重產）逐案證明：除 `ruleVersion` 外世界內容與 rngState 完全相同。新局的 `tiles` 仍是空陣列（地圖版型在 rules.js，等 SG-04 建局時採用），因此世界狀態資料沒有其他變化。
+升版影響（SG-02 當時；SG-05 起 `state.js` 只接受 ruleVersion 3）：`state.js` 只接受 ruleVersion 2。ruleVersion 1 的存檔以 `unknown_rule_version` 明確拒絕，不就地升版、不默默重解（測試：`舊版（ruleVersion 1）存檔被明確拒絕…`）；本版不提供遷移（設計 D4：新遊戲新存檔）。固定 seed fixture 的 7 個 hash 全部改變，原因只有一個：canonical 狀態中的 `ruleVersion` 欄位由 1 變 2。測試以 `test/fixtures/new-world.v1.json`（SG-01 的歷史 golden，不再重產）逐案證明：除 `ruleVersion` 外世界內容與 rngState 完全相同。當時新局的 `tiles` 仍是空陣列，因此世界狀態資料沒有其他變化（SG-04 起，新局的 `tiles` 採用 rules.js 的 25 格版型，見 DEVELOPMENT.md；本檔數值未變）。
 
 ## 2. 單位與取整
 
@@ -109,7 +119,7 @@
 
 **行動消耗**：採集靈材／靈草 體力 −15；修行 −10、心境 −3；調心 −5、心境 +12；建造 −15；煉丹 −10；援村 −15；突破 −20、心境 −5；支援突破 −10。體力、心境夾在 0..100；體力不足不禁止行動，只降效（上表）。
 
-**突破**：修為 ≥100 才可嘗試；每人最多一次境界提升。成功率（基點）＝ 5000 ＋ 支援者 1500 ＋ 丹 2000 ＋ 心境≥60 的 500，上限 9500；抽樣由 SG-05 以單一 RNG 完成。失敗保留 70% 修為（floor），傷勢 +15，無永久死亡。
+**突破**：修為 ≥100 才可嘗試；每人最多一次境界提升。成功率（基點）＝ 5000 ＋ 支援者 1500 ＋ 丹 2000 ＋ 心境≥60 的 500，上限 9500；抽樣由 SG-05 以單一 RNG 完成（每個開工的突破一次 `Rng.nextInt(state, 10000)`，`roll < chanceBp` 成功）。修為上限 100；成功保留 100 並記一次提升。失敗保留 70% 修為（floor），傷勢 +15，無永久死亡。
 
 **援村**（`village-fence`）：日 4（slot 9）起開放；占 1 人 1 格（D6：一人一格）；一次性獎勵，兩種做法互斥、合計只能領一次。
 
@@ -154,3 +164,46 @@
 證明（規則層級，AC 對照）：AC-C10 的「描述逐項對應真實公式」只對本包資料成立；AC-C11 的模板等預算、負點／超額／未知枚舉拒絕、性格不改效率、設定可存讀與 hash 一致（與 SG-01 驗證一起）；AC-C12 的階段邊界（日 4／7／11 第一格、不倒退、每階段有可核對差異）；AC-C13 的零材料援村入口與無招募前置死鎖（僅數值層）。
 
 不證明：AC-C10／11／12 整條、AC-C13 的招募流程、AC-C14、AC-C15、SG-M1；需要後續 runtime（SG-03／04／04A／05／06）、UI 與真人試玩。**數值是否好玩或平衡完全未驗證。**
+
+## 10. 第一章事件契約（SG-02A，資料與驗證）
+
+資料在 `js/story-data.js`（`SectChronicle.StoryData`，內容版本 1，要求 ruleVersion 3）。它只是**宣告式資料＋驗證**；沒有 advance、指令、去重、存讀或 UI。本章的時點、數字都不在資料裡複製，而是引用本文件第 5～7 章對應的 `rules.js` 常數（`{rule: 名稱}`、`{phase, field}`）。
+
+### 10.1 事件表
+
+「時點」欄是從規則推得的 slotIndex（0～42）邊界，測試逐一驗證前一格不觸發、該格觸發。
+
+| 事件 ID | 類型 | 觸發（引用） | 時點 | 待選 | 選項 → 宣告效果 | 一次性鍵 | 後續消費者 |
+|---|---|---|---|---|---|---|---|
+| `evt-phase-faint` | 階段 | `SPIRIT_PHASES.faint.startSlot` | 0 | 否 | — | `phase:faint` | SG-03 |
+| `evt-phase-omen` | 階段 | `SPIRIT_PHASES.omen.startSlot` | 8→9 | 否 | — | `phase:omen` | SG-03 |
+| `evt-phase-manifest` | 階段 | `SPIRIT_PHASES.manifest.startSlot` | 17→18 | 否 | — | `phase:manifest` | SG-03 |
+| `evt-phase-surge` | 階段 | `SPIRIT_PHASES.surge.startSlot` | 29→30 | 否 | — | `phase:surge` | SG-03 |
+| `evt-village-plea` | 求援 | `AID_AVAILABLE_FROM_SLOT` 且尚未完成援村 | 8→9 | 是 | `opt-aid-accept` → `showAidPrompt`；`opt-aid-later` → 無 | `plea:village-fence` | SG-04A |
+| `evt-aid-complete` | 援村完成 | `aidCompleted` | — | 否 | `grantAidReward`＋`recordRescue`（同一去重鍵） | `aid:village-fence` | SG-04A |
+| `evt-invite-cand-1` | 邀請 | 已援村、`manifest.startSlot`、cand-1 為 locked | 17→18 | 是 | 確認 → `setInvitationStatus invited`；稍後 → `deferred` | `invite:cand-1` | SG-03／04A |
+| `evt-invite-cand-2` | 邀請 | 同上，且 `evt-invite-cand-1` 已出現 | 18 起 | 是 | 同上 | `invite:cand-2` | SG-03／04A |
+| `evt-beast-crisis` | 危機 | `MAX_SLOT_INDEX` | 41→42 | 是 | `opt-crisis-submit` → `submitFormation`（內容由 SG-06 擁有） | `crisis:beast` | SG-06 |
+| `evt-ending-victory` | 結局 | 危機結果 `victory` | — | 否 | `setOrganisationStatus sectFounded`＋`displayLabel chief-disciple`（僅顯示） | `ending:victory` | SG-06 |
+| `evt-ending-defeat` | 結局 | 危機結果 `defeat` | — | 否 | `setOrganisationStatus foundingDeferred` | `ending:defeat` | SG-06 |
+
+同一格多個事件時依 `priority` 由大到小、再依 ID 排序（`dueEvents`）：危機高於所有邀請；cand-1 高於 cand-2；援村完成高於求援與階段事件。
+
+### 10.2 效果詞彙
+
+`showAidPrompt`、`setInvitationStatus`（只能設 invited／deferred，accepted 只由 `acceptCandidate` 設定）、`grantAidReward`、`recordRescue`、`submitFormation`、`setOrganisationStatus`（只能 sectFounded／foundingDeferred）、`displayLabel`（`worldChange: false`，首席弟子只是顯示）。`grantAidReward`／`recordRescue` 只能出現在 `evt-aid-complete`，邀請事件不能給資源或改屬性。
+
+### 10.3 宣告的契約（SG-04A 起由 `js/story.js`、`commands.js`、`engine.js` 執行；實作契約見 DEVELOPMENT.md「SG-04A 新增」）
+
+- 援村：占 `AID_WORKERS` 人 `AID_DURATION_SLOTS` 格；獎勵只發一次（去重鍵 `reward:village-fence`，兩種援村選項共用）；收徒不給獎勵。
+- 招募：每名候選只提示一次、不重複詢問；選擇後回 planning；`acceptCommand` 只在 planning、`joinSlotIndex`＝接受當下的 slotIndex、不補發；slotIndex ≥ `MAX_SLOT_INDEX` 時拒絕；加入前不產生勞動、支援或戰力；任何人數都能走到危機。人數上限唯一來源是 `State.MAX_ROSTER`。
+- 危機：slotIndex ≥ `MAX_SLOT_INDEX` 時優先於邀請，只結算一次，結算後進入結局，沒有第 43 格。
+- 師父：維持師父身分；沒有腳本化死亡、失蹤或傳位。
+
+### 10.4 描述與規則的連結
+
+事件文字不含數字。階段事件以 `claims`（如 `herbLocked`、`herbUnlocked`、`cultivationBoost`、`threatRises`）宣告可核對的陳述，驗證器對照 `SPIRIT_PHASES` 檢查是否為真（與前一階段比較）；其他事件標 `narrativeOnly`，表示文字只是氛圍、不暗示任何數值。性格（`personalityNote`／`describeEvent`）只改文字提示，不改選項、觸發或效果。
+
+### 10.5 本章證明與不證明
+
+證明：資料結構、事件／選項形狀（待選事件必須有非空 options）、觸發樹每層只有已知操作子且值型別與候選／事件／規則引用皆有效（通過驗證的觸發在任何合法 facts 下 `evaluateTrigger` 不會拋錯）、ID／一次性鍵唯一、引用都解得開、文字無數字、claims 與規則一致、效果值落在 state 合法枚舉內、候選人只有 cand-1／cand-2、階段／危機邊界與優先順序、性格四組合都有文案、版本與新世界不受影響。不證明：advance、去重、存讀、快轉、招募流程、戰鬥、UI，也不是 AC-C10～C15 的整體通過，更不是 SG-M1。
