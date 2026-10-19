@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>宗門編年・生活觀察版</title>
+  <link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+  <header>
+    <h1>宗門編年・生活觀察版</h1>
+    <p class="notice">觀察版：只看正式世界自己生活，不能下指令、改目標或回應詢問。<strong>沒有保存</strong>，重新整理會開新局。</p>
+  </header>
+
+  <section id="setup" aria-labelledby="setup-title">
+    <h2 id="setup-title">開局</h2>
+    <form id="setup-form">
+      <label>seed <input id="seed" name="seed" value="rt-dev-000" maxlength="64" autocomplete="off" required></label>
+      <span id="seed-error" class="error-inline" role="alert"></span>
+      <div id="setup-settings"></div>
+      <button id="start" type="submit">開始（Enter）</button>
+    </form>
+  </section>
+
+  <main id="viewer" hidden>
+    <section id="controls" aria-label="播放控制">
+      <div id="hud"></div>
+      <div class="buttons">
+        <button id="toggle" type="button">暫停／繼續（空白鍵）</button>
+        <span role="group" aria-label="倍速">
+          <button type="button" data-speed="1">1×（鍵 1）</button>
+          <button type="button" data-speed="2">2×（鍵 2）</button>
+          <button type="button" data-speed="4">4×（鍵 4）</button>
+        </span>
+      </div>
+      <p id="error" class="error" role="alert" hidden></p>
+    </section>
+    <div class="layout">
+      <section id="map" aria-label="地圖"></section>
+      <section id="people" aria-label="人物"></section>
+      <aside>
+        <section id="detail" aria-label="選取人物"></section>
+        <section id="stock" aria-label="庫存與設施"></section>
+        <section id="settings" aria-label="政策與目標"></section>
+      </aside>
+    </div>
+    <section id="events" aria-label="事件"></section>
+  </main>
+
+  <script src="../js/rng.js"></script>
+  <script src="../js/rules.js"></script>
+  <script src="../js/state.js"></script>
+  <script src="../js/story-data.js"></script>
+  <script src="../js/story.js"></script>
+  <script src="../js/progression.js"></script>
+  <script src="../js/commands.js"></script>
+  <script src="../js/engine.js"></script>
+  <script src="../js/autonomy.js"></script>
+  <script src="../js/realtime.js"></script>
+  <script src="controller.js"></script>
+  <script src="view.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
