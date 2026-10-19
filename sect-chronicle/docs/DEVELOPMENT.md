@@ -101,7 +101,7 @@ python3 -m http.server 8765 --directory sect-chronicle
 - 開局畫面列出安穩發展政策與六項目標；開局世界 hash 等於 `createWorld('rt-dev-000')`；停在開局 1.5 秒仍是 tick 0；Enter 開始。
 - 鍵 1／2／4 各播約 5 秒：20／40／80 tick。
 - 空白鍵暫停 3.5 秒並點選人物：tick 141 不動，hash 相同。
-- 背景：headless 與 Xvfb 下最小化視窗或切分頁，Chromium 都不會把頁面變成 hidden（實測），所以腳本在頁面內把 `document.hidden` 設成背景值並送出 `visibilitychange`，走 `app.js` 的正式處理器。背景 5 秒自動暫停、tick 157 不動；回前景 3 秒仍暫停；按繼續後 1 秒推進 15 tick，沒有追趕。這是模擬事件，不算真實分頁切換的驗收。
+- 背景：經 Playwright 操作時，最小化視窗或切分頁都沒有讓頁面變成 hidden（實測），所以這支腳本在頁面內把 `document.hidden` 設成背景值並送出 `visibilitychange`，走 `app.js` 的正式處理器。背景 5 秒自動暫停、tick 157 不動；回前景 3 秒仍暫停；按繼續後 1 秒推進 15 tick，沒有追趕。這段是模擬事件；真實分頁切換見下一段。
 - 4× 播到 tick 2704 後暫停，1 秒後仍是 2704；途中 5 次 `breakthroughResolved` 停批都在同一幀續推。頁面 hash `5fe0a144…` 與 Node 直接推進到同一 tick 的 hash 相同。
 - 取樣到移動中、各種工作中、休養、待決策與等待（`goals_done`）。待決策只持續 1 tick，取樣不保證抓到，所以只記錄、不當失敗條件。
 
@@ -111,7 +111,14 @@ python3 -m http.server 8765 --directory sect-chronicle
 
 截圖與完整紀錄在輸出目錄，不入庫。
 
-**未驗證**：桌面瀏覽器的真實背景切換、其他 seed 與政策的畫面（本包沒有政策編輯器）、真人試玩與手感。
+**真實分頁背景**：`tools/viewer-background-check.js` 不用 Playwright，也不改寫 `document.hidden`、不自己送事件。它啟動一般（非 headless）Chromium，經 DevTools Protocol 在同一視窗開新分頁，讓瀏覽器自己把 viewer 分頁轉成 hidden，5 秒後再切回。按鍵用 `Input.dispatchKeyEvent` 送進頁面，狀態只讀 `window.sectViewer.snapshot()`；另掛一個只記錄的 `visibilitychange` 監聽，確認事件是瀏覽器送出的。只需要 Node 22 以上、Chromium 執行檔與圖形環境（Linux 用 `xvfb-run`），用法見檔頭；條件不成立同樣寫 FAIL、exit 1。2026-10-19 在 Chromium 141.0.7390.37（非 headless，Xvfb）、Node 22 下：
+
+- Enter 開始、鍵 4 換 4×，tick 49 時開新分頁：viewer 分頁變 hidden，瀏覽器送出 `visibilitychange`，viewer 自動暫停。
+- 背景 5 秒 tick 49 不動、hash 相同；切回後 visible，3 秒仍暫停；空白鍵繼續 1 秒推進 16 tick（4× 預期約 16），沒有追趕。
+- 暫停在 tick 65，頁面 hash 等於 Node 直接推進到 tick 65 的 hash；console 0 行。PASS、exit 0，牆鐘約 14 秒。
+- 反例：把 `app.js` 的 `visibilitychange` 處理器拿掉後，分頁同樣變 hidden，但 viewer 仍是 playing，`FAIL 背景時自動暫停：mode=playing autoPaused=false`，exit 1。
+
+**未驗證**：作業系統層級的視窗最小化或鎖螢幕（本環境沒有視窗管理器）、其他 seed 與政策的畫面（本包沒有政策編輯器）、真人試玩與手感。
 
 ## SG-02 新增的契約
 
