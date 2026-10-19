@@ -167,7 +167,6 @@
     // expected：本分頁最後確認的指標原字串（null 表示空）；owned：本分頁是否已是寫者。
     let expected = { raw: undefined, owned: false };
     let broken = false;
-    const overwriteNeedsConfirm = { a: false, b: false };
 
     function get(key) {
       try {
@@ -250,7 +249,11 @@
         }
         if (broken && !so.takeover) return fail('save_broken', '存檔損壞；請先恢復某一槽');
         const target = base ? otherSlot(base.active) : 'a';
-        if (overwriteNeedsConfirm[target] && !so.overwriteBroken) {
+        // 依即將覆寫的槽在鎖內的實際內容判斷，不靠本頁記憶：重新整理或換分頁後，壞資料仍要明確確認才覆寫。
+        // 讀取失敗不能當空槽；空槽與合法備份照常輪替。
+        const existing = get(SLOT_KEYS[target]);
+        if (!existing.ok) return existing;
+        if (existing.raw !== null && !readSave(existing.raw).ok && !so.overwriteBroken) {
           return fail('overwrite_broken_slot', `槽 ${target} 的資料損壞；確認覆寫（建議先匯出原始資料）後才保存`, { slot: target });
         }
         const w = put(SLOT_KEYS[target], prepared.text);
@@ -270,7 +273,6 @@
         if (pb.raw !== ptr) return fail('pointer_readback_mismatch', '指標讀回內容與寫入不同；這次未保存', { slot: target });
         expected = { raw: ptr, owned: true };
         broken = false;
-        overwriteNeedsConfirm[target] = false;
         return { ok: true, slot: target, seq, tick: prepared.tick, revision: prepared.revision, checksum: prepared.checksum, bytes: prepared.text.length };
       });
     }
@@ -289,7 +291,7 @@
     }
 
     // 明確恢復某一槽：鎖內重新驗證該槽，把指標改指向它，使它成為 active（不會被下一次保存覆寫）。
-    // 另一槽若有損壞資料，下一次保存前需要明確確認覆寫。
+    // 另一槽若有損壞資料，save 在鎖內看到它就要求明確確認才覆寫。
     function restore(slot, seenPointerRaw) {
       if (!SLOTS.includes(slot)) return Promise.resolve(fail('bad_slot', `沒有槽 ${String(slot)}`));
       return withLock(() => {
@@ -305,11 +307,9 @@
         if (!pb.ok) return pb;
         if (pb.raw !== ptr) return fail('pointer_readback_mismatch', '指標讀回內容與寫入不同；沒有恢復');
         const other = otherSlot(slot);
-        overwriteNeedsConfirm[other] = view.slots[other].raw !== null && !view.slots[other].result.ok;
-        overwriteNeedsConfirm[slot] = false;
         expected = { raw: ptr, owned: true };
         broken = false;
-        return { ok: true, world: chosen.world, envelope: chosen.envelope, slot, otherSlotBroken: overwriteNeedsConfirm[other] };
+        return { ok: true, world: chosen.world, envelope: chosen.envelope, slot, otherSlotBroken: view.slots[other].raw !== null && !view.slots[other].result.ok };
       });
     }
 

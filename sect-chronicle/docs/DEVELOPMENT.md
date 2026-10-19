@@ -134,7 +134,8 @@ python3 -m http.server 8765 --directory sect-chronicle
 - 錯誤碼：寫槽失敗（quota、`SecurityError`）`write_failed`、讀回不同 `readback_mismatch`、切指標失敗 `pointer_write_failed`、指標讀回不同 `pointer_readback_mismatch`、讀取被擋 `storage_error`。
 - 單寫者：`writerId` 是每個分頁開啟時產生的隨機 id，不用世界 RNG、不進世界。空存檔時本分頁直接是寫者。已有存檔要先「讀取並在此分頁接續」（`adopt`，鎖內確認指標沒變）或在保存時確認接管（`takeover`，鎖內以當下指標為基線）。指標和本分頁基線不同就回 `external_change`、別的分頁寫的回 `not_owner`，都不寫入。`storage` 事件只是提早通知（立即停自動保存），互斥靠鎖。
 - 沒有 Web Locks 或 localStorage：不寫任何 key，畫面顯示本地保存不可用；仍可唯讀載入、匯入與匯出。不做無鎖的雙槽寫入。
-- 壞存檔（指標壞、active 壞、只剩資料槽沒有指標、未知版本）不當成沒有存檔：不自動初始化、不換指標、不刪檔、不自動改讀備份，保存一律拒絕（`save_broken`）。畫面列出兩槽狀態，提供各 key 的原始資料匯出，以及「恢復槽 A／B」（`restore`）：鎖內重新驗證該槽，把指標改指向它，使它成為 active，下一次保存寫另一槽。另一槽若是壞資料，保存前要再確認覆寫（`overwrite_broken_slot`），不會把剛恢復的唯一可讀副本當 inactive 覆寫。
+- 壞存檔（指標壞、active 壞、只剩資料槽沒有指標、未知版本）不當成沒有存檔：不自動初始化、不換指標、不刪檔、不自動改讀備份，保存一律拒絕（`save_broken`）。畫面列出兩槽狀態，提供各 key 的原始資料匯出，以及「恢復槽 A／B」（`restore`）：鎖內重新驗證該槽，把指標改指向它，使它成為 active，下一次保存寫另一槽。另一槽若是壞資料，保存前要再確認覆寫（`overwrite_broken_slot`），不會把剛恢復的唯一可讀副本當 inactive 覆寫。這個判斷在鎖內讀目標槽的實際內容，不靠記憶體旗標，所以恢復後重新整理、讀取接續再保存仍會要求確認；接管確認不能代替覆寫確認。
+- 存檔正常（active 可讀）但另一槽或指標以外的 key 損壞時，設定畫面與播放中的控制列仍列出壞 key 的原始資料匯出，讓使用者在確認覆寫前先留下原字串。沒有 Web Locks 的唯讀模式也能匯出。
 
 **保存時機與 dirty**（`createSession`＋控制器）：
 - 控制器在每幀推進後看實際範圍 `(t0, t1]`：`floor(t0/180) < floor(t1/180)` 就是跨日，存 `t1` 的世界，不為保存切批次；這一幀有 `breakthroughResolved` 就在續推完後存；播放中手動暫停或轉背景也存。命令入口屬 RT-04。批次中途出錯時世界是最後合法的成功前綴，可以保存，不存失敗 tick 的 clone。
@@ -144,7 +145,7 @@ python3 -m http.server 8765 --directory sect-chronicle
 - 匯出是完整封套 JSON，檔名 `sect-chronicle-<seed>-t<tick>.json`。
 
 **已驗證**：
-- `test/storage.test.js` 12 項：
+- `test/storage.test.js` 14 項：
   - 封套欄位與 checksum。
   - 17 種壞檔、舊 slot 與未知版本的拒絕碼。
   - 六類邊界經假 localStorage 存檔、由另一個寫者接續後推到 2700，hash 與 `rngState` 都和不中斷推進相同：旅行中 tick 1、工作中 35、休養轉自主 348、邀請事件登記後 1081、突破停點 1176，以及 tick 1100 下達的人工 `pending`（推到 1700）。人工 `pending` 存讀後，同 id 重送回 `duplicate`，不再套用。
@@ -153,6 +154,8 @@ python3 -m http.server 8765 --directory sect-chronicle
   - 讀取被擋或無鎖時零寫入。
   - 接續、外部改動停寫與接管。
   - 壞指標、壞 active、只剩資料槽、未知版本都零寫入。恢復後不覆寫唯一可讀副本，覆寫壞槽要確認。
+  - 恢復備份後換新 store（模擬重新整理）、接續、保存：未確認時拒絕且壞槽原字串不變，只確認接管也拒絕，確認覆寫才寫；讀目標槽被擋時回 `storage_error` 且零寫入。
+  - active 正常、另一槽損壞時，畫面提供該槽原始資料匯出（含無鎖唯讀模式）。
   - 舊 generation 排隊不寫入；dirty 與相同 revision；停自動保存與恢復。
 - `test/viewer-controller.test.js` 新增 2 項：
   - 跨日落點不是 180 與剛好 180、突破停批續推後、暫停與轉背景各通知一次，`load` 不通知且保持暫停。

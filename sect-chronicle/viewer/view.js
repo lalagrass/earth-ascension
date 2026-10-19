@@ -413,6 +413,18 @@
     return { ok: true, empty: false, text: `seed ${r.world.seed}・tick ${e.tick}（第 ${Math.floor(e.tick / 180) + 1} 天）・保存於 ${e.savedAt}`, tick: e.tick };
   }
 
+  // 原始資料匯出按鈕：all 為 true 時列出所有非空 key，否則只列無法讀取的 key（壞指標、壞槽）。
+  // 只讀 localStorage，沒有 Web Locks 也能用。
+  function renderRawExports(inspection, all) {
+    if (!inspection || !inspection.slots) return '';
+    const keys = [['pointer', '指標'], ['a', SLOT_LABELS.a], ['b', SLOT_LABELS.b]].filter(([k]) => {
+      const entry = k === 'pointer' ? inspection.pointer : inspection.slots[k];
+      if (!entry || entry.raw === null) return false;
+      return all || !entry.result.ok;
+    });
+    return keys.map(([k, l]) => `<button type="button" data-export-raw="${k}">匯出${esc(l)}原始資料</button>`).join('');
+  }
+
   // inspection 是 store.inspect()／open() 的結果；canWrite 決定按鈕是「接續」還是「唯讀載入」。
   function renderSavePanel(inspection) {
     if (inspection.state === 'unavailable') return '<p class="hint">本地保存不可用：可以從檔案匯入。</p>';
@@ -426,16 +438,15 @@
       ? `<p class="error-inline">存檔指標損壞：${esc(inspection.pointer.result.reason)}</p>` : '';
     if (inspection.state === 'ok') {
       const how = inspection.canWrite ? '讀取並在此分頁接續保存' : '唯讀載入（不會保存）';
-      return `<ul class="plain">${rows}</ul><button type="button" id="load-saved">${how}</button>`;
+      const raws = renderRawExports(inspection, false);
+      const warn = raws ? '<p class="error-inline">另一槽的資料損壞；覆寫前會再確認，可以先匯出原始資料。</p>' : '';
+      return `<ul class="plain">${rows}</ul>${warn}<div class="buttons"><button type="button" id="load-saved">${how}</button>${raws}</div>`;
     }
     const restore = ['a', 'b'].filter((s) => slotSummary(inspection.slots[s]).ok)
       .map((s) => `<button type="button" data-restore="${s}">恢復${esc(SLOT_LABELS[s])}</button>`).join('');
-    const raws = [['pointer', '指標'], ['a', SLOT_LABELS.a], ['b', SLOT_LABELS.b]]
-      .filter(([k]) => (k === 'pointer' ? inspection.pointer && inspection.pointer.raw !== null : inspection.slots[k].raw !== null))
-      .map(([k, l]) => `<button type="button" data-export-raw="${k}">匯出${esc(l)}原始資料</button>`).join('');
     return `<p class="error-inline">存檔無法直接讀取，沒有改動任何資料。請先匯出原始資料，再選擇要恢復的槽。</p>${ptr}
-      <ul class="plain">${rows}</ul><div class="buttons">${raws}${inspection.canWrite ? restore : ''}</div>`;
+      <ul class="plain">${rows}</ul><div class="buttons">${renderRawExports(inspection, true)}${inspection.canWrite ? restore : ''}</div>`;
   }
 
-  return Object.freeze({ describe, render, eventText, renderSettings, saveStatusText, renderSavePanel, WAIT_LABELS, FALLBACK_LABELS });
+  return Object.freeze({ describe, render, eventText, renderSettings, saveStatusText, renderSavePanel, renderRawExports, WAIT_LABELS, FALLBACK_LABELS });
 });

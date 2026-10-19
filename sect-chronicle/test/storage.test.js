@@ -8,6 +8,7 @@ const Realtime = require('../js/realtime.js');
 const State = require('../js/state.js');
 const Rules = require('../js/rules.js');
 const Storage = require('../js/storage.js');
+const View = require('../viewer/view.js');
 
 const SEED = 'rt-dev-000';
 const HORIZON = Rules.OBSERVATION_TICKS;
@@ -427,4 +428,70 @@ test('匯出檔名只用安全字元', () => {
   const w = worldAt(100);
   assert.equal(Storage.exportFileName(w), 'sect-chronicle-rt-dev-000-t100.json');
   assert.equal(Storage.exportFileName(Object.assign({}, w, { seed: '../a b' })), 'sect-chronicle-_a_b-t100.json');
+});
+
+// 審查 R1：壞槽覆寫確認不能只靠本頁記憶；重新整理（重建 store）後仍依槽內實際內容判斷。
+test('恢復備份後重新整理再接續，覆寫壞槽仍要確認，原字串保留', async () => {
+  const disk = fakeStorage();
+  const s = store(disk, 'tab-1');
+  s.open();
+  await s.save(envelopeOf(worldAt(100))); // a
+  await s.save(envelopeOf(worldAt(200))); // b（active）
+  const damaged = JSON.parse(disk.map.get(Storage.SLOT_KEYS.b));
+  damaged.stateText = damaged.stateText.replace('"tick":200', '"tick":201');
+  disk.map.set(Storage.SLOT_KEYS.b, JSON.stringify(damaged));
+  const brokenRaw = disk.map.get(Storage.SLOT_KEYS.b);
+  const t = store(disk, 'tab-2');
+  const seen = t.open();
+  assert.equal((await t.restore('a', seen.pointer.raw)).ok, true);
+
+  // 重新整理：新的 store，讀取並接續 active（a）
+  const reloaded = store(disk, 'tab-3');
+  const view = reloaded.open();
+  assert.equal(view.state, 'ok');
+  assert.equal(view.active, 'a');
+  assert.equal((await reloaded.adopt(view.pointer.raw)).ok, true);
+  const refused = await reloaded.save(envelopeOf(worldAt(150)));
+  assert.equal(refused.code, 'overwrite_broken_slot');
+  assert.equal(disk.map.get(Storage.SLOT_KEYS.b), brokenRaw, '未確認前壞槽原字串保留');
+  const takeover = await reloaded.save(envelopeOf(worldAt(150)), { takeover: true });
+  assert.equal(takeover.code, 'overwrite_broken_slot', '接管不等於確認覆寫壞槽');
+  const ok = await reloaded.save(envelopeOf(worldAt(150)), { overwriteBroken: true });
+  assert.equal(ok.ok, true);
+  assert.equal(ok.slot, 'b');
+
+  // 讀不到即將覆寫的槽：不能當空槽寫入
+  const d2 = fakeStorage();
+  const u = store(d2, 'tab-1');
+  u.open();
+  await u.save(envelopeOf(worldAt(100)));
+  d2.failGet[Storage.SLOT_KEYS.b] = 'SecurityError';
+  const writes = d2.writes.length;
+  assert.equal((await u.save(envelopeOf(worldAt(200)))).code, 'storage_error');
+  assert.equal(d2.writes.length, writes);
+});
+
+// 審查 R2：active 可讀時，壞掉的另一槽（或指標）也要有原始資料匯出入口。
+test('存檔正常但另一槽損壞時，畫面仍提供該槽的原始資料匯出', async () => {
+  const disk = fakeStorage();
+  const s = store(disk, 'tab-1');
+  s.open();
+  await s.save(envelopeOf(worldAt(100))); // a
+  await s.save(envelopeOf(worldAt(200))); // b（active）
+  const clean = s.inspect();
+  assert.equal(View.renderSavePanel(clean).includes('data-export-raw'), false, '兩槽都正常時不列');
+  assert.equal(View.renderRawExports(clean, false), '');
+  disk.map.set(Storage.SLOT_KEYS.a, '{"format":"sect-chronicle"');
+  const view = s.inspect();
+  assert.equal(view.state, 'ok');
+  const panel = View.renderSavePanel(view);
+  assert.ok(panel.includes('data-export-raw="a"'), panel);
+  assert.ok(panel.includes('id="load-saved"'));
+  assert.equal(View.renderRawExports(view, false), '<button type="button" data-export-raw="a">匯出槽 A原始資料</button>');
+  // 沒有 Web Locks 時仍可唯讀匯出
+  const nolock = Storage.createStore({ storage: disk, locks: null, writerId: 'tab-2' });
+  const ro = nolock.open();
+  assert.ok(View.renderSavePanel(ro).includes('data-export-raw="a"'));
+  assert.ok(View.renderSavePanel(ro).includes('唯讀載入'));
+  assert.equal(nolock.readRaw(Storage.SLOT_KEYS.a).raw, '{"format":"sect-chronicle"');
 });

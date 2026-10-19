@@ -44,6 +44,7 @@
     const t0 = performance.now();
     session.request(ctl.world, { reason }).then((r) => {
       recordSave(r, performance.now() - t0);
+      refreshInspection();
       draw(true);
     });
     draw(true);
@@ -69,7 +70,7 @@
       r = await session.request(ctl.world, flags);
     }
     recordSave(r, performance.now() - t0);
-    inspection = store.inspect();
+    refreshInspection();
     draw(true);
     return r;
   }
@@ -98,6 +99,7 @@
     if (!r.ok) return r;
     session.begin(kind, baseline);
     ui.selected = null;
+    refreshInspection();
     if (ms !== undefined) metrics.lastLoad = { tick: world.clock.tick, ms: Math.round(ms * 10) / 10 };
     enterViewer();
     return r;
@@ -200,6 +202,12 @@
     $('save-panel').innerHTML = View.renderSavePanel(inspection);
   }
 
+  // 重新讀三個 key；遊戲畫面上也列出無法讀取的槽或指標的原始資料匯出（例如恢復備份後仍損壞的另一槽）。
+  function refreshInspection() {
+    inspection = store.inspect();
+    $('viewer-save-raw').innerHTML = View.renderRawExports(inspection, false);
+  }
+
   function draw(force) {
     const s = ctl.snapshot();
     if (!s.world || s.mode === 'setup') return;
@@ -229,6 +237,7 @@
     if (!prepare()) return;
     session.begin('new');
     ctl.start();
+    refreshInspection();
     enterViewer();
   }
 
@@ -270,6 +279,9 @@
     else if (t.dataset.restore) restoreSlot(t.dataset.restore);
     else if (t.dataset.exportRaw) exportRaw(t.dataset.exportRaw);
   });
+  $('viewer-save-raw').addEventListener('click', (ev) => {
+    if (ev.target.dataset.exportRaw) exportRaw(ev.target.dataset.exportRaw);
+  });
   document.addEventListener('click', (ev) => {
     const el = ev.target.closest('[data-person]');
     if (!el) return;
@@ -299,7 +311,7 @@
   window.addEventListener('storage', (ev) => {
     if (ev.key !== null && ev.key !== Storage.POINTER_KEY && ev.key !== Storage.SLOT_KEYS.a && ev.key !== Storage.SLOT_KEYS.b) return;
     if (ev.key === Storage.POINTER_KEY || ev.key === null) session.noticeExternal(ev.key === null ? null : ev.newValue);
-    inspection = store.inspect();
+    refreshInspection();
     if (!$('setup').hidden) renderSetupSave();
     draw(true);
   });
