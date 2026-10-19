@@ -1,8 +1,8 @@
-# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05／RT-01／RT-02／RT-02V觀察版／RT-03a存讀）
+# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05／RT-01／RT-02／RT-02V觀察版／RT-03a存讀／RT-03b原因查詢）
 
 ## D10：RT-02V觀察版
 
-擁有人已選先做[RT-02V #129](https://github.com/lalagrass/earth-ascension/issues/129)，範圍見[RT02V_HANDOFF](RT02V_HANDOFF.md)。Claude 實作的唯讀 viewer 與啟動方式見下方「[SG-RT-02V 新增](#sg-rt-02v-新增唯讀生活觀察版)」；交付狀態以 #129 與 PR／postCI 為準。RT-03a 正式存讀（[#137](https://github.com/lalagrass/earth-ascension/issues/137)）見「[SG-RT-03a 新增](#sg-rt-03a-新增正式存讀)」；唯讀原因查詢 #138、玩家介入 RT-04 #139、整體試玩 RT-05 #140 仍未交付。
+擁有人已選先做[RT-02V #129](https://github.com/lalagrass/earth-ascension/issues/129)，範圍見[RT02V_HANDOFF](RT02V_HANDOFF.md)。Claude 實作的唯讀 viewer 與啟動方式見下方「[SG-RT-02V 新增](#sg-rt-02v-新增唯讀生活觀察版)」；交付狀態以 #129 與 PR／postCI 為準。RT-03a 正式存讀（[#137](https://github.com/lalagrass/earth-ascension/issues/137)）見「[SG-RT-03a 新增](#sg-rt-03a-新增正式存讀)」；唯讀原因查詢（[#138](https://github.com/lalagrass/earth-ascension/issues/138)）見「[SG-RT-03b 新增](#sg-rt-03b-新增目標工作與等待原因)」；玩家介入 RT-04 #139、整體試玩 RT-05 #140 仍未交付。
 
 **目前新方向**：D8 可暫停即時自主生活，見 [REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)。RT-00 契約已合入 dev（#101；P1–P4 已批准，見 [RT00_CONTRACT.md](RT00_CONTRACT.md)）。RT-01 已實作即時世界、正式手動指令、移動與工作。RT-02 接上自主決策、政策／目標的無人介入，以及不凍結世界的詢問（`js/autonomy.js`、`js/realtime.js`）。播放控制器見 RT-02V，RT 瀏覽器存讀見 RT-03a；玩家介入 UI 與試玩仍是 RT-04～RT-05。戰鬥 #98 延後。下方 slot 引擎紀錄仍然有效；舊回歸與 golden 保留。slot 的自動連續 advance 不是即時移動。
 
@@ -182,6 +182,41 @@ python3 -m http.server 8765 --directory sect-chronicle
 - 兩個分頁在同一毫秒競爭（Web Locks 保證互斥，未做壓力測試）。
 
 **不在本包**：唯讀原因查詢 #138、建角與工作／目標編輯 RT-04、checkpoint 重播或歷史瀏覽、`rng2`。
+
+## SG-RT-03b 新增（目標、工作與等待原因）
+
+不新增模組，直接擴充 `viewer/view.js` 的 `describe()`：每個人多一個 `why`，世界多一個 `goalStatus`。兩者都只讀世界已記錄的欄位與 `rules.js` 的公開表，不跑 `Autonomy.plan()`、不讀 RNG、不寫世界，世界、規則、存檔格式與版本都不變。每一行都附 `source`（世界或規則欄位）。人物詳情多一段「正在做什麼、為什麼」，政策與目標區的目標順序改成逐項狀態加缺口。
+
+- **狀態**（`why.state.kind`）分六種：
+  - `activity`：工作或趕路。
+  - `recovery`：休養，含 `fallback` 轉來的休養。
+  - `queued`：手動令已收到，下一 tick 才出發。原本畫面把這種情況誤標成「待決策」，本包一起改正。
+  - `wait`：`autonomy.wait`。其中 `effect` 為 `blocked` 表示有明確解除條件；`none` 表示 `goals_done`，也就是無效果等待。
+  - `decide`：剛空出來，下一 tick 階段 2 才規劃。
+  - `notJoined`。
+- **目標**（`why.goal.basis`）：`plan()` 只輸出請求，不記錄是為哪個目標，所以分級標示：
+  - `kind`：由活動種類唯一對上，包括建造、煉丹、援村、修行、突破、護法。
+  - `candidates`：只能列候選，例如採靈材可能為建造、存丹或備料援村，並註明「引擎沒有記錄是哪一個目標」。
+  - `manual`：玩家手動令。
+  - `inferred`：自主休養。只附規則門檻，出發當下的數值沒有記錄。
+  - `recovery`／`none`／`unknown`：其他情況。
+- **接下來**：
+  - 活動：給出「約 tick X 空出來」，前提是不被取消、改令，修行也沒有中途轉休養。這是純算術，計算剩下的步數、步內 tick 與工作 tick；等同伴時標未知。
+  - 等待：給出最晚復查 tick，以及解除條件，例如靈草解鎖 tick、詢問逾期 tick、冷卻 tick 與上次處置、突破政策、同時只能一人突破。
+- **缺口**：每個目標分成完成、進行中、卡住、可做，缺口逐條列出：
+  - 建造或煉丹缺多少靈材、靈草，丹房是否完工、工作位是否已滿。
+  - 靈草和援村的開放時間，以及援村、收徒、突破的政策。
+  - 收徒的前置條件、各人修為。
+  - 工作位用 `world.reservations` 對照 `rules.js` 容量來算，和 `realtime.js` 的 `seatPool` 同一套來源。
+
+**已驗證**：`test/viewer-explain.test.js`（6 項，約 30 秒）。
+- 以 `rt-dev-000` 在預設政策與詢問政策下各跑完 2700 tick，每 3 tick 檢查一次每個人的狀態類別都和世界欄位一致，每一行都有來源，採集只列候選、手動只標手動。
+- 每一個「約 tick X」預估都在 X 那一 tick 看到該活動 `done` 且 `completedTick === X`。
+- 凍結世界可描述，hash 前後相同。
+- 手動建造在缺料時先顯示排隊與「開工缺靈材」，下一 tick 改休養並說明 `fallback`。
+- 第 600 tick 的丹藥與收徒缺口附來源；觀察期末主角的無效果等待說明已突破。
+- 詳情 HTML 有跳脫。
+- `blocked:herb_locked` 在這個 seed 的觀察期內引擎走不到，只靠程式路徑涵蓋，沒有另造世界去測。
 
 ## SG-02 新增的契約
 

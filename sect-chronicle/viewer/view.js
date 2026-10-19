@@ -125,6 +125,9 @@
       const act = world.activities.find((a) => a.id === d.activityId);
       if (act) return activityStatus(Rules, world, d, act);
     }
+    if (d.manualOrder && d.manualOrder.status === 'pending') {
+      return { kind: 'queued', label: '排隊', text: `手動指令「${kindLabel(Rules, d.manualOrder.kind)}」已收到，下一 tick 出發` };
+    }
     if (d.autonomy && d.autonomy.wait) {
       const w = d.autonomy.wait;
       return {
@@ -251,12 +254,358 @@
     }
   }
 
+  // ---------- SG-RT-03b：目標、工作與等待原因（唯讀） ----------
+  //
+  // 只讀世界裡已記錄的欄位與 rules.js 的公開表，不跑 plan()、不讀 RNG、不寫世界。
+  // 每一條說明都附 source（世界或規則欄位）。引擎沒記錄的事（自主工作是為哪個目標、自主休養當下的數值）
+  // 只標「推定」或「未記錄」，不替角色編動機。
+
+  const RESOURCE_SHORT = Object.freeze({ spiritMaterial: '靈材', spiritHerb: '靈草' });
+  const INVITE_LABELS = Object.freeze({ locked: '尚未觸發', invited: '邀請待回覆', deferred: '暫不收（已略過）', accepted: '已入隊' });
+  const ASK_DISPOSITION = Object.freeze({ expired: '逾期沒回覆', later: '你選了稍後再說', agree_invalid: '同意了但當時開不了工', agree: '已同意', null: '原因未記錄' });
+  const WAIT_EFFECT = Object.freeze({
+    goals_done: 'none', 'blocked:herb_locked': 'blocked', breakthrough_ask_open: 'blocked',
+    breakthrough_later: 'blocked', cultivation_full: 'blocked',
+  });
+
+  function dayOfTick(Rules, tick) {
+    return Math.floor(tick / Rules.TICKS_PER_DAY) + 1;
+  }
+
+  function herbOpenTick(Rules) {
+    const p = Rules.SPIRIT_PHASES.find((x) => x.herbYield > 0);
+    return p ? p.startSlot * Rules.TICKS_PER_SLOT : null;
+  }
+
+  function doneFacility(world, type) {
+    return world.activities.find((a) => a.kind === 'build' && a.status === 'done' && a.target.facilityType === type) || null;
+  }
+
+  function liveActivities(world) {
+    return world.activities.filter((a) => a.status === 'traveling' || a.status === 'working');
+  }
+
+  function aidDone(Rules, world) {
+    return world.story.rescues.find((r) => r.id === Rules.AID_ID) || null;
+  }
+
+  // 工作位容量與已預約數，和 realtime.js 的 seatPool 同一套來源（rules.js 容量、world.reservations）。
+  function seatUse(Rules, world, key) {
+    let cap = 0;
+    const [kind, id] = key.split(':');
+    if (key === 'aid:village') cap = Rules.AID_WORKERS;
+    else if (kind === 'gather' || kind === 'build') {
+      const tile = world.tiles.find((t) => t.id === id);
+      const terrain = tile ? Rules.TERRAIN[tile.terrain] : null;
+      if (terrain) cap = kind === 'gather' ? (terrain.workSlots || 0) : (terrain.buildable ? 1 : 0);
+    } else if (kind === 'work' && doneFacility(world, id)) cap = Rules.FACILITIES[id].workSlots;
+    else if (kind === 'rest' && id === 'residence' && doneFacility(world, 'residence')) cap = Rules.FACILITIES.residence.restSlots;
+    let used = 0;
+    for (const r of world.reservations) used += r.seats[key] || 0;
+    return { key, cap, used, free: cap - used };
+  }
+
+  function costGaps(world, cost, why) {
+    const out = [];
+    for (const k of Object.keys(cost)) {
+      const have = world.resources[k];
+      if (have < cost[k]) out.push({ text: `${why}缺${RESOURCE_SHORT[k] || k}：有 ${have}，要 ${cost[k]}`, source: [`resources.${k}`, 'Rules.cost'] });
+    }
+    return out;
+  }
+
+  function goalFor(goal, id) {
+    return goal.discipleId === 'all' || goal.discipleId === id;
+  }
+
+  // 宗門層級：每個目標現在做到哪、卡在哪。
+  function goalStatus(Rules, world, names) {
+    const tick = world.clock.tick;
+    const slot = Math.floor(tick / Rules.TICKS_PER_SLOT);
+    const live = liveActivities(world);
+    const joined = world.disciples.filter((d) => d.joinTick <= tick);
+    return world.goals.map((g) => {
+      const row = { id: g.id, kind: g.kind, text: goalText(Rules, g), state: 'open', detail: '', gaps: [] };
+      if (g.kind === 'buildFacility') {
+        const spec = Rules.FACILITIES[g.facilityType];
+        const done = doneFacility(world, g.facilityType);
+        const doing = live.find((a) => a.kind === 'build' && a.target.facilityType === g.facilityType);
+        if (done) Object.assign(row, { state: 'done', detail: `tick ${done.completedTick} 完工`, source: [`activities[${done.id}]`] });
+        else if (doing) Object.assign(row, { state: 'active', detail: `${names[doing.discipleId]}建造中 ${doing.workTicks}/${doing.units * Rules.TICKS_PER_SLOT} tick`, source: [`activities[${doing.id}]`] });
+        else if (spec) row.gaps.push(...costGaps(world, spec.cost, '開工'));
+      } else if (g.kind === 'stockPills') {
+        const pills = world.inventory['breakthrough-pill'];
+        const recipe = Rules.RECIPES['breakthrough-pill'];
+        row.detail = `凝氣丹 ${pills}/${g.count}`;
+        row.source = ['inventory.breakthrough-pill'];
+        const brewing = live.find((a) => a.kind === 'brew');
+        if (pills >= g.count) row.state = 'done';
+        else if (brewing) Object.assign(row, { state: 'active', detail: `${row.detail}，${names[brewing.discipleId]}煉丹中` });
+        else {
+          if (!doneFacility(world, 'alchemyRoom')) row.gaps.push({ text: '丹房還沒完工', source: ['activities(build alchemyRoom)'] });
+          row.gaps.push(...costGaps(world, recipe.cost, '煉一爐'));
+          const open = herbOpenTick(Rules);
+          if (world.resources.spiritHerb < (recipe.cost.spiritHerb || 0) && open !== null && tick < open) {
+            row.gaps.push({ text: `靈草 tick ${open}（第 ${dayOfTick(Rules, open)} 天）才長出來`, source: ['Rules.SPIRIT_PHASES.herbYield'] });
+          }
+          if (doneFacility(world, 'alchemyRoom')) {
+            const seat = seatUse(Rules, world, 'work:alchemyRoom');
+            if (seat.free < 1) row.gaps.push({ text: `丹房工作位已滿（${seat.used}/${seat.cap}）`, source: ['reservations', 'Rules.FACILITIES.alchemyRoom.workSlots'] });
+          }
+        }
+      } else if (g.kind === 'aid') {
+        const done = aidDone(Rules, world);
+        const doing = live.find((a) => a.kind === 'aid');
+        const pol = world.policy.aid;
+        if (done) Object.assign(row, { state: 'done', detail: `tick ${done.completedTick} 完成`, source: ['story.rescues'] });
+        else if (doing) Object.assign(row, { state: 'active', detail: `${names[doing.discipleId]}援村中`, source: [`activities[${doing.id}]`] });
+        else {
+          const from = Rules.AID_AVAILABLE_FROM_SLOT * Rules.TICKS_PER_SLOT;
+          if (!Rules.aidAvailableEq(slot)) row.gaps.push({ text: `tick ${from}（第 ${dayOfTick(Rules, from)} 天）才有人求援`, source: ['Rules.AID_AVAILABLE_FROM_SLOT'] });
+          if (pol === 'off') row.gaps.push({ text: '援村政策是「關閉」', source: ['policy.aid'] });
+          if (pol === 'ask') {
+            const plea = world.pendingEvents.find((e) => e.kind === 'plea');
+            row.gaps.push(plea
+              ? { text: `求援事件等你回覆，tick ${plea.expiresTick} 逾期`, source: [`pendingEvents[${plea.id}]`] }
+              : { text: '援村政策是「詢問」，要等求援事件', source: ['policy.aid'] });
+          }
+          if (pol === 'auto-supplied') row.gaps.push(...costGaps(world, Rules.AID_OPTIONS.supplied.cost, '備料協助'));
+        }
+      } else if (g.kind === 'recruit') {
+        const inv = world.story.invitations;
+        const ids = Object.keys(inv).sort();
+        row.detail = ids.map((id) => `${names[id] || id}：${label(INVITE_LABELS, inv[id].status)}`).join('、');
+        row.source = ['story.invitations'];
+        if (ids.every((id) => inv[id].status === 'accepted')) row.state = 'done';
+        else if (ids.some((id) => inv[id].status === 'locked')) {
+          if (!aidDone(Rules, world)) row.gaps.push({ text: '要先完成援村，才會有人來投靠', source: ['story.rescues'] });
+          const manifest = Rules.SPIRIT_PHASES.find((p) => p.id === 'manifest');
+          const at = manifest ? manifest.startSlot * Rules.TICKS_PER_SLOT : null;
+          if (at !== null && tick < at) row.gaps.push({ text: `靈氣「${manifest.label}」（tick ${at}，第 ${dayOfTick(Rules, at)} 天）起才有人投靠`, source: ['Rules.SPIRIT_PHASES'] });
+          if (world.policy.recruit === 'off') row.gaps.push({ text: '收徒政策是「關閉」', source: ['policy.recruit'] });
+        }
+      } else if (g.kind === 'cultivateTo100' || g.kind === 'breakthrough') {
+        const who = joined.filter((d) => goalFor(g, d.id));
+        const left = who.filter((d) => (g.kind === 'breakthrough'
+          ? d.breakthroughs < Rules.MAX_BREAKTHROUGHS_PER_DISCIPLE
+          : d.breakthroughs < Rules.MAX_BREAKTHROUGHS_PER_DISCIPLE && d.cultivation < Rules.CULTIVATION_CAP));
+        row.detail = left.length === 0 ? `已入隊的 ${who.length} 人都達成` : left.map((d) => `${names[d.id]} 修為 ${d.cultivation}/${Rules.CULTIVATION_CAP}`).join('、');
+        row.source = ['disciples[].cultivation', 'disciples[].breakthroughs'];
+        if (left.length === 0) row.state = 'done';
+        if (g.kind === 'breakthrough' && left.length > 0 && world.policy.breakthrough !== 'auto') {
+          row.gaps.push({ text: `突破政策是「${label(POLICY_LABELS.breakthrough.values, world.policy.breakthrough)}」，不會自動突破`, source: ['policy.breakthrough'] });
+        }
+      }
+      if (row.state === 'open' && row.gaps.length > 0) row.state = 'blocked';
+      return row;
+    });
+  }
+
+  // 自主工作對應哪個目標。只有 kind 能唯一對上時才說「為了」，否則列候選並註明引擎沒記錄。
+  function goalOfActivity(Rules, world, d, act, names, goals) {
+    const src = [`activities[${act.id}].kind`, `activities[${act.id}].origin`];
+    if (act.origin === 'manual' && act.kind !== 'support') {
+      return { basis: 'manual', text: '你下的手動指令，不在目標順序裡', goalIds: [], source: src.concat(['disciples[].manualOrder']) };
+    }
+    if (act.kind === 'rest') {
+      if (act.fallback) return { basis: 'recovery', text: '不是目標：原本的工作開不了工，改成休養', goalIds: [], source: [`activities[${act.id}].fallback`] };
+      return {
+        basis: 'inferred',
+        text: `推定：自主規劃在體力低於 ${Rules.REST_BELOW_STAMINA} 或傷勢達 ${Rules.REST_AT_INJURY} 時先休養（出發當下的數值引擎沒有記錄）`,
+        goalIds: [],
+        source: src.concat(['Rules.REST_BELOW_STAMINA', 'Rules.REST_AT_INJURY']),
+      };
+    }
+    if (act.kind === 'support') {
+      const main = world.activities.find((a) => a.id === act.target.breakthroughId);
+      const who = main ? names[main.discipleId] : '（未知）';
+      return { basis: 'kind', text: `護法：協助${who}突破`, goalIds: [], source: [`activities[${act.id}].target.breakthroughId`] };
+    }
+    const pick = (fn) => goals.filter((g) => world.goals.find((x) => x.id === g.id && fn(x)));
+    let matched = [];
+    if (act.kind === 'build') matched = pick((g) => g.kind === 'buildFacility' && g.facilityType === act.target.facilityType);
+    else if (act.kind === 'brew') matched = pick((g) => g.kind === 'stockPills');
+    else if (act.kind === 'aid') matched = pick((g) => g.kind === 'aid');
+    else if (act.kind === 'breakthrough') matched = pick((g) => g.kind === 'breakthrough' && goalFor(g, d.id));
+    else if (act.kind === 'cultivate') {
+      matched = pick((g) => (g.kind === 'cultivateTo100' || g.kind === 'breakthrough') && goalFor(g, d.id)).slice(0, 1);
+      if (matched.length === 0) return { basis: 'kind', text: '沒有適用的目標，空閒時預設修行', goalIds: [], source: src.concat(['goals']) };
+    } else if (act.kind === 'gather-material' || act.kind === 'gather-herb') {
+      const res = act.kind === 'gather-material' ? 'spiritMaterial' : 'spiritHerb';
+      const needs = (g) => {
+        if (g.kind === 'buildFacility') return res === 'spiritMaterial';
+        if (g.kind === 'stockPills') return true;
+        if (g.kind === 'aid') return res === 'spiritMaterial' && world.policy.aid === 'auto-supplied';
+        return false;
+      };
+      const cands = goals.filter((g) => g.state !== 'done' && needs(world.goals.find((x) => x.id === g.id)));
+      return {
+        basis: 'candidates',
+        text: cands.length > 0
+          ? `可能為了：${cands.map((g) => g.text).join('、')}（引擎沒有記錄是哪一個目標）`
+          : '對應的目標引擎沒有記錄',
+        goalIds: cands.map((g) => g.id),
+        source: src.concat(['goals']),
+      };
+    }
+    if (matched.length === 0) return { basis: 'unknown', text: '目標順序裡找不到對應的目標（未知）', goalIds: [], source: src.concat(['goals']) };
+    return { basis: 'kind', text: `為了：${matched.map((g) => g.text).join('、')}`, goalIds: matched.map((g) => g.id), source: src.concat(['goals']) };
+  }
+
+  // 若不被取消、改令或修行中途轉休養，這件事在哪個 tick 後空出來，下一次規劃在哪個 tick。純算術，不讀 RNG。
+  function activityEnd(Rules, world, act) {
+    if (act.partnerWait) return null;
+    const now = world.clock.tick;
+    const workLeft = act.units * Rules.TICKS_PER_SLOT - act.workTicks;
+    if (act.status === 'working') return now + workLeft;
+    const walk = Math.max(0, (act.path.length - act.pathIndex) * Rules.STEP_TICKS - act.stepTicks);
+    return now + walk + workLeft;
+  }
+
+  function nextOfActivity(Rules, world, d, act) {
+    const src = [`activities[${act.id}].path`, `activities[${act.id}].workTicks`, `activities[${act.id}].units`];
+    const order = d.manualOrder;
+    if (order && order.status === 'pending') {
+      const kind = kindLabel(Rules, order.kind);
+      if (act.status === 'traveling') return { text: `新指令「${kind}」排隊中：走完這一步就改做`, source: ['disciples[].manualOrder.status'] };
+      return { text: `新指令「${kind}」排隊中：要等這件事做完（已開工的承諾不中斷）`, source: ['disciples[].manualOrder.status'] };
+    }
+    if (act.partnerWait) return { text: '等同伴到場才開工，什麼時候結束未知', source: [`activities[${act.id}].partnerWait`] };
+    const end = activityEnd(Rules, world, act);
+    const after = act.origin === 'manual' ? '手動指令完成後回到自主規劃' : '之後由自主規劃重新決定';
+    return {
+      text: `約 tick ${end}（第 ${dayOfTick(Rules, end)} 天）空出來，${after}`,
+      assumption: '假設不被取消、改令，修行也沒有中途轉休養',
+      source: src,
+    };
+  }
+
+  function waitDetail(Rules, world, d, names) {
+    const w = d.autonomy.wait;
+    const gaps = [];
+    const src = ['disciples[].autonomy.wait'];
+    if (w.reason === 'blocked:herb_locked') {
+      const open = herbOpenTick(Rules);
+      gaps.push({ text: `靈草 tick ${open}（第 ${dayOfTick(Rules, open)} 天）長出；現有靈草 ${world.resources.spiritHerb}`, source: ['Rules.SPIRIT_PHASES.herbYield', 'resources.spiritHerb'] });
+    } else if (w.reason === 'breakthrough_ask_open') {
+      const ask = world.pendingEvents.find((e) => e.kind === 'breakthroughAsk' && e.discipleId === d.id);
+      gaps.push(ask
+        ? { text: `突破詢問等你回覆，tick ${ask.expiresTick} 逾期`, source: [`pendingEvents[${ask.id}]`] }
+        : { text: '突破詢問待回覆', source: ['story.breakthroughAsks'] });
+    } else if (w.reason === 'breakthrough_later') {
+      const rec = world.story.breakthroughAsks[d.id];
+      const why = rec ? label(ASK_DISPOSITION, rec.lastDisposition) : '原因未記錄';
+      gaps.push({
+        text: `上次突破詢問${why}，tick ${rec ? rec.cooldownUntilTick : '（未知）'} 後再問`,
+        source: ['story.breakthroughAsks[].lastDisposition', 'story.breakthroughAsks[].cooldownUntilTick'],
+      });
+    } else if (w.reason === 'cultivation_full') {
+      const pol = world.policy.breakthrough;
+      gaps.push({ text: `修為已滿 ${Rules.CULTIVATION_CAP}，突破政策是「${label(POLICY_LABELS.breakthrough.values, pol)}」`, source: ['disciples[].cultivation', 'policy.breakthrough'] });
+      const other = liveActivities(world).find((a) => a.kind === 'breakthrough' && a.discipleId !== d.id);
+      if (other) gaps.push({ text: `同一時間只能一人突破，${names[other.discipleId]}正在突破`, source: [`activities[${other.id}]`] });
+    }
+    return {
+      text: `最晚 tick ${w.recheckTick} 復查；世界有變化時會提早重新規劃`,
+      gaps,
+      source: src.concat(['Rules.WAIT_RECHECK_TICKS']),
+    };
+  }
+
+  function explainPerson(Rules, world, d, names, goals) {
+    const tick = world.clock.tick;
+    if (d.joinTick > tick) {
+      return {
+        state: { kind: 'notJoined', text: `預定 tick ${d.joinTick} 入隊`, source: ['disciples[].joinTick'] },
+        goal: { basis: 'none', text: '還沒入隊', goalIds: [], source: [] },
+        next: { text: `tick ${d.joinTick} 入隊後開始自主規劃`, source: ['disciples[].joinTick'] },
+        gaps: [],
+      };
+    }
+    const act = d.activityId !== null ? world.activities.find((a) => a.id === d.activityId) : null;
+    if (act) {
+      const recovery = act.kind === 'rest';
+      const goal = goalOfActivity(Rules, world, d, act, names, goals);
+      const gaps = [];
+      if (act.fallback) {
+        gaps.push({
+          text: `原本要${kindLabel(Rules, act.fallback.from)}，因${label(FALLBACK_LABELS, act.fallback.reason)}改成休養`,
+          source: [`activities[${act.id}].fallback`],
+        });
+      }
+      if (goal.basis === 'kind' || goal.basis === 'candidates') {
+        for (const g of goals) if (goal.goalIds.includes(g.id)) gaps.push(...g.gaps);
+      }
+      return {
+        state: {
+          kind: recovery ? 'recovery' : 'activity',
+          text: recovery ? '恢復：休養中' : `活動：${kindLabel(Rules, act.kind)}（${label(STATUS_LABELS, act.status)}）`,
+          source: [`disciples[].activityId`, `activities[${act.id}].status`],
+        },
+        goal,
+        next: nextOfActivity(Rules, world, d, act),
+        gaps,
+      };
+    }
+    if (d.manualOrder && d.manualOrder.status === 'pending') {
+      const o = d.manualOrder;
+      const gaps = [];
+      const seatKey = o.kind === 'gather-material' || o.kind === 'gather-herb' ? `gather:${o.target.tileId}`
+        : o.kind === 'build' ? `build:${o.target.tileId}` : o.kind === 'brew' ? 'work:alchemyRoom' : o.kind === 'aid' ? 'aid:village' : null;
+      if (seatKey) {
+        const seat = seatUse(Rules, world, seatKey);
+        if (seat.free < 1) gaps.push({ text: `工作位已滿（${seat.used}/${seat.cap}），可能改成休養`, source: ['reservations', 'Rules 容量'] });
+      }
+      if (o.kind === 'build') gaps.push(...costGaps(world, Rules.FACILITIES[o.target.facilityType].cost, '開工'));
+      if (o.kind === 'brew') gaps.push(...costGaps(world, Rules.RECIPES[o.target.recipeId].cost, '開爐'));
+      return {
+        state: { kind: 'queued', text: `排隊：手動指令「${kindLabel(Rules, o.kind)}」已收到，還沒出發`, source: ['disciples[].manualOrder.status'] },
+        goal: { basis: 'manual', text: '你下的手動指令，不在目標順序裡', goalIds: [], source: ['disciples[].manualOrder'] },
+        next: { text: `tick ${tick} 推進時出發；缺料或沒有工作位會改成休養並告訴你`, source: ['disciples[].manualOrder.requestedTick'] },
+        gaps,
+      };
+    }
+    if (d.autonomy && d.autonomy.wait) {
+      const w = d.autonomy.wait;
+      const detail = waitDetail(Rules, world, d, names);
+      const none = WAIT_EFFECT[w.reason] === 'none';
+      const gaps = detail.gaps.slice();
+      if (none) {
+        if (d.breakthroughs >= Rules.MAX_BREAKTHROUGHS_PER_DISCIPLE) {
+          gaps.push({ text: `已突破 ${d.breakthroughs} 次（上限 ${Rules.MAX_BREAKTHROUGHS_PER_DISCIPLE}），修行與突破目標對這個人已經做完`, source: ['disciples[].breakthroughs', 'Rules.MAX_BREAKTHROUGHS_PER_DISCIPLE'] });
+        }
+        for (const g of goals) if (g.state === 'blocked') gaps.push(...g.gaps.map((x) => ({ text: `${g.text}：${x.text}`, source: x.source })));
+      }
+      return {
+        state: {
+          kind: 'wait',
+          effect: WAIT_EFFECT[w.reason] || 'unknown',
+          text: `${none ? '無效果等待' : '有原因的等待'}：${label(WAIT_LABELS, w.reason)}（自 tick ${w.sinceTick}）`,
+          source: ['disciples[].autonomy.wait.reason', 'disciples[].autonomy.wait.sinceTick'],
+        },
+        goal: none
+          ? { basis: 'none', text: '目前目標順序裡沒有這個人做得到的事', goalIds: [], source: ['disciples[].autonomy.wait.reason'] }
+          : { basis: 'unknown', text: '等這個條件解除', goalIds: [], source: ['disciples[].autonomy.wait.reason'] },
+        next: { text: detail.text, source: detail.source },
+        gaps,
+      };
+    }
+    return {
+      state: { kind: 'decide', text: '待決策：剛空出來，還沒規劃', source: ['disciples[].activityId', 'disciples[].autonomy.wait'] },
+      goal: { basis: 'unknown', text: '下一次規劃才決定（現在不預測）', goalIds: [], source: [] },
+      next: { text: `tick ${tick} 推進時由自主規劃決定`, source: ['RT00 §1.3'] },
+      gaps: [],
+    };
+  }
+
   function describe(world, deps) {
     const Rules = deps.Rules;
     const names = nameTable(world, deps.StoryData);
     const tick = world.clock.tick;
     const phase = phaseOf(Rules, tick);
     const people = describePeople(Rules, world, names);
+    const goals = goalStatus(Rules, world, names);
+    for (const p of people) p.why = explainPerson(Rules, world, world.disciples.find((d) => d.id === p.id), names, goals);
     const facilities = describeFacilities(Rules, world);
     const slot = Math.floor(tick / Rules.TICKS_PER_SLOT);
     return {
@@ -280,6 +629,7 @@
         key: k, name: POLICY_LABELS[k].name, value: world.policy[k], text: label(POLICY_LABELS[k].values, world.policy[k]),
       })),
       goals: world.goals.map((g) => ({ id: g.id, text: goalText(Rules, g) })),
+      goalStatus: goals,
       pending: world.pendingEvents.map((p) => ({ text: JSON.stringify(p) })),
       events: world.eventLog.slice(-EVENT_TAIL).reverse().map((e) => ({
         seq: e.seq, tick: e.tick, type: e.type, text: eventText(Rules, names, e),
@@ -356,7 +706,24 @@
       ['手動指令', p.manualOrder || '無'],
       ['根骨／悟性／手藝', `${p.attributes.rootBone}／${p.attributes.comprehension}／${p.attributes.craft}`],
     ];
-    return `<h3>${esc(p.name)}</h3><dl>${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>`;
+    return `<h3>${esc(p.name)}</h3><dl>${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>${renderWhy(p.why)}`;
+  }
+
+  function sourceTag(source) {
+    return source && source.length > 0 ? ` <code class="src">${esc(source.join('、'))}</code>` : '';
+  }
+
+  // SG-RT-03b：人物詳情裡的「為什麼」。每一行後面附來源欄位。
+  function renderWhy(why) {
+    if (!why) return '';
+    const gaps = why.gaps.length === 0 ? '<li>沒有記錄到的缺口</li>'
+      : why.gaps.map((g) => `<li>${esc(g.text)}${sourceTag(g.source)}</li>`).join('');
+    const assume = why.next.assumption ? `<br><small>前提：${esc(why.next.assumption)}</small>` : '';
+    return `<div class="why" data-state="${esc(why.state.kind)}"><h3>正在做什麼、為什麼</h3><dl>
+      <dt>狀態</dt><dd>${esc(why.state.text)}${sourceTag(why.state.source)}</dd>
+      <dt>目標</dt><dd data-basis="${esc(why.goal.basis)}">${esc(why.goal.text)}${sourceTag(why.goal.source)}</dd>
+      <dt>接下來</dt><dd>${esc(why.next.text)}${sourceTag(why.next.source)}${assume}</dd>
+      <dt>缺口</dt><dd><ul class="gaps">${gaps}</ul></dd></dl></div>`;
   }
 
   function renderStock(model) {
@@ -367,7 +734,13 @@
 
   function renderSettings(model) {
     const pol = model.policy.map((p) => `<li>${esc(p.name)}：<strong>${esc(p.text)}</strong> <code>${esc(p.value)}</code></li>`).join('');
-    const goals = model.goals.map((g, i) => `<li>${i + 1}. ${esc(g.text)}</li>`).join('');
+    const STATE = { done: '完成', active: '進行中', blocked: '卡住', open: '可做' };
+    const goals = (model.goalStatus || model.goals).map((g, i) => {
+      const tag = g.state ? `<span class="goal-${esc(g.state)}">${esc(STATE[g.state] || g.state)}</span>` : '';
+      const detail = g.detail ? `：${esc(g.detail)}` : '';
+      const gaps = g.gaps && g.gaps.length > 0 ? `<ul class="gaps">${g.gaps.map((x) => `<li>${esc(x.text)}${sourceTag(x.source)}</li>`).join('')}</ul>` : '';
+      return `<li>${i + 1}. ${esc(g.text)} ${tag}${detail}${gaps}</li>`;
+    }).join('');
     return `<h3>政策（安穩發展）</h3><ul>${pol}</ul><h3>目標順序</h3><ol class="plain">${goals}</ol>`;
   }
 
@@ -448,5 +821,5 @@
       <ul class="plain">${rows}</ul><div class="buttons">${renderRawExports(inspection, true)}${inspection.canWrite ? restore : ''}</div>`;
   }
 
-  return Object.freeze({ describe, render, eventText, renderSettings, saveStatusText, renderSavePanel, renderRawExports, WAIT_LABELS, FALLBACK_LABELS });
+  return Object.freeze({ describe, render, eventText, renderSettings, renderWhy, saveStatusText, renderSavePanel, renderRawExports, WAIT_LABELS, FALLBACK_LABELS });
 });
