@@ -88,3 +88,6 @@ dd { margin: 0; }
 .events { list-style: none; padding: 0; max-height: 320px; overflow: auto; font-size: 13px; }
 .events li { padding: 2px 0; border-bottom: 1px dashed var(--line); }
 .events .tick { color: var(--muted); font-variant-numeric: tabular-nums; display: inline-block; min-width: 52px; }
+.save-status { margin: 4px 0 0; flex-basis: 100%; color: var(--muted); }
+.save-status[data-kind="saved"] { color: #2c6e2f; }
+.save-status[data-kind="stopped"], .save-status[data-kind="unavailable"] { color: var(--error); }

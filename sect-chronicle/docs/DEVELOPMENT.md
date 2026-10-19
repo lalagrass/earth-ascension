@@ -1,10 +1,10 @@
-# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05／RT-01／RT-02／RT-02V觀察版）
+# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05／RT-01／RT-02／RT-02V觀察版／RT-03a存讀）
 
 ## D10：RT-02V觀察版
 
-擁有人已選先做[RT-02V #129](https://github.com/lalagrass/earth-ascension/issues/129)，範圍見[RT02V_HANDOFF](RT02V_HANDOFF.md)。Claude 實作的唯讀 viewer 與啟動方式見下方「[SG-RT-02V 新增](#sg-rt-02v-新增唯讀生活觀察版)」；交付狀態以 #129 與 PR／postCI 為準。正式存讀與玩家介入仍在RT-03／04，整體試玩RT-05。
+擁有人已選先做[RT-02V #129](https://github.com/lalagrass/earth-ascension/issues/129)，範圍見[RT02V_HANDOFF](RT02V_HANDOFF.md)。Claude 實作的唯讀 viewer 與啟動方式見下方「[SG-RT-02V 新增](#sg-rt-02v-新增唯讀生活觀察版)」；交付狀態以 #129 與 PR／postCI 為準。RT-03a 正式存讀（[#137](https://github.com/lalagrass/earth-ascension/issues/137)）見「[SG-RT-03a 新增](#sg-rt-03a-新增正式存讀)」；唯讀原因查詢 #138、玩家介入 RT-04 #139、整體試玩 RT-05 #140 仍未交付。
 
-**目前新方向**：D8 可暫停即時自主生活，見 [REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)。RT-00 契約已合入 dev（#101；P1–P4 已批准，見 [RT00_CONTRACT.md](RT00_CONTRACT.md)）。RT-01 已實作即時世界、正式手動指令、移動與工作。RT-02 接上自主決策、政策／目標的無人介入，以及不凍結世界的詢問（`js/autonomy.js`、`js/realtime.js`）。瀏覽器存檔與播放控制器仍是 RT-03～RT-05。戰鬥 #98 延後。下方 slot 引擎紀錄仍然有效；舊回歸與 golden 保留。slot 的自動連續 advance 不是即時移動。
+**目前新方向**：D8 可暫停即時自主生活，見 [REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)。RT-00 契約已合入 dev（#101；P1–P4 已批准，見 [RT00_CONTRACT.md](RT00_CONTRACT.md)）。RT-01 已實作即時世界、正式手動指令、移動與工作。RT-02 接上自主決策、政策／目標的無人介入，以及不凍結世界的詢問（`js/autonomy.js`、`js/realtime.js`）。播放控制器見 RT-02V，RT 瀏覽器存讀見 RT-03a；玩家介入 UI 與試玩仍是 RT-04～RT-05。戰鬥 #98 延後。下方 slot 引擎紀錄仍然有效；舊回歸與 golden 保留。slot 的自動連續 advance 不是即時移動。
 
 本文件隨程式更新；runtime紀錄只描述已存在且已驗證的事。尚未實作的模組見 [TECHNICAL_DESIGN](TECHNICAL_DESIGN.md)。
 
@@ -31,7 +31,7 @@ node sect-chronicle/tools/rt-auto-replay.js --intervention
 `js/rng.js`、`js/rules.js`、`js/state.js`、`js/story-data.js`、`js/story.js`、`js/progression.js`、`js/commands.js`、`js/engine.js`、`js/autonomy.js`、`js/realtime.js` 是無框架的 UMD 風格腳本：
 
 - Node：`require('./js/state.js')`（state 會自行 require rng 與 rules；`rules.js` 是葉節點，不 require 任何模組，因此沒有 state↔rules 循環）。
-- 瀏覽器：依序以一般 `<script>` 載入 `js/rng.js` → `js/rules.js` → `js/state.js` → `js/story-data.js` → `js/story.js` → `js/progression.js` → `js/commands.js` → `js/engine.js` → `js/autonomy.js` → `js/realtime.js`；API 掛在 `globalThis.SectChronicle.Rng`／`.Rules`／`.State`／`.StoryData`／`.Story`／`.Progression`／`.Commands`／`.Engine`／`.Autonomy`／`.Realtime`（`progression.js` 只依賴 rng、rules，須早於 commands；`autonomy.js` 只依賴 rules，須早於 realtime；`realtime.js` 在 engine 與 autonomy 之後）。漏載任何前置檔時，後面的檔案會丟出指名該檔的錯誤。Node 只需 `require('./js/engine.js')` 或 `require('./js/realtime.js')`（逐層 require 前置檔，沒有循環：rules←state←story-data←story←commands←engine；progression 只依賴 rng、rules；autonomy 只依賴 rules；realtime 讀取引擎與 autonomy，兩邊都不讀 realtime）。不需建置、不使用 ES module，`file://` 也能載入（儲存相容性另計，見技術設計；RT 瀏覽器存檔屬 RT-03）。
+- 瀏覽器：依序以一般 `<script>` 載入 `js/rng.js` → `js/rules.js` → `js/state.js` → `js/story-data.js` → `js/story.js` → `js/progression.js` → `js/commands.js` → `js/engine.js` → `js/autonomy.js` → `js/realtime.js` → `js/storage.js`；API 掛在 `globalThis.SectChronicle.Rng`／`.Rules`／`.State`／`.StoryData`／`.Story`／`.Progression`／`.Commands`／`.Engine`／`.Autonomy`／`.Realtime`／`.Storage`（`progression.js` 只依賴 rng、rules，須早於 commands；`autonomy.js` 只依賴 rules，須早於 realtime；`realtime.js` 在 engine 與 autonomy 之後；`storage.js` 只讀 state 與 realtime，放最後）。漏載任何前置檔時，後面的檔案會丟出指名該檔的錯誤。Node 只需 `require('./js/engine.js')` 或 `require('./js/realtime.js')`（逐層 require 前置檔，沒有循環：rules←state←story-data←story←commands←engine；progression 只依賴 rng、rules；autonomy 只依賴 rules；realtime 讀取引擎與 autonomy，兩邊都不讀 realtime）。不需建置、不使用 ES module，`file://` 也能載入（RT 瀏覽器存讀見 SG-RT-03a；`file://` 下 localStorage 是否可用由瀏覽器決定，不可用時頁面顯示本地保存不可用）。
 
 ## 版本
 
@@ -84,13 +84,13 @@ python3 -m http.server 8765 --directory sect-chronicle
 # 瀏覽器開 http://localhost:8765/viewer/
 ```
 
-`viewer/index.html` 依上方「模組載入策略」的順序載入 `../js/` 十支 UMD 腳本，再載 `viewer/controller.js`、`viewer/view.js`、`viewer/app.js`。也可以直接用 `file://` 開。
+`viewer/index.html` 依上方「模組載入策略」的順序載入 `../js/` 的 UMD 腳本（RT-03a 起含 `storage.js`），再載 `viewer/controller.js`、`viewer/view.js`、`viewer/app.js`。也可以直接用 `file://` 開。
 
 - **開局**：預填 seed `rt-dev-000`（可改；不合法時顯示 `bad_seed` 且不能開始）。開始前顯示 `createWorld` 給的安穩發展政策與目標順序，按「開始」或 Enter 才確認並播放。角色選項用引擎預設，不做模板配點或政策編輯。
 - **播放**（`controller.js`，無 DOM，可在 Node 測試）：只呼叫 `Realtime.createWorld` 與 `Realtime.advanceTicks`。1× 每秒 4 tick，2×／4× 只乘倍率。牆鐘時間換成 tick 後才推進，單幀最多計 250 ms，卡頓或節流不會補一大批。`breakthroughResolved` 只結束一次 API 批次，控制器在同一幀把剩下的量繼續推完。`ok:false` 是拒絕，世界不動。`stopReason: 'error'` 時，同一批在失敗前已提交的 `advancedTicks` 個 tick 保留（RT00 §1.5）；回傳的 state 可能帶著失敗 tick 的改動，所以不直接採用，而是從批次起點用同一個公開 API 重推這段成功前綴，停在最後合法的 tick。畫面顯示錯誤碼、原因、停住的 tick 與該批已提交的 tick 數，之後不再推進。過了 2700 tick 世界照常繼續，畫面只標示已過觀察期。
 - **暫停與背景**：空白鍵暫停／繼續，鍵 1／2／4 換倍速。`visibilitychange` 轉為 hidden 時，播放中就自動暫停並丟掉未換成 tick 的時間；回到前景仍是暫停，按繼續後第一幀只重設時間基準，不追趕背景或暫停期間的牆鐘時間。
 - **畫面**（`view.js`）：`describe(world)` 把正式世界讀成畫面資料，不寫世界、不讀 RNG，也不另算產出。5×5 地圖加村口、道館、地形與五行、已完工或建造中的設施、人物所在格；人物的工作或趕路進度、體力／心境／修為／傷勢、突破次數；庫存、凝氣丹與設施；最近 40 筆事件；`pendingEvents` 只列出不能操作。人物狀態分四種：活動（含 `fallback` 的來源與原因）、`autonomy.wait`（原因碼與復查 tick）、未入隊，以及剛完成工作、下一 tick 才決策的「待決策」。同名學徒在名字後加 id，地圖標記用「徒1／徒2」。點人物只改畫面選取。
-- **限制**：觀察版沒有保存，重新整理就開新局；沒有 localStorage、匯入匯出或假存檔按鈕。不能下工作、改目標或政策，也不回應詢問；詢問照既有 180 tick 逾期流程處理。RT-03 存讀、RT-04 完整介入 UI、RT-05 試玩都不在本包。
+- **限制**：觀察版沒有保存，重新整理就開新局；沒有 localStorage、匯入匯出或假存檔按鈕。不能下工作、改目標或政策，也不回應詢問；詢問照既有 180 tick 逾期流程處理。RT-03 存讀、RT-04 完整介入 UI、RT-05 試玩都不在本包（存讀在 RT-03a 加入，見下節）。
 
 採用：控制器與畫面分檔，控制器不碰 DOM，方便在 Node 用假時鐘測倍速、暫停、背景與續推；`app.js` 只接 DOM、`requestAnimationFrame` 與 `visibilitychange`。單幀上限 250 ms，讓分頁節流或長卡頓都不會變成追趕。不採用：在 viewer 內複製規則或預測產出、用 `setInterval` 固定 tick（背景節流時會漂移）、離線追趕、debug 注入完成世界。
 
@@ -119,6 +119,69 @@ python3 -m http.server 8765 --directory sect-chronicle
 - 反例：把 `app.js` 的 `visibilitychange` 處理器拿掉後，分頁同樣變 hidden，但 viewer 仍是 playing，`FAIL 背景時自動暫停：mode=playing autoPaused=false`，exit 1。
 
 **未驗證**：作業系統層級的視窗最小化或鎖螢幕（本環境沒有視窗管理器）、其他 seed 與政策的畫面（本包沒有政策編輯器）、真人試玩與手感。
+
+## SG-RT-03a 新增（正式存讀）
+
+追蹤 [#137](https://github.com/lalagrass/earth-ascension/issues/137)（母單 #136）。實際主筆 Claude（Claude Code）；base dev `afcdfee02d85dc59fb5fce4b0f4f9bcc75ff99a0`。契約依[遊戲 PO 結論](https://github.com/lalagrass/earth-ascension/issues/137#issuecomment-6267157810)。新增 `js/storage.js`，`js/` 其他檔案、引擎、schema5／rule4／rng1、fixture 與 golden 都沒改；世界 hash 不變。
+
+**封套**：`{ format: "sect-chronicle", envelopeVersion: 1, scenarioId, schemaVersion, ruleVersion, rngVersion, tick, revision, savedAt, checksum, stateText }`。`stateText` 是 `Realtime.serializeState(world)` 的原字串，`checksum` 是它的 SHA-256（沿 `State.sha256Hex`，等於 `hashWorld(world)`），只檢查完整性、不防竄改。`savedAt` 只供顯示。暫停、倍率、畫面選取都不存。
+
+**載入檢查順序**（`Storage.readSave`，任何一步失敗都只回錯誤碼，不改世界、不改存檔，原始字串可匯出）：不是 JSON `invalid_json` → 不是物件或格式不對 `unknown_format` → 可辨識的舊 slot 裸檔或舊 slot 封套 `legacy_slot_save`（P4=B，不轉換）→ 沒有封套的 RT 世界 `missing_envelope` → 封套版本 `unsupported_envelope_version` → 欄位多缺或型別 `bad_envelope` → 身份不是 life-rt／5／4／1 `unsupported_version` → `checksum_mismatch` → `Realtime.parseState` 的原錯誤碼（壞引用、時間、工量、目標、政策等）→ 封套身份或 tick／revision 與世界不符 `envelope_mismatch` → 不是正式序列化結果 `noncanonical_state`。
+
+**localStorage 與保存協定**（`createStore`，storage 與 locks 都注入，Node 用假物件測）：
+- 只用三個 key：指標 `sect-chronicle-save-v1`（`{active, writerId, seq, revision, tick}`）與資料槽 `sect-chronicle-save-v1:a`、`:b`。不碰其他 key。
+- 整個保存流程包在 Web Locks（鎖名同指標 key）裡：讀指標 → 比對本分頁基線 → 寫**非 active** 槽 → 讀回逐字比對並重新驗證 → 最後切指標並讀回。指標切換成功才算已保存。原 active 不會被這次寫入碰到；寫入失敗可能弄壞非 active 槽（通常是上一份備份），所以不承諾失敗時兩份都完好。localStorage 沒有多 key 交易，這裡不宣稱有。
+- 錯誤碼：寫槽失敗（quota、`SecurityError`）`write_failed`、讀回不同 `readback_mismatch`、切指標失敗 `pointer_write_failed`、指標讀回不同 `pointer_readback_mismatch`、讀取被擋 `storage_error`。
+- 單寫者：`writerId` 是每個分頁開啟時產生的隨機 id，不用世界 RNG、不進世界。空存檔時本分頁直接是寫者。已有存檔要先「讀取並在此分頁接續」（`adopt`，鎖內確認指標沒變）或在保存時確認接管（`takeover`，鎖內以當下指標為基線）。指標和本分頁基線不同就回 `external_change`、別的分頁寫的回 `not_owner`，都不寫入。`storage` 事件只是提早通知（立即停自動保存），互斥靠鎖。
+- 沒有 Web Locks 或 localStorage：不寫任何 key，畫面顯示本地保存不可用；仍可唯讀載入、匯入與匯出。不做無鎖的雙槽寫入。
+- 壞存檔（指標壞、active 壞、只剩資料槽沒有指標、未知版本）不當成沒有存檔：不自動初始化、不換指標、不刪檔、不自動改讀備份，保存一律拒絕（`save_broken`）。畫面列出兩槽狀態，提供各 key 的原始資料匯出，以及「恢復槽 A／B」（`restore`）：鎖內重新驗證該槽，把指標改指向它，使它成為 active，下一次保存寫另一槽。另一槽若是壞資料，保存前要再確認覆寫（`overwrite_broken_slot`），不會把剛恢復的唯一可讀副本當 inactive 覆寫。這個判斷在鎖內讀目標槽的實際內容，不靠記憶體旗標，所以恢復後重新整理、讀取接續再保存仍會要求確認；接管確認不能代替覆寫確認。
+- 存檔正常（active 可讀）但另一槽或指標以外的 key 損壞時，設定畫面與播放中的控制列仍列出壞 key 的原始資料匯出，讓使用者在確認覆寫前先留下原字串。沒有 Web Locks 的唯讀模式也能匯出。
+
+**保存時機與 dirty**（`createSession`＋控制器）：
+- 控制器在每幀推進後看實際範圍 `(t0, t1]`：`floor(t0/180) < floor(t1/180)` 就是跨日，存 `t1` 的世界，不為保存切批次；這一幀有 `breakthroughResolved` 就在續推完後存；播放中手動暫停或轉背景也存。命令入口屬 RT-04。批次中途出錯時世界是最後合法的成功前綴，可以保存，不存失敗 tick 的 clone。
+- 每次新局、匯入、讀取都換新 generation。dirty 以 (generation, revision) 判斷，不同世界相同 revision 仍算不同。保存要求在呼叫當下就捕捉世界字串；成功只標記那份快照。排在鎖後面的舊 generation 保存，取得鎖後被拒絕（`stale_generation`），不寫入。
+- 自動保存遇到上列失敗或外部改動就停止，不每幀重試；畫面顯示「尚未保存」與原因。按「立即保存」才再試，需要接管或覆寫壞槽時先跳確認。
+- 讀取、恢復、匯入後一律暫停，不補離線 tick。匯入只換記憶體裡的世界，不自動寫 localStorage。新局不刪舊存檔，第一次保存需要確認接管，舊的那份留作備份。有未保存變更時，新局、讀取、匯入都先確認；離開頁面時瀏覽器會提示。
+- 匯出是完整封套 JSON，檔名 `sect-chronicle-<seed>-t<tick>.json`。
+
+**已驗證**：
+- `test/storage.test.js` 14 項：
+  - 封套欄位與 checksum。
+  - 17 種壞檔、舊 slot 與未知版本的拒絕碼。
+  - 六類邊界經假 localStorage 存檔、由另一個寫者接續後推到 2700，hash 與 `rngState` 都和不中斷推進相同：旅行中 tick 1、工作中 35、休養轉自主 348、邀請事件登記後 1081、突破停點 1176，以及 tick 1100 下達的人工 `pending`（推到 1700）。人工 `pending` 存讀後，同 id 重送回 `duplicate`，不再套用。
+  - 雙槽輪流與備份。
+  - 五種寫入失敗都不偽報成功，原 active 不變。
+  - 讀取被擋或無鎖時零寫入。
+  - 接續、外部改動停寫與接管。
+  - 壞指標、壞 active、只剩資料槽、未知版本都零寫入。恢復後不覆寫唯一可讀副本，覆寫壞槽要確認。
+  - 恢復備份後換新 store（模擬重新整理）、接續、保存：未確認時拒絕且壞槽原字串不變，只確認接管也拒絕，確認覆寫才寫；讀目標槽被擋時回 `storage_error` 且零寫入。
+  - active 正常、另一槽損壞時，畫面提供該槽原始資料匯出（含無鎖唯讀模式）。
+  - 舊 generation 排隊不寫入；dirty 與相同 revision；停自動保存與恢復。
+- `test/viewer-controller.test.js` 新增 2 項：
+  - 跨日落點不是 180 與剛好 180、突破停批續推後、暫停與轉背景各通知一次，`load` 不通知且保持暫停。
+  - 出錯時只在成功前綴跨日才通知。
+- 突變檢查：把保存改成先切指標、拿掉讀回比對、拿掉 generation 檢查，各自都會讓上面的測試失敗。
+
+**真實瀏覽器**：`tools/viewer-save-check.js`，和背景檢查一樣不用 Playwright，用法見檔頭。它用一般（非 headless）Chromium，經 DevTools Protocol 送鍵盤與滑鼠事件、重新整理頁面、開第二個分頁、指定匯入檔。只有壞檔一段刻意改壞 localStorage 的一槽來模擬損壞，紀錄中標明。任何條件不成立都寫 FAIL、exit 1。
+
+2026-10-19 在 Chromium 141.0.7390.37（非 headless，Xvfb）、Node 22、seed `rt-dev-000` 下 PASS、exit 0，牆鐘約 104 秒，console 0 行：
+- 4× 播放跨日自動保存（tick 360）。暫停時保存 tick 382：21,879 bytes，保存 19.1 ms。
+- 重新整理後讀取並接續：tick、hash、`rngState` 相同，載入 11.4 ms；2 秒後仍是同一 tick。續玩到 533，hash 等於 Node 不中斷推進。
+- 匯出檔讀回 hash 相同。
+- 第二個分頁接續並保存到 554 後，第一個分頁停自動保存，播放與暫停都沒有寫入；確認接管後才保存，第二分頁那份留作備份。
+- 匯入 Node 推到 tick 2700 的存檔：載入 15.8 ms，保持暫停、未自動寫入。立即保存：151,276 bytes（約 148 KiB），77.6 ms。續玩到 2781，hash 相同。
+- 改壞 active 槽後重新整理：辨識為 `checksum_mismatch`，提供原始資料匯出（已下載）與恢復。恢復另一槽後 hash 正確；下次保存覆寫壞槽前跳出確認。
+- 反例：把 `app.js` 的保存點接線拿掉，`FAIL 播放中跨日自動保存：已保存 tick null`，exit 1。
+
+大小與時間只是這台機器的一次紀錄，1 MB 不是 gate。
+
+**未驗證**：
+- 真的 quota 滿或權限被擋的瀏覽器（只在 Node 用假物件測）。
+- 沒有 Web Locks 的真實瀏覽器。
+- 其他瀏覽器與手機。
+- 兩個分頁在同一毫秒競爭（Web Locks 保證互斥，未做壓力測試）。
+
+**不在本包**：唯讀原因查詢 #138、建角與工作／目標編輯 RT-04、checkpoint 重播或歷史瀏覽、`rng2`。
 
 ## SG-02 新增的契約
 
@@ -250,7 +313,7 @@ python3 -m http.server 8765 --directory sect-chronicle
 
 ## 尚未實作
 
-危機結算與 ending（SG-06）、storage／瀏覽器備份與重開提示（SG-07）、UI、forecast。下一境條件未定，沒有第二境；境界戰力換算屬 SG-06。
+危機結算與 ending（SG-06）、slot 模式的瀏覽器存檔（SG-07；RT 世界的存讀已由 RT-03a 交付）、完整介入 UI（RT-04）、forecast。下一境條件未定，沒有第二境；境界戰力換算屬 SG-06。
 ## fixture
 
 SG-05 升到 schemaVersion 4／ruleVersion 3：`test/fixtures/new-world.json` 以新版本重產（7 個 hash 全部改變，rngState 不變；差異只有 `ruleVersion`、`schemaVersion` 與每位弟子新增的 `breakthroughs: 0`）；SG-04／SG-04A 時的 schema 3／rule 2 golden 原樣搬到 `test/fixtures/new-world.schema3-rule2.json`（不再重產，用來證明舊開發存檔被明確拒絕）。

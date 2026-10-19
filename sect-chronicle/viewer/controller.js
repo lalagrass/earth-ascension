@@ -6,6 +6,9 @@
  * 暫停、背景與 render 都不推進世界；背景會自動暫停並清掉待補的時間，回前景仍暫停，恢復時不追趕離線時長。
  * breakthroughResolved 只結束一次 API 批次，控制器在同一幀把剩下的 tick 繼續餵完。
  * 批次中途出錯時保留已提交的成功前綴，停在最後合法的 tick，不再推進。
+ * SG-RT-03a：保存時機只在幀末通知（onSavePoint），不切批次、不插在 advanceTicks 中間：
+ * 這一段推進跨過日界（floor(t0/180) < floor(t1/180)，落點不必剛好是 180）、途中有突破停批、或播放中被暫停／轉背景。
+ * 控制器本身不寫存檔；load(world) 換成已驗證的世界並保持暫停，不補離線 tick。
  */
 (function (root, factory) {
   'use strict';
@@ -23,12 +26,14 @@
   const SPEEDS = Object.freeze([1, 2, 4]);
   // 單幀最多計入的牆鐘時間。分頁被節流或卡頓時，不把空檔補成一大批 tick。
   const MAX_FRAME_MS = 250;
+  const TICKS_PER_DAY = 180;
 
   function createController(Realtime, options) {
     if (!Realtime || typeof Realtime.createWorld !== 'function' || typeof Realtime.advanceTicks !== 'function') {
       throw new Error('ViewerController 需要 Realtime.createWorld 與 Realtime.advanceTicks');
     }
     const opts = options || {};
+    const onSavePoint = typeof opts.onSavePoint === 'function' ? opts.onSavePoint : null;
     let mode = 'setup'; // setup → playing ⇄ paused；error 為終止狀態
     let world = null;
     let seed = null;
@@ -72,6 +77,7 @@
       if (mode !== 'playing') return false;
       mode = 'paused';
       resetClock();
+      notify(['pause']);
       return true;
     }
 
@@ -103,6 +109,7 @@
         autoPaused = true;
       }
       resetClock();
+      if (was) notify(['pause']);
       return was;
     }
 
@@ -125,9 +132,26 @@
       return advance(due);
     }
 
-    // 推進恰好 n 個 tick（或遇到錯誤為止）。breakthroughResolved 只結束 API 批次，剩下的量繼續推。
+    // 推進恰好 n 個 tick（或遇到錯誤為止），結束後依實際推進範圍通知保存點。
     function advance(n) {
       if (world === null || mode === 'error') return 0;
+      const t0 = world.clock.tick;
+      const done = advanceBatch(n);
+      const t1 = world.clock.tick;
+      const reasons = [];
+      if (Math.floor(t0 / TICKS_PER_DAY) < Math.floor(t1 / TICKS_PER_DAY)) reasons.push('day');
+      if (lastStep && lastStep.stops.includes('breakthroughResolved')) reasons.push('breakthrough');
+      // error 時 world 已是最後合法的成功前綴，可以照常保存；不保存失敗 tick 的 clone。
+      if (reasons.length && t1 > t0) notify(reasons);
+      return done;
+    }
+
+    function notify(reasons) {
+      if (onSavePoint) onSavePoint(reasons);
+    }
+
+    // breakthroughResolved 只結束 API 批次，剩下的量繼續推。
+    function advanceBatch(n) {
       let left = n;
       let advanced = 0;
       const stops = [];
@@ -196,6 +220,21 @@
       return advanced;
     }
 
+    // 換成已驗證的世界（讀檔／匯入）。一律暫停、不補離線 tick；統計從這份世界重新計。
+    function load(next) {
+      const v = Realtime.validateWorld ? Realtime.validateWorld(next) : { ok: true };
+      if (!v.ok) return { ok: false, code: v.code, reason: v.reason };
+      world = next;
+      seed = next.seed;
+      mode = 'paused';
+      error = null;
+      autoPaused = false;
+      lastStep = null;
+      totals = { ticks: 0, batches: 0, breakthroughStops: 0 };
+      resetClock();
+      return { ok: true };
+    }
+
     function snapshot() {
       return {
         mode, seed, speed, autoPaused, error, lastStep,
@@ -205,12 +244,12 @@
     }
 
     return Object.freeze({
-      prepare, start, pause, resume, toggle, setSpeed, hide, frame, advance, snapshot,
+      prepare, start, pause, resume, toggle, setSpeed, hide, frame, advance, load, snapshot,
       get world() { return world; },
       get mode() { return mode; },
       get speed() { return speed; },
     });
   }
 
-  return Object.freeze({ TICKS_PER_SECOND, SPEEDS, MAX_FRAME_MS, createController });
+  return Object.freeze({ TICKS_PER_SECOND, SPEEDS, MAX_FRAME_MS, TICKS_PER_DAY, createController });
 });
