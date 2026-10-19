@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>宗門編年・2.5D 生活場景原型</title>
+  <link rel="stylesheet" href="prototype.css">
+</head>
+<body class="layout-a">
+  <header id="top">
+    <div class="brand">
+      <strong>宗門編年</strong>
+      <span class="tag">#142 研究原型，不是正式 viewer</span>
+    </div>
+    <div id="clock" aria-live="polite"></div>
+    <div class="controls">
+      <button id="toggle" type="button" title="空白鍵">▶ 開始</button>
+      <span role="group" aria-label="倍速" class="speeds">
+        <button type="button" data-speed="1" aria-pressed="true">1×</button>
+        <button type="button" data-speed="2" aria-pressed="false">2×</button>
+        <button type="button" data-speed="4" aria-pressed="false">4×</button>
+      </span>
+    </div>
+    <div id="resources" aria-label="資源"></div>
+    <div class="layout-switch" role="group" aria-label="布局">
+      <button type="button" data-layout="a" aria-pressed="true">布局 A：場景為主</button>
+      <button type="button" data-layout="b" aria-pressed="false">布局 B：名冊＋場景</button>
+    </div>
+  </header>
+
+  <main id="stage">
+    <section id="roster" aria-label="人物"></section>
+    <div id="scene-wrap">
+      <canvas id="scene" aria-label="道館與周邊的斜視場景。點人物選取，點地點看可做操作。鍵盤：[ ] 換人、Tab 到地點清單"></canvas>
+      <div id="hint" class="hint"></div>
+      <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+      <div id="banner" class="banner" hidden></div>
+    </div>
+    <aside id="dock">
+      <section id="menu" class="menu" aria-label="可做操作" hidden></section>
+      <details id="drawer" class="drawer">
+        <summary>細節：人物、地點、目標與事件</summary>
+        <section id="detail" aria-label="選取人物"></section>
+        <section id="detail-actions"></section>
+        <section id="places" aria-label="地點清單"></section>
+        <section id="goals" aria-label="宗門目標與政策"></section>
+        <section id="events" aria-label="事件"></section>
+      </details>
+    </aside>
+  </main>
+
+  <footer id="legend">
+    <p><strong>哪些是真的：</strong>時間、位置、旅行與工作進度、資源、事件、入隊、突破，以及「下令」的驗證和結果，全部來自正式的 <code>Realtime.createWorld／advanceTicks／dispatch</code>，規則、存檔格式和 RNG 都沒改。
+    <strong>哪些是示意：</strong>畫面外觀、配色、人物造型、走路的補間、浮字、橫幅、「開選單時自動暫停」和兩種布局。沒有任何素材或外部套件，畫面全部用原生 Canvas 畫。不存檔，重新整理就是新局。</p>
+    <p><strong>想請你回饋的三件事：</strong>①哪個布局比較容易看懂每個人正在做什麼？②點人物、再點地點後跳出的操作，直不直覺？③哪個回饋最讓你想繼續玩，哪一段最像在等？</p>
+  </footer>
+
+  <script src="../../js/rng.js"></script>
+  <script src="../../js/rules.js"></script>
+  <script src="../../js/state.js"></script>
+  <script src="../../js/story-data.js"></script>
+  <script src="../../js/story.js"></script>
+  <script src="../../js/progression.js"></script>
+  <script src="../../js/commands.js"></script>
+  <script src="../../js/engine.js"></script>
+  <script src="../../js/autonomy.js"></script>
+  <script src="../../js/realtime.js"></script>
+  <script src="../../viewer/view.js"></script>
+  <script src="prototype.js"></script>
+</body>
+</html>
