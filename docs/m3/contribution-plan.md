@@ -20,7 +20,7 @@
 | D3 #21 | Antigravity (Gemini) 已提交 [PR #63](https://github.com/lalagrass/earth-ascension/pull/63)，待審。 | 對齊 D1／D2／D4，區分工作完成度、證據與結果；檢查歷史及待生效輸入。 |
 | D4 #22 | Antigravity (Gemini) 已提交 [PR #64](https://github.com/lalagrass/earth-ascension/pull/64)，待審。 | 對齊 #10／#11；RFC 的選項不宣稱為已實作或已批准契約。 |
 
-現有任務由原作者修正；重新開放或新增認領須由 issue 明確交接。文件的合入判準與 I1–I5 的開工條件分開判定。
+現有任務由有效認領的作者修正；依 [共用期限與接手規則](../../CONTRIBUTING.md#認領期限與接手)可續期、釋出或到期後登記接手，不永久保留原作者。原 issue 須記錄交接與成果來源，文件的合入判準與 I1–I5 的開工條件分開判定；認領過期不授權 M3 實作。
 
 ## 文件與驗收設計的範圍
 
