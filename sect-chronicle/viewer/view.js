@@ -125,6 +125,10 @@
       const act = world.activities.find((a) => a.id === d.activityId);
       if (act) return activityStatus(Rules, world, d, act);
     }
+    if (d.manualOrder && d.manualOrder.status === 'pending') {
+      const kind = kindLabel(Rules, d.manualOrder.kind || d.manualOrder.action);
+      return { kind: 'pendingOrder', label: '排隊中', text: `手動指令排隊中（${kind}），下個規劃 tick 出發` };
+    }
     if (d.autonomy && d.autonomy.wait) {
       const w = d.autonomy.wait;
       return {
@@ -134,6 +138,98 @@
     }
     // 剛完成工作的人要到下一 tick 的階段 2 才決策（RT00 §1.3）：畫面只標示，不替角色安排。
     return { kind: 'decide', label: '待決策', text: '本 tick 剛空出來，下一 tick 由自主規劃決定' };
+  }
+
+  function describePersonWhy(Rules, world, d, names) {
+    let goal = '—';
+    let estimatedEnd = null;
+    let reason = '—';
+
+    if (d.joinTick > world.clock.tick) {
+      goal = '未入隊';
+      reason = `預定 tick ${d.joinTick} 入隊`;
+    } else if (d.activityId !== null) {
+      const act = world.activities.find((a) => a.id === d.activityId);
+      if (act) {
+        if (act.origin === 'manual') {
+          goal = '手動指令，不屬於任何目標';
+        } else if (act.kind === 'build') {
+          goal = `建造${facilityLabel(Rules, act.target.facilityType)}`;
+        } else if (act.kind === 'brew') {
+          goal = '存凝氣丹';
+        } else if (act.kind === 'aid') {
+          goal = '援村';
+        } else if (act.kind === 'cultivate') {
+          goal = '修為到 100';
+        } else if (act.kind === 'breakthrough') {
+          goal = '突破';
+        } else if (act.kind === 'support') {
+          goal = '突破支援';
+        } else if (act.kind === 'gather-material') {
+          goal = '候選：建造、存丹或備料援村（引擎未記錄）';
+        } else if (act.kind === 'gather-herb') {
+          goal = '候選：存丹或備料援村（引擎未記錄）';
+        } else if (act.kind === 'rest') {
+          if (act.fallback) {
+            goal = `休養（由${kindLabel(Rules, act.fallback.from)}轉來：${label(FALLBACK_LABELS, act.fallback.reason)}）`;
+          } else if (d.injury >= Rules.REST_AT_INJURY) {
+            goal = `推定：休養（傷勢 ${d.injury}，門檻 ≥ ${Rules.REST_AT_INJURY}）`;
+          } else if (d.stamina < Rules.REST_BELOW_STAMINA) {
+            goal = `推定：休養（體力 ${d.stamina}，門檻 < ${Rules.REST_BELOW_STAMINA}）`;
+          } else {
+            goal = '休養';
+          }
+        } else {
+          goal = kindLabel(Rules, act.kind);
+        }
+
+        if (act.fallback) {
+          reason = `由${kindLabel(Rules, act.fallback.from)}轉來：${label(FALLBACK_LABELS, act.fallback.reason)}`;
+        } else if (act.partnerWait) {
+          reason = '已就位，等待同伴到達';
+        } else if (act.status === 'traveling') {
+          reason = `前往 (${act.dest.r},${act.dest.c})`;
+        } else {
+          reason = `執行中（${kindLabel(Rules, act.kind)}）`;
+        }
+
+        if (act.partnerWait) {
+          estimatedEnd = '未知（等待同伴）';
+        } else {
+          const unitTicks = Rules.TICKS_PER_SLOT;
+          const totalWork = act.units * unitTicks;
+          const remWork = Math.max(0, totalWork - act.workTicks);
+          const remTravel = act.status === 'traveling' ? Math.max(0, act.path.length - act.pathIndex) : 0;
+          const remTotal = remTravel + remWork;
+          estimatedEnd = `若不中斷，約 tick ${world.clock.tick + remTotal} 結束`;
+        }
+      }
+    } else if (d.manualOrder && d.manualOrder.status === 'pending') {
+      const orderKind = d.manualOrder.kind || d.manualOrder.action;
+      goal = '手動指令，不屬於任何目標';
+      reason = `手動指令已排隊（${kindLabel(Rules, orderKind)}），下個規劃 tick 出發`;
+    } else if (d.autonomy && d.autonomy.wait) {
+      const w = d.autonomy.wait;
+      if (w.reason === 'goals_done') {
+        goal = '目標都已完成，無效果等待';
+      } else if (w.reason === 'blocked:herb_locked') {
+        goal = '存凝氣丹（靈草尚未解鎖）';
+      } else if (w.reason === 'breakthrough_ask_open') {
+        goal = '突破（詢問待回覆）';
+      } else if (w.reason === 'breakthrough_later') {
+        goal = '突破（稍後再問冷卻中）';
+      } else if (w.reason === 'cultivation_full') {
+        goal = '修為到 100／突破（修為已滿，等待突破）';
+      } else {
+        goal = label(WAIT_LABELS, w.reason);
+      }
+      reason = `${label(WAIT_LABELS, w.reason)}（自 tick ${w.sinceTick}，下次復查 tick ${w.recheckTick}）`;
+    } else {
+      goal = '待決策';
+      reason = '本 tick 剛空出來，下一 tick 由自主規劃決定';
+    }
+
+    return { goal, estimatedEnd, reason };
   }
 
   function describePeople(Rules, world, names) {
@@ -152,6 +248,7 @@
       attributes: { rootBone: d.attributes.rootBone, comprehension: d.attributes.comprehension, craft: d.attributes.craft },
       manualOrder: d.manualOrder ? kindLabel(Rules, d.manualOrder.kind) : null,
       status: personStatus(Rules, world, d),
+      why: describePersonWhy(Rules, world, d, names),
     }));
   }
 
@@ -251,6 +348,211 @@
     }
   }
 
+  function describeGoalStatus(Rules, world, names) {
+    const tick = world.clock.tick;
+    const slotEq = Math.floor(tick / Rules.TICKS_PER_SLOT);
+    const herbUnlocked = Rules.phaseAtEq(slotEq).herbYield > 0;
+    const items = [];
+
+    for (const g of world.goals) {
+      if (g.kind === 'buildFacility') {
+        const spec = Rules.FACILITIES[g.facilityType];
+        const costMat = spec && spec.cost ? (spec.cost.spiritMaterial || 0) : 0;
+        const currentMat = world.resources.spiritMaterial;
+        const deficit = Math.max(0, costMat - currentMat);
+        const done = world.activities.some((a) => a.kind === 'build' && a.target.facilityType === g.facilityType && a.status === 'done');
+        const inFlight = world.activities.find((a) => a.kind === 'build' && a.target.facilityType === g.facilityType && a.status !== 'done' && a.status !== 'cancelled');
+        let statusText = '';
+        if (done) {
+          statusText = '已完工';
+        } else if (inFlight) {
+          const total = inFlight.units * Rules.TICKS_PER_SLOT;
+          statusText = `建造中（${inFlight.workTicks}/${total} tick）`;
+        } else if (deficit > 0) {
+          statusText = `缺靈材 ${deficit}（現有 ${currentMat} / 需 ${costMat}）`;
+        } else {
+          statusText = `材料已齊備（現有 ${currentMat}），等待開工`;
+        }
+        items.push({
+          id: g.id,
+          kind: g.kind,
+          text: goalText(Rules, g),
+          done,
+          deficit: !done && deficit > 0,
+          statusText,
+        });
+      } else if (g.kind === 'stockPills') {
+        const curPills = world.inventory['breakthrough-pill'] || 0;
+        const targetPills = g.count;
+        const done = curPills >= targetPills;
+        const alchemyDone = world.activities.some((a) => a.kind === 'build' && a.target.facilityType === 'alchemyRoom' && a.status === 'done');
+        const inFlight = world.activities.find((a) => a.kind === 'brew' && a.status !== 'done' && a.status !== 'cancelled');
+        const recipe = Rules.RECIPES['breakthrough-pill'] || { cost: { spiritMaterial: 4, spiritHerb: 4 } };
+        const curMat = world.resources.spiritMaterial;
+        const curHerb = world.resources.spiritHerb;
+        const needMat = recipe.cost.spiritMaterial || 0;
+        const needHerb = recipe.cost.spiritHerb || 0;
+        let statusText = '';
+        let deficit = false;
+        if (done) {
+          statusText = `已達成（現有 ${curPills} / 目標 ${targetPills} 顆）`;
+        } else if (!alchemyDone) {
+          statusText = `丹房尚未完工（現有 ${curPills}/${targetPills} 顆）`;
+          deficit = true;
+        } else if (inFlight) {
+          const total = inFlight.units * Rules.TICKS_PER_SLOT;
+          statusText = `煉丹中（${inFlight.workTicks}/${total} tick，現有 ${curPills}/${targetPills} 顆）`;
+        } else if (!herbUnlocked && curHerb < needHerb) {
+          statusText = `靈草尚未解鎖生長（現有靈草 ${curHerb}/${needHerb}）`;
+          deficit = true;
+        } else if (curMat < needMat || curHerb < needHerb) {
+          const lack = [];
+          if (curMat < needMat) lack.push(`缺靈材 ${needMat - curMat}`);
+          if (curHerb < needHerb) lack.push(`缺靈草 ${needHerb - curHerb}`);
+          statusText = `${lack.join('、')}（現有 ${curPills}/${targetPills} 顆）`;
+          deficit = true;
+        } else {
+          statusText = `材料齊備，等待開爐（現有 ${curPills}/${targetPills} 顆）`;
+        }
+        items.push({
+          id: g.id,
+          kind: g.kind,
+          text: goalText(Rules, g),
+          done,
+          deficit,
+          statusText,
+        });
+      } else if (g.kind === 'aid') {
+        const available = Rules.aidAvailableEq(slotEq);
+        const openTick = Rules.AID_AVAILABLE_FROM_SLOT * Rules.TICKS_PER_SLOT;
+        const done = Boolean(world.story && (world.story.rescues > 0 || (Array.isArray(world.story.rescues) && world.story.rescues.length > 0)));
+        const inFlight = world.activities.find((a) => a.kind === 'aid' && a.status !== 'done' && a.status !== 'cancelled');
+        let statusText = '';
+        if (done) {
+          statusText = '已完成援助村落';
+        } else if (inFlight) {
+          statusText = '援助村落進行中';
+        } else if (!available) {
+          statusText = `尚未開放（第 4 天 / tick ${openTick} 開放）`;
+        } else if (world.policy.aid === 'off') {
+          statusText = '政策已關閉';
+        } else {
+          statusText = `已開放，等待執行（政策：${label(POLICY_LABELS.aid.values, world.policy.aid)}）`;
+        }
+        items.push({
+          id: g.id,
+          kind: g.kind,
+          text: goalText(Rules, g),
+          done,
+          deficit: false,
+          statusText,
+        });
+      } else if (g.kind === 'recruit') {
+        const manifestPhase = (Rules.SPIRIT_PHASES && Rules.SPIRIT_PHASES.find((p) => p.id === 'manifest')) || { startSlot: 18 };
+        const available = slotEq >= manifestPhase.startSlot;
+        const openTick = manifestPhase.startSlot * Rules.TICKS_PER_SLOT;
+        const apprentices = world.disciples.filter((d) => d.role === 'apprentice');
+        const done = apprentices.length >= 2;
+        let statusText = '';
+        if (done) {
+          statusText = `已招募 ${apprentices.length} 名學徒（名額已滿）`;
+        } else if (!available) {
+          statusText = `尚未開放（第 7 天 / tick ${openTick} 開放）`;
+        } else if (world.policy.recruit === 'off') {
+          statusText = '政策已關閉';
+        } else {
+          statusText = `已招募 ${apprentices.length}/2 名學徒（政策：${label(POLICY_LABELS.recruit.values, world.policy.recruit)}）`;
+        }
+        items.push({
+          id: g.id,
+          kind: g.kind,
+          text: goalText(Rules, g),
+          done,
+          deficit: false,
+          statusText,
+        });
+      } else if (g.kind === 'cultivateTo100') {
+        const targets = world.disciples.filter((d) => g.discipleId === 'all' || d.id === g.discipleId);
+        const allDone = targets.length > 0 && targets.every((d) => d.cultivation >= 100);
+        const details = targets.map((d) => `${names[d.id] || d.id} ${d.cultivation}/100`).join('、');
+        items.push({
+          id: g.id,
+          kind: g.kind,
+          text: goalText(Rules, g),
+          done: allDone,
+          deficit: false,
+          statusText: allDone ? '修為均已達 100' : `進度：${details}`,
+        });
+      } else if (g.kind === 'breakthrough') {
+        const targets = world.disciples.filter((d) => g.discipleId === 'all' || d.id === g.discipleId);
+        const allDone = targets.length > 0 && targets.every((d) => d.breakthroughs >= 1);
+        const phase = phaseOf(Rules, tick);
+        const details = targets.map((d) => `${names[d.id] || d.id} 突破 ${d.breakthroughs} 次`).join('、');
+        const phaseWarn = phase.canAttemptBreakthrough ? '' : '（目前靈氣階段不可突破）';
+        items.push({
+          id: g.id,
+          kind: g.kind,
+          text: goalText(Rules, g),
+          done: allDone,
+          deficit: false,
+          statusText: allDone ? '全員已完成突破' : `${details}${phaseWarn}`,
+        });
+      } else {
+        items.push({
+          id: g.id,
+          kind: g.kind,
+          text: goalText(Rules, g),
+          done: false,
+          deficit: false,
+          statusText: '進行中',
+        });
+      }
+    }
+
+    const seats = [];
+    const reservedCounts = {};
+    for (const rsv of world.reservations) {
+      if (!rsv || !rsv.seats) continue;
+      for (const k of Object.keys(rsv.seats)) {
+        reservedCounts[k] = (reservedCounts[k] || 0) + rsv.seats[k];
+      }
+    }
+
+    let matCap = 0;
+    let matOcc = 0;
+    let herbCap = 0;
+    let herbOcc = 0;
+    for (const tile of world.tiles) {
+      const terrain = Rules.TERRAIN[tile.terrain];
+      if (terrain && terrain.workSlots) {
+        const occ = reservedCounts[`gather:${tile.id}`] || 0;
+        if (tile.terrain === 'material') {
+          matCap += terrain.workSlots;
+          matOcc += occ;
+        } else if (tile.terrain === 'herb') {
+          herbCap += terrain.workSlots;
+          herbOcc += occ;
+        }
+      }
+    }
+    if (matCap > 0) seats.push({ name: '採靈材位', capacity: matCap, occupied: matOcc });
+    if (herbCap > 0) seats.push({ name: '採靈草位', capacity: herbCap, occupied: herbOcc });
+
+    const alchemyDone = world.activities.some((a) => a.kind === 'build' && a.target.facilityType === 'alchemyRoom' && a.status === 'done');
+    if (alchemyDone) {
+      const occ = reservedCounts['work:alchemyRoom'] || 0;
+      seats.push({ name: '煉丹位', capacity: Rules.FACILITIES.alchemyRoom.workSlots, occupied: occ });
+    }
+
+    const aidAvailable = Rules.aidAvailableEq(slotEq);
+    if (aidAvailable) {
+      const occ = reservedCounts['aid:village'] || 0;
+      seats.push({ name: '援村位', capacity: Rules.AID_WORKERS, occupied: occ });
+    }
+
+    return { items, seats };
+  }
+
   function describe(world, deps) {
     const Rules = deps.Rules;
     const names = nameTable(world, deps.StoryData);
@@ -280,6 +582,7 @@
         key: k, name: POLICY_LABELS[k].name, value: world.policy[k], text: label(POLICY_LABELS[k].values, world.policy[k]),
       })),
       goals: world.goals.map((g) => ({ id: g.id, text: goalText(Rules, g) })),
+      goalStatus: describeGoalStatus(Rules, world, names),
       pending: world.pendingEvents.map((p) => ({ text: JSON.stringify(p) })),
       events: world.eventLog.slice(-EVENT_TAIL).reverse().map((e) => ({
         seq: e.seq, tick: e.tick, type: e.type, text: eventText(Rules, names, e),
@@ -345,11 +648,15 @@
     const p = model.people.find((x) => x.id === selected);
     if (!p) return '<p class="hint">點地圖上的人物或左側名單查看細節（只改畫面選取，不影響世界）。</p>';
     const s = p.status;
+    const why = p.why || {};
     const rows = [
       ['身分', `${p.role}（${p.id}）`],
       ['位置', `(${p.pos.r},${p.pos.c})`],
       ['狀態', `${s.label}${s.status ? `・${s.status}` : ''}`],
       ['說明', s.text],
+      ['為了哪個目標', why.goal || '—'],
+      ['動機／理由', why.reason || '—'],
+      ['預估結束', why.estimatedEnd || '—'],
       ['來源', s.origin ? (s.origin === 'auto' ? '自主規劃' : '手動指令') : '—'],
       ['fallback', s.fallback || '—'],
       ['等待原因碼', s.code || '—'],
@@ -368,7 +675,19 @@
   function renderSettings(model) {
     const pol = model.policy.map((p) => `<li>${esc(p.name)}：<strong>${esc(p.text)}</strong> <code>${esc(p.value)}</code></li>`).join('');
     const goals = model.goals.map((g, i) => `<li>${i + 1}. ${esc(g.text)}</li>`).join('');
-    return `<h3>政策（安穩發展）</h3><ul>${pol}</ul><h3>目標順序</h3><ol class="plain">${goals}</ol>`;
+    const statusItems = (model.goalStatus && model.goalStatus.items) ? model.goalStatus.items.map((item, i) => {
+      const cls = item.done ? 'done' : (item.deficit ? 'deficit' : 'ongoing');
+      return `<li class="goal-item ${cls}"><strong>${i + 1}. ${esc(item.text)}</strong><br><span class="goal-desc">${esc(item.statusText)}</span></li>`;
+    }).join('') : '';
+    const seats = (model.goalStatus && model.goalStatus.seats) ? model.goalStatus.seats.map((s) => {
+      const full = s.occupied >= s.capacity ? '（滿員）' : '';
+      return `<li>${esc(s.name)}：<strong>${s.occupied}/${s.capacity}</strong>${full}</li>`;
+    }).join('') : '';
+
+    return `<h3>政策（安穩發展）</h3><ul>${pol}</ul>
+      <h3>目標狀態與缺口</h3><ul class="goal-status-list">${statusItems || '<li>尚無目標</li>'}</ul>
+      ${seats ? `<h3>工作位容量</h3><ul class="seat-list">${seats}</ul>` : ''}
+      <h3>目標順序</h3><ol class="plain">${goals}</ol>`;
   }
 
   function renderEvents(model) {
@@ -448,5 +767,8 @@
       <ul class="plain">${rows}</ul><div class="buttons">${renderRawExports(inspection, true)}${inspection.canWrite ? restore : ''}</div>`;
   }
 
-  return Object.freeze({ describe, render, eventText, renderSettings, saveStatusText, renderSavePanel, renderRawExports, WAIT_LABELS, FALLBACK_LABELS });
+  return Object.freeze({
+    describe, render, renderDetail, renderPeople, renderSettings, eventText,
+    saveStatusText, renderSavePanel, renderRawExports, WAIT_LABELS, FALLBACK_LABELS,
+  });
 });

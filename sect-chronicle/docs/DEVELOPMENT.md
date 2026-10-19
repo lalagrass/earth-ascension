@@ -181,7 +181,42 @@ python3 -m http.server 8765 --directory sect-chronicle
 - 其他瀏覽器與手機。
 - 兩個分頁在同一毫秒競爭（Web Locks 保證互斥，未做壓力測試）。
 
-**不在本包**：唯讀原因查詢 #138、建角與工作／目標編輯 RT-04、checkpoint 重播或歷史瀏覽、`rng2`。
+## SG-RT-03b 新增（因果 selectors 與理由查詢）
+
+追蹤 [#138](https://github.com/lalagrass/earth-ascension/issues/138)（母單 #136）。實際主筆 Antigravity (Gemini)；base dev `a9bb79b0b397b9c340175293a60e5fabfd4be9d3`。依 Issue #145 directive（薄整合與復用既有架構，不引入額外模組檔案），直接擴充 `viewer/view.js` 的 `describe()`、相關渲染函式與 CSS 樣式；引擎、schema5／rule4／rng1、存檔格式與世界 hash 不變。
+
+**核心資料結構與 Selectors 擴充**（`View.describe(world, deps)`）：
+- **人物 why 欄位**（`p.why`）：
+  - `goal`：為了哪個目標（具體目標如「建造聚靈台」、「存凝氣丹」、「休養」等；若由 fallback 轉來亦註明轉來來源如「由採集靈材轉來：沒有空位」）。
+  - `reason`：動機／理由（如體力門檻 `<60`、傷勢門檻 `≥30`、等待同伴、前往座標、等待靈草解鎖等）。
+  - `estimatedEnd`：預估結束時間（若不中斷，約 tick X 結束；非活動中或等待同伴為 `null` 或「未知」）。
+  - 資源與工作位引用：支援 `reservationKey` 與 `seatAvailable` 查詢。
+- **手動排隊狀態標示**（`pendingOrder`）：
+  - 當弟子有 `manualOrder && manualOrder.status === 'pending'` 時，狀態識別為 `pendingOrder`（標籤「排隊中」，文字「手動指令排隊中（...），下個規劃 tick 出發」），避免在自主規劃交接前誤標為待決策。
+- **目標狀態與缺口**（`model.goalStatus`）：
+  - `items`：目標清單與即時進度（建造缺靈材數量、凝氣丹目標與丹房工期／靈草生長解鎖進度、援村開放與政策、學徒招募進度、全員修為 100 與突破狀態）。
+  - `seats`：各類工作位容量與即時佔用統計（採靈材位、採靈草位、煉丹位、援村位）。
+
+**畫面更新**：
+- `renderDetail`：選取人物時展示「為了哪個目標」、「動機／理由」、「預估結束」。
+- `renderSettings`：展示「目標狀態與缺口」（標記已達成或缺口中）與「工作位容量」（顯示佔用與滿員狀態）。
+- `renderPeople`：為手動指令排隊中標記 `.state-pendingOrder`。
+- 匯出 `renderDetail` 與 `renderPeople`，提升單元測試與外部工具的可測性。
+
+**已驗證**：
+- `test/viewer-explain.test.js` 9 項測試：
+  - `describe` 維持純函式無副作用唯讀性、深凍結相容性（`deepFreeze`）、world hash 不變。
+  - 開局弟子包含 why 解釋（目標、理由、預估結束為 null 或字串）。
+  - 目標狀態與缺口正確辨識建材缺口與丹房狀態。
+  - 工作位容量與佔用統計。
+  - `pendingOrder` 狀態正確識別。
+  - 推進後活動與移動中的弟子 why 帶有預估結束時間。
+  - `renderDetail`、`renderSettings` 與 `renderPeople` DOM 渲染輸出。
+  - 休養活動門檻（傷勢 ≥ 30、體力 < 60）與 fallback 理由映射。
+  - 自主等待各類 wait 理由映射（`goals_done`、`blocked:herb_locked`、`breakthrough_ask_open` 等）。
+- 既有 `test/*.test.js` 全數 358 項 Node 測試通過。
+
+**不在本包**：建角與工作／目標編輯 RT-04、checkpoint 重播或歷史瀏覽、`rng2`。
 
 ## SG-02 新增的契約
 
