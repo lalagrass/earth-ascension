@@ -187,34 +187,42 @@ python3 -m http.server 8765 --directory sect-chronicle
 
 **核心資料結構與 Selectors 擴充**（`View.describe(world, deps)`）：
 - **人物 why 欄位**（`p.why`）：
-  - `goal`：為了哪個目標（具體目標如「建造聚靈台」、「存凝氣丹」、「休養」等；若由 fallback 轉來亦註明轉來來源如「由採集靈材轉來：沒有空位」）。
-  - `reason`：動機／理由（如體力門檻 `<60`、傷勢門檻 `≥30`、等待同伴、前往座標、等待靈草解鎖等）。
-  - `estimatedEnd`：預估結束時間（若不中斷，約 tick X 結束；非活動中或等待同伴為 `null` 或「未知」）。
-  - 資源與工作位引用：支援 `reservationKey` 與 `seatAvailable` 查詢。
+  - `goal`：為了哪個目標。從當前活動 `act` 或排隊狀態推導（如「建造聚靈台」、「存凝氣丹」、「休養」；若由 fallback 轉來亦註明轉來來源如「休養（由採集靈材轉來：沒有空位）」）。當非 fallback 休養時，若傷勢 ≥ 30 或體力 < 60 則標註「推定：休養（傷勢/體力門檻）」，此為當前數值投影，不宣稱持有出發時之歷史快照。
+  - `reason`：動機／理由。活動中反映前往座標、等待同伴或執行中；若同時持有待執行的手動指令（`pending`），明示排隊中並標註待目前活動單位完成後接續。自主等待則映射 `autonomy.wait.reason`。
+  - `estimatedEnd`：預估結束時間。旅行 ETA 依權威時間單位精確折算：`(act.path.length - act.pathIndex) * Rules.STEP_TICKS - act.stepTicks` 加上剩餘工時 `act.units * Rules.TICKS_PER_SLOT - act.workTicks`；同伴等候期間明示「未知（等待同伴）」；非活動中為 `null`。
 - **手動排隊狀態標示**（`pendingOrder`）：
-  - 當弟子有 `manualOrder && manualOrder.status === 'pending'` 時，狀態識別為 `pendingOrder`（標籤「排隊中」，文字「手動指令排隊中（...），下個規劃 tick 出發」），避免在自主規劃交接前誤標為待決策。
+  - 人物空閒且有 `manualOrder.status === 'pending'` 時，狀態識別為 `pendingOrder`（標籤「排隊中」，文字「手動指令排隊中（...），下個規劃 tick 出發」），避免誤標為待決策。
+  - 人物正在活動且有 `manualOrder.status === 'pending'` 時，保留當前活動狀態，於 `status.pendingOrder`、`status.text` 與 `why.reason` 中同時展示當前活動與下一手動指令雙層資訊。
 - **目標狀態與缺口**（`model.goalStatus`）：
-  - `items`：目標清單與即時進度（建造缺靈材數量、凝氣丹目標與丹房工期／靈草生長解鎖進度、援村開放與政策、學徒招募進度、全員修為 100 與突破狀態）。
+  - `items`：目標清單與即時進度。
+    - 建造設施：計算當前靈材缺口（`deficit`）或完工/工期進度。
+    - 存丹：依丹房完工狀況、靈草解鎖進度（初兆日 4）、材料儲備（靈材/靈草缺口）與在煉狀態投影。
+    - 援村：反映開放時段（日 4 初兆 / tick 540）、政策狀態或進行中/已完成。
+    - 收徒：真實投影 `story.invitations`、`story.rescues`、`pendingEvents` 與 `joinTick`，區分「尚未開放收徒：需先完成援助村落（前置未達成）」、「尚未開放（第 7 天）」、「已發出邀請，待回覆（待回覆計數）」、「已接受邀請（預定入隊 tick）」、「邀請已延後」、「政策已關閉」與「已招募滿員」，不憑天數掩蓋前置阻擋。
+    - 突破：依真實弟子修為、突破次數、在途/進行中突破活動、突破詢問事件（`openEventId`）、冷卻時間（`cooldownUntilTick`）、政策與未預約丹藥投影，不引用或編造不存在的階段門檻。
   - `seats`：各類工作位容量與即時佔用統計（採靈材位、採靈草位、煉丹位、援村位）。
 
 **畫面更新**：
-- `renderDetail`：選取人物時展示「為了哪個目標」、「動機／理由」、「預估結束」。
+- `renderDetail`：選取人物時展示「為了哪個目標」、「動機／理由」、「預估結束」，並將手動指令物件展開為可讀文字。
 - `renderSettings`：展示「目標狀態與缺口」（標記已達成或缺口中）與「工作位容量」（顯示佔用與滿員狀態）。
 - `renderPeople`：為手動指令排隊中標記 `.state-pendingOrder`。
 - 匯出 `renderDetail` 與 `renderPeople`，提升單元測試與外部工具的可測性。
 
 **已驗證**：
-- `test/viewer-explain.test.js` 9 項測試：
-  - `describe` 維持純函式無副作用唯讀性、深凍結相容性（`deepFreeze`）、world hash 不變。
-  - 開局弟子包含 why 解釋（目標、理由、預估結束為 null 或字串）。
+- `test/viewer-explain.test.js`：
+  - `describe` 維持純函式無副作用唯讀性、深凍結相容性（`deepFreeze`）、world hash 與 rngState 不變。
+  - 旅行 ETA 在不同格內進度與整段旅行中固定折算（如 seed `rt-dev-000` 首個採集在 tick 1、tick 15 皆精確預估 tick 84 完成）。
+  - 主角 dispatch 手動指令後，工作中/旅行中保留雙層資訊（當前活動＋下一令排隊中），空閒時正確顯示 `pendingOrder`。
+  - 突破目標投影真實 eligibility、突破進行中、詢問待回覆與冷卻，不含假階段限制。
+  - 收徒缺口真實反映援村前置阻擋（未援村阻擋）、邀請待回覆（`recruit: 'ask'` 產生待回覆事件）與已入隊狀態。
   - 目標狀態與缺口正確辨識建材缺口與丹房狀態。
   - 工作位容量與佔用統計。
-  - `pendingOrder` 狀態正確識別。
-  - 推進後活動與移動中的弟子 why 帶有預估結束時間。
-  - `renderDetail`、`renderSettings` 與 `renderPeople` DOM 渲染輸出。
-  - 休養活動門檻（傷勢 ≥ 30、體力 < 60）與 fallback 理由映射。
-  - 自主等待各類 wait 理由映射（`goals_done`、`blocked:herb_locked`、`breakthrough_ask_open` 等）。
-- 既有 `test/*.test.js` 全數 358 項 Node 測試通過。
+  - 休養活動門檻與 fallback 理由映射、自主等待各類 wait 理由映射。
+- 既有 `test/*.test.js` 全數 Node 測試通過，Python 測試通過。
+
+**未驗證／已知限制**：
+- 長時間多日連續播放下的瀏覽器記憶體占用與 GC 曲線（需進一步長時間壓測）。
+- 手機/平板小螢幕觸控點選人物卡片的互動手感（需後續 RT-04 介面整合時實機測試）。
 
 **不在本包**：建角與工作／目標編輯 RT-04、checkpoint 重播或歷史瀏覽、`rng2`。
 

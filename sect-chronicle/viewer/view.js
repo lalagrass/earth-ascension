@@ -123,7 +123,19 @@
     if (d.joinTick > world.clock.tick) return { kind: 'notJoined', label: '未入隊', text: `預定 tick ${d.joinTick} 入隊` };
     if (d.activityId !== null) {
       const act = world.activities.find((a) => a.id === d.activityId);
-      if (act) return activityStatus(Rules, world, d, act);
+      if (act) {
+        const out = activityStatus(Rules, world, d, act);
+        if (d.manualOrder && d.manualOrder.status === 'pending') {
+          const nextKind = kindLabel(Rules, d.manualOrder.kind || d.manualOrder.action);
+          out.pendingOrder = {
+            kind: d.manualOrder.kind || d.manualOrder.action,
+            label: nextKind,
+            text: `手動指令排隊中（${nextKind}），待目前活動單位完成後接續`,
+          };
+          out.text = `${out.text}（下一手動令：${nextKind} 排隊中）`;
+        }
+        return out;
+      }
     }
     if (d.manualOrder && d.manualOrder.status === 'pending') {
       const kind = kindLabel(Rules, d.manualOrder.kind || d.manualOrder.action);
@@ -193,13 +205,22 @@
           reason = `執行中（${kindLabel(Rules, act.kind)}）`;
         }
 
+        if (d.manualOrder && d.manualOrder.status === 'pending') {
+          const nextKind = kindLabel(Rules, d.manualOrder.kind || d.manualOrder.action);
+          reason = `${reason}；手動指令排隊中（${nextKind}），待目前活動單位完成後接續`;
+        }
+
         if (act.partnerWait) {
           estimatedEnd = '未知（等待同伴）';
         } else {
           const unitTicks = Rules.TICKS_PER_SLOT;
           const totalWork = act.units * unitTicks;
           const remWork = Math.max(0, totalWork - act.workTicks);
-          const remTravel = act.status === 'traveling' ? Math.max(0, act.path.length - act.pathIndex) : 0;
+          let remTravel = 0;
+          if (act.status === 'traveling') {
+            const stepTicks = act.stepTicks || 0;
+            remTravel = Math.max(0, (act.path.length - act.pathIndex) * Rules.STEP_TICKS - stepTicks);
+          }
           const remTotal = remTravel + remWork;
           estimatedEnd = `若不中斷，約 tick ${world.clock.tick + remTotal} 結束`;
         }
@@ -246,7 +267,14 @@
       injury: d.injury,
       breakthroughs: d.breakthroughs,
       attributes: { rootBone: d.attributes.rootBone, comprehension: d.attributes.comprehension, craft: d.attributes.craft },
-      manualOrder: d.manualOrder ? kindLabel(Rules, d.manualOrder.kind) : null,
+      manualOrder: d.manualOrder ? {
+        kind: d.manualOrder.kind || d.manualOrder.action,
+        label: kindLabel(Rules, d.manualOrder.kind || d.manualOrder.action),
+        status: d.manualOrder.status,
+        text: d.manualOrder.status === 'pending'
+          ? `${kindLabel(Rules, d.manualOrder.kind || d.manualOrder.action)}（排隊中，待當前活動完成後接續）`
+          : kindLabel(Rules, d.manualOrder.kind || d.manualOrder.action),
+      } : null,
       status: personStatus(Rules, world, d),
       why: describePersonWhy(Rules, world, d, names),
     }));
@@ -449,26 +477,49 @@
         });
       } else if (g.kind === 'recruit') {
         const manifestPhase = (Rules.SPIRIT_PHASES && Rules.SPIRIT_PHASES.find((p) => p.id === 'manifest')) || { startSlot: 18 };
-        const available = slotEq >= manifestPhase.startSlot;
         const openTick = manifestPhase.startSlot * Rules.TICKS_PER_SLOT;
         const apprentices = world.disciples.filter((d) => d.role === 'apprentice');
         const done = apprentices.length >= 2;
         let statusText = '';
+        let deficit = false;
+
+        const hasRescues = Boolean(world.story && world.story.rescues && (
+          Array.isArray(world.story.rescues) ? world.story.rescues.length > 0 : world.story.rescues > 0
+        ));
+        const invitations = (world.story && world.story.invitations) || {};
+        const pendingEvents = world.pendingEvents || [];
+        const pendingInvites = pendingEvents.filter((e) => e.id && String(e.id).startsWith('evt-invite-cand-'));
+        const invitedCount = Object.values(invitations).filter((inv) => inv.status === 'invited').length;
+        const deferredCount = Object.values(invitations).filter((inv) => inv.status === 'deferred').length;
+        const acceptedWaiting = Object.values(invitations).filter((inv) => inv.status === 'accepted' && inv.joinTick > world.clock.tick);
+
         if (done) {
           statusText = `已招募 ${apprentices.length} 名學徒（名額已滿）`;
-        } else if (!available) {
-          statusText = `尚未開放（第 7 天 / tick ${openTick} 開放）`;
+        } else if (!hasRescues) {
+          statusText = `尚未開放收徒：需先完成援助村落（前置未達成，已招募 ${apprentices.length}/2）`;
+          deficit = true;
+        } else if (slotEq < manifestPhase.startSlot) {
+          statusText = `尚未開放（第 7 天 / tick ${openTick} 開放，已招募 ${apprentices.length}/2）`;
+        } else if (pendingInvites.length > 0 || invitedCount > 0) {
+          const count = Math.max(pendingInvites.length, invitedCount);
+          statusText = `已發出邀請，待回覆（${count} 位候選待回覆，已招募 ${apprentices.length}/2）`;
+          deficit = true;
+        } else if (acceptedWaiting.length > 0) {
+          const ticks = acceptedWaiting.map((inv) => `tick ${inv.joinTick}`).join('、');
+          statusText = `已接受邀請（預定 ${ticks} 入隊，已招募 ${apprentices.length}/2）`;
+        } else if (deferredCount > 0) {
+          statusText = `邀請已延後（稍後再問，已招募 ${apprentices.length}/2）`;
         } else if (world.policy.recruit === 'off') {
-          statusText = '政策已關閉';
+          statusText = `政策已關閉（已招募 ${apprentices.length}/2）`;
         } else {
-          statusText = `已招募 ${apprentices.length}/2 名學徒（政策：${label(POLICY_LABELS.recruit.values, world.policy.recruit)}）`;
+          statusText = `已開放收徒（已招募 ${apprentices.length}/2，政策：${label(POLICY_LABELS.recruit.values, world.policy.recruit)}）`;
         }
         items.push({
           id: g.id,
           kind: g.kind,
           text: goalText(Rules, g),
           done,
-          deficit: false,
+          deficit,
           statusText,
         });
       } else if (g.kind === 'cultivateTo100') {
@@ -486,17 +537,46 @@
       } else if (g.kind === 'breakthrough') {
         const targets = world.disciples.filter((d) => g.discipleId === 'all' || d.id === g.discipleId);
         const allDone = targets.length > 0 && targets.every((d) => d.breakthroughs >= 1);
-        const phase = phaseOf(Rules, tick);
-        const details = targets.map((d) => `${names[d.id] || d.id} 突破 ${d.breakthroughs} 次`).join('、');
-        const phaseWarn = phase.canAttemptBreakthrough ? '' : '（目前靈氣階段不可突破）';
-        items.push({
-          id: g.id,
-          kind: g.kind,
-          text: goalText(Rules, g),
-          done: allDone,
-          deficit: false,
-          statusText: allDone ? '全員已完成突破' : `${details}${phaseWarn}`,
-        });
+        if (allDone) {
+          items.push({
+            id: g.id,
+            kind: g.kind,
+            text: goalText(Rules, g),
+            done: true,
+            deficit: false,
+            statusText: '全員已完成突破',
+          });
+        } else {
+          const inFlight = world.activities.find((a) => a.kind === 'breakthrough' && a.status !== 'done' && a.status !== 'cancelled');
+          const details = targets.map((d) => {
+            const who = names[d.id] || d.id;
+            if (d.breakthroughs >= 1) return `${who} 已突破`;
+            if (inFlight && inFlight.discipleId === d.id) return `${who} 突破進行中`;
+            if (d.cultivation >= 100) {
+              const ask = world.story && world.story.breakthroughAsks && world.story.breakthroughAsks[d.id];
+              if (world.policy.breakthrough === 'off') return `${who} 修為已滿（突破政策已關閉）`;
+              if (ask && ask.openEventId) return `${who} 修為已滿（突破詢問待回覆）`;
+              if (ask && ask.cooldownUntilTick !== null && world.clock.tick < ask.cooldownUntilTick) {
+                return `${who} 修為已滿（稍後再問，冷卻至 tick ${ask.cooldownUntilTick}）`;
+              }
+              const unreservedPills = (world.inventory['breakthrough-pill'] || 0) - (inFlight && inFlight.usePill ? 1 : 0);
+              if (world.policy.breakthroughPill === 'use' && unreservedPills < 1) {
+                return `${who} 修為已滿（缺凝氣丹）`;
+              }
+              return `${who} 修為已滿（可突破）`;
+            }
+            return `${who} 修為 ${d.cultivation}/100`;
+          }).join('、');
+
+          items.push({
+            id: g.id,
+            kind: g.kind,
+            text: goalText(Rules, g),
+            done: false,
+            deficit: false,
+            statusText: `進度：${details}`,
+          });
+        }
       } else {
         items.push({
           id: g.id,
@@ -660,7 +740,7 @@
       ['來源', s.origin ? (s.origin === 'auto' ? '自主規劃' : '手動指令') : '—'],
       ['fallback', s.fallback || '—'],
       ['等待原因碼', s.code || '—'],
-      ['手動指令', p.manualOrder || '無'],
+      ['手動指令', p.manualOrder ? (p.manualOrder.text || p.manualOrder.label || p.manualOrder) : '無'],
       ['根骨／悟性／手藝', `${p.attributes.rootBone}／${p.attributes.comprehension}／${p.attributes.craft}`],
     ];
     return `<h3>${esc(p.name)}</h3><dl>${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>`;

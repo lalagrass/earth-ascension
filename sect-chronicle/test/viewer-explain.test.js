@@ -41,23 +41,104 @@ test('SG-RT-03b: describe 保持唯讀性與深凍結相容性', () => {
   const model = View.describe(frozen, deps);
 
   assert.equal(Realtime.hashWorld(world), hashBefore, 'describe 後世界 hash 不變');
+  assert.deepEqual(world.rngState, frozen.rngState, 'rngState 不變');
   assert.ok(model, 'model 產生成功');
   assert.ok(model.goalStatus, '包含 goalStatus');
   assert.ok(Array.isArray(model.goalStatus.items), 'goalStatus.items 是陣列');
   assert.ok(Array.isArray(model.goalStatus.seats), 'goalStatus.seats 是陣列');
 });
 
-test('SG-RT-03b: 開局弟子包含 why 解釋（目標、理由、預估結束）', () => {
-  const world = Realtime.createWorld(SEED).state;
-  const model = View.describe(world, deps);
+test('SG-RT-03b R1: 旅行 ETA 精確折算 STEP_TICKS 並扣除當前格進度，完成點固定', () => {
+  let world = Realtime.createWorld(SEED).state;
 
-  assert.equal(model.people.length, 2);
-  for (const p of model.people) {
-    assert.ok(p.why, `${p.id} 應包含 why`);
-    assert.ok(typeof p.why.goal === 'string', `${p.id} why.goal 為字串`);
-    assert.ok(typeof p.why.reason === 'string', `${p.id} why.reason 為字串`);
-    assert.ok(p.why.estimatedEnd === null || typeof p.why.estimatedEnd === 'string', `${p.id} why.estimatedEnd 為 null 或字串`);
-  }
+  // rt-dev-000 在 tick 1：第一個採集活動出發，path 長度 4，pathIndex 0，stepTicks 1，預計在 tick 84 完成
+  world = advanceTo(world, 1);
+  const m1 = View.describe(world, deps);
+  const p1 = m1.people.find((x) => x.id === world.masterId);
+  assert.equal(p1.status.kind, 'activity');
+  assert.equal(p1.status.status, '移動中');
+  assert.equal(p1.why.estimatedEnd, '若不中斷，約 tick 84 結束');
+
+  // 推進至 tick 15（同一旅行途中，格內進度推進）
+  world = advanceTo(world, 15);
+  const m15 = View.describe(world, deps);
+  const p15 = m15.people.find((x) => x.id === world.masterId);
+  assert.equal(p15.status.kind, 'activity');
+  assert.equal(p15.status.status, '移動中');
+  assert.equal(p15.why.estimatedEnd, '若不中斷，約 tick 84 結束', '同一段旅行不同進度預估完成 tick 應固定在 84');
+});
+
+test('SG-RT-03b R2: 突破目標依真實 eligibility 與在途活動投影，不含假階段限制', () => {
+  let world = Realtime.createWorld(SEED).state;
+  // rt-dev-000 推進至 tick 1160（主角正在進行突破活動）
+  world = advanceTo(world, 1160);
+  const model = View.describe(world, deps);
+  const btGoal = model.goalStatus.items.find((g) => g.kind === 'breakthrough');
+  assert.ok(btGoal, '應有突破目標');
+  assert.equal(btGoal.done, false);
+  assert.ok(!btGoal.statusText.includes('目前靈氣階段不可突破'), '不應包含假階段限制');
+  assert.ok(btGoal.statusText.includes('突破進行中') || btGoal.statusText.includes('可突破'), `應反映真實進度，實際為：${btGoal.statusText}`);
+});
+
+test('SG-RT-03b R3: 工作中的 pending 手動令明示排隊，保留當前活動與下一令雙層資訊', () => {
+  let world = Realtime.createWorld(SEED).state;
+  world = advanceTo(world, 700);
+  const prot = world.disciples.find((d) => d.id === world.protagonistId);
+
+  // 主角正在煉丹中，dispatch orderActivity(rest, units: 1)
+  const cmd = {
+    id: 'cmd-order-test',
+    expectedRevision: world.revision,
+    type: 'orderActivity',
+    payload: {
+      discipleId: prot.id,
+      kind: 'rest',
+      target: {},
+      units: 1,
+    },
+  };
+  const res = Realtime.dispatch(world, cmd);
+  assert.equal(res.ok, true, 'dispatch 成功');
+  world = res.state;
+
+  const model = View.describe(world, deps);
+  const p = model.people.find((x) => x.id === prot.id);
+  // 當前活動維持 activity，但包含排隊中手動令
+  assert.equal(p.status.kind, 'activity');
+  assert.ok(p.status.pendingOrder, '活動中弟子應持有 pendingOrder 資訊');
+  assert.equal(p.status.pendingOrder.kind, 'rest');
+  assert.ok(p.status.text.includes('下一手動令：休養 排隊中'), `status.text 應包含下一手動令，實際：${p.status.text}`);
+  assert.ok(p.why.reason.includes('手動指令排隊中（休養）'), `why.reason 應包含排隊令，實際：${p.why.reason}`);
+
+  // renderDetail 正確輸出當前與排隊說明
+  const detail = View.renderDetail(model, p.id);
+  assert.ok(detail.includes('休養（排隊中，待當前活動完成後接續）'), `detail 應展示排隊接續說明，實際：${detail}`);
+});
+
+test('SG-RT-03b R4: 收徒缺口真實投影援村前置阻擋與邀請待回覆', () => {
+  // 反例 1：aid: 'off' 推至 tick 1081（未完成援村，收徒應被前置阻擋）
+  let w1 = Realtime.createWorld(SEED).state;
+  const pol1 = Object.assign({}, w1.policy, { aid: 'off' });
+  w1 = Realtime.dispatch(w1, { id: 'p-aid-off', expectedRevision: w1.revision, type: 'setPolicy', payload: { policy: pol1 } }).state;
+  w1 = advanceTo(w1, 1081);
+  const m1 = View.describe(w1, deps);
+  const recruit1 = m1.goalStatus.items.find((g) => g.kind === 'recruit');
+  assert.ok(recruit1);
+  assert.equal(recruit1.done, false);
+  assert.equal(recruit1.deficit, true);
+  assert.ok(recruit1.statusText.includes('需先完成援助村落'), `未援村時應指出前置未達成，實際：${recruit1.statusText}`);
+
+  // 反例 2：recruit: 'ask' 推至 tick 1081（已完成援村，進入顯化日 7，但邀請待回覆）
+  let w2 = Realtime.createWorld(SEED).state;
+  const pol2 = Object.assign({}, w2.policy, { recruit: 'ask' });
+  w2 = Realtime.dispatch(w2, { id: 'p-rec-ask', expectedRevision: w2.revision, type: 'setPolicy', payload: { policy: pol2 } }).state;
+  w2 = advanceTo(w2, 1081);
+  const m2 = View.describe(w2, deps);
+  const recruit2 = m2.goalStatus.items.find((g) => g.kind === 'recruit');
+  assert.ok(recruit2);
+  assert.equal(recruit2.done, false);
+  assert.equal(recruit2.deficit, true);
+  assert.ok(recruit2.statusText.includes('待回覆'), `邀請已發出時應提示待回覆，實際：${recruit2.statusText}`);
 });
 
 test('SG-RT-03b: 目標狀態與缺口 (goalStatus) 正確識別建材缺口與丹房狀態', () => {
@@ -83,12 +164,6 @@ test('SG-RT-03b: 目標狀態與缺口 (goalStatus) 正確識別建材缺口與�
   assert.ok(aid, '應包含援村目標');
   assert.equal(aid.done, false);
   assert.ok(aid.statusText.includes('第 4 天'), `應提示第 4 天開放，實際：${aid.statusText}`);
-
-  // 開局：收徒目標應提示第 7 天開放
-  const recruit = model.goalStatus.items.find((g) => g.kind === 'recruit');
-  assert.ok(recruit, '應包含收徒目標');
-  assert.equal(recruit.done, false);
-  assert.ok(recruit.statusText.includes('第 7 天'), `應提示第 7 天開放，實際：${recruit.statusText}`);
 });
 
 test('SG-RT-03b: 工作位容量與佔用統計', () => {
@@ -104,62 +179,6 @@ test('SG-RT-03b: 工作位容量與佔用統計', () => {
   const herbSeat = model.goalStatus.seats.find((s) => s.name === '採靈草位');
   assert.ok(herbSeat);
   assert.ok(herbSeat.capacity > 0);
-});
-
-test('SG-RT-03b: pendingOrder 狀態被正確識別而非顯示 decide', () => {
-  const world = Realtime.createWorld(SEED).state;
-  const disciple = world.disciples[0];
-  // 注入 pending 手動指令
-  disciple.manualOrder = {
-    action: 'rest',
-    status: 'pending',
-    target: { r: 2, c: 2 },
-  };
-
-  const model = View.describe(world, deps);
-  const p = model.people.find((x) => x.id === disciple.id);
-  assert.equal(p.status.kind, 'pendingOrder');
-  assert.equal(p.status.label, '排隊中');
-  assert.ok(p.why.reason.includes('手動指令'));
-});
-
-test('SG-RT-03b: 推進數十 tick 後，活動與移動中的弟子 why 帶有預估結束時間與目標說明', () => {
-  let world = Realtime.createWorld(SEED).state;
-  world = advanceTo(world, 100);
-
-  const model = View.describe(world, deps);
-  for (const p of model.people) {
-    if (p.status.kind === 'activity') {
-      assert.ok(p.why.goal.length > 0, '活動中應有具體目標');
-      assert.ok(p.why.reason.length > 0, '活動中應有原因');
-      assert.ok(p.why.estimatedEnd.includes('約 tick'), `應有預估結束時間，實際為：${p.why.estimatedEnd}`);
-    }
-  }
-});
-
-test('SG-RT-03b: renderDetail 與 renderSettings 渲染包含因果解釋與目標狀態', () => {
-  const world = Realtime.createWorld(SEED).state;
-  const model = View.describe(world, deps);
-
-  // 測試 renderDetail
-  const discipleId = model.people[0].id;
-  const detailHtml = View.renderDetail(model, discipleId);
-  assert.ok(detailHtml.includes('為了哪個目標'), 'renderDetail 應包含「為了哪個目標」');
-  assert.ok(detailHtml.includes('動機／理由'), 'renderDetail 應包含「動機／理由」');
-  assert.ok(detailHtml.includes('預估結束'), 'renderDetail 應包含「預估結束」');
-
-  // 測試 renderSettings
-  const settingsHtml = View.renderSettings(model);
-  assert.ok(settingsHtml.includes('目標狀態與缺口'), 'renderSettings 應包含「目標狀態與缺口」');
-  assert.ok(settingsHtml.includes('工作位容量'), 'renderSettings 應包含「工作位容量」');
-  assert.ok(settingsHtml.includes('採靈材位'), 'renderSettings 應列出採靈材位容量');
-
-  // 測試 renderPeople 含 pendingOrder
-  const disciple = world.disciples[0];
-  disciple.manualOrder = { action: 'rest', status: 'pending' };
-  const pendingModel = View.describe(world, deps);
-  const peopleHtml = View.renderPeople(pendingModel, disciple.id);
-  assert.ok(peopleHtml.includes('state-pendingOrder'), 'renderPeople 應包含 state-pendingOrder 類別');
 });
 
 test('SG-RT-03b: 休養活動與 fallback 的理由和門檻解釋', () => {
@@ -224,3 +243,27 @@ test('SG-RT-03b: 自主等待 (autonomy.wait) 的各類理由映射', () => {
   }
 });
 
+test('SG-RT-03b: renderDetail 與 renderSettings 渲染包含因果解釋與目標狀態', () => {
+  const world = Realtime.createWorld(SEED).state;
+  const model = View.describe(world, deps);
+
+  // 測試 renderDetail
+  const discipleId = model.people[0].id;
+  const detailHtml = View.renderDetail(model, discipleId);
+  assert.ok(detailHtml.includes('為了哪個目標'), 'renderDetail 應包含「為了哪個目標」');
+  assert.ok(detailHtml.includes('動機／理由'), 'renderDetail 應包含「動機／理由」');
+  assert.ok(detailHtml.includes('預估結束'), 'renderDetail 應包含「預估結束」');
+
+  // 測試 renderSettings
+  const settingsHtml = View.renderSettings(model);
+  assert.ok(settingsHtml.includes('目標狀態與缺口'), 'renderSettings 應包含「目標狀態與缺口」');
+  assert.ok(settingsHtml.includes('工作位容量'), 'renderSettings 應包含「工作位容量」');
+  assert.ok(settingsHtml.includes('採靈材位'), 'renderSettings 應列出採靈材位容量');
+
+  // 測試 renderPeople 空閒排隊時的 pendingOrder
+  const disciple = world.disciples[0];
+  disciple.manualOrder = { kind: 'rest', status: 'pending' };
+  const pendingModel = View.describe(world, deps);
+  const peopleHtml = View.renderPeople(pendingModel, disciple.id);
+  assert.ok(peopleHtml.includes('state-pendingOrder'), 'renderPeople 應包含 state-pendingOrder 類別');
+});
