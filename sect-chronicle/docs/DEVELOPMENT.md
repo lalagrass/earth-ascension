@@ -202,14 +202,19 @@ python3 -m http.server 8765 --directory sect-chronicle
   - `recovery`／`none`／`unknown`：其他情況。
 - **接下來**：
   - 活動：給出「約 tick X 空出來」，前提是不被取消、改令，修行也沒有中途轉休養。這是純算術，計算剩下的步數、步內 tick 與工作 tick；等同伴時標未知。
+  - 正在做事時又收到手動令：依 RT00 §2.3、§2.5 分三類預告換手時點。
+    - 旅行中：走完目前這一步就停下，約 tick X 出發。
+    - 可打斷的工作（採集、修行、休養）：下一次推進就換手，進行中這一單位不保留。
+    - 已開工的承諾（建造、煉丹、援村、突破、護法，和 `realtime.js` 的 `PROMISE` 同一份清單）：做完才換。
+    - 測試核對三類預告的 tick 都等於新指令實際出發的 `departTick`。
   - 等待：給出最晚復查 tick，以及解除條件，例如靈草解鎖 tick、詢問逾期 tick、冷卻 tick 與上次處置、突破政策、同時只能一人突破。
-- **缺口**：每個目標分成完成、進行中、卡住、可做，缺口逐條列出：
+- **缺口**：每個目標分成完成、進行中、卡住、可做，缺口逐條列出。成本來源寫到 `rules.js` 的實際欄位，例如 `Rules.FACILITIES.alchemyRoom.cost.spiritMaterial`、`Rules.RECIPES.breakthrough-pill.cost.spiritHerb`、`Rules.AID_OPTIONS.supplied.cost.spiritMaterial`；工作位來源寫 `reservations[].seats.<key>` 與容量欄位：
   - 建造或煉丹缺多少靈材、靈草，丹房是否完工、工作位是否已滿。
   - 靈草和援村的開放時間，以及援村、收徒、突破的政策。
   - 收徒的前置條件、各人修為。
   - 工作位用 `world.reservations` 對照 `rules.js` 容量來算，和 `realtime.js` 的 `seatPool` 同一套來源。
 
-**已驗證**：`test/viewer-explain.test.js`（6 項，約 30 秒）。
+**已驗證**：`test/viewer-explain.test.js`（7 項，約 30 秒）。
 - 以 `rt-dev-000` 在預設政策與詢問政策下各跑完 2700 tick，每 3 tick 檢查一次每個人的狀態類別都和世界欄位一致，每一行都有來源，採集只列候選、手動只標手動。
 - 每一個「約 tick X」預估都在 X 那一 tick 看到該活動 `done` 且 `completedTick === X`。
 - 凍結世界可描述，hash 前後相同。

@@ -140,7 +140,9 @@ test('手動令：收到後顯示排隊和缺料，出發時缺料改成休養�
   assert.equal(p.status.kind, 'queued');
   assert.equal(p.why.state.kind, 'queued');
   assert.equal(p.why.goal.basis, 'manual');
-  assert.ok(p.why.gaps.some((g) => g.text === '開工缺靈材：有 0，要 12'), JSON.stringify(p.why.gaps));
+  const gap = p.why.gaps.find((g) => g.text === '開工缺靈材：有 0，要 12');
+  assert.ok(gap, JSON.stringify(p.why.gaps));
+  assert.deepEqual(gap.source, ['resources.spiritMaterial', 'Rules.FACILITIES.alchemyRoom.cost.spiritMaterial']);
 
   world = step(world);
   p = View.describe(world, deps).people.find((x) => x.id === id);
@@ -150,6 +152,42 @@ test('手動令：收到後顯示排隊和缺料，出發時缺料改成休養�
   assert.ok(p.why.gaps.some((g) => g.text === '原本要建造，因資源不足改成休養' && g.source.includes(`activities[${act.id}].fallback`)));
 });
 
+// 工作中又下手動令：預告的換手 tick 必須等於引擎實際讓新指令出發的 tick（RT00 §2.3、§2.5 三類）。
+test('排隊手動令的換手時點：旅行走完當前一步、可打斷工作立即換、已開工承諾做完才換', () => {
+  const id = 'disc-protagonist';
+  const cases = [
+    { tick: 1, kind: 'gather-material', status: 'traveling', words: '走完目前這一步' },
+    { tick: 30, kind: 'gather-material', status: 'working', words: '可以打斷' },
+    { tick: 700, kind: 'brew', status: 'working', words: '承諾不中斷' },
+  ];
+  for (const c of cases) {
+    let world = advanceTo(fresh(null), c.tick);
+    const before = world.activities.find((a) => a.id === world.disciples.find((d) => d.id === id).activityId);
+    assert.equal(before.kind, c.kind);
+    assert.equal(before.status, c.status);
+    const r = Realtime.dispatch(world, {
+      id: `test-rest-${c.tick}`, expectedRevision: world.revision, type: 'orderActivity',
+      payload: { discipleId: id, kind: 'rest', target: {}, units: 1 },
+    });
+    assert.equal(r.ok, true);
+    world = r.state;
+    const why = View.describe(world, deps).people.find((p) => p.id === id).why;
+    assert.equal(why.state.kind, 'activity');
+    assert.ok(why.next.text.includes(c.words), why.next.text);
+    const predicted = Number(/tick (\d+)/.exec(why.next.text)[1]);
+    let rest = null;
+    while (!rest) {
+      world = step(world);
+      const d = world.disciples.find((x) => x.id === id);
+      const act = d.activityId && world.activities.find((a) => a.id === d.activityId);
+      if (act && act.kind === 'rest' && act.origin === 'manual') rest = act;
+      assert.ok(world.clock.tick < c.tick + 400, '新指令一直沒有出發');
+    }
+    assert.equal(rest.departTick, predicted, `${c.kind} ${c.status}`);
+    assert.equal(world.activities.find((a) => a.id === before.id).status, c.kind === 'brew' ? 'done' : 'cancelled');
+  }
+});
+
 test('目標狀態：缺口附來源；觀察期末的無效果等待說明已突破與卡住的目標', () => {
   let world = fresh(null);
   world = advanceTo(world, 600);
@@ -157,7 +195,19 @@ test('目標狀態：缺口附來源；觀察期末的無效果等待說明已�
   const byId = Object.fromEntries(model.goalStatus.map((g) => [g.id, g]));
   assert.equal(byId['goal-alchemy'].state, 'done');
   assert.equal(byId['goal-pills'].state, 'blocked');
-  assert.ok(byId['goal-pills'].gaps.some((g) => g.source.includes('resources.spiritHerb')));
+  assert.ok(byId['goal-pills'].gaps.some((g) => g.source.includes('resources.spiritHerb')
+    && g.source.includes('Rules.RECIPES.breakthrough-pill.cost.spiritHerb')));
+  // 每個成本來源都要能在 rules.js 找到同一個數字。
+  const opening = View.describe(fresh(null), deps);
+  for (const g of opening.goalStatus) {
+    for (const gap of g.gaps) {
+      for (const src of gap.source.filter((x) => x.startsWith('Rules.') && x.includes('.cost.'))) {
+        const value = src.split('.').slice(1).reduce((o, k) => o[k], Rules);
+        assert.equal(typeof value, 'number', src);
+        assert.match(gap.text, new RegExp(`要 ${value}$`), src);
+      }
+    }
+  }
   assert.equal(byId['goal-recruit'].state, 'blocked');
   assert.ok(byId['goal-recruit'].gaps.some((g) => g.source.includes('story.rescues')));
 

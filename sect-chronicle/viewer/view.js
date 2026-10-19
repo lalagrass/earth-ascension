@@ -292,24 +292,38 @@
   // 工作位容量與已預約數，和 realtime.js 的 seatPool 同一套來源（rules.js 容量、world.reservations）。
   function seatUse(Rules, world, key) {
     let cap = 0;
+    let capSource = null;
     const [kind, id] = key.split(':');
-    if (key === 'aid:village') cap = Rules.AID_WORKERS;
-    else if (kind === 'gather' || kind === 'build') {
+    if (key === 'aid:village') {
+      cap = Rules.AID_WORKERS;
+      capSource = 'Rules.AID_WORKERS';
+    } else if (kind === 'gather' || kind === 'build') {
       const tile = world.tiles.find((t) => t.id === id);
       const terrain = tile ? Rules.TERRAIN[tile.terrain] : null;
-      if (terrain) cap = kind === 'gather' ? (terrain.workSlots || 0) : (terrain.buildable ? 1 : 0);
-    } else if (kind === 'work' && doneFacility(world, id)) cap = Rules.FACILITIES[id].workSlots;
-    else if (kind === 'rest' && id === 'residence' && doneFacility(world, 'residence')) cap = Rules.FACILITIES.residence.restSlots;
+      if (terrain) {
+        cap = kind === 'gather' ? (terrain.workSlots || 0) : (terrain.buildable ? 1 : 0);
+        capSource = `Rules.TERRAIN.${tile.terrain}.${kind === 'gather' ? 'workSlots' : 'buildable'}`;
+      }
+    } else if (kind === 'work' && doneFacility(world, id)) {
+      cap = Rules.FACILITIES[id].workSlots;
+      capSource = `Rules.FACILITIES.${id}.workSlots`;
+    } else if (kind === 'rest' && id === 'residence' && doneFacility(world, 'residence')) {
+      cap = Rules.FACILITIES.residence.restSlots;
+      capSource = 'Rules.FACILITIES.residence.restSlots';
+    }
     let used = 0;
     for (const r of world.reservations) used += r.seats[key] || 0;
-    return { key, cap, used, free: cap - used };
+    return { key, cap, used, free: cap - used, source: [`reservations[].seats.${key}`].concat(capSource ? [capSource] : []) };
   }
 
-  function costGaps(world, cost, why) {
+  // costSource 是成本在 rules.js 的實際位置，例如 Rules.FACILITIES.alchemyRoom.cost。
+  function costGaps(world, cost, costSource, why) {
     const out = [];
     for (const k of Object.keys(cost)) {
       const have = world.resources[k];
-      if (have < cost[k]) out.push({ text: `${why}缺${RESOURCE_SHORT[k] || k}：有 ${have}，要 ${cost[k]}`, source: [`resources.${k}`, 'Rules.cost'] });
+      if (have < cost[k]) {
+        out.push({ text: `${why}缺${RESOURCE_SHORT[k] || k}：有 ${have}，要 ${cost[k]}`, source: [`resources.${k}`, `${costSource}.${k}`] });
+      }
     }
     return out;
   }
@@ -332,7 +346,7 @@
         const doing = live.find((a) => a.kind === 'build' && a.target.facilityType === g.facilityType);
         if (done) Object.assign(row, { state: 'done', detail: `tick ${done.completedTick} 完工`, source: [`activities[${done.id}]`] });
         else if (doing) Object.assign(row, { state: 'active', detail: `${names[doing.discipleId]}建造中 ${doing.workTicks}/${doing.units * Rules.TICKS_PER_SLOT} tick`, source: [`activities[${doing.id}]`] });
-        else if (spec) row.gaps.push(...costGaps(world, spec.cost, '開工'));
+        else if (spec) row.gaps.push(...costGaps(world, spec.cost, `Rules.FACILITIES.${g.facilityType}.cost`, '開工'));
       } else if (g.kind === 'stockPills') {
         const pills = world.inventory['breakthrough-pill'];
         const recipe = Rules.RECIPES['breakthrough-pill'];
@@ -343,14 +357,14 @@
         else if (brewing) Object.assign(row, { state: 'active', detail: `${row.detail}，${names[brewing.discipleId]}煉丹中` });
         else {
           if (!doneFacility(world, 'alchemyRoom')) row.gaps.push({ text: '丹房還沒完工', source: ['activities(build alchemyRoom)'] });
-          row.gaps.push(...costGaps(world, recipe.cost, '煉一爐'));
+          row.gaps.push(...costGaps(world, recipe.cost, 'Rules.RECIPES.breakthrough-pill.cost', '煉一爐'));
           const open = herbOpenTick(Rules);
           if (world.resources.spiritHerb < (recipe.cost.spiritHerb || 0) && open !== null && tick < open) {
             row.gaps.push({ text: `靈草 tick ${open}（第 ${dayOfTick(Rules, open)} 天）才長出來`, source: ['Rules.SPIRIT_PHASES.herbYield'] });
           }
           if (doneFacility(world, 'alchemyRoom')) {
             const seat = seatUse(Rules, world, 'work:alchemyRoom');
-            if (seat.free < 1) row.gaps.push({ text: `丹房工作位已滿（${seat.used}/${seat.cap}）`, source: ['reservations', 'Rules.FACILITIES.alchemyRoom.workSlots'] });
+            if (seat.free < 1) row.gaps.push({ text: `丹房工作位已滿（${seat.used}/${seat.cap}）`, source: seat.source });
           }
         }
       } else if (g.kind === 'aid') {
@@ -369,7 +383,7 @@
               ? { text: `求援事件等你回覆，tick ${plea.expiresTick} 逾期`, source: [`pendingEvents[${plea.id}]`] }
               : { text: '援村政策是「詢問」，要等求援事件', source: ['policy.aid'] });
           }
-          if (pol === 'auto-supplied') row.gaps.push(...costGaps(world, Rules.AID_OPTIONS.supplied.cost, '備料協助'));
+          if (pol === 'auto-supplied') row.gaps.push(...costGaps(world, Rules.AID_OPTIONS.supplied.cost, 'Rules.AID_OPTIONS.supplied.cost', '備料協助'));
         }
       } else if (g.kind === 'recruit') {
         const inv = world.story.invitations;
@@ -465,11 +479,7 @@
   function nextOfActivity(Rules, world, d, act) {
     const src = [`activities[${act.id}].path`, `activities[${act.id}].workTicks`, `activities[${act.id}].units`];
     const order = d.manualOrder;
-    if (order && order.status === 'pending') {
-      const kind = kindLabel(Rules, order.kind);
-      if (act.status === 'traveling') return { text: `新指令「${kind}」排隊中：走完這一步就改做`, source: ['disciples[].manualOrder.status'] };
-      return { text: `新指令「${kind}」排隊中：要等這件事做完（已開工的承諾不中斷）`, source: ['disciples[].manualOrder.status'] };
-    }
+    if (order && order.status === 'pending') return nextWithPendingOrder(Rules, world, act, order);
     if (act.partnerWait) return { text: '等同伴到場才開工，什麼時候結束未知', source: [`activities[${act.id}].partnerWait`] };
     const end = activityEnd(Rules, world, act);
     const after = act.origin === 'manual' ? '手動指令完成後回到自主規劃' : '之後由自主規劃重新決定';
@@ -477,6 +487,43 @@
       text: `約 tick ${end}（第 ${dayOfTick(Rules, end)} 天）空出來，${after}`,
       assumption: '假設不被取消、改令，修行也沒有中途轉休養',
       source: src,
+    };
+  }
+
+  // 已開工就不能被新手動令打斷的活動種類，和 realtime.js 的 PROMISE 同一份清單（RT00 §2.3、§2.5）。
+  const PROMISE_KINDS = Object.freeze(['build', 'brew', 'aid', 'breakthrough', 'support']);
+
+  // 正在做事時又收到手動令：換手時點依 RT00 分三類，只讀投影，不替引擎決定。
+  function nextWithPendingOrder(Rules, world, act, order) {
+    const now = world.clock.tick;
+    const kind = kindLabel(Rules, order.kind);
+    const src = ['disciples[].manualOrder.status', `activities[${act.id}].kind`, `activities[${act.id}].status`];
+    const fail = '缺料或沒有工作位時新指令會失效';
+    if (act.status === 'traveling') {
+      if (act.partnerWait || act.pathIndex >= act.path.length) {
+        return { text: `新指令「${kind}」排隊中：已到場等開工，換手時點未知`, source: src.concat([`activities[${act.id}].partnerWait`]) };
+      }
+      const at = now + Rules.STEP_TICKS - act.stepTicks;
+      return {
+        text: `新指令「${kind}」排隊中：走完目前這一步就停下，約 tick ${at} 出發去做新指令`,
+        assumption: '缺料或沒有工作位時新指令會改成休養',
+        source: src.concat([`activities[${act.id}].stepTicks`, 'Rules.STEP_TICKS']),
+      };
+    }
+    if (PROMISE_KINDS.includes(act.kind)) {
+      if (act.partnerWait) return { text: `新指令「${kind}」排隊中：要等這件事做完，但同伴未到，時點未知`, source: src };
+      const end = activityEnd(Rules, world, act);
+      return {
+        text: `新指令「${kind}」排隊中：${kindLabel(Rules, act.kind)}已開工，承諾不中斷，約 tick ${end} 做完後才換`,
+        assumption: '假設不被取消；缺料或沒有工作位時新指令會改成休養',
+        source: src.concat([`activities[${act.id}].workTicks`, `activities[${act.id}].units`]),
+      };
+    }
+    const done = act.unitsDone > 0 ? `已完成的 ${act.unitsDone} 單位照算，` : '';
+    return {
+      text: `新指令「${kind}」排隊中：${kindLabel(Rules, act.kind)}可以打斷，tick ${now} 推進時就換手（${done}進行中這一單位不保留）`,
+      assumption: `${fail}，原工作照常繼續`,
+      source: src.concat([`activities[${act.id}].unitsDone`]),
     };
   }
 
@@ -554,10 +601,16 @@
         : o.kind === 'build' ? `build:${o.target.tileId}` : o.kind === 'brew' ? 'work:alchemyRoom' : o.kind === 'aid' ? 'aid:village' : null;
       if (seatKey) {
         const seat = seatUse(Rules, world, seatKey);
-        if (seat.free < 1) gaps.push({ text: `工作位已滿（${seat.used}/${seat.cap}），可能改成休養`, source: ['reservations', 'Rules 容量'] });
+        if (seat.free < 1) gaps.push({ text: `工作位已滿（${seat.used}/${seat.cap}），可能改成休養`, source: seat.source });
       }
-      if (o.kind === 'build') gaps.push(...costGaps(world, Rules.FACILITIES[o.target.facilityType].cost, '開工'));
-      if (o.kind === 'brew') gaps.push(...costGaps(world, Rules.RECIPES[o.target.recipeId].cost, '開爐'));
+      if (o.kind === 'build') {
+        const type = o.target.facilityType;
+        gaps.push(...costGaps(world, Rules.FACILITIES[type].cost, `Rules.FACILITIES.${type}.cost`, '開工'));
+      }
+      if (o.kind === 'brew') gaps.push(...costGaps(world, Rules.RECIPES[o.target.recipeId].cost, `Rules.RECIPES.${o.target.recipeId}.cost`, '開爐'));
+      if (o.kind === 'aid' && o.target.optionId === 'supplied') {
+        gaps.push(...costGaps(world, Rules.AID_OPTIONS.supplied.cost, 'Rules.AID_OPTIONS.supplied.cost', '備料協助'));
+      }
       return {
         state: { kind: 'queued', text: `排隊：手動指令「${kindLabel(Rules, o.kind)}」已收到，還沒出發`, source: ['disciples[].manualOrder.status'] },
         goal: { basis: 'manual', text: '你下的手動指令，不在目標順序裡', goalIds: [], source: ['disciples[].manualOrder'] },
