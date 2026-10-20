@@ -1,5 +1,11 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## 2026-10-20 窄原型已批准：挑水與腳力成長
+
+擁有人另行要求先獨立讓 Claude 做挑水／成長／越跑越快的效果，已建立 [SG-EXP-01 #155](https://github.com/lalagrass/earth-ascension/issues/155)與[獨立工作包／prompt](EXPERIMENT_WATER_CARRY.md)。從 BL-L01／V01／M01 僅提取一人固定路線、腳力一維、下一趟移動更快與初始能力對照，允許在 `experiments/water-carry/` 做可點展示。這是本包的實作批准，不必等 SG-13；下方「全部未批准／先真人試玩」不阻擋此窄例外。
+
+其餘 BL 與願景維持原狀；展示不接正式世界／存檔、不改 RT-04／05 DoD 或依賴、不批准完整成長、輕功、巡山或新引擎。Claude 開工仍需真實認領與獨立 worktree，不預占作者；完成展示後由擁有人看效果，再決定是否正式採用。
+
 ## 2026-10-20 長期願景與人格命譜草案
 
 擁有人提供三份構想並要求一併整理，保存於[長期願景入口](vision/README.md)：[《山間道》願景](vision/SHANJIANDAO_DRAFT.md)、[人格／命譜／卦象](vision/PERSONALITY_DESTINY_DRAFT.md)與[村民生活／邀請入門](vision/NPC_LIFE_RECRUITMENT_DRAFT.md)，含原稿對照、PO 建議及待決策，追蹤 [Proposal #152](https://github.com/lalagrass/earth-ascension/issues/152)。這次批准文件整理，不表示正式改名、現代世界觀／新玩法／數值／16 週交期或換 Godot／Unity 已定案；不增加 14 天切片或 RT-04／05 的依賴與 DoD。
