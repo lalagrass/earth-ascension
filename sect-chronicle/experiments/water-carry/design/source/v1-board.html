@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>挑水切片 V1 畫面稿</title>
+<!--
+  SG-EXP-01 V1 可編輯來源（#155）。
+  純 HTML／CSS＋inline SVG，沒有外部圖片或字型檔；全部圖形由下方 script 的函式畫出，
+  兩張完整畫面、人物動作表與場景／UI 元件表共用同一組函式，所以比例、配色與造型一致。
+  開法：直接用瀏覽器開本檔，或加 ?board=observe|intervene|characters|sceneui 只看一張。
+  輸出 PNG：node ../render.js（見 ../V1.md）。
+-->
+<style>
+  :root {
+    --ink: #2f2a24; --ink2: #6b6254; --paper: #f6efe0; --paper2: #efe4cc; --line: #cdbb98;
+    --gold: #c8962e; --gold2: #f3dfae; --red: #a33b2a; --jade: #3f7d6e; --water: #4f93b0;
+    --hero: #4f78a8; --master: #6c5a8e; --senior: #b07a3a; --muted: #9a907f; --off: #b8ad99;
+    --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "WenQuanYi Zen Hei", sans-serif;
+    --serif: "Noto Serif TC", "Songti TC", "PMingLiU", "WenQuanYi Zen Hei", serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #d9d2c3; color: var(--ink); font-family: var(--font); }
+  .board { position: relative; width: 1600px; height: 900px; overflow: hidden; margin: 0 auto 40px; background: var(--paper); }
+  .board.tall { height: 1000px; }
+  .board > svg.scene { position: absolute; inset: 0; }
+  body.single .board { margin: 0; }
+
+  /* HUD */
+  .hud { position: absolute; left: 0; right: 0; top: 0; height: 60px; display: flex; align-items: center; gap: 14px;
+    padding: 0 18px; background: rgba(246,239,224,.93); border-bottom: 1px solid var(--line); font-size: 15px; }
+  .hud .title { font-family: var(--serif); font-size: 20px; font-weight: 700; letter-spacing: 2px; }
+  .hud .sub { font-size: 12px; color: var(--ink2); border: 1px dashed var(--line); padding: 1px 6px; border-radius: 4px; }
+  .clock { display: flex; flex-direction: column; gap: 4px; min-width: 132px; }
+  .clock b { font-size: 16px; }
+  .daybar { height: 4px; background: #e2d6bd; border-radius: 2px; overflow: hidden; }
+  .daybar i { display: block; height: 100%; background: var(--gold); }
+  .btn { border: 1px solid var(--line); background: #fffaf0; border-radius: 6px; padding: 5px 11px; font-size: 14px; color: var(--ink); white-space: nowrap; }
+  .btn.on { background: #8f4a2a; color: #fff6e6; border-color: #8f4a2a; }
+  .btn.play { font-weight: 700; }
+  .btn.paused { background: #fff3cf; border-color: var(--gold); }
+  .chip { border-radius: 14px; padding: 3px 10px; font-size: 13px; background: #ece2cc; white-space: nowrap; }
+  .chip.water { background: #d5e8ee; color: #23566b; }
+  .chip.leg { background: #e6ddf0; color: #4a3d68; }
+  .spacer { flex: 1; }
+  .kbd { font-size: 11px; color: var(--ink2); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; margin-left: 4px; background: #fff; }
+
+  /* roster */
+  .roster { position: absolute; left: 0; right: 0; bottom: 0; height: 104px; display: flex; gap: 12px; align-items: center;
+    padding: 0 18px; background: rgba(246,239,224,.95); border-top: 1px solid var(--line); }
+  .card { width: 268px; height: 80px; border: 1px solid var(--line); border-radius: 10px; background: #fffaf0; display: flex; gap: 10px; padding: 9px 11px; align-items: flex-start; position: relative; }
+  .card.sel { border: 2px solid var(--gold); box-shadow: 0 0 0 3px rgba(200,150,46,.22); background: #fff8e8; }
+  .ava { width: 40px; height: 40px; border-radius: 50%; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 15px; flex: none; }
+  .card .nm { font-weight: 700; font-size: 15px; }
+  .card .st { font-size: 13px; color: var(--ink2); margin-top: 2px; }
+  .card .st b { color: var(--ink); font-weight: 600; }
+  .bars { display: flex; gap: 5px; margin-top: 7px; }
+  .bars i { display: block; height: 5px; border-radius: 3px; background: #e5dccb; width: 56px; position: relative; overflow: hidden; }
+  .bars i::after { content: ""; position: absolute; inset: 0; width: var(--v); background: var(--c); }
+  .badge { position: absolute; right: 8px; top: 8px; font-size: 11px; border-radius: 9px; padding: 1px 7px; background: #fff3cf; border: 1px solid var(--gold); color: #7a5a14; }
+  .roster .more { margin-left: auto; }
+
+  /* in-scene labels */
+  .tag { position: absolute; transform: translate(-50%, 0); font-size: 12px; background: rgba(255,250,240,.92); border: 1px solid var(--line);
+    border-radius: 9px; padding: 0 7px; white-space: nowrap; }
+  .tag.hero { border-color: var(--hero); color: #23436a; font-weight: 700; }
+  .tag.sel { border: 2px solid var(--gold); background: #fff6dc; font-size: 13px; padding: 1px 9px; }
+  .tag.place { font-family: var(--serif); font-size: 14px; font-weight: 700; background: rgba(47,42,36,.72); color: #fff3d8; border: 0; border-radius: 4px; padding: 1px 8px; }
+  .tag.ghost { opacity: .85; border-style: dashed; color: var(--ink2); font-size: 11px; }
+  .pill { position: absolute; transform: translate(-50%, 0); font-size: 12px; background: #2f2a24; color: #fff3d8; border-radius: 10px; padding: 2px 9px 2px 6px; white-space: nowrap; display: flex; gap: 5px; align-items: center; }
+  .pill .ring { width: 16px; height: 16px; border-radius: 50%; background: conic-gradient(#f0c35a var(--p), #5a5146 0); display: grid; place-items: center; }
+  .pill .ring::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #2f2a24; }
+  .float { position: absolute; transform: translate(-50%, 0); font-weight: 700; font-size: 15px; color: #23566b; text-shadow: 0 1px 0 #fff, 0 0 4px #fff; }
+  .float.gold { color: #8a5e10; }
+
+  /* drawers / panels */
+  .drawer { position: absolute; right: 16px; top: 74px; display: flex; gap: 8px; }
+  .feed { position: absolute; left: 16px; top: 74px; width: 290px; font-size: 13px; background: rgba(255,250,240,.88); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+  .feed div { padding: 2px 0; color: var(--ink2); }
+  .feed div b { color: var(--ink); font-weight: 600; }
+  .feed .t { color: var(--muted); font-size: 11px; margin-right: 6px; }
+  .hint { position: absolute; left: 50%; bottom: 116px; transform: translateX(-50%); font-size: 13px; background: rgba(47,42,36,.78); color: #fff3d8; padding: 4px 12px; border-radius: 12px; white-space: nowrap; }
+
+  .banner { position: absolute; left: 50%; top: 74px; transform: translateX(-50%); background: #fff3cf; border: 1px solid var(--gold); color: #6b4b0c; font-weight: 700; padding: 6px 16px; border-radius: 18px; font-size: 14px; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+
+  .menu { position: absolute; width: 300px; background: #fffaf0; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 8px 24px rgba(47,42,36,.22); padding: 12px; font-size: 14px; }
+  .menu h3 { margin: 0; font-family: var(--serif); font-size: 18px; display: flex; justify-content: space-between; align-items: baseline; }
+  .menu h3 small { font-family: var(--font); font-size: 12px; color: var(--ink2); font-weight: 400; }
+  .menu .desc { color: var(--ink2); font-size: 12px; margin: 4px 0 8px; }
+  .menu .who { font-size: 12px; background: #eef3f8; color: #23436a; border-radius: 6px; padding: 4px 8px; margin-bottom: 8px; }
+  .opt { border: 1px solid var(--line); border-radius: 7px; padding: 7px 10px; margin-top: 6px; background: #fff; }
+  .opt b { display: block; font-size: 14px; }
+  .opt span { font-size: 12px; color: var(--ink2); }
+  .opt.hover { border: 2px solid var(--gold); background: #fff6dc; }
+  .opt.off { background: #f3eee4; color: var(--off); border-style: dashed; }
+  .opt.off b { color: #a59a86; }
+  .opt.off span { color: #a33b2a; }
+  .menu .foot { font-size: 11px; color: var(--muted); margin-top: 8px; display: flex; justify-content: space-between; }
+  .waterbar { height: 8px; border-radius: 4px; background: #e2ddd2; overflow: hidden; margin: 6px 0 2px; }
+  .waterbar i { display: block; height: 100%; background: linear-gradient(90deg, #6fb3cb, #3f87a6); }
+
+  .panel { position: absolute; right: 16px; top: 74px; width: 360px; bottom: 116px; background: rgba(255,250,240,.97); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; font-size: 14px; box-shadow: 0 6px 18px rgba(47,42,36,.14); }
+  .panel h2 { margin: 0; font-family: var(--serif); font-size: 20px; display: flex; align-items: center; gap: 10px; }
+  .panel h2 .ava { width: 34px; height: 34px; font-size: 13px; }
+  .panel h2 small { font-family: var(--font); font-size: 12px; color: var(--ink2); font-weight: 400; }
+  .panel h4 { margin: 14px 0 6px; font-size: 13px; color: var(--ink2); font-weight: 600; letter-spacing: 1px; }
+  .work { border: 1px solid var(--line); border-radius: 9px; padding: 10px; background: #fff; }
+  .work .now { font-size: 16px; font-weight: 700; }
+  .stages { display: flex; gap: 4px; margin: 9px 0 6px; }
+  .stages div { flex: 1; text-align: center; font-size: 12px; padding: 4px 0; border-radius: 5px; background: #efe8da; color: var(--ink2); }
+  .stages div.done { background: #dbe7d6; color: #355d2b; }
+  .stages div.cur { background: var(--hero); color: #fff; font-weight: 700; }
+  .prog { height: 6px; border-radius: 3px; background: #e5dccb; overflow: hidden; }
+  .prog i { display: block; height: 100%; background: var(--hero); }
+  .kv { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: 13px; margin-top: 8px; }
+  .kv span:nth-child(odd) { color: var(--ink2); }
+  .kv b { font-weight: 700; }
+  .leg { display: flex; align-items: center; gap: 8px; }
+  .leg .lv { font-size: 22px; font-weight: 800; color: #4a3d68; font-family: var(--serif); }
+  .leg .bar { flex: 1; height: 8px; border-radius: 4px; background: #e6ddf0; overflow: hidden; }
+  .leg .bar i { display: block; height: 100%; background: #7a64a6; }
+  .speed { display: flex; align-items: flex-end; gap: 6px; margin-top: 10px; }
+  .speed div { flex: 1; text-align: center; font-size: 11px; color: var(--ink2); }
+  .speed div i { display: block; margin: 0 auto 3px; width: 70%; border-radius: 3px 3px 0 0; background: #c9bfdc; }
+  .speed div.me i { background: #7a64a6; }
+  .speed div.cap i { background: repeating-linear-gradient(45deg,#e6ddf0 0 4px,#d4c8e6 4px 8px); }
+  .pending { margin-top: 6px; border: 2px solid var(--gold); background: #fff6dc; border-radius: 9px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .pending b { display: block; }
+  .pending span { font-size: 12px; color: #7a5a14; }
+  .note { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .toast { position: absolute; background: #2f2a24; color: #fff3d8; border-radius: 8px; padding: 6px 12px; font-size: 13px; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+  .toast b { color: #f0c35a; }
+
+  .call { position: absolute; width: 26px; height: 26px; border-radius: 50%; background: #a33b2a; color: #fff; font-weight: 800; font-size: 14px;
+    display: grid; place-items: center; box-shadow: 0 0 0 3px #fff, 0 2px 6px rgba(0,0,0,.3); }
+  .flow { position: absolute; left: 16px; top: 74px; background: rgba(255,250,240,.95); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-size: 13px; width: 300px; }
+  .flow b { font-size: 12px; color: var(--ink2); letter-spacing: 1px; }
+  .flow ol { margin: 4px 0 0; padding: 0; list-style: none; }
+  .flow li { display: flex; gap: 8px; align-items: center; padding: 2px 0; }
+  .flow li i { flex: none; width: 18px; height: 18px; border-radius: 50%; background: #a33b2a; color: #fff; font-style: normal; font-size: 11px; font-weight: 800; display: grid; place-items: center; }
+
+  /* sheets */
+  .sheet { padding: 22px 30px; }
+  .sheet h1 { margin: 0 0 2px; font-family: var(--serif); font-size: 26px; }
+  .sheet .lead { color: var(--ink2); font-size: 13px; margin-bottom: 10px; }
+  .sheet h3 { margin: 0; font-size: 15px; }
+  .sheet .cap { font-size: 12px; color: var(--ink2); line-height: 1.5; }
+  .abs { position: absolute; }
+  .sw { display: inline-flex; flex-direction: column; align-items: center; font-size: 11px; color: var(--ink2); margin-right: 8px; }
+  .sw i { width: 44px; height: 30px; border-radius: 5px; border: 1px solid rgba(0,0,0,.12); margin-bottom: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+/* ---------- palette ---------- */
+const C = {
+  ink: '#2f2a24', paper: '#f6efe0', line: '#cdbb98', gold: '#c8962e',
+  water: '#4f93b0', waterLight: '#a9d4e2', waterDeep: '#2f6f8c',
+  grass: '#a7b878', grass2: '#8ea463', grass3: '#748c4e', earth: '#d8c8a2', earthEdge: '#b9a77f',
+  stone: '#bdb6a6', stone2: '#9d968a', stone3: '#7c766b',
+  roof: '#4b5662', roof2: '#363f49', wall: '#f1e8d4', wall2: '#dcd0b8', pillar: '#8c3a2b',
+  wood: '#93683f', wood2: '#62452a', band: '#4d4a46',
+  pine: '#4f6e4a', pine2: '#3c5739', pine3: '#6e8b5c', trunk: '#6b4a32',
+  skin: '#f0d2b0', skin2: '#ddb48f', hair: '#2b2522',
+  hero: '#4f78a8', hero2: '#3b5d85', heroSash: '#e7d9b8',
+  master: '#6c5a8e', master2: '#52446d', senior: '#b07a3a', senior2: '#8a5c27',
+  trousers: '#e9e0cc', shoe: '#3a332c'
+};
+
+/* ---------- geometry helpers ---------- */
+const rad = d => d * Math.PI / 180;
+const f = n => Math.round(n * 10) / 10;
+const pt = (x, y) => `${f(x)},${f(y)}`;
+const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
+const rot = (v, deg) => { const r = rad(deg); return [v[0] * Math.cos(r) - v[1] * Math.sin(r), v[0] * Math.sin(r) + v[1] * Math.cos(r)]; };
+const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+
+/* ---------- bucket: (0,0) = handle top / rope point ---------- */
+function bucket(x, y, deg, fill, s = 1, extra = '') {
+  const water = fill > 0
+    ? `<ellipse cx="0" cy="10" rx="7.2" ry="2.1" fill="${C.water}"/><ellipse cx="-2" cy="9.6" rx="3" ry=".8" fill="${C.waterLight}"/>`
+    : `<ellipse cx="0" cy="10" rx="7.2" ry="2.1" fill="${C.wood2}"/>`;
+  return `<g transform="translate(${f(x)},${f(y)}) rotate(${f(deg)}) scale(${s})" ${extra}>
+    <path d="M-8.5,9 Q0,-4 8.5,9" fill="none" stroke="${C.band}" stroke-width="1.3"/>
+    <path d="M-8,10 L-6.6,24 Q0,26 6.6,24 L8,10 Z" fill="${C.wood}" stroke="${C.wood2}" stroke-width="1"/>
+    <path d="M-3,10.5 L-2.6,25 M3,10.5 L2.6,25" stroke="${C.wood2}" stroke-width=".6" opacity=".6"/>
+    <path d="M-7.6,14 Q0,16 7.6,14 M-7,21 Q0,23 7,21" fill="none" stroke="${C.band}" stroke-width="1.4"/>
+    <ellipse cx="0" cy="10" rx="8" ry="2.6" fill="none" stroke="${C.wood2}" stroke-width="1"/>
+    ${water}
+  </g>`;
+}
+
+/* ---------- character ----------
+   local coords: x forward, y down, origin = ground point under hips.
+   legs: [{t: thigh angle from vertical (forward +), k: knee bend}], front leg first.
+   load: 'pole' (扁擔+兩桶) | 'dip' (取水) | 'pour' (倒水) | 'none' */
+function figure(o) {
+  const d = Object.assign({ x: 0, y: 0, s: 1, dir: 1, back: false, lean: 0, bob: 0,
+    legs: [{ t: 4, k: 0 }, { t: -4, k: 0 }], load: 'pole', fill: 0, swing: 0, poleTilt: 0, sag: 0,
+    robe: C.hero, robe2: C.hero2, sash: C.heroSash, opacity: 1, glow: null, freeArm: false,
+    broom: false, sit: false }, o);
+  const TH = 21, SH = 21;
+  // legs relative to hip
+  const legPts = d.legs.map(l => {
+    const knee = [TH * Math.sin(rad(l.t)), TH * Math.cos(rad(l.t))];
+    const sa = l.t - l.k;
+    const foot = add(knee, [SH * Math.sin(rad(sa)), SH * Math.cos(rad(sa))]);
+    return { knee, foot, sa };
+  });
+  let low = 0;
+  legPts.forEach(p => { low = Math.max(low, p.foot[1] + 2, p.knee[1] + 3); });
+  if (d.sit) low = 12;
+  const hip = [0, -low + d.bob];
+  const L = d.lean;
+  const up = [Math.sin(rad(L)), -Math.cos(rad(L))];
+  const along = (base, k) => [base[0] + up[0] * k, base[1] + up[1] * k];
+  const sh = along(hip, 30), neck = along(hip, 34), head = along(hip, 44);
+  const perp = [Math.cos(rad(L)), Math.sin(rad(L))];
+  const P = (base, k) => [base[0] + perp[0] * k, base[1] + perp[1] * k];
+
+  let back = '', front = '', body = '';
+  // legs (back leg first)
+  const legSvg = (lp, shade) => {
+    const k = add(hip, lp.knee), ft = add(hip, lp.foot);
+    const toe = rot([6, 0], 0);
+    return `<path d="M${pt(...hip)} L${pt(...k)} L${pt(...ft)}" fill="none" stroke="${shade ? '#d3c8b0' : C.trousers}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M${pt(ft[0] - 3, ft[1] - 1.5)} q2,-2.5 6,-1 l3.5,2.5 l-9.5,0 z" fill="${C.shoe}"/>`;
+  };
+  if (d.sit) {
+    back += `<ellipse cx="${f(hip[0])}" cy="${f(hip[1] + 9)}" rx="17" ry="5" fill="${d.robe2}"/>`;
+  } else {
+    back += legSvg(legPts[1], true);
+    front += legSvg(legPts[0], false);
+  }
+  // robe
+  const hemY = hip[1] + (d.sit ? 9 : 15);
+  const robe = `<path d="M${pt(...P(sh, -8.5))} L${pt(...P(sh, 8))} Q${pt(...P(along(hip, 12), 10))} ${pt(hip[0] + 15, hemY)}
+     L${pt(hip[0] - 13, hemY + 1)} Q${pt(...P(along(hip, 10), -11))} ${pt(...P(sh, -8.5))} Z" fill="${d.robe}" stroke="${d.robe2}" stroke-width="1.2"/>
+     <path d="M${pt(...P(sh, 2))} L${pt(...P(along(hip, 14), 6))}" stroke="${d.sash}" stroke-width="2" fill="none" opacity="${d.back ? 0 : .9}"/>
+     <path d="M${pt(...P(along(hip, 3), -10.5))} L${pt(...P(along(hip, 3), 11))}" stroke="${d.sash}" stroke-width="3.2"/>
+     ${d.back ? `<path d="M${pt(...P(along(hip, 3), -10))} l-5,7 m5,-7 l-1,8" stroke="${d.sash}" stroke-width="2" fill="none"/>` : ''}`;
+  // head
+  const hx = head[0], hy = head[1];
+  const face = d.back
+    ? `<circle cx="${f(hx)}" cy="${f(hy)}" r="9.6" fill="${C.hair}"/><circle cx="${f(hx - 1)}" cy="${f(hy - 10)}" r="4.2" fill="${C.hair}"/>
+       <ellipse cx="${f(hx + 6.5)}" cy="${f(hy + 2)}" rx="2" ry="3" fill="${C.skin2}"/>`
+    : `<circle cx="${f(hx)}" cy="${f(hy)}" r="9.6" fill="${C.skin}"/>
+       <path d="M${pt(hx - 9.8, hy + 2)} Q${pt(hx - 10, hy - 10)} ${pt(hx + 1, hy - 10.2)} Q${pt(hx + 9, hy - 9)} ${pt(hx + 9.6, hy - 3)} Q${pt(hx + 2, hy - 6)} ${pt(hx - 3, hy - 3)} L${pt(hx - 4, hy + 4)} Z" fill="${C.hair}"/>
+       <circle cx="${f(hx - 4)}" cy="${f(hy - 11)}" r="4" fill="${C.hair}"/>
+       <circle cx="${f(hx + 5)}" cy="${f(hy + 0.5)}" r="1.15" fill="${C.ink}"/>
+       <path d="M${pt(hx + 4, hy + 5)} q2,1 3.4,-.4" stroke="#a5654a" stroke-width=".9" fill="none"/>
+       <circle cx="${f(hx + 2.5)}" cy="${f(hy + 3.5)}" r="1.8" fill="#f2a98f" opacity=".45"/>`;
+  const neckSvg = `<path d="M${pt(...sh)} L${pt(...neck)}" stroke="${C.skin2}" stroke-width="5"/>`;
+
+  // arms & load
+  const arm = (el, hand, color) => `<path d="M${pt(...sh)} L${pt(...el)} L${pt(...hand)}" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+     <circle cx="${f(hand[0])}" cy="${f(hand[1])}" r="2.7" fill="${C.skin}"/>`;
+  let loadBack = '', loadFront = '';
+  if (d.load === 'pole') {
+    const c = add(sh, [0, -3]);
+    const pa = d.poleTilt;
+    const e1 = add(c, rot([40, 0], pa)), e2 = add(c, rot([-40, 0], pa));
+    const sag = 1.5 + d.fill * 3.5 + d.sag;
+    const pole = `<path d="M${pt(e2[0], e2[1] + sag)} Q${pt(c[0], c[1] - 1.5)} ${pt(e1[0], e1[1] + sag)}" fill="none" stroke="${C.wood}" stroke-width="3.2" stroke-linecap="round"/>`;
+    const hang = (e, sw) => {
+      const top = [e[0], e[1] + sag];
+      const end = add(top, rot([0, 24], sw));
+      return `<path d="M${pt(...top)} L${pt(...end)}" stroke="#7b6a52" stroke-width="1"/>` + bucket(end[0], end[1], sw, d.fill);
+    };
+    loadBack += hang(e2, d.swing * 0.8);
+    loadFront += pole + hang(e1, d.swing);
+    const pf = add(c, rot([15, 0], pa)), pb = add(c, rot([-13, 0], pa));
+    back += arm(add(sh, [-6, 9]), d.freeArm ? add(sh, [-10, 22]) : [pb[0], pb[1] + 1], d.robe2);
+    loadFront += arm(add(sh, [9, 9]), [pf[0], pf[1] + 1], d.robe);
+  } else if (d.load === 'dip') {
+    const b = d.bucketAt || [30, -14];
+    loadFront += bucket(b[0], b[1], d.bucketRot || 18, d.fill);
+    back += arm(add(sh, [6, 12]), [b[0] - 1, b[1] + 1], d.robe2);
+    loadFront += arm(add(sh, [12, 10]), [b[0] + 2, b[1] + 2], d.robe);
+    if (d.poleDown) back = `<path d="M-46,-2 L22,-3" stroke="${C.wood}" stroke-width="3.2" stroke-linecap="round"/>` + bucket(-40, -27, 0, 1, 1) + back;
+  } else if (d.load === 'pour') {
+    const b = d.bucketAt || [24, -66];
+    loadFront += bucket(b[0], b[1], d.bucketRot || 78, 1);
+    back += arm(add(sh, [6, 10]), [b[0] - 4, b[1] + 3], d.robe2);
+    loadFront += arm(add(sh, [13, 2]), [b[0] + 4, b[1] - 3], d.robe);
+    if (d.stream) loadFront += `<path d="M${pt(b[0] + 23, b[1] + 6)} q12,4 10,${d.stream}" stroke="${C.water}" stroke-width="4.5" fill="none" stroke-linecap="round" opacity=".9"/>
+      <path d="M${pt(b[0] + 23, b[1] + 6)} q11,4 9,${d.stream}" stroke="${C.waterLight}" stroke-width="1.4" fill="none" opacity=".9"/>`;
+  } else if (d.broom) {
+    const h1 = add(sh, [14, 16]), h2 = add(sh, [6, 22]);
+    loadFront += `<path d="M${pt(h1[0] - 4, h1[1] - 10)} L${pt(h1[0] + 18, h1[1] + 40)}" stroke="${C.wood}" stroke-width="2.4"/>
+      <path d="M${pt(h1[0] + 14, h1[1] + 36)} l14,10 l-12,4 z" fill="#c7a86a"/>`;
+    back += arm(add(sh, [5, 12]), h2, d.robe2);
+    loadFront += arm(add(sh, [10, 10]), h1, d.robe);
+  } else if (d.sit) {
+    const hl = add(hip, [6, -4]);
+    loadFront += arm(add(sh, [9, 12]), hl, d.robe);
+  } else {
+    back += arm(add(sh, [-3, 13]), add(sh, [-2, 25]), d.robe2);
+    loadFront += arm(add(sh, [4, 13]), add(sh, [5, 25]), d.robe);
+  }
+  const inner = `${loadBack}${back}${front}${robe}${neckSvg}${face}${loadFront}`;
+  const glow = d.glow ? `<g stroke="${d.glow}" stroke-width="5" stroke-linejoin="round" opacity=".9" style="filter:blur(.6px)">${inner.replace(/fill="[^"]*"/g, `fill="${d.glow}"`)}</g>` : '';
+  return `<g transform="translate(${f(d.x)},${f(d.y)}) scale(${f(d.s * d.dir)},${f(d.s)})" opacity="${d.opacity}">${glow}${inner}</g>`;
+}
+
+/* ---------- poses (shared by scene + sheet) ---------- */
+const POSE = {
+  idle:     { lean: 0, legs: [{ t: 4, k: 2 }, { t: -4, k: 2 }], load: 'pole', fill: 0 },
+  emptyA:   { lean: 6, legs: [{ t: 24, k: 6 }, { t: -20, k: 22 }], bob: 0, swing: 10, fill: 0 },
+  emptyB:   { lean: 6, legs: [{ t: -2, k: 4 }, { t: 14, k: 52 }], bob: -3, swing: 2, fill: 0 },
+  emptyC:   { lean: 6, legs: [{ t: -20, k: 22 }, { t: 24, k: 6 }], bob: 0, swing: -8, fill: 0 },
+  emptyD:   { lean: 6, legs: [{ t: 14, k: 52 }, { t: -2, k: 4 }], bob: -3, swing: -2, fill: 0 },
+  loadA:    { lean: 15, legs: [{ t: 18, k: 16 }, { t: -14, k: 12 }], bob: 3, swing: 3, fill: .9, poleTilt: -3 },
+  loadB:    { lean: 16, legs: [{ t: 4, k: 22 }, { t: 6, k: 40 }], bob: 2, swing: 1, fill: .9, poleTilt: -2 },
+  loadC:    { lean: 15, legs: [{ t: -14, k: 12 }, { t: 18, k: 16 }], bob: 3, swing: -3, fill: .9, poleTilt: -3 },
+  loadD:    { lean: 16, legs: [{ t: 6, k: 40 }, { t: 4, k: 22 }], bob: 2, swing: -1, fill: .9, poleTilt: -2 },
+  grownA:   { lean: 8, legs: [{ t: 30, k: 10 }, { t: -26, k: 28 }], bob: -1, swing: 6, fill: .9, freeArm: true },
+  grownB:   { lean: 8, legs: [{ t: 0, k: 6 }, { t: 18, k: 64 }], bob: -5, swing: 2, fill: .9, freeArm: true },
+  grownC:   { lean: 8, legs: [{ t: -26, k: 28 }, { t: 30, k: 10 }], bob: -1, swing: -6, fill: .9, freeArm: true },
+  grownD:   { lean: 8, legs: [{ t: 18, k: 64 }, { t: 0, k: 6 }], bob: -5, swing: -2, fill: .9, freeArm: true },
+  dip:      { lean: 32, legs: [{ t: 80, k: 80 }, { t: -6, k: 96 }], load: 'dip', fill: .5, bucketAt: [32, -12], bucketRot: 24, poleDown: true },
+  pour:     { lean: 10, legs: [{ t: 10, k: 4 }, { t: -10, k: 4 }], load: 'pour', bucketAt: [20, -70], bucketRot: 80, stream: 26 },
+  sweep:    { lean: 12, legs: [{ t: 12, k: 6 }, { t: -12, k: 8 }], load: 'none', broom: true, robe: C.senior, robe2: C.senior2, sash: '#f0e2c2' },
+  meditate: { lean: 0, legs: [{ t: 0, k: 0 }, { t: 0, k: 0 }], load: 'none', sit: true, robe: C.master, robe2: C.master2, sash: '#e9dcc0' }
+};
+const pose = (name, extra) => figure(Object.assign({}, POSE[name], extra));
+
+/* ---------- path ---------- */
+const PATH = [[962, 512], [872, 540], [918, 592], [790, 636], [662, 612], [556, 656], [440, 694], [376, 702]];
+function pathAt(t) {
+  const segs = []; let total = 0;
+  for (let i = 1; i < PATH.length; i++) { const l = Math.hypot(PATH[i][0] - PATH[i - 1][0], PATH[i][1] - PATH[i - 1][1]); segs.push(l); total += l; }
+  let r = t * total;
+  for (let i = 0; i < segs.length; i++) {
+    if (r <= segs[i] || i === segs.length - 1) { const k = Math.min(1, r / segs[i]); const p = lerp(PATH[i], PATH[i + 1], k);
+      return { x: p[0], y: p[1], dx: PATH[i + 1][0] - PATH[i][0] }; }
+    r -= segs[i];
+  }
+}
+function pathSvg(routeFrom, routeTo) {
+  const d = 'M' + PATH.map(p => pt(...p)).join(' L');
+  let steps = '';
+  for (let t = 0.02; t < 0.98; t += 0.03) {
+    const a = pathAt(t), b = pathAt(t + 0.004);
+    const ang = Math.atan2(b.y - a.y, b.x - a.x) + Math.PI / 2;
+    const ox = Math.cos(ang) * 12, oy = Math.sin(ang) * 12 * 0.6;
+    steps += `<path d="M${pt(a.x - ox, a.y - oy)} L${pt(a.x + ox, a.y + oy)}" stroke="${C.earthEdge}" stroke-width="1.6" opacity=".7"/>`;
+  }
+  let route = '';
+  if (routeFrom != null) {
+    let pts = []; for (let t = routeFrom; routeFrom > routeTo ? t >= routeTo : t <= routeTo; t += routeFrom > routeTo ? -0.01 : 0.01) { const p = pathAt(t); pts.push(pt(p.x, p.y - 2)); }
+    route = `<path d="M${pts.join(' L')}" fill="none" stroke="${C.gold}" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round"/>`;
+  }
+  return `<path d="${d}" fill="none" stroke="#9c8b67" stroke-width="36" stroke-linejoin="round" stroke-linecap="round" opacity=".35"/>
+    <path d="${d}" fill="none" stroke="${C.earth}" stroke-width="30" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="${d}" fill="none" stroke="#e6d8b6" stroke-width="12" stroke-linejoin="round" stroke-linecap="round" opacity=".6"/>
+    ${steps}${route}`;
+}
+
+/* ---------- scene parts ---------- */
+function pine(x, y, s = 1, tone = 0) {
+  const c1 = [C.pine, C.pine2, '#5a7a55'][tone], c2 = [C.pine2, '#2f4730', C.pine][tone];
+  return `<g transform="translate(${x},${y}) scale(${s})">
+    <ellipse cx="10" cy="2" rx="34" ry="8" fill="#3a3a2a" opacity=".18"/>
+    <path d="M-4,0 L-3,-70 Q0,-90 2,-70 L4,0 Z" fill="${C.trunk}"/>
+    <path d="M-2,-40 L-22,-52 M1,-60 L20,-70" stroke="${C.trunk}" stroke-width="3"/>
+    <ellipse cx="-26" cy="-56" rx="26" ry="11" fill="${c2}"/><ellipse cx="-22" cy="-60" rx="22" ry="8" fill="${c1}"/>
+    <ellipse cx="22" cy="-74" rx="28" ry="12" fill="${c2}"/><ellipse cx="25" cy="-78" rx="23" ry="8" fill="${c1}"/>
+    <ellipse cx="0" cy="-96" rx="30" ry="13" fill="${c2}"/><ellipse cx="2" cy="-100" rx="24" ry="9" fill="${c1}"/>
+    <ellipse cx="-4" cy="-116" rx="20" ry="9" fill="${c2}"/><ellipse cx="-2" cy="-119" rx="15" ry="6" fill="${C.pine3}"/>
+  </g>`;
+}
+function rock(x, y, s = 1, c = C.stone) {
+  return `<g transform="translate(${x},${y}) scale(${s})"><path d="M-22,0 Q-24,-14 -10,-20 Q4,-28 16,-16 Q26,-8 22,0 Z" fill="${c}" stroke="${C.stone3}" stroke-width="1"/>
+    <path d="M-10,-18 Q0,-22 10,-14" stroke="#e6e0d2" stroke-width="2" fill="none" opacity=".7"/></g>`;
+}
+function bush(x, y, s = 1) {
+  return `<g transform="translate(${x},${y}) scale(${s})"><ellipse cx="0" cy="0" rx="34" ry="10" fill="#3a3a2a" opacity=".15"/>
+    <ellipse cx="-14" cy="-12" rx="20" ry="14" fill="${C.grass3}"/><ellipse cx="12" cy="-14" rx="22" ry="16" fill="#6c8549"/>
+    <ellipse cx="0" cy="-22" rx="18" ry="12" fill="${C.grass2}"/><ellipse cx="6" cy="-26" rx="9" ry="5" fill="#b7c78c" opacity=".7"/></g>`;
+}
+function bamboo(x, y, n = 5) {
+  let s = '';
+  for (let i = 0; i < n; i++) {
+    const bx = x + i * 9 - n * 4, h = 120 + (i * 37 % 50);
+    s += `<path d="M${bx},${y} L${bx + (i % 2 ? 4 : -3)},${y - h}" stroke="${i % 2 ? '#7f9a55' : '#6c8a47'}" stroke-width="4"/>`;
+    for (let k = 20; k < h; k += 24) s += `<path d="M${bx - 2},${y - k} l4,0" stroke="#4f6a35" stroke-width="1.4"/>`;
+    s += `<path d="M${bx},${y - h + 10} q-18,-4 -26,6 M${bx},${y - h + 30} q18,-6 26,4 M${bx},${y - h + 50} q-16,-2 -22,8" stroke="#86a65e" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  }
+  return s;
+}
+function vat(x, y, level = 0.55, s = 1) {
+  const wy = -38 + (1 - level) * 6;
+  return `<g transform="translate(${x},${y}) scale(${s})">
+    <ellipse cx="4" cy="2" rx="38" ry="9" fill="#3a3a2a" opacity=".22"/>
+    <path d="M-30,-36 Q-40,-14 -24,0 Q0,7 24,0 Q40,-14 30,-36 Z" fill="#6e4b33" stroke="#4b3220" stroke-width="1.4"/>
+    <path d="M-22,-30 Q-30,-14 -18,-4" stroke="#9a6d4c" stroke-width="4" fill="none" opacity=".6"/>
+    <path d="M-31,-24 Q0,-16 31,-24" stroke="#4b3220" stroke-width="1.2" fill="none" opacity=".7"/>
+    <ellipse cx="0" cy="-38" rx="31" ry="9.5" fill="#5a3c28" stroke="#4b3220" stroke-width="1.4"/>
+    <ellipse cx="0" cy="-38" rx="26" ry="7.2" fill="#2a1d14"/>
+    ${level > 0 ? `<ellipse cx="0" cy="${f(wy)}" rx="${f(18 + level * 7)}" ry="${f(4.4 + level * 2.2)}" fill="${C.water}"/>
+    <ellipse cx="-6" cy="${f(wy - 1)}" rx="8" ry="1.6" fill="${C.waterLight}" opacity=".8"/>` : ''}
+  </g>`;
+}
+function dojo() {
+  const tiles = Array.from({ length: 22 }, (_, i) => { const x0 = 1060 + i * 18; const x1 = 1128 + i * 12.8; return `<path d="M${x0},303 L${f(x1)},230" stroke="${C.roof2}" stroke-width="1.4" opacity=".55"/>`; }).join('');
+  return `
+  <!-- platform & courtyard -->
+  <path d="M1000,436 L1440,436 L1478,412 L1478,426 L1440,452 L1000,452 Z" fill="${C.stone2}"/>
+  <path d="M1000,436 L1060,404 L1478,404 L1440,436 Z" fill="${C.stone}"/>
+  <path d="M960,452 L1440,452 L1404,540 L918,540 Z" fill="#d6cfbf"/>
+  ${Array.from({ length: 6 }, (_, i) => `<path d="M${960 - i * 7.2},${452 + i * 17.6} L${1440 - i * 7.2},${452 + i * 17.6}" stroke="#bfb7a6" stroke-width="1"/>`).join('')}
+  ${Array.from({ length: 12 }, (_, i) => `<path d="M${960 + i * 40},452 L${918 + i * 40.5},540" stroke="#bfb7a6" stroke-width="1"/>`).join('')}
+  <path d="M918,540 L1404,540 L1404,548 L918,548 Z" fill="${C.stone2}"/>
+  <!-- side wall -->
+  <path d="M1404,306 L1450,278 L1450,392 L1404,420 Z" fill="${C.wall2}"/>
+  <path d="M1404,306 L1450,278" stroke="${C.pillar}" stroke-width="6"/>
+  <!-- front wall -->
+  <rect x="1088" y="306" width="316" height="114" fill="${C.wall}"/>
+  <rect x="1088" y="306" width="316" height="10" fill="#7a3426"/>
+  ${[1090, 1162, 1230, 1262, 1330, 1396].map(x => `<rect x="${x - 4}" y="306" width="9" height="114" fill="${C.pillar}"/>`).join('')}
+  <rect x="1206" y="330" width="80" height="90" fill="#3d2f26"/>
+  ${Array.from({ length: 5 }, (_, i) => `<path d="M${1210 + i * 18},332 L${1210 + i * 18},420" stroke="#6d4a33" stroke-width="2"/>`).join('')}
+  <path d="M1206,360 L1286,360" stroke="#6d4a33" stroke-width="2"/>
+  ${[[1106, 1150], [1340, 1384]].map(([a, b]) => `<rect x="${a}" y="334" width="${b - a}" height="50" fill="#e4d6b7" stroke="#7a3426" stroke-width="2"/>` +
+    Array.from({ length: 4 }, (_, i) => `<path d="M${a + (i + 1) * (b - a) / 5},334 L${a + (i + 1) * (b - a) / 5},384" stroke="#9e6a4c" stroke-width="1.2"/>`).join('') +
+    `<path d="M${a},359 L${b},359" stroke="#9e6a4c" stroke-width="1.2"/>`).join('')}
+  <!-- steps -->
+  <path d="M1196,420 L1296,420 L1300,436 L1192,436 Z" fill="${C.stone}"/><path d="M1192,436 L1300,436 L1304,450 L1188,450 Z" fill="${C.stone2}"/>
+  <!-- roof -->
+  <path d="M1167,198 L1447,198 L1500,268 L1450,282 L1405,228 L1125,228 Z" fill="${C.roof2}"/>
+  <path d="M1040,296 Q1060,309 1088,305 L1404,305 Q1440,309 1462,288 L1405,228 L1125,228 Z" fill="${C.roof}"/>
+  ${tiles}
+  <path d="M1405,228 L1462,288 Q1484,284 1506,262 L1447,198 Z" fill="#414b56"/>
+  <path d="M1125,228 L1405,228 L1447,198 L1167,198 Z" fill="#59636e"/>
+  <path d="M1125,228 L1405,228" stroke="#2c333a" stroke-width="5" stroke-linecap="round"/>
+  <path d="M1118,232 q-6,-14 6,-18 M1412,232 q6,-14 -6,-18" stroke="#2c333a" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M1040,296 Q1060,309 1088,305 L1404,305 Q1440,309 1462,288" stroke="#2c333a" stroke-width="3" fill="none"/>
+  <path d="M1040,296 q-8,-8 -2,-14 M1462,288 q10,-6 8,-14" stroke="#2c333a" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- plaque -->
+  <rect x="1213" y="309" width="66" height="22" rx="2" fill="#2f2a24" stroke="${C.gold}" stroke-width="1.5"/>
+  <text x="1246" y="325.5" text-anchor="middle" font-size="14" fill="#f0c35a" font-family="var(--serif)" letter-spacing="6" font-weight="700">道館</text>
+  <!-- lanterns -->
+  <ellipse cx="1150" cy="324" rx="7" ry="9" fill="#c0442f"/><ellipse cx="1342" cy="324" rx="7" ry="9" fill="#c0442f"/>
+  <!-- incense stand in courtyard -->
+  <path d="M1236,486 L1256,486 L1260,500 L1232,500 Z" fill="#6a5a46"/><ellipse cx="1246" cy="486" rx="12" ry="4" fill="#8a7860"/>
+  <path d="M1244,484 q-3,-12 2,-20 q4,-8 0,-16" stroke="#cfc8bc" stroke-width="1.5" fill="none" opacity=".7"/>`;
+}
+function spring() {
+  return `
+  <path d="M0,690 Q120,700 210,716 Q260,724 300,720 L300,760 Q180,770 0,760 Z" fill="${C.water}" opacity=".55"/>
+  ${rock(150, 690, 2.2, C.stone2)}${rock(214, 664, 1.8)}${rock(120, 660, 1.4, '#a9a294')}${rock(250, 690, 1.3)}
+  <path d="M190,654 L312,690" stroke="#7e9c58" stroke-width="7" stroke-linecap="round"/>
+  <path d="M190,654 L312,690" stroke="#a9c27d" stroke-width="2" stroke-linecap="round"/>
+  <path d="M232,668 l0,-6 M270,679 l0,-6" stroke="#5f7a40" stroke-width="2"/>
+  <ellipse cx="328" cy="722" rx="112" ry="30" fill="${C.waterDeep}"/>
+  <ellipse cx="328" cy="719" rx="104" ry="25" fill="${C.water}"/>
+  <ellipse cx="300" cy="714" rx="54" ry="8" fill="${C.waterLight}" opacity=".55"/>
+  <path d="M312,690 q6,2 6,12 q0,12 -2,20" stroke="${C.waterLight}" stroke-width="4" fill="none"/>
+  <ellipse cx="316" cy="724" rx="12" ry="4" fill="none" stroke="#e3f2f6" stroke-width="1.5"/><ellipse cx="316" cy="724" rx="22" ry="7" fill="none" stroke="#e3f2f6" stroke-width="1" opacity=".6"/>
+  ${[[222, 724], [244, 742], [282, 750], [330, 752], [378, 748], [418, 736], [436, 718]].map(([x, y], i) => `<ellipse cx="${x}" cy="${y}" rx="${14 + i % 3 * 3}" ry="7" fill="${i % 2 ? C.stone : C.stone2}" stroke="${C.stone3}" stroke-width=".8"/>`).join('')}
+  <path d="M424,700 l6,-14 l4,14 M432,702 l10,-12 l1,12" stroke="#6f8a4c" stroke-width="2" fill="none"/>`;
+}
+function terrain() {
+  return `
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7e3e2"/><stop offset=".55" stop-color="#efe9d8"/></linearGradient>
+    <linearGradient id="slope" x1="0" y1="0" x2=".4" y2="1"><stop offset="0" stop-color="#b3c182"/><stop offset="1" stop-color="#8ea463"/></linearGradient>
+    <linearGradient id="plateau" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfca8f"/><stop offset="1" stop-color="#a7b878"/></linearGradient>
+    <radialGradient id="sun" cx=".15" cy=".05" r=".8"><stop offset="0" stop-color="#fff6dc" stop-opacity=".55"/><stop offset="1" stop-color="#fff6dc" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <path d="M0,250 L120,190 L210,226 L330,150 L450,214 L560,170 L700,236 L820,180 L960,230 L1100,160 L1260,214 L1400,150 L1600,210 L1600,420 L0,420 Z" fill="#c3cfcb"/>
+  <path d="M0,320 L140,262 L260,300 L400,240 L520,296 L660,256 L800,312 L940,262 L1080,300 L1240,250 L1380,290 L1600,240 L1600,460 L0,460 Z" fill="#a9bbb2"/>
+  <ellipse cx="420" cy="330" rx="420" ry="26" fill="#fff" opacity=".45"/><ellipse cx="1180" cy="300" rx="380" ry="20" fill="#fff" opacity=".4"/>
+  <path d="M0,420 Q300,380 620,430 Q760,452 860,420 L960,360 Q1200,300 1600,280 L1600,900 L0,900 Z" fill="url(#slope)"/>
+  <path d="M820,440 Q860,390 960,352 Q1200,300 1600,282 L1600,560 Q1300,590 1080,566 Q900,550 820,500 Z" fill="url(#plateau)"/>
+  <path d="M820,500 Q900,550 1080,566 Q1300,590 1600,560" stroke="#7e9356" stroke-width="3" fill="none" opacity=".6"/>
+  ${Array.from({ length: 40 }, (_, i) => { const x = (i * 157) % 1600, y = 470 + (i * 89) % 330; return `<path d="M${x},${y} l3,-7 l3,7 m2,0 l4,-9 l2,9" stroke="#7d9455" stroke-width="1.4" fill="none" opacity=".6"/>`; }).join('')}
+  <rect width="1600" height="900" fill="url(#sun)"/>`;
+}
+function shadow(x, y, w = 22) { return `<ellipse cx="${f(x + 4)}" cy="${f(y + 1)}" rx="${w}" ry="${f(w * .28)}" fill="#3a3a2a" opacity=".22"/>`; }
+
+/* ---------- full scene ---------- */
+function scene(state) {
+  const cam = state === 'intervene' ? 'translate(-200,14)' : '';
+  const hero = state === 'observe'
+    ? (() => { const p = pathAt(0.55); return { p, svg: shadow(p.x, p.y) + pose('loadA', { x: p.x, y: p.y, s: .78, dir: 1, back: true }) }; })()
+    : (() => { const p = pathAt(0.42); return { p, svg: `<ellipse cx="${p.x}" cy="${p.y + 2}" rx="30" ry="9" fill="none" stroke="${C.gold}" stroke-width="3"/>` + shadow(p.x, p.y) + pose('emptyA', { x: p.x, y: p.y, s: .78, dir: -1, glow: '#f6d77a' }) }; })();
+  const ghost = state === 'intervene' ? (() => { const p = pathAt(0.30); return figure(Object.assign({}, POSE.emptyC, { x: p.x, y: p.y, s: .78, dir: -1, opacity: .32, robe: '#9aa7b4', robe2: '#7d8994' })); })() : '';
+  const objs = [
+    { y: 470, s: pine(1520, 470, 1.15, 1) }, { y: 380, s: pine(980, 382, .9, 0) }, { y: 340, s: pine(1560, 330, .8, 2) },
+    { y: 512, s: pose('meditate', { x: 1300, y: 512, s: .78 }) + shadow(1300, 512, 18) },
+    { y: 528, s: shadow(1120, 528) + pose('sweep', { x: 1120, y: 528, s: .78, dir: -1 }) },
+    { y: 520, s: vat(1000, 520, state === 'observe' ? .55 : .57) },
+    { y: hero.p.y, s: hero.svg },
+    { y: 640, s: ghost },
+    { y: 640, s: bush(706, 662, 1) }, { y: 610, s: rock(520, 610, 1.1) }, { y: 590, s: bush(1030, 596, .9) },
+    { y: 900, s: pine(560, 860, 1.6, 1) },
+    { y: 820, s: bush(460, 800, 1.4) }, { y: 830, s: rock(860, 812, 1.8, C.stone2) }, { y: 830, s: bush(1220, 820, 1.6) }
+  ].sort((a, b) => a.y - b.y).map(o => o.s).join('');
+  return `<svg class="scene" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" style="${state === 'intervene' ? 'filter:saturate(.82) brightness(.97)' : ''}">
+    ${terrain()}
+    <g transform="${cam}">
+      ${bamboo(110, 660, 6)}
+      ${spring()}
+      ${pathSvg(state === 'observe' ? 0.55 : 0.42, state === 'observe' ? 0.02 : 0.98)}
+      ${dojo()}
+      ${objs}
+      ${state === 'intervene' ? `<ellipse cx="1000" cy="494" rx="52" ry="20" fill="none" stroke="${C.gold}" stroke-width="3" stroke-dasharray="7 5"/>` : ''}
+    </g>
+  </svg>`;
+}
+
+/* ---------- HTML chrome ---------- */
+const ava = (txt, color) => `<span class="ava" style="background:${color}">${txt}</span>`;
+function hud(paused) {
+  return `<div class="hud">
+    <span class="title">宗門編年</span><span class="sub">挑水切片 · V1 畫面稿</span>
+    <div class="clock"><b>第 3 天 · 辰時</b><div class="daybar"><i style="width:38%"></i></div></div>
+    <span class="btn play ${paused ? 'paused' : ''}">${paused ? '▶ 繼續' : '❚❚ 暫停'}<span class="kbd">Space</span></span>
+    <span class="btn ${paused ? '' : 'on'}">1×</span><span class="btn">2×</span><span class="btn">4×</span>
+    <span style="font-size:12px;color:var(--ink2)">播放倍率</span>
+    <span class="spacer"></span>
+    <span class="chip water">水缸 ${paused ? '34' : '33'} / 60 擔</span><span class="chip leg">主角腳力 Lv 3</span><span class="chip">今日已挑 7 趟</span>
+    <span class="btn">名冊 ▾</span><span class="btn">事件</span>
+  </div>`;
+}
+function roster(sel) {
+  const card = (cls, a, nm, st, bars, badge) => `<div class="card ${cls}">${a}<div style="flex:1"><div class="nm">${nm}</div><div class="st">${st}</div>
+    <div class="bars">${bars.map(([v, c]) => `<i style="--v:${v}%;--c:${c}"></i>`).join('')}</div></div>${badge || ''}</div>`;
+  return `<div class="roster">
+    ${card(sel ? 'sel' : '', ava('主', C.hero), '主角 · 林遠', sel ? '<b>挑水</b>・下山（空桶）・第 8 趟' : '<b>挑水</b>・上山負重・第 8 趟', [[62, C.hero], [70, '#c08a3e'], [60, '#7a64a6']], sel ? '<span class="badge">待執行 1</span>' : '')}
+    ${card('', ava('師', C.master), '師父 · 玄真', '<b>打坐</b>・道館院中', [[90, C.master], [85, '#c08a3e'], [40, '#7a64a6']])}
+    ${card('', ava('兄', C.senior), '師兄 · 周衡', '<b>掃地</b>・道館院中', [[30, C.senior], [55, '#c08a3e'], [50, '#7a64a6']])}
+    <span class="btn more">展開名冊 ▸ <span class="kbd">R</span></span>
+  </div>`;
+}
+const at = (x, y) => `left:${x}px;top:${y}px`;
+
+function boardObserve() {
+  const p = pathAt(0.55);
+  return `<div class="board" id="observe">${scene('observe')}${hud(false)}
+    <div class="feed"><div><span class="t">辰時</span><b>主角</b> 倒水完成 · 水缸 +6 擔</div><div><span class="t">辰時</span><b>主角</b> 第 8 趟出發</div><div><span class="t">卯時</span><b>主角</b> 腳力升到 <b>Lv 3</b>，下趟更快</div></div>
+    <div class="tag place" style="${at(1246, 168)}">道館</div>
+    <div class="tag place" style="${at(312, 620)}">泉水</div>
+    <div class="tag place" style="${at(1000, 422)}">水缸</div>
+    <div class="pill" style="${at(p.x, p.y - 106)}"><span class="ring" style="--p:62%"></span>挑水 · 上山負重 62%</div>
+    <div class="tag hero" style="${at(p.x, p.y + 6)}">主角</div>
+    <div class="tag" style="${at(1300, 518)}">師父 · 打坐</div>
+    <div class="tag" style="${at(1120, 534)}">師兄 · 掃地</div>
+    <div class="float" style="${at(1000, 396)}">+6 擔</div>
+    <div class="drawer"><span class="btn">細節 ▸</span></div>
+    <div class="hint">點人物看他在做什麼；點地點下令（會自動暫停）　·　拖曳平移　·　滾輪縮放</div>
+    ${roster(false)}</div>`;
+}
+function boardIntervene() {
+  const p = pathAt(0.42), g = pathAt(0.30);
+  const hx = p.x - 200, hy = p.y + 14, gx = g.x - 200, gy = g.y + 14, vx = 800, vy = 534;
+  return `<div class="board" id="intervene">${scene('intervene')}${hud(true)}
+    <div class="banner">❚❚ 已暫停　選單開著時世界不前進；下令或按 Esc 關閉後繼續</div>
+    <div class="flow"><b>這張畫面示範的操作順序</b><ol>
+      <li><i>1</i>點主角（或底部人物卡）選取</li><li><i>2</i>點水缸 → 自動暫停、跳出操作</li>
+      <li><i>3</i>右側看目前工作、腳力與速度</li><li><i>4</i>選「本趟後休息」下令</li><li><i>5</i>看待執行指令與生效時間</li></ol></div>
+    <div class="tag place" style="${at(1046, 182)}">道館</div>
+    <div class="tag place" style="${at(112, 634)}">泉水</div>
+    <div class="tag hero sel" style="${at(hx, hy + 8)}">主角 · 林遠</div>
+    <div class="pill" style="${at(hx, hy - 108)}"><span class="ring" style="--p:24%"></span>挑水 · 下山空桶 24%</div>
+    <div class="tag ghost" style="${at(gx, gy + 6)}">初始腳力影子 · 不產水</div>
+    <div class="call" style="${at(hx - 58, hy - 60)}">1</div>
+    <div class="call" style="${at(vx - 70, vy - 80)}">2</div>
+    <div class="menu" style="${at(850, 268)}">
+      <h3>水缸 <small>道館院中 · 點選位置</small></h3>
+      <div class="waterbar"><i style="width:57%"></i></div><div class="desc">存水 34 / 60 擔。每趟挑回 6 擔；宗門每天用掉約 30 擔。</div>
+      <div class="who">對象：主角 · 林遠（腳力 Lv 3）</div>
+      <div class="opt hover"><b>本趟後休息</b><span>這趟挑完、倒進水缸後停手回道館休息</span></div>
+      <div class="opt off"><b>開始挑水（持續）</b><span>已在挑水中</span></div>
+      <div class="opt off"><b>立即倒水</b><span>肩上是空桶：要先到泉水裝水</span></div>
+      <div class="opt off"><b>派師兄一起挑</b><span>示範只開放主角下令</span></div>
+      <div class="foot"><span>↑↓ 選擇　Enter 下令</span><span>Esc 關閉</span></div>
+    </div>
+    <div class="call" style="${at(822, 404)}">4</div>
+    <div class="panel">
+      <h2>${ava('主', C.hero)}林遠 <small>主角 · 道館學徒</small></h2>
+      <h4>目前工作</h4>
+      <div class="work"><div class="now">挑水（持續）· 第 8 趟</div>
+        <div class="stages"><div class="done">倒水 ✓</div><div class="cur">下山</div><div>取水</div><div>上山</div><div>倒水</div></div>
+        <div class="prog"><i style="width:24%"></i></div>
+        <div class="kv"><span>本趟已走</span><b>12 秒 / 預估 49 秒</b><span>這趟會挑回</span><b>6 擔（倒水時入帳）</b></div></div>
+      <h4>腳力（成長）</h4>
+      <div class="leg"><span class="lv">Lv 3</span><div style="flex:1"><div class="bar"><i style="width:60%"></i></div><div class="note" style="margin-top:3px">12 / 20 · 每完成一趟 +2 · 再 4 趟升級</div></div></div>
+      <div class="speed">
+        <div><i style="height:20px"></i>初始<br>1.00×</div><div><i style="height:24px"></i>Lv 2<br>1.10×</div>
+        <div class="me"><i style="height:28px"></i><b>目前</b><br>1.20×</div><div><i style="height:32px"></i>Lv 4<br>1.30×</div><div class="cap"><i style="height:40px"></i>上限<br>1.60×</div></div>
+      <div class="kv"><span>整趟耗時（同 1× 播放）</span><b>49 秒，初始 64 秒</b><span>只影響走路；裝水／倒水</span><b>固定各 4 秒</b></div>
+      <h4>待執行指令</h4>
+      <div class="pending"><div><b>本趟後休息</b><span>第 8 趟倒水完成時生效（約 37 秒後）</span></div><span class="btn">取消</span></div>
+      <div class="note">影子是同條件的初始腳力，只給你比快慢，不挑水、不升級。播放倍率改的是看的速度，不是腳力。</div>
+    </div>
+    <div class="call" style="${at(1214, 124)}">3</div>
+    <div class="call" style="${at(1214, 556)}">5</div>
+    <div class="toast" style="${at(hx - 90, hy - 150)}">已下令：<b>本趟後休息</b>（第 8 趟倒水後生效）</div>
+    ${roster(true)}</div>`;
+}
+
+/* ---------- sheets ---------- */
+function boardCharacters() {
+  const big = (name, x, label, sub, ex = {}) => `<g>${shadow(x, 330, 34)}${pose(name, Object.assign({ x, y: 330, s: 2.1, dir: 1 }, ex))}</g>
+     <text x="${x}" y="362" text-anchor="middle" font-size="16" font-weight="700" fill="${C.ink}">${label}</text>
+     <text x="${x}" y="382" text-anchor="middle" font-size="12" fill="#6b6254">${sub}</text>`;
+  const strip = (prefix, y, title, timing, notes, color) => {
+    let s = `<text x="40" y="${y - 132}" font-size="15" font-weight="700" fill="${C.ink}">${title}</text>
+      <text x="40" y="${y - 114}" font-size="12" fill="#6b6254">${timing}</text>`;
+    ['A', 'B', 'C', 'D'].forEach((k, i) => {
+      const x = 90 + i * 112;
+      s += shadow(x, y, 20) + pose(prefix + k, { x, y, s: 1.05 });
+      s += `<text x="${x}" y="${y + 22}" text-anchor="middle" font-size="11" fill="#6b6254">${['觸地', '經過', '觸地', '經過'][i]}</text>`;
+    });
+    s += `<rect x="40" y="${y + 32}" width="440" height="6" rx="3" fill="#e5dccb"/><rect x="40" y="${y + 32}" width="${timing.includes('110') ? 330 : timing.includes('130') ? 390 : 440}" height="6" rx="3" fill="${color}"/>`;
+    s += notes.map((n, i) => `<text x="40" y="${y + 56 + i * 16}" font-size="12" fill="#4a4338">· ${n}</text>`).join('');
+    return s;
+  };
+  return `<div class="board tall" id="characters"><svg class="scene" viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg" font-family="var(--font)">
+    <rect width="1600" height="1000" fill="#f6efe0"/>
+    <text x="30" y="44" font-size="26" font-weight="700" fill="${C.ink}" font-family="var(--serif)">人物與挑水動作設計</text>
+    <text x="30" y="68" font-size="13" fill="#6b6254">同一套 SVG 人物函式畫出場景與本表；側面為基準，左右用鏡射。數字是 V3 的起始值，試作時以實際觀感調整。</text>
+    <rect x="20" y="86" width="1560" height="320" rx="12" fill="#fffaf0" stroke="${C.line}"/>
+    ${big('idle', 150, '待機', '扁擔上肩、空桶，微呼吸 ±1px')}
+    ${big('emptyA', 370, '空桶走路', '身體前傾 6°，桶擺 ±10°')}
+    ${big('dip', 590, '取水', '跪單膝、前傾 32°，桶斜入水 4 秒')}
+    ${big('loadA', 820, '負重返回', '前傾 15°、膝彎、扁擔下彎、重心低')}
+    ${big('pour', 1040, '倒水', '雙手抬桶傾 80°，水柱入缸 4 秒')}
+    ${big('grownA', 1270, '成長後負重', '前傾 8°、步幅大、後手自然擺')}
+    ${vat(1102, 330, .6, 1.5)}
+    <path d="M1460,140 L1460,370" stroke="${C.line}" stroke-dasharray="4 4"/>
+    <text x="1468" y="150" font-size="13" font-weight="700" fill="${C.ink}">角色配色</text>
+    ${pose('idle', { x: 1500, y: 250, s: .7 })}${pose('idle', { x: 1556, y: 250, s: .7, robe: C.master, robe2: C.master2 })}
+    ${pose('idle', { x: 1500, y: 360, s: .7, robe: C.senior, robe2: C.senior2 })}${pose('emptyA', { x: 1556, y: 360, s: .7, back: true })}
+    <text x="1468" y="390" font-size="11" fill="#6b6254">主角／師父／師兄／背面</text>
+
+    <rect x="20" y="420" width="760" height="560" rx="12" fill="#fffaf0" stroke="${C.line}"/>
+    ${strip('empty', 600, '空桶下山　4 幀循環', '每幀 110 ms（循環 0.44 秒＝一步半）· 桶與步伐反向擺', ['腳在 A／C 觸地，B／D 是另一腳經過，身體最高 −3px', '空桶輕、擺幅大 ±10°；扁擔幾乎不彎'], C.hero)}
+    ${strip('load', 850, '負重上山　4 幀循環', '每幀 130 ms（循環 0.52 秒）· 步幅小、膝彎、身體低 +3px', ['滿桶擺幅只有 ±3°，扁擔兩端下彎 5px', '下山／上山的實際移動速度由腳力決定，幀率跟著移速成比例'], '#c08a3e')}
+    <g transform="translate(520,0)">
+      <text x="0" y="504" font-size="15" font-weight="700" fill="${C.ink}">成長後負重　4 幀</text>
+      <text x="0" y="522" font-size="12" fill="#6b6254">每幀 105 ms · 步幅 +25%</text>
+      ${['A', 'B', 'C', 'D'].map((k, i) => shadow(30 + i * 62, 640, 16) + pose('grown' + k, { x: 30 + i * 62, y: 640, s: .82 })).join('')}
+      ${['身體更直（8°）', '後手放開扁擔自然擺', '腳抬更高（經過幀 −5px）', '影子用初始步態對照'].map((n, i) => `<text x="0" y="${676 + i * 16}" font-size="12" fill="#4a4338">· ${n}</text>`).join('')}
+      <text x="0" y="776" font-size="13" font-weight="700" fill="${C.ink}">初始影子</text>
+      ${figure(Object.assign({}, POSE.loadA, { x: 40, y: 880, s: .9, opacity: .32, robe: '#9aa7b4', robe2: '#7d8994' }))}
+      ${pose('loadA', { x: 130, y: 880, s: .9 })}
+      <text x="0" y="910" font-size="11" fill="#6b6254">淡灰、30% 透明、無名牌泡泡</text>
+      <text x="0" y="926" font-size="11" fill="#6b6254">同條件跑初始腳力，不入帳</text>
+    </g>
+
+    <rect x="800" y="420" width="780" height="560" rx="12" fill="#fffaf0" stroke="${C.line}"/>
+    <text x="824" y="452" font-size="15" font-weight="700" fill="${C.ink}">路線需要的朝向與遮擋</text>
+    <g transform="translate(830,470) scale(.42)">
+      <rect width="1600" height="900" fill="#e8e0cc"/>
+      <path d="M${PATH.map(p => pt(...p)).join(' L')}" fill="none" stroke="${C.earth}" stroke-width="40" stroke-linejoin="round"/>
+      ${PATH.slice(0, -1).map((p, i) => { const q = PATH[i + 1]; const m = lerp(p, q, .5); return `<circle cx="${m[0]}" cy="${m[1]}" r="20" fill="${q[0] < p[0] ? C.hero : '#c08a3e'}"/><text x="${m[0]}" y="${m[1] + 8}" text-anchor="middle" font-size="24" fill="#fff" font-weight="700">${i + 1}</text>`; }).join('')}
+      <circle cx="${PATH[0][0]}" cy="${PATH[0][1]}" r="16" fill="#6e4b33"/><circle cx="${PATH[7][0]}" cy="${PATH[7][1]}" r="16" fill="${C.water}"/>
+      <text x="${PATH[0][0] + 26}" y="${PATH[0][1] - 10}" font-size="30" fill="${C.ink}">水缸</text><text x="${PATH[7][0] - 30}" y="${PATH[7][1] + 50}" font-size="30" fill="${C.ink}">泉水</text>
+      <ellipse cx="706" cy="650" rx="44" ry="22" fill="${C.grass3}" opacity=".8"/><text x="706" y="710" text-anchor="middle" font-size="26" fill="${C.ink}">矮叢遮腿</text>
+      <circle cx="1000" cy="520" r="60" fill="none" stroke="${C.ink}" stroke-dasharray="8 8"/><text x="1080" y="590" font-size="26" fill="${C.ink}">倒水時人在缸後</text>
+    </g>
+    <text x="824" y="878" font-size="12" fill="#4a4338">· 7 段之字路：藍＝下山往左、橙＝上山往右；只需「側面向左／向右」兩個朝向（右＝鏡射）。</text>
+    <text x="824" y="896" font-size="12" fill="#4a4338">· 上山段畫背面 3/4（看得到髮髻與腰結），下山段畫正面 3/4；共用骨架，只換頭與腰帶層。</text>
+    <text x="824" y="914" font-size="12" fill="#4a4338">· 深度依腳底 y 排序：人物在矮叢後只露上半身；倒水時水缸畫在人前，桶與水柱在缸口之上。</text>
+    <text x="824" y="932" font-size="12" fill="#4a4338">· 選取外框、名牌、泡泡永遠畫在最上層，不被樹遮住；影子在主角之下。</text>
+    <text x="824" y="950" font-size="12" fill="#4a4338">· 縮放 0.6×～1.6×；人物在 1× 約 75px 高，最低可讀 0.6× 時約 45px（名牌字仍 12px）。</text>
+  </svg></div>`;
+}
+function boardSceneUI() {
+  const sw = (c, n) => `<span class="sw"><i style="background:${c}"></i>${n}</span>`;
+  return `<div class="board tall" id="sceneui"><svg class="scene" viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1600" height="1000" fill="#f6efe0"/>
+    <rect x="20" y="86" width="980" height="420" rx="12" fill="#fffaf0" stroke="${C.line}"/>
+    <g transform="translate(-529,84) scale(.62)">${dojo()}</g>
+    <g transform="translate(680,-234) scale(.7)">${spring()}</g>
+    ${bucket(450, 430, 0, 0, 1.6)}${bucket(500, 430, 0, .9, 1.6)}
+    ${vat(210, 488, 0, .9)}${vat(300, 488, .5, .9)}${vat(390, 488, 1, .9)}
+    ${bush(570, 488, .8)}${rock(640, 486, 1.1)}${pine(720, 488, .62, 0)}${pine(820, 488, .62, 1)}${bamboo(930, 488, 4)}
+    ${[[475, '木桶 空／滿'], [300, '水缸 空／半／滿'], [600, '矮叢・石'], [770, '松（兩色）'], [930, '竹']].map(([x, t]) => `<text x="${x}" y="500" text-anchor="middle" font-size="11" fill="#6b6254">${t}</text>`).join('')}
+    <text x="222" y="205" text-anchor="middle" font-size="11" fill="#6b6254">道館：歇山頂、紅柱、白牆、匾額、燈籠、香爐</text>
+    <text x="830" y="330" text-anchor="middle" font-size="11" fill="#6b6254">泉水：竹管引水、石池、溪</text>
+    <rect x="20" y="520" width="980" height="460" rx="12" fill="#fffaf0" stroke="${C.line}"/>
+    <rect x="1020" y="86" width="560" height="894" rx="12" fill="#fffaf0" stroke="${C.line}"/>
+  </svg>
+  <div class="sheet abs" style="left:0;top:0;width:1600px">
+    <h1>場景與介面元件</h1><div class="lead">場景元件與 UI 元件都來自兩張完整畫面；這裡拆開看狀態。全部原創向量繪製，無第三方素材。</div>
+  </div>
+  <div class="abs cap" style="left:40px;top:96px"><h3>場景元件</h3>光從左上來，影子一律右下橢圓 22% 透明；物件依腳底 y 排序。</div>
+
+  <div class="abs" style="left:40px;top:536px;width:940px">
+    <h3>介面元件</h3>
+    <div style="display:flex;gap:16px;margin-top:10px;align-items:flex-start;position:relative;height:420px">
+      <div style="width:290px">
+        <div class="cap">人物卡：一般／選取＋待執行</div>
+        <div class="card" style="margin-top:6px">${ava('兄', C.senior)}<div><div class="nm">師兄 · 周衡</div><div class="st"><b>掃地</b>・道館院中</div><div class="bars"><i style="--v:30%;--c:${C.senior}"></i><i style="--v:55%;--c:#c08a3e"></i></div></div></div>
+        <div class="card sel" style="margin-top:8px">${ava('主', C.hero)}<div><div class="nm">主角 · 林遠</div><div class="st"><b>挑水</b>・取水中</div><div class="bars"><i style="--v:62%;--c:${C.hero}"></i><i style="--v:60%;--c:#7a64a6"></i></div></div><span class="badge">待執行 1</span></div>
+        <div class="cap" style="margin-top:12px">場景標籤：名牌／選取／地點／影子</div>
+        <div style="position:relative;height:70px;margin-top:6px">
+          <span class="tag hero" style="left:40px;top:4px">主角</span><span class="tag hero sel" style="left:130px;top:2px">主角 · 林遠</span>
+          <span class="tag place" style="left:230px;top:2px">水缸</span><span class="tag ghost" style="left:110px;top:38px">初始腳力影子 · 不產水</span></div>
+        <div class="cap">工作泡泡（外圈＝本段進度）</div>
+        <div style="position:relative;height:30px;margin-top:4px"><span class="pill" style="left:110px;top:2px"><span class="ring" style="--p:62%"></span>挑水 · 上山負重 62%</span></div>
+      </div>
+      <div style="width:300px">
+        <div class="cap">操作選項：可做／滑過／不可做</div>
+        <div class="opt" style="margin-top:6px"><b>開始挑水（持續）</b><span>來回泉水與水缸，直到你叫停</span></div>
+        <div class="opt hover"><b>本趟後休息</b><span>這趟挑完、倒進水缸後停手</span></div>
+        <div class="opt off"><b>立即倒水</b><span>肩上是空桶：要先到泉水裝水</span></div>
+        <div class="cap" style="margin-top:12px">待執行指令與回饋</div>
+        <div class="pending"><div><b>本趟後休息</b><span>第 8 趟倒水完成時生效</span></div><span class="btn">取消</span></div>
+        <div style="position:relative;height:40px;margin-top:8px"><span class="toast" style="left:0;top:4px">已下令：<b>本趟後休息</b></span></div>
+      </div>
+      <div style="width:300px">
+        <div class="cap">HUD：播放倍率和腳力分開放</div>
+        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><span class="btn play">❚❚ 暫停</span><span class="btn play paused">▶ 繼續</span><span class="btn on">1×</span><span class="btn">2×</span><span class="btn">4×</span></div>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><span class="chip water">水缸 34 / 60 擔</span><span class="chip leg">主角腳力 Lv 3</span><span class="chip">今日已挑 7 趟</span></div>
+        <div class="cap" style="margin-top:12px">暫停橫幅與流程編號</div>
+        <div style="position:relative;height:40px;margin-top:4px"><span class="banner" style="left:150px;top:0">❚❚ 已暫停</span></div>
+        <div style="display:flex;gap:8px;margin-top:4px"><span class="call" style="position:static">1</span><span class="call" style="position:static">2</span><span class="call" style="position:static">3</span></div>
+        <div class="cap" style="margin-top:10px">浮字：入帳藍、成長金</div>
+        <div style="position:relative;height:30px"><span class="float" style="left:40px;top:4px">+6 擔</span><span class="float gold" style="left:150px;top:4px">腳力 Lv 3 ↑</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="abs cap" style="left:1040px;top:96px;width:520px;font-size:13px;color:var(--ink)">
+    <h3>主色</h3>
+    <div style="margin:8px 0 12px">${sw('#f6efe0', '紙底')}${sw('#2f2a24', '墨字')}${sw('#c8962e', '選取金')}${sw('#a33b2a', '朱紅')}${sw('#4f93b0', '水')}${sw('#4f78a8', '主角')}${sw('#7a64a6', '腳力')}</div>
+    <div>${sw('#a7b878', '草地')}${sw('#d8c8a2', '山路')}${sw('#bdb6a6', '石')}${sw('#4b5662', '屋瓦')}${sw('#8c3a2b', '紅柱')}${sw('#6c5a8e', '師父')}${sw('#b07a3a', '師兄')}</div>
+    <h3 style="margin-top:18px">字級</h3>
+    <div style="line-height:1.9">
+      <div><span style="font-family:var(--serif);font-size:20px;font-weight:700">道館 20px 標題（宋／明體優先）</span></div>
+      <div style="font-size:16px;font-weight:700">16px 目前工作、時間</div>
+      <div style="font-size:14px">14px 選項、面板內文</div>
+      <div style="font-size:12px;color:var(--ink2)">12px 名牌、原因、說明（最低可讀，縮放不再縮小）</div>
+    </div>
+    <h3 style="margin-top:18px">最低尺寸</h3>
+    <div style="line-height:1.7">· 可點目標 ≥ 32×32px（人物命中框比外形大一圈）<br>· 人物 1× 約 75px 高，最小縮放 0.6× 約 45px<br>· 1280×720 仍要放得下 HUD、人物列與右側面板；更窄時面板改成底部抽屜</div>
+    <h3 style="margin-top:18px">動畫狀態（人物）</h3>
+    <div style="line-height:1.7">待機 → 空桶走（下山）→ 取水 → 負重走（上山）→ 倒水 → 回到空桶走或待機（休息）。<br>成長後只換步態參數（步幅、傾斜、幀時），不換角色圖。<br>暫停：動畫停在當前幀；背景分頁自動暫停。</div>
+    <h3 style="margin-top:18px">真的與示意</h3>
+    <div style="line-height:1.7">本表與兩張畫面是 V1 畫面稿，數字（49 秒、Lv 3、1.20×、6 擔）是示意值，不是模型輸出。V3 才接極小模型，屆時由模型決定。</div>
+  </div>
+  </div>`;
+}
+
+/* ---------- mount ---------- */
+const BOARDS = { observe: boardObserve, intervene: boardIntervene, characters: boardCharacters, sceneui: boardSceneUI };
+const want = new URLSearchParams(location.search).get('board');
+if (want) document.body.classList.add('single');
+document.getElementById('root').innerHTML = (want ? [want] : Object.keys(BOARDS)).map(k => BOARDS[k]()).join('');
+</script>
+</body>
+</html>
