@@ -1,0 +1,17 @@
+{
+ "loadMs": 933,
+ "trips": [
+  {
+   "level": 1,
+   "seconds": 38.45,
+   "realMs": 9683
+  },
+  {
+   "level": 2,
+   "seconds": 34.76666666666667,
+   "realMs": 9286
+  }
+ ],
+ "wideConsole": [],
+ "narrowConsole": []
+}

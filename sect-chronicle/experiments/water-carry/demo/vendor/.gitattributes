@@ -1,0 +1,2 @@
+# 第三方原樣檔（PixiJS 打包產物含 shader 字串的行尾空白），不套用本 repo 的空白檢查
+pixi.min.mjs -whitespace linguist-vendored

@@ -1,0 +1,14 @@
+ok   一般（非 headless）Chromium：Chrome/141.0.7390.37
+ok   找到展示分頁 http://127.0.0.1:8770/demo/
+ok   4× 播放中（tick 338）
+ok   點水缸：選單開著、自動暫停
+ok   開新分頁：展示分頁 hidden，瀏覽器送出 visibilitychange ["hidden@338"]
+ok   背景：改記為自動暫停，收回選單的恢復權
+ok   背景 3 秒 tick 不動（338）
+ok   切回：visible，仍暫停，選單還在，沒補 tick
+ok   Esc 關選單後仍暫停（V2 的反例：這裡以前會恢復播放）
+ok   空白鍵恢復，1 秒推進 239 步（4× 預期約 240，不追趕背景時間）
+ok   播放中轉背景：自動暫停（tick 589）
+ok   切回仍暫停、沒補 tick
+ok   console 沒有錯誤或警告
+PASS 全部條件成立
