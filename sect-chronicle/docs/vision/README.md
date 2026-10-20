@@ -2,7 +2,7 @@
 
 狀態：**討論草案／未排程／不是開發契約**。整理：Codex（遊戲 PO），2026-10-20；來源為擁有人在遊戲 PO 聊天提供的三份構想。追蹤 [Proposal #152](https://github.com/lalagrass/earth-ascension/issues/152)。本次授權保存與整理，沒有批准全部玩法、數值、技術選型或交期。
 
-後續窄範圍批准：擁有人已另行要求 [SG-EXP-01 #155](https://github.com/lalagrass/earth-ascension/issues/155)獨立挑水成長展示，見[工作包／Claude prompt](../EXPERIMENT_WATER_CARRY.md)。只有這一小包可做隔離原型，其餘願景仍待討論，不代表全本 GDD 採用或正式引擎已加入成長。
+後續批准 [D11](../DECISIONS_AND_SOURCES.md#d11sg-exp-01-ui視覺切片2026-10-20)：[SG-EXP-01 #155](https://github.com/lalagrass/earth-ascension/issues/155)已由純挑水包更正為 UI／視覺切片，先完整畫面稿與動作設計，再比較 PixiJS／Godot，最後可操作展示；挑水成長作驗證情境。見[新版工作包／Claude prompt](../EXPERIMENT_WATER_CARRY.md)。只批准獨立展示與比較，不代表全本 GDD 採用、正式引擎遷移或正式世界加入成長。
 
 | 文件 | 內容與用途 |
 |---|---|
