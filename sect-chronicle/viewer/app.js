@@ -858,7 +858,8 @@
     if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
     if (ctl.mode === 'setup') return;
     if (ev.key === ' ') {
-      if (tag === 'BUTTON' || tag === 'SUMMARY') return; // 讓按鈕自己處理空白鍵
+      // 空白鍵是全域播放／暫停；只有選單裡的按鈕與展開鈕保留原本的空白鍵行為。
+      if (tag === 'SUMMARY' || (tag === 'BUTTON' && ev.target.closest('#menu'))) return;
       ev.preventDefault();
       ui.pausedByMenu = false;
       ctl.toggle();
