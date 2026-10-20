@@ -1,13 +1,15 @@
 # 長期願景與討論入口
 
-狀態：**討論草案／未排程／不是開發契約**。整理：Codex（遊戲 PO），2026-10-20；來源為擁有人在遊戲 PO 聊天提供的兩份文字。追蹤 [Proposal #152](https://github.com/lalagrass/earth-ascension/issues/152)。本次授權保存與整理，沒有批准全部玩法、數值、技術選型或交期。
+狀態：**討論草案／未排程／不是開發契約**。整理：Codex（遊戲 PO），2026-10-20；來源為擁有人在遊戲 PO 聊天提供的三份構想。追蹤 [Proposal #152](https://github.com/lalagrass/earth-ascension/issues/152)。本次授權保存與整理，沒有批准全部玩法、數值、技術選型或交期。
 
 | 文件 | 內容與用途 |
 |---|---|
 | [山間道長期願景](SHANJIANDAO_DRAFT.md) | 現代山村、師徒生活、復甦與門派發展；原意、PO 建議、現況差異與待決策 |
 | [人格、命譜與卦象草案](PERSONALITY_DESTINY_DRAFT.md) | 人格呈現／行為偏好、命格天賦、判詞、占卜與事件的責任及取捨 |
+| [村民生活與邀請入門草案](NPC_LIFE_RECRUITMENT_DRAFT.md) | NPC 的追求、交往與可知資訊、入門意願／安置及非弟子合作 |
 | [第一份原稿](sources/2026-10-20-shanjiandao-original.md) | 《山間道：靈氣復甦》GDD，原樣保存；原文公式、JSON 與週數均屬提案 |
 | [第二份原稿](sources/2026-10-20-personality-destiny-original.md) | 人格命盤／易經構想，文字保存，僅清除三處空白行的行尾空白以通過 diff 檢查；原文錯誤與 GDScript 範例保留供對照，不能直接採用 |
+| [第三份原稿](sources/2026-10-20-npc-life-recruitment-original.md) | 村民自主／交友／點化招募，按聊天來稿保存；範例不是已完成的 Utility AI 或可直接使用的引擎 |
 
 ## 怎麼一起討論
 

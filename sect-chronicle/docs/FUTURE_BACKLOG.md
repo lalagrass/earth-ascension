@@ -2,9 +2,9 @@
 
 ## 2026-10-20 長期願景與人格命譜草案
 
-擁有人提供兩份構想並要求一併整理，保存於[長期願景入口](vision/README.md)：[《山間道》願景](vision/SHANJIANDAO_DRAFT.md)與[人格／命譜／卦象](vision/PERSONALITY_DESTINY_DRAFT.md)，含原稿對照、PO 建議及待決策，追蹤 [Proposal #152](https://github.com/lalagrass/earth-ascension/issues/152)。這次批准文件整理，不表示正式改名、現代世界觀／新玩法／數值／16 週交期或換 Godot／Unity 已定案；不增加 14 天切片或 RT-04／05 的依賴與 DoD。
+擁有人提供三份構想並要求一併整理，保存於[長期願景入口](vision/README.md)：[《山間道》願景](vision/SHANJIANDAO_DRAFT.md)、[人格／命譜／卦象](vision/PERSONALITY_DESTINY_DRAFT.md)與[村民生活／邀請入門](vision/NPC_LIFE_RECRUITMENT_DRAFT.md)，含原稿對照、PO 建議及待決策，追蹤 [Proposal #152](https://github.com/lalagrass/earth-ascension/issues/152)。這次批准文件整理，不表示正式改名、現代世界觀／新玩法／數值／16 週交期或換 Godot／Unity 已定案；不增加 14 天切片或 RT-04／05 的依賴與 DoD。
 
-生活成長／設施／巡山延伸下方既有 BL；安全區接 #104、村莊演化接 #105。人格分析及文化投影繼續引用 Earth PO 主責 #106；遊戲命格天賦／占卜資訊與事件因果先留 #152 討論，不重建共用人格核心、不新增 schema／RNG／服務。全部維持未來研究、實作未排程；原稿程式和倍率不是 coding agent 的需求或可直接採用的元件。
+生活成長／設施／巡山延伸下方既有 BL；安全區接 #104，村莊演化／NPC 追求與非弟子合作接 #105／BL-A01～A04。人格分析及文化投影繼續引用 Earth PO 主責 #106；遊戲命格天賦／占卜資訊與事件因果、動態招募先留 #152 討論，不重建共用人格核心、不新增 schema／RNG／服務、不替換現有兩名固定候選。全部維持未來研究、實作未排程；原稿程式和倍率不是 coding agent 的需求或可直接採用的元件。
 
 ## D8有限範圍已提入目前規劃
 
