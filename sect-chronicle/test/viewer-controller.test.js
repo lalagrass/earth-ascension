@@ -354,3 +354,140 @@ test('保存點：批次中途出錯時只在成功前綴跨日才通知，世�
   assert.deepEqual(calls, [{ tick: 182, reasons: ['day'] }]);
   assert.equal(Realtime.hashWorld(ctl.world), refHash(182));
 });
+
+// ---------- SG-RT-04：建角開局與下令 ----------
+
+const SETUP = {
+  characterOptions: { templateId: 'herb-child', allocation: { rootBone: 2, comprehension: 0, craft: 1 }, personality: { risk: 'bold', bond: 'caring' } },
+  policy: Object.assign({}, Realtime.ASK_POLICY),
+  goals: [{ id: 'goal-pills', kind: 'stockPills', count: 2 }, { id: 'goal-alchemy', kind: 'buildFacility', facilityType: 'alchemyRoom' }],
+};
+
+test('開局設定：預設輸入與 createWorld(seed) 相同；建角、政策、目標在未推 tick 的世界依序套用', () => {
+  const ctl = Controller.createController(Realtime);
+  assert.equal(ctl.prepare(SEED, { characterOptions: undefined, policy: Realtime.DEFAULT_POLICY, goals: Realtime.createWorld(SEED).state.goals }).ok, true);
+  assert.equal(Realtime.hashWorld(ctl.world), refHash(0), '和預設相同的政策、目標不另下命令');
+  const g0 = ctl.generation;
+
+  assert.equal(ctl.prepare(SEED, SETUP).ok, true);
+  const w = ctl.world;
+  assert.equal(ctl.generation, g0 + 1);
+  assert.equal(w.clock.tick, 0);
+  assert.deepEqual(w.characterOptions, SETUP.characterOptions);
+  assert.deepEqual(w.policy, SETUP.policy);
+  assert.deepEqual(w.goals, SETUP.goals);
+  assert.deepEqual(w.commandLog.map((c) => [c.id, c.type]), [['setup-setPolicy', 'setPolicy'], ['setup-setGoals', 'setGoals']]);
+  // 等於直接用公開 API 做同樣的事。
+  let ref = Realtime.createWorld(SEED, SETUP.characterOptions).state;
+  ref = Realtime.dispatch(ref, { id: 'setup-setPolicy', expectedRevision: 0, type: 'setPolicy', payload: { policy: SETUP.policy } }).state;
+  ref = Realtime.dispatch(ref, { id: 'setup-setGoals', expectedRevision: 1, type: 'setGoals', payload: { goals: SETUP.goals } }).state;
+  assert.equal(Realtime.hashWorld(w), Realtime.hashWorld(ref));
+
+  // 任何一項不合法：整個開局不採用，前一個準備好的世界與世代都不動，原因是中文。
+  const bad = [
+    [{ characterOptions: Object.assign({}, SETUP.characterOptions, { allocation: { rootBone: 3, comprehension: 1, craft: 0 } }) }, 'bad_character_options'],
+    [{ policy: Object.assign({}, SETUP.policy, { aid: 'sometimes' }) }, 'bad_policy'],
+    [{ goals: [{ id: 'g', kind: 'nope' }] }, 'bad_goal'],
+  ];
+  for (const [over, code] of bad) {
+    const r = ctl.prepare(SEED, Object.assign({}, SETUP, over));
+    assert.equal(r.ok, false);
+    assert.equal(r.code, code);
+    assert.match(r.reason, /[一-鿿]/);
+    assert.equal(ctl.world, w);
+    assert.equal(ctl.generation, g0 + 1);
+  }
+});
+
+test('下令：暫停中零 tick，只採用 dispatch 回傳的 state；和直接呼叫正式 API 的結果相同', () => {
+  const ctl = started();
+  run(ctl, 0, 3000, 50);
+  ctl.pause();
+  const before = ctl.world;
+  const it = ctl.intent();
+  assert.deepEqual([it.revision, it.tick], [before.revision, before.clock.tick]);
+  const cmd = { type: 'orderActivity', payload: { discipleId: before.protagonistId, kind: 'rest', target: {}, units: 1 } };
+  const r = ctl.dispatch(it, cmd);
+  assert.equal(r.ok, true);
+  assert.equal(r.before, before);
+  const ref = Realtime.dispatch(before, { id: `ui-r${it.revision}-i${it.seq}`, expectedRevision: it.revision, type: cmd.type, payload: cmd.payload });
+  assert.equal(Realtime.hashWorld(ctl.world), Realtime.hashWorld(ref.state));
+  assert.deepEqual(r.events, ref.events);
+  assert.equal(ctl.world.clock.tick, before.clock.tick, '下令不推進 tick');
+  assert.equal(ctl.world.revision, before.revision + 1);
+  assert.equal(ctl.mode, 'paused', '下令不會恢復播放');
+  assert.equal(run(ctl, 3000, 9000, 50), 0);
+});
+
+test('舊畫面的意圖：世界推進過就 stale_revision；同一意圖不送第二次；拒絕時世界不動、不換 id 重試', () => {
+  const ctl = started();
+  run(ctl, 0, 2000, 50);
+  ctl.pause();
+  const pid = ctl.world.protagonistId;
+  const rest = { type: 'orderActivity', payload: { discipleId: pid, kind: 'rest', target: {}, units: 1 } };
+
+  // 開選單後世界又走了一個 tick：用開選單當下的 revision 送出，引擎拒絕，世界不動。
+  const old = ctl.intent();
+  ctl.advance(1);
+  const w1 = ctl.world;
+  const r1 = ctl.dispatch(old, rest);
+  assert.equal(r1.ok, false);
+  assert.equal(r1.code, 'stale_revision');
+  assert.equal(ctl.world, w1);
+  assert.equal(ctl.dispatch(old, rest).code, 'intent_spent', '被拒的意圖也不能再送，畫面要重開選單');
+  assert.equal(ctl.world, w1);
+
+  // 雙擊：第一次成功，第二次不再套用。
+  const it = ctl.intent();
+  assert.equal(ctl.dispatch(it, rest).ok, true);
+  const w2 = ctl.world;
+  assert.equal(ctl.dispatch(it, rest).code, 'intent_spent');
+  assert.equal(ctl.world, w2);
+  assert.equal(w2.commandLog.filter((c) => c.id.startsWith('ui-')).length, 1);
+
+  // 引擎拒絕（師父不能手動下令）：世界不動。
+  const it2 = ctl.intent();
+  const r3 = ctl.dispatch(it2, { type: 'orderActivity', payload: { discipleId: ctl.world.masterId, kind: 'rest', target: {}, units: 1 } });
+  assert.deepEqual([r3.ok, r3.code], [false, 'not_protagonist']);
+  assert.equal(ctl.world, w2);
+
+  // 多個命令只在全部成功時採用。
+  const it3 = ctl.intent();
+  const r4 = ctl.dispatch(it3, [
+    { type: 'setPolicy', payload: { policy: Object.assign({}, Realtime.ASK_POLICY) } },
+    { type: 'setGoals', payload: { goals: [{ id: 'x', kind: 'nope' }] } },
+  ]);
+  assert.deepEqual([r4.ok, r4.code, r4.index], [false, 'bad_goal', 1]);
+  assert.equal(ctl.world, w2, '第一個命令雖然合法，整批不採用');
+  const it4 = ctl.intent();
+  const r5 = ctl.dispatch(it4, [
+    { type: 'setPolicy', payload: { policy: Object.assign({}, Realtime.ASK_POLICY) } },
+    { type: 'setGoals', payload: { goals: [{ id: 'goal-aid', kind: 'aid' }] } },
+  ]);
+  assert.equal(r5.ok, true);
+  assert.equal(ctl.world.revision, w2.revision + 2);
+  assert.deepEqual(ctl.world.policy, Realtime.ASK_POLICY);
+});
+
+test('換世界（新局、讀檔）後舊世代的意圖作廢；開始前與出錯後不接受命令', () => {
+  const ctl = started();
+  ctl.pause();
+  const rest = { type: 'orderActivity', payload: { discipleId: ctl.world.protagonistId, kind: 'rest', target: {}, units: 1 } };
+  const it = ctl.intent();
+  const saved = JSON.parse(JSON.stringify(ctl.world));
+  assert.equal(ctl.load(saved).ok, true);
+  assert.equal(ctl.world.revision, it.revision, '同一個 revision 也不行：世代不同');
+  assert.equal(ctl.dispatch(it, rest).code, 'stale_generation');
+  assert.equal(ctl.world, saved);
+
+  const fresh = Controller.createController(Realtime);
+  fresh.prepare(SEED);
+  assert.equal(fresh.dispatch(fresh.intent(), rest).code, 'not_started');
+
+  const fake = failingAt(2);
+  const broken = started(1, fake.api);
+  broken.advance(4);
+  const before = broken.world;
+  assert.equal(broken.dispatch(broken.intent(), rest).code, 'world_stopped');
+  assert.equal(broken.world, before, '保留出錯前的成功前綴');
+});

@@ -1,8 +1,8 @@
-# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05／RT-01／RT-02／RT-02V觀察版／RT-03a存讀／RT-03b原因查詢）
+# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05／RT-01／RT-02／RT-02V觀察版／RT-03a存讀／RT-03b原因查詢／RT-04玩家介入）
 
 ## D10：RT-02V觀察版
 
-擁有人已選先做[RT-02V #129](https://github.com/lalagrass/earth-ascension/issues/129)，範圍見[RT02V_HANDOFF](RT02V_HANDOFF.md)。Claude 實作的唯讀 viewer 與啟動方式見下方「[SG-RT-02V 新增](#sg-rt-02v-新增唯讀生活觀察版)」；交付狀態以 #129 與 PR／postCI 為準。RT-03a 正式存讀（[#137](https://github.com/lalagrass/earth-ascension/issues/137)）見「[SG-RT-03a 新增](#sg-rt-03a-新增正式存讀)」；唯讀原因查詢（[#138](https://github.com/lalagrass/earth-ascension/issues/138)）見「[SG-RT-03b 新增](#sg-rt-03b-新增目標工作與等待原因)」；玩家介入 RT-04 #139、整體試玩 RT-05 #140 仍未交付。
+擁有人已選先做[RT-02V #129](https://github.com/lalagrass/earth-ascension/issues/129)，範圍見[RT02V_HANDOFF](RT02V_HANDOFF.md)。Claude 實作的唯讀 viewer 與啟動方式見下方「[SG-RT-02V 新增](#sg-rt-02v-新增唯讀生活觀察版)」；交付狀態以 #129 與 PR／postCI 為準。RT-03a 正式存讀（[#137](https://github.com/lalagrass/earth-ascension/issues/137)）見「[SG-RT-03a 新增](#sg-rt-03a-新增正式存讀)」；唯讀原因查詢（[#138](https://github.com/lalagrass/earth-ascension/issues/138)）見「[SG-RT-03b 新增](#sg-rt-03b-新增目標工作與等待原因)」；玩家介入（[#139](https://github.com/lalagrass/earth-ascension/issues/139)）見「[SG-RT-04 新增](#sg-rt-04-新增玩家介入介面)」，交付狀態以 #139 與 PR／postCI 為準；整體試玩 RT-05 #140 仍未交付。
 
 **目前新方向**：D8 可暫停即時自主生活，見 [REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)。RT-00 契約已合入 dev（#101；P1–P4 已批准，見 [RT00_CONTRACT.md](RT00_CONTRACT.md)）。RT-01 已實作即時世界、正式手動指令、移動與工作。RT-02 接上自主決策、政策／目標的無人介入，以及不凍結世界的詢問（`js/autonomy.js`、`js/realtime.js`）。播放控制器見 RT-02V，RT 瀏覽器存讀見 RT-03a；玩家介入 UI 與試玩仍是 RT-04～RT-05。戰鬥 #98 延後。下方 slot 引擎紀錄仍然有效；舊回歸與 golden 保留。slot 的自動連續 advance 不是即時移動。
 
@@ -222,6 +222,28 @@ python3 -m http.server 8765 --directory sect-chronicle
 - 第 600 tick 的丹藥與收徒缺口附來源；觀察期末主角的無效果等待說明已突破。
 - 詳情 HTML 有跳脫。
 - `blocked:herb_locked` 在這個 seed 的觀察期內引擎走不到，只靠程式路徑涵蓋，沒有另造世界去測。
+
+## SG-RT-04 新增（玩家介入介面）
+
+同一個 `viewer/index.html` 從觀察版改成可遊玩：A 主場景（Canvas 斜視）＋可收合名冊。引擎、規則、schema、RNG 與存檔格式都沒改；所有改變世界的操作只走 `Realtime.createWorld` 與 `Realtime.dispatch`。
+
+- **開局**：出身模板、3 點配點、兩個性格（`characterOptions`，由 `State.validateCharacterOptions` 驗），加上政策與目標順序。`controller.prepare(seed, setup)` 在未推 tick 的世界依序 `setPolicy`／`setGoals`，全部成功才採用；和預設相同就不下命令，預設開局與 `createWorld(seed)` 完全相同。
+- **下令**（`viewer/controller.js`）：打開選單或編輯器時 `intent()` 記下世代與 revision；`dispatch(intent, commands)` 以那個 revision 當 `expectedRevision`。世界在這之間推進過就是 `stale_revision`；換過世界（新局、讀檔、匯入）是 `stale_generation`；同一意圖只送一次。被拒時世界不動、不換 id 重試，選單依現在的世界更新後等玩家再選。多個命令（政策＋目標）全部成功才採用。成功只採用回傳的 state，不推進 tick。
+- **操作與說法**（`viewer/actions.js`，純函式）：點地點列出主角能下的令與不能下的原因；換手時點直接沿用 #138 的 `why.next`。取消手動令依引擎三種結果分開說：排隊中直接取消、旅行走完這一步停、可打斷工作停下（做到一半的單位不算）、已開工的承諾工作回 `manualLockReleased`，畫面說「仍會完成」而不是拒絕。三類詢問的事件與選項取自 `pendingEvents`、`StoryData` 模板與 `Realtime.BREAKTHROUGH_ASK`；收徒「接受」走 `acceptCandidate`（`chooseEvent` 不會讓人入隊），「再想想」走 `chooseEvent`，之後仍可從「暫不收」收；同意突破只說排進突破，不說成功。
+- **場景**（`viewer/scene.js`）：從 #146 研究原型移植繪圖、遮擋與點擊判定，介面只有 `draw`／`hitTest`／`screenOf`／`pulse`／鏡頭。選 Canvas 2D 不引入 PixiJS 的理由見 #139 認領留言；要換只改這個檔案。
+- **畫面**（`viewer/app.js`）：播放中開選單會自動暫停並記住原本在播放；關選單時只在「是選單暫停的、且玩家沒自己按過播放鍵」才恢復，原本已暫停（含讀檔後）就保持暫停。DOM 依字串或 key 比對只更新有變的部分，播放中點名冊、按鈕不會被重建吃掉，焦點與展開的細節保留。來源欄位收在「來源」細節裡並換行。下令與改設定後立刻反映保存狀態（未保存）；保存時機與協定沿用 RT-03a。
+- **鍵盤**：空白鍵播放／暫停、1／2／4 倍速、`[` `]` 換人、Esc 關選單；地點清單的按鈕可用 Tab／Enter 開選單；場景上方向鍵平移、+／- 縮放、0 重設。
+
+測試：`test/viewer-controller.test.js`（開局設定、下令零 tick、舊意圖、雙擊、換世代、整批不採用）、`test/viewer-actions.test.js`（每個可按操作都被正式 API 接受、取消四種說法對得上引擎、三類詢問各一條命令、逾期後舊選項被拒）。
+
+真實瀏覽器（需另裝 Playwright，用法見檔頭）：
+
+```sh
+python3 -m http.server 8765 --directory sect-chronicle &
+NODE_PATH=$(npm root -g) node sect-chronicle/tools/viewer-play-check.js /tmp/rt04-play
+```
+
+只經畫面操作，不注入世界。檢查建角與開局設定（hash 對照公開 API）、採集中／旅行中／承諾工作（援村）／煉丹中各下一次令並以畫面說的換手 tick 對照實際出發 tick、舊意圖被拒、求援／收徒／突破各回應一次、暫停中改政策與目標、保存→重新整理→讀取 hash 相同且保持暫停、鍵盤、播放中點名冊 8 次、窄畫面（390px）與 console。
 
 ## SG-02 新增的契約
 

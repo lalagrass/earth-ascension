@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## D12：逐步可見交付、驗證後整合
+
+依 [交付規劃](docs/VISIBLE_DELIVERY_PLAN.md)與[D12](docs/DECISIONS_AND_SOURCES.md#d12逐步可見交付與驗證後整合2026-10-20)：每包一個玩家問題、短流程、可見證據與保留／調整／延後／捨棄判定；驗證後擬正式採用才排整合到同一主要入口，只留參考可歸檔／記回訪條件。#155 是第一個視覺／操作參照來源，沿下節 D11 建立標準；未交圖稿／選型不得聲稱已驗收。後續候選先看規劃表與原 backlog，不自動開工或重建正式世界。
+
+#139／#154 按原 DoD 審查，#140 原前置保持，不將本流程或未交付參照追溯成 UI 重做 gate。保護現有 #155 V1 認領與 experiments 檔案；下一包依實際證據與有效認領安排，不預占後段租期。這次流程批准不額外批准正式成長、人格、社交或換引擎。
+
 ## SG-EXP-01：已批准 UI／視覺切片（D11，取代舊純挑水包）
 
 擁有人於 2026-10-20 更正並批准 [#155](https://github.com/lalagrass/earth-ascension/issues/155)：**先交完整畫面稿 → 比較 PixiJS 與 Godot → 做可操作 UI／視覺展示**。讀[工作包／最新 Claude prompt](docs/EXPERIMENT_WATER_CARRY.md)與[決策 D11](docs/DECISIONS_AND_SOURCES.md#d11sg-exp-01-ui視覺切片2026-10-20)。挑水、成長與跑步是完整介面的驗證情境；舊「只挑水、固定 Canvas、不准評估新引擎」與舊 prompt 已被取代，不照舊功能清單開工。
