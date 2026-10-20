@@ -1,9 +1,10 @@
 # 獨立互動小說：技術設計（提案）
 
-- 狀態：**提案**（[#128](https://github.com/lalagrass/earth-ascension/issues/128) A3），待 Earth PO／暫代小說協調審查。**`novel-chronicle/` 目前只有本文件，沒有任何 runtime**；本文件不授權 #125–#127，也不決定 #123 的產品取捨。
+- 狀態：**提案**（[#128](https://github.com/lalagrass/earth-ascension/issues/128) A3），待 Earth PO／暫代小說協調審查。**本設計尚無 runtime 實作**；本文件不授權 #125–#127，也不決定 #123 的產品取捨。
 - 實際主筆：Claude（Anthropic Claude Code），共用 `lalagrass` 帳號。
 - 核對基底：dev `0875d116e774cf2b53c6c36d160465b460302b1d`。
 - 已定（不重問）：**原創獨立故事、獨立 continuity**（#123 擁有人決定）。故事聖經、正文與分支圖屬 [#124](https://github.com/lalagrass/earth-ascension/issues/124)；語氣、視角、選擇節奏、存讀語意與 runtime 授權屬 [#123](https://github.com/lalagrass/earth-ascension/issues/123)。
+- 協作：依 [小說入口](../AGENTS.md) 分流；本文是系統提案，正文／紙上章節圖不以本文候選 schema 或技術驗收作交付 gate。
 - 上層：[產品組合邊界](../../docs/architecture/PORTFOLIO_BOUNDARIES.md)。
 
 本文所有欄位名、檔名、範例內容都是**提案**；範例故事內容（藥泉、鄰人）取自 #123 PO 留言的候選素描，只用來說明形狀，不是 #124 的正文或定稿。
@@ -190,7 +191,7 @@ choose(story, state1, { nodeId:'c1-open', choiceId:'c1-tell', seq:1 })   // 同�
 
 | 工作 | 本設計提供的介面 | 必要檢查 |
 |---|---|---|
-| #124 內容 | §2 節點／選項／旗標形狀；`acknowledges` | 三條以上不同路徑走查（含平凡路徑）；圖檢查報告 |
+| #124 內容 | 紙上章節圖與正文；§2 形狀僅供未來接線參考，不約束草稿 | 作者自校＋輕量編輯／邊界檢查；原 DoD 三條紙上路徑（含平凡路徑）。可執行圖檢查在轉成 #125 資料時才驗 |
 | #125 runner＋存檔 | §3 `validateStory`／`newState`／`available`／`choose`（含 settle）；§5 adapter | 轉移單測（效果只套一次、同分頁重送、過期、前置不滿足、結局後拒絕、settle 走過多個接續節點後停在選擇／結局節點、`passed` 順序）；**圖檢查**（所有 `next` 存在、所有旗標已宣告、所有節點從 start 可達、非結局節點都有出路、**沒有只由接續節點構成的循環**、每個結局至少一條路徑可達、每個選項在某條路徑上可選、匯流節點 `acknowledges` 覆蓋分歧選擇）；**存檔測試**（往返、壞 JSON、未知 schema、`storyId`／`contentVersion` 不符、checksum 不符、重播不等、接續節點後保存再讀回仍合法、寫入失敗保留舊檔、主 key 已被另一分頁推進時拒絕寫入） |
 | #126 reader | 只呼叫 `newState`／`available`／`choose`／adapter | 真實瀏覽器：完整讀完三章、重新整理續讀、第二分頁改動後本分頁停用選項、新故事需確認且不誤刪、鍵盤操作與焦點、手機寬度 |
 | #127 讀者驗證 | 歷史與 `readerKnown` 旗標可作回顧 | 記錄實際 build／路徑／人數；作者走查不等於獨立讀者回饋 |
