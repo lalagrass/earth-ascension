@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>宗門編年・生活觀察版</title>
+  <title>宗門編年</title>
   <link rel="stylesheet" href="viewer.css">
 </head>
 <body>
   <header>
-    <h1>宗門編年・生活觀察版</h1>
-    <p class="notice">觀察版：只看正式世界自己生活，不能下指令、改目標或回應詢問。世界存在這個瀏覽器（暫停、每日、突破後自動保存），也可以匯出成檔案。</p>
+    <h1>宗門編年</h1>
+    <p class="notice">宗門的人會依目標自己生活；你可以給主角下令、調整政策與目標、回應詢問。世界存在這個瀏覽器（暫停、每日、突破後自動保存），也可以匯出成檔案。</p>
   </header>
 
   <section id="setup" aria-labelledby="setup-title">
@@ -17,7 +17,9 @@
     <form id="setup-form">
       <label>seed <input id="seed" name="seed" value="rt-dev-000" maxlength="64" autocomplete="off" required></label>
       <span id="seed-error" class="error-inline" role="alert"></span>
+      <fieldset id="setup-character"><legend>主角</legend></fieldset>
       <div id="setup-settings"></div>
+      <p id="setup-error" class="error-inline" role="alert"></p>
       <button id="start" type="submit">開始新局（Enter）</button>
     </form>
     <h3>存檔</h3>
@@ -48,14 +50,31 @@
       <div id="viewer-save-raw" class="buttons"></div>
       <p id="error" class="error" role="alert" hidden></p>
     </section>
+    <div class="stage">
+      <div id="scene-wrap">
+        <canvas id="scene" tabindex="0" aria-label="道館與周邊的斜視場景。點人物選取，點地點看主角能做的事。鍵盤：[ ] 換人、方向鍵平移、+／- 縮放、0 重設；地點清單在下方。"></canvas>
+        <div id="hint" class="hint"></div>
+        <div id="banner" class="banner" hidden></div>
+        <section id="menu" class="menu" aria-label="可做操作" hidden></section>
+      </div>
+      <details id="roster" open>
+        <summary>人物</summary>
+        <section id="people" aria-label="人物"></section>
+      </details>
+    </div>
+    <p id="toast" class="toast" role="status" aria-live="polite"></p>
     <div class="layout">
-      <section id="map" aria-label="地圖"></section>
-      <section id="people" aria-label="人物"></section>
-      <aside>
+      <div class="col">
+        <section id="asks" aria-label="待回應的詢問"></section>
         <section id="detail" aria-label="選取人物"></section>
-        <section id="stock" aria-label="庫存與設施"></section>
+        <div id="detail-actions" class="buttons"></div>
+      </div>
+      <div class="col">
         <section id="settings" aria-label="政策與目標"></section>
-      </aside>
+        <div class="buttons"><button type="button" id="edit-settings">修改政策與目標…</button></div>
+        <section id="stock" aria-label="庫存與設施"></section>
+        <section id="places" aria-label="地點清單"></section>
+      </div>
     </div>
     <section id="events" aria-label="事件"></section>
   </main>
@@ -73,6 +92,8 @@
   <script src="../js/storage.js"></script>
   <script src="controller.js"></script>
   <script src="view.js"></script>
+  <script src="actions.js"></script>
+  <script src="scene.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

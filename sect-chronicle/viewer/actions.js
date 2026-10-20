@@ -213,17 +213,20 @@
     const act = activityOf(world, d);
     const kind = kindName(Rules, d.manualOrder.kind);
     const command = { type: 'cancelManualOrder', payload: { discipleId: id } };
+    // 排隊中的新指令（還沒變成活動）：取消它；目前的工作怎麼收尾仍照引擎 cancelManualOrder 的規則。
+    const queued = d.manualOrder.status === 'pending' && d.manualOrder.activityId === null && act && d.manualOrder.seq !== act.manualSeq;
+    const drop = queued ? `排隊的「${kind}」取消；` : '';
     let label;
     let why;
     if (act && PROMISE_KINDS.includes(act.kind) && act.status === 'working') {
-      label = '解除手動指令';
-      why = `「${kindName(Rules, act.kind)}」已開工，是承諾工作，解除後仍會做完；之後回到自主`;
+      label = queued ? '取消排隊的新指令' : '解除手動指令';
+      why = `${drop}「${kindName(Rules, act.kind)}」已開工，是承諾工作，仍會做完；之後回到自主`;
     } else if (act && act.status === 'traveling') {
-      label = '取消手動指令';
-      why = '走完目前這一步就停下，回到自主';
+      label = queued ? '取消排隊的新指令' : '取消手動指令';
+      why = `${drop}目前的「${kindName(Rules, act.kind)}」走完這一步就停下，回到自主`;
     } else if (act && act.status === 'working') {
-      label = '取消手動指令';
-      why = `停下「${kindName(Rules, act.kind)}」：已完成的單位保留，做到一半的這個單位不算；之後回到自主`;
+      label = queued ? '取消排隊的新指令' : '取消手動指令';
+      why = `${drop}停下「${kindName(Rules, act.kind)}」：已完成的單位保留，做到一半的這個單位不算；之後回到自主`;
     } else {
       label = '取消排隊中的手動指令';
       why = '還沒出發，直接取消';
