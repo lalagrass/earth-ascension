@@ -1,0 +1,12 @@
+{
+  "name": "water-carry-pixi-spike",
+  "private": true,
+  "description": "SG-EXP-01 V2：PixiJS＋HTML/CSS 極小試作（只讀 ../shared 的素材與 scene.json）",
+  "license": "UNLICENSED",
+  "scripts": {
+    "serve": "cd ../.. && python3 -m http.server 8770"
+  },
+  "dependencies": {
+    "pixi.js": "8.14.0"
+  }
+}

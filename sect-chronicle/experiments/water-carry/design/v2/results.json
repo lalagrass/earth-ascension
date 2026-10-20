@@ -1,0 +1,84 @@
+{
+ "occlusion": {
+  "front": {
+   "tick": 1161,
+   "prop": "pine-d",
+   "area": 3048.8999147561585,
+   "v": {
+    "x": 514.4138150384185,
+    "y": 669.6230605908629,
+    "face": 1,
+    "back": true,
+    "frame": "load-0",
+    "label": "上山負重",
+    "progress": 0.19546083088795696,
+    "vatLevel": 1,
+    "trips": 0,
+    "resting": false
+   },
+   "propXY": [
+    560,
+    860
+   ]
+  },
+  "behind": {
+   "tick": 562,
+   "prop": "rock-a",
+   "area": 2006,
+   "v": {
+    "x": 538.9253095731093,
+    "y": 661.593433070878,
+    "face": -1,
+    "back": false,
+    "frame": "empty-1",
+    "label": "下山（空桶）",
+    "progress": 0.7692348707333138,
+    "vatLevel": 1,
+    "trips": 0,
+    "resting": false
+   },
+   "propXY": [
+    520,
+    610
+   ]
+  }
+ },
+ "results": {
+  "pixi": {
+   "loadToFirstFrameMs": 469,
+   "frameMs": {
+    "median": 66.7,
+    "p95": 116.7
+   }
+  },
+  "godot": {
+   "loadToFirstFrameMs": 1837,
+   "frameMs": {
+    "median": 50,
+    "p95": 83.3
+   }
+  }
+ },
+ "sizes": {
+  "pixiCode": {
+   "raw": 732828,
+   "gz": 207277
+  },
+  "pixiAssets": {
+   "raw": 1740426,
+   "gz": 1714804
+  },
+  "godotAll": {
+   "raw": 39959472,
+   "gz": 10987275
+  },
+  "godotWasm": {
+   "raw": 38034280,
+   "gz": 9331566
+  },
+  "godotPck": {
+   "raw": 1604280,
+   "gz": 1572506
+  }
+ }
+}

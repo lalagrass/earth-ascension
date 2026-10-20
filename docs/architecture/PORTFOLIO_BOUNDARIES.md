@@ -19,7 +19,7 @@
 | 存檔命名空間 | 使用者指定的 SQLite 檔路徑 | 【現況】`serializeState`／`parseState` 純函式，無瀏覽器存檔；【已定】SG-07／RT-03 設計用 localStorage key `sect-chronicle-save-v1`（[TECHNICAL_DESIGN](../../sect-chronicle/docs/TECHNICAL_DESIGN.md)） | 【提案】獨立 key，例如 `novel-chronicle-save-v1`，不讀寫其他 key |
 | 本機埠 | 【現況】README 用 18765；HTTP demo 18766；程式預設 8765 | 【現況】無服務。【提案】RT-02V 作者在啟動文件記錄實際埠，建議 18770 起 | 【提案】18780 起，由 #126 作者記錄 |
 | 測試 | `python3 -m unittest discover -s tests -v`；`tests/test_golden.py` | `node --test sect-chronicle/test/*.test.js`；RT 20seed×2700、slot 20seed×42 回放 | 【提案】`node --test novel-chronicle/test/*.test.js`（尚無 CI job） |
-| 產品負責 | Earth PO（Codex） | 遊戲 PO（另一個 Astra 聊天） | Earth PO 暫代協調（#123）；正式小說 PO／主筆未指派 |
+| 產品負責 | Earth PO（Codex） | 遊戲 PO（「評估大型模擬情境」聊天） | 小說 PO／主筆：「規劃小說式新分支」聊天；Earth PO 管共用 queue（[#173](https://github.com/lalagrass/earth-ascension/issues/173)） |
 
 三個產品之間**沒有任何 import**：【現況】`earth_ascension/` 不讀 `sect-chronicle/`，`sect-chronicle/js/` 只 `require('./*.js')` 同目錄模組。小說必須維持同樣狀態。未追蹤的 `guwu-game/`、`sect_ascension/` 等原型不在 dev，也不是任何產品的依賴；本文件不複製或引用它們的程式。
 
@@ -113,7 +113,7 @@ flowchart LR
 |---|---|---|---|---|
 | 1 | SG：抽出 `arbitrate` 到獨立模組（ADR §5 選項 B） | 遊戲 PO 排程的 SG 核心主筆（Stage B，單一 claim） | ADR 經遊戲 PO 接受；#110 不在同檔進行 | 見 [ADR §5.4](../../sect-chronicle/docs/ARCHITECTURE.md#54-驗收證據與回滾) |
 | 2 | CI：新增 `novel-test` job | 共用 CI 單一主筆（另開 issue） | 早於 #125 runtime PR 接受；與 #113 協調 | workflow 在無目錄時 notice、有目錄無測試時失敗的實際 run |
-| 3 | 小說 #124 內容依 [技術設計 §2](../../novel-chronicle/docs/TECHNICAL_DESIGN.md#2-資料契約提案) 的節點／選項形狀撰寫 branch map | #124 主筆 | #123 擁有人 gate 前即可設計 | 三條路徑走查（#124 DoD） |
+| 3 | 小說 #124 正文／紙上 branch map 按 [輕量內容流程](../../CONTRIBUTING.md#小說內容與系統的審查分流) 交付；技術設計的資料形狀只供未來接線參考 | 小說 PO／#124 主筆 | 未決系統 gate 不阻止草稿，無 runtime 授權 | 作者自校與三條紙上路徑（#124 DoD）；執行圖留到轉為系統資料時驗 |
 | 4 | SG RT-03 存檔格式選擇（#121） | 遊戲 PO | ADR §7 的比較；#118／#120 的決定 | 實測大小／載入時間 |
 | 5 | 讀取 viewer 啟動埠與 key 記錄 | RT-02V 主筆 | #110 | README 啟動命令 |
 

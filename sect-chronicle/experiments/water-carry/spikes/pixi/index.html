@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>挑水小場景 · PixiJS 試作</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage"></div>
+<div id="tags" aria-hidden="true"></div>
+<header class="hud">
+  <span class="title">宗門編年</span><span class="sub">V2 · PixiJS＋HTML/CSS</span>
+  <button id="play" class="btn" title="空白鍵">❚❚ 暫停</button>
+  <button class="btn speed on" data-speed="1">1×</button><button class="btn speed" data-speed="2">2×</button><button class="btn speed" data-speed="4">4×</button>
+  <span class="muted">播放倍率</span>
+  <span class="spacer"></span>
+  <span class="chip" id="trips">今日已挑 0 趟</span>
+  <button class="btn" id="roster-toggle" title="R">名冊</button>
+</header>
+<div id="banner" class="banner" hidden>❚❚ 已暫停　選單開著時世界不前進；下令或按 Esc 關閉</div>
+<div id="menu" class="menu" hidden role="dialog" aria-label="地點操作"></div>
+<aside id="panel" class="panel" hidden aria-live="polite"></aside>
+<footer id="roster" class="roster"></footer>
+<div id="toast" class="toast" hidden></div>
+<div class="hint">點人物看他在做什麼；點水缸或泉水下令（會自動暫停）· 拖曳平移 · 滾輪或 +/- 縮放 · 0 重設</div>
+<script type="module" src="main.mjs"></script>
+</body>
+</html>
