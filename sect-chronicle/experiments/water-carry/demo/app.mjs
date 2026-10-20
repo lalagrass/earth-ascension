@@ -283,7 +283,15 @@ new ResizeObserver(measure).observe($('roster'));
 
 // ---------- HTML 介面：只在內容變了才寫 DOM，避免播放中吃掉點擊／焦點 ----------
 const last = {};
-const put = (key, el, html) => { if (last[key] !== html) { last[key] = html; el.innerHTML = html; } };
+// 內容變了要重寫時，若焦點在裡面的某個操作上，寫完後把焦點交回同一個操作（同 data-cmd／data-person）
+const put = (key, el, html) => {
+  if (last[key] === html) return;
+  last[key] = html;
+  const f = el.contains(document.activeElement) ? document.activeElement : null;
+  const sel = f && (f.dataset.cmd ? `[data-cmd="${f.dataset.cmd}"]` : f.dataset.person ? `[data-person="${f.dataset.person}"]` : null);
+  el.innerHTML = html;
+  if (sel) el.querySelector(sel)?.focus();
+};
 const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 const sec = (s) => `${s.toFixed(1)} 秒`;
 function bannerText() {
@@ -319,11 +327,13 @@ function renderChrome() {
       ? `<div class="pending"><span><b>本趟後休息</b><br><small>本趟倒水完成時生效</small></span><button class="btn" data-cmd="cancel">取消</button></div>`
       : v.resting ? `<div class="pending"><span><b>休息中</b><br><small>不會自己出發</small></span><button class="btn" data-cmd="start">開始挑水</button></div>`
         : '<div class="muted">沒有</div>';
-    put('panel', panel, `<h2>${scene.ui.hero.name}<small>${scene.ui.hero.role}</small></h2>
+    // 待執行指令單獨一格：本趟進度每幀在變，不能連帶重建「取消」「開始挑水」按鈕
+    if (!panel.firstElementChild) panel.innerHTML = '<div id="p-work"></div><h4>待執行指令</h4><div id="p-pend"></div><div id="p-leg"></div>';
+    put('p-work', $('p-work'), `<h2>${scene.ui.hero.name}<small>${scene.ui.hero.role}</small></h2>
       <h4>目前工作</h4><div>${work}</div><div class="row"><span>${v.status}</span>${v.mode === 'carry' ? `<span class="muted">本趟用 Lv ${v.tripLevel}</span>` : ''}</div>
-      <div class="bar"><i style="width:${Math.round(v.tripProgress * 100)}%"></i></div>
-      <h4>待執行指令</h4>${pend}
-      <h4>腳力</h4><div class="row"><b>Lv ${v.level}／${v.maxLevel}</b><span class="muted">${v.nextNeed ? `再 ${v.nextNeed - v.xp} 趟升 Lv ${v.level + 1}` : '已到上限，不會再變快'}</span></div>
+      <div class="bar"><i style="width:${Math.round(v.tripProgress * 100)}%"></i></div>`);
+    put('p-pend', $('p-pend'), pend);
+    put('p-leg', $('p-leg'), `<h4>腳力</h4><div class="row"><b>Lv ${v.level}／${v.maxLevel}</b><span class="muted">${v.nextNeed ? `再 ${v.nextNeed - v.xp} 趟升 Lv ${v.level + 1}` : '已到上限，不會再變快'}</span></div>
       <div class="bar xp"><i style="width:${v.nextNeed ? Math.round(v.xp / v.nextNeed * 100) : 100}%"></i></div>
       <table class="cmp"><tr><td></td><td class="now">現在</td><td class="init">初始</td></tr>
         <tr><td>下山（空桶）</td><td class="now">${sn.empty.toFixed(0)}</td><td class="init">${si.empty.toFixed(0)}</td></tr>
