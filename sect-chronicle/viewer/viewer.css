@@ -91,3 +91,13 @@ dd { margin: 0; }
 .save-status { margin: 4px 0 0; flex-basis: 100%; color: var(--muted); }
 .save-status[data-kind="saved"] { color: #2c6e2f; }
 .save-status[data-kind="stopped"], .save-status[data-kind="unavailable"] { color: var(--error); }
+
+/* SG-RT-03b：人物詳情的「為什麼」與目標狀態 */
+.why dd small { color: var(--muted); }
+.why code.src, .gaps code.src { font-size: 11px; }
+.state-queued { color: #6b3f8a; }
+.gaps { margin: 2px 0 0; padding-left: 18px; font-size: 13px; }
+.goal-done { color: #2c6e2f; font-weight: 600; }
+.goal-active { color: #2e5d8a; font-weight: 600; }
+.goal-blocked { color: #7a3d00; font-weight: 600; }
+.goal-open { color: var(--muted); }
