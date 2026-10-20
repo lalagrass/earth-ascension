@@ -165,6 +165,57 @@ async function main(box) {
   const ref = refHash(SEED, e.tick);
   check(e.mode === 'paused' && e.hash === ref, `暫停在 tick ${e.tick}，頁面 hash ${e.hash} 等於 Node 直接推進的 ${ref}`);
   await browser.send('Target.closeTarget', { targetId: other.targetId });
+
+  // #154 補修：設定選單焦點在下拉時 Esc 仍能關選單；選單開著切到背景，回來關選單要保持暫停。
+  const clickEl = async (id) => {
+    const r = await evaluate(`(() => { const el = document.getElementById(${JSON.stringify(id)}); el.scrollIntoView({ block: 'center' }); const b = el.getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; })()`);
+    for (const type of ['mousePressed', 'mouseReleased']) {
+      await page.send('Input.dispatchMouseEvent', { type, x: r.x, y: r.y, button: 'left', clickCount: 1 });
+    }
+    await sleep(300);
+  };
+  const focusTag = () => evaluate('document.activeElement ? document.activeElement.tagName : null');
+  await page.send('Page.bringToFront');
+  await key(' ', 'Space', 32, ' ');
+  await sleep(500);
+  check((await snap()).mode === 'playing', '空白鍵繼續播放');
+  await clickEl('edit-settings');
+  let m = await snap();
+  const tag1 = await focusTag();
+  check(m.menu && m.menu.kind === 'settings' && m.mode === 'paused' && m.pausedByMenu && tag1 === 'SELECT',
+    `播放中開設定選單：自動暫停，焦點在 ${tag1}（menu=${m.menu && m.menu.kind} mode=${m.mode} pausedByMenu=${m.pausedByMenu}）`);
+  await key('Escape', 'Escape', 27);
+  await sleep(500);
+  m = await snap();
+  check(!m.menu && m.mode === 'playing', `焦點在下拉時 Esc 關選單並恢復播放：menu=${m.menu && m.menu.kind} mode=${m.mode}`);
+  await key(' ', 'Space', 32, ' ');
+  await sleep(300);
+  await clickEl('edit-settings');
+  m = await snap();
+  check(m.menu && m.mode === 'paused' && !m.pausedByMenu, '原本已暫停時開設定選單：不記自動恢復');
+  await key('Escape', 'Escape', 27);
+  await sleep(800);
+  m = await snap();
+  check(!m.menu && m.mode === 'paused', `原本已暫停：Esc 關選單後仍暫停（mode=${m.mode}）`);
+  await key(' ', 'Space', 32, ' ');
+  await sleep(300);
+  await clickEl('edit-settings');
+  m = await snap();
+  check(m.menu && m.mode === 'paused' && m.pausedByMenu, '再次播放中開設定選單：自動暫停');
+  const other2 = await browser.send('Target.createTarget', { url: 'about:blank' });
+  await sleep(500);
+  const h = await snap();
+  check((await vis()) === 'hidden' && h.menu && h.mode === 'paused' && !h.pausedByMenu,
+    `選單開著切到背景：hidden，選單自動恢復權已撤回（pausedByMenu=${h.pausedByMenu}）`);
+  await browser.send('Target.activateTarget', { targetId: target.id });
+  await sleep(500);
+  check((await vis()) === 'visible', '切回 viewer 分頁');
+  await key('Escape', 'Escape', 27);
+  await sleep(1500);
+  const f = await snap();
+  check(!f.menu && f.mode === 'paused' && f.tick === h.tick, `回前景後 Esc 關選單仍暫停：mode=${f.mode} tick ${h.tick}→${f.tick}`);
+  await browser.send('Target.closeTarget', { targetId: other2.targetId });
+  check(f.hash === refHash(SEED, f.tick), `tick ${f.tick} 的頁面 hash 等於 Node 直接推進`);
   check(problems.length === 0, `console 沒有錯誤或警告（${problems.length} 行${problems.length ? `：${JSON.stringify(problems)}` : ''}）`);
   note('wall time', ((Date.now() - t0) / 1000).toFixed(1), 's');
 }

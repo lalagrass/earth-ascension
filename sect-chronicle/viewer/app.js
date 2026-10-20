@@ -855,6 +855,14 @@
 
   document.addEventListener('keydown', (ev) => {
     const tag = ev.target && ev.target.tagName;
+    // Esc 先處理：設定選單打開時焦點常在下拉或輸入欄。原生下拉展開時瀏覽器自己吃掉 Esc，收起後的 Esc 才會到這裡。
+    if (ev.key === 'Escape' && ui.menu && ctl.mode !== 'setup') {
+      ev.preventDefault();
+      closeMenu(true);
+      dirtyUi = true;
+      draw();
+      return;
+    }
     if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
     if (ctl.mode === 'setup') return;
     if (ev.key === ' ') {
@@ -865,9 +873,6 @@
       ctl.toggle();
     } else if (ev.key === '1' || ev.key === '2' || ev.key === '4') {
       ctl.setSpeed(Number(ev.key));
-    } else if (ev.key === 'Escape') {
-      if (!ui.menu) return;
-      closeMenu(true);
     } else if (ev.key === '[' || ev.key === ']') {
       const ids = model ? model.people.filter((p) => p.joined).map((p) => p.id) : [];
       if (ids.length === 0) return;
@@ -894,6 +899,8 @@
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       ctl.hide();
+      // 選單已先暫停時 hide() 不會記 autoPaused；這裡撤回選單的自動恢復，回前景關選單也保持暫停。
+      ui.pausedByMenu = false;
       dirtyUi = true;
       draw();
     }
