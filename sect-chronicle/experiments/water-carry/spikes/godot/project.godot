@@ -1,0 +1,25 @@
+; SG-EXP-01 V2：Godot 極小試作。素材由 tools/sync-assets.sh 從 ../shared 複製到 shared/（不入庫）。
+config_version=5
+
+[application]
+
+config/name="Water Carry Spike (Godot)"
+run/main_scene="res://main.tscn"
+config/features=PackedStringArray("4.5", "GL Compatibility")
+
+[display]
+
+window/size/viewport_width=1400
+window/size/viewport_height=820
+window/stretch/aspect="expand"
+
+[gui]
+
+theme/custom_font="res://fonts/ui-subset.woff2"
+theme/default_font_size=14
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=1

@@ -1,0 +1,40 @@
+共用播放：tick 1161 主角腳底 y=669.6，與 pine-d（腳底 y=860）重疊最多 → pine-d 應畫在主角前面
+共用播放：tick 562 主角腳底 y=661.6，與 rock-a（腳底 y=610）重疊最多 → 主角應畫在 rock-a 前面
+Chromium 141.0.7390.37，headless，WebGL 走 SwiftShader（軟體算圖）
+
+== pixi ==
+載入到第一幀 469 ms（含下載；本機 http.server，未壓縮）
+ok   pixi：人物在走、1 秒內看到 4 種動作幀（empty-3、empty-0、empty-2、empty-1）
+rAF 間隔 中位數 66.7 ms、p95 116.7 ms（headless＋SwiftShader，只當相對參考）
+ok   pixi：點主角選取
+ok   pixi：點水缸開選單並自動暫停
+ok   pixi：選單開著時世界不前進（tick 657）
+ok   pixi：Esc 關選單後恢復播放
+ok   pixi：鍵盤 Enter 下令，待執行「本趟後休息」，選單關閉並恢復
+ok   pixi：拖曳平移 (800,450)→(900,490)
+ok   pixi：滾輪放大到 1.10（上限 1.6）
+ok   pixi：鍵盤縮小停在下限 0.60
+ok   pixi：0 鍵重設鏡頭
+ok   pixi：console 沒有錯誤或警告
+ok   pixi：tick 1161 主角在 (514.41, 669.62)、load-0，與共用播放規則相同
+ok   pixi：tick 562 主角在 (538.93, 661.59)、empty-1，與共用播放規則相同
+
+== godot ==
+載入到第一幀 1837 ms（含下載；本機 http.server，未壓縮）
+ok   godot：人物在走、1 秒內看到 4 種動作幀（empty-0、empty-1、empty-2、empty-3）
+rAF 間隔 中位數 50 ms、p95 83.3 ms（headless＋SwiftShader，只當相對參考）
+ok   godot：點主角選取
+ok   godot：點水缸開選單並自動暫停
+ok   godot：選單開著時世界不前進（tick 576）
+ok   godot：Esc 關選單後恢復播放
+ok   godot：鍵盤 Enter 下令，待執行「本趟後休息」，選單關閉並恢復
+ok   godot：拖曳平移 (800,450)→(900,490)
+ok   godot：滾輪放大到 1.10（上限 1.6）
+ok   godot：鍵盤縮小停在下限 0.60
+ok   godot：0 鍵重設鏡頭
+ok   godot：console 沒有錯誤或警告
+ok   godot：tick 1161 主角在 (514.41, 669.62)、load-0，與共用播放規則相同
+ok   godot：tick 562 主角在 (538.93, 661.59)、empty-1，與共用播放規則相同
+
+下載體積（原始／gzip -9）：PixiJS 程式 716 KB／202 KB＋素材 1700 KB／1675 KB；Godot 合計 39023 KB／10730 KB（wasm 37143 KB／9113 KB，pck 1567 KB／1536 KB）
+PASS 全部條件成立

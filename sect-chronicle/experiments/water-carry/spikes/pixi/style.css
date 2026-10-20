@@ -1,0 +1,37 @@
+:root { --ink: #2f2a24; --ink2: #6b6254; --paper: #f8f2e4; --line: #cdbb98; --gold: #c8962e; --hero: #4f78a8; --red: #a33b2a;
+  --sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "WenQuanYi Zen Hei", sans-serif; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; color: var(--ink); font: 14px/1.5 var(--sans); }
+#stage { position: fixed; inset: 0; }
+#stage canvas { display: block; touch-action: none; }
+.hud { position: fixed; top: 10px; left: 10px; right: 10px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+  background: rgba(248, 242, 228, .94); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; }
+.hud .title { font-weight: 700; letter-spacing: 2px; } .hud .sub, .muted { color: var(--ink2); font-size: 12px; } .spacer { flex: 1; }
+.btn { font: inherit; border: 1px solid var(--line); background: #fffaf0; border-radius: 6px; padding: 2px 9px; cursor: pointer; color: var(--ink); }
+.btn.on { background: var(--ink); color: #fff; } .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.chip { background: #efe4cb; border-radius: 999px; padding: 1px 10px; font-size: 13px; }
+.banner { position: fixed; top: 62px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #f6e7c4; padding: 4px 14px; border-radius: 999px; font-size: 13px; }
+#tags { position: fixed; inset: 0; pointer-events: none; }
+.tag { position: absolute; transform: translate(-50%, 0); white-space: nowrap; font-size: 12px; padding: 0 6px; border-radius: 4px;
+  background: rgba(248, 242, 228, .9); border: 1px solid var(--line); }
+.tag.hero { background: var(--hero); color: #fff; border-color: #3b5d85; } .tag.hero.sel { background: var(--gold); border-color: #8a6416; }
+.tag.place { font-weight: 700; transform: translate(-50%, -100%); }
+.tag.pill { transform: translate(-50%, -100%); background: rgba(47, 42, 36, .88); color: #f6e7c4; border: 0; }
+.menu { position: fixed; width: 300px; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .18); }
+.menu h3 { margin: 0 0 6px; font-size: 16px; } .menu h3 small { color: var(--ink2); font-weight: 400; font-size: 12px; margin-left: 6px; }
+.opt { display: block; width: 100%; text-align: left; font: inherit; border: 1px solid transparent; border-radius: 6px; background: none; padding: 4px 6px; cursor: pointer; color: var(--ink); }
+.opt span { display: block; color: var(--ink2); font-size: 12px; } .opt:hover:not([disabled]), .opt:focus-visible { border-color: var(--gold); background: #fff6e0; outline: none; }
+.opt[disabled] { cursor: default; color: #9a917f; } .menu .foot { color: var(--ink2); font-size: 12px; margin-top: 6px; display: flex; justify-content: space-between; }
+.panel { position: fixed; right: 10px; top: 70px; width: 280px; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.panel h2 { margin: 0 0 4px; font-size: 16px; } .panel h2 small { color: var(--ink2); font-weight: 400; font-size: 12px; margin-left: 6px; }
+.panel h4 { margin: 8px 0 2px; font-size: 13px; color: var(--ink2); }
+.bar { height: 6px; background: #e8dcc2; border-radius: 3px; overflow: hidden; } .bar i { display: block; height: 100%; background: var(--hero); }
+.pending { display: flex; justify-content: space-between; align-items: center; background: #fff6e0; border: 1px dashed var(--gold); border-radius: 6px; padding: 4px 6px; }
+.roster { position: fixed; left: 10px; bottom: 34px; display: flex; gap: 8px; flex-wrap: wrap; max-width: calc(100% - 20px); }
+.card { display: block; text-align: left; font: inherit; color: var(--ink); background: rgba(248, 242, 228, .94); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; min-width: 150px; cursor: pointer; }
+.card.sel { border: 2px solid var(--gold); } .card small { display: block; color: var(--ink2); font-size: 12px; }
+.roster.collapsed .card:not(.sel) { display: none; }
+.toast { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); background: var(--ink); color: #f6e7c4; padding: 4px 14px; border-radius: 6px; }
+.hint { position: fixed; left: 10px; bottom: 8px; font-size: 12px; color: var(--ink2); background: rgba(248, 242, 228, .8); padding: 0 6px; border-radius: 4px; }
+@media (max-width: 640px) { .panel { left: 10px; right: 10px; width: auto; top: auto; bottom: 100px; } .menu { width: calc(100% - 20px); } .hint { display: none; } }
