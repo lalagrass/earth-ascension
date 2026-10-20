@@ -1,12 +1,14 @@
 # Coding agent 接手入口
 
-## SG-EXP-01：已批准的獨立挑水成長展示（窄範圍例外）
+## SG-EXP-01：已批准 UI／視覺切片（D11，取代舊純挑水包）
 
-擁有人於 2026-10-20 要求獨立讓 Claude 做「挑水、成長、越跑越快」效果，見 [#155](https://github.com/lalagrass/earth-ascension/issues/155)與[工作包／prompt](docs/EXPERIMENT_WATER_CARRY.md)。這次已批准原型，優先於下方 backlog 對生活成長的一般禁止文字，**僅限 `sect-chronicle/experiments/water-carry/` 的隔離展示**，不批准正式世界整合、其他成長／輕功／戰鬥或整份願景。
+擁有人於 2026-10-20 更正並批准 [#155](https://github.com/lalagrass/earth-ascension/issues/155)：**先交完整畫面稿 → 比較 PixiJS 與 Godot → 做可操作 UI／視覺展示**。讀[工作包／最新 Claude prompt](docs/EXPERIMENT_WATER_CARRY.md)與[決策 D11](docs/DECISIONS_AND_SOURCES.md#d11sg-exp-01-ui視覺切片2026-10-20)。挑水、成長與跑步是完整介面的驗證情境；舊「只挑水、固定 Canvas、不准評估新引擎」與舊 prompt 已被取代，不照舊功能清單開工。
 
-預定 Claude 接手不等於已認領；開工先核對 #155／#139 最新有效作者與狀態，從最新 dev 的獨立 worktree／短分支登記精確檔案與四小時期限，不使用 #154 分支或承襲其租期。#154 待審時可做本包；需補修則先記 checkpoint／釋出此包，串行處理。原型一個小 PR；正式 RT-04／05 的依賴和 DoD 不變。
+Claude 僅改 `sect-chronicle/experiments/water-carry/` 的設計圖／素材、兩條技術小試作與一條最終展示，可在該處使用原型依賴／Godot project；不改正式 `js/`、`viewer/`、storage、主線測試、root CI／依賴或 Earth。獨立模型不寫正式 world／RNG／存檔；原型選型不批准正式引擎遷移或整份 GDD／完整成長、輕功、戰鬥等新系統。
 
-只做一人固定路線的挑水循環、腳力一維、下一趟實際速度成長、初始同路無收益對照、暫停／重來與局部驗證。展示模型不讀寫正式 world／RNG／存檔，不是第二套正式權威引擎；不改 `js/`、`viewer/`、主線測試或 root 依賴／CI。先交可見效果，不先跑長世界矩陣。範圍完整見工作包，無需重問本原型批准；未合入的規劃文件不構成額外產品批准前置，當前 issue 留有人類授權來源。
+V1 交兩張完整狀態畫面／可編輯來源與動作設計，V2 同素材／同場景比較製作與接線成本並推薦路線，V3 才接極小模型完成操作。先交每段可看成果，串行小 PR；不是一次做完程式才給人看。未回覆不新增每段批准 gate，重大偏離另提案；測試／輸出依工作包分段，未變主線長矩陣不重跑。
+
+預定 Claude 接手不等於已認領。開始核對 #155／#139／#154 最新狀態，從最新 dev 的獨立 worktree／短分支登記目前階段與精確檔案／四小時期限，不承襲 #139 租期或預占後段。#154 待審時可做本包，需補修則先 checkpoint／釋出原型 active 再串行；不動 #154 checkout，不提前開 #140。RT-04／05 依賴與 DoD 不變。本輪只更新工作包與授權紀錄，不代 Claude 開工。
 
 ## 認領有效期限（優先於下方歷史作者指派）
 

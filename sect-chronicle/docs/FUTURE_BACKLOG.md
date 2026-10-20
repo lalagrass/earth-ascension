@@ -1,10 +1,10 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
-## 2026-10-20 窄原型已批准：挑水與腳力成長
+## 2026-10-20 D11 已批准：UI／視覺切片，挑水成長作驗證情境
 
-擁有人另行要求先獨立讓 Claude 做挑水／成長／越跑越快的效果，已建立 [SG-EXP-01 #155](https://github.com/lalagrass/earth-ascension/issues/155)與[獨立工作包／prompt](EXPERIMENT_WATER_CARRY.md)。從 BL-L01／V01／M01 僅提取一人固定路線、腳力一維、下一趟移動更快與初始能力對照，允許在 `experiments/water-carry/` 做可點展示。這是本包的實作批准，不必等 SG-13；下方「全部未批准／先真人試玩」不阻擋此窄例外。
+擁有人更正並批准 [SG-EXP-01 #155](https://github.com/lalagrass/earth-ascension/issues/155)：先交完整場景／介面畫稿與人物動作設計，再以同場景比較 PixiJS／Godot，最後用選定路線做可操作展示。見[新版工作包／Claude prompt](EXPERIMENT_WATER_CARRY.md)與[決策 D11](DECISIONS_AND_SOURCES.md#d11sg-exp-01-ui視覺切片2026-10-20)。這取代舊純挑水功能包；獨立 `experiments/water-carry/` 可做設計、素材、兩個小試作與最終展示，不再預定 Canvas 或禁止原型內的引擎／依賴比較。
 
-其餘 BL 與願景維持原狀；展示不接正式世界／存檔、不改 RT-04／05 DoD 或依賴、不批准完整成長、輕功、巡山或新引擎。Claude 開工仍需真實認領與獨立 worktree，不預占作者；完成展示後由擁有人看效果，再決定是否正式採用。
+從 BL-L01／V01／M01 僅提取一人挑水／腳力／真實速度成長支撐 UI，並加上完整 HUD、選人點物件、工作／成長面板、暫停下令、鏡頭與動作呈現。本包已批，不必等 SG-13，舊「全部未批准」不阻擋此例外；其餘 BL／GDD 維持待評估。原型不接正式世界／存檔，不批准正式 Godot 遷移／renderer 替換，不改 RT-04／05 DoD 或依賴。Claude 按目前階段真實認領，不代開 session；先看成果、沿成本原則驗證，效果與正式採用另判。
 
 ## 2026-10-20 長期願景與人格命譜草案
 
