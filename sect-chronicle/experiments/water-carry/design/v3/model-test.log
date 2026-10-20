@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: 每趟只在倒水完成時入帳一次，並且只成長一次
+ok 1 - 每趟只在倒水完成時入帳一次，並且只成長一次
+  ---
+  duration_ms: 16.990211
+  type: 'test'
+  ...
+# Subtest: 成長在倒完水才生效：當趟維持出發時的速度，下一趟同倍率真的更快
+ok 2 - 成長在倒完水才生效：當趟維持出發時的速度，下一趟同倍率真的更快
+  ---
+  duration_ms: 5.559217
+  type: 'test'
+  ...
+# Subtest: 速度有上限：滿級後再挑不會更快，也不再成長
+ok 3 - 速度有上限：滿級後再挑不會更快，也不再成長
+  ---
+  duration_ms: 20.518359
+  type: 'test'
+  ...
+# Subtest: 本趟後休息：倒完水才停，之後不自己出發；開始挑水才再出發
+ok 4 - 本趟後休息：倒完水才停，之後不自己出發；開始挑水才再出發
+  ---
+  duration_ms: 3.541466
+  type: 'test'
+  ...
+# Subtest: 取消待執行：倒完水後繼續挑
+ok 5 - 取消待執行：倒完水後繼續挑
+  ---
+  duration_ms: 3.209169
+  type: 'test'
+  ...
+# Subtest: 做不到的選項回原因，不改狀態
+ok 6 - 做不到的選項回原因，不改狀態
+  ---
+  duration_ms: 0.322751
+  type: 'test'
+  ...
+# Subtest: 水缸滿了在道館等用水，用掉一擔後自己出發
+ok 7 - 水缸滿了在道館等用水，用掉一擔後自己出發
+  ---
+  duration_ms: 0.548108
+  type: 'test'
+  ...
+# Subtest: 初始腳力影子用 Lv 1 速度走，永遠不產水
+ok 8 - 初始腳力影子用 Lv 1 速度走，永遠不產水
+  ---
+  duration_ms: 4.938015
+  type: 'test'
+  ...
+# Subtest: view() 只讀：重複呼叫不改狀態
+ok 9 - view() 只讀：重複呼叫不改狀態
+  ---
+  duration_ms: 0.76472
+  type: 'test'
+  ...
+# Subtest: 畫面幀率與分段不影響結果：60fps、144fps、不規則幀與 4 倍速餵同樣的總時間，得到同一個世界
+ok 10 - 畫面幀率與分段不影響結果：60fps、144fps、不規則幀與 4 倍速餵同樣的總時間，得到同一個世界
+  ---
+  duration_ms: 10.056515
+  type: 'test'
+  ...
+# Subtest: 長空檔不追趕：一次 10 秒的空檔只算 250ms
+ok 11 - 長空檔不追趕：一次 10 秒的空檔只算 250ms
+  ---
+  duration_ms: 0.2814
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 152.473312
