@@ -1,6 +1,6 @@
 # 長期願景與討論入口
 
-狀態：**討論草案／未排程／不是開發契約**。2026-10-20；前三份由 Codex（遊戲 PO）整理擁有人在遊戲 PO 聊天提供的構想，追蹤 [Proposal #152](https://github.com/lalagrass/earth-ascension/issues/152)；第四份資源／物流／人口維持由 Codex（Earth PO）整理其聊天來稿，追蹤 [Proposal #160](https://github.com/lalagrass/earth-ascension/issues/160)。授權是保存與整理，沒有批准全部玩法、數值、技術選型或交期。
+狀態：**討論草案／未排程／不是開發契約**。2026-10-20；前三份由 Codex（遊戲 PO）整理擁有人在遊戲 PO 聊天提供的構想，追蹤 [Proposal #152](https://github.com/lalagrass/earth-ascension/issues/152)；第四份資源／物流／人口維持及第五份三問心印／近期方針由 Codex（Earth PO）整理其聊天來稿，分別追蹤 [#160](https://github.com/lalagrass/earth-ascension/issues/160)／[#163](https://github.com/lalagrass/earth-ascension/issues/163)。授權是保存與整理；#163另保存擁有人明確的初始性格預選、無操作可續進UX方向，沒有批准全部玩法、數值、技術選型或交期。
 
 後續批准 [D11](../DECISIONS_AND_SOURCES.md#d11sg-exp-01-ui視覺切片2026-10-20)：[SG-EXP-01 #155](https://github.com/lalagrass/earth-ascension/issues/155)已由純挑水包更正為 UI／視覺切片，先完整畫面稿與動作設計，再比較 PixiJS／Godot，最後可操作展示；挑水成長作驗證情境。見[新版工作包／Claude prompt](../EXPERIMENT_WATER_CARRY.md)。只批准獨立展示與比較，不代表全本 GDD 採用、正式引擎遷移或正式世界加入成長。
 
@@ -10,14 +10,16 @@
 | [人格、命譜與卦象草案](PERSONALITY_DESTINY_DRAFT.md) | 人格呈現／行為偏好、命格天賦、判詞、占卜與事件的責任及取捨 |
 | [村民生活與邀請入門草案](NPC_LIFE_RECRUITMENT_DRAFT.md) | NPC 的追求、交往與可知資訊、入門意願／安置及非弟子合作 |
 | [資源、物流倉儲與人口維持草案](LOGISTICS_UPKEEP_DRAFT.md) | 採集／搬運／儲存／消耗、住房／保存／建造／自動化；原意、現況差異與逐步驗證候選 |
+| [三問心印與近期方針草案](PERIODIC_INTENTIONS_DRAFT.md) | 八種原創風格、初始性格預選、可略過與修改；人格／方針／回顧分層、卦象校對及待決策 |
 | [第一份原稿](sources/2026-10-20-shanjiandao-original.md) | 《山間道：靈氣復甦》GDD，原樣保存；原文公式、JSON 與週數均屬提案 |
 | [第二份原稿](sources/2026-10-20-personality-destiny-original.md) | 人格命盤／易經構想，文字保存，僅清除三處空白行的行尾空白以通過 diff 檢查；原文錯誤與 GDScript 範例保留供對照，不能直接採用 |
 | [第三份原稿](sources/2026-10-20-npc-life-recruitment-original.md) | 村民自主／交友／點化招募，按聊天來稿保存；範例不是已完成的 Utility AI 或可直接使用的引擎 |
-| [第四份原稿](sources/2026-10-20-logistics-upkeep-original.md) | 資源／物流／Upkeep 完整聊天草稿，僅清行尾空白；數值、設施表與 Godot 程式均為示意，矛盾保留供對照 |
+| [第四份原稿](sources/2026-10-20-logistics-upkeep-original.md) | 資源／物流／Upkeep 完整聊天草稿，空白行／行尾正規化，非逐位元相同；數值、設施表與 Godot 程式均為示意，矛盾保留供對照 |
+| [第五份原稿](sources/2026-10-20-periodic-intentions-original.md) | 三問／八種當期心境附件全文，僅清行尾空白與補末尾換行；錯配的爻形／Godot示例原樣保留，擁有人後補UX要求見整理版 |
 
 ## 怎麼一起討論
 
-聊天用來探索想法；#152／#160 留各自選項、回饋與決策；這裡保存可版本比較的完整草案。[FUTURE_BACKLOG](../FUTURE_BACKLOG.md)／[#75](https://github.com/lalagrass/earth-ascension/issues/75)維持構想索引，成熟題目才拆獨立研究或實作 issue。不把整本 GDD 貼成 coding agent 的工作包。沿 [D12](../VISIBLE_DELIVERY_PLAN.md)逐步可見交付與驗證後整合；只保留參考可歸檔／記回訪條件，擬正式採用才另排差異包。
+聊天用來探索想法；#152／#160／#163 留各自選項、回饋與決策；這裡保存可版本比較的完整草案。[FUTURE_BACKLOG](../FUTURE_BACKLOG.md)／[#75](https://github.com/lalagrass/earth-ascension/issues/75)維持構想索引，成熟題目才拆獨立研究或實作 issue。不把整本 GDD 貼成 coding agent 的工作包。沿 [D12](../VISIBLE_DELIVERY_PLAN.md)逐步可見交付與驗證後整合；只保留參考可歸檔／記回訪條件，擬正式採用才另排差異包。
 
 每次討論留下「問題、方案、建議與代價、是否採用、來源與日期、影響哪個工作包」。未定項可持續補充，不阻擋已批准的工作。採用時另以文件 PR 同步正式設計、決策紀錄、任務與驗收；不要只改草案就宣稱批准。
 
