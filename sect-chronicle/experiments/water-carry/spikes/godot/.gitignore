@@ -1,0 +1,5 @@
+# 由 tools/sync-assets.sh 從 ../shared 複製；Godot 匯入快取與匯出產物
+/shared/
+/.godot/
+/build/
+*.import

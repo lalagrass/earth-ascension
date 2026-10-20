@@ -1,0 +1,353 @@
+{
+ "note": "由 export.js 從 V1 來源產生，請勿手改。座標為 V1 場景座標（1600×900）；PNG 以 resolution 倍輸出，放進引擎時乘 1/resolution。",
+ "resolution": 2,
+ "size": {
+  "w": 1600,
+  "h": 900
+ },
+ "background": "bg.png",
+ "path": {
+  "points": [
+   [
+    962,
+    512
+   ],
+   [
+    872,
+    540
+   ],
+   [
+    918,
+    592
+   ],
+   [
+    790,
+    636
+   ],
+   [
+    662,
+    612
+   ],
+   [
+    556,
+    656
+   ],
+   [
+    440,
+    694
+   ],
+   [
+    376,
+    702
+   ]
+  ],
+  "length": 730.6,
+  "top": "dojo",
+  "bottom": "spring"
+ },
+ "props": [
+  {
+   "id": "pine-a",
+   "file": "pine-a.png",
+   "w": 126,
+   "h": 164,
+   "ax": 64,
+   "ay": 148,
+   "x": 1520,
+   "y": 470
+  },
+  {
+   "id": "pine-b",
+   "file": "pine-b.png",
+   "w": 100,
+   "h": 130,
+   "ax": 51,
+   "ay": 117,
+   "x": 980,
+   "y": 382
+  },
+  {
+   "id": "pine-c",
+   "file": "pine-c.png",
+   "w": 86,
+   "h": 116,
+   "ax": 46,
+   "ay": 104,
+   "x": 1560,
+   "y": 330
+  },
+  {
+   "id": "pine-d",
+   "file": "pine-d.png",
+   "w": 172,
+   "h": 224,
+   "ax": 88,
+   "ay": 204,
+   "x": 560,
+   "y": 860
+  },
+  {
+   "id": "master",
+   "file": "master.png",
+   "w": 44,
+   "h": 71,
+   "ax": 18,
+   "ay": 61,
+   "x": 1300,
+   "y": 512
+  },
+  {
+   "id": "senior",
+   "file": "senior.png",
+   "w": 73,
+   "h": 98,
+   "ax": 43,
+   "ay": 86,
+   "x": 1120,
+   "y": 528
+  },
+  {
+   "id": "bush-a",
+   "file": "bush-a.png",
+   "w": 76,
+   "h": 52,
+   "ax": 38,
+   "ay": 38,
+   "x": 706,
+   "y": 662
+  },
+  {
+   "id": "rock-a",
+   "file": "rock-a.png",
+   "w": 59,
+   "h": 34,
+   "ax": 29,
+   "ay": 30,
+   "x": 520,
+   "y": 610
+  },
+  {
+   "id": "bush-b",
+   "file": "bush-b.png",
+   "w": 70,
+   "h": 48,
+   "ax": 35,
+   "ay": 35,
+   "x": 1030,
+   "y": 596
+  },
+  {
+   "id": "bush-c",
+   "file": "bush-c.png",
+   "w": 104,
+   "h": 70,
+   "ax": 52,
+   "ay": 52,
+   "x": 460,
+   "y": 800
+  },
+  {
+   "id": "rock-b",
+   "file": "rock-b.png",
+   "w": 91,
+   "h": 50,
+   "ax": 45,
+   "ay": 46,
+   "x": 860,
+   "y": 812
+  },
+  {
+   "id": "bush-d",
+   "file": "bush-d.png",
+   "w": 118,
+   "h": 79,
+   "ax": 59,
+   "ay": 59,
+   "x": 1220,
+   "y": 820
+  }
+ ],
+ "vats": [
+  {
+   "id": "vat-0",
+   "file": "vat-0.png",
+   "w": 84,
+   "h": 67,
+   "ax": 38,
+   "ay": 52,
+   "level": 0
+  },
+  {
+   "id": "vat-1",
+   "file": "vat-1.png",
+   "w": 84,
+   "h": 67,
+   "ax": 38,
+   "ay": 52,
+   "level": 0.55
+  },
+  {
+   "id": "vat-2",
+   "file": "vat-2.png",
+   "w": 84,
+   "h": 67,
+   "ax": 38,
+   "ay": 52,
+   "level": 1
+  }
+ ],
+ "hero": {
+  "w": 102,
+  "h": 109,
+  "ax": 48,
+  "ay": 91,
+  "frames": {
+   "idle": "hero-idle.png",
+   "idle-sel": "hero-idle-sel.png",
+   "empty-0": "hero-empty-0.png",
+   "empty-0-sel": "hero-empty-0-sel.png",
+   "empty-1": "hero-empty-1.png",
+   "empty-1-sel": "hero-empty-1-sel.png",
+   "empty-2": "hero-empty-2.png",
+   "empty-2-sel": "hero-empty-2-sel.png",
+   "empty-3": "hero-empty-3.png",
+   "empty-3-sel": "hero-empty-3-sel.png",
+   "load-0": "hero-load-0.png",
+   "load-0-sel": "hero-load-0-sel.png",
+   "load-1": "hero-load-1.png",
+   "load-1-sel": "hero-load-1-sel.png",
+   "load-2": "hero-load-2.png",
+   "load-2-sel": "hero-load-2-sel.png",
+   "load-3": "hero-load-3.png",
+   "load-3-sel": "hero-load-3-sel.png",
+   "dip": "hero-dip.png",
+   "dip-sel": "hero-dip-sel.png",
+   "pour": "hero-pour.png",
+   "pour-sel": "hero-pour-sel.png"
+  },
+  "faceRightDefault": true
+ },
+ "places": {
+  "vat": {
+   "label": "水缸",
+   "x": 1000,
+   "y": 520,
+   "rx": 44,
+   "ry": 26,
+   "sub": "道館院中"
+  },
+  "spring": {
+   "label": "泉水",
+   "x": 328,
+   "y": 719,
+   "rx": 108,
+   "ry": 32,
+   "sub": "谷底"
+  }
+ },
+ "camera": {
+  "start": {
+   "x": 800,
+   "y": 450,
+   "zoom": 1
+  },
+  "minZoom": 0.6,
+  "maxZoom": 1.6
+ },
+ "playback": {
+  "loop": true,
+  "steps": [
+   {
+    "kind": "walk",
+    "from": 0,
+    "to": 1,
+    "speed": 60,
+    "anim": "empty",
+    "frameMs": 110,
+    "label": "下山（空桶）"
+   },
+   {
+    "kind": "hold",
+    "ms": 4000,
+    "anim": "dip",
+    "label": "取水"
+   },
+   {
+    "kind": "walk",
+    "from": 1,
+    "to": 0,
+    "speed": 45,
+    "anim": "load",
+    "frameMs": 130,
+    "label": "上山負重"
+   },
+   {
+    "kind": "hold",
+    "ms": 4000,
+    "anim": "pour",
+    "label": "倒水",
+    "vatLevelAfter": 2
+   }
+  ]
+ },
+ "ui": {
+  "hero": {
+   "name": "林遠",
+   "role": "主角 · 道館學徒",
+   "leg": "Lv 3",
+   "work": "挑水（持續）"
+  },
+  "menus": {
+   "vat": [
+    {
+     "label": "本趟後休息",
+     "detail": "這趟挑完、倒進水缸後停手回道館休息",
+     "enabled": true
+    },
+    {
+     "label": "開始挑水（持續）",
+     "detail": "已在挑水中",
+     "enabled": false
+    },
+    {
+     "label": "立即倒水",
+     "detail": "肩上是空桶：要先到泉水裝水",
+     "enabled": false
+    },
+    {
+     "label": "派師兄一起挑",
+     "detail": "示範只開放主角下令",
+     "enabled": false
+    }
+   ],
+   "spring": [
+    {
+     "label": "本趟後休息",
+     "detail": "這趟挑完、倒進水缸後停手回道館休息",
+     "enabled": true
+    },
+    {
+     "label": "在這裡多裝一桶",
+     "detail": "扁擔只掛得了兩桶",
+     "enabled": false
+    }
+   ]
+  },
+  "people": [
+   {
+    "id": "hero",
+    "name": "主角 · 林遠"
+   },
+   {
+    "id": "master",
+    "name": "師父 · 玄真",
+    "status": "打坐・道館院中"
+   },
+   {
+    "id": "senior",
+    "name": "師兄 · 周衡",
+    "status": "掃地・道館院中"
+   }
+  ]
+ }
+}

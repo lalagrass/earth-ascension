@@ -5,5 +5,5 @@
 | 階段 | 狀態 | 入口 |
 |---|---|---|
 | V1 完整畫面稿與動作設計 | 已交，待人看 | [design/V1.md](design/V1.md) |
-| V2 PixiJS／Godot 同場景比較 | 未開始 | — |
+| V2 PixiJS／Godot 同場景比較 | 已交，推薦 PixiJS＋HTML/CSS，待審 | [design/V2.md](design/V2.md)；試作在 [spikes/](spikes/) |
 | V3 可操作展示 | 未開始 | — |
