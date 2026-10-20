@@ -5,7 +5,7 @@
  * 頁面狀態只透過 window.sectViewer 的唯讀 snapshot 與畫面文字讀取。
  *
  * A 無人介入：預設開局按 4× 播到 2700 tick（跨第 14 天邊界 2520），每跨一天記下名冊上每人的狀態文字並截圖幾張；
- *   結束時頁面 hash 必須等於 Node 直接推進同一 tick 的結果。之後在 Node 對同一個世界每 10 tick 取樣 View.describe()，
+ *   結束時頁面 hash 必須等於 Node 直接推進同一 tick 的結果。之後在 Node 對同一個世界逐 tick 讀 View.describe()，
  *   統計每人每天的工作、恢復、等待與原因，以及目標進度。這份統計描述的是與頁面 hash 相同的世界。
  * B 暫停介入：開局 → 暫停（確認世界不動）→ 在道場給主角下令 → 改目標順序 → 恢復 → 主角執行玩家令途中暫停並保存 →
  *   重新整理讀檔（保持暫停、不補 tick）→ 續玩到玩家令做完、自主接手 → 用畫面的「匯出存檔」取出世界，
@@ -15,7 +15,8 @@
  *   python3 -m http.server 8765 --directory sect-chronicle &
  *   NODE_PATH=$(npm root -g) node sect-chronicle/tools/viewer-playtest.js /tmp/rt05-playtest
  * 紀錄寫到 <輸出目錄>/playtest.log，統計在 unattended.json，截圖與匯出存檔在同一目錄。
- * 任何一項不成立就以 FAIL 結束、結束碼非零。
+ * 任何一項不成立就以 FAIL 結束、結束碼非零。只重算統計：
+ *   NODE_PATH=$(npm root -g) node -e "console.log(JSON.stringify(require('./sect-chronicle/tools/viewer-playtest.js').analyse(2702)))"
  */
 const { chromium } = require('playwright');
 const fs = require('fs');
@@ -35,7 +36,6 @@ const URL = process.env.VIEWER_URL || 'http://127.0.0.1:8765/viewer/';
 const SEED = 'rt-dev-000';
 const HORIZON = 2700;
 const DAY = Rules.TICKS_PER_DAY;
-const SAMPLE = 10;
 const TOTAL_LIMIT_MS = 15 * 60 * 1000;
 fs.mkdirSync(OUT, { recursive: true });
 const log = [];
@@ -125,12 +125,13 @@ async function partA(browser) {
   return { endTick: s.tick, wall, days };
 }
 
-// A 的世界統計：同一 seed、同一 tick，hash 已與頁面核對。
+// A 的世界統計：同一 seed、同一 tick，hash 已與頁面核對。逐 tick 讀狀態，tick t 的狀態算 [t, t+1) 這 1 tick，
+// 所以每天的數字是實際時數（最後一天只到 endTick），不是抽樣估計。
 function analyse(endTick) {
   let w = Realtime.createWorld(SEED).state;
   const perDay = new Map();
   const names = {};
-  for (let t = 0; t < endTick; t += SAMPLE) {
+  for (let t = 0; t < endTick; t += 1) {
     w = advanceTo(w, t);
     const m = View.describe(w, deps);
     const day = m.clock.day;
@@ -145,7 +146,7 @@ function analyse(endTick) {
       else if (st.kind === 'wait') key = `等待：${st.text.replace(/（自 tick.*$/, '')}`; // 去掉起訖 tick，同一原因才會合併
       else key = st.label || st.kind;
       const b = bucket[p.id] || (bucket[p.id] = {});
-      b[key] = (b[key] || 0) + SAMPLE;
+      b[key] = (b[key] || 0) + 1;
     }
   }
   w = advanceTo(w, endTick);
@@ -154,7 +155,7 @@ function analyse(endTick) {
   const eventTypes = {};
   for (const e of w.eventLog) eventTypes[e.type] = (eventTypes[e.type] || 0) + 1;
   return {
-    seed: SEED, endTick, sampleEvery: SAMPLE,
+    seed: SEED, endTick, unit: 'tick（逐 tick 實數）',
     names,
     days: [...perDay.entries()].map(([day, people]) => ({ day, people })),
     final: {
@@ -296,7 +297,9 @@ async function main(box) {
   note('wall time', ((Date.now() - t0) / 1000).toFixed(1), 's');
 }
 
-(async () => {
+// 只要重算 A 的統計（不開瀏覽器）時可 require 本檔取 analyse(endTick)。
+module.exports = { analyse };
+if (require.main === module) (async () => {
   const box = {};
   const watchdog = setTimeout(() => {
     note('FAIL', `超過總時限 ${TOTAL_LIMIT_MS / 1000} 秒`);

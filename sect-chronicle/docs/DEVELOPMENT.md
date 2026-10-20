@@ -254,7 +254,7 @@ python3 -m http.server 8765 --directory sect-chronicle &
 NODE_PATH=$(npm root -g) node sect-chronicle/tools/viewer-playtest.js /tmp/rt05-playtest
 ```
 
-只經畫面操作，不注入世界、不偽造背景事件。A：預設開局 4× 無人介入播過 2700 tick，頁面 hash／RNG 對照 Node，再在 Node 對同一世界每 10 tick 取樣 `View.describe()`，寫每人每天的工作、休養、等待與原因（`unattended.json`）。B：暫停 → 在道館給主角下令 → 改目標順序 → 恢復 → 玩家令工作中保存 → 重新整理讀檔（保持暫停、不補 tick）→ 續玩到自主接手 → 匯出存檔，在 Node 依 tick 只重放 `origin: 'manual'` 的命令，hash／RNG 必須相同（`intervention.json`）。`commandLog` 也記自主產生的 `autoAssign`（`origin: 'auto'`），重放時不送，由推進自己產生。條件不成立寫 FAIL、exit 1；可用 `VIEWER_URL` 指向別的頁面跑反例。真實背景沿用上面的 `viewer-background-check.js`。
+只經畫面操作，不注入世界、不偽造背景事件。A：預設開局 4× 無人介入播過 2700 tick，頁面 hash／RNG 對照 Node，再在 Node 對同一世界逐 tick 讀 `View.describe()`，寫每人每天的工作、休養、等待與原因的實際 tick 數（`unattended.json`；tick t 的狀態算 [t, t+1)，最後一天只算到結束 tick）。只重算統計不必開瀏覽器：`require('./sect-chronicle/tools/viewer-playtest.js').analyse(endTick)`，約 10 秒。B：暫停 → 在道館給主角下令 → 改目標順序 → 恢復 → 玩家令工作中保存 → 重新整理讀檔（保持暫停、不補 tick）→ 續玩到自主接手 → 匯出存檔，在 Node 依 tick 只重放 `origin: 'manual'` 的命令，hash／RNG 必須相同（`intervention.json`）。`commandLog` 也記自主產生的 `autoAssign`（`origin: 'auto'`），重放時不送，由推進自己產生。條件不成立寫 FAIL、exit 1；可用 `VIEWER_URL` 指向別的頁面跑反例。真實背景沿用上面的 `viewer-background-check.js`。
 
 ## SG-02 新增的契約
 
