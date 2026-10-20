@@ -9,6 +9,10 @@
  * SG-RT-03a：保存時機只在幀末通知（onSavePoint），不切批次、不插在 advanceTicks 中間：
  * 這一段推進跨過日界（floor(t0/180) < floor(t1/180)，落點不必剛好是 180）、途中有突破停批、或播放中被暫停／轉背景。
  * 控制器本身不寫存檔；load(world) 換成已驗證的世界並保持暫停，不補離線 tick。
+ * SG-RT-04：下令只走 Realtime.dispatch。畫面打開選單或編輯器時用 intent() 記下當時的世代與 revision，
+ * 送出時以那個 revision 當 expectedRevision，不換成最新值；世界在這之間推進過就由引擎回 stale_revision。
+ * 一個 intent 只能送一次（雙擊不會重送），被拒時世界不動、不換 id 重試。成功只採用回傳的 state，不推進 tick。
+ * 新局（prepare）與換世界（load）會換世代，舊世代的 intent 一律作廢。
  */
 (function (root, factory) {
   'use strict';
@@ -44,14 +48,46 @@
     let autoPaused = false;
     let lastStep = null;
     let totals = { ticks: 0, batches: 0, breakthroughStops: 0 };
+    let generation = 0;
+    let intentSeq = 0;
+    const spent = new Set(); // 已送出過的 intent
 
-    function prepare(nextSeed) {
-      const made = Realtime.createWorld(nextSeed, opts.characterOptions);
+    // 依序套用多個命令到同一份世界；全部成功才回傳新世界，任何一個被拒就整批不採用。
+    function applyAll(base, baseRevision, commands, idOf) {
+      let next = base;
+      const events = [];
+      for (let i = 0; i < commands.length; i += 1) {
+        const c = commands[i];
+        const r = Realtime.dispatch(next, { id: idOf(i), expectedRevision: baseRevision + i, type: c.type, payload: c.payload });
+        if (!r || r.ok !== true) {
+          return { ok: false, code: r ? r.code : 'no_result', reason: r ? r.reason : 'dispatch 沒有回傳結果', index: i };
+        }
+        if (r.duplicate) return { ok: false, code: 'duplicate', reason: `命令 ${idOf(i)} 已經處理過，這次沒有再套用`, index: i };
+        next = r.state;
+        events.push(...r.events);
+      }
+      return { ok: true, world: next, events };
+    }
+
+    // setup：{ characterOptions, policy, goals }。政策與目標只在和預設不同時才下命令，預設開局與 createWorld(seed) 完全相同。
+    function prepare(nextSeed, setup) {
+      const s = setup || {};
+      const made = Realtime.createWorld(nextSeed, s.characterOptions !== undefined ? s.characterOptions : opts.characterOptions);
       if (!made || made.ok !== true) {
         return { ok: false, code: made && made.code, reason: made && made.reason };
       }
-      world = made.state;
+      const commands = [];
+      if (s.policy !== undefined && JSON.stringify(s.policy) !== JSON.stringify(made.state.policy)) {
+        commands.push({ type: 'setPolicy', payload: { policy: s.policy } });
+      }
+      if (s.goals !== undefined && JSON.stringify(s.goals) !== JSON.stringify(made.state.goals)) {
+        commands.push({ type: 'setGoals', payload: { goals: s.goals } });
+      }
+      const applied = applyAll(made.state, made.state.revision, commands, (i) => `setup-${commands[i].type}`);
+      if (!applied.ok) return { ok: false, code: applied.code, reason: applied.reason };
+      world = applied.world;
       seed = nextSeed;
+      generation += 1;
       mode = 'setup';
       error = null;
       autoPaused = false;
@@ -226,6 +262,7 @@
       if (!v.ok) return { ok: false, code: v.code, reason: v.reason };
       world = next;
       seed = next.seed;
+      generation += 1;
       mode = 'paused';
       error = null;
       autoPaused = false;
@@ -235,17 +272,41 @@
       return { ok: true };
     }
 
+    // 畫面打開選單或編輯器時呼叫，記下當下的世代與 revision。
+    function intent() {
+      if (world === null) return null;
+      intentSeq += 1;
+      return Object.freeze({ generation, revision: world.revision, tick: world.clock.tick, seq: intentSeq });
+    }
+
+    // commands：一個 { type, payload } 或其陣列（例如政策與目標一起改）。多個命令依序套用，全部成功才採用。
+    function dispatch(it, commands) {
+      const list = Array.isArray(commands) ? commands : [commands];
+      if (world === null || mode === 'setup') return { ok: false, code: 'not_started', reason: '世界還沒開始' };
+      if (mode === 'error') return { ok: false, code: 'world_stopped', reason: '世界已因錯誤停止，不再接受命令' };
+      if (!it || it.generation !== generation) return { ok: false, code: 'stale_generation', reason: '世界已經換過（新局、讀檔或匯入），這個操作作廢' };
+      if (spent.has(it.seq)) return { ok: false, code: 'intent_spent', reason: '這個操作已經送出過一次' };
+      if (list.length === 0) return { ok: false, code: 'no_command', reason: '沒有要送出的命令' };
+      spent.add(it.seq);
+      const before = world;
+      const applied = applyAll(world, it.revision, list, (i) => `ui-r${it.revision}-i${it.seq}${list.length > 1 ? `-${i}` : ''}`);
+      if (!applied.ok) return applied;
+      world = applied.world;
+      return { ok: true, events: applied.events, before, revision: world.revision };
+    }
+
     function snapshot() {
       return {
-        mode, seed, speed, autoPaused, error, lastStep,
+        mode, seed, speed, autoPaused, error, lastStep, generation,
         totals: Object.assign({}, totals),
         world,
       };
     }
 
     return Object.freeze({
-      prepare, start, pause, resume, toggle, setSpeed, hide, frame, advance, load, snapshot,
+      prepare, start, pause, resume, toggle, setSpeed, hide, frame, advance, load, snapshot, intent, dispatch,
       get world() { return world; },
+      get generation() { return generation; },
       get mode() { return mode; },
       get speed() { return speed; },
     });
