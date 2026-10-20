@@ -1,4 +1,4 @@
-# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05／RT-01／RT-02／RT-02V觀察版／RT-03a存讀／RT-03b原因查詢／RT-04玩家介入）
+# 開發說明（SG-01／SG-02／SG-02A／SG-03／SG-04／SG-04A／SG-05／RT-01／RT-02／RT-02V觀察版／RT-03a存讀／RT-03b原因查詢／RT-04玩家介入／RT-05生活試玩）
 
 ## D10：RT-02V觀察版
 
@@ -244,6 +244,17 @@ NODE_PATH=$(npm root -g) node sect-chronicle/tools/viewer-play-check.js /tmp/rt0
 ```
 
 只經畫面操作，不注入世界。檢查建角與開局設定（hash 對照公開 API）、採集中／旅行中／承諾工作（援村）／煉丹中各下一次令並以畫面說的換手 tick 對照實際出發 tick、舊意圖被拒、求援／收徒／突破各回應一次、暫停中改政策與目標、保存→重新整理→讀取 hash 相同且保持暫停、鍵盤、播放中點名冊 8 次、窄畫面（390px）與 console。
+
+## SG-RT-05 新增（生活試玩紀錄）
+
+追蹤 [#140](https://github.com/lalagrass/earth-ascension/issues/140)。只新增試玩工具與紀錄，`js/`、`viewer/`、存檔格式與 golden 都沒改。結果、每日統計、驗收條件對照與交接見 [PLAYTEST_LOG.md](PLAYTEST_LOG.md)。
+
+```sh
+python3 -m http.server 8765 --directory sect-chronicle &
+NODE_PATH=$(npm root -g) node sect-chronicle/tools/viewer-playtest.js /tmp/rt05-playtest
+```
+
+只經畫面操作，不注入世界、不偽造背景事件。A：預設開局 4× 無人介入播過 2700 tick，頁面 hash／RNG 對照 Node，再在 Node 對同一世界每 10 tick 取樣 `View.describe()`，寫每人每天的工作、休養、等待與原因（`unattended.json`）。B：暫停 → 在道館給主角下令 → 改目標順序 → 恢復 → 玩家令工作中保存 → 重新整理讀檔（保持暫停、不補 tick）→ 續玩到自主接手 → 匯出存檔，在 Node 依 tick 只重放 `origin: 'manual'` 的命令，hash／RNG 必須相同（`intervention.json`）。`commandLog` 也記自主產生的 `autoAssign`（`origin: 'auto'`），重放時不送，由推進自己產生。條件不成立寫 FAIL、exit 1；可用 `VIEWER_URL` 指向別的頁面跑反例。真實背景沿用上面的 `viewer-background-check.js`。
 
 ## SG-02 新增的契約
 
