@@ -246,6 +246,18 @@
       case 'autonomyResumed': return `${who} 恢復自主（${e.reason}）`;
       case 'breakthroughAskOpened': return `${who} 想突破，詢問待回覆`;
       case 'askExpired': return `詢問逾期：${e.eventId}`;
+      // SG-RT-04：玩家命令的結果
+      case 'commandAccepted': return `收到手動指令：${who}${kind}`;
+      case 'manualCancelled': return `${who} 的手動指令已取消（還沒出發）`;
+      case 'cancelArmed': return `${who} 的手動指令已取消：${e.halt === 'step' ? '走完這一步就停下' : '停下目前工作'}`;
+      case 'manualLockReleased': return `${who} 的手動指令已解除，已開工的承諾工作仍會做完`;
+      case 'manualInvalid': return `${who} 的手動指令沒辦法執行（${label(FALLBACK_LABELS, e.reason)}），回到自主`;
+      case 'goalsSet': return `目標順序已更新（第 ${e.goalsRevision} 版）`;
+      case 'policySet': return '政策已更新';
+      case 'eventChosen': {
+        const d = { agree: '同意突破', later: '稍後再說', agree_invalid: '同意了但開不了工' };
+        return `回覆詢問 ${e.eventId}：${e.disposition ? label(d, e.disposition) : e.optionId}`;
+      }
       default: {
         const rest = Object.keys(e).filter((k) => !['seq', 'tick', 'type'].includes(k))
           .map((k) => `${k}=${typeof e[k] === 'object' ? JSON.stringify(e[k]) : e[k]}`).join(' ');
@@ -746,7 +758,7 @@
 
   function renderDetail(model, selected) {
     const p = model.people.find((x) => x.id === selected);
-    if (!p) return '<p class="hint">點地圖上的人物或左側名單查看細節（只改畫面選取，不影響世界）。</p>';
+    if (!p) return '<p class="hint">點場景裡的人物或名冊查看細節（只改畫面選取，不影響世界）。</p>';
     const s = p.status;
     const rows = [
       ['身分', `${p.role}（${p.id}）`],
@@ -762,8 +774,9 @@
     return `<h3>${esc(p.name)}</h3><dl>${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>${renderWhy(p.why)}`;
   }
 
+  // 來源欄位收在可展開的細節裡並允許換行；主畫面先看說明，需要時再展開。
   function sourceTag(source) {
-    return source && source.length > 0 ? ` <code class="src">${esc(source.join('、'))}</code>` : '';
+    return source && source.length > 0 ? ` <details class="src"><summary>來源</summary><code>${esc(source.join('、'))}</code></details>` : '';
   }
 
   // SG-RT-03b：人物詳情裡的「為什麼」。每一行後面附來源欄位。
@@ -799,8 +812,7 @@
 
   function renderEvents(model) {
     const rows = model.events.map((e) => `<li data-type="${esc(e.type)}"><span class="tick">t${e.tick}</span> ${esc(e.text)}</li>`).join('');
-    const pending = model.pending.length === 0 ? '' : `<h3>待處理事件（唯讀）</h3><ul>${model.pending.map((p) => `<li><code>${esc(p.text)}</code></li>`).join('')}</ul>`;
-    return `${pending}<h3>最近事件（共 ${model.eventCount} 筆，顯示最新 ${model.events.length} 筆）</h3><ul class="events">${rows || '<li>尚無事件</li>'}</ul>`;
+    return `<h3>最近事件（共 ${model.eventCount} 筆，顯示最新 ${model.events.length} 筆）</h3><ul class="events">${rows || '<li>尚無事件</li>'}</ul>`;
   }
 
   function render(dom, model, ctl, ui) {
@@ -874,5 +886,8 @@
       <ul class="plain">${rows}</ul><div class="buttons">${renderRawExports(inspection, true)}${inspection.canWrite ? restore : ''}</div>`;
   }
 
-  return Object.freeze({ describe, render, eventText, renderSettings, renderWhy, saveStatusText, renderSavePanel, renderRawExports, WAIT_LABELS, FALLBACK_LABELS });
+  return Object.freeze({
+    describe, render, eventText, renderSettings, renderWhy, saveStatusText, renderSavePanel, renderRawExports, WAIT_LABELS, FALLBACK_LABELS,
+    renderHud, renderDetail, renderStock, renderEvents, goalText, esc, bar, POLICY_LABELS,
+  });
 });
