@@ -140,6 +140,8 @@ async function menu(page, id) {
   await np.screenshot({ path: `${OUT}/narrow-menu.png` });
   await np.keyboard.press('Tab');
   check(await np.evaluate(() => !!document.activeElement.closest('.menu')), '390px選單Tab焦點留在選單');
+  // LP-03 起選單多了「採藥（持續）」：Shift+Tab 回到第一個可用的「本趟後休息」再下令。
+  await np.keyboard.press('Shift+Tab');
   await np.keyboard.press('Enter');
   s = await snap(np);
   check(s.people.cousin.restOrder && !s.people.hero.restOrder, '390px對熟手下本趟後休息，只改熟手意圖');

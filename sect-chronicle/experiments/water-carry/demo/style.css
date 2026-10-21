@@ -40,6 +40,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .cmp { width: 100%; border-collapse: collapse; font-size: 13px; } .cmp td { padding: 1px 0; } .cmp td:not(:first-child) { text-align: right; }
 .cmp .now { font-weight: 700; } .cmp .init { color: var(--ghost); }
 .pending { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #fff6e0; border: 1px dashed var(--gold); border-radius: 6px; padding: 4px 6px; }
+.cmds { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; } .cmds .btn[disabled] { opacity: .45; cursor: default; }
 .roster { position: fixed; left: 10px; bottom: 34px; display: flex; gap: 8px; flex-wrap: wrap; max-width: calc(100% - 20px); z-index: 2; }
 .card { display: block; text-align: left; font: inherit; color: var(--ink); background: rgba(248, 242, 228, .94); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; min-width: 150px; cursor: pointer; }
 .card.sel { border: 2px solid var(--gold); } .card small { display: block; color: var(--ink2); font-size: 12px; } .card .due { color: #8a6416; }
