@@ -1,5 +1,11 @@
 # 可見交付、驗證與正式整合
 
+## D13：本輪生活主入口優先（2026-10-22）
+
+擁有人已指定生活展示作為取代正式入口、持續演進的遊戲方向，並要求一次最長兩小時的Codex開發／非作者review／Earth PO合併循環。沿 [#197](https://github.com/lalagrass/earth-ascension/issues/197)／[有限工作包](LIFE_LOOP_HANDOFF.md)：LP-01共用人物動畫→LP-02兩人不同體態／既有起始腳力、獨立挑水／停工休息／成長與生活入口；各包合dev及postCI才續下包，達標或截止即停。這是本輪優先工作，不把N1／N2所有候選一併批准。
+
+下方「正式入口目前viewer」為此前基線；LP-02完成後以實際新生活入口為主要開發／試玩入口，保留舊viewer與資料。新入口未接的舊RT功能／存讀清楚標明，不把路由切換當完整功能遷移，也不在同一局跑兩套權威模型。主入口與進度由原issue／PR記錄，未交前不先宣稱替換完成。
+
 狀態：**D12 已批准交付方式與候選排序；未批准下表全部玩法實作**。2026-10-20；主筆 Codex（Earth PO／shared queue owner），遊戲 PO 管理產品驗證與後續任務。[D12](DECISIONS_AND_SOURCES.md#d12逐步可見交付與驗證後整合2026-10-20)／[規劃工作單 #158](https://github.com/lalagrass/earth-ascension/issues/158)。
 
 目標是讓每次成果都能回答一個玩家問題，經過驗證後累積到同一個正式遊戲。第一個視覺與操作標準來源是 [#155](https://github.com/lalagrass/earth-ascension/issues/155) 的 [D11 工作包](EXPERIMENT_WATER_CARRY.md)：完整畫面稿、同場景技術比較、可操作展示。現在是標準的建立來源，沒有宣稱尚未交付的畫面／選型已驗收。
