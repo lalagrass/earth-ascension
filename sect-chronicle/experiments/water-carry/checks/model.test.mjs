@@ -2,7 +2,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createModel, createClock, tripSteps, speedsFor, RULES, STEP_MS } from '../demo/model.mjs';
+import { createModel as createLifeModel, createClock, tripSteps, speedsFor, RULES, STEP_MS } from '../demo/model.mjs';
+
+// 保留原一人基線的反例，明確指定單人；預設新局與下方共享容量反例使用雙人。
+const createModel = (len, rules) => createLifeModel(len, rules, [{ id: 'hero', initialLevel: 1 }]);
 
 const LEN = JSON.parse(readFileSync(new URL('../spikes/shared/scene.json', import.meta.url))).path.length;
 const runUntil = (m, pred, limit = 1e6) => { for (let i = 0; i < limit; i++) { if (pred(m.view())) return; m.step(); } throw new Error('沒有等到條件'); };
@@ -125,9 +128,9 @@ test('view() 只讀：重複呼叫不改狀態', () => {
   assert.equal(JSON.stringify(m.state), before);
 });
 
-test('畫面幀率與分段不影響結果：60fps、144fps、不規則幀與 4 倍速餵同樣的總時間，得到同一個世界', () => {
+test('雙人畫面幀率與分段不影響結果：60fps、144fps、不規則幀與 4 倍速得到同一世界', () => {
   const run = (frames, speed) => {
-    const m = createModel(LEN);
+    const m = createLifeModel(LEN);
     const c = createClock();
     for (const dt of frames) { const n = c.feed(dt, speed); for (let i = 0; i < n; i++) m.step(); }
     return JSON.stringify(m.state);
@@ -145,4 +148,107 @@ test('畫面幀率與分段不影響結果：60fps、144fps、不規則幀與 4 
 test('長空檔不追趕：一次 10 秒的空檔只算 250ms', () => {
   const c = createClock();
   assert.equal(c.feed(10000, 1), Math.floor(250 / STEP_MS + 1e-9));
+});
+
+test('兩人以不同起始腳力同時真移動，世界時間與用水只算一次', () => {
+  const m = createLifeModel(LEN, NO_USE);
+  for (let i = 0; i < 301; i++) m.step();
+  const v = m.view();
+  assert.equal(v.tick, 301);
+  assert.equal(v.inFlight, 2);
+  assert.equal(v.vat, NO_USE.vatStart, '路上不先產水');
+  assert.equal(v.people.hero.initialLevel, 1);
+  assert.equal(v.people.cousin.initialLevel, 3);
+  assert.ok(v.people.cousin.phase.k > v.people.hero.phase.k, '同時出發／同時間，熟手走得更遠');
+  assert.deepEqual(v.people.cousin.tripSpeeds, speedsFor(3));
+  const before = JSON.stringify(m.state);
+  for (let i = 0; i < 10; i++) { m.view(); m.actions('cousin'); }
+  assert.equal(JSON.stringify(m.state), before, '讀取人物或選單不改世界');
+  const full = createLifeModel(LEN, { ...RULES, vatStart: RULES.vatCapacity });
+  runUntil(full, (v) => v.inFlight > 0);
+  assert.equal(full.view().vat, RULES.vatCapacity - 1, '兩人共用每60秒一擔用水，不每人扣一擔');
+  assert.equal(full.view().inFlight, 1, '一擔空位只准一人出發');
+});
+
+test('兩人同刻倒完：各一次釋約／入帳／成長，滿缸不重複結算', () => {
+  const rules = { ...NO_USE, vatStart: 0, vatCapacity: 2 };
+  const m = createLifeModel(LEN, rules, [{ id: 'hero', initialLevel: 1 }, { id: 'cousin', initialLevel: 1 }]);
+  m.step();
+  assert.equal(m.view().inFlight, 2);
+  runUntil(m, (v) => v.people.hero.trips === 1);
+  const v = m.view(), credits = m.state.log.filter((x) => x.kind === 'trip');
+  assert.equal(v.vat, 2); assert.equal(v.inFlight, 0);
+  assert.equal(credits.length, 2); assert.equal(credits[0].tick, credits[1].tick);
+  for (const p of Object.values(v.people)) { assert.equal(p.trips, 1); assert.equal(p.level, 2); assert.equal(p.mode, 'idle'); }
+  for (let i = 0; i < 1000; i++) m.step();
+  assert.equal(m.view().vat, 2); assert.equal(m.view().inFlight, 0);
+  assert.equal(m.state.log.filter((x) => x.kind === 'trip').length, 2);
+});
+
+test('容量含在途預約：滿缸等待、用水續工，單一空位輪流出發不餓死另一人', () => {
+  const rules = { ...RULES, vatStart: 1, vatCapacity: 1 };
+  const m = createLifeModel(LEN, rules);
+  m.step();
+  assert.equal(m.view().inFlight, 0);
+  assert.ok(Object.values(m.view().people).every((p) => /水缸已滿/.test(p.status)));
+  for (let i = 0; i < 30000; i++) {
+    m.step();
+    const v = m.view();
+    assert.ok(v.vat >= 0 && v.inFlight >= 0 && v.vat + v.inFlight <= 1, '任何一步都沒有超額預約／丟水');
+    assert.equal(v.inFlight, Object.values(v.people).filter((p) => p.mode === 'carry').length);
+  }
+  const v = m.view();
+  assert.ok(v.people.hero.trips >= 2 && v.people.cousin.trips >= 2, '耗水後兩人都有後續工作');
+  assert.ok(Math.abs(v.people.hero.trips - v.people.cousin.trips) <= 1);
+});
+
+test('對主角下休息與取消只改該人意圖；熟手繼續入帳，休息保留當趟預約至倒完', () => {
+  const m = createLifeModel(LEN, NO_USE);
+  m.step();
+  const other = JSON.stringify(m.state.people.cousin);
+  assert.equal(m.dispatch('restAfterTrip', 'hero').ok, true);
+  assert.equal(JSON.stringify(m.state.people.cousin), other);
+  assert.equal(m.view().inFlight, 2);
+  runUntil(m, (v) => v.people.hero.resting);
+  assert.equal(m.view().people.hero.trips, 1);
+  assert.equal(m.view().inFlight, 1);
+  runUntil(m, (v) => v.people.cousin.trips === 3);
+  assert.equal(m.view().people.hero.trips, 1);
+  assert.equal(m.dispatch('start', 'hero').ok, true);
+  assert.equal(m.dispatch('restAfterTrip', 'hero').ok, true);
+  assert.equal(m.dispatch('cancel', 'hero').ok, true);
+  assert.equal(m.view().inFlight, 2, '取消停工意圖不釋放工作預約');
+  const before = JSON.stringify(m.state);
+  assert.equal(m.dispatch('start', 'missing').ok, false);
+  assert.equal(m.dispatch('pourNow', 'cousin').ok, false);
+  assert.equal(JSON.stringify(m.state), before, '拒絕指令不改預約或人物');
+});
+
+test('熟手也只在倒完才成長，當趟鎖腳力，下一趟採新速度', () => {
+  const m = createLifeModel(LEN, NO_USE);
+  runUntil(m, (v) => {
+    const p = v.people.cousin;
+    if (p.trips < 3 && p.mode === 'carry') { assert.equal(p.tripLevel, 3); assert.deepEqual(p.tripSpeeds, speedsFor(3)); }
+    return p.trips === 3;
+  });
+  let p = m.view().people.cousin;
+  assert.equal(p.level, 4); assert.equal(p.tripLevel, 4); assert.equal(p.lastTrip.level, 3);
+  const third = p.lastTrip.seconds;
+  runUntil(m, (v) => v.people.cousin.trips === 4);
+  p = m.view().people.cousin;
+  assert.equal(p.lastTrip.level, 4); assert.ok(p.lastTrip.seconds < third);
+});
+
+test('重建新局清除兩人的意圖、成長、在途預約及分配順序', () => {
+  let m = createLifeModel(LEN);
+  m.step(); m.dispatch('restAfterTrip', 'cousin');
+  runUntil(m, (v) => v.people.hero.trips === 1);
+  m = createLifeModel(LEN);
+  const v = m.view();
+  assert.equal(v.tick, 0); assert.equal(v.vat, RULES.vatStart); assert.equal(v.inFlight, 0);
+  for (const p of Object.values(v.people)) {
+    assert.equal(p.level, p.initialLevel); assert.equal(p.trips, 0); assert.equal(p.xp, 0);
+    assert.equal(p.restOrder, false); assert.equal(p.resting, false); assert.equal(p.mode, 'idle');
+  }
+  m.step(); assert.equal(m.view().inFlight, 2);
 });

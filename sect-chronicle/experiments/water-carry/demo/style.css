@@ -8,6 +8,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .hud { position: fixed; top: 10px; left: 10px; right: 10px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; z-index: 3;
   background: rgba(248, 242, 228, .94); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; }
 .hud .title { font-weight: 700; letter-spacing: 2px; } .hud .sub, .muted { color: var(--ink2); font-size: 12px; } .spacer { flex: 1; }
+.legacy-link { color: var(--ink2); font-size: 12px; white-space: nowrap; }
 .group { display: inline-flex; gap: 4px; }
 .btn { font: inherit; border: 1px solid var(--line); background: #fffaf0; border-radius: 6px; padding: 2px 9px; cursor: pointer; color: var(--ink); }
 .btn.on { background: var(--ink); color: #fff; } .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
@@ -46,13 +47,14 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .toast { position: fixed; left: 50%; bottom: calc(var(--roster-h) + 50px); transform: translateX(-50%); background: var(--ink); color: #f6e7c4;
   padding: 4px 14px; border-radius: 6px; z-index: 5; max-width: calc(100% - 20px); text-align: center; }
 .hint { position: fixed; left: 10px; bottom: 8px; font-size: 12px; color: var(--ink2); background: rgba(248, 242, 228, .8); padding: 0 6px; border-radius: 4px; }
-/* 窄螢幕：面板與選單改成底部抽屜，疊在名冊上方；名冊只留選中的那張；提示移到頂部橫幅下面，誰都不蓋誰 */
+/* 窄螢幕：面板與選單在名冊上方；兩張卡都保留，方便切換跟隨的工作者。 */
 @media (max-width: 640px) {
   .hint { display: none; }
-  .roster { bottom: 10px; }
+  .roster { bottom: 10px; width: calc(100% - 20px); flex-wrap: nowrap; }
   .panel { left: 10px; right: 10px; width: auto; top: auto; bottom: calc(var(--roster-h) + 18px); max-height: 42%; }
   body.menu-open .panel { display: none; }
   .menu { left: 10px !important; right: 10px; width: auto; top: auto !important; bottom: calc(var(--roster-h) + 18px); max-height: 42%; overflow: auto; }
   .toast { top: calc(var(--hud-h) + 52px); bottom: auto; }
-  .card { min-width: 0; }
+  .card { min-width: 0; flex: 1; padding: 4px 6px; }
+  .card small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }

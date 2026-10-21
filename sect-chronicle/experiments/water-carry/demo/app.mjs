@@ -1,16 +1,18 @@
-// SG-EXP-01 V3：PixiJS＋HTML/CSS 可操作展示。場景（背景、可排序物件、人物與影子、選取圈）畫在 Pixi；
+// 宗門編年生活開發版：PixiJS＋HTML/CSS。場景（背景、可排序物件、兩人與影子、選取圈）畫在 Pixi；
 // HUD、名冊、選單、面板、名牌、提示是 HTML/CSS。世界只有 model.mjs：畫面只讀 view()，下令只走 dispatch()，
 // 推進只經 createClock() 換算的固定步進。暫停、背景、播放倍率與畫面幀率都不改結果。
 import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.min.mjs';
-import { createModel, createClock, STEP_MS } from './model.mjs';
+import { createModel, createClock, PEOPLE, STEP_MS } from './model.mjs';
 import { createAnimator, pathTool } from '../template/animator.mjs';
 
 const SHARED = '../spikes/shared/';
 const t0 = performance.now();
 const scene = await (await fetch(SHARED + 'scene.json')).json();
 const template = await (await fetch('../template/actions.json')).json();
-const sheet = await Assets.load('../template/out/hero.json');
-const animator = createAnimator(template, sheet.data);
+const IDS = PEOPLE.map((p) => p.id);
+const sheets = Object.fromEntries(await Promise.all(IDS.map(async (id) => [id, await Assets.load(`../template/out/${id}.json`)])));
+const animators = Object.fromEntries(IDS.map((id) => [id, createAnimator(template, sheets[id].data)]));
+const profiles = { hero: { name: scene.ui.hero.name, label: '主角', role: '初學者 · 起始腳力 Lv 1' }, cousin: { name: '熟手同伴', label: '熟手', role: '熟手 · 起始腳力 Lv 3' } };
 const R = scene.resolution;
 const $ = (id) => document.getElementById(id);
 
@@ -27,11 +29,11 @@ const path = pathTool(scene.path.points);
 const GROWN_FROM = 3; // 本趟腳力到 Lv 3 起換成長後步態
 
 // 人物在畫面上的樣子：全部由模型的階段與步數推出，不另存狀態
-function pose(ph, level, mode, resting = false) {
+function pose(ph, level, mode, resting = false, id = 'hero') {
   const phase = mode === 'carry' && ph ? ph.name : resting ? 'rest' : 'idle';
   const view = { phase, k: ph?.k || 0, travelled: phase === 'down' || phase === 'up' ? ph.k * path.length : 0 };
   // 模型只提供階段與進度；共用動畫用實際走過的距離換幀，不另開 walker 或時鐘。
-  const pick = animator.pick(view, { grown: level >= GROWN_FROM });
+  const pick = animators[id].pick(view, { grown: level >= GROWN_FROM });
   return { ...path.place(view), ...pick, travelled: view.travelled };
 }
 
@@ -56,21 +58,21 @@ const placeSprite = (file, ax, ay, w, h, x, y) => {
 for (const p of scene.props) placeSprite(p.file, p.ax, p.ay, p.w, p.h, p.x, p.y);
 const vatV = scene.vats[1];
 const vatSprite = placeSprite(vatV.file, vatV.ax, vatV.ay, vatV.w, vatV.h, scene.places.vat.x, scene.places.vat.y);
-const H = sheet.data.meta;
-const heroSprite = (alpha, tint) => {
+const personSprite = (id, alpha = 1, tint) => {
+  const sheet = sheets[id], h = sheet.data.meta;
   const s = new Sprite(sheet.textures[sheet.data.animations.idle[0]]);
   // Pixi 已依 meta.scale 換回場景單位；所有幀共用同一個腳底錨點。
-  s.anchor.set(H.anchorPx.x / H.frameSize.w, H.anchorPx.y / H.frameSize.h);
+  s.anchor.set(h.anchorPx.x / h.frameSize.w, h.anchorPx.y / h.frameSize.h);
   s.alpha = alpha;
   if (tint != null) s.tint = tint;
   sorted.addChild(s);
   return s;
 };
-const ghost = heroSprite(0.38, 0x9aa7b4);
+const ghost = personSprite('hero', 0.38, 0x9aa7b4);
 const ring = new Graphics().ellipse(0, 2, 18, 5.5).stroke({ width: 2.4, color: 0xc8962e });
 ring.visible = false;
 sorted.addChild(ring);
-const hero = heroSprite(1);
+const sprites = Object.fromEntries(IDS.map((id) => [id, personSprite(id)]));
 const placeMark = new Graphics();
 world.addChild(placeMark);
 
@@ -96,6 +98,7 @@ function zoomAt(sx, sy, z) {
 const narrow = () => window.innerWidth <= 640;
 if (narrow()) cam.zoom = 0.85;
 function follow() {
+  const p = positions[selectedPerson()];
   const top = document.querySelector('.hud').getBoundingClientRect().bottom;
   const drawer = [$('menu'), $('panel'), $('roster')].filter((el) => !el.hidden && el.offsetHeight).map((el) => el.getBoundingClientRect().top);
   const bottom = Math.min(window.innerHeight, ...drawer);
@@ -108,26 +111,35 @@ function follow() {
 // ---------- 狀態 ----------
 let model = createModel(scene.path.length);
 const clock = createClock();
-const ui = { follow: narrow(), playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, rosterOpen: true, shadow: true, returnFocus: null };
+const ui = { follow: narrow(), playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null };
 let v = model.view();
-let p = pose(v.phase, v.tripLevel, v.mode, v.resting);
+let positions = Object.fromEntries(IDS.map((id) => { const p = v.people[id]; return [id, pose(p.phase, p.tripLevel, p.mode, p.resting, id)]; }));
 const fx = []; // 浮字（只是畫面效果）
+const selectedPerson = () => IDS.includes(ui.selected) ? ui.selected : 'hero';
 
 // sheet 碰框是像素；換成相對腳底的場景單位，翻面時身體碰框跟著翻。
-const body = { x: (H.hitbox.x - H.anchorPx.x) / Number(H.scale), y: (H.hitbox.y - H.anchorPx.y) / Number(H.scale), w: H.hitbox.w / Number(H.scale), h: H.hitbox.h / Number(H.scale) };
-function bodyBox() {
+const bodies = Object.fromEntries(IDS.map((id) => {
+  const h = sheets[id].data.meta, r = Number(h.scale);
+  return [id, { x: (h.hitbox.x - h.anchorPx.x) / r, y: (h.hitbox.y - h.anchorPx.y) / r, w: h.hitbox.w / r, h: h.hitbox.h / r }];
+}));
+function bodyBox(id) {
+  const p = positions[id], body = bodies[id];
   return { x: p.x + (p.face > 0 ? body.x : -(body.x + body.w)), y: p.y + body.y, w: body.w, h: body.h };
 }
-function tapBox() {
-  const b = bodyBox();
+function tapBox(id) {
+  const b = bodyBox(id);
   const px = Math.max(0, (44 / cam.zoom - b.w) / 2), py = Math.max(0, (44 / cam.zoom - b.h) / 2);
   return { x: b.x - px, y: b.y - py, w: b.w + px * 2, h: b.h + py * 2 };
 }
 function screenBox(b) { return { ...toScreen(b.x, b.y), w: b.w * cam.zoom, h: b.h * cam.zoom }; }
 function hitTest(sx, sy) {
   const w = toWorld(sx, sy);
-  const b = tapBox();
-  if (w.x >= b.x && w.x <= b.x + b.w && w.y >= b.y && w.y <= b.y + b.h) return { kind: 'person', id: 'hero' };
+  let front = null;
+  for (const id of IDS) {
+    const b = tapBox(id);
+    if (w.x >= b.x && w.x <= b.x + b.w && w.y >= b.y && w.y <= b.y + b.h && (!front || positions[id].y >= positions[front].y)) front = id;
+  }
+  if (front) return { kind: 'person', id: front };
   for (const [id, pl] of Object.entries(scene.places)) {
     const dx = (w.x - pl.x) / pl.rx, dy = (w.y - (pl.y - pl.ry * 0.6)) / (pl.ry * 1.6);
     if (dx * dx + dy * dy <= 1) return { kind: 'place', id };
@@ -160,7 +172,8 @@ window.addEventListener('keydown', (e) => {
     if (e.key === 'Tab') { e.preventDefault(); moveFocus(e.shiftKey ? -1 : 1); } // 焦點留在選單裡
     return;
   }
-  if (e.target.closest && e.target.closest('button') && (e.key === ' ' || e.key === 'Enter')) return; // 交給按鈕本身
+  if (e.target.closest && e.target.closest('input, select, textarea, [contenteditable="true"]')) return;
+  if (e.target.closest && e.target.closest('button, a') && (e.key === ' ' || e.key === 'Enter')) return; // 交給按鈕／舊版連結本身
   const k = e.key;
   if (k === ' ') { e.preventDefault(); togglePlay(); }
   else if (k === '1' || k === '2' || k === '4') setSpeed(Number(k));
@@ -170,7 +183,7 @@ window.addEventListener('keydown', (e) => {
   else if (k.startsWith('Arrow')) { const s = 40 / cam.zoom; cam.x += k === 'ArrowLeft' ? -s : k === 'ArrowRight' ? s : 0; cam.y += k === 'ArrowUp' ? -s : k === 'ArrowDown' ? s : 0; applyCam(); }
   else if (k === 'r' || k === 'R') toggleRoster();
   else if (k === 's' || k === 'S') toggleShadow();
-  else if (k === 'Enter' && ui.selected === 'hero') { e.preventDefault(); openMenu('vat'); } // 不讓同一次 Enter 落到剛拿到焦點的選項上
+  else if (k === 'Enter' && IDS.includes(ui.selected)) { e.preventDefault(); openMenu('vat'); } // 不讓同一次 Enter 落到剛拿到焦點的選項上
 });
 // 背景：一律暫停並清掉待補時間；若原本是選單造成的暫停，回來後也不會因為關選單就自己恢復播放
 document.addEventListener('visibilitychange', () => {
@@ -191,30 +204,31 @@ function togglePlay() { if (ui.menu) closeMenu(false); ui.playing = !ui.playing;
 function setSpeed(s) { ui.speed = s; renderChrome(); }
 function toggleRoster() { ui.rosterOpen = !ui.rosterOpen; renderChrome(); }
 function toggleShadow() { ui.shadow = !ui.shadow; renderChrome(); }
-function select(id) { ui.selected = id; renderChrome(); }
+function select(id) { ui.selected = id; if (narrow() && IDS.includes(id)) ui.follow = true; renderChrome(); }
 function reset() {
   if (ui.menu) closeMenu(false);
   model = createModel(scene.path.length);
   clock.clear();
   v = model.view();
   fx.length = 0;
-  toast('已重來：腳力回到 Lv 1、水缸 3 擔');
+  toast('已重來：主角 Lv 1、熟手 Lv 3，水缸 3 擔，待執行指令已清除');
   renderChrome();
 }
 
-function menuOptions(id) {
-  const opts = model.actions().filter((a) => !a.hidden);
+function menuOptions(id, person) {
+  const opts = model.actions(person).filter((a) => !a.hidden);
   if (id === 'spring') return opts.filter((a) => a.id !== 'pourNow').concat([{ id: 'more', label: '在這裡多裝一桶', enabled: false, reason: '扁擔只掛得了兩桶' }]);
   return opts;
 }
 function openMenu(id) {
   if (ui.playing) { ui.playing = false; ui.pausedByMenu = true; clock.clear(); }
   ui.menu = id;
+  ui.menuPerson = selectedPerson();
   ui.returnFocus = document.activeElement !== document.body ? document.activeElement : null;
   const pl = scene.places[id];
   const m = $('menu');
-  m.innerHTML = `<h3>${pl.label}<small>${pl.sub}</small></h3><div class="muted">對象：主角 · ${scene.ui.hero.name}（腳力 Lv ${v.level}）</div>` +
-    menuOptions(id).map((o) => `<button class="opt" data-cmd="${o.id}" ${o.enabled ? '' : 'disabled'}><b>${o.label}</b><span>${o.enabled ? o.detail : o.reason}</span></button>`).join('') +
+  m.innerHTML = `<h3>${pl.label}<small>${pl.sub}</small></h3><div class="muted">對象：${profiles[ui.menuPerson].name}（腳力 Lv ${v.people[ui.menuPerson].level}）</div>` +
+    menuOptions(id, ui.menuPerson).map((o) => `<button class="opt" data-cmd="${o.id}" ${o.enabled ? '' : 'disabled'}><b>${o.label}</b><span>${o.enabled ? o.detail : o.reason}</span></button>`).join('') +
     '<div class="foot"><span>↑↓ 選擇　Enter 下令</span><span>Esc 關閉</span></div>';
   for (const b of m.querySelectorAll('.opt:not([disabled])')) b.addEventListener('click', () => { command(b.dataset.cmd); });
   m.hidden = false;
@@ -245,6 +259,7 @@ function moveFocus(d) {
 }
 function closeMenu(resume = true) {
   ui.menu = null;
+  ui.menuPerson = null;
   $('menu').hidden = true;
   document.body.classList.remove('menu-open');
   if (resume && ui.pausedByMenu) { ui.playing = true; clock.clear(); }
@@ -255,9 +270,11 @@ function closeMenu(resume = true) {
   renderChrome();
 }
 function command(cmd) {
-  const r = model.dispatch(cmd);
-  toast(r.ok ? `已下令：${r.text}` : `做不到：${r.reason}`);
-  ui.selected = 'hero';
+  const person = ui.menu ? ui.menuPerson : selectedPerson();
+  const r = model.dispatch(cmd, person);
+  v = model.view(); // 暫停下令也立即顯示最新意圖，不等待下一個畫面幀。
+  toast(r.ok ? `${profiles[person].label}：${r.text}` : `做不到：${r.reason}`);
+  ui.selected = person;
   if (ui.menu) closeMenu(); else renderChrome();
 }
 let toastTimer = 0;
@@ -292,6 +309,7 @@ function bannerText() {
   return '';
 }
 function renderChrome() {
+  const id = selectedPerson(), person = v.people[id], profile = profiles[id];
   $('play').textContent = ui.playing ? '❚❚ 暫停' : '▶ 繼續';
   for (const b of document.querySelectorAll('[data-speed]')) b.classList.toggle('on', Number(b.dataset.speed) === ui.speed);
   $('shadow-toggle').classList.toggle('on', ui.shadow);
@@ -299,38 +317,37 @@ function renderChrome() {
   $('banner').hidden = !bt;
   if ($('banner').textContent !== bt) $('banner').textContent = bt;
   $('clock').textContent = fmt(v.seconds);
-  $('vat').textContent = `水缸 ${v.vat}／${v.vatCapacity} 擔`;
-  $('leg').textContent = `腳力 Lv ${v.level}`;
-  $('trips').textContent = `已挑 ${v.trips} 趟`;
-  const narrowPanel = narrow() && ui.selected === 'hero';
-  const cards = scene.ui.people.map((pp) => {
-    const st = pp.id === 'hero' ? `${v.resting ? '休息' : '挑水'}・${v.status}` : pp.status;
-    return `<button class="card ${ui.selected === pp.id ? 'sel' : ''}" data-person="${pp.id}"><b>${pp.name}</b><small>${st}</small>${pp.id === 'hero' && v.restOrder ? '<small class="due">待執行 1</small>' : ''}</button>`;
+  $('vat').textContent = `水缸 ${v.vat}／${v.vatCapacity} · 在途 ${v.inFlight}`;
+  $('leg').textContent = `${profile.label} Lv ${person.level}`;
+  $('trips').textContent = `共挑 ${IDS.reduce((n, who) => n + v.people[who].trips, 0)} 趟`;
+  const cards = IDS.map((who) => {
+    const p = v.people[who], info = profiles[who];
+    return `<button class="card ${ui.selected === who ? 'sel' : ''}" data-person="${who}"><b>${info.name} · Lv ${p.level}</b><small>${p.status}</small>${p.restOrder ? '<small class="due">本趟後休息</small>' : ''}</button>`;
   }).join('');
   put('roster', $('roster'), cards);
-  $('roster').classList.toggle('collapsed', !ui.rosterOpen || narrowPanel);
+  $('roster').classList.toggle('collapsed', !ui.rosterOpen);
   const panel = $('panel');
-  panel.hidden = ui.selected !== 'hero';
+  panel.hidden = !IDS.includes(ui.selected);
   if (!panel.hidden) {
-    const si = v.speedsInitial, sn = v.speeds;
-    const work = v.mode === 'carry' ? `挑水（持續）· 第 ${v.trips + 1} 趟` : v.resting ? '休息' : '挑水（持續）';
-    const pend = v.restOrder
-      ? `<div class="pending"><span><b>本趟後休息</b><br><small>本趟倒水完成時生效</small></span><button class="btn" data-cmd="cancel">取消</button></div>`
-      : v.resting ? `<div class="pending"><span><b>休息中</b><br><small>不會自己出發</small></span><button class="btn" data-cmd="start">開始挑水</button></div>`
+    const si = person.speedsInitial, sn = person.mode === 'carry' ? person.tripSpeeds : person.speeds;
+    const work = person.mode === 'carry' ? `挑水（持續）· 第 ${person.trips + 1} 趟` : person.resting ? '休息（停工）' : '挑水（持續）';
+    const pend = person.restOrder
+      ? `<div class="pending"><span><b>本趟後休息</b><br><small>本趟倒水完成時生效，不影響另一人</small></span><button class="btn" data-cmd="cancel">取消</button></div>`
+      : person.resting ? `<div class="pending"><span><b>休息中</b><br><small>停工中，不會自己出發</small></span><button class="btn" data-cmd="start">開始挑水</button></div>`
         : '<div class="muted">沒有</div>';
-    // 待執行指令單獨一格：本趟進度每幀在變，不能連帶重建「取消」「開始挑水」按鈕
     if (!panel.firstElementChild) panel.innerHTML = '<div id="p-work"></div><h4>待執行指令</h4><div id="p-pend"></div><div id="p-leg"></div>';
-    put('p-work', $('p-work'), `<h2>${scene.ui.hero.name}<small>${scene.ui.hero.role}</small></h2>
-      <h4>目前工作</h4><div>${work}</div><div class="row"><span>${v.status}</span>${v.mode === 'carry' ? `<span class="muted">本趟用 Lv ${v.tripLevel}</span>` : ''}</div>
-      <div class="bar"><i style="width:${Math.round(v.tripProgress * 100)}%"></i></div>`);
+    put('p-work', $('p-work'), `<h2>${profile.name}<small>${profile.role}</small></h2>
+      <h4>目前工作</h4><div>${work}</div><div class="row"><span>${person.status}</span>${person.mode === 'carry' ? `<span class="muted">本趟用 Lv ${person.tripLevel}</span>` : ''}</div>
+      <div class="bar"><i style="width:${Math.round(person.tripProgress * 100)}%"></i></div>`);
     put('p-pend', $('p-pend'), pend);
-    put('p-leg', $('p-leg'), `<h4>腳力</h4><div class="row"><b>Lv ${v.level}／${v.maxLevel}</b><span class="muted">${v.nextNeed ? `再 ${v.nextNeed - v.xp} 趟升 Lv ${v.level + 1}` : '已到上限，不會再變快'}</span></div>
-      <div class="bar xp"><i style="width:${v.nextNeed ? Math.round(v.xp / v.nextNeed * 100) : 100}%"></i></div>
-      <table class="cmp"><tr><td></td><td class="now">現在</td><td class="init">初始</td></tr>
-        <tr><td>下山（空桶）</td><td class="now">${sn.empty.toFixed(0)}</td><td class="init">${si.empty.toFixed(0)}</td></tr>
-        <tr><td>上山（負重）</td><td class="now">${sn.load.toFixed(0)}</td><td class="init">${si.load.toFixed(0)}</td></tr>
-        <tr><td>整趟耗時</td><td class="now">${sec(v.tripSeconds)}</td><td class="init">${sec(v.tripSecondsInitial)}</td></tr></table>
-      <div class="muted">${v.lastTrip ? `上一趟實際 ${sec(v.lastTrip.seconds)}（出發時 Lv ${v.lastTrip.level}）` : '還沒挑完第一趟'}；倍率只改播放快慢，不改上面的秒數</div>`);
+    put('p-leg', $('p-leg'), `<h4>腳力</h4><div class="row"><b>Lv ${person.level}／${person.maxLevel}</b><span class="muted">${person.nextNeed ? `再 ${person.nextNeed - person.xp} 趟升 Lv ${person.level + 1}` : '已到上限，不會再變快'}</span></div>
+      <div class="bar xp"><i style="width:${person.nextNeed ? Math.round(person.xp / person.nextNeed * 100) : 100}%"></i></div>
+      <table class="cmp"><tr><td>場景單位／秒</td><td class="now">${person.mode === 'carry' ? '本趟' : '現在'}</td><td class="init">起始 Lv ${person.initialLevel}</td></tr>
+        <tr><td>下山（空桶）</td><td class="now">${sn.empty.toFixed(1)}</td><td class="init">${si.empty.toFixed(1)}</td></tr>
+        <tr><td>上山（負重）</td><td class="now">${sn.load.toFixed(1)}</td><td class="init">${si.load.toFixed(1)}</td></tr>
+        <tr><td>下趟預計</td><td class="now">${sec(person.tripSeconds)}</td><td class="init">${sec(person.tripSecondsInitial)}</td></tr></table>
+      <div class="muted">${person.lastTrip ? `上一趟實際 ${sec(person.lastTrip.seconds)}（出發時 Lv ${person.lastTrip.level}）` : '還沒挑完第一趟'}；升級只影響下一趟，倍率只改播放快慢</div>
+      ${positions[id].fallback ? `<div class="muted">動作沿用：${template.actions[positions[id].action].label}</div>` : ''}`);
   }
 }
 
@@ -352,35 +369,41 @@ app.ticker.add((t) => {
   if (ui.playing) { const n = clock.feed(t.deltaMS, ui.speed); for (let i = 0; i < n; i++) model.step(); }
   const prev = v;
   v = model.view();
-  p = pose(v.phase, v.tripLevel, v.mode, v.resting);
-  if (v.trips > prev.trips) {
-    fx.push({ text: '+1 擔', x: scene.places.vat.x, y: scene.places.vat.y - 70, until: performance.now() + 1600 });
-    if (v.level > prev.level) fx.push({ text: `腳力升到 Lv ${v.level}`, x: p.x, y: p.y - 100, until: performance.now() + 2200 });
+  for (const id of IDS) {
+    const person = v.people[id], p = pose(person.phase, person.tripLevel, person.mode, person.resting, id);
+    positions[id] = p;
+    const sprite = sprites[id];
+    sprite.texture = sheets[id].textures[p.frame];
+    sprite.scale.x = p.face;
+    sprite.position.set(p.x, p.y);
+    sprite.zIndex = p.y;
+    if (person.trips > prev.people[id].trips) {
+      fx.push({ text: `${profiles[id].label} +1 擔`, x: scene.places.vat.x, y: scene.places.vat.y - 70, until: performance.now() + 1600 });
+      if (person.level > prev.people[id].level) fx.push({ text: `${profiles[id].label}腳力 Lv ${person.level}`, x: p.x, y: p.y - 100, until: performance.now() + 2200 });
+    }
+    tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level}`, p.x, p.y, 6);
+    tag(`${id}-pill`, 'pill', person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.status, p.x, p.y - 80);
   }
-  hero.texture = sheet.textures[p.frame];
-  hero.scale.x = p.face;
-  hero.position.set(p.x, p.y);
-  hero.zIndex = p.y;
-  const showGhost = ui.shadow && v.shadow && v.mode === 'carry' && v.tripLevel > 1;
+  const h = v.people.hero;
+  const showGhost = ui.shadow && v.shadow && h.mode === 'carry' && h.tripLevel > h.initialLevel;
   ghost.visible = !!showGhost;
   let g = null;
   if (showGhost) {
-    g = pose(v.shadow, 1, 'carry');
-    ghost.texture = sheet.textures[g.frame];
+    g = pose(v.shadow, h.initialLevel, 'carry');
+    ghost.texture = sheets.hero.textures[g.frame];
     ghost.scale.x = g.face;
     ghost.position.set(g.x, g.y);
     ghost.zIndex = g.y - 0.02;
   }
-  ring.visible = ui.selected === 'hero';
-  ring.position.set(p.x, p.y); ring.zIndex = p.y - 0.01;
+  const selected = IDS.includes(ui.selected) && positions[ui.selected];
+  ring.visible = !!selected;
+  if (selected) { ring.position.set(selected.x, selected.y); ring.zIndex = selected.y - 0.01; }
   vatSprite.texture = TS(scene.vats[v.vat <= 2 ? 0 : v.vat < 6 ? 1 : 2].file);
   placeMark.clear();
   if (ui.menu) { const pl = scene.places[ui.menu]; placeMark.ellipse(pl.x, pl.y - pl.ry * 0.6, pl.rx + 6, pl.ry + 4).stroke({ width: 3, color: 0xc8962e, alpha: 0.9 }); }
-  tag('vat', 'place', `${scene.places.vat.label} ${v.vat}／${v.vatCapacity}`, scene.places.vat.x, scene.places.vat.y - 60);
+  tag('vat', 'place', `${scene.places.vat.label} ${v.vat}／${v.vatCapacity} · 在途 ${v.inFlight}`, scene.places.vat.x, scene.places.vat.y - 60);
   tag('spring', 'place', scene.places.spring.label, scene.places.spring.x, scene.places.spring.y - 40);
-  tag('hero', `hero ${ui.selected === 'hero' ? 'sel' : ''}`, `主角 Lv ${v.level}`, p.x, p.y, 6);
-  tag('pill', 'pill', v.mode === 'carry' ? `${v.status} ${Math.round(v.phase.k * 100)}%` : v.status, p.x, p.y - 80);
-  tag('ghost', 'ghost', showGhost ? '初始腳力・不產水' : null, g ? g.x : 0, g ? g.y : 0, 6);
+  tag('ghost', 'ghost', showGhost ? '主角初始影子・不產水' : null, g ? g.x : 0, g ? g.y : 0, 6);
   tag('master', '', '師父 · 打坐', 1300, 512, 6);
   tag('senior', '', '師兄 · 掃地', 1120, 528, 6);
   const now = performance.now();
@@ -388,7 +411,7 @@ app.ticker.add((t) => {
   for (let i = 0; i < 3; i++) { const f = fx[i]; tag(`fx${i}`, 'gain', f ? f.text : null, f ? f.x : 0, f ? f.y - (1 - (f.until - now) / 1600) * 14 : 0); }
   if (ui.follow) follow();
   placeMenu();
-  if (prev.trips !== v.trips || prev.status !== v.status || prev.restOrder !== v.restOrder || prev.resting !== v.resting || frames % 15 === 0) renderChrome();
+  if (IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting) || frames % 15 === 0) renderChrome();
   frames++;
   if (firstFrameMs == null) firstFrameMs = performance.now() - t0;
 });
@@ -396,18 +419,27 @@ applyCam();
 measure();
 renderChrome();
 
-// 給自動檢查讀的唯讀狀態（不改世界）
+// 唯讀觀測；沒有測試專用世界推進或寫入接口。
+function personSnapshot(id) {
+  const person = v.people[id], p = positions[id], sprite = sprites[id], b = bodyBox(id);
+  return { ...person, phase: person.phase && person.phase.name, phaseProgress: person.phase?.k || 0,
+    frame: p.frame, action: p.action, requestedAction: p.requested, fallback: p.fallback, face: p.face, travelled: p.travelled, x: p.x, y: p.y,
+    screen: toScreen(b.x + b.w / 2, b.y + b.h / 2), bodyScreen: screenBox(b), tapScreen: screenBox(tapBox(id)), footScreen: toScreen(p.x, p.y),
+    sprite: { resolution: sprite.texture.source.resolution, width: sprite.texture.orig.width, height: sprite.texture.orig.height,
+      anchor: { x: sprite.anchor.x, y: sprite.anchor.y }, scale: { x: sprite.scale.x, y: sprite.scale.y }, z: sprite.zIndex,
+      bounds: ((b) => ({ x: b.x, y: b.y, w: b.width, h: b.height }))(sprite.getBounds()) },
+  };
+}
 window.demo = {
-  snapshot: () => ({ tick: v.tick, seconds: v.seconds, vat: v.vat, trips: v.trips, level: v.level, xp: v.xp, mode: v.mode, status: v.status,
-    phase: v.phase && v.phase.name, tripLevel: v.tripLevel, restOrder: v.restOrder, resting: v.resting, lastTrip: v.lastTrip,
-    tripSeconds: v.tripSeconds, tripSecondsInitial: v.tripSecondsInitial, shadow: v.shadow && v.shadow.name, ghostVisible: ghost.visible,
-    frame: p.frame, action: p.action, requestedAction: p.requested, fallback: p.fallback, face: p.face, travelled: p.travelled,
-    x: p.x, y: p.y, playing: ui.playing, autoPaused: ui.autoPaused, pausedByMenu: ui.pausedByMenu, speed: ui.speed,
-    selected: ui.selected, menu: ui.menu, cam: { ...cam }, hidden: document.hidden,
-    heroScreen: toScreen(p.x + (p.face > 0 ? body.x : -(body.x + body.w)) + body.w / 2, p.y + body.y + body.h / 2),
-    bodyScreen: screenBox(bodyBox()), tapScreen: screenBox(tapBox()), footScreen: toScreen(p.x, p.y),
-    sprite: { resolution: hero.texture.source.resolution, width: hero.texture.orig.width, height: hero.texture.orig.height, anchor: { x: hero.anchor.x, y: hero.anchor.y }, scale: { x: hero.scale.x, y: hero.scale.y }, z: hero.zIndex,
-      bounds: ((b) => ({ x: b.x, y: b.y, w: b.width, h: b.height }))(hero.getBounds()) },
-    vatScreen: toScreen(scene.places.vat.x, scene.places.vat.y - 20), springScreen: toScreen(scene.places.spring.x, scene.places.spring.y - 10),
-    firstFrameMs, frames, stepMs: STEP_MS }),
+  snapshot: () => {
+    const people = Object.fromEntries(IDS.map((id) => [id, personSnapshot(id)]));
+    return { ...people.hero, people, tick: v.tick, seconds: v.seconds, vat: v.vat, vatCapacity: v.vatCapacity, inFlight: v.inFlight,
+      shadow: v.shadow && v.shadow.name, ghostVisible: ghost.visible,
+      playing: ui.playing, autoPaused: ui.autoPaused, pausedByMenu: ui.pausedByMenu, speed: ui.speed,
+      selected: ui.selected, menu: ui.menu, menuPerson: ui.menuPerson, cam: { ...cam }, hidden: document.hidden,
+      heroScreen: people.hero.screen,
+      vatScreen: toScreen(scene.places.vat.x, scene.places.vat.y - 20), springScreen: toScreen(scene.places.spring.x, scene.places.spring.y - 10),
+      firstFrameMs, frames, stepMs: STEP_MS,
+    };
+  },
 };

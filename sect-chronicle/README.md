@@ -1,4 +1,22 @@
-# 門派修行錄（Sect Chronicle）整合開發提案
+# 宗門編年（Sect Chronicle）生活開發版
+
+**目前主入口是生活開發版**（[#201](https://github.com/lalagrass/earth-ascension/issues/201)，D13）：兩名真實工作者在同一張地圖自主挑水，共用水缸，各自成長與接受本趟後停工休息。主角初始腳力 Lv1、熟手 Lv3，沿既有 Lv5 上限；兩種體態是既有外觀，不會因升級自動變瘦。這是持續演進的主遊戲，後續累積在同一生活入口。
+
+在 repo 根目錄啟動：
+
+```sh
+python3 -m http.server 8765 --directory sect-chronicle
+```
+
+開 <http://localhost:8765/>；穩定主入口薄導向唯一的 `experiments/water-carry/demo/` runtime，沒有第二份 app。點名冊／地圖上的兩人看實際工作、空桶／負重速度與成長；點水缸或泉水對選中的人下令（會暫停）→「本趟後休息」→恢復，該人倒完才停，另一人繼續。按「開始挑水」再出發；1／2／4×只改播放快慢。拖曳／滾輪平移縮放，390px選人後鏡頭跟隨該人；重來清除兩人意圖與在途預約。
+
+**目前限制**：生活版尚未存檔，重整即新局；休息是停工，沒有新增疲勞／體力恢復或完整人格／社交。舊版的修行、目標、招募與存讀尚未移植。[舊 viewer](http://localhost:8765/viewer/) 與原資料保留，生活版也有「舊版與存檔」連結；不自動讀取、匯入或覆寫 RT 存檔。示意腳力數值不改寫舊 RT 規則。上一版單人可操作基線為 dev `c51615648b6f38151ffdcb36e8b2b1a0362fe857`（LP-01）；切回該已發布 commit 仍用原 `/experiments/water-carry/demo/` 路徑，無需另一份 runtime。
+
+局部檢查：`node --test sect-chronicle/experiments/water-carry/checks/model.test.mjs`；必要主線快驗／基本檢查仍按 [AGENTS](AGENTS.md)。開發與審查狀態以 [#197](https://github.com/lalagrass/earth-ascension/issues/197)／[#201](https://github.com/lalagrass/earth-ascension/issues/201)為準。
+
+## 歷史設計與交接紀錄
+
+以下保留早期提案與 D10 交接，並非目前任務狀態；最新入口與功能以上方為準。
 
 **最新交接（D10，2026-10-19）**：RT-02 #108已合dev0875d116、postCI39161730112五項成功；目前只有自主純引擎，沒有可玩UI。擁有人已批准先做[RT-02V觀察版 #129](https://github.com/lalagrass/earth-ascension/issues/129)，讀[接手文件](docs/RT02V_HANDOFF.md)。Grok額度用盡，工作包開放待認領；本次排程文件合dev／postCI後即可登記接手，不重問產品批准。順序改為RT-02V→03→04→05。以下早期提案、SG-01及RT-00接手描述只作歷史；最新任務狀態以[#93](https://github.com/lalagrass/earth-ascension/issues/93)為準。
 
