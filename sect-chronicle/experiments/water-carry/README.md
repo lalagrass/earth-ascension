@@ -8,4 +8,5 @@
 | V2 PixiJS／Godot 同場景比較 | 已交，推薦 PixiJS＋HTML/CSS，待審 | [design/V2.md](design/V2.md)；試作在 [spikes/](spikes/) |
 | V3 可操作展示 | 已合 dev | [design/V3.md](design/V3.md)；入口 `python3 -m http.server 8770` 後開 `/demo/` |
 | BL-V03 第 1 步：山路與主角改前／改後（[#177](https://github.com/lalagrass/earth-ascension/issues/177)） | 已合 dev，待擁有人看 | [design/BL-V03.md](design/BL-V03.md)；靜態圖稿，未換進展示 |
-| BL-L03 長住堂親：角色卡、同路對照、指點分鏡（[#180](https://github.com/lalagrass/earth-ascension/issues/180)） | 已交，待人看 | [design/BL-L03.md](design/BL-L03.md)；設計圖稿，沒有新增正式角色 |
+| BL-L03 長住堂親：角色卡、同路對照、指點分鏡（[#180](https://github.com/lalagrass/earth-ascension/issues/180)） | 已合 dev，靜態設計 | [design/BL-L03.md](design/BL-L03.md)；設計圖稿，沒有新增正式角色 |
+| BL-W02 道館往東接一塊藥圃：配置草圖（[#182](https://github.com/lalagrass/earth-ascension/issues/182)） | 已交，待人看 | [design/BL-W02.md](design/BL-W02.md)；只是配置圖，沒有可走的新場景 |
