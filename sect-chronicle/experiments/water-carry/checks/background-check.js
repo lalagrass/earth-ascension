@@ -46,6 +46,8 @@ async function main(box) {
   const profile = fs.mkdtempSync(path.join(OUT, 'profile-'));
   box.profile = profile;
   box.chrome = spawn(CHROME, [`--remote-debugging-port=${PORT}`, `--user-data-dir=${profile}`, '--no-sandbox', '--no-first-run', '--no-default-browser-check',
+    // 與 Playwright 原生啟動一致，排除 OS 遮住視窗造成的優先序降速；下方仍驗真正 hidden／visibilitychange 與零 tick。
+    '--disable-backgrounding-occluded-windows', '--disable-renderer-backgrounding',
     '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--window-size=1400,900', URL], { stdio: 'ignore' });
   let version = null;
   for (let i = 0; i < 40 && !version; i += 1) { try { version = await (await fetch(`http://127.0.0.1:${PORT}/json/version`)).json(); } catch { await sleep(250); } }
@@ -83,10 +85,11 @@ async function main(box) {
   check(s.playing && s.speed === 4 && s.tick > 0, `4× 播放中（tick ${s.tick}）`);
 
   // 一、選單暫停中轉背景：回來後選單還在、仍暫停；Esc 關選單也不會自己恢復播放
-  await click(s.vatScreen.x, s.vatScreen.y);
+  const requestedVat = s.vatScreen;
+  await click(requestedVat.x, requestedVat.y);
   await sleep(300);
   s = await snap();
-  check(s.menu === 'vat' && !s.playing && s.pausedByMenu, '點水缸：選單開著、自動暫停');
+  check(s.menu === 'vat' && !s.playing && s.pausedByMenu, `點水缸：選單開著、自動暫停 ${JSON.stringify({ requestedVat, actualVat: s.vatScreen, menu: s.menu, selected: s.selected, playing: s.playing, autoPaused: s.autoPaused, cam: s.cam })}`);
   const other = await hide();
   const a = await snap();
   check((await vis()) === 'hidden' && visEvents.some((x) => x.startsWith('hidden@')), `開新分頁：展示分頁 hidden，瀏覽器送出 visibilitychange ${JSON.stringify(visEvents)}`);

@@ -19,7 +19,7 @@ const snap = (page) => page.evaluate(() => window.demo.snapshot());
 const active = (page) => page.evaluate(() => { const a = document.activeElement; return a && a !== document.body ? (a.dataset.cmd || a.dataset.person || a.id || a.tagName) : 'body'; });
 const bar = (page) => page.evaluate(() => document.querySelector('#panel .bar i')?.style.width);
 
-async function run(browser, label, viewport) {
+async function run(browser, label, viewport, id) {
   const context = await browser.newContext({ viewport });
   const page = await context.newPage();
   const errors = [];
@@ -27,7 +27,7 @@ async function run(browser, label, viewport) {
   page.on('pageerror', (e) => errors.push(`pageerror: ${e}`));
   await page.goto(URL);
   await page.waitForFunction(() => window.demo && window.demo.snapshot().frames > 3, null, { timeout: 30000 });
-  await page.click('#roster [data-person="hero"]');
+  await page.click(`#roster [data-person="${id}"]`);
   await page.evaluate(() => document.activeElement.blur());
   await page.keyboard.press('Enter'); // 選中主角時開水缸選單，焦點在第一個可做的選項
   await page.waitForTimeout(200);
@@ -36,29 +36,29 @@ async function run(browser, label, viewport) {
   await page.waitForTimeout(200);
   await page.keyboard.press('4');
   let s = await snap(page);
-  check(s.restOrder && s.playing && s.mode === 'carry', `${label}：播放中有待執行「本趟後休息」`);
+  check(s.selected === id && s.people[id].restOrder && s.playing && s.people[id].mode === 'carry', `${label}：所選${id}播放中有待執行「本趟後休息」`);
   for (let i = 0; i < 40 && (await active(page)) !== 'cancel'; i += 1) await page.keyboard.press('Tab');
   check(await active(page) === 'cancel', `${label}：Tab 到面板的「取消」`);
   const t0 = s.tick, w0 = await bar(page);
   await page.waitForTimeout(1500);
   s = await snap(page);
   const w1 = await bar(page);
-  check(s.tick - t0 > 120 && w1 !== w0 && s.restOrder && s.mode === 'carry', `${label}：等 1.5 秒，tick ${t0}→${s.tick}，進度 ${w0}→${w1}，仍在本趟`);
+  check(s.tick - t0 > 120 && w1 !== w0 && s.people[id].restOrder && s.people[id].mode === 'carry', `${label}：等 1.5 秒，tick ${t0}→${s.tick}，進度 ${w0}→${w1}，仍在本趟`);
   const a = await active(page);
   check(a === 'cancel', `${label}：進度更新後焦點仍在「取消」（${a}）`);
   await page.keyboard.press('Enter');
   await page.waitForTimeout(200);
   s = await snap(page);
-  check(!s.restOrder && !s.menu && s.playing, `${label}：Enter 真的取消待執行，沒有開選單，繼續播放`);
+  check(!s.people[id].restOrder && !s.menu && s.playing && !s.people[id === 'hero' ? 'cousin' : 'hero'].restOrder, `${label}：Enter只取消所選人物待執行，沒有開選單，繼續播放`);
   check(errors.length === 0, `${label}：console 沒有錯誤或警告${errors.length ? '：' + errors.slice(0, 3).join(' | ') : ''}`);
   await context.close();
 }
 
 (async () => {
-  const browser = await chromium.launch({ headless: false, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-  note(`Chromium ${browser.version()}，非 headless（xvfb）`);
-  await run(browser, '寬畫面', { width: 1400, height: 820 });
-  await run(browser, '390px', { width: 390, height: 780 });
+  const browser = await chromium.launch({ headless: false, ...(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {}), args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  note(`Chromium ${browser.version()}，非 headless（${process.platform}）`);
+  await run(browser, '寬畫面', { width: 1400, height: 820 }, 'hero');
+  await run(browser, '390px', { width: 390, height: 780 }, 'cousin');
   await browser.close();
   note(fails.length ? `FAIL ${fails.length} 項：${fails.join('；')}` : 'PASS 全部條件成立');
   fs.writeFileSync(`${OUT}/focus.log`, log.join('\n') + '\n');
