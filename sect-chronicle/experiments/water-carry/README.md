@@ -13,3 +13,4 @@
 | BL-W02 道館往東接一塊藥圃：配置草圖（[#182](https://github.com/lalagrass/earth-ascension/issues/182)） | 已合 dev，靜態配置圖 | [design/BL-W02.md](design/BL-W02.md)；只是配置圖，沒有可走的新場景 |
 | N1f 工作之後自己的生活：兩段流程分鏡（[#188](https://github.com/lalagrass/earth-ascension/issues/188)） | 已合 dev，分鏡圖稿 | [design/N1F.md](design/N1F.md)；沒有自主或社交實作 |
 | 主角立繪＋兩種表情（[#184](https://github.com/lalagrass/earth-ascension/issues/184) 第 1 項） | 已交，待人看 | [design/PORTRAIT.md](design/PORTRAIT.md)；靜態立繪候選，未定畫風 |
+| BL-V03 第 2 步：空桶／負重走路改前／改後（[#177](https://github.com/lalagrass/earth-ascension/issues/177)） | 已交，待審 | [design/BL-V03-WALK.md](design/BL-V03-WALK.md)；動態對照 `design/walk/preview.html`，未換進展示 |
