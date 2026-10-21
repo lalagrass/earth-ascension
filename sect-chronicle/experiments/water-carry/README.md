@@ -12,4 +12,5 @@
 | BL-V04 兩人共用一組挑水動作（[#181](https://github.com/lalagrass/earth-ascension/issues/181)） | 已合 dev，實驗小樣 | [design/BL-V04.md](design/BL-V04.md)；小樣在 [template/](template/)，`python3 -m http.server 8771` 後開 `/template/` |
 | BL-W02 道館往東接一塊藥圃：配置草圖（[#182](https://github.com/lalagrass/earth-ascension/issues/182)） | 已合 dev，靜態配置圖 | [design/BL-W02.md](design/BL-W02.md)；只是配置圖，沒有可走的新場景 |
 | N1f 工作之後自己的生活：兩段流程分鏡（[#188](https://github.com/lalagrass/earth-ascension/issues/188)） | 已合 dev，分鏡圖稿 | [design/N1F.md](design/N1F.md)；沒有自主或社交實作 |
-| 主角立繪＋兩種表情（[#184](https://github.com/lalagrass/earth-ascension/issues/184) 第 1 項） | 已交，待人看 | [design/PORTRAIT.md](design/PORTRAIT.md)；靜態立繪候選，未定畫風 |
+| 主角立繪＋兩種表情（[#184](https://github.com/lalagrass/earth-ascension/issues/184) 第 1 項） | 已合 dev，靜態候選 | [design/PORTRAIT.md](design/PORTRAIT.md)；靜態立繪候選，未定畫風 |
+| 立繪放進現有介面＋圓臉 B 版（[#184](https://github.com/lalagrass/earth-ascension/issues/184) 第 2 項） | 已交，待人看 | [design/PORTRAIT-UI.md](design/PORTRAIT-UI.md)；疊在 V3 截圖上的合成示意，沒有改展示程式 |
