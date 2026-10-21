@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>挑水走路對照</title>
+<!--
+  BL-V03 第 2 步動態對照（#177）的樣板。../render-walk.js 把四組幀（改前／改後 × 空桶／負重）與量測寫進下方 WALK_DATA，輸出成 ../walk/preview.html。
+  人物移動速度照 V3／#181 的權威速度（空桶 60、負重 45 場景單位／秒）；換幀只看走了多遠，所以改前、改後兩人永遠在同一位置，只差腳怎麼動。
+  ?still=1 時不自動播放，由 renderAt(秒) 指定時間（輸出 GIF 用）。
+-->
+<style>
+  :root {
+    --bg: #f3ecdd; --panel: #fffaf0; --ink: #2f2a24; --ink2: #6b6254; --line: #d8c9a6; --accent: #4f78a8; --warn: #a8432e; --ok: #3f6d3a;
+    --sky: #eef1e4; --earth: #dccba3; --earth-edge: #b49f76; --seam: #9d8f72;
+    --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "WenQuanYi Zen Hei", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #1f1c18; --panel: #2a2620; --ink: #efe6d4; --ink2: #b8ad98; --line: #4a4335; --accent: #8db0db; --warn: #e48a72; --ok: #8fc283;
+    --sky: #2e3129; --earth: #8c7c5c; --earth-edge: #6c5e43; --seam: #5a4e38; color-scheme: dark } }
+  :root[data-theme="dark"] {
+    --bg: #1f1c18; --panel: #2a2620; --ink: #efe6d4; --ink2: #b8ad98; --line: #4a4335; --accent: #8db0db; --warn: #e48a72; --ok: #8fc283;
+    --sky: #2e3129; --earth: #8c7c5c; --earth-edge: #6c5e43; --seam: #5a4e38; color-scheme: dark }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.6 var(--font); }
+  main { max-width: 960px; margin: 0 auto; padding-block: 20px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; }
+  h1 { font-size: 22px; margin: 0; text-wrap: balance; }
+  p { margin: 0; color: var(--ink2); max-width: 68ch; }
+  .bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .seg button { font: inherit; color: var(--ink); background: var(--panel); border: 0; padding: 4px 12px; cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .lab { font-size: 12px; letter-spacing: .04em; color: var(--ink2); }
+  #big { display: grid; gap: 12px; background: var(--bg); padding: 4px 0; }
+  .cond { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 4px; min-width: 0; }
+  .cond h2 { font-size: 16px; margin: 0; }
+  .lane { display: grid; grid-template-columns: 56px 1fr; align-items: center; gap: 8px; min-width: 0; }
+  .lane b { font-size: 13px; }
+  .lane svg { width: 100%; height: auto; display: block; border-radius: 6px; }
+  .m { font-size: 12px; color: var(--ink2); grid-column: 2; margin-top: -2px; }
+  .m .bad { color: var(--warn); font-weight: 700; } .m .good { color: var(--ok); font-weight: 700; }
+  .real { display: flex; flex-wrap: wrap; gap: 12px; }
+  .real .cond { flex: 1 1 300px; }
+  .real svg { width: 250px; max-width: 100%; height: auto; }
+  .sky { fill: var(--sky); } .earth { fill: var(--earth); } .edge { stroke: var(--earth-edge); } .seam { stroke: var(--seam); }
+</style>
+</head>
+<body>
+<main>
+  <h1>挑水走路：改前 4 幀 vs 改後 8 幀</h1>
+  <p>同一個主角、同一個畫法，兩人以同樣速度走同一段路，只差腳怎麼動。看地上的石縫：改後每次換幀時，站著的那隻腳會回到同一處；改前換幀時腳的落點就跳開。注意兩版在兩幀之間人物都連續前進、腿不動，所以腳仍會滑最多一幀的前進量；這裡沒有做連續鎖腳。</p>
+  <div class="bar">
+    <span class="lab">播放速度</span>
+    <span class="seg" id="speed"><button data-v="0.25">0.25×</button><button data-v="0.5" aria-pressed="true">0.5×</button><button data-v="1">1×</button></span>
+    <span class="seg"><button id="pause">暫停</button></span>
+  </div>
+  <section id="big"></section>
+  <h2 style="font-size:16px;margin:4px 0 0">實際遊玩大小</h2>
+  <p>人物照 V3 的場景比例（0.78）、不放大。這個大小下改後的差別主要是上下起伏和桶子擺動，換幀時的落點跳動在改前也比較不明顯。</p>
+  <section class="real" id="real"></section>
+</main>
+<script>
+const DATA = /*WALK_DATA*/null;
+const COND = [['empty', '空桶下山（正面）', 60], ['load', '負重上山（背面）', 45]];
+const SCENE = .78, VW = 320, SPAN = VW + 90;
+const lanes = [];
+
+function laneSvg(v, zoomed) {
+  let seams = '';
+  for (let x = 0; x <= VW; x += 12) seams += `<path class="seam" d="M${x},2 v7" stroke-width="1.1"/>`;
+  return `<svg viewBox="0 -112 ${VW} 130" xmlns="http://www.w3.org/2000/svg" ${zoomed ? '' : 'width="' + Math.round(VW * SCENE) + '"'} role="img" aria-label="${v.label}">
+    <rect class="sky" x="0" y="-112" width="${VW}" height="112"/>
+    <rect class="earth" x="0" y="0" width="${VW}" height="18"/><path class="edge" d="M0,0 H${VW}" stroke-width="1.2"/>${seams}
+    <g class="who"><ellipse cx="3" cy="1.2" rx="22" ry="6" fill="#3e4a3a" opacity=".22"/><g class="fig"></g></g>
+  </svg>`;
+}
+function metric(v) {
+  const s = v.metrics.slipPerCycle * SCENE;
+  return `換幀落點差 <span class="${s > 1 ? 'bad' : 'good'}">${s.toFixed(1)}</span>／循環・幀內仍滑最多 ${v.stride.toFixed(1)}・髖部起伏 ${(v.metrics.hipRange * SCENE).toFixed(1)}・${v.frames.length} 幀・每秒換 ${v.metrics.framesPerSec.toFixed(1)} 幀`;
+}
+function build() {
+  for (const [host, zoomed] of [[document.getElementById('big'), true], [document.getElementById('real'), false]]) {
+    for (const [kind, title, speed] of COND) {
+      const box = document.createElement('div');
+      box.className = 'cond';
+      box.innerHTML = `<h2>${title}</h2>`;
+      for (const id of ['before', 'after']) {
+        const key = id + (kind === 'empty' ? 'Empty' : 'Load'), v = DATA[key];
+        const row = document.createElement('div');
+        row.className = 'lane';
+        row.innerHTML = `<b>${v.label}</b>${laneSvg(v, zoomed)}${zoomed ? `<div class="m">${metric(v)}</div>` : ''}`;
+        box.appendChild(row);
+        lanes.push({ v, speed, who: row.querySelector('.who'), fig: row.querySelector('.fig'), idx: -1 });
+      }
+      host.appendChild(box);
+    }
+  }
+}
+// t 秒時：走了 speed×t 場景單位；位置與換幀都只由這個距離決定
+function renderAt(t) {
+  for (const L of lanes) {
+    const travelled = L.speed * t;
+    const x = ((travelled / SCENE + 95) % SPAN) - 45; // 從畫面左側走進來，走出右邊後從左邊再出現
+    const idx = Math.floor(travelled / L.v.stride) % L.v.frames.length;
+    if (idx !== L.idx) { L.fig.innerHTML = L.v.frames[idx]; L.idx = idx; }
+    L.who.setAttribute('transform', `translate(${x.toFixed(2)},0)`);
+  }
+}
+window.renderAt = renderAt;
+
+build();
+let rate = .5, t = 0, last = null, paused = false;
+renderAt(0);
+document.getElementById('speed').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  rate = +b.dataset.v;
+  for (const x of e.currentTarget.children) x.setAttribute('aria-pressed', String(x === b));
+});
+document.getElementById('pause').addEventListener('click', (e) => { paused = !paused; e.target.textContent = paused ? '繼續' : '暫停'; });
+if (!new URLSearchParams(location.search).has('still')) {
+  requestAnimationFrame(function loop(now) {
+    if (last !== null && !paused) { t += Math.min(now - last, 100) / 1000 * rate; renderAt(t); }
+    last = now;
+    requestAnimationFrame(loop);
+  });
+}
+</script>
+</body>
+</html>

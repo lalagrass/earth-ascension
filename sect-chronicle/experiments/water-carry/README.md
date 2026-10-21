@@ -14,3 +14,4 @@
 | N1f 工作之後自己的生活：兩段流程分鏡（[#188](https://github.com/lalagrass/earth-ascension/issues/188)） | 已合 dev，分鏡圖稿 | [design/N1F.md](design/N1F.md)；沒有自主或社交實作 |
 | 主角立繪＋兩種表情（[#184](https://github.com/lalagrass/earth-ascension/issues/184) 第 1 項） | 已合 dev，靜態候選 | [design/PORTRAIT.md](design/PORTRAIT.md)；靜態立繪候選，未定畫風 |
 | 立繪放進現有介面＋圓臉 B 版（[#184](https://github.com/lalagrass/earth-ascension/issues/184) 第 2 項） | 已交，待人看 | [design/PORTRAIT-UI.md](design/PORTRAIT-UI.md)；疊在 V3 截圖上的合成示意，沒有改展示程式 |
+| BL-V03 第 2 步：空桶／負重走路改前／改後（[#177](https://github.com/lalagrass/earth-ascension/issues/177)） | 已交，待審 | [design/BL-V03-WALK.md](design/BL-V03-WALK.md)；動態對照 `design/walk/preview.html`，未換進展示 |
