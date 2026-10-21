@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// BL-V04 頁面檢查（#181）：真的打開 template/ 小樣頁，驗兩人共用動作在畫面上成立，並輸出兩張對照圖。
+// BL-V04 頁面檢查（#181）：真的打開 template/ 小樣頁，驗兩人共用動作在畫面上成立，並輸出對照圖。
+// 第 9～13 項驗第 4 項的遮擋與選取：點景與人物依腳底排序、點選與重疊選前、選取不改權威狀態、窄畫面點得到。
 // 只讀頁面公開的 window.v04；任何一項不成立就印 FAIL、結束碼 1。
 // 用法（在 experiments/water-carry 下，先 python3 -m http.server 8771）：
 //   NODE_PATH=$(npm root -g) node template/checks/page-check.js design/bl-v04
@@ -116,7 +117,102 @@ const check = (ok, msg) => { note(ok ? 'ok  ' : 'FAIL', msg); if (!ok) fails.pus
   check(hr && hr.action === 'idle' && hr.fallback, `主角休息：缺「坐下歇」→ 退回「待機」（${hr && hr.texture}）`);
   check(cr && cr.action === 'rest' && !cr.fallback, `堂親休息：顯示「坐下歇」（${cr && cr.texture}）`);
 
-  // 9. 對照板
+  // 9. 遮擋：點景與人物同層、依腳底 y 排序。走兩趟，每一步都核
+  const ov = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+  await click('#restart');
+  const props = await page.evaluate(() => window.v04.props().filter((q) => q.label !== 'Sprite'));
+  let sortedOk = true, wrong = 0;
+  const best = { behind: { step: -1, depth: 0 }, front: { step: -1, depth: 0 } };
+  const seen = {};
+  for (let i = 0; i < 1400; i++) {
+    await page.evaluate(() => window.v04.advance(100));
+    const r = await page.evaluate(() => ({ order: window.v04.order(), hero: window.v04.worldBox('hero'), cousin: window.v04.worldBox('cousin'), s: window.v04.snapshot() }));
+    const zs = r.order.filter((c) => c.label !== 'Sprite' || c.z !== 0).map((c) => c.z);
+    if (zs.some((z, j) => j && z < zs[j - 1])) sortedOk = false;
+    const idx = (l) => r.order.findIndex((c) => c.label === l);
+    for (const id of ['hero', 'cousin']) for (const q of props) {
+      if (!ov(r[id], q)) continue;
+      const front = idx(id) > idx(q.label), shouldFront = r.s.people[id].y > q.z;
+      if (front !== shouldFront) wrong++;
+      const k = `${q.label}:${front ? '人在前' : '人在後'}`;
+      seen[k] = (seen[k] || 0) + 1;
+      // 記下重疊最深的一步，最後各留一張近照：主角在水缸後倒水、走在石頭前
+      const depth = Math.min(r.hero.y + r.hero.h, q.y + q.h) - Math.max(r.hero.y, q.y);
+      if (id === 'hero' && !front && q.label === 'vat' && depth > best.behind.depth) best.behind = { step: i + 1, depth };
+      if (id === 'hero' && front && q.label === 'rock-a' && depth > best.front.depth) best.front = { step: i + 1, depth };
+    }
+  }
+  check(sortedOk, '走兩趟共 1400 步：每一步畫面的繪製順序都依腳底 y 由後到前');
+  for (const [k, file] of [['behind', 'occlude-behind.png'], ['front', 'occlude-front.png']]) {
+    if (best[k].step < 0) continue;
+    await click('#restart');
+    await page.evaluate((n) => window.v04.advance(n * 100), best[k].step);
+    const b = await page.evaluate(() => window.v04.screenBox('hero'));
+    await page.screenshot({ path: path.join(OUT, file), clip: { x: Math.round(b.x + b.w / 2 - 160), y: Math.round(b.y + b.h / 2 - 100), width: 320, height: 200 } });
+  }
+  const kinds = Object.keys(seen).sort();
+  check(wrong === 0 && kinds.some((k) => k.endsWith('人在前')) && kinds.some((k) => k.endsWith('人在後')),
+    `人物和點景重疊時前後都對（錯 ${wrong} 次）：${kinds.map((k) => `${k} ${seen[k]}`).join('、')}`);
+
+  // 10. 選取：點人物選到他、名牌加深、狀態欄顯示；點空白處取消
+  await click('#restart');
+  await page.evaluate(() => window.v04.advance(3000));
+  const hb = await page.evaluate(() => window.v04.screenBox('hero'));
+  await page.mouse.click(hb.x + hb.w / 2, hb.y + hb.h / 2);
+  const sel1 = await snap();
+  const panel = await page.evaluate(() => ({ shown: !document.getElementById('sel').hidden, text: document.getElementById('sel').textContent, tag: document.querySelector('.tag.hero').classList.contains('sel') }));
+  check(sel1.ui.selected === 'hero' && panel.shown && panel.tag && /主角/.test(panel.text), `點主角身上：選到主角，名牌加深，狀態欄「${panel.text}」`);
+  await page.screenshot({ path: path.join(OUT, 'select.png') });
+  await page.mouse.click(800, 220);
+  check((await snap()).ui.selected === null, '點天空空白處：取消選取，狀態欄收起');
+
+  // 11. 重疊時選前面的人：兩人在路上交會時點在重疊處
+  await click('#restart');
+  let crossed = null;
+  for (let i = 0; i < 1400 && !crossed; i++) {
+    await page.evaluate(() => window.v04.advance(100));
+    const r = await page.evaluate(() => ({ h: window.v04.screenBox('hero'), c: window.v04.screenBox('cousin'), s: window.v04.snapshot() }));
+    if (ov(r.h, r.c) && Math.abs(r.s.people.hero.y - r.s.people.cousin.y) > 1) crossed = r;
+  }
+  if (crossed) {
+    const x = (Math.max(crossed.h.x, crossed.c.x) + Math.min(crossed.h.x + crossed.h.w, crossed.c.x + crossed.c.w)) / 2;
+    const y = (Math.max(crossed.h.y, crossed.c.y) + Math.min(crossed.h.y + crossed.h.h, crossed.c.y + crossed.c.h)) / 2;
+    await page.mouse.click(x, y);
+    const want = crossed.s.people.hero.y > crossed.s.people.cousin.y ? 'hero' : 'cousin';
+    check((await snap()).ui.selected === want, `兩人交會、碰框重疊時點在重疊處：選到前面（腳底較低）的${want === 'hero' ? '主角' : '堂親'}`);
+  } else check(false, '兩人交會、碰框重疊：兩趟內沒找到交會的時刻');
+
+  // 12. 選取只改畫面：暫停、4×、重來後都還在，而且權威狀態和沒選時一樣
+  await click('#restart');
+  await page.evaluate(() => window.v04.advance(3000));
+  const hb2 = await page.evaluate(() => window.v04.screenBox('cousin'));
+  await page.mouse.click(hb2.x + hb2.w / 2, hb2.y + hb2.h / 2);
+  await click('[data-speed="4"]'); await click('#play'); await page.waitForTimeout(500); await click('#play'); await click('[data-speed="1"]');
+  const keep1 = (await snap()).ui.selected;
+  await click('#restart');
+  const keep2 = (await snap()).ui.selected;
+  await page.evaluate(() => window.v04.advance(8000));
+  const withSel = pick(await snap());
+  await page.mouse.click(800, 220);
+  await click('#restart');
+  await page.evaluate(() => window.v04.advance(8000));
+  const noSel = pick(await snap());
+  check(keep1 === 'cousin' && keep2 === 'cousin' && withSel === noSel, '選堂親後暫停、4× 播放、重來：選取都還在；選與不選推 8 秒，兩人的權威狀態完全相同');
+
+  // 13. 窄畫面 390px：人物只剩十幾 px 高，點選範圍仍有 44px
+  const nar = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  nar.on('pageerror', (e) => errors.push(`narrow pageerror: ${e}`));
+  await nar.goto(BASE);
+  await nar.waitForFunction(() => window.v04 && window.v04.snapshot().ui.frames > 3, null, { timeout: 30000 });
+  await nar.click('#play'); await nar.click('#restart');
+  await nar.evaluate(() => window.v04.advance(3000));
+  const nb = await nar.evaluate(() => window.v04.screenBox('hero'));
+  await nar.mouse.click(nb.x + nb.w / 2, nb.y + nb.h + 12); // 腳底下方 12px：在身體碰框外、44px 範圍內
+  const ns = await nar.evaluate(() => window.v04.snapshot().ui.selected);
+  check(ns === 'hero', `390×844：主角碰框只有 ${nb.w.toFixed(0)}×${nb.h.toFixed(0)}px，點在腳底下方 12px 仍選到主角（點選範圍下限 44px）`);
+  await nar.close();
+
+  // 14. 對照板
   const cmp = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
   cmp.on('pageerror', (e) => errors.push(`compare pageerror: ${e}`));
   await cmp.goto(`${BASE}?board=compare`);
