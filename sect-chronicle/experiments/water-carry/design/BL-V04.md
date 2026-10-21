@@ -80,7 +80,7 @@
 | 方案 | 授權與來源 | 這次為什麼用或不用 |
 |---|---|---|
 | **TexturePacker 式 JSON hash**（PixiJS 原生讀） | 格式公開；repo 已有 PixiJS 8.14（MIT） | **採用**。Pixi 的 `Assets.load` 直接讀 `frames`、`animations`、`anchor`、`meta.scale`，不新增依賴。sheet 由本 repo 的工具輸出，來源仍是可編輯的 SVG 函式 |
-| Aseprite 匯出的 JSON | 格式相同；編輯器是付費或自行編譯 | 若日後美術改用點陣手繪，可以直接換成它的匯出，播放端不必改 |
+| Aseprite 匯出的 JSON | 也是 JSON hash／array；編輯器是付費或自行編譯 | 若日後美術改用點陣手繪，可以考慮。**未驗**：本播放器還讀自訂的 `animations`、`anchor` 與 `meta.hitbox`／`meta.attach`，Aseprite 把動作 tags 放在 `meta.frameTags`，所以要加一段轉接並重驗，不能保證直接替換 |
 | Spine | 執行期要搭配付費編輯器授權 | 骨架動畫很強，但違反開源優先，也超出兩人小樣的需要 |
 | DragonBones | 執行期 MIT，編輯器近年少有更新 | 骨架格式要另寫 Pixi 8 的轉接，成本大於收益 |
 | Godot SpriteFrames（`.tres`） | MIT | 只在 Godot 裡用；V2 已選 PixiJS 路線，這次不重比引擎 |
