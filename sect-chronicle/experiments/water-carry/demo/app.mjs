@@ -2,12 +2,15 @@
 // HUD、名冊、選單、面板、名牌、提示是 HTML/CSS。世界只有 model.mjs：畫面只讀 view()，下令只走 dispatch()，
 // 推進只經 createClock() 換算的固定步進。暫停、背景、播放倍率與畫面幀率都不改結果。
 import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.min.mjs';
-import { createModel, createClock, speedsFor, STEP_MS } from './model.mjs';
+import { createModel, createClock, STEP_MS } from './model.mjs';
+import { createAnimator, pathTool } from '../template/animator.mjs';
 
 const SHARED = '../spikes/shared/';
 const t0 = performance.now();
 const scene = await (await fetch(SHARED + 'scene.json')).json();
-const grownFrames = await (await fetch('assets/frames.json')).json();
+const template = await (await fetch('../template/actions.json')).json();
+const sheet = await Assets.load('../template/out/hero.json');
+const animator = createAnimator(template, sheet.data);
 const R = scene.resolution;
 const $ = (id) => document.getElementById(id);
 
@@ -15,45 +18,21 @@ const app = new Application();
 await app.init({ resizeTo: window, background: '#bdc791', antialias: true, autoDensity: true, resolution: Math.min(2, window.devicePixelRatio || 1) });
 $('stage').appendChild(app.canvas);
 
-const sharedFiles = [scene.background, ...scene.props.map((p) => p.file), ...scene.vats.map((v) => v.file), ...Object.values(scene.hero.frames)];
-await Assets.load([...sharedFiles.map((f) => SHARED + 'assets/' + f), ...Object.values(grownFrames).map((f) => 'assets/' + f)]);
-const FRAMES = { ...Object.fromEntries(Object.entries(scene.hero.frames).map(([k, f]) => [k, SHARED + 'assets/' + f])),
-  ...Object.fromEntries(Object.entries(grownFrames).map(([k, f]) => [k, 'assets/' + f])) };
-const T = (f) => Assets.get(f);
-const TS = (f) => T(SHARED + 'assets/' + f);
+const sharedFiles = [scene.background, ...scene.props.map((p) => p.file), ...scene.vats.map((v) => v.file)];
+await Assets.load(sharedFiles.map((f) => SHARED + 'assets/' + f));
+const TS = (f) => Assets.get(SHARED + 'assets/' + f);
 
 // ---------- 路線（只是畫面換算：模型給「走到第幾成」，這裡換成場景座標） ----------
-const pts = scene.path.points;
-const segLen = pts.slice(1).map((p, i) => Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1]));
-const PATH_LEN = segLen.reduce((a, b) => a + b, 0);
-function at(u) {
-  let r = Math.max(0, Math.min(1, u)) * PATH_LEN;
-  for (let i = 0; i < segLen.length; i++) {
-    if (r <= segLen[i] || i === segLen.length - 1) {
-      const k = segLen[i] ? Math.min(1, r / segLen[i]) : 0;
-      return { x: pts[i][0] + (pts[i + 1][0] - pts[i][0]) * k, y: pts[i][1] + (pts[i + 1][1] - pts[i][1]) * k, dx: pts[i + 1][0] - pts[i][0] };
-    }
-    r -= segLen[i];
-  }
-}
-// 每一幀走多遠（場景單位）：幀時跟著移速成比例，腳才不會在地上滑。成長後步態步幅大 25%。
-const STRIDE = { empty: 110 * 60 / 1000, load: 130 * 40 / 1000, grown: 105 * 52 / 1000 };
+const path = pathTool(scene.path.points);
 const GROWN_FROM = 3; // 本趟腳力到 Lv 3 起換成長後步態
 
 // 人物在畫面上的樣子：全部由模型的階段與步數推出，不另存狀態
-function pose(ph, level, mode) {
-  if (mode !== 'carry' || !ph) { const p = at(0); return { x: p.x, y: p.y, face: -1, frame: 'idle', back: false }; }
-  const sp = speedsFor(level);
-  if (ph.name === 'down' || ph.name === 'up') {
-    const down = ph.name === 'down';
-    const p = at(down ? ph.k : 1 - ph.k);
-    const anim = down ? 'empty' : level >= GROWN_FROM ? 'grown' : 'load';
-    const speed = down ? sp.empty : sp.load;
-    const n = Math.floor(ph.ms * speed / 1000 / STRIDE[anim]) % 4;
-    return { x: p.x, y: p.y, face: (down ? p.dx : -p.dx) >= 0 ? 1 : -1, frame: `${anim}-${n}`, back: !down };
-  }
-  const p = at(ph.name === 'dip' ? 1 : 0);
-  return { x: p.x, y: p.y, face: ph.name === 'dip' ? -1 : 1, frame: ph.name, back: false };
+function pose(ph, level, mode, resting = false) {
+  const phase = mode === 'carry' && ph ? ph.name : resting ? 'rest' : 'idle';
+  const view = { phase, k: ph?.k || 0, travelled: phase === 'down' || phase === 'up' ? ph.k * path.length : 0 };
+  // 模型只提供階段與進度；共用動畫用實際走過的距離換幀，不另開 walker 或時鐘。
+  const pick = animator.pick(view, { grown: level >= GROWN_FROM });
+  return { ...path.place(view), ...pick, travelled: view.travelled };
 }
 
 // ---------- 場景 ----------
@@ -77,18 +56,18 @@ const placeSprite = (file, ax, ay, w, h, x, y) => {
 for (const p of scene.props) placeSprite(p.file, p.ax, p.ay, p.w, p.h, p.x, p.y);
 const vatV = scene.vats[1];
 const vatSprite = placeSprite(vatV.file, vatV.ax, vatV.ay, vatV.w, vatV.h, scene.places.vat.x, scene.places.vat.y);
-const H = scene.hero;
+const H = sheet.data.meta;
 const heroSprite = (alpha, tint) => {
-  const s = new Sprite(T(FRAMES.idle));
-  s.scale.set(1 / R);
-  s.anchor.set(H.ax / H.w, H.ay / H.h);
+  const s = new Sprite(sheet.textures[sheet.data.animations.idle[0]]);
+  // Pixi 已依 meta.scale 換回場景單位；所有幀共用同一個腳底錨點。
+  s.anchor.set(H.anchorPx.x / H.frameSize.w, H.anchorPx.y / H.frameSize.h);
   s.alpha = alpha;
   if (tint != null) s.tint = tint;
   sorted.addChild(s);
   return s;
 };
 const ghost = heroSprite(0.38, 0x9aa7b4);
-const ring = new Graphics().ellipse(0, 2, 30, 9).stroke({ width: 3, color: 0xc8962e });
+const ring = new Graphics().ellipse(0, 2, 18, 5.5).stroke({ width: 2.4, color: 0xc8962e });
 ring.visible = false;
 sorted.addChild(ring);
 const hero = heroSprite(1);
@@ -131,12 +110,24 @@ let model = createModel(scene.path.length);
 const clock = createClock();
 const ui = { follow: narrow(), playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, rosterOpen: true, shadow: true, returnFocus: null };
 let v = model.view();
-let p = pose(v.phase, v.tripLevel, v.mode);
+let p = pose(v.phase, v.tripLevel, v.mode, v.resting);
 const fx = []; // 浮字（只是畫面效果）
 
+// sheet 碰框是像素；換成相對腳底的場景單位，翻面時身體碰框跟著翻。
+const body = { x: (H.hitbox.x - H.anchorPx.x) / Number(H.scale), y: (H.hitbox.y - H.anchorPx.y) / Number(H.scale), w: H.hitbox.w / Number(H.scale), h: H.hitbox.h / Number(H.scale) };
+function bodyBox() {
+  return { x: p.x + (p.face > 0 ? body.x : -(body.x + body.w)), y: p.y + body.y, w: body.w, h: body.h };
+}
+function tapBox() {
+  const b = bodyBox();
+  const px = Math.max(0, (44 / cam.zoom - b.w) / 2), py = Math.max(0, (44 / cam.zoom - b.h) / 2);
+  return { x: b.x - px, y: b.y - py, w: b.w + px * 2, h: b.h + py * 2 };
+}
+function screenBox(b) { return { ...toScreen(b.x, b.y), w: b.w * cam.zoom, h: b.h * cam.zoom }; }
 function hitTest(sx, sy) {
   const w = toWorld(sx, sy);
-  if (w.x >= p.x - 20 && w.x <= p.x + 20 && w.y >= p.y - 78 && w.y <= p.y + 4) return { kind: 'person', id: 'hero' };
+  const b = tapBox();
+  if (w.x >= b.x && w.x <= b.x + b.w && w.y >= b.y && w.y <= b.y + b.h) return { kind: 'person', id: 'hero' };
   for (const [id, pl] of Object.entries(scene.places)) {
     const dx = (w.x - pl.x) / pl.rx, dy = (w.y - (pl.y - pl.ry * 0.6)) / (pl.ry * 1.6);
     if (dx * dx + dy * dy <= 1) return { kind: 'place', id };
@@ -361,13 +352,13 @@ app.ticker.add((t) => {
   if (ui.playing) { const n = clock.feed(t.deltaMS, ui.speed); for (let i = 0; i < n; i++) model.step(); }
   const prev = v;
   v = model.view();
-  p = pose(v.phase, v.tripLevel, v.mode);
+  p = pose(v.phase, v.tripLevel, v.mode, v.resting);
   if (v.trips > prev.trips) {
     fx.push({ text: '+1 擔', x: scene.places.vat.x, y: scene.places.vat.y - 70, until: performance.now() + 1600 });
     if (v.level > prev.level) fx.push({ text: `腳力升到 Lv ${v.level}`, x: p.x, y: p.y - 100, until: performance.now() + 2200 });
   }
-  hero.texture = T(FRAMES[p.frame + (ui.selected === 'hero' ? '-sel' : '')] || FRAMES.idle);
-  hero.scale.x = (p.face < 0 ? -1 : 1) / R;
+  hero.texture = sheet.textures[p.frame];
+  hero.scale.x = p.face;
   hero.position.set(p.x, p.y);
   hero.zIndex = p.y;
   const showGhost = ui.shadow && v.shadow && v.mode === 'carry' && v.tripLevel > 1;
@@ -375,8 +366,8 @@ app.ticker.add((t) => {
   let g = null;
   if (showGhost) {
     g = pose(v.shadow, 1, 'carry');
-    ghost.texture = T(FRAMES[g.frame] || FRAMES.idle);
-    ghost.scale.x = (g.face < 0 ? -1 : 1) / R;
+    ghost.texture = sheet.textures[g.frame];
+    ghost.scale.x = g.face;
     ghost.position.set(g.x, g.y);
     ghost.zIndex = g.y - 0.02;
   }
@@ -410,9 +401,13 @@ window.demo = {
   snapshot: () => ({ tick: v.tick, seconds: v.seconds, vat: v.vat, trips: v.trips, level: v.level, xp: v.xp, mode: v.mode, status: v.status,
     phase: v.phase && v.phase.name, tripLevel: v.tripLevel, restOrder: v.restOrder, resting: v.resting, lastTrip: v.lastTrip,
     tripSeconds: v.tripSeconds, tripSecondsInitial: v.tripSecondsInitial, shadow: v.shadow && v.shadow.name, ghostVisible: ghost.visible,
-    frame: p.frame, x: p.x, y: p.y, playing: ui.playing, autoPaused: ui.autoPaused, pausedByMenu: ui.pausedByMenu, speed: ui.speed,
+    frame: p.frame, action: p.action, requestedAction: p.requested, fallback: p.fallback, face: p.face, travelled: p.travelled,
+    x: p.x, y: p.y, playing: ui.playing, autoPaused: ui.autoPaused, pausedByMenu: ui.pausedByMenu, speed: ui.speed,
     selected: ui.selected, menu: ui.menu, cam: { ...cam }, hidden: document.hidden,
-    heroScreen: (({ x, y }) => ({ x, y: y - 40 }))(toScreen(p.x, p.y)),
+    heroScreen: toScreen(p.x + (p.face > 0 ? body.x : -(body.x + body.w)) + body.w / 2, p.y + body.y + body.h / 2),
+    bodyScreen: screenBox(bodyBox()), tapScreen: screenBox(tapBox()), footScreen: toScreen(p.x, p.y),
+    sprite: { resolution: hero.texture.source.resolution, width: hero.texture.orig.width, height: hero.texture.orig.height, anchor: { x: hero.anchor.x, y: hero.anchor.y }, scale: { x: hero.scale.x, y: hero.scale.y }, z: hero.zIndex,
+      bounds: ((b) => ({ x: b.x, y: b.y, w: b.width, h: b.height }))(hero.getBounds()) },
     vatScreen: toScreen(scene.places.vat.x, scene.places.vat.y - 20), springScreen: toScreen(scene.places.spring.x, scene.places.spring.y - 10),
     firstFrameMs, frames, stepMs: STEP_MS }),
 };

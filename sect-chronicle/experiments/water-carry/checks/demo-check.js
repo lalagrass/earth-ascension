@@ -19,7 +19,7 @@ const check = (ok, msg) => { note(ok ? 'ok  ' : 'FAIL', msg); if (!ok) fails.pus
 const results = {};
 
 async function open(browser, viewport) {
-  const context = await browser.newContext({ viewport });
+  const context = await browser.newContext({ viewport, deviceScaleFactor: viewport.width <= 640 ? 2 : 1 });
   const page = await context.newPage();
   const errors = [];
   page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(`${m.type()}: ${m.text()}`); });
@@ -33,10 +33,20 @@ const snap = (page) => page.evaluate(() => window.demo.snapshot());
 const waitFor = (page, fn, arg, timeout = 60000) => page.waitForFunction(fn, arg, { timeout, polling: 50 });
 const rect = (page, sel) => page.evaluate((s) => { const el = document.querySelector(s); if (!el || el.hidden || !el.offsetHeight) return null; const r = el.getBoundingClientRect(); return { x: r.left, y: r.top, r: r.right, b: r.bottom }; }, sel);
 const overlap = (a, b) => a && b && a.x < b.r && b.x < a.r && a.y < b.b && b.y < a.b;
+// 由實際 Pixi bounds 反推腳底，能抓到漏用 atlas resolution／anchor 或翻面後位移。
+function checkSheet(s, label) {
+  const { bounds: b, anchor: a } = s.sprite;
+  const x = b.x + b.w * (s.face > 0 ? a.x : 1 - a.x), y = b.y + b.h * a.y;
+  check(s.sprite.resolution === 2 && s.sprite.scale.y === 1 && Math.abs(b.w - s.sprite.width * s.cam.zoom) < .1,
+    `${label}：2× atlas 正確換回場景尺寸，不再縮一半`);
+  check(Math.abs(x - s.footScreen.x) < .1 && Math.abs(y - s.footScreen.y) < .1,
+    `${label}：實際 sprite 腳底與權威位置相同（face ${s.face}）`);
+  check(s.tapScreen.w >= 43.99 && s.tapScreen.h >= 43.99, `${label}：螢幕點選範圍至少 44×44px`);
+}
 
 (async () => {
-  const browser = await chromium.launch({ headless: false, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-  note(`Chromium ${browser.version()}，非 headless（xvfb），WebGL 走 SwiftShader`);
+  const browser = await chromium.launch({ headless: false, ...(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {}), args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  note(`Chromium ${browser.version()}，非 headless（${process.platform}），WebGL 走 SwiftShader`);
 
   // ---------- 寬畫面：自主挑水、成長、介入、背景、重來 ----------
   const W = await open(browser, { width: 1400, height: 820 });
@@ -45,6 +55,20 @@ const overlap = (a, b) => a && b && a.x < b.r && b.x < a.r && a.y < b.b && b.y <
   note(`開頁到可操作 ${W.loadMs} ms`);
   let s = await snap(page);
   check(s.mode === 'carry' && s.playing, `自主：沒有下令，主角自己出發挑水（${s.status}）`);
+  await page.click('#play');
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('-');
+  s = await snap(page);
+  checkSheet(s, '空桶下山／平移縮放後');
+  const frozenSheetTick = s.tick;
+  // 點在身體左邊、44px padding 內；不是點扁擔或假定舊版 78px 高碰框。
+  await page.mouse.click(s.tapScreen.x + 1, s.tapScreen.y + s.tapScreen.h / 2);
+  await page.waitForTimeout(200);
+  s = await snap(page);
+  check(s.selected === 'hero' && s.tick === frozenSheetTick, '平移縮放後點身體框外的 padding 仍選到主角，暫停零進度');
+  await page.click('#roster [data-person="hero"]');
+  await page.keyboard.press('0');
+  await page.click('#play');
   await page.screenshot({ path: `${OUT}/wide-observe.png` });
 
   await page.keyboard.press('4');
@@ -68,7 +92,8 @@ const overlap = (a, b) => a && b && a.x < b.r && b.x < a.r && a.y < b.b && b.y <
   await waitFor(page, () => { const v = window.demo.snapshot(); return v.tripLevel >= 3 && v.phase === 'up'; }, null, 90000);
   await page.waitForTimeout(1500);
   s = await snap(page);
-  check(s.frame.startsWith('grown-'), `Lv ${s.tripLevel} 上山換成長後步態（${s.frame}）`);
+  check(s.requestedAction === 'walkGrown' && (s.action === 'walkGrown' || s.fallback), `Lv ${s.tripLevel} 上山要求共用成長步態，缺幀才依模板退回（${s.frame}，fallback ${s.fallback}）`);
+  checkSheet(s, '成長後負重／反向走路');
   check(s.ghostVisible && (s.shadow === 'up' || s.shadow === 'dip' || s.shadow === 'down'), `初始腳力影子在路上（${s.shadow}），主角已在上山`);
   await page.keyboard.press('Space');
   await page.waitForTimeout(200);
@@ -105,6 +130,8 @@ const overlap = (a, b) => a && b && a.x < b.r && b.x < a.r && a.y < b.b && b.y <
   await page.waitForTimeout(2000);
   s = await snap(page);
   check(s.resting && s.mode === 'idle' && s.trips === tripsBefore + 1, `倒完這趟才休息，之後不再自己出發（已挑 ${s.trips} 趟）`);
+  check(s.requestedAction === 'rest' && s.action === 'idle' && s.fallback, '主角缺坐下幀，如實沿用模板待機 fallback；沒有新增休息素材');
+  await page.screenshot({ path: `${OUT}/wide-rest.png` });
 
   // 從泉水選單「開始挑水」
   await page.keyboard.press('1');
@@ -130,6 +157,14 @@ const overlap = (a, b) => a && b && a.x < b.r && b.x < a.r && a.y < b.b && b.y <
   // ---------- 390px：面板、名冊、橫幅、提示、選單互不遮擋；鍵盤可用 ----------
   const N = await open(browser, { width: 390, height: 780 });
   const np = N.page;
+  await np.click('#play');
+  s = await snap(np);
+  checkSheet(s, '390px／DPR 2');
+  await np.mouse.click(s.tapScreen.x + 1, s.tapScreen.y + s.tapScreen.h / 2);
+  await np.waitForTimeout(200);
+  check((await snap(np)).selected === 'hero', '390px／DPR 2：身體外 padding 也能點選');
+  await np.click('#roster [data-person="hero"]');
+  await np.click('#play');
   await np.click('#roster [data-person="hero"]');
   await np.waitForTimeout(800);
   await np.evaluate(() => document.activeElement.blur()); // 焦點回到場景，Enter 才是「對選中的人開水缸選單」
