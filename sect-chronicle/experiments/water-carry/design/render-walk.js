@@ -51,7 +51,7 @@ const GIF_FPS = 15, GIF_SECONDS = 4, GIF_SPEED = 0.5;
   const data = await page.evaluate(() => window.WALK.export());
   for (const [id, v] of Object.entries(data)) {
     const m = v.metrics;
-    console.log(`${id}: ${v.frames.length} 幀, 每幀 ${m.cycle / v.frames.length} 場景單位, 滑動/循環 ${(m.slipPerCycle * 0.78).toFixed(2)}, 髖起伏 ${(m.hipRange * 0.78).toFixed(2)}, 每秒 ${m.framesPerSec.toFixed(1)} 幀`);
+    console.log(`${id}: ${v.frames.length} 幀, 每幀 ${m.cycle / v.frames.length} 場景單位, 換幀落點差/循環 ${(m.slipPerCycle * 0.78).toFixed(2)}, 髖起伏 ${(m.hipRange * 0.78).toFixed(2)}, 每秒 ${m.framesPerSec.toFixed(1)} 幀`);
   }
   await page.close();
   const tplHtml = fs.readFileSync(path.join(__dirname, 'source', 'walk-preview.html'), 'utf8');

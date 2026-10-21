@@ -1,7 +1,8 @@
 /* BL-V03 第 2 步：空桶／負重走路的改前／改後（#177）。
    本檔不是獨立頁：由 ../render-walk.js 先開 bl-v03-board.html（#179 的 figure() 畫法），帶入 V1 姿勢表與 template/actions.json 的步距，再注入本檔。
    改前 = V1 姿勢表的 4 幀循環（V3 展示與 #181 模板目前用的就是這組），只換成 #179 的畫法，所以兩邊只差動作。
-   改後 = 8 幀循環，腳的位置先定在地上，再用兩段腿長反推膝蓋角度：站著的那隻腳跟著地面往後退，不在地上滑。
+   改後 = 8 幀循環，腳的位置先定在地上，再用兩段腿長反推膝蓋角度：站著的那隻腳每換一幀就往後退一幀的前進量，換幀時落點對得上同一處地面。
+   但播放時人物在兩幀之間仍連續前進、腿維持上一幀，所以幀與幀之間腳仍會滑最多一幀的前進量；連續鎖腳沒做。
    只是畫法與幀表，不改 demo／模板的模型、速度、路程或任何入帳時點。 */
 'use strict';
 
@@ -10,7 +11,7 @@ const LEG = 21, REACH = 41.6; // figure() 的大腿、小腿長；REACH 是幾�
 const N = 8;
 
 // 改後的步態參數（人物單位）。E＝站立腳在一步裡相對髖部往後退的距離；beta＝一隻腳著地佔一個循環的比例。
-// 一個循環身體前進 E / beta，所以腳不滑；負重時 E 短、beta 長（雙腳著地久）、膝蓋多彎（c 小）、腳抬得低。
+// 一個循環身體前進 E / beta，所以換幀時著地腳落點對齊；負重時 E 短、beta 長（雙腳著地久）、膝蓋多彎（c 小）、腳抬得低。
 const GAIT = {
   empty: { label: '空桶下山', speed: 60, E: 36, beta: .6, c: .975, lift: 5.5, accept: .7, lean: 6, leanAmp: .8,
     swingA: 9, lag: .5, tiltBase: 0, tiltAmp: 2, sagAmp: .3, fill: 0, back: false },
@@ -68,7 +69,7 @@ const VARIANTS = {
   afterLoad: { kind: 'load', label: '改後', poses: [...Array(N).keys()].map(i => gaitPose('load', i / N)), stride: GAIT.load.E / GAIT.load.beta * SCENE / N }
 };
 
-// 量測：站立腳（最低的那隻）在相鄰兩幀都著地時，它在地面上的位置差 = 腳底滑動；另記髖高起伏
+// 量測：站立腳（最低的那隻）在相鄰兩幀都著地時，換幀那一刻它在地面上的落點差（離散幀邊界，不是連續播放的滑動量）；另記髖高起伏
 function measure(v) {
   const n = v.poses.length, step = v.stride / SCENE; // 每幀身體前進的人物單位
   const L = v.poses.map(legsOf);
@@ -102,9 +103,10 @@ function strip(id, y0) {
     ${B(30, y0 + 30, `${GAIT[v.kind].label}・${v.label}`)}
     ${T(30, y0 + 52, `${v.poses.length} 幀一循環`)}
     ${T(30, y0 + 72, `每幀前進 ${f(v.stride)} 場景單位`)}
-    ${T(30, y0 + 98, `站立腳滑動：每循環 ${f(m.slipPerCycle * SCENE)}`, 13, `font-weight="700" fill="${m.slipPerCycle * SCENE > 1 ? '#a8432e' : '#3f6d3a'}"`)}
-    ${T(30, y0 + 118, `髖部起伏 ${f(m.hipRange * SCENE)}`)}
-    ${T(30, y0 + 138, `跨步寬 ${f(m.stepLen * SCENE)}`)}`;
+    ${T(30, y0 + 98, `換幀落點差：每循環 ${f(m.slipPerCycle * SCENE)}`, 13, `font-weight="700" fill="${m.slipPerCycle * SCENE > 1 ? '#a8432e' : '#3f6d3a'}"`)}
+    ${T(30, y0 + 118, `幀與幀之間仍滑：最多 ${f(v.stride)}`)}
+    ${T(30, y0 + 140, `髖部起伏 ${f(m.hipRange * SCENE)}`)}
+    ${T(30, y0 + 160, `跨步寬 ${f(m.stepLen * SCENE)}`)}`;
   v.poses.forEach((p, i) => {
     const cx = X0 + i * CW + CW / 2, L = legsOf(p);
     s += `<g><clipPath id="c-${id}-${i}"><rect x="${cx - CW / 2 + 3}" y="${y0 + 6}" width="${CW - 6}" height="174"/></clipPath><g clip-path="url(#c-${id}-${i})">
@@ -126,9 +128,9 @@ function strip(id, y0) {
 function framesBoard() {
   const notes = [
     '看法：每格地面上的直紋是地上的石板縫，跟著身體前進往後捲。紅點是著地那隻腳的腳底。',
-    '改前：紅點在相鄰兩格之間對不上同一道紋，表示腳在地上滑；每循環前進的距離比兩步實際跨出的距離短很多。',
-    '改後：紅點一直壓在同一道紋上，直到腳抬起；髖部在雙腳著地時最低、單腳經過時最高，負重時更低、雙腳著地更久、落地膝蓋再沉一點。',
-    '桶子擺動比身體慢半拍，扁擔在落地時往下彎；負重桶擺幅小、空桶擺幅大。紅色數字 > 1 表示看得出在滑。',
+    '改前：紅點在相鄰兩格之間對不上同一道紋，表示換幀時腳的落點就跳了；每循環前進的距離比兩步實際跨出的距離短很多。',
+    '改後：換幀時紅點壓在同一道紋上，直到腳抬起（播放時兩幀之間人物仍連續前進，腳仍會滑最多一幀的前進量）；髖部在雙腳著地時最低、單腳經過時最高，負重時更低、雙腳著地更久、落地膝蓋再沉一點。',
+    '桶子擺動比身體慢半拍，扁擔在落地時往下彎；負重桶擺幅小、空桶擺幅大。「換幀落點差」只比幀邊界，不是連續播放的滑動量；紅色 > 1 表示換幀時就看得出跳。',
     '速度、路程、何時到達都照舊；只換幀表與每幀步距（改後 8 幀）。是否換進 V3 展示或 #181 模板，留給第 3 步與審查決定。'
   ];
   return `<div class="board tall" id="frames">${css}<svg viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg" font-family="var(--font)">
