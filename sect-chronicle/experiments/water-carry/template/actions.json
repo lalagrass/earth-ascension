@@ -1,0 +1,38 @@
+{
+ "note": "BL-V04 共用挑水動作模板（#181）。所有人物共用：動作清單、姿勢來源、幀框與腳底錨點、掛點、碰框、狀態對照與缺幀退回。人物只寫外觀覆寫。tools/bake.js 讀本檔輸出每人一張 sprite sheet（PixiJS 原生 JSON hash 格式）。座標是場景單位；sprite 以 resolution 倍輸出。",
+ "version": 1,
+ "resolution": 2,
+ "sceneScale": 0.78,
+ "anchor": "腳底：兩腳之間、與地面接觸的點；所有人物、所有幀的錨點落在同一個框內位置，換幀和換人都不跳",
+ "hitbox": { "x": -16, "y": -66, "w": 32, "h": 68, "note": "腳底為原點、未乘 sceneScale 的身體碰框，給點選與遮擋排序；不含扁擔與桶" },
+ "attach": {
+  "pole": "扁擔中點（肩上），由烘焙時依每幀姿勢算出",
+  "bucketFront": "前桶掛繩頂",
+  "bucketBack": "後桶掛繩頂"
+ },
+ "states": [
+  { "phase": "idle", "action": "idle" },
+  { "phase": "down", "action": "walkEmpty" },
+  { "phase": "dip", "action": "dip" },
+  { "phase": "up", "action": "walkLoaded" },
+  { "phase": "up", "grown": true, "action": "walkGrown" },
+  { "phase": "pour", "action": "pour" },
+  { "phase": "rest", "action": "rest" }
+ ],
+ "actions": {
+  "idle": { "label": "待機", "loop": true, "poses": ["idle"], "view": "front", "next": "依權威狀態切換" },
+  "walkEmpty": { "label": "空桶下山", "loop": true, "poses": ["emptyA", "emptyB", "emptyC", "emptyD"], "view": "front", "stride": 6.6, "fallback": "idle" },
+  "dip": { "label": "取水", "loop": false, "poses": ["dip"], "view": "front", "fallback": "idle" },
+  "walkLoaded": { "label": "負重上山", "loop": true, "poses": ["loadA", "loadB", "loadC", "loadD"], "view": "back", "stride": 5.2, "fallback": "idle" },
+  "walkGrown": { "label": "成長後負重", "loop": true, "poses": ["grownA", "grownB", "grownC", "grownD"], "view": "back", "stride": 5.46, "fallback": "walkLoaded" },
+  "pour": { "label": "倒水", "loop": false, "poses": ["pour"], "view": "front", "fallback": "idle" },
+  "rest": { "label": "坐下歇", "loop": false, "poses": ["rest"], "view": "front", "fallback": "idle" }
+ },
+ "extraPoses": {
+  "rest": { "lean": 0, "legs": [{ "t": 0, "k": 0 }, { "t": 0, "k": 0 }], "load": "none", "sit": true }
+ },
+ "characters": {
+  "hero": { "label": "主角", "draw": "figure", "scale": 1, "overrides": {}, "omit": ["rest"] },
+  "cousin": { "label": "堂親", "draw": "cousin", "scale": 0.97, "overrides": {}, "omit": ["walkGrown"] }
+ }
+}

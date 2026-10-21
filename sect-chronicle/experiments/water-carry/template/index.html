@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>共用挑水動作 BL-V04 小樣</title>
+<link rel="icon" href="data:,">
+<style>
+  :root { --ink: #2f2a24; --ink2: #6b6254; --paper: #f6efe0; --line: #cdbb98; --hero: #4f78a8; --kin: #5f7d5a;
+    --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "WenQuanYi Zen Hei", sans-serif; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #bdc791; color: var(--ink); font-family: var(--font); overflow: hidden; }
+  #stage { position: absolute; inset: 0; }
+  #bar { position: absolute; left: 12px; top: 12px; right: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    background: rgba(246, 239, 224, .94); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-size: 14px; }
+  #bar h1 { font-size: 15px; margin: 0 8px 0 0; }
+  #bar button { font: inherit; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--line); background: #fffaf0; cursor: pointer; }
+  #bar button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  #bar label { display: inline-flex; gap: 4px; align-items: center; }
+  #bar .note { color: var(--ink2); font-size: 12px; flex-basis: 100%; }
+  .tag { position: absolute; transform: translate(-50%, -100%); white-space: nowrap; font-size: 12px; padding: 1px 6px; border-radius: 4px;
+    background: rgba(255, 250, 240, .95); border: 1px solid var(--line); pointer-events: none; }
+  .tag b { color: #fff; border-radius: 3px; padding: 0 4px; margin-right: 4px; font-weight: 400; }
+  .tag.hero b { background: var(--hero); } .tag.cousin b { background: var(--kin); }
+  .tag .fb { color: #a0461f; }
+  #legend { position: absolute; left: 12px; bottom: 12px; max-width: 520px; font-size: 12px; color: var(--ink2);
+    background: rgba(246, 239, 224, .94); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+  body.compare #bar, body.compare #legend { display: none; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="bar">
+  <h1>同一組動作，兩個人</h1>
+  <button id="play" aria-pressed="true">暫停</button>
+  <span>倍率</span><button data-speed="1" aria-pressed="true">1×</button><button data-speed="2">2×</button><button data-speed="4">4×</button>
+  <button id="restart">重來</button>
+  <label><input type="checkbox" id="grown"> 兩人都換「成長後負重」</label>
+  <span class="note">同一路線、同樣兩個半桶、同一倍率；堂親晚出發半趟。畫面只讀權威狀態，幀由走了多遠換算。缺的動作會退回並標紅字。</span>
+</div>
+<div id="legend">背景是 V1／V3 現況的場景；人物是 #179 改後畫法與 #180 堂親外觀，由 template/actions.json 一份模板烘焙。這是實驗小樣：沒有產水、沒有正式角色。</div>
+<script type="module" src="play.mjs"></script>
+</body>
+</html>
