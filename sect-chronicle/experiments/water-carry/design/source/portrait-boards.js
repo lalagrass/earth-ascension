@@ -21,7 +21,7 @@ const FACES = {
     note: ['眉尾下垂、半閉眼、張口喘氣；', '臉紅、多滴汗、一縷頭髮垂下、肩膀往下沉。'] }
 };
 
-function eye(cx, cy, side, kind, id) {
+function eye(cx, cy, side, kind, id, scale = 1.28) {
   // side=-1 是畫面左眼；外眼角朝 side 方向。高光固定在左上（光從左上），所以不跟著鏡像。
   const m = (x) => f(cx + x * side);
   const lidY = kind === 'half' ? 10 : kind === 'firm' ? 2 : 0;          // 上眼瞼下壓多少
@@ -31,7 +31,7 @@ function eye(cx, cy, side, kind, id) {
   const lid = `M${m(-17)},${f(cy + 2 + tiltIn * .5)} C${m(-11)},${f(cy - 14 + lidY + tiltIn)} ${m(11)},${f(cy - 16 + lidY)} ${m(19)},${f(cy - 4 + lidY * .4)}`;
   const lash = `M${m(16)},${f(cy - 5 + lidY * .4)} l${f(6 * side)},${f(-4)} M${m(18)},${f(cy - 1 + lidY * .4)} l${f(6 * side)},${f(-1)}`;
   const ix = cx + side * 1, iy = cy + 2 + lidY * .3;
-  return `<g transform="translate(${cx} ${cy}) scale(1.28) translate(${-cx} ${-cy})"><clipPath id="${id}"><path d="${white}"/></clipPath>
+  return `<g transform="translate(${cx} ${cy}) scale(${scale}) translate(${-cx} ${-cy})"><clipPath id="${id}"><path d="${white}"/></clipPath>
     <path d="${white}" fill="#fffdf8"/>
     <g clip-path="url(#${id})">
       <ellipse cx="${f(ix)}" cy="${f(iy)}" rx="10.5" ry="13" fill="url(#iris)"/>
@@ -71,15 +71,26 @@ function sweat(x, y, s = 1) {
 /* ---------- 半身立繪：畫布 400×500，頭心約 (200,215) ---------- */
 let portraitN = 0;
 const BANGS_D = 'M116,206 C108,136 150,104 200,104 C250,104 292,136 284,206 L274,220 L266,176 L254,210 L240,166 L228,200 L212,160 L202,198 L186,162 L176,202 L160,170 L150,210 L138,178 L128,224 Z';
+// 臉型 B「圓潤初學者」（#184 第 2 項，回應 #192 審查：A 的大眼、尖瀏海、窄下臉偏秀氣）：
+// 下臉更寬、下巴短、眼睛小一號、瀏海改成圓束、脖子與肩更厚。預設仍是 A，#192 的圖不變。
+const SHAPES = {
+  A: { face: 'M128,186 C124,238 144,286 178,304 Q200,316 222,304 C256,286 276,238 272,186 C270,132 130,132 128,186 Z',
+    bangs: BANGS_D, eyeS: 1.28, eyeX: 35, eyeY: 232, earX: 72, blushR: 17, bodyX: 1, neck: [180, 220],
+    strands: 'M200,108 Q197,140 202,198 M170,118 Q160,150 176,202 M230,118 Q240,150 228,200 M146,134 Q136,170 150,210 M254,134 Q264,170 254,210' },
+  B: { face: 'M122,186 C114,250 140,300 184,312 Q200,316 216,312 C260,300 286,250 278,186 C276,126 124,126 122,186 Z',
+    bangs: 'M116,206 C108,136 150,104 200,104 C250,104 292,136 284,206 L278,196 Q266,168 248,186 Q234,158 214,180 Q200,154 186,180 Q166,158 152,186 Q136,168 122,200 Z',
+    eyeS: 1.06, eyeX: 38, eyeY: 238, earX: 77, blushR: 21, bodyX: 1.08, neck: [174, 226],
+    strands: 'M200,108 Q198,130 200,158 M170,118 Q162,140 168,168 M230,118 Q238,140 232,168 M146,134 Q140,156 146,180 M254,134 Q260,156 254,180' }
+};
 function portrait(key, o = {}) {
-  const F = FACES[key], id = `p${portraitN++}`;
+  const F = FACES[key], id = `p${portraitN++}`, S = SHAPES[o.shape || 'A'];
   const flat = o.layer === 'flat', line = o.layer === 'line';
   const cls = line ? 'p-line' : flat ? 'p-flat' : '';
   // 頭部（含髮、臉、表情）一起依表情傾斜／下沉；身體只在疲累時往下沉一點
   const headT = `rotate(${F.tilt} 200 300) translate(0 ${F.dy + 12}) translate(200 318) scale(1.12) translate(-200 -318)`;
   const slump = F.dy > 4 ? 6 : 0;
 
-  const body = `<g transform="translate(0 ${slump})">
+  const body = `<g transform="translate(0 ${slump}) translate(200 0) scale(${S.bodyX} 1) translate(-200 0)">
     <path d="M44,500 C52,440 80,404 128,386 C150,378 168,366 180,346 L220,346 C232,366 250,378 272,386 C320,404 348,440 356,500 Z" fill="${C.hero}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
     <path d="M272,386 C320,404 348,440 356,500 L266,500 C280,456 278,414 262,382 Z" fill="${SHADE.robe}" class="shade"/>
     <path d="M70,446 C88,418 112,400 140,390" fill="none" stroke="${C.heroLit}" stroke-width="7" stroke-linecap="round" opacity=".8" class="shade"/>
@@ -92,7 +103,7 @@ function portrait(key, o = {}) {
     <path d="M226,484 q12,-10 22,-2 q-8,8 -22,2 z" fill="${C.heroSash}" stroke="${INK}" stroke-width="2"/>
   </g>`;
 
-  const neck = `<path d="M180,280 L178,352 Q200,364 222,352 L220,280 Z" fill="${C.skin}" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>
+  const neck = `<path d="M${S.neck[0]},280 L${S.neck[0] - 2},352 Q200,364 ${S.neck[1] + 2},352 L${S.neck[1]},280 Z" fill="${C.skin}" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>
     <path d="M180,300 Q200,326 220,300 L221,330 Q200,342 179,330 Z" fill="${SHADE.skin}" class="shade"/>`;
 
   // 頭髮後層與髮髻
@@ -103,29 +114,29 @@ function portrait(key, o = {}) {
     <path d="M224,102 C246,96 268,104 282,124 C264,118 248,116 234,114 Z" fill="${C.ribbon}" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
     <path d="M228,108 C244,118 254,134 258,154 C248,140 238,130 226,120 Z" fill="#b8473a" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
     <path d="M172,108 Q200,120 228,108 L226,96 Q200,107 174,96 Z" fill="${C.ribbon}" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>`;
-  const ear = (side) => `<ellipse cx="${200 + side * 72}" cy="236" rx="11" ry="17" fill="${C.skin}" stroke="${INK}" stroke-width="2.6"/>
-    <path d="M${200 + side * 74},228 q${side * 4},6 0,14" fill="none" stroke="${C.skin2}" stroke-width="2"/>`;
+  const ear = (side) => `<ellipse cx="${200 + side * S.earX}" cy="236" rx="11" ry="17" fill="${C.skin}" stroke="${INK}" stroke-width="2.6"/>
+    <path d="M${200 + side * (S.earX + 2)},228 q${side * 4},6 0,14" fill="none" stroke="${C.skin2}" stroke-width="2"/>`;
 
   // 圓臉：顴骨寬、下巴圓
-  const faceD = 'M128,186 C124,238 144,286 178,304 Q200,316 222,304 C256,286 276,238 272,186 C270,132 130,132 128,186 Z';
+  const faceD = S.face;
   const face = `<path d="${faceD}" fill="${C.skin}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
     <clipPath id="${id}-face"><path d="${faceD}"/></clipPath>
     <g clip-path="url(#${id}-face)" class="shade">
-      <path d="${BANGS_D}" fill="${SHADE.skin}" transform="translate(2 9)"/>
+      <path d="${S.bangs}" fill="${SHADE.skin}" transform="translate(2 9)"/>
       <path d="M248,230 C270,250 262,286 222,304 L280,320 L280,220 Z" fill="${SHADE.skin}" opacity=".7"/>
     </g>
-    <ellipse cx="156" cy="264" rx="17" ry="7" fill="${C.blush}" opacity="${F.blush}"/>
-    <ellipse cx="244" cy="264" rx="17" ry="7" fill="${C.blush}" opacity="${F.blush}"/>
+    <ellipse cx="156" cy="264" rx="${S.blushR}" ry="7" fill="${C.blush}" opacity="${F.blush}"/>
+    <ellipse cx="244" cy="264" rx="${S.blushR}" ry="7" fill="${C.blush}" opacity="${F.blush}"/>
     ${F.blush > .5 ? [148, 155, 162, 236, 243, 250].map(x => `<path d="M${x + 3},259 l-4,9" stroke="#d98a7a" stroke-width="1.5" stroke-linecap="round"/>`).join('') : ''}
     <path d="M203,246 l-4,10 l6,1" fill="none" stroke="${C.skin2}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`;
 
   // 瀏海：上緣圓，下緣幾束尖髮；兩側鬢髮垂到耳前
-  const bangs = `<path d="${BANGS_D}"
+  const bangs = `<path d="${S.bangs}"
       fill="${C.hair}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
     <path d="M118,196 C112,226 116,256 126,276 L134,250 L132,214 Z" fill="${C.hair}" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>
     <path d="M282,196 C288,226 284,256 274,276 L266,250 L268,214 Z" fill="${C.hair}" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>
     <path d="M146,140 Q200,116 254,140" fill="none" stroke="${C.hairLit}" stroke-width="8" stroke-linecap="round" stroke-dasharray="26 10" class="shade"/>
-    <path d="M200,108 Q197,140 202,198 M170,118 Q160,150 176,202 M230,118 Q240,150 228,200 M146,134 Q136,170 150,210 M254,134 Q264,170 254,210" fill="none" stroke="#4a403a" stroke-width="1.4" opacity=".7"/>
+    <path d="${S.strands}" fill="none" stroke="#4a403a" stroke-width="1.4" opacity=".7"/>
     ${F.lock ? `<path d="M206,160 C214,190 204,214 214,236 C200,220 202,194 198,168 Z" fill="${C.hair}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>` : ''}`;
 
   const extras = (F.sweat >= 1 ? sweat(276, 186, 1.1) : '') + (F.sweat >= 2 ? sweat(124, 202, .9) : '') + (F.sweat >= 3 ? sweat(258, 282, .8) : '')
@@ -136,7 +147,7 @@ function portrait(key, o = {}) {
     <defs><linearGradient id="iris" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${IRIS[1]}"/><stop offset=".55" stop-color="${IRIS[0]}"/><stop offset="1" stop-color="#8a5a3c"/></linearGradient></defs>
     ${body}${neck}
     <g transform="${headT}">${hairBack}${ear(-1)}${ear(1)}${face}
-      ${eye(165, 232, -1, F.eye, `${id}-el`)}${eye(235, 232, 1, F.eye, `${id}-er`)}
+      ${eye(200 - S.eyeX, S.eyeY, -1, F.eye, `${id}-el`, S.eyeS)}${eye(200 + S.eyeX, S.eyeY, 1, F.eye, `${id}-er`, S.eyeS)}
       ${mouth(F.mouth)}${bangs}${brows(F.brow)}${bun}${extras}</g>
   </g>`;
 }
