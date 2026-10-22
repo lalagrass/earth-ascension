@@ -1,5 +1,13 @@
 # Coding agent 接手入口
 
+## D22：LP-12 自主清鼠與玩家覆寫 L1–L4 已批准（2026-10-23）
+
+讀 [D22](docs/DECISIONS_AND_SOURCES.md#d22lp-12-自主清鼠與玩家覆寫-l1l4-批准2026-10-23)、[#241](https://github.com/lalagrass/earth-ascension/issues/241)、[LP12正式工作包](docs/LP12_HANDOFF.md)／[Gemini提示詞](docs/LP12_GEMINI_PROMPT.md)。擁有人已同意L1–L4，後續主筆Gemini；本次批准文件合dev／postCI後才本人新認領runtime，不重問四項，不沿舊Claude／LP11窗口，未代啟作者。
+
+每人允許預設關，候補不占名額；完整交付／必要恢復80／休閒真返院後重驗，人工及停工叫回優先，依既有自主護院→整理→清鼠→下一趟工作順序。auto/manual來源分清，玩家有效改令抑制當人到明確重新允許；關auto保manual，恢復自主只解LP05叫回；候補與來源不改LP07／09識別。沿原掌法卡一個控制與短理由，不加人格／HP／XP／繁殖／存讀。
+
+LP11 #238／PR242已交dev a7e485f／postCI39842008077五SUCCESS，8800是LP11並保留LP09。LP12只demo/**、必要checks/**與實驗README，不用dispatch假裝人工自主接單、保留單tick移動預算／模型真位置與原掌法值，不造第二時鐘／通用Queue或大拆。新T0最多2h／100min不新包／早停、4h不延長，必要局部／SG快驗／根CI與一次桌面390、未變證據復用／摘要輸出／真exit保留；非作者review→Earth唯一queue→postCI才更入口保留LP11，不自合dev或啟其他agent。
+
 ## D21：LP-11 手動掌法清鼠 K1–K4 已批准（2026-10-22）
 
 讀 [D21](docs/DECISIONS_AND_SOURCES.md#d21lp-11-手動掌法清鼠-k1k4-批准2026-10-22)、[#238](https://github.com/lalagrass/earth-ascension/issues/238)、[LP11工作包](docs/LP11_HANDOFF.md)／[Claude提示詞](docs/LP11_CLAUDE_PROMPT.md)。擁有人已批准K1–K4及本片示意值，不重問；LP10 #220／PR237設計已合dev1c82218、postCI39805538262五SUCCESS，舊CI不一致解除。D20只設計的限制在D21有限包更新，不授整串戰鬥／生態。

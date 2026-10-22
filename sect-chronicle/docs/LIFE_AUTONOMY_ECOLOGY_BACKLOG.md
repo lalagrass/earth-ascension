@@ -1,5 +1,11 @@
 # 生活後續候選：自主護院、修繕、鼠巢與招式
 
+## 最新有限批准：LP12 自主清鼠與玩家覆寫（2026-10-23）
+
+擁有人已同意L1–L4，見 [D22](DECISIONS_AND_SOURCES.md#d22lp-12-自主清鼠與玩家覆寫-l1l4-批准2026-10-23)／[#241](https://github.com/lalagrass/earth-ascension/issues/241)、[工作包](LP12_HANDOFF.md)／[Gemini prompt](LP12_GEMINI_PROMPT.md)。每人允許預設關、候補不預占／院中合法才受理；既有自主護院→整理→清鼠，人工／恢復停工叫回優先；玩家有效改令抑制當人到明確重新允許，關auto保manual、來源與既有兩政策識別分開，掌法卡短理由。原有限三鼠／掌法成本、單tick真移動及返院名額不變。
+
+LP11已由PR242交付dev a7e485f／postCI39842008077五SUCCESS，8800已LP11；本次文件合dev／postCI後Gemini新claim／新T0最多2h，不代啟，不把舊設計「自主未批」擋住此包。完整生態／人格、HP／技能XP／人傷／掉落／繁殖／巡山或存讀仍另議，不授整串backlog；#219研究及#215大拆非前置。
+
 ## 最新有限批准：LP11 手動掌法清鼠（2026-10-22）
 
 擁有人已同意K1–K4，見 [D21](DECISIONS_AND_SOURCES.md#d21lp-11-手動掌法清鼠-k1k4-批准2026-10-22)／[#238](https://github.com/lalagrass/earth-ascension/issues/238)，沿 [工作包](LP11_HANDOFF.md)／[Claude prompt](LP11_CLAUDE_PROMPT.md)。LP10畫面與點選設計已交付；本片才做有限runtime：手動一人、交付／恢復後出發，真接觸一鼠一次擊倒、起手扣2、三鼠警覺逃生／有界換目標、取消真返院，兩掌法比較fixture不改腳力。值與界線已批，待真人校準不等未批准。
