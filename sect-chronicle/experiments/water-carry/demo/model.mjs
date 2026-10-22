@@ -244,7 +244,15 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     p.job = job; p.pending = null;
     s.log.push({ tick: s.tick, person: p.id, kind: 'start', job });
     // 休閒中明確下工作＝叫回去做它；停工中的明確開始同時解除停工（LP-04 規則：只有明確開始能解除）。
-    if (mode === 'toFun' || mode === 'fun' || mode === 'fromFun') { if (p.rest === 'manual') p.rest = null; return recall(p, name); }
+    // 解除停工時精力未到 80，沿 LP-04 轉為自主恢復：走完本段、返院後先去座位恢復到 80，再回院做最新工作（叫回仍保留）。
+    if (mode === 'toFun' || mode === 'fun' || mode === 'fromFun') {
+      const r = recall(p, name);
+      if (p.rest === 'manual') {
+        if (p.energy < E.backAt) { p.rest = 'auto'; p.why = `已解除停工；精力未到 ${E.backAt}，先恢復`; return { ok: true, text: `回院中後先恢復到 ${E.backAt} 再${name}` }; }
+        p.rest = null;
+      }
+      return r;
+    }
     if (mode === 'back') {
       p.rest = null; p.why = null;
       return { ok: true, text: `正在回院中，到了就${name}` };
@@ -356,6 +364,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       ? (p.pending === 'rest' ? '交付後去座位停工' : p.energy <= E.restAt ? `交付後精力 ≤ ${E.restAt}，去休息再回來${JOBS[nextJob].label}` : `交付後繼續${JOBS[nextJob].label}`)
       : h.mode === 'back' ? (stopped ? '到院中後回座位停工' : `到院中重查${place}，有空位就${name}`)
         : fun && stopped ? (h.mode === 'toFun' ? `走到${pref.place}後回院中，再去座位停工` : '回院中後去座位停工')
+          : fun && p.rest === 'auto' ? `回院中後先去座位恢復至 ${E.backAt}，再${name}`
           : fun && (p.recall || p.funCap || !full(p.job)) && h.mode !== 'fun' ? (h.mode === 'toFun' ? `走到${pref.place}後回院中${name}` : `到院中重查${place}，有空位就${name}${p.recall ? '，滿了待命' : ''}`)
             : h.mode === 'toFun' ? `到了就${pref.doing}；${place}有空位會回去`
               : h.mode === 'fun' ? `${place}有空位就回去${name}；這是閒暇，不回精力`

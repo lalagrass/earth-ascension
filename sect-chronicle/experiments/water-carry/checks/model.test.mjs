@@ -725,6 +725,44 @@ test('意圖與控制：叫回滿庫待命至返院後一趟完成；改工作�
   assert.equal(who(m2, 'cousin').mode, 'toSeat');
 });
 
+// 審查 P2：休閒中停工後，精力未到 80 時明確開始／改工作，仍須返院後先沿 LP-04 恢復到 80，不能直接出發。
+test('休閒中停工後低精力重啟：去程／活動點／返程都走完本段→返院→座位恢復到 80→做最新工作；位置連續、收益守恆', () => {
+  const legs = [
+    ['toFun', (p) => p.mode === 'toFun' && p.funLeg.k > 0.3, 'start'],
+    ['fun', (p) => p.mode === 'fun', 'work:herb'],
+    ['fromFun', (p) => p.mode === 'fromFun' && p.funLeg.k > 0.3, 'start'],
+  ];
+  for (const [leg, at, restart] of legs) {
+    const m = createLifeModel(FUNL, { ...FULLV, useEveryMs: 20000 }); // 開局滿缸，之後照常用水讓工作有容量
+    m.state.people.hero.energy = 45.25; // 主角帶著 30<E<80 去看山
+    if (leg === 'fromFun') { runUntil(m, (v) => v.people.hero.mode === 'fun'); m.dispatch('recall', 'hero'); }
+    runUntil(m, (v) => at(v.people.hero));
+    const before = m.view();
+    m.dispatch('restAfterTrip', 'hero');
+    assert.equal(who(m, 'hero').rest, 'manual');
+    const r = m.dispatch(restart, 'hero');
+    assert.ok(r.ok, `${leg} ${restart}`);
+    let h = who(m, 'hero');
+    assert.equal(h.rest, 'auto', `${leg}：解除停工但精力未到 80，轉為自主恢復`); assert.equal(h.recall, true);
+    assert.equal(h.mode, before.people.hero.mode, '下令當下不換段'); assert.ok(dist(posOf(h), posOf(before.people.hero)) < 1e-9); assert.equal(h.energy, 45.25);
+    assert.match(h.next, /先去座位恢復至 80/);
+    const want = restart === 'work:herb' ? 'herb' : 'water';
+    let prev = posOf(h), path = [h.mode];
+    runUntil(m, (v) => {
+      const p = v.people.hero;
+      assert.ok(dist(posOf(p), prev) <= RULES.emptySpeed.cap * STEP_MS / 1000 + 1e-6, `${leg} 連續`); prev = posOf(p);
+      if (path.at(-1) !== p.mode) path.push(p.mode);
+      if (p.mode === 'carry') assert.ok(p.energy >= E.backAt - W * 2, `${leg} 出發前已恢復到 80（${p.energy.toFixed(2)}）`);
+      return p.mode === 'carry';
+    });
+    h = who(m, 'hero');
+    const exp = leg === 'toFun' ? ['toFun', 'fromFun', 'idle', 'toSeat', 'seated', 'back', 'carry'] : leg === 'fun' ? ['fun', 'fromFun', 'idle', 'toSeat', 'seated', 'back', 'carry'] : ['fromFun', 'idle', 'toSeat', 'seated', 'back', 'carry'];
+    assert.deepEqual(path.filter((x) => x !== 'idle'), exp.filter((x) => x !== 'idle'), `${leg} 路徑 ${path.join('→')}`);
+    assert.equal(h.job, want); assert.equal(h.trips, before.people.hero.trips); assert.deepEqual(h.done, before.people.hero.done, '休閒／恢復不產出');
+    assert.equal(h.recall, true, '叫回到返院後一趟完成才解除');
+  }
+});
+
 test('路程與容量：逐 tick 連續、受出發空手速度上限；暫停改令不動；單一空位只回輪到的人、不超額、不餓死', () => {
   const m = createLifeModel(FUNL, { ...RULES, vatStart: RULES.vatCapacity, useEveryMs: 20000 });
   const lim = (id) => speedsFor(m.state.people[id].motion.tripLevel).empty * STEP_MS / 1000 + 1e-6;
