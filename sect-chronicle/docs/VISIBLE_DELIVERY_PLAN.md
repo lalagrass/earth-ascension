@@ -1,11 +1,11 @@
 # 可見交付、驗證與正式整合
 
 
-## 2026-10-22現況：LP08已交付 → LP09自主整理候選
+## 2026-10-22現況：LP08已交付 → LP09自主整理已批准
 
 LP08 [PR231](https://github.com/lalagrass/earth-ascension/pull/231)已由Earth PO合dev `3d504102f975ae5124cf7b215d764d25e5004c4a`，postCI [39776400224](https://github.com/lalagrass/earth-ascension/actions/runs/39776400224)五SUCCESS。已審head9886c4f／base46588c0，獨立模型87PASS、桌面＋390px新功能22ok；strict本機exit1僅GPU ReadPixels兩warning、無應用error，完整7檔／真3→2與8精力／取消返回實圖已核。遊戲PO依接受版本更新同一8800並保留LP07；這是D18單次手動整理的工程交付，不批准自主維修或新數值，也不代表平衡／喜好已驗。
 
-下一建議另立[#232](https://github.com/lalagrass/earth-ascension/issues/232)／[LP09候選N1–N4](LP09_PROPOSAL.md)：每人獨立允許預設關、1階／3階可交換反應、安全時候補不占額、忙完／恢復後院中正式出發；玩家有效覆寫等新真碰撞重評、一輪全隊最多自主一階，人工整理優先。N1–N4全部待確認，沒有新D19／runtime／可開工prompt或代啟作者；不擴LP08原DoD或沿其Claude窗口。
+擁有人現已同意[#232](https://github.com/lalagrass/earth-ascension/issues/232)／PR233的N1–N4，見[D19](DECISIONS_AND_SOURCES.md#d19lp-09-自主整理護欄-n1n4-批准2026-10-22)，[LP09正式工作包](LP09_HANDOFF.md)／[Claude兩小時prompt](LP09_CLAUDE_PROMPT.md)與[提案沿革](LP09_PROPOSAL.md)。獨立允許預設關、1／3階反應、安全候補不占額、院中準備好才正式受理；人工覆寫等新真碰撞重評、全隊一輪最多自主一階，人工fix優先結束當輪。封頂3仍看真接觸，auto/manual與新舊機會不混用；本次批准同步文件合dev／postCI後本人新認領，不重問四項、不沿LP08窗口，也未代啟作者。
 
 ### D18批准與此前交付來源
 
@@ -18,17 +18,17 @@ LP08規劃PR229已合dev `e10eba1d443c4fb2103ceacb9b72801f504edd73`／postCI3976
 | 順位／追蹤 | 可見價值 | 範圍與去向 |
 |---|---|---|
 | **已交付：BL-D02／LP08 #228** | 選一人→真走護欄→動手進度→一階痕淡去→回生活 | 單次手動、480工作tick／8精力、無XP／材料／耐久／安全buff；可察覺sniff／approach／prep及仍可見flee皆阻擋／中止未完成效果，沿既有固定場景可見界線，不讀畫外、不以active=false當安全。原趟交付／恢復80／停工叫回與LP07保留，精確一次名額／取消／同tick沿工作包 |
-| 下一候選：LP09／#232，自主家務／#188及BL-D02 | 角色能依允許與情勢自己整理，玩家能覆寫 | [N1–N4](LP09_PROPOSAL.md)待確認，護院開關不當整理開關、一輪一階；材料／真耐久仍未批，不預占下一作者 |
+| **已批下一片：LP09／#232，自主家務／#188及BL-D02** | 角色能依允許與情勢自己整理，玩家能覆寫 | [D19工作包](LP09_HANDOFF.md)已批N1–N4，本次文件合dev／postCI後可本人認領；護院開關不當整理開關、一輪一階，材料／真耐久仍未批 |
 | 觀賞性候選：BL-Q02／#220 | 少量鼠群、一式掌法、真起手命中／逐隻換目標 | 可先有界fixture，不等完整繁殖生態；真傷害／成長／失效目標與有限追擊界線仍需另批，腳力不當戰力buff |
 | 獨立研究：BL-D06／#219 | 食源→攜回巢／育幼、受阻不增長、非戰鬥控制；巡山發現與清巢失敗／逃散 | 三案研究PR223已合dev，其他巢穴／鼠群侵略性與警覺性／守恆遷徙仍為研究池；空閒agent須另認領有限文件，不占核心實作，也非LP08／#220硬前置 |
 
-本表只有LP08的D18有限片新批准，其餘不自動解鎖。詳細來源／邊界沿[自主與生態評估](LIFE_AUTONOMY_ECOLOGY_BACKLOG.md)與[FUTURE_BACKLOG](FUTURE_BACKLOG.md)，母單#75；不取消美術／社交候選、不擴#104等原DoD。真偷取／族群壓力會改可忽略承諾，需另選可恢復損失／上限與非戰鬥控制，不塞進外觀整理。
+本表LP08的D18有限片已交付，LP09的D19有限片新批准，其餘不自動解鎖。詳細來源／邊界沿[自主與生態評估](LIFE_AUTONOMY_ECOLOGY_BACKLOG.md)與[FUTURE_BACKLOG](FUTURE_BACKLOG.md)，母單#75；不取消美術／社交候選、不擴#104等原DoD。真偷取／族群壓力會改可忽略承諾，需另選可恢復損失／上限與非戰鬥控制，不塞進外觀整理。
 
 ### 架構健康與成本
 
 從LP05基線算LP06／LP07／LP08三片皆已交付，已到[#215](https://github.com/lalagrass/earth-ascension/issues/215)建議10～15分鐘短回訪點，檢查命令來源／取消／名額／返回是否開始多處重複。本輪短回訪已記#215，現有人工atHome／自主acceptStep的院中邊界是下一包具體接線風險，當前未見bug；只收具體證據，最多另選一個最小整理，無問題可維持；非阻擋不擋現包，不預先大拆或建立ECS／通用Queue，不加全架構audit gate或永久排程。
 
-必要局部／主線快驗／根檢查與CI保留，一次桌面＋390px真操作並開圖；未變背景／atlas／動畫／舊RT證據復用，不做全命令×人格×時相或新seed／遷移矩陣。log摘要／失敗／少量圖、strict真exit與GPU／CDP限制照實，不追綠。LP08原窗口達標停止；下一包獲批後另新T0最多120min／100min後不開新包／提早達標停，非作者review／Earth PO唯一queue／postCI後才更新接受入口並保留上一版。
+必要局部／主線快驗／根檢查與CI保留，一次桌面＋390px真操作並開圖；未變背景／atlas／動畫／舊RT證據復用，不做全命令×人格×時相或新seed／遷移矩陣。log摘要／失敗／少量圖、strict真exit與GPU／CDP限制照實，不追綠。LP08原窗口達標停止；本次LP09批准文件合dev／postCI後另新T0最多120min／100min後不開新包／提早達標停，非作者review／Earth PO唯一queue／postCI後才更新接受入口並保留上一版。
 
 ## D13：本輪生活主入口優先（2026-10-22）
 

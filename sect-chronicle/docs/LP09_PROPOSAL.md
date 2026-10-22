@@ -1,8 +1,8 @@
-# LP-09候選：自主整理護欄（#232）
+# LP-09提案沿革：自主整理護欄（#232）
 
-狀態：**N1–N4待擁有人確認，不可認領程式。** Codex／遊戲PO，2026-10-22，依擁有人「check github updates and review. then plan for the next」。追蹤[#232](https://github.com/lalagrass/earth-ascension/issues/232)，接BL-D02／[#188](https://github.com/lalagrass/earth-ascension/issues/188)，母單[#75](https://github.com/lalagrass/earth-ascension/issues/75)。這是下一片產品建議，不擴[#228](https://github.com/lalagrass/earth-ascension/issues/228)原DoD或預占Claude窗口。
+狀態：**N1–N4已依[D19](DECISIONS_AND_SOURCES.md#d19lp-09-自主整理護欄-n1n4-批准2026-10-22)批准；精確執行沿[LP09工作包](LP09_HANDOFF.md)／[Claude prompt](LP09_CLAUDE_PROMPT.md)。** 本次批准同步文件合dev／postCI後可本人新認領，未代啟作者；以下保留取捨沿革，不以舊候選未批文字阻擋有限片。 Codex／遊戲PO，2026-10-22，依擁有人「check github updates and review. then plan for the next」。追蹤[#232](https://github.com/lalagrass/earth-ascension/issues/232)，接BL-D02／[#188](https://github.com/lalagrass/earth-ascension/issues/188)，母單[#75](https://github.com/lalagrass/earth-ascension/issues/75)。這是下一片產品建議，不擴[#228](https://github.com/lalagrass/earth-ascension/issues/228)原DoD或預占Claude窗口。
 
-規劃起點dev `46588c03df7000087e3d3c0ee517ee5565c85dca`；LP08 [PR231](https://github.com/lalagrass/earth-ascension/pull/231)已由Earth PO合dev `3d504102f975ae5124cf7b215d764d25e5004c4a`，postCI [39776400224](https://github.com/lalagrass/earth-ascension/actions/runs/39776400224)五SUCCESS。已審head `9886c4f`完整7檔與D18核實、獨立模型87PASS；桌面＋390px新操作22ok／1console FAIL，strict真exit1僅兩GPU ReadPixels warning、無應用error，已開動手圖。3→2／8.00精力／真往返／取消不清痕實見；限制沿PR，不冒稱全strict綠／玩家喜好。下一runtime仍須N1–N4另經擁有人確認、批准版文件整合與最新issue認領，不能拿本候選規劃取代授權。
+規劃起點dev `46588c03df7000087e3d3c0ee517ee5565c85dca`；LP08 [PR231](https://github.com/lalagrass/earth-ascension/pull/231)已由Earth PO合dev `3d504102f975ae5124cf7b215d764d25e5004c4a`，postCI [39776400224](https://github.com/lalagrass/earth-ascension/actions/runs/39776400224)五SUCCESS。已審head `9886c4f`完整7檔與D18核實、獨立模型87PASS；桌面＋390px新操作22ok／1console FAIL，strict真exit1僅兩GPU ReadPixels warning、無應用error，已開動手圖。3→2／8.00精力／真往返／取消不清痕實見；限制沿PR，不冒稱全strict綠／玩家喜好。N1–N4產品前置已解除，runtime仍須本次批准同步文件合dev／postCI及本人核最新issue認領，舊候選合併不能取代此前置。
 
 ## 玩家問題與最小可見閉環
 
@@ -10,9 +10,9 @@
 
 短流程：選人允許自主整理→自然野豬留下痕並離開可察覺範圍→角色表達候補→交付原趟／恢復／返院→準備好者才正式出發→一階改善／真返院。另一段用交換反應或玩家改工／取消，看候補時機與不搶回原因。不修改D18已批示意值，不注入資源／精力造戲。
 
-## N1–N4建議與取捨
+## N1–N4提案取捨沿革（已批准）
 
-| 待確認項 | PO建議 | 取捨／替代 |
+| 已批准項 | 本片採用 | 原取捨／替代 |
 |---|---|---|
 | N1 允許來源 | 每人獨立「允許自主整理」，預設關；與護院允許分開 | 玩家能選願意管哪種事，不暗開家務；代價是多一個小設定。仍可一直不理外觀損痕 |
 | N2 反應／候補 | 「順手照看」marks≥1、「累積再整理」marks=3才願意，預選熟手順手／主角累積，可交換。安全時先記意願、不占名額；院中完整交付／恢復80、能合法出發才沿原fix正式受理 | 看得出反應差異，無速度／戰力buff或人格canon；尚非完整人格需求評分。多人ready明列穩定ID打平，人工明派／已出發者不被搶，不依render或人物迴圈順序 |
@@ -21,7 +21,7 @@
 
 N4的「新碰撞」是實際接觸事件，不是`marks`增加；封頂3仍有新接觸，本訪hits／訪次可提供事件身份，不能讓封頂後永不重評。候補不算正式受理；一旦自主正式受理即用掉當輪機會，即使之後中止也不在同機會無限重試。新接觸可開下一輪，但仍須安全／真返院與恢復，不在獸旁反覆起身。無新接觸時手動仍可整理，沒有必須等獸的人工限制。
 
-N3是每人覆寫，人工改一人的工作不禁止另一人的合法候補；N4是全護欄的一次自主名額，**人工明派整理**則優先處理並結束當輪自主機會。兩者分清，不能把一般改工誤做全隊停防，或讓手動整理剛完成就被同一輪auto續接。這些仍是待確認取捨，尚未新增D19。
+N3是每人覆寫，人工改一人的工作不禁止另一人的合法候補；N4是全護欄的一次自主名額，**人工明派整理**則優先處理並結束當輪自主機會。兩者分清，不能把一般改工誤做全隊停防，或讓手動整理剛完成就被同一輪auto續接。這些取捨已依D19批准，精確機會身份／來源與命令表沿工作包。
 
 ## 正式執行與既有生活邊界
 
@@ -33,16 +33,16 @@ N3是每人覆寫，人工改一人的工作不禁止另一人的合法候補；
 
 UI只補允許／反應與真原因：未允許、等損痕／安全、候補待交付／恢復、玩家改派等新碰撞、同伴／人工處理、當輪已嘗試、出發／完成／中止。原因變了才log；可取消候補，正式整理沿LP08專用取消，避免每幀刷log或萬用中斷。無真耐久／加固／材料、完整人格／社交、鼠群／掌法／巡山生態。
 
-## 批准後才做的有限驗收與工作包
+## 有限驗收沿革（精確要求已轉工作包）
 
 選少量代表反例：預設關、同條件交換1／3階反應、候補不占額／ready單人／manual不被搶；有效覆寫與拒絕、新接觸仍保留停工叫回恢復、封頂3後新接觸可重評；一輪一次正式受理／關auto保manual／改反應不重啟；原交付與480tick／8精力／安全中止及真返院；暫停倍率背景／重來。只一條桌面＋390px真操作並開圖，復用LP08路線／動作與未變守恆證據，模型負責長恢復與競爭，不做人格×命令×時相全矩陣或30分鐘近似重跑。
 
 根Python／m2語法／diff、SG主線快驗與適用CI保留；純本提案只核連結／契約，不跑新runtime／世界seed。完整log落檔，讀摘要／失敗與少量圖，strict真exit／GPU／CDP限制照實，不改門檻追綠。工程通過不代表玩家喜歡。
 
-若N1–N4確認，再同步批准來源／#232／正式handoff／Claude兩小時prompt；LP08合dev／postCI後本人核最新作者，新worktree／新T0最多120min、100min後不開新包、提早達標停，四小時認領不延長兩小時。非作者review→Earth PO唯一queue→postCI後更新同一接受入口，不代啟作者或預占LP08原窗口。**本提案不提供可直接開工prompt或批准程式。**
+N1–N4已確認，D19／#232／正式handoff與Claude兩小時prompt已同步。本次批准同步文件合dev／postCI後本人核最新作者，新worktree／新T0最多120min、100min後不開新包、提早達標停，四小時認領不延長兩小時。非作者review→Earth PO唯一queue→postCI後更新同一接受入口，未代啟作者，不沿LP08原窗口；本提案不取代[正式工作包](LP09_HANDOFF.md)或重問四項。
 
 ## 三片短回訪與其後候選
 
-LP06／LP07／LP08皆已接受，已到[#215](https://github.com/lalagrass/earth-ascension/issues/215)建議短回訪點。現有`model.mjs`的`atHome()`負責人工待命令與恢復／返院，`acceptStep()`在院中邊界負責自主護院；本片若採用，須保留同一合法出發邊界而非再造模型外輪詢。這是具體接線風險，**不是已發現bug**：LP08的87快速反例及真實受威脅後fixHome→guard探針通過。#215已留本輪短回訪紀錄，候選只在本片獲批且需要時最小共享合法性／受理判斷，無需現在大拆，沒有大重構前置、行數門檻或ECS／通用JobQueue授權。
+LP06／LP07／LP08皆已接受，已到[#215](https://github.com/lalagrass/earth-ascension/issues/215)建議短回訪點。現有`model.mjs`的`atHome()`負責人工待命令與恢復／返院，`acceptStep()`在院中邊界負責自主護院；本片已選定，須保留同一合法出發邊界而非再造模型外輪詢。這是具體接線風險，**不是已發現bug**：LP08的87快速反例及真實受威脅後fixHome→guard探針通過。#215已留本輪短回訪紀錄，候選只在本片需要時最小共享合法性／受理判斷，無需現在大拆，沒有大重構前置、行數門檻或ECS／通用JobQueue授權。
 
-建議先驗這個自主家務；其後可比較[#220](https://github.com/lalagrass/earth-ascension/issues/220)少量鼠群／一式掌法的觀賞性，或依真人回饋改選，不預占整串。#219生態研究不是硬前置，真傷害／繁殖／巡山仍另批。美術／社交其他候選沿[FUTURE_BACKLOG](FUTURE_BACKLOG.md)保留。
+已選定先驗這個自主家務；其後可比較[#220](https://github.com/lalagrass/earth-ascension/issues/220)少量鼠群／一式掌法的觀賞性，或依真人回饋改選，不預占整串。#219生態研究不是硬前置，真傷害／繁殖／巡山仍另批。美術／社交其他候選沿[FUTURE_BACKLOG](FUTURE_BACKLOG.md)保留。
