@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## D14：LP-04 精力與自主恢復已批准（2026-10-22）
+
+擁有人已同意先做 [#205](https://github.com/lalagrass/earth-ascension/issues/205)：自主休息後續工，玩家明確叫停維持停工，並委託遊戲PO整理精力示意值／驗收與Claude兩小時prompt。讀 [LP04工作包](docs/LP04_HANDOFF.md)及[Claude prompt](docs/LP04_CLAUDE_PROMPT.md)。這是單一生活runtime的一項精力需求，不是整套需求／社交／自選工作AI；D13／LP03「不加體力恢復」是上一輪邊界，本次有限範圍不受其阻擋。既有兩人、挑水／採藥、腳力與存檔邊界保留。
+
+本輪示意值由PO依委託選定：兩人100起、工作每遊戲秒−1、交付後≤30自動恢復、坐下每秒＋5、≥80續工；手動停工可恢復至100但不自動解除。精確狀態／指令／邊界以工作包為準，不能自行調閾值追綠。文件合dev／postCI後Claude可按最新#205認領，尚未代啟動；實際開工起最多2h，最後20分鐘不開新包，提早達標即停，既有4h認領不延長這個窗口。非作者review與Earth PO唯一dev queue保留。
+
 ## D13：兩小時生活開發循環與主入口方向（2026-10-22）
 
 擁有人已要求 Codex 主開發、非作者 review、Earth PO 合 dev 後續下一小包，最長約兩小時，提早達標即停；並明確說「生活展示會取代正式遊戲入口」。讀 [工作包](docs/LIFE_LOOP_HANDOFF.md)／[D13](docs/DECISIONS_AND_SOURCES.md#d13生活主入口與兩小時開發循環2026-10-22)／[#197](https://github.com/lalagrass/earth-ascension/issues/197)。本輪先 LP-01 共用人物呈現，再 LP-02 雙人挑水、停工休息、既有腳力成長與生活主入口；只認領目前一包，未合 dev／postCI 不接後包。Codex 主筆替代先前預定 Claude 的未認領後續，不接管他人有效工作。
