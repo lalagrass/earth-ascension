@@ -170,7 +170,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     }
     return false;
   }
-  const funOver = (p) => p.rest === 'manual' || p.recall || slotFor(p);
+  // 停工或待恢復（rest 非空）都要離開休閒；恢復自主只清叫回，不能讓待恢復的人卡在活動點。
+  const funOver = (p) => !!p.rest || p.recall || slotFor(p);
   function goBack(p) {
     p.why = `精力恢復到 ${E.backAt}，自己回去`;
     p.motion = { mode: 'back', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level };
@@ -296,8 +297,10 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     }
     if (cmd === 'recall') return recall(p);
     if (cmd === 'resume') {
-      p.recall = false; p.why = null;
+      p.recall = false;
       s.log.push({ tick: s.tick, person: p.id, kind: 'resume' });
+      if (p.rest === 'auto') return { ok: true, text: `恢復自主：先恢復到 ${E.backAt}，之後有空位就做，滿了就去休閒` };
+      p.why = null;
       return { ok: true, text: '恢復自主：有空位就做，滿了就去休閒' };
     }
     if (cmd === 'cancel') { p.pending = null; return { ok: true, text: '已取消待執行指令' }; }

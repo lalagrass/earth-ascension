@@ -763,6 +763,41 @@ test('休閒中停工後低精力重啟：去程／活動點／返程都走完�
   }
 });
 
+// 審查 P2（第二輪）：低精力停工→開始後再按「恢復自主」，只清叫回；待恢復仍要走完本段→返院→座位到 80，不能卡在活動點。
+test('休閒中停工→開始／改工作→恢復自主：叫回解除但必要恢復照走，不卡活動點、不跳過 80', () => {
+  const legs = [['toFun', (p) => p.mode === 'toFun' && p.funLeg.k > 0.3, 'start'], ['fun', (p) => p.mode === 'fun', 'work:herb']];
+  for (const [leg, at, restart] of legs) {
+    const m = createLifeModel(FUNL, { ...FULLV, useEveryMs: 20000 });
+    m.state.people.hero.energy = 45.25;
+    runUntil(m, (v) => at(v.people.hero));
+    const before = m.view();
+    m.dispatch('restAfterTrip', 'hero');
+    assert.ok(m.dispatch(restart, 'hero').ok);
+    const r = m.dispatch('resume', 'hero');
+    assert.ok(r.ok); assert.match(r.text, /先恢復到 80/);
+    let h = who(m, 'hero');
+    assert.equal(h.recall, false, '恢復自主清叫回'); assert.equal(h.rest, 'auto', '不清必要恢復');
+    assert.equal(h.mode, before.people.hero.mode); assert.ok(dist(posOf(h), posOf(before.people.hero)) < 1e-9); assert.equal(h.energy, 45.25);
+    assert.match(h.next, /先去座位恢復至 80/);
+    let prev = posOf(h), path = [h.mode];
+    runUntil(m, (v) => {
+      const p = v.people.hero;
+      assert.ok(dist(posOf(p), prev) <= RULES.emptySpeed.cap * STEP_MS / 1000 + 1e-6, `${leg} 連續`); prev = posOf(p);
+      if (path.at(-1) !== p.mode) path.push(p.mode);
+      if (p.mode === 'back') assert.ok(p.energy >= E.backAt, `${leg} 起身前已恢復到 80（${p.energy.toFixed(2)}）`);
+      return path.includes('back') && p.mode !== 'back' && p.mode !== 'idle';
+    }, 60000); // 卡在活動點會在這裡逾時
+    // 恢復後叫回已解除，回院中照自主規則重評：有空位就出發，仍滿就再去休閒（不是被叫回待命）
+    const after = path.pop();
+    assert.deepEqual(path.filter((x) => x !== 'idle'), [leg, 'fromFun', 'toSeat', 'seated', 'back'], `${leg} 路徑 ${path.join('→')}`);
+    assert.ok(after === 'carry' || after === 'toFun', `${leg} 恢復後自主：${after}`);
+    h = who(m, 'hero');
+    assert.equal(h.recall, false); assert.equal(h.rest, null);
+    assert.equal(h.job, restart === 'work:herb' ? 'herb' : 'water', '保留最新工作');
+    assert.equal(h.trips, before.people.hero.trips); assert.deepEqual(h.done, before.people.hero.done, '休閒／恢復不產出');
+  }
+});
+
 test('路程與容量：逐 tick 連續、受出發空手速度上限；暫停改令不動；單一空位只回輪到的人、不超額、不餓死', () => {
   const m = createLifeModel(FUNL, { ...RULES, vatStart: RULES.vatCapacity, useEveryMs: 20000 });
   const lim = (id) => speedsFor(m.state.people[id].motion.tripLevel).empty * STEP_MS / 1000 + 1e-6;
