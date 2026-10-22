@@ -1,12 +1,12 @@
 # 可見交付、驗證與正式整合
 
-## 2026-10-22 現況與下一候選：LP-04已交付 → LP-05待確認
+## 2026-10-22 現況：LP-04已交付 → LP-05已批准
 
-D13的生活主入口已有兩人、挑水／採藥、成長與LP04精力／可見自主恢復。LP04 [#205](https://github.com/lalagrass/earth-ascension/issues/205)／PR #207已合dev `8f8c93a168873e8c174c857d3b9c8768e0efc030`，postCI39702669958五SUCCESS，兩小時有限包達標即停止。權威數值／停工語義仍見[LP04](LP04_HANDOFF.md)，不把舊接手文字當尚未交付。
+LP04 [#205](https://github.com/lalagrass/earth-ascension/issues/205)／PR #207已合dev `8f8c93a168873e8c174c857d3b9c8768e0efc030`，postCI39702669958五SUCCESS，兩小時有限包已完成。既有兩人、工作／成長、精力／可見恢復及手動停工沿[LP04](LP04_HANDOFF.md)。LP05較早規劃PR #209已合dev `c6313ed`／postCI39707307863五SUCCESS；它沒有交付休閒程式。
 
-擁有人本輪委託評估下一個模擬市民式小片，推薦 [LP05工作包](LP05_HANDOFF.md)／[Claude prompt](LP05_CLAUDE_PROMPT.md)，追蹤 [#208](https://github.com/lalagrass/earth-ascension/issues/208)，由N1f／#188提取「無合法工作時的偏好休閒→有缺口返院→玩家叫回待命／恢復自主」。**本輪只批准規劃，P1–P4玩法仍待擁有人確認；文件合併不等於批准程式或啟動Claude。** 候選先於聊天／途中分心與飲食睡眠，並非新增平行順位表或把N1f全批准。
+擁有人已同意P1–P4，批准由N1f／#188提取「無合法工作且實存滿時的兩偏好休閒→有容量返院→玩家叫回待命／恢復自主」，來源[D15](DECISIONS_AND_SOURCES.md#d15lp-05-偏好休閒與玩家叫回2026-10-22)。工作單[#208](https://github.com/lalagrass/earth-ascension/issues/208)、[工作包](LP05_HANDOFF.md)、[Claude兩小時prompt](LP05_CLAUDE_PROMPT.md)。本次批准同步文件合dev／postCI後可有效認領，不重問產品；尚未代啟Claude或宣稱新玩法通過。
 
-只沿同一入口與唯一60Hz模型，不為每活動另開demo／換引擎。#188舊分鏡可復用，但它針對舊RT的R2／固定units不是生活版已有功能；#176舊RT消耗方案未採用。尚未確認LP05不阻擋其他已批准工作，不改LP04驗收或追溯加重舊PR。
+只沿同一生活入口／單60Hz薄接線，不新增排序表或將N1f全部批准；聊天／途中分心、飲食睡眠與資源用途仍留後段。#188分鏡可復用，但其舊RT的R2／固定units不是生活版已有功能；#176舊RT消耗未採用，不擴舊PR DoD。下方未批准候選僅在本D15有限範圍有新授權。
 
 ## D13：本輪生活主入口優先（2026-10-22）
 

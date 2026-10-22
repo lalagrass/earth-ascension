@@ -1,10 +1,10 @@
 # Coding agent 接手入口
 
-## 下一候選：LP-05 規劃／產品待確認（2026-10-22）
+## D15：LP-05 偏好休閒與玩家叫回已批准（2026-10-22）
 
-LP04 #205／PR #207已合dev `8f8c93a`，postCI39702669958五SUCCESS；原工作／精力／停工已交付。擁有人本輪委託評估「像模擬市民」的下一個最小可見切片與Claude兩小時prompt，接 [#208](https://github.com/lalagrass/earth-ascension/issues/208)／[LP05工作包](docs/LP05_HANDOFF.md)／[prompt](docs/LP05_CLAUDE_PROMPT.md)。推薦滿庫後偏好休閒、缺口出現回原工作，玩家可叫回待命／恢復自主；**只批准本次規劃，P1–P4仍待擁有人確認，不代啟Claude或認領程式**。文件合dev不解除玩法批准前置，沒有無限loop或承襲LP04窗口。
+擁有人已明確同意P1–P4並委託更新文件／#208與Claude兩小時prompt，來源見[D15](docs/DECISIONS_AND_SOURCES.md#d15lp-05-偏好休閒與玩家叫回2026-10-22)。接[#208](https://github.com/lalagrass/earth-ascension/issues/208)／[LP05工作包](docs/LP05_HANDOFF.md)／[Claude prompt](docs/LP05_CLAUDE_PROMPT.md)：實存滿且無合法工作時兩偏好休閒，有容量回原工作；玩家可叫回待命／恢復自主，後者不能解玩家停工。兩人／同入口／單60Hz、精力與收益邊界沿工作包，不擴聊天、途中分心、完整需求、存讀或新引擎。
 
-確認後只沿同一生活runtime薄整合兩個活動／原因與介入，不擴聊天、途中分心、完整需求、舊RT／存檔或新引擎；LP04已批准門檻與手動停工不重問。尚未確認時只讀／評估，其他已批准工作不因此受阻。下方D14的「文件後可認領／尚未開工」為原LP04歷史接手狀態，以#205已交付及最新issue為準。
+產品前置已解除，不重問P1–P4。本次批准同步文件合dev／postCI後，Claude可本人核最新dev／有效認領、獨立worktree開發；舊規劃PR #209合併不替代本次文件前置。新的T0從本次LP05實際認領開工記，最多120min、100min後不開新包、提早達標即停，4h租期不延長；非作者review／Earth PO唯一queue／必要測試與輸出成本維持，尚未代啟作者。LP04 #205／PR #207已交付，下面D14的舊接手狀態不重啟其窗口。
 
 ## D14：LP-04 精力與自主恢復已批准（2026-10-22）
 
