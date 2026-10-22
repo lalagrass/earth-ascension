@@ -51,7 +51,14 @@ function pose(ph, level, mode, resting = false, id = 'hero', job = 'water') {
 // LP-04：去／回座位用空手步態（同一份距離換幀），坐下用模板的「坐下歇」；主角 sheet 沒有坐姿，暫用採藥蹲姿並在面板標明。
 // LP-05：去／回偏好點用空手步態（借採藥空手走路幀、不畫背簍）；活動中主角用「看山」背影、熟手用「舒展筋骨」循環（幀依模型活動步數換，不看真實時間）。
 const FUN_TICKS_PER_POSE = 36;
+// LP-08：往返護欄用空手步態；動手沒有專用幀，借「舒展筋骨」的前彎（綁竹／敲樁）與站直兩幀交替出節奏，面板如實標示借用。
+const FIX_BEAT = 45, FIX_BEND = 30; // 每 45 tick 一拍：前彎 30 tick、站直 15 tick（只是畫面節奏，進度只看模型步數）
 function poseOf(id, person) {
+  if (person.fixing) {
+    const at = geo.of(id, person), a = animators[id];
+    const view = person.mode === 'fix' ? { phase: 'stretch', k: 0, travelled: person.fixWork.steps % FIX_BEAT < FIX_BEND ? 3 : 0 } : { phase: 'herbOut', k: 0, travelled: at.travelled };
+    return { x: at.x, y: at.y, face: at.face, ...a.pick(view), travelled: at.travelled, phase: person.mode, borrowed: person.mode === 'fix' };
+  }
   // LP-06：往返防守點用空手步態；等候用空手站姿（舒展筋骨第一幀＝站直，不扛扁擔）；喝止無專用幀，用前彎那幀＋畫面另畫喝止波紋。
   if (person.guarding) {
     const at = geo.of(id, person), a = animators[id];
@@ -302,7 +309,7 @@ function follow() {
 // ---------- 狀態 ----------
 const r1 = (n) => Math.round(n * 10) / 10;
 const LENGTHS = { water: scene.path.length, herb: r1(herbPath.length), seat: geo.seatLengths, fun: geo.funLengths,
-  boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total) }, guard: r1(geo.guardLength) };
+  boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength) };
 let model = createModel(LENGTHS);
 const clock = createClock();
 const ui = { follow: narrow(), playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null };
@@ -410,13 +417,13 @@ function reset() {
   clock.clear();
   v = model.view();
   fx.length = 0;
-  toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份；野豬回棲地精力 60、威脅 0，護欄損痕 0；休息、休閒、叫回、驅離與待執行指令已清除；自主護院回到兩人未允許（熟手主動照看、主角受擾再處理）');
+  toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份；野豬回棲地精力 60、威脅 0，護欄損痕 0；休息、休閒、叫回、驅離、整理與待執行指令已清除；自主護院回到兩人未允許（熟手主動照看、主角受擾再處理）');
   renderChrome();
 }
 
 function menuOptions(id, person) {
   // 地點自己的工作排第一，其次本趟後休息，再來另一份工作。
-  const here = id === 'herb' || id === 'rack' ? 'herb' : 'water', rank = id === 'fence' ? { guard: 0 } : id === 'bench' ? { restAfterTrip: 0 } : id === 'view' || id === 'yard' ? { recall: 0, resume: 1 } : { [`work:${here}`]: 0, restAfterTrip: 1, guard: 3 };
+  const here = id === 'herb' || id === 'rack' ? 'herb' : 'water', rank = id === 'fence' ? { fix: 0, fixCancel: 0, guard: 1 } : id === 'bench' ? { restAfterTrip: 0 } : id === 'view' || id === 'yard' ? { recall: 0, resume: 1 } : { [`work:${here}`]: 0, restAfterTrip: 1, guard: 3 };
   const opts = model.actions(person).filter((a) => !a.hidden && !(here === 'herb' && a.id === 'pourNow'))
     .sort((a, b) => (rank[a.id] ?? 2) - (rank[b.id] ?? 2));
   if (id === 'spring') return opts.filter((a) => a.id !== 'pourNow').concat([{ id: 'more', label: '在這裡多裝一桶', enabled: false, reason: '扁擔只掛得了兩桶' }]);
@@ -517,7 +524,16 @@ const cmdLabel = (a, p) => !a.id.startsWith('work:') || p.mode !== 'carry' ? a.l
   : a.id !== 'work:' + p.job ? `交付後改${JOBS[a.id.slice(5)].label}` : p.pending ? `繼續${p.jobLabel}` : a.label;
 const pendText = (p) => p.pending === 'rest' ? '本趟後停工' : `交付後改去${JOBS[p.pending].label}`;
 const en = (p) => Math.floor(p.energy);
-const srcText = (p) => p.rest === 'manual' ? '玩家停工' : p.rest === 'auto' ? '自主恢復' : p.mode === 'back' ? '自主恢復完成' : p.leisure ? '閒暇（不扣不回）' : p.guarding ? '驅離往返（不扣不回）' : null;
+const srcText = (p) => p.rest === 'manual' ? '玩家停工' : p.rest === 'auto' ? '自主恢復' : p.mode === 'back' ? '自主恢復完成' : p.leisure ? '閒暇（不扣不回）' : p.guarding ? '驅離往返（不扣不回）'
+  : p.mode === 'fix' ? '整理護欄動手（每秒 −1，共 8）' : p.fixing ? '整理往返（不扣不回）' : null;
+const FIX_RESULT = { done: '整理完成：護欄損痕 −1', threat: '看得見野豬：整理中止，這一階未清', canceled: '已取消整理（未完成，不清痕）', clean: '護欄已沒有損痕，取消' };
+// 整理狀態一行：待原趟／恢復／返院、前往、動手進度與取消入口。
+function fixHtml(p) {
+  if (!p.fix && !p.fixing) return p.fixResult ? `<div class="muted">整理結果：${FIX_RESULT[p.fixResult.kind]}</div>` : '';
+  const what = p.mode === 'fix' ? `整理護欄 ${Math.round(p.fixWork.k * 100)}%（${(p.fixWork.steps / 60).toFixed(1)}／${(p.fixWork.need / 60).toFixed(0)} 秒）`
+    : p.mode === 'toFix' ? (p.fix ? '走去整理護欄' : '整理已取消，走到護欄後返院') : p.mode === 'fromFix' ? '從護欄返院' : `待整理護欄：${p.next}`;
+  return `<div class="fixline"><span>${what}</span>${p.fix ? '<button class="btn" data-cmd="fixCancel">取消本次整理</button>' : ''}</div>${p.mode === 'fix' ? `<div class="bar fix"><i style="width:${Math.round(p.fixWork.k * 100)}%"></i></div>` : ''}`;
+}
 const RESULT_TEXT = { success: '喝止成功，野豬逃走', late: '晚到：野豬已經走了', expired: '還沒出發野豬就走了，取消', canceled: '已改令，取消驅離' };
 const guardText = (p) => p.guardOrder != null ? (p.guarding ? `驅離野豬：${p.status}` : '待驅離野豬（交付／恢復後野豬還在才去）') : null;
 const B = RULES.boar;
@@ -530,6 +546,13 @@ function autoHtml(p) {
     <div class="muted">${a.text}</div></div>`;
 }
 const AUTO_FX = { want: '想去護院', go: '自己去護院', expired: '意願過期', peer: '同伴處理', late: '到場晚到' };
+// 野豬卡上的整理入口：誰在整理、或派選中的人去（停用時 title 說原因）。
+function fixBtn(b, sel) {
+  if (b.fixBy) return `<span class="muted">${profiles[b.fixBy].label}整理中</span>`;
+  const opt = model.actions(sel).find((a) => a.id === 'fix');
+  if (!opt || opt.hidden) return '<span class="muted">只是外觀，不擋路不停工</span>';
+  return `<button class="btn" data-cmd="fix" ${opt.enabled ? '' : 'disabled'} title="${opt.enabled ? opt.detail : opt.reason}">派${profiles[sel].label}整理</button>`;
+}
 function boarHtml(b) {
   const who = b.assignee ? profiles[b.assignee].label : null;
   const sel = selectedPerson(), opt = model.actions(sel).find((a) => a.id === 'guard');
@@ -538,7 +561,7 @@ function boarHtml(b) {
   return `<div class="row"><b>野豬 · ${b.label}</b><span class="muted">第 ${b.visit} 次來訪${b.mode === 'habitat' ? '（已回棲地）' : ''}</span></div>
     <div class="muted why">${reason}</div>
     <div class="bars"><div>${bar('benergy', b.energy, [B.tiredAt, B.goEnergy], '精力（不是血量）')}</div><div>${bar('threat', b.threat, [B.goThreat, B.scaredAt], '威脅記憶')}</div></div>
-    <div class="row"><span>護欄損痕 ${b.marks}／${b.maxMarks}</span><span class="muted">只是外觀，不擋路不停工</span></div>
+    <div class="row"><span>護欄損痕 ${b.marks}／${b.maxMarks}</span>${fixBtn(b, sel)}</div>
     ${b.active ? `<div class="row"><span>${who ? `${who}正在處理` : '沒人處理也能繼續生活'}</span>${opt ? `<button class="btn" data-cmd="guard" ${opt.enabled ? '' : 'disabled'} title="${opt.enabled ? opt.detail : opt.reason}">派${profiles[sel].label}驅離</button>` : ''}</div>`
       : b.last ? `<div class="muted">上次：撞了 ${b.last.hits} 下，${b.last.why}</div>` : ''}`;
 }
@@ -574,7 +597,7 @@ function renderChrome() {
   panel.hidden = !IDS.includes(ui.selected);
   if (!panel.hidden) {
     const si = person.speedsInitial, sn = person.mode === 'carry' ? person.tripSpeeds : person.speeds;
-    const work = person.guarding ? `驅離野豬（回來${person.jobLabel}）` : person.mode === 'carry' ? `${person.jobLabel}（持續）· 第 ${person.trips + 1} 趟` : person.resting ? `停工（原工作：${person.jobLabel}）`
+    const work = person.fixing ? `整理護欄（回來${person.jobLabel}）` : person.guarding ? `驅離野豬（回來${person.jobLabel}）` : person.mode === 'carry' ? `${person.jobLabel}（持續）· 第 ${person.trips + 1} 趟` : person.resting ? `停工（原工作：${person.jobLabel}）`
       : person.leisure ? `閒暇：${person.pref.doing}（原工作：${person.jobLabel}）` : person.recall ? `${person.jobLabel}（玩家叫回）` : `${person.jobLabel}（持續）`;
     const other = person.job === 'water' ? 'herb' : 'water';
     const pend = person.pending
@@ -582,7 +605,7 @@ function renderChrome() {
       : person.resting ? `<div class="pending"><span><b>已停工</b><br><small>回滿也不會自己出發；下令開始才解除</small></span><span><button class="btn" data-cmd="start">開始${person.jobLabel}</button> <button class="btn" data-cmd="work:${other}">改${JOBS[other].label}</button></span></div>`
         : person.recall ? `<div class="pending"><span><b>玩家叫回</b><br><small>回院中${person.jobLabel}；滿了就待命，完成返院後的一趟才解除</small></span><button class="btn" data-cmd="resume">恢復自主</button></div>`
           : '<div class="muted">沒有</div>';
-    const cmds = model.actions(id).filter((a) => !a.hidden && a.id !== 'pourNow')
+    const cmds = model.actions(id).filter((a) => !a.hidden && a.id !== 'pourNow' && a.id !== 'fixCancel') // 取消整理放在整理狀態列旁
       .map((a) => `<button class="btn" data-cmd="${a.id}" ${a.enabled ? '' : 'disabled'} title="${a.enabled ? a.detail : a.reason}">${cmdLabel(a, person)}</button>`).join(' ');
     if (!panel.firstElementChild) panel.innerHTML = '<div id="p-work"></div><h4>待執行指令</h4><div id="p-pend"></div><div id="p-cmds" class="cmds"></div><div id="p-gain"></div><div id="p-leg"></div>';
     put('p-work', $('p-work'), `<h2>${profile.name}<small>${profile.role}</small></h2>
@@ -590,10 +613,11 @@ function renderChrome() {
       <div class="bar energy ${person.energy <= 30 ? 'low' : ''}"><i style="width:${person.energy / person.energyMax * 100}%"></i><s style="left:30%"></s><s style="left:80%"></s></div>
       ${person.why ? `<div class="muted">原因：${person.why}</div>` : ''}
       ${guardText(person) ? `<div class="guardline">${guardText(person)}</div>` : person.guardResult ? `<div class="muted">驅離結果：${RESULT_TEXT[person.guardResult.kind]}</div>` : ''}
+      ${fixHtml(person)}
       ${autoHtml(person)}
       <div class="muted">偏好：${person.pref ? `${person.pref.label}（${person.pref.place}）· ${person.job === 'herb' ? '藥架' : '水缸'}實存滿才去，有空位就回` : '無'}</div>
       <h4>目前工作</h4><div>${work}</div><div class="row"><span>${person.status}</span>${person.mode === 'carry' ? `<span class="muted">本趟用 Lv ${person.tripLevel}</span>` : ''}</div>
-      <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : 0) * 100)}%"></i></div>
+      <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : person.fixLeg ? person.fixLeg.k : person.fixWork ? person.fixWork.k : 0) * 100)}%"></i></div>
       <div class="next">下一步：${person.next}</div>`);
     put('p-pend', $('p-pend'), pend);
     put('p-cmds', $('p-cmds'), cmds);
@@ -606,6 +630,7 @@ function renderChrome() {
         ${person.mode === 'carry' ? `<tr><td>本趟${person.jobLabel}（已鎖定）</td><td class="now">${sec(person.tripSecondsNow)}</td><td class="init"></td></tr>` : ''}
         <tr><td>下趟${JOBS[person.nextJob].label}（Lv ${person.level}）</td><td class="now">${sec(person.tripSeconds)}</td><td class="init">${sec(person.tripSecondsInitial)}</td></tr></table>
       <div class="muted">${person.lastTrip ? `上一趟${JOBS[person.lastTrip.job].label}實際 ${sec(person.lastTrip.seconds)}（出發時 Lv ${person.lastTrip.level}）` : '還沒完成第一趟'}；挑水、採藥共用腳力，升級只影響下一趟，倍率只改播放快慢</div>
+      ${positions[id].borrowed ? '<div class="muted">動作借用：整理護欄沒有專用幀，暫用「舒展筋骨」前彎／站直兩幀交替</div>' : ''}
       ${positions[id].fallback ? `<div class="muted">動作沿用：${positions[id].requested === 'rest' ? '坐下歇（此人尚無坐姿幀，暫用蹲姿）' : template.actions[positions[id].action].label}</div>` : ''}`);
   }
 }
@@ -645,9 +670,11 @@ app.ticker.add((t) => {
     const as = person.auto.state, ap = prev.people[id].auto.state;
     if (as !== ap && AUTO_FX[as]) fx.push({ text: `${profiles[id].label}：${AUTO_FX[as]}`, x: p.x, y: p.y - 112, until: performance.now() + 2000 });
     const gr = person.guardResult, pg = prev.people[id].guardResult;
+    const fr = person.fixResult, pf = prev.people[id].fixResult;
+    if (fr && (!pf || fr.tick !== pf.tick)) fx.push({ text: `${profiles[id].label}：${FIX_RESULT[fr.kind]}`, x: BOAR.fence.x + 30, y: BOAR.fence.y1 - 4, until: performance.now() + 2400 });
     if (gr && gr !== pg && (!pg || gr.tick !== pg.tick)) fx.push({ text: `${profiles[id].label}：${RESULT_TEXT[gr.kind]}`, x: p.x, y: p.y - 96, until: performance.now() + 2200 });
     tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level} · 精力 ${en(person)}`, p.x, p.y, 6);
-    tag(`${id}-pill`, `pill ${person.resting ? 'stop' : person.rest || person.mode === 'back' ? 'rest' : person.guarding ? 'guard' : person.leisure ? 'fun' : person.recall ? 'recall' : ''}`, person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.status, p.x, p.y - (person.mode === 'seated' ? 64 : 80));
+    tag(`${id}-pill`, `pill ${person.resting ? 'stop' : person.rest || person.mode === 'back' ? 'rest' : person.guarding || person.fixing ? 'guard' : person.leisure ? 'fun' : person.recall ? 'recall' : ''}`, person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.mode === 'fix' ? `${person.status} ${Math.round(person.fixWork.k * 100)}%` : person.status, p.x, p.y - (person.mode === 'seated' ? 64 : 80));
   }
   // 野豬與護欄：只讀 view().boar；畫面效果（撞擊閃光、喝止波紋）不入帳。
   const b = v.boar, bp = geo.boarAt(b), now = performance.now();
@@ -666,6 +693,9 @@ app.ticker.add((t) => {
     shoutG.position.set(sp.x - 14, sp.y - 58); shoutG.zIndex = sp.y + 0.05;
   }
   tag('shout', 'gain shout', shouter ? (v.people[shouter].shoutK < 0.5 ? '喝！' : '啪啪！') : null, shouter ? positions[shouter].x - 30 : 0, shouter ? positions[shouter].y - 86 : 0);
+  // 整理中：護欄旁每拍跳一下「綁」／「叩」，只是畫面效果，進度與清痕只看模型。
+  const fixer = IDS.find((id) => v.people[id].mode === 'fix');
+  tag('fixbeat', 'gain shout', fixer ? (v.people[fixer].fixWork.steps % FIX_BEAT < FIX_BEND ? (Math.floor(v.people[fixer].fixWork.steps / FIX_BEAT) % 2 ? '叩' : '綁') : null) : null, fixer ? BOAR.fence.x + 10 : 0, fixer ? BOAR.fence.y1 + 6 : 0);
   tag('fence', 'place', `${places.fence.label} · 損痕 ${b.marks}／${b.maxMarks}`, BOAR.fence.x2 + 34, BOAR.fence.y2 + 22);
   const h = v.people.hero;
   const showGhost = ui.shadow && v.shadow && h.mode === 'carry' && h.tripLevel > h.initialLevel;
@@ -700,7 +730,7 @@ app.ticker.add((t) => {
   for (let i = 0; i < 3; i++) { const f = fx[i]; tag(`fx${i}`, 'gain', f ? f.text : null, f ? f.x : 0, f ? f.y - (1 - (f.until - now) / 1600) * 14 : 0); }
   if (ui.follow) follow();
   placeMenu();
-  if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next || prev.people[id].auto.text !== v.people[id].auto.text) || frames % 15 === 0) renderChrome();
+  if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next || prev.people[id].auto.text !== v.people[id].auto.text || prev.people[id].fix !== v.people[id].fix || prev.people[id].fixResult !== v.people[id].fixResult) || prev.boar.marks !== v.boar.marks || prev.boar.seen !== v.boar.seen || frames % 15 === 0) renderChrome();
   frames++;
   if (firstFrameMs == null) firstFrameMs = performance.now() - t0;
 });
