@@ -87,4 +87,5 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 }
 .auto { margin: 6px 0; padding: 4px 6px; border: 1px solid #d9c9a8; border-radius: 6px; } .auto .group { display: inline-flex; gap: 4px; }
 .auto.want, .auto.go { border-color: #c8873e; background: #fff4e4; } .auto.expired, .auto.peer, .auto.player { background: #f3f0ea; }
+.auto.up.want, .auto.up.go { border-color: #6f8f4e; background: #eef5e4; } .auto.up.used, .auto.up.threat, .auto.up.canceled, .auto.up.none { background: #f3f0ea; }
 .autoline { display: block; color: #8a4a1e; }
