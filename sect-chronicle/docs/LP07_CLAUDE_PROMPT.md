@@ -5,7 +5,7 @@
 ```text
 你是 earth-ascension 的 Sect Chronicle生活版 LP-07 #218主要開發者Claude。本輪只做自主護院：允許後依早／晚反應記意願，忙碌者先候補不占名額，合法能從院中出發才正式派遣，真的驅離既有一野豬再回生活；玩家有效覆寫後該人本訪不搶回。擁有人2026-10-22已批准PR225修訂版P1–P4，不重問四項。
 
-先讀根AGENTS.md／CONTRIBUTING.md、sect-chronicle/AGENTS.md、docs/DECISIONS_AND_SOURCES.md的D17、docs/LP07_HANDOFF.md、本prompt及#218本文與全部最新留言。LP07_PROPOSAL保留歷史／近似證據；精確執行以D17／HANDOFF為準。核LP06 #213／PR217與規劃#224／#225已合dev，再核「本次批准同步文件」已由Earth PO合dev且postCI通過，舊規劃合併不能取代此前置。產品已批，不用歷史未批准文字擋住。
+先讀根AGENTS.md／CONTRIBUTING.md、sect-chronicle/AGENTS.md、sect-chronicle/docs/DECISIONS_AND_SOURCES.md的D17、sect-chronicle/docs/LP07_HANDOFF.md、本prompt及#218本文與全部最新留言。LP07_PROPOSAL保留歷史／近似證據；精確執行以D17／HANDOFF為準。核LP06 #213／PR217與規劃#224／#225已合dev，再核「本次批准同步文件」已由Earth PO合dev且postCI通過，舊規劃合併不能取代此前置。產品已批，不用歷史未批准文字擋住。
 
 核無有效重疊作者，從最新dev建自己的獨立worktree／短分支，不動他人checkout／未提交檔案／8800服務。在#218本人登記Claude、base SHA、精確檔案、GitHub created_at與＋4h，登記後再讀一次核先後。預定作者／本prompt不等於認領；若已有有效作者只唯讀交接。不啟子agent。實際本次認領開工記新T0及UTC／台北截止T0＋120分鐘，100分鐘後不開新包、提早達標停，4h租期不延長2h，不沿LP06 T0、不建永久排程。
 
