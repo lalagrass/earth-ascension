@@ -19,7 +19,7 @@
 // 候補不寫 fix／fixBy；院中端點合法才沿 LP08 同一路徑正式出發。人工 fix 結束當輪；有效改令清當人候補並抑制到下一次真碰撞。示意見 docs/LP09_HANDOFF.md。
 // LP-11 手動掌法清鼠：玩家選一人明派，全場只一份清理（等待／前往／起手／收勢／返院都占額，真返院才釋放）。原趟交付完／必要恢復到 80、
 // 院中才出發；沿 palm.mjs 固定節點與 ≤40 短段走，位置在權威 tick 取樣。掌距 ≤28、起手開始扣 2 精力；接觸 tick 重驗同一鼠才擊倒一次。
-// 三鼠：兩普通嗅地、一警覺（≤50 察覺清理者或 100 內同伴實際受掌就以 120／秒沿西出口逃，出界失效不追）。無 HP／XP／收益／趟次。示意見 docs/LP11_HANDOFF.md。
+// 三鼠：兩普通嗅地、一警覺（任何人 ≤50 即察覺，或 100 內同伴實際受掌就以 120／秒沿西出口逃，出界失效不追）。無 HP／XP／收益／趟次。示意見 docs/LP11_HANDOFF.md。
 import { HOME, RATS, EXIT, PALM, SKILLS, GO_NODES, HOME_NODES, dist, inZone, validRat, nearest, standFor, stepToward, legs } from './palm.mjs';
 export const STEP_MS = 1000 / 60;
 
@@ -500,6 +500,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     s.clean.phase = 'go'; s.clean.target = t.id; p.why = '玩家派去清理測試鼠';
     clog(p, 'toRat', { target: t.id });
     walkQueue(p, 'toRat', legs(p.pos, GO_NODES));
+    p.motion.hold = s.tick; // 回院端點這 tick 已用掉原活動的移動；第一步留給下一權威 tick（每人每 tick 只走一次）
   }
   // 站在節點上：目標失效就換最近有效者；沒有 2 精力就收工；在掌距內就起手；否則朝站位再走一短段。
   function approach(p) {
@@ -592,7 +593,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const c = s.clean;
     if (c && c.phase !== 'wait') {
       const p = s.people[c.by], h = p.motion;
-      if (h.mode === 'toRat' || h.mode === 'fromRat') {
+      if (h.hold === s.tick) { /* 本 tick 才在人物迴圈受理：不再推第一段 */ }
+      else if (h.mode === 'toRat' || h.mode === 'fromRat') {
         h.steps += 1;
         const k = Math.min(1, h.steps / h.need), px = p.pos.x, py = p.pos.y;
         p.pos = h.steps >= h.need ? { x: h.to.x, y: h.to.y } : { x: h.from.x + (h.to.x - h.from.x) * k, y: h.from.y + (h.to.y - h.from.y) * k };

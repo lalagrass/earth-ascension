@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createModel, createClock, RULES, STEP_MS } from '../demo/model.mjs';
+import { createModel, createClock, RULES, STEP_MS, speedsFor } from '../demo/model.mjs';
 import { createRoutes } from '../demo/routes.mjs';
 import { HOME, RATS, ZONE, EXIT, PALM, SKILLS, inZone, nearest, dist } from '../demo/palm.mjs';
 
@@ -252,6 +252,36 @@ test('普通鼠原位嗅地；人物每 tick 位移不超過當段空手速度�
   const max = traceMax(m, 'hero', (v, s) => !s.clean);
   assert.ok(max <= 84 / 60 + 1e-9, `每 tick 最大位移 ${max.toFixed(3)}`);
   assert.deepEqual(m.state.rats.slice(0, 2).map((r) => [r.x, r.y]), [[868, 528], [790, 490]]);
+});
+
+// 跨活動邊界：從下令起逐 tick 用同一純幾何量整段（原活動最後一步＋清理第一段），每 tick 只用一次移動預算。
+function edgeMax(m, id, limit = ticks(600)) {
+  let max = 0, at = 0, prev = where(m, id), started = null;
+  for (let i = 0; i < limit; i++) {
+    m.step();
+    const now = where(m, id), d = Math.hypot(now.x - prev.x, now.y - prev.y), cap = speedsFor(P(m, id).level).empty / 60;
+    if (d - cap > max) { max = d - cap; at = m.state.tick; }
+    prev = now;
+    const h = P(m, id).motion;
+    if (h.mode === 'toRat' && started == null) started = m.state.tick;
+    if (started != null && m.state.tick - started > 5) return { over: max, at, started };
+  }
+  throw new Error('沒有等到條件');
+}
+
+test('跨活動邊界不瞬移（自然指令）：低精力恢復→返院→清理、休閒回程→清理，回院那 tick 不再推清理第一段', () => {
+  const m = game();
+  run(m, (v) => v.people.hero.mode === 'carry' && v.people.hero.energy < 31 && v.people.hero.phase.name === 'pour', ticks(3600));
+  assert.equal(m.dispatch('clean', 'hero').ok, true);
+  run(m, (v) => v.people.hero.mode === 'back');
+  const a = edgeMax(m, 'hero');
+  assert.ok(a.over <= 1e-9, `恢復返院→清理：tick ${a.at} 超出空手上限 ${a.over.toFixed(5)}`);
+  assert.equal(logOf(m, 'toRat', (e) => e.person === 'hero')[0].tick, a.started, '回院端點同 tick 受理清理');
+  const f = game();
+  run(f, (v) => v.people.hero.mode === 'fun', ticks(1800));
+  assert.equal(f.dispatch('clean', 'hero').ok, true);
+  const b = edgeMax(f, 'hero');
+  assert.ok(b.over <= 1e-9, `休閒回程→清理：tick ${b.at} 超出空手上限 ${b.over.toFixed(5)}`);
 });
 
 // ---------- 4. 取消與返回 ----------
