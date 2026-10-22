@@ -217,7 +217,9 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     for (const id of ids) {
       const p = s.people[id], why = blocked(p);
       if (why) { if (why === 'peer') dropWant(p, 'peer'); continue; }
-      if (p.want !== s.boar.visit && triggered(p)) { p.want = s.boar.visit; note(p, 'want'); }
+      // 未正式受理的候補每次都用最新傾向重評：改成受擾後，本訪未被撞就收回意願（已出發的 guard 不在此列）。
+      if (p.want === s.boar.visit && !triggered(p)) dropWant(p, 'react');
+      else if (p.want !== s.boar.visit && triggered(p)) { p.want = s.boar.visit; note(p, 'want'); }
     }
   }
   // 正式受理：只在院中端點（idle、不在恢復、交付已完成），在原工作／休閒再出發之前；同 tick 依 AUTO_ORDER 只取一位。
@@ -225,7 +227,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (!live() || assignee()) return;
     for (const id of AUTO_ORDER) {
       const p = s.people[id];
-      if (!p || !wants(p) || blocked(p) || p.motion.mode !== 'idle' || p.rest) continue;
+      if (!p || !wants(p) || blocked(p) || !triggered(p) || p.motion.mode !== 'idle' || p.rest) continue;
       p.want = null; p.tried = s.boar.visit; p.guardOrder = s.boar.visit; p.guardSrc = 'auto'; p.guardResult = null;
       s.log.push({ tick: s.tick, person: p.id, kind: 'guard', visit: p.guardOrder, src: 'auto' });
       note(p, 'go');
@@ -241,6 +243,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (react && react !== p.react) {
       if (!REACT_LABEL[react]) return { ok: false, reason: '沒有這個傾向' };
       p.react = react; s.log.push({ tick: s.tick, person: id, kind: 'auto:react', react });
+      if (wants(p) && !triggered(p)) dropWant(p, 'react'); // 候補立即照新傾向；已正式受理的不重啟也不取消
     }
     if (allow != null && !!allow !== p.autoAllow) {
       p.autoAllow = !!allow;

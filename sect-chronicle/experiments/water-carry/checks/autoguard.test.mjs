@@ -61,6 +61,27 @@ test('同一人同一局配對：主動在可見嗅探就有意願、受擾要�
   assert.equal(walk('early'), g.state.people.hero.motion.need, '自主與手動同一防守路步數：傾向不是速度 buff');
 });
 
+test('候補未受理時改成受擾：收回意願、第一撞前不出發；已正式出發的改傾向不取消也不重啟', () => {
+  const m = game(FULL, { hero: { allow: true, react: 'early' } });
+  run(m, (x) => x.people.hero.auto.wanting && x.people.hero.guardSrc == null);
+  assert.equal(m.view().boar.hits, 0);
+  assert.equal(m.setAuto('hero', { react: 'late' }).ok, true);
+  assert.equal(m.view().people.hero.auto.wanting, false, '暫停中改傾向立即收回候補');
+  const v = run(m, (x) => x.boar.hits >= 1 || x.people.hero.guardSrc != null || !x.boar.active);
+  assert.equal(v.people.hero.guardSrc, null, '第一撞前沒有自主出發');
+  assert.equal(autoGuards(m, 'hero').filter((e) => e.tick < v.tick).length, 0);
+  if (v.boar.active) { m.step(); assert.equal(m.view().people.hero.auto.wanting || m.view().people.hero.guardSrc === 'auto', true, '被撞後才有意願'); }
+  // 已正式出發後改傾向：guard 保留，不重啟腿
+  const g = game(FULL, { hero: { allow: true, react: 'early' } });
+  run(g, (x) => x.people.hero.guardSrc === 'auto');
+  const before = JSON.stringify(g.state.people.hero.motion), order = g.state.people.hero.guardOrder;
+  g.setAuto('hero', { react: 'late' });
+  assert.equal(g.state.people.hero.guardSrc, 'auto'); assert.equal(g.state.people.hero.guardOrder, order);
+  assert.equal(JSON.stringify(g.state.people.hero.motion), before);
+  g.step();
+  assert.equal(g.state.people.hero.guardOrder, order, '下一 tick 也不取消');
+});
+
 test('損痕封頂後的新來訪：受擾者看本訪 hits，仍會有意願', () => {
   const m = game();
   run(m, (x) => x.boar.marks === RULES.boar.maxMarks);
