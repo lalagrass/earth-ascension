@@ -402,6 +402,8 @@ $('roster').addEventListener('click', (e) => { const b = e.target.closest('[data
 $('panel').addEventListener('click', (e) => {
   const a = e.target.closest('[data-auto]');
   if (a) { autoSet(a.dataset.auto); return; }
+  const u = e.target.closest('[data-up]');
+  if (u) { upSet(u.dataset.up); return; }
   const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd);
 });
 $('boar').addEventListener('click', (e) => { const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd); });
@@ -494,6 +496,14 @@ function autoSet(what) {
   toast(r.ok ? `${profiles[id].label}：${r.text}` : `做不到：${r.reason}`);
   renderChrome();
 }
+// LP-09 自主整理設定：與護院分開的允許開關與兩種傾向；暫停時也可改，只改設定不推進世界。
+function upSet(what) {
+  const id = selectedPerson(), p = v.people[id];
+  const r = model.setUpkeep(id, what === 'allow' ? { allow: !p.up.allow } : { react: what });
+  v = model.view();
+  toast(r.ok ? `${profiles[id].label}：${r.text}` : `做不到：${r.reason}`);
+  renderChrome();
+}
 let toastTimer = 0;
 function toast(text) { const t = $('toast'); t.textContent = text; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2800); }
 
@@ -545,6 +555,15 @@ function autoHtml(p) {
     <div class="row"><span class="group">${react('early', '主動照看')}${react('late', '受擾再處理')}</span>${a.wanting ? '<button class="btn" data-cmd="cancel" title="取消這次自己去護院的意願；本訪不再自己去">取消意願</button>' : ''}</div>
     <div class="muted">${a.text}</div></div>`;
 }
+// 自主整理：允許（預設關，與護院分開）＋可交換傾向＋目前原因；有候補時給「取消整理意願」（只抑制這一輪）。
+function upHtml(p) {
+  const a = p.up;
+  const react = (r, label) => `<button class="btn ${a.react === r ? 'on' : ''}" data-up="${r}" aria-pressed="${a.react === r}">${label}</button>`;
+  return `<div class="auto up ${a.state}"><div class="row"><b>自主整理護欄</b><button class="btn ${a.allow ? 'on' : ''}" data-up="allow" aria-pressed="${a.allow}">${a.allow ? '允許中' : '未允許'}</button></div>
+    <div class="row"><span class="group">${react('early', '順手照看')}${react('late', '累積再整理')}</span>${a.wanting ? '<button class="btn" data-cmd="upCancel" title="只取消這輪自己去整理的意願；下一次護欄被撞才再想">取消整理意願</button>' : ''}</div>
+    <div class="muted">${a.text}</div></div>`;
+}
+const UP_FX = { want: '想去整理', go: '自己去整理', done: '自己整理完一階' };
 const AUTO_FX = { want: '想去護院', go: '自己去護院', expired: '意願過期', peer: '同伴處理', late: '到場晚到' };
 // 野豬卡上的整理入口：誰在整理、或派選中的人去（停用時 title 說原因）。
 function fixBtn(b, sel) {
@@ -588,7 +607,7 @@ function renderChrome() {
   $('trips').textContent = `共完成 ${IDS.reduce((n, who) => n + v.people[who].trips, 0)} 趟`;
   const cards = IDS.map((who) => {
     const p = v.people[who], info = profiles[who];
-    return `<button class="card ${ui.selected === who ? 'sel' : ''} ${p.resting ? 'stopped' : ''}" data-person="${who}"><b>${info.name} · Lv ${p.level}</b><small><span class="emini"><i style="width:${en(p)}%"></i></span>精力 ${en(p)} · ${p.resting ? '' : p.jobLabel + ' · '}${p.status}</small>${p.pending ? `<small class="due">${pendText(p)}</small>` : ''}${p.auto.allow || p.auto.wanting ? `<small class="autoline">護院：${p.auto.text}</small>` : ''}</button>`;
+    return `<button class="card ${ui.selected === who ? 'sel' : ''} ${p.resting ? 'stopped' : ''}" data-person="${who}"><b>${info.name} · Lv ${p.level}</b><small><span class="emini"><i style="width:${en(p)}%"></i></span>精力 ${en(p)} · ${p.resting ? '' : p.jobLabel + ' · '}${p.status}</small>${p.pending ? `<small class="due">${pendText(p)}</small>` : ''}${p.auto.allow || p.auto.wanting ? `<small class="autoline">護院：${p.auto.text}</small>` : ''}${p.up.allow || p.up.wanting ? `<small class="autoline">整理：${p.up.text}</small>` : ''}</button>`;
   }).join('');
   put('roster', $('roster'), cards);
   put('boar', $('boar'), boarHtml(v.boar));
@@ -605,7 +624,7 @@ function renderChrome() {
       : person.resting ? `<div class="pending"><span><b>已停工</b><br><small>回滿也不會自己出發；下令開始才解除</small></span><span><button class="btn" data-cmd="start">開始${person.jobLabel}</button> <button class="btn" data-cmd="work:${other}">改${JOBS[other].label}</button></span></div>`
         : person.recall ? `<div class="pending"><span><b>玩家叫回</b><br><small>回院中${person.jobLabel}；滿了就待命，完成返院後的一趟才解除</small></span><button class="btn" data-cmd="resume">恢復自主</button></div>`
           : '<div class="muted">沒有</div>';
-    const cmds = model.actions(id).filter((a) => !a.hidden && a.id !== 'pourNow' && a.id !== 'fixCancel') // 取消整理放在整理狀態列旁
+    const cmds = model.actions(id).filter((a) => !a.hidden && a.id !== 'pourNow' && a.id !== 'fixCancel' && a.id !== 'upCancel') // 取消整理／整理意願放在各自狀態列旁
       .map((a) => `<button class="btn" data-cmd="${a.id}" ${a.enabled ? '' : 'disabled'} title="${a.enabled ? a.detail : a.reason}">${cmdLabel(a, person)}</button>`).join(' ');
     if (!panel.firstElementChild) panel.innerHTML = '<div id="p-work"></div><h4>待執行指令</h4><div id="p-pend"></div><div id="p-cmds" class="cmds"></div><div id="p-gain"></div><div id="p-leg"></div>';
     put('p-work', $('p-work'), `<h2>${profile.name}<small>${profile.role}</small></h2>
@@ -615,6 +634,7 @@ function renderChrome() {
       ${guardText(person) ? `<div class="guardline">${guardText(person)}</div>` : person.guardResult ? `<div class="muted">驅離結果：${RESULT_TEXT[person.guardResult.kind]}</div>` : ''}
       ${fixHtml(person)}
       ${autoHtml(person)}
+      ${upHtml(person)}
       <div class="muted">偏好：${person.pref ? `${person.pref.label}（${person.pref.place}）· ${person.job === 'herb' ? '藥架' : '水缸'}實存滿才去，有空位就回` : '無'}</div>
       <h4>目前工作</h4><div>${work}</div><div class="row"><span>${person.status}</span>${person.mode === 'carry' ? `<span class="muted">本趟用 Lv ${person.tripLevel}</span>` : ''}</div>
       <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : person.fixLeg ? person.fixLeg.k : person.fixWork ? person.fixWork.k : 0) * 100)}%"></i></div>
@@ -669,6 +689,8 @@ app.ticker.add((t) => {
     }
     const as = person.auto.state, ap = prev.people[id].auto.state;
     if (as !== ap && AUTO_FX[as]) fx.push({ text: `${profiles[id].label}：${AUTO_FX[as]}`, x: p.x, y: p.y - 112, until: performance.now() + 2000 });
+    const us = person.up.state, up0 = prev.people[id].up.state;
+    if (us !== up0 && UP_FX[us]) fx.push({ text: `${profiles[id].label}：${UP_FX[us]}`, x: p.x, y: p.y - 124, until: performance.now() + 2000 });
     const gr = person.guardResult, pg = prev.people[id].guardResult;
     const fr = person.fixResult, pf = prev.people[id].fixResult;
     if (fr && (!pf || fr.tick !== pf.tick)) fx.push({ text: `${profiles[id].label}：${FIX_RESULT[fr.kind]}`, x: BOAR.fence.x + 30, y: BOAR.fence.y1 - 4, until: performance.now() + 2400 });
@@ -730,7 +752,7 @@ app.ticker.add((t) => {
   for (let i = 0; i < 3; i++) { const f = fx[i]; tag(`fx${i}`, 'gain', f ? f.text : null, f ? f.x : 0, f ? f.y - (1 - (f.until - now) / 1600) * 14 : 0); }
   if (ui.follow) follow();
   placeMenu();
-  if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next || prev.people[id].auto.text !== v.people[id].auto.text || prev.people[id].fix !== v.people[id].fix || prev.people[id].fixResult !== v.people[id].fixResult) || prev.boar.marks !== v.boar.marks || prev.boar.seen !== v.boar.seen || frames % 15 === 0) renderChrome();
+  if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next || prev.people[id].auto.text !== v.people[id].auto.text || prev.people[id].up.text !== v.people[id].up.text || prev.people[id].fix !== v.people[id].fix || prev.people[id].fixResult !== v.people[id].fixResult) || prev.boar.marks !== v.boar.marks || prev.boar.seen !== v.boar.seen || frames % 15 === 0) renderChrome();
   frames++;
   if (firstFrameMs == null) firstFrameMs = performance.now() - t0;
 });
