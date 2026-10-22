@@ -1,5 +1,11 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## D18有限提取：BL-D02單次護欄整理已批准（2026-10-22）
+
+擁有人已同意PR229的R1–R4，來源[D18](DECISIONS_AND_SOURCES.md#d18lp-08-護欄損痕整理-r1r4-批准2026-10-22)／[#228](https://github.com/lalagrass/earth-ascension/issues/228)，[正式工作包](LP08_HANDOFF.md)／[Claude prompt](LP08_CLAUDE_PROMPT.md)。一次手動一階非功能損痕、真往返／動手8秒僅耗8精力、無XP／材料；可察覺野豬含仍可見flee均阻擋／中止未完成效果，保留原趟交付／恢復80／manual停工／LP05來源及LP07政策，護院開關不控制整理。
+
+本次批准同步文件合dev／postCI後Claude本人新認領／新T0兩小時，未代啟作者；歷史「修護未批」只在此有限外觀整理例外更新。自主修護、耐久／材料／加固、真傷害、鼠群／生態／巡山及人格／存讀仍未批准，不預留schema或加前置。LP07 #218／PR227已交付，BL-D02另用#228，不擴原DoD；8秒／8精力是本片已批示意值，待真人校準不阻擋實作。#215短回訪非大拆gate。
+
 ## D17有限提取：BL-A05自主護院已批准（2026-10-22）
 
 擁有人已同意PR225修訂版P1–P4，來源[D17](DECISIONS_AND_SOURCES.md#d17lp-07-自主護院修訂版-p1p4-批准2026-10-22)／[#218](https://github.com/lalagrass/earth-ascension/issues/218)，[正式工作包](LP07_HANDOFF.md)／[Claude prompt](LP07_CLAUDE_PROMPT.md)。只兩傾向與每人允許、看可見來訪／本訪hits、先意願不占額、院中交付／必要恢復後能合法出發才正式派遣；人工明派／已出發不搶單，玩家有效覆寫本訪抑制、停工叫回優先；接受晚到／候補過期、不改D16值或加收益／XP／人傷。
@@ -13,7 +19,7 @@
 | ID／追蹤 | 收錄方向與最小出口 | 保留邊界 |
 |---|---|---|
 | BL-A05／[#218](https://github.com/lalagrass/earth-ascension/issues/218) | 同一來訪較早／較晚願接手驅離；可解釋、可覆寫的自主護院 | 先合法意圖／必要恢復／玩家停工，再反應偏好，不以MBTI改戰力、不重建#106人格核心；接A02／A03及#188 |
-| BL-D02有限修護／[#228](https://github.com/lalagrass/earth-ascension/issues/228) | 損痕→走去整理→進度／一次改善→回生活 | [LP08候選R1–R4](LP08_PROPOSAL.md)待確認，先單次手動外觀整理，不擴#218；時間／精力／取消先選，不硬塞耐久／材料／砍柴／無限整理XP，外觀改善不等安全buff |
+| BL-D02有限修護／[#228](https://github.com/lalagrass/earth-ascension/issues/228) | 損痕→走去整理→進度／一次改善→回生活 | D18已批[LP08工作包](LP08_HANDOFF.md)，本次文件合dev／postCI後可本人認領；只單次手動外觀整理，不擴#218或自主修護／耐久／材料／砍柴／XP，外觀改善不等安全buff |
 | BL-D06／[#219](https://github.com/lalagrass/earth-ascension/issues/219) | 真可食資源→攜回巢→育幼／成熟→有條件同行；有界族群與非戰鬥控制 | 水／草藥誘因不等營養；不按回訪加怪、無限出生或必須全殺，真損失／上限與模式另定。空閒agent後續只可另認領有限文件研究 |
 | BL-Q02／[#220](https://github.com/lalagrass/earth-ascension/issues/220) | 少量鼠群、一式掌法、真移動／命中／逐隻換目標，看到熟練差異 | 可先有限fixture驗觀賞性，不假稱已繁殖；腳力不暗當傷害，不遠端刪群、同時開完整戰鬥／輕功樹或無限刷XP |
 

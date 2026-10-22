@@ -1,5 +1,15 @@
 # Coding agent 接手入口
 
+## D18：LP-08 單次護欄整理R1–R4已批准（2026-10-22）
+
+擁有人已明確同意R1–R4，讀[D18](docs/DECISIONS_AND_SOURCES.md#d18lp-08-護欄損痕整理-r1r4-批准2026-10-22)、[#228](https://github.com/lalagrass/earth-ascension/issues/228)、[LP08工作包](docs/LP08_HANDOFF.md)與[Claude兩小時prompt](docs/LP08_CLAUDE_PROMPT.md)。LP07 #218／PR227已交付，規劃PR229已合dev／postCI；本次批准同步文件合dev／postCI後，Claude本人核最新dev／有效作者、新worktree認領。產品已批不重問，8秒／8精力為已批本片示意值，下面歷史未批限制只在此有限範圍更新，未代啟作者。
+
+一次人工派遣、單一未完成名額，完整原趟／必要恢復80後院中才出發，真走既有護欄路／動手480tick只清一階外觀損痕／返院；僅動手共耗8精力，無材料／XP／產物／工作趟次或耐久／防禦buff。可察覺sniff／approach／prep及仍可見flee均阻擋／中止未完成效果，走完當前腿返院、不退成本、不自動補做；用既有固定場景可見界線，不讀畫外／不靠active=false當安全，不隨camera改感知。單模型tick判效，同tick威脅先失效本片未完成效果，不重排D16原判效。
+
+專用取消只取消本次整理，不擴LP05／LP07原取消成萬用中斷；有效人工整理沿P3清該人候補／記本訪抑制，拒絕不改政策。停工／待停工與正式guard不被搶，LP05叫回與必要恢復來源保留；護院允許／傾向不當整理開關，返院重查最新工作／護院／容量。精確交接與六組驗收沿工作包，不另建Queue／人格核心／第二時鐘。
+
+本輪本人實際認領開工新T0最多120min、100min後不開新包、提早達標停，4h租期不延長2h，不沿LP07。必要局部／主線快驗／根檢查／CI及桌面＋390px保留，未變證據復用／log摘要／strict真exit與GPU限制照實，不加全矩陣追綠。#215短回訪非大拆gate；自主維修／真建造／鼠群／巡山／人格／存讀未因此批准。非作者review／Earth PO唯一queue／postCI保留，不自行合dev或動他人8800服務。
+
 ## D17：LP-07 自主護院修訂版P1–P4已批准（2026-10-22）
 
 擁有人已明確同意修訂版P1–P4，讀[D17](docs/DECISIONS_AND_SOURCES.md#d17lp-07-自主護院修訂版-p1p4-批准2026-10-22)、[#218](https://github.com/lalagrass/earth-ascension/issues/218)、[LP07工作包](docs/LP07_HANDOFF.md)與[Claude prompt](docs/LP07_CLAUDE_PROMPT.md)。本次批准同步文件合dev／postCI後，Claude本人核最新dev／有效作者、新worktree短分支認領；不重問四項，不用下方歷史「自主未批准」擋有限本片，未代啟作者。
