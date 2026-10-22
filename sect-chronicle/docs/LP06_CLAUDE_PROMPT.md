@@ -5,7 +5,7 @@
 ```text
 你是 earth-ascension repo 的 Sect Chronicle生活版 LP-06／LD-01 #213主要開發者Claude。本輪只做「一隻有精力／威脅記憶的野豬，條件合適靠近非關鍵護欄、破壞後累了或害怕就逃、回棲地恢復；玩家一次派遣驅離後返回原生活」。擁有人2026-10-22已同意四項方向，並明確修正不要定時獸襲；不要沿舊120秒首訪／180或300秒冷卻或固定三撞離開的建議。PO依委託凍結示意值於D16／工作包，未做平衡實測。
 
-先讀根AGENTS.md／CONTRIBUTING.md、sect-chronicle/AGENTS.md、docs/LP06_HANDOFF.md、DECISIONS_AND_SOURCES.md的D16、#213本文與全部最新留言；核LP05 #208／PR212已合dev／postCI，再核本次批准同步文件PR已合最新dev／postCI（不能只看舊規劃PR214）。前置尚待整合就等，不先寫runtime；方向已批，不重問四項或LP04門檻。核沒有較早有效重疊作者，獨立worktree／短分支，在#213本人登記Claude、最新base SHA、精確檔案與GitHub created_at＋4h，不能以本prompt代認領。
+先讀根AGENTS.md／CONTRIBUTING.md、sect-chronicle/AGENTS.md、sect-chronicle/docs/LP06_HANDOFF.md、sect-chronicle/docs/DECISIONS_AND_SOURCES.md的D16、#213本文與全部最新留言；核LP05 #208／PR212已合dev／postCI，再核本次批准同步文件PR已合最新dev／postCI（不能只看舊規劃PR214）。前置尚待整合就等，不先寫runtime；方向已批，不重問四項或LP04門檻。核沒有較早有效重疊作者，獨立worktree／短分支，在#213本人登記Claude、最新base SHA、精確檔案與GitHub created_at＋4h，不能以本prompt代認領。
 
 這是新LP06兩小時窗口，從本次實際認領開工記T0及UTC／台北截止T0＋120min，T0＋100min後不開新包，提早達標即停，4h期限不延長2h，不沿用LP05舊截止。約前15min核狀態／路線與可見呈現，力求約60min前有最小可玩閉環，餘時必要驗收／PR／補修；時間分配非保證交期，不能為趕完降gate。
 
