@@ -1,5 +1,11 @@
 # 生活後續候選：自主護院、修繕、鼠巢與招式
 
+## 最新有限批准：LP09自主整理護欄（2026-10-22）
+
+擁有人已同意PR233的N1–N4，見[D19](DECISIONS_AND_SOURCES.md#d19lp-09-自主整理護欄-n1n4-批准2026-10-22)／[#232](https://github.com/lalagrass/earth-ascension/issues/232)，[工作包](LP09_HANDOFF.md)／[Claude prompt](LP09_CLAUDE_PROMPT.md)。只BL-D02一階自主家務：獨立允許預設關、1／3階可交換反應、安全候補不占額／院中準備好才正式出發、人工覆寫等新真碰撞重評、全隊一輪最多自主一階。人工fix優先結束當輪，封頂3仍用真接觸事件開輪，auto/manual分清；沿LP08真動作／8秒8精力及安全／返回，停工叫回／恢復與LP07保留。
+
+本次批准同步文件合dev／postCI後本人新認領／新T0，不重問四項，未代啟作者。歷史「自主修護尚未批准」只在此有限片更新，不授權材料耐久／反覆清零、真建造、鼠巢偷取繁殖／掌法傷害／巡山或人格核心，也不把研究收錄當整串runtime批准；不擴已交付LP08原DoD。
+
 ## 最新有限批准：LP08單次護欄整理（2026-10-22）
 
 擁有人已同意PR229的R1–R4，來源[D18](DECISIONS_AND_SOURCES.md#d18lp-08-護欄損痕整理-r1r4-批准2026-10-22)／[#228](https://github.com/lalagrass/earth-ascension/issues/228)，沿[正式工作包](LP08_HANDOFF.md)與[Claude prompt](LP08_CLAUDE_PROMPT.md)。只BL-D02外觀整理：單次人工派一人、真走既有路／動手8秒僅耗8精力、完整清一階損痕再返院；無材料／XP／耐久／防禦buff，保留交付／恢復80／停工叫回與LP07。可察覺野豬含仍可見flee阻擋／中止未完成效果，無自動補做，護院開關不當整理開關。

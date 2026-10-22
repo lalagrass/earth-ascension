@@ -1,5 +1,15 @@
 # Coding agent 接手入口
 
+## D19：LP-09 自主整理護欄N1–N4已批准（2026-10-22）
+
+擁有人已同意N1–N4，讀[D19](docs/DECISIONS_AND_SOURCES.md#d19lp-09-自主整理護欄-n1n4-批准2026-10-22)、[#232](https://github.com/lalagrass/earth-ascension/issues/232)、[LP09工作包](docs/LP09_HANDOFF.md)及[Claude兩小時prompt](docs/LP09_CLAUDE_PROMPT.md)。LP08 #228／PR231已交付，候選PR233已合dev／postCI；本次批准同步文件合dev／postCI後本人核最新dev／有效作者、新worktree新認領，不重問四項，未代啟Claude。
+
+每人自主整理獨立允許預設關，順手1階／累積3階可交換；安全時先候補不占額，完整原趟／恢復80後院中合法才正式受理，人工／已出發不搶。真接觸含marks封頂後都開新輪，全隊最新機會最多一次自主受理；有效人工fix結束當輪且仍可明派，舊任務結果不誤關新輪，auto/manual來源清楚、不假裝人工覆寫。
+
+有效人工改工／取消／叫回等只抑制當人到新真碰撞，停工待停工／LP05叫回／必要恢復仍優先；拒絕不改，恢復自主不清抑制或已用機會。關auto整理保manual，改反應立即重評未受理候補、不重啟正式行動，護院與整理設定分開。精確候補取消、原指令／LP07本訪識別與返院順序沿工作包，不造萬用中斷／通用Queue。
+
+沿D18既有真fix路／480tick／8精力與可察覺flee安全中止、D16原判效；本次只新增自主政策，材料耐久／鼠群／巡山／人格／存讀未批。新T0最多120min／100min後不開新包／達標早停、4h不延長2h、不沿LP08；非作者review／Earth PO唯一queue／postCI保留，不自行合dev或動8800。必要局部／主線快驗／根檢查／CI及一次桌面＋390px保留，未變證據復用／log摘要／strict真exit與GPU限制照實，不全矩陣追綠，#215不是大拆gate。
+
 ## D18：LP-08 單次護欄整理R1–R4已批准（2026-10-22）
 
 擁有人已明確同意R1–R4，讀[D18](docs/DECISIONS_AND_SOURCES.md#d18lp-08-護欄損痕整理-r1r4-批准2026-10-22)、[#228](https://github.com/lalagrass/earth-ascension/issues/228)、[LP08工作包](docs/LP08_HANDOFF.md)與[Claude兩小時prompt](docs/LP08_CLAUDE_PROMPT.md)。LP07 #218／PR227已交付，規劃PR229已合dev／postCI；本次批准同步文件合dev／postCI後，Claude本人核最新dev／有效作者、新worktree認領。產品已批不重問，8秒／8精力為已批本片示意值，下面歷史未批限制只在此有限範圍更新，未代啟作者。
