@@ -1,5 +1,15 @@
 # Coding agent 接手入口
 
+## D16：LP-06 狀態驅動野豬騷擾與驅離已批准（2026-10-22）
+
+擁有人已同意四項方向並委託PO整理示意值／驗收及Claude兩小時prompt，隨後明確修正獸行為不按固定回訪，而是破壞耗精力、累了／感到威脅逃走、回棲地恢復後再判誘因。讀[D16](docs/DECISIONS_AND_SOURCES.md#d16lp-06-野豬騷擾與驅離2026-10-22)、[#213](https://github.com/lalagrass/earth-ascension/issues/213)、[LP06工作包](docs/LP06_HANDOFF.md)與[Claude prompt](docs/LP06_CLAUDE_PROMPT.md)。一獸／非關鍵護欄有上限損痕／一次驅離／同入口及60Hz，無人傷、建物失效、真傷害／假血條或追殺。
+
+方向與PO受委託示意值已落定，不重問原四項、不用舊提案「待決策」擋住；本次批准同步文件合dev／postCI後，Claude本人核最新dev／有效認領並從獨立worktree短分支只接LD01。獸精力／威脅／資源誘因與精確值沿工作包，沒有首訪／回訪倒數；不自行添血條／戰鬥XP或改門檻追綠。人仍完整交付、必要恢復至80與手動停工優先，返院重查容量／最新工作，LP05叫回與恢復自主不被破壞。
+
+本次LP06實際認領開工起新T0，120min上限、100min後不開新包、提早達標停；4h租期不延長2h，非作者review／Earth PO唯一queue／postCI保留，不代啟Claude。LP05 #208／PR #212已交付／postCI通過，下面D15舊「待開工」不是新窗口來源。
+
+[技術債池#215](https://github.com/lalagrass/earth-ascension/issues/215)收非阻擋發現的檔案／影響／最小整理建議；約三個生活功能切片後短盤點為PO回訪建議，非本包全架構audit／新gate或重構授權。只做當前正確性必要的最小整理，其他留單照常開發，不順手大拆、建通用JobQueue或套舊RT #117。
+
 ## D15：LP-05 偏好休閒與玩家叫回已批准（2026-10-22）
 
 擁有人已明確同意P1–P4並委託更新文件／#208與Claude兩小時prompt，來源見[D15](docs/DECISIONS_AND_SOURCES.md#d15lp-05-偏好休閒與玩家叫回2026-10-22)。接[#208](https://github.com/lalagrass/earth-ascension/issues/208)／[LP05工作包](docs/LP05_HANDOFF.md)／[Claude prompt](docs/LP05_CLAUDE_PROMPT.md)：實存滿且無合法工作時兩偏好休閒，有容量回原工作；玩家可叫回待命／恢復自主，後者不能解玩家停工。兩人／同入口／單60Hz、精力與收益邊界沿工作包，不擴聊天、途中分心、完整需求、存讀或新引擎。

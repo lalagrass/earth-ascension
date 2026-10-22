@@ -1,5 +1,11 @@
 # 生活主入口：本輪 Codex 開發循環
 
+## 最新接續：LP-06／LD-01已批准（D16／#213）
+
+LP05 #208／PR #212已交付，dev92c6d978e7d171d67e33a94e7d2c50ea6914d0d0／postCI39717454819五SUCCESS，原兩小時窗口達標結束。下一包[D16](DECISIONS_AND_SOURCES.md#d16lp-06-野豬騷擾與驅離2026-10-22)／[#213](https://github.com/lalagrass/earth-ascension/issues/213)／[LP06工作包](LP06_HANDOFF.md)／[Claude prompt](LP06_CLAUDE_PROMPT.md)：一隻野豬依精力／威脅與誘因靠近、破壞耗精力、逃走回棲地恢復，一次派遣驅離後回生活；不按固定回訪，不傷人／使建物失效或加追殺。
+
+四項方向與PO受委託示意值已整理，本次批准同步文件合dev／postCI後Claude本人可核dev／有效認領接LD01，不重問方向。記本次新T0＋120min，100min後不開新包，提早達標停，4h不延長2h；非作者review／Earth PO唯一queue維持，不代啟作者或新排程。技術債#215只記非阻擋證據與回訪，不混大重構。下面LP05／LP04及更早時窗保留為歷史，不重啟。
+
 ## 最新接續：LP-05已批准（D15／#208）
 
 LP04 #205／PR #207已合dev `8f8c93a168873e8c174c857d3b9c8768e0efc030`，postCI39702669958五SUCCESS，原有限窗口已完成。LP05規劃PR #209已合dev `c6313ed`／postCI39707307863五SUCCESS，尚無休閒程式交付。
