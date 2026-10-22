@@ -392,7 +392,11 @@ $('roster-toggle').addEventListener('click', toggleRoster);
 $('shadow-toggle').addEventListener('click', toggleShadow);
 $('reset').addEventListener('click', reset);
 $('roster').addEventListener('click', (e) => { const b = e.target.closest('[data-person]'); if (b) select(ui.selected === b.dataset.person ? null : b.dataset.person); });
-$('panel').addEventListener('click', (e) => { const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd); });
+$('panel').addEventListener('click', (e) => {
+  const a = e.target.closest('[data-auto]');
+  if (a) { autoSet(a.dataset.auto); return; }
+  const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd);
+});
 $('boar').addEventListener('click', (e) => { const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd); });
 
 function togglePlay() { if (ui.menu) closeMenu(false); ui.playing = !ui.playing; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); renderChrome(); }
@@ -406,7 +410,7 @@ function reset() {
   clock.clear();
   v = model.view();
   fx.length = 0;
-  toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份；野豬回棲地精力 60、威脅 0，護欄損痕 0；休息、休閒、叫回、驅離與待執行指令已清除');
+  toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份；野豬回棲地精力 60、威脅 0，護欄損痕 0；休息、休閒、叫回、驅離與待執行指令已清除；自主護院回到兩人未允許（熟手主動照看、主角受擾再處理）');
   renderChrome();
 }
 
@@ -475,6 +479,14 @@ function command(cmd) {
   ui.selected = person;
   if (ui.menu) closeMenu(); else renderChrome();
 }
+// LP-07 自主護院設定：允許開關與兩種傾向；暫停時也可改，只改設定不推進世界。
+function autoSet(what) {
+  const id = selectedPerson(), p = v.people[id];
+  const r = model.setAuto(id, what === 'allow' ? { allow: !p.auto.allow } : { react: what });
+  v = model.view();
+  toast(r.ok ? `${profiles[id].label}：${r.text}` : `做不到：${r.reason}`);
+  renderChrome();
+}
 let toastTimer = 0;
 function toast(text) { const t = $('toast'); t.textContent = text; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2800); }
 
@@ -509,6 +521,15 @@ const srcText = (p) => p.rest === 'manual' ? '玩家停工' : p.rest === 'auto' 
 const RESULT_TEXT = { success: '喝止成功，野豬逃走', late: '晚到：野豬已經走了', expired: '還沒出發野豬就走了，取消', canceled: '已改令，取消驅離' };
 const guardText = (p) => p.guardOrder != null ? (p.guarding ? `驅離野豬：${p.status}` : '待驅離野豬（交付／恢復後野豬還在才去）') : null;
 const B = RULES.boar;
+// 自主護院：允許（預設關）＋可交換傾向＋目前原因；有候補時給「取消這次意願」（＝取消待執行，本訪不再自己去）。
+function autoHtml(p) {
+  const a = p.auto;
+  const react = (r, label) => `<button class="btn ${a.react === r ? 'on' : ''}" data-auto="${r}" aria-pressed="${a.react === r}">${label}</button>`;
+  return `<div class="auto ${a.state}"><div class="row"><b>自主護院</b><button class="btn ${a.allow ? 'on' : ''}" data-auto="allow" aria-pressed="${a.allow}">${a.allow ? '允許中' : '未允許'}</button></div>
+    <div class="row"><span class="group">${react('early', '主動照看')}${react('late', '受擾再處理')}</span>${a.wanting ? '<button class="btn" data-cmd="cancel" title="取消這次自己去護院的意願；本訪不再自己去">取消意願</button>' : ''}</div>
+    <div class="muted">${a.text}</div></div>`;
+}
+const AUTO_FX = { want: '想去護院', go: '自己去護院', expired: '意願過期', peer: '同伴處理', late: '到場晚到' };
 function boarHtml(b) {
   const who = b.assignee ? profiles[b.assignee].label : null;
   const sel = selectedPerson(), opt = model.actions(sel).find((a) => a.id === 'guard');
@@ -544,7 +565,7 @@ function renderChrome() {
   $('trips').textContent = `共完成 ${IDS.reduce((n, who) => n + v.people[who].trips, 0)} 趟`;
   const cards = IDS.map((who) => {
     const p = v.people[who], info = profiles[who];
-    return `<button class="card ${ui.selected === who ? 'sel' : ''} ${p.resting ? 'stopped' : ''}" data-person="${who}"><b>${info.name} · Lv ${p.level}</b><small><span class="emini"><i style="width:${en(p)}%"></i></span>精力 ${en(p)} · ${p.resting ? '' : p.jobLabel + ' · '}${p.status}</small>${p.pending ? `<small class="due">${pendText(p)}</small>` : ''}</button>`;
+    return `<button class="card ${ui.selected === who ? 'sel' : ''} ${p.resting ? 'stopped' : ''}" data-person="${who}"><b>${info.name} · Lv ${p.level}</b><small><span class="emini"><i style="width:${en(p)}%"></i></span>精力 ${en(p)} · ${p.resting ? '' : p.jobLabel + ' · '}${p.status}</small>${p.pending ? `<small class="due">${pendText(p)}</small>` : ''}${p.auto.allow || p.auto.wanting ? `<small class="autoline">護院：${p.auto.text}</small>` : ''}</button>`;
   }).join('');
   put('roster', $('roster'), cards);
   put('boar', $('boar'), boarHtml(v.boar));
@@ -569,6 +590,7 @@ function renderChrome() {
       <div class="bar energy ${person.energy <= 30 ? 'low' : ''}"><i style="width:${person.energy / person.energyMax * 100}%"></i><s style="left:30%"></s><s style="left:80%"></s></div>
       ${person.why ? `<div class="muted">原因：${person.why}</div>` : ''}
       ${guardText(person) ? `<div class="guardline">${guardText(person)}</div>` : person.guardResult ? `<div class="muted">驅離結果：${RESULT_TEXT[person.guardResult.kind]}</div>` : ''}
+      ${autoHtml(person)}
       <div class="muted">偏好：${person.pref ? `${person.pref.label}（${person.pref.place}）· ${person.job === 'herb' ? '藥架' : '水缸'}實存滿才去，有空位就回` : '無'}</div>
       <h4>目前工作</h4><div>${work}</div><div class="row"><span>${person.status}</span>${person.mode === 'carry' ? `<span class="muted">本趟用 Lv ${person.tripLevel}</span>` : ''}</div>
       <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : 0) * 100)}%"></i></div>
@@ -620,6 +642,8 @@ app.ticker.add((t) => {
       fx.push({ text: `${profiles[id].label} +1 ${herb ? '份藥' : '擔'}`, x: at.x, y: at.y - 70, until: performance.now() + 1600 });
       if (person.level > prev.people[id].level) fx.push({ text: `${profiles[id].label}腳力 Lv ${person.level}`, x: p.x, y: p.y - 100, until: performance.now() + 2200 });
     }
+    const as = person.auto.state, ap = prev.people[id].auto.state;
+    if (as !== ap && AUTO_FX[as]) fx.push({ text: `${profiles[id].label}：${AUTO_FX[as]}`, x: p.x, y: p.y - 112, until: performance.now() + 2000 });
     const gr = person.guardResult, pg = prev.people[id].guardResult;
     if (gr && gr !== pg && (!pg || gr.tick !== pg.tick)) fx.push({ text: `${profiles[id].label}：${RESULT_TEXT[gr.kind]}`, x: p.x, y: p.y - 96, until: performance.now() + 2200 });
     tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level} · 精力 ${en(person)}`, p.x, p.y, 6);
@@ -676,7 +700,7 @@ app.ticker.add((t) => {
   for (let i = 0; i < 3; i++) { const f = fx[i]; tag(`fx${i}`, 'gain', f ? f.text : null, f ? f.x : 0, f ? f.y - (1 - (f.until - now) / 1600) * 14 : 0); }
   if (ui.follow) follow();
   placeMenu();
-  if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next) || frames % 15 === 0) renderChrome();
+  if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next || prev.people[id].auto.text !== v.people[id].auto.text) || frames % 15 === 0) renderChrome();
   frames++;
   if (firstFrameMs == null) firstFrameMs = performance.now() - t0;
 });
