@@ -98,6 +98,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .bar.palm i { background: #c8962e; }
 .palmbox { margin: 6px 0; padding: 4px 6px; border: 1px solid #d9c9a8; border-radius: 6px; } .palmbox .group { display: inline-flex; gap: 4px; }
 .palmbox .btn[disabled] { opacity: .45; cursor: default; }
+.palmbox.want, .palmbox.go { border-color: #8b6b3e; background: #faf4e8; }
+.palmbox.player, .palmbox.peer { background: #f3f0ea; }
+.autoclean-text { color: #5a4020; font-weight: normal; }
 .tag.pill.rat { background: rgba(110, 90, 60, .82); font-size: 11px; } .tag.pill.rat.down, .tag.pill.rat.gone { background: rgba(140, 130, 112, .7); }
 @media (max-width: 640px) {
   /* 窄螢幕：鼠列壓成一行（不寫種類、不寫說明），卡片只多一行 */

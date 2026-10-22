@@ -20,6 +20,9 @@
 // LP-11 手動掌法清鼠：玩家選一人明派，全場只一份清理（等待／前往／起手／收勢／返院都占額，真返院才釋放）。原趟交付完／必要恢復到 80、
 // 院中才出發；沿 palm.mjs 固定節點與 ≤40 短段走，位置在權威 tick 取樣。掌距 ≤28、起手開始扣 2 精力；接觸 tick 重驗同一鼠才擊倒一次。
 // 三鼠：兩普通嗅地、一警覺（任何人 ≤50 即察覺，或 100 內同伴實際受掌就以 120／秒沿西出口逃，出界失效不追）。無 HP／XP／收益／趟次。示意見 docs/LP11_HANDOFF.md。
+// LP-12 自主清鼠：每人「允許自主清鼠」預設關；固定範圍內有有效鼠才有候補意願（不占名額、不鎖 ID、不扣精力）。
+// 原趟交付完、必要恢復到 80、休閒真返院後，院中端點合法才受理；依自主護院→整理→清鼠→下一趟工作優先序，同 tick 依 AUTO_ORDER 只取一位。
+// auto／manual 來源分明；有效人工改令撤候補並抑制該人自主清鼠，直到玩家明確重新允許。關允許只取消 auto 來源、保留 manual。示意見 docs/LP12_HANDOFF.md。
 import { HOME, RATS, EXIT, PALM, SKILLS, GO_NODES, HOME_NODES, dist, inZone, validRat, nearest, standFor, stepToward, legs } from './palm.mjs';
 export const STEP_MS = 1000 / 60;
 
@@ -141,6 +144,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       fixSrc: null, fixOpp: null, upAllow: false, upReact: UP_REACT[id] || 'late', upWant: null, upSuppress: null, upNote: null,
       // LP-11：pos＝清理中的模型場景位置（不清理時在院中端點）；cface 朝向；walked 只給畫面換步；palm＝掌法比較 fixture（新局初學）。
       pos: { x: HOME[0], y: HOME[1] }, cface: -1, walked: 0, palm: 'novice', cleanResult: null,
+      // LP-12：cleanAllow＝允許自主清鼠（預設 false）；cleanWant＝候補意願；cleanSuppress＝玩家改派抑制；cleanSrc＝正式清理來源 auto／manual；cleanNote＝最近原因。
+      cleanAllow: false, cleanWant: false, cleanSuppress: false, cleanSrc: null, cleanNote: null,
     }])),
     // LP-09：contact＝最新真護欄接觸序號（＝目前整理機會）；upUsed＝已被自主或人工受理結束的機會。
     contact: 0, upUsed: 0,
@@ -471,9 +476,10 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   }
   const walkQueue = (p, mode, queue) => { const to = queue.shift(); walkTo(p, mode, to, queue); };
   function cleanOrder(p) {
-    s.clean = { by: p.id, phase: 'wait', target: null, downs: 0, spent: 0, end: null, tick: s.tick };
+    s.clean = { by: p.id, phase: 'wait', target: null, downs: 0, spent: 0, end: null, tick: s.tick, src: 'manual' };
     p.cleanResult = null;
-    clog(p, 'cleanOrder');
+    p.cleanSrc = 'manual';
+    clog(p, 'cleanOrder', { src: 'manual' });
     const m = p.motion.mode;
     if (m === 'idle') { atHome(p); return { ok: true, text: p.rest ? `精力低，先恢復到 ${E.backAt} 再去清理` : '從院中出發，去西院清理測試鼠' }; }
     if (m === 'carry') return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後去清理測試鼠`, pending: true };
@@ -495,10 +501,10 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   }
   // 院中端點出發：再核有效目標；沒有就結束、立即釋放（還沒離開院中）。
   function goClean(p) {
-    const t = nearest(s.rats, p.pos);
-    if (!t) { p.cleanResult = { kind: 'none', downs: 0, spent: 0, tick: s.tick }; clog(p, 'clean:none'); s.clean = null; p.motion = idle(p.level); return; }
-    s.clean.phase = 'go'; s.clean.target = t.id; p.why = '玩家派去清理測試鼠';
-    clog(p, 'toRat', { target: t.id });
+    const t = nearest(s.rats, p.pos), src = s.clean ? s.clean.src : 'manual';
+    if (!t) { p.cleanResult = { kind: 'none', downs: 0, spent: 0, tick: s.tick, src }; clog(p, 'clean:none', { src }); s.clean = null; p.motion = idle(p.level); return; }
+    s.clean.phase = 'go'; s.clean.target = t.id; p.why = src === 'auto' ? '自己去清理測試鼠' : '玩家派去清理測試鼠';
+    clog(p, 'toRat', { target: t.id, src });
     walkQueue(p, 'toRat', legs(p.pos, GO_NODES));
     p.motion.hold = s.tick; // 回院端點這 tick 已用掉原活動的移動；第一步留給下一權威 tick（每人每 tick 只走一次）
   }
@@ -519,27 +525,27 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     p.energy -= PALM.cost; s.clean.spent += PALM.cost; // 真正開始起手才扣，一次；中止不退
     p.cface = t.x < p.pos.x ? -1 : 1;
     p.motion = { mode: 'windup', job: null, phase: null, steps: 0, need: SKILLS[p.palm].windup, tripLevel: p.level, target: t.id };
-    clog(p, 'palm:windup', { target: t.id, skill: p.palm });
+    clog(p, 'palm:windup', { target: t.id, skill: p.palm, src: s.clean.src });
   }
   // 接觸 tick：用本 tick 已移動／出界後的鼠與人物位置重驗同一 ID；成立才擊倒一次，之後才傳同伴目擊。
   function contact(p) {
-    const t = ratById(p.motion.target);
+    const t = ratById(p.motion.target), src = s.clean ? s.clean.src : 'manual';
     if (t && validRat(t) && dist(p.pos, t) <= PALM.reach) {
       t.mode = 'down'; t.why = `${nameOf(p.id)}一掌擊倒`;
       s.clean.downs += 1; s.clean.lastHit = { rat: t.id, tick: s.tick };
-      clog(p, 'palm:hit', { target: t.id, skill: p.palm });
+      clog(p, 'palm:hit', { target: t.id, skill: p.palm, src });
       for (const r of s.rats) if (r.kind === 'alert' && r.mode === 'sniff' && dist(r, t) <= PALM.witness) fleeRat(r, `同伴鼠${t.id}受掌`);
       p.motion = { mode: 'recover', job: null, phase: null, steps: 0, need: SKILLS[p.palm].recover, tripLevel: p.level, target: t.id };
       return;
     }
-    clog(p, 'palm:miss', { target: p.motion.target });
+    clog(p, 'palm:miss', { target: p.motion.target, src });
     approach(p); // 目標先失效：不出掌、不隔空補中，已花不退；換有效目標或結束
   }
   function finishClean(p, kind) {
-    const c = s.clean;
+    const c = s.clean, src = c ? c.src : 'manual';
     c.phase = 'back'; c.end = kind;
-    p.cleanResult = { kind, downs: c.downs, spent: c.spent, tick: s.tick };
-    clog(p, 'clean:' + kind, { downs: c.downs });
+    p.cleanResult = { kind, downs: c.downs, spent: c.spent, tick: s.tick, src };
+    clog(p, 'clean:' + kind, { downs: c.downs, src });
     goHomeClean(p);
   }
   function goHomeClean(p) {
@@ -548,21 +554,23 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   }
   // 真返院：才釋放名額，再核最新工作／停工／必要恢復與容量（沿 atHome 與出發迴圈）。
   function homeClean(p) {
-    p.pos = { x: HOME[0], y: HOME[1] }; s.clean = null;
-    clog(p, 'clean:home');
-    if (p.why === '玩家派去清理測試鼠') p.why = null;
+    p.pos = { x: HOME[0], y: HOME[1] };
+    const src = s.clean ? s.clean.src : p.cleanSrc || 'manual';
+    s.clean = null;
+    clog(p, 'clean:home', { src });
+    if (p.why === '玩家派去清理測試鼠' || p.why === '自己去清理測試鼠') p.why = null;
     p.motion = idle(p.level);
     atHome(p);
   }
   // 專用取消／有效改令：未出發立即釋放；前往走完當前短段再返院；起手中止（不退）、收勢中保留結果都立刻返院；返院中拒絕。
   function cancelClean(p) {
-    const c = s.clean;
+    const c = s.clean, src = c ? c.src : 'manual';
     if (!c || c.by !== p.id || c.phase === 'back') return false;
-    p.cleanResult = { kind: 'canceled', downs: c.downs, spent: c.spent, tick: s.tick };
-    clog(p, 'clean:canceled', { downs: c.downs, mode: p.motion.mode });
+    p.cleanResult = { kind: 'canceled', downs: c.downs, spent: c.spent, tick: s.tick, src };
+    clog(p, 'clean:canceled', { downs: c.downs, mode: p.motion.mode, src });
     if (c.phase === 'wait') { s.clean = null; return true; }
     c.phase = 'back'; c.end = 'canceled';
-    if (p.why === '玩家派去清理測試鼠') p.why = null;
+    if (p.why === '玩家派去清理測試鼠' || p.why === '自己去清理測試鼠') p.why = null;
     if (p.motion.mode === 'windup' || p.motion.mode === 'recover') goHomeClean(p);
     return true;
   }
@@ -624,6 +632,120 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (s.clean) return { ok: false, reason: '有清理任務（含等待與返院）：真返院後才能換掌法比較設定' };
     if (p.palm !== skill) { p.palm = skill; clog(p, 'palm:skill', { skill }); }
     return { ok: true, text: `掌法比較 fixture：${SKILLS[skill].label}（起手 ${SKILLS[skill].windup}／收勢 ${SKILLS[skill].recover} tick）` };
+  }
+  // ---------- LP-12 自主清鼠 ----------
+  function cleanNote(p, kind) {
+    if (p.cleanNote && p.cleanNote.kind === kind) return;
+    p.cleanNote = { kind, tick: s.tick };
+    s.log.push({ tick: s.tick, person: p.id, kind: 'autoclean:' + kind });
+  }
+  const wantsClean = (p) => p.cleanAllow && !p.cleanSuppress && p.cleanWant;
+  function dropCleanWant(p, kind) {
+    if (!p.cleanWant) return false;
+    p.cleanWant = false;
+    cleanNote(p, kind);
+    return true;
+  }
+  function cleanOverride(p) {
+    dropCleanWant(p, 'player');
+    p.cleanSuppress = true;
+  }
+  function cleanBlocked(p) {
+    if (!p.cleanAllow) return 'off';
+    if (p.cleanSuppress) return 'player';
+    if (p.rest === 'manual' || p.pending === 'rest' || p.recall) return 'held';
+    if (cleaning(p)) return 'self';
+    if (!s.rats.some(validRat)) return 'none';
+    return null;
+  }
+  function cleanWantStep() {
+    const hasRats = s.rats.some(validRat);
+    for (const id of ids) {
+      const p = s.people[id], why = cleanBlocked(p);
+      if (why) {
+        if (p.cleanWant) dropCleanWant(p, why);
+        continue;
+      }
+      if (s.clean && s.clean.by !== p.id) {
+        if (p.cleanWant) cleanNote(p, 'peer');
+        else if (hasRats) { p.cleanWant = true; cleanNote(p, 'peer'); }
+        continue;
+      }
+      if (!p.cleanWant && hasRats) {
+        p.cleanWant = true;
+        cleanNote(p, 'want');
+      }
+    }
+  }
+  function cleanAcceptStep() {
+    if (s.clean) return;
+    if (!s.rats.some(validRat)) return;
+    for (const id of AUTO_ORDER) {
+      const p = s.people[id];
+      if (!p || !p.cleanAllow || p.cleanSuppress || p.motion.mode !== 'idle' || p.rest) continue;
+      if (p.rest === 'manual' || p.pending === 'rest' || p.recall) continue;
+      if (p.guardOrder != null || p.fix || cleaning(p)) continue;
+      if (p.energy <= E.restAt) continue;
+      p.cleanWant = false;
+      cleanNote(p, 'go');
+      s.clean = { by: p.id, phase: 'wait', target: null, downs: 0, spent: 0, end: null, tick: s.tick, src: 'auto' };
+      p.cleanResult = null;
+      p.cleanSrc = 'auto';
+      clog(p, 'cleanOrder', { src: 'auto' });
+      goClean(p);
+      break;
+    }
+  }
+  function setAutoClean(id, { allow } = {}) {
+    const p = s.people[id];
+    if (!p) return { ok: false, reason: '沒有這個工作者' };
+    if (allow == null) return { ok: true, allow: p.cleanAllow };
+    const bool = !!allow;
+    if (bool) {
+      const wasSuppressed = p.cleanSuppress, wasAllow = p.cleanAllow;
+      p.cleanAllow = true;
+      p.cleanSuppress = false;
+      if (!wasAllow || wasSuppressed) {
+        s.log.push({ tick: s.tick, person: id, kind: 'autoclean:allow', allow: true });
+      }
+      return { ok: true, text: '允許自主清鼠' };
+    } else {
+      p.cleanAllow = false;
+      p.cleanSuppress = false;
+      dropCleanWant(p, 'off');
+      s.log.push({ tick: s.tick, person: id, kind: 'autoclean:allow', allow: false });
+      if (s.clean && s.clean.by === id && s.clean.src === 'auto') {
+        cancelClean(p);
+      }
+      return { ok: true, text: '不自主清鼠（仍可由玩家派遣）' };
+    }
+  }
+  function cleanAutoView(p) {
+    const hasRats = s.rats.some(validRat);
+    const base = { allow: p.cleanAllow, wanting: wantsClean(p), suppressed: p.cleanSuppress };
+    const say = (state, text) => ({ ...base, state, text });
+    if (p.cleanSrc === 'auto' && s.clean && s.clean.by === p.id) {
+      if (s.clean.phase === 'back') {
+        if (p.cleanSuppress) return say('player', '玩家改令，取消自己出發的清理返院');
+        return say('back', '清理結束，返回院中');
+      }
+      if (p.cleanSuppress) return say('player', '玩家改令，取消自己出發的清理');
+      return say('go', '自己出發清理測試鼠（全場唯一處理者）');
+    }
+    if (p.cleanSrc === 'manual' && s.clean && s.clean.by === p.id) return say('manual', '玩家派遣清理中（不受自主開關影響）');
+    if (s.clean && s.clean.by !== p.id) return say('peer', `${nameOf(s.clean.by)}已在清理，等待同伴`);
+    if (!p.cleanAllow) return say('off', '尚未允許自主清鼠（仍可由玩家派遣）');
+    if (p.cleanSuppress) return say('player', '受玩家改派抑制，這次不自己清鼠');
+    if (p.rest === 'manual' || p.pending === 'rest') return say('held', '已停工：不自己清鼠');
+    if (p.recall) return say('held', '玩家叫回中：不自己清鼠');
+    if (p.guardOrder != null) return say('held', '正在驅離野豬：回院中後再評估');
+    if (p.fix) return say('held', '正在整理護欄：回院中後再評估');
+    if (!hasRats) return say('none', '範圍內沒有有效的測試鼠');
+    if (p.motion.mode === 'carry') return say('wait', '本趟交付後自己去清理');
+    if (p.motion.mode === 'toSeat' || p.motion.mode === 'seated') return say('wait', `先恢復到 ${rules.energy.backAt}，回院中自己去清理`);
+    if (p.motion.mode === 'toFun' || p.motion.mode === 'fun' || p.motion.mode === 'fromFun') return say('wait', '回院中後自己去清理');
+    if (p.cleanWant) return say('wait', '等待出發去清理');
+    return say('watch', '觀察中：範圍內有測試鼠就想去清理');
   }
   function goSeat(p) {
     p.motion = { mode: 'toSeat', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level };
@@ -735,6 +857,9 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     // LP-09：護院之後判整理候補與正式受理（同人 guard／fix 互斥；看得見野豬時整理本就不合法）。
     upWantStep();
     upAcceptStep();
+    // LP-12：護院與整理之後判清鼠候補與正式受理（同人互斥；優先序為護院→整理→清鼠→一般工作）。
+    cleanWantStep();
+    cleanAcceptStep();
     // 空位少時輪流獲得下一個出發機會，避免滿缸後每次用水都被同一人搶走。
     const first = s.nextPerson;
     for (let n = 0; n < ids.length; n++) {
@@ -744,7 +869,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     // 出發輪替之後才看閒暇：有合法容量一定先工作；只在實存滿時去休閒，僅在途占滿就留在院中等。
     for (const id of ids) {
       const p = s.people[id];
-      if (p.motion.mode === 'idle' && !p.rest && !p.recall && p.guardOrder == null && !cleaning(p) && !wants(p) && !wantsUp(p) && p.energy > E.restAt && prefs[id] && stocked(p.job)) goFun(p);
+      if (p.motion.mode === 'idle' && !p.rest && !p.recall && p.guardOrder == null && !cleaning(p) && !wants(p) && !wantsUp(p) && !wantsClean(p) && p.energy > E.restAt && prefs[id] && stocked(p.job)) goFun(p);
     }
     // 人的工作交付、移動與喝止進度都先結算完，最後才結算野豬（誘因看交付後的實存）。
     boarStep();
@@ -917,6 +1042,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (['start', 'restAfterTrip', 'cancel', 'recall', 'fix', 'fixCancel', 'clean', 'cleanCancel'].includes(cmd) || cmd.startsWith('work:')) override(p);
     // LP-09：同一批有效指令＋人工護院也清當人整理候補、抑制目前碰撞機會（與 LP07 的本訪抑制分開記）。
     if (['start', 'restAfterTrip', 'cancel', 'recall', 'fixCancel', 'guard', 'clean', 'cleanCancel'].includes(cmd) || cmd.startsWith('work:')) upOverride(p);
+    // LP-12：有效人工改令撤當人清鼠候補並抑制自主清鼠直到明確重新允許。
+    if (['start', 'restAfterTrip', 'cancel', 'recall', 'guard', 'fix', 'fixCancel', 'clean', 'cleanCancel'].includes(cmd) || cmd.startsWith('work:')) cleanOverride(p);
     if (cmd === 'clean') return cleanOrder(p);
     if (cmd === 'cleanCancel') {
       const m = p.motion.mode, waiting = s.clean.phase === 'wait';
@@ -1138,11 +1265,13 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       fixLeg: h.mode === 'toFix' || h.mode === 'fromFix' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need } : null,
       fixWork: h.mode === 'fix' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need } : null,
       // LP-11：位置只在清理中離開院中端點；palm 是比較 fixture。
-      cleaning: CLEAN_MODES.includes(h.mode), clean: cl ? { phase: cl.phase, target: cl.target, downs: cl.downs, spent: cl.spent, end: cl.end } : null,
+      cleaning: CLEAN_MODES.includes(h.mode), clean: cl ? { phase: cl.phase, target: cl.target, downs: cl.downs, spent: cl.spent, end: cl.end, src: cl.src } : null,
       cleanResult: p.cleanResult, pos: { x: p.pos.x, y: p.pos.y }, cface: p.cface, walked: p.walked,
       palm: p.palm, palmLabel: SKILLS[p.palm].label, palmTicks: { windup: SKILLS[p.palm].windup, recover: SKILLS[p.palm].recover },
       palmStep: h.mode === 'windup' || h.mode === 'recover' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need, target: h.target } : null,
       cleanLeg: h.mode === 'toRat' || h.mode === 'fromRat' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need, from: { ...h.from }, to: { ...h.to } } : null,
+      // LP-12：自主清鼠原因與狀態。
+      autoClean: cleanAutoView(p), cleanSrc: p.cleanSrc,
     };
   }
   // 自主護院原因：把「沒允許／觀察中／有意願待交付或恢復／玩家改派／同伴處理／已出發／結果／意願過期」分開講，不用一句「護院中」。
@@ -1230,7 +1359,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       log: s.log.slice(-5),
     };
   }
-  return { state: s, step, dispatch, actions, view, setAuto, setUpkeep, setPalm, pathLength, lengths, rules };
+  return { state: s, step, dispatch, actions, view, setAuto, setUpkeep, setPalm, setAutoClean, pathLength, lengths, rules };
 }
 
 // 牆鐘只決定餵幾步；長空檔最多算250ms，不追趕背景時間。

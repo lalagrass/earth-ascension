@@ -474,6 +474,8 @@ $('panel').addEventListener('click', (e) => {
   if (a) { autoSet(a.dataset.auto); return; }
   const u = e.target.closest('[data-up]');
   if (u) { upSet(u.dataset.up); return; }
+  const ca = e.target.closest('[data-autoclean]');
+  if (ca) { cleanAutoSet(ca.dataset.autoclean); return; }
   const pm = e.target.closest('[data-palm]');
   if (pm) { palmSet(pm.dataset.palm); return; }
   const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd);
@@ -583,6 +585,14 @@ function palmSet(skill) {
   toast(r.ok ? `${profiles[id].label}：${r.text}` : `做不到：${r.reason}`);
   renderChrome();
 }
+// LP-12 自主清鼠設定：允許開關與重新允許；暫停時也可改，只改設定不推進世界。
+function cleanAutoSet(what) {
+  const id = selectedPerson(), p = v.people[id];
+  const r = model.setAutoClean(id, { allow: what === 'reallow' ? true : !p.autoClean.allow });
+  v = model.view();
+  toast(r.ok ? `${profiles[id].label}：${r.text}` : `做不到：${r.reason}`);
+  renderChrome();
+}
 let toastTimer = 0;
 function toast(text) { const t = $('toast'); t.textContent = text; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2800); }
 
@@ -643,21 +653,30 @@ function upHtml(p) {
     <div class="muted">${a.text}</div></div>`;
 }
 // LP-11 清理：目前目標、等待交付／恢復、前往、起手／收勢、取消返回、結束原因與成本；比較 fixture 明標且任務中鎖定。
+// LP-12 自主清鼠：允許開關、短理由與來源標籤。
 const PHASE_TEXT = { wait: '等待出發', go: '清理中', back: '返院中' };
 function cleanHtml(p, id) {
-  const c = p.clean, r = p.cleanResult, locked = !!v.clean;
+  const c = p.clean, r = p.cleanResult, locked = !!v.clean, ac = p.autoClean;
   const skill = (k) => `<button class="btn ${p.palm === k ? 'on' : ''}" data-palm="${k}" aria-pressed="${p.palm === k}" ${locked ? 'disabled' : ''} title="${locked ? '有清理任務（含等待與返院）時鎖定' : `起手 ${SKILLS[k].windup}／收勢 ${SKILLS[k].recover} tick`}">${SKILLS[k].label}</button>`;
   let line = '';
   if (c) {
+    const srcTag = c.src === 'auto' ? '（自主）' : '（手動）';
     const what = p.mode === 'windup' ? `起手 → 鼠${c.target}（${p.palmStep.steps}／${p.palmStep.need} tick）` : p.mode === 'recover' ? `收勢（${p.palmStep.steps}／${p.palmStep.need} tick）`
       : p.mode === 'toRat' ? (c.phase === 'back' ? '已取消：走完這段後返院' : `走向鼠${c.target}`) : p.mode === 'fromRat' ? `返院：${CLEAN_END[c.end] || ''}` : `待出發：${p.next}`;
-    line = `<div class="fixline"><span>${PHASE_TEXT[c.phase]} · ${what}</span>${c.phase !== 'back' ? '<button class="btn" data-cmd="cleanCancel">取消清理</button>' : ''}</div>
+    line = `<div class="fixline"><span>${PHASE_TEXT[c.phase]} ${srcTag} · ${what}</span>${c.phase !== 'back' ? '<button class="btn" data-cmd="cleanCancel">取消清理</button>' : ''}</div>
       ${p.palmStep ? `<div class="bar palm"><i style="width:${Math.round(p.palmStep.k * 100)}%"></i></div>` : ''}
       <div class="muted">本次擊倒 ${c.downs} · 起手已花精力 ${c.spent}（中止不退）</div>`;
-  } else if (r) line = `<div class="muted">上次清理：${CLEAN_END[r.kind]} · 擊倒 ${r.downs} · 花精力 ${r.spent}</div>`;
+  } else if (r) {
+    const srcTag = r.src === 'auto' ? '（自主）' : '（手動）';
+    line = `<div class="muted">上次清理 ${srcTag}：${CLEAN_END[r.kind]} · 擊倒 ${r.downs} · 花精力 ${r.spent}</div>`;
+  }
   const other = v.clean && v.clean.by !== id ? `<div class="muted">${profiles[v.clean.by].label}正在清理（全場只一份）</div>` : '';
-  return `<div class="palmbox"><div class="row"><b>有限清理 · 掌法</b><span class="group">${skill('novice')}${skill('adept')}</span></div>
-    <div class="muted">掌法比較 fixture（不是成長）：掌距 ≤${PALM.reach}，起手開始扣 ${PALM.cost} 精力</div>${line}${other}</div>`;
+  const reallowBtn = ac && ac.suppressed ? '<button class="btn" data-autoclean="reallow" title="清除玩家改派抑制，重新允許自主清鼠">重新允許</button>' : '';
+  return `<div class="palmbox ${ac ? ac.state : ''}"><div class="row"><b>有限清理 · 掌法</b><span class="group">${skill('novice')}${skill('adept')}</span></div>
+    <div class="muted">掌法比較 fixture（不是成長）：掌距 ≤${PALM.reach}，起手開始扣 ${PALM.cost} 精力</div>
+    <div class="row"><span>自主清鼠</span><span>${reallowBtn}<button class="btn ${ac && ac.allow ? 'on' : ''}" data-autoclean="allow" aria-pressed="${ac && ac.allow}">${ac && ac.allow ? '允許中' : '未允許'}</button></span></div>
+    <div class="muted autoclean-text">${ac ? ac.text : ''}</div>
+    ${line}${other}</div>`;
 }
 const RAT_KIND = { normal: '普通', alert: '警覺' };
 function ratsHtml() {
@@ -713,7 +732,7 @@ function renderChrome() {
   $('trips').textContent = `共完成 ${IDS.reduce((n, who) => n + v.people[who].trips, 0)} 趟`;
   const cards = IDS.map((who) => {
     const p = v.people[who], info = profiles[who];
-    return `<button class="card ${ui.selected === who ? 'sel' : ''} ${p.resting ? 'stopped' : ''}" data-person="${who}"><b>${info.name} · Lv ${p.level}</b><small><span class="emini"><i style="width:${en(p)}%"></i></span>精力 ${en(p)} · ${p.resting ? '' : p.jobLabel + ' · '}${p.status}</small>${p.pending ? `<small class="due">${pendText(p)}</small>` : ''}${p.auto.allow || p.auto.wanting ? `<small class="autoline">護院：${p.auto.text}</small>` : ''}${p.up.allow || p.up.wanting ? `<small class="autoline">整理：${p.up.text}</small>` : ''}</button>`;
+    return `<button class="card ${ui.selected === who ? 'sel' : ''} ${p.resting ? 'stopped' : ''}" data-person="${who}"><b>${info.name} · Lv ${p.level}</b><small><span class="emini"><i style="width:${en(p)}%"></i></span>精力 ${en(p)} · ${p.resting ? '' : p.jobLabel + ' · '}${p.status}</small>${p.pending ? `<small class="due">${pendText(p)}</small>` : ''}${p.auto.allow || p.auto.wanting ? `<small class="autoline">護院：${p.auto.text}</small>` : ''}${p.up.allow || p.up.wanting ? `<small class="autoline">整理：${p.up.text}</small>` : ''}${p.autoClean && (p.autoClean.allow || p.autoClean.wanting) ? `<small class="autoline">清鼠：${p.autoClean.text}</small>` : ''}</button>`;
   }).join('');
   put('roster', $('roster'), cards);
   put('boar', $('boar'), boarHtml(v.boar));
