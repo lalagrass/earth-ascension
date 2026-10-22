@@ -365,7 +365,8 @@ const narrow = () => window.innerWidth <= 640;
 if (narrow()) cam.zoom = 0.85;
 function follow() {
   const p = positions[selectedPerson()];
-  const top = document.querySelector('.hud').getBoundingClientRect().bottom;
+  // 野豬／鼠卡在 HUD 下方占了一塊：跟隨時把人放在卡片下緣與抽屜之間。
+  const top = Math.max(document.querySelector('.hud').getBoundingClientRect().bottom, ...[$('boar')].filter((el) => !el.hidden && el.offsetHeight && getComputedStyle(el).display !== 'none').map((el) => el.getBoundingClientRect().bottom));
   const drawer = [$('menu'), $('panel'), $('roster')].filter((el) => !el.hidden && el.offsetHeight).map((el) => el.getBoundingClientRect().top);
   const bottom = Math.min(window.innerHeight, ...drawer);
   const ty = p.y - 30 - ((top + bottom) / 2 - app.screen.height / 2) / cam.zoom;
@@ -660,10 +661,10 @@ function cleanHtml(p, id) {
 const RAT_KIND = { normal: '普通', alert: '警覺' };
 function ratsHtml() {
   const sel = selectedPerson(), opt = model.actions(sel).find((a) => a.id === 'clean'), c = v.clean;
-  const rows = v.rats.map((r) => `<span class="rat r-${r.mode}${c && c.target === r.id && c.phase !== 'back' ? ' tgt' : ''}" title="${r.why || ''}">鼠${r.id}·${RAT_KIND[r.kind]} ${r.label}</span>`).join('');
+  const rows = v.rats.map((r) => `<span class="rat r-${r.mode}${c && c.target === r.id && c.phase !== 'back' ? ' tgt' : ''}" title="${r.why || ''}">鼠${r.id}<i>·${RAT_KIND[r.kind]}</i> ${r.label}</span>`).join('');
   const btn = c ? `<span class="muted">${profiles[c.by].label}${PHASE_TEXT[c.phase]}${c.phase !== 'wait' && c.phase !== 'back' ? `：目標鼠${c.target}` : ''}</span>`
     : `<button class="btn" data-cmd="clean" ${opt.enabled ? '' : 'disabled'} title="${opt.enabled ? opt.detail : opt.reason}">派${profiles[sel].label}清理</button>`;
-  return `<div class="ratrow"><b>測試弱鼠 ×3</b>${btn}</div><div class="rats">${rows}</div>
+  return `<div class="ratrow"><b>測試弱鼠<i> ×3</i></b><span class="rats">${rows}</span>${btn}</div>
     <div class="muted ratnote">新局固定 fixture，不補滿／不繁殖；只按距離感知（無遮擋視線），不保證清光或每掌必中</div>`;
 }
 const UP_FX = { want: '想去整理', go: '自己去整理', done: '自己整理完一階' };
