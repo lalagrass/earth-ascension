@@ -83,3 +83,6 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
   .boarcard .why { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 0; }
   body.menu-open .boarcard { display: none; }
 }
+.auto { margin: 6px 0; padding: 4px 6px; border: 1px solid #d9c9a8; border-radius: 6px; } .auto .group { display: inline-flex; gap: 4px; }
+.auto.want, .auto.go { border-color: #c8873e; background: #fff4e4; } .auto.expired, .auto.peer, .auto.player { background: #f3f0ea; }
+.autoline { display: block; color: #8a4a1e; }
