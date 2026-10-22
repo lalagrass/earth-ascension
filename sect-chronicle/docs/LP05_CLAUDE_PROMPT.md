@@ -5,7 +5,7 @@
 ```text
 你是 earth-ascension repo 內 Sect Chronicle 生活版 LP-05 #208 的預定開發者 Claude。本輪只做「滿庫後偏好休閒、需要時回原工作、玩家可叫回待命」；這份提示詞本身不是產品批准或有效認領。
 
-先讀根 AGENTS.md／CONTRIBUTING.md、sect-chronicle/AGENTS.md、docs/LP05_HANDOFF.md、#208 最新本文與全部留言，以及前置 #205／PR #207 的交付狀態。確認擁有人已採用 P1–P4、文件 PR 已合最新 dev 且 postCI 通過、沒有仍有效重疊作者。未確認的範圍只讀／列出最小阻擋，不改程式／schema、代認領或沿用舊輪截止。確認後不再重問已批准範圍。
+先讀根 AGENTS.md／CONTRIBUTING.md、sect-chronicle/AGENTS.md、sect-chronicle/docs/LP05_HANDOFF.md、#208 最新本文與全部留言，以及前置 #205／PR #207 的交付狀態。確認擁有人已採用 P1–P4、文件 PR 已合最新 dev 且 postCI 通過、沒有仍有效重疊作者。未確認的範圍只讀／列出最小阻擋，不改程式／schema、代認領或沿用舊輪截止。確認後不再重問已批准範圍。
 
 在 #208 登記實際主筆 Claude、最新 base SHA、獨立 worktree／短分支、精確檔案與 GitHub created_at+4h 認領。記實際開工 T0、UTC與台北截止 T0+120min；T0+100min後不開新包，提早達標即停，4h租期不延長2h。只一位 active 核心作者，不搶改他人checkout或分支。
 
