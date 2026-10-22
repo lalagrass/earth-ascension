@@ -1,10 +1,12 @@
 # 生活主入口：本輪 Codex 開發循環
 
-## 最新接續：LP-04（D14／#205）
+## 最新狀態：LP-04完成，LP-05只做規劃
 
-LP-03／PR #204已合dev `1eeaaa3c91517730abb017edb79031de945fa732`，postCI39698128687五SUCCESS。擁有人已批准先做精力／可見休息／自主續工，手動停工維持；PO依委託整理本輪示意值與驗收。完整 [LP04工作包](LP04_HANDOFF.md)／[Claude兩小時prompt](LP04_CLAUDE_PROMPT.md)，狀態以[#205](https://github.com/lalagrass/earth-ascension/issues/205)為準。文件合dev／postCI後可認領，Claude尚未開工；新的T0從Claude實際認領／開工記錄，不沿用下方已結束的LP01～03時間窗。
+LP04 #205／PR #207已合dev `8f8c93a168873e8c174c857d3b9c8768e0efc030`，postCI39702669958五SUCCESS，本輪有限開發已完成並停止。精力／自主恢復／玩家停工沿[LP04工作包](LP04_HANDOFF.md)，不重啟舊窗口。
 
-下方為各輪歷史工作包，原「不擴體力恢復」只限制當輪；本次只新增一種精力與恢復，不授權其他backlog。
+下一候選為 [LP05工作包](LP05_HANDOFF.md)／[Claude兩小時prompt](LP05_CLAUDE_PROMPT.md)與[#208](https://github.com/lalagrass/earth-ascension/issues/208)：滿庫後偏好休閒、需要時返回原工作、玩家叫回待命／恢復自主。擁有人這次委託評估／規劃，P1–P4待確認；文件合dev/postCI且產品確認回填後，Claude才可本人有效認領。現在不代啟作者或承諾程式已批准，既有4h認領不延長未來120min有限窗口。
+
+下方LP01～04是各輪歷史範圍，不把已完成包重新開工，也不將未來聊天／完整需求預先實作。
 
 狀態：D13 有限開發已由擁有人批准；實作進度以 [#197](https://github.com/lalagrass/earth-ascension/issues/197)及各小包PR為準。來源／取捨見 [D13](DECISIONS_AND_SOURCES.md#d13生活主入口與兩小時開發循環2026-10-22)。本輪 UTC 2026-10-21 16:56–18:56（台北10/22 00:56–02:56），18:36後不開新包；達標即停。
 
