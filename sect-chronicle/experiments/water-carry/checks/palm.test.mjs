@@ -269,7 +269,7 @@ function edgeMax(m, id, limit = ticks(600)) {
   throw new Error('沒有等到條件');
 }
 
-test('跨活動邊界不瞬移（自然指令）：低精力恢復→返院→清理、休閒回程→清理，回院那 tick 不再推清理第一段', () => {
+test('跨活動邊界不瞬移（自然指令）：低精力恢復→返院→清理、休閒回程→清理、本趟交付→清理，回院那 tick 不再推清理第一段', () => {
   const m = game();
   run(m, (v) => v.people.hero.mode === 'carry' && v.people.hero.energy < 31 && v.people.hero.phase.name === 'pour', ticks(3600));
   assert.equal(m.dispatch('clean', 'hero').ok, true);
@@ -282,6 +282,12 @@ test('跨活動邊界不瞬移（自然指令）：低精力恢復→返院→�
   assert.equal(f.dispatch('clean', 'hero').ok, true);
   const b = edgeMax(f, 'hero');
   assert.ok(b.over <= 1e-9, `休閒回程→清理：tick ${b.at} 超出空手上限 ${b.over.toFixed(5)}`);
+  const c = game();
+  while (c.view().people.hero.mode !== 'carry') c.step();
+  assert.equal(c.dispatch('clean', 'hero').ok, true);
+  run(c, (v) => v.people.hero.phase?.name === 'pour');
+  const d = edgeMax(c, 'hero');
+  assert.ok(d.over <= 1e-9, `本趟交付→清理：tick ${d.at} 超出空手上限 ${d.over.toFixed(5)}`);
 });
 
 // ---------- 4. 取消與返回 ----------
