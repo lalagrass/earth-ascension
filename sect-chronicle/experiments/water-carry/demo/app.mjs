@@ -365,8 +365,7 @@ const narrow = () => window.innerWidth <= 640;
 if (narrow()) cam.zoom = 0.85;
 function follow() {
   const p = positions[selectedPerson()];
-  // 野豬／鼠卡在 HUD 下方占了一塊：跟隨時把人放在卡片下緣與抽屜之間。
-  const top = Math.max(document.querySelector('.hud').getBoundingClientRect().bottom, ...[$('boar')].filter((el) => !el.hidden && el.offsetHeight && getComputedStyle(el).display !== 'none').map((el) => el.getBoundingClientRect().bottom));
+  const top = document.querySelector('.hud').getBoundingClientRect().bottom;
   const drawer = [$('menu'), $('panel'), $('roster')].filter((el) => !el.hidden && el.offsetHeight).map((el) => el.getBoundingClientRect().top);
   const bottom = Math.min(window.innerHeight, ...drawer);
   const ty = p.y - 30 - ((top + bottom) / 2 - app.screen.height / 2) / cam.zoom;
