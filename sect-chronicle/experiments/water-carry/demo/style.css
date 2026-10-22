@@ -44,6 +44,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .emini i { display: block; height: 100%; background: #4f9a5a; }
 .card.stopped { border-style: dashed; }
 .tag.pill.rest { background: rgba(59, 93, 133, .92); } .tag.pill.stop { background: rgba(138, 64, 30, .92); }
+.tag.pill.fun { background: rgba(70, 112, 62, .92); } .tag.pill.recall { background: rgba(150, 110, 30, .94); }
 .cmp { width: 100%; border-collapse: collapse; font-size: 13px; } .cmp td { padding: 1px 0; } .cmp td:not(:first-child) { text-align: right; }
 .cmp .now { font-weight: 700; } .cmp .init { color: var(--ghost); }
 .pending { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #fff6e0; border: 1px dashed var(--gold); border-radius: 6px; padding: 4px 6px; }

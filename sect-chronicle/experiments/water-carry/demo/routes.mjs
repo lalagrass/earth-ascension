@@ -18,9 +18,17 @@ export const SEATS = {
   cousin: { points: [[962, 512], [952, 470], [976, 436], [994, 420]] },
 };
 
+// LP-05 偏好休閒點：主角走到院子西側草坡邊的觀景石看山（背對鏡頭朝西北群山），熟手到道館門前院中空地舒展筋骨。
+// 都從同一院中端點出發，固定折線、不尋路；與石凳路線分開，避免看成「去休息」。長度交給模型計時。
+export const FUN = {
+  hero: { points: [[962, 512], [930, 522], [880, 512], [820, 480], [774, 448]], stone: { x: 752, y: 456 }, face: -1, act: 'gaze' },
+  cousin: { points: [[962, 512], [1040, 492], [1120, 472], [1190, 462]], face: 1, act: 'stretch' },
+};
+
 export function createRoutes(waterPoints) {
   const routes = { water: pathTool(waterPoints), herb: pathTool(HERB.points) };
   const seats = { hero: pathTool(SEATS.hero.points), cousin: pathTool(SEATS.cousin.points) };
+  const funs = { hero: pathTool(FUN.hero.points), cousin: pathTool(FUN.cousin.points) };
   // phase：模型的階段名，或 idle／rest；job：不在路上時，人站在哪份工作的路頭（兩者相同）。
   function place(phase, k, job = 'water') {
     const onHerb = ALIAS[phase] || (!(phase in WATER) && job === 'herb');
@@ -37,12 +45,20 @@ export function createRoutes(waterPoints) {
     const face = mode === 'seated' ? 1 : (mode === 'back' ? -p.dx : p.dx) >= 0 ? 1 : -1;
     return { x: p.x, y: p.y, face, route: r, geo: mode, travelled: mode === 'seated' ? 0 : k * r.length };
   }
+  // 去／做／回偏好活動：u=0 院中端點、u=1 活動點；活動中朝固定方向（主角朝群山、熟手朝院子）。
+  function funPlace(id, mode, k) {
+    const r = funs[id], u = mode === 'toFun' ? k : mode === 'fromFun' ? 1 - k : 1, p = r.at(u);
+    const face = mode === 'fun' ? FUN[id].face : (mode === 'fromFun' ? -p.dx : p.dx) >= 0 ? 1 : -1;
+    return { x: p.x, y: p.y, face, route: r, geo: mode, travelled: mode === 'fun' ? 0 : k * r.length };
+  }
   // 由 view() 的人物欄位決定位置：畫面與檢查共用，避免各自猜狀態。
   function of(id, p) {
+    if (p.mode === 'toFun' || p.mode === 'fromFun') return funPlace(id, p.mode, p.funLeg.k);
+    if (p.mode === 'fun') return funPlace(id, 'fun', 1);
     if (p.mode === 'toSeat' || p.mode === 'back') return seatPlace(id, p.mode, p.restLeg.k);
     if (p.mode === 'seated') return seatPlace(id, 'seated', 1);
     return place(p.mode === 'carry' && p.phase ? p.phase.name : 'idle', p.phase?.k || 0, p.job);
   }
-  return { routes, seats, place, of, seatLengths: { hero: seats.hero.length, cousin: seats.cousin.length } };
+  return { routes, seats, funs, place, of, seatLengths: { hero: seats.hero.length, cousin: seats.cousin.length }, funLengths: { hero: funs.hero.length, cousin: funs.cousin.length } };
 }
 const WATER = { down: 1, dip: 1, up: 1, pour: 1 };

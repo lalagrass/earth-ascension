@@ -4,7 +4,7 @@
 import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.min.mjs';
 import { createModel, createClock, PEOPLE, JOBS, STEP_MS } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
-import { createRoutes, HERB, SEATS } from './routes.mjs';
+import { createRoutes, HERB, SEATS, FUN } from './routes.mjs';
 
 const SHARED = '../spikes/shared/';
 const t0 = performance.now();
@@ -33,6 +33,8 @@ const places = {
   herb: { label: '藥圃', x: HERB.patch.x, y: HERB.patch.y + 14, rx: 70, ry: 30, sub: '道館東側坡地 · 可重複採' },
   rack: { label: '藥架', x: HERB.rack.x, y: HERB.rack.y, rx: 30, ry: 22, sub: '道館院中 · 交藥處' },
   bench: { label: '休息石凳', x: SEATS.bench.x, y: SEATS.bench.y + 6, rx: 50, ry: 18, sub: '松樹下 · 兩人各一席' },
+  view: { label: '觀景石', x: FUN.hero.stone.x, y: FUN.hero.stone.y, rx: 34, ry: 16, sub: '院子西側草坡 · 主角愛來看山（閒暇，不回精力）' },
+  yard: { label: '院邊空地', x: FUN.cousin.points.at(-1)[0], y: FUN.cousin.points.at(-1)[1] + 6, rx: 34, ry: 14, sub: '道館門前院中 · 熟手愛來舒展筋骨（閒暇，不回精力）' },
 };
 const GROWN_FROM = 3; // 本趟腳力到 Lv 3 起換成長後步態
 
@@ -46,7 +48,15 @@ function pose(ph, level, mode, resting = false, id = 'hero', job = 'water') {
   return { x: at.x, y: at.y, face: at.face, ...pick, travelled: at.travelled, phase };
 }
 // LP-04：去／回座位用空手步態（同一份距離換幀），坐下用模板的「坐下歇」；主角 sheet 沒有坐姿，暫用採藥蹲姿並在面板標明。
+// LP-05：去／回偏好點用空手步態（借採藥空手走路幀、不畫背簍）；活動中主角用「看山」背影、熟手用「舒展筋骨」循環（幀依模型活動步數換，不看真實時間）。
+const FUN_TICKS_PER_POSE = 36;
 function poseOf(id, person) {
+  if (person.leisure) {
+    const at = geo.of(id, person), a = animators[id];
+    // 往返用空手往藥圃的步態（不畫背簍），不扛扁擔。
+    const view = person.mode === 'fun' ? { phase: FUN[id].act, k: 0, travelled: person.funSteps / FUN_TICKS_PER_POSE } : { phase: 'herbOut', k: 0, travelled: at.travelled };
+    return { x: at.x, y: at.y, face: at.face, ...a.pick(view), travelled: at.travelled, phase: person.mode };
+  }
   if (person.mode !== 'toSeat' && person.mode !== 'back' && person.mode !== 'seated') return pose(person.phase, person.tripLevel, person.mode, false, id, person.job);
   const at = geo.of(id, person), a = animators[id];
   const view = { phase: person.mode === 'seated' ? 'rest' : 'down', k: 0, travelled: at.travelled };
@@ -102,6 +112,16 @@ for (const p of scene.props) placeSprite(p.file, p.ax, p.ay, p.w, p.h, p.x, p.y)
   b.position.set(x, y);
   b.zIndex = y - 2;
   sorted.addChild(b);
+}
+// 觀景石：原創簡單圖形，主角看山時站在它旁邊；只是地標，不是座位。
+{
+  const g = new Graphics(), { x, y } = FUN.hero.stone;
+  g.ellipse(0, 4, 26, 7).fill({ color: 0x5b5a3a, alpha: 0.22 });
+  g.poly([-22, 2, -18, -14, -6, -22, 10, -20, 22, -8, 22, 3]).fill(0xa9a89a).stroke({ width: 1.4, color: 0x75746a });
+  g.poly([-14, -12, -4, -19, 8, -17]).stroke({ width: 1, color: 0xc9c8bc });
+  g.position.set(x, y);
+  g.zIndex = y;
+  sorted.addChild(g);
 }
 const vatV = scene.vats[1];
 const vatSprite = placeSprite(vatV.file, vatV.ax, vatV.ay, vatV.w, vatV.h, scene.places.vat.x, scene.places.vat.y);
@@ -198,7 +218,7 @@ function follow() {
 }
 
 // ---------- 狀態 ----------
-const LENGTHS = { water: scene.path.length, herb: Math.round(herbPath.length * 10) / 10, seat: geo.seatLengths };
+const LENGTHS = { water: scene.path.length, herb: Math.round(herbPath.length * 10) / 10, seat: geo.seatLengths, fun: geo.funLengths };
 let model = createModel(LENGTHS);
 const clock = createClock();
 const ui = { follow: narrow(), playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null };
@@ -301,13 +321,13 @@ function reset() {
   clock.clear();
   v = model.view();
   fx.length = 0;
-  toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份，休息與待執行指令已清除');
+  toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份，休息、休閒、叫回與待執行指令已清除');
   renderChrome();
 }
 
 function menuOptions(id, person) {
   // 地點自己的工作排第一，其次本趟後休息，再來另一份工作。
-  const here = id === 'herb' || id === 'rack' ? 'herb' : 'water', rank = id === 'bench' ? { restAfterTrip: 0 } : { [`work:${here}`]: 0, restAfterTrip: 1 };
+  const here = id === 'herb' || id === 'rack' ? 'herb' : 'water', rank = id === 'bench' ? { restAfterTrip: 0 } : id === 'view' || id === 'yard' ? { recall: 0, resume: 1 } : { [`work:${here}`]: 0, restAfterTrip: 1 };
   const opts = model.actions(person).filter((a) => !a.hidden && !(here === 'herb' && a.id === 'pourNow'))
     .sort((a, b) => (rank[a.id] ?? 2) - (rank[b.id] ?? 2));
   if (id === 'spring') return opts.filter((a) => a.id !== 'pourNow').concat([{ id: 'more', label: '在這裡多裝一桶', enabled: false, reason: '扁擔只掛得了兩桶' }]);
@@ -398,7 +418,7 @@ const cmdLabel = (a, p) => !a.id.startsWith('work:') || p.mode !== 'carry' ? a.l
   : a.id !== 'work:' + p.job ? `交付後改${JOBS[a.id.slice(5)].label}` : p.pending ? `繼續${p.jobLabel}` : a.label;
 const pendText = (p) => p.pending === 'rest' ? '本趟後停工' : `交付後改去${JOBS[p.pending].label}`;
 const en = (p) => Math.floor(p.energy);
-const srcText = (p) => p.rest === 'manual' ? '玩家停工' : p.rest === 'auto' ? '自主恢復' : p.mode === 'back' ? '自主恢復完成' : null;
+const srcText = (p) => p.rest === 'manual' ? '玩家停工' : p.rest === 'auto' ? '自主恢復' : p.mode === 'back' ? '自主恢復完成' : p.leisure ? '閒暇（不扣不回）' : null;
 const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 const sec = (s) => `${s.toFixed(1)} 秒`;
 function bannerText() {
@@ -430,12 +450,14 @@ function renderChrome() {
   panel.hidden = !IDS.includes(ui.selected);
   if (!panel.hidden) {
     const si = person.speedsInitial, sn = person.mode === 'carry' ? person.tripSpeeds : person.speeds;
-    const work = person.mode === 'carry' ? `${person.jobLabel}（持續）· 第 ${person.trips + 1} 趟` : person.resting ? `停工（原工作：${person.jobLabel}）` : `${person.jobLabel}（持續）`;
+    const work = person.mode === 'carry' ? `${person.jobLabel}（持續）· 第 ${person.trips + 1} 趟` : person.resting ? `停工（原工作：${person.jobLabel}）`
+      : person.leisure ? `閒暇：${person.pref.doing}（原工作：${person.jobLabel}）` : person.recall ? `${person.jobLabel}（玩家叫回）` : `${person.jobLabel}（持續）`;
     const other = person.job === 'water' ? 'herb' : 'water';
     const pend = person.pending
       ? `<div class="pending"><span><b>${pendText(person)}</b><br><small>本趟${person.jobLabel}交付時生效；再下指令只保留最新一個</small></span><button class="btn" data-cmd="cancel">取消</button></div>`
       : person.resting ? `<div class="pending"><span><b>已停工</b><br><small>回滿也不會自己出發；下令開始才解除</small></span><span><button class="btn" data-cmd="start">開始${person.jobLabel}</button> <button class="btn" data-cmd="work:${other}">改${JOBS[other].label}</button></span></div>`
-        : '<div class="muted">沒有</div>';
+        : person.recall ? `<div class="pending"><span><b>玩家叫回</b><br><small>回院中${person.jobLabel}；滿了就待命，完成返院後的一趟才解除</small></span><button class="btn" data-cmd="resume">恢復自主</button></div>`
+          : '<div class="muted">沒有</div>';
     const cmds = model.actions(id).filter((a) => !a.hidden && a.id !== 'pourNow')
       .map((a) => `<button class="btn" data-cmd="${a.id}" ${a.enabled ? '' : 'disabled'} title="${a.enabled ? a.detail : a.reason}">${cmdLabel(a, person)}</button>`).join(' ');
     if (!panel.firstElementChild) panel.innerHTML = '<div id="p-work"></div><h4>待執行指令</h4><div id="p-pend"></div><div id="p-cmds" class="cmds"></div><div id="p-gain"></div><div id="p-leg"></div>';
@@ -443,8 +465,9 @@ function renderChrome() {
       <h4>精力</h4><div class="row"><b>${en(person)}／${person.energyMax}</b><span class="muted">${srcText(person) ? `來源：${srcText(person)}` : '工作每秒 −1 · 坐下每秒 +5'}</span></div>
       <div class="bar energy ${person.energy <= 30 ? 'low' : ''}"><i style="width:${person.energy / person.energyMax * 100}%"></i><s style="left:30%"></s><s style="left:80%"></s></div>
       ${person.why ? `<div class="muted">原因：${person.why}</div>` : ''}
+      <div class="muted">偏好：${person.pref ? `${person.pref.label}（${person.pref.place}）· ${person.job === 'herb' ? '藥架' : '水缸'}實存滿才去，有空位就回` : '無'}</div>
       <h4>目前工作</h4><div>${work}</div><div class="row"><span>${person.status}</span>${person.mode === 'carry' ? `<span class="muted">本趟用 Lv ${person.tripLevel}</span>` : ''}</div>
-      <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : 0) * 100)}%"></i></div>
+      <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : 0) * 100)}%"></i></div>
       <div class="next">下一步：${person.next}</div>`);
     put('p-pend', $('p-pend'), pend);
     put('p-cmds', $('p-cmds'), cmds);
@@ -494,7 +517,7 @@ app.ticker.add((t) => {
       if (person.level > prev.people[id].level) fx.push({ text: `${profiles[id].label}腳力 Lv ${person.level}`, x: p.x, y: p.y - 100, until: performance.now() + 2200 });
     }
     tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level} · 精力 ${en(person)}`, p.x, p.y, 6);
-    tag(`${id}-pill`, `pill ${person.resting ? 'stop' : person.rest || person.mode === 'back' ? 'rest' : ''}`, person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.status, p.x, p.y - (person.mode === 'seated' ? 64 : 80));
+    tag(`${id}-pill`, `pill ${person.resting ? 'stop' : person.rest || person.mode === 'back' ? 'rest' : person.leisure ? 'fun' : person.recall ? 'recall' : ''}`, person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.status, p.x, p.y - (person.mode === 'seated' ? 64 : 80));
   }
   const h = v.people.hero;
   const showGhost = ui.shadow && v.shadow && h.mode === 'carry' && h.tripLevel > h.initialLevel;
@@ -518,7 +541,9 @@ app.ticker.add((t) => {
   if (rack.n !== v.herbs) { drawRack(v.herbs); rack.n = v.herbs; }
   tag('rack', 'place', `${places.rack.label} ${v.herbs}／${v.herbCapacity} · 在途 ${v.herbInFlight}`, places.rack.x - 30, places.rack.y + 36); // 名牌放在藥架左下，避開院中出發點上的人物狀態
   tag('herb', 'place', places.herb.label, places.herb.x, places.herb.y - 46);
-  tag('bench', 'place', places.bench.label, places.bench.x + 92, places.bench.y + 4); // 名牌放石凳右側，頭頂留給坐著的人的狀態
+  tag('bench', 'place', places.bench.label, places.bench.x + 92, places.bench.y + 4);
+  tag('view', 'place', places.view.label, places.view.x - 58, places.view.y - 4); // 名牌放在石頭左側，腳下留給人物名牌
+  tag('yard', 'place', places.yard.label, places.yard.x + 66, places.yard.y - 6); // 名牌放石凳右側，頭頂留給坐著的人的狀態
   tag('ghost', 'ghost', showGhost ? '主角初始影子・不入帳' : null, g ? g.x : 0, g ? g.y : 0, 6);
   tag('master', '', '師父 · 打坐', 1300, 512, 6);
   tag('senior', '', '師兄 · 掃地', 1120, 528, 6);
