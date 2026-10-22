@@ -63,7 +63,7 @@ const shot = (page, name) => paused(page, async () => { await page.screenshot({ 
     await wait(page, () => ['success', 'late'].includes(window.demo.snapshot().people.cousin.auto.state));
     [s, t] = await shot(page, 'desk-3-result');
     const k = s.people.cousin.auto.state;
-    check(k === 'success' ? s.boar.mode === 'flee' && s.boar.threat >= 80 : s.boar.mode !== 'prep', `第一訪結果：${k}，野豬 ${s.boar.label} 威脅 ${s.boar.threat.toFixed(0)}；${t}`);
+    check(k === 'success' ? s.boar.mode === 'flee' && s.boar.threat >= 80 : s.boar.mode !== 'prep', `第 ${s.boar.visit} 訪結果：${k}，野豬 ${s.boar.label} 威脅 ${s.boar.threat.toFixed(0)}；${t}`);
     await wait(page, () => !window.demo.snapshot().people.cousin.guarding);
     s = await snap(page);
     check(s.people.cousin.guardOrder == null, `熟手回生活：${s.people.cousin.status}`);
@@ -90,7 +90,9 @@ const shot = (page, name) => paused(page, async () => { await page.screenshot({ 
   await page.click('#panel [data-auto="allow"]');
   await page.click('#roster [data-person="cousin"]');
   await page.click('#panel [data-auto="allow"]');
-  await wait(page, () => window.demo.snapshot().people.cousin.auto.wanting);
+  // 挑水／採藥前半段才按：留給真人反應時間（交付即出發，太晚按就已出發）
+  const early = () => { const p = window.demo.snapshot().people.cousin; return p.auto.wanting && p.mode === 'carry' && ['down', 'dip', 'herbOut', 'herbGather'].includes(p.phase); };
+  await wait(page, early, null, 900000);
   await page.click('#play');
   const v3 = (await snap(page)).boar.visit;
   await page.click('#panel .auto [data-cmd="cancel"]');
@@ -118,7 +120,7 @@ const shot = (page, name) => paused(page, async () => { await page.screenshot({ 
   await np.screenshot({ path: `${OUT}/narrow-1-settings.png` });
   await np.click('#play');
   await np.keyboard.press('4');
-  await wait(np, () => window.demo.snapshot().people.cousin.auto.wanting);
+  await wait(np, () => { const p = window.demo.snapshot().people.cousin; return p.auto.wanting && p.mode === 'carry' && ['down', 'dip', 'herbOut', 'herbGather'].includes(p.phase); }, null, 900000);
   await np.click('#play');
   const cb = np.locator('#panel .auto [data-cmd="cancel"]');
   check(await cb.isVisible(), `390px：有意願時面板出現「取消意願」（${await autoText(np)}）`);
