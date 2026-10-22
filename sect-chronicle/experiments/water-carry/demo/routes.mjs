@@ -82,6 +82,8 @@ export function createRoutes(waterPoints) {
   // LP-08 整理護欄：沿同一條防守路往返，到點在防守點面向護欄動手。
   const FIX_AS = { toFix: 'toGuard', fromFix: 'fromGuard', fix: 'guardWait' };
   function of(id, p) {
+    // LP-11：清理中直接用模型在權威 tick 取樣的場景位置（palm.mjs 同一幾何），畫面不另算。
+    if (p.cleaning) return { x: p.pos.x, y: p.pos.y, face: p.cface, route: null, geo: p.mode, travelled: p.walked };
     if (p.mode === 'toFix' || p.mode === 'fromFix') return { ...guardPlace(FIX_AS[p.mode], p.fixLeg.k), geo: p.mode };
     if (p.mode === 'fix') return { ...guardPlace('guardWait', 1), geo: 'fix' };
     if (p.mode === 'toGuard' || p.mode === 'fromGuard') return guardPlace(p.mode, p.guardLeg.k);

@@ -17,6 +17,10 @@
 // LP-09 自主整理：每人「允許自主整理」預設關（與護院分開）；順手照看＝損痕≥1、累積再整理＝損痕到 3 才有意願。
 // 機會只由真護欄接觸開（接觸序號在野豬撞的結算點遞增，封頂後仍開新輪）；全隊每輪最多一次自主正式受理，候補不消耗。
 // 候補不寫 fix／fixBy；院中端點合法才沿 LP08 同一路徑正式出發。人工 fix 結束當輪；有效改令清當人候補並抑制到下一次真碰撞。示意見 docs/LP09_HANDOFF.md。
+// LP-11 手動掌法清鼠：玩家選一人明派，全場只一份清理（等待／前往／起手／收勢／返院都占額，真返院才釋放）。原趟交付完／必要恢復到 80、
+// 院中才出發；沿 palm.mjs 固定節點與 ≤40 短段走，位置在權威 tick 取樣。掌距 ≤28、起手開始扣 2 精力；接觸 tick 重驗同一鼠才擊倒一次。
+// 三鼠：兩普通嗅地、一警覺（≤50 察覺清理者或 100 內同伴實際受掌就以 120／秒沿西出口逃，出界失效不追）。無 HP／XP／收益／趟次。示意見 docs/LP11_HANDOFF.md。
+import { HOME, RATS, EXIT, PALM, SKILLS, GO_NODES, HOME_NODES, dist, inZone, validRat, nearest, standFor, stepToward, legs } from './palm.mjs';
 export const STEP_MS = 1000 / 60;
 
 export const RULES = Object.freeze({
@@ -60,6 +64,10 @@ export const UP_REACT = Object.freeze({ hero: 'late', cousin: 'early' });
 export const UP_REACT_LABEL = { early: '順手照看', late: '累積再整理' };
 export const GUARD_LABEL = { toGuard: '趕去防守點', guardWait: '在防守點等野豬', shout: '喝止／拍掌', fromGuard: '從防守點返院' };
 const GUARD_MODES = ['toGuard', 'guardWait', 'shout', 'fromGuard'];
+export const CLEAN_LABEL = { toRat: '走向測試鼠', windup: '起手', recover: '收勢', fromRat: '清理結束返院' };
+const CLEAN_MODES = ['toRat', 'windup', 'recover', 'fromRat'];
+export const CLEAN_END = { clear: '範圍內沒有有效目標', energy: `精力不足 ${PALM.cost}，不能起下一掌`, canceled: '玩家取消／改令', none: '出發時已沒有有效目標' };
+export const RAT_MODE = { sniff: '嗅地', flee: '逃離中', down: '擊倒', gone: '逃出範圍（不追）' };
 // 兩人各自的偏好活動：可替換的展示 fixture，不由體態或個性數值推導，也沒有效果。
 export const PREFS = Object.freeze({
   hero: Object.freeze({ id: 'view', label: '看山', place: '觀景石', doing: '看山' }),
@@ -129,10 +137,14 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       fix: null, fixDue: false, fixResult: null,
       // LP-09：fixSrc／fixOpp＝正式整理的來源與受理時的碰撞機會；upWant＝整理候補（機會編號）；upSuppress＝玩家改令抑制的機會。
       fixSrc: null, fixOpp: null, upAllow: false, upReact: UP_REACT[id] || 'late', upWant: null, upSuppress: null, upNote: null,
+      // LP-11：pos＝清理中的模型場景位置（不清理時在院中端點）；cface 朝向；walked 只給畫面換步；palm＝掌法比較 fixture（新局初學）。
+      pos: { x: HOME[0], y: HOME[1] }, cface: -1, walked: 0, palm: 'novice', cleanResult: null,
     }])),
     // LP-09：contact＝最新真護欄接觸序號（＝目前整理機會）；upUsed＝已被自主或人工受理結束的機會。
     contact: 0, upUsed: 0,
     fixBy: null, // 這段護欄唯一的未完成整理名額（人物 id）
+    // LP-11：clean＝全場唯一清理名額（by／phase wait|go|back／target／downs／spent）；rats 只在新局重設。
+    clean: null, rats: RATS.map((r) => ({ ...r, mode: 'sniff', exit: 0, why: null })),
     // 野豬：d＝離棲地沿固定路的距離；visit 是最近一次來訪編號，active＝這次來訪仍可派人（退走開始即失效）。
     boar: { mode: 'habitat', e: B.start * Q, t: B.threatStart * Q, d: 0, leg: null, steps: 0, need: 0, visit: 0, active: false, hits: 0, marks: 0, why: null, last: null },
     shadow: { active: false, job: null, phase: null, steps: 0, need: null },
@@ -147,7 +159,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   const reserve = (job, d) => { if (job === 'herb') s.herbInFlight += d; else s.inFlight += d; };
 
   function depart(p) {
-    if (p.motion.mode !== 'idle' || p.rest || p.guardOrder != null || p.fix || full(p.job)) return false;
+    if (p.motion.mode !== 'idle' || p.rest || p.guardOrder != null || p.fix || cleaning(p) || full(p.job)) return false;
     p.motion = { mode: 'carry', job: p.job, phase: 0, steps: 0, need: phaseSteps(speedsFor(p.level, rules), lengths[p.job], rules), tripLevel: p.level, tripStart: s.tick };
     reserve(p.job, 1);
     if (p.id === 'hero') s.shadow = { active: true, job: p.job, phase: 0, steps: 0, need: phaseSteps(speedsFor(p.initialLevel, rules), lengths[p.job], rules) };
@@ -187,6 +199,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   function atHome(p) {
     if (p.rest !== 'manual' && p.energy <= E.restAt) { p.rest = 'auto'; p.why = `精力 ${Math.floor(p.energy)} ≤ ${E.restAt}，自己去恢復`; }
     if (p.rest) goSeat(p);
+    else if (cleaning(p) && s.clean.phase === 'wait') goClean(p);
     else if (p.fix === 'wait') goFix(p);
     else if (p.guardOrder != null && guardLive(p)) goGuard(p);
     else { if (p.guardOrder != null) expireGuard(p); p.motion = idle(p.level); p.why = null; }
@@ -230,7 +243,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (p.suppress === v) return 'player';
     if (p.tried === v) return 'tried';
     if (p.rest === 'manual' || p.pending === 'rest' || p.recall) return 'held';
-    if (p.guardOrder != null) return 'self';
+    if (p.guardOrder != null || cleaning(p)) return 'self';
     if (who && who !== p.id) return 'peer';
     return null;
   }
@@ -366,6 +379,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (s.fixBy) return `${nameOf(s.fixBy)}已在整理這段護欄`;
     if (m === 'fromFix') return '正從護欄返院：回到院中後才能再派';
     if (p.guardOrder != null || GUARD_MODES.includes(m)) return '正在驅離野豬（含返院）：回院中後再派';
+    if (cleaning(p)) return '正在清理測試鼠（含返院）：回院中後再派';
     if (s.boar.marks <= 0) return '護欄沒有損痕';
     if (boarSeen()) return '看得見野豬：等牠離開視線再整理';
     if (p.rest === 'manual') return '已停工：下令開始工作才解除';
@@ -392,7 +406,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (p.upSuppress === s.contact) return 'player';
     if (p.rest === 'manual' || p.pending === 'rest' || p.recall) return 'held';
     if (p.guardOrder != null) return 'guard';
-    if (p.fix) return 'self';
+    if (p.fix || cleaning(p)) return 'self';
     if (s.fixBy) return 'peer';
     if (boarSeen()) return 'threat';
     if (s.boar.marks <= 0) return 'clean';
@@ -443,6 +457,156 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     }
     return { ok: true, text: p.upAllow ? `允許自主整理：${UP_REACT_LABEL[p.upReact]}` : '不自主整理（仍可由玩家派遣）' };
   }
+  // ---------- LP-11 手動掌法清鼠 ----------
+  const cleaning = (p) => !!s.clean && s.clean.by === p.id; // 含等待與返院：名額到真返院才釋放
+  const ratById = (id) => s.rats.find((r) => r.id === id);
+  const clog = (p, kind, extra = {}) => s.log.push({ tick: s.tick, person: p.id, kind, ...extra });
+  // 一短段：出發時鎖目前腳力的空手速度與實際距離算步數；位置每 tick 由 from→to 取樣。
+  function walkTo(p, mode, to, queue = []) {
+    const from = { x: p.pos.x, y: p.pos.y }, len = dist(from, to);
+    p.cface = Math.abs(to.x - from.x) < 1e-9 ? p.cface : to.x < from.x ? -1 : 1;
+    p.motion = { mode, job: null, phase: null, steps: 0, need: walkSteps(p.level, len, rules), tripLevel: p.level, from, to, queue };
+  }
+  const walkQueue = (p, mode, queue) => { const to = queue.shift(); walkTo(p, mode, to, queue); };
+  function cleanOrder(p) {
+    s.clean = { by: p.id, phase: 'wait', target: null, downs: 0, spent: 0, end: null, tick: s.tick };
+    p.cleanResult = null;
+    clog(p, 'cleanOrder');
+    const m = p.motion.mode;
+    if (m === 'idle') { atHome(p); return { ok: true, text: p.rest ? `精力低，先恢復到 ${E.backAt} 再去清理` : '從院中出發，去西院清理測試鼠' }; }
+    if (m === 'carry') return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後去清理測試鼠`, pending: true };
+    if (m === 'toFun') return { ok: true, text: `走到${prefs[p.id].place}後回院中，再去清理` };
+    if (m === 'fun' || m === 'fromFun') return { ok: true, text: '回院中後去清理' };
+    if (m === 'toSeat' || m === 'seated') return { ok: true, text: `先恢復到 ${E.backAt}，回院中再去清理` };
+    return { ok: true, text: '回到院中就去清理' };
+  }
+  function cleanReason(p) {
+    const m = p.motion.mode;
+    if (cleaning(p)) return s.clean.phase === 'back' ? '正在清理返院：回到院中後才能再派' : '已在清理（重送不重新出發）';
+    if (s.clean) return `${nameOf(s.clean.by)}已在清理（全場只一份）`;
+    if (p.rest === 'manual') return '已停工：下令開始工作才解除';
+    if (p.pending === 'rest') return '已排定本趟後停工';
+    if (p.guardOrder != null || GUARD_MODES.includes(m)) return '正在驅離野豬（含返院）：回院中後再派';
+    if (p.fix || FIX_MODES.includes(m)) return '正在整理護欄（含返院）：回院中後再派';
+    if (!s.rats.some(validRat)) return '範圍內沒有有效的測試鼠';
+    return '';
+  }
+  // 院中端點出發：再核有效目標；沒有就結束、立即釋放（還沒離開院中）。
+  function goClean(p) {
+    const t = nearest(s.rats, p.pos);
+    if (!t) { p.cleanResult = { kind: 'none', downs: 0, spent: 0, tick: s.tick }; clog(p, 'clean:none'); s.clean = null; p.motion = idle(p.level); return; }
+    s.clean.phase = 'go'; s.clean.target = t.id; p.why = '玩家派去清理測試鼠';
+    clog(p, 'toRat', { target: t.id });
+    walkQueue(p, 'toRat', legs(p.pos, GO_NODES));
+  }
+  // 站在節點上：目標失效就換最近有效者；沒有 2 精力就收工；在掌距內就起手；否則朝站位再走一短段。
+  function approach(p) {
+    const c = s.clean;
+    let t = ratById(c.target);
+    if (!t || !validRat(t)) {
+      t = nearest(s.rats, p.pos);
+      if (!t) { finishClean(p, 'clear'); return; }
+      c.target = t.id; clog(p, 'palm:retarget', { target: t.id });
+    }
+    if (p.energy < PALM.cost) { finishClean(p, 'energy'); return; }
+    if (dist(p.pos, t) <= PALM.reach) { windup(p, t); return; }
+    walkTo(p, 'toRat', stepToward(p.pos, standFor(t)));
+  }
+  function windup(p, t) {
+    p.energy -= PALM.cost; s.clean.spent += PALM.cost; // 真正開始起手才扣，一次；中止不退
+    p.cface = t.x < p.pos.x ? -1 : 1;
+    p.motion = { mode: 'windup', job: null, phase: null, steps: 0, need: SKILLS[p.palm].windup, tripLevel: p.level, target: t.id };
+    clog(p, 'palm:windup', { target: t.id, skill: p.palm });
+  }
+  // 接觸 tick：用本 tick 已移動／出界後的鼠與人物位置重驗同一 ID；成立才擊倒一次，之後才傳同伴目擊。
+  function contact(p) {
+    const t = ratById(p.motion.target);
+    if (t && validRat(t) && dist(p.pos, t) <= PALM.reach) {
+      t.mode = 'down'; t.why = `${nameOf(p.id)}一掌擊倒`;
+      s.clean.downs += 1; s.clean.lastHit = { rat: t.id, tick: s.tick };
+      clog(p, 'palm:hit', { target: t.id, skill: p.palm });
+      for (const r of s.rats) if (r.kind === 'alert' && r.mode === 'sniff' && dist(r, t) <= PALM.witness) fleeRat(r, `同伴鼠${t.id}受掌`);
+      p.motion = { mode: 'recover', job: null, phase: null, steps: 0, need: SKILLS[p.palm].recover, tripLevel: p.level, target: t.id };
+      return;
+    }
+    clog(p, 'palm:miss', { target: p.motion.target });
+    approach(p); // 目標先失效：不出掌、不隔空補中，已花不退；換有效目標或結束
+  }
+  function finishClean(p, kind) {
+    const c = s.clean;
+    c.phase = 'back'; c.end = kind;
+    p.cleanResult = { kind, downs: c.downs, spent: c.spent, tick: s.tick };
+    clog(p, 'clean:' + kind, { downs: c.downs });
+    goHomeClean(p);
+  }
+  function goHomeClean(p) {
+    const q = legs(p.pos, HOME_NODES);
+    if (q.length) walkQueue(p, 'fromRat', q); else homeClean(p);
+  }
+  // 真返院：才釋放名額，再核最新工作／停工／必要恢復與容量（沿 atHome 與出發迴圈）。
+  function homeClean(p) {
+    p.pos = { x: HOME[0], y: HOME[1] }; s.clean = null;
+    clog(p, 'clean:home');
+    if (p.why === '玩家派去清理測試鼠') p.why = null;
+    p.motion = idle(p.level);
+    atHome(p);
+  }
+  // 專用取消／有效改令：未出發立即釋放；前往走完當前短段再返院；起手中止（不退）、收勢中保留結果都立刻返院；返院中拒絕。
+  function cancelClean(p) {
+    const c = s.clean;
+    if (!c || c.by !== p.id || c.phase === 'back') return false;
+    p.cleanResult = { kind: 'canceled', downs: c.downs, spent: c.spent, tick: s.tick };
+    clog(p, 'clean:canceled', { downs: c.downs, mode: p.motion.mode });
+    if (c.phase === 'wait') { s.clean = null; return true; }
+    c.phase = 'back'; c.end = 'canceled';
+    if (p.why === '玩家派去清理測試鼠') p.why = null;
+    if (p.motion.mode === 'windup' || p.motion.mode === 'recover') goHomeClean(p);
+    return true;
+  }
+  function fleeRat(r, why) { r.mode = 'flee'; r.why = why; s.log.push({ tick: s.tick, kind: 'rat:flee', rat: r.id, why }); }
+  function ratStep() {
+    for (const r of s.rats) {
+      if ((r.mode !== 'flee' && r.mode !== 'gone') || r.exit >= EXIT.length) continue;
+      let left = PALM.flee / 60;
+      while (left > 0 && r.exit < EXIT.length) {
+        const [tx, ty] = EXIT[r.exit], d = Math.hypot(tx - r.x, ty - r.y);
+        if (d <= left) { r.x = tx; r.y = ty; left -= d; r.exit += 1; } else { r.x += (tx - r.x) * left / d; r.y += (ty - r.y) * left / d; left = 0; }
+      }
+      if (r.mode === 'flee' && !inZone(r.x, r.y)) { r.mode = 'gone'; s.log.push({ tick: s.tick, kind: 'rat:gone', rat: r.id }); }
+    }
+  }
+  function cleanStep() {
+    ratStep();
+    const c = s.clean;
+    if (c && c.phase !== 'wait') {
+      const p = s.people[c.by], h = p.motion;
+      if (h.mode === 'toRat' || h.mode === 'fromRat') {
+        h.steps += 1;
+        const k = Math.min(1, h.steps / h.need), px = p.pos.x, py = p.pos.y;
+        p.pos = h.steps >= h.need ? { x: h.to.x, y: h.to.y } : { x: h.from.x + (h.to.x - h.from.x) * k, y: h.from.y + (h.to.y - h.from.y) * k };
+        p.walked += Math.hypot(p.pos.x - px, p.pos.y - py);
+        if (h.steps >= h.need) {
+          if (h.mode === 'fromRat') { if (h.queue.length) walkQueue(p, 'fromRat', h.queue); else homeClean(p); }
+          else if (c.phase === 'back') goHomeClean(p); // 取消：走完這段就從這裡返院，不續走原路
+          else if (h.queue.length) walkQueue(p, 'toRat', h.queue);
+          else approach(p);
+        }
+      } else if (h.mode === 'windup') { h.steps += 1; if (h.steps >= h.need) contact(p); }
+      else if (h.mode === 'recover') { h.steps += 1; if (h.steps >= h.need) approach(p); }
+    }
+    // 察覺：只看正式清理者的模型位置（不讀鏡頭／所選人／未送指令），無遮擋視線；返院中不算逼近。
+    const q = s.clean && s.clean.phase !== 'wait' ? s.people[s.clean.by] : null;
+    if (q && q.motion.mode !== 'fromRat') for (const r of s.rats) if (r.kind === 'alert' && r.mode === 'sniff' && dist(r, q.pos) <= PALM.see) fleeRat(r, `察覺${nameOf(q.id)}逼近`);
+  }
+  // 掌法比較 fixture：只有全場沒有清理任務時可換；不算人工工作覆寫。
+  function setPalm(id, skill) {
+    const p = s.people[id];
+    if (!p) return { ok: false, reason: '沒有這個工作者' };
+    if (!SKILLS[skill]) return { ok: false, reason: '沒有這個掌法設定' };
+    if (s.clean) return { ok: false, reason: '有清理任務（含等待與返院）：真返院後才能換掌法比較設定' };
+    if (p.palm !== skill) { p.palm = skill; clog(p, 'palm:skill', { skill }); }
+    return { ok: true, text: `掌法比較 fixture：${SKILLS[skill].label}（起手 ${SKILLS[skill].windup}／收勢 ${SKILLS[skill].recover} tick）` };
+  }
   function goSeat(p) {
     p.motion = { mode: 'toSeat', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level };
     s.log.push({ tick: s.tick, person: p.id, kind: 'toSeat', rest: p.rest });
@@ -479,7 +643,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     return false;
   }
   // 停工或待恢復（rest 非空）都要離開休閒；恢復自主只清叫回，不能讓待恢復的人卡在活動點。
-  const funOver = (p) => !!p.rest || p.recall || p.guardOrder != null || !!p.fix || wants(p) || wantsUp(p) || slotFor(p);
+  const funOver = (p) => !!p.rest || p.recall || p.guardOrder != null || !!p.fix || cleaning(p) || wants(p) || wantsUp(p) || slotFor(p);
   function goBack(p) {
     p.why = `精力恢復到 ${E.backAt}，自己回去`;
     p.motion = { mode: 'back', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level };
@@ -545,6 +709,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         if (h.steps >= h.need) p.shoutDone = true; // 成效在本 tick 野豬結算時才判，不在這裡提高威脅
       } else if (h.mode === 'idle' && !p.rest && p.energy <= E.restAt) atHome(p);
     }
+    // LP-11：鼠移動→清理者移動／起手／接觸→察覺；回到院中的清理者在護院／整理判斷與出發迴圈之前就已重查生活。
+    cleanStep();
     // LP-07：人物結算後、原工作出發迴圈前，集中判意願與正式受理；回到院中端點的人先決定是否護院，才會接下一趟。
     wantStep();
     acceptStep();
@@ -560,7 +726,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     // 出發輪替之後才看閒暇：有合法容量一定先工作；只在實存滿時去休閒，僅在途占滿就留在院中等。
     for (const id of ids) {
       const p = s.people[id];
-      if (p.motion.mode === 'idle' && !p.rest && !p.recall && p.guardOrder == null && !wants(p) && !wantsUp(p) && p.energy > E.restAt && prefs[id] && stocked(p.job)) goFun(p);
+      if (p.motion.mode === 'idle' && !p.rest && !p.recall && p.guardOrder == null && !cleaning(p) && !wants(p) && !wantsUp(p) && p.energy > E.restAt && prefs[id] && stocked(p.job)) goFun(p);
     }
     // 人的工作交付、移動與喝止進度都先結算完，最後才結算野豬（誘因看交付後的實存）。
     boarStep();
@@ -660,6 +826,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const name = JOBS[job].label, mode = p.motion.mode;
     cancelGuard(p); // 較新的改工作／開始取消尚未完成的驅離
     dropFix(p, 'canceled'); // 也取消尚未完成的整理；前往途中走完這段再回
+    cancelClean(p); // 也取消清理；前往途中走完這段、起手／收勢中立刻返院
     if (mode === 'carry') {
       if (job === p.motion.job) { p.pending = null; return { ok: true, text: `取消待執行，繼續${name}` }; }
       p.pending = job;
@@ -688,6 +855,13 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       p.why = p.rest === 'auto' ? `已解除停工；精力未到 ${E.backAt}，先恢復` : null;
       return { ok: true, text: mode === 'toFix' ? `走到護欄後回院中${name}` : `回院中後${name}` };
     }
+    // 清理往返中：只改要回去的工作；走完當前短段（或立刻收手）真返院後才做。
+    if (CLEAN_MODES.includes(mode)) {
+      p.job = job; p.pending = null;
+      if (p.rest === 'manual') p.rest = p.energy < E.backAt ? 'auto' : null;
+      p.why = p.rest === 'auto' ? `已解除停工；精力未到 ${E.backAt}，先恢復` : null;
+      return { ok: true, text: mode === 'toRat' ? `取消清理：走完這段後回院中${name}` : `回院中後${name}` };
+    }
     // 驅離往返中：只改要回去的工作；去防守點途中走完這段，等候／喝止中已立刻返院。停工中的明確開始照 LP-04 解除，未到 80 先恢復。
     if (GUARD_MODES.includes(mode)) {
       p.job = job; p.pending = null;
@@ -710,6 +884,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   function recall(p, name = JOBS[p.job].label) {
     p.recall = true; p.why = '玩家叫回';
     dropFix(p, 'canceled'); // 有效叫回也取消待整理
+    cancelClean(p); // 也取消尚未出發的清理
     s.log.push({ tick: s.tick, person: p.id, kind: 'recall', job: p.job });
     const m = p.motion.mode;
     return { ok: true, text: m === 'toFun' ? `走到${prefs[p.id].place}後回院中${name}` : m === 'fun' ? `起身回院中${name}` : `回到院中就${name}；沒有空位就待命` };
@@ -721,9 +896,15 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (!a) return { ok: false, reason: '沒有這個指令' };
     if (!a.enabled) return { ok: false, reason: a.reason };
     // LP-07：以下有效指令（改工作／開始／停工／取消待執行／叫回）清該人候補並抑制本訪自主；拒絕的已在上面返回。
-    if (['start', 'restAfterTrip', 'cancel', 'recall', 'fix', 'fixCancel'].includes(cmd) || cmd.startsWith('work:')) override(p);
+    if (['start', 'restAfterTrip', 'cancel', 'recall', 'fix', 'fixCancel', 'clean', 'cleanCancel'].includes(cmd) || cmd.startsWith('work:')) override(p);
     // LP-09：同一批有效指令＋人工護院也清當人整理候補、抑制目前碰撞機會（與 LP07 的本訪抑制分開記）。
-    if (['start', 'restAfterTrip', 'cancel', 'recall', 'fixCancel', 'guard'].includes(cmd) || cmd.startsWith('work:')) upOverride(p);
+    if (['start', 'restAfterTrip', 'cancel', 'recall', 'fixCancel', 'guard', 'clean', 'cleanCancel'].includes(cmd) || cmd.startsWith('work:')) upOverride(p);
+    if (cmd === 'clean') return cleanOrder(p);
+    if (cmd === 'cleanCancel') {
+      const m = p.motion.mode, waiting = s.clean.phase === 'wait';
+      cancelClean(p);
+      return { ok: true, text: waiting ? '取消清理：還沒出發，名額已釋放，原工作照舊' : m === 'toRat' ? '取消清理：走完這段後返院' : m === 'windup' ? '取消清理：收手返院（這掌未出，已花 2 精力不退）' : '取消清理：收勢後的結果保留，返院' };
+    }
     if (cmd === 'upCancel') { upOverride(p); return { ok: true, text: '已取消這輪整理意願；下一次護欄被撞才再想' }; }
     if (cmd === 'fix') return fixOrder(p);
     if (cmd === 'fixCancel') {
@@ -737,6 +918,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (cmd === 'restAfterTrip') {
       cancelGuard(p);
       dropFix(p, 'canceled');
+      cancelClean(p);
       const mode = p.motion.mode;
       if (mode === 'carry') { p.pending = 'rest'; return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後停工休息`, pending: true }; }
       p.rest = 'manual'; p.why = '玩家下令停工'; p.pending = null; p.recall = false;
@@ -748,6 +930,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       if (mode === 'toGuard') return { ok: true, text: '走到防守點後回院中，再去座位停工' };
       if (mode === 'fromGuard' || mode === 'fromFix' || mode === 'fix') return { ok: true, text: '回院中後去座位停工' };
       if (mode === 'toFix') return { ok: true, text: '走到護欄後回院中，再去座位停工' };
+      if (mode === 'toRat') return { ok: true, text: '取消清理：走完這段後回院中，再去座位停工' };
+      if (CLEAN_MODES.includes(mode)) return { ok: true, text: '回院中後去座位停工' };
       return { ok: true, text: '改為停工：回滿也不會自己開工' };
     }
     if (cmd === 'recall') return recall(p);
@@ -793,8 +977,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const cur = carrying ? p.motion.job : p.job;
     const stopped = p.rest === 'manual', fun = ['toFun', 'fun', 'fromFun'].includes(p.motion.mode);
     const guarding = GUARD_MODES.includes(p.motion.mode), g = guarding || p.guardOrder != null;
-    const fixing = FIX_MODES.includes(p.motion.mode), f = fixing || !!p.fix;
-    const inRest = p.motion.mode !== 'idle' && !carrying && !fun && !guarding && !fixing;
+    const fixing = FIX_MODES.includes(p.motion.mode), f = fixing || !!p.fix || cleaning(p);
+    const inRest = p.motion.mode !== 'idle' && !carrying && !fun && !guarding && !fixing && !CLEAN_MODES.includes(p.motion.mode);
     // 已在做這份工作、也沒有別的待執行時，再下同一工作沒有意義。
     const workOpt = (job) => {
       const name = JOBS[job].label;
@@ -825,8 +1009,16 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       fixOpt(p),
       { id: 'fixCancel', label: '取消本次整理', detail: p.motion.mode === 'toFix' ? '走到護欄後直接返院；不清痕' : p.motion.mode === 'fix' ? '停手返院；這一階未完成、已花的時間精力不退' : '只取消整理，原工作／叫回／恢復照舊',
         enabled: !!p.fix, hidden: !p.fix, reason: '沒有未完成的整理' },
+      cleanOpt(p),
+      { id: 'cleanCancel', label: '取消清理', detail: p.motion.mode === 'toRat' ? '走完這段後返院' : p.motion.mode === 'windup' ? '收手返院；這掌已花 2 精力不退' : p.motion.mode === 'recover' ? '已接觸的結果保留，返院' : '還沒出發：立即釋放名額，原工作照舊',
+        enabled: cleaning(p) && s.clean.phase !== 'back', hidden: !cleaning(p), reason: cleaning(p) ? '已在返院：到院中才釋放名額，不重複取消' : '沒有清理任務' },
       { id: 'upCancel', label: '取消整理意願', detail: '只取消這輪自己去整理的意願；不解除停工／叫回／恢復', enabled: wantsUp(p), hidden: !wantsUp(p), reason: '沒有整理意願' },
     ];
+  }
+  function cleanOpt(p) {
+    const reason = cleanReason(p);
+    return { id: 'clean', label: '清理測試鼠', detail: p.motion.mode === 'carry' ? '本趟交付後去西院清理（掌法，一掌起手扣 2 精力）' : '走去西院清理測試鼠（掌法，一掌起手扣 2 精力），結束後返院',
+      enabled: !reason, reason, hidden: false };
   }
   function fixOpt(p) {
     const reason = fixReason(p);
@@ -839,7 +1031,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       : who === p.id ? '已在處理這次野豬（重送不重新出發）'
         : who ? `${nameOf(who)}已在處理；要換人先對${nameOf(who)}改工作或停工`
           : stopped ? '已停工：下令開始工作才解除' : p.pending === 'rest' ? '已排定本趟後停工'
-            : p.fix || FIX_MODES.includes(p.motion.mode) ? '正在整理護欄（含返院）：先回院中再派驅離' : '';
+            : p.fix || FIX_MODES.includes(p.motion.mode) ? '正在整理護欄（含返院）：先回院中再派驅離'
+              : cleaning(p) ? '正在清理測試鼠（含返院）：先回院中再派驅離' : '';
     return { id: 'guard', label: '驅離野豬', detail: p.motion.mode === 'carry' ? '本趟交付後去防守點；野豬到護欄時喝止' : '走去防守點；野豬到護欄時喝止，已走就返院',
       enabled: !reason, reason, hidden: !b.active && p.guardOrder == null };
   }
@@ -862,6 +1055,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
                 : h.mode === 'fromFun' ? '從休閒返院'
                   : GUARD_LABEL[h.mode] ? GUARD_LABEL[h.mode]
                   : FIX_LABEL[h.mode] ? FIX_LABEL[h.mode]
+                  : CLEAN_LABEL[h.mode] ? (h.mode === 'toRat' && s.clean && s.clean.phase === 'back' ? '清理已取消，走完這段' : CLEAN_LABEL[h.mode])
             : p.recall ? (st.amount + st.inFlight >= st.cap ? `玩家叫回，等${place}空位` : '玩家叫回，準備出發')
             : st.amount >= st.cap ? (p.job === 'herb' ? '等空位（藥架已滿，藥草不會自己耗用）' : '等用水（水缸已滿）')
               : st.amount + st.inFlight >= st.cap ? `等空位（${place}與在途已滿）` : '準備出發';
@@ -874,7 +1068,14 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         : h.mode === 'fromFix' ? (stopped ? '到院中後回座位停工' : p.energy <= E.restAt ? `到院中後先去恢復到 ${E.backAt}` : `到院中重查${place}，有空位就${name}`)
           : p.fix === 'wait' ? (h.mode === 'carry' ? `交付後去整理護欄，回來${JOBS[nextJob].label}` : p.rest ? `先恢復到 ${E.backAt}，回院中再去整理護欄` : '回到院中就去整理護欄')
             : null;
-    const next = fixNext ? fixNext : guardNext ? guardNext
+    const cl = cleaning(p) ? s.clean : null, tgt = cl && cl.target;
+    const cleanNext = h.mode === 'toRat' ? (cl.phase === 'back' ? '走完這段後返院' : `走到鼠${tgt}旁（掌距 ≤${PALM.reach}）再起手`)
+      : h.mode === 'windup' ? `起手中：到點以最新位置重驗鼠${tgt}，仍在掌距才擊倒`
+        : h.mode === 'recover' ? '收勢後換最近的有效目標，沒有就返院'
+          : h.mode === 'fromRat' ? (stopped ? '到院中後回座位停工' : p.energy <= E.restAt ? `到院中後先去恢復到 ${E.backAt}` : `到院中重查${place}，有空位就${name}`)
+            : cl && cl.phase === 'wait' ? (h.mode === 'carry' ? `交付後去清理測試鼠，回來${JOBS[nextJob].label}` : p.rest ? `先恢復到 ${E.backAt}，回院中再去清理` : '回到院中就去清理')
+              : null;
+    const next = cleanNext ? cleanNext : fixNext ? fixNext : guardNext ? guardNext
       : h.mode === 'fromGuard' ? (stopped ? '到院中後回座位停工' : `到院中重查${place}，有空位就${name}`)
       : h.mode === 'toGuard' ? `走到防守點後回院中${name}`
       : p.guardOrder != null && h.mode === 'carry' ? `交付後去驅離野豬，回來${JOBS[nextJob].label}`
@@ -918,6 +1119,12 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       fix: p.fix, fixing: FIX_MODES.includes(h.mode), fixResult: p.fixResult,
       fixLeg: h.mode === 'toFix' || h.mode === 'fromFix' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need } : null,
       fixWork: h.mode === 'fix' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need } : null,
+      // LP-11：位置只在清理中離開院中端點；palm 是比較 fixture。
+      cleaning: CLEAN_MODES.includes(h.mode), clean: cl ? { phase: cl.phase, target: cl.target, downs: cl.downs, spent: cl.spent, end: cl.end } : null,
+      cleanResult: p.cleanResult, pos: { x: p.pos.x, y: p.pos.y }, cface: p.cface, walked: p.walked,
+      palm: p.palm, palmLabel: SKILLS[p.palm].label, palmTicks: { windup: SKILLS[p.palm].windup, recover: SKILLS[p.palm].recover },
+      palmStep: h.mode === 'windup' || h.mode === 'recover' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need, target: h.target } : null,
+      cleanLeg: h.mode === 'toRat' || h.mode === 'fromRat' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need, from: { ...h.from }, to: { ...h.to } } : null,
     };
   }
   // 自主護院原因：把「沒允許／觀察中／有意願待交付或恢復／玩家改派／同伴處理／已出發／結果／意願過期」分開講，不用一句「護院中」。
@@ -1000,10 +1207,12 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       herbs: s.herbs, herbCapacity: rules.herbCapacity, herbInFlight: s.herbInFlight, people,
       shadow: s.shadow.active ? phaseView(s.shadow) : null,
       boar: boarView(),
+      rats: s.rats.map((r) => ({ id: r.id, kind: r.kind, mode: r.mode, label: RAT_MODE[r.mode], x: r.x, y: r.y, valid: validRat(r), why: r.why })),
+      clean: s.clean ? { ...s.clean } : null,
       log: s.log.slice(-5),
     };
   }
-  return { state: s, step, dispatch, actions, view, setAuto, setUpkeep, pathLength, lengths, rules };
+  return { state: s, step, dispatch, actions, view, setAuto, setUpkeep, setPalm, pathLength, lengths, rules };
 }
 
 // 牆鐘只決定餵幾步；長空檔最多算250ms，不追趕背景時間。

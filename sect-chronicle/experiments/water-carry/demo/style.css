@@ -89,3 +89,16 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .auto.want, .auto.go { border-color: #c8873e; background: #fff4e4; } .auto.expired, .auto.peer, .auto.player { background: #f3f0ea; }
 .auto.up.want, .auto.up.go { border-color: #6f8f4e; background: #eef5e4; } .auto.up.used, .auto.up.threat, .auto.up.canceled, .auto.up.none { background: #f3f0ea; }
 .autoline { display: block; color: #8a4a1e; }
+/* LP-11 測試弱鼠列與掌法：鼠卡併在野豬卡下方；目標鼠加框，擊倒／逃出淡化。 */
+.ratrow { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 4px; border-top: 1px dashed var(--line); padding-top: 4px; }
+.rats { display: flex; flex-wrap: wrap; gap: 4px; margin: 2px 0; }
+.rat { font-size: 12px; background: #efe4cb; border-radius: 4px; padding: 0 5px; border: 1px solid transparent; }
+.rat.tgt { border-color: var(--gold); background: #fff0c8; } .rat.r-down, .rat.r-gone { color: #8a8070; text-decoration: line-through; } .rat.r-flee { background: #f3d8c8; }
+.bar.palm i { background: #c8962e; }
+.palmbox .btn[disabled] { opacity: .45; cursor: default; }
+.tag.pill.rat { background: rgba(110, 90, 60, .82); font-size: 11px; } .tag.pill.rat.down, .tag.pill.rat.gone { background: rgba(140, 130, 112, .7); }
+@media (max-width: 640px) {
+  .ratnote { display: none; }
+  .rats { flex-wrap: nowrap; overflow: hidden; }
+  .rat { white-space: nowrap; }
+}
