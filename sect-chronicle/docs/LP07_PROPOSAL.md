@@ -1,5 +1,9 @@
 # LP-07候選：自主護院與早／晚接手（#218）
 
+## 最新狀態：修訂版P1–P4已批准（2026-10-22）
+
+擁有人已同意PR225修訂版P1–P4，來源[D17](DECISIONS_AND_SOURCES.md#d17lp-07-自主護院修訂版-p1p4-批准2026-10-22)，精確執行／驗收改讀[正式工作包](LP07_HANDOFF.md)與[Claude prompt](LP07_CLAUDE_PROMPT.md)。本頁保留原候選／取捨／近似試跑沿革；下方「待確認／未批准／不新增D17」只記當時狀態，不撤銷最新批准或重問四項。**採用的是自主候補不預占、院中合法能出發才占額**，不是原PR224工作中即自主預占；手動明派保留D16。批准同步文件合dev／postCI後再由Claude本人新認領，未代啟作者；近似四列表不是新政策已實測。
+
 ## 狀態與玩家問題
 
 2026-10-22，Codex遊戲PO依擁有人「check GitHub updates and review，then plan for the next」整理。基線dev `23ef57ea3e1001b0840d3cc23f5a97fbab573db0`：LP06 #213／PR217工程已交付，#221／#222研究／backlog文件已接受；#219／PR223是另位Claude的鼠群文件研究，不是本片前置。唯一候選順位沿[可見交付](VISIBLE_DELIVERY_PLAN.md)。
