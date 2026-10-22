@@ -1,5 +1,11 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## D14 有限提取：LP-04 精力與自主恢復（2026-10-22）
+
+擁有人已批准先做[#205](https://github.com/lalagrass/earth-ascension/issues/205)，委託PO整理示意值與驗收；[工作包](LP04_HANDOFF.md)／[Claude prompt](LP04_CLAUDE_PROMPT.md)。沿D13同一生活入口、LP03已合成果，只提取一種精力、走去坐下恢復、回原工作與手動停工保持。文件合dev／postCI後可有效認領，並非作者已開工或功能已驗收。
+
+本項從BL-A01～A03／#188的生活方向取最小恢復循環；示意值100起／工作每秒−1／≤30恢復／坐下每秒＋5／≥80續工。手動停工可回滿但不自行開工。#188偏好、聊天、分心，完整生理需求、飲食睡眠／藥草用途等仍未批准；#176舊RT消耗另定。唯一順位入口仍是[可見交付規劃](VISIBLE_DELIVERY_PLAN.md)，下方各歷史「未批准體力」依這次有限例外閱讀。
+
 ## D12：Backlog 優先序（2026-10-20 更新）
 
 擁有人要求進一步排序，Codex（遊戲 PO）整理於 [#165](https://github.com/lalagrass/earth-ascension/issues/165)。**[可見交付規劃的排序表](VISIBLE_DELIVERY_PLAN.md#後續候選順序與既有-backlog)是唯一順位入口**，本文件保存全部構想與來源，不再另維護一份不同順序。

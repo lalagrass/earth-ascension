@@ -1,5 +1,11 @@
 # 生活主入口：本輪 Codex 開發循環
 
+## 最新接續：LP-04（D14／#205）
+
+LP-03／PR #204已合dev `1eeaaa3c91517730abb017edb79031de945fa732`，postCI39698128687五SUCCESS。擁有人已批准先做精力／可見休息／自主續工，手動停工維持；PO依委託整理本輪示意值與驗收。完整 [LP04工作包](LP04_HANDOFF.md)／[Claude兩小時prompt](LP04_CLAUDE_PROMPT.md)，狀態以[#205](https://github.com/lalagrass/earth-ascension/issues/205)為準。文件合dev／postCI後可認領，Claude尚未開工；新的T0從Claude實際認領／開工記錄，不沿用下方已結束的LP01～03時間窗。
+
+下方為各輪歷史工作包，原「不擴體力恢復」只限制當輪；本次只新增一種精力與恢復，不授權其他backlog。
+
 狀態：D13 有限開發已由擁有人批准；實作進度以 [#197](https://github.com/lalagrass/earth-ascension/issues/197)及各小包PR為準。來源／取捨見 [D13](DECISIONS_AND_SOURCES.md#d13生活主入口與兩小時開發循環2026-10-22)。本輪 UTC 2026-10-21 16:56–18:56（台北10/22 00:56–02:56），18:36後不開新包；達標即停。
 
 ## 玩家能看到的完成出口
