@@ -11,6 +11,9 @@
 // LP-07 自主護院：每人「允許」預設關；主動照看＝看見野豬（嗅探／靠近／到護欄）就有意願，受擾再處理＝本訪被撞過才有意願。
 // 意願只是候補：不寫 guardOrder、不占這次來訪；人回到院中端點（交付完一趟、恢復到 80、休閒返院）且仍合法時，才沿原驅離路徑正式出發。
 // 同 tick 多人準備好依 AUTO_ORDER 只取一位；每人每訪自主正式受理最多一次。玩家有效改令清意願並抑制該人本訪。示意見 docs/LP07_HANDOFF.md。
+// LP-08 護欄整理：玩家選一人單次手動派遣；這段護欄同時只有一個未完成整理（待原趟／恢復／返院、前往、動手）。院中合法才沿防守路出發，
+// 到點動手 480 工作 tick（僅這段每秒精力 −1，共 8），完整且安全才損痕 −1 一次；看得見的野豬（嗅探／靠近／撞／可見退走）使未完成效果失效。
+// 無材料／XP／趟次／產物；不自動補派或接下一階。示意見 docs/LP08_HANDOFF.md。
 export const STEP_MS = 1000 / 60;
 
 export const RULES = Object.freeze({
@@ -31,6 +34,8 @@ export const RULES = Object.freeze({
   // LP-06 示意值（PO 依委託選定、未實測）：速度為場景單位／秒，時長為遊戲毫秒。
   boar: { start: 60, threatStart: 0, max: 100, goEnergy: 80, goThreat: 20, restPerSec: 0.5, calmPerSec: 0.25, walkPerSec: 1,
     sniffMs: 2000, approach: 72, flee: 120, hitMs: 2000, hitCost: 18, tiredAt: 30, scaredAt: 60, shoutMs: 1000, shoutThreat: 80, maxMarks: 3 },
+  // LP-08 示意值（D18 已批，待真人校準）：動手 8 遊戲秒、這段每秒精力 −1。
+  fix: { workMs: 8000, workPerSec: 1 },
 });
 // 野豬精力／威脅以 1/240 點為單位存整數：每 tick 恢復 0.5/s＝2、淡忘 0.25/s＝1、走路 1/s＝4，長時間累加沒有浮點漂移。
 export const BOAR_Q = 240;
@@ -38,6 +43,10 @@ export const BOAR_MODE = { habitat: '棲地恢復', out: '走出林緣', sniff: 
 // 未指定路線時的預設長度（棲地→林緣、棲地→護欄外、院中端點→防守點）；畫面用 routes.mjs 的實際折線長度覆寫。
 export const BOAR_LENGTH = { edge: 210, total: 720 };
 export const GUARD_LENGTH = 250;
+// 退走中野豬離棲地多遠以內就看不見：與 routes.mjs boarAt().visible 的固定界線（x > −20）同源，畫面以 boarSeenD 覆寫。
+export const BOAR_SEEN = 50;
+export const FIX_LABEL = { toFix: '走去整理護欄', fix: '整理護欄', fromFix: '從護欄返院' };
+const FIX_MODES = ['toFix', 'fix', 'fromFix'];
 // 同 tick 都準備好時的打平順序（明列、穩定，不由迴圈或畫面順序決定）；不是最短 ETA 或排班公平。
 export const AUTO_ORDER = Object.freeze(['hero', 'cousin']);
 // 預選傾向是可交換 fixture（熟手主動、主角受擾），不由體態／個性推導，也不改速度或能力。
@@ -92,6 +101,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   const seatLen = (id) => (lengths.seat && lengths.seat[id]) || SEAT_LENGTH;
   const funLen = (id) => (lengths.fun && lengths.fun[id]) || SEAT_LENGTH;
   const boarLen = { ...BOAR_LENGTH, ...(lengths.boar || {}) }, guardLen = lengths.guard || GUARD_LENGTH;
+  const seenD = boarLen.seen ?? BOAR_SEEN, fixSteps = Math.ceil(rules.fix.workMs / STEP_MS - 1e-9);
   const B = rules.boar, Q = BOAR_Q, perQ = (perSec) => Math.round(perSec * Q / 60), msSteps = (ms) => Math.ceil(ms / STEP_MS - 1e-9);
   const E = rules.energy, perTick = (perSec) => perSec * STEP_MS / 1000;
   const ids = characters.map((p) => p.id);
@@ -109,7 +119,10 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       // LP-07：guardSrc＝正式驅離來源 auto／manual；want＝有意願的來訪（候補）；suppress＝玩家本訪改派；tried＝本訪已自主出發過。
       // autoNote 是給玩家看的最近原因（變動才記 log）。
       guardSrc: null, autoAllow: false, react: AUTO_REACT[id] || 'late', want: null, suppress: null, tried: null, autoNote: null,
+      // LP-08：fix＝這人持有的未完成整理（wait 待原趟／恢復／返院、go 已出發或動手中）；fixResult 只是給玩家看的最近結果。
+      fix: null, fixDue: false, fixResult: null,
     }])),
+    fixBy: null, // 這段護欄唯一的未完成整理名額（人物 id）
     // 野豬：d＝離棲地沿固定路的距離；visit 是最近一次來訪編號，active＝這次來訪仍可派人（退走開始即失效）。
     boar: { mode: 'habitat', e: B.start * Q, t: B.threatStart * Q, d: 0, leg: null, steps: 0, need: 0, visit: 0, active: false, hits: 0, marks: 0, why: null, last: null },
     shadow: { active: false, job: null, phase: null, steps: 0, need: null },
@@ -124,7 +137,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   const reserve = (job, d) => { if (job === 'herb') s.herbInFlight += d; else s.inFlight += d; };
 
   function depart(p) {
-    if (p.motion.mode !== 'idle' || p.rest || p.guardOrder != null || full(p.job)) return false;
+    if (p.motion.mode !== 'idle' || p.rest || p.guardOrder != null || p.fix || full(p.job)) return false;
     p.motion = { mode: 'carry', job: p.job, phase: 0, steps: 0, need: phaseSteps(speedsFor(p.level, rules), lengths[p.job], rules), tripLevel: p.level, tripStart: s.tick };
     reserve(p.job, 1);
     if (p.id === 'hero') s.shadow = { active: true, job: p.job, phase: 0, steps: 0, need: phaseSteps(speedsFor(p.initialLevel, rules), lengths[p.job], rules) };
@@ -164,6 +177,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   function atHome(p) {
     if (p.rest !== 'manual' && p.energy <= E.restAt) { p.rest = 'auto'; p.why = `精力 ${Math.floor(p.energy)} ≤ ${E.restAt}，自己去恢復`; }
     if (p.rest) goSeat(p);
+    else if (p.fix === 'wait') goFix(p);
     else if (p.guardOrder != null && guardLive(p)) goGuard(p);
     else { if (p.guardOrder != null) expireGuard(p); p.motion = idle(p.level); p.why = null; }
   }
@@ -268,6 +282,81 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (p.guardOrder != null) result(p, 'late');
     leaveGuard(p);
   }
+  // ---------- LP-08 護欄整理 ----------
+  // 看得見的野豬：嗅探／靠近／撞護欄，或退走中仍在可見界線內。畫外 out／棲地不讀心，也不隨鏡頭／視窗改變。
+  const boarSeen = () => { const b = s.boar; return ['sniff', 'approach', 'prep'].includes(b.mode) || (b.mode === 'flee' && b.d > seenD); };
+  const fixWalk = (p, mode) => ({ mode, job: null, phase: null, steps: 0, need: walkSteps(p.level, guardLen, rules), tripLevel: p.level });
+  // 名額只在這裡釋放一次：完成、失效或玩家取消。
+  function endFix(p, kind) {
+    p.fixResult = { kind, tick: s.tick, marks: s.boar.marks };
+    s.log.push({ tick: s.tick, person: p.id, kind: 'fix:' + kind, marks: s.boar.marks });
+    p.fix = null; p.fixDue = false; s.fixBy = null;
+    if (p.why === '玩家派去整理護欄') p.why = null;
+  }
+  // 院中端點出發：再核安全與損痕；不合法就失效，不等野豬走後自動補派。
+  function goFix(p) {
+    if (boarSeen()) { endFix(p, 'threat'); p.motion = idle(p.level); return; }
+    if (s.boar.marks <= 0) { endFix(p, 'clean'); p.motion = idle(p.level); return; }
+    p.fix = 'go'; p.why = '玩家派去整理護欄';
+    p.motion = fixWalk(p, 'toFix');
+    s.log.push({ tick: s.tick, person: p.id, kind: 'toFix' });
+  }
+  function leaveFix(p) {
+    p.motion = fixWalk(p, 'fromFix');
+    s.log.push({ tick: s.tick, person: p.id, kind: 'fromFix' });
+  }
+  function arriveFix(p) {
+    if (p.fix === 'go' && !boarSeen() && s.boar.marks > 0) {
+      p.motion = { mode: 'fix', job: null, phase: null, steps: 0, need: fixSteps, tripLevel: p.level };
+      s.log.push({ tick: s.tick, person: p.id, kind: 'fix' });
+      return;
+    }
+    if (p.fix) endFix(p, boarSeen() ? 'threat' : 'clean');
+    leaveFix(p);
+  }
+  // 取消尚未完成的整理（玩家有效改令／專用取消／叫回／安全失效）：前往途中走完這段再回，動手中立刻返院，待執行只清名額。
+  function dropFix(p, kind) {
+    if (!p.fix) return false;
+    endFix(p, kind);
+    if (p.motion.mode === 'fix') leaveFix(p);
+    return true;
+  }
+  // 每 tick 野豬結算後：先看安全（看得見就失效，不補效果），再結算本 tick 做滿的那一下。
+  function fixStep() {
+    for (const id of ids) {
+      const p = s.people[id];
+      if (!p.fix) continue;
+      if (boarSeen()) { dropFix(p, 'threat'); continue; }
+      if (p.fixDue) {
+        s.boar.marks = Math.max(0, s.boar.marks - 1);
+        endFix(p, 'done');
+        leaveFix(p);
+      }
+    }
+  }
+  function fixOrder(p) {
+    p.fix = 'wait'; s.fixBy = p.id; p.fixResult = null;
+    s.log.push({ tick: s.tick, person: p.id, kind: 'fixOrder', marks: s.boar.marks });
+    const m = p.motion.mode;
+    if (m === 'idle') { atHome(p); return { ok: true, text: p.rest ? `精力低，先恢復到 ${E.backAt} 再去整理護欄` : '走去西坡護欄整理一階損痕' }; }
+    if (m === 'carry') return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後去整理護欄`, pending: true };
+    if (m === 'toFun') return { ok: true, text: `走到${prefs[p.id].place}後回院中，再去整理護欄` };
+    if (m === 'fun' || m === 'fromFun') return { ok: true, text: '回院中後去整理護欄' };
+    if (m === 'toSeat' || m === 'seated') return { ok: true, text: `先恢復到 ${E.backAt}，回院中再去整理護欄` };
+    return { ok: true, text: '回到院中就去整理護欄' };
+  }
+  function fixReason(p) {
+    const m = p.motion.mode;
+    if (s.fixBy === p.id) return '已在整理這段護欄（重送不重新出發）';
+    if (s.fixBy) return `${nameOf(s.fixBy)}已在整理這段護欄`;
+    if (m === 'fromFix') return '正從護欄返院：回到院中後才能再派';
+    if (p.guardOrder != null || GUARD_MODES.includes(m)) return '正在驅離野豬（含返院）：回院中後再派';
+    if (s.boar.marks <= 0) return '護欄沒有損痕';
+    if (boarSeen()) return '看得見野豬：等牠離開視線再整理';
+    if (p.rest === 'manual') return '已停工：下令開始工作才解除';
+    if (p.pending === 'rest') return '已排定本趟後停工';
+    return '';
+  }
   function goSeat(p) {
     p.motion = { mode: 'toSeat', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level };
     s.log.push({ tick: s.tick, person: p.id, kind: 'toSeat', rest: p.rest });
@@ -304,7 +393,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     return false;
   }
   // 停工或待恢復（rest 非空）都要離開休閒；恢復自主只清叫回，不能讓待恢復的人卡在活動點。
-  const funOver = (p) => !!p.rest || p.recall || p.guardOrder != null || wants(p) || slotFor(p);
+  const funOver = (p) => !!p.rest || p.recall || p.guardOrder != null || !!p.fix || wants(p) || slotFor(p);
   function goBack(p) {
     p.why = `精力恢復到 ${E.backAt}，自己回去`;
     p.motion = { mode: 'back', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level };
@@ -324,6 +413,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       const p = s.people[id], h = p.motion;
       // 每人每步只依步前活動計一次精力：工作扣、坐著回；走路、等待不變。之後才結算進度與轉場。
       if (h.mode === 'carry') p.energy = Math.max(0, p.energy - perTick(E.workPerSec));
+      else if (h.mode === 'fix') p.energy = Math.max(0, p.energy - perTick(rules.fix.workPerSec));
       else if (h.mode === 'seated') p.energy = Math.min(E.max, p.energy + perTick(E.restPerSec));
       if (h.mode === 'carry') {
         h.steps += 1;
@@ -354,6 +444,13 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       } else if (h.mode === 'toGuard' || h.mode === 'fromGuard') {
         h.steps += 1;
         if (h.steps >= h.need) { if (h.mode === 'fromGuard') { s.log.push({ tick: s.tick, person: id, kind: 'guardHome' }); atHome(p); } else arriveGuard(p); }
+      } else if (h.mode === 'toFix' || h.mode === 'fromFix') {
+        h.steps += 1;
+        if (h.steps >= h.need) { if (h.mode === 'fromFix') { s.log.push({ tick: s.tick, person: id, kind: 'fixHome' }); atHome(p); } else arriveFix(p); }
+      } else if (h.mode === 'fix') {
+        // 動手：每 tick 推一格；做滿只記到期，效果等本 tick 野豬結算後才定（同 tick 看得見野豬就失效）。
+        h.steps += 1;
+        if (h.steps >= h.need) p.fixDue = true;
       } else if (h.mode === 'guardWait') {
         // 野豬到了護欄（準備撞）才喝止；還在嗅探／靠近就等它。看的是上一 tick 結束時的野豬。
         if (s.boar.mode === 'prep') { p.motion = { mode: 'shout', job: null, phase: null, steps: 0, need: msSteps(B.shoutMs), tripLevel: p.level }; s.log.push({ tick: s.tick, person: id, kind: 'shout' }); }
@@ -378,6 +475,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     }
     // 人的工作交付、移動與喝止進度都先結算完，最後才結算野豬（誘因看交付後的實存）。
     boarStep();
+    // LP-08：野豬狀態確定後才判整理安全與完成；不改野豬自身的喝止／退走／碰撞先後。
+    fixStep();
   }
 
   // ---------- LP-06 野豬 ----------
@@ -470,6 +569,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   function work(p, job) {
     const name = JOBS[job].label, mode = p.motion.mode;
     cancelGuard(p); // 較新的改工作／開始取消尚未完成的驅離
+    dropFix(p, 'canceled'); // 也取消尚未完成的整理；前往途中走完這段再回
     if (mode === 'carry') {
       if (job === p.motion.job) { p.pending = null; return { ok: true, text: `取消待執行，繼續${name}` }; }
       p.pending = job;
@@ -490,6 +590,13 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (mode === 'back') {
       p.rest = null; p.why = null;
       return { ok: true, text: `正在回院中，到了就${name}` };
+    }
+    // 整理往返中：同驅離，只改要回去的工作；走完當前腿返院。
+    if (FIX_MODES.includes(mode)) {
+      p.job = job; p.pending = null;
+      if (p.rest === 'manual') p.rest = p.energy < E.backAt ? 'auto' : null;
+      p.why = p.rest === 'auto' ? `已解除停工；精力未到 ${E.backAt}，先恢復` : null;
+      return { ok: true, text: mode === 'toFix' ? `走到護欄後回院中${name}` : `回院中後${name}` };
     }
     // 驅離往返中：只改要回去的工作；去防守點途中走完這段，等候／喝止中已立刻返院。停工中的明確開始照 LP-04 解除，未到 80 先恢復。
     if (GUARD_MODES.includes(mode)) {
@@ -512,6 +619,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   // 叫回：保留（或剛改的）工作，實際走回院中；去程走完這段、活動中下一步起身、返院途中只記意圖。
   function recall(p, name = JOBS[p.job].label) {
     p.recall = true; p.why = '玩家叫回';
+    dropFix(p, 'canceled'); // 有效叫回也取消待整理
     s.log.push({ tick: s.tick, person: p.id, kind: 'recall', job: p.job });
     const m = p.motion.mode;
     return { ok: true, text: m === 'toFun' ? `走到${prefs[p.id].place}後回院中${name}` : m === 'fun' ? `起身回院中${name}` : `回到院中就${name}；沒有空位就待命` };
@@ -523,12 +631,19 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (!a) return { ok: false, reason: '沒有這個指令' };
     if (!a.enabled) return { ok: false, reason: a.reason };
     // LP-07：以下有效指令（改工作／開始／停工／取消待執行／叫回）清該人候補並抑制本訪自主；拒絕的已在上面返回。
-    if (['start', 'restAfterTrip', 'cancel', 'recall'].includes(cmd) || cmd.startsWith('work:')) override(p);
+    if (['start', 'restAfterTrip', 'cancel', 'recall', 'fix', 'fixCancel'].includes(cmd) || cmd.startsWith('work:')) override(p);
+    if (cmd === 'fix') return fixOrder(p);
+    if (cmd === 'fixCancel') {
+      const m = p.motion.mode;
+      dropFix(p, 'canceled');
+      return { ok: true, text: m === 'toFix' ? '取消整理：走到護欄後直接返院' : m === 'fix' ? '取消整理：停手返院（這一階未完成，不清痕）' : '取消整理：原工作照舊' };
+    }
     if (cmd === 'start') return work(p, p.motion.mode === 'carry' ? p.motion.job : p.job);
     if (cmd.startsWith('work:')) return work(p, cmd.slice(5));
     if (cmd === 'guard') return guard(p);
     if (cmd === 'restAfterTrip') {
       cancelGuard(p);
+      dropFix(p, 'canceled');
       const mode = p.motion.mode;
       if (mode === 'carry') { p.pending = 'rest'; return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後停工休息`, pending: true }; }
       p.rest = 'manual'; p.why = '玩家下令停工'; p.pending = null; p.recall = false;
@@ -538,7 +653,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       if (mode === 'fun' || mode === 'fromFun') return { ok: true, text: '回院中後去座位停工' };
       if (mode === 'back') return { ok: true, text: '走回院中後再回座位停工' };
       if (mode === 'toGuard') return { ok: true, text: '走到防守點後回院中，再去座位停工' };
-      if (mode === 'fromGuard') return { ok: true, text: '回院中後去座位停工' };
+      if (mode === 'fromGuard' || mode === 'fromFix' || mode === 'fix') return { ok: true, text: '回院中後去座位停工' };
+      if (mode === 'toFix') return { ok: true, text: '走到護欄後回院中，再去座位停工' };
       return { ok: true, text: '改為停工：回滿也不會自己開工' };
     }
     if (cmd === 'recall') return recall(p);
@@ -584,16 +700,18 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const cur = carrying ? p.motion.job : p.job;
     const stopped = p.rest === 'manual', fun = ['toFun', 'fun', 'fromFun'].includes(p.motion.mode);
     const guarding = GUARD_MODES.includes(p.motion.mode), g = guarding || p.guardOrder != null;
-    const inRest = p.motion.mode !== 'idle' && !carrying && !fun && !guarding;
+    const fixing = FIX_MODES.includes(p.motion.mode), f = fixing || !!p.fix;
+    const inRest = p.motion.mode !== 'idle' && !carrying && !fun && !guarding && !fixing;
     // 已在做這份工作、也沒有別的待執行時，再下同一工作沒有意義。
     const workOpt = (job) => {
       const name = JOBS[job].label;
       // 休息流程中下同一工作仍有意義：解除停工；自主恢復中則已會回去做它。
       // 驅離中（或已排定）下同一工作＝取消驅離、回來做它，仍有意義。
-      const same = !stopped && !g && job === cur && (carrying ? p.pending == null : true);
+      // 整理中（或已排定）下同一工作＝取消整理、回來做它，也有意義，不能因同工作而卡死。
+      const same = !stopped && !g && !f && job === cur && (carrying ? p.pending == null : true);
       return { id: `work:${job}`, label: `${name}（持續）`,
         detail: carrying ? (job === cur ? `取消待執行，繼續${name}` : `本趟${JOBS[cur].label}交付後改去${name}`)
-          : guarding ? `取消驅離，回院中${name}` : inRest ? `恢復到 ${E.backAt} 並回院中後${name}` : fun ? `叫回院中改${name}` : '做完一趟自己接下一趟，沒有空位就等',
+          : guarding ? `取消驅離，回院中${name}` : fixing ? `${p.fix ? '取消整理，' : ''}回院中${name}` : p.fix ? `取消整理，${name}` : inRest ? `恢復到 ${E.backAt} 並回院中後${name}` : fun ? `叫回院中改${name}` : '做完一趟自己接下一趟，沒有空位就等',
         enabled: !same && p.pending !== job, reason: p.pending === job ? `已排定交付後改去${name}` : fun ? '這是原工作：要回去請按「叫回工作」' : `已在持續${name}中` };
     };
     return [
@@ -611,14 +729,23 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         reason: carrying && p.motion.phase >= 2 ? '還沒走到水缸' : '肩上是空桶：要先到泉水裝水' },
       { id: 'cancel', label: '取消待執行', detail: wants(p) ? '取消這次自己去護院的意願' : '', enabled: p.pending != null || (p.guardOrder != null && !guardBusy(p)) || wants(p), reason: stopped ? '停工已生效：下令開始工作才解除' : '沒有待執行指令', hidden: true },
       guardOpt(p, stopped),
+      fixOpt(p),
+      { id: 'fixCancel', label: '取消本次整理', detail: p.motion.mode === 'toFix' ? '走到護欄後直接返院；不清痕' : p.motion.mode === 'fix' ? '停手返院；這一階未完成、已花的時間精力不退' : '只取消整理，原工作／叫回／恢復照舊',
+        enabled: !!p.fix, hidden: !p.fix, reason: '沒有未完成的整理' },
     ];
+  }
+  function fixOpt(p) {
+    const reason = fixReason(p);
+    return { id: 'fix', label: '整理護欄', detail: p.motion.mode === 'carry' ? '本趟交付後走去護欄動手 8 秒，清一階損痕' : '走去護欄動手 8 秒（只這段扣 8 精力），清一階損痕後回院',
+      enabled: !reason, reason, hidden: s.boar.marks <= 0 && !p.fix && !FIX_MODES.includes(p.motion.mode) };
   }
   function guardOpt(p, stopped) {
     const b = s.boar, who = assignee();
     const reason = !b.active ? (b.mode === 'flee' ? '野豬已在退走：這次來訪不能再派' : '野豬不在院外：沒有可驅離的來訪')
       : who === p.id ? '已在處理這次野豬（重送不重新出發）'
         : who ? `${nameOf(who)}已在處理；要換人先對${nameOf(who)}改工作或停工`
-          : stopped ? '已停工：下令開始工作才解除' : p.pending === 'rest' ? '已排定本趟後停工' : '';
+          : stopped ? '已停工：下令開始工作才解除' : p.pending === 'rest' ? '已排定本趟後停工'
+            : p.fix || FIX_MODES.includes(p.motion.mode) ? '正在整理護欄（含返院）：先回院中再派驅離' : '';
     return { id: 'guard', label: '驅離野豬', detail: p.motion.mode === 'carry' ? '本趟交付後去防守點；野豬到護欄時喝止' : '走去防守點；野豬到護欄時喝止，已走就返院',
       enabled: !reason, reason, hidden: !b.active && p.guardOrder == null };
   }
@@ -640,6 +767,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
               : h.mode === 'fun' ? pref.doing
                 : h.mode === 'fromFun' ? '從休閒返院'
                   : GUARD_LABEL[h.mode] ? GUARD_LABEL[h.mode]
+                  : FIX_LABEL[h.mode] ? FIX_LABEL[h.mode]
             : p.recall ? (st.amount + st.inFlight >= st.cap ? `玩家叫回，等${place}空位` : '玩家叫回，準備出發')
             : st.amount >= st.cap ? (p.job === 'herb' ? '等空位（藥架已滿，藥草不會自己耗用）' : '等用水（水缸已滿）')
               : st.amount + st.inFlight >= st.cap ? `等空位（${place}與在途已滿）` : '準備出發';
@@ -647,7 +775,12 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const E = rules.energy;
     // 下一步：把「為什麼停下」與「什麼時候、做什麼」講清楚；自主恢復與玩家停工不共用一句「休息中」。
     const guardNext = p.guardOrder != null && (h.mode === 'toGuard' ? '到防守點等野豬到護欄，再喝止' : h.mode === 'guardWait' ? '野豬到護欄就喝止／拍掌' : h.mode === 'shout' ? '喝止完成野豬就會逃' : null);
-    const next = guardNext ? guardNext
+    const fixNext = h.mode === 'toFix' ? (p.fix ? '到護欄動手 8 秒，清一階損痕' : `整理已取消：走到護欄後回院中${name}`)
+      : h.mode === 'fix' ? '做滿 8 秒且看不見野豬才清一階'
+        : h.mode === 'fromFix' ? (stopped ? '到院中後回座位停工' : p.energy <= E.restAt ? `到院中後先去恢復到 ${E.backAt}` : `到院中重查${place}，有空位就${name}`)
+          : p.fix === 'wait' ? (h.mode === 'carry' ? `交付後去整理護欄，回來${JOBS[nextJob].label}` : p.rest ? `先恢復到 ${E.backAt}，回院中再去整理護欄` : '回到院中就去整理護欄')
+            : null;
+    const next = fixNext ? fixNext : guardNext ? guardNext
       : h.mode === 'fromGuard' ? (stopped ? '到院中後回座位停工' : `到院中重查${place}，有空位就${name}`)
       : h.mode === 'toGuard' ? `走到防守點後回院中${name}`
       : p.guardOrder != null && h.mode === 'carry' ? `交付後去驅離野豬，回來${JOBS[nextJob].label}`
@@ -687,6 +820,9 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       auto: autoView(p),
       guardLeg: h.mode === 'toGuard' || h.mode === 'fromGuard' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need } : null,
       shoutK: h.mode === 'shout' ? Math.min(1, h.steps / h.need) : 0,
+      fix: p.fix, fixing: FIX_MODES.includes(h.mode), fixResult: p.fixResult,
+      fixLeg: h.mode === 'toFix' || h.mode === 'fromFix' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need } : null,
+      fixWork: h.mode === 'fix' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need } : null,
     };
   }
   // 自主護院原因：把「沒允許／觀察中／有意願待交付或恢復／玩家改派／同伴處理／已出發／結果／意願過期」分開講，不用一句「護院中」。
@@ -724,6 +860,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       mode: b.mode, label: BOAR_MODE[b.mode], energy: e, threat: t, max: B.max, d: b.d, edge: boarLen.edge, total: boarLen.total,
       legK: b.need ? Math.min(1, b.steps / b.need) : 0, prepK: b.mode === 'prep' ? Math.min(1, b.steps / b.need) : 0, sniffK: b.mode === 'sniff' ? Math.min(1, b.steps / b.need) : 0,
       visit: b.visit, active: b.active, hits: b.hits, marks: b.marks, maxMarks: B.maxMarks, lure: lured, assignee: assignee(), last: b.last,
+      seen: boarSeen(), fixBy: s.fixBy,
       why: b.mode === 'habitat' ? (stay.length ? `留在棲地：${stay.join('、')}` : '條件都到了') : b.why,
     };
   }
