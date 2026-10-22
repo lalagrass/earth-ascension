@@ -54,13 +54,31 @@ const panel = (page) => page.locator('#panel').innerText();
   check(s.tick === t0 && s.people.hero.pending === 'herb', '暫停期間多次改令，世界零進度');
   await page.screenshot({ path: `${OUT}/desk-1-pending-herb.png` });
 
-  // 播放：當趟挑水交付後才去採藥；熟手繼續挑水
+  // 播放：當趟挑水交付後才去採藥；熟手繼續挑水。每畫面幀記錄兩人實際位置，檢查切換處沒有跳點。
+  await page.evaluate(() => {
+    const tr = window.__trace = { max: 0, at: null, last: null };
+    const loop = () => {
+      const s = window.demo.snapshot();
+      for (const id of Object.keys(s.people)) {
+        const p = s.people[id], l = tr.last && tr.last[id];
+        if (l && s.tick > l.tick) {
+          const d = Math.hypot(p.x - l.x, p.y - l.y) / (s.tick - l.tick);
+          if (d > tr.max) { tr.max = d; tr.at = { id, tick: s.tick, job: p.job, phase: p.phase }; }
+        }
+        if (l && s.tick === l.tick && (p.x !== l.x || p.y !== l.y)) { tr.max = Infinity; tr.at = { id, tick: s.tick, still: true }; }
+      }
+      tr.last = Object.fromEntries(Object.entries(s.people).map(([id, p]) => [id, { x: p.x, y: p.y, tick: s.tick }]));
+      requestAnimationFrame(loop);
+    };
+    loop();
+  });
   await page.click('#play'); await page.keyboard.press('4');
   await wait(page, () => window.demo.snapshot().people.hero.job === 'herb');
   s = await snap(page);
   check(s.people.hero.trips === 1 && s.people.hero.done.water === 1 && s.people.hero.mode === 'carry' && s.people.hero.phase === 'herbOut' && s.herbInFlight === 1,
     '主角挑完第一擔才改採藥，同一步出發並預約藥架');
   check(s.people.cousin.job === 'water' && s.people.cousin.mode === 'carry', '熟手同時繼續挑水');
+  check(Math.hypot(s.people.hero.x - 962, s.people.hero.y - 512) < 40, `改採藥後從院中同一端點出發，還在起點附近（${s.people.hero.x.toFixed(1)}, ${s.people.hero.y.toFixed(1)}）`);
   await wait(page, () => { const h = window.demo.snapshot().people.hero; return h.phase === 'herbOut' && h.phaseProgress > 0.55; });
   await page.click('#play'); s = await snap(page);
   check(s.people.hero.x > 1150 && s.people.hero.y > 600, `主角沿東側小路往藥圃（${s.people.hero.x.toFixed(0)}, ${s.people.hero.y.toFixed(0)}）`);
@@ -104,6 +122,22 @@ const panel = (page) => page.locator('#panel').innerText();
   check(s.people.hero.done.herb === 4 && s.people.hero.mode === 'carry' && s.people.hero.phase === 'down' && s.herbInFlight === 0, '採藥當趟交完才切回挑水，藥在途歸零');
   await cmd(page, 'restAfterTrip');
   await wait(page, () => window.demo.snapshot().people.hero.resting);
+  // 暫停中休息→改採藥→改回挑水：世界不前進，人也不動
+  await page.click('#play');
+  const r0 = await snap(page);
+  await cmd(page, 'work:herb');
+  const r1 = await snap(page);
+  check(r1.tick === r0.tick && r1.people.hero.x === r0.people.hero.x && r1.people.hero.y === r0.people.hero.y && r1.people.hero.job === 'herb',
+    '暫停時休息中改採藥：立即換工作，tick 與位置都不變');
+  await cmd(page, 'restAfterTrip'); await cmd(page, 'work:water');
+  const r2 = await snap(page);
+  check(r2.people.hero.x === r0.people.hero.x && r2.people.hero.y === r0.people.hero.y, '再改回挑水，位置仍不變');
+  await cmd(page, 'restAfterTrip');
+  check((await snap(page)).people.hero.pending === 'rest', '採藥當趟中再下休息：只留最新意圖');
+  await page.click('#play');
+  await wait(page, () => window.demo.snapshot().people.hero.resting);
+  const tr = await page.evaluate(() => window.__trace);
+  check(tr.max <= 84 / 60 + 0.01, `整段播放逐幀位置連續：每 tick 最大位移 ${tr.max.toFixed(3)}（上限 1.40）${tr.at ? ' @' + JSON.stringify(tr.at) : ''}`);
   s = await snap(page);
   check(s.people.hero.mode === 'idle' && !s.people.cousin.resting && s.people.cousin.pending === null && s.people.cousin.job === 'water',
     `本趟後休息只停主角，熟手仍在挑水工作（${s.people.cousin.status}，水缸 ${s.vat}／${s.vatCapacity}）`);

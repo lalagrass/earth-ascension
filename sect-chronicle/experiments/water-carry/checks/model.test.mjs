@@ -368,3 +368,49 @@ test('採藥時不同 render 頻率與播放倍率，在同一固定模擬時間
   assert.equal(v.herbs, RULES.herbStart); assert.equal(v.herbInFlight, 0);
   for (const p of Object.values(v.people)) { assert.equal(p.job, 'water'); assert.equal(p.pending, null); }
 });
+
+// ---------- LP-03 補修：工作切換不瞬移（審查 P2） ----------
+import { createRoutes } from '../demo/routes.mjs';
+const SCENE = JSON.parse(readFileSync(new URL('../spikes/shared/scene.json', import.meta.url)));
+const geo = createRoutes(SCENE.path.points);
+const posOf = (p) => geo.place(p.mode === 'carry' ? p.phase.name : p.resting ? 'rest' : 'idle', p.phase?.k || 0, p.job);
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+
+test('兩條路共用院中端點：閒置、休息、交付、出發都在同一點', () => {
+  const home = geo.place('idle', 0, 'water');
+  for (const [ph, k, job] of [['idle', 0, 'herb'], ['rest', 0, 'herb'], ['rest', 0, 'water'], ['pour', 0.5, 'water'], ['herbDeliver', 0.5, 'herb'],
+    ['down', 0, 'water'], ['herbOut', 0, 'herb'], ['up', 1, 'water'], ['herbBack', 1, 'herb']]) {
+    assert.ok(dist(geo.place(ph, k, job), home) < 1e-9, `${ph}/${job} 應在院中端點`);
+  }
+});
+
+test('逐 tick 位置連續：雙向切換、休息後改令、滿額閒置改令；暫停（不 step）下令位置不變', () => {
+  const m = createLifeModel({ water: SCENE.path.length, herb: geo.routes.herb.length }, { ...RULES, herbCapacity: 2 });
+  const maxStep = RULES.emptySpeed.cap * STEP_MS / 1000 + 1e-6;
+  let prev = Object.fromEntries(Object.entries(m.view().people).map(([id, p]) => [id, posOf(p)]));
+  const order = (cmd, id) => {
+    const before = posOf(m.view().people[id]);
+    m.dispatch(cmd, id);
+    assert.ok(dist(posOf(m.view().people[id]), before) < 1e-9, `${id} 下 ${cmd} 當下（未推進）不移動`);
+  };
+  const script = [
+    [1, () => order('work:herb', 'hero')],                     // 挑水途中改採藥（交付後生效）
+    [2, () => order('restAfterTrip', 'cousin')],               // 熟手挑完休息
+    [(v) => v.people.cousin.resting, () => order('work:herb', 'cousin')], // 休息時直接改採藥
+    [(v) => v.people.hero.job === 'herb' && v.people.hero.done.herb >= 1, () => order('work:water', 'hero')], // 採藥途中改回挑水
+    [(v) => v.herbs >= 2 && v.people.cousin.mode === 'idle', () => order('work:water', 'cousin')], // 藥架滿額閒置時改挑水
+  ];
+  let i = 0;
+  for (let t = 0; t < 60 * 60 * 6 && i < script.length; t++) {
+    const v = m.view();
+    const [when, act] = script[i];
+    if (typeof when === 'number' ? v.tick >= when : when(v)) { act(); i++; }
+    m.step();
+    for (const [id, p] of Object.entries(m.view().people)) {
+      const now = posOf(p);
+      assert.ok(dist(now, prev[id]) <= maxStep, `${id} tick ${m.view().tick} 跳了 ${dist(now, prev[id]).toFixed(2)}（${p.job}/${p.phase?.name || p.mode}）`);
+      prev[id] = now;
+    }
+  }
+  assert.equal(i, script.length, '每個切換情境都有發生');
+});

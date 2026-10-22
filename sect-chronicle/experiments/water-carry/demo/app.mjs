@@ -3,7 +3,8 @@
 // 推進只經 createClock() 換算的固定步進。暫停、背景、播放倍率與畫面幀率都不改結果。
 import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.min.mjs';
 import { createModel, createClock, PEOPLE, JOBS, STEP_MS } from './model.mjs';
-import { createAnimator, pathTool } from '../template/animator.mjs';
+import { createAnimator } from '../template/animator.mjs';
+import { createRoutes, HERB } from './routes.mjs';
 
 const SHARED = '../spikes/shared/';
 const t0 = performance.now();
@@ -24,35 +25,24 @@ const sharedFiles = [scene.background, ...scene.props.map((p) => p.file), ...sce
 await Assets.load(sharedFiles.map((f) => SHARED + 'assets/' + f));
 const TS = (f) => Assets.get(SHARED + 'assets/' + f);
 
-// ---------- 路線（只是畫面換算：模型給「走到第幾成」，這裡換成場景座標） ----------
-const path = pathTool(scene.path.points);
-// 採藥路：道館院中藥架 → 東側坡地小路 → 藥圃。座標是本輪生活開發版的示意配置（方向沿 BL-W02 草圖），長度交給模型計時。
-const HERB = {
-  points: [[1200, 494], [1215, 548], [1150, 610], [1230, 668], [1320, 718], [1398, 772]],
-  patch: { x: 1440, y: 788 },
-};
-const herbPath = pathTool(HERB.points);
+// ---------- 路線（只是畫面換算：模型給「走到第幾成」，這裡換成場景座標；算法在 routes.mjs） ----------
+const { routes: ROUTES, place } = createRoutes(scene.path.points);
+const path = ROUTES.water, herbPath = ROUTES.herb;
 const places = {
   ...scene.places,
   herb: { label: '藥圃', x: HERB.patch.x, y: HERB.patch.y + 14, rx: 70, ry: 30, sub: '道館東側坡地 · 可重複採' },
-  rack: { label: '藥架', x: HERB.points[0][0], y: HERB.points[0][1] - 8, rx: 30, ry: 22, sub: '道館院中 · 交藥處' },
+  rack: { label: '藥架', x: HERB.rack.x, y: HERB.rack.y, rx: 30, ry: 22, sub: '道館院中 · 交藥處' },
 };
-const ROUTES = { water: path, herb: herbPath };
-// 採藥四段借用挑水路的位置算法：去程＝down、採集＝dip（停在路底）、回程＝up、交藥＝pour（停在路頭）。
-const ALIAS = { herbOut: 'down', herbGather: 'dip', herbBack: 'up', herbDeliver: 'pour' };
 const GROWN_FROM = 3; // 本趟腳力到 Lv 3 起換成長後步態
 
 // 人物在畫面上的樣子：全部由模型的階段與步數推出，不另存狀態
 function pose(ph, level, mode, resting = false, id = 'hero', job = 'water') {
   const phase = mode === 'carry' && ph ? ph.name : resting ? 'rest' : 'idle';
-  const route = ROUTES[mode === 'carry' && ph ? (ALIAS[phase] ? 'herb' : 'water') : job];
-  const geo = ALIAS[phase] || phase;
-  const view = { phase, k: ph?.k || 0, travelled: geo === 'down' || geo === 'up' ? ph.k * route.length : 0 };
+  const at = place(phase, ph?.k || 0, job);
+  const view = { phase, k: ph?.k || 0, travelled: at.travelled };
   // 模型只提供階段與進度；共用動畫用實際走過的距離換幀，不另開 walker 或時鐘。
   const pick = animators[id].pick(view, { grown: level >= GROWN_FROM });
-  const at = route.place({ ...view, phase: geo });
-  if (phase === 'herbGather') at.face = 1; // 藥圃在路底右側
-  return { ...at, ...pick, travelled: view.travelled, phase };
+  return { x: at.x, y: at.y, face: at.face, ...pick, travelled: at.travelled, phase };
 }
 
 // ---------- 場景 ----------
@@ -146,7 +136,7 @@ function placeBasket(id, p, person) {
   if (ph.name === 'herbOut') { x = p.x - p.face * 8 * s; y = p.y - 19 * s; }
   else if (ph.name === 'herbBack') { x = p.x - p.face * 1.5 * s; y = p.y - 17 * s; z = p.y + 0.03; load = 1; }
   else if (ph.name === 'herbGather') { x = p.x - 16; load = k; z = p.y + 0.03; }
-  else { x = p.x + 16; load = 1 - k; z = p.y + 0.03; }
+  else { x = p.x - 16; load = 1 - k; z = p.y + 0.03; } // 交藥：簍放在面向藥架的一側
   if (g.load !== load) { drawBasket(g, load); g.load = load; }
   g.scale.set(s); g.position.set(x, y); g.zIndex = z;
 }
@@ -499,7 +489,7 @@ app.ticker.add((t) => {
   tag('vat', 'place', `${scene.places.vat.label} ${v.vat}／${v.vatCapacity} · 在途 ${v.inFlight}`, scene.places.vat.x, scene.places.vat.y - 60);
   tag('spring', 'place', scene.places.spring.label, scene.places.spring.x, scene.places.spring.y - 40);
   if (rack.n !== v.herbs) { drawRack(v.herbs); rack.n = v.herbs; }
-  tag('rack', 'place', `${places.rack.label} ${v.herbs}／${v.herbCapacity} · 在途 ${v.herbInFlight}`, places.rack.x, places.rack.y - 52);
+  tag('rack', 'place', `${places.rack.label} ${v.herbs}／${v.herbCapacity} · 在途 ${v.herbInFlight}`, places.rack.x - 30, places.rack.y + 36); // 名牌放在藥架左下，避開院中出發點上的人物狀態
   tag('herb', 'place', places.herb.label, places.herb.x, places.herb.y - 46);
   tag('ghost', 'ghost', showGhost ? '主角初始影子・不入帳' : null, g ? g.x : 0, g ? g.y : 0, 6);
   tag('master', '', '師父 · 打坐', 1300, 512, 6);
