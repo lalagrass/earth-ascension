@@ -654,7 +654,7 @@ function cleanHtml(p, id) {
       <div class="muted">本次擊倒 ${c.downs} · 起手已花精力 ${c.spent}（中止不退）</div>`;
   } else if (r) line = `<div class="muted">上次清理：${CLEAN_END[r.kind]} · 擊倒 ${r.downs} · 花精力 ${r.spent}</div>`;
   const other = v.clean && v.clean.by !== id ? `<div class="muted">${profiles[v.clean.by].label}正在清理（全場只一份）</div>` : '';
-  return `<div class="auto palmbox"><div class="row"><b>有限清理 · 掌法</b><span class="group">${skill('novice')}${skill('adept')}</span></div>
+  return `<div class="palmbox"><div class="row"><b>有限清理 · 掌法</b><span class="group">${skill('novice')}${skill('adept')}</span></div>
     <div class="muted">掌法比較 fixture（不是成長）：掌距 ≤${PALM.reach}，起手開始扣 ${PALM.cost} 精力</div>${line}${other}</div>`;
 }
 const RAT_KIND = { normal: '普通', alert: '警覺' };

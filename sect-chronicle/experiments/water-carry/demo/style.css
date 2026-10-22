@@ -96,6 +96,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .rat { font-size: 12px; background: #efe4cb; border-radius: 4px; padding: 0 5px; border: 1px solid transparent; }
 .rat.tgt { border-color: var(--gold); background: #fff0c8; } .rat.r-down, .rat.r-gone { color: #8a8070; text-decoration: line-through; } .rat.r-flee { background: #f3d8c8; }
 .bar.palm i { background: #c8962e; }
+.palmbox { margin: 6px 0; padding: 4px 6px; border: 1px solid #d9c9a8; border-radius: 6px; } .palmbox .group { display: inline-flex; gap: 4px; }
 .palmbox .btn[disabled] { opacity: .45; cursor: default; }
 .tag.pill.rat { background: rgba(110, 90, 60, .82); font-size: 11px; } .tag.pill.rat.down, .tag.pill.rat.gone { background: rgba(140, 130, 112, .7); }
 @media (max-width: 640px) {
