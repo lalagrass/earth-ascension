@@ -1,18 +1,24 @@
 # 可見交付、驗證與正式整合
 
 
-## 2026-10-22現況：LP07已交付 → LP08單次護欄整理已批准
+## 2026-10-22現況：LP08已交review → LP09自主整理候選
+
+LP08 [PR231](https://github.com/lalagrass/earth-ascension/pull/231) head9886c4f／base46588c0已完成遊戲PO非作者review，獨立模型87PASS、桌面＋390px新功能22ok；strict本機exit1僅GPU ReadPixels兩warning、無應用error，完整7檔／真3→2與8精力／取消返回實圖已核，待Earth PO整合／postCI，接受入口未提前更新。這是D18單次手動整理的交付，不批准自主維修或新數值。
+
+下一建議另立[#232](https://github.com/lalagrass/earth-ascension/issues/232)／[LP09候選N1–N4](LP09_PROPOSAL.md)：每人獨立允許預設關、1階／3階可交換反應、安全時候補不占額、忙完／恢復後院中正式出發；玩家有效覆寫等新真碰撞重評、一輪全隊最多自主一階，人工整理優先。N1–N4全部待確認，沒有新D19／runtime／可開工prompt或代啟作者；不擴LP08原DoD或沿其Claude窗口。
+
+### D18批准與此前交付來源
 
 LP07 [#218](https://github.com/lalagrass/earth-ascension/issues/218)／PR227已合dev `bd743f0dfc023b124484e14d0cc5c64092ce3c4c`／postCI39764906333五SUCCESS，同一8800接受入口已更新：允許／早晚反應、候補不預占、合法院中出發、玩家有效改令本訪不搶回。候補改傾向P2已修；模型與桌面＋390px證據、strict本機GPU ReadPixels兩warning限制沿原review，不冒稱全瀏覽器綠或平衡／喜好已驗，仍無生活存檔。
 
 LP08規劃PR229已合dev `e10eba1d443c4fb2103ceacb9b72801f504edd73`／postCI39765527956五SUCCESS。擁有人現已同意R1–R4，來源[D18](DECISIONS_AND_SOURCES.md#d18lp-08-護欄損痕整理-r1r4-批准2026-10-22)，追蹤[#228](https://github.com/lalagrass/earth-ascension/issues/228)，[正式工作包](LP08_HANDOFF.md)／[Claude兩小時prompt](LP08_CLAUDE_PROMPT.md)，[提案沿革](LP08_PROPOSAL.md)。本次批准同步文件合dev／postCI後Claude本人核最新dev／有效作者，新worktree新T0認領；不重問四項，不拿舊候選合併代替此前置，未代啟作者。
 
-### 已批下一片與後續候選
+### 現行工作包與後續候選
 
 | 順位／追蹤 | 可見價值 | 範圍與去向 |
 |---|---|---|
 | **已批下一片：BL-D02／LP08 #228** | 選一人→真走護欄→動手進度→一階痕淡去→回生活 | 單次手動、480工作tick／8精力、無XP／材料／耐久／安全buff；可察覺sniff／approach／prep及仍可見flee皆阻擋／中止未完成效果，沿既有固定場景可見界線，不讀畫外、不以active=false當安全。原趟交付／恢復80／停工叫回與LP07保留，精確一次名額／取消／同tick沿工作包 |
-| 後續再評：自主家務／#188及BL-D02其餘 | 角色能依允許與情勢自己整理，玩家能覆寫 | LP08先驗手動行動表現，不把護院開關當整理開關；自主修護／材料／真耐久仍未批，不預占下一作者 |
+| 下一候選：LP09／#232，自主家務／#188及BL-D02 | 角色能依允許與情勢自己整理，玩家能覆寫 | [N1–N4](LP09_PROPOSAL.md)待確認，護院開關不當整理開關、一輪一階；材料／真耐久仍未批，不預占下一作者 |
 | 觀賞性候選：BL-Q02／#220 | 少量鼠群、一式掌法、真起手命中／逐隻換目標 | 可先有界fixture，不等完整繁殖生態；真傷害／成長／失效目標與有限追擊界線仍需另批，腳力不當戰力buff |
 | 獨立研究：BL-D06／#219 | 食源→攜回巢／育幼、受阻不增長、非戰鬥控制；巡山發現與清巢失敗／逃散 | 三案研究PR223已合dev，其他巢穴／鼠群侵略性與警覺性／守恆遷徙仍為研究池；空閒agent須另認領有限文件，不占核心實作，也非LP08／#220硬前置 |
 
