@@ -1,6 +1,6 @@
 :root { --ink: #2f2a24; --ink2: #6b6254; --paper: #f8f2e4; --line: #cdbb98; --gold: #c8962e; --hero: #4f78a8; --ghost: #8a96a3;
   --sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "WenQuanYi Zen Hei", sans-serif;
-  --hud-h: 46px; --roster-h: 48px; }
+  --hud-h: 46px; --roster-h: 48px; --boar-h: 0px; }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; color: var(--ink); font: 14px/1.5 var(--sans); }
 #stage { position: fixed; inset: 0; }
@@ -56,6 +56,15 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .toast { position: fixed; left: 50%; bottom: calc(var(--roster-h) + 50px); transform: translateX(-50%); background: var(--ink); color: #f6e7c4;
   padding: 4px 14px; border-radius: 6px; z-index: 5; max-width: calc(100% - 20px); text-align: center; }
 .hint { position: fixed; left: 10px; bottom: 8px; font-size: 12px; color: var(--ink2); background: rgba(248, 242, 228, .8); padding: 0 6px; border-radius: 4px; }
+/* LP-06 野豬卡：左上 HUD 下方；精力／威脅條上的刻線是門檻（30／80、20／60），不是血量。 */
+.boarcard { position: fixed; left: 10px; top: calc(var(--hud-h) + 24px); width: 250px; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; z-index: 2; font-size: 13px; }
+.boarcard .why { min-height: 1.5em; } .boarcard .bar { position: relative; height: 7px; }
+.bar.benergy i { background: #8a6a3e; } .bar.threat i { background: #b0483a; }
+.boarcard .bar s { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(47, 42, 36, .5); }
+.boarcard .btn[disabled] { opacity: .45; cursor: default; }
+.guardline { color: #8a4a1e; font-size: 13px; }
+.tag.pill.guard { background: rgba(138, 74, 30, .92); } .tag.pill.boar { background: rgba(70, 50, 36, .9); }
+.tag.gain.shout { color: #8a4a1e; font-size: 16px; }
 /* 窄螢幕：面板與選單在名冊上方；兩張卡都保留，方便切換跟隨的工作者。 */
 @media (max-width: 640px) {
   .hint { display: none; }
@@ -66,4 +75,11 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
   .toast { top: calc(var(--hud-h) + 52px); bottom: auto; }
   .card { min-width: 0; flex: 1; padding: 4px 6px; }
   .card small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .boarcard { right: 10px; width: auto; top: calc(var(--hud-h) + 18px); padding: 4px 8px; font-size: 12px; }
+  .boarcard .bars { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  /* 野豬卡占了 HUD 下方：暫停橫幅與提示改排在它下面 */
+  .banner { top: calc(var(--hud-h) + var(--boar-h, 0px) + 26px); }
+  .toast { top: calc(var(--hud-h) + var(--boar-h, 0px) + 58px) !important; }
+  .boarcard .why { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 0; }
+  body.menu-open .boarcard { display: none; }
 }

@@ -5,6 +5,9 @@
 // 玩家明確停工可坐到 100 仍不自己開工；往返座位與等待不扣不回。示意值見 docs/LP04_HANDOFF.md，非正式平衡。
 // LP-05 偏好休閒：院中、原工作存放處實存已滿、精力>30、非停工／叫回時，各自走去喜好的地方（主角看山、熟手舒展筋骨）。
 // 休閒不扣不回精力、不產出、不成長、不占預約；有空位（實存＋在途<容量）就回院重查。玩家可叫回（返院後完成一趟才解除）或恢復自主。
+// LP-06 野豬：唯一一隻，有精力與威脅記憶；只在棲地恢復／淡忘。精力≥80、威脅≤20且水缸或藥架有實存才出來，嗅探後沿固定路靠近護欄，
+// 每下準備 2 秒、接觸才扣精力加損痕；累了／害怕／院內已空就逃回棲地。沒有首訪／回訪計時、波次或 RNG。
+// 玩家可派一人去防守點：野豬在護欄時喝止 1 秒→威脅＋80 逃走；已走就晚到返院。往返不扣不回精力、無收益、不占預約。示意值見 docs/LP06_HANDOFF.md。
 export const STEP_MS = 1000 / 60;
 
 export const RULES = Object.freeze({
@@ -22,7 +25,18 @@ export const RULES = Object.freeze({
   herbStart: 0,
   frameMs: { empty: 110, load: 130, grown: 105 },
   energy: { max: 100, start: 100, workPerSec: 1, restPerSec: 5, restAt: 30, backAt: 80 },
+  // LP-06 示意值（PO 依委託選定、未實測）：速度為場景單位／秒，時長為遊戲毫秒。
+  boar: { start: 60, threatStart: 0, max: 100, goEnergy: 80, goThreat: 20, restPerSec: 0.5, calmPerSec: 0.25, walkPerSec: 1,
+    sniffMs: 2000, approach: 72, flee: 120, hitMs: 2000, hitCost: 18, tiredAt: 30, scaredAt: 60, shoutMs: 1000, shoutThreat: 80, maxMarks: 3 },
 });
+// 野豬精力／威脅以 1/240 點為單位存整數：每 tick 恢復 0.5/s＝2、淡忘 0.25/s＝1、走路 1/s＝4，長時間累加沒有浮點漂移。
+export const BOAR_Q = 240;
+export const BOAR_MODE = { habitat: '棲地恢復', out: '走出林緣', sniff: '林緣嗅探', approach: '靠近護欄', prep: '撞護欄', flee: '逃回棲地' };
+// 未指定路線時的預設長度（棲地→林緣、棲地→護欄外、院中端點→防守點）；畫面用 routes.mjs 的實際折線長度覆寫。
+export const BOAR_LENGTH = { edge: 210, total: 720 };
+export const GUARD_LENGTH = 250;
+export const GUARD_LABEL = { toGuard: '趕去防守點', guardWait: '在防守點等野豬', shout: '喝止／拍掌', fromGuard: '從防守點返院' };
+const GUARD_MODES = ['toGuard', 'guardWait', 'shout', 'fromGuard'];
 // 兩人各自的偏好活動：可替換的展示 fixture，不由體態或個性數值推導，也沒有效果。
 export const PREFS = Object.freeze({
   hero: Object.freeze({ id: 'view', label: '看山', place: '觀景石', doing: '看山' }),
@@ -69,6 +83,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   const pathLength = lengths.water;
   const seatLen = (id) => (lengths.seat && lengths.seat[id]) || SEAT_LENGTH;
   const funLen = (id) => (lengths.fun && lengths.fun[id]) || SEAT_LENGTH;
+  const boarLen = { ...BOAR_LENGTH, ...(lengths.boar || {}) }, guardLen = lengths.guard || GUARD_LENGTH;
+  const B = rules.boar, Q = BOAR_Q, perQ = (perSec) => Math.round(perSec * Q / 60), msSteps = (ms) => Math.ceil(ms / STEP_MS - 1e-9);
   const E = rules.energy, perTick = (perSec) => perSec * STEP_MS / 1000;
   const ids = characters.map((p) => p.id);
   const s = {
@@ -80,7 +96,11 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       energy: E.start, rest: null, why: null,
       // LP-05：recall＝玩家叫回待命（完成返院後新開始的一趟才解除）；funCap＝去程中見過空位，到點就回。
       recall: false, funCap: false,
+      // LP-06：guardOrder＝被派去驅離的來訪編號（同一來訪最多一人）；guardResult 只是給玩家看的最近結果。
+      guardOrder: null, guardResult: null, shoutDone: false,
     }])),
+    // 野豬：d＝離棲地沿固定路的距離；visit 是最近一次來訪編號，active＝這次來訪仍可派人（退走開始即失效）。
+    boar: { mode: 'habitat', e: B.start * Q, t: B.threatStart * Q, d: 0, leg: null, steps: 0, need: 0, visit: 0, active: false, hits: 0, marks: 0, why: null, last: null },
     shadow: { active: false, job: null, phase: null, steps: 0, need: null },
     log: [],
   };
@@ -93,7 +113,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   const reserve = (job, d) => { if (job === 'herb') s.herbInFlight += d; else s.inFlight += d; };
 
   function depart(p) {
-    if (p.motion.mode !== 'idle' || p.rest || full(p.job)) return false;
+    if (p.motion.mode !== 'idle' || p.rest || p.guardOrder != null || full(p.job)) return false;
     p.motion = { mode: 'carry', job: p.job, phase: 0, steps: 0, need: phaseSteps(speedsFor(p.level, rules), lengths[p.job], rules), tripLevel: p.level, tripStart: s.tick };
     reserve(p.job, 1);
     if (p.id === 'hero') s.shadow = { active: true, job: p.job, phase: 0, steps: 0, need: phaseSteps(speedsFor(p.initialLevel, rules), lengths[p.job], rules) };
@@ -133,7 +153,39 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   function atHome(p) {
     if (p.rest !== 'manual' && p.energy <= E.restAt) { p.rest = 'auto'; p.why = `精力 ${Math.floor(p.energy)} ≤ ${E.restAt}，自己去恢復`; }
     if (p.rest) goSeat(p);
-    else { p.motion = idle(p.level); p.why = null; }
+    else if (p.guardOrder != null && guardLive(p)) goGuard(p);
+    else { if (p.guardOrder != null) expireGuard(p); p.motion = idle(p.level); p.why = null; }
+  }
+  // ---------- LP-06 驅離（人物側）----------
+  const guardLive = (p) => s.boar.active && p.guardOrder === s.boar.visit;
+  const guardWalk = (p, mode) => ({ mode, job: null, phase: null, steps: 0, need: walkSteps(p.level, guardLen, rules), tripLevel: p.level });
+  function goGuard(p) {
+    p.why = '玩家派去驅離野豬';
+    p.motion = guardWalk(p, 'toGuard');
+    s.log.push({ tick: s.tick, person: p.id, kind: 'toGuard', visit: p.guardOrder });
+  }
+  function leaveGuard(p) {
+    p.motion = guardWalk(p, 'fromGuard'); p.shoutDone = false;
+    s.log.push({ tick: s.tick, person: p.id, kind: 'fromGuard' });
+  }
+  function result(p, kind) {
+    p.guardResult = { visit: p.guardOrder, kind, tick: s.tick };
+    s.log.push({ tick: s.tick, person: p.id, kind: 'guard:' + kind, visit: p.guardOrder });
+    p.guardOrder = null; p.shoutDone = false;
+  }
+  // 目標已退走：還沒出發的清掉意圖照原流程；到了防守點（或喝止中）的就是晚到，從防守點走回去。
+  function expireGuard(p) { result(p, 'expired'); if (p.why === '玩家派去驅離野豬') p.why = null; }
+  // 新改工作／開始／停工：取消尚未完成的驅離；在防守點等或喝止中立刻返院，去防守點途中走完這段再回。
+  function cancelGuard(p) {
+    if (p.guardOrder == null) return false;
+    result(p, 'canceled');
+    if (p.motion.mode === 'guardWait' || p.motion.mode === 'shout') leaveGuard(p);
+    return true;
+  }
+  function arriveGuard(p) {
+    if (guardLive(p)) { p.motion = { mode: 'guardWait', job: null, phase: null, steps: 0, need: null, tripLevel: p.level }; s.log.push({ tick: s.tick, person: p.id, kind: 'guardWait' }); return; }
+    if (p.guardOrder != null) result(p, 'late');
+    leaveGuard(p);
   }
   function goSeat(p) {
     p.motion = { mode: 'toSeat', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level };
@@ -171,7 +223,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     return false;
   }
   // 停工或待恢復（rest 非空）都要離開休閒；恢復自主只清叫回，不能讓待恢復的人卡在活動點。
-  const funOver = (p) => !!p.rest || p.recall || slotFor(p);
+  const funOver = (p) => !!p.rest || p.recall || p.guardOrder != null || slotFor(p);
   function goBack(p) {
     p.why = `精力恢復到 ${E.backAt}，自己回去`;
     p.motion = { mode: 'back', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level };
@@ -218,6 +270,15 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       } else if (h.mode === 'fun') {
         h.steps += 1; // 只給畫面換動作幀；不是計時獎勵
         if (funOver(p)) leaveFun(p);
+      } else if (h.mode === 'toGuard' || h.mode === 'fromGuard') {
+        h.steps += 1;
+        if (h.steps >= h.need) { if (h.mode === 'fromGuard') { s.log.push({ tick: s.tick, person: id, kind: 'guardHome' }); atHome(p); } else arriveGuard(p); }
+      } else if (h.mode === 'guardWait') {
+        // 野豬到了護欄（準備撞）才喝止；還在嗅探／靠近就等它。看的是上一 tick 結束時的野豬。
+        if (s.boar.mode === 'prep') { p.motion = { mode: 'shout', job: null, phase: null, steps: 0, need: msSteps(B.shoutMs), tripLevel: p.level }; s.log.push({ tick: s.tick, person: id, kind: 'shout' }); }
+      } else if (h.mode === 'shout') {
+        h.steps += 1;
+        if (h.steps >= h.need) p.shoutDone = true; // 成效在本 tick 野豬結算時才判，不在這裡提高威脅
       } else if (h.mode === 'idle' && !p.rest && p.energy <= E.restAt) atHome(p);
     }
     // 空位少時輪流獲得下一個出發機會，避免滿缸後每次用水都被同一人搶走。
@@ -229,14 +290,100 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     // 出發輪替之後才看閒暇：有合法容量一定先工作；只在實存滿時去休閒，僅在途占滿就留在院中等。
     for (const id of ids) {
       const p = s.people[id];
-      if (p.motion.mode === 'idle' && !p.rest && !p.recall && p.energy > E.restAt && prefs[id] && stocked(p.job)) goFun(p);
+      if (p.motion.mode === 'idle' && !p.rest && !p.recall && p.guardOrder == null && p.energy > E.restAt && prefs[id] && stocked(p.job)) goFun(p);
     }
+    // 人的工作交付、移動與喝止進度都先結算完，最後才結算野豬（誘因看交付後的實存）。
+    boarStep();
+  }
+
+  // ---------- LP-06 野豬 ----------
+  const lure = () => s.vat > 0 || s.herbs > 0; // 只看實存，不看在途預約
+  function boarLeg(mode, to, speed) {
+    const b = s.boar;
+    b.mode = mode; b.leg = { from: b.d, to }; b.steps = 0;
+    b.need = Math.max(1, Math.ceil(Math.abs(to - b.d) / speed * 1000 / STEP_MS - 1e-9));
+  }
+  // 自行退走的原因（每個決策 tick 重看）：累了、害怕或院內已空。
+  function fleeWhy() {
+    const b = s.boar;
+    if (b.e <= B.tiredAt * Q) return `累了（精力 ≤ ${B.tiredAt}）`;
+    if (b.t >= B.scaredAt * Q) return `害怕（威脅 ≥ ${B.scaredAt}）`;
+    if (!lure()) return '院內已空，沒有水／藥草氣味';
+    return null;
+  }
+  function boarFlee(why) {
+    const b = s.boar;
+    b.active = false; b.why = why;
+    boarLeg('flee', 0, B.flee);
+    s.log.push({ tick: s.tick, kind: 'boar:flee', visit: b.visit, why });
+    // 目標退走：等著或喝止中的人晚到返院；還沒出發的清掉意圖；正在路上的到防守點再發現晚到。
+    for (const id of ids) {
+      const p = s.people[id];
+      if (p.guardOrder !== b.visit) continue;
+      const m = p.motion.mode;
+      if (m === 'guardWait' || m === 'shout') { result(p, 'late'); leaveGuard(p); }
+      else if (m !== 'toGuard') expireGuard(p);
+    }
+  }
+  function boarStep() {
+    const b = s.boar;
+    if (b.mode === 'habitat') {
+      b.e = Math.min(B.max * Q, b.e + perQ(B.restPerSec));
+      b.t = Math.max(0, b.t - perQ(B.calmPerSec));
+      if (b.e >= B.goEnergy * Q && b.t <= B.goThreat * Q && lure()) {
+        b.visit += 1; b.active = true; b.hits = 0; b.why = '水／藥草氣味，精力夠、不害怕';
+        boarLeg('out', boarLen.edge, B.approach);
+        s.log.push({ tick: s.tick, kind: 'boar:out', visit: b.visit });
+      }
+      return;
+    }
+    if (b.mode === 'out' || b.mode === 'approach' || b.mode === 'flee') {
+      b.e = Math.max(0, b.e - perQ(B.walkPerSec));
+      b.steps += 1;
+      b.d = b.leg.from + (b.leg.to - b.leg.from) * Math.min(1, b.steps / b.need);
+      if (b.steps < b.need) return;
+      b.d = b.leg.to;
+      if (b.mode === 'out') { b.mode = 'sniff'; b.steps = 0; b.need = msSteps(B.sniffMs); b.leg = null; }
+      else if (b.mode === 'approach') { b.mode = 'prep'; b.steps = 0; b.need = msSteps(B.hitMs); b.leg = null; s.log.push({ tick: s.tick, kind: 'boar:fence', visit: b.visit, e: b.e / Q }); }
+      else { b.mode = 'habitat'; b.leg = null; b.steps = 0; b.need = 0; b.last = { visit: b.visit, hits: b.hits, why: b.why }; s.log.push({ tick: s.tick, kind: 'boar:home', visit: b.visit }); }
+      return;
+    }
+    if (b.mode === 'sniff') {
+      b.steps += 1;
+      if (b.steps < b.need) return;
+      // 嗅探完：院內已空就回棲地；否則沿路靠近，途中誘因消失也先走完這段到護欄再判。
+      if (!lure()) boarFlee('院內已空，沒有水／藥草氣味');
+      else boarLeg('approach', boarLen.total, B.approach);
+      return;
+    }
+    // prep：在護欄外。先判自行退走（已逃就不能被喝止補成功），再判喝止完成（取消尚未接觸的這一下），最後才是到期接觸。
+    const why = fleeWhy();
+    if (why) { boarFlee(why); return; }
+    const shouter = ids.map((id) => s.people[id]).find((p) => p.shoutDone && p.guardOrder === b.visit);
+    if (shouter) {
+      b.t = Math.min(B.max * Q, b.t + B.shoutThreat * Q);
+      result(shouter, 'success');
+      leaveGuard(shouter);
+      boarFlee(`被${shouter.id === 'hero' ? '主角' : '熟手'}喝止，害怕`);
+      return;
+    }
+    b.steps += 1;
+    if (b.steps < b.need) return;
+    b.e = Math.max(0, b.e - B.hitCost * Q);
+    b.hits += 1;
+    const grew = b.marks < B.maxMarks;
+    if (grew) b.marks += 1;
+    s.log.push({ tick: s.tick, kind: 'boar:hit', visit: b.visit, marks: b.marks, grew });
+    b.steps = 0;
+    const after = fleeWhy();
+    if (after) boarFlee(after);
   }
 
   // 改做某工作：當趟途中只記待執行（再下當趟的工作＝取消待執行）；閒置時立刻換並嘗試出發。
   // 休息流程中只更新要回去的工作：解除玩家停工，但仍要恢復到 80、走回院中才出發；不移動、不加精力。
   function work(p, job) {
     const name = JOBS[job].label, mode = p.motion.mode;
+    cancelGuard(p); // 較新的改工作／開始取消尚未完成的驅離
     if (mode === 'carry') {
       if (job === p.motion.job) { p.pending = null; return { ok: true, text: `取消待執行，繼續${name}` }; }
       p.pending = job;
@@ -257,6 +404,13 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (mode === 'back') {
       p.rest = null; p.why = null;
       return { ok: true, text: `正在回院中，到了就${name}` };
+    }
+    // 驅離往返中：只改要回去的工作；去防守點途中走完這段，等候／喝止中已立刻返院。停工中的明確開始照 LP-04 解除，未到 80 先恢復。
+    if (GUARD_MODES.includes(mode)) {
+      p.job = job; p.pending = null;
+      if (p.rest === 'manual') p.rest = p.energy < E.backAt ? 'auto' : null;
+      p.why = p.rest === 'auto' ? `已解除停工；精力未到 ${E.backAt}，先恢復` : null;
+      return { ok: true, text: mode === 'toGuard' ? `走到防守點後回院中${name}` : `回院中後${name}` };
     }
     if (mode === 'toSeat' || mode === 'seated') {
       const was = p.rest;
@@ -284,7 +438,9 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (!a.enabled) return { ok: false, reason: a.reason };
     if (cmd === 'start') return work(p, p.motion.mode === 'carry' ? p.motion.job : p.job);
     if (cmd.startsWith('work:')) return work(p, cmd.slice(5));
+    if (cmd === 'guard') return guard(p);
     if (cmd === 'restAfterTrip') {
+      cancelGuard(p);
       const mode = p.motion.mode;
       if (mode === 'carry') { p.pending = 'rest'; return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後停工休息`, pending: true }; }
       p.rest = 'manual'; p.why = '玩家下令停工'; p.pending = null; p.recall = false;
@@ -293,6 +449,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       if (mode === 'toFun') return { ok: true, text: `走到${prefs[p.id].place}後回院中，再去座位停工` };
       if (mode === 'fun' || mode === 'fromFun') return { ok: true, text: '回院中後去座位停工' };
       if (mode === 'back') return { ok: true, text: '走回院中後再回座位停工' };
+      if (mode === 'toGuard') return { ok: true, text: '走到防守點後回院中，再去座位停工' };
+      if (mode === 'fromGuard') return { ok: true, text: '回院中後去座位停工' };
       return { ok: true, text: '改為停工：回滿也不會自己開工' };
     }
     if (cmd === 'recall') return recall(p);
@@ -303,8 +461,30 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       p.why = null;
       return { ok: true, text: '恢復自主：有空位就做，滿了就去休閒' };
     }
-    if (cmd === 'cancel') { p.pending = null; return { ok: true, text: '已取消待執行指令' }; }
+    if (cmd === 'cancel') {
+      p.pending = null;
+      // 尚未生效（還沒走上防守路）的驅離也一起取消；已在走的路與停工不受影響。
+      if (p.guardOrder != null && !guardBusy(p)) result(p, 'canceled');
+      return { ok: true, text: '已取消待執行指令' };
+    }
     return { ok: false, reason: '沒有這個指令' };
+  }
+
+  const guardBusy = (p) => ['toGuard', 'guardWait', 'shout'].includes(p.motion.mode);
+  const nameOf = (id) => (id === 'hero' ? '主角' : id === 'cousin' ? '熟手' : id);
+  const assignee = () => (s.boar.active ? ids.find((id) => s.people[id].guardOrder === s.boar.visit) || null : null);
+  // 派遣驅離：只接受這次有效來訪；同一來訪最多一人；已在處理不重啟。工作／恢復中只記意圖，交付或恢復到 80 後目標仍在才出發。
+  function guard(p) {
+    p.guardOrder = s.boar.visit; p.guardResult = null;
+    s.log.push({ tick: s.tick, person: p.id, kind: 'guard', visit: p.guardOrder });
+    const m = p.motion.mode;
+    if (m === 'idle') { atHome(p); return { ok: true, text: '去防守點驅離野豬' }; }
+    if (m === 'carry') return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後去驅離（野豬還在才去）`, pending: true };
+    if (m === 'toFun') return { ok: true, text: `走到${prefs[p.id].place}後回院中，再去驅離` };
+    if (m === 'fun' || m === 'fromFun') return { ok: true, text: '回院中後去驅離' };
+    if (m === 'toSeat' || m === 'seated') return { ok: true, text: `先恢復到 ${E.backAt}，野豬還在才去` };
+    if (m === 'toGuard') return { ok: true, text: '繼續走向防守點' };
+    return { ok: true, text: '回到院中就去驅離' };
   }
 
   function actions(id = 'hero') {
@@ -313,15 +493,17 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const carrying = p.motion.mode === 'carry';
     const cur = carrying ? p.motion.job : p.job;
     const stopped = p.rest === 'manual', fun = ['toFun', 'fun', 'fromFun'].includes(p.motion.mode);
-    const inRest = p.motion.mode !== 'idle' && !carrying && !fun;
+    const guarding = GUARD_MODES.includes(p.motion.mode), g = guarding || p.guardOrder != null;
+    const inRest = p.motion.mode !== 'idle' && !carrying && !fun && !guarding;
     // 已在做這份工作、也沒有別的待執行時，再下同一工作沒有意義。
     const workOpt = (job) => {
       const name = JOBS[job].label;
       // 休息流程中下同一工作仍有意義：解除停工；自主恢復中則已會回去做它。
-      const same = !stopped && job === cur && (carrying ? p.pending == null : true);
+      // 驅離中（或已排定）下同一工作＝取消驅離、回來做它，仍有意義。
+      const same = !stopped && !g && job === cur && (carrying ? p.pending == null : true);
       return { id: `work:${job}`, label: `${name}（持續）`,
         detail: carrying ? (job === cur ? `取消待執行，繼續${name}` : `本趟${JOBS[cur].label}交付後改去${name}`)
-          : inRest ? `恢復到 ${E.backAt} 並回院中後${name}` : fun ? `叫回院中改${name}` : '做完一趟自己接下一趟，沒有空位就等',
+          : guarding ? `取消驅離，回院中${name}` : inRest ? `恢復到 ${E.backAt} 並回院中後${name}` : fun ? `叫回院中改${name}` : '做完一趟自己接下一趟，沒有空位就等',
         enabled: !same && p.pending !== job, reason: p.pending === job ? `已排定交付後改去${name}` : fun ? '這是原工作：要回去請按「叫回工作」' : `已在持續${name}中` };
     };
     return [
@@ -337,8 +519,18 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         enabled: !stopped && p.pending !== 'rest', reason: stopped ? '已停工' : '已下過這個指令' },
       { id: 'pourNow', label: '立即倒水', detail: '', enabled: false, hidden: cur === 'herb',
         reason: carrying && p.motion.phase >= 2 ? '還沒走到水缸' : '肩上是空桶：要先到泉水裝水' },
-      { id: 'cancel', label: '取消待執行', detail: '', enabled: p.pending != null, reason: stopped ? '停工已生效：下令開始工作才解除' : '沒有待執行指令', hidden: true },
+      { id: 'cancel', label: '取消待執行', detail: '', enabled: p.pending != null || (p.guardOrder != null && !guardBusy(p)), reason: stopped ? '停工已生效：下令開始工作才解除' : '沒有待執行指令', hidden: true },
+      guardOpt(p, stopped),
     ];
+  }
+  function guardOpt(p, stopped) {
+    const b = s.boar, who = assignee();
+    const reason = !b.active ? (b.mode === 'flee' ? '野豬已在退走：這次來訪不能再派' : '野豬不在院外：沒有可驅離的來訪')
+      : who === p.id ? '已在處理這次野豬（重送不重新出發）'
+        : who ? `${nameOf(who)}已在處理；要換人先對${nameOf(who)}改工作或停工`
+          : stopped ? '已停工：下令開始工作才解除' : p.pending === 'rest' ? '已排定本趟後停工' : '';
+    return { id: 'guard', label: '驅離野豬', detail: p.motion.mode === 'carry' ? '本趟交付後去防守點；野豬到護欄時喝止' : '走去防守點；野豬到護欄時喝止，已走就返院',
+      enabled: !reason, reason, hidden: !b.active && p.guardOrder == null };
   }
 
   function phaseView(m) {
@@ -357,13 +549,19 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
             : h.mode === 'toFun' ? `去${pref.place}${pref.doing}`
               : h.mode === 'fun' ? pref.doing
                 : h.mode === 'fromFun' ? '從休閒返院'
+                  : GUARD_LABEL[h.mode] ? GUARD_LABEL[h.mode]
             : p.recall ? (st.amount + st.inFlight >= st.cap ? `玩家叫回，等${place}空位` : '玩家叫回，準備出發')
             : st.amount >= st.cap ? (p.job === 'herb' ? '等空位（藥架已滿，藥草不會自己耗用）' : '等用水（水缸已滿）')
               : st.amount + st.inFlight >= st.cap ? `等空位（${place}與在途已滿）` : '準備出發';
     const nextJob = p.pending && p.pending !== 'rest' ? p.pending : job;
     const E = rules.energy;
     // 下一步：把「為什麼停下」與「什麼時候、做什麼」講清楚；自主恢復與玩家停工不共用一句「休息中」。
-    const next = h.mode === 'carry'
+    const guardNext = p.guardOrder != null && (h.mode === 'toGuard' ? '到防守點等野豬到護欄，再喝止' : h.mode === 'guardWait' ? '野豬到護欄就喝止／拍掌' : h.mode === 'shout' ? '喝止完成野豬就會逃' : null);
+    const next = guardNext ? guardNext
+      : h.mode === 'fromGuard' ? (stopped ? '到院中後回座位停工' : `到院中重查${place}，有空位就${name}`)
+      : h.mode === 'toGuard' ? `走到防守點後回院中${name}`
+      : p.guardOrder != null && h.mode === 'carry' ? `交付後去驅離野豬，回來${JOBS[nextJob].label}`
+      : h.mode === 'carry'
       ? (p.pending === 'rest' ? '交付後去座位停工' : p.energy <= E.restAt ? `交付後精力 ≤ ${E.restAt}，去休息再回來${JOBS[nextJob].label}` : `交付後繼續${JOBS[nextJob].label}`)
       : h.mode === 'back' ? (stopped ? '到院中後回座位停工' : `到院中重查${place}，有空位就${name}`)
         : fun && stopped ? (h.mode === 'toFun' ? `走到${pref.place}後回院中，再去座位停工` : '回院中後去座位停工')
@@ -394,6 +592,21 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       pref: prefs[p.id] || null, recall: p.recall, leisure: fun,
       funLeg: h.mode === 'toFun' || h.mode === 'fromFun' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need } : null,
       funSteps: h.mode === 'fun' ? h.steps : 0,
+      guardOrder: p.guardOrder, guardResult: p.guardResult, guarding: GUARD_MODES.includes(h.mode),
+      guardLeg: h.mode === 'toGuard' || h.mode === 'fromGuard' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need } : null,
+      shoutK: h.mode === 'shout' ? Math.min(1, h.steps / h.need) : 0,
+    };
+  }
+  function boarView() {
+    const b = s.boar, e = b.e / Q, t = b.t / Q, lured = lure();
+    // 原因：為什麼來、為什麼走、為什麼還留在棲地。不提供任何「下次襲擊」倒數。
+    const stay = b.mode !== 'habitat' ? null
+      : [e < B.goEnergy ? `精力未到 ${B.goEnergy}` : null, t > B.goThreat ? `還記得威脅（> ${B.goThreat}）` : null, !lured ? '院內水缸與藥架都空，沒有氣味' : null].filter(Boolean);
+    return {
+      mode: b.mode, label: BOAR_MODE[b.mode], energy: e, threat: t, max: B.max, d: b.d, edge: boarLen.edge, total: boarLen.total,
+      legK: b.need ? Math.min(1, b.steps / b.need) : 0, prepK: b.mode === 'prep' ? Math.min(1, b.steps / b.need) : 0, sniffK: b.mode === 'sniff' ? Math.min(1, b.steps / b.need) : 0,
+      visit: b.visit, active: b.active, hits: b.hits, marks: b.marks, maxMarks: B.maxMarks, lure: lured, assignee: assignee(), last: b.last,
+      why: b.mode === 'habitat' ? (stay.length ? `留在棲地：${stay.join('、')}` : '條件都到了') : b.why,
     };
   }
   function view() {
@@ -405,6 +618,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       vat: s.vat, vatCapacity: rules.vatCapacity, inFlight: s.inFlight,
       herbs: s.herbs, herbCapacity: rules.herbCapacity, herbInFlight: s.herbInFlight, people,
       shadow: s.shadow.active ? phaseView(s.shadow) : null,
+      boar: boarView(),
       log: s.log.slice(-5),
     };
   }
