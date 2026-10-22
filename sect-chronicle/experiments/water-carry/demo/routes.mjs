@@ -25,10 +25,33 @@ export const FUN = {
   cousin: { points: [[962, 512], [1040, 492], [1120, 472], [1190, 462]], face: 1, act: 'stretch' },
 };
 
+// LP-06 野豬：院子西側草坡外一段非關鍵竹護欄。獸路從畫面西界外的棲地出來，到林緣（第 2 點）嗅探，再沿草坡靠近護欄外側。
+// 防守點在護欄內側，人從同一院中端點沿看山那條路的方向走去（另一條獨立折線，不改舊路線）。長度交給模型計時。
+export const BOAR = {
+  points: [[-70, 448], [150, 446], [300, 432], [450, 440], [580, 432], [664, 432]], // 第 1 點＝棲地（畫面外），第 2 點＝林緣
+  fence: { x: 680, y1: 386, y2: 480, x1: 640, x2: 720 }, // 西北→東南斜向一段，野豬接觸點在它西側、防守點在東側
+  edge: { x: 150, y: 446 },
+};
+export const GUARD = { points: [[962, 512], [930, 522], [880, 512], [820, 480], [782, 452], [748, 428], [706, 430]] };
+
 export function createRoutes(waterPoints) {
   const routes = { water: pathTool(waterPoints), herb: pathTool(HERB.points) };
   const seats = { hero: pathTool(SEATS.hero.points), cousin: pathTool(SEATS.cousin.points) };
   const funs = { hero: pathTool(FUN.hero.points), cousin: pathTool(FUN.cousin.points) };
+  const boarPath = pathTool(BOAR.points), guardPath = pathTool(GUARD.points);
+  const [h0, h1] = BOAR.points, boarEdge = Math.hypot(h1[0] - h0[0], h1[1] - h0[1]);
+  // 野豬位置只看模型的距離 d（離棲地多遠）與模式；退走朝棲地（西）。
+  function boarAt(b) {
+    const p = boarPath.at(b.d / boarPath.length);
+    const face = b.mode === 'flee' ? -1 : b.mode === 'habitat' ? -1 : 1;
+    return { x: p.x, y: p.y, face, visible: b.mode !== 'habitat' && p.x > -20 };
+  }
+  // 去／等／喝止／回防守點：u=0 院中端點、u=1 防守點；等候與喝止面向護欄（西）。
+  function guardPlace(mode, k) {
+    const u = mode === 'toGuard' ? k : mode === 'fromGuard' ? 1 - k : 1, p = guardPath.at(u);
+    const face = mode === 'guardWait' || mode === 'shout' ? -1 : (mode === 'fromGuard' ? -p.dx : p.dx) >= 0 ? 1 : -1;
+    return { x: p.x, y: p.y, face, route: guardPath, geo: mode, travelled: mode === 'toGuard' || mode === 'fromGuard' ? k * guardPath.length : 0 };
+  }
   // phase：模型的階段名，或 idle／rest；job：不在路上時，人站在哪份工作的路頭（兩者相同）。
   function place(phase, k, job = 'water') {
     const onHerb = ALIAS[phase] || (!(phase in WATER) && job === 'herb');
@@ -53,12 +76,15 @@ export function createRoutes(waterPoints) {
   }
   // 由 view() 的人物欄位決定位置：畫面與檢查共用，避免各自猜狀態。
   function of(id, p) {
+    if (p.mode === 'toGuard' || p.mode === 'fromGuard') return guardPlace(p.mode, p.guardLeg.k);
+    if (p.mode === 'guardWait' || p.mode === 'shout') return guardPlace(p.mode, 1);
     if (p.mode === 'toFun' || p.mode === 'fromFun') return funPlace(id, p.mode, p.funLeg.k);
     if (p.mode === 'fun') return funPlace(id, 'fun', 1);
     if (p.mode === 'toSeat' || p.mode === 'back') return seatPlace(id, p.mode, p.restLeg.k);
     if (p.mode === 'seated') return seatPlace(id, 'seated', 1);
     return place(p.mode === 'carry' && p.phase ? p.phase.name : 'idle', p.phase?.k || 0, p.job);
   }
-  return { routes, seats, funs, place, of, seatLengths: { hero: seats.hero.length, cousin: seats.cousin.length }, funLengths: { hero: funs.hero.length, cousin: funs.cousin.length } };
+  return { routes, seats, funs, place, of, seatLengths: { hero: seats.hero.length, cousin: seats.cousin.length }, funLengths: { hero: funs.hero.length, cousin: funs.cousin.length },
+    boarPath, guardPath, boarAt, guardPlace, boarLengths: { edge: boarEdge, total: boarPath.length }, guardLength: guardPath.length };
 }
 const WATER = { down: 1, dip: 1, up: 1, pour: 1 };

@@ -2,9 +2,9 @@
 // HUD、名冊、選單、面板、名牌、提示是 HTML/CSS。世界只有 model.mjs：畫面只讀 view()，下令只走 dispatch()，
 // 推進只經 createClock() 換算的固定步進。暫停、背景、播放倍率與畫面幀率都不改結果。
 import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.min.mjs';
-import { createModel, createClock, PEOPLE, JOBS, STEP_MS } from './model.mjs';
+import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
-import { createRoutes, HERB, SEATS, FUN } from './routes.mjs';
+import { createRoutes, HERB, SEATS, FUN, BOAR, GUARD } from './routes.mjs';
 
 const SHARED = '../spikes/shared/';
 const t0 = performance.now();
@@ -34,6 +34,7 @@ const places = {
   rack: { label: '藥架', x: HERB.rack.x, y: HERB.rack.y, rx: 30, ry: 22, sub: '道館院中 · 交藥處' },
   bench: { label: '休息石凳', x: SEATS.bench.x, y: SEATS.bench.y + 6, rx: 50, ry: 18, sub: '松樹下 · 兩人各一席' },
   view: { label: '觀景石', x: FUN.hero.stone.x, y: FUN.hero.stone.y, rx: 34, ry: 16, sub: '院子西側草坡 · 主角愛來看山（閒暇，不回精力）' },
+  fence: { label: '西坡竹護欄', x: BOAR.fence.x, y: BOAR.fence.y2 - 10, rx: 46, ry: 46, sub: '非關鍵護欄 · 內側是防守點' },
   yard: { label: '院邊空地', x: FUN.cousin.points.at(-1)[0], y: FUN.cousin.points.at(-1)[1] + 6, rx: 34, ry: 14, sub: '道館門前院中 · 熟手愛來舒展筋骨（閒暇，不回精力）' },
 };
 const GROWN_FROM = 3; // 本趟腳力到 Lv 3 起換成長後步態
@@ -51,6 +52,13 @@ function pose(ph, level, mode, resting = false, id = 'hero', job = 'water') {
 // LP-05：去／回偏好點用空手步態（借採藥空手走路幀、不畫背簍）；活動中主角用「看山」背影、熟手用「舒展筋骨」循環（幀依模型活動步數換，不看真實時間）。
 const FUN_TICKS_PER_POSE = 36;
 function poseOf(id, person) {
+  // LP-06：往返防守點用空手步態；等候用空手站姿（舒展筋骨第一幀＝站直，不扛扁擔）；喝止無專用幀，用前彎那幀＋畫面另畫喝止波紋。
+  if (person.guarding) {
+    const at = geo.of(id, person), a = animators[id];
+    const walk = person.mode === 'toGuard' || person.mode === 'fromGuard';
+    const view = walk ? { phase: 'herbOut', k: 0, travelled: at.travelled } : { phase: 'stretch', k: 0, travelled: person.mode === 'shout' && person.shoutK > 0.3 ? 3 : 0 };
+    return { x: at.x, y: at.y, face: at.face, ...a.pick(view), travelled: at.travelled, phase: person.mode };
+  }
   if (person.leisure) {
     const at = geo.of(id, person), a = animators[id];
     // 往返用空手往藥圃的步態（不畫背簍），不扛扁擔。
@@ -123,6 +131,80 @@ for (const p of scene.props) placeSprite(p.file, p.ax, p.ay, p.w, p.h, p.x, p.y)
   g.zIndex = y;
   sorted.addChild(g);
 }
+// ---------- LP-06：林緣、竹護欄、防守點與野豬（原創簡單圖形，可編輯來源就是這段程式） ----------
+{
+  // 林緣：畫面西側幾株矮樹叢，野豬從這裡出來嗅探。
+  const { x, y } = BOAR.edge;
+  for (const [dx, dy, r, c] of [[-34, -6, 22, 0x4c7a3c], [-8, -14, 26, 0x5a8a44], [22, -4, 20, 0x4c7a3c], [-46, 10, 16, 0x5f9050], [10, 12, 15, 0x557f45]]) {
+    const g = new Graphics();
+    g.rect(-2, -4, 4, 12).fill(0x6e5434);
+    g.ellipse(0, -r * 0.7, r, r * 0.8).fill(c).stroke({ width: 1.2, color: 0x3c5f30 });
+    g.ellipse(-r * 0.3, -r, r * 0.45, r * 0.35).fill({ color: 0x8ab06a, alpha: 0.5 });
+    g.position.set(x + dx, y + dy + 8); g.zIndex = y + dy + 8;
+    sorted.addChild(g);
+  }
+}
+const fence = new Graphics();
+sorted.addChild(fence);
+// 竹護欄：一段南北向的矮籬，損痕 0～3 只改外觀（裂紋→歪柱→斷橫桿），不擋路、不影響任何工作。
+function drawFence(marks, hitFlash = 0) {
+  const { x1, x2, y1, y2 } = BOAR.fence, n = 7;
+  fence.clear();
+  const post = (i) => ({ x: x1 + (x2 - x1) * i / (n - 1) - fence.x, y: y1 + (y2 - y1) * i / (n - 1) - fence.y });
+  for (const h of [32, 16]) {
+    const a = post(0), b = post(n - 1), m = post(3);
+    if (marks >= 3 && h === 32) {
+      // 斷橫桿：中段斷開垂下
+      fence.moveTo(a.x, a.y - h).lineTo(m.x - 3, m.y - h).stroke({ width: 3.4, color: 0xb59a5c });
+      fence.moveTo(m.x + 3, m.y - h + 9).lineTo(b.x, b.y - h).stroke({ width: 3.4, color: 0xb59a5c });
+    } else fence.moveTo(a.x, a.y - h).lineTo(b.x, b.y - h).stroke({ width: 3.4, color: 0xb59a5c });
+  }
+  for (let i = 0; i < n; i++) {
+    const p = post(i), tilt = marks >= 2 && i === 3 ? 8 : 0;
+    fence.moveTo(p.x, p.y).lineTo(p.x - tilt, p.y - 40).stroke({ width: 4.5, color: 0x9c8048, cap: 'round' });
+    fence.circle(p.x - tilt, p.y - 40, 2.6).fill(0xc2a666);
+  }
+  if (marks >= 1) { const m = post(2); fence.moveTo(m.x - 4, m.y - 30).lineTo(m.x + 3, m.y - 22).lineTo(m.x - 3, m.y - 14).stroke({ width: 1.6, color: 0x4a3720 }); }
+  if (hitFlash > 0) { const m = post(3); fence.circle(m.x - 8, m.y - 18, 10 + 10 * hitFlash).stroke({ width: 2.4, color: 0xd0702a, alpha: hitFlash }); }
+}
+fence.position.set(BOAR.fence.x, (BOAR.fence.y1 + BOAR.fence.y2) / 2);
+fence.zIndex = fence.y;
+drawFence(0);
+// 防守點：護欄內側一塊踏平的草地。
+{
+  const [gx, gy] = GUARD.points.at(-1);
+  ground.ellipse(gx, gy + 2, 16, 5).fill({ color: 0xc9b07a, alpha: 0.75 }).stroke({ width: 1, color: 0x9a7a44, alpha: 0.6 });
+}
+// 野豬：原創向量圖，朝右畫、翻面朝左。腿依模型走過的距離換步，準備撞時後坐再前衝，逃跑時揚塵；全部只讀 view().boar。
+const boarG = new Graphics();
+boarG.visible = false;
+sorted.addChild(boarG);
+function drawBoar(b, now) {
+  const g = boarG;
+  g.clear();
+  const walking = b.mode === 'out' || b.mode === 'approach' || b.mode === 'flee';
+  const gait = walking ? Math.sin(b.d / (b.mode === 'flee' ? 7 : 5)) : 0;
+  let lean = 0, head = 0;
+  if (b.mode === 'prep') lean = b.prepK < 0.75 ? -7 * b.prepK / 0.75 : -7 + 19 * (b.prepK - 0.75) / 0.25;
+  if (b.mode === 'sniff') head = 3 + 3 * Math.sin(b.sniffK * Math.PI * 6);
+  g.ellipse(0, 1, 24, 5).fill({ color: 0x3a3424, alpha: 0.25 });
+  const legs = [[-14, 1], [-7, -1], [8, 1], [14, -1]];
+  for (const [lx, ph] of legs) g.rect(lean + lx - 2 + gait * 3 * ph, -10, 4, 10).fill(0x3b2a1e);
+  g.ellipse(lean, -16, 22, 11).fill(0x5a4030).stroke({ width: 1.2, color: 0x2e2018 });
+  for (let i = 0; i < 6; i++) g.moveTo(lean - 14 + i * 5, -26).lineTo(lean - 12 + i * 5, -31).stroke({ width: 1.6, color: 0x2e2018 }); // 鬃毛
+  g.poly([lean + 14, -24, lean + 30, -14 + head, lean + 30, -8 + head, lean + 14, -8]).fill(0x4e382a).stroke({ width: 1.2, color: 0x2e2018 });
+  g.ellipse(lean + 31, -11 + head, 3.2, 3.6).fill(0x8a6a5a);
+  g.moveTo(lean + 26, -8 + head).lineTo(lean + 29, -14 + head).stroke({ width: 2, color: 0xf2ead8, cap: 'round' }); // 獠牙
+  g.circle(lean + 22, -18 + head, 1.4).fill(0x111111);
+  g.poly([lean + 16, -24, lean + 19, -31, lean + 21, -23]).fill(0x3b2a1e);
+  g.moveTo(lean - 22, -18).lineTo(lean - 27, -14 + gait * 2).stroke({ width: 1.4, color: 0x2e2018 });
+  if (b.mode === 'flee') for (let i = 0; i < 3; i++) g.circle(-28 - i * 9, -4 - (i % 2) * 3, 4 - i).fill({ color: 0xc9b07a, alpha: 0.55 - i * 0.15 });
+  if (b.mode === 'sniff') for (let i = 0; i < 3; i++) g.moveTo(-30 + i * 6, 4).lineTo(-32 + i * 6 + Math.sin(now / 90 + i) * 3, -6).stroke({ width: 2, color: 0x6f9a52 }); // 草動
+}
+const shoutG = new Graphics();
+shoutG.visible = false;
+sorted.addChild(shoutG);
+
 const vatV = scene.vats[1];
 const vatSprite = placeSprite(vatV.file, vatV.ax, vatV.ay, vatV.w, vatV.h, scene.places.vat.x, scene.places.vat.y);
 // 藥架：兩層竹篩，每份藥草畫一束（最多 8）。
@@ -218,7 +300,9 @@ function follow() {
 }
 
 // ---------- 狀態 ----------
-const LENGTHS = { water: scene.path.length, herb: Math.round(herbPath.length * 10) / 10, seat: geo.seatLengths, fun: geo.funLengths };
+const r1 = (n) => Math.round(n * 10) / 10;
+const LENGTHS = { water: scene.path.length, herb: r1(herbPath.length), seat: geo.seatLengths, fun: geo.funLengths,
+  boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total) }, guard: r1(geo.guardLength) };
 let model = createModel(LENGTHS);
 const clock = createClock();
 const ui = { follow: narrow(), playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null };
@@ -309,6 +393,7 @@ $('shadow-toggle').addEventListener('click', toggleShadow);
 $('reset').addEventListener('click', reset);
 $('roster').addEventListener('click', (e) => { const b = e.target.closest('[data-person]'); if (b) select(ui.selected === b.dataset.person ? null : b.dataset.person); });
 $('panel').addEventListener('click', (e) => { const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd); });
+$('boar').addEventListener('click', (e) => { const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd); });
 
 function togglePlay() { if (ui.menu) closeMenu(false); ui.playing = !ui.playing; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); renderChrome(); }
 function setSpeed(s) { ui.speed = s; renderChrome(); }
@@ -321,13 +406,13 @@ function reset() {
   clock.clear();
   v = model.view();
   fx.length = 0;
-  toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份，休息、休閒、叫回與待執行指令已清除');
+  toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份；野豬回棲地精力 60、威脅 0，護欄損痕 0；休息、休閒、叫回、驅離與待執行指令已清除');
   renderChrome();
 }
 
 function menuOptions(id, person) {
   // 地點自己的工作排第一，其次本趟後休息，再來另一份工作。
-  const here = id === 'herb' || id === 'rack' ? 'herb' : 'water', rank = id === 'bench' ? { restAfterTrip: 0 } : id === 'view' || id === 'yard' ? { recall: 0, resume: 1 } : { [`work:${here}`]: 0, restAfterTrip: 1 };
+  const here = id === 'herb' || id === 'rack' ? 'herb' : 'water', rank = id === 'fence' ? { guard: 0 } : id === 'bench' ? { restAfterTrip: 0 } : id === 'view' || id === 'yard' ? { recall: 0, resume: 1 } : { [`work:${here}`]: 0, restAfterTrip: 1, guard: 3 };
   const opts = model.actions(person).filter((a) => !a.hidden && !(here === 'herb' && a.id === 'pourNow'))
     .sort((a, b) => (rank[a.id] ?? 2) - (rank[b.id] ?? 2));
   if (id === 'spring') return opts.filter((a) => a.id !== 'pourNow').concat([{ id: 'more', label: '在這裡多裝一桶', enabled: false, reason: '扁擔只掛得了兩桶' }]);
@@ -398,9 +483,11 @@ function measure() {
   const st = document.documentElement.style;
   st.setProperty('--hud-h', `${document.querySelector('.hud').offsetHeight}px`);
   st.setProperty('--roster-h', `${$('roster').offsetHeight}px`);
+  st.setProperty('--boar-h', `${$('boar').offsetHeight}px`);
 }
 new ResizeObserver(measure).observe(document.querySelector('.hud'));
 new ResizeObserver(measure).observe($('roster'));
+new ResizeObserver(measure).observe($('boar'));
 
 // ---------- HTML 介面：只在內容變了才寫 DOM，避免播放中吃掉點擊／焦點 ----------
 const last = {};
@@ -418,7 +505,22 @@ const cmdLabel = (a, p) => !a.id.startsWith('work:') || p.mode !== 'carry' ? a.l
   : a.id !== 'work:' + p.job ? `交付後改${JOBS[a.id.slice(5)].label}` : p.pending ? `繼續${p.jobLabel}` : a.label;
 const pendText = (p) => p.pending === 'rest' ? '本趟後停工' : `交付後改去${JOBS[p.pending].label}`;
 const en = (p) => Math.floor(p.energy);
-const srcText = (p) => p.rest === 'manual' ? '玩家停工' : p.rest === 'auto' ? '自主恢復' : p.mode === 'back' ? '自主恢復完成' : p.leisure ? '閒暇（不扣不回）' : null;
+const srcText = (p) => p.rest === 'manual' ? '玩家停工' : p.rest === 'auto' ? '自主恢復' : p.mode === 'back' ? '自主恢復完成' : p.leisure ? '閒暇（不扣不回）' : p.guarding ? '驅離往返（不扣不回）' : null;
+const RESULT_TEXT = { success: '喝止成功，野豬逃走', late: '晚到：野豬已經走了', expired: '還沒出發野豬就走了，取消', canceled: '已改令，取消驅離' };
+const guardText = (p) => p.guardOrder != null ? (p.guarding ? `驅離野豬：${p.status}` : '待驅離野豬（交付／恢復後野豬還在才去）') : null;
+const B = RULES.boar;
+function boarHtml(b) {
+  const who = b.assignee ? profiles[b.assignee].label : null;
+  const sel = selectedPerson(), opt = model.actions(sel).find((a) => a.id === 'guard');
+  const reason = b.mode === 'habitat' ? b.why : b.mode === 'flee' ? `退走原因：${b.why}` : `來的原因：${b.why}`;
+  const bar = (cls, val, marks, label) => `<div class="row"><span>${label}</span><b>${Math.floor(val)}／${b.max}</b></div><div class="bar ${cls}"><i style="width:${val / b.max * 100}%"></i>${marks.map((m) => `<s style="left:${m}%"></s>`).join('')}</div>`;
+  return `<div class="row"><b>野豬 · ${b.label}</b><span class="muted">第 ${b.visit} 次來訪${b.mode === 'habitat' ? '（已回棲地）' : ''}</span></div>
+    <div class="muted why">${reason}</div>
+    <div class="bars"><div>${bar('benergy', b.energy, [B.tiredAt, B.goEnergy], '精力（不是血量）')}</div><div>${bar('threat', b.threat, [B.goThreat, B.scaredAt], '威脅記憶')}</div></div>
+    <div class="row"><span>護欄損痕 ${b.marks}／${b.maxMarks}</span><span class="muted">只是外觀，不擋路不停工</span></div>
+    ${b.active ? `<div class="row"><span>${who ? `${who}正在處理` : '沒人處理也能繼續生活'}</span>${opt ? `<button class="btn" data-cmd="guard" ${opt.enabled ? '' : 'disabled'} title="${opt.enabled ? opt.detail : opt.reason}">派${profiles[sel].label}驅離</button>` : ''}</div>`
+      : b.last ? `<div class="muted">上次：撞了 ${b.last.hits} 下，${b.last.why}</div>` : ''}`;
+}
 const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 const sec = (s) => `${s.toFixed(1)} 秒`;
 function bannerText() {
@@ -445,12 +547,13 @@ function renderChrome() {
     return `<button class="card ${ui.selected === who ? 'sel' : ''} ${p.resting ? 'stopped' : ''}" data-person="${who}"><b>${info.name} · Lv ${p.level}</b><small><span class="emini"><i style="width:${en(p)}%"></i></span>精力 ${en(p)} · ${p.resting ? '' : p.jobLabel + ' · '}${p.status}</small>${p.pending ? `<small class="due">${pendText(p)}</small>` : ''}</button>`;
   }).join('');
   put('roster', $('roster'), cards);
+  put('boar', $('boar'), boarHtml(v.boar));
   $('roster').classList.toggle('collapsed', !ui.rosterOpen);
   const panel = $('panel');
   panel.hidden = !IDS.includes(ui.selected);
   if (!panel.hidden) {
     const si = person.speedsInitial, sn = person.mode === 'carry' ? person.tripSpeeds : person.speeds;
-    const work = person.mode === 'carry' ? `${person.jobLabel}（持續）· 第 ${person.trips + 1} 趟` : person.resting ? `停工（原工作：${person.jobLabel}）`
+    const work = person.guarding ? `驅離野豬（回來${person.jobLabel}）` : person.mode === 'carry' ? `${person.jobLabel}（持續）· 第 ${person.trips + 1} 趟` : person.resting ? `停工（原工作：${person.jobLabel}）`
       : person.leisure ? `閒暇：${person.pref.doing}（原工作：${person.jobLabel}）` : person.recall ? `${person.jobLabel}（玩家叫回）` : `${person.jobLabel}（持續）`;
     const other = person.job === 'water' ? 'herb' : 'water';
     const pend = person.pending
@@ -465,6 +568,7 @@ function renderChrome() {
       <h4>精力</h4><div class="row"><b>${en(person)}／${person.energyMax}</b><span class="muted">${srcText(person) ? `來源：${srcText(person)}` : '工作每秒 −1 · 坐下每秒 +5'}</span></div>
       <div class="bar energy ${person.energy <= 30 ? 'low' : ''}"><i style="width:${person.energy / person.energyMax * 100}%"></i><s style="left:30%"></s><s style="left:80%"></s></div>
       ${person.why ? `<div class="muted">原因：${person.why}</div>` : ''}
+      ${guardText(person) ? `<div class="guardline">${guardText(person)}</div>` : person.guardResult ? `<div class="muted">驅離結果：${RESULT_TEXT[person.guardResult.kind]}</div>` : ''}
       <div class="muted">偏好：${person.pref ? `${person.pref.label}（${person.pref.place}）· ${person.job === 'herb' ? '藥架' : '水缸'}實存滿才去，有空位就回` : '無'}</div>
       <h4>目前工作</h4><div>${work}</div><div class="row"><span>${person.status}</span>${person.mode === 'carry' ? `<span class="muted">本趟用 Lv ${person.tripLevel}</span>` : ''}</div>
       <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : 0) * 100)}%"></i></div>
@@ -497,7 +601,7 @@ function tag(id, cls, text, x, y, dy = 0) {
 }
 
 // ---------- 每幀 ----------
-let frames = 0, firstFrameMs = null;
+let frames = 0, firstFrameMs = null, fenceHit = -1e9;
 app.ticker.add((t) => {
   if (ui.playing) { const n = clock.feed(t.deltaMS, ui.speed); for (let i = 0; i < n; i++) model.step(); }
   const prev = v;
@@ -516,9 +620,29 @@ app.ticker.add((t) => {
       fx.push({ text: `${profiles[id].label} +1 ${herb ? '份藥' : '擔'}`, x: at.x, y: at.y - 70, until: performance.now() + 1600 });
       if (person.level > prev.people[id].level) fx.push({ text: `${profiles[id].label}腳力 Lv ${person.level}`, x: p.x, y: p.y - 100, until: performance.now() + 2200 });
     }
+    const gr = person.guardResult, pg = prev.people[id].guardResult;
+    if (gr && gr !== pg && (!pg || gr.tick !== pg.tick)) fx.push({ text: `${profiles[id].label}：${RESULT_TEXT[gr.kind]}`, x: p.x, y: p.y - 96, until: performance.now() + 2200 });
     tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level} · 精力 ${en(person)}`, p.x, p.y, 6);
-    tag(`${id}-pill`, `pill ${person.resting ? 'stop' : person.rest || person.mode === 'back' ? 'rest' : person.leisure ? 'fun' : person.recall ? 'recall' : ''}`, person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.status, p.x, p.y - (person.mode === 'seated' ? 64 : 80));
+    tag(`${id}-pill`, `pill ${person.resting ? 'stop' : person.rest || person.mode === 'back' ? 'rest' : person.guarding ? 'guard' : person.leisure ? 'fun' : person.recall ? 'recall' : ''}`, person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.status, p.x, p.y - (person.mode === 'seated' ? 64 : 80));
   }
+  // 野豬與護欄：只讀 view().boar；畫面效果（撞擊閃光、喝止波紋）不入帳。
+  const b = v.boar, bp = geo.boarAt(b), now = performance.now();
+  if (b.visit === prev.boar.visit && b.hits > prev.boar.hits) { fenceHit = now; for (let i = fx.length - 1; i >= 0; i--) if (fx[i].boar) fx.splice(i, 1); fx.push({ boar: true, text: b.marks > prev.boar.marks ? `砰！護欄損痕 ${b.marks}／${b.maxMarks}` : '砰！（損痕已到頂，不再惡化）', x: BOAR.fence.x - 40, y: BOAR.fence.y1 + 10, until: now + 1600 }); }
+  const flash = Math.max(0, 1 - (now - fenceHit) / 400);
+  if (fence.marks !== b.marks || flash > 0 || fence.flash) { drawFence(b.marks, flash); fence.marks = b.marks; fence.flash = flash > 0; }
+  boarG.visible = bp.visible;
+  if (bp.visible) { drawBoar(b, now); boarG.scale.set(1.3 * bp.face, 1.3); boarG.position.set(bp.x, bp.y); boarG.zIndex = bp.y; }
+  tag('boar', 'pill boar', bp.visible ? `野豬 · ${b.label}` : null, bp.x + 12, bp.y - 50);
+  const shouter = IDS.find((id) => v.people[id].mode === 'shout');
+  shoutG.visible = !!shouter;
+  if (shouter) {
+    const sp = positions[shouter], k = v.people[shouter].shoutK;
+    shoutG.clear();
+    for (let i = 0; i < 3; i++) shoutG.arc(0, 0, 14 + i * 9 + k * 8, Math.PI * 0.75, Math.PI * 1.25).stroke({ width: 2.4, color: 0xc8962e, alpha: 0.9 - i * 0.25 });
+    shoutG.position.set(sp.x - 14, sp.y - 58); shoutG.zIndex = sp.y + 0.05;
+  }
+  tag('shout', 'gain shout', shouter ? (v.people[shouter].shoutK < 0.5 ? '喝！' : '啪啪！') : null, shouter ? positions[shouter].x - 30 : 0, shouter ? positions[shouter].y - 86 : 0);
+  tag('fence', 'place', `${places.fence.label} · 損痕 ${b.marks}／${b.maxMarks}`, BOAR.fence.x2 + 34, BOAR.fence.y2 + 22);
   const h = v.people.hero;
   const showGhost = ui.shadow && v.shadow && h.mode === 'carry' && h.tripLevel > h.initialLevel;
   ghost.visible = !!showGhost;
@@ -542,17 +666,17 @@ app.ticker.add((t) => {
   tag('rack', 'place', `${places.rack.label} ${v.herbs}／${v.herbCapacity} · 在途 ${v.herbInFlight}`, places.rack.x - 30, places.rack.y + 36); // 名牌放在藥架左下，避開院中出發點上的人物狀態
   tag('herb', 'place', places.herb.label, places.herb.x, places.herb.y - 46);
   tag('bench', 'place', places.bench.label, places.bench.x + 92, places.bench.y + 4);
-  tag('view', 'place', places.view.label, places.view.x - 58, places.view.y - 4); // 名牌放在石頭左側，腳下留給人物名牌
+  tag('view', 'place', places.view.label, places.view.x - 6, places.view.y + 40); // 名牌放在石頭下方：左側是 LP-06 防守點，腳下留給人物名牌
   tag('yard', 'place', places.yard.label, places.yard.x + 66, places.yard.y - 6); // 名牌放石凳右側，頭頂留給坐著的人的狀態
   tag('ghost', 'ghost', showGhost ? '主角初始影子・不入帳' : null, g ? g.x : 0, g ? g.y : 0, 6);
   tag('master', '', '師父 · 打坐', 1300, 512, 6);
   tag('senior', '', '師兄 · 掃地', 1120, 528, 6);
-  const now = performance.now();
+  // now 已在上方取得
   for (let i = fx.length - 1; i >= 0; i--) if (fx[i].until < now) fx.splice(i, 1);
   for (let i = 0; i < 3; i++) { const f = fx[i]; tag(`fx${i}`, 'gain', f ? f.text : null, f ? f.x : 0, f ? f.y - (1 - (f.until - now) / 1600) * 14 : 0); }
   if (ui.follow) follow();
   placeMenu();
-  if (IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next) || frames % 15 === 0) renderChrome();
+  if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next) || frames % 15 === 0) renderChrome();
   frames++;
   if (firstFrameMs == null) firstFrameMs = performance.now() - t0;
 });
@@ -575,6 +699,8 @@ window.demo = {
   snapshot: () => {
     const people = Object.fromEntries(IDS.map((id) => [id, personSnapshot(id)]));
     return { ...people.hero, people, tick: v.tick, seconds: v.seconds, vat: v.vat, vatCapacity: v.vatCapacity, inFlight: v.inFlight,
+      boar: { ...v.boar, ...geo.boarAt(v.boar), screen: toScreen(geo.boarAt(v.boar).x, geo.boarAt(v.boar).y - 16) },
+      fenceScreen: toScreen(places.fence.x, places.fence.y - places.fence.ry * 0.6), guardScreen: toScreen(...GUARD.points.at(-1)), lengths: LENGTHS,
       herbs: v.herbs, herbCapacity: v.herbCapacity, herbInFlight: v.herbInFlight, herbScreen: toScreen(places.herb.x, places.herb.y - 10), rackScreen: toScreen(places.rack.x, places.rack.y - 10),
       shadow: v.shadow && v.shadow.name, ghostVisible: ghost.visible,
       playing: ui.playing, autoPaused: ui.autoPaused, pausedByMenu: ui.pausedByMenu, speed: ui.speed,
