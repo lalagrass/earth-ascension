@@ -28,3 +28,4 @@
 | 立繪放進現有介面＋圓臉 B 版（[#184](https://github.com/lalagrass/earth-ascension/issues/184) 第 2 項） | 已交，待人看 | [design/PORTRAIT-UI.md](design/PORTRAIT-UI.md)；疊在 V3 截圖上的合成示意，沒有改展示程式 |
 | BL-V03 第 2 步：空桶／負重走路改前／改後（[#177](https://github.com/lalagrass/earth-ascension/issues/177)） | 已交，待審 | [design/BL-V03-WALK.md](design/BL-V03-WALK.md)；動態對照 `design/walk/preview.html`，未換進展示 |
 | 整體畫風比較：同一挑水畫面，現況 vs 新風格候選（[#184](https://github.com/lalagrass/earth-ascension/issues/184)） | 已交，待審 | [design/STYLE-SCENE.md](design/STYLE-SCENE.md)；靜態候選，未換進展示 |
+| LP-10 掌法畫面稿與點選流程（[#220](https://github.com/lalagrass/earth-ascension/issues/220)） | 已交，待審 | [design/LP10.md](design/LP10.md)；熱區翻稿 `design/lp10/`，設計示意，未連遊戲 |

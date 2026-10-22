@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LP-10 掌法節奏對照</title>
+<style>
+  :root { --ink: #2f2a24; --ink2: #6b6254; --paper: #f8f2e4; --line: #cdbb98; --gold: #c8962e; --warn: #b8432f;
+    --sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "WenQuanYi Zen Hei", sans-serif; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 14px/1.55 var(--sans); padding: 16px; }
+  h1 { font-size: 20px; margin: 0 0 4px; } h2 { font-size: 16px; margin: 18px 0 6px; } p { margin: 4px 0; max-width: 1100px; }
+  .seal { display: inline-block; background: var(--warn); color: #fff4e8; font-weight: 700; padding: 2px 12px; border-radius: 4px; letter-spacing: 2px; font-size: 13px; margin-left: 8px; vertical-align: 2px; }
+  .grid { display: grid; grid-template-columns: 110px repeat(5, minmax(0, 1fr)); gap: 6px; align-items: center; max-width: 1400px; }
+  #close { grid-template-columns: 110px repeat(4, minmax(0, 1fr)); max-width: 1100px; }
+  .colh { font-weight: 700; text-align: center; color: var(--ink2); } .rowh { font-weight: 700; }
+  figure { margin: 0; } canvas { width: 100%; aspect-ratio: 4 / 3; display: block; border: 1px solid var(--line); border-radius: 6px; background: #bdc791; }
+  figcaption { text-align: center; font-size: 12px; color: var(--ink2); }
+  .beat { display: flex; align-items: center; gap: 8px; margin: 4px 0; max-width: 1400px; } .bl { width: 110px; font-weight: 700; flex: none; }
+  .track { position: relative; flex: 1; display: flex; height: 24px; background: #efe4cb; border-radius: 4px; overflow: hidden; }
+  .seg { font-style: normal; font-size: 11px; color: #fff; background: #a0741e; border-right: 1px solid #f8f2e4; display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; }
+  .seg.move { background: #4f78a8; } .seg.hit { background: #c0392b; }
+  .tick { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--ink); }
+  ul { margin: 4px 0; padding-left: 20px; max-width: 1100px; }
+  a { color: #8a6416; }
+  @media (max-width: 600px) { body { padding: 10px; } .grid, #close { grid-template-columns: 64px repeat(5, minmax(0, 1fr)); gap: 3px; } #close { grid-template-columns: 64px repeat(4, minmax(0, 1fr)); }
+    .bl { width: 64px; font-size: 12px; } .rowh { font-size: 12px; } .colh { font-size: 11px; } figcaption { font-size: 10px; } }
+</style>
+</head>
+<body>
+<h1>掌法初學／熟練對照<span class="seal">設計示意，未連遊戲</span></h1>
+<p>同一個主角、同一個鏡頭、同一條路、同一腳力，只換「掌法熟練」這個<b>設計 fixture</b>（不是已實作的角色能力，也不是人物 Lv、體態或 MBTI）。差別在站定、起手、收勢與轉向；<b>移動段兩列一樣長</b>，所以不是把播放倍率調快。</p>
+<p><a href="index.html">← 回點選流程</a></p>
+
+<h2>① 同一時刻並排（t＝相對拍數）</h2>
+<div id="moments" class="grid"></div>
+
+<h2>② 相對節奏條（比例示意，非實作值；黑線＝上面五個時刻）</h2>
+<div id="beats"></div>
+<p class="muted">藍＝移動（只看腳力，兩列等長）；紅＝掌接觸；金＝站定／起手／收勢／轉向（熟練差異只在這些段）。拍數只用來排畫格，不凍結毫秒、HP、傷害或攻擊間隔。</p>
+
+<h2>③ 同一動作分段特寫（鼠1、同站位）</h2>
+<div id="close" class="grid"></div>
+<ul>
+  <li>站定：初學要調整腳步（腳邊晃動線）；熟練到位即定。</li>
+  <li>起手：初學收掌到身後、重心大幅後坐；熟練收在腰側、身體幾乎不動。</li>
+  <li>掌接觸：兩者都是低身下按掌、掌根落在鼠背上（借採藥蹲姿＋本稿疊繪手臂）。初學落點偏鼠側、衝擊線少；熟練落點正中、衝擊線清楚。</li>
+  <li>收勢：初學退半步踉蹌（借走路幀＋後傾）；熟練直接站正，可馬上轉身。</li>
+</ul>
+<p class="muted">素材：人物身體全是現有 template/out sheet 的借用幀（herbHand／herbGather／herbWalk），手臂與立掌是本稿用向量疊上去的示意，<b>缺專用掌法幀</b>；鼠、衝擊線是本稿原創向量。</p>
+<script type="module" src="compare.js"></script>
+</body>
+</html>
