@@ -1,13 +1,13 @@
-# Claude 接手提示詞：LP-05（#208，產品待確認）
+# Claude 接手提示詞：LP-05（#208，P1–P4已批准）
 
-權威範圍／狀態／驗收在 [LP05_HANDOFF](LP05_HANDOFF.md)。以下可整段貼給 Claude；**先核 #208 的擁有人 P1–P4 確認與文件 dev/postCI，尚未成立則只回報，不開始程式兩小時窗口。** 不重問已批准的 LP04。
+權威範圍／狀態／驗收在 [LP05_HANDOFF](LP05_HANDOFF.md)。以下可整段貼給Claude。擁有人已批准P1–P4並委託接手；**本次批准同步文件合dev／postCI後即可本人有效認領**。只核最新整合與作者，不重問P1–P4或LP04，也不由貼文代認領／代啟動。
 
 ```text
-你是 earth-ascension repo 內 Sect Chronicle 生活版 LP-05 #208 的預定開發者 Claude。本輪只做「滿庫後偏好休閒、需要時回原工作、玩家可叫回待命」；這份提示詞本身不是產品批准或有效認領。
+你是 earth-ascension repo 內 Sect Chronicle 生活版 LP-05 #208 的主要開發者 Claude。擁有人已於2026-10-22明確同意P1–P4並委託兩小時接手，來源已回填D15／#208；本輪只做「滿庫後偏好休閒、需要時回原工作、玩家可叫回待命／恢復自主」。不是待產品確認，仍需你本人有效認領。
 
-先讀根 AGENTS.md／CONTRIBUTING.md、sect-chronicle/AGENTS.md、sect-chronicle/docs/LP05_HANDOFF.md、#208 最新本文與全部留言，以及前置 #205／PR #207 的交付狀態。確認擁有人已採用 P1–P4、文件 PR 已合最新 dev 且 postCI 通過、沒有仍有效重疊作者。未確認的範圍只讀／列出最小阻擋，不改程式／schema、代認領或沿用舊輪截止。確認後不再重問已批准範圍。
+先讀根AGENTS.md／CONTRIBUTING.md、sect-chronicle/AGENTS.md、sect-chronicle/docs/LP05_HANDOFF.md、sect-chronicle/docs/DECISIONS_AND_SOURCES.md的D15、#208最新本文與全部留言，以及前置#205／PR #207交付狀態。P1–P4已確認，不再重問；核本次批准同步文件PR已合最新dev且postCI通過（不是只看較早規劃PR #209）、沒有仍有效重疊作者。文件尚待整合時只等該前置，不提前寫程式；真正新增的未定語義才交PO，其他已批部分照常。
 
-在 #208 登記實際主筆 Claude、最新 base SHA、獨立 worktree／短分支、精確檔案與 GitHub created_at+4h 認領。記實際開工 T0、UTC與台北截止 T0+120min；T0+100min後不開新包，提早達標即停，4h租期不延長2h。只一位 active 核心作者，不搶改他人checkout或分支。
+在 #208 登記實際主筆 Claude、最新 base SHA、獨立 worktree／短分支、精確檔案與 GitHub created_at+4h 認領。這是新LP05窗口，不沿用LP04舊截止；記本次實際認領開工T0、UTC與台北截止T0+120min；T0+100min後不開新包，提早達標即停，4h租期不延長2h。只一位 active 核心作者，不搶改他人checkout或分支。
 
 沿同一 sect-chronicle/index.html → experiments/water-carry/demo/、PixiJS/HTML與唯一60Hz純模型。既有兩人、挑水／採藥、腳力與Lv1/Lv3、容量／公平預約、精力與LP04手動停工保持。休閒只在院中、實存量已滿、精力>30且非玩家停工／叫回待命時考慮；僅在途占滿仍院中等，有合法工作先工作，低精力先LP04恢復，不打斷當趟、不自動換工作。
 
