@@ -1,5 +1,11 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## D20有限提取：BL-Q02 掌法畫面與點選設計已批准（2026-10-22）
+
+擁有人同意 [#220 的 Q1–Q4](https://github.com/lalagrass/earth-ascension/issues/220#issuecomment-6342025973)，來源 [D20](DECISIONS_AND_SOURCES.md#d20lp-10-掌法畫面稿與點選流程-q1q4-批准2026-10-22)；按 [LP10 工作包](LP10_HANDOFF.md)／[Claude prompt](LP10_CLAUDE_PROMPT.md)先交同生活場景的完整畫面、短分鏡與點選流程。一式掌法、約三隻測試弱鼠、初學／熟練分段對照、目標逃走與有限換目標、手動發起／叫停／返院回生活；只批准有限設計，不用歷史「掌法未批」阻擋畫稿，也不把它變成真傷害 runtime 批准。
+
+LP09 #232／PR235已交付 dev167a981／postCI39788194427五 SUCCESS，同一8800已更新並保留LP08。下一實作前仍須選合法出發／工作恢復、精力／命中與測試鼠重設，HP／傷害／間隔／成長不猜值；無人傷、真偷糧、掉落、戰鬥XP、自動殺敵或生態繁殖。#219研究非硬前置。本次批准文件合dev／postCI後本人新認領設計／新2h窗口，不代啟作者、不動接受入口。
+
 ## D19有限提取：BL-D02自主整理護欄已批准（2026-10-22）
 
 擁有人已同意PR233的N1–N4，見[D19](DECISIONS_AND_SOURCES.md#d19lp-09-自主整理護欄-n1n4-批准2026-10-22)／[#232](https://github.com/lalagrass/earth-ascension/issues/232)，[LP09工作包](LP09_HANDOFF.md)／[Claude prompt](LP09_CLAUDE_PROMPT.md)，[提案沿革](LP09_PROPOSAL.md)。每人獨立允許預設關、順手1階／累積3階反應、安全候補不占額／院中準備好才正式出發、有效人工覆寫等下一真碰撞重評、一輪全隊最多自主一階。人工fix優先結束當輪，封頂3仍按真接觸事件開新輪；auto/manual與舊任務／新機會分清，沿LP08動作／480tick8精力及安全／返回，停工叫回／恢復與LP07保留。

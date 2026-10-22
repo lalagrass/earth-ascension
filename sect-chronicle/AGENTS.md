@@ -1,5 +1,13 @@
 # Coding agent 接手入口
 
+## D20：LP-10 掌法視覺與點選設計 Q1–Q4 已批准（2026-10-22）
+
+先讀 [D20](docs/DECISIONS_AND_SOURCES.md#d20lp-10-掌法畫面稿與點選流程-q1q4-批准2026-10-22)、[#220](https://github.com/lalagrass/earth-ascension/issues/220)、[LP10 工作包](docs/LP10_HANDOFF.md)與 [Claude 提示詞](docs/LP10_CLAUDE_PROMPT.md)。擁有人同意 Q1–Q4，本次批准同步文件合 dev／postCI 後可本人新認領 **設計交付**，不重問四項；未代啟 Claude。LP09 #232／PR235 已交付 dev167a981／postCI39788194427五 SUCCESS，8800仍為已接受的生活版。
+
+本輪只做完整掌法畫面、短分鏡與點選流程：同生活場景、一式掌法、約三隻測試弱鼠、初學／熟練節奏對照、目標逃走／有限追擊、玩家叫停及回生活。可用設計專用 HTML 熱區切換畫稿，不連模型／世界時間，明標未連遊戲。只在工作包指定 design 路徑交圖／來源／流程，不改 demo、入口、atlas、Earth、CI依賴或8800。
+
+Q1–Q4 不授權真傷害／鼠群 runtime、HP／攻擊間隔／精力或成長值，不自動接可操作遊戲包；合法出發／恢復、權威命中、測試鼠重設等隨稿列待決。無自動殺敵、人傷、偷糧、掉落、戰鬥XP或繁殖，不把腳力當傷害。新T0最多120分鐘／100分鐘後不開新包／早停、4h不延長2h；少量設計路徑與必要瀏覽器／根檢查，未變證據復用，真exit／GPU限制照實。非作者review→Earth PO唯一queue→postCI，設計接受不等遊戲可玩或授權下一階段。
+
 ## D19：LP-09 自主整理護欄N1–N4已批准（2026-10-22）
 
 擁有人已同意N1–N4，讀[D19](docs/DECISIONS_AND_SOURCES.md#d19lp-09-自主整理護欄-n1n4-批准2026-10-22)、[#232](https://github.com/lalagrass/earth-ascension/issues/232)、[LP09工作包](docs/LP09_HANDOFF.md)及[Claude兩小時prompt](docs/LP09_CLAUDE_PROMPT.md)。LP08 #228／PR231已交付，候選PR233已合dev／postCI；本次批准同步文件合dev／postCI後本人核最新dev／有效作者、新worktree新認領，不重問四項，未代啟Claude。
