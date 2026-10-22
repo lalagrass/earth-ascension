@@ -90,8 +90,10 @@ const shot = (page, name) => paused(page, async () => { await page.screenshot({ 
   await page.click('#panel [data-auto="allow"]');
   await page.click('#roster [data-person="cousin"]');
   await page.click('#panel [data-auto="allow"]');
-  // 挑水／採藥前半段才按：留給真人反應時間（交付即出發，太晚按就已出發）
-  const early = () => { const p = window.demo.snapshot().people.cousin; return p.auto.wanting && p.mode === 'carry' && ['down', 'dip', 'herbOut', 'herbGather'].includes(p.phase); };
+  // 在工作前半段或休閒返院前半段有意願時才按（活動點的意願只留 1 tick，下一 tick 就起身）：留給真人反應時間（院中端點會當 tick 出發，太晚按就已出發）
+  const early = () => { const p = window.demo.snapshot().people.cousin; return p.auto.wanting && (['down', 'dip', 'herbOut', 'herbGather'].includes(p.phase) || p.mode === 'toFun' || (p.mode === 'fromFun' && p.funLeg.k < 0.5)); };
+  s = await snap(page);
+  note(`  設定：主角允許 ${s.people.hero.auto.allow}、熟手允許 ${s.people.cousin.auto.allow}（${s.people.cousin.auto.react}）`);
   await wait(page, early, null, 900000);
   await page.click('#play');
   const v3 = (await snap(page)).boar.visit;
@@ -120,7 +122,7 @@ const shot = (page, name) => paused(page, async () => { await page.screenshot({ 
   await np.screenshot({ path: `${OUT}/narrow-1-settings.png` });
   await np.click('#play');
   await np.keyboard.press('4');
-  await wait(np, () => { const p = window.demo.snapshot().people.cousin; return p.auto.wanting && p.mode === 'carry' && ['down', 'dip', 'herbOut', 'herbGather'].includes(p.phase); }, null, 900000);
+  await wait(np, () => { const p = window.demo.snapshot().people.cousin; return p.auto.wanting && (['down', 'dip', 'herbOut', 'herbGather'].includes(p.phase) || p.mode === 'toFun' || (p.mode === 'fromFun' && p.funLeg.k < 0.5)); }, null, 900000);
   await np.click('#play');
   const cb = np.locator('#panel .auto [data-cmd="cancel"]');
   check(await cb.isVisible(), `390px：有意願時面板出現「取消意願」（${await autoText(np)}）`);
