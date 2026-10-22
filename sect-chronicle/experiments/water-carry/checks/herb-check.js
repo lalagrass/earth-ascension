@@ -133,14 +133,14 @@ const panel = (page) => page.locator('#panel').innerText();
   const r2 = await snap(page);
   check(r2.people.hero.x === r0.people.hero.x && r2.people.hero.y === r0.people.hero.y, '再改回挑水，位置仍不變');
   await cmd(page, 'restAfterTrip');
-  check((await snap(page)).people.hero.pending === 'rest', '採藥當趟中再下休息：只留最新意圖');
+  check((await snap(page)).people.hero.rest === 'manual', 'LP-04：已在休息流程中再下停工＝直接轉玩家停工，不另記待執行');
   await page.click('#play');
   await wait(page, () => window.demo.snapshot().people.hero.resting);
   const tr = await page.evaluate(() => window.__trace);
   check(tr.max <= 84 / 60 + 0.01, `整段播放逐幀位置連續：每 tick 最大位移 ${tr.max.toFixed(3)}（上限 1.40）${tr.at ? ' @' + JSON.stringify(tr.at) : ''}`);
   s = await snap(page);
-  check(s.people.hero.mode === 'idle' && !s.people.cousin.resting && s.people.cousin.pending === null && s.people.cousin.job === 'water',
-    `本趟後休息只停主角，熟手仍在挑水工作（${s.people.cousin.status}，水缸 ${s.vat}／${s.vatCapacity}）`);
+  check(['toSeat', 'seated'].includes(s.people.hero.mode) && !s.people.cousin.resting && s.people.cousin.pending === null && s.people.cousin.job === 'water',
+    `本趟後停工只停主角（LP-04 起走去座位），熟手仍在挑水工作（${s.people.cousin.status}，水缸 ${s.vat}／${s.vatCapacity}）`);
   await page.click('#play');
   await page.screenshot({ path: `${OUT}/desk-6-rest.png` });
   // 重來清意圖、藥架、預約

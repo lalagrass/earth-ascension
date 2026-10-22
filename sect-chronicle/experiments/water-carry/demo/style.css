@@ -37,6 +37,13 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .row { display: flex; justify-content: space-between; gap: 8px; } .row b { font-weight: 600; }
 .bar { height: 6px; background: #e8dcc2; border-radius: 3px; overflow: hidden; margin: 2px 0; } .bar i { display: block; height: 100%; background: var(--hero); }
 .bar.xp i { background: var(--gold); }
+.bar.energy { position: relative; height: 8px; } .bar.energy i { background: #4f9a5a; } .bar.energy.low i { background: #c8682e; }
+.bar.energy s { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(47, 42, 36, .45); }
+.next { font-size: 13px; color: #3b5d85; margin-top: 2px; }
+.emini { display: inline-block; vertical-align: middle; width: 28px; height: 5px; background: #e8dcc2; border-radius: 3px; overflow: hidden; margin-right: 4px; }
+.emini i { display: block; height: 100%; background: #4f9a5a; }
+.card.stopped { border-style: dashed; }
+.tag.pill.rest { background: rgba(59, 93, 133, .92); } .tag.pill.stop { background: rgba(138, 64, 30, .92); }
 .cmp { width: 100%; border-collapse: collapse; font-size: 13px; } .cmp td { padding: 1px 0; } .cmp td:not(:first-child) { text-align: right; }
 .cmp .now { font-weight: 700; } .cmp .init { color: var(--ghost); }
 .pending { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #fff6e0; border: 1px dashed var(--gold); border-radius: 6px; padding: 4px 6px; }

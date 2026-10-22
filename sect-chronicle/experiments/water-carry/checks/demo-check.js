@@ -90,7 +90,7 @@ async function menu(page, id) {
   await page.click('#play');
   await wait(page, () => window.demo.snapshot().people.hero.resting);
   s = await snap(page);
-  check(s.people.hero.trips === 1 && s.people.hero.level === 2 && s.people.hero.mode === 'idle', '主角倒完第一趟才入帳／升Lv2／停工');
+  check(s.people.hero.trips === 1 && s.people.hero.level === 2 && s.people.hero.mode === 'toSeat', '主角倒完第一趟才入帳／升Lv2／停工（LP-04 起走去座位）');
   const first = s.people.hero.lastTrip.seconds, cousinTrips = s.people.cousin.trips;
   await wait(page, (n) => window.demo.snapshot().people.cousin.trips > n, cousinTrips);
   s = await snap(page);

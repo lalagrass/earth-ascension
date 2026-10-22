@@ -4,7 +4,7 @@
 import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.min.mjs';
 import { createModel, createClock, PEOPLE, JOBS, STEP_MS } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
-import { createRoutes, HERB } from './routes.mjs';
+import { createRoutes, HERB, SEATS } from './routes.mjs';
 
 const SHARED = '../spikes/shared/';
 const t0 = performance.now();
@@ -26,12 +26,13 @@ await Assets.load(sharedFiles.map((f) => SHARED + 'assets/' + f));
 const TS = (f) => Assets.get(SHARED + 'assets/' + f);
 
 // ---------- 路線（只是畫面換算：模型給「走到第幾成」，這裡換成場景座標；算法在 routes.mjs） ----------
-const { routes: ROUTES, place } = createRoutes(scene.path.points);
+const geo = createRoutes(scene.path.points), { routes: ROUTES, place } = geo;
 const path = ROUTES.water, herbPath = ROUTES.herb;
 const places = {
   ...scene.places,
   herb: { label: '藥圃', x: HERB.patch.x, y: HERB.patch.y + 14, rx: 70, ry: 30, sub: '道館東側坡地 · 可重複採' },
   rack: { label: '藥架', x: HERB.rack.x, y: HERB.rack.y, rx: 30, ry: 22, sub: '道館院中 · 交藥處' },
+  bench: { label: '休息石凳', x: SEATS.bench.x, y: SEATS.bench.y + 6, rx: 50, ry: 18, sub: '松樹下 · 兩人各一席' },
 };
 const GROWN_FROM = 3; // 本趟腳力到 Lv 3 起換成長後步態
 
@@ -43,6 +44,15 @@ function pose(ph, level, mode, resting = false, id = 'hero', job = 'water') {
   // 模型只提供階段與進度；共用動畫用實際走過的距離換幀，不另開 walker 或時鐘。
   const pick = animators[id].pick(view, { grown: level >= GROWN_FROM });
   return { x: at.x, y: at.y, face: at.face, ...pick, travelled: at.travelled, phase };
+}
+// LP-04：去／回座位用空手步態（同一份距離換幀），坐下用模板的「坐下歇」；主角 sheet 沒有坐姿，暫用採藥蹲姿並在面板標明。
+function poseOf(id, person) {
+  if (person.mode !== 'toSeat' && person.mode !== 'back' && person.mode !== 'seated') return pose(person.phase, person.tripLevel, person.mode, false, id, person.job);
+  const at = geo.of(id, person), a = animators[id];
+  const view = { phase: person.mode === 'seated' ? 'rest' : 'down', k: 0, travelled: at.travelled };
+  let pick = a.pick(view);
+  if (person.mode === 'seated' && pick.fallback && a.has('herbGather')) pick = { ...a.pick({ phase: 'herbGather', k: 0, travelled: 0 }), requested: 'rest', fallback: true, chain: ['rest', 'herbGather'] };
+  return { x: at.x, y: at.y, face: at.face, ...pick, travelled: at.travelled, phase: person.mode };
 }
 
 // ---------- 場景 ----------
@@ -82,6 +92,17 @@ const placeSprite = (file, ax, ay, w, h, x, y) => {
   return s;
 };
 for (const p of scene.props) placeSprite(p.file, p.ax, p.ay, p.w, p.h, p.x, p.y);
+// 休息區：原創簡單圖形的長石凳，兩個座位各鋪一塊蒲團；排在坐著的人後面。
+{
+  const b = new Graphics(), { x, y, w } = SEATS.bench;
+  b.ellipse(0, 6, w / 2 + 8, 9).fill({ color: 0x5b5a3a, alpha: 0.25 });
+  b.roundRect(-w / 2 + 6, -4, 10, 10, 2).fill(0x8f8f86).roundRect(w / 2 - 16, -4, 10, 10, 2).fill(0x8f8f86);
+  b.roundRect(-w / 2, -12, w, 9, 4).fill(0xb9b8ad).stroke({ width: 1.2, color: 0x7b7a70 });
+  for (const id of ['hero', 'cousin']) { const [sx] = SEATS[id].points.at(-1); b.ellipse(sx - x, -12, 11, 3.5).fill(id === 'hero' ? 0x9db0c8 : 0xa8bf9a); }
+  b.position.set(x, y);
+  b.zIndex = y - 2;
+  sorted.addChild(b);
+}
 const vatV = scene.vats[1];
 const vatSprite = placeSprite(vatV.file, vatV.ax, vatV.ay, vatV.w, vatV.h, scene.places.vat.x, scene.places.vat.y);
 // 藥架：兩層竹篩，每份藥草畫一束（最多 8）。
@@ -177,12 +198,12 @@ function follow() {
 }
 
 // ---------- 狀態 ----------
-const LENGTHS = { water: scene.path.length, herb: Math.round(herbPath.length * 10) / 10 };
+const LENGTHS = { water: scene.path.length, herb: Math.round(herbPath.length * 10) / 10, seat: geo.seatLengths };
 let model = createModel(LENGTHS);
 const clock = createClock();
 const ui = { follow: narrow(), playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null };
 let v = model.view();
-let positions = Object.fromEntries(IDS.map((id) => { const p = v.people[id]; return [id, pose(p.phase, p.tripLevel, p.mode, p.resting, id, p.job)]; }));
+let positions = Object.fromEntries(IDS.map((id) => [id, poseOf(id, v.people[id])]));
 const fx = []; // 浮字（只是畫面效果）
 const selectedPerson = () => IDS.includes(ui.selected) ? ui.selected : 'hero';
 
@@ -280,13 +301,13 @@ function reset() {
   clock.clear();
   v = model.view();
   fx.length = 0;
-  toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水；水缸 3 擔、藥架 0 份，待執行指令已清除');
+  toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份，休息與待執行指令已清除');
   renderChrome();
 }
 
 function menuOptions(id, person) {
   // 地點自己的工作排第一，其次本趟後休息，再來另一份工作。
-  const here = id === 'herb' || id === 'rack' ? 'herb' : 'water', rank = { [`work:${here}`]: 0, restAfterTrip: 1 };
+  const here = id === 'herb' || id === 'rack' ? 'herb' : 'water', rank = id === 'bench' ? { restAfterTrip: 0 } : { [`work:${here}`]: 0, restAfterTrip: 1 };
   const opts = model.actions(person).filter((a) => !a.hidden && !(here === 'herb' && a.id === 'pourNow'))
     .sort((a, b) => (rank[a.id] ?? 2) - (rank[b.id] ?? 2));
   if (id === 'spring') return opts.filter((a) => a.id !== 'pourNow').concat([{ id: 'more', label: '在這裡多裝一桶', enabled: false, reason: '扁擔只掛得了兩桶' }]);
@@ -375,7 +396,9 @@ const put = (key, el, html) => {
 // 面板按鈕：途中改另一份工作＝「交付後改…」；有待執行時再按當趟工作＝取消、繼續。
 const cmdLabel = (a, p) => !a.id.startsWith('work:') || p.mode !== 'carry' ? a.label
   : a.id !== 'work:' + p.job ? `交付後改${JOBS[a.id.slice(5)].label}` : p.pending ? `繼續${p.jobLabel}` : a.label;
-const pendText = (p) => p.pending === 'rest' ? '本趟後休息' : `交付後改去${JOBS[p.pending].label}`;
+const pendText = (p) => p.pending === 'rest' ? '本趟後停工' : `交付後改去${JOBS[p.pending].label}`;
+const en = (p) => Math.floor(p.energy);
+const srcText = (p) => p.rest === 'manual' ? '玩家停工' : p.rest === 'auto' ? '自主恢復' : p.mode === 'back' ? '自主恢復完成' : null;
 const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 const sec = (s) => `${s.toFixed(1)} 秒`;
 function bannerText() {
@@ -399,7 +422,7 @@ function renderChrome() {
   $('trips').textContent = `共完成 ${IDS.reduce((n, who) => n + v.people[who].trips, 0)} 趟`;
   const cards = IDS.map((who) => {
     const p = v.people[who], info = profiles[who];
-    return `<button class="card ${ui.selected === who ? 'sel' : ''}" data-person="${who}"><b>${info.name} · Lv ${p.level}</b><small>${p.resting ? '' : p.jobLabel + ' · '}${p.status}</small>${p.pending ? `<small class="due">${pendText(p)}</small>` : ''}</button>`;
+    return `<button class="card ${ui.selected === who ? 'sel' : ''} ${p.resting ? 'stopped' : ''}" data-person="${who}"><b>${info.name} · Lv ${p.level}</b><small><span class="emini"><i style="width:${en(p)}%"></i></span>精力 ${en(p)} · ${p.resting ? '' : p.jobLabel + ' · '}${p.status}</small>${p.pending ? `<small class="due">${pendText(p)}</small>` : ''}</button>`;
   }).join('');
   put('roster', $('roster'), cards);
   $('roster').classList.toggle('collapsed', !ui.rosterOpen);
@@ -407,18 +430,22 @@ function renderChrome() {
   panel.hidden = !IDS.includes(ui.selected);
   if (!panel.hidden) {
     const si = person.speedsInitial, sn = person.mode === 'carry' ? person.tripSpeeds : person.speeds;
-    const work = person.mode === 'carry' ? `${person.jobLabel}（持續）· 第 ${person.trips + 1} 趟` : person.resting ? '休息（停工）' : `${person.jobLabel}（持續）`;
+    const work = person.mode === 'carry' ? `${person.jobLabel}（持續）· 第 ${person.trips + 1} 趟` : person.resting ? `停工（原工作：${person.jobLabel}）` : `${person.jobLabel}（持續）`;
     const other = person.job === 'water' ? 'herb' : 'water';
     const pend = person.pending
       ? `<div class="pending"><span><b>${pendText(person)}</b><br><small>本趟${person.jobLabel}交付時生效；再下指令只保留最新一個</small></span><button class="btn" data-cmd="cancel">取消</button></div>`
-      : person.resting ? `<div class="pending"><span><b>休息中</b><br><small>停工中，不會自己出發</small></span><span><button class="btn" data-cmd="start">開始${person.jobLabel}</button> <button class="btn" data-cmd="work:${other}">改${JOBS[other].label}</button></span></div>`
+      : person.resting ? `<div class="pending"><span><b>已停工</b><br><small>回滿也不會自己出發；下令開始才解除</small></span><span><button class="btn" data-cmd="start">開始${person.jobLabel}</button> <button class="btn" data-cmd="work:${other}">改${JOBS[other].label}</button></span></div>`
         : '<div class="muted">沒有</div>';
     const cmds = model.actions(id).filter((a) => !a.hidden && a.id !== 'pourNow')
       .map((a) => `<button class="btn" data-cmd="${a.id}" ${a.enabled ? '' : 'disabled'} title="${a.enabled ? a.detail : a.reason}">${cmdLabel(a, person)}</button>`).join(' ');
     if (!panel.firstElementChild) panel.innerHTML = '<div id="p-work"></div><h4>待執行指令</h4><div id="p-pend"></div><div id="p-cmds" class="cmds"></div><div id="p-gain"></div><div id="p-leg"></div>';
     put('p-work', $('p-work'), `<h2>${profile.name}<small>${profile.role}</small></h2>
+      <h4>精力</h4><div class="row"><b>${en(person)}／${person.energyMax}</b><span class="muted">${srcText(person) ? `來源：${srcText(person)}` : '工作每秒 −1 · 坐下每秒 +5'}</span></div>
+      <div class="bar energy ${person.energy <= 30 ? 'low' : ''}"><i style="width:${person.energy / person.energyMax * 100}%"></i><s style="left:30%"></s><s style="left:80%"></s></div>
+      ${person.why ? `<div class="muted">原因：${person.why}</div>` : ''}
       <h4>目前工作</h4><div>${work}</div><div class="row"><span>${person.status}</span>${person.mode === 'carry' ? `<span class="muted">本趟用 Lv ${person.tripLevel}</span>` : ''}</div>
-      <div class="bar"><i style="width:${Math.round(person.tripProgress * 100)}%"></i></div>`);
+      <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : 0) * 100)}%"></i></div>
+      <div class="next">下一步：${person.next}</div>`);
     put('p-pend', $('p-pend'), pend);
     put('p-cmds', $('p-cmds'), cmds);
     put('p-gain', $('p-gain'), `<h4>收穫（此人交付）</h4><div class="row"><span>挑水 ${person.done.water} 擔</span><span>採藥 ${person.done.herb} 份</span></div>`);
@@ -430,7 +457,7 @@ function renderChrome() {
         ${person.mode === 'carry' ? `<tr><td>本趟${person.jobLabel}（已鎖定）</td><td class="now">${sec(person.tripSecondsNow)}</td><td class="init"></td></tr>` : ''}
         <tr><td>下趟${JOBS[person.nextJob].label}（Lv ${person.level}）</td><td class="now">${sec(person.tripSeconds)}</td><td class="init">${sec(person.tripSecondsInitial)}</td></tr></table>
       <div class="muted">${person.lastTrip ? `上一趟${JOBS[person.lastTrip.job].label}實際 ${sec(person.lastTrip.seconds)}（出發時 Lv ${person.lastTrip.level}）` : '還沒完成第一趟'}；挑水、採藥共用腳力，升級只影響下一趟，倍率只改播放快慢</div>
-      ${positions[id].fallback ? `<div class="muted">動作沿用：${template.actions[positions[id].action].label}</div>` : ''}`);
+      ${positions[id].fallback ? `<div class="muted">動作沿用：${positions[id].requested === 'rest' ? '坐下歇（此人尚無坐姿幀，暫用蹲姿）' : template.actions[positions[id].action].label}</div>` : ''}`);
   }
 }
 
@@ -453,7 +480,7 @@ app.ticker.add((t) => {
   const prev = v;
   v = model.view();
   for (const id of IDS) {
-    const person = v.people[id], p = pose(person.phase, person.tripLevel, person.mode, person.resting, id, person.job);
+    const person = v.people[id], p = poseOf(id, person);
     positions[id] = p;
     const sprite = sprites[id];
     sprite.texture = sheets[id].textures[p.frame];
@@ -466,8 +493,8 @@ app.ticker.add((t) => {
       fx.push({ text: `${profiles[id].label} +1 ${herb ? '份藥' : '擔'}`, x: at.x, y: at.y - 70, until: performance.now() + 1600 });
       if (person.level > prev.people[id].level) fx.push({ text: `${profiles[id].label}腳力 Lv ${person.level}`, x: p.x, y: p.y - 100, until: performance.now() + 2200 });
     }
-    tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level}`, p.x, p.y, 6);
-    tag(`${id}-pill`, 'pill', person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.status, p.x, p.y - 80);
+    tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level} · 精力 ${en(person)}`, p.x, p.y, 6);
+    tag(`${id}-pill`, `pill ${person.resting ? 'stop' : person.rest || person.mode === 'back' ? 'rest' : ''}`, person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.status, p.x, p.y - (person.mode === 'seated' ? 64 : 80));
   }
   const h = v.people.hero;
   const showGhost = ui.shadow && v.shadow && h.mode === 'carry' && h.tripLevel > h.initialLevel;
@@ -491,6 +518,7 @@ app.ticker.add((t) => {
   if (rack.n !== v.herbs) { drawRack(v.herbs); rack.n = v.herbs; }
   tag('rack', 'place', `${places.rack.label} ${v.herbs}／${v.herbCapacity} · 在途 ${v.herbInFlight}`, places.rack.x - 30, places.rack.y + 36); // 名牌放在藥架左下，避開院中出發點上的人物狀態
   tag('herb', 'place', places.herb.label, places.herb.x, places.herb.y - 46);
+  tag('bench', 'place', places.bench.label, places.bench.x + 92, places.bench.y + 4); // 名牌放石凳右側，頭頂留給坐著的人的狀態
   tag('ghost', 'ghost', showGhost ? '主角初始影子・不入帳' : null, g ? g.x : 0, g ? g.y : 0, 6);
   tag('master', '', '師父 · 打坐', 1300, 512, 6);
   tag('senior', '', '師兄 · 掃地', 1120, 528, 6);
@@ -499,7 +527,7 @@ app.ticker.add((t) => {
   for (let i = 0; i < 3; i++) { const f = fx[i]; tag(`fx${i}`, 'gain', f ? f.text : null, f ? f.x : 0, f ? f.y - (1 - (f.until - now) / 1600) * 14 : 0); }
   if (ui.follow) follow();
   placeMenu();
-  if (IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting) || frames % 15 === 0) renderChrome();
+  if (IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next) || frames % 15 === 0) renderChrome();
   frames++;
   if (firstFrameMs == null) firstFrameMs = performance.now() - t0;
 });
