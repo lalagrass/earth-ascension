@@ -2,7 +2,7 @@
 
 原始工作單 [#155](https://github.com/lalagrass/earth-ascension/issues/155) 的 UI／2.5D 原型與素材保留在這裡。D13／[#197](https://github.com/lalagrass/earth-ascension/issues/197) 已將同一 `demo/` runtime 接續為主遊戲生活開發版；設計候選與技術小樣仍各自保留，不自動採用。
 
-**生活主入口**：repo 根目錄跑 `python3 -m http.server 8765 --directory sect-chronicle`，開 <http://localhost:8765/>，會導向同一生活 runtime。亦可在本目錄跑 `python3 -m http.server 8798`，開 `/demo/`。兩人各自挑水／成長／本趟後停工休息，主角 Lv1、熟手 Lv3，水缸含在途預約；共用一個60Hz時鐘。名冊可切換兩人，窄畫面跟隨所選人物。
+**生活主入口**：repo 根目錄跑 `python3 -m http.server 8765 --directory sect-chronicle`，開 <http://localhost:8765/>，會導向同一生活 runtime。亦可在本目錄跑 `python3 -m http.server 8798`，開 `/demo/`。兩人各自挑水或採藥（LP-03）／成長／本趟後停工休息，主角 Lv1、熟手 Lv3，水缸與藥架都含在途預約；共用一個60Hz時鐘。名冊可切換兩人，窄畫面跟隨所選人物。
 
 目前無存檔，重整即新局；不承接或覆寫舊RT資料，舊修行／目標／招募等尚未移植，[舊viewer](../../viewer/)可保留原功能與存檔。體態是既有外觀，休息是停工，沒有新增減重／疲勞／社交系統。LP-01已發布單人基線 commit `c51615648b6f38151ffdcb36e8b2b1a0362fe857` 的同一路徑可回訪。
 
@@ -11,6 +11,7 @@
 | V1 完整畫面稿與動作設計 | 已交，待人看 | [design/V1.md](design/V1.md) |
 | V2 PixiJS／Godot 同場景比較 | 已交，推薦 PixiJS＋HTML/CSS，待審 | [design/V2.md](design/V2.md)；試作在 [spikes/](spikes/) |
 | LP-02 雙人生活主入口（[#201](https://github.com/lalagrass/earth-ascension/issues/201)） | 本版實作；審查／合併見 issue | `/demo/`，由 `sect-chronicle/index.html` 導向同一 runtime；上方列實際功能與限制 |
+| LP-03 採藥與工作切換（[#203](https://github.com/lalagrass/earth-ascension/issues/203)） | 本版實作；審查／合併見 issue | 同一 `/demo/`；藥圃、小路、藥架與背簍是簡單原創圖形，採藥幀由 `template/actions.json` 重烘（舊幀不變）；瀏覽器流程 `checks/herb-check.js` |
 | V3 可操作展示（歷史基線） | 已合 dev | [design/V3.md](design/V3.md)；入口 `python3 -m http.server 8770` 後開 `/demo/` |
 | BL-V03 第 1 步：山路與主角改前／改後（[#177](https://github.com/lalagrass/earth-ascension/issues/177)） | 已合 dev，待擁有人看 | [design/BL-V03.md](design/BL-V03.md)；靜態圖稿，未換進展示 |
 | BL-L03 長住堂親：角色卡、同路對照、指點分鏡（[#180](https://github.com/lalagrass/earth-ascension/issues/180)） | 已合 dev，靜態設計 | [design/BL-L03.md](design/BL-L03.md)；設計圖稿，沒有新增正式角色 |

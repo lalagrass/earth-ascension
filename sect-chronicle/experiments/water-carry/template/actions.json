@@ -17,7 +17,11 @@
   { "phase": "up", "action": "walkLoaded" },
   { "phase": "up", "grown": true, "action": "walkGrown" },
   { "phase": "pour", "action": "pour" },
-  { "phase": "rest", "action": "rest" }
+  { "phase": "rest", "action": "rest" },
+  { "phase": "herbOut", "action": "herbWalk" },
+  { "phase": "herbGather", "action": "herbGather" },
+  { "phase": "herbBack", "action": "herbWalkBack" },
+  { "phase": "herbDeliver", "action": "herbHand" }
  ],
  "actions": {
   "idle": { "label": "待機", "loop": true, "poses": ["idle"], "view": "front", "next": "依權威狀態切換" },
@@ -26,10 +30,24 @@
   "walkLoaded": { "label": "負重上山", "loop": true, "poses": ["loadA", "loadB", "loadC", "loadD"], "view": "back", "stride": 5.2, "fallback": "idle" },
   "walkGrown": { "label": "成長後負重", "loop": true, "poses": ["grownA", "grownB", "grownC", "grownD"], "view": "back", "stride": 5.46, "fallback": "walkLoaded" },
   "pour": { "label": "倒水", "loop": false, "poses": ["pour"], "view": "front", "fallback": "idle" },
-  "rest": { "label": "坐下歇", "loop": false, "poses": ["rest"], "view": "front", "fallback": "idle" }
+  "rest": { "label": "坐下歇", "loop": false, "poses": ["rest"], "view": "front", "fallback": "idle" },
+  "herbWalk": { "label": "空手往藥圃（背簍由畫面另畫）", "loop": true, "poses": ["herbA", "herbB", "herbC", "herbD"], "view": "front", "stride": 6.6, "fallback": "walkEmpty" },
+  "herbGather": { "label": "蹲下採藥（暫用取水蹲姿，手不拿桶）", "loop": false, "poses": ["herbGather"], "view": "front", "fallback": "dip" },
+  "herbWalkBack": { "label": "背藥回道館（背簍由畫面另畫）", "loop": true, "poses": ["herbLoadA", "herbLoadB", "herbLoadC", "herbLoadD"], "view": "back", "stride": 5.6, "fallback": "walkLoaded" },
+  "herbHand": { "label": "交藥（暫用站姿）", "loop": false, "poses": ["herbHand"], "view": "front", "fallback": "idle" }
  },
  "extraPoses": {
-  "rest": { "lean": 0, "legs": [{ "t": 0, "k": 0 }, { "t": 0, "k": 0 }], "load": "none", "sit": true }
+  "rest": { "lean": 0, "legs": [{ "t": 0, "k": 0 }, { "t": 0, "k": 0 }], "load": "none", "sit": true },
+  "herbA": { "lean": 4, "legs": [{ "t": 24, "k": 6 }, { "t": -20, "k": 22 }], "bob": 0, "load": "none" },
+  "herbB": { "lean": 4, "legs": [{ "t": -2, "k": 4 }, { "t": 14, "k": 52 }], "bob": -3, "load": "none" },
+  "herbC": { "lean": 4, "legs": [{ "t": -20, "k": 22 }, { "t": 24, "k": 6 }], "bob": 0, "load": "none" },
+  "herbD": { "lean": 4, "legs": [{ "t": 14, "k": 52 }, { "t": -2, "k": 4 }], "bob": -3, "load": "none" },
+  "herbLoadA": { "lean": 10, "legs": [{ "t": 20, "k": 12 }, { "t": -16, "k": 16 }], "bob": 1, "load": "none" },
+  "herbLoadB": { "lean": 10, "legs": [{ "t": 2, "k": 6 }, { "t": 12, "k": 46 }], "bob": -2, "load": "none" },
+  "herbLoadC": { "lean": 10, "legs": [{ "t": -16, "k": 16 }, { "t": 20, "k": 12 }], "bob": 1, "load": "none" },
+  "herbLoadD": { "lean": 10, "legs": [{ "t": 12, "k": 46 }, { "t": 2, "k": 6 }], "bob": -2, "load": "none" },
+  "herbGather": { "lean": 32, "legs": [{ "t": 80, "k": 80 }, { "t": -6, "k": 96 }], "load": "none" },
+  "herbHand": { "lean": 10, "legs": [{ "t": 10, "k": 4 }, { "t": -10, "k": 4 }], "load": "none" }
  },
  "characters": {
   "hero": { "label": "主角", "draw": "figure", "scale": 1, "overrides": {}, "omit": ["rest"] },

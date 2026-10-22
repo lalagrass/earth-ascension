@@ -1,6 +1,6 @@
 # 宗門編年（Sect Chronicle）生活開發版
 
-**目前主入口是生活開發版**（[#201](https://github.com/lalagrass/earth-ascension/issues/201)，D13）：兩名真實工作者在同一張地圖自主挑水，共用水缸，各自成長與接受本趟後停工休息。主角初始腳力 Lv1、熟手 Lv3，沿既有 Lv5 上限；兩種體態是既有外觀，不會因升級自動變瘦。這是持續演進的主遊戲，後續累積在同一生活入口。
+**目前主入口是生活開發版**（[#201](https://github.com/lalagrass/earth-ascension/issues/201)、[#203](https://github.com/lalagrass/earth-ascension/issues/203)，D13）：兩名真實工作者在同一張地圖自主挑水或採藥，可隨時改工作（途中改令當趟交付後生效）或本趟後停工休息，兩份工作共用腳力成長。主角初始腳力 Lv1、熟手 Lv3，沿既有 Lv5 上限；兩種體態是既有外觀，不會因升級自動變瘦。這是持續演進的主遊戲，後續累積在同一生活入口。
 
 在 repo 根目錄啟動：
 
@@ -8,9 +8,9 @@
 python3 -m http.server 8765 --directory sect-chronicle
 ```
 
-開 <http://localhost:8765/>；穩定主入口薄導向唯一的 `experiments/water-carry/demo/` runtime，沒有第二份 app。點名冊／地圖上的兩人看實際工作、空桶／負重速度與成長；點水缸或泉水對選中的人下令（會暫停）→「本趟後休息」→恢復，該人倒完才停，另一人繼續。按「開始挑水」再出發；1／2／4×只改播放快慢。拖曳／滾輪平移縮放，390px選人後鏡頭跟隨該人；重來清除兩人意圖與在途預約。
+開 <http://localhost:8765/>；穩定主入口薄導向唯一的 `experiments/water-carry/demo/` runtime，沒有第二份 app。點名冊／地圖上的兩人看實際工作、空桶／負重速度與成長；點水缸或泉水對選中的人下令（會暫停）→「本趟後休息」→恢復，該人倒完才停，另一人繼續。按「開始挑水」再出發。面板或點藥圃／藥架可把選中的人改成「採藥（持續）」：他沿東側小路到藥圃蹲採、背簍帶回院中藥架交付，再自己接下一趟；另一人可同時挑水。1／2／4×只改播放快慢。拖曳／滾輪平移縮放，390px選人後鏡頭跟隨該人；重來清除兩人意圖與在途預約。
 
-**目前限制**：生活版尚未存檔，重整即新局；休息是停工，沒有新增疲勞／體力恢復或完整人格／社交。舊版的修行、目標、招募與存讀尚未移植。[舊 viewer](http://localhost:8765/viewer/) 與原資料保留，生活版也有「舊版與存檔」連結；不自動讀取、匯入或覆寫 RT 存檔。示意腳力數值不改寫舊 RT 規則。上一版單人可操作基線為 dev `c51615648b6f38151ffdcb36e8b2b1a0362fe857`（LP-01）；切回該已發布 commit 仍用原 `/experiments/water-carry/demo/` 路徑，無需另一份 runtime。
+**目前限制**：生活版尚未存檔，重整即新局；採藥是生活開發版示意值（藥架容量 8、每趟 1 份、採集／交藥沿用取水／倒水時長），藥草點不枯竭、藥草沒有用途或每日消耗，藥架滿了就清楚等待；休息是停工，沒有新增疲勞／體力恢復或完整人格／社交。舊版的修行、目標、招募與存讀尚未移植。[舊 viewer](http://localhost:8765/viewer/) 與原資料保留，生活版也有「舊版與存檔」連結；不自動讀取、匯入或覆寫 RT 存檔。示意腳力數值不改寫舊 RT 規則。上一版單人可操作基線為 dev `c51615648b6f38151ffdcb36e8b2b1a0362fe857`（LP-01）；切回該已發布 commit 仍用原 `/experiments/water-carry/demo/` 路徑，無需另一份 runtime。
 
 局部檢查：`node --test sect-chronicle/experiments/water-carry/checks/model.test.mjs`；必要主線快驗／基本檢查仍按 [AGENTS](AGENTS.md)。開發與審查狀態以 [#197](https://github.com/lalagrass/earth-ascension/issues/197)／[#201](https://github.com/lalagrass/earth-ascension/issues/201)為準。
 
