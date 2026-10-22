@@ -2,7 +2,7 @@
 
 狀態：**N1–N4待擁有人確認，不可認領程式。** Codex／遊戲PO，2026-10-22，依擁有人「check github updates and review. then plan for the next」。追蹤[#232](https://github.com/lalagrass/earth-ascension/issues/232)，接BL-D02／[#188](https://github.com/lalagrass/earth-ascension/issues/188)，母單[#75](https://github.com/lalagrass/earth-ascension/issues/75)。這是下一片產品建議，不擴[#228](https://github.com/lalagrass/earth-ascension/issues/228)原DoD或預占Claude窗口。
 
-規劃起點dev `46588c03df7000087e3d3c0ee517ee5565c85dca`：LP07自主護院已交付，LP08 [PR231](https://github.com/lalagrass/earth-ascension/pull/231) head `9886c4f`／base46588c0已通過遊戲PO非作者review，待Earth PO整合／postCI。完整7檔與D18核實、獨立模型87PASS；桌面＋390px新操作22ok／1console FAIL，strict真exit1僅兩GPU ReadPixels warning、無應用error，已開動手圖。3→2／8.00精力／真往返／取消不清痕實見；限制沿PR，不冒稱全strict綠／玩家喜好。下一runtime若獲批准仍須等LP08實際接受與最新issue認領，不能拿本規劃取代前置。
+規劃起點dev `46588c03df7000087e3d3c0ee517ee5565c85dca`；LP08 [PR231](https://github.com/lalagrass/earth-ascension/pull/231)已由Earth PO合dev `3d504102f975ae5124cf7b215d764d25e5004c4a`，postCI [39776400224](https://github.com/lalagrass/earth-ascension/actions/runs/39776400224)五SUCCESS。已審head `9886c4f`完整7檔與D18核實、獨立模型87PASS；桌面＋390px新操作22ok／1console FAIL，strict真exit1僅兩GPU ReadPixels warning、無應用error，已開動手圖。3→2／8.00精力／真往返／取消不清痕實見；限制沿PR，不冒稱全strict綠／玩家喜好。下一runtime仍須N1–N4另經擁有人確認、批准版文件整合與最新issue認領，不能拿本候選規劃取代授權。
 
 ## 玩家問題與最小可見閉環
 
@@ -43,6 +43,6 @@ UI只補允許／反應與真原因：未允許、等損痕／安全、候補待
 
 ## 三片短回訪與其後候選
 
-LP06／LP07／LP08若皆接受，已到[#215](https://github.com/lalagrass/earth-ascension/issues/215)建議短回訪點。現有`model.mjs`的`atHome()`負責人工待命令與恢復／返院，`acceptStep()`在院中邊界負責自主護院；本片若採用，須保留同一合法出發邊界而非再造模型外輪詢。這是具體接線風險，**不是已發現bug**：LP08的87快速反例及真實受威脅後fixHome→guard探針通過。候選只在本片需要時最小共享合法性／受理判斷，無需現在大拆，沒有大重構前置、行數門檻或ECS／通用JobQueue授權。
+LP06／LP07／LP08皆已接受，已到[#215](https://github.com/lalagrass/earth-ascension/issues/215)建議短回訪點。現有`model.mjs`的`atHome()`負責人工待命令與恢復／返院，`acceptStep()`在院中邊界負責自主護院；本片若採用，須保留同一合法出發邊界而非再造模型外輪詢。這是具體接線風險，**不是已發現bug**：LP08的87快速反例及真實受威脅後fixHome→guard探針通過。#215已留本輪短回訪紀錄，候選只在本片獲批且需要時最小共享合法性／受理判斷，無需現在大拆，沒有大重構前置、行數門檻或ECS／通用JobQueue授權。
 
 建議先驗這個自主家務；其後可比較[#220](https://github.com/lalagrass/earth-ascension/issues/220)少量鼠群／一式掌法的觀賞性，或依真人回饋改選，不預占整串。#219生態研究不是硬前置，真傷害／繁殖／巡山仍另批。美術／社交其他候選沿[FUTURE_BACKLOG](FUTURE_BACKLOG.md)保留。
