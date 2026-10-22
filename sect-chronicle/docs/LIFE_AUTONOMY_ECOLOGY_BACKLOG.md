@@ -1,5 +1,11 @@
 # 生活後續候選：自主護院、修繕、鼠巢與招式
 
+## 最新有限批准：LP11 手動掌法清鼠（2026-10-22）
+
+擁有人已同意K1–K4，見 [D21](DECISIONS_AND_SOURCES.md#d21lp-11-手動掌法清鼠-k1k4-批准2026-10-22)／[#238](https://github.com/lalagrass/earth-ascension/issues/238)，沿 [工作包](LP11_HANDOFF.md)／[Claude prompt](LP11_CLAUDE_PROMPT.md)。LP10畫面與點選設計已交付；本片才做有限runtime：手動一人、交付／恢復後出發，真接觸一鼠一次擊倒、起手扣2、三鼠警覺逃生／有界換目標、取消真返院，兩掌法比較fixture不改腳力。值與界線已批，待真人校準不等未批准。
+
+D20及下方歷史「未批准掌法runtime」只在D21此範圍更新；不授HP傷害樹／戰鬥XP、人物受傷、偷糧掉落、生態繁殖／遷徙／巡山或存讀。新文件合dev／postCI後本人新認領／新T0兩小時，未代啟作者，8800仍LP09。#219研究非硬前置，#215非大拆gate，分層測試與輸出成本保留。
+
 ## 最新有限批准：LP10 掌法畫面與點選流程（2026-10-22）
 
 擁有人已同意 Q1–Q4，見 [D20](DECISIONS_AND_SOURCES.md#d20lp-10-掌法畫面稿與點選流程-q1q4-批准2026-10-22)／[#220](https://github.com/lalagrass/earth-ascension/issues/220)，沿 [LP10 工作包](LP10_HANDOFF.md)／[Claude prompt](LP10_CLAUDE_PROMPT.md)。一式掌法、約三隻測試弱鼠、同場景初學／熟練節奏、警覺鼠逃離／失效換目標／有限追擊、玩家發起可叫停及回生活；本輪先交畫面與點選設計，未連遊戲的熱區串稿可用，不批准真傷害 runtime 或數值。

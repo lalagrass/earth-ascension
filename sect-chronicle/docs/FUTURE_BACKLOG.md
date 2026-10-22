@@ -1,5 +1,11 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## D21有限提取：BL-Q02 手動掌法清鼠已批准（2026-10-22）
+
+擁有人同意 [#238的K1–K4](https://github.com/lalagrass/earth-ascension/issues/238)，來源 [D21](DECISIONS_AND_SOURCES.md#d21lp-11-手動掌法清鼠-k1k4-批准2026-10-22)；按 [LP11工作包](LP11_HANDOFF.md)／[Claude prompt](LP11_CLAUDE_PROMPT.md)交同入口有限真接觸與擊倒。手動一人一份任務，原趟／恢復後出發，三隻測試鼠、初學熟練僅起手／收勢差異、50／100察覺與120逃速、28掌距／起手扣2／取消真返院、down保留／僅新局重設。完整數值、名額、同tick與命令來源沿工作包，已批示意值不重問。
+
+LP10 #220／PR237畫稿已合dev1c82218／postCI39805538262五SUCCESS，設計與程式分開記錄；本次批准同步文件合dev／postCI後本人新認領／新2h窗口，不代啟作者或提前更新8800（仍LP09）。只有此有限包解除舊掌法未批限制；無通用HP／戰鬥XP、技能養成、人傷、掉落、真偷糧、繁殖／遷徙／巡山或存讀，#219／#215不是硬前置。
+
 ## D20有限提取：BL-Q02 掌法畫面與點選設計已批准（2026-10-22）
 
 擁有人同意 [#220 的 Q1–Q4](https://github.com/lalagrass/earth-ascension/issues/220#issuecomment-6342025973)，來源 [D20](DECISIONS_AND_SOURCES.md#d20lp-10-掌法畫面稿與點選流程-q1q4-批准2026-10-22)；按 [LP10 工作包](LP10_HANDOFF.md)／[Claude prompt](LP10_CLAUDE_PROMPT.md)先交同生活場景的完整畫面、短分鏡與點選流程。一式掌法、約三隻測試弱鼠、初學／熟練分段對照、目標逃走與有限換目標、手動發起／叫停／返院回生活；只批准有限設計，不用歷史「掌法未批」阻擋畫稿，也不把它變成真傷害 runtime 批准。

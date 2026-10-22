@@ -1,5 +1,13 @@
 # Coding agent 接手入口
 
+## D21：LP-11 手動掌法清鼠 K1–K4 已批准（2026-10-22）
+
+讀 [D21](docs/DECISIONS_AND_SOURCES.md#d21lp-11-手動掌法清鼠-k1k4-批准2026-10-22)、[#238](https://github.com/lalagrass/earth-ascension/issues/238)、[LP11工作包](docs/LP11_HANDOFF.md)／[Claude提示詞](docs/LP11_CLAUDE_PROMPT.md)。擁有人已批准K1–K4及本片示意值，不重問；LP10 #220／PR237設計已合dev1c82218、postCI39805538262五SUCCESS，舊CI不一致解除。D20只設計的限制在D21有限包更新，不授整串戰鬥／生態。
+
+本次批准文件合dev／postCI後可本人新認領runtime，未代啟Claude。手動一份清理含等待至返院，原趟／恢復80／院中出發、停工與guard-fix互斥；模型真位置／28掌距／一次接觸擊倒，初學起手48tick收勢36、熟練24／18，起手一次扣2精力。三鼠／固定世界50逼近或100目擊察覺、逃速120、出界不追／穩定ID、取消真返院／down保留／僅新局重設；精確語義沿工作包，無HP／戰鬥XP／人傷／收益／繁殖或存讀。
+
+只demo/**、必要checks/**及實驗README，不搬翻稿STATES當世界、不由render判命中／讀畫面座標。單60Hz、沿現有腳力與生活來源；最小必要掌法疊圖／去工具，不重畫atlas／大拆框架。新T0最多120min／100min後不開新包／早停、4h不延長2h，不沿LP10。局部與主線快驗／根CI、一次桌面390保留、未變證據復用／真exit照實；非作者review→Earth唯一queue→postCI才更8800並保留LP09，不代啟子agent／排程或自合dev。
+
 ## D20：LP-10 掌法視覺與點選設計 Q1–Q4 已批准（2026-10-22）
 
 先讀 [D20](docs/DECISIONS_AND_SOURCES.md#d20lp-10-掌法畫面稿與點選流程-q1q4-批准2026-10-22)、[#220](https://github.com/lalagrass/earth-ascension/issues/220)、[LP10 工作包](docs/LP10_HANDOFF.md)與 [Claude 提示詞](docs/LP10_CLAUDE_PROMPT.md)。擁有人同意 Q1–Q4，本次批准同步文件合 dev／postCI 後可本人新認領 **設計交付**，不重問四項；未代啟 Claude。LP09 #232／PR235 已交付 dev167a981／postCI39788194427五 SUCCESS，8800仍為已接受的生活版。
