@@ -102,12 +102,13 @@ test('做不到的選項回原因，不改狀態', () => {
   assert.equal(JSON.stringify(m.state), before);
 });
 
-test('水缸滿了在道館等用水，用掉一擔後自己出發', () => {
+// LP-05 改語義：前＝滿缸在院中 idle 等用水；後＝實存滿先去偏好活動（主角看山），用掉一擔後自己回院出發。
+test('水缸滿了去看山，用掉一擔後自己回院出發', () => {
   const rules = { ...RULES, vatStart: RULES.vatCapacity, useEveryMs: 10000 };
   const m = createModel(LEN, rules);
   m.step();
-  assert.equal(m.view().mode, 'idle');
-  assert.match(m.view().status, /水缸已滿/);
+  assert.equal(m.view().mode, 'toFun');
+  assert.match(m.view().status, /看山/);
   runUntil(m, (v) => v.mode === 'carry');
   assert.equal(m.view().vat, RULES.vatCapacity - 1);
 });
@@ -183,7 +184,8 @@ test('兩人同刻倒完：各一次釋約／入帳／成長，滿缸不重複�
   const v = m.view(), credits = m.state.log.filter((x) => x.kind === 'trip');
   assert.equal(v.vat, 2); assert.equal(v.inFlight, 0);
   assert.equal(credits.length, 2); assert.equal(credits[0].tick, credits[1].tick);
-  for (const p of Object.values(v.people)) { assert.equal(p.trips, 1); assert.equal(p.level, 2); assert.equal(p.mode, 'idle'); }
+  // LP-05：交付後滿缸，同一步去偏好活動（前：院中 idle）；仍不重複結算。
+  for (const p of Object.values(v.people)) { assert.equal(p.trips, 1); assert.equal(p.level, 2); assert.equal(p.mode, 'toFun'); }
   for (let i = 0; i < 1000; i++) m.step();
   assert.equal(m.view().vat, 2); assert.equal(m.view().inFlight, 0);
   assert.equal(m.state.log.filter((x) => x.kind === 'trip').length, 2);
@@ -194,7 +196,7 @@ test('容量含在途預約：滿缸等待、用水續工，單一空位輪流�
   const m = createLifeModel(LEN, rules);
   m.step();
   assert.equal(m.view().inFlight, 0);
-  assert.ok(Object.values(m.view().people).every((p) => /水缸已滿/.test(p.status)));
+  assert.ok(Object.values(m.view().people).every((p) => p.mode === 'toFun'), 'LP-05：實存滿去休閒（前：院中等）');
   for (let i = 0; i < 30000; i++) {
     m.step();
     const v = m.view();
@@ -342,8 +344,8 @@ test('兩人不同工作同時進行：各自入帳／成長一次，容量與�
   for (let i = 0; i < 600; i++) m.step();
   const v = m.view();
   assert.equal(v.herbs, 2); assert.equal(v.herbInFlight, 0);
-  assert.equal(v.people.cousin.mode, 'idle');
-  assert.match(v.people.cousin.status, /藥架已滿/);
+  assert.equal(v.people.cousin.mode, 'fun', 'LP-05：藥架實存滿，熟手去舒展筋骨（前：院中 idle）');
+  assert.match(v.people.cousin.next, /藥架有空位就回去採藥/);
   assert.equal(sumLog(m, 'herb'), 2);
 });
 
@@ -393,7 +395,8 @@ test('兩條路共用院中端點：閒置、休息、交付、出發都在同�
 });
 
 test('逐 tick 位置連續：雙向切換、休息後改令、滿額閒置改令；暫停（不 step）下令位置不變', () => {
-  const m = createLifeModel({ water: SCENE.path.length, herb: geo.routes.herb.length }, { ...RULES, herbCapacity: 2 });
+  // LP-05：藥架滿額時熟手會去休閒，模型路程長度須與畫面路線一致（含座位與休閒點），否則換算位置會跳。
+  const m = createLifeModel({ water: SCENE.path.length, herb: geo.routes.herb.length, seat: geo.seatLengths, fun: geo.funLengths }, { ...RULES, herbCapacity: 2 });
   const maxStep = RULES.emptySpeed.cap * STEP_MS / 1000 + 1e-6;
   let prev = Object.fromEntries(Object.entries(m.view().people).map(([id, p]) => [id, posOf(p)]));
   const order = (cmd, id) => {
@@ -406,7 +409,7 @@ test('逐 tick 位置連續：雙向切換、休息後改令、滿額閒置改�
     [2, () => order('restAfterTrip', 'cousin')],               // 熟手挑完休息
     [(v) => v.people.cousin.resting, () => order('work:herb', 'cousin')], // 休息時直接改採藥
     [(v) => v.people.hero.job === 'herb' && v.people.hero.done.herb >= 1, () => order('work:water', 'hero')], // 採藥途中改回挑水
-    [(v) => v.herbs >= 2 && v.people.cousin.mode === 'idle', () => order('work:water', 'cousin')], // 藥架滿額閒置時改挑水
+    [(v) => v.herbs >= 2 && v.people.cousin.mode === 'fun', () => order('work:water', 'cousin')], // 藥架滿額、熟手在休閒時改挑水（LP-05 前為院中閒置）
   ];
   let i = 0;
   for (let t = 0; t < 60 * 60 * 6 && i < script.length; t++) {
@@ -457,7 +460,7 @@ test('精力每 tick 只依步前活動計一次：工作扣、坐下回、走�
 test('門檻：院中 30 去恢復、略高不去；坐下自主恢復一到 80 就起身，之前不走', () => {
   const rules = { ...RULES, vatStart: RULES.vatCapacity, useEveryMs: 1e12 };
   for (const [e, goes] of [[30, true], [30.01, false]]) {
-    const m = createLifeModel(LIFE, rules);
+    const m = createLifeModel(LIFE, rules, undefined, {}); // 不帶偏好：隔離 LP-04 院中門檻（有偏好時滿缸會去休閒）
     m.step();
     assert.equal(hero(m).mode, 'idle', '滿缸等待');
     m.state.people.hero.energy = e;
@@ -511,7 +514,8 @@ test('精力到 0 仍完整交付一次、釋約／成長一次，不搶開下�
   runUntil(m3, (x) => x.people.hero.mode === 'seated');
   m3.state.vat = NO_USE.vatCapacity; // 坐著時水缸被填滿（休息者本身不持有預約）
   runUntil(m3, (x) => x.people.hero.mode !== 'seated' && x.people.hero.mode !== 'back');
-  assert.equal(hero(m3).mode, 'idle'); assert.equal(hero(m3).job, 'water'); assert.match(hero(m3).status, /水缸已滿/);
+  // LP-05：返院時實存已滿不強制換工作，去偏好活動（前：院中 idle 等）
+  assert.equal(hero(m3).mode, 'toFun'); assert.equal(hero(m3).job, 'water'); assert.match(hero(m3).status, /看山/);
 });
 
 test('自主轉手動停工、回滿仍停；低精力時下令開始先恢復到 80；返院途中叫停回座位、再開始覆蓋；取消不能抹掉停工', () => {
@@ -613,4 +617,189 @@ test('含休息循環時不同 render 分段／1、2、4 倍得同一世界；�
     assert.equal(p.energy, 100); assert.equal(p.rest, null); assert.equal(p.restLeg, null); assert.equal(p.pending, null);
     assert.equal(p.mode, 'idle'); assert.equal(p.job, 'water'); assert.equal(p.level, p.initialLevel);
   }
+});
+
+// ---------- LP-05 滿庫後的偏好休閒與玩家叫回（#208） ----------
+const FUNL = { ...LIFE, fun: geo.funLengths };
+const FULLV = { ...RULES, vatStart: RULES.vatCapacity, useEveryMs: 1e12 }; // 開局實存滿、不用水
+const who = (m, id) => m.view().people[id];
+const MODES_FUN = ['toFun', 'fun', 'fromFun'];
+
+test('啟動與優先：實存滿才去、僅在途滿留院中；低精力先恢復；停工不去玩；可工作先工作；兩人不同偏好、不每 tick 重啟', () => {
+  // 僅在途占滿：1 空位被同伴預約，另一人院中明示等，不去玩；同伴交付後實存滿，兩人各去偏好點
+  const m = createLifeModel(FUNL, { ...NO_USE, vatCapacity: 2, vatStart: 1 });
+  m.step();
+  const waiting = Object.values(m.view().people).find((p) => p.mode !== 'carry');
+  assert.equal(waiting.mode, 'idle'); assert.match(waiting.next, /有人在補位/);
+  runUntil(m, (v) => v.vat === 2);
+  m.step();
+  assert.deepEqual(Object.values(m.view().people).map((p) => p.mode), ['toFun', 'toFun']);
+  const kinds = m.state.log.filter((x) => x.kind === 'toFun');
+  assert.deepEqual(kinds.map((x) => [x.person, x.fun]).sort(), [['cousin', 'stretch'], ['hero', 'view']]);
+  for (let i = 0; i < 3000; i++) m.step();
+  assert.equal(m.state.log.filter((x) => x.kind === 'toFun').length, 2, '持續休閒期間不重啟路程或活動');
+  assert.deepEqual(Object.values(m.view().people).map((p) => p.mode), ['fun', 'fun']);
+  // 低精力先沿 LP-04 恢復，回到院中才去休閒
+  const m2 = createLifeModel(FUNL, FULLV);
+  m2.state.people.hero.energy = 20;
+  m2.step();
+  assert.equal(who(m2, 'hero').mode, 'toSeat'); assert.equal(who(m2, 'cousin').mode, 'toFun');
+  runUntil(m2, (v) => v.people.hero.mode === 'back');
+  runUntil(m2, (v) => v.people.hero.mode !== 'back');
+  assert.equal(who(m2, 'hero').mode, 'toFun'); assert.ok(who(m2, 'hero').energy >= E.backAt);
+  // 玩家停工：坐到 100 也不去玩
+  const m3 = createLifeModel(FUNL, FULLV);
+  m3.dispatch('restAfterTrip', 'hero');
+  for (let i = 0; i < 60 * 60; i++) { m3.step(); assert.ok(!MODES_FUN.includes(who(m3, 'hero').mode), '停工不去休閒'); }
+  assert.equal(who(m3, 'hero').mode, 'seated'); assert.equal(who(m3, 'hero').energy, 100);
+  // 有合法容量就工作：未滿的工作不會去休閒
+  const m4 = createLifeModel(FUNL, NO_USE);
+  for (let i = 0; i < 60 * 60; i++) { m4.step(); assert.ok(Object.values(m4.view().people).every((p) => !p.leisure)); }
+});
+
+test('守恆：休閒往返與活動不改精力、產出、XP、趟次或預約；不佔容量', () => {
+  const m = createLifeModel(FUNL, FULLV);
+  m.state.people.hero.energy = 55.5; m.state.people.cousin.energy = 40.25;
+  m.step();
+  const a = m.view();
+  runUntil(m, (v) => v.people.hero.mode === 'fun' && v.people.cousin.mode === 'fun');
+  for (let i = 0; i < 1200; i++) m.step();
+  const b = m.view();
+  assert.equal(b.vat, a.vat); assert.equal(b.inFlight, 0); assert.equal(b.herbs, a.herbs); assert.equal(b.herbInFlight, 0);
+  for (const id of ['hero', 'cousin']) {
+    for (const k of ['energy', 'trips', 'xp', 'level']) assert.equal(b.people[id][k], a.people[id][k], `${id} ${k}`);
+    assert.deepEqual(b.people[id].done, a.people[id].done);
+  }
+  assert.equal(m.state.log.filter((x) => x.kind === 'trip').length, 0);
+});
+
+test('意圖與控制：叫回滿庫待命至返院後一趟完成；改工作留最新；恢復自主只解叫回；停工仍需明確開始；兩人互不串', () => {
+  const m = createLifeModel(FUNL, { ...FULLV, herbStart: RULES.herbCapacity }); // 水、藥都滿
+  runUntil(m, (v) => v.people.hero.mode === 'fun' && v.people.cousin.mode === 'fun');
+  assert.ok(m.dispatch('recall', 'hero').ok);
+  assert.equal(who(m, 'hero').recall, true); assert.equal(who(m, 'cousin').recall, false);
+  assert.equal(m.dispatch('cancel', 'hero').ok, false, '取消待執行不能抹掉叫回');
+  m.step();
+  assert.equal(who(m, 'hero').mode, 'fromFun', '活動點下一 tick 起身');
+  runUntil(m, (v) => v.people.hero.mode !== 'fromFun');
+  let h = who(m, 'hero');
+  assert.equal(h.mode, 'idle'); assert.match(h.status, /玩家叫回，等水缸空位/); assert.match(h.next, /恢復自主/);
+  for (let i = 0; i < 1200; i++) m.step();
+  assert.equal(who(m, 'hero').mode, 'idle', '叫回待命不去玩、不自動換工作'); assert.equal(who(m, 'hero').job, 'water');
+  assert.equal(who(m, 'cousin').mode, 'fun', '同伴繼續生活');
+  // 恢復自主只清叫回：滿庫下一決策點就回去休閒
+  assert.ok(m.dispatch('resume', 'hero').ok); m.step();
+  assert.equal(who(m, 'hero').recall, false); assert.equal(who(m, 'hero').mode, 'toFun');
+  // 去程中改工作＝叫回並換最新工作：走完這段才回，不瞬移；水還滿，改採藥後藥架騰空才出發
+  m.dispatch('work:herb', 'hero');
+  h = who(m, 'hero');
+  assert.equal(h.job, 'herb'); assert.equal(h.recall, true);
+  const need = m.state.people.hero.motion.need, left = need - m.state.people.hero.motion.steps;
+  for (let i = 0; i < left - 1; i++) { m.step(); assert.equal(who(m, 'hero').mode, 'toFun', '走完去程'); }
+  m.step(); assert.equal(who(m, 'hero').mode, 'fromFun');
+  runUntil(m, (v) => v.people.hero.mode === 'idle');
+  assert.match(who(m, 'hero').status, /玩家叫回，等藥架空位/);
+  m.state.herbs = RULES.herbCapacity - 1; // 藥架騰出一格（藥草沒有用途，這裡只模擬容量開放）
+  m.step();
+  assert.equal(who(m, 'hero').mode, 'carry'); assert.equal(who(m, 'hero').job, 'herb'); assert.equal(who(m, 'hero').recall, true, '出發不等於解除');
+  runUntil(m, (v) => v.people.hero.trips === 1);
+  assert.equal(who(m, 'hero').recall, false, '返院後新開始的一趟完成才解除');
+  assert.ok(m.state.log.some((x) => x.kind === 'recallDone' && x.person === 'hero'));
+  // 停工：活動中叫停→返院→座位，回滿仍停；恢復自主不可用；明確開始才解除
+  const m2 = createLifeModel(FUNL, FULLV);
+  runUntil(m2, (v) => v.people.cousin.mode === 'fun');
+  m2.dispatch('restAfterTrip', 'cousin');
+  assert.equal(m2.actions('cousin').find((a) => a.id === 'recall').enabled, false);
+  runUntil(m2, (v) => v.people.cousin.mode === 'seated');
+  for (let i = 0; i < 60 * 30; i++) m2.step();
+  assert.equal(who(m2, 'cousin').mode, 'seated'); assert.equal(who(m2, 'cousin').energy, 100);
+  assert.ok(m2.dispatch('start', 'cousin').ok);
+  runUntil(m2, (v) => v.people.cousin.mode !== 'seated' && v.people.cousin.mode !== 'back');
+  assert.equal(who(m2, 'cousin').mode, 'toFun', '解除停工後滿庫照常去休閒');
+  // 去程中叫停：走完去程→返院→座位（不從休閒點跳去石凳）
+  m2.dispatch('restAfterTrip', 'cousin');
+  assert.equal(who(m2, 'cousin').mode, 'toFun');
+  runUntil(m2, (v) => v.people.cousin.mode !== 'toFun');
+  assert.equal(who(m2, 'cousin').mode, 'fromFun');
+  runUntil(m2, (v) => v.people.cousin.mode !== 'fromFun');
+  assert.equal(who(m2, 'cousin').mode, 'toSeat');
+});
+
+test('路程與容量：逐 tick 連續、受出發空手速度上限；暫停改令不動；單一空位只回輪到的人、不超額、不餓死', () => {
+  const m = createLifeModel(FUNL, { ...RULES, vatStart: RULES.vatCapacity, useEveryMs: 20000 });
+  const lim = (id) => speedsFor(m.state.people[id].motion.tripLevel).empty * STEP_MS / 1000 + 1e-6;
+  let prev = Object.fromEntries(Object.entries(m.view().people).map(([id, p]) => [id, posOf(p)]));
+  const order = (cmd, id) => { const b = posOf(who(m, id)), e = who(m, id).energy; m.dispatch(cmd, id); assert.ok(dist(posOf(who(m, id)), b) < 1e-9); assert.equal(who(m, id).energy, e); };
+  const script = [
+    [(v) => v.people.hero.mode === 'toFun' && v.people.hero.funLeg.k > 0.4, () => order('recall', 'hero')],
+    [(v) => v.people.hero.mode === 'idle' && v.people.hero.recall, () => order('resume', 'hero')],
+    [(v) => v.people.hero.mode === 'fun', () => order('work:herb', 'hero')],
+    [(v) => v.people.cousin.mode === 'fun', () => order('restAfterTrip', 'cousin')],
+    [(v) => v.people.cousin.mode === 'seated', () => order('work:water', 'cousin')],
+  ];
+  let i = 0;
+  for (let t = 0; t < 60 * 60 * 8; t++) {
+    const v = m.view();
+    if (i < script.length && script[i][0](v)) { script[i][1](); i++; }
+    m.step();
+    const w = m.view();
+    assert.ok(w.vat + w.inFlight <= w.vatCapacity && w.inFlight >= 0 && w.herbs + w.herbInFlight <= w.herbCapacity, '不超額');
+    assert.equal(w.inFlight, Object.values(w.people).filter((p) => p.mode === 'carry' && p.phase && JOBS_WATER.has(p.phase.name)).length);
+    for (const [id, p] of Object.entries(w.people)) {
+      const now = posOf(p), d = dist(now, prev[id]);
+      if (p.leisure) assert.ok(d <= lim(id), `${id} tick ${w.tick} 休閒路程跳 ${d.toFixed(2)}`);
+      else assert.ok(d <= RULES.emptySpeed.cap * STEP_MS / 1000 + 1e-6, `${id} tick ${w.tick} 跳 ${d.toFixed(2)}`);
+      prev[id] = now;
+    }
+  }
+  assert.equal(i, script.length, '每個介入情境都有發生');
+  // 單一空位：只輪到的人回去，另一人留在活動點；長跑兩人都有後續工作、不餓死
+  const m2 = createLifeModel(FUNL, { ...RULES, vatStart: 1, vatCapacity: 1, useEveryMs: 20000 });
+  let bothLeft = 0;
+  for (let t = 0; t < 60 * 60 * 20; t++) {
+    m2.step();
+    const v = m2.view();
+    assert.ok(v.vat + v.inFlight <= 1);
+    if (Object.values(v.people).every((p) => p.mode === 'fromFun')) bothLeft++;
+  }
+  const v = m2.view();
+  assert.equal(bothLeft, 0, '一個空位不叫兩人一起跑回來');
+  assert.ok(v.people.hero.trips >= 3 && v.people.cousin.trips >= 3, `兩人都有後續工作 ${v.people.hero.trips}/${v.people.cousin.trips}`);
+  assert.ok(Math.abs(v.people.hero.trips - v.people.cousin.trips) <= 1, '輪流');
+});
+const JOBS_WATER = new Set(['down', 'dip', 'up', 'pour']);
+
+test('單一時間與新局：含休閒／叫回時分段與 1、2、4× 得同一世界；新局清休閒路程／叫回', () => {
+  const run = (frameMs, speed) => {
+    const m = createLifeModel(FUNL), c = createClock();
+    let fed = 0;
+    while (fed < 60 * 480) {
+      const n = Math.min(60 * 480 - fed, c.feed(frameMs, speed));
+      for (let i = 0; i < n; i++) {
+        m.step();
+        // 世界時間決定的事件：第一次有人在活動點時叫回他，3000 步後恢復自主（各分段都在同一 tick 發生）
+        if (!m.recallAt) for (const id of ['hero', 'cousin']) if (m.state.people[id].motion.mode === 'fun') { m.dispatch('recall', id); m.recallAt = [m.state.tick, id]; break; }
+        if (m.recallAt && m.state.tick === m.recallAt[0] + 3000) m.dispatch('resume', m.recallAt[1]);
+      }
+      fed += n;
+    }
+    return m;
+  };
+  const a = run(1000 / 60, 1);
+  assert.ok(a.state.log.some((x) => x.kind === 'fun') && a.state.log.some((x) => x.kind === 'recall'), '區間內真的有休閒與叫回');
+  const ref = JSON.stringify([a.state, a.recallAt]);
+  for (const [f, s] of [[1000 / 30, 2], [1000 / 144, 4], [250, 1]]) { const b = run(f, s); assert.equal(JSON.stringify([b.state, b.recallAt]), ref); }
+  const v = createLifeModel(FUNL).view();
+  for (const p of Object.values(v.people)) { assert.equal(p.recall, false); assert.equal(p.leisure, false); assert.equal(p.funLeg, null); assert.equal(p.mode, 'idle'); }
+  assert.equal(v.vat, 3); assert.equal(v.herbs, 0);
+});
+
+test('畫面換算：休閒往返從院中端點出發、活動點分開且不與石凳混淆', () => {
+  const home = geo.place('idle', 0, 'water');
+  for (const id of ['hero', 'cousin']) {
+    assert.ok(dist(geo.of(id, { mode: 'toFun', funLeg: { k: 0 } }), home) < 1e-9);
+    assert.ok(dist(geo.of(id, { mode: 'fromFun', funLeg: { k: 1 } }), home) < 1e-9);
+    assert.ok(dist(geo.of(id, { mode: 'fun' }), geo.of(id, { mode: 'seated' })) > 80, `${id} 活動點離座位夠遠`);
+  }
+  assert.ok(dist(geo.of('hero', { mode: 'fun' }), geo.of('cousin', { mode: 'fun' })) > 200);
 });

@@ -21,7 +21,9 @@
   { "phase": "herbOut", "action": "herbWalk" },
   { "phase": "herbGather", "action": "herbGather" },
   { "phase": "herbBack", "action": "herbWalkBack" },
-  { "phase": "herbDeliver", "action": "herbHand" }
+  { "phase": "herbDeliver", "action": "herbHand" },
+  { "phase": "gaze", "action": "gaze" },
+  { "phase": "stretch", "action": "stretch" }
  ],
  "actions": {
   "idle": { "label": "待機", "loop": true, "poses": ["idle"], "view": "front", "next": "依權威狀態切換" },
@@ -34,7 +36,9 @@
   "herbWalk": { "label": "空手往藥圃（背簍由畫面另畫）", "loop": true, "poses": ["herbA", "herbB", "herbC", "herbD"], "view": "front", "stride": 6.6, "fallback": "walkEmpty" },
   "herbGather": { "label": "蹲下採藥（暫用取水蹲姿，手不拿桶）", "loop": false, "poses": ["herbGather"], "view": "front", "fallback": "dip" },
   "herbWalkBack": { "label": "背藥回道館（背簍由畫面另畫）", "loop": true, "poses": ["herbLoadA", "herbLoadB", "herbLoadC", "herbLoadD"], "view": "back", "stride": 5.6, "fallback": "walkLoaded" },
-  "herbHand": { "label": "交藥（暫用站姿）", "loop": false, "poses": ["herbHand"], "view": "front", "fallback": "idle" }
+  "herbHand": { "label": "交藥（暫用站姿）", "loop": false, "poses": ["herbHand"], "view": "front", "fallback": "idle" },
+  "gaze": { "label": "看山（背對鏡頭站定，LP-05 偏好休閒）", "loop": false, "poses": ["gaze"], "view": "back", "fallback": "idle" },
+  "stretch": { "label": "舒展筋骨（站直→後仰→站直→前彎，LP-05 偏好休閒）", "loop": true, "poses": ["stretchA", "stretchB", "stretchA", "stretchC"], "view": "front", "stride": 1, "fallback": "idle" }
  },
  "extraPoses": {
   "rest": { "lean": 0, "legs": [{ "t": 0, "k": 0 }, { "t": 0, "k": 0 }], "load": "none", "sit": true },
@@ -47,7 +51,11 @@
   "herbLoadC": { "lean": 10, "legs": [{ "t": -16, "k": 16 }, { "t": 20, "k": 12 }], "bob": 1, "load": "none" },
   "herbLoadD": { "lean": 10, "legs": [{ "t": 12, "k": 46 }, { "t": 2, "k": 6 }], "bob": -2, "load": "none" },
   "herbGather": { "lean": 32, "legs": [{ "t": 80, "k": 80 }, { "t": -6, "k": 96 }], "load": "none" },
-  "herbHand": { "lean": 10, "legs": [{ "t": 10, "k": 4 }, { "t": -10, "k": 4 }], "load": "none" }
+  "herbHand": { "lean": 10, "legs": [{ "t": 10, "k": 4 }, { "t": -10, "k": 4 }], "load": "none" },
+  "gaze": { "lean": -3, "legs": [{ "t": 5, "k": 2 }, { "t": -5, "k": 2 }], "load": "none" },
+  "stretchA": { "lean": 0, "legs": [{ "t": 7, "k": 0 }, { "t": -7, "k": 0 }], "load": "none" },
+  "stretchB": { "lean": -12, "legs": [{ "t": 7, "k": 4 }, { "t": -7, "k": 4 }], "bob": 1, "load": "none" },
+  "stretchC": { "lean": 48, "legs": [{ "t": 9, "k": 0 }, { "t": -9, "k": 0 }], "bob": 2, "load": "none" }
  },
  "characters": {
   "hero": { "label": "主角", "draw": "figure", "scale": 1, "overrides": {}, "omit": ["rest"] },
