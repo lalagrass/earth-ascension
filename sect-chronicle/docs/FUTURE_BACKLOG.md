@@ -1,5 +1,11 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## D22有限提取：自主清鼠與玩家覆寫已批准（2026-10-23）
+
+擁有人同意L1–L4，來源 [D22](DECISIONS_AND_SOURCES.md#d22lp-12-自主清鼠與玩家覆寫-l1l4-批准2026-10-23)／[#241](https://github.com/lalagrass/earth-ascension/issues/241)，沿 [LP12工作包](LP12_HANDOFF.md)／[Gemini prompt](LP12_GEMINI_PROMPT.md)。只從BL-A01／BL-Q02提取有限自主清鼠：獨立允許預設關、候補不預占，院中合法與既有任務優先，玩家改令後不搶回、重新允許才恢復，auto/manual分開；UI沿掌法卡短理由。既有LP07／09識別、LP11三鼠與成本／名額／真移動不變，無完整人格AI／HP／XP／繁殖／存讀。
+
+LP11 #238／PR242已接受dev a7e485f／postCI39842008077五SUCCESS，8800已LP11、保留LP09。LP12批准文件合dev／postCI後Gemini本人新認領／新2h窗口，未代啟作者，不先換入口；舊未批自主清鼠限制只在D22有限包解除，#215／#219／#106不新增硬依賴。
+
 ## D21有限提取：BL-Q02 手動掌法清鼠已批准（2026-10-22）
 
 擁有人同意 [#238的K1–K4](https://github.com/lalagrass/earth-ascension/issues/238)，來源 [D21](DECISIONS_AND_SOURCES.md#d21lp-11-手動掌法清鼠-k1k4-批准2026-10-22)；按 [LP11工作包](LP11_HANDOFF.md)／[Claude prompt](LP11_CLAUDE_PROMPT.md)交同入口有限真接觸與擊倒。手動一人一份任務，原趟／恢復後出發，三隻測試鼠、初學熟練僅起手／收勢差異、50／100察覺與120逃速、28掌距／起手扣2／取消真返院、down保留／僅新局重設。完整數值、名額、同tick與命令來源沿工作包，已批示意值不重問。

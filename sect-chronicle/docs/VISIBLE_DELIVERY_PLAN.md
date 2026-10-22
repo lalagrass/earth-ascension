@@ -1,13 +1,13 @@
 # 可見交付、驗證與正式整合
 
 
-## 2026-10-22現況：LP10設計已交付 → LP11有限掌法程式已批准
+## 2026-10-23現況：LP11已交付 → LP12自主清鼠已批准
 
-LP10 [#220／PR237](https://github.com/lalagrass/earth-ascension/pull/237)設計已合dev `1c82218288c937bf221965221a6f8f1063402f9a`，CI39797212554五項明細已一致通過，[postCI39805538262](https://github.com/lalagrass/earth-ascension/actions/runs/39805538262)亦五SUCCESS。遊戲PO完整來源／代表圖／三路徑審查，兩小修後本人點選19/19 exit0；舊14b85d7的favicon404／18ok1FAIL歷史保留。畫稿見 [LP10設計入口](../experiments/water-carry/design/LP10.md)，仍明標未連遊戲、借用採藥幀與缺專用掌法幀，不稱戰鬥／平衡已驗收。
+LP11 [#238／唯一接續PR242](https://github.com/lalagrass/earth-ascension/pull/242)已合dev `a7e485ff442c55f5800248a9fedc06c27ade63fb`／[postCI39842008077](https://github.com/lalagrass/earth-ascension/actions/runs/39842008077)五SUCCESS，#238工程結案、原PR240被接續且關閉。保留Claude原六提交與Gemini補測來源；全員感知／短態觀測／單tick返院→清理P2已解，本人局部118PASS／根53OK，自然轉場位移1.119936≤1.12、首步0。UI作者27ac774 28/28與本人72244cb桌面390 27ok／strict1僅GPUwarning分列，未追綠；工程接受不等真人平衡喜好。
 
-擁有人同意 [#238的K1–K4](https://github.com/lalagrass/earth-ascension/issues/238)，來源 [D21](DECISIONS_AND_SOURCES.md#d21lp-11-手動掌法清鼠-k1k4-批准2026-10-22)／[LP11正式工作包](LP11_HANDOFF.md)／[Claude新2h prompt](LP11_CLAUDE_PROMPT.md)：同入口手動一人有限清鼠，真接觸／起手精力成本、比較fixture、三鼠警覺逃生／出界不追、取消返院與新局重設；本次批准文件合dev／postCI後本人新認領runtime，不重問四項、不沿LP10窗口。無HP樹／戰鬥XP／生態繁殖／人傷／掉落或存讀。
+主生活8800已LP11、保留LP09，入口與主要7檔HTTP字節核實，更新後真UI冒煙派遣等待／暫停／取消釋放保工作通過、無app-pageerror，GPUwarning如實另列。本輪文件不改入口。LP10 #220／PR237設計已交付，圖稿與借用幀沿革保留。
 
-主生活8800仍是LP09 [PR235](https://github.com/lalagrass/earth-ascension/pull/235)接受版dev167a981／postCI39788194427五SUCCESS，保留LP08；本人模型101PASS、桌面390功能20ok／1consoleFAIL真exit1僅兩GPU ReadPixels warning與作者Linuxstrict21/21 exit0分列。新LP11程式審查與postCI通過後再更同入口並保留LP09，批准文件不等程式已交付或真人喜好已驗。
+擁有人已同意[#241的L1–L4](https://github.com/lalagrass/earth-ascension/issues/241)，來源 [D22](DECISIONS_AND_SOURCES.md#d22lp-12-自主清鼠與玩家覆寫-l1l4-批准2026-10-23)／[LP12正式工作包](LP12_HANDOFF.md)／[Gemini新兩小時prompt](LP12_GEMINI_PROMPT.md)。同入口獨立允許預設關、候補不預占／院中合法、既有任務優先，auto/manual分明、人工改令後不搶回／重新允許才恢復；掌法卡短理由，不加HP／XP／生態或存讀。本次批准文件合dev／postCI後Gemini本人新認領runtime，新T0最多120min／100min後不新包／早停，4h不延長、不沿Claude或LP11，未代啟作者。程式接受／postCI後才更同8800並保留LP11。
 
 ### D18批准與此前交付來源
 
@@ -22,16 +22,17 @@ LP08規劃PR229已合dev `e10eba1d443c4fb2103ceacb9b72801f504edd73`／postCI3976
 | **已交付：BL-D02／LP08 #228** | 選一人→真走護欄→動手進度→一階痕淡去→回生活 | 單次手動、480工作tick／8精力、無XP／材料／耐久／安全buff；可察覺sniff／approach／prep及仍可見flee皆阻擋／中止未完成效果，沿既有固定場景可見界線，不讀畫外、不以active=false當安全。原趟交付／恢復80／停工叫回與LP07保留，精確一次名額／取消／同tick沿工作包 |
 | **已交付：LP09／#232，自主家務／#188及BL-D02** | 角色依允許與情勢自己整理，玩家可覆寫 | PR235／postCI已接受；護院與整理開關分開、一輪一階，材料／真耐久仍未批 |
 | **已交付設計：LP10／BL-Q02／#220** | 掌法完整畫面／點選三路徑與初熟對照 | PR237／postCI已接受，仍是未連遊戲的設計，原待決沿革在D21有限範圍更新 |
-| **已批下一程式片：LP11／#238** | 同入口真接近／一掌擊倒／逐隻換目標或逃離／叫停返院 | [D21工作包](LP11_HANDOFF.md) K1–K4已批；本次批准文件合dev／postCI後本人新認領，無通用HP／XP／繁殖，未更8800 |
+| **已交付：LP11／#238** | 真接近／一掌擊倒／逐隻換目標或逃離／叫停返院 | PR242／postCI已接受，單tickP2已解、8800已LP11，原掌法／三鼠有限fixture與成本保留 |
+| **已批下一程式片：LP12／#241** | 允許後自主清鼠，玩家改令後不搶回，原因可讀 | [D22工作包](LP12_HANDOFF.md) L1–L4已批；新文件合dev／postCI後Gemini本人新認領，未代啟／未改入口 |
 | 獨立研究：BL-D06／#219 | 食源→攜回巢／育幼、受阻不增長、非戰鬥控制；巡山發現與清巢失敗／逃散 | 三案研究PR223已合dev，其他巢穴／鼠群侵略性與警覺性／守恆遷徙仍為研究池；空閒agent須另認領有限文件，不占核心實作，也非LP08／#220硬前置 |
 
-本表LP08／LP09工程與LP10設計已交付，LP11的D21有限程式新批准，其餘不自動解鎖。詳細來源／邊界沿[自主與生態評估](LIFE_AUTONOMY_ECOLOGY_BACKLOG.md)與[FUTURE_BACKLOG](FUTURE_BACKLOG.md)，母單#75；不取消美術／社交候選、不擴#104等原DoD。真偷取／族群壓力會改可忽略承諾，需另選可恢復損失／上限與非戰鬥控制，不塞進外觀整理。
+本表LP08／LP09／LP11工程與LP10設計已交付，LP12的D22有限自主政策新批准，其餘不自動解鎖。詳細來源／邊界沿[自主與生態評估](LIFE_AUTONOMY_ECOLOGY_BACKLOG.md)與[FUTURE_BACKLOG](FUTURE_BACKLOG.md)，母單#75；不取消美術／社交候選、不擴#104等原DoD。真偷取／族群壓力會改可忽略承諾，需另選可恢復損失／上限與非戰鬥控制，不塞進外觀整理。
 
 ### 架構健康與成本
 
-從LP05基線算LP06／LP07／LP08三片皆已交付，已到[#215](https://github.com/lalagrass/earth-ascension/issues/215)建議10～15分鐘短回訪點，檢查命令來源／取消／名額／返回是否開始多處重複。本輪短回訪已記#215，現有人工atHome／自主acceptStep的院中邊界是下一包具體接線風險，當前未見bug；只收具體證據，最多另選一個最小整理，無問題可維持；非阻擋不擋現包，不預先大拆或建立ECS／通用Queue，不加全架構audit gate或永久排程。
+從LP05基線算LP06／LP07／LP08三片皆已交付，已到[#215](https://github.com/lalagrass/earth-ascension/issues/215)建議10～15分鐘短回訪點，檢查命令來源／取消／名額／返回是否開始多處重複。本輪短回訪已記#215，現有人工atHome／自主acceptStep的院中邊界是下一包具體接線風險，LP11後已由PR242解決單tick跨活動移動的具體缺口；只收具體證據，最多另選一個最小整理，無問題可維持；非阻擋不擋現包，不預先大拆或建立ECS／通用Queue，不加全架構audit gate或永久排程。
 
-生活程式切片保留必要局部／主線快驗／根檢查與CI、一次桌面＋390px真操作開圖；LP10純設計按工作包核三條設計路徑與必要HTML操作／語法、根檢查及CI，不另跑LP09局部／生活長矩陣。未變背景／atlas／動畫／舊RT證據復用，不做全命令×人格×時相或新seed／遷移矩陣。log摘要／失敗／少量圖、strict真exit與GPU／CDP限制照實，不追綠。LP10原窗口不延長；本次LP11批准文件合dev／postCI後另新T0最多120min／100min後不開新包／提早達標停，非作者review／Earth PO唯一queue／postCI才更接受入口並保留LP09。LP11按工作包保留必要局部／主線快驗及一次桌面390，模型或共用路徑有改才核受影響舊局部，無關畫稿／世界長矩陣不重跑。
+生活程式切片保留必要局部／SG快驗／根檢查與CI、一次桌面＋390真操作開少量圖；未變背景／atlas／掌法／三鼠／舊RT證據復用。LP12只新增自主政策，不重跑所有掌法×人物×時相或無RNG的seed／遷移／30分鐘近似矩陣。保留單tick跨活動移動與有效人工覆寫等受影響反例，無關舊UI不重演。log落檔只讀摘要／失敗、strict真exit與GPU／CDP限制照實，不追綠。Gemini新T0最多120min／100min後不新包／早停，非作者review／Earth唯一queue／postCI後才更入口、保留LP11，不沿舊窗口／代啟作者。
 
 ## D13：本輪生活主入口優先（2026-10-22）
 
