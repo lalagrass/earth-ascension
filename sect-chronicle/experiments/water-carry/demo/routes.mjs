@@ -32,6 +32,8 @@ export const BOAR = {
   fence: { x: 680, y1: 386, y2: 480, x1: 640, x2: 720 }, // 西北→東南斜向一段，野豬接觸點在它西側、防守點在東側
   edge: { x: 150, y: 446 },
 };
+// LP-08：退走中的野豬只要還在這條固定世界界線東側（x > SEEN_X）就看得見；與鏡頭／縮放／視窗無關。
+export const SEEN_X = -20;
 export const GUARD = { points: [[962, 512], [930, 522], [880, 512], [820, 480], [782, 452], [748, 428], [706, 430]] };
 
 export function createRoutes(waterPoints) {
@@ -40,11 +42,13 @@ export function createRoutes(waterPoints) {
   const funs = { hero: pathTool(FUN.hero.points), cousin: pathTool(FUN.cousin.points) };
   const boarPath = pathTool(BOAR.points), guardPath = pathTool(GUARD.points);
   const [h0, h1] = BOAR.points, boarEdge = Math.hypot(h1[0] - h0[0], h1[1] - h0[1]);
+  // 獸路 x 由西往東單調增加，所以「x > SEEN_X」等於「離棲地距離 d > boarSeenD」；模型用這個距離判斷，畫面用 x，同一來源。
+  const boarSeenD = (SEEN_X - h0[0]) / (h1[0] - h0[0]) * boarEdge;
   // 野豬位置只看模型的距離 d（離棲地多遠）與模式；退走朝棲地（西）。
   function boarAt(b) {
     const p = boarPath.at(b.d / boarPath.length);
     const face = b.mode === 'flee' ? -1 : b.mode === 'habitat' ? -1 : 1;
-    return { x: p.x, y: p.y, face, visible: b.mode !== 'habitat' && p.x > -20 };
+    return { x: p.x, y: p.y, face, visible: b.mode !== 'habitat' && p.x > SEEN_X };
   }
   // 去／等／喝止／回防守點：u=0 院中端點、u=1 防守點；等候與喝止面向護欄（西）。
   function guardPlace(mode, k) {
@@ -75,7 +79,11 @@ export function createRoutes(waterPoints) {
     return { x: p.x, y: p.y, face, route: r, geo: mode, travelled: mode === 'fun' ? 0 : k * r.length };
   }
   // 由 view() 的人物欄位決定位置：畫面與檢查共用，避免各自猜狀態。
+  // LP-08 整理護欄：沿同一條防守路往返，到點在防守點面向護欄動手。
+  const FIX_AS = { toFix: 'toGuard', fromFix: 'fromGuard', fix: 'guardWait' };
   function of(id, p) {
+    if (p.mode === 'toFix' || p.mode === 'fromFix') return { ...guardPlace(FIX_AS[p.mode], p.fixLeg.k), geo: p.mode };
+    if (p.mode === 'fix') return { ...guardPlace('guardWait', 1), geo: 'fix' };
     if (p.mode === 'toGuard' || p.mode === 'fromGuard') return guardPlace(p.mode, p.guardLeg.k);
     if (p.mode === 'guardWait' || p.mode === 'shout') return guardPlace(p.mode, 1);
     if (p.mode === 'toFun' || p.mode === 'fromFun') return funPlace(id, p.mode, p.funLeg.k);
@@ -85,6 +93,6 @@ export function createRoutes(waterPoints) {
     return place(p.mode === 'carry' && p.phase ? p.phase.name : 'idle', p.phase?.k || 0, p.job);
   }
   return { routes, seats, funs, place, of, seatLengths: { hero: seats.hero.length, cousin: seats.cousin.length }, funLengths: { hero: funs.hero.length, cousin: funs.cousin.length },
-    boarPath, guardPath, boarAt, guardPlace, boarLengths: { edge: boarEdge, total: boarPath.length }, guardLength: guardPath.length };
+    boarPath, guardPath, boarAt, guardPlace, boarLengths: { edge: boarEdge, total: boarPath.length, seen: boarSeenD }, boarSeenD, guardLength: guardPath.length };
 }
 const WATER = { down: 1, dip: 1, up: 1, pour: 1 };
