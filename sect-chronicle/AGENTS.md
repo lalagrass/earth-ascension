@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## 下一候選：LP-05 規劃／產品待確認（2026-10-22）
+
+LP04 #205／PR #207已合dev `8f8c93a`，postCI39702669958五SUCCESS；原工作／精力／停工已交付。擁有人本輪委託評估「像模擬市民」的下一個最小可見切片與Claude兩小時prompt，接 [#208](https://github.com/lalagrass/earth-ascension/issues/208)／[LP05工作包](docs/LP05_HANDOFF.md)／[prompt](docs/LP05_CLAUDE_PROMPT.md)。推薦滿庫後偏好休閒、缺口出現回原工作，玩家可叫回待命／恢復自主；**只批准本次規劃，P1–P4仍待擁有人確認，不代啟Claude或認領程式**。文件合dev不解除玩法批准前置，沒有無限loop或承襲LP04窗口。
+
+確認後只沿同一生活runtime薄整合兩個活動／原因與介入，不擴聊天、途中分心、完整需求、舊RT／存檔或新引擎；LP04已批准門檻與手動停工不重問。尚未確認時只讀／評估，其他已批准工作不因此受阻。下方D14的「文件後可認領／尚未開工」為原LP04歷史接手狀態，以#205已交付及最新issue為準。
+
 ## D14：LP-04 精力與自主恢復已批准（2026-10-22）
 
 擁有人已同意先做 [#205](https://github.com/lalagrass/earth-ascension/issues/205)：自主休息後續工，玩家明確叫停維持停工，並委託遊戲PO整理精力示意值／驗收與Claude兩小時prompt。讀 [LP04工作包](docs/LP04_HANDOFF.md)及[Claude prompt](docs/LP04_CLAUDE_PROMPT.md)。這是單一生活runtime的一項精力需求，不是整套需求／社交／自選工作AI；D13／LP03「不加體力恢復」是上一輪邊界，本次有限範圍不受其阻擋。既有兩人、挑水／採藥、腳力與存檔邊界保留。

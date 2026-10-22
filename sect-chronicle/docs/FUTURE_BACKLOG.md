@@ -1,5 +1,11 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## 2026-10-22 最近交付與下一片提案
+
+LP04 #205／PR #207已交付，dev `8f8c93a`／postCI39702669958五SUCCESS；同一生活入口能工作、成長、低精力自己走去恢復並續工，玩家停工維持。下一最小候選由N1f／[#188](https://github.com/lalagrass/earth-ascension/issues/188)提取 [LP05滿庫後偏好休閒與叫回](LP05_HANDOFF.md)，追蹤[#208](https://github.com/lalagrass/earth-ascension/issues/208)，[Claude prompt](LP05_CLAUDE_PROMPT.md)。依擁有人本輪委託整理社群玩法、選項／取捨與驗收，**P1–P4仍待確認，只有規劃已授權**；不代啟動或認領程式。
+
+推薦先讓主角看山／熟手舒展筋骨，有容量回原工作、玩家可叫回待命或恢復自主；不加收益、需求條、聊天、途中偷懶或人格核心。先驗「有自己的生活且可靠介入」，後續再比較一次相遇／聊天與飲食睡眠。唯一排序沿[可見交付](VISIBLE_DELIVERY_PLAN.md)，不是將本backlog或#188全數改成已批准；既有14天／舊RT／Earth範圍不擴。
+
 ## D14 有限提取：LP-04 精力與自主恢復（2026-10-22）
 
 擁有人已批准先做[#205](https://github.com/lalagrass/earth-ascension/issues/205)，委託PO整理示意值與驗收；[工作包](LP04_HANDOFF.md)／[Claude prompt](LP04_CLAUDE_PROMPT.md)。沿D13同一生活入口、LP03已合成果，只提取一種精力、走去坐下恢復、回原工作與手動停工保持。文件合dev／postCI後可有效認領，並非作者已開工或功能已驗收。
