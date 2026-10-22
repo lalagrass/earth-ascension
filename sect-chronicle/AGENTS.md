@@ -1,5 +1,15 @@
 # Coding agent 接手入口
 
+## D17：LP-07 自主護院修訂版P1–P4已批准（2026-10-22）
+
+擁有人已明確同意修訂版P1–P4，讀[D17](docs/DECISIONS_AND_SOURCES.md#d17lp-07-自主護院修訂版-p1p4-批准2026-10-22)、[#218](https://github.com/lalagrass/earth-ascension/issues/218)、[LP07工作包](docs/LP07_HANDOFF.md)與[Claude prompt](docs/LP07_CLAUDE_PROMPT.md)。本次批准同步文件合dev／postCI後，Claude本人核最新dev／有效作者、新worktree短分支認領；不重問四項，不用下方歷史「自主未批准」擋有限本片，未代啟作者。
+
+兩人／一野豬／同入口／60Hz，允許預設關、熟手主動／主角受擾可交換；看可見靠近與本訪hits，不用全局marks。自主先記意願不占名額，完整交付／必要恢復80後、院中合法能出發才正式受理；每人每訪最多一次，ready同tick只選一人，不搶已出發／人工明派。人工guard仍沿D16工作中預占，來源auto/manual分清；候補未出發過期不假稱到場晚到。
+
+有效人工改工／開始／停工／取消／LP05叫回清候補、抑制該人本訪；拒絕不改政策，恢復自主不清抑制／停工／必要恢復，關允許只取消auto保manual。新訪不能解除既有停工／叫回來源。已批精確交接沿工作包，不另建萬用取消／Queue／第二時鐘。D16獸值／路長與驅離零精力收益／XP不改，接受受擾可能晚到，不造成功；修護、鼠群／真傷害／巡山／人格／存讀未因此批准。
+
+本輪新T0從Claude實際認領開工算，120min上限、100min後不開新包、提早達標停，4h租期不延長2h，不沿LP06舊窗。必要局部驗收／一次桌面＋390px與主線快驗／根檢查／CI保留，未變證據復用、不重跑原30分鐘近似矩陣；log摘要／失敗／少量圖、strict真exit與GPU限制保留。非作者review／Earth PO唯一queue／postCI、#215非阻擋與不大拆契約維持，不自己合dev或動他人8800服務。
+
 ## D16：LP-06 狀態驅動野豬騷擾與驅離已批准（2026-10-22）
 
 擁有人已同意四項方向並委託PO整理示意值／驗收及Claude兩小時prompt，隨後明確修正獸行為不按固定回訪，而是破壞耗精力、累了／感到威脅逃走、回棲地恢復後再判誘因。讀[D16](docs/DECISIONS_AND_SOURCES.md#d16lp-06-野豬騷擾與驅離2026-10-22)、[#213](https://github.com/lalagrass/earth-ascension/issues/213)、[LP06工作包](docs/LP06_HANDOFF.md)與[Claude prompt](docs/LP06_CLAUDE_PROMPT.md)。一獸／非關鍵護欄有上限損痕／一次驅離／同入口及60Hz，無人傷、建物失效、真傷害／假血條或追殺。
