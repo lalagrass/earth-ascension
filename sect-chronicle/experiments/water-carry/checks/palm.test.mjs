@@ -15,7 +15,9 @@ const LENGTHS = { water: scene.path.length, herb: r1(geo.routes.herb.length), se
   boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength) };
 const ticks = (s) => Math.round(s * 60);
 const run = (m, pred, limit = ticks(1800)) => { for (let i = 0; i < limit; i++) { if (pred(m.view(), m.state)) return m.view(); m.step(); } throw new Error('沒有等到條件'); };
-const game = () => createModel(LENGTHS);
+// 與 app.mjs 同一份察覺取樣（routes.mjs 純幾何）。
+const game = () => createModel(LENGTHS, undefined, undefined, undefined, { placeOf: geo.of });
+const where = (m, id) => { const p = m.view().people[id]; return p.cleaning ? p.pos : geo.of(id, p); };
 const P = (m, id) => m.state.people[id];
 const logOf = (m, kind, extra = () => true) => m.state.log.filter((e) => e.kind === kind && extra(e));
 const frozen = (m) => JSON.stringify({ ...m.state, log: m.state.log.length });
@@ -218,11 +220,28 @@ test('察覺 ≤50（改 state：先讓鼠1、2擊倒）：清理者逼近到 �
   run(m, (v, s) => { const d = dist(s.rats[2], s.people.hero.pos); if (s.rats[2].mode === 'flee') return true; prevD = d; return false; });
   const d = dist(m.state.rats[2], P(m, 'hero').pos);
   assert.ok(prevD > PALM.see && d <= PALM.see + 1e-9, `觸發前 ${prevD.toFixed(2)} > 50，觸發時 ${d.toFixed(2)} ≤ 50`);
+  assert.equal(logOf(m, 'rat:flee')[0].by, 'hero');
   assert.equal(logOf(m, 'palm:hit').length, 0);
   run(m, (v, s) => !s.clean);
   assert.equal(P(m, 'hero').cleanResult.kind, 'clear');
   assert.ok(home(P(m, 'hero')));
   assert.ok(m.actions('hero').find((a) => a.id === 'clean').reason.match(/沒有有效/), '沒有有效鼠就拒絕發起');
+});
+
+test('非清理者也會驚動（自然指令，不改 state）：沒有清理任務時派熟手整理護欄，沿防守路走到警覺鼠 ≤50 那 tick 才逃、出界失效', () => {
+  const m = game();
+  run(m, (v) => v.boar.marks > 0 && v.boar.mode === 'flee' && !v.boar.seen, ticks(600));
+  assert.equal(m.dispatch('fix', 'cousin').ok, true);
+  assert.equal(m.state.clean, null, '沒有清理任務');
+  let prev = Infinity;
+  run(m, (v, s) => { if (s.rats[2].mode === 'flee') return true; prev = dist(s.rats[2], where(m, 'cousin')); return false; }, ticks(120));
+  const d = dist(m.state.rats[2], where(m, 'cousin')), f = logOf(m, 'rat:flee')[0];
+  assert.equal(f.by, 'cousin'); assert.match(f.why, /熟手/);
+  assert.ok(prev > PALM.see && d <= PALM.see + 1e-9, `觸發前 ${prev.toFixed(2)} > 50，觸發時 ${d.toFixed(2)} ≤ 50（tick ${f.tick}）`);
+  assert.equal(m.state.clean, null);
+  assert.deepEqual(m.state.rats.slice(0, 2).map((r) => r.mode), ['sniff', 'sniff'], '普通鼠不因有人走過而逃');
+  run(m, (v) => v.rats[2].mode === 'gone', ticks(5));
+  assert.ok(!m.actions('hero').find((a) => a.id === 'clean').reason, '仍可清理剩下兩隻');
 });
 
 test('普通鼠原位嗅地；人物每 tick 位移不超過當段空手速度（不瞬移），返院走節點', () => {

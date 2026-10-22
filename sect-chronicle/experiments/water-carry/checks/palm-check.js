@@ -26,6 +26,18 @@ async function open(browser, viewport) {
   await wait(page, () => window.demo && window.demo.snapshot().frames > 3);
   return { context, page, errors };
 }
+// 短態要在條件成立的那一幀固定：頁內同一次判斷時按真 UI「暫停」並回傳當下 snapshot，之後的斷言與截圖都看這個暫停的世界，
+// 截圖耗時不會讓 36 tick 的收勢等短態先走完。resume() 再按一次「繼續」。
+async function hold(page, cond) {
+  const h = await page.waitForFunction((src) => {
+    const s = window.demo.snapshot();
+    if (!(0, eval)(`(${src})`)(s)) return null;
+    if (s.playing) document.getElementById('play').click();
+    return window.demo.snapshot();
+  }, cond.toString(), { timeout: 180000, polling: 'raf' });
+  return h.jsonValue();
+}
+const resume = (page) => page.click('#play');
 const pick = async (page, id) => { if ((await snap(page)).selected !== id) await page.click(`#roster [data-person="${id}"]`); };
 // 每畫面幀記主角位置：每 tick 位移超過 Lv5 空手上限（84／秒）或同 tick 位置變了都算失敗。
 const trace = (page) => page.evaluate(() => {
@@ -65,29 +77,30 @@ const trace = (page) => page.evaluate(() => {
   s = await snap(page);
   check(s.people.hero.trips === trips0 + 1, '原趟完整交付一次後才出發');
   await page.keyboard.press('1');
-  await wait(page, () => { const h = window.demo.snapshot().people.hero; return h.mode === 'toRat' && h.cleanLeg && h.pos.x < 930; });
+  await hold(page, (s) => s.people.hero.mode === 'toRat' && s.people.hero.cleanLeg && s.people.hero.pos.x < 930);
   await page.screenshot({ path: path.join(OUT, 'desk-1-approach.png') });
-  await wait(page, () => window.demo.snapshot().people.hero.mode === 'windup');
-  await wait(page, () => window.demo.snapshot().people.hero.palmStep.steps >= 20);
-  s = await snap(page);
+  await resume(page);
+  s = await hold(page, (s) => s.people.hero.mode === 'windup' && s.people.hero.palmStep.steps >= 20);
   check(s.palmArm.hero, '起手：掌法手臂疊圖顯示');
   check(/起手 → 鼠1/.test(await page.textContent('#panel')), '面板：起手 → 鼠1 與 tick 進度');
   await page.screenshot({ path: path.join(OUT, 'desk-2-windup.png') });
-  await wait(page, () => window.demo.snapshot().rats[0].mode === 'down');
+  await resume(page);
+  s = await hold(page, (s) => s.rats[0].mode === 'down');
+  check(s.people.hero.mode === 'recover' && s.clean.downs === 1, `接觸：鼠1擊倒一次，進入收勢（${s.people.hero.palmStep && s.people.hero.palmStep.steps}／${s.people.hero.palmStep && s.people.hero.palmStep.need}）`);
   await page.screenshot({ path: path.join(OUT, 'desk-3-hit.png') });
-  s = await snap(page);
-  check(s.people.hero.mode === 'recover' && s.clean.downs === 1, '接觸：鼠1擊倒一次，進入收勢');
-  await wait(page, () => window.demo.snapshot().clean && window.demo.snapshot().clean.target === 2);
+  await resume(page);
+  await hold(page, (s) => s.clean && s.clean.target === 2);
   await page.screenshot({ path: path.join(OUT, 'desk-4-turn.png') });
-  await wait(page, () => window.demo.snapshot().rats[2].mode === 'flee');
-  s = await snap(page);
+  await resume(page);
+  s = await hold(page, (s) => s.rats[2].mode === 'flee');
   check(s.rats[1].mode === 'down', '鼠3 在鼠2 真受掌之後才逃');
-  await page.waitForTimeout(80);
   await page.screenshot({ path: path.join(OUT, 'desk-5-flee.png') });
+  await resume(page);
   await wait(page, () => window.demo.snapshot().rats[2].mode === 'gone');
-  await wait(page, () => window.demo.snapshot().people.hero.mode === 'fromRat');
+  await hold(page, (s) => s.people.hero.mode === 'fromRat');
   check(/範圍內沒有有效目標/.test(await page.textContent('#panel')), '無目標結束原因可讀');
   await page.screenshot({ path: path.join(OUT, 'desk-6-return.png') });
+  await resume(page);
   await page.keyboard.press('4');
   await wait(page, () => !window.demo.snapshot().clean);
   s = await snap(page);
@@ -109,9 +122,7 @@ const trace = (page) => page.evaluate(() => {
   await page.keyboard.press('4');
   await wait(page, () => window.demo.snapshot().people.hero.mode === 'toRat');
   await page.keyboard.press('1');
-  await wait(page, () => { const h = window.demo.snapshot().people.hero; return h.mode === 'toRat' && h.cleanLeg.k > 0.3 && h.cleanLeg.k < 0.7; });
-  await page.click('#play');
-  const before = (await snap(page)).people.hero.cleanLeg.to;
+  const before = (await hold(page, (s) => s.people.hero.mode === 'toRat' && s.people.hero.cleanLeg.k > 0.3 && s.people.hero.cleanLeg.k < 0.7)).people.hero.cleanLeg.to;
   await page.click('#panel [data-cmd="cleanCancel"]');
   check(/走完這段後返院/.test(await page.textContent('#toast')), `取消提示：${await page.textContent('#toast')}`);
   s = await snap(page);

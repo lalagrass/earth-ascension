@@ -109,7 +109,9 @@ export const REST_LABEL = { toSeat: '走去休息', seated: '坐下恢復', back
 // 第一參數是單程長度：數字＝兩份工作同長（舊單人基線與反例沿用），或 { water, herb, seat: { [id]: 長度 } }。
 // 第三參數只指定新局人物與起始腳力；不承接舊 RT 存檔。
 // 第四參數是偏好 fixture（預設 PREFS）；傳 {} 表示沒有人有偏好活動，只給隔離 LP-04 門檻的反例用。
-export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = PREFS) {
+// 第五參數 sense.placeOf(id, 幾何欄位)：由畫面同一份純幾何（routes.mjs createRoutes().of）提供人物在權威 tick 的場景位置，
+// 只給 LP-11 警覺鼠的固定世界距離察覺用；未提供時（舊單元基線）只有清理者有模型位置。
+export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = PREFS, sense = {}) {
   const lengths = typeof routes === 'number' ? { water: routes, herb: routes } : { ...routes };
   const pathLength = lengths.water;
   const seatLen = (id) => (lengths.seat && lengths.seat[id]) || SEAT_LENGTH;
@@ -563,7 +565,17 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (p.motion.mode === 'windup' || p.motion.mode === 'recover') goHomeClean(p);
     return true;
   }
-  function fleeRat(r, why) { r.mode = 'flee'; r.why = why; s.log.push({ tick: s.tick, kind: 'rat:flee', rat: r.id, why }); }
+  function fleeRat(r, why, by = null) { r.mode = 'flee'; r.why = why; s.log.push({ tick: s.tick, kind: 'rat:flee', rat: r.id, why, by }); }
+  // routes.of() 需要的最少欄位：模式、工作／階段進度與各往返腿進度；清理中直接用模型 pos。
+  function geoView(p) {
+    const h = p.motion, k = h.need && h.mode !== 'carry' ? Math.min(1, h.steps / h.need) : 0, leg = { k };
+    return { mode: h.mode, job: h.mode === 'carry' ? h.job : p.job,
+      phase: h.mode === 'carry' ? { name: JOBS[h.job].phases[h.phase], k: Math.min(1, h.steps / h.need[h.phase]) } : null,
+      restLeg: leg, funLeg: leg, guardLeg: leg, fixLeg: leg,
+      cleaning: CLEAN_MODES.includes(h.mode), pos: p.pos, cface: p.cface, walked: p.walked };
+  }
+  // 人物目前的場景位置：清理中讀模型 pos；其餘由共用純幾何取樣（沒提供就沒有位置）。
+  const personAt = (p) => (CLEAN_MODES.includes(p.motion.mode) ? p.pos : sense.placeOf ? sense.placeOf(p.id, geoView(p)) : null);
   function ratStep() {
     for (const r of s.rats) {
       if ((r.mode !== 'flee' && r.mode !== 'gone') || r.exit >= EXIT.length) continue;
@@ -594,9 +606,13 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       } else if (h.mode === 'windup') { h.steps += 1; if (h.steps >= h.need) contact(p); }
       else if (h.mode === 'recover') { h.steps += 1; if (h.steps >= h.need) approach(p); }
     }
-    // 察覺：只看正式清理者的模型位置（不讀鏡頭／所選人／未送指令），無遮擋視線；返院中不算逼近。
-    const q = s.clean && s.clean.phase !== 'wait' ? s.people[s.clean.by] : null;
-    if (q && q.motion.mode !== 'fromRat') for (const r of s.rats) if (r.kind === 'alert' && r.mode === 'sniff' && dist(r, q.pos) <= PALM.see) fleeRat(r, `察覺${nameOf(q.id)}逼近`);
+    // 察覺：任何人（不論是否清理、在做什麼）本 tick 結算後的場景位置 ≤50 就逃；只按固定世界距離，不讀鏡頭／所選人／未送指令，無遮擋視線。
+    // 依 ids 固定順序找第一個觸發者只影響記錄的原因文字，不影響結果。
+    for (const r of s.rats) {
+      if (r.kind !== 'alert' || r.mode !== 'sniff') continue;
+      const who = ids.find((id) => { const at = personAt(s.people[id]); return at && dist(r, at) <= PALM.see; });
+      if (who) fleeRat(r, `察覺${nameOf(who)}逼近`, who);
+    }
   }
   // 掌法比較 fixture：只有全場沒有清理任務時可換；不算人工工作覆寫。
   function setPalm(id, skill) {

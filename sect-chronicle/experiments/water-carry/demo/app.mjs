@@ -378,7 +378,9 @@ function follow() {
 const r1 = (n) => Math.round(n * 10) / 10;
 const LENGTHS = { water: scene.path.length, herb: r1(herbPath.length), seat: geo.seatLengths, fun: geo.funLengths,
   boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength) };
-let model = createModel(LENGTHS);
+// LP-11：警覺鼠察覺用同一份純幾何取樣兩人位置（模型在權威 tick 呼叫，不讀畫面座標）。
+const SENSE = { placeOf: geo.of };
+let model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
 const clock = createClock();
 const ui = { follow: narrow(), playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null };
 let v = model.view();
@@ -485,7 +487,7 @@ function toggleShadow() { ui.shadow = !ui.shadow; renderChrome(); }
 function select(id) { ui.selected = id; if (narrow() && IDS.includes(id)) ui.follow = true; renderChrome(); }
 function reset() {
   if (ui.menu) closeMenu(false);
-  model = createModel(LENGTHS);
+  model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
   clock.clear();
   v = model.view();
   fx.length = 0;
