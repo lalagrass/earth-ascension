@@ -1,5 +1,11 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## LP09候選：自主整理護欄（2026-10-22，待確認）
+
+擁有人要求review／plan next，Codex遊戲PO將BL-D02／#188的自主家務另切[#232](https://github.com/lalagrass/earth-ascension/issues/232)／[LP09提案](LP09_PROPOSAL.md)。N1–N4全部待確認：每人獨立允許預設關、順手1階／累積3階兩種反應、候補不占額／院中準備好才正式受理、有效玩家改令等下一次真碰撞才重評、一輪全隊最多自主一階；人工整理優先，沿LP08真動作／8秒8精力與安全中止。封頂3後的新接觸仍是新事件，不用marks增量判機會。
+
+只是下一候選，不把D18單次手動批准擴成自主維修，也不提供可開工prompt／新T0／代啟作者。#228／PR231沿原有限review與Earth queue，最新交付以[可見規劃](VISIBLE_DELIVERY_PLAN.md)為準；#215短回訪非大拆gate，#219／#220不是本片硬前置，材料耐久／生態等仍另選。
+
 ## D18有限提取：BL-D02單次護欄整理已批准（2026-10-22）
 
 擁有人已同意PR229的R1–R4，來源[D18](DECISIONS_AND_SOURCES.md#d18lp-08-護欄損痕整理-r1r4-批准2026-10-22)／[#228](https://github.com/lalagrass/earth-ascension/issues/228)，[正式工作包](LP08_HANDOFF.md)／[Claude prompt](LP08_CLAUDE_PROMPT.md)。一次手動一階非功能損痕、真往返／動手8秒僅耗8精力、無XP／材料；可察覺野豬含仍可見flee均阻擋／中止未完成效果，保留原趟交付／恢復80／manual停工／LP05來源及LP07政策，護院開關不控制整理。
