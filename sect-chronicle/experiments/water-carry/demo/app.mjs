@@ -5,6 +5,8 @@ import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.
 import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
 import { createRoutes, HERB, SEATS, FUN, BOAR, GUARD } from './routes.mjs';
+import { ZONE, EXIT, PALM, SKILLS } from './palm.mjs';
+import { CLEAN_END } from './model.mjs';
 
 const SHARED = '../spikes/shared/';
 const t0 = performance.now();
@@ -53,7 +55,26 @@ function pose(ph, level, mode, resting = false, id = 'hero', job = 'water') {
 const FUN_TICKS_PER_POSE = 36;
 // LP-08：往返護欄用空手步態；動手沒有專用幀，借「舒展筋骨」的前彎（綁竹／敲樁）與站直兩幀交替出節奏，面板如實標示借用。
 const FIX_BEAT = 45, FIX_BEND = 30; // 每 45 tick 一拍：前彎 30 tick、站直 15 tick（只是畫面節奏，進度只看模型步數）
+// LP-11 掌法：沒有專用掌法幀。底圖借模板空手站姿（交藥站姿 herbHand）／蹲身（採藥 herbGather），身體依掌勢前後傾，
+// 再由 armG 補一隻向量手臂與立掌（沿 LP10 畫稿姿勢表）；不畫背簍、扁擔等工具。接觸後收勢前 STRIKE_TICKS 顯示出掌定格，只是畫面。
+const STRIKE_TICKS = 12;
+const PALM_POSE = {
+  windup: { novice: { base: 'herbHand', lean: -12, elbow: [-8, -33], hand: [-14, -26], palm: -70 }, adept: { base: 'herbHand', lean: -3, elbow: [1, -36], hand: [-1, -31], palm: -85 } },
+  strike: { novice: { base: 'herbGather', lean: 0, shoulder: [10.5, -34], elbow: [18, -22], hand: [22, -10], palm: 10 }, adept: { base: 'herbGather', lean: 4, shoulder: [10.5, -34], elbow: [19, -21], hand: [24, -9], palm: 0 } },
+  recover: { novice: { base: 'herbHand', lean: -6, elbow: [2, -30], hand: [8, -24], palm: -40 }, adept: { base: 'herbHand', lean: 0, elbow: [6, -34], hand: [12, -32], palm: -90 } },
+};
+const SHOULDER = [6.6, -45.6]; // herbHand-0 的肩點（場景單位，相對腳底，朝右）
+function palmPose(person) {
+  if (person.mode === 'windup') return PALM_POSE.windup[person.palm];
+  if (person.mode === 'recover') return PALM_POSE[person.palmStep.steps < STRIKE_TICKS ? 'strike' : 'recover'][person.palm];
+  return null;
+}
 function poseOf(id, person) {
+  if (person.cleaning) {
+    const at = geo.of(id, person), a = animators[id], pp = palmPose(person);
+    const pick = pp ? a.pick({ phase: pp.base === 'herbGather' ? 'herbGather' : 'herbDeliver', k: 0, travelled: 0 }) : a.pick({ phase: 'herbOut', k: 0, travelled: at.travelled });
+    return { x: at.x, y: at.y, face: at.face, ...pick, travelled: at.travelled, phase: person.mode, palm: pp, borrowed: !!pp };
+  }
   if (person.fixing) {
     const at = geo.of(id, person), a = animators[id];
     const view = person.mode === 'fix' ? { phase: 'stretch', k: 0, travelled: person.fixWork.steps % FIX_BEAT < FIX_BEND ? 3 : 0 } : { phase: 'herbOut', k: 0, travelled: at.travelled };
@@ -102,6 +123,19 @@ const ground = new Graphics();
   }
   // 竹籬兩段
   for (let i = 0; i < 6; i++) ground.rect(x + 76 + (i % 2) * 2, y - 20 + i * 8, 3, 12).fill(0xa98a52);
+}
+// LP-11 有限清理區（竹護欄內西院）：虛線外框與西側出口箭頭，只是地面提示。
+{
+  const pts = [...ZONE, ZONE[0]];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [ax, ay] = pts[i], [bx, by] = pts[i + 1], n = Math.max(1, Math.floor(Math.hypot(bx - ax, by - ay) / 12));
+    for (let j = 0; j < n; j += 2) ground.moveTo(ax + (bx - ax) * j / n, ay + (by - ay) * j / n).lineTo(ax + (bx - ax) * (j + 1) / n, ay + (by - ay) * (j + 1) / n);
+  }
+  ground.stroke({ width: 1.6, color: 0x8a6a3e, alpha: 0.55 });
+  const [ex, ey] = EXIT.at(-1), [px, py] = EXIT.at(-2);
+  ground.poly(EXIT.flat(), false).stroke({ width: 1.2, color: 0x8a6a3e, alpha: 0.35 });
+  const ang = Math.atan2(ey - py, ex - px);
+  ground.poly([ex, ey, ex - 8 * Math.cos(ang - 0.5), ey - 8 * Math.sin(ang - 0.5), ex - 8 * Math.cos(ang + 0.5), ey - 8 * Math.sin(ang + 0.5)]).fill({ color: 0x8a6a3e, alpha: 0.45 });
 }
 world.addChild(ground);
 const sorted = new Container();
@@ -211,6 +245,40 @@ function drawBoar(b, now) {
 const shoutG = new Graphics();
 shoutG.visible = false;
 sorted.addChild(shoutG);
+// LP-11 測試弱鼠：原創向量（沿 LP10 畫稿畫法），朝右畫、翻面朝左。位置／狀態只讀 view().rats。
+const ratGs = new Map();
+function drawRat(g, r, now) {
+  g.clear();
+  const body = r.kind === 'alert' ? 0x7b6a5a : 0x8a7a68, dark = 0x3f342a;
+  g.ellipse(0, 1, 10, 3).fill({ color: 0x3a3424, alpha: 0.22 });
+  if (r.mode === 'down') {
+    g.ellipse(0, -4, 9, 4.2).fill(body).stroke({ width: 0.9, color: dark });
+    g.moveTo(-6, -1).lineTo(-6, 3).moveTo(-1, 0).lineTo(-1, 3).stroke({ width: 0.9, color: dark });
+    for (const [x, y] of [[8, -6], [10, -4]]) g.moveTo(x - 1.4, y - 1.4).lineTo(x + 1.4, y + 1.4).moveTo(x + 1.4, y - 1.4).lineTo(x - 1.4, y + 1.4).stroke({ width: 0.8, color: dark });
+    g.rotation = -0.25; g.alpha = 0.75; return;
+  }
+  g.rotation = 0; g.alpha = r.mode === 'gone' ? 0.35 : 1;
+  const run = r.mode === 'flee' || r.mode === 'gone', bob = run ? Math.sin(now / 40) * 1.2 : 0;
+  g.moveTo(-9, -3).quadraticCurveTo(-16, -2, -18, run ? -8 : -5).stroke({ width: 1, color: dark });
+  g.ellipse(0, -5 + bob, run ? 11.5 : 9.5, 5.2).fill(body).stroke({ width: 0.9, color: dark });
+  g.moveTo(6, -8 + bob).quadraticCurveTo(13, -6 + bob, 14, -3 + bob).quadraticCurveTo(10, -1 + bob, 6, -2 + bob).fill(body).stroke({ width: 0.9, color: dark });
+  g.circle(6, (r.kind === 'alert' ? -12 : -10) + bob, 2.4).fill(0xd9a59a).stroke({ width: 0.9, color: dark });
+  g.circle(10.5, -5.4 + bob, 0.9).fill(0x111111);
+  if (r.mode === 'sniff') { const w = Math.sin(now / 160 + r.id) * 1.5; for (let i = 0; i < 3; i++) g.moveTo(16 + i * 3, 2).lineTo(17 + i * 3 + w, -4).stroke({ width: 1.4, color: 0x6f9a52 }); }
+  if (run) for (let i = 0; i < 3; i++) g.circle(-18 - i * 7, -2 - (i % 2) * 2, 3 - i * 0.6).fill({ color: 0xc9b07a, alpha: 0.55 - i * 0.15 });
+}
+// 掌法疊圖：一隻向量手臂＋立掌，畫在人物 sprite 上面（同一腳底原點、同一翻面）。
+const armGs = Object.fromEntries(['hero', 'cousin'].map((id) => { const g = new Graphics(); g.visible = false; sorted.addChild(g); return [id, g]; }));
+const rot = ([x, y], deg) => { const a = deg * Math.PI / 180; return [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)]; };
+function drawArm(g, p, id) {
+  const robe = id === 'hero' ? 0x4f78a8 : 0x6c8a68, edge = id === 'hero' ? 0x34567f : 0x455d43;
+  const sh = rot(p.shoulder || SHOULDER, p.lean), el = rot(p.elbow, p.lean * 0.5), hd = rot(p.hand, p.lean * 0.3);
+  g.clear();
+  g.moveTo(...sh).lineTo(...el).lineTo(...hd).stroke({ width: 8.4, color: edge, cap: 'round', join: 'round' });
+  g.moveTo(...sh).lineTo(...el).lineTo(...hd).stroke({ width: 6.4, color: robe, cap: 'round', join: 'round' });
+  const a = p.palm * Math.PI / 180, c = Math.cos(a), s = Math.sin(a), pt = (x, y) => [hd[0] + x * c - y * s, hd[1] + x * s + y * c];
+  g.poly([...pt(-0.5, -2.8), ...pt(7, -2.8), ...pt(7, 2.8), ...pt(-0.5, 2.8)]).fill(0xf2cfa8).stroke({ width: 0.9, color: 0xb98b62 });
+}
 
 const vatV = scene.vats[1];
 const vatSprite = placeSprite(vatV.file, vatV.ax, vatV.ay, vatV.w, vatV.h, scene.places.vat.x, scene.places.vat.y);
@@ -310,7 +378,9 @@ function follow() {
 const r1 = (n) => Math.round(n * 10) / 10;
 const LENGTHS = { water: scene.path.length, herb: r1(herbPath.length), seat: geo.seatLengths, fun: geo.funLengths,
   boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength) };
-let model = createModel(LENGTHS);
+// LP-11：警覺鼠察覺用同一份純幾何取樣兩人位置（模型在權威 tick 呼叫，不讀畫面座標）。
+const SENSE = { placeOf: geo.of };
+let model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
 const clock = createClock();
 const ui = { follow: narrow(), playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null };
 let v = model.view();
@@ -404,6 +474,8 @@ $('panel').addEventListener('click', (e) => {
   if (a) { autoSet(a.dataset.auto); return; }
   const u = e.target.closest('[data-up]');
   if (u) { upSet(u.dataset.up); return; }
+  const pm = e.target.closest('[data-palm]');
+  if (pm) { palmSet(pm.dataset.palm); return; }
   const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd);
 });
 $('boar').addEventListener('click', (e) => { const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd); });
@@ -415,11 +487,11 @@ function toggleShadow() { ui.shadow = !ui.shadow; renderChrome(); }
 function select(id) { ui.selected = id; if (narrow() && IDS.includes(id)) ui.follow = true; renderChrome(); }
 function reset() {
   if (ui.menu) closeMenu(false);
-  model = createModel(LENGTHS);
+  model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
   clock.clear();
   v = model.view();
   fx.length = 0;
-  toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份；野豬回棲地精力 60、威脅 0，護欄損痕 0；休息、休閒、叫回、驅離、整理與待執行指令已清除；自主護院回到兩人未允許（熟手主動照看、主角受擾再處理）');
+  toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份；野豬回棲地精力 60、威脅 0，護欄損痕 0；休息、休閒、叫回、驅離、整理與待執行指令已清除；自主護院回到兩人未允許（熟手主動照看、主角受擾再處理）；三隻測試鼠回原位、清理名額清空、掌法比較回初學');
   renderChrome();
 }
 
@@ -504,6 +576,13 @@ function upSet(what) {
   toast(r.ok ? `${profiles[id].label}：${r.text}` : `做不到：${r.reason}`);
   renderChrome();
 }
+// LP-11 掌法比較 fixture：初學／熟練；只在全場沒有清理任務時可換，暫停時也可改（只改設定）。
+function palmSet(skill) {
+  const id = selectedPerson(), r = model.setPalm(id, skill);
+  v = model.view();
+  toast(r.ok ? `${profiles[id].label}：${r.text}` : `做不到：${r.reason}`);
+  renderChrome();
+}
 let toastTimer = 0;
 function toast(text) { const t = $('toast'); t.textContent = text; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2800); }
 
@@ -535,7 +614,7 @@ const cmdLabel = (a, p) => !a.id.startsWith('work:') || p.mode !== 'carry' ? a.l
 const pendText = (p) => p.pending === 'rest' ? '本趟後停工' : `交付後改去${JOBS[p.pending].label}`;
 const en = (p) => Math.floor(p.energy);
 const srcText = (p) => p.rest === 'manual' ? '玩家停工' : p.rest === 'auto' ? '自主恢復' : p.mode === 'back' ? '自主恢復完成' : p.leisure ? '閒暇（不扣不回）' : p.guarding ? '驅離往返（不扣不回）'
-  : p.mode === 'fix' ? '整理護欄動手（每秒 −1，共 8）' : p.fixing ? '整理往返（不扣不回）' : null;
+  : p.mode === 'fix' ? '整理護欄動手（每秒 −1，共 8）' : p.fixing ? '整理往返（不扣不回）' : p.cleaning ? `清理（每次起手 −${PALM.cost}，走路不扣）` : null;
 const FIX_RESULT = { done: '整理完成：護欄損痕 −1', threat: '看得見野豬：整理中止，這一階未清', canceled: '已取消整理（未完成，不清痕）', clean: '護欄已沒有損痕，取消' };
 // 整理狀態一行：待原趟／恢復／返院、前往、動手進度與取消入口。
 function fixHtml(p) {
@@ -563,6 +642,32 @@ function upHtml(p) {
     <div class="row"><span class="group">${react('early', '順手照看')}${react('late', '累積再整理')}</span>${a.wanting ? '<button class="btn" data-cmd="upCancel" title="只取消這輪自己去整理的意願；下一次護欄被撞才再想">取消整理意願</button>' : ''}</div>
     <div class="muted">${a.text}</div></div>`;
 }
+// LP-11 清理：目前目標、等待交付／恢復、前往、起手／收勢、取消返回、結束原因與成本；比較 fixture 明標且任務中鎖定。
+const PHASE_TEXT = { wait: '等待出發', go: '清理中', back: '返院中' };
+function cleanHtml(p, id) {
+  const c = p.clean, r = p.cleanResult, locked = !!v.clean;
+  const skill = (k) => `<button class="btn ${p.palm === k ? 'on' : ''}" data-palm="${k}" aria-pressed="${p.palm === k}" ${locked ? 'disabled' : ''} title="${locked ? '有清理任務（含等待與返院）時鎖定' : `起手 ${SKILLS[k].windup}／收勢 ${SKILLS[k].recover} tick`}">${SKILLS[k].label}</button>`;
+  let line = '';
+  if (c) {
+    const what = p.mode === 'windup' ? `起手 → 鼠${c.target}（${p.palmStep.steps}／${p.palmStep.need} tick）` : p.mode === 'recover' ? `收勢（${p.palmStep.steps}／${p.palmStep.need} tick）`
+      : p.mode === 'toRat' ? (c.phase === 'back' ? '已取消：走完這段後返院' : `走向鼠${c.target}`) : p.mode === 'fromRat' ? `返院：${CLEAN_END[c.end] || ''}` : `待出發：${p.next}`;
+    line = `<div class="fixline"><span>${PHASE_TEXT[c.phase]} · ${what}</span>${c.phase !== 'back' ? '<button class="btn" data-cmd="cleanCancel">取消清理</button>' : ''}</div>
+      ${p.palmStep ? `<div class="bar palm"><i style="width:${Math.round(p.palmStep.k * 100)}%"></i></div>` : ''}
+      <div class="muted">本次擊倒 ${c.downs} · 起手已花精力 ${c.spent}（中止不退）</div>`;
+  } else if (r) line = `<div class="muted">上次清理：${CLEAN_END[r.kind]} · 擊倒 ${r.downs} · 花精力 ${r.spent}</div>`;
+  const other = v.clean && v.clean.by !== id ? `<div class="muted">${profiles[v.clean.by].label}正在清理（全場只一份）</div>` : '';
+  return `<div class="palmbox"><div class="row"><b>有限清理 · 掌法</b><span class="group">${skill('novice')}${skill('adept')}</span></div>
+    <div class="muted">掌法比較 fixture（不是成長）：掌距 ≤${PALM.reach}，起手開始扣 ${PALM.cost} 精力</div>${line}${other}</div>`;
+}
+const RAT_KIND = { normal: '普通', alert: '警覺' };
+function ratsHtml() {
+  const sel = selectedPerson(), opt = model.actions(sel).find((a) => a.id === 'clean'), c = v.clean;
+  const rows = v.rats.map((r) => `<span class="rat r-${r.mode}${c && c.target === r.id && c.phase !== 'back' ? ' tgt' : ''}" title="${r.why || ''}">鼠${r.id}<i>·${RAT_KIND[r.kind]}</i> ${r.label}</span>`).join('');
+  const btn = c ? `<span class="muted">${profiles[c.by].label}${PHASE_TEXT[c.phase]}${c.phase !== 'wait' && c.phase !== 'back' ? `：目標鼠${c.target}` : ''}</span>`
+    : `<button class="btn" data-cmd="clean" ${opt.enabled ? '' : 'disabled'} title="${opt.enabled ? opt.detail : opt.reason}">派${profiles[sel].label}清理</button>`;
+  return `<div class="ratrow"><b>測試弱鼠<i> ×3</i></b><span class="rats">${rows}</span>${btn}</div>
+    <div class="muted ratnote">新局固定 fixture，不補滿／不繁殖；只按距離感知（無遮擋視線），不保證清光或每掌必中</div>`;
+}
 const UP_FX = { want: '想去整理', go: '自己去整理', done: '自己整理完一階' };
 const AUTO_FX = { want: '想去護院', go: '自己去護院', expired: '意願過期', peer: '同伴處理', late: '到場晚到' };
 // 野豬卡上的整理入口：誰在整理、或派選中的人去（停用時 title 說原因）。
@@ -581,6 +686,7 @@ function boarHtml(b) {
     <div class="muted why">${reason}</div>
     <div class="bars"><div>${bar('benergy', b.energy, [B.tiredAt, B.goEnergy], '精力（不是血量）')}</div><div>${bar('threat', b.threat, [B.goThreat, B.scaredAt], '威脅記憶')}</div></div>
     <div class="row"><span>護欄損痕 ${b.marks}／${b.maxMarks}</span>${fixBtn(b, sel)}</div>
+    ${ratsHtml()}
     ${b.active ? `<div class="row"><span>${who ? `${who}正在處理` : '沒人處理也能繼續生活'}</span>${opt ? `<button class="btn" data-cmd="guard" ${opt.enabled ? '' : 'disabled'} title="${opt.enabled ? opt.detail : opt.reason}">派${profiles[sel].label}驅離</button>` : ''}</div>`
       : b.last ? `<div class="muted">上次：撞了 ${b.last.hits} 下，${b.last.why}</div>` : ''}`;
 }
@@ -616,7 +722,7 @@ function renderChrome() {
   panel.hidden = !IDS.includes(ui.selected);
   if (!panel.hidden) {
     const si = person.speedsInitial, sn = person.mode === 'carry' ? person.tripSpeeds : person.speeds;
-    const work = person.fixing ? `整理護欄（回來${person.jobLabel}）` : person.guarding ? `驅離野豬（回來${person.jobLabel}）` : person.mode === 'carry' ? `${person.jobLabel}（持續）· 第 ${person.trips + 1} 趟` : person.resting ? `停工（原工作：${person.jobLabel}）`
+    const work = person.cleaning ? `清理測試鼠（回來${person.jobLabel}）` : person.fixing ? `整理護欄（回來${person.jobLabel}）` : person.guarding ? `驅離野豬（回來${person.jobLabel}）` : person.mode === 'carry' ? `${person.jobLabel}（持續）· 第 ${person.trips + 1} 趟` : person.resting ? `停工（原工作：${person.jobLabel}）`
       : person.leisure ? `閒暇：${person.pref.doing}（原工作：${person.jobLabel}）` : person.recall ? `${person.jobLabel}（玩家叫回）` : `${person.jobLabel}（持續）`;
     const other = person.job === 'water' ? 'herb' : 'water';
     const pend = person.pending
@@ -624,7 +730,7 @@ function renderChrome() {
       : person.resting ? `<div class="pending"><span><b>已停工</b><br><small>回滿也不會自己出發；下令開始才解除</small></span><span><button class="btn" data-cmd="start">開始${person.jobLabel}</button> <button class="btn" data-cmd="work:${other}">改${JOBS[other].label}</button></span></div>`
         : person.recall ? `<div class="pending"><span><b>玩家叫回</b><br><small>回院中${person.jobLabel}；滿了就待命，完成返院後的一趟才解除</small></span><button class="btn" data-cmd="resume">恢復自主</button></div>`
           : '<div class="muted">沒有</div>';
-    const cmds = model.actions(id).filter((a) => !a.hidden && a.id !== 'pourNow' && a.id !== 'fixCancel' && a.id !== 'upCancel') // 取消整理／整理意願放在各自狀態列旁
+    const cmds = model.actions(id).filter((a) => !a.hidden && a.id !== 'pourNow' && a.id !== 'fixCancel' && a.id !== 'upCancel' && a.id !== 'cleanCancel') // 取消整理／整理意願／清理放在各自狀態列旁
       .map((a) => `<button class="btn" data-cmd="${a.id}" ${a.enabled ? '' : 'disabled'} title="${a.enabled ? a.detail : a.reason}">${cmdLabel(a, person)}</button>`).join(' ');
     if (!panel.firstElementChild) panel.innerHTML = '<div id="p-work"></div><h4>待執行指令</h4><div id="p-pend"></div><div id="p-cmds" class="cmds"></div><div id="p-gain"></div><div id="p-leg"></div>';
     put('p-work', $('p-work'), `<h2>${profile.name}<small>${profile.role}</small></h2>
@@ -633,6 +739,7 @@ function renderChrome() {
       ${person.why ? `<div class="muted">原因：${person.why}</div>` : ''}
       ${guardText(person) ? `<div class="guardline">${guardText(person)}</div>` : person.guardResult ? `<div class="muted">驅離結果：${RESULT_TEXT[person.guardResult.kind]}</div>` : ''}
       ${fixHtml(person)}
+      ${cleanHtml(person, id)}
       ${autoHtml(person)}
       ${upHtml(person)}
       <div class="muted">偏好：${person.pref ? `${person.pref.label}（${person.pref.place}）· ${person.job === 'herb' ? '藥架' : '水缸'}實存滿才去，有空位就回` : '無'}</div>
@@ -650,7 +757,7 @@ function renderChrome() {
         ${person.mode === 'carry' ? `<tr><td>本趟${person.jobLabel}（已鎖定）</td><td class="now">${sec(person.tripSecondsNow)}</td><td class="init"></td></tr>` : ''}
         <tr><td>下趟${JOBS[person.nextJob].label}（Lv ${person.level}）</td><td class="now">${sec(person.tripSeconds)}</td><td class="init">${sec(person.tripSecondsInitial)}</td></tr></table>
       <div class="muted">${person.lastTrip ? `上一趟${JOBS[person.lastTrip.job].label}實際 ${sec(person.lastTrip.seconds)}（出發時 Lv ${person.lastTrip.level}）` : '還沒完成第一趟'}；挑水、採藥共用腳力，升級只影響下一趟，倍率只改播放快慢</div>
-      ${positions[id].borrowed ? '<div class="muted">動作借用：整理護欄沒有專用幀，暫用「舒展筋骨」前彎／站直兩幀交替</div>' : ''}
+      ${positions[id].borrowed ? `<div class="muted">${positions[id].palm ? '動作借用：掌法沒有專用幀，暫用空手站姿／蹲身底圖＋向量手臂立掌疊圖（專用 atlas 另案）' : '動作借用：整理護欄沒有專用幀，暫用「舒展筋骨」前彎／站直兩幀交替'}</div>` : ''}
       ${positions[id].fallback ? `<div class="muted">動作沿用：${positions[id].requested === 'rest' ? '坐下歇（此人尚無坐姿幀，暫用蹲姿）' : template.actions[positions[id].action].label}</div>` : ''}`);
   }
 }
@@ -682,6 +789,13 @@ app.ticker.add((t) => {
     sprite.position.set(p.x, p.y);
     sprite.zIndex = p.y;
     placeBasket(id, p, person);
+    const arm = armGs[id];
+    arm.visible = !!p.palm;
+    if (p.palm) {
+      if (arm.pose !== p.palm) { drawArm(arm, p.palm, id); arm.pose = p.palm; }
+      sprite.rotation = p.palm.lean * Math.PI / 180 * p.face;
+      arm.scale.x = p.face; arm.position.set(p.x, p.y); arm.zIndex = p.y + 0.02;
+    } else sprite.rotation = 0;
     if (person.trips > prev.people[id].trips) {
       const herb = person.lastTrip.job === 'herb', at = places[herb ? 'rack' : 'vat'];
       fx.push({ text: `${profiles[id].label} +1 ${herb ? '份藥' : '擔'}`, x: at.x, y: at.y - 70, until: performance.now() + 1600 });
@@ -697,6 +811,22 @@ app.ticker.add((t) => {
     if (gr && gr !== pg && (!pg || gr.tick !== pg.tick)) fx.push({ text: `${profiles[id].label}：${RESULT_TEXT[gr.kind]}`, x: p.x, y: p.y - 96, until: performance.now() + 2200 });
     tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level} · 精力 ${en(person)}`, p.x, p.y, 6);
     tag(`${id}-pill`, `pill ${person.resting ? 'stop' : person.rest || person.mode === 'back' ? 'rest' : person.guarding || person.fixing ? 'guard' : person.leisure ? 'fun' : person.recall ? 'recall' : ''}`, person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.mode === 'fix' ? `${person.status} ${Math.round(person.fixWork.k * 100)}%` : person.status, p.x, p.y - (person.mode === 'seated' ? 64 : 80));
+  }
+  // LP-11 三鼠與接觸：只讀 view().rats／clean；接觸閃光與浮字只是畫面，不入帳。
+  for (const r of v.rats) {
+    let g = ratGs.get(r.id);
+    if (!g) { g = new Graphics(); sorted.addChild(g); ratGs.set(r.id, g); }
+    const out = r.mode === 'gone' && (r.x <= EXIT.at(-1)[0] + 0.01);
+    g.visible = !out;
+    if (!out) { drawRat(g, r, performance.now()); g.scale.set(1.25 * (r.mode === 'flee' || r.mode === 'gone' ? -1 : 1), 1.25); g.position.set(r.x, r.y); g.zIndex = r.y; }
+    const pr = prev.rats.find((q) => q.id === r.id);
+    if (pr && pr.mode !== r.mode && r.mode === 'down') fx.push({ text: `啪！鼠${r.id}擊倒`, x: r.x, y: r.y - 30, until: performance.now() + 1600 });
+    if (pr && pr.mode !== r.mode && r.mode === 'flee') fx.push({ text: `鼠${r.id}逃！`, x: r.x, y: r.y - 30, until: performance.now() + 1400 });
+    if (pr && pr.mode !== r.mode && r.mode === 'gone') fx.push({ text: `鼠${r.id}出界，不追`, x: r.x, y: r.y - 30, until: performance.now() + 1800 });
+    tag(`rat${r.id}`, `pill rat ${r.mode}`, out ? null : `鼠${r.id}${r.kind === 'alert' ? '（警覺）' : ''}`, r.x - 34, r.y + 2); // 名牌放鼠左側：上方是藥架名牌、右側是清理者
+  }
+  if (v.clean && prev.clean && v.clean.target !== prev.clean.target && v.clean.target != null && prev.clean.target != null) {
+    const cp = positions[v.clean.by]; fx.push({ text: `換目標 → 鼠${v.clean.target}`, x: cp.x, y: cp.y - 110, until: performance.now() + 1600 });
   }
   // 野豬與護欄：只讀 view().boar；畫面效果（撞擊閃光、喝止波紋）不入帳。
   const b = v.boar, bp = geo.boarAt(b), now = performance.now();
@@ -752,7 +882,7 @@ app.ticker.add((t) => {
   for (let i = 0; i < 3; i++) { const f = fx[i]; tag(`fx${i}`, 'gain', f ? f.text : null, f ? f.x : 0, f ? f.y - (1 - (f.until - now) / 1600) * 14 : 0); }
   if (ui.follow) follow();
   placeMenu();
-  if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next || prev.people[id].auto.text !== v.people[id].auto.text || prev.people[id].up.text !== v.people[id].up.text || prev.people[id].fix !== v.people[id].fix || prev.people[id].fixResult !== v.people[id].fixResult) || prev.boar.marks !== v.boar.marks || prev.boar.seen !== v.boar.seen || frames % 15 === 0) renderChrome();
+  if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next || prev.people[id].auto.text !== v.people[id].auto.text || prev.people[id].up.text !== v.people[id].up.text || prev.people[id].fix !== v.people[id].fix || prev.people[id].fixResult !== v.people[id].fixResult || prev.people[id].cleanResult !== v.people[id].cleanResult) || JSON.stringify(prev.clean) !== JSON.stringify(v.clean) || prev.rats.some((r, i) => r.mode !== v.rats[i].mode) || prev.boar.marks !== v.boar.marks || prev.boar.seen !== v.boar.seen || frames % 15 === 0) renderChrome();
   frames++;
   if (firstFrameMs == null) firstFrameMs = performance.now() - t0;
 });
@@ -779,6 +909,7 @@ window.demo = {
       fenceScreen: toScreen(places.fence.x, places.fence.y - places.fence.ry * 0.6), guardScreen: toScreen(...GUARD.points.at(-1)), lengths: LENGTHS,
       herbs: v.herbs, herbCapacity: v.herbCapacity, herbInFlight: v.herbInFlight, herbScreen: toScreen(places.herb.x, places.herb.y - 10), rackScreen: toScreen(places.rack.x, places.rack.y - 10),
       shadow: v.shadow && v.shadow.name, ghostVisible: ghost.visible,
+      rats: v.rats.map((r) => ({ ...r, screen: toScreen(r.x, r.y - 6) })), clean: v.clean, palmArm: Object.fromEntries(IDS.map((id) => [id, armGs[id].visible])),
       playing: ui.playing, autoPaused: ui.autoPaused, pausedByMenu: ui.pausedByMenu, speed: ui.speed,
       selected: ui.selected, menu: ui.menu, menuPerson: ui.menuPerson, cam: { ...cam }, hidden: document.hidden,
       heroScreen: people.hero.screen,

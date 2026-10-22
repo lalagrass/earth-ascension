@@ -89,3 +89,20 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .auto.want, .auto.go { border-color: #c8873e; background: #fff4e4; } .auto.expired, .auto.peer, .auto.player { background: #f3f0ea; }
 .auto.up.want, .auto.up.go { border-color: #6f8f4e; background: #eef5e4; } .auto.up.used, .auto.up.threat, .auto.up.canceled, .auto.up.none { background: #f3f0ea; }
 .autoline { display: block; color: #8a4a1e; }
+/* LP-11 測試弱鼠列與掌法：鼠卡併在野豬卡下方；目標鼠加框，擊倒／逃出淡化。 */
+.ratrow { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 8px; margin-top: 4px; border-top: 1px dashed var(--line); padding-top: 4px; }
+.ratrow b i, .rat i { font-style: normal; }
+.rats { display: flex; flex-wrap: wrap; gap: 4px; order: 3; flex-basis: 100%; }
+.rat { font-size: 12px; background: #efe4cb; border-radius: 4px; padding: 0 5px; border: 1px solid transparent; }
+.rat.tgt { border-color: var(--gold); background: #fff0c8; } .rat.r-down, .rat.r-gone { color: #8a8070; text-decoration: line-through; } .rat.r-flee { background: #f3d8c8; }
+.bar.palm i { background: #c8962e; }
+.palmbox { margin: 6px 0; padding: 4px 6px; border: 1px solid #d9c9a8; border-radius: 6px; } .palmbox .group { display: inline-flex; gap: 4px; }
+.palmbox .btn[disabled] { opacity: .45; cursor: default; }
+.tag.pill.rat { background: rgba(110, 90, 60, .82); font-size: 11px; } .tag.pill.rat.down, .tag.pill.rat.gone { background: rgba(140, 130, 112, .7); }
+@media (max-width: 640px) {
+  /* 窄螢幕：鼠列壓成一行（不寫種類、不寫說明），卡片只多一行 */
+  .ratnote, .ratrow b i, .rat i { display: none; }
+  .ratrow { flex-wrap: nowrap; }
+  .rats { order: 0; flex: 1; flex-basis: auto; flex-wrap: nowrap; overflow: hidden; min-width: 0; }
+  .rat { white-space: nowrap; padding: 0 3px; }
+}
