@@ -10,7 +10,7 @@ LP06 [#213](https://github.com/lalagrass/earth-ascension/issues/213)／PR217已�
 
 ### 本次延伸的建議順序（待選，未批准實作）
 
-2026-10-22最新review：LP07 [PR227](https://github.com/lalagrass/earth-ascension/pull/227)已交6檔，base9094752，新head2f063db已修候補改傾向P2；PO完整diff／原模型72PASS、新18反例與最小真UI、CI五SUCCESS已核，無未解功能阻擋，待Earth PO整合／postCI。本機strict GPU限制沿PR，不虛稱瀏覽器全綠。下一候選另開[#228](https://github.com/lalagrass/earth-ascension/issues/228)與[LP08提案](LP08_PROPOSAL.md)：單次手動整理一階非功能損痕、真往返／動手，再回生活；R1–R4含候選8秒／8精力、可見野豬中止未完成效果，均待擁有人確認，不授權程式／新2h窗口。LP07原包不擴，修護不再共用其認領。
+2026-10-22最新review：LP07 [PR227](https://github.com/lalagrass/earth-ascension/pull/227)新head2f063db的候補改傾向P2已修，PO完整diff／新18反例與最小真UI通過；Earth PO已合dev `bd743f0dfc023b124484e14d0cc5c64092ce3c4c`，postCI [39764906333](https://github.com/lalagrass/earth-ascension/actions/runs/39764906333)五SUCCESS，同一接受入口已更新。strict本機GPU兩warning限制沿PR，不虛稱全瀏覽器綠。下一候選另開[#228](https://github.com/lalagrass/earth-ascension/issues/228)與[LP08提案](LP08_PROPOSAL.md)：單次手動整理一階非功能損痕、真往返／動手，再回生活；R1–R4含候選8秒／8精力、可察覺野豬含仍可見flee皆阻擋／中止未完成效果，均待擁有人確認，不授權程式／新2h窗口。LP07原包不擴，修護不再共用其認領。
 
 下一個最小可見包已整理為[LP07候選：自主護院與早／晚接手](LP07_PROPOSAL.md)／#218：只提取自主驅離，P1–P4列範圍、每人允許／反應fixture、玩家本次覆寫與既有成本／風險取捨，已依D17批准轉正式handoff／prompt，本次批准同步文件合dev／postCI後可本人認領，未代啟新agent，修護／鼠群不夾帶。#219／PR223的三案文件研究已合dev，其他鼠巢題仍為研究池，非本片前置。
 
