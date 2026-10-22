@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>LP-10 掌法點選流程</title>
+<link rel="stylesheet" href="lp10.css">
+</head>
+<body>
+<div id="stage"><canvas id="cv"></canvas></div>
+<div id="tags"></div>
+<header class="hud" aria-label="遊戲頂列（畫稿，不能操作）">
+  <span class="title">宗門編年</span><span class="sub">生活開發版 · 尚未存檔</span>
+  <span class="group fake"><span class="btn">▶ 繼續</span><span class="btn">1×</span><span class="btn">2×</span><span class="btn on">4×</span></span>
+  <span class="spacer"></span>
+  <span class="chip">水缸 6／8 · 在途 1</span><span class="chip">藥架 3／8</span><span class="chip">熟手 Lv 4</span>
+</header>
+<div class="seal" role="note">設計示意，未連遊戲</div>
+<section id="card" class="card"></section>
+<aside id="panel" class="panel"></aside>
+<div id="end" class="endcard" hidden></div>
+<button id="hot" class="hotspot" hidden></button>
+<nav id="roster" class="roster"><div class="rc sel"><b>林遠 · Lv 2</b><span id="r-hero">挑水</span></div><div class="rc"><b>熟手同伴 · Lv 4</b><span>採藥</span></div></nav>
+<footer id="bar" class="dbar" aria-label="設計稿翻頁（不是遊戲介面）">
+  <div class="drow">
+    <span class="dlabel">畫稿翻頁</span>
+    <span class="group" id="paths"></span>
+    <button class="btn" id="prev">← 上一格</button>
+    <span id="step" class="dstep"></span>
+    <button class="btn" id="next">下一格 →</button>
+    <span class="group" id="skill"><button class="btn on" data-skill="b">初學</button><button class="btn" data-skill="e">熟練</button></span>
+    <a href="compare.html" class="dlink">初學／熟練分鏡對照</a>
+  </div>
+  <p id="cap" class="dcap"></p>
+</footer>
+<script type="module" src="flow.js"></script>
+</body>
+</html>
