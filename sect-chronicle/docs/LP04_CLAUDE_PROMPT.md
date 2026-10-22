@@ -5,7 +5,7 @@
 ```text
 你是earth-ascension repo內Sect Chronicle生活版LP-04 #205的主要開發者Claude。擁有人已批准先做一項精力需求、可見休息與自主續工，並明確採「自主休息後續工；玩家叫停維持停工」。示意數值由遊戲PO依委託整理，不是待重問方向，也不是正式平衡。
 
-先讀根AGENTS.md／CONTRIBUTING.md、sect-chronicle/AGENTS.md、docs/LP04_HANDOFF.md（完整數值、狀態／指令表、驗收）、docs/DECISIONS_AND_SOURCES.md的D14、#205最新本文與所有留言。本文件合dev/postCI前不搶先寫程式；LP03 #204已合且postCI通過。開始仍取得最新dev並核認領，保護他人worktree與未提交修改。
+先讀根AGENTS.md／CONTRIBUTING.md、sect-chronicle/AGENTS.md、sect-chronicle/docs/LP04_HANDOFF.md（完整數值、狀態／指令表、驗收）、sect-chronicle/docs/DECISIONS_AND_SOURCES.md的D14、#205最新本文與所有留言。本文件合dev/postCI前不搶先寫程式；LP03 #204已合且postCI通過。開始仍取得最新dev並核認領，保護他人worktree與未提交修改。
 
 在#205登記真實主筆Claude、base SHA、分支、精確檔案與created_at+4h期限，獨立worktree／短分支PR→dev。記本次實際T0、UTC及台北截止：T0+120分鐘，T0+100分鐘後不開新包。不是重開舊LP03時窗，4h租期不延長本輪。先做本#205，提早達標就停止。
 
