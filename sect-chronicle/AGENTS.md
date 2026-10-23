@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## D25最新改派：#182設計／改圖由Gemini接手（2026-10-23）
+
+擁有人因Grok額度不足明確改派，讀 [D25](docs/DECISIONS_AND_SOURCES.md#d25-182-設計與改圖改由gemini接手2026-10-23)、[#182](https://github.com/lalagrass/earth-ascension/issues/182)、[工作包](docs/MAP182_HANDOFF.md)／[Gemini提示詞](docs/MAP182_GEMINI_PROMPT.md)。下方D24「Grok專注圖像」是原分工；現在Gemini接剩餘設計／改圖與PR248四項P2，Grok成果與原分支／review保留，不冒稱本人released，不等原Grok期限。
+
+本D25文件合dev／postCI後本人新claim，從最新dev新分支沿用公開d56acd3、保留Grok來源，建接續PR連248；舊PR不續推／不自行關。只design/map182/**，可沿用乾淨的原grok-art184美術worktree，不動gemini-241。建議244補修先送review再接圖，圖修不等244合併，原scope／期限不變。長通勤與設計自由保留，實裝仍看稿後確認；不改demo／checks／共享README或8800，不代啟作者／接線。只驗局部／必要根檢查及CI，未變證據復用。
+
 ## D24：完整地圖設計先行，Grok畫圖／Gemini後續整合（2026-10-23）
 
 最新批准見 [D24](docs/DECISIONS_AND_SOURCES.md#d24-182-完整道館生活地圖設計與美術分工批准2026-10-23)、[#182](https://github.com/lalagrass/earth-ascension/issues/182)、[正式工作包](docs/MAP182_HANDOFF.md)／[Grok Build提示詞](docs/MAP182_GROK_BUILD_PROMPT.md)。Grok主筆完整道館生活地圖總配置、畫風稿與長路線行走預演（分鏡／短片即可）；保留長通勤／看人物奔波，允許自由延伸生活功能點、外圍山徑與未來巡山構想。每點標現有／景觀／未來候選，不逐點加簽核，也不把設計當新玩法批准。

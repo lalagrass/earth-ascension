@@ -1,8 +1,13 @@
 # Grok Build接手提示詞：#182完整生活地圖與圖像設計
 
+## 已停用：Grok額度不足，改交Gemini
+
+擁有人最新改派見 [D25](DECISIONS_AND_SOURCES.md#d25-182-設計與改圖改由gemini接手2026-10-23)；請改貼 [Gemini接手提示詞](MAP182_GEMINI_PROMPT.md)，按 [更新工作包](MAP182_HANDOFF.md)補PR248四項。下方只保留Grok原設計來源，不要依舊prompt再認領或續推248。Gemini保留原作者／branch／review，從最新dev另開接續PR；本改派不批准遊戲接線或延長244期限。
+
 擁有人已批准設計先行，並指定Grok專注圖像、Gemini後續整合。先讀 [正式工作包](MAP182_HANDOFF.md)，以下可直接貼；未代啟作者。舊ART184實裝prompt暫後，不是本輪任務。
 
 ```text
+【歷史停用：擁有人已將剩餘設計／改圖交Gemini。不要執行本舊指令，改讀sect-chronicle/docs/MAP182_GEMINI_PROMPT.md。】
 你是earth-ascension／Sect Chronicle #182完整道館生活地圖的設計主筆Grok Build。擁有人已同意先交總配置、畫風稿與行走預演，保留長通勤與看人物四處奔波；你專注設計圖片，Gemini後續才把圖片整合進遊戲。你有更大設計自由，可延伸更多生活功能點、外圍山徑與未來巡山區域，不必逐個點等批准才能畫。每點標現有功能／純景觀／未來候選，新增玩法與實裝範圍須看稿後再確認，不能直接寫進遊戲。
 
 從repo根讀AGENTS.md、CONTRIBUTING.md、sect-chronicle/AGENTS.md、sect-chronicle/docs/DECISIONS_AND_SOURCES.md的D24、sect-chronicle/docs/MAP182_HANDOFF.md及sect-chronicle/docs/MAP182_GROK_BUILD_PROMPT.md，讀 https://github.com/lalagrass/earth-ascension/issues/182 最新內容與有效claim。核本D24文件已經非作者review、Earth PO合dev且postCI通過；記實際commit／CI。不需等PR244：那是Gemini在獨立目錄補修生活功能，原scope／期限不變，不接管或延長。PR245已接受合dev bccda780、postCI39884517733五SUCCESS，只作候選來源，不等於畫風或atlas定稿。

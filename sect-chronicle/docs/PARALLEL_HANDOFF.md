@@ -1,5 +1,11 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+## D25最新分工：Gemini接手#182圖像設計與改圖（2026-10-23）
+
+擁有人因Grok quota不足明確改派，依 [D25](DECISIONS_AND_SOURCES.md#d25-182-設計與改圖改由gemini接手2026-10-23)／[更新工作包](MAP182_HANDOFF.md)／[Gemini提示詞](MAP182_GEMINI_PROMPT.md)。下方D24的Grok圖像／Gemini整合改為歷史分工；Gemini現在接PR248剩餘設計與四項P2，保留Grok公開成果／原分支／審查，另從最新dev新claim／新接續PR。只design/map182/**，可沿乾淨的原grok-art184美術worktree，不能碰Gemini gemini-241 checkout或混244檔案。
+
+建議先244原補修回review，再等審查時接圖；設計不等244合併、其原期限不變。D25文件審合／postCI後本人認領，不代啟作者。保留長通勤／觀看奔波、可自由延伸生活點與未來巡山構想；先交設計，擁有人看稿後確認實裝範圍，未授新玩法／遊戲接線或8800更新。必要局部驗收／CI與輸出成本沿原則，未變證據復用、不大重畫或跑長矩陣。
+
 ## 2026-10-23 D24最新分工：Grok圖像設計、Gemini功能與後續整合
 
 以 [D24](DECISIONS_AND_SOURCES.md#d24-182-完整道館生活地圖設計與美術分工批准2026-10-23)、[#182](https://github.com/lalagrass/earth-ascension/issues/182)、[MAP182工作包](MAP182_HANDOFF.md)／[Grok提示詞](MAP182_GROK_BUILD_PROMPT.md)為準；下方D23及更早quota／分工保留歷史，不作開工指令。
