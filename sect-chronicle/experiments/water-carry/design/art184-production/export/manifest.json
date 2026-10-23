@@ -1,0 +1,684 @@
+{
+ "hero_front_idle": {
+  "file": "sprites/hero_front_idle.png",
+  "src": "raw/hero-turnaround.jpg",
+  "size": [
+   350,
+   638
+  ],
+  "anchor": [
+   175,
+   637
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "actor",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.406,
+  "display_scale": 0.1003,
+  "display_size": [
+   35.1,
+   64.0
+  ]
+ },
+ "hero_side_idle": {
+  "file": "sprites/hero_side_idle.png",
+  "src": "raw/hero-turnaround.jpg",
+  "size": [
+   220,
+   629
+  ],
+  "anchor": [
+   110,
+   628
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "actor",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.342,
+  "display_scale": 0.1017,
+  "display_size": [
+   22.4,
+   64.0
+  ]
+ },
+ "hero_back_idle": {
+  "file": "sprites/hero_back_idle.png",
+  "src": "raw/hero-turnaround.jpg",
+  "size": [
+   338,
+   630
+  ],
+  "anchor": [
+   169,
+   629
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "actor",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.406,
+  "display_scale": 0.1016,
+  "display_size": [
+   34.3,
+   64.0
+  ]
+ },
+ "hero_side_carry": {
+  "file": "sprites/hero_side_carry.png",
+  "src": "raw/hero-poses.jpg",
+  "size": [
+   420,
+   538
+  ],
+  "anchor": [
+   210,
+   537
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "actor",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.509,
+  "display_scale": 0.119,
+  "display_size": [
+   50.0,
+   64.0
+  ]
+ },
+ "hero_back_carry": {
+  "file": "sprites/hero_back_carry.png",
+  "src": "raw/hero-poses.jpg",
+  "size": [
+   380,
+   545
+  ],
+  "anchor": [
+   190,
+   544
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "actor",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.504,
+  "display_scale": 0.1174,
+  "display_size": [
+   44.6,
+   64.0
+  ]
+ },
+ "hero_side_herb": {
+  "file": "sprites/hero_side_herb.png",
+  "src": "raw/hero-poses.jpg",
+  "size": [
+   365,
+   385
+  ],
+  "anchor": [
+   182,
+   384
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "actor",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.441,
+  "display_scale": 0.0997,
+  "display_size": [
+   36.4,
+   38.4
+  ]
+ },
+ "senior_front_idle": {
+  "file": "sprites/senior_front_idle.png",
+  "src": "raw/senior-turnaround.jpg",
+  "size": [
+   222,
+   649
+  ],
+  "anchor": [
+   111,
+   648
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "actor",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.43,
+  "display_scale": 0.1109,
+  "display_size": [
+   24.6,
+   72.0
+  ]
+ },
+ "senior_side_idle": {
+  "file": "sprites/senior_side_idle.png",
+  "src": "raw/senior-turnaround.jpg",
+  "size": [
+   126,
+   643
+  ],
+  "anchor": [
+   63,
+   642
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "actor",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.326,
+  "display_scale": 0.112,
+  "display_size": [
+   14.1,
+   72.0
+  ]
+ },
+ "senior_back_idle": {
+  "file": "sprites/senior_back_idle.png",
+  "src": "raw/senior-turnaround.jpg",
+  "size": [
+   221,
+   642
+  ],
+  "anchor": [
+   110,
+   641
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "actor",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.435,
+  "display_scale": 0.1121,
+  "display_size": [
+   24.8,
+   72.0
+  ]
+ },
+ "senior_side_carry": {
+  "file": "sprites/senior_side_carry.png",
+  "src": "raw/senior-poses.jpg",
+  "size": [
+   373,
+   607
+  ],
+  "anchor": [
+   186,
+   606
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "actor",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.599,
+  "display_scale": 0.1186,
+  "display_size": [
+   44.2,
+   72.0
+  ]
+ },
+ "senior_back_carry": {
+  "file": "sprites/senior_back_carry.png",
+  "src": "raw/senior-poses.jpg",
+  "size": [
+   359,
+   615
+  ],
+  "anchor": [
+   180,
+   614
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "actor",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.583,
+  "display_scale": 0.1171,
+  "display_size": [
+   42.0,
+   72.0
+  ]
+ },
+ "senior_side_herb": {
+  "file": "sprites/senior_side_herb.png",
+  "src": "raw/senior-poses.jpg",
+  "size": [
+   336,
+   371
+  ],
+  "anchor": [
+   168,
+   370
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "actor",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.429,
+  "display_scale": 0.1164,
+  "display_size": [
+   39.1,
+   43.2
+  ]
+ },
+ "dojo_main_hall": {
+  "file": "sprites/dojo_main_hall.png",
+  "src": "raw/dojo-props.jpg",
+  "size": [
+   448,
+   386
+  ],
+  "anchor": [
+   224,
+   385
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.397,
+  "display_scale": 0.4922,
+  "display_size": [
+   220.5,
+   190.0
+  ]
+ },
+ "dojo_side_house": {
+  "file": "sprites/dojo_side_house.png",
+  "src": "raw/dojo-props.jpg",
+  "size": [
+   353,
+   318
+  ],
+  "anchor": [
+   176,
+   317
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.384,
+  "display_scale": 0.4717,
+  "display_size": [
+   166.5,
+   150.0
+  ]
+ },
+ "dojo_gate": {
+  "file": "sprites/dojo_gate.png",
+  "src": "raw/dojo-props.jpg",
+  "size": [
+   216,
+   257
+  ],
+  "anchor": [
+   108,
+   256
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.534,
+  "display_scale": 0.4669,
+  "display_size": [
+   100.9,
+   120.0
+  ]
+ },
+ "court_wall": {
+  "file": "sprites/court_wall.png",
+  "src": "raw/dojo-props.jpg",
+  "size": [
+   272,
+   146
+  ],
+  "anchor": [
+   136,
+   145
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.399,
+  "display_scale": 0.411,
+  "display_size": [
+   111.8,
+   60.0
+  ]
+ },
+ "water_vat": {
+  "file": "sprites/water_vat.png",
+  "src": "raw/dojo-props.jpg",
+  "size": [
+   138,
+   161
+  ],
+  "anchor": [
+   69,
+   160
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.181,
+  "display_scale": 0.2484,
+  "display_size": [
+   34.3,
+   40.0
+  ]
+ },
+ "stone_mill": {
+  "file": "sprites/stone_mill.png",
+  "src": "raw/dojo-props.jpg",
+  "size": [
+   205,
+   176
+  ],
+  "anchor": [
+   102,
+   175
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.353,
+  "display_scale": 0.2273,
+  "display_size": [
+   46.6,
+   40.0
+  ]
+ },
+ "woodpile": {
+  "file": "sprites/woodpile.png",
+  "src": "raw/dojo-props.jpg",
+  "size": [
+   216,
+   173
+  ],
+  "anchor": [
+   108,
+   172
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.324,
+  "display_scale": 0.2312,
+  "display_size": [
+   49.9,
+   40.0
+  ]
+ },
+ "herb_rack": {
+  "file": "sprites/herb_rack.png",
+  "src": "raw/dojo-props.jpg",
+  "size": [
+   230,
+   238
+  ],
+  "anchor": [
+   115,
+   237
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.574,
+  "display_scale": 0.2605,
+  "display_size": [
+   59.9,
+   62.0
+  ]
+ },
+ "pine_a": {
+  "file": "sprites/pine_a.png",
+  "src": "raw/path-kit.jpg",
+  "size": [
+   307,
+   330
+  ],
+  "anchor": [
+   154,
+   329
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.526,
+  "display_scale": 0.6364,
+  "display_size": [
+   195.4,
+   210.0
+  ]
+ },
+ "pine_b": {
+  "file": "sprites/pine_b.png",
+  "src": "raw/path-kit.jpg",
+  "size": [
+   282,
+   307
+  ],
+  "anchor": [
+   141,
+   306
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.545,
+  "display_scale": 0.6515,
+  "display_size": [
+   183.7,
+   200.0
+  ]
+ },
+ "bamboo_clump": {
+  "file": "sprites/bamboo_clump.png",
+  "src": "raw/path-kit.jpg",
+  "size": [
+   262,
+   339
+  ],
+  "anchor": [
+   131,
+   338
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.478,
+  "display_scale": 0.5605,
+  "display_size": [
+   146.8,
+   190.0
+  ]
+ },
+ "broadleaf_tree": {
+  "file": "sprites/broadleaf_tree.png",
+  "src": "raw/path-kit.jpg",
+  "size": [
+   350,
+   333
+  ],
+  "anchor": [
+   175,
+   332
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.462,
+  "display_scale": 0.5706,
+  "display_size": [
+   199.7,
+   190.0
+  ]
+ },
+ "boulder_l": {
+  "file": "sprites/boulder_l.png",
+  "src": "raw/path-kit.jpg",
+  "size": [
+   235,
+   161
+  ],
+  "anchor": [
+   118,
+   160
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.435,
+  "display_scale": 0.3851,
+  "display_size": [
+   90.5,
+   62.0
+  ]
+ },
+ "boulder_m": {
+  "file": "sprites/boulder_m.png",
+  "src": "raw/path-kit.jpg",
+  "size": [
+   198,
+   120
+  ],
+  "anchor": [
+   99,
+   119
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.341,
+  "display_scale": 0.3833,
+  "display_size": [
+   75.9,
+   46.0
+  ]
+ },
+ "boulder_s": {
+  "file": "sprites/boulder_s.png",
+  "src": "raw/path-kit.jpg",
+  "size": [
+   168,
+   100
+  ],
+  "anchor": [
+   84,
+   99
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.39,
+  "display_scale": 0.34,
+  "display_size": [
+   57.1,
+   34.0
+  ]
+ },
+ "path_edge_stones": {
+  "file": "sprites/path_edge_stones.png",
+  "src": "raw/path-kit.jpg",
+  "size": [
+   369,
+   79
+  ],
+  "anchor": [
+   184,
+   78
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "ground-decal",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.149,
+  "display_scale": 0.2785,
+  "display_size": [
+   102.8,
+   22.0
+  ]
+ },
+ "spring_pool": {
+  "file": "sprites/spring_pool.png",
+  "src": "raw/path-kit.jpg",
+  "size": [
+   297,
+   134
+  ],
+  "anchor": [
+   148,
+   133
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "ground-decal",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.279,
+  "display_scale": 0.5224,
+  "display_size": [
+   155.1,
+   70.0
+  ]
+ },
+ "creek_bank": {
+  "file": "sprites/creek_bank.png",
+  "src": "raw/path-kit.jpg",
+  "size": [
+   278,
+   171
+  ],
+  "anchor": [
+   139,
+   170
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "ground-decal",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.459,
+  "display_scale": 0.3626,
+  "display_size": [
+   100.8,
+   62.0
+  ]
+ },
+ "fern": {
+  "file": "sprites/fern.png",
+  "src": "raw/path-kit.jpg",
+  "size": [
+   195,
+   179
+  ],
+  "anchor": [
+   98,
+   178
+  ],
+  "anchor_note": "底邊中心＝腳底/落地點",
+  "layer": "occluder-ysort",
+  "alpha_min": 0,
+  "alpha_max": 255,
+  "transparent_ratio": 0.466,
+  "display_scale": 0.2235,
+  "display_size": [
+   43.6,
+   40.0
+  ]
+ }
+}
