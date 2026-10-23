@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <defs>
+    <style>
+      .bg { fill: #f4ecdc; }
+      .mountain-far { fill: #d7e3c8; }
+      .mountain-near { fill: #e7f0d4; }
+      .trail-path { fill: none; stroke: #3d6b8a; stroke-width: 10; stroke-linejoin: round; }
+      .herb-trail { fill: none; stroke: #6a8a3d; stroke-width: 8; stroke-dasharray: 8 4; stroke-linejoin: round; }
+      .hall-base { fill: #f7f1e4; stroke: #c4b59a; stroke-width: 1.5; }
+      .hall-roof { fill: #8d95a0; }
+      .soil-patch { fill: #8a6a4e; stroke: #6e5434; stroke-width: 1.5; rx: 4px; }
+      .plant { fill: #4f8a3e; stroke: #2f5c24; stroke-width: 0.8; }
+      .bamboo-rack { stroke: #b08a4e; stroke-width: 2.5; stroke-linecap: round; }
+      .sieve { fill: #d8bf86; stroke: #9a7a44; stroke-width: 1.2; }
+      .water-pot { fill: #6a7a7a; stroke: #4f5e5e; stroke-width: 1.5; }
+      .ui-hud { fill: rgba(248, 242, 228, 0.95); stroke: #d9c9a8; stroke-width: 1; rx: 8px; }
+      .ui-card { fill: rgba(248, 242, 228, 0.96); stroke: #c8b998; stroke-width: 1.5; rx: 8px; }
+      .ui-btn { fill: #fffaf0; stroke: #cbba9e; stroke-width: 1; rx: 4px; }
+      .ui-badge { fill: #efe4cb; stroke: #cbba9e; stroke-width: 1; rx: 999px; }
+      .text-title { font-family: system-ui, sans-serif; font-size: 14px; font-weight: bold; fill: #2c251e; }
+      .text-body { font-family: system-ui, sans-serif; font-size: 11px; fill: #2c251e; }
+      .text-muted { font-family: system-ui, sans-serif; font-size: 10px; fill: #6e5d4b; }
+      .text-tag { font-family: system-ui, sans-serif; font-size: 10px; font-weight: bold; fill: #ffffff; }
+      .split-line { stroke: #8c7b64; stroke-width: 2; stroke-dasharray: 6 4; }
+      .badge-ann { fill: #fff3cd; stroke: #856404; stroke-width: 1; rx: 4px; }
+      .badge-txt { font-family: system-ui, sans-serif; font-size: 11px; font-weight: bold; fill: #856404; }
+    </style>
+  </defs>
+
+  <!-- 1. 背景山色與地景 -->
+  <rect width="1280" height="720" class="bg"/>
+  <path d="M0,180 C320,110 640,210 960,130 C1120,90 1200,120 1280,110 L1280,0 L0,0 Z" class="mountain-far"/>
+  <path d="M0,320 C420,240 820,350 1100,270 C1200,240 1250,260 1280,250 L1280,720 L0,720 Z" class="mountain-near"/>
+
+  <!-- 左半部：現況基線 (Current Baseline - LP-14 接受版) -->
+  <g id="current-view">
+    <!-- 道館山門與庭院 -->
+    <rect x="280" y="220" width="180" height="120" class="hall-base"/>
+    <polygon points="260,220 370,170 480,220" class="hall-roof"/>
+    <!-- 院落水缸與石凳 -->
+    <ellipse cx="320" cy="330" rx="20" ry="12" fill="#6aa8a8" stroke="#4f7e7e" stroke-width="1.5"/>
+    <text x="310" y="334" class="text-tag">水缸</text>
+    <!-- 現況藥架 (簡易棕線雙層) -->
+    <rect x="360" y="315" width="22" height="28" fill="#b7a48a" stroke="#8a7a66"/>
+    <text x="362" y="332" font-size="9" fill="#2c251e">藥架</text>
+
+    <!-- 採藥山徑 (往東坡) -->
+    <path d="M380,340 L440,390 L490,440 L530,510 L560,580 L580,640" class="herb-trail"/>
+    
+    <!-- 現況藥圃 (簡單扁平圓形，缺乏生活感) -->
+    <ellipse cx="580" cy="650" rx="42" ry="24" fill="#c5d6a4" stroke="#6a8a3d" stroke-width="1.5"/>
+    <circle cx="570" cy="645" r="3" fill="#4f8a3e"/>
+    <circle cx="585" cy="652" r="3" fill="#4f8a3e"/>
+    <circle cx="595" cy="646" r="3" fill="#4f8a3e"/>
+    <text x="562" y="670" font-size="10" fill="#2c251e">東坡藥圃</text>
+
+    <!-- 主角採藥姿態 (現況：借用蹲姿，背簍簡單) -->
+    <g transform="translate(570, 640)">
+      <rect x="-8" y="-22" width="16" height="22" rx="3" fill="#3b5d85"/>
+      <circle cx="0" cy="-28" r="6" fill="#e8c89b"/>
+      <!-- 背簍在腳邊 -->
+      <polygon points="-16,-12 -8,-12 -9,0 -15,0" fill="#b08a4e" stroke="#6e5434"/>
+      <!-- 名牌與狀態 -->
+      <rect x="-38" y="-46" width="76" height="14" rx="3" fill="rgba(47,42,36,0.85)"/>
+      <text x="-32" y="-35" class="text-tag">採藥中 40%</text>
+    </g>
+
+    <text x="40" y="690" font-size="13" font-weight="bold" fill="#6e5d4b">【現況】簡單幾何地標 · 缺乏生活作業痕跡</text>
+  </g>
+
+  <!-- 中間分割線 -->
+  <line x1="640" y1="70" x2="640" y2="700" class="split-line"/>
+
+  <!-- 右半部：LP-15 改善提案 (Improved Herb Gathering Life Scene) -->
+  <g id="improved-view" transform="translate(640, 0)">
+    <!-- 道館山門與庭院 -->
+    <rect x="180" y="220" width="180" height="120" class="hall-base"/>
+    <polygon points="160,220 270,170 380,220" class="hall-roof"/>
+    <ellipse cx="220" cy="330" rx="20" ry="12" fill="#6aa8a8" stroke="#4f7e7e" stroke-width="1.5"/>
+
+    <!-- 改善藥架：立體三層竹篩，逐份晾曬靈草，旁邊有木凳與小水甕 -->
+    <g transform="translate(260, 310)">
+      <!-- 藥架立柱與竹篩 -->
+      <line x1="-16" y1="0" x2="-16" y2="34" class="bamboo-rack"/>
+      <line x1="16" y1="0" x2="16" y2="34" class="bamboo-rack"/>
+      <ellipse cx="0" cy="8" rx="18" ry="4" class="sieve"/>
+      <ellipse cx="0" cy="20" rx="18" ry="4" class="sieve"/>
+      <ellipse cx="0" cy="32" rx="18" ry="4" class="sieve"/>
+      <!-- 篩中草藥葉片 -->
+      <circle cx="-6" cy="7" r="2" fill="#4f8a3e"/>
+      <circle cx="4" cy="8" r="2" fill="#4f8a3e"/>
+      <circle cx="8" cy="7" r="2" fill="#3e6b30"/>
+      <!-- 旁邊晾曬小木架與草耙 -->
+      <line x1="22" y1="12" x2="28" y2="34" stroke="#8a6a3e" stroke-width="1.5"/>
+      <text x="-16" y="46" font-size="9" font-weight="bold" fill="#2c251e">曬藥架 2/8</text>
+    </g>
+
+    <!-- 採藥山徑：碎石嵌泥石階，路旁有矮石欄與草本覆蓋 -->
+    <path d="M280,340 L340,390 L390,440 L430,510 L460,580 L480,640" class="herb-trail"/>
+    
+    <!-- 改善藥圃：整齊土畦 (梯田式微落差)、支架、標籤木牌、生活陶罐 -->
+    <g transform="translate(480, 620)">
+      <!-- 土畦 1 與植株 -->
+      <rect x="-50" y="-12" width="46" height="18" class="soil-patch"/>
+      <ellipse cx="-42" cy="-4" rx="3.5" ry="5" class="plant"/>
+      <ellipse cx="-28" cy="-4" rx="3.5" ry="5" class="plant"/>
+      <!-- 土畦 2 與植株 -->
+      <rect x="4" y="-12" width="46" height="18" class="soil-patch"/>
+      <ellipse cx="12" cy="-4" rx="3.5" ry="5" class="plant"/>
+      <ellipse cx="26" cy="-4" rx="3.5" ry="5" class="plant"/>
+      <ellipse cx="40" cy="-4" rx="3.5" ry="5" class="plant"/>
+      <!-- 蓄水小陶甕 (澆灌用生活道具) -->
+      <ellipse cx="-58" cy="12" rx="7" ry="9" class="water-pot"/>
+      <!-- 藥鋤工具插在土中 -->
+      <line x1="-52" y1="-8" x2="-56" y2="4" stroke="#3e3327" stroke-width="1.8"/>
+      <polygon points="-57,3 -54,6 -58,6" fill="#8a8070"/>
+      <!-- 竹籬與遮陽小棚角 -->
+      <line x1="-65" y1="-20" x2="55" y2="-20" stroke="#b08a4e" stroke-width="2" stroke-dasharray="4 2"/>
+      <text x="-48" y="24" font-size="10" font-weight="bold" fill="#2c251e">東坡藥圃 (整齊土畦 · 灌溉水甕 · 採藥鋤)</text>
+    </g>
+
+    <!-- 主角採藥動態質感 (改善：真實重心微蹲、手持藥鋤細拔、身旁藥簍自然傾斜) -->
+    <g transform="translate(480, 608)">
+      <!-- 身體前傾重心 -->
+      <rect x="-7" y="-20" width="16" height="20" rx="3" fill="#3b5d85" transform="rotate(8)"/>
+      <circle cx="2" cy="-26" r="6" fill="#e8c89b"/>
+      <!-- 手部持鋤撥土細拔動作 -->
+      <line x1="8" y1="-14" x2="16" y2="-4" stroke="#e8c89b" stroke-width="2"/>
+      <!-- 簍子傾斜放在腳邊，草藥清晰可見 -->
+      <polygon points="-18,-14 -10,-14 -11,0 -17,0" fill="#b08a4e" stroke="#6e5434" transform="rotate(-6)"/>
+      <ellipse cx="-14" cy="-14" rx="3" ry="2" fill="#5f9a4a"/>
+      <!-- 動作狀態標籤 -->
+      <rect x="-38" y="-48" width="80" height="15" rx="3" fill="rgba(47,42,36,0.9)"/>
+      <text x="-32" y="-37" class="text-tag">採摘中 (撥土細拔)</text>
+    </g>
+
+    <text x="40" y="690" font-size="13" font-weight="bold" fill="#2f6d3a">【改善】梯田土畦 · 曬藥竹篩 · 重心轉移與工具質感</text>
+  </g>
+
+  <!-- ==================== 頂部標註與對照抬頭 ==================== -->
+  <g transform="translate(20, 15)">
+    <rect width="1240" height="46" class="ui-hud"/>
+    <text x="16" y="30" class="text-title">LP-15 H1 採藥生活場景同鏡頭對照稿 (1280×720)</text>
+    <text x="16" y="44" class="text-muted">Base dev: d1a4dde62bc456fe3c138943401a3e33a3a0af32 ｜ 嚴格保留原東坡坐標 (1440, 788) 與藥架坐標 (896, 474)</text>
+    <rect x="940" y="10" width="280" height="26" class="badge-ann"/>
+    <text x="950" y="27" class="badge-txt">★ 改善生活痕跡 · 不改動模型座標與玩法</text>
+  </g>
+</svg>
