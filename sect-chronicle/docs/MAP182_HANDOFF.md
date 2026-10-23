@@ -1,10 +1,10 @@
 # MAP182：完整道館生活地圖設計工作包
 
-## 設計已交付；下一片LP-13尚待範圍確認（2026-10-23）
+## 設計已交付；LP-13長挑水路W1–W4已批准（2026-10-23）
 
 PR250已由非作者接受、Earth合dev dff6f310／postCI39906919235五SUCCESS。原總配置、畫風與有限預演交付完成；#182維持OPEN追蹤後續實裝。下方D25四項補修與原設計claim為歷史，不再用其啟動。PR248只保留來源／原branch／review，不再整合。
 
-擁有人已選**同生活入口先長挑水路、觀看奔波與速度差**。下一片看[#254](https://github.com/lalagrass/earth-ascension/issues/254)／[LP13工作包](LP13_HANDOFF.md)／[Gemini接手提示詞](LP13_GEMINI_PROMPT.md)：具體W1–W4仍待確認，不能沿舊設計白名單或claim接線。概念圖含人物、距離壓縮／原prompt缺失等限制保留；只接受存檔不等全圖、分層生產素材或新玩法批准。8800仍LP12 e611037。
+擁有人同意下一片**同生活入口先長挑水路、觀看奔波與速度差的W1–W4**，見[D27](DECISIONS_AND_SOURCES.md#d27lp-13-長挑水路-w1w4批准2026-10-23)／[#254](https://github.com/lalagrass/earth-ascension/issues/254)／[正式工作包](LP13_HANDOFF.md)／[Gemini提示詞](LP13_GEMINI_PROMPT.md)。只保留院落的南延水路，不採全部概念配置；不能沿舊設計白名單／claim接線。本批准文件非作者審合dev／postCI後Gemini本人新claim，不重問W1–W4。概念圖含人物、距離壓縮／原prompt缺失限制仍保留；全圖、新功能點與巡山未批准。8800仍LP12 e611037。
 
 ## D25目前接手：Gemini承接PR248設計／改圖補修
 

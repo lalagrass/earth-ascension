@@ -1,17 +1,17 @@
 # Gemini接手提示詞：LP-13 長挑水路
 
-**狀態：W1–W4待擁有人確認，本提示詞目前只能用於閱讀／評估，不可認領或寫runtime。** PO將在人類確認後更新批准文件與[#254](https://github.com/lalagrass/earth-ascension/issues/254)；該批准文件經非作者review、Earth合dev及postCI通過才解鎖。提案文件合併、PR250接受或舊prompt不解鎖本片。完整取捨／數值／白名單／驗收見[工作包](LP13_HANDOFF.md)。以下整段可複製。
+**狀態：W1–W4已由擁有人批准，見[D27](DECISIONS_AND_SOURCES.md#d27lp-13-長挑水路-w1w4批准2026-10-23)；本批准PR255經非作者review、Earth合dev及postCI通過後，Gemini可本人新認領實作。** 開工時核對[#254](https://github.com/lalagrass/earth-ascension/issues/254)的整合／postCI與有效作者，不再重問W1–W4。舊提案head5561cf4、PR250設計接受或舊prompt不解鎖本片。完整取捨／數值／白名單／驗收見[工作包](LP13_HANDOFF.md)。以下整段可複製。
 
 ```text
-你是Gemini，接手earth-ascension/sect-chronicle的LP-13長挑水路切片（#254，父單#182）。先讀根CONTRIBUTING.md、根／子專案AGENTS.md、最新issue與PR留言、LP13_HANDOFF.md及DECISIONS_AND_SOURCES.md的D26和後續批准紀錄。
+你是Gemini，接手earth-ascension/sect-chronicle的LP-13長挑水路切片（#254，父單#182）。先讀根CONTRIBUTING.md、根／子專案AGENTS.md、最新issue與PR留言、LP13_HANDOFF.md及DECISIONS_AND_SOURCES.md的D27批准及D26提案沿革。
 
-開工門檻：W1–W4須有人類確認、PO批准文件與issue一致，文件經非作者review→Earth唯一queue合dev→postCI通過。若尚未完成，只回報缺哪一項並停runtime；可以列唯讀疑點，不重問已選的長路／同入口方向，不自己補批。這則prompt不是認領、不代啟其他agent。
+W1–W4已有人類批准，不重問同一批產品決策。開工門檻是本批准PR255／#254一致，經非作者review→Earth唯一queue合dev→postCI通過；核最新證據，不能把舊提案head或PR250設計CI當此前置。若整合／CI尚未完成，只停runtime並回報缺口。這則prompt不是認領、不代啟其他agent。
 
 門檻完成後，核對當前有效作者與4h期限；用自己的獨立乾淨worktree，從最新origin/dev新codex/短分支，在#254先登記Gemini本人、精確檔案、base SHA、branch及GitHub created_at起4h UTC期限，再次確認無較早有效重疊claim才開工。不要續推#250／#248舊分支，不碰別人checkout、未提交成果或8800，不reset／force push。沿用公開素材時保留Grok／Gemini原作者與來源。
 
 目標：同一生活demo入口可看兩人在長路上真走、真挑水與成長，熟手更快，主角下一趟變快。長通勤是玩家想看的內容，不能為縮短等候偷偷加速、縮圖或提高收益。
 
-按工作包當前已批准值執行；若仍採本提案：
+按D27及工作包已批准值執行：
 - 既有1600×900院落與HOME(962,512)不搬，只向南延伸世界到1600×1350。
 - 單程water約1700、範圍1650–1750：院落→竹林→溪橋→石階／泉眼，原路返院。採藥、座位、休閒、護院與清鼠幾何保留。不直接採整張2400×1350概念配置。
 - 原速度、精力／休息、每趟產出與成長、人工改令及LP12自主政策不改。精力0仍完成本趟後休息是既有行為，不能順手改成途中休息。每趟鎖速、交付後下一趟才用新等級；不按路長多發XP。

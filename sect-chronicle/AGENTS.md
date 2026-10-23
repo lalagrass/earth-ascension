@@ -1,10 +1,10 @@
 # Coding agent 接手入口
 
-## LP-13最新規劃：長挑水路切片（W1–W4待確認，2026-10-23）
+## D27最新批准：LP-13長挑水路 W1–W4（2026-10-23）
 
-擁有人已選同生活入口的長挑水路、觀看奔波與速度差；[D26](docs/DECISIONS_AND_SOURCES.md#d26lp-13-長挑水路方向與實裝提案2026-10-23)／[#254](https://github.com/lalagrass/earth-ascension/issues/254)／[工作包](docs/LP13_HANDOFF.md)／[Gemini提示詞](docs/LP13_GEMINI_PROMPT.md)列出具體提案。保留院落，只向南延伸水路；建議1600×1350、單程1650–1750／約1700、沿原速度／精力與成長、只做必需水路圖層與鏡頭。**W1–W4尚待擁有人確認，不可認領runtime；規劃文件合併不解鎖。** 人類確認後PO更新批准文件／issue、非作者review→Earth合dev／postCI，Gemini才本人新claim／新分支。未代啟作者、不改8800。
+擁有人已同意W1–W4，見[D27](docs/DECISIONS_AND_SOURCES.md#d27lp-13-長挑水路-w1w4批准2026-10-23)／[#254](https://github.com/lalagrass/earth-ascension/issues/254)／[正式工作包](docs/LP13_HANDOFF.md)／[Gemini提示詞](docs/LP13_GEMINI_PROMPT.md)。原院落／HOME保留，世界只南延1600×1350、水路單程1650–1750／約1700；原速度／每趟成長／產出與精力政策不改，明確接受0精力仍完成本趟後休息；只必需乾淨水路圖層與鏡頭薄接線，原人物與其他生活幾何／LP12控制保留。**產品前置已解除，不重問四項；本批准PR255合dev／postCI後，Gemini本人從最新dev新claim／新分支實作。** 未代啟作者、不改8800。
 
-PR250設計已接受並合dev dff6f310／postCI39906919235五SUCCESS；PR244生活LP12亦已交付，8800仍LP12 e611037。下方D25補修與舊MAP182_GEMINI_PROMPT為已完成的設計沿革，不重做或沿舊claim接線；PR248只留來源。新片保留原atlas與其他生活幾何，概念JPG不直接鋪底，不偷加速／改平衡；有限白名單、必要局部／SG快驗／根CI、桌面390與未變證據復用／摘要真exit沿新工作包。
+PR250設計已合dev dff6f310／postCI39906919235五SUCCESS；LP12／PR244已交付、8800仍LP12 e611037。下方D25舊設計prompt／補修為完成沿革、PR248只留來源，不重做或沿舊claim接線；原提案head5561cf4綠燈不取代本批准前置。新片只有限白名單／單一權威路長與60Hz，不偷加速或改平衡；必要局部／SG快驗／根CI、桌面390、未變證據復用／摘要真exit，沿120min／100min後不加範圍／達標早停，不自接下一包。
 
 ## D25最新改派：#182設計／改圖由Gemini接手（2026-10-23）
 
