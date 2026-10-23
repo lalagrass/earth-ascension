@@ -12,11 +12,12 @@ import { CLEAN_END } from './model.mjs';
 import { drawRefinedHerbPatch, drawRefinedRack, drawRefinedBasket, getRefinedBasketPlacement } from './assets/lp16/herb-decor.mjs';
 
 const SHARED = '../spikes/shared/';
+const LP17 = 'assets/lp17/';
 const t0 = performance.now();
 const scene = await (await fetch(SHARED + 'scene.json')).json();
 const template = await (await fetch('../template/actions.json')).json();
 const IDS = PEOPLE.map((p) => p.id);
-const sheets = Object.fromEntries(await Promise.all(IDS.map(async (id) => [id, await Assets.load(`../template/out/${id}.json`)])));
+const sheets = Object.fromEntries(await Promise.all(IDS.map(async (id) => [id, await Assets.load(`${LP17}${id}.json`)])));
 const animators = Object.fromEntries(IDS.map((id) => [id, createAnimator(template, sheets[id].data)]));
 const profiles = { hero: { name: scene.ui.hero.name, label: '主角', role: '初學者 · 起始腳力 Lv 1' }, cousin: { name: '熟手同伴', label: '熟手', role: '熟手 · 起始腳力 Lv 3' } };
 const R = scene.resolution;
@@ -26,8 +27,8 @@ const app = new Application();
 await app.init({ resizeTo: window, background: '#bdc791', antialias: true, autoDensity: true, resolution: Math.min(2, window.devicePixelRatio || 1) });
 $('stage').appendChild(app.canvas);
 
-const sharedFiles = [scene.background, ...scene.props.map((p) => p.file), ...scene.vats.map((v) => v.file)];
-await Assets.load(sharedFiles.map((f) => SHARED + 'assets/' + f));
+const sharedFiles = [...scene.props.map((p) => p.file), ...scene.vats.map((v) => v.file)];
+await Assets.load([LP17 + 'bg.png', ...sharedFiles.map((f) => SHARED + 'assets/' + f)]);
 const TS = (f) => Assets.get(SHARED + 'assets/' + f);
 
 // ---------- 路線（只是畫面換算：模型給「走到第幾成」，這裡換成場景座標；算法在 routes.mjs） ----------
@@ -110,7 +111,8 @@ function poseOf(id, person) {
 // ---------- 場景 ----------
 const world = new Container();
 app.stage.addChild(world);
-const bg = new Sprite(TS(scene.background));
+// LP-17：載入 Grok D32 風格青灰瓦、深木柱、石院之重繪背景
+const bg = new Sprite(Assets.get(LP17 + 'bg.png'));
 bg.scale.set(1 / R);
 world.addChild(bg);
 // 採藥小路與藥圃：LP-16 精修梯田土畦、18組藥草植株、竹籬、陶甕與靠放木鋤
@@ -153,7 +155,7 @@ for (const p of scene.props) placeSprite(p.file, p.ax, p.ay, p.w, p.h, p.x, p.y)
   b.ellipse(0, 6, w / 2 + 8, 9).fill({ color: 0x5b5a3a, alpha: 0.25 });
   b.roundRect(-w / 2 + 6, -4, 10, 10, 2).fill(0x8f8f86).roundRect(w / 2 - 16, -4, 10, 10, 2).fill(0x8f8f86);
   b.roundRect(-w / 2, -12, w, 9, 4).fill(0xb9b8ad).stroke({ width: 1.2, color: 0x7b7a70 });
-  for (const id of ['hero', 'cousin']) { const [sx] = SEATS[id].points.at(-1); b.ellipse(sx - x, -12, 11, 3.5).fill(id === 'hero' ? 0x9db0c8 : 0xa8bf9a); }
+  for (const id of ['hero', 'cousin']) { const [sx] = SEATS[id].points.at(-1); b.ellipse(sx - x, -12, 11, 3.5).fill(id === 'hero' ? 0x506e94 : 0x6e7c5a); }
   b.position.set(x, y);
   b.zIndex = y - 2;
   sorted.addChild(b);
@@ -267,13 +269,15 @@ function drawRat(g, r, now) {
 const armGs = Object.fromEntries(['hero', 'cousin'].map((id) => { const g = new Graphics(); g.visible = false; sorted.addChild(g); return [id, g]; }));
 const rot = ([x, y], deg) => { const a = deg * Math.PI / 180; return [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)]; };
 function drawArm(g, p, id) {
-  const robe = id === 'hero' ? 0x4f78a8 : 0x6c8a68, edge = id === 'hero' ? 0x34567f : 0x455d43;
+  // LP-17：與 Grok D32 主角藍短衫／堂親橄欖褐村衣、膚色協調
+  const robe = id === 'hero' ? 0x3b5f85 : 0x5a6245, edge = id === 'hero' ? 0x264260 : 0x3e462e;
+  const skin = id === 'hero' ? 0xfed8b4 : 0xdbb085, skinEdge = id === 'hero' ? 0xe2ae86 : 0xbd8e64;
   const sh = rot(p.shoulder || SHOULDER, p.lean), el = rot(p.elbow, p.lean * 0.5), hd = rot(p.hand, p.lean * 0.3);
   g.clear();
   g.moveTo(...sh).lineTo(...el).lineTo(...hd).stroke({ width: 8.4, color: edge, cap: 'round', join: 'round' });
   g.moveTo(...sh).lineTo(...el).lineTo(...hd).stroke({ width: 6.4, color: robe, cap: 'round', join: 'round' });
   const a = p.palm * Math.PI / 180, c = Math.cos(a), s = Math.sin(a), pt = (x, y) => [hd[0] + x * c - y * s, hd[1] + x * s + y * c];
-  g.poly([...pt(-0.5, -2.8), ...pt(7, -2.8), ...pt(7, 2.8), ...pt(-0.5, 2.8)]).fill(0xf2cfa8).stroke({ width: 0.9, color: 0xb98b62 });
+  g.poly([...pt(-0.5, -2.8), ...pt(7, -2.8), ...pt(7, 2.8), ...pt(-0.5, 2.8)]).fill(skin).stroke({ width: 0.9, color: skinEdge });
 }
 
 const vatV = scene.vats[1];
