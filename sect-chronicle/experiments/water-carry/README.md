@@ -42,4 +42,5 @@
 - `hero.json`／`cousin.json` 與 `assets/lp17/` **逐字相同**（幀數、幀名、rect、anchor、hitbox、attach），只換 `meta.app`／`meta.source`；`app.mjs` 改讀 `ART`。
 - `bg.png`＝LP17 bg，只把原道館建物範圍（990–1510 × 186–452）換回同畫法無建物底，再放手繪正堂／側屋；院坪與功能點不動。
 - `scenery.mjs` 的竹叢與潭邊山石改用可選 `art` 貼圖，位置／zIndex 不變，未傳 `art` 時沿用原 Graphics。
+- 補修（review 5632022434）：herbHand 站姿空手、herbGather 蹲採不帶簍（動態簍唯一）、rest 席地坐；身高實量對齊 LP17 幀；掌法肩點由 `meta.palmShoulder` 平移手臂。
 - LP17 素材保留為基線，未覆寫。

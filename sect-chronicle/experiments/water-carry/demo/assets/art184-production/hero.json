@@ -991,6 +991,16 @@
     ]
    }
   },
-  "source": "design/art184-production（D35 Grok 手繪）＋LP17 POSE 動態／契約"
+  "source": "design/art184-production（D35 Grok 手繪）＋LP17 POSE 動態／契約",
+  "palmShoulder": {
+   "herbHand": [
+    -0.2,
+    -60.8
+   ],
+   "herbGather": [
+    3.5,
+    -45
+   ]
+  }
  }
 }

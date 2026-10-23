@@ -271,9 +271,13 @@ const armGs = Object.fromEntries(['hero', 'cousin'].map((id) => { const g = new 
 const rot = ([x, y], deg) => { const a = deg * Math.PI / 180; return [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)]; };
 function drawArm(g, p, id) {
   // LP-17：與 Grok D32 主角藍短衫／堂親橄欖褐村衣、膚色協調
-  const robe = id === 'hero' ? 0x3b5f85 : 0x5a6245, edge = id === 'hero' ? 0x264260 : 0x3e462e;
-  const skin = id === 'hero' ? 0xfed8b4 : 0xdbb085, skinEdge = id === 'hero' ? 0xe2ae86 : 0xbd8e64;
-  const sh = rot(p.shoulder || SHOULDER, p.lean), el = rot(p.elbow, p.lean * 0.5), hd = rot(p.hand, p.lean * 0.3);
+  // D35：袖色對齊 Grok 手繪新皮（主角青藍短襖／熟手褐麻衣）
+  const robe = id === 'hero' ? 0x3b5f85 : 0x7a6646, edge = id === 'hero' ? 0x264260 : 0x4e4030;
+  const skin = id === 'hero' ? 0xf3c9a4 : 0xd6a77c, skinEdge = id === 'hero' ? 0xd6a47e : 0xb0805a;
+  // 新皮肩點與舊 LP17 不同：sheet meta.palmShoulder 給實量肩點，整隻手臂（肩／肘／手）一起平移，掌法姿勢表與命中不動
+  const sh0 = p.shoulder || SHOULDER, ns = sheets[id].data.meta.palmShoulder?.[p.base];
+  const dv = ns ? [ns[0] - sh0[0], ns[1] - sh0[1]] : [0, 0], mv = ([x, y]) => [x + dv[0], y + dv[1]];
+  const sh = rot(mv(sh0), p.lean), el = rot(mv(p.elbow), p.lean * 0.5), hd = rot(mv(p.hand), p.lean * 0.3);
   g.clear();
   g.moveTo(...sh).lineTo(...el).lineTo(...hd).stroke({ width: 8.4, color: edge, cap: 'round', join: 'round' });
   g.moveTo(...sh).lineTo(...el).lineTo(...hd).stroke({ width: 6.4, color: robe, cap: 'round', join: 'round' });

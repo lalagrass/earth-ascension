@@ -39,10 +39,16 @@
 - UI 占用區為目視量測框，非 DOM 實測。
 - 光源為左上，與 D32 一致；dojo v1 因紅柱高彩度不協調已棄用。
 
-## B（runtime 接線）
+## B（runtime 接線）—歷史紀錄（已解除）
 
-**blocked**：等 #274／LP17 最終非作者接受→Earth 合 dev→postCI 成功。本目錄之外未改任何檔案。
+~~blocked~~（歷史）：當時在等 #274／LP17 最終非作者接受→Earth 合 dev→postCI。前置已在 dev `28bb2e7` 完成，B 已實裝（見下）。
 
 ## B（實裝）
 
 `demo/tools/export-art184.js` → `demo/assets/art184-production/`：人物 sheet（契約與 LP17 相同）、bg（無殘影道館替換）、竹叢與三種山石 kit。預覽見 `export/preview/`（contact-sheets、bg-dojo、flow-dojo、flow-long-route）。已知限制：人物為單張姿勢＋剪切步態，非逐幀手繪；山石 kit 比原 Graphics 略大。
+
+### B 補修（review 5632022434 兩 P2）
+
+- **動作／工具語義**：herbHand＝站姿空手（交藥、掌法起手／收勢底圖）；herbGather＝蹲採，烘焙時挖掉原圖自帶竹簍（app.placeBasket 的動態簍是唯一的簍）；rest（熟手）＝席地坐（正面上身＋衣襬落地，同 LP17 rest 構圖），不再和採藥共用一張。熟手側身原圖本來就朝右，修正誤翻面。
+- **比例／掛點**：站姿／蹲姿高度改為實量 LP17 同名幀 alpha（主角 173／134 px、熟手 169／130 px），腳底對齊保留的 anchor／hitbox。掌法手臂改讀 sheet `meta.palmShoulder`（新圖實量肩點），app 把肩／肘／手一起平移，PALM_POSE 表、命中與模型不改。
+- 對照：`export/preview/fix-{hero,cousin}-lp17-vs-new.png`（上 LP17、下新皮；紅＝hitbox、藍＝腳底、洋紅＝掌法肩點）、`fix-flow-herb-palm.png`（真 app：蹲採／站姿交藥／背簍回程／起手／出掌／收勢）。

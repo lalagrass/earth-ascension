@@ -18,13 +18,17 @@ const OUT = path.join(ROOT, 'demo/assets/art184-production');
 const uri = (f) => 'data:image/png;base64,' + fs.readFileSync(f).toString('base64');
 
 // 動作 → 手繪姿態（flip：原圖朝左者翻成朝右，與 LP17 sheet 同向；播放端再依 face 翻面）
+// h／ch：站姿／蹲姿不透明高度（sheet px），取自 LP17 同名幀 alpha（idle-0 173／169、herbGather-0 134／130），讓新皮對齊保留的 hitbox／肩點／簍掛點。
+// cut：蹲採原圖自帶的竹簍（原圖座標 [x0,y0,x1,y1]，翻面前）——app.placeBasket 已畫動態簍，烘焙時挖掉，避免重複工具。
 const LOOK = {
-  hero: { h: 112, idle: ['hero_front_idle', 0], side: ['hero_side_idle', 1], carry: ['hero_side_carry', 1], backCarry: ['hero_back_carry', 0], back: ['hero_back_idle', 0], herb: ['hero_side_herb', 0] },
-  cousin: { h: 120, idle: ['senior_front_idle', 0], side: ['senior_side_idle', 1], carry: ['senior_side_carry', 1], backCarry: ['senior_back_carry', 0], back: ['senior_back_idle', 0], herb: ['senior_side_herb', 1] },
+  hero: { h: 173, ch: 134, idle: ['hero_front_idle', 0], side: ['hero_side_idle', 1], carry: ['hero_side_carry', 1], backCarry: ['hero_back_carry', 0], back: ['hero_back_idle', 0], herb: ['hero_side_herb', 0], cut: [212, 286, 365, 385] },
+  cousin: { h: 169, ch: 130, idle: ['senior_front_idle', 0], side: ['senior_side_idle', 0], carry: ['senior_side_carry', 0], backCarry: ['senior_back_carry', 0], back: ['senior_back_idle', 0], herb: ['senior_side_herb', 1], cut: [0, 286, 136, 371] },
 };
-const ACTION = { idle: 'idle', walkEmpty: 'carry', dip: 'carry', walkLoaded: 'backCarry', walkGrown: 'backCarry', pour: 'carry', rest: 'herb',
-  herbWalk: 'side', herbGather: 'herb', herbWalkBack: 'back', herbHand: 'herb', gaze: 'back', stretch: 'idle' };
-const CROUCH = 0.6; // 蹲姿高度／站姿高度（與 design manifest 同）
+// 語義沿 LP17：herbHand＝站姿空手交藥（掌法起手／收勢的底圖）、herbGather＝蹲採（不帶簍）、rest＝席地坐（上身＋衣襬落地）。
+const ACTION = { idle: 'idle', walkEmpty: 'carry', dip: 'carry', walkLoaded: 'backCarry', walkGrown: 'backCarry', pour: 'carry', rest: 'rest',
+  herbWalk: 'side', herbGather: 'herb', herbWalkBack: 'back', herbHand: 'side', gaze: 'back', stretch: 'idle' };
+// 掌法疊圖的肩點（場景單位，相對腳底、朝右），依上面縮放後在新圖上量得；app 以「新肩點−舊肩點」平移整隻手臂。
+const PALM_SHOULDER = { hero: { herbHand: [-0.2, -60.8], herbGather: [3.5, -45] }, cousin: { herbHand: [-1, -61], herbGather: [1.2, -41] } };
 const WALK = new Set(['walkEmpty', 'walkLoaded', 'walkGrown', 'herbWalk', 'herbWalkBack']);
 
 (async () => {
@@ -48,25 +52,39 @@ const WALK = new Set(['walkEmpty', 'walkLoaded', 'walkGrown', 'herbWalk', 'herbW
 
     for (const id of ['hero', 'cousin']) {
       const sheet = JSON.parse(fs.readFileSync(path.join(LP17, `${id}.json`), 'utf8'));
-      const L = LOOK[id], need = new Set(Object.values(ACTION).map((k) => L[k][0]));
+      const L = LOOK[id], need = new Set(Object.values(ACTION).filter((k) => k !== 'rest').map((k) => L[k][0]));
       const srcs = Object.fromEntries([...need].map((n) => [n, uri(path.join(SRC, n + '.png'))]));
-      const png = await page.evaluate(async ({ sheet, srcs, L, ACTION, CROUCH, WALK, lp }) => {
+      const png = await page.evaluate(async ({ sheet, srcs, L, ACTION, WALK, lp }) => {
         const m = sheet.meta, R = Number(m.scale), ax = m.anchorPx.x, ay = m.anchorPx.y;
         const lpImg = await img(lp), art = {};
         for (const [k, s] of Object.entries(srcs)) art[k] = await img(s);
+        { // 挖掉蹲採圖自帶竹簍
+          const im = art[L.herb[0]], cc = document.createElement('canvas'); cc.width = im.width; cc.height = im.height;
+          const gg = cc.getContext('2d'); gg.drawImage(im, 0, 0); const [x0, y0, x1, y1] = L.cut; gg.clearRect(x0, y0, x1 - x0, y1 - y0);
+          art[L.herb[0]] = cc;
+        }
         const idleTop = topOf(lpImg, sheet.frames['idle-0'].frame);
         const c = document.getElementById('c'); c.width = m.size.w; c.height = m.size.h;
         const g = c.getContext('2d'); g.clearRect(0, 0, c.width, c.height); g.imageSmoothingQuality = 'high';
         for (const [name, f] of Object.entries(sheet.frames)) {
           const [act, idx] = [name.replace(/-\d+$/, ''), Number(name.split('-').pop())];
+          const fx = f.frame.x + ax, fy = f.frame.y + ay; // 腳底
+          if (ACTION[act] === 'rest') { // 席地坐：正面上身 64% 落到腳底，衣襬一圈貼地（同 LP17 rest 構圖）
+            const im = art[L.idle[0]], s = L.h / im.height, w = im.width * s, uh = im.height * 0.64;
+            const pick = im.getContext ? im : (() => { const t = document.createElement('canvas'); t.width = im.width; t.height = im.height; t.getContext('2d').drawImage(im, 0, 0); return t; })();
+            const px = pick.getContext('2d').getImageData(Math.round(im.width * 0.5), Math.round(im.height * 0.55), 1, 1).data;
+            g.save(); g.beginPath(); g.rect(f.frame.x, f.frame.y, f.frame.w, f.frame.h); g.clip();
+            g.fillStyle = `rgb(${px[0]},${px[1]},${px[2]})`; g.beginPath(); g.ellipse(fx, fy - 5, w * 0.48, 7, 0, 0, Math.PI * 2); g.fill();
+            g.drawImage(im, 0, 0, im.width, uh, fx - w / 2, fy - 4 - uh * s, w, uh * s);
+            g.restore(); continue;
+          }
           const [src, flip] = L[ACTION[act]], im = art[src];
           const crouch = ACTION[act] === 'herb';
-          const hgt = L.h * (crouch ? CROUCH : 1), s = hgt / im.height, w = im.width * s;
+          const hgt = crouch ? L.ch : L.h, s = hgt / im.height, w = im.width * s;
           // POSE 起伏：LP17 同名幀身體頂端相對 idle 的位移（蹲姿不套，限 ±8px）
           const bob = crouch ? 0 : Math.max(-8, Math.min(8, topOf(lpImg, f.frame) - idleTop));
           const sq = act === 'dip' ? 0.9 : act === 'stretch' && idx % 2 ? 1.04 : 1; // 取水下蹲／伸展：只做垂直伸縮
           const tilt = act === 'pour' ? -0.12 : 0;
-          const fx = f.frame.x + ax, fy = f.frame.y + ay; // 腳底
           const top = fy - hgt * sq;
           g.save(); g.beginPath(); g.rect(f.frame.x, f.frame.y, f.frame.w, f.frame.h); g.clip();
           const draw = (sy, sh, shear) => { // 把原圖 [sy, sy+sh) 這段畫到對應位置，可左右錯步
@@ -83,10 +101,11 @@ const WALK = new Set(['walkEmpty', 'walkLoaded', 'walkGrown', 'herbWalk', 'herbW
           g.restore();
         }
         return c.toDataURL('image/png');
-      }, { sheet, srcs, L, ACTION, CROUCH, WALK: [...WALK], lp: uri(path.join(LP17, `${id}.png`)) });
+      }, { sheet, srcs, L, ACTION, WALK: [...WALK], lp: uri(path.join(LP17, `${id}.png`)) });
       fs.writeFileSync(path.join(OUT, `${id}.png`), Buffer.from(png.split(',')[1], 'base64'));
       sheet.meta.app = 'earth-ascension demo/tools/export-art184.js';
       sheet.meta.source = 'design/art184-production（D35 Grok 手繪）＋LP17 POSE 動態／契約';
+      sheet.meta.palmShoulder = PALM_SHOULDER[id]; // 視覺掛點：只供掌法疊圖平移，幀框／hitbox／attach 不變
       fs.writeFileSync(path.join(OUT, `${id}.json`), JSON.stringify(sheet, null, 1) + '\n');
       console.log(`${id}: ${Object.keys(sheet.frames).length} 幀，sheet ${sheet.meta.size.w}×${sheet.meta.size.h}，契約沿用 LP17`);
     }
