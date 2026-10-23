@@ -1,5 +1,7 @@
 # LP-16：美術與採藥視覺整合工作包
 
+**LP16已完成**：#271／PR273合dev `a363c7b`，postCI39976283668五成功，同8800已更新。下文保留原範圍與驗收沿革，不再認領。下一包讀[LP17工作包](LP17_HANDOFF.md)／[Gemini提示詞](LP17_GEMINI_PROMPT.md)。擁有人已取消舊試玩副本，[單版本政策](VALIDATION_POLICY.md#單一正式試玩版本)優先於下方保留LP14要求，Git歷史／來源保留。
+
 追蹤 [#271](https://github.com/lalagrass/earth-ascension/issues/271)，主筆 Gemini；[可貼提示詞](LP16_GEMINI_PROMPT.md)。擁有人要求將已接受的 #267／#270 整理成同一生活入口的下一個工程包，保留長通勤與速度差。本文件界定有限視覺採用，不批准新玩法或完整地圖改建。依 [D31整包流程](PARALLEL_HANDOFF.md#d31單一主筆完整工作包與集中審查)與 [VALIDATION_POLICY](VALIDATION_POLICY.md)：一位作者完整完成素材、畫面接線、必要文件與自校，一個 PR 集中 review，不再拆畫稿／素材／接線交接或逐張審批。
 
 ## 已核對前置與開工點

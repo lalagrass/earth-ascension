@@ -1,5 +1,11 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+## D34目前核心包與單版本試玩
+
+Gemini下一包[#274／LP17](LP17_HANDOFF.md)／[提示詞](LP17_GEMINI_PROMPT.md)同時交道館／長路環境、雙人活動素材及薄接線，一位主筆一個工程PR集中review。LP16已交付，本文件非作者接受／Earth合dev／postCI後本人最新dev新claim，不續舊租期。原長通勤與速度／模型／動作契約保留，詳白名單；沒有另派Grok重疊改同批檔案。
+
+擁有人已改成[只留一個正式試玩版](VALIDATION_POLICY.md#單一正式試玩版本)：由PO在工程接受／合dev／postCI後更新同8800、清自有舊部署副本，不保留回退入口／常駐舊快照／備份tar。歷史段落保留上一版的要求不再適用；Git／作者worktree與必要證據保留。D31與精簡驗證／清理照舊。
+
 ## D33目前核心作者與整合包
 
 已核#267／270合dev及各五項postCI成功；Gemini原#259收尾完成，不續舊claim。下一完整工程包為[#271／LP16](LP16_HANDOFF.md)／[提示詞](LP16_GEMINI_PROMPT.md)：本文件非作者接受／Earth合dev／postCI後，Gemini本人最新dev新claim，一位主筆同時完成局部素材、採藥視覺與長水路材質呼應、接線及必要文件，一個PR集中review。未代啟／預占，沒有另派Grok改同批檔案。
@@ -38,7 +44,7 @@
 1. 作者完成整包與自校，PR一次列3–5組驗收結果、實際head/base、少量可見證據、未完成與限制；必要文件同PR更新，不把作者自校冒充獨立review。
 2. 遊戲PO／非作者讀完整受影響diff，核對證據，**一次整理已發現阻擋清單**。錯誤資料、命令／暫停副作用、原DoD缺漏、來源不實及相容風險需補；非阻擋美化／個人偏好／可選重構標建議並集中留backlog，不邊審邊擴DoD。新head有新問題可追加，說明新差異／發現原因，不承諾只准一輪。
 3. 同一主筆集中補修，回填新head與對應結果。審查者重看差異與必要反例，復用未變結果；缺證據先指出可復用的最小補件，不一律要求作者重跑或另做一套示意稿。受影響的原驗收仍須成立。
-4. 通過後一次將ready PR與審查結論交[#67](https://github.com/lalagrass/earth-ascension/issues/67)／Earth唯一queue。Earth依根契約核範圍、head/base、當前合併結果／必要CI並squash dev，不再重做一整輪遊戲體驗驗收；若有新差異、失敗或證據疑點仍補查。queue確認postCI後，遊戲PO回填結果；runtime入口由PO按既有權限更新並保留上版。
+4. 通過後一次將ready PR與審查結論交[#67](https://github.com/lalagrass/earth-ascension/issues/67)／Earth唯一queue。Earth依根契約核範圍、head/base、當前合併結果／必要CI並squash dev，不再重做一整輪遊戲體驗驗收；若有新差異、失敗或證據疑點仍補查。queue確認postCI後，遊戲PO回填結果；runtime入口由PO按[單版本政策](VALIDATION_POLICY.md#單一正式試玩版本)更新同8800，只維持當前接受版。
 
 驗證、單一測試頁／服務、復用與收尾只引用[VALIDATION_POLICY](VALIDATION_POLICY.md)，工作包只加本次直接風險／例外。短進度是資訊，普通步驟不用等PO回覆；真正產品取捨仍交原決策者。
 
