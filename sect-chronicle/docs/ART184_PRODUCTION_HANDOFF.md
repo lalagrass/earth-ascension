@@ -1,5 +1,9 @@
 # D35：Grok場景素材與雙人造型，出圖後接續實裝
 
+## D37現在接手入口
+
+PR278 D35有限接線已接受／合dev ac7148d／postCI40004282037並更新8800；下面是歷史設計／有限交付，不等於全圖已完成。擁有人已批准[全場景水彩完整包](ART184_WATERCOLOR_HANDOFF.md)／[Grok提示詞](ART184_WATERCOLOR_GROK_PROMPT.md)：先PR282原補修接受／整合，再Grok新claim主184、182互連，一新工程PR整張地圖一致。必要架構／設計／相關功能授權以D37為準，不沿舊薄接線限制；長通勤、速度差與玩法保留，母單其餘backlog仍OPEN。
+
 主追蹤 [#184](https://github.com/lalagrass/earth-ascension/issues/184)，配置關聯 [#182](https://github.com/lalagrass/earth-ascension/issues/182)；[Grok提示詞](ART184_PRODUCTION_GROK_PROMPT.md)。擁有人於2026-10-24批准保留Gemini完成#274、Grok先獨立出圖，LP17通過後同一主筆接續實裝；最後補充「不用再限制時間四小時，就做到完成」。**本包不設4h／2h執行總上限、100分鐘凍結或按時停止；完成下面A–D才算完成。**
 
 ## 完整交付與並行方式
