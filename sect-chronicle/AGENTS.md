@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## D35最新：Grok獨立素材後接實裝，做到完成
+
+擁有人保留Gemini完成#274，另批准[#184完整工作包](docs/ART184_PRODUCTION_HANDOFF.md)／[Grok提示詞](docs/ART184_PRODUCTION_GROK_PROMPT.md)。D35文件接受／Earth合dev／postCI後Grok本人184新claim，A僅design/art184-production/**可並行出圖；B等LP17最終非作者接受／Earth合dev／postCI後，同Grok依新白名單接續同一主PR。不要改Gemini作者／scope／原期限或未公開成果，182只互連。
+
+本Grok包不設4h／2h執行總上限、100min凍結，按A–D做到完成；根契約4h是可附新證據續的認領租期，不是交付倒數。受阻／額度中斷保存成果與續接點，不空等或自啟agent／排程。長通勤／原模型速度／動作契約、D31整包集中review、精簡驗證與單一試玩版本照舊，未代啟Grok。下方D34的Gemini2h不套用這個Grok包。
+
 ## D34目前下一包：場景與雙人美術，正式試玩只留一版
 
 LP16／PR273已合dev `a363c7b`／postCI39976283668五成功，#271結案。下一包[#274／LP17工作包](docs/LP17_HANDOFF.md)／[Gemini提示詞](docs/LP17_GEMINI_PROMPT.md)：道館院落、長路環境與兩位活動人物一起改善，一位Gemini完整素材／烘焙／接線PR集中review。本文件非作者接受／Earth合dev／postCI後本人最新dev新claim，不沿LP16舊prompt。長通勤、原幾何／速度／成長與動作契約保留；全台地搬遷／女孩AI／新玩法延後。

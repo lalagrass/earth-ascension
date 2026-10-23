@@ -1,5 +1,7 @@
 # Grok接手提示詞：完整場景與三人人物設計
 
+**此D32提示詞已交付，保留沿革。** 新工作改貼[D35 Grok提示詞](ART184_PRODUCTION_GROK_PROMPT.md)／[工作包](ART184_PRODUCTION_HANDOFF.md)：保留Gemini274，Grok先獨立素材、LP17通過後同主筆接實裝；不設4h總執行上限，根claim租期可有證據續。勿沿下段舊scope／分支／期限開工。
+
 擁有人已批准[D32](DECISIONS_AND_SOURCES.md#d32grok完整場景與三人人物設計批准2026-10-23)，主追蹤[#184](https://github.com/lalagrass/earth-ascension/issues/184)、配置[#182](https://github.com/lalagrass/earth-ascension/issues/182)。以下可貼給Grok Bot／實際使用的Grok入口，並不表示已啟動或認領。完整範圍以[正式工作包](ART184_SCENE_TRIO_HANDOFF.md)為準。
 
 ```text

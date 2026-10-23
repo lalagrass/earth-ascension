@@ -1,5 +1,7 @@
 # #184：Grok完整道館生活場景與三人人物設計包
 
+**D32原概念包已由PR270交付接受。** 2026-10-24擁有人新批准可採用素材與同Grok後續實裝，改讀[D35工作包](ART184_PRODUCTION_HANDOFF.md)／[新prompt](ART184_PRODUCTION_GROK_PROMPT.md)。原圖／來源保留，不重開舊claim；Grok新包取消執行總時限、先A獨立出圖，B等LP17通過。本頁舊4h／Gemini接整合的安排不適用新包。
+
 狀態：擁有人已批准[D32](DECISIONS_AND_SOURCES.md#d32grok完整場景與三人人物設計批准2026-10-23)。主追蹤[#184](https://github.com/lalagrass/earth-ascension/issues/184)，配置[#182](https://github.com/lalagrass/earth-ascension/issues/182)，人物／小說[#251](https://github.com/lalagrass/earth-ascension/issues/251)。預定設計主筆Grok，尚未代啟或認領；[可貼提示詞](ART184_GROK_BOT_PROMPT.md)。
 
 ## 一個目標與自由範圍
