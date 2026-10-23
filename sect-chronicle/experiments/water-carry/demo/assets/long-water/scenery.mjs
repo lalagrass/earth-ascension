@@ -59,18 +59,35 @@ export function buildLongWaterScenery({ world, ground, sorted }) {
   // 中心踏跡
   ground.poly(flatPts, false).stroke({ width: 9, color: 0xe6d6aa, join: 'round', cap: 'round' });
 
-  // 坡段石階 (防滑鋪石)：
+  // 坡段石階 (防滑鋪石，LP-16 依 Grok 暖灰石、鑿面踏步與苔綠色調精修)：
   // 院南斜坡段 (點 1 到 點 3)
   for (let i = 1; i <= 3; i++) {
     const [x, y] = WATER_POINTS[i];
-    ground.ellipse(x, y, 14, 6).fill(0x8a8474).stroke({ width: 1.5, color: 0x686456 });
+    // 基底暗色襯托與踏面鑿石
+    ground.ellipse(x, y + 1, 15, 6.5).fill(0x545248);
+    ground.ellipse(x, y, 14, 5.5).fill(0x888274).stroke({ width: 1.2, color: 0x646054 });
+    // 踏步頂面微量光影與暖灰石紋
+    ground.ellipse(x, y - 1, 11, 3.2).fill(0x9a9486);
+    // 階邊青苔苔蘚微飾（呼應 Grok 苔綠山居感）
+    ground.ellipse(x - 8, y, 3.5, 2).fill({ color: 0x5a6e42, alpha: 0.65 });
   }
   // 石階降坡段 (點 12 到 點 14，山崖石階鑿石階梯)
   for (let k = 0; k < 12; k++) {
     const u = k / 12;
     const [x1, y1] = WATER_POINTS[12], [x2, y2] = WATER_POINTS[14];
     const sx = x1 + (x2 - x1) * u, sy = y1 + (y2 - y1) * u;
-    ground.roundRect(sx - 12, sy - 4, 24, 7, 2).fill(0x767468).stroke({ width: 1.2, color: 0x545248 });
+    // 階梯底陰影
+    ground.roundRect(sx - 13, sy - 3.5, 26, 7.5, 2).fill(0x424036);
+    // 階梯立體鑿面
+    ground.roundRect(sx - 12, sy - 4.5, 24, 7, 2).fill(0x767468).stroke({ width: 1.1, color: 0x545248 });
+    // 踏面石板受光上緣
+    ground.rect(sx - 10, sy - 4.5, 20, 2).fill(0x8e8c80);
+    // 崖階兩緣自然苔蘚微飾
+    if (k % 2 === 0) {
+      ground.ellipse(sx - 10, sy - 2, 2.5, 2).fill({ color: 0x586c40, alpha: 0.6 });
+    } else {
+      ground.ellipse(sx + 9, sy - 1, 2.5, 2).fill({ color: 0x586c40, alpha: 0.6 });
+    }
   }
 
   // 3. 溪流與溪橋 (嚴格對齊水路：溪流穿過橋底，橋面完整覆蓋跨溪折線)
