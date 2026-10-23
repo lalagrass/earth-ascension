@@ -783,7 +783,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     return false;
   }
   // 停工或待恢復（rest 非空）都要離開休閒；恢復自主只清叫回，不能讓待恢復的人卡在活動點。
-  const funOver = (p) => !!p.rest || p.recall || p.guardOrder != null || !!p.fix || cleaning(p) || wants(p) || wantsUp(p) || slotFor(p);
+  // LP-12：自主清鼠意願成立時亦離開休閒，沿 fromFun 返院後在院中端點重新查驗受理。
+  const funOver = (p) => !!p.rest || p.recall || p.guardOrder != null || !!p.fix || cleaning(p) || wants(p) || wantsUp(p) || wantsClean(p) || slotFor(p);
   function goBack(p) {
     p.why = `精力恢復到 ${E.backAt}，自己回去`;
     p.motion = { mode: 'back', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level };

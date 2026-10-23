@@ -113,6 +113,33 @@ test('L2 受理：原趟交付完成後在院中端點合法才正式受理；�
   assert.ok(vHome.people.hero.cleanResult.downs >= 1, '保留擊倒結果');
 });
 
+test('L2 受理：滿庫休閒中允許自主清鼠，沿 fromFun 返院後在院中端點重新查驗並正式受理', () => {
+  const m = game();
+  m.dispatch('work:herb', 'hero');
+  m.dispatch('work:herb', 'cousin');
+  // 推進直到藥架滿庫（8/8）且主角進入休閒（fun）
+  run(m, (v, s) => s.herbs === 8 && s.people.hero.motion.mode === 'fun', ticks(600));
+  assert.equal(m.state.people.hero.motion.mode, 'fun', '主角在休閒觀景石');
+  assert.equal(m.state.clean, null);
+
+  // 在休閒中開啟自主清鼠
+  m.setAutoClean('hero', { allow: true });
+  m.step();
+  assert.equal(m.state.people.hero.cleanWant, true, 'step 結算意願成立');
+  m.step();
+  assert.equal(m.state.people.hero.motion.mode, 'fromFun', '休閒中有清鼠意願立即沿 fromFun 返院');
+  assert.equal(m.state.clean, null, '返院途中不提早占名額');
+
+  // 等待真返院並在院中端點合法正式受理
+  run(m, (v, s) => s.clean && s.clean.by === 'hero', ticks(30));
+  assert.equal(m.state.clean.src, 'auto', '由院中端點正式受理，來源為 auto');
+  assert.equal(m.state.people.hero.motion.mode, 'toRat', '出發前往弱鼠');
+
+  // 等待清理完成並真返院
+  run(m, (v, s) => s.clean === null, ticks(60));
+  assert.ok(m.state.people.hero.cleanResult.downs >= 1, '保留擊倒成果');
+});
+
 test('L2 優先序：停工、LP05 叫回、必要恢復優先於自主清鼠', () => {
   const m = game();
   m.setAutoClean('hero', { allow: true });
