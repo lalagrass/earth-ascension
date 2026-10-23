@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <style>
+      .bg { fill: #f5eedb; }
+      .box { fill: #fffaf0; stroke: #8c7b64; stroke-width: 1.5; rx: 6px; }
+      .title { font-family: system-ui, sans-serif; font-size: 15px; font-weight: bold; fill: #2c251e; }
+      .sub { font-family: system-ui, sans-serif; font-size: 11px; fill: #6e5d4b; }
+      .col-title { font-family: system-ui, sans-serif; font-size: 13px; font-weight: bold; fill: #3b5d85; }
+      .row-lbl { font-family: system-ui, sans-serif; font-size: 11px; fill: #5a4a3a; font-weight: 500; }
+      .val-bold { font-family: system-ui, sans-serif; font-size: 11px; font-weight: bold; fill: #2c251e; }
+      .val-adv { font-family: system-ui, sans-serif; font-size: 11px; font-weight: bold; fill: #2f6d3a; }
+      .bar-bg { fill: #e8dcc2; rx: 3px; }
+      .bar-hero { fill: #3b5d85; rx: 3px; }
+      .bar-cousin { fill: #6a5280; rx: 3px; }
+      .badge-model { fill: #e6f4ea; stroke: #137333; stroke-width: 1; rx: 3px; }
+      .badge-visual { fill: #fef7e0; stroke: #b06000; stroke-width: 1; rx: 3px; }
+      .badge-txt-m { font-family: system-ui, sans-serif; font-size: 9px; font-weight: bold; fill: #137333; }
+      .badge-txt-v { font-family: system-ui, sans-serif; font-size: 9px; font-weight: bold; fill: #b06000; }
+      .note-txt { font-family: system-ui, sans-serif; font-size: 10px; fill: #8a6416; }
+    </style>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="800" height="450" class="bg"/>
+
+  <!-- 抬頭與說明 -->
+  <text x="25" y="30" class="title">LP-15 H3 初學 vs 熟手同路徑動作與成長對照 (800×450)</text>
+  <text x="25" y="46" class="sub">同一採藥路徑 (實長 515.2) ｜ 同一 1× 基準倍率 ｜ 嚴格區分「接受版模型真值」與「設計提案／待接線」</text>
+
+  <!-- 主對照卡片 (初學者 vs 熟練者) -->
+  <g transform="translate(25, 60)">
+    <!-- 卡片本體 -->
+    <rect width="750" height="280" class="box"/>
+
+    <!-- 表頭欄位 -->
+    <rect x="15" y="12" width="220" height="26" fill="#eee4cb" rx="4"/>
+    <text x="25" y="29" class="col-title">比較維度與規範依據</text>
+
+    <rect x="250" y="12" width="240" height="26" fill="#e2ebf5" rx="4"/>
+    <text x="260" y="29" class="col-title">初學者：主角 (Lv 1)</text>
+
+    <rect x="505" y="12" width="230" height="26" fill="#ebe2f5" rx="4"/>
+    <text x="515" y="29" font-family="system-ui, sans-serif" font-size="13px" font-weight="bold" fill="#6a5280">熟練者：堂哥 (Lv 3)</text>
+
+    <!-- 項目 1：空手去程速度 -->
+    <rect x="25" y="47" width="56" height="15" class="badge-model"/>
+    <text x="29" y="58" class="badge-txt-m">模型真值</text>
+    <text x="86" y="59" class="row-lbl">去程速度 (emptySpeed)</text>
+    <text x="260" y="59" class="val-bold">60.0 單位／秒 <tspan font-weight="normal" fill="#6e5d4b">(去程 8.59 秒)</tspan></text>
+    <rect x="260" y="65" width="160" height="5" class="bar-bg"/>
+    <rect x="260" y="65" width="115" height="5" class="bar-hero"/>
+
+    <text x="515" y="59" class="val-adv">74.4 單位／秒 <tspan font-weight="normal" fill="#6e5d4b">(去程 6.92 秒 · 快 24%)</tspan></text>
+    <rect x="515" y="65" width="160" height="5" class="bar-bg"/>
+    <rect x="515" y="65" width="143" height="5" class="bar-cousin"/>
+
+    <!-- 項目 2：負重回程速度 -->
+    <rect x="25" y="87" width="56" height="15" class="badge-model"/>
+    <text x="29" y="98" class="badge-txt-m">模型真值</text>
+    <text x="86" y="99" class="row-lbl">回程速度 (loadSpeed)</text>
+    <text x="260" y="99" class="val-bold">40.0 單位／秒 <tspan font-weight="normal" fill="#6e5d4b">(負重 12.88 秒)</tspan></text>
+    <rect x="260" y="105" width="160" height="5" class="bar-bg"/>
+    <rect x="260" y="105" width="95" height="5" class="bar-hero"/>
+
+    <text x="515" y="99" class="val-adv">52.0 單位／秒 <tspan font-weight="normal" fill="#6e5d4b">(負重 9.91 秒 · 快 30%)</tspan></text>
+    <rect x="515" y="105" width="160" height="5" class="bar-bg"/>
+    <rect x="515" y="105" width="124" height="5" class="bar-cousin"/>
+
+    <!-- 項目 3：動作時序與階段 -->
+    <rect x="25" y="127" width="56" height="15" class="badge-model"/>
+    <text x="29" y="138" class="badge-txt-m">模型真值</text>
+    <text x="86" y="139" class="row-lbl">作業耗時 (Gather+Deliver)</text>
+    <text x="260" y="139" class="val-bold">採摘 4.0s + 交付 4.0s = 8.0s</text>
+    <text x="260" y="152" class="sub">模型階段：herbGather(4s) / herbDeliver(4s)</text>
+
+    <text x="515" y="139" class="val-adv">採摘 4.0s + 交付 4.0s = 8.0s</text>
+    <text x="515" y="152" class="sub">動作時長完全相同，維持同一規則常數</text>
+
+    <!-- 項目 4：單趟名義總耗時 -->
+    <rect x="25" y="167" width="56" height="15" class="badge-model"/>
+    <text x="29" y="178" class="badge-txt-m">模型真值</text>
+    <text x="86" y="179" class="row-lbl">名義單趟總耗時 (路長 515.2)</text>
+    <text x="260" y="179" font-size="12px" font-weight="bold" fill="#3b5d85">29.48 秒 <tspan font-size="10px" font-weight="normal" fill="#6e5d4b">(8.59 + 4 + 12.88 + 4)</tspan></text>
+    <text x="260" y="193" class="sub">交付那一 tick 藥架草藥 +1 (tripsToNext[0]=1 升級)</text>
+
+    <text x="515" y="179" font-size="12px" font-weight="bold" fill="#2f6d3a">24.85 秒 <tspan font-size="10px" font-weight="normal" fill="#6e5d4b">(6.92 + 4 + 9.91 + 4 · 快 4.63s)</tspan></text>
+    <text x="515" y="193" class="sub">交付那一 tick 藥架草藥 +1 (固定不溢出)</text>
+
+    <!-- 項目 5：身體姿態與步頻節奏 -->
+    <rect x="25" y="210" width="56" height="15" class="badge-visual"/>
+    <text x="29" y="221" class="badge-txt-v">視覺提案</text>
+    <text x="86" y="222" class="row-lbl">軀幹重心與步態質感</text>
+    <text x="260" y="222" class="val-bold">前傾 8° · 步伐沉重 · 步頻 130ms/frame</text>
+    <text x="260" y="236" class="sub">負重時肩背微沉，簍中草藥隨步態起伏晃動</text>
+
+    <text x="515" y="222" class="val-adv">前傾 5° · 步伐穩健 · 步頻 105ms/frame</text>
+    <text x="515" y="236" class="sub">重心平穩起伏小，步幅開展自如，行進流暢</text>
+
+    <!-- 項目 6：採摘細部動作呈現 -->
+    <rect x="25" y="250" width="56" height="15" class="badge-visual"/>
+    <text x="29" y="261" class="badge-txt-v">視覺提案</text>
+    <text x="86" y="262" class="row-lbl">採摘姿態 (4s 內 k 演繹)</text>
+    <text x="260" y="262" class="val-bold">k &lt; 0.5 撥土細拔 (2s) → k ≥ 0.5 收整入簍 (2s)</text>
+    <text x="515" y="262" class="val-adv">熟稔撥土摘取，手法乾脆俐落，同在 4s 內切換</text>
+  </g>
+
+  <!-- 底部規格註記 -->
+  <g transform="translate(25, 352)">
+    <rect width="750" height="84" class="box" fill="#fffdfa"/>
+    <text x="16" y="20" font-size="12px" font-weight="bold" fill="#2c251e">★ 成長反饋保證與模型事實邊界 (嚴守 D29 / VALIDATION_POLICY)</text>
+    <text x="16" y="38" class="sub">1. 【模型事實】：空手 60/74.4、負重 40/52、路長 515.2、動作各 4s，名義單趟 29.48s vs 24.85s，主角完成 1 趟即升 Lv 2 (tripsToNext[0]=1)。</text>
+    <text x="16" y="54" class="sub">2. 【視覺提案】：8°/5° 重心、步頻 frameMs (130ms vs 105ms) 與掛點均為「視覺設計提案／待接線」，不修改 model.mjs 亦不跑長模擬。</text>
+    <text x="16" y="70" class="note-txt">3. 速度差異完全源自已有之物理速度，不以倍率或人工加速偽造節奏；藥架產出每趟精確 +1 份藥，無數值副作用。</text>
+  </g>
+</svg>
