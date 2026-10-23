@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" width="360" height="220">
+  <!-- LP-13 谷底深潭與新泉眼掛點（清潭、青苔石岩、取水青石台） -->
+  <defs>
+    <radialGradient id="poolGrad" cx="45%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#4aa0b5" stop-opacity="0.95"/>
+      <stop offset="65%" stop-color="#286278" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#1a4252" stop-opacity="1"/>
+    </radialGradient>
+  </defs>
+  <!-- 深潭池壁岩石陰影 -->
+  <ellipse cx="170" cy="115" rx="150" ry="75" fill="#3a3830"/>
+  <!-- 清潭池水 -->
+  <ellipse cx="165" cy="112" rx="142" ry="68" fill="url(#poolGrad)"/>
+  <!-- 水波漣漪 -->
+  <ellipse cx="145" cy="108" rx="70" ry="24" fill="none" stroke="#7ecde0" stroke-width="2" opacity="0.6"/>
+  <ellipse cx="140" cy="106" rx="42" ry="14" fill="none" stroke="#a2e4f2" stroke-width="1.5" opacity="0.75"/>
+  <ellipse cx="138" cy="105" rx="16" ry="6" fill="#c4f4fc" opacity="0.8"/>
+  <!-- 周圍青苔溪石 -->
+  <ellipse cx="40" cy="90" rx="36" ry="24" fill="#68665a" stroke="#48463c" stroke-width="2"/>
+  <ellipse cx="50" cy="135" rx="42" ry="28" fill="#58564c" stroke="#3e3c32" stroke-width="2"/>
+  <ellipse cx="110" cy="165" rx="55" ry="32" fill="#68665a" stroke="#48463c" stroke-width="2"/>
+  <ellipse cx="230" cy="165" rx="60" ry="34" fill="#58564c" stroke="#3e3c32" stroke-width="2"/>
+  <ellipse cx="295" cy="130" rx="48" ry="30" fill="#68665a" stroke="#48463c" stroke-width="2"/>
+  <ellipse cx="280" cy="75" rx="40" ry="26" fill="#58564c" stroke="#3e3c32" stroke-width="2"/>
+  <ellipse cx="190" cy="52" rx="58" ry="25" fill="#605e52" stroke="#444238" stroke-width="2"/>
+  <ellipse cx="100" cy="58" rx="44" ry="22" fill="#545248" stroke="#3a3830" stroke-width="2"/>
+  <!-- 取水石台 (人物站在右上方靠近泉眼之處) -->
+  <ellipse cx="240" cy="120" rx="45" ry="22" fill="#787a70" stroke="#505248" stroke-width="2"/>
+  <ellipse cx="240" cy="116" rx="38" ry="16" fill="#888a80"/>
+  <!-- 取水點標記 (對齊場景座標 x:352, y:1245) -->
+  <circle cx="240" cy="116" r="5" fill="#c4452d"/>
+  <text x="250" y="112" font-family="sans-serif" font-size="12" fill="#fff" font-weight="bold">泉眼掛點</text>
+</svg>
