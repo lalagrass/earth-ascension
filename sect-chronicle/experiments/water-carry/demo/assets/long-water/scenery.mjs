@@ -1,6 +1,6 @@
 // LP-13 長挑水路南段場景渲染建構模組（PixiJS 原創幾何與分層）
 // 涵蓋 1600×1350 延伸地面、長水路路面步石、竹林、溪流溪橋前後遮擋與谷底深潭新泉眼。
-import { Graphics, Container } from '../../vendor/pixi.min.mjs';
+import { Graphics, Container, Sprite } from '../../vendor/pixi.min.mjs';
 import { WATER_POINTS, WORLD_SIZE } from '../../water-layout.mjs';
 
 // 匯出溪流與橋面幾何，供驗收測試與除錯同源驗證
@@ -27,7 +27,18 @@ export const BRIDGE_DECK_POLY = Object.freeze([
   [775, 1006],
 ]);
 
-export function buildLongWaterScenery({ world, ground, sorted }) {
+// D35（#184）：art 為可選的手繪貼圖 { bamboo, boulder_l, boulder_m, boulder_s }（Texture，2x、底邊中心落地）。
+// 有就只換竹叢／山石材質，位置、zIndex 與其餘幾何完全不變；沒有則沿用原 Graphics。
+const artSprite = (tex, x, y, w) => {
+  const s = new Sprite(tex);
+  s.anchor.set(0.5, 1 - 1 / tex.height);
+  s.scale.set(w ? w / tex.width : 0.5);
+  s.position.set(x, y);
+  s.zIndex = y;
+  return s;
+};
+
+export function buildLongWaterScenery({ world, ground, sorted, art = null }) {
   // 1. 南段延伸地面底層 (y: 880 至 1350，LP-17 呼應 Grok 暖灰土與山林苔綠)
   const terrain = new Graphics();
   // 底色：山林草坡綠 (呼應 Grok 苔綠與暖土色系)
@@ -157,6 +168,12 @@ export function buildLongWaterScenery({ world, ground, sorted }) {
     [485, 890], [550, 920], [600, 935]
   ];
   for (const [bx, by] of bambooPositions) {
+    if (art?.bamboo) {
+      const sp = artSprite(art.bamboo, bx, by);
+      if ((bx * 3) % 2) sp.scale.x *= -1; // 左右變化，避免整排同一張
+      sorted.addChild(sp);
+      continue;
+    }
     const b = new Graphics();
     b.ellipse(0, 0, 18, 5).fill({ color: 0x545238, alpha: 0.28 });
     const lean = ((bx * 3) % 7) - 3;
@@ -193,6 +210,13 @@ export function buildLongWaterScenery({ world, ground, sorted }) {
     [320, 1195, 45, 18, 0x5a584c],
     [250, 1200, 32, 16, 0x4c4a40],
   ]) {
+    if (art?.boulder_l) {
+      const tex = rw >= 40 ? art.boulder_l : rw >= 32 ? art.boulder_m : art.boulder_s;
+      const sp = artSprite(tex, rx, ry + rh * 0.5, rw * 2.1); // 圖底邊對齊原橢圓下緣
+      sp.zIndex = ry; // 與原 Graphics 相同排序
+      sorted.addChild(sp);
+      continue;
+    }
     const rock = new Graphics();
     rock.ellipse(0, 0, rw, rh).fill(c).stroke({ width: 1.5, color: 0x38362e });
     rock.ellipse(-rw * 0.2, -rh * 0.3, rw * 0.6, rh * 0.4).fill({ color: 0x6e804a, alpha: 0.4 });

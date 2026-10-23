@@ -12,12 +12,12 @@ import { CLEAN_END } from './model.mjs';
 import { drawRefinedHerbPatch, drawRefinedRack, drawRefinedBasket, getRefinedBasketPlacement } from './assets/lp16/herb-decor.mjs';
 
 const SHARED = '../spikes/shared/';
-const LP17 = 'assets/lp17/';
+const ART = 'assets/art184-production/'; // D35：Grok 手繪人物／道館／景物；sheet 契約與 LP17 相同
 const t0 = performance.now();
 const scene = await (await fetch(SHARED + 'scene.json')).json();
 const template = await (await fetch('../template/actions.json')).json();
 const IDS = PEOPLE.map((p) => p.id);
-const sheets = Object.fromEntries(await Promise.all(IDS.map(async (id) => [id, await Assets.load(`${LP17}${id}.json`)])));
+const sheets = Object.fromEntries(await Promise.all(IDS.map(async (id) => [id, await Assets.load(`${ART}${id}.json`)])));
 const animators = Object.fromEntries(IDS.map((id) => [id, createAnimator(template, sheets[id].data)]));
 const profiles = { hero: { name: scene.ui.hero.name, label: '主角', role: '初學者 · 起始腳力 Lv 1' }, cousin: { name: '熟手同伴', label: '熟手', role: '熟手 · 起始腳力 Lv 3' } };
 const R = scene.resolution;
@@ -28,7 +28,8 @@ await app.init({ resizeTo: window, background: '#bdc791', antialias: true, autoD
 $('stage').appendChild(app.canvas);
 
 const sharedFiles = [...scene.props.map((p) => p.file), ...scene.vats.map((v) => v.file)];
-await Assets.load([LP17 + 'bg.png', ...sharedFiles.map((f) => SHARED + 'assets/' + f)]);
+const ART_KIT = ['bamboo', 'boulder_l', 'boulder_m', 'boulder_s'];
+await Assets.load([ART + 'bg.png', ...ART_KIT.map((k) => `${ART}${k}.png`), ...sharedFiles.map((f) => SHARED + 'assets/' + f)]);
 const TS = (f) => Assets.get(SHARED + 'assets/' + f);
 
 // ---------- 路線（只是畫面換算：模型給「走到第幾成」，這裡換成場景座標；算法在 routes.mjs） ----------
@@ -112,7 +113,7 @@ function poseOf(id, person) {
 const world = new Container();
 app.stage.addChild(world);
 // LP-17：載入 Grok D32 風格青灰瓦、深木柱、石院之重繪背景
-const bg = new Sprite(Assets.get(LP17 + 'bg.png'));
+const bg = new Sprite(Assets.get(ART + 'bg.png')); // LP17 bg＋手繪正堂／側屋（院坪與功能點不動）
 bg.scale.set(1 / R);
 world.addChild(bg);
 // 採藥小路與藥圃：LP-16 精修梯田土畦、18組藥草植株、竹籬、陶甕與靠放木鋤
@@ -138,7 +139,7 @@ const sorted = new Container();
 sorted.sortableChildren = true; // 依腳底 y 排序：人物走到樹叢後面時被遮住
 world.addChild(sorted);
 // LP-13：長挑水路南段場景（1600×1350 延伸地面、步石、竹林、溪流溪橋前後遮擋與新泉眼）
-buildLongWaterScenery({ world, ground, sorted });
+buildLongWaterScenery({ world, ground, sorted, art: Object.fromEntries(ART_KIT.map((k) => [k, Assets.get(`${ART}${k}.png`)])) });
 const placeSprite = (file, ax, ay, w, h, x, y) => {
   const s = new Sprite(TS(file));
   s.scale.set(1 / R);

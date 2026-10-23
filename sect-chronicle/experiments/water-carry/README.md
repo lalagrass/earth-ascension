@@ -35,3 +35,11 @@
 | BL-V03 第 2 步：空桶／負重走路改前／改後（[#177](https://github.com/lalagrass/earth-ascension/issues/177)） | 已交，待審 | [design/BL-V03-WALK.md](design/BL-V03-WALK.md)；動態對照 `design/walk/preview.html`，未換進展示 |
 | 整體畫風比較：同一挑水畫面，現況 vs 新風格候選（[#184](https://github.com/lalagrass/earth-ascension/issues/184)） | 已交，待審 | [design/STYLE-SCENE.md](design/STYLE-SCENE.md)；靜態候選，未換進展示 |
 | LP-10 掌法畫面稿與點選流程（[#220](https://github.com/lalagrass/earth-ascension/issues/220)） | 已交，待審 | [design/LP10.md](design/LP10.md)；熱區翻稿 `design/lp10/`，設計示意，未連遊戲 |
+
+### D35（#184）Grok 手繪人物／道館／景物實裝
+
+- 執行期素材在 `demo/assets/art184-production/`，由 `node demo/tools/export-art184.js`（重用 LP17 `POSE`，需 `PLAYWRIGHT_PATH`）從 `design/art184-production/sprites/` 產生。
+- `hero.json`／`cousin.json` 與 `assets/lp17/` **逐字相同**（幀數、幀名、rect、anchor、hitbox、attach），只換 `meta.app`／`meta.source`；`app.mjs` 改讀 `ART`。
+- `bg.png`＝LP17 bg，只把原道館建物範圍（990–1510 × 186–452）換回同畫法無建物底，再放手繪正堂／側屋；院坪與功能點不動。
+- `scenery.mjs` 的竹叢與潭邊山石改用可選 `art` 貼圖，位置／zIndex 不變，未傳 `art` 時沿用原 Graphics。
+- LP17 素材保留為基線，未覆寫。

@@ -42,3 +42,7 @@
 ## B（runtime 接線）
 
 **blocked**：等 #274／LP17 最終非作者接受→Earth 合 dev→postCI 成功。本目錄之外未改任何檔案。
+
+## B（實裝）
+
+`demo/tools/export-art184.js` → `demo/assets/art184-production/`：人物 sheet（契約與 LP17 相同）、bg（無殘影道館替換）、竹叢與三種山石 kit。預覽見 `export/preview/`（contact-sheets、bg-dojo、flow-dojo、flow-long-route）。已知限制：人物為單張姿勢＋剪切步態，非逐幀手繪；山石 kit 比原 Graphics 略大。
