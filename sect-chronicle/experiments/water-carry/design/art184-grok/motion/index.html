@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>走路預演 · 10 秒 · 未連遊戲</title>
+<style>
+  body { margin: 0; background: #1c1a17; color: #f6e7c4; font: 16px/1.45 "PingFang TC", "Noto Sans TC", sans-serif; }
+  main { width: 1100px; margin: 0 auto; padding: 24px; }
+  h1 { font-size: 26px; margin: 0 0 8px; }
+  .stage { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #efe6d4; padding: 12px; border-radius: 12px; }
+  .lane { position: relative; height: 420px; overflow: hidden; background: #efe6d4; }
+  .lane img, .lane video { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; }
+  .base { position: absolute; left: 8%; right: 8%; bottom: 36px; border-top: 2px dashed #c4452d; z-index: 3; }
+  .base span { position: absolute; right: 0; top: 4px; color: #6b3030; font-size: 12px; }
+  .tag { position: absolute; left: 8px; top: 8px; background: #2f2a24; color: #fff; font-size: 13px; padding: 2px 8px; border-radius: 4px; z-index: 4; }
+  button { font: inherit; margin-top: 12px; padding: 6px 14px; }
+  .readout { min-height: 1.4em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>美術預演 · 10 秒 · 未連遊戲</h1>
+  <p>左是初學負重，右是熟手空手穩步。0–2 秒待機，2–8 秒走路，8–10 秒主角停在負重定格上表示喘氣，熟手繼續走。紅虛線是腳底基準。影片裡的人會相對這條線漂移，所以這還不是可套用的 sprite。</p>
+  <div class="stage">
+    <div class="lane" id="novice">
+      <img class="idle" src="../paint/novice-side.jpg" alt="">
+      <video class="walk" src="novice-carry.mp4" muted playsinline></video>
+      <img class="pant" src="../paint/novice-carry.jpg" alt="">
+      <div class="base"><span>腳底基準</span></div>
+      <div class="tag">主角 · 負重</div>
+    </div>
+    <div class="lane" id="skilled">
+      <img class="idle" src="../paint/skilled-side.jpg" alt="">
+      <video class="walk" src="skilled-walk.mp4" muted playsinline loop></video>
+      <div class="base"><span>腳底基準</span></div>
+      <div class="tag">熟手 · 穩步</div>
+    </div>
+  </div>
+  <button id="play" type="button">播放 10 秒</button>
+  <p class="readout" id="readout">待機</p>
+  <p>朝右為預設正面。掛點在肩上的扁擔兩端。選取圈與遮擋仍沿現有腳底 y，不在這頁重算。關鍵幀見 <a href="contact.html">contact.html</a>。</p>
+</main>
+<script>
+const TOTAL = 10000;
+const playBtn = document.getElementById('play');
+const readout = document.getElementById('readout');
+const lanes = {
+  novice: document.getElementById('novice'),
+  skilled: document.getElementById('skilled')
+};
+function show(lane, name) {
+  for (const el of lane.children) {
+    if (el.classList.contains('base') || el.classList.contains('tag')) continue;
+    el.style.visibility = el.classList.contains(name) ? 'visible' : 'hidden';
+  }
+}
+function phase(t) {
+  if (t < 2000) return 'idle';
+  if (t < 8000) return 'walk';
+  return 'pant';
+}
+function label(name) {
+  if (name === 'idle') return '待機';
+  if (name === 'walk') return '走路：主角短步、身體起伏；熟手步幅較開、上身較穩';
+  return '主角停在負重姿勢上表示喘氣；熟手繼續走';
+}
+let start = 0;
+let raf = 0;
+function frame(now) {
+  const t = now - start;
+  if (t >= TOTAL) {
+    apply(8000);
+    readout.textContent = '10 秒結束。這是美術預演，不是腳力或命中驗收。';
+    playBtn.disabled = false;
+    return;
+  }
+  apply(t);
+  raf = requestAnimationFrame(frame);
+}
+function apply(t) {
+  const novicePhase = phase(t);
+  const skilledPhase = t < 2000 ? 'idle' : 'walk';
+  show(lanes.novice, novicePhase === 'pant' ? 'pant' : novicePhase);
+  show(lanes.skilled, skilledPhase);
+  const novVideo = lanes.novice.querySelector('video');
+  const skVideo = lanes.skilled.querySelector('video');
+  if (novicePhase === 'walk') {
+    if (novVideo.paused) novVideo.play();
+  } else novVideo.pause();
+  if (skilledPhase === 'walk') {
+    if (skVideo.paused) skVideo.play();
+  } else skVideo.pause();
+  readout.textContent = (t / 1000).toFixed(1) + ' 秒 · ' + label(novicePhase);
+}
+function reset() {
+  cancelAnimationFrame(raf);
+  for (const lane of Object.values(lanes)) {
+    const video = lane.querySelector('video');
+    video.pause();
+    video.currentTime = 0;
+  }
+  apply(0);
+}
+playBtn.addEventListener('click', () => {
+  reset();
+  playBtn.disabled = true;
+  for (const lane of Object.values(lanes)) lane.querySelector('video').play().catch(() => {});
+  start = performance.now();
+  raf = requestAnimationFrame(frame);
+});
+reset();
+</script>
+</body>
+</html>

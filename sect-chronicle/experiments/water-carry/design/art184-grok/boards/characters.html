@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>主角與熟手造型板</title>
+<style>
+  body { margin: 0; background: #f6f1e6; color: #2f2a24; font: 16px/1.45 "PingFang TC", "Noto Sans TC", sans-serif; }
+  main { width: 1600px; padding: 28px 36px 40px; box-sizing: border-box; }
+  h1 { font-size: 28px; margin: 0 0 6px; }
+  p { margin: 0 0 14px; }
+  .row { display: flex; gap: 16px; align-items: flex-end; }
+  figure { margin: 0; background: #fffaf2; border: 1px solid #cdbb98; border-radius: 10px; padding: 10px; }
+  figcaption { font-size: 14px; margin-top: 6px; }
+  img { display: block; width: 100%; height: auto; }
+  .pair img { width: 760px; }
+  .map { display: flex; gap: 28px; align-items: flex-end; padding: 12px 8px 0; }
+  .who { text-align: center; font-size: 14px; }
+  .sprite { height: 107px; width: auto; display: block; margin: 0 auto; background: #efe6d4; }
+  .big { height: 321px; }
+  .rule { height: 107px; width: 8px; background: linear-gradient(#2f2a24, #2f2a24); position: relative; }
+  .rule span { position: absolute; left: 14px; top: 40px; white-space: nowrap; font-size: 13px; }
+  .note { font-size: 14px; color: #6b6254; }
+</style>
+</head>
+<body>
+<main>
+  <h1>主角與熟手 · 造型候選</h1>
+  <p>性別與姓名未新定。地圖名牌仍用現有顯示名「林遠」。體態是兩種既有外形，不隨腳力升級改變，也不改數值。左：圓、藍袍、朱紅髮帶、容易累但仍有精神。右：瘦直、橄欖褐袍、深色包頭、步態較穩。</p>
+  <div class="row">
+    <figure class="pair"><img src="../paint/characters-daily.jpg" alt="日常表情"><figcaption>日常。放大立繪，不是地圖尺寸。</figcaption></figure>
+    <figure class="pair"><img src="../paint/characters-tired.jpg" alt="疲累表情"><figcaption>疲累。主角張嘴、多汗。熟手這張汗滴偏多，仍像在忍，沒有改站姿。</figcaption></figure>
+  </div>
+  <h2>正面、右側、背面</h2>
+  <figure><img src="../paint/turnaround.jpg" alt="轉身表" style="width:1100px"><figcaption>同一張生成，保證比例與衣服一致。側面在這張上朝左；走路預演的側面朝右，引擎可再翻面。</figcaption></figure>
+  <h2>地圖高度與放大</h2>
+  <p class="note">現有烘焙幀 190×214、scale 2，腳底錨點 (90, 184)。地圖上約 95×107 場景像素。下面把側身圖縮到 107px 高，旁邊是 3 倍。</p>
+  <div class="map">
+    <div class="who">主角 107px<img class="sprite" src="../paint/novice-carry.jpg" alt=""></div>
+    <div class="who">熟手 107px<img class="sprite" src="../paint/skilled-side.jpg" alt=""></div>
+    <div class="rule"><span>107px</span></div>
+    <div class="who">主角 ×3<img class="sprite big" src="../paint/novice-carry.jpg" alt=""></div>
+    <div class="who">熟手 ×3<img class="sprite big" src="../paint/skilled-side.jpg" alt=""></div>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>概念排版 · 390×844</title>
+<style>
+  html, body { margin: 0; background: #111; }
+  .phone { position: relative; width: 390px; height: 844px; overflow: hidden; background: #c5d6b0;
+    font: 13px/1.35 "PingFang TC", "Noto Sans TC", sans-serif; color: #2f2a24; }
+  /* 世界窗約 x 500–1120、對準石階上的主角與水缸，泉水留在畫面左外。 */
+  .world { position: absolute; left: -314px; top: 118px; width: 1006px; height: 566px; }
+  .world img { width: 1006px; height: 566px; display: block; }
+  .hud, .line, .roster, .mark { position: absolute; z-index: 2; }
+  .hud { top: 8px; left: 8px; right: 8px; background: rgba(248,242,228,.96); border: 1px solid #cdbb98; border-radius: 10px; padding: 6px 8px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .hud b { letter-spacing: 1px; }
+  .btn { border: 1px solid #cdbb98; background: #fffaf0; border-radius: 6px; padding: 1px 7px; }
+  .on { background: #2f2a24; color: #fff; }
+  .chip { background: #efe4cb; border-radius: 999px; padding: 1px 8px; }
+  .line { top: 78px; left: 8px; right: 8px; background: rgba(248,242,228,.94); border: 1px solid #cdbb98; border-radius: 8px; padding: 4px 8px; font-size: 12px; }
+  .roster { left: 8px; right: 8px; bottom: 8px; display: flex; gap: 6px; }
+  .card { flex: 1; background: rgba(248,242,228,.96); border: 1px solid #cdbb98; border-radius: 8px; padding: 4px 8px; }
+  .card.sel { border: 2px solid #c8962e; }
+  .card small { display: block; color: #6b6254; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mark { top: 112px; right: 8px; background: #2f2a24; color: #f6e7c4; font-size: 11px; padding: 2px 6px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <!-- 鏡頭對準水缸、石階與目前選取的主角，不是把 1600 整張壓窄。 -->
+  <div class="world"><img alt="" src="../source/scene.svg"></div>
+  <header class="hud">
+    <b>宗門編年</b>
+    <span class="btn">❚❚ 暫停</span>
+    <span class="btn on">1×</span>
+    <span class="chip">水缸 3／8</span>
+    <span class="chip">藥架 0／8</span>
+    <span class="chip">主角 Lv 1</span>
+    <span class="btn">重來</span>
+  </header>
+  <div class="line">野豬在棲地 · 精力 60 · 威脅 0 · 護欄損痕 0 · 不是血量</div>
+  <div class="mark">概念排版 · 未連遊戲</div>
+  <footer class="roster">
+    <div class="card sel"><b>林遠 · Lv 1</b><small>精力 99 · 挑水 · 下山（空桶）</small></div>
+    <div class="card"><b>熟手同伴 · Lv 3</b><small>精力 99 · 挑水 · 下山（空桶）</small></div>
+  </footer>
+</div>
+</body>
+</html>
