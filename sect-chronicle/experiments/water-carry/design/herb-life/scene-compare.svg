@@ -1,128 +1,169 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
   <defs>
     <style>
-      .bg-main { fill: #24201b; }
-      .header-bar { fill: #1c1814; }
-      .title-main { font-family: system-ui, sans-serif; font-size: 15px; font-weight: bold; fill: #f5eedb; }
-      .title-sub { font-family: system-ui, sans-serif; font-size: 11px; fill: #c8b998; }
+      .hdr-pill { fill: rgba(28, 24, 20, 0.90); stroke: #8c7b64; stroke-width: 0.8; rx: 4px; }
+      .hdr-txt-title { font-family: system-ui, sans-serif; font-size: 11px; font-weight: bold; fill: #f5eedb; }
+      .hdr-txt-sub { font-family: system-ui, sans-serif; font-size: 9.5px; fill: #c8b998; }
 
-      .col-box { fill: #f8f3e6; stroke: #8c7b64; stroke-width: 1.2; rx: 6px; }
-      .col-header { font-family: system-ui, sans-serif; font-size: 13px; font-weight: bold; fill: #2c251e; }
+      .card-box { fill: rgba(248, 243, 230, 0.96); stroke: #8c7b64; stroke-width: 1.2; rx: 6px; }
+      .card-header-a { font-family: system-ui, sans-serif; font-size: 11.5px; font-weight: bold; fill: #2f6d3a; }
+      .card-header-b { font-family: system-ui, sans-serif; font-size: 11.5px; font-weight: bold; fill: #3b5d85; }
+      .card-sub { font-family: system-ui, sans-serif; font-size: 9px; fill: #6e5d4b; }
 
-      .view-box-base { fill: #fffdf9; stroke: #3b5d85; stroke-width: 1.2; rx: 4px; }
-      .view-box-prop { fill: #fffdf9; stroke: #2f6d3a; stroke-width: 1.2; rx: 4px; }
-      .view-title-base { font-family: system-ui, sans-serif; font-size: 11px; font-weight: bold; fill: #3b5d85; }
-      .view-title-prop { font-family: system-ui, sans-serif; font-size: 11px; font-weight: bold; fill: #2f6d3a; }
-      .view-sub { font-family: system-ui, sans-serif; font-size: 9.5px; fill: #6e5d4b; }
+      .view-box-base { fill: #fffdf9; stroke: #3b5d85; stroke-width: 1; rx: 3px; }
+      .view-box-prop { fill: #fffdf9; stroke: #2f6d3a; stroke-width: 1; rx: 3px; }
+      .view-lbl-b { font-family: system-ui, sans-serif; font-size: 9.5px; font-weight: bold; fill: #3b5d85; }
+      .view-lbl-p { font-family: system-ui, sans-serif; font-size: 9.5px; font-weight: bold; fill: #2f6d3a; }
 
-      /* 地點名牌標籤 (LP-14 UI 規格) */
-      .tag-bg { fill: rgba(248, 242, 228, 0.94); stroke: #cdbb98; stroke-width: 1; rx: 3px; }
-      .tag-txt-title { font-family: system-ui, sans-serif; font-size: 9px; font-weight: bold; fill: #2f2a24; }
-      .tag-txt-sub { font-family: system-ui, sans-serif; font-size: 7.5px; fill: #6b6254; }
+      .tag-bg { fill: rgba(248, 242, 228, 0.94); stroke: #cdbb98; stroke-width: 0.8; rx: 2px; }
+      .tag-txt-title { font-family: system-ui, sans-serif; font-size: 8.5px; font-weight: bold; fill: #2f2a24; }
 
-      /* 批註與文字 */
-      .badge-code { fill: #eef2f7; stroke: #3b5d85; stroke-width: 0.8; rx: 3px; }
-      .badge-txt-c { font-family: monospace; font-size: 9px; fill: #2b4667; }
-      .badge-ann { fill: #fff3cd; stroke: #856404; stroke-width: 0.8; rx: 3px; }
-      .badge-txt-a { font-family: system-ui, sans-serif; font-size: 9px; font-weight: bold; fill: #856404; }
-      .note-txt { font-family: system-ui, sans-serif; font-size: 9.5px; fill: #8a6416; }
-      .sub-txt { font-family: system-ui, sans-serif; font-size: 10px; fill: #4a3e31; }
+      .ftr-bar { fill: rgba(24, 20, 16, 0.94); stroke: #8c7b64; stroke-width: 1; rx: 4px; }
+      .ftr-title { font-family: system-ui, sans-serif; font-size: 9.5px; font-weight: bold; fill: #f5eedb; }
+      .ftr-body { font-family: system-ui, sans-serif; font-size: 8.5px; fill: #c8b998; }
+
+      .ann-badge { fill: #fff3cd; stroke: #856404; stroke-width: 0.8; rx: 3px; }
+      .ann-txt { font-family: system-ui, sans-serif; font-size: 8px; font-weight: bold; fill: #856404; }
     </style>
   </defs>
 
-  <!-- 外框背景 -->
-  <rect width="1280" height="720" class="bg-main"/>
+  <!-- 1. 底層：完整桌面操作畫面參考 (引用庫內真操作畫面 ../life-observation/desktop-real.png，LP-14 dev 接受版 d1a4dde) -->
+  <image href="../life-observation/desktop-real.png" xlink:href="../life-observation/desktop-real.png" x="0" y="0" width="1280" height="720"/>
 
-  <!-- 頂部主要抬頭列 -->
-  <rect x="0" y="0" width="1280" height="42" class="header-bar"/>
-  <text x="24" y="26" class="title-main">LP-15 H1 採藥場景同鏡頭分鏡特寫對照稿 (1280×720)</text>
-  <text x="500" y="26" class="title-sub">忠實對齊 app.mjs lines 113–132 現況繪製段 ｜ 同世界坐標零偏移 ｜ 嚴格區分「現況實際渲染」與「視覺概念疊圖」</text>
+  <!-- 2. 頂部標註條 (不遮擋原 HUD 控制列) -->
+  <g transform="translate(14, 40)">
+    <rect width="630" height="22" class="hdr-pill"/>
+    <text x="10" y="15" class="hdr-txt-title">LP-15 H1 採藥生活場景完整桌面參考與特寫合成</text>
+    <text x="265" y="15" class="hdr-txt-sub">｜ 底圖引用：../life-observation/desktop-real.png (LP-14 接受版) ｜ 特寫嵌圖：未接線</text>
+  </g>
 
-  <!-- ======================================================== -->
-  <!-- 左欄：分鏡 A · 東坡藥圃生活場景 (HERB.patch 1440, 788)     -->
-  <!-- ======================================================== -->
-  <g transform="translate(18, 48)">
-    <rect width="612" height="610" class="col-box"/>
-    <!-- 分鏡抬頭 -->
-    <text x="14" y="22" class="col-header">【分鏡 A】東坡藥圃生活場景 (HERB.patch 1440, 788 · 坐標範圍 1350..1530, 740..850)</text>
+  <!-- 3. 左側嵌圖卡片：【分鏡 B】院中晾藥架 (HERB.rack 896, 474) 現況 vs 改善提案特寫 -->
+  <g transform="translate(14, 68)">
+    <rect width="606" height="286" class="card-box"/>
+    <!-- 卡片標頭 -->
+    <text x="12" y="18" class="card-header-b">【分鏡 B 特寫嵌圖】院中晾藥架 (HERB.rack 896, 474 · 鏡頭局部特寫)</text>
+    <text x="12" y="31" class="card-sub">左：依接受版 app.mjs lines 295–304 源碼繪製的現況示意 ｜ 右：LP-15 改善提案概念疊圖（未接線）</text>
 
-    <!-- 上半部：現況實際渲染 (LP-14 接受版 app.mjs lines 113–132) -->
-    <g transform="translate(10, 32)">
-      <rect width="592" height="254" class="view-box-base"/>
-      <text x="12" y="18" class="view-title-base">【現況基線】LP-14 接受版實際渲染段（忠實呈現 app.mjs lines 113–132 ground 內容）</text>
-      <text x="12" y="31" class="view-sub">採藥路 (雙層線條) ＋ 橢圓棕色藥圃 ＋ 三道暗色土畦 ＋ 18 組三葉植株與黃花 ＋ 右側 6 根竹籬</text>
+    <!-- 左半：現況實際渲染 (app.mjs 295–304 drawRack) -->
+    <g transform="translate(10, 38)">
+      <rect width="286" height="216" class="view-box-base"/>
+      <text x="10" y="16" class="view-lbl-b">現況局部示意 (依接受版 drawRack 源碼)</text>
+      <!-- 視口：viewBox="820 420 160 110" -->
+      <svg x="8" y="24" width="270" height="182" viewBox="820 420 160 110">
+        <rect x="820" y="420" width="160" height="110" fill="#dcd5c4"/>
+        <path d="M820,440 L980,440" stroke="#c2baa8" stroke-width="1.2"/>
+        <path d="M820,480 L980,480" stroke="#c2baa8" stroke-width="1.2"/>
+        <!-- 藥架現況：(896, 482) 兩支立柱 + 兩層竹篩 + 圓點藥草 (app.mjs lines 295–304) -->
+        <g transform="translate(896, 482)">
+          <ellipse cx="0" cy="2" rx="22" ry="5" fill="#2c251e" opacity="0.2"/>
+          <rect x="-26" y="-40" width="3" height="40" fill="#8a6a3e"/>
+          <rect x="23" y="-40" width="3" height="40" fill="#8a6a3e"/>
+          <ellipse cx="0" cy="-36" rx="27" ry="5" fill="#d8bf86" stroke="#9a7a44" stroke-width="1.2"/>
+          <ellipse cx="0" cy="-18" rx="27" ry="5" fill="#d8bf86" stroke="#9a7a44" stroke-width="1.2"/>
+          <ellipse cx="-16" cy="-39" rx="4.5" ry="3" fill="#5f9a4a" stroke="#3e6b30" stroke-width="0.8"/>
+          <ellipse cx="-5" cy="-39" rx="4.5" ry="3" fill="#5f9a4a" stroke="#3e6b30" stroke-width="0.8"/>
+          <ellipse cx="6" cy="-39" rx="4.5" ry="3" fill="#5f9a4a" stroke="#3e6b30" stroke-width="0.8"/>
+        </g>
+        <g transform="translate(866, 510)">
+          <rect x="-10" y="-10" width="115" height="18" class="tag-bg"/>
+          <text x="47" y="2" class="tag-txt-title" text-anchor="middle">藥架 3／8 · 在途 0</text>
+        </g>
+      </svg>
+    </g>
 
-      <!-- 視口內部：viewBox="1350 740 180 115" -->
-      <svg x="10" y="38" width="572" height="206" viewBox="1350 740 180 115">
-        <!-- 底層草坡 (接受版背景色) -->
+    <!-- 右半：改善提案概念疊圖 (精編三層竹篩) -->
+    <g transform="translate(306, 38)">
+      <rect width="288" height="216" class="view-box-prop"/>
+      <text x="10" y="16" class="view-lbl-p">改善提案概念疊圖 (精修三層竹篩)</text>
+      <!-- 視口：viewBox="820 420 160 110" -->
+      <svg x="8" y="24" width="272" height="182" viewBox="820 420 160 110">
+        <rect x="820" y="420" width="160" height="110" fill="#dcd5c4"/>
+        <path d="M820,440 L980,440" stroke="#c2baa8" stroke-width="1.2"/>
+        <path d="M820,480 L980,480" stroke="#c2baa8" stroke-width="1.2"/>
+        <!-- 精編三層竹篩 (896, 482) -->
+        <g transform="translate(896, 482)">
+          <ellipse cx="0" cy="2" rx="25" ry="5.5" fill="#2c251e" opacity="0.25"/>
+          <rect x="-27" y="-45" width="4" height="45" fill="#8a6a3e" rx="1"/>
+          <rect x="23" y="-45" width="4" height="45" fill="#8a6a3e" rx="1"/>
+          <line x1="-25" y1="-21" x2="25" y2="-21" stroke="#70522a" stroke-width="1.8"/>
+          <ellipse cx="0" cy="-41" rx="28" ry="5.2" fill="#d8bf86" stroke="#8a6a3e" stroke-width="1.2"/>
+          <ellipse cx="0" cy="-27" rx="29" ry="5.6" fill="#d8bf86" stroke="#8a6a3e" stroke-width="1.2"/>
+          <ellipse cx="0" cy="-13" rx="30" ry="6.0" fill="#d8bf86" stroke="#8a6a3e" stroke-width="1.2"/>
+          <line x1="-18" y1="-28" x2="18" y2="-26" stroke="#b08a4e" stroke-width="0.8"/>
+          <line x1="-20" y1="-14" x2="20" y2="-12" stroke="#b08a4e" stroke-width="0.8"/>
+          <ellipse cx="-12" cy="-42" rx="4" ry="2.2" fill="#5f9a4a"/>
+          <ellipse cx="8" cy="-42" rx="4.5" ry="2" fill="#4f8a3e"/>
+          <ellipse cx="-6" cy="-28" rx="5" ry="2.4" fill="#5f9a4a"/>
+          <ellipse cx="14" cy="-28" rx="4.5" ry="2.2" fill="#4f8a3e"/>
+        </g>
+        <!-- 交藥動作姿態 (提案) -->
+        <g transform="translate(938, 482)">
+          <ellipse cx="0" cy="1" rx="8" ry="3" fill="#2c251e" opacity="0.32"/>
+          <path d="M-4,-24 L4,-22 L3,-6 L-5,-6 Z" fill="#5683b8" stroke="#3d6593" stroke-width="0.8" transform="rotate(-8)"/>
+          <circle cx="-2" cy="-28" r="4.2" fill="#f4d6b6"/>
+          <line x1="-2" y1="-16" x2="-14" y2="-14" stroke="#f4d6b6" stroke-width="1.4"/>
+          <polygon points="10,-10 18,-10 16,0 12,0" fill="#b08a4e" stroke="#6e5434" stroke-width="0.7"/>
+          <text x="-26" y="-32" font-size="9" font-weight="bold" fill="#2f6d3a">+1 份藥</text>
+        </g>
+        <g transform="translate(866, 510)">
+          <rect x="-10" y="-10" width="115" height="18" class="tag-bg" stroke="#2f6d3a"/>
+          <text x="47" y="2" class="tag-txt-title" fill="#2f6d3a" text-anchor="middle">藥架 · 精編三層竹篩</text>
+        </g>
+      </svg>
+    </g>
+    <!-- 卡片底部說明 -->
+    <text x="12" y="272" class="card-sub">※ 標明：依接受版源碼繪製之局部示意與視覺提案合成；保留原 8 份容量，未授權 runtime。</text>
+  </g>
+
+  <!-- 4. 右側嵌圖卡片：【分鏡 A】東坡藥圃 (HERB.patch 1440, 788) 現況 vs 改善提案特寫 -->
+  <g transform="translate(636, 68)">
+    <rect width="630" height="286" class="card-box"/>
+    <!-- 卡片標頭 -->
+    <text x="12" y="18" class="card-header-a">【分鏡 A 特寫嵌圖】東坡藥圃 (HERB.patch 1440, 788 · 鏡頭局部特寫)</text>
+    <text x="12" y="31" class="card-sub">左：依接受版 app.mjs lines 113–132 源碼繪製的現況示意 ｜ 右：LP-15 改善提案概念疊圖（未接線）</text>
+
+    <!-- 左半：現況實際渲染 (app.mjs 113–132 ground 內容) -->
+    <g transform="translate(10, 38)">
+      <rect width="298" height="216" class="view-box-base"/>
+      <text x="10" y="16" class="view-lbl-b">現況局部示意 (依接受版 ground 源碼)</text>
+      <!-- 視口：viewBox="1350 740 180 115" -->
+      <svg x="8" y="24" width="282" height="182" viewBox="1350 740 180 115">
         <rect x="1350" y="740" width="180" height="115" fill="#8ea868"/>
         <path d="M1350,760 Q1440,750 1530,765 L1530,855 L1350,855 Z" fill="#7a9355" opacity="0.45"/>
-
-        <!-- 1. 採藥小路 (app.mjs 115-116 行: poly 15 #c9b07a / 11 #e2d1a2) -->
         <path d="M1320,718 L1398,772 L1440,788" stroke="#c9b07a" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         <path d="M1320,718 L1398,772 L1440,788" stroke="#e2d1a2" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-
-        <!-- 2. 藥圃與三道土畦 (app.mjs 118-120 行: ellipse 74,30 #8a6b45; 3道 #6e5434 a=0.45) -->
+        <!-- 藥圃與三道土畦 (app.mjs 118-120 行: ellipse 74,30 #8a6b45; 3道 #6e5434 a=0.45) -->
         <ellipse cx="1440" cy="796" rx="74" ry="30" fill="#8a6b45" stroke="#6e5434" stroke-width="2"/>
         <ellipse cx="1440" cy="784" rx="60" ry="4" fill="#6e5434" fill-opacity="0.45"/>
         <ellipse cx="1440" cy="796" rx="56" ry="4" fill="#6e5434" fill-opacity="0.45"/>
         <ellipse cx="1440" cy="808" rx="52" ry="4" fill="#6e5434" fill-opacity="0.45"/>
-
-        <!-- 3. 18 組植株與黃花 (app.mjs 121-127 行: 3葉 #5f9a4a/#4f8a3e + 黃花 #e8d16a) -->
-        <!-- 簡潔準確演繹迴圈分佈：c=0..5, r=0..2 -->
-        <g id="base-plants">
-          <!-- 第 1 排 (ty = 782) -->
-          <ellipse cx="1390" cy="777" rx="2.6" ry="5.5" fill="#4f8a3e"/>
-          <circle cx="1390" cy="771" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1410" cy="777" rx="2.6" ry="5.5" fill="#4f8a3e"/>
-          <circle cx="1410" cy="771" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1430" cy="777" rx="2.6" ry="5.5" fill="#4f8a3e"/>
-          <circle cx="1430" cy="771" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1450" cy="777" rx="2.6" ry="5.5" fill="#4f8a3e"/>
-          <circle cx="1450" cy="771" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1470" cy="777" rx="2.6" ry="5.5" fill="#4f8a3e"/>
-          <circle cx="1470" cy="771" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1490" cy="777" rx="2.6" ry="5.5" fill="#4f8a3e"/>
-          <circle cx="1490" cy="771" r="1.8" fill="#e8d16a"/>
-          <!-- 第 2 排 (ty = 794) -->
-          <ellipse cx="1398" cy="789" rx="2.6" ry="5.5" fill="#5f9a4a"/>
-          <circle cx="1398" cy="783" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1418" cy="789" rx="2.6" ry="5.5" fill="#5f9a4a"/>
-          <circle cx="1418" cy="783" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1438" cy="789" rx="2.6" ry="5.5" fill="#5f9a4a"/>
-          <circle cx="1438" cy="783" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1458" cy="789" rx="2.6" ry="5.5" fill="#5f9a4a"/>
-          <circle cx="1458" cy="783" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1478" cy="789" rx="2.6" ry="5.5" fill="#5f9a4a"/>
-          <circle cx="1478" cy="783" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1498" cy="789" rx="2.6" ry="5.5" fill="#5f9a4a"/>
-          <circle cx="1498" cy="783" r="1.8" fill="#e8d16a"/>
-          <!-- 第 3 排 (ty = 806) -->
-          <ellipse cx="1390" cy="801" rx="2.6" ry="5.5" fill="#4f8a3e"/>
-          <circle cx="1390" cy="795" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1410" cy="801" rx="2.6" ry="5.5" fill="#4f8a3e"/>
-          <circle cx="1410" cy="795" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1430" cy="801" rx="2.6" ry="5.5" fill="#4f8a3e"/>
-          <circle cx="1430" cy="795" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1450" cy="801" rx="2.6" ry="5.5" fill="#4f8a3e"/>
-          <circle cx="1450" cy="795" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1470" cy="801" rx="2.6" ry="5.5" fill="#4f8a3e"/>
-          <circle cx="1470" cy="795" r="1.8" fill="#e8d16a"/>
-          <ellipse cx="1490" cy="801" rx="2.6" ry="5.5" fill="#4f8a3e"/>
-          <circle cx="1490" cy="795" r="1.8" fill="#e8d16a"/>
+        <!-- 18 組植株與黃花 (app.mjs 121-127 行) -->
+        <g>
+          <ellipse cx="1390" cy="777" rx="2.6" ry="5.5" fill="#4f8a3e"/><circle cx="1390" cy="771" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1410" cy="777" rx="2.6" ry="5.5" fill="#4f8a3e"/><circle cx="1410" cy="771" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1430" cy="777" rx="2.6" ry="5.5" fill="#4f8a3e"/><circle cx="1430" cy="771" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1450" cy="777" rx="2.6" ry="5.5" fill="#4f8a3e"/><circle cx="1450" cy="771" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1470" cy="777" rx="2.6" ry="5.5" fill="#4f8a3e"/><circle cx="1470" cy="771" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1490" cy="777" rx="2.6" ry="5.5" fill="#4f8a3e"/><circle cx="1490" cy="771" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1398" cy="789" rx="2.6" ry="5.5" fill="#5f9a4a"/><circle cx="1398" cy="783" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1418" cy="789" rx="2.6" ry="5.5" fill="#5f9a4a"/><circle cx="1418" cy="783" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1438" cy="789" rx="2.6" ry="5.5" fill="#5f9a4a"/><circle cx="1438" cy="783" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1458" cy="789" rx="2.6" ry="5.5" fill="#5f9a4a"/><circle cx="1458" cy="783" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1478" cy="789" rx="2.6" ry="5.5" fill="#5f9a4a"/><circle cx="1478" cy="783" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1498" cy="789" rx="2.6" ry="5.5" fill="#5f9a4a"/><circle cx="1498" cy="783" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1390" cy="801" rx="2.6" ry="5.5" fill="#4f8a3e"/><circle cx="1390" cy="795" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1410" cy="801" rx="2.6" ry="5.5" fill="#4f8a3e"/><circle cx="1410" cy="795" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1430" cy="801" rx="2.6" ry="5.5" fill="#4f8a3e"/><circle cx="1430" cy="795" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1450" cy="801" rx="2.6" ry="5.5" fill="#4f8a3e"/><circle cx="1450" cy="795" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1470" cy="801" rx="2.6" ry="5.5" fill="#4f8a3e"/><circle cx="1470" cy="795" r="1.8" fill="#e8d16a"/>
+          <ellipse cx="1490" cy="801" rx="2.6" ry="5.5" fill="#4f8a3e"/><circle cx="1490" cy="795" r="1.8" fill="#e8d16a"/>
         </g>
-
-        <!-- 4. 竹籬兩段 (app.mjs 129-130 行: 6 支 #a98a52) -->
-        <g id="base-fence">
-          <rect x="1516" y="768" width="3" height="12" fill="#a98a52"/>
-          <rect x="1518" y="776" width="3" height="12" fill="#a98a52"/>
-          <rect x="1516" y="784" width="3" height="12" fill="#a98a52"/>
-          <rect x="1518" y="792" width="3" height="12" fill="#a98a52"/>
-          <rect x="1516" y="800" width="3" height="12" fill="#a98a52"/>
-          <rect x="1518" y="808" width="3" height="12" fill="#a98a52"/>
+        <!-- 竹籬 (app.mjs 129-130 行) -->
+        <g>
+          <rect x="1516" y="768" width="3" height="12" fill="#a98a52"/><rect x="1518" y="776" width="3" height="12" fill="#a98a52"/>
+          <rect x="1516" y="784" width="3" height="12" fill="#a98a52"/><rect x="1518" y="792" width="3" height="12" fill="#a98a52"/>
+          <rect x="1516" y="800" width="3" height="12" fill="#a98a52"/><rect x="1518" y="808" width="3" height="12" fill="#a98a52"/>
         </g>
-
-        <!-- 5. 藥圃名牌 tag('herb', 1440, 788 - 46 = 742) -->
         <g transform="translate(1440, 750)">
           <rect x="-42" y="-10" width="84" height="18" class="tag-bg"/>
           <text x="0" y="2" class="tag-txt-title" text-anchor="middle">藥圃</text>
@@ -130,206 +171,77 @@
       </svg>
     </g>
 
-    <!-- 下半部：改善提案 (LP-15 概念設計疊圖) -->
-    <g transform="translate(10, 296)">
-      <rect width="592" height="298" class="view-box-prop"/>
-      <text x="12" y="18" class="view-title-prop">【改善提案】LP-15 視覺概念設計疊圖（同一視口、同坐標 1440, 788 精修）</text>
-      <text x="12" y="31" class="view-sub">精修階梯式立體土畦 ＋ 疊入灌溉陶甕 ＋ 採藥木鋤 ＋ 採藥下蹲與置簍姿態（零坐標偏移）</text>
-
-      <!-- 視口內部：完全相同之 viewBox="1350 740 180 115" -->
-      <svg x="10" y="38" width="572" height="248" viewBox="1350 740 180 115">
-        <!-- 底層草坡 (同坐標) -->
+    <!-- 右半：改善提案概念疊圖 (階梯式土畦/陶甕/木鋤) -->
+    <g transform="translate(318, 38)">
+      <rect width="300" height="216" class="view-box-prop"/>
+      <text x="10" y="16" class="view-lbl-p">改善提案概念疊圖 (階梯土畦/陶甕/木鋤)</text>
+      <!-- 視口：viewBox="1350 740 180 115" -->
+      <svg x="8" y="24" width="284" height="182" viewBox="1350 740 180 115">
         <rect x="1350" y="740" width="180" height="115" fill="#8ea868"/>
         <path d="M1350,760 Q1440,750 1530,765 L1530,855 L1350,855 Z" fill="#7a9355" opacity="0.45"/>
-
-        <!-- 採藥小路 (同坐標) -->
         <path d="M1320,718 L1398,772 L1440,788" stroke="#c9b07a" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         <path d="M1320,718 L1398,772 L1440,788" stroke="#e2d1a2" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-
-        <!-- 改善：精修梯田階梯式深色土畦 (保留原藥圃 74,30 範圍，強化分層立體感) -->
+        <!-- 精修階梯式土畦 -->
         <ellipse cx="1440" cy="796" rx="74" ry="30" fill="#705436" stroke="#523d24" stroke-width="2"/>
         <path d="M1374,788 Q1440,776 1506,788 Q1510,796 1498,802 Q1440,792 1382,802 Z" fill="#8a6a4e"/>
         <path d="M1380,800 Q1440,788 1500,800 Q1504,808 1492,814 Q1440,804 1388,814 Z" fill="#9c7856"/>
-
-        <!-- 改善：多樣野生靈草生長簇 (分層錯落) -->
-        <g id="prop-plants">
-          <ellipse cx="1394" cy="784" rx="3.5" ry="6" fill="#3e6b30"/>
-          <circle cx="1394" cy="778" r="2" fill="#f7d96a"/>
-          <ellipse cx="1416" cy="782" rx="3.5" ry="6" fill="#4f8a3e"/>
-          <circle cx="1416" cy="776" r="2" fill="#f7d96a"/>
-          <ellipse cx="1438" cy="780" rx="4" ry="6.5" fill="#5f9a4a"/>
-          <circle cx="1438" cy="774" r="2.2" fill="#f7d96a"/>
-          <ellipse cx="1462" cy="782" rx="3.5" ry="6" fill="#4f8a3e"/>
-          <circle cx="1462" cy="776" r="2" fill="#f7d96a"/>
-          <ellipse cx="1484" cy="785" rx="3.5" ry="6" fill="#3e6b30"/>
-          <circle cx="1484" cy="779" r="2" fill="#f7d96a"/>
-
+        <!-- 靈草簇 -->
+        <g>
+          <ellipse cx="1394" cy="784" rx="3.5" ry="6" fill="#3e6b30"/><circle cx="1394" cy="778" r="2" fill="#f7d96a"/>
+          <ellipse cx="1416" cy="782" rx="3.5" ry="6" fill="#4f8a3e"/><circle cx="1416" cy="776" r="2" fill="#f7d96a"/>
+          <ellipse cx="1438" cy="780" rx="4" ry="6.5" fill="#5f9a4a"/><circle cx="1438" cy="774" r="2.2" fill="#f7d96a"/>
+          <ellipse cx="1462" cy="782" rx="3.5" ry="6" fill="#4f8a3e"/><circle cx="1462" cy="776" r="2" fill="#f7d96a"/>
+          <ellipse cx="1484" cy="785" rx="3.5" ry="6" fill="#3e6b30"/><circle cx="1484" cy="779" r="2" fill="#f7d96a"/>
           <ellipse cx="1404" cy="796" rx="3.8" ry="6.2" fill="#5f9a4a"/>
           <ellipse cx="1426" cy="795" rx="4" ry="6.5" fill="#3e6b30"/>
           <ellipse cx="1450" cy="794" rx="4.2" ry="7" fill="#4f8a3e"/>
           <ellipse cx="1472" cy="797" rx="3.8" ry="6.2" fill="#5f9a4a"/>
-
           <ellipse cx="1414" cy="808" rx="3.6" ry="6" fill="#3e6b30"/>
           <ellipse cx="1436" cy="806" rx="4" ry="6.5" fill="#4f8a3e"/>
           <ellipse cx="1460" cy="808" rx="3.6" ry="6" fill="#5f9a4a"/>
         </g>
-
-        <!-- 改善提案疊加：灌溉陶甕 (Water Urn) 位於路底旁 (1382, 770) -->
-        <g id="prop-urn" transform="translate(1382, 772)">
+        <!-- 灌溉陶甕 (1382, 772) -->
+        <g transform="translate(1382, 772)">
           <ellipse cx="0" cy="2" rx="6" ry="2.5" fill="#2c251e" opacity="0.3"/>
           <path d="M-5,-12 Q-7,-5 -4,0 Q0,2 4,0 Q7,-5 5,-12 Z" fill="#8a5234" stroke="#5a3420" stroke-width="0.9"/>
           <ellipse cx="0" cy="-12" rx="5" ry="2" fill="#5a3420"/>
           <ellipse cx="0" cy="-11.5" rx="4" ry="1.4" fill="#3d5a5e"/>
         </g>
-
-        <!-- 改善提案疊加：採藥小木鋤 (Hoe Tool) 倚於土畦邊 (1492, 804) -->
-        <g id="prop-hoe" transform="translate(1492, 804) rotate(-24)">
+        <!-- 採藥木鋤 (1492, 804) -->
+        <g transform="translate(1492, 804) rotate(-24)">
           <rect x="-0.8" y="-16" width="1.6" height="18" fill="#8a6446"/>
           <rect x="-3" y="-17" width="6" height="2.2" fill="#5a4230" rx="0.4"/>
         </g>
-
-        <!-- 竹籬 (同坐標保持原樣) -->
-        <g transform="translate(0, 0)">
-          <rect x="1516" y="768" width="3" height="12" fill="#a98a52"/>
-          <rect x="1518" y="776" width="3" height="12" fill="#a98a52"/>
-          <rect x="1516" y="784" width="3" height="12" fill="#a98a52"/>
-          <rect x="1518" y="792" width="3" height="12" fill="#a98a52"/>
-          <rect x="1516" y="800" width="3" height="12" fill="#a98a52"/>
-          <rect x="1518" y="808" width="3" height="12" fill="#a98a52"/>
+        <!-- 竹籬 -->
+        <g>
+          <rect x="1516" y="768" width="3" height="12" fill="#a98a52"/><rect x="1518" y="776" width="3" height="12" fill="#a98a52"/>
+          <rect x="1516" y="784" width="3" height="12" fill="#a98a52"/><rect x="1518" y="792" width="3" height="12" fill="#a98a52"/>
+          <rect x="1516" y="800" width="3" height="12" fill="#a98a52"/><rect x="1518" y="808" width="3" height="12" fill="#a98a52"/>
         </g>
-
-        <!-- 採藥人物微蹲姿態 (提案) 於 (1398, 772) -->
+        <!-- 採藥微蹲姿態 (提案) -->
         <g transform="translate(1398, 772)">
           <ellipse cx="0" cy="1" rx="8" ry="3" fill="#2c251e" opacity="0.35"/>
           <path d="M-4,-22 L4,-20 L4,-6 L-5,-6 Z" fill="#5683b8" stroke="#3d6593" stroke-width="0.8" transform="rotate(10)"/>
           <circle cx="2" cy="-25" r="4.2" fill="#f4d6b6"/>
-          <!-- 身前置簍 (x - 18, load 增加中) -->
           <polygon points="-16,-12 -8,-12 -9,0 -15,0" fill="#b08a4e" stroke="#6e5434" stroke-width="0.7"/>
           <ellipse cx="-12" cy="-12" rx="3.5" ry="1.8" fill="#5f9a4a"/>
-          <!-- 腳底 Anchor 點 -->
           <circle cx="0" cy="0" r="1.8" fill="#d9534f"/>
         </g>
-
-        <!-- 藥圃名牌 (同坐標) -->
         <g transform="translate(1440, 750)">
           <rect x="-42" y="-10" width="84" height="18" class="tag-bg" stroke="#2f6d3a"/>
           <text x="0" y="2" class="tag-txt-title" fill="#2f6d3a" text-anchor="middle">藥圃 · 梯田土畦</text>
         </g>
       </svg>
     </g>
+    <!-- 卡片底部說明 -->
+    <text x="12" y="272" class="card-sub">※ 標明：依接受版源碼繪製之局部示意與視覺提案合成；非世界坐標覆寫，未授權 runtime。</text>
   </g>
 
-  <!-- ======================================================== -->
-  <!-- 右欄：分鏡 B · 院中晾藥架生活場景 (HERB.rack 896, 474)     -->
-  <!-- ======================================================== -->
-  <g transform="translate(650, 48)">
-    <rect width="612" height="610" class="col-box"/>
-    <!-- 分鏡抬頭 -->
-    <text x="14" y="22" class="col-header">【分鏡 B】院中晾藥架生活場景 (HERB.rack 896, 474 · 坐標範圍 820..980, 420..530)</text>
-
-    <!-- 上半部：現況實際渲染 (LP-14 接受版 app.mjs lines 295–304) -->
-    <g transform="translate(10, 32)">
-      <rect width="592" height="254" class="view-box-base"/>
-      <text x="12" y="18" class="view-title-base">【現況基線】LP-14 接受版實際渲染段（忠實呈現 app.mjs lines 295–304 drawRack）</text>
-      <text x="12" y="31" class="view-sub">兩支立柱 (-26/23, -40) ＋ 兩層橢圓竹篩 (sy = -36, -18) ＋ 每份藥草單顆圓點 (最多 8 顆)</text>
-
-      <!-- 視口內部：viewBox="820 420 160 110" -->
-      <svg x="10" y="38" width="572" height="206" viewBox="820 420 160 110">
-        <!-- 院中石台基與土石地面 -->
-        <rect x="820" y="420" width="160" height="110" fill="#dcd5c4"/>
-        <path d="M820,440 L980,440" stroke="#c2baa8" stroke-width="1.2"/>
-        <path d="M820,480 L980,480" stroke="#c2baa8" stroke-width="1.2"/>
-
-        <!-- 藥架現況：(896, 474+8 = 482) 嚴格照 app.mjs drawRack 繪製 -->
-        <g transform="translate(896, 482)">
-          <!-- 陰影 -->
-          <ellipse cx="0" cy="2" rx="22" ry="5" fill="#2c251e" opacity="0.2"/>
-          <!-- 兩支立柱 (rect -26,-40,3,40 / 23,-40,3,40 #8a6a3e) -->
-          <rect x="-26" y="-40" width="3" height="40" fill="#8a6a3e"/>
-          <rect x="23" y="-40" width="3" height="40" fill="#8a6a3e"/>
-          <!-- 兩層竹篩 (ellipse 0, -36, 27, 5 / 0, -18, 27, 5 #d8bf86 #9a7a44) -->
-          <ellipse cx="0" cy="-36" rx="27" ry="5" fill="#d8bf86" stroke="#9a7a44" stroke-width="1.2"/>
-          <ellipse cx="0" cy="-18" rx="27" ry="5" fill="#d8bf86" stroke="#9a7a44" stroke-width="1.2"/>
-          <!-- 示意顯示 3 份藥草 (row -36, -16 + i*11) -->
-          <ellipse cx="-16" cy="-39" rx="4.5" ry="3" fill="#5f9a4a" stroke="#3e6b30" stroke-width="0.8"/>
-          <ellipse cx="-5" cy="-39" rx="4.5" ry="3" fill="#5f9a4a" stroke="#3e6b30" stroke-width="0.8"/>
-          <ellipse cx="6" cy="-39" rx="4.5" ry="3" fill="#5f9a4a" stroke="#3e6b30" stroke-width="0.8"/>
-        </g>
-
-        <!-- 藥架標籤 tag('rack', 896 - 30, 474 + 36 = 510) -->
-        <g transform="translate(866, 510)">
-          <rect x="-10" y="-10" width="115" height="18" class="tag-bg"/>
-          <text x="47" y="2" class="tag-txt-title" text-anchor="middle">藥架 3／8 · 在途 0</text>
-        </g>
-
-        <!-- 院中出發端點 (962, 512) -->
-        <circle cx="962" cy="512" r="3" fill="#c8962e" opacity="0.6"/>
-      </svg>
-    </g>
-
-    <!-- 下半部：改善提案 (LP-15 概念設計疊圖) -->
-    <g transform="translate(10, 296)">
-      <rect width="592" height="298" class="view-box-prop"/>
-      <text x="12" y="18" class="view-title-prop">【改善提案】LP-15 視覺概念設計疊圖（同一視口、同坐標 896, 474 精修）</text>
-      <text x="12" y="31" class="view-sub">精編三層竹篩 ＋ 榫接竹木立柱與橫欞 ＋ 錯落晾曬靈草束 ＋ 交藥卸簍動作姿態</text>
-
-      <!-- 視口內部：完全相同之 viewBox="820 420 160 110" -->
-      <svg x="10" y="38" width="572" height="248" viewBox="820 420 160 110">
-        <!-- 院中石台基 (同坐標) -->
-        <rect x="820" y="420" width="160" height="110" fill="#dcd5c4"/>
-        <path d="M820,440 L980,440" stroke="#c2baa8" stroke-width="1.2"/>
-        <path d="M820,480 L980,480" stroke="#c2baa8" stroke-width="1.2"/>
-
-        <!-- 改善：精修三層竹編晾藥架 (同坐標 896, 482) -->
-        <g transform="translate(896, 482)">
-          <!-- 陰影 -->
-          <ellipse cx="0" cy="2" rx="25" ry="5.5" fill="#2c251e" opacity="0.25"/>
-          <!-- 榫接加厚竹立柱與橫欞 -->
-          <rect x="-27" y="-45" width="4" height="45" fill="#8a6a3e" rx="1"/>
-          <rect x="23" y="-45" width="4" height="45" fill="#8a6a3e" rx="1"/>
-          <line x1="-25" y1="-21" x2="25" y2="-21" stroke="#70522a" stroke-width="1.8"/>
-          <!-- 提案三層圓形竹編篩 (sy = -41, -27, -13) -->
-          <ellipse cx="0" cy="-41" rx="28" ry="5.2" fill="#d8bf86" stroke="#8a6a3e" stroke-width="1.2"/>
-          <ellipse cx="0" cy="-27" rx="29" ry="5.6" fill="#d8bf86" stroke="#8a6a3e" stroke-width="1.2"/>
-          <ellipse cx="0" cy="-13" rx="30" ry="6.0" fill="#d8bf86" stroke="#8a6a3e" stroke-width="1.2"/>
-          <!-- 竹編經緯肌理 (暗示手工編織) -->
-          <line x1="-18" y1="-28" x2="18" y2="-26" stroke="#b08a4e" stroke-width="0.8"/>
-          <line x1="-20" y1="-14" x2="20" y2="-12" stroke="#b08a4e" stroke-width="0.8"/>
-          <!-- 錯落晾曬靈草束 (立體深淺雙色) -->
-          <ellipse cx="-12" cy="-42" rx="4" ry="2.2" fill="#5f9a4a"/>
-          <ellipse cx="8" cy="-42" rx="4.5" ry="2" fill="#4f8a3e"/>
-          <ellipse cx="-6" cy="-28" rx="5" ry="2.4" fill="#5f9a4a"/>
-          <ellipse cx="14" cy="-28" rx="4.5" ry="2.2" fill="#4f8a3e"/>
-        </g>
-
-        <!-- 交藥人物 (提案姿態) 停於端點左側面向藥架 (935, 482) -->
-        <g transform="translate(938, 482)">
-          <ellipse cx="0" cy="1" rx="8" ry="3" fill="#2c251e" opacity="0.32"/>
-          <!-- 前傾面向藥架 -->
-          <path d="M-4,-24 L4,-22 L3,-6 L-5,-6 Z" fill="#5683b8" stroke="#3d6593" stroke-width="0.8" transform="rotate(-8)"/>
-          <circle cx="-2" cy="-28" r="4.2" fill="#f4d6b6"/>
-          <!-- 雙手向前置藥 -->
-          <line x1="-2" y1="-16" x2="-14" y2="-14" stroke="#f4d6b6" stroke-width="1.4"/>
-          <!-- 身後腳邊卸下之藥簍 (+16, 0) -->
-          <polygon points="10,-10 18,-10 16,0 12,0" fill="#b08a4e" stroke="#6e5434" stroke-width="0.7"/>
-          <!-- 交付 +1 浮字 (入帳瞬時反饋) -->
-          <text x="-26" y="-32" font-size="9" font-weight="bold" fill="#2f6d3a">+1 份藥</text>
-        </g>
-
-        <!-- 藥架標籤 (同坐標) -->
-        <g transform="translate(866, 510)">
-          <rect x="-10" y="-10" width="115" height="18" class="tag-bg" stroke="#2f6d3a"/>
-          <text x="47" y="2" class="tag-txt-title" fill="#2f6d3a" text-anchor="middle">藥架 · 精編三層竹篩</text>
-        </g>
-      </svg>
-    </g>
-  </g>
-
-  <!-- 底部整體說明與邊界標示 -->
-  <g transform="translate(18, 666)">
-    <rect width="1244" height="42" fill="#1c1814" rx="4"/>
-    <text x="14" y="18" class="badge-txt-a">★ 來源依據與圖稿性質保證：</text>
-    <text x="180" y="18" class="title-sub">1. 【現況實際渲染段】：嚴格忠實還原 demo/app.mjs lines 113–132（ground 採藥路、藥圃土畦、18組植株、竹籬）與 lines 295–304（drawRack 兩層竹篩）。</text>
-    <text x="180" y="32" class="title-sub">2. 【改善提案概念疊圖】：在現有 ground 與 drawRack 上精修土畦分層、補陶甕木鋤與精編竹篩，建議抽函式或就地精修，零坐標位移，不重造或重疊圖層。</text>
+  <!-- 5. 底部總結聲明條 -->
+  <g transform="translate(14, 668)">
+    <rect width="1252" height="42" class="ftr-bar"/>
+    <text x="14" y="17" class="ftr-title">★ LP-15 H1 完整畫面參考來源與性質保證：</text>
+    <text x="250" y="17" class="ftr-body">1. 底圖引用庫內真操作畫面 ../life-observation/desktop-real.png (LP-14 dev 接受版 d1a4dde)，保留真桌面 UI、原人物可讀尺度與視野。</text>
+    <text x="250" y="31" class="ftr-body">2. 嵌圖特寫忠實對齊 app.mjs 113–132 行 ground 與 295–304 行 drawRack 接受版源碼；改善提案為概念疊圖，清楚標明合成／未接線，不冒稱實測。</text>
   </g>
 </svg>

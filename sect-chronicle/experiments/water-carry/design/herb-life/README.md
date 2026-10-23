@@ -1,6 +1,6 @@
 # LP-15 採藥場景與動作質感完整設計包
 
-本文件為 **LP-15 採藥場景與動作質感**（H1–H4，依據 [D29 決策](../../../../docs/DECISIONS_AND_SOURCES.md#d29lp-15-採藥場景與動作質感-h1h4批准2026-10-23)、[D30 決策](../../../../docs/DECISIONS_AND_SOURCES.md#d30桌面生活優先平台末位與精簡驗證2026-10-23)、[D31 流程](../../../../docs/PARALLEL_HANDOFF.md#d31單一主筆完整工作包與集中審查) 及 [LP15_HANDOFF.md](../../../../docs/LP15_HANDOFF.md)）之正式設計規格、同鏡頭對照、四段分鏡、最小接線差異表與誠實界線。
+本文件為 **LP-15 採藥場景與動作質感**（H1–H4，依據 [D29 決策](../../../../docs/DECISIONS_AND_SOURCES.md#d29lp-15-採藥場景與動作質感-h1h4批准2026-10-23)、[D30 決策](../../../../docs/DECISIONS_AND_SOURCES.md#d30桌面生活優先平台末位與精簡驗證2026-10-23)、[D31 流程](../../../../docs/PARALLEL_HANDOFF.md#d31單一主筆完整工作包與集中審查) 及 [LP15_HANDOFF.md](../../../../docs/LP15_HANDOFF.md)）之正式設計規格、完整桌面參考、四段分鏡、最小接線差異表與誠實界線。
 - **實際主筆**：Gemini（Antigravity，經共用帳號集中交付）
 - **Base dev SHA**：`d1a4dde62bc456fe3c138943401a3e33a3a0af32`（對齊 LP-14 接受版）
 - **關聯 Issues**：Refs [#259](https://github.com/lalagrass/earth-ascension/issues/259)、[#170](https://github.com/lalagrass/earth-ascension/issues/170)、[#182](https://github.com/lalagrass/earth-ascension/issues/182)、[#184](https://github.com/lalagrass/earth-ascension/issues/184)
@@ -13,7 +13,7 @@
 
 | 決策 | 交付產物 | 核心設計與邊界保證 |
 |---|---|---|
-| **H1 一條生活場景** | [`scene-compare.svg`](scene-compare.svg) (1280×720) | **同鏡頭分鏡特寫對照稿**：忠實依據接受版 `app.mjs` lines 113–132（`ground` 採藥路、藥圃土畦、18組植株、竹籬）與 lines 295–304（`drawRack` 兩層竹篩）還原東坡藥圃 `(1440, 788)` 與藥架 `(896, 474)` 現況渲染；改善提案疊入梯田土畦、精編三層竹篩、灌溉陶甕與木鋤之視覺概念疊圖；原坐標與路線長度 100% 同鏡頭保留，零坐標偏移。 |
+| **H1 一條生活場景** | [`scene-compare.svg`](scene-compare.svg) (1280×720) | **完整桌面畫面參考與特寫合成稿**：底圖直接引用庫內真操作畫面 `../life-observation/desktop-real.png`（LP-14 dev 接受版 `d1a4dde`），保留完整真實桌面 UI、原人物可讀尺度與視野；特寫嵌圖忠實對齊接受版 `app.mjs` lines 113–132（`ground` 採藥路、藥圃土畦、18組植株、竹籬）與 lines 295–304（`drawRack` 兩層竹篩）現況；改善提案疊入梯田土畦、精編三層竹篩、灌溉陶甕與木鋤之視覺概念疊圖；清楚標記「合成／特寫示意／未接線」，零世界坐標偏移。 |
 | **H2 一組動作質感** | [`storyboard-gather.svg`](storyboard-gather.svg) (1000×560) | **採摘→裝簍→背回→交藥四段動作分鏡**：標明腳底 Anchor `(0, 0)`、手部/簍具掛點、前後圖層遮擋關係 (`zIndex`)；原模型固定 4 階段 (`herbOut`, `herbGather` 4.0s, `herbBack`, `herbDeliver` 4.0s)，採摘與裝簍在 4.0s 內依進度 `k` 平順切換姿態，無新增 `herbStow` 階段。 |
 | **H3 成長來源清楚** | [`growth-contrast.svg`](growth-contrast.svg) (800×450) | **初學 (Lv 1) vs 熟練 (Lv 3) 同路徑、同負重、同倍率對照**：完全基於 `model.mjs` 之真實物理速度（空身 60.0 vs 74.4、負重 40.0 vs 52.0、實路 515.2、動作各 4.0s、名義單趟 29.48s vs 24.85s、主角 1 趟升 Lv 2），不以人為加速偽造節奏；重心 8° vs 5°、步頻節奏明確標為「視覺提案／待接線」。 |
 | **H4 最小接線與界線** | [`wiring-spec.svg`](wiring-spec.svg) (800×500) | **圖層管線、掛點偏移量與「現況→建議→涉及位置／延後」表**：統一全稿掛點規範；基於接受版現有 `ground` 繪製段與 `drawRack` 列出精修建議，手部動作標記為延後候選 (BL-P02)，不誇大僅三函式即可實現；原始向量圖稿採 CC0 授權。 |
@@ -24,7 +24,7 @@
 
 | 產物檔案 | 格式與尺寸 | 內容與設計說明 | 狀態標註 |
 |---|---|---|---|
-| [`scene-compare.svg`](scene-compare.svg) | SVG (1280×720) | **H1 生活場景同鏡頭對照稿**：分鏡 A (東坡藥圃 1440, 788) 與分鏡 B (院中藥架 896, 474)。忠實對齊接受版 `app.mjs` 113–132 行 `ground` 與 295–304 行 `drawRack` 現況，改善提案疊入梯田土畦、灌溉陶甕、木鋤與三層竹篩概念疊圖。 | `[同鏡頭對照稿]`、`[Base: d1a4dde]` |
+| [`scene-compare.svg`](scene-compare.svg) | SVG (1280×720) | **H1 完整桌面參考與特寫合成稿**：引用 `../life-observation/desktop-real.png` 作為 1280×720 完整桌面參考，保留原真實 UI 與人物可讀尺度；嵌圖附分鏡 A (東坡藥圃 1440, 788) 與分鏡 B (院中藥架 896, 474) 之現況依源碼局部示意 vs 改善概念疊圖，清楚標「合成／特寫示意／未接線」。 | `[完整桌面參考稿]`、`[Base: d1a4dde]` |
 | [`storyboard-gather.svg`](storyboard-gather.svg) | SVG (1000×560) | **H2 採藥動作四段分鏡圖**：詳細拆解 ① 採摘 (Gather, k&lt;0.5) ② 裝簍 (Stow, k≥0.5) ③ 背回 (Carry Back) ④ 交藥 (Deliver) 的動作重心、腳底 Anchor、掛點座標、草藥裝載量與時長；採集與交付嚴格對齊模型各 4.0 秒。 | `[動作分鏡規範]` |
 | [`growth-contrast.svg`](growth-contrast.svg) | SVG (800×450) | **H3 初學 vs 熟手成長對照圖**：主角 Lv 1（空手 60/負重 40、單趟名義 29.48s、1趟升級）與堂哥 Lv 3（空手 74.4/負重 52、單趟名義 24.85s）在同路徑 (長度 515.2) 之真實模型數據與視覺提案對照。 | `[模型事實與視覺對照]` |
 | [`wiring-spec.svg`](wiring-spec.svg) | SVG (800×500) | **H4 最小接線規格與圖層結構圖**：渲染管線 zIndex 堆疊順序、現況 vs 建議差異與接線位置表、動作延後標記與授權聲明。 | `[接線規格與圖層]` |
