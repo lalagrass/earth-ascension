@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>概念合成 · 同鏡頭 1600×900</title>
+<style>
+  html, body { margin: 0; background: #222; }
+  .frame { position: relative; width: 1600px; height: 900px; overflow: hidden; background: #d7e3e2; font: 14px/1.4 "PingFang TC", "Noto Sans TC", sans-serif; color: #2f2a24; }
+  .frame img.scene { position: absolute; inset: 0; width: 1600px; height: 900px; }
+  .hud { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+    background: rgba(248,242,228,.94); border: 1px solid #cdbb98; border-radius: 10px; padding: 6px 10px; z-index: 2; }
+  .hud b { letter-spacing: 2px; } .muted { color: #6b6254; font-size: 12px; }
+  .btn { border: 1px solid #cdbb98; background: #fffaf0; border-radius: 6px; padding: 2px 9px; }
+  .on { background: #2f2a24; color: #fff; }
+  .chip { background: #efe4cb; border-radius: 999px; padding: 1px 10px; font-size: 13px; }
+  .spacer { flex: 1; }
+  .boar, .card { position: absolute; background: rgba(248,242,228,.94); border: 1px solid #cdbb98; border-radius: 10px; z-index: 2; }
+  .boar { left: 10px; top: 64px; width: 250px; padding: 6px 10px; font-size: 13px; }
+  .bar { height: 7px; background: #e8dcc2; border-radius: 3px; margin: 2px 0 6px; position: relative; }
+  .bar i { display: block; height: 100%; background: #8a6a3e; }
+  .bar.threat i { width: 0; background: #b0483a; }
+  .bar s { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(47,42,36,.5); }
+  .roster { position: absolute; left: 10px; bottom: 36px; display: flex; gap: 8px; z-index: 2; }
+  .card { position: static; padding: 4px 10px; min-width: 180px; }
+  .card small { display: block; color: #6b6254; font-size: 12px; }
+  .card.sel { border: 2px solid #c8962e; }
+  .hint { position: absolute; left: 10px; right: 10px; bottom: 6px; font-size: 12px; color: #6b6254; background: rgba(248,242,228,.8); z-index: 2; }
+  .mark { position: absolute; right: 12px; bottom: 28px; z-index: 3; background: #2f2a24; color: #f6e7c4; font-size: 12px; padding: 2px 8px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <img class="scene" alt="" src="../source/scene.svg">
+  <header class="hud">
+    <b>宗門編年</b><span class="muted">生活開發版 · 尚未存檔</span>
+    <span class="btn">❚❚ 暫停</span>
+    <span class="btn on">1×</span><span class="btn">2×</span><span class="btn">4×</span>
+    <span class="muted">播放倍率</span>
+    <span class="btn">重來</span>
+    <span class="spacer"></span>
+    <span class="chip">0:00</span>
+    <span class="chip">水缸 3／8 · 在途 2</span>
+    <span class="chip">藥架 0／8 · 在途 0</span>
+    <span class="chip">主角 Lv 1</span>
+    <span class="chip">共完成 0 趟</span>
+    <span class="btn on">初始影子</span>
+    <span class="btn">名冊</span>
+    <span class="muted">舊版與存檔</span>
+  </header>
+  <aside class="boar">
+    <div>野豬 · 棲地恢復　第 0 次來訪（已回棲地）</div>
+    <div>精力（不是血量） 60／100</div>
+    <div class="bar"><i style="width:60%"></i><s style="left:30%"></s><s style="left:80%"></s></div>
+    <div>威脅記憶 0／100</div>
+    <div class="bar threat"><i></i><s style="left:20%"></s><s style="left:60%"></s></div>
+    <div>護欄損痕 0／3　只是外觀，不擋路不停工</div>
+  </aside>
+  <footer class="roster">
+    <div class="card sel"><b>林遠 · Lv 1</b><small>精力 99 · 挑水 · 下山（空桶）</small></div>
+    <div class="card"><b>熟手同伴 · Lv 3</b><small>精力 99 · 挑水 · 下山（空桶）</small></div>
+  </footer>
+  <div class="hint">點兩人看工作與腳力；點水缸／泉水／藥圃／藥架下令。此圖是概念合成，控制文字沿現有含義，不是新的操作。</div>
+  <div class="mark">概念合成 · 同鏡頭 · 未連遊戲</div>
+</div>
+</body>
+</html>

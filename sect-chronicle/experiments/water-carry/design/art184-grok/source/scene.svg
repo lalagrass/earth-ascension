@@ -1,0 +1,314 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <title>同鏡頭生活場景候選</title>
+  <desc>座標沿 spikes/shared/scene.json 與 demo/routes.mjs。概念圖，未連遊戲。遠林與雲是裝飾，不表示可走。</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7f1e4"/>
+      <stop offset="0.55" stop-color="#d5e4df"/>
+      <stop offset="1" stop-color="#b7d0c6"/>
+    </linearGradient>
+    <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d5e2b4"/>
+      <stop offset="0.45" stop-color="#b7cf8b"/>
+      <stop offset="1" stop-color="#8eaf62"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9fd0d4"/>
+      <stop offset="1" stop-color="#3f7f92"/>
+    </linearGradient>
+    <linearGradient id="roof" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6a7580"/>
+      <stop offset="1" stop-color="#3c4650"/>
+    </linearGradient>
+    <pattern id="tiles" width="18" height="10" patternUnits="userSpaceOnUse">
+      <path d="M0 8 Q9 0 18 8" fill="none" stroke="#2e3842" stroke-width="1.2"/>
+    </pattern>
+    <pattern id="slabs" width="86" height="48" patternUnits="userSpaceOnUse">
+      <rect width="86" height="48" fill="#d2c6ae"/>
+      <path d="M0 47 H86" stroke="#b5a68c" stroke-width="1.4"/>
+    </pattern>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <ellipse cx="1180" cy="150" rx="70" ry="70" fill="#fff6df" opacity="0.9"/>
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.55">
+    <path d="M80 210 Q180 180 280 210" stroke-width="18"/>
+    <path d="M420 160 Q560 120 700 168" stroke-width="22"/>
+  </g>
+  <g fill="#e7eeea">
+    <path d="M0 250 L120 190 L230 240 L360 170 L520 230 L640 180 L760 240 L900 190 L1040 250 L1040 340 L0 360 Z"/>
+  </g>
+  <g fill="#c5d4cf">
+    <path d="M0 310 L140 250 L280 310 L430 240 L600 320 L760 250 L940 330 L1100 270 L1280 340 L1600 290 L1600 430 L0 450 Z"/>
+  </g>
+  <g fill="#8eaaa0" opacity="0.85">
+    <path d="M40 390 L180 330 L300 390 L460 340 L640 410 L820 350 L980 420 L980 470 L40 480 Z"/>
+    <path d="M1100 400 L1260 340 L1420 400 L1560 350 L1600 370 L1600 460 L1100 470 Z"/>
+  </g>
+  <ellipse cx="700" cy="430" rx="520" ry="36" fill="#f7f4ee" opacity="0.55"/>
+
+  <path d="M0 430 C280 390 520 470 900 430 C1180 400 1400 460 1600 430 L1600 900 L0 900 Z" fill="url(#grass)"/>
+  <g fill="#9cbc70" opacity="0.45">
+    <ellipse cx="180" cy="520" rx="220" ry="40"/>
+    <ellipse cx="1280" cy="760" rx="260" ry="50"/>
+    <ellipse cx="700" cy="820" rx="300" ry="40"/>
+  </g>
+  <g stroke="#6e8f48" stroke-width="1.2" opacity="0.55">
+    <path d="M120 560 l6 -14 M148 548 l5 -12 M210 590 l7 -16 M260 540 l4 -10"/>
+    <path d="M430 760 l6 -14 M500 800 l5 -12 M820 790 l7 -15 M900 740 l4 -11"/>
+    <path d="M1500 640 l6 -14 M1540 700 l5 -12"/>
+  </g>
+
+  <!-- 外側山林：裝飾，畫在可走區之外 -->
+  <g fill="#3f6a45">
+    <polygon points="70,470 110,360 150,470"/>
+    <polygon points="130,480 180,340 230,480"/>
+    <polygon points="200,475 250,370 300,478"/>
+    <polygon points="1480,430 1530,330 1580,440"/>
+  </g>
+  <g fill="#2f5134">
+    <polygon points="100,470 128,400 156,470"/>
+    <polygon points="160,478 196,390 232,478"/>
+  </g>
+
+  <!-- 採藥土徑：既有路線，比石階窄 -->
+  <polyline points="962,512 990,556 1090,598 1160,640 1240,676 1320,718 1398,772" fill="none" stroke="#c6b07a" stroke-width="16" stroke-linejoin="round" stroke-linecap="round"/>
+  <polyline points="962,512 990,556 1090,598 1160,640 1240,676 1320,718 1398,772" fill="none" stroke="#e4d2a4" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- 挑水石階 -->
+  <polyline points="962,512 872,540 918,592 790,636 662,612 556,656 440,694 376,702" fill="none" stroke="#b7a78a" stroke-width="34" stroke-linejoin="round" stroke-linecap="round"/>
+  <polyline points="962,512 872,540 918,592 790,636 662,612 556,656 440,694 376,702" fill="none" stroke="#e6dcc8" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>
+  <g fill="#d5cbb6" stroke="#a89878" stroke-width="1">
+    <ellipse cx="930" cy="522" rx="16" ry="7"/>
+    <ellipse cx="890" cy="536" rx="15" ry="7"/>
+    <ellipse cx="900" cy="568" rx="16" ry="7"/>
+    <ellipse cx="850" cy="612" rx="17" ry="8"/>
+    <ellipse cx="760" cy="628" rx="18" ry="8"/>
+    <ellipse cx="690" cy="618" rx="16" ry="7"/>
+    <ellipse cx="600" cy="640" rx="18" ry="8"/>
+    <ellipse cx="520" cy="676" rx="18" ry="8"/>
+    <ellipse cx="440" cy="694" rx="16" ry="7"/>
+    <ellipse cx="390" cy="702" rx="15" ry="7"/>
+  </g>
+  <g fill="#7d9a62" opacity="0.7">
+    <ellipse cx="760" cy="640" rx="6" ry="3"/>
+    <ellipse cx="520" cy="688" rx="7" ry="3"/>
+    <ellipse cx="400" cy="710" rx="5" ry="2"/>
+  </g>
+
+  <!-- 泉水 -->
+  <g>
+    <ellipse cx="328" cy="734" rx="128" ry="28" fill="#6d8a55" opacity="0.35"/>
+    <ellipse cx="328" cy="719" rx="108" ry="36" fill="url(#water)" stroke="#3d6c78" stroke-width="3"/>
+    <ellipse cx="310" cy="712" rx="40" ry="8" fill="#e9f7f6" opacity="0.45"/>
+    <ellipse cx="328" cy="719" rx="16" ry="5" fill="none" stroke="#f4fffe" stroke-width="1.4"/>
+    <ellipse cx="328" cy="719" rx="30" ry="9" fill="none" stroke="#f4fffe" stroke-width="1"/>
+    <g fill="#8d8a80" stroke="#5e5c54">
+      <ellipse cx="230" cy="700" rx="28" ry="14"/>
+      <ellipse cx="250" cy="742" rx="22" ry="12"/>
+      <ellipse cx="420" cy="700" rx="26" ry="13"/>
+      <ellipse cx="400" cy="748" rx="20" ry="11"/>
+    </g>
+    <path d="M250 676 L300 708" stroke="#c9a15a" stroke-width="7" stroke-linecap="round"/>
+    <path d="M300 708 L318 716" stroke="#e8f7f8" stroke-width="3"/>
+    <g stroke="#3f6a38" fill="#6fa35a">
+      <path d="M210 730 q8 -28 4 -36 q10 10 8 28 z"/>
+      <path d="M230 748 q10 -32 2 -40 q12 12 8 32 z"/>
+      <path d="M430 736 q-8 -26 -2 -34 q-10 8 -8 26 z"/>
+    </g>
+    <g stroke="#2f5130" stroke-width="3">
+      <path d="M188 760 V700 M196 760 V710 M180 760 V718"/>
+    </g>
+  </g>
+
+  <!-- 西坡竹護欄：既有非關鍵護欄 -->
+  <g stroke="#c2a15a" stroke-width="4" stroke-linecap="round">
+    <path d="M640 470 L720 400"/>
+    <path d="M640 448 L720 378"/>
+  </g>
+  <g fill="#9a7a3e">
+    <rect x="636" y="430" width="6" height="52" rx="2"/>
+    <rect x="668" y="408" width="6" height="52" rx="2"/>
+    <rect x="706" y="382" width="6" height="52" rx="2"/>
+  </g>
+
+  <!-- 觀景石 -->
+  <g transform="translate(752 456)">
+    <ellipse cx="0" cy="8" rx="26" ry="8" fill="#6d8a55" opacity="0.35"/>
+    <path d="M-22 6 L-16 -16 L8 -22 L24 -4 L18 8 Z" fill="#b7b6ac" stroke="#7c7b72"/>
+  </g>
+
+  <!-- 道館與院落 -->
+  <g>
+    <path d="M960 470 L1540 430 L1560 590 L940 620 Z" fill="url(#slabs)" stroke="#9a8d74"/>
+    <path d="M990 530 L1510 492" stroke="#c4b59a" stroke-width="2"/>
+    <path d="M1004 572 L1524 530" stroke="#c4b59a" stroke-width="2"/>
+    <!-- 牆 -->
+    <rect x="1148" y="268" width="300" height="168" fill="#f6f1e6" stroke="#8d5a48" stroke-width="6"/>
+    <rect x="1148" y="268" width="16" height="168" fill="#a8483c"/>
+    <rect x="1432" y="268" width="16" height="168" fill="#a8483c"/>
+    <rect x="1278" y="300" width="46" height="136" fill="#6b4a32" stroke="#3e2a1c"/>
+    <rect x="1292" y="318" width="18" height="28" fill="#2c241c"/>
+    <rect x="1184" y="312" width="52" height="40" fill="#f3e2b0" stroke="#8d5a48"/>
+    <path d="M1210 312 V352 M1184 332 H1236" stroke="#8d5a48"/>
+    <rect x="1360" y="312" width="52" height="40" fill="#f3e2b0" stroke="#8d5a48"/>
+    <path d="M1386 312 V352 M1360 332 H1412" stroke="#8d5a48"/>
+    <!-- 瓦 -->
+    <path d="M1108 292 L1298 176 L1488 292 L1460 308 L1298 206 L1136 308 Z" fill="url(#roof)"/>
+    <path d="M1108 292 L1298 176 L1488 292 L1460 308 L1298 206 L1136 308 Z" fill="url(#tiles)"/>
+    <path d="M1120 300 Q1298 210 1476 300" fill="none" stroke="#2a333b" stroke-width="3"/>
+    <rect x="1266" y="248" width="64" height="22" rx="2" fill="#1e2428"/>
+    <text x="1298" y="264" text-anchor="middle" font-family="PingFang TC, Noto Sans TC, sans-serif" font-size="13" fill="#f3e2b0">道館</text>
+    <circle cx="1168" cy="292" r="7" fill="#c4452d"/>
+    <circle cx="1428" cy="292" r="7" fill="#c4452d"/>
+  </g>
+
+  <!-- 休息石凳 -->
+  <g transform="translate(968 420)">
+    <ellipse cx="0" cy="16" rx="54" ry="12" fill="#6d8a55" opacity="0.3"/>
+    <rect x="-46" y="-6" width="92" height="12" rx="4" fill="#c8c6ba" stroke="#7d7c72"/>
+    <rect x="-40" y="4" width="10" height="10" fill="#9a9a90"/>
+    <rect x="30" y="4" width="10" height="10" fill="#9a9a90"/>
+    <ellipse cx="-16" cy="-2" rx="12" ry="4" fill="#9db0c8"/>
+    <ellipse cx="18" cy="-2" rx="12" ry="4" fill="#a8bf9a"/>
+  </g>
+
+  <!-- 松 -->
+  <g transform="translate(980 300)">
+    <rect x="-4" y="20" width="8" height="46" fill="#6e5434"/>
+    <ellipse cx="0" cy="10" rx="34" ry="22" fill="#3f6a38"/>
+    <ellipse cx="-16" cy="24" rx="22" ry="14" fill="#4e7c44"/>
+    <ellipse cx="18" cy="22" rx="20" ry="13" fill="#2f5130"/>
+  </g>
+  <g transform="translate(1520 360)">
+    <rect x="-3" y="16" width="7" height="40" fill="#6e5434"/>
+    <ellipse cx="0" cy="8" rx="28" ry="18" fill="#3f6a38"/>
+    <ellipse cx="0" cy="22" rx="22" ry="12" fill="#4e7c44"/>
+  </g>
+  <g transform="translate(560 760)">
+    <rect x="-6" y="10" width="12" height="70" fill="#6e5434"/>
+    <ellipse cx="0" cy="-10" rx="48" ry="30" fill="#3f6a38"/>
+    <ellipse cx="-20" cy="16" rx="30" ry="18" fill="#4e7c44"/>
+    <ellipse cx="22" cy="18" rx="26" ry="16" fill="#2f5130"/>
+  </g>
+
+  <!-- 水缸 -->
+  <g transform="translate(1000 520)">
+    <ellipse cx="0" cy="18" rx="28" ry="8" fill="#5d7348" opacity="0.35"/>
+    <path d="M-26 -8 L-20 20 Q0 30 20 20 L26 -8 Q0 2 -26 -8 Z" fill="#8a5a32" stroke="#5c3a20"/>
+    <ellipse cx="0" cy="-8" rx="26" ry="8" fill="#6e8f98" stroke="#5c3a20"/>
+    <ellipse cx="-6" cy="-10" rx="10" ry="3" fill="#e7f4f4" opacity="0.6"/>
+    <path d="M18 -16 q16 -8 8 6" stroke="#c9a15a" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- 藥架 -->
+  <g transform="translate(896 474)">
+    <rect x="-28" y="-8" width="4" height="40" fill="#8a6a3e"/>
+    <rect x="24" y="-8" width="4" height="40" fill="#8a6a3e"/>
+    <ellipse cx="0" cy="-6" rx="28" ry="6" fill="#e2cb96" stroke="#9a7a44"/>
+    <ellipse cx="0" cy="12" rx="28" ry="6" fill="#e2cb96" stroke="#9a7a44"/>
+    <g fill="#4f8a3e">
+      <ellipse cx="-16" cy="-12" rx="5" ry="4"/>
+      <ellipse cx="-4" cy="-14" rx="5" ry="4"/>
+      <ellipse cx="8" cy="-12" rx="5" ry="4"/>
+      <ellipse cx="-8" cy="6" rx="5" ry="4"/>
+      <ellipse cx="6" cy="5" rx="5" ry="4"/>
+    </g>
+  </g>
+
+  <!-- 藥圃 -->
+  <g transform="translate(1440 788)">
+    <ellipse cx="0" cy="10" rx="78" ry="22" fill="#6a4a2c"/>
+    <ellipse cx="0" cy="6" rx="70" ry="16" fill="#7d5a34"/>
+    <g fill="#5f9a4a" stroke="#3e6b30">
+      <ellipse cx="-40" cy="2" rx="8" ry="5"/>
+      <ellipse cx="-16" cy="-2" rx="8" ry="5"/>
+      <ellipse cx="8" cy="2" rx="8" ry="5"/>
+      <ellipse cx="32" cy="-1" rx="8" ry="5"/>
+      <ellipse cx="-28" cy="10" rx="8" ry="5"/>
+      <ellipse cx="0" cy="12" rx="8" ry="5"/>
+      <ellipse cx="24" cy="10" rx="8" ry="5"/>
+    </g>
+    <g fill="#e8d16a">
+      <circle cx="-16" cy="-6" r="2"/>
+      <circle cx="32" cy="-5" r="2"/>
+      <circle cx="0" cy="8" r="2"/>
+    </g>
+  </g>
+
+  <!-- 灌木與石 -->
+  <g fill="#4e7c44">
+    <ellipse cx="706" cy="650" rx="28" ry="16"/>
+    <ellipse cx="460" cy="790" rx="36" ry="18"/>
+    <ellipse cx="1220" cy="800" rx="40" ry="20"/>
+  </g>
+  <g fill="#9a978c">
+    <ellipse cx="520" cy="600" rx="18" ry="10"/>
+    <ellipse cx="860" cy="800" rx="28" ry="12"/>
+  </g>
+
+  <!-- 熟手：同高 107，瘦、直、橄欖褐。腳底 (1090,508) -->
+  <g id="skilled" transform="translate(1090 508)">
+    <ellipse cx="0" cy="2" rx="16" ry="5" fill="#5d7348" opacity="0.35"/>
+    <line x1="-34" y1="-78" x2="34" y2="-78" stroke="#8a6a3e" stroke-width="3"/>
+    <g fill="#b08a4e" stroke="#6e5434">
+      <rect x="-40" y="-70" width="12" height="10" rx="1"/>
+      <rect x="28" y="-70" width="12" height="10" rx="1"/>
+    </g>
+    <path d="M-8 -8 L-12 -36" stroke="#3a342c" stroke-width="4" stroke-linecap="round"/>
+    <path d="M6 -8 L10 -36" stroke="#3a342c" stroke-width="4" stroke-linecap="round"/>
+    <path d="M-14 -36 Q0 -8 14 -36 L10 -70 Q0 -78 -10 -70 Z" fill="#6e6248"/>
+    <path d="M-16 -62 Q0 -74 12 -60" fill="none" stroke="#2c3140" stroke-width="3"/>
+    <circle cx="0" cy="-86" r="11" fill="#f2c7a2"/>
+    <path d="M-12 -90 Q0 -102 12 -90 Q8 -80 -8 -82 Z" fill="#243044"/>
+    <circle cx="4" cy="-86" r="1" fill="#2a241e"/>
+    <path d="M-4 -78 L6 -78" stroke="#2a241e" stroke-width="1"/>
+  </g>
+
+  <!-- 主角：同高 107，圓、藍、紅帶，略前傾。腳底 (610,648)，選取 -->
+  <g id="novice" transform="translate(610 648)">
+    <ellipse cx="0" cy="4" rx="22" ry="6" fill="none" stroke="#c8962e" stroke-width="2.4"/>
+    <ellipse cx="0" cy="4" rx="14" ry="4" fill="#5d7348" opacity="0.3"/>
+    <line x1="-38" y1="-74" x2="36" y2="-70" stroke="#8a6a3e" stroke-width="3.4"/>
+    <g fill="#a87840" stroke="#6e5434">
+      <rect x="-46" y="-66" width="14" height="12" rx="1"/>
+      <rect x="30" y="-62" width="14" height="12" rx="1"/>
+    </g>
+    <path d="M-10 -6 L-14 -30" stroke="#2c3440" stroke-width="5" stroke-linecap="round"/>
+    <path d="M8 -4 L14 -28" stroke="#2c3440" stroke-width="5" stroke-linecap="round"/>
+    <path d="M-20 -34 Q-2 -6 20 -30 L14 -68 Q-2 -78 -16 -66 Z" fill="#4f78a8"/>
+    <ellipse cx="-2" cy="-40" rx="16" ry="12" fill="#3f6896"/>
+    <path d="M-8 -64 Q2 -74 14 -62" fill="none" stroke="#e6d3b0" stroke-width="3"/>
+    <circle cx="2" cy="-84" r="15" fill="#f2c7a2"/>
+    <circle cx="8" cy="-80" r="4" fill="#f0b0a4" opacity="0.8"/>
+    <path d="M-10 -96 Q2 -108 16 -94 Q6 -86 -8 -90 Z" fill="#1c1a18"/>
+    <path d="M-2 -104 Q6 -112 14 -100" stroke="#c4452d" stroke-width="3" fill="none"/>
+    <circle cx="8" cy="-84" r="1.2" fill="#2a241e"/>
+    <path d="M2 -76 Q8 -73 12 -76" fill="none" stroke="#a86858" stroke-width="1"/>
+  </g>
+
+  <!-- 前景枝，不擋路 -->
+  <g fill="#2f5130" opacity="0.9">
+    <path d="M0 860 Q40 820 20 760 Q70 830 0 900 Z"/>
+    <path d="M1580 820 Q1520 780 1560 730 Q1500 800 1600 900 Z"/>
+  </g>
+
+  <g font-family="PingFang TC, Noto Sans TC, sans-serif" font-size="12">
+    <g fill="#2f2a24">
+      <text x="328" y="676" text-anchor="middle">泉水</text>
+      <text x="1000" y="492" text-anchor="middle">水缸 3／8</text>
+      <text x="896" y="446" text-anchor="middle">藥架 0／8</text>
+      <text x="968" y="396" text-anchor="middle">休息石凳</text>
+      <text x="1440" y="760" text-anchor="middle">藥圃</text>
+      <text x="680" y="360" text-anchor="middle">西坡竹護欄</text>
+      <text x="752" y="430" text-anchor="middle">觀景石</text>
+      <text x="1190" y="600" text-anchor="middle">院邊空地</text>
+    </g>
+    <g>
+      <rect x="560" y="520" width="100" height="18" rx="4" fill="#4f78a8"/>
+      <text x="610" y="533" text-anchor="middle" fill="#fff">主角 Lv 1</text>
+      <rect x="1040" y="386" width="108" height="18" rx="4" fill="#6e6248"/>
+      <text x="1094" y="399" text-anchor="middle" fill="#fff">熟手 Lv 3</text>
+    </g>
+  </g>
+</svg>
