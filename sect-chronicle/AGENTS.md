@@ -1,5 +1,13 @@
 # Coding agent 接手入口
 
+## D24：完整地圖設計先行，Grok畫圖／Gemini後續整合（2026-10-23）
+
+最新批准見 [D24](docs/DECISIONS_AND_SOURCES.md#d24-182-完整道館生活地圖設計與美術分工批准2026-10-23)、[#182](https://github.com/lalagrass/earth-ascension/issues/182)、[正式工作包](docs/MAP182_HANDOFF.md)／[Grok Build提示詞](docs/MAP182_GROK_BUILD_PROMPT.md)。Grok主筆完整道館生活地圖總配置、畫風稿與長路線行走預演（分鏡／短片即可）；保留長通勤／看人物奔波，允許自由延伸生活功能點、外圍山徑與未來巡山構想。每點標現有／景觀／未來候選，不逐點加簽核，也不把設計當新玩法批准。
+
+本D24文件經非作者review／Earth唯一queue合dev／postCI後，Grok本人新claim，只寫`sect-chronicle/experiments/water-carry/design/map182/**`；不等#244才可畫稿。復用自己的乾淨grok-art184 worktree、保留245舊分支，從最新dev另開例如`codex/map182-dojo-design`，不操作Gemini目錄／branch。#245已合dev bccda780／postCI39884517733通過；#244原補修scope／期限不變。不得改demo、checks、共享README、atlas／spikes、模型／依賴或8800。
+
+**D23與舊ART184 prompt的下一步已被本節更新**：先交#182設計給擁有人看，實裝範圍之後確認，再由Gemini新包／新claim整合；不能在#244通過後自行啟動舊Grok局部runtime。Grok以圖片與來源交接為主，不要求寫遊戲程式；若設計播放器則只在白名單、標未連遊戲且真暫停／有限結束。必要根檢查／CI、少量可讀性與受影響預演驗證保留，未變證據復用、摘要真exit，不跑長矩陣或自接下一包。
+
 ## D23：#184 泉池—石階局部美術 V1–V4已批准（2026-10-23）
 
 讀 [D23](docs/DECISIONS_AND_SOURCES.md#d23-184-局部美術整合-v1v4-批准2026-10-23)、[#184](https://github.com/lalagrass/earth-ascension/issues/184)、[正式工作包](docs/ART184_HANDOFF.md)與 [Grok Build提示詞](docs/ART184_GROK_BUILD_PROMPT.md)。擁有人同意V1–V4，後續主筆Grok Build。先同鏡頭泉池—石階小對照，再分層薄整合同生活入口；舊人物／動畫、原模型路線／碰框與LP11／LP12控制保留。不是全場景、人物皮、玩法或UI重排。

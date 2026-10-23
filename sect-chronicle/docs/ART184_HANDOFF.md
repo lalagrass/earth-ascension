@@ -1,5 +1,11 @@
 # #184 正式工作包：泉池—石階局部美術整合
 
+## D24更新：本實裝包暫後，勿直接按下方舊prompt開工
+
+擁有人最新決策見 [D24](DECISIONS_AND_SOURCES.md#d24-182-完整道館生活地圖設計與美術分工批准2026-10-23)：先由Grok Build交[#182完整道館生活地圖設計](MAP182_HANDOFF.md)／[新圖像設計提示詞](MAP182_GROK_BUILD_PROMPT.md)，保留長通勤並可延伸功能點／未來巡山。**Grok專注設計圖片，Gemini才是後續整合主筆**；看稿後由擁有人確認實裝範圍，再更新工程工作包並本人新claim。
+
+下方D23的V1–V4範圍／證據留作歷史與後續候選，不自動執行。#245已合dev bccda780、postCI39884517733通過；#244原補修不變，但其完成不會自動解鎖本舊包。新#182純設計不等#244，D24文件合dev／postCI即可按新工作包認領；本文件不授Grok接demo或操作8800。
+
 ## 批准、玩家目標與開工條件
 
 擁有人2026-10-23已同意V1–V4，原話與範圍見 [D23](DECISIONS_AND_SOURCES.md#d23-184-局部美術整合-v1v4-批准2026-10-23)，追蹤 [#184](https://github.com/lalagrass/earth-ascension/issues/184)，沿 [#177／BL-V03](https://github.com/lalagrass/earth-ascension/issues/177)，不另建同義工作單。後續主筆Grok Build，貼用 [接手提示詞](ART184_GROK_BUILD_PROMPT.md)；本PO只同步批准文件，未代認領或啟動製作。
