@@ -1,5 +1,13 @@
 # Coding agent 接手入口
 
+## D30最高優先：桌面生活先行，手機與冗餘驗證延後（2026-10-23）
+
+擁有人直接要求把手機這類項目排最後並簡化驗證，見[D30](docs/DECISIONS_AND_SOURCES.md#d30桌面生活優先平台末位與精簡驗證2026-10-23)／[#262](https://github.com/lalagrass/earth-ascension/issues/262)。**當前只以桌面作產品驗收；舊段落的390必交／必驗不再是門檻。** 手機／平板／觸控／全面跨裝置排最末位BL-P01，既有適配保留。
+
+按[唯一優先序](docs/VISIBLE_DELIVERY_PLAN.md#d30目前唯一執行優先序)與[局部驗證政策](docs/VALIDATION_POLICY.md)：只驗改動直接風險，一段桌面操作及必要回歸；未變模型與當前CI復用，作者／PO不重複本地全套，不加自證／長矩陣／全架構audit。必要CI與真實資料／原指令／暫停、來源、非作者review／唯一queue照舊。
+
+#257／PR261先按桌面重審；#259仍等257接受／合dev／postCI後才Gemini新claim，只先桌面採藥完整稿，不先改路線／數值或runtime。下方D28／D29的手機字樣保留批准沿革但受D30更新，不能再拿手機遮擋阻擋桌面交付；其他白名單／作者期限與2h上限不變。
+
 ## D29最新批准：LP-15採藥場景與動作質感，等LP14後先畫稿（2026-10-23）
 
 H1–H4已批准，見[D29](docs/DECISIONS_AND_SOURCES.md#d29lp-15-採藥場景與動作質感-h1h4批准2026-10-23)／[#259](https://github.com/lalagrass/earth-ascension/issues/259)／[正式包](docs/LP15_HANDOFF.md)／[Gemini提示詞](docs/LP15_GEMINI_PROMPT.md)。藥圃→藥架完整稿與採摘／裝簍／背回／交藥分鏡，原坐標／路線／數值／角色保留；採藥既有功能不重做。

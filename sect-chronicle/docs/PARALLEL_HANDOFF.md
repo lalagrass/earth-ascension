@@ -1,5 +1,11 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+## D30交接更新：桌面優先與最小必要驗證
+
+[D30](DECISIONS_AND_SOURCES.md#d30桌面生活優先平台末位與精簡驗證2026-10-23)／[#262](https://github.com/lalagrass/earth-ascension/issues/262)更新平台與成本優先序。Codex遊戲PO只10MD，不碰Gemini PR261／未提交成果；Gemini先按桌面完成#257，#259仍等前置後本人新claim，只先桌面採藥設計。舊手機必交／必驗移末位BL-P01，不延長作者期限，不為文件審合停止已有桌面工作。
+
+[局部驗證政策](VALIDATION_POLICY.md)覆蓋下方每包桌面390／全套重跑敘述：只驗改動直接風險，復用未變資料與當前CI，保留必要CI／非作者review／Earth唯一queue；不新建全裝置或矩陣runner，不把自校當獨立審查。原路線／數值／來源、worktree隔離與8800權限不變。
+
 ## D29最新交接：Gemini先完成LP14，LP15前置通過後才新認領（2026-10-23）
 
 [批准D29](DECISIONS_AND_SOURCES.md#d29lp-15-採藥場景與動作質感-h1h4批准2026-10-23)／[#259](https://github.com/lalagrass/earth-ascension/issues/259)／[工作包](LP15_HANDOFF.md)／[Gemini prompt](LP15_GEMINI_PROMPT.md)。Codex遊戲PO只6MD批准同步；Gemini當前#257原O1–O4／期限不變，不動其worktree、未公開成果或branch。
