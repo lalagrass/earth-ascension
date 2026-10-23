@@ -1,5 +1,21 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+## 2026-10-23 D23現行分工：Gemini生活核心、Grok Build有限美術
+
+以 [D23](DECISIONS_AND_SOURCES.md#d23-184-局部美術整合-v1v4-批准2026-10-23)、[#184](https://github.com/lalagrass/earth-ascension/issues/184)／[#241](https://github.com/lalagrass/earth-ascension/issues/241)及 [正式工作包](ART184_HANDOFF.md)／[Grok Build提示詞](ART184_GROK_BUILD_PROMPT.md)為本輪入口。下方2026-10-18的Grok單核心／Gemini quota與示意路徑是歷史，不能用來重分配當前有效作者。
+
+| 角色／工作目錄 | 本輪所有權與下一步 |
+|---|---|
+| Gemini：`/Users/chenyuying/workspace/earth-ascension-gemini-241`，`gemini/lp12-rat-autonomy` | #241／PR244有限補修；精確檔案／期限看原claim和最新審查。Grok、PO不寫此checkout或處理未提交成果 |
+| Grok Build：`/Users/chenyuying/workspace/earth-ascension-grok-art184`，`codex/art184-grok-build` | #184／PR245原美術包／到期播放補修，只原design/art184-grok/**。本次V1–V4不是加到此PR的範圍 |
+| Codex遊戲PO：自有PO checkout／`codex/art184-v1-v4-approved` | 本次僅7MD批准同步、工作包與prompt，不改以上兩位作者的檔案；交Earth唯一queue審核整合 |
+
+批准文件可先合；本文件與PR244／245各新head非作者接受、合dev及postCI後，Grok才在自己的乾淨worktree從最新dev另開例如`codex/art184-v1-v4-integration`的新分支、新4h認領V1–V4。保留原245分支；squash後不要為了同步而reset／force push或切別人的branch。若新runtime已有重疊作者先協調，不預占後包。
+
+本包只允許新design/art184-integration/**、demo/assets/art184/**與必要app背景接線／局部檢查／實驗README（依正式白名單）；模型與其他UI不動。兩個checkout／index分離，但Git refs共用，仍不能操作他人branch／worktree。各自確認空預覽埠、使用自有輸出；8800由遊戲PO在接受／postCI後更新並保留上版，作者不啟停他人服務。不在子資料夾git init，不拆repo／換引擎，不啟其他agent或排程。
+
+## 2026-10-18歷史交接（保留來源，現況以上方D23為準）
+
 **D8最新交接優先**：[REALTIME_LIFE_SLICE.md](REALTIME_LIFE_SLICE.md)與RT-00 #99／總單#93取代下方從SG-01或先SG-06的舊啟動prompt。仍由原Grok單一核心agent串行，Earth PO唯一整合負責人；Gemini不參與。戰鬥延後，先交可暫停即時自主生活的契約、核心、存讀、UI與試玩；不因即時改造同時派多agent搶engine。
 
 更新：2026-10-18。使用者澄清：並行是「一位開發上層 Earth 模擬、一位開發下層遊戲」，不是兩位一起拆 SG 任務。Gemini quota 已用完，本輪不參與；任何任務與審核不得依賴 Gemini。產品分工已由擁有人於同日指定：Earth PO（Codex，本 PO 聊天）管理 Earth 並兼任唯一共用合併佇列負責人；另一個 Astra 聊天為遊戲 PO。開發主筆仍以各 issue 的實際認領為準。

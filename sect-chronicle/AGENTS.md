@@ -1,5 +1,15 @@
 # Coding agent 接手入口
 
+## D23：#184 泉池—石階局部美術 V1–V4已批准（2026-10-23）
+
+讀 [D23](docs/DECISIONS_AND_SOURCES.md#d23-184-局部美術整合-v1v4-批准2026-10-23)、[#184](https://github.com/lalagrass/earth-ascension/issues/184)、[正式工作包](docs/ART184_HANDOFF.md)與 [Grok Build提示詞](docs/ART184_GROK_BUILD_PROMPT.md)。擁有人同意V1–V4，後續主筆Grok Build。先同鏡頭泉池—石階小對照，再分層薄整合同生活入口；舊人物／動畫、原模型路線／碰框與LP11／LP12控制保留。不是全場景、人物皮、玩法或UI重排。
+
+**前置受阻**：本次批准文件、#244休閒返院補修、#245預演到期不停補修，均須新head非作者接受→Earth唯一queue合dev→postCI通過，才可本人認領任何本新包製作／runtime。文件可先獨立合併，不把文件綠燈或舊PR綠燈當解鎖；原作者原scope補修不受本文件阻擋，不重問V1–V4。
+
+Grok已有獨立worktree `/Users/chenyuying/workspace/earth-ascension-grok-art184`；#245原分支保留，前置完成且自有目錄乾淨／無重疊作者後從最新dev另建codex/新分支／新4h認領。不要在原PR加整合提交，不因squash分歧reset／force push。Gemini `/Users/chenyuying/workspace/earth-ascension-gemini-241`完全不動。只改工作包白名單的新design/art184-integration/**、demo/assets/art184/**、app背景接線、必要局部檢查與實驗README；model/routes/palm、atlas/template/spikes、其他UI與root不動。
+
+必要局部實圖／真操作與根檢查／SG快驗／CI保留，未變證據復用，摘要／真exit／GPU限制照實，不重跑世界長矩陣。不代啟作者／其他agent／排程，完成本包即停；接受／postCI後才由遊戲PO更同8800保留上版。下方D10 quota與PARALLEL_HANDOFF早期「Gemini不參與」為歷史；本次明確安排僅更新這個有限美術包，不重啟#93或接管#241。
+
 ## D22：LP-12 自主清鼠與玩家覆寫 L1–L4 已批准（2026-10-23）
 
 讀 [D22](docs/DECISIONS_AND_SOURCES.md#d22lp-12-自主清鼠與玩家覆寫-l1l4-批准2026-10-23)、[#241](https://github.com/lalagrass/earth-ascension/issues/241)、[LP12正式工作包](docs/LP12_HANDOFF.md)／[Gemini提示詞](docs/LP12_GEMINI_PROMPT.md)。擁有人已同意L1–L4，後續主筆Gemini；本次批准文件合dev／postCI後才本人新認領runtime，不重問四項，不沿舊Claude／LP11窗口，未代啟作者。
