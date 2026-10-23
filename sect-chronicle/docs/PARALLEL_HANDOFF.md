@@ -1,5 +1,17 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+## D28最新交接：#256補修先行，Gemini後續接LP14（2026-10-23）
+
+擁有人同意O1–O4及兩小時有限循環，見[D28](DECISIONS_AND_SOURCES.md#d28lp-14-生活觀察介面-o1o4批准2026-10-23)／[#257](https://github.com/lalagrass/earth-ascension/issues/257)／[正式工作包](LP14_HANDOFF.md)／[Gemini prompt](LP14_GEMINI_PROMPT.md)。下方D25等設計分工留歷史，不用舊claim或prompt啟動新包。
+
+| 角色／工作 | 現行邊界 |
+|---|---|
+| Gemini：#254／PR256 | 仍原作者／原分支的390可讀性有限補修，c34d413尚有P2；只按#254最新review／期限續修，不等D28文件、不插LP14設計或新UI，不碰PO文件 |
+| Codex遊戲PO：codex/lp14-observation-approved | 只6MD批准同步／工作包與prompt，與256的runtime檔無重疊；交Earth非作者審合文件，不動Gemini checkout／branch |
+| Gemini：LP14新工作 | 本批准文件及256修正版各自非作者接受→Earth合dev→postCI後，核最新dev／有效作者、新4h claim／新codex分支，才做畫稿與接線。未代啟／未預占後包；只LP14白名單 |
+
+可重用自己的乾淨獨立worktree，但保留256原branch／未提交成果，不因squash分歧reset／force push／切他人分支，也不在子資料夾git init。新包兩小時從本人新T0算、100min後不加scope／達標停，4h不延長窗口，不啟其他agent／排程或自合dev。作者用確認空埠預覽，8800仍由PO在runtime接受／Earth合dev／postCI後更換並保留上一版。必要局部／SG快驗／根CI與桌面390、未變證據復用及摘要真exit，無額外大拆或長矩陣。
+
 ## D25最新分工：Gemini接手#182圖像設計與改圖（2026-10-23）
 
 擁有人因Grok quota不足明確改派，依 [D25](DECISIONS_AND_SOURCES.md#d25-182-設計與改圖改由gemini接手2026-10-23)／[更新工作包](MAP182_HANDOFF.md)／[Gemini提示詞](MAP182_GEMINI_PROMPT.md)。下方D24的Grok圖像／Gemini整合改為歷史分工；Gemini現在接PR248剩餘設計與四項P2，保留Grok公開成果／原分支／審查，另從最新dev新claim／新接續PR。只design/map182/**，可沿乾淨的原grok-art184美術worktree，不能碰Gemini gemini-241 checkout或混244檔案。
