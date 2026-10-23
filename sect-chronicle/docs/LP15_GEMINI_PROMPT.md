@@ -1,5 +1,7 @@
 # Gemini下一包：LP-15完整採藥設計，兩小時集中交付
 
+**本提示詞已完成，僅留沿革**：#267合dev `0403c10e`／postCI39966426048五成功，原#259設計不重做／不續舊claim。請貼[LP16新提示詞](LP16_GEMINI_PROMPT.md)，依[整合工作包](LP16_HANDOFF.md)處理下一包；下段不再是開工指令。
+
 目標、H1–H4與A–D驗收只以[正式工作包](LP15_HANDOFF.md)為準；協作依[D31](PARALLEL_HANDOFF.md#d31單一主筆完整工作包與集中審查)，測試／清理依[VALIDATION_POLICY](VALIDATION_POLICY.md)。只先桌面，手機／平板排最後。下段可直接貼給Gemini；這份提示詞不代表已啟動或認領。
 
 ```text
