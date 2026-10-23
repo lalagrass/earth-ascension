@@ -190,3 +190,52 @@ test('E 幾何對齊與模組載入：scenery 依賴解析正常、溪流河道�
   assert.ok(onBridgeCount > inStreamCount, '橋面必須寬於溪水河道，提供兩端平穩接合');
   assert.equal(inStreamOffBridge, 0, '跨溪水路樣本落在橋外（踩水）的數量必須為 0');
 });
+
+test('F 窄螢幕 390 視窗上方遮擋（HUD／野豬卡）避讓與跟隨人物可讀性', () => {
+  // 窄螢幕規格參數 (iPhone 12/13/14 等標準 390×844 視窗)
+  const screenW = 390, screenH = 844, zoom = 0.85;
+
+  function calcNarrowY(pY, topRects, bottomRects) {
+    const top = Math.max(0, ...topRects);
+    const bottom = Math.min(screenH, ...bottomRects);
+    const targetY = bottom > top + 40 ? (top + bottom) / 2 : Math.max(top + 20, (top + bottom) / 2);
+    const ty = pY - 30 - (targetY - screenH / 2) / zoom;
+    // 渲染屏幕 Y：toScreen(p.x, y) = (y - cam.y) * zoom + screenH / 2
+    const toScreenY = (y, camY) => (y - camY) * zoom + screenH / 2;
+    return {
+      camY: ty,
+      targetY,
+      headY: toScreenY(pY - 60, ty),
+      centerY: toScreenY(pY - 30, ty),
+      feetY: toScreenY(pY, ty),
+      tagY: toScreenY(pY, ty) + 6,
+      pillY: toScreenY(pY - 80, ty),
+      top,
+      bottom,
+    };
+  }
+
+  // 1. 真機實測數據（Codex 覆核數值）：HUD bottom 168.5、#boar bottom 303、#panel top 420.52
+  const panelOpen = calcNarrowY(512, [168.5, 303], [420.52, 796]);
+  assert.ok(panelOpen.headY > 303, `人物頭頂 (${panelOpen.headY}px) 必須位於 #boar 底部 (303px) 下方，不得被野豬卡遮住`);
+  assert.ok(panelOpen.feetY < 420.52, `人物腳底 (${panelOpen.feetY}px) 必須位於 #panel 頂部 (420.52px) 上方，不得被面板遮擋`);
+  assert.ok(panelOpen.tagY < 420.52, `人物名牌 (${panelOpen.tagY}px) 必須在面板上方可讀`);
+  assert.ok(panelOpen.pillY > 303, `人物狀態藥丸 (${panelOpen.pillY}px) 必須位於野豬卡下方`);
+
+  // 2. 人物面板關閉時（只有名冊在底部，roster top = 796）
+  const panelClosed = calcNarrowY(512, [168.5, 303], [796]);
+  assert.ok(panelClosed.headY > 303, '面板關閉時頭頂依然避開野豬卡');
+  assert.ok(panelClosed.feetY < 796, '面板關閉時腳底在名冊上方');
+
+  // 3. 暫停橫幅彈出時（banner bottom = 334.5）
+  const pausedWithBanner = calcNarrowY(512, [168.5, 303, 334.5], [420.52, 796]);
+  assert.ok(pausedWithBanner.headY > 334.5, `暫停時人物頭頂 (${pausedWithBanner.headY}px) 必須在暫停橫幅 (334.5px) 下方可讀`);
+  assert.ok(pausedWithBanner.feetY < 420.52, '暫停時人物腳底依然在面板上方');
+
+  // 4. 挑水全程關鍵點位（院落 512、石階 750、溪橋 1000、深潭新泉 1245）相機 Y 均在合法邊界內且可讀
+  for (const [name, ptY] of [['院落 HOME', 512], ['石階', 750], ['溪橋', 1000], ['新泉眼', 1245]]) {
+    const res = calcNarrowY(ptY, [168.5, 303], [420.52, 796]);
+    assert.ok(res.camY >= 0 && res.camY <= WORLD_SIZE.h, `${name} 相機 Y (${res.camY}) 必須在世界高度 [0, ${WORLD_SIZE.h}] 內不被截斷`);
+    assert.ok(res.headY > 303 && res.feetY < 420.52, `${name} 人物全身在淨視野區間內完全可見`);
+  }
+});

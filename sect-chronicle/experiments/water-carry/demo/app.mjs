@@ -374,10 +374,22 @@ function follow() {
   if (!p) return;
   let ty;
   if (narrow()) {
-    const top = document.querySelector('.hud').getBoundingClientRect().bottom;
-    const drawer = [$('menu'), $('panel'), $('roster')].filter((el) => !el.hidden && el.offsetHeight).map((el) => el.getBoundingClientRect().top);
+    // 窄螢幕：上方遮擋包含 HUD、野豬卡與暫停橫幅，下方抽屜包含選單、人物面板與名冊；
+    // 計算上下遮擋間的淨可視垂直區間，使跟隨人物位於兩者正中，避開野豬卡等上方遮擋
+    const topEls = [document.querySelector('.hud'), $('boar'), $('banner')].filter((el) => {
+      if (!el || el.hidden || !el.offsetHeight) return false;
+      const s = window.getComputedStyle ? window.getComputedStyle(el) : null;
+      return !s || (s.display !== 'none' && s.visibility !== 'hidden');
+    });
+    const top = Math.max(0, ...topEls.map((el) => el.getBoundingClientRect().bottom));
+    const drawer = [$('menu'), $('panel'), $('roster')].filter((el) => {
+      if (!el || el.hidden || !el.offsetHeight) return false;
+      const s = window.getComputedStyle ? window.getComputedStyle(el) : null;
+      return !s || (s.display !== 'none' && s.visibility !== 'hidden');
+    }).map((el) => el.getBoundingClientRect().top);
     const bottom = Math.min(window.innerHeight, ...drawer);
-    ty = p.y - 30 - ((top + bottom) / 2 - app.screen.height / 2) / cam.zoom;
+    const targetY = bottom > top + 40 ? (top + bottom) / 2 : Math.max(top + 20, (top + bottom) / 2);
+    ty = p.y - 30 - (targetY - app.screen.height / 2) / cam.zoom;
   } else {
     // 桌面版：人物居中偏上，留出名冊與場景下方視野
     const hud = document.querySelector('.hud');
