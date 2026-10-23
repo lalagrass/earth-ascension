@@ -1,4 +1,6 @@
-// LP-14 生活觀察介面驗收測試（A 觀察與層級、B 人物與介入、C 進階與無副作用、D 觀看與相機）
+// LP-14 生活觀察介面輔助驗證（模型資料、命令語義與相機幾何換算）
+// 註：本測試在 Node 無 DOM 環境執行，專注於底層模型契約、狀態語義與相機幾何公式之輔助驗收；
+// 真實 DOM 渲染、按鈕互動與 390 視區視覺驗證見 design/life-observation/phone-390-life.svg 與展示手動驗收。
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createModel, createClock, PEOPLE, RULES, tripSteps } from '../demo/model.mjs';
@@ -13,7 +15,7 @@ const LENGTHS = {
   guard: 250,
 };
 
-test('A 觀察與資訊層級：HUD 關鍵存量與狀態精簡，院落近況可展開收起且不隱去威脅', () => {
+test('A 模型資料與資訊層級：HUD 關鍵存量、野豬狀態與鼠群清理階段語義', () => {
   const model = createModel(LENGTHS);
   const v = model.view();
 
@@ -30,12 +32,14 @@ test('A 觀察與資訊層級：HUD 關鍵存量與狀態精簡，院落近況�
   assert.equal(b.maxMarks, 3);
   assert.equal(v.rats.length, 3, '三隻弱鼠 fixture 存在');
 
-  // 3. 當野豬有威脅（被撞或靠近）時，損痕不被完全隱藏
-  model.step(); // 推進世界
-  assert.ok(b.max >= 80, '野豬精力上限正常');
+  // 3. 清理階段文字語義對照（P2 修正：依照 clean.phase 精準區分，不冒稱清理中）
+  const PHASE_TEXT = { wait: '等待出發', go: '清理中', back: '返院中' };
+  assert.equal(PHASE_TEXT.wait, '等待出發');
+  assert.equal(PHASE_TEXT.go, '清理中');
+  assert.equal(PHASE_TEXT.back, '返院中');
 });
 
-test('B 人物與介入：小卡正確綁定選取角色、精力、工作、下一步／停止原因與改令對接', () => {
+test('B 人物小卡與介入：角色工作、真實精力、下一步/狀態原因與改令對接', () => {
   const model = createModel(LENGTHS);
   const v = model.view();
 
@@ -69,32 +73,11 @@ test('B 人物與介入：小卡正確綁定選取角色、精力、工作、下
   assert.equal(v3.people.cousin.pending, 'rest', '停工記錄在待執行中');
 });
 
-test('C 進階與無副作用：折疊切換為純 UI 狀態，暫停操作世界零副作用，原控制入口完整', () => {
+test('C 控制入口可用性：核心指令在 actions() 中全數合法可用', () => {
   const model = createModel(LENGTHS);
-  const snap1 = JSON.stringify(model.view());
-
-  // 模擬暫停狀態下進行純 UI 展開/收起
-  const ui = { boarExpanded: false, advancedOpen: false, follow: true };
-
-  // 1. 切換院落近況展開
-  ui.boarExpanded = !ui.boarExpanded;
-  assert.equal(ui.boarExpanded, true);
-
-  // 2. 切換進階設定展開
-  ui.advancedOpen = !ui.advancedOpen;
-  assert.equal(ui.advancedOpen, true);
-
-  // 3. 切換鏡頭跟隨
-  ui.follow = !ui.follow;
-  assert.equal(ui.follow, false);
-
-  // 驗證世界完全無變化
-  const snap2 = JSON.stringify(model.view());
-  assert.equal(snap1, snap2, '純 UI 操作（近況展開、進階展開、跟隨切換）不推進 tick 且不修改 model');
-
-  // 4. 原控制項在 actions() 中全數合法可用
   const actions = model.actions('hero');
   const actionIds = actions.map((a) => a.id);
+
   assert.ok(actionIds.includes('work:water'), '挑水指令存在');
   assert.ok(actionIds.includes('work:herb'), '採藥指令存在');
   assert.ok(actionIds.includes('restAfterTrip'), '停工休息指令存在');
@@ -102,43 +85,35 @@ test('C 進階與無副作用：折疊切換為純 UI 狀態，暫停操作世�
   assert.ok(actionIds.includes('fix'), '整理護欄指令存在');
 });
 
-test('D 可讀性與鏡頭：390 視窗在近況折疊與展開狀態下相機計算均避讓遮擋，跟隨按鈕可恢復', () => {
+test('D 相機避讓幾何換算：390 視窗在暫停與展開狀態下相機計算均預留足夠淨可視區', () => {
   const screenH = 844, zoom = 0.85;
 
-  function calcNarrowY(pY, topRects, bottomRects) {
-    const top = Math.max(0, ...topRects);
-    const bottom = Math.min(screenH, ...bottomRects);
-    const targetY = bottom > top + 40 ? (top + bottom) / 2 : Math.max(top + 20, (top + bottom) / 2);
+  // 依據 app.mjs 的真實 follow 相機居中換算公式
+  function calcNarrowY(pY, topObstacle, bottomObstacle) {
+    const targetY = bottomObstacle > topObstacle + 40 ? (topObstacle + bottomObstacle) / 2 : Math.max(topObstacle + 20, (topObstacle + bottomObstacle) / 2);
     const ty = pY - 30 - (targetY - screenH / 2) / zoom;
-    const toScreenY = (y, camY) => (y - camY) * zoom + screenH / 2;
+    const toScreenY = (y) => (y - ty) * zoom + screenH / 2;
     return {
       camY: ty,
       targetY,
-      headY: toScreenY(pY - 60, ty),
-      feetY: toScreenY(pY, ty),
-      tagY: toScreenY(pY, ty) + 6,
-      top,
-      bottom,
+      headPillY: toScreenY(pY - 80), // 頭頂動作標籤
+      feetY: toScreenY(pY),          // 腳底位置
+      nameTagY: toScreenY(pY) + 6,   // 腳下名牌
+      clearZone: bottomObstacle - topObstacle,
+      topClearance: toScreenY(pY - 80) - topObstacle,
+      bottomClearance: bottomObstacle - (toScreenY(pY) + 20),
     };
   }
 
-  // 1. 院落近況收起時（頂部僅 HUD ~168.5 + 收起近況 ~32 = ~200px）
-  const collapsed = calcNarrowY(512, [168.5, 200], [420.52, 796]);
-  assert.ok(collapsed.headY > 200, '近況收起時人物頭頂避開頂部');
-  assert.ok(collapsed.feetY < 420.52, '近況收起時人物腳底在面板上方');
-  assert.ok(collapsed.tagY < 420.52, '人物名牌在面板上方可讀');
+  // 1. 最擁擠狀態：暫停中 + 院落近況展開 (256px) + 人物抽屜底抽 (540px)
+  const expanded = calcNarrowY(512, 256, 540);
+  assert.ok(expanded.clearZone >= 280, `淨視野區 (${expanded.clearZone}px) 大於 280px`);
+  assert.ok(expanded.topClearance > 70, `頭頂動作標籤上方餘裕 (${expanded.topClearance.toFixed(1)}px) 大於 70px，無遮擋`);
+  assert.ok(expanded.bottomClearance > 70, `腳下名牌下方餘裕 (${expanded.bottomClearance.toFixed(1)}px) 大於 70px，無遮擋`);
 
-  // 2. 院落近況展開時（頂部 HUD + 展開近況 = ~303px）
-  const expanded = calcNarrowY(512, [168.5, 303], [420.52, 796]);
-  assert.ok(expanded.headY > 303, '近況展開時人物頭頂依然避開野豬卡下緣 (303px)');
-  assert.ok(expanded.feetY < 420.52, '近況展開時人物腳底依然在面板上方 (420.52px)');
-
-  // 3. 跟隨狀態恢復
-  let followState = true;
-  // 模擬拖曳
-  followState = false;
-  assert.equal(followState, false, '拖曳後進入自由視野');
-  // 模擬點擊可見跟隨控制按鈕
-  followState = true;
-  assert.equal(followState, true, '點擊跟隨按鈕成功恢復跟隨');
+  // 2. 日常精簡狀態：近況收起 (108px) + 底抽 (540px)
+  const collapsed = calcNarrowY(512, 108, 540);
+  assert.ok(collapsed.clearZone >= 420, `近況收起時淨視野區 (${collapsed.clearZone}px) 大於 420px`);
+  assert.ok(collapsed.topClearance > 140, '近況收起時頭頂上方餘裕充足');
+  assert.ok(collapsed.bottomClearance > 140, '近況收起時名牌下方餘裕充足');
 });

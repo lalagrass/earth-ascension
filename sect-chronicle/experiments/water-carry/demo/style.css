@@ -76,20 +76,26 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 /* 窄螢幕：面板與選單在名冊上方；兩張卡都保留，方便切換跟隨的工作者。 */
 @media (max-width: 640px) {
   .hint { display: none; }
+  .hud { padding: 4px 8px; gap: 4px; }
+  .hud .sub { display: none; }
+  .hud .muted { display: none; }
+  .chip#leg, .chip#trips { display: none; }
+  .btn { padding: 2px 7px; font-size: 12px; }
   .roster { bottom: 10px; width: calc(100% - 20px); flex-wrap: nowrap; }
-  .panel { left: 10px; right: 10px; width: auto; top: auto; bottom: calc(var(--roster-h) + 18px); max-height: 42%; }
+  .panel { left: 10px; right: 10px; width: auto; top: auto; bottom: calc(var(--roster-h) + 14px); max-height: min(36vh, 260px); overflow-y: auto; }
   body.menu-open .panel { display: none; }
-  .menu { left: 10px !important; right: 10px; width: auto; top: auto !important; bottom: calc(var(--roster-h) + 18px); max-height: 42%; overflow: auto; }
-  .toast { top: calc(var(--hud-h) + 52px); bottom: auto; }
-  .card { min-width: 0; flex: 1; padding: 4px 6px; }
-  .card small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .boarcard { right: 10px; width: auto; top: calc(var(--hud-h) + 18px); padding: 4px 8px; font-size: 12px; }
-  .boarcard .bars { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  /* 野豬卡占了 HUD 下方：暫停橫幅與提示改排在它下面 */
-  .banner { top: calc(var(--hud-h) + var(--boar-h, 0px) + 26px); }
-  .toast { top: calc(var(--hud-h) + var(--boar-h, 0px) + 58px) !important; }
+  .menu { left: 10px !important; right: 10px; width: auto; top: auto !important; bottom: calc(var(--roster-h) + 14px); max-height: 38%; overflow: auto; }
+  /* 暫停橫幅：緊貼 HUD 下方，不掉到野豬卡下方佔據中央淨區 */
+  .banner { top: calc(var(--hud-h) + 6px); padding: 2px 10px; font-size: 11px; max-width: calc(100% - 20px); }
+  /* 野豬近況卡：排在 HUD 與橫幅下方，確保中央淨視野區保留至少 260px */
+  .boarcard { right: 10px; left: 10px; width: auto; top: calc(var(--hud-h) + var(--banner-h, 0px) + 8px); padding: 4px 8px; font-size: 12px; max-height: min(30vh, 180px); overflow-y: auto; }
+  .boarcard.collapsed { max-height: none; overflow: visible; }
+  .boarcard .bars { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .boarcard .why { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 0; }
   body.menu-open .boarcard { display: none; }
+  .toast { top: calc(var(--hud-h) + var(--banner-h, 0px) + var(--boar-h, 0px) + 16px) !important; bottom: auto; }
+  .card { min-width: 0; flex: 1; padding: 4px 6px; }
+  .card small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
 .auto { margin: 6px 0; padding: 4px 6px; border: 1px solid #d9c9a8; border-radius: 6px; } .auto .group { display: inline-flex; gap: 4px; }
 .auto.want, .auto.go { border-color: #c8873e; background: #fff4e4; } .auto.expired, .auto.peer, .auto.player { background: #f3f0ea; }

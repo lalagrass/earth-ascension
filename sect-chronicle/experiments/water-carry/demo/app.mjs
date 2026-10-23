@@ -632,17 +632,23 @@ function cleanAutoSet(what) {
 let toastTimer = 0;
 function toast(text) { const t = $('toast'); t.textContent = text; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2800); }
 
-// 窄螢幕版面靠這兩個高度排開：橫幅在 HUD 下面、抽屜在名冊上面
+// 窄螢幕版面靠高度排開：橫幅在 HUD 下面、野豬卡在橫幅下面、抽屜在名冊上面
 function measure() {
   const st = document.documentElement.style;
-  st.setProperty('--hud-h', `${document.querySelector('.hud').offsetHeight}px`);
-  st.setProperty('--roster-h', `${$('roster').offsetHeight}px`);
-  st.setProperty('--boar-h', `${$('boar').offsetHeight}px`);
+  const hud = document.querySelector('.hud');
+  const roster = $('roster');
+  const boar = $('boar');
+  const banner = $('banner');
+  if (hud) st.setProperty('--hud-h', `${hud.offsetHeight}px`);
+  if (roster) st.setProperty('--roster-h', `${roster.offsetHeight}px`);
+  if (boar) st.setProperty('--boar-h', `${boar.offsetHeight}px`);
+  if (banner) st.setProperty('--banner-h', banner.hidden ? '0px' : `${banner.offsetHeight}px`);
 }
 new ResizeObserver(measure).observe(document.querySelector('.hud'));
 new ResizeObserver(measure).observe($('roster'));
 new ResizeObserver(measure).observe($('boar'));
 new ResizeObserver(measure).observe($('panel'));
+new ResizeObserver(measure).observe($('banner'));
 
 // ---------- HTML 介面：只在內容變了才寫 DOM，避免播放中吃掉點擊／焦點 ----------
 const last = {};
@@ -741,7 +747,7 @@ function boarHtml(b) {
 
   if (!ui.boarExpanded) {
     const statusTxt = b.mode === 'habitat' ? '棲地休息' : b.mode === 'approach' ? '逼近護欄' : b.mode === 'prep' ? '撞擊中' : b.mode === 'flee' ? '退走中' : b.label;
-    const cleanTxt = v.clean ? `${profiles[v.clean.by].label}清理中` : '平靜';
+    const cleanTxt = v.clean ? `${profiles[v.clean.by].label}${PHASE_TEXT[v.clean.phase] || '清理中'}` : '平靜';
     const alert = b.mode === 'approach' || b.mode === 'prep' || b.marks > 0;
     return `<div class="boar-summary" data-ui="toggleBoar" role="button" aria-expanded="false" title="點擊展開院落近況與派遣">
       <div class="summary-line">
@@ -777,8 +783,10 @@ function renderChrome() {
   for (const b of document.querySelectorAll('[data-speed]')) b.classList.toggle('on', Number(b.dataset.speed) === ui.speed);
   $('shadow-toggle').classList.toggle('on', ui.shadow);
   const bt = bannerText();
+  const bannerWasHidden = $('banner').hidden;
   $('banner').hidden = !bt;
   if ($('banner').textContent !== bt) $('banner').textContent = bt;
+  if (bannerWasHidden !== $('banner').hidden) measure();
   $('clock').textContent = fmt(v.seconds);
   $('vat').textContent = `水缸 ${v.vat}／${v.vatCapacity} · 在途 ${v.inFlight}`;
   $('herbs').textContent = `藥架 ${v.herbs}／${v.herbCapacity} · 在途 ${v.herbInFlight}`;
