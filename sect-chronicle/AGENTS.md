@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## D34目前下一包：場景與雙人美術，正式試玩只留一版
+
+LP16／PR273已合dev `a363c7b`／postCI39976283668五成功，#271結案。下一包[#274／LP17工作包](docs/LP17_HANDOFF.md)／[Gemini提示詞](docs/LP17_GEMINI_PROMPT.md)：道館院落、長路環境與兩位活動人物一起改善，一位Gemini完整素材／烘焙／接線PR集中review。本文件非作者接受／Earth合dev／postCI後本人最新dev新claim，不沿LP16舊prompt。長通勤、原幾何／速度／成長與動作契約保留；全台地搬遷／女孩AI／新玩法延後。
+
+擁有人已取消試玩回退入口，按[單版本政策](docs/VALIDATION_POLICY.md#單一正式試玩版本)：同8800只維持當前接受版，不常駐舊部署快照／備份tar／版本選單；更新後清自有舊部署副本，Git歷史／來源／作者worktree與少量證據保留。下方歷史「保留LP14／上一版」不再是當前要求。D31整包、兩小時早停、精簡驗證與清理照舊，未代啟Gemini。
+
 ## D33目前下一包：Gemini整合美術與採藥視覺
 
 #267／LP15設計已合dev `0403c10e`／postCI39966426048五成功；#270／D32候選已合dev `089eb39d`／postCI39966737757五成功。下一包為[#271／LP16正式工作包](docs/LP16_HANDOFF.md)／[Gemini兩小時提示詞](docs/LP16_GEMINI_PROMPT.md)，本文件非作者接受／Earth合dev／postCI後本人新claim。下方「Gemini收尾267／等待257」是歷史狀態，不重做已完成前置或沿舊prompt開工。

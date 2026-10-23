@@ -1,5 +1,7 @@
 # Gemini：LP-16 美術與採藥視覺整合，兩小時整包交付
 
+**此提示詞已完成、僅留沿革**：PR273／#271已整合，同8800是LP16。改用[LP17提示詞](LP17_GEMINI_PROMPT.md)／[工作包](LP17_HANDOFF.md)，不沿舊claim開工。擁有人已要求只留單一接受版，[單版本政策](VALIDATION_POLICY.md#單一正式試玩版本)覆蓋下段保留LP14文字。
+
 完成條件／採用差異／白名單以 [正式工作包](LP16_HANDOFF.md)為準；流程依 [D31](PARALLEL_HANDOFF.md#d31單一主筆完整工作包與集中審查)，測試與清理只依 [VALIDATION_POLICY](VALIDATION_POLICY.md)。下段可直接貼；不是已啟動或代認領。
 
 ```text
