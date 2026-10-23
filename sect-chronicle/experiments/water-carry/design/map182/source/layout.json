@@ -1,0 +1,53 @@
+{
+  "id": "basin-v1",
+  "note": "設計板坐標。紙上估量假設 1 板像素＝1 現有場景單位，用來和 scene.json 的 730.6 比較。不是已批准的遊戲尺寸，也不是碰撞或可走區。",
+  "board": { "w": 2400, "h": 1350 },
+  "currentWorld": {
+    "w": 1600,
+    "h": 900,
+    "source": "sect-chronicle/experiments/water-carry/spikes/shared/scene.json",
+    "waterLength": 730.6
+  },
+  "places": [
+    { "id": "dojo", "name": "道館", "x": 1980, "y": 420, "kind": "existing", "was": "現有院落北側屋舍" },
+    { "id": "vat", "name": "水缸", "x": 1860, "y": 500, "kind": "existing", "was": "現有約 (1000,520)" },
+    { "id": "yard", "name": "院中端點", "x": 1760, "y": 560, "kind": "existing", "was": "現有 (962,512)，挑水與採藥同一出發點" },
+    { "id": "bench", "name": "石凳", "x": 1660, "y": 470, "kind": "existing", "was": "現有約 (968,420)" },
+    { "id": "stretch", "name": "院邊空地", "x": 2080, "y": 560, "kind": "existing", "was": "熟手舒展，現有路終點約 (1190,462)" },
+    { "id": "rack", "name": "藥架", "x": 1900, "y": 660, "kind": "existing", "was": "現有約 (896,474)" },
+    { "id": "fence", "name": "竹護欄", "x": 1500, "y": 470, "kind": "existing", "was": "現有院子西側護欄，仍是野豬側，不是新玩法" },
+    { "id": "bridge", "name": "溪橋", "x": 740, "y": 780, "kind": "existing", "was": "挑水路中段，現有短石階改成過橋" },
+    { "id": "spring", "name": "泉眼", "x": 300, "y": 1160, "kind": "existing", "was": "現有約 (328,719)" },
+    { "id": "patch", "name": "藥圃", "x": 2260, "y": 1220, "kind": "existing", "was": "現有約 (1440,788)，改到另一側坡地" },
+    { "id": "stone", "name": "觀景石", "x": 1040, "y": 360, "kind": "existing", "was": "現有約 (752,456)，沿山脊拉遠" },
+    { "id": "gate", "name": "山門", "x": 520, "y": 150, "kind": "scenic", "was": "遠景，沒有工作路線" },
+    { "id": "village", "name": "遠村", "x": 260, "y": 190, "kind": "scenic", "was": "遠景，沒有工作路線" },
+    { "id": "cairn", "name": "巡山石堆", "x": 500, "y": 210, "kind": "future", "was": "未來巡山視覺，玩法未批准" }
+  ],
+  "routes": {
+    "water": {
+      "kind": "existing",
+      "name": "挑水",
+      "length": 1709.1,
+      "points": [[1760, 560], [1620, 640], [1480, 720], [1320, 790], [1160, 850], [1000, 900], [860, 860], [740, 780], [620, 860], [500, 960], [390, 1060], [300, 1160]]
+    },
+    "herb": {
+      "kind": "existing",
+      "name": "採藥",
+      "length": 800.4,
+      "points": [[1760, 560], [1860, 680], [1960, 820], [2060, 960], [2160, 1100], [2240, 1200]]
+    },
+    "view": {
+      "kind": "existing",
+      "name": "看山",
+      "length": 747.6,
+      "points": [[1760, 560], [1580, 500], [1380, 450], [1180, 400], [1040, 360]]
+    },
+    "patrol": {
+      "kind": "future",
+      "name": "巡山視覺",
+      "length": 560.9,
+      "points": [[1040, 360], [860, 300], [680, 250], [500, 210]]
+    }
+  }
+}
