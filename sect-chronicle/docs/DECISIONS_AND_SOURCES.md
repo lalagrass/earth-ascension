@@ -1,5 +1,27 @@
 # 決策、來源與風險
 
+## D31：單一主筆完整工作包與集中審查（2026-10-23）
+
+決策者：專案擁有人。Codex／遊戲PO在本聊天直接收到：
+
+> 同意，幫我把協作流程改成一位 agent 完整開發一包、集中 review，更新文件與接手提示詞，減少交接和重複驗證，依流程交 Earth PO 合入 dev。
+
+追加：
+
+> 整理一下，下一包要給gemini開發的
+
+追蹤[#265](https://github.com/lalagrass/earth-ascension/issues/265)。[PARALLEL_HANDOFF](PARALLEL_HANDOFF.md#d31單一主筆完整工作包與集中審查)為單一協作流程與通用提示格式；測試方法仍以[VALIDATION_POLICY](VALIDATION_POLICY.md)為準，不另複製全套清單。
+
+- 一包是一個完整、可獨立驗收的玩家目標，開工確認3–5組完成條件、範圍、主筆與時間。一般由同一agent完成已批准的畫面／行為／接線／必要文件，內部小commit與自校，最後一個PR集中review；不是把整個backlog一次塞入，也不為每個按鈕、圖稿或檔案換人。
+- 正常實作選擇與同包必要文件不再拆逐步審批／文件PR；非作者集中回饋阻擋、原主筆集中修。正確性、資料真實、原驗收與相容風險仍需修；一般美化／偏好／非必要重構留backlog，不邊審邊新增DoD。
+- 作者與PO復用未變證據／當前CI；review讀完整受影響diff並核可重現證據，只因新差異或疑點補驗，不逐人本地全套／重演所有舊功能。保留必要CI、高風險、非作者review、Earth唯一dev queue與原4h認領；兩小時包沿原上限／早停，不重開既有補修窗口。
+- 核心遊戲維持一位主筆；平行限已安排且檔案／契約獨立的研究、美術或另一產品，用worktree隔離。此批准不啟agent／新聊天／排程、不改Earth或小說流程與root契約。
+- Gemini先完成#257／PR261原有限補正，接受→Earth合dev→postCI後才#259新claim。#259依H1–H4仍設計先行，由同一主筆一次交完整桌面稿、四段動作、來源／接線差異表，集中一個設計PR；不逐張簽核。協作更新不自授LP15接線、新玩法、路線或數值，後續批准完整實裝包時才可整包開發。
+
+依據參考：[Cursor公開多agent工程經驗](https://cursor.com/blog/scaling-agents)、[Anthropic長任務實驗](https://www.anthropic.com/research/effective-harnesses-for-long-running-agents)、[開發／評估分工實驗](https://www.anthropic.com/research/harness-design-long-running-apps)。本案包大小與2h方式是專案取捨，不宣稱來源保證此專案效能。
+
+本輪只9MD流程／接手文件、一個PR；不改runtime、素材、測試、CI、作者checkout或8800。D30桌面優先與測完清理照舊。
+
 ## D30：桌面生活優先、平台末位與精簡驗證（2026-10-23）
 
 決策者：專案擁有人。Codex／遊戲PO在本聊天直接收到：
