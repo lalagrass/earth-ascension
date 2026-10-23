@@ -1,5 +1,15 @@
 # MAP182：完整道館生活地圖設計工作包
 
+## D25目前接手：Gemini承接PR248設計／改圖補修
+
+擁有人因Grok額度不足已明確改派，來源 [D25](DECISIONS_AND_SOURCES.md#d25-182-設計與改圖改由gemini接手2026-10-23)，使用 [Gemini接手提示詞](MAP182_GEMINI_PROMPT.md)。**現在圖像設計／改圖及後續整合均由Gemini接手，但這次只做設計補修；實裝範圍仍待看稿確認。** 下方Grok姓名／啟動描述保留原D24歷史，不再用它開工；原成果與主筆歸屬保留。
+
+原PR248 head d56acd335710f7edb7348025b9f9198a39cbc1d8／base dev5b797722，四項必修沿[review5623213224](https://github.com/lalagrass/earth-ascension/pull/248#pullrequestreview-5623213224)：移開遮三地點的圖例；修107透明框與可見身高混淆並補代表尺度／腳底；播放器390排版與真操作；實際生成prompt／輸入來源紀錄。來源遺失照實記，不捏造。沿用全景／近景／分鏡與已核路長／紙上估量，不強制全圖重畫；必要改圖與D24有限設計自由一併由Gemini接手。
+
+D25文件經非作者review／Earth合dev／postCI後，Gemini本人新claim／4h，從最新dev新codex短分支沿用公開Grok commit（保留來源／-x），新開接續PR連248，舊PR不續推／不自己關；PO在接續PR完整交付時標唯一有效PR。可沿乾淨的`/Users/chenyuying/workspace/earth-ascension-grok-art184`獨立美術worktree，原branch保留，不動`earth-ascension-gemini-241`。先244回review再接圖為工作排序建議，不是等244合併的gate；原244期限／scope不變，兩包兩PR。
+
+仍只design/map182/**、必要局部圖像／來源／尺度與桌面390預演；未變證據復用、必要根檢查／CI和摘要真exit保留。不改生活runtime／共享README／atlas／spikes或8800，不啟其他agent／排程。下方D24三項交付及實裝另確認的產品邊界保持。
+
 狀態：擁有人已批准**先設計**；本D24文件非作者review→Earth PO合dev→postCI後，Grok本人新認領交圖。實際設計主筆 **Grok Build**；後續遊戲整合主筆 **Gemini**，須看稿後另確認實裝範圍。追蹤 [#182](https://github.com/lalagrass/earth-ascension/issues/182)，批准原話與取捨 [D24](DECISIONS_AND_SOURCES.md#d24-182-完整道館生活地圖設計與美術分工批准2026-10-23)，可貼 [Grok提示詞](MAP182_GROK_BUILD_PROMPT.md)。本包不啟作者，也沒有遊戲功能交付。
 
 ## 玩家目標與設計自由

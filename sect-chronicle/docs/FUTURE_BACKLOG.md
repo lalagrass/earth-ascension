@@ -1,5 +1,11 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## D25有限改派：Gemini接手#182圖像設計與改圖（2026-10-23）
+
+擁有人因Grok quota不足明確改派，依 [D25](DECISIONS_AND_SOURCES.md#d25-182-設計與改圖改由gemini接手2026-10-23)／[更新工作包](MAP182_HANDOFF.md)／[Gemini提示詞](MAP182_GEMINI_PROMPT.md)。下方D24的Grok圖像／Gemini整合改為歷史分工；Gemini現在接PR248剩餘設計與四項P2，保留Grok公開成果／原分支／審查，另從最新dev新claim／新接續PR。只design/map182/**，可沿乾淨的原grok-art184美術worktree，不能碰Gemini gemini-241 checkout或混244檔案。
+
+建議先244原補修回review，再等審查時接圖；設計不等244合併、其原期限不變。D25文件審合／postCI後本人認領，不代啟作者。保留長通勤／觀看奔波、可自由延伸生活點與未來巡山構想；先交設計，擁有人看稿後確認實裝範圍，未授新玩法／遊戲接線或8800更新。必要局部驗收／CI與輸出成本沿原則，未變證據復用、不大重畫或跑長矩陣。
+
 ## D24有限提取：#182完整道館地圖設計已批准（2026-10-23）
 
 來源 [D24](DECISIONS_AND_SOURCES.md#d24-182-完整道館生活地圖設計與美術分工批准2026-10-23)；[正式工作包](MAP182_HANDOFF.md)／[Grok Build提示詞](MAP182_GROK_BUILD_PROMPT.md)。從BL-W02／[#182](https://github.com/lalagrass/earth-ascension/issues/182)提取完整總配置、統一畫風與長路線預演的**設計交付**；長通勤與觀看奔波已選定為正向方向。Grok專注圖像，可自由延伸生活功能點、山徑／巡山區／地標與外觀候選，每點標現有／景觀／未來候選。這些延伸不逐點阻擋畫稿，但新增採集／建築／巡山／獸巢玩法未因此批准。
