@@ -411,7 +411,7 @@ const LENGTHS = { water: WATER_LENGTH, herb: r1(herbPath.length), seat: geo.seat
 const SENSE = { placeOf: geo.of };
 let model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
 const clock = createClock();
-const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null };
+const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null, boarExpanded: false, advancedOpen: false };
 let v = model.view();
 let positions = Object.fromEntries(IDS.map((id) => [id, poseOf(id, v.people[id])]));
 const fx = []; // 浮字（只是畫面效果）
@@ -496,9 +496,12 @@ $('play').addEventListener('click', togglePlay);
 for (const b of document.querySelectorAll('[data-speed]')) b.addEventListener('click', () => setSpeed(Number(b.dataset.speed)));
 $('roster-toggle').addEventListener('click', toggleRoster);
 $('shadow-toggle').addEventListener('click', toggleShadow);
+$('follow-toggle').addEventListener('click', () => { ui.follow = !ui.follow; applyCam(); renderChrome(); });
 $('reset').addEventListener('click', reset);
 $('roster').addEventListener('click', (e) => { const b = e.target.closest('[data-person]'); if (b) select(b.dataset.person); });
 $('panel').addEventListener('click', (e) => {
+  const adv = e.target.closest('[data-ui="toggleAdv"]');
+  if (adv) { ui.advancedOpen = !ui.advancedOpen; renderChrome(); measure(); return; }
   const a = e.target.closest('[data-auto]');
   if (a) { autoSet(a.dataset.auto); return; }
   const u = e.target.closest('[data-up]');
@@ -509,7 +512,11 @@ $('panel').addEventListener('click', (e) => {
   if (pm) { palmSet(pm.dataset.palm); return; }
   const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd);
 });
-$('boar').addEventListener('click', (e) => { const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd); });
+$('boar').addEventListener('click', (e) => {
+  const tb = e.target.closest('[data-ui="toggleBoar"]');
+  if (tb) { ui.boarExpanded = !ui.boarExpanded; renderChrome(); measure(); return; }
+  const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd);
+});
 
 function togglePlay() { if (ui.menu) closeMenu(false); ui.playing = !ui.playing; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); renderChrome(); }
 function setSpeed(s) { ui.speed = s; renderChrome(); }
@@ -625,16 +632,23 @@ function cleanAutoSet(what) {
 let toastTimer = 0;
 function toast(text) { const t = $('toast'); t.textContent = text; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2800); }
 
-// 窄螢幕版面靠這兩個高度排開：橫幅在 HUD 下面、抽屜在名冊上面
+// 窄螢幕版面靠高度排開：橫幅在 HUD 下面、野豬卡在橫幅下面、抽屜在名冊上面
 function measure() {
   const st = document.documentElement.style;
-  st.setProperty('--hud-h', `${document.querySelector('.hud').offsetHeight}px`);
-  st.setProperty('--roster-h', `${$('roster').offsetHeight}px`);
-  st.setProperty('--boar-h', `${$('boar').offsetHeight}px`);
+  const hud = document.querySelector('.hud');
+  const roster = $('roster');
+  const boar = $('boar');
+  const banner = $('banner');
+  if (hud) st.setProperty('--hud-h', `${hud.offsetHeight}px`);
+  if (roster) st.setProperty('--roster-h', `${roster.offsetHeight}px`);
+  if (boar) st.setProperty('--boar-h', `${boar.offsetHeight}px`);
+  if (banner) st.setProperty('--banner-h', banner.hidden ? '0px' : `${banner.offsetHeight}px`);
 }
 new ResizeObserver(measure).observe(document.querySelector('.hud'));
 new ResizeObserver(measure).observe($('roster'));
 new ResizeObserver(measure).observe($('boar'));
+new ResizeObserver(measure).observe($('panel'));
+new ResizeObserver(measure).observe($('banner'));
 
 // ---------- HTML 介面：只在內容變了才寫 DOM，避免播放中吃掉點擊／焦點 ----------
 const last = {};
@@ -730,13 +744,30 @@ function boarHtml(b) {
   const sel = selectedPerson(), opt = model.actions(sel).find((a) => a.id === 'guard');
   const reason = b.mode === 'habitat' ? b.why : b.mode === 'flee' ? `退走原因：${b.why}` : `來的原因：${b.why}`;
   const bar = (cls, val, marks, label) => `<div class="row"><span>${label}</span><b>${Math.floor(val)}／${b.max}</b></div><div class="bar ${cls}"><i style="width:${val / b.max * 100}%"></i>${marks.map((m) => `<s style="left:${m}%"></s>`).join('')}</div>`;
-  return `<div class="row"><b>野豬 · ${b.label}</b><span class="muted">第 ${b.visit} 次來訪${b.mode === 'habitat' ? '（已回棲地）' : ''}</span></div>
+
+  if (!ui.boarExpanded) {
+    const statusTxt = b.mode === 'habitat' ? '棲地休息' : b.mode === 'approach' ? '逼近護欄' : b.mode === 'prep' ? '撞擊中' : b.mode === 'flee' ? '退走中' : b.label;
+    const cleanTxt = v.clean ? `${profiles[v.clean.by].label}${PHASE_TEXT[v.clean.phase] || '清理中'}` : '平靜';
+    const alert = b.mode === 'approach' || b.mode === 'prep' || b.marks > 0;
+    return `<div class="boar-summary" data-ui="toggleBoar" role="button" aria-expanded="false" title="點擊展開院落近況與派遣">
+      <div class="summary-line">
+        <span class="tag-chip ${alert ? 'alert' : ''}">🐗 野豬 · ${statusTxt}</span>
+        <span class="tag-chip ${b.marks > 0 ? 'alert' : ''}">損痕 ${b.marks}／${b.maxMarks}</span>
+        <span class="tag-chip">🐭 鼠群 · ${cleanTxt}</span>
+        <button class="btn toggle-boar" data-ui="toggleBoar">明細 ▾</button>
+      </div>
+    </div>`;
+  }
+
+  return `<div class="boar-expanded">
+    <div class="row"><b>院落近況 · 野豬 ${b.label}</b><button class="btn toggle-boar" data-ui="toggleBoar" aria-label="收起近況">收起 ▴</button></div>
     <div class="muted why">${reason}</div>
     <div class="bars"><div>${bar('benergy', b.energy, [B.tiredAt, B.goEnergy], '精力（不是血量）')}</div><div>${bar('threat', b.threat, [B.goThreat, B.scaredAt], '威脅記憶')}</div></div>
     <div class="row"><span>護欄損痕 ${b.marks}／${b.maxMarks}</span>${fixBtn(b, sel)}</div>
     ${ratsHtml()}
     ${b.active ? `<div class="row"><span>${who ? `${who}正在處理` : '沒人處理也能繼續生活'}</span>${opt ? `<button class="btn" data-cmd="guard" ${opt.enabled ? '' : 'disabled'} title="${opt.enabled ? opt.detail : opt.reason}">派${profiles[sel].label}驅離</button>` : ''}</div>`
-      : b.last ? `<div class="muted">上次：撞了 ${b.last.hits} 下，${b.last.why}</div>` : ''}`;
+      : b.last ? `<div class="muted">上次：撞了 ${b.last.hits} 下，${b.last.why}</div>` : ''}
+  </div>`;
 }
 const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 const sec = (s) => `${s.toFixed(1)} 秒`;
@@ -752,18 +783,23 @@ function renderChrome() {
   for (const b of document.querySelectorAll('[data-speed]')) b.classList.toggle('on', Number(b.dataset.speed) === ui.speed);
   $('shadow-toggle').classList.toggle('on', ui.shadow);
   const bt = bannerText();
+  const bannerWasHidden = $('banner').hidden;
   $('banner').hidden = !bt;
   if ($('banner').textContent !== bt) $('banner').textContent = bt;
+  if (bannerWasHidden !== $('banner').hidden) measure();
   $('clock').textContent = fmt(v.seconds);
   $('vat').textContent = `水缸 ${v.vat}／${v.vatCapacity} · 在途 ${v.inFlight}`;
   $('herbs').textContent = `藥架 ${v.herbs}／${v.herbCapacity} · 在途 ${v.herbInFlight}`;
   $('leg').textContent = `${profile.label} Lv ${person.level}`;
   $('trips').textContent = `共完成 ${IDS.reduce((n, who) => n + v.people[who].trips, 0)} 趟`;
+  $('follow-toggle').classList.toggle('on', ui.follow);
+  $('follow-toggle').textContent = ui.follow ? '🎥 跟隨中' : '👁 自由視野';
   const cards = IDS.map((who) => {
     const p = v.people[who], info = profiles[who];
     return `<button class="card ${ui.selected === who ? 'sel' : ''} ${p.resting ? 'stopped' : ''}" data-person="${who}"><b>${info.name} · Lv ${p.level}</b><small><span class="emini"><i style="width:${en(p)}%"></i></span>精力 ${en(p)} · ${p.resting ? '' : p.jobLabel + ' · '}${p.status}</small>${p.pending ? `<small class="due">${pendText(p)}</small>` : ''}${p.auto.allow || p.auto.wanting ? `<small class="autoline">護院：${p.auto.text}</small>` : ''}${p.up.allow || p.up.wanting ? `<small class="autoline">整理：${p.up.text}</small>` : ''}${p.autoClean && (p.autoClean.allow || p.autoClean.wanting) ? `<small class="autoline">清鼠：${p.autoClean.text}</small>` : ''}</button>`;
   }).join('');
   put('roster', $('roster'), cards);
+  $('boar').classList.toggle('collapsed', !ui.boarExpanded);
   put('boar', $('boar'), boarHtml(v.boar));
   $('roster').classList.toggle('collapsed', !ui.rosterOpen);
   const panel = $('panel');
@@ -780,33 +816,41 @@ function renderChrome() {
           : '<div class="muted">沒有</div>';
     const cmds = model.actions(id).filter((a) => !a.hidden && a.id !== 'pourNow' && a.id !== 'fixCancel' && a.id !== 'upCancel' && a.id !== 'cleanCancel') // 取消整理／整理意願／清理放在各自狀態列旁
       .map((a) => `<button class="btn" data-cmd="${a.id}" ${a.enabled ? '' : 'disabled'} title="${a.enabled ? a.detail : a.reason}">${cmdLabel(a, person)}</button>`).join(' ');
-    if (!panel.firstElementChild) panel.innerHTML = '<div id="p-work"></div><h4>待執行指令</h4><div id="p-pend"></div><div id="p-cmds" class="cmds"></div><div id="p-gain"></div><div id="p-leg"></div>';
-    put('p-work', $('p-work'), `<h2>${profile.name}<small>${profile.role}</small></h2>
+    if (!panel.firstElementChild) panel.innerHTML = '<div id="p-core"></div><div id="p-pend"></div><div id="p-cmds" class="cmds"></div><div id="p-adv"></div>';
+    put('p-core', $('p-core'), `<h2>${profile.name}<small>${profile.role}</small></h2>
+      <div class="leg-badge"><b>腳力 Lv ${person.level}／${person.maxLevel}</b><span class="muted">${person.nextNeed ? `（再 ${person.nextNeed - person.xp} 趟升 Lv ${person.level + 1}）` : '（已封頂）'}</span></div>
       <h4>精力</h4><div class="row"><b>${en(person)}／${person.energyMax}</b><span class="muted">${srcText(person) ? `來源：${srcText(person)}` : '工作每秒 −1 · 坐下每秒 +5'}</span></div>
       <div class="bar energy ${person.energy <= 30 ? 'low' : ''}"><i style="width:${person.energy / person.energyMax * 100}%"></i><s style="left:30%"></s><s style="left:80%"></s></div>
-      ${person.why ? `<div class="muted">原因：${person.why}</div>` : ''}
-      ${guardText(person) ? `<div class="guardline">${guardText(person)}</div>` : person.guardResult ? `<div class="muted">驅離結果：${RESULT_TEXT[person.guardResult.kind]}</div>` : ''}
-      ${fixHtml(person)}
-      ${cleanHtml(person, id)}
-      ${autoHtml(person)}
-      ${upHtml(person)}
-      <div class="muted">偏好：${person.pref ? `${person.pref.label}（${person.pref.place}）· ${person.job === 'herb' ? '藥架' : '水缸'}實存滿才去，有空位就回` : '無'}</div>
-      <h4>目前工作</h4><div>${work}</div><div class="row"><span>${person.status}</span>${person.mode === 'carry' ? `<span class="muted">本趟用 Lv ${person.tripLevel}</span>` : ''}</div>
-      <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : person.fixLeg ? person.fixLeg.k : person.fixWork ? person.fixWork.k : 0) * 100)}%"></i></div>
-      <div class="next">下一步：${person.next}</div>`);
+      <div class="job-card">
+        <div class="row"><b>目前工作：${person.jobLabel}</b><span>${person.status}</span></div>
+        <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : person.fixLeg ? person.fixLeg.k : person.fixWork ? person.fixWork.k : 0) * 100)}%"></i></div>
+        <div class="next-box"><b>下一步：</b>${person.next}</div>
+        ${person.why ? `<div class="muted stop-reason">狀態原因：${person.why}</div>` : ''}
+      </div>`);
     put('p-pend', $('p-pend'), pend);
     put('p-cmds', $('p-cmds'), cmds);
-    put('p-gain', $('p-gain'), `<h4>收穫（此人交付）</h4><div class="row"><span>挑水 ${person.done.water} 擔</span><span>採藥 ${person.done.herb} 份</span></div>`);
-    put('p-leg', $('p-leg'), `<h4>腳力</h4><div class="row"><b>Lv ${person.level}／${person.maxLevel}</b><span class="muted">${person.nextNeed ? `再 ${person.nextNeed - person.xp} 趟升 Lv ${person.level + 1}` : '已到上限，不會再變快'}</span></div>
-      <div class="bar xp"><i style="width:${person.nextNeed ? Math.round(person.xp / person.nextNeed * 100) : 100}%"></i></div>
-      <table class="cmp"><tr><td>場景單位／秒</td><td class="now">${person.mode === 'carry' ? `本趟 Lv ${person.tripLevel}` : `現在 Lv ${person.level}`}</td><td class="init">起始 Lv ${person.initialLevel}</td></tr>
-        <tr><td>去程（空手／空桶）</td><td class="now">${sn.empty.toFixed(1)}</td><td class="init">${si.empty.toFixed(1)}</td></tr>
-        <tr><td>回程（負重）</td><td class="now">${sn.load.toFixed(1)}</td><td class="init">${si.load.toFixed(1)}</td></tr>
-        ${person.mode === 'carry' ? `<tr><td>本趟${person.jobLabel}（已鎖定）</td><td class="now">${sec(person.tripSecondsNow)}</td><td class="init"></td></tr>` : ''}
-        <tr><td>下趟${JOBS[person.nextJob].label}（Lv ${person.level}）</td><td class="now">${sec(person.tripSeconds)}</td><td class="init">${sec(person.tripSecondsInitial)}</td></tr></table>
-      <div class="muted">${person.lastTrip ? `上一趟${JOBS[person.lastTrip.job].label}實際 ${sec(person.lastTrip.seconds)}（出發時 Lv ${person.lastTrip.level}）` : '還沒完成第一趟'}；挑水、採藥共用腳力，升級只影響下一趟，倍率只改播放快慢</div>
-      ${positions[id].borrowed ? `<div class="muted">${positions[id].palm ? '動作借用：掌法沒有專用幀，暫用空手站姿／蹲身底圖＋向量手臂立掌疊圖（專用 atlas 另案）' : '動作借用：整理護欄沒有專用幀，暫用「舒展筋骨」前彎／站直兩幀交替'}</div>` : ''}
-      ${positions[id].fallback ? `<div class="muted">動作沿用：${positions[id].requested === 'rest' ? '坐下歇（此人尚無坐姿幀，暫用蹲姿）' : template.actions[positions[id].action].label}</div>` : ''}`);
+    put('p-adv', $('p-adv'), `<div class="adv-section">
+      <button class="btn toggle-adv" data-ui="toggleAdv">${ui.advancedOpen ? '▾ 收起進階設定與掌法' : '▸ 進階設定（自主政策與掌法）'}</button>
+      <div class="adv-body" ${ui.advancedOpen ? '' : 'hidden'}>
+        ${guardText(person) ? `<div class="guardline">${guardText(person)}</div>` : person.guardResult ? `<div class="muted">驅離結果：${RESULT_TEXT[person.guardResult.kind]}</div>` : ''}
+        ${fixHtml(person)}
+        ${cleanHtml(person, id)}
+        ${autoHtml(person)}
+        ${upHtml(person)}
+        <div class="muted">偏好：${person.pref ? `${person.pref.label}（${person.pref.place}）· ${person.job === 'herb' ? '藥架' : '水缸'}實存滿才去，有空位就回` : '無'}</div>
+        <h4>收穫（此人交付）</h4><div class="row"><span>挑水 ${person.done.water} 擔</span><span>採藥 ${person.done.herb} 份</span></div>
+        <h4>腳力速度對照</h4>
+        <div class="bar xp"><i style="width:${person.nextNeed ? Math.round(person.xp / person.nextNeed * 100) : 100}%"></i></div>
+        <table class="cmp"><tr><td>場景單位／秒</td><td class="now">${person.mode === 'carry' ? `本趟 Lv ${person.tripLevel}` : `現在 Lv ${person.level}`}</td><td class="init">起始 Lv ${person.initialLevel}</td></tr>
+          <tr><td>去程（空手／空桶）</td><td class="now">${sn.empty.toFixed(1)}</td><td class="init">${si.empty.toFixed(1)}</td></tr>
+          <tr><td>回程（負重）</td><td class="now">${sn.load.toFixed(1)}</td><td class="init">${si.load.toFixed(1)}</td></tr>
+          ${person.mode === 'carry' ? `<tr><td>本趟${person.jobLabel}（已鎖定）</td><td class="now">${sec(person.tripSecondsNow)}</td><td class="init"></td></tr>` : ''}
+          <tr><td>下趟${JOBS[person.nextJob].label}（Lv ${person.level}）</td><td class="now">${sec(person.tripSeconds)}</td><td class="init">${sec(person.tripSecondsInitial)}</td></tr></table>
+        <div class="muted">${person.lastTrip ? `上一趟${JOBS[person.lastTrip.job].label}實際 ${sec(person.lastTrip.seconds)}（出發時 Lv ${person.lastTrip.level}）` : '還沒完成第一趟'}；挑水、採藥共用腳力，升級只影響下一趟，倍率只改播放快慢</div>
+        ${positions[id].borrowed ? `<div class="muted">${positions[id].palm ? '動作借用：掌法沒有專用幀，暫用空手站姿／蹲身底圖＋向量手臂立掌疊圖（專用 atlas 另案）' : '動作借用：整理護欄沒有專用幀，暫用「舒展筋骨」前彎／站直兩幀交替'}</div>` : ''}
+        ${positions[id].fallback ? `<div class="muted">動作沿用：${positions[id].requested === 'rest' ? '坐下歇（此人尚無坐姿幀，暫用蹲姿）' : template.actions[positions[id].action].label}</div>` : ''}
+      </div>
+    </div>`);
   }
 }
 
