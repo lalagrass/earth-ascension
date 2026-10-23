@@ -1,5 +1,11 @@
 # Milestone 與 task backlog
 
+## 生活入口目前milestone規劃（2026-10-24）
+
+LP17已合dev `28bb2e7`／postCI39991587455通過並更新單一8800；D35 Grok素材A已接受、B可接續，原工作包不變。下一milestone建議見[SG-LIFE-01可持續生活試玩](LIFE_MILESTONE_NEXT.md)：飲水自理與最小存讀，必要技術邊界隨包處理；**M1–M4待批准，不授新實作**。
+
+當前唯一排序見[可見交付表](VISIBLE_DELIVERY_PLAN.md#d30目前唯一執行優先序)。下方SG-01～12／舊RT里程碑保留契約與歷史證據，不代表當前入口仍按原排程，也不能因生活美術通過就宣稱舊SG-M2全部未驗項完成。
+
 ## D10目前執行順序：先交唯讀生活觀察版
 
 最新批准見[決策D10](DECISIONS_AND_SOURCES.md)與[REALTIME_LIFE_SLICE](REALTIME_LIFE_SLICE.md)。RT-00～02已逐包合dev／postCI，RT-02 #108的dev為0875d116。擁有人已選「先做 viewer」，下一包[RT-02V #129](https://github.com/lalagrass/earth-ascension/issues/129)開放待認領，讀[RT02V_HANDOFF](RT02V_HANDOFF.md)。Grok額度用盡，不再指定其自動接續。
