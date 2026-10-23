@@ -350,7 +350,7 @@ function placeCup(id, p, person) {
   g.visible = !!p.cup;
   if (!g.visible) return;
   const tip = Math.min(1, person.drinkLeg.k * 3); // 先舉杯再就口
-  g.position.set(p.x + p.face * (7 - tip * 2), p.y - 50 - tip * 6); g.rotation = -p.face * tip * 0.5; g.zIndex = p.y + 0.03;
+  g.position.set(p.x + p.face * (9 - tip * 3), p.y - 52 - tip * 8); g.rotation = -p.face * tip * 0.5; g.scale.set(1.7); g.zIndex = p.y + 0.03;
 }
 
 const placeMark = new Graphics();
