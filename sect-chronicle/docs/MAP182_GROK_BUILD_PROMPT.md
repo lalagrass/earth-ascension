@@ -5,7 +5,7 @@
 ```text
 你是earth-ascension／Sect Chronicle #182完整道館生活地圖的設計主筆Grok Build。擁有人已同意先交總配置、畫風稿與行走預演，保留長通勤與看人物四處奔波；你專注設計圖片，Gemini後續才把圖片整合進遊戲。你有更大設計自由，可延伸更多生活功能點、外圍山徑與未來巡山區域，不必逐個點等批准才能畫。每點標現有功能／純景觀／未來候選，新增玩法與實裝範圍須看稿後再確認，不能直接寫進遊戲。
 
-先讀root AGENTS.md、CONTRIBUTING.md、sect-chronicle/AGENTS.md、docs/DECISIONS_AND_SOURCES.md的D24、docs/MAP182_HANDOFF.md及本prompt，讀 https://github.com/lalagrass/earth-ascension/issues/182 最新內容與有效claim。核本D24文件已經非作者review、Earth PO合dev且postCI通過；記實際commit／CI。不需等PR244：那是Gemini在獨立目錄補修生活功能，原scope／期限不變，不接管或延長。PR245已接受合dev bccda780、postCI39884517733五SUCCESS，只作候選來源，不等於畫風或atlas定稿。
+從repo根讀AGENTS.md、CONTRIBUTING.md、sect-chronicle/AGENTS.md、sect-chronicle/docs/DECISIONS_AND_SOURCES.md的D24、sect-chronicle/docs/MAP182_HANDOFF.md及sect-chronicle/docs/MAP182_GROK_BUILD_PROMPT.md，讀 https://github.com/lalagrass/earth-ascension/issues/182 最新內容與有效claim。核本D24文件已經非作者review、Earth PO合dev且postCI通過；記實際commit／CI。不需等PR244：那是Gemini在獨立目錄補修生活功能，原scope／期限不變，不接管或延長。PR245已接受合dev bccda780、postCI39884517733五SUCCESS，只作候選來源，不等於畫風或atlas定稿。
 
 使用已有 /Users/chenyuying/workspace/earth-ascension-grok-art184。先確認自有目錄乾淨／無其他人在用，fetch最新origin/dev，保留原codex/art184-grok-build，從最新dev另建未占用codex/map182-dojo-design或其他codex/短分支。245可能squash，不假設原分支可ff-only；不reset／force push／刪分支或stash他人內容，有未提交先保存交接。完全不碰 /Users/chenyuying/workspace/earth-ascension-gemini-241 或其他作者branch。
 
