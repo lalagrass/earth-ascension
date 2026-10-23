@@ -1,5 +1,9 @@
 # #184 正式工作包：泉池—石階局部美術整合
 
+## D32新包入口：Grok完整場景與三人設計
+
+擁有人已批准[新工作包](ART184_SCENE_TRIO_HANDOFF.md)／[Grok新提示詞](ART184_GROK_BOT_PROMPT.md)，來源[D32](DECISIONS_AND_SOURCES.md#d32grok完整場景與三人人物設計批准2026-10-23)。本檔下方D23局部runtime與D24舊設計流程保留歷史，不直接開工；新包只design/art184-scene-trio/**，完整圖像設計不改demo。Gemini仍保留#267原收尾，新包可在不同檔案獨立認領。
+
 ## D24更新：本實裝包暫後，勿直接按下方舊prompt開工
 
 擁有人最新決策見 [D24](DECISIONS_AND_SOURCES.md#d24-182-完整道館生活地圖設計與美術分工批准2026-10-23)：先由Grok Build交[#182完整道館生活地圖設計](MAP182_HANDOFF.md)／[新圖像設計提示詞](MAP182_GROK_BUILD_PROMPT.md)，保留長通勤並可延伸功能點／未來巡山。**Grok專注設計圖片，Gemini才是後續整合主筆**；看稿後由擁有人確認實裝範圍，再更新工程工作包並本人新claim。
