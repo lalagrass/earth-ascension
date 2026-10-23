@@ -1,7 +1,7 @@
 // SG-LIFE-01 手動存讀（生活開發版 demo 專用）。自己的 localStorage key，不讀不寫舊 RT（sect-chronicle-save-v1*）或 viewer 資料。
 // 只有玩家按「存檔／讀檔」才動：沒有自動讀、自動存、雲端、離線收益或舊版遷移。
 // 讀檔流程：解析 → 版本與相容識別 → 結構 → 數值 → 資源／任務一致性，全部通過才交給 model.restore 整份替換；任何一步失敗都不動目前這局。
-import { JOBS, DRINK_MODES, WATER_Q } from './model.mjs';
+import { JOBS, DRINK_MODES, WATER_Q, BOAR_MODE, RAT_MODE } from './model.mjs';
 
 export const SAVE_KEY = 'earth-ascension:life01-demo:save';
 export const SAVE_VERSION = 1;
@@ -22,7 +22,8 @@ const LOOSE = new Set(['motion', 'leg', 'clean', 'last', 'want', 'upWant', 'supp
 export class SaveError extends Error { constructor(code, msg) { super(msg); this.code = code; } }
 const bad = (code, msg) => { throw new SaveError(code, msg); };
 
-// 兩份物件要有完全相同的欄位、相同型別（null 視為可替換）；陣列長度與元素形狀也要相同（log 除外）。
+// 兩份物件要有完全相同的欄位、相同型別；只有新局模板本身就是 null 或列在 LOOSE 的可空欄位才接受 null，
+// 模板中必須存在的物件／字串／數字（例如 shadow、boar、pos）被改成 null 一律拒絕。陣列長度與元素形狀也要相同（log 除外）。
 function sameShape(tpl, c, path) {
   if (!isObj(c)) bad('structure', `${path} 不是物件`);
   const a = Object.keys(tpl).sort(), b = Object.keys(c).sort();
@@ -30,7 +31,7 @@ function sameShape(tpl, c, path) {
   for (const k of a) {
     const t = tpl[k], v = c[k], p = `${path}.${k}`;
     if (k === 'log') { if (!Array.isArray(v)) bad('structure', `${p} 不是陣列`); continue; }
-    if (LOOSE.has(k) || t === null || v === null) { if (typeof v === 'function' || v === undefined) bad('structure', `${p} 型別錯誤`); continue; }
+    if (LOOSE.has(k) || t === null) { if (typeof v === 'function' || v === undefined) bad('structure', `${p} 型別錯誤`); continue; }
     if (Array.isArray(t)) {
       if (!Array.isArray(v) || v.length !== t.length) bad('structure', `${p} 陣列長度不符`);
       t.forEach((x, i) => (isObj(x) ? sameShape(x, v[i], `${p}[${i}]`) : typeof v[i] !== typeof x && bad('structure', `${p}[${i}] 型別錯誤`)));
@@ -86,7 +87,22 @@ function checkValues(st, model) {
     if (['toRat', 'windup', 'recover', 'fromRat'].includes(m) && (!st.clean || st.clean.by !== id)) bad('consistency', `${id} 在清理卻沒有清理名額`);
     if (['toFix', 'fix'].includes(m) && st.fixBy !== id && st.people[id].fix) bad('consistency', `${id} 整理名額不符`);
   }
-  range(st.boar.marks, 0, r.boar.maxMarks, 'boar.marks', true);
+  // 野豬／鼠／影子：已知 enum 與基本範圍，避免未知狀態值寫進目前這局。
+  const b = st.boar;
+  if (!Object.hasOwn(BOAR_MODE, b.mode)) bad('value', `boar.mode 不是已知狀態：${JSON.stringify(b.mode)}`);
+  range(b.marks, 0, r.boar.maxMarks, 'boar.marks', true);
+  for (const k of ['e', 't', 'd', 'steps', 'need', 'visit', 'hits']) range(b[k], 0, Number.MAX_SAFE_INTEGER, `boar.${k}`, true);
+  if (b.leg != null && !isObj(b.leg)) bad('value', 'boar.leg 型別錯誤');
+  st.rats.forEach((rt, i) => {
+    if (!Object.hasOwn(RAT_MODE, rt.mode)) bad('value', `rats[${i}].mode 不是已知狀態`);
+    if (!num(rt.x) || !num(rt.y)) bad('value', `rats[${i}] 位置不合法`);
+  });
+  const sh = st.shadow;
+  if (sh.job != null && !JOBS[sh.job]) bad('value', 'shadow.job 不是已知工作');
+  if (sh.active && (!JOBS[sh.job] || !Array.isArray(sh.need) || sh.need.length !== 4 || !sh.need.every((n) => isInt(n) && n >= 1)
+    || !isInt(sh.phase) || sh.phase < 0 || sh.phase > 3)) bad('value', 'shadow 進行中狀態不完整');
+  if (sh.active) range(sh.steps, 0, sh.need[sh.phase], 'shadow.steps', true);
+  for (const id of ids) { const q = st.people[id].pos; if (!num(q.x) || !num(q.y)) bad('value', `people.${id}.pos 不合法`); }
 }
 
 // 序列化目前這局：版本、相容識別、幾何長度（不同路線長度的檔不能套用）與完整權威狀態。
@@ -113,6 +129,9 @@ export function validateSave(raw, model, template) {
 export function loadInto(model, raw, template) {
   try {
     const st = validateSave(raw, model, template);
+    // 最後一道：在目前模型上試跑一步，任何例外都先還原原局再拒絕；成功則重新整份套用候選（試跑的那一步不保留）。
+    const live = model.exportState(Infinity);
+    try { model.restore(st); model.step(); } catch (e) { model.restore(live); bad('structure', `存檔內容無法運行（${e.message}）`); }
     model.restore(st);
     return { ok: true, text: `已讀檔（第 ${(st.tick / 60).toFixed(1)} 遊戲秒）；已暫停` };
   } catch (e) {

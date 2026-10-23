@@ -164,3 +164,33 @@ test('壞檔：未知版本、結構錯、數值錯、資源／任務不一致�
   assert.equal(w.ok, false); assert.equal(w.code, 'quota');
   assert.equal(store.get(S.SAVE_KEY), 'OLD');
 });
+
+test('壞檔（review 5632832438）：必要物件改 null、未知 enum 一律拒絕；拒絕前後目前這局逐欄相同且能繼續 tick；合法檔仍可讀', async () => {
+  const { S, fresh, run } = await setup();
+  const m = fresh(), tpl = fresh().exportState();
+  run(m, 120);
+  const good = S.makeSave(m);
+  run(m, 30);
+  const cases = {
+    'shadow=null': (st) => { st.shadow = null; },
+    'boar=null': (st) => { st.boar = null; },
+    'people.hero.pos=null': (st) => { st.people.hero.pos = null; },
+    'boar.mode 未知': (st) => { st.boar.mode = 'teleport'; },
+    'rats[0].mode 未知': (st) => { st.rats[0].mode = 'fly'; },
+    'shadow.job 未知': (st) => { st.shadow.job = 'gold'; },
+  };
+  for (const [name, mut] of Object.entries(cases)) {
+    const env = JSON.parse(JSON.stringify(good)); mut(env.state);
+    const before = JSON.stringify(m.exportState(Infinity));
+    const r = S.loadInto(m, JSON.stringify(env), tpl);
+    assert.equal(r.ok, false, `${name} 應被拒絕`);
+    assert.equal(JSON.stringify(m.exportState(Infinity)), before, `${name} 拒絕後目前這局不變`);
+    const t = m.state.tick; m.step(); assert.equal(m.state.tick, t + 1, `${name} 拒絕後仍能續 tick`);
+  }
+  // 合法檔：讀入後與存檔時逐欄相同，並與同一檔另一份重放一致。
+  const r = S.loadInto(m, JSON.stringify(good), tpl);
+  assert.equal(r.ok, true, r.text);
+  const twin = fresh(); assert.equal(S.loadInto(twin, JSON.stringify(good), tpl).ok, true);
+  run(m, 60); run(twin, 60);
+  assert.deepEqual(m.exportState(), twin.exportState());
+});
