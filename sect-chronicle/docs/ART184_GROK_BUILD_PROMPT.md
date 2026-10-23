@@ -1,8 +1,15 @@
 # Grok Build接手提示詞：#184 V1–V4局部美術整合
 
+## D24更新：本實裝包暫後，勿直接按下方舊prompt開工
+
+擁有人最新決策見 [D24](DECISIONS_AND_SOURCES.md#d24-182-完整道館生活地圖設計與美術分工批准2026-10-23)：先由Grok Build交[#182完整道館生活地圖設計](MAP182_HANDOFF.md)／[新圖像設計提示詞](MAP182_GROK_BUILD_PROMPT.md)，保留長通勤並可延伸功能點／未來巡山。**Grok專注設計圖片，Gemini才是後續整合主筆**；看稿後由擁有人確認實裝範圍，再更新工程工作包並本人新claim。
+
+下方D23的V1–V4範圍／證據留作歷史與後續候選，不自動執行。#245已合dev bccda780、postCI39884517733通過；#244原補修不變，但其完成不會自動解鎖本舊包。新#182純設計不等#244，D24文件合dev／postCI即可按新工作包認領；本文件不授Grok接demo或操作8800。
+
 批准來源 [D23](DECISIONS_AND_SOURCES.md#d23-184-局部美術整合-v1v4-批准2026-10-23)，精確範圍與六項驗收以 [正式工作包](ART184_HANDOFF.md)為準。擁有人貼給Grok Build；未代啟作者。**這不是#245原補修的替代prompt；先補修通過再接本新包。**
 
 ```text
+【歷史封存：不要執行本舊整合指令。先讀D24及MAP182_HANDOFF.md；Grok本輪只做圖像設計，後續整合改由Gemini並等待新範圍批准。本框後文僅保留D23歷史。】
 你是earth-ascension內Sect Chronicle #184「泉池—石階局部美術整合」主筆Grok Build。擁有人2026-10-23已批准V1–V4，不重問：同鏡頭局部材質比較；遠景／地面可烘、遮擋物分層、舊角色動畫保留；薄整合同生活入口且不改生活規則／最新控制；保留上版並做局部驗證。整體畫風／人物canon沒有因此全定稿。
 
 先從repo根讀AGENTS.md、CONTRIBUTING.md、sect-chronicle/AGENTS.md、sect-chronicle/docs/DECISIONS_AND_SOURCES.md的D23、sect-chronicle/docs/ART184_HANDOFF.md與本prompt、#184／#241及PR #244／#245全部最新留言。GitHub來源：https://github.com/lalagrass/earth-ascension/issues/184 。

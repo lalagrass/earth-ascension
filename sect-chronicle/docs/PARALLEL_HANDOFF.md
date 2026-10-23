@@ -1,5 +1,19 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+## 2026-10-23 D24最新分工：Grok圖像設計、Gemini功能與後續整合
+
+以 [D24](DECISIONS_AND_SOURCES.md#d24-182-完整道館生活地圖設計與美術分工批准2026-10-23)、[#182](https://github.com/lalagrass/earth-ascension/issues/182)、[MAP182工作包](MAP182_HANDOFF.md)／[Grok提示詞](MAP182_GROK_BUILD_PROMPT.md)為準；下方D23及更早quota／分工保留歷史，不作開工指令。
+
+| 實際主筆／目錄 | 當前範圍與交接 |
+|---|---|
+| Grok Build：`/Users/chenyuying/workspace/earth-ascension-grok-art184` | #245已合；保留原codex/art184-grok-build。D24文件合dev／postCI、目錄乾淨且無重疊作者後，從最新origin/dev另開codex/map182-dojo-design、新4h認領#182。**僅design/map182/**圖稿／來源／分鏡或短片，不寫遊戲程式。不等#244才可設計 |
+| Gemini：`/Users/chenyuying/workspace/earth-ascension-gemini-241` | 先依原#241／PR244 scope與期限補修；Grok不動其檔。後續待#182看稿、擁有人確認實裝範圍與新工作包，再本人新claim整合圖像，不塞入244 |
+| Codex遊戲PO：自有PO checkout／codex/map182-design-approved | 本次9MD批准同步／交接；非作者review與Earth唯一queue後回填issue，不代啟作者 |
+
+Grok可自由擴完整道館／生活點／未來巡山視覺，分清現有與未來候選。設計與功能補修不重疊檔案可並行；未來Gemini才接地圖、路線、圖層與素材，本次未授runtime。D23／#184局部實裝暫後，舊Grok prompt不可因#244合併就自啟；整合主筆已換Gemini，須新範圍與認領。
+
+兩個worktree各有index／檔案但refs共享；不reset／force push／stash他人內容或切他人分支，原245經squash後不假設可ff-only同步。Grok只在新設計目錄寫自有README／來源，不改共享實驗README／demo／checks或Gemini的branch。各自用確認空埠預覽，8800仍由遊戲PO維護已接受生活版；不新建repo、不啟其他agent／排程或自接下一包。
+
 ## 2026-10-23 D23現行分工：Gemini生活核心、Grok Build有限美術
 
 以 [D23](DECISIONS_AND_SOURCES.md#d23-184-局部美術整合-v1v4-批准2026-10-23)、[#184](https://github.com/lalagrass/earth-ascension/issues/184)／[#241](https://github.com/lalagrass/earth-ascension/issues/241)及 [正式工作包](ART184_HANDOFF.md)／[Grok Build提示詞](ART184_GROK_BUILD_PROMPT.md)為本輪入口。下方2026-10-18的Grok單核心／Gemini quota與示意路徑是歷史，不能用來重分配當前有效作者。
