@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 720" width="1280" height="720">
+  <!-- 手寫SVG標註層：疊在 ../paint/scene-master.jpg 上。全部為「新提案／未來候選」概念，非已實裝地圖。 -->
+  <image href="../paint/scene-master.jpg" xlink:href="../paint/scene-master.jpg" width="1280" height="720"/>
+  <style>
+    text{font-family:"Noto Sans CJK TC","Noto Sans TC",sans-serif;font-size:19px;font-weight:700;paint-order:stroke;stroke:#fff8e8;stroke-width:5px;fill:#2c2a26}
+    .f{fill:#8a2b1c}.s{font-size:15px;font-weight:400}
+    .route{fill:none;stroke:#1f4e8c;stroke-width:5;stroke-dasharray:14 9;opacity:.85}
+    .visit{fill:none;stroke:#7a5a22;stroke-width:4;stroke-dasharray:4 8;opacity:.9}
+    .fut{fill:none;stroke:#8a2b1c;stroke-width:3;stroke-dasharray:3 6}
+    circle{fill:#1f4e8c;stroke:#fff8e8;stroke-width:3}
+  </style>
+  <!-- 取水長路：泉口 → 石階 → 作業院落水缸 -->
+  <path class="route" d="M1095 575 C1000 560 930 520 880 470 C820 420 780 410 700 420 C600 430 540 420 480 400"/>
+  <!-- 村落來路：堂弟由左下村莊上山 -->
+  <path class="visit" d="M120 560 C220 600 400 610 560 560 C640 530 700 480 760 430"/>
+  <!-- 未來巡山入口 -->
+  <path class="fut" d="M960 170 C1000 110 1040 60 1080 20"/>
+  <circle cx="400" cy="90" r="9"/><text x="415" y="60">① 道館正堂／起居（上台，最高、乾燥）</text>
+  <circle cx="490" cy="205" r="9"/><text x="505" y="200">② 教學練武坪</text>
+  <circle cx="470" cy="420" r="9"/><text x="300" y="470">③ 作業院落：柴、水缸、石磨、晾衣</text>
+  <circle cx="760" cy="320" r="9"/><text x="770" y="300">④ 藥圃／竹架晾曬（向陽中台）</text>
+  <circle cx="1080" cy="560" r="9"/><text x="920" y="650">⑤ 泉眼／溪口（最低，取水點）</text>
+  <circle cx="90" cy="530" r="9"/><text x="20" y="610">⑥ 村落來路</text>
+  <text class="f" x="900" y="40">⑦ 未來候選：巡山入口（未授權）</text>
+  <text class="s" x="560" y="700">藍虛線＝取水長路（下坡空、上坡負重）　褐點線＝堂弟由村來訪　紅點線＝未來候選</text>
+</svg>
