@@ -1,5 +1,13 @@
 # Coding agent 接手入口
 
+## D28最新批准：LP-14生活觀察介面O1–O4（2026-10-23）
+
+擁有人已同意O1–O4，見[D28](docs/DECISIONS_AND_SOURCES.md#d28lp-14-生活觀察介面-o1o4批准2026-10-23)／[#257](https://github.com/lalagrass/earth-ascension/issues/257)／[正式工作包](docs/LP14_HANDOFF.md)／[Gemini兩小時提示詞](docs/LP14_GEMINI_PROMPT.md)。簡潔HUD／院落近況、人物小卡、進階按需與可見跟隨控制，同場景先桌面390畫面／流程再薄接線；原模型／命令／數值／工作／路線／存檔與控制效果保留，不加玩法／全圖重畫。
+
+**文件可獨立先合，LP14製作／runtime仍須本批准文件及#256的390遮擋修正版各自非作者接受→Earth唯一queue合dev→postCI通過，Gemini才本人最新dev新claim／新分支；不重問O1–O4，也不把文件綠燈當依賴解除。** #256原Gemini只補現有390可讀性、不等本文件、原scope／期限不變，不能把W4修正延到LP14。c34d413是尚有P2的狀態快照，開工讀#254最新接受head，不用其舊CI代替。
+
+LP14僅design/life-observation/**、demo/index／style／app必要呈現與鏡頭控制、局部checks及實驗README；不動model/routes/palm/layout、素材／atlas或Earth。兩小時從LP14本人新T0算、100min後不加範圍／達標早停，4h不延長窗口；非作者review／Earth唯一queue保留。必要局部／SG快驗／根CI與桌面390、未變證據復用／摘要真exit，不跑無關長矩陣、不啟其他agent／排程或改8800。下方D27仍管理LP13原有限實作，D25等舊prompt是歷史。
+
 ## D27最新批准：LP-13長挑水路 W1–W4（2026-10-23）
 
 擁有人已同意W1–W4，見[D27](docs/DECISIONS_AND_SOURCES.md#d27lp-13-長挑水路-w1w4批准2026-10-23)／[#254](https://github.com/lalagrass/earth-ascension/issues/254)／[正式工作包](docs/LP13_HANDOFF.md)／[Gemini提示詞](docs/LP13_GEMINI_PROMPT.md)。原院落／HOME保留，世界只南延1600×1350、水路單程1650–1750／約1700；原速度／每趟成長／產出與精力政策不改，明確接受0精力仍完成本趟後休息；只必需乾淨水路圖層與鏡頭薄接線，原人物與其他生活幾何／LP12控制保留。**產品前置已解除，不重問四項；本批准PR255合dev／postCI後，Gemini本人從最新dev新claim／新分支實作。** 未代啟作者、不改8800。

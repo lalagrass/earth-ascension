@@ -1,5 +1,17 @@
 # 可見交付、驗證與正式整合
 
+## D28下一片已批准：LP-14生活觀察介面（2026-10-23）
+
+[#257](https://github.com/lalagrass/earth-ascension/issues/257) O1–O4已由擁有人批准，見[D28](DECISIONS_AND_SOURCES.md#d28lp-14-生活觀察介面-o1o4批准2026-10-23)／[正式工作包](LP14_HANDOFF.md)／[Gemini兩小時prompt](LP14_GEMINI_PROMPT.md)。簡潔HUD、人物小卡、院落近況／進階按需與可見跟隨，先桌面390畫面及流程再同入口薄接線，現有工作／模型／數值保留。
+
+| 順序 | 交付與限制 |
+|---|---|
+| #254／PR256當前補修 | c34d413三項已修，但真390人物仍被狀態卡遮擋；先依原W4 scope補修、非作者驗收通過才交Earth整合，不能延到LP14。讀#254最新head／狀態，不重做已接受證據 |
+| D28批准同步文件 | 可獨立非作者review／Earth合dev及postCI，不要求先合256，也不解除其阻擋 |
+| LP14-A→B→C | **上述文件及256各自接受／合dev／postCI後**Gemini本人新claim：畫面流程→有限接線→真桌面390驗收；不沿256舊branch／租期，不混兩包 |
+
+必要局部／快驗／根CI、未變證據復用／摘要真exit保留，不擴長矩陣或全UI框架；新T0最多120min／100min後不加範圍／達標早停。只循環本包、非作者review與Earth唯一queue，未代啟作者或改8800。runtime接受／合dev／postCI後才更入口保留上一版；採藥視覺細化→砍柴連一項用途等只是後續候選，不隨本片解鎖。
+
 ## D27下一片已批准：LP-13長挑水路（2026-10-23）
 
 已接受基線：LP12／PR244生活版e611037，以及PR250地圖設計dev dff6f310／postCI39906919235五SUCCESS。#182設計已交付，8800仍LP12，不沿下方舊狀態重做。下一片[#254](https://github.com/lalagrass/earth-ascension/issues/254)的**同入口長挑水路、觀看奔波與速度差W1–W4已批准**，見[D27](DECISIONS_AND_SOURCES.md#d27lp-13-長挑水路-w1w4批准2026-10-23)／[正式工作包](LP13_HANDOFF.md)／[Gemini提示詞](LP13_GEMINI_PROMPT.md)。
