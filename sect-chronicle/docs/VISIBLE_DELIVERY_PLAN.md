@@ -1,5 +1,13 @@
 # 可見交付、驗證與正式整合
 
+## D29下一片已批准：LP-15採藥場景與動作質感，畫稿先行（2026-10-23）
+
+[#259](https://github.com/lalagrass/earth-ascension/issues/259)／[D29](DECISIONS_AND_SOURCES.md#d29lp-15-採藥場景與動作質感-h1h4批准2026-10-23) H1–H4已批准，沿#170／#182／#184的採藥／場景方向，不另建順位。正式[工作包](LP15_HANDOFF.md)／[Gemini prompt](LP15_GEMINI_PROMPT.md)：最新接受LP14同鏡頭桌面390完整稿＋四段動作分鏡＋來源與接線差異表；復用既有採藥，不改坐標／路線／數值。
+
+順序：**#257非作者接受／Earth合dev／postCI＋本文件同流程完成→Gemini本人新claim設計→設計PR接受／選定差異→另列有限接線→runtime接受／合dev／postCI後同8800更新並保留LP14。** 先畫稿也等前置，不把新範圍塞進#257／延其窗口，不把設計接受當可玩交付；當前只design/herb-life/**。
+
+無逐張人類必簽，不重問已批H1–H4；新玩法／路線數值仍另決。兩小時／早停、必要局部與根CI、未變證據復用／摘要輸出沿原則；藥草用途／砍柴／社交與獸巢仍候選，#182／#184完整backlog不因這包結案。
+
 ## D28下一片已批准：LP-14生活觀察介面（2026-10-23）
 
 [#257](https://github.com/lalagrass/earth-ascension/issues/257) O1–O4已由擁有人批准，見[D28](DECISIONS_AND_SOURCES.md#d28lp-14-生活觀察介面-o1o4批准2026-10-23)／[正式工作包](LP14_HANDOFF.md)／[Gemini兩小時prompt](LP14_GEMINI_PROMPT.md)。簡潔HUD、人物小卡、院落近況／進階按需與可見跟隨，先桌面390畫面及流程再同入口薄接線，現有工作／模型／數值保留。

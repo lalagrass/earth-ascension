@@ -1,0 +1,30 @@
+# Gemini兩小時提示詞：LP-15採藥場景與動作質感，先交畫面稿
+
+H1–H4已批准，見[D29](DECISIONS_AND_SOURCES.md#d29lp-15-採藥場景與動作質感-h1h4批准2026-10-23)／[#259](https://github.com/lalagrass/earth-ascension/issues/259)／[正式工作包](LP15_HANDOFF.md)。**本文件及#257各自接受／合dev／postCI前，連畫稿也不能開工或預占認領。** 可整段貼給Gemini；不是代啟或新認領。
+
+```text
+你是Gemini，準備接earth-ascension/sect-chronicle的LP15「採藥場景與動作質感」#259。H1–H4已批准，先交完整畫面稿，不改路線或數值；本次執行只設計，不自動接runtime。
+
+先讀根CONTRIBUTING／AGENTS、sect-chronicle/AGENTS、最新#259／#257、D29、LP15_HANDOFF.md。必須核：①本D29文件非作者review→Earth唯一queue合dev→postCI成功；②#257最終LP14已遊戲PO真驗收接受、無阻擋→Earth合dev→postCI成功。只認新接受head與實際CI證據，不用作者自校／issue關閉／PR綠燈代替。任一未完，不認領／畫圖／做素材或預演；若仍是#257有效作者，僅按原O1–O4／期限完成，不把本包塞進舊分支或延長舊窗口。
+
+全部前置完成後，核最新dev與有效作者，自己的獨立乾淨worktree、新codex短分支。在#259新claim列真主筆Gemini、design/herb-life/**、完整base SHA、branch、前置證據、claimed_at以留言GitHub created_at、expires_at=其+4h UTC；重讀確認無較早重疊認領。保護LP14原branch／未提交成果，不reset／force push／stash他人內容，不沿舊claim。
+
+目標：沿最新接受LP14同一生活場景，改善東坡藥圃→院中藥架的一趟採藥觀感，保留長水路／觀看奔波與速度差。既有四phase、蹲採、空滿背簍、藥架逐份顯示、交付+1與共用腳力都已存在，先盤點再列真正改善，不重做採藥系統。
+
+H1 同鏡頭現況／改善完整稿，桌面與390，一個主案；土圃／竹篩／工具／生活痕跡與長水路風格一致。原坐標／互動點／路線／長度／世界尺寸不動，不為構圖搬藥圃或把人縮成點。藥圃與藥架可分鏡，不強迫一鏡全收。
+H2 一組採摘→裝簍→背回→交藥四段分鏡／必要少量姿態，標腳底anchor、手簍掛點、圖層遮擋與原phase／原時長。原角色辨識與atlas復用，不做全cast／全朝向。視覺不早入帳、不假造新技能／收益。
+H3 沿LP14既有小卡／原資料顯工作、腳力／交付；同路同負重同倍率看初學熟手差，同一人升級前後另標。任何速度／精力／成長／產量容量／預設工作與模型／存檔均不改，不加藥種、配方、耗竭／耗藥、飢餓心情或人格。
+H4 設計流程：一人採藥另一人挑水→採摘／背回／交藥+1→路中改令原趟後生效→暫停／390跟隨。設計專用熱區可切圖，明標未連遊戲，不宣稱模型真驗收；靜態分鏡足夠就不寫播放器。有播放器才補真暫停／有限結束／重播。
+
+只寫sect-chronicle/experiments/water-carry/design/herb-life/**：可編輯來源、少量桌面／390完整對照、四段分鏡／必要自有輸出、來源README與最小接線差異表，必要設計流程HTML／JS。demo/**、atlas/template/spikes、checks、共享實驗README、PO文件、Earth／依賴CI、其他作者checkout／8800全只讀。不要讀未公開LP14工作目錄，用接受dev作基線。確認空埠預覽，不更遊戲入口。
+
+交LP15-A完整稿、LP15-B分鏡／點選流程、LP15-C來源授權與接線差異表。每張註base/head、視窗尺寸／倍率／鏡頭、實際截圖或合成，示意不當世界結果。生成圖記實際工具／prompt／引用與原圖；缺功能照實交限制，不用商業遊戲素材。概念全景不假裝可直接接的分層圖，既有／新增圖層與幀及最低接線檔案分列。
+
+先以設計PR交可看成果，本階段即停。PO依稿選採用／調整／延後差異，再列有限接線白名單與新claim；不能自行改demo。這不是要求逐張人類批准，H1–H4不重問；超出原批准的坐標／數值／玩法交擁有人。
+
+驗收照LP15_HANDOFF A–D：同條件完整畫面、真390可讀；姿態／工具／腳底／圖層與原phase時點；來源可交接；靜態與可操作／真世界分清。有流程頁才做桌面390真操作，無則驗實圖。保留根python3 -m unittest discover -s tests -v、node --check earth_ascension/static/m2.js、git diff --check及當前merge CI；設計JS補syntax。純圖稿不重跑未變生活checks、全工作×等級、世界seed／SG長矩陣／存讀；CI必要快驗保留。log落檔只讀摘要／失敗、少量圖，真exit／工具GPU限制照實。
+
+本人新T0最多120min，100min後不加scope，達標或完整交review無可做項即停；4h租期不延長2h。不等待湊滿2h，不自啟下一輪／其他agent／聊天／排程。到時未完交draft／head／已跑證據／缺口後停新工作。只循環本設計自校→非作者review→剩餘時間有限補修→Earth唯一queue，不自合dev或冒充獨立review。
+
+PR指dev，根模板寫真作者／base/head／有效新claim、檔案、A–D證據／短流程與圖／URL、來源授權、測試摘要與限制，Refs #259／#170／#184。issue回review／blocked，不關完整#182／#184。設計接受不等runtime交付；未來接線接受→Earth合dev→postCI才PO更新同8800並保留LP14。本次提交完即停。
+```
