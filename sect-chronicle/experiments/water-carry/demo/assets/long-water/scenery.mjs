@@ -28,22 +28,22 @@ export const BRIDGE_DECK_POLY = Object.freeze([
 ]);
 
 export function buildLongWaterScenery({ world, ground, sorted }) {
-  // 1. 南段延伸地面底層 (y: 880 至 1350)
+  // 1. 南段延伸地面底層 (y: 880 至 1350，LP-17 呼應 Grok 暖灰土與山林苔綠)
   const terrain = new Graphics();
-  // 底色：山林草坡綠 (#98a870 與 #8c9c64 交替)
+  // 底色：山林草坡綠 (呼應 Grok 苔綠與暖土色系)
   terrain.rect(0, WORLD_SIZE.originalH - 20, WORLD_SIZE.w, WORLD_SIZE.extendedH + 20)
-    .fill(0x94a46c);
+    .fill(0x8ea066);
 
   // 接縫自然草紋與過渡帶 (y: 880–920)
   for (let x = 0; x < WORLD_SIZE.w; x += 32) {
     const h = 14 + ((x * 7) % 18);
     terrain.poly([x, WORLD_SIZE.originalH - 10, x + 16, WORLD_SIZE.originalH - 10 - h, x + 32, WORLD_SIZE.originalH - 10])
-      .fill({ color: 0x889860, alpha: 0.65 });
+      .fill({ color: 0x7a8c54, alpha: 0.65 });
   }
 
-  // 南部山崖石壁與深谷層次 (y: 1040–1350)
+  // 南部山崖石壁與深谷層次 (y: 1040–1350，暖灰岩崖與苔蘚)
   terrain.poly([0, 1080, 240, 1060, 480, 1090, 720, 1050, 980, 1100, 1280, 1070, 1600, 1110, 1600, 1350, 0, 1350])
-    .fill({ color: 0x82905e, alpha: 0.45 });
+    .fill({ color: 0x748252, alpha: 0.5 });
 
   // 谷底深潭周圍深色基底 (左下角區域)
   terrain.ellipse(360, 1250, 220, 95).fill({ color: 0x6e784e, alpha: 0.5 });
