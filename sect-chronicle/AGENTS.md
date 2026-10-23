@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## D27最新批准：LP-13長挑水路 W1–W4（2026-10-23）
+
+擁有人已同意W1–W4，見[D27](docs/DECISIONS_AND_SOURCES.md#d27lp-13-長挑水路-w1w4批准2026-10-23)／[#254](https://github.com/lalagrass/earth-ascension/issues/254)／[正式工作包](docs/LP13_HANDOFF.md)／[Gemini提示詞](docs/LP13_GEMINI_PROMPT.md)。原院落／HOME保留，世界只南延1600×1350、水路單程1650–1750／約1700；原速度／每趟成長／產出與精力政策不改，明確接受0精力仍完成本趟後休息；只必需乾淨水路圖層與鏡頭薄接線，原人物與其他生活幾何／LP12控制保留。**產品前置已解除，不重問四項；本批准PR255合dev／postCI後，Gemini本人從最新dev新claim／新分支實作。** 未代啟作者、不改8800。
+
+PR250設計已合dev dff6f310／postCI39906919235五SUCCESS；LP12／PR244已交付、8800仍LP12 e611037。下方D25舊設計prompt／補修為完成沿革、PR248只留來源，不重做或沿舊claim接線；原提案head5561cf4綠燈不取代本批准前置。新片只有限白名單／單一權威路長與60Hz，不偷加速或改平衡；必要局部／SG快驗／根CI、桌面390、未變證據復用／摘要真exit，沿120min／100min後不加範圍／達標早停，不自接下一包。
+
 ## D25最新改派：#182設計／改圖由Gemini接手（2026-10-23）
 
 擁有人因Grok額度不足明確改派，讀 [D25](docs/DECISIONS_AND_SOURCES.md#d25-182-設計與改圖改由gemini接手2026-10-23)、[#182](https://github.com/lalagrass/earth-ascension/issues/182)、[工作包](docs/MAP182_HANDOFF.md)／[Gemini提示詞](docs/MAP182_GEMINI_PROMPT.md)。下方D24「Grok專注圖像」是原分工；現在Gemini接剩餘設計／改圖與PR248四項P2，Grok成果與原分支／review保留，不冒稱本人released，不等原Grok期限。
