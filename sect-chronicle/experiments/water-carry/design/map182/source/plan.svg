@@ -42,27 +42,49 @@
     <text x="2060" y="600">院邊空地</text>
   </g>
   <g font-family="PingFang TC, Noto Sans TC, sans-serif" font-size="22">
-    <rect x="48" y="48" width="620" height="250" rx="12" fill="#fffaf1" stroke="#c4b59a"/>
-    <text x="72" y="88" font-size="30" fill="#2c2824">青石生活盆地 · 一個主案</text>
-    <text x="72" y="126" fill="#3d6b8a">挑水 1709.1 · 現有功能，拉長</text>
-    <text x="72" y="158" fill="#6a8a3d">採藥 800.4 · 現有功能，另一側</text>
-    <text x="72" y="190" fill="#8a7348">看山 747.6 · 現有休閒</text>
-    <text x="72" y="222" fill="#8a4b3a">巡山虛線 · 未來候選，不是路線</text>
-    <text x="72" y="262" fill="#5c564c">2400×1350 設計板 · 未連遊戲</text>
+    <rect x="1000" y="48" width="640" height="250" rx="12" fill="#fffaf1" stroke="#c4b59a"/>
+    <text x="1024" y="88" font-size="30" fill="#2c2824">青石生活盆地 · 一個主案</text>
+    <text x="1024" y="126" fill="#3d6b8a">挑水 1709.1 · 現有功能，拉長</text>
+    <text x="1024" y="158" fill="#6a8a3d">採藥 800.4 · 現有功能，另一側</text>
+    <text x="1024" y="190" fill="#8a7348">看山 747.6 · 現有休閒</text>
+    <text x="1024" y="222" fill="#8a4b3a">巡山虛線 · 未來候選，不是路線</text>
+    <text x="1024" y="262" fill="#5c564c">2400×1350 設計板 · 未連遊戲</text>
   </g>
   <g font-family="PingFang TC, Noto Sans TC, sans-serif" font-size="20" fill="#5c564c">
     <rect x="1680" y="40" width="680" height="150" rx="12" fill="#fffaf1" stroke="#c4b59a"/>
     <rect x="1704" y="64" width="160" height="90" fill="none" stroke="#2c2824" stroke-dasharray="6 4"/>
     <text x="1880" y="100">虛線是現有 1600×900</text>
     <text x="1880" y="128">同比例外框，不是舊坐標套位</text>
-    <text x="1704" y="168">人物現有地圖高約 107。本板不把升級畫成變高。</text>
+    <text x="1704" y="168">人物透明幀框高 107（214÷2），非透明可見高 86.5（主角）／84.5（熟手）。</text>
   </g>
-  <g transform="translate(80 1120)">
-    <line x1="0" y1="80" x2="48" y2="80" stroke="#c4452d"/>
-    <circle cx="24" cy="28" r="12" fill="#4f78a8"/>
-    <rect x="10" y="40" width="28" height="36" rx="10" fill="#4f78a8"/>
-    <text x="60" y="70" font-family="PingFang TC, Noto Sans TC, sans-serif" font-size="22" fill="#2c2824">同高示意。現有地圖人物約 107 場景像素，這兩個小圖沒有按 107 畫。</text>
-    <circle cx="430" cy="24" r="10" fill="#6c8a68"/>
-    <rect x="420" y="36" width="20" height="42" rx="6" fill="#6c8a68"/>
+  <g transform="translate(680 1060)" font-family="PingFang TC, Noto Sans TC, sans-serif">
+    <rect x="0" y="0" width="860" height="230" rx="12" fill="#fffaf1" stroke="#c4b59a"/>
+    <text x="24" y="36" font-size="22" font-weight="bold" fill="#2c2824">人物與幀框尺度對照（非透明可見 vs 透明幀框 vs 腳底 anchor）</text>
+    <!-- 地面接觸基準線 -->
+    <line x1="40" y1="160" x2="820" y2="160" stroke="#8a7348" stroke-width="2"/>
+    <text x="590" y="152" font-size="16" fill="#8a7348">地面基準線（腳底 anchor y=92）</text>
+
+    <!-- 主角 -->
+    <rect x="60" y="53" width="107" height="107" fill="none" stroke="#a09888" stroke-dasharray="4 3"/>
+    <rect x="80" y="73.5" width="58" height="86.5" rx="6" fill="#4f78a8" opacity=".75"/>
+    <circle cx="113.5" cy="160" r="4" fill="#c4452d"/>
+    <text x="60" y="46" font-size="14" fill="#7a7060">透明幀框 107</text>
+    <text x="76" y="122" font-size="17" fill="#fff">主角 86.5</text>
+
+    <!-- 熟手 -->
+    <rect x="230" y="53" width="107" height="107" fill="none" stroke="#a09888" stroke-dasharray="4 3"/>
+    <rect x="250" y="75.5" width="60" height="84.5" rx="6" fill="#6c8a68" opacity=".75"/>
+    <circle cx="283.5" cy="160" r="4" fill="#c4452d"/>
+    <text x="230" y="46" font-size="14" fill="#7a7060">透明幀框 107</text>
+    <text x="246" y="122" font-size="17" fill="#fff">熟手 84.5</text>
+
+    <!-- 候選新角 -->
+    <rect x="400" y="75" width="56" height="85" rx="6" fill="#c49a68" stroke="#8a6840" stroke-dasharray="3 3" opacity=".65"/>
+    <circle cx="428" cy="160" r="4" fill="#c4452d"/>
+    <text x="390" y="46" font-size="14" fill="#8a6840">候選尺度 ~85（未定）</text>
+    <text x="402" y="122" font-size="15" fill="#2c2824">候選新角</text>
+
+    <text x="24" y="196" font-size="16" fill="#5c564c">說明：幀框 107 為 atlas 214÷2 容器；實際可見身高為 alpha bbox（主角 86.5、熟手 84.5）；紅點為腳底 anchor(45, 92)。</text>
+    <text x="24" y="218" font-size="15" fill="#8a6840">概念新人物僅示意候選尺度約 80–90 場景單位，尚未工程鎖定。</text>
   </g>
 </svg>

@@ -2,19 +2,27 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>回院預演 · 10 秒剪輯 · 未連遊戲</title>
 <style>
-  body { margin: 0; background: #1c1a17; color: #f6e7c4; font: 18px/1.45 "PingFang TC", "Noto Sans TC", sans-serif; }
-  main { width: 1100px; margin: 0 auto; padding: 24px; }
-  h1 { font-size: 28px; margin: 0 0 8px; }
-  video { width: 100%; background: #111; }
-  .row { display: flex; gap: 8px; margin: 12px 0; }
-  button { font: inherit; padding: 6px 14px; }
+  body { margin: 0; background: #1c1a17; color: #f6e7c4; font: 16px/1.45 "PingFang TC", "Noto Sans TC", sans-serif; }
+  main { max-width: 1100px; width: 100%; margin: 0 auto; padding: 24px; box-sizing: border-box; }
+  h1 { font-size: 26px; margin: 0 0 8px; }
+  video { width: 100%; max-width: 100%; height: auto; background: #111; display: block; }
+  .row { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+  button { font: inherit; padding: 6px 14px; cursor: pointer; border: 1px solid #c4b59a; background: #3b352a; color: #f6e7c4; border-radius: 4px; }
+  button:hover { background: #504738; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  figure { margin: 0; background: #efe6d4; color: #2c2824; }
+  figure { margin: 0; background: #efe6d4; color: #2c2824; border-radius: 4px; overflow: hidden; }
   img { width: 100%; display: block; }
-  figcaption { padding: 8px 10px; }
-  .readout { min-height: 1.4em; }
+  figcaption { padding: 8px 10px; font-size: 14px; }
+  .readout { min-height: 1.4em; font-weight: bold; }
+  @media (max-width: 640px) {
+    main { padding: 12px; font-size: 15px; }
+    h1 { font-size: 20px; }
+    .grid { grid-template-columns: 1fr; gap: 10px; }
+    button { flex: 1 1 auto; min-width: 70px; text-align: center; }
+  }
 </style>
 </head>
 <body>
@@ -40,12 +48,17 @@ const clip = document.getElementById('clip');
 const readout = document.getElementById('readout');
 clip.loop = false;
 function text() {
-  if (clip.ended) return '10 秒剪輯結束。設計預演，不是腳力驗收。';
-  if (clip.paused) return '暫停 ' + clip.currentTime.toFixed(2) + ' 秒';
+  if (clip.ended) return '10 秒剪輯結束（' + (clip.duration ? clip.duration.toFixed(2) : '10.04') + ' 秒）。設計預演，不是腳力驗收。';
+  if (clip.paused) {
+    if (clip.currentTime === 0) return '未播放';
+    return '暫停 ' + clip.currentTime.toFixed(2) + ' 秒';
+  }
   return '播放 ' + clip.currentTime.toFixed(2) + ' 秒';
 }
 function paint() { readout.textContent = text(); }
 clip.addEventListener('timeupdate', paint);
+clip.addEventListener('play', paint);
+clip.addEventListener('pause', paint);
 clip.addEventListener('ended', () => { clip.pause(); paint(); });
 document.getElementById('play').addEventListener('click', () => {
   if (clip.ended) clip.currentTime = 0;
