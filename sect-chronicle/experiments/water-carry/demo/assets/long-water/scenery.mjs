@@ -1,7 +1,31 @@
 // LP-13 長挑水路南段場景渲染建構模組（PixiJS 原創幾何與分層）
 // 涵蓋 1600×1350 延伸地面、長水路路面步石、竹林、溪流溪橋前後遮擋與谷底深潭新泉眼。
-import { Graphics, Container } from '../vendor/pixi.min.mjs';
-import { WATER_POINTS, WORLD_SIZE } from '../water-layout.mjs';
+import { Graphics, Container } from '../../vendor/pixi.min.mjs';
+import { WATER_POINTS, WORLD_SIZE } from '../../water-layout.mjs';
+
+// 匯出溪流與橋面幾何，供驗收測試與除錯同源驗證
+export const STREAM_POLY = Object.freeze([
+  [825, 870],
+  [875, 870],
+  [875, 960],
+  [885, 1005],
+  [875, 1045],
+  [830, 1080],
+  [760, 1100],
+  [690, 1120],
+  [680, 1070],
+  [750, 1050],
+  [815, 1030],
+  [815, 1000],
+  [820, 960],
+]);
+
+export const BRIDGE_DECK_POLY = Object.freeze([
+  [775, 970],
+  [925, 1022],
+  [925, 1058],
+  [775, 1006],
+]);
 
 export function buildLongWaterScenery({ world, ground, sorted }) {
   // 1. 南段延伸地面底層 (y: 880 至 1350)
@@ -49,70 +73,67 @@ export function buildLongWaterScenery({ world, ground, sorted }) {
     ground.roundRect(sx - 12, sy - 4, 24, 7, 2).fill(0x767468).stroke({ width: 1.2, color: 0x545248 });
   }
 
-  // 3. 溪流與溪橋 (點 9 ~ 點 11 附近)
+  // 3. 溪流與溪橋 (嚴格對齊水路：溪流穿過橋底，橋面完整覆蓋跨溪折線)
   // 溪流河床與水體 (畫在 ground)
   const stream = new Graphics();
-  stream.poly([
-    620, 910,
-    760, 950,
-    880, 990,
-    1020, 1040,
-    1180, 1090,
-    1150, 1140,
-    980, 1080,
-    840, 1030,
-    710, 990,
-    580, 950,
-  ]).fill({ color: 0x487994, alpha: 0.88 });
+  stream.poly(STREAM_POLY.flat()).fill({ color: 0x487994, alpha: 0.88 });
 
   // 溪流波紋
-  for (const [wx, wy, l] of [[680, 940, 40], [780, 975, 45], [920, 1020, 50], [1060, 1070, 42]]) {
-    stream.ellipse(wx, wy, l, 3).fill({ color: 0x7eb5cc, alpha: 0.55 });
+  for (const [wx, wy, l] of [[850, 910, 20], [845, 955, 24], [850, 1020, 26], [780, 1075, 30], [720, 1095, 25]]) {
+    stream.ellipse(wx, wy, l, 2.8).fill({ color: 0x7eb5cc, alpha: 0.55 });
   }
-  // 溪岸鵝卵石
-  for (const [rx, ry, s] of [[650, 925, 8], [740, 960, 10], [950, 1050, 9], [1120, 1110, 11]]) {
+  // 溪岸卵石
+  for (const [rx, ry, s] of [[820, 915, 6], [880, 950, 7], [810, 1045, 8], [880, 1055, 7], [740, 1060, 9]]) {
     stream.ellipse(rx, ry, s, s * 0.65).fill(0x5c564c);
   }
   ground.addChild(stream);
 
-  // 橫跨溪橋：木石溪橋 (位於點 10: 850, 1000 橫跨溪流)
-  // 橋面主結構 (sorted，zIndex = 998)
+  // 橫跨溪橋：木石溪橋 (位於點 9 與點 11 之間，跨越點 10: 850, 1000)
+  // 橋墩石座 (ground，支撐橋身兩端與河床)
+  const piers = new Graphics();
+  piers.roundRect(805, 990, 16, 32, 3).fill(0x605e54).stroke({ width: 1.5, color: 0x44423a });
+  piers.roundRect(875, 1015, 16, 32, 3).fill(0x605e54).stroke({ width: 1.5, color: 0x44423a });
+  ground.addChild(piers);
+
+  // 橋面主結構 (sorted，zIndex = 998，完整覆蓋跨水折線與兩端引道)
+  // 幾何：左端 (775, 970)–(775, 1006)，右端 (925, 1022)–(925, 1058)
   const bridgeDeck = new Graphics();
-  bridgeDeck.poly([790, 982, 910, 1018, 910, 1038, 790, 1002]).fill(0x94724e).stroke({ width: 2, color: 0x644c32 });
-  for (let b = 0; b < 7; b++) {
-    const u = b / 6;
-    const px = 795 + (905 - 795) * u, py = 985 + (1020 - 985) * u;
-    bridgeDeck.poly([px - 2, py, px + 2, py + 18]).stroke({ width: 1.5, color: 0x6e5034 });
+  bridgeDeck.poly(BRIDGE_DECK_POLY.flat())
+    .fill(0x94724e).stroke({ width: 2, color: 0x644c32 });
+  // 橋面橫向防滑木條紋理
+  for (let b = 0; b < 10; b++) {
+    const u = b / 9;
+    const px = 780 + (920 - 780) * u, py = 975 + (1027 - 975) * u;
+    bridgeDeck.poly([px - 2, py, px + 2, py + 26]).stroke({ width: 1.5, color: 0x6e5034 });
   }
   bridgeDeck.zIndex = 998;
   sorted.addChild(bridgeDeck);
 
-  // 橋身後欄杆 (zIndex = 980，人物在橋上時人物遮擋後欄杆)
+  // 橋身後欄杆 (zIndex = 972，人物在橋上時人物遮擋後欄杆)
   const backRailing = new Graphics();
-  backRailing.poly([790, 980, 910, 1016]).stroke({ width: 3.5, color: 0x6a4e34, cap: 'round' });
-  backRailing.poly([790, 972, 910, 1008]).stroke({ width: 2.5, color: 0x7a5a3c, cap: 'round' });
-  for (let p = 0; p < 5; p++) {
-    const u = p / 4;
-    const rx = 794 + (906 - 794) * u, ry = 974 + (1010 - 974) * u;
-    backRailing.poly([rx, ry - 8, rx, ry + 10]).stroke({ width: 3.5, color: 0x543c26 });
+  backRailing.poly([775, 968, 925, 1020]).stroke({ width: 3.5, color: 0x6a4e34, cap: 'round' });
+  backRailing.poly([775, 960, 925, 1012]).stroke({ width: 2.5, color: 0x7a5a3c, cap: 'round' });
+  for (let p = 0; p < 6; p++) {
+    const u = p / 5;
+    const rx = 780 + (920 - 780) * u, ry = 962 + (1014 - 962) * u;
+    backRailing.poly([rx, ry - 8, rx, ry + 12]).stroke({ width: 3.5, color: 0x543c26 });
   }
-  backRailing.zIndex = 980;
+  backRailing.zIndex = 972;
   sorted.addChild(backRailing);
 
-  // 橋面前欄杆 (zIndex = 1015，人物在橋上時前欄杆遮擋人物腿部，形成真深度)
+  // 橋面前欄杆 (zIndex = 1060，人物在橋上時前欄杆遮擋人物腿部，形成真深度)
   const frontRailing = new Graphics();
-  frontRailing.poly([790, 1004, 910, 1040]).stroke({ width: 3.5, color: 0x7a5a3c, cap: 'round' });
-  frontRailing.poly([790, 996, 910, 1032]).stroke({ width: 2.5, color: 0x8a6644, cap: 'round' });
-  for (let p = 0; p < 5; p++) {
-    const u = p / 4;
-    const rx = 794 + (906 - 794) * u, ry = 998 + (1034 - 998) * u;
-    frontRailing.poly([rx, ry - 8, rx, ry + 12]).stroke({ width: 3.5, color: 0x543c26 });
+  frontRailing.poly([775, 1004, 925, 1056]).stroke({ width: 3.5, color: 0x7a5a3c, cap: 'round' });
+  frontRailing.poly([775, 996, 925, 1048]).stroke({ width: 2.5, color: 0x8a6644, cap: 'round' });
+  for (let p = 0; p < 6; p++) {
+    const u = p / 5;
+    const rx = 780 + (920 - 780) * u, ry = 998 + (1050 - 998) * u;
+    frontRailing.poly([rx, ry - 8, rx, ry + 14]).stroke({ width: 3.5, color: 0x543c26 });
   }
-  frontRailing.zIndex = 1015;
+  frontRailing.zIndex = 1060;
   sorted.addChild(frontRailing);
 
   // 4. 竹林步道林木群 (點 3 到 點 7 周圍，x: 480–740, y: 640–920)
-  // 分批置入 sorted，以 y 軸動態排序，實現人物穿梭竹林時的真遮擋
   const bambooPositions = [
     [700, 630], [745, 660], [615, 675], [660, 710],
     [530, 735], [585, 770], [475, 810], [530, 850],
@@ -120,19 +141,15 @@ export function buildLongWaterScenery({ world, ground, sorted }) {
   ];
   for (const [bx, by] of bambooPositions) {
     const b = new Graphics();
-    // 陰影
     b.ellipse(0, 0, 18, 5).fill({ color: 0x545238, alpha: 0.28 });
-    // 竹竿主幹 (修長微斜)
     const lean = ((bx * 3) % 7) - 3;
     b.poly([lean - 3, -110, 0, 0]).stroke({ width: 5, color: 0x55803a, cap: 'round' });
     b.poly([lean - 3, -110, 0, 0]).stroke({ width: 3, color: 0x6e9e4c, cap: 'round' });
-    // 竹節
     for (let j = 1; j <= 4; j++) {
       const jy = -j * 24, jx = (lean - 3) * (1 - j / 4.5);
       b.ellipse(jx, jy, 4.5, 1.6).fill(0x354e22);
     }
-    // 竹葉群
-    for (const [lx, ly, rx, ry, ang] of [[-10, -90, 12, 4, -0.4], [8, -85, 13, 4, 0.3], [-14, -65, 11, 3.5, -0.5], [10, -60, 12, 4, 0.4]]) {
+    for (const [lx, ly, rx, ry] of [[-10, -90, 12, 4], [8, -85, 13, 4], [-14, -65, 11, 3.5], [10, -60, 12, 4]]) {
       b.ellipse(lx, ly, rx, ry).fill(0x629244);
     }
     b.position.set(bx, by);
@@ -141,18 +158,14 @@ export function buildLongWaterScenery({ world, ground, sorted }) {
   }
 
   // 5. 谷底深潭與新泉眼 (點 17 取水點：352, 1245)
-  // 泉池 (畫在 ground)
   const pool = new Graphics();
-  // 潭底深水與清潭
   pool.ellipse(320, 1245, 120, 55).fill({ color: 0x1f4c5e, alpha: 0.95 });
   pool.ellipse(320, 1245, 108, 48).fill({ color: 0x367a92, alpha: 0.9 });
-  // 水面波光與漣漪
   pool.ellipse(310, 1240, 68, 24).stroke({ width: 2, color: 0x6dc0d6, alpha: 0.65 });
   pool.ellipse(305, 1238, 40, 14).stroke({ width: 1.5, color: 0x98e0f0, alpha: 0.75 });
   pool.circle(302, 1236, 4).fill({ color: 0xd2f5fc, alpha: 0.85 });
   ground.addChild(pool);
 
-  // 泉潭周圍青苔石岩 (sorted)
   for (const [rx, ry, rw, rh, c] of [
     [210, 1225, 28, 18, 0x5a584c],
     [230, 1265, 34, 22, 0x4e4c40],
@@ -165,17 +178,15 @@ export function buildLongWaterScenery({ world, ground, sorted }) {
   ]) {
     const rock = new Graphics();
     rock.ellipse(0, 0, rw, rh).fill(c).stroke({ width: 1.5, color: 0x38362e });
-    rock.ellipse(-rw * 0.2, -rh * 0.3, rw * 0.6, rh * 0.4).fill({ color: 0x6e804a, alpha: 0.4 }); // 青苔
+    rock.ellipse(-rw * 0.2, -rh * 0.3, rw * 0.6, rh * 0.4).fill({ color: 0x6e804a, alpha: 0.4 });
     rock.position.set(rx, ry);
     rock.zIndex = ry;
     sorted.addChild(rock);
   }
 
-  // 取水青石台 (人站在 (352, 1245) 處面西取水)
   const dippingPlatform = new Graphics();
   dippingPlatform.ellipse(0, 0, 34, 16).fill(0x72756a).stroke({ width: 2, color: 0x4c4e46 });
   dippingPlatform.ellipse(0, -3, 28, 12).fill(0x84887c);
-  // 石台防滑鑿痕
   dippingPlatform.poly([-12, -4, 12, -4]).stroke({ width: 1.2, color: 0x5a5c54 });
   dippingPlatform.poly([-10, 0, 10, 0]).stroke({ width: 1.2, color: 0x5a5c54 });
   dippingPlatform.position.set(352, 1245);

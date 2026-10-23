@@ -1,9 +1,10 @@
-// LP-13 長挑水路切片局部驗收測試（A 路線／素材、B 速度／成長、C 自主／介入、D 觀看／時鐘）
+// LP-13 長挑水路切片局部驗收測試（A 路線／素材、B 速度／成長、C 自主／介入、D 觀看／時鐘、E 溪橋對齊與模組載入冒煙）
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { WORLD_SIZE, WATER_POINTS, WATER_LENGTH, SPRING_PLACE, WATER_LANDMARKS } from '../demo/water-layout.mjs';
+import { WORLD_SIZE, WATER_POINTS, WATER_LENGTH, SPRING_PLACE, WATER_LANDMARKS, WATER_TOOL } from '../demo/water-layout.mjs';
 import { createRoutes } from '../demo/routes.mjs';
 import { createModel, createClock, PEOPLE, RULES, tripSteps, speedsFor } from '../demo/model.mjs';
+import { STREAM_POLY, BRIDGE_DECK_POLY } from '../demo/assets/long-water/scenery.mjs';
 
 test('A 路線／同源：世界 1600×1350、HOME 不變、水路長度 1650–1750 且同源同長', () => {
   // 1. 世界延伸尺寸
@@ -143,4 +144,49 @@ test('D 觀看與幾何：相機視圖覆蓋 1600×1350，新泉眼與地標坐�
   assert.equal(WATER_LANDMARKS.bridge.y, 1000);
   assert.equal(WATER_LANDMARKS.spring.x, 352);
   assert.equal(WATER_LANDMARKS.spring.y, 1245);
+});
+
+test('E 幾何對齊與模組載入：scenery 依賴解析正常、溪流河道不吃路徑、跨溪路段 100% 覆蓋於橋面', () => {
+  // 1. 模組載入冒煙：STREAM_POLY 與 BRIDGE_DECK_POLY 成功自 scenery.mjs 匯出，表示 ../../ 相對路徑解析成功
+  assert.ok(Array.isArray(STREAM_POLY) && STREAM_POLY.length >= 6);
+  assert.ok(Array.isArray(BRIDGE_DECK_POLY) && BRIDGE_DECK_POLY.length === 4);
+
+  // 2. 多邊形內部判定函式
+  function inside(pt, vs) {
+    const [x, y] = pt;
+    let isInside = false;
+    for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+      const xi = vs[i][0], yi = vs[i][1];
+      const xj = vs[j][0], yj = vs[j][1];
+      const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+      if (intersect) isInside = !isInside;
+    }
+    return isInside;
+  }
+
+  // 3. 逐點檢驗水路折線兩端引道（點 9 與點 11）：必須在乾地，不落在溪水內
+  const pt9 = WATER_POINTS[9];  // [742, 980]
+  const pt11 = WATER_POINTS[11]; // [922, 1040]
+  assert.equal(inside(pt9, STREAM_POLY), false, '點 9 溪橋西引道 (742, 980) 必須在陸地上，不得浸入溪水');
+  assert.equal(inside(pt11, STREAM_POLY), false, '點 11 溪南山坳 (922, 1040) 必須在陸地上，不得浸入溪水');
+
+  // 4. 沿全路長每 1 場景單位取樣：所有落入溪流河道的點，必須 100% 同時落在橋面多邊形內
+  const total = WATER_TOOL.length;
+  let inStreamCount = 0;
+  let inStreamOffBridge = 0;
+  let onBridgeCount = 0;
+
+  for (let d = 0; d <= total; d += 1) {
+    const p = WATER_TOOL.at(d / total);
+    const inStream = inside([p.x, p.y], STREAM_POLY);
+    const onBridge = inside([p.x, p.y], BRIDGE_DECK_POLY);
+
+    if (inStream) inStreamCount++;
+    if (onBridge) onBridgeCount++;
+    if (inStream && !onBridge) inStreamOffBridge++;
+  }
+
+  assert.ok(inStreamCount > 0, '水路必須真實橫跨溪流（有跨溪樣本）');
+  assert.ok(onBridgeCount > inStreamCount, '橋面必須寬於溪水河道，提供兩端平穩接合');
+  assert.equal(inStreamOffBridge, 0, '跨溪水路樣本落在橋外（踩水）的數量必須為 0');
 });

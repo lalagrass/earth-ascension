@@ -365,15 +365,27 @@ function zoomAt(sx, sy, z) {
   cam.x += before.x - after.x; cam.y += before.y - after.y;
   applyCam();
 }
-// 窄螢幕：鏡頭跟著主角，並把主角放在 HUD 與底部抽屜之間的空處；拖曳後停止跟隨，按 0 恢復
+// 鏡頭跟隨：桌機與窄螢幕均跟隨選取人物（預設主角）；拖曳後停止跟隨，按 0 或點選人物／名冊恢復
 const narrow = () => window.innerWidth <= 640;
 if (narrow()) cam.zoom = 0.85;
 function follow() {
+  if (!ui.follow) return;
   const p = positions[selectedPerson()];
-  const top = document.querySelector('.hud').getBoundingClientRect().bottom;
-  const drawer = [$('menu'), $('panel'), $('roster')].filter((el) => !el.hidden && el.offsetHeight).map((el) => el.getBoundingClientRect().top);
-  const bottom = Math.min(window.innerHeight, ...drawer);
-  const ty = p.y - 30 - ((top + bottom) / 2 - app.screen.height / 2) / cam.zoom;
+  if (!p) return;
+  let ty;
+  if (narrow()) {
+    const top = document.querySelector('.hud').getBoundingClientRect().bottom;
+    const drawer = [$('menu'), $('panel'), $('roster')].filter((el) => !el.hidden && el.offsetHeight).map((el) => el.getBoundingClientRect().top);
+    const bottom = Math.min(window.innerHeight, ...drawer);
+    ty = p.y - 30 - ((top + bottom) / 2 - app.screen.height / 2) / cam.zoom;
+  } else {
+    // 桌面版：人物居中偏上，留出名冊與場景下方視野
+    const hud = document.querySelector('.hud');
+    const top = hud ? hud.getBoundingClientRect().bottom : 56;
+    const roster = $('roster');
+    const bottom = roster && !roster.hidden ? roster.getBoundingClientRect().top : app.screen.height - 40;
+    ty = p.y - 20 - ((top + bottom) / 2 - app.screen.height / 2) / cam.zoom;
+  }
   cam.x += (p.x - cam.x) * 0.12;
   cam.y += (ty - cam.y) * 0.12;
   applyCam();
@@ -387,7 +399,7 @@ const LENGTHS = { water: WATER_LENGTH, herb: r1(herbPath.length), seat: geo.seat
 const SENSE = { placeOf: geo.of };
 let model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
 const clock = createClock();
-const ui = { follow: narrow(), playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null };
+const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null };
 let v = model.view();
 let positions = Object.fromEntries(IDS.map((id) => [id, poseOf(id, v.people[id])]));
 const fx = []; // 浮字（只是畫面效果）
@@ -455,7 +467,7 @@ window.addEventListener('keydown', (e) => {
   else if (k === '1' || k === '2' || k === '4') setSpeed(Number(k));
   else if (k === '+' || k === '=') zoomAt(app.screen.width / 2, app.screen.height / 2, cam.zoom * 1.1);
   else if (k === '-') zoomAt(app.screen.width / 2, app.screen.height / 2, cam.zoom / 1.1);
-  else if (k === '0') { Object.assign(cam, scene.camera.start); if (narrow()) cam.zoom = 0.85; ui.follow = narrow(); applyCam(); }
+  else if (k === '0') { Object.assign(cam, scene.camera.start); if (narrow()) cam.zoom = 0.85; ui.follow = true; applyCam(); renderChrome(); }
   else if (k.startsWith('Arrow')) { const s = 40 / cam.zoom; cam.x += k === 'ArrowLeft' ? -s : k === 'ArrowRight' ? s : 0; cam.y += k === 'ArrowUp' ? -s : k === 'ArrowDown' ? s : 0; applyCam(); }
   else if (k === 'r' || k === 'R') toggleRoster();
   else if (k === 's' || k === 'S') toggleShadow();
@@ -473,7 +485,7 @@ for (const b of document.querySelectorAll('[data-speed]')) b.addEventListener('c
 $('roster-toggle').addEventListener('click', toggleRoster);
 $('shadow-toggle').addEventListener('click', toggleShadow);
 $('reset').addEventListener('click', reset);
-$('roster').addEventListener('click', (e) => { const b = e.target.closest('[data-person]'); if (b) select(ui.selected === b.dataset.person ? null : b.dataset.person); });
+$('roster').addEventListener('click', (e) => { const b = e.target.closest('[data-person]'); if (b) select(b.dataset.person); });
 $('panel').addEventListener('click', (e) => {
   const a = e.target.closest('[data-auto]');
   if (a) { autoSet(a.dataset.auto); return; }
@@ -491,7 +503,7 @@ function togglePlay() { if (ui.menu) closeMenu(false); ui.playing = !ui.playing;
 function setSpeed(s) { ui.speed = s; renderChrome(); }
 function toggleRoster() { ui.rosterOpen = !ui.rosterOpen; renderChrome(); }
 function toggleShadow() { ui.shadow = !ui.shadow; renderChrome(); }
-function select(id) { ui.selected = id; if (narrow() && IDS.includes(id)) ui.follow = true; renderChrome(); }
+function select(id) { ui.selected = id; if (IDS.includes(id)) ui.follow = true; renderChrome(); }
 function reset() {
   if (ui.menu) closeMenu(false);
   model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
