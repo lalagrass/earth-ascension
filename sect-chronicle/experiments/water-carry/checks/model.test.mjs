@@ -10,7 +10,9 @@ const createModel = (len, rules) => createLifeModel(len, rules, [{ id: 'hero', i
 const LEN = JSON.parse(readFileSync(new URL('../spikes/shared/scene.json', import.meta.url))).path.length;
 const runUntil = (m, pred, limit = 1e6) => { for (let i = 0; i < limit; i++) { if (pred(m.view())) return; m.step(); } throw new Error('沒有等到條件'); };
 // 不讓道館用水干擾的規則（水缸夠大、不用水）
-const NO_USE = { ...RULES, vatCapacity: 999, useEveryMs: 1e12 };
+// SG-LIFE-01：正式規則改為「兩人真喝水才扣缸」；以下沿用舊定時用水（或不用水）的 LP 回歸 fixture 一律加 drink: null，
+// 明確關掉飲水，讓它們繼續只驗原本的停工／休閒／容量語意（飲水另由 test/life01-demo.test.js 與 design/life01 反例驗）。
+const NO_USE = { ...RULES, vatCapacity: 999, useEveryMs: 1e12, drink: null };
 
 test('每趟只在倒水完成時入帳一次，並且只成長一次', () => {
   const m = createModel(LEN, NO_USE);
@@ -169,7 +171,7 @@ test('兩人以不同起始腳力同時真移動，世界時間與用水只算�
   const before = JSON.stringify(m.state);
   for (let i = 0; i < 10; i++) { m.view(); m.actions('cousin'); }
   assert.equal(JSON.stringify(m.state), before, '讀取人物或選單不改世界');
-  const full = createLifeModel(LEN, { ...RULES, vatStart: RULES.vatCapacity });
+  const full = createLifeModel(LEN, { ...RULES, vatStart: RULES.vatCapacity, drink: null });
   runUntil(full, (v) => v.inFlight > 0);
   assert.equal(full.view().vat, RULES.vatCapacity - 1, '兩人共用每60秒一擔用水，不每人扣一擔');
   assert.equal(full.view().inFlight, 1, '一擔空位只准一人出發');
@@ -733,7 +735,7 @@ test('休閒中停工後低精力重啟：去程／活動點／返程都走完�
     ['fromFun', (p) => p.mode === 'fromFun' && p.funLeg.k > 0.3, 'start'],
   ];
   for (const [leg, at, restart] of legs) {
-    const m = createLifeModel(FUNL, { ...FULLV, useEveryMs: 20000 }); // 開局滿缸，之後照常用水讓工作有容量
+    const m = createLifeModel(FUNL, { ...FULLV, useEveryMs: 20000, drink: null }); // 開局滿缸，之後照常用水讓工作有容量
     m.state.people.hero.energy = 45.25; // 主角帶著 30<E<80 去看山
     if (leg === 'fromFun') { runUntil(m, (v) => v.people.hero.mode === 'fun'); m.dispatch('recall', 'hero'); }
     runUntil(m, (v) => at(v.people.hero));
@@ -799,7 +801,7 @@ test('休閒中停工→開始／改工作→恢復自主：叫回解除但必�
 });
 
 test('路程與容量：逐 tick 連續、受出發空手速度上限；暫停改令不動；單一空位只回輪到的人、不超額、不餓死', () => {
-  const m = createLifeModel(FUNL, { ...RULES, vatStart: RULES.vatCapacity, useEveryMs: 20000 });
+  const m = createLifeModel(FUNL, { ...RULES, vatStart: RULES.vatCapacity, useEveryMs: 20000, drink: null });
   const lim = (id) => speedsFor(m.state.people[id].motion.tripLevel).empty * STEP_MS / 1000 + 1e-6;
   let prev = Object.fromEntries(Object.entries(m.view().people).map(([id, p]) => [id, posOf(p)]));
   const order = (cmd, id) => { const b = posOf(who(m, id)), e = who(m, id).energy; m.dispatch(cmd, id); assert.ok(dist(posOf(who(m, id)), b) < 1e-9); assert.equal(who(m, id).energy, e); };
@@ -827,7 +829,7 @@ test('路程與容量：逐 tick 連續、受出發空手速度上限；暫停�
   }
   assert.equal(i, script.length, '每個介入情境都有發生');
   // 單一空位：只輪到的人回去，另一人留在活動點；長跑兩人都有後續工作、不餓死
-  const m2 = createLifeModel(FUNL, { ...RULES, vatStart: 1, vatCapacity: 1, useEveryMs: 20000 });
+  const m2 = createLifeModel(FUNL, { ...RULES, vatStart: 1, vatCapacity: 1, useEveryMs: 20000, drink: null });
   let bothLeft = 0;
   for (let t = 0; t < 60 * 60 * 20; t++) {
     m2.step();

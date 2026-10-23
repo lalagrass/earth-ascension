@@ -83,8 +83,10 @@ test('移動每秒 −1、只在棲地恢復；嗅探 2 秒；到場精力不同
 
 test('誘因消失：嗅探完院內已空就從林緣回棲地；靠近途中消失先走完到護欄這段才判、不撞', () => {
   // 沒人工作、水缸 1 擔，只把用水間隔當 fixture 調整，讓水在嗅探／靠近途中用完（野豬示意值不變）。
+  // SG-LIFE-01 起正式規則改為「真喝水才扣缸」、無人時水缸不再自己減少；這裡以 drink: null 明確沿用舊定時用水作為讓誘因消失的 fixture，
+  // 測的仍是野豬對「院內已空」的反應，不是用水規則本身。
   for (const [useEveryMs, where] of [[45000, 'sniff'], [48000, 'approach']]) {
-    const m = createModel(LENGTHS, { ...RULES, vatStart: 1, useEveryMs }, []);
+    const m = createModel(LENGTHS, { ...RULES, vatStart: 1, useEveryMs, drink: null }, []);
     run(m, (v) => v.boar.mode === 'out');
     const v1 = run(m, (v) => v.vat === 0);
     assert.equal(v1.boar.mode, where);
