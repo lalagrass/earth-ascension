@@ -27,8 +27,8 @@ json.dump(man, open('export/manifest.json','w'), ensure_ascii=False, indent=1)
 Z=1.5; CW,CH=1600,900
 rng=np.random.default_rng(7); n=rng.normal(0,1,(CH//4,CW//4))
 base=Image.fromarray(np.dstack([110+n*6,128+n*8,82+n*5]).clip(0,255).astype(np.uint8)).resize((CW,CH),Image.BICUBIC).filter(ImageFilter.GaussianBlur(3))
-def tiled(t): 
-    out=Image.new('RGB',(CW,CH)); 
+def tiled(t):
+    out=Image.new('RGB',(CW,CH));
     for y in range(0,CH,t.height):
         for x in range(0,CW,t.width): out.paste(t,(x,y))
     return out
