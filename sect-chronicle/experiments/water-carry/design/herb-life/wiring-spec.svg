@@ -10,7 +10,9 @@
       .muted { font-family: system-ui, sans-serif; font-size: 10px; fill: #6e5d4b; }
       .highlight { font-family: system-ui, sans-serif; font-size: 10px; font-weight: bold; fill: #8a4a1e; }
       .layer-bar { rx: 4px; stroke-width: 1; }
-      .code { font-family: monospace; font-size: 10px; fill: #2b4667; }
+      .code { font-family: monospace; font-size: 9.5px; fill: #2b4667; }
+      .badge-def { fill: #fce8e6; stroke: #c5221f; stroke-width: 1; rx: 3px; }
+      .badge-txt-d { font-family: system-ui, sans-serif; font-size: 9px; font-weight: bold; fill: #c5221f; }
     </style>
   </defs>
 
@@ -18,73 +20,93 @@
   <rect width="800" height="500" class="bg"/>
 
   <!-- 抬頭與說明 -->
-  <text x="25" y="32" class="title">LP-15 C 最小接線規格與圖層結構圖 (800×500)</text>
-  <text x="25" y="48" class="sub">圖層遮擋 (zIndex) ｜ 掛點偏移量 (Attach Offsets) ｜ 最小接線檔案清單（接線階段實施）</text>
+  <text x="25" y="30" class="title">LP-15 H4 最小接線差異表與圖層管線 (800×500)</text>
+  <text x="25" y="46" class="sub">圖層遮擋 (zIndex) ｜ 現況 vs 建議掛點 ｜ 涵蓋藥圃繪製、藥架、背簍與動作邊界（接線階段實施）</text>
 
   <!-- 1. 左側：圖層堆疊與 zIndex 規範 -->
-  <g transform="translate(25, 65)">
-    <rect width="360" height="400" class="box"/>
-    <text x="16" y="26" class="card-title">① 圖層順序與 zIndex 規範 (渲染管線)</text>
+  <g transform="translate(25, 60)">
+    <rect width="360" height="415" class="box"/>
+    <text x="16" y="24" class="card-title">① 圖層順序與 zIndex 規範 (渲染管線)</text>
 
     <!-- herbOut 去程圖層 -->
-    <text x="16" y="56" class="lbl"><b>A. 去程 (herbOut)</b>：空簍在身後</text>
-    <rect x="20" y="66" width="320" height="20" fill="#e8dcc2" stroke="#b5a28a" class="layer-bar"/>
-    <text x="30" y="80" class="code">z - 0.03: 空簍 (背部遮擋，只露出邊緣)</text>
-    <rect x="20" y="90" width="320" height="20" fill="#d2e3f5" stroke="#7da6d8" class="layer-bar"/>
-    <text x="30" y="104" class="code">z: 人物主體 Sprite (腳底錨點 anchorPx 24, 44)</text>
+    <text x="16" y="50" class="lbl"><b>A. 去程 (herbOut)</b>：空簍在身後</text>
+    <rect x="20" y="58" width="320" height="18" fill="#e8dcc2" stroke="#b5a28a" class="layer-bar"/>
+    <text x="30" y="71" class="code">z - 0.03: 空簍 (背部遮擋，只露出邊緣 load=0)</text>
+    <rect x="20" y="79" width="320" height="18" fill="#d2e3f5" stroke="#7da6d8" class="layer-bar"/>
+    <text x="30" y="92" class="code">z: 人物主體 Sprite (共用腳底錨點 anchorPx)</text>
 
     <!-- herbGather 採摘圖層 -->
-    <text x="16" y="132" class="lbl"><b>B. 採摘 (herbGather)</b>：簍放身前腳邊</text>
-    <rect x="20" y="142" width="320" height="20" fill="#d8e8d0" stroke="#8cb880" class="layer-bar"/>
-    <text x="30" y="156" class="code">z - 0.01: 藥圃泥土與植株</text>
-    <rect x="20" y="166" width="320" height="20" fill="#d2e3f5" stroke="#7da6d8" class="layer-bar"/>
-    <text x="30" y="180" class="code">z: 俯身蹲採人物主體 Sprite</text>
-    <rect x="20" y="190" width="320" height="20" fill="#fcecd2" stroke="#dcb070" class="layer-bar"/>
-    <text x="30" y="204" class="code">z + 0.02: 藥鋤工具 (手部掛點 +16, -8)</text>
-    <rect x="20" y="214" width="320" height="20" fill="#f7e0cb" stroke="#cf956b" class="layer-bar"/>
-    <text x="30" y="228" class="code">z + 0.03: 側邊藥簍 (逐漸填滿 load = k)</text>
+    <text x="16" y="118" class="lbl"><b>B. 採摘 (herbGather 4.0s)</b>：簍放身前腳邊</text>
+    <rect x="20" y="126" width="320" height="18" fill="#d8e8d0" stroke="#8cb880" class="layer-bar"/>
+    <text x="30" y="139" class="code">z - 0.01: 藥圃泥土畦面與陶甕 (drawHerbPatch)</text>
+    <rect x="20" y="147" width="320" height="18" fill="#d2e3f5" stroke="#7da6d8" class="layer-bar"/>
+    <text x="30" y="160" class="code">z: 俯身蹲採人物主體 Sprite</text>
+    <rect x="20" y="168" width="320" height="18" fill="#fcecd2" stroke="#dcb070" class="layer-bar"/>
+    <text x="30" y="181" class="code">z + 0.02: 木鋤工具手部掛點 (+14, -8) [延後 BL-P02]</text>
+    <rect x="20" y="189" width="320" height="18" fill="#f7e0cb" stroke="#cf956b" class="layer-bar"/>
+    <text x="30" y="202" class="code">z + 0.03: 腳邊藥簍 (隨 k 增加 load 0.0 → 1.0)</text>
 
     <!-- herbBack 負重回程圖層 -->
-    <text x="16" y="256" class="lbl"><b>C. 回程 (herbBack)</b>：滿簍在背部可見</text>
-    <rect x="20" y="266" width="320" height="20" fill="#d2e3f5" stroke="#7da6d8" class="layer-bar"/>
-    <text x="30" y="280" class="code">z: 前傾負重人物 Sprite (旋轉 -8°)</text>
-    <rect x="20" y="290" width="320" height="20" fill="#f7e0cb" stroke="#cf956b" class="layer-bar"/>
-    <text x="30" y="304" class="code">z + 0.03: 滿載背簍 (身後上方清晰可見 load=1.0)</text>
+    <text x="16" y="228" class="lbl"><b>C. 回程 (herbBack)</b>：滿簍在背部可見</text>
+    <rect x="20" y="236" width="320" height="18" fill="#d2e3f5" stroke="#7da6d8" class="layer-bar"/>
+    <text x="30" y="249" class="code">z: 前傾負重人物 Sprite (前傾 8°/5° 視覺提案)</text>
+    <rect x="20" y="257" width="320" height="18" fill="#f7e0cb" stroke="#cf956b" class="layer-bar"/>
+    <text x="30" y="270" class="code">z + 0.03: 滿載背簍 (身後上方清晰可見 load=1.0)</text>
 
     <!-- herbDeliver 交藥圖層 -->
-    <text x="16" y="332" class="lbl"><b>D. 交藥 (herbDeliver)</b>：卸簍入架</text>
-    <rect x="20" y="342" width="320" height="20" fill="#e8dfce" stroke="#b8ab94" class="layer-bar"/>
-    <text x="30" y="356" class="code">z: 曬藥架本體 (兩層竹篩 + 立柱)</text>
-    <rect x="20" y="366" width="320" height="20" fill="#d2e3f5" stroke="#7da6d8" class="layer-bar"/>
-    <text x="30" y="380" class="code">z + 0.02: 雙手捧草入篩 (手部掛點 -22, -26)</text>
+    <text x="16" y="296" class="lbl"><b>D. 交藥 (herbDeliver 4.0s)</b>：卸簍入架</text>
+    <rect x="20" y="304" width="320" height="18" fill="#e8dfce" stroke="#b8ab94" class="layer-bar"/>
+    <text x="30" y="317" class="code">z: 曬藥架本體 (drawRack: 兩層細編/提案三層)</text>
+    <rect x="20" y="325" width="320" height="18" fill="#d2e3f5" stroke="#7da6d8" class="layer-bar"/>
+    <text x="30" y="338" class="code">z: 交付人物 Sprite (面向藥架 face=-1)</text>
+    <rect x="20" y="346" width="320" height="18" fill="#fcecd2" stroke="#dcb070" class="layer-bar"/>
+    <text x="30" y="359" class="code">z + 0.02: 捧草入篩掛點 (-22*face, -26) [延後 BL-P02]</text>
+    <rect x="20" y="367" width="320" height="18" fill="#f7e0cb" stroke="#cf956b" class="layer-bar"/>
+    <text x="30" y="380" class="code">z + 0.03: 腳邊卸下背簍 (load: 1 → 0)</text>
+
+    <text x="16" y="404" class="muted">※ 註：工具手部與捧草動作需全新 sprite 骨架，標記延後至 BL-P02。</text>
   </g>
 
-  <!-- 2. 右側：掛點偏移量與最小接線檔案清單 -->
-  <g transform="translate(410, 65)">
-    <rect width="365" height="400" class="box"/>
-    <text x="16" y="26" class="card-title">② 掛點偏移與最小接線差異清單</text>
+  <!-- 2. 右側：現況 vs 建議差異清單 -->
+  <g transform="translate(410, 60)">
+    <rect width="365" height="415" class="box"/>
+    <text x="16" y="24" class="card-title">② 現況 → 建議差異與接線位置表</text>
 
-    <!-- 掛點座標表格 -->
-    <text x="16" y="56" class="lbl"><b>掛點偏移量規格 (相對人物原點 p.x, p.y)</b></text>
-    <rect x="16" y="66" width="333" height="110" fill="#fffdfa" stroke="#dfd2be" rx="4"/>
-    <text x="24" y="84" class="code">• 人物腳底錨點: (0, 0) · 對齊地表路線節點</text>
-    <text x="24" y="104" class="code">• 去程身後背簍: (p.x - 8*face, p.y - 19)</text>
-    <text x="24" y="124" class="code">• 採摘腳邊置簍: (p.x - 16, p.y) · load: 0 → 1</text>
-    <text x="24" y="144" class="code">• 回程負重背簍: (p.x - 1.5*face, p.y - 17) · load: 1</text>
-    <text x="24" y="164" class="code">• 交藥身前卸簍: (p.x - 16, p.y) · load: 1 → 0</text>
+    <!-- 差異表格 -->
+    <rect x="14" y="38" width="337" height="236" fill="#fffdfa" stroke="#dfd2be" rx="4"/>
+    <text x="22" y="54" class="code"><b>維度 / 物件</b> ｜ <b>現況基準</b> → <b>建議提案</b> ｜ <b>涉及位置</b></text>
+    <line x1="20" y1="60" x2="345" y2="60" stroke="#dfd2be"/>
 
-    <!-- 最低接線檔案清單 -->
-    <text x="16" y="200" class="lbl"><b>後續接線階段最小修改檔案清單 (白名單預覽)</b></text>
-    <rect x="16" y="210" width="333" height="120" fill="#fffdfa" stroke="#dfd2be" rx="4"/>
-    <text x="24" y="228" class="highlight">1. demo/app.mjs (僅強化 drawBasket / drawRack / placeBasket)</text>
-    <text x="24" y="246" class="muted">   - 無需重構 model.mjs 或 routes.mjs</text>
-    <text x="24" y="264" class="highlight">2. demo/style.css (藥架與採藥浮字樣式微調)</text>
-    <text x="24" y="282" class="muted">   - 無需新增外部依賴或新 CSS 類別</text>
-    <text x="24" y="300" class="highlight">3. checks/water15.test.mjs (新增採藥動作輔助驗收)</text>
-    <text x="24" y="318" class="muted">   - 驗證 herbOut/Gather/Back/Deliver 階段狀態與交付入帳</text>
+    <text x="22" y="76" class="code"><b>藥圃地景</b>: 無地景函式 → 新增 drawHerbPatch</text>
+    <text x="22" y="88" class="muted">  └ 繪製土畦/陶甕，涉及 app.mjs sorted 容器</text>
 
-    <text x="16" y="354" font-size="11" font-weight="bold" fill="#8a6416">★ 來源與授權聲明：</text>
-    <text x="16" y="372" class="sub">• 所有向量設計圖稿與規格為專案原創，採 CC0 協議。</text>
-    <text x="16" y="388" class="sub">• 不使用未授權之外部商業遊戲素材或閉源圖庫。</text>
+    <text x="22" y="104" class="code"><b>曬藥架</b>: 2層竹篩 (drawRack) → 維持2層精修或提案3層</text>
+    <text x="22" y="116" class="muted">  └ 容量上限 8 份不變，涉及 app.mjs drawRack</text>
+
+    <text x="22" y="132" class="code"><b>去程簍</b>: (-8*face, -19) z-0.03 → 保持原樣</text>
+    <text x="22" y="144" class="muted">  └ 涉及 app.mjs placeBasket (現已符合)</text>
+
+    <text x="22" y="160" class="code"><b>採集簍</b>: (-16, 0) z+0.03 → 微調 (-18, 0)</text>
+    <text x="22" y="172" class="muted">  └ 採摘階段置於腳邊，涉及 app.mjs placeBasket</text>
+
+    <text x="22" y="188" class="code"><b>回程簍</b>: (-1.5*face, -17) → 微調 (-2*face, -20)</text>
+    <text x="22" y="200" class="muted">  └ 負重綠草冒出，微調高低對齊背部，涉及 placeBasket</text>
+
+    <text x="22" y="216" class="code"><b>交藥簍</b>: (-16, 0) → 建議微調 (+16*face, 0)</text>
+    <text x="22" y="228" class="muted">  └ 卸於身後側邊，涉及 app.mjs placeBasket</text>
+
+    <text x="22" y="244" class="code"><b>持鋤/捧草</b>: 共用 dip/pour 幀 → <b>延後 (BL-P02)</b></text>
+    <text x="22" y="256" class="muted">  └ 暫不改 sprite 動畫幀，避免擴大接線範圍</text>
+
+    <!-- 接線階段邊界 -->
+    <text x="16" y="292" class="lbl"><b>後續接線階段最小修改檔案清單 (白名單預覽)</b></text>
+    <rect x="14" y="302" width="337" height="58" fill="#fffdfa" stroke="#dfd2be" rx="4"/>
+    <text x="22" y="318" class="highlight">• demo/app.mjs (drawHerbPatch, drawRack, placeBasket, drawBasket)</text>
+    <text x="22" y="334" class="muted">• demo/style.css (藥架與藥草入帳浮字微調)</text>
+    <text x="22" y="348" class="muted">• model.mjs / routes.mjs 保持 0 修改；不強制新單測前置</text>
+
+    <text x="16" y="378" font-size="11px" font-weight="bold" fill="#8a6416">★ 授權與邊界保證 (D29 / D31)：</text>
+    <text x="16" y="394" class="sub">• 所有向量設計圖稿與規格採 CC0 協議開源。</text>
+    <text x="16" y="408" class="sub">• 本 PR 為純設計交付，不授權 runtime 接線或新玩法。</text>
   </g>
 </svg>
