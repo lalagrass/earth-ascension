@@ -5,6 +5,8 @@ import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.
 import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
 import { createRoutes, HERB, SEATS, FUN, BOAR, GUARD } from './routes.mjs';
+import { WATER_POINTS, WATER_LENGTH, WORLD_SIZE, SPRING_PLACE, WATER_LANDMARKS } from './water-layout.mjs';
+import { buildLongWaterScenery } from './assets/long-water/scenery.mjs';
 import { ZONE, EXIT, PALM, SKILLS } from './palm.mjs';
 import { CLEAN_END } from './model.mjs';
 
@@ -28,10 +30,11 @@ await Assets.load(sharedFiles.map((f) => SHARED + 'assets/' + f));
 const TS = (f) => Assets.get(SHARED + 'assets/' + f);
 
 // ---------- 路線（只是畫面換算：模型給「走到第幾成」，這裡換成場景座標；算法在 routes.mjs） ----------
-const geo = createRoutes(scene.path.points), { routes: ROUTES, place } = geo;
+const geo = createRoutes(WATER_POINTS), { routes: ROUTES, place } = geo;
 const path = ROUTES.water, herbPath = ROUTES.herb;
 const places = {
   ...scene.places,
+  spring: SPRING_PLACE, // LP-13: 谷底新泉眼取代舊取水點；舊泉池保留純景觀無取水熱區
   herb: { label: '藥圃', x: HERB.patch.x, y: HERB.patch.y + 14, rx: 70, ry: 30, sub: '道館東側坡地 · 可重複採' },
   rack: { label: '藥架', x: HERB.rack.x, y: HERB.rack.y, rx: 30, ry: 22, sub: '道館院中 · 交藥處' },
   bench: { label: '休息石凳', x: SEATS.bench.x, y: SEATS.bench.y + 6, rx: 50, ry: 18, sub: '松樹下 · 兩人各一席' },
@@ -141,6 +144,8 @@ world.addChild(ground);
 const sorted = new Container();
 sorted.sortableChildren = true; // 依腳底 y 排序：人物走到樹叢後面時被遮住
 world.addChild(sorted);
+// LP-13：長挑水路南段場景（1600×1350 延伸地面、步石、竹林、溪流溪橋前後遮擋與新泉眼）
+buildLongWaterScenery({ world, ground, sorted });
 const placeSprite = (file, ax, ay, w, h, x, y) => {
   const s = new Sprite(TS(file));
   s.scale.set(1 / R);
@@ -348,8 +353,8 @@ const clampZoom = (z) => Math.min(scene.camera.maxZoom, Math.max(scene.camera.mi
 const toScreen = (x, y) => ({ x: (x - cam.x) * cam.zoom + app.screen.width / 2, y: (y - cam.y) * cam.zoom + app.screen.height / 2 });
 const toWorld = (sx, sy) => ({ x: (sx - app.screen.width / 2) / cam.zoom + cam.x, y: (sy - app.screen.height / 2) / cam.zoom + cam.y });
 function applyCam() {
-  cam.x = Math.min(scene.size.w, Math.max(0, cam.x));
-  cam.y = Math.min(scene.size.h, Math.max(0, cam.y));
+  cam.x = Math.min(WORLD_SIZE.w, Math.max(0, cam.x));
+  cam.y = Math.min(WORLD_SIZE.h, Math.max(0, cam.y));
   world.scale.set(cam.zoom);
   world.position.set(app.screen.width / 2 - cam.x * cam.zoom, app.screen.height / 2 - cam.y * cam.zoom);
 }
@@ -360,15 +365,39 @@ function zoomAt(sx, sy, z) {
   cam.x += before.x - after.x; cam.y += before.y - after.y;
   applyCam();
 }
-// 窄螢幕：鏡頭跟著主角，並把主角放在 HUD 與底部抽屜之間的空處；拖曳後停止跟隨，按 0 恢復
+// 鏡頭跟隨：桌機與窄螢幕均跟隨選取人物（預設主角）；拖曳後停止跟隨，按 0 或點選人物／名冊恢復
 const narrow = () => window.innerWidth <= 640;
 if (narrow()) cam.zoom = 0.85;
 function follow() {
+  if (!ui.follow) return;
   const p = positions[selectedPerson()];
-  const top = document.querySelector('.hud').getBoundingClientRect().bottom;
-  const drawer = [$('menu'), $('panel'), $('roster')].filter((el) => !el.hidden && el.offsetHeight).map((el) => el.getBoundingClientRect().top);
-  const bottom = Math.min(window.innerHeight, ...drawer);
-  const ty = p.y - 30 - ((top + bottom) / 2 - app.screen.height / 2) / cam.zoom;
+  if (!p) return;
+  let ty;
+  if (narrow()) {
+    // 窄螢幕：上方遮擋包含 HUD、野豬卡與暫停橫幅，下方抽屜包含選單、人物面板與名冊；
+    // 計算上下遮擋間的淨可視垂直區間，使跟隨人物位於兩者正中，避開野豬卡等上方遮擋
+    const topEls = [document.querySelector('.hud'), $('boar'), $('banner')].filter((el) => {
+      if (!el || el.hidden || !el.offsetHeight) return false;
+      const s = window.getComputedStyle ? window.getComputedStyle(el) : null;
+      return !s || (s.display !== 'none' && s.visibility !== 'hidden');
+    });
+    const top = Math.max(0, ...topEls.map((el) => el.getBoundingClientRect().bottom));
+    const drawer = [$('menu'), $('panel'), $('roster')].filter((el) => {
+      if (!el || el.hidden || !el.offsetHeight) return false;
+      const s = window.getComputedStyle ? window.getComputedStyle(el) : null;
+      return !s || (s.display !== 'none' && s.visibility !== 'hidden');
+    }).map((el) => el.getBoundingClientRect().top);
+    const bottom = Math.min(window.innerHeight, ...drawer);
+    const targetY = bottom > top + 40 ? (top + bottom) / 2 : Math.max(top + 20, (top + bottom) / 2);
+    ty = p.y - 30 - (targetY - app.screen.height / 2) / cam.zoom;
+  } else {
+    // 桌面版：人物居中偏上，留出名冊與場景下方視野
+    const hud = document.querySelector('.hud');
+    const top = hud ? hud.getBoundingClientRect().bottom : 56;
+    const roster = $('roster');
+    const bottom = roster && !roster.hidden ? roster.getBoundingClientRect().top : app.screen.height - 40;
+    ty = p.y - 20 - ((top + bottom) / 2 - app.screen.height / 2) / cam.zoom;
+  }
   cam.x += (p.x - cam.x) * 0.12;
   cam.y += (ty - cam.y) * 0.12;
   applyCam();
@@ -376,13 +405,13 @@ function follow() {
 
 // ---------- 狀態 ----------
 const r1 = (n) => Math.round(n * 10) / 10;
-const LENGTHS = { water: scene.path.length, herb: r1(herbPath.length), seat: geo.seatLengths, fun: geo.funLengths,
+const LENGTHS = { water: WATER_LENGTH, herb: r1(herbPath.length), seat: geo.seatLengths, fun: geo.funLengths,
   boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength) };
 // LP-11：警覺鼠察覺用同一份純幾何取樣兩人位置（模型在權威 tick 呼叫，不讀畫面座標）。
 const SENSE = { placeOf: geo.of };
 let model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
 const clock = createClock();
-const ui = { follow: narrow(), playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null };
+const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null };
 let v = model.view();
 let positions = Object.fromEntries(IDS.map((id) => [id, poseOf(id, v.people[id])]));
 const fx = []; // 浮字（只是畫面效果）
@@ -450,7 +479,7 @@ window.addEventListener('keydown', (e) => {
   else if (k === '1' || k === '2' || k === '4') setSpeed(Number(k));
   else if (k === '+' || k === '=') zoomAt(app.screen.width / 2, app.screen.height / 2, cam.zoom * 1.1);
   else if (k === '-') zoomAt(app.screen.width / 2, app.screen.height / 2, cam.zoom / 1.1);
-  else if (k === '0') { Object.assign(cam, scene.camera.start); if (narrow()) cam.zoom = 0.85; ui.follow = narrow(); applyCam(); }
+  else if (k === '0') { Object.assign(cam, scene.camera.start); if (narrow()) cam.zoom = 0.85; ui.follow = true; applyCam(); renderChrome(); }
   else if (k.startsWith('Arrow')) { const s = 40 / cam.zoom; cam.x += k === 'ArrowLeft' ? -s : k === 'ArrowRight' ? s : 0; cam.y += k === 'ArrowUp' ? -s : k === 'ArrowDown' ? s : 0; applyCam(); }
   else if (k === 'r' || k === 'R') toggleRoster();
   else if (k === 's' || k === 'S') toggleShadow();
@@ -468,7 +497,7 @@ for (const b of document.querySelectorAll('[data-speed]')) b.addEventListener('c
 $('roster-toggle').addEventListener('click', toggleRoster);
 $('shadow-toggle').addEventListener('click', toggleShadow);
 $('reset').addEventListener('click', reset);
-$('roster').addEventListener('click', (e) => { const b = e.target.closest('[data-person]'); if (b) select(ui.selected === b.dataset.person ? null : b.dataset.person); });
+$('roster').addEventListener('click', (e) => { const b = e.target.closest('[data-person]'); if (b) select(b.dataset.person); });
 $('panel').addEventListener('click', (e) => {
   const a = e.target.closest('[data-auto]');
   if (a) { autoSet(a.dataset.auto); return; }
@@ -486,7 +515,7 @@ function togglePlay() { if (ui.menu) closeMenu(false); ui.playing = !ui.playing;
 function setSpeed(s) { ui.speed = s; renderChrome(); }
 function toggleRoster() { ui.rosterOpen = !ui.rosterOpen; renderChrome(); }
 function toggleShadow() { ui.shadow = !ui.shadow; renderChrome(); }
-function select(id) { ui.selected = id; if (narrow() && IDS.includes(id)) ui.follow = true; renderChrome(); }
+function select(id) { ui.selected = id; if (IDS.includes(id)) ui.follow = true; renderChrome(); }
 function reset() {
   if (ui.menu) closeMenu(false);
   model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
@@ -886,7 +915,7 @@ app.ticker.add((t) => {
   placeMark.clear();
   if (ui.menu) { const pl = places[ui.menu]; placeMark.ellipse(pl.x, pl.y - pl.ry * 0.6, pl.rx + 6, pl.ry + 4).stroke({ width: 3, color: 0xc8962e, alpha: 0.9 }); }
   tag('vat', 'place', `${scene.places.vat.label} ${v.vat}／${v.vatCapacity} · 在途 ${v.inFlight}`, scene.places.vat.x, scene.places.vat.y - 60);
-  tag('spring', 'place', scene.places.spring.label, scene.places.spring.x, scene.places.spring.y - 40);
+  tag('spring', 'place', places.spring.label, places.spring.x, places.spring.y - 40);
   if (rack.n !== v.herbs) { drawRack(v.herbs); rack.n = v.herbs; }
   tag('rack', 'place', `${places.rack.label} ${v.herbs}／${v.herbCapacity} · 在途 ${v.herbInFlight}`, places.rack.x - 30, places.rack.y + 36); // 名牌放在藥架左下，避開院中出發點上的人物狀態
   tag('herb', 'place', places.herb.label, places.herb.x, places.herb.y - 46);
@@ -932,7 +961,7 @@ window.demo = {
       playing: ui.playing, autoPaused: ui.autoPaused, pausedByMenu: ui.pausedByMenu, speed: ui.speed,
       selected: ui.selected, menu: ui.menu, menuPerson: ui.menuPerson, cam: { ...cam }, hidden: document.hidden,
       heroScreen: people.hero.screen,
-      vatScreen: toScreen(scene.places.vat.x, scene.places.vat.y - 20), springScreen: toScreen(scene.places.spring.x, scene.places.spring.y - 10),
+      vatScreen: toScreen(scene.places.vat.x, scene.places.vat.y - 20), springScreen: toScreen(places.spring.x, places.spring.y - 10),
       firstFrameMs, frames, stepMs: STEP_MS,
     };
   },
