@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## LP-13最新規劃：長挑水路切片（W1–W4待確認，2026-10-23）
+
+擁有人已選同生活入口的長挑水路、觀看奔波與速度差；[D26](docs/DECISIONS_AND_SOURCES.md#d26lp-13-長挑水路方向與實裝提案2026-10-23)／[#254](https://github.com/lalagrass/earth-ascension/issues/254)／[工作包](docs/LP13_HANDOFF.md)／[Gemini提示詞](docs/LP13_GEMINI_PROMPT.md)列出具體提案。保留院落，只向南延伸水路；建議1600×1350、單程1650–1750／約1700、沿原速度／精力與成長、只做必需水路圖層與鏡頭。**W1–W4尚待擁有人確認，不可認領runtime；規劃文件合併不解鎖。** 人類確認後PO更新批准文件／issue、非作者review→Earth合dev／postCI，Gemini才本人新claim／新分支。未代啟作者、不改8800。
+
+PR250設計已接受並合dev dff6f310／postCI39906919235五SUCCESS；PR244生活LP12亦已交付，8800仍LP12 e611037。下方D25補修與舊MAP182_GEMINI_PROMPT為已完成的設計沿革，不重做或沿舊claim接線；PR248只留來源。新片保留原atlas與其他生活幾何，概念JPG不直接鋪底，不偷加速／改平衡；有限白名單、必要局部／SG快驗／根CI、桌面390與未變證據復用／摘要真exit沿新工作包。
+
 ## D25最新改派：#182設計／改圖由Gemini接手（2026-10-23）
 
 擁有人因Grok額度不足明確改派，讀 [D25](docs/DECISIONS_AND_SOURCES.md#d25-182-設計與改圖改由gemini接手2026-10-23)、[#182](https://github.com/lalagrass/earth-ascension/issues/182)、[工作包](docs/MAP182_HANDOFF.md)／[Gemini提示詞](docs/MAP182_GEMINI_PROMPT.md)。下方D24「Grok專注圖像」是原分工；現在Gemini接剩餘設計／改圖與PR248四項P2，Grok成果與原分支／review保留，不冒稱本人released，不等原Grok期限。

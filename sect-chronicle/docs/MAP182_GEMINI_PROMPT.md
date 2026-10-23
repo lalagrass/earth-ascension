@@ -1,5 +1,9 @@
 # Gemini接手提示詞：#182圖像設計與PR248補修
 
+## 本設計補修提示詞已完成，勿再啟動（2026-10-23）
+
+PR250設計已接受並合dev dff6f310／postCI39906919235五SUCCESS；下方只保留D25交接沿革。下一個實裝候選是[#254](https://github.com/lalagrass/earth-ascension/issues/254)的[LP13長挑水路工作包](LP13_HANDOFF.md)／[新Gemini提示詞](LP13_GEMINI_PROMPT.md)，**W1–W4待擁有人確認，目前不可認領runtime**。不延用設計claim／branch，不重做舊四項補修、不把PR250綠燈當接線授權。
+
 擁有人明確將Grok額度不足後的改圖一併交Gemini，完整 [工作包](MAP182_HANDOFF.md)以D25更新優先。以下可貼給同一位Gemini；沒有代啟作者，也未授遊戲接線。
 
 ```text

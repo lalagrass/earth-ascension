@@ -1,5 +1,11 @@
 # MAP182：完整道館生活地圖設計工作包
 
+## 設計已交付；下一片LP-13尚待範圍確認（2026-10-23）
+
+PR250已由非作者接受、Earth合dev dff6f310／postCI39906919235五SUCCESS。原總配置、畫風與有限預演交付完成；#182維持OPEN追蹤後續實裝。下方D25四項補修與原設計claim為歷史，不再用其啟動。PR248只保留來源／原branch／review，不再整合。
+
+擁有人已選**同生活入口先長挑水路、觀看奔波與速度差**。下一片看[#254](https://github.com/lalagrass/earth-ascension/issues/254)／[LP13工作包](LP13_HANDOFF.md)／[Gemini接手提示詞](LP13_GEMINI_PROMPT.md)：具體W1–W4仍待確認，不能沿舊設計白名單或claim接線。概念圖含人物、距離壓縮／原prompt缺失等限制保留；只接受存檔不等全圖、分層生產素材或新玩法批准。8800仍LP12 e611037。
+
 ## D25目前接手：Gemini承接PR248設計／改圖補修
 
 擁有人因Grok額度不足已明確改派，來源 [D25](DECISIONS_AND_SOURCES.md#d25-182-設計與改圖改由gemini接手2026-10-23)，使用 [Gemini接手提示詞](MAP182_GEMINI_PROMPT.md)。**現在圖像設計／改圖及後續整合均由Gemini接手，但這次只做設計補修；實裝範圍仍待看稿確認。** 下方Grok姓名／啟動描述保留原D24歷史，不再用它開工；原成果與主筆歸屬保留。

@@ -1,5 +1,11 @@
 # 可見交付、驗證與正式整合
 
+## 最新候選：LP-13 長挑水路（W1–W4待確認，2026-10-23）
+
+已接受基線：LP12／PR244生活版e611037，以及PR250地圖設計dev dff6f310／postCI39906919235五SUCCESS。#182設計已交付，8800仍LP12，不沿下方舊「LP12待交」狀態重做。下一片由擁有人選**同入口先長挑水路、觀看奔波與速度差**，具體實裝提案見[#254](https://github.com/lalagrass/earth-ascension/issues/254)、[LP13工作包](LP13_HANDOFF.md)／[Gemini提示詞](LP13_GEMINI_PROMPT.md)與[D26](DECISIONS_AND_SOURCES.md#d26lp-13-長挑水路方向與實裝提案2026-10-23)。
+
+建議保留院落、向南延水路、原規則和人物、最少乾淨圖層與長路鏡頭；**W1–W4待確認，不能認領runtime**。先交局部實圖再同片接線；接受／Earth合dev／postCI才更新入口保留LP12。完整生活地圖換位、人物全重製與巡山延後；必要局部／快驗／根CI及桌面390、未變證據復用與摘要真exit保留，不把同路線效果測成全矩陣。
+
 ## D25最新交付順序：Gemini接手#182圖像設計與改圖（2026-10-23）
 
 擁有人因Grok quota不足明確改派，依 [D25](DECISIONS_AND_SOURCES.md#d25-182-設計與改圖改由gemini接手2026-10-23)／[更新工作包](MAP182_HANDOFF.md)／[Gemini提示詞](MAP182_GEMINI_PROMPT.md)。下方D24的Grok圖像／Gemini整合改為歷史分工；Gemini現在接PR248剩餘設計與四項P2，保留Grok公開成果／原分支／審查，另從最新dev新claim／新接續PR。只design/map182/**，可沿乾淨的原grok-art184美術worktree，不能碰Gemini gemini-241 checkout或混244檔案。
