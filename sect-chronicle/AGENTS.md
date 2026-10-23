@@ -1,5 +1,12 @@
 # Coding agent 接手入口
 
+## D36最新：美術收尾後連續飲水與存讀，完成後集中review
+
+擁有人已明確批准「包含：美術收尾＋SG-LIFE-01，採M1–M4建議」，讀[正式工作包](docs/LIFE01_HANDOFF.md)／[可貼Grok提示詞](docs/LIFE01_GROK_PROMPT.md)。舊#279待決與D35完成即停止於美術的安排被本有限批准更新；PR278兩P2仍須原Grok先修，不因產品批准變成已接受。
+
+正式文件非作者接受／Earth合dev／postCI後本人#279新claim；同Grok先D35自校checkpoint，再從最新dev新支線普通merge本人美術checkpoint、標depends278，連續完成飲水＋存讀一主PR。不每個內部批次等review，也不自合dev／更新8800；下次非作者集中review、Earth按依賴整合。沒有執行總限時、完成早停，4h租期可憑進度續；仍不得自啟agent／排程或預占未開始後包。D35範圍以原包收尾，飲水／存讀只用LIFE01新白名單。
+
+
 ## D35最新：Grok獨立素材後接實裝，做到完成
 
 擁有人保留Gemini完成#274，另批准[#184完整工作包](docs/ART184_PRODUCTION_HANDOFF.md)／[Grok提示詞](docs/ART184_PRODUCTION_GROK_PROMPT.md)。D35文件接受／Earth合dev／postCI後Grok本人184新claim，A僅design/art184-production/**可並行出圖；B等LP17最終非作者接受／Earth合dev／postCI後，同Grok依新白名單接續同一主PR。不要改Gemini作者／scope／原期限或未公開成果，182只互連。

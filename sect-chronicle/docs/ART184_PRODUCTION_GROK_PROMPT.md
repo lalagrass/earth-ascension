@@ -1,5 +1,12 @@
 # Grok：場景素材與雙人造型，獨立出圖後同主筆實裝
 
+## D36目前批准與接手（2026-10-24）
+
+擁有人已批准#279／SG-LIFE-01的M1–M4及同Grok多批次做到完成：先PR278美術兩P2補修，再連續飲水自理與最小本地存讀，下次集中review。以[正式工作包](LIFE01_HANDOFF.md)／[最新提示詞](LIFE01_GROK_PROMPT.md)為準；下方M1–M4待批准／美術完成就停止的文字是原提案與歷史範圍，不再作當前阻擋。新增功能仍等本正式文件非作者接受／Earth合dev／postCI後本人279新claim。
+
+本輪候選串接允許同Grok自校D35後，新支線從最新dev普通merge自己checkpoint、標depends278，不逐內部批次空等；PR278維持美術唯一主PR，飲水＋存讀另同一完整主PR。這不允許自合dev／發布／改8800，未審候選不宣稱接受；下次非作者集中review後Earth按依賴整合。無執行總限時、達標早停，4h有效租期／必要差異驗證、單頁清理與單版本維持。
+
+
 以[正式工作包](ART184_PRODUCTION_HANDOFF.md)為唯一範圍／A–D驗收；[D31](PARALLEL_HANDOFF.md#d31單一主筆完整工作包與集中審查)、[精簡驗證及單版本政策](VALIDATION_POLICY.md)照舊。以下可貼，未代啟／認領。
 
 ```text
