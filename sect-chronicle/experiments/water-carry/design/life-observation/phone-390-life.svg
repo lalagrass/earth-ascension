@@ -31,9 +31,9 @@
   <path d="M60,760 L140,630 L195,500 L240,380 L300,280" class="trail"/>
 
   <!-- ==================== 淨視野區標註 (Clear Visual Zone) ==================== -->
-  <!-- 淨視野區：頂部障礙 Y=256px 到 底部抽屜 Y=540px，共 284px -->
+  <!-- 淨視野區設計假設：頂部障礙 Y=256px 到 底部抽屜 Y=540px，共 284px -->
   <rect x="10" y="256" width="370" height="284" class="zone-clear"/>
-  <text x="18" y="274" font-size="11" font-weight="bold" fill="#2f6d3a">★ 中央淨視野區：284px（完全無 UI 覆蓋）</text>
+  <text x="18" y="274" font-size="11" font-weight="bold" fill="#2f6d3a">★ 淨視野區設計假設：~284px（實測樣本 268px）</text>
 
   <!-- 人物跟隨置中於淨區中央 (Y=398px) -->
   <g transform="translate(195, 398)">
@@ -170,5 +170,5 @@
   <text x="206" y="827" font-size="9" fill="#6e5d4b">精力 80 · 挑水·休息</text>
 
   <!-- 底部標記 -->
-  <text x="10" y="842" font-size="8" fill="#856404">LP-14 390×844 視區驗證 ｜ Base: fd87f675 ｜ Head: fb4030e1 ｜ 淨視野: 284px 避讓遮擋</text>
+  <text x="10" y="842" font-size="8" fill="#856404">LP-14 390×844 概念線框與設計假設 ｜ 實測樣本: 淨區 268px (HUD 90, boar 251, panel 519) ｜ 依 D30 手機適配移至末位</text>
 </svg>

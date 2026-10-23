@@ -85,10 +85,10 @@ test('C 控制入口可用性：核心指令在 actions() 中全數合法可用'
   assert.ok(actionIds.includes('fix'), '整理護欄指令存在');
 });
 
-test('D 相機避讓幾何換算：390 視窗在暫停與展開狀態下相機計算均預留足夠淨可視區', () => {
+test('D 相機避讓幾何設計換算：390 視窗在暫停與展開設計假設下相機計算預留足夠淨可視區', () => {
   const screenH = 844, zoom = 0.85;
 
-  // 依據 app.mjs 的真實 follow 相機居中換算公式
+  // 依據 app.mjs 的 follow 相機居中換算公式（設計幾何輔助驗算，非瀏覽器 DOM 實測）
   function calcNarrowY(pY, topObstacle, bottomObstacle) {
     const targetY = bottomObstacle > topObstacle + 40 ? (topObstacle + bottomObstacle) / 2 : Math.max(topObstacle + 20, (topObstacle + bottomObstacle) / 2);
     const ty = pY - 30 - (targetY - screenH / 2) / zoom;

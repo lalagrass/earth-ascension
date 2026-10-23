@@ -200,8 +200,8 @@
   <!-- ==================== 設計標註與規格對照 (LP14-A) ==================== -->
   <g transform="translate(20, 600)">
     <rect width="660" height="50" class="ann-tag"/>
-    <text x="12" y="18" class="ann-txt">LP14-A 桌面生活觀察畫面稿 (1280×720)</text>
-    <text x="12" y="32" font-size="10" fill="#533f03">Base dev: fd87f6751e2b2afd6521673d83b80798cac623a7 ｜ Head: fb4030e18791aac45d20ca1d6fe150612ce7c819</text>
+    <text x="12" y="18" class="ann-txt">LP14-A 桌面生活觀察概念線框示意 (1280×720，非真實截圖)</text>
+    <text x="12" y="32" font-size="10" fill="#533f03">真實截圖與標註請參見 desktop-annotated.svg ｜ Base dev: fd87f6751e2b2afd6521673d83b80798cac623a7</text>
     <text x="12" y="44" font-size="10" fill="#533f03">規格對應：O1 觀察優先 (HUD 精簡/近況折疊) ｜ O2 人物因果小卡 ｜ O3 進階純 UI 折疊與可見跟隨 ｜ O4 零模型改動</text>
   </g>
 </svg>
