@@ -66,10 +66,19 @@ function label(name) {
 }
 let start = 0;
 let raf = 0;
+let running = false;
+function media() {
+  return Object.values(lanes).map((lane) => lane.querySelector('video'));
+}
+function pauseBoth() {
+  for (const video of media()) video.pause();
+}
 function frame(now) {
   const t = now - start;
   if (t >= TOTAL) {
-    apply(8000);
+    running = false;
+    pauseBoth();
+    apply(TOTAL);
     readout.textContent = '10 秒結束。這是美術預演，不是腳力或命中驗收。';
     playBtn.disabled = false;
     return;
@@ -84,18 +93,19 @@ function apply(t) {
   show(lanes.skilled, skilledPhase);
   const novVideo = lanes.novice.querySelector('video');
   const skVideo = lanes.skilled.querySelector('video');
-  if (novicePhase === 'walk') {
+  const live = running && t < TOTAL;
+  if (live && novicePhase === 'walk') {
     if (novVideo.paused) novVideo.play();
   } else novVideo.pause();
-  if (skilledPhase === 'walk') {
+  if (live && skilledPhase === 'walk') {
     if (skVideo.paused) skVideo.play();
   } else skVideo.pause();
   readout.textContent = (t / 1000).toFixed(1) + ' 秒 · ' + label(novicePhase);
 }
 function reset() {
+  running = false;
   cancelAnimationFrame(raf);
-  for (const lane of Object.values(lanes)) {
-    const video = lane.querySelector('video');
+  for (const video of media()) {
     video.pause();
     video.currentTime = 0;
   }
@@ -103,8 +113,9 @@ function reset() {
 }
 playBtn.addEventListener('click', () => {
   reset();
+  running = true;
   playBtn.disabled = true;
-  for (const lane of Object.values(lanes)) lane.querySelector('video').play().catch(() => {});
+  for (const video of media()) video.play().catch(() => {});
   start = performance.now();
   raf = requestAnimationFrame(frame);
 });
