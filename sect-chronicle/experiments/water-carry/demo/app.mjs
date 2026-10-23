@@ -4,6 +4,7 @@
 import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.min.mjs';
 import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
+import { saveTo, loadFrom } from './life-save.mjs';
 import { createRoutes, HERB, SEATS, FUN, BOAR, GUARD } from './routes.mjs';
 import { WATER_POINTS, WATER_LENGTH, WORLD_SIZE, SPRING_PLACE, WATER_LANDMARKS } from './water-layout.mjs';
 import { buildLongWaterScenery } from './assets/long-water/scenery.mjs';
@@ -507,6 +508,18 @@ $('roster-toggle').addEventListener('click', toggleRoster);
 $('shadow-toggle').addEventListener('click', toggleShadow);
 $('follow-toggle').addEventListener('click', () => { ui.follow = !ui.follow; applyCam(); renderChrome(); });
 $('reset').addEventListener('click', reset);
+// SG-LIFE-01 手動存讀：只在按鈕時動；讀檔通過驗證才替換，讀後暫停、清時鐘、不補 tick、不重播交付特效。
+const storage = (() => { try { return window.localStorage; } catch { return null; } })();
+const SAVE_TEMPLATE = createModel(LENGTHS, undefined, undefined, undefined, SENSE).exportState();
+function saveGame() { const r = saveTo(storage, model); toast(r.text); return r; }
+function loadGame() {
+  if (ui.menu) closeMenu(false);
+  const r = loadFrom(storage, model, SAVE_TEMPLATE);
+  if (r.ok) { ui.playing = false; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); v = model.view(); fx.length = 0; }
+  toast(r.text); renderChrome(); return r;
+}
+$('save').addEventListener('click', saveGame);
+$('load').addEventListener('click', loadGame);
 $('roster').addEventListener('click', (e) => { const b = e.target.closest('[data-person]'); if (b) select(b.dataset.person); });
 $('panel').addEventListener('click', (e) => {
   const adv = e.target.closest('[data-ui="toggleAdv"]');
@@ -1021,5 +1034,6 @@ window.demo = {
       firstFrameMs, frames, stepMs: STEP_MS, cups: Object.fromEntries(IDS.map((id) => [id, cups[id].visible])),
     };
   },
-
+  // 權威狀態深拷貝（只讀；存讀等價檢查用）。
+  exportState: () => model.exportState(),
 };
