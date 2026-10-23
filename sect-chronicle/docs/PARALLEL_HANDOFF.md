@@ -1,5 +1,11 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+## D35最新並行：Gemini LP17保留，Grok A出圖／B續接
+
+擁有人批准[Grok工作包](ART184_PRODUCTION_HANDOFF.md)／[可貼prompt](ART184_PRODUCTION_GROK_PROMPT.md)。本文件非作者接受／Earth合dev／postCI後Grok本人184新claim；A僅design/art184-production/**，與Gemini #274檔案隔離，不讀其未公開成果、不要求它等新圖。B等LP17最終非作者接受／Earth合dev／postCI才依最新dev／新白名單接續，該時段同一Grok為本美術整合主筆，同一主PR集中review；不改Gemini原scope／期限或預占B。
+
+Grok本包取消執行總時限，按A–D做到完成；claim仍按根4h租期附新證據續期，review等待／blocked／中斷按原狀態處理。與下方Gemini2h、D32舊出圖時限區分；不自啟其他agent／排程。單一正式試玩版、精簡驗證及唯一queue照舊，184／182母單保持OPEN。
+
 ## D34目前核心包與單版本試玩
 
 Gemini下一包[#274／LP17](LP17_HANDOFF.md)／[提示詞](LP17_GEMINI_PROMPT.md)同時交道館／長路環境、雙人活動素材及薄接線，一位主筆一個工程PR集中review。LP16已交付，本文件非作者接受／Earth合dev／postCI後本人最新dev新claim，不續舊租期。原長通勤與速度／模型／動作契約保留，詳白名單；沒有另派Grok重疊改同批檔案。

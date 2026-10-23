@@ -1,5 +1,7 @@
 # MAP182：完整道館生活地圖設計工作包
 
+**D35目前接續（2026-10-24）**：主追蹤#184的[Grok場景素材／雙人工作包](ART184_PRODUCTION_HANDOFF.md)／[prompt](ART184_PRODUCTION_GROK_PROMPT.md)，本182只配置互連。Gemini274保留；Grok先獨立A出圖，LP17最終接受／Earth合dev／postCI後同主筆B接線，取消固定執行總時限，按根claim可續。保持原長路／速度與模型幾何，本包不重開完整地形／巡山玩法；舊D32／D25 prompt不授本新包。
+
 ## D32目前接續：Grok可自由深化新總圖，舊成果保留
 
 主追蹤#184，配置關聯本#182，依[完整場景／三人工作包](ART184_SCENE_TRIO_HANDOFF.md)／[Grok提示詞](ART184_GROK_BOT_PROMPT.md)及[D32批准](DECISIONS_AND_SOURCES.md#d32grok完整場景與三人人物設計批准2026-10-23)。新概念可提出更合理地勢、生活區／功能點、村落來路與外圍巡山，不必綁舊圖坐標；新舊配置分清、長通勤及觀看人物奔波保留。堂弟村居偶訪，女孩受疼愛的道館日常融入構圖。

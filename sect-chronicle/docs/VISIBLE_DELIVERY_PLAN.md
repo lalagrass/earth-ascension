@@ -1,5 +1,11 @@
 # 可見交付、驗證與正式整合
 
+## D35當前美術排程：先素材，再以LP17為基線實裝
+
+Gemini保留#274／LP17，現有作者／scope／原期限不變。Grok按[#184新工作包](ART184_PRODUCTION_HANDOFF.md)／[提示詞](ART184_PRODUCTION_GROK_PROMPT.md)，在本文件接受／Earth合dev／postCI後本人新claim，先獨立產出場景素材／雙人造型與合成；不把新圖塞進Gemini當前包。LP17最終非作者接受／Earth合dev／postCI後，同Grok同步最新dev，接續同主PR的有限實裝，不退回LP16重做。
+
+本Grok包不設4h／2h總執行上限，做到A–D完成，claim可依根契約附新證據續期；阻擋／額度中斷保存續接點，不空等、自啟agent／排程或無證據囤名額。保留原長路／速度差與模型／動作，女孩AI／全台地改建延後，D31集中review、精簡驗證、單一8800版與唯一queue不變。184／182母單不全關。
+
 ## D34當前交付：整體場景與雙人外觀，單一試玩版
 
 LP16／PR273已整合並上同8800，postCI39976283668五成功。下一包[#274／LP17](LP17_HANDOFF.md)／[Gemini prompt](LP17_GEMINI_PROMPT.md)把道館院落、長路沿線景物、兩位活動小人的造型與原動作整包接線，不再逐素材交接。保持原長路／速度成長／模型／幾何，完整台地搬遷與女孩AI延後；四組驗收與白名單見工作包。文件整合／postCI後Gemini新claim，未代啟。
