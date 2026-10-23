@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## D33目前下一包：Gemini整合美術與採藥視覺
+
+#267／LP15設計已合dev `0403c10e`／postCI39966426048五成功；#270／D32候選已合dev `089eb39d`／postCI39966737757五成功。下一包為[#271／LP16正式工作包](docs/LP16_HANDOFF.md)／[Gemini兩小時提示詞](docs/LP16_GEMINI_PROMPT.md)，本文件非作者接受／Earth合dev／postCI後本人新claim。下方「Gemini收尾267／等待257」是歷史狀態，不重做已完成前置或沿舊prompt開工。
+
+同一主筆整包完成藥圃／藥架／簍具／四段採藥視覺與長水路局部材質呼應，一個PR集中review。原長路、坐標、模型／速度／成長與兩人fixture不變；Grok全景只作風格參考，不直接當地圖／atlas，不實裝三層台地換位或女孩AI。白名單與四組驗收以LP16為準；D31、桌面優先與精簡驗證照舊，8800只在工程接受／合dev／postCI後由PO更新。#184／182母單保持OPEN，未代啟Gemini。
+
 ## D32最新美術分工：Grok完整場景與三人設計，Gemini保留LP15收尾
 
 擁有人已批准[D32](docs/DECISIONS_AND_SOURCES.md#d32grok完整場景與三人人物設計批准2026-10-23)，讀[#184正式設計包](docs/ART184_SCENE_TRIO_HANDOFF.md)／[Grok接手提示詞](docs/ART184_GROK_BOT_PROMPT.md)，聯繫#182／小說#251。Grok可自由提出更合理的道館、村落通路、長通勤與外圍山林配置，完整主視覺與三人同框一包交付，不把線框／規格表當出圖。

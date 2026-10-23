@@ -1,5 +1,11 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+## D33目前核心作者與整合包
+
+已核#267／270合dev及各五項postCI成功；Gemini原#259收尾完成，不續舊claim。下一完整工程包為[#271／LP16](LP16_HANDOFF.md)／[提示詞](LP16_GEMINI_PROMPT.md)：本文件非作者接受／Earth合dev／postCI後，Gemini本人最新dev新claim，一位主筆同時完成局部素材、採藥視覺與長水路材質呼應、接線及必要文件，一個PR集中review。未代啟／預占，沒有另派Grok改同批檔案。
+
+只寫LP16白名單，原模型／路線／atlas與長通勤速度差保留，完整地圖／第三角色延後；舊D32設計作者分工成為已交付歷史。依D31復用未變證據、必要當前CI與唯一queue，作者不更新8800；工程接受／實際合dev／postCI後遊戲PO更新同入口。#184／182母單保持OPEN。
+
 ## D32目前分工：Grok新視覺包，Gemini收尾原設計
 
 擁有人已批准[D32](DECISIONS_AND_SOURCES.md#d32grok完整場景與三人人物設計批准2026-10-23)。主追蹤#184、配置連#182，讀[正式工作包](ART184_SCENE_TRIO_HANDOFF.md)與[Grok提示詞](ART184_GROK_BOT_PROMPT.md)。
