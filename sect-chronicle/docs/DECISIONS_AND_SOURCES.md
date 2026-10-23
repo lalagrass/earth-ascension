@@ -1,5 +1,26 @@
 # 決策、來源與風險
 
+## D23： #184 局部美術整合 V1–V4 批准（2026-10-23）
+
+決策者：專案擁有人。Codex／遊戲PO直接收到本聊天人類原話：
+
+> 同意 V1–V4，幫我更新 #184 和正式工作包，依流程交 Earth PO 合入 dev，再產生給 Grok Build 的接手提示詞，沿用測試與輸出成本原則；#244／#245 先補修通過再整合。
+
+沿 [#184](https://github.com/lalagrass/earth-ascension/issues/184)／[#177](https://github.com/lalagrass/earth-ascension/issues/177)，精確契約 [正式工作包](ART184_HANDOFF.md)／[Grok Build提示詞](ART184_GROK_BUILD_PROMPT.md)。V1–V4已批准，不再列為產品待決；指定Grok Build做這個新包，不代啟作者／認領或解除前置。
+
+- **V1**：按現有鏡頭／坐標深化泉池—石階一小段材質，先用同站位舊人物疊圖比較。不同鏡頭的材質參考不能直接拉伸替換；不是全圖換色或套紙紋。
+- **V2**：遠景／地面可烘，水缸／樹／屋舍等遮擋物分層；沿舊sprite與腳底／掛點、原縮放及角色辨識。新人物皮／正式動畫另片，不把mp4裁格當atlas。
+- **V3**：一個候選薄整合同生活入口；模型、路線、碰框、世界時間、速度／精力／產出與掌法政策不變，保留最新LP11／LP12全部控制和資訊，不照靜態稿刪鼠列或掌法卡。
+- **V4**：非作者review→Earth PO唯一queue合dev→postCI後，遊戲PO才更新同一8800並保留上版。局部尺寸／遮擋／點選／暫停、一次桌面390及畫面成本，未變生活／世界證據復用。
+
+本批准文件可獨立先審合dev，但新製作／整合須等**本文件、PR #244與#245**各自接受、Earth合dev且postCI通過。起草時dev fa0ccff，#244 head768020a因休閒候補不返院、#245 head96bdc8d因預演到期不停仍各有P2；五綠CI不能代行為接受。前置實際新head／review／merge／postCI由開工者核對，不把本文件當解除或擴原補修DoD。原作者在自己的期限／scope補修，不等D23。
+
+本包主筆Grok Build，已有專用worktree earth-ascension-grok-art184；#245原分支保留，前置完成後本人在乾淨自有worktree從最新dev另開codex/短分支、新4h認領。Gemini的#241 checkout不動；若有新重疊認領先協調，不預占後包，不啟其他agent或排程。
+
+只准新design/art184-integration/**、demo/assets/art184/**、app.mjs最小背景接線、必要局部檢查及實驗README；精確白名單見正式工作包。原art184-grok來源只讀、model/routes/palm／template/atlas/spikes／整套UI／root依賴CI／Earth不改，不加人設canon／玩法／全遊戲畫風／引擎選型或付費服務。未批准的其他#177／#181／#182與#188／#219保持backlog。
+
+沿必要根檢查、SG快驗與適用CI；圖稿只驗圖／來源／連結，實裝才補受影響UI／成本。完整log留檔、真exit／失敗／GPU限制照實、摘要與少量圖；不造鏡像測試、世界seed／長RT或全操作排列。工程接受不代擁有人美感確認，已批範圍內不新增逐張人類簽核。
+
 ## D22：LP-12 自主清鼠與玩家覆寫 L1–L4 批准（2026-10-23）
 
 決策者：專案擁有人。Codex／遊戲 PO 直接收到本聊天人類原話：
