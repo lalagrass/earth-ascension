@@ -1,5 +1,13 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+## D29最新交接：Gemini先完成LP14，LP15前置通過後才新認領（2026-10-23）
+
+[批准D29](DECISIONS_AND_SOURCES.md#d29lp-15-採藥場景與動作質感-h1h4批准2026-10-23)／[#259](https://github.com/lalagrass/earth-ascension/issues/259)／[工作包](LP15_HANDOFF.md)／[Gemini prompt](LP15_GEMINI_PROMPT.md)。Codex遊戲PO只6MD批准同步；Gemini當前#257原O1–O4／期限不變，不動其worktree、未公開成果或branch。
+
+LP15任何畫稿／素材／預演須#257最終接受／Earth合dev／postCI及本文件同流程完成後，才本人最新dev、新codex分支／新4h claim。可復用自己乾淨worktree但保護LP14分支與成果，不reset／force push／沿舊租期，不預占後包。只design/herb-life/**先設計PR，PO選採用差異再列有限接線，不動demo／atlas／共享README或8800。
+
+本人新T0最多2h、100min後不加scope、達標早停，4h不延長；不啟其他agent／排程。確認空埠設計預覽，原同8800由PO保留接受版；設計／工程／美感與正式整合分開，必要檢查／未變證據復用／摘要真exit。下方D28等舊狀態讀各issue最新紀錄，不以歷史快照重做已完成補修。
+
 ## D28最新交接：#256補修先行，Gemini後續接LP14（2026-10-23）
 
 擁有人同意O1–O4及兩小時有限循環，見[D28](DECISIONS_AND_SOURCES.md#d28lp-14-生活觀察介面-o1o4批准2026-10-23)／[#257](https://github.com/lalagrass/earth-ascension/issues/257)／[正式工作包](LP14_HANDOFF.md)／[Gemini prompt](LP14_GEMINI_PROMPT.md)。下方D25等設計分工留歷史，不用舊claim或prompt啟動新包。

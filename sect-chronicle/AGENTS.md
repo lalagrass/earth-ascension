@@ -1,5 +1,13 @@
 # Coding agent 接手入口
 
+## D29最新批准：LP-15採藥場景與動作質感，等LP14後先畫稿（2026-10-23）
+
+H1–H4已批准，見[D29](docs/DECISIONS_AND_SOURCES.md#d29lp-15-採藥場景與動作質感-h1h4批准2026-10-23)／[#259](https://github.com/lalagrass/earth-ascension/issues/259)／[正式包](docs/LP15_HANDOFF.md)／[Gemini提示詞](docs/LP15_GEMINI_PROMPT.md)。藥圃→藥架完整稿與採摘／裝簍／背回／交藥分鏡，原坐標／路線／數值／角色保留；採藥既有功能不重做。
+
+**#257最終版及本批准文件，各自非作者接受→Earth合dev→postCI後才Gemini新claim；畫稿／素材／預演也不可提前。** #257原O1–O4與期限不變，本文件可先獨立合。本人最新dev／新codex分支／新4h認領，只design/herb-life/**；先設計PR停止，PO選採用差異再列接線包，不先改demo／atlas／模型／8800或沿舊租期。沒有逐張人類必簽，H1–H4不重問。
+
+本人新T0最多120min／100min不加scope／達標早停，4h不延長；必要根CI／少量圖與流程真操作、未變證據復用／摘要真exit，不加長矩陣。未代啟agent，採藥用途／新工作仍候選；下方D28管理當前LP14，歷史狀態讀最新issue。
+
 ## D28最新批准：LP-14生活觀察介面O1–O4（2026-10-23）
 
 擁有人已同意O1–O4，見[D28](docs/DECISIONS_AND_SOURCES.md#d28lp-14-生活觀察介面-o1o4批准2026-10-23)／[#257](https://github.com/lalagrass/earth-ascension/issues/257)／[正式工作包](docs/LP14_HANDOFF.md)／[Gemini兩小時提示詞](docs/LP14_GEMINI_PROMPT.md)。簡潔HUD／院落近況、人物小卡、進階按需與可見跟隨控制，同場景先桌面390畫面／流程再薄接線；原模型／命令／數值／工作／路線／存檔與控制效果保留，不加玩法／全圖重畫。
