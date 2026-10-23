@@ -1,6 +1,7 @@
 // 生活開發版的兩條工作路線與「模型狀態 → 場景位置」換算。純函式、不碰 Pixi，畫面與檢查共用同一份。
 // 兩條路共用同一個院中端點（水缸旁），所以交付後改做另一份工作、或休息時改令，人都站在同一點出發，不會瞬移。
 import { pathTool } from '../template/animator.mjs';
+import { WATER_POINTS } from './water-layout.mjs';
 
 // 採藥路：院中端點 → 沿院子下緣往東 → 坡地小路 → 藥圃。座標是本輪示意配置（方向沿 BL-W02 草圖），長度交給模型計時。
 export const HERB = {
@@ -36,7 +37,7 @@ export const BOAR = {
 export const SEEN_X = -20;
 export const GUARD = { points: [[962, 512], [930, 522], [880, 512], [820, 480], [782, 452], [748, 428], [706, 430]] };
 
-export function createRoutes(waterPoints) {
+export function createRoutes(waterPoints = WATER_POINTS) {
   const routes = { water: pathTool(waterPoints), herb: pathTool(HERB.points) };
   const seats = { hero: pathTool(SEATS.hero.points), cousin: pathTool(SEATS.cousin.points) };
   const funs = { hero: pathTool(FUN.hero.points), cousin: pathTool(FUN.cousin.points) };

@@ -1,5 +1,70 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+## D31：單一主筆完整工作包與集中審查
+
+2026-10-23擁有人已批准，來源見[D31](DECISIONS_AND_SOURCES.md#d31單一主筆完整工作包與集中審查2026-10-23)／[#265](https://github.com/lalagrass/earth-ascension/issues/265)。本節是目前遊戲協作流程，覆蓋下方歷史「每個小task交接」的解讀，不改根契約或既有明示產品前置。
+
+### 一包如何切與開發
+
+- 以一個可見玩家結果切包，開工一次確認目標、3–5組完成條件、範圍／檔案、前置與時間；例如同一角色「採藥→疲累休息→恢復續工→畫面看懂原因」，不是把按鈕／精力條／移動分給不同人。範例不是新增玩法批准。
+- 一個issue、一位實際主筆、一條短分支、一個交付PR。主筆負責整個已批准範圍的畫面、行為、接線、必要驗證與文件；可自行拆內部步驟／commit，用draft展示進度，但不強制每步交外部審批、換作者或另開文件PR。
+- 依根契約從最新dev與有效claim開始；同包普通實作選擇依既有授權處理。只在新玩法／數值語義、相容性或白名單等未授權邊界停受影響部分，提出最小取捨；不擅擴範圍。既有明示「先交設計、再確認接線」仍只交完整設計包，不能靠本流程改成runtime。
+- 兩小時包最多120min，100min後不加scope、達標早停；用少量進度紀錄＋Git保存已做／剩餘／證據，不建重複交接日誌。完整交review無可做項就停；到時未完交draft與缺口，不假稱完成、不自行再開一輪。原4h認領與補修規則保留。
+- 核心實作一次一位主筆。只有已安排、檔案及契約獨立的研究／美術／另一產品才平行，用獨立worktree；不為每個內部步驟新建worktree，不讓多位一起改生活入口。不自行啟動其他agent／聊天／排程。
+
+### 集中review與合併
+
+1. 作者完成整包與自校，PR一次列3–5組驗收結果、實際head/base、少量可見證據、未完成與限制；必要文件同PR更新，不把作者自校冒充獨立review。
+2. 遊戲PO／非作者讀完整受影響diff，核對證據，**一次整理已發現阻擋清單**。錯誤資料、命令／暫停副作用、原DoD缺漏、來源不實及相容風險需補；非阻擋美化／個人偏好／可選重構標建議並集中留backlog，不邊審邊擴DoD。新head有新問題可追加，說明新差異／發現原因，不承諾只准一輪。
+3. 同一主筆集中補修，回填新head與對應結果。審查者重看差異與必要反例，復用未變結果；缺證據先指出可復用的最小補件，不一律要求作者重跑或另做一套示意稿。受影響的原驗收仍須成立。
+4. 通過後一次將ready PR與審查結論交[#67](https://github.com/lalagrass/earth-ascension/issues/67)／Earth唯一queue。Earth依根契約核範圍、head/base、當前合併結果／必要CI並squash dev，不再重做一整輪遊戲體驗驗收；若有新差異、失敗或證據疑點仍補查。queue確認postCI後，遊戲PO回填結果；runtime入口由PO按既有權限更新並保留上版。
+
+驗證、單一測試頁／服務、復用與收尾只引用[VALIDATION_POLICY](VALIDATION_POLICY.md)，工作包只加本次直接風險／例外。短進度是資訊，普通步驟不用等PO回覆；真正產品取捨仍交原決策者。
+
+### 可複製的完整工作包提示格式
+
+```text
+你是<實際主筆>，完整負責<issue／一個玩家結果>。
+先讀根及遊戲AGENTS／CONTRIBUTING、原issue最新狀態、正式工作包。
+目標與完成條件：<3–5組可見結果>。
+允許修改與保留邊界：<檔案／原規則／明示設計或實裝範圍>。
+前置：<真實依賴與有效主筆>；通過後最新dev、新短分支與有效claim。
+同一主筆完成整包，內部小commit／自校，不按步驟拆人、PR或逐張審批。
+沿已批准的時間上限；完成即停，未完留head／已做／剩餘／證據，不自行續輪。
+驗證依VALIDATION_POLICY，只補本次直接風險，引用未變結果／當前CI，測完清理。
+交一個指dev的PR，附真作者／head/base／驗收／限制與必要同包文件。
+非作者集中review→同主筆集中補修→Earth唯一queue／postCI；不自行合併。
+新產品決策只停受影響部分，非阻擋建議留原issue／backlog後繼續。
+```
+
+**下一包Gemini**：先按[LP14提示詞](LP14_GEMINI_PROMPT.md)完成#257／PR261原補正；接受／Earth合dev／postCI後，依[LP15正式包](LP15_HANDOFF.md)與[可貼提示詞](LP15_GEMINI_PROMPT.md)新claim #259。由Gemini一次交整包桌面採藥設計；仍不自授接線，不逐張換人review。
+
+## D30交接更新：桌面優先與最小必要驗證
+
+[D30](DECISIONS_AND_SOURCES.md#d30桌面生活優先平台末位與精簡驗證2026-10-23)／[#262](https://github.com/lalagrass/earth-ascension/issues/262)更新平台與成本優先序。Codex遊戲PO只10MD，不碰Gemini PR261／未提交成果；Gemini先按桌面完成#257，#259仍等前置後本人新claim，只先桌面採藥設計。舊手機必交／必驗移末位BL-P01，不延長作者期限，不為文件審合停止已有桌面工作。
+
+[局部驗證政策](VALIDATION_POLICY.md)覆蓋下方每包桌面390／全套重跑敘述：只驗改動直接風險，復用未變資料與當前CI，保留必要CI／非作者review／Earth唯一queue；不新建全裝置或矩陣runner，不把自校當獨立審查。原路線／數值／來源、worktree隔離與8800權限不變。
+
+## D29最新交接：Gemini先完成LP14，LP15前置通過後才新認領（2026-10-23）
+
+[批准D29](DECISIONS_AND_SOURCES.md#d29lp-15-採藥場景與動作質感-h1h4批准2026-10-23)／[#259](https://github.com/lalagrass/earth-ascension/issues/259)／[工作包](LP15_HANDOFF.md)／[Gemini prompt](LP15_GEMINI_PROMPT.md)。Codex遊戲PO只6MD批准同步；Gemini當前#257原O1–O4／期限不變，不動其worktree、未公開成果或branch。
+
+LP15任何畫稿／素材／預演須#257最終接受／Earth合dev／postCI及本文件同流程完成後，才本人最新dev、新codex分支／新4h claim。可復用自己乾淨worktree但保護LP14分支與成果，不reset／force push／沿舊租期，不預占後包。只design/herb-life/**先設計PR，PO選採用差異再列有限接線，不動demo／atlas／共享README或8800。
+
+本人新T0最多2h、100min後不加scope、達標早停，4h不延長；不啟其他agent／排程。確認空埠設計預覽，原同8800由PO保留接受版；設計／工程／美感與正式整合分開，必要檢查／未變證據復用／摘要真exit。下方D28等舊狀態讀各issue最新紀錄，不以歷史快照重做已完成補修。
+
+## D28最新交接：#256補修先行，Gemini後續接LP14（2026-10-23）
+
+擁有人同意O1–O4及兩小時有限循環，見[D28](DECISIONS_AND_SOURCES.md#d28lp-14-生活觀察介面-o1o4批准2026-10-23)／[#257](https://github.com/lalagrass/earth-ascension/issues/257)／[正式工作包](LP14_HANDOFF.md)／[Gemini prompt](LP14_GEMINI_PROMPT.md)。下方D25等設計分工留歷史，不用舊claim或prompt啟動新包。
+
+| 角色／工作 | 現行邊界 |
+|---|---|
+| Gemini：#254／PR256 | 仍原作者／原分支的390可讀性有限補修，c34d413尚有P2；只按#254最新review／期限續修，不等D28文件、不插LP14設計或新UI，不碰PO文件 |
+| Codex遊戲PO：codex/lp14-observation-approved | 只6MD批准同步／工作包與prompt，與256的runtime檔無重疊；交Earth非作者審合文件，不動Gemini checkout／branch |
+| Gemini：LP14新工作 | 本批准文件及256修正版各自非作者接受→Earth合dev→postCI後，核最新dev／有效作者、新4h claim／新codex分支，才做畫稿與接線。未代啟／未預占後包；只LP14白名單 |
+
+可重用自己的乾淨獨立worktree，但保留256原branch／未提交成果，不因squash分歧reset／force push／切他人分支，也不在子資料夾git init。新包兩小時從本人新T0算、100min後不加scope／達標停，4h不延長窗口，不啟其他agent／排程或自合dev。作者用確認空埠預覽，8800仍由PO在runtime接受／Earth合dev／postCI後更換並保留上一版。必要局部／SG快驗／根CI與桌面390、未變證據復用及摘要真exit，無額外大拆或長矩陣。
+
 ## D25最新分工：Gemini接手#182圖像設計與改圖（2026-10-23）
 
 擁有人因Grok quota不足明確改派，依 [D25](DECISIONS_AND_SOURCES.md#d25-182-設計與改圖改由gemini接手2026-10-23)／[更新工作包](MAP182_HANDOFF.md)／[Gemini提示詞](MAP182_GEMINI_PROMPT.md)。下方D24的Grok圖像／Gemini整合改為歷史分工；Gemini現在接PR248剩餘設計與四項P2，保留Grok公開成果／原分支／審查，另從最新dev新claim／新接續PR。只design/map182/**，可沿乾淨的原grok-art184美術worktree，不能碰Gemini gemini-241 checkout或混244檔案。

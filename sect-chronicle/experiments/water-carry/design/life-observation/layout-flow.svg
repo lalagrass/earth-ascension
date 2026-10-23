@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560">
+  <defs>
+    <style>
+      .bg { fill: #f5eedb; }
+      .box { fill: #fffaf0; stroke: #8c7b64; stroke-width: 1.5; rx: 8px; }
+      .box-head { fill: #4a3e31; font-family: system-ui, sans-serif; font-size: 14px; font-weight: bold; fill: #f5eedb; }
+      .title { font-family: system-ui, sans-serif; font-size: 18px; font-weight: bold; fill: #2c251e; }
+      .sub { font-family: system-ui, sans-serif; font-size: 12px; fill: #6e5d4b; }
+      .lbl { font-family: system-ui, sans-serif; font-size: 12px; fill: #2c251e; }
+      .badge { fill: #e2d3be; stroke: #b5a28a; stroke-width: 1; rx: 4px; }
+      .badge-txt { font-family: system-ui, sans-serif; font-size: 11px; fill: #3e3327; }
+      .accent { fill: #b85c38; }
+      .accent-box { fill: #fdf5e6; stroke: #b85c38; stroke-width: 1.5; stroke-dasharray: 4,4; rx: 6px; }
+      .arr { stroke: #8c7b64; stroke-width: 1.5; marker-end: url(#arrow); }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#8c7b64" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="560" class="bg" />
+
+  <!-- Title Header -->
+  <text x="30" y="38" class="title">LP-14 生活觀察介面架構 (O1–O4)</text>
+  <text x="30" y="58" class="sub">觀察優先 · 人物小卡因果展開 · 院落近況按需折疊 · 可見鏡頭控制</text>
+
+  <!-- 1. Top HUD Area -->
+  <rect x="30" y="75" width="940" height="48" class="box" />
+  <rect x="30" y="75" width="940" height="24" fill="#3d3328" rx="8" />
+  <rect x="30" y="87" width="940" height="12" fill="#3d3328" />
+  <text x="45" y="92" class="box-head">HUD (頂部常駐：時間、倍率、存量與可見跟隨控制)</text>
+
+  <rect x="45" y="104" width="70" height="15" class="badge" />
+  <text x="50" y="115" class="badge-txt">❚❚ 1× 2× 4×</text>
+
+  <rect x="125" y="104" width="60" height="15" class="badge" />
+  <text x="130" y="115" class="badge-txt">時鐘 0:00</text>
+
+  <rect x="195" y="104" width="90" height="15" class="badge" />
+  <text x="200" y="115" class="badge-txt">水缸 3/8 擔</text>
+
+  <rect x="295" y="104" width="90" height="15" class="badge" />
+  <text x="300" y="115" class="badge-txt">藥架 0/8 份</text>
+
+  <!-- Visible Camera Control in HUD -->
+  <rect x="740" y="102" width="130" height="18" fill="#d97443" rx="4" />
+  <text x="748" y="115" font-family="system-ui, sans-serif" font-size="11px" font-weight="bold" fill="#fff">🎥 跟隨中 (點擊切換)</text>
+
+  <rect x="880" y="102" width="80" height="18" class="badge" />
+  <text x="892" y="115" class="badge-txt">重來 / 影子</text>
+
+  <!-- 2. Left: Yard Summary (Collapsed vs Expanded) -->
+  <!-- 2A: Collapsed State -->
+  <rect x="30" y="138" width="360" height="42" class="box" />
+  <text x="45" y="156" class="lbl" font-weight="bold">🐗 院落近況 (預設精簡摘要)</text>
+  <rect x="330" y="146" width="50" height="18" class="badge" />
+  <text x="338" y="159" class="badge-txt">展開 ▾</text>
+  <text x="45" y="172" class="sub">野豬：棲地休息中 · 護欄損痕：0/3 · 鼠群：平靜</text>
+
+  <!-- Flow Arrow to Expanded -->
+  <path d="M 210 180 L 210 205" class="arr" />
+  <text x="218" y="196" class="sub" font-size="10px">點擊展開 (純UI)</text>
+
+  <!-- 2B: Expanded State -->
+  <rect x="30" y="210" width="360" height="210" class="box" />
+  <rect x="30" y="210" width="360" height="22" fill="#5c4a38" rx="8" />
+  <rect x="30" y="220" width="360" height="12" fill="#5c4a38" />
+  <text x="45" y="226" class="box-head">院落近況與防守派遣 (展開明細)</text>
+  <rect x="330" y="213" width="50" height="16" fill="#3d3328" rx="3" />
+  <text x="338" y="225" font-family="system-ui, sans-serif" font-size="10px" fill="#fff">收起 ▴</text>
+
+  <text x="45" y="248" class="lbl" font-weight="bold">野豬狀態：</text>
+  <text x="110" y="248" class="sub">棲地休息 (精力 80 / 威脅 0)</text>
+  <rect x="45" y="254" width="330" height="8" fill="#e0d6c3" rx="3" />
+  <rect x="45" y="254" width="220" height="8" fill="#8a6a3e" rx="3" />
+
+  <text x="45" y="280" class="lbl" font-weight="bold">西坡護欄：</text>
+  <text x="110" y="280" class="sub">損痕 0 / 3 (完好無損)</text>
+
+  <text x="45" y="306" class="lbl" font-weight="bold">鼠群動向：</text>
+  <text x="110" y="306" class="sub">鼠1 (嗅地) · 鼠2 (警覺) · 鼠3 (逃出)</text>
+
+  <rect x="45" y="325" width="330" height="40" fill="#f5ede0" stroke="#d4c5af" rx="4" />
+  <text x="55" y="342" class="lbl">防守喝止派遣：</text>
+  <rect x="250" y="333" width="115" height="24" fill="#8a4a1e" rx="4" />
+  <text x="260" y="349" font-family="system-ui, sans-serif" font-size="11px" font-weight="bold" fill="#fff">派主角喝止</text>
+
+  <text x="45" y="388" class="sub">※ 展開/收起純屬 UI 狀態，不推進世界，無模型副作用</text>
+  <text x="45" y="404" class="sub">※ 相機 follow 自動動態避讓展開後的高度</text>
+
+  <!-- 3. Center: World View Area -->
+  <rect x="405" y="138" width="245" height="282" class="accent-box" />
+  <text x="460" y="240" font-family="system-ui, sans-serif" font-size="15px" font-weight="bold" fill="#b85c38">場景可視區 (無遮擋)</text>
+  <text x="445" y="265" class="sub">人物在淨視野區間內奔波</text>
+  <text x="445" y="285" class="sub">頭身避開上方近況卡</text>
+  <text x="445" y="305" class="sub">腳底與名牌避開下方抽屜</text>
+
+  <!-- 4. Right: Character Mini-Card (O2 & O3) -->
+  <rect x="665" y="138" width="305" height="360" class="box" />
+  <rect x="665" y="138" width="305" height="24" fill="#3b5d85" rx="8" />
+  <rect x="665" y="150" width="305" height="12" fill="#3b5d85" />
+  <text x="680" y="155" class="box-head">人物小卡 (O2 核心呈現 + O3 進階折疊)</text>
+
+  <!-- Core Character Status -->
+  <text x="680" y="180" class="lbl" font-size="15px" font-weight="bold">主角</text>
+  <rect x="720" y="168" width="60" height="16" class="badge" />
+  <text x="725" y="180" class="badge-txt">腳力 Lv 1</text>
+  <text x="790" y="180" class="sub">(升級進度 0/1)</text>
+
+  <!-- Energy Bar -->
+  <text x="680" y="206" class="lbl">精力：62 / 100</text>
+  <rect x="680" y="212" width="275" height="8" fill="#e0d6c3" rx="3" />
+  <rect x="680" y="212" width="170" height="8" fill="#4f9a5a" rx="3" />
+
+  <!-- Current Work & NEXT Step / Cause of Stop -->
+  <rect x="680" y="230" width="275" height="52" fill="#fff4e4" stroke="#c8873e" rx="4" />
+  <text x="690" y="248" class="lbl" font-weight="bold" fill="#8a4a1e">當前工作：挑水 (南山深潭取水中)</text>
+  <text x="690" y="268" class="lbl" font-size="11px" fill="#543c26">下一步：精力≤30，交付後去石凳休息</text>
+
+  <!-- Work Action Buttons -->
+  <rect x="680" y="292" width="62" height="24" fill="#3b5d85" rx="4" />
+  <text x="692" y="308" font-family="system-ui, sans-serif" font-size="11px" fill="#fff">挑水</text>
+
+  <rect x="750" y="292" width="62" height="24" fill="#e8dcc2" stroke="#8c7b64" rx="4" />
+  <text x="762" y="308" class="badge-txt">改採藥</text>
+
+  <rect x="820" y="292" width="62" height="24" fill="#e8dcc2" stroke="#8c7b64" rx="4" />
+  <text x="828" y="308" class="badge-txt">本趟後停工</text>
+
+  <rect x="890" y="292" width="65" height="24" fill="#e8dcc2" stroke="#8c7b64" rx="4" />
+  <text x="900" y="308" class="badge-txt">休滿復工</text>
+
+  <!-- Collapsible Advanced Settings (O3) -->
+  <rect x="680" y="328" width="275" height="155" fill="#f8f4eb" stroke="#c2b49d" rx="6" />
+  <rect x="680" y="328" width="275" height="22" fill="#8c7b64" rx="4" />
+  <text x="692" y="343" font-family="system-ui, sans-serif" font-size="11px" font-weight="bold" fill="#fff">▸ 進階設定 (自主政策與掌法Fixture)</text>
+
+  <text x="690" y="368" class="lbl" font-size="11px">自主護院：</text>
+  <rect x="755" y="358" width="40" height="15" class="badge" /><text x="760" y="369" class="badge-txt">允許</text>
+  <rect x="800" y="358" width="70" height="15" class="badge" /><text x="805" y="369" class="badge-txt">傾向: 受擾</text>
+
+  <text x="690" y="392" class="lbl" font-size="11px">自主整理：</text>
+  <rect x="755" y="382" width="40" height="15" class="badge" /><text x="760" y="393" class="badge-txt">關閉</text>
+  <rect x="800" y="382" width="70" height="15" class="badge" /><text x="805" y="393" class="badge-txt">傾向: 順手</text>
+
+  <text x="690" y="416" class="lbl" font-size="11px">自主清鼠：</text>
+  <rect x="755" y="406" width="40" height="15" class="badge" /><text x="760" y="417" class="badge-txt">關閉</text>
+
+  <text x="690" y="440" class="lbl" font-size="11px">掌法對照：</text>
+  <rect x="755" y="430" width="80" height="15" class="badge" /><text x="760" y="441" class="badge-txt">初學 / 熟練</text>
+
+  <text x="690" y="468" class="sub" font-size="10px">※ 展開/折疊不觸發任何命令副作用，原控制入口100%保留</text>
+
+  <!-- 5. Bottom Roster Bar -->
+  <rect x="30" y="508" width="940" height="40" class="box" />
+  <text x="45" y="532" class="lbl" font-weight="bold">名冊：</text>
+  <rect x="90" y="516" width="130" height="24" fill="#3b5d85" rx="4" />
+  <text x="100" y="532" font-family="system-ui, sans-serif" font-size="12px" fill="#fff">主角 Lv 1 · 挑水中</text>
+
+  <rect x="230" y="516" width="130" height="24" class="badge" />
+  <text x="240" y="532" class="badge-txt">熟手 Lv 3 · 挑水中</text>
+</svg>

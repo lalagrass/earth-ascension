@@ -1,0 +1,174 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" width="390" height="844">
+  <defs>
+    <style>
+      .bg { fill: #f4ecdc; }
+      .mountain { fill: #e7f0d4; }
+      .stream { fill: #7ec8c8; opacity: 0.6; }
+      .trail { fill: none; stroke: #3d6b8a; stroke-width: 10; stroke-linejoin: round; }
+      .ui-hud { fill: rgba(248, 242, 228, 0.96); stroke: #d9c9a8; stroke-width: 1; rx: 8px; }
+      .ui-banner { fill: #2c251e; rx: 12px; }
+      .ui-boar { fill: rgba(248, 242, 228, 0.98); stroke: #c8b998; stroke-width: 1.5; rx: 8px; }
+      .ui-drawer { fill: rgba(248, 242, 228, 0.98); stroke: #c8b998; stroke-width: 1.5; rx: 10px 10px 0 0; }
+      .ui-subcard { fill: #fffaf0; stroke: #dfd2be; stroke-width: 1; rx: 6px; }
+      .ui-btn { fill: #fffaf0; stroke: #cbba9e; stroke-width: 1; rx: 4px; }
+      .ui-btn-pri { fill: #3b5d85; stroke: #2b4667; stroke-width: 1; rx: 4px; }
+      .ui-badge { fill: #efe4cb; stroke: #cbba9e; stroke-width: 1; rx: 999px; }
+      .text-title { font-family: system-ui, sans-serif; font-size: 13px; font-weight: bold; fill: #2c251e; }
+      .text-body { font-family: system-ui, sans-serif; font-size: 11px; fill: #2c251e; }
+      .text-muted { font-family: system-ui, sans-serif; font-size: 10px; fill: #6e5d4b; }
+      .text-alert { font-family: system-ui, sans-serif; font-size: 10px; font-weight: bold; fill: #8a2010; }
+      .text-white { font-family: system-ui, sans-serif; font-size: 10px; fill: #ffffff; }
+      .dim-line { stroke: #d9534f; stroke-width: 1.5; stroke-dasharray: 4 2; }
+      .dim-txt { font-family: system-ui, sans-serif; font-size: 11px; font-weight: bold; fill: #d9534f; }
+      .zone-clear { fill: rgba(126, 200, 200, 0.12); stroke: #2f6d3a; stroke-width: 1; stroke-dasharray: 6 4; }
+    </style>
+  </defs>
+
+  <!-- 1. 背景與場景地景 (390×844 視口) -->
+  <rect width="390" height="844" class="bg"/>
+  <path d="M0,160 C120,120 240,190 390,140 L390,844 L0,844 Z" class="mountain"/>
+  <path d="M40,780 C120,660 180,520 230,420 C270,330 330,260 380,210" class="stream"/>
+  <path d="M60,760 L140,630 L195,500 L240,380 L300,280" class="trail"/>
+
+  <!-- ==================== 淨視野區標註 (Clear Visual Zone) ==================== -->
+  <!-- 淨視野區設計假設：頂部障礙 Y=256px 到 底部抽屜 Y=540px，共 284px -->
+  <rect x="10" y="256" width="370" height="284" class="zone-clear"/>
+  <text x="18" y="274" font-size="11" font-weight="bold" fill="#2f6d3a">★ 淨視野區設計假設：~284px（實測樣本 268px）</text>
+
+  <!-- 人物跟隨置中於淨區中央 (Y=398px) -->
+  <g transform="translate(195, 398)">
+    <!-- 扁擔與水桶 -->
+    <line x1="-24" y1="-16" x2="24" y2="-16" stroke="#8a6416" stroke-width="2.5"/>
+    <rect x="-28" y="-14" width="8" height="12" rx="1.5" fill="#6aa8a8"/>
+    <rect x="20" y="-14" width="8" height="12" rx="1.5" fill="#6aa8a8"/>
+    <!-- 主角身體 -->
+    <rect x="-9" y="-30" width="18" height="30" rx="3.5" fill="#3b5d85"/>
+    <circle cx="0" cy="-37" r="7" fill="#e8c89b"/>
+    <!-- 頭頂動作標籤 (Y - 60 = 338px) -->
+    <rect x="-42" y="-60" width="84" height="16" rx="4" fill="rgba(47,42,36,0.9)"/>
+    <text x="-36" y="-48" class="text-white">挑水·回程 45%</text>
+    <!-- 腳底名牌標籤 (Y + 6 = 404px) -->
+    <rect x="-48" y="6" width="96" height="16" rx="4" fill="rgba(248,242,228,0.95)" stroke="#3b5d85"/>
+    <text x="-43" y="18" font-size="10" font-weight="bold" fill="#3b5d85">主角 Lv 1 · 精力 46</text>
+  </g>
+
+  <!-- 避讓驗證尺寸標註箭頭 -->
+  <line x1="28" y1="256" x2="28" y2="338" class="dim-line"/>
+  <text x="34" y="302" class="dim-txt">↑ 82px 餘裕</text>
+  <line x1="28" y1="420" x2="28" y2="540" class="dim-line"/>
+  <text x="34" y="485" class="dim-txt">↓ 120px 餘裕</text>
+
+  <!-- ==================== 頂部 UI 區域 (Y: 10px ~ 256px) ==================== -->
+
+  <!-- 1. 精簡 HUD (2 列式，高度 ~50px，Y: 10 ~ 60) -->
+  <rect x="10" y="10" width="370" height="50" class="ui-hud"/>
+  <!-- Row 1: 標題、時間、暫停按鈕、跟隨按鈕 -->
+  <text x="18" y="28" class="text-title">宗門生活</text>
+  <rect x="80" y="16" width="46" height="18" class="ui-badge"/>
+  <text x="89" y="29" class="text-body">0:12</text>
+  <rect x="134" y="16" width="56" height="18" class="ui-btn"/>
+  <text x="141" y="29" class="text-body">▶ 繼續</text>
+  <rect x="196" y="16" width="60" height="18" class="ui-btn"/>
+  <text x="202" y="29" class="text-body">1× 2× 4×</text>
+  <rect x="296" y="16" width="76" height="18" class="ui-btn-pri"/>
+  <text x="304" y="29" class="text-white">🎥 跟隨中</text>
+  <!-- Row 2: 存量 Chips 與開關 -->
+  <rect x="18" y="38" width="84" height="17" class="ui-badge"/>
+  <text x="24" y="50" font-size="10" fill="#2c251e">水缸 3／8 擔</text>
+  <rect x="108" y="38" width="84" height="17" class="ui-badge"/>
+  <text x="114" y="50" font-size="10" fill="#2c251e">藥架 0／8 份</text>
+  <rect x="236" y="38" width="42" height="17" class="ui-btn"/>
+  <text x="243" y="50" font-size="10" fill="#2c251e">重來</text>
+  <rect x="284" y="38" width="44" height="17" class="ui-btn"/>
+  <text x="292" y="50" font-size="10" fill="#2c251e">影子</text>
+  <rect x="334" y="38" width="38" height="17" class="ui-btn"/>
+  <text x="341" y="50" font-size="10" fill="#2c251e">名冊</text>
+
+  <!-- 2. 暫停橫幅 Banner (緊貼 HUD 下方，Y: 64 ~ 86，高度 22px，不佔用中央) -->
+  <rect x="18" y="64" width="354" height="22" class="ui-banner"/>
+  <text x="135" y="79" class="text-white" font-weight="bold">❚❚ 已暫停（按繼續恢復）</text>
+
+  <!-- 3. 院落近況卡 (排在橫幅下方，Y: 92 ~ 252，高度 160px <= 180px 上限) -->
+  <rect x="10" y="92" width="370" height="160" class="ui-boar"/>
+  <!-- 卡片頂列 -->
+  <text x="20" y="110" class="text-title">院落近況 · 野豬 休息</text>
+  <rect x="312" y="98" width="56" height="18" class="ui-btn"/>
+  <text x="320" y="111" class="text-body">收起 ▴</text>
+  <!-- 狀態細節 -->
+  <text x="20" y="126" class="text-muted">野豬在棲地休息，尚未逼近護欄</text>
+  <!-- 雙條：精力與威脅 -->
+  <text x="20" y="142" font-size="10" fill="#6e5d4b">野豬精力 100/100</text>
+  <rect x="20" y="146" width="160" height="6" rx="3" fill="#e8dcc2"/>
+  <rect x="20" y="146" width="160" height="6" rx="3" fill="#8a6a3e"/>
+  <text x="200" y="142" font-size="10" fill="#6e5d4b">威脅記憶 0/100</text>
+  <rect x="200" y="146" width="160" height="6" rx="3" fill="#e8dcc2"/>
+  <rect x="200" y="146" width="0" height="6" rx="3" fill="#b0483a"/>
+  <!-- 護欄損痕與整理 -->
+  <text x="20" y="168" class="text-body">護欄損痕 1／3</text>
+  <rect x="286" y="156" width="82" height="18" class="ui-btn"/>
+  <text x="294" y="169" font-size="10" fill="#2c251e">派主角整理</text>
+  <!-- 鼠群列 (P2 修正：依照 clean.phase 精準呈現，不冒稱清理中) -->
+  <line x1="20" y1="180" x2="368" y2="180" stroke="#dfd2be" stroke-width="1"/>
+  <text x="20" y="196" font-size="10" font-weight="bold" fill="#2c251e">弱鼠 ×3：</text>
+  <rect x="68" y="186" width="46" height="15" rx="3" fill="#efe4cb"/>
+  <text x="73" y="197" font-size="9" fill="#2c251e">鼠1·普通</text>
+  <rect x="118" y="186" width="46" height="15" rx="3" fill="#efe4cb"/>
+  <text x="123" y="197" font-size="9" fill="#2c251e">鼠2·警覺</text>
+  <rect x="168" y="186" width="46" height="15" rx="3" fill="#efe4cb"/>
+  <text x="173" y="197" font-size="9" fill="#2c251e">鼠3·普通</text>
+  <rect x="286" y="184" width="82" height="18" class="ui-btn"/>
+  <text x="294" y="197" font-size="10" fill="#2c251e">派主角清理</text>
+  <text x="20" y="215" class="text-muted">驅離野豬：沒人處理也能繼續生活</text>
+  <rect x="286" y="206" width="82" height="18" class="ui-btn"/>
+  <text x="294" y="219" font-size="10" fill="#2c251e">派主角驅離</text>
+  <text x="20" y="238" font-size="10" fill="#856404">[O1] 折疊時僅 28px；展開高度限制 160px，保證中央通透</text>
+
+  <!-- ==================== 底部 UI 抽屜 (Y: 540px ~ 844px) ==================== -->
+
+  <!-- 人物抽屜 Panel (Y: 540 ~ 790，高度 250px <= 260px 上限，超出內部捲動) -->
+  <rect x="10" y="540" width="370" height="250" class="ui-drawer"/>
+  <!-- 人物小卡 Header & 腳力 -->
+  <text x="22" y="562" class="text-title">梁丘（主角）<tspan font-size="11" fill="#6e5d4b"> 師弟</tspan></text>
+  <rect x="140" y="550" width="140" height="17" rx="3" fill="#efe4cb"/>
+  <text x="146" y="562" font-size="10" fill="#5a4a3a">腳力 Lv 1／3 (再 3 趟升級)</text>
+  <!-- 精力條 -->
+  <text x="22" y="582" class="text-body"><b>精力 46／100</b></text>
+  <rect x="110" y="574" width="250" height="7" rx="3.5" fill="#e8dcc2"/>
+  <rect x="110" y="574" width="115" height="7" rx="3.5" fill="#4f9a5a"/>
+
+  <!-- 工作專區 (job-card) -->
+  <rect x="20" y="592" width="350" height="72" class="ui-subcard"/>
+  <text x="30" y="610" class="text-body"><b>目前工作：挑水</b> · 返程負重中</text>
+  <rect x="30" y="616" width="330" height="5" rx="2.5" fill="#e8dcc2"/>
+  <rect x="30" y="616" width="148" height="5" rx="2.5" fill="#3b5d85"/>
+  <text x="30" y="636" font-size="11" font-weight="bold" fill="#8a4a1e">下一步：交付後去石凳休息</text>
+  <text x="30" y="652" font-size="10" fill="#6e5d4b">狀態原因：精力低於 30 門檻，排定休整</text>
+
+  <!-- 快捷指令列 -->
+  <rect x="20" y="670" width="60" height="22" class="ui-btn"/>
+  <text x="32" y="685" class="text-body">挑水</text>
+  <rect x="88" y="670" width="60" height="22" class="ui-btn"/>
+  <text x="100" y="685" class="text-body">採藥</text>
+  <rect x="156" y="670" width="90" height="22" class="ui-btn"/>
+  <text x="166" y="685" class="text-body">本趟後停工</text>
+
+  <!-- 進階設定折疊按鈕 (已展開示範，內部 overflow-y: auto) -->
+  <rect x="20" y="700" width="350" height="22" class="ui-btn"/>
+  <text x="30" y="715" class="text-body">⚙ 進階設定（自主政策／掌法） ▾</text>
+  <rect x="20" y="726" width="350" height="56" class="ui-subcard"/>
+  <text x="30" y="742" font-size="10" fill="#6e5d4b">自主政策：護院·關 ｜ 整理·關 ｜ 清鼠·關</text>
+  <text x="30" y="758" font-size="10" fill="#6e5d4b">掌法比較 fixture：[初學] · 熟練 ｜ 收穫：挑水 0 · 採藥 0</text>
+  <text x="30" y="774" font-size="9" fill="#856404">[O3] 底抽上限 260px 且內部滾動，確保上方淨視野永遠留存</text>
+
+  <!-- 底部名冊列 Roster (Y: 796 ~ 838，高度 42px) -->
+  <rect x="10" y="796" width="180" height="40" rx="6" fill="#fffaf0" stroke="#8a6416" stroke-width="1.5"/>
+  <text x="18" y="813" font-size="10" font-weight="bold" fill="#2c251e">梁丘（主角）· Lv 1</text>
+  <text x="18" y="827" font-size="9" fill="#6e5d4b">精力 46 · 挑水·回程</text>
+
+  <rect x="198" y="796" width="180" height="40" rx="6" fill="#fffaf0" stroke="#cbba9e"/>
+  <text x="206" y="813" font-size="10" fill="#2c251e">仲遠（熟手）· Lv 3</text>
+  <text x="206" y="827" font-size="9" fill="#6e5d4b">精力 80 · 挑水·休息</text>
+
+  <!-- 底部標記 -->
+  <text x="10" y="842" font-size="8" fill="#856404">LP-14 390×844 概念線框與設計假設 ｜ 實測樣本: 淨區 268px (HUD 90, boar 251, panel 519) ｜ 依 D30 手機適配移至末位</text>
+</svg>

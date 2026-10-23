@@ -1,5 +1,47 @@
 # Coding agent 接手入口
 
+## D31目前協作方式：一位主筆完成整包，集中review
+
+依擁有人[批准D31](docs/DECISIONS_AND_SOURCES.md#d31單一主筆完整工作包與集中審查2026-10-23)，以[完整工作包流程](docs/PARALLEL_HANDOFF.md#d31單一主筆完整工作包與集中審查)為準：一個玩家目標、3–5組驗收、一位主筆、一個PR。主筆在已批准範圍自行完成畫面／行為／接線及必要文件，內部拆commit與自校，不按按鈕／圖稿／接線步驟另派人、另開審批或文件PR。非作者集中列阻擋、同主筆集中補修，非阻擋美化與重構留backlog。
+
+驗證只補受影響部分；作者證據可供review，審查者核diff及可信度，不重複全套。Earth仍是唯一dev queue；不自行啟其他agent、合併或擴新玩法。下一包Gemini讀[LP15工作包](docs/LP15_HANDOFF.md)／[提示詞](docs/LP15_GEMINI_PROMPT.md)：先完成#257原補正，整合後才新claim #259，整包交桌面採藥設計。**既有明示設計先行的界線保留，本流程不自授LP15 runtime。** 下方逐任務小PR等歷史文字不得解讀成同包內每步都要交接。
+
+## 測試方法必讀：單一頁面、差異驗證、結束清理
+
+所有遊戲作者與PO依[VALIDATION_POLICY](docs/VALIDATION_POLICY.md#統一執行步驟與資源上限)規劃／執行／收尾，工作包只列當次風險與例外，不再自行附全套測試／設備要求。純文件不開瀏覽器；一般最多一個本地測試分頁、一個臨時服務、一套本地測試，重用同頁。
+
+測完先暫停、存少量證據，成功／失敗／時間到都關閉自建頁與自有臨時程序、還原viewport並確認；預設不留常駐遊戲頁，只有使用者明確要求才保留一個暫停頁。不碰使用者頁／其他作者服務／正式8800，不整個關Chrome／Codex。逾時或機器變慢停止新增測試，最多一次最小清理確認後如實回報，不反覆開頁／重試。未變證據／當前CI復用與必要高風險驗證沿原政策。
+
+## D30最高優先：桌面生活先行，手機與冗餘驗證延後（2026-10-23）
+
+擁有人直接要求把手機這類項目排最後並簡化驗證，見[D30](docs/DECISIONS_AND_SOURCES.md#d30桌面生活優先平台末位與精簡驗證2026-10-23)／[#262](https://github.com/lalagrass/earth-ascension/issues/262)。**當前只以桌面作產品驗收；舊段落的390必交／必驗不再是門檻。** 手機／平板／觸控／全面跨裝置排最末位BL-P01，既有適配保留。
+
+按[唯一優先序](docs/VISIBLE_DELIVERY_PLAN.md#d30目前唯一執行優先序)與[局部驗證政策](docs/VALIDATION_POLICY.md)：只驗改動直接風險，一段桌面操作及必要回歸；未變模型與當前CI復用，作者／PO不重複本地全套，不加自證／長矩陣／全架構audit。必要CI與真實資料／原指令／暫停、來源、非作者review／唯一queue照舊。
+
+#257／PR261先按桌面重審；#259仍等257接受／合dev／postCI後才Gemini新claim，只先桌面採藥完整稿，不先改路線／數值或runtime。下方D28／D29的手機字樣保留批准沿革但受D30更新，不能再拿手機遮擋阻擋桌面交付；其他白名單／作者期限與2h上限不變。
+
+## D29最新批准：LP-15採藥場景與動作質感，等LP14後先畫稿（2026-10-23）
+
+H1–H4已批准，見[D29](docs/DECISIONS_AND_SOURCES.md#d29lp-15-採藥場景與動作質感-h1h4批准2026-10-23)／[#259](https://github.com/lalagrass/earth-ascension/issues/259)／[正式包](docs/LP15_HANDOFF.md)／[Gemini提示詞](docs/LP15_GEMINI_PROMPT.md)。藥圃→藥架完整稿與採摘／裝簍／背回／交藥分鏡，原坐標／路線／數值／角色保留；採藥既有功能不重做。
+
+**#257最終版及本批准文件，各自非作者接受→Earth合dev→postCI後才Gemini新claim；畫稿／素材／預演也不可提前。** #257原O1–O4與期限不變，本文件可先獨立合。本人最新dev／新codex分支／新4h認領，只design/herb-life/**；先設計PR停止，PO選採用差異再列接線包，不先改demo／atlas／模型／8800或沿舊租期。沒有逐張人類必簽，H1–H4不重問。
+
+本人新T0最多120min／100min不加scope／達標早停，4h不延長；必要根CI／少量圖與流程真操作、未變證據復用／摘要真exit，不加長矩陣。未代啟agent，採藥用途／新工作仍候選；下方D28管理當前LP14，歷史狀態讀最新issue。
+
+## D28最新批准：LP-14生活觀察介面O1–O4（2026-10-23）
+
+擁有人已同意O1–O4，見[D28](docs/DECISIONS_AND_SOURCES.md#d28lp-14-生活觀察介面-o1o4批准2026-10-23)／[#257](https://github.com/lalagrass/earth-ascension/issues/257)／[正式工作包](docs/LP14_HANDOFF.md)／[Gemini兩小時提示詞](docs/LP14_GEMINI_PROMPT.md)。簡潔HUD／院落近況、人物小卡、進階按需與可見跟隨控制，同場景先桌面390畫面／流程再薄接線；原模型／命令／數值／工作／路線／存檔與控制效果保留，不加玩法／全圖重畫。
+
+**文件可獨立先合，LP14製作／runtime仍須本批准文件及#256的390遮擋修正版各自非作者接受→Earth唯一queue合dev→postCI通過，Gemini才本人最新dev新claim／新分支；不重問O1–O4，也不把文件綠燈當依賴解除。** #256原Gemini只補現有390可讀性、不等本文件、原scope／期限不變，不能把W4修正延到LP14。c34d413是尚有P2的狀態快照，開工讀#254最新接受head，不用其舊CI代替。
+
+LP14僅design/life-observation/**、demo/index／style／app必要呈現與鏡頭控制、局部checks及實驗README；不動model/routes/palm/layout、素材／atlas或Earth。兩小時從LP14本人新T0算、100min後不加範圍／達標早停，4h不延長窗口；非作者review／Earth唯一queue保留。必要局部／SG快驗／根CI與桌面390、未變證據復用／摘要真exit，不跑無關長矩陣、不啟其他agent／排程或改8800。下方D27仍管理LP13原有限實作，D25等舊prompt是歷史。
+
+## D27最新批准：LP-13長挑水路 W1–W4（2026-10-23）
+
+擁有人已同意W1–W4，見[D27](docs/DECISIONS_AND_SOURCES.md#d27lp-13-長挑水路-w1w4批准2026-10-23)／[#254](https://github.com/lalagrass/earth-ascension/issues/254)／[正式工作包](docs/LP13_HANDOFF.md)／[Gemini提示詞](docs/LP13_GEMINI_PROMPT.md)。原院落／HOME保留，世界只南延1600×1350、水路單程1650–1750／約1700；原速度／每趟成長／產出與精力政策不改，明確接受0精力仍完成本趟後休息；只必需乾淨水路圖層與鏡頭薄接線，原人物與其他生活幾何／LP12控制保留。**產品前置已解除，不重問四項；本批准PR255合dev／postCI後，Gemini本人從最新dev新claim／新分支實作。** 未代啟作者、不改8800。
+
+PR250設計已合dev dff6f310／postCI39906919235五SUCCESS；LP12／PR244已交付、8800仍LP12 e611037。下方D25舊設計prompt／補修為完成沿革、PR248只留來源，不重做或沿舊claim接線；原提案head5561cf4綠燈不取代本批准前置。新片只有限白名單／單一權威路長與60Hz，不偷加速或改平衡；必要局部／SG快驗／根CI、桌面390、未變證據復用／摘要真exit，沿120min／100min後不加範圍／達標早停，不自接下一包。
+
 ## D25最新改派：#182設計／改圖由Gemini接手（2026-10-23）
 
 擁有人因Grok額度不足明確改派，讀 [D25](docs/DECISIONS_AND_SOURCES.md#d25-182-設計與改圖改由gemini接手2026-10-23)、[#182](https://github.com/lalagrass/earth-ascension/issues/182)、[工作包](docs/MAP182_HANDOFF.md)／[Gemini提示詞](docs/MAP182_GEMINI_PROMPT.md)。下方D24「Grok專注圖像」是原分工；現在Gemini接剩餘設計／改圖與PR248四項P2，Grok成果與原分支／review保留，不冒稱本人released，不等原Grok期限。

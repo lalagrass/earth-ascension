@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <defs>
+    <style>
+      .ann-box { fill: rgba(255, 250, 240, 0.94); stroke: #8c7b64; stroke-width: 1.5; rx: 6px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25)); }
+      .ann-title { font-family: system-ui, sans-serif; font-size: 13px; font-weight: bold; fill: #2c251e; }
+      .ann-body { font-family: system-ui, sans-serif; font-size: 11px; fill: #5a4a3a; }
+      .ann-meta { font-family: system-ui, sans-serif; font-size: 10px; fill: #8a6416; font-weight: bold; }
+      .pointer { stroke: #b85c38; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .pointer-dot { fill: #b85c38; }
+      .tag-chip { fill: #3b5d85; rx: 3px; }
+      .tag-txt { font-family: system-ui, sans-serif; font-size: 10px; font-weight: bold; fill: #ffffff; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#b85c38" />
+    </marker>
+  </defs>
+
+  <!-- 1. 接受版真實場景截圖底圖 (1280×720，真操作原檔) -->
+  <image href="desktop-real.png" width="1280" height="720"/>
+
+  <!-- ==================== 可編輯 SVG 註記層 ==================== -->
+
+  <!-- 頂部標題標註 -->
+  <g transform="translate(30, 20)">
+    <rect width="640" height="34" class="ann-box"/>
+    <text x="12" y="18" class="ann-title">LP14-A 桌面生活觀察完整稿（接受版真實場景截圖＋可編輯標註）</text>
+    <text x="12" y="30" class="ann-meta">Base dev: fd87f6751e2b2afd6521673d83b80798cac623a7 ｜ Head: 9052662afb690868be965311da91538ea9c87260</text>
+  </g>
+
+  <!-- 1. 頂部 HUD (O1 觀察優先) 標註 -->
+  <g transform="translate(680, 20)">
+    <rect width="360" height="42" class="ann-box"/>
+    <text x="10" y="16" class="ann-title">① HUD 精簡與可見跟隨 (O1/O3)</text>
+    <text x="10" y="28" class="ann-body">時鐘、倍率、水缸 3/8、藥架 0/8 存量清晰</text>
+    <text x="10" y="38" class="ann-body">新增可見「🎥 跟隨中」按鈕，隨時恢復鏡頭跟隨</text>
+    <path d="M 280 42 L 300 70" class="pointer"/>
+  </g>
+
+  <!-- 2. 院落近況 (O1 摘要折疊) 標註 -->
+  <g transform="translate(30, 85)">
+    <rect width="320" height="54" class="ann-box"/>
+    <text x="10" y="16" class="ann-title">② 院落近況摘要卡片 (O1)</text>
+    <text x="10" y="28" class="ann-body">預設僅佔 ~28px 高度，不遮擋下方挑水山路</text>
+    <text x="10" y="40" class="ann-body">點擊「明細 ▾」展開完整野豬條、護欄損痕與派遣</text>
+    <text x="10" y="50" class="ann-meta">鼠群狀態精準依 clean.phase 顯示（等待出發/清理中/返院中）</text>
+    <path d="M 120 54 L 120 78" class="pointer"/>
+  </g>
+
+  <!-- 3. 人物小卡 (O2 工作因果與下一步) 標註 -->
+  <g transform="translate(680, 160)">
+    <rect width="280" height="90" class="ann-box"/>
+    <text x="10" y="16" class="ann-title">③ 人物小卡因果專區 (O2)</text>
+    <text x="10" y="30" class="ann-body">真實精力條（標記 30 休息／80 復工門檻）</text>
+    <text x="10" y="44" class="ann-body">突顯目前工作、<b>下一步與狀態原因</b></text>
+    <text x="10" y="58" class="ann-body">快捷指令：挑水／採藥／本趟後停工一鍵可達</text>
+    <text x="10" y="72" class="ann-body">折疊進階區：自主護院/整理/清鼠與掌法 fixture</text>
+    <text x="10" y="84" class="ann-meta">[純 UI 折疊] 展開收起零模型副作用</text>
+    <path d="M 280 40 L 320 60" class="pointer"/>
+  </g>
+
+  <!-- 4. 真實場景與人物 (接受版 PixiJS) 標註 -->
+  <g transform="translate(320, 480)">
+    <rect width="360" height="60" class="ann-box"/>
+    <text x="10" y="16" class="ann-title">④ 接受版真實場景與人物（PixiJS 60Hz）</text>
+    <text x="10" y="30" class="ann-body">長挑水路全景幾何、山門院落、水缸、藥架、石凳</text>
+    <text x="10" y="44" class="ann-body">主角真實像素小人、扁擔水桶負重姿態與名牌標籤</text>
+    <text x="10" y="56" class="ann-meta">模型契約、路線幾何、時鐘推進 100% 維持原版無改動</text>
+    <circle cx="200" cy="-30" r="4" class="pointer-dot"/>
+    <path d="M 200 -30 L 200 0" class="pointer"/>
+  </g>
+
+  <!-- 5. 底部名冊 (Roster) 標註 -->
+  <g transform="translate(30, 640)">
+    <rect width="340" height="38" class="ann-box"/>
+    <text x="10" y="16" class="ann-title">⑤ 底部名冊：切換工作者小卡與視野焦點</text>
+    <text x="10" y="30" class="ann-body">主角 Lv 1（挑水中）與熟手 Lv 3（歇息中）即時同步</text>
+    <path d="M 170 38 L 170 60" class="pointer"/>
+  </g>
+</svg>
