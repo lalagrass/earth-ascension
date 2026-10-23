@@ -1,5 +1,11 @@
 # Sect Chronicle 架構現況與最小抽取 ADR
 
+## 生活入口架構盤點入口（2026-10-24）
+
+下文是dev0875d116的舊`js/realtime.js`提案，並非目前生活入口的重構授權。當前`experiments/water-carry/demo/model.mjs`／`app.mjs`／`routes.mjs`的有限盤點與最小存讀邊界，見[下一milestone提案](LIFE_MILESTONE_NEXT.md#架構健康有具體債尚不需要全面重構)及[#215](https://github.com/lalagrass/earth-ascension/issues/215)。
+
+保留單一權威tick與原模型／幾何／呈現分工；不因行數或本提案先做kernel／通用JobQueue／引擎遷移。Grok既有D35接線不受新架構前置阻擋；新增功能／存讀／整理待正式範圍批准。
+
 - 狀態：**提案**（[#128](https://github.com/lalagrass/earth-ascension/issues/128) A2，ADR for [#117](https://github.com/lalagrass/earth-ascension/issues/117)），待遊戲 PO 技術接受。本文件不改 runtime、fixture、規則、schema、RNG、驗證頻率或排程文件。
 - 實際主筆：Claude（Anthropic Claude Code），共用 `lalagrass` 帳號；不是遊戲 PO 的獨立審核。
 - 核對基底：dev `0875d116e774cf2b53c6c36d160465b460302b1d`（#108 RT-02 squash）。所有行號以此 SHA 為準。
