@@ -1,5 +1,20 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+## D32目前分工：Grok新視覺包，Gemini收尾原設計
+
+擁有人已批准[D32](DECISIONS_AND_SOURCES.md#d32grok完整場景與三人人物設計批准2026-10-23)。主追蹤#184、配置連#182，讀[正式工作包](ART184_SCENE_TRIO_HANDOFF.md)與[Grok提示詞](ART184_GROK_BOT_PROMPT.md)。
+
+| 主筆 | 本輪範圍／交接 |
+|---|---|
+| Grok（實際入口於claim自述） | D32文件接受／Earth合dev／postCI後本人#184新claim，只design/art184-scene-trio/**；整包主視覺、三人同框、女孩表情與來源配置說明，一個設計PR。可與267不同檔案並行，不自行接runtime |
+| Gemini | 原#259／PR267的design/herb-life/**收尾，沿原作者／期限與review，不因Grok回來換人或加大重畫。後續整合另依選定差異／批准範圍新claim |
+| 小說PO | 依人類跨聊天授權同步#251人物：女孩受寵／衣著較好、內向溫柔親切；堂弟村居偶訪。管理小說人設／必要旁註，遊戲PO與Grok不改小說檔 |
+| 遊戲PO／Earth PO | 遊戲PO集中審設計與選採用差異；Earth保留唯一dev queue／當前CI與postCI。藝術設計合併不自動替換8800或宣稱角色已入遊戲 |
+
+本地Grok可復用自有乾淨美術worktree（舊grok-art184），從最新dev新codex分支並保留舊branch；託管bot按repo／issue／新branch工作，不假裝能用本機絕對路徑。不要碰Gemini worktree、未提交內容或未公開圖。新總圖可自由提改配置／功能點，但標現況／景觀／未來候選與整合差異，不擅改遊戲幾何、規則或角色數量。
+
+下方D31方法沿用；D25的Gemini接圖是歷史交接，現在只保留#267原範圍，新設計依本D32。女孩設定不使堂弟變長住，三人同框只代表一次聚在道館的視覺參考。
+
 ## D31：單一主筆完整工作包與集中審查
 
 2026-10-23擁有人已批准，來源見[D31](DECISIONS_AND_SOURCES.md#d31單一主筆完整工作包與集中審查2026-10-23)／[#265](https://github.com/lalagrass/earth-ascension/issues/265)。本節是目前遊戲協作流程，覆蓋下方歷史「每個小task交接」的解讀，不改根契約或既有明示產品前置。
