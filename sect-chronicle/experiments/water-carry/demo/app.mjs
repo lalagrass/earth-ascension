@@ -5,6 +5,7 @@ import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.
 import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
 import { saveTo, loadFrom } from './life-save.mjs';
+import { guardedSave, guardedLoad } from './life02.mjs'; // SG-LIFE-02 存讀邊界
 import { createRoutes, HERB, SEATS, FUN, BOAR, GUARD } from './routes.mjs';
 import { WATER_POINTS, WATER_LENGTH, WORLD_SIZE, SPRING_PLACE, WATER_LANDMARKS } from './water-layout.mjs';
 import { buildWatercolorScene, ART_WC } from './scene/watercolor.mjs';
@@ -81,7 +82,15 @@ function palmPose(person) {
   if (person.mode === 'recover' || person.mode === 'patrolRec') return PALM_POSE[person.palmStep.steps < STRIKE_TICKS ? 'strike' : 'recover'][person.palm];
   return null;
 }
+// SG-LIFE-02 招呼：往返用空手步態；站位時輪到自己說話用「舒展筋骨」前彎那幀（拱手／點頭的借用姿勢），否則站直；面板如實標借用。
+const SAY = { greet: { hero: '師兄辛苦了！', cousin: '師弟，腳力見長！' }, reply: { hero: '多謝師兄，一起加油！', cousin: '你也辛苦了！' } };
+function meetTurn(person) { const m = person.life02 && person.life02.meet; if (!m || m.phase !== 'talk' || person.mode !== 'meet') return null; return (m.k < 0.5) === (m.role === 'greet') ? m.role : null; }
 function poseOf(id, person) {
+  if (person.life02 && person.life02.meeting) {
+    const at = geo.of(id, person), a = animators[id], turn = meetTurn(person);
+    const view = person.mode === 'meet' ? { phase: 'stretch', k: 0, travelled: turn ? 3 : 0 } : { phase: 'herbOut', k: 0, travelled: at.travelled };
+    return { x: at.x, y: at.y, face: at.face, ...a.pick(view), travelled: at.travelled, phase: person.mode, borrowed: person.mode === 'meet', meet: true };
+  }
   // SG-PATROL-01：巡山沿用清理的畫法（空手步態＋掌法姿勢）；觀察／喝止用站直那幀。
   if (person.cleaning || person.patrolling) {
     const at = geo.of(id, person), a = animators[id], pp = palmPose(person);
@@ -399,7 +408,7 @@ const LENGTHS = { water: WATER_LENGTH, herb: r1(herbPath.length), seat: geo.seat
   boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength),
   drink: r1(geo.drinkLengths.home), drinkSeat: { hero: r1(geo.drinkLengths.seat.hero), cousin: r1(geo.drinkLengths.seat.cousin) } };
 // LP-11：警覺鼠察覺用同一份純幾何取樣兩人位置（模型在權威 tick 呼叫，不讀畫面座標）。
-const SENSE = { placeOf: geo.of, boarAt: geo.boarAt };
+const SENSE = { placeOf: geo.of, boarAt: geo.boarAt, meetLengths: geo.meetLengths }; // SG-LIFE-02 招呼路長度不進 LENGTHS（存檔幾何識別不變）
 let model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
 const clock = createClock();
 const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null, boarExpanded: false, advancedOpen: false };
@@ -512,10 +521,11 @@ $('reset').addEventListener('click', reset);
 // SG-LIFE-01 手動存讀：只在按鈕時動；讀檔通過驗證才替換，讀後暫停、清時鐘、不補 tick、不重播交付特效。
 const storage = (() => { try { return window.localStorage; } catch { return null; } })();
 const SAVE_TEMPLATE = createModel(LENGTHS, undefined, undefined, undefined, SENSE).exportState();
-function saveGame() { const r = saveTo(storage, model); toast(r.text); return r; }
+// SG-LIFE-02：招呼（含走回院中）期間不存、不碰舊檔；方針與招呼只本局，存檔處明說不保存。
+function saveGame() { const r = guardedSave(model, () => saveTo(storage, model)); toast(r.text); return r; }
 function loadGame() {
   if (ui.menu) closeMenu(false);
-  const r = loadFrom(storage, model, SAVE_TEMPLATE);
+  const r = guardedLoad(model, () => loadFrom(storage, model, SAVE_TEMPLATE)); // 失敗時暫態也不變（life-save 試跑一步可能推動暫態）
   if (r.ok) { ui.playing = false; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); v = model.view(); fx.length = 0; }
   toast(r.text); renderChrome(); return r;
 }
@@ -868,6 +878,7 @@ function renderChrome() {
         <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : person.fixLeg ? person.fixLeg.k : person.fixWork ? person.fixWork.k : person.drinkLeg ? person.drinkLeg.k : 0) * 100)}%"></i></div>
         <div class="next-box"><b>下一步：</b>${person.next}</div>
         ${person.why ? `<div class="muted stop-reason">狀態原因：${person.why}</div>` : ''}
+        ${life02Html(person)}
       </div>`);
     put('p-pend', $('p-pend'), pend);
     put('p-cmds', $('p-cmds'), cmds);
@@ -896,6 +907,12 @@ function renderChrome() {
   }
 }
 
+// SG-LIFE-02 人物卡：只補「現在／來源／原因／下一步」，不重排 HUD。
+function life02Html(person) {
+  const l = person.life02;
+  if (!l || (!l.fill && !l.meeting && !l.why)) return '';
+  return `<div class="life02" id="life02-${person.id}">${l.now ? `<div><b>現在：</b>${l.now}</div>` : ''}<div class="muted">來源：${l.src}</div>${l.why ? `<div class="muted">原因：${l.why}</div>` : ''}${l.next && l.next !== person.next ? `<div class="muted">下一步：${l.next}</div>` : ''}${l.meeting ? '<div class="muted">動作借用：招呼用「舒展筋骨」前彎／站直幀；這段互動不存檔</div>' : ''}</div>`;
+}
 const tagEls = {};
 function tag(id, cls, text, x, y, dy = 0) {
   let el = tagEls[id];
@@ -944,6 +961,8 @@ app.ticker.add((t) => {
     const fr = person.fixResult, pf = prev.people[id].fixResult;
     if (fr && (!pf || fr.tick !== pf.tick)) fx.push({ text: `${profiles[id].label}：${FIX_RESULT[fr.kind]}`, x: BOAR.fence.x + 30, y: BOAR.fence.y1 - 4, until: performance.now() + 2400 });
     if (gr && gr !== pg && (!pg || gr.tick !== pg.tick)) fx.push({ text: `${profiles[id].label}：${RESULT_TEXT[gr.kind]}`, x: p.x, y: p.y - 96, until: performance.now() + 2200 });
+    const turn = meetTurn(person);
+    tag(`${id}-say`, 'say', turn ? SAY[turn][id] : null, p.x, p.y - 96);
     tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level} · 精力 ${en(person)}`, p.x, p.y, 6);
     tag(`${id}-pill`, `pill ${person.resting ? 'stop' : person.rest || person.mode === 'back' ? 'rest' : person.guarding || person.fixing ? 'guard' : person.leisure ? 'fun' : person.recall ? 'recall' : ''}`, person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.mode === 'fix' ? `${person.status} ${Math.round(person.fixWork.k * 100)}%` : person.status, p.x, p.y - (person.mode === 'seated' ? 64 : 80));
   }

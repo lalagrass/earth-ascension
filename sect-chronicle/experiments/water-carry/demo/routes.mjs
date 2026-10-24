@@ -37,12 +37,27 @@ export const BOAR = {
 export const SEEN_X = -20;
 // SG-LIFE-01 飲水站：現有水缸（scene 水缸 x1000,y520）前左側一個站點；從院中端點走一小段。停工坐著的人從座位沿原座位路回到院中端點再接這段。
 export const DRINK = { points: [[962, 512], [958, 530], [972, 546]], face: 1, vat: { x: 1000, y: 520 } };
+// SG-LIFE-02 同門招呼站位：院中端點西南的院坪空地，兩人相距約 34、面對面。從各自休閒點沿原休閒路反走回院中端點，
+// 再接這段院中短折線；固定折線、不尋路，不改原工作／休閒／巡山幾何。
+export const MEET = {
+  hero: { points: [[962, 512], [940, 532], [914, 548]], face: 1 },
+  cousin: { points: [[962, 512], [956, 534], [948, 550]], face: -1 },
+};
 export const GUARD = { points: [[962, 512], [930, 522], [880, 512], [820, 480], [782, 452], [748, 428], [706, 430]] };
 
 export function createRoutes(waterPoints = WATER_POINTS) {
   const routes = { water: pathTool(waterPoints), herb: pathTool(HERB.points) };
   const seats = { hero: pathTool(SEATS.hero.points), cousin: pathTool(SEATS.cousin.points) };
   const funs = { hero: pathTool(FUN.hero.points), cousin: pathTool(FUN.cousin.points) };
+  // SG-LIFE-02：休閒點 → 院中端點 → 招呼站位（u=0 休閒點、u=1 站位；院中端點在 meetHome[id]）。
+  const meets = Object.fromEntries(['hero', 'cousin'].map((id) => [id, pathTool([...FUN[id].points].reverse().concat(MEET[id].points.slice(1)))]));
+  const meetHome = Object.fromEntries(['hero', 'cousin'].map((id) => [id, pathTool(FUN[id].points).length]));
+  function meetPlace(id, l) {
+    const r = meets[id], p = r.at(Math.max(0, Math.min(1, l.u)));
+    const back = l.b < l.a;
+    const face = l.mode === 'meet' ? MEET[id].face : (back ? -p.dx : p.dx) >= 0 ? 1 : -1;
+    return { x: p.x, y: p.y, face, route: r, geo: l.mode, travelled: l.mode === 'meet' ? 0 : Math.abs(l.u - l.a) * r.length };
+  }
   const boarPath = pathTool(BOAR.points), guardPath = pathTool(GUARD.points);
   const drinks = { home: pathTool(DRINK.points), hero: pathTool([...SEATS.hero.points].reverse().concat(DRINK.points.slice(1))), cousin: pathTool([...SEATS.cousin.points].reverse().concat(DRINK.points.slice(1))) };
   // 去／喝／回：u=0 出發點、u=1 飲水站；回程只走 span（取消去程時走回已走的那段）。喝水時面向水缸。
@@ -95,6 +110,7 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   function of(id, p) {
     // LP-11：清理中直接用模型在權威 tick 取樣的場景位置（palm.mjs 同一幾何），畫面不另算。
     if (p.drinkLeg) return drinkPlace(id, { ...p.drinkLeg, mode: p.mode });
+    if (p.life02 && p.life02.leg) return meetPlace(id, { ...p.life02.leg, mode: p.mode });
     if (p.patrolling) return { x: p.pos.x, y: p.pos.y, face: p.cface, route: null, geo: p.mode, travelled: p.walked }; // SG-PATROL-01：巡山同用模型 pos
     if (p.cleaning) return { x: p.pos.x, y: p.pos.y, face: p.cface, route: null, geo: p.mode, travelled: p.walked };
     if (p.mode === 'toFix' || p.mode === 'fromFix') return { ...guardPlace(FIX_AS[p.mode], p.fixLeg.k), geo: p.mode };
@@ -109,6 +125,7 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   }
   return { routes, seats, funs, place, of, seatLengths: { hero: seats.hero.length, cousin: seats.cousin.length }, funLengths: { hero: funs.hero.length, cousin: funs.cousin.length },
     boarPath, guardPath, boarAt, guardPlace, boarLengths: { edge: boarEdge, total: boarPath.length, seen: boarSeenD }, boarSeenD, guardLength: guardPath.length,
+    meets, meetPlace, meetLengths: Object.fromEntries(['hero', 'cousin'].map((id) => [id, { total: meets[id].length, home: meetHome[id] }])),
     drinks, drinkPlace, drinkLengths: { home: drinks.home.length, seat: { hero: drinks.hero.length, cousin: drinks.cousin.length } } };
 }
 const WATER = { down: 1, dip: 1, up: 1, pour: 1 };

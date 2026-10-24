@@ -142,3 +142,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 /* SG-PATROL-01 巡山戰報 */
 .patrolrep { margin: 4px 0; padding: 4px 6px; border-radius: 6px; background: rgba(243, 230, 196, 0.75); font-size: 12px; line-height: 1.5; }
 .pill.wp { opacity: 0.85; font-size: 11px; }
+
+/* SG-LIFE-02 招呼氣泡與人物卡補充 */
+.tag.say { transform: translate(-50%, -100%); background: #fffaf0; color: #2f2a24; border: 1px solid #8a7a5a; border-radius: 10px; font-size: 13px; padding: 2px 8px; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+.life02 { margin-top: 6px; padding: 4px 6px; border-left: 3px solid #5d7f4a; background: rgba(93, 127, 74, .08); font-size: 12px; }
