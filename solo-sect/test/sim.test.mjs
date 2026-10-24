@@ -76,3 +76,17 @@ test('野豬下山拱菜後回山，族群數不變', () => {
   let i = 0; while (!s.log.some((l) => /回山/.test(l.msg)) && i++ < 4 * 300) tick(s);
   assert.ok(s.plots.some((p) => p.st !== 'ripe')); run(s, 200); assert.equal(s.eco.boar.n, n0);
 });
+
+// v0.5
+import { recruit, canRecruit, capacity, mapStage } from '../src/sim.mjs';
+test('招收受名聲、床位、存糧三道門檻；成功扣糧且新人從村路上山', () => {
+  const s = createState(41); s.res.food = 10; assert.equal(canRecruit(s).ok, false); s.rep = 100;
+  const cap = capacity(s); assert.equal(cap, 3); assert.match(canRecruit(s).why, /床位/);
+  s.fac.dorm.stage = 1; const r = recruit(s); assert.ok(r.ok); assert.equal(s.res.food, 7); assert.equal(r.d.at, 'gate'); assert.equal(s.ds.length, 4);
+  s.res.food = 0; s.fac.dorm.stage = 2; assert.match(canRecruit(s).why, /存糧/);
+});
+test('大廳擴建需名聲；母版階段隨建設 S0→S1→S2', () => {
+  const s = createState(42); s.res.wood = 12; assert.equal(startBuild(s, 'hall'), false); assert.equal(mapStage(s), 'S0');
+  s.fac.dorm.stage = 1; s.fac.kitchen.stage = 1; assert.equal(mapStage(s), 'S1');
+  s.rep = 20; assert.ok(startBuild(s, 'hall')); s.fac.yard.stage = 1; run(s, 600); assert.equal(s.fac.hall.stage, 1); assert.equal(mapStage(s), 'S2');
+});

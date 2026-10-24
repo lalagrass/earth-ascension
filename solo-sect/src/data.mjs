@@ -1,23 +1,55 @@
 // 資料驅動定義：地圖節點、設施階段、活動、武學、角色。改數值只動這裡。
-export const WORLD = { w: 1600, h: 1000 };
-
-// 路網節點（加權路徑；長山路刻意保留距離）
+// v0.5：座標＝SCENE04 母版 MU（1280×720）×1.25，路網沿母版 routes（挑水/遠採藥/巡山/村路）與院南口 portal
+export const WORLD = { w: 1600, h: 900 };
+export const MAPS = { S0: 'map_s0', S1: 'map_s1', S2: 'map_s2' };
 export const NODES = {
-  gate: [800, 900], court: [800, 600], hall: [800, 420], yard: [1050, 620],
-  dorm: [560, 560], kitchen: [600, 760], veg: [380, 800], herb: [1000, 820],
-  well: [1180, 800], forest: [250, 480], forest2: [120, 300],
-  trail1: [1250, 420], trail2: [1380, 260], guard: [1450, 170], den: [1560, 60],
+  hall: [1125, 340],
+  court: [1038, 394],
+  yard: [1175, 419],
+  dormP: [960, 319],
+  dorm: [931, 210],
+  mid: [950, 431],
+  kitchen: [800, 362],
+  south: [960, 506],
+  s1: [965, 569],
+  s2: [931, 631],
+  s3: [894, 681],
+  g1: [862, 700],
+  g2: [750, 694],
+  g3: [625, 656],
+  forest: [456, 665],
+  forest2: [412, 631],
+  g4: [375, 681],
+  g5: [300, 738],
+  g6: [269, 812],
+  herb: [281, 875],
+  e1: [1062, 572],
+  e2: [1150, 588],
+  veg: [1200, 515],
+  e3: [1250, 644],
+  e4: [1350, 644],
+  e5: [1431, 625],
+  v1: [1412, 700],
+  v2: [1450, 800],
+  gate: [1475, 875],
+  e6: [1475, 525],
+  trail1: [1494, 438],
+  t2a: [1538, 362],
+  trail2: [1550, 275],
+  t3: [1500, 181],
+  t4: [1412, 125],
+  guard: [1344, 148],
+  t5: [1344, 88],
+  t6: [1412, 50],
+  den: [1475, 22],
 };
-export const EDGES = [
-  ['gate', 'court'], ['court', 'hall'], ['court', 'yard'], ['court', 'dorm'], ['court', 'kitchen'],
-  ['kitchen', 'veg'], ['court', 'herb'], ['herb', 'well'], ['yard', 'well'], ['dorm', 'forest'],
-  ['forest', 'forest2'], ['yard', 'trail1'], ['trail1', 'trail2'], ['trail2', 'guard'], ['guard', 'den'],
-];
+export const EDGES = [['hall', 'court'], ['court', 'yard'], ['court', 'dormP'], ['dormP', 'dorm'], ['court', 'mid'], ['mid', 'kitchen'], ['mid', 'south'], ['south', 's1'], ['s1', 's2'], ['s2', 's3'], ['s3', 'g1'], ['g1', 'g2'], ['g2', 'g3'], ['g3', 'forest'], ['forest', 'g4'], ['g4', 'g5'], ['g5', 'g6'], ['g6', 'herb'], ['forest', 'forest2'], ['s1', 'e1'], ['e1', 'e2'], ['e2', 'e3'], ['e3', 'e4'], ['e4', 'e5'], ['e5', 'v1'], ['v1', 'v2'], ['v2', 'gate'], ['e2', 'veg'], ['e5', 'e6'], ['e6', 'trail1'], ['trail1', 't2a'], ['t2a', 'trail2'], ['trail2', 't3'], ['t3', 't4'], ['t4', 'guard'], ['guard', 't5'], ['t5', 't6'], ['t6', 'den']];
 
 // 設施：每階段宣告提供的活動（smart object）。stage 0 = 荒廢/空地。
 export const FACILITIES = [
   { id: 'hall', name: '大廳', node: 'hall', stages: [
-    { name: '破道館', sprite: 'hall_s0', offers: ['rest', 'learn'], restRate: 3 },
+    { name: '破道館', sprite: 'hall_s0', offers: ['rest', 'learn'], restRate: 3, beds: 3, learnDur: 8 },
+    { name: '大廳', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 4, beds: 2, learnDur: 4, cost: { wood: 12 }, work: 30, rep: 20 },
   ] },
   { id: 'yard', name: '外功場', node: 'yard', stages: [
     { name: '空地', sprite: null, offers: ['train'], trainMul: 1 },
@@ -25,7 +57,8 @@ export const FACILITIES = [
   ] },
   { id: 'dorm', name: '宿舍', node: 'dorm', stages: [
     { name: '破寢舍', sprite: 'dorm_s0', offers: [] },
-    { name: '小寢舍', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, cost: { wood: 6 }, work: 18 },
+    { name: '小寢舍', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 2, cost: { wood: 6 }, work: 18 },
+    { name: '宿舍', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 6, cost: { wood: 10 }, work: 24, rep: 12 },
   ] },
   { id: 'kitchen', name: '膳房', node: 'kitchen', stages: [
     { name: '露天灶', sprite: 'vat', offers: ['cook', 'eat'], cookDur: 12, cookYield: 3, mealBonus: 0 },
@@ -93,7 +126,17 @@ export const HARVEST = 3;    // 每畦收菜
 export const STYLES = { palm: '掌法', leg: '腿法' };
 // v0.4 後山生態：族群有上限與繁衍；狩獵是真的取走個體
 export const ECO = { rat: { start: 6, max: 8, regen: 50 }, boar: { start: 2, max: 3, regen: 150 } };
-export const HABITAT = { c: [1470, 130], r: 110 };
+export const HABITAT = { c: [1450, 60], r: 70 };
 export const POSTS = { guard: '山頂守點', trail2: '山腰岔口', trail1: '山腳路口' };
 export const RAID_EVERY = 160; // 秒；野豬下山拱菜
 export const HUNT_WAVES = 3, WAVE_GAP = 6;
+
+// v0.5 名聲與招收
+export const REP = { build: 5, kill: 1, learn: 2 };
+export const RECRUIT = { baseRep: 8, stepRep: 6, food: 3 };
+export const RECRUIT_POOL = [
+  { id: 'aqing', name: '阿青', adult: true, sprite: 'hero', style: 'palm', skills: { leg: 3, palm: 6, strength: 8, farming: 6, herbal: 4, agility: 9, cooking: 4 }, traits: { diligent: 1.3 } },
+  { id: 'shitou', name: '石頭', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {} },
+  { id: 'xiaomei', name: '小梅', adult: true, sprite: 'senior', style: 'palm', skills: { leg: 2, palm: 4, strength: 4, farming: 10, herbal: 14, agility: 11, cooking: 12 }, traits: { social: 1.4 } },
+  { id: 'laoqi', name: '老七', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 6, palm: 6, strength: 10, farming: 12, herbal: 6, agility: 7, cooking: 8 }, traits: { diligent: 1.1 } },
+];
