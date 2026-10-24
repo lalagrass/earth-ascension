@@ -1,5 +1,21 @@
 # 決策、來源與風險
 
+## D51：M1完成線與grass純遊戲review／dev合併批准（2026-10-25）
+
+擁有人於台北2026-10-25明確要求：
+
+> 同意這個 M1 完成線，也批准 grass 接手純遊戲 PR 的 review 與 dev 合併。幫我更新權限文件與雲端限制，依流程交 Earth PO 完成正式切換，再整理 Grok 和 grass 的接手提示詞，先收尾 #330／#333，完成後休息。
+
+擁有人於2026-10-25台北明確批准 **D51**：第一生活里程碑＝已接受生活／成長／武學巡山／S0基線＋**#330 HOME02收尾**；grass接手純遊戲PR的集中review與dev squash merge。總控[#334](https://github.com/lalagrass/earth-ascension/issues/334)，[M1清單](LIFE_M1_EXECUTION_PLAN.md)／[移交與生效規則](GAME_PR_GRASS_TRANSFER_PLAN.md)／[Grok](LIFE_M1_GROK_PROMPT.md)與[grass](LIFE_M1_GRASS_PROMPT.md)提示詞。
+
+這是正式批准，不是只有規劃；**操作生效以Earth在#67發布的唯一cutover紀錄為準**，須先由Earth整合正式權限PR／postCI、同步既有Cloud啟動限制並取得grass接手收據。未生效前原Earth路徑照常；已由Earth持有的active票由該票記錄決定收尾，不搶合。新規則優先於下方D48–D50的歷史Earth-only／待批准描述，不重設作者claim、scope／DoD或重做已驗。
+
+Grok仍由人類手動貼網頁／App接棒，沒有已部署callback／runner。剩餘工程白名單只有330；PR333的Cloud差異複審[6388542820](https://github.com/lalagrass/earth-ascension/pull/333#issuecomment-6388542820)已鎖head b86657324c82c2d470baeac39c0d74ea552d56a5判A–D ready，接手先核最新狀態，未變證據復用，不再次初審。整合／postCI成功後沿同一接受SHA交短摘要、清理後休息；不掃其他OPEN，不加QA包／研究／M2。Cloud執行、Mac真人、單一版本／長通勤速度差／原玩法與資料、集中review／精簡驗證及必要CI保持，存檔升版與手機適配最後。
+
+正式權限由根CONTRIBUTING／AGENTS同步，Earth審合此次權限PR／postCI、核既有Cloud啟動限制實際發布與grass能力收據，在#67公布effective_after_sha／唯一owner／未結票歸屬才操作生效。這些是執行交接，不需再問已批准的M1／角色。grass只非本人主筆的已批准純遊戲PR，Earth保root／共用／混合／權限與其他產品，main／未定產品仍擁有人。文件不是硬性ACL／GitHub Merge Queue，未啟runner／排程或付費；原工程與已驗證據不重設。
+
+下方D50為當時規劃沿革，其待批准／阻擋快照已由本D51與最新GitHub更新；不刪來源、不將當時計畫冒稱當時已生效。
+
 ## D50：第一生活里程碑與grass合併移交之規劃委託（2026-10-25）
 
 擁有人台北2026-10-25要求：
