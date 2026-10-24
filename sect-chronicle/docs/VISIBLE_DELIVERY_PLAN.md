@@ -1,8 +1,14 @@
 # 可見交付、驗證與正式整合
 
+## D44已批准：先收尾308，再整包SG-LIFE-03
+
+擁有人已同意MS1–MS4及茶示意值，主[#309](https://github.com/lalagrass/earth-ascension/issues/309)，[正式包](LIFE03_HANDOFF.md)／[Grok提示詞](LIFE03_GROK_PROMPT.md)。水1＋藥草1、煮6秒／喝4秒，完成水分＋60／精力＋40各上限100、不疊坐休；茶用途、現在／原因來源／下一步與真成長小事卡、必要局部意圖整理一Grok一PR。U3／MS待批字樣在本有限批准範圍解除，其他母題不解鎖。
+
+先原305／PR308最終補修非作者接受／Earth合dev／postCI且PO更新唯一8800，本批准文件審合／postCI後才本人309新claim／當時最新dev新支線與隔離區；不占308原scope／期限或增加DoD，不預占後包。原長通勤／體態速度差／玩法保留，茶一次手動、完成返院待命，較新改令／停工優先；新暫態限本局、不升存檔，手機與新增保存最後。整包集中review／精簡驗證／清理／唯一queue與單版本照正式包，沒有代啟Grok。下方「待確認」為舊提案狀態。
+
 ## 最新產品review與下一里程碑提案（2026-10-24）
 
-見[SG-LIFE-03山居日常整包提案](LIFE03_MILESTONE_PROPOSAL.md)：沿[#309](https://github.com/lalagrass/earth-ascension/issues/309)把藥草第一用途、入口／自主可讀與真成長小目標一起評估，一Grok一主PR，不按素材／UI拆交接。U1–U4藥茶方向已獲擁有人「ok」，新配方／收益／時長與本輪MS1–MS4整體範圍尚待確認；沒有runtime認領或開工prompt。
+見[SG-LIFE-03山居日常整包提案](LIFE03_MILESTONE_PROPOSAL.md)：沿[#309](https://github.com/lalagrass/earth-ascension/issues/309)把藥草第一用途、入口／自主可讀與真成長小目標一起評估，一Grok一主PR，不按素材／UI拆交接。U1–U4藥茶方向已獲擁有人「ok」，新配方／收益／時長與MS1–MS4已由本輪D44確認，正式包／prompt見上；尚無runtime claim。
 
 現況：LIFE02唯一8800已發布；305／PR308新head49f47da原兩P2已修，但Earth queue發現飲水承接練掌的recall早退路徑仍會卡住（review5638238207），同PR補修中，未合併／未發布；preCI五SUCCESS不取代此驗收，最終狀態以issue回填為準。先收尾原包，不讓新研究變它的gate。後續順序建議本用途整包→真人試玩→少量床位或自主多資源日常擇一；#215只做同包必要局部交接整理，不重構先行。存讀升版與手機／全面平台仍末位；下方D43及更早「下一包」是沿革，按本節核實目前狀態。
 

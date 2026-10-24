@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## D44已批准：先收尾308，再整包SG-LIFE-03
+
+擁有人已同意MS1–MS4及茶示意值，主[#309](https://github.com/lalagrass/earth-ascension/issues/309)，[正式包](docs/LIFE03_HANDOFF.md)／[Grok提示詞](docs/LIFE03_GROK_PROMPT.md)。水1＋藥草1、煮6秒／喝4秒，完成水分＋60／精力＋40各上限100、不疊坐休；茶用途、現在／原因來源／下一步與真成長小事卡、必要局部意圖整理一Grok一PR。U3／MS待批字樣在本有限批准範圍解除，其他母題不解鎖。
+
+先原305／PR308最終補修非作者接受／Earth合dev／postCI且PO更新唯一8800，本批准文件審合／postCI後才本人309新claim／當時最新dev新支線與隔離區；不占308原scope／期限或增加DoD，不預占後包。原長通勤／體態速度差／玩法保留，茶一次手動、完成返院待命，較新改令／停工優先；新暫態限本局、不升存檔，手機與新增保存最後。整包集中review／精簡驗證／清理／唯一queue與單版本照正式包，沒有代啟Grok。下方「待確認」為舊提案狀態。
+
 ## D43目前下一整包：SG-TRAIN-01已批准
 
 擁有人明確同意T1–T4，主[#305](https://github.com/lalagrass/earth-ascension/issues/305)，讀[正式包](docs/TRAIN01_HANDOFF.md)／[Grok提示詞](docs/TRAIN01_GROK_PROMPT.md)。LIFE02／PR302＋304已接受／合dev5dd0222／postCI成功並發布同8800，不重做下方D42或場景。**本批准文件非作者接受→Earth合dev／postCI後**Grok本人305新claim／當時最新dev新codex支線、自有隔離工作區，沒有代啟或預占工程。
