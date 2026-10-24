@@ -41,6 +41,25 @@ function sameShape(tpl, c, path) {
   }
 }
 
+// 進行中路徑的必要結構（review 5635905946）：motion 在形狀比對列 LOOSE，這裡依 mode 驗後續 tick 會讀的欄位，
+// 包括清鼠分段行走的 from／to、queue 與每個路點、步數，以及起手／收勢鎖定的目標。同一個小驗證涵蓋所有可變路段。
+const isPt = (q) => isObj(q) && num(q.x) && num(q.y);
+const PATH = {
+  toRat: ['from', 'to', 'queue'], fromRat: ['from', 'to', 'queue'],
+  windup: ['target'], recover: ['target'],
+};
+function checkPath(h, at) {
+  const need = PATH[h.mode];
+  if (!need) return;
+  if (!isInt(h.need) || h.need < 1 || !isInt(h.steps) || h.steps < 0 || h.steps > h.need) bad('value', `${at} 步數不合法`);
+  for (const k of need) {
+    if (k === 'target') { if (!RATS.some((r) => r.id === h.target)) bad('value', `${at}.target 不是已知測試鼠`); continue; }
+    if (k === 'queue') { if (!Array.isArray(h.queue) || !h.queue.every(isPt)) bad('value', `${at}.queue 路點不合法`); continue; }
+    if (!isPt(h[k])) bad('value', `${at}.${k} 座標不合法`);
+  }
+  if (h.hold !== undefined && !isInt(h.hold)) bad('value', `${at}.hold 不合法`);
+}
+
 function checkValues(st, model) {
   const r = model.rules, E = r.energy, D = r.drink, ids = Object.keys(model.state.people);
   const range = (v, lo, hi, p, int = false) => { if (!num(v) || v < lo || v > hi || (int && !isInt(v))) bad('value', `${p} 超出範圍（${lo}–${hi}）`); };
@@ -73,6 +92,7 @@ function checkValues(st, model) {
       if (DRINK_MODES.includes(h.mode) && !['home', 'seat'].includes(h.from)) bad('value', `${at} 喝水出發點不合法`);
       if (h.mode === 'fromDrink' && !(num(h.span) && h.span > 0 && h.span <= 1)) bad('value', `${at} 喝水返回比例不合法`);
     } else if (!isInt(h.steps) || h.steps < 0) bad('value', `${at}.motion.steps 不合法`);
+    checkPath(h, `${at}.motion`);
     for (const j of Object.keys(JOBS)) range(p.done[j], 0, Number.MAX_SAFE_INTEGER, `${at}.done.${j}`, true);
     range(p.trips, 0, Number.MAX_SAFE_INTEGER, `${at}.trips`, true);
     if (p.fix != null && !['wait', 'go'].includes(p.fix)) bad('value', `${at}.fix 不合法`);
