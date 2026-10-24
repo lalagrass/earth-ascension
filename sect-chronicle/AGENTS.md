@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## D38下一包已批准：第一版後巡山與返院戰報
+
+擁有人同意PF1–PF4，讀[#290正式包](docs/PATROL01_HANDOFF.md)／[Grok提示詞](docs/PATROL01_GROK_PROMPT.md)與[D38](docs/DECISIONS_AND_SOURCES.md#d38sg-patrol-01-pf1pf4批准2026-10-24)。Grok先收尾#279／PR282及#184／PR289，兩部分接受／Earth合dev／postCI且PO記單一8800第一版更新、本文件接受／整合／postCI後，再290新claim／最新dev新支線。未到前置不預占工程；本文件不擋原第一版／不改原作者租期，D37不等282合併可接續的批准保留。
+
+一條西坡路、有限林鼠與同一豬、真移動迎敵／留回程、人工召回與真戰報，模型／場景／UI／必要v1→v2相容同作者一PR整包。不逐項交接；只新巡山有示意值，原長路／速度／玩法保留，完整安全區／繁殖／人傷掉落XP／輕功仍未授。規劃文件不代表工程已啟動。集中review、差異驗證／清理、4h可續租期、Earth唯一queue與單一試玩版照舊。
+
 ## D37最新：Grok全場景水彩整包與自主權
 
 擁有人已批准[全場景工作包](docs/ART184_WATERCOLOR_HANDOFF.md)／[Grok提示詞](docs/ART184_WATERCOLOR_GROK_PROMPT.md)，主184／配置182／生活閉環279。**排程更正立即生效**：取消先等PR282接受／合dev／postCI才可開發全場景的誤設等待。同Grok現在可184新claim，最新dev新支線普通merge本人282公開候選、標depends282及已知阻擋，接續完整場景；原282缺陷仍在原支線修好再同步，原補修期限不重置。兩候選最後集中review、Earth依282→場景整合／postCI才發布；不再等本更正文件PR合併才動手。PR278只是已交的局部素材整合，第一版另需D37整張真遊戲地圖風格一致，不追溯改278驗收。
