@@ -200,3 +200,38 @@ test('壞檔（review 5632832438）：必要物件改 null、未知 enum 一律�
   run(m, 60); run(twin, 60);
   assert.deepEqual(m.exportState(), twin.exportState());
 });
+
+test('壞檔（review 5635905946）：進行中清鼠路徑依 mode 驗 from／to／queue 路點與目標；拒絕前後目前這局不變，合法在途檔跨路段續跑一致', async () => {
+  const { S, fresh, until } = await setup();
+  const tpl = fresh().exportState();
+  const a = fresh();
+  assert.equal(a.dispatch('clean', 'hero').ok, true);
+  assert.ok(until(a, (m) => { const h = m.state.people.hero.motion; return h.mode === 'toRat' && h.steps > 0 && h.queue.length > 0; }, 120), '清鼠走在分段路上');
+  const good = S.makeSave(a);
+  const cases = {
+    'queue=null': (h) => { h.queue = null; },
+    'queue=[null]': (h) => { h.queue = [null]; },
+    'queue 路點缺 y': (h) => { h.queue[0] = { x: 1 }; },
+    'to=null': (h) => { h.to = null; },
+    'from.x 非數字': (h) => { h.from.x = 'a'; },
+    'steps 超過 need': (h) => { h.steps = h.need + 1; },
+  };
+  const m = fresh();
+  for (const [name, mut] of Object.entries(cases)) {
+    const env = JSON.parse(JSON.stringify(good)); mut(env.state.people.hero.motion);
+    const before = JSON.stringify(m.exportState(Infinity));
+    assert.equal(S.loadInto(m, JSON.stringify(env), tpl).ok, false, `${name} 應被拒絕`);
+    assert.equal(JSON.stringify(m.exportState(Infinity)), before, `${name} 拒絕後目前這局不變`);
+    m.step(); assert.ok(m.view().people.hero, `${name} 拒絕後 step／view 正常`);
+  }
+  const w = JSON.parse(JSON.stringify(good)); w.state.people.hero.motion = { ...w.state.people.hero.motion, mode: 'windup', target: 99 };
+  assert.equal(S.loadInto(m, JSON.stringify(w), tpl).ok, false, '起手目標不是已知測試鼠應拒絕');
+  // 合法在途檔：讀入後與原局同步走過下一路段（queue 減少），逐欄一致。
+  const b = fresh(); assert.equal(S.loadInto(b, JSON.stringify(good), tpl).ok, true);
+  const q0 = a.state.people.hero.motion.queue.length;
+  assert.ok(until(b, (x) => x.state.people.hero.motion.mode !== 'toRat' || x.state.people.hero.motion.queue.length < q0, 120), '跨過下一路段');
+  const n = b.state.tick - good.state.tick;
+  for (let i = 0; i < n + 60; i++) a.step();
+  for (let i = 0; i < 60; i++) b.step();
+  assert.deepEqual(b.exportState(), a.exportState());
+});
