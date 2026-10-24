@@ -1,5 +1,7 @@
 # 可貼給Grok：D45統一生活補給＋生活總覽／武學成長
 
+> **D46最新接續順序**：擁有人改為先交[SCENE04成熟→初始場景完整設計](SCENE04_HANDOFF.md)／[新Grok提示詞](SCENE04_GROK_PROMPT.md)，主182。PO核對時本309無Grok工程claim／PR，因此本D45批准內容保留、工程順延，先不要依下方歷史「立即開工」新claim；設計集中review後按選定差異接續本包。若核對前確已開工，先回報真head保留該包，再串行設計，不強停覆寫／預占雙claim。本次不改D45數值或增加本包DoD，亦不授新地圖工程。
+
 你是實際主筆Grok。請完整完成[#309／SG-LIFE-03](https://github.com/lalagrass/earth-ascension/issues/309)，讀[LIFE03_HANDOFF](LIFE03_HANDOFF.md)／[D45](DECISIONS_AND_SOURCES.md#d45sg-life-03未開工併修統一生活補給與人物面板2026-10-24)。擁有人已選統一補給、人物面板生活總覽＋武學成長；PO核當時309沒有Grok工程claim／支線／PR，故併修未開工原包，**不要沿舊D44獨立口渴／茶水分＋60提示詞實作**。不是再交研究／畫稿或重做308。
 
 先讀根CONTRIBUTING、sect-chronicle/AGENTS、VALIDATION_POLICY與309最新留言／正式包。308已接受／Earth合devabbee504／postCI40101025656成功並由PO更新唯一8800，305已關，不再等這個舊前置。本D45批准文件非作者接受／Earth合dev／postCI後，本人核無有效重疊作者、新claim（真身份／工具、當時最新dev、codex支線與自有隔離區、範圍、UTC4h期限），從最新dev整包開發。若已經有本輪PO核對前開始且未回填的實際成果，先回報真head／範圍，讓PO按擁有人條件保留現包／新方向排後包，不擅自覆寫未公開工作或搶作者。
