@@ -1,5 +1,11 @@
 # 下一個 milestone 提案：SG-LIFE-01 可持續生活試玩
 
+## D38已批准：第一版後SG-PATROL-01
+
+擁有人同意PF1–PF4，下一正式包主[#290](https://github.com/lalagrass/earth-ascension/issues/290)，讀[工作包](PATROL01_HANDOFF.md)／[Grok提示詞](PATROL01_GROK_PROMPT.md)及[D38](DECISIONS_AND_SOURCES.md#d38sg-patrol-01-pf1pf4批准2026-10-24)。先收斂D36＋D37第一版接受／Earth整合／postCI並更新同8800、正式文件整合／postCI，再Grok新claim巡山整包；不再重問PF1–PF4，不把巡山加第一版DoD或阻D37。
+
+一次有限西坡巡山、鼠／同豬、自主預算返院、人工召回與真戰報，必要v1→v2相容同作者一PR。舊生活規則保留，完整生態／傷害／真武學成長與本文件其餘生活候選不自動前移；原SG-LIFE-01提案與待決文字是沿革，D36與D38有限批准優先。唯一順序沿可見交付表。
+
 ## D37最新：第一版需要全場景水彩統一（2026-10-24）
 
 擁有人已批准[全場景完整包](ART184_WATERCOLOR_HANDOFF.md)／[Grok接手提示詞](ART184_WATERCOLOR_GROK_PROMPT.md)。主#184、配置#182、生活閉環#279；PR278 D35局部整合已合dev ac7148d／postCI40004282037並更新單一8800，不能再把它稱全圖美術完成。整張地表、院落、藥圃、長路、溪橋／泉眼與角色／獸要在真遊戲中風格一致；優先已有素材、缺件補圖。

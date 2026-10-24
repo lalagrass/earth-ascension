@@ -1,5 +1,9 @@
 # 柵欄外巡防掃蕩：塔防觀感、武學實戰與返院紀錄
 
+## 後續D38有限批准（2026-10-24）
+
+本研究後擁有人同意PF1–PF4、委託補耗能與返程示意值，已提取[#290正式工作包](PATROL01_HANDOFF.md)／[Grok提示詞](PATROL01_GROK_PROMPT.md)，批准見[D38](DECISIONS_AND_SOURCES.md#d38sg-patrol-01-pf1pf4批准2026-10-24)。只在正式包範圍解除下方歷史「未授runtime」：一條路／有限鼠與同豬／自主返院／真戰報及必要保存，第一版完成後才接。其他安全控制／生態／傷害／真熟練仍研究，不把本報告所有選項變任務，也不阻D36／D37；研究來源／未執行限制保持原樣。
+
 日期：2026-10-24；Codex／遊戲PO；base dev `5742a4908aadb1bd7d9083183701222d0f6353b7`；[文件認領 #75](https://github.com/lalagrass/earth-ascension/issues/75#issuecomment-6377618061)。依擁有人構想：由野獸出沒的柵欄往外延伸，角色沿路處理不同野怪，遇到精力／危險限制返回，顯示掃蕩距離、數量與種類，觀察實戰能力。
 
 **研究與backlog候選，未批准新巡山／傷害／敵種／成長／數值或schema實作。** 不擴D36／D37第一版，不阻擋Grok全場景或增加本文件先合併才能開發的條件；原已授場景／動作／觀察改善照原包繼續。母單[#75](https://github.com/lalagrass/earth-ascension/issues/75)，巡防研究[#104](https://github.com/lalagrass/earth-ascension/issues/104)，巢穴與逃散[#219](https://github.com/lalagrass/earth-ascension/issues/219)，舊SG-06／#98仍延後；不重開已交#220／238／241。
