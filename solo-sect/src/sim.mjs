@@ -1,5 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED } from './data.mjs';
+import { TRAITS, THOUGHTS, NEED_MOOD, MOOD, WORK_ACTS, LEISURE_ACTS, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED } from './data.mjs';
 
 export const SAVE_VERSION = 1;
 const clone = (o) => JSON.parse(JSON.stringify(o));
@@ -41,13 +41,40 @@ export function createState(seed = 1) {
 }
 function mkDisciple(d, i, at = 'court') {
   return ({
-      id: d.id, name: d.name, style: d.style, adult: d.adult, sprite: d.sprite, traits: d.traits,
+      id: d.id, name: d.name, style: d.style, personality: [...(d.personality || [])], mood: MOOD.base, thoughts: [], adult: d.adult, sprite: d.sprite, traits: d.traits,
       skills: { ...d.skills }, moves: ['fist'], pendingMove: null,
       needs: { energy: 80, hunger: 70 - i * 10, social: 50 }, hp: 100,
       at, pos: [...NODES[at]].map((v, k) => v + (k ? 0 : (i - 1) * 16)), path: [],
       task: null, order: null, reason: at === 'gate' ? '慕名上山' : '剛到道館', carry: null, cool: 0, walked: 0, face: 1, anim: null,
     });
 }
+// ---- v0.6 性格與心情 ----
+export function think(s, d, id, extra = '') {
+  const T = THOUGHTS[id]; if (!T) return;
+  let v = T.v; for (const p of d.personality || []) { const m = TRAITS[p]?.thoughtMul; if (m?.[T.tag]) v *= m[T.tag]; if (m?.bad && v < 0 && T.tag !== 'bad') v *= 1; }
+  const ex = d.thoughts.find((x) => x.id === id);
+  if (ex) { ex.left = T.ttl; ex.v = Math.round(v); } else d.thoughts.push({ id, text: T.text + extra, v: Math.round(v), left: T.ttl });
+}
+export function moodTarget(d) {
+  let t = MOOD.base;
+  for (const p of d.personality || []) t += TRAITS[p]?.moodBase || 0;
+  for (const th of d.thoughts) t += th.v;
+  for (const [k, [thr, v, tag]] of Object.entries(NEED_MOOD)) if (d.needs[k] < thr) { let x = v; for (const p of d.personality || []) { const m = TRAITS[p]?.thoughtMul; if (m?.[tag]) x *= m[tag]; } t += x; }
+  return clamp(t, 0, 100);
+}
+function moodStep(d, dt) {
+  for (const th of d.thoughts) th.left -= dt; d.thoughts = d.thoughts.filter((x) => x.left > 0);
+  const tgt = moodTarget(d), diff = tgt - d.mood; d.mood = clamp(d.mood + clamp(diff, -MOOD.down * dt, MOOD.up * dt), 0, 100);
+}
+export function traitMul(d, act) { let m = 1; for (const p of d.personality || []) m *= TRAITS[p]?.mods?.[act] || 1; return m; }
+export function moodMul(d, act) {
+  if (d.mood < MOOD.low) return WORK_ACTS.includes(act) ? 0.6 : LEISURE_ACTS.includes(act) ? 1.35 : 1;
+  if (d.mood > MOOD.high) return WORK_ACTS.includes(act) ? 1.15 : 1;
+  return 1;
+}
+export const focusMul = (d) => 0.8 + 0.4 * (d.mood / 100); // DF focus：心情影響成長 0.8–1.2
+export const moodLabel = (m) => (m < 15 ? '崩潰邊緣' : m < MOOD.low ? '低落' : m < MOOD.high ? '平穩' : m < 90 ? '愉快' : '意氣風發');
+
 // ---- v0.5 名聲、床位、招收、母版階段 ----
 export function capacity(s) { return FACILITIES.reduce((a, f) => a + (facStage(s, f.id).beds || 0), 0); }
 export function recruitNeed(s) { return RECRUIT.baseRep + RECRUIT.stepRep * (s.ds.length - 3); }
@@ -141,7 +168,7 @@ export function scoreActs(s, d) {
   const plotWork = s.plots.some((p) => p.st === 'empty' || p.st === 'ripe');
   const cookable = s.res.veg - s.vegRes >= 2 && s.res.food < 10;
   if (cookable) add('cook', 30 + (10 - s.res.food) * 4, '灶上該煮飯了');
-  for (const o of out) { o.score *= sch[o.act] || 1; o.score += rand(s) * 8; } // 作息＋個性雜訊
+  for (const o of out) { o.score *= (sch[o.act] || 1) * traitMul(d, o.act) * moodMul(d, o.act); o.score += rand(s) * 8; } // 作息×性格×心情＋雜訊
   for (let i = out.length - 1; i >= 0; i--) if (out[i].act === 'farm' && !plotWork) out.splice(i, 1);
   return out.sort((a, b) => b.score - a.score);
 }
@@ -196,7 +223,7 @@ function moveStep(d, dt) {
 
 function grow(s, d, sk, amt) {
   if (sk === 'style') sk = d.style;
-  const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130));
+  const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
   for (const m of MOVES) if (m.skill === sk && !d.moves.includes(m.id) && d.skills[sk] >= m.req && d.pendingMove !== m.id && !d.pendingMove) { d.pendingMove = m.id; log(s, `${d.name}${sk === 'palm' ? '掌法' : '腿法'}到了火候，可向師父求學「${m.name}」`); }
 }
 
@@ -229,19 +256,19 @@ function doTask(s, d, dt) {
     t.timer += dt;
     if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = s.ds.find((x) => x.id === t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
     if (A.energy) d.needs.energy = clamp(d.needs.energy + A.energy * dt / A.dur, 0, 100);
-    if (t.act === 'rest') { const rate = facStage(s, t.fac).restRate || 3; d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= 80 && t.timer > 4))) finish(s, d); return; }
+    if (t.act === 'rest') { const rate = facStage(s, t.fac).restRate || 3; if (t.timer < dt * 1.5) think(s, d, t.fac === 'hall' && s.fac.hall.stage === 0 ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= 80 && t.timer > 4))) finish(s, d); return; }
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
     const dur = t.act === 'cook' ? facStage(s, t.fac).cookDur : t.act === 'learn' ? facStage(s, 'hall').learnDur : A.dur;
     if (t.timer >= dur) {
       if (t.act === 'cook') { const st = facStage(s, t.fac); s.res.veg -= 2; s.vegRes -= 2; t.phase = 'done'; s.res.food += st.cookYield; log(s, `${d.name}在${st.name}煮好 ${st.cookYield} 份飯`); grow(s, d, 'cooking', 6); finish(s, d); return; }
       if (t.act === 'farm') { const p = s.plots[t.plot]; p.busy = null; grow(s, d, 'farming', 6); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; }
-      if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) d.needs.social = clamp(d.needs.social + b / 2, 0, 100); }
+      if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } }
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? facStage(s, 'yard').trainMul : 1));
       if (t.act === 'spar' && t.partner) { const p = s.ds.find((x) => x.id === t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在木樁場切磋`); } }
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
-      if (t.act === 'learn' && d.pendingMove) { const m = MOVES.find((x) => x.id === d.pendingMove); d.moves.push(m.id); d.pendingMove = null; s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); }
-      if (t.act === 'chat' && t.partner) { const p = s.ds.find((x) => x.id === t.partner); if (d.id < p.id) relAdd(s, d, p, 4 * Math.max(d.traits.social || 1, p.traits.social || 1)); }
+      if (t.act === 'learn' && d.pendingMove) { const m = MOVES.find((x) => x.id === d.pendingMove); d.moves.push(m.id); d.pendingMove = null; s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
+      if (t.act === 'chat' && t.partner) { const p = s.ds.find((x) => x.id === t.partner); if (d.id < p.id) relAdd(s, d, p, 4 * Math.max(d.traits.social || 1, p.traits.social || 1)); think(s, d, 'goodChat', `（${p.name}）`); }
       if (A.carry) { d.carry = { ...A.carry }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; }
       finish(s, d);
     }
@@ -288,7 +315,7 @@ function huntStep(s, dt) {
     if (monWalk(m, M.speed * dt)) { m.gone = true; h.escaped++; s.eco[m.k].n++; log(s, `${M.name}衝過守點逃回山裡`); }
   }
   for (const d of team) {
-    if (d.hp <= 25) { if (d.task?.act === 'hunt') { d.order = null; cancelTask(s, d, '傷重退回院中'); assign(s, d, 'rest', '傷重歇息'); log(s, `${d.name}受傷退下`); } continue; }
+    if (d.hp <= 25) { if (d.task?.act === 'hunt') { d.order = null; cancelTask(s, d, '傷重退回院中'); assign(s, d, 'rest', '傷重歇息'); log(s, `${d.name}受傷退下`); think(s, d, 'hurt'); } continue; }
     if (d.at !== h.post || d.path.length) continue;
     d.cool -= dt; if (d.cool > 0) continue;
     const ms = d.moves.map((id) => MOVES.find((m) => m.id === id)).sort((a, b) => b.dmg * (1 + (b.aoe ? 1 : 0)) - a.dmg * (1 + (a.aoe ? 1 : 0)));
@@ -312,7 +339,7 @@ function huntStep(s, dt) {
   if (waveClear) { h.gap += dt; if (h.gap >= WAVE_GAP && h.wave + 1 < h.waves && anyFit && (s.eco.rat.n + s.eco.boar.n) > 0) { h.wave++; h.gap = 0; spawnWave(s); } }
   if ((waveClear && (h.wave + 1 >= h.waves || !anyFit || s.eco.rat.n + s.eco.boar.n === 0) && h.gap >= 1) || (!anyFit && waveClear)) {
     const rep = `狩獵戰報（${POSTS[h.post]}，${h.wave + 1} 波）：擊退 ${h.kills}、溜走 ${h.escaped}；` + team.map((d) => `${d.name}出手 ${h.hits[d.id] || 0} 次`).join('，') + `｜山中尚餘 鼠${s.eco.rat.n} 豬${s.eco.boar.n}`;
-    log(s, rep); s.lastReport = rep; s.rep = (s.rep || 0) + h.kills;
+    log(s, rep); s.lastReport = rep; if (h.kills > h.escaped) for (const d of team) if (d.hp > 25) think(s, d, 'wonHunt'); s.rep = (s.rep || 0) + h.kills;
     for (const d of team) { if (d.order === 'hunt') d.order = null; if (d.task?.act === 'hunt') { d.task = null; d.anim = null; } d.reason = '狩獵結束回院'; }
     s.hunt = null;
   }
@@ -337,7 +364,7 @@ function ecoStep(s, dt) {
   }
   for (const m of s.mons) if (m.raid) {
     if (monWalk(m, MONSTERS.boar.speed * dt)) {
-      if (m.raid === 'go') { const p = s.plots.find((x) => x.st === 'ripe') || s.plots.find((x) => x.st === 'grow'); if (p) { p.st = 'empty'; p.g = 0; log(s, '野豬拱壞了一畦菜，吃飽回山。'); } else log(s, '野豬在菜園沒找到吃的，回山了。'); m.raid = 'back'; m.path = route('veg', 'den').slice(1); }
+      if (m.raid === 'go') { const p = s.plots.find((x) => x.st === 'ripe') || s.plots.find((x) => x.st === 'grow'); if (p) { p.st = 'empty'; p.g = 0; log(s, '野豬拱壞了一畦菜，吃飽回山。'); for (const d of s.ds) think(s, d, 'cropLost'); } else log(s, '野豬在菜園沒找到吃的，回山了。'); m.raid = 'back'; m.path = route('veg', 'den').slice(1); }
       else { m.gone = true; s.eco.boar.n++; }
     }
   }
@@ -351,6 +378,7 @@ export function tick(s, dt = 0.25) {
   for (const d of s.ds) {
     d.needs.hunger = clamp(d.needs.hunger - 0.35 * dt, 0, 100);
     d.needs.social = clamp(d.needs.social - 0.4 * dt, 0, 100);
+    moodStep(d, dt);
     if (!d.task) decide(s, d);
     if (d.task) { moveStep(d, dt); doTask(s, d, dt); }
     if (d.anim === 'strike' && d.cool < 0.6) d.anim = null;
@@ -365,6 +393,7 @@ export function save(s) { return JSON.stringify({ ...s, fx: [] }); }
 export function load(str) {
   let o; try { o = JSON.parse(str); } catch { return { ok: false, err: '存檔損毀' }; }
   if (!o || o.v !== SAVE_VERSION || !Array.isArray(o.ds)) return { ok: false, err: `不支援的存檔版本 ${o?.v}` };
+  for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.personality ??= []; } // v0.5 檔補預設
   return { ok: true, state: o };
 }
 export { clone };

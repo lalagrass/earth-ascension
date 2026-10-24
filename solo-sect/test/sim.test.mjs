@@ -90,3 +90,21 @@ test('大廳擴建需名聲；母版階段隨建設 S0→S1→S2', () => {
   s.fac.dorm.stage = 1; s.fac.kitchen.stage = 1; assert.equal(mapStage(s), 'S1');
   s.rep = 20; assert.ok(startBuild(s, 'hall')); s.fac.yard.stage = 1; run(s, 600); assert.equal(s.fac.hall.stage, 1); assert.equal(mapStage(s), 'S2');
 });
+
+// v0.6 性格與心情
+import { think, moodTarget, moodMul, traitMul, scoreActs } from '../src/sim.mjs';
+test('性格乘數：貪玩的人練功分數比勤奮的人低', () => {
+  const s = createState(51); const [hero, , cousin] = s.ds; assert.ok(traitMul(hero, 'train') > 1 && traitMul(cousin, 'train') < 1);
+});
+test('想法疊加進心情目標並隨時間消退；樂天者基線較高', () => {
+  const s = createState(52); const sen = s.ds[1], hero = s.ds[0];
+  assert.ok(moodTarget(sen) > moodTarget(hero)); const t0 = moodTarget(hero); think(s, hero, 'learned'); assert.ok(moodTarget(hero) > t0);
+  hero.thoughts[0].left = 0.1; s.res.food = 99; tick(s); assert.equal(hero.thoughts.some((t) => t.id === 'learned'), false);
+});
+test('心情低落時工作分數下降、休閒上升；多慮放大壞事', () => {
+  const s = createState(53); const d = s.ds[0]; d.mood = 10; assert.ok(moodMul(d, 'train') < 1 && moodMul(d, 'chat') > 1);
+  think(s, d, 'cropLost'); think(s, s.ds[1], 'cropLost'); assert.ok(d.thoughts[0].v < s.ds[1].thoughts[0].v);
+});
+test('舊（v0.5）存檔缺心情欄位也能讀入並補預設', () => {
+  const s = createState(54); for (const d of s.ds) { delete d.mood; delete d.thoughts; } const r = load(save(s)); assert.ok(r.ok); assert.equal(r.state.ds[0].mood, 50);
+});

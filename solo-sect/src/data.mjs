@@ -104,9 +104,9 @@ export const WAVES = [
 ];
 
 export const DISCIPLES = [
-  { id: 'hero', name: '主角', adult: true, sprite: 'hero', style: 'palm', skills: { leg: 2, palm: 10, strength: 10, farming: 5, herbal: 5, agility: 10, cooking: 3 }, traits: { diligent: 1.2 } },
-  { id: 'senior', name: '林師姐', adult: true, sprite: 'senior', style: 'leg', skills: { leg: 10, palm: 5, strength: 5, farming: 15, herbal: 10, agility: 12, cooking: 10 }, traits: { social: 1.3 } },
-  { id: 'cousin', name: '堂弟', adult: false, sprite: 'cousin', style: 'leg', skills: { leg: 3, palm: 0, strength: 2, farming: 3, herbal: 8, agility: 15, cooking: 2 }, traits: { playful: 1.4 } },
+  { id: 'hero', name: '主角', adult: true, sprite: 'hero', style: 'palm', skills: { leg: 2, palm: 10, strength: 10, farming: 5, herbal: 5, agility: 10, cooking: 3 }, traits: { diligent: 1.2 }, personality: ['diligent', 'worrier'] },
+  { id: 'senior', name: '林師姐', adult: true, sprite: 'senior', style: 'leg', skills: { leg: 10, palm: 5, strength: 5, farming: 15, herbal: 10, agility: 12, cooking: 10 }, traits: { social: 1.3 }, personality: ['gentle', 'optimist'] },
+  { id: 'cousin', name: '堂弟', adult: false, sprite: 'cousin', style: 'leg', skills: { leg: 3, palm: 0, strength: 2, farming: 3, herbal: 8, agility: 15, cooking: 2 }, traits: { playful: 1.4 }, personality: ['playful', 'glutton'] },
 ];
 
 export const REL_STAGES = [[0, '陌生'], [20, '相識'], [45, '好友'], [70, '知己'], [90, '道侶']];
@@ -135,8 +135,36 @@ export const HUNT_WAVES = 3, WAVE_GAP = 6;
 export const REP = { build: 5, kill: 1, learn: 2 };
 export const RECRUIT = { baseRep: 8, stepRep: 6, food: 3 };
 export const RECRUIT_POOL = [
-  { id: 'aqing', name: '阿青', adult: true, sprite: 'hero', style: 'palm', skills: { leg: 3, palm: 6, strength: 8, farming: 6, herbal: 4, agility: 9, cooking: 4 }, traits: { diligent: 1.3 } },
-  { id: 'shitou', name: '石頭', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {} },
-  { id: 'xiaomei', name: '小梅', adult: true, sprite: 'senior', style: 'palm', skills: { leg: 2, palm: 4, strength: 4, farming: 10, herbal: 14, agility: 11, cooking: 12 }, traits: { social: 1.4 } },
-  { id: 'laoqi', name: '老七', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 6, palm: 6, strength: 10, farming: 12, herbal: 6, agility: 7, cooking: 8 }, traits: { diligent: 1.1 } },
+  { id: 'aqing', name: '阿青', adult: true, sprite: 'hero', style: 'palm', skills: { leg: 3, palm: 6, strength: 8, farming: 6, herbal: 4, agility: 9, cooking: 4 }, traits: { diligent: 1.3 }, personality: ['diligent', 'brave'] },
+  { id: 'shitou', name: '石頭', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {}, personality: ['brave', 'glutton'] },
+  { id: 'xiaomei', name: '小梅', adult: true, sprite: 'senior', style: 'palm', skills: { leg: 2, palm: 4, strength: 4, farming: 10, herbal: 14, agility: 11, cooking: 12 }, traits: { social: 1.4 }, personality: ['gentle', 'sociable'] },
+  { id: 'laoqi', name: '老七', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 6, palm: 6, strength: 10, farming: 12, herbal: 6, agility: 7, cooking: 8 }, traits: { diligent: 1.1 }, personality: ['gentle', 'optimist'] },
 ];
+
+// v0.6 切片：性格特質（RimWorld traits／DF facets 的簡化版）與心情
+// mods：活動分數乘數；moodBase：常駐心情；thoughtMul：對某類想法放大
+export const TRAITS = {
+  diligent: { name: '勤奮', desc: '閒不下來，練功砍柴都起勁', mods: { train: 1.25, chop: 1.15, build: 1.15, farm: 1.1, chat: 0.85 } },
+  sociable: { name: '健談', desc: '愛找人說話，聊完心情特別好', mods: { chat: 1.5, spar: 1.1 }, thoughtMul: { social: 1.6 } },
+  playful: { name: '貪玩', desc: '愛往外跑採藥，坐不住練功', mods: { forage: 1.4, train: 0.7, chat: 1.2 } },
+  gentle: { name: '溫和', desc: '愛下廚照顧人，不愛打鬥', mods: { cook: 1.4, farm: 1.15, spar: 0.6 }, thoughtMul: { fight: 1.5 } },
+  brave: { name: '膽大', desc: '受傷不太放在心上，愛切磋', mods: { spar: 1.4 }, thoughtMul: { fight: 0.4 } },
+  optimist: { name: '樂天', desc: '天塌下來也笑得出來', moodBase: 8 },
+  worrier: { name: '多慮', desc: '小事也掛心', moodBase: -6, thoughtMul: { bad: 1.4 } },
+  glutton: { name: '貪吃', desc: '吃得好心情就好，餓了特別煩', mods: { eat: 1.3 }, thoughtMul: { food: 1.8 } },
+};
+// 想法（記憶）：值、持續秒數、分類（給 thoughtMul 用）
+export const THOUGHTS = {
+  learned:   { text: '學會了新招', v: 15, ttl: 400, tag: 'good' },
+  goodChat:  { text: '和人聊得開心', v: 6, ttl: 150, tag: 'social' },
+  bedSleep:  { text: '睡在床上', v: 5, ttl: 300, tag: 'good' },
+  floorSleep:{ text: '睡破地鋪', v: -5, ttl: 300, tag: 'bad' },
+  hallMeal:  { text: '在膳房吃了熱飯', v: 6, ttl: 200, tag: 'food' },
+  hurt:      { text: '狩獵受傷', v: -12, ttl: 400, tag: 'fight' },
+  wonHunt:   { text: '守住了後山', v: 8, ttl: 300, tag: 'good' },
+  cropLost:  { text: '菜被野豬拱了', v: -5, ttl: 200, tag: 'bad' },
+};
+export const NEED_MOOD = { hunger: [20, -10, 'food'], energy: [30, -8, 'bad'], social: [25, -6, 'social'] };
+export const MOOD = { base: 50, up: 3, down: 2, low: 30, high: 70 }; // 每秒向目標移動；低／高門檻
+export const WORK_ACTS = ['train', 'chop', 'build', 'spar']; // 低落時被壓低的「可延後」工作；種菜煮飯屬求生，不壓，避免餓→低落→不煮的死亡螺旋
+export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat'];
