@@ -1,5 +1,13 @@
 # Coding agent 接手入口
 
+## D52：先規劃主角與小女孩的相處，未授新runtime
+
+擁有人2026-10-25已確認D52：採納PR329 review的近期順序，下一個生活里程碑先規劃**主角與道館收養的小女孩**的聊天、鼓勵與可讀關係變化。主[#337](https://github.com/lalagrass/earth-ascension/issues/337)，[SOCIAL01整包提案](docs/SOCIAL01_BATCH_PROPOSAL.md)／[北極星願景](docs/vision/NORTH_STAR.md)。本次批准方向與文件規劃，具體S1–S4為PO建議待定，**尚未授runtime／門檻數值**，不自啟Grok或預占實作。
+
+M1／#330與#334已completed，HOME02／PR333合dev68d489d9265d32dd101ece5e4b4ee47aa3e2f60f、postCI40128621449五success；砍柴／修繕／雙床已交、新木／工地／床只本局，不重開保存決策或回頭加第三人。grass純遊戲review／dev合併已由[#67正式切換6388938032](https://github.com/lalagrass/earth-ascension/issues/67#issuecomment-6388938032)生效；本次只差異審合PO文件，不重做M1產品驗收，整合後休息。
+
+先有內容交談／有情境鼓勵→可回看的相處事件與變化，親情與共同生活不等於道侶。小女孩沿被收養、受寵、內向而溫柔親切、鼓勵主角的既有設定；住村莊的堂親只偶爾來訪，本包不新增其AI、第三人／招募、戀愛婚姻或新世界核心。設施站位與預約依真需求漸進整理，演武與第二式另選，後山先量路網再定擴圖；新增保存升版與手機適配仍在最後。沿用同一生活入口、長通勤速度差與原玩法／資料，一作者一完整包、集中review、新head只驗差異、必要CI與精簡直接驗證，Mac只真人。
+
 ## D51：M1完成線與grass純遊戲整合責任已批准
 
 擁有人於2026-10-25台北明確批准 **D51**：第一生活里程碑＝已接受生活／成長／武學巡山／S0基線＋**#330 HOME02收尾**；grass接手純遊戲PR的集中review與dev squash merge。總控[#334](https://github.com/lalagrass/earth-ascension/issues/334)，[M1清單](docs/LIFE_M1_EXECUTION_PLAN.md)／[移交與生效規則](docs/GAME_PR_GRASS_TRANSFER_PLAN.md)／[Grok](docs/LIFE_M1_GROK_PROMPT.md)與[grass](docs/LIFE_M1_GRASS_PROMPT.md)提示詞。
