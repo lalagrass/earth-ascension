@@ -1,5 +1,7 @@
 # 可貼給Grok：D45統一生活補給＋生活總覽／武學成長
 
+> **SCENE04接受後的最新規劃**：原兩P2已接受、Earth合dev ec6b2744／postCI40109475112五成功；接續建議[HOME01初始場景＋本309整包](HOME01_BATCH_PROPOSAL.md)，I1–I4仍待擁有人選定。本D45內容／數值保持已批，這次只是整合規劃，不授新地圖重排／核心重建；Grok不要把提案／文件合併當runtime新claim。正式接續以309最新批准及有效作者為準，不沿下方歷史立即開工或重做SCENE04。
+
 > **D46最新接續順序**：擁有人改為先交[SCENE04成熟→初始場景完整設計](SCENE04_HANDOFF.md)／[新Grok提示詞](SCENE04_GROK_PROMPT.md)，主182。PO核對時本309無Grok工程claim／PR，因此本D45批准內容保留、工程順延，先不要依下方歷史「立即開工」新claim；設計集中review後按選定差異接續本包。若核對前確已開工，先回報真head保留該包，再串行設計，不強停覆寫／預占雙claim。本次不改D45數值或增加本包DoD，亦不授新地圖工程。
 
 你是實際主筆Grok。請完整完成[#309／SG-LIFE-03](https://github.com/lalagrass/earth-ascension/issues/309)，讀[LIFE03_HANDOFF](LIFE03_HANDOFF.md)／[D45](DECISIONS_AND_SOURCES.md#d45sg-life-03未開工併修統一生活補給與人物面板2026-10-24)。擁有人已選統一補給、人物面板生活總覽＋武學成長；PO核當時309沒有Grok工程claim／支線／PR，故併修未開工原包，**不要沿舊D44獨立口渴／茶水分＋60提示詞實作**。不是再交研究／畫稿或重做308。
