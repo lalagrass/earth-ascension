@@ -55,12 +55,13 @@ const T = (id, x, y, h, extra = {}) => ({ id, x, y, h, ...extra });
 export const PROPS = Object.freeze([
   // 院落：正堂、側屋、院牆、院門、功能物
   T('dojo_side_house', 1450, 420, 150),
-  T('dojo_main_hall', 1236, 476, 290),
+  T('dojo_hall_s0', 1236, 476, 290), // HOME-01：S0 破道館（同基座、朝向、石階入口；破損態）
   T('court_wall', 1150, 590, 50), T('court_wall', 1322, 590, 50), T('court_wall', 1414, 590, 50), T('court_wall', 1506, 586, 50),
   T('dojo_gate', 1236, 594, 96),
   T('stone_mill', 1410, 548, 46),
   T('woodpile', 1534, 492, 52),
   T('stone_bench', 968, 424, 32, { w: 104, z: 416 }),
+  T('tea_stove', 1022, 486, 34, { w: 44 }), // HOME-01 茶座：TEA_SEAT 站位（1004,480）東側的石座與小爐
   // 松竹樹石：院北與屋後
   T('pine_b', 985, 384, 170, { fade: 0.45 }),
   T('pine_a', 1540, 474, 190, { fade: 0.45 }),

@@ -3,7 +3,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createModel, createClock, RULES, STEP_MS, BOAR_Q, speedsFor } from '../demo/model.mjs';
+import { createModel, createClock, RULES as RULES_D45, STEP_MS, BOAR_Q, speedsFor } from '../demo/model.mjs';
+// HOME-01／D45：新局已無口渴；本檔舊節奏（喝水耗缸、口渴自理）只作舊行為 fixture，明示 thirst:true。新局 D45 斷言見 tea.test.mjs。
+const RULES = { ...RULES_D45, thirst: true };
 import { createRoutes } from '../demo/routes.mjs';
 
 const scene = JSON.parse(readFileSync(new URL('../spikes/shared/scene.json', import.meta.url)));
@@ -15,7 +17,7 @@ const LENGTHS = { water: scene.path.length, herb: r1(geo.routes.herb.length), se
 const B = RULES.boar;
 const ticks = (s) => Math.round(s * 60);
 const run = (m, pred, limit = ticks(3600)) => { for (let i = 0; i < limit; i++) { if (pred(m.view())) return m.view(); m.step(); } throw new Error('沒有等到條件'); };
-const newGame = () => createModel(LENGTHS);
+const newGame = () => createModel(LENGTHS, RULES);
 // 水缸開局就滿：兩人一開始去休閒、院中有空人可派；只改開局水量，不動野豬示意值。
 const FULL = { ...RULES, vatStart: RULES.vatCapacity };
 const idleGame = () => createModel(LENGTHS, FULL);

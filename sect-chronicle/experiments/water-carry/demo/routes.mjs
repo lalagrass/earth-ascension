@@ -49,6 +49,8 @@ export const TRAIN_POSTS = {
   hero: { points: [[962, 512], [990, 540], [1036, 560], [1060, 566]], face: 1, stake: { x: 1086, y: 562 } },
   cousin: { points: [[962, 512], [990, 540], [1054, 572], [1112, 576]], face: 1, stake: { x: 1138, y: 572 } },
 };
+// HOME-01（D45）茶座：S0 院中端點東北、草亭旁一個石座與小爐（一個座位）。獨立短折線，不動任何原路線。
+export const TEA_SEAT = { points: [[962, 512], [984, 494], [1004, 480]], face: 1, stove: { x: 1028, y: 476 } };
 export const GUARD = { points: [[962, 512], [930, 522], [880, 512], [820, 480], [782, 452], [748, 428], [706, 430]] };
 
 export function createRoutes(waterPoints = WATER_POINTS) {
@@ -69,6 +71,13 @@ export function createRoutes(waterPoints = WATER_POINTS) {
     const r = trains[id], p = r.at(Math.max(0, Math.min(1, l.u)));
     const face = l.mode === 'train' ? TRAIN_POSTS[id].face : (l.b < l.a ? -p.dx : p.dx) >= 0 ? 1 : -1;
     return { x: p.x, y: p.y, face, route: r, geo: l.mode, travelled: l.mode === 'train' ? 0 : Math.abs(l.u - l.a) * r.length };
+  }
+  const teaPath = pathTool(TEA_SEAT.points);
+  function teaPlace(l) {
+    const p = teaPath.at(Math.max(0, Math.min(1, l.u)));
+    const still = l.mode === 'brew' || l.mode === 'sip';
+    const face = still ? TEA_SEAT.face : (l.b < l.a ? -p.dx : p.dx) >= 0 ? 1 : -1;
+    return { x: p.x, y: p.y, face, route: teaPath, geo: l.mode, travelled: still ? 0 : Math.abs(l.u - l.a) * teaPath.length };
   }
   const boarPath = pathTool(BOAR.points), guardPath = pathTool(GUARD.points);
   const drinks = { home: pathTool(DRINK.points), hero: pathTool([...SEATS.hero.points].reverse().concat(DRINK.points.slice(1))), cousin: pathTool([...SEATS.cousin.points].reverse().concat(DRINK.points.slice(1))) };
@@ -123,6 +132,7 @@ export function createRoutes(waterPoints = WATER_POINTS) {
     // LP-11：清理中直接用模型在權威 tick 取樣的場景位置（palm.mjs 同一幾何），畫面不另算。
     if (p.drinkLeg) return drinkPlace(id, { ...p.drinkLeg, mode: p.mode });
     if (p.life02 && p.life02.leg) return meetPlace(id, { ...p.life02.leg, mode: p.mode });
+    if (p.tea && p.tea.leg) return teaPlace({ ...p.tea.leg, mode: p.mode });
     if (p.train01 && p.train01.leg) return trainPlace(id, { ...p.train01.leg, mode: p.mode });
     if (p.patrolling) return { x: p.pos.x, y: p.pos.y, face: p.cface, route: null, geo: p.mode, travelled: p.walked }; // SG-PATROL-01：巡山同用模型 pos
     if (p.cleaning) return { x: p.pos.x, y: p.pos.y, face: p.cface, route: null, geo: p.mode, travelled: p.walked };
@@ -138,6 +148,7 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   }
   return { routes, seats, funs, place, of, seatLengths: { hero: seats.hero.length, cousin: seats.cousin.length }, funLengths: { hero: funs.hero.length, cousin: funs.cousin.length },
     boarPath, guardPath, boarAt, guardPlace, boarLengths: { edge: boarEdge, total: boarPath.length, seen: boarSeenD }, boarSeenD, guardLength: guardPath.length,
+    teaPath, teaPlace, teaLength: teaPath.length,
     trains, trainPlace, trainLengths: Object.fromEntries(['hero', 'cousin'].map((id) => [id, trains[id].length])),
     meets, meetPlace, meetLengths: Object.fromEntries(['hero', 'cousin'].map((id) => [id, { total: meets[id].length, home: meetHome[id] }])),
     drinks, drinkPlace, drinkLengths: { home: drinks.home.length, seat: { hero: drinks.hero.length, cousin: drinks.cousin.length } } };

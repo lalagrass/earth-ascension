@@ -151,3 +151,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .train01 { margin-top: 6px; padding: 4px 6px; border-left: 3px solid #8b6b3e; background: rgba(139, 107, 62, .08); font-size: 12px; }
 .train01 .tcells { display: inline-flex; gap: 3px; } .train01 .tcells i { width: 12px; height: 8px; border: 1px solid #8b6b3e; border-radius: 2px; }
 .train01 .tcells i.on { background: #8b6b3e; } .train01 .tcells i.cur { background: repeating-linear-gradient(90deg, #c8a970 0 3px, transparent 3px 6px); }
+/* HOME-01 人物面板：固定資訊＋兩分頁（生活總覽／武學成長）＋可收合小事件 */
+.panel .ptabs { display: flex; gap: 6px; margin: 8px 0 6px; }
+.panel .ptabs .tab.on { background: #4a3a26; color: #fff4dc; }
+.panel .stock { gap: 10px; flex-wrap: wrap; font-size: 12px; }
+.panel .tea { margin-top: 6px; padding: 6px 8px; border-left: 3px solid #8a6a3a; background: rgba(138, 106, 58, .08); }
+.panel .events ul { margin: 4px 0 0 16px; padding: 0; font-size: 12px; max-height: 140px; overflow: auto; }
