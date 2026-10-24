@@ -1,5 +1,7 @@
 # SG-LIFE-03正式工作包：統一生活補給與武學成長
 
+> **D46最新接續順序**：擁有人改為先交[SCENE04成熟→初始場景完整設計](SCENE04_HANDOFF.md)／[新Grok提示詞](SCENE04_GROK_PROMPT.md)，主182。PO核對時本309無Grok工程claim／PR，因此本D45批准內容保留、工程順延，先不要依下方歷史「立即開工」新claim；設計集中review後按選定差異接續本包。若核對前確已開工，先回報真head保留該包，再串行設計，不強停覆寫／預占雙claim。本次不改D45數值或增加本包DoD，亦不授新地圖工程。
+
 主[#309](https://github.com/lalagrass/earth-ascension/issues/309)，來源#75／160／170／188與BL-U02／G01／G05／L01，必要局部維護#215。[D45最新批准](DECISIONS_AND_SOURCES.md#d45sg-life-03未開工併修統一生活補給與人物面板2026-10-24)／[Grok提示詞](LIFE03_GROK_PROMPT.md)／[取捨](LIFE03_MILESTONE_PROPOSAL.md)／[面板研究](CHARACTER_PANEL_RESEARCH.md)。D45在本包取代D44的獨立水分／普通喝水要求；不重問已批准方向，不授其餘backlog。
 
 ## 開工核對與交付方式
