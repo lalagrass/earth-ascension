@@ -6,6 +6,12 @@
 
 若環境未發布，先協助完成設定與確認，不能宣稱已遠端接手，也不能新開本機task作替代。新雲端task不會自動收到整段歷史，以repo／GitHub為準。讀根CONTRIBUTING與AGENTS、sect-chronicle/AGENTS、最新DECISIONS、VISIBLE_DELIVERY_PLAN、VALIDATION_POLICY及上方完整交接。
 
+**這輪只review #326，完成後休息**：這是一次HOME01 A–D集中review，不是永久PO循環或新工程授權。先核PR326最新head／base／CI與已有審查；若已接受／合併，引用結果後結束，不重做。你可自己在Cloud審，或用一個Cloud Codex reviewer，同一PR最多一個有效review任務，不兩邊各審一遍。保留Grok作者與Earth唯一merge。
+
+**用量控制**：先metadata／diff／既有A–D證據與CI，有具體缺口才讀相關程式／做必要反例或一次Cloud桌面操作；復用已核決策，不重讀輸出全部歷史／log／全repo。同head且相關base／gate／證據未變就不重審／重跑；新head只驗差異，有新共用契約／gate／反證才補受影響部分，原必要驗收不可跳過。Earth復用產品結論，只核整合與CI。不要多開reviewer、研究／出圖／開發任務或為量測用量另跑測試，不短間隔輪詢、重送同任務或重啟服務；必要CI最多一次有界等待，未完成記待CI。這是工作限制，不是硬性token預算；有平台實測用量才附，沒有標未量測，不猜數字／保證花費，不購買額度。詳細依完整交接的「用量控制與本輪停止條件」。
+
+**停止點**：通過→在PR／#67交Earth；有阻擋→一次列齊交Grok；環境／權限不通→交已驗／未驗與具體缺口。回報並關自有Cloud頁／服務／程序後，就停止本輪遊戲工作；不自己補修、追作者新head／Earth排隊、接下一包或新增排程／自動喚醒。要重審由我再次喚起，無變化不用通知。保留grass其他責任與Grok開發，不暫停整個Dot。
+
 **權限固定**：你負責遊戲範圍／backlog／工作包、核有效認領、集中審查與交ready結果；Earth PO仍是唯一dev squash merge queue owner，main與未批准產品決策交擁有人。你和雲端reviewer不得合dev/main或更改保護／權限。即使技術帳號有write，也不構成產品merge授權；同帳號留言寫真實主筆／審查者，不能假冒獨立平台approval。透過GitHub PR／#67交Earth持久記錄，別以找不到本機Earth聊天為理由自行合併。
 
 **保留進行中工程**：Grok已認領HOME01／#309，branch codex/home01-s0-tea-grok、自有box /workspace/ea309、原base7ea5ac38，最新claim與續期以issue為準。D47 I1–I4已批，讀HOME01_HANDOFF／HOME01_GROK_PROMPT：完整S0全圖水彩適配＋原活動回接＋D45統一補給／真藥茶＋生活總覽與武學成長，I3選A保權威幾何、速度成長與原玩法，必要局部設施站位接線同包。你不要改他的分支／scope／白名單／驗收／期限、讀未公開成果、換作者、要求重畫已接受SCENE04或等待這次環境移轉；不代領runtime，不另派第二位開發HOME01。這份交接可與Grok不同檔案進行，不作工程前置。
@@ -18,4 +24,4 @@
 
 當前正式試玩最近接受版TRAIN01／PR308 abbee504，唯一入口路徑experiments/water-carry/demo/；現狀請核最新issue，不依賴本機/tmp／聊天ID／檔案路徑。存檔升版／遷移與手機適配最後，既有資料功能不刪；#314–321新核心／新入口／新保存等仍提案。4h是可憑進度續的claim，不是開發總限時，review不續租。一個玩家成果、一作者、一PR；後包要確認範圍，不能預占整串任務。
 
-先回報：你使用的Cloud環境／repo／最新dev、GitHub可讀寫能力與缺口、HOME01最新作者狀態、下一個已批准交付；不要先執行HOME01開發／全測試。之後只有實質交付、阻擋、需我決策才通知；沒有變化不用打卡。這次接手不自動新增排程或永久循環，若要定期／事件追蹤先明列可支援觸發與通知策略。
+先回報：你使用的Cloud環境／repo／最新dev、GitHub可讀寫能力與缺口、HOME01最新作者狀態、本輪#326審查計畫；不要先執行HOME01開發／全測試。先完成本輪集中review與回報就休息；後包規劃／重審／長期追蹤另等我的明確指示，沒有變化不用打卡。
