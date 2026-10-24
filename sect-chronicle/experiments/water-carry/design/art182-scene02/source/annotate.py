@@ -39,16 +39,32 @@ def arrow(d, pts, col, w=8, head=26):
         d.polygon([(mx + head * math.cos(a), my + head * math.sin(a)), (mx + head * .6 * math.cos(a + 2.4), my + head * .6 * math.sin(a + 2.4)),
                    (mx + head * .6 * math.cos(a - 2.4), my + head * .6 * math.sin(a - 2.4))], fill=col)
 
-def legend_panel(h, title, rows, w=1000):
-    p = Image.new('RGB', (w, h), PAPER); d = ImageDraw.Draw(p)
-    d.text((40, 36), title, font=F(44, True), fill=INK)
-    y = 110
+def wrap(text, font, width):
+    """依實際字寬換行（CJK 逐字），回傳行列表。"""
+    out, cur = [], ''
+    for ch in text:
+        if font.getlength(cur + ch) > width and cur:
+            out.append(cur); cur = ch
+        else:
+            cur += ch
+    return out + [cur] if cur else out
+
+def legend_panel(min_h, title, rows, w=1000):
+    """依內容算高度，不再固定裁切；回傳面板（高度≥min_h）。"""
+    f, fb = F(25), F(28, True); items = []; y = 110
     for r in rows:
         if r[0] == '#':
-            d.text((40, y), r[1], font=F(28, True), fill=INK); y += 46; continue
-        n, st, txt = r
-        col = ST[st]; d.ellipse((40, y, 84, y + 44), fill=col); d.text((62, y + 22), str(n), font=F(24, True), fill='white', anchor='mm')
-        d.text((100, y + 22), f'［{st}］{txt}', font=F(25), fill=INK, anchor='lm'); y += 54
+            ls = wrap(r[1], fb, w - 80); items.append(('h', y, ls)); y += 40 * len(ls) + 10; continue
+        n, st, txt = r; ls = wrap(f'［{st}］{txt}', f, w - 140); items.append(('r', y, (n, st, ls))); y += max(54, 36 * len(ls) + 18)
+    p = Image.new('RGB', (w, max(min_h, y + 40)), PAPER); d = ImageDraw.Draw(p)
+    d.text((40, 36), title, font=F(44, True), fill=INK)
+    for k, y, v in items:
+        if k == 'h':
+            for i, t in enumerate(v): d.text((40, y + i * 40), t, font=fb, fill=INK)
+            continue
+        n, st, ls = v; col = ST[st]
+        d.ellipse((40, y, 84, y + 44), fill=col); d.text((62, y + 22), str(n), font=F(24, True), fill='white', anchor='mm')
+        for i, t in enumerate(ls): d.text((100, y + 22 + i * 36), t, font=f, fill=INK, anchor='lm')
     return p
 
 # ---------- A 主景 ----------
@@ -79,7 +95,7 @@ for n, x, y, st, _ in MARK:
     d.text((X, Y), str(n), font=F(26, True), fill='white', anchor='mm')
 rows = [('#', '狀態：綠 現有／藍 已批待做／橘 候選預留／灰 純景觀／紫 更後')] + [(n, st, t) for n, _, _, st, t in MARK]
 lp = legend_panel(lay.height, 'A2 總配置（現有／已批／候選／景觀）', rows, 1150)
-A2 = Image.new('RGB', (lay.width + lp.width, lay.height), PAPER); A2.paste(lay, (0, 0)); A2.paste(lp, (lay.width, 0))
+A2 = Image.new('RGB', (lay.width + lp.width, max(lay.height, lp.height)), PAPER); A2.paste(lay, (0, 0)); A2.paste(lp, (lay.width, 0))
 A2.save(OUT / 'A2-layout-annotated.jpg', quality=86)
 
 # ---------- B 水系 ----------
@@ -118,9 +134,9 @@ if geo_p and geo_p.exists():
 else:
     base = Image.new('RGB', (3200, 2700), (200, 196, 170))
 K = base.width / 1600
-pad = 260
-cv = Image.new('RGB', (base.width + 2 * pad, base.height + 2 * pad), (225, 219, 200)); cv.paste(base, (pad, pad))
-d = ImageDraw.Draw(cv, 'RGBA'); P = lambda x, y: (pad + x * K, pad + y * K)
+pad, padR = 820, 1180  # 依框外標籤實際寬度留白（左：西林；右：山門／廚房）
+cv = Image.new('RGB', (base.width + pad + padR, base.height + 2 * 260 + 140), (225, 219, 200)); cv.paste(base, (pad, 260))
+d = ImageDraw.Draw(cv, 'RGBA'); P = lambda x, y: (pad + x * K, 260 + y * K)
 d.rectangle((*P(0, 0), *P(1600, 1350)), outline=(200, 30, 30), width=8)
 tag(d, *P(10, -50), '目前 runtime 世界 1600×1350（權威，不改）', (200, 30, 30), 34)
 for k, col in [('water', (20, 90, 200)), ('herb', (46, 125, 50)), ('guard', (120, 60, 20)), ('boar', (90, 50, 30))]:
@@ -163,18 +179,24 @@ for x, y in [(420, 660), (1215, 640), (1960, 640)]:
     tag(d, x, y, '床側站位', (20, 120, 60), 20, 'mm')
 note = ['兩床＝兩名額、兩個真站位；不是同床擠兩人。改建保留房間 ID 與 bed-A／原主人引用，只新增 bed-B（參考 OpenKeeper 改建保留 lair 實體的思路，不搬程式／圖）。',
         '認領者／當前使用者／短時預約者分開；本包不新增睡眠、恢復率、缺床懲罰，也不取代石凳恢復。若搬床：原主人物品隨床遷移，使用中不得拆。']
-bar = Image.new('RGB', (dm.width, 150), PAPER); bd = ImageDraw.Draw(bar)
-for i, t in enumerate(note): bd.text((40, 26 + i * 56), t, font=F(27), fill=INK)
-C1 = Image.new('RGB', (dm.width, dm.height + 150), PAPER); C1.paste(dm, (0, 0)); C1.paste(bar, (0, dm.height)); C1.save(OUT / 'C1-dorm-three-stages.jpg', quality=86)
+lines = [l for t in note for l in wrap(t, F(27), dm.width - 80)]; bh = 40 + 44 * len(lines)
+bar = Image.new('RGB', (dm.width, bh), PAPER); bd = ImageDraw.Draw(bar)
+for i, t in enumerate(lines): bd.text((40, 20 + i * 44), t, font=F(27), fill=INK)
+C1 = Image.new('RGB', (dm.width, dm.height + bh), PAPER); C1.paste(dm, (0, 0)); C1.paste(bar, (0, dm.height)); C1.save(OUT / 'C1-dorm-three-stages.jpg', quality=86)
 
 # ---------- D 分鏡 ----------
 SB = {'sb-water.jpg': ('D1 長路挑水', ['出院門、空桶下坡入竹林（腳在路上）', '過溪橋：在橋板上，前欄擋腿，不入水', '潭東石階：彎身取水，桶到水面、腳不濕']),
       'sb-patrol.jpg': ('D2 巡山進退（#290 已批，畫稿示意）', ['S0：竹護欄端點出巡、路標', '竹坡／石坳：先看見野豬與林鼠再應對', '同路回院才算完成（真回程）']),
       'sb-dorm.jpg': ('D3 院落入房（宿舍候選）', ['夜間穿院、經水缸往側屋宿舍；屋簷不吞人物', '門口台階推門，燈光', '房內雙床、走道通暢，站在自己床側（bed-A）'])}
 for f, (title, caps) in SB.items():
-    im = up(f); bar = Image.new('RGB', (im.width, 130), PAPER); bd = ImageDraw.Draw(bar)
-    bd.text((30, 14), title + '（畫稿／示意，不是可玩版本）', font=F(32, True), fill=INK)
-    for i, c in enumerate(caps): bd.text((30 + i * im.width // 3, 72), f'{i + 1}. {c}', font=F(25), fill=INK)
-    o = Image.new('RGB', (im.width, im.height + 130), PAPER); o.paste(im, (0, 0)); o.paste(bar, (0, im.height))
+    im = up(f); cw = im.width // 3 - 60
+    tl = wrap(title + '（畫稿／示意，不是可玩版本）', F(32, True), im.width - 60)
+    cl = [wrap(f'{i + 1}. {c}', F(25), cw) for i, c in enumerate(caps)]
+    bh = 24 + 44 * len(tl) + 36 * max(map(len, cl)) + 20
+    bar = Image.new('RGB', (im.width, bh), PAPER); bd = ImageDraw.Draw(bar)
+    for j, t in enumerate(tl): bd.text((30, 14 + j * 44), t, font=F(32, True), fill=INK)
+    for i, ls in enumerate(cl):
+        for j, t in enumerate(ls): bd.text((30 + i * im.width // 3, 24 + 44 * len(tl) + j * 36), t, font=F(25), fill=INK)
+    o = Image.new('RGB', (im.width, im.height + bh), PAPER); o.paste(im, (0, 0)); o.paste(bar, (0, im.height))
     o.save(OUT / f"{title.split()[0]}-{f.replace('.jpg', '')}.jpg", quality=84)
 print('ok', sorted(p.name for p in OUT.iterdir()))
