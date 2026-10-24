@@ -2,6 +2,7 @@
 // 只有玩家按「存檔／讀檔」才動：沒有自動讀、自動存、雲端、離線收益或舊版遷移。
 // 讀檔流程：解析 → 版本與相容識別 → 結構 → 數值 → 資源／任務一致性，全部通過才交給 model.restore 整份替換；任何一步失敗都不動目前這局。
 import { JOBS, DRINK_MODES, WATER_Q, BOAR_MODE, RAT_MODE } from './model.mjs';
+import { RATS, SKILLS } from './palm.mjs';
 
 export const SAVE_KEY = 'earth-ascension:life01-demo:save';
 export const SAVE_VERSION = 1;
@@ -75,7 +76,15 @@ function checkValues(st, model) {
     for (const j of Object.keys(JOBS)) range(p.done[j], 0, Number.MAX_SAFE_INTEGER, `${at}.done.${j}`, true);
     range(p.trips, 0, Number.MAX_SAFE_INTEGER, `${at}.trips`, true);
     if (p.fix != null && !['wait', 'go'].includes(p.fix)) bad('value', `${at}.fix 不合法`);
+    // 規則定義的人物 enum／範圍：掌法、反應快慢、面向、成長經驗與初始等級。
+    if (!Object.hasOwn(SKILLS, p.palm)) bad('value', `${at}.palm 不是已知掌法`);
+    for (const k of ['react', 'upReact']) if (!['early', 'late'].includes(p[k])) bad('value', `${at}.${k} 不合法`);
+    if (p.cface !== -1 && p.cface !== 1) bad('value', `${at}.cface 不合法`);
+    range(p.initialLevel, 1, r.maxLevel, `${at}.initialLevel`, true);
+    range(p.xp, 0, p.level < r.maxLevel ? r.tripsToNext[p.level - 1] - 1 : Math.max(...r.tripsToNext), `${at}.xp`, true);
+    range(p.walked, 0, Number.MAX_VALUE, `${at}.walked`);
   }
+  for (const k of ['useMs', 'contact', 'upUsed']) range(st[k], 0, Number.MAX_SAFE_INTEGER, k, true);
   // 資源／任務一致：在途預約＝正在挑擔的人數；實存＋在途不超過容量；唯一名額指向真的持有者。
   if (st.inFlight !== carryW || st.herbInFlight !== carryH) bad('consistency', '在途預約與正在挑擔的人數不符');
   if (st.vat + st.inFlight > r.vatCapacity || st.herbs + st.herbInFlight > r.herbCapacity) bad('consistency', '實存＋在途超過容量');
@@ -91,10 +100,13 @@ function checkValues(st, model) {
   const b = st.boar;
   if (!Object.hasOwn(BOAR_MODE, b.mode)) bad('value', `boar.mode 不是已知狀態：${JSON.stringify(b.mode)}`);
   range(b.marks, 0, r.boar.maxMarks, 'boar.marks', true);
-  for (const k of ['e', 't', 'd', 'steps', 'need', 'visit', 'hits']) range(b[k], 0, Number.MAX_SAFE_INTEGER, `boar.${k}`, true);
+  for (const k of ['steps', 'need', 'visit', 'hits']) range(b[k], 0, Number.MAX_SAFE_INTEGER, `boar.${k}`, true);
+  for (const k of ['e', 't', 'd']) range(b[k], 0, Number.MAX_VALUE, `boar.${k}`);
   if (b.leg != null && !isObj(b.leg)) bad('value', 'boar.leg 型別錯誤');
   st.rats.forEach((rt, i) => {
     if (!Object.hasOwn(RAT_MODE, rt.mode)) bad('value', `rats[${i}].mode 不是已知狀態`);
+    if (rt.id !== RATS[i].id || rt.kind !== RATS[i].kind) bad('value', `rats[${i}] 身份不符（id／種類須與本試玩固定名單相同）`);
+    range(rt.exit, 0, Number.MAX_SAFE_INTEGER, `rats[${i}].exit`, true);
     if (!num(rt.x) || !num(rt.y)) bad('value', `rats[${i}] 位置不合法`);
   });
   const sh = st.shadow;
@@ -129,9 +141,10 @@ export function validateSave(raw, model, template) {
 export function loadInto(model, raw, template) {
   try {
     const st = validateSave(raw, model, template);
-    // 最後一道：在目前模型上試跑一步，任何例外都先還原原局再拒絕；成功則重新整份套用候選（試跑的那一步不保留）。
+    // 上面的 schema／enum／範圍／ID 驗證才是主防線；這裡只是保險：套候選後讀一次 view 並試跑一步再讀 view，
+    // 任何例外都先還原原局再拒絕；成功則重新整份套用候選（試跑的那一步不保留）。
     const live = model.exportState(Infinity);
-    try { model.restore(st); model.step(); } catch (e) { model.restore(live); bad('structure', `存檔內容無法運行（${e.message}）`); }
+    try { model.restore(st); model.view(); model.step(); model.view(); } catch (e) { model.restore(live); bad('structure', `存檔內容無法運行（${e.message}）`); }
     model.restore(st);
     return { ok: true, text: `已讀檔（第 ${(st.tick / 60).toFixed(1)} 遊戲秒）；已暫停` };
   } catch (e) {

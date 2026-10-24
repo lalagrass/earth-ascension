@@ -178,6 +178,9 @@ test('壞檔（review 5632832438）：必要物件改 null、未知 enum 一律�
     'boar.mode 未知': (st) => { st.boar.mode = 'teleport'; },
     'rats[0].mode 未知': (st) => { st.rats[0].mode = 'fly'; },
     'shadow.job 未知': (st) => { st.shadow.job = 'gold'; },
+    'hero.palm 未知（review 5635659721）': (st) => { st.people.hero.palm = 'teleport'; },
+    'hero.xp 負數': (st) => { st.people.hero.xp = -100; },
+    'rats[0].id 未知': (st) => { st.rats[0].id = 999; },
   };
   for (const [name, mut] of Object.entries(cases)) {
     const env = JSON.parse(JSON.stringify(good)); mut(env.state);
@@ -186,10 +189,13 @@ test('壞檔（review 5632832438）：必要物件改 null、未知 enum 一律�
     assert.equal(r.ok, false, `${name} 應被拒絕`);
     assert.equal(JSON.stringify(m.exportState(Infinity)), before, `${name} 拒絕後目前這局不變`);
     const t = m.state.tick; m.step(); assert.equal(m.state.tick, t + 1, `${name} 拒絕後仍能續 tick`);
+    assert.ok(m.view().people.hero, `${name} 拒絕後 view 正常`);
   }
   // 合法檔：讀入後與存檔時逐欄相同，並與同一檔另一份重放一致。
   const r = S.loadInto(m, JSON.stringify(good), tpl);
   assert.equal(r.ok, true, r.text);
+  assert.deepEqual(m.exportState(S.LOG_KEEP), good.state, '合法讀檔同 tick、原狀態');
+  m.view();
   const twin = fresh(); assert.equal(S.loadInto(twin, JSON.stringify(good), tpl).ok, true);
   run(m, 60); run(twin, 60);
   assert.deepEqual(m.exportState(), twin.exportState());
