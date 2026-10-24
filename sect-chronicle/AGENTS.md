@@ -1,5 +1,13 @@
 # Coding agent 接手入口
 
+## D43目前下一整包：SG-TRAIN-01已批准
+
+擁有人明確同意T1–T4，主[#305](https://github.com/lalagrass/earth-ascension/issues/305)，讀[正式包](docs/TRAIN01_HANDOFF.md)／[Grok提示詞](docs/TRAIN01_GROK_PROMPT.md)。LIFE02／PR302＋304已接受／合dev5dd0222／postCI成功並發布同8800，不重做下方D42或場景。**本批准文件非作者接受→Earth合dev／postCI後**Grok本人305新claim／當時最新dev新codex支線、自有隔離工作區，沒有代啟或預占工程。
+
+一Grok完整訓練模型／場景動作／成長回饋／最小UI／原清鼠巡山接線一主PR，做到A–D完成再交回。已批准示意12秒完整單位／6單位／每秒1精力、原掌法novice→adept節奏；必要自理後只續有效目標、達標返院休息待命、最新改派／停工不被搶回，原當趟資源進度保留。新進度／目標限本局，結果沿原palm合法欄位，不升v3或改life-save；最小guard／載入原子性、移除玩家fixture UI但保留測試API依正式包。原幾何／長通勤／體態速度與玩法不變，手機／新增保存最後。
+
+必要指令意圖局部整理同包，不建通用架構；四組驗收／白名單依正式包，集中review、直接反例／證據復用、一頁一服務清理、Earth唯一queue與單一試玩版本保留。無2h／4h開發總限時，4h為可附具體進度續claim，review／queue不續租；達標停，不啟後包。
+
 ## D42已批准：SG-LIFE-02自主補水與一次同門招呼
 
 擁有人已確認P1–P4，主[#300](https://github.com/lalagrass/earth-ascension/issues/300)，讀[正式工作包](docs/LIFE02_HANDOFF.md)／[Grok提示詞](docs/LIFE02_GROK_PROMPT.md)。SCENE-03／PR298已接受、Earth合dev ef84c60／postCI40077720968成功並更新唯一8800，不重做下方歷史等待。批准即時有效，正式包公開後Grok核無重疊作者、本人300新claim／當時最新dev新codex支線、自有隔離工作區；文件queue不另加開工gate，PO文件claim不占runtime，未代啟bot。
