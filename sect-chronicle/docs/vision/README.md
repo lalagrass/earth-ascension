@@ -6,6 +6,7 @@
 
 | 文件 | 內容與用途 |
 |---|---|
+| [破道館到小門派：重新架構與系統設計總藍圖](SECT_LIFE_REDESIGN_MASTERPLAN.md) | 整合五支柱、Smart Object 模擬核心、SCENE-04 七大區域擴建、三層性格與三問心印、同圖武學與塔防演武的完整架構與 S0–S6 路線圖 |
 | [北極星：門派生活五支柱](NORTH_STAR.md) | 原話／五支柱、M1完成狀態與D52落地順序；方向選定與工程授權分開 |
 | [SOCIAL01：主角與小女孩的相處](../SOCIAL01_HANDOFF.md) | D53 S1–S4已批准：真對談／鼓勵／本局相處事件，A–D整包工程；[Grok提示詞](../SOCIAL01_GROK_PROMPT.md)，[原提案](../SOCIAL01_BATCH_PROPOSAL.md)留沿革 |
 | [山間道長期願景](SHANJIANDAO_DRAFT.md) | 現代山村、師徒生活、復甦與門派發展；原意、PO 建議、現況差異與待決策 |
