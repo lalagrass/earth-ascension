@@ -1,5 +1,21 @@
 # 決策、來源與風險
 
+## D48：遊戲PO與review預設雲端執行（2026-10-25）
+
+決策者：專案擁有人，台北2026-10-25於遊戲PO聊天要求：
+
+> 好，幫我先設定 earth-ascension 的雲端環境，整理遊戲 PO／review 交接文件和給 Dot 的提示詞，保留 Earth PO 唯一合併權限，不影響 Grok 的 HOME-01 開發；預設都在雲端執行，Mac 只留真人試玩。
+
+[環境設定](CLOUD_REVIEW_ENVIRONMENT.md)／[完整交接](CLOUD_PO_HANDOFF.md)／[給Dot提示詞](DOT_GAME_PO_PROMPT.md)。本有限批准移轉遊戲PO／review執行位置，不更動CONTRIBUTING的Earth PO唯一queue／main發布與產品決策權、不自動改派HOME01或授新玩法。
+
+- Dot／遊戲PO與必要review任務預設Cloud；純文件不啟遊戲、靜態圖雲端檢視，必要直接反例／一次畫面流程也在雲端。Local／Worktree或由Dot調Mac不當作已遠端；環境／工具不足回報缺口，不無聲回本機。
+- Earth仍唯一dev squash merge owner，復用遊戲PO／作者未變證據，核當前head/base／merge與必要CI／postCI，不重跑同一套遊戲。技術GitHub write權不等合併角色授權；不另設第二queue owner。
+- Mac只使用者真人試玩；工程接受／Earth合dev／postCI後交接受SHA／同步說明，由使用者發起試玩更新，雲端PO不自動部署Mac8800／調Mac工具／新增本機服務。單一接受版本與資料來源／作者worktree保留，既有用戶頁／服務不擅停。
+- Grok HOME01已有效認領6386685609，原branch codex/home01-s0-tea-grok／box /workspace/ea309、D47 scope／白名單／A–D與續期規則保持。新PO文件與設定不重設原claim，不要求他等雲端發布／多交證據、不讀未公開成果或派第二主筆。
+- GitHub repo授權、雲端設定／Publish與PO實際接手分層記錄。設定可單獨完成，不把repo文件合併宣稱Cloud已發布；新GitHub App授權由使用者親自操作，環境只選本repo。不上傳token／cookie、不變其他repo／環境權限，不自動新增排程或常駐agent循環。
+
+整包交付、集中review／原作者集中補修、精簡驗證與一頁一服務清理保持；存檔升版與手機最後。此次文件可獨立審合dev，純文件不啟本機測試／server／8800、不影響HOME01 PR或作者base；最新dev若只多這些文件，原工程證據復用、不強迫Grok為文件更新重跑。
+
 ## D47：HOME-01 I1–I4批准（2026-10-25）
 
 決策者：專案擁有人，台北日期2026-10-25於遊戲PO聊天明確要求：

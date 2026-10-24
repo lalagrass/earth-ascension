@@ -1,11 +1,16 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+## D48：遊戲PO／review預設雲端，Mac只真人試玩
+
+擁有人2026-10-25已批准設定earth-ascension雲端環境、[遊戲PO／review交接](CLOUD_PO_HANDOFF.md)與[Dot提示詞](DOT_GAME_PO_PROMPT.md)。環境規格／帳號端實際完成狀態見[CLOUD_REVIEW_ENVIRONMENT](CLOUD_REVIEW_ENVIRONMENT.md)。PO規劃、diff／圖稿審查與必要驗證預設在Cloud，不自動轉回Mac；Earth PO保唯一dev合併權，復用集中review證據；Mac只使用者真人試玩，舊「PO自動更新Mac8800」改交接受SHA／同步說明、由使用者發起。設定／授權／Publish與實際接手分開記，不能拿文件merge當環境已發布。
+
+Grok已認領#309 HOME01（claim6386685609、codex/home01-s0-tea-grok、box /workspace/ea309），原scope／期限／D47 A–D與開發不因PO移轉改變，不把本環境或文件加成HOME01前置。這次只不同檔案交接，未代啟Dot／其他reviewer、排程或永久循環；原整包交付／精簡差異驗證／清理／單一試玩版本、手機與新增保存末位保留。下方本機路徑與部署的歷史流程依本節更新。
+
 ## D36目前批准與接手（2026-10-24）
 
 擁有人已批准#279／SG-LIFE-01的M1–M4及同Grok多批次做到完成：先PR278美術兩P2補修，再連續飲水自理與最小本地存讀，下次集中review。以[正式工作包](LIFE01_HANDOFF.md)／[最新提示詞](LIFE01_GROK_PROMPT.md)為準；下方M1–M4待批准／美術完成就停止的文字是原提案與歷史範圍，不再作當前阻擋。新增功能仍等本正式文件非作者接受／Earth合dev／postCI後本人279新claim。
 
 本輪候選串接允許同Grok自校D35後，新支線從最新dev普通merge自己checkpoint、標depends278，不逐內部批次空等；PR278維持美術唯一主PR，飲水＋存讀另同一完整主PR。這不允許自合dev／發布／改8800，未審候選不宣稱接受；下次非作者集中review後Earth按依賴整合。無執行總限時、達標早停，4h有效租期／必要差異驗證、單頁清理與單版本維持。
-
 
 ## D35最新並行：Gemini LP17保留，Grok A出圖／B續接
 

@@ -1,5 +1,11 @@
 # 遊戲局部驗證政策：必要、直接、可復用
 
+## D48：遊戲PO／review預設雲端，Mac只真人試玩
+
+擁有人2026-10-25已批准設定earth-ascension雲端環境、[遊戲PO／review交接](CLOUD_PO_HANDOFF.md)與[Dot提示詞](DOT_GAME_PO_PROMPT.md)。環境規格／帳號端實際完成狀態見[CLOUD_REVIEW_ENVIRONMENT](CLOUD_REVIEW_ENVIRONMENT.md)。PO規劃、diff／圖稿審查與必要驗證預設在Cloud，不自動轉回Mac；Earth PO保唯一dev合併權，復用集中review證據；Mac只使用者真人試玩，舊「PO自動更新Mac8800」改交接受SHA／同步說明、由使用者發起。設定／授權／Publish與實際接手分開記，不能拿文件merge當環境已發布。
+
+Grok已認領#309 HOME01（claim6386685609、codex/home01-s0-tea-grok、box /workspace/ea309），原scope／期限／D47 A–D與開發不因PO移轉改變，不把本環境或文件加成HOME01前置。這次只不同檔案交接，未代啟Dot／其他reviewer、排程或永久循環；原整包交付／精簡差異驗證／清理／單一試玩版本、手機與新增保存末位保留。下方本機路徑與部署的歷史流程依本節更新。
+
 依[D30](DECISIONS_AND_SOURCES.md#d30桌面生活優先平台末位與精簡驗證2026-10-23)，由擁有人要求精簡遊戲開發的冗餘驗證。適用生活版切片、畫稿與PO review；根[貢獻契約](../../CONTRIBUTING.md)／[測試政策](../../docs/testing-policy.md)的必要CI、Earth高風險與正式發布驗收保留。本文件不修改workflow、分支保護、根測試或既有驗收結論。
 
 ## 每類改動只驗直接風險
