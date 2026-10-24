@@ -1,0 +1,110 @@
+{
+ "dead_log": {
+  "file": "dead_log.png",
+  "px": [
+   150,
+   80
+  ],
+  "src": "design/home02/source/home02_sprites.py",
+  "origin": "HOME-02 新繪（Pillow＋NumPy 決定性水彩）"
+ },
+ "wood_bundle": {
+  "file": "wood_bundle.png",
+  "px": [
+   56,
+   28
+  ],
+  "src": "design/home02/source/home02_sprites.py",
+  "origin": "HOME-02 新繪（Pillow＋NumPy 決定性水彩）"
+ },
+ "woodpile_0": {
+  "file": "woodpile_0.png",
+  "px": [
+   90,
+   64
+  ],
+  "src": "design/home02/source/home02_sprites.py",
+  "origin": "HOME-02 新繪（Pillow＋NumPy 決定性水彩）"
+ },
+ "woodpile_1": {
+  "file": "woodpile_1.png",
+  "px": [
+   90,
+   64
+  ],
+  "src": "design/home02/source/home02_sprites.py",
+  "origin": "HOME-02 新繪（Pillow＋NumPy 決定性水彩）"
+ },
+ "woodpile_2": {
+  "file": "woodpile_2.png",
+  "px": [
+   90,
+   64
+  ],
+  "src": "design/home02/source/home02_sprites.py",
+  "origin": "HOME-02 新繪（Pillow＋NumPy 決定性水彩）"
+ },
+ "woodpile_3": {
+  "file": "woodpile_3.png",
+  "px": [
+   90,
+   64
+  ],
+  "src": "design/home02/source/home02_sprites.py",
+  "origin": "HOME-02 新繪（Pillow＋NumPy 決定性水彩）"
+ },
+ "dorm_broken": {
+  "file": "dorm_broken.png",
+  "px": [
+   220,
+   170
+  ],
+  "src": "design/home02/source/home02_sprites.py",
+  "origin": "HOME-02 新繪（Pillow＋NumPy 決定性水彩）"
+ },
+ "dorm_building": {
+  "file": "dorm_building.png",
+  "px": [
+   220,
+   170
+  ],
+  "src": "design/home02/source/home02_sprites.py",
+  "origin": "HOME-02 新繪（Pillow＋NumPy 決定性水彩）"
+ },
+ "dorm_done": {
+  "file": "dorm_done.png",
+  "px": [
+   220,
+   170
+  ],
+  "src": "design/home02/source/home02_sprites.py",
+  "origin": "HOME-02 新繪（Pillow＋NumPy 決定性水彩）"
+ },
+ "bed": {
+  "file": "bed.png",
+  "px": [
+   70,
+   34
+  ],
+  "src": "design/home02/source/home02_sprites.py",
+  "origin": "HOME-02 新繪（Pillow＋NumPy 決定性水彩）"
+ },
+ "quilt": {
+  "file": "quilt.png",
+  "px": [
+   52,
+   18
+  ],
+  "src": "design/home02/source/home02_sprites.py",
+  "origin": "HOME-02 新繪（Pillow＋NumPy 決定性水彩）"
+ },
+ "chip": {
+  "file": "chip.png",
+  "px": [
+   16,
+   10
+  ],
+  "src": "design/home02/source/home02_sprites.py",
+  "origin": "HOME-02 新繪（Pillow＋NumPy 決定性水彩）"
+ }
+}

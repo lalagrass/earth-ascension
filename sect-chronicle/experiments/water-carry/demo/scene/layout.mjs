@@ -135,6 +135,8 @@ export const VIEWS = Object.freeze({
   west: { label: '西坡', x: 640, y: 460, zoom: 1.5 },
   herb: { label: '藥圃', x: 1360, y: 740, zoom: 1.3 },
   road: { label: '長路', x: 640, y: 800, zoom: 0.9 },
+  dorm: { label: '寢舍', x: 1080, y: 690, zoom: 1.7 }, // SG-HOME-02：寢舍工地與兩床
+  woods: { label: '林緣', x: 880, y: 420, zoom: 1.7 }, // SG-HOME-02：枯木砍柴點
   source: { label: '泉口', x: 930, y: 800, zoom: 1.5 },
   bridge: { label: '溪橋', x: 850, y: 1010, zoom: 1.5 },
   spring: { label: '泉眼', x: 400, y: 1225, zoom: 1.4 },
