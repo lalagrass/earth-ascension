@@ -1,6 +1,6 @@
 # SG-SOCIAL-01：主角與小女孩的交談、鼓勵與相處變化
 
-**狀態：D52方向／規劃已確認，S1–S4具體機制待選；不是runtime開工契約。** 主[#337](https://github.com/lalagrass/earth-ascension/issues/337)，來源[PR329](https://github.com/lalagrass/earth-ascension/pull/329)／#319／188／152，願景見[北極星](vision/NORTH_STAR.md)。Codex／遊戲PO，2026-10-25台北。M1以dev68d489d／postCI40128621449五success完成，本包不追溯改M1 DoD。
+**狀態：原D52提案沿革。擁有人已於2026-10-25批准D53／S1–S4，工程以[SOCIAL01正式包](SOCIAL01_HANDOFF.md)／[Grok提示詞](SOCIAL01_GROK_PROMPT.md)為準；下方待選／未授工程／候選數值文字是當時紀錄，不作現在開工阻擋。** 主[#337](https://github.com/lalagrass/earth-ascension/issues/337)，來源[PR329](https://github.com/lalagrass/earth-ascension/pull/329)／#319／188／152，願景見[北極星](vision/NORTH_STAR.md)。Codex／遊戲PO，2026-10-25台北。M1以dev68d489d／postCI40128621449五success完成，本包不追溯改M1 DoD。
 
 ## 玩家成果與角色
 
@@ -18,7 +18,7 @@
 
 上列是建議流程，選定S1–S4後才凍結正式工作包。畫面設計與程式／資料／必要局部整理可在同一工程包完成，不另開逐張稿件簽核或多agent接力。
 
-## S1–S4：待擁有人選定，推薦方案與取捨
+## D52當時的S1–S4推薦與取捨（已由D53正式包定案）
 
 | 項目 | PO推薦 | 取捨／另一選項 |
 |---|---|---|
