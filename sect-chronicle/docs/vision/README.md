@@ -7,7 +7,7 @@
 | 文件 | 內容與用途 |
 |---|---|
 | [北極星：門派生活五支柱](NORTH_STAR.md) | 原話／五支柱、M1完成狀態與D52落地順序；方向選定與工程授權分開 |
-| [SOCIAL01：主角與小女孩的相處](../SOCIAL01_BATCH_PROPOSAL.md) | 下一里程碑規劃：聊天、鼓勵與可讀關係變化；S1–S4待選，未授runtime |
+| [SOCIAL01：主角與小女孩的相處](../SOCIAL01_HANDOFF.md) | D53 S1–S4已批准：真對談／鼓勵／本局相處事件，A–D整包工程；[Grok提示詞](../SOCIAL01_GROK_PROMPT.md)，[原提案](../SOCIAL01_BATCH_PROPOSAL.md)留沿革 |
 | [山間道長期願景](SHANJIANDAO_DRAFT.md) | 現代山村、師徒生活、復甦與門派發展；原意、PO 建議、現況差異與待決策 |
 | [人格、命譜與卦象草案](PERSONALITY_DESTINY_DRAFT.md) | 人格呈現／行為偏好、命格天賦、判詞、占卜與事件的責任及取捨 |
 | [村民生活與邀請入門草案](NPC_LIFE_RECRUITMENT_DRAFT.md) | NPC 的追求、交往與可知資訊、入門意願／安置及非弟子合作 |
