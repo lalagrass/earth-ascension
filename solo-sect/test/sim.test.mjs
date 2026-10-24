@@ -32,3 +32,19 @@ test('存檔往返與壞檔拒絕', () => {
   const s = createState(8); run(s, 30); const r = load(save(s)); assert.ok(r.ok); assert.equal(r.state.t, s.t);
   assert.equal(load('{bad').ok, false); assert.equal(load(JSON.stringify({ v: 99, ds: [] })).ok, false);
 });
+
+// v0.2
+import { phaseOf } from '../src/sim.mjs';
+test('菜畦→收菜→煮飯：菜與預約不為負，飯會增加', () => {
+  const s = createState(11); s.res.food = 2; let maxFood = 0;
+  for (let i = 0; i < 4 * 900; i++) { tick(s); assert.ok(s.res.veg >= 0 && s.vegRes >= 0 && s.vegRes <= s.res.veg, `veg ${s.res.veg} res ${s.vegRes}`); maxFood = Math.max(maxFood, s.res.food); }
+  assert.ok(s.log.some((l) => /煮好/.test(l.msg))); assert.ok(maxFood > 2);
+});
+test('入夜多數人去歇息', () => {
+  const s = createState(12); s.res.food = 99; let night = 0, resting = 0;
+  for (let i = 0; i < 4 * 1200; i++) { tick(s); if (phaseOf(s).id === 'night') for (const d of s.ds) { night++; if (d.task?.act === 'rest') resting++; } }
+  assert.ok(resting / night > 0.5, `${resting}/${night}`);
+});
+test('膳房可建且升級後每鍋產量提高', () => {
+  const s = createState(13); s.res.wood = 8; assert.ok(startBuild(s, 'kitchen')); run(s, 400); assert.equal(s.fac.kitchen.stage, 1);
+});

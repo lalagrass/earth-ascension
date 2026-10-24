@@ -27,9 +27,10 @@ export const FACILITIES = [
     { name: '小寢舍', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, cost: { wood: 6 }, work: 18 },
   ] },
   { id: 'kitchen', name: '膳房', node: 'kitchen', stages: [
-    { name: '露天灶', sprite: 'vat', offers: ['eat'] },
+    { name: '露天灶', sprite: 'vat', offers: ['cook', 'eat'], cookDur: 12, cookYield: 3, mealBonus: 0 },
+    { name: '膳房', sprite: 'kitchen_s1', offers: ['cook', 'eat'], cookDur: 6, cookYield: 4, mealBonus: 15, cost: { wood: 8 }, work: 20 },
   ] },
-  { id: 'veg', name: '菜園', node: 'veg', stages: [{ name: '荒地菜畦', sprite: 'grass', offers: ['farm'] }] },
+  { id: 'veg', name: '菜園', node: 'veg', stages: [{ name: '荒地菜畦', sprite: 'grass', offers: ['farm'], plots: 4 }] },
   { id: 'herb', name: '藥園', node: 'herb', stages: [{ name: '野藥圃', sprite: 'herb', offers: ['forage'] }] },
   { id: 'forest', name: '林緣枯木', node: 'forest2', stages: [{ name: '枯木', sprite: 'log', offers: ['chop'] }] },
   { id: 'store', name: '院倉', node: 'court', stages: [{ name: '柴堆', sprite: 'woodpile', offers: ['chat'] }] },
@@ -39,13 +40,15 @@ export const FACILITIES = [
 export const ACTIVITIES = {
   rest:   { name: '歇息', dur: 10, need: { energy: 'rate' } },
   eat:    { name: '用飯', dur: 5, use: { food: 1 }, need: { hunger: 60 } },
-  farm:   { name: '種菜', dur: 10, energy: -8, skill: { farming: 6 }, carry: { food: 2 } },
+  farm:   { name: '種菜', dur: 8, energy: -8, skill: { farming: 6 } }, // 播種或收成，見 sim plots
+  cook:   { name: '煮飯', dur: 0, energy: -3, skill: { cooking: 6 } }, // dur 由灶階段決定
   forage: { name: '採藥', dur: 8, energy: -6, skill: { herbal: 6 }, carry: { herb: 1 } },
   chop:   { name: '砍柴', dur: 8, energy: -8, skill: { strength: 5 }, carry: { wood: 1 } },
   train:  { name: '練掌', dur: 10, energy: -10, skill: { palm: 5 } },
   learn:  { name: '聽師父講武', dur: 8, energy: -2, skill: { palm: 3 }, social: 10 },
   build:  { name: '施工', dur: 6, energy: -6, skill: { strength: 2 } },
   chat:   { name: '聊天', dur: 6, social: 35 },
+  deliver: { name: '送回院倉', dur: 0 },
 };
 
 // 武學：熟練門檻解鎖；範圍/冷卻/傷害由 palm 技能放大
@@ -64,10 +67,22 @@ export const WAVES = [
 ];
 
 export const DISCIPLES = [
-  { id: 'hero', name: '主角', adult: true, sprite: 'hero', skills: { palm: 10, strength: 10, farming: 5, herbal: 5, agility: 10 }, traits: { diligent: 1.2 } },
-  { id: 'senior', name: '林師姐', adult: true, sprite: 'senior', skills: { palm: 5, strength: 5, farming: 15, herbal: 10, agility: 12 }, traits: { social: 1.3 } },
-  { id: 'cousin', name: '堂弟', adult: false, sprite: 'cousin', skills: { palm: 0, strength: 2, farming: 3, herbal: 8, agility: 15 }, traits: { playful: 1.4 } },
+  { id: 'hero', name: '主角', adult: true, sprite: 'hero', skills: { palm: 10, strength: 10, farming: 5, herbal: 5, agility: 10, cooking: 3 }, traits: { diligent: 1.2 } },
+  { id: 'senior', name: '林師姐', adult: true, sprite: 'senior', skills: { palm: 5, strength: 5, farming: 15, herbal: 10, agility: 12, cooking: 10 }, traits: { social: 1.3 } },
+  { id: 'cousin', name: '堂弟', adult: false, sprite: 'cousin', skills: { palm: 0, strength: 2, farming: 3, herbal: 8, agility: 15, cooking: 2 }, traits: { playful: 1.4 } },
 ];
 
 export const REL_STAGES = [[0, '陌生'], [20, '相識'], [45, '好友'], [70, '知己'], [90, '道侶']];
 export const BASE_SPEED = 55; // px/s
+
+// 日夜與作息（v0.2）：一日 600 遊戲秒
+export const DAY = 600;
+export const PHASES = [[0, 'dawn', '晨'], [0.2, 'day', '日'], [0.65, 'dusk', '暮'], [0.8, 'night', '夜']];
+export const SCHEDULE = {
+  dawn: { train: 1.5, learn: 1.2 },
+  day: { farm: 1.2, chop: 1.2, cook: 1.1, forage: 1.1, build: 1.2 },
+  dusk: { eat: 1.4, chat: 1.6, cook: 1.3 },
+  night: { rest: 2.2, train: 0.3, chop: 0.2, farm: 0.2, forage: 0.2, build: 0.3, chat: 0.6 },
+};
+export const PLOT_GROW = 90; // 秒，播種到成熟
+export const HARVEST = 3;    // 每畦收菜

@@ -1,7 +1,7 @@
-import { createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf } from './sim.mjs';
+import { phaseOf, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf } from './sim.mjs';
 import { NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS } from './data.mjs';
 const cv = document.getElementById('map'), g = cv.getContext('2d');
-const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile'];
+const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile', 'kitchen_s1'];
 await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i.onload = r; i.onerror = r; i.src = `assets/${n}.${n === 'ground' ? 'jpg' : 'png'}`; IMG[n] = i; })));
 const BG = document.createElement('canvas'); BG.width = 1600; BG.height = 1000;
 { const b = BG.getContext('2d'); b.fillStyle = '#c9c49a'; b.fillRect(0, 0, 1600, 1000); let r = 7; const R = () => (r = (r * 16807) % 2147483647) / 2147483647;
@@ -10,7 +10,7 @@ const BG = document.createElement('canvas'); BG.width = 1600; BG.height = 1000;
 let S = createState(Date.now() % 100000 | 0), speed = 1;
 window.__sect = { get S() { return S; }, set speed(v) { speed = v; } };
 const SCENERY = [['pine', 140, 200], ['pine', 300, 380], ['bamboo', 60, 420], ['pine', 1320, 120], ['pine', 1500, 300], ['bamboo', 1200, 300], ['pine', 1420, 420], ['bench', 1100, 660], ['pine', 200, 640]];
-const ACT_ICON = { rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔' };
+const ACT_ICON = { cook: '🍲', deliver: '📦', rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔' };
 function draw() {
   g.drawImage(BG, 0, 0);
   // 後山
@@ -44,6 +44,11 @@ function draw() {
     if (S.hunt) hp(x, y - IMG[d.sprite].height - 22, d.hp / 100, '#3a7');
   } });
   items.sort((a, b) => a.y - b.y).forEach((i) => i.f());
+  // 菜畦
+  S.plots.forEach((p, i) => { const x = NODES.veg[0] - 45 + i * 30, y = NODES.veg[1] + 40; g.fillStyle = p.st === 'empty' ? '#8a6e4b' : p.st === 'ripe' ? '#5f9a3a' : `rgba(110,150,70,${0.3 + 0.5 * p.g / 90})`; g.fillRect(x, y, 24, 12); });
+  // 日夜
+  const ph = phaseOf(S), dark = ph.id === 'night' ? 0.38 : ph.id === 'dusk' ? 0.15 : ph.id === 'dawn' ? 0.1 : 0;
+  if (dark) { g.fillStyle = ph.id === 'dusk' ? `rgba(120,60,30,${dark})` : `rgba(20,30,70,${dark})`; g.fillRect(0, 0, 1600, 1000); }
   for (const f of S.fx) {
     if (f.kind === 'move') { g.strokeStyle = f.color; g.lineWidth = 4; g.globalAlpha = f.ttl / 0.6; g.beginPath(); g.moveTo(f.from[0], f.from[1] - 40); g.lineTo(f.to[0], f.to[1] - 10); g.stroke(); g.beginPath(); g.arc(f.to[0], f.to[1] - 10, f.r, 0, 7); g.stroke(); label(f.name, f.from[0], f.from[1] - 95, f.color); g.globalAlpha = 1; }
     else { g.fillStyle = 'rgba(200,40,40,.6)'; g.beginPath(); g.arc(f.pos[0], f.pos[1] - 30, 10, 0, 7); g.fill(); }
@@ -54,18 +59,18 @@ function label(t, x, y, c) { g.font = '15px sans-serif'; g.textAlign = 'center';
 function hp(x, y, r, c) { g.fillStyle = '#0006'; g.fillRect(x - 20, y, 40, 5); g.fillStyle = c; g.fillRect(x - 20, y, 40 * Math.max(0, r), 5); }
 const $ = (id) => document.getElementById(id);
 const bar = (v, c) => `<div class="bar"><i style="width:${v}%;background:${c}"></i></div>`;
-const ORD = [['', '自主'], ...['train', 'chop', 'farm', 'forage', 'build', 'rest', 'eat'].map((k) => [k, ACTIVITIES[k].name])];
+const ORD = [['', '自主'], ...['train', 'chop', 'farm', 'cook', 'forage', 'build', 'rest', 'eat'].map((k) => [k, ACTIVITIES[k].name])];
 let lastPanel = 0;
 function panel() {
-  $('clock').textContent = `第 ${Math.floor(S.t / 600) + 1} 日 · ${Math.floor(S.t)} 秒 · ${speed}×`;
-  $('res').innerHTML = `木 ${S.res.wood}/${S.cap.wood}　糧 ${S.res.food}　藥 ${S.res.herb}`;
+  const ph = phaseOf(S); $('clock').textContent = `第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×`;
+  $('res').innerHTML = `木 ${S.res.wood}/${S.cap.wood}　菜 ${S.res.veg}　飯 ${S.res.food}　藥 ${S.res.herb}<div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
   $('build').innerHTML = FACILITIES.filter((f) => f.stages.length > 1).map((f) => { const st = S.fac[f.id], nx = f.stages[st.stage + 1];
-    return `<div>${f.name}：${f.stages[st.stage].name} ${nx ? `<button data-build="${f.id}" ${st.site ? 'disabled' : ''}>${st.site ? '施工中' : `修成${nx.name}（木${nx.cost.wood}）`}</button>` : '✓'}</div>`; }).join('') + '<div class="k">尚未開放：膳房、外功場木樁、菜園擴建（見 DESIGN.md）</div>';
+    return `<div>${f.name}：${f.stages[st.stage].name} ${nx ? `<button data-build="${f.id}" ${st.site ? 'disabled' : ''}>${st.site ? '施工中' : `修成${nx.name}（木${nx.cost.wood}）`}</button>` : '✓'}</div>`; }).join('') + '';
   $('hunt').innerHTML = S.hunt ? `進行中：擊退 ${S.hunt.kills}・溜走 ${S.hunt.escaped}` : `<button id="hunt-go">派主角＋林師姐上山（一波）</button><div class="k">${S.lastReport || '尚無戰報'}</div>`;
   if (!S.hunt) $('hunt-go').onclick = () => startHunt(S, ['hero', 'senior']);
   $('ds').innerHTML = S.ds.map((d) => `<div class="card"><b>${d.name}</b> <span class="k">${d.adult ? '' : '（少年）'}${d.task ? (ACTIVITIES[d.task.act]?.name || '狩獵') : '待命'}｜${d.reason}</span>
    <div class="k">精力 ${d.needs.energy | 0}</div>${bar(d.needs.energy, '#d9a441')}<div class="k">飽足 ${d.needs.hunger | 0}</div>${bar(d.needs.hunger, '#7aa35a')}<div class="k">交流 ${d.needs.social | 0}</div>${bar(d.needs.social, '#c77')}
-   <div class="k">掌法 ${d.skills.palm.toFixed(1)}・腳力 ${d.skills.agility.toFixed(1)}（${speedOf(d).toFixed(0)}px/s）・力氣 ${d.skills.strength.toFixed(1)}・農 ${d.skills.farming.toFixed(1)}</div>
+   <div class="k">掌法 ${d.skills.palm.toFixed(1)}・腳力 ${d.skills.agility.toFixed(1)}（${speedOf(d).toFixed(0)}px/s）・力氣 ${d.skills.strength.toFixed(1)}・農 ${d.skills.farming.toFixed(1)}・廚 ${d.skills.cooking.toFixed(1)}</div>
    <div>${d.moves.map((m) => `<span class="mv">${MOVES.find((x) => x.id === m).name}</span>`).join('')}${d.pendingMove ? `<span class="mv new">可學：${MOVES.find((x) => x.id === d.pendingMove).name}</span>` : ''}</div>
    <select data-ord="${d.id}">${ORD.map(([k, n]) => `<option value="${k}" ${(d.order || '') === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`).join('');
   $('rel').innerHTML = Object.entries(S.rel).map(([k, v]) => { const [a, b] = k.split('|').map((id) => S.ds.find((d) => d.id === id).name); return `<div>${a}—${b}：${relStage(v)} ${v.toFixed(0)}${S.families.includes(k) ? ' 🏠' : ''}</div>`; }).join('');

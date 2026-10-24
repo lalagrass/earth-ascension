@@ -1,5 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED } from './data.mjs';
+import { DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED } from './data.mjs';
 
 export const SAVE_VERSION = 1;
 const clone = (o) => JSON.parse(JSON.stringify(o));
@@ -30,7 +30,7 @@ export const relStage = (v) => { let n = REL_STAGES[0][1]; for (const [t, name] 
 
 export function createState(seed = 1) {
   const s = {
-    v: SAVE_VERSION, seed, t: 0, res: { wood: 0, food: 4, herb: 0 }, cap: { wood: 12 },
+    v: SAVE_VERSION, seed, t: 0, res: { wood: 0, food: 6, herb: 0, veg: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })), vegRes: 0, cap: { wood: 12 },
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
     ds: DISCIPLES.map((d, i) => ({
       id: d.id, name: d.name, adult: d.adult, sprite: d.sprite, traits: d.traits,
@@ -46,6 +46,7 @@ export function createState(seed = 1) {
   return s;
 }
 function rand(s) { const r = rng(s.seed * 7919 + s.rngN++); return r(); }
+export function phaseOf(s) { const f = (s.t % DAY) / DAY; let p = PHASES[0]; for (const x of PHASES) if (f >= x[0]) p = x; return { id: p[1], name: p[2], day: Math.floor(s.t / DAY) + 1, frac: f }; }
 export function log(s, msg) { s.log.unshift({ t: Math.floor(s.t), msg }); if (s.log.length > 60) s.log.pop(); }
 
 // ---- 建造 ----
@@ -73,6 +74,8 @@ function cancelTask(s, d, why) {
   const t = d.task; if (!t) return;
   if (t.act === 'build' && d.carry?.wood) { const site = s.fac[t.fac].site; if (site) site.reserved -= d.carry.wood; s.res.wood += d.carry.wood; d.carry = null; }
   else if (t.act === 'build' && t.reservedWood) { const site = s.fac[t.fac].site; if (site) site.reserved -= t.reservedWood; }
+  if (t.act === 'cook' && t.phase !== 'done') s.vegRes -= 2;
+  if (t.act === 'farm' && t.plot >= 0 && s.plots[t.plot]?.busy === d.id) s.plots[t.plot].busy = null;
   if (t.partner) { const p = s.ds.find((x) => x.id === t.partner); if (p?.task?.partner === d.id) { p.task = null; p.path = []; } }
   d.task = null; d.path = []; d.anim = null; d.reason = why;
 }
@@ -97,11 +100,17 @@ export function scoreActs(s, d) {
   add('train', (d.adult ? 40 : 18) * (tr.diligent || 1), '練功變強');
   const wood = s.res.wood + s.ds.reduce((a, o) => a + (o.task?.act === 'chop' ? 1 : 0), 0);
   if (wood < s.cap.wood) add('chop', siteOf(s) ? 50 : 28, siteOf(s) ? '工地缺木' : '備柴');
-  add('farm', s.res.food < 6 ? 48 : 15, s.res.food < 6 ? '存糧不多' : '照顧菜畦');
+  add('farm', s.plots.some((p) => p.st === 'ripe') ? 50 : 30, s.plots.some((p) => p.st === 'ripe') ? '菜熟了' : '菜畦空著該播種');
   add('forage', 18 * (tr.playful || 1), '採藥');
   const site = siteOf(s);
   if (site) { const v = site[1]; const missing = v.need.wood - v.delivered - v.reserved; if ((missing > 0 && s.res.wood > 0) || (missing <= 0 && v.delivered >= v.need.wood)) add('build', 55 * (d.adult ? 1 : 0.6), '去工地幫忙'); }
-  for (const o of out) o.score += rand(s) * 8; // 個性雜訊
+  const ph = phaseOf(s).id, sch = SCHEDULE[ph] || {};
+  if (ph === 'night' && n.energy < 95) add('rest', 60, '入夜歇息');
+  const plotWork = s.plots.some((p) => p.st === 'empty' || p.st === 'ripe');
+  const cookable = s.res.veg - s.vegRes >= 2 && s.res.food < 10;
+  if (cookable) add('cook', 30 + (10 - s.res.food) * 4, '灶上該煮飯了');
+  for (const o of out) { o.score *= sch[o.act] || 1; o.score += rand(s) * 8; } // 作息＋個性雜訊
+  for (let i = out.length - 1; i >= 0; i--) if (out[i].act === 'farm' && !plotWork) out.splice(i, 1);
   return out.sort((a, b) => b.score - a.score);
 }
 
@@ -123,12 +132,15 @@ function assign(s, d, act, why) {
     goto(d, node); goto(p, node); d.reason = why; p.reason = `${d.name}找來聊天`; return true;
   }
   if (act === 'eat' && s.res.food <= 0) return false;
+  if (act === 'cook') { if (s.res.veg - s.vegRes < 2) return false; s.vegRes += 2; }
+  if (act === 'farm') { const i = s.plots.findIndex((p) => (p.st === 'ripe' || p.st === 'empty') && !p.busy); if (i < 0) return false; s.plots[i].busy = d.id; }
   const f = bestFac(s, d, act); if (!f) return false;
-  d.task = { act, fac: f.id, node: f.node, phase: 'go' }; goto(d, f.node); d.reason = why; return true;
+  d.task = { act, fac: f.id, node: f.node, phase: 'go', plot: act === 'farm' ? s.plots.findIndex((p) => p.busy === d.id) : undefined }; goto(d, f.node); d.reason = why; return true;
 }
 function goto(d, node) { const p = route(d.at, node); d.path = p.slice(1).map((n) => ({ n, xy: NODES[n] })); if (!d.path.length) d.path = [{ n: node, xy: NODES[node] }]; }
 
 function decide(s, d) {
+  if (d.carry) { d.task = { act: 'deliver', phase: 'return', node: 'court', walkStart: d.walked }; goto(d, 'court'); d.reason = '先把東西送回院倉'; return true; }
   if (d.order) {
     const o = d.order; if (o !== 'hunt' && (d.needs.energy < 15 || (o !== 'eat' && d.needs.hunger < 10 && s.res.food > 0))) return assign(s, d, d.needs.energy < 15 ? 'rest' : 'eat', '指派中先自理');
     if (assign(s, d, o, '玩家指派')) return true;
@@ -176,18 +188,21 @@ function doTask(s, d, dt) {
     const site = s.fac[t.fac].site; site.reserved -= d.carry.wood; site.delivered += d.carry.wood; log(s, `${d.name}送 ${d.carry.wood} 木到工地（${site.delivered}/${site.need.wood}）`); d.carry = null; d.task = null; return;
   }
   if (t.phase === 'go' && !d.path.length) {
-    if (t.partner) { const p = s.ds.find((x) => x.id === t.partner); if (!p || p.task?.partner !== d.id) { d.task = null; return; } if (p.path.length) return; }
+  if (t.partner) { const p = s.ds.find((x) => x.id === t.partner); if (!p || p.task?.partner !== d.id) { d.task = null; return; } if (p.path.length) return; }
     t.phase = 'do'; t.timer = 0; d.anim = t.act;
   }
   if (t.phase === 'do') {
     if (t.act === 'build') { const site = s.fac[t.fac].site; if (!site) { d.task = null; d.anim = null; return; } }
     t.timer += dt;
     if (A.energy) d.needs.energy = clamp(d.needs.energy + A.energy * dt / A.dur, 0, 100);
-    if (t.act === 'rest') { const rate = facStage(s, t.fac).restRate || 3; d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); if (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= 80 && t.timer > 4)) finish(s, d); return; }
+    if (t.act === 'rest') { const rate = facStage(s, t.fac).restRate || 3; d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= 80 && t.timer > 4))) finish(s, d); return; }
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
-    if (t.timer >= A.dur) {
+    const dur = t.act === 'cook' ? facStage(s, t.fac).cookDur : A.dur;
+    if (t.timer >= dur) {
+      if (t.act === 'cook') { const st = facStage(s, t.fac); s.res.veg -= 2; s.vegRes -= 2; t.phase = 'done'; s.res.food += st.cookYield; log(s, `${d.name}在${st.name}煮好 ${st.cookYield} 份飯`); grow(s, d, 'cooking', 6); finish(s, d); return; }
+      if (t.act === 'farm') { const p = s.plots[t.plot]; p.busy = null; grow(s, d, 'farming', 6); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; }
-      if (A.need?.hunger) d.needs.hunger = clamp(d.needs.hunger + A.need.hunger, 0, 100);
+      if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) d.needs.social = clamp(d.needs.social + b / 2, 0, 100); }
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) grow(s, d, k, v);
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
       if (t.act === 'learn' && d.pendingMove) { const m = MOVES.find((x) => x.id === d.pendingMove); d.moves.push(m.id); d.pendingMove = null; log(s, `師父傳授${d.name}「${m.name}」！`); }
@@ -264,6 +279,7 @@ function huntStep(s, dt) {
 // ---- tick ----
 export function tick(s, dt = 0.25) {
   s.t += dt;
+  for (const p of s.plots) if (p.st === 'grow' && (p.g += dt) >= PLOT_GROW) p.st = 'ripe';
   for (const d of s.ds) {
     d.needs.hunger = clamp(d.needs.hunger - 0.35 * dt, 0, 100);
     d.needs.social = clamp(d.needs.social - 0.4 * dt, 0, 100);
