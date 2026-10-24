@@ -1,8 +1,14 @@
 # SG-LIFE-M1：第一生活里程碑執行清單
 
-2026-10-25台北，Codex／遊戲PO；總控[#334](https://github.com/lalagrass/earth-ascension/issues/334)。[接棒協定](GROK_GRASS_HANDOFF_PROTOCOL.md)／[grass遊戲PR合併移交計畫](GAME_PR_GRASS_TRANSFER_PLAN.md)／[Grok提示詞](LIFE_M1_GROK_PROMPT.md)／[grass提示詞](LIFE_M1_GRASS_PROMPT.md)。依擁有人本輪要求整理清單、待決與移交規劃；**不以規劃PR合併宣稱合併權或自動喚醒已移交／接通**。現行#330 D49工程及review立即照原契約，不等本規劃。
+擁有人於2026-10-25台北明確批准 **D51**：第一生活里程碑＝已接受生活／成長／武學巡山／S0基線＋**#330 HOME02收尾**；grass接手純遊戲PR的集中review與dev squash merge。總控[#334](https://github.com/lalagrass/earth-ascension/issues/334)，[M1清單](LIFE_M1_EXECUTION_PLAN.md)／[移交與生效規則](GAME_PR_GRASS_TRANSFER_PLAN.md)／[Grok](LIFE_M1_GROK_PROMPT.md)與[grass](LIFE_M1_GRASS_PROMPT.md)提示詞。
 
-## 推薦完成線
+這是正式批准，不是只有規劃；**操作生效以Earth在#67發布的唯一cutover紀錄為準**，須先由Earth整合正式權限PR／postCI、同步既有Cloud啟動限制並取得grass接手收據。未生效前原Earth路徑照常；已由Earth持有的active票由該票記錄決定收尾，不搶合。新規則優先於下方D48–D50的歷史Earth-only／待批准描述，不重設作者claim、scope／DoD或重做已驗。
+
+Grok仍由人類手動貼網頁／App接棒，沒有已部署callback／runner。剩餘工程白名單只有330；PR333的Cloud差異複審[6388542820](https://github.com/lalagrass/earth-ascension/pull/333#issuecomment-6388542820)已鎖head b86657324c82c2d470baeac39c0d74ea552d56a5判A–D ready，接手先核最新狀態，未變證據復用，不再次初審。整合／postCI成功後沿同一接受SHA交短摘要、清理後休息；不掃其他OPEN，不加QA包／研究／M2。Cloud執行、Mac真人、單一版本／長通勤速度差／原玩法與資料、集中review／精簡驗證及必要CI保持，存檔升版與手機適配最後。
+
+2026-10-25台北，Codex／遊戲PO；總控[#334](https://github.com/lalagrass/earth-ascension/issues/334)。[接棒協定](GROK_GRASS_HANDOFF_PROTOCOL.md)／[grass遊戲PR合併移交計畫](GAME_PR_GRASS_TRANSFER_PLAN.md)／[Grok提示詞](LIFE_M1_GROK_PROMPT.md)／[grass提示詞](LIFE_M1_GRASS_PROMPT.md)。D51已將完成線與角色定案；自動喚醒仍未接通，實際merge切換按#67生效紀錄，330原scope／DoD不變。
+
+## 已批准完成線
 
 第一生活里程碑是「可看兩人在初始道館生活、工作、成長與回到各自歸處」的一個完整可試玩版本。沿現唯一experiments/water-carry/demo/入口、暫停／速度／玩家改派，已有挑水採藥／原自主自理招呼、真腳力與練掌／同圖巡山、全場景S0水彩／茶與生活總覽；補完330砍柴→修寢舍→認床歇息後即到工程完成線。這不是承諾完整模擬市民、成熟門派、無限內容、正式main發布或舊RT所有驗收完成。
 
@@ -17,7 +23,7 @@
 | **1 正在進行** | **#330／PR333：HOME02砍柴—寢舍—雙床** | 唯一待完實作，依[正式包](HOME02_HANDOFF.md)。原Grok同PR完成H2-1～4／A–D，不換作者、不加DoD |
 | 2 本總控收尾 | #334：PO交付摘要／真人試玩指引 | 復用330與基線接受SHA／CI／畫面，回填功能完成／限制與唯一入口同步說明；不是另一輪Grok開發或全測試PR，不為收尾重錄全流程 |
 
-查核快照：Grok有效工程claim6388105872、branch codex/home02-wood-dorm-grok、box /workspace/ea330；原base121257f9。PR333為open／非draft，head **84cfa07bdeb1354202a4eb7a644fd3925ea73538**；[Cloud初審6388352861](https://github.com/lalagrass/earth-ascension/pull/333#issuecomment-6388352861)已對該head一次列出床位／真躺卧在屋外的阻擋，下一步是原Grok同PR補修，再由原grass路徑差異複審。此規劃只讀狀態，沒有第二次產品review。接手查最新head／留言，不把本快照當永久狀態。
+歷史初交快照（已由下述D51接續狀態更新）：Grok有效工程claim6388105872、branch codex/home02-wood-dorm-grok、box /workspace/ea330；原base121257f9。PR333為open／非draft，head **84cfa07bdeb1354202a4eb7a644fd3925ea73538**；[Cloud初審6388352861](https://github.com/lalagrass/earth-ascension/pull/333#issuecomment-6388352861)已對該head一次列出床位／真躺卧在屋外的阻擋，下一步是原Grok同PR補修，再由原grass路徑差異複審。此規劃只讀狀態，沒有第二次產品review。接手查最新head／留言，不把本快照當永久狀態。
 
 ## OPEN母題與待決的去向
 
@@ -39,8 +45,8 @@ PO沿同一接受SHA出短摘要：功能、已驗／未驗、限制、新木／
 
 清單所有批准項done、摘要已交後，雙方停止本里程碑，不掃其他open issue、不自動補滿母單／接M2、研究出圖、開新任務／排程或購買額度。缺產品決策／權限／額度時記未完成與下一責任人，等待而非假報完成。只有收到本清單的新交付／補修／必要CI結果才接續，不空轉輪詢。
 
-## 待擁有人選定
+## D51定案與後續界線
 
-1. **M1範圍建議**：330＋以上已接受基線為完成線，更多社交／食物鏈留M2。330已批scope不需重批，也不因這項排序討論停工。
-2. **合併責任建議**：按移交計畫把純遊戲PR的dev合併交grass，Earth保其他產品／混合與共用契約；須正式權限文件與#67切換記錄後生效，目前仍Earth唯一合併，不能由本規劃暗改。
-3. **接棒已確認**：使用者回覆Grok是手動貼到網頁／App；本版採可操作的人工轉貼。若希望完全自動，另定可驗證的Grok API／CLI／支援事件入口及必要成本，尚未批准／建立runner，不能把紀錄訊息當喚醒完成。
+1. M1完成線已批准：330＋上述已接受基線，更多社交／食物鏈／成熟門派留下一里程碑；剩餘工程白名單只有330，不再等待產品重批。
+2. grass接手純遊戲review／dev合併已批准；按[正式移交](GAME_PR_GRASS_TRANSFER_PLAN.md)由Earth審合權限PR／postCI、實際發布Cloud限制、收grass收據並在#67切換後生效。切換前Earth處理，未結票明記owner，不能雙合。
+3. Grok手動貼網頁／App已確認；本版仍人工轉貼，尚無callback／runner／事件訂閱，不建立永久循環。清單done後雙方休息。

@@ -1,5 +1,7 @@
 # Grok／grass接棒協定與已核接收方式
 
+D51已批准M1完成線與grass純遊戲review／dev合併；依[正式移交規則](GAME_PR_GRASS_TRANSFER_PLAN.md)，Earth在#67完成cutover才生效，生效後純遊戲不再交Earth重審。當前M1只330／333，完成就休息。Grok人工貼入口保持，本文件不建立監控或自動回呼。
+
 2026-10-25台北，總控[#334](https://github.com/lalagrass/earth-ascension/issues/334)／[執行清單](LIFE_M1_EXECUTION_PLAN.md)／[合併移交規劃](GAME_PR_GRASS_TRANSFER_PLAN.md)。這是協作紀錄與提示詞規約，不是已部署的排程／webhook系統。
 
 ## 已確認與未確認
