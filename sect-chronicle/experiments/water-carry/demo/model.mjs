@@ -1412,7 +1412,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       cleaning: CLEAN_MODES.includes(h.mode), clean: cl ? { phase: cl.phase, target: cl.target, downs: cl.downs, spent: cl.spent, end: cl.end, src: cl.src } : null,
       cleanResult: p.cleanResult, pos: { x: p.pos.x, y: p.pos.y }, cface: p.cface, walked: p.walked,
       palm: p.palm, palmLabel: SKILLS[p.palm].label, palmTicks: { windup: SKILLS[p.palm].windup, recover: SKILLS[p.palm].recover },
-      palmStep: h.mode === 'windup' || h.mode === 'recover' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need, target: h.target } : null,
+      palmStep: ['windup', 'recover', 'patrolWind', 'patrolRec'].includes(h.mode) ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need, target: h.target } : null,
       cleanLeg: h.mode === 'toRat' || h.mode === 'fromRat' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need, from: { ...h.from }, to: { ...h.to } } : null,
       // LP-12：自主清鼠原因與狀態。
       autoClean: cleanAutoView(p), cleanSrc: p.cleanSrc,

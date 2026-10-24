@@ -11,6 +11,9 @@ import { buildWatercolorScene, ART_WC } from './scene/watercolor.mjs';
 import { VIEWS } from './scene/layout.mjs';
 import { ZONE, EXIT, PALM, SKILLS } from './palm.mjs';
 import { CLEAN_END } from './model.mjs';
+import { ROUTE, S0, PATROL_END } from './patrol.mjs';
+import { WAYPOINTS as WP0, MAIN_LENGTH } from './patrol-layout.mjs';
+const WAYPOINTS = WP0.map((w) => ({ ...w, x: ROUTE[S0 + w.node][0], y: ROUTE[S0 + w.node][1] }));
 import { drawRefinedRack, drawRefinedBasket, getRefinedBasketPlacement } from './assets/lp16/herb-decor.mjs';
 
 const SHARED = '../spikes/shared/';
@@ -74,12 +77,13 @@ const PALM_POSE = {
 };
 const SHOULDER = [6.6, -45.6]; // herbHand-0 的肩點（場景單位，相對腳底，朝右）
 function palmPose(person) {
-  if (person.mode === 'windup') return PALM_POSE.windup[person.palm];
-  if (person.mode === 'recover') return PALM_POSE[person.palmStep.steps < STRIKE_TICKS ? 'strike' : 'recover'][person.palm];
+  if (person.mode === 'windup' || person.mode === 'patrolWind') return PALM_POSE.windup[person.palm];
+  if (person.mode === 'recover' || person.mode === 'patrolRec') return PALM_POSE[person.palmStep.steps < STRIKE_TICKS ? 'strike' : 'recover'][person.palm];
   return null;
 }
 function poseOf(id, person) {
-  if (person.cleaning) {
+  // SG-PATROL-01：巡山沿用清理的畫法（空手步態＋掌法姿勢）；觀察／喝止用站直那幀。
+  if (person.cleaning || person.patrolling) {
     const at = geo.of(id, person), a = animators[id], pp = palmPose(person);
     const pick = pp ? a.pick({ phase: pp.base === 'herbGather' ? 'herbGather' : 'herbDeliver', k: 0, travelled: 0 }) : a.pick({ phase: 'herbOut', k: 0, travelled: at.travelled });
     return { x: at.x, y: at.y, face: at.face, ...pick, travelled: at.travelled, phase: person.mode, palm: pp, borrowed: !!pp };
@@ -121,6 +125,18 @@ const world = new Container();
 app.stage.addChild(world);
 // D37：地面（草坡、院坪、全段長路、溪與深潭、石階泉台）是一張烘焙水彩底圖，見 scene/watercolor.mjs
 const ground = new Graphics(); // 只剩介面提示（清理區虛線、出口箭頭）
+// SG-PATROL-01：西坡巡山小徑（虛線）、四個路標與三隻林鼠的逃路；只是畫面提示，位置與判定只讀 patrol-layout.mjs。
+const patrolG = new Graphics();
+{
+  const pts = ROUTE.slice(S0);
+  for (let i = 1; i < pts.length; i++) {
+    const [ax, ay] = pts[i - 1], [bx, by] = pts[i], n = Math.max(2, Math.round(Math.hypot(bx - ax, by - ay) / 9));
+    for (let j = 0; j < n; j += 2) patrolG.moveTo(ax + (bx - ax) * j / n, ay + (by - ay) * j / n).lineTo(ax + (bx - ax) * (j + 1) / n, ay + (by - ay) * (j + 1) / n);
+  }
+  patrolG.stroke({ width: 2.2, color: 0x6b5233, alpha: 0.6 });
+  for (const w of WAYPOINTS) patrolG.circle(w.x, w.y, 6).fill({ color: 0xf3e6c4, alpha: 0.9 }).stroke({ width: 1.6, color: 0x6b5233 });
+  patrolG.poly([...ROUTE.slice(0, S0 + 1).flat()], false).stroke({ width: 1.2, color: 0x6b5233, alpha: 0.3 });
+}
 // LP-11 有限清理區（竹護欄內西院）：虛線外框與西側出口箭頭，只是地面提示。
 {
   const pts = [...ZONE, ZONE[0]];
@@ -135,6 +151,7 @@ const ground = new Graphics(); // 只剩介面提示（清理區虛線、出口�
   ground.poly([ex, ey, ex - 8 * Math.cos(ang - 0.5), ey - 8 * Math.sin(ang - 0.5), ex - 8 * Math.cos(ang + 0.5), ey - 8 * Math.sin(ang + 0.5)]).fill({ color: 0x8a6a3e, alpha: 0.45 });
 }
 world.addChild(ground);
+world.addChild(patrolG);
 const sorted = new Container();
 sorted.sortableChildren = true; // 依腳底 y 排序：人物走到樹叢後面時被遮住
 world.addChild(sorted);
@@ -201,7 +218,7 @@ const shoutG = new Graphics();
 shoutG.visible = false;
 sorted.addChild(shoutG);
 // LP-11 測試弱鼠：原創向量（沿 LP10 畫稿畫法），朝右畫、翻面朝左。位置／狀態只讀 view().rats。
-const ratGs = new Map();
+const ratGs = new Map(), pratGs = new Map();
 // D37：手繪鼠（嗅／跑兩張），倒地＝側傾半透明、出界淡出；動作語意與位置只讀 view().rats
 function makeRat() {
   const c = new Container(), fx = new Graphics(), sp = new Sprite(WT('rat_sniff'));
@@ -382,7 +399,7 @@ const LENGTHS = { water: WATER_LENGTH, herb: r1(herbPath.length), seat: geo.seat
   boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength),
   drink: r1(geo.drinkLengths.home), drinkSeat: { hero: r1(geo.drinkLengths.seat.hero), cousin: r1(geo.drinkLengths.seat.cousin) } };
 // LP-11：警覺鼠察覺用同一份純幾何取樣兩人位置（模型在權威 tick 呼叫，不讀畫面座標）。
-const SENSE = { placeOf: geo.of };
+const SENSE = { placeOf: geo.of, boarAt: geo.boarAt };
 let model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
 const clock = createClock();
 const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null, boarExpanded: false, advancedOpen: false };
@@ -728,6 +745,18 @@ function cleanHtml(p, id) {
     ${line}${other}</div>`;
 }
 const RAT_KIND = { normal: '普通', alert: '警覺' };
+// SG-PATROL-01：巡山列＋最近一次戰報（只顯示最新一份，舊的只留有界摘要）。
+const PRES = { down: '擊倒', drove: '喝退', escaped: '逃走', avoided: '避開', unhandled: '未處理' };
+function patrolHtml() {
+  const sel = selectedPerson(), pa = v.patrol, r = v.patrolReport;
+  const opt = model.actions(sel).find((a) => a.id === 'patrol');
+  const head = pa ? `<span class="muted">${profiles[pa.by].label}巡山${pa.phase === 'wait' ? '（等精力／等出發）' : pa.phase === 'back' ? '：返院中' : '中'}</span>`
+    : opt ? `<button class="btn" data-cmd="patrol" ${opt.enabled ? '' : 'disabled'} title="${opt.enabled ? opt.detail : opt.reason}">派${profiles[sel].label}巡山</button>` : '';
+  const rats = v.prats.map((x) => `<span class="rat r-${x.mode}">林鼠${x.id.slice(-1)}<i>·${RAT_KIND[x.kind]}</i></span>`).join('');
+  const rep = r ? `<div class="patrolrep" data-report="1"><b>戰報</b> ${profiles[r.by].label} · ${PATROL_END[r.end]} · 最遠 ${Math.round(r.far)}／${Math.round(MAIN_LENGTH)} · 路標 ${r.obs.join('→') || '—'} · 精力 ${Math.round(r.e0)}→${Math.round(r.e1)}（扣 ${r.spent.toFixed(1)}） · ${(r.total / 60).toFixed(1)} 秒<br>${r.seen.map((x) => `${x.id === 'boar' ? '野豬' : '林鼠' + x.id.slice(-1)}：${PRES[x.res]}`).join('、') || '沒遇到'}</div>
+    <div class="muted">往次摘要（最多 ${v.patrolLog.length} 筆）：${v.patrolLog.slice(0, -1).slice(-4).map((x) => `${PATROL_END[x.end]}·${Math.round(x.far)}`).join('；') || '—'}</div>` : '<div class="muted">還沒有巡山戰報</div>';
+  return `<div class="ratrow"><b>西坡巡山<i> S0→S3</i></b><span class="rats">${rats}</span>${head}</div>${rep}`;
+}
 function ratsHtml() {
   const sel = selectedPerson(), opt = model.actions(sel).find((a) => a.id === 'clean'), c = v.clean;
   const rows = v.rats.map((r) => `<span class="rat r-${r.mode}${c && c.target === r.id && c.phase !== 'back' ? ' tgt' : ''}" title="${r.why || ''}">鼠${r.id}<i>·${RAT_KIND[r.kind]}</i> ${r.label}</span>`).join('');
@@ -760,6 +789,7 @@ function boarHtml(b) {
         <span class="tag-chip ${alert ? 'alert' : ''}">🐗 野豬 · ${statusTxt}</span>
         <span class="tag-chip ${b.marks > 0 ? 'alert' : ''}">損痕 ${b.marks}／${b.maxMarks}</span>
         <span class="tag-chip">🐭 鼠群 · ${cleanTxt}</span>
+        <span class="tag-chip">🧭 巡山 · ${v.patrol ? (v.patrol.phase === 'back' ? '返院中' : v.patrol.phase === 'wait' ? '待出發' : '巡山中') : v.patrolReport ? '有戰報' : '未巡'}</span>
         <button class="btn toggle-boar" data-ui="toggleBoar">明細 ▾</button>
       </div>
     </div>`;
@@ -771,6 +801,7 @@ function boarHtml(b) {
     <div class="bars"><div>${bar('benergy', b.energy, [B.tiredAt, B.goEnergy], '精力（不是血量）')}</div><div>${bar('threat', b.threat, [B.goThreat, B.scaredAt], '威脅記憶')}</div></div>
     <div class="row"><span>護欄損痕 ${b.marks}／${b.maxMarks}</span>${fixBtn(b, sel)}</div>
     ${ratsHtml()}
+    ${patrolHtml()}
     ${b.active ? `<div class="row"><span>${who ? `${who}正在處理` : '沒人處理也能繼續生活'}</span>${opt ? `<button class="btn" data-cmd="guard" ${opt.enabled ? '' : 'disabled'} title="${opt.enabled ? opt.detail : opt.reason}">派${profiles[sel].label}驅離</button>` : ''}</div>`
       : b.last ? `<div class="muted">上次：撞了 ${b.last.hits} 下，${b.last.why}</div>` : ''}
   </div>`;
@@ -913,6 +944,19 @@ app.ticker.add((t) => {
     tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level} · 精力 ${en(person)}`, p.x, p.y, 6);
     tag(`${id}-pill`, `pill ${person.resting ? 'stop' : person.rest || person.mode === 'back' ? 'rest' : person.guarding || person.fixing ? 'guard' : person.leisure ? 'fun' : person.recall ? 'recall' : ''}`, person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.mode === 'fix' ? `${person.status} ${Math.round(person.fixWork.k * 100)}%` : person.status, p.x, p.y - (person.mode === 'seated' ? 64 : 80));
   }
+  // SG-PATROL-01 林鼠：同一套鼠畫法，只讀 view().prats。
+  for (const w of WAYPOINTS) tag(`wp${w.id}`, 'pill wp', `${w.id} ${w.label}`, w.x, w.y, 14);
+  for (const r of v.prats) {
+    let g = pratGs.get(r.id);
+    if (!g) { g = makeRat(); sorted.addChild(g); pratGs.set(r.id, g); }
+    const out = r.mode === 'gone';
+    g.visible = !out;
+    if (!out) { drawRat(g, r, performance.now()); g.scale.set(1.25 * (r.mode === 'flee' ? -1 : 1), 1.25); g.position.set(r.x, r.y); g.zIndex = r.y; }
+    const pr = prev.prats.find((q) => q.id === r.id);
+    if (pr && pr.mode !== r.mode && r.mode === 'down') fx.push({ text: '啪！林鼠擊倒', x: r.x, y: r.y - 30, until: performance.now() + 1600 });
+    if (pr && pr.mode !== r.mode && r.mode === 'flee') fx.push({ text: '林鼠逃！', x: r.x, y: r.y - 30, until: performance.now() + 1400 });
+  }
+  if (v.patrolReport && v.patrolReport !== prev.patrolReport && (!prev.patrolReport || prev.patrolReport.endTick !== v.patrolReport.endTick)) { const hp = positions[v.patrolReport.by]; fx.push({ text: `巡山回院：${PATROL_END[v.patrolReport.end]}`, x: hp.x, y: hp.y - 110, until: performance.now() + 2400 }); }
   // LP-11 三鼠與接觸：只讀 view().rats／clean；接觸閃光與浮字只是畫面，不入帳。
   for (const r of v.rats) {
     let g = ratGs.get(r.id);
@@ -984,7 +1028,7 @@ app.ticker.add((t) => {
   wc.tick(t.deltaMS, ui.playing, IDS.map((id) => positions[id]).filter(Boolean)); // D37：遮擋淡出／竹影／水光，只是畫面
   if (ui.follow) follow();
   placeMenu();
-  if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next || prev.people[id].auto.text !== v.people[id].auto.text || prev.people[id].up.text !== v.people[id].up.text || prev.people[id].fix !== v.people[id].fix || prev.people[id].fixResult !== v.people[id].fixResult || prev.people[id].cleanResult !== v.people[id].cleanResult) || JSON.stringify(prev.clean) !== JSON.stringify(v.clean) || prev.rats.some((r, i) => r.mode !== v.rats[i].mode) || prev.boar.marks !== v.boar.marks || prev.boar.seen !== v.boar.seen || frames % 15 === 0) renderChrome();
+  if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next || prev.people[id].auto.text !== v.people[id].auto.text || prev.people[id].up.text !== v.people[id].up.text || prev.people[id].fix !== v.people[id].fix || prev.people[id].fixResult !== v.people[id].fixResult || prev.people[id].cleanResult !== v.people[id].cleanResult) || JSON.stringify(prev.clean) !== JSON.stringify(v.clean) || prev.rats.some((r, i) => r.mode !== v.rats[i].mode) || prev.prats.some((r, i) => r.mode !== v.prats[i].mode) || JSON.stringify(prev.patrol) !== JSON.stringify(v.patrol) || (prev.patrolReport && prev.patrolReport.endTick) !== (v.patrolReport && v.patrolReport.endTick) || prev.boar.marks !== v.boar.marks || prev.boar.seen !== v.boar.seen || frames % 15 === 0) renderChrome();
   frames++;
   if (firstFrameMs == null) firstFrameMs = performance.now() - t0;
 });
@@ -1011,7 +1055,9 @@ window.demo = {
       fenceScreen: toScreen(places.fence.x, places.fence.y - places.fence.ry * 0.6), guardScreen: toScreen(...GUARD.points.at(-1)), lengths: LENGTHS,
       herbs: v.herbs, herbCapacity: v.herbCapacity, herbInFlight: v.herbInFlight, herbScreen: toScreen(places.herb.x, places.herb.y - 10), rackScreen: toScreen(places.rack.x, places.rack.y - 10),
       shadow: v.shadow && v.shadow.name, ghostVisible: ghost.visible,
-      rats: v.rats.map((r) => ({ ...r, screen: toScreen(r.x, r.y - 6) })), clean: v.clean, palmArm: Object.fromEntries(IDS.map((id) => [id, armGs[id].visible])),
+      rats: v.rats.map((r) => ({ ...r, screen: toScreen(r.x, r.y - 6) })), clean: v.clean,
+      prats: v.prats.map((r) => ({ ...r, screen: toScreen(r.x, r.y - 6) })), patrol: v.patrol, patrolReport: v.patrolReport, patrolLog: v.patrolLog.length,
+      waypoints: WAYPOINTS.map((w) => ({ ...w, screen: toScreen(w.x, w.y) })), palmArm: Object.fromEntries(IDS.map((id) => [id, armGs[id].visible])),
       playing: ui.playing, autoPaused: ui.autoPaused, pausedByMenu: ui.pausedByMenu, speed: ui.speed,
       selected: ui.selected, menu: ui.menu, menuPerson: ui.menuPerson, cam: { ...cam }, hidden: document.hidden,
       heroScreen: people.hero.screen,
