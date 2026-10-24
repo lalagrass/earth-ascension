@@ -1,5 +1,13 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## D49已批准：HOME02砍柴、寢舍與雙人歸處
+
+HOME01／PR326已由Earth鎖head43c788eb squash合dev **23e3414ed0f1f323f04b34c97f70b22a8587dc41**，postCI40120490402五項成功，326整合前置已滿；沿Earth與Cloud接受證據復用，不重跑、不再等待326，且沒有更新Mac試玩。
+
+擁有人2026-10-25台北已同意B1–B4。主[#330](https://github.com/lalagrass/earth-ascension/issues/330)，[正式包](HOME02_HANDOFF.md)／[Grok開發prompt](HOME02_GROK_PROMPT.md)／[grass接續review prompt](HOME02_GRASS_REVIEW_PROMPT.md)。一Grok完整砍柴搬木→固定側屋修繕→兩床認領與自主歇息／有效續工，模型／水彩動作／UI／必要局部維護一主PR；木0／cap12、砍8秒1木／作業1E每秒，修木6＋18秒／施工1E每秒，床沿+5E每秒／30／80與石凳備案，無新睡眠需求。示意值已批，平衡待真人。
+
+**先原326接受／Earth合dev及postCI，且本D49正式文件審合／postCI後**，Grok本人330最新dev新claim／codex分支與自有隔離區，既有前置已滿不重等。本包不改326scope／claim／DoD，不沿其claim。新木／工地／床位限本局、最小guard保舊資料，不升保存。grass只本包初審／同PR新head差異複審→交Earth整合後休息，不開後包／輪詢／新排程，無現成事件就人類貼PR喚起；並非已代啟bot。Cloud／Mac真人、長通勤速度差／原玩法、必要CI／證據復用／清理、Earth唯一merge與單一正式版保持，手機及新增保存最後。下方HOME02待確認及舊326後永久停止解讀，在本有限批准範圍由D49更新。
+
 ## HOME01最新審查與下一候選HOME02（2026-10-25）
 
 HOME01／PR326查核head43c788eb已由[Cloud集中複審](https://github.com/lalagrass/earth-ascension/pull/326#issuecomment-6387652955)確認兩P2修好、A–D ready交Earth；尚待唯一queue整合／postCI，沒有PO重跑或自合／更新Mac。接手核最新結果，不拿下方舊「未交付」當現在狀態。
