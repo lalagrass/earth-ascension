@@ -4,9 +4,9 @@
 >
 > 先讀根CONTRIBUTING、sect-chronicle/AGENTS、[D37正式工作包](ART184_WATERCOLOR_HANDOFF.md)及D37決策、#184／182／279、PR282與最新review／claim。最新主筆仍是你；不要把先前GPT bot grass的討論當作另一位已接手。若issue已有有效接手者，先按根流程協調，不搶改。
 >
-> **先收尾生活閉環**：PR278已合dev ac7148d、postCI40004282037五成功、8800已更新。PR282 head53e0117的review5632832438目前要求修壞檔驗證：必要shadow物件=null、未知boar.mode等不得回ok／污染現局。依最新issue在原PR集中修，候選全驗成功才restore，最小代表反例驗拒絕後世界不變且可續tick；保留合法存讀回放與人工停工。不要用新美術包重置原補修claim，亦勿只硬補一個shadow特例。新head交非作者review／Earth合dev／postCI，不自合。
+> **立即接續，不再等282合併**：擁有人要求整批做到完成，PO已在[#184排程更正](https://github.com/lalagrass/earth-ascension/issues/184#issuecomment-6377183577)撤除錯誤等待；更正立即生效，不要再因PR282仍待review／CI／merge或更正文檔未合而停下全場景。PR278與D37文件已合dev／postCI。PR282目前1a62d40仍有review5635659721的掌法enum／XP／鼠ID驗證缺口；它必須在交付前修好，但不阻止你先製作獨立場景部分。依最新issue在原282集中修，保留合法存讀與人工停工，拒絕壞檔後狀態不變且step＋view可用。不要重跑40萬tick或把原補修租期重置。
 >
-> **開始新整包的前置**：本D37文件與PR282都已非作者接受、Earth合dev／postCI後，你本人#184新claim，#182互連不重複占；從含生活閉環的最新dev建codex分支／自有隔離工作區，不force/reset或碰他人未公開成果。一份新工程主PR→dev，Refs #184／#182，內部分commit，自校接續，不按圖／設計／匯出／接線拆多人或一堆PR。
+> **現在開工的方式**：核有效作者後本人#184新claim（182互連不重複占），從最新dev建codex場景分支／自有隔離工作區，普通merge你自己已公開的282候選checkpoint，記來源head、已知阻擋與depends282。可邊接續場景邊按原窗口修282，不等待每個小批次簽核；你仍是唯一核心作者。原282保留生活PR，新場景一份完整工程PR→dev、Refs184／182。後續282補修先推原支線，再普通同步到場景支線，不雙份修法／force/reset。候選未接受不等於不能開發；也不等於可以發布。
 >
 > **先盤點，立即接線**：讀design/art184-production的sprites／ground／manifest與art184-scene-trio原圖，列短採用表。現有正堂、側屋、門牆、水缸、石磨、柴堆、晾架、松竹樹石、蕨、水岸、石板與土路先用；不足才補圖，來源不覆寫，輸出到新design/art184-watercolor與demo/assets/art184-watercolor。概念全景不是權威地圖，不把上面的固定人物一同烘進可玩背景。
 >
@@ -22,4 +22,4 @@
 >
 > 沒有兩／四小時執行總上限，做到完成早停；每次claim的4h是可附新證據續的協調租期，推送前核最新issue。一般一測試頁／一臨時服務／一本地工作；烘焙與遊戲依序，finally清自建頁／程序／viewport並確認，不碰8800或使用者頁。額度中斷留head／成果／缺口／續接點並回填，不假稱離線仍跑。
 >
-> 最終一PR交真實作者、base/head、採用／補圖表、架構／設計／新增功能取捨、必要驗證exit、少量真圖、限制及清理，交遊戲PO集中review；同你補阻擋，Earth唯一queue合dev／postCI後遊戲PO更同一入口。你不得自合／發布／新增試玩回退入口／啟其他agent或排程。第一版需要#279生活閉環與本包均完成，不把278局部美術通過當全圖完成。
+> 最終一PR交真實作者、base/head、採用／補圖表、架構／設計／新增功能取捨、必要驗證exit、少量真圖、限制及清理，交遊戲PO集中review；同你補阻擋，Earth依282→場景順序整合；前者合後普通同步實際dev、只核剩餘差異與必要CI，兩部分接受／合dev／postCI後遊戲PO更同一入口。你不得自合／發布／新增試玩回退入口／啟其他agent或排程。第一版需要#279生活閉環與本包均完成，不把278局部美術通過當全圖完成。
