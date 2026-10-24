@@ -1,24 +1,29 @@
 // SG-LIFE-01 手動存讀（生活開發版 demo 專用）。自己的 localStorage key，不讀不寫舊 RT（sect-chronicle-save-v1*）或 viewer 資料。
-// 只有玩家按「存檔／讀檔」才動：沒有自動讀、自動存、雲端、離線收益或舊版遷移。
+// 只有玩家按「存檔／讀檔」才動：沒有自動讀、自動存、雲端或離線收益。
+// SG-PATROL-01：同 key 升 saveVersion 2。v1 先按第一版規則完整驗證，再無損補「尚未巡山＋林鼠新局初態」成 v2；未知版本一律拒絕；不讀 RT。
 // 讀檔流程：解析 → 版本與相容識別 → 結構 → 數值 → 資源／任務一致性，全部通過才交給 model.restore 整份替換；任何一步失敗都不動目前這局。
 import { JOBS, DRINK_MODES, WATER_Q, BOAR_MODE, RAT_MODE } from './model.mjs';
 import { RATS, SKILLS } from './palm.mjs';
+import { PATROL_MODES, PATROL_END, PATROL_RESULT, ROUTE, SUMMARY_KEEP, freshForestRats } from './patrol.mjs';
+import { FOREST_RATS, WAYPOINTS, PATROL, MAIN_LENGTH, PATROL_GEO_ID } from './patrol-layout.mjs';
 
 export const SAVE_KEY = 'earth-ascension:life01-demo:save';
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
+export const V1 = 1;
+const PATROL_KEYS = ['patrol', 'patrolReport', 'patrolLog', 'prats'];
 export const COMPAT_ID = 'sg-life-01/water-carry-demo';
 export const LOG_KEEP = 200;
 
 const MODES = new Set(['idle', 'carry', 'toSeat', 'seated', 'back', 'toFun', 'fun', 'fromFun',
-  'toGuard', 'guardWait', 'shout', 'fromGuard', 'toFix', 'fix', 'fromFix', 'toRat', 'windup', 'recover', 'fromRat', ...DRINK_MODES]);
-const WALK = new Set(['toSeat', 'back', 'toFun', 'fromFun', 'toGuard', 'fromGuard', 'toFix', 'fix', 'fromFix', 'shout', 'windup', 'recover', ...DRINK_MODES]);
+  'toGuard', 'guardWait', 'shout', 'fromGuard', 'toFix', 'fix', 'fromFix', 'toRat', 'windup', 'recover', 'fromRat', ...DRINK_MODES, ...PATROL_MODES]);
+const WALK = new Set(['toSeat', 'back', 'toFun', 'fromFun', 'toGuard', 'fromGuard', 'toFix', 'fix', 'fromFix', 'shout', 'windup', 'recover', ...DRINK_MODES, ...PATROL_MODES]);
 const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 const isInt = (v) => Number.isInteger(v);
 const num = (v) => typeof v === 'number' && Number.isFinite(v);
 // 形狀比對時，這些欄位依模式而變，只查型別是物件或 null，內容另由數值檢查負責。
 const LOOSE = new Set(['motion', 'leg', 'clean', 'last', 'want', 'upWant', 'suppress', 'upSuppress', 'tried', 'autoNote', 'upNote', 'cleanNote',
   'guardResult', 'fixResult', 'cleanResult', 'lastTrip', 'why', 'need', 'target', 'end', 'phase', 'job', 'pending', 'rest', 'fix', 'fixSrc', 'fixOpp',
-  'guardOrder', 'guardSrc', 'drinkNote', 'fixBy']);
+  'guardOrder', 'guardSrc', 'drinkNote', 'fixBy', 'patrol', 'patrolReport']);
 
 export class SaveError extends Error { constructor(code, msg) { super(msg); this.code = code; } }
 const bad = (code, msg) => { throw new SaveError(code, msg); };
@@ -31,7 +36,7 @@ function sameShape(tpl, c, path) {
   if (a.join() !== b.join()) bad('structure', `${path} 欄位不符（缺：${a.filter((k) => !(k in c)).join('、') || '無'}；多：${b.filter((k) => !(k in tpl)).join('、') || '無'}）`);
   for (const k of a) {
     const t = tpl[k], v = c[k], p = `${path}.${k}`;
-    if (k === 'log') { if (!Array.isArray(v)) bad('structure', `${p} 不是陣列`); continue; }
+    if (k === 'log' || k === 'patrolLog') { if (!Array.isArray(v)) bad('structure', `${p} 不是陣列`); continue; }
     if (LOOSE.has(k) || t === null) { if (typeof v === 'function' || v === undefined) bad('structure', `${p} 型別錯誤`); continue; }
     if (Array.isArray(t)) {
       if (!Array.isArray(v) || v.length !== t.length) bad('structure', `${p} 陣列長度不符`);
@@ -47,6 +52,7 @@ const isPt = (q) => isObj(q) && num(q.x) && num(q.y);
 const PATH = {
   toRat: ['from', 'to', 'queue'], fromRat: ['from', 'to', 'queue'],
   windup: ['target'], recover: ['target'],
+  patrolGo: ['from', 'to', 'queue'], patrolBack: ['from', 'to', 'queue'], patrolWind: ['ptarget'], patrolRec: ['ptarget'], patrolObs: ['wp'], patrolShout: ['visit'],
 };
 function checkPath(h, at) {
   const need = PATH[h.mode];
@@ -54,6 +60,9 @@ function checkPath(h, at) {
   if (!isInt(h.need) || h.need < 1 || !isInt(h.steps) || h.steps < 0 || h.steps > h.need) bad('value', `${at} 步數不合法`);
   for (const k of need) {
     if (k === 'target') { if (!RATS.some((r) => r.id === h.target)) bad('value', `${at}.target 不是已知測試鼠`); continue; }
+    if (k === 'ptarget') { if (!FOREST_RATS.some((r) => r.id === h.target)) bad('value', `${at}.target 不是已知林鼠`); continue; }
+    if (k === 'wp') { if (!WAYPOINTS.some((w) => w.id === h.wp)) bad('value', `${at}.wp 不是已知路標`); continue; }
+    if (k === 'visit') { if (!isInt(h.visit) || h.visit < 1) bad('value', `${at}.visit 不合法`); continue; }
     if (k === 'queue') { if (!Array.isArray(h.queue) || !h.queue.every(isPt)) bad('value', `${at}.queue 路點不合法`); continue; }
     if (!isPt(h[k])) bad('value', `${at}.${k} 座標不合法`);
   }
@@ -135,11 +144,69 @@ function checkValues(st, model) {
     || !isInt(sh.phase) || sh.phase < 0 || sh.phase > 3)) bad('value', 'shadow 進行中狀態不完整');
   if (sh.active) range(sh.steps, 0, sh.need[sh.phase], 'shadow.steps', true);
   for (const id of ids) { const q = st.people[id].pos; if (!num(q.x) || !num(q.y)) bad('value', `people.${id}.pos 不合法`); }
+  checkPatrol(st, model, ids);
+}
+
+// SG-PATROL-01：巡山名額／階段／真位置與離路退路／鎖定腳力／計時與扣費／已觀察個體與結果／林鼠／戰報與摘要，依模式驗。
+const RAT_IDS = FOREST_RATS.map((r) => r.id);
+function checkPatrol(st, model, ids) {
+  const r = model.rules, range = (v, lo, hi, p, int = false) => { if (!num(v) || v < lo || v > hi || (int && !isInt(v))) bad('value', `${p} 超出範圍（${lo}–${hi}）`); };
+  if (!Array.isArray(st.prats) || st.prats.length !== FOREST_RATS.length) bad('structure', 'prats 數量不符');
+  st.prats.forEach((rt, i) => {
+    const f = FOREST_RATS[i];
+    if (!isObj(rt) || rt.id !== f.id || rt.kind !== f.kind) bad('value', `prats[${i}] 身份不符（須為固定三隻林鼠）`);
+    if (!Object.hasOwn(RAT_MODE, rt.mode)) bad('value', `prats[${i}].mode 不是已知狀態`);
+    range(rt.exit, 0, f.exit.length, `prats[${i}].exit`, true);
+    if (!num(rt.x) || !num(rt.y)) bad('value', `prats[${i}] 位置不合法`);
+  });
+  const pa = st.patrol;
+  for (const id of ids) {
+    const m = st.people[id].motion.mode;
+    if (PATROL_MODES.includes(m) && (!pa || pa.by !== id || pa.phase === 'wait')) bad('consistency', `${id} 在巡山卻沒有巡山名額`);
+    if (pa && pa.by === id && pa.phase !== 'wait' && !PATROL_MODES.includes(m)) bad('consistency', `${id} 持巡山名額卻不在巡山`);
+    if (pa && pa.by === id && pa.phase === 'back' && m !== 'patrolBack') bad('consistency', `${id} 已返程卻不在返院`);
+  }
+  if (pa != null) {
+    if (!isObj(pa) || !ids.includes(pa.by)) bad('consistency', '巡山名額指向不存在的人');
+    if (!['wait', 'go', 'back'].includes(pa.phase) || pa.src !== 'manual') bad('value', 'patrol.phase／src 不合法');
+    range(pa.lvl, 1, r.maxLevel, 'patrol.lvl', true);
+    range(pa.ri, 0, ROUTE.length - 1, 'patrol.ri', true);
+    range(pa.tick, 0, st.tick, 'patrol.tick', true);
+    range(pa.e0, 0, r.energy.max, 'patrol.e0'); range(pa.far, 0, MAIN_LENGTH + 1e-6, 'patrol.far');
+    range(pa.walked, 0, Number.MAX_VALUE, 'patrol.walked'); range(pa.spent, 0, Number.MAX_VALUE, 'patrol.spent');
+    if (typeof pa.cancel !== 'boolean') bad('value', 'patrol.cancel 不合法');
+    if (pa.end != null && !Object.hasOwn(PATROL_END, pa.end)) bad('value', 'patrol.end 不是已知返回理由');
+    if ((pa.phase === 'back') !== (pa.end != null)) bad('consistency', 'patrol 返程與返回理由不一致');
+    for (const k of ['boarVisit', 'boarTry']) if (pa[k] != null) range(pa[k], 1, st.boar.visit, `patrol.${k}`, true);
+    if (!isObj(pa.t)) bad('structure', 'patrol.t 不是物件');
+    for (const k of ['move', 'obs', 'fight', 'back']) range(pa.t[k], 0, Number.MAX_SAFE_INTEGER, `patrol.t.${k}`, true);
+    if (pa.t.back > pa.t.move) bad('consistency', 'patrol 返程時間超過移動時間');
+    if (!Array.isArray(pa.obs) || new Set(pa.obs).size !== pa.obs.length || !pa.obs.every((w) => WAYPOINTS.some((x) => x.id === w))) bad('value', 'patrol.obs 路標不合法');
+    if (!isObj(pa.seen)) bad('structure', 'patrol.seen 不是物件');
+    for (const [id, v] of Object.entries(pa.seen)) if (!(RAT_IDS.includes(id) || id === 'boar') || !isObj(v) || !Object.hasOwn(PATROL_RESULT, v.res)) bad('value', `patrol.seen.${id} 不合法`);
+    if (pa.off != null) {
+      if (!isObj(pa.off) || !isPt(pa.off.from) || !isInt(pa.off.ri) || pa.off.ri !== pa.ri) bad('value', 'patrol.off 離路點不合法');
+      range(pa.off.ticks, 0, PATROL.chaseTicks, 'patrol.off.ticks', true);
+      if (!(pa.off.target === 'boar' || RAT_IDS.includes(pa.off.target))) bad('value', 'patrol.off.target 不合法');
+    }
+    // 返程可行：進行中（未返程）必須仍付得起從目前真位置沿真路返院的精力（段前已預留，存檔不能讓人卡在半路）。
+    if (pa.phase === 'go') {
+      const p = st.people[pa.by], need = model.patrol.returnCost(p.pos, pa);
+      if (p.energy + 1e-6 < need) bad('consistency', `巡山返程不可行：精力 ${p.energy.toFixed(2)} < 返程 ${need.toFixed(2)}`);
+    }
+  }
+  const rep = st.patrolReport;
+  if (rep != null) {
+    if (!isObj(rep) || !ids.includes(rep.by) || rep.home !== true || !Object.hasOwn(PATROL_END, rep.end)) bad('value', 'patrolReport 不合法');
+    range(rep.far, 0, MAIN_LENGTH + 1e-6, 'patrolReport.far');
+    if (!Array.isArray(rep.seen) || !rep.seen.every((x) => isObj(x) && Object.hasOwn(PATROL_RESULT, x.res))) bad('value', 'patrolReport.seen 不合法');
+  }
+  if (st.patrolLog.length > SUMMARY_KEEP || !st.patrolLog.every(isObj)) bad('value', `patrolLog 超過 ${SUMMARY_KEEP} 筆或不合法`);
 }
 
 // 序列化目前這局：版本、相容識別、幾何長度（不同路線長度的檔不能套用）與完整權威狀態。
 export function makeSave(model, savedAt = new Date().toISOString()) {
-  return { saveVersion: SAVE_VERSION, compat: COMPAT_ID, savedAt, geometry: geometryOf(model), state: model.exportState(LOG_KEEP) };
+  return { saveVersion: SAVE_VERSION, compat: COMPAT_ID, savedAt, geometry: geometryOf(model), patrolGeo: PATROL_GEO_ID, state: model.exportState(LOG_KEEP) };
 }
 const geometryOf = (model) => JSON.parse(JSON.stringify(model.lengths));
 
@@ -148,13 +215,31 @@ export function validateSave(raw, model, template) {
   let env = raw;
   if (typeof raw === 'string') { try { env = JSON.parse(raw); } catch { bad('parse', '存檔不是有效的 JSON'); } }
   if (!isObj(env)) bad('structure', '存檔不是物件');
-  if (env.saveVersion !== SAVE_VERSION) bad('version', `不認得的存檔版本：${JSON.stringify(env.saveVersion)}（只接受 ${SAVE_VERSION}）`);
+  if (env.saveVersion !== SAVE_VERSION && env.saveVersion !== V1) bad('version', `不認得的存檔版本：${JSON.stringify(env.saveVersion)}（只接受 ${V1}、${SAVE_VERSION}）`);
   if (env.compat !== COMPAT_ID) bad('compat', '這不是本試玩頁的存檔');
   if (JSON.stringify(env.geometry) !== JSON.stringify(geometryOf(model))) bad('compat', '路線長度與目前試玩頁不同，不能套用');
+  if (env.saveVersion === V1) {
+    // v1：用第一版的形狀（新局模板去掉巡山欄位）完整驗，再只補空巡山狀態與林鼠新局初態；其餘欄位原樣保留。
+    if (!isObj(env.state)) bad('structure', 'state 不是物件');
+    if (PATROL_KEYS.some((k) => k in env.state)) bad('structure', 'v1 存檔不應含巡山欄位');
+    const v1tpl = Object.fromEntries(Object.entries(template).filter(([k]) => !PATROL_KEYS.includes(k)));
+    sameShape(v1tpl, env.state, 'state');
+    if (JSON.stringify(Object.keys(env.state.people)) !== JSON.stringify(Object.keys(template.people))) bad('structure', '人物名單不符');
+    const st = migrateV1(env.state);
+    checkValues(st, model);
+    return st;
+  }
+  if (env.patrolGeo !== PATROL_GEO_ID) bad('compat', '巡山路線／林鼠配置與目前試玩頁不同，不能套用');
   sameShape(template, env.state, 'state');
   if (JSON.stringify(Object.keys(env.state.people)) !== JSON.stringify(Object.keys(template.people))) bad('structure', '人物名單不符');
   checkValues(env.state, model);
   return env.state;
+}
+
+// v1→v2 最小無損遷移（純函式，不改輸入）。
+export function migrateV1(state) {
+  const st = JSON.parse(JSON.stringify(state));
+  return { ...st, patrol: null, patrolReport: null, patrolLog: [], prats: freshForestRats() };
 }
 
 // 讀檔：候選完全通過才整份替換；回傳 { ok, text }。
@@ -166,7 +251,8 @@ export function loadInto(model, raw, template) {
     const live = model.exportState(Infinity);
     try { model.restore(st); model.view(); model.step(); model.view(); } catch (e) { model.restore(live); bad('structure', `存檔內容無法運行（${e.message}）`); }
     model.restore(st);
-    return { ok: true, text: `已讀檔（第 ${(st.tick / 60).toFixed(1)} 遊戲秒）；已暫停` };
+    const old = (() => { try { return (typeof raw === 'string' ? JSON.parse(raw) : raw).saveVersion === V1; } catch { return false; } })();
+    return { ok: true, migrated: old, text: `已讀檔（第 ${(st.tick / 60).toFixed(1)} 遊戲秒${old ? '；v1 存檔已遷移為 v2，下次存檔寫 v2' : ''}）；已暫停` };
   } catch (e) {
     if (e instanceof SaveError) return { ok: false, code: e.code, text: `讀檔失敗：${e.message}；目前這局不變` };
     throw e;

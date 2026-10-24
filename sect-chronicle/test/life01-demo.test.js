@@ -139,7 +139,7 @@ test('壞檔：未知版本、結構錯、數值錯、資源／任務不一致�
   const before = JSON.stringify(b.exportState());
   const mutate = (fn) => { const e = JSON.parse(JSON.stringify(good)); fn(e); return e; };
   const cases = {
-    version: mutate((e) => { e.saveVersion = 2; }),
+    version: mutate((e) => { e.saveVersion = 99; }),
     compat: mutate((e) => { e.compat = 'other'; }),
     structure: mutate((e) => { delete e.state.people.hero.energy; }),
     extra: mutate((e) => { e.state.people.hero.bonus = 1; }),
