@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## 2026-10-24目前接續：先交回293補修，再同Grok整包290
+
+第一版D36／282與D37／289已接受、Earth合dev `4f0bf8f`／postCI40056166835五項成功，唯一8800已更新並清舊部署；D38正式文件亦已整合。擁有人本輪批准Grok先按原review／原窗口收尾293標註裁切，推新head與必要證據、#182回填review後，即可#290本人新claim／當時最新dev新分支接續[巡山正式包](docs/PATROL01_HANDOFF.md)／[最新提示詞](docs/PATROL01_GROK_PROMPT.md)。不等293審合／postCI或本提示詞更新合併才開發，不重做第一版／預占未開工工程。PO文件claim不占作者設計／runtime；同作者串行、原補修責任與根認領規則保留。
+
+290一主筆一PR完整交路線、對手、耗能返程、戰報、必要保存與水彩接線；PF1–PF4／原長路速度與數值不變。293新全景／宿舍仍獨立設計，未授整圖替換、床位睡眠／建造。集中review、必要差異驗證／證據復用／清理、Earth唯一queue與單一試玩版照舊。下方「等第一版」為已完成的歷史前置，不能再次阻擋接續。
+
 ## D39新增獨立場景設計：不更動原第一版／巡山
 
 擁有人直接要求Grok再次重設完整場景、納backlog與水系合理性，另研究宿舍床位。讀[#182設計整包](docs/SCENE02_HANDOFF.md)／[Grok提示詞](docs/SCENE02_GROK_PROMPT.md)及[床位開源研究](docs/ROOM_BEDS_RESEARCH.md)。同Grok交完289／本輪必要補修可於等待整合期間182新claim、只寫design/art182-scene02/**；不等新文件merge或290實裝才畫圖，PO#75文件claim不占圖稿目錄，不能同時互改runtime。
