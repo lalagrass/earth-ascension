@@ -5,7 +5,8 @@ import { Container, Graphics, Sprite, TilingSprite } from '../vendor/pixi.min.mj
 import { PROPS, DECALS, NPCS, POOL, STREAM_UP, STREAM_DOWN, STREAM_OUT, BRIDGE } from './layout.mjs';
 import { STREAM_POLY } from '../assets/long-water/scenery.mjs';
 
-export const ART_WC = 'assets/scene03/';
+// HOME-01（#309）：S0 素材入口改 assets/home01/manifest.json（新地面＋破道館＋茶座；其餘件沿用 scene03／D35／D37 原檔相對路徑）。
+export const ART_WC = 'assets/home01/';
 
 // tex(name) → Pixi Texture；manifest＝demo/assets/art184-watercolor/manifest.json
 export function buildWatercolorScene({ world, sorted, tex, manifest }) {

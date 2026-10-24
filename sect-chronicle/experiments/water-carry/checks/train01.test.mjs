@@ -3,18 +3,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createModel, TRAIN, TRAIN_MODES } from '../demo/model.mjs';
+import { RULES as RULES_D45, createModel, TRAIN, TRAIN_MODES } from '../demo/model.mjs';
 import { createRoutes } from '../demo/routes.mjs';
 import { SKILLS } from '../demo/palm.mjs';
 import { saveTo, loadFrom, SAVE_KEY } from '../demo/life-save.mjs';
 import { guardedSave, guardedLoad } from '../demo/life02.mjs';
 
+// HOME-01／D45：新局已無口渴；本檔舊節奏（喝水耗缸、口渴自理）只作舊行為 fixture，明示 thirst:true。新局 D45 斷言見 tea.test.mjs。
+const RULES = { ...RULES_D45, thirst: true };
 const scene = JSON.parse(readFileSync(new URL('../spikes/shared/scene.json', import.meta.url)));
 const geo = createRoutes(scene.path.points);
 const r1 = (n) => Math.round(n * 10) / 10;
 const LENGTHS = { water: scene.path.length, herb: r1(geo.routes.herb.length), seat: geo.seatLengths, fun: geo.funLengths,
   boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength) };
-const mk = () => createModel(LENGTHS, undefined, undefined, undefined, { placeOf: geo.of, meetLengths: geo.meetLengths, trainLengths: geo.trainLengths });
+const mk = () => createModel(LENGTHS, RULES, undefined, undefined, { placeOf: geo.of, meetLengths: geo.meetLengths, trainLengths: geo.trainLengths });
 const UNIT = Math.round(TRAIN.unitMs * 60 / 1000);
 const P = (m, id = 'hero') => m.state.people[id];
 const T = (m) => m.train01.state;

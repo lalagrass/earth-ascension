@@ -129,6 +129,12 @@ function poseOf(id, person) {
     const view = person.mode === 'drink' ? { phase: 'herbDeliver', k: 0.5, travelled: 0 } : { phase: 'herbOut', k: 0, travelled: at.travelled };
     return { x: at.x, y: at.y, face: at.face, ...a.pick(view), travelled: at.travelled, phase: person.mode, cup: person.mode === 'drink' };
   }
+  // HOME-01 茶座：往返空手步態；煮茶蹲身看爐（採藥蹲身幀借用），喝茶空手站姿＋杯子。
+  if (person.tea && person.tea.mode) {
+    const at = geo.of(id, person), a = animators[id], m = person.mode;
+    const view = m === 'brew' ? { phase: 'herbGather', k: 0.5, travelled: 0 } : m === 'sip' ? { phase: 'herbDeliver', k: 0.5, travelled: 0 } : { phase: 'herbOut', k: 0, travelled: at.travelled };
+    return { x: at.x, y: at.y, face: at.face, ...a.pick(view), travelled: at.travelled, phase: m, cup: m === 'sip', borrowed: m === 'brew' };
+  }
   if (person.leisure) {
     const at = geo.of(id, person), a = animators[id];
     // 往返用空手往藥圃的步態（不畫背簍），不扛扁擔。
@@ -355,7 +361,7 @@ function placeCup(id, p, person) {
   const g = cups[id];
   g.visible = !!p.cup;
   if (!g.visible) return;
-  const tip = Math.min(1, person.drinkLeg.k * 3); // 先舉杯再就口
+  const tip = Math.min(1, (person.drinkLeg ? person.drinkLeg.k : person.tea ? person.tea.sipK : 1) * 3); // 先舉杯再就口
   g.position.set(p.x + p.face * (9 - tip * 3), p.y - 52 - tip * 8); g.rotation = -p.face * tip * 0.5; g.scale.set(1.7); g.zIndex = p.y + 0.03;
 }
 
@@ -424,10 +430,10 @@ const LENGTHS = { water: WATER_LENGTH, herb: r1(herbPath.length), seat: geo.seat
   boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength),
   drink: r1(geo.drinkLengths.home), drinkSeat: { hero: r1(geo.drinkLengths.seat.hero), cousin: r1(geo.drinkLengths.seat.cousin) } };
 // LP-11：警覺鼠察覺用同一份純幾何取樣兩人位置（模型在權威 tick 呼叫，不讀畫面座標）。
-const SENSE = { placeOf: geo.of, boarAt: geo.boarAt, meetLengths: geo.meetLengths, trainLengths: geo.trainLengths }; // SG-LIFE-02 招呼路長度不進 LENGTHS（存檔幾何識別不變）
+const SENSE = { placeOf: geo.of, boarAt: geo.boarAt, meetLengths: geo.meetLengths, trainLengths: geo.trainLengths, teaLength: geo.teaLength }; // SG-LIFE-02 招呼路長度不進 LENGTHS（存檔幾何識別不變）
 let model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
 const clock = createClock();
-const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null, boarExpanded: false, advancedOpen: false };
+const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null, boarExpanded: false, advancedOpen: false, tab: 'life', eventsOpen: false };
 let v = model.view();
 let positions = Object.fromEntries(IDS.map((id) => [id, poseOf(id, v.people[id])]));
 const fx = []; // 浮字（只是畫面效果）
@@ -549,6 +555,11 @@ $('save').addEventListener('click', saveGame);
 $('load').addEventListener('click', loadGame);
 $('roster').addEventListener('click', (e) => { const b = e.target.closest('[data-person]'); if (b) select(b.dataset.person); });
 $('panel').addEventListener('click', (e) => {
+  // HOME-01：分頁／小事件只切顯示，不派令、不推 tick。
+  const tab = e.target.closest('[data-tab]');
+  if (tab) { ui.tab = tab.dataset.tab; renderChrome(); measure(); return; }
+  const evt = e.target.closest('[data-ui="toggleEvents"]');
+  if (evt) { ui.eventsOpen = !ui.eventsOpen; renderChrome(); measure(); return; }
   const adv = e.target.closest('[data-ui="toggleAdv"]');
   if (adv) { ui.advancedOpen = !ui.advancedOpen; renderChrome(); measure(); return; }
   const a = e.target.closest('[data-auto]');
@@ -882,25 +893,29 @@ function renderChrome() {
           : '<div class="muted">沒有</div>';
     const cmds = model.actions(id).filter((a) => !a.hidden && a.id !== 'pourNow' && a.id !== 'fixCancel' && a.id !== 'upCancel' && a.id !== 'cleanCancel') // 取消整理／整理意願／清理放在各自狀態列旁
       .map((a) => `<button class="btn" data-cmd="${a.id}" ${a.enabled ? '' : 'disabled'} title="${a.enabled ? a.detail : a.reason}">${cmdLabel(a, person)}</button>`).join(' ');
-    if (!panel.firstElementChild) panel.innerHTML = '<div id="p-core"></div><div id="p-pend"></div><div id="p-cmds" class="cmds"></div><div id="p-adv"></div>';
+    if (!panel.firstElementChild) panel.innerHTML = '<div id="p-core"></div><div id="p-tabs" class="ptabs" role="tablist"></div><div id="p-life"></div><div id="p-martial"></div>';
+    // HOME-01 固定人物資訊：名字、身分、精力、院中存量（都讀模型 view；沒有血量／內力／總戰力）。
     put('p-core', $('p-core'), `<h2>${profile.name}<small>${profile.role}</small></h2>
-      <div class="leg-badge"><b>腳力 Lv ${person.level}／${person.maxLevel}</b><span class="muted">${person.nextNeed ? `（再 ${person.nextNeed - person.xp} 趟升 Lv ${person.level + 1}）` : '（已封頂）'}</span></div>
-      <h4>精力</h4><div class="row"><b>${en(person)}／${person.energyMax}</b><span class="muted">${srcText(person) ? `來源：${srcText(person)}` : '工作每秒 −1 · 坐下每秒 +5'}</span></div>
+      <h4>精力</h4><div class="row"><b>${en(person)}／${person.energyMax}</b><span class="muted">${srcText(person) ? `來源：${srcText(person)}` : '工作每秒 −1 · 坐下每秒 +5 · 喝茶 +40'}</span></div>
       <div class="bar energy ${person.energy <= 30 ? 'low' : ''}"><i style="width:${person.energy / person.energyMax * 100}%"></i><s style="left:30%"></s><s style="left:80%"></s></div>
-      ${person.water == null ? '' : `<h4>水分</h4><div class="row" id="water-${id}"><b>${Math.floor(person.water)}／${person.waterMax}</b><span class="muted">${person.drinkText}</span></div>
-      <div class="bar water ${person.thirsty ? 'low' : ''}"><i style="width:${person.water / person.waterMax * 100}%"></i><s style="left:${v.drinkRules.want / person.waterMax * 100}%"></s></div>`}
-      <div class="job-card">
-        <div class="row"><b>目前工作：${person.jobLabel}</b><span>${person.status}</span></div>
-        <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : person.fixLeg ? person.fixLeg.k : person.fixWork ? person.fixWork.k : person.drinkLeg ? person.drinkLeg.k : 0) * 100)}%"></i></div>
+      <div class="row stock" id="stock-${id}"><span>水缸 ${v.vat}／${v.vatCapacity}${v.inFlight ? `（在途 ${v.inFlight}）` : ''}</span><span>藥草 ${v.herbs}／${v.herbCapacity}${v.herbInFlight ? `（在途 ${v.herbInFlight}）` : ''}</span><span class="muted">茶可用：水 ${Math.max(0, v.teaAvail.water)}・藥草 ${Math.max(0, v.teaAvail.herb)}</span></div>`);
+    put('p-tabs', $('p-tabs'), `<button class="btn tab ${ui.tab === 'life' ? 'on' : ''}" role="tab" aria-selected="${ui.tab === 'life'}" data-tab="life">生活總覽</button><button class="btn tab ${ui.tab === 'martial' ? 'on' : ''}" role="tab" aria-selected="${ui.tab === 'martial'}" data-tab="martial">武學成長</button>`);
+    $('p-life').hidden = ui.tab !== 'life';
+    $('p-martial').hidden = ui.tab !== 'martial';
+    if (ui.tab === 'life') put('p-life', $('p-life'), `<div class="job-card">
+        <div class="row"><b>現在：${person.tea && person.tea.now ? person.tea.now : person.status}</b><span>${work}</span></div>
+        <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.tea && person.tea.mode === 'brew' ? person.tea.brewK : person.tea && person.tea.mode === 'sip' ? person.tea.sipK : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : person.fixLeg ? person.fixLeg.k : person.fixWork ? person.fixWork.k : person.drinkLeg ? person.drinkLeg.k : 0) * 100)}%"></i></div>
+        <div class="muted">來源：${sourceText(person)}</div>
         <div class="next-box"><b>下一步：</b>${person.next}</div>
         ${person.why ? `<div class="muted stop-reason">狀態原因：${person.why}</div>` : ''}
+        ${teaHtml(person)}
         ${life02Html(person)}
-        ${trainHtml(person)}
-      </div>`);
-    put('p-pend', $('p-pend'), pend);
-    put('p-cmds', $('p-cmds'), cmds);
-    put('p-adv', $('p-adv'), `<div class="adv-section">
-      <button class="btn toggle-adv" data-ui="toggleAdv">${ui.advancedOpen ? '▾ 收起進階設定與掌法' : '▸ 進階設定（自主政策與掌法）'}</button>
+      </div>
+      <div id="p-pend">${pend}</div>
+      <div id="p-cmds" class="cmds">${cmds}</div>
+      ${eventsHtml(id)}
+      <div class="adv-section">
+      <button class="btn toggle-adv" data-ui="toggleAdv">${ui.advancedOpen ? '▾ 收起進階設定' : '▸ 進階設定（自主政策）'}</button>
       <div class="adv-body" ${ui.advancedOpen ? '' : 'hidden'}>
         ${guardText(person) ? `<div class="guardline">${guardText(person)}</div>` : person.guardResult ? `<div class="muted">驅離結果：${RESULT_TEXT[person.guardResult.kind]}</div>` : ''}
         ${fixHtml(person)}
@@ -909,21 +924,46 @@ function renderChrome() {
         ${upHtml(person)}
         <div class="muted">偏好：${person.pref ? `${person.pref.label}（${person.pref.place}）· ${person.job === 'herb' ? '藥架' : '水缸'}實存滿才去，有空位就回` : '無'}</div>
         <h4>收穫（此人交付）</h4><div class="row"><span>挑水 ${person.done.water} 擔</span><span>採藥 ${person.done.herb} 份</span></div>
-        <h4>腳力速度對照</h4>
+        ${positions[id].borrowed ? `<div class="muted">${positions[id].palm ? '動作借用：掌法沒有專用幀，暫用空手站姿／蹲身底圖＋向量手臂立掌疊圖（專用 atlas 另案）' : '動作借用：整理護欄沒有專用幀，暫用「舒展筋骨」前彎／站直兩幀交替'}</div>` : ''}
+        ${positions[id].fallback ? `<div class="muted">動作沿用：${positions[id].requested === 'rest' ? '坐下歇（此人尚無坐姿幀，暫用蹲姿）' : template.actions[positions[id].action].label}</div>` : ''}
+      </div></div>`);
+    else put('p-martial', $('p-martial'), `<div class="leg-badge"><b>腳力 Lv ${person.level}／${person.maxLevel}</b><span class="muted">${person.nextNeed ? `（再 ${person.nextNeed - person.xp} 趟升 Lv ${person.level + 1}）` : '（已封頂）'}</span></div>
         <div class="bar xp"><i style="width:${person.nextNeed ? Math.round(person.xp / person.nextNeed * 100) : 100}%"></i></div>
         <table class="cmp"><tr><td>場景單位／秒</td><td class="now">${person.mode === 'carry' ? `本趟 Lv ${person.tripLevel}` : `現在 Lv ${person.level}`}</td><td class="init">起始 Lv ${person.initialLevel}</td></tr>
           <tr><td>去程（空手／空桶）</td><td class="now">${sn.empty.toFixed(1)}</td><td class="init">${si.empty.toFixed(1)}</td></tr>
           <tr><td>回程（負重）</td><td class="now">${sn.load.toFixed(1)}</td><td class="init">${si.load.toFixed(1)}</td></tr>
-          ${person.mode === 'carry' ? `<tr><td>本趟${person.jobLabel}（已鎖定）</td><td class="now">${sec(person.tripSecondsNow)}</td><td class="init"></td></tr>` : ''}
           <tr><td>下趟${JOBS[person.nextJob].label}（Lv ${person.level}）</td><td class="now">${sec(person.tripSeconds)}</td><td class="init">${sec(person.tripSecondsInitial)}</td></tr></table>
-        <div class="muted">${person.lastTrip ? `上一趟${JOBS[person.lastTrip.job].label}實際 ${sec(person.lastTrip.seconds)}（出發時 Lv ${person.lastTrip.level}）` : '還沒完成第一趟'}；挑水、採藥共用腳力，升級只影響下一趟，倍率只改播放快慢</div>
-        ${positions[id].borrowed ? `<div class="muted">${positions[id].palm ? '動作借用：掌法沒有專用幀，暫用空手站姿／蹲身底圖＋向量手臂立掌疊圖（專用 atlas 另案）' : '動作借用：整理護欄沒有專用幀，暫用「舒展筋骨」前彎／站直兩幀交替'}</div>` : ''}
-        ${positions[id].fallback ? `<div class="muted">動作沿用：${positions[id].requested === 'rest' ? '坐下歇（此人尚無坐姿幀，暫用蹲姿）' : template.actions[positions[id].action].label}</div>` : ''}
-      </div>
-    </div>`);
+        <h4>掌法</h4><div class="row"><b>${person.palmLabel}</b><span class="muted">起手 ${person.palmTicks.windup}・收勢 ${person.palmTicks.recover} tick</span></div>
+        ${trainHtml(person)}
+        <h4>巡山戰報（本局真實紀錄）</h4>${martialPatrol(v, id)}`);
   }
 }
 
+// HOME-01：來源只說真的原因（玩家指派／自主政策／必要自理）。
+function sourceText(p) {
+  if (p.tea && p.tea.active) return '玩家指派：泡茶';
+  if (p.train01 && p.train01.src) return p.train01.src;
+  if (p.life02 && p.life02.src) return p.life02.src;
+  if (p.rest === 'auto') return '必要自理：精力低先恢復';
+  if (p.rest === 'manual') return '玩家停工／待命';
+  if (p.recall) return '玩家叫回';
+  if (p.guardSrc || p.fixSrc || p.cleanSrc) return (p.guardSrc || p.fixSrc || p.cleanSrc) === 'auto' ? '自主政策' : '玩家指派';
+  return p.leisure ? '自由活動（存放處已滿）' : '持續工作';
+}
+function teaHtml(p) {
+  const t = p.tea;
+  if (!t || (!t.active && !t.note)) return '';
+  return `<div class="tea" id="tea-${p.id}">${t.now ? `<div><b>茶座：</b>${t.now}</div>` : ''}${t.note ? `<div class="muted">最近：${t.note}</div>` : ''}${t.active ? `<div class="muted">預約：水 ${t.resv.water}・藥草 ${t.resv.herb}${t.seat ? `・座位 ${profiles[t.seat].name}` : ''}</div>` : ''}</div>`;
+}
+function eventsHtml(id) {
+  const evs = v.teaEvents.filter((e) => e.person === id).slice(-8).reverse();
+  return `<div class="events"><button class="btn toggle-adv" data-ui="toggleEvents">${ui.eventsOpen ? '▾' : '▸'} 小事件（本局 ${evs.length}）</button>${ui.eventsOpen ? `<ul>${evs.map((e) => `<li>${(e.tick / 60).toFixed(0)}s ${e.text}</li>`).join('') || '<li class="muted">本局還沒有</li>'}</ul>` : ''}</div>`;
+}
+function martialPatrol(v, id) {
+  const r = v.patrolReport;
+  if (!r || r.by !== id) return '<div class="muted">此人本局還沒有巡山戰報</div>';
+  return `<div class="patrolrep">${PATROL_END[r.end]} · 最遠 ${Math.round(r.far)} · 路標 ${r.obs.join('→') || '—'} · 精力 ${Math.round(r.e0)}→${Math.round(r.e1)}</div>`;
+}
 // SG-LIFE-02 人物卡：只補「現在／來源／原因／下一步」，不重排 HUD。
 function life02Html(person) {
   const l = person.life02;

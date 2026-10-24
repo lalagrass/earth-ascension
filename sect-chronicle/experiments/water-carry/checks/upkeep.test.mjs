@@ -5,7 +5,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createModel, createClock, RULES, STEP_MS, AUTO_ORDER, UP_REACT } from '../demo/model.mjs';
+import { createModel, createClock, RULES as RULES_D45, STEP_MS, AUTO_ORDER, UP_REACT } from '../demo/model.mjs';
+// HOME-01／D45：新局已無口渴；本檔舊節奏（喝水耗缸、口渴自理）只作舊行為 fixture，明示 thirst:true。新局 D45 斷言見 tea.test.mjs。
+const RULES = { ...RULES_D45, thirst: true };
 import { createRoutes } from '../demo/routes.mjs';
 
 const scene = JSON.parse(readFileSync(new URL('../spikes/shared/scene.json', import.meta.url)));

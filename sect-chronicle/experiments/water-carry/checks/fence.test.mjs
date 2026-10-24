@@ -4,7 +4,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createModel, createClock, RULES, STEP_MS } from '../demo/model.mjs';
+import { createModel, createClock, RULES as RULES_D45, STEP_MS } from '../demo/model.mjs';
+// HOME-01／D45：新局已無口渴；本檔舊節奏（喝水耗缸、口渴自理）只作舊行為 fixture，明示 thirst:true。新局 D45 斷言見 tea.test.mjs。
+const RULES = { ...RULES_D45, thirst: true };
 import { createRoutes, SEEN_X } from '../demo/routes.mjs';
 
 const scene = JSON.parse(readFileSync(new URL('../spikes/shared/scene.json', import.meta.url)));
@@ -15,7 +17,7 @@ const LENGTHS = { water: scene.path.length, herb: r1(geo.routes.herb.length), se
   boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength) };
 const ticks = (s) => Math.round(s * 60);
 const run = (m, pred, limit = ticks(3600)) => { for (let i = 0; i < limit; i++) { if (pred(m.view())) return m.view(); m.step(); } throw new Error('沒有等到條件'); };
-const game = () => createModel(LENGTHS);
+const game = () => createModel(LENGTHS, RULES);
 const P = (m, id) => m.state.people[id];
 const logOf = (m, pred) => m.state.log.filter(pred);
 const FIX_N = Math.ceil(RULES.fix.workMs / STEP_MS - 1e-9);
