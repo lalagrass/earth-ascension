@@ -1,17 +1,17 @@
-# 給既有grass：SG-LIFE-M1逐包review與合併責任規劃
+# 給既有grass：M1收尾、純遊戲review／dev整合，完成後休息
 
-沿用現有grass，不新建Dot／第二reviewer。讀[#334總控](https://github.com/lalagrass/earth-ascension/issues/334)、[執行清單](LIFE_M1_EXECUTION_PLAN.md)、[接棒協定](GROK_GRASS_HANDOFF_PROTOCOL.md)與[移交計畫](GAME_PR_GRASS_TRANSFER_PLAN.md)。當前剩餘工程白名單只有330，按D49正式包；更多社交食物擴招／架構等均不在循環，不把所有OPEN當任務。
+擁有人2026-10-25已批准D51：M1＝既有基線＋330；你接手**非本人主筆、完整diff全在sect-chronicle/且產品範圍已批准**的純遊戲PR集中review及dev squash merge。沿用既有grass，全部在已發布earth-ascension Cloud環境，不另建Dot／第二reviewer。先讀最新origin/dev的根CONTRIBUTING／AGENTS、SG AGENTS、[正式移交](GAME_PR_GRASS_TRANSFER_PLAN.md)、[#334總控](https://github.com/lalagrass/earth-ascension/issues/334)、[M1清單](LIFE_M1_EXECUTION_PLAN.md)與#67最新唯一切換／票紀錄。
 
-**合併權尚未切換。** 目前你沿HOME02原授權review→Earth合dev／postCI，不能自己merge。只有擁有人明確批准、正式權限PR與根契約／環境啟動規則更新並合dev/postCI、#67唯一cutover紀錄／接手收據完整後，才可依記錄成為純遊戲PR owner；規劃文件merge、技術工具可寫或另一bot留言都不構成授權。切換前後不新增scope／DoD／數值，main仍交擁有人。
+**先完成接手收據，再依正式cutover操作。** 回報真Cloud位置／環境、最新dev、PR/checks可讀、COMMENT／正常鎖head squash工具及缺口；可在#67留具名收據，不造測試PR／試merge、不抄Mac token。Earth須先審合正式權限PR／postCI、核Cloud啟動限制實際保存發布與你的收據，才在#67記effective_after_sha／範圍／owner／未結票／生效時間。切換前不自合；切換後不用再問已批准角色或交Earth做同一套產品review。能力不足記明，先停用你的merge並明確返還Earth，不能雙owner。
 
-先查330／PR333最新head與已有review任務。Cloud review6388352861已對head 84cfa07bdeb1354202a4eb7a644fd3925ea73538列床位／躺卧在屋外的阻擋；同head不要再初審／另派人，等待Grok同PR補修的新head，只核受影響差異、必要真圖／直接反例與CI。若原任務仍有效就接同一任務，不兩邊各審一次；共享帳號寫真Grok／reviewer與COMMENT，不冒充平台獨立approval。
+本輪唯一工程330／PR333，D49 A–D不變。已有Cloud[ready6388542820](https://github.com/lalagrass/earth-ascension/pull/333#issuecomment-6388542820)鎖head **b86657324c82c2d470baeac39c0d74ea552d56a5**，床位／躺臥阻擋已解；不要重做初審／原圖／全測。先查實際head、合併與CI；若已被Earth收尾，復用接受SHA／postCI，不再合一次。若未合，照#67明確票歸屬；Earth已active則等它收尾，沒有active且cutover明交你才整合。
 
-全部在已發布earth-ascension Cloud環境執行，不轉Mac。先metadata／diff／A–D已有證據，真缺口才補必要反例／一次桌面；舊內容／原326圖與通勤速度／武學巡山證據復用。新base／共用gate／新反證才擴受影響範圍，不全checks/rootSG/全seed/角色倍率/保存手機矩陣。只一Cloud頁／服務、觀察後暫停並finally清理，不重啟常駐renderer／讀出全歷史或全部log；用量只記平台實測，無資料標未量測，不買額度。
+#67同時只有一個active dev merge（Earth與你共用），記owner／PR／expected head／最新dev／CI並再核無競合；#67不是硬鎖，碰撞先協調，不並發寫dev。核完整diff／真head/base／實際merge parents/tree與當前必要CI；無關MD前進可復用產品、真圖及測試證據，不為整合重跑全遊戲，但當前合併必要CI仍須覆蓋。head/base前進只驗差異／連帶風險，新gate／反證才擴驗。鎖expected_head_sha正常squash→dev，不force/admin/跳gate/刪作者分支。確認遠端dev／接受SHA與此push必要postCI成功才done；失敗停後包，原批准範圍fix／revert PR，不rewrite dev。
 
-有阻擋一次列齊給原Grok，附head／最小重現／證據來源與下一步，產生給人類轉貼Grok的短訊息；等待期間休眠，不追作者／短輪詢／重送同任務或自設排程。Grok是手動貼網頁／App入口，未驗callback；有現成完成事件才用並確認收據，沒有則等人類貼PR／新head再喚起。你可追蹤自己建立的Cloud任務，但不能假稱能直接喚起外部Grok。
+根契約、.github、共用依賴、跨產品、整合權限／保護仍Earth；遊戲路徑不能繞過這些邊界。main／新玩法／數值／重大資料語義／付費仍擁有人；你主筆的PR不能自審自合。共用帳號寫真Grok／grass具名COMMENT，不冒充平台獨立approval。
 
-通過後：切換前交Earth唯一queue；切換後只對已批純遊戲範圍、非作者合格PR，按#67單一active merge序列處理。核真head/base／實際merge父SHA與tree／必要CI，head或base變更就回差異核對；鎖expected_head_sha用squash，無force／admin／跳gate／刪作者分支。根CI／依賴／跨產品／合併權限類PR仍交Earth，不用路徑冒充純遊戲。其他owner有active整合票時等它結束，避免兩邊並合；不把#67文字票當GitHub硬鎖。
+只補真正缺口：必要直接反例／一次Cloud桌面，未變證據復用；不全checks／rootSG／全seed／倍率／保存手機矩陣，純MD不啟遊戲。最多一頁一服務，觀察後暫停、finally清自有頁／程序，不用Mac或碰Grok box／branch。輸出只head/base、A–D／阻擋、證據／CI、清理及下一責任人；用量無實測就標未量測、不買額度。
 
-merge後核接受SHA／遠端dev與該push必要postCI，成功才done／給下一個已批ready項；失敗停後包，交原批准範圍fix／revert PR，不rewrite dev。每項完成更新總控與原issue的已驗／未驗／證據、下一責任人；不要為總控收尾重跑整套遊戲或造另一個Grok開發PR。
+有新阻擋一次列齊，原Grok同PR補修；產生人類轉貼Grok的短訊息，等待新head才差異複審。Grok僅人工貼網頁／App，沒有callback／runner；不用留言假稱對方已醒，不短輪詢／重送同任務／建排程。只有新交付／必要CI結果或人類接棒才續同包，無變化休眠。
 
-白名單所有項done後，沿已有接受SHA／CI／真圖交一份短M1摘要與真人按需同步說明，註新木／工地／床只本局、體驗平衡未真人驗；不自動部署Mac或開第二正式版。清理後停止本里程碑，Grok也休息，不掃其他OPEN／開M2／研究出圖／永久loop。權限／產品／額度受阻保成果並記待誰處理，不假報完成；grass merge能力不足時不擅自與Earth雙owner，按正式返還記錄處理。手機／新增保存始終最後。
+330整合postCI成功後回填330／334／67：接受SHA、證據／CI、功能／未驗／限制（新木／工地／床僅本局）與唯一試玩入口的真人按需同步說明。**Mac只真人，不自部署，不另建回退入口**。不另造QA／Grok開發PR；本M1工程清單全done就交短摘要、清理並休息，不掃其他OPEN／開M2／研究／出圖／永久loop。保存升版與手機最後，長通勤／速度差與原玩法資料保持。
