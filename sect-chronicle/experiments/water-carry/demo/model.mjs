@@ -1524,7 +1524,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       rats: s.rats.map((r) => ({ id: r.id, kind: r.kind, mode: r.mode, label: RAT_MODE[r.mode], x: r.x, y: r.y, valid: validRat(r), why: r.why })),
       clean: s.clean ? { ...s.clean } : null,
       prats: s.prats.map((r) => ({ id: r.id, kind: r.kind, mode: r.mode, label: RAT_MODE[r.mode], x: r.x, y: r.y, valid: pt.validPrat(r), why: r.why })),
-      patrol: s.patrol ? { by: s.patrol.by, phase: s.patrol.phase, end: s.patrol.end } : null,
+      patrol: s.patrol ? { by: s.patrol.by, phase: s.patrol.phase, end: s.patrol.end, seen: Object.entries(s.patrol.seen).map(([id, x]) => ({ id, kind: x.kind, res: x.res })) } : null,
       patrolReport: s.patrolReport ? JSON.parse(JSON.stringify(s.patrolReport)) : null, patrolLog: s.patrolLog.map((x) => ({ ...x })),
       log: s.log.slice(-5), drinkRules: D ? { ...D } : null,
     };

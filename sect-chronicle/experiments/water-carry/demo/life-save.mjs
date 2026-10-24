@@ -194,14 +194,45 @@ function checkPatrol(st, model, ids) {
       const p = st.people[pa.by], need = model.patrol.returnCost(p.pos, pa);
       if (p.energy + 1e-6 < need) bad('consistency', `巡山返程不可行：精力 ${p.energy.toFixed(2)} < 返程 ${need.toFixed(2)}`);
     }
+    if (pa.phase === 'back') {
+      // 返程：驗目前短段與剩餘返院 queue 的結構，且精力付得起真實剩餘路（不足樣本整份拒絕，不補能／清 queue）。
+      const p = st.people[pa.by], h = p.motion, home = ROUTE[0];
+      if (!isPt(h.to) || !Array.isArray(h.queue) || !h.queue.every(isPt) || !isInt(h.need) || !isInt(h.steps) || h.steps > h.need || h.tripLevel !== pa.lvl) bad('structure', '巡山返程段／queue 不合法');
+      const last = h.queue.length ? h.queue[h.queue.length - 1] : h.to;
+      if (Math.hypot(last.x - home[0], last.y - home[1]) > 1e-6) bad('consistency', '巡山返程 queue 終點不是院中');
+      const need = model.patrol.backCost(h);
+      if (p.energy + 1e-6 < need) bad('consistency', `巡山返程不可行：精力 ${p.energy.toFixed(2)} < 剩餘返程 ${need.toFixed(2)}`);
+    }
   }
   const rep = st.patrolReport;
-  if (rep != null) {
-    if (!isObj(rep) || !ids.includes(rep.by) || rep.home !== true || !Object.hasOwn(PATROL_END, rep.end)) bad('value', 'patrolReport 不合法');
-    range(rep.far, 0, MAIN_LENGTH + 1e-6, 'patrolReport.far');
-    if (!Array.isArray(rep.seen) || !rep.seen.every((x) => isObj(x) && Object.hasOwn(PATROL_RESULT, x.res))) bad('value', 'patrolReport.seen 不合法');
+  if (rep != null) checkReport(rep, ids, st.tick, r);
+  if (!Array.isArray(st.patrolLog) || st.patrolLog.length > SUMMARY_KEEP) bad('value', `patrolLog 超過 ${SUMMARY_KEEP} 筆或不合法`);
+  st.patrolLog.forEach((x, i) => {
+    const at = `patrolLog[${i}]`;
+    if (!isObj(x) || !ids.includes(x.by) || !Object.hasOwn(PATROL_END, x.end) || typeof x.drove !== 'boolean') bad('value', `${at} 不合法`);
+    range(x.tick, 0, st.tick, `${at}.tick`, true); range(x.far, 0, MAIN_LENGTH + 1e-6, `${at}.far`); range(x.down, 0, RAT_IDS.length, `${at}.down`, true);
+  });
+}
+// 戰報：只驗 UI／摘要真正讀的欄位（結果、路標、精力、時間、遭遇），壞資料在替換前拒絕。
+function checkReport(rep, ids, tick, r) {
+  const range = (v, lo, hi, p, int = false) => { if (!num(v) || v < lo || v > hi || (int && !isInt(v))) bad('value', `${p} 超出範圍（${lo}–${hi}）`); };
+  if (!isObj(rep) || !ids.includes(rep.by) || rep.home !== true || !Object.hasOwn(PATROL_END, rep.end)) bad('value', 'patrolReport 不合法');
+  range(rep.far, 0, MAIN_LENGTH + 1e-6, 'patrolReport.far');
+  range(rep.startTick, 0, tick, 'patrolReport.startTick', true); range(rep.endTick, rep.startTick, tick, 'patrolReport.endTick', true);
+  range(rep.total, 0, tick, 'patrolReport.total', true);
+  if (rep.total !== rep.endTick - rep.startTick) bad('consistency', 'patrolReport.total 與起訖不符');
+  range(rep.e0, 0, r.energy.max, 'patrolReport.e0'); range(rep.e1, 0, r.energy.max, 'patrolReport.e1');
+  range(rep.spent, -r.energy.max, r.energy.max, 'patrolReport.spent'); range(rep.walked, 0, Number.MAX_VALUE, 'patrolReport.walked');
+  range(rep.lvl, 1, r.maxLevel, 'patrolReport.lvl', true);
+  if (!Array.isArray(rep.obs) || new Set(rep.obs).size !== rep.obs.length || !rep.obs.every((w) => WAYPOINTS.some((x) => x.id === w))) bad('value', 'patrolReport.obs 路標不合法');
+  if (!Array.isArray(rep.segs) || !rep.segs.every((x) => typeof x === 'string')) bad('value', 'patrolReport.segs 不合法');
+  if (!isObj(rep.t)) bad('structure', 'patrolReport.t 不是物件');
+  for (const k of ['move', 'obs', 'fight', 'back']) range(rep.t[k], 0, Number.MAX_SAFE_INTEGER, `patrolReport.t.${k}`, true);
+  if (!Array.isArray(rep.seen) || new Set(rep.seen.map((x) => x && x.id)).size !== rep.seen.length) bad('value', 'patrolReport.seen 不合法');
+  for (const x of rep.seen) {
+    const kindOk = x && (x.id === 'boar' ? x.kind === 'boar' : RAT_IDS.includes(x.id) && x.kind === FOREST_RATS.find((f) => f.id === x.id).kind);
+    if (!isObj(x) || !kindOk || !Object.hasOwn(PATROL_RESULT, x.res)) bad('value', 'patrolReport.seen 個體／結果不合法');
   }
-  if (st.patrolLog.length > SUMMARY_KEEP || !st.patrolLog.every(isObj)) bad('value', `patrolLog 超過 ${SUMMARY_KEEP} 筆或不合法`);
 }
 
 // 序列化目前這局：版本、相容識別、幾何長度（不同路線長度的檔不能套用）與完整權威狀態。

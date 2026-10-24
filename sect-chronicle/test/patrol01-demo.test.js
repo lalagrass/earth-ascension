@@ -152,3 +152,45 @@ test('save v2 反例：返程不可行、名額不一致、林鼠身份錯、路
   }
   assert.equal(JSON.stringify(b.exportState()), before);
 });
+
+test('review P2-1：返程存檔按目前短段＋剩餘 queue 驗真實耗能；正常返程可續玩，0 精力原子拒絕', async () => {
+  const { fresh, until, S, storage } = await setup();
+  const a = fresh();
+  a.dispatch('patrol', 'hero');
+  assert.ok(until(a, (x) => x.state.patrol && x.state.patrol.phase === 'back' && x.state.people.hero.motion.queue.length > 5));
+  const sto = storage(); S.saveTo(sto, a);
+  const base = JSON.parse(sto.st.get(S.SAVE_KEY));
+  const ok = fresh();
+  assert.equal(S.loadInto(ok, JSON.stringify(base), fresh().exportState()).ok, true);
+  assert.ok(until(ok, (x) => x.state.patrolReport));
+  const b = fresh(), before = JSON.stringify(b.exportState());
+  for (const f of [(e) => { e.state.people.hero.energy = 0; }, (e) => { e.state.people.hero.motion.queue = 'x'; }]) {
+    const e = JSON.parse(JSON.stringify(base)); f(e);
+    assert.equal(S.loadInto(b, JSON.stringify(e), fresh().exportState()).ok, false);
+  }
+  assert.equal(JSON.stringify(b.exportState()), before);
+});
+
+test('review P2-2：戰報缺 UI 必讀欄位（obs／spent）或個體錯 → 替換前拒絕；正常戰報保留', async () => {
+  const { fresh, until, S, storage } = await setup();
+  const a = fresh();
+  a.dispatch('patrol', 'hero');
+  assert.ok(until(a, (x) => x.state.patrolReport));
+  const sto = storage(); S.saveTo(sto, a);
+  const base = JSON.parse(sto.st.get(S.SAVE_KEY));
+  const ok = fresh();
+  assert.equal(S.loadInto(ok, JSON.stringify(base), fresh().exportState()).ok, true);
+  assert.deepEqual(ok.state.patrolReport, a.state.patrolReport);
+  const b = fresh(), before = JSON.stringify(b.exportState());
+  const cases = {
+    minimal: (e) => { e.state.patrolReport = { by: 'hero', home: true, end: 'end', far: 0, seen: [] }; },
+    noSpent: (e) => { delete e.state.patrolReport.spent; },
+    badSeen: (e) => { e.state.patrolReport.seen.push({ id: 'rat9', kind: 'normal', res: 'down' }); },
+    badLog: (e) => { e.state.patrolLog.push({ by: 'hero' }); },
+  };
+  for (const [name, f] of Object.entries(cases)) {
+    const e = JSON.parse(JSON.stringify(base)); f(e);
+    assert.equal(S.loadInto(b, JSON.stringify(e), fresh().exportState()).ok, false, name);
+  }
+  assert.equal(JSON.stringify(b.exportState()), before);
+});

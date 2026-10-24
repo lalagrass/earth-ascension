@@ -752,7 +752,10 @@ function patrolHtml() {
   const opt = model.actions(sel).find((a) => a.id === 'patrol');
   const head = pa ? `<span class="muted">${profiles[pa.by].label}巡山${pa.phase === 'wait' ? '（等精力／等出發）' : pa.phase === 'back' ? '：返院中' : '中'}</span>`
     : opt ? `<button class="btn" data-cmd="patrol" ${opt.enabled ? '' : 'disabled'} title="${opt.enabled ? opt.detail : opt.reason}">派${profiles[sel].label}巡山</button>` : '';
-  const rats = v.prats.map((x) => `<span class="rat r-${x.mode}">林鼠${x.id.slice(-1)}<i>·${RAT_KIND[x.kind]}</i></span>`).join('');
+  // 只顯可合理知道的：本趟已觀察到的個體，否則最近戰報記錄；未巡山先顯「尚未探查」，不列 fixture 總數／種類。
+  const known = (pa && pa.seen.length ? pa.seen : r ? r.seen : []).filter((x) => x.id !== 'boar');
+  const rats = known.length ? known.map((x) => `<span class="rat">林鼠${x.id.slice(-1)}<i>·${RAT_KIND[x.kind]}·${PRES[x.res]}</i></span>`).join('')
+    : `<span class="muted">${pa && pa.phase !== 'wait' ? '尚未發現林鼠' : r ? '上次沒遇到林鼠' : '尚未探查'}</span>`;
   const rep = r ? `<div class="patrolrep" data-report="1"><b>戰報</b> ${profiles[r.by].label} · ${PATROL_END[r.end]} · 最遠 ${Math.round(r.far)}／${Math.round(MAIN_LENGTH)} · 路標 ${r.obs.join('→') || '—'} · 精力 ${Math.round(r.e0)}→${Math.round(r.e1)}（扣 ${r.spent.toFixed(1)}） · ${(r.total / 60).toFixed(1)} 秒<br>${r.seen.map((x) => `${x.id === 'boar' ? '野豬' : '林鼠' + x.id.slice(-1)}：${PRES[x.res]}`).join('、') || '沒遇到'}</div>
     <div class="muted">往次摘要（最多 ${v.patrolLog.length} 筆）：${v.patrolLog.slice(0, -1).slice(-4).map((x) => `${PATROL_END[x.end]}·${Math.round(x.far)}`).join('；') || '—'}</div>` : '<div class="muted">還沒有巡山戰報</div>';
   return `<div class="ratrow"><b>西坡巡山<i> S0→S3</i></b><span class="rats">${rats}</span>${head}</div>${rep}`;

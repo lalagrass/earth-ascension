@@ -32,6 +32,13 @@ export function createPatrol(m) {
   function homeNodes(pa) { const out = []; if (pa.off) out.push([pa.off.from.x, pa.off.from.y]); for (let i = pa.ri; i >= 0; i--) out.push(ROUTE[i]); return out; }
   function returnTicks(pos, pa, lvl = pa.lvl) { return legs(pos, homeNodes(pa)).reduce((n, q, i, a) => n + walkSteps(lvl, dist(i ? a[i - 1] : pos, q), rules), 0); }
   const walkCost = (ticks) => ticks * perTick(PATROL.walkPerSec);
+  // 已返程：按「目前未走完的短段剩餘 tick＋剩餘返院 queue 各段」算真實剩餘耗能（不沿 ri 重算整條 homeNodes）。
+  function backTicks(h) {
+    let n = Math.max(0, h.need - h.steps), prev = h.to;
+    for (const q of h.queue) { n += walkSteps(h.tripLevel, dist(prev, q), rules); prev = q; }
+    return n;
+  }
+  const backCost = (h) => walkCost(backTicks(h));
   const returnCost = (pos, pa) => walkCost(returnTicks(pos, pa));
   // 段前預留：本段 + 段尾返程 + 8（8 只是保底，不扣）。
   function canWalk(p, to, pa, offAfter = pa.off) {
@@ -314,5 +321,5 @@ export function createPatrol(m) {
     return { phase: pa.phase, ri: pa.ri, next: wp.id, nextLabel: wp.label, far: pa.far, off: !!pa.off, target: pa.off ? pa.off.target : h.target || null,
       returnNeed: pa.phase === 'wait' ? null : Math.round(returnCost(p.pos, pa) * 100) / 100, end: pa.end, cancel: pa.cancel, obs: [...pa.obs] };
   }
-  return { active, reason, order, atHome, cancel, step, view, returnCost, returnTicks, homeNodes, validPrat };
+  return { active, reason, order, atHome, cancel, step, view, returnCost, backCost, returnTicks, homeNodes, validPrat };
 }
