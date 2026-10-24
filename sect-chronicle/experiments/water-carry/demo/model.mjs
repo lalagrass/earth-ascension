@@ -35,6 +35,9 @@ import { createTrain01, TRAIN_MODES, TRAIN_LABEL, TRAIN } from './train01.mjs';
 export { TRAIN_MODES, TRAIN_LABEL, TRAIN };
 import { createTea, TEA_MODES, TEA_LABEL, TEA } from './tea.mjs';
 export { TEA_MODES, TEA_LABEL, TEA };
+// SG-HOME-02：木料、寢舍修繕與床位（只本局；見 home02.mjs）。
+import { createHome02, H2_MODES, H2_LABEL, WOOD, SITE, WOOD_JOB, WOOD_PHASE_LABEL, ROOM_ID, BED_IDS, STAGE_LABEL } from './home02.mjs';
+export { H2_MODES, H2_LABEL, WOOD, SITE, ROOM_ID, BED_IDS, STAGE_LABEL };
 export const STEP_MS = 1000 / 60;
 
 export const RULES = Object.freeze({
@@ -111,7 +114,10 @@ export const JOBS = Object.freeze({
 export const PHASE_LABEL = {
   down: '下山（空桶）', dip: '取水', up: '上山負重', pour: '倒水',
   herbOut: '往藥圃（空簍）', herbGather: '採藥', herbBack: '背藥回道館', herbDeliver: '交藥',
+  ...WOOD_PHASE_LABEL,
 };
+// 對外 JOBS 不加砍柴（舊存檔驗證逐鍵核 done）；模型內部用 JB。
+const JB = Object.freeze({ ...JOBS, wood: WOOD_JOB });
 
 export function speedsFor(level, rules = RULES) {
   const f = (s) => Math.min(s.cap, s.base * (1 + s.perLevel * (level - 1)));
@@ -120,9 +126,9 @@ export function speedsFor(level, rules = RULES) {
 export function tripSteps(level, pathLength, rules = RULES) {
   return phaseSteps(speedsFor(level, rules), pathLength, rules).reduce((a, b) => a + b, 0);
 }
-function phaseSteps(sp, len, rules) {
+function phaseSteps(sp, len, rules, gatherMs = rules.dipMs) {
   const st = (ms) => Math.ceil(ms / STEP_MS - 1e-9);
-  return [st(len / sp.empty * 1000), st(rules.dipMs), st(len / sp.load * 1000), st(rules.pourMs)];
+  return [st(len / sp.empty * 1000), st(gatherMs), st(len / sp.load * 1000), st(rules.pourMs)];
 }
 const idle = (level) => ({ mode: 'idle', job: null, phase: null, steps: 0, need: null, tripLevel: level });
 // 去／回座位：出發時鎖空手速度算步數；坐著沒有固定步數，由精力決定何時起身。
@@ -144,6 +150,9 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   const B = rules.boar, Q = BOAR_Q, perQ = (perSec) => Math.round(perSec * Q / 60), msSteps = (ms) => Math.ceil(ms / STEP_MS - 1e-9);
   const E = rules.energy, perTick = (perSec) => perSec * STEP_MS / 1000;
   const ids = characters.map((p) => p.id);
+  // SG-HOME-02：砍柴路長由 sense 帶入（不進 lengths，免改存檔幾何比對）；採集 8 秒。
+  const jobLen = (job) => job === 'wood' ? (sense.woodLength || 220) : lengths[job];
+  const tripNeed = (lv, job) => phaseSteps(speedsFor(lv, rules), jobLen(job), rules, job === 'wood' ? WOOD.chopMs : rules.dipMs);
   // HOME-01／D45：口渴衰減與自動喝水移除（rules.thirst 預設關）；drink 規則只留給舊存檔在喝水模式中的那一趟照原收尾。
   const D = rules.drink, WQ = WATER_Q, THIRST = !!(D && rules.thirst), wq = (v) => Math.round(v * WQ);
   const drinkLen = (origin, id) => origin === 'seat' ? ((lengths.drinkSeat && lengths.drinkSeat[id]) || seatLen(id) + (lengths.drink || DRINK_LENGTH)) : (lengths.drink || DRINK_LENGTH);
@@ -185,13 +194,13 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     log: [],
   };
   const pt = createPatrol({ s, rules, ids, Q, B, walkSteps, idle, GUARD_MODES, FIX_MODES, shoutSteps: msSteps(B.shoutMs), boarAt: sense.boarAt,
-    nameOf: (id) => nameOf(id), cleaning: (p) => cleaning(p), jobLabel: (j) => JOBS[j].label, atHome: (p) => atHome(p), atHomeLife: (p) => atHome(p),
+    nameOf: (id) => nameOf(id), cleaning: (p) => cleaning(p), jobLabel: (j) => JB[j].label, atHome: (p) => atHome(p), atHomeLife: (p) => atHome(p),
     goSeat: (p) => goSeat(p), assignee: () => assignee(), boarFlee: (why) => boarFlee(why), personAt: (p) => personAt(p) });
   const patrolling = (p) => pt.active(p); // 含等待與返院：真到院才釋放
   // SG-LIFE-02：暫態在 L2 閉包，不進 s；busy＝必要自理／人工／護院巡山承諾或候補、待執行（招呼不能插隊）。
   const L2 = createLife02({ s, ids, rules, meetLengths: sense.meetLengths, walkSteps, nameOf: (id) => nameOf(id), funLen: (id) => funLen(id), order: AUTO_ORDER,
     atHome: (p) => atHome(p), store: (job) => store(job), cleaning: (p) => cleaning(p), patrolling: (p) => patrolling(p), thirsty: (p) => thirsty(p),
-    busy: (p) => !!p.rest || p.recall || T1.active(p) || TE.active(p) || p.pending != null || p.guardOrder != null || !!p.fix || cleaning(p) || patrolling(p) || wants(p) || wantsUp(p) || wantsClean(p) || (thirsty(p) && s.vat >= D.cost) || p.energy <= E.restAt });
+    busy: (p) => !!p.rest || p.recall || T1.active(p) || TE.active(p) || H2.active(p) || p.pending != null || p.guardOrder != null || !!p.fix || cleaning(p) || patrolling(p) || wants(p) || wantsUp(p) || wantsClean(p) || (thirsty(p) && s.vat >= D.cost) || p.energy <= E.restAt });
   // SG-TRAIN-01：練掌暫態在 T1 閉包；blocked＝人工／護院巡山等既有承諾（這些先照原規則做完或被玩家取消）。
   const T1 = createTrain01({ s, ids, rules, SKILLS, walkSteps, nameOf: (id) => nameOf(id), trainLengths: sense.trainLengths,
     atHome: (p) => atHome(p), thirsty: (p) => thirsty(p), canDrink: () => !!D && s.vat >= D.cost,
@@ -200,29 +209,33 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   // HOME-01：茶座暫態在 TE 閉包（座位、真料預約、意圖、小事件），不進 s。
   const TE = createTea({ s, ids, rules, walkSteps, nameOf: (id) => nameOf(id), teaLength: sense.teaLength, atHome: (p) => atHome(p),
     blocked: (p) => p.pending != null || p.guardOrder != null || !!p.fix || cleaning(p) || patrolling(p) });
+  // SG-HOME-02：木料庫／修繕工地／床位暫態在 H2 閉包。
+  const H2 = createHome02({ s, ids, rules, nameOf: (id) => nameOf(id), atHome: (p) => atHome(p), siteLength: sense.siteLength, bedLengths: sense.bedLengths,
+    walkSteps: (lv, len) => walkSteps(lv, len, rules), loadSteps: (lv, len) => Math.max(1, Math.ceil(len / speedsFor(lv, rules).load * 1000 / STEP_MS - 1e-9)),
+    blocked: (p) => p.pending != null || p.guardOrder != null || !!p.fix || cleaning(p) || patrolling(p) || T1.gate(p) || TE.gate(p) });
   // 存放處：數量、容量與在途預約；挑水沿用舊欄位名 vat／inFlight。
-  const store = (job) => job === 'herb'
+  const store = (job) => job === 'wood' ? H2.store() : job === 'herb'
     ? { amount: s.herbs, inFlight: s.herbInFlight, cap: rules.herbCapacity }
     : { amount: s.vat, inFlight: s.inFlight, cap: rules.vatCapacity };
   const full = (job) => { const st = store(job); return st.amount + st.inFlight >= st.cap; };
   const stocked = (job) => { const st = store(job); return st.amount >= st.cap; }; // 實存已滿（不含在途）
-  const reserve = (job, d) => { if (job === 'herb') s.herbInFlight += d; else s.inFlight += d; };
+  const reserve = (job, d) => { if (job === 'wood') H2.reserveTrip(d); else if (job === 'herb') s.herbInFlight += d; else s.inFlight += d; };
 
   function depart(p) {
-    if (p.motion.mode !== 'idle' || p.rest || p.guardOrder != null || p.fix || cleaning(p) || patrolling(p) || full(p.job) || L2.gate(p) || T1.gate(p) || TE.gate(p)) return false;
-    p.motion = { mode: 'carry', job: p.job, phase: 0, steps: 0, need: phaseSteps(speedsFor(p.level, rules), lengths[p.job], rules), tripLevel: p.level, tripStart: s.tick };
+    if (p.motion.mode !== 'idle' || p.rest || p.guardOrder != null || p.fix || cleaning(p) || patrolling(p) || full(p.job) || L2.gate(p) || T1.gate(p) || TE.gate(p) || H2.gate(p)) return false;
+    p.motion = { mode: 'carry', job: p.job, phase: 0, steps: 0, need: tripNeed(p.level, p.job), tripLevel: p.level, tripStart: s.tick };
     reserve(p.job, 1);
-    if (p.id === 'hero') s.shadow = { active: true, job: p.job, phase: 0, steps: 0, need: phaseSteps(speedsFor(p.initialLevel, rules), lengths[p.job], rules) };
+    if (p.id === 'hero' && p.job !== 'wood') s.shadow = { active: true, job: p.job, phase: 0, steps: 0, need: phaseSteps(speedsFor(p.initialLevel, rules), lengths[p.job], rules) };
     return true;
   }
 
   function finishTrip(p) {
     // 這一趟已持有一份預約，故不需 Math.min 截掉同刻另一人的入帳。
     const job = p.motion.job;
-    reserve(job, -1);
-    if (job === 'herb') s.herbs += 1; else s.vat += 1;
+    if (job === 'wood') H2.deliverWood(p); // 在途→院倉：交付才入帳一次
+    else { reserve(job, -1); if (job === 'herb') s.herbs += 1; else s.vat += 1; }
     p.trips += 1;
-    p.done[job] += 1;
+    if (job !== 'wood') p.done[job] += 1;
     L2.tripDone(p); // SG-LIFE-02：完成一趟新工作才可再發起招呼
     // 叫回只在休閒中可下，所以叫回時人一定不在工作；此後交付的第一趟必是返院後新開始的，完成即解除。
     if (p.recall) { p.recall = false; s.log.push({ tick: s.tick, person: p.id, kind: 'recallDone' }); }
@@ -294,7 +307,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (!p.autoAllow) return 'off';
     if (p.suppress === v) return 'player';
     if (p.tried === v) return 'tried';
-    if (p.rest === 'manual' || p.pending === 'rest' || p.recall || T1.active(p) || TE.active(p)) return 'held';
+    if (p.rest === 'manual' || p.pending === 'rest' || p.recall || T1.active(p) || TE.active(p) || H2.active(p)) return 'held';
     if (p.guardOrder != null || cleaning(p) || patrolling(p)) return 'self';
     if (who && who !== p.id) return 'peer';
     return null;
@@ -419,7 +432,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     for (const id of ids) dropUp(s.people[id], 'manual');
     const m = p.motion.mode;
     if (m === 'idle') { atHome(p); return { ok: true, text: p.rest ? `精力低，先恢復到 ${E.backAt} 再去整理護欄` : '走去西坡護欄整理一階損痕' }; }
-    if (m === 'carry') return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後去整理護欄`, pending: true };
+    if (m === 'carry') return { ok: true, text: `本趟${JB[p.motion.job].label}交付後去整理護欄`, pending: true };
     if (m === 'toFun') return { ok: true, text: `走到${prefs[p.id].place}後回院中，再去整理護欄` };
     if (m === 'fun' || m === 'fromFun') return { ok: true, text: '回院中後去整理護欄' };
     if (m === 'toSeat' || m === 'seated') return { ok: true, text: `先恢復到 ${E.backAt}，回院中再去整理護欄` };
@@ -457,7 +470,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (s.contact <= 0) return 'none';
     if (s.upUsed === s.contact) return 'used';
     if (p.upSuppress === s.contact) return 'player';
-    if (p.rest === 'manual' || p.pending === 'rest' || p.recall || T1.active(p) || TE.active(p)) return 'held';
+    if (p.rest === 'manual' || p.pending === 'rest' || p.recall || T1.active(p) || TE.active(p) || H2.active(p)) return 'held';
     if (p.guardOrder != null) return 'guard';
     if (p.fix || cleaning(p) || patrolling(p)) return 'self';
     if (s.fixBy) return 'peer';
@@ -528,7 +541,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     clog(p, 'cleanOrder', { src: 'manual' });
     const m = p.motion.mode;
     if (m === 'idle') { atHome(p); return { ok: true, text: p.rest ? `精力低，先恢復到 ${E.backAt} 再去清理` : '從院中出發，去西院清理測試鼠' }; }
-    if (m === 'carry') return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後去清理測試鼠`, pending: true };
+    if (m === 'carry') return { ok: true, text: `本趟${JB[p.motion.job].label}交付後去清理測試鼠`, pending: true };
     if (m === 'toFun') return { ok: true, text: `走到${prefs[p.id].place}後回院中，再去清理` };
     if (m === 'fun' || m === 'fromFun') return { ok: true, text: '回院中後去清理' };
     if (m === 'toSeat' || m === 'seated') return { ok: true, text: `先恢復到 ${E.backAt}，回院中再去清理` };
@@ -626,7 +639,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   function geoView(p) {
     const h = p.motion, k = h.need && h.mode !== 'carry' ? Math.min(1, h.steps / h.need) : 0, leg = { k };
     return { mode: h.mode, job: h.mode === 'carry' ? h.job : p.job,
-      phase: h.mode === 'carry' ? { name: JOBS[h.job].phases[h.phase], k: Math.min(1, h.steps / h.need[h.phase]) } : null,
+      phase: h.mode === 'carry' ? { name: JB[h.job].phases[h.phase], k: Math.min(1, h.steps / h.need[h.phase]) } : null,
       restLeg: leg, funLeg: leg, guardLeg: leg, fixLeg: leg,
       drinkLeg: DRINK_MODES.includes(h.mode) ? { k, span: h.span ?? 1, from: h.from } : null,
       cleaning: CLEAN_MODES.includes(h.mode), patrolling: PATROL_MODES.includes(h.mode), pos: p.pos, cface: p.cface, walked: p.walked,
@@ -703,7 +716,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   function cleanBlocked(p) {
     if (!p.cleanAllow) return 'off';
     if (p.cleanSuppress) return 'player';
-    if (p.rest === 'manual' || p.pending === 'rest' || p.recall || T1.active(p) || TE.active(p)) return 'held';
+    if (p.rest === 'manual' || p.pending === 'rest' || p.recall || T1.active(p) || TE.active(p) || H2.active(p)) return 'held';
     if (cleaning(p) || patrolling(p)) return 'self';
     if (!s.rats.some(validRat)) return 'none';
     return null;
@@ -733,7 +746,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     for (const id of AUTO_ORDER) {
       const p = s.people[id];
       if (!p || !p.cleanAllow || p.cleanSuppress || p.motion.mode !== 'idle' || p.rest) continue;
-      if (p.rest === 'manual' || p.pending === 'rest' || p.recall || T1.active(p) || TE.active(p)) continue;
+      if (p.rest === 'manual' || p.pending === 'rest' || p.recall || T1.active(p) || TE.active(p) || H2.active(p)) continue;
       if (p.guardOrder != null || p.fix || cleaning(p) || patrolling(p)) continue;
       if (p.energy <= E.restAt) continue;
       p.cleanWant = false;
@@ -797,14 +810,17 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (p.cleanWant) return say('wait', '等待出發去清理');
     return say('watch', '觀察中：範圍內有測試鼠就想去清理');
   }
+  const restLen = (p, bed) => bed ? H2.bedLen(bed) : seatLen(p.id);
   function goSeat(p) {
-    p.motion = { mode: 'toSeat', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level };
+    // SG-HOME-02：寢舍可用時己床優先、否則依穩定順序認領空床；沒有床照原石凳。
+    const bed = H2.bedFor(p);
+    p.motion = { mode: 'toSeat', job: null, phase: null, steps: 0, need: walkSteps(p.level, restLen(p, bed), rules), tripLevel: p.level, ...(bed ? { bed } : {}) };
     s.log.push({ tick: s.tick, person: p.id, kind: 'toSeat', rest: p.rest });
   }
   // 休閒往返：出發時鎖空手速度算步數；活動本身沒有固定步數，有空位或玩家介入就結束。
   const funWalk = (p, mode) => ({ mode, job: null, phase: null, steps: 0, need: walkSteps(p.level, funLen(p.id), rules), tripLevel: p.level });
   function goFun(p) {
-    p.funCap = false; p.why = `${JOBS[p.job].place}已滿，有空閒`;
+    p.funCap = false; p.why = `${JB[p.job].place}已滿，有空閒`;
     p.motion = funWalk(p, 'toFun');
     s.log.push({ tick: s.tick, person: p.id, kind: 'toFun', fun: prefs[p.id].id });
   }
@@ -834,10 +850,11 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   }
   // 停工或待恢復（rest 非空）都要離開休閒；恢復自主只清叫回，不能讓待恢復的人卡在活動點。
   // LP-12：自主清鼠意願成立時亦離開休閒，沿 fromFun 返院後在院中端點重新查驗受理。
-  const funOver = (p) => !!p.rest || p.recall || T1.gate(p) || TE.gate(p) || p.guardOrder != null || !!p.fix || cleaning(p) || patrolling(p) || wants(p) || wantsUp(p) || wantsClean(p) || (thirsty(p) && s.vat >= D.cost) || slotFor(p);
+  const funOver = (p) => !!p.rest || p.recall || T1.gate(p) || TE.gate(p) || H2.gate(p) || p.guardOrder != null || !!p.fix || cleaning(p) || patrolling(p) || wants(p) || wantsUp(p) || wantsClean(p) || (thirsty(p) && s.vat >= D.cost) || slotFor(p);
   function goBack(p) {
     p.why = `精力恢復到 ${E.backAt}，自己回去`;
-    p.motion = { mode: 'back', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level };
+    const bed = p.motion.bed;
+    p.motion = { mode: 'back', job: null, phase: null, steps: 0, need: walkSteps(p.level, restLen(p, bed), rules), tripLevel: p.level, ...(bed ? { bed } : {}) };
     s.log.push({ tick: s.tick, person: p.id, kind: 'back' });
   }
 
@@ -903,6 +920,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       const p = s.people[id], h = p.motion;
       // 每人每步只依步前活動計一次精力：工作扣、坐著回；走路、等待不變。之後才結算進度與轉場。
       if (h.mode === 'carry') p.energy = Math.max(0, p.energy - perTick(E.workPerSec));
+      else if (h.mode === 'build') p.energy = Math.max(0, p.energy - perTick(E.workPerSec));
       else if (h.mode === 'fix') p.energy = Math.max(0, p.energy - perTick(rules.fix.workPerSec));
       else if (h.mode === 'seated') p.energy = Math.min(E.max, p.energy + perTick(E.restPerSec));
       if (THIRST) p.waterQ = Math.max(0, p.waterQ - Math.round(D.perSec * WQ * STEP_MS / 1000));
@@ -915,7 +933,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       } else if (h.mode === 'toSeat' || h.mode === 'back') {
         h.steps += 1;
         if (h.steps >= h.need) {
-          if (h.mode === 'toSeat') { p.motion = { mode: 'seated', job: null, phase: null, steps: 0, need: null, tripLevel: p.level }; s.log.push({ tick: s.tick, person: id, kind: 'seated', rest: p.rest }); }
+          if (h.mode === 'toSeat') { p.motion = { mode: 'seated', job: null, phase: null, steps: 0, need: null, tripLevel: p.level, ...(h.bed ? { bed: h.bed } : {}) }; s.log.push({ tick: s.tick, person: id, kind: 'seated', rest: p.rest }); }
           else atHome(p);
         }
       } else if (h.mode === 'seated') {
@@ -965,6 +983,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       } else if (MEET_MODES.includes(h.mode)) L2.move(p);
       else if (TRAIN_MODES.includes(h.mode)) T1.move(p);
       else if (TEA_MODES.includes(h.mode)) TE.move(p);
+      else if (H2_MODES.includes(h.mode)) H2.move(p);
       else if (h.mode === 'idle' && !p.rest && p.energy <= E.restAt) atHome(p);
     }
     // LP-11：鼠移動→清理者移動／起手／接觸→察覺；回到院中的清理者在護院／整理判斷與出發迴圈之前就已重查生活。
@@ -993,10 +1012,11 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     // 出發輪替之後才看閒暇：有合法容量一定先工作；只在實存滿時去休閒，僅在途占滿就留在院中等。
     for (const id of ids) {
       const p = s.people[id];
-      if (p.motion.mode === 'idle' && !p.rest && !p.recall && p.guardOrder == null && !cleaning(p) && !patrolling(p) && !wants(p) && !wantsUp(p) && !wantsClean(p) && p.energy > E.restAt && prefs[id] && !T1.gate(p) && !TE.gate(p) && L2.leisureOk(p, stocked(p.job))) goFun(p);
+      if (p.motion.mode === 'idle' && !p.rest && !p.recall && p.guardOrder == null && !cleaning(p) && !patrolling(p) && !wants(p) && !wantsUp(p) && !wantsClean(p) && p.energy > E.restAt && prefs[id] && !T1.gate(p) && !TE.gate(p) && !H2.gate(p) && L2.leisureOk(p, stocked(p.job))) goFun(p);
     }
     // SG-LIFE-02：出發與休閒之後才看招呼（取消→推進→新發起）；有合法工作或必要自理一定先做。
     L2.step();
+    H2.step(); // SG-HOME-02：有修繕意圖、院中有空才領料走去工地
     TE.step(); // HOME-01：有泡茶意圖、院中有空才走去茶座
     T1.step(); // SG-TRAIN-01：有目標、院中有空才走去練功樁
     // 人的工作交付、移動與喝止進度都先結算完，最後才結算野豬（誘因看交付後的實存）。
@@ -1094,7 +1114,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   // 改做某工作：當趟途中只記待執行（再下當趟的工作＝取消待執行）；閒置時立刻換並嘗試出發。
   // 休息流程中只更新要回去的工作：解除玩家停工，但仍要恢復到 80、走回院中才出發；不移動、不加精力。
   function work(p, job) {
-    const name = JOBS[job].label, mode = p.motion.mode;
+    const name = JB[job].label, mode = p.motion.mode;
     cancelGuard(p); // 較新的改工作／開始取消尚未完成的驅離
     dropFix(p, 'canceled'); // 也取消尚未完成的整理；前往途中走完這段再回
     cancelClean(p); // 也取消清理；前往途中走完這段、起手／收勢中立刻返院
@@ -1110,7 +1130,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (mode === 'carry') {
       if (job === p.motion.job) { p.pending = null; return { ok: true, text: `取消待執行，繼續${name}` }; }
       p.pending = job;
-      return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後改去${name}`, pending: true };
+      return { ok: true, text: `本趟${JB[p.motion.job].label}交付後改去${name}`, pending: true };
     }
     p.job = job; p.pending = null;
     s.log.push({ tick: s.tick, person: p.id, kind: 'start', job });
@@ -1127,6 +1147,10 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (MEET_MODES.includes(mode)) {
       if (p.rest === 'manual') p.rest = p.energy < E.backAt ? 'auto' : null;
       return { ok: true, text: `結束招呼，走回院中後${name}` };
+    }
+    if (H2_MODES.includes(mode)) {
+      if (p.rest === 'manual') p.rest = p.energy < E.backAt ? 'auto' : null;
+      return { ok: true, text: `不修寢舍了：走回院中後${name}` };
     }
     if (TEA_MODES.includes(mode)) {
       if (p.rest === 'manual') p.rest = p.energy < E.backAt ? 'auto' : null;
@@ -1175,11 +1199,11 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       return { ok: true, text: `先恢復到 ${E.backAt} 再回去${name}` };
     }
     depart(p);
-    return { ok: true, text: p.motion.mode === 'carry' ? `開始${name}，做完一趟自己接下一趟` : `改為${name}，等${JOBS[job].place}有空位再出發` };
+    return { ok: true, text: p.motion.mode === 'carry' ? `開始${name}，做完一趟自己接下一趟` : `改為${name}，等${JB[job].place}有空位再出發` };
   }
 
   // 叫回：保留（或剛改的）工作，實際走回院中；去程走完這段、活動中下一步起身、返院途中只記意圖。
-  function recall(p, name = JOBS[p.job].label) {
+  function recall(p, name = JB[p.job].label) {
     p.recall = true; p.why = '玩家叫回';
     dropFix(p, 'canceled'); // 有效叫回也取消待整理
     cancelClean(p); // 也取消尚未出發的清理
@@ -1200,22 +1224,26 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (cmd !== 'train') T1.cancelBy(p);
     // HOME-01：較新的任何有效指令取消泡茶（煮完前全退、煮完後不退料）；「泡茶」本身另處理。
     if (cmd !== 'tea') TE.cancelBy(p);
+    // SG-HOME-02：較新的任何有效指令取消修寢舍（未領料全退；手上那捆帶回；已交料／工時留工地）；「修寢舍」本身另處理。
+    if (cmd !== 'build') H2.cancelBy(p);
+    if (cmd === 'buildCancel') return buildStop(p);
     if (cmd === 'teaCancel') return teaStop(p);
     if (cmd === 'trainCancel') return trainStop(p);
-    if (['start', 'restAfterTrip', 'recall', 'guard', 'fix', 'clean', 'patrol', 'train', 'tea'].includes(cmd) || cmd.startsWith('work:')) L2.setFill(p, false);
+    if (['start', 'restAfterTrip', 'recall', 'guard', 'fix', 'clean', 'patrol', 'train', 'tea', 'build'].includes(cmd) || cmd.startsWith('work:')) L2.setFill(p, false);
     if (cmd === 'meetCancel') return { ok: true, text: metCanceled ? '取消這次招呼：兩人各自走回院中' : '沒有進行中的招呼' };
     if (cmd === 'fill') return fillOrder(p);
     // LP-07：以下有效指令（改工作／開始／停工／取消待執行／叫回）清該人候補並抑制本訪自主；拒絕的已在上面返回。
-    if (['start', 'restAfterTrip', 'cancel', 'recall', 'fix', 'fixCancel', 'clean', 'cleanCancel', 'patrol', 'patrolCancel', 'fill', 'train', 'tea'].includes(cmd) || cmd.startsWith('work:')) override(p);
+    if (['start', 'restAfterTrip', 'cancel', 'recall', 'fix', 'fixCancel', 'clean', 'cleanCancel', 'patrol', 'patrolCancel', 'fill', 'train', 'tea', 'build'].includes(cmd) || cmd.startsWith('work:')) override(p);
     // LP-09：同一批有效指令＋人工護院也清當人整理候補、抑制目前碰撞機會（與 LP07 的本訪抑制分開記）。
-    if (['start', 'restAfterTrip', 'cancel', 'recall', 'fixCancel', 'guard', 'clean', 'cleanCancel', 'patrol', 'patrolCancel', 'train', 'tea'].includes(cmd) || cmd.startsWith('work:')) upOverride(p);
+    if (['start', 'restAfterTrip', 'cancel', 'recall', 'fixCancel', 'guard', 'clean', 'cleanCancel', 'patrol', 'patrolCancel', 'train', 'tea', 'build'].includes(cmd) || cmd.startsWith('work:')) upOverride(p);
     // LP-12：有效人工改令撤當人清鼠候補並抑制自主清鼠直到明確重新允許。
-    if (['start', 'restAfterTrip', 'cancel', 'recall', 'guard', 'fix', 'fixCancel', 'clean', 'cleanCancel', 'patrol', 'patrolCancel', 'train', 'tea'].includes(cmd) || cmd.startsWith('work:')) cleanOverride(p);
+    if (['start', 'restAfterTrip', 'cancel', 'recall', 'guard', 'fix', 'fixCancel', 'clean', 'cleanCancel', 'patrol', 'patrolCancel', 'train', 'tea', 'build'].includes(cmd) || cmd.startsWith('work:')) cleanOverride(p);
     // SG-LIFE-01：會改變去向的有效指令先取消未喝完的水（走回已走的那段），返院後照指令走。
     if (['restAfterTrip', 'guard', 'fix', 'clean', 'patrol'].includes(cmd)) cancelDrink(p);
     if (cmd === 'clean') return cleanOrder(p);
     if (cmd === 'train') return trainOrder(p);
     if (cmd === 'tea') return teaOrder(p);
+    if (cmd === 'build') return buildOrder(p);
     if (cmd === 'patrol') return pt.order(p);
     if (cmd === 'patrolCancel') {
       const m = p.motion.mode, waiting = s.patrol.phase === 'wait';
@@ -1243,7 +1271,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       cancelClean(p);
       pt.cancel(p);
       const mode = p.motion.mode;
-      if (mode === 'carry') { p.pending = 'rest'; return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後停工休息`, pending: true }; }
+      if (mode === 'carry') { p.pending = 'rest'; return { ok: true, text: `本趟${JB[p.motion.job].label}交付後停工休息`, pending: true }; }
       p.rest = 'manual'; p.why = '玩家下令停工'; p.pending = null; p.recall = false;
       s.log.push({ tick: s.tick, person: p.id, kind: 'rest' });
       if (mode === 'idle') { goSeat(p); return { ok: true, text: '停工，走去座位休息' }; }
@@ -1288,7 +1316,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     }
     const r = work(p, 'water');
     if (!r.ok) return r;
-    const lead = m === 'carry' && p.motion.job !== 'water' ? `本趟${JOBS[p.motion.job].label}交付後` : '';
+    const lead = m === 'carry' && p.motion.job !== 'water' ? `本趟${JB[p.motion.job].label}交付後` : '';
     return { ok: true, text: `${lead}自主補水：實存 ≤${FILL.start} 補到 ${FILL.stop}，夠用就歇（只本局，不存檔）`, pending: r.pending };
   }
   // SG-TRAIN-01：練掌到熟練＝新有限人工目標。先立目標（出發／休閒閘立刻生效），再沿原 work() 合法邊界收尾舊事：
@@ -1301,7 +1329,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const r = work(p, p.job);
     // 休閒中承接時 work() 走原 recall（起身真返程）；這個工作叫回旗標由練掌意圖消費，否則回院後 recall 與目標互擋（review P2①）。
     if (p.recall) { p.recall = false; p.why = null; }
-    const lead = m === 'carry' ? `本趟${JOBS[p.motion.job || p.job].label}交付後` : r.text && /恢復/.test(r.text) ? `先恢復到 ${E.backAt} 再` : '';
+    const lead = m === 'carry' ? `本趟${JB[p.motion.job || p.job].label}交付後` : r.text && /恢復/.test(r.text) ? `先恢復到 ${E.backAt} 再` : '';
     return { ok: true, text: `${lead}練掌到熟練：每 ${TRAIN.unitMs / 1000} 秒 1 單位、${TRAIN.units} 單位練熟（進度只本局；練熟結果沿原掌法欄位保存）` };
   }
   // HOME-01：泡茶＝有限人工目標。先核缺料／座位（拒絕不清舊意圖），再沿原 work() 合法邊界收尾舊事：搬運這趟先交付、
@@ -1313,8 +1341,27 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (DRINK_MODES.includes(m)) { p.recall = false; if (p.rest === 'manual') p.rest = p.energy < E.backAt ? 'auto' : null; return { ok: true, text: '喝完回院中後去茶座' }; }
     const r = work(p, p.job);
     if (p.recall) { p.recall = false; p.why = null; }
-    const lead = m === 'carry' ? `本趟${JOBS[p.motion.job || p.job].label}交付後` : r.text && /恢復/.test(r.text) ? `先恢復到 ${E.backAt} 再` : '';
+    const lead = m === 'carry' ? `本趟${JB[p.motion.job || p.job].label}交付後` : r.text && /恢復/.test(r.text) ? `先恢復到 ${E.backAt} 再` : '';
     return { ok: true, text: `${lead}去茶座泡茶：水 ${TEA.water}＋藥草 ${TEA.herb}，煮 ${TEA.brewMs / 1000} 秒、喝 ${TEA.sipMs / 1000} 秒，精力 +${TEA.gain}（只本局）` };
+  }
+  // SG-HOME-02：修寢舍＝有限人工目標。先原子占工位＋預約缺料（拒絕不清舊意圖），再沿原 work() 合法邊界收尾舊事。
+  function buildOrder(p) {
+    const r0 = H2.order(p);
+    if (!r0.ok) return r0;
+    const m = p.motion.mode;
+    if (DRINK_MODES.includes(m)) { p.recall = false; if (p.rest === 'manual') p.rest = p.energy < E.backAt ? 'auto' : null; return { ok: true, text: '喝完回院中後去寢舍工地' }; }
+    const r = work(p, p.job);
+    // 明確下令即解除停工（院中閒置停工的人也算）；精力未到 80 先恢復。
+    if (p.rest === 'manual' && m !== 'carry') { p.rest = p.energy < E.backAt ? 'auto' : null; p.why = p.rest ? `已解除停工；精力未到 ${E.backAt}，先恢復` : null; }
+    if (p.recall) { p.recall = false; p.why = null; }
+    const lead = m === 'carry' ? `本趟${JB[p.motion.job || p.job].label}交付後` : r.text && /恢復/.test(r.text) ? `先恢復到 ${E.backAt} 再` : '';
+    return { ok: true, text: `${lead}去修寢舍：${r0.need ? `從院倉領木 ${r0.need} 扛去工地，` : ''}木 ${SITE.wood}＋有效施工 ${SITE.workMs / 1000} 秒（每秒 −1 精力；只本局）` };
+  }
+  function buildStop(p) {
+    p.rest = 'manual'; p.why = '玩家取消修寢舍：回院中待命'; p.pending = null; p.recall = false;
+    s.log.push({ tick: s.tick, person: p.id, kind: 'rest' });
+    if (p.motion.mode === 'idle') goSeat(p);
+    return { ok: true, text: '取消修寢舍：未領的料退回、手上的料帶回院倉、已交的料與工時留工地；回院中待命' };
   }
   // 取消泡茶＝明確待命：從所在處走回院中，之後停工待命、不默恢復舊工作。
   function teaStop(p) {
@@ -1327,7 +1374,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   // 進行中的舊搬運照原交付這趟後停工。已完成單位保留；再選工作／練掌／自主補水即重新開始。
   function trainStop(p) {
     const text = '停止練掌：未完成的單位不算，已完成單位保留；回院中待命';
-    if (p.motion.mode === 'carry') { p.pending = 'rest'; return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後${text.slice(5)}`, pending: true }; }
+    if (p.motion.mode === 'carry') { p.pending = 'rest'; return { ok: true, text: `本趟${JB[p.motion.job].label}交付後${text.slice(5)}`, pending: true }; }
     p.rest = 'manual'; p.why = '玩家停止練掌：回院中待命'; p.pending = null; p.recall = false;
     s.log.push({ tick: s.tick, person: p.id, kind: 'rest' });
     if (p.motion.mode === 'idle') goSeat(p);
@@ -1345,7 +1392,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     for (const q of ids) if (q !== p.id) dropWant(s.people[q], 'peer');
     const m = p.motion.mode;
     if (m === 'idle') { atHome(p); return { ok: true, text: '去防守點驅離野豬' }; }
-    if (m === 'carry') return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後去驅離（野豬還在才去）`, pending: true };
+    if (m === 'carry') return { ok: true, text: `本趟${JB[p.motion.job].label}交付後去驅離（野豬還在才去）`, pending: true };
     if (m === 'toFun') return { ok: true, text: `走到${prefs[p.id].place}後回院中，再去驅離` };
     if (m === 'fun' || m === 'fromFun') return { ok: true, text: '回院中後去驅離' };
     if (m === 'toSeat' || m === 'seated') return { ok: true, text: `先恢復到 ${E.backAt}，野豬還在才去` };
@@ -1362,17 +1409,17 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const guarding = GUARD_MODES.includes(p.motion.mode), g = guarding || p.guardOrder != null;
     const fixing = FIX_MODES.includes(p.motion.mode), f = fixing || !!p.fix || cleaning(p) || patrolling(p);
     const drinking = DRINK_MODES.includes(p.motion.mode), meeting = MEET_MODES.includes(p.motion.mode), trainingNow = TRAIN_MODES.includes(p.motion.mode);
-    const teaNow = TEA_MODES.includes(p.motion.mode);
+    const teaNow = TEA_MODES.includes(p.motion.mode) || H2_MODES.includes(p.motion.mode);
     const inRest = p.motion.mode !== 'idle' && !carrying && !fun && !guarding && !fixing && !drinking && !meeting && !trainingNow && !teaNow && !CLEAN_MODES.includes(p.motion.mode) && !PATROL_MODES.includes(p.motion.mode);
     // 已在做這份工作、也沒有別的待執行時，再下同一工作沒有意義。
     const workOpt = (job) => {
-      const name = JOBS[job].label;
+      const name = JB[job].label;
       // 休息流程中下同一工作仍有意義：解除停工；自主恢復中則已會回去做它。
       // 驅離中（或已排定）下同一工作＝取消驅離、回來做它，仍有意義。
       // 整理中（或已排定）下同一工作＝取消整理、回來做它，也有意義，不能因同工作而卡死。
-      const same = !stopped && !g && !f && job === cur && (carrying ? p.pending == null : true) && !L2.state.fill[p.id] && !T1.gate(p) && !TE.gate(p); // SG-TRAIN-01：練掌目標中按原工作＝明確改令，同理； SG-LIFE-02：方針中按同工作持續＝明確切回人工持續、退出方針，不算重複
+      const same = !stopped && !g && !f && job === cur && (carrying ? p.pending == null : true) && !L2.state.fill[p.id] && !T1.gate(p) && !TE.gate(p) && !H2.gate(p); // SG-TRAIN-01：練掌目標中按原工作＝明確改令，同理； SG-LIFE-02：方針中按同工作持續＝明確切回人工持續、退出方針，不算重複
       return { id: `work:${job}`, label: `${name}（持續）`,
-        detail: carrying ? (job === cur ? `取消待執行，繼續${name}` : `本趟${JOBS[cur].label}交付後改去${name}`)
+        detail: carrying ? (job === cur ? `取消待執行，繼續${name}` : `本趟${JB[cur].label}交付後改去${name}`)
           : guarding ? `取消驅離，回院中${name}` : meeting ? `結束招呼，回院中${name}` : trainingNow ? `停止練掌，回院中${name}` : teaNow ? `不泡茶了，回院中${name}` : drinking ? (p.motion.mode === 'fromDrink' ? `喝完回院中後${name}` : `沒喝完，先回院中${name}`) : fixing ? `${p.fix ? '取消整理，' : ''}回院中${name}` : p.fix ? `取消整理，${name}` : inRest ? `恢復到 ${E.backAt} 並回院中後${name}` : fun ? `叫回院中改${name}` : '做完一趟自己接下一趟，沒有空位就等',
         enabled: !same && (p.pending !== job || L2.state.fill[p.id]), reason: p.pending === job ? `已排定交付後改去${name}` : fun ? '這是原工作：要回去請按「叫回工作」' : `已在持續${name}中` };
     };
@@ -1380,6 +1427,10 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     return [
       workOpt('water'),
       workOpt('herb'),
+      workOpt('wood'),
+      ((r) => ({ id: 'build', label: `修寢舍（木 ${SITE.wood}＋${SITE.workMs / 1000} 秒）`, detail: `一個施工位：下令即占位並預約缺的木料，從院倉扛去工地；到位施工每秒 −1 精力，工時中斷保留。只本局`,
+        enabled: !r, reason: r, hidden: H2.world().site.stage === 'done' && !H2.active(p) }))(H2.reason(p)),
+      { id: 'buildCancel', label: '取消修寢舍', detail: '未領料：工位與預約全退；扛料途中：沿原路帶回院倉；已交料與工時留工地。之後回院中待命', enabled: H2.active(p), hidden: !H2.active(p), reason: '沒有修寢舍' },
       { id: 'fill', label: '自主補水（夠用就歇）', detail: `水缸實存 ≤${FILL.start} 才去補、補到 ${FILL.stop} 就自由活動；實存＋在途 ≥${FILL.stop} 不再出發。只本局，不存檔`,
         enabled: !lv.fill, reason: '已選自主補水：改派其他工作或停工即退出' },
       ((tv) => ({ id: 'train', label: '練掌到熟練（6 單位）', detail: `到練功樁練這一式：完整 ${TRAIN.unitMs / 1000} 秒算 1 單位，${TRAIN.units} 單位練熟（每秒 −1 精力；已 ${tv.units}／${TRAIN.units}）。進度只本局，練熟結果沿原掌法欄位保存`,
@@ -1389,15 +1440,15 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       { id: 'teaCancel', label: '取消泡茶', detail: '煮好前取消：座位與預約全退、不扣料；煮好後取消：料不退、沒喝完沒有精力。之後回院中待命', enabled: TE.active(p), hidden: !TE.active(p), reason: '沒有泡茶' },
       { id: 'trainCancel', label: '停止練掌', detail: '未完成的單位不算，已完成單位保留；回院中待命', enabled: T1.active(p), hidden: !T1.active(p), reason: '沒有練掌目標' },
       { id: 'meetCancel', label: '取消招呼', detail: '兩人各自從所在處走回院中', enabled: !!lv.meet, hidden: !lv.meet, reason: '沒有進行中的招呼' },
-      { id: 'start', label: `開始${JOBS[cur].label}（持續）`, detail: '恢復目前工作', hidden: true,
-        enabled: stopped || p.pending != null, reason: `已在持續${JOBS[cur].label}中` },
-      { id: 'recall', label: '叫回工作', detail: `回院中${JOBS[cur].label}；滿了就待命，做完一趟才解除`, hidden: !fun && !p.recall,
+      { id: 'start', label: `開始${JB[cur].label}（持續）`, detail: '恢復目前工作', hidden: true,
+        enabled: stopped || p.pending != null, reason: `已在持續${JB[cur].label}中` },
+      { id: 'recall', label: '叫回工作', detail: `回院中${JB[cur].label}；滿了就待命，做完一趟才解除`, hidden: !fun && !p.recall,
         enabled: fun && !p.recall && !stopped, reason: stopped ? '已停工：下令開始工作才解除' : p.recall ? '已叫回' : '不在休閒中' },
       { id: 'resume', label: '恢復自主', detail: '解除叫回：有空位就做，滿了可再去休閒；不解除停工', hidden: !p.recall,
         enabled: p.recall && !stopped, reason: stopped ? '停工中：恢復自主不能解除停工' : '沒有叫回' },
       { id: 'restAfterTrip', label: carrying ? '本趟後停工' : '停工休息', detail: carrying ? '這趟交付後去座位停工；不影響另一人' : '去座位坐著，回滿也不自己開工',
         enabled: !stopped && p.pending !== 'rest', reason: stopped ? '已停工' : '已下過這個指令' },
-      { id: 'pourNow', label: '立即倒水', detail: '', enabled: false, hidden: cur === 'herb',
+      { id: 'pourNow', label: '立即倒水', detail: '', enabled: false, hidden: cur !== 'water',
         reason: carrying && p.motion.phase >= 2 ? '還沒走到水缸' : '肩上是空桶：要先到泉水裝水' },
       { id: 'cancel', label: '取消待執行', detail: wants(p) ? '取消這次自己去護院的意願' : '', enabled: p.pending != null || (p.guardOrder != null && !guardBusy(p)) || wants(p), reason: stopped ? '停工已生效：下令開始工作才解除' : '沒有待執行指令', hidden: true },
       guardOpt(p, stopped),
@@ -1443,12 +1494,12 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
 
   function phaseView(m) {
     if (!m.need || m.phase == null) return null;
-    return { name: JOBS[m.job].phases[m.phase], k: Math.min(1, m.steps / m.need[m.phase]), steps: m.steps, ms: m.steps * STEP_MS };
+    return { name: JB[m.job].phases[m.phase], k: Math.min(1, m.steps / m.need[m.phase]), steps: m.steps, ms: m.steps * STEP_MS };
   }
   function personView(p) {
     const h = p.motion, ph = phaseView(h), sp = speedsFor(p.level, rules);
-    const job = h.mode === 'carry' ? h.job : p.job, st = store(p.job), place = JOBS[p.job].place;
-    const stopped = p.rest === 'manual', name = JOBS[p.job].label, pref = prefs[p.id] || { place: '院中', doing: '休息' };
+    const job = h.mode === 'carry' ? h.job : p.job, st = store(p.job), place = JB[p.job].place;
+    const stopped = p.rest === 'manual', name = JB[p.job].label, pref = prefs[p.id] || { place: '院中', doing: '休息' };
     const fun = h.mode === 'toFun' || h.mode === 'fun' || h.mode === 'fromFun';
     const status = h.mode === 'carry' ? PHASE_LABEL[ph.name]
       : h.mode === 'seated' ? (stopped ? '已停工，需下令開始' : '坐下恢復')
@@ -1472,31 +1523,31 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const fixNext = h.mode === 'toFix' ? (p.fix ? '到護欄動手 8 秒，清一階損痕' : `整理已取消：走到護欄後回院中${name}`)
       : h.mode === 'fix' ? '做滿 8 秒且看不見野豬才清一階'
         : h.mode === 'fromFix' ? (stopped ? '到院中後回座位停工' : p.energy <= E.restAt ? `到院中後先去恢復到 ${E.backAt}` : `到院中重查${place}，有空位就${name}`)
-          : p.fix === 'wait' ? (h.mode === 'carry' ? `交付後去整理護欄，回來${JOBS[nextJob].label}` : p.rest ? `先恢復到 ${E.backAt}，回院中再去整理護欄` : '回到院中就去整理護欄')
+          : p.fix === 'wait' ? (h.mode === 'carry' ? `交付後去整理護欄，回來${JB[nextJob].label}` : p.rest ? `先恢復到 ${E.backAt}，回院中再去整理護欄` : '回到院中就去整理護欄')
             : null;
     const cl = cleaning(p) ? s.clean : null, tgt = cl && cl.target;
     const cleanNext = h.mode === 'toRat' ? (cl.phase === 'back' ? '走完這段後返院' : `走到鼠${tgt}旁（掌距 ≤${PALM.reach}）再起手`)
       : h.mode === 'windup' ? `起手中：到點以最新位置重驗鼠${tgt}，仍在掌距才擊倒`
         : h.mode === 'recover' ? '收勢後換最近的有效目標，沒有就返院'
           : h.mode === 'fromRat' ? (stopped ? '到院中後回座位停工' : p.energy <= E.restAt ? `到院中後先去恢復到 ${E.backAt}` : `到院中重查${place}，有空位就${name}`)
-            : cl && cl.phase === 'wait' ? (h.mode === 'carry' ? `交付後去清理測試鼠，回來${JOBS[nextJob].label}` : p.rest ? `先恢復到 ${E.backAt}，回院中再去清理` : '回到院中就去清理')
+            : cl && cl.phase === 'wait' ? (h.mode === 'carry' ? `交付後去清理測試鼠，回來${JB[nextJob].label}` : p.rest ? `先恢復到 ${E.backAt}，回院中再去清理` : '回到院中就去清理')
               : null;
     const drinkNext = h.mode === 'toDrink' ? `到水缸旁喝 ${D.drinkMs / 1000} 秒；到時水缸還有水才扣 ${D.cost}、水分 +${D.gain}`
       : h.mode === 'drink' ? `喝滿 ${D.drinkMs / 1000} 秒才結算（水缸 ${s.vat}）`
         : h.mode === 'fromDrink' ? (h.from === 'seat' && stopped ? '回座位繼續停工' : stopped ? '到院中後回座位停工' : h.from === 'seat' ? `回院中${name}` : `到院中重查${place}，有空位就${name}`)
           : null;
     const pv = pt.view(p);
-    const patrolNext = !pv ? null : pv.phase === 'wait' ? (h.mode === 'carry' ? `交付後去巡山，回來${JOBS[nextJob].label}` : p.rest ? `先恢復到 ${E.backAt}，回院中再去巡山` : '回到院中就去巡山')
+    const patrolNext = !pv ? null : pv.phase === 'wait' ? (h.mode === 'carry' ? `交付後去巡山，回來${JB[nextJob].label}` : p.rest ? `先恢復到 ${E.backAt}，回院中再去巡山` : '回到院中就去巡山')
       : pv.phase === 'back' ? `返院（${PATROL_END[pv.end] || ''}）；到院後${stopped ? '回座位停工' : name}`
         : pv.cancel ? '走完這段就返院' : `往 ${pv.next} ${pv.nextLabel}；返程需 ${pv.returnNeed} 精力`;
     const next = patrolNext ? patrolNext : drinkNext ? drinkNext : cleanNext ? cleanNext : fixNext ? fixNext : guardNext ? guardNext
       : h.mode === 'fromGuard' ? (stopped ? '到院中後回座位停工' : `到院中重查${place}，有空位就${name}`)
       : h.mode === 'toGuard' ? `走到防守點後回院中${name}`
-      : p.guardOrder != null && h.mode === 'carry' ? `交付後去驅離野豬，回來${JOBS[nextJob].label}`
+      : p.guardOrder != null && h.mode === 'carry' ? `交付後去驅離野豬，回來${JB[nextJob].label}`
       : wants(p) && h.mode === 'carry' ? '交付後在院中自己去護院（野豬還在、沒人處理才去）'
       : wantsUp(p) && h.mode === 'carry' ? `交付後${p.energy <= E.restAt ? `先恢復到 ${E.backAt}，再` : ''}在院中自己去整理護欄（看不見野豬、沒人整理才去）`
       : h.mode === 'carry'
-      ? (p.pending === 'rest' ? '交付後去座位停工' : p.energy <= E.restAt ? `交付後精力 ≤ ${E.restAt}，去休息再回來${JOBS[nextJob].label}` : `交付後繼續${JOBS[nextJob].label}`)
+      ? (p.pending === 'rest' ? '交付後去座位停工' : p.energy <= E.restAt ? `交付後精力 ≤ ${E.restAt}，去休息再回來${JB[nextJob].label}` : `交付後繼續${JB[nextJob].label}`)
       : h.mode === 'back' ? (stopped ? '到院中後回座位停工' : `到院中重查${place}，有空位就${name}`)
         : fun && stopped ? (h.mode === 'toFun' ? `走到${pref.place}後回院中，再去座位停工` : '回院中後去座位停工')
           : fun && p.rest === 'auto' ? `回院中後先去座位恢復至 ${E.backAt}，再${name}`
@@ -1507,22 +1558,22 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
           : h.mode === 'toSeat' || h.mode === 'seated' ? `恢復至 ${E.backAt} 後返回${name}`
             : p.recall && st.amount + st.inFlight >= st.cap ? `等${place}有空位再${name}；做完一趟才解除叫回，或按「恢復自主」`
               : st.amount + st.inFlight >= st.cap ? (st.amount >= st.cap ? `${place}已滿，去${pref.place}${pref.doing}` : `等${place}有空位再${name}（有人在補位）`) : `出發${name}`;
-    const l2 = L2.view(p), t1 = T1.view(p), te = TE.view(p);
+    const l2 = L2.view(p), t1 = T1.view(p), te = TE.view(p), h2 = H2.view(p);
     return {
       id: p.id, initialLevel: p.initialLevel, level: p.level, xp: p.xp, trips: p.trips, done: { ...p.done },
-      job, jobLabel: JOBS[job].label, pending: p.pending, nextJob,
+      job, jobLabel: JB[job].label, pending: p.pending, nextJob,
       nextNeed: p.level < rules.maxLevel ? rules.tripsToNext[p.level - 1] : null, maxLevel: rules.maxLevel,
       tripLevel: h.tripLevel, speeds: sp, tripSpeeds: speedsFor(h.tripLevel, rules), speedsInitial: speedsFor(p.initialLevel, rules),
       atCap: sp.empty >= rules.emptySpeed.cap && sp.load >= rules.loadSpeed.cap,
       // 下趟預計：用目前腳力、下一趟實際要走的工作路線（有待切換就用新工作）。本趟：出發時鎖定的步數。
-      tripSeconds: tripSteps(p.level, lengths[nextJob], rules) * STEP_MS / 1000,
+      tripSeconds: tripNeed(p.level, nextJob).reduce((a, b) => a + b, 0) * STEP_MS / 1000,
       tripSecondsNow: h.mode === 'carry' ? h.need.reduce((a, b) => a + b, 0) * STEP_MS / 1000 : null,
-      tripSecondsInitial: tripSteps(p.initialLevel, lengths[nextJob], rules) * STEP_MS / 1000,
+      tripSecondsInitial: tripNeed(p.initialLevel, nextJob).reduce((a, b) => a + b, 0) * STEP_MS / 1000,
       lastTrip: p.lastTrip && { job: p.lastTrip.job, level: p.lastTrip.level, seconds: p.lastTrip.steps * STEP_MS / 1000 },
-      mode: h.mode, phase: ph, status: (te.mode && TEA_LABEL[te.mode]) || (te.want && '待泡茶') || t1.status || l2.status || status,
+      mode: h.mode, phase: ph, status: (h2.mode && H2_LABEL[h2.mode]) || (h2.want && '待修寢舍') || (h.bed && h.mode === 'seated' ? (stopped ? `躺在 ${h.bed}（停工）` : '躺下恢復') : null) || (h.bed && h.mode === 'toSeat' ? `走去 ${h.bed}` : null) || (h.bed && h.mode === 'back' ? `起身離開 ${h.bed}` : null) || (te.mode && TEA_LABEL[te.mode]) || (te.want && '待泡茶') || t1.status || l2.status || status,
       tripProgress: h.mode === 'carry' ? (h.need.slice(0, h.phase).reduce((a, b) => a + b, 0) + h.steps) / h.need.reduce((a, b) => a + b, 0) : 0,
       restOrder: p.pending === 'rest', resting: stopped,
-      energy: p.energy, energyMax: E.max, rest: p.rest, why: p.why, next: te.next || t1.next || l2.next || next, life02: l2, train01: t1, tea: te,
+      energy: p.energy, energyMax: E.max, rest: p.rest, why: p.why, next: h2.next || te.next || t1.next || l2.next || next, life02: l2, train01: t1, tea: te, home02: h2, bed: h.bed || null, bedWhy: (h.mode === 'toSeat' || h.mode === 'seated') && !h.bed ? H2.bedWhy(p) : null,
       restLeg: h.mode === 'toSeat' || h.mode === 'back' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need } : null,
       pref: prefs[p.id] || null, recall: p.recall, leisure: fun,
       funLeg: h.mode === 'toFun' || h.mode === 'fromFun' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need } : null,
@@ -1655,6 +1706,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       patrolReport: s.patrolReport ? JSON.parse(JSON.stringify(s.patrolReport)) : null, patrolLog: s.patrolLog.map((x) => ({ ...x })),
       log: s.log.slice(-5), drinkRules: D ? { ...D } : null, thirst: THIRST,
       teaEvents: TE.events(), teaAvail: TE.avail(), teaSeat: TE.state.seat,
+      home02: H2.world(),
     };
   }
   // SG-LIFE-01 手動存讀：權威狀態全在 s；匯出為深拷貝（紀錄只留最近 logKeep 筆，規則與還原都不讀紀錄）。
@@ -1669,7 +1721,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     for (const k of Object.keys(s)) delete s[k];
     Object.assign(s, copy);
   }
-  return { state: s, patrol: pt, life02: L2, train01: T1, tea: TE, step, dispatch, actions, view, setAuto, setUpkeep, setPalm, setAutoClean, pathLength, lengths, rules, exportState, restore };
+  return { state: s, patrol: pt, life02: L2, train01: T1, tea: TE, home02: H2, step, dispatch, assignBed: (bed, pid) => H2.assign(bed, pid), actions, view, setAuto, setUpkeep, setPalm, setAutoClean, pathLength, lengths, rules, exportState, restore };
 }
 
 // 牆鐘只決定餵幾步；長空檔最多算250ms，不追趕背景時間。
