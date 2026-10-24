@@ -157,3 +157,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .panel .stock { gap: 10px; flex-wrap: wrap; font-size: 12px; }
 .panel .tea { margin-top: 6px; padding: 6px 8px; border-left: 3px solid #8a6a3a; background: rgba(138, 106, 58, .08); }
 .panel .events ul { margin: 4px 0 0 16px; padding: 0; font-size: 12px; max-height: 140px; overflow: auto; }
+/* SG-HOME-02 生活面板：木料／寢舍／床位 */
+.home02 { margin-top: 8px; padding: 6px 8px; border: 1px solid #c9b78f; border-radius: 6px; background: #f6eedb; }
+.home02 .bedrow { align-items: center; gap: 6px; }
+.btn.mini { padding: 1px 6px; font-size: 12px; margin-left: 2px; }
+.bar.site i { background: #8a6a3e; }
+.home02 .unsaved { color: #8a4a2a; }

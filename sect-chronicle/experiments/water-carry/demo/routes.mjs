@@ -51,6 +51,13 @@ export const TRAIN_POSTS = {
 };
 // HOME-01（D45）茶座：S0 院中端點東北、草亭旁一個石座與小爐（一個座位）。獨立短折線，不動任何原路線。
 export const TEA_SEAT = { points: [[962, 512], [984, 494], [1004, 480]], face: 1, stove: { x: 1028, y: 476 } };
+// SG-HOME-02（D49）：林緣枯木（砍柴）、寢舍工地（HOME01 預留位 dorm_reserved）與房內兩張床。全為自院中端點出發的獨立固定折線，不動舊路。
+export const WOOD_PATH = { points: [[962, 512], [930, 496], [904, 470], [890, 430], [876, 392], [858, 360]], log: { x: 836, y: 350 } };
+export const WOOD_ALIAS = { woodOut: 'down', woodChop: 'dip', woodBack: 'up', woodDeliver: 'pour' };
+export const DORM = { points: [[962, 512], [990, 556], [1090, 598], [1160, 640], [1180, 700], [1150, 742], [1108, 744]], site: { x: 1104, y: 722 }, face: -1,
+  // 房內兩床：門口 (1108,744) → 門檻 (1104,724) 進屋 → 屋內走道 (1104,712) → 床側；床都在寢舍底線 (y 722) 以內。
+  beds: { 'bed-1': { points: [[1108, 744], [1104, 724], [1104, 712], [1090, 708], [1078, 706]], face: 1 }, 'bed-2': { points: [[1108, 744], [1104, 724], [1104, 712], [1118, 708], [1130, 706]], face: -1 } },
+  woodpile: { x: 1050, y: 524 } };
 export const GUARD = { points: [[962, 512], [930, 522], [880, 512], [820, 480], [782, 452], [748, 428], [706, 430]] };
 
 export function createRoutes(waterPoints = WATER_POINTS) {
@@ -71,6 +78,22 @@ export function createRoutes(waterPoints = WATER_POINTS) {
     const r = trains[id], p = r.at(Math.max(0, Math.min(1, l.u)));
     const face = l.mode === 'train' ? TRAIN_POSTS[id].face : (l.b < l.a ? -p.dx : p.dx) >= 0 ? 1 : -1;
     return { x: p.x, y: p.y, face, route: r, geo: l.mode, travelled: l.mode === 'train' ? 0 : Math.abs(l.u - l.a) * r.length };
+  }
+  routes.wood = pathTool(WOOD_PATH.points);
+  const sitePath = pathTool(DORM.points);
+  const beds = Object.fromEntries(Object.entries(DORM.beds).map(([id, b]) => [id, pathTool(DORM.points.concat(b.points.slice(1)))]));
+  // 工地往返：u=0 院中端點、u=1 工地門口；施工時面向工地。
+  function sitePlace(l) {
+    const p = sitePath.at(Math.max(0, Math.min(1, l.u)));
+    const still = l.mode === 'build';
+    const face = still ? DORM.face : (l.b < l.a ? -p.dx : p.dx) >= 0 ? 1 : -1;
+    return { x: p.x, y: p.y, face, route: sitePath, geo: l.mode, travelled: still ? 0 : Math.abs(l.u - l.a) * sitePath.length };
+  }
+  // 去床／躺／起身：u=0 院中端點、u=1 床位；躺下面向床頭。
+  function bedPlace(bed, mode, k) {
+    const r = beds[bed], u = mode === 'toSeat' ? k : mode === 'back' ? 1 - k : 1, p = r.at(u);
+    const face = mode === 'seated' ? DORM.beds[bed].face : (mode === 'back' ? -p.dx : p.dx) >= 0 ? 1 : -1;
+    return { x: p.x, y: p.y, face, route: r, geo: mode === 'seated' ? 'lie' : mode, bed, travelled: mode === 'seated' ? 0 : k * r.length };
   }
   const teaPath = pathTool(TEA_SEAT.points);
   function teaPlace(l) {
@@ -105,12 +128,14 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   }
   // phase：模型的階段名，或 idle／rest；job：不在路上時，人站在哪份工作的路頭（兩者相同）。
   function place(phase, k, job = 'water') {
-    const onHerb = ALIAS[phase] || (!(phase in WATER) && job === 'herb');
-    const route = routes[onHerb ? 'herb' : 'water'];
-    const geo = ALIAS[phase] || phase;
+    const onWood = WOOD_ALIAS[phase] || (!(phase in WATER) && !ALIAS[phase] && job === 'wood');
+    const onHerb = !onWood && (ALIAS[phase] || (!(phase in WATER) && job === 'herb'));
+    const route = routes[onWood ? 'wood' : onHerb ? 'herb' : 'water'];
+    const geo = WOOD_ALIAS[phase] || ALIAS[phase] || phase;
     const at = route.place({ phase: geo, k });
     if (phase === 'herbGather') at.face = 1; // 藥圃在路底右側
     if (phase === 'herbDeliver') at.face = -1; // 藥架在左上
+    if (phase === 'woodChop') at.face = -1; // 枯木在路底左側
     return { ...at, route, geo, travelled: geo === 'down' || geo === 'up' ? k * route.length : 0 };
   }
   // 去／坐／回座位：u=0 院中端點、u=1 座位。坐下面向鏡頭右側（朝院子）。
@@ -132,6 +157,9 @@ export function createRoutes(waterPoints = WATER_POINTS) {
     // LP-11：清理中直接用模型在權威 tick 取樣的場景位置（palm.mjs 同一幾何），畫面不另算。
     if (p.drinkLeg) return drinkPlace(id, { ...p.drinkLeg, mode: p.mode });
     if (p.life02 && p.life02.leg) return meetPlace(id, { ...p.life02.leg, mode: p.mode });
+    if (p.home02 && p.home02.leg) return sitePlace({ ...p.home02.leg, mode: p.mode });
+    if (p.bed && (p.mode === 'toSeat' || p.mode === 'back')) return bedPlace(p.bed, p.mode, p.restLeg.k);
+    if (p.bed && p.mode === 'seated') return bedPlace(p.bed, 'seated', 1);
     if (p.tea && p.tea.leg) return teaPlace({ ...p.tea.leg, mode: p.mode });
     if (p.train01 && p.train01.leg) return trainPlace(id, { ...p.train01.leg, mode: p.mode });
     if (p.patrolling) return { x: p.pos.x, y: p.pos.y, face: p.cface, route: null, geo: p.mode, travelled: p.walked }; // SG-PATROL-01：巡山同用模型 pos
@@ -149,6 +177,7 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   return { routes, seats, funs, place, of, seatLengths: { hero: seats.hero.length, cousin: seats.cousin.length }, funLengths: { hero: funs.hero.length, cousin: funs.cousin.length },
     boarPath, guardPath, boarAt, guardPlace, boarLengths: { edge: boarEdge, total: boarPath.length, seen: boarSeenD }, boarSeenD, guardLength: guardPath.length,
     teaPath, teaPlace, teaLength: teaPath.length,
+    sitePath, sitePlace, bedPlace, beds, woodLength: routes.wood.length, siteLength: sitePath.length, bedLengths: Object.fromEntries(Object.entries(beds).map(([id, r]) => [id, r.length])),
     trains, trainPlace, trainLengths: Object.fromEntries(['hero', 'cousin'].map((id) => [id, trains[id].length])),
     meets, meetPlace, meetLengths: Object.fromEntries(['hero', 'cousin'].map((id) => [id, { total: meets[id].length, home: meetHome[id] }])),
     drinks, drinkPlace, drinkLengths: { home: drinks.home.length, seat: { hero: drinks.hero.length, cousin: drinks.cousin.length } } };

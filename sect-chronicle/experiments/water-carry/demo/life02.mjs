@@ -169,17 +169,20 @@ export function createLife02(ctx) {
 export function guardedSave(model, save) {
   // SG-TRAIN-01 共用同一最小 guard：練掌往返／站位中也不呼叫原寫入。
   const teaBlock = model.tea && model.tea.saveBlock();
-  const block = model.life02.saveBlock() || (model.train01 && model.train01.saveBlock()) || teaBlock;
-  if (block) return { ok: false, code: block === model.life02.saveBlock() ? 'life02' : block === teaBlock ? 'tea' : 'train01', text: `暫不能存檔：${block}` };
+  // SG-HOME-02：木料／修寢舍／床位中同一最小 guard。
+  const h2Block = model.home02 && model.home02.saveBlock();
+  const block = model.life02.saveBlock() || (model.train01 && model.train01.saveBlock()) || teaBlock || h2Block;
+  if (block) return { ok: false, code: block === model.life02.saveBlock() ? 'life02' : block === teaBlock ? 'tea' : block === h2Block ? 'home02' : 'train01', text: `暫不能存檔：${block}` };
   const r = save();
   if (r.ok && model.life02.anyFill()) r.text += '；自主補水方針與招呼只本局，不寫入存檔（讀檔後回原持續工作）';
   if (r.ok && model.train01) r.text += '；練掌進度不保存，已練熟結果沿原掌法欄位保存';
+  if (r.ok && model.home02) r.text += '；木料、寢舍工地與床位只本局，不寫入存檔';
   return r;
 }
 export function guardedLoad(model, load) {
-  const keep = model.life02.snapshot(), keep1 = model.train01 && model.train01.snapshot(), keep2 = model.tea && model.tea.snapshot();
+  const keep = model.life02.snapshot(), keep1 = model.train01 && model.train01.snapshot(), keep2 = model.tea && model.tea.snapshot(), keep3 = model.home02 && model.home02.snapshot();
   const r = load();
-  if (r.ok) { model.life02.reset(); if (model.train01) model.train01.reset(); if (model.tea) model.tea.reset(); r.text += '；自主補水／招呼、練掌進度與泡茶不在存檔內，已回預設（掌法照存檔）'; }
-  else { model.life02.restoreSnap(keep); if (keep1) model.train01.restoreSnap(keep1); if (keep2) model.tea.restoreSnap(keep2); }
+  if (r.ok) { model.life02.reset(); if (model.train01) model.train01.reset(); if (model.tea) model.tea.reset(); if (model.home02) model.home02.reset(); r.text += '；自主補水／招呼、練掌進度、泡茶與木料／寢舍／床位不在存檔內，已回預設（掌法照存檔）'; }
+  else { model.life02.restoreSnap(keep); if (keep1) model.train01.restoreSnap(keep1); if (keep2) model.tea.restoreSnap(keep2); if (keep3) model.home02.restoreSnap(keep3); }
   return r;
 }

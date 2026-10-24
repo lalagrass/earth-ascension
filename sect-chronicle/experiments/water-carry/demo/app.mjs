@@ -8,7 +8,7 @@ import { saveTo, loadFrom } from './life-save.mjs';
 import { guardedSave, guardedLoad } from './life02.mjs'; // SG-LIFE-02 存讀邊界（SG-TRAIN-01 共用）
 import { TRAIN_POSTS } from './routes.mjs';
 import { drawStake } from './assets/train01/stake.mjs';
-import { createRoutes, HERB, SEATS, FUN, BOAR, GUARD } from './routes.mjs';
+import { createRoutes, HERB, SEATS, FUN, BOAR, GUARD, WOOD_PATH, DORM } from './routes.mjs';
 import { WATER_POINTS, WATER_LENGTH, WORLD_SIZE, SPRING_PLACE, WATER_LANDMARKS } from './water-layout.mjs';
 import { buildWatercolorScene, ART_WC } from './scene/watercolor.mjs';
 import { VIEWS } from './scene/layout.mjs';
@@ -19,6 +19,8 @@ import { WAYPOINTS as WP0, MAIN_LENGTH } from './patrol-layout.mjs';
 const WAYPOINTS = WP0.map((w) => ({ ...w, x: ROUTE[S0 + w.node][0], y: ROUTE[S0 + w.node][1] }));
 import { drawRefinedRack, drawRefinedBasket, getRefinedBasketPlacement } from './assets/lp16/herb-decor.mjs';
 
+// SG-HOME-02：對外 JOBS 不含砍柴（舊存檔），畫面查名稱另補一份。
+const JOBX = { ...JOBS, wood: { label: '砍柴', unit: '捆', place: '柴堆' } };
 const SHARED = '../spikes/shared/';
 const ART = 'assets/art184-production/'; // D35：Grok 手繪人物／道館／景物；sheet 契約與 LP17 相同
 const t0 = performance.now();
@@ -38,6 +40,10 @@ $('stage').appendChild(app.canvas);
 const WC = await (await fetch(ART_WC + 'manifest.json')).json();
 await Assets.load(Object.values(WC).map((m) => ART_WC + m.file));
 const WT = (name) => Assets.get(ART_WC + WC[name].file);
+// SG-HOME-02 素材（design/home02/source 決定性水彩）：枯木、柴捆、院倉柴堆、寢舍三階段、床與被褥、木屑。
+const H2_ART = 'assets/home02/', H2M = await (await fetch(H2_ART + 'manifest.json')).json();
+await Assets.load(Object.values(H2M).map((m) => H2_ART + m.file));
+const HT = (name) => Assets.get(H2_ART + H2M[name].file);
 
 // ---------- 路線（只是畫面換算：模型給「走到第幾成」，這裡換成場景座標；算法在 routes.mjs） ----------
 const geo = createRoutes(WATER_POINTS), { routes: ROUTES, place } = geo;
@@ -60,7 +66,10 @@ function pose(ph, level, mode, resting = false, id = 'hero', job = 'water') {
   const at = place(phase, ph?.k || 0, job);
   // LP-16 採藥動作：Gather (4s) 依進度 k 前後切換姿態：k < 0.5 採摘（herbGather 蹲身採草），k >= 0.5 裝簍（herbDeliver/herbHand 整理入簍）
   const animPhase = phase === 'herbGather' && (ph?.k || 0) >= 0.5 ? 'herbDeliver' : phase;
-  const view = { phase: animPhase, k: ph?.k || 0, travelled: at.travelled };
+  // SG-HOME-02 砍柴：往返借採藥空手／負重步態；砍 8 秒借舒展前彎／站直兩拍（揮斧節奏，依階段步數）；堆柴借交藥站姿。
+  const WOODA = { woodOut: 'herbOut', woodBack: 'herbBack', woodDeliver: 'herbDeliver' };
+  const chop = phase === 'woodChop';
+  const view = chop ? { phase: 'stretch', k: 0, travelled: ((ph?.steps || 0) % FIX_BEAT) < FIX_BEND ? 3 : 0 } : { phase: WOODA[phase] || animPhase, k: ph?.k || 0, travelled: at.travelled };
   // 模型只提供階段與進度；共用動畫用實際走過的距離換幀，不另開 walker 或時鐘。
   const pick = animators[id].pick(view, { grown: level >= GROWN_FROM });
   return { x: at.x, y: at.y, face: at.face, ...pick, travelled: at.travelled, phase };
@@ -134,6 +143,12 @@ function poseOf(id, person) {
     const at = geo.of(id, person), a = animators[id], m = person.mode;
     const view = m === 'brew' ? { phase: 'herbGather', k: 0.5, travelled: 0 } : m === 'sip' ? { phase: 'herbDeliver', k: 0.5, travelled: 0 } : { phase: 'herbOut', k: 0, travelled: at.travelled };
     return { x: at.x, y: at.y, face: at.face, ...a.pick(view), travelled: at.travelled, phase: m, cup: m === 'sip', borrowed: m === 'brew' };
+  }
+  // SG-HOME-02 修寢舍：往返空手（扛料時同負重步態）；施工借「舒展筋骨」前彎／站直兩拍（釘椽、綁茅），面板標明借用。
+  if (person.home02 && person.home02.mode) {
+    const at = geo.of(id, person), a = animators[id], m = person.mode;
+    const view = m === 'build' ? { phase: 'stretch', k: 0, travelled: (v.tick % FIX_BEAT) < FIX_BEND ? 3 : 0 } : { phase: person.home02.carrying ? 'herbBack' : 'herbOut', k: 0, travelled: at.travelled };
+    return { x: at.x, y: at.y, face: at.face, ...a.pick(view), travelled: at.travelled, phase: m, borrowed: m === 'build', build: m === 'build' };
   }
   if (person.leisure) {
     const at = geo.of(id, person), a = animators[id];
@@ -337,6 +352,42 @@ const ring = new Graphics().ellipse(0, 2, 18, 5.5).stroke({ width: 2.4, color: 0
 ring.visible = false;
 sorted.addChild(ring);
 const sprites = Object.fromEntries(IDS.map((id) => [id, personSprite(id)]));
+// ---------- SG-HOME-02 場景件（只讀 view().home02 與人物 view；不另存狀態） ----------
+const h2Sprite = (name, x, y, h, z = y) => { const s = new Sprite(HT(name)); s.anchor.set(0.5, 1); s.scale.set(h / s.texture.height); s.position.set(x, y); s.zIndex = z; sorted.addChild(s); return s; };
+const deadLog = h2Sprite('dead_log', WOOD_PATH.log.x, WOOD_PATH.log.y + 8, 34);
+const yardPile = h2Sprite('woodpile_0', DORM.woodpile.x, DORM.woodpile.y, 30);
+// 寢舍：取代 HOME01 預留位 dorm_reserved 的同一位置；依工地階段換圖（破損→施工中→可用）。
+const dormProp = wc.props.find((q) => q.p.id === 'dorm_reserved');
+if (dormProp) dormProp.s.visible = false;
+const dorm = h2Sprite('dorm_broken', DORM.site.x, DORM.site.y, 96);
+const bedSprites = Object.fromEntries(Object.entries(DORM.beds).map(([id, b]) => { const e = b.points.at(-1); const s = h2Sprite('bed', e[0], e[1] + 6, 20, e[1] - 1); s.visible = false; return [id, s]; }));
+const quilts = Object.fromEntries(IDS.map((id) => { const s = new Sprite(HT('quilt')); s.anchor.set(0.5, 0.5); s.scale.set(0.5); s.visible = false; sorted.addChild(s); return [id, s]; }));
+const bundles = Object.fromEntries(IDS.map((id) => { const s = new Sprite(HT('wood_bundle')); s.anchor.set(0.5, 0.5); s.scale.set(0.5); s.visible = false; sorted.addChild(s); return [id, s]; }));
+const chips = []; // 砍柴木屑（純畫面）
+const LIE_TICKS = 24; // 躺下／起身的過渡幀數（只看模型步數）
+function placeHome02(id, p, person) {
+  const sp = sprites[id], h2 = person.home02, ph = person.mode === 'carry' && person.phase && person.phase.name;
+  // 扛柴：回程與堆柴、或修繕扛料往返時肩上一捆。
+  const carry = ph === 'woodBack' || ph === 'woodDeliver' || (h2 && h2.carrying);
+  const b = bundles[id];
+  b.visible = !!carry;
+  if (carry) { b.position.set(p.x + 4 * p.face, p.y - 44); b.rotation = -0.25 * p.face; b.zIndex = p.y + 0.03; }
+  // 躺下：到床才轉成平躺＋被褥；起身沿 back 前段漸直。
+  const q = quilts[id];
+  let lie = 0;
+  if (person.mode !== 'seated') sp.lieAt = null;
+  if (person.bed && person.mode === 'seated') { if (sp.lieAt == null) sp.lieAt = v.tick; lie = Math.min(1, (v.tick - sp.lieAt) / LIE_TICKS); } // 躺下：到床後漸平
+  else if (person.bed && person.mode === 'back' && person.restLeg) lie = Math.max(0, 1 - person.restLeg.steps / LIE_TICKS); // 起身：離床前段漸直
+  if (lie > 0) {
+    // 躺在房內床上：身體中心對齊床心（腳底錨點往床腳側推半身長），屋內比例縮小，被褥蓋在床上。
+    const bedAt = DORM.beds[person.bed].points.at(-1), k = 1 - 0.4 * lie;
+    sp.scale.set(p.face * k, k); sp.rotation = -Math.PI / 2 * lie * p.face;
+    const half = (sp.texture.height * k) / 2;
+    sp.position.set(p.x + (bedAt[0] + half * p.face - p.x) * lie, p.y + (bedAt[1] - 4 - p.y) * lie);
+  }
+  q.visible = lie > 0.6;
+  if (q.visible) { const bq = DORM.beds[person.bed].points.at(-1); q.position.set(bq[0] + 4 * p.face, bq[1] - 4); q.zIndex = p.y + 0.04; }
+}
 const baskets = Object.fromEntries(IDS.map((id) => { const g = new Graphics(); g.visible = false; sorted.addChild(g); return [id, g]; }));
 // 背簍放哪：LP-16 掛點精修（去程身後微遮、採集身前置簍、回程背上、交藥身側）
 function placeBasket(id, p, person) {
@@ -430,7 +481,8 @@ const LENGTHS = { water: WATER_LENGTH, herb: r1(herbPath.length), seat: geo.seat
   boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength),
   drink: r1(geo.drinkLengths.home), drinkSeat: { hero: r1(geo.drinkLengths.seat.hero), cousin: r1(geo.drinkLengths.seat.cousin) } };
 // LP-11：警覺鼠察覺用同一份純幾何取樣兩人位置（模型在權威 tick 呼叫，不讀畫面座標）。
-const SENSE = { placeOf: geo.of, boarAt: geo.boarAt, meetLengths: geo.meetLengths, trainLengths: geo.trainLengths, teaLength: geo.teaLength }; // SG-LIFE-02 招呼路長度不進 LENGTHS（存檔幾何識別不變）
+const SENSE = { placeOf: geo.of, boarAt: geo.boarAt, meetLengths: geo.meetLengths, trainLengths: geo.trainLengths, teaLength: geo.teaLength,
+  woodLength: r1(geo.woodLength), siteLength: r1(geo.siteLength), bedLengths: Object.fromEntries(Object.entries(geo.bedLengths).map(([k, v]) => [k, r1(v)])) }; // SG-HOME-02 新路長也走 sense，不進 LENGTHS // SG-LIFE-02 招呼路長度不進 LENGTHS（存檔幾何識別不變）
 let model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
 const clock = createClock();
 const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null, boarExpanded: false, advancedOpen: false, tab: 'life', eventsOpen: false };
@@ -568,6 +620,9 @@ $('panel').addEventListener('click', (e) => {
   if (u) { upSet(u.dataset.up); return; }
   const ca = e.target.closest('[data-autoclean]');
   if (ca) { cleanAutoSet(ca.dataset.autoclean); return; }
+  // SG-HOME-02 床牌：只改床主，不推進 tick、不派工。
+  const bd = e.target.closest('[data-bed]');
+  if (bd) { const r = model.assignBed(bd.dataset.bed, bd.dataset.owner || null); v = model.view(); toast(r.ok ? r.text : `做不到：${r.reason}`); renderChrome(); return; }
   const pm = e.target.closest('[data-palm]');
   if (pm) { palmSet(pm.dataset.palm); return; }
   const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd);
@@ -723,8 +778,8 @@ const put = (key, el, html) => {
 };
 // 面板按鈕：途中改另一份工作＝「交付後改…」；有待執行時再按當趟工作＝取消、繼續。
 const cmdLabel = (a, p) => !a.id.startsWith('work:') || p.mode !== 'carry' ? a.label
-  : a.id !== 'work:' + p.job ? `交付後改${JOBS[a.id.slice(5)].label}` : p.pending ? `繼續${p.jobLabel}` : a.label;
-const pendText = (p) => p.pending === 'rest' ? '本趟後停工' : `交付後改去${JOBS[p.pending].label}`;
+  : a.id !== 'work:' + p.job ? `交付後改${JOBX[a.id.slice(5)].label}` : p.pending ? `繼續${p.jobLabel}` : a.label;
+const pendText = (p) => p.pending === 'rest' ? '本趟後停工' : `交付後改去${JOBX[p.pending].label}`;
 const en = (p) => Math.floor(p.energy);
 const srcText = (p) => p.rest === 'manual' ? '玩家停工' : p.rest === 'auto' ? '自主恢復' : p.mode === 'back' ? '自主恢復完成' : p.leisure ? '閒暇（不扣不回）' : p.guarding ? '驅離往返（不扣不回）'
   : p.mode === 'fix' ? '整理護欄動手（每秒 −1，共 8）' : p.fixing ? '整理往返（不扣不回）' : p.cleaning ? `清理（每次起手 −${PALM.cost}，走路不扣）` : null;
@@ -888,7 +943,7 @@ function renderChrome() {
     const other = person.job === 'water' ? 'herb' : 'water';
     const pend = person.pending
       ? `<div class="pending"><span><b>${pendText(person)}</b><br><small>本趟${person.jobLabel}交付時生效；再下指令只保留最新一個</small></span><button class="btn" data-cmd="cancel">取消</button></div>`
-      : person.resting ? `<div class="pending"><span><b>已停工</b><br><small>回滿也不會自己出發；下令開始才解除</small></span><span><button class="btn" data-cmd="start">開始${person.jobLabel}</button> <button class="btn" data-cmd="work:${other}">改${JOBS[other].label}</button></span></div>`
+      : person.resting ? `<div class="pending"><span><b>已停工</b><br><small>回滿也不會自己出發；下令開始才解除</small></span><span><button class="btn" data-cmd="start">開始${person.jobLabel}</button> <button class="btn" data-cmd="work:${other}">改${JOBX[other].label}</button></span></div>`
         : person.recall ? `<div class="pending"><span><b>玩家叫回</b><br><small>回院中${person.jobLabel}；滿了就待命，完成返院後的一趟才解除</small></span><button class="btn" data-cmd="resume">恢復自主</button></div>`
           : '<div class="muted">沒有</div>';
     const cmds = model.actions(id).filter((a) => !a.hidden && a.id !== 'pourNow' && a.id !== 'fixCancel' && a.id !== 'upCancel' && a.id !== 'cleanCancel') // 取消整理／整理意願／清理放在各自狀態列旁
@@ -909,6 +964,7 @@ function renderChrome() {
         <div class="next-box"><b>下一步：</b>${person.next}</div>
         ${person.why ? `<div class="muted stop-reason">狀態原因：${person.why}</div>` : ''}
         ${teaHtml(person)}
+        ${home02Html(person)}
         ${life02Html(person)}
       </div>
       <div id="p-pend">${pend}</div>
@@ -932,7 +988,7 @@ function renderChrome() {
         <table class="cmp"><tr><td>場景單位／秒</td><td class="now">${person.mode === 'carry' ? `本趟 Lv ${person.tripLevel}` : `現在 Lv ${person.level}`}</td><td class="init">起始 Lv ${person.initialLevel}</td></tr>
           <tr><td>去程（空手／空桶）</td><td class="now">${sn.empty.toFixed(1)}</td><td class="init">${si.empty.toFixed(1)}</td></tr>
           <tr><td>回程（負重）</td><td class="now">${sn.load.toFixed(1)}</td><td class="init">${si.load.toFixed(1)}</td></tr>
-          <tr><td>下趟${JOBS[person.nextJob].label}（Lv ${person.level}）</td><td class="now">${sec(person.tripSeconds)}</td><td class="init">${sec(person.tripSecondsInitial)}</td></tr></table>
+          <tr><td>下趟${JOBX[person.nextJob].label}（Lv ${person.level}）</td><td class="now">${sec(person.tripSeconds)}</td><td class="init">${sec(person.tripSecondsInitial)}</td></tr></table>
         <h4>掌法</h4><div class="row"><b>${person.palmLabel}</b><span class="muted">起手 ${person.palmTicks.windup}・收勢 ${person.palmTicks.recover} tick</span></div>
         ${trainHtml(person)}
         <h4>巡山戰報（本局真實紀錄）</h4>${martialPatrol(v, id)}`);
@@ -942,6 +998,8 @@ function renderChrome() {
 // HOME-01：來源只說真的原因（玩家指派／自主政策／必要自理）。
 function sourceText(p) {
   if (p.tea && p.tea.active) return '玩家指派：泡茶';
+  if (p.home02 && p.home02.active) return '玩家指派：修寢舍';
+  if (p.bed && (p.mode === 'toSeat' || p.mode === 'seated')) return p.rest === 'manual' ? '玩家停工：回自己的床' : '必要自理：回床恢復';
   if (p.train01 && p.train01.src) return p.train01.src;
   if (p.life02 && p.life02.src) return p.life02.src;
   if (p.rest === 'auto') return '必要自理：精力低先恢復';
@@ -949,6 +1007,20 @@ function sourceText(p) {
   if (p.recall) return '玩家叫回';
   if (p.guardSrc || p.fixSrc || p.cleanSrc) return (p.guardSrc || p.fixSrc || p.cleanSrc) === 'auto' ? '自主政策' : '玩家指派';
   return p.leisure ? '自由活動（存放處已滿）' : '持續工作';
+}
+// SG-HOME-02 生活面板：木料、工地進度、床位（床主／使用中／預約）與床牌；全只本局、不存檔（明示）。
+function home02Html(p) {
+  const w = v.home02, h = p.home02, nm = (x) => (x ? profiles[x].label : '—');
+  const beds = w.beds.map((b) => `<div class="row bedrow" id="bed-${b.id}"><span><b>${b.id}</b> 床主 ${nm(b.owner)}${b.user ? ` · 使用中 ${nm(b.user)}` : b.resv ? ` · 正走去 ${nm(b.resv)}` : ''}</span>
+    <span>${b.open ? IDS.map((who) => `<button class="btn mini" data-bed="${b.id}" data-owner="${who}" ${b.idle && b.owner !== who ? '' : 'disabled'} title="${b.idle ? '指派床主（不推進時間、不派工）' : '有人使用或正走去：不能改'}">給${profiles[who].label}</button>`).join('') + `<button class="btn mini" data-bed="${b.id}" data-owner="" ${b.idle && b.owner ? '' : 'disabled'}>解除</button>` : '<small class="muted">寢舍未修好</small>'}</span></div>`).join('');
+  return `<div class="home02" id="home02-${p.id}">
+    <div class="row"><b>院倉木料</b><span>${w.wood}／${w.cap}${w.woodIn ? `（砍柴在途 ${w.woodIn}）` : ''}${w.resv ? ` · 工地預約 ${w.resv}` : ''}${w.bundle ? ` · 扛往工地 ${w.bundle.n}` : ''}</span></div>
+    <div class="row"><b>寢舍（${w.roomId}）</b><span>${w.site.label} · 木 ${w.site.at}／${w.site.need} · 工時 ${w.site.work}／${w.site.workMs / 1000} 秒${w.site.by ? ` · 工位：${nm(w.site.by)}` : ''}</span></div>
+    <div class="bar site"><i style="width:${Math.round(w.site.k * 100)}%"></i></div>
+    ${h && h.now ? `<div><b>修繕：</b>${h.now}</div><div class="muted">下一步：${h.next}</div>` : ''}${h && h.note ? `<div class="muted">最近：${h.note}</div>` : ''}
+    ${p.bed ? `<div class="muted">床位：${p.bed}${p.mode === 'seated' ? '（躺下恢復，每秒 +5）' : ''}</div>` : p.bedWhy ? `<div class="muted">床位：${p.bedWhy}</div>` : ''}
+    ${beds}
+    <div class="muted unsaved">木料、寢舍工地與床位只本局，<b>不存檔</b>；讀檔／重來後回到破損、木 0。</div></div>`;
 }
 function teaHtml(p) {
   const t = p.tea;
@@ -1017,9 +1089,11 @@ app.ticker.add((t) => {
       sprite.rotation = p.palm.lean * Math.PI / 180 * p.face;
       arm.scale.x = p.face; arm.position.set(p.x, p.y); arm.zIndex = p.y + 0.02;
     } else sprite.rotation = 0;
+    placeHome02(id, p, person); // SG-HOME-02：扛柴、躺下／起身與被褥
+    if (p.phase === 'woodChop' && person.phase && person.phase.steps % FIX_BEAT === FIX_BEND) chips.push({ x: WOOD_PATH.log.x + 6, y: WOOD_PATH.log.y - 10, t: 0 });
     if (person.trips > prev.people[id].trips) {
-      const herb = person.lastTrip.job === 'herb', at = places[herb ? 'rack' : 'vat'];
-      fx.push({ text: `${profiles[id].label} +1 ${herb ? '份藥' : '擔'}`, x: at.x, y: at.y - 70, until: performance.now() + 1600 });
+      const herb = person.lastTrip.job === 'herb', wood = person.lastTrip.job === 'wood', at = wood ? DORM.woodpile : places[herb ? 'rack' : 'vat'];
+      fx.push({ text: `${profiles[id].label} +1 ${wood ? '捆柴' : herb ? '份藥' : '擔'}`, x: at.x, y: at.y - 70, until: performance.now() + 1600 });
       if (person.level > prev.people[id].level) fx.push({ text: `${profiles[id].label}腳力 Lv ${person.level}`, x: p.x, y: p.y - 100, until: performance.now() + 2200 });
     }
     const as = person.auto.state, ap = prev.people[id].auto.state;
@@ -1035,6 +1109,22 @@ app.ticker.add((t) => {
     tag(`${id}-say`, 'say', turn ? SAY[turn][id] : null, p.x, p.y - 96);
     tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level} · 精力 ${en(person)}`, p.x, p.y, 6);
     tag(`${id}-pill`, `pill ${person.resting ? 'stop' : person.rest || person.mode === 'back' ? 'rest' : person.guarding || person.fixing ? 'guard' : person.leisure ? 'fun' : person.recall ? 'recall' : ''}`, person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.mode === 'fix' ? `${person.status} ${Math.round(person.fixWork.k * 100)}%` : person.status, p.x, p.y - (person.mode === 'seated' ? 64 : 80));
+  }
+  // SG-HOME-02 世界件：柴堆分級、寢舍階段、床（修好才出現）、木屑、名牌。
+  {
+    const w = v.home02, lv = w.wood <= 0 ? 0 : w.wood <= 4 ? 1 : w.wood <= 8 ? 2 : 3;
+    if (yardPile.lv !== lv) { yardPile.texture = HT('woodpile_' + lv); yardPile.lv = lv; }
+    const st = 'dorm_' + w.site.stage;
+    if (dorm.st !== st) { dorm.texture = HT(st); dorm.scale.set(96 / dorm.texture.height); dorm.st = st; }
+    for (const b of w.beds) bedSprites[b.id].visible = w.site.stage === 'done';
+    // 房內剖視：修好後寢舍退到屋內件之後並半透（剖面），兩床與走向／躺在／起身的人物畫在屋內、可辨認在房裡。
+    const inside = w.site.stage === 'done';
+    dorm.zIndex = inside ? DORM.site.y - 140 : DORM.site.y; dorm.alpha = inside ? 0.72 : 1;
+    for (const id in bedSprites) bedSprites[id].zIndex = inside ? DORM.site.y - 120 : bedSprites[id].y - 7;
+    for (let i = chips.length - 1; i >= 0; i--) { const c = chips[i]; if (!c.g) { c.g = new Sprite(HT('chip')); c.g.anchor.set(0.5); c.g.scale.set(0.5); sorted.addChild(c.g); } c.t += t.deltaMS / 1000; c.g.position.set(c.x + c.t * 30, c.y - 20 * c.t + 40 * c.t * c.t); c.g.zIndex = WOOD_PATH.log.y + 10; c.g.alpha = Math.max(0, 1 - c.t * 1.6); if (c.t > 0.7) { c.g.destroy(); chips.splice(i, 1); } }
+    tag('h2-pile', 'place', `院倉柴堆 ${w.wood}／${w.cap}${w.woodIn ? ` · 在途 ${w.woodIn}` : ''}${w.resv ? ` · 預約 ${w.resv}` : ''}`, DORM.woodpile.x, DORM.woodpile.y + 14);
+    tag('h2-site', 'place', `寢舍 ${w.site.label} · 木 ${w.site.at}／${w.site.need} · ${w.site.work}／${w.site.workMs / 1000} 秒`, DORM.site.x, DORM.site.y + 26);
+    tag('h2-log', 'place', '林緣枯木（砍柴）', WOOD_PATH.log.x, WOOD_PATH.log.y + 14);
   }
   // SG-PATROL-01 林鼠：同一套鼠畫法，只讀 view().prats。
   for (const w of WAYPOINTS) tag(`wp${w.id}`, 'pill wp', `${w.id} ${w.label}`, w.x, w.y, 14);
@@ -1155,6 +1245,7 @@ window.demo = {
       heroScreen: people.hero.screen,
       vatScreen: toScreen(scene.places.vat.x, scene.places.vat.y - 20), springScreen: toScreen(places.spring.x, places.spring.y - 10),
       firstFrameMs, frames, stepMs: STEP_MS, cups: Object.fromEntries(IDS.map((id) => [id, cups[id].visible])),
+      home02: v.home02, h2: Object.fromEntries(IDS.map((id) => [id, { mode: v.people[id].mode, bed: v.people[id].bed, bundle: bundles[id].visible, quilt: quilts[id].visible, rot: sprites[id].rotation, phase: v.people[id].phase && v.people[id].phase.name }])),
     };
   },
   // D37：鏡頭快看（只動鏡頭；截圖與手動導覽共用同一條路徑）
