@@ -1,5 +1,11 @@
 # 可見交付、驗證與正式整合
 
+## D48：遊戲PO／review預設雲端，Mac只真人試玩
+
+擁有人2026-10-25已批准設定earth-ascension雲端環境、[遊戲PO／review交接](CLOUD_PO_HANDOFF.md)與[Dot提示詞](DOT_GAME_PO_PROMPT.md)。環境規格／帳號端實際完成狀態見[CLOUD_REVIEW_ENVIRONMENT](CLOUD_REVIEW_ENVIRONMENT.md)。PO規劃、diff／圖稿審查與必要驗證預設在Cloud，不自動轉回Mac；Earth PO保唯一dev合併權，復用集中review證據；Mac只使用者真人試玩，舊「PO自動更新Mac8800」改交接受SHA／同步說明、由使用者發起。設定／授權／Publish與實際接手分開記，不能拿文件merge當環境已發布。
+
+Grok已認領#309 HOME01（claim6386685609、codex/home01-s0-tea-grok、box /workspace/ea309），原scope／期限／D47 A–D與開發不因PO移轉改變，不把本環境或文件加成HOME01前置。這次只不同檔案交接，未代啟Dot／其他reviewer、排程或永久循環；原整包交付／精簡差異驗證／清理／單一試玩版本、手機與新增保存末位保留。下方本機路徑與部署的歷史流程依本節更新。
+
 ## D47最新批准：HOME-01整包，採I3推薦A
 
 擁有人已於2026-10-25（台北）同意I1–I4。下一整包為[#309／HOME01正式包](HOME01_HANDOFF.md)／[Grok提示詞](HOME01_GROK_PROMPT.md)：完整S0水彩初始道館＋現有活動回接＋D45統一補給／一次藥茶＋生活總覽與武學成長，一Grok一PR做到完成集中review。權威世界／水藥巡山幾何、速度成長及原玩法保持，素材按真路線完整分層重繪適配；只必要局部設施／站位／控制接線整理，不切新座標B或另起核心／入口。
