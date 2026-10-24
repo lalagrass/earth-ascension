@@ -1,6 +1,6 @@
 # SCENE-03 地面烘焙（D37 bake.py 衍生）：geometry.json（權威路線＋296 最終接受巡山 LEAD/MAIN＋視覺佈局）＋貼圖 → 3200×2700 水彩地面（2×）。
 # 用法（design/scene03）：node source/dump-geometry.mjs（於 water-carry 目錄）之後 python3 source/bake.py
-# 新增：林谷山壁泉口濕痕匯流→上游溪→權威溪段→深潭→下游出圖；西坡巡山淡徑與坡面明暗；預留地村路。來源只讀：art184-watercolor/raw、art184-production/ground。
+# 新增：林谷山壁泉口（P2：連續崖坡 SPRING_BANK）濕痕匯流→上游溪→權威溪段→深潭→下游出圖；西坡巡山淡徑與坡面明暗；預留地村路。來源只讀：art184-watercolor/raw、art184-production/ground。
 import json, numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 from scipy import ndimage as nd
@@ -58,6 +58,33 @@ for poly in G['ROCKY']:
 # SCENE-03 西坡（巡山段）坡面：上坡亮、坳底暗，泉口林谷陰面
 for x, y, rx, ry, k in G['WASHES'] + [[300, 640, 260, 150, -0.07], [420, 560, 200, 80, 0.05], [360, 790, 120, 60, -0.08], [1000, 740, 110, 60, -0.14], [920, 800, 120, 60, -0.08]]:
     e = nd.gaussian_filter(ellm(x, y, rx, ry), 50 * S); img = mul(img, 1 + k * e / max(e.max(), 1e-6))
+# 3b SCENE-03 P2：泉口背後的連續林谷崖坡（崖頂林下苔坡→岩面→崖腳濕陰）。另用獨立亂數，其餘地面逐像素不變。
+_rng0 = rng; rng = np.random.default_rng(1823)
+B = G['SPRING_BANK']; rx_ = [p[0] for p in B['rim']]; ry_ = [p[1] for p in B['rim']]
+X = np.arange(W, dtype=np.float32) / S; Y = yy * H / S
+rimY = np.interp(X, rx_, ry_)[None, :] + noise(14 * S, 3.0); drop = np.interp(X, rx_, B['drop'], left=0, right=0)[None, :]
+inx = np.clip(np.minimum(X - rx_[0], rx_[-1] - X) / 70, 0, 1)[None, :] ** 0.8
+u = (Y - rimY) / np.maximum(drop, 1)                     # 0＝崖頂緣，1＝崖腳
+jag = noise(10 * S, 0.16) + noise(4 * S, 0.05)
+face = np.clip((np.minimum(u, 1 + jag - u) * np.maximum(drop, 1)) / 2.0 + 0.5, 0, 1) * (drop > 2) * inx
+# 崖頂林下苔坡：從崖緣往北漸淡（不是一塊黑斑）
+d_up = np.clip((rimY - Y) / (60 + 1.2 * drop), 0, 1)
+plat = (Y < rimY) * (1 - d_up) ** 1.3 * inx
+plat = np.clip(nd.gaussian_filter(plat, 6 * S) * (1 + noise(20 * S, 0.5)), 0, 1)
+img = over(img, np.clip(ft * np.array([0.98, 1.06, 0.84], np.float32) * 1.08, 0, 1), plat * 0.55)
+# 岩面：低頻雜訊量化成塊面（光面／陰面），往下變暗，上半掛苔
+fac = np.floor((noise(9 * S, 1.0) + 1) * 2.5) / 5
+uu = np.clip(u, 0, 1)
+shade = (1.2 - 0.46 * uu) * (0.78 + 0.32 * fac) * (1 + noise(2 * S, 0.06))
+rcol = np.clip(rock * np.array([0.86, 0.83, 0.74], np.float32) * shade[..., None], 0, 1)
+moss = np.clip((noise(7 * S, 1.0) - 0.05 - 1.2 * uu) * 1.6, 0, 1) * 0.65
+rcol = over(rcol, ft * np.array([0.62, 0.8, 0.55], np.float32), moss)
+img = over(img, rcol, face); img = mul(img, 1 - 0.3 * ink_edge(face) * (Y > rimY + 0.4 * drop))
+lip = np.clip(1 - np.abs(Y - rimY) / 3.0, 0, 1) * inx * (drop > 2); img = over(img, ft * np.array([1.0, 1.08, 0.8], np.float32), lip * 0.55)
+# 崖腳濕陰（與泉口濕痕連成一片）
+sh = np.clip((Y - rimY - drop) / 26, 0, 1); sh = (1 - sh) * (Y > rimY + drop * 0.8) * np.clip(drop / 20, 0, 1) * inx
+img = mul(img, 1 - 0.34 * nd.gaussian_filter(sh, 4 * S))
+rng = _rng0
 # 4 遠山（北緣）：霧中群山漸隱入院後草坡
 mt = Image.open(RAW + 'far-mountains.jpg').convert('RGB').crop((0, 50, 1280, 470)).resize((W, 620), Image.LANCZOS)
 mt = np.asarray(mt).astype(np.float32) / 255; band = np.zeros_like(img); band[:620] = mt
