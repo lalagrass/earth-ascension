@@ -1,5 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED } from './data.mjs';
+import { ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED } from './data.mjs';
 
 export const SAVE_VERSION = 1;
 const clone = (o) => JSON.parse(JSON.stringify(o));
@@ -39,7 +39,7 @@ export function createState(seed = 1) {
       at: 'court', pos: [...NODES.court].map((v, k) => v + (k ? 0 : (i - 1) * 30)), path: [],
       task: null, order: null, reason: '剛到道館', carry: null, cool: 0, walked: 0, face: 1, anim: null,
     })),
-    rel: {}, families: [], log: [], hunt: null, mons: [], fx: [], rngN: 0,
+    rel: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
   };
   for (let i = 0; i < s.ds.length; i++) for (let j = i + 1; j < s.ds.length; j++) s.rel[relKey(s.ds[i].id, s.ds[j].id)] = 10;
   log(s, '師徒三人來到山腳一間破道館。');
@@ -117,7 +117,7 @@ export function scoreActs(s, d) {
 }
 
 function assign(s, d, act, why) {
-  if (act === 'hunt') { d.task = { act: 'hunt', node: 'guard', phase: 'go' }; goto(d, 'guard'); d.reason = why || '後山守點'; return true; }
+  if (act === 'hunt') { const post = s.hunt?.post || s.post; d.task = { act: 'hunt', node: post, phase: 'go' }; goto(d, post); d.reason = why || '後山守點'; return true; }
   if (act === 'build') {
     const site = siteOf(s); if (!site) return false; const [fid, v] = site;
     const missing = v.need.wood - v.delivered - v.reserved;
@@ -224,47 +224,51 @@ function doTask(s, d, dt) {
 }
 function finish(s, d) { d.task = null; d.anim = null; }
 
-// ---- 狩獵（同圖塔防波次） ----
-export function startHunt(s, ids) {
+// ---- 狩獵（同圖塔防波次，v0.4 接生態） ----
+export function setPost(s, node) { if (POSTS[node] && !s.hunt) { s.post = node; return true; } return false; }
+export function startHunt(s, ids, waves = HUNT_WAVES) {
   if (s.hunt) return false;
-  const team = s.ds.filter((d) => ids.includes(d.id)); if (!team.length) return false;
-  s.hunt = { wave: 0, t: 0, spawned: 0, kills: 0, escaped: 0, hits: {}, team: team.map((d) => d.id) };
+  const team = s.ds.filter((d) => ids.includes(d.id) && d.hp > 30); if (!team.length) return false;
+  s.hunt = { wave: 0, waves, gap: 0, t: 0, kills: 0, escaped: 0, hits: {}, team: team.map((d) => d.id), post: s.post, perWave: [] };
   for (const d of team) { d.order = 'hunt'; cancelTask(s, d, '奉命上後山'); }
-  log(s, `後山獸群出沒，${team.map((d) => d.name).join('、')}上山守點。`);
+  log(s, `${team.map((d) => d.name).join('、')}上山，守在「${POSTS[s.post]}」，預計 ${waves} 波。`);
   return true;
 }
-const MON_PATH = ['den', 'guard', 'trail2', 'trail1', 'yard'];
+const MON_PATH = route('den', 'yard');
+function spawnWave(s) {
+  const h = s.hunt, i = h.wave, list = [];
+  const nr = Math.min(s.eco.rat.n, 2 + i), nb = i === h.waves - 1 ? Math.min(1, s.eco.boar.n) : 0;
+  for (let k = 0; k < nr; k++) list.push({ k: 'rat', t: k * 1.5 }); for (let k = 0; k < nb; k++) list.push({ k: 'boar', t: nr * 1.5 + 1 });
+  s.eco.rat.n -= nr; s.eco.boar.n -= nb; h.queue = list; h.wt = 0; h.perWave.push({ rat: nr, boar: nb });
+  removeWild(s, 'rat', nr); removeWild(s, 'boar', nb);
+  log(s, list.length ? `第 ${i + 1} 波：山鼠 ${nr}${nb ? '、野豬 ' + nb : ''}` : `第 ${i + 1} 波：山裡沒有獸出來`);
+}
 function huntStep(s, dt) {
   const h = s.hunt; if (!h) return;
   const team = s.ds.filter((d) => h.team.includes(d.id));
-  const ready = team.every((d) => d.at === 'guard' || d.hp <= 25);
-  if (!ready && !h.started) return; h.started = true; h.t += dt;
-  const wave = WAVES[h.wave];
-  while (h.spawned < wave.length && wave[h.spawned].t <= h.t) {
-    const k = wave[h.spawned].k, M = MONSTERS[k];
-    s.mons.push({ uid: `${k}${h.spawned}`, k, hp: M.hp, max: M.hp, pos: [...NODES.den], seg: 1, cool: 0 }); h.spawned++;
-  }
+  if (!h.started) { if (!team.every((d) => d.at === h.post || d.hp <= 25)) return; h.started = true; spawnWave(s); }
+  h.t += dt; h.wt += dt;
+  while (h.queue.length && h.queue[0].t <= h.wt) { const q = h.queue.shift(), M = MONSTERS[q.k]; s.mons.push({ uid: `${q.k}${s.rngN++}`, k: q.k, hp: M.hp, max: M.hp, pos: [...NODES.den], path: MON_PATH.slice(1), cool: 0 }); }
   for (const m of s.mons) {
+    if (m.raid) continue;
     const M = MONSTERS[m.k];
     const foe = team.filter((d) => d.hp > 25).sort((a, b) => dist(a.pos, m.pos) - dist(b.pos, m.pos))[0];
     m.cool -= dt;
     if (foe && dist(foe.pos, m.pos) < 26) { if (m.cool <= 0) { foe.hp -= M.dmg; m.cool = 1.2; s.fx.push({ kind: 'bite', pos: [...foe.pos], ttl: 0.4 }); } continue; }
-    const tgt = NODES[MON_PATH[m.seg]]; const L = dist(m.pos, tgt), step = M.speed * dt;
-    if (L <= step) { m.pos = [...tgt]; m.seg++; if (m.seg >= MON_PATH.length) { m.gone = true; h.escaped++; log(s, `${M.name}衝下山溜走了`); } }
-    else { m.pos[0] += (tgt[0] - m.pos[0]) * step / L; m.pos[1] += (tgt[1] - m.pos[1]) * step / L; }
+    if (monWalk(m, M.speed * dt)) { m.gone = true; h.escaped++; s.eco[m.k].n++; log(s, `${M.name}衝過守點逃回山裡`); }
   }
   for (const d of team) {
     if (d.hp <= 25) { if (d.task?.act === 'hunt') { d.order = null; cancelTask(s, d, '傷重退回院中'); assign(s, d, 'rest', '傷重歇息'); log(s, `${d.name}受傷退下`); } continue; }
-    if (d.at !== 'guard') continue;
+    if (d.at !== h.post || d.path.length) continue;
     d.cool -= dt; if (d.cool > 0) continue;
     const ms = d.moves.map((id) => MOVES.find((m) => m.id === id)).sort((a, b) => b.dmg * (1 + (b.aoe ? 1 : 0)) - a.dmg * (1 + (a.aoe ? 1 : 0)));
-    const live = s.mons.filter((m) => !m.gone && m.hp > 0);
+    const live = s.mons.filter((m) => !m.gone && m.hp > 0 && !m.raid);
     for (const mv of ms) {
       const lv = d.skills[mv.skill]; const reach = mv.range * (1 + lv / 200);
       const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
       const power = mv.dmg * (1 + lv / 50);
       const hitList = mv.aoe ? live.filter((m) => dist(m.pos, tgt.pos) <= mv.aoe) : [tgt];
-      for (const m of hitList) { m.hp -= power; if (m.hp <= 0) { m.gone = true; h.kills++; log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') s.res.food += 3; } }
+      for (const m of hitList) { m.hp -= power; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') s.res.food += 3; } }
       h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5);
       d.cool = mv.cd; d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike';
       s.fx.push({ kind: 'move', name: mv.name, color: mv.color, from: [...d.pos], to: [...tgt.pos], r: mv.aoe || 16, ttl: 0.6 });
@@ -273,12 +277,41 @@ function huntStep(s, dt) {
     }
   }
   s.mons = s.mons.filter((m) => !m.gone);
-  if (h.spawned >= wave.length && !s.mons.length) {
-    const rep = `狩獵戰報：擊退 ${h.kills}、溜走 ${h.escaped}；` + team.map((d) => `${d.name}出手 ${h.hits[d.id] || 0} 次`).join('，');
-    log(s, rep); s.lastReport = rep;
+  const waveClear = !h.queue.length && !s.mons.some((m) => !m.raid);
+  const anyFit = team.some((d) => d.hp > 25);
+  if (waveClear) { h.gap += dt; if (h.gap >= WAVE_GAP && h.wave + 1 < h.waves && anyFit && (s.eco.rat.n + s.eco.boar.n) > 0) { h.wave++; h.gap = 0; spawnWave(s); } }
+  if ((waveClear && (h.wave + 1 >= h.waves || !anyFit || s.eco.rat.n + s.eco.boar.n === 0) && h.gap >= 1) || (!anyFit && waveClear)) {
+    const rep = `狩獵戰報（${POSTS[h.post]}，${h.wave + 1} 波）：擊退 ${h.kills}、溜走 ${h.escaped}；` + team.map((d) => `${d.name}出手 ${h.hits[d.id] || 0} 次`).join('，') + `｜山中尚餘 鼠${s.eco.rat.n} 豬${s.eco.boar.n}`;
+    log(s, rep); s.lastReport = rep; s.rep = (s.rep || 0) + h.kills;
     for (const d of team) { if (d.order === 'hunt') d.order = null; if (d.task?.act === 'hunt') { d.task = null; d.anim = null; } d.reason = '狩獵結束回院'; }
     s.hunt = null;
   }
+}
+function monWalk(m, step) {
+  while (step > 0 && m.path.length) { const tgt = NODES[m.path[0]], L = dist(m.pos, tgt);
+    if (L <= step) { m.pos = [...tgt]; m.path.shift(); step -= L; } else { m.pos[0] += (tgt[0] - m.pos[0]) * step / L; m.pos[1] += (tgt[1] - m.pos[1]) * step / L; step = 0; } }
+  return !m.path.length;
+}
+// 生態：繁衍、棲地遊蕩、野豬下山拱菜（有目的、會離開）
+function removeWild(s, k, n) { for (let i = 0; i < n; i++) { const j = s.wild.findIndex((w) => w.k === k); if (j >= 0) s.wild.splice(j, 1); } }
+function ecoStep(s, dt) {
+  for (const [k, E] of Object.entries(ECO)) { const e = s.eco[k]; if (e.n < E.max) { e.timer += dt; if (e.timer >= E.regen) { e.n++; e.timer = 0; } } }
+  const R = HABITAT.r;
+  for (const k of Object.keys(ECO)) { let have = s.wild.filter((w) => w.k === k).length; while (have < s.eco[k].n) { s.wild.push({ k, pos: [HABITAT.c[0] + (rand(s) - 0.5) * R, HABITAT.c[1] + (rand(s) - 0.5) * R], tgt: null }); have++; } if (have > s.eco[k].n) removeWild(s, k, have - s.eco[k].n); }
+  for (const w of s.wild) { if (!w.tgt || dist(w.pos, w.tgt) < 4) w.tgt = [HABITAT.c[0] + (rand(s) - 0.5) * 2 * R, HABITAT.c[1] + (rand(s) - 0.5) * R]; const L = dist(w.pos, w.tgt), st = MONSTERS[w.k].speed * 0.3 * dt; w.pos[0] += (w.tgt[0] - w.pos[0]) * Math.min(1, st / L); w.pos[1] += (w.tgt[1] - w.pos[1]) * Math.min(1, st / L); w.face = w.tgt[0] >= w.pos[0] ? 1 : -1; }
+  s.raidT += dt;
+  if (!s.hunt && s.raidT >= RAID_EVERY && s.eco.boar.n > 0 && !s.mons.some((m) => m.raid)) {
+    s.raidT = 0; s.eco.boar.n--; removeWild(s, 'boar', 1);
+    s.mons.push({ uid: `raid${s.rngN++}`, k: 'boar', hp: MONSTERS.boar.hp, max: MONSTERS.boar.hp, pos: [...NODES.den], path: route('den', 'veg').slice(1), raid: 'go', cool: 0 });
+    log(s, '一頭野豬循山路下來，朝菜園去了。');
+  }
+  for (const m of s.mons) if (m.raid) {
+    if (monWalk(m, MONSTERS.boar.speed * dt)) {
+      if (m.raid === 'go') { const p = s.plots.find((x) => x.st === 'ripe') || s.plots.find((x) => x.st === 'grow'); if (p) { p.st = 'empty'; p.g = 0; log(s, '野豬拱壞了一畦菜，吃飽回山。'); } else log(s, '野豬在菜園沒找到吃的，回山了。'); m.raid = 'back'; m.path = route('veg', 'den').slice(1); }
+      else { m.gone = true; s.eco.boar.n++; }
+    }
+  }
+  s.mons = s.mons.filter((m) => !m.gone);
 }
 
 // ---- tick ----
@@ -293,6 +326,7 @@ export function tick(s, dt = 0.25) {
     if (d.anim === 'strike' && d.cool < 0.6) d.anim = null;
   }
   huntStep(s, dt);
+  ecoStep(s, dt);
   for (const f of s.fx) f.ttl -= dt; s.fx = s.fx.filter((f) => f.ttl > 0);
 }
 

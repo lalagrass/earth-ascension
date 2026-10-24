@@ -58,3 +58,21 @@ test('木樁場建成後會切磋，並加速練功', () => {
   const s = createState(22); s.res.food = 99; s.res.wood = 6; startBuild(s, 'yard'); run(s, 1500);
   assert.equal(s.fac.yard.stage, 1); assert.ok(s.log.some((l) => /切磋/.test(l.msg)));
 });
+
+// v0.4
+import { setPost } from '../src/sim.mjs';
+test('狩獵取走真個體：擊退的獸從族群扣掉，之後會慢慢繁衍回來', () => {
+  const s = createState(31); s.ds[0].skills.palm = 50; s.ds[0].moves.push('push', 'wave'); s.ds[1].skills.leg = 40; s.ds[1].moves.push('kick');
+  const before = s.eco.rat.n + s.eco.boar.n; startHunt(s, ['hero', 'senior']); let i = 0; while (s.hunt && i++ < 4 * 600) tick(s);
+  assert.equal(s.hunt, null); const m = s.lastReport.match(/擊退 (\d+)/); const kills = +m[1];
+  assert.ok(kills > 0); assert.ok(s.eco.rat.n + s.eco.boar.n <= before - kills + 2); const after = s.eco.rat.n;
+  run(s, 400); assert.ok(s.eco.rat.n > after);
+});
+test('守點設定生效：隊伍站到所選守點', () => {
+  const s = createState(32); assert.ok(setPost(s, 'trail1')); startHunt(s, ['hero']); run(s, 40); assert.equal(s.ds[0].at, 'trail1');
+});
+test('野豬下山拱菜後回山，族群數不變', () => {
+  const s = createState(33); s.plots.forEach((p) => { p.st = 'ripe'; }); s.raidT = 159; const n0 = s.eco.boar.n;
+  let i = 0; while (!s.log.some((l) => /回山/.test(l.msg)) && i++ < 4 * 300) tick(s);
+  assert.ok(s.plots.some((p) => p.st !== 'ripe')); run(s, 200); assert.equal(s.eco.boar.n, n0);
+});

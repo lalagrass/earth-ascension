@@ -1,5 +1,5 @@
-import { phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf } from './sim.mjs';
-import { STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS } from './data.mjs';
+import { setPost, phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf } from './sim.mjs';
+import { POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS } from './data.mjs';
 const cv = document.getElementById('map'), g = cv.getContext('2d');
 const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile', 'kitchen_s1'];
 await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i.onload = r; i.onerror = r; i.src = `assets/${n}.${n === 'ground' ? 'jpg' : 'png'}`; IMG[n] = i; })));
@@ -34,7 +34,9 @@ function draw() {
     } });
   }
   items.push({ y: 400, f: () => sprite('master', NODES.hall[0] + 60, NODES.hall[1] - 10) });
-  for (const m of S.mons) items.push({ y: m.pos[1], f: () => { sprite(MONSTERS[m.k].sprite, m.pos[0], m.pos[1]); hp(m.pos[0], m.pos[1] - 30, m.hp / m.max, '#a33'); } });
+  for (const w of S.wild) items.push({ y: w.pos[1], f: () => { g.save(); g.globalAlpha = 0.85; g.translate(w.pos[0], w.pos[1]); g.scale(-(w.face || 1), 1); const i = IMG[MONSTERS[w.k].sprite]; g.drawImage(i, -i.width / 2, -i.height); g.restore(); } });
+  for (const [k, n] of Object.entries(POSTS)) items.push({ y: NODES[k][1], f: () => { g.fillStyle = S.post === k ? '#c0392b' : 'rgba(120,80,40,.5)'; g.beginPath(); g.moveTo(NODES[k][0], NODES[k][1] - 40); g.lineTo(NODES[k][0] + 18, NODES[k][1] - 33); g.lineTo(NODES[k][0], NODES[k][1] - 26); g.fill(); g.fillRect(NODES[k][0] - 1, NODES[k][1] - 40, 2, 40); } });
+  for (const m of S.mons) items.push({ y: m.pos[1], f: () => { sprite(MONSTERS[m.k].sprite, m.pos[0], m.pos[1]); if (!m.raid) hp(m.pos[0], m.pos[1] - 30, m.hp / m.max, '#a33'); else label('下山拱菜', m.pos[0], m.pos[1] - 40, '#a33'); } });
   for (const d of S.ds) items.push({ y: d.pos[1], f: () => {
     const bob = d.path.length ? Math.sin(S.t * 10) * 2 : 0, [x, y] = d.pos;
     g.save(); g.translate(x, y + bob); if (d.face < 0) g.scale(-1, 1); if (d.anim === 'strike') g.rotate(0.15);
@@ -67,8 +69,12 @@ function panel() {
   $('res').innerHTML = `木 ${S.res.wood}/${S.cap.wood}　菜 ${S.res.veg}　飯 ${S.res.food}　藥 ${S.res.herb}<div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
   $('build').innerHTML = FACILITIES.filter((f) => f.stages.length > 1).map((f) => { const st = S.fac[f.id], nx = f.stages[st.stage + 1];
     return `<div>${f.name}：${f.stages[st.stage].name} ${nx ? `<button data-build="${f.id}" ${st.site ? 'disabled' : ''}>${st.site ? '施工中' : `修成${nx.name}（木${nx.cost.wood}）`}</button>` : '✓'}</div>`; }).join('') + '';
-  $('hunt').innerHTML = S.hunt ? `進行中：擊退 ${S.hunt.kills}・溜走 ${S.hunt.escaped}` : `<button id="hunt-go">派主角＋林師姐上山（一波）</button><div class="k">${S.lastReport || '尚無戰報'}</div>`;
-  if (!S.hunt) $('hunt-go').onclick = () => startHunt(S, ['hero', 'senior']);
+  const eco = `山中：山鼠 ${S.eco.rat.n}・野豬 ${S.eco.boar.n}`;
+  $('hunt').innerHTML = S.hunt ? `${eco}<div>進行中（${POSTS[S.hunt.post]}）第 ${S.hunt.wave + 1}/${S.hunt.waves} 波：擊退 ${S.hunt.kills}・溜走 ${S.hunt.escaped}</div>` :
+    `${eco}<div>守點：<select id="post">${Object.entries(POSTS).map(([k, n]) => `<option value="${k}" ${S.post === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
+    <div>${S.ds.map((d) => `<label><input type="checkbox" class="hteam" value="${d.id}" ${(window.__team ||= new Set(['hero', 'senior'])).has(d.id) ? 'checked' : ''}>${d.name}</label>`).join(' ')}</div>
+    <button id="hunt-go">上山狩獵（${3} 波）</button><div class="k">${S.lastReport || '尚無戰報'}</div>`;
+  if (!S.hunt) { $('hunt-go').onclick = () => startHunt(S, [...window.__team]); $('post').onchange = (e) => setPost(S, e.target.value); document.querySelectorAll('.hteam').forEach((c) => (c.onchange = () => { c.checked ? window.__team.add(c.value) : window.__team.delete(c.value); })); }
   $('ds').innerHTML = S.ds.map((d) => `<div class="card"><b>${d.name}</b> <span class="k">${d.adult ? '' : '（少年）'}${d.task ? (ACTIVITIES[d.task.act]?.name || '狩獵') : '待命'}｜${d.reason}</span>
    <div class="k">精力 ${d.needs.energy | 0}</div>${bar(d.needs.energy, '#d9a441')}<div class="k">飽足 ${d.needs.hunger | 0}</div>${bar(d.needs.hunger, '#7aa35a')}<div class="k">交流 ${d.needs.social | 0}</div>${bar(d.needs.social, '#c77')}
    <div class="k">主修 ${STYLES[d.style]}・掌 ${d.skills.palm.toFixed(1)}・腿 ${d.skills.leg.toFixed(1)}・腳力 ${d.skills.agility.toFixed(1)}（${speedOf(d).toFixed(0)}px/s）・力氣 ${d.skills.strength.toFixed(1)}・農 ${d.skills.farming.toFixed(1)}・廚 ${d.skills.cooking.toFixed(1)}</div>
@@ -85,5 +91,5 @@ $('load').onclick = () => { const r = load(localStorage.getItem('solo-sect-save'
 $('reset').onclick = () => { S = createState(Date.now() % 100000 | 0); panel(); };
 let last = performance.now(), acc = 0;
 function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now; while (acc >= 0.25) { tick(S); acc -= 0.25; }
-  draw(); if (now - lastPanel > 400 && !document.activeElement?.matches('select')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
+  draw(); if (now - lastPanel > 400 && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
 panel(); requestAnimationFrame(loop);

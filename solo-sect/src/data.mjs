@@ -91,3 +91,9 @@ export const SCHEDULE = {
 export const PLOT_GROW = 90; // 秒，播種到成熟
 export const HARVEST = 3;    // 每畦收菜
 export const STYLES = { palm: '掌法', leg: '腿法' };
+// v0.4 後山生態：族群有上限與繁衍；狩獵是真的取走個體
+export const ECO = { rat: { start: 6, max: 8, regen: 50 }, boar: { start: 2, max: 3, regen: 150 } };
+export const HABITAT = { c: [1470, 130], r: 110 };
+export const POSTS = { guard: '山頂守點', trail2: '山腰岔口', trail1: '山腳路口' };
+export const RAID_EVERY = 160; // 秒；野豬下山拱菜
+export const HUNT_WAVES = 3, WAVE_GAP = 6;
