@@ -360,7 +360,7 @@ const yardPile = h2Sprite('woodpile_0', DORM.woodpile.x, DORM.woodpile.y, 30);
 const dormProp = wc.props.find((q) => q.p.id === 'dorm_reserved');
 if (dormProp) dormProp.s.visible = false;
 const dorm = h2Sprite('dorm_broken', DORM.site.x, DORM.site.y, 96);
-const bedSprites = Object.fromEntries(Object.entries(DORM.beds).map(([id, b]) => { const e = b.points.at(-1); const s = h2Sprite('bed', e[0], e[1] + 6, 15, e[1] - 1); s.visible = false; return [id, s]; }));
+const bedSprites = Object.fromEntries(Object.entries(DORM.beds).map(([id, b]) => { const e = b.points.at(-1); const s = h2Sprite('bed', e[0], e[1] + 6, 20, e[1] - 1); s.visible = false; return [id, s]; }));
 const quilts = Object.fromEntries(IDS.map((id) => { const s = new Sprite(HT('quilt')); s.anchor.set(0.5, 0.5); s.scale.set(0.5); s.visible = false; sorted.addChild(s); return [id, s]; }));
 const bundles = Object.fromEntries(IDS.map((id) => { const s = new Sprite(HT('wood_bundle')); s.anchor.set(0.5, 0.5); s.scale.set(0.5); s.visible = false; sorted.addChild(s); return [id, s]; }));
 const chips = []; // 砍柴木屑（純畫面）
@@ -378,9 +378,15 @@ function placeHome02(id, p, person) {
   if (person.mode !== 'seated') sp.lieAt = null;
   if (person.bed && person.mode === 'seated') { if (sp.lieAt == null) sp.lieAt = v.tick; lie = Math.min(1, (v.tick - sp.lieAt) / LIE_TICKS); } // 躺下：到床後漸平
   else if (person.bed && person.mode === 'back' && person.restLeg) lie = Math.max(0, 1 - person.restLeg.steps / LIE_TICKS); // 起身：離床前段漸直
-  if (lie > 0) { sp.rotation = -Math.PI / 2 * lie * p.face; sp.position.set(p.x - 10 * lie * p.face, p.y - 6 * lie); }
+  if (lie > 0) {
+    // 躺在房內床上：身體中心對齊床心（腳底錨點往床腳側推半身長），屋內比例縮小，被褥蓋在床上。
+    const bedAt = DORM.beds[person.bed].points.at(-1), k = 1 - 0.4 * lie;
+    sp.scale.set(p.face * k, k); sp.rotation = -Math.PI / 2 * lie * p.face;
+    const half = (sp.texture.height * k) / 2;
+    sp.position.set(p.x + (bedAt[0] + half * p.face - p.x) * lie, p.y + (bedAt[1] - 4 - p.y) * lie);
+  }
   q.visible = lie > 0.6;
-  if (q.visible) { q.position.set(p.x + 2 * p.face, p.y - 8); q.zIndex = p.y + 0.04; }
+  if (q.visible) { const bq = DORM.beds[person.bed].points.at(-1); q.position.set(bq[0] + 4 * p.face, bq[1] - 4); q.zIndex = p.y + 0.04; }
 }
 const baskets = Object.fromEntries(IDS.map((id) => { const g = new Graphics(); g.visible = false; sorted.addChild(g); return [id, g]; }));
 // 背簍放哪：LP-16 掛點精修（去程身後微遮、採集身前置簍、回程背上、交藥身側）
@@ -1111,6 +1117,10 @@ app.ticker.add((t) => {
     const st = 'dorm_' + w.site.stage;
     if (dorm.st !== st) { dorm.texture = HT(st); dorm.scale.set(96 / dorm.texture.height); dorm.st = st; }
     for (const b of w.beds) bedSprites[b.id].visible = w.site.stage === 'done';
+    // 房內剖視：修好後寢舍退到屋內件之後並半透（剖面），兩床與走向／躺在／起身的人物畫在屋內、可辨認在房裡。
+    const inside = w.site.stage === 'done';
+    dorm.zIndex = inside ? DORM.site.y - 140 : DORM.site.y; dorm.alpha = inside ? 0.72 : 1;
+    for (const id in bedSprites) bedSprites[id].zIndex = inside ? DORM.site.y - 120 : bedSprites[id].y - 7;
     for (let i = chips.length - 1; i >= 0; i--) { const c = chips[i]; if (!c.g) { c.g = new Sprite(HT('chip')); c.g.anchor.set(0.5); c.g.scale.set(0.5); sorted.addChild(c.g); } c.t += t.deltaMS / 1000; c.g.position.set(c.x + c.t * 30, c.y - 20 * c.t + 40 * c.t * c.t); c.g.zIndex = WOOD_PATH.log.y + 10; c.g.alpha = Math.max(0, 1 - c.t * 1.6); if (c.t > 0.7) { c.g.destroy(); chips.splice(i, 1); } }
     tag('h2-pile', 'place', `院倉柴堆 ${w.wood}／${w.cap}${w.woodIn ? ` · 在途 ${w.woodIn}` : ''}${w.resv ? ` · 預約 ${w.resv}` : ''}`, DORM.woodpile.x, DORM.woodpile.y + 14);
     tag('h2-site', 'place', `寢舍 ${w.site.label} · 木 ${w.site.at}／${w.site.need} · ${w.site.work}／${w.site.workMs / 1000} 秒`, DORM.site.x, DORM.site.y + 26);
