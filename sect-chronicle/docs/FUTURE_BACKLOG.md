@@ -1,5 +1,11 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## 最新產品review與下一里程碑提案（2026-10-24）
+
+見[SG-LIFE-03山居日常整包提案](LIFE03_MILESTONE_PROPOSAL.md)：沿[#309](https://github.com/lalagrass/earth-ascension/issues/309)把藥草第一用途、入口／自主可讀與真成長小目標一起評估，一Grok一主PR，不按素材／UI拆交接。U1–U4藥茶方向已獲擁有人「ok」，新配方／收益／時長與本輪MS1–MS4整體範圍尚待確認；沒有runtime認領或開工prompt。
+
+現況：LIFE02唯一8800已發布；305／PR308新head49f47da原兩P2已修，但Earth queue發現飲水承接練掌的recall早退路徑仍會卡住（review5638238207），同PR補修中，未合併／未發布；preCI五SUCCESS不取代此驗收，最終狀態以issue回填為準。先收尾原包，不讓新研究變它的gate。後續順序建議本用途整包→真人試玩→少量床位或自主多資源日常擇一；#215只做同包必要局部交接整理，不重構先行。存讀升版與手機／全面平台仍末位；下方D43及更早「下一包」是沿革，按本節核實目前狀態。
+
 ## D43已批准提取：SG-TRAIN-01一式練掌成長
 
 擁有人已明確同意T1–T4，主[#305](https://github.com/lalagrass/earth-ascension/issues/305)，[正式包](TRAIN01_HANDOFF.md)／[Grok提示詞](TRAIN01_GROK_PROMPT.md)。已有入門掌→完整12秒單位／6單位→原掌法adept節奏→原清鼠巡山應用，訓練每秒扣1精力、必要自理續有效目標、人工改派／停工優先、達標返院待命。一Grok完整模型到動作UI接線與必要局部意圖整理一主PR；文件接受／Earth合dev／postCI後本人新claim，未代啟。
