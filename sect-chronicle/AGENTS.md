@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## D42已批准：SG-LIFE-02自主補水與一次同門招呼
+
+擁有人已確認P1–P4，主[#300](https://github.com/lalagrass/earth-ascension/issues/300)，讀[正式工作包](docs/LIFE02_HANDOFF.md)／[Grok提示詞](docs/LIFE02_GROK_PROMPT.md)。SCENE-03／PR298已接受、Earth合dev ef84c60／postCI40077720968成功並更新唯一8800，不重做下方歷史等待。批准即時有效，正式包公開後Grok核無重疊作者、本人300新claim／當時最新dev新codex支線、自有隔離工作區；文件queue不另加開工gate，PO文件claim不占runtime，未代啟bot。
+
+同Grok完整模型／雙人真招呼回應／最小UI／接線／必要局部整理一主PR：自主補水實存≤3啟動、6結束、實存＋在途6不新增自主出發，原手動持續工作與容量8保留；雙方自主有空才4秒招呼，完成一趟新工作才再發起，人工改派／停工不被搶回。新方針／互動只本局，不升存檔；有限guard不覆寫舊檔、載入成功才重設暫態／暫停，失敗不動當局。原幾何／長通勤／速度與玩法保留，完整社交／人格／床睡／真武學等未授；手機與新增保存末位。白名單／四組驗收依正式包，無全面重構或全矩陣前置。一人整包集中review、精簡驗證／清理、4h可續租期／待審不續租、Earth唯一queue與單版本維持；沒有開發總限時。
+
 ## D41已批准下一包：296通過後整包整合新山居場景
 
 擁有人同意[SCENE-03正式包](docs/SCENE03_HANDOFF.md)／[Grok提示詞](docs/SCENE03_GROK_PROMPT.md)，主182、來源184。先原Grok完成296三P2、最終head非作者接受／Earth合dev／postCI並由PO更新唯一8800，再本人182新claim、當時最新dev新codex支線／自有工作區接續；原296 scope／補修窗口不變，本文件可先整合，不作296前置，也不另以本文件queue增加等待。未滿前置可讀資料，不先畫圖／烘焙／預演或占工程。
