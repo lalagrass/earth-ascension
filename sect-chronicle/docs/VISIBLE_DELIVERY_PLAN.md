@@ -1,5 +1,11 @@
 # 可見交付、驗證與正式整合
 
+## HOME01最新審查與下一候選HOME02（2026-10-25）
+
+HOME01／PR326查核head43c788eb已由[Cloud集中複審](https://github.com/lalagrass/earth-ascension/pull/326#issuecomment-6387652955)確認兩P2修好、A–D ready交Earth；尚待唯一queue整合／postCI，沒有PO重跑或自合／更新Mac。接手核最新結果，不拿下方舊「未交付」當現在狀態。
+
+下一候選[#330／HOME02整包提案](HOME02_BATCH_PROPOSAL.md)：砍柴→木料用途→一間固定小寢舍修繕→雙人床位與自主休息，沿BL-L04／S01／G01／G04、#321。一Grok一主PR，整包集中review；**B1–B4範圍／示意值／床效果／有限review接續仍待擁有人確認，不授runtime**。原grass只326後休息仍有效；330若批准才另授同包初審／補修差異複審後休息，不自動建立輪詢／排程。HOME01不增加DoD，手機／新增保存最後，單一版本／Cloud／Earth唯一merge保持。
+
 ## D48：遊戲PO／review預設雲端，Mac只真人試玩
 
 擁有人2026-10-25已批准設定earth-ascension雲端環境、[遊戲PO／review交接](CLOUD_PO_HANDOFF.md)與[Dot提示詞](DOT_GAME_PO_PROMPT.md)。環境規格／帳號端實際完成狀態見[CLOUD_REVIEW_ENVIRONMENT](CLOUD_REVIEW_ENVIRONMENT.md)。PO規劃、diff／圖稿審查與必要驗證預設在Cloud，不自動轉回Mac；Earth PO保唯一dev合併權，復用集中review證據；Mac只使用者真人試玩，舊「PO自動更新Mac8800」改交接受SHA／同步說明、由使用者發起。設定／授權／Publish與實際接手分開記，不能拿文件merge當環境已發布。
