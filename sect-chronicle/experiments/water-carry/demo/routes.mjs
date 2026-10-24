@@ -43,6 +43,12 @@ export const MEET = {
   hero: { points: [[962, 512], [940, 532], [914, 548]], face: 1 },
   cousin: { points: [[962, 512], [956, 534], [948, 550]], face: -1 },
 };
+// SG-TRAIN-01 院中練功區：院坪東側石地，兩人各一固定站位、各一根木樁（樁在站位右前方，只是道具，不是敵人或設施）。
+// 獨立短折線自院中端點出發，不動原工作／休閒／飲水／防衛／巡山／招呼路。
+export const TRAIN_POSTS = {
+  hero: { points: [[962, 512], [990, 540], [1036, 560], [1060, 566]], face: 1, stake: { x: 1086, y: 562 } },
+  cousin: { points: [[962, 512], [990, 540], [1054, 572], [1112, 576]], face: 1, stake: { x: 1138, y: 572 } },
+};
 export const GUARD = { points: [[962, 512], [930, 522], [880, 512], [820, 480], [782, 452], [748, 428], [706, 430]] };
 
 export function createRoutes(waterPoints = WATER_POINTS) {
@@ -57,6 +63,12 @@ export function createRoutes(waterPoints = WATER_POINTS) {
     const back = l.b < l.a;
     const face = l.mode === 'meet' ? MEET[id].face : (back ? -p.dx : p.dx) >= 0 ? 1 : -1;
     return { x: p.x, y: p.y, face, route: r, geo: l.mode, travelled: l.mode === 'meet' ? 0 : Math.abs(l.u - l.a) * r.length };
+  }
+  const trains = Object.fromEntries(['hero', 'cousin'].map((id) => [id, pathTool(TRAIN_POSTS[id].points)]));
+  function trainPlace(id, l) {
+    const r = trains[id], p = r.at(Math.max(0, Math.min(1, l.u)));
+    const face = l.mode === 'train' ? TRAIN_POSTS[id].face : (l.b < l.a ? -p.dx : p.dx) >= 0 ? 1 : -1;
+    return { x: p.x, y: p.y, face, route: r, geo: l.mode, travelled: l.mode === 'train' ? 0 : Math.abs(l.u - l.a) * r.length };
   }
   const boarPath = pathTool(BOAR.points), guardPath = pathTool(GUARD.points);
   const drinks = { home: pathTool(DRINK.points), hero: pathTool([...SEATS.hero.points].reverse().concat(DRINK.points.slice(1))), cousin: pathTool([...SEATS.cousin.points].reverse().concat(DRINK.points.slice(1))) };
@@ -111,6 +123,7 @@ export function createRoutes(waterPoints = WATER_POINTS) {
     // LP-11：清理中直接用模型在權威 tick 取樣的場景位置（palm.mjs 同一幾何），畫面不另算。
     if (p.drinkLeg) return drinkPlace(id, { ...p.drinkLeg, mode: p.mode });
     if (p.life02 && p.life02.leg) return meetPlace(id, { ...p.life02.leg, mode: p.mode });
+    if (p.train01 && p.train01.leg) return trainPlace(id, { ...p.train01.leg, mode: p.mode });
     if (p.patrolling) return { x: p.pos.x, y: p.pos.y, face: p.cface, route: null, geo: p.mode, travelled: p.walked }; // SG-PATROL-01：巡山同用模型 pos
     if (p.cleaning) return { x: p.pos.x, y: p.pos.y, face: p.cface, route: null, geo: p.mode, travelled: p.walked };
     if (p.mode === 'toFix' || p.mode === 'fromFix') return { ...guardPlace(FIX_AS[p.mode], p.fixLeg.k), geo: p.mode };
@@ -125,6 +138,7 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   }
   return { routes, seats, funs, place, of, seatLengths: { hero: seats.hero.length, cousin: seats.cousin.length }, funLengths: { hero: funs.hero.length, cousin: funs.cousin.length },
     boarPath, guardPath, boarAt, guardPlace, boarLengths: { edge: boarEdge, total: boarPath.length, seen: boarSeenD }, boarSeenD, guardLength: guardPath.length,
+    trains, trainPlace, trainLengths: Object.fromEntries(['hero', 'cousin'].map((id) => [id, trains[id].length])),
     meets, meetPlace, meetLengths: Object.fromEntries(['hero', 'cousin'].map((id) => [id, { total: meets[id].length, home: meetHome[id] }])),
     drinks, drinkPlace, drinkLengths: { home: drinks.home.length, seat: { hero: drinks.hero.length, cousin: drinks.cousin.length } } };
 }

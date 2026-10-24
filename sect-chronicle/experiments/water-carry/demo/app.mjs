@@ -5,7 +5,9 @@ import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.
 import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
 import { saveTo, loadFrom } from './life-save.mjs';
-import { guardedSave, guardedLoad } from './life02.mjs'; // SG-LIFE-02 存讀邊界
+import { guardedSave, guardedLoad } from './life02.mjs'; // SG-LIFE-02 存讀邊界（SG-TRAIN-01 共用）
+import { TRAIN_POSTS } from './routes.mjs';
+import { drawStake } from './assets/train01/stake.mjs';
 import { createRoutes, HERB, SEATS, FUN, BOAR, GUARD } from './routes.mjs';
 import { WATER_POINTS, WATER_LENGTH, WORLD_SIZE, SPRING_PLACE, WATER_LANDMARKS } from './water-layout.mjs';
 import { buildWatercolorScene, ART_WC } from './scene/watercolor.mjs';
@@ -85,7 +87,19 @@ function palmPose(person) {
 // SG-LIFE-02 招呼：往返用空手步態；站位時輪到自己說話用「舒展筋骨」前彎那幀（拱手／點頭的借用姿勢），否則站直；面板如實標借用。
 const SAY = { greet: { hero: '師兄辛苦了！', cousin: '師弟，腳力見長！' }, reply: { hero: '多謝師兄，一起加油！', cousin: '你也辛苦了！' } };
 function meetTurn(person) { const m = person.life02 && person.life02.meet; if (!m || m.phase !== 'talk' || person.mode !== 'meet') return null; return (m.k < 0.5) === (m.role === 'greet') ? m.role : null; }
+// SG-TRAIN-01 練掌：往返空手步態；站位上照模型給的節奏（起手／出掌收勢／調息）借清鼠掌法姿勢＋向量手臂，調息用站直幀。
+function trainPose(person) {
+  const c = person.train01 && person.train01.cyc;
+  if (!c || c.phase === 'breath') return null;
+  return palmPose({ mode: c.phase === 'windup' ? 'windup' : 'recover', palm: person.palm, palmStep: { steps: c.steps } });
+}
 function poseOf(id, person) {
+  if (person.train01 && person.train01.training) {
+    const at = geo.of(id, person), a = animators[id], pp = person.mode === 'train' ? trainPose(person) : null;
+    const pick = pp ? a.pick({ phase: pp.base === 'herbGather' ? 'herbGather' : 'herbDeliver', k: 0, travelled: 0 })
+      : person.mode === 'train' ? a.pick({ phase: 'stretch', k: 0, travelled: 0 }) : a.pick({ phase: 'herbOut', k: 0, travelled: at.travelled });
+    return { x: at.x, y: at.y, face: at.face, ...pick, travelled: at.travelled, phase: person.mode, palm: pp, borrowed: person.mode === 'train' };
+  }
   if (person.life02 && person.life02.meeting) {
     const at = geo.of(id, person), a = animators[id], turn = meetTurn(person);
     const view = person.mode === 'meet' ? { phase: 'stretch', k: 0, travelled: turn ? 3 : 0 } : { phase: 'herbOut', k: 0, travelled: at.travelled };
@@ -169,6 +183,8 @@ const wc = buildWatercolorScene({ world, sorted, tex: WT, manifest: WC });
 // 石凳、觀景石、西林緣改為 layout.mjs 的手繪件（stone_bench／boulder_m／林緣樹叢）
 const fence = new Graphics();
 sorted.addChild(fence);
+// SG-TRAIN-01 兩根練功木樁（向量道具，依腳底 y 排序）。
+const stakes = Object.fromEntries(Object.entries(TRAIN_POSTS).map(([id, t]) => { const g = new Graphics(); drawStake(g); g.position.set(t.stake.x, t.stake.y); g.zIndex = t.stake.y; sorted.addChild(g); return [id, g]; }));
 // 竹護欄：一段南北向的矮籬，損痕 0～3 只改外觀（裂紋→歪柱→斷橫桿），不擋路、不影響任何工作。
 function drawFence(marks, hitFlash = 0) {
   const { x1, x2, y1, y2 } = BOAR.fence, n = 7;
@@ -408,7 +424,7 @@ const LENGTHS = { water: WATER_LENGTH, herb: r1(herbPath.length), seat: geo.seat
   boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength),
   drink: r1(geo.drinkLengths.home), drinkSeat: { hero: r1(geo.drinkLengths.seat.hero), cousin: r1(geo.drinkLengths.seat.cousin) } };
 // LP-11：警覺鼠察覺用同一份純幾何取樣兩人位置（模型在權威 tick 呼叫，不讀畫面座標）。
-const SENSE = { placeOf: geo.of, boarAt: geo.boarAt, meetLengths: geo.meetLengths }; // SG-LIFE-02 招呼路長度不進 LENGTHS（存檔幾何識別不變）
+const SENSE = { placeOf: geo.of, boarAt: geo.boarAt, meetLengths: geo.meetLengths, trainLengths: geo.trainLengths }; // SG-LIFE-02 招呼路長度不進 LENGTHS（存檔幾何識別不變）
 let model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
 const clock = createClock();
 const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null, boarExpanded: false, advancedOpen: false };
@@ -733,7 +749,6 @@ function upHtml(p) {
 const PHASE_TEXT = { wait: '等待出發', go: '清理中', back: '返院中' };
 function cleanHtml(p, id) {
   const c = p.clean, r = p.cleanResult, locked = !!v.clean, ac = p.autoClean;
-  const skill = (k) => `<button class="btn ${p.palm === k ? 'on' : ''}" data-palm="${k}" aria-pressed="${p.palm === k}" ${locked ? 'disabled' : ''} title="${locked ? '有清理任務（含等待與返院）時鎖定' : `起手 ${SKILLS[k].windup}／收勢 ${SKILLS[k].recover} tick`}">${SKILLS[k].label}</button>`;
   let line = '';
   if (c) {
     const srcTag = c.src === 'auto' ? '（自主）' : '（手動）';
@@ -748,8 +763,9 @@ function cleanHtml(p, id) {
   }
   const other = v.clean && v.clean.by !== id ? `<div class="muted">${profiles[v.clean.by].label}正在清理（全場只一份）</div>` : '';
   const reallowBtn = ac && ac.suppressed ? '<button class="btn" data-autoclean="reallow" title="清除玩家改派抑制，重新允許自主清鼠">重新允許</button>' : '';
-  return `<div class="palmbox ${ac ? ac.state : ''}"><div class="row"><b>有限清理 · 掌法</b><span class="group">${skill('novice')}${skill('adept')}</span></div>
-    <div class="muted">掌法比較 fixture（不是成長）：掌距 ≤${PALM.reach}，起手開始扣 ${PALM.cost} 精力</div>
+  // SG-TRAIN-01：一般玩家不再直接切初學／熟練（比較 fixture 只留測試 API）；這裡只讀真結果。
+  return `<div class="palmbox ${ac ? ac.state : ''}"><div class="row"><b>有限清理 · 掌法</b><span class="tag-chip">${SKILLS[p.palm].label}</span></div>
+    <div class="muted">起手 ${SKILLS[p.palm].windup}／收勢 ${SKILLS[p.palm].recover} tick · 掌距 ≤${PALM.reach}，起手開始扣 ${PALM.cost} 精力（練熟靠「練掌到熟練」）</div>
     <div class="row"><span>自主清鼠</span><span>${reallowBtn}<button class="btn ${ac && ac.allow ? 'on' : ''}" data-autoclean="allow" aria-pressed="${ac && ac.allow}">${ac && ac.allow ? '允許中' : '未允許'}</button></span></div>
     <div class="muted autoclean-text">${ac ? ac.text : ''}</div>
     ${line}${other}</div>`;
@@ -879,6 +895,7 @@ function renderChrome() {
         <div class="next-box"><b>下一步：</b>${person.next}</div>
         ${person.why ? `<div class="muted stop-reason">狀態原因：${person.why}</div>` : ''}
         ${life02Html(person)}
+        ${trainHtml(person)}
       </div>`);
     put('p-pend', $('p-pend'), pend);
     put('p-cmds', $('p-cmds'), cmds);
@@ -912,6 +929,18 @@ function life02Html(person) {
   const l = person.life02;
   if (!l || (!l.fill && !l.meeting && !l.why)) return '';
   return `<div class="life02" id="life02-${person.id}">${l.now ? `<div><b>現在：</b>${l.now}</div>` : ''}<div class="muted">來源：${l.src}</div>${l.why ? `<div class="muted">原因：${l.why}</div>` : ''}${l.next && l.next !== person.next ? `<div class="muted">下一步：${l.next}</div>` : ''}${l.meeting ? '<div class="muted">動作借用：招呼用「舒展筋骨」前彎／站直幀；這段互動不存檔</div>' : ''}</div>`;
+}
+// SG-TRAIN-01 人物卡：腳力與這一式進度分開；現在／來源／原因／下一步讀模型，動畫只呈現。
+function trainHtml(person) {
+  const t = person.train01;
+  if (!t) return '';
+  const cells = Array.from({ length: t.max }, (_, i) => `<i class="${i < t.units ? 'on' : i === t.units && t.training && person.mode === 'train' ? 'cur' : ''}"></i>`).join('');
+  const rhythm = `起手 ${t.palm.from.windup}→${t.palm.to.windup}・收勢 ${t.palm.from.recover}→${t.palm.to.recover} tick（現：${t.palm.windup}／${t.palm.recover}）`;
+  return `<div class="train01" id="train01-${person.id}"><div class="row"><b>掌法進度</b><span class="tcells">${cells}</span><span class="muted">${t.adept ? '已練熟（本包上限）' : `${t.units}／${t.max} 單位`}</span></div>
+    ${person.mode === 'train' ? `<div class="bar palm"><i style="width:${Math.round(t.unitK * 100)}%"></i></div>` : ''}
+    <div class="muted">${rhythm}</div>
+    ${t.now ? `<div><b>現在：</b>${t.now}</div><div class="muted">來源：${t.src}</div>` : ''}${t.why ? `<div class="muted">原因：${t.why}</div>` : ''}${t.next ? `<div class="muted">下一步：${t.next}</div>` : ''}
+    ${t.goal || t.training ? '<div class="muted">練習進度只本局、不保存；練熟結果沿原掌法欄位保存</div>' : ''}</div>`;
 }
 const tagEls = {};
 function tag(id, cls, text, x, y, dy = 0) {
@@ -961,6 +990,7 @@ app.ticker.add((t) => {
     const fr = person.fixResult, pf = prev.people[id].fixResult;
     if (fr && (!pf || fr.tick !== pf.tick)) fx.push({ text: `${profiles[id].label}：${FIX_RESULT[fr.kind]}`, x: BOAR.fence.x + 30, y: BOAR.fence.y1 - 4, until: performance.now() + 2400 });
     if (gr && gr !== pg && (!pg || gr.tick !== pg.tick)) fx.push({ text: `${profiles[id].label}：${RESULT_TEXT[gr.kind]}`, x: p.x, y: p.y - 96, until: performance.now() + 2200 });
+    if (stakes[id]) { const c = person.train01 && person.train01.cyc, hit = c && c.phase === 'recover' && c.steps < 12 ? 1 - c.steps / 12 : 0; if (hit || stakes[id].hit) { drawStake(stakes[id], hit); stakes[id].hit = hit > 0; } }
     const turn = meetTurn(person);
     tag(`${id}-say`, 'say', turn ? SAY[turn][id] : null, p.x, p.y - 96);
     tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level} · 精力 ${en(person)}`, p.x, p.y, 6);
@@ -1091,4 +1121,6 @@ window.demo = {
   look,
   // 權威狀態深拷貝（只讀；存讀等價檢查用）。
   exportState: () => model.exportState(),
+  // SG-TRAIN-01：一般玩家已無掌法 fixture 按鈕；舊比較檢查改走同一 model.setPalm 測試 API（任務中照樣拒絕）。
+  setPalm: (id, skill) => model.setPalm(id, skill),
 };

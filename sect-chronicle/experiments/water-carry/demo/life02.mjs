@@ -167,15 +167,18 @@ export function createLife02(ctx) {
 // SG-LIFE-02 P4 存讀邊界（app 與反例共用同一段，不另造框架）：
 // 招呼或其返程進行中→不呼叫原存檔、舊檔不被覆寫；讀檔成功才重設本局暫態，失敗則連暫態也還原。
 export function guardedSave(model, save) {
-  const block = model.life02.saveBlock();
-  if (block) return { ok: false, code: 'life02', text: `暫不能存檔：${block}` };
+  // SG-TRAIN-01 共用同一最小 guard：練掌往返／站位中也不呼叫原寫入。
+  const block = model.life02.saveBlock() || (model.train01 && model.train01.saveBlock());
+  if (block) return { ok: false, code: block === model.life02.saveBlock() ? 'life02' : 'train01', text: `暫不能存檔：${block}` };
   const r = save();
   if (r.ok && model.life02.anyFill()) r.text += '；自主補水方針與招呼只本局，不寫入存檔（讀檔後回原持續工作）';
+  if (r.ok && model.train01) r.text += '；練掌進度不保存，已練熟結果沿原掌法欄位保存';
   return r;
 }
 export function guardedLoad(model, load) {
-  const keep = model.life02.snapshot();
+  const keep = model.life02.snapshot(), keep1 = model.train01 && model.train01.snapshot();
   const r = load();
-  if (r.ok) { model.life02.reset(); r.text += '；自主補水／招呼不在存檔內，已回預設'; } else model.life02.restoreSnap(keep);
+  if (r.ok) { model.life02.reset(); if (model.train01) model.train01.reset(); r.text += '；自主補水／招呼與練掌進度不在存檔內，已回預設（掌法照存檔）'; }
+  else { model.life02.restoreSnap(keep); if (keep1) model.train01.restoreSnap(keep1); }
   return r;
 }
