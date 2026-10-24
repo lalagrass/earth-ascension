@@ -7,10 +7,11 @@ import { createAnimator } from '../template/animator.mjs';
 import { saveTo, loadFrom } from './life-save.mjs';
 import { createRoutes, HERB, SEATS, FUN, BOAR, GUARD } from './routes.mjs';
 import { WATER_POINTS, WATER_LENGTH, WORLD_SIZE, SPRING_PLACE, WATER_LANDMARKS } from './water-layout.mjs';
-import { buildLongWaterScenery } from './assets/long-water/scenery.mjs';
+import { buildWatercolorScene, ART_WC } from './scene/watercolor.mjs';
+import { VIEWS } from './scene/layout.mjs';
 import { ZONE, EXIT, PALM, SKILLS } from './palm.mjs';
 import { CLEAN_END } from './model.mjs';
-import { drawRefinedHerbPatch, drawRefinedRack, drawRefinedBasket, getRefinedBasketPlacement } from './assets/lp16/herb-decor.mjs';
+import { drawRefinedRack, drawRefinedBasket, getRefinedBasketPlacement } from './assets/lp16/herb-decor.mjs';
 
 const SHARED = '../spikes/shared/';
 const ART = 'assets/art184-production/'; // D35：Grok 手繪人物／道館／景物；sheet 契約與 LP17 相同
@@ -21,17 +22,16 @@ const IDS = PEOPLE.map((p) => p.id);
 const sheets = Object.fromEntries(await Promise.all(IDS.map(async (id) => [id, await Assets.load(`${ART}${id}.json`)])));
 const animators = Object.fromEntries(IDS.map((id) => [id, createAnimator(template, sheets[id].data)]));
 const profiles = { hero: { name: scene.ui.hero.name, label: '主角', role: '初學者 · 起始腳力 Lv 1' }, cousin: { name: '熟手同伴', label: '熟手', role: '熟手 · 起始腳力 Lv 3' } };
-const R = scene.resolution;
 const $ = (id) => document.getElementById(id);
 
 const app = new Application();
-await app.init({ resizeTo: window, background: '#bdc791', antialias: true, autoDensity: true, resolution: Math.min(2, window.devicePixelRatio || 1) });
+await app.init({ resizeTo: window, background: '#cfc8ad', antialias: true, autoDensity: true, resolution: Math.min(2, window.devicePixelRatio || 1) });
 $('stage').appendChild(app.canvas);
 
-const sharedFiles = [...scene.props.map((p) => p.file), ...scene.vats.map((v) => v.file)];
-const ART_KIT = ['bamboo', 'boulder_l', 'boulder_m', 'boulder_s'];
-await Assets.load([ART + 'bg.png', ...ART_KIT.map((k) => `${ART}${k}.png`), ...sharedFiles.map((f) => SHARED + 'assets/' + f)]);
-const TS = (f) => Assets.get(SHARED + 'assets/' + f);
+// D37：全場改用 art184-watercolor（沿用 D35 手繪件＋本輪補畫＋一張烘焙地面）；舊 LP17 bg／scene.props 不再載入
+const WC = await (await fetch(ART_WC + 'manifest.json')).json();
+await Assets.load(Object.values(WC).map((m) => ART_WC + m.file));
+const WT = (name) => Assets.get(ART_WC + WC[name].file);
 
 // ---------- 路線（只是畫面換算：模型給「走到第幾成」，這裡換成場景座標；算法在 routes.mjs） ----------
 const geo = createRoutes(WATER_POINTS), { routes: ROUTES, place } = geo;
@@ -119,15 +119,8 @@ function poseOf(id, person) {
 // ---------- 場景 ----------
 const world = new Container();
 app.stage.addChild(world);
-// LP-17：載入 Grok D32 風格青灰瓦、深木柱、石院之重繪背景
-const bg = new Sprite(Assets.get(ART + 'bg.png')); // LP17 bg＋手繪正堂／側屋（院坪與功能點不動）
-bg.scale.set(1 / R);
-world.addChild(bg);
-// 採藥小路與藥圃：LP-16 精修梯田土畦、18組藥草植株、竹籬、陶甕與靠放木鋤
-const ground = new Graphics();
-{
-  drawRefinedHerbPatch(ground, HERB.patch, HERB.points);
-}
+// D37：地面（草坡、院坪、全段長路、溪與深潭、石階泉台）是一張烘焙水彩底圖，見 scene/watercolor.mjs
+const ground = new Graphics(); // 只剩介面提示（清理區虛線、出口箭頭）
 // LP-11 有限清理區（竹護欄內西院）：虛線外框與西側出口箭頭，只是地面提示。
 {
   const pts = [...ZONE, ZONE[0]];
@@ -145,52 +138,9 @@ world.addChild(ground);
 const sorted = new Container();
 sorted.sortableChildren = true; // 依腳底 y 排序：人物走到樹叢後面時被遮住
 world.addChild(sorted);
-// LP-13：長挑水路南段場景（1600×1350 延伸地面、步石、竹林、溪流溪橋前後遮擋與新泉眼）
-buildLongWaterScenery({ world, ground, sorted, art: Object.fromEntries(ART_KIT.map((k) => [k, Assets.get(`${ART}${k}.png`)])) });
-const placeSprite = (file, ax, ay, w, h, x, y) => {
-  const s = new Sprite(TS(file));
-  s.scale.set(1 / R);
-  s.anchor.set(ax / w, ay / h);
-  s.position.set(x, y);
-  s.zIndex = y;
-  sorted.addChild(s);
-  return s;
-};
-for (const p of scene.props) placeSprite(p.file, p.ax, p.ay, p.w, p.h, p.x, p.y);
-// 休息區：原創簡單圖形的長石凳，兩個座位各鋪一塊蒲團；排在坐著的人後面。
-{
-  const b = new Graphics(), { x, y, w } = SEATS.bench;
-  b.ellipse(0, 6, w / 2 + 8, 9).fill({ color: 0x5b5a3a, alpha: 0.25 });
-  b.roundRect(-w / 2 + 6, -4, 10, 10, 2).fill(0x8f8f86).roundRect(w / 2 - 16, -4, 10, 10, 2).fill(0x8f8f86);
-  b.roundRect(-w / 2, -12, w, 9, 4).fill(0xb9b8ad).stroke({ width: 1.2, color: 0x7b7a70 });
-  for (const id of ['hero', 'cousin']) { const [sx] = SEATS[id].points.at(-1); b.ellipse(sx - x, -12, 11, 3.5).fill(id === 'hero' ? 0x506e94 : 0x6e7c5a); }
-  b.position.set(x, y);
-  b.zIndex = y - 2;
-  sorted.addChild(b);
-}
-// 觀景石：原創簡單圖形，主角看山時站在它旁邊；只是地標，不是座位。
-{
-  const g = new Graphics(), { x, y } = FUN.hero.stone;
-  g.ellipse(0, 4, 26, 7).fill({ color: 0x5b5a3a, alpha: 0.22 });
-  g.poly([-22, 2, -18, -14, -6, -22, 10, -20, 22, -8, 22, 3]).fill(0xa9a89a).stroke({ width: 1.4, color: 0x75746a });
-  g.poly([-14, -12, -4, -19, 8, -17]).stroke({ width: 1, color: 0xc9c8bc });
-  g.position.set(x, y);
-  g.zIndex = y;
-  sorted.addChild(g);
-}
-// ---------- LP-06：林緣、竹護欄、防守點與野豬（原創簡單圖形，可編輯來源就是這段程式） ----------
-{
-  // 林緣：畫面西側幾株矮樹叢，野豬從這裡出來嗅探。
-  const { x, y } = BOAR.edge;
-  for (const [dx, dy, r, c] of [[-34, -6, 22, 0x4c7a3c], [-8, -14, 26, 0x5a8a44], [22, -4, 20, 0x4c7a3c], [-46, 10, 16, 0x5f9050], [10, 12, 15, 0x557f45]]) {
-    const g = new Graphics();
-    g.rect(-2, -4, 4, 12).fill(0x6e5434);
-    g.ellipse(0, -r * 0.7, r, r * 0.8).fill(c).stroke({ width: 1.2, color: 0x3c5f30 });
-    g.ellipse(-r * 0.3, -r, r * 0.45, r * 0.35).fill({ color: 0x8ab06a, alpha: 0.5 });
-    g.position.set(x + dx, y + dy + 8); g.zIndex = y + dy + 8;
-    sorted.addChild(g);
-  }
-}
+// D37：烘焙地面、貼片（藥畦、溪岸、橋板）、依腳底排序的屋舍樹石、師父／師兄；溪橋前欄 z=1060 拆層
+const wc = buildWatercolorScene({ world, sorted, tex: WT, manifest: WC });
+// 石凳、觀景石、西林緣改為 layout.mjs 的手繪件（stone_bench／boulder_m／林緣樹叢）
 const fence = new Graphics();
 sorted.addChild(fence);
 // 竹護欄：一段南北向的矮籬，損痕 0～3 只改外觀（裂紋→歪柱→斷橫桿），不擋路、不影響任何工作。
@@ -202,14 +152,17 @@ function drawFence(marks, hitFlash = 0) {
     const a = post(0), b = post(n - 1), m = post(3);
     if (marks >= 3 && h === 32) {
       // 斷橫桿：中段斷開垂下
-      fence.moveTo(a.x, a.y - h).lineTo(m.x - 3, m.y - h).stroke({ width: 3.4, color: 0xb59a5c });
-      fence.moveTo(m.x + 3, m.y - h + 9).lineTo(b.x, b.y - h).stroke({ width: 3.4, color: 0xb59a5c });
-    } else fence.moveTo(a.x, a.y - h).lineTo(b.x, b.y - h).stroke({ width: 3.4, color: 0xb59a5c });
+      fence.moveTo(a.x, a.y - h).lineTo(m.x - 3, m.y - h).stroke({ width: 3.4, color: 0x8f8a4e });
+      fence.moveTo(m.x + 3, m.y - h + 9).lineTo(b.x, b.y - h).stroke({ width: 3.4, color: 0x8f8a4e });
+    } else fence.moveTo(a.x, a.y - h).lineTo(b.x, b.y - h).stroke({ width: 3.4, color: 0x8f8a4e });
   }
   for (let i = 0; i < n; i++) {
     const p = post(i), tilt = marks >= 2 && i === 3 ? 8 : 0;
-    fence.moveTo(p.x, p.y).lineTo(p.x - tilt, p.y - 40).stroke({ width: 4.5, color: 0x9c8048, cap: 'round' });
-    fence.circle(p.x - tilt, p.y - 40, 2.6).fill(0xc2a666);
+    fence.ellipse(p.x, p.y + 1, 5, 1.8).fill({ color: 0x3a3424, alpha: 0.25 }); // D37：竹色＋墨線，與手繪竹叢同色系
+    fence.moveTo(p.x, p.y).lineTo(p.x - tilt, p.y - 40).stroke({ width: 5.6, color: 0x4a4a2c, cap: 'round' });
+    fence.moveTo(p.x, p.y).lineTo(p.x - tilt, p.y - 40).stroke({ width: 3.8, color: 0x8c9152, cap: 'round' });
+    for (const k of [14, 28]) fence.moveTo(p.x - tilt * k / 40 - 2.2, p.y - k).lineTo(p.x - tilt * k / 40 + 2.2, p.y - k).stroke({ width: 1, color: 0x4a4a2c });
+    fence.circle(p.x - tilt, p.y - 40, 2.4).fill(0xb7b27a).stroke({ width: 0.8, color: 0x4a4a2c });
   }
   if (marks >= 1) { const m = post(2); fence.moveTo(m.x - 4, m.y - 30).lineTo(m.x + 3, m.y - 22).lineTo(m.x - 3, m.y - 14).stroke({ width: 1.6, color: 0x4a3720 }); }
   if (hitFlash > 0) { const m = post(3); fence.circle(m.x - 8, m.y - 18, 10 + 10 * hitFlash).stroke({ width: 2.4, color: 0xd0702a, alpha: hitFlash }); }
@@ -217,59 +170,59 @@ function drawFence(marks, hitFlash = 0) {
 fence.position.set(BOAR.fence.x, (BOAR.fence.y1 + BOAR.fence.y2) / 2);
 fence.zIndex = fence.y;
 drawFence(0);
-// 防守點：護欄內側一塊踏平的草地。
-{
-  const [gx, gy] = GUARD.points.at(-1);
-  ground.ellipse(gx, gy + 2, 16, 5).fill({ color: 0xc9b07a, alpha: 0.75 }).stroke({ width: 1, color: 0x9a7a44, alpha: 0.6 });
-}
+// 防守點：護欄內側一塊踏平的草地（D37 烘進地面）。
 // 野豬：原創向量圖，朝右畫、翻面朝左。腿依模型走過的距離換步，準備撞時後坐再前衝，逃跑時揚塵；全部只讀 view().boar。
-const boarG = new Graphics();
+const boarG = new Container(); // D37：手繪野豬（走／衝兩張），步態、後坐、嗅草、揚塵仍只讀 view().boar
 boarG.visible = false;
+const boarFx = new Graphics(), boarSp = new Sprite(WT('boar_walk'));
+boarSp.anchor.set(0.5, 0.96);
+boarG.addChild(boarFx, boarSp);
 sorted.addChild(boarG);
+const BOAR_H = 34; // 場景單位（含 boarG 的 1.3 倍後約 44）
 function drawBoar(b, now) {
-  const g = boarG;
+  const g = boarFx;
   g.clear();
   const walking = b.mode === 'out' || b.mode === 'approach' || b.mode === 'flee';
   const gait = walking ? Math.sin(b.d / (b.mode === 'flee' ? 7 : 5)) : 0;
   let lean = 0, head = 0;
   if (b.mode === 'prep') lean = b.prepK < 0.75 ? -7 * b.prepK / 0.75 : -7 + 19 * (b.prepK - 0.75) / 0.25;
   if (b.mode === 'sniff') head = 3 + 3 * Math.sin(b.sniffK * Math.PI * 6);
-  g.ellipse(0, 1, 24, 5).fill({ color: 0x3a3424, alpha: 0.25 });
-  const legs = [[-14, 1], [-7, -1], [8, 1], [14, -1]];
-  for (const [lx, ph] of legs) g.rect(lean + lx - 2 + gait * 3 * ph, -10, 4, 10).fill(0x3b2a1e);
-  g.ellipse(lean, -16, 22, 11).fill(0x5a4030).stroke({ width: 1.2, color: 0x2e2018 });
-  for (let i = 0; i < 6; i++) g.moveTo(lean - 14 + i * 5, -26).lineTo(lean - 12 + i * 5, -31).stroke({ width: 1.6, color: 0x2e2018 }); // 鬃毛
-  g.poly([lean + 14, -24, lean + 30, -14 + head, lean + 30, -8 + head, lean + 14, -8]).fill(0x4e382a).stroke({ width: 1.2, color: 0x2e2018 });
-  g.ellipse(lean + 31, -11 + head, 3.2, 3.6).fill(0x8a6a5a);
-  g.moveTo(lean + 26, -8 + head).lineTo(lean + 29, -14 + head).stroke({ width: 2, color: 0xf2ead8, cap: 'round' }); // 獠牙
-  g.circle(lean + 22, -18 + head, 1.4).fill(0x111111);
-  g.poly([lean + 16, -24, lean + 19, -31, lean + 21, -23]).fill(0x3b2a1e);
-  g.moveTo(lean - 22, -18).lineTo(lean - 27, -14 + gait * 2).stroke({ width: 1.4, color: 0x2e2018 });
-  if (b.mode === 'flee') for (let i = 0; i < 3; i++) g.circle(-28 - i * 9, -4 - (i % 2) * 3, 4 - i).fill({ color: 0xc9b07a, alpha: 0.55 - i * 0.15 });
-  if (b.mode === 'sniff') for (let i = 0; i < 3; i++) g.moveTo(-30 + i * 6, 4).lineTo(-32 + i * 6 + Math.sin(now / 90 + i) * 3, -6).stroke({ width: 2, color: 0x6f9a52 }); // 草動
+  const charge = b.mode === 'flee' || (b.mode === 'prep' && b.prepK >= 0.75);
+  const t = WT(charge ? 'boar_charge' : 'boar_walk');
+  if (boarSp.texture !== t) boarSp.texture = t;
+  boarSp.scale.set(BOAR_H / t.height);
+  boarSp.position.set(lean, -Math.abs(gait) * 1.4);
+  boarSp.rotation = (head * 0.012) + (b.mode === 'prep' ? lean * 0.006 : 0) + gait * 0.02;
+  g.ellipse(lean, 1, 26, 5).fill({ color: 0x3a3424, alpha: 0.25 });
+  if (b.mode === 'flee') for (let i = 0; i < 3; i++) g.circle(-30 - i * 9, -4 - (i % 2) * 3, 4 - i).fill({ color: 0xc9b07a, alpha: 0.55 - i * 0.15 });
+  if (b.mode === 'sniff') for (let i = 0; i < 3; i++) g.moveTo(26 + i * 5, 4).lineTo(24 + i * 5 + Math.sin(now / 90 + i) * 3, -6).stroke({ width: 2, color: 0x6f9a52 }); // 鼻前草動
 }
 const shoutG = new Graphics();
 shoutG.visible = false;
 sorted.addChild(shoutG);
 // LP-11 測試弱鼠：原創向量（沿 LP10 畫稿畫法），朝右畫、翻面朝左。位置／狀態只讀 view().rats。
 const ratGs = new Map();
-function drawRat(g, r, now) {
+// D37：手繪鼠（嗅／跑兩張），倒地＝側傾半透明、出界淡出；動作語意與位置只讀 view().rats
+function makeRat() {
+  const c = new Container(), fx = new Graphics(), sp = new Sprite(WT('rat_sniff'));
+  sp.anchor.set(0.5, 0.95); c.addChild(fx, sp); c.fx = fx; c.sp = sp; return c;
+}
+function drawRat(c, r, now) {
+  const g = c.fx, sp = c.sp;
   g.clear();
-  const body = r.kind === 'alert' ? 0x7b6a5a : 0x8a7a68, dark = 0x3f342a;
   g.ellipse(0, 1, 10, 3).fill({ color: 0x3a3424, alpha: 0.22 });
+  const run = r.mode === 'flee' || r.mode === 'gone', t = WT(run ? 'rat_run' : 'rat_sniff');
+  if (sp.texture !== t) sp.texture = t;
+  sp.scale.set((r.kind === 'alert' ? 11 : 10) / t.height);
+  sp.tint = r.kind === 'alert' ? 0xd8c8b4 : 0xffffff;
   if (r.mode === 'down') {
-    g.ellipse(0, -4, 9, 4.2).fill(body).stroke({ width: 0.9, color: dark });
-    g.moveTo(-6, -1).lineTo(-6, 3).moveTo(-1, 0).lineTo(-1, 3).stroke({ width: 0.9, color: dark });
-    for (const [x, y] of [[8, -6], [10, -4]]) g.moveTo(x - 1.4, y - 1.4).lineTo(x + 1.4, y + 1.4).moveTo(x + 1.4, y - 1.4).lineTo(x - 1.4, y + 1.4).stroke({ width: 0.8, color: dark });
-    g.rotation = -0.25; g.alpha = 0.75; return;
+    sp.rotation = -0.5; sp.position.set(0, -1); c.alpha = 0.75;
+    for (const [x, y] of [[8, -8], [11, -6]]) g.moveTo(x - 1.4, y - 1.4).lineTo(x + 1.4, y + 1.4).moveTo(x + 1.4, y - 1.4).lineTo(x - 1.4, y + 1.4).stroke({ width: 0.8, color: 0x3f342a });
+    return;
   }
-  g.rotation = 0; g.alpha = r.mode === 'gone' ? 0.35 : 1;
-  const run = r.mode === 'flee' || r.mode === 'gone', bob = run ? Math.sin(now / 40) * 1.2 : 0;
-  g.moveTo(-9, -3).quadraticCurveTo(-16, -2, -18, run ? -8 : -5).stroke({ width: 1, color: dark });
-  g.ellipse(0, -5 + bob, run ? 11.5 : 9.5, 5.2).fill(body).stroke({ width: 0.9, color: dark });
-  g.moveTo(6, -8 + bob).quadraticCurveTo(13, -6 + bob, 14, -3 + bob).quadraticCurveTo(10, -1 + bob, 6, -2 + bob).fill(body).stroke({ width: 0.9, color: dark });
-  g.circle(6, (r.kind === 'alert' ? -12 : -10) + bob, 2.4).fill(0xd9a59a).stroke({ width: 0.9, color: dark });
-  g.circle(10.5, -5.4 + bob, 0.9).fill(0x111111);
+  c.alpha = r.mode === 'gone' ? 0.35 : 1;
+  const bob = run ? Math.sin(now / 40) * 1.2 : 0;
+  sp.rotation = 0; sp.position.set(0, bob);
   if (r.mode === 'sniff') { const w = Math.sin(now / 160 + r.id) * 1.5; for (let i = 0; i < 3; i++) g.moveTo(16 + i * 3, 2).lineTo(17 + i * 3 + w, -4).stroke({ width: 1.4, color: 0x6f9a52 }); }
   if (run) for (let i = 0; i < 3; i++) g.circle(-18 - i * 7, -2 - (i % 2) * 2, 3 - i * 0.6).fill({ color: 0xc9b07a, alpha: 0.55 - i * 0.15 });
 }
@@ -292,8 +245,19 @@ function drawArm(g, p, id) {
   g.poly([...pt(-0.5, -2.8), ...pt(7, -2.8), ...pt(7, 2.8), ...pt(-0.5, 2.8)]).fill(skin).stroke({ width: 0.9, color: skinEdge });
 }
 
-const vatV = scene.vats[1];
-const vatSprite = placeSprite(vatV.file, vatV.ax, vatV.ay, vatV.w, vatV.h, scene.places.vat.x, scene.places.vat.y);
+// 水缸：手繪 water_vat＋缸口水面（水位只讀 view().vat，三段與舊三張缸圖相同：≤2／<6／其餘）
+const vatSprite = new Sprite(WT('water_vat'));
+vatSprite.anchor.set(0.5, 1); vatSprite.scale.set(56 / vatSprite.texture.height);
+vatSprite.position.set(scene.places.vat.x, scene.places.vat.y + 6); vatSprite.zIndex = scene.places.vat.y;
+sorted.addChild(vatSprite);
+const vatWater = new Graphics(); vatWater.zIndex = scene.places.vat.y + 0.01; sorted.addChild(vatWater);
+function drawVatWater(n) {
+  const lv = n <= 2 ? 0 : n < 6 ? 1 : 2, w = vatSprite.width, mx = scene.places.vat.x, my = scene.places.vat.y + 6 - 56 * 0.86;
+  vatWater.clear();
+  vatWater.ellipse(mx, my, w * 0.29, w * 0.085).fill({ color: 0x2c2a22, alpha: 0.85 });
+  if (lv) vatWater.ellipse(mx, my + (lv === 1 ? 1.6 : 0.4), w * (lv === 1 ? 0.23 : 0.27), w * (lv === 1 ? 0.06 : 0.075)).fill({ color: lv === 1 ? 0x3e6a72 : 0x5a8e94 }).ellipse(mx - w * 0.06, my - 0.4, w * 0.08, w * 0.015).fill({ color: 0xd8ece6, alpha: 0.6 });
+}
+let vatShown = -1;
 // 藥架：兩層竹篩，每份藥草畫一束（最多 8）。
 const rack = new Graphics();
 rack.position.set(places.rack.x, places.rack.y + 8);
@@ -490,11 +454,31 @@ window.addEventListener('keydown', (e) => {
   else if (k === '+' || k === '=') zoomAt(app.screen.width / 2, app.screen.height / 2, cam.zoom * 1.1);
   else if (k === '-') zoomAt(app.screen.width / 2, app.screen.height / 2, cam.zoom / 1.1);
   else if (k === '0') { Object.assign(cam, scene.camera.start); if (narrow()) cam.zoom = 0.85; ui.follow = true; applyCam(); renderChrome(); }
+  else if (k === 'o' || k === 'O') look('overview');
   else if (k.startsWith('Arrow')) { const s = 40 / cam.zoom; cam.x += k === 'ArrowLeft' ? -s : k === 'ArrowRight' ? s : 0; cam.y += k === 'ArrowUp' ? -s : k === 'ArrowDown' ? s : 0; applyCam(); }
   else if (k === 'r' || k === 'R') toggleRoster();
   else if (k === 's' || k === 'S') toggleShadow();
   else if (k === 'Enter' && IDS.includes(ui.selected)) { e.preventDefault(); openMenu('vat'); } // 不讓同一次 Enter 落到剛拿到焦點的選項上
 });
+// D37 地標快看：只移鏡頭（停止跟隨），不推進世界、不改任何狀態；按 0 回到跟隨。
+function look(name) {
+  const vw = VIEWS[name];
+  if (!vw) return false;
+  ui.follow = false;
+  cam.zoom = clampZoom(vw.zoom === 'fit' ? Math.min(app.screen.width / WORLD_SIZE.w, app.screen.height / WORLD_SIZE.h) : vw.zoom * (narrow() ? 0.7 : 1));
+  const hw = app.screen.width / 2 / cam.zoom, hh = app.screen.height / 2 / cam.zoom; // 視窗比世界小時，別讓快看露出世界外
+  cam.x = hw * 2 >= WORLD_SIZE.w ? WORLD_SIZE.w / 2 : Math.min(WORLD_SIZE.w - hw, Math.max(hw, vw.x));
+  cam.y = hh * 2 >= WORLD_SIZE.h ? WORLD_SIZE.h / 2 : Math.min(WORLD_SIZE.h - hh, Math.max(hh, vw.y));
+  applyCam(); renderChrome();
+  return true;
+}
+{
+  const nav = $('views');
+  if (nav) {
+    nav.innerHTML = Object.entries(VIEWS).map(([k, vw]) => `<button class="btn" data-view="${k}" title="${k === 'overview' ? 'O：' : ''}鏡頭移到${vw.label}（只看，不推進）">${vw.label}</button>`).join('');
+    nav.addEventListener('click', (e) => { const b = e.target.closest('[data-view]'); if (b) look(b.dataset.view); });
+  }
+}
 // 背景：一律暫停並清掉待補時間；若原本是選單造成的暫停，回來後也不會因為關選單就自己恢復播放
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && (ui.playing || ui.pausedByMenu)) { ui.playing = false; ui.autoPaused = true; ui.pausedByMenu = false; }
@@ -932,7 +916,7 @@ app.ticker.add((t) => {
   // LP-11 三鼠與接觸：只讀 view().rats／clean；接觸閃光與浮字只是畫面，不入帳。
   for (const r of v.rats) {
     let g = ratGs.get(r.id);
-    if (!g) { g = new Graphics(); sorted.addChild(g); ratGs.set(r.id, g); }
+    if (!g) { g = makeRat(); sorted.addChild(g); ratGs.set(r.id, g); }
     const out = r.mode === 'gone' && (r.x <= EXIT.at(-1)[0] + 0.01);
     g.visible = !out;
     if (!out) { drawRat(g, r, performance.now()); g.scale.set(1.25 * (r.mode === 'flee' || r.mode === 'gone' ? -1 : 1), 1.25); g.position.set(r.x, r.y); g.zIndex = r.y; }
@@ -980,7 +964,7 @@ app.ticker.add((t) => {
   const selected = IDS.includes(ui.selected) && positions[ui.selected];
   ring.visible = !!selected;
   if (selected) { ring.position.set(selected.x, selected.y); ring.zIndex = selected.y - 0.01; }
-  vatSprite.texture = TS(scene.vats[v.vat <= 2 ? 0 : v.vat < 6 ? 1 : 2].file);
+  if (vatShown !== v.vat) { drawVatWater(v.vat); vatShown = v.vat; }
   placeMark.clear();
   if (ui.menu) { const pl = places[ui.menu]; placeMark.ellipse(pl.x, pl.y - pl.ry * 0.6, pl.rx + 6, pl.ry + 4).stroke({ width: 3, color: 0xc8962e, alpha: 0.9 }); }
   tag('vat', 'place', `${scene.places.vat.label} ${v.vat}／${v.vatCapacity} · 在途 ${v.inFlight}`, scene.places.vat.x, scene.places.vat.y - 60);
@@ -997,6 +981,7 @@ app.ticker.add((t) => {
   // now 已在上方取得
   for (let i = fx.length - 1; i >= 0; i--) if (fx[i].until < now) fx.splice(i, 1);
   for (let i = 0; i < 3; i++) { const f = fx[i]; tag(`fx${i}`, 'gain', f ? f.text : null, f ? f.x : 0, f ? f.y - (1 - (f.until - now) / 1600) * 14 : 0); }
+  wc.tick(t.deltaMS, ui.playing, IDS.map((id) => positions[id]).filter(Boolean)); // D37：遮擋淡出／竹影／水光，只是畫面
   if (ui.follow) follow();
   placeMenu();
   if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next || prev.people[id].auto.text !== v.people[id].auto.text || prev.people[id].up.text !== v.people[id].up.text || prev.people[id].fix !== v.people[id].fix || prev.people[id].fixResult !== v.people[id].fixResult || prev.people[id].cleanResult !== v.people[id].cleanResult) || JSON.stringify(prev.clean) !== JSON.stringify(v.clean) || prev.rats.some((r, i) => r.mode !== v.rats[i].mode) || prev.boar.marks !== v.boar.marks || prev.boar.seen !== v.boar.seen || frames % 15 === 0) renderChrome();
@@ -1034,6 +1019,8 @@ window.demo = {
       firstFrameMs, frames, stepMs: STEP_MS, cups: Object.fromEntries(IDS.map((id) => [id, cups[id].visible])),
     };
   },
+  // D37：鏡頭快看（只動鏡頭；截圖與手動導覽共用同一條路徑）
+  look,
   // 權威狀態深拷貝（只讀；存讀等價檢查用）。
   exportState: () => model.exportState(),
 };

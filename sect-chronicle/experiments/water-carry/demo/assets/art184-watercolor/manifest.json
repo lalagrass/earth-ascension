@@ -1,0 +1,294 @@
+{
+ "bamboo_clump": {
+  "file": "bamboo_clump.png",
+  "px": [
+   262,
+   339
+  ],
+  "src": "design/art184-production/sprites/bamboo_clump.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "boar_charge": {
+  "file": "boar_charge.png",
+  "px": [
+   167,
+   96
+  ],
+  "src": "design/art184-watercolor/sprites/boar_charge.png",
+  "origin": "art184-watercolor（D37 補畫）"
+ },
+ "boar_walk": {
+  "file": "boar_walk.png",
+  "px": [
+   160,
+   96
+  ],
+  "src": "design/art184-watercolor/sprites/boar_walk.png",
+  "origin": "art184-watercolor（D37 補畫）"
+ },
+ "boulder_l": {
+  "file": "boulder_l.png",
+  "px": [
+   188,
+   129
+  ],
+  "src": "design/art184-production/sprites/boulder_l.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "boulder_m": {
+  "file": "boulder_m.png",
+  "px": [
+   125,
+   76
+  ],
+  "src": "design/art184-production/sprites/boulder_m.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "boulder_s": {
+  "file": "boulder_s.png",
+  "px": [
+   71,
+   42
+  ],
+  "src": "design/art184-production/sprites/boulder_s.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "broadleaf_tree": {
+  "file": "broadleaf_tree.png",
+  "px": [
+   350,
+   333
+  ],
+  "src": "design/art184-production/sprites/broadleaf_tree.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "court_wall": {
+  "file": "court_wall.png",
+  "px": [
+   196,
+   105
+  ],
+  "src": "design/art184-production/sprites/court_wall.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "creek_bank": {
+  "file": "creek_bank.png",
+  "px": [
+   146,
+   90
+  ],
+  "src": "design/art184-production/sprites/creek_bank.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "dojo_gate": {
+  "file": "dojo_gate.png",
+  "px": [
+   169,
+   201
+  ],
+  "src": "design/art184-production/sprites/dojo_gate.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "dojo_main_hall": {
+  "file": "dojo_main_hall.png",
+  "px": [
+   448,
+   386
+  ],
+  "src": "design/art184-production/sprites/dojo_main_hall.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "dojo_side_house": {
+  "file": "dojo_side_house.png",
+  "px": [
+   350,
+   315
+  ],
+  "src": "design/art184-production/sprites/dojo_side_house.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "fern": {
+  "file": "fern.png",
+  "px": [
+   59,
+   54
+  ],
+  "src": "design/art184-production/sprites/fern.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "herb_bed": {
+  "file": "herb_bed.png",
+  "px": [
+   335,
+   192
+  ],
+  "src": "design/art184-watercolor/sprites/herb_bed.png",
+  "origin": "art184-watercolor（D37 補畫）"
+ },
+ "herb_rack": {
+  "file": "herb_rack.png",
+  "px": [
+   150,
+   155
+  ],
+  "src": "design/art184-production/sprites/herb_rack.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "master_meditate": {
+  "file": "master_meditate.png",
+  "px": [
+   81,
+   117
+  ],
+  "src": "design/art184-watercolor/sprites/master_meditate.png",
+  "origin": "art184-watercolor（D37 補畫）"
+ },
+ "pine_a": {
+  "file": "pine_a.png",
+  "px": [
+   307,
+   330
+  ],
+  "src": "design/art184-production/sprites/pine_a.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "pine_b": {
+  "file": "pine_b.png",
+  "px": [
+   282,
+   307
+  ],
+  "src": "design/art184-production/sprites/pine_b.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "rat_run": {
+  "file": "rat_run.png",
+  "px": [
+   80,
+   29
+  ],
+  "src": "design/art184-watercolor/sprites/rat_run.png",
+  "origin": "art184-watercolor（D37 補畫）"
+ },
+ "rat_sniff": {
+  "file": "rat_sniff.png",
+  "px": [
+   68,
+   31
+  ],
+  "src": "design/art184-watercolor/sprites/rat_sniff.png",
+  "origin": "art184-watercolor（D37 補畫）"
+ },
+ "senior_sweep": {
+  "file": "senior_sweep.png",
+  "px": [
+   128,
+   184
+  ],
+  "src": "design/art184-watercolor/sprites/senior_sweep.png",
+  "origin": "art184-watercolor（D37 補畫）"
+ },
+ "shrub_fern": {
+  "file": "shrub_fern.png",
+  "px": [
+   95,
+   92
+  ],
+  "src": "design/art184-watercolor/sprites/shrub_fern.png",
+  "origin": "art184-watercolor（D37 補畫）"
+ },
+ "stone_bench": {
+  "file": "stone_bench.png",
+  "px": [
+   218,
+   135
+  ],
+  "src": "design/art184-watercolor/sprites/stone_bench.png",
+  "origin": "art184-watercolor（D37 補畫）"
+ },
+ "stone_mill": {
+  "file": "stone_mill.png",
+  "px": [
+   112,
+   96
+  ],
+  "src": "design/art184-production/sprites/stone_mill.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "water_vat": {
+  "file": "water_vat.png",
+  "px": [
+   100,
+   117
+  ],
+  "src": "design/art184-production/sprites/water_vat.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "wild_grass": {
+  "file": "wild_grass.png",
+  "px": [
+   51,
+   46
+  ],
+  "src": "design/art184-watercolor/sprites/wild_grass.png",
+  "origin": "art184-watercolor（D37 補畫）"
+ },
+ "woodpile": {
+  "file": "woodpile.png",
+  "px": [
+   136,
+   109
+  ],
+  "src": "design/art184-production/sprites/woodpile.png",
+  "origin": "art184-production（D35 沿用）"
+ },
+ "bridge_deck": {
+  "file": "bridge_deck.png",
+  "px": [
+   370,
+   250
+  ],
+  "world": [
+   757.0,
+   952.0
+  ],
+  "src": "design/art184-watercolor/sprites/bridge.png",
+  "origin": "art184-watercolor（D37 補畫，仿射對齊 BRIDGE_DECK_POLY）"
+ },
+ "bridge_front": {
+  "file": "bridge_front.png",
+  "px": [
+   370,
+   250
+  ],
+  "world": [
+   757.0,
+   952.0
+  ],
+  "src": "design/art184-watercolor/sprites/bridge.png",
+  "origin": "art184-watercolor（D37 補畫，仿射對齊 BRIDGE_DECK_POLY）",
+  "note": "前欄（橫桿＋柱）拆層，z=1060 蓋人物腿"
+ },
+ "skirt": {
+  "file": "skirt.jpg",
+  "px": [
+   512,
+   512
+  ],
+  "src": "design/art184-watercolor/raw/tex-meadow.jpg",
+  "origin": "世界外圍淡色草地襯底（鏡頭到邊時不露空白）"
+ },
+ "ground": {
+  "file": "ground.jpg",
+  "px": [
+   3200,
+   2700
+  ],
+  "world": [
+   0,
+   0
+  ],
+  "src": "design/art184-watercolor/source/bake.py",
+  "origin": "烘焙：meadow/forest/water 補畫貼圖＋D35 dirt/flagstone 地磚＋權威路線"
+ }
+}
