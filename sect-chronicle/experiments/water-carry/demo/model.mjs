@@ -858,7 +858,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       if (!thirsty(p) || busyElse(p)) continue;
       const home = m === 'idle' && !p.rest, seat = m === 'seated' && p.rest === 'manual' && p.energy >= E.backAt;
       if (!home && !seat) continue;
-      if (s.vat < D.cost) { drinkNote(p, 'dry'); continue; }
+      if (TE.avail().water < D.cost) { drinkNote(p, 'dry'); continue; }
       const from = home ? 'home' : 'seat';
       p.drinkNote = null;
       p.motion = { mode: 'toDrink', job: null, phase: null, steps: 0, need: walkSteps(p.level, drinkLen(from, id), rules), tripLevel: p.level, from };
@@ -958,7 +958,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         // 飲滿 3 秒才結算；人物迴圈依固定 ids 順序，同 tick 只剩 1 份水時只有排前面的人成功。
         h.steps += 1;
         if (h.steps >= h.need) {
-          if (s.vat >= D.cost) { s.vat -= D.cost; p.waterQ = Math.min(wq(D.max), p.waterQ + wq(D.gain)); drinkNote(p, 'ok'); }
+          if (TE.avail().water >= D.cost) { s.vat -= D.cost; p.waterQ = Math.min(wq(D.max), p.waterQ + wq(D.gain)); drinkNote(p, 'ok'); }
           else drinkNote(p, 'empty');
           drinkBack(p, h.from, 1);
         }

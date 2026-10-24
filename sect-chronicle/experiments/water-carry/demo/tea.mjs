@@ -46,6 +46,8 @@ export function createTea(ctx) {
   }
   // 較新的有效指令：取消意圖；煮完前放掉座位與預約（不扣料），喝的途中取消不退料、不給益；從原地走回院中。
   function cancelBy(p, why = '玩家改令') {
+    // 已喝完、返院途中收到較新指令：不再於抵院時蓋成 manual，讓新指令生效。
+    if (t.done[p.id]) t.done[p.id] = false;
     if (!active(p)) return false;
     const m = p.motion.mode;
     t.want[p.id] = false;

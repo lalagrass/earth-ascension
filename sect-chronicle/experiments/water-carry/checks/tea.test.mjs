@@ -103,3 +103,41 @@ test('搬運中派茶：這趟先交付，再去茶座；煮茶中不能存、�
   assert.equal(r.ok, false); assert.equal(r.code, 'tea'); assert.equal(wrote, false);
   assert.match(r.text, /舊存檔未覆寫/);
 });
+
+test('review 6387175919①：喝完茶返院途中下較新 work:herb，抵院後照新指令採藥，不被舊 manual 待命蓋掉', () => {
+  const m = mk({ vatStart: 3, herbStart: 2 }, ONE);
+  P(m).energy = 50;
+  assert.ok(m.dispatch('tea').ok);
+  until(m, () => P(m).motion.mode === 'fromTea');
+  assert.equal(m.tea.state.done.hero, true);
+  const r = m.dispatch('work:herb');
+  assert.ok(r.ok, r.reason);
+  until(m, () => P(m).motion.mode !== 'fromTea');
+  for (let i = 0; i < 30; i++) m.step();
+  assert.notEqual(P(m).rest, 'manual');
+  assert.equal(P(m).job, 'herb');
+  assert.ok(!['toSeat', 'seated'].includes(P(m).motion.mode), `應去採藥，實際 ${P(m).motion.mode}`);
+  // 明確取消仍保持 manual 語義。
+  const n = mk({ vatStart: 3, herbStart: 2 }, ONE);
+  P(n).energy = 50;
+  assert.ok(n.dispatch('tea').ok);
+  until(n, () => P(n).motion.mode === 'brew');
+  assert.ok(n.dispatch('teaCancel').ok);
+  until(n, () => !TEA_MODES.includes(P(n).motion.mode));
+  assert.equal(P(n).rest, 'manual');
+});
+
+test('review 6387175919②：合法舊 drink mode 與茶預約競爭最後水 1，水缸不為負、不雙用', () => {
+  const m = mk({ vatStart: 1, herbStart: 1 });
+  const c = P(m, 'cousin');
+  c.motion = { mode: 'drink', job: null, phase: null, steps: 0, need: 180, tripLevel: c.level, from: 'home' };
+  P(m).energy = 50;
+  assert.ok(m.dispatch('tea').ok);
+  let min = m.state.vat;
+  for (let i = 0; i < 60 * 40; i++) { m.step(); min = Math.min(min, m.state.vat); }
+  assert.ok(min >= 0, `水缸出現 ${min}`);
+  const drank = m.state.log.filter((l) => l.kind === 'drink:ok').length;
+  const brewed = m.tea.state.events.filter((e) => e.kind === 'brewed').length;
+  assert.equal(drank + brewed, 1, `最後一份只能用一次（drink ${drank}／tea ${brewed}）`);
+  assert.equal(m.state.vat, 0);
+});
