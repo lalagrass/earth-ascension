@@ -1,10 +1,11 @@
-// D37（#184）全場水彩場景建構：一張無接縫烘焙地面＋地面貼片＋依腳底排序的手繪景物。
+// D37（#184）全場水彩場景建構 → SCENE-03（#182／D41）：一張無接縫烘焙地面＋地面貼片＋人物腳底陰影＋依腳底排序的手繪景物。
+// 素材唯一來源 demo/assets/scene03/manifest.json（新件在本目錄，D35／D37 既有件以相對路徑沿用；不保留舊新場景切換）。
 // 只讀 layout.mjs 與權威幾何；回傳的 tick() 只改畫面（透明度、竹影搖曳、水光），暫停時凍結，不碰模型、不入存檔。
 import { Container, Graphics, Sprite, TilingSprite } from '../vendor/pixi.min.mjs';
-import { PROPS, DECALS, NPCS, POOL, STREAM_DOWN, BRIDGE } from './layout.mjs';
+import { PROPS, DECALS, NPCS, POOL, STREAM_UP, STREAM_DOWN, STREAM_OUT, BRIDGE } from './layout.mjs';
 import { STREAM_POLY } from '../assets/long-water/scenery.mjs';
 
-export const ART_WC = 'assets/art184-watercolor/';
+export const ART_WC = 'assets/scene03/';
 
 // tex(name) → Pixi Texture；manifest＝demo/assets/art184-watercolor/manifest.json
 export function buildWatercolorScene({ world, sorted, tex, manifest }) {
@@ -38,7 +39,10 @@ export function buildWatercolorScene({ world, sorted, tex, manifest }) {
   decals.addChildAt(shimmer, 0);
   const lines = [];
   const along = (poly, n) => { for (let i = 0; i < n; i++) { const a = poly[Math.floor(i / n * (poly.length / 2))], b = poly[poly.length - 1 - Math.floor(i / n * (poly.length / 2))]; lines.push({ x: (a[0] + b[0]) / 2, y: (a[1] + b[1]) / 2, l: 10 + (i * 7) % 9, ph: i * 1.7 }); } };
-  along(STREAM_POLY, 7); along(STREAM_DOWN, 8);
+  along(STREAM_UP, 5); along(STREAM_POLY, 7); along(STREAM_DOWN, 8); along(STREAM_OUT, 4);
+  // SCENE-03 腳底陰影：貼片層最上面（橋板／藥畦之上、人物之下），只跟畫面腳底位置
+  const feetG = new Graphics();
+  decals.addChild(feetG); // 最後加入＝貼片層最上（decals 不排序，依加入順序）
   for (let i = 0; i < 6; i++) lines.push({ x: POOL.x - 50 + (i * 23) % 90, y: POOL.y - 24 + (i * 13) % 44, l: 12 + (i % 3) * 5, ph: i * 2.1, pool: true });
   const props = PROPS.map((p) => ({ p, s: place(p, sorted) }));
   const npcs = Object.fromEntries(NPCS.map((n) => [n.id, place(n, sorted)]));
@@ -46,6 +50,8 @@ export function buildWatercolorScene({ world, sorted, tex, manifest }) {
   function tick(dtMs, playing, feet) {
     if (playing) vt += dtMs / 1000;
     shimmer.clear();
+    feetG.clear();
+    for (const f of feet) feetG.ellipse(f.x, f.y + 1, 11, 3.6).fill({ color: 0x2a2618, alpha: 0.28 }).ellipse(f.x, f.y + 1, 6.5, 2.2).fill({ color: 0x2a2618, alpha: 0.2 });
     for (const w of lines) {
       const k = (Math.sin(vt * 1.6 + w.ph) + 1) / 2, dx = w.pool ? Math.sin(vt * 0.5 + w.ph) * 4 : ((vt * 9 + w.ph * 5) % 18) - 9;
       shimmer.ellipse(w.x + dx, w.y, w.l, 1.6).fill({ color: 0xe8f4f0, alpha: 0.18 + 0.28 * k });

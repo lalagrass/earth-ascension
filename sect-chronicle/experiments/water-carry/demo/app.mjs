@@ -31,7 +31,7 @@ const app = new Application();
 await app.init({ resizeTo: window, background: '#cfc8ad', antialias: true, autoDensity: true, resolution: Math.min(2, window.devicePixelRatio || 1) });
 $('stage').appendChild(app.canvas);
 
-// D37：全場改用 art184-watercolor（沿用 D35 手繪件＋本輪補畫＋一張烘焙地面）；舊 LP17 bg／scene.props 不再載入
+// SCENE-03（#182／D41）：場景素材唯一來源 assets/scene03/manifest.json（新地面＋泉口／瀑／取水台／預留屋／晾架／西坡件；D35／D37 件沿用）
 const WC = await (await fetch(ART_WC + 'manifest.json')).json();
 await Assets.load(Object.values(WC).map((m) => ART_WC + m.file));
 const WT = (name) => Assets.get(ART_WC + WC[name].file);

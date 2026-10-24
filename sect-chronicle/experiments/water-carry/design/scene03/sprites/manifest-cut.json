@@ -1,0 +1,132 @@
+{
+ "spring_cliff": {
+  "file": "sprites/spring_cliff.png",
+  "src": "raw/water-sheet.jpg",
+  "size": [
+   361,
+   365
+  ],
+  "anchor": [
+   180,
+   364
+  ],
+  "corner_alpha": 0
+ },
+ "cascade": {
+  "file": "sprites/cascade.png",
+  "src": "raw/water-sheet.jpg",
+  "size": [
+   335,
+   221
+  ],
+  "anchor": [
+   168,
+   220
+  ],
+  "corner_alpha": 0
+ },
+ "intake_platform": {
+  "file": "sprites/intake_platform.png",
+  "src": "raw/water-sheet.jpg",
+  "size": [
+   348,
+   246
+  ],
+  "anchor": [
+   174,
+   245
+  ],
+  "corner_alpha": 0
+ },
+ "dorm_reserved": {
+  "file": "sprites/dorm_reserved.png",
+  "src": "raw/build-sheet.jpg",
+  "size": [
+   445,
+   415
+  ],
+  "anchor": [
+   222,
+   414
+  ],
+  "corner_alpha": 0
+ },
+ "shed_reserved": {
+  "file": "sprites/shed_reserved.png",
+  "src": "raw/build-sheet.jpg",
+  "size": [
+   377,
+   363
+  ],
+  "anchor": [
+   188,
+   362
+  ],
+  "corner_alpha": 0
+ },
+ "drying_rack": {
+  "file": "sprites/drying_rack.png",
+  "src": "raw/build-sheet.jpg",
+  "size": [
+   331,
+   289
+  ],
+  "anchor": [
+   166,
+   288
+  ],
+  "corner_alpha": 0
+ },
+ "rock_ledge": {
+  "file": "sprites/rock_ledge.png",
+  "src": "raw/slope-sheet.jpg",
+  "size": [
+   318,
+   188
+  ],
+  "anchor": [
+   159,
+   187
+  ],
+  "corner_alpha": 0
+ },
+ "trail_marker": {
+  "file": "sprites/trail_marker.png",
+  "src": "raw/slope-sheet.jpg",
+  "size": [
+   260,
+   200
+  ],
+  "anchor": [
+   130,
+   199
+  ],
+  "corner_alpha": 0
+ },
+ "reeds": {
+  "file": "sprites/reeds.png",
+  "src": "raw/slope-sheet.jpg",
+  "size": [
+   223,
+   200
+  ],
+  "anchor": [
+   112,
+   199
+  ],
+  "corner_alpha": 0
+ },
+ "step_stones": {
+  "file": "sprites/step_stones.png",
+  "src": "raw/slope-sheet.jpg",
+  "size": [
+   276,
+   161
+  ],
+  "anchor": [
+   138,
+   160
+  ],
+  "corner_alpha": 0
+ }
+}
