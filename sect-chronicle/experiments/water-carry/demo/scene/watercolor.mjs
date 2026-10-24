@@ -17,7 +17,7 @@ export function buildWatercolorScene({ world, sorted, tex, manifest }) {
   skirt.position.set(-1600, -1500); skirt.tileScale.set(0.9); skirt.alpha = 0.45; // 疊在紙色畫布底上＝淡草霧，和烘焙邊緣羽化同色
   world.addChildAt(skirt, 0);
   const decals = new Container();
-  world.addChildAt(decals, 1);
+  world.addChildAt(decals, world.getChildIndex(groundSprite) + 1); // skirt → 不透明地面 → 貼片（橋板／後欄、藥畦、溪岸、水光）→ 提示／sorted
   const place = (p, parent) => {
     const t = tex(p.img ?? p.id), s = new Sprite(t);
     s.anchor.set(0.5, 1);
