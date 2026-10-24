@@ -1,0 +1,82 @@
+import { createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf } from './sim.mjs';
+import { NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS } from './data.mjs';
+const cv = document.getElementById('map'), g = cv.getContext('2d');
+const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile'];
+await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i.onload = r; i.onerror = r; i.src = `assets/${n}.${n === 'ground' ? 'jpg' : 'png'}`; IMG[n] = i; })));
+const BG = document.createElement('canvas'); BG.width = 1600; BG.height = 1000;
+{ const b = BG.getContext('2d'); b.fillStyle = '#c9c49a'; b.fillRect(0, 0, 1600, 1000); let r = 7; const R = () => (r = (r * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 900; i++) { const x = R() * 1600, y = R() * 1000, h = 70 + R() * 50 - y / 40; b.fillStyle = `hsla(${h},${25 + R() * 20}%,${45 + R() * 20}%,.08)`; b.beginPath(); b.ellipse(x, y, 40 + R() * 120, 20 + R() * 60, R() * 3, 0, 7); b.fill(); }
+  b.globalAlpha = .35; for (let x = 0; x < 1600; x += 512) b.drawImage(IMG.ground, 0, 0, 512, 120, x, 0, 512, 120); b.globalAlpha = 1; }
+let S = createState(Date.now() % 100000 | 0), speed = 1;
+window.__sect = { get S() { return S; }, set speed(v) { speed = v; } };
+const SCENERY = [['pine', 140, 200], ['pine', 300, 380], ['bamboo', 60, 420], ['pine', 1320, 120], ['pine', 1500, 300], ['bamboo', 1200, 300], ['pine', 1420, 420], ['bench', 1100, 660], ['pine', 200, 640]];
+const ACT_ICON = { rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔' };
+function draw() {
+  g.drawImage(BG, 0, 0);
+  // 後山
+  g.fillStyle = 'rgba(70,90,60,.22)'; g.beginPath(); g.moveTo(1150, 0); g.lineTo(1600, 0); g.lineTo(1600, 480); g.quadraticCurveTo(1300, 520, 1150, 0); g.fill();
+  g.fillStyle = '#4a5a3a'; g.font = 'bold 22px serif'; g.fillText('後山獵場', 1440, 40);
+  // 溪
+  g.strokeStyle = 'rgba(90,140,170,.55)'; g.lineWidth = 26; g.beginPath(); g.moveTo(1300, 1000); g.bezierCurveTo(1250, 900, 1240, 820, 1230, 700); g.stroke();
+  // 路
+  g.strokeStyle = 'rgba(150,120,80,.55)'; g.lineWidth = 14; g.lineCap = 'round';
+  for (const [a, b] of EDGES) { g.beginPath(); g.moveTo(...NODES[a]); g.lineTo(...NODES[b]); g.stroke(); }
+  const items = [];
+  for (const [n, x, y] of SCENERY) items.push({ y, f: () => sprite(n, x, y) });
+  for (const f of FACILITIES) {
+    const st = facStage(S, f.id), [x, y] = NODES[f.node], fs = S.fac[f.id];
+    items.push({ y: y - 1, f: () => {
+      if (st.sprite) sprite(st.sprite, x, y + 10);
+      if (f.id === 'yard') { g.fillStyle = 'rgba(180,150,100,.35)'; g.beginPath(); g.ellipse(x, y, 90, 45, 0, 0, 7); g.fill(); }
+      label(`${f.name}・${st.name}`, x, y + 28, '#3a2f24');
+      if (fs.site) { const s = fs.site; label(`工地 木${s.delivered}/${s.need.wood} 工${s.work.toFixed(0)}/${s.workNeed}s`, x, y + 46, '#a0461e'); }
+    } });
+  }
+  items.push({ y: 400, f: () => sprite('master', NODES.hall[0] + 60, NODES.hall[1] - 10) });
+  for (const m of S.mons) items.push({ y: m.pos[1], f: () => { sprite(MONSTERS[m.k].sprite, m.pos[0], m.pos[1]); hp(m.pos[0], m.pos[1] - 30, m.hp / m.max, '#a33'); } });
+  for (const d of S.ds) items.push({ y: d.pos[1], f: () => {
+    const bob = d.path.length ? Math.sin(S.t * 10) * 2 : 0, [x, y] = d.pos;
+    g.save(); g.translate(x, y + bob); if (d.face < 0) g.scale(-1, 1); if (d.anim === 'strike') g.rotate(0.15);
+    if (d.task?.phase === 'do' && d.anim === 'rest') g.rotate(-1.3);
+    const im = IMG[d.sprite]; g.drawImage(im, -im.width / 2, -im.height); g.restore();
+    if (d.carry) sprite('wood', x + 14, y - 30);
+    label(`${d.name} ${ACT_ICON[d.anim || d.task?.act] || ''}`, x, y - (IMG[d.sprite].height + 6), '#222');
+    if (S.hunt) hp(x, y - IMG[d.sprite].height - 22, d.hp / 100, '#3a7');
+  } });
+  items.sort((a, b) => a.y - b.y).forEach((i) => i.f());
+  for (const f of S.fx) {
+    if (f.kind === 'move') { g.strokeStyle = f.color; g.lineWidth = 4; g.globalAlpha = f.ttl / 0.6; g.beginPath(); g.moveTo(f.from[0], f.from[1] - 40); g.lineTo(f.to[0], f.to[1] - 10); g.stroke(); g.beginPath(); g.arc(f.to[0], f.to[1] - 10, f.r, 0, 7); g.stroke(); label(f.name, f.from[0], f.from[1] - 95, f.color); g.globalAlpha = 1; }
+    else { g.fillStyle = 'rgba(200,40,40,.6)'; g.beginPath(); g.arc(f.pos[0], f.pos[1] - 30, 10, 0, 7); g.fill(); }
+  }
+}
+function sprite(n, x, y) { const i = IMG[n]; if (i?.width) g.drawImage(i, x - i.width / 2, y - i.height); }
+function label(t, x, y, c) { g.font = '15px sans-serif'; g.textAlign = 'center'; g.lineWidth = 4; g.strokeStyle = 'rgba(255,250,235,.85)'; g.strokeText(t, x, y); g.fillStyle = c; g.fillText(t, x, y); g.textAlign = 'left'; }
+function hp(x, y, r, c) { g.fillStyle = '#0006'; g.fillRect(x - 20, y, 40, 5); g.fillStyle = c; g.fillRect(x - 20, y, 40 * Math.max(0, r), 5); }
+const $ = (id) => document.getElementById(id);
+const bar = (v, c) => `<div class="bar"><i style="width:${v}%;background:${c}"></i></div>`;
+const ORD = [['', '自主'], ...['train', 'chop', 'farm', 'forage', 'build', 'rest', 'eat'].map((k) => [k, ACTIVITIES[k].name])];
+let lastPanel = 0;
+function panel() {
+  $('clock').textContent = `第 ${Math.floor(S.t / 600) + 1} 日 · ${Math.floor(S.t)} 秒 · ${speed}×`;
+  $('res').innerHTML = `木 ${S.res.wood}/${S.cap.wood}　糧 ${S.res.food}　藥 ${S.res.herb}`;
+  $('build').innerHTML = FACILITIES.filter((f) => f.stages.length > 1).map((f) => { const st = S.fac[f.id], nx = f.stages[st.stage + 1];
+    return `<div>${f.name}：${f.stages[st.stage].name} ${nx ? `<button data-build="${f.id}" ${st.site ? 'disabled' : ''}>${st.site ? '施工中' : `修成${nx.name}（木${nx.cost.wood}）`}</button>` : '✓'}</div>`; }).join('') + '<div class="k">尚未開放：膳房、外功場木樁、菜園擴建（見 DESIGN.md）</div>';
+  $('hunt').innerHTML = S.hunt ? `進行中：擊退 ${S.hunt.kills}・溜走 ${S.hunt.escaped}` : `<button id="hunt-go">派主角＋林師姐上山（一波）</button><div class="k">${S.lastReport || '尚無戰報'}</div>`;
+  if (!S.hunt) $('hunt-go').onclick = () => startHunt(S, ['hero', 'senior']);
+  $('ds').innerHTML = S.ds.map((d) => `<div class="card"><b>${d.name}</b> <span class="k">${d.adult ? '' : '（少年）'}${d.task ? (ACTIVITIES[d.task.act]?.name || '狩獵') : '待命'}｜${d.reason}</span>
+   <div class="k">精力 ${d.needs.energy | 0}</div>${bar(d.needs.energy, '#d9a441')}<div class="k">飽足 ${d.needs.hunger | 0}</div>${bar(d.needs.hunger, '#7aa35a')}<div class="k">交流 ${d.needs.social | 0}</div>${bar(d.needs.social, '#c77')}
+   <div class="k">掌法 ${d.skills.palm.toFixed(1)}・腳力 ${d.skills.agility.toFixed(1)}（${speedOf(d).toFixed(0)}px/s）・力氣 ${d.skills.strength.toFixed(1)}・農 ${d.skills.farming.toFixed(1)}</div>
+   <div>${d.moves.map((m) => `<span class="mv">${MOVES.find((x) => x.id === m).name}</span>`).join('')}${d.pendingMove ? `<span class="mv new">可學：${MOVES.find((x) => x.id === d.pendingMove).name}</span>` : ''}</div>
+   <select data-ord="${d.id}">${ORD.map(([k, n]) => `<option value="${k}" ${(d.order || '') === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`).join('');
+  $('rel').innerHTML = Object.entries(S.rel).map(([k, v]) => { const [a, b] = k.split('|').map((id) => S.ds.find((d) => d.id === id).name); return `<div>${a}—${b}：${relStage(v)} ${v.toFixed(0)}${S.families.includes(k) ? ' 🏠' : ''}</div>`; }).join('');
+  $('log').innerHTML = S.log.slice(0, 30).map((l) => `<li>[${l.t}s] ${l.msg}</li>`).join('');
+}
+document.addEventListener('click', (e) => { const b = e.target.closest('[data-build],[data-speed]'); if (!b) return; if (b.dataset.build) startBuild(S, b.dataset.build); if (b.dataset.speed) speed = +b.dataset.speed; panel(); });
+document.addEventListener('change', (e) => { if (e.target.dataset.ord) { setOrder(S, e.target.dataset.ord, e.target.value || null); panel(); } });
+$('save').onclick = () => { localStorage.setItem('solo-sect-save', save(S)); alert('已存檔'); };
+$('load').onclick = () => { const r = load(localStorage.getItem('solo-sect-save') || ''); if (r.ok) S = r.state; else alert(r.err); panel(); };
+$('reset').onclick = () => { S = createState(Date.now() % 100000 | 0); panel(); };
+let last = performance.now(), acc = 0;
+function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now; while (acc >= 0.25) { tick(S); acc -= 0.25; }
+  draw(); if (now - lastPanel > 400 && !document.activeElement?.matches('select')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
+panel(); requestAnimationFrame(loop);
