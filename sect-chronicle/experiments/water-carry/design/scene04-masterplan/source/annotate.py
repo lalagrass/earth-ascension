@@ -9,7 +9,7 @@ f = lambda s, b=False: ImageFont.truetype(FB if b else FONT, s, index=2)  # inde
 S = 2  # output scale (labels only; paint is 1280x720 upscaled)
 STAGES = {'S0': '破道館（初始）', 'S1': '可居住・成長中', 'S2': '成熟小門派'}
 COL = {'ruin': (170, 90, 40), 'basic': (150, 110, 30), 'repair': (200, 120, 0), 'built': (30, 90, 60), 'wild': (120, 120, 120)}
-STL = {'ruin': '破損可用', 'basic': '簡陋可用', 'repair': '修繕中', 'built': '完成', 'wild': '未建・真地形'}
+STL = {'ruin': '破損可用', 'basic': '簡陋可用', 'repair': '外殼修好・未啟用', 'built': '完成', 'wild': '未建・真地形'}
 # 慢／快對照：只讀 demo/model.mjs RULES（Lv1 負重 base40；Lv5 空手 cap84），不改腳力規則
 SLOW, FAST = 40.0, 84.0
 plen = lambda pts: sum(math.dist(pts[i], pts[i + 1]) for i in range(len(pts) - 1))
@@ -104,11 +104,11 @@ def dorm_inset(d):
         d.rectangle((sx - 9, by + 46, sx + 9, by + 64), fill=(40, 90, 200, 255))
     d.text((x0 + 20, y0 + h - 34), "藍方＝床側站位（貼通道）；A 原位不動，B 新增，C–F 擴建", font=f(20), fill=(40, 60, 140, 255))
 
-walk('W1-gather-supply-train.jpg', ['farherb', 'water', 'rest2train'], 'W1 採集→回院補給休息→練功', ['遠採藥路刻意過橋出西南圖外（遠藥坡另一景段），回程經潭邊坡上院；交倉→膳房缸補給→演練場', '挑水路保留長通勤：母版長度用來校準 k；慢快差約 2.1 倍，人物在同一張圖上明顯拉開'])
-walk('W2-social-visit.jpg', ['social', 'village'], 'W2 生活／交流', ['宿舍→膳房→餐敘棚為短生活圈；堂弟住村，自東南村路經山門到大廳前院，不穿後院宿舍', '女孩只用空間參照（靜室旁安靜角），不加 AI／不改 canon'])
+walk('W1-gather-supply-train.jpg', ['farherb', 'water', 'rest2train'], 'W1 採集→回院補給休息→練功', ['遠採藥路刻意過橋出西南圖外（遠藥坡另一景段），回程經潭邊坡上院；交倉→膳房缸補給→演練場', '出入院一律經院南口（木籬端與客舍之間土路）；挑水站在潭南石階頂層乾石、桶探北側潭面；母版挑水路校準 k'])
+walk('W2-social-visit.jpg', ['social', 'village'], 'W2 生活／交流', ['宿舍→膳房→餐敘棚為短生活圈；堂弟住村，自東南村路沿菜圃南土路→院南口→前院（山門在東路上、不直通前院），不穿牆／後院宿舍', '女孩只用空間參照（靜室旁安靜角），不加 AI／不改 canon'])
 def danger(d):
     x, y = sc((1150, 45)); d.regular_polygon((x, y, 26), 3, fill=(230, 60, 30, 255), outline=(255, 255, 255, 255)); tag(d, (x - 40, y + 40), '遇險點（候選空間，不定數值）→ 原路返院', (200, 40, 20), 22, 'ra')
-walk('W3-patrol-return.jpg', ['patrol'], 'W3 巡山遇險→返院', ['山門北岔山徑→望台→後山棲地邊界（只留空間，不定刷怪／數值）；原路返院到演練場', '與現行西坡 #290 巡山並存為候選第二景段，不取代已接受巡山'], inset=danger, bottom=True)
+walk('W3-patrol-return.jpg', ['patrol'], 'W3 巡山遇險→返院', ['演練場→院南口→南環路→東路→山門→望台→後山棲地邊界（只留空間，不定刷怪／數值）；原路返院', '與現行西坡 #290 巡山並存為候選第二景段，不取代已接受巡山'], inset=danger, bottom=True)
 walk('W4-dorm-door-bedside.jpg', ['dorm'], 'W4 入宿舍→床側', ['大廳前→後院安靜徑→宿舍甲門；門→通道→床側全程不被床或練功區堵住'], inset=dorm_inset)
 
 # D overlay: current runtime ground (read-only) with accepted routes + candidate correspondence
