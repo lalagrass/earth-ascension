@@ -1,5 +1,9 @@
 # HOME-02候選整包：砍柴、第一間寢舍與各自歸處
 
+> **D49／B1–B4已批准（2026-10-25台北）**：本案已轉[正式工作包](HOME02_HANDOFF.md)／[Grok開發提示詞](HOME02_GROK_PROMPT.md)／[grass接續review提示詞](HOME02_GRASS_REVIEW_PROMPT.md)。採完整砍柴／固定寢舍／雙床與本局狀態／有限review方案，下方待確認與禁止認領是提案沿革，不再作已滿前置的額外阻擋；工程白名單／材料床位／A–D以正式包為準，先收326及正式文件審合postCI後本人330新claim。
+
+HOME01／PR326已由Earth鎖head43c788eb squash合dev **23e3414ed0f1f323f04b34c97f70b22a8587dc41**，postCI40120490402五項成功，326整合前置已滿；沿Earth與Cloud接受證據復用，不重跑、不再等待326，且沒有更新Mac試玩。
+
 2026-10-25台北，Codex／遊戲PO。主[#330](https://github.com/lalagrass/earth-ascension/issues/330)，來源#75／#321、BL-L04／S01／G01／G04；必要局部維護#215／315。[唯一排序](VISIBLE_DELIVERY_PLAN.md)／[backlog](FUTURE_BACKLOG.md)／[床位研究](ROOM_BEDS_RESEARCH.md)。
 
 **狀態：規劃提案，B1–B4待擁有人確認，未授runtime認領。** 本文件審合只接受規劃，不等於批准工程／示意值、改派Grok或啟動grass。HOME01 PR326在查核時為open、head43c788eb934f21178e5091c31a1df91b446dea1d，Cloud[複審6387652955](https://github.com/lalagrass/earth-ascension/pull/326#issuecomment-6387652955)已確認兩項補修、A–D ready並交Earth，尚待唯一queue合dev／postCI；本包不重做該review或加326 DoD。接手核最新結果，勿把快照當永久阻擋。
