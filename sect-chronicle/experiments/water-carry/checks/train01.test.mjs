@@ -128,3 +128,38 @@ test('D2 載入：失敗全不變；成功清新暫態、掌法照存檔', () =>
   assert.ok(ro.ok, ro.text);
   assert.equal(T(m).goal.hero, false); assert.equal(T(m).units.hero, 0); assert.equal(P(m).palm, 'novice');
 });
+
+test('review P2①：自然滿庫休閒中派練掌，起身真返程後不被 recall 卡住，真到樁取得單位；途中改派不搶回', () => {
+  const m = mk();
+  until(m, () => P(m).motion.mode === 'fun', 60 * 60 * 40);
+  assert.ok(m.dispatch('train', 'hero').ok);
+  assert.equal(P(m).recall, false);
+  until(m, atPost, 60 * 60 * 10);
+  run(m, UNIT + 1);
+  assert.equal(T(m).units.hero, 1);
+  const n = mk();
+  until(n, () => P(n).motion.mode === 'fun', 60 * 60 * 40);
+  n.dispatch('train', 'hero');
+  until(n, () => P(n).motion.mode === 'toTrain', 60 * 60 * 10);
+  assert.ok(n.dispatch('work:herb', 'hero').ok);
+  run(n, 60 * 60 * 3);
+  assert.equal(T(n).goal.hero, false); assert.ok(!['toTrain', 'train'].includes(P(n).motion.mode), '不搶回練功');
+});
+
+test('review P2②：停止練掌→真返院→保持待命、無新搬運；已完成單位保留；明確再派可重新開始', () => {
+  const m = mk();
+  m.dispatch('train', 'hero');
+  until(m, atPost); run(m, UNIT + 30);
+  assert.ok(m.dispatch('trainCancel', 'hero').ok);
+  assert.equal(P(m).motion.mode, 'fromTrain', '從原地真走回');
+  until(m, () => !TRAIN_MODES.includes(P(m).motion.mode), 60 * 60 * 5);
+  const inFlight = m.state.inFlight ?? m.view().inFlight;
+  run(m, 600);
+  assert.equal(P(m).rest, 'manual'); assert.notEqual(P(m).motion.mode, 'carry');
+  assert.equal(m.view().inFlight, inFlight);
+  assert.equal(T(m).units.hero, 1); assert.equal(T(m).goal.hero, false);
+  assert.ok(m.dispatch('train', 'hero').ok, '可明確再派練掌');
+  until(m, atPost, 60 * 60 * 10);
+  assert.ok(m.dispatch('trainCancel', 'hero').ok && m.dispatch('work:water', 'hero').ok, '也可明確派工作');
+  until(m, () => P(m).motion.mode === 'carry', 60 * 60 * 10);
+});

@@ -1186,7 +1186,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const metCanceled = L2.cancelBy(p);
     // SG-TRAIN-01：較新的任何有效指令都取消練掌目標與未完成單位（「練掌」本身是新目標，另處理）。
     if (cmd !== 'train') T1.cancelBy(p);
-    if (cmd === 'trainCancel') return { ok: true, text: '停止練掌：未完成的單位不算，已完成單位保留；回院中待命' };
+    if (cmd === 'trainCancel') return trainStop(p);
     if (['start', 'restAfterTrip', 'recall', 'guard', 'fix', 'clean', 'patrol', 'train'].includes(cmd) || cmd.startsWith('work:')) L2.setFill(p, false);
     if (cmd === 'meetCancel') return { ok: true, text: metCanceled ? '取消這次招呼：兩人各自走回院中' : '沒有進行中的招呼' };
     if (cmd === 'fill') return fillOrder(p);
@@ -1283,8 +1283,20 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const m = p.motion.mode;
     if (DRINK_MODES.includes(m)) { if (p.rest === 'manual') p.rest = p.energy < E.backAt ? 'auto' : null; return { ok: true, text: '喝完回院中後去練功樁' }; }
     const r = work(p, p.job);
+    // 休閒中承接時 work() 走原 recall（起身真返程）；這個工作叫回旗標由練掌意圖消費，否則回院後 recall 與目標互擋（review P2①）。
+    if (p.recall) { p.recall = false; p.why = null; }
     const lead = m === 'carry' ? `本趟${JOBS[p.motion.job || p.job].label}交付後` : r.text && /恢復/.test(r.text) ? `先恢復到 ${E.backAt} 再` : '';
     return { ok: true, text: `${lead}練掌到熟練：每 ${TRAIN.unitMs / 1000} 秒 1 單位、${TRAIN.units} 單位練熟（進度只本局；練熟結果沿原掌法欄位保存）` };
+  }
+  // 停止練掌＝明確待命（review P2②）：練功／往返／待自理都依合法邊界返院（T1.cancelBy 已從原地走回），之後保持停工、不默恢復舊工作；
+  // 進行中的舊搬運照原交付這趟後停工。已完成單位保留；再選工作／練掌／自主補水即重新開始。
+  function trainStop(p) {
+    const text = '停止練掌：未完成的單位不算，已完成單位保留；回院中待命';
+    if (p.motion.mode === 'carry') { p.pending = 'rest'; return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後${text.slice(5)}`, pending: true }; }
+    p.rest = 'manual'; p.why = '玩家停止練掌：回院中待命'; p.pending = null; p.recall = false;
+    s.log.push({ tick: s.tick, person: p.id, kind: 'rest' });
+    if (p.motion.mode === 'idle') goSeat(p);
+    return { ok: true, text };
   }
   const guardBusy = (p) => ['toGuard', 'guardWait', 'shout'].includes(p.motion.mode);
   const nameOf = (id) => (id === 'hero' ? '主角' : id === 'cousin' ? '熟手' : id);
