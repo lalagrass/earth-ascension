@@ -4,7 +4,7 @@
 
 PR278有限美術已合dev ac7148d／postCI40004282037並更新8800，原兩P2已解；PR282目前仍待review5632832438的壞檔驗證補修。本D36生活包的M1–M4／白名單／驗收不變，不把全圖重繪混進282或追溯原278。
 
-擁有人另批准[全場景水彩完整包](ART184_WATERCOLOR_HANDOFF.md)／[Grok提示詞](ART184_WATERCOLOR_GROK_PROMPT.md)，先PR282接受／合dev／postCI，再同Grok新claim接#184／182。**第一版整體驗收＝本包生活閉環A–D成立＋D37全圖A–D成立＋兩者整合／postCI並更新單一入口**。長通勤、速度差與既有玩法保留；不因飲水／存讀通過就宣稱整體美術完成，不新增手機／完整門派／生態門檻。
+擁有人另批准[全場景水彩完整包](ART184_WATERCOLOR_HANDOFF.md)／[Grok提示詞](ART184_WATERCOLOR_GROK_PROMPT.md)，排程更正：同Grok可立即184新claim、最新dev新支線普通merge本人282候選，列depends282／已知阻擋並接續全場景；不必等本包接受／合dev／postCI或更正文件整合。原282仍修至合格，Earth最後依282→場景整合；原補修期限不重置。**第一版整體驗收＝本包生活閉環A–D成立＋D37全圖A–D成立＋兩者整合／postCI並更新單一入口**。長通勤、速度差與既有玩法保留；不因飲水／存讀通過就宣稱整體美術完成，不新增手機／完整門派／生態門檻。
 
 主追蹤 [#279](https://github.com/lalagrass/earth-ascension/issues/279)，美術原包 [#184／PR278](https://github.com/lalagrass/earth-ascension/pull/278)；[可貼給Grok的提示詞](LIFE01_GROK_PROMPT.md)。擁有人於2026-10-24在遊戲PO聊天批准「包含：美術收尾＋SG-LIFE-01，採M1–M4建議」，並要求同Grok多批次做到完成、下次集中review。正式批准見 [D36](DECISIONS_AND_SOURCES.md#d36sg-life-01與grok連續批次批准2026-10-24)。
 

@@ -2,7 +2,7 @@
 
 ## D37最新：Grok全場景水彩整包與自主權
 
-擁有人已批准[全場景工作包](docs/ART184_WATERCOLOR_HANDOFF.md)／[Grok提示詞](docs/ART184_WATERCOLOR_GROK_PROMPT.md)，主184／配置182／生活閉環279。先PR282原存讀補修接受→Earth合dev／postCI，再同Grok本人184新claim／最新dev新工程PR；本文件先獨立整合，不重置原租期或混兩包。PR278只是已交的局部素材整合，第一版另需D37整張真遊戲地圖風格一致，不追溯改278驗收。
+擁有人已批准[全場景工作包](docs/ART184_WATERCOLOR_HANDOFF.md)／[Grok提示詞](docs/ART184_WATERCOLOR_GROK_PROMPT.md)，主184／配置182／生活閉環279。**排程更正立即生效**：取消先等PR282接受／合dev／postCI才可開發全場景的誤設等待。同Grok現在可184新claim，最新dev新支線普通merge本人282公開候選、標depends282及已知阻擋，接續完整場景；原282缺陷仍在原支線修好再同步，原補修期限不重置。兩候選最後集中review、Earth依282→場景整合／postCI才發布；不再等本更正文件PR合併才動手。PR278只是已交的局部素材整合，第一版另需D37整張真遊戲地圖風格一致，不追溯改278驗收。
 
 Grok可在遊戲層自主整理場景／renderer／資產管線／必要等價介面、改場景設計，並增加本次觀看／操作相關功能，詳正式包；不再只准薄接線，也不逐模組請示。長通勤／速度差／玩法與存讀相容保留；新增世界規則、跨Earth／小說／根依賴付費等仍按原權限，不清空backlog。既有素材優先、缺圖補，一作者完整交付集中review，必要差異驗證與清理／Earth唯一queue／單一8800／無執行總限時但4hclaim可續照舊。此文件／prompt不代表已啟bot或新圖已交付。
 
