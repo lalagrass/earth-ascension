@@ -1,5 +1,11 @@
 # Coding agent 接手入口
 
+## D39新增獨立場景設計：不更動原第一版／巡山
+
+擁有人直接要求Grok再次重設完整場景、納backlog與水系合理性，另研究宿舍床位。讀[#182設計整包](docs/SCENE02_HANDOFF.md)／[Grok提示詞](docs/SCENE02_GROK_PROMPT.md)及[床位開源研究](docs/ROOM_BEDS_RESEARCH.md)。同Grok交完289／本輪必要補修可於等待整合期間182新claim、只寫design/art182-scene02/**；不等新文件merge或290實裝才畫圖，PO#75文件claim不占圖稿目錄，不能同時互改runtime。
+
+新包交全景／水源至下游／坡地與門路、宿舍一床→雙床／擴房、行走分鏡、backlog狀態與整合差異／來源。只是設計與研究，沒有床位／睡眠／建造runtime批准，不能改demo／路線／D38值／存檔／8800。原282／289審查與必要補修、第一版出口／290接續照舊；新圖不加原第一版DoD或成巡山硬前置。整包集中review／少量圖文驗證／單頁清理／4h可續租期／Earth唯一queue維持。
+
 ## D38下一包已批准：第一版後巡山與返院戰報
 
 擁有人同意PF1–PF4，讀[#290正式包](docs/PATROL01_HANDOFF.md)／[Grok提示詞](docs/PATROL01_GROK_PROMPT.md)與[D38](docs/DECISIONS_AND_SOURCES.md#d38sg-patrol-01-pf1pf4批准2026-10-24)。Grok先收尾#279／PR282及#184／PR289，兩部分接受／Earth合dev／postCI且PO記單一8800第一版更新、本文件接受／整合／postCI後，再290新claim／最新dev新支線。未到前置不預占工程；本文件不擋原第一版／不改原作者租期，D37不等282合併可接續的批准保留。

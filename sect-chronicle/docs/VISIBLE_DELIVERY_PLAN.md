@@ -1,5 +1,11 @@
 # 可見交付、驗證與正式整合
 
+## D39新增設計委託，主線順序不變
+
+[#182／SCENE-02完整包](SCENE02_HANDOFF.md)／[Grok提示詞](SCENE02_GROK_PROMPT.md)：Grok交完289及本輪必要集中補修，可利用等待整合時間在新design/art182-scene02/**重新構圖，只交完整圖／空間與分鏡，不改runtime。水源至出口／坡地門路、宿舍一床→雙床／擴房與其他backlog功能用地要合理並標現有／候選；研究[開源床位](ROOM_BEDS_RESEARCH.md)，不先造建造引擎。
+
+不等新文件merge／290實裝才可設計，也不反過來讓新圖成290或第一版前置。原D37橋面貼片被底圖遮住的真P2修復保留，新水系／宿舍要求是另包設計，不追溯改289DoD。已批主線仍先第一版接受／Earth合dev／postCI並更新同8800→290新claim；設計與程式同作者串行安排，圖選定差異後才另整合，保持單一可玩版。
+
 ## D38已批准下一整包：第一版後巡山與返院戰報
 
 擁有人同意PF1–PF4，主[#290](https://github.com/lalagrass/earth-ascension/issues/290)，[正式包](PATROL01_HANDOFF.md)／[Grok提示詞](PATROL01_GROK_PROMPT.md)。先D36＋D37第一版接受／Earth合dev／postCI並更新單一8800、正式文件接受／整合／postCI，再Grok新claim完整巡山；D07不再只列候選，也不插成第一版前置。原D37作者／補修／可接續開發權限不變。
