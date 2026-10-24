@@ -70,7 +70,7 @@ const trace = (page) => page.evaluate(() => {
   s = await snap(page);
   check(s.clean && s.clean.by === 'hero' && s.clean.phase === 'wait' && s.people.hero.mode === 'carry', '派遣後占等待名額、原趟照走');
   check(/交付後去清理/.test(await page.textContent('#toast')), `提示：${await page.textContent('#toast')}`);
-  check(await page.locator('#panel [data-palm="adept"][disabled]').count() === 1, '任務中掌法比較 fixture 鎖定');
+  check(!(await page.evaluate(() => window.demo.setPalm('hero', 'adept'))).ok, '任務中掌法比較 fixture（測試 API）鎖定');
   const trips0 = s.people.hero.trips;
   await page.keyboard.press('4');
   await wait(page, () => window.demo.snapshot().people.hero.mode === 'toRat');
@@ -115,7 +115,7 @@ const trace = (page) => page.evaluate(() => {
   // 2. 新局：熟練 fixture、前往中取消→走完當段返院
   await page.click('#reset');
   await pick(page, 'hero');
-  await page.click('#panel [data-palm="adept"]');
+  await page.evaluate(() => window.demo.setPalm('hero', 'adept')); // SG-TRAIN-01：UI 按鈕已移除，改測試 API
   s = await snap(page);
   check(s.people.hero.palm === 'adept' && s.rats.every((r) => r.mode === 'sniff'), '新局三鼠重設；無任務時可改熟練 fixture');
   await page.click('#boar [data-cmd="clean"]');
@@ -148,7 +148,7 @@ const trace = (page) => page.evaluate(() => {
   check(/主角正在清理（全場只一份）/.test(await np.textContent('#panel')), '390：熟手面板說明全場只一份');
   await np.screenshot({ path: path.join(OUT, 'narrow-1-reason.png') });
   await pick(np, 'hero');
-  check(await np.locator('#panel [data-cmd="cleanCancel"]').count() === 1 && await np.locator('#panel [data-palm][disabled]').count() === 2, '390：主角面板有取消清理、fixture 鎖定');
+  check(await np.locator('#panel [data-cmd="cleanCancel"]').count() === 1 && await np.locator('#panel [data-palm]').count() === 0, '390：主角面板有取消清理、無 fixture 按鈕（SG-TRAIN-01）');
   check(!overlap(await rect(np, '#boar'), await rect(np, '#panel')), '390：鼠卡與面板不重疊');
   await np.screenshot({ path: path.join(OUT, 'narrow-2-panel.png') });
   await np.click('#panel [data-cmd="cleanCancel"]');
