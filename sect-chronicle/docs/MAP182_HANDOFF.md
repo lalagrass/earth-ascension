@@ -1,5 +1,17 @@
 # MAP182：完整道館生活地圖設計工作包
 
+## D37現在接手入口
+
+PR278 D35有限接線已接受／合dev ac7148d／postCI40004282037並更新8800；下面是歷史設計／有限交付，不等於全圖已完成。擁有人已批准[全場景水彩完整包](ART184_WATERCOLOR_HANDOFF.md)／[Grok提示詞](ART184_WATERCOLOR_GROK_PROMPT.md)：排程已更正：Grok現在可新claim主184、182互連，最新dev新支線普通merge本人282候選、標depends282，接續一新工程PR完成整張地圖。原282存讀缺陷仍必修，但不等review／整合才製作場景；最後Earth依序整合。更正文件不是新開工gate。必要架構／設計／相關功能授權以D37為準，不沿舊薄接線限制；長通勤、速度差與玩法保留，母單其餘backlog仍OPEN。
+
+**D35目前接續（2026-10-24）**：主追蹤#184的[Grok場景素材／雙人工作包](ART184_PRODUCTION_HANDOFF.md)／[prompt](ART184_PRODUCTION_GROK_PROMPT.md)，本182只配置互連。Gemini274保留；Grok先獨立A出圖，LP17最終接受／Earth合dev／postCI後同主筆B接線，取消固定執行總時限，按根claim可續。保持原長路／速度與模型幾何，本包不重開完整地形／巡山玩法；舊D32／D25 prompt不授本新包。
+
+## D32目前接續：Grok可自由深化新總圖，舊成果保留
+
+主追蹤#184，配置關聯本#182，依[完整場景／三人工作包](ART184_SCENE_TRIO_HANDOFF.md)／[Grok提示詞](ART184_GROK_BOT_PROMPT.md)及[D32批准](DECISIONS_AND_SOURCES.md#d32grok完整場景與三人人物設計批准2026-10-23)。新概念可提出更合理地勢、生活區／功能點、村落來路與外圍巡山，不必綁舊圖坐標；新舊配置分清、長通勤及觀看人物奔波保留。堂弟村居偶訪，女孩受疼愛的道館日常融入構圖。
+
+只新design/art184-scene-trio/**，不重開PR250／248、不改舊圖／demo或#267。Grok畫新主案，Gemini保留原收尾；未來採用哪些配置與遊戲接線另列範圍。本#182與#184母單維持OPEN，不用下方D25舊Gemini提示詞啟動本新包。
+
 ## 設計已交付；LP-13長挑水路W1–W4已批准（2026-10-23）
 
 PR250已由非作者接受、Earth合dev dff6f310／postCI39906919235五SUCCESS。原總配置、畫風與有限預演交付完成；#182維持OPEN追蹤後續實裝。下方D25四項補修與原設計claim為歷史，不再用其啟動。PR248只保留來源／原branch／review，不再整合。

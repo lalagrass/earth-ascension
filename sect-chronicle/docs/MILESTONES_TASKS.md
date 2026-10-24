@@ -1,5 +1,24 @@
 # Milestone 與 task backlog
 
+## D37最新：第一版需要全場景水彩統一（2026-10-24）
+
+擁有人已批准[全場景完整包](ART184_WATERCOLOR_HANDOFF.md)／[Grok接手提示詞](ART184_WATERCOLOR_GROK_PROMPT.md)。主#184、配置#182、生活閉環#279；PR278 D35局部整合已合dev ac7148d／postCI40004282037並更新單一8800，不能再把它稱全圖美術完成。整張地表、院落、藥圃、長路、溪橋／泉眼與角色／獸要在真遊戲中風格一致；優先已有素材、缺件補圖。
+
+Grok有本包必要架構、場景設計與相關觀察／呈現功能自主權，詳正式包；原長通勤、速度差、玩法與存讀相容保留。已移除「PR282先接受／合dev／postCI才可開發」的誤設等待：同Grok現在可184新claim，最新dev新支線普通merge本人282候選、標depends282，連續做完整場景；原存讀補修仍交付前修好、原期限不重置。Earth按282→場景整合與發布，不把開發也卡在queue，不按素材拆交接；本次排程更正立即生效，不再等更正文件合併。第一版須D36生活閉環＋D37全圖美術都接受／整合／postCI並更新同入口；下方D35／36局部完成說明不取代此新出口。純文件合併不代表作者已啟動。
+
+## D36目前批准與接手（2026-10-24）
+
+擁有人已批准#279／SG-LIFE-01的M1–M4及同Grok多批次做到完成：先PR278美術兩P2補修，再連續飲水自理與最小本地存讀，下次集中review。以[正式工作包](LIFE01_HANDOFF.md)／[最新提示詞](LIFE01_GROK_PROMPT.md)為準；下方M1–M4待批准／美術完成就停止的文字是原提案與歷史範圍，不再作當前阻擋。新增功能仍等本正式文件非作者接受／Earth合dev／postCI後本人279新claim。
+
+本輪候選串接允許同Grok自校D35後，新支線從最新dev普通merge自己checkpoint、標depends278，不逐內部批次空等；PR278維持美術唯一主PR，飲水＋存讀另同一完整主PR。這不允許自合dev／發布／改8800，未審候選不宣稱接受；下次非作者集中review後Earth按依賴整合。無執行總限時、達標早停，4h有效租期／必要差異驗證、單頁清理與單版本維持。
+
+
+## 生活入口目前milestone規劃（2026-10-24）
+
+LP17已合dev `28bb2e7`／postCI39991587455通過並更新單一8800；D35 Grok素材A已接受、B可接續，原工作包不變。下一milestone建議見[SG-LIFE-01可持續生活試玩](LIFE_MILESTONE_NEXT.md)：飲水自理與最小存讀，必要技術邊界隨包處理；**M1–M4待批准，不授新實作**。
+
+當前唯一排序見[可見交付表](VISIBLE_DELIVERY_PLAN.md#d30目前唯一執行優先序)。下方SG-01～12／舊RT里程碑保留契約與歷史證據，不代表當前入口仍按原排程，也不能因生活美術通過就宣稱舊SG-M2全部未驗項完成。
+
 ## D10目前執行順序：先交唯讀生活觀察版
 
 最新批准見[決策D10](DECISIONS_AND_SOURCES.md)與[REALTIME_LIFE_SLICE](REALTIME_LIFE_SLICE.md)。RT-00～02已逐包合dev／postCI，RT-02 #108的dev為0875d116。擁有人已選「先做 viewer」，下一包[RT-02V #129](https://github.com/lalagrass/earth-ascension/issues/129)開放待認領，讀[RT02V_HANDOFF](RT02V_HANDOFF.md)。Grok額度用盡，不再指定其自動接續。

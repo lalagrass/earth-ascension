@@ -1,0 +1,51 @@
+{
+ "package": "D35-B",
+ "resolution": 2,
+ "characters": [
+  "hero",
+  "cousin"
+ ],
+ "background": "bg.png",
+ "scenery": {
+  "bamboo": {
+   "file": "bamboo.png",
+   "w": 182,
+   "h": 236,
+   "anchor": [
+    91,
+    235
+   ],
+   "scale": 2
+  },
+  "boulder_l": {
+   "file": "boulder_l.png",
+   "w": 88,
+   "h": 60,
+   "anchor": [
+    44,
+    59
+   ],
+   "scale": 2
+  },
+  "boulder_m": {
+   "file": "boulder_m.png",
+   "w": 79,
+   "h": 48,
+   "anchor": [
+    39.5,
+    47
+   ],
+   "scale": 2
+  },
+  "boulder_s": {
+   "file": "boulder_s.png",
+   "w": 60,
+   "h": 36,
+   "anchor": [
+    30,
+    35
+   ],
+   "scale": 2
+  }
+ }
+}

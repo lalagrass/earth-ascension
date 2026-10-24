@@ -1,5 +1,45 @@
 # Earth 主專案與遊戲子專案的隔離接手計畫
 
+## D36目前批准與接手（2026-10-24）
+
+擁有人已批准#279／SG-LIFE-01的M1–M4及同Grok多批次做到完成：先PR278美術兩P2補修，再連續飲水自理與最小本地存讀，下次集中review。以[正式工作包](LIFE01_HANDOFF.md)／[最新提示詞](LIFE01_GROK_PROMPT.md)為準；下方M1–M4待批准／美術完成就停止的文字是原提案與歷史範圍，不再作當前阻擋。新增功能仍等本正式文件非作者接受／Earth合dev／postCI後本人279新claim。
+
+本輪候選串接允許同Grok自校D35後，新支線從最新dev普通merge自己checkpoint、標depends278，不逐內部批次空等；PR278維持美術唯一主PR，飲水＋存讀另同一完整主PR。這不允許自合dev／發布／改8800，未審候選不宣稱接受；下次非作者集中review後Earth按依賴整合。無執行總限時、達標早停，4h有效租期／必要差異驗證、單頁清理與單版本維持。
+
+
+## D35最新並行：Gemini LP17保留，Grok A出圖／B續接
+
+擁有人批准[Grok工作包](ART184_PRODUCTION_HANDOFF.md)／[可貼prompt](ART184_PRODUCTION_GROK_PROMPT.md)。本文件非作者接受／Earth合dev／postCI後Grok本人184新claim；A僅design/art184-production/**，與Gemini #274檔案隔離，不讀其未公開成果、不要求它等新圖。B等LP17最終非作者接受／Earth合dev／postCI才依最新dev／新白名單接續，該時段同一Grok為本美術整合主筆，同一主PR集中review；不改Gemini原scope／期限或預占B。
+
+Grok本包取消執行總時限，按A–D做到完成；claim仍按根4h租期附新證據續期，review等待／blocked／中斷按原狀態處理。與下方Gemini2h、D32舊出圖時限區分；不自啟其他agent／排程。單一正式試玩版、精簡驗證及唯一queue照舊，184／182母單保持OPEN。
+
+## D34目前核心包與單版本試玩
+
+Gemini下一包[#274／LP17](LP17_HANDOFF.md)／[提示詞](LP17_GEMINI_PROMPT.md)同時交道館／長路環境、雙人活動素材及薄接線，一位主筆一個工程PR集中review。LP16已交付，本文件非作者接受／Earth合dev／postCI後本人最新dev新claim，不續舊租期。原長通勤與速度／模型／動作契約保留，詳白名單；沒有另派Grok重疊改同批檔案。
+
+擁有人已改成[只留一個正式試玩版](VALIDATION_POLICY.md#單一正式試玩版本)：由PO在工程接受／合dev／postCI後更新同8800、清自有舊部署副本，不保留回退入口／常駐舊快照／備份tar。歷史段落保留上一版的要求不再適用；Git／作者worktree與必要證據保留。D31與精簡驗證／清理照舊。
+
+## D33目前核心作者與整合包
+
+已核#267／270合dev及各五項postCI成功；Gemini原#259收尾完成，不續舊claim。下一完整工程包為[#271／LP16](LP16_HANDOFF.md)／[提示詞](LP16_GEMINI_PROMPT.md)：本文件非作者接受／Earth合dev／postCI後，Gemini本人最新dev新claim，一位主筆同時完成局部素材、採藥視覺與長水路材質呼應、接線及必要文件，一個PR集中review。未代啟／預占，沒有另派Grok改同批檔案。
+
+只寫LP16白名單，原模型／路線／atlas與長通勤速度差保留，完整地圖／第三角色延後；舊D32設計作者分工成為已交付歷史。依D31復用未變證據、必要當前CI與唯一queue，作者不更新8800；工程接受／實際合dev／postCI後遊戲PO更新同入口。#184／182母單保持OPEN。
+
+## D32目前分工：Grok新視覺包，Gemini收尾原設計
+
+擁有人已批准[D32](DECISIONS_AND_SOURCES.md#d32grok完整場景與三人人物設計批准2026-10-23)。主追蹤#184、配置連#182，讀[正式工作包](ART184_SCENE_TRIO_HANDOFF.md)與[Grok提示詞](ART184_GROK_BOT_PROMPT.md)。
+
+| 主筆 | 本輪範圍／交接 |
+|---|---|
+| Grok（實際入口於claim自述） | D32文件接受／Earth合dev／postCI後本人#184新claim，只design/art184-scene-trio/**；整包主視覺、三人同框、女孩表情與來源配置說明，一個設計PR。可與267不同檔案並行，不自行接runtime |
+| Gemini | 原#259／PR267的design/herb-life/**收尾，沿原作者／期限與review，不因Grok回來換人或加大重畫。後續整合另依選定差異／批准範圍新claim |
+| 小說PO | 依人類跨聊天授權同步#251人物：女孩受寵／衣著較好、內向溫柔親切；堂弟村居偶訪。管理小說人設／必要旁註，遊戲PO與Grok不改小說檔 |
+| 遊戲PO／Earth PO | 遊戲PO集中審設計與選採用差異；Earth保留唯一dev queue／當前CI與postCI。藝術設計合併不自動替換8800或宣稱角色已入遊戲 |
+
+本地Grok可復用自有乾淨美術worktree（舊grok-art184），從最新dev新codex分支並保留舊branch；託管bot按repo／issue／新branch工作，不假裝能用本機絕對路徑。不要碰Gemini worktree、未提交內容或未公開圖。新總圖可自由提改配置／功能點，但標現況／景觀／未來候選與整合差異，不擅改遊戲幾何、規則或角色數量。
+
+下方D31方法沿用；D25的Gemini接圖是歷史交接，現在只保留#267原範圍，新設計依本D32。女孩設定不使堂弟變長住，三人同框只代表一次聚在道館的視覺參考。
+
 ## D31：單一主筆完整工作包與集中審查
 
 2026-10-23擁有人已批准，來源見[D31](DECISIONS_AND_SOURCES.md#d31單一主筆完整工作包與集中審查2026-10-23)／[#265](https://github.com/lalagrass/earth-ascension/issues/265)。本節是目前遊戲協作流程，覆蓋下方歷史「每個小task交接」的解讀，不改根契約或既有明示產品前置。
@@ -17,7 +57,7 @@
 1. 作者完成整包與自校，PR一次列3–5組驗收結果、實際head/base、少量可見證據、未完成與限制；必要文件同PR更新，不把作者自校冒充獨立review。
 2. 遊戲PO／非作者讀完整受影響diff，核對證據，**一次整理已發現阻擋清單**。錯誤資料、命令／暫停副作用、原DoD缺漏、來源不實及相容風險需補；非阻擋美化／個人偏好／可選重構標建議並集中留backlog，不邊審邊擴DoD。新head有新問題可追加，說明新差異／發現原因，不承諾只准一輪。
 3. 同一主筆集中補修，回填新head與對應結果。審查者重看差異與必要反例，復用未變結果；缺證據先指出可復用的最小補件，不一律要求作者重跑或另做一套示意稿。受影響的原驗收仍須成立。
-4. 通過後一次將ready PR與審查結論交[#67](https://github.com/lalagrass/earth-ascension/issues/67)／Earth唯一queue。Earth依根契約核範圍、head/base、當前合併結果／必要CI並squash dev，不再重做一整輪遊戲體驗驗收；若有新差異、失敗或證據疑點仍補查。queue確認postCI後，遊戲PO回填結果；runtime入口由PO按既有權限更新並保留上版。
+4. 通過後一次將ready PR與審查結論交[#67](https://github.com/lalagrass/earth-ascension/issues/67)／Earth唯一queue。Earth依根契約核範圍、head/base、當前合併結果／必要CI並squash dev，不再重做一整輪遊戲體驗驗收；若有新差異、失敗或證據疑點仍補查。queue確認postCI後，遊戲PO回填結果；runtime入口由PO按[單版本政策](VALIDATION_POLICY.md#單一正式試玩版本)更新同8800，只維持當前接受版。
 
 驗證、單一測試頁／服務、復用與收尾只引用[VALIDATION_POLICY](VALIDATION_POLICY.md)，工作包只加本次直接風險／例外。短進度是資訊，普通步驟不用等PO回覆；真正產品取捨仍交原決策者。
 

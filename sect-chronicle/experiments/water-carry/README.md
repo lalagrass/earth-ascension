@@ -22,6 +22,8 @@
 | LP-12 自主清鼠與玩家覆寫（[#241](https://github.com/lalagrass/earth-ascension/issues/241)） | 本版實作；審查／合併見 issue | 同一 `/demo/`；契約見 [LP12_HANDOFF](../../docs/LP12_HANDOFF.md)／D22。面板「有限清理 · 掌法」每人多一個「自主清鼠」開關（預設關，主角／熟手獨立）；院內有可觸及有效鼠、無全場鎖且未被抑制時起意願。工作中等原趟交付、精力≤30等恢復至80、休閒回院後在院中查驗（護院／整理優先）後正式受理；同一時間全隊至多一人執行，出發至真返院全程占鎖。有效玩家指令（改工作／開始／停工／取消／叫回／護院／整理／手動清鼠／取消清理）清意願並抑制自主；取消行走中走完當段返院、起手收手（扣2精力不退）、收勢保留擊倒真返院。面板可手動「重新允許」（解除抑制）；開關關閉僅取消自主出發，手動指派保留。無 HP／XP／繁殖／離屏生態。模型反例 `checks/autoclean.test.mjs` |
 | LP-13 長挑水路最小可見切片（[#254](https://github.com/lalagrass/earth-ascension/issues/254)） | 本版實作；審查／合併見 issue | 同一 `/demo/`；契約見 [LP13_HANDOFF](../../docs/LP13_HANDOFF.md)／D27。保留 1600×900 原院落與 HOME (962,512)，向南擴建至 1600×1350。由 `demo/water-layout.mjs` 提供權威 points、長度 1700.9（批准範圍 1650–1750）與新泉眼掛點 (352, 1245)；舊泉池保留純景觀並移除取水標記。同路同負重下熟手 Lv3 首趟 3815 ticks（約 63.58 秒）先返院交付，主角 Lv1 首趟 4733 ticks（約 78.88 秒）顯著奔波差（約 15.3 秒）；主角交付後晉升 Lv2，第二趟步數降至 4212 ticks（節省 515 ticks，約 8.58 秒）。長路中改令於交付後執行；首趟工作消耗 78.8 精力，交付後降至 21.12（≤30）走去石凳休息，回滿 80 後開工。南段圖層含步石、竹林、溪橋前後遮擋（`zIndex` 分層）與谷底深潭，相機平滑支援桌機與 390px 視窗。局部反例 `checks/water13.test.mjs` |
 | LP-14 生活觀察介面（[#257](https://github.com/lalagrass/earth-ascension/issues/257)） | 本版實作；審查／合併見 issue | 同一 `/demo/`；契約見 [LP14_HANDOFF](../../docs/LP14_HANDOFF.md)／D28。O1 觀察優先：HUD 精簡聚焦時間、存量與人物快捷；野豬／鼠群／護欄收納為可展開的「院落近況」摘要卡片（預設緊湊摘要，點擊展開完整條與派遣）。O2 人物小卡：選人先顯工作、精力、下一步／停止原因與腳力成長回饋；常用挑水／採藥／停工／復工一鍵可達。O3 進階按需：自主護院／整理／清鼠開關與傾向、掌法 fixture 整合入「進階設定」折疊區，純 UI 展開不發命令；新增可見鏡頭跟隨控制（手機不依賴 0 鍵恢復）。O4 單純 UI 切片：同場景先畫面流程（`design/life-observation/`），再同包薄接線；原模型、路線、數值、命令語義與時鐘 100% 保留。局部反例 `checks/water14.test.mjs` |
+| LP-16 美術與採藥視覺整合（[#271](https://github.com/lalagrass/earth-ascension/issues/271)） | 本版實作；集中 review | 同一 `/demo/`；契約見 [LP16_HANDOFF](../../docs/LP16_HANDOFF.md)／[design/lp16-integration/](design/lp16-integration/)。A 場景真正更新：東坡藥圃精修深褐梯田土畦溝壑、18組立體藥草植株、帶竹節與橫綁繩的竹籬，補西側灌溉陶甕與東側靠放木鋤；曬藥架精修粗竹立柱榫接斜撐與雙層大竹篩經緯篾條編織紋理，草藥束清晰可辨；長挑水路石階（點 1～3、點 12～14）呼應 Grok 暖灰鑿面與苔綠。B 採藥動作：原 atlas 渲染層呈現採摘（4s 內 k<0.5 蹲身採藥、k>=0.5 直身裝簍）、負重背回（滿簍在背）、交藥（4s 身側卸簍、實存與浮字誠實同步）。C 長通勤與真成長不變：模型速度、精力、1700.9 水路與 515.2 藥路、當趟後生效契約 100% 保留。D 可整合交付：原創可編輯向量模組 `demo/assets/lp16/herb-decor.mjs`，無第三方依賴。 |
+| LP-17 道館場景與雙人美術整合（[#274](https://github.com/lalagrass/earth-ascension/issues/274)） | 本版實作；集中 review | 同一 `/demo/`；契約見 [LP17_HANDOFF](../../docs/LP17_HANDOFF.md)／[design/lp17-integration/](design/lp17-integration/)。A 整體場景：原位重繪青灰小青瓦、深木柱樑窗格、暖灰石基石板院坪、松木柴垛與古樸香爐，告別舊紅白大塊面；長挑水路南段材質呼應 Grok 暖灰木竹苔綠土色，長路 1700.9、藥路 515.2、世界 1600×1350 與可走幾何保持。B 活動雙人：主角圓潤藍短衫朱紅結、堂親瘦長橄欖褐村衣搭擦汗巾與補丁，真正套用在現有走路／負重／工作 57 幀原動作（共框 190×214、腳底 90, 184），工具不漂腳底不跳。C 原生活保持：模型速度、精力、成長、1×速度差、改工後生效與真入帳 100% 保留。D 可接手整合：新素材與烘焙腳本在 `demo/assets/lp17/**` 與 `demo/tools/export-lp17.js`，原 `template/out` 與舊圖稿只讀。 |
 | V3 可操作展示（歷史基線） | 已合 dev | [design/V3.md](design/V3.md)；入口 `python3 -m http.server 8770` 後開 `/demo/` |
 | BL-V03 第 1 步：山路與主角改前／改後（[#177](https://github.com/lalagrass/earth-ascension/issues/177)） | 已合 dev，待擁有人看 | [design/BL-V03.md](design/BL-V03.md)；靜態圖稿，未換進展示 |
 | BL-L03 長住堂親：角色卡、同路對照、指點分鏡（[#180](https://github.com/lalagrass/earth-ascension/issues/180)） | 已合 dev，靜態設計 | [design/BL-L03.md](design/BL-L03.md)；設計圖稿，沒有新增正式角色 |
@@ -33,3 +35,12 @@
 | BL-V03 第 2 步：空桶／負重走路改前／改後（[#177](https://github.com/lalagrass/earth-ascension/issues/177)） | 已交，待審 | [design/BL-V03-WALK.md](design/BL-V03-WALK.md)；動態對照 `design/walk/preview.html`，未換進展示 |
 | 整體畫風比較：同一挑水畫面，現況 vs 新風格候選（[#184](https://github.com/lalagrass/earth-ascension/issues/184)） | 已交，待審 | [design/STYLE-SCENE.md](design/STYLE-SCENE.md)；靜態候選，未換進展示 |
 | LP-10 掌法畫面稿與點選流程（[#220](https://github.com/lalagrass/earth-ascension/issues/220)） | 已交，待審 | [design/LP10.md](design/LP10.md)；熱區翻稿 `design/lp10/`，設計示意，未連遊戲 |
+
+### D35（#184）Grok 手繪人物／道館／景物實裝
+
+- 執行期素材在 `demo/assets/art184-production/`，由 `node demo/tools/export-art184.js`（重用 LP17 `POSE`，需 `PLAYWRIGHT_PATH`）從 `design/art184-production/sprites/` 產生。
+- `hero.json`／`cousin.json` 與 `assets/lp17/` **逐字相同**（幀數、幀名、rect、anchor、hitbox、attach），只換 `meta.app`／`meta.source`；`app.mjs` 改讀 `ART`。
+- `bg.png`＝LP17 bg，只把原道館建物範圍（990–1510 × 186–452）換回同畫法無建物底，再放手繪正堂／側屋；院坪與功能點不動。
+- `scenery.mjs` 的竹叢與潭邊山石改用可選 `art` 貼圖，位置／zIndex 不變，未傳 `art` 時沿用原 Graphics。
+- 補修（review 5632022434）：herbHand 站姿空手、herbGather 蹲採不帶簍（動態簍唯一）、rest 席地坐；身高實量對齊 LP17 幀；掌法肩點由 `meta.palmShoulder` 平移手臂。
+- LP17 素材保留為基線，未覆寫。

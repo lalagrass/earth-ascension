@@ -9,13 +9,15 @@ import { WATER_POINTS, WATER_LENGTH, WORLD_SIZE, SPRING_PLACE, WATER_LANDMARKS }
 import { buildLongWaterScenery } from './assets/long-water/scenery.mjs';
 import { ZONE, EXIT, PALM, SKILLS } from './palm.mjs';
 import { CLEAN_END } from './model.mjs';
+import { drawRefinedHerbPatch, drawRefinedRack, drawRefinedBasket, getRefinedBasketPlacement } from './assets/lp16/herb-decor.mjs';
 
 const SHARED = '../spikes/shared/';
+const ART = 'assets/art184-production/'; // D35：Grok 手繪人物／道館／景物；sheet 契約與 LP17 相同
 const t0 = performance.now();
 const scene = await (await fetch(SHARED + 'scene.json')).json();
 const template = await (await fetch('../template/actions.json')).json();
 const IDS = PEOPLE.map((p) => p.id);
-const sheets = Object.fromEntries(await Promise.all(IDS.map(async (id) => [id, await Assets.load(`../template/out/${id}.json`)])));
+const sheets = Object.fromEntries(await Promise.all(IDS.map(async (id) => [id, await Assets.load(`${ART}${id}.json`)])));
 const animators = Object.fromEntries(IDS.map((id) => [id, createAnimator(template, sheets[id].data)]));
 const profiles = { hero: { name: scene.ui.hero.name, label: '主角', role: '初學者 · 起始腳力 Lv 1' }, cousin: { name: '熟手同伴', label: '熟手', role: '熟手 · 起始腳力 Lv 3' } };
 const R = scene.resolution;
@@ -25,8 +27,9 @@ const app = new Application();
 await app.init({ resizeTo: window, background: '#bdc791', antialias: true, autoDensity: true, resolution: Math.min(2, window.devicePixelRatio || 1) });
 $('stage').appendChild(app.canvas);
 
-const sharedFiles = [scene.background, ...scene.props.map((p) => p.file), ...scene.vats.map((v) => v.file)];
-await Assets.load(sharedFiles.map((f) => SHARED + 'assets/' + f));
+const sharedFiles = [...scene.props.map((p) => p.file), ...scene.vats.map((v) => v.file)];
+const ART_KIT = ['bamboo', 'boulder_l', 'boulder_m', 'boulder_s'];
+await Assets.load([ART + 'bg.png', ...ART_KIT.map((k) => `${ART}${k}.png`), ...sharedFiles.map((f) => SHARED + 'assets/' + f)]);
 const TS = (f) => Assets.get(SHARED + 'assets/' + f);
 
 // ---------- 路線（只是畫面換算：模型給「走到第幾成」，這裡換成場景座標；算法在 routes.mjs） ----------
@@ -48,7 +51,9 @@ const GROWN_FROM = 3; // 本趟腳力到 Lv 3 起換成長後步態
 function pose(ph, level, mode, resting = false, id = 'hero', job = 'water') {
   const phase = mode === 'carry' && ph ? ph.name : resting ? 'rest' : 'idle';
   const at = place(phase, ph?.k || 0, job);
-  const view = { phase, k: ph?.k || 0, travelled: at.travelled };
+  // LP-16 採藥動作：Gather (4s) 依進度 k 前後切換姿態：k < 0.5 採摘（herbGather 蹲身採草），k >= 0.5 裝簍（herbDeliver/herbHand 整理入簍）
+  const animPhase = phase === 'herbGather' && (ph?.k || 0) >= 0.5 ? 'herbDeliver' : phase;
+  const view = { phase: animPhase, k: ph?.k || 0, travelled: at.travelled };
   // 模型只提供階段與進度；共用動畫用實際走過的距離換幀，不另開 walker 或時鐘。
   const pick = animators[id].pick(view, { grown: level >= GROWN_FROM });
   return { x: at.x, y: at.y, face: at.face, ...pick, travelled: at.travelled, phase };
@@ -107,25 +112,14 @@ function poseOf(id, person) {
 // ---------- 場景 ----------
 const world = new Container();
 app.stage.addChild(world);
-const bg = new Sprite(TS(scene.background));
+// LP-17：載入 Grok D32 風格青灰瓦、深木柱、石院之重繪背景
+const bg = new Sprite(Assets.get(ART + 'bg.png')); // LP17 bg＋手繪正堂／側屋（院坪與功能點不動）
 bg.scale.set(1 / R);
 world.addChild(bg);
-// 採藥小路與藥圃：簡單原創圖形，畫在地面層（人物一律在上面）。
+// 採藥小路與藥圃：LP-16 精修梯田土畦、18組藥草植株、竹籬、陶甕與靠放木鋤
 const ground = new Graphics();
 {
-  const pts = HERB.points.flat();
-  ground.poly(pts, false).stroke({ width: 15, color: 0xc9b07a, join: 'round', cap: 'round' });
-  ground.poly(pts, false).stroke({ width: 11, color: 0xe2d1a2, join: 'round', cap: 'round' });
-  const { x, y } = HERB.patch;
-  ground.ellipse(x, y + 8, 74, 30).fill(0x8a6b45).stroke({ width: 2, color: 0x6e5434 });
-  for (let r = 0; r < 3; r++) ground.ellipse(x, y - 4 + r * 12, 60 - r * 4, 4).fill({ color: 0x6e5434, alpha: 0.45 });
-  for (let i = 0; i < 18; i++) {
-    const r = i % 3, c = Math.floor(i / 3), tx = x - 50 + c * 20 + (r % 2) * 8, ty = y - 6 + r * 12;
-    for (const [dx, a] of [[-4, -0.5], [0, 0], [4, 0.5]]) ground.ellipse(tx + dx, ty - 5, 2.6, 6).fill(r === 1 ? 0x5f9a4a : 0x4f8a3e);
-    ground.circle(tx, ty - 11, 1.8).fill(0xe8d16a);
-  }
-  // 竹籬兩段
-  for (let i = 0; i < 6; i++) ground.rect(x + 76 + (i % 2) * 2, y - 20 + i * 8, 3, 12).fill(0xa98a52);
+  drawRefinedHerbPatch(ground, HERB.patch, HERB.points);
 }
 // LP-11 有限清理區（竹護欄內西院）：虛線外框與西側出口箭頭，只是地面提示。
 {
@@ -145,7 +139,7 @@ const sorted = new Container();
 sorted.sortableChildren = true; // 依腳底 y 排序：人物走到樹叢後面時被遮住
 world.addChild(sorted);
 // LP-13：長挑水路南段場景（1600×1350 延伸地面、步石、竹林、溪流溪橋前後遮擋與新泉眼）
-buildLongWaterScenery({ world, ground, sorted });
+buildLongWaterScenery({ world, ground, sorted, art: Object.fromEntries(ART_KIT.map((k) => [k, Assets.get(`${ART}${k}.png`)])) });
 const placeSprite = (file, ax, ay, w, h, x, y) => {
   const s = new Sprite(TS(file));
   s.scale.set(1 / R);
@@ -162,7 +156,7 @@ for (const p of scene.props) placeSprite(p.file, p.ax, p.ay, p.w, p.h, p.x, p.y)
   b.ellipse(0, 6, w / 2 + 8, 9).fill({ color: 0x5b5a3a, alpha: 0.25 });
   b.roundRect(-w / 2 + 6, -4, 10, 10, 2).fill(0x8f8f86).roundRect(w / 2 - 16, -4, 10, 10, 2).fill(0x8f8f86);
   b.roundRect(-w / 2, -12, w, 9, 4).fill(0xb9b8ad).stroke({ width: 1.2, color: 0x7b7a70 });
-  for (const id of ['hero', 'cousin']) { const [sx] = SEATS[id].points.at(-1); b.ellipse(sx - x, -12, 11, 3.5).fill(id === 'hero' ? 0x9db0c8 : 0xa8bf9a); }
+  for (const id of ['hero', 'cousin']) { const [sx] = SEATS[id].points.at(-1); b.ellipse(sx - x, -12, 11, 3.5).fill(id === 'hero' ? 0x506e94 : 0x6e7c5a); }
   b.position.set(x, y);
   b.zIndex = y - 2;
   sorted.addChild(b);
@@ -276,13 +270,19 @@ function drawRat(g, r, now) {
 const armGs = Object.fromEntries(['hero', 'cousin'].map((id) => { const g = new Graphics(); g.visible = false; sorted.addChild(g); return [id, g]; }));
 const rot = ([x, y], deg) => { const a = deg * Math.PI / 180; return [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)]; };
 function drawArm(g, p, id) {
-  const robe = id === 'hero' ? 0x4f78a8 : 0x6c8a68, edge = id === 'hero' ? 0x34567f : 0x455d43;
-  const sh = rot(p.shoulder || SHOULDER, p.lean), el = rot(p.elbow, p.lean * 0.5), hd = rot(p.hand, p.lean * 0.3);
+  // LP-17：與 Grok D32 主角藍短衫／堂親橄欖褐村衣、膚色協調
+  // D35：袖色對齊 Grok 手繪新皮（主角青藍短襖／熟手褐麻衣）
+  const robe = id === 'hero' ? 0x3b5f85 : 0x7a6646, edge = id === 'hero' ? 0x264260 : 0x4e4030;
+  const skin = id === 'hero' ? 0xf3c9a4 : 0xd6a77c, skinEdge = id === 'hero' ? 0xd6a47e : 0xb0805a;
+  // 新皮肩點與舊 LP17 不同：sheet meta.palmShoulder 給實量肩點，整隻手臂（肩／肘／手）一起平移，掌法姿勢表與命中不動
+  const sh0 = p.shoulder || SHOULDER, ns = sheets[id].data.meta.palmShoulder?.[p.base];
+  const dv = ns ? [ns[0] - sh0[0], ns[1] - sh0[1]] : [0, 0], mv = ([x, y]) => [x + dv[0], y + dv[1]];
+  const sh = rot(mv(sh0), p.lean), el = rot(mv(p.elbow), p.lean * 0.5), hd = rot(mv(p.hand), p.lean * 0.3);
   g.clear();
   g.moveTo(...sh).lineTo(...el).lineTo(...hd).stroke({ width: 8.4, color: edge, cap: 'round', join: 'round' });
   g.moveTo(...sh).lineTo(...el).lineTo(...hd).stroke({ width: 6.4, color: robe, cap: 'round', join: 'round' });
   const a = p.palm * Math.PI / 180, c = Math.cos(a), s = Math.sin(a), pt = (x, y) => [hd[0] + x * c - y * s, hd[1] + x * s + y * c];
-  g.poly([...pt(-0.5, -2.8), ...pt(7, -2.8), ...pt(7, 2.8), ...pt(-0.5, 2.8)]).fill(0xf2cfa8).stroke({ width: 0.9, color: 0xb98b62 });
+  g.poly([...pt(-0.5, -2.8), ...pt(7, -2.8), ...pt(7, 2.8), ...pt(-0.5, 2.8)]).fill(skin).stroke({ width: 0.9, color: skinEdge });
 }
 
 const vatV = scene.vats[1];
@@ -292,25 +292,15 @@ const rack = new Graphics();
 rack.position.set(places.rack.x, places.rack.y + 8);
 rack.zIndex = places.rack.y + 8;
 sorted.addChild(rack);
+// 藥架：LP-16 精修兩層竹篩與竹柱斜撐，每份藥草畫一獨立束（最多 8 份）。
 function drawRack(n) {
-  rack.clear();
-  rack.rect(-26, -40, 3, 40).fill(0x8a6a3e).rect(23, -40, 3, 40).fill(0x8a6a3e);
-  for (const sy of [-36, -18]) rack.ellipse(0, sy, 27, 5).fill(0xd8bf86).stroke({ width: 1.2, color: 0x9a7a44 });
-  for (let i = 0; i < n; i++) {
-    const row = i < 4 ? -36 : -18, cx = -16 + (i % 4) * 11;
-    rack.ellipse(cx, row - 3, 4.5, 3).fill(0x5f9a4a).stroke({ width: 0.8, color: 0x3e6b30 });
-  }
+  drawRefinedRack(rack, n);
 }
-// 背簍：原創簡單圖形，load 0～1 決定冒出多少藥草。原點在簍底中央。
+drawRack(0);
+rack.n = 0;
+// 背簍：LP-16 精修竹編篾條菱紋與背帶，load 0～1 決定冒出多少藥草。原點在簍底中央。
 function drawBasket(g, load) {
-  g.clear();
-  if (load > 0) for (let i = 0; i < 5; i++) {
-    const h = 5 + 7 * load * (i % 2 ? 0.8 : 1);
-    g.ellipse(-6 + i * 3, -20 - h / 2, 2.4, h / 2 + 1).fill(i % 2 ? 0x5f9a4a : 0x4f8a3e);
-  }
-  g.poly([-9, -21, 9, -21, 6.5, 0, -6.5, 0]).fill(0xb08a4e).stroke({ width: 1.2, color: 0x6e5434 });
-  for (const y of [-15, -9, -3]) g.moveTo(-8 + (y + 21) * 0.1, y).lineTo(8 - (y + 21) * 0.1, y).stroke({ width: 0.9, color: 0x7e6036 });
-  g.rect(-9.5, -22.5, 19, 2.5).fill(0x8a6a3e);
+  drawRefinedBasket(g, load);
 }
 
 const personSprite = (id, alpha = 1, tint) => {
@@ -329,19 +319,16 @@ ring.visible = false;
 sorted.addChild(ring);
 const sprites = Object.fromEntries(IDS.map((id) => [id, personSprite(id)]));
 const baskets = Object.fromEntries(IDS.map((id) => { const g = new Graphics(); g.visible = false; sorted.addChild(g); return [id, g]; }));
-// 背簍放哪：去程背在身後（被身體擋住一部分）；回程背對鏡頭，簍在背上看得見；採集與交藥時放在腳邊。
+// 背簍放哪：LP-16 掛點精修（去程身後微遮、採集身前置簍、回程背上、交藥身側）
 function placeBasket(id, p, person) {
   const g = baskets[id], ph = person.mode === 'carry' && person.phase;
   g.visible = !!ph && person.job === 'herb';
   if (!g.visible) return;
   const s = id === 'cousin' ? 0.97 : 1, k = person.phase.k;
-  let load = 0, x = p.x, y = p.y, z = p.y - 0.03;
-  if (ph.name === 'herbOut') { x = p.x - p.face * 8 * s; y = p.y - 19 * s; }
-  else if (ph.name === 'herbBack') { x = p.x - p.face * 1.5 * s; y = p.y - 17 * s; z = p.y + 0.03; load = 1; }
-  else if (ph.name === 'herbGather') { x = p.x - 16; load = k; z = p.y + 0.03; }
-  else { x = p.x - 16; load = 1 - k; z = p.y + 0.03; } // 交藥：簍放在面向藥架的一側
-  if (g.load !== load) { drawBasket(g, load); g.load = load; }
-  g.scale.set(s); g.position.set(x, y); g.zIndex = z;
+  const placement = getRefinedBasketPlacement(ph.name, p.x, p.y, p.face, s, k);
+  const qLoad = Math.round(placement.load * 24) / 24;
+  if (g.load !== qLoad) { drawBasket(g, qLoad); g.load = qLoad; }
+  g.scale.set(s); g.position.set(placement.x, placement.y); g.zIndex = placement.zIndex;
 }
 
 const placeMark = new Graphics();

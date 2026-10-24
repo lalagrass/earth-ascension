@@ -1,5 +1,44 @@
 # Coding agent 接手入口
 
+## D37最新：Grok全場景水彩整包與自主權
+
+擁有人已批准[全場景工作包](docs/ART184_WATERCOLOR_HANDOFF.md)／[Grok提示詞](docs/ART184_WATERCOLOR_GROK_PROMPT.md)，主184／配置182／生活閉環279。**排程更正立即生效**：取消先等PR282接受／合dev／postCI才可開發全場景的誤設等待。同Grok現在可184新claim，最新dev新支線普通merge本人282公開候選、標depends282及已知阻擋，接續完整場景；原282缺陷仍在原支線修好再同步，原補修期限不重置。兩候選最後集中review、Earth依282→場景整合／postCI才發布；不再等本更正文件PR合併才動手。PR278只是已交的局部素材整合，第一版另需D37整張真遊戲地圖風格一致，不追溯改278驗收。
+
+Grok可在遊戲層自主整理場景／renderer／資產管線／必要等價介面、改場景設計，並增加本次觀看／操作相關功能，詳正式包；不再只准薄接線，也不逐模組請示。長通勤／速度差／玩法與存讀相容保留；新增世界規則、跨Earth／小說／根依賴付費等仍按原權限，不清空backlog。既有素材優先、缺圖補，一作者完整交付集中review，必要差異驗證與清理／Earth唯一queue／單一8800／無執行總限時但4hclaim可續照舊。此文件／prompt不代表已啟bot或新圖已交付。
+
+## D36最新：美術收尾後連續飲水與存讀，完成後集中review
+
+擁有人已明確批准「包含：美術收尾＋SG-LIFE-01，採M1–M4建議」，讀[正式工作包](docs/LIFE01_HANDOFF.md)／[可貼Grok提示詞](docs/LIFE01_GROK_PROMPT.md)。舊#279待決與D35完成即停止於美術的安排被本有限批准更新；PR278兩P2仍須原Grok先修，不因產品批准變成已接受。
+
+正式文件非作者接受／Earth合dev／postCI後本人#279新claim；同Grok先D35自校checkpoint，再從最新dev新支線普通merge本人美術checkpoint、標depends278，連續完成飲水＋存讀一主PR。不每個內部批次等review，也不自合dev／更新8800；下次非作者集中review、Earth按依賴整合。沒有執行總限時、完成早停，4h租期可憑進度續；仍不得自啟agent／排程或預占未開始後包。D35範圍以原包收尾，飲水／存讀只用LIFE01新白名單。
+
+
+## D35最新：Grok獨立素材後接實裝，做到完成
+
+擁有人保留Gemini完成#274，另批准[#184完整工作包](docs/ART184_PRODUCTION_HANDOFF.md)／[Grok提示詞](docs/ART184_PRODUCTION_GROK_PROMPT.md)。D35文件接受／Earth合dev／postCI後Grok本人184新claim，A僅design/art184-production/**可並行出圖；B等LP17最終非作者接受／Earth合dev／postCI後，同Grok依新白名單接續同一主PR。不要改Gemini作者／scope／原期限或未公開成果，182只互連。
+
+本Grok包不設4h／2h執行總上限、100min凍結，按A–D做到完成；根契約4h是可附新證據續的認領租期，不是交付倒數。受阻／額度中斷保存成果與續接點，不空等或自啟agent／排程。長通勤／原模型速度／動作契約、D31整包集中review、精簡驗證與單一試玩版本照舊，未代啟Grok。下方D34的Gemini2h不套用這個Grok包。
+
+## D34目前下一包：場景與雙人美術，正式試玩只留一版
+
+LP16／PR273已合dev `a363c7b`／postCI39976283668五成功，#271結案。下一包[#274／LP17工作包](docs/LP17_HANDOFF.md)／[Gemini提示詞](docs/LP17_GEMINI_PROMPT.md)：道館院落、長路環境與兩位活動人物一起改善，一位Gemini完整素材／烘焙／接線PR集中review。本文件非作者接受／Earth合dev／postCI後本人最新dev新claim，不沿LP16舊prompt。長通勤、原幾何／速度／成長與動作契約保留；全台地搬遷／女孩AI／新玩法延後。
+
+擁有人已取消試玩回退入口，按[單版本政策](docs/VALIDATION_POLICY.md#單一正式試玩版本)：同8800只維持當前接受版，不常駐舊部署快照／備份tar／版本選單；更新後清自有舊部署副本，Git歷史／來源／作者worktree與少量證據保留。下方歷史「保留LP14／上一版」不再是當前要求。D31整包、兩小時早停、精簡驗證與清理照舊，未代啟Gemini。
+
+## D33目前下一包：Gemini整合美術與採藥視覺
+
+#267／LP15設計已合dev `0403c10e`／postCI39966426048五成功；#270／D32候選已合dev `089eb39d`／postCI39966737757五成功。下一包為[#271／LP16正式工作包](docs/LP16_HANDOFF.md)／[Gemini兩小時提示詞](docs/LP16_GEMINI_PROMPT.md)，本文件非作者接受／Earth合dev／postCI後本人新claim。下方「Gemini收尾267／等待257」是歷史狀態，不重做已完成前置或沿舊prompt開工。
+
+同一主筆整包完成藥圃／藥架／簍具／四段採藥視覺與長水路局部材質呼應，一個PR集中review。原長路、坐標、模型／速度／成長與兩人fixture不變；Grok全景只作風格參考，不直接當地圖／atlas，不實裝三層台地換位或女孩AI。白名單與四組驗收以LP16為準；D31、桌面優先與精簡驗證照舊，8800只在工程接受／合dev／postCI後由PO更新。#184／182母單保持OPEN，未代啟Gemini。
+
+## D32最新美術分工：Grok完整場景與三人設計，Gemini保留LP15收尾
+
+擁有人已批准[D32](docs/DECISIONS_AND_SOURCES.md#d32grok完整場景與三人人物設計批准2026-10-23)，讀[#184正式設計包](docs/ART184_SCENE_TRIO_HANDOFF.md)／[Grok接手提示詞](docs/ART184_GROK_BOT_PROMPT.md)，聯繫#182／小說#251。Grok可自由提出更合理的道館、村落通路、長通勤與外圍山林配置，完整主視覺與三人同框一包交付，不把線框／規格表當出圖。
+
+女孩自幼被收養且受大家疼愛，穿著較好、清秀有靈氣，內向但溫柔親切、會鼓勵主角；堂弟**住村莊，偶爾上山**，不是道館固定居民或每天三人工作隊。姓名仍為小說工作名，三人圖不自動增遊戲角色／規則；小說PO獨立同步其人設文件。
+
+本D32文件接受／Earth合dev／postCI後Grok本人在#184新claim，只寫design/art184-scene-trio/**；不等#267合併才可做獨立新設計。Gemini仍原主筆／原期限收尾#259／PR267，不換人、不重做；兩者檔案分離。Grok不接runtime，Gemini後續依選定差異與另定工程範圍整合，不自動採全圖／換路線／加女孩AI。D31整包集中review、D30桌面優先及VALIDATION_POLICY照舊；下方D25的Gemini改圖分工不再支配本新包，舊成果／來源保留。
+
 ## D31目前協作方式：一位主筆完成整包，集中review
 
 依擁有人[批准D31](docs/DECISIONS_AND_SOURCES.md#d31單一主筆完整工作包與集中審查2026-10-23)，以[完整工作包流程](docs/PARALLEL_HANDOFF.md#d31單一主筆完整工作包與集中審查)為準：一個玩家目標、3–5組驗收、一位主筆、一個PR。主筆在已批准範圍自行完成畫面／行為／接線及必要文件，內部拆commit與自校，不按按鈕／圖稿／接線步驟另派人、另開審批或文件PR。非作者集中列阻擋、同主筆集中補修，非阻擋美化與重構留backlog。
