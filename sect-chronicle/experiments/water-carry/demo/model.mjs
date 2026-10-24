@@ -1293,7 +1293,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       // 休息流程中下同一工作仍有意義：解除停工；自主恢復中則已會回去做它。
       // 驅離中（或已排定）下同一工作＝取消驅離、回來做它，仍有意義。
       // 整理中（或已排定）下同一工作＝取消整理、回來做它，也有意義，不能因同工作而卡死。
-      const same = !stopped && !g && !f && job === cur && (carrying ? p.pending == null : true);
+      const same = !stopped && !g && !f && job === cur && (carrying ? p.pending == null : true) && !L2.state.fill[p.id]; // SG-LIFE-02：方針中按同工作持續＝明確切回人工持續、退出方針，不算重複
       return { id: `work:${job}`, label: `${name}（持續）`,
         detail: carrying ? (job === cur ? `取消待執行，繼續${name}` : `本趟${JOBS[cur].label}交付後改去${name}`)
           : guarding ? `取消驅離，回院中${name}` : meeting ? `結束招呼，回院中${name}` : drinking ? (p.motion.mode === 'fromDrink' ? `喝完回院中後${name}` : `沒喝完，先回院中${name}`) : fixing ? `${p.fix ? '取消整理，' : ''}回院中${name}` : p.fix ? `取消整理，${name}` : inRest ? `恢復到 ${E.backAt} 並回院中後${name}` : fun ? `叫回院中改${name}` : '做完一趟自己接下一趟，沒有空位就等',

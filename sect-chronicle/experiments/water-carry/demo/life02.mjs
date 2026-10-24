@@ -115,8 +115,9 @@ export function createLife02(ctx) {
       if (!t.ready[id] || !filling(p) || !free(p)) continue; // 只有本局明確選了自主補水的人會發起（舊局／持續工作預設不變）
       const q = s.people[ids.find((x) => x !== id)];
       t.ready[id] = false; // 一次機會：成功或被拒都要完成一趟新工作才再發起
-      if (q && free(q)) start(p, q);
-      else if (q) note(p, busyText(q));
+      // 接收方也要本局明確選了自主補水；人工持續工作者滿庫去休閒不等於同意新社交。
+      if (q && free(q) && filling(q)) start(p, q);
+      else if (q) note(p, filling(q) ? busyText(q) : `${nameOf(q.id)}在持續原工作（未選自主補水），這次不邀`);
       return;
     }
   }

@@ -156,3 +156,27 @@ test('P4 載入：成功才重設暫態；失敗時當局狀態與暫態都不�
   assert.ok(ro.ok, ro.text);
   assert.equal(m.life02.anyFill(), false); assert.equal(meetOf(m), null);
 });
+
+test('review①：方針中按「挑水（持續）」可明確切回人工持續並退出方針，之後照原規則補到 8', () => {
+  const m = mk();
+  m.dispatch('fill', 'hero');
+  const a = m.actions('hero').find((x) => x.id === 'work:water');
+  assert.equal(a.enabled, true, a.reason);
+  const r = m.dispatch('work:water', 'hero');
+  assert.ok(r.ok, r.reason);
+  assert.equal(m.life02.state.fill.hero, false);
+  assert.equal(m.state.people.hero.job, 'water');
+  assert.equal(m.actions('hero').find((x) => x.id === 'work:water').enabled, false, '已回人工持續後同工作才算重複');
+});
+
+test('review②：未選方針的人工持續者滿庫休閒時不被拉入招呼；只對一人選方針不會發起', () => {
+  const m = mk();
+  let both = false;
+  run(m, 60 * 60 * 30, () => { if (['hero', 'cousin'].every((id) => m.state.people[id].motion.mode === 'fun')) { both = true; return false; } });
+  assert.ok(both, '自然新局兩人都在休閒');
+  m.dispatch('fill', 'hero');
+  m.life02.state.ready.hero = true;
+  let met = 0; run(m, 60 * 60 * 10, () => { if (meetOf(m)) met += 1; });
+  assert.equal(met, 0);
+  assert.ok(m.life02.log().some((e) => e.person === 'hero' && /未選自主補水/.test(e.text || '')));
+});
