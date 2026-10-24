@@ -45,3 +45,10 @@ SG-LIFE-01 起有**手動**存檔／讀檔（只有一格，按鈕才動；無�
 - `scenery.mjs` 的竹叢與潭邊山石改用可選 `art` 貼圖，位置／zIndex 不變，未傳 `art` 時沿用原 Graphics。
 - 補修（review 5632022434）：herbHand 站姿空手、herbGather 蹲採不帶簍（動態簍唯一）、rest 席地坐；身高實量對齊 LP17 幀；掌法肩點由 `meta.palmShoulder` 平移手臂。
 - LP17 素材保留為基線，未覆寫。
+
+### D37（#184）全場 Grok 山居水彩統一
+
+- 整張生活入口場景（院落、藥圃、全段長路、溪橋、泉眼）改由 `demo/scene/`：`layout.mjs`（純視覺佈局，權威路線／端點全從 `water-layout.mjs`／`routes.mjs`／`palm.mjs` 讀）＋`watercolor.mjs`（烘焙地面＋貼片＋依腳底排序的手繪件）。
+- 地面是一張無接縫 3200×2700 烘焙水彩圖（`demo/assets/art184-watercolor/ground.jpg`），舊 1600×900 bg＋南段 Graphics 的接縫與大片平塗已移除；D35 的 `bg.png`、`scene.props` 與 `buildLongWaterScenery` 不再載入／已刪除（`scenery.mjs` 只留 `STREAM_POLY`／`BRIDGE_DECK_POLY` 幾何）。
+- 素材採用表、烘焙流程與證據圖見 [design/art184-watercolor/README.md](design/art184-watercolor/README.md)；來源 `design/art184-production`、`art184-scene-trio` 未覆寫。
+- 新增（只動畫面）：右下「地標快看」（總覽／院落／西坡／藥圃／長路／溪橋／泉眼，O＝總覽，0 回跟隨）與 `window.demo.look(name)`；人物走到松竹樹後方時該樹淡出；竹影與水光在暫停時凍結。都不推進世界、不入存檔、不改 saveVersion。
