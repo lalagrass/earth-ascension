@@ -4,13 +4,14 @@
 
 ## 產品 PO 與共用合併佇列
 
-專案擁有人於 2026-10-18 指定以下分工；[協調 issue #77](https://github.com/lalagrass/earth-ascension/issues/77)記錄本次指派，[共用佇列 #67](https://github.com/lalagrass/earth-ascension/issues/67)記錄目前交接。這是單一整合負責人的工作佇列，不代表啟用了 GitHub Merge Queue 功能。其他文件中既有「PO／Tech Lead 可合併」的描述，統一按本節交由共用 queue owner 執行。
+專案擁有人於 2026-10-18 指定以下分工；[協調 issue #77](https://github.com/lalagrass/earth-ascension/issues/77)記錄本次指派，[共用佇列 #67](https://github.com/lalagrass/earth-ascension/issues/67)記錄目前交接。這是共用 dev 的串行整合佇列，不代表啟用了 GitHub Merge Queue 功能。2026-10-25擁有人批准 D51 的純遊戲例外；角色操作切換以 #67 唯一生效紀錄為準，其他文件既有權限描述統一按本節解讀。
 
 | 角色 | 責任與權限 |
 |---|---|
-| Earth PO（Codex，本 PO 聊天） | 管理 Earth 的 issue、M2 驗收、M3 待決策；**兼任各產品共用合併佇列的唯一負責人**，安排整合並執行合格 PR 的 dev squash merge。 |
-| Sect Chronicle 遊戲 PO（「評估大型模擬情境」聊天） | 管理遊戲產品範圍、SG 任務、驗收與試玩；提交可審查的產品決策與 ready PR 給共用佇列，不直接執行 dev 合併。 |
+| Earth PO（Codex） | 管理 Earth／小說、混合與根契約／共用 CI／依賴／整合權限 PR；維護 #67 共用序列。D51 生效前仍為唯一 dev owner；生效後不與 grass 重複合純遊戲票。正式權限切換 PR 仍由 Earth 審合。 |
+| grass（既有雲端 Sect Chronicle 遊戲 PO／review） | D51 生效後，集中審查非本人主筆的已批准純遊戲 PR，並依 #67 串行執行合格 PR 的 dev squash merge／postCI；不擴產品授權、不合 main。生效前仍交 Earth。 |
 | 小說 PO／主筆（「規劃小說式新分支」聊天） | 管理小說章節、故事設計與編輯回饋；內容依下節輕量交付，系統提案／實作依技術審查交共用佇列。不得把作者自校冒充獨立技術審查。 |
+| 本機遊戲規劃聊天（「評估大型模擬情境」） | 整理擁有人決策與文件交接；不因 grass 接手而取得本機合併權。Mac 僅真人試玩，日常 PO／review／整合在 Cloud。 |
 | 作者與專用審查者 | 作者按單一 issue 交付；審查者檢查明確範圍並回報 head/base、證據及阻擋。共用帳號不冒充另一人的獨立 approval；審查通過後交 queue owner 整合。 |
 | 專案擁有人 | 決定跨專案資源優先序、未批准玩法與數值、重大相容性選項、付費服務及 main 發布。既有批准照常有效，無需重問。 |
 
@@ -18,6 +19,16 @@
 - Earth 與遊戲使用各自 worktree、短分支、測試資料、服務埠與存檔空間；檔案所有權見 [PARALLEL_HANDOFF](sect-chronicle/docs/PARALLEL_HANDOFF.md)。共用 CI、根目錄契約與依賴設定另開 issue，指定單一主筆。
 - 各產品 PO 更新「已交付／下一交付／阻擋／需擁有人決策」；GitHub issue／PR 保存決策與驗證證據，聊天不是唯一紀錄。各自只指派所屬產品工作。
 - 共用佇列依功能依賴、風險與同檔衝突排序，對一組 ready PR 逐份整合；每次 merge 後核對下一份的實際合併結果。另一 PO 需要插入高優先任務時，先在 #67 協調。
+
+## D51：純遊戲 PR 的 grass 權限與正式切換
+
+擁有人2026-10-25明確批准 M1 完成線與 grass 的純遊戲 review／dev 合併，總控 [#334](https://github.com/lalagrass/earth-ascension/issues/334)，完整[移交協定](sect-chronicle/docs/GAME_PR_GRASS_TRANSFER_PLAN.md)。
+
+- 純遊戲須 **完整 diff 全在 `sect-chronicle/`，且 issue／修改均屬已批准遊戲範圍**。根檔、`.github/`、跨產品／共用依賴、整合權限／分支保護交 Earth；即使檔案在遊戲目錄，也不能以路徑繞過這些邊界或批准新玩法／數值。grass 不合本人主筆 PR；共用帳號以具名 COMMENT 記真作者／reviewer，不冒充平台獨立 approval。
+- **生效**：Earth 審合正式權限 PR、確認該 push 必要 postCI；既有 Cloud Start skill 與文件一致且實際保存發布；grass 回接手收據。Earth 再於 #67 記 `effective_after_sha`、環境證據、grass owner／純遊戲範圍、Earth 停止同範圍 merge、未結票歸屬與生效時間。沒有此紀錄仍由 Earth 整合，不以本文件出現、工具可寫或 bot 留言代替切換。
+- **共用序列**：每次只有一個 active dev merge，票記 owner／PR／expected head／dev／CI。Earth／grass 先核最新 #67，另一 owner active 時等待；取得明確票歸屬再合，不同時寫 dev。#67 不是原子鎖，遇競合只停整合交雙方協調，不停作者無關工作；不新增 runner／Merge Queue 或硬性保護。
+- **驗證復用**：grass 核當前 head/base／完整 diff／實際 merge／必要 CI；已接受的產品結論不交 Earth 重審。依下方既有 gate 正常鎖 head squash，不 force／admin／跳檢查／刪作者分支；postCI 成功才 done。base 只前進無關 MD 時可復用行為證據，但當前合併必要 CI 仍須覆蓋。main／新產品／重大相容與付費仍由擁有人決定。
+- **既有票與失敗**：切換時 #333 若已有 Earth active 票，明記由 Earth 收尾或明確交 grass，不能兩邊同合。head／CI／scope 不符就暫不合；postCI 失敗沿原批准範圍交 fix／revert PR，不 rewrite dev。grass 工具／額度不足時在 #67 明記停用其 merge、未完成票與返還 Earth，再由 Earth 接管，不能自動雙 owner；已批 scope 不重問。
 
 ## 小說內容與系統的審查分流
 
@@ -113,8 +124,8 @@ expires_at：YYYY-MM-DDTHH:MM:SSZ（active／續期／接手為本留言時間�
 ## 審核、合併與發布權限
 
 - **整合目標是 `dev`。** 作者分支或 draft PR 是討論與修正處，不另設一條長期共用的「待合併」分支。`main` 僅在整個 milestone 的驗收、已知風險與發布內容由專案擁有人確認後，另走發布 PR；日常貢獻者與審核者不得直接推 `main`。
-- **各產品 PO／Tech Lead 準備審查，共用 queue owner 統一整合。** 先看依賴與同檔衝突，優先合併獨立 CI／驗收基礎，再合併已定契約的修復；相互依賴的 PR 依前置到後置排序。每次合併後重看其餘 PR 對最新 `dev` 的適用性。PR 綠燈不等於 M2／M3 milestone 通過。
-- **可直接合併到 `dev` 的條件：** issue／認領與範圍清楚、非 draft、無未解阻擋意見或待定產品選項；審核者檢查完整 diff、實際 head、基底與合併結果；GitHub 顯示可合併；適用的 CI 通過，並依改動完成固定 seed、M1 回歸、遷移、多 seed 或瀏覽器驗證。文件 PR 須檢查連結、契約一致性與不夾帶程式。證據齊全時，由共用 queue owner（目前 Earth PO）代表維護流程以 **squash merge** 合入 `dev`，在 PR 留下判定與測試；合併時核對 head SHA，不用強制合併、跳過檢查或刪除作者分支。
+- **各產品 PO／Tech Lead 準備審查，按 D51 的角色與 #67 唯一票整合。** 先看依賴與同檔衝突，優先合併獨立 CI／驗收基礎，再合併已定契約的修復；相互依賴的 PR 依前置到後置排序。每次合併後重看其餘 PR 對最新 `dev` 的適用性。PR 綠燈不等於 M2／M3 milestone 通過。
+- **可直接合併到 `dev` 的條件：** issue／認領與範圍清楚、非 draft、無未解阻擋意見或待定產品選項；審核者檢查完整 diff、實際 head、基底與合併結果；GitHub 顯示可合併；適用的 CI 通過，並依改動完成固定 seed、M1 回歸、遷移、多 seed 或瀏覽器驗證。文件 PR 須檢查連結、契約一致性與不夾帶程式。證據齊全時，由當時合法 queue owner（D51 生效後純遊戲為 grass，其餘為 Earth）代表維護流程以 **squash merge** 合入 `dev`，在 PR 留下判定與測試；合併時核對 head SHA，不用強制合併、跳過檢查或刪除作者分支。
 - **先停下交由專案擁有人決策：** 新玩法或尚無事前規格的數值門檻、版本或舊檔語義改變而缺遷移選擇、M3 實作範圍、付費模型／外部服務、重大效能與資料風險，以及 `main` 發布。審核者先整理選項、代價與可執行證據；產品決策明確後才讓作者完成 PR。已寫入事前驗收的候選上限可作驗證防線，但仍標「待校準」，不能因此宣稱正式定值或 milestone 已驗收。
 - **有阻擋就不合併。** CI 失敗、衝突、缺少最新合併結果的證據、缺少所需審核或未解阻擋意見，先修正並重新核對。若舊 PR 的 CI 尚未包含新加入的必要檢查，queue owner 安排更新分支或對當前合併結果重新執行，取得正確證據後才合併；不得把舊綠燈當成新 gate 通過。合併後確認遠端 `dev` SHA 與 CI；失敗時開修復或 revert PR，記錄原因，不以改寫共享歷史處理。
 
