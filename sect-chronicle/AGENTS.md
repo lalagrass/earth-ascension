@@ -1,5 +1,15 @@
 # Coding agent 接手入口
 
+## D53：主角與收養小女孩SOCIAL01整包工程已批准
+
+擁有人2026-10-25已明確批准 **D53／S1–S4**，主[#337](https://github.com/lalagrass/earth-ascension/issues/337)。[SOCIAL01正式包](docs/SOCIAL01_HANDOFF.md)／[Grok接手提示詞](docs/SOCIAL01_GROK_PROMPT.md)為工程契約；D52／原提案待選文字只留沿革，不再重問S1–S4。
+
+一位Grok完整開發**主角與道館收養小女孩**的空檔自主＋玩家邀聊、真走近對話／女孩溫柔鼓勵、本局可回看相處事件與可靠取消／續原生活；親情與陪伴，不加第三AI／堂親／戀愛道侶、不重設既有家人身分。鼓勵不加buff，新社交資料只本局；同一正式生活入口、原長通勤速度差／玩法與資料保持，保存升版及手機適配最後。
+
+本次PO正式文件經grass差異審合dev／必要postCI後，Grok本人核337最新狀態／無有效重疊作者，從當時最新dev新codex分支與自有Cloud／box認領一個完整工程包。4h為可附具體進度續期的claim，不是總工時；不代領runtime或假稱已啟動Grok，接收方式仍由人類貼既有網頁／App。
+
+一作者一主PR，模型／對話素材動作／UI與必要局部整理一起交付，grass集中review／同PR補修新head只驗差異；按D51與#67串行整合、核當前必要CI與postCI，不再交Earth重做同一產品驗收。純文件不開遊戲；工程只驗直接風險＋一段必要Cloud桌面、未變M1證據復用，Mac只真人、不代部署，必要頁／服務finally清理。工程完成與必要補修後休息，不自接後包或建永久循環。
+
 ## D52：先規劃主角與小女孩的相處，未授新runtime
 
 擁有人2026-10-25已確認D52：採納PR329 review的近期順序，下一個生活里程碑先規劃**主角與道館收養的小女孩**的聊天、鼓勵與可讀關係變化。主[#337](https://github.com/lalagrass/earth-ascension/issues/337)，[SOCIAL01整包提案](docs/SOCIAL01_BATCH_PROPOSAL.md)／[北極星願景](docs/vision/NORTH_STAR.md)。本次批准方向與文件規劃，具體S1–S4為PO建議待定，**尚未授runtime／門檻數值**，不自啟Grok或預占實作。
