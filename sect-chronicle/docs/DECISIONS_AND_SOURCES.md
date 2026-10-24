@@ -1,5 +1,19 @@
 # 決策、來源與風險
 
+## D50：第一生活里程碑與grass合併移交之規劃委託（2026-10-25）
+
+擁有人台北2026-10-25要求：
+
+> 好，幫我整理第一個生活里程碑要完成的 issue 清單、順序與待決事項，並規劃把遊戲 PR 的 review／dev 合併責任移交 grass。也確認 Grok 的接棒方式，整理雙方提示詞，讓他們逐包交替，指定清單全部完成後休息，存檔升版和手機適配繼續排最後。
+
+並明確回覆Grok接收方式：「手動貼到 Grok 網頁／App」。總控[#334](https://github.com/lalagrass/earth-ascension/issues/334)，[執行表](LIFE_M1_EXECUTION_PLAN.md)／[移交規劃](GAME_PR_GRASS_TRANSFER_PLAN.md)／[接棒協定](GROK_GRASS_HANDOFF_PROTOCOL.md)／[Grok](LIFE_M1_GROK_PROMPT.md)與[grass](LIFE_M1_GRASS_PROMPT.md)prompt。
+
+本次授權規劃／文件交付，**不是宣稱擁有人已批准實際切換合併權或新玩法／自動化服務**。推薦M1沿既有基線＋330為完成線、剩餘實作白名單[330]，本總控收尾只復用來源／接受SHA／CI與真人試玩說明；更多母題另定，330原D49可照常開發review，不因規劃多一道gate或重設claim。Grok已交PR333、Cloud有一項屋內床位呈現阻擋，接續原作者同PR補修而非第二review。
+
+grass接手純遊戲PR review／dev squash合併的正式批准、根契約／環境限制同步與#67唯一cutover收據仍待辦，目前Earth唯一merge不變。Grok只核到人工貼入口，沒有已驗callback／runner；雙方用GitHub最小head／stage／下一步訊息與人類轉貼，未建立排程／webhook或購買服務，不把接棒紀錄當自動喚醒。指定清單全部done後休息；未決／權限／額度阻擋需如實交接、不假報done、不自擴open issue。
+
+單一生活版／Cloud、原長通勤速度差與玩法／資料、證據復用與精簡直接驗證／必要CI、Mac真人、手機與新增保存末位保持。正式移交需另更新有效契約，不能由本規劃或提示詞暗授權。
+
 ## D49：HOME-02 B1–B4與有限grass接續review批准（2026-10-25）
 
 決策者：擁有人，台北2026-10-25於遊戲PO聊天明確要求：

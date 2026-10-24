@@ -1,5 +1,11 @@
 # 可見交付、驗證與正式整合
 
+## SG-LIFE-M1清單與grass移交規劃（2026-10-25）
+
+擁有人要求整理[第一生活里程碑執行表](LIFE_M1_EXECUTION_PLAN.md)、[grass遊戲PR合併移交計畫](GAME_PR_GRASS_TRANSFER_PLAN.md)、[已核Grok入口／接棒協定](GROK_GRASS_HANDOFF_PROTOCOL.md)與[Grok](LIFE_M1_GROK_PROMPT.md)／[grass](LIFE_M1_GRASS_PROMPT.md)雙prompt，總控#334。推薦M1沿已接受生活／成長／S0基線，剩餘實作白名單只330，總控收尾復用證據，不另造QA／開發包；更多社交食物／N人／擴建母題留後續待決。
+
+330原Grok已交PR333，查核head84cfa07b有Cloud初審6388352861的屋內床位／躺卧呈現阻擋，原作者同PR補修、新head差異複審；此規劃不改scope／DoD／claim或重做review。Grok入口已由人類確認為手動貼網頁／App，現在採人工轉貼，未接通自動callback／監控。**移交只在規劃，現行Earth唯一merge／D49仍有效**；要grass合純遊戲PR須正式權限文件與#67切換收據，本計畫合併不使之生效，不擋330原流程。Cloud／單版本／精簡驗證與必要CI、Mac真人、手機及新增保存末位保持。
+
 ## D49已批准：HOME02砍柴、寢舍與雙人歸處
 
 HOME01／PR326已由Earth鎖head43c788eb squash合dev **23e3414ed0f1f323f04b34c97f70b22a8587dc41**，postCI40120490402五項成功，326整合前置已滿；沿Earth與Cloud接受證據復用，不重跑、不再等待326，且沒有更新Mac試玩。
