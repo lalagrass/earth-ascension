@@ -4,7 +4,7 @@
 
 ## D51：既有環境啟動限制更新
 
-擁有人已批准grass接手純遊戲review／dev合併，[正式規則](GAME_PR_GRASS_TRANSFER_PLAN.md)。原環境不重建；只更新Start skill／用途中的Earth-only／一律不合併文字，install script、工具、唯一repo、必要網路、正式憑證、Only me保持。**實際更新／保存／發布狀態由原設定聊天回讀與#67切換紀錄確認；本文不能冒稱已發布。**
+擁有人已批准grass接手純遊戲review／dev合併，[正式規則](GAME_PR_GRASS_TRANSFER_PLAN.md)。原環境不重建；只更新Start skill／用途中的Earth-only／一律不合併文字，install script、工具、唯一repo、必要網路、正式憑證、Only me保持。**實際狀態：原Cloud設定聊天已保存並回讀草稿 revision 3（cecfgdraft_6add0739d35c81a298daa7e64a387775），只改Start skill與用途，尚待UI Publish。** 原設定工具沒有發布功能，Codex App不允許本輪電腦操作；已交人類在既有環境Publish，未完成前不宣稱已發布／cutover。其後正式發布證據與#67切換紀錄需回填。
 
 Start skill須先讀最新origin/dev根CONTRIBUTING／AGENTS及移交規則，再核#67生效與唯一active票。只有Earth整合本正式權限PR／必要postCI、Cloud更新實際發布、grass接手收據齊，Earth公布cutover後，才允許grass對非本人主筆的已批准純遊戲PR鎖head正常squash→dev並核postCI。根／共用／混合／權限及main不在此授權；不能force/admin/跳CI。設定啟動不自合PR，只有明確任務才做正常動作，不造空PR試權限。
 
