@@ -1,5 +1,7 @@
 # 宗門編年（Sect Chronicle）生活開發版
 
+**新增設計委託**：Grok可按[#182／SCENE-02](docs/SCENE02_HANDOFF.md)／[提示詞](docs/SCENE02_GROK_PROMPT.md)重新設計合理山居與未來功能空間，含水源／溪橋／取水潭／出口、宿舍一床→雙床與擴房。[床位開源評估](docs/ROOM_BEDS_RESEARCH.md)只作候選，不代表建造／睡眠已實裝。新圖與原第一版／#290工程分流，不改目前入口或增加前置。
+
 **最新交付順序**：先完成[#279生活閉環](https://github.com/lalagrass/earth-ascension/issues/279)＋[#184全場景水彩](https://github.com/lalagrass/earth-ascension/issues/184)第一版。已批准下一包[#290巡山與返院戰報](docs/PATROL01_HANDOFF.md)／[Grok提示詞](docs/PATROL01_GROK_PROMPT.md)，第一版接受／整合／postCI並更新同入口、正式文件整合／postCI後才Grok新claim。新包尚未交付，下面早期限制／版本文字不當最新工程狀態；唯一順位見[可見交付表](docs/VISIBLE_DELIVERY_PLAN.md#d30目前唯一執行優先序)，持續單一入口、整包review與精簡驗證。
 
 **目前主入口是生活開發版**（[#201](https://github.com/lalagrass/earth-ascension/issues/201)、[#203](https://github.com/lalagrass/earth-ascension/issues/203)，D13）：兩名真實工作者在同一張地圖自主挑水或採藥，可隨時改工作（途中改令當趟交付後生效）或本趟後停工休息，兩份工作共用腳力成長。主角初始腳力 Lv1、熟手 Lv3，沿既有 Lv5 上限；兩種體態是既有外觀，不會因升級自動變瘦。這是持續演進的主遊戲，後續累積在同一生活入口。
