@@ -180,3 +180,26 @@ test('review②：未選方針的人工持續者滿庫休閒時不被拉入招�
   assert.equal(met, 0);
   assert.ok(m.life02.log().some((e) => e.person === 'hero' && /未選自主補水/.test(e.text || '')));
 });
+
+test('pending 方針也可切回人工持續：採藥當趟不變，交付後執行最新挑水意圖', () => {
+  const m = mk();
+  assert.ok(m.dispatch('work:herb', 'hero').ok);
+  assert.ok(m.dispatch('fill', 'hero').ok);
+  const p = m.state.people.hero;
+  assert.equal(p.pending, 'water');
+  assert.equal(m.life02.state.fill.hero, true);
+  const motion = JSON.stringify(p.motion), inFlight = m.state.herbInFlight;
+  const r = m.dispatch('work:water', 'hero');
+  assert.ok(r.ok, r.reason);
+  assert.equal(m.life02.state.fill.hero, false);
+  assert.equal(p.pending, 'water');
+  assert.equal(JSON.stringify(p.motion), motion, '原採藥行走／進度不變');
+  assert.equal(m.state.herbInFlight, inFlight, '原藥材預約不變');
+  assert.equal(m.dispatch('work:water', 'hero').ok, false, '人工同指令仍拒絕重複');
+  const before = p.done.herb;
+  run(m, 60 * 60 * 5, () => p.done.herb === before ? undefined : false);
+  assert.equal(p.done.herb, before + 1, '當趟正常交付一次');
+  assert.equal(p.job, 'water');
+  assert.equal(p.pending, null);
+  assert.equal(m.life02.state.fill.hero, false, '交付後不搶回方針');
+});

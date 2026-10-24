@@ -1297,7 +1297,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       return { id: `work:${job}`, label: `${name}（持續）`,
         detail: carrying ? (job === cur ? `取消待執行，繼續${name}` : `本趟${JOBS[cur].label}交付後改去${name}`)
           : guarding ? `取消驅離，回院中${name}` : meeting ? `結束招呼，回院中${name}` : drinking ? (p.motion.mode === 'fromDrink' ? `喝完回院中後${name}` : `沒喝完，先回院中${name}`) : fixing ? `${p.fix ? '取消整理，' : ''}回院中${name}` : p.fix ? `取消整理，${name}` : inRest ? `恢復到 ${E.backAt} 並回院中後${name}` : fun ? `叫回院中改${name}` : '做完一趟自己接下一趟，沒有空位就等',
-        enabled: !same && p.pending !== job, reason: p.pending === job ? `已排定交付後改去${name}` : fun ? '這是原工作：要回去請按「叫回工作」' : `已在持續${name}中` };
+        enabled: !same && (p.pending !== job || L2.state.fill[p.id]), reason: p.pending === job ? `已排定交付後改去${name}` : fun ? '這是原工作：要回去請按「叫回工作」' : `已在持續${name}中` };
     };
     const lv = L2.view(p);
     return [
