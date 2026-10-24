@@ -35,6 +35,8 @@ export const BOAR = {
 };
 // LP-08：退走中的野豬只要還在這條固定世界界線東側（x > SEEN_X）就看得見；與鏡頭／縮放／視窗無關。
 export const SEEN_X = -20;
+// SG-LIFE-01 飲水站：現有水缸（scene 水缸 x1000,y520）前左側一個站點；從院中端點走一小段。停工坐著的人從座位沿原座位路回到院中端點再接這段。
+export const DRINK = { points: [[962, 512], [958, 530], [972, 546]], face: 1, vat: { x: 1000, y: 520 } };
 export const GUARD = { points: [[962, 512], [930, 522], [880, 512], [820, 480], [782, 452], [748, 428], [706, 430]] };
 
 export function createRoutes(waterPoints = WATER_POINTS) {
@@ -42,6 +44,14 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   const seats = { hero: pathTool(SEATS.hero.points), cousin: pathTool(SEATS.cousin.points) };
   const funs = { hero: pathTool(FUN.hero.points), cousin: pathTool(FUN.cousin.points) };
   const boarPath = pathTool(BOAR.points), guardPath = pathTool(GUARD.points);
+  const drinks = { home: pathTool(DRINK.points), hero: pathTool([...SEATS.hero.points].reverse().concat(DRINK.points.slice(1))), cousin: pathTool([...SEATS.cousin.points].reverse().concat(DRINK.points.slice(1))) };
+  // 去／喝／回：u=0 出發點、u=1 飲水站；回程只走 span（取消去程時走回已走的那段）。喝水時面向水缸。
+  function drinkPlace(id, d) {
+    const r = d.from === 'seat' ? drinks[id] : drinks.home, m = d.mode;
+    const u = m === 'toDrink' ? d.k : m === 'fromDrink' ? d.span * (1 - d.k) : 1, p = r.at(u);
+    const face = m === 'drink' ? DRINK.face : (m === 'fromDrink' ? -p.dx : p.dx) >= 0 ? 1 : -1;
+    return { x: p.x, y: p.y, face, route: r, geo: m, travelled: m === 'drink' ? 0 : d.k * r.length * (m === 'fromDrink' ? d.span : 1) };
+  }
   const [h0, h1] = BOAR.points, boarEdge = Math.hypot(h1[0] - h0[0], h1[1] - h0[1]);
   // 獸路 x 由西往東單調增加，所以「x > SEEN_X」等於「離棲地距離 d > boarSeenD」；模型用這個距離判斷，畫面用 x，同一來源。
   const boarSeenD = (SEEN_X - h0[0]) / (h1[0] - h0[0]) * boarEdge;
@@ -84,6 +94,7 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   const FIX_AS = { toFix: 'toGuard', fromFix: 'fromGuard', fix: 'guardWait' };
   function of(id, p) {
     // LP-11：清理中直接用模型在權威 tick 取樣的場景位置（palm.mjs 同一幾何），畫面不另算。
+    if (p.drinkLeg) return drinkPlace(id, { ...p.drinkLeg, mode: p.mode });
     if (p.cleaning) return { x: p.pos.x, y: p.pos.y, face: p.cface, route: null, geo: p.mode, travelled: p.walked };
     if (p.mode === 'toFix' || p.mode === 'fromFix') return { ...guardPlace(FIX_AS[p.mode], p.fixLeg.k), geo: p.mode };
     if (p.mode === 'fix') return { ...guardPlace('guardWait', 1), geo: 'fix' };
@@ -96,6 +107,7 @@ export function createRoutes(waterPoints = WATER_POINTS) {
     return place(p.mode === 'carry' && p.phase ? p.phase.name : 'idle', p.phase?.k || 0, p.job);
   }
   return { routes, seats, funs, place, of, seatLengths: { hero: seats.hero.length, cousin: seats.cousin.length }, funLengths: { hero: funs.hero.length, cousin: funs.cousin.length },
-    boarPath, guardPath, boarAt, guardPlace, boarLengths: { edge: boarEdge, total: boarPath.length, seen: boarSeenD }, boarSeenD, guardLength: guardPath.length };
+    boarPath, guardPath, boarAt, guardPlace, boarLengths: { edge: boarEdge, total: boarPath.length, seen: boarSeenD }, boarSeenD, guardLength: guardPath.length,
+    drinks, drinkPlace, drinkLengths: { home: drinks.home.length, seat: { hero: drinks.hero.length, cousin: drinks.cousin.length } } };
 }
 const WATER = { down: 1, dip: 1, up: 1, pour: 1 };

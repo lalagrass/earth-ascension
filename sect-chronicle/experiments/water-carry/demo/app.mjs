@@ -4,6 +4,7 @@
 import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.min.mjs';
 import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
+import { saveTo, loadFrom } from './life-save.mjs';
 import { createRoutes, HERB, SEATS, FUN, BOAR, GUARD } from './routes.mjs';
 import { WATER_POINTS, WATER_LENGTH, WORLD_SIZE, SPRING_PLACE, WATER_LANDMARKS } from './water-layout.mjs';
 import { buildLongWaterScenery } from './assets/long-water/scenery.mjs';
@@ -94,6 +95,12 @@ function poseOf(id, person) {
     const walk = person.mode === 'toGuard' || person.mode === 'fromGuard';
     const view = walk ? { phase: 'herbOut', k: 0, travelled: at.travelled } : { phase: 'stretch', k: 0, travelled: person.mode === 'shout' && person.shoutK > 0.3 ? 3 : 0 };
     return { x: at.x, y: at.y, face: at.face, ...a.pick(view), travelled: at.travelled, phase: person.mode };
+  }
+  // SG-LIFE-01：往返水缸用空手步態；喝水用空手站姿（交藥那組＝站直空手），杯子由 placeCup 另畫。
+  if (person.drinking) {
+    const at = geo.of(id, person), a = animators[id];
+    const view = person.mode === 'drink' ? { phase: 'herbDeliver', k: 0.5, travelled: 0 } : { phase: 'herbOut', k: 0, travelled: at.travelled };
+    return { x: at.x, y: at.y, face: at.face, ...a.pick(view), travelled: at.travelled, phase: person.mode, cup: person.mode === 'drink' };
   }
   if (person.leisure) {
     const at = geo.of(id, person), a = animators[id];
@@ -331,6 +338,21 @@ function placeBasket(id, p, person) {
   g.scale.set(s); g.position.set(placement.x, placement.y); g.zIndex = placement.zIndex;
 }
 
+// SG-LIFE-01 最小杯子：喝水時舉在嘴邊（木杯，向量畫，不是新素材）；只跟 poseOf 的 cup 旗標，不另判狀態。
+const cups = Object.fromEntries(IDS.map((id) => {
+  const g = new Graphics();
+  g.roundRect(-3.2, -4.5, 6.4, 8, 1.4).fill(0x8a5a32).stroke({ width: 0.8, color: 0x3b2614 });
+  g.rect(-2.6, -4.2, 5.2, 1.4).fill(0x9fc6d8);
+  g.visible = false; sorted.addChild(g); return [id, g];
+}));
+function placeCup(id, p, person) {
+  const g = cups[id];
+  g.visible = !!p.cup;
+  if (!g.visible) return;
+  const tip = Math.min(1, person.drinkLeg.k * 3); // 先舉杯再就口
+  g.position.set(p.x + p.face * (9 - tip * 3), p.y - 52 - tip * 8); g.rotation = -p.face * tip * 0.5; g.scale.set(1.7); g.zIndex = p.y + 0.03;
+}
+
 const placeMark = new Graphics();
 world.addChild(placeMark);
 
@@ -393,7 +415,8 @@ function follow() {
 // ---------- 狀態 ----------
 const r1 = (n) => Math.round(n * 10) / 10;
 const LENGTHS = { water: WATER_LENGTH, herb: r1(herbPath.length), seat: geo.seatLengths, fun: geo.funLengths,
-  boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength) };
+  boar: { edge: r1(geo.boarLengths.edge), total: r1(geo.boarLengths.total), seen: geo.boarSeenD }, guard: r1(geo.guardLength),
+  drink: r1(geo.drinkLengths.home), drinkSeat: { hero: r1(geo.drinkLengths.seat.hero), cousin: r1(geo.drinkLengths.seat.cousin) } };
 // LP-11：警覺鼠察覺用同一份純幾何取樣兩人位置（模型在權威 tick 呼叫，不讀畫面座標）。
 const SENSE = { placeOf: geo.of };
 let model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
@@ -485,6 +508,18 @@ $('roster-toggle').addEventListener('click', toggleRoster);
 $('shadow-toggle').addEventListener('click', toggleShadow);
 $('follow-toggle').addEventListener('click', () => { ui.follow = !ui.follow; applyCam(); renderChrome(); });
 $('reset').addEventListener('click', reset);
+// SG-LIFE-01 手動存讀：只在按鈕時動；讀檔通過驗證才替換，讀後暫停、清時鐘、不補 tick、不重播交付特效。
+const storage = (() => { try { return window.localStorage; } catch { return null; } })();
+const SAVE_TEMPLATE = createModel(LENGTHS, undefined, undefined, undefined, SENSE).exportState();
+function saveGame() { const r = saveTo(storage, model); toast(r.text); return r; }
+function loadGame() {
+  if (ui.menu) closeMenu(false);
+  const r = loadFrom(storage, model, SAVE_TEMPLATE);
+  if (r.ok) { ui.playing = false; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); v = model.view(); fx.length = 0; }
+  toast(r.text); renderChrome(); return r;
+}
+$('save').addEventListener('click', saveGame);
+$('load').addEventListener('click', loadGame);
 $('roster').addEventListener('click', (e) => { const b = e.target.closest('[data-person]'); if (b) select(b.dataset.person); });
 $('panel').addEventListener('click', (e) => {
   const adv = e.target.closest('[data-ui="toggleAdv"]');
@@ -808,9 +843,11 @@ function renderChrome() {
       <div class="leg-badge"><b>腳力 Lv ${person.level}／${person.maxLevel}</b><span class="muted">${person.nextNeed ? `（再 ${person.nextNeed - person.xp} 趟升 Lv ${person.level + 1}）` : '（已封頂）'}</span></div>
       <h4>精力</h4><div class="row"><b>${en(person)}／${person.energyMax}</b><span class="muted">${srcText(person) ? `來源：${srcText(person)}` : '工作每秒 −1 · 坐下每秒 +5'}</span></div>
       <div class="bar energy ${person.energy <= 30 ? 'low' : ''}"><i style="width:${person.energy / person.energyMax * 100}%"></i><s style="left:30%"></s><s style="left:80%"></s></div>
+      ${person.water == null ? '' : `<h4>水分</h4><div class="row" id="water-${id}"><b>${Math.floor(person.water)}／${person.waterMax}</b><span class="muted">${person.drinkText}</span></div>
+      <div class="bar water ${person.thirsty ? 'low' : ''}"><i style="width:${person.water / person.waterMax * 100}%"></i><s style="left:${v.drinkRules.want / person.waterMax * 100}%"></s></div>`}
       <div class="job-card">
         <div class="row"><b>目前工作：${person.jobLabel}</b><span>${person.status}</span></div>
-        <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : person.fixLeg ? person.fixLeg.k : person.fixWork ? person.fixWork.k : 0) * 100)}%"></i></div>
+        <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : person.fixLeg ? person.fixLeg.k : person.fixWork ? person.fixWork.k : person.drinkLeg ? person.drinkLeg.k : 0) * 100)}%"></i></div>
         <div class="next-box"><b>下一步：</b>${person.next}</div>
         ${person.why ? `<div class="muted stop-reason">狀態原因：${person.why}</div>` : ''}
       </div>`);
@@ -868,6 +905,7 @@ app.ticker.add((t) => {
     sprite.position.set(p.x, p.y);
     sprite.zIndex = p.y;
     placeBasket(id, p, person);
+    placeCup(id, p, person);
     const arm = armGs[id];
     arm.visible = !!p.palm;
     if (p.palm) {
@@ -993,7 +1031,9 @@ window.demo = {
       selected: ui.selected, menu: ui.menu, menuPerson: ui.menuPerson, cam: { ...cam }, hidden: document.hidden,
       heroScreen: people.hero.screen,
       vatScreen: toScreen(scene.places.vat.x, scene.places.vat.y - 20), springScreen: toScreen(places.spring.x, places.spring.y - 10),
-      firstFrameMs, frames, stepMs: STEP_MS,
+      firstFrameMs, frames, stepMs: STEP_MS, cups: Object.fromEntries(IDS.map((id) => [id, cups[id].visible])),
     };
   },
+  // 權威狀態深拷貝（只讀；存讀等價檢查用）。
+  exportState: () => model.exportState(),
 };

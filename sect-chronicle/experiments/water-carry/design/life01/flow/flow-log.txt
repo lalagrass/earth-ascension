@@ -1,0 +1,13 @@
+port 33083
+localStorage before []
+drink drink water 0 vat 6 cup true status 喝水
+after drink fromDrink water 60 note ok
+switch herb 到院中重查藥架，有空位就採藥
+stopped seated true hero herb carry
+saved tick 12910 keys ["earth-ascension:life01-demo:save"]
+ran to tick 13649
+loaded tick 12910 equal true playing false
+tick after 500ms paused 12910
+bad load toast 讀檔失敗：不認得的存檔版本：9（只接受 1）；目前這局不變 tick 12910
+errors []
+cleanup: browser+server closed

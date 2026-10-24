@@ -36,7 +36,8 @@ test('A 路線／同源：世界 1600×1350、HOME 不變、水路長度 1650–
 });
 
 test('B 速度／耗時：熟手先完成首趟、主角交付後成長且下一趟變快、不因路長多發產物', () => {
-  const model = createModel({ water: WATER_LENGTH, herb: 747.6 });
+  // SG-LIFE-01：此題以舊每 60 秒用水推算水缸數，飲水改為真喝水扣缸後以 drink: null 保留原 fixture 語意。
+  const model = createModel({ water: WATER_LENGTH, herb: 747.6 }, { ...RULES, drink: null });
 
   // 兩人物起始腳力
   assert.equal(model.view().people.hero.level, 1);

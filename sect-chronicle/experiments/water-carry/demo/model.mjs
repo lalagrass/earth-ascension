@@ -46,7 +46,16 @@ export const RULES = Object.freeze({
     sniffMs: 2000, approach: 72, flee: 120, hitMs: 2000, hitCost: 18, tiredAt: 30, scaredAt: 60, shoutMs: 1000, shoutThreat: 80, maxMarks: 3 },
   // LP-08 示意值（D18 已批，待真人校準）：動手 8 遊戲秒、這段每秒精力 −1。
   fix: { workMs: 8000, workPerSec: 1 },
+  // SG-LIFE-01 自主飲水（owner 核准示意值）：水分 0–100、新局 80、每遊戲秒 −0.5、≤20 想喝；在水缸旁飲 3 遊戲秒，
+  // 成功才扣水缸實存 1、水分 +60（上限 100）。取代舊的每 60 秒背景扣水（drink 存在時 useEveryMs 不再生效，不疊加）。
+  drink: { max: 100, start: 80, perSec: 0.5, want: 20, drinkMs: 3000, gain: 60, cost: 1 },
 });
+// 水分以 1/120 點存整數：每 tick −0.5/s＝1，長時間累加沒有浮點漂移。
+export const WATER_Q = 120;
+export const DRINK_LABEL = { toDrink: '口渴，走去水缸', drink: '喝水', fromDrink: '喝完返回' };
+export const DRINK_MODES = Object.freeze(['toDrink', 'drink', 'fromDrink']);
+export const DRINK_LENGTH = 40;
+export const DRINK_NOTE = { ok: '喝到水：水缸 −1、水分 +60', empty: '到了水缸已沒水：沒喝到，照常工作', canceled: '玩家改令：沒喝完，先回去', dry: '口渴但水缸沒有實存：照常工作，有水再去喝' };
 // 野豬精力／威脅以 1/240 點為單位存整數：每 tick 恢復 0.5/s＝2、淡忘 0.25/s＝1、走路 1/s＝4，長時間累加沒有浮點漂移。
 export const BOAR_Q = 240;
 export const BOAR_MODE = { habitat: '棲地恢復', out: '走出林緣', sniff: '林緣嗅探', approach: '靠近護欄', prep: '撞護欄', flee: '逃回棲地' };
@@ -124,6 +133,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   const B = rules.boar, Q = BOAR_Q, perQ = (perSec) => Math.round(perSec * Q / 60), msSteps = (ms) => Math.ceil(ms / STEP_MS - 1e-9);
   const E = rules.energy, perTick = (perSec) => perSec * STEP_MS / 1000;
   const ids = characters.map((p) => p.id);
+  const D = rules.drink, WQ = WATER_Q, wq = (v) => Math.round(v * WQ);
+  const drinkLen = (origin, id) => origin === 'seat' ? ((lengths.drinkSeat && lengths.drinkSeat[id]) || seatLen(id) + (lengths.drink || DRINK_LENGTH)) : (lengths.drink || DRINK_LENGTH);
   const s = {
     tick: 0, vat: rules.vatStart, inFlight: 0, herbs: rules.herbStart, herbInFlight: 0, useMs: 0, nextPerson: 0,
     people: Object.fromEntries(characters.map(({ id, initialLevel }) => [id, {
@@ -146,6 +157,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       pos: { x: HOME[0], y: HOME[1] }, cface: -1, walked: 0, palm: 'novice', cleanResult: null,
       // LP-12：cleanAllow＝允許自主清鼠（預設 false）；cleanWant＝候補意願；cleanSuppress＝玩家改派抑制；cleanSrc＝正式清理來源 auto／manual；cleanNote＝最近原因。
       cleanAllow: false, cleanWant: false, cleanSuppress: false, cleanSrc: null, cleanNote: null,
+      // SG-LIFE-01：waterQ＝水分（1/120 點整數）；drinkHold＝玩家剛取消、先照指令做事；drinkNote＝最近結果或原因（變動才記 log）。
+      waterQ: D ? wq(D.start) : 0, drinkNote: null, drinkHold: false,
     }])),
     // LP-09：contact＝最新真護欄接觸序號（＝目前整理機會）；upUsed＝已被自主或人工受理結束的機會。
     contact: 0, upUsed: 0,
@@ -581,6 +594,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     return { mode: h.mode, job: h.mode === 'carry' ? h.job : p.job,
       phase: h.mode === 'carry' ? { name: JOBS[h.job].phases[h.phase], k: Math.min(1, h.steps / h.need[h.phase]) } : null,
       restLeg: leg, funLeg: leg, guardLeg: leg, fixLeg: leg,
+      drinkLeg: DRINK_MODES.includes(h.mode) ? { k, span: h.span ?? 1, from: h.from } : null,
       cleaning: CLEAN_MODES.includes(h.mode), pos: p.pos, cface: p.cface, walked: p.walked };
   }
   // 人物目前的場景位置：清理中讀模型 pos；其餘由共用純幾何取樣（沒提供就沒有位置）。
@@ -784,17 +798,66 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   }
   // 停工或待恢復（rest 非空）都要離開休閒；恢復自主只清叫回，不能讓待恢復的人卡在活動點。
   // LP-12：自主清鼠意願成立時亦離開休閒，沿 fromFun 返院後在院中端點重新查驗受理。
-  const funOver = (p) => !!p.rest || p.recall || p.guardOrder != null || !!p.fix || cleaning(p) || wants(p) || wantsUp(p) || wantsClean(p) || slotFor(p);
+  const funOver = (p) => !!p.rest || p.recall || p.guardOrder != null || !!p.fix || cleaning(p) || wants(p) || wantsUp(p) || wantsClean(p) || (thirsty(p) && s.vat >= D.cost) || slotFor(p);
   function goBack(p) {
     p.why = `精力恢復到 ${E.backAt}，自己回去`;
     p.motion = { mode: 'back', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level };
     s.log.push({ tick: s.tick, person: p.id, kind: 'back' });
   }
 
+  // ---------- SG-LIFE-01 自主飲水 ----------
+  const thirsty = (p) => !!D && p.waterQ <= wq(D.want);
+  const busyElse = (p) => p.guardOrder != null || !!p.fix || cleaning(p) || wants(p) || wantsUp(p) || wantsClean(p);
+  function drinkNote(p, kind) {
+    if (p.drinkNote === kind) return;
+    p.drinkNote = kind;
+    s.log.push({ tick: s.tick, person: p.id, kind: 'drink:' + kind, vat: s.vat, water: p.waterQ / WQ });
+  }
+  // 出發條件：院中閒著（不在恢復）或玩家停工坐著且精力已到 80；沒有護院／整理／清鼠／候補；水缸有實存。不預約：到點才扣。
+  function drinkStep() {
+    for (const id of ids) {
+      const p = s.people[id], m = p.motion.mode;
+      // 玩家取消過的那次：等他真的去做別的事（出發工作／護院／整理／清理／休閒）後才再想喝，不在院中來回切換。
+      if (p.drinkHold) { if (m !== 'idle' && m !== 'seated' && !DRINK_MODES.includes(m)) p.drinkHold = false; else continue; }
+      if (!thirsty(p) || busyElse(p)) continue;
+      const home = m === 'idle' && !p.rest, seat = m === 'seated' && p.rest === 'manual' && p.energy >= E.backAt;
+      if (!home && !seat) continue;
+      if (s.vat < D.cost) { drinkNote(p, 'dry'); continue; }
+      const from = home ? 'home' : 'seat';
+      p.drinkNote = null;
+      p.motion = { mode: 'toDrink', job: null, phase: null, steps: 0, need: walkSteps(p.level, drinkLen(from, id), rules), tripLevel: p.level, from };
+      s.log.push({ tick: s.tick, person: id, kind: 'toDrink', from, water: p.waterQ / WQ, vat: s.vat });
+    }
+  }
+  // span＝要走回的比例（取消去程時只走回已走的那段）；畫面用同一比例取樣路線，不瞬移。
+  function drinkBack(p, from, span) {
+    p.motion = { mode: 'fromDrink', job: null, phase: null, steps: 0, need: walkSteps(p.level, drinkLen(from, p.id) * span, rules), tripLevel: p.level, from, span };
+  }
+  // 返回：從座位出發且仍停工就回座位坐著；否則回院中端點照常重查（恢復、指令、工作）。
+  function endDrink(p) {
+    const from = p.motion.from;
+    s.log.push({ tick: s.tick, person: p.id, kind: 'drinkHome', from });
+    if (from === 'seat' && p.rest === 'manual') { p.motion = { mode: 'seated', job: null, phase: null, steps: 0, need: null, tripLevel: p.level }; return; }
+    // 從座位來、途中已解除停工：人在座位旁，沿座位路走回院中（不瞬移）。
+    if (from === 'seat') { p.motion = { mode: 'back', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level }; return; }
+    atHome(p);
+  }
+  // 玩家改令：去程或飲用中取消，沿已走的距離返回（不扣水缸、不加水分）；返回途中不受影響。
+  function cancelDrink(p) {
+    const h = p.motion;
+    if (h.mode !== 'toDrink' && h.mode !== 'drink') return false;
+    drinkNote(p, 'canceled'); p.drinkHold = true;
+    drinkBack(p, h.from, h.mode === 'toDrink' ? Math.max(1, h.steps) / h.need : 1);
+    return true;
+  }
+
   function step() {
     s.tick += 1;
-    s.useMs += STEP_MS;
-    if (s.useMs >= rules.useEveryMs) { s.useMs -= rules.useEveryMs; s.vat = Math.max(0, s.vat - 1); }
+    // 舊背景扣水只在沒有飲水規則時保留（舊 fixture）；有飲水時水缸只因真喝水而減少。
+    if (!D) {
+      s.useMs += STEP_MS;
+      if (s.useMs >= rules.useEveryMs) { s.useMs -= rules.useEveryMs; s.vat = Math.max(0, s.vat - 1); }
+    }
     const sh = s.shadow;
     if (sh.active) {
       sh.steps += 1;
@@ -806,6 +869,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       if (h.mode === 'carry') p.energy = Math.max(0, p.energy - perTick(E.workPerSec));
       else if (h.mode === 'fix') p.energy = Math.max(0, p.energy - perTick(rules.fix.workPerSec));
       else if (h.mode === 'seated') p.energy = Math.min(E.max, p.energy + perTick(E.restPerSec));
+      if (D) p.waterQ = Math.max(0, p.waterQ - Math.round(D.perSec * WQ * STEP_MS / 1000));
       if (h.mode === 'carry') {
         h.steps += 1;
         if (h.steps >= h.need[h.phase]) {
@@ -848,6 +912,20 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       } else if (h.mode === 'shout') {
         h.steps += 1;
         if (h.steps >= h.need) p.shoutDone = true; // 成效在本 tick 野豬結算時才判，不在這裡提高威脅
+      } else if (h.mode === 'toDrink' || h.mode === 'fromDrink') {
+        h.steps += 1;
+        if (h.steps >= h.need) {
+          if (h.mode === 'toDrink') { p.motion = { mode: 'drink', job: null, phase: null, steps: 0, need: msSteps(D.drinkMs), tripLevel: p.level, from: h.from }; s.log.push({ tick: s.tick, person: id, kind: 'drink' }); }
+          else endDrink(p);
+        }
+      } else if (h.mode === 'drink') {
+        // 飲滿 3 秒才結算；人物迴圈依固定 ids 順序，同 tick 只剩 1 份水時只有排前面的人成功。
+        h.steps += 1;
+        if (h.steps >= h.need) {
+          if (s.vat >= D.cost) { s.vat -= D.cost; p.waterQ = Math.min(wq(D.max), p.waterQ + wq(D.gain)); drinkNote(p, 'ok'); }
+          else drinkNote(p, 'empty');
+          drinkBack(p, h.from, 1);
+        }
       } else if (h.mode === 'idle' && !p.rest && p.energy <= E.restAt) atHome(p);
     }
     // LP-11：鼠移動→清理者移動／起手／接觸→察覺；回到院中的清理者在護院／整理判斷與出發迴圈之前就已重查生活。
@@ -861,6 +939,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     // LP-12：護院與整理之後判清鼠候補與正式受理（同人互斥；優先序為護院→整理→清鼠→一般工作）。
     cleanWantStep();
     cleanAcceptStep();
+    // SG-LIFE-01：護院／整理／清鼠受理之後、下一趟出發之前，閒著（或停工坐著且精力已回 80）的口渴者先去喝水。
+    if (D) drinkStep();
     // 空位少時輪流獲得下一個出發機會，避免滿缸後每次用水都被同一人搶走。
     const first = s.nextPerson;
     for (let n = 0; n < ids.length; n++) {
@@ -971,6 +1051,14 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     cancelGuard(p); // 較新的改工作／開始取消尚未完成的驅離
     dropFix(p, 'canceled'); // 也取消尚未完成的整理；前往途中走完這段再回
     cancelClean(p); // 也取消清理；前往途中走完這段、起手／收勢中立刻返院
+    if (DRINK_MODES.includes(mode)) {
+      const cut = cancelDrink(p);
+      p.job = job; p.pending = null;
+      s.log.push({ tick: s.tick, person: p.id, kind: 'start', job });
+      if (p.rest === 'manual') p.rest = p.energy < E.backAt ? 'auto' : null;
+      p.why = p.rest === 'auto' ? `已解除停工；精力未到 ${E.backAt}，先恢復` : null;
+      return { ok: true, text: cut ? `沒喝完，先回院中${name}` : `喝完回院中後${name}` };
+    }
     if (mode === 'carry') {
       if (job === p.motion.job) { p.pending = null; return { ok: true, text: `取消待執行，繼續${name}` }; }
       p.pending = job;
@@ -1045,6 +1133,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (['start', 'restAfterTrip', 'cancel', 'recall', 'fixCancel', 'guard', 'clean', 'cleanCancel'].includes(cmd) || cmd.startsWith('work:')) upOverride(p);
     // LP-12：有效人工改令撤當人清鼠候補並抑制自主清鼠直到明確重新允許。
     if (['start', 'restAfterTrip', 'cancel', 'recall', 'guard', 'fix', 'fixCancel', 'clean', 'cleanCancel'].includes(cmd) || cmd.startsWith('work:')) cleanOverride(p);
+    // SG-LIFE-01：會改變去向的有效指令先取消未喝完的水（走回已走的那段），返院後照指令走。
+    if (['restAfterTrip', 'guard', 'fix', 'clean'].includes(cmd)) cancelDrink(p);
     if (cmd === 'clean') return cleanOrder(p);
     if (cmd === 'cleanCancel') {
       const m = p.motion.mode, waiting = s.clean.phase === 'wait';
@@ -1077,6 +1167,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       if (mode === 'fromGuard' || mode === 'fromFix' || mode === 'fix') return { ok: true, text: '回院中後去座位停工' };
       if (mode === 'toFix') return { ok: true, text: '走到護欄後回院中，再去座位停工' };
       if (mode === 'toRat') return { ok: true, text: '取消清理：走完這段後回院中，再去座位停工' };
+      if (mode === 'fromDrink') return { ok: true, text: '從水缸回院中後去座位停工' };
       if (CLEAN_MODES.includes(mode)) return { ok: true, text: '回院中後去座位停工' };
       return { ok: true, text: '改為停工：回滿也不會自己開工' };
     }
@@ -1124,7 +1215,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const stopped = p.rest === 'manual', fun = ['toFun', 'fun', 'fromFun'].includes(p.motion.mode);
     const guarding = GUARD_MODES.includes(p.motion.mode), g = guarding || p.guardOrder != null;
     const fixing = FIX_MODES.includes(p.motion.mode), f = fixing || !!p.fix || cleaning(p);
-    const inRest = p.motion.mode !== 'idle' && !carrying && !fun && !guarding && !fixing && !CLEAN_MODES.includes(p.motion.mode);
+    const drinking = DRINK_MODES.includes(p.motion.mode);
+    const inRest = p.motion.mode !== 'idle' && !carrying && !fun && !guarding && !fixing && !drinking && !CLEAN_MODES.includes(p.motion.mode);
     // 已在做這份工作、也沒有別的待執行時，再下同一工作沒有意義。
     const workOpt = (job) => {
       const name = JOBS[job].label;
@@ -1134,7 +1226,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       const same = !stopped && !g && !f && job === cur && (carrying ? p.pending == null : true);
       return { id: `work:${job}`, label: `${name}（持續）`,
         detail: carrying ? (job === cur ? `取消待執行，繼續${name}` : `本趟${JOBS[cur].label}交付後改去${name}`)
-          : guarding ? `取消驅離，回院中${name}` : fixing ? `${p.fix ? '取消整理，' : ''}回院中${name}` : p.fix ? `取消整理，${name}` : inRest ? `恢復到 ${E.backAt} 並回院中後${name}` : fun ? `叫回院中改${name}` : '做完一趟自己接下一趟，沒有空位就等',
+          : guarding ? `取消驅離，回院中${name}` : drinking ? (p.motion.mode === 'fromDrink' ? `喝完回院中後${name}` : `沒喝完，先回院中${name}`) : fixing ? `${p.fix ? '取消整理，' : ''}回院中${name}` : p.fix ? `取消整理，${name}` : inRest ? `恢復到 ${E.backAt} 並回院中後${name}` : fun ? `叫回院中改${name}` : '做完一趟自己接下一趟，沒有空位就等',
         enabled: !same && p.pending !== job, reason: p.pending === job ? `已排定交付後改去${name}` : fun ? '這是原工作：要回去請按「叫回工作」' : `已在持續${name}中` };
     };
     return [
@@ -1201,6 +1293,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
                 : h.mode === 'fromFun' ? '從休閒返院'
                   : GUARD_LABEL[h.mode] ? GUARD_LABEL[h.mode]
                   : FIX_LABEL[h.mode] ? FIX_LABEL[h.mode]
+                  : DRINK_LABEL[h.mode] ? (h.mode === 'fromDrink' && p.drinkNote === 'canceled' ? '沒喝完，返回' : DRINK_LABEL[h.mode])
                   : CLEAN_LABEL[h.mode] ? (h.mode === 'toRat' && s.clean && s.clean.phase === 'back' ? '清理已取消，走完這段' : CLEAN_LABEL[h.mode])
             : p.recall ? (st.amount + st.inFlight >= st.cap ? `玩家叫回，等${place}空位` : '玩家叫回，準備出發')
             : st.amount >= st.cap ? (p.job === 'herb' ? '等空位（藥架已滿，藥草不會自己耗用）' : '等用水（水缸已滿）')
@@ -1221,7 +1314,11 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
           : h.mode === 'fromRat' ? (stopped ? '到院中後回座位停工' : p.energy <= E.restAt ? `到院中後先去恢復到 ${E.backAt}` : `到院中重查${place}，有空位就${name}`)
             : cl && cl.phase === 'wait' ? (h.mode === 'carry' ? `交付後去清理測試鼠，回來${JOBS[nextJob].label}` : p.rest ? `先恢復到 ${E.backAt}，回院中再去清理` : '回到院中就去清理')
               : null;
-    const next = cleanNext ? cleanNext : fixNext ? fixNext : guardNext ? guardNext
+    const drinkNext = h.mode === 'toDrink' ? `到水缸旁喝 ${D.drinkMs / 1000} 秒；到時水缸還有水才扣 ${D.cost}、水分 +${D.gain}`
+      : h.mode === 'drink' ? `喝滿 ${D.drinkMs / 1000} 秒才結算（水缸 ${s.vat}）`
+        : h.mode === 'fromDrink' ? (h.from === 'seat' && stopped ? '回座位繼續停工' : stopped ? '到院中後回座位停工' : h.from === 'seat' ? `回院中${name}` : `到院中重查${place}，有空位就${name}`)
+          : null;
+    const next = drinkNext ? drinkNext : cleanNext ? cleanNext : fixNext ? fixNext : guardNext ? guardNext
       : h.mode === 'fromGuard' ? (stopped ? '到院中後回座位停工' : `到院中重查${place}，有空位就${name}`)
       : h.mode === 'toGuard' ? `走到防守點後回院中${name}`
       : p.guardOrder != null && h.mode === 'carry' ? `交付後去驅離野豬，回來${JOBS[nextJob].label}`
@@ -1273,7 +1370,30 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       cleanLeg: h.mode === 'toRat' || h.mode === 'fromRat' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need, from: { ...h.from }, to: { ...h.to } } : null,
       // LP-12：自主清鼠原因與狀態。
       autoClean: cleanAutoView(p), cleanSrc: p.cleanSrc,
+      // SG-LIFE-01：水分、口渴、喝水階段與最近結果（原因字串由模型給，畫面不另判）。
+      water: D ? p.waterQ / WQ : null, waterMax: D ? D.max : null, thirsty: thirsty(p), drinking: DRINK_MODES.includes(h.mode),
+      drinkFrom: DRINK_MODES.includes(h.mode) ? h.from : null, drinkNote: p.drinkNote, drinkText: drinkText(p),
+      drinkLeg: DRINK_MODES.includes(h.mode) ? { k: h.need ? Math.min(1, h.steps / h.need) : 0, steps: h.steps, need: h.need, span: h.span ?? 1, from: h.from } : null,
     };
+  }
+  function drinkText(p) {
+    if (!D) return null;
+    const m = p.motion.mode, w = Math.floor(p.waterQ / WQ);
+    if (m === 'toDrink') return `口渴（水分 ${w} ≤ ${D.want}），走去水缸`;
+    if (m === 'drink') return `喝水中（${D.drinkMs / 1000} 秒）`;
+    if (m === 'fromDrink') return DRINK_NOTE[p.drinkNote] || '喝完返回';
+    if (thirsty(p)) {
+      if (p.drinkHold) return '口渴：剛被玩家改令，先照指令做事，之後再去喝';
+      if (s.vat < D.cost) return DRINK_NOTE.dry;
+      if (busyElse(p)) return '口渴：先處理護院／整理／清鼠，回院中再喝';
+      if (m === 'carry') return '口渴：交付這趟後先去喝水';
+      if (p.rest === 'auto') return `口渴：先恢復到 ${E.backAt} 再去喝水`;
+      if (p.rest === 'manual') return p.energy >= E.backAt ? '口渴：停工中，起身去喝' : `口渴：停工中，精力回到 ${E.backAt} 才起身喝`;
+      return '口渴：回院中就去喝水';
+    }
+    if (p.drinkNote === 'ok') return `${DRINK_NOTE.ok}；水分 ≤ ${D.want} 才再想喝`;
+    if (p.drinkNote === 'empty' || p.drinkNote === 'canceled') return DRINK_NOTE[p.drinkNote];
+    return `不渴（水分 ≤ ${D.want} 才想喝）`;
   }
   // 自主護院原因：把「沒允許／觀察中／有意願待交付或恢復／玩家改派／同伴處理／已出發／結果／意願過期」分開講，不用一句「護院中」。
   function autoView(p) {
@@ -1357,10 +1477,22 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       boar: boarView(),
       rats: s.rats.map((r) => ({ id: r.id, kind: r.kind, mode: r.mode, label: RAT_MODE[r.mode], x: r.x, y: r.y, valid: validRat(r), why: r.why })),
       clean: s.clean ? { ...s.clean } : null,
-      log: s.log.slice(-5),
+      log: s.log.slice(-5), drinkRules: D ? { ...D } : null,
     };
   }
-  return { state: s, step, dispatch, actions, view, setAuto, setUpkeep, setPalm, setAutoClean, pathLength, lengths, rules };
+  // SG-LIFE-01 手動存讀：權威狀態全在 s；匯出為深拷貝（紀錄只留最近 logKeep 筆，規則與還原都不讀紀錄）。
+  // restore 只整份替換（呼叫端須先完整驗證）；不推進 tick、不結算任何獎勵。
+  function exportState(logKeep = 200) {
+    const out = JSON.parse(JSON.stringify(s));
+    out.log = out.log.slice(-logKeep);
+    return out;
+  }
+  function restore(next) {
+    const copy = JSON.parse(JSON.stringify(next));
+    for (const k of Object.keys(s)) delete s[k];
+    Object.assign(s, copy);
+  }
+  return { state: s, step, dispatch, actions, view, setAuto, setUpkeep, setPalm, setAutoClean, pathLength, lengths, rules, exportState, restore };
 }
 
 // 牆鐘只決定餵幾步；長空檔最多算250ms，不追趕背景時間。

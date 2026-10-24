@@ -39,6 +39,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .bar.xp i { background: var(--gold); }
 .bar.energy { position: relative; height: 8px; } .bar.energy i { background: #4f9a5a; } .bar.energy.low i { background: #c8682e; }
 .bar.energy s { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(47, 42, 36, .45); }
+.bar.water { position: relative; height: 8px; } .bar.water i { background: #4c8fb8; } .bar.water.low i { background: #c8682e; }
+.bar.water s { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(47, 42, 36, .45); }
 .next { font-size: 13px; color: #3b5d85; margin-top: 2px; }
 .emini { display: inline-block; vertical-align: middle; width: 28px; height: 5px; background: #e8dcc2; border-radius: 3px; overflow: hidden; margin-right: 4px; }
 .emini i { display: block; height: 100%; background: #4f9a5a; }
