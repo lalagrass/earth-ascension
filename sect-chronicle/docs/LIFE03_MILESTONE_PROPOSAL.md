@@ -1,5 +1,11 @@
 # SG-LIFE-03已確認取捨：山居日常有用途、有進步
 
+## D45採用狀態（優先於下方研究快照）
+
+擁有人已明確同意統一生活補給與人物面板生活總覽＋武學成長。PO核309只有文件claim、無Grok工程claim／實作支線或PR，故併修原包，最新[D45](DECISIONS_AND_SOURCES.md#d45sg-life-03未開工併修統一生活補給與人物面板2026-10-24)／[正式包](LIFE03_HANDOFF.md)／[Grok提示詞](LIFE03_GROK_PROMPT.md)為準。撤獨立口渴機制／水分主條與茶水分＋60，精力／休息／一次手動茶統一，原水藥配方／6＋4秒／精力＋40保留；面板以真生活與成長分區，不加飢餓／營養／食材農獵。下方A/B待選、D44保水分或只研究不授此部分的文字保留來源沿革，不能再覆蓋本有限批准；其餘候選仍未授。
+
+308已發布，D45文件審合postCI後Grok本人新claim，不讀舊prompt。若發現核對前已開工成果先回報，依擁有人條件保留原包、新方向另排，不能覆寫他人工作；新保存與手機仍最後，集中review／差異驗證與單一試玩版不變。
+
 2026-10-24，Codex／遊戲PO。主追蹤[#75](https://github.com/lalagrass/earth-ascension/issues/75)，下一工程候選沿[#309](https://github.com/lalagrass/earth-ascension/issues/309)，不另拆多張同義工程單。**擁有人本輪已明確批准MS1–MS4與茶示意值**，取代下方歷史待批狀態；契約以[D44](DECISIONS_AND_SOURCES.md#d44sg-life-03-ms1ms4與茶示意值批准2026-10-24)、[正式包](LIFE03_HANDOFF.md)／[Grok提示詞](LIFE03_GROK_PROMPT.md)為準。前輪U1–U4方向一併保留；先收尾308再309新claim，非全backlog授權。
 
 ## 目前能玩什麼，還缺什麼
