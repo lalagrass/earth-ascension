@@ -1,5 +1,11 @@
 # 可見交付、驗證與正式整合
 
+## 最新接續：308已發布，309前置已解除
+
+PR308已接受／Earth合devabbee504／postCI40101025656五SUCCESS，遊戲PO更新同8800、67項HTTP來源一致並清前自有LIFE02部署；305結案。D44正式文件PR311亦已審合／postCI，下一核心包為[#309／LIFE03](LIFE03_HANDOFF.md)／[Grok提示詞](LIFE03_GROK_PROMPT.md)，本人新claim／當時最新dev新支線後整包接續，不再等待已滿前置。
+
+[BL-U02人物面板與補給研究](CHARACTER_PANEL_RESEARCH.md)僅backlog：評統一補給vs細分需求與生活／武學人物卡，309後短試玩再選，不加309 DoD或改D44水分／茶值。開源只候選、不新加依賴／引擎；精簡驗證／單一版本、手機與新增保存最後維持。下方先收尾308／待決文字為當時快照，以本節及最新issue核實。
+
 ## D44已批准：先收尾308，再整包SG-LIFE-03
 
 擁有人已同意MS1–MS4及茶示意值，主[#309](https://github.com/lalagrass/earth-ascension/issues/309)，[正式包](LIFE03_HANDOFF.md)／[Grok提示詞](LIFE03_GROK_PROMPT.md)。水1＋藥草1、煮6秒／喝4秒，完成水分＋60／精力＋40各上限100、不疊坐休；茶用途、現在／原因來源／下一步與真成長小事卡、必要局部意圖整理一Grok一PR。U3／MS待批字樣在本有限批准範圍解除，其他母題不解鎖。
