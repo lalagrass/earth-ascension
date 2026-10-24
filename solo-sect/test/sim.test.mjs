@@ -48,3 +48,13 @@ test('入夜多數人去歇息', () => {
 test('膳房可建且升級後每鍋產量提高', () => {
   const s = createState(13); s.res.wood = 8; assert.ok(startBuild(s, 'kitchen')); run(s, 400); assert.equal(s.fac.kitchen.stage, 1);
 });
+
+// v0.3
+test('腿法路數練到門檻學到掃堂腿，不會誤學掌法招', () => {
+  const s = createState(21); s.res.food = 99; setOrder(s, 'senior', 'train'); run(s, 500); setOrder(s, 'senior', null); run(s, 200);
+  const d = s.ds[1]; assert.ok(d.moves.includes('kick'), d.moves.join()); assert.ok(!d.moves.includes('push'));
+});
+test('木樁場建成後會切磋，並加速練功', () => {
+  const s = createState(22); s.res.food = 99; s.res.wood = 6; startBuild(s, 'yard'); run(s, 1500);
+  assert.equal(s.fac.yard.stage, 1); assert.ok(s.log.some((l) => /切磋/.test(l.msg)));
+});

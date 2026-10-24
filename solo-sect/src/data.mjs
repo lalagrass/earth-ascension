@@ -20,7 +20,8 @@ export const FACILITIES = [
     { name: '破道館', sprite: 'hall_s0', offers: ['rest', 'learn'], restRate: 3 },
   ] },
   { id: 'yard', name: '外功場', node: 'yard', stages: [
-    { name: '空地', sprite: null, offers: ['train'] },
+    { name: '空地', sprite: null, offers: ['train'], trainMul: 1 },
+    { name: '木樁場', sprite: null, offers: ['train', 'spar'], trainMul: 1.6, dummies: 3, cost: { wood: 6 }, work: 15 },
   ] },
   { id: 'dorm', name: '宿舍', node: 'dorm', stages: [
     { name: '破寢舍', sprite: 'dorm_s0', offers: [] },
@@ -44,7 +45,8 @@ export const ACTIVITIES = {
   cook:   { name: '煮飯', dur: 0, energy: -3, skill: { cooking: 6 } }, // dur 由灶階段決定
   forage: { name: '採藥', dur: 8, energy: -6, skill: { herbal: 6 }, carry: { herb: 1 } },
   chop:   { name: '砍柴', dur: 8, energy: -8, skill: { strength: 5 }, carry: { wood: 1 } },
-  train:  { name: '練掌', dur: 10, energy: -10, skill: { palm: 5 } },
+  train:  { name: '練功', dur: 10, energy: -10, skill: { style: 5 } }, // style＝弟子主修路數
+  spar:   { name: '切磋', dur: 8, energy: -10, skill: { style: 4 } },
   learn:  { name: '聽師父講武', dur: 8, energy: -2, skill: { palm: 3 }, social: 10 },
   build:  { name: '施工', dur: 6, energy: -6, skill: { strength: 2 } },
   chat:   { name: '聊天', dur: 6, social: 35 },
@@ -53,9 +55,11 @@ export const ACTIVITIES = {
 
 // 武學：熟練門檻解鎖；範圍/冷卻/傷害由 palm 技能放大
 export const MOVES = [
-  { id: 'fist', name: '基礎拳', req: 0, range: 34, cd: 1.0, dmg: 4, aoe: 0, color: '#8a6a4a' },
-  { id: 'push', name: '推山掌', req: 25, range: 60, cd: 1.6, dmg: 8, aoe: 0, color: '#b0482e' },
-  { id: 'wave', name: '迴風掌', req: 60, range: 80, cd: 3.0, dmg: 7, aoe: 70, color: '#3d6b8a' },
+  { id: 'fist', skill: 'palm', name: '基礎拳', req: 0, range: 34, cd: 1.0, dmg: 4, aoe: 0, color: '#8a6a4a' },
+  { id: 'push', skill: 'palm', name: '推山掌', req: 25, range: 60, cd: 1.6, dmg: 8, aoe: 0, color: '#b0482e' },
+  { id: 'wave', skill: 'palm', name: '迴風掌', req: 60, range: 80, cd: 3.0, dmg: 7, aoe: 70, color: '#3d6b8a' },
+  { id: 'kick', skill: 'leg', name: '掃堂腿', req: 20, range: 40, cd: 1.4, dmg: 6, aoe: 40, color: '#6b8a3d' },
+  { id: 'whirl', skill: 'leg', name: '旋風腿', req: 50, range: 55, cd: 2.4, dmg: 9, aoe: 60, color: '#8a3d7a' },
 ];
 
 export const MONSTERS = {
@@ -67,9 +71,9 @@ export const WAVES = [
 ];
 
 export const DISCIPLES = [
-  { id: 'hero', name: '主角', adult: true, sprite: 'hero', skills: { palm: 10, strength: 10, farming: 5, herbal: 5, agility: 10, cooking: 3 }, traits: { diligent: 1.2 } },
-  { id: 'senior', name: '林師姐', adult: true, sprite: 'senior', skills: { palm: 5, strength: 5, farming: 15, herbal: 10, agility: 12, cooking: 10 }, traits: { social: 1.3 } },
-  { id: 'cousin', name: '堂弟', adult: false, sprite: 'cousin', skills: { palm: 0, strength: 2, farming: 3, herbal: 8, agility: 15, cooking: 2 }, traits: { playful: 1.4 } },
+  { id: 'hero', name: '主角', adult: true, sprite: 'hero', style: 'palm', skills: { leg: 2, palm: 10, strength: 10, farming: 5, herbal: 5, agility: 10, cooking: 3 }, traits: { diligent: 1.2 } },
+  { id: 'senior', name: '林師姐', adult: true, sprite: 'senior', style: 'leg', skills: { leg: 10, palm: 5, strength: 5, farming: 15, herbal: 10, agility: 12, cooking: 10 }, traits: { social: 1.3 } },
+  { id: 'cousin', name: '堂弟', adult: false, sprite: 'cousin', style: 'leg', skills: { leg: 3, palm: 0, strength: 2, farming: 3, herbal: 8, agility: 15, cooking: 2 }, traits: { playful: 1.4 } },
 ];
 
 export const REL_STAGES = [[0, '陌生'], [20, '相識'], [45, '好友'], [70, '知己'], [90, '道侶']];
@@ -86,3 +90,4 @@ export const SCHEDULE = {
 };
 export const PLOT_GROW = 90; // 秒，播種到成熟
 export const HARVEST = 3;    // 每畦收菜
+export const STYLES = { palm: '掌法', leg: '腿法' };

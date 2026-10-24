@@ -33,7 +33,7 @@ export function createState(seed = 1) {
     v: SAVE_VERSION, seed, t: 0, res: { wood: 0, food: 6, herb: 0, veg: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })), vegRes: 0, cap: { wood: 12 },
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
     ds: DISCIPLES.map((d, i) => ({
-      id: d.id, name: d.name, adult: d.adult, sprite: d.sprite, traits: d.traits,
+      id: d.id, name: d.name, style: d.style, adult: d.adult, sprite: d.sprite, traits: d.traits,
       skills: { ...d.skills }, moves: ['fist'], pendingMove: null,
       needs: { energy: 80, hunger: 70 - i * 10, social: 50 }, hp: 100,
       at: 'court', pos: [...NODES.court].map((v, k) => v + (k ? 0 : (i - 1) * 30)), path: [],
@@ -64,6 +64,7 @@ function finishBuild(s, id) {
 const siteOf = (s) => { const e = Object.entries(s.fac).find(([, v]) => v.site); return e ? [e[0], e[1].site] : null; };
 
 // ---- 指令 ----
+export function setStyle(s, id, st) { const d = s.ds.find((x) => x.id === id); if (d && (st === 'palm' || st === 'leg')) d.style = st; }
 export function setOrder(s, id, order) {
   const d = s.ds.find((x) => x.id === id); if (!d) return false;
   if (order && order !== 'hunt' && !ACTIVITIES[order]) return false;
@@ -82,7 +83,7 @@ function cancelTask(s, d, why) {
 
 // ---- 效用 AI ----
 // 可被邀聊：無玩家指派、未負重、未在施工/狩獵/歇息/聊天中
-function chatMates(s, d) { return s.ds.filter((o) => o !== d && !o.order && o.hp > 30 && !o.carry && !['build', 'hunt', 'rest', 'chat', 'learn'].includes(o.task?.act) && o.task?.phase !== 'return'); }
+function chatMates(s, d) { return s.ds.filter((o) => o !== d && !o.order && o.hp > 30 && !o.carry && !['build', 'hunt', 'rest', 'chat', 'spar', 'learn'].includes(o.task?.act) && o.task?.phase !== 'return'); }
 function offered(s, act) { return FACILITIES.filter((f) => facStage(s, f.id).offers.includes(act)); }
 function bestFac(s, d, act) {
   const fs = offered(s, act); if (!fs.length) return null;
@@ -98,6 +99,7 @@ export function scoreActs(s, d) {
   if (others.length) add('chat', (100 - n.social) * 0.6 * (tr.social || 1) * (tr.playful || 1) * 0.8, '想找人說話');
   if (d.pendingMove) add('learn', 80, `師父能傳「${MOVES.find((m) => m.id === d.pendingMove).name}」`);
   add('train', (d.adult ? 40 : 18) * (tr.diligent || 1), '練功變強');
+  if (facStage(s, 'yard').offers.includes('spar') && n.energy > 45 && chatMates(s, d).some((o) => o.needs.energy > 45)) add('spar', 34 * (tr.diligent || 1), '找人切磋');
   const wood = s.res.wood + s.ds.reduce((a, o) => a + (o.task?.act === 'chop' ? 1 : 0), 0);
   if (wood < s.cap.wood) add('chop', siteOf(s) ? 50 : 28, siteOf(s) ? '工地缺木' : '備柴');
   add('farm', s.plots.some((p) => p.st === 'ripe') ? 50 : 30, s.plots.some((p) => p.st === 'ripe') ? '菜熟了' : '菜畦空著該播種');
@@ -124,12 +126,12 @@ function assign(s, d, act, why) {
     else return false;
     d.reason = why; return true;
   }
-  if (act === 'chat') {
+  if (act === 'chat' || act === 'spar') {
     const p = chatMates(s, d).sort((a, b) => (s.rel[relKey(b.id, d.id)] || 0) - (s.rel[relKey(a.id, d.id)] || 0))[0];
     if (!p) return false;
-    if (p.task) cancelTask(s, p, `被${d.name}拉去聊天`);
-    const node = 'court'; d.task = { act, node, phase: 'go', partner: p.id }; p.task = { act, node, phase: 'go', partner: d.id };
-    goto(d, node); goto(p, node); d.reason = why; p.reason = `${d.name}找來聊天`; return true;
+    if (p.task) cancelTask(s, p, `被${d.name}拉去${act === 'spar' ? '切磋' : '聊天'}`);
+    const node = act === 'spar' ? 'yard' : 'court'; d.task = { act, fac: 'yard', node, phase: 'go', partner: p.id }; p.task = { act, fac: 'yard', node, phase: 'go', partner: d.id };
+    goto(d, node); goto(p, node); d.reason = why; p.reason = act === 'spar' ? `${d.name}邀來切磋` : `${d.name}找來聊天`; return true;
   }
   if (act === 'eat' && s.res.food <= 0) return false;
   if (act === 'cook') { if (s.res.veg - s.vegRes < 2) return false; s.vegRes += 2; }
@@ -163,8 +165,9 @@ function moveStep(d, dt) {
 }
 
 function grow(s, d, sk, amt) {
+  if (sk === 'style') sk = d.style;
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130));
-  if (sk === 'palm') for (const m of MOVES) if (!d.moves.includes(m.id) && d.skills.palm >= m.req && d.pendingMove !== m.id && !d.pendingMove) { d.pendingMove = m.id; log(s, `${d.name}掌法到了火候，可向師父求學「${m.name}」`); }
+  for (const m of MOVES) if (m.skill === sk && !d.moves.includes(m.id) && d.skills[sk] >= m.req && d.pendingMove !== m.id && !d.pendingMove) { d.pendingMove = m.id; log(s, `${d.name}${sk === 'palm' ? '掌法' : '腿法'}到了火候，可向師父求學「${m.name}」`); }
 }
 
 function relAdd(s, a, b, amt) {
@@ -194,6 +197,7 @@ function doTask(s, d, dt) {
   if (t.phase === 'do') {
     if (t.act === 'build') { const site = s.fac[t.fac].site; if (!site) { d.task = null; d.anim = null; return; } }
     t.timer += dt;
+    if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = s.ds.find((x) => x.id === t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
     if (A.energy) d.needs.energy = clamp(d.needs.energy + A.energy * dt / A.dur, 0, 100);
     if (t.act === 'rest') { const rate = facStage(s, t.fac).restRate || 3; d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= 80 && t.timer > 4))) finish(s, d); return; }
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
@@ -203,7 +207,8 @@ function doTask(s, d, dt) {
       if (t.act === 'farm') { const p = s.plots[t.plot]; p.busy = null; grow(s, d, 'farming', 6); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) d.needs.social = clamp(d.needs.social + b / 2, 0, 100); }
-      if (A.skill) for (const [k, v] of Object.entries(A.skill)) grow(s, d, k, v);
+      if (A.skill) for (const [k, v] of Object.entries(A.skill)) grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? facStage(s, 'yard').trainMul : 1));
+      if (t.act === 'spar' && t.partner) { const p = s.ds.find((x) => x.id === t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在木樁場切磋`); } }
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
       if (t.act === 'learn' && d.pendingMove) { const m = MOVES.find((x) => x.id === d.pendingMove); d.moves.push(m.id); d.pendingMove = null; log(s, `師父傳授${d.name}「${m.name}」！`); }
       if (t.act === 'chat' && t.partner) { const p = s.ds.find((x) => x.id === t.partner); if (d.id < p.id) relAdd(s, d, p, 4 * Math.max(d.traits.social || 1, p.traits.social || 1)); }
@@ -255,12 +260,12 @@ function huntStep(s, dt) {
     const ms = d.moves.map((id) => MOVES.find((m) => m.id === id)).sort((a, b) => b.dmg * (1 + (b.aoe ? 1 : 0)) - a.dmg * (1 + (a.aoe ? 1 : 0)));
     const live = s.mons.filter((m) => !m.gone && m.hp > 0);
     for (const mv of ms) {
-      const reach = mv.range * (1 + d.skills.palm / 200);
+      const lv = d.skills[mv.skill]; const reach = mv.range * (1 + lv / 200);
       const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
-      const power = mv.dmg * (1 + d.skills.palm / 50);
+      const power = mv.dmg * (1 + lv / 50);
       const hitList = mv.aoe ? live.filter((m) => dist(m.pos, tgt.pos) <= mv.aoe) : [tgt];
       for (const m of hitList) { m.hp -= power; if (m.hp <= 0) { m.gone = true; h.kills++; log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') s.res.food += 3; } }
-      h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, 'palm', 1.5);
+      h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5);
       d.cool = mv.cd; d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike';
       s.fx.push({ kind: 'move', name: mv.name, color: mv.color, from: [...d.pos], to: [...tgt.pos], r: mv.aoe || 16, ttl: 0.6 });
       d.needs.energy = clamp(d.needs.energy - 1, 0, 100);

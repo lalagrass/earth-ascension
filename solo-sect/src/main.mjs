@@ -1,5 +1,5 @@
-import { phaseOf, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf } from './sim.mjs';
-import { NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS } from './data.mjs';
+import { phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf } from './sim.mjs';
+import { STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS } from './data.mjs';
 const cv = document.getElementById('map'), g = cv.getContext('2d');
 const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile', 'kitchen_s1'];
 await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i.onload = r; i.onerror = r; i.src = `assets/${n}.${n === 'ground' ? 'jpg' : 'png'}`; IMG[n] = i; })));
@@ -10,7 +10,7 @@ const BG = document.createElement('canvas'); BG.width = 1600; BG.height = 1000;
 let S = createState(Date.now() % 100000 | 0), speed = 1;
 window.__sect = { get S() { return S; }, set speed(v) { speed = v; } };
 const SCENERY = [['pine', 140, 200], ['pine', 300, 380], ['bamboo', 60, 420], ['pine', 1320, 120], ['pine', 1500, 300], ['bamboo', 1200, 300], ['pine', 1420, 420], ['bench', 1100, 660], ['pine', 200, 640]];
-const ACT_ICON = { cook: '🍲', deliver: '📦', rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔' };
+const ACT_ICON = { spar: '🤺', cook: '🍲', deliver: '📦', rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔' };
 function draw() {
   g.drawImage(BG, 0, 0);
   // 後山
@@ -27,7 +27,8 @@ function draw() {
     const st = facStage(S, f.id), [x, y] = NODES[f.node], fs = S.fac[f.id];
     items.push({ y: y - 1, f: () => {
       if (st.sprite) sprite(st.sprite, x, y + 10);
-      if (f.id === 'yard') { g.fillStyle = 'rgba(180,150,100,.35)'; g.beginPath(); g.ellipse(x, y, 90, 45, 0, 0, 7); g.fill(); }
+      if (f.id === 'yard') { g.fillStyle = 'rgba(180,150,100,.35)'; g.beginPath(); g.ellipse(x, y, 90, 45, 0, 0, 7); g.fill();
+        for (let k = 0; k < (st.dummies || 0); k++) { const dx = x - 60 + k * 50, dy = y - 15; g.fillStyle = '#6b4a2a'; g.fillRect(dx - 4, dy - 40, 8, 40); g.fillRect(dx - 14, dy - 32, 28, 5); g.fillRect(dx - 12, dy - 20, 24, 4); } }
       label(`${f.name}・${st.name}`, x, y + 28, '#3a2f24');
       if (fs.site) { const s = fs.site; label(`工地 木${s.delivered}/${s.need.wood} 工${s.work.toFixed(0)}/${s.workNeed}s`, x, y + 46, '#a0461e'); }
     } });
@@ -59,7 +60,7 @@ function label(t, x, y, c) { g.font = '15px sans-serif'; g.textAlign = 'center';
 function hp(x, y, r, c) { g.fillStyle = '#0006'; g.fillRect(x - 20, y, 40, 5); g.fillStyle = c; g.fillRect(x - 20, y, 40 * Math.max(0, r), 5); }
 const $ = (id) => document.getElementById(id);
 const bar = (v, c) => `<div class="bar"><i style="width:${v}%;background:${c}"></i></div>`;
-const ORD = [['', '自主'], ...['train', 'chop', 'farm', 'cook', 'forage', 'build', 'rest', 'eat'].map((k) => [k, ACTIVITIES[k].name])];
+const ORD = [['', '自主'], ...['train', 'spar', 'chop', 'farm', 'cook', 'forage', 'build', 'rest', 'eat'].map((k) => [k, ACTIVITIES[k].name])];
 let lastPanel = 0;
 function panel() {
   const ph = phaseOf(S); $('clock').textContent = `第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×`;
@@ -70,14 +71,15 @@ function panel() {
   if (!S.hunt) $('hunt-go').onclick = () => startHunt(S, ['hero', 'senior']);
   $('ds').innerHTML = S.ds.map((d) => `<div class="card"><b>${d.name}</b> <span class="k">${d.adult ? '' : '（少年）'}${d.task ? (ACTIVITIES[d.task.act]?.name || '狩獵') : '待命'}｜${d.reason}</span>
    <div class="k">精力 ${d.needs.energy | 0}</div>${bar(d.needs.energy, '#d9a441')}<div class="k">飽足 ${d.needs.hunger | 0}</div>${bar(d.needs.hunger, '#7aa35a')}<div class="k">交流 ${d.needs.social | 0}</div>${bar(d.needs.social, '#c77')}
-   <div class="k">掌法 ${d.skills.palm.toFixed(1)}・腳力 ${d.skills.agility.toFixed(1)}（${speedOf(d).toFixed(0)}px/s）・力氣 ${d.skills.strength.toFixed(1)}・農 ${d.skills.farming.toFixed(1)}・廚 ${d.skills.cooking.toFixed(1)}</div>
+   <div class="k">主修 ${STYLES[d.style]}・掌 ${d.skills.palm.toFixed(1)}・腿 ${d.skills.leg.toFixed(1)}・腳力 ${d.skills.agility.toFixed(1)}（${speedOf(d).toFixed(0)}px/s）・力氣 ${d.skills.strength.toFixed(1)}・農 ${d.skills.farming.toFixed(1)}・廚 ${d.skills.cooking.toFixed(1)}</div>
    <div>${d.moves.map((m) => `<span class="mv">${MOVES.find((x) => x.id === m).name}</span>`).join('')}${d.pendingMove ? `<span class="mv new">可學：${MOVES.find((x) => x.id === d.pendingMove).name}</span>` : ''}</div>
+   <select data-style="${d.id}">${Object.entries(STYLES).map(([k, n]) => `<option value="${k}" ${d.style === k ? 'selected' : ''}>主修${n}</option>`).join('')}</select>
    <select data-ord="${d.id}">${ORD.map(([k, n]) => `<option value="${k}" ${(d.order || '') === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`).join('');
   $('rel').innerHTML = Object.entries(S.rel).map(([k, v]) => { const [a, b] = k.split('|').map((id) => S.ds.find((d) => d.id === id).name); return `<div>${a}—${b}：${relStage(v)} ${v.toFixed(0)}${S.families.includes(k) ? ' 🏠' : ''}</div>`; }).join('');
   $('log').innerHTML = S.log.slice(0, 30).map((l) => `<li>[${l.t}s] ${l.msg}</li>`).join('');
 }
 document.addEventListener('click', (e) => { const b = e.target.closest('[data-build],[data-speed]'); if (!b) return; if (b.dataset.build) startBuild(S, b.dataset.build); if (b.dataset.speed) speed = +b.dataset.speed; panel(); });
-document.addEventListener('change', (e) => { if (e.target.dataset.ord) { setOrder(S, e.target.dataset.ord, e.target.value || null); panel(); } });
+document.addEventListener('change', (e) => { if (e.target.dataset.style) setStyle(S, e.target.dataset.style, e.target.value); if (e.target.dataset.ord) { setOrder(S, e.target.dataset.ord, e.target.value || null); panel(); } });
 $('save').onclick = () => { localStorage.setItem('solo-sect-save', save(S)); alert('已存檔'); };
 $('load').onclick = () => { const r = load(localStorage.getItem('solo-sect-save') || ''); if (r.ok) S = r.state; else alert(r.err); panel(); };
 $('reset').onclick = () => { S = createState(Date.now() % 100000 | 0); panel(); };
