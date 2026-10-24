@@ -95,6 +95,7 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   function of(id, p) {
     // LP-11：清理中直接用模型在權威 tick 取樣的場景位置（palm.mjs 同一幾何），畫面不另算。
     if (p.drinkLeg) return drinkPlace(id, { ...p.drinkLeg, mode: p.mode });
+    if (p.patrolling) return { x: p.pos.x, y: p.pos.y, face: p.cface, route: null, geo: p.mode, travelled: p.walked }; // SG-PATROL-01：巡山同用模型 pos
     if (p.cleaning) return { x: p.pos.x, y: p.pos.y, face: p.cface, route: null, geo: p.mode, travelled: p.walked };
     if (p.mode === 'toFix' || p.mode === 'fromFix') return { ...guardPlace(FIX_AS[p.mode], p.fixLeg.k), geo: p.mode };
     if (p.mode === 'fix') return { ...guardPlace('guardWait', 1), geo: 'fix' };

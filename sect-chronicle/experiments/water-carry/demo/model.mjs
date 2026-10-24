@@ -24,6 +24,9 @@
 // 原趟交付完、必要恢復到 80、休閒真返院後，院中端點合法才受理；依自主護院→整理→清鼠→下一趟工作優先序，同 tick 依 AUTO_ORDER 只取一位。
 // auto／manual 來源分明；有效人工改令撤候補並抑制該人自主清鼠，直到玩家明確重新允許。關允許只取消 auto 來源、保留 manual。示意見 docs/LP12_HANDOFF.md。
 import { HOME, RATS, EXIT, PALM, SKILLS, GO_NODES, HOME_NODES, dist, inZone, validRat, nearest, standFor, stepToward, legs } from './palm.mjs';
+// SG-PATROL-01：巡山狀態邏輯與林鼠初態（幾何在 patrol-layout.mjs）。
+import { createPatrol, PATROL_MODES, PATROL_LABEL, PATROL_END, PATROL_RESULT, freshForestRats } from './patrol.mjs';
+export { PATROL_MODES, PATROL_LABEL, PATROL_END, PATROL_RESULT };
 export const STEP_MS = 1000 / 60;
 
 export const RULES = Object.freeze({
@@ -168,8 +171,14 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     // 野豬：d＝離棲地沿固定路的距離；visit 是最近一次來訪編號，active＝這次來訪仍可派人（退走開始即失效）。
     boar: { mode: 'habitat', e: B.start * Q, t: B.threatStart * Q, d: 0, leg: null, steps: 0, need: 0, visit: 0, active: false, hits: 0, marks: 0, why: null, last: null },
     shadow: { active: false, job: null, phase: null, steps: 0, need: null },
+    // SG-PATROL-01：patrol＝全場唯一巡山名額（null 或進行中）；patrolReport＝最近一份戰報；patrolLog＝有界活動摘要；prats＝三隻林鼠（新局才重設）。
+    patrol: null, patrolReport: null, patrolLog: [], prats: freshForestRats(),
     log: [],
   };
+  const pt = createPatrol({ s, rules, ids, Q, B, walkSteps, idle, GUARD_MODES, FIX_MODES, shoutSteps: msSteps(B.shoutMs), boarAt: sense.boarAt,
+    nameOf: (id) => nameOf(id), cleaning: (p) => cleaning(p), jobLabel: (j) => JOBS[j].label, atHome: (p) => atHome(p), atHomeLife: (p) => atHome(p),
+    goSeat: (p) => goSeat(p), assignee: () => assignee(), boarFlee: (why) => boarFlee(why), personAt: (p) => personAt(p) });
+  const patrolling = (p) => pt.active(p); // 含等待與返院：真到院才釋放
   // 存放處：數量、容量與在途預約；挑水沿用舊欄位名 vat／inFlight。
   const store = (job) => job === 'herb'
     ? { amount: s.herbs, inFlight: s.herbInFlight, cap: rules.herbCapacity }
@@ -179,7 +188,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   const reserve = (job, d) => { if (job === 'herb') s.herbInFlight += d; else s.inFlight += d; };
 
   function depart(p) {
-    if (p.motion.mode !== 'idle' || p.rest || p.guardOrder != null || p.fix || cleaning(p) || full(p.job)) return false;
+    if (p.motion.mode !== 'idle' || p.rest || p.guardOrder != null || p.fix || cleaning(p) || patrolling(p) || full(p.job)) return false;
     p.motion = { mode: 'carry', job: p.job, phase: 0, steps: 0, need: phaseSteps(speedsFor(p.level, rules), lengths[p.job], rules), tripLevel: p.level, tripStart: s.tick };
     reserve(p.job, 1);
     if (p.id === 'hero') s.shadow = { active: true, job: p.job, phase: 0, steps: 0, need: phaseSteps(speedsFor(p.initialLevel, rules), lengths[p.job], rules) };
@@ -220,6 +229,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (p.rest !== 'manual' && p.energy <= E.restAt) { p.rest = 'auto'; p.why = `精力 ${Math.floor(p.energy)} ≤ ${E.restAt}，自己去恢復`; }
     if (p.rest) goSeat(p);
     else if (cleaning(p) && s.clean.phase === 'wait') goClean(p);
+    else if (patrolling(p) && s.patrol.phase === 'wait') pt.atHome(p);
     else if (p.fix === 'wait') goFix(p);
     else if (p.guardOrder != null && guardLive(p)) goGuard(p);
     else { if (p.guardOrder != null) expireGuard(p); p.motion = idle(p.level); p.why = null; }
@@ -263,7 +273,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (p.suppress === v) return 'player';
     if (p.tried === v) return 'tried';
     if (p.rest === 'manual' || p.pending === 'rest' || p.recall) return 'held';
-    if (p.guardOrder != null || cleaning(p)) return 'self';
+    if (p.guardOrder != null || cleaning(p) || patrolling(p)) return 'self';
     if (who && who !== p.id) return 'peer';
     return null;
   }
@@ -400,6 +410,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (m === 'fromFix') return '正從護欄返院：回到院中後才能再派';
     if (p.guardOrder != null || GUARD_MODES.includes(m)) return '正在驅離野豬（含返院）：回院中後再派';
     if (cleaning(p)) return '正在清理測試鼠（含返院）：回院中後再派';
+    if (patrolling(p)) return '正在巡山（含返院）：回院中後再派';
     if (s.boar.marks <= 0) return '護欄沒有損痕';
     if (boarSeen()) return '看得見野豬：等牠離開視線再整理';
     if (p.rest === 'manual') return '已停工：下令開始工作才解除';
@@ -426,7 +437,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (p.upSuppress === s.contact) return 'player';
     if (p.rest === 'manual' || p.pending === 'rest' || p.recall) return 'held';
     if (p.guardOrder != null) return 'guard';
-    if (p.fix || cleaning(p)) return 'self';
+    if (p.fix || cleaning(p) || patrolling(p)) return 'self';
     if (s.fixBy) return 'peer';
     if (boarSeen()) return 'threat';
     if (s.boar.marks <= 0) return 'clean';
@@ -509,6 +520,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (p.pending === 'rest') return '已排定本趟後停工';
     if (p.guardOrder != null || GUARD_MODES.includes(m)) return '正在驅離野豬（含返院）：回院中後再派';
     if (p.fix || FIX_MODES.includes(m)) return '正在整理護欄（含返院）：回院中後再派';
+    if (patrolling(p)) return '正在巡山（含返院）：回院中後再派';
     if (!s.rats.some(validRat)) return '範圍內沒有有效的測試鼠';
     return '';
   }
@@ -595,10 +607,10 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       phase: h.mode === 'carry' ? { name: JOBS[h.job].phases[h.phase], k: Math.min(1, h.steps / h.need[h.phase]) } : null,
       restLeg: leg, funLeg: leg, guardLeg: leg, fixLeg: leg,
       drinkLeg: DRINK_MODES.includes(h.mode) ? { k, span: h.span ?? 1, from: h.from } : null,
-      cleaning: CLEAN_MODES.includes(h.mode), pos: p.pos, cface: p.cface, walked: p.walked };
+      cleaning: CLEAN_MODES.includes(h.mode), patrolling: PATROL_MODES.includes(h.mode), pos: p.pos, cface: p.cface, walked: p.walked };
   }
   // 人物目前的場景位置：清理中讀模型 pos；其餘由共用純幾何取樣（沒提供就沒有位置）。
-  const personAt = (p) => (CLEAN_MODES.includes(p.motion.mode) ? p.pos : sense.placeOf ? sense.placeOf(p.id, geoView(p)) : null);
+  const personAt = (p) => (CLEAN_MODES.includes(p.motion.mode) || PATROL_MODES.includes(p.motion.mode) ? p.pos : sense.placeOf ? sense.placeOf(p.id, geoView(p)) : null);
   function ratStep() {
     for (const r of s.rats) {
       if ((r.mode !== 'flee' && r.mode !== 'gone') || r.exit >= EXIT.length) continue;
@@ -644,6 +656,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (!p) return { ok: false, reason: '沒有這個工作者' };
     if (!SKILLS[skill]) return { ok: false, reason: '沒有這個掌法設定' };
     if (s.clean) return { ok: false, reason: '有清理任務（含等待與返院）：真返院後才能換掌法比較設定' };
+    if (s.patrol) return { ok: false, reason: '有巡山任務（含等待與返院）：真返院後才能換掌法比較設定' };
     if (p.palm !== skill) { p.palm = skill; clog(p, 'palm:skill', { skill }); }
     return { ok: true, text: `掌法比較 fixture：${SKILLS[skill].label}（起手 ${SKILLS[skill].windup}／收勢 ${SKILLS[skill].recover} tick）` };
   }
@@ -668,7 +681,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (!p.cleanAllow) return 'off';
     if (p.cleanSuppress) return 'player';
     if (p.rest === 'manual' || p.pending === 'rest' || p.recall) return 'held';
-    if (cleaning(p)) return 'self';
+    if (cleaning(p) || patrolling(p)) return 'self';
     if (!s.rats.some(validRat)) return 'none';
     return null;
   }
@@ -698,7 +711,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       const p = s.people[id];
       if (!p || !p.cleanAllow || p.cleanSuppress || p.motion.mode !== 'idle' || p.rest) continue;
       if (p.rest === 'manual' || p.pending === 'rest' || p.recall) continue;
-      if (p.guardOrder != null || p.fix || cleaning(p)) continue;
+      if (p.guardOrder != null || p.fix || cleaning(p) || patrolling(p)) continue;
       if (p.energy <= E.restAt) continue;
       p.cleanWant = false;
       cleanNote(p, 'go');
@@ -798,7 +811,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   }
   // 停工或待恢復（rest 非空）都要離開休閒；恢復自主只清叫回，不能讓待恢復的人卡在活動點。
   // LP-12：自主清鼠意願成立時亦離開休閒，沿 fromFun 返院後在院中端點重新查驗受理。
-  const funOver = (p) => !!p.rest || p.recall || p.guardOrder != null || !!p.fix || cleaning(p) || wants(p) || wantsUp(p) || wantsClean(p) || (thirsty(p) && s.vat >= D.cost) || slotFor(p);
+  const funOver = (p) => !!p.rest || p.recall || p.guardOrder != null || !!p.fix || cleaning(p) || patrolling(p) || wants(p) || wantsUp(p) || wantsClean(p) || (thirsty(p) && s.vat >= D.cost) || slotFor(p);
   function goBack(p) {
     p.why = `精力恢復到 ${E.backAt}，自己回去`;
     p.motion = { mode: 'back', job: null, phase: null, steps: 0, need: walkSteps(p.level, seatLen(p.id), rules), tripLevel: p.level };
@@ -807,7 +820,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
 
   // ---------- SG-LIFE-01 自主飲水 ----------
   const thirsty = (p) => !!D && p.waterQ <= wq(D.want);
-  const busyElse = (p) => p.guardOrder != null || !!p.fix || cleaning(p) || wants(p) || wantsUp(p) || wantsClean(p);
+  const busyElse = (p) => p.guardOrder != null || !!p.fix || cleaning(p) || patrolling(p) || wants(p) || wantsUp(p) || wantsClean(p);
   function drinkNote(p, kind) {
     if (p.drinkNote === kind) return;
     p.drinkNote = kind;
@@ -930,6 +943,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     }
     // LP-11：鼠移動→清理者移動／起手／接觸→察覺；回到院中的清理者在護院／整理判斷與出發迴圈之前就已重查生活。
     cleanStep();
+    // SG-PATROL-01：林鼠移動→巡山者移動／觀察／出掌／喝止→林鼠察覺；到院者在護院／整理判斷與出發迴圈之前已重查生活。
+    pt.step();
     // LP-07：人物結算後、原工作出發迴圈前，集中判意願與正式受理；回到院中端點的人先決定是否護院，才會接下一趟。
     wantStep();
     acceptStep();
@@ -950,7 +965,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     // 出發輪替之後才看閒暇：有合法容量一定先工作；只在實存滿時去休閒，僅在途占滿就留在院中等。
     for (const id of ids) {
       const p = s.people[id];
-      if (p.motion.mode === 'idle' && !p.rest && !p.recall && p.guardOrder == null && !cleaning(p) && !wants(p) && !wantsUp(p) && !wantsClean(p) && p.energy > E.restAt && prefs[id] && stocked(p.job)) goFun(p);
+      if (p.motion.mode === 'idle' && !p.rest && !p.recall && p.guardOrder == null && !cleaning(p) && !patrolling(p) && !wants(p) && !wantsUp(p) && !wantsClean(p) && p.energy > E.restAt && prefs[id] && stocked(p.job)) goFun(p);
     }
     // 人的工作交付、移動與喝止進度都先結算完，最後才結算野豬（誘因看交付後的實存）。
     boarStep();
@@ -1051,6 +1066,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     cancelGuard(p); // 較新的改工作／開始取消尚未完成的驅離
     dropFix(p, 'canceled'); // 也取消尚未完成的整理；前往途中走完這段再回
     cancelClean(p); // 也取消清理；前往途中走完這段、起手／收勢中立刻返院
+    pt.cancel(p); // 也召回巡山：前進中走完當前短段，其餘立刻沿原路返院
     if (DRINK_MODES.includes(mode)) {
       const cut = cancelDrink(p);
       p.job = job; p.pending = null;
@@ -1094,6 +1110,12 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       p.why = p.rest === 'auto' ? `已解除停工；精力未到 ${E.backAt}，先恢復` : null;
       return { ok: true, text: mode === 'toRat' ? `取消清理：走完這段後回院中${name}` : `回院中後${name}` };
     }
+    if (PATROL_MODES.includes(mode)) {
+      p.job = job; p.pending = null;
+      if (p.rest === 'manual') p.rest = p.energy < E.backAt ? 'auto' : null;
+      p.why = p.rest === 'auto' ? `已解除停工；精力未到 ${E.backAt}，先恢復` : null;
+      return { ok: true, text: `巡山召回：真回到院中後${name}` };
+    }
     // 驅離往返中：只改要回去的工作；去防守點途中走完這段，等候／喝止中已立刻返院。停工中的明確開始照 LP-04 解除，未到 80 先恢復。
     if (GUARD_MODES.includes(mode)) {
       p.job = job; p.pending = null;
@@ -1117,6 +1139,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     p.recall = true; p.why = '玩家叫回';
     dropFix(p, 'canceled'); // 有效叫回也取消待整理
     cancelClean(p); // 也取消尚未出發的清理
+    pt.cancel(p);
     s.log.push({ tick: s.tick, person: p.id, kind: 'recall', job: p.job });
     const m = p.motion.mode;
     return { ok: true, text: m === 'toFun' ? `走到${prefs[p.id].place}後回院中${name}` : m === 'fun' ? `起身回院中${name}` : `回到院中就${name}；沒有空位就待命` };
@@ -1128,14 +1151,20 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (!a) return { ok: false, reason: '沒有這個指令' };
     if (!a.enabled) return { ok: false, reason: a.reason };
     // LP-07：以下有效指令（改工作／開始／停工／取消待執行／叫回）清該人候補並抑制本訪自主；拒絕的已在上面返回。
-    if (['start', 'restAfterTrip', 'cancel', 'recall', 'fix', 'fixCancel', 'clean', 'cleanCancel'].includes(cmd) || cmd.startsWith('work:')) override(p);
+    if (['start', 'restAfterTrip', 'cancel', 'recall', 'fix', 'fixCancel', 'clean', 'cleanCancel', 'patrol', 'patrolCancel'].includes(cmd) || cmd.startsWith('work:')) override(p);
     // LP-09：同一批有效指令＋人工護院也清當人整理候補、抑制目前碰撞機會（與 LP07 的本訪抑制分開記）。
-    if (['start', 'restAfterTrip', 'cancel', 'recall', 'fixCancel', 'guard', 'clean', 'cleanCancel'].includes(cmd) || cmd.startsWith('work:')) upOverride(p);
+    if (['start', 'restAfterTrip', 'cancel', 'recall', 'fixCancel', 'guard', 'clean', 'cleanCancel', 'patrol', 'patrolCancel'].includes(cmd) || cmd.startsWith('work:')) upOverride(p);
     // LP-12：有效人工改令撤當人清鼠候補並抑制自主清鼠直到明確重新允許。
-    if (['start', 'restAfterTrip', 'cancel', 'recall', 'guard', 'fix', 'fixCancel', 'clean', 'cleanCancel'].includes(cmd) || cmd.startsWith('work:')) cleanOverride(p);
+    if (['start', 'restAfterTrip', 'cancel', 'recall', 'guard', 'fix', 'fixCancel', 'clean', 'cleanCancel', 'patrol', 'patrolCancel'].includes(cmd) || cmd.startsWith('work:')) cleanOverride(p);
     // SG-LIFE-01：會改變去向的有效指令先取消未喝完的水（走回已走的那段），返院後照指令走。
-    if (['restAfterTrip', 'guard', 'fix', 'clean'].includes(cmd)) cancelDrink(p);
+    if (['restAfterTrip', 'guard', 'fix', 'clean', 'patrol'].includes(cmd)) cancelDrink(p);
     if (cmd === 'clean') return cleanOrder(p);
+    if (cmd === 'patrol') return pt.order(p);
+    if (cmd === 'patrolCancel') {
+      const m = p.motion.mode, waiting = s.patrol.phase === 'wait';
+      pt.cancel(p);
+      return { ok: true, text: waiting ? '取消巡山：還沒出發，名額已釋放，原工作照舊' : m === 'patrolGo' ? '召回：走完這段後沿原路返院' : m === 'patrolWind' ? '召回：收手返院（這掌未出，已花 2 精力不退）' : '召回：沿原路返院' };
+    }
     if (cmd === 'cleanCancel') {
       const m = p.motion.mode, waiting = s.clean.phase === 'wait';
       cancelClean(p);
@@ -1155,6 +1184,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       cancelGuard(p);
       dropFix(p, 'canceled');
       cancelClean(p);
+      pt.cancel(p);
       const mode = p.motion.mode;
       if (mode === 'carry') { p.pending = 'rest'; return { ok: true, text: `本趟${JOBS[p.motion.job].label}交付後停工休息`, pending: true }; }
       p.rest = 'manual'; p.why = '玩家下令停工'; p.pending = null; p.recall = false;
@@ -1168,7 +1198,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       if (mode === 'toFix') return { ok: true, text: '走到護欄後回院中，再去座位停工' };
       if (mode === 'toRat') return { ok: true, text: '取消清理：走完這段後回院中，再去座位停工' };
       if (mode === 'fromDrink') return { ok: true, text: '從水缸回院中後去座位停工' };
-      if (CLEAN_MODES.includes(mode)) return { ok: true, text: '回院中後去座位停工' };
+      if (CLEAN_MODES.includes(mode) || PATROL_MODES.includes(mode)) return { ok: true, text: '回院中後去座位停工' };
       return { ok: true, text: '改為停工：回滿也不會自己開工' };
     }
     if (cmd === 'recall') return recall(p);
@@ -1190,7 +1220,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
 
   const guardBusy = (p) => ['toGuard', 'guardWait', 'shout'].includes(p.motion.mode);
   const nameOf = (id) => (id === 'hero' ? '主角' : id === 'cousin' ? '熟手' : id);
-  const assignee = () => (s.boar.active ? ids.find((id) => s.people[id].guardOrder === s.boar.visit) || null : null);
+  // SG-PATROL-01：巡山者喝止時沿用同一 visit 的唯一處理名額（不搶別人的）。
+  const assignee = () => (s.boar.active ? ids.find((id) => s.people[id].guardOrder === s.boar.visit) || (s.patrol && s.patrol.boarVisit === s.boar.visit ? s.patrol.by : null) : null);
   // 派遣驅離：只接受這次有效來訪；同一來訪最多一人；已在處理不重啟。工作／恢復中只記意圖，交付或恢復到 80 後目標仍在才出發。
   function guard(p) {
     p.guardOrder = s.boar.visit; p.guardResult = null; p.guardSrc = 'manual';
@@ -1214,9 +1245,9 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const cur = carrying ? p.motion.job : p.job;
     const stopped = p.rest === 'manual', fun = ['toFun', 'fun', 'fromFun'].includes(p.motion.mode);
     const guarding = GUARD_MODES.includes(p.motion.mode), g = guarding || p.guardOrder != null;
-    const fixing = FIX_MODES.includes(p.motion.mode), f = fixing || !!p.fix || cleaning(p);
+    const fixing = FIX_MODES.includes(p.motion.mode), f = fixing || !!p.fix || cleaning(p) || patrolling(p);
     const drinking = DRINK_MODES.includes(p.motion.mode);
-    const inRest = p.motion.mode !== 'idle' && !carrying && !fun && !guarding && !fixing && !drinking && !CLEAN_MODES.includes(p.motion.mode);
+    const inRest = p.motion.mode !== 'idle' && !carrying && !fun && !guarding && !fixing && !drinking && !CLEAN_MODES.includes(p.motion.mode) && !PATROL_MODES.includes(p.motion.mode);
     // 已在做這份工作、也沒有別的待執行時，再下同一工作沒有意義。
     const workOpt = (job) => {
       const name = JOBS[job].label;
@@ -1248,10 +1279,18 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       { id: 'fixCancel', label: '取消本次整理', detail: p.motion.mode === 'toFix' ? '走到護欄後直接返院；不清痕' : p.motion.mode === 'fix' ? '停手返院；這一階未完成、已花的時間精力不退' : '只取消整理，原工作／叫回／恢復照舊',
         enabled: !!p.fix, hidden: !p.fix, reason: '沒有未完成的整理' },
       cleanOpt(p),
+      patrolOpt(p),
+      { id: 'patrolCancel', label: '召回巡山', detail: p.motion.mode === 'patrolGo' ? '走完這段後沿原路返院' : p.motion.mode === 'patrolWind' ? '收手返院；這掌已花 2 精力不退' : s.patrol && s.patrol.phase === 'wait' ? '還沒出發：立即釋放名額，原工作照舊' : '沿原路返院',
+        enabled: patrolling(p) && s.patrol.phase !== 'back' && !s.patrol.cancel, hidden: !patrolling(p), reason: patrolling(p) ? '已在返院：到院中才釋放名額' : '沒有巡山任務' },
       { id: 'cleanCancel', label: '取消清理', detail: p.motion.mode === 'toRat' ? '走完這段後返院' : p.motion.mode === 'windup' ? '收手返院；這掌已花 2 精力不退' : p.motion.mode === 'recover' ? '已接觸的結果保留，返院' : '還沒出發：立即釋放名額，原工作照舊',
         enabled: cleaning(p) && s.clean.phase !== 'back', hidden: !cleaning(p), reason: cleaning(p) ? '已在返院：到院中才釋放名額，不重複取消' : '沒有清理任務' },
       { id: 'upCancel', label: '取消整理意願', detail: '只取消這輪自己去整理的意願；不解除停工／叫回／恢復', enabled: wantsUp(p), hidden: !wantsUp(p), reason: '沒有整理意願' },
     ];
+  }
+  function patrolOpt(p) {
+    const reason = pt.reason(p);
+    return { id: 'patrol', label: '巡山一趟', detail: p.motion.mode === 'carry' ? '本趟交付後出西柵巡山（S0→S3），精力只夠返程就回' : '出西柵巡山（S0→S3）：看見林鼠出掌、靠近的野豬喝止，精力只夠返程就回',
+      enabled: !reason, reason, hidden: false };
   }
   function cleanOpt(p) {
     const reason = cleanReason(p);
@@ -1270,7 +1309,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         : who ? `${nameOf(who)}已在處理；要換人先對${nameOf(who)}改工作或停工`
           : stopped ? '已停工：下令開始工作才解除' : p.pending === 'rest' ? '已排定本趟後停工'
             : p.fix || FIX_MODES.includes(p.motion.mode) ? '正在整理護欄（含返院）：先回院中再派驅離'
-              : cleaning(p) ? '正在清理測試鼠（含返院）：先回院中再派驅離' : '';
+              : cleaning(p) ? '正在清理測試鼠（含返院）：先回院中再派驅離'
+                : patrolling(p) ? '正在巡山（含返院）：巡山中看見靠近的野豬會自己喝止' : '';
     return { id: 'guard', label: '驅離野豬', detail: p.motion.mode === 'carry' ? '本趟交付後去防守點；野豬到護欄時喝止' : '走去防守點；野豬到護欄時喝止，已走就返院',
       enabled: !reason, reason, hidden: !b.active && p.guardOrder == null };
   }
@@ -1294,6 +1334,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
                   : GUARD_LABEL[h.mode] ? GUARD_LABEL[h.mode]
                   : FIX_LABEL[h.mode] ? FIX_LABEL[h.mode]
                   : DRINK_LABEL[h.mode] ? (h.mode === 'fromDrink' && p.drinkNote === 'canceled' ? '沒喝完，返回' : DRINK_LABEL[h.mode])
+                  : PATROL_LABEL[h.mode] ? (h.mode === 'patrolGo' && s.patrol && s.patrol.cancel ? '已召回，走完這段' : PATROL_LABEL[h.mode])
                   : CLEAN_LABEL[h.mode] ? (h.mode === 'toRat' && s.clean && s.clean.phase === 'back' ? '清理已取消，走完這段' : CLEAN_LABEL[h.mode])
             : p.recall ? (st.amount + st.inFlight >= st.cap ? `玩家叫回，等${place}空位` : '玩家叫回，準備出發')
             : st.amount >= st.cap ? (p.job === 'herb' ? '等空位（藥架已滿，藥草不會自己耗用）' : '等用水（水缸已滿）')
@@ -1318,7 +1359,11 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       : h.mode === 'drink' ? `喝滿 ${D.drinkMs / 1000} 秒才結算（水缸 ${s.vat}）`
         : h.mode === 'fromDrink' ? (h.from === 'seat' && stopped ? '回座位繼續停工' : stopped ? '到院中後回座位停工' : h.from === 'seat' ? `回院中${name}` : `到院中重查${place}，有空位就${name}`)
           : null;
-    const next = drinkNext ? drinkNext : cleanNext ? cleanNext : fixNext ? fixNext : guardNext ? guardNext
+    const pv = pt.view(p);
+    const patrolNext = !pv ? null : pv.phase === 'wait' ? (h.mode === 'carry' ? `交付後去巡山，回來${JOBS[nextJob].label}` : p.rest ? `先恢復到 ${E.backAt}，回院中再去巡山` : '回到院中就去巡山')
+      : pv.phase === 'back' ? `返院（${PATROL_END[pv.end] || ''}）；到院後${stopped ? '回座位停工' : name}`
+        : pv.cancel ? '走完這段就返院' : `往 ${pv.next} ${pv.nextLabel}；返程需 ${pv.returnNeed} 精力`;
+    const next = patrolNext ? patrolNext : drinkNext ? drinkNext : cleanNext ? cleanNext : fixNext ? fixNext : guardNext ? guardNext
       : h.mode === 'fromGuard' ? (stopped ? '到院中後回座位停工' : `到院中重查${place}，有空位就${name}`)
       : h.mode === 'toGuard' ? `走到防守點後回院中${name}`
       : p.guardOrder != null && h.mode === 'carry' ? `交付後去驅離野豬，回來${JOBS[nextJob].label}`
@@ -1363,10 +1408,11 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       fixLeg: h.mode === 'toFix' || h.mode === 'fromFix' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need } : null,
       fixWork: h.mode === 'fix' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need } : null,
       // LP-11：位置只在清理中離開院中端點；palm 是比較 fixture。
+      patrolling: PATROL_MODES.includes(h.mode), patrol: pv,
       cleaning: CLEAN_MODES.includes(h.mode), clean: cl ? { phase: cl.phase, target: cl.target, downs: cl.downs, spent: cl.spent, end: cl.end, src: cl.src } : null,
       cleanResult: p.cleanResult, pos: { x: p.pos.x, y: p.pos.y }, cface: p.cface, walked: p.walked,
       palm: p.palm, palmLabel: SKILLS[p.palm].label, palmTicks: { windup: SKILLS[p.palm].windup, recover: SKILLS[p.palm].recover },
-      palmStep: h.mode === 'windup' || h.mode === 'recover' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need, target: h.target } : null,
+      palmStep: ['windup', 'recover', 'patrolWind', 'patrolRec'].includes(h.mode) ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need, target: h.target } : null,
       cleanLeg: h.mode === 'toRat' || h.mode === 'fromRat' ? { k: Math.min(1, h.steps / h.need), steps: h.steps, need: h.need, from: { ...h.from }, to: { ...h.to } } : null,
       // LP-12：自主清鼠原因與狀態。
       autoClean: cleanAutoView(p), cleanSrc: p.cleanSrc,
@@ -1477,6 +1523,9 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       boar: boarView(),
       rats: s.rats.map((r) => ({ id: r.id, kind: r.kind, mode: r.mode, label: RAT_MODE[r.mode], x: r.x, y: r.y, valid: validRat(r), why: r.why })),
       clean: s.clean ? { ...s.clean } : null,
+      prats: s.prats.map((r) => ({ id: r.id, kind: r.kind, mode: r.mode, label: RAT_MODE[r.mode], x: r.x, y: r.y, valid: pt.validPrat(r), why: r.why })),
+      patrol: s.patrol ? { by: s.patrol.by, phase: s.patrol.phase, end: s.patrol.end, seen: Object.entries(s.patrol.seen).map(([id, x]) => ({ id, kind: x.kind, res: x.res })) } : null,
+      patrolReport: s.patrolReport ? JSON.parse(JSON.stringify(s.patrolReport)) : null, patrolLog: s.patrolLog.map((x) => ({ ...x })),
       log: s.log.slice(-5), drinkRules: D ? { ...D } : null,
     };
   }
@@ -1492,7 +1541,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     for (const k of Object.keys(s)) delete s[k];
     Object.assign(s, copy);
   }
-  return { state: s, step, dispatch, actions, view, setAuto, setUpkeep, setPalm, setAutoClean, pathLength, lengths, rules, exportState, restore };
+  return { state: s, patrol: pt, step, dispatch, actions, view, setAuto, setUpkeep, setPalm, setAutoClean, pathLength, lengths, rules, exportState, restore };
 }
 
 // 牆鐘只決定餵幾步；長空檔最多算250ms，不追趕背景時間。

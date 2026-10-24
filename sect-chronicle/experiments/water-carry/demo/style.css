@@ -139,3 +139,6 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .views { position: fixed; right: 10px; bottom: 34px; display: flex; gap: 4px; z-index: 2; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 3px; }
 .views .btn { padding: 2px 7px; font-size: 12px; }
 @media (max-width: 640px) { .views { bottom: auto; top: calc(var(--hud-h) + var(--banner-h, 0px) + 8px); right: 6px; flex-direction: column; } }
+/* SG-PATROL-01 巡山戰報 */
+.patrolrep { margin: 4px 0; padding: 4px 6px; border-radius: 6px; background: rgba(243, 230, 196, 0.75); font-size: 12px; line-height: 1.5; }
+.pill.wp { opacity: 0.85; font-size: 11px; }
