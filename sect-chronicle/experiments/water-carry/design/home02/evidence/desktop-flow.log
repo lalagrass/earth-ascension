@@ -1,0 +1,23 @@
+start {"tick":289,"h2":{"stage":"broken","label":"破損","at":0,"need":6,"work":0,"workMs":18000,"k":0,"by":null},"wood":0}
+shot 01-dorm-broken
+wood hero ok
+wood cousin ok
+shot 02-chop
+shot 03-haul-wood
+wood>=6 true 7
+build ok
+shot 04-carry-to-site
+shot 05-dorm-building
+done true {"stage":"done","label":"可用","at":6,"need":6,"work":18,"workMs":18000,"k":1,"by":null}
+shot 06-dorm-done
+assign ok
+assign ticks 11703 11703 [{"id":"bed-1","owner":"hero","user":null,"resv":"hero","idle":false,"open":true},{"id":"bed-2","owner":"cousin","user":null,"resv":null,"idle":true,"open":true}]
+shot 07-bed-card
+rest disabled
+lie true {"mode":"seated","bed":"bed-1","bundle":false,"quilt":true,"rot":-1.5707963267948966,"phase":null}
+shot 08-lie-down
+getup cmd ok
+back true
+shot 09-get-up
+final {"beds":[{"id":"bed-1","owner":"hero","user":"hero","resv":null,"idle":false,"open":true},{"id":"bed-2","owner":"cousin","user":null,"resv":null,"idle":true,"open":true}],"stage":"done","wood":3}
+errors []

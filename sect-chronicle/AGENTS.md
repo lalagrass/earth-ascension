@@ -1,5 +1,21 @@
 # Coding agent 接手入口
 
+## D51：M1完成線與grass純遊戲整合責任已批准
+
+擁有人於2026-10-25台北明確批准 **D51**：第一生活里程碑＝已接受生活／成長／武學巡山／S0基線＋**#330 HOME02收尾**；grass接手純遊戲PR的集中review與dev squash merge。總控[#334](https://github.com/lalagrass/earth-ascension/issues/334)，[M1清單](docs/LIFE_M1_EXECUTION_PLAN.md)／[移交與生效規則](docs/GAME_PR_GRASS_TRANSFER_PLAN.md)／[Grok](docs/LIFE_M1_GROK_PROMPT.md)與[grass](docs/LIFE_M1_GRASS_PROMPT.md)提示詞。
+
+這是正式批准，不是只有規劃；**操作生效以Earth在#67發布的唯一cutover紀錄為準**，須先由Earth整合正式權限PR／postCI、同步既有Cloud啟動限制並取得grass接手收據。未生效前原Earth路徑照常；已由Earth持有的active票由該票記錄決定收尾，不搶合。新規則優先於下方D48–D50的歷史Earth-only／待批准描述，不重設作者claim、scope／DoD或重做已驗。
+
+Grok仍由人類手動貼網頁／App接棒，沒有已部署callback／runner。剩餘工程白名單只有330；PR333的Cloud差異複審[6388542820](https://github.com/lalagrass/earth-ascension/pull/333#issuecomment-6388542820)已鎖head b86657324c82c2d470baeac39c0d74ea552d56a5判A–D ready，接手先核最新狀態，未變證據復用，不再次初審。整合／postCI成功後沿同一接受SHA交短摘要、清理後休息；不掃其他OPEN，不加QA包／研究／M2。Cloud執行、Mac真人、單一版本／長通勤速度差／原玩法與資料、集中review／精簡驗證及必要CI保持，存檔升版與手機適配最後。
+
+## D49已批准：HOME02砍柴、寢舍與雙人歸處
+
+HOME01／PR326已由Earth鎖head43c788eb squash合dev **23e3414ed0f1f323f04b34c97f70b22a8587dc41**，postCI40120490402五項成功，326整合前置已滿；沿Earth與Cloud接受證據復用，不重跑、不再等待326，且沒有更新Mac試玩。
+
+擁有人2026-10-25台北已同意B1–B4。主[#330](https://github.com/lalagrass/earth-ascension/issues/330)，[正式包](docs/HOME02_HANDOFF.md)／[Grok開發prompt](docs/HOME02_GROK_PROMPT.md)／[grass接續review prompt](docs/HOME02_GRASS_REVIEW_PROMPT.md)。一Grok完整砍柴搬木→固定側屋修繕→兩床認領與自主歇息／有效續工，模型／水彩動作／UI／必要局部維護一主PR；木0／cap12、砍8秒1木／作業1E每秒，修木6＋18秒／施工1E每秒，床沿+5E每秒／30／80與石凳備案，無新睡眠需求。示意值已批，平衡待真人。
+
+**先原326接受／Earth合dev及postCI，且本D49正式文件審合／postCI後**，Grok本人330最新dev新claim／codex分支與自有隔離區，既有前置已滿不重等。本包不改326scope／claim／DoD，不沿其claim。新木／工地／床位限本局、最小guard保舊資料，不升保存。grass只本包初審／同PR新head差異複審→交Earth整合後休息，不開後包／輪詢／新排程，無現成事件就人類貼PR喚起；並非已代啟bot。Cloud／Mac真人、長通勤速度差／原玩法、必要CI／證據復用／清理、Earth唯一merge與單一正式版保持，手機及新增保存最後。下方HOME02待確認及舊326後永久停止解讀，在本有限批准範圍由D49更新。
+
 ## D48：遊戲PO／review預設雲端，Mac只真人試玩
 
 擁有人2026-10-25已批准設定earth-ascension雲端環境、[遊戲PO／review交接](docs/CLOUD_PO_HANDOFF.md)與[Dot提示詞](docs/DOT_GAME_PO_PROMPT.md)。環境規格／帳號端實際完成狀態見[CLOUD_REVIEW_ENVIRONMENT](docs/CLOUD_REVIEW_ENVIRONMENT.md)。PO規劃、diff／圖稿審查與必要驗證預設在Cloud，不自動轉回Mac；Earth PO保唯一dev合併權，復用集中review證據；Mac只使用者真人試玩，舊「PO自動更新Mac8800」改交接受SHA／同步說明、由使用者發起。設定／授權／Publish與實際接手分開記，不能拿文件merge當環境已發布。

@@ -2,7 +2,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createModel as createLifeModel, createClock, tripSteps, speedsFor, RULES, STEP_MS } from '../demo/model.mjs';
+import { createModel as createLifeModel, createClock, tripSteps, speedsFor, RULES as RULES_D45, STEP_MS } from '../demo/model.mjs';
+// HOME-01／D45：新局已無口渴；本檔舊節奏（喝水耗缸、口渴自理）只作舊行為 fixture，明示 thirst:true。新局 D45 斷言見 tea.test.mjs。
+const RULES = { ...RULES_D45, thirst: true };
 
 // 保留原一人基線的反例，明確指定單人；預設新局與下方共享容量反例使用雙人。
 const createModel = (len, rules) => createLifeModel(len, rules, [{ id: 'hero', initialLevel: 1 }]);

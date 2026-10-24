@@ -2,12 +2,14 @@
 // 玩家覆寫／單 tick 不重複移動、最小保存 guard 與成功／失敗載入邊界。不重跑舊矩陣，不做常數鏡像。
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createModel, MEET_MODES } from '../demo/model.mjs';
+import { RULES as RULES_D45, createModel, MEET_MODES } from '../demo/model.mjs';
 import { saveTo, loadFrom, SAVE_KEY } from '../demo/life-save.mjs';
 import { guardedSave, guardedLoad } from '../demo/life02.mjs';
 
+// HOME-01／D45：新局已無口渴；本檔舊節奏（喝水耗缸、口渴自理）只作舊行為 fixture，明示 thirst:true。新局 D45 斷言見 tea.test.mjs。
+const RULES = { ...RULES_D45, thirst: true };
 const LEN = 1700.9;
-const mk = () => createModel(LEN);
+const mk = () => createModel(LEN, RULES);
 const run = (m, n, f) => { for (let i = 0; i < n; i++) { m.step(); if (f && f(m) === false) return i; } return n; };
 const meetOf = (m) => m.life02.state.meet;
 function untilMeet(m, mode = 'meet', max = 60 * 60 * 40) {

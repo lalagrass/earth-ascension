@@ -1,5 +1,54 @@
 # 決策、來源與風險
 
+## D51：M1完成線與grass純遊戲review／dev合併批准（2026-10-25）
+
+擁有人於台北2026-10-25明確要求：
+
+> 同意這個 M1 完成線，也批准 grass 接手純遊戲 PR 的 review 與 dev 合併。幫我更新權限文件與雲端限制，依流程交 Earth PO 完成正式切換，再整理 Grok 和 grass 的接手提示詞，先收尾 #330／#333，完成後休息。
+
+擁有人於2026-10-25台北明確批准 **D51**：第一生活里程碑＝已接受生活／成長／武學巡山／S0基線＋**#330 HOME02收尾**；grass接手純遊戲PR的集中review與dev squash merge。總控[#334](https://github.com/lalagrass/earth-ascension/issues/334)，[M1清單](LIFE_M1_EXECUTION_PLAN.md)／[移交與生效規則](GAME_PR_GRASS_TRANSFER_PLAN.md)／[Grok](LIFE_M1_GROK_PROMPT.md)與[grass](LIFE_M1_GRASS_PROMPT.md)提示詞。
+
+這是正式批准，不是只有規劃；**操作生效以Earth在#67發布的唯一cutover紀錄為準**，須先由Earth整合正式權限PR／postCI、同步既有Cloud啟動限制並取得grass接手收據。未生效前原Earth路徑照常；已由Earth持有的active票由該票記錄決定收尾，不搶合。新規則優先於下方D48–D50的歷史Earth-only／待批准描述，不重設作者claim、scope／DoD或重做已驗。
+
+Grok仍由人類手動貼網頁／App接棒，沒有已部署callback／runner。剩餘工程白名單只有330；PR333的Cloud差異複審[6388542820](https://github.com/lalagrass/earth-ascension/pull/333#issuecomment-6388542820)已鎖head b86657324c82c2d470baeac39c0d74ea552d56a5判A–D ready，接手先核最新狀態，未變證據復用，不再次初審。整合／postCI成功後沿同一接受SHA交短摘要、清理後休息；不掃其他OPEN，不加QA包／研究／M2。Cloud執行、Mac真人、單一版本／長通勤速度差／原玩法與資料、集中review／精簡驗證及必要CI保持，存檔升版與手機適配最後。
+
+正式權限由根CONTRIBUTING／AGENTS同步，Earth審合此次權限PR／postCI、核既有Cloud啟動限制實際發布與grass能力收據，在#67公布effective_after_sha／唯一owner／未結票歸屬才操作生效。這些是執行交接，不需再問已批准的M1／角色。grass只非本人主筆的已批准純遊戲PR，Earth保root／共用／混合／權限與其他產品，main／未定產品仍擁有人。文件不是硬性ACL／GitHub Merge Queue，未啟runner／排程或付費；原工程與已驗證據不重設。
+
+下方D50為當時規劃沿革，其待批准／阻擋快照已由本D51與最新GitHub更新；不刪來源、不將當時計畫冒稱當時已生效。
+
+## D50：第一生活里程碑與grass合併移交之規劃委託（2026-10-25）
+
+擁有人台北2026-10-25要求：
+
+> 好，幫我整理第一個生活里程碑要完成的 issue 清單、順序與待決事項，並規劃把遊戲 PR 的 review／dev 合併責任移交 grass。也確認 Grok 的接棒方式，整理雙方提示詞，讓他們逐包交替，指定清單全部完成後休息，存檔升版和手機適配繼續排最後。
+
+並明確回覆Grok接收方式：「手動貼到 Grok 網頁／App」。總控[#334](https://github.com/lalagrass/earth-ascension/issues/334)，[執行表](LIFE_M1_EXECUTION_PLAN.md)／[移交規劃](GAME_PR_GRASS_TRANSFER_PLAN.md)／[接棒協定](GROK_GRASS_HANDOFF_PROTOCOL.md)／[Grok](LIFE_M1_GROK_PROMPT.md)與[grass](LIFE_M1_GRASS_PROMPT.md)prompt。
+
+本次授權規劃／文件交付，**不是宣稱擁有人已批准實際切換合併權或新玩法／自動化服務**。推薦M1沿既有基線＋330為完成線、剩餘實作白名單[330]，本總控收尾只復用來源／接受SHA／CI與真人試玩說明；更多母題另定，330原D49可照常開發review，不因規劃多一道gate或重設claim。Grok已交PR333、Cloud有一項屋內床位呈現阻擋，接續原作者同PR補修而非第二review。
+
+grass接手純遊戲PR review／dev squash合併的正式批准、根契約／環境限制同步與#67唯一cutover收據仍待辦，目前Earth唯一merge不變。Grok只核到人工貼入口，沒有已驗callback／runner；雙方用GitHub最小head／stage／下一步訊息與人類轉貼，未建立排程／webhook或購買服務，不把接棒紀錄當自動喚醒。指定清單全部done後休息；未決／權限／額度阻擋需如實交接、不假報done、不自擴open issue。
+
+單一生活版／Cloud、原長通勤速度差與玩法／資料、證據復用與精簡直接驗證／必要CI、Mac真人、手機與新增保存末位保持。正式移交需另更新有效契約，不能由本規劃或提示詞暗授權。
+
+## D49：HOME-02 B1–B4與有限grass接續review批准（2026-10-25）
+
+決策者：擁有人，台北2026-10-25於遊戲PO聊天明確要求：
+
+> 同意 B1–B4，幫我更新批准文件、#330 和正式工作包，依流程交 Earth PO 合入 dev，再產生給 Grok 的開發提示詞與 grass 的接續 review 提示詞；先收尾 #326，沿用整包交付、集中 review、精簡驗證與單一試玩版本原則，本包完成後休息，存檔升版和手機適配繼續排最後。
+
+主[#330](https://github.com/lalagrass/earth-ascension/issues/330)，[正式包](HOME02_HANDOFF.md)／[Grok prompt](HOME02_GROK_PROMPT.md)／[grass prompt](HOME02_GRASS_REVIEW_PROMPT.md)／[已確認提案](HOME02_BATCH_PROPOSAL.md)，來源321／75、BL-L04／S01／G01／G04，必要維護215／315。PR331規劃已合devca11e034，規劃合併本身未授runtime；本次明確批准以下有限提取，不授所有建造／床位母題。
+
+- B1：砍柴搬木→一間固定側屋真修繕→兩張穩定床認領／自主歇息與有效續工，模型／必要局部維護／水彩動作／UI同一Grok一主PR；不採「只床位」替代案，不自由建造／N人／新核心入口。
+- B2示意值已批：木初始0／容量12、有效砍8遊戲秒得1／作業1E每秒；修繕木6＋有效18秒／施工1E每秒，搬運沿既有同類成本／負重。預約／在途／工地守恆、取消前後／有效工時與一次完成依正式包，不退款刷料或新工藝屬性。真人平衡未驗。
+- B3：屋完才兩床，床主／使用／預約分清，穩定自理認空床與閒置玩家指派／解除；真到位恢復沿+5E每秒／30／80／上限100、石凳備案、不疊茶坐休。新令優先，停工可自理不續工，不加睡眠條／日夜／舒適buff。
+- B4：新木料／工地／床位限本局、畫面明示；不升保存／遷移或新矩陣，原資料功能保留、最小guard／成功失敗載入邊界如實處理。grass本有限包初審→同PR集中補修／新head差異複審→交Earth整合／postCI→休息，覆蓋D48只326後停止的本批範圍，不授無限loop、輪詢、額外reviewer／排程／付費或後包。
+
+HOME01／PR326已由Earth鎖head43c788eb squash合dev **23e3414ed0f1f323f04b34c97f70b22a8587dc41**，postCI40120490402五項成功，326整合前置已滿；沿Earth與Cloud接受證據復用，不重跑、不再等待326，且沒有更新Mac試玩。
+
+本D49正式文件非作者接受／Earth合dev／postCI後，Grok本人330核最新作者、當時最新dev／新codex分支與自有隔離區新claim，不沿326／PO文件claim；已滿前置不重等，不加326 DoD或重設其scope／期限。4h為可附具體進度續的claim非總工時，待審不續租、同作者集中補修。無現成事件通知則由人類貼PR連結喚起grass，不假稱已設webhook或自動監控，未代啟bot。
+
+四組A–D集中review、必要直接反例與一段Cloud桌面／未變證據復用／必要CI保持，無全seed／全checks或保存手機矩陣前置，單頁單服務清理。Earth唯一dev squash merge、Mac只真人試玩且更新由使用者發起、單一正式版本保持；完成本包休息，手機／新增保存末位。
+
 ## D48：遊戲PO與review預設雲端執行（2026-10-25）
 
 決策者：專案擁有人，台北2026-10-25於遊戲PO聊天要求：

@@ -1,5 +1,27 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## D51：M1完成線與grass純遊戲整合責任已批准
+
+擁有人於2026-10-25台北明確批准 **D51**：第一生活里程碑＝已接受生活／成長／武學巡山／S0基線＋**#330 HOME02收尾**；grass接手純遊戲PR的集中review與dev squash merge。總控[#334](https://github.com/lalagrass/earth-ascension/issues/334)，[M1清單](LIFE_M1_EXECUTION_PLAN.md)／[移交與生效規則](GAME_PR_GRASS_TRANSFER_PLAN.md)／[Grok](LIFE_M1_GROK_PROMPT.md)與[grass](LIFE_M1_GRASS_PROMPT.md)提示詞。
+
+這是正式批准，不是只有規劃；**操作生效以Earth在#67發布的唯一cutover紀錄為準**，須先由Earth整合正式權限PR／postCI、同步既有Cloud啟動限制並取得grass接手收據。未生效前原Earth路徑照常；已由Earth持有的active票由該票記錄決定收尾，不搶合。新規則優先於下方D48–D50的歷史Earth-only／待批准描述，不重設作者claim、scope／DoD或重做已驗。
+
+Grok仍由人類手動貼網頁／App接棒，沒有已部署callback／runner。剩餘工程白名單只有330；PR333的Cloud差異複審[6388542820](https://github.com/lalagrass/earth-ascension/pull/333#issuecomment-6388542820)已鎖head b86657324c82c2d470baeac39c0d74ea552d56a5判A–D ready，接手先核最新狀態，未變證據復用，不再次初審。整合／postCI成功後沿同一接受SHA交短摘要、清理後休息；不掃其他OPEN，不加QA包／研究／M2。Cloud執行、Mac真人、單一版本／長通勤速度差／原玩法與資料、集中review／精簡驗證及必要CI保持，存檔升版與手機適配最後。
+
+## D49已批准：HOME02砍柴、寢舍與雙人歸處
+
+HOME01／PR326已由Earth鎖head43c788eb squash合dev **23e3414ed0f1f323f04b34c97f70b22a8587dc41**，postCI40120490402五項成功，326整合前置已滿；沿Earth與Cloud接受證據復用，不重跑、不再等待326，且沒有更新Mac試玩。
+
+擁有人2026-10-25台北已同意B1–B4。主[#330](https://github.com/lalagrass/earth-ascension/issues/330)，[正式包](HOME02_HANDOFF.md)／[Grok開發prompt](HOME02_GROK_PROMPT.md)／[grass接續review prompt](HOME02_GRASS_REVIEW_PROMPT.md)。一Grok完整砍柴搬木→固定側屋修繕→兩床認領與自主歇息／有效續工，模型／水彩動作／UI／必要局部維護一主PR；木0／cap12、砍8秒1木／作業1E每秒，修木6＋18秒／施工1E每秒，床沿+5E每秒／30／80與石凳備案，無新睡眠需求。示意值已批，平衡待真人。
+
+**先原326接受／Earth合dev及postCI，且本D49正式文件審合／postCI後**，Grok本人330最新dev新claim／codex分支與自有隔離區，既有前置已滿不重等。本包不改326scope／claim／DoD，不沿其claim。新木／工地／床位限本局、最小guard保舊資料，不升保存。grass只本包初審／同PR新head差異複審→交Earth整合後休息，不開後包／輪詢／新排程，無現成事件就人類貼PR喚起；並非已代啟bot。Cloud／Mac真人、長通勤速度差／原玩法、必要CI／證據復用／清理、Earth唯一merge與單一正式版保持，手機及新增保存最後。下方HOME02待確認及舊326後永久停止解讀，在本有限批准範圍由D49更新。
+
+## HOME01最新審查與下一候選HOME02（2026-10-25）
+
+HOME01／PR326查核head43c788eb已由[Cloud集中複審](https://github.com/lalagrass/earth-ascension/pull/326#issuecomment-6387652955)確認兩P2修好、A–D ready交Earth；尚待唯一queue整合／postCI，沒有PO重跑或自合／更新Mac。接手核最新結果，不拿下方舊「未交付」當現在狀態。
+
+下一候選[#330／HOME02整包提案](HOME02_BATCH_PROPOSAL.md)：砍柴→木料用途→一間固定小寢舍修繕→雙人床位與自主休息，沿BL-L04／S01／G01／G04、#321。一Grok一主PR，整包集中review；**B1–B4範圍／示意值／床效果／有限review接續仍待擁有人確認，不授runtime**。原grass只326後休息仍有效；330若批准才另授同包初審／補修差異複審後休息，不自動建立輪詢／排程。HOME01不增加DoD，手機／新增保存最後，單一版本／Cloud／Earth唯一merge保持。
+
 ## D47最新批准：HOME-01整包，採I3推薦A
 
 擁有人已於2026-10-25（台北）同意I1–I4。下一整包為[#309／HOME01正式包](HOME01_HANDOFF.md)／[Grok提示詞](HOME01_GROK_PROMPT.md)：完整S0水彩初始道館＋現有活動回接＋D45統一補給／一次藥茶＋生活總覽與武學成長，一Grok一PR做到完成集中review。權威世界／水藥巡山幾何、速度成長及原玩法保持，素材按真路線完整分層重繪適配；只必要局部設施／站位／控制接線整理，不切新座標B或另起核心／入口。

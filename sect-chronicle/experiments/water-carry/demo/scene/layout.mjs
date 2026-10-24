@@ -55,12 +55,13 @@ const T = (id, x, y, h, extra = {}) => ({ id, x, y, h, ...extra });
 export const PROPS = Object.freeze([
   // 院落：正堂、側屋、院牆、院門、功能物
   T('dojo_side_house', 1450, 420, 150),
-  T('dojo_main_hall', 1236, 476, 290),
+  T('dojo_hall_s0', 1236, 476, 290), // HOME-01：S0 破道館（同基座、朝向、石階入口；破損態）
   T('court_wall', 1150, 590, 50), T('court_wall', 1322, 590, 50), T('court_wall', 1414, 590, 50), T('court_wall', 1506, 586, 50),
   T('dojo_gate', 1236, 594, 96),
   T('stone_mill', 1410, 548, 46),
   T('woodpile', 1534, 492, 52),
   T('stone_bench', 968, 424, 32, { w: 104, z: 416 }),
+  T('tea_stove', 1022, 486, 34, { w: 44 }), // HOME-01 茶座：TEA_SEAT 站位（1004,480）東側的石座與小爐
   // 松竹樹石：院北與屋後
   T('pine_b', 985, 384, 170, { fade: 0.45 }),
   T('pine_a', 1540, 474, 190, { fade: 0.45 }),
@@ -134,6 +135,8 @@ export const VIEWS = Object.freeze({
   west: { label: '西坡', x: 640, y: 460, zoom: 1.5 },
   herb: { label: '藥圃', x: 1360, y: 740, zoom: 1.3 },
   road: { label: '長路', x: 640, y: 800, zoom: 0.9 },
+  dorm: { label: '寢舍', x: 1080, y: 690, zoom: 1.7 }, // SG-HOME-02：寢舍工地與兩床
+  woods: { label: '林緣', x: 880, y: 420, zoom: 1.7 }, // SG-HOME-02：枯木砍柴點
   source: { label: '泉口', x: 930, y: 800, zoom: 1.5 },
   bridge: { label: '溪橋', x: 850, y: 1010, zoom: 1.5 },
   spring: { label: '泉眼', x: 400, y: 1225, zoom: 1.4 },
