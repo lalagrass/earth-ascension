@@ -163,3 +163,23 @@ test('review P2②：停止練掌→真返院→保持待命、無新搬運；�
   assert.ok(m.dispatch('trainCancel', 'hero').ok && m.dispatch('work:water', 'hero').ok, '也可明確派工作');
   until(m, () => P(m).motion.mode === 'carry', 60 * 60 * 10);
 });
+
+test('review5638238207：自然滿庫休閒→叫回→喝水中派練掌，喝完真到樁取得單位；較新改派仍有效', () => {
+  const setup = () => {
+    const m = mk();
+    until(m, () => P(m).motion.mode === 'fun', 60 * 60 * 40);
+    assert.ok(m.dispatch('recall', 'hero').ok);
+    until(m, () => /drink/i.test(P(m).motion.mode), 60 * 60 * 20);
+    assert.ok(m.dispatch('train', 'hero').ok);
+    assert.equal(P(m).recall, false);
+    return m;
+  };
+  const m = setup();
+  until(m, atPost, 60 * 60 * 10);
+  run(m, UNIT + 1);
+  assert.equal(T(m).units.hero, 1);
+  const n = setup();
+  assert.ok(n.dispatch('work:herb', 'hero').ok);
+  run(n, 60 * 60 * 3);
+  assert.equal(T(n).goal.hero, false); assert.equal(P(n).job, 'herb'); assert.ok(!['toTrain', 'train'].includes(P(n).motion.mode));
+});

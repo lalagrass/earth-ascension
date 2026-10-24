@@ -1281,7 +1281,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const r0 = T1.order(p);
     if (!r0.ok) return r0;
     const m = p.motion.mode;
-    if (DRINK_MODES.includes(m)) { if (p.rest === 'manual') p.rest = p.energy < E.backAt ? 'auto' : null; return { ok: true, text: '喝完回院中後去練功樁' }; }
+    if (DRINK_MODES.includes(m)) { if (p.recall) { p.recall = false; p.why = null; } /* review5638238207：喝水中承接舊工作叫回 */ if (p.rest === 'manual') p.rest = p.energy < E.backAt ? 'auto' : null; return { ok: true, text: '喝完回院中後去練功樁' }; }
     const r = work(p, p.job);
     // 休閒中承接時 work() 走原 recall（起身真返程）；這個工作叫回旗標由練掌意圖消費，否則回院後 recall 與目標互擋（review P2①）。
     if (p.recall) { p.recall = false; p.why = null; }
