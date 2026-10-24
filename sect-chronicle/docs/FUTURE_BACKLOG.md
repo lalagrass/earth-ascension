@@ -1,5 +1,11 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## HOME01最新審查與下一候選HOME02（2026-10-25）
+
+HOME01／PR326查核head43c788eb已由[Cloud集中複審](https://github.com/lalagrass/earth-ascension/pull/326#issuecomment-6387652955)確認兩P2修好、A–D ready交Earth；尚待唯一queue整合／postCI，沒有PO重跑或自合／更新Mac。接手核最新結果，不拿下方舊「未交付」當現在狀態。
+
+下一候選[#330／HOME02整包提案](HOME02_BATCH_PROPOSAL.md)：砍柴→木料用途→一間固定小寢舍修繕→雙人床位與自主休息，沿BL-L04／S01／G01／G04、#321。一Grok一主PR，整包集中review；**B1–B4範圍／示意值／床效果／有限review接續仍待擁有人確認，不授runtime**。原grass只326後休息仍有效；330若批准才另授同包初審／補修差異複審後休息，不自動建立輪詢／排程。HOME01不增加DoD，手機／新增保存最後，單一版本／Cloud／Earth唯一merge保持。
+
 ## D47最新批准：HOME-01整包，採I3推薦A
 
 擁有人已於2026-10-25（台北）同意I1–I4。下一整包為[#309／HOME01正式包](HOME01_HANDOFF.md)／[Grok提示詞](HOME01_GROK_PROMPT.md)：完整S0水彩初始道館＋現有活動回接＋D45統一補給／一次藥茶＋生活總覽與武學成長，一Grok一PR做到完成集中review。權威世界／水藥巡山幾何、速度成長及原玩法保持，素材按真路線完整分層重繪適配；只必要局部設施／站位／控制接線整理，不切新座標B或另起核心／入口。
