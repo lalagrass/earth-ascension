@@ -52,3 +52,6 @@ SG-LIFE-01 起有**手動**存檔／讀檔（只有一格，按鈕才動；無�
 - 地面是一張無接縫 3200×2700 烘焙水彩圖（`demo/assets/art184-watercolor/ground.jpg`），舊 1600×900 bg＋南段 Graphics 的接縫與大片平塗已移除；D35 的 `bg.png`、`scene.props` 與 `buildLongWaterScenery` 不再載入／已刪除（`scenery.mjs` 只留 `STREAM_POLY`／`BRIDGE_DECK_POLY` 幾何）。
 - 素材採用表、烘焙流程與證據圖見 [design/art184-watercolor/README.md](design/art184-watercolor/README.md)；來源 `design/art184-production`、`art184-scene-trio` 未覆寫。
 - 新增（只動畫面）：右下「地標快看」（總覽／院落／西坡／藥圃／長路／溪橋／泉眼，O＝總覽，0 回跟隨）與 `window.demo.look(name)`；人物走到松竹樹後方時該樹淡出；竹影與水光在暫停時凍結。都不推進世界、不入存檔、不改 saveVersion。
+
+## SCENE-03 場景（#182）
+地面與新道具改由 `demo/assets/scene03/` 載入（`design/scene03/` 為來源與流程）。已知限制：預留宿舍/工棚僅為外觀、無功能；未做行動版與夜間版構圖；巡山與水路幾何仍以唯讀模型為準，畫面僅對齊。

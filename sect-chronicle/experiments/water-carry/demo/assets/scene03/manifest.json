@@ -1,0 +1,394 @@
+{
+ "bamboo_clump": {
+  "file": "../art184-watercolor/bamboo_clump.png",
+  "px": [
+   262,
+   339
+  ],
+  "src": "design/art184-production/sprites/bamboo_clump.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "boar_charge": {
+  "file": "../art184-watercolor/boar_charge.png",
+  "px": [
+   167,
+   96
+  ],
+  "src": "design/art184-watercolor/sprites/boar_charge.png",
+  "origin": "art184-watercolor（D37 補畫）；SCENE-03 原檔沿用"
+ },
+ "boar_walk": {
+  "file": "../art184-watercolor/boar_walk.png",
+  "px": [
+   160,
+   96
+  ],
+  "src": "design/art184-watercolor/sprites/boar_walk.png",
+  "origin": "art184-watercolor（D37 補畫）；SCENE-03 原檔沿用"
+ },
+ "boulder_l": {
+  "file": "../art184-watercolor/boulder_l.png",
+  "px": [
+   188,
+   129
+  ],
+  "src": "design/art184-production/sprites/boulder_l.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "boulder_m": {
+  "file": "../art184-watercolor/boulder_m.png",
+  "px": [
+   125,
+   76
+  ],
+  "src": "design/art184-production/sprites/boulder_m.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "boulder_s": {
+  "file": "../art184-watercolor/boulder_s.png",
+  "px": [
+   71,
+   42
+  ],
+  "src": "design/art184-production/sprites/boulder_s.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "broadleaf_tree": {
+  "file": "../art184-watercolor/broadleaf_tree.png",
+  "px": [
+   350,
+   333
+  ],
+  "src": "design/art184-production/sprites/broadleaf_tree.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "court_wall": {
+  "file": "../art184-watercolor/court_wall.png",
+  "px": [
+   196,
+   105
+  ],
+  "src": "design/art184-production/sprites/court_wall.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "creek_bank": {
+  "file": "../art184-watercolor/creek_bank.png",
+  "px": [
+   146,
+   90
+  ],
+  "src": "design/art184-production/sprites/creek_bank.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "dojo_gate": {
+  "file": "../art184-watercolor/dojo_gate.png",
+  "px": [
+   169,
+   201
+  ],
+  "src": "design/art184-production/sprites/dojo_gate.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "dojo_main_hall": {
+  "file": "../art184-watercolor/dojo_main_hall.png",
+  "px": [
+   448,
+   386
+  ],
+  "src": "design/art184-production/sprites/dojo_main_hall.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "dojo_side_house": {
+  "file": "../art184-watercolor/dojo_side_house.png",
+  "px": [
+   350,
+   315
+  ],
+  "src": "design/art184-production/sprites/dojo_side_house.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "fern": {
+  "file": "../art184-watercolor/fern.png",
+  "px": [
+   59,
+   54
+  ],
+  "src": "design/art184-production/sprites/fern.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "herb_bed": {
+  "file": "../art184-watercolor/herb_bed.png",
+  "px": [
+   335,
+   192
+  ],
+  "src": "design/art184-watercolor/sprites/herb_bed.png",
+  "origin": "art184-watercolor（D37 補畫）；SCENE-03 原檔沿用"
+ },
+ "herb_rack": {
+  "file": "../art184-watercolor/herb_rack.png",
+  "px": [
+   150,
+   155
+  ],
+  "src": "design/art184-production/sprites/herb_rack.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "master_meditate": {
+  "file": "../art184-watercolor/master_meditate.png",
+  "px": [
+   81,
+   117
+  ],
+  "src": "design/art184-watercolor/sprites/master_meditate.png",
+  "origin": "art184-watercolor（D37 補畫）；SCENE-03 原檔沿用"
+ },
+ "pine_a": {
+  "file": "../art184-watercolor/pine_a.png",
+  "px": [
+   307,
+   330
+  ],
+  "src": "design/art184-production/sprites/pine_a.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "pine_b": {
+  "file": "../art184-watercolor/pine_b.png",
+  "px": [
+   282,
+   307
+  ],
+  "src": "design/art184-production/sprites/pine_b.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "rat_run": {
+  "file": "../art184-watercolor/rat_run.png",
+  "px": [
+   80,
+   29
+  ],
+  "src": "design/art184-watercolor/sprites/rat_run.png",
+  "origin": "art184-watercolor（D37 補畫）；SCENE-03 原檔沿用"
+ },
+ "rat_sniff": {
+  "file": "../art184-watercolor/rat_sniff.png",
+  "px": [
+   68,
+   31
+  ],
+  "src": "design/art184-watercolor/sprites/rat_sniff.png",
+  "origin": "art184-watercolor（D37 補畫）；SCENE-03 原檔沿用"
+ },
+ "senior_sweep": {
+  "file": "../art184-watercolor/senior_sweep.png",
+  "px": [
+   128,
+   184
+  ],
+  "src": "design/art184-watercolor/sprites/senior_sweep.png",
+  "origin": "art184-watercolor（D37 補畫）；SCENE-03 原檔沿用"
+ },
+ "shrub_fern": {
+  "file": "../art184-watercolor/shrub_fern.png",
+  "px": [
+   95,
+   92
+  ],
+  "src": "design/art184-watercolor/sprites/shrub_fern.png",
+  "origin": "art184-watercolor（D37 補畫）；SCENE-03 原檔沿用"
+ },
+ "stone_bench": {
+  "file": "../art184-watercolor/stone_bench.png",
+  "px": [
+   218,
+   135
+  ],
+  "src": "design/art184-watercolor/sprites/stone_bench.png",
+  "origin": "art184-watercolor（D37 補畫）；SCENE-03 原檔沿用"
+ },
+ "stone_mill": {
+  "file": "../art184-watercolor/stone_mill.png",
+  "px": [
+   112,
+   96
+  ],
+  "src": "design/art184-production/sprites/stone_mill.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "water_vat": {
+  "file": "../art184-watercolor/water_vat.png",
+  "px": [
+   100,
+   117
+  ],
+  "src": "design/art184-production/sprites/water_vat.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "wild_grass": {
+  "file": "../art184-watercolor/wild_grass.png",
+  "px": [
+   51,
+   46
+  ],
+  "src": "design/art184-watercolor/sprites/wild_grass.png",
+  "origin": "art184-watercolor（D37 補畫）；SCENE-03 原檔沿用"
+ },
+ "woodpile": {
+  "file": "../art184-watercolor/woodpile.png",
+  "px": [
+   136,
+   109
+  ],
+  "src": "design/art184-production/sprites/woodpile.png",
+  "origin": "art184-production（D35 沿用）；SCENE-03 原檔沿用"
+ },
+ "bridge_deck": {
+  "file": "../art184-watercolor/bridge_deck.png",
+  "px": [
+   370,
+   250
+  ],
+  "world": [
+   757.0,
+   952.0
+  ],
+  "src": "design/art184-watercolor/sprites/bridge.png",
+  "origin": "art184-watercolor（D37 補畫，仿射對齊 BRIDGE_DECK_POLY）；SCENE-03 原檔沿用"
+ },
+ "bridge_front": {
+  "file": "../art184-watercolor/bridge_front.png",
+  "px": [
+   370,
+   250
+  ],
+  "world": [
+   757.0,
+   952.0
+  ],
+  "src": "design/art184-watercolor/sprites/bridge.png",
+  "origin": "art184-watercolor（D37 補畫，仿射對齊 BRIDGE_DECK_POLY）；SCENE-03 原檔沿用",
+  "note": "前欄（橫桿＋柱）拆層，z=1060 蓋人物腿"
+ },
+ "skirt": {
+  "file": "../art184-watercolor/skirt.jpg",
+  "px": [
+   512,
+   512
+  ],
+  "src": "design/art184-watercolor/raw/tex-meadow.jpg",
+  "origin": "世界外圍淡色草地襯底（鏡頭到邊時不露空白）；SCENE-03 原檔沿用"
+ },
+ "cascade": {
+  "file": "cascade.png",
+  "px": [
+   133,
+   88
+  ],
+  "src": "design/scene03/sprites/cascade.png",
+  "raw": "design/scene03/raw/water-sheet.jpg",
+  "origin": "SCENE-03 補畫（GenerateImage 綠底→cut.py 去背）"
+ },
+ "dorm_reserved": {
+  "file": "dorm_reserved.png",
+  "px": [
+   207,
+   193
+  ],
+  "src": "design/scene03/sprites/dorm_reserved.png",
+  "raw": "design/scene03/raw/build-sheet.jpg",
+  "origin": "SCENE-03 補畫（GenerateImage 綠底→cut.py 去背）"
+ },
+ "drying_rack": {
+  "file": "drying_rack.png",
+  "px": [
+   101,
+   88
+  ],
+  "src": "design/scene03/sprites/drying_rack.png",
+  "raw": "design/scene03/raw/build-sheet.jpg",
+  "origin": "SCENE-03 補畫（GenerateImage 綠底→cut.py 去背）"
+ },
+ "intake_platform": {
+  "file": "intake_platform.png",
+  "px": [
+   146,
+   103
+  ],
+  "src": "design/scene03/sprites/intake_platform.png",
+  "raw": "design/scene03/raw/water-sheet.jpg",
+  "origin": "SCENE-03 補畫（GenerateImage 綠底→cut.py 去背）"
+ },
+ "reeds": {
+  "file": "reeds.png",
+  "px": [
+   51,
+   46
+  ],
+  "src": "design/scene03/sprites/reeds.png",
+  "raw": "design/scene03/raw/slope-sheet.jpg",
+  "origin": "SCENE-03 補畫（GenerateImage 綠底→cut.py 去背）"
+ },
+ "rock_ledge": {
+  "file": "rock_ledge.png",
+  "px": [
+   107,
+   63
+  ],
+  "src": "design/scene03/sprites/rock_ledge.png",
+  "raw": "design/scene03/raw/slope-sheet.jpg",
+  "origin": "SCENE-03 補畫（GenerateImage 綠底→cut.py 去背）"
+ },
+ "shed_reserved": {
+  "file": "shed_reserved.png",
+  "px": [
+   174,
+   168
+  ],
+  "src": "design/scene03/sprites/shed_reserved.png",
+  "raw": "design/scene03/raw/build-sheet.jpg",
+  "origin": "SCENE-03 補畫（GenerateImage 綠底→cut.py 去背）"
+ },
+ "spring_cliff": {
+  "file": "spring_cliff.png",
+  "px": [
+   244,
+   247
+  ],
+  "src": "design/scene03/sprites/spring_cliff.png",
+  "raw": "design/scene03/raw/water-sheet.jpg",
+  "origin": "SCENE-03 補畫（GenerateImage 綠底→cut.py 去背）"
+ },
+ "step_stones": {
+  "file": "step_stones.png",
+  "px": [
+   67,
+   39
+  ],
+  "src": "design/scene03/sprites/step_stones.png",
+  "raw": "design/scene03/raw/slope-sheet.jpg",
+  "origin": "SCENE-03 補畫（GenerateImage 綠底→cut.py 去背）"
+ },
+ "trail_marker": {
+  "file": "trail_marker.png",
+  "px": [
+   70,
+   54
+  ],
+  "src": "design/scene03/sprites/trail_marker.png",
+  "raw": "design/scene03/raw/slope-sheet.jpg",
+  "origin": "SCENE-03 補畫（GenerateImage 綠底→cut.py 去背）"
+ },
+ "ground": {
+  "file": "ground.jpg",
+  "px": [
+   3200,
+   2700
+  ],
+  "world": [
+   0,
+   0
+  ],
+  "src": "design/scene03/source/bake.py",
+  "origin": "SCENE-03 烘焙：D37 meadow/forest/water 補畫貼圖＋D35 dirt/flagstone＋權威路線／296 巡山淡徑＋泉口→溪→潭→出圖水系"
+ }
+}
