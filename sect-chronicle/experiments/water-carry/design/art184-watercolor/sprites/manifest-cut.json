@@ -1,0 +1,145 @@
+{
+ "bridge": {
+  "file": "sprites/bridge.png",
+  "src": "raw/prop-bridge.jpg",
+  "size": [
+   944,
+   238
+  ],
+  "anchor": [
+   472,
+   237
+  ],
+  "corner_alpha": 0
+ },
+ "master_meditate": {
+  "file": "sprites/master_meditate.png",
+  "src": "raw/chars-master-senior.jpg",
+  "size": [
+   360,
+   517
+  ],
+  "anchor": [
+   180,
+   516
+  ],
+  "corner_alpha": 0
+ },
+ "senior_sweep": {
+  "file": "sprites/senior_sweep.png",
+  "src": "raw/chars-master-senior.jpg",
+  "size": [
+   398,
+   572
+  ],
+  "anchor": [
+   199,
+   571
+  ],
+  "corner_alpha": 0
+ },
+ "boar_walk": {
+  "file": "sprites/boar_walk.png",
+  "src": "raw/animals.jpg",
+  "size": [
+   319,
+   191
+  ],
+  "anchor": [
+   160,
+   190
+  ],
+  "corner_alpha": 0
+ },
+ "boar_charge": {
+  "file": "sprites/boar_charge.png",
+  "src": "raw/animals.jpg",
+  "size": [
+   323,
+   186
+  ],
+  "anchor": [
+   162,
+   185
+  ],
+  "corner_alpha": 0
+ },
+ "rat_sniff": {
+  "file": "sprites/rat_sniff.png",
+  "src": "raw/animals.jpg",
+  "size": [
+   206,
+   94
+  ],
+  "anchor": [
+   103,
+   93
+  ],
+  "corner_alpha": 0
+ },
+ "rat_run": {
+  "file": "sprites/rat_run.png",
+  "src": "raw/animals.jpg",
+  "size": [
+   237,
+   86
+  ],
+  "anchor": [
+   118,
+   85
+  ],
+  "corner_alpha": 0
+ },
+ "stone_bench": {
+  "file": "sprites/stone_bench.png",
+  "src": "raw/props-misc.jpg",
+  "size": [
+   307,
+   190
+  ],
+  "anchor": [
+   154,
+   189
+  ],
+  "corner_alpha": 0
+ },
+ "herb_bed": {
+  "file": "sprites/herb_bed.png",
+  "src": "raw/props-misc.jpg",
+  "size": [
+   351,
+   201
+  ],
+  "anchor": [
+   176,
+   200
+  ],
+  "corner_alpha": 0
+ },
+ "wild_grass": {
+  "file": "sprites/wild_grass.png",
+  "src": "raw/props-misc.jpg",
+  "size": [
+   203,
+   184
+  ],
+  "anchor": [
+   102,
+   183
+  ],
+  "corner_alpha": 0
+ },
+ "shrub_fern": {
+  "file": "sprites/shrub_fern.png",
+  "src": "raw/props-misc.jpg",
+  "size": [
+   236,
+   228
+  ],
+  "anchor": [
+   118,
+   227
+  ],
+  "corner_alpha": 0
+ }
+}
