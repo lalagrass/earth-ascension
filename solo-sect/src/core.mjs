@@ -5,7 +5,7 @@
 //    決定性：slot 由小到大取第一個空位；sweep 以 key 字典序。
 // 3) 工序（toil）：stepsOf(task) 把 phase 對成可讀的步驟清單，狀態層與取消/召回共用。
 // 4) 需求遲滯＋厭倦：精力 ≤30 進入「想睡」直到 ≥80；做完休閒類 60 秒內吸引力 −70%。
-import { FACILITIES, ACTIVITIES } from './data.mjs';
+import { FACILITIES, ACTIVITIES, SIG_ACTS } from './data.mjs';
 export const CORE = { sleepAt: 30, wakeAt: 80, boredFor: 60, boredMul: 0.3, boredActs: ['leisure', 'chat', 'forage', 'encourage'] };
 const facDef = (id) => FACILITIES.find((f) => f.id === id);
 const stageOf = (s, id) => facDef(id).stages[s.fac[id]?.stage || 0];
@@ -21,7 +21,7 @@ export function registry(s) {
   for (const f of FACILITIES) { const st = stageOf(s, f.id); for (const act of st.offers || []) out.push({ fac: f.id, node: f.node, act, cap: slotCap(s, f.id, act), dur: durOf(s, { act, fac: f.id }), ad: ACTIVITIES[act]?.ad || null, laborOnly: !!st.laborOnly }); }
   return out;
 }
-export function durOf(s, t) { const A = ACTIVITIES[t.act] || {}; if (t.act === 'cook') return stageOf(s, t.fac).cookDur; if (t.act === 'learn') return stageOf(s, 'hall').learnDur; return A.dur || 0; }
+export function durOf(s, t) { const A = t.act === 'sig' ? { ...ACTIVITIES.sig, ...(SIG_ACTS[s.sect?.id] || {}) } : ACTIVITIES[t.act] || {}; if (t.act === 'cook') return stageOf(s, t.fac).cookDur; if (t.act === 'learn') return stageOf(s, 'hall').learnDur * (s.fac.library?.stage ? 0.75 : 1); /* v1.6 藏經閣：聽講快 25% */ return A.dur || 0; }
 // ---- 預約 ----
 export const resvOf = (s) => (s.resv ??= {});
 export const holder = (s, key) => resvOf(s)[key] ?? null;

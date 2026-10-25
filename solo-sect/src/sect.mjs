@@ -65,7 +65,7 @@ export function canBuildFac(s) {
 export function buildFac(s, force) {
   const c = canBuildFac(s); if (!c.ok && !force) return c; const F = sectFac(s);
   if (!force) for (const [k, v] of Object.entries(F.cost)) s.res[k] -= v;
-  s.sect.fac = true; log(s, `【鎮派】${F.name}落成：${F.desc}`); return { ok: true };
+  s.sect.fac = true; if (s.fac.sig) s.fac.sig.stage = 1; log(s, `【鎮派】${F.name}落成：${F.desc}`); return { ok: true };
 }
 function facDaily(s) {
   const F = sectFac(s); if (!s.sect.fac || !F) return;

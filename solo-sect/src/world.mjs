@@ -124,3 +124,7 @@ export const partyCloud = (s) => cloudAt(partyDist(s));
 // v1.55d 三段縮放（Songs of Syx 式 LOD）：近＝立繪小人；中＝圓點＋名字；遠＝只畫環色塊與族群圖示
 export const ZOOMS = { near: 1.6, mid: 1, far: 0.3 };
 export const lodOf = (z) => (z >= 1.15 ? 'near' : z >= 0.55 ? 'mid' : 'far');
+
+// v1.6 區塊快取上限：LRU（Map 插入序＝使用序；命中就移到尾端，超量踢最舊）
+export const CHUNK_CAP = 64;
+export function lruGet(m, k, make, cap = CHUNK_CAP) { let v = m.get(k); if (v !== undefined) { m.delete(k); m.set(k, v); return v; } v = make(); m.set(k, v); while (m.size > cap) m.delete(m.keys().next().value); return v; }

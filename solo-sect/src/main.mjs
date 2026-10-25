@@ -1,4 +1,4 @@
-import { HOME, HOME_VIEW, CHUNK, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, styledPos, fogged, inVision, leftovers, FOG_W, FOG_H, WORLD, cellColor, STYLE_PATH, cloudAt, cloudPos, cloudSpots, partyCloud, CLOUD_MAP, ZOOMS, lodOf, TRAIL_END, raidDescent, RINGS, TRAIL } from './world.mjs';
+import { HOME, HOME_VIEW, CHUNK, CHUNK_CAP, lruGet, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, styledPos, fogged, inVision, leftovers, FOG_W, FOG_H, WORLD, cellColor, STYLE_PATH, cloudAt, cloudPos, cloudSpots, partyCloud, CLOUD_MAP, ZOOMS, lodOf, TRAIL_END, raidDescent, RINGS, TRAIL } from './world.mjs';
 import { raidMul } from './expedition.mjs';
 import { sideCards, bubbles } from './events.mjs';
 import { statusHtml } from './status.mjs';
@@ -63,7 +63,8 @@ function draw() {
     items.push({ y: y - 1, f: () => {
       if (f.id === 'yard') { g.fillStyle = 'rgba(180,150,100,.35)'; if (st.dummies) { g.beginPath(); g.ellipse(x, y, 45, 20, 0, 0, 7); g.fill(); }
         for (let k = 0; k < (st.dummies || 0); k++) { const dx = x - 30 + k * 26, dy = y + 4; g.fillStyle = '#6b4a2a'; g.fillRect(dx - 2, dy - 24, 5, 24); g.fillRect(dx - 8, dy - 19, 16, 3); g.fillRect(dx - 7, dy - 12, 14, 3); } }
-      label(`${f.name}・${st.name}`, x, y + 22, '#3a2f24');
+      if (f.v16) { if (fs.stage) { g.fillStyle = f.sig ? '#7a2e2e' : '#8a6a44'; g.fillRect(x - 22, y - 18, 44, 22); g.fillStyle = '#3d3f46'; g.beginPath(); g.moveTo(x - 30, y - 16); g.lineTo(x, y - 34); g.lineTo(x + 30, y - 16); g.fill(); } else { g.strokeStyle = 'rgba(120,80,40,.45)'; g.setLineDash([4, 3]); g.strokeRect(x - 22, y - 18, 44, 22); g.setLineDash([]); } } // v1.6 新建築：簡易屋頂佔位
+      if (f.sig && !fs.stage) return; label(`${f.sig ? (sectFac(S)?.name || f.name) : f.name}・${st.name}`, x, y + 22, '#3a2f24');
       if (fs.site) { const s = fs.site; label(`${s.paused ? '⏸暫停 ' : '工地 '}${MATS.filter((k) => s.need[k]).map((k) => `${RES_NAMES[k]}${s.delivered[k]}/${s.need[k]}`).join(' ')} 工${s.work.toFixed(0)}/${s.workNeed}s`, x, y + 46, '#a0461e');
         for (let k = 0; k < s.delivered.wood; k++) { g.fillStyle = '#8b5a2b'; g.fillRect(x - 46 + (k % 6) * 6, y + 52 - Math.floor(k / 6) * 4, 5, 3); }
         for (let k = 0; k < s.delivered.stone; k++) { g.fillStyle = '#8c8c8c'; g.beginPath(); g.arc(x + 16 + (k % 6) * 6, y + 54 - Math.floor(k / 6) * 4, 2.6, 0, 7); g.fill(); } }
@@ -154,8 +155,8 @@ const ORD = [['', '自主'], ...['train', 'spar', 'chop', 'farm', 'cook', 'forag
 let lastPanel = 0;
 function panel() {
   const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×`;
-  $('res').innerHTML = `木 ${S.res.wood}/${S.cap.wood}　石 ${S.res.stone}/${S.cap.stone}　香火錢 ${S.res.coin}　菜 ${S.res.veg}　飯 ${S.res.food}　藥 ${S.res.herb}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
-  $('build').innerHTML = FACILITIES.filter((f) => f.stages.length > 1).map((f) => { const st = S.fac[f.id], nx = f.stages[st.stage + 1];
+  $('res').innerHTML = `木 ${S.res.wood}/${S.cap.wood}　石 ${S.res.stone}/${S.cap.stone}　香火錢 ${S.res.coin}　菜 ${S.res.veg}　飯 ${S.res.food}　藥 ${S.res.herb}　水 ${S.res.water}/${S.cap.water}　療傷丹 ${S.res.pill}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
+  $('build').innerHTML = FACILITIES.filter((f) => f.stages.length > 1 && !f.sig).map((f) => { const st = S.fac[f.id], nx = f.stages[st.stage + 1];
     const cost = nx ? Object.entries(nx.cost).map(([k, v]) => `${RES_NAMES[k]}${v}`).join('・') : '';
     const bundle = st.site ? `<div class="k">收集包：${MATS.filter((k) => st.site.need[k]).map((k) => `${RES_NAMES[k]} ${st.site.delivered[k]}/${st.site.need[k]}${st.site.reserved[k] ? `（在途${st.site.reserved[k]}）` : ''}`).join('　')}｜工時 ${st.site.work.toFixed(0)}/${st.site.workNeed}s</div>${bar(100 * MATS.reduce((a, k) => a + st.site.delivered[k], 0) / Math.max(1, MATS.reduce((a, k) => a + st.site.need[k], 0)), '#a0461e')}` : '';
     return `<div>${f.name}：${f.stages[st.stage].name} ${nx ? (st.site ? `<button data-pause="${f.id}">${st.site.paused ? '復工' : '暫停'}</button>` : `<button data-build="${f.id}" ${(nx.rep && S.rep < nx.rep) || (nx.cost.coin || 0) > S.res.coin ? 'disabled' : ''}>藍圖：${nx.name}（${cost}${nx.rep ? '・名聲' + nx.rep : ''}）</button>`) : '✓'}${bundle}</div>`; }).join('');
@@ -326,7 +327,7 @@ export const camFollow = (on = !cam.follow) => { cam.follow = on && !!S.exp; ref
 window.__camFocus = camFocus; window.__cam = cam; window.__camHome = camHome; window.__camFollow = camFollow;
 // ---- v1.55a 世界：256px 區塊第一次進視窗才畫進離屏 canvas，之後每幀只 drawImage ----
 const CHUNKS = new Map(); window.__chunks = CHUNKS; const ART = { ground: IMG.ground, grass: IMG.grass, pine: IMG.pine, bamboo: IMG.bamboo };
-function chunkCanvas(cx, cy) { const k = chunkKey(cx, cy); let c = CHUNKS.get(k); if (!c) { c = document.createElement('canvas'); c.width = c.height = CHUNK; paintChunk(c.getContext('2d'), cx, cy, ART); CHUNKS.set(k, c); } return c; }
+function chunkCanvas(cx, cy) { return lruGet(CHUNKS, chunkKey(cx, cy), () => { const c = document.createElement('canvas'); c.width = c.height = CHUNK; paintChunk(c.getContext('2d'), cx, cy, ART); return c; }, CHUNK_CAP); } // v1.6 64 格 LRU
 function drawWorld(c) { g.fillStyle = '#b9ad8f'; const hw = 800 / c.z, hh = 450 / c.z; g.fillRect(c.x - hw, c.y - hh, hw * 2, hh * 2);
   const lod = lodOf(c.z); drawWorld.lod = lod; const fogC = [];
   if (lod === 'far') { g.drawImage(mmBaseImg(), 0, 0, WORLD.w, WORLD.h); for (let cy = 0; cy < FOG_H; cy++) for (let cx = 0; cx < FOG_W; cx++) if (fogged(S, cx, cy)) fogC.push([cx, cy]); } // 遠景：一張烘好的環色縮圖，不建區塊

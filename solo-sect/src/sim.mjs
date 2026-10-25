@@ -8,7 +8,7 @@ import { relStage, relAdd, compat, aff, initPair } from './social.mjs';
 import { seasonOf } from './season.mjs';
 import { pipeline, mulText } from './mul.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf } from './expedition.mjs';
-import { PACE, TRIAL_BOAR } from './data.mjs';
+import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES } from './data.mjs';
 import { aspStep, likeMeal, likesOf } from './v10.mjs';
 import { raidMul } from './expedition.mjs';
 import { popStep, fogStep } from './world.mjs';
@@ -48,11 +48,11 @@ export function route(from, to) {
 export const routeLength = (a, b) => { const p = route(a, b); let L = 0; for (let i = 1; i < p.length; i++) L += dist(NODES[p[i - 1]], NODES[p[i]]); return L; };
 
 export const facDef = (id) => FACILITIES.find((f) => f.id === id);
-export const facStage = (s, id) => facDef(id).stages[s.fac[id].stage];
+export const facStage = (s, id) => { const S = facDef(id).stages; return S[Math.min(s.fac[id]?.stage || 0, S.length - 1)]; };
 
 export function createState(seed = 1, heroSpec = null) {
   const s = {
-    v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })), vegRes: 0, cap: { wood: 12, stone: 12 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
+    v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })), vegRes: 0, cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
     ds: DISCIPLES.map((d, i) => mkDisciple(d, i)),
     rel: {}, aff: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
@@ -150,7 +150,7 @@ export function phaseOf(s) { const f = (s.t % DAY) / DAY; let p = PHASES[0]; for
 export const MATS = ['wood', 'stone'];
 export function startBuild(s, id) {
   const f = facDef(id), st = s.fac[id], next = f.stages[st.stage + 1];
-  if (!next || st.site) return false;
+  if (!next || st.site || f.sig || next.noBlueprint) return false; // v1.6 鎮派建築只能走門派面板
   if (next.rep && (s.rep || 0) < next.rep) return false;
   const coin = next.cost.coin || 0; if (s.res.coin < coin) return false;
   s.res.coin -= coin; book(s, 'out', 'coin', coin);
@@ -190,10 +190,28 @@ function offered(s, act) { return FACILITIES.filter((f) => facStage(s, f.id).off
 function bestFac(s, d, act) {
   const fs = offered(s, act).filter((f) => !facStage(s, f.id).laborOnly || isLabor(d)); if (!fs.length) return null;
   if (act === 'rest') fs.sort((a, b) => (facStage(s, b.id).restRate || 0) - (facStage(s, a.id).restRate || 0));
+  if (act === 'meditate') fs.sort((a, b) => (facStage(s, b.id).medEase || 1) - (facStage(s, a.id).medEase || 1)); // v1.6 靜室優先，滿了才回外功場
   for (const f of fs) { const key = freeSlot(s, f.id, act, d); if (key) return { f, key }; }
   if (act === 'rest') { const f = facDef('hall'); return { f, key: `hall:floor:${d.id}`, floor: true }; }
   return null;
 }
+// ---- v1.6 資料驅動的建築活動：條件、每日上限、效果解讀 ----
+const GEN_ACTS = Object.entries(ACTIVITIES).filter(([, A]) => A.gen);
+export const GEN_COND = { always: () => true, injured: (s, d) => d.hp < 60, herb2: (s) => s.res.herb >= 2 && s.res.pill < s.cap.pill, water: (s) => s.res.water < s.cap.water, bell: (s) => phaseOf(s).id === 'dawn' };
+export const actDef = (s, act) => (act === 'sig' ? (SIG_ACTS[s.sect?.id] ? { ...ACTIVITIES.sig, ...SIG_ACTS[s.sect.id] } : null) : ACTIVITIES[act]);
+const genOf = (s, act, A) => { if (act !== 'sig') return A.gen; const S = SIG_ACTS[s.sect?.id]; return S && { ...A.gen, why: S.why, perDay: S.perDay }; };
+const dayOk = (s, act, n) => { if (!n) return true; const c = s.daily?.[act]; return !c || c.day !== s.day || c.n < n; };
+const dayUse = (s, act) => { const D = (s.daily ??= {}), c = D[act]; if (!c || c.day !== s.day) D[act] = { day: s.day, n: 1 }; else c.n++; };
+// 效果：use 不夠就改用 alt；全部由資料決定，無亂數
+export function applyEff(s, d, E, actName) { if (!E) return;
+  if (E.use && Object.entries(E.use).some(([k, v]) => (s.res[k] || 0) < v)) return applyEff(s, d, E.alt, actName);
+  for (const [k, v] of Object.entries(E.use || {})) { s.res[k] -= v; book(s, 'out', k, v); }
+  for (const [k, v] of Object.entries(E.res || {})) { const nv = Math.min(s.cap[k] ?? Infinity, (s.res[k] || 0) + v); book(s, 'in', k, nv - (s.res[k] || 0)); s.res[k] = nv; }
+  if (E.hp) d.hp = clamp(d.hp + E.hp, 0, 100); if (E.mood) d.mood = clamp(d.mood + E.mood, 0, 100); if (E.rep) s.rep = Math.round(((s.rep || 0) + E.rep) * 10) / 10;
+  if (E.wexin) for (let i = 0; i < E.wexin; i++) easeWexin(s, d);
+  if (E.allMood) { for (const o of s.ds) if (!o.away) o.mood = clamp(o.mood + E.allMood, 0, 100); log(s, `${d.name}敲響晨鐘，全派精神一振`); }
+  if (E.watch) s.watch = s.t;
+  if (E.log !== false && (E.use || E.res || E.hp)) log(s, `${d.name}${actName}${E.res ? '：' + Object.entries(E.res).map(([k, v]) => `${RES_NAMES[k] || k}+${v}`).join('、') : ''}${E.hp ? `：氣血+${E.hp}` : ''}${E.use ? `（用${Object.entries(E.use).map(([k, v]) => `${RES_NAMES[k] || k}${v}`).join('、')}）` : ''}`); }
 export function scoreActs(s, d) {
   const n = d.needs, tr = d.traits, out = [];
   const add = (act, score, why) => { if (score > 0) out.push({ act, score, why }); };
@@ -215,6 +233,7 @@ export function scoreActs(s, d) {
   if (stone < s.cap.stone) add('quarry', short('stone') ? 50 : 14, short('stone') ? '工地缺石' : '備石');
   add('farm', s.plots.some((p) => p.st === 'ripe') ? 50 : 30, s.plots.some((p) => p.st === 'ripe') ? '菜熟了' : '菜畦空著該播種');
   add('forage', 18 * (tr.playful || 1), '採藥');
+  for (const [act, A] of GEN_ACTS) { if (!offered(s, act).length) continue; const g = genOf(s, act, A); if (!g || !GEN_COND[g.cond]?.(s, d) || !dayOk(s, act, g.perDay)) continue; const n0 = out.length; add(act, g.base, g.why); if (g.layer && out.length > n0) out[out.length - 1].layer = g.layer; } // v1.6 資料宣告的建築活動
   const site = siteOf(s);
   if (site) { const v = site[1]; const haul = MATS.some((k) => missingOf(v, k) > 0 && s.res[k] > 0); if (haul || siteReady(v)) add('build', 55 * (d.adult ? 1 : 0.6), haul ? '把料搬到工地料堆' : '料齊了，去施工'); }
   const ph = phaseOf(s).id, sch = SCHEDULE[ph] || {};
@@ -261,6 +280,7 @@ function assign(s, d, act, why) {
   let plot; if (act === 'farm') { plot = s.plots.findIndex((p, i) => (p.st === 'ripe' || p.st === 'empty') && !holder(s, `plot:${i}`)); if (plot < 0) return false; }
   const b = bestFac(s, d, act); if (!b) { if (act === 'cook') s.vegRes -= 2; return false; } const f = b.f;
   const resv = [b.key]; if (act === 'farm') resv.push(`plot:${plot}`); for (const k of resv) reserve(s, d, k);
+  if (ACTIVITIES[act]?.gen) dayUse(s, act);
   d.task = { act, fac: f.id, node: f.node, phase: 'go', plot, resv, floor: b.floor || undefined }; goto(d, f.node); d.reason = why; return true;
 }
 function goto(d, node) { const p = route(d.at, node); d.path = p.slice(1).map((n) => ({ n, xy: NODES[n] })); if (!d.path.length) d.path = [{ n: node, xy: NODES[node] }]; }
@@ -296,7 +316,7 @@ function grow(s, d, sk, amt) {
 }
 
 function doTask(s, d, dt) {
-  const t = d.task, A = ACTIVITIES[t.act];
+  const t = d.task, A = actDef(s, t.act) || {};
   if (t.act === 'hunt') return;
   if (t.act === 'trial') return trialStep(s, d, dt);
   if (t.phase === 'fetch' && !d.path.length) { // 建造取料
@@ -324,7 +344,7 @@ function doTask(s, d, dt) {
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
     const dur = effDur;
     if (t.timer >= dur) {
-      if (t.act === 'cook') { const st = facStage(s, t.fac); s.res.veg -= 2; s.vegRes -= 2; t.phase = 'done'; const yld = st.cookYield + cookBonus(d); onCook(s, d); s.res.food += yld; book(s, 'in', 'food', yld); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); grow(s, d, 'cooking', 6); finish(s, d); return; }
+      if (t.act === 'cook') { const st = facStage(s, t.fac); s.res.veg -= 2; s.vegRes -= 2; t.phase = 'done'; const wat = s.res.water >= 1 ? 1 : 0; if (wat) { s.res.water -= 1; book(s, 'out', 'water', 1); } const yld = st.cookYield + cookBonus(d) + wat; /* v1.6 有井水多煮一份 */ onCook(s, d); s.res.food += yld; book(s, 'in', 'food', yld); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); grow(s, d, 'cooking', 6); finish(s, d); return; }
       if (t.act === 'farm') { const p = s.plots[t.plot]; t.resv = []; grow(s, d, 'farming', 6); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; book(s, 'out', 'food', 1); }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
@@ -335,12 +355,13 @@ function doTask(s, d, dt) {
       if (t.act === 'forage') d.needs.fun = clamp((d.needs.fun ?? 60) + (d.personality.includes('playful') ? 20 : 8), 0, 100);
       if (t.act === 'eat' && s.res.food >= 8) think(s, d, 'wellFed');
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
-      if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s)); if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
+      if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) for (let i = 0; i < (facStage(s, t.fac).medEase || 1); i++) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s)); if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
       if (t.act === 'learn' && d.pendingArt) { const m = learnArt(d, d.pendingArt, s.t); s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
       if (t.act === 'chat' && t.partner) { const p = byId(s, t.partner); d.together += 20; if (isLabor(d) && !isLabor(p)) d.cowork = (d.cowork || 0) + 30;
         if (t.encouragedBy) { think(s, d, 'encouraged', `（${p.name}）`); }
         else if (d.id < p.id) { const cm = Math.min(compat(d, p), compat(p, d)); if (cm < 1 && rand(s) < (1 - cm) * 0.8) { relAdd(s, d, p, 1); for (const x of [d, p]) think(s, x, 'badChat', `（${x === d ? p.name : d.name}）`); log(s, `${d.name}與${p.name}聊不到一塊`); } else { relAdd(s, d, p, 4 * Math.max(d.traits.social || 1, p.traits.social || 1)); think(s, d, 'goodChat', `（${p.name}）`); think(s, p, 'goodChat', `（${d.name}）`); } } }
       if (t.act === 'encourage' && t.partner) { const p = byId(s, t.partner); think(s, d, 'helped'); relAdd(s, d, p, 3); log(s, `${d.name}陪心情低落的${p.name}說了好一會兒話`); }
+      if (A.eff) applyEff(s, d, A.eff, A.name);
       if (A.carry) { d.carry = { ...A.carry }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; }
       finish(s, d);
     }
@@ -423,12 +444,14 @@ function monWalk(m, step) {
 }
 // 生態：繁衍、棲地遊蕩、野豬下山拱菜（有目的、會離開）
 function removeWild(s, k, n) { for (let i = 0; i < n; i++) { const j = s.wild.findIndex((w) => w.k === k); if (j >= 0) s.wild.splice(j, 1); } }
+const WATCH_WARN = 120; // 秒：有人在哨崗守過，這段時間內下山的野豬會被嚇回
 function ecoStep(s, dt) {
   for (const [k, E] of Object.entries(ECO)) { const e = s.eco[k]; if (e.n < E.max) { e.timer += dt; if (e.timer >= E.regen) { e.n++; e.timer = 0; } } }
   const R = HABITAT.r;
   for (const k of Object.keys(ECO)) { let have = s.wild.filter((w) => w.k === k).length; while (have < s.eco[k].n) { s.wild.push({ k, pos: [HABITAT.c[0] + (rand(s) - 0.5) * R, HABITAT.c[1] + (rand(s) - 0.5) * R], tgt: null }); have++; } if (have > s.eco[k].n) removeWild(s, k, have - s.eco[k].n); }
   for (const w of s.wild) { if (!w.tgt || dist(w.pos, w.tgt) < 4) w.tgt = [HABITAT.c[0] + (rand(s) - 0.5) * 2 * R, HABITAT.c[1] + (rand(s) - 0.5) * R]; const L = dist(w.pos, w.tgt), st = MONSTERS[w.k].speed * 0.3 * dt; w.pos[0] += (w.tgt[0] - w.pos[0]) * Math.min(1, st / L); w.pos[1] += (w.tgt[1] - w.pos[1]) * Math.min(1, st / L); w.face = w.tgt[0] >= w.pos[0] ? 1 : -1; }
   s.raidT += dt;
+  if (!s.hunt && s.raidT >= RAID_EVERY * raidMul(s) && s.eco.boar.n > 0 && !s.mons.some((m) => m.raid) && s.watch != null && s.t - s.watch < WATCH_WARN) { s.raidT = 0; s.watched = (s.watched || 0) + 1; log(s, '護山哨示警：野豬剛下山就被鑼聲嚇回去了。'); } // v1.6 哨崗預警
   if (!s.hunt && s.raidT >= RAID_EVERY * raidMul(s) && s.eco.boar.n > 0 && !s.mons.some((m) => m.raid)) {
     s.raidT = 0; s.eco.boar.n--; removeWild(s, 'boar', 1);
     s.mons.push({ uid: `raid${s.rngN++}`, k: 'boar', hp: MONSTERS.boar.hp, max: MONSTERS.boar.hp, pos: [...NODES.den], path: route('den', 'veg').slice(1), raid: 'go', cool: 0 });

@@ -1,0 +1,12 @@
+PASS 藍圖面板列出新建築、沒有鎮派地 ["hall","yard","dorm","kitchen","shed","library","quiet","shrine","alchemy","clinic","guest","well","bell","watch"]
+PASS 點藍圖：井開工 {"stage":0,"site":true}
+PASS 自然遊玩：井落成 {"day":4}
+PASS 有人去挑水／水入庫 {"water":0,"acts":["train","chat","chat","water","water","build"]}
+PASS 資源列顯示水／療傷丹 "木 10/12　石 4/12　香火錢 12　菜 55　飯 13　藥 13　水 0/12　療傷丹 0名聲 56・弟子 6/3 床・雇工 0/0・地圖 S0菜畦：空"
+PASS 點藍圖：靜室開工 {"stage":0,"site":true}
+PASS 自然遊玩：靜室落成 {"day":4}
+STATE EDIT: sect.rep=999, wood/stone=12, coin≥20
+PASS 鎮派建築落成 → 鎮派地 stage 1 {"sect":{"id":"gaibang","rep":999,"fac":true},"sig":{"stage":1,"site":false},"clicked":true}
+PASS 弟子自己去做鎮派活動 {"acts":["eat","chat","rest","sig","water","chat"],"daily":{"water":{"day":4,"n":7},"sig":{"day":4,"n":1}}}
+PASS 區塊快取上限 64（拖動地圖後） {"chunks":37}
+PASS 無頁面錯誤 []

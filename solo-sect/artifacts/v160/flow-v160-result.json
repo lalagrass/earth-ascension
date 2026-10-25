@@ -1,0 +1,196 @@
+{
+ "steps": [
+  {
+   "n": "藍圖面板列出新建築、沒有鎮派地",
+   "pass": true,
+   "d": [
+    "hall",
+    "yard",
+    "dorm",
+    "kitchen",
+    "shed",
+    "library",
+    "quiet",
+    "shrine",
+    "alchemy",
+    "clinic",
+    "guest",
+    "well",
+    "bell",
+    "watch"
+   ]
+  },
+  {
+   "n": "點藍圖：井開工",
+   "pass": true,
+   "d": {
+    "stage": 0,
+    "site": true
+   }
+  },
+  {
+   "n": "自然遊玩：井落成",
+   "pass": true,
+   "d": {
+    "day": 4
+   }
+  },
+  {
+   "n": "有人去挑水／水入庫",
+   "pass": true,
+   "d": {
+    "water": 0,
+    "acts": [
+     "train",
+     "chat",
+     "chat",
+     "water",
+     "water",
+     "build"
+    ]
+   }
+  },
+  {
+   "n": "資源列顯示水／療傷丹",
+   "pass": true,
+   "d": "木 10/12　石 4/12　香火錢 12　菜 55　飯 13　藥 13　水 0/12　療傷丹 0名聲 56・弟子 6/3 床・雇工 0/0・地圖 S0菜畦：空"
+  },
+  {
+   "n": "點藍圖：靜室開工",
+   "pass": true,
+   "d": {
+    "stage": 0,
+    "site": true
+   }
+  },
+  {
+   "n": "自然遊玩：靜室落成",
+   "pass": true,
+   "d": {
+    "day": 4
+   }
+  },
+  {
+   "n": "鎮派建築落成 → 鎮派地 stage 1",
+   "pass": true,
+   "d": {
+    "sect": {
+     "id": "gaibang",
+     "rep": 999,
+     "fac": true
+    },
+    "sig": {
+     "stage": 1,
+     "site": false
+    },
+    "clicked": true
+   }
+  },
+  {
+   "n": "弟子自己去做鎮派活動",
+   "pass": true,
+   "d": {
+    "acts": [
+     "eat",
+     "chat",
+     "rest",
+     "sig",
+     "water",
+     "chat"
+    ],
+    "daily": {
+     "water": {
+      "day": 4,
+      "n": 7
+     },
+     "sig": {
+      "day": 4,
+      "n": 1
+     }
+    }
+   }
+  },
+  {
+   "n": "區塊快取上限 64（拖動地圖後）",
+   "pass": true,
+   "d": {
+    "chunks": 37
+   }
+  },
+  {
+   "n": "無頁面錯誤",
+   "pass": true,
+   "d": []
+  }
+ ],
+ "errs": [],
+ "edit": "STATE EDIT: sect.rep=999, wood/stone=12, coin≥20",
+ "sectBtn": true,
+ "final": {
+  "day": 4,
+  "res": {
+   "wood": 2,
+   "stone": 12,
+   "coin": 10,
+   "food": 12,
+   "herb": 13,
+   "veg": 55,
+   "water": 8,
+   "pill": 0,
+   "page1": 0,
+   "page2": 0,
+   "hide": 0,
+   "gall": 0
+  },
+  "fac": {
+   "well": {
+    "stage": 1,
+    "site": false
+   },
+   "quiet": {
+    "stage": 1,
+    "site": false
+   },
+   "library": {
+    "stage": 0,
+    "site": false
+   },
+   "sig": {
+    "stage": 1,
+    "site": false
+   }
+  },
+  "acts": [
+   "eat",
+   "chat",
+   "rest",
+   "sig",
+   "water",
+   "chat"
+  ],
+  "daily": {
+   "water": {
+    "day": 4,
+    "n": 7
+   },
+   "sig": {
+    "day": 4,
+    "n": 1
+   }
+  },
+  "chunks": 34,
+  "sect": {
+   "id": "gaibang",
+   "rep": 999,
+   "fac": true
+  },
+  "log": [
+   "郭靖與黃蓉成了「知己」",
+   "【鎮派】打狗棒堂落成：污衣淨衣議事；弟子沿村乞討，每日糧 +2",
+   "完工：靜室成了「靜室」，解鎖：打坐衝關",
+   "一頭野豬循山路下來，朝菜園去了。",
+   "令狐沖送 2 石到工地料堆（4/4）",
+   "林師姐送 2 石到工地料堆（2/4）"
+  ]
+ }
+}

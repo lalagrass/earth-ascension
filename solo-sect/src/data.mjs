@@ -445,3 +445,45 @@ Object.assign(ENEMIES.rat, { home: { speed: 40, sprite: 'rat' } }); Object.assig
 for (const [k, e] of Object.entries(ENEMIES)) { const i = ROUTE.findIndex((g) => g.roster.some(([x]) => x === k)); e.ring = i >= 0 ? ROUTE[i].id : null; }
 ENEMIES.rat.ring = 'foot'; // 山鼠不在巡山名單，棲在山腳
 for (const [k, e] of Object.entries(ENEMIES)) if (e.home) MONSTERS[k] = { name: e.name, hp: e.hp, speed: e.home.speed, dmg: e.dmg, sprite: e.home.sprite, ring: e.ring };
+
+// ---- v1.6 補建築（ROADMAP §19、DESIGN-REVIEW §1.2）：全部是 smart object 資料 ----
+// 新活動用資料宣告：gen＝{ base 基礎分, why 理由, cond 條件名（見 sim GEN_COND）, perDay 每日全派上限 }；eff＝完成時效果（sim applyEff 解讀）
+// eff 鍵：res{k:+n} 入庫（受 cap 限）、use{k:n} 消耗（不夠就不做）、hp、mood、rep、wexin（−層數）、allMood（全派心情）、alt（use 不夠時改用的效果）
+Object.assign(NODES, { library: [1235, 300], quiet: [1265, 395], shrine: [1110, 255], alchemy: [705, 335], clinic: [870, 470], guest: [860, 290], well: [1035, 655], bell: [1040, 325], sig: [1290, 480] });
+EDGES.push(['hall', 'library'], ['yard', 'quiet'], ['hall', 'shrine'], ['kitchen', 'alchemy'], ['mid', 'clinic'], ['dormP', 'guest'], ['s1', 'well'], ['court', 'bell'], ['yard', 'sig']);
+const B = (id, name, node, built, cost, work, offers, extra = {}, rep = 0) => ({ id, name, node, v16: true, stages: [{ name: '空地', sprite: null, offers: [] }, { name: built, sprite: null, offers, cost, work, rep: rep || undefined, ...extra }] });
+FACILITIES.push(
+  B('library', '藏經閣', 'library', '藏經閣', { wood: 10, stone: 6, coin: 6 }, 26, ['study'], { slots: { study: 2 } }, 15),
+  B('quiet', '靜室', 'quiet', '靜室', { wood: 6, stone: 4 }, 18, ['meditate'], { slots: { meditate: 2 }, medEase: 2 }),
+  B('shrine', '祠堂', 'shrine', '祠堂', { wood: 8, stone: 6, coin: 4 }, 22, ['worship'], { slots: { worship: 2 } }, 10),
+  B('alchemy', '丹房', 'alchemy', '丹房', { wood: 6, stone: 8, coin: 6 }, 24, ['brew'], { slots: { brew: 1 } }, 12),
+  B('clinic', '醫館', 'clinic', '醫館', { wood: 8, stone: 4, coin: 4 }, 20, ['heal'], { slots: { heal: 2 } }),
+  B('guest', '客房', 'guest', '客房', { wood: 10, stone: 4, coin: 6 }, 22, ['host'], { slots: { host: 1 } }, 18),
+  B('well', '井', 'well', '水井', { stone: 6 }, 14, ['water'], { slots: { water: 2 } }),
+  B('bell', '鐘樓', 'bell', '鐘樓', { wood: 8, stone: 6 }, 20, ['bell'], { slots: { bell: 1 } }, 8),
+  B('watch', '哨崗', 'guard', '護山哨', { wood: 8, stone: 4 }, 18, ['watch'], { slots: { watch: 1 } }),
+  // 鎮派建築的地：不能從藍圖蓋，跟著「鎮派」落成一起開（sect.buildFac 把 stage 設成 1）；活動內容依門派查 SIG_ACTS
+  { id: 'sig', name: '鎮派地', node: 'sig', v16: true, sig: true, stages: [{ name: '空地', sprite: null, offers: [] }, { name: '鎮派建築', sprite: null, offers: ['sig'], slots: { sig: 2 }, noBlueprint: true }] },
+);
+Object.assign(ACTIVITIES, {
+  study:   { name: '藏經閣研讀', dur: 10, energy: -4, skill: { style: 3 }, gen: { base: 40, why: '去藏經閣翻殘頁', cond: 'always' }, eff: { pageXP: 1 } },
+  worship: { name: '祠堂上香', dur: 6, energy: -1, gen: { base: 46, why: '給祖師爺上炷香', cond: 'always', perDay: 3 }, eff: { mood: 6, rep: 0.3 } },
+  brew:    { name: '丹房煉藥', dur: 12, energy: -6, skill: { herbal: 5 }, gen: { base: 34, why: '藥材夠了，煉療傷丹', cond: 'herb2' }, eff: { use: { herb: 2 }, res: { pill: 1 } } },
+  heal:    { name: '醫館治傷', dur: 8, gen: { base: 115, why: '傷得不輕，去醫館', cond: 'injured', layer: 'need' }, eff: { use: { pill: 1 }, hp: 45, alt: { use: { herb: 1 }, hp: 25, alt: { hp: 12 } } } },
+  host:    { name: '客房待客', dur: 8, social: 20, gen: { base: 36, why: '打掃客房、陪客人說話', cond: 'always', perDay: 2 }, eff: { rep: 0.5, mood: 3 } },
+  water:   { name: '挑水', dur: 8, energy: -7, skill: { strength: 4 }, carry: { water: 2 }, gen: { base: 50, why: '水缸見底，去挑水', cond: 'water' } },
+  bell:    { name: '敲晨鐘', dur: 4, energy: -1, gen: { base: 90, why: '天亮了，去敲晨鐘', cond: 'bell', perDay: 1 }, eff: { allMood: 3 } },
+  watch:   { name: '護山哨瞭望', dur: 10, energy: -5, skill: { agility: 3 }, gen: { base: 40, why: '上哨崗守獸道', cond: 'always', perDay: 4 }, eff: { watch: 1 } },
+  sig:     { name: '鎮派功課', dur: 8, gen: { base: 48, why: '鎮派建築的功課', cond: 'always' } }, // 實際名稱／時長／效果見 SIG_ACTS
+});
+// 7 座鎮派建築各自的活動（sect id → 活動資料，形狀同上）
+export const SIG_ACTS = {
+  gaibang:   { name: '沿村乞討', dur: 10, energy: -6, perDay: 3, why: '打狗棒堂：沿村討口飯', eff: { res: { food: 2 } } },
+  qizong:    { name: '思過崖面壁', dur: 12, energy: -3, perDay: 2, why: '思過崖：面壁思過', eff: { wexin: 1, mood: 2 } },
+  jianzong:  { name: '酒窖品酒', dur: 6, fun: 35, perDay: 3, why: '酒窖：喝兩口好酒', eff: { mood: 5 } },
+  mingjiao:  { name: '護聖火', dur: 10, energy: -8, skill: { style: 5 }, perDay: 4, why: '聖火壇：守火練功', eff: {} },
+  tiandihui: { name: '拜香堂收會費', dur: 8, energy: -3, perDay: 3, why: '香堂：拜香收會費', eff: { res: { coin: 2 } } },
+  zhulong:   { name: '大雜院收租', dur: 8, energy: -4, perDay: 2, why: '大雜院：挨家收租', eff: { res: { coin: 1, food: 1 } } },
+  wuming:    { name: '祖師堂祭祖', dur: 6, energy: -1, perDay: 2, why: '祖師堂：祭拜開山祖師', eff: { rep: 0.5, mood: 3 } },
+};
+RES_NAMES.water = '水'; RES_NAMES.pill = '療傷丹';

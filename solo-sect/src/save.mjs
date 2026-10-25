@@ -49,7 +49,7 @@ export function v150Up(o) {
     if (t.act === 'rest' || t.act === 'cook') { const st = FACILITIES.find((f) => f.id === t.fac)?.stages[o.fac?.[t.fac]?.stage || 0]; const cap = t.act === 'cook' ? 1 : st?.beds ?? 1; let ok = false; for (let i = 0; i < cap && !ok; i++) ok = take(d, `${t.fac}:${t.act}:${i}`); if (!ok && t.act === 'rest') { t.floor = true; take(d, `hall:floor:${d.id}`); } else if (!ok) { o.vegRes = Math.max(0, (o.vegRes || 0) - 2); d.task = null; } } }
 }
 // 每次讀檔都跑：補最基本的不變式（手改或殘缺存檔也能讀）
-function repair(o, D) { o.cap ??= { wood: 12, stone: 12 }; for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= []; d.needs.fun ??= 60; if (!d.personality?.length) d.personality = [...(D[d.id]?.personality || [])]; d.known ??= d.personality.slice(0, 1); } freshV095(o); }
+function repair(o, D) { o.cap ??= { wood: 12, stone: 12 }; o.fac ??= {}; for (const f of FACILITIES) o.fac[f.id] ??= { stage: 0, site: null }; o.cap.water ??= 12; o.cap.pill ??= 10; o.res.water ??= 0; o.res.pill ??= 0; if (o.sect?.fac && o.fac?.sig) o.fac.sig.stage = 1; for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= []; d.needs.fun ??= 60; if (!d.personality?.length) d.personality = [...(D[d.id]?.personality || [])]; d.known ??= d.personality.slice(0, 1); } freshV095(o); }
 export function migrate(o) {
   const from = o.rules || (o.ds.some((d) => 'mood' in d) ? '0.6' : '0.5'), D = defs();
   const steps = MIGRATIONS.filter((m) => ver(m.to) > ver(from));
