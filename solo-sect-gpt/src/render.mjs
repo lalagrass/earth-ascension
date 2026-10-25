@@ -2,9 +2,10 @@ import {Q,FACILITIES,ITEM,MOVES,TASKNAME} from './data.mjs';
 import {MAP,rects,stations,corridors,position,inRect,trees} from './map.mjs';
 import {sorted,qty,bagWeight} from './state.mjs';
 import {paintedGround,buildingShell,roofLayer,treeLayer,bridgeLayer,lifeProps,roadPath} from './scene-art.mjs';
+import {STYLES} from './martial-config.mjs';
 import {visibleEntity} from './view.mjs';
 const COLORS={paper:'#eee7d3',ink:'#31443c',muted:'#7d8b70',earth:'#b9a485',grass:'#c2cbb0',water:'#8cbbb5',wood:'#87705a'};
-export function cameraPreset(name){return {home:{x:1005,y:1245,span:1430},all:{x:1200,y:900,span:2440},forest:{x:1520,y:690,span:550},valley:{x:1830,y:440,span:600},cave:{x:2180,y:200,span:500}}[name]||cameraPreset('home');}
+export function cameraPreset(name){return {home:{x:1005,y:1245,span:1430},yard:{x:1350,y:1220,span:460},all:{x:1200,y:900,span:2440},forest:{x:1520,y:690,span:550},valley:{x:1830,y:440,span:600},cave:{x:2180,y:200,span:500}}[name]||cameraPreset('home');}
 export function render(canvas,w,view){
  const dpr=window.devicePixelRatio||1,box=canvas.getBoundingClientRect(),width=box.width,height=box.height;if(canvas.width!==Math.round(width*dpr)||canvas.height!==Math.round(height*dpr)){canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);}
  const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle=COLORS.paper;ctx.fillRect(0,0,width,height);
@@ -30,7 +31,8 @@ export function render(canvas,w,view){
  // Building floors and furniture; roof is a separate foreground pass.
  for(const f of Object.values(rects))drawBuilding(ctx,w,f,false,view);
  const actors=sorted(w.people).filter(p=>p.residence!=='departed'&&!p.inactive&&visibleEntity(w,p)).sort((a,b)=>a.y-b.y||a.id.localeCompare(b.id));
- const labels=[],labelOffsets={};for(const p of [...actors].sort((a,b)=>(b.id===view.selected)-(a.id===view.selected)||a.id.localeCompare(b.id))){const x=p.x/Q;let y=p.y/Q-62;while(labels.some(r=>Math.abs(r.x-x)<66&&Math.abs(r.y-y)<20))y-=20;labels.push({x,y});labelOffsets[p.id]=y-(p.y/Q-62);}
+ const labels=[],labelOffsets={};for(const p of [...actors].sort((a,b)=>(b.id===view.selected)-(a.id===view.selected)||a.id.localeCompare(b.id))){const x=p.x/Q;let y=p.y/Q-62;while(labels.some(r=>Math.abs(r.x-x)<(w.martialPlan&&p.combatSession?110:66)&&Math.abs(r.y-y)<(w.martialPlan&&p.combatSession?42:20)))y-=w.martialPlan&&p.combatSession?42:20;labels.push({x,y});labelOffsets[p.id]=y-(p.y/Q-62);}
+ for(const p of actors)if(w.martialPlan&&p.combatSession)drawCombatTelegraph(ctx,w,p,view);
  const props=[];
  for(const t of trees)props.push({y:t.y,fn:()=>{const p=w.people[view.selected];if(!treeLayer(ctx,t.x,t.y,t.variant,p&&Math.abs(p.x/Q-t.x)<43&&p.y/Q<t.y+15&&p.y/Q>t.y-85))drawTree(ctx,t.x,t.y,t.variant);}});
  for(const p of actors)props.push({y:p.y/Q,fn:()=>drawPerson(ctx,w,p,view,labelOffsets[p.id],false)});
@@ -91,12 +93,14 @@ export function drawPerson(c,w,p,v,labelOffset=0,labels=true){const x=p.x/Q,y=p.
  c.strokeStyle='#bd9b77';c.lineWidth=3;c.beginPath();c.moveTo(4,-21);c.lineTo(ax,ay);c.moveTo(-4,-21);c.lineTo(bx,by);c.stroke();
  if(p.helping||p.helpedBy){c.strokeStyle='#9c805e';c.lineWidth=2;c.beginPath();c.moveTo(9,-18);c.lineTo(12,1);c.stroke();}if(a?.kind==='gather'&&!p.moving&&a.args.item==='stone'){c.strokeStyle='#6a756d';c.lineWidth=3;c.beginPath();c.moveTo(ax,ay);c.lineTo(ax+10,ay-10);c.lineTo(ax+16,ay-7);c.stroke();}if(a?.kind==='gather'&&!p.moving&&a.args.item==='water'){c.strokeStyle='#7d928b';c.strokeRect(4,-14,10,11);}if(a?.kind==='build'&&!p.moving){c.fillStyle='#8a7755';c.fillRect(ax,ay-8,3,10);c.fillStyle='#7a8172';c.fillRect(ax-4,ay-10,12,4);}
  if(a?.kind==='eat'&&!p.moving){c.fillStyle='#eee4c9';c.beginPath();c.ellipse(-2,-15,7,4,0,0,Math.PI);c.fill();c.strokeStyle='#7f7356';c.lineWidth=1;c.beginPath();c.moveTo(ax,ay);c.lineTo(ax-6,ay-6);c.stroke();}
+ if(!p.action&&p.weapon!=='punch'&&(w.inventories[p.equipment]?.items[p.weapon]||0)>0){c.strokeStyle=p.weapon==='staff'?'#8f7048':'#b8ab83';c.lineWidth=2.4;c.beginPath();c.moveTo(7,-15);c.lineTo(p.weapon==='staff'?-10:14,p.weapon==='staff'?-41:-36);c.stroke();if(p.weapon==='sword'){c.strokeStyle='#735e43';c.beginPath();c.moveTo(4,-17);c.lineTo(12,-13);c.stroke();}}
  const items=Object.keys(w.inventories[p.bag].items);if(items.length){const item=items[0];if(item==='tea'){c.fillStyle='#e4ddc7';c.fillRect(7,-19,7,6);c.strokeStyle='#afa384';c.strokeRect(7,-19,7,6);}c.fillStyle=item==='water'?'#7a8c83':item==='stone'?'#8b8a7b':'#9d8059';if(item==='wood'){c.save();c.rotate(-0.2);c.fillRect(-17,-22,34,5);c.restore();}else c.fillRect(6,-17,9,10);}
  c.restore();
  if(a&&['class','talk','encourage','care','teach','paired','story'].includes(a.kind)&&!p.moving){c.fillStyle='#f5eddb';c.beginPath();c.ellipse(x+13,y-32,8,5,0,0,7);c.fill();c.fillStyle='#7c856b';c.font='9px system-ui';c.fillText('…',x+9,y-30);}
  if(labels)drawLabel(c,w,p,v,labelOffset);
 }
 function drawLabel(c,w,p,v,labelOffset=0){const x=p.x/Q,y=p.y/Q,a=w.activities[p.activity||p.classSession];
+ if(w.martialPlan&&p.combatSession){c.save();c.font='10px system-ui';c.textAlign='center';c.fillStyle='#f7efdde8';c.fillRect(x-52,y-84+labelOffset,104,39);c.fillStyle='#344638';c.fillText(p.name,x,y-72+labelOffset);const a=p.action;c.fillStyle=a?.phase==='windup'?'#a87535':a?.phase==='active'?'#a35f43':'#607c6e';c.fillText(a?MOVES[a.move].name+' · '+({windup:'起手',active:'出招',recover:'收勢'}[a.phase])+' '+(a.remaining/20).toFixed(2)+'s':'移位／觀察',x,y-58+labelOffset);c.fillStyle='#c8c4a8';c.fillRect(x-43,y-51+labelOffset,86,3);c.fillStyle='#92a37c';c.fillRect(x-43,y-51+labelOffset,86*p.hp/p.maxHp,3);c.restore();return;}
  if(p.id===v.selected||p.residence==='resident'||p.residence==='visitor'){c.save();c.font='11px system-ui';c.textAlign='center';c.fillStyle='#f5edd9dd';c.fillRect(x-31,y-62+labelOffset,62,18);c.fillStyle='#344638';c.fillText(p.name,x,y-49+labelOffset);if(labelOffset){c.strokeStyle='#8b967c88';c.lineWidth=1;c.beginPath();c.moveTo(x,y-44+labelOffset);c.lineTo(x,y-28);c.stroke();}
   if(p.action){c.fillStyle=p.action.phase==='windup'?'#b47b37':p.action.phase==='active'?'#9f533d':'#6f847b';c.fillText(MOVES[p.action.move].name+' · '+({windup:'起手',active:'出招',recover:'收勢'}[p.action.phase]),x,y+16);}
   else if(p.residence==='resident'||p.id===v.selected){const load=Object.keys(w.inventories[p.bag].items).find(i=>w.inventories[p.bag].items[i]>0);c.fillStyle=p.blocked?'#a57946':'#455e49';c.fillText(p.blocked?'候位':p.moving&&load?'搬'+ITEM[load]:p.moving?'行走 · '+(TASKNAME[a?.kind]||'散步'):TASKNAME[a?.kind]||'閒步',x,y+16);}c.restore();}
@@ -106,3 +110,5 @@ function drawResources(c,w){for(const inv of Object.values(w.inventories))if(inv
  c.fillStyle='#9d8d64';c.fillRect(1643,487,26,20);c.fillStyle='#3c594b';c.font='13px system-ui';c.fillText('休整營地',1620,560);
 }
 function drawMarkers(c,w,v){c.fillStyle='#506052';c.font='16px system-ui';for(const [id,name]of [['forest','林緣'],['valley','溪谷 · 單人窄橋'],['cave','古洞']]){const p=stations[id];c.fillText(name,p[0]-40,p[1]+60);}c.font='12px system-ui';c.fillText('山寨未開放 · 本章止步',2030,80);c.fillText('西南藥坡封路',150,1780);}
+
+export function drawCombatTelegraph(c,w,p,v){const a=p.action,x=p.x/Q,y=p.y/Q,style=STYLES[w.martialPlan?.styles[p.id]||'arhat'];c.save();c.translate(x,y);if(p.id===v.selected){c.strokeStyle=style.color+'88';c.lineWidth=1;c.setLineDash([3,5]);c.beginPath();c.arc(0,0,style.move==='intercept'?30:MOVES[style.move].range+6,0,Math.PI*2);c.stroke();c.setLineDash([]);}if(a?.phase==='windup'){c.rotate(Math.atan2(a.aim[1],a.aim[0]));c.fillStyle='#c5913c30';c.beginPath();c.moveTo(0,0);c.arc(0,0,MOVES[a.move].range+6,-.35,.35);c.closePath();c.fill();c.strokeStyle='#ad844d77';c.lineWidth=1;c.beginPath();c.moveTo(0,0);c.lineTo(MOVES[a.move].range+6,0);c.stroke();}c.restore();}

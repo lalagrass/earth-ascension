@@ -1,0 +1,219 @@
+{
+  "source": "controlled model fixtures, not normal UI",
+  "summaries": [
+    {
+      "style": "arhat",
+      "pattern": "slow",
+      "trial": {
+        "version": 1,
+        "actor": "leader",
+        "coach": "practice.slow",
+        "pattern": "slow",
+        "style": "arhat",
+        "session": "spar.6",
+        "status": "completed",
+        "phase": "ended",
+        "started": 2000,
+        "positions": {
+          "left": [
+            1340,
+            1220
+          ],
+          "right": [
+            1358,
+            1220
+          ]
+        },
+        "demos": 2,
+        "lastDemo": null,
+        "energyBefore": 10000,
+        "hpBefore": 100,
+        "combatStart": 2071,
+        "ended": 2671,
+        "summary": {
+          "elapsedTicks": 600,
+          "actions": 14,
+          "energySpentOnMoves": 2800,
+          "hits": 13,
+          "interceptSuccess": 0,
+          "interceptFailure": 0,
+          "failures": [],
+          "energyAfter": 7155,
+          "hpAfter": 64
+        }
+      }
+    },
+    {
+      "style": "staff",
+      "pattern": "slow",
+      "trial": {
+        "version": 1,
+        "actor": "leader",
+        "coach": "practice.slow",
+        "pattern": "slow",
+        "style": "staff",
+        "session": "spar.9",
+        "status": "completed",
+        "phase": "ended",
+        "started": 2489,
+        "positions": {
+          "left": [
+            1340,
+            1220
+          ],
+          "right": [
+            1374,
+            1220
+          ]
+        },
+        "demos": 2,
+        "lastDemo": null,
+        "energyBefore": 9908,
+        "hpBefore": 100,
+        "combatStart": 2862,
+        "ended": 3462,
+        "summary": {
+          "elapsedTicks": 600,
+          "actions": 10,
+          "energySpentOnMoves": 5000,
+          "hits": 5,
+          "interceptSuccess": 0,
+          "interceptFailure": 0,
+          "failures": [],
+          "energyAfter": 4793,
+          "hpAfter": 70
+        }
+      }
+    },
+    {
+      "style": "counter",
+      "pattern": "slow",
+      "trial": {
+        "version": 1,
+        "actor": "leader",
+        "coach": "practice.slow",
+        "pattern": "slow",
+        "style": "counter",
+        "session": "spar.9",
+        "status": "completed",
+        "phase": "ended",
+        "started": 2489,
+        "positions": {
+          "left": [
+            1340,
+            1220
+          ],
+          "right": [
+            1362,
+            1220
+          ]
+        },
+        "demos": 2,
+        "lastDemo": null,
+        "energyBefore": 9908,
+        "hpBefore": 100,
+        "combatStart": 2862,
+        "ended": 3462,
+        "summary": {
+          "elapsedTicks": 600,
+          "actions": 4,
+          "energySpentOnMoves": 1600,
+          "hits": 2,
+          "interceptSuccess": 4,
+          "interceptFailure": 0,
+          "failures": [],
+          "energyAfter": 8169,
+          "hpAfter": 70
+        }
+      }
+    },
+    {
+      "style": "counter",
+      "pattern": "quick",
+      "trial": {
+        "version": 1,
+        "actor": "leader",
+        "coach": "practice.quick",
+        "pattern": "quick",
+        "style": "counter",
+        "session": "spar.9",
+        "status": "completed",
+        "phase": "ended",
+        "started": 2489,
+        "positions": {
+          "left": [
+            1340,
+            1220
+          ],
+          "right": [
+            1362,
+            1220
+          ]
+        },
+        "demos": 2,
+        "lastDemo": null,
+        "energyBefore": 9908,
+        "hpBefore": 100,
+        "combatStart": 2862,
+        "ended": 3106,
+        "summary": {
+          "elapsedTicks": 244,
+          "actions": 1,
+          "energySpentOnMoves": 400,
+          "hits": 0,
+          "interceptSuccess": 0,
+          "interceptFailure": 1,
+          "failures": [
+            "尚未連續觀察／辨識兩次起手"
+          ],
+          "energyAfter": 9395,
+          "hpAfter": 50
+        }
+      }
+    },
+    {
+      "style": "counter",
+      "pattern": "feint",
+      "trial": {
+        "version": 1,
+        "actor": "leader",
+        "coach": "practice.feint",
+        "pattern": "feint",
+        "style": "counter",
+        "session": "spar.9",
+        "status": "completed",
+        "phase": "ended",
+        "started": 2489,
+        "positions": {
+          "left": [
+            1340,
+            1220
+          ],
+          "right": [
+            1362,
+            1220
+          ]
+        },
+        "demos": 2,
+        "lastDemo": null,
+        "energyBefore": 9908,
+        "hpBefore": 100,
+        "combatStart": 2862,
+        "ended": 3462,
+        "summary": {
+          "elapsedTicks": 600,
+          "actions": 6,
+          "energySpentOnMoves": 2400,
+          "hits": 3,
+          "interceptSuccess": 5,
+          "interceptFailure": 1,
+          "failures": [
+            "對方佯攻已收手"
+          ],
+          "energyAfter": 7378,
+          "hpAfter": 94
+        }
+      }
+    }
+  ]
+}

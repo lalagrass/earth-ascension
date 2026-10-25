@@ -1,3 +1,5 @@
+import {rulesFor} from './save-features.mjs';
+import {adoptMartial,setFocus,chooseStyle,startPractice,martialTick,cancelPractice} from './martial.mjs';
 import {DEFAULT_LIFE_POLICY,validateLifePolicy,LIFE_RULES} from './life-policy.mjs';
 import {beginClass,classActivityTick} from './classes.mjs';
 import {Q,FACILITIES} from './data.mjs';
@@ -17,9 +19,10 @@ export function command(w,c){
  const id=c.id||(c.executeTick>w.tick?uid(w,'queued-command'):'cmd.'+(w.commandSeq+1));if(Object.hasOwn(w.seenCommands,id))return w.seenCommands[id];
  w.pendingCommands??=[];if(c.executeTick>w.tick){const existing=w.pendingCommands.find(q=>q.id===id);if(existing)return {ok:true,queued:true};w.commandArrivalSeq=(w.commandArrivalSeq||0)+1;w.pendingCommands.push({...structuredClone(c),id,arrivalSeq:w.commandArrivalSeq});return {ok:true,queued:true};}
  let result={ok:true};const p=w.people[c.actor||'leader'];
+ if(w.martialPlan&&p&&!['resident','visitor'].includes(p.residence)&&['task','stop','resume','recall','guard','roles','auto','attack','preferred','martialFocus','martialStyle','practice','practiceStop'].includes(c.type))return {ok:false,reason:'教習／野外人物只供觀察，不能代下門人命令'};
  if(w.lifePolicy&&c.temporary&&(p?.storyBusy||p?.classSession||w.expedition?.actors.includes(p?.id)&&!['returned','cancelled'].includes(w.expedition.phase)))return {ok:false,reason:'遠征／約定／同堂進行中不支援一次回復；請先完成或取消勾選作普通改派'};
  if(['task','stop'].includes(c.type)&&w.expedition?.actors.includes(p?.id)&&!['returned','cancelled'].includes(w.expedition.phase)){w.expedition.phase='halted';w.expedition.haltReason='隊員接到新指令／停工';p.storyBusy=false;if(w.people.zhou.helpedBy===p.id){const z=w.people.zhou;cancel(w,z,'扶助已中止');z.helpedBy=null;p.helping=null;w.expedition.reservedVisitor=false;event(w,'escort-interrupted',[p.id,z.id]);}}
- if(['task','stop','recall'].includes(c.type)&&p?.combatSession)interruptCombat(w,p);
+ if(['task','stop','recall'].includes(c.type)&&p?.combatSession){cancelPractice(w,p);interruptCombat(w,p);}
  if(c.type==='task'){
   if(!p)result={ok:false,reason:'人物不存在'};
   else if(p.residence==='visitor'&&p.canonicalIdentity&&w.identityMode==='matureGuest'&&!['move','rest','sleep','eat','talk','encourage','care'].includes(c.kind))result={ok:false,reason:'成熟宗師只作客，請透過約定交流'};else if(p.kind!=='human')result={ok:false,reason:'野生個體不能接受門派勞作命令'};else {const prior=p.temporary?{auto:p.temporary.auto,manualStop:p.temporary.manualStop,intent:structuredClone(p.temporary.intent)}:{auto:p.auto,manualStop:p.manualStop,intent:p.intent?structuredClone(p.intent):null},args={...(c.args||{})};if(w.lifePolicy&&c.temporary&&['train','study'].includes(c.kind))args.units=1;result=begin(w,p,c.kind,args,true);if(result.ok){delete p.temporary;if(w.lifePolicy&&c.temporary)p.temporary={version:1,revision:p.revision,kind:c.kind,...prior,originId:p.activity};}}
@@ -27,7 +30,12 @@ export function command(w,c){
   cancel(w,p,'玩家停工');delete p.temporary;p.revision++;p.manualStop=true;p.intent=null;
  }else if(c.type==='resume'){if(p.temporary){cancel(w,p,'取消臨時工作，恢復自主');delete p.temporary;}p.manualStop=false;p.intent=null;p.auto=true;}
  else if(c.type==='recall'){result=begin(w,p,'return',{},true);}
- else if(c.type==='lifePolicy'){try{const policy=structuredClone(c.policy||DEFAULT_LIFE_POLICY);validateLifePolicy(policy,w.inventories.vat.capacity);w.lifePolicy=policy;w.rulesVersion=LIFE_RULES;event(w,'life-policy-adopted',[],{version:policy.version});}catch(e){result={ok:false,reason:e.message};}}
+ else if(c.type==='lifePolicy'){try{const policy=structuredClone(c.policy||DEFAULT_LIFE_POLICY);validateLifePolicy(policy,w.inventories.vat.capacity);w.lifePolicy=policy;w.rulesVersion=rulesFor(w);event(w,'life-policy-adopted',[],{version:policy.version});}catch(e){result={ok:false,reason:e.message};}}
+ else if(c.type==='adoptMartial')result=adoptMartial(w);
+ else if(c.type==='martialFocus')result=setFocus(w,p,c.focus);
+ else if(c.type==='martialStyle')result=chooseStyle(w,p,c.style);
+ else if(c.type==='practice')result=startPractice(w,p,c.pattern);
+ else if(c.type==='practiceStop'){cancelPractice(w,p);interruptCombat(w,p);p.manualStop=true;p.intent=null;martialTick(w);}
  else if(c.type==='policy'){w.policy=c.policy;}
  else if(c.type==='guard'){if(!p.adult||p.kind!=='human')result={ok:false,reason:'守點需成年門人'};else{const pos=c.point==='B'?[1430,1150]:[1340,1220];p.guardPoint=pos;p.protect=c.protect||null;p.chaseLimit=Number(c.limit)||100;result=begin(w,p,'move',{pos},true);p.manualStop=true;p.team='residents';}}
  else if(c.type==='roles'){if(['gather','production','build','teach','care'].includes(c.primary)&&['gather','production','build','teach','care'].includes(c.secondary)){p.primary=c.primary;p.secondary=c.secondary;}else result={ok:false,reason:'未知職務'};}
@@ -75,8 +83,8 @@ export function step(w,batch=[]){for(const c of batch)command(w,c);w.tick++;w.pe
   p.simTick=w.tick;if(p.stun)p.stun--;
   if(w.tick%20===sorted(w.people).findIndex(o=>o.id===p.id)%20)autonomy(w,p);
  }
- ecologyTick(w);sessionsTick(w);combatAI(w);
- moveAll(w);combatTick(w);
+ ecologyTick(w);martialTick(w);sessionsTick(w);combatAI(w);
+ moveAll(w);combatTick(w);martialTick(w);
  const activityOrder=sorted(w.people).sort((a,b)=>(w.activities[a.activity]?.started??Infinity)-(w.activities[b.activity]?.started??Infinity)||a.id.localeCompare(b.id));
  for(const p of activityOrder){
   if(p.moving){p.energyRemainder+=(bagWeight(w,p)?10:5);while(p.energyRemainder>=20){p.energy=Math.max(0,p.energy-1);p.energyRemainder-=20;}}

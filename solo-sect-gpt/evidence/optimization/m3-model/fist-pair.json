@@ -1,0 +1,17 @@
+{
+  "source": "controlled 600-tick actual actions; no combatAI target, equal geometry",
+  "results": [
+    {
+      "deep": false,
+      "hits": 19,
+      "energy": 6200,
+      "hp": 9848
+    },
+    {
+      "deep": true,
+      "hits": 32,
+      "energy": 3600,
+      "hp": 9744
+    }
+  ]
+}

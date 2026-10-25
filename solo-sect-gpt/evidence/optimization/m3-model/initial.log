@@ -1,0 +1,37 @@
+✔ M3 goals use actual progress and focus/stance do not grant skill; old and new rule headers remain explicit (304.222875ms)
+✔ M3 real sword is mandatory in new mode; impossible counters still pay and keep a recovery phase when equipped (85.658334ms)
+✔ M3 physical practice arhat / slow (252.6185ms)
+✔ M3 physical practice staff / slow (459.523333ms)
+✔ M3 physical practice counter / slow (390.406375ms)
+✖ M3 physical practice counter / quick (232.40625ms)
+✔ M3 physical practice counter / feint (396.066875ms)
+✔ M3 unfinished actual practice save/resume hashes match, cancellation clears the shared scene, and youth cannot enter (811.016792ms)
+✔ M3 timing is finite and deep low-cost fist remains faster than novice fist (0.2525ms)
+✔ M3 five fixed seeds preserve exact adopted-profile replay (4109.855709ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 9
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7146.991625
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/optimization/martial.test.mjs:5:138
+✖ M3 physical practice counter / quick (232.40625ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(t.summary.actions>0)
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/martial.test.mjs:5:440)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

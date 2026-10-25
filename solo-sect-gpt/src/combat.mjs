@@ -12,9 +12,12 @@ export function hitGeometry(w,p,t,move,aim){const m=MOVES[move],dx=t.x-p.x,dy=t.
  if(move==='sweep')return true;if(move==='push')return cross<=dot;return cross<=(m.width/2+6)*Q*10000&&dot<=(m.range+6)*Q*10000;
 }
 export function interceptionReason(w,p,target){
- const o=p.observation[target?.id],ac=target?.action;if(!p.skill.nine)return '尚未學會九劍';if(!target||dist(p,target)>30)return '距離太遠';if(!los(w,position(p),position(target)))return '視線被遮擋';if(!o||o.last!==ac?.id||o.continuous<12||o.patterns<2)return '尚未連續觀察／辨識兩次起手';if(!ac||ac.phase!=='windup'||ac.remaining<9)return '起手太短或出手太晚';if(p.energy<400)return '精力不足';return null;
+ const o=p.observation[target?.id],ac=target?.action;if(!p.skill.nine)return '尚未學會九劍';if(w.martialPlan&&(p.weapon!=='sword'||!qty(w,p.equipment,'sword')))return '先實際領用木劍';if(!target||dist(p,target)>30)return '距離太遠';if(!los(w,position(p),position(target)))return '視線被遮擋';if(!o||o.last!==ac?.id||o.continuous<12||o.patterns<2)return '尚未連續觀察／辨識兩次起手';if(!ac||ac.phase!=='windup'||ac.remaining<9)return '起手太短或出手太晚';if(p.energy<400)return '精力不足';return null;
 }
 function sweepRoom(w,p,aim=directions[p.angle]){const at=position(p),side=[-aim[1]/10000*16,aim[0]/10000*16];return sweep(w,at,[at[0]+side[0],at[1]+side[1]],2)&&sweep(w,at,[at[0]-side[0],at[1]-side[1]],2);}
+export function actionTiming(p,move){const m=MOVES[move];const s=p.skill[m.art],level=s?.F>=90&&s?.I>=10?2:s?.F>=18?1:0;
+ let wind=m.wind,recover=m.recover;if(move==='punch'){wind=[16,12,10][level];recover=[14,10,7][level];}else recover=Math.ceil(recover*[1,.9,.8][level]);
+ if(move==='step')recover=Math.max(12,recover+4-p.stats[2]);return{wind,active:m.active,recover,cost:m.cost,range:m.range};}
 export function startAction(w,p,move,target=null,forced=false){
  const m=MOVES[move];if(!m)return {ok:false,reason:'未知招式'};
  if(target&&!target.adult)return {ok:false,reason:'未成年不能成為攻防或切磋對象'};
@@ -22,6 +25,7 @@ export function startAction(w,p,move,target=null,forced=false){
  if(p.action||p.stun||p.hp<=0)return {ok:false,reason:'仍在起手／收勢／失能'};
  if(!p.skill[m.art]&&p.kind==='human')return {ok:false,reason:'尚未學會這門武學'};
  if(['staff','sword'].includes(m.art)&&(p.weapon!==m.art||!qty(w,p.equipment,m.art)))return {ok:false,reason:'先到倉庫實際領用並裝備這種器械'};
+ if(w.martialPlan&&move==='intercept'&&(p.weapon!=='sword'||!qty(w,p.equipment,'sword')))return {ok:false,reason:'九劍需實際領用並裝備木劍'};
  if(move==='push'&&!p.pushLearned)return {ok:false,reason:'推掌需洪七公真授課'};
  if(move==='sweep'&&(inRect(p.x/Q,p.y/Q,[1854,415,102,50])||!sweepRoom(w,p)))return {ok:false,reason:'窄橋空間不足，不能棍掃'};
  if(move==='step'){const v=directions[p.angle],at=position(p),to=[at[0]+v[0]/10000*24,at[1]+v[1]/10000*24];if(!sweep(w,at,to)||inRect(to[0],to[1],[1860,415,90,50])&&w.bridge.holder!==p.id||sorted(w.people).some(o=>o.id!==p.id&&o.residence!=='departed'&&!o.inactive&&Math.hypot(o.x/Q-to[0],o.y/Q-to[1])<12))return {ok:false,reason:'短步無合法落腳；不能穿牆、越溪或搶橋'};}
@@ -30,12 +34,11 @@ export function startAction(w,p,move,target=null,forced=false){
   const pile=inventory(w,uid(w,'ground'),{},96);w.inventories[pile].pos=position(p);for(const [i,n]of Object.entries(w.inventories[p.bag].items))transfer(w,p.bag,pile,i,n);event(w,'set-down',[p.id],{inventory:pile});
  }
  let failure=move==='intercept'?interceptionReason(w,p,target):null;if(failure&&!forced)return {ok:false,reason:failure};
- const s=p.skill[m.art],level=s?.F>=90&&s?.I>=10?2:s?.F>=18?1:0;
- let wind=m.wind,recover=m.recover;if(move==='punch'){wind=[16,12,10][level];recover=[14,10,7][level];}else recover=Math.ceil(recover*[1,.9,.8][level]);
- if(move==='step')recover=Math.max(12,recover+4-p.stats[2]);
+ const {wind,recover}=actionTiming(p,move);
  if(target)face(p,target);const ac={id:uid(w,'action'),move,target:target?.id||null,phase:'windup',remaining:wind,wind,active:m.active,recover,hitSet:[],aim:[...directions[p.angle]],started:w.tick,initialThreat:target?hitGeometry(w,p,target,move):false,failure,expectedTargetAction:target?.action?.id||null,energyCost:m.cost};
+ if(w.martialPlan&&p.rank==='training'&&p.martialPattern==='feint'){p.attackCount=(p.attackCount||0)+1;if(p.attackCount%3===0)ac.feintTick=w.tick+14;}
  if(p.rank==='warden'){p.attackCount=(p.attackCount||0)+1;if(p.attackCount%3===0)ac.feintTick=w.tick+Math.min(10,Math.max(3,wind-5));}
- p.action=ac;p.energy-=m.cost;p.path=[];p.routeAt=0;w.metrics.actions++;event(w,'action-start',[p.id,...(target?[target.id]:[])],{action:ac.id,move,wind,recover});return {ok:true};
+ p.action=ac;p.energy-=m.cost;p.path=[];p.routeAt=0;w.metrics.actions++;event(w,'action-start',[p.id,...(target?[target.id]:[])],{action:ac.id,move,wind,recover,...(w.martialPlan?{energyCost:ac.energyCost}:{})});return {ok:true};
 }
 function opposite(w,p,t){if(!t||p.id===t.id||!t.adult||t.residence==='departed'||t.inactive||t.trainingDefeated||t.hp<=0)return false;return p.combatSession&&p.combatSession===t.combatSession&&p.team!==t.team||p.kind!=='human'&&t.kind==='human'&&t.adult||p.kind==='human'&&t.kind!=='human'||p.rank==='warden'&&p.hostile&&t.residence==='resident'||t.rank==='warden'&&t.hostile&&p.residence==='resident';}
 export function combatAI(w){
@@ -54,9 +57,10 @@ export function combatAI(w){
    p.lastAvoid=ac.id;if(sweep(w,at,to)&&!sorted(w.people).some(o=>o.id!==p.id&&Math.hypot(o.x/Q-to[0],o.y/Q-to[1])<12)){route(w,p,to);continue;}
   }
   if(p.lastAvoid&&p.lastAvoid===target.action?.id&&!arrived(p))continue;
-  if(dist(p,target)>MOVES[move].range-2){if(w.tick%10===0){let dx=p.x-target.x,dy=p.y-target.y,d=Math.hypot(dx,dy)||1;const to=[target.x/Q+dx/d*(MOVES[move].range-4),target.y/Q+dy/d*(MOVES[move].range-4)];route(w,p,to);}continue;}
+  const desired=w.martialPlan?.styles[p.id]==='counter'?26:MOVES[move].range-2;
+  if(dist(p,target)>desired){if(w.tick%10===0){let dx=p.x-target.x,dy=p.y-target.y,d=Math.hypot(dx,dy)||1;const to=[target.x/Q+dx/d*(desired-2),target.y/Q+dy/d*(desired-2)];route(w,p,to);}continue;}
   if(p.assessment){const window=Math.floor((w.tick-p.sparStarted)/200);if(p.assessmentWindow===window)continue;p.assessmentWindow=window;}
-  face(p,target);if(p.skill.nine&&!interceptionReason(w,p,target))startAction(w,p,'intercept',target);else {const r=startAction(w,p,move,target);if(!r.ok&&move==='sweep')startAction(w,p,'punch',target);}
+  face(p,target);if(w.martialPlan?.styles[p.id]==='counter'&&p.skill.nine&&p.weapon==='sword'){if(!target.action||target.action.phase==='recover')continue;if(target.action.phase==='windup'&&target.action.wind>=21){if(!interceptionReason(w,p,target))startAction(w,p,'intercept',target);continue;}}if(p.skill.nine&&!interceptionReason(w,p,target))startAction(w,p,'intercept',target);else {const r=startAction(w,p,move,target);if(!r.ok&&move==='sweep')startAction(w,p,'punch',target);}
  }
 }
 export function combatTick(w){

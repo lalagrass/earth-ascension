@@ -1,3 +1,5 @@
+import {SUPPORTED_RULES,rulesFor} from './save-features.mjs';
+import {FOCUS,STYLES,PRACTICE} from './martial-config.mjs';
 import {validateLifePolicy,LIFE_RULES} from './life-policy.mjs';
 import {VERSION,ITEM,ART,MOVES,FACILITIES,STORY_IDS,RECIPES} from './data.mjs';
 import {invariants,sorted} from './state.mjs';
@@ -11,7 +13,10 @@ const safeId=id=>typeof id==='string'&&/^[-a-zA-Z0-9._]+$/.test(id)&&!['__proto_
 const kinds=new Set(['class','unloadQuest','drink','move','return','gather','build','train','study','rest','sleep','eat','cook','craft','talk','encourage','care','teach','greet','farm','harvestHaul','delivery','school','reception','learn','equip','story','pack','aid','collect','paired']);
 const validOrigin=(w,id)=>safeId(id)&&id.startsWith('activity.')&&int(Number(id.slice(9)),1,w.nextId-1);
 function validate(w){
- if(w.lifePolicy!==undefined){validateLifePolicy(w.lifePolicy,w.inventories?.vat?.capacity);if(w.rulesVersion!==LIFE_RULES)throw Error('日課版本標記不符');}else if(w.rulesVersion===LIFE_RULES)throw Error('日課版本缺少政策');
+ if(w.rulesVersion!==rulesFor(w))throw Error('日課版本標記／武學版本標記不符');
+ if(w.martialPlan!==undefined){const m=w.martialPlan;if(!record(m)||m.version!==1||!record(m.focus)||!record(m.styles)||!Array.isArray(m.history)||m.history.length>12||Object.entries(m.focus).some(([id,key])=>!w.people?.[id]?.adult||!Object.hasOwn(FOCUS,key))||Object.entries(m.styles).some(([id,key])=>!w.people?.[id]?.adult||!Object.hasOwn(STYLES,key)))throw Error('武學計畫版本／引用不合法');const t=m.trial;if(t&&(!record(t)||t.version!==1||!w.people?.[t.actor]?.adult||!w.people?.[t.coach]?.adult||!Object.hasOwn(PRACTICE,t.pattern)||!Object.hasOwn(STYLES,t.style)||!['running','completed','cancelled'].includes(t.status)||!['approach','observe','duel','ended'].includes(t.phase)||!int(t.started,0,w.tick)||!record(t.positions)||!Array.isArray(t.positions.left)||!Array.isArray(t.positions.right)||[t.positions.left,t.positions.right].some(pos=>pos.length!==2||pos.some((n,i)=>!int(n,12,i?1788:2388)))||t.coach!=='practice.'+t.pattern||w.people[t.coach].rank!=='training'||!safeId(t.session)||!int(t.demos,0,2)))throw Error('教習對練引用／進度不合法');}
+
+ if(w.lifePolicy!==undefined){validateLifePolicy(w.lifePolicy,w.inventories?.vat?.capacity);if(![LIFE_RULES,'chapter1-martial-1'].includes(w.rulesVersion))throw Error('日課版本標記不符');}else if(w.rulesVersion===LIFE_RULES)throw Error('日課版本缺少政策');
  for(const k of ['people','facilities','inventories','activities','reservations','queues','bridge','random','relationships','families','stories','ledger','plots','metrics','facts','seenCommands'])if(!record(w[k]))throw Error('缺少世界欄位：'+k);
  for(const k of ['journal','memories','commands'])if(!Array.isArray(w[k]))throw Error('記錄格式錯誤：'+k);
  if(!int(w.seed,1,4294967295)||!int(w.tick)||!int(w.nextId,1)||!int(w.commandSeq)||!w.people.leader||!w.people.child)throw Error('世界識別／時間不合法');
@@ -70,7 +75,7 @@ function validate(w){
 export async function decode(text){
  if(typeof text!=='string'||new TextEncoder().encode(text).length>8*1024*1024)throw Error('檔案超過8MiB或格式不符');
  const x=JSON.parse(text,(key,v)=>{if(['__proto__','constructor','prototype'].includes(key))throw Error('不允許的欄位');if(typeof v==='number'&&!Number.isFinite(v))throw Error('非有限數');return v;});
- if(x.format!=='solo-sect-gpt')throw Error('非本遊戲存檔');for(const k of Object.keys(VERSION))if(k==='rulesVersion'?![VERSION.rulesVersion,LIFE_RULES].includes(x[k]):x[k]!==VERSION[k])throw Error('不支援的版本：'+k);
+ if(x.format!=='solo-sect-gpt')throw Error('非本遊戲存檔');for(const k of Object.keys(VERSION))if(k==='rulesVersion'?!SUPPORTED_RULES.includes(x[k]):x[k]!==VERSION[k])throw Error('不支援的版本：'+k);
  if(!x.payload||x.checksum!==await hash(x.payload))throw Error('校驗碼不符，原存檔已保留');
  const w=x.payload;for(const k of Object.keys(VERSION))if(w[k]!==x[k])throw Error('內容版本不符');
  try{validate(w);}catch(e){if(e instanceof TypeError)throw Error('存檔內容欄位缺失／型別不合法');throw e;}return w;

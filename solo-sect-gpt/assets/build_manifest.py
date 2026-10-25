@@ -17,6 +17,7 @@ for person in ['leader','child','amu','lin','shen','zhou','hong','linghu','qiao'
   asset('person.'+person+'.'+pose,'src/render.mjs','drawPerson',[-48,-64,96,80],person)
 for fx in ['punch','push','sweep','thrust','intercept','step','miss','hit']:asset('fx.'+fx,'src/render.mjs','drawPerson',[0,0,128,128],fx)
 for id,export in [('paint','paintedGround'),('wall','buildingShell'),('watercolor-roof','roofLayer'),('watercolor-tree','treeLayer'),('watercolor-bridge','bridgeLayer'),('life-props','lifeProps')]:asset('scene.'+id,'src/scene-art.mjs',export,[0,0,2400,1800])
+asset('fx.combat-telegraph','src/render.mjs','drawCombatTelegraph',[-40,-40,80,80],'actual range and windup aim')
 for sound in ['footstep','work','martial','complete']:asset('audio.'+sound,'src/audio.mjs','AudioPalette',[0,0,0,0],kind='audio',presentation=dict(generator='oscillator/envelope v1',voices=8,firstInteraction=True))
 (ROOT/'assets/manifest.json').write_text(json.dumps(dict(version=1,author='GPT / Codex',status='validated_author_self_review',coordinateSpace='DU; procedural source is authoritative, no baked sprite frames',rulesVersion='chapter1-1',mapVersion='gpt-world-1',entries=entries),ensure_ascii=False,indent=2)+'\n')
 print('catalogued',len(entries),'procedural visual/audio IDs')

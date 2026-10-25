@@ -1,0 +1,19 @@
+✔ M3 goals use actual progress and focus/stance do not grant skill; old and new rule headers remain explicit (314.055166ms)
+✔ M3 real sword is mandatory in new mode; impossible counters still pay and keep a recovery phase when equipped (97.254542ms)
+✔ M3 physical practice arhat / slow (279.211166ms)
+✔ M3 physical practice staff / slow (446.344209ms)
+✔ M3 physical practice counter / slow (401.030917ms)
+✔ M3 physical practice counter / quick (243.037916ms)
+✔ M3 physical practice counter / feint (402.109875ms)
+✔ M3 unfinished actual practice save/resume hashes match, cancellation clears the shared scene, and youth cannot enter (759.318667ms)
+✔ M3 timing is finite and deep low-cost fist remains faster than novice fist (0.225041ms)
+✔ M3 five fixed seeds preserve exact adopted-profile replay (4135.72125ms)
+✔ M3 previous M2 reader refuses martial saves and corrupted trial references reject (7.402291ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7187.899375

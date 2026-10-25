@@ -1,0 +1,106 @@
+{
+  "status": "passed",
+  "author": "GPT / Codex; GPT-6.1 Sol / high",
+  "baseCommit": "a9dfc1c05095e87d2f1a1637fefe55cec8c37520",
+  "spec": "docs/optimization/M3.md",
+  "normalUI": "evidence/optimization/m3-ui-initial/index.json",
+  "model": "evidence/optimization/m3-model/accepted.log",
+  "regression": "evidence/optimization/m3-model/legacy-and-m2.log",
+  "normalCases": [
+    {
+      "style": "arhat",
+      "pattern": "slow",
+      "summary": {
+        "elapsedTicks": 594,
+        "actions": 19,
+        "energySpentOnMoves": 3800,
+        "hits": 13,
+        "interceptSuccess": 0,
+        "interceptFailure": 0,
+        "failures": [],
+        "energyAfter": 5830,
+        "hpAfter": 64
+      }
+    },
+    {
+      "style": "staff",
+      "pattern": "slow",
+      "summary": {
+        "elapsedTicks": 600,
+        "actions": 10,
+        "energySpentOnMoves": 5000,
+        "hits": 5,
+        "interceptSuccess": 0,
+        "interceptFailure": 0,
+        "failures": [],
+        "energyAfter": 4570,
+        "hpAfter": 70
+      }
+    },
+    {
+      "style": "counter",
+      "pattern": "slow",
+      "summary": {
+        "elapsedTicks": 600,
+        "actions": 6,
+        "energySpentOnMoves": 2400,
+        "hits": 4,
+        "interceptSuccess": 6,
+        "interceptFailure": 0,
+        "failures": [],
+        "energyAfter": 6715,
+        "hpAfter": 82
+      }
+    },
+    {
+      "style": "counter",
+      "pattern": "quick",
+      "summary": {
+        "elapsedTicks": 276,
+        "actions": 3,
+        "energySpentOnMoves": 1000,
+        "hits": 2,
+        "interceptSuccess": 0,
+        "interceptFailure": 1,
+        "failures": [
+          "已出招，截擊太晚"
+        ],
+        "energyAfter": 8131,
+        "hpAfter": 50
+      }
+    },
+    {
+      "style": "counter",
+      "pattern": "feint",
+      "summary": {
+        "elapsedTicks": 600,
+        "actions": 8,
+        "energySpentOnMoves": 3200,
+        "hits": 4,
+        "interceptSuccess": 6,
+        "interceptFailure": 2,
+        "failures": [
+          "對方佯攻已收手",
+          "對方佯攻已收手"
+        ],
+        "energyAfter": 5922,
+        "hpAfter": 100
+      }
+    }
+  ],
+  "checks": {
+    "martial": 12,
+    "assets": 2,
+    "legacyAndM2": 72,
+    "root": "reuse M2 Python53 / SG dev383 / Earth syntax; no root files changed"
+  },
+  "limits": [
+    "Author self-review; no independent review or human playtest",
+    "Five finite training trials and five seed replay checks are not a balance distribution",
+    "Practice coaches are finite physical training NPCs; no multiplayer or universal victory"
+  ],
+  "repairs": [
+    "Initial quick test assumed automatic attack; added actual forced short-window counter, keeping zero successful interception requirement",
+    "First LOS fixture had no obstacle; corrected to known tree trunk at 380,880; failed log retained"
+  ]
+}

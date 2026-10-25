@@ -24,6 +24,7 @@ export function story(w,p,node){const s=w.stories[node];if(!s)return {ok:false,r
  if(key==='qiao'&&sorted(w.people).filter(q=>q.residence==='visitor'&&q.id!=='escort.traveler').length>=2)return {ok:false,reason:'護送旅人需要一日訪空位，先送客'};
  if(key==='qiao'&&part==='1'&&!w.expedition?.seen?.includes('forest')&&!w.facts['waypoint-reached'])return {ok:false,reason:'先正常出門發現林緣，再約護送'};
  if(key==='linghu'&&part==='2'&&own&&!w.facilities.quiet.stage)return {ok:false,reason:'自身故事先建靜室研讀'};
+ if(w.martialPlan&&key==='linghu'&&part==='2'&&(!p.skill.sword||p.weapon!=='sword'||!qty(w,p.equipment,'sword')))return {ok:false,reason:'先學基礎劍並實際領用木劍，再來學九劍破招'};
  s.status='active';s.cast=[p.id,o.id];s.started=w.tick;s.own=own;
  if(key==='linghu'&&part==='1'){const result=beginSpar(w,p,o,true);if(!result.ok){s.status='unseen';return result;}s.session=p.combatSession;return result;}
  if(key==='guo'&&part==='2'){const helper=sorted(w.people).find(q=>q.id!==p.id&&q.adult&&q.residence==='resident'&&q.hp>=q.maxHp*.8&&q.injury<=30);const actors=[p.id,...(helper?[helper.id]:[])];const result=startDrill(w,actors,'A');if(o.residence==='visitor'){cancel(w,o,'接受演武見證之約');o.storyBusy=true;route(w,o,[1390,1155]);w.drill.witnessId=o.id;w.drill.witnessPoint=[1390,1155];}s.witnessed=[];s.needsRetry=false;if(!result.ok){s.status='active';return result;}s.session=w.drill.id;s.before={F:p.skill.punch.F,I:p.skill.punch.I,energy:p.energy,weapon:p.weapon};return result;}

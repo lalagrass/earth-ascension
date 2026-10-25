@@ -1,0 +1,41 @@
+✔ A41/A44 procedural asset IDs, source hashes, exports, geometry and story coverage are complete (329.830541ms)
+✔ M1 raster material manifest hashes real PNGs and records separate layers and prompts (16.406125ms)
+✔ M3 goals use actual progress and focus/stance do not grant skill; old and new rule headers remain explicit (308.822375ms)
+✔ M3 real sword is mandatory in new mode; impossible counters still pay and keep a recovery phase when equipped (90.715708ms)
+✔ M3 physical practice arhat / slow (265.544ms)
+✔ M3 physical practice staff / slow (454.479083ms)
+✔ M3 physical practice counter / slow (390.371708ms)
+✔ M3 physical practice counter / quick (238.194209ms)
+✔ M3 physical practice counter / feint (391.90125ms)
+✔ M3 unfinished actual practice save/resume hashes match, cancellation clears the shared scene, and youth cannot enter (750.146584ms)
+✔ M3 timing is finite and deep low-cost fist remains faster than novice fist (0.211417ms)
+✔ M3 five fixed seeds preserve exact adopted-profile replay (4617.656125ms)
+✔ M3 previous M2 reader refuses martial saves and corrupted trial references reject (9.28725ms)
+✖ M3 range, sight and observation reject an otherwise equipped counter; deep fist earns at least novice actual hits in 600 ticks (80.791833ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 13
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7686.1375
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/optimization/martial.test.mjs:11:1
+✖ M3 range, sight and observation reject an otherwise equipped counter; deep fist earns at least novice actual hits in 600 ticks (80.791833ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /視線/. Input:
+  
+  '尚未連續觀察／辨識兩次起手'
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/martial.test.mjs:11:471)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '尚未連續觀察／辨識兩次起手',
+    expected: /視線/,
+    operator: 'match',
+    diff: 'simple'
+  }

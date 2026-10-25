@@ -17,7 +17,7 @@ export function recruitmentReason(w,p){
  if(p.id==='amu'&&(w.relationships['leader|amu']?.trust||0)<12)return '阿木尚需互信12（共作、交談、鼓勵、指點皆可）';
  return null;
 }
-export function invite(w,id){const p=w.people[id],reason=recruitmentReason(w,p);if(reason)return {ok:false,reason};p.rank='outer';p.residence='resident';p.auto=true;p.visits++;assignBeds(w);p.paidThrough=day(w);event(w,'joined',[p.id],{text:p.name+'願意留在門中；原有工作與物品仍在。'});if(id==='amu')w.stories['recruit.worker'].status='completed';return {ok:true};}
+export function invite(w,id){const p=w.people[id];if(w.martialPlan&&p?.residence==='training')return {ok:false,reason:'陪練教習不在招募名單'};const reason=recruitmentReason(w,p);if(reason)return {ok:false,reason};p.rank='outer';p.residence='resident';p.auto=true;p.visits++;assignBeds(w);p.paidThrough=day(w);event(w,'joined',[p.id],{text:p.name+'願意留在門中；原有工作與物品仍在。'});if(id==='amu')w.stories['recruit.worker'].status='completed';return {ok:true};}
 export function visit(w,legend){const l=Object.hasOwn(LEGENDS,legend)?LEGENDS[legend]:null;if(!l)return {ok:false,reason:'未知來客'};
  if(w.people.leader.canonicalIdentity===legend)return {ok:false,reason:'此人就是掌門；約定改為自身故事'};
  const existing=sorted(w.people).find(p=>p.canonicalIdentity===legend);

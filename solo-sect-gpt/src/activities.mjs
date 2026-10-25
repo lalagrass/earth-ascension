@@ -1,3 +1,4 @@
+import {trainingArt,homeSlotIndex} from './martial-config.mjs';
 import {applyLifePolicy,supply,shouldYield} from './life-policy.mjs';
 import {detachClass} from './classes.mjs';
 import {Q,HZ,DAY,FACILITIES,RECIPES,TASKNAME,ART,MEMORY} from './data.mjs';
@@ -138,7 +139,7 @@ export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=
   if(a.phase==='walking'&&arrived(p)&&!p.bridgeExit){if(a.kind==='return'){p.manualStop=true;event(w,'returned',[p.id]);}finish(w,p,a,'已抵達');}return;
  }
  if(a.kind==='train'||a.kind==='study'){
-  if(!p.adult){finish(w,p,a);return;}const art=a.args.art||'punch';if(!p.skill[art]){blocked(p,a,'尚未學會這門武學，請先授課');return;}
+  if(!p.adult){finish(w,p,a);return;}const art=a.args.art||'punch';if(!p.skill[art]){blocked(p,a,'尚未學會這門武學，請先授課');return;}if(w.martialPlan&&a.kind==='train'&&['staff','sword','nine'].includes(art)){const weapon=art==='nine'?'sword':art;if(p.weapon!==weapon||!qty(w,p.equipment,weapon)){blocked(p,a,'先實際領用並裝備'+(weapon==='staff'?'木棍':'木劍')+'再練');return;}}
   if(bagWeight(w,p)){depositBag(w,p,a);return;}
   const key=a.kind==='study'?'quiet.book':(a.station||=stationAvailable(w,'yard.',w.facilities.yard.stage===2?4:w.facilities.yard.stage===1?2:1,p));
   if(a.kind==='study'&&!w.facilities.quiet.stage){blocked(p,a,'先建靜室');return;}
@@ -152,7 +153,7 @@ export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=
  }
  if(['rest','sleep','eat'].includes(a.kind)){
   if(a.kind==='eat'&&a.args.item==='ration'&&!qty(w,p.bag,'ration')){if(bagWeight(w,p)>=4||!reserve(w,a,'source:store:ration',1,qty(w,'store','ration'))){blocked(p,a,'需一份未預約乾糧與空手位');return;}if(approach(w,p,a,'store.drop')){transfer(w,'store',p.bag,'ration',1);delete w.reservations[a.id+'|source:store:ration'];clearStation(w,a);}return;}
-  let key=a.kind==='sleep'?p.bed:a.kind==='eat'?(a.station||=stationAvailable(w,'dining.',[3,6,8][w.facilities.dining.stage],p)):(a.station||='safe.'+(sorted(w.people).findIndex(o=>o.id===p.id)%10));
+  let key=a.kind==='sleep'?p.bed:a.kind==='eat'?(a.station||=stationAvailable(w,'dining.',[3,6,8][w.facilities.dining.stage],p)):(a.station||='safe.'+homeSlotIndex(w,p));
   if(!key){blocked(p,a,'沒有可用床位');return;}if(a.kind==='eat'&&a.args.item!=='ration'){if(qty(w,'table','meal')<=0){release(w,a.id);finish(w,p,a,'缺餐：先備餐或坐休');return;}if(!reserve(w,a,'source:table:meal',1,qty(w,'table','meal'))){blocked(p,a,'餐已預約，等候下一鍋');return;}}
   if(!approach(w,p,a,key))return;p.pose=a.kind;
   if(a.kind==='eat'){
@@ -241,13 +242,13 @@ export function autonomy(w,p){
  if(w.facilities.garden.stage&&qty(w,'store','veg')<mealTarget&&sorted(w.plots).some(o=>o.kind==='garden'&&Number(o.id.split('.')[1])<w.facilities.garden.stage&&o.stage!=='growing'&&!Object.values(w.reservations).some(r=>r.key==='plot:'+o.id&&r.actor!==p.id)))addC('farm',{crop:'garden'},55,'耕作維持菜供應');
  if(qty(w,'store','veg')<mealTarget&&w.ecology.veg.remaining)addC('gather',{item:'veg'},qty(w,'table','meal')===0?95:qty(w,'table','meal')<mealTarget?65:30,'補菜以便供餐');
  const record=p.contribution[day(w)],met=record?.units>=2||record?.ticks>=2400;
- if(p.rank==='inner'||p.rank==='outer'&&met||phase>=6000||w.policy==='train')addC('train',{art:'punch',units:5},((p.dailyPractice?.[day(w)]||0)<1200?40:20)+(w.policy==='train'?20:0)+(p.rank==='inner'?25:0),'保留修行窗口');
- if(met&&(p.dailyPractice?.[day(w)]||0)>=1200){const friend=sorted(w.people).find(o=>o.id!==p.id&&o.residence==='resident'&&!o.activity&&!o.combatSession&&!w.memories.some(m=>m.kind==='talk'&&m.actors.includes(p.id)&&m.actors.includes(o.id)&&w.tick-m.tick<2400));if(friend)addC('talk',{target:friend.id},25,'自由時段：與同門交談');else addC('move',{pos:stations['safe.'+(sorted(w.people).findIndex(o=>o.id===p.id)%10)]},21,'自由時段：散步歇腳');}
+ if(p.rank==='inner'||p.rank==='outer'&&met||phase>=6000||w.policy==='train')addC('train',{art:trainingArt(w,p),units:5},((p.dailyPractice?.[day(w)]||0)<1200?40:20)+(w.policy==='train'?20:0)+(p.rank==='inner'?25:0),'保留修行窗口');
+ if(met&&(p.dailyPractice?.[day(w)]||0)>=1200){const friend=sorted(w.people).find(o=>o.id!==p.id&&o.residence==='resident'&&!o.activity&&!o.combatSession&&!w.memories.some(m=>m.kind==='talk'&&m.actors.includes(p.id)&&m.actors.includes(o.id)&&w.tick-m.tick<2400));if(friend)addC('talk',{target:friend.id},25,'自由時段：與同門交談');else addC('move',{pos:stations['safe.'+homeSlotIndex(w,p)]},21,'自由時段：散步歇腳');}
  if(p.primary==='care'){const hurt=sorted(w.people).find(o=>o.id!==p.id&&o.residence==='resident'&&o.injury>10&&!o.activity);if(hurt)addC('care',{target:hurt.id},55,'照料受傷同門');}
  candidates=applyLifePolicy(w,p,candidates);
  for(const c of candidates){const job=c.kind==='gather'?'gather':['cook','farm'].includes(c.kind)?'production':c.kind==='build'?'build':c.kind==='care'?'care':c.kind==='teach'?'teach':null;c.roleBonus=job===(p.primary||'gather')?15:job===(p.secondary||'production')?5:0;if(!w.lifePolicy)delete c.roleBonus;if(job===(p.primary||'gather'))c.score+=15;else if(job===(p.secondary||'production'))c.score+=5;let trait=0;if(['build','train'].includes(c.kind))trait=Math.max(0,p.traits[0]*3);if(['care','talk','encourage'].includes(c.kind))trait=Math.max(0,p.traits[1]*5);if(c.kind==='move'||w.lifePolicy&&c.kind==='rest')trait=Math.max(0,-p.traits[0]*3);c.traitScore=Math.min(10,trait);c.score+=c.traitScore;const where=c.kind==='gather'?stations[c.args.item==='water'?'water.take':c.args.item]:c.kind==='build'?(stations[c.args.facility+'.work']||stations[c.args.facility+'.worksite']):c.kind==='cook'?stations['kitchen.cook']:c.kind==='train'?stations['yard.1']:c.kind==='talk'||c.kind==='care'?position(w.people[c.args.target]):c.args.pos;c.commutePenalty=where?Math.floor(Math.hypot(p.x/Q-where[0],p.y/Q-where[1])/100):0;c.score=Math.max(0,c.score-c.commutePenalty);}
  if(p.rank==='outer'&&!candidates.some(c=>['build','gather','cook','farm'].includes(c.kind))){p.contribution[day(w)]??={units:0,ticks:0,exempt:null};if(p.contribution[day(w)].units<2&&p.contribution[day(w)].ticks<2400)p.contribution[day(w)].exempt='缺料／物資達標，無可行雜務';}
- if(!candidates.length&&!w.lifePolicy)addC('train',{art:'punch',units:5},20,'物資已達標，練功與自由');
+ if(!candidates.length&&!w.lifePolicy)addC('train',{art:trainingArt(w,p),units:5},20,'物資已達標，練功與自由');
  if(!candidates.length){p.reason='目前可行候選仍受阻，稍候重選';p.taskWaitUntil=w.tick+40;return;}
  candidates.sort((a,b)=>b.score-a.score||a.kind.localeCompare(b.kind));const c=candidates[0];p.candidates=candidates.slice(0,3);begin(w,p,c.kind,c.args);if(w.lifePolicy){const a=w.activities[p.activity];if(a)a.decision={version:1,layer:c.layer,code:c.code,reason:c.reason,chosenAt:w.tick,score:c.score,baseScore:c.baseScore,roleBonus:c.roleBonus,traitScore:c.traitScore,commutePenalty:c.commutePenalty};}p.reason=c.reason+'（'+c.score+'；勤勉'+p.traits[0]+'／顧人'+p.traits[1]+'）';
 }

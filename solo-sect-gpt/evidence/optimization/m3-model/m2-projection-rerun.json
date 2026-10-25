@@ -1,0 +1,975 @@
+{
+  "source": "controlled model fixtures, not normal-UI play",
+  "samples": [
+    {
+      "tick": 2001,
+      "kind": "gather",
+      "activityPhase": "init",
+      "actualPos": [
+        240640,
+        281600
+      ],
+      "energy": 9000,
+      "blocked": "目的倉滿：water",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.4",
+        "kind": "gather",
+        "phase": "init",
+        "progress": 0,
+        "current": "採集",
+        "why": "目的倉滿：water",
+        "next": "等待進展；連續30秒無進展則回原安排",
+        "destination": null,
+        "destinationName": "待選作業位",
+        "carried": [],
+        "queue": [],
+        "held": [],
+        "resources": [
+          {
+            "item": "water",
+            "sourceRemaining": null,
+            "destinationCapacity": 8
+          }
+        ],
+        "bodyBlockers": [],
+        "period": "free",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 8,
+          "meals": 16,
+          "physicalWater": 8,
+          "physicalMeals": 16
+        },
+        "temporary": {
+          "revision": 1,
+          "kind": "gather"
+        }
+      }
+    },
+    {
+      "tick": 2641,
+      "kind": "train",
+      "activityPhase": "init",
+      "actualPos": [
+        246930,
+        283368
+      ],
+      "energy": 8996,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.16",
+        "kind": "train",
+        "phase": "walking",
+        "progress": 0,
+        "current": "行走 · 練功",
+        "why": "接單時：可行選擇：加練",
+        "next": "完成本輪後依日課重選",
+        "destination": "yard.1",
+        "destinationName": "演武木樁 1",
+        "carried": [],
+        "queue": [],
+        "held": [],
+        "resources": [],
+        "bodyBlockers": [
+          {
+            "actor": "amu",
+            "manualStop": false,
+            "position": [
+              1100,
+              1145
+            ]
+          }
+        ],
+        "period": "work",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 8,
+          "meals": 16,
+          "physicalWater": 8,
+          "physicalMeals": 16
+        },
+        "temporary": null
+      }
+    },
+    {
+      "tick": 2721,
+      "kind": "train",
+      "activityPhase": "init",
+      "actualPos": [
+        276026,
+        292892
+      ],
+      "energy": 8976,
+      "blocked": "候位：yard.1／阿木",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.16",
+        "kind": "train",
+        "phase": "walking",
+        "progress": 0,
+        "current": "行走 · 練功",
+        "why": "候位 演武木樁 1 · 阿木使用中",
+        "next": "條件可用後續做；可改派或停工",
+        "destination": "yard.1.queue",
+        "destinationName": "演武木樁 1",
+        "carried": [],
+        "queue": [
+          {
+            "key": "station:yard.1",
+            "place": 2,
+            "owner": "amu"
+          }
+        ],
+        "held": [],
+        "resources": [],
+        "bodyBlockers": [
+          {
+            "actor": "amu",
+            "manualStop": false,
+            "position": [
+              1100,
+              1145
+            ]
+          }
+        ],
+        "period": "work",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 8,
+          "meals": 16,
+          "physicalWater": 8,
+          "physicalMeals": 16
+        },
+        "temporary": null
+      }
+    },
+    {
+      "tick": 2761,
+      "kind": "train",
+      "activityPhase": "init",
+      "actualPos": [
+        287232,
+        299264
+      ],
+      "energy": 8967,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.16",
+        "kind": "train",
+        "phase": "init",
+        "progress": 0,
+        "current": "練功",
+        "why": "接單時：可行選擇：加練",
+        "next": "完成本輪後依日課重選",
+        "destination": "yard.1.queue",
+        "destinationName": "演武木樁 1",
+        "carried": [],
+        "queue": [
+          {
+            "key": "station:yard.1",
+            "place": 2,
+            "owner": "amu"
+          }
+        ],
+        "held": [],
+        "resources": [],
+        "bodyBlockers": [
+          {
+            "actor": "amu",
+            "manualStop": false,
+            "position": [
+              1100,
+              1145
+            ]
+          }
+        ],
+        "period": "work",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 8,
+          "meals": 16,
+          "physicalWater": 8,
+          "physicalMeals": 16
+        },
+        "temporary": null
+      }
+    },
+    {
+      "tick": 3501,
+      "kind": "cook",
+      "activityPhase": "fetch",
+      "actualPos": [
+        287232,
+        299264
+      ],
+      "energy": 8967,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.102",
+        "kind": "cook",
+        "phase": "fetch",
+        "progress": 0,
+        "current": "烹調",
+        "why": "臨時一次 · 保留原安排",
+        "next": "交付完成後回自主日課",
+        "destination": "store.drop",
+        "destinationName": "倉前料堆",
+        "carried": [],
+        "queue": [],
+        "held": [
+          {
+            "activity": "activity.102",
+            "actor": "leader",
+            "key": "dest:table:meal",
+            "n": 0,
+            "tick": 3501
+          },
+          {
+            "activity": "activity.102",
+            "actor": "leader",
+            "key": "source:store:veg",
+            "n": 2,
+            "tick": 3501
+          },
+          {
+            "activity": "activity.102",
+            "actor": "leader",
+            "key": "source:vat:water",
+            "n": 1,
+            "tick": 3501
+          }
+        ],
+        "resources": [
+          {
+            "item": "veg",
+            "required": 2,
+            "source": "store",
+            "physical": 8,
+            "carried": 0,
+            "reservedByOthers": 0
+          },
+          {
+            "item": "water",
+            "required": 1,
+            "source": "vat",
+            "physical": 8,
+            "carried": 0,
+            "reservedByOthers": 0
+          }
+        ],
+        "bodyBlockers": [],
+        "period": "work",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 8,
+          "meals": 20,
+          "physicalWater": 8,
+          "physicalMeals": 16
+        },
+        "temporary": {
+          "revision": 3,
+          "kind": "cook"
+        }
+      }
+    },
+    {
+      "tick": 3541,
+      "kind": "cook",
+      "activityPhase": "fetch",
+      "actualPos": [
+        271872,
+        298624
+      ],
+      "energy": 8957,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.102",
+        "kind": "cook",
+        "phase": "walking",
+        "progress": 0,
+        "current": "行走 · 烹調",
+        "why": "臨時一次 · 保留原安排",
+        "next": "交付完成後回自主日課",
+        "destination": "store.drop",
+        "destinationName": "倉前料堆",
+        "carried": [],
+        "queue": [],
+        "held": [
+          {
+            "activity": "activity.102",
+            "actor": "leader",
+            "key": "dest:table:meal",
+            "n": 0,
+            "tick": 3501
+          },
+          {
+            "activity": "activity.102",
+            "actor": "leader",
+            "key": "source:store:veg",
+            "n": 2,
+            "tick": 3501
+          },
+          {
+            "activity": "activity.102",
+            "actor": "leader",
+            "key": "source:vat:water",
+            "n": 1,
+            "tick": 3501
+          }
+        ],
+        "resources": [
+          {
+            "item": "veg",
+            "required": 2,
+            "source": "store",
+            "physical": 8,
+            "carried": 0,
+            "reservedByOthers": 0
+          },
+          {
+            "item": "water",
+            "required": 1,
+            "source": "vat",
+            "physical": 8,
+            "carried": 0,
+            "reservedByOthers": 0
+          }
+        ],
+        "bodyBlockers": [],
+        "period": "work",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 8,
+          "meals": 20,
+          "physicalWater": 8,
+          "physicalMeals": 16
+        },
+        "temporary": {
+          "revision": 3,
+          "kind": "cook"
+        }
+      }
+    },
+    {
+      "tick": 3741,
+      "kind": "cook",
+      "activityPhase": "fetch",
+      "actualPos": [
+        205974,
+        289968
+      ],
+      "energy": 8902,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.102",
+        "kind": "cook",
+        "phase": "walking",
+        "progress": 0,
+        "current": "行走 · 烹調",
+        "why": "臨時一次 · 保留原安排",
+        "next": "交付完成後回自主日課",
+        "destination": "kitchen.vat",
+        "destinationName": "膳房水缸",
+        "carried": [
+          [
+            "veg",
+            2
+          ]
+        ],
+        "queue": [],
+        "held": [
+          {
+            "activity": "activity.102",
+            "actor": "leader",
+            "key": "dest:table:meal",
+            "n": 0,
+            "tick": 3501
+          },
+          {
+            "activity": "activity.102",
+            "actor": "leader",
+            "key": "source:vat:water",
+            "n": 1,
+            "tick": 3501
+          }
+        ],
+        "resources": [
+          {
+            "item": "veg",
+            "required": 2,
+            "source": "store",
+            "physical": 6,
+            "carried": 2,
+            "reservedByOthers": 0
+          },
+          {
+            "item": "water",
+            "required": 1,
+            "source": "vat",
+            "physical": 8,
+            "carried": 0,
+            "reservedByOthers": 0
+          }
+        ],
+        "bodyBlockers": [],
+        "period": "work",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 8,
+          "meals": 20,
+          "physicalWater": 8,
+          "physicalMeals": 16
+        },
+        "temporary": {
+          "revision": 3,
+          "kind": "cook"
+        }
+      }
+    },
+    {
+      "tick": 3901,
+      "kind": "cook",
+      "activityPhase": "perform",
+      "actualPos": [
+        206539,
+        322422
+      ],
+      "energy": 8823,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.102",
+        "kind": "cook",
+        "phase": "walking",
+        "progress": 0,
+        "current": "行走 · 烹調",
+        "why": "臨時一次 · 保留原安排",
+        "next": "交付完成後回自主日課",
+        "destination": "kitchen.cook",
+        "destinationName": "膳房爐灶",
+        "carried": [
+          [
+            "veg",
+            2
+          ],
+          [
+            "water",
+            1
+          ]
+        ],
+        "queue": [],
+        "held": [
+          {
+            "activity": "activity.102",
+            "actor": "leader",
+            "key": "dest:table:meal",
+            "n": 0,
+            "tick": 3501
+          }
+        ],
+        "resources": [
+          {
+            "item": "veg",
+            "required": 2,
+            "source": "store",
+            "physical": 6,
+            "carried": 2,
+            "reservedByOthers": 0
+          },
+          {
+            "item": "water",
+            "required": 1,
+            "source": "vat",
+            "physical": 7,
+            "carried": 1,
+            "reservedByOthers": 0
+          }
+        ],
+        "bodyBlockers": [],
+        "period": "work",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 7,
+          "meals": 20,
+          "physicalWater": 7,
+          "physicalMeals": 16
+        },
+        "temporary": {
+          "revision": 3,
+          "kind": "cook"
+        }
+      }
+    },
+    {
+      "tick": 3981,
+      "kind": "cook",
+      "activityPhase": "perform",
+      "actualPos": [
+        194763,
+        322558
+      ],
+      "energy": 8748,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.102",
+        "kind": "cook",
+        "phase": "doing",
+        "progress": 35,
+        "current": "烹調",
+        "why": "臨時一次 · 保留原安排",
+        "next": "交付完成後回自主日課",
+        "destination": "kitchen.cook",
+        "destinationName": "膳房爐灶",
+        "carried": [],
+        "queue": [
+          {
+            "key": "station:kitchen.cook",
+            "place": 1,
+            "owner": "leader"
+          }
+        ],
+        "held": [
+          {
+            "activity": "activity.102",
+            "actor": "leader",
+            "key": "dest:table:meal",
+            "n": 0,
+            "tick": 3501
+          },
+          {
+            "activity": "activity.102",
+            "actor": "leader",
+            "key": "station:kitchen.cook",
+            "n": 1,
+            "tick": 3981
+          }
+        ],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "work",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 7,
+          "meals": 20,
+          "physicalWater": 7,
+          "physicalMeals": 16
+        },
+        "temporary": {
+          "revision": 3,
+          "kind": "cook"
+        }
+      }
+    },
+    {
+      "tick": 4581,
+      "kind": "cook",
+      "activityPhase": "haulOutput",
+      "actualPos": [
+        203211,
+        322261
+      ],
+      "energy": 7884,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.102",
+        "kind": "cook",
+        "phase": "walking",
+        "progress": 600,
+        "current": "搬運成品",
+        "why": "臨時一次 · 保留原安排",
+        "next": "實際交餐／入倉後才算完成",
+        "destination": "table.drop",
+        "destinationName": "餐桌交餐處",
+        "carried": [
+          [
+            "meal",
+            4
+          ]
+        ],
+        "queue": [],
+        "held": [
+          {
+            "activity": "activity.102",
+            "actor": "leader",
+            "key": "dest:table:meal",
+            "n": 0,
+            "tick": 3501
+          }
+        ],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "work",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 7,
+          "meals": 20,
+          "physicalWater": 7,
+          "physicalMeals": 16
+        },
+        "temporary": {
+          "revision": 3,
+          "kind": "cook"
+        }
+      }
+    },
+    {
+      "tick": 5041,
+      "kind": "train",
+      "activityPhase": "init",
+      "actualPos": [
+        281600,
+        293120
+      ],
+      "energy": 7680,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.269",
+        "kind": "train",
+        "phase": "doing",
+        "progress": 40,
+        "current": "練功",
+        "why": "臨時一次 · 保留原安排",
+        "next": "交付完成後回自主日課",
+        "destination": "yard.1",
+        "destinationName": "演武木樁 1",
+        "carried": [],
+        "queue": [
+          {
+            "key": "station:yard.1",
+            "place": 1,
+            "owner": "leader"
+          }
+        ],
+        "held": [
+          {
+            "activity": "activity.269",
+            "actor": "leader",
+            "key": "station:yard.1",
+            "n": 1,
+            "tick": 5041
+          }
+        ],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "work",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 7,
+          "meals": 20,
+          "physicalWater": 7,
+          "physicalMeals": 20
+        },
+        "temporary": {
+          "revision": 5,
+          "kind": "train"
+        }
+      }
+    },
+    {
+      "tick": 5241,
+      "actualPos": [
+        281600,
+        293120
+      ],
+      "energy": 7430,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": null,
+        "kind": "idle",
+        "phase": "idle",
+        "progress": 0,
+        "current": "庭院歇息",
+        "why": "工作時段，等待可行單位",
+        "next": "補給不足先處理，否則下一時段／可行活動",
+        "destination": null,
+        "destinationName": "待選作業位",
+        "carried": [],
+        "queue": [],
+        "held": [],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "work",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 7,
+          "meals": 20,
+          "physicalWater": 7,
+          "physicalMeals": 20
+        },
+        "temporary": null
+      }
+    },
+    {
+      "tick": 6501,
+      "kind": "study",
+      "activityPhase": "init",
+      "actualPos": [
+        281600,
+        293120
+      ],
+      "energy": 5859,
+      "blocked": "先建靜室",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.342",
+        "kind": "study",
+        "phase": "init",
+        "progress": 0,
+        "current": "研讀",
+        "why": "先建靜室",
+        "next": "等待進展；連續30秒無進展則回原安排",
+        "destination": null,
+        "destinationName": "待選作業位",
+        "carried": [],
+        "queue": [],
+        "held": [],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "train",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 7,
+          "meals": 19,
+          "physicalWater": 7,
+          "physicalMeals": 19
+        },
+        "temporary": {
+          "revision": 7,
+          "kind": "study"
+        }
+      }
+    },
+    {
+      "tick": 7141,
+      "kind": "paired",
+      "activityPhase": "paired",
+      "actualPos": [
+        286910,
+        288692
+      ],
+      "energy": 5855,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.408",
+        "kind": "paired",
+        "phase": "walking",
+        "progress": 0,
+        "current": "雙人相伴",
+        "why": "已受理的paired，正在赴作業位",
+        "next": "等雙人活動完成",
+        "destination": null,
+        "destinationName": "待選作業位",
+        "carried": [],
+        "queue": [],
+        "held": [],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "train",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 7,
+          "meals": 16,
+          "physicalWater": 7,
+          "physicalMeals": 16
+        },
+        "temporary": null
+      }
+    },
+    {
+      "tick": 7221,
+      "kind": "paired",
+      "activityPhase": "paired",
+      "actualPos": [
+        304640,
+        273920
+      ],
+      "energy": 5840,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.408",
+        "kind": "paired",
+        "phase": "doing",
+        "progress": 0,
+        "current": "雙人相伴",
+        "why": "已受理的paired",
+        "next": "等雙人活動完成",
+        "destination": null,
+        "destinationName": "待選作業位",
+        "carried": [],
+        "queue": [],
+        "held": [],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "train",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 7,
+          "meals": 16,
+          "physicalWater": 7,
+          "physicalMeals": 16
+        },
+        "temporary": null
+      }
+    },
+    {
+      "tick": 8001,
+      "kind": "rest",
+      "activityPhase": "init",
+      "actualPos": [
+        287232,
+        299264
+      ],
+      "energy": 5818,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.458",
+        "kind": "rest",
+        "phase": "doing",
+        "progress": 0,
+        "current": "坐休",
+        "why": "精力 58，先養足體力",
+        "next": "精力至少100後續有效指令",
+        "destination": "safe.4",
+        "destinationName": "庭院歇腳處",
+        "carried": [],
+        "queue": [],
+        "held": [],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "train",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 7,
+          "meals": 16,
+          "physicalWater": 7,
+          "physicalMeals": 16
+        },
+        "temporary": {
+          "revision": 9,
+          "kind": "rest"
+        }
+      }
+    },
+    {
+      "tick": 8041,
+      "kind": "rest",
+      "activityPhase": "init",
+      "actualPos": [
+        274180,
+        293855
+      ],
+      "energy": 5808,
+      "blocked": "",
+      "projection": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.458",
+        "kind": "rest",
+        "phase": "walking",
+        "progress": 0,
+        "current": "行走 · 坐休",
+        "why": "精力 58，先養足體力",
+        "next": "精力至少100後續有效指令",
+        "destination": "safe.4",
+        "destinationName": "庭院歇腳處",
+        "carried": [],
+        "queue": [],
+        "held": [],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "train",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 3,
+          "waterTarget": 6,
+          "mealTarget": 6,
+          "water": 7,
+          "meals": 16,
+          "physicalWater": 7,
+          "physicalMeals": 16
+        },
+        "temporary": {
+          "revision": 9,
+          "kind": "rest"
+        }
+      }
+    }
+  ]
+}
