@@ -2,7 +2,7 @@
 // HUD、名冊、選單、面板、名牌、提示是 HTML/CSS。世界只有 model.mjs：畫面只讀 view()，下令只走 dispatch()，
 // 推進只經 createClock() 換算的固定步進。暫停、背景、播放倍率與畫面幀率都不改結果。
 import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.min.mjs';
-import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES } from './model.mjs';
+import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES, QUESTIONNAIRE } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
 import { saveTo, loadFrom } from './life-save.mjs';
 import { guardedSave, guardedLoad } from './life02.mjs'; // SG-LIFE-02 存讀邊界（SG-TRAIN-01 共用）
@@ -633,6 +633,164 @@ $('boar').addEventListener('click', (e) => {
   const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd);
 });
 
+// LIFE-V01-V02 創角、Autopilot 與敲鐘招工 UI 接線
+function setupLifeV02UI() {
+  const modal = $('creation-modal');
+  const creationBtn = $('creation-btn');
+  const modalClose = $('modal-close');
+  const tabCustom = $('tab-custom');
+  const tabPreset = $('tab-preset');
+  const contentCustom = $('content-custom');
+  const contentPreset = $('content-preset');
+  const autopilotBtn = $('autopilot-btn');
+  const ringBellBtn = $('ring-bell-btn');
+
+  const currentStats = { comprehension: 6, constitution: 6, strength: 6, agility: 6, composure: 6 };
+  let destinyBonus = 0;
+
+  function updatePointsLeft() {
+    const totalSpent = Object.values(currentStats).reduce((a, b) => a + b, 0);
+    const maxAllowed = 30 + destinyBonus;
+    const left = maxAllowed - totalSpent;
+    const leftEl = $('points-left');
+    if (leftEl) {
+      leftEl.textContent = left;
+      leftEl.style.color = left < 0 ? '#b0483a' : left === 0 ? '#4f9a5a' : '#8a6a3e';
+    }
+    for (const stat of Object.keys(currentStats)) {
+      const el = $(`val-${stat}`);
+      if (el) el.textContent = currentStats[stat];
+    }
+  }
+
+  // 渲染 5 題情境性向問卷
+  const qList = $('questionnaire-list');
+  if (qList && qList.children.length === 0 && Array.isArray(QUESTIONNAIRE)) {
+    qList.innerHTML = QUESTIONNAIRE.map((q, idx) => `
+      <div class="question-item">
+        <div class="question-title">${idx + 1}. ${q.title}</div>
+        ${q.options.map((opt, oIdx) => `
+          <label class="option-label">
+            <input type="radio" name="q_${q.id}" value="${opt.id}" ${oIdx === 0 ? 'checked' : ''}>
+            ${opt.text}
+          </label>
+        `).join('')}
+      </div>
+    `).join('');
+  }
+
+  creationBtn?.addEventListener('click', () => {
+    modal.hidden = false;
+    updatePointsLeft();
+  });
+  modalClose?.addEventListener('click', () => { modal.hidden = true; });
+
+  tabCustom?.addEventListener('click', () => {
+    tabCustom.classList.add('active');
+    tabPreset.classList.remove('active');
+    contentCustom.hidden = false;
+    contentPreset.hidden = true;
+  });
+  tabPreset?.addEventListener('click', () => {
+    tabPreset.classList.add('active');
+    tabCustom.classList.remove('active');
+    contentPreset.hidden = false;
+    contentCustom.hidden = true;
+  });
+
+  contentCustom?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-stat');
+    if (!btn) return;
+    const stat = btn.dataset.stat;
+    const d = Number(btn.dataset.d);
+    const nextVal = currentStats[stat] + d;
+    if (nextVal >= 1 && nextVal <= 10) {
+      currentStats[stat] = nextVal;
+      updatePointsLeft();
+    }
+  });
+
+  const bonusRadios = document.querySelectorAll('input[name="destinyBonus"]');
+  for (const r of bonusRadios) {
+    r.addEventListener('change', () => {
+      destinyBonus = Number(r.value);
+      updatePointsLeft();
+    });
+  }
+
+  $('submit-custom')?.addEventListener('click', () => {
+    const name = ($('custom-name')?.value || '林玄真').trim();
+    const perk = $('custom-perk')?.value || 'perk.peerless_talent';
+    const answers = [];
+    if (Array.isArray(QUESTIONNAIRE)) {
+      for (const q of QUESTIONNAIRE) {
+        const checked = document.querySelector(`input[name="q_${q.id}"]:checked`);
+        if (checked) answers.push(checked.value);
+      }
+    }
+    const res = model.dispatch({
+      type: 'INIT_PERSONA',
+      payload: {
+        mode: 'custom',
+        name,
+        stats: { ...currentStats },
+        destinyBonusPoints: destinyBonus,
+        innatePerks: [perk],
+        questionnaireAnswers: answers,
+      },
+    });
+    if (!res.ok) {
+      toast(`創角失敗：${res.reason}`);
+      return;
+    }
+    modal.hidden = true;
+    profiles.hero = { name: res.master.name, label: '掌門', role: `${res.master.persona.daoTitle} · 自創掌門` };
+    v = model.view();
+    toast(`掌門【${name}】立匾就任破道館，零手動自走開局！`);
+    renderChrome();
+  });
+
+  contentPreset?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.select-preset-btn');
+    if (!btn) return;
+    const presetKey = btn.dataset.preset;
+    const res = model.dispatch({
+      type: 'INIT_PERSONA',
+      payload: { mode: 'preset', presetKey },
+    });
+    if (!res.ok) {
+      toast(`選擇失敗：${res.reason}`);
+      return;
+    }
+    modal.hidden = true;
+    profiles.hero = { name: res.master.name, label: '掌門', role: `${res.master.persona.daoTitle} · 經典傳奇` };
+    v = model.view();
+    toast(`經典掌門【${res.master.name}】就任破道館，全自動自走開啟！`);
+    renderChrome();
+  });
+
+  autopilotBtn?.addEventListener('click', () => {
+    const res = model.dispatch({ type: 'TOGGLE_AUTOPILOT' });
+    v = model.view();
+    toast(res.enabled ? '已開啟掌門全自動自走（放鬆看生態缸）' : '已暫停掌門自走（切換為手動指令優先）');
+    renderChrome();
+  });
+
+  ringBellBtn?.addEventListener('click', () => {
+    const facId = v.life?.facilities?.hall?.phase !== 'completed' ? 'fac.hall' : 'fac.dorm.a';
+    const res = model.dispatch({ type: 'RING_BELL', facilityId: facId });
+    v = model.view();
+    if (!res.ok) {
+      toast(res.reason);
+    } else {
+      toast(res.speechBubble || '鐘聲悠揚，山下木匠進山施工！');
+    }
+    renderChrome();
+  });
+}
+setupLifeV02UI();
+
+
 function togglePlay() { if (ui.menu) closeMenu(false); ui.playing = !ui.playing; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); renderChrome(); }
 function setSpeed(s) { ui.speed = s; renderChrome(); }
 function toggleRoster() { ui.rosterOpen = !ui.rosterOpen; renderChrome(); }
@@ -926,6 +1084,63 @@ function renderChrome() {
   $('trips').textContent = `共完成 ${IDS.reduce((n, who) => n + v.people[who].trips, 0)} 趟`;
   $('follow-toggle').classList.toggle('on', ui.follow);
   $('follow-toggle').textContent = ui.follow ? '🎥 跟隨中' : '👁 自由視野';
+
+  // LIFE-V02 HUD 與工地更新
+  const life = v.life;
+  if (life) {
+    const apBtn = $('autopilot-btn');
+    if (apBtn) {
+      apBtn.classList.toggle('on', !!life.autopilotActive);
+      apBtn.textContent = life.autopilotActive ? '自走中' : '自走暫停';
+    }
+
+    const hall = life.facilities?.hall;
+    const dorm = life.facilities?.dorm;
+    const currentFac = (hall && hall.phase !== 'completed') ? hall : dorm;
+    if (currentFac && currentFac.stagingPile) {
+      const siteTitleEl = $('site-title');
+      if (siteTitleEl) {
+        siteTitleEl.textContent = currentFac.facilityId === 'fac.hall'
+          ? (hall.phase === 'completed' ? '大廳已竣工' : '大廳修頂 (S1)')
+          : (dorm?.phase === 'completed' ? '雙人寢舍已落成' : '雙人寢舍 (S1)');
+      }
+
+      const pile = currentFac.stagingPile;
+      const tPct = pile.thatch ? Math.min(100, Math.round(pile.thatch.current / pile.thatch.required * 100)) : 0;
+      const sPct = pile.stone ? Math.min(100, Math.round(pile.stone.current / pile.stone.required * 100)) : 0;
+      const wPct = pile.timber ? Math.min(100, Math.round(pile.timber.current / pile.timber.required * 100)) : 0;
+
+      const barThatch = $('bar-thatch');
+      const barStone = $('bar-stone');
+      const barTimber = $('bar-timber');
+      if (barThatch) barThatch.style.width = `${tPct}%`;
+      if (barStone) barStone.style.width = `${sPct}%`;
+      if (barTimber) barTimber.style.width = `${wPct}%`;
+
+      const txtThatch = $('txt-thatch');
+      const txtStone = $('txt-stone');
+      const txtTimber = $('txt-timber');
+      if (txtThatch) txtThatch.textContent = `${pile.thatch?.current || 0}/${pile.thatch?.required || 0}`;
+      if (txtStone) txtStone.textContent = `${pile.stone?.current || 0}/${pile.stone?.required || 0}`;
+      if (txtTimber) txtTimber.textContent = `${pile.timber?.current || 0}/${pile.timber?.required || 0}`;
+
+      const workInfo = currentFac.phase === 'building'
+        ? `木匠施工中 (${currentFac.workforce?.progressTicks || 0}/${currentFac.workforce?.totalTicks || 1440}t)`
+        : currentFac.phase === 'completed' ? '完工可用' : (tPct === 100 && sPct === 100 && wPct === 100 ? '備料滿額，可敲鐘招工' : '備料中');
+      const siteWorkEl = $('site-work-info');
+      if (siteWorkEl) siteWorkEl.textContent = workInfo;
+    }
+
+    const bubbleEl = $('speech-bubble');
+    if (bubbleEl) {
+      if (life.speechBubble && life.speechBubble.text) {
+        bubbleEl.textContent = life.speechBubble.text;
+        bubbleEl.hidden = false;
+      } else {
+        bubbleEl.hidden = true;
+      }
+    }
+  }
   const cards = IDS.map((who) => {
     const p = v.people[who], info = profiles[who];
     return `<button class="card ${ui.selected === who ? 'sel' : ''} ${p.resting ? 'stopped' : ''}" data-person="${who}"><b>${info.name} · Lv ${p.level}</b><small><span class="emini"><i style="width:${en(p)}%"></i></span>精力 ${en(p)} · ${p.resting ? '' : p.jobLabel + ' · '}${p.status}</small>${p.pending ? `<small class="due">${pendText(p)}</small>` : ''}${p.auto.allow || p.auto.wanting ? `<small class="autoline">護院：${p.auto.text}</small>` : ''}${p.up.allow || p.up.wanting ? `<small class="autoline">整理：${p.up.text}</small>` : ''}${p.autoClean && (p.autoClean.allow || p.autoClean.wanting) ? `<small class="autoline">清鼠：${p.autoClean.text}</small>` : ''}</button>`;
@@ -963,6 +1178,15 @@ function renderChrome() {
         <div class="muted">來源：${sourceText(person)}</div>
         <div class="next-box"><b>下一步：</b>${person.next}</div>
         ${person.why ? `<div class="muted stop-reason">狀態原因：${person.why}</div>` : ''}
+        ${(id === 'hero' && v.life?.master) ? `
+          <div class="row" style="margin-top:6px;"><b>命譜心印：</b><span><span class="seal-badge">0b${v.life.master.heartSeal.code.toString(2).padStart(3, '0')}</span>【${v.life.master.daoTitle}】</span></div>
+          <div class="poem-box">「${v.life.master.natalPoem.join('，')}」</div>
+          <div class="decision-explain">
+            <div><b>正在：</b>${v.life.master.explain.doing}</div>
+            <div><b>原因：</b>${v.life.master.explain.reason}</div>
+            <div><b>下一步：</b>${v.life.master.explain.nextPlan}</div>
+          </div>
+        ` : ''}
         ${teaHtml(person)}
         ${home02Html(person)}
         ${life02Html(person)}

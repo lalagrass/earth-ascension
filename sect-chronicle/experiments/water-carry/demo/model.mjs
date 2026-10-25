@@ -38,6 +38,26 @@ export { TEA_MODES, TEA_LABEL, TEA };
 // SG-HOME-02：木料、寢舍修繕與床位（只本局；見 home02.mjs）。
 import { createHome02, H2_MODES, H2_LABEL, WOOD, SITE, WOOD_JOB, WOOD_PHASE_LABEL, ROOM_ID, BED_IDS, STAGE_LABEL } from './home02.mjs';
 export { H2_MODES, H2_LABEL, WOOD, SITE, ROOM_ID, BED_IDS, STAGE_LABEL };
+
+// LIFE-V01-V02 破道館開局、雙軌創角、預約守恆、宿命樹與全自動掌門自走
+import { ReservationBroker } from '../../../life/core/reservation.mjs';
+import { ToilPipeline } from '../../../life/core/toils.mjs';
+import { SmartObjectSystem, LIFE_V02_CONSTANTS } from '../../../life/core/smart-objects.mjs';
+import { evaluateDestinyMilestones } from '../../../life/core/destiny-engine.mjs';
+import { SectLeaderAutopilot } from '../../../life/core/autopilot.mjs';
+import { createPersona, createPresetDisciple, createIconicRoster, QUESTIONNAIRE } from '../../../life/core/persona-creation.mjs';
+export {
+  ReservationBroker,
+  ToilPipeline,
+  SmartObjectSystem,
+  LIFE_V02_CONSTANTS,
+  evaluateDestinyMilestones,
+  SectLeaderAutopilot,
+  createPersona,
+  createPresetDisciple,
+  createIconicRoster,
+  QUESTIONNAIRE,
+};
 export const STEP_MS = 1000 / 60;
 
 export const RULES = Object.freeze({
@@ -213,6 +233,70 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   const H2 = createHome02({ s, ids, rules, nameOf: (id) => nameOf(id), atHome: (p) => atHome(p), siteLength: sense.siteLength, bedLengths: sense.bedLengths,
     walkSteps: (lv, len) => walkSteps(lv, len, rules), loadSteps: (lv, len) => Math.max(1, Math.ceil(len / speedsFor(lv, rules).load * 1000 / STEP_MS - 1e-9)),
     blocked: (p) => p.pending != null || p.guardOrder != null || !!p.fix || cleaning(p) || patrolling(p) || T1.gate(p) || TE.gate(p) });
+
+  // LIFE-V01-V02 整合
+  const lifeBroker = new ReservationBroker();
+  const lifePipeline = new ToilPipeline(lifeBroker);
+  const lifeAutopilot = new SectLeaderAutopilot(lifePipeline, lifeBroker);
+  const lifeSmartObjects = new SmartObjectSystem();
+  let masterDisciple = createPresetDisciple('yue_buqun').master;
+  let recruitPool = createPresetDisciple('yue_buqun').recruitPool;
+  let autopilotActive = false;
+
+  const facilities = {
+    'fac.hall': {
+      facilityId: 'fac.hall',
+      name: '大廳屋頂修繕',
+      targetStage: 'S1',
+      phase: 'staging_materials',
+      stagingPile: {
+        timber: { current: 0, required: 4, reservedInFlight: 0 },
+        stone: { current: 0, required: 4, reservedInFlight: 0 },
+        thatch: { current: 0, required: 4, reservedInFlight: 0 },
+      },
+      workforce: {
+        mode: 'hire_artisans',
+        hiredArtisan: null,
+        progressTicks: 0,
+        totalTicks: LIFE_V02_CONSTANTS.blueprints.hallRoofRepair.workTicks,
+        activeWorkerId: null,
+        bonusTimberOnComplete: 0,
+      },
+    },
+    'fac.dorm.a': {
+      facilityId: 'fac.dorm.a',
+      name: '第一間雙人寢舍落成',
+      targetStage: 'S1',
+      phase: 'staging_materials',
+      stagingPile: {
+        timber: { current: 0, required: 6, reservedInFlight: 0 },
+        stone: { current: 0, required: 2, reservedInFlight: 0 },
+        thatch: { current: 0, required: 2, reservedInFlight: 0 },
+      },
+      workforce: {
+        mode: 'hire_artisans',
+        hiredArtisan: null,
+        progressTicks: 0,
+        totalTicks: LIFE_V02_CONSTANTS.blueprints.dormExpansion.workTicks,
+        activeWorkerId: null,
+        bonusTimberOnComplete: 0,
+      },
+    },
+  };
+
+  const housing = {
+    beds: [
+      { id: 'bed-1', owner: null, occupant: null },
+      { id: 'bed-2', owner: null, occupant: null },
+    ],
+  };
+
+  const lifeInventory = {
+    tea: 2,
+    timber: 0,
+    stone: 0,
+    thatch: 0,
+  };
   // 存放處：數量、容量與在途預約；挑水沿用舊欄位名 vat／inFlight。
   const store = (job) => job === 'wood' ? H2.store() : job === 'herb'
     ? { amount: s.herbs, inFlight: s.herbInFlight, cap: rules.herbCapacity }
@@ -1019,6 +1103,35 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     H2.step(); // SG-HOME-02：有修繕意圖、院中有空才領料走去工地
     TE.step(); // HOME-01：有泡茶意圖、院中有空才走去茶座
     T1.step(); // SG-TRAIN-01：有目標、院中有空才走去練功樁
+
+    // LIFE-V02：掌門全自動自走引擎
+    if (autopilotActive && masterDisciple) {
+      const lifeWorld = {
+        tick: s.tick,
+        day: Math.floor(s.tick / LIFE_V02_CONSTANTS.simulation.fullDayTicks) + 1,
+        teaVat: s.vat,
+        inventory: lifeInventory,
+        facilities,
+        housing,
+        disciples: { [masterDisciple.id]: masterDisciple },
+        lastSpeechBubble: s.lastSpeechBubble || null,
+      };
+      lifeAutopilot.step(lifeWorld, masterDisciple);
+      s.lastSpeechBubble = lifeWorld.lastSpeechBubble;
+
+      const hero = s.people.hero;
+      if (hero) {
+        if (masterDisciple.pos) {
+          hero.lifePos = {
+            x: masterDisciple.pos[0] ?? 962,
+            y: masterDisciple.pos[1] ?? 512,
+            face: (masterDisciple.pos[0] ?? 962) >= 962 ? 1 : -1,
+          };
+        }
+        hero.decision = masterDisciple.decision;
+        hero.carrying = masterDisciple.carrying;
+      }
+    }
     // 人的工作交付、移動與喝止進度都先結算完，最後才結算野豬（誘因看交付後的實存）。
     boarStep();
     // LP-08：野豬狀態確定後才判整理安全與完成；不改野豬自身的喝止／退走／碰撞先後。
@@ -1213,11 +1326,64 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     return { ok: true, text: m === 'toFun' ? `走到${prefs[p.id].place}後回院中${name}` : m === 'fun' ? `起身回院中${name}` : `回到院中就${name}；沒有空位就待命` };
   }
   function dispatch(cmd, id = 'hero') {
+    // LIFE-V02 自定義事件與指令
+    if (typeof cmd === 'object' && cmd !== null) {
+      if (cmd.type === 'TOGGLE_AUTOPILOT') {
+        autopilotActive = cmd.enabled !== undefined ? !!cmd.enabled : !autopilotActive;
+        if (masterDisciple?.persona?.autopilot) {
+          masterDisciple.persona.autopilot.enabled = autopilotActive;
+        }
+        return { ok: true, enabled: autopilotActive };
+      }
+      if (cmd.type === 'RING_BELL') {
+        const lifeWorld = {
+          tick: s.tick,
+          day: Math.floor(s.tick / LIFE_V02_CONSTANTS.simulation.fullDayTicks) + 1,
+          teaVat: s.vat,
+          inventory: lifeInventory,
+          facilities,
+          housing,
+          disciples: { [masterDisciple.id]: masterDisciple },
+        };
+        const res = lifeAutopilot.ringArtisanBell(lifeWorld, masterDisciple, cmd.facilityId || 'fac.hall');
+        s.lastSpeechBubble = lifeWorld.lastSpeechBubble;
+        return res;
+      }
+      if (cmd.type === 'INIT_PERSONA') {
+        const payload = cmd.payload || {};
+        if (payload.mode === 'preset') {
+          const res = createPresetDisciple(payload.presetKey);
+          if (!res.ok) return res;
+          masterDisciple = res.master;
+          recruitPool = res.recruitPool;
+        } else {
+          const res = createPersona(payload);
+          if (!res.ok) return res;
+          masterDisciple = res.disciple;
+          recruitPool = createIconicRoster();
+        }
+        autopilotActive = true;
+        if (masterDisciple.persona?.autopilot) {
+          masterDisciple.persona.autopilot.enabled = true;
+        }
+        evaluateDestinyMilestones({ day: 1, facilities }, masterDisciple);
+        return { ok: true, master: masterDisciple };
+      }
+    }
+
     const p = s.people[id];
     if (!p) return { ok: false, reason: '沒有這個工作者' };
     const a = actions(id).find((x) => x.id === cmd);
     if (!a) return { ok: false, reason: '沒有這個指令' };
     if (!a.enabled) return { ok: false, reason: a.reason };
+
+    // Tier 1 玩家手動改派：主角暫時退出 Autopilot
+    if (id === 'hero' && autopilotActive) {
+      autopilotActive = false;
+      if (masterDisciple?.persona?.autopilot) {
+        masterDisciple.persona.autopilot.enabled = false;
+      }
+    }
     // SG-LIFE-02：玩家任何有效指令先取消此人所在的招呼（雙方釋放、各自走回）；改派／停工／巡山等退出自主補水方針。
     const metCanceled = L2.cancelBy(p);
     // SG-TRAIN-01：較新的任何有效指令都取消練掌目標與未完成單位（「練掌」本身是新目標，另處理）。
@@ -1707,6 +1873,30 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       log: s.log.slice(-5), drinkRules: D ? { ...D } : null, thirst: THIRST,
       teaEvents: TE.events(), teaAvail: TE.avail(), teaSeat: TE.state.seat,
       home02: H2.world(),
+      life: {
+        autopilotActive,
+        master: masterDisciple ? {
+          id: masterDisciple.id,
+          name: masterDisciple.name,
+          originMode: masterDisciple.originMode,
+          destinyTreeId: masterDisciple.destinyTreeId,
+          daoTitle: masterDisciple.persona?.daoTitle || '清微持中',
+          natalPoem: masterDisciple.persona?.natalPoem || [],
+          heartSeal: masterDisciple.persona?.heartSeal || { code: 0b110 },
+          innateStats: masterDisciple.innateStats,
+          unlockedArts: masterDisciple.unlockedArts || [],
+          explain: masterDisciple.decision?.explain || { doing: '待命', reason: '等待指令', nextPlan: '無' },
+          carrying: masterDisciple.carrying,
+        } : null,
+        facilities: {
+          hall: facilities['fac.hall'],
+          dorm: facilities['fac.dorm.a'],
+        },
+        inventory: lifeInventory,
+        housing,
+        speechBubble: s.lastSpeechBubble || null,
+        recruitPool: recruitPool.map((r) => ({ id: r.id, name: r.name, availableForRecruit: r.availableForRecruit })),
+      },
     };
   }
   // SG-LIFE-01 手動存讀：權威狀態全在 s；匯出為深拷貝（紀錄只留最近 logKeep 筆，規則與還原都不讀紀錄）。
@@ -1721,7 +1911,27 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     for (const k of Object.keys(s)) delete s[k];
     Object.assign(s, copy);
   }
-  return { state: s, patrol: pt, life02: L2, train01: T1, tea: TE, home02: H2, step, dispatch, assignBed: (bed, pid) => H2.assign(bed, pid), actions, view, setAuto, setUpkeep, setPalm, setAutoClean, pathLength, lengths, rules, exportState, restore };
+  return {
+    state: s, patrol: pt, life02: L2, train01: T1, tea: TE, home02: H2,
+    life: {
+      broker: lifeBroker,
+      toilPipeline: lifePipeline,
+      autopilot: lifeAutopilot,
+      smartObjects: lifeSmartObjects,
+      get master() { return masterDisciple; },
+      get facilities() { return facilities; },
+      get inventory() { return lifeInventory; },
+      get housing() { return housing; },
+      get autopilotActive() { return autopilotActive; },
+      setAutopilot: (val) => {
+        autopilotActive = !!val;
+        if (masterDisciple?.persona?.autopilot) masterDisciple.persona.autopilot.enabled = autopilotActive;
+      },
+      initPersona: (payload) => dispatch({ type: 'INIT_PERSONA', payload }),
+      ringBell: (facId) => dispatch({ type: 'RING_BELL', facilityId: facId }),
+    },
+    step, dispatch, assignBed: (bed, pid) => H2.assign(bed, pid), actions, view, setAuto, setUpkeep, setPalm, setAutoClean, pathLength, lengths, rules, exportState, restore
+  };
 }
 
 // 牆鐘只決定餵幾步；長空檔最多算250ms，不追趕背景時間。

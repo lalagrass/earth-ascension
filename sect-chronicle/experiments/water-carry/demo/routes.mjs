@@ -60,6 +60,12 @@ export const DORM = { points: [[962, 512], [990, 556], [1090, 598], [1160, 640],
   woodpile: { x: 1050, y: 524 } };
 export const GUARD = { points: [[962, 512], [930, 522], [880, 512], [820, 480], [782, 452], [748, 428], [706, 430]] };
 
+// LIFE-V02 破道館三大建材短路徑、大廳屋頂與招工鐘
+export const WEEDS_PATH = { points: [[962, 512], [950, 536], [940, 560]], station: { x: 940, y: 560 } };
+export const RUBBLE_PATH = { points: [[962, 512], [930, 460], [900, 360], [880, 260]], station: { x: 880, y: 260 } };
+export const BELL_PATH = { points: [[962, 512], [936, 496], [910, 480]], station: { x: 910, y: 480 } };
+export const HALL_ROOF_PATH = { points: [[962, 512], [930, 460], [890, 320], [870, 205]], station: { x: 870, y: 205 }, scaffoldingBox: [765, 135, 975, 275] };
+
 export function createRoutes(waterPoints = WATER_POINTS) {
   const routes = { water: pathTool(waterPoints), herb: pathTool(HERB.points) };
   const seats = { hero: pathTool(SEATS.hero.points), cousin: pathTool(SEATS.cousin.points) };
@@ -103,6 +109,10 @@ export function createRoutes(waterPoints = WATER_POINTS) {
     return { x: p.x, y: p.y, face, route: teaPath, geo: l.mode, travelled: still ? 0 : Math.abs(l.u - l.a) * teaPath.length };
   }
   const boarPath = pathTool(BOAR.points), guardPath = pathTool(GUARD.points);
+  const weedsPath = pathTool(WEEDS_PATH.points);
+  const rubblePath = pathTool(RUBBLE_PATH.points);
+  const bellPath = pathTool(BELL_PATH.points);
+  const hallRoofPath = pathTool(HALL_ROOF_PATH.points);
   const drinks = { home: pathTool(DRINK.points), hero: pathTool([...SEATS.hero.points].reverse().concat(DRINK.points.slice(1))), cousin: pathTool([...SEATS.cousin.points].reverse().concat(DRINK.points.slice(1))) };
   // 去／喝／回：u=0 出發點、u=1 飲水站；回程只走 span（取消去程時走回已走的那段）。喝水時面向水缸。
   function drinkPlace(id, d) {
@@ -155,6 +165,7 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   const FIX_AS = { toFix: 'toGuard', fromFix: 'fromGuard', fix: 'guardWait' };
   function of(id, p) {
     // LP-11：清理中直接用模型在權威 tick 取樣的場景位置（palm.mjs 同一幾何），畫面不另算。
+    if (p.lifePos) return { x: p.lifePos.x, y: p.lifePos.y, face: p.lifePos.face ?? 1, route: null, geo: p.mode || 'toil', travelled: 0 };
     if (p.drinkLeg) return drinkPlace(id, { ...p.drinkLeg, mode: p.mode });
     if (p.life02 && p.life02.leg) return meetPlace(id, { ...p.life02.leg, mode: p.mode });
     if (p.home02 && p.home02.leg) return sitePlace({ ...p.home02.leg, mode: p.mode });
@@ -180,6 +191,9 @@ export function createRoutes(waterPoints = WATER_POINTS) {
     sitePath, sitePlace, bedPlace, beds, woodLength: routes.wood.length, siteLength: sitePath.length, bedLengths: Object.fromEntries(Object.entries(beds).map(([id, r]) => [id, r.length])),
     trains, trainPlace, trainLengths: Object.fromEntries(['hero', 'cousin'].map((id) => [id, trains[id].length])),
     meets, meetPlace, meetLengths: Object.fromEntries(['hero', 'cousin'].map((id) => [id, { total: meets[id].length, home: meetHome[id] }])),
-    drinks, drinkPlace, drinkLengths: { home: drinks.home.length, seat: { hero: drinks.hero.length, cousin: drinks.cousin.length } } };
+    drinks, drinkPlace, drinkLengths: { home: drinks.home.length, seat: { hero: drinks.hero.length, cousin: drinks.cousin.length } },
+    weedsPath, rubblePath, bellPath, hallRoofPath,
+    weedsLength: weedsPath.length, rubbleLength: rubblePath.length, bellLength: bellPath.length, hallRoofLength: hallRoofPath.length,
+  };
 }
 const WATER = { down: 1, dip: 1, up: 1, pour: 1 };
