@@ -25,6 +25,7 @@ export const MIGRATIONS = [
   { to: '0.9', note: '根骨與武學', up(o, D) { for (const d of o.ds) { if (d.root == null) { d.root = D[d.id]?.root ?? 3; d.rootKnown = true; } seedArts(d); } } },
   { to: '0.92', note: '瓶頸旗標與每階一招', up(o) { for (const d of o.ds) seedArts(d); } },
   { to: '0.95', note: '敵人圖鑑、巡山遠征、前期里程碑', up(o) { freshV095(o); } },
+  { to: '0.96', note: '主角建立：悟性／根骨拆分、價值觀、同門', up(o) { for (const d of o.ds) d.wu ??= d.root; o.hero ??= null; o.choices ??= []; o.encExclude ??= []; } },
 ];
 // 每次讀檔都跑：補最基本的不變式（手改或殘缺存檔也能讀）
 function repair(o, D) { o.cap ??= { wood: 12, stone: 12 }; for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= []; d.needs.fun ??= 60; if (!d.personality?.length) d.personality = [...(D[d.id]?.personality || [])]; d.known ??= d.personality.slice(0, 1); } freshV095(o); }

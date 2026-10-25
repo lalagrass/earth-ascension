@@ -1,3 +1,4 @@
+import { NEW_TRAITS } from './hero-data.mjs';
 // 資料驅動定義：地圖節點、設施階段、活動、武學、角色。改數值只動這裡。
 // v0.5：座標＝SCENE04 母版 MU（1280×720）×1.25，路網沿母版 routes（挑水/遠採藥/巡山/村路）與院南口 portal
 export const WORLD = { w: 1600, h: 900 };
@@ -218,7 +219,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '0.95';
+export const RULES_VERSION = '0.96';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -329,3 +330,5 @@ export const PACE = [
   { id: 'firstBuild', day: 3, name: '第一次動工', guide: '師父：「巡山帶回的木料夠了就動工吧，膳房或工寮都行。」（上方「建造」）' },
 ];
 export const TRIAL_BOAR = { hp: 24, hit: 1.0 };
+
+Object.assign(TRAITS, NEW_TRAITS); // v0.96 主角／同門新特質

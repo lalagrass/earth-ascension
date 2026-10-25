@@ -6,11 +6,13 @@ import { outers, skipsChores, emergency, quotaOf, setDuty, setPrio, canPromote, 
 import { CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES } from './data.mjs';
 import { isLabor, disciples, laborers, laborCap, canHire, hire, canInvite, invite, avgAff, togglePause, MATS, moodLabel, moodParts, seasonOf, aff, compat, defaultAnswers, personalityFrom, capacity, canRecruit, recruit, recruitNeed, mapStage, setPost, phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf } from './sim.mjs';
 import { ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS } from './data.mjs';
+import { openStart, choiceUI, heroCard } from './start-ui.mjs';
 const cv = document.getElementById('map'), g = cv.getContext('2d');
 const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile', 'kitchen_s1', 'map_s0', 'map_s1', 'map_s2'];
 await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i.onload = r; i.onerror = r; i.src = `assets/${n}.${n === 'ground' || n.startsWith('map_') ? 'jpg' : 'png'}`; IMG[n] = i; })));
-let S = createState(Date.now() % 100000 | 0), speed = 1;
-window.__sect = { get S() { return S; }, set speed(v) { speed = v; }, freeze: false, panel: () => panel() };
+let S = createState(Date.now() % 100000 | 0), speed = 1, starting = true;
+const newGame = () => { starting = true; openStart((spec) => { S = createState(Date.now() % 100000 | 0, spec); starting = false; panel(); }); };
+window.__sect = { get S() { return S; }, set speed(v) { speed = v; }, freeze: false, panel: () => panel(), get starting() { return starting; } };
 const ACT_ICON = { quarry: '⛏', spar: '🤺', cook: '🍲', deliver: '📦', rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔', trial: '⚔' };
 function draw() {
   const shake = S.fx.find((f) => f.kind === 'shake'); g.save(); if (shake) g.translate((Math.random() - 0.5) * 12 * shake.ttl / 0.35, (Math.random() - 0.5) * 12 * shake.ttl / 0.35);
@@ -103,7 +105,7 @@ function panel() {
   { const ds = disciples(S), cur = ds.find((d) => d.id === window.__artsOf) || ds[0];
     if (cur) $('arts').innerHTML = `<select data-artsof>${ds.map((d) => `<option value="${d.id}" ${d.id === cur.id ? 'selected' : ''}>${d.name}</option>`).join('')}</select>
       <select data-focus="${cur.id}"><option value="">專修：自動（${artById(focusOf(cur) || 'basicFist').name}）</option>${Object.keys(cur.arts).map((id) => `<option value="${id}" ${cur.focus === id ? 'selected' : ''}>專修：${artById(id).name}</option>`).join('')}</select>
-      <div class="k">悟性 ${cur.rootKnown ? `${cur.root}（${ROOT.names[cur.root]}）` : '未明'}｜${ARTS.filter((a) => cur.arts[a.id]).map((a) => `${a.name}×${artMul(cur, a).toFixed(2)}`).join('・')}</div>${artsSvg(cur)}
+      <div class="k">悟性 ${cur.rootKnown ? `${cur.wu ?? cur.root}（${ROOT.names[cur.wu ?? cur.root]}）` : '未明'}｜${ARTS.filter((a) => cur.arts[a.id]).map((a) => `${a.name}×${artMul(cur, a).toFixed(2)}`).join('・')}</div>${artsSvg(cur)}
       ${ARTS.filter((a) => cur.arts[a.id]).map((a) => { const r = cur.arts[a.id], st = stuckAt(cur, a, S.t), t = artState(cur, a).tier, va = variantOf(cur, a.id, S.t), rust = rustOf(r, S.t);
         return `<div class="k artrow">${a.name}・${TIERS[t][1]} ${r.xp.toFixed(1)}${r.guizhen ? `・歸真 ${'★'.repeat(Math.min(r.stars || 0, 10))}${(r.stars || 0) > 10 ? '+' + (r.stars - 10) : ''}（${(r.sxp || 0).toFixed(1)}/${starCost(r)}）` : ''}${st ? `・<b style="color:#2a5a9a">瓶頸${st === 3 ? '（可歸真）' : ''}，衝關成功率 ${Math.round(breakChance(cur) * 100)}%${cur.mood < BREAK.moodMin || cur.needs.energy < BREAK.energyMin ? '（心情或精力不足）' : ''}</b>` : (r.btCd || 0) > S.t ? `・衝關冷卻 ${Math.ceil(r.btCd - S.t)}s` : ''}${rust > 0.01 ? `・荒疏 −${Math.round(rust * 100)}%` : ''}
           ${t >= 2 ? `<select data-variant="${cur.id}|${a.id}"><option value="">大成變式：未選</option>${VARIANTS[a.school].map((v) => `<option value="${v.id}" ${r.variant === v.id ? 'selected' : ''}>${v.name}</option>`).join('')}</select>${r.variant && !va ? '（換路重練中）' : ''}` : ''}</div>`; }).join('')}
@@ -153,14 +155,16 @@ function panel() {
    <select data-style="${d.id}">${Object.entries(STYLES).map(([k, n]) => `<option value="${k}" ${d.style === k ? 'selected' : ''}>主修${n}</option>`).join('')}</select>
    <select data-ord="${d.id}">${ORD.map(([k, n]) => `<option value="${k}" ${(d.order || '') === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`).join('');
   $('rel').innerHTML = Object.entries(S.rel).map(([k, v]) => { const [a, b] = k.split('|').map((id) => S.ds.find((d) => d.id === id).name); const [A, B] = k.split('|').map((id) => S.ds.find((d) => d.id === id)); return `<div>${a}—${b}：${relStage(v)} ${v.toFixed(0)}${S.families.includes(k) ? ' 🏠' : ''} <span class="k">（${a}→${aff(S, A, B).toFixed(0)}／${b}→${aff(S, B, A).toFixed(0)}・合拍 ${compat(A, B).toFixed(1)}/${compat(B, A).toFixed(1)}）</span></div>`; }).join('');
+  $('hero').innerHTML = heroCard(S);
   $('log').innerHTML = S.log.slice(0, 30).map((l) => `<li>[${l.t}s] ${l.msg}</li>`).join('');
 }
 document.addEventListener('click', (e) => { const b = e.target.closest('[data-build],[data-speed],[data-pause],[data-invite],[data-promote]'); if (!b) return; if (b.dataset.promote) startTrial(S, b.dataset.promote); if (b.dataset.pause) togglePause(S, b.dataset.pause); if (b.dataset.invite) invite(S, b.dataset.invite); if (b.dataset.build) startBuild(S, b.dataset.build); if (b.dataset.speed) speed = +b.dataset.speed; panel(); });
 document.addEventListener('change', (e) => { if (e.target.dataset.variant) { const [id, art] = e.target.dataset.variant.split('|'); const d = S.ds.find((x) => x.id === id); if (d && e.target.value) chooseVariant(d, art, e.target.value, S.t); panel(); return; } if ('artsof' in e.target.dataset) { window.__artsOf = e.target.value; panel(); return; } if (e.target.dataset.focus) { setFocus(S, e.target.dataset.focus, e.target.value || null); panel(); return; } if (e.target.dataset.q) { window.__ans[+e.target.dataset.q] = +e.target.value; panel(); return; } if (e.target.dataset.duty) { setDuty(S, e.target.dataset.duty, e.target.value, e.target.checked); panel(); return; } if (e.target.dataset.prio) { setPrio(S, e.target.dataset.prio, e.target.value); panel(); return; } if (e.target.dataset.style) setStyle(S, e.target.dataset.style, e.target.value); if (e.target.dataset.ord) { setOrder(S, e.target.dataset.ord, e.target.value || null); panel(); } });
 $('save').onclick = () => { localStorage.setItem('solo-sect-save', save(S)); alert('已存檔'); };
 $('load').onclick = () => { const r = load(localStorage.getItem('solo-sect-save') || ''); if (r.ok) S = r.state; else alert(r.err); panel(); };
-$('reset').onclick = () => { S = createState(Date.now() % 100000 | 0); panel(); };
+$('reset').onclick = () => newGame();
+$('load').addEventListener('click', () => { if (document.getElementById('start')) { document.getElementById('start').remove(); starting = false; } });
 let last = performance.now(), acc = 0;
-function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now; while (acc >= 0.25) { tick(S); acc -= 0.25; }
+function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now; if (starting || choiceUI(S)) acc = 0; while (acc >= 0.25) { tick(S); acc -= 0.25; }
   draw(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
-panel(); requestAnimationFrame(loop);
+panel(); newGame(); requestAnimationFrame(loop);

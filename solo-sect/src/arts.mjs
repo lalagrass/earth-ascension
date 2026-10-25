@@ -6,7 +6,7 @@ export const artOfMove = (mv) => ARTS.find((a) => a.tech === mv || a.techs?.incl
 export const tierOf = (xp) => { let t = 0; for (let i = 0; i < TIERS.length; i++) if (xp >= TIERS[i][0]) t = i; return t; };
 export const artTier = (d, id) => (d.arts?.[id] ? tierOf(d.arts[id].xp) : -1);
 export const tierName = (t) => (t < 0 ? '未學' : TIERS[t][1]);
-export const gated = (d, a) => (d.root ?? 3) < (a.wuxingMin || 0);
+export const gated = (d, a) => (d.wu ?? d.root ?? 3) < (a.wuxingMin || 0);
 export function reqMissing(d, a) { return a.req.filter((r) => artTier(d, r.art) < r.tier).map((r) => `${artById(r.art).name}${TIERS[r.tier][1]}`); }
 export function artState(d, a) {
   if (d.arts?.[a.id]) return { st: 'learned', tier: artTier(d, a.id), why: gated(d, a) ? `悟性不足（需 ${a.wuxingMin}），止於小成` : '' };
@@ -16,10 +16,11 @@ export function artState(d, a) {
 }
 // 熟練倍率走統一管線：天賦（悟性、憨厚、灑脫/勤奮）＋外部（前置加成）；悟性門檻 ×0.3 是硬規則，管線外另乘
 export function artMulParts(d, a, state = []) {
-  const [basic, adv] = WUXING_MUL[d.root ?? 3] || [1, 1], p = d.personality || [], talent = [['悟性', a.grade <= 1 ? basic : adv]];
+  const [basic, adv] = WUXING_MUL[d.wu ?? d.root ?? 3] || [1, 1], p = d.personality || [], talent = [['悟性', a.grade <= 1 ? basic : adv]];
   if (p.includes('honest')) talent.push(['憨厚', a.grade <= 1 ? ART_GAIN.honest[0] : ART_GAIN.honest[1]]);
   for (const [t, [tag, k]] of Object.entries(ART_GAIN.tagTrait)) if (p.includes(t) && a.tags.includes(tag)) talent.push([t === 'free' ? '灑脫' : '勤奮', k]);
   const ext = a.req.length ? [['前置', 1 + ART_GAIN.reqBonus * a.req.length]] : [];
+  if (d.pairMul > 0) ext.push(['同門默契', 1 + d.pairMul]); // v0.96 郭靖＋黃蓉最多 +25%
   const r = pipeline({ talent, state, ext }); r.gate = gated(d, a) ? ART_GAIN.gated : 1; r.total *= r.gate; return r;
 }
 export const artMul = (d, a) => artMulParts(d, a).total;
@@ -34,7 +35,7 @@ export const focusOf = (d) => (d.focus && d.arts?.[d.focus] ? d.focus : autoFocu
 // 只自動求學：主修系、拳、內功、身法，或前置含主修系的合擊武學
 export const fits = (d, a) => ['fist', 'inner', 'step', d.style].includes(a.school) || a.req.some((r) => artById(r.art).school === d.style);
 // 回傳新可求學的武學 id（若有）
-export const guizhenOk = (d, a) => a.grade <= 1 && ((d.root ?? 3) <= GUIZHEN.rootMax || GUIZHEN.traits.some((t) => (d.personality || []).includes(t)));
+export const guizhenOk = (d, a) => a.grade <= 1 && ((d.wu ?? d.root ?? 3) <= GUIZHEN.rootMax || GUIZHEN.traits.some((t) => (d.personality || []).includes(t)));
 export const starCost = (r) => GUIZHEN.cost0 + GUIZHEN.costStep * (r.stars || 0);
 // 目前上限：悟性門檻 → 54.9；未破第一關 → 54.9；未破第二關 → 99.9
 export function curCap(d, a) { const r = d.arts[a.id]; if (gated(d, a)) return ART_GAIN.gateCap; if (!r.bt1) return BREAK.caps[0]; if (!r.bt2) return BREAK.caps[1]; return 100; }
@@ -45,7 +46,7 @@ export function stuckAt(d, a, now = 0) {
   if (r.bt2 && !r.guizhen && guizhenOk(d, a)) return 3; return 0;
 }
 export const btReady = (d, now = 0) => ARTS.find((a) => stuckAt(d, a, now))?.id || null;
-export function breakChance(d) { return Math.max(0.1, Math.min(0.9, BREAK.base + ((d.mood ?? 50) - 50) / 100 + ((d.root ?? 3) - 3) * 0.08 + ((d.needs?.energy ?? 50) - BREAK.energyMin) / 200)); }
+export function breakChance(d) { return Math.max(0.1, Math.min(0.9, BREAK.base + ((d.mood ?? 50) - 50) / 100 + ((d.wu ?? d.root ?? 3) - 3) * 0.08 + ((d.needs?.energy ?? 50) - BREAK.energyMin) / 200)); }
 // 衝關結算：回傳 {ok, stage, art}
 export function resolveBreak(d, id, now, roll) {
   const a = artById(id), r = d.arts[id], st = stuckAt(d, a, now); if (!st) return null;

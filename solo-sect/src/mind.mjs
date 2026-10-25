@@ -1,3 +1,4 @@
+import { wexinMood } from './hero.mjs';
 // 心智（v0.6→v0.7 拆檔）：性格、想法、心情、特質揭露
 import { TRAITS, THOUGHTS, NEED_MOOD, MOOD, WORK_ACTS, LEISURE_ACTS, REVEAL_AT } from './data.mjs';
 import { clamp, log } from './util.mjs';
@@ -13,6 +14,7 @@ export function moodParts(d, s) {
   for (const p of d.personality || []) if (TRAITS[p]?.moodBase) parts.push([TRAITS[p].name, TRAITS[p].moodBase]);
   for (const th of d.thoughts) parts.push([th.text, th.v]);
   for (const [k, [thr, v, tag]] of Object.entries(NEED_MOOD)) if ((d.needs[k] ?? 100) < thr) { let x = v; for (const p of d.personality || []) { const m = TRAITS[p]?.thoughtMul; if (m?.[tag]) x *= m[tag]; } parts.push([{ hunger: '肚子餓', energy: '累', social: '寂寞', fun: '悶' }[k], Math.round(x)]); }
+  if (d.wexin) parts.push([`違心×${d.wexin}`, Math.round(wexinMood(d))]);
   if (s) { const se = seasonOf(s); if (se.mood) parts.push([`${se.name}天`, se.mood]); }
   return parts;
 }
