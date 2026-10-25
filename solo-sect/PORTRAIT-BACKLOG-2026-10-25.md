@@ -107,3 +107,6 @@
 ## 附錄：試畫 A 提示詞（Grok Bot 圖像生成，3:4）
 
 > Original character portrait for a wuxia comedy game: a scrappy young street hustler in a dirty white sleeveless undershirt, dark baggy trousers with patches, messy black hair, small bandage on cheek, cocky half-grin with nervous sweat drop. Upper-body bust, 3/4 view toward viewer, head occupying top third, one arm thrust forward palm open in a Buddhist-palm strike pose, faint golden glow and a small palm-shaped shockwave ring around the hand. Style: clean confident dark-brown ink linework with varied line weight, flat watercolor color blocks plus one shadow layer, light from upper left, strong value contrast between figure and background, limited palette of warm off-white, ink black, rust red accent, muted teal. Background: pale rice paper with a very light faded silhouette of a crowded old tenement courtyard building. Readable at 64px thumbnail. No text, no logo.
+
+## Update: 阿星 v2 candidates (2026-10-25)
+6 candidates in `assets/portraits/v2/axing-cand-*.png`, sheet `artifacts/portrait-review/axing-v2-candidates.png`, prompts in `assets/portraits/PROMPTS.md`. Top 3: 2-beaten, 1-sneer, 6-scheme. Next: lock a character sheet (face shape, hair, vest/patches/red sash) and derive the expression set from 2-beaten via reference-image passes; remove AI-generated text; consistency across images not yet proven.
