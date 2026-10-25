@@ -19,7 +19,7 @@ export function makePerson(w,id,name,pos,options={}){
   activity:null,intent:null,revision:0,manualStop:false,path:[],routeAt:0,distance:0,walkRemainder:0,energyRemainder:0,
   skill:{punch:{U:5,F:0,I:0,contexts:[],practice:0,sources:[]}},weapon:'punch',move:'punch',action:null,stun:0,
   observation:{},known:{},meals:0,mealDay:0,contribution:{},reason:'等候方針',next:'自由活動',blocked:'',auto:true,
-  moving:false,waitSince:null,recovering:false,visits:0,...options};
+  moving:false,waitSince:null,recovering:false,visits:0,...structuredClone(options),stats:[...stats],traits:[...(options.traits||[0,0])]};
  w.people[id]=p;inventory(w,p.bag,{},4);return p;
 }
 export function createWorld(config={}){
@@ -50,8 +50,8 @@ export function createWorld(config={}){
  event(w,'new-world',['leader','amu','child'],{text:'破廳仍可棲身。先取木石修宿舍，留下小禾的床。'});
  hero.reason='依你的配點與性向，先安置家人';return w;
 }
-export function reserve(w,activity,key,n=1,limit=1){const others=Object.values(w.reservations).filter(r=>r.key===key&&r.activity!==activity.id).reduce((a,r)=>a+r.n,0);if(others+n>limit)return false;w.reservations[activity.id+'|'+key]={activity:activity.id,actor:activity.actor,key,n,tick:w.tick};return true;}
-export function release(w,id){for(const key of Object.keys(w.reservations))if(w.reservations[key].activity===id)delete w.reservations[key];}
+export function reserve(w,activity,key,n=1,limit=1){if(key.startsWith('station:')){const q=w.queues[key]??=[];if(!q.some(r=>r.activity===activity.id))q.push({activity:activity.id,actor:activity.actor,tick:w.tick});q.sort((a,b)=>a.tick-b.tick||a.actor.localeCompare(b.actor));const owns=Object.values(w.reservations).some(r=>r.activity===activity.id&&r.key===key);if(!owns&&q[0]?.activity!==activity.id)return false;}const others=Object.values(w.reservations).filter(r=>r.key===key&&r.activity!==activity.id).reduce((a,r)=>a+r.n,0);if(others+n>limit)return false;w.reservations[activity.id+'|'+key]={activity:activity.id,actor:activity.actor,key,n,tick:w.tick};return true;}
+export function release(w,id){for(const [key,q]of Object.entries(w.queues))w.queues[key]=q.filter(r=>r.activity!==id);for(const key of Object.keys(w.reservations))if(w.reservations[key].activity===id)delete w.reservations[key];}
 export function assignBeds(w){const available=bedSlots(w),used=new Set();for(const p of sorted(w.people).filter(p=>p.residence==='resident')){
  if(p.bed&&available.includes(p.bed)&&!used.has(p.bed)){used.add(p.bed);continue;}p.bed=null;
  }for(const p of sorted(w.people).filter(p=>p.residence==='resident'&&!p.bed)){p.bed=available.find(b=>!used.has(b))||null;if(p.bed)used.add(p.bed);}}

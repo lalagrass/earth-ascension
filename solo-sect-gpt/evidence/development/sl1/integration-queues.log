@@ -1,0 +1,61 @@
+✔ A04 built rooms and stations have legal non-teleport routes (312.238375ms)
+✔ A05/A09 in-process recipe survives cancel without duplicate input or output (188.83975ms)
+✔ A08 worker identity and bag preserved at invitation; capacity rejects cleanly (0.395125ms)
+✔ A12 participant cancellation releases both actors and station locks (4.502084ms)
+✔ A13/A14 child rejected at relationship model boundary; mutual adult consent required (0.337875ms)
+✔ A17 hits are geometry based, one target per action, finite windup/recovery (4.713291ms)
+✔ A18 low and high intelligence share depth conditions; practice never supplies insight (109.707541ms)
+✖ A23 bridge cancellation preserves token to actual exit (6.225333ms)
+✔ A24 invalid dispatch leaves no extra activity, supply or reservation (0.496459ms)
+✔ A27 lesson reaches a real failed interception and a legal success (378.732ms)
+✖ A33 actual travel and return fulfills rescue and food promises independently (25405.621417ms)
+✔ A35 in-flight construction, cooking, combat and conversation roundtrip hashes (2027.049041ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 10
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 28528.880541
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:19:1
+✖ A23 bridge cancellation preserves token to actual exit (6.225333ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'leader' !== null
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:19:276)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'leader',
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:22:1
+✖ A33 actual travel and return fulfills rescue and food promises independently (25405.621417ms)
+  AssertionError [ERR_ASSERTION]: {"id":"expedition.2","actors":["leader","amu"],"target":"cave","phase":"outbound","started":0,"packed":["amu","leader"],"seen":["forest","camp"],"foodTaken":0,"reservedVisitor":false,"report":null,"returnReason":null,"segment":"valley","restUntil":1691,"rested":true}
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:22:530)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

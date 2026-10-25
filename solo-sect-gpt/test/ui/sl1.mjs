@@ -1,0 +1,16 @@
+import {chromium} from '/Users/chenyuying/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
+import fs from 'node:fs/promises';
+const out=new URL('../../evidence/development/sl1/',import.meta.url),browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true}),page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.goto('http://127.0.0.1:8877/');await page.getByRole('button',{name:'在山中留下來',exact:true}).click();await page.locator('[data-speed="4"]').click();
+await page.getByRole('button',{name:'建設',exact:true}).click();await page.locator('[data-build="dorm"]').click();
+await page.waitForFunction(()=>window.__game.snapshot().facilities.dorm.stage===1,{},{timeout:180000});
+await page.screenshot({path:new URL('dorm-complete.png',out).pathname});
+await page.getByRole('button',{name:'人物',exact:true}).click();await page.locator('[data-person="leader"]').click();await page.locator('[data-task="train"]').click();
+await page.waitForFunction(()=>window.__game.snapshot().people.leader.skill.punch.F>=18,{},{timeout:100000});
+await page.screenshot({path:new URL('practice.png',out).pathname});
+await page.locator('[data-task="sleep"]').click();await page.locator('[data-camera="home"]').click();
+await page.waitForFunction(()=>{const w=window.__game.snapshot(),p=w.people.leader;return w.activities[p.activity]?.kind==='sleep'&&p.path.length===0;},{},{timeout:100000});
+await page.screenshot({path:new URL('real-bed.png',out).pathname});
+await page.getByRole('button',{name:'暫停',exact:true}).click();await page.getByRole('button',{name:'存檔',exact:true}).click();await page.locator('[data-special="save"]').click();await page.waitForTimeout(1000);
+const state=await page.evaluate(()=>window.__game.snapshot());await fs.writeFile(new URL('normal-world.json',out),JSON.stringify(state));await fs.writeFile(new URL('ui-result.json',out),JSON.stringify({seed:11,layer:'U',tick:state.tick,errors,commands:state.commands,passed:{dorm:state.facilities.dorm.stage,practice:state.people.leader.skill.punch.F,bed:state.people.leader.bed}},null,2));
+await browser.close();if(errors.length)throw Error(errors.join('\n'));console.log('SL1 UI: physical gathering/construction, practice and real indoor bed reached');

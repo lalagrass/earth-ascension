@@ -11,3 +11,39 @@
 127.0.0.1 - - [25/Oct/2026 21:02:23] "GET /maps/runtime/layout.mjs HTTP/1.1" 200 -
 127.0.0.1 - - [25/Oct/2026 21:02:23] code 404, message File not found
 127.0.0.1 - - [25/Oct/2026 21:02:23] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /src/ui.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /src/map.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /src/data.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /src/world.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /src/state.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /src/save.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /src/render.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /src/activities.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /src/combat.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /src/navigation.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /maps/runtime/layout.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /src/life.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /data/directions.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:07:57] code 404, message File not found
+127.0.0.1 - - [25/Oct/2026 21:07:57] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [25/Oct/2026 21:15:38] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:38] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:38] "GET /src/ui.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /src/data.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /src/world.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /src/map.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /src/state.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /src/stories.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /src/render.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /src/save.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /src/activities.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /src/navigation.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /src/expedition.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /src/combat.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /src/life.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /maps/runtime/layout.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /data/directions.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:15:39] code 404, message File not found
+127.0.0.1 - - [25/Oct/2026 21:15:39] "GET /favicon.ico HTTP/1.1" 404 -

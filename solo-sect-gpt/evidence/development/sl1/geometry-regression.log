@@ -1,0 +1,107 @@
+✔ new world has stable identities and no geometry/ledger errors (2.639333ms)
+✖ all initial stations are reached by legal circle sweeps (3.796292ms)
+✖ build dorm consumes actual harvested materials, duplicate command ignored (590.684ms)
+✔ cancellation in transit never refunds or erases carried wood (23.993958ms)
+✔ children cannot be assigned labor, adult activities or expedition work (0.588958ms)
+✔ determinism survives people insertion order and save/resume (1118.675042ms)
+✔ bad saves and failed writes protect the last valid slot (3.939709ms)
+✔ A04 built rooms and stations have legal non-teleport routes (297.669958ms)
+✔ A05/A09 in-process recipe survives cancel without duplicate input or output (180.873458ms)
+✔ A08 worker identity and bag preserved at invitation; capacity rejects cleanly (0.419541ms)
+✔ A12 participant cancellation releases both actors and station locks (4.965375ms)
+✔ A13/A14 child rejected at relationship model boundary; mutual adult consent required (0.3665ms)
+✔ A17 hits are geometry based, one target per action, finite windup/recovery (4.900375ms)
+✔ A18 low and high intelligence share depth conditions; practice never supplies insight (115.969667ms)
+✖ A23 bridge cancellation preserves token to actual exit (8.007542ms)
+✔ A24 invalid dispatch leaves no extra activity, supply or reservation (0.801125ms)
+✔ A27 lesson reaches a real failed interception and a legal success (435.418125ms)
+✖ A33 actual travel and return fulfills rescue and food promises independently (1010.221625ms)
+✔ A35 in-flight construction, cooking, combat and conversation roundtrip hashes (1953.490333ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 15
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4089.075875
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/core.test.mjs:8:1
+✖ all initial stations are reached by legal circle sweeps (3.796292ms)
+  AssertionError [ERR_ASSERTION]: stone
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/core.test.mjs:8:272)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/core.test.mjs:9:1
+✖ build dorm consumes actual harvested materials, duplicate command ignored (590.684ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/core.test.mjs:9:287)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:19:1
+✖ A23 bridge cancellation preserves token to actual exit (8.007542ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'leader' !== null
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:19:276)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'leader',
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:22:1
+✖ A33 actual travel and return fulfills rescue and food promises independently (1010.221625ms)
+  AssertionError [ERR_ASSERTION]: {"id":"expedition.2","actors":["leader","amu"],"target":"cave","phase":"prepare","started":0,"packed":["amu"],"seen":[],"foodTaken":0,"reservedVisitor":false,"report":null,"returnReason":null}
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:22:530)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

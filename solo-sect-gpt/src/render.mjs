@@ -1,6 +1,7 @@
 import {Q,FACILITIES,ITEM,MOVES,TASKNAME} from './data.mjs';
-import {MAP,rects,stations,corridors,position,inRect} from './map.mjs';
+import {MAP,rects,stations,corridors,position,inRect,trees} from './map.mjs';
 import {sorted,qty,bagWeight} from './state.mjs';
+import {visibleEntity} from './view.mjs';
 const COLORS={paper:'#eee7d3',ink:'#31443c',muted:'#7d8b70',earth:'#b9a485',grass:'#c2cbb0',water:'#8cbbb5',wood:'#87705a'};
 export function cameraPreset(name){return {home:{x:980,y:1260,span:1300},all:{x:1200,y:900,span:2440},forest:{x:1520,y:690,span:550},valley:{x:1830,y:440,span:600},cave:{x:2180,y:200,span:500}}[name]||cameraPreset('home');}
 export function render(canvas,w,view){
@@ -26,10 +27,9 @@ export function render(canvas,w,view){
  ctx.fillStyle='#5e7065';ctx.beginPath();ctx.ellipse(2240,95,62,50,0,Math.PI,0);ctx.fill();
  // Building floors and furniture; roof is a separate foreground pass.
  for(const f of Object.values(rects))drawBuilding(ctx,w,f,false,view);
- const actors=sorted(w.people).filter(p=>p.residence!=='departed'&&!p.inactive).sort((a,b)=>a.y-b.y||a.id.localeCompare(b.id));
+ const actors=sorted(w.people).filter(p=>p.residence!=='departed'&&!p.inactive&&visibleEntity(w,p)).sort((a,b)=>a.y-b.y||a.id.localeCompare(b.id));
  const props=[];
- for(let i=0;i<30;i++){let x=380+(i*97)%340,y=880+(i*151)%500;if(Math.hypot(x-430,y-960)<30)continue;props.push({y,fn:()=>drawTree(ctx,x,y,i)});}
- for(let i=0;i<17;i++){let x=1360+(i*53)%300,y=550+(i*113)%260;props.push({y,fn:()=>drawTree(ctx,x,y,i)});}
+ for(const t of trees)props.push({y:t.y,fn:()=>drawTree(ctx,t.x,t.y,t.variant)});
  for(const p of actors)props.push({y:p.y/Q,fn:()=>drawPerson(ctx,w,p,view)});
  props.sort((a,b)=>a.y-b.y);for(const p of props)p.fn();
  for(const f of Object.values(rects))drawBuilding(ctx,w,f,true,view);
@@ -54,20 +54,20 @@ export function drawBuilding(c,w,f,roof,view){const[x,y,a,b]=f.rect,stage=w.faci
  if(f.id==='hall'){const n=[3,2,0][stage];for(let i=0;i<n;i++)drawBed(c,1040+i*70,970,true);if(stage)c.fillStyle='#9c6849',c.fillRect(x+60,y+20,100,12);}
  if(['dorm','annex'].includes(f.id)&&available)for(let i=1;i<=4;i++){const pos=stations[f.id+'.bed.'+i];drawBed(c,...pos);}
  if(f.id==='quiet'&&available){c.fillStyle='#8c7054';c.fillRect(x+15,y+12,76,15);for(let i=0;i<8;i++){c.fillStyle=i%2?'#84947a':'#b89a69';c.fillRect(x+18+i*9,y+8,6,18);}}
- if(f.id==='dining'){for(let i=1;i<=[3,6,8][stage];i++){const p=stations['dining.'+i];c.fillStyle='#927d5d';c.fillRect(p[0]-10,p[1]-16,20,12);c.fillStyle='#a99877';c.fillRect(p[0]-7,p[1]+3,14,5);}}
+ if(f.id==='dining'){for(let i=1;i<=[3,6,8][stage];i++){const p=stations['dining.'+i];c.fillStyle='#927d5d';c.fillRect(p[0]-10,p[1]-24,20,12);c.fillStyle='#a99877';c.fillRect(p[0]-7,p[1]+3,14,5);}}
  if(f.id==='yard'){for(let i=1;i<=(stage===2?4:stage===1?2:1);i++){const p=stations['yard.'+i];c.fillStyle='#a08158';c.fillRect(p[0]-3,p[1]-35,6,20);c.fillRect(p[0]-10,p[1]-30,20,4);}}
  if(['garden','herb'].includes(f.id)&&available){const n=stage;for(let i=0;i<n;i++){const px=x+18+i*65;c.fillStyle='#ad9874';c.fillRect(px,y+12,48,b-24);const plot=w.plots[f.id+'.'+i];for(let j=0;j<6;j++){c.fillStyle=plot.stage==='ready'?'#69845a':plot.watered?'#889a61':'#b8ad7b';c.beginPath();c.ellipse(px+10+(j%2)*24,y+25+Math.floor(j/2)*18,7,4,0,0,7);c.fill();}}}
  if(f.id==='kitchen'){c.fillStyle='#797562';c.fillRect(748,1237,24,18);c.fillStyle='#3f4e43';c.beginPath();c.ellipse(760,1238,11,5,0,0,7);c.fill();c.fillStyle='#9d977b';c.beginPath();c.ellipse(835,1248,10,14,0,0,7);c.fill();c.fillStyle='#87b4b2';c.beginPath();c.ellipse(835,1242,8,5,0,0,7);c.fill();}
  c.font='13px system-ui';c.textAlign='center';c.fillStyle='#3a4c40';c.fillText(FACILITIES[f.id].name+(active?' · 修建中':stage?'':' · 待修'),x+a/2,y+b+17);c.textAlign='left';
  if(active){const req=FACILITIES[f.id].stages[stage];c.fillStyle='#e6d8af';c.fillRect(x,y+b-7,a,5);c.fillStyle='#8f995c';c.fillRect(x,y+b-7,a*Math.min(1,w.facilities[f.id].work/(req[2]*20)),5);}
 }
-function drawBed(c,x,y,mat=false){c.fillStyle=mat?'#b29d70':'#9f825a';c.fillRect(x-12,y-24,24,33);c.fillStyle='#d4c49d';c.fillRect(x-9,y-20,18,26);c.fillStyle='#eee3c8';c.fillRect(x-8,y-19,16,7);}
+function drawBed(c,x,y,mat=false){c.fillStyle=mat?'#b29d70':'#9f825a';c.fillRect(x-12,y-36,24,36);c.fillStyle='#d4c49d';c.fillRect(x-9,y-32,18,29);c.fillStyle='#eee3c8';c.fillRect(x-8,y-31,16,7);}
 export function drawPerson(c,w,p,v){const x=p.x/Q,y=p.y/Q,a=w.activities[p.activity],selected=p.id===v.selected;
  c.save();c.translate(x,y);if(selected){c.strokeStyle='#d8b451';c.lineWidth=2;c.beginPath();c.ellipse(0,1,10,5,0,0,7);c.stroke();}
  c.fillStyle='#48583c30';c.beginPath();c.ellipse(0,2,8,3,0,0,7);c.fill();
  if(p.kind!=='human'){c.fillStyle=p.kind==='rat'?'#8a8173':'#786255';c.beginPath();c.ellipse(0,-5,p.kind==='rat'?8:14,p.kind==='rat'?5:8,0,0,7);c.fill();c.fillStyle='#473e35';c.fillRect(7,-7,4,3);c.restore();return;}
  const child=!p.adult,scale=child?0.76:1;c.scale(scale,scale);const sleep=a?.kind==='sleep'&&a.progress!==0||p.pose==='sleep'&&!p.moving,down=p.hp<=0;
- if(sleep||down){c.rotate(-Math.PI/2);c.translate(5,0);}
+ if(down){c.rotate(-Math.PI/2);c.translate(5,0);}else if(sleep){c.translate(0,-8);c.scale(.85,.65);}
  const frame=Math.floor(p.distance/(5*Q))%4,walk=p.moving?[-2,0,2,0][frame]:0;
  c.strokeStyle='#4c5147';c.lineWidth=3;c.beginPath();c.moveTo(-3,-8);c.lineTo(-3+walk,0);c.moveTo(3,-8);c.lineTo(3-walk,0);c.stroke();
  c.fillStyle=p.color;c.beginPath();c.moveTo(-6,-22);c.lineTo(6,-22);c.lineTo(8,-7);c.lineTo(-7,-7);c.closePath();c.fill();c.strokeStyle='#e1cfaa';c.lineWidth=2;c.beginPath();c.moveTo(-5,-10);c.lineTo(5,-10);c.stroke();
@@ -77,7 +77,7 @@ export function drawPerson(c,w,p,v){const x=p.x/Q,y=p.y/Q,a=w.activities[p.activ
   c.strokeStyle=ac.move==='sweep'?'#9c7549':'#cebd89';c.lineWidth=3;
   if(['sweep','thrust','intercept'].includes(ac.move)){c.beginPath();c.moveTo(ax,ay);c.lineTo(ax+Math.cos(dir)*(ac.move==='sweep'?24:22),ay+Math.sin(dir)*18);c.stroke();}
   if(phase==='active'){c.save();c.translate(0,-10);c.rotate(dir);c.strokeStyle=ac.move==='push'?'#a77a45':ac.move==='intercept'?'#d2bb68':'#eee3b9';c.lineWidth=ac.move==='thrust'?2:4;c.beginPath();if(ac.move==='sweep'||ac.move==='push')c.arc(0,0,m.range,-Math.PI/2,Math.PI/2);else{c.moveTo(6,0);c.lineTo(m.range,0);}c.stroke();c.restore();}
- }else if(a?.kind==='train'&&!p.moving){ax=7+Math.sin((a.progress||0)/6)*7;ay=-17;}else if(['build','gather','farm','cook'].includes(a?.kind)&&!p.moving){ax=9;ay=-17-Math.sin((a.progress||0)/8)*9;}
+ }else if(a?.kind==='train'&&!p.moving){ax=7+(v.lowMotion?0:Math.sin((a.progress||0)/6))*7;ay=-17;}else if(['build','gather','farm','cook'].includes(a?.kind)&&!p.moving){ax=9;ay=-17-(v.lowMotion?0:Math.sin((a.progress||0)/8))*9;}
  c.strokeStyle='#bd9b77';c.lineWidth=3;c.beginPath();c.moveTo(4,-21);c.lineTo(ax,ay);c.moveTo(-4,-21);c.lineTo(bx,by);c.stroke();
  const items=Object.keys(w.inventories[p.bag].items);if(items.length){const item=items[0];c.fillStyle=item==='water'?'#7a8c83':item==='stone'?'#8b8a7b':'#9d8059';if(item==='wood'){c.save();c.rotate(-0.2);c.fillRect(-17,-22,34,5);c.restore();}else c.fillRect(6,-17,9,10);}
  c.restore();

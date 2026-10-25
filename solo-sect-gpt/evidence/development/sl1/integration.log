@@ -1,0 +1,122 @@
+✔ A04 built rooms and stations have legal non-teleport routes (271.202ms)
+✔ A05/A09 in-process recipe survives cancel without duplicate input or output (72.64275ms)
+✔ A08 worker identity and bag preserved at invitation; capacity rejects cleanly (0.36925ms)
+✖ A12 participant cancellation releases both actors and station locks (3.65425ms)
+✔ A13/A14 child rejected at relationship model boundary; mutual adult consent required (0.267416ms)
+✔ A17 hits are geometry based, one target per action, finite windup/recovery (3.166417ms)
+✖ A18 low and high intelligence share depth conditions; practice never supplies insight (37.154417ms)
+✖ A23 bridge cancellation preserves token to actual exit (0.073667ms)
+✖ A24 invalid dispatch leaves no extra activity, supply or reservation (0.0815ms)
+✖ A27 lesson reaches a real failed interception and a legal success (0.101875ms)
+✖ A33 actual travel and return fulfills rescue and food promises independently (0.155625ms)
+✖ A35 in-flight construction, cooking, combat and conversation roundtrip hashes (0.176208ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 5
+ℹ fail 7
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 468.04025
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:15:1
+✖ A12 participant cancellation releases both actors and station locks (3.65425ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:15:268)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:18:1
+✖ A18 low and high intelligence share depth conditions; practice never supplies insight (37.154417ms)
+  Error: 五屬性每項1–7，合計20點
+      at createWorld (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/state.mjs:29:108)
+      at fixture (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:10:28)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:18:131)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:19:1
+✖ A23 bridge cancellation preserves token to actual exit (0.073667ms)
+  Error: 五屬性每項1–7，合計20點
+      at createWorld (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/state.mjs:29:108)
+      at fixture (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:10:28)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:19:76)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:20:1
+✖ A24 invalid dispatch leaves no extra activity, supply or reservation (0.0815ms)
+  Error: 五屬性每項1–7，合計20點
+      at createWorld (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/state.mjs:29:108)
+      at fixture (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:10:28)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:20:187)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:21:1
+✖ A27 lesson reaches a real failed interception and a legal success (0.101875ms)
+  Error: 五屬性每項1–7，合計20點
+      at createWorld (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/state.mjs:29:108)
+      at fixture (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:10:28)
+      at advanced (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:11:29)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:21:87)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:22:1
+✖ A33 actual travel and return fulfills rescue and food promises independently (0.155625ms)
+  Error: 五屬性每項1–7，合計20點
+      at createWorld (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/state.mjs:29:108)
+      at fixture (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:10:28)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:22:137)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:23:1
+✖ A35 in-flight construction, cooking, combat and conversation roundtrip hashes (0.176208ms)
+  Error: 五屬性每項1–7，合計20點
+      at createWorld (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/state.mjs:29:108)
+      at fixture (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:10:28)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:23:152)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)

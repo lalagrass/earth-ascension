@@ -17,6 +17,7 @@ for(let i=0;i<4;i++)stations['hall.student.'+i]=[1075+i*24,1100];
 for(let i=0;i<10;i++)stations['safe.'+i]=[900+(i%5)*24,1100+Math.floor(i/5)*24];
 export const side=[[1740,480],[1770,360],[1840,330],[1845,370],[1855,440],[1870,440]];
 export const corridors=[...Object.values(layout.home.paths).map(p=>({points:p.points.map(home),width:p.width})),{points:layout.expedition.main,width:48},{points:side,width:36}];
+export const trees=[];for(let i=0;i<30;i++){const x=380+(i*97)%340,y=880+(i*151)%500;if(Math.hypot(x-430,y-960)>=30)trees.push({id:'tree.home.'+i,x,y,variant:i});}for(let i=0;i<17;i++)trees.push({id:'tree.forest.'+i,x:1360+(i*53)%300,y:550+(i*113)%260,variant:i});
 function segDist2(x,y,a,b){const dx=b[0]-a[0],dy=b[1]-a[1],n=dx*dx+dy*dy,t=n?Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/n)):0;return (x-a[0]-t*dx)**2+(y-a[1]-t*dy)**2;}
 export const inRect=(x,y,r,pad=0)=>x>=r[0]-pad&&y>=r[1]-pad&&x<=r[0]+r[2]+pad&&y<=r[1]+r[3]+pad;
 export function obstacles(w){
@@ -26,6 +27,12 @@ export function obstacles(w){
   const [x,y,a,b]=f.rect,door=f.door[0];
   out.push([x,y,a,4],[x,y,4,b],[x+a-4,y,4,b],[x,y+b-4,door-14-x,4],[door+14,y+b-4,x+a-door-14,4]);
  }
+ // Independent trunk and furniture geometry, aligned with the procedural props.
+ for(const t of trees)out.push([t.x-3,t.y-3,6,6]);
+ for(const id of ['dorm','annex'])if(w.facilities[id].stage)for(let i=1;i<=4;i++){const p=stations[id+'.bed.'+i];out.push([p[0]-12,p[1]-36,24,24]);}
+ for(let i=0;i<[3,2,0][w.facilities.hall.stage];i++){const p=stations['hall.bed.'+i];out.push([p[0]-12,p[1]-36,24,24]);}
+ for(let i=1;i<=[3,6,8][w.facilities.dining.stage];i++){const p=stations['dining.'+i];out.push([p[0]-10,p[1]-24,20,12]);}
+ if(w.facilities.quiet.stage)out.push([1275,925,75,10]);
  // River spans the world: a single traversable bridge opening, no bank-end shortcut.
  out.push([1870,0,70,425],[1870,455,70,1345]);
  out.push([1795,385,16,24],[2040,355,20,24]);
@@ -49,20 +56,20 @@ export function terrain(x,y,r=6){
  return false;
 }
 export function walkable(w,x,y,r=6){return terrain(x,y,r)&&!geometry(w).some(o=>inRect(x,y,o,r));}
-export function sweep(w,a,b,r=6){const d=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let i=0,n=Math.ceil(d/3);i<=n;i++){let t=n?i/n:0;if(!walkable(w,a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,r))return false;}return true;}
+export function sweep(w,a,b,r=6){const obstacles=geometry(w);const d=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let i=0,n=Math.ceil(d/3);i<=n;i++){let t=n?i/n:0;const x=a[0]+(b[0]-a[0])*t,y=a[1]+(b[1]-a[1])*t;if(!terrain(x,y,r)||obstacles.some(o=>inRect(x,y,o,r)))return false;}return true;}
 export function los(w,a,b){const d=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let i=0,n=Math.ceil(d/3);i<=n;i++){const t=n?i/n:0,x=a[0]+(b[0]-a[0])*t,y=a[1]+(b[1]-a[1])*t;if(geometry(w).some(o=>inRect(x,y,o)))return false;}return true;}
 const navCache=new Map();
-function grid(w){const key=signature(w);if(navCache.has(key))return navCache.get(key);const nx=241,ny=181,free=new Uint8Array(nx*ny);for(let y=0;y<ny;y++)for(let x=0;x<nx;x++)free[y*nx+x]=walkable(w,x*10,y*10)?1:0;const g={nx,ny,free};navCache.set(key,g);return g;}
+function grid(w){const key=signature(w);if(navCache.has(key))return navCache.get(key);const nx=241,ny=181,free=new Uint8Array(nx*ny);for(let y=0;y<ny;y++)for(let x=0;x<nx;x++)free[y*nx+x]=walkable(w,x*10,y*10)?1:0;const g={nx,ny,free,edges:new Uint8Array(nx*ny),checked:new Uint8Array(nx*ny)};navCache.set(key,g);return g;}
 class Heap{constructor(){this.a=[];}push(v){let a=this.a,i=a.length;a.push(v);while(i){const j=(i-1)>>1;if(a[j][0]<v[0]||a[j][0]===v[0]&&a[j][1]<v[1])break;a[i]=a[j];i=j;}a[i]=v;}pop(){let a=this.a,r=a[0],v=a.pop();if(a.length){let i=0;while(i*2+1<a.length){let j=i*2+1;if(j+1<a.length&&(a[j+1][0]<a[j][0]||a[j+1][0]===a[j][0]&&a[j+1][1]<a[j][1]))j++;if(a[j][0]>v[0]||a[j][0]===v[0]&&a[j][1]>v[1])break;a[i]=a[j];i=j;}a[i]=v;}return r;}}
 export function findPath(w,from,to){
  if(!walkable(w,...to))return null;
  if(sweep(w,from,to))return [to.map(n=>Math.round(n*Q))];
- const {nx,ny,free}=grid(w);
+ const {nx,ny,free,edges,checked}=grid(w);
  const nearest=p=>{let best=-1,dist=Infinity;const gx=Math.round(p[0]/10),gy=Math.round(p[1]/10);for(let y=Math.max(0,gy-3);y<=Math.min(ny-1,gy+3);y++)for(let x=Math.max(0,gx-3);x<=Math.min(nx-1,gx+3);x++){let id=y*nx+x,d=(x*10-p[0])**2+(y*10-p[1])**2;if(free[id]&&d<dist&&sweep(w,p,[x*10,y*10])){best=id;dist=d;}}return best;};
  const start=nearest(from),goal=nearest(to);if(start<0||goal<0)return null;
  const costs=new Float64Array(nx*ny).fill(Infinity),prev=new Int32Array(nx*ny).fill(-1),heap=new Heap();costs[start]=0;heap.push([0,start]);
  const dirs=[[0,-1,10],[-1,0,10],[1,0,10],[0,1,10],[-1,-1,14],[1,-1,14],[-1,1,14],[1,1,14]];
- while(heap.a.length){const [,id]=heap.pop();if(id===goal)break;const x=id%nx,y=Math.floor(id/nx);for(const [dx,dy,c]of dirs){const xx=x+dx,yy=y+dy,j=yy*nx+xx;if(xx<0||yy<0||xx>=nx||yy>=ny||!free[j])continue;if(!sweep(w,[x*10,y*10],[xx*10,yy*10]))continue;const n=costs[id]+c;if(n<costs[j]){costs[j]=n;prev[j]=id;heap.push([n+Math.hypot(xx-goal%nx,yy-Math.floor(goal/nx))*10,j]);}}}
+ while(heap.a.length){const [,id]=heap.pop();if(id===goal)break;const x=id%nx,y=Math.floor(id/nx);for(let di=0;di<dirs.length;di++){const [dx,dy,c]=dirs[di];const xx=x+dx,yy=y+dy,j=yy*nx+xx;if(xx<0||yy<0||xx>=nx||yy>=ny||!free[j])continue;const bit=1<<di;if(!(checked[id]&bit)){checked[id]|=bit;if(sweep(w,[x*10,y*10],[xx*10,yy*10]))edges[id]|=bit;}if(!(edges[id]&bit))continue;const n=costs[id]+c;if(n<costs[j]){costs[j]=n;prev[j]=id;heap.push([n+Math.hypot(xx-goal%nx,yy-Math.floor(goal/nx))*10,j]);}}}
  if(costs[goal]===Infinity)return null;
  let path=[to],j=goal;while(j!==start){path.push([j%nx*10,Math.floor(j/nx)*10]);j=prev[j];if(j<0)return null;}path.push([start%nx*10,Math.floor(start/nx)*10]);path.reverse();
  let smooth=[],at=from;for(let i=0;i<path.length;){let k=i;while(k+1<path.length&&sweep(w,at,path[k+1]))k++;smooth.push(path[k].map(n=>Math.round(n*Q)));at=path[k];i=k+1;}return smooth;

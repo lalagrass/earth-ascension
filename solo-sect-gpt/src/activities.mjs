@@ -16,7 +16,7 @@ export function begin(w,p,kind,args={},manual=false){
  cancel(w,p);if(manual){p.revision++;p.intent={kind,args:{...args},revision:p.revision};p.manualStop=false;}
  const a={id:uid(w,'activity'),actor:p.id,kind,args:{...args},phase:'init',progress:0,revision:p.revision,started:w.tick,units:0};w.activities[a.id]=a;p.activity=a.id;p.reason=(manual?'玩家指令：':'自主：')+(TASKNAME[kind]||kind);p.next='完成當前單位';return {ok:true};
 }
-export function finish(w,p,a,text='完成',keepIntent=false){if(!w.activities[a.id])return;release(w,a.id);delete w.activities[a.id];p.activity=null;p.reason=text;p.path=[];p.routeAt=0;if(!keepIntent&&p.intent?.revision===a.revision)p.intent=null;event(w,'activity-complete',[p.id],{kind:a.kind,completionId:a.id,units:a.units});}
+export function finish(w,p,a,text='完成',keepIntent=false){if(!w.activities[a.id])return;release(w,a.id);delete w.activities[a.id];p.activity=null;p.reason=text;p.path=[];p.routeAt=0;if(!keepIntent&&p.intent?.revision===a.revision)p.intent=null;event(w,'activity-complete',[p.id],{kind:a.kind,completionId:a.id,units:a.units});if(['gather','cook','craft','harvestHaul','school','reception'].includes(a.kind)){const at=position(p);route(w,p,[at[0]+20,at[1]+20]);}}
 function blocked(p,a,text){a.blocked=text;p.blocked=text;p.next='改善條件後重試';}
 export function approach(w,p,a,key,pos){
  const target=pos||stations[key];if(!target){blocked(p,a,'站位不存在：'+key);return false;}
@@ -31,8 +31,8 @@ export function approach(w,p,a,key,pos){
  if(distance>1){if(a.destination!==key||arrived(p)){route(w,p,target);a.destination=key;}return false;}
  p.blocked='';a.blocked='';p.path=[];p.routeAt=0;return true;
 }
-const clearStation=(w,a)=>{for(const k of Object.keys(w.reservations))if(w.reservations[k].activity===a.id&&w.reservations[k].key.startsWith('station:'))delete w.reservations[k];a.destination=null;};
-function work(p,rate=30){p.energy=Math.max(0,p.energy-rate/20);}
+const clearStation=(w,a)=>{for(const k of Object.keys(w.reservations))if(w.reservations[k].activity===a.id&&w.reservations[k].key.startsWith('station:'))delete w.reservations[k];for(const [key,q]of Object.entries(w.queues))if(key.startsWith('station:'))w.queues[key]=q.filter(r=>r.activity!==a.id);a.destination=null;};
+function work(p,rate=30){p.workRemainder=(p.workRemainder||0)+rate;const n=Math.floor(p.workRemainder/20);p.energy=Math.max(0,p.energy-n);p.workRemainder%=20;}
 function duration(a,ticks){a.progress++;return a.progress>=ticks;}
 function countWork(w,p,a,units=1){const d=String(day(w));p.contribution[d]??={units:0,ticks:0,exempt:null};p.contribution[d].units+=units;p.contribution[d].ticks+=a.progress;}
 export function memory(w,kind,one,two,source){if(!one||!two||one.id===two.id)return false;const pair=[one.id,two.id].sort(),key=pair.join('|')+'|'+kind;
@@ -140,7 +140,7 @@ export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=
    if(duration(a,10*HZ)){add(w,'table','meal',-1,'eat');p.meals++;if(p.meals<=2)p.energy=Math.min(10000,p.energy+1500);event(w,'ate',[p.id]);finish(w,p,a,'已用餐');}
   }else{
    const gain=a.kind==='sleep'?(key.startsWith('hall')?120:200):80;
-   p.energy=Math.min(10000,p.energy+gain/HZ*(a.kind==='sleep'&&!p.meals?0.75:1));p.hp=Math.min(p.maxHp,p.hp+1/HZ);if(w.tick%200===0)p.injury=Math.max(0,p.injury-1);
+   p.restRemainder=(p.restRemainder||0)+gain*(a.kind==='sleep'&&!p.meals?3:4);const energy=Math.floor(p.restRemainder/80);p.restRemainder%=80;p.energy=Math.min(10000,p.energy+energy);p.hpRemainder=(p.hpRemainder||0)+1;if(p.hpRemainder>=20){p.hp=Math.min(p.maxHp,p.hp+1);p.hpRemainder-=20;}if(w.tick%200===0)p.injury=Math.max(0,p.injury-1);
    if(p.energy>= (a.args.until||10000)&&p.hp>=p.maxHp&&p.injury===0){finish(w,p,a,'恢復完成');p.recovering=false;}
   }return;
  }
@@ -149,6 +149,9 @@ export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=
   if(!r){blocked(p,a,'未知配方');return;}if(recipe==='ration'&&w.facilities.kitchen.stage<2){blocked(p,a,'乾糧需最終膳房');return;}
   if(a.kind==='craft'&&!w.facilities.hall.stage){blocked(p,a,'需先修補大廳教學');return;}
   if(a.phase==='init'){
+   const old=w.facilities[a.kind==='craft'?'hall':'kitchen'].wip;if(old){if(w.activities[old.activity]&&old.activity!==a.id){blocked(p,a,'灶上有他人正在烹調');return;}if(old.recipe!==recipe){blocked(p,a,'灶上仍有在製品：'+old.recipe+'，先續做');return;}a.committed=true;a.phase='perform';a.progress=old.progress;old.activity=a.id;}
+  }
+  if(a.phase==='init'){
    for(const [item,n]of Object.entries(r.input))if(qty(w,sourceFor(item),item)<n){blocked(p,a,'缺料：'+item);return;}
    if(!Object.entries(r.input).every(([i,n])=>reserve(w,a,'source:'+sourceFor(i)+':'+i,n,qty(w,sourceFor(i),i)))){release(w,a.id);blocked(p,a,'原料已預約');return;}
    a.phase='fetch';a.fetch=Object.keys(r.input);
@@ -156,7 +159,7 @@ export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=
   if(a.phase==='fetch'){
    const item=a.fetch[0];if(!item){a.phase='perform';a.progress=0;clearStation(w,a);return;}
    const src=sourceFor(item),key=src==='vat'?'kitchen.vat':'store.drop';
-   if(approach(w,p,a,key)){const n=r.input[item];if(qty(w,src,item)<n){release(w,a.id);a.phase='init';return;}transfer(w,src,p.bag,item,n);a.fetch.shift();clearStation(w,a);}return;
+   if(approach(w,p,a,key)){const n=r.input[item];if(qty(w,src,item)<n){release(w,a.id);a.phase='init';return;}transfer(w,src,p.bag,item,n);a.fetch.shift();delete w.reservations[a.id+'|source:'+src+':'+item];clearStation(w,a);}return;
   }
   const key=a.kind==='craft'?'hall.teach':'kitchen.cook';if(!approach(w,p,a,key))return;
   if(!a.committed){
@@ -183,7 +186,7 @@ export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=
  }
 }
 export function autonomy(w,p){
- if(!['resident','visitor'].includes(p.residence)||p.hp<=0||p.rank==='rescuer')return;
+ if(!['resident','visitor'].includes(p.residence)||p.hp<=0||p.rank==='rescuer'||p.combatSession||p.combatTarget||p.departing||p.storyBusy)return;
  if(p.mealDay!==day(w)){p.mealDay=day(w);p.meals=0;const prior=p.contribution[day(w)-1];if(p.rank==='outer'&&!prior)p.contribution[day(w)-1]={units:0,ticks:0,exempt:p.injury?'傷病':'缺料／無可行工作'};}
  if(p.activity){const a=w.activities[p.activity];if(!['rest','sleep','eat','return','paired'].includes(a.kind)&&p.energy<2500){const intent=p.intent;p.recovering=true;begin(w,p,'rest',{until:7500});p.intent=intent;p.reason='精力低於25：先照料自己，恢復75後續有效指令';}return;}
  if(p.recovering&&p.energy<7500){begin(w,p,'rest',{until:7500});return;}p.recovering=false;
@@ -196,10 +199,11 @@ export function autonomy(w,p){
  if(!p.adult){begin(w,p,'move',{pos:stations['safe.'+(2+(Math.floor(w.tick/200)%3))]});p.reason='小禾在院內散步、等家人';return;}
  const candidates=[];const addC=(kind,args,score,reason)=>candidates.push({kind,args,score,reason});
  const waterTarget=Math.min(w.inventories.vat.capacity,w.goals.water),mealTarget=w.goals.meal;
- if(qty(w,'table','meal')<mealTarget&&qty(w,'store','veg')>=2&&qty(w,'vat','water')>=1)addC('cook',{recipe:'meal'},60,'缺餐備糧');
+ if(qty(w,'table','meal')<mealTarget&&qty(w,'store','veg')>=2&&qty(w,'vat','water')>=1)addC('cook',{recipe:'meal'},qty(w,'table','meal')===0?90:60,'缺餐備糧');
  for(const f of sorted(w.facilities))if(f.active)addC('build',{facility:f.id},50+(w.policy==='build'?20:0),'已開工的'+FACILITIES[f.id].name);
- if(qty(w,'vat','water')<waterTarget)addC('gather',{item:'water'},40,'低於水目標'+waterTarget);
- if(qty(w,'store','veg')<mealTarget&&w.ecology.veg.remaining)addC('gather',{item:'veg'},qty(w,'table','meal')<mealTarget?65:30,'補菜以便供餐');
+ if(qty(w,'vat','water')<waterTarget)addC('gather',{item:'water'},qty(w,'vat','water')===0&&qty(w,'table','meal')===0?98:40,'低於水目標'+waterTarget);
+ if(w.facilities.garden.stage&&qty(w,'store','veg')<mealTarget)addC('farm',{crop:'garden'},55,'耕作維持菜供應');
+ if(qty(w,'store','veg')<mealTarget&&w.ecology.veg.remaining)addC('gather',{item:'veg'},qty(w,'table','meal')===0?95:qty(w,'table','meal')<mealTarget?65:30,'補菜以便供餐');
  const record=p.contribution[day(w)],met=record?.units>=2||record?.ticks>=2400;
  if(p.rank==='outer'&&met||phase>=6000||w.policy==='train')addC('train',{art:'punch',units:5},40+(w.policy==='train'?20:0)+p.traits[0]*3,'保留修行窗口');
  if(!candidates.length)addC('train',{art:'punch',units:5},20,'物資已達標，練功與自由');
