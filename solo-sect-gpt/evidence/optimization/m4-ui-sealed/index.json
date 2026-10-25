@@ -1,0 +1,3904 @@
+{
+  "status": "passed",
+  "errors": [],
+  "cases": [
+    {
+      "id": "table",
+      "choice": "share",
+      "mode": "ordinary",
+      "source": "/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/evidence/development/visual-final/visual-final.save.json",
+      "sourceSha256": "1ff5d8f59e19d15bef9140f95f667777203dff5d86256e9d4d5e3c3ae78a89ad",
+      "before": {
+        "tick": 171453,
+        "food": 17
+      },
+      "history": [
+        {
+          "version": 1,
+          "event": "table",
+          "choice": "share",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "顧人性向與既有互信，普通雇工／弟子同樣能發聲"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.48879",
+          "started": 171453,
+          "progress": 240,
+          "ended": 171952,
+          "callbackDone": true,
+          "callbackAt": 172125
+        }
+      ],
+      "events": [
+        {
+          "id": "event.48877",
+          "tick": 171453,
+          "type": "culture-adopted",
+          "actors": []
+        },
+        {
+          "id": "event.48880",
+          "tick": 171453,
+          "type": "culture-start",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "table",
+          "choice": "share",
+          "callback": false,
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "顧人性向與既有互信，普通雇工／弟子同樣能發聲"
+          }
+        },
+        {
+          "id": "event.48932",
+          "tick": 171952,
+          "type": "culture-complete",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "table",
+          "choice": "share",
+          "prestige": 0,
+          "practice": 0,
+          "energy": 500,
+          "trust": 4
+        },
+        {
+          "id": "event.48935",
+          "tick": 171959,
+          "type": "culture-start",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "table",
+          "choice": "share",
+          "callback": true,
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "顧人性向與既有互信，普通雇工／弟子同樣能發聲"
+          }
+        },
+        {
+          "id": "event.48957",
+          "tick": 172125,
+          "type": "culture-callback",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "table",
+          "choice": "share",
+          "text": "我記得你替搬料的人留了座。今天一起收拾，再慢慢講拳。"
+        }
+      ],
+      "positions": [
+        {
+          "id": "leader",
+          "skill": {
+            "punch": {
+              "U": 15,
+              "F": 100,
+              "I": 15,
+              "contexts": [
+                "guard",
+                "protect",
+                "dodge"
+              ],
+              "practice": 55,
+              "sources": [
+                {
+                  "kind": "train",
+                  "tick": 104746,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 104986,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105226,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105466,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105706,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105946,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106186,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106426,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106666,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106906,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107146,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109026,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109266,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109506,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109746,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109986,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110226,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110466,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110706,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110946,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111186,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111426,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111666,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111906,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112146,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112386,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112626,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114517,
+                  "activity": "activity.10066"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114757,
+                  "activity": "activity.10066"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114997,
+                  "activity": "activity.10066"
+                },
+                {
+                  "kind": "guard",
+                  "tick": 117304,
+                  "source": "action.10339"
+                },
+                {
+                  "kind": "protect",
+                  "tick": 117344,
+                  "source": "action.10339"
+                },
+                {
+                  "kind": "dodge",
+                  "tick": 121157,
+                  "source": "action.10826"
+                },
+                {
+                  "kind": "train",
+                  "tick": 129635,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 129875,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 130115,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 130355,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 130595,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 131502,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 131742,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 131982,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 132222,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 132462,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 133325,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 133565,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 133805,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 134045,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 134285,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 134543,
+                  "activity": "activity.18838"
+                },
+                {
+                  "kind": "train",
+                  "tick": 147762,
+                  "activity": "activity.26837"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156032,
+                  "activity": "activity.31745"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156272,
+                  "activity": "activity.31745"
+                }
+              ]
+            },
+            "step": {
+              "U": 5,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": []
+            },
+            "nine": {
+              "U": 5,
+              "F": 2,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": [
+                {
+                  "kind": "linghu-teaching",
+                  "tick": 147106
+                }
+              ]
+            },
+            "staff": {
+              "U": 10,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": [
+                {
+                  "kind": "learn",
+                  "tick": 162337,
+                  "activity": "activity.38043"
+                }
+              ]
+            },
+            "sword": {
+              "U": 10,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": [
+                {
+                  "kind": "learn",
+                  "tick": 163905,
+                  "activity": "activity.39886"
+                }
+              ]
+            }
+          },
+          "energy": 9996,
+          "injury": 0
+        },
+        {
+          "id": "amu",
+          "skill": {
+            "punch": {
+              "U": 5,
+              "F": 100,
+              "I": 10,
+              "contexts": [
+                "guard",
+                "return"
+              ],
+              "practice": 93,
+              "sources": [
+                {
+                  "kind": "train",
+                  "tick": 105057,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105297,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105537,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105777,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106017,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106257,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106497,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106737,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106977,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107217,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107457,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107697,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107937,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 108177,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 108417,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 108657,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110495,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110735,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110975,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111215,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111455,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111695,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111935,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112175,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112415,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112655,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112895,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113135,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113375,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113615,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113855,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114095,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 116040,
+                  "activity": "activity.10221"
+                },
+                {
+                  "kind": "guard",
+                  "tick": 117304,
+                  "source": "action.10339"
+                },
+                {
+                  "kind": "return",
+                  "tick": 124636,
+                  "source": "expedition.10761"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135075,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135315,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135555,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135795,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 136035,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139002,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139242,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139482,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139722,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139962,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 140219,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 140459,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 140699,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 140939,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 141179,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 142187,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 142427,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 142667,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 142907,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 143147,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144027,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144267,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144507,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144747,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144987,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 147458,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 147698,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 147938,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 148178,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 148418,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156103,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156343,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156583,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156823,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 157063,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 160553,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 160793,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 161033,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 161273,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 161513,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 161802,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 162042,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 162282,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 162522,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 162762,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 163412,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 163652,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 163892,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 164132,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 164372,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 164619,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 164859,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 165099,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 165339,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 165579,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167039,
+                  "activity": "activity.43327"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167279,
+                  "activity": "activity.43327"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167519,
+                  "activity": "activity.43327"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167759,
+                  "activity": "activity.43327"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167999,
+                  "activity": "activity.43327"
+                }
+              ]
+            },
+            "step": {
+              "U": 5,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": []
+            }
+          },
+          "energy": 8815,
+          "injury": 0
+        }
+      ]
+    },
+    {
+      "id": "reputation",
+      "choice": "welfare",
+      "mode": "ordinary",
+      "source": "/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/evidence/development/visual-final/visual-final.save.json",
+      "sourceSha256": "1ff5d8f59e19d15bef9140f95f667777203dff5d86256e9d4d5e3c3ae78a89ad",
+      "before": {
+        "tick": 171453,
+        "food": 17
+      },
+      "history": [
+        {
+          "version": 1,
+          "event": "reputation",
+          "choice": "welfare",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "勤勉性向與既有互信，普通雇工／弟子同樣能發聲"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.48879",
+          "started": 171453,
+          "progress": 240,
+          "ended": 171957,
+          "callbackDone": true,
+          "callbackAt": 172145
+        }
+      ],
+      "events": [
+        {
+          "id": "event.48877",
+          "tick": 171453,
+          "type": "culture-adopted",
+          "actors": []
+        },
+        {
+          "id": "event.48880",
+          "tick": 171453,
+          "type": "culture-start",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "reputation",
+          "choice": "welfare",
+          "callback": false,
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "勤勉性向與既有互信，普通雇工／弟子同樣能發聲"
+          }
+        },
+        {
+          "id": "event.48932",
+          "tick": 171957,
+          "type": "culture-complete",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "reputation",
+          "choice": "welfare",
+          "prestige": 0,
+          "practice": 0,
+          "energy": 800,
+          "trust": 4
+        },
+        {
+          "id": "event.48937",
+          "tick": 171971,
+          "type": "culture-start",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "reputation",
+          "choice": "welfare",
+          "callback": true,
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "勤勉性向與既有互信，普通雇工／弟子同樣能發聲"
+          }
+        },
+        {
+          "id": "event.48959",
+          "tick": 172145,
+          "type": "culture-callback",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "reputation",
+          "choice": "welfare",
+          "text": "你那日撤了示範。肩膀鬆開了，我才又願意和你共練。"
+        }
+      ],
+      "positions": [
+        {
+          "id": "leader",
+          "skill": {
+            "punch": {
+              "U": 15,
+              "F": 100,
+              "I": 15,
+              "contexts": [
+                "guard",
+                "protect",
+                "dodge"
+              ],
+              "practice": 55,
+              "sources": [
+                {
+                  "kind": "train",
+                  "tick": 104746,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 104986,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105226,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105466,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105706,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105946,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106186,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106426,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106666,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106906,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107146,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109026,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109266,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109506,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109746,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109986,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110226,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110466,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110706,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110946,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111186,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111426,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111666,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111906,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112146,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112386,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112626,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114517,
+                  "activity": "activity.10066"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114757,
+                  "activity": "activity.10066"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114997,
+                  "activity": "activity.10066"
+                },
+                {
+                  "kind": "guard",
+                  "tick": 117304,
+                  "source": "action.10339"
+                },
+                {
+                  "kind": "protect",
+                  "tick": 117344,
+                  "source": "action.10339"
+                },
+                {
+                  "kind": "dodge",
+                  "tick": 121157,
+                  "source": "action.10826"
+                },
+                {
+                  "kind": "train",
+                  "tick": 129635,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 129875,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 130115,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 130355,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 130595,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 131502,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 131742,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 131982,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 132222,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 132462,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 133325,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 133565,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 133805,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 134045,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 134285,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 134543,
+                  "activity": "activity.18838"
+                },
+                {
+                  "kind": "train",
+                  "tick": 147762,
+                  "activity": "activity.26837"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156032,
+                  "activity": "activity.31745"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156272,
+                  "activity": "activity.31745"
+                }
+              ]
+            },
+            "step": {
+              "U": 5,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": []
+            },
+            "nine": {
+              "U": 5,
+              "F": 2,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": [
+                {
+                  "kind": "linghu-teaching",
+                  "tick": 147106
+                }
+              ]
+            },
+            "staff": {
+              "U": 10,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": [
+                {
+                  "kind": "learn",
+                  "tick": 162337,
+                  "activity": "activity.38043"
+                }
+              ]
+            },
+            "sword": {
+              "U": 10,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": [
+                {
+                  "kind": "learn",
+                  "tick": 163905,
+                  "activity": "activity.39886"
+                }
+              ]
+            }
+          },
+          "energy": 9998,
+          "injury": 0
+        },
+        {
+          "id": "amu",
+          "skill": {
+            "punch": {
+              "U": 5,
+              "F": 100,
+              "I": 10,
+              "contexts": [
+                "guard",
+                "return"
+              ],
+              "practice": 93,
+              "sources": [
+                {
+                  "kind": "train",
+                  "tick": 105057,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105297,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105537,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105777,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106017,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106257,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106497,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106737,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106977,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107217,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107457,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107697,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107937,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 108177,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 108417,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 108657,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110495,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110735,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110975,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111215,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111455,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111695,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111935,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112175,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112415,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112655,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112895,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113135,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113375,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113615,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113855,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114095,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 116040,
+                  "activity": "activity.10221"
+                },
+                {
+                  "kind": "guard",
+                  "tick": 117304,
+                  "source": "action.10339"
+                },
+                {
+                  "kind": "return",
+                  "tick": 124636,
+                  "source": "expedition.10761"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135075,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135315,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135555,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135795,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 136035,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139002,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139242,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139482,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139722,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139962,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 140219,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 140459,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 140699,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 140939,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 141179,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 142187,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 142427,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 142667,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 142907,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 143147,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144027,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144267,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144507,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144747,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144987,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 147458,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 147698,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 147938,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 148178,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 148418,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156103,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156343,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156583,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156823,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 157063,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 160553,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 160793,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 161033,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 161273,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 161513,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 161802,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 162042,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 162282,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 162522,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 162762,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 163412,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 163652,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 163892,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 164132,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 164372,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 164619,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 164859,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 165099,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 165339,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 165579,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167039,
+                  "activity": "activity.43327"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167279,
+                  "activity": "activity.43327"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167519,
+                  "activity": "activity.43327"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167759,
+                  "activity": "activity.43327"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167999,
+                  "activity": "activity.43327"
+                }
+              ]
+            },
+            "step": {
+              "U": 5,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": []
+            }
+          },
+          "energy": 9139,
+          "injury": 0
+        }
+      ]
+    },
+    {
+      "id": "friend",
+      "choice": "wander",
+      "mode": "ordinary",
+      "source": "/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/evidence/development/visual-final/visual-final.save.json",
+      "sourceSha256": "1ff5d8f59e19d15bef9140f95f667777203dff5d86256e9d4d5e3c3ae78a89ad",
+      "before": {
+        "tick": 171453,
+        "food": 17
+      },
+      "history": [
+        {
+          "version": 1,
+          "event": "friend",
+          "choice": "wander",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "自由性向與既有互信，普通雇工／弟子同樣能發聲"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.48879",
+          "started": 171453,
+          "progress": 240,
+          "ended": 171931,
+          "callbackDone": true,
+          "callbackAt": 172116
+        }
+      ],
+      "events": [
+        {
+          "id": "event.48877",
+          "tick": 171453,
+          "type": "culture-adopted",
+          "actors": []
+        },
+        {
+          "id": "event.48880",
+          "tick": 171453,
+          "type": "culture-start",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "friend",
+          "choice": "wander",
+          "callback": false,
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "自由性向與既有互信，普通雇工／弟子同樣能發聲"
+          }
+        },
+        {
+          "id": "event.48930",
+          "tick": 171931,
+          "type": "culture-complete",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "friend",
+          "choice": "wander",
+          "prestige": 0,
+          "practice": 0,
+          "energy": 500,
+          "trust": 4
+        },
+        {
+          "id": "event.48935",
+          "tick": 171944,
+          "type": "culture-start",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "friend",
+          "choice": "wander",
+          "callback": true,
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "自由性向與既有互信，普通雇工／弟子同樣能發聲"
+          }
+        },
+        {
+          "id": "event.48955",
+          "tick": 172116,
+          "type": "culture-callback",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "friend",
+          "choice": "wander",
+          "text": "不談功課的半刻，我倒記住了。這次換我陪你收拾院子。"
+        }
+      ],
+      "positions": [
+        {
+          "id": "leader",
+          "skill": {
+            "punch": {
+              "U": 15,
+              "F": 100,
+              "I": 15,
+              "contexts": [
+                "guard",
+                "protect",
+                "dodge"
+              ],
+              "practice": 55,
+              "sources": [
+                {
+                  "kind": "train",
+                  "tick": 104746,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 104986,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105226,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105466,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105706,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105946,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106186,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106426,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106666,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106906,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107146,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109026,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109266,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109506,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109746,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109986,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110226,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110466,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110706,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110946,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111186,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111426,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111666,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111906,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112146,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112386,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112626,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114517,
+                  "activity": "activity.10066"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114757,
+                  "activity": "activity.10066"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114997,
+                  "activity": "activity.10066"
+                },
+                {
+                  "kind": "guard",
+                  "tick": 117304,
+                  "source": "action.10339"
+                },
+                {
+                  "kind": "protect",
+                  "tick": 117344,
+                  "source": "action.10339"
+                },
+                {
+                  "kind": "dodge",
+                  "tick": 121157,
+                  "source": "action.10826"
+                },
+                {
+                  "kind": "train",
+                  "tick": 129635,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 129875,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 130115,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 130355,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 130595,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 131502,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 131742,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 131982,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 132222,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 132462,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 133325,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 133565,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 133805,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 134045,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 134285,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 134543,
+                  "activity": "activity.18838"
+                },
+                {
+                  "kind": "train",
+                  "tick": 147762,
+                  "activity": "activity.26837"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156032,
+                  "activity": "activity.31745"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156272,
+                  "activity": "activity.31745"
+                }
+              ]
+            },
+            "step": {
+              "U": 5,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": []
+            },
+            "nine": {
+              "U": 5,
+              "F": 2,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": [
+                {
+                  "kind": "linghu-teaching",
+                  "tick": 147106
+                }
+              ]
+            },
+            "staff": {
+              "U": 10,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": [
+                {
+                  "kind": "learn",
+                  "tick": 162337,
+                  "activity": "activity.38043"
+                }
+              ]
+            },
+            "sword": {
+              "U": 10,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": [
+                {
+                  "kind": "learn",
+                  "tick": 163905,
+                  "activity": "activity.39886"
+                }
+              ]
+            }
+          },
+          "energy": 9998,
+          "injury": 0
+        },
+        {
+          "id": "amu",
+          "skill": {
+            "punch": {
+              "U": 5,
+              "F": 100,
+              "I": 10,
+              "contexts": [
+                "guard",
+                "return"
+              ],
+              "practice": 93,
+              "sources": [
+                {
+                  "kind": "train",
+                  "tick": 105057,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105297,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105537,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105777,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106017,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106257,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106497,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106737,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106977,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107217,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107457,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107697,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107937,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 108177,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 108417,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 108657,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110495,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110735,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110975,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111215,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111455,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111695,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111935,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112175,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112415,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112655,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112895,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113135,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113375,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113615,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113855,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114095,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 116040,
+                  "activity": "activity.10221"
+                },
+                {
+                  "kind": "guard",
+                  "tick": 117304,
+                  "source": "action.10339"
+                },
+                {
+                  "kind": "return",
+                  "tick": 124636,
+                  "source": "expedition.10761"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135075,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135315,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135555,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135795,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 136035,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139002,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139242,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139482,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139722,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 139962,
+                  "activity": "activity.21478"
+                },
+                {
+                  "kind": "train",
+                  "tick": 140219,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 140459,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 140699,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 140939,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 141179,
+                  "activity": "activity.22285"
+                },
+                {
+                  "kind": "train",
+                  "tick": 142187,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 142427,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 142667,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 142907,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 143147,
+                  "activity": "activity.23312"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144027,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144267,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144507,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144747,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 144987,
+                  "activity": "activity.24419"
+                },
+                {
+                  "kind": "train",
+                  "tick": 147458,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 147698,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 147938,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 148178,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 148418,
+                  "activity": "activity.26583"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156103,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156343,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156583,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 156823,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 157063,
+                  "activity": "activity.31036"
+                },
+                {
+                  "kind": "train",
+                  "tick": 160553,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 160793,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 161033,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 161273,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 161513,
+                  "activity": "activity.36274"
+                },
+                {
+                  "kind": "train",
+                  "tick": 161802,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 162042,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 162282,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 162522,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 162762,
+                  "activity": "activity.37572"
+                },
+                {
+                  "kind": "train",
+                  "tick": 163412,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 163652,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 163892,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 164132,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 164372,
+                  "activity": "activity.39483"
+                },
+                {
+                  "kind": "train",
+                  "tick": 164619,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 164859,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 165099,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 165339,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 165579,
+                  "activity": "activity.40890"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167039,
+                  "activity": "activity.43327"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167279,
+                  "activity": "activity.43327"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167519,
+                  "activity": "activity.43327"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167759,
+                  "activity": "activity.43327"
+                },
+                {
+                  "kind": "train",
+                  "tick": 167999,
+                  "activity": "activity.43327"
+                }
+              ]
+            },
+            "step": {
+              "U": 5,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": []
+            }
+          },
+          "energy": 8869,
+          "injury": 0
+        }
+      ]
+    },
+    {
+      "id": "reputation",
+      "choice": "display",
+      "mode": "classic",
+      "source": "/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/evidence/development/u04-yue/yue-1.save.json",
+      "sourceSha256": "e335b3a68c770ba416a878efbe1618015ef7bc9a365829d0ea7dfb4d55ee951a",
+      "before": {
+        "tick": 26408,
+        "food": 6
+      },
+      "history": [
+        {
+          "version": 1,
+          "event": "reputation",
+          "choice": "display",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "leader",
+            "mode": "classic",
+            "reason": "以本人現時身份參與，不強制正史"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.2204",
+          "started": 26408,
+          "progress": 240,
+          "ended": 26711,
+          "callbackDone": true,
+          "callbackAt": 26895
+        }
+      ],
+      "events": [
+        {
+          "id": "event.2202",
+          "tick": 26408,
+          "type": "culture-adopted",
+          "actors": []
+        },
+        {
+          "id": "event.2205",
+          "tick": 26408,
+          "type": "culture-start",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "reputation",
+          "choice": "display",
+          "callback": false,
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "leader",
+            "mode": "classic",
+            "reason": "以本人現時身份參與，不強制正史"
+          }
+        },
+        {
+          "id": "event.2236",
+          "tick": 26711,
+          "type": "culture-complete",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "reputation",
+          "choice": "display",
+          "prestige": 2,
+          "practice": 3,
+          "energy": -1000,
+          "trust": -2
+        },
+        {
+          "id": "event.2240",
+          "tick": 26723,
+          "type": "culture-start",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "reputation",
+          "choice": "display",
+          "callback": true,
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "leader",
+            "mode": "classic",
+            "reason": "以本人現時身份參與，不強制正史"
+          }
+        },
+        {
+          "id": "event.2259",
+          "tick": 26895,
+          "type": "culture-callback",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "reputation",
+          "choice": "display",
+          "text": "拳架是進了一步，可肩頭還記得那回加練。下回先問問我。"
+        }
+      ],
+      "positions": [
+        {
+          "id": "leader",
+          "skill": {
+            "punch": {
+              "U": 5,
+              "F": 30,
+              "I": 0,
+              "contexts": [],
+              "practice": 10,
+              "sources": [
+                {
+                  "kind": "train",
+                  "tick": 8686,
+                  "activity": "activity.818"
+                },
+                {
+                  "kind": "train",
+                  "tick": 8926,
+                  "activity": "activity.818"
+                },
+                {
+                  "kind": "train",
+                  "tick": 10815,
+                  "activity": "activity.901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 11055,
+                  "activity": "activity.901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 11295,
+                  "activity": "activity.901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 11535,
+                  "activity": "activity.901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 11775,
+                  "activity": "activity.901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 12015,
+                  "activity": "activity.901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 12255,
+                  "activity": "activity.901"
+                },
+                {
+                  "kind": "culture-practice",
+                  "tick": 26711,
+                  "source": "activity.2204"
+                }
+              ]
+            },
+            "step": {
+              "U": 5,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": []
+            }
+          },
+          "energy": 4549,
+          "injury": 5
+        },
+        {
+          "id": "amu",
+          "skill": {
+            "punch": {
+              "U": 5,
+              "F": 3,
+              "I": 0,
+              "contexts": [],
+              "practice": 1,
+              "sources": [
+                {
+                  "kind": "culture-practice",
+                  "tick": 26711,
+                  "source": "activity.2204"
+                }
+              ]
+            }
+          },
+          "energy": 8929,
+          "injury": 5
+        }
+      ]
+    },
+    {
+      "id": "friend",
+      "choice": "drill",
+      "mode": "classic",
+      "source": "/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/evidence/development/u04-linghu/linghu-1.save.json",
+      "sourceSha256": "eff0c7d1f696af9a66b576829708ab91ebafbfcb2368fcdb0bab99de4406d075",
+      "before": {
+        "tick": 22444,
+        "food": 6
+      },
+      "history": [
+        {
+          "version": 1,
+          "event": "friend",
+          "choice": "drill",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "leader",
+            "mode": "classic",
+            "reason": "以本人現時身份參與，不強制正史"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.1921",
+          "started": 22444,
+          "progress": 240,
+          "ended": 22869,
+          "callbackDone": true,
+          "callbackAt": 23057
+        }
+      ],
+      "events": [
+        {
+          "id": "event.1919",
+          "tick": 22444,
+          "type": "culture-adopted",
+          "actors": []
+        },
+        {
+          "id": "event.1922",
+          "tick": 22444,
+          "type": "culture-start",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "friend",
+          "choice": "drill",
+          "callback": false,
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "leader",
+            "mode": "classic",
+            "reason": "以本人現時身份參與，不強制正史"
+          }
+        },
+        {
+          "id": "event.1966",
+          "tick": 22869,
+          "type": "culture-complete",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "friend",
+          "choice": "drill",
+          "prestige": 0,
+          "practice": 3,
+          "energy": -800,
+          "trust": -1
+        },
+        {
+          "id": "event.1973",
+          "tick": 22884,
+          "type": "culture-start",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "friend",
+          "choice": "drill",
+          "callback": true,
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "leader",
+            "mode": "classic",
+            "reason": "以本人現時身份參與，不強制正史"
+          }
+        },
+        {
+          "id": "event.1991",
+          "tick": 23057,
+          "type": "culture-callback",
+          "actors": [
+            "leader",
+            "amu"
+          ],
+          "event": "friend",
+          "choice": "drill",
+          "text": "你練得好。我只想下次路過，能有一張不用先報功課的席。"
+        }
+      ],
+      "positions": [
+        {
+          "id": "leader",
+          "skill": {
+            "punch": {
+              "U": 5,
+              "F": 24,
+              "I": 0,
+              "contexts": [],
+              "practice": 7,
+              "sources": [
+                {
+                  "kind": "train",
+                  "tick": 8492,
+                  "activity": "activity.797"
+                },
+                {
+                  "kind": "train",
+                  "tick": 8732,
+                  "activity": "activity.797"
+                },
+                {
+                  "kind": "train",
+                  "tick": 8972,
+                  "activity": "activity.797"
+                },
+                {
+                  "kind": "train",
+                  "tick": 9212,
+                  "activity": "activity.797"
+                },
+                {
+                  "kind": "train",
+                  "tick": 9452,
+                  "activity": "activity.797"
+                },
+                {
+                  "kind": "train",
+                  "tick": 9692,
+                  "activity": "activity.797"
+                },
+                {
+                  "kind": "culture-practice",
+                  "tick": 22869,
+                  "source": "activity.1921"
+                }
+              ]
+            },
+            "step": {
+              "U": 5,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": []
+            }
+          },
+          "energy": 9144,
+          "injury": 0
+        },
+        {
+          "id": "amu",
+          "skill": {
+            "punch": {
+              "U": 5,
+              "F": 5,
+              "I": 0,
+              "contexts": [],
+              "practice": 1,
+              "sources": [
+                {
+                  "kind": "culture-practice",
+                  "tick": 22869,
+                  "source": "activity.1921"
+                }
+              ]
+            }
+          },
+          "energy": 9010,
+          "injury": 0
+        }
+      ]
+    },
+    {
+      "id": "table",
+      "choice": "share",
+      "mode": "classic",
+      "source": "/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/evidence/development/u03-family-legends-rerun/hong-1.save.json",
+      "sourceSha256": "be650c8a9af0c3d6681d6e38907c1c6e7bbd50467750ba4015942549a72c5b9a",
+      "before": {
+        "tick": 135461,
+        "food": 10
+      },
+      "history": [
+        {
+          "version": 1,
+          "event": "table",
+          "choice": "share",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu",
+              "legend.hong"
+            ],
+            "peer": "amu",
+            "voice": "legend.hong",
+            "mode": "classic",
+            "reason": "以本人現時身份參與，不強制正史"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.19557",
+          "started": 135461,
+          "progress": 240,
+          "ended": 135977,
+          "callbackDone": true,
+          "callbackAt": 136146
+        }
+      ],
+      "events": [
+        {
+          "id": "event.19555",
+          "tick": 135461,
+          "type": "culture-adopted",
+          "actors": []
+        },
+        {
+          "id": "event.19558",
+          "tick": 135461,
+          "type": "culture-start",
+          "actors": [
+            "leader",
+            "amu",
+            "legend.hong"
+          ],
+          "event": "table",
+          "choice": "share",
+          "callback": false,
+          "casting": {
+            "cast": [
+              "leader",
+              "amu",
+              "legend.hong"
+            ],
+            "peer": "amu",
+            "voice": "legend.hong",
+            "mode": "classic",
+            "reason": "以本人現時身份參與，不強制正史"
+          }
+        },
+        {
+          "id": "event.19612",
+          "tick": 135977,
+          "type": "culture-kindness-teaching",
+          "actors": [
+            "legend.hong",
+            "amu"
+          ],
+          "art": "punch"
+        },
+        {
+          "id": "event.19613",
+          "tick": 135977,
+          "type": "culture-complete",
+          "actors": [
+            "leader",
+            "amu",
+            "legend.hong"
+          ],
+          "event": "table",
+          "choice": "share",
+          "prestige": 0,
+          "practice": 0,
+          "energy": 500,
+          "trust": 4
+        },
+        {
+          "id": "event.19616",
+          "tick": 135982,
+          "type": "culture-start",
+          "actors": [
+            "leader",
+            "amu",
+            "legend.hong"
+          ],
+          "event": "table",
+          "choice": "share",
+          "callback": true,
+          "casting": {
+            "cast": [
+              "leader",
+              "amu",
+              "legend.hong"
+            ],
+            "peer": "amu",
+            "voice": "legend.hong",
+            "mode": "classic",
+            "reason": "以本人現時身份參與，不強制正史"
+          }
+        },
+        {
+          "id": "event.19638",
+          "tick": 136146,
+          "type": "culture-callback",
+          "actors": [
+            "leader",
+            "amu",
+            "legend.hong"
+          ],
+          "event": "table",
+          "choice": "share",
+          "text": "我記得你替搬料的人留了座。今天一起收拾，再慢慢講拳。"
+        }
+      ],
+      "positions": [
+        {
+          "id": "leader",
+          "skill": {
+            "punch": {
+              "U": 5,
+              "F": 100,
+              "I": 15,
+              "contexts": [
+                "guard",
+                "protect",
+                "dodge"
+              ],
+              "practice": 46,
+              "sources": [
+                {
+                  "kind": "train",
+                  "tick": 104746,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 104986,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105226,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105466,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105706,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105946,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106186,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106426,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106666,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106906,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107146,
+                  "activity": "activity.9227"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109026,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109266,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109506,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109746,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 109986,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110226,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110466,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110706,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110946,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111186,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111426,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111666,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111906,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112146,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112386,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112626,
+                  "activity": "activity.9603"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114517,
+                  "activity": "activity.10066"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114757,
+                  "activity": "activity.10066"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114997,
+                  "activity": "activity.10066"
+                },
+                {
+                  "kind": "guard",
+                  "tick": 117304,
+                  "source": "action.10339"
+                },
+                {
+                  "kind": "protect",
+                  "tick": 117344,
+                  "source": "action.10339"
+                },
+                {
+                  "kind": "dodge",
+                  "tick": 121157,
+                  "source": "action.10826"
+                },
+                {
+                  "kind": "train",
+                  "tick": 129635,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 129875,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 130115,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 130355,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 130595,
+                  "activity": "activity.15755"
+                },
+                {
+                  "kind": "train",
+                  "tick": 131502,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 131742,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 131982,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 132222,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 132462,
+                  "activity": "activity.16901"
+                },
+                {
+                  "kind": "train",
+                  "tick": 133325,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 133565,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 133805,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 134045,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 134285,
+                  "activity": "activity.18020"
+                },
+                {
+                  "kind": "train",
+                  "tick": 134543,
+                  "activity": "activity.18838"
+                }
+              ]
+            },
+            "step": {
+              "U": 5,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": []
+            }
+          },
+          "energy": 8570,
+          "injury": 0
+        },
+        {
+          "id": "amu",
+          "skill": {
+            "punch": {
+              "U": 7,
+              "F": 100,
+              "I": 10,
+              "contexts": [
+                "guard",
+                "return"
+              ],
+              "practice": 35,
+              "sources": [
+                {
+                  "kind": "train",
+                  "tick": 105057,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105297,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105537,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 105777,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106017,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106257,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106497,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106737,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 106977,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107217,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107457,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107697,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 107937,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 108177,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 108417,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 108657,
+                  "activity": "activity.9230"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110495,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110735,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 110975,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111215,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111455,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111695,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 111935,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112175,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112415,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112655,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 112895,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113135,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113375,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113615,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 113855,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 114095,
+                  "activity": "activity.9717"
+                },
+                {
+                  "kind": "train",
+                  "tick": 116040,
+                  "activity": "activity.10221"
+                },
+                {
+                  "kind": "guard",
+                  "tick": 117304,
+                  "source": "action.10339"
+                },
+                {
+                  "kind": "return",
+                  "tick": 124636,
+                  "source": "expedition.10761"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135075,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "train",
+                  "tick": 135315,
+                  "activity": "activity.19029"
+                },
+                {
+                  "kind": "kindness-teaching",
+                  "tick": 135977,
+                  "source": "legend.hong"
+                }
+              ]
+            },
+            "step": {
+              "U": 5,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": []
+            }
+          },
+          "energy": 9842,
+          "injury": 0
+        },
+        {
+          "id": "legend.hong",
+          "skill": {
+            "punch": {
+              "U": 5,
+              "F": 0,
+              "I": 0,
+              "contexts": [],
+              "practice": 0,
+              "sources": []
+            }
+          },
+          "energy": 9998,
+          "injury": 0
+        }
+      ]
+    }
+  ]
+}

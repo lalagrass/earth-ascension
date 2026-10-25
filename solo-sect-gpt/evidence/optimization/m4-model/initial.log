@@ -1,0 +1,58 @@
+✔ M4 physical life table/share (290.808875ms)
+✔ M4 physical life table/honor (91.97225ms)
+✔ M4 physical life reputation/welfare (148.358334ms)
+✔ M4 physical life reputation/display (112.648416ms)
+✔ M4 physical life friend/wander (142.348625ms)
+✔ M4 physical life friend/drill (147.77375ms)
+✖ M4 ordinary and classic casting, kindness teaching after physical meal only, cancellation and minors (993.13525ms)
+✖ M4 missing meal/facility and unknown branch are rejected; adopted and old saves keep versions (106.964584ms)
+✔ M4 five seed event and callback replay (1813.101958ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 7
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3920.981125
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/optimization/culture.test.mjs:4:1
+✖ M4 ordinary and classic casting, kindness teaching after physical meal only, cancellation and minors (993.13525ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(f(w))
+
+      at until (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/culture.test.mjs:2:169)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/culture.test.mjs:4:604)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/optimization/culture.test.mjs:5:1
+✖ M4 missing meal/facility and unknown branch are rejected; adopted and old saves keep versions (106.964584ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  true !== false
+
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/culture.test.mjs:5:446)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

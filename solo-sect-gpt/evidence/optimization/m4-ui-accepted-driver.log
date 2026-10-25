@@ -1,0 +1,327 @@
+table-ordinary-together
+culture-1280
+table-ordinary-callback
+reputation-ordinary-together
+reputation-ordinary-callback
+friend-ordinary-together
+friend-ordinary-callback
+reputation-classic-together
+reputation-classic-callback
+failure
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-culture-event="friend"][data-culture-choice="drill"][data-culture-mode="classic"]')[22m
+[2m    - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not stable[22m
+[2m  - retrying click action[22m
+[2m    - waiting 100ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not stable[22m
+[2m  - retrying click action[22m
+[2m    - waiting 100ms[22m
+[2m    3 × waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not enabled[22m
+[2m  - retrying click action[22m
+[2m    - waiting 100ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m  - element was detached from the DOM, retrying[22m
+[2m    - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not stable[22m
+[2m  - retrying click action[22m
+[2m    - waiting 100ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m  - element was detached from the DOM, retrying[22m
+[2m    - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m  - attempting click action[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not stable[22m
+[2m  - retrying click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m    3 × waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not stable[22m
+[2m  2 × retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m  - retrying click action[22m
+[2m    - waiting 100ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m  - element was detached from the DOM, retrying[22m
+[2m    - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m  - element was detached from the DOM, retrying[22m
+[2m    - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m  - attempting click action[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not enabled[22m
+[2m  - retrying click action[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not stable[22m
+[2m  2 × retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m  - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not enabled[22m
+[2m  - retrying click action[22m
+[2m    - waiting 100ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m  - element was detached from the DOM, retrying[22m
+[2m    - locator resolved to <button disabled data-culture-event="friend" data-culture-choice="drill" data-culture-mode="classic">本人未在場</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not enabled[22m
+[2m  - retrying click action[22m
+[2m    - waiting 100ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m  - element was detached from the DOM, retrying[22m
+
+    at click (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m4-ui.mjs:2:598)
+    at /Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m4-ui.mjs:4:983

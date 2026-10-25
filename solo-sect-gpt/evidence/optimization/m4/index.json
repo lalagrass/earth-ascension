@@ -1,0 +1,231 @@
+{
+  "status": "passed",
+  "author": "GPT / Codex; GPT-6.1 Sol / high",
+  "baseCommit": "9f27f66",
+  "spec": "docs/optimization/M4.md",
+  "normalUI": "evidence/optimization/m4-ui-sealed/index.json",
+  "models": "evidence/optimization/m4-model/final.log",
+  "regression": "evidence/optimization/m4-model/regression.log",
+  "m2": "evidence/optimization/m4-model/m2-policy-accepted.log",
+  "assets": "evidence/optimization/m4-model/assets-final.log",
+  "counts": {
+    "life": 9,
+    "regressionIncludesOldAndM3": 68,
+    "m2": 18,
+    "assetsIncludedInRegression": 2,
+    "normalUICases": 6
+  },
+  "cases": [
+    {
+      "event": "table",
+      "choice": "share",
+      "mode": "ordinary",
+      "sourceSha256": "1ff5d8f59e19d15bef9140f95f667777203dff5d86256e9d4d5e3c3ae78a89ad",
+      "history": [
+        {
+          "version": 1,
+          "event": "table",
+          "choice": "share",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "顧人性向與既有互信，普通雇工／弟子同樣能發聲"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.48879",
+          "started": 171453,
+          "progress": 240,
+          "ended": 171952,
+          "callbackDone": true,
+          "callbackAt": 172125
+        }
+      ]
+    },
+    {
+      "event": "reputation",
+      "choice": "welfare",
+      "mode": "ordinary",
+      "sourceSha256": "1ff5d8f59e19d15bef9140f95f667777203dff5d86256e9d4d5e3c3ae78a89ad",
+      "history": [
+        {
+          "version": 1,
+          "event": "reputation",
+          "choice": "welfare",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "勤勉性向與既有互信，普通雇工／弟子同樣能發聲"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.48879",
+          "started": 171453,
+          "progress": 240,
+          "ended": 171957,
+          "callbackDone": true,
+          "callbackAt": 172145
+        }
+      ]
+    },
+    {
+      "event": "friend",
+      "choice": "wander",
+      "mode": "ordinary",
+      "sourceSha256": "1ff5d8f59e19d15bef9140f95f667777203dff5d86256e9d4d5e3c3ae78a89ad",
+      "history": [
+        {
+          "version": 1,
+          "event": "friend",
+          "choice": "wander",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "自由性向與既有互信，普通雇工／弟子同樣能發聲"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.48879",
+          "started": 171453,
+          "progress": 240,
+          "ended": 171931,
+          "callbackDone": true,
+          "callbackAt": 172116
+        }
+      ]
+    },
+    {
+      "event": "reputation",
+      "choice": "display",
+      "mode": "classic",
+      "sourceSha256": "e335b3a68c770ba416a878efbe1618015ef7bc9a365829d0ea7dfb4d55ee951a",
+      "history": [
+        {
+          "version": 1,
+          "event": "reputation",
+          "choice": "display",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "leader",
+            "mode": "classic",
+            "reason": "以本人現時身份參與，不強制正史"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.2204",
+          "started": 26408,
+          "progress": 240,
+          "ended": 26711,
+          "callbackDone": true,
+          "callbackAt": 26895
+        }
+      ]
+    },
+    {
+      "event": "friend",
+      "choice": "drill",
+      "mode": "classic",
+      "sourceSha256": "eff0c7d1f696af9a66b576829708ab91ebafbfcb2368fcdb0bab99de4406d075",
+      "history": [
+        {
+          "version": 1,
+          "event": "friend",
+          "choice": "drill",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "leader",
+            "mode": "classic",
+            "reason": "以本人現時身份參與，不強制正史"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.1921",
+          "started": 22444,
+          "progress": 240,
+          "ended": 22869,
+          "callbackDone": true,
+          "callbackAt": 23057
+        }
+      ]
+    },
+    {
+      "event": "table",
+      "choice": "share",
+      "mode": "classic",
+      "sourceSha256": "be650c8a9af0c3d6681d6e38907c1c6e7bbd50467750ba4015942549a72c5b9a",
+      "history": [
+        {
+          "version": 1,
+          "event": "table",
+          "choice": "share",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu",
+              "legend.hong"
+            ],
+            "peer": "amu",
+            "voice": "legend.hong",
+            "mode": "classic",
+            "reason": "以本人現時身份參與，不強制正史"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.19557",
+          "started": 135461,
+          "progress": 240,
+          "ended": 135977,
+          "callbackDone": true,
+          "callbackAt": 136146
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Author self-review, no human or independent review",
+    "Three finite events with two outcomes each; not a procedural story engine",
+    "A physical stopped body can still require manual yielding, as in M2"
+  ],
+  "repairs": [
+    "Wrong fixture spawn overlapped a child; replaced with legal empty space",
+    "Own-property branch validation and callback original-branch lock",
+    "Trust now matches displayed net delta; two bowls count only two meals",
+    "Normal source companion at 79/100 needed real rest before participation",
+    "Paused panel stays stable; two failed UI runs and pre-final snapshot retained"
+  ],
+  "historicalUI": [
+    "m4-ui-initial failed DOM scroll",
+    "m4-ui-accepted failed 79/100 prerequisite",
+    "m4-ui-final passed pre two-meal correction; not final runtime"
+  ],
+  "unaffectedRoot": "Reuse M2 Python53 / SG dev383 / Earth syntax; root files unchanged"
+}

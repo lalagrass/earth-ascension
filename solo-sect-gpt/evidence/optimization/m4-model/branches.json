@@ -1,0 +1,209 @@
+{
+  "source": "controlled models, not UI",
+  "result": [
+    {
+      "id": "table",
+      "choice": "share",
+      "food": 4,
+      "energy": 10000,
+      "F": 0,
+      "trust": 9,
+      "history": [
+        {
+          "version": 1,
+          "event": "table",
+          "choice": "share",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "顧人性向與既有互信，普通雇工／弟子同樣能發聲"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.4",
+          "started": 2000,
+          "progress": 240,
+          "ended": 2314,
+          "callbackDone": true,
+          "callbackAt": 2474
+        }
+      ]
+    },
+    {
+      "id": "table",
+      "choice": "honor",
+      "food": 4,
+      "energy": 10000,
+      "F": 0,
+      "trust": -3,
+      "history": [
+        {
+          "version": 1,
+          "event": "table",
+          "choice": "honor",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "顧人性向與既有互信，普通雇工／弟子同樣能發聲"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.4",
+          "started": 2000,
+          "progress": 160,
+          "ended": 2234,
+          "callbackDone": true,
+          "callbackAt": 2394
+        }
+      ]
+    },
+    {
+      "id": "reputation",
+      "choice": "welfare",
+      "food": 6,
+      "energy": 10000,
+      "F": 0,
+      "trust": 9,
+      "history": [
+        {
+          "version": 1,
+          "event": "reputation",
+          "choice": "welfare",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "勤勉性向與既有互信，普通雇工／弟子同樣能發聲"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.4",
+          "started": 2000,
+          "progress": 240,
+          "ended": 2400,
+          "callbackDone": true,
+          "callbackAt": 2560
+        }
+      ]
+    },
+    {
+      "id": "reputation",
+      "choice": "display",
+      "food": 6,
+      "energy": 8963,
+      "F": 3,
+      "trust": -3,
+      "history": [
+        {
+          "version": 1,
+          "event": "reputation",
+          "choice": "display",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "勤勉性向與既有互信，普通雇工／弟子同樣能發聲"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.4",
+          "started": 2000,
+          "progress": 240,
+          "ended": 2400,
+          "callbackDone": true,
+          "callbackAt": 2560
+        }
+      ]
+    },
+    {
+      "id": "friend",
+      "choice": "wander",
+      "food": 6,
+      "energy": 10000,
+      "F": 0,
+      "trust": 9,
+      "history": [
+        {
+          "version": 1,
+          "event": "friend",
+          "choice": "wander",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "自由性向與既有互信，普通雇工／弟子同樣能發聲"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.4",
+          "started": 2000,
+          "progress": 240,
+          "ended": 2447,
+          "callbackDone": true,
+          "callbackAt": 2607
+        }
+      ]
+    },
+    {
+      "id": "friend",
+      "choice": "drill",
+      "food": 6,
+      "energy": 9149,
+      "F": 3,
+      "trust": -2,
+      "history": [
+        {
+          "version": 1,
+          "event": "friend",
+          "choice": "drill",
+          "casting": {
+            "cast": [
+              "leader",
+              "amu"
+            ],
+            "peer": "amu",
+            "voice": "amu",
+            "mode": "ordinary",
+            "reason": "自由性向與既有互信，普通雇工／弟子同樣能發聲"
+          },
+          "callback": false,
+          "status": "completed",
+          "phase": "together",
+          "activity": "activity.4",
+          "started": 2000,
+          "progress": 240,
+          "ended": 2447,
+          "callbackDone": true,
+          "callbackAt": 2607
+        }
+      ]
+    }
+  ]
+}

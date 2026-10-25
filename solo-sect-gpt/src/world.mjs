@@ -1,3 +1,4 @@
+import{adoptCulture,selectCulture,startLife,cultureActivityTick,stopLife}from'./culture.mjs';
 import {rulesFor} from './save-features.mjs';
 import {adoptMartial,setFocus,chooseStyle,startPractice,martialTick,cancelPractice} from './martial.mjs';
 import {DEFAULT_LIFE_POLICY,validateLifePolicy,LIFE_RULES} from './life-policy.mjs';
@@ -31,6 +32,10 @@ export function command(w,c){
  }else if(c.type==='resume'){if(p.temporary){cancel(w,p,'取消臨時工作，恢復自主');delete p.temporary;}p.manualStop=false;p.intent=null;p.auto=true;}
  else if(c.type==='recall'){result=begin(w,p,'return',{},true);}
  else if(c.type==='lifePolicy'){try{const policy=structuredClone(c.policy||DEFAULT_LIFE_POLICY);validateLifePolicy(policy,w.inventories.vat.capacity);w.lifePolicy=policy;w.rulesVersion=rulesFor(w);event(w,'life-policy-adopted',[],{version:policy.version});}catch(e){result={ok:false,reason:e.message};}}
+ else if(c.type==='adoptCulture')result=adoptCulture(w);
+ else if(c.type==='culturePack')result=selectCulture(w,c.pack);
+ else if(c.type==='cultureEvent')result=startLife(w,p,c.event,c.choice,c.mode,c.callback);
+ else if(c.type==='cultureStop')result=stopLife(w);
  else if(c.type==='adoptMartial')result=adoptMartial(w);
  else if(c.type==='martialFocus')result=setFocus(w,p,c.focus);
  else if(c.type==='martialStyle')result=chooseStyle(w,p,c.style);
@@ -88,7 +93,7 @@ export function step(w,batch=[]){for(const c of batch)command(w,c);w.tick++;w.pe
  const activityOrder=sorted(w.people).sort((a,b)=>(w.activities[a.activity]?.started??Infinity)-(w.activities[b.activity]?.started??Infinity)||a.id.localeCompare(b.id));
  for(const p of activityOrder){
   if(p.moving){p.energyRemainder+=(bagWeight(w,p)?10:5);while(p.energyRemainder>=20){p.energy=Math.max(0,p.energy-1);p.energyRemainder-=20;}}
-  if(!classActivityTick(w,p)&&!travelActivityTick(w,p)&&!storyActivityTick(w,p)&&!lifeActivityTick(w,p))activityTick(w,p);
+  if(!cultureActivityTick(w,p)&&!classActivityTick(w,p)&&!travelActivityTick(w,p)&&!storyActivityTick(w,p)&&!lifeActivityTick(w,p))activityTick(w,p);
   // Energy uses a fixed hundredth-point accumulator; no renderer state enters rules.
   p.energy=Math.round(p.energy*1000)/1000;
  }

@@ -1,0 +1,17 @@
+✔ M4 physical life table/share (349.733541ms)
+✔ M4 physical life table/honor (127.066959ms)
+✔ M4 physical life reputation/welfare (141.243625ms)
+✔ M4 physical life reputation/display (124.880708ms)
+✔ M4 physical life friend/wander (184.818125ms)
+✔ M4 physical life friend/drill (203.27225ms)
+✔ M4 ordinary and classic casting, kindness teaching after physical meal only, cancellation and minors (77.142208ms)
+✔ M4 missing meal/facility and unknown branch are rejected; adopted and old saves keep versions (6.4445ms)
+✔ M4 five seed event and callback replay (2003.726708ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3329.610291

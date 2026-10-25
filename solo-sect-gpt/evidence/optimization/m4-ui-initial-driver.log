@@ -1,0 +1,17 @@
+table-ordinary-together
+culture-1280
+table-ordinary-callback
+reputation-ordinary-together
+reputation-ordinary-callback
+friend-ordinary-together
+friend-ordinary-callback
+failure
+locator.scrollIntoViewIfNeeded: Element is not attached to the DOM
+Call log:
+[2m  - attempting scroll into view action[22m
+[2m    - waiting for element to be stable[22m
+[2m    - element is not stable[22m
+[2m  - retrying scroll into view action[22m
+[2m    - waiting for element to be stable[22m
+
+    at /Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m4-ui.mjs:4:1334

@@ -7,6 +7,7 @@ import {uid,event,inventory,availableQty as qty,qty as physicalQty,add,transfer,
 import {route,arrived} from './navigation.mjs';
 export function cancel(w,p,reason='玩家改派'){
  detachClass(w,p,reason);
+ const life=w.culturePlan?.active;if(life?.status==='running'&&life.casting.cast.includes(p.id)){life.status='cancelled';life.phase='ended';life.ended=w.tick;for(const id of life.casting.cast){const q=w.people[id];q.storyBusy=false;q.pose='idle';q.path=[];q.routeAt=0;}const owner=w.people[life.casting.cast[0]];if(owner.id!==p.id)cancel(w,owner,reason);event(w,'culture-cancelled',life.casting.cast,{reason});}
  const shared=Object.values(w.activities).find(a=>a.kind==='story'&&a.args.partner===p.id&&a.actor!==p.id);if(shared)cancel(w,w.people[shared.actor],reason);
  const a=w.activities[p.activity];if(a){if(['school','reception'].includes(a.kind)&&a.partner&&w.people[a.partner])w.people[a.partner].storyBusy=false;if(a.kind==='story'){p.storyBusy=false;for(const id of [a.traveler,a.guard].filter(Boolean)){const q=w.people[id];if(q){q.storyBusy=false;q.combatTarget=null;q.combatSession=null;if(q.action){q.action.phase='recover';q.action.remaining=q.action.recover;}if(q.id==='escort.traveler'){q.departing=true;route(w,q,stations.spawn);}else if(q.home)route(w,q,q.home);}}const partner=w.people[a.args.partner];if(partner){partner.storyBusy=false;partner.pose='idle';partner.path=[];partner.routeAt=0;if(partner.combatSession===p.combatSession){partner.combatSession=null;partner.combatTarget=null;p.combatSession=null;p.combatTarget=null;}}if(w.stories[a.args.node])w.stories[a.args.node].status='active';}release(w,a.id);delete w.activities[a.id];p.activity=null;
   if(a.partner){const o=w.people[a.partner];if(o&&w.activities[o.activity]?.session===a.session){release(w,o.activity);delete w.activities[o.activity];o.activity=null;o.path=[];o.reason='同伴已中止活動';}}
@@ -15,7 +16,7 @@ export function cancel(w,p,reason='玩家改派'){
  p.reason=reason;p.blocked='';p.pose='idle';
 }
 export function begin(w,p,kind,args={},manual=false){
- if(!['class','unloadQuest','drink','move','return','gather','build','train','study','rest','sleep','eat','cook','craft','talk','encourage','care','teach','greet','farm','harvestHaul','delivery','school','reception','learn','equip','story','pack','aid','collect'].includes(kind))return {ok:false,reason:'未知活動'};
+ if(!['culture','class','unloadQuest','drink','move','return','gather','build','train','study','rest','sleep','eat','cook','craft','talk','encourage','care','teach','greet','farm','harvestHaul','delivery','school','reception','learn','equip','story','pack','aid','collect'].includes(kind))return {ok:false,reason:'未知活動'};
  if(kind==='equip'&&!['punch','staff','sword'].includes(args.art))return {ok:false,reason:'換裝只支援拳、木棍與木劍'};
  if(kind==='gather'&&!['wood','stone','water','veg','herb'].includes(args.item))return {ok:false,reason:'未知採集物'};
  if(kind==='move'&&(!Array.isArray(args.pos)||args.pos.length!==2||args.pos.some(n=>!Number.isFinite(n))||!findPath(w,position(p),args.pos)))return {ok:false,reason:'目標無路可達／水域或封閉邊界'};

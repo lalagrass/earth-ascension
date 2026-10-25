@@ -1,3 +1,4 @@
+import{SECT_LIFE}from'./culture-data.mjs';
 import {Q,FACILITIES,ITEM,MOVES,TASKNAME} from './data.mjs';
 import {MAP,rects,stations,corridors,position,inRect,trees} from './map.mjs';
 import {sorted,qty,bagWeight} from './state.mjs';
@@ -38,7 +39,7 @@ export function render(canvas,w,view){
  for(const p of actors)props.push({y:p.y/Q,fn:()=>drawPerson(ctx,w,p,view,labelOffsets[p.id],false)});
  props.sort((a,b)=>a.y-b.y);for(const p of props)p.fn();
  for(const f of Object.values(rects))drawBuilding(ctx,w,f,true,view);
- bridgeLayer(ctx,[1870,425,70,30],true);lifeProps(ctx,w);
+ bridgeLayer(ctx,[1870,425,70,30],true);lifeProps(ctx,w);drawSectLife(ctx,w);
  for(const p of actors)drawLabel(ctx,w,p,view,labelOffsets[p.id]);
  for(const [x,y,a,b]of [[1795,385,16,24],[2040,355,20,24]]){poly([[x,y+b],[x+2,y+5],[x+a*.6,y],[x+a,y+b*.5],[x+a-2,y+b]],'#8f9986','#74846f');ctx.strokeStyle='#c1c4a8';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+3,y+6);ctx.lineTo(x+a*.6,y+5);ctx.stroke();}
  drawResources(ctx,w);drawMarkers(ctx,w,view);
@@ -112,3 +113,5 @@ function drawResources(c,w){for(const inv of Object.values(w.inventories))if(inv
 function drawMarkers(c,w,v){c.fillStyle='#506052';c.font='16px system-ui';for(const [id,name]of [['forest','林緣'],['valley','溪谷 · 單人窄橋'],['cave','古洞']]){const p=stations[id];c.fillText(name,p[0]-40,p[1]+60);}c.font='12px system-ui';c.fillText('山寨未開放 · 本章止步',2030,80);c.fillText('西南藥坡封路',150,1780);}
 
 export function drawCombatTelegraph(c,w,p,v){const a=p.action,x=p.x/Q,y=p.y/Q,style=STYLES[w.martialPlan?.styles[p.id]||'arhat'];c.save();c.translate(x,y);if(p.id===v.selected){c.strokeStyle=style.color+'88';c.lineWidth=1;c.setLineDash([3,5]);c.beginPath();c.arc(0,0,style.move==='intercept'?30:MOVES[style.move].range+6,0,Math.PI*2);c.stroke();c.setLineDash([]);}if(a?.phase==='windup'){c.rotate(Math.atan2(a.aim[1],a.aim[0]));c.fillStyle='#c5913c30';c.beginPath();c.moveTo(0,0);c.arc(0,0,MOVES[a.move].range+6,-.35,.35);c.closePath();c.fill();c.strokeStyle='#ad844d77';c.lineWidth=1;c.beginPath();c.moveTo(0,0);c.lineTo(MOVES[a.move].range+6,0);c.stroke();}c.restore();}
+
+export function drawSectLife(c,w){if(!w.culturePlan)return;const a=SECT_LIFE[w.culturePlan.pack],pos={hearth:[907,1180],discipline:[1160,1114],freedom:[1240,1220]}[w.culturePlan.pack],x=pos[0],y=pos[1];c.save();c.strokeStyle='#776d51';c.lineWidth=3;c.beginPath();c.moveTo(x,y);c.lineTo(x,y-86);c.stroke();c.fillStyle=a.color;c.beginPath();c.moveTo(x,y-84);c.lineTo(x+35,y-80);c.lineTo(x+32,y-32);c.lineTo(x,y-37);c.fill();c.fillStyle='#f7eed8';c.font='18px serif';c.fillText(a.symbol,x+7,y-55);if(w.culturePlan.pack==='freedom'){c.fillStyle='#b8b28b';c.fillRect(x+8,y+8,60,14);c.strokeStyle='#8c906d';c.lineWidth=1;for(let i=0;i<10;i++){c.beginPath();c.moveTo(x+10+i*6,y+8);c.lineTo(x+10+i*6,y+22);c.stroke();}}else{c.fillStyle=a.color+'55';c.fillRect(x+5,y+4,46,12);}c.restore();}
