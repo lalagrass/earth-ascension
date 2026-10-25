@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "shortform",
+  "version": "1.0.0",
+  "title": "只改JSON的短式變體",
+  "people": {},
+  "moves": {
+    "shortform.closefist": {
+      "name": "近身短拳",
+      "description": "短距離、有限起手與收勢；不帶任何額外效果。",
+      "base": "punch",
+      "wind": 12,
+      "active": 2,
+      "recover": 12,
+      "range": 16,
+      "width": 8,
+      "damage": 7,
+      "cost": 220,
+      "requires": {
+        "U": 5,
+        "F": 18
+      }
+    }
+  },
+  "events": {},
+  "sectActivities": {}
+}

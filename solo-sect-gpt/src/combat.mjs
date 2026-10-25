@@ -1,3 +1,4 @@
+import{moveFor}from'./catalog.mjs';
 import {Q,MOVES,ART} from './data.mjs';
 import directions from '../data/directions.mjs';
 import {position,los,sweep,stations,inRect,walkable} from './map.mjs';
@@ -7,19 +8,20 @@ import {cancel,begin,memory} from './activities.mjs';
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y)/Q;
 export function face(p,target){let best=-Infinity,angle=0,dx=target.x-p.x,dy=target.y-p.y;for(let i=0;i<360;i++){const v=directions[i],dot=dx*v[0]+dy*v[1];if(dot>best){best=dot;angle=i;}}let turn=((angle-p.angle+540)%360)-180,max=Math.max(10,15+Math.max(0,p.stats[2]-4));p.angle=(p.angle+Math.max(-max,Math.min(max,turn))+360)%360;}
 export function insight(w,p,art,kind,source){const s=p.skill[art];if(p.kind!=='human'||p.rank==='training'||!s||s.contexts.includes(kind))return;s.contexts.push(kind);s.I=Math.min(100,s.I+5);s.sources.push({kind,tick:w.tick,source});event(w,'insight',[p.id],{art,kind,text:ART[art]+'：'+({guard:'守點配合',dodge:'避開明顯招式',protect:'護人',return:'受傷後安全返程'}[kind]||kind)});}
-export function hitGeometry(w,p,t,move,aim){const m=MOVES[move],dx=t.x-p.x,dy=t.y-p.y,v=aim||directions[p.angle],dot=dx*v[0]+dy*v[1],cross=Math.abs(dx*v[1]-dy*v[0]);
+export function hitGeometry(w,p,t,move,aim,definition=null){const m=definition||moveFor(w,move),dx=t.x-p.x,dy=t.y-p.y,v=aim||directions[p.angle],dot=dx*v[0]+dy*v[1],cross=Math.abs(dx*v[1]-dy*v[0]);
  if(dot<0||dx*dx+dy*dy>((m.range+6)*Q)**2||!los(w,position(p),position(t)))return false;
- if(move==='sweep')return true;if(move==='push')return cross<=dot;return cross<=(m.width/2+6)*Q*10000&&dot<=(m.range+6)*Q*10000;
+ if((m.base||move)==='sweep')return true;if(move==='push')return cross<=dot;return cross<=(m.width/2+6)*Q*10000&&dot<=(m.range+6)*Q*10000;
 }
 export function interceptionReason(w,p,target){
  const o=p.observation[target?.id],ac=target?.action;if(!p.skill.nine)return '尚未學會九劍';if(w.martialPlan&&(p.weapon!=='sword'||!qty(w,p.equipment,'sword')))return '先實際領用木劍';if(!target||dist(p,target)>30)return '距離太遠';if(!los(w,position(p),position(target)))return '視線被遮擋';if(!o||o.last!==ac?.id||o.continuous<12||o.patterns<2)return '尚未連續觀察／辨識兩次起手';if(!ac||ac.phase!=='windup'||ac.remaining<9)return '起手太短或出手太晚';if(p.energy<400)return '精力不足';return null;
 }
 function sweepRoom(w,p,aim=directions[p.angle]){const at=position(p),side=[-aim[1]/10000*16,aim[0]/10000*16];return sweep(w,at,[at[0]+side[0],at[1]+side[1]],2)&&sweep(w,at,[at[0]-side[0],at[1]-side[1]],2);}
-export function actionTiming(p,move){const m=MOVES[move];const s=p.skill[m.art],level=s?.F>=90&&s?.I>=10?2:s?.F>=18?1:0;
+export function actionTiming(p,move,w=null){const m=moveFor(w,move);const s=p.skill[m.art],level=s?.F>=90&&s?.I>=10?2:s?.F>=18?1:0;
  let wind=m.wind,recover=m.recover;if(move==='punch'){wind=[16,12,10][level];recover=[14,10,7][level];}else recover=Math.ceil(recover*[1,.9,.8][level]);
  if(move==='step')recover=Math.max(12,recover+4-p.stats[2]);return{wind,active:m.active,recover,cost:m.cost,range:m.range};}
 export function startAction(w,p,move,target=null,forced=false){
- const m=MOVES[move];if(!m)return {ok:false,reason:'未知招式'};
+ const requestedMove=move,m=moveFor(w,move);if(!m)return {ok:false,reason:'未知招式'};
+ if(m.base&&!p.contentMoves?.includes(requestedMove))return{ok:false,reason:'先實際研讀這個內容招式'};if(m.base&&(!p.skill[m.art]||p.skill[m.art].U<m.requires.U||p.skill[m.art].F<m.requires.F))return{ok:false,reason:'武學前置不足'};move=m.base||move;
  if(target&&!target.adult)return {ok:false,reason:'未成年不能成為攻防或切磋對象'};
  if(!p.adult)return {ok:false,reason:'未成年不參戰'};
  if(p.action||p.stun||p.hp<=0)return {ok:false,reason:'仍在起手／收勢／失能'};
@@ -34,11 +36,12 @@ export function startAction(w,p,move,target=null,forced=false){
   const pile=inventory(w,uid(w,'ground'),{},96);w.inventories[pile].pos=position(p);for(const [i,n]of Object.entries(w.inventories[p.bag].items))transfer(w,p.bag,pile,i,n);event(w,'set-down',[p.id],{inventory:pile});
  }
  let failure=move==='intercept'?interceptionReason(w,p,target):null;if(failure&&!forced)return {ok:false,reason:failure};
- const {wind,recover}=actionTiming(p,move);
- if(target)face(p,target);const ac={id:uid(w,'action'),move,target:target?.id||null,phase:'windup',remaining:wind,wind,active:m.active,recover,hitSet:[],aim:[...directions[p.angle]],started:w.tick,initialThreat:target?hitGeometry(w,p,target,move):false,failure,expectedTargetAction:target?.action?.id||null,energyCost:m.cost};
+ const {wind,recover}=actionTiming(p,requestedMove,w);
+ if(target)face(p,target);const ac={id:uid(w,'action'),move,target:target?.id||null,phase:'windup',remaining:wind,wind,active:m.active,recover,hitSet:[],aim:[...directions[p.angle]],started:w.tick,initialThreat:target?hitGeometry(w,p,target,move,undefined,m):false,failure,expectedTargetAction:target?.action?.id||null,energyCost:m.cost};
+ if(m.base)ac.contentMove=requestedMove;
  if(w.martialPlan&&p.rank==='training'&&p.martialPattern==='feint'){p.attackCount=(p.attackCount||0)+1;if(p.attackCount%3===0)ac.feintTick=w.tick+14;}
  if(p.rank==='warden'){p.attackCount=(p.attackCount||0)+1;if(p.attackCount%3===0)ac.feintTick=w.tick+Math.min(10,Math.max(3,wind-5));}
- p.action=ac;p.energy-=m.cost;p.path=[];p.routeAt=0;w.metrics.actions++;event(w,'action-start',[p.id,...(target?[target.id]:[])],{action:ac.id,move,wind,recover,...(w.martialPlan?{energyCost:ac.energyCost}:{})});return {ok:true};
+ p.action=ac;p.energy-=m.cost;p.path=[];p.routeAt=0;w.metrics.actions++;event(w,'action-start',[p.id,...(target?[target.id]:[])],{action:ac.id,move:requestedMove,wind,recover,...(w.martialPlan||m.base?{energyCost:ac.energyCost}:{})});return {ok:true};
 }
 function opposite(w,p,t){if(!t||p.id===t.id||!t.adult||t.residence==='departed'||t.inactive||t.trainingDefeated||t.hp<=0)return false;return p.combatSession&&p.combatSession===t.combatSession&&p.team!==t.team||p.kind!=='human'&&t.kind==='human'&&t.adult||p.kind==='human'&&t.kind!=='human'||p.rank==='warden'&&p.hostile&&t.residence==='resident'||t.rank==='warden'&&t.hostile&&p.residence==='resident';}
 export function combatAI(w){
@@ -49,7 +52,8 @@ export function combatAI(w){
   if(dist(p,target)>120&&!p.combatSession){p.combatTarget=null;continue;}
   if(dist(p,target)>120||!los(w,position(p),position(target))){if(p.combatSession&&w.tick%20===0)route(w,p,p.rank==='training'?[1280,1240]:position(target));continue;}
   if(p.action){if(p.action.phase==='windup'&&p.action.remaining>4){face(p,target);p.action.aim=[...directions[p.angle]];}continue;}
-  const move=p.kind==='rat'?'bite':p.kind==='boar'?'gore':p.weapon==='staff'&&p.skill.staff?'sweep':p.weapon==='sword'&&p.skill.sword?'thrust':p.move==='push'&&p.pushLearned?'push':'punch';
+  let move=p.kind==='rat'?'bite':p.kind==='boar'?'gore':p.weapon==='staff'&&p.skill.staff?'sweep':p.weapon==='sword'&&p.skill.sword?'thrust':p.move==='push'&&p.pushLearned?'push':'punch';
+  const preference=p.contentPreferred,custom=preference&&moveFor(w,preference);if(custom&&p.contentMoves?.includes(preference)&&p.skill[custom.art]&&p.skill[custom.art].U>=custom.requires.U&&p.skill[custom.art].F>=custom.requires.F&&(custom.art==='punch'||p.weapon===custom.art&&qty(w,p.equipment,custom.art)))move=preference;
   const ac=target.action;
   // A legal sidestep while a visible opponent telegraphs an attack; no invulnerability.
   if(ac?.phase==='windup'&&ac.remaining>7&&ac.initialThreat&&ac.target===p.id&&p.lastAvoid!==ac.id&&p.stats[2]>=3){
@@ -57,7 +61,7 @@ export function combatAI(w){
    p.lastAvoid=ac.id;if(sweep(w,at,to)&&!sorted(w.people).some(o=>o.id!==p.id&&Math.hypot(o.x/Q-to[0],o.y/Q-to[1])<12)){route(w,p,to);continue;}
   }
   if(p.lastAvoid&&p.lastAvoid===target.action?.id&&!arrived(p))continue;
-  const desired=w.martialPlan?.styles[p.id]==='counter'?26:MOVES[move].range-2;
+  const desired=w.martialPlan?.styles[p.id]==='counter'?26:moveFor(w,move).range-2;
   if(dist(p,target)>desired){if(w.tick%10===0){let dx=p.x-target.x,dy=p.y-target.y,d=Math.hypot(dx,dy)||1;const to=[target.x/Q+dx/d*(desired-2),target.y/Q+dy/d*(desired-2)];route(w,p,to);}continue;}
   if(p.assessment){const window=Math.floor((w.tick-p.sparStarted)/200);if(p.assessmentWindow===window)continue;p.assessmentWindow=window;}
   face(p,target);if(w.martialPlan?.styles[p.id]==='counter'&&p.skill.nine&&p.weapon==='sword'){if(!target.action||target.action.phase==='recover')continue;if(target.action.phase==='windup'&&target.action.wind>=21){if(!interceptionReason(w,p,target))startAction(w,p,'intercept',target);continue;}}if(p.skill.nine&&!interceptionReason(w,p,target))startAction(w,p,'intercept',target);else {const r=startAction(w,p,move,target);if(!r.ok&&move==='sweep')startAction(w,p,'punch',target);}
@@ -75,18 +79,18 @@ export function combatTick(w){
   if(a.phase==='windup'&&a.remaining<=0){a.phase='active';a.remaining=a.active;if(a.move==='sweep'&&!sweepRoom(w,p,a.aim)){a.failure='橫掃左右淨空不足';p.blocked=a.failure;event(w,'move-failed',[p.id],{action:a.id,reason:a.failure});}if(a.move==='intercept'){const t=w.people[a.target];const reason=!t||dist(p,t)>30?'距離太遠':!los(w,position(p),position(t))?'視線被遮擋':t.action?.id!==a.expectedTargetAction?'對方已取消／換招':t.action?.phase!=='windup'?(t.action?.feinted?'對方佯攻已收手':'已出招，截擊太晚'):null;if(reason||a.failure){a.failure=reason||a.failure;event(w,'intercept-failed',[p.id],{reason:a.failure,action:a.id});}else {t.action.phase='recover';t.action.remaining=20;t.action.justInterruptedAt=w.tick;event(w,'intercept-success',[p.id,t.id],{action:a.id});}}}
   if(a.phase==='active'){
    if(a.move==='step'){const at=position(p),to=[at[0]+a.aim[0]/10000*4,at[1]+a.aim[1]/10000*4];if(sweep(w,at,to)&&(!inRect(to[0],to[1],[1860,415,90,50])||w.bridge.holder===p.id)&&!entities.some(o=>o.id!==p.id&&Math.hypot(o.x/Q-to[0],o.y/Q-to[1])<12)){const before=[p.x,p.y];p.x=Math.round(to[0]*Q);p.y=Math.round(to[1]*Q);p.distance+=Math.round(Math.hypot(p.x-before[0],p.y-before[1]));}}
-   else if(!a.failure){const targets=entities.filter(t=>opposite(w,p,t)&&!a.hitSet.includes(t.id)&&hitGeometry(w,p,t,a.move,a.aim)).sort((u,v)=>dist(p,u)-dist(p,v)||u.id.localeCompare(v.id));
-    for(const t of targets.slice(0,a.move==='sweep'?3:1)){a.hitSet.push(t.id);hits.push({p,t,a,damage:Math.max(1,MOVES[a.move].damage+(p.kind==='human'?p.stats[1]-4:0))});}
+   else if(!a.failure){const targets=entities.filter(t=>opposite(w,p,t)&&!a.hitSet.includes(t.id)&&hitGeometry(w,p,t,a.move,a.aim,moveFor(w,a.contentMove||a.move))).sort((u,v)=>dist(p,u)-dist(p,v)||u.id.localeCompare(v.id));
+    for(const t of targets.slice(0,a.move==='sweep'?3:1)){a.hitSet.push(t.id);hits.push({p,t,a,damage:Math.max(1,moveFor(w,a.contentMove||a.move).damage+(p.kind==='human'?p.stats[1]-4:0))});}
    }
   }
-  if(a.remaining<=0){if(a.phase==='active'){a.phase='recover';a.remaining=a.recover;if(!a.hitSet.length&&MOVES[a.move].damage){w.metrics.misses++;event(w,'miss',[p.id],{action:a.id,move:a.move});const t=w.people[a.target];if(t&&a.initialThreat&&dist(p,t)<80){insight(w,t,t.weapon==='punch'?'punch':t.weapon,'dodge',a.id);}}}
+  if(a.remaining<=0){if(a.phase==='active'){a.phase='recover';a.remaining=a.recover;if(!a.hitSet.length&&moveFor(w,a.contentMove||a.move).damage){w.metrics.misses++;event(w,'miss',[p.id],{action:a.id,move:a.move});const t=w.people[a.target];if(t&&a.initialThreat&&dist(p,t)<80){insight(w,t,t.weapon==='punch'?'punch':t.weapon,'dodge',a.id);}}}
    else if(a.phase==='recover'){event(w,'action-end',[p.id],{action:a.id,move:a.move,hits:a.hitSet});p.action=null;}}
  }
  for(const {p,t,a,damage}of hits){const safe=!!p.combatSession&&p.combatSession===t.combatSession;const before=t.hp;t.hp=Math.max(safe?Math.ceil(t.maxHp/2):0,t.hp-damage);if(!safe)t.injury=Math.min(100,t.injury+Math.ceil(damage/2));w.metrics.hits++;
   t.stun=4;if(t.action?.phase==='windup'){const protectedId=t.action.target,actual=w.people[protectedId];t.action.phase='recover';t.action.remaining=Math.max(4,t.action.recover);if(actual&&actual.id!==p.id&&actual.kind==='human'&&p.kind==='human'){
-   (w.pendingProtection??=[]).push({actor:p.id,protected:actual.id,enemy:t.id,art:MOVES[a.move].art,action:a.id,tick:w.tick});}}
+   (w.pendingProtection??=[]).push({actor:p.id,protected:actual.id,enemy:t.id,art:moveFor(w,a.contentMove||a.move).art,action:a.id,tick:w.tick});}}
   for(const o of Object.values(t.observation)){o.continuous=0;o.patterns=Math.max(0,o.patterns-Math.max(0,2-Math.floor(t.stats[4]/3)));}
-  const art=MOVES[a.move].art,s=p.skill[art];if(s&&p.kind==='human'&&p.rank!=='training'){p.sessionHits??={};const key=p.combatSession||w.expedition?.id||'home';p.sessionHits[key]??=0;if(p.sessionHits[key]<6){s.F=Math.min(100,s.F+1);p.sessionHits[key]++;}}
+  const art=moveFor(w,a.contentMove||a.move).art,s=p.skill[art];if(s&&p.kind==='human'&&p.rank!=='training'){p.sessionHits??={};const key=p.combatSession||w.expedition?.id||'home';p.sessionHits[key]??=0;if(p.sessionHits[key]<6){s.F=Math.min(100,s.F+1);p.sessionHits[key]++;}}
   if(w.expedition?.actors.includes(p.id)&&!['returned','cancelled'].includes(w.expedition.phase)){w.expedition.usedArts??={};w.expedition.usedArts[p.id]??=[];if(!w.expedition.usedArts[p.id].includes(art))w.expedition.usedArts[p.id].push(art);}
   event(w,'hit',[p.id,t.id],{action:a.id,move:a.move,damage:before-t.hp,safe});
   if(a.move==='push'){const from=position(t),to=[from[0]+a.aim[0]/10000*18,from[1]+a.aim[1]/10000*18];let end=from;for(let i=1;i<=18;i++){const q=[from[0]+(to[0]-from[0])*i/18,from[1]+(to[1]-from[1])*i/18];if(!sweep(w,from,q)||entities.some(o=>o.id!==t.id&&Math.hypot(o.x/Q-q[0],o.y/Q-q[1])<12))break;end=q;}t.x=Math.round(end[0]*Q);t.y=Math.round(end[1]*Q);}

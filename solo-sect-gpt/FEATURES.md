@@ -1,3 +1,22 @@
+# 優化 M1–M6：目前交付
+
+GPT / Codex，GPT-6.1 Sol / high，單一作者；獨立worktree的solo-sect-gpt。六階段已依序完成，總完成標記見`handoff/optimization-m1-m6.done.json`，可核索引見`evidence/optimization/index.json`；作者自校，非真人／獨立review。
+
+| 階段 | 已交付與實際證據 |
+| --- | --- |
+| M1 | 分層水彩屋／樹／橋／地表，真門口／遮擋／行走，兩視窗與生活動作；m1/index.json。 |
+| M2 | 日課、補給優先、一次命令回原安排、危急分級；兩邊各真實20分鐘，必要介入0=0，不宣稱減少；m2/index.json。 |
+| M3 | 三近期武學目標、三風格／長招快拳佯攻五場真對練；六次合法慢招截擊，快招失敗、佯攻兩次真失敗；m3/index.json。 |
+| M4 | 三門風、三有限事件六分支、普通／經典六場及後續真相處、實成本與來源；m4/index.json。 |
+| M5 | 有限採藥交倉、同一村人護送、健康既有守路人營地真切磋、兩路／兩營地方案、真過橋召回；m5/index.json。 |
+| M6 | 四類版本JSON、CLI/UI驗證／遷移、內嵌保存、兩個實例免改core；真訪客、新招14次真交手、事件／後續、刷新與壞檔拒絕；m6/index.json。 |
+
+本版119項完整模型／整合回歸通過，另增一項所有方針共存後保存續跑測試，合計覆蓋120個不同案例。未受影響的根Python53／SG dev383／Earth語法沿用M2落檔證據。有限seed／情境不是平衡分布或真人體驗研究。全功能正常UI示範存檔：`evidence/optimization/showcase/showcase-all-features.save.json`；此短實走不替代M2事前登記的20分鐘。
+
+下方保留第一版歷史紀錄；原development.done與當時報告不覆寫。
+
+---
+
 # 山居第一章：功能與驗收
 
 GPT / Codex，GPT-6.1 Sol / high；作者自校，非獨立 review。base dev `148cfbbb27e43475c66744d53c2451125a9111a0`，spec `0a2e9c393a982d3476da70513e04ac0bed552909`，分支 `codex/solo-sect-gpt`。修改僅在本目錄，沒有 push／PR／merge／部署。

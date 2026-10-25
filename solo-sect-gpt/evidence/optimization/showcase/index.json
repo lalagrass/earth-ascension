@@ -1,0 +1,4705 @@
+{
+  "status": "passed",
+  "errors": [],
+  "source": "m6-ui-final/content-final.save.json, normal UI import and adoption/resume only",
+  "observed": {
+    "realSeconds": 31.897,
+    "startTick": 181131,
+    "endTick": 183574,
+    "note": "30 real-second integration showcase only; does not replace or extend M2 registered20-minute claim",
+    "samples": [
+      {
+        "tick": 181131,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 337015,
+            "y": 252233,
+            "hp": 100,
+            "energy": 7795
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9948
+          },
+          {
+            "id": "amu",
+            "activity": "eat",
+            "x": 245998,
+            "y": 297039,
+            "hp": 100,
+            "energy": 8968
+          },
+          {
+            "id": "lin",
+            "activity": null,
+            "x": 253248,
+            "y": 304197,
+            "hp": 100,
+            "energy": 9954
+          },
+          {
+            "id": "shen",
+            "activity": "eat",
+            "x": 238236,
+            "y": 297127,
+            "hp": 100,
+            "energy": 9993
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49885",
+            "tick": 181131,
+            "type": "command",
+            "actors": [
+              "leader"
+            ],
+            "commandId": "ui.143",
+            "command": "resume",
+            "reason": null
+          },
+          {
+            "id": "event.49886",
+            "tick": 181131,
+            "type": "command",
+            "actors": [
+              "amu"
+            ],
+            "commandId": "ui.144",
+            "command": "resume",
+            "reason": null
+          },
+          {
+            "id": "event.49887",
+            "tick": 181131,
+            "type": "command",
+            "actors": [
+              "lin"
+            ],
+            "commandId": "ui.145",
+            "command": "resume",
+            "reason": null
+          },
+          {
+            "id": "event.49888",
+            "tick": 181131,
+            "type": "command",
+            "actors": [
+              "shen"
+            ],
+            "commandId": "ui.146",
+            "command": "resume",
+            "reason": null
+          }
+        ]
+      },
+      {
+        "tick": 181176,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 321933,
+            "y": 264953,
+            "hp": 100,
+            "energy": 7783
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9948
+          },
+          {
+            "id": "amu",
+            "activity": "eat",
+            "x": 245998,
+            "y": 297039,
+            "hp": 100,
+            "energy": 8968
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 254460,
+            "y": 300540,
+            "hp": 100,
+            "energy": 9944
+          },
+          {
+            "id": "shen",
+            "activity": null,
+            "x": 242001,
+            "y": 300892,
+            "hp": 100,
+            "energy": 9994
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49891",
+            "tick": 181145,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49890",
+            "units": 0
+          },
+          {
+            "id": "event.49892",
+            "tick": 181163,
+            "type": "ate",
+            "actors": [
+              "shen"
+            ]
+          },
+          {
+            "id": "event.49893",
+            "tick": 181163,
+            "type": "activity-complete",
+            "actors": [
+              "shen"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49849",
+            "units": 0
+          },
+          {
+            "id": "event.49895",
+            "tick": 181165,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49894",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181222,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 300214,
+            "y": 275810,
+            "hp": 100,
+            "energy": 7772
+          },
+          {
+            "id": "child",
+            "activity": "paired",
+            "x": 278898,
+            "y": 277910,
+            "hp": 90,
+            "energy": 9937
+          },
+          {
+            "id": "amu",
+            "activity": "eat",
+            "x": 245998,
+            "y": 297039,
+            "hp": 100,
+            "energy": 8968
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 258127,
+            "y": 297368,
+            "hp": 100,
+            "energy": 9932
+          },
+          {
+            "id": "shen",
+            "activity": "talk",
+            "x": 254432,
+            "y": 298308,
+            "hp": 100,
+            "energy": 9971
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49891",
+            "tick": 181145,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49890",
+            "units": 0
+          },
+          {
+            "id": "event.49892",
+            "tick": 181163,
+            "type": "ate",
+            "actors": [
+              "shen"
+            ]
+          },
+          {
+            "id": "event.49893",
+            "tick": 181163,
+            "type": "activity-complete",
+            "actors": [
+              "shen"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49849",
+            "units": 0
+          },
+          {
+            "id": "event.49895",
+            "tick": 181165,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49894",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181268,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 278797,
+            "y": 288211,
+            "hp": 100,
+            "energy": 7760
+          },
+          {
+            "id": "child",
+            "activity": "paired",
+            "x": 303352,
+            "y": 274120,
+            "hp": 90,
+            "energy": 9925
+          },
+          {
+            "id": "amu",
+            "activity": "eat",
+            "x": 245998,
+            "y": 297039,
+            "hp": 100,
+            "energy": 8968
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 268948,
+            "y": 305702,
+            "hp": 100,
+            "energy": 9921
+          },
+          {
+            "id": "shen",
+            "activity": "talk",
+            "x": 271625,
+            "y": 293232,
+            "hp": 100,
+            "energy": 9948
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49891",
+            "tick": 181145,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49890",
+            "units": 0
+          },
+          {
+            "id": "event.49892",
+            "tick": 181163,
+            "type": "ate",
+            "actors": [
+              "shen"
+            ]
+          },
+          {
+            "id": "event.49893",
+            "tick": 181163,
+            "type": "activity-complete",
+            "actors": [
+              "shen"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49849",
+            "units": 0
+          },
+          {
+            "id": "event.49895",
+            "tick": 181165,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49894",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181314,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 264874,
+            "y": 295927,
+            "hp": 100,
+            "energy": 7749
+          },
+          {
+            "id": "child",
+            "activity": "paired",
+            "x": 304640,
+            "y": 273920,
+            "hp": 90,
+            "energy": 9925
+          },
+          {
+            "id": "amu",
+            "activity": null,
+            "x": 246288,
+            "y": 297329,
+            "hp": 100,
+            "energy": 10000
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 257399,
+            "y": 321694,
+            "hp": 100,
+            "energy": 9909
+          },
+          {
+            "id": "shen",
+            "activity": "talk",
+            "x": 279807,
+            "y": 281312,
+            "hp": 100,
+            "energy": 9926
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49893",
+            "tick": 181163,
+            "type": "activity-complete",
+            "actors": [
+              "shen"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49849",
+            "units": 0
+          },
+          {
+            "id": "event.49895",
+            "tick": 181165,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49894",
+            "units": 0
+          },
+          {
+            "id": "event.49898",
+            "tick": 181313,
+            "type": "ate",
+            "actors": [
+              "amu"
+            ]
+          },
+          {
+            "id": "event.49899",
+            "tick": 181313,
+            "type": "activity-complete",
+            "actors": [
+              "amu"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49868",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181361,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 245940,
+            "y": 296960,
+            "hp": 100,
+            "energy": 7740
+          },
+          {
+            "id": "child",
+            "activity": "paired",
+            "x": 304640,
+            "y": 273920,
+            "hp": 90,
+            "energy": 9925
+          },
+          {
+            "id": "amu",
+            "activity": "move",
+            "x": 232692,
+            "y": 295345,
+            "hp": 100,
+            "energy": 9977
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 243948,
+            "y": 337072,
+            "hp": 100,
+            "energy": 9898
+          },
+          {
+            "id": "shen",
+            "activity": "talk",
+            "x": 297836,
+            "y": 274551,
+            "hp": 100,
+            "energy": 9902
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49893",
+            "tick": 181163,
+            "type": "activity-complete",
+            "actors": [
+              "shen"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49849",
+            "units": 0
+          },
+          {
+            "id": "event.49895",
+            "tick": 181165,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49894",
+            "units": 0
+          },
+          {
+            "id": "event.49898",
+            "tick": 181313,
+            "type": "ate",
+            "actors": [
+              "amu"
+            ]
+          },
+          {
+            "id": "event.49899",
+            "tick": 181313,
+            "type": "activity-complete",
+            "actors": [
+              "amu"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49868",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181406,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 245940,
+            "y": 296960,
+            "hp": 100,
+            "energy": 7740
+          },
+          {
+            "id": "child",
+            "activity": "paired",
+            "x": 304640,
+            "y": 273920,
+            "hp": 90,
+            "energy": 9925
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 229623,
+            "y": 283931,
+            "hp": 100,
+            "energy": 9956
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 231069,
+            "y": 351796,
+            "hp": 100,
+            "energy": 9886
+          },
+          {
+            "id": "shen",
+            "activity": "talk",
+            "x": 299371,
+            "y": 273976,
+            "hp": 100,
+            "energy": 9900
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49895",
+            "tick": 181165,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49894",
+            "units": 0
+          },
+          {
+            "id": "event.49898",
+            "tick": 181313,
+            "type": "ate",
+            "actors": [
+              "amu"
+            ]
+          },
+          {
+            "id": "event.49899",
+            "tick": 181313,
+            "type": "activity-complete",
+            "actors": [
+              "amu"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49868",
+            "units": 0
+          },
+          {
+            "id": "event.49901",
+            "tick": 181396,
+            "type": "activity-complete",
+            "actors": [
+              "amu"
+            ],
+            "kind": "move",
+            "completionId": "activity.49900",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181453,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 245940,
+            "y": 296960,
+            "hp": 100,
+            "energy": 7740
+          },
+          {
+            "id": "child",
+            "activity": "paired",
+            "x": 304640,
+            "y": 273920,
+            "hp": 90,
+            "energy": 9925
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 223532,
+            "y": 302195,
+            "hp": 100,
+            "energy": 9933
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 217617,
+            "y": 367175,
+            "hp": 100,
+            "energy": 9875
+          },
+          {
+            "id": "shen",
+            "activity": "talk",
+            "x": 299371,
+            "y": 273976,
+            "hp": 100,
+            "energy": 9900
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49895",
+            "tick": 181165,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49894",
+            "units": 0
+          },
+          {
+            "id": "event.49898",
+            "tick": 181313,
+            "type": "ate",
+            "actors": [
+              "amu"
+            ]
+          },
+          {
+            "id": "event.49899",
+            "tick": 181313,
+            "type": "activity-complete",
+            "actors": [
+              "amu"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49868",
+            "units": 0
+          },
+          {
+            "id": "event.49901",
+            "tick": 181396,
+            "type": "activity-complete",
+            "actors": [
+              "amu"
+            ],
+            "kind": "move",
+            "completionId": "activity.49900",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181498,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 245940,
+            "y": 296960,
+            "hp": 100,
+            "energy": 7740
+          },
+          {
+            "id": "child",
+            "activity": "paired",
+            "x": 304640,
+            "y": 273920,
+            "hp": 90,
+            "energy": 9925
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 217706,
+            "y": 319682,
+            "hp": 100,
+            "energy": 9910
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 204733,
+            "y": 381899,
+            "hp": 100,
+            "energy": 9863
+          },
+          {
+            "id": "shen",
+            "activity": "talk",
+            "x": 299371,
+            "y": 273976,
+            "hp": 100,
+            "energy": 9900
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49895",
+            "tick": 181165,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49894",
+            "units": 0
+          },
+          {
+            "id": "event.49898",
+            "tick": 181313,
+            "type": "ate",
+            "actors": [
+              "amu"
+            ]
+          },
+          {
+            "id": "event.49899",
+            "tick": 181313,
+            "type": "activity-complete",
+            "actors": [
+              "amu"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49868",
+            "units": 0
+          },
+          {
+            "id": "event.49901",
+            "tick": 181396,
+            "type": "activity-complete",
+            "actors": [
+              "amu"
+            ],
+            "kind": "move",
+            "completionId": "activity.49900",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181544,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 245940,
+            "y": 296960,
+            "hp": 100,
+            "energy": 7740
+          },
+          {
+            "id": "child",
+            "activity": "paired",
+            "x": 304640,
+            "y": 273920,
+            "hp": 90,
+            "energy": 9925
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 226763,
+            "y": 310336,
+            "hp": 100,
+            "energy": 9896
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 191559,
+            "y": 396950,
+            "hp": 100,
+            "energy": 9852
+          },
+          {
+            "id": "shen",
+            "activity": "talk",
+            "x": 299371,
+            "y": 273976,
+            "hp": 100,
+            "energy": 9900
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49898",
+            "tick": 181313,
+            "type": "ate",
+            "actors": [
+              "amu"
+            ]
+          },
+          {
+            "id": "event.49899",
+            "tick": 181313,
+            "type": "activity-complete",
+            "actors": [
+              "amu"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49868",
+            "units": 0
+          },
+          {
+            "id": "event.49901",
+            "tick": 181396,
+            "type": "activity-complete",
+            "actors": [
+              "amu"
+            ],
+            "kind": "move",
+            "completionId": "activity.49900",
+            "units": 0
+          },
+          {
+            "id": "event.49903",
+            "tick": 181510,
+            "type": "transfer",
+            "actors": [],
+            "from": "bag.amu",
+            "to": "vat",
+            "item": "water",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "tick": 181592,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 237611,
+            "y": 300113,
+            "hp": 100,
+            "energy": 9229
+          },
+          {
+            "id": "child",
+            "activity": "move",
+            "x": 305459,
+            "y": 279224,
+            "hp": 90,
+            "energy": 9919
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 240078,
+            "y": 297247,
+            "hp": 100,
+            "energy": 9884
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 177812,
+            "y": 412656,
+            "hp": 100,
+            "energy": 9840
+          },
+          {
+            "id": "shen",
+            "activity": "farm",
+            "x": 303837,
+            "y": 283521,
+            "hp": 100,
+            "energy": 9887
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49904",
+            "tick": 181549,
+            "type": "ate",
+            "actors": [
+              "leader"
+            ]
+          },
+          {
+            "id": "event.49905",
+            "tick": 181549,
+            "type": "activity-complete",
+            "actors": [
+              "leader"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49871",
+            "units": 0
+          },
+          {
+            "id": "event.49907",
+            "tick": 181564,
+            "type": "memory",
+            "actors": [
+              "child",
+              "shen"
+            ],
+            "kind": "talk",
+            "text": "交談",
+            "source": "activity.49896"
+          },
+          {
+            "id": "event.49908",
+            "tick": 181564,
+            "type": "activity-complete",
+            "actors": [
+              "shen"
+            ],
+            "kind": "talk",
+            "completionId": "activity.49896",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181637,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 238080,
+            "y": 296960,
+            "hp": 100,
+            "energy": 9228
+          },
+          {
+            "id": "child",
+            "activity": "move",
+            "x": 281267,
+            "y": 280242,
+            "hp": 90,
+            "energy": 9908
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 264166,
+            "y": 296960,
+            "hp": 100,
+            "energy": 9873
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 164925,
+            "y": 427380,
+            "hp": 100,
+            "energy": 9829
+          },
+          {
+            "id": "shen",
+            "activity": "farm",
+            "x": 306827,
+            "y": 301728,
+            "hp": 100,
+            "energy": 9864
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49904",
+            "tick": 181549,
+            "type": "ate",
+            "actors": [
+              "leader"
+            ]
+          },
+          {
+            "id": "event.49905",
+            "tick": 181549,
+            "type": "activity-complete",
+            "actors": [
+              "leader"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49871",
+            "units": 0
+          },
+          {
+            "id": "event.49907",
+            "tick": 181564,
+            "type": "memory",
+            "actors": [
+              "child",
+              "shen"
+            ],
+            "kind": "talk",
+            "text": "交談",
+            "source": "activity.49896"
+          },
+          {
+            "id": "event.49908",
+            "tick": 181564,
+            "type": "activity-complete",
+            "actors": [
+              "shen"
+            ],
+            "kind": "talk",
+            "completionId": "activity.49896",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181684,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 238080,
+            "y": 296960,
+            "hp": 100,
+            "energy": 9228
+          },
+          {
+            "id": "child",
+            "activity": "move",
+            "x": 256000,
+            "y": 281300,
+            "hp": 90,
+            "energy": 9896
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9848
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153754,
+            "y": 440144,
+            "hp": 100,
+            "energy": 9806
+          },
+          {
+            "id": "shen",
+            "activity": "farm",
+            "x": 309953,
+            "y": 320744,
+            "hp": 100,
+            "energy": 9841
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49904",
+            "tick": 181549,
+            "type": "ate",
+            "actors": [
+              "leader"
+            ]
+          },
+          {
+            "id": "event.49905",
+            "tick": 181549,
+            "type": "activity-complete",
+            "actors": [
+              "leader"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49871",
+            "units": 0
+          },
+          {
+            "id": "event.49907",
+            "tick": 181564,
+            "type": "memory",
+            "actors": [
+              "child",
+              "shen"
+            ],
+            "kind": "talk",
+            "text": "交談",
+            "source": "activity.49896"
+          },
+          {
+            "id": "event.49908",
+            "tick": 181564,
+            "type": "activity-complete",
+            "actors": [
+              "shen"
+            ],
+            "kind": "talk",
+            "completionId": "activity.49896",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181729,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 238080,
+            "y": 296960,
+            "hp": 100,
+            "energy": 9228
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9890
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9792
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153754,
+            "y": 440144,
+            "hp": 100,
+            "energy": 9738
+          },
+          {
+            "id": "shen",
+            "activity": "farm",
+            "x": 312945,
+            "y": 338951,
+            "hp": 100,
+            "energy": 9818
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49908",
+            "tick": 181564,
+            "type": "activity-complete",
+            "actors": [
+              "shen"
+            ],
+            "kind": "talk",
+            "completionId": "activity.49896",
+            "units": 0
+          },
+          {
+            "id": "event.49912",
+            "tick": 181698,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49911",
+            "units": 0
+          },
+          {
+            "id": "event.49914",
+            "tick": 181716,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49913",
+            "units": 0
+          },
+          {
+            "id": "event.49916",
+            "tick": 181725,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49915",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181776,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "eat",
+            "x": 238080,
+            "y": 296960,
+            "hp": 100,
+            "energy": 9228
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9890
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9733
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153754,
+            "y": 440144,
+            "hp": 100,
+            "energy": 9668
+          },
+          {
+            "id": "shen",
+            "activity": "farm",
+            "x": 314874,
+            "y": 350684,
+            "hp": 100,
+            "energy": 9785
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49914",
+            "tick": 181716,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49913",
+            "units": 0
+          },
+          {
+            "id": "event.49916",
+            "tick": 181725,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49915",
+            "units": 0
+          },
+          {
+            "id": "event.49918",
+            "tick": 181745,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49917",
+            "units": 0
+          },
+          {
+            "id": "event.49920",
+            "tick": 181765,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49919",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181825,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 231648,
+            "y": 296201,
+            "hp": 100,
+            "energy": 9993
+          },
+          {
+            "id": "child",
+            "activity": "move",
+            "x": 243686,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9884
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9672
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153754,
+            "y": 440144,
+            "hp": 100,
+            "energy": 9594
+          },
+          {
+            "id": "shen",
+            "activity": "farm",
+            "x": 314874,
+            "y": 350684,
+            "hp": 100,
+            "energy": 9736
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49922",
+            "tick": 181785,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49921",
+            "units": 0
+          },
+          {
+            "id": "event.49923",
+            "tick": 181795,
+            "type": "harvest",
+            "actors": [
+              "lin"
+            ],
+            "item": "water",
+            "n": 2
+          },
+          {
+            "id": "event.49924",
+            "tick": 181797,
+            "type": "ate",
+            "actors": [
+              "leader"
+            ]
+          },
+          {
+            "id": "event.49925",
+            "tick": 181797,
+            "type": "activity-complete",
+            "actors": [
+              "leader"
+            ],
+            "kind": "eat",
+            "completionId": "activity.49909",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181872,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 208199,
+            "y": 286801,
+            "hp": 100,
+            "energy": 9981
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 242688,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9884
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9613
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153754,
+            "y": 440144,
+            "hp": 100,
+            "energy": 9524
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 316829,
+            "y": 350538,
+            "hp": 100,
+            "energy": 9707
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49929",
+            "tick": 181837,
+            "type": "watered",
+            "actors": [
+              "shen"
+            ],
+            "plot": "garden.0"
+          },
+          {
+            "id": "event.49930",
+            "tick": 181837,
+            "type": "activity-complete",
+            "actors": [
+              "shen"
+            ],
+            "kind": "farm",
+            "completionId": "activity.49910",
+            "units": 0
+          },
+          {
+            "id": "event.49932",
+            "tick": 181845,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49931",
+            "units": 0
+          },
+          {
+            "id": "event.49935",
+            "tick": 181865,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49934",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 181920,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 217600,
+            "y": 292147,
+            "hp": 100,
+            "energy": 9960
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 242688,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9884
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9553
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153754,
+            "y": 440144,
+            "hp": 100,
+            "energy": 9452
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 306701,
+            "y": 333670,
+            "hp": 100,
+            "energy": 9683
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49938",
+            "tick": 181885,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49937",
+            "units": 0
+          },
+          {
+            "id": "event.49940",
+            "tick": 181905,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49939",
+            "units": 0
+          },
+          {
+            "id": "event.49941",
+            "tick": 181910,
+            "type": "growth",
+            "actors": [
+              "amu"
+            ],
+            "art": "punch",
+            "U": 5,
+            "F": 100,
+            "I": 10,
+            "source": "train"
+          },
+          {
+            "id": "event.49942",
+            "tick": 181915,
+            "type": "harvest",
+            "actors": [
+              "lin"
+            ],
+            "item": "water",
+            "n": 2
+          }
+        ]
+      },
+      {
+        "tick": 181970,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 217600,
+            "y": 312627,
+            "hp": 100,
+            "energy": 9935
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 242688,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9884
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9490
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153754,
+            "y": 440144,
+            "hp": 100,
+            "energy": 9377
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 288296,
+            "y": 328856,
+            "hp": 100,
+            "energy": 9658
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49942",
+            "tick": 181915,
+            "type": "harvest",
+            "actors": [
+              "lin"
+            ],
+            "item": "water",
+            "n": 2
+          },
+          {
+            "id": "event.49944",
+            "tick": 181925,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49943",
+            "units": 0
+          },
+          {
+            "id": "event.49946",
+            "tick": 181945,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49945",
+            "units": 0
+          },
+          {
+            "id": "event.49948",
+            "tick": 181965,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49947",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182016,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 207709,
+            "y": 322513,
+            "hp": 100,
+            "energy": 9913
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 248832,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9881
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9433
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153754,
+            "y": 440144,
+            "hp": 100,
+            "energy": 9308
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 269501,
+            "y": 327268,
+            "hp": 100,
+            "energy": 9635
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49948",
+            "tick": 181965,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49947",
+            "units": 0
+          },
+          {
+            "id": "event.49950",
+            "tick": 181985,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49949",
+            "units": 0
+          },
+          {
+            "id": "event.49951",
+            "tick": 181999,
+            "type": "transfer",
+            "actors": [],
+            "from": "vat",
+            "to": "bag.leader",
+            "item": "water",
+            "n": 1
+          },
+          {
+            "id": "event.49953",
+            "tick": 182016,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49952",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182062,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 194602,
+            "y": 322560,
+            "hp": 100,
+            "energy": 9875
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 248832,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9881
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9375
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 157534,
+            "y": 432767,
+            "hp": 100,
+            "energy": 9265
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 250705,
+            "y": 325680,
+            "hp": 100,
+            "energy": 9612
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49953",
+            "tick": 182016,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49952",
+            "units": 0
+          },
+          {
+            "id": "event.49955",
+            "tick": 182025,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49954",
+            "units": 0
+          },
+          {
+            "id": "event.49957",
+            "tick": 182045,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49956",
+            "units": 0
+          },
+          {
+            "id": "event.49958",
+            "tick": 182048,
+            "type": "recipe-start",
+            "actors": [
+              "leader"
+            ],
+            "recipe": "meal"
+          }
+        ]
+      },
+      {
+        "tick": 182108,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 194602,
+            "y": 322560,
+            "hp": 100,
+            "energy": 9806
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 248832,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9881
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9318
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 163954,
+            "y": 420200,
+            "hp": 100,
+            "energy": 9242
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 231909,
+            "y": 324093,
+            "hp": 100,
+            "energy": 9589
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49958",
+            "tick": 182048,
+            "type": "recipe-start",
+            "actors": [
+              "leader"
+            ],
+            "recipe": "meal"
+          },
+          {
+            "id": "event.49960",
+            "tick": 182065,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49959",
+            "units": 0
+          },
+          {
+            "id": "event.49962",
+            "tick": 182085,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49961",
+            "units": 0
+          },
+          {
+            "id": "event.49964",
+            "tick": 182105,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49963",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182153,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 194602,
+            "y": 322560,
+            "hp": 100,
+            "energy": 9738
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 248832,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9881
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9262
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 170226,
+            "y": 407906,
+            "hp": 100,
+            "energy": 9220
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 213931,
+            "y": 322574,
+            "hp": 100,
+            "energy": 9567
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49966",
+            "tick": 182125,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49965",
+            "units": 0
+          },
+          {
+            "id": "event.49968",
+            "tick": 182145,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49967",
+            "units": 0
+          },
+          {
+            "id": "event.49969",
+            "tick": 182150,
+            "type": "growth",
+            "actors": [
+              "amu"
+            ],
+            "art": "punch",
+            "U": 5,
+            "F": 100,
+            "I": 10,
+            "source": "train"
+          },
+          {
+            "id": "event.49970",
+            "tick": 182152,
+            "type": "transfer",
+            "actors": [],
+            "from": "bag.shen",
+            "to": "vat",
+            "item": "water",
+            "n": 3
+          }
+        ]
+      },
+      {
+        "tick": 182200,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 194602,
+            "y": 322560,
+            "hp": 100,
+            "energy": 9668
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 248832,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9881
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9203
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 176775,
+            "y": 395066,
+            "hp": 100,
+            "energy": 9196
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 238728,
+            "y": 317714,
+            "hp": 100,
+            "energy": 9555
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49969",
+            "tick": 182150,
+            "type": "growth",
+            "actors": [
+              "amu"
+            ],
+            "art": "punch",
+            "U": 5,
+            "F": 100,
+            "I": 10,
+            "source": "train"
+          },
+          {
+            "id": "event.49970",
+            "tick": 182152,
+            "type": "transfer",
+            "actors": [],
+            "from": "bag.shen",
+            "to": "vat",
+            "item": "water",
+            "n": 3
+          },
+          {
+            "id": "event.49972",
+            "tick": 182165,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49971",
+            "units": 0
+          },
+          {
+            "id": "event.49974",
+            "tick": 182185,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49973",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182246,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 194602,
+            "y": 322560,
+            "hp": 100,
+            "energy": 9599
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9878
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9145
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 183186,
+            "y": 382498,
+            "hp": 100,
+            "energy": 9173
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 262998,
+            "y": 312955,
+            "hp": 100,
+            "energy": 9544
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49974",
+            "tick": 182185,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49973",
+            "units": 0
+          },
+          {
+            "id": "event.49976",
+            "tick": 182216,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49975",
+            "units": 0
+          },
+          {
+            "id": "event.49978",
+            "tick": 182225,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49977",
+            "units": 0
+          },
+          {
+            "id": "event.49980",
+            "tick": 182245,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49979",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182294,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 194602,
+            "y": 322560,
+            "hp": 100,
+            "energy": 9527
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9878
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9085
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 189875,
+            "y": 369385,
+            "hp": 100,
+            "energy": 9149
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 285945,
+            "y": 302462,
+            "hp": 100,
+            "energy": 9532
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49978",
+            "tick": 182225,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49977",
+            "units": 0
+          },
+          {
+            "id": "event.49980",
+            "tick": 182245,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49979",
+            "units": 0
+          },
+          {
+            "id": "event.49982",
+            "tick": 182265,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49981",
+            "units": 0
+          },
+          {
+            "id": "event.49984",
+            "tick": 182285,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49983",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182340,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 194602,
+            "y": 322560,
+            "hp": 100,
+            "energy": 9458
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9878
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 9028
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 196286,
+            "y": 356818,
+            "hp": 100,
+            "energy": 9126
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 9512
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49982",
+            "tick": 182265,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49981",
+            "units": 0
+          },
+          {
+            "id": "event.49984",
+            "tick": 182285,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49983",
+            "units": 0
+          },
+          {
+            "id": "event.49986",
+            "tick": 182305,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49985",
+            "units": 0
+          },
+          {
+            "id": "event.49988",
+            "tick": 182325,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49987",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182385,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 201156,
+            "y": 322320,
+            "hp": 100,
+            "energy": 9409
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9878
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 8972
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 202557,
+            "y": 344524,
+            "hp": 100,
+            "energy": 9104
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 9455
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49992",
+            "tick": 182365,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49991",
+            "units": 0
+          },
+          {
+            "id": "event.49993",
+            "tick": 182367,
+            "type": "recipe-cooked",
+            "actors": [
+              "leader"
+            ],
+            "recipe": "meal",
+            "batch": "activity.49927",
+            "source": "pot"
+          },
+          {
+            "id": "event.49994",
+            "tick": 182368,
+            "type": "transfer",
+            "actors": [],
+            "from": "pot",
+            "to": "bag.leader",
+            "item": "meal",
+            "n": 4
+          },
+          {
+            "id": "event.49996",
+            "tick": 182385,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49995",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182432,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 220407,
+            "y": 321624,
+            "hp": 100,
+            "energy": 9385
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 242688,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9872
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 8913
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 209108,
+            "y": 331681,
+            "hp": 100,
+            "energy": 9080
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 9397
+          }
+        ],
+        "events": [
+          {
+            "id": "event.49994",
+            "tick": 182368,
+            "type": "transfer",
+            "actors": [],
+            "from": "pot",
+            "to": "bag.leader",
+            "item": "meal",
+            "n": 4
+          },
+          {
+            "id": "event.49996",
+            "tick": 182385,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49995",
+            "units": 0
+          },
+          {
+            "id": "event.49997",
+            "tick": 182390,
+            "type": "growth",
+            "actors": [
+              "amu"
+            ],
+            "art": "punch",
+            "U": 5,
+            "F": 100,
+            "I": 10,
+            "source": "train"
+          },
+          {
+            "id": "event.49999",
+            "tick": 182427,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.49998",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182477,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 238839,
+            "y": 320970,
+            "hp": 100,
+            "energy": 9363
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 242688,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9872
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 8857
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 213653,
+            "y": 325541,
+            "hp": 100,
+            "energy": 9061
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 9340
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50001",
+            "tick": 182445,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50000",
+            "units": 0
+          },
+          {
+            "id": "event.50003",
+            "tick": 182465,
+            "type": "transfer",
+            "actors": [],
+            "from": "bag.lin",
+            "to": "vat",
+            "item": "water",
+            "n": 4
+          },
+          {
+            "id": "event.50004",
+            "tick": 182465,
+            "type": "activity-complete",
+            "actors": [
+              "lin"
+            ],
+            "kind": "gather",
+            "completionId": "activity.49889",
+            "units": 2
+          },
+          {
+            "id": "event.50005",
+            "tick": 182465,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50002",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182524,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 258090,
+            "y": 320289,
+            "hp": 100,
+            "energy": 9339
+          },
+          {
+            "id": "child",
+            "activity": "move",
+            "x": 242688,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9872
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 8798
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 195699,
+            "y": 335364,
+            "hp": 100,
+            "energy": 9049
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 9282
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50004",
+            "tick": 182465,
+            "type": "activity-complete",
+            "actors": [
+              "lin"
+            ],
+            "kind": "gather",
+            "completionId": "activity.49889",
+            "units": 2
+          },
+          {
+            "id": "event.50005",
+            "tick": 182465,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50002",
+            "units": 0
+          },
+          {
+            "id": "event.50008",
+            "tick": 182485,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50007",
+            "units": 0
+          },
+          {
+            "id": "event.50010",
+            "tick": 182505,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50009",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182569,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "gather",
+            "x": 254542,
+            "y": 323993,
+            "hp": 100,
+            "energy": 9323
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 242688,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9872
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 8742
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 178509,
+            "y": 344769,
+            "hp": 100,
+            "energy": 9038
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 9225
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50015",
+            "tick": 182544,
+            "type": "transfer",
+            "actors": [],
+            "from": "bag.leader",
+            "to": "table",
+            "item": "meal",
+            "n": 4
+          },
+          {
+            "id": "event.50016",
+            "tick": 182545,
+            "type": "activity-complete",
+            "actors": [
+              "leader"
+            ],
+            "kind": "cook",
+            "completionId": "activity.49927",
+            "units": 0
+          },
+          {
+            "id": "event.50017",
+            "tick": 182545,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50013",
+            "units": 0
+          },
+          {
+            "id": "event.50020",
+            "tick": 182565,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50019",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182616,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "gather",
+            "x": 230638,
+            "y": 332152,
+            "hp": 100,
+            "energy": 9312
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 248832,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9869
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 8683
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 160555,
+            "y": 354592,
+            "hp": 100,
+            "energy": 9026
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 9167
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50020",
+            "tick": 182565,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50019",
+            "units": 0
+          },
+          {
+            "id": "event.50021",
+            "tick": 182572,
+            "type": "growth",
+            "actors": [
+              "shen"
+            ],
+            "art": "punch",
+            "U": 5,
+            "F": 100,
+            "I": 0,
+            "source": "train"
+          },
+          {
+            "id": "event.50023",
+            "tick": 182585,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50022",
+            "units": 0
+          },
+          {
+            "id": "event.50025",
+            "tick": 182616,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50024",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182661,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "gather",
+            "x": 207751,
+            "y": 339951,
+            "hp": 100,
+            "energy": 9300
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 248832,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9869
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 8627
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8980
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 9110
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50025",
+            "tick": 182616,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50024",
+            "units": 0
+          },
+          {
+            "id": "event.50027",
+            "tick": 182625,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50026",
+            "units": 0
+          },
+          {
+            "id": "event.50028",
+            "tick": 182630,
+            "type": "growth",
+            "actors": [
+              "amu"
+            ],
+            "art": "punch",
+            "U": 5,
+            "F": 100,
+            "I": 10,
+            "source": "train"
+          },
+          {
+            "id": "event.50030",
+            "tick": 182645,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50029",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182709,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "gather",
+            "x": 183338,
+            "y": 348269,
+            "hp": 100,
+            "energy": 9288
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 248832,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9869
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 8567
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8908
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 9050
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50030",
+            "tick": 182645,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50029",
+            "units": 0
+          },
+          {
+            "id": "event.50032",
+            "tick": 182665,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50031",
+            "units": 0
+          },
+          {
+            "id": "event.50034",
+            "tick": 182685,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50033",
+            "units": 0
+          },
+          {
+            "id": "event.50036",
+            "tick": 182705,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50035",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182756,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "gather",
+            "x": 161742,
+            "y": 358951,
+            "hp": 100,
+            "energy": 9277
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 248832,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9869
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 8508
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8838
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8992
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50034",
+            "tick": 182685,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50033",
+            "units": 0
+          },
+          {
+            "id": "event.50036",
+            "tick": 182705,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50035",
+            "units": 0
+          },
+          {
+            "id": "event.50038",
+            "tick": 182725,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50037",
+            "units": 0
+          },
+          {
+            "id": "event.50040",
+            "tick": 182745,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50039",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182808,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 9274
+          },
+          {
+            "id": "child",
+            "activity": "move",
+            "x": 250982,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9868
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 8443
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8760
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8927
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50040",
+            "tick": 182745,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50039",
+            "units": 0
+          },
+          {
+            "id": "event.50042",
+            "tick": 182765,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50041",
+            "units": 0
+          },
+          {
+            "id": "event.50044",
+            "tick": 182785,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50043",
+            "units": 0
+          },
+          {
+            "id": "event.50045",
+            "tick": 182793,
+            "type": "harvest",
+            "actors": [
+              "lin"
+            ],
+            "item": "veg",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "tick": 182858,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 9274
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9866
+          },
+          {
+            "id": "amu",
+            "activity": "train",
+            "x": 281432,
+            "y": 293183,
+            "hp": 100,
+            "energy": 8380
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8685
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8864
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50047",
+            "tick": 182812,
+            "type": "growth",
+            "actors": [
+              "shen"
+            ],
+            "art": "punch",
+            "U": 5,
+            "F": 100,
+            "I": 0,
+            "source": "train"
+          },
+          {
+            "id": "event.50048",
+            "tick": 182816,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50046",
+            "units": 0
+          },
+          {
+            "id": "event.50050",
+            "tick": 182825,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50049",
+            "units": 0
+          },
+          {
+            "id": "event.50052",
+            "tick": 182845,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50051",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182905,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 9274
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9866
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 268342,
+            "y": 296279,
+            "hp": 100,
+            "energy": 8358
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8614
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8805
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50055",
+            "tick": 182870,
+            "type": "growth",
+            "actors": [
+              "amu"
+            ],
+            "art": "punch",
+            "U": 5,
+            "F": 100,
+            "I": 10,
+            "source": "train"
+          },
+          {
+            "id": "event.50056",
+            "tick": 182870,
+            "type": "activity-complete",
+            "actors": [
+              "amu"
+            ],
+            "kind": "train",
+            "completionId": "activity.49902",
+            "units": 5
+          },
+          {
+            "id": "event.50059",
+            "tick": 182885,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50058",
+            "units": 0
+          },
+          {
+            "id": "event.50061",
+            "tick": 182905,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50060",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 182953,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 9274
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9866
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 244946,
+            "y": 300379,
+            "hp": 100,
+            "energy": 8346
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8542
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8745
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50061",
+            "tick": 182905,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50060",
+            "units": 0
+          },
+          {
+            "id": "event.50063",
+            "tick": 182925,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50062",
+            "units": 0
+          },
+          {
+            "id": "event.50065",
+            "tick": 182945,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50064",
+            "units": 0
+          },
+          {
+            "id": "event.50066",
+            "tick": 182953,
+            "type": "harvest",
+            "actors": [
+              "lin"
+            ],
+            "item": "veg",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "tick": 183000,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 9274
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9866
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 223691,
+            "y": 312819,
+            "hp": 100,
+            "energy": 8335
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8472
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8687
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50065",
+            "tick": 182945,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50064",
+            "units": 0
+          },
+          {
+            "id": "event.50066",
+            "tick": 182953,
+            "type": "harvest",
+            "actors": [
+              "lin"
+            ],
+            "item": "veg",
+            "n": 1
+          },
+          {
+            "id": "event.50068",
+            "tick": 182965,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50067",
+            "units": 0
+          },
+          {
+            "id": "event.50070",
+            "tick": 182985,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50069",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 183049,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 9274
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 242688,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9860
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 203944,
+            "y": 330243,
+            "hp": 100,
+            "energy": 8322
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8398
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8625
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50068",
+            "tick": 182965,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50067",
+            "units": 0
+          },
+          {
+            "id": "event.50070",
+            "tick": 182985,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50069",
+            "units": 0
+          },
+          {
+            "id": "event.50072",
+            "tick": 183027,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50071",
+            "units": 0
+          },
+          {
+            "id": "event.50074",
+            "tick": 183045,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50073",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 183096,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 9274
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 242688,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9860
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 184000,
+            "y": 345372,
+            "hp": 100,
+            "energy": 8311
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8328
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8567
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50074",
+            "tick": 183045,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50073",
+            "units": 0
+          },
+          {
+            "id": "event.50075",
+            "tick": 183052,
+            "type": "growth",
+            "actors": [
+              "shen"
+            ],
+            "art": "punch",
+            "U": 5,
+            "F": 100,
+            "I": 0,
+            "source": "train"
+          },
+          {
+            "id": "event.50077",
+            "tick": 183065,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50076",
+            "units": 0
+          },
+          {
+            "id": "event.50079",
+            "tick": 183085,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50078",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 183146,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 9274
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 242688,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9860
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 161667,
+            "y": 358281,
+            "hp": 100,
+            "energy": 8298
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8253
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8504
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50081",
+            "tick": 183105,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50080",
+            "units": 0
+          },
+          {
+            "id": "event.50082",
+            "tick": 183113,
+            "type": "harvest",
+            "actors": [
+              "lin"
+            ],
+            "item": "veg",
+            "n": 1
+          },
+          {
+            "id": "event.50084",
+            "tick": 183125,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50083",
+            "units": 0
+          },
+          {
+            "id": "event.50086",
+            "tick": 183145,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50085",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 183194,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 160709,
+            "y": 360507,
+            "hp": 100,
+            "energy": 9272
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 242688,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9860
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 8286
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8181
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8444
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50084",
+            "tick": 183125,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50083",
+            "units": 0
+          },
+          {
+            "id": "event.50086",
+            "tick": 183145,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50085",
+            "units": 0
+          },
+          {
+            "id": "event.50088",
+            "tick": 183165,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50087",
+            "units": 0
+          },
+          {
+            "id": "event.50090",
+            "tick": 183185,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50089",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 183242,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 169128,
+            "y": 336317,
+            "hp": 100,
+            "energy": 9260
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 248832,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9857
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 8286
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8109
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8384
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50088",
+            "tick": 183165,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50087",
+            "units": 0
+          },
+          {
+            "id": "event.50090",
+            "tick": 183185,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50089",
+            "units": 0
+          },
+          {
+            "id": "event.50093",
+            "tick": 183216,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50092",
+            "units": 0
+          },
+          {
+            "id": "event.50095",
+            "tick": 183225,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50094",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 183290,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 171822,
+            "y": 310656,
+            "hp": 100,
+            "energy": 9248
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 248832,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9857
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 8286
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 8037
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8324
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50097",
+            "tick": 183245,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50096",
+            "units": 0
+          },
+          {
+            "id": "event.50099",
+            "tick": 183265,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50098",
+            "units": 0
+          },
+          {
+            "id": "event.50100",
+            "tick": 183273,
+            "type": "harvest",
+            "actors": [
+              "lin"
+            ],
+            "item": "veg",
+            "n": 1
+          },
+          {
+            "id": "event.50102",
+            "tick": 183285,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50101",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 183338,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 178349,
+            "y": 288744,
+            "hp": 100,
+            "energy": 9236
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 248832,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9857
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 8286
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 7965
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8264
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50102",
+            "tick": 183285,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50101",
+            "units": 0
+          },
+          {
+            "id": "event.50103",
+            "tick": 183292,
+            "type": "growth",
+            "actors": [
+              "shen"
+            ],
+            "art": "punch",
+            "U": 5,
+            "F": 100,
+            "I": 0,
+            "source": "train"
+          },
+          {
+            "id": "event.50105",
+            "tick": 183305,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50104",
+            "units": 0
+          },
+          {
+            "id": "event.50107",
+            "tick": 183325,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50106",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 183384,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 202895,
+            "y": 285677,
+            "hp": 100,
+            "energy": 9224
+          },
+          {
+            "id": "child",
+            "activity": "move",
+            "x": 248832,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9857
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 8286
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 7896
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8207
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50105",
+            "tick": 183305,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50104",
+            "units": 0
+          },
+          {
+            "id": "event.50107",
+            "tick": 183325,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50106",
+            "units": 0
+          },
+          {
+            "id": "event.50109",
+            "tick": 183345,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50108",
+            "units": 0
+          },
+          {
+            "id": "event.50111",
+            "tick": 183365,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50110",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 183432,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 217600,
+            "y": 293376,
+            "hp": 100,
+            "energy": 9202
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9854
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 159232,
+            "y": 364544,
+            "hp": 100,
+            "energy": 8286
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 153680,
+            "y": 358356,
+            "hp": 100,
+            "energy": 7824
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8147
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50113",
+            "tick": 183385,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50112",
+            "units": 0
+          },
+          {
+            "id": "event.50114",
+            "tick": 183388,
+            "type": "transfer",
+            "actors": [],
+            "from": "store",
+            "to": "bag.leader",
+            "item": "veg",
+            "n": 2
+          },
+          {
+            "id": "event.50116",
+            "tick": 183416,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50115",
+            "units": 0
+          },
+          {
+            "id": "event.50118",
+            "tick": 183425,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50117",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 183478,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 217600,
+            "y": 312217,
+            "hp": 100,
+            "energy": 9179
+          },
+          {
+            "id": "child",
+            "activity": null,
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9854
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 153600,
+            "y": 358400,
+            "hp": 100,
+            "energy": 8237
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 161339,
+            "y": 346836,
+            "hp": 100,
+            "energy": 7799
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8089
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50116",
+            "tick": 183416,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50115",
+            "units": 0
+          },
+          {
+            "id": "event.50118",
+            "tick": 183425,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50117",
+            "units": 0
+          },
+          {
+            "id": "event.50120",
+            "tick": 183445,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50119",
+            "units": 0
+          },
+          {
+            "id": "event.50122",
+            "tick": 183465,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50121",
+            "units": 0
+          }
+        ]
+      },
+      {
+        "tick": 183524,
+        "people": [
+          {
+            "id": "leader",
+            "activity": "cook",
+            "x": 208117,
+            "y": 322512,
+            "hp": 100,
+            "energy": 9157
+          },
+          {
+            "id": "child",
+            "activity": "move",
+            "x": 254976,
+            "y": 281600,
+            "hp": 90,
+            "energy": 9854
+          },
+          {
+            "id": "amu",
+            "activity": "gather",
+            "x": 153600,
+            "y": 358400,
+            "hp": 100,
+            "energy": 8168
+          },
+          {
+            "id": "lin",
+            "activity": "gather",
+            "x": 169168,
+            "y": 335060,
+            "hp": 100,
+            "energy": 7776
+          },
+          {
+            "id": "shen",
+            "activity": "train",
+            "x": 304640,
+            "y": 293120,
+            "hp": 100,
+            "energy": 8032
+          }
+        ],
+        "events": [
+          {
+            "id": "event.50122",
+            "tick": 183465,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50121",
+            "units": 0
+          },
+          {
+            "id": "event.50124",
+            "tick": 183485,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50123",
+            "units": 0
+          },
+          {
+            "id": "event.50126",
+            "tick": 183505,
+            "type": "activity-complete",
+            "actors": [
+              "child"
+            ],
+            "kind": "move",
+            "completionId": "activity.50125",
+            "units": 0
+          },
+          {
+            "id": "event.50127",
+            "tick": 183508,
+            "type": "transfer",
+            "actors": [],
+            "from": "vat",
+            "to": "bag.leader",
+            "item": "water",
+            "n": 1
+          }
+        ]
+      }
+    ]
+  }
+}

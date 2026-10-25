@@ -1,0 +1,18 @@
+✔ M6 extracted core values are identical; v0 migration equals v1 and a second JSON validates (5.950542ms)
+✔ M6 four category catalog is per-world, immutable and rendering reads do not mutate state (10.486708ms)
+✔ M6 unknown, unsafe, duplicate, dangling and out-of-range packs reject with gameplay state intact (11.203666ms)
+✔ M6 real study precedes custom action; actual energy, timing, damage family and save in-flight are preserved (501.4645ms)
+✔ M6 custom staff family retains actual gear requirements and youth cannot study (40.617542ms)
+✔ M6 profile person really walks from south, participates in same data event and callback with finite effects (448.630625ms)
+✔ M6 old saves continue without adoption; explicit migration keeps people, goods and RNG, old reader refuses new header (531.680209ms)
+✔ M6 saved embedded packs continue independently of the author input and reject checksum-valid broken references (313.055834ms)
+✔ M6 five fixed seeds preserve installed data and mid-study continuation (2591.424542ms)
+✔ M6 authored punch uses its real longer geometry and six damage, without changing the built-in punch (27.113917ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4560.865625

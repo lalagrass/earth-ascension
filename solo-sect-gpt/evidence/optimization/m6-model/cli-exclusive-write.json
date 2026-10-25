@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "refused": true,
+  "before": "7a124ace66d6d36660b9158803e82b61965d06936ed70feb18b669077399e5a8",
+  "after": "7a124ace66d6d36660b9158803e82b61965d06936ed70feb18b669077399e5a8",
+  "message": "EEXIST: file already exists, open 'solo-sect-gpt/evidence/optimization/m6-model/legacy-migrated.save.json'"
+}

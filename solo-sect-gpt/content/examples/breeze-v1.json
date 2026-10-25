@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "id": "breeze",
+  "version": "1.0.0",
+  "title": "溪風小集 · 四類內容範例",
+  "people": {
+    "breeze.liu": {
+      "name": "柳青岫",
+      "description": "沿山路訪友的採藥人，懂得一式慢拳。",
+      "adult": true,
+      "stats": [
+        4,
+        3,
+        4,
+        5,
+        4
+      ],
+      "traits": [
+        -1,
+        2
+      ],
+      "color": "#729786",
+      "skills": {
+        "punch": {
+          "U": 8,
+          "F": 18
+        }
+      },
+      "moves": [
+        "breeze.slowfist"
+      ]
+    }
+  },
+  "moves": {
+    "breeze.slowfist": {
+      "name": "松風緩拳",
+      "description": "長一點的拳路與起手；距離稍遠，耗能與收勢仍要實算。",
+      "base": "punch",
+      "wind": 20,
+      "active": 2,
+      "recover": 18,
+      "range": 24,
+      "width": 14,
+      "damage": 6,
+      "cost": 250,
+      "requires": {
+        "U": 5,
+        "F": 18
+      }
+    }
+  },
+  "sectActivities": {
+    "breeze.gathering": {
+      "name": "溪風小集",
+      "description": "借外功場的竹席相處；練拳與留座各有時間和人情。",
+      "base": "freedom",
+      "color": "#729786",
+      "symbol": "風"
+    }
+  },
+  "events": {
+    "breeze.seat": {
+      "name": "竹席留一個位置",
+      "pack": "breeze.gathering",
+      "person": "breeze.liu",
+      "role": "顧人",
+      "text": "柳青岫把藥簍放到竹席旁，問這半刻要一起讀拳，還是留給朋友說話。",
+      "choices": {
+        "talk": {
+          "name": "留座聽山路見聞",
+          "cost": "12秒相處；精力+2、互信+3，沒有熟練獎勵",
+          "duration": 240,
+          "meal": 0,
+          "energy": 200,
+          "trust": 3,
+          "practice": 0,
+          "prestige": 0,
+          "pose": "talk",
+          "callback": "那天你沒有急著問我會什麼。這次我也留半刻，陪你照看院子。"
+        },
+        "practice": {
+          "name": "同練已學的松風拳",
+          "cost": "需先研讀松風緩拳；12秒真練、拳熟練+3、精力−8、互信+1",
+          "duration": 240,
+          "meal": 0,
+          "energy": -800,
+          "trust": 1,
+          "practice": 3,
+          "prestige": 0,
+          "pose": "practice",
+          "callback": "那輪慢拳沒有捷徑。下回先留些力氣，再一起練。",
+          "requiresMove": "breeze.slowfist"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,318 @@
+{
+  "status": "passed",
+  "author": "GPT / Codex; GPT-6.1 Sol / high",
+  "baseCommit": "f34747b",
+  "spec": "docs/optimization/M6.md",
+  "format": "content/FORMAT.md",
+  "normalUI": "evidence/optimization/m6-ui-final/index.json",
+  "initialUI": "evidence/optimization/m6-ui-initial/index.json",
+  "regression": "evidence/optimization/m6-model/final-regression.log",
+  "additionalCombinedCase": "evidence/optimization/m6-model/combined-features.log",
+  "scopeAndSyntax": "evidence/optimization/m6-model/final-scope-and-syntax.json",
+  "cliValidation": "evidence/optimization/m6-model/cli-validation.log",
+  "cliSaveMigration": "evidence/optimization/m6-model/cli-save-migration.log",
+  "cliExclusiveWrite": "evidence/optimization/m6-model/cli-exclusive-write.json",
+  "showcase": "evidence/optimization/showcase/index.json",
+  "showcaseSave": "evidence/optimization/showcase/showcase-all-features.save.json",
+  "counts": {
+    "fullRegression": 119,
+    "additionalAllFeaturesCase": 1,
+    "distinctCasesCovered": 120,
+    "contentSubsetIncludingAdditional": 12
+  },
+  "proof": {
+    "adoptionPreserved": [
+      "people",
+      "inventories",
+      "random",
+      "tick"
+    ],
+    "previewPure": true,
+    "actualAirAction": {
+      "id": "action.48962",
+      "move": "punch",
+      "target": null,
+      "phase": "windup",
+      "remaining": 20,
+      "wind": 20,
+      "active": 2,
+      "recover": 15,
+      "hitSet": [],
+      "aim": [
+        -6018,
+        -7986
+      ],
+      "started": 172204,
+      "initialThreat": false,
+      "failure": null,
+      "expectedTargetAction": null,
+      "energyCost": 250,
+      "contentMove": "breeze.slowfist"
+    },
+    "actionSaveLoad": true,
+    "combatActions": [
+      {
+        "id": "event.49010",
+        "tick": 172493,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49009",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49020",
+        "tick": 172530,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49019",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49031",
+        "tick": 172567,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49030",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49041",
+        "tick": 172604,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49040",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49051",
+        "tick": 172641,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49050",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49062",
+        "tick": 172678,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49061",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49073",
+        "tick": 172715,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49072",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49084",
+        "tick": 172752,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49083",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49095",
+        "tick": 172789,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49094",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49103",
+        "tick": 172826,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49102",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49113",
+        "tick": 172863,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49112",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49124",
+        "tick": 172900,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49123",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49135",
+        "tick": 172937,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49134",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49146",
+        "tick": 172974,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49145",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      }
+    ],
+    "arrival": {
+      "x": 254720,
+      "y": 296960,
+      "tick": 174143
+    },
+    "event": {
+      "version": 1,
+      "event": "breeze.seat",
+      "choice": "practice",
+      "casting": {
+        "cast": [
+          "leader",
+          "amu",
+          "breeze.liu"
+        ],
+        "peer": "amu",
+        "voice": "breeze.liu",
+        "mode": "classic",
+        "reason": "以本人現時身份參與，不強制正史"
+      },
+      "callback": false,
+      "status": "completed",
+      "phase": "together",
+      "activity": "activity.49224",
+      "started": 174143,
+      "progress": 240,
+      "ended": 180297,
+      "callbackDone": true,
+      "callbackAt": 180487
+    },
+    "secondJSONAction": {
+      "id": "action.49872",
+      "move": "punch",
+      "target": null,
+      "phase": "windup",
+      "remaining": 12,
+      "wind": 12,
+      "active": 2,
+      "recover": 10,
+      "hitSet": [],
+      "aim": [
+        6018,
+        7986
+      ],
+      "started": 181097,
+      "initialThreat": false,
+      "failure": null,
+      "expectedTargetAction": null,
+      "energyCost": 220,
+      "contentMove": "shortform.closefist"
+    },
+    "fullRefreshRoundtrip": true,
+    "invalidPackPreserved": true,
+    "corruptSavePreserved": true
+  },
+  "limits": [
+    "Author self-review; no independent review/human playtest or hardware audio listening",
+    "JSON only, at most4packs and20entries/category/pack; existing3move families and3venue families; no arbitrary code/algorithm or same-ID hot replacement",
+    "FNV fingerprint identifies changes, not authenticity; save envelope remains SHA256 and semantic validation",
+    "Examples and five seed checks are bounded, not a general balance distribution",
+    "30-second showcase loop is extra integration evidence, not another M2 registered20-minute trial"
+  ],
+  "unaffectedRootChecksReused": [
+    "m2-model/root-python.log:53pass",
+    "m2-model/root-sect-node.log:383pass",
+    "m2-model/root-earth-syntax.log:pass"
+  ]
+}

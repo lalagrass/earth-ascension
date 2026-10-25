@@ -1,3 +1,4 @@
+import{adoptContent,installPack,inviteContent,studyContent,preferContent,contentActivityTick,contentTick}from'./content.mjs';
 import{adoptTrail,launchJourney,journeyTick,stopJourneySpar}from'./journey.mjs';
 import{adoptCulture,selectCulture,startLife,cultureActivityTick,stopLife}from'./culture.mjs';
 import {rulesFor} from './save-features.mjs';
@@ -33,6 +34,11 @@ export function command(w,c){
  }else if(c.type==='resume'){if(p.temporary){cancel(w,p,'取消臨時工作，恢復自主');delete p.temporary;}p.manualStop=false;p.intent=null;p.auto=true;}
  else if(c.type==='recall'){result=begin(w,p,'return',{},true);}
  else if(c.type==='lifePolicy'){try{const policy=structuredClone(c.policy||DEFAULT_LIFE_POLICY);validateLifePolicy(policy,w.inventories.vat.capacity);w.lifePolicy=policy;w.rulesVersion=rulesFor(w);event(w,'life-policy-adopted',[],{version:policy.version});}catch(e){result={ok:false,reason:e.message};}}
+ else if(c.type==='adoptContent')result=adoptContent(w);
+ else if(c.type==='installContent')result=installPack(w,c.pack);
+ else if(c.type==='inviteContent')result=inviteContent(w,c.person);
+ else if(c.type==='studyContent')result=studyContent(w,p,c.move);
+ else if(c.type==='preferContent')result=preferContent(w,p,c.move);
  else if(c.type==='adoptTrail')result=adoptTrail(w);
  else if(c.type==='journey')result=launchJourney(w,c.actors||[],c.objective,c.route,c.camp);
  else if(c.type==='adoptCulture')result=adoptCulture(w);
@@ -75,7 +81,7 @@ export function command(w,c){
  else if(c.type==='spar')result=beginSpar(w,p,w.people[c.target]);
  else if(c.type==='drill')result=startDrill(w,c.actors,c.config);
  else if(c.type==='endDrill'){if(w.drill)w.drill.status='cancelled';for(const o of sorted(w.people))if(o.combatSession===w.drill?.id){o.combatSession=null;o.combatTarget=null;if(o.action){o.action.phase='recover';o.action.remaining=o.action.recover;}o.manualStop=false;if(o.rank==='training'){o.trainingDefeated=true;}}}
- else if(c.type==='preferred'){if(c.move==='push'&&p.pushLearned||c.move==='punch')p.move=c.move;else result={ok:false,reason:'偏好只選已學拳／掌；棍劍請先換裝'};}
+ else if(c.type==='preferred'){if(c.move==='push'&&p.pushLearned||c.move==='punch'){p.move=c.move;delete p.contentPreferred;}else result={ok:false,reason:'偏好只選已學拳／掌；棍劍請先換裝'};}
  else if(c.type==='attack'&&(p.kind!=='human'||p.residence!=='resident'))result={ok:false,reason:'試招請選成年門人；訪客透過同意的約定交流'};
  else if(c.type==='attack'&&p.residence==='visitor'&&p.canonicalIdentity&&w.identityMode==='matureGuest'&&!p.combatSession)result={ok:false,reason:'成熟宗師不接受代打指令'};
  else if(c.type==='attack')result=startAction(w,p,c.move,w.people[c.target],true);
@@ -96,11 +102,11 @@ export function step(w,batch=[]){for(const c of batch)command(w,c);w.tick++;w.pe
  const activityOrder=sorted(w.people).sort((a,b)=>(w.activities[a.activity]?.started??Infinity)-(w.activities[b.activity]?.started??Infinity)||a.id.localeCompare(b.id));
  for(const p of activityOrder){
   if(p.moving){p.energyRemainder+=(bagWeight(w,p)?10:5);while(p.energyRemainder>=20){p.energy=Math.max(0,p.energy-1);p.energyRemainder-=20;}}
-  if(!cultureActivityTick(w,p)&&!classActivityTick(w,p)&&!travelActivityTick(w,p)&&!storyActivityTick(w,p)&&!lifeActivityTick(w,p))activityTick(w,p);
+  if(!contentActivityTick(w,p)&&!cultureActivityTick(w,p)&&!classActivityTick(w,p)&&!travelActivityTick(w,p)&&!storyActivityTick(w,p)&&!lifeActivityTick(w,p))activityTick(w,p);
   // Energy uses a fixed hundredth-point accumulator; no renderer state enters rules.
   p.energy=Math.round(p.energy*1000)/1000;
  }
- lifeTick(w);expeditionTick(w);journeyTick(w);storiesTick(w);discover(w);
+ lifeTick(w);contentTick(w);expeditionTick(w);journeyTick(w);storiesTick(w);discover(w);
  for(const item of ['veg','herb']){const s=w.ecology[item];if(s.day<day(w)){s.day=day(w);s.remaining=8;event(w,'resource-regrow',[],{item});}}
  closeTick(w);const violations=invariants(w);if(violations.length)throw Error('World invariant at seed '+w.seed+' tick '+w.tick+': '+violations.join('; '));return w;
 }
