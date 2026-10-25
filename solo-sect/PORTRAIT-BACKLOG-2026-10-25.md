@@ -165,3 +165,42 @@
   4. 統一構圖：一律半身，頭頂留白 5%，眼睛約在 1/3 高。卡框和陰影都一樣。
   5. 表情誇張的上限：女性可以眨眼、吐舌、壞笑，但不畫成諷刺漫畫的大臉；男性不畫成美型臉。
 - **PB-03：** 阿星照電影長相重畫的那項維持暫停。這次是原創風格化的重畫，不受影響。
+
+## 7.5 定調完成與 v1.5 美術排程（2026-10-25 擁有人核准）
+
+**定調完成（鎖定參考）：** `huangrong-v2-a`（inkpretty）、`guojing-v2-b`（wcaricature）、`axing-v2b-a`（wcaricature）。PB-22 調和規則核准。之後所有重畫都以這三張當參考圖，依性別套風格規則；新圖放 `assets/portraits/v2/`，舊圖保留，用 v2 開關切換。PB-03（照電影長相重畫阿星）仍然暫停。
+
+| ID | 角色 | 性別 | 風格 | 參考圖 | 版本 |
+|---|---|---|---|---|---|
+| PB-23 | 韋小寶（`weixiaobao`）・主角 | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-24 | 令狐沖（`linghuchong`）・主角 | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-25 | 岳不群（`yuebuqun`）・主角 | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-26 | 張無忌（`zhangwuji`）・主角 | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-27 | 阿芳（`afang`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
+| PB-28 | 阿珂（`ake`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
+| PB-29 | 包租婆（`baozupo`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
+| PB-30 | 彩鳳（`caifeng`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
+| PB-31 | 穆念慈（`munianci`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
+| PB-32 | 寧中則（`ningzhongze`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
+| PB-33 | 任盈盈（`renyingying`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
+| PB-34 | 雙兒（`shuanger`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
+| PB-35 | 小龍女（`xiaolongnv`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
+| PB-36 | 小昭（`xiaozhao`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
+| PB-37 | 岳靈珊（`yuelingshan`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
+| PB-38 | 趙敏（`zhaomin`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
+| PB-39 | 東方不敗（`dongfangbubai`） | 待定 | inkpretty（預設，請擁有人確認） | huangrong-v2-a | v1.5 美術任務 |
+| PB-40 | 包租公（`baozugong`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-41 | 肥仔聰（`feizaicong`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-42 | 風清揚（`fengqingyang`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-43 | 海大富（`haidafu`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-44 | 洪七公（`hongqigong`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-45 | 火雲邪神（`huoyunxieshen`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-46 | 苦力強（`kulijiang`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-47 | 林平之（`linpingzhi`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-48 | 田伯光（`tianboguang`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-49 | 楊過（`yangguo`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-50 | 油炸鬼（`youzhagui`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-51 | 周伯通（`zhoubotong`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
+| PB-52 | 批次後製：PB-15～19 套用於全部 v2 新圖與舊圖 | — | 依 PB-22 | — | v1.5 美術任務 |
+
+附註：包租婆照規則用 inkpretty，但角色靠誇張喜感，表情上限放寬到壞笑、怒吼。東方不敗的性別風格待擁有人確認，預設 inkpretty。每位各畫 2 張候選，挑 1 張，另附 64/48px 縮圖。驗收標準是跟三張定調圖並排不衝突。
