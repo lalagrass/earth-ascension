@@ -6,6 +6,7 @@ import { encounterPool, mkComp, heroById } from './hero.mjs';
 import { learnArt, artById } from './arts.mjs';
 import { log } from './util.mjs';
 import { initPair } from './social.mjs';
+import { onJoin13 } from './jianghu.mjs';
 export const xidOf = (s, d) => (d.id === 'hero' ? s.hero?.id || 'hero' : d.id);
 export const present = (s, x) => s.ds.some((d) => xidOf(s, d) === x);
 const kitchenLv = (s) => s.fac?.kitchen?.stage || 0;
@@ -21,11 +22,34 @@ export const XIA = {
   hongqigong: { name: '洪七公', role: 'teacher', where: '膳房', title: '洪七公聞香而來', text: '一個背酒葫蘆的老叫化蹲在膳房門口吞口水：「好香！這手藝……是誰燒的？老叫化走不動了。」',
     need: (s) => present(s, 'huangrong') && (s.xia.cooks || 0) >= (s.hero?.flags?.hong ? 1 : 2) && (kitchenLv(s) >= 1 || s.hero?.flags?.hong), why: '黃蓉在門中且下過廚（膳房或郭靖主線）' },
 };
-export const XIA_PAIRS = { 'guojing+huangrong': 0.25, 'hongqigong+huangrong': 0.1 };
+// v1.3 第二組名俠（客卿）：楊過、小龍女、周伯通（師父，賭贏才教）、韋小寶（喜劇非戰鬥）、包租公／包租婆（功夫）
+const T13 = (name, stats, personality, skills) => ({ name, stats, personality, skills });
+export const XIA_T = {
+  yangguo: T13('楊過', { wu: 5, gen: 4, li: 3 }, ['free', 'brave', 'sociable'], { leg: 20, palm: 40, strength: 26, farming: 2, herbal: 2, agility: 28, cooking: 2 }),
+  xiaolongnv: T13('小龍女', { wu: 5, gen: 4, li: 2 }, ['quiet', 'kind'], { leg: 24, palm: 32, strength: 10, farming: 4, herbal: 16, agility: 40, cooking: 4 }),
+  weixiaobao: T13('韋小寶', { wu: 1, gen: 1, li: 1 }, ['glib', 'lazy', 'optimist'], { leg: 6, palm: 4, strength: 4, farming: 2, herbal: 2, agility: 30, cooking: 10 }),
+  baozupo: T13('包租婆', { wu: 3, gen: 4, li: 4 }, ['stubborn', 'brave'], { leg: 26, palm: 40, strength: 36, farming: 4, herbal: 2, agility: 22, cooking: 8 }),
+  baozugong: T13('包租公', { wu: 4, gen: 4, li: 2 }, ['lazy', 'gentle'], { leg: 30, palm: 38, strength: 16, farming: 4, herbal: 2, agility: 34, cooking: 2 }),
+};
+const XIA13 = {
+  yangguo: { name: '楊過', role: 'guest', where: '後山', title: '後山的獨臂少年與神鵰', text: '後山出現一頭醜陋巨鵰，鵰後跟著一個灰衣少年：「借貴派一塊地方住幾天，我在等一個人。」',
+    need: (s) => (s.records?.sect || 0) >= 500 || (s.rep || 0) >= 18, why: '巡山走到山腰（500 步）或名聲 18' },
+  xiaolongnv: { name: '小龍女', role: 'guest', where: '古墓', title: '古墓裡的白衣女子', text: '後山石墓的門開了一道縫。一個白衣女子冷冷地說：「這裡太吵。」——她在找一個叫過兒的人。',
+    need: (s) => present(s, 'yangguo') || (s.records?.sect || 0) >= 900, why: '楊過在門中，或巡山 900 步' },
+  zhoubotong: { name: '周伯通', role: 'teacher', where: '村路', title: '老頑童要打賭', text: '一個白鬍子老頭攔住巡山隊：「來來來，陪老頑童玩！贏了我就教你們好玩的功夫！」',
+    need: (s) => (s.day || 0) >= 4 && ((s.rep || 0) >= 10 || present(s, 'xiaolongnv')), why: '第 4 天後且名聲 10（或小龍女在門中）' },
+  weixiaobao: { name: '韋小寶', role: 'guest', where: '賭坊', title: '賭坊裡的小混混', text: '村路賭坊裡一個小滑頭贏光了全場：「這位掌門，收不收徒弟？我會拍馬屁、會賭錢、還會跑！」',
+    need: (s) => (s.res?.coin || 0) >= 20 && (s.day || 0) >= 3, why: '第 3 天後且香火錢 20' },
+  baozupo: { name: '包租婆', role: 'guest', where: '豬籠城寨', title: '豬籠城寨的包租婆', text: '一陣獅吼震得瓦片亂飛：「交租啊！」——山下大雜院的包租婆帶著老公搬上山來，說是避斧頭幫。',
+    need: (s) => (s.res && (s.ds || []).filter((d) => d.role === 'laborer').length >= 2) || s.hero?.id === 'axing', why: '雇了 2 個雜工（或阿星開局）' },
+  baozugong: { name: '包租公', role: 'guest', where: '豬籠城寨', title: '包租公', text: '', need: () => false, why: '跟包租婆一起來' },
+};
+export const XIA_PAIRS = { 'guojing+huangrong': 0.25, 'hongqigong+huangrong': 0.1, 'xiaolongnv+yangguo': 0.25, 'baozugong+baozupo': 0.25 };
+Object.assign(XIA, XIA13);
 export const PAIR_CAP = 0.25;
 export const xiaInit = () => ({ done: {}, declined: {}, joinT: {}, cooks: 0, lastT: -1e9, pending: null, teacher: null, left: {} });
 export function xiaPool(s) {
-  const ex = new Set(s.encExclude || []), pool = new Set([...encounterPool(s), 'hongqigong']);
+  const ex = new Set(s.encExclude || []), pool = new Set([...encounterPool(s), 'hongqigong', ...Object.keys(XIA13)]);
   return Object.keys(XIA).filter((k) => pool.has(k) && !ex.has(k) && !present(s, k) && s.xia.teacher?.id !== k && !s.xia.done[k] && !s.xia.left[k]);
 }
 // 每 tick：一天最多一個奇遇；不在場、未拒絕三天內
@@ -43,6 +67,7 @@ export function xiaStep(s, H) {
 export function xiaResolve(s, ch, i) {
   const k = ch.xia, A = XIA[k]; s.choices = s.choices.filter((c) => c !== ch); s.xia.pending = null;
   if (i !== 0) { s.xia.declined[k] = s.t; log(s, `婉拒了${A.name}。（三天後或許還會再來）`); return true; }
+  if (A.role === 'teacher' && k === 'zhoubotong') { s.jh ??= {}; s.jh.zbt = { since: s.t, wins: 0, losses: 0, taught: [] }; s.xia.done[k] = true; log(s, '周伯通拍手大笑：「好好好，有人陪我玩了！」在山門邊搭了個草窩。'); return true; }
   if (A.role === 'teacher') { s.xia.teacher = { id: k, name: A.name, stage: 0, meals: 0, since: s.t, lastStageT: s.t - DAY, student: null }; s.rep = (s.rep || 0) + 3;
     const hr = s.ds.find((d) => xidOf(s, d) === 'huangrong'); if (hr) s.aff[`${hr.id}>hongqigong`] = 40;
     log(s, `洪七公在膳房邊上住下：「女娃娃的菜好吃，老叫化就教點東西。」（吃人嘴軟）`); arcAdvance(s, 2, '吃人嘴軟：洪七公留下了'); return true; }
@@ -51,13 +76,15 @@ export function xiaResolve(s, ch, i) {
 // 突然入門的高手：帶著底子來（技藝高、心情好）
 export function join(s, k) {
   let d;
-  if (k === 'huangrong') d = mkComp('huangrong', s.ds.length);
+  const Y = XIA_T[k];
+  if (Y) { d = mkComp('huangrong', s.ds.length); Object.assign(d, { id: k, name: Y.name, root: Y.stats.gen, wu: Y.stats.wu, personality: [...Y.personality], known: Y.personality.slice(0, 2), sprite: 'hero', portrait: `assets/portraits/${k}.png`, skills: { ...Y.skills }, values: null, guest: XIA[k].role === 'guest' }); }
+  else if (k === 'huangrong') d = mkComp('huangrong', s.ds.length);
   else { const T = heroById(k); d = mkComp('huangrong', s.ds.length); Object.assign(d, { id: k, name: T.name, root: T.stats.gen, wu: T.stats.wu, style: T.style, personality: [...T.personality], known: T.personality.slice(0, 2), sprite: 'hero', portrait: `assets/portraits/${k}.png`,
     skills: k === 'linghuchong' ? { leg: 16, palm: 36, strength: 14, farming: 2, herbal: 2, agility: 30, cooking: 2 } : { leg: 14, palm: 30, strength: 36, farming: 6, herbal: 2, agility: 14, cooking: 2 }, values: null }); }
   Object.assign(d, { companion: false, xia: k, reason: '名俠入門', mood: 80, role: 'inner' });
-  d.skills.palm = Math.max(d.skills.palm, 30); s.ds.push(d);
+  d.skills.palm = Math.max(d.skills.palm, k === 'weixiaobao' ? 4 : 30); s.ds.push(d); if (Y) onJoin13(s, d, k);
   for (const o of s.ds) if (o !== d) initPair(s, d, o, 10);
-  const mate = s.ds.find((o) => xidOf(s, o) === (k === 'guojing' ? 'huangrong' : 'guojing')); if (mate) initPair(s, d, mate, 45);
+  const mate = s.ds.find((o) => xidOf(s, o) === ({ guojing: 'huangrong', huangrong: 'guojing', yangguo: 'xiaolongnv', xiaolongnv: 'yangguo', baozupo: 'baozugong' })[k]); if (mate) initPair(s, d, mate, 45);
   s.xia.joinT[k] = s.t; s.xia.done[k] = true; s.rep = (s.rep || 0) + 3; for (const o of s.ds) if (o.role !== 'laborer') think(s, o, 'xiaJoin');
   log(s, `【名俠入門】${XIA[k].name}拜入門下！`); return d;
 }

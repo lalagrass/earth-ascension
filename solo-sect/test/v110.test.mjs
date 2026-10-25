@@ -30,7 +30,7 @@ test('名俠弟子：郭靖、黃蓉、令狐沖（v1.2）；洪七公是師父'
   assert.deepEqual(Object.keys(XIA).filter((k) => XIA[k].role === 'disciple').sort(), ['guojing', 'huangrong', 'linghuchong']); assert.equal(XIA.hongqigong.role, 'teacher');
 });
 test('婉拒三天內不再出現', () => {
-  const s = st(); s.rep = 20; xiaStep(s); const ch = s.choices.find((c) => c.xia); xiaResolve(s, ch, 1); s.t += DAY * 1.5; xiaStep(s); assert.ok(!s.choices.some((c) => c.xia));
+  const s = st(); s.rep = 20; xiaStep(s); const ch = s.choices.find((c) => c.xia); xiaResolve(s, ch, 1); s.t += DAY * 1.5; xiaStep(s); assert.ok(!s.choices.some((c) => c.xia === ch.xia));
 });
 test('黃蓉下廚食誘→洪七公三段傳降龍，打狗棒法給黃蓉，傳完下山不死', () => {
   const s = st(); join(s, 'guojing'); join(s, 'huangrong'); const hr = s.ds.find((d) => d.xia === 'huangrong'), gj = s.ds.find((d) => d.xia === 'guojing');

@@ -1,3 +1,5 @@
+import { ARC13 } from './jianghu.mjs';
+import { JH, DAY as DAY13 } from './data.mjs';
 import { zxGate } from './huashan.mjs';
 import { HS, DUGU } from './data.mjs';
 import { XIA, xiaPool, pickStudent } from './wuxia.mjs';
@@ -85,6 +87,13 @@ function draw() {
     if (f.kind === 'dugu' || (f.kind === 'move' && f.mfx === 'dugu')) { const c = f.to || f.pos; g.save(); g.globalAlpha = Math.min(0.85, f.ttl * 1.4); g.strokeStyle = '#cfe0f5'; g.lineWidth = 2; for (let i = 0; i < 9; i++) { const a = i * 2.3 + (f.seed || 0), r = 30 + (i * 37) % 50; g.beginPath(); g.moveTo(c[0] + Math.cos(a) * r, c[1] - 20 + Math.sin(a) * r * 0.6); g.lineTo(c[0] - Math.cos(a + 0.4) * r, c[1] - 20 - Math.sin(a + 0.4) * r * 0.6); g.stroke(); } g.restore(); if (f.kind === 'dugu') continue; }
     if (f.kind === 'move' && f.mfx === 'bixie') { g.save(); for (let k = 0; k < 4; k++) { g.globalAlpha = 0.35 - k * 0.07; g.fillStyle = '#d04070'; g.beginPath(); g.arc(f.from[0] + (f.to[0] - f.from[0]) * k / 4, f.from[1] - 25 + (f.to[1] - f.from[1]) * k / 4, 9, 0, 7); g.fill(); } g.restore(); }
     if (f.kind === 'move' && f.zx) { g.save(); g.strokeStyle = '#a35ce0'; g.shadowColor = '#c08cff'; g.shadowBlur = 12; g.lineWidth = 7; g.globalAlpha = f.ttl / 0.6; g.beginPath(); g.moveTo(f.from[0], f.from[1] - 25); g.lineTo(f.to[0], f.to[1] - 8); g.stroke(); g.restore(); }
+    // v1.3 江湖群像招式特效：黯然（灰藍淚痕）、重劍（黑色重弧）、玉女（白絲）、獅吼（音波圈）、蛤蟆（綠色蓄勁）、葵花（紅針）等
+    if (f.kind === 'move' && JH_FX[f.mfx]) { const [col, kind] = JH_FX[f.mfx], to = f.to || f.pos, k = 1 - f.ttl / 0.6; g.save(); g.globalAlpha = Math.max(0, Math.min(1, f.ttl / 0.6)); g.strokeStyle = col; g.fillStyle = col; g.lineWidth = kind === 'heavy' ? 10 : 3; g.shadowColor = col; g.shadowBlur = 10;
+      if (kind === 'ring') for (let r = 0; r < 3; r++) { g.beginPath(); g.arc(f.from[0], f.from[1] - 20, 30 + (k * 90) + r * 22, 0, 7); g.stroke(); }
+      else if (kind === 'needle') for (let i = 0; i < 6; i++) { g.beginPath(); g.moveTo(f.from[0], f.from[1] - 25); g.lineTo(to[0] + (i - 3) * 6, to[1] - 10 + (i % 2) * 8); g.stroke(); }
+      else if (kind === 'toad') { g.globalAlpha *= 0.5; g.beginPath(); g.ellipse(to[0], to[1] - 10, 30 + k * 40, 18 + k * 20, 0, 0, 7); g.fill(); }
+      else { g.beginPath(); g.moveTo(f.from[0], f.from[1] - 25); g.quadraticCurveTo((f.from[0] + to[0]) / 2, f.from[1] - 70, to[0], to[1] - 10); g.stroke(); }
+      g.restore(); }
     if (f.kind === 'move' && f.mfx === 'staff') { const c = f.to; g.save(); g.globalAlpha = Math.min(1, f.ttl * 1.6); g.strokeStyle = '#4fc47a'; g.lineWidth = 5; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI + (1 - f.ttl) * 4; g.beginPath(); g.moveTo(c[0] - Math.cos(a) * 40, c[1] - 12 - Math.sin(a) * 26); g.lineTo(c[0] + Math.cos(a) * 40, c[1] - 12 + Math.sin(a) * 26); g.stroke(); } g.restore(); }
     if (f.kind === 'break') { const k = 1 - f.ttl / 1.2; g.strokeStyle = `rgba(255,215,80,${f.ttl / 1.2})`; g.lineWidth = 5; g.beginPath(); g.arc(f.pos[0], f.pos[1] - 25, 10 + k * 70, 0, 7); g.stroke(); continue; }
     if (f.kind === 'move' && f.tier >= 1 && f.sprite) { const im = IMG[f.sprite]; if (im?.width) for (let k = 1; k <= 2; k++) { g.save(); g.globalAlpha = 0.25 / k * (f.ttl / 0.6); g.translate(f.from[0] - (f.face || 1) * 12 * k, f.from[1]); if ((f.face || 1) < 0) g.scale(-1, 1); g.drawImage(im, -im.width * SC / 2, -im.height * SC, im.width * SC, im.height * SC); g.restore(); } }
@@ -159,7 +168,7 @@ function panel() {
     const nm = (o) => Object.entries(o || {}).map(([k, v]) => `${ENEMIES[k].name}×${v}`).join('、') || '無';
     const card = R ? `<div class="card"><b>戰報 #${R.n}</b>（第 ${R.day} 日・${R.team.join('、')}）<div>📏 走到 <b>${R.seg}</b> ${R.dist} 步${R.sectRec ? ' <span class="rec">★本門新紀錄</span>' : ''}</div><div>⚔ 擊倒：${nm(R.kills)}</div><div>💨 逃走：${nm(R.escaped)}</div><div>🩹 傷：${R.hurt.map(([n, l]) => n + l).join('、') || '無'}</div><div>🎒 帶回：${Object.entries(R.loot).map(([k, v]) => `${RES_NAMES[k] || k}${v}`).join(' ') || '無'}</div><div>↩ 回頭：${R.reason}</div>${R.style ? `<div>🧭 風格：<b>${EXP_STYLES[R.style].name}</b>・閃避 ${Object.values(R.evaded).reduce((a, b) => a + b, 0)}・追擊 ${R.chase.got}/${R.chase.n}・用時 ${R.time}s</div><div>🗺 清場率：${Object.entries(R.clear).map(([k, v]) => `${(ROUTE.find((g) => g.id === k)?.name || k.replace(/^end(\d+)$/, '絕頂之上・第$1重'))} ${Math.round(v * 100)}%${v >= 1 ? '（清山）' : ''}`).join('・') || '—'}</div><div class="story">📜 ${R.story}</div>` : ''}</div>` : '<div class="k">尚未巡山</div>';
     const sty = [...team].map((id) => S.ds.find((d) => d.id === id)).filter(Boolean), styHtml = sty.length ? `<div class="k">隊伍風格：<b>${EXP_STYLES[teamStyle(sty)].name}</b>（多數決）｜${sty.map((d) => { const o = styleOf(d); return `${d.name}${EXP_STYLES[o.id].name}：${o.why}`; }).join('；')}</div>` : '';
-    const rec = `${xiaHtml()}${hsHtml()}${manualHtml()}<div class="k">清場紀錄：${ROUTE.map((g) => `${g.name}${Math.round((S.records.clear?.[g.id] || 0) * 100)}%${S.records.qing?.[g.id] ? `・清山${S.records.qing[g.id]}次${peaceOf(S, g.id) ? '☮' : ''}` : ''}`).join('　')}${S.records.fastGorge != null ? `・最快到深谷 ${S.records.fastGorge}s` : ''}</div><div class="k">本門最遠：${S.records.sect || 0} 步${S.records.who ? `（${S.records.who.join('、')}）` : ''}・個人：${disciples(S).map((d) => `${d.name} ${d.best || 0}`).join('・')}</div>`;
+    const rec = `${xiaHtml()}${hsHtml()}${jhHtml()}${manualHtml()}<div class="k">清場紀錄：${ROUTE.map((g) => `${g.name}${Math.round((S.records.clear?.[g.id] || 0) * 100)}%${S.records.qing?.[g.id] ? `・清山${S.records.qing[g.id]}次${peaceOf(S, g.id) ? '☮' : ''}` : ''}`).join('　')}${S.records.fastGorge != null ? `・最快到深谷 ${S.records.fastGorge}s` : ''}</div><div class="k">本門最遠：${S.records.sect || 0} 步${S.records.who ? `（${S.records.who.join('、')}）` : ''}・個人：${disciples(S).map((d) => `${d.name} ${d.best || 0}`).join('・')}</div>`;
     $('exp').innerHTML = X ? `<div>巡山中 #${X.n}：${X.team.map((id) => S.ds.find((d) => d.id === id)?.name).join('、')}・${EXP_STYLES[X.style]?.name || ''}・${X.phase === 'out' ? '前進' : '回程'} ${X.dist.toFixed(0)} 步（${segAt(X.dist).name}）・乾糧 ${X.supplies}・撤退線 ${X.thr * 100}%</div><div class="k">${rbar('體力', X.sta, EXP.sta, '#3a7')} ${rbar(`耐性${X.order ? '（巡山令）' : ''}`, X.pat, X.patMax || 100, '#c80')}${X.scout ? `　探路：${X.scout}（先手 +20%）` : ''}${X.camp ? `　自${X.camp}出發` : ''}</div><div class="k">擊倒 ${nm(X.kills)}｜逃走 ${nm(X.escaped)}｜閃過 ${nm(X.evaded)}｜追 ${X.chase?.got || 0}/${X.chase?.n || 0}</div>${rec}${card}` :
       `<div>${disciples(S).map((d) => `<label><input type="checkbox" class="xteam" value="${d.id}" ${team.has(d.id) ? 'checked' : ''}>${d.name}${d.hp < EXP.minHp ? '（傷）' : ''}</label>`).join(' ')}</div>
       ${styHtml}<div>撤退線：<select id="exthr">${EXP.thr.map((v) => `<option value="${v}" ${v === thr ? 'selected' : ''}>氣血 ${v * 100}%</option>`).join('')}</select>（心情 &lt;${EXP.moodMin} 也會回頭）</div>
@@ -204,6 +213,23 @@ let last = performance.now(), acc = 0;
 function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now; if (starting || choiceUI(S)) acc = 0; while (acc >= 0.25) { tick(S); acc -= 0.25; }
   audioStep(); draw(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
 function rbar(n, v, max, c) { const p = Math.max(0, Math.min(1, (v ?? 0) / (max || 1))); return `${n} <span style="display:inline-block;width:80px;height:8px;background:#ddd;vertical-align:middle"><span style="display:block;height:8px;width:${p * 80}px;background:${c}"></span></span> ${Math.max(0, Math.round(v ?? 0))}`; }
+const JH_FX = { anran: ['#7a8ca8', 'arc'], xuantie: ['#2a2a2a', 'heavy'], yunv: ['#eef', 'arc'], kongming: ['#bcb', 'arc'], kuihua: ['#d04050', 'needle'], huagu: ['#9a8aa8', 'arc'], qiankun: ['#e0a040', 'arc'], taiji: ['#ddd', 'arc'], shihou: ['#f0d070', 'ring'], tantui: ['#a07040', 'arc'], tiexian: ['#889', 'heavy'], bagua: ['#8a6a3a', 'arc'], hama: ['#6a8a3a', 'toad'] };
+function jhHtml() {
+  const J = S.jh; if (!J) return ''; const out = [], nm = (id) => S.ds.find((d) => d.xia === id || (d.id === 'hero' && S.hero?.id === id));
+  const yg = nm('yangguo'); if (yg) out.push(`🦅 楊過：神鵰 ${Math.min(J.diao, JH.diaoFeeds)}/${JH.diaoFeeds}${J.armLost ? '・已斷臂（玄鐵劍法）' : ''}・心情 ${Math.round(yg.mood)}（黯然 ×${(yg.jhMul || 1).toFixed(2)}）`);
+  if (J.bees) out.push(`🐝 玉蜂漿 ${J.honey}`);
+  if (J.zbt) out.push(`🦗 周伯通賭約：贏 ${J.zbt.wins}・輸 ${J.zbt.losses}・已教 ${J.zbt.taught.length}/2`);
+  if (J.dfbb) out.push(`🪡 東方不敗：${J.dfbb === 2 ? '已擊退（葵花殘頁）' : '敗過一次，還會再來'}`);
+  if (J.hy) out.push(`🐸 火雲邪神：${J.hy === 2 ? '跪地認輸（蛤蟆功殘頁）' : '敗過一次，還會再來'}`);
+  if (J.casino) out.push(`🎲 賭坊抽頭累計 ${J.gambleSum}（每日上限 ${JH.gambleCap}）`);
+  const hid = S.ds.filter((d) => d.hidden); if (hid.length) out.push(`🧺 深藏不露：${hid.map((d) => (d.hidden.shown ? `<b>${d.name}</b>` : '？？')).join('、')}（${hid.length}/${JH.hiddenMax}）`);
+  if (J.poison) out.push('☠ 慢性化骨綿掌（三天自癒）');
+  if (S.hero && ARC13[S.hero.id]) out.push(`📜 主線：${ARC13[S.hero.id].map((x, i) => (i < (S.hero.arcStep || 0) ? `<b>${x}</b>` : `<span style="opacity:.45">${x}</span>`)).join(' → ')}`);
+  const wk = J.comedy.filter((t) => S.t - t < 7 * DAY13).length;
+  out.push(`<label><input type="checkbox" data-jhopt="morningOn" ${J.morningOn ? 'checked' : ''}> 晨課令</label>　<label><input type="checkbox" data-jhopt="comedyOn" ${J.comedyOn ? 'checked' : ''}> 喜劇卡（本週 ${wk}/${JH.comedyWeek}）</label>`);
+  return `<div class="k"><b>江湖群像</b><br>${out.join('<br>')}</div>`;
+}
+document.addEventListener('change', (e) => { const k = e.target?.dataset?.jhopt; if (k && S.jh) S.jh[k] = e.target.checked; });
 function hsHtml() {
   const X = S.hs; if (!X) return ''; const out = [];
   for (const d of S.ds) if (d.zixia) out.push(`🟣 ${d.name}紫霞神功 第 ${d.zixia}/9 層${zxGate(S, d) ? `（${zxGate(S, d)}）` : `（閉關 ${Math.floor(X.zx)}/${HS.zxNeed * d.zixia}）`}`);

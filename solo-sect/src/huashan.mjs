@@ -52,7 +52,7 @@ export function zxUp(s, d) {
 }
 // ---- 辟邪劍譜：捷徑，自宮＋斷情 ----
 export function bixie(s, d) {
-  s.hs.bixie = 3; s.hs.bixieT = s.t; d.duanqing = s.t; learnArt(d, 'bixie', s.t); d.arts.bixie.xp = TIERS[2][0] + 1; learnArt(d, 'bixie', s.t);
+  s.hs.bixie = 3; s.hs.bixieT = s.t; d.duanqing = s.t; learnArt(d, 'bixie', s.t); d.arts.bixie.xp = TIERS[2][0] + 5; d.arts.bixie.bt1 = true; learnArt(d, 'bixie', s.t);
   for (const k of Object.keys(s.rel || {})) if (k.includes(d.id) && /couple|spouse|lover/.test(JSON.stringify(s.rel[k]))) delete s.rel[k];
   const n = find(s, 'ningzhongze'), y = find(s, 'yuelingshan'); if (n) { bump(s, n, d, -40); n.lockDown = true; } if (y) think(s, y, 'bixieShock');
   for (const o of s.ds) if (o !== d && o.role !== 'laborer') think(s, o, 'bixieShock');

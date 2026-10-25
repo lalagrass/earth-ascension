@@ -89,7 +89,7 @@ function fight(s, e, team, H, gate = false, scale = 1) {
     t += 0.5; const fs = X.scout && t <= EXP.scoutT ? 1 + EXP.scoutBonus : 1; for (const d of alive) { hp -= dpsOf(s, d) * 0.5 * bonus * fs; if (d.dugu?.length) d.hp = Math.min(100, d.hp + HS.duguHeal); } // v1.2 九劍只攻不守：不格擋，但料敵機先回氣血 // v1.0 探路者先手 +20%
     if (gate && hp > E.hp * 0.4 && alive.some((d) => d.hp < 100 * EXP.gateBail)) { X.events.push(`見勢不妙，在${E.name}前及早撤退`); return { t, won: false, fled: false, bail: true }; } // v0.98 守關敵打不過：及早撤退
     if (!gate && hp > 0 && hp < E.hp * 0.35 && !fled) { fled = true; if (H.rand(s) < E.flee) { add(X.escaped, e, 1); seeEnemy(s, e, 'fled'); return { t, won: false, fled: true }; } }
-    cd -= 0.5; if (cd <= 0 && hp > 0) { cd = E.cd; const d = alive[Math.floor(H.rand(s) * alive.length)]; if (d.dugu?.length && H.rand(s) < Math.min(0.6, 0.2 + (s.codex[e]?.insight || 0) / 200)) { d.hp = Math.min(100, d.hp + 2); continue; } const def = d.dugu?.length ? 1 : (1 - Math.min(0.4, (d.skills.agility + d.skills.strength) / 400)) * guardOf(d); d.hp = Math.max(0, d.hp - E.dmg * def); }
+    cd -= 0.5; if (cd <= 0 && hp > 0) { cd = E.cd; const d = alive[Math.floor(H.rand(s) * alive.length)]; if (d.dugu?.length && H.rand(s) < Math.min(0.6, 0.2 + (s.codex[e]?.insight || 0) / 200)) { d.hp = Math.min(100, d.hp + 2); continue; } const def = d.dugu?.length ? 1 : (1 - Math.min(0.4, (d.skills.agility + d.skills.strength) / 400)) * guardOf(d); d.hp = Math.max(0, d.hp - E.dmg * def * (d.takeMul || 1)); if (d.reflect) hp -= E.dmg * def * d.reflect; }
   }
   if (hp <= 0) { const alive = team.filter((d) => d.hp > 0); const k = alive[Math.floor(H.rand(s) * alive.length)]; add(X.kills, e, 1); seeEnemy(s, e, 'kill', k); lootRoll(s, X.loot, E.loot, H); for (const d of alive) H.grow(s, d, 'style', 3); }
   return { t, won: hp <= 0, fled: false };
@@ -131,7 +131,7 @@ export function expStep(s, dt, H) {
     const d0 = X.dist, f0 = X.fights, pm = peaceOf(s, segAt(X.dist).id) ? EXP.peaceSpeed : 1;
     X.dist = Math.min(X.target, X.dist + EXP.walk * dt * pm);
     X.dist = Math.min(X.target, X.dist + EXP.walk * dt * pm * (STYLES[X.style].speed - 1));
-    X.sta = (X.sta ?? EXP.sta) - (X.dist - d0) * EXP.staStep;
+    X.sta = (X.sta ?? EXP.sta + Math.max(0, ...team.map((d) => d.staBonus || 0))) - (X.dist - d0) * EXP.staStep;
     if (X.gorgeT == null && !(X.from > 0) && X.dist >= ROUTE[3].from) X.gorgeT = s.t - X.startT;
     const G = routeSeg(X.gateI);
     if (G && X.dist >= G.to) { X.dist = G.to; X.gateI++; const r = fight(s, G.gate, team, H, true, G.scale || 1); X.busy = r.t / 2; X.fights++; const sg = (X.seg[G.id] ??= { enc: 0, kill: 0 }); sg.enc++;

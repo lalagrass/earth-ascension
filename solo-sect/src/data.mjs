@@ -230,7 +230,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '1.2';
+export const RULES_VERSION = '1.3';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -415,3 +415,29 @@ export const DUGU = [
 ];
 for (const f of DUGU) MOVES.push({ id: f.id, skill: 'palm', name: f.name, req: 0, range: 80, cd: 1.0, dmg: f.dmg, aoe: f.id === 'dg0' || f.inner ? 70 : 0, color: '#9fb8d8', fx: 'dugu' });
 export const HS = { zxNeed: 240, carvPer: 1, carvInsight: 6, cleanDays: 7, zxMoodMin: 60, zxDingMin: 4, zxPow: 0.03, zxGuard: 0.03, bixieDayPow: 0.04, bixieCap: 0.6, songEvery: 4, fengNights: 3, softP: 0.05, duguHeal: 1, secondWind: 0.5, windHp: 0.5 };
+
+// ---- v1.3 江湖群像（ROADMAP §13.8–13.11）：神鵰、倚天、鹿鼎、功夫 ----
+const A13 = (id, name, school, grade, tags, moves, extra = {}) => { ARTS.push({ id, name, school, grade, tags, req: [], techs: moves.map((m) => m[0]), tech: moves[0]?.[0], secret: true, classic: true, ...extra });
+  for (const [mid, mn, cd, dmg, aoe, color] of moves) MOVES.push({ id: mid, skill: school === 'leg' ? 'leg' : 'palm', name: mn, req: 0, range: 60 + aoe / 2, cd, dmg, aoe, color, fx: id }); };
+A13('anran', '黯然銷魂掌', 'palm', 4, ['柔', '情'], [['ar1', '心驚肉跳', 1.2, 18, 0, '#7a8ca8'], ['ar2', '杞人憂天', 1.4, 22, 60, '#6a7c98'], ['ar3', '拖泥帶水', 1.8, 32, 90, '#5a6c88']], { signature: 'yangguo' });
+A13('xuantie', '玄鐵劍法', 'palm', 3, ['剛', '拙'], [['xt1', '重劍無鋒', 1.6, 30, 70, '#3a3a3a']], { signature: 'yangguo' });
+A13('yunv', '玉女心經', 'palm', 3, ['巧', '靈'], [['yn1', '小園藝菊', 0.8, 12, 0, '#e8e8f8'], ['yn2', '西窗夜話', 1.0, 16, 50, '#d8dcf8']], { signature: 'xiaolongnv' });
+A13('zuoyou', '左右互搏', 'palm', 3, ['巧'], [], { signature: 'zhoubotong', effect: 'twin' });
+A13('kongming', '空明拳', 'palm', 3, ['柔'], [['km1', '空碗盛飯', 0.9, 13, 0, '#c8d8c8'], ['km2', '妙手空空', 1.2, 19, 50, '#b8c8b8']], { signature: 'zhoubotong' });
+A13('kuihua', '葵花寶典', 'leg', 4, ['快'], [['kh1', '繡花針', 0.35, 8, 0, '#d04050']], { signature: 'dongfangbubai' });
+A13('huagu', '化骨綿掌', 'palm', 4, ['柔', '陰'], [['hg1', '化骨綿掌', 1.6, 34, 0, '#9a8aa8']], { signature: 'haidafu' });
+A13('jiuyang', '九陽神功', 'palm', 3, ['剛', '內'], [], { signature: 'zhangwuji' });
+A13('qiankun', '乾坤大挪移', 'palm', 4, ['巧'], [['qk1', '借力打力', 1.2, 20, 40, '#e0a040']], { signature: 'zhangwuji' });
+A13('taiji', '太極拳', 'palm', 3, ['柔'], [['tj1', '攬雀尾', 1.0, 12, 0, '#d8d8d8'], ['tj2', '雲手', 1.2, 16, 60, '#c8c8c8']], { signature: 'zhangwuji' });
+A13('shihou', '獅子吼', 'palm', 3, ['剛'], [['sh1', '獅子吼', 2.0, 18, 140, '#f0d070']], { signature: 'baozupo' });
+A13('tantui', '十二路譚腿', 'leg', 2, ['剛'], [['tt1', '十二路譚腿', 0.8, 14, 0, '#a07040']]);
+A13('tiexian', '洪家鐵線拳', 'palm', 2, ['剛'], [['tx1', '鐵線拳', 1.0, 16, 0, '#808890']]);
+A13('bagua', '五郎八卦棍', 'leg', 2, ['剛'], [['bg1', '五郎八卦棍', 1.0, 15, 50, '#8a6a3a']]);
+A13('hama', '蛤蟆功', 'palm', 4, ['剛', '蓄'], [['hm1', '蛤蟆功', 2.2, 40, 60, '#6a8a3a']], { signature: 'huoyunxieshen' });
+export const JH = {
+  comedyWeek: 2, comedyDays: 7, morningOpts: 3,
+  anranMood: 30, anranMax: 1.5, twin: 1.3, kongming: 1.15, pair: 0.25,
+  gambleBase: 2, gambleCap: 6, recruitBonus: 0.4, baoyi: 0.5, reflect: 0.3, jiuyangSta: 30,
+  hiddenMax: 3, hiddenP: 0.35, residueXp: 20, dfbbPow: 40, hyPow: 50, diaoFeeds: 3, honeyHeal: 15,
+};
+Object.assign(TRAITS, { quiet: { name: '清冷', desc: '心情起伏減半，不喜熱鬧', mods: { train: 1.05, leisure: 0.9 } }, chi: { name: '癡', desc: '心情隨意中人起伏', mods: {} } });
