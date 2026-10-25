@@ -1,0 +1,140 @@
+{
+ "steps": [
+  {
+   "n": "開局選「純金庸」→ 畫風濾鏡生效",
+   "pass": true,
+   "d": "jin"
+  },
+  {
+   "n": "名俠池無周星馳角色",
+   "pass": true,
+   "d": [
+    [
+     "hongqigong",
+     "jin"
+    ],
+    [
+     "linghuchong",
+     "jin"
+    ],
+    [
+     "yangguo",
+     "jin"
+    ],
+    [
+     "xiaolongnv",
+     "jin"
+    ],
+    [
+     "zhoubotong",
+     "jin"
+    ],
+    [
+     "weixiaobao",
+     "jin"
+    ]
+   ]
+  },
+  {
+   "n": "自然遊玩：人際面板出現共同記憶（時、地、事）",
+   "pass": true,
+   "d": [
+    "chat:堂弟和郭靖在前院聊了一下午"
+   ]
+  },
+  {
+   "n": "自然遊玩：巡山歸來寫入「並肩巡山」",
+   "pass": true,
+   "d": [
+    "patrol:郭靖和林師姐並肩巡山，走到林地"
+   ]
+  },
+  {
+   "n": "傳功（改熟練後自走發生，只算畫面證據）",
+   "pass": true,
+   "d": {
+    "passed": [
+     "hero>huangrong:basicFist"
+    ],
+    "log": "【傳功】郭靖帶黃蓉練「基礎拳」，熟練 +15"
+   }
+  },
+  {
+   "n": "收徒按鈕出現",
+   "pass": true,
+   "d": 2
+  },
+  {
+   "n": "實點收徒 → 師徒成立、寫入記憶（另有自然形成的師徒一併列出）",
+   "pass": true,
+   "d": {
+    "masters": [
+     "林師姐<hero"
+    ]
+   }
+  },
+  {
+   "n": "無頁面錯誤",
+   "pass": true,
+   "d": []
+  }
+ ],
+ "errs": [],
+ "passNatural": false,
+ "edit1": "STATE EDIT: hero basicFist xp=90 (圓滿)",
+ "edit2": "STATE EDIT: 林師姐.role=outer, aff(郭靖,林師姐)=35",
+ "mastersBefore": [
+  "林師姐<hero"
+ ],
+ "final": {
+  "day": 3,
+  "xs": "jin",
+  "mem": [
+   "chat:堂弟和郭靖在前院聊了一下午",
+   "chat:郭靖和黃蓉在前院聊了一下午",
+   "chat:郭靖和林師姐在前院聊了一下午",
+   "chat:郭靖和黃蓉在前院聊了一下午",
+   "chat:郭靖和黃蓉在前院聊了一下午",
+   "chat:堂弟和黃蓉在前院聊了一下午",
+   "patrol:郭靖和林師姐並肩巡山，走到林地",
+   "chat:黃蓉和林師姐在前院聊了一下午",
+   "chat:堂弟和黃蓉在前院聊了一下午",
+   "chat:林師姐和楊過在前院聊了一下午",
+   "chat:郭靖和黃蓉在前院聊了一下午",
+   "chat:堂弟和林師姐在前院聊了一下午",
+   "chat:郭靖和楊過在前院聊了一下午",
+   "chat:堂弟和黃蓉在前院聊了一下午",
+   "chat:堂弟和林師姐在前院聊了一下午",
+   "chat:郭靖和楊過在前院聊了一下午",
+   "chat:郭靖和楊過在前院聊了一下午",
+   "chat:堂弟和林師姐在前院聊了一下午",
+   "chat:堂弟和林師姐在前院聊了一下午",
+   "chat:郭靖和楊過在前院聊了一下午",
+   "chat:郭靖和黃蓉在前院聊了一下午",
+   "chat:堂弟和林師姐在前院聊了一下午",
+   "chat:郭靖和楊過在前院聊了一下午",
+   "chat:堂弟和黃蓉在前院聊了一下午",
+   "chat:郭靖和楊過在前院聊了一下午",
+   "chat:黃蓉和林師姐在前院聊了一下午",
+   "chat:堂弟和林師姐在前院聊了一下午",
+   "pass:郭靖把「基礎拳」親手傳給黃蓉",
+   "apprentice:郭靖在祖師像前收林師姐為徒"
+  ],
+  "passed": [
+   "hero>huangrong:basicFist"
+  ],
+  "masters": [
+   "林師姐<hero"
+  ],
+  "roles": [
+   "hero:inner",
+   "senior:outer",
+   "cousin:inner",
+   "huangrong:inner",
+   "yangguo:inner"
+  ],
+  "exp": false,
+  "pupilBtns": 0,
+  "memDom": 14
+ }
+}

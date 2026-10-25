@@ -1,0 +1,10 @@
+PASS 開局選「純金庸」→ 畫風濾鏡生效 "jin"
+PASS 名俠池無周星馳角色 [["hongqigong","jin"],["linghuchong","jin"],["yangguo","jin"],["xiaolongnv","jin"],["zhoubotong","jin"],["weixiaobao","jin"]]
+PASS 自然遊玩：人際面板出現共同記憶（時、地、事） ["chat:堂弟和郭靖在前院聊了一下午"]
+PASS 自然遊玩：巡山歸來寫入「並肩巡山」 ["patrol:郭靖和林師姐並肩巡山，走到林地"]
+STATE EDIT: hero basicFist xp=90 (圓滿)
+PASS 傳功（改熟練後自走發生，只算畫面證據） {"passed":["hero>huangrong:basicFist"],"log":"【傳功】郭靖帶黃蓉練「基礎拳」，熟練 +15"}
+STATE EDIT: 林師姐.role=outer, aff(郭靖,林師姐)=35
+PASS 收徒按鈕出現 2
+PASS 實點收徒 → 師徒成立、寫入記憶（另有自然形成的師徒一併列出） {"masters":["林師姐<hero"]}
+PASS 無頁面錯誤 []

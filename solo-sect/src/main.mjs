@@ -1,6 +1,7 @@
 import { HOME, HOME_VIEW, CHUNK, CHUNK_CAP, lruGet, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, styledPos, fogged, inVision, leftovers, FOG_W, FOG_H, WORLD, cellColor, STYLE_PATH, cloudAt, cloudPos, cloudSpots, partyCloud, CLOUD_MAP, ZOOMS, lodOf, TRAIL_END, raidDescent, RINGS, TRAIL } from './world.mjs';
 import { raidMul } from './expedition.mjs';
 import { sideCards, bubbles } from './events.mjs';
+import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES } from './bonds.mjs';
 import { statusHtml } from './status.mjs';
 import { milestones } from './expedition.mjs';
 import { ARC13 } from './jianghu.mjs';
@@ -228,11 +229,11 @@ function panel() {
    <div>${d.moves.map((m) => `<span class="mv">${MOVES.find((x) => x.id === m).name}</span>`).join('')}${d.pendingArt ? `<span class="mv new">可學：${artById(d.pendingArt).name}</span>` : ''}</div>
    <select data-style="${d.id}">${Object.entries(STYLES).map(([k, n]) => `<option value="${k}" ${d.style === k ? 'selected' : ''}>主修${n}</option>`).join('')}</select>
    <select data-ord="${d.id}">${ORD.map(([k, n]) => `<option value="${k}" ${(d.order || '') === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`).join('');
-  $('rel').innerHTML = Object.entries(S.rel).map(([k, v]) => { const [a, b] = k.split('|').map((id) => S.ds.find((d) => d.id === id).name); const [A, B] = k.split('|').map((id) => S.ds.find((d) => d.id === id)); return `<div>${a}—${b}：${relStage(v)} ${v.toFixed(0)}${S.families.includes(k) ? ' 🏠' : ''} <span class="k">（${a}→${aff(S, A, B).toFixed(0)}／${b}→${aff(S, B, A).toFixed(0)}・合拍 ${compat(A, B).toFixed(1)}/${compat(B, A).toFixed(1)}）</span></div>`; }).join('');
+  $('rel').innerHTML = Object.entries(S.rel).map(([k, v]) => { const [a, b] = k.split('|').map((id) => S.ds.find((d) => d.id === id).name); const [A, B] = k.split('|').map((id) => S.ds.find((d) => d.id === id)); return `<div>${a}—${b}：${relStage(v)} ${v.toFixed(0)}${S.families.includes(k) ? ' 🏠' : ''} <span class="k">（${a}→${aff(S, A, B).toFixed(0)}／${b}→${aff(S, B, A).toFixed(0)}・合拍 ${compat(A, B).toFixed(1)}/${compat(B, A).toFixed(1)}）</span>${memsOf(S, A, B).slice(-2).map((m) => `<div class="k mem">📜 第${m.day}日・${m.where}：${m.text}</div>`).join('')}</div>`; }).join('') + bondsHtml(S);
   $('hero').innerHTML = heroCard(S);
   $('log').innerHTML = S.log.slice(0, 30).map((l) => `<li>[${l.t}s] ${l.msg}</li>`).join('');
 }
-document.addEventListener('click', (e) => { const b = e.target.closest('[data-build],[data-speed],[data-pause],[data-invite],[data-promote]'); if (!b) return; if (b.dataset.promote) startTrial(S, b.dataset.promote); if (b.dataset.pause) togglePause(S, b.dataset.pause); if (b.dataset.invite) invite(S, b.dataset.invite); if (b.dataset.build) startBuild(S, b.dataset.build); if (b.dataset.speed) speed = +b.dataset.speed; panel(); });
+document.addEventListener('click', (e) => { const b = e.target.closest('[data-build],[data-speed],[data-pause],[data-invite],[data-promote],[data-pupil]'); if (!b) return; if (b.dataset.pupil) { const [m, d] = b.dataset.pupil.split('|').map((id) => S.ds.find((x) => x.id === id)); takePupil(S, m, d); } if (b.dataset.promote) startTrial(S, b.dataset.promote); if (b.dataset.pause) togglePause(S, b.dataset.pause); if (b.dataset.invite) invite(S, b.dataset.invite); if (b.dataset.build) startBuild(S, b.dataset.build); if (b.dataset.speed) speed = +b.dataset.speed; panel(); });
 document.addEventListener('change', (e) => { if (e.target.dataset.variant) { const [id, art] = e.target.dataset.variant.split('|'); const d = S.ds.find((x) => x.id === id); if (d && e.target.value) chooseVariant(d, art, e.target.value, S.t); panel(); return; } if ('artsof' in e.target.dataset) { window.__artsOf = e.target.value; panel(); return; } if (e.target.dataset.focus) { setFocus(S, e.target.dataset.focus, e.target.value || null); panel(); return; } if (e.target.dataset.q) { window.__ans[+e.target.dataset.q] = +e.target.value; panel(); return; } if (e.target.dataset.duty) { setDuty(S, e.target.dataset.duty, e.target.value, e.target.checked); panel(); return; } if (e.target.dataset.prio) { setPrio(S, e.target.dataset.prio, e.target.value); panel(); return; } if (e.target.dataset.style) setStyle(S, e.target.dataset.style, e.target.value); if (e.target.dataset.ord) { setOrder(S, e.target.dataset.ord, e.target.value || null); panel(); } });
 // review fix：存讀檔改用非阻斷提示（原本 alert() 會卡住瀏覽器自動化與遊戲迴圈）
 function toast(msg, bad = false) { let t = document.getElementById('toast'); if (!t) { t = document.createElement('div'); t.id = 'toast'; t.style.cssText = 'position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:99;padding:6px 14px;border-radius:6px;font-size:14px;pointer-events:none'; document.body.appendChild(t); } t.textContent = msg; t.style.background = bad ? '#7a2a1e' : '#3a5a2a'; t.style.color = '#fff'; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => { t.style.display = 'none'; }, 2000); }
@@ -441,3 +442,10 @@ $('import').onchange = async (e) => { const f = e.target.files[0]; if (!f) retur
 $('mute').onclick = () => { setMute(!isMuted()); ambient(!isMuted()); panel(); };
 document.addEventListener('click', (e) => { if (e.target.closest('button')) { SFX.click(); if (!isMuted()) ambient(true); } }, true);
 panel(); newGame(); requestAnimationFrame(loop);
+
+// v1.65 師徒與傳功面板
+function bondsHtml(S) { const out = ['<h3 style="margin:6px 0 2px">師徒</h3>'];
+  for (const m of S.ds) { const ps = pupilsOf(S, m); if (ps.length) out.push(`<div>🧑‍🏫 ${m.name} → 徒弟 ${ps.map((p) => p.name).join('、')}</div>`); for (const c of apprCands(S, m)) out.push(`<div><button data-pupil="${m.id}|${c.id}">${m.name}收${c.name}為徒</button></div>`); }
+  const P = Object.keys(S.passed || {}); if (P.length) out.push(`<div class="k">已傳功 ${P.length} 次</div>`);
+  out.push(`<div class="k" id="xia-style">名俠池畫風：${(XIA_STYLES[S.xiaStyle || 'all'] || XIA_STYLES.all).name}</div>`);
+  return out.length > 2 || P.length ? out.join('') : out.join('') + '<div class="k">尚無師徒（內門與外門互有好感 30 才能收徒）</div>'; }

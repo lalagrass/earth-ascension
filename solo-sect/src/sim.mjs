@@ -9,6 +9,7 @@ import { seasonOf } from './season.mjs';
 import { pipeline, mulText } from './mul.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf } from './expedition.mjs';
 import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES } from './data.mjs';
+import { addMem, chatLine, passPick, passDo, PASS, apprDaily, apprMul } from './bonds.mjs';
 import { aspStep, likeMeal, likesOf } from './v10.mjs';
 import { raidMul } from './expedition.mjs';
 import { popStep, fogStep } from './world.mjs';
@@ -220,6 +221,7 @@ export function scoreActs(s, d) {
   if (s.res.food > 0) add('eat', n.hunger < 15 ? 160 : n.hunger < 30 ? 95 : (100 - n.hunger) * 0.6, n.hunger < 15 ? '餓得發昏，先吃' : n.hunger < 30 ? '餓了' : '順便吃點'); if (s.res.food > 0 && n.hunger < 30) out[out.length - 1].layer = 'need';
   const others = chatMates(s, d);
   if (others.length) add('chat', (100 - n.social) * 0.6 * (tr.social || 1) * (tr.playful || 1) * 0.8, '想找人說話');
+  { const pp = passPick(s, d); if (pp) add('pass', PASS.base, `${PASS.why}：帶${pp.p.name}練「${artById(pp.art).name}」`); } // v1.65
   const fun = n.fun ?? 60; add('leisure', (100 - fun) * 0.55, fun < 25 ? '悶得慌，想偷閒' : '想坐坐看雲');
   if (d.adult && d.mood >= 45) { const low = others.filter((o) => o.mood < 35).sort((a, b) => a.mood - b.mood)[0]; if (low) add('encourage', 40 + (35 - low.mood) * 1.5, `${low.name}心情低落，去打打氣`); }
   if (d.pendingArt) add('learn', 80, `師父能傳「${artById(d.pendingArt).name}」`);
@@ -268,6 +270,9 @@ function assign(s, d, act, why) {
     else return false;
     d.reason = why; return true;
   }
+  if (act === 'pass') { const pp = passPick(s, d); if (!pp) return false; const p = pp.p; if (p.task) cancelTask(s, p, `被${d.name}叫去傳功`);
+    d.task = { act, fac: 'hall', node: 'hall', phase: 'go', partner: p.id, art: pp.art, lead: true, resv: [`actor:${p.id}`] }; p.task = { act, fac: 'hall', node: 'hall', phase: 'go', partner: d.id, art: pp.art, resv: [`actor:${d.id}`] };
+    reserve(s, d, `actor:${p.id}`); reserve(s, p, `actor:${d.id}`); goto(d, 'hall'); goto(p, 'hall'); d.reason = why; p.reason = `${d.name}要傳功`; return true; }
   if (act === 'chat' || act === 'spar' || act === 'encourage') {
     const p = act === 'encourage' ? chatMates(s, d).filter((o) => o.mood < 35).sort((a, b) => a.mood - b.mood)[0] : chatMates(s, d).sort((a, b) => aff(s, d, b) - aff(s, d, a))[0];
     if (!p) return false;
@@ -311,6 +316,7 @@ function moveStep(d, dt) {
 
 function grow(s, d, sk, amt) {
   if (sk === 'style') sk = d.style;
+  amt *= apprMul(s, d); // v1.65 師父在場，徒弟練得快
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
   if (sk === d.style) { const o = gainArt(d, amt, focusMul(d), s.t); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === m).name}」`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); }
 }
@@ -349,7 +355,7 @@ function doTask(s, d, dt) {
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; book(s, 'out', 'food', 1); }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? facStage(s, 'yard').trainMul || 1 : 1));
-      if (t.act === 'spar' && t.partner) { const p = byId(s, t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在木樁場切磋`); } }
+      if (t.act === 'spar' && t.partner) { const p = byId(s, t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在木樁場切磋`); addMem(s, d, p, 'spar'); } }
       if (A.fun) d.needs.fun = clamp((d.needs.fun ?? 60) + A.fun, 0, 100);
       if (t.act === 'leisure') think(s, d, 'idled');
       if (t.act === 'forage') d.needs.fun = clamp((d.needs.fun ?? 60) + (d.personality.includes('playful') ? 20 : 8), 0, 100);
@@ -359,8 +365,9 @@ function doTask(s, d, dt) {
       if (t.act === 'learn' && d.pendingArt) { const m = learnArt(d, d.pendingArt, s.t); s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
       if (t.act === 'chat' && t.partner) { const p = byId(s, t.partner); d.together += 20; if (isLabor(d) && !isLabor(p)) d.cowork = (d.cowork || 0) + 30;
         if (t.encouragedBy) { think(s, d, 'encouraged', `（${p.name}）`); }
-        else if (d.id < p.id) { const cm = Math.min(compat(d, p), compat(p, d)); if (cm < 1 && rand(s) < (1 - cm) * 0.8) { relAdd(s, d, p, 1); for (const x of [d, p]) think(s, x, 'badChat', `（${x === d ? p.name : d.name}）`); log(s, `${d.name}與${p.name}聊不到一塊`); } else { relAdd(s, d, p, 4 * Math.max(d.traits.social || 1, p.traits.social || 1)); think(s, d, 'goodChat', `（${p.name}）`); think(s, p, 'goodChat', `（${d.name}）`); } } }
+        else if (d.id < p.id) { const cm = Math.min(compat(d, p), compat(p, d)); if (cm < 1 && rand(s) < (1 - cm) * 0.8) { relAdd(s, d, p, 1); for (const x of [d, p]) think(s, x, 'badChat', `（${x === d ? p.name : d.name}）`); log(s, `${d.name}與${p.name}聊不到一塊`); } else { relAdd(s, d, p, 4 * Math.max(d.traits.social || 1, p.traits.social || 1)); think(s, d, 'goodChat', `（${p.name}）`); think(s, p, 'goodChat', `（${d.name}）`); const ln = chatLine(s, d, p), K = `${d.id}|${p.id}`; (s.memTalk ??= {}); if (ln && s.memTalk[K] !== s.day) { s.memTalk[K] = s.day; log(s, ln, 'low'); } addMem(s, d, p, 'chat'); } } }
       if (t.act === 'encourage' && t.partner) { const p = byId(s, t.partner); think(s, d, 'helped'); relAdd(s, d, p, 3); log(s, `${d.name}陪心情低落的${p.name}說了好一會兒話`); }
+      if (t.act === 'pass' && t.lead && t.partner) { const p = byId(s, t.partner); if (p) passDo(s, d, p, t.art); }
       if (A.eff) applyEff(s, d, A.eff, A.name);
       if (A.carry) { d.carry = { ...A.carry }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; }
       finish(s, d);
@@ -531,7 +538,7 @@ export function payday(s) {
 // ---- tick ----
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
-  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); } }
+  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); apprDaily(s); } }
   const se = seasonOf(s); for (const p of s.plots) if (p.st === 'grow' && (p.g += dt / se.grow) >= PLOT_GROW) p.st = 'ripe';
   const seIdx = se.i; if (s.seasonI !== seIdx) { if (s.seasonI !== undefined) log(s, `入${se.name}了。${{ spring: '萬物萌發，菜長得快。', summer: '天長日暖。', autumn: '秋高氣爽，心情開闊。', winter: '天寒地凍，菜長得慢，飯量變大。' }[se.id]}`); s.seasonI = seIdx; }
   for (const d of s.ds) {

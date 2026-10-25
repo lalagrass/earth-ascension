@@ -113,6 +113,10 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 | SS-BLD-V16-REST | v1.6 | 藏經閣（研讀、聽講快25%）、祠堂（上香 3/日、名聲）、丹房（藥材2→療傷丹，1槽）、醫館（受傷需求層：丹→藥→包紮）、客房（待客）、鐘樓（晨鐘全派心情 1/日）、哨崗（守過 120 秒內野豬被嚇回） | **已接線** | 單元測試 test/v160.test.mjs；藍圖鈕在面板可見（截圖） | src/data.mjs src/sim.mjs src/core.mjs | test/v160.test.mjs | shots/v160-04-sig-activity.png（面板） | 未逐一點建 |
 | SS-SIG-ACTS | v1.6 | 7 派鎮派建築活動（乞討/面壁/品酒/護聖火/收會費/收租/祭祖），資料表 SIG_ACTS，每日上限 | **已接線** | 瀏覽器：門派聲望與材料為狀態修改，再實點建造鈕→弟子自去做「沿村乞討」；只算畫面證據。七派效果為單元測試 | src/data.mjs src/sect.mjs src/sim.mjs | artifacts/v160/flow-v160.mjs | shots/v160-04-sig-activity.png | — |
 | SS-CHUNK-LRU | v1.6 | 區塊快取 64 格 LRU | **已接線** | 單元測試 lruGet；瀏覽器拖地圖 37 格未達上限，僅證明不出錯 | src/world.mjs src/main.mjs | test/v160.test.mjs | shots/v160-05-chunks.png | — |
+| SS-MEM-LEDGER | v1.65 | 共同記憶帳本：聊天／切磋／巡山／傳功／收徒各寫一筆（日、地、事），每對 6 筆、全門 80 筆；人際面板列最近兩筆；聊天氣泡引用 | **已驗證** | 自然遊玩：人際面板出現「第N日・前院：…」；巡山歸來出現「並肩巡山，走到林地」（反例：自己對自己、未知種類不寫） | src/bonds.mjs src/sim.mjs src/expedition.mjs src/main.mjs | artifacts/v165/flow-v165.mjs | shots/v165-02-memories.png shots/v165-03-patrol-memory.png | — |
+| SS-XIA-FILTER | v1.65 | 名俠池畫風濾鏡：全明星／純金庸／純周星馳（開局選單），只過濾名俠池 | **已驗證** | 實點開局選「純金庸」→ 名俠池全為金庸角色、包租公婆不在（反例：純周星馳只剩周星馳角色，單元測試） | src/bonds.mjs src/wuxia.mjs src/start-ui.mjs src/hero.mjs | artifacts/v165/flow-v165.mjs | shots/v165-01-start-style.png | — |
+| SS-PASS | v1.65 | 傳功：圓滿以上的人自走帶人練同一門（名俠絕學除外），對方熟練 +15（徒弟 +20），每門每對一次、每人每日一次，好感 +6 | **已接線** | 瀏覽器：主角基礎拳改到 90（狀態修改）後自走去傳功、紀事出現【傳功】，只算畫面證據；前一輪自然遊玩曾自然發生（楊過→郭靖，絕學，之後已排除） | src/bonds.mjs src/sim.mjs | test/v165.test.mjs | shots/v165-04-pass.png | — |
+| SS-APPRENTICE | v1.65 | 收徒：內門／首徒與外門互有好感 ≥30 → 每日自動收一名，或點「收為徒」；師父在場徒弟練功 ×1.15 | **已接線** | 瀏覽器：角色與好感為狀態修改，再實點按鈕→師徒成立、寫入記憶；另一輪看到自然形成（小石<楊過） | src/bonds.mjs src/sim.mjs src/main.mjs | artifacts/v165/flow-v165.mjs | shots/v165-05-apprentice.png | — |
 
 修正：巡山在模擬層也守解鎖（第一章不再在第 1 日記成）；「本門新紀錄」「重傷倒地」由頂級改為中級事件。
 

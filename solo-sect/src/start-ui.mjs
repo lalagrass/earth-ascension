@@ -33,6 +33,7 @@ function render(el) {
     h += `<div>→ 主價值 <b>${VALUE_NAMES[r.main]}</b>・副 <b>${VALUE_NAMES[r.sub]}</b>　特質 <b>${r.visible.map(tn).join('、')}</b>＋一個暗特質（相處後才看得出）</div></div>` + compCards(null);
   } else h += `<p>沿用 v0.95 的無名主角、林師姐、堂弟開局（不帶價值觀與同門）。</p>`;
   const ok = st.tab !== 'custom' || validStats(st.stats, SUHUI);
+  h += `<div>名俠池畫風 <select id="st-xia">${[['all', '全明星'], ['jin', '純金庸'], ['zhou', '純周星馳']].map(([k, n]) => `<option value="${k}" ${(st.xia || 'all') === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`;
   h += `<div><label><input type="checkbox" id="st-ask" ${st.ask ? 'checked' : ''}> 重大抉擇每次詢問我（取消則依價值觀自動決定）</label></div><button class="go" id="st-go" ${ok ? '' : 'disabled'}>開山立派</button></div>`;
   el.innerHTML = h;
 }
@@ -43,9 +44,9 @@ export function openStart(onStart) {
     if (t.dataset.tab) st.tab = t.dataset.tab; if (t.dataset.hero) { st.hero = t.dataset.hero; st.comp = null; } if (t.dataset.comp) st.comp = t.dataset.comp;
     if (t.dataset.st) { const [k, dv] = t.dataset.st.split('|'); const v = st.stats[k] + +dv; if (v >= 1 && v <= 5) { const n = { ...st.stats, [k]: v }; if (spent(n) <= budgetOf(n, SUHUI) || +dv < 0) st.stats = n; } }
     if (t.id === 'st-ask') st.ask = t.checked;
-    if (t.id === 'st-go') { const spec = st.tab === 'classic' ? { kind: 'template', id: st.hero, companion: st.comp, askMajor: st.ask } : st.tab === 'custom' ? { kind: 'custom', name: st.name, stats: st.stats, answers: st.ans, companion: st.comp, askMajor: st.ask, bonus: SUHUI } : null; el.remove(); onStart(spec); return; }
+    if (t.id === 'st-go') { const spec = st.tab === 'classic' ? { kind: 'template', id: st.hero, companion: st.comp, askMajor: st.ask, xiaStyle: st.xia || 'all' } : st.tab === 'custom' ? { kind: 'custom', name: st.name, stats: st.stats, answers: st.ans, companion: st.comp, askMajor: st.ask, bonus: SUHUI, xiaStyle: st.xia || 'all' } : null; el.remove(); onStart(spec); return; }
     render(el); });
-  el.addEventListener('change', (e) => { if (e.target.dataset.q9) { st.ans[+e.target.dataset.q9] = +e.target.value; render(el); } if (e.target.id === 'st-name') st.name = e.target.value || '無名'; });
+  el.addEventListener('change', (e) => { if (e.target.dataset.q9) { st.ans[+e.target.dataset.q9] = +e.target.value; render(el); } if (e.target.id === 'st-name') st.name = e.target.value || '無名'; if (e.target.id === 'st-xia') st.xia = e.target.value; });
 }
 export function choiceUI(S) {
   let el = document.getElementById('choice'); const ch = S.hero?.askMajor && S.choices?.[0];

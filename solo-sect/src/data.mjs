@@ -487,3 +487,6 @@ export const SIG_ACTS = {
   wuming:    { name: '祖師堂祭祖', dur: 6, energy: -1, perDay: 2, why: '祖師堂：祭拜開山祖師', eff: { rep: 0.5, mood: 3 } },
 };
 RES_NAMES.water = '水'; RES_NAMES.pill = '療傷丹';
+
+// v1.65 傳功（夥伴活動，由 bonds.mjs 判斷誰傳誰）
+ACTIVITIES.pass = { name: '傳功', dur: 20, energy: -4 };

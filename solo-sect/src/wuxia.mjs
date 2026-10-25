@@ -1,3 +1,4 @@
+import { styleOk } from './bonds.mjs';
 // v1.1 名俠奇遇（ROADMAP §13）：名俠池（扣掉主角／同門）、觸發（巡山深度、下山、名聲、下廚）、突然入門的高手、
 // 第一組：郭靖、黃蓉（只有這兩位能入門當弟子）、洪七公（傳完就走的師父）；名俠只會離開，不會死
 import { favSort } from './sect.mjs';
@@ -52,7 +53,7 @@ export const PAIR_CAP = 0.25;
 export const xiaInit = () => ({ done: {}, declined: {}, joinT: {}, cooks: 0, lastT: -1e9, pending: null, teacher: null, left: {} });
 export function xiaPool(s) {
   const ex = new Set(s.encExclude || []), pool = new Set([...encounterPool(s), 'hongqigong', ...Object.keys(XIA13)]);
-  return favSort(s, Object.keys(XIA)).filter((k) => pool.has(k) && !ex.has(k) && !present(s, k) && s.xia.teacher?.id !== k && !s.xia.done[k] && !s.xia.left[k]);
+  return favSort(s, Object.keys(XIA)).filter((k) => pool.has(k) && !ex.has(k) && !present(s, k) && s.xia.teacher?.id !== k && !s.xia.done[k] && !s.xia.left[k] && styleOk(s, k));
 }
 // 每 tick：一天最多一個奇遇；不在場、未拒絕三天內
 export function xiaStep(s, H) {
