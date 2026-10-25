@@ -129,3 +129,9 @@
 - arts.mjs：curCap/stuckAt/breakChance/resolveBreak、unlockTechs、gainArt（荒疏、歸真星）、chooseVariant/variantOf、moveMul/cdMul/effectMul、visTier
 - data.mjs：BREAK、GUIZHEN、RUST、VARIANTS、PERKS、AURA；行動 meditate（打坐衝關）
 - sim：衝關的評分是 75；出招時帶上 tier 和變式色；階數 ≥3 會震屏；main：氣旋、進度環、殘影、變式環、大字招名、光暈、面板上的變式選單
+
+## 擴充名俠與《功夫》租客高手（規劃，ROADMAP §13.8–13.13）
+- 角色：楊過、小龍女、張無忌（擴充）、周伯通、東方不敗（反派）、韋小寶（喜劇非戰鬥，可入門）、海大富（1992 電影版）；《功夫》的包租公、包租婆、苦力強、裁縫、油炸鬼、阿星、火雲邪神、天殘地缺、乞丐
+- 資料結構草案：laborer.hidden {art, lv, reveal}；d.latent（潛龍旗標）；d.cha、d.luck；PAIRS [[a,b,bonus .25]]；EVENT.tone 'comedy'|'serious'；social duel = 三回合（魅力＋運氣＋計謀）
+- 平衡：隱藏高手揭露後不再成長；連攜 +25% 封頂；喜劇卡每週最多 2 張、不會造成永久損失；反派不能入門
+- 版權：公開發行前必須先解決
