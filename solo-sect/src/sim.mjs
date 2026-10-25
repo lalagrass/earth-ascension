@@ -12,6 +12,7 @@ import { PACE, TRIAL_BOAR } from './data.mjs';
 import { aspStep, likeMeal, likesOf } from './v10.mjs';
 import { raidMul } from './expedition.mjs';
 import { xiaStep, onCook, xiaInit } from './wuxia.mjs';
+import { hsStep, hsInit } from './huashan.mjs';
 import { unlockStep, chapterStep } from './slice.mjs';
 import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus, awaken, econCoin, cookBonus } from './hero.mjs';
 export { canExpedition, codexRows, reportText, segAt, ROUTE_END, dpsOf };
@@ -44,7 +45,7 @@ export const facStage = (s, id) => facDef(id).stages[s.fac[id].stage];
 
 export function createState(seed = 1, heroSpec = null) {
   const s = {
-    v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })), vegRes: 0, cap: { wood: 12, stone: 12 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
+    v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })), vegRes: 0, cap: { wood: 12, stone: 12 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
     ds: DISCIPLES.map((d, i) => mkDisciple(d, i)),
     rel: {}, aff: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
@@ -312,7 +313,7 @@ function doTask(s, d, dt) {
   if (t.phase === 'do') {
     if (t.act === 'build') { const site = s.fac[t.fac].site; if (!site || site.paused || !siteReady(site)) { d.task = null; d.anim = null; return; } }
     t.timer += dt;
-    if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = byId(s, t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', mfx: mv.fx, name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
+    if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = byId(s, t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
     if (A.energy) d.needs.energy = clamp(d.needs.energy + A.energy * dt / A.dur, 0, 100);
     if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', s.t); if (t.timer < dt * 1.5) think(s, d, t.fac === 'hall' && s.fac.hall.stage === 0 ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= 80 && t.timer > 4))) finish(s, d); return; }
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
@@ -394,7 +395,7 @@ function huntStep(s, dt) {
       for (const m of hitList) { m.hp -= power; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', d); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') s.res.food += 3; } }
       h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5);
       d.cool = mv.cd * cdMul(d, mv.id, s.t); d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike';
-      { const tier = visTier(d, mv.id), a = artOfMove(mv.id), va = a && variantOf(d, a.id, s.t); s.fx.push({ kind: 'move', mfx: mv.fx, name: mv.name, color: mv.color, from: [...d.pos], to: [...tgt.pos], r: mv.aoe || 16, ttl: tier >= 3 ? 1.0 : 0.6, tier, vcolor: va?.color || null, sprite: d.sprite, face: d.face }); if (tier >= 3) s.fx.push({ kind: 'shake', ttl: 0.35 }); }
+      { const tier = visTier(d, mv.id), a = artOfMove(mv.id), va = a && variantOf(d, a.id, s.t); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...tgt.pos], r: mv.aoe || 16, ttl: tier >= 3 ? 1.0 : 0.6, tier, vcolor: va?.color || null, sprite: d.sprite, face: d.face }); if (tier >= 3) s.fx.push({ kind: 'shake', ttl: 0.35 }); }
       d.needs.energy = clamp(d.needs.energy - 1, 0, 100);
       break;
     }
@@ -523,7 +524,7 @@ export function tick(s, dt = 0.25) {
   ecoStep(s, dt);
   expStep(s, dt, H);
   paceStep(s); unlockStep(s); chapterStep(s); if (Math.floor(s.t) !== Math.floor(s.t - dt)) aspStep(s, think);
-  xiaStep(s, H);
+  xiaStep(s, H); hsStep(s, 0.25, H);
   if (s.hero) { const h = byId(s, 'hero'); if (h && !h.away && h.hp <= EXP.hurtHeavy) awaken(s, h); heroStep(s); heroAuto(s); for (const d of s.ds) d.pairMul = pairBonus(s, d, aff); }
   for (const f of s.fx) f.ttl -= dt; s.fx = s.fx.filter((f) => f.ttl > 0);
 }
@@ -547,7 +548,7 @@ function trialStep(s, d, dt) {
   if (d.path.length) return;
   t.phase = 'do'; t.timer += dt; d.face = m.pos[0] >= d.pos[0] ? 1 : -1;
   if (t.timer >= TRIAL_BOAR.hit) { t.timer = 0; const mv = MOVES.find((x) => x.id === d.moves[d.moves.length - 1]); const p = mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t); m.hp -= p; d.anim = 'strike'; d.cool = 1;
-    s.fx.push({ kind: 'move', mfx: mv.fx, name: mv.name, color: mv.color, from: [...d.pos], to: [...m.pos], r: 16, ttl: 0.6, tier: visTier(d, mv.id), sprite: d.sprite, face: d.face }); d.hp = Math.max(30, d.hp - 3);
+    s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...m.pos], r: 16, ttl: 0.6, tier: visTier(d, mv.id), sprite: d.sprite, face: d.face }); d.hp = Math.max(30, d.hp - 3);
     if (m.hp <= 0) { s.mons = s.mons.filter((x) => x !== m); seeEnemy(s, 'boar', 'kill', d); s.res.food += 2;
       const r = d.arts.basicFist; if (r && r.xp < 25) { r.xp = 25.5; } const o = gainArt(d, 0, 1, s.t); for (const id of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === id).name}」`);
       log(s, `${d.name}一拳撂倒野豬！師父點撥：「這一下有了火候。」基礎拳入小成。`); think(s, d, 'learned'); s.pace.trial = 'done'; milestone(s, 'trial'); d.task = null; d.anim = null; } }

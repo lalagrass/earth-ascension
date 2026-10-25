@@ -16,6 +16,8 @@ export const XIA = {
     need: (s) => (s.records?.sect || 0) >= 250 || (s.rep || 0) >= 12, why: '巡山走過林地（250 步）或名聲 12' },
   huangrong: { name: '黃蓉', role: 'disciple', where: '下山採買', title: '追上山的俏姑娘', text: '下山採買的弟子回來說，鎮上有個小叫化一路跟著郭靖，洗了臉竟是個俏姑娘：「靖哥哥，我也要拜師。」',
     need: (s) => present(s, 'guojing') && s.t - (s.xia.joinT.guojing ?? (s.hero?.id === 'guojing' ? 0 : s.t)) >= DAY * 0.5, why: '郭靖在門中半天以上（下山採買時遇上）' },
+  linghuchong: { name: '令狐沖', role: 'disciple', where: '斷崖', title: '斷崖上喝酒的浪子', text: '巡山隊在斷崖邊遇到一個抱著酒罈的年輕人：「好酒！各位要不要來一碗？聽說你們門派不拘一格，我來討口酒喝。」',
+    need: (s) => (s.records?.sect || 0) >= 700 || (s.rep || 0) >= 25, why: '巡山走到斷崖（700 步）或名聲 25' },
   hongqigong: { name: '洪七公', role: 'teacher', where: '膳房', title: '洪七公聞香而來', text: '一個背酒葫蘆的老叫化蹲在膳房門口吞口水：「好香！這手藝……是誰燒的？老叫化走不動了。」',
     need: (s) => present(s, 'huangrong') && (s.xia.cooks || 0) >= (s.hero?.flags?.hong ? 1 : 2) && (kitchenLv(s) >= 1 || s.hero?.flags?.hong), why: '黃蓉在門中且下過廚（膳房或郭靖主線）' },
 };
@@ -34,7 +36,7 @@ export function xiaStep(s, H) {
   for (const k of xiaPool(s)) {
     if ((X.declined[k] || -1e9) > s.t - 3 * DAY || !XIA[k].need(s)) continue;
     const A = XIA[k]; X.pending = k; X.lastT = s.t;
-    s.choices.push({ id: `xia-${k}`, xia: k, title: `【奇遇・${A.where}】${A.title}`, text: A.text, opts: A.role === 'teacher' ? ['好酒好菜招待他', '門派窮，請他走'] : ['收入門下', '婉拒'], at: s.t });
+    s.choices.push({ id: `xia-${k}`, xia: k, portrait: `assets/portraits/${k}.png`, title: `【奇遇・${A.where}】${A.title}`, text: A.text, opts: A.role === 'teacher' ? ['好酒好菜招待他', '門派窮，請他走'] : ['收入門下', '婉拒'], at: s.t });
     log(s, `【奇遇】${A.title}：${A.text}`); if (!s.hero?.askMajor) s.autoAt = s.t; return;
   }
 }
@@ -51,7 +53,7 @@ export function join(s, k) {
   let d;
   if (k === 'huangrong') d = mkComp('huangrong', s.ds.length);
   else { const T = heroById(k); d = mkComp('huangrong', s.ds.length); Object.assign(d, { id: k, name: T.name, root: T.stats.gen, wu: T.stats.wu, style: T.style, personality: [...T.personality], known: T.personality.slice(0, 2), sprite: 'hero', portrait: `assets/portraits/${k}.png`,
-    skills: { leg: 14, palm: 30, strength: 36, farming: 6, herbal: 2, agility: 14, cooking: 2 }, values: null }); }
+    skills: k === 'linghuchong' ? { leg: 16, palm: 36, strength: 14, farming: 2, herbal: 2, agility: 30, cooking: 2 } : { leg: 14, palm: 30, strength: 36, farming: 6, herbal: 2, agility: 14, cooking: 2 }, values: null }); }
   Object.assign(d, { companion: false, xia: k, reason: '名俠入門', mood: 80, role: 'inner' });
   d.skills.palm = Math.max(d.skills.palm, 30); s.ds.push(d);
   for (const o of s.ds) if (o !== d) initPair(s, d, o, 10);

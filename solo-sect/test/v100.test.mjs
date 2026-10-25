@@ -13,9 +13,9 @@ test('路線第五段起：斷崖、古洞、無名絕頂，各有守關敵與 �
   for (const r of ROUTE) { assert.ok(ENEMIES[r.gate], r.id); for (const [k] of r.roster) assert.ok(ENEMIES[k], k); }
   assert.ok(Math.abs(ROUTE[5].scale / ROUTE[4].scale - 1.25) < 1e-9);
 });
-test('無盡段：每 200 步一段、段末固定守關、每段再 ×1.25', () => {
+test('無盡段：每 200 步一段、段末固定守關、每段再 ×ENDLESS.mul（v1.2 起 1.18）', () => {
   const a = routeSeg(7), b = routeSeg(8); assert.equal(a.from, 1600); assert.equal(a.to - a.from, ENDLESS.len); assert.equal(b.from, a.to);
-  assert.equal(a.gate, 'peakguard'); assert.ok(Math.abs(b.scale / a.scale - 1.25) < 1e-9); assert.equal(segAt(1700).id, 'end1'); assert.equal(segAt(2050).id, 'end3');
+  assert.equal(a.gate, 'peakguard'); assert.ok(Math.abs(b.scale / a.scale - ENDLESS.mul) < 1e-9); assert.equal(segAt(1700).id, 'end1'); assert.equal(segAt(2050).id, 'end3');
 });
 test('營地設在第三段、第五段盡頭；過關設營、可從營地出發', () => {
   assert.deepEqual(CAMPS.map((c) => ROUTE[c.seg].to), [450, 950]);

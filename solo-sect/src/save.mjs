@@ -30,6 +30,7 @@ export const MIGRATIONS = [
   { to: '0.98', note: '漸進解鎖、第一章終點', up(o) { o.unlock ??= ['base', 'arts', 'hunt', 'exp', 'social', 'econ']; o.chapter ??= { done: false }; } },
   { to: '1.0', note: '巡山第五段起、營地、秘笈、喜好、志向', up(o) { o.camps ??= {}; o.manuals ??= []; for (const d of o.ds || []) { delete d.restUntil; } } },
   { to: '1.1', note: '名俠奇遇、招牌武學', up(o) { o.xia ??= { done: {}, declined: {}, joinT: {}, cooks: 0, lastT: -1e9, pending: null, teacher: null, left: {} }; } },
+  { to: '1.2', note: '華山線：紫霞、辟邪、九劍、風清揚', up(o) { o.hs ??= { zx: 0, cave: false, carv: 0, lastCarvDay: -1, bixie: 0, bixieT: null, songN: 0, songLast: 0, siguo: false, feng: null, fengLeft: false, fengTries: 0, jealous: false, lhc: 'stay', cards: {}, arcN: 0 }; } },
 ];
 // 每次讀檔都跑：補最基本的不變式（手改或殘缺存檔也能讀）
 function repair(o, D) { o.cap ??= { wood: 12, stone: 12 }; for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= []; d.needs.fun ??= 60; if (!d.personality?.length) d.personality = [...(D[d.id]?.personality || [])]; d.known ??= d.personality.slice(0, 1); } freshV095(o); }

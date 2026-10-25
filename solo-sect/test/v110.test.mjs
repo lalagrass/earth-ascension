@@ -11,7 +11,7 @@ import { guardOf } from '../src/expedition.mjs';
 
 const st = (seed = 3) => { const s = createState(seed); tick(s); return s; };
 test('v1.1 版本與招牌武學各三招、帶地圖特效、不入秘笈池', () => {
-  assert.equal(RULES_VERSION, '1.1');
+  assert.ok(parseFloat(RULES_VERSION) >= 1.1);
   for (const [id, fx] of [['xianglong', 'dragon'], ['dagou', 'staff']]) { const a = ARTS.find((x) => x.id === id); assert.ok(a.secret && a.classic); assert.equal(a.techs.length, 3);
     for (const m of a.techs) assert.equal(MOVES.find((x) => x.id === m).fx, fx); }
   assert.deepEqual(ARTS.find((a) => a.id === 'xianglong').techs.map((m) => MOVES.find((x) => x.id === m).name), ['見龍在田', '飛龍在天', '亢龍有悔']);
@@ -26,8 +26,8 @@ test('名聲觸發郭靖奇遇，一天最多一個；收入門下帶高手底�
   assert.equal(autoPick(s, ch), 0); xiaResolve(s, ch, 0); const g = s.ds.find((d) => d.xia === 'guojing');
   assert.ok(g && g.skills.palm >= 30 && dragonFit(g)); assert.ok(s.xia.done.guojing);
 });
-test('只有郭靖、黃蓉能入門當弟子；洪七公是師父', () => {
-  assert.deepEqual(Object.keys(XIA).filter((k) => XIA[k].role === 'disciple').sort(), ['guojing', 'huangrong']); assert.equal(XIA.hongqigong.role, 'teacher');
+test('名俠弟子：郭靖、黃蓉、令狐沖（v1.2）；洪七公是師父', () => {
+  assert.deepEqual(Object.keys(XIA).filter((k) => XIA[k].role === 'disciple').sort(), ['guojing', 'huangrong', 'linghuchong']); assert.equal(XIA.hongqigong.role, 'teacher');
 });
 test('婉拒三天內不再出現', () => {
   const s = st(); s.rep = 20; xiaStep(s); const ch = s.choices.find((c) => c.xia); xiaResolve(s, ch, 1); s.t += DAY * 1.5; xiaStep(s); assert.ok(!s.choices.some((c) => c.xia));

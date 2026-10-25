@@ -25,7 +25,7 @@ export function mainSub(values) { const o = Object.entries(values).sort((a, b) =
 export function valueMul(d, act) { if (!d.values) return 1; const t = ACT_TAGS[act]; if (!t) return 1; return 1 + t.reduce((a, k) => a + (d.values[k] || 0), 0) * VALUE_K; }
 export const valueOfAct = (d, act) => (ACT_TAGS[act] || []).reduce((a, k) => a + (d.values?.[k] || 0), 0);
 export function addWexin(s, d, why) {
-  if (!d.values) return false; d.wexin = Math.min(WEXIN.max, (d.wexin || 0) + 1);
+  if (!d.values) return false; d.lastWexinT = s.t; d.wexin = Math.min(WEXIN.max, (d.wexin || 0) + 1);
   log(s, `${d.name}心中違心（${why}）：違心 ${d.wexin}/${WEXIN.max}`); return true;
 }
 export function easeWexin(s, d) { if (d.wexin > 0) { d.wexin--; log(s, `${d.name}閉關靜坐，心中稍安（違心 ${d.wexin}/${WEXIN.max}）`); } }
@@ -69,6 +69,7 @@ export function applyHero(s, spec, initPair) {
 export function encounterPool(s) { const ex = new Set(s.encExclude || []); return [...HEROES.map((h) => h.id), ...Object.keys(COMPANIONS)].filter((id, i, a) => a.indexOf(id) === i && !ex.has(id)); }
 // 同門默契：郭靖＋黃蓉 練功最多 +25%（隨好感線性），其他組合 +10%
 import { xiaResolve, pairBest } from './wuxia.mjs';
+import { hsResolve, hsAutoPick } from './huashan.mjs';
 export function pairBonus(s, d, aff) {
   if (!s.hero) return 0; return pairBest(s, d, aff, (a, b) => { const c = s.hero.companion; return (a.id === 'hero' && b.id === c) || (b.id === 'hero' && a.id === c) ? COMPANIONS[c]?.pair?.[s.hero.id] ?? 0.1 : 0; });
 }
@@ -86,9 +87,9 @@ export function heroStep(s) {
   s.choices.push(ch); log(s, `【抉擇】${A.title}：${A.text}`); H.arcStep = 0.5;
   if (!H.askMajor) s.autoAt = s.t + (ch.delay || 0);
 }
-export function autoPick(s, ch) { if (ch.xia) return 0; const A = ARCS[ch.arc], v = s.hero.values; let best = 0, bv = -1e9; A.opts.forEach(([, dv], i) => { const sc = Object.entries(dv).reduce((a, [k, x]) => a + x * (v[k] || 0), 0); if (sc > bv) { bv = sc; best = i; } }); return best; }
+export function autoPick(s, ch) { if (ch.xia) return 0; if (ch.hs) return hsAutoPick(s, ch); const A = ARCS[ch.arc], v = s.hero.values; let best = 0, bv = -1e9; A.opts.forEach(([, dv], i) => { const sc = Object.entries(dv).reduce((a, [k, x]) => a + x * (v[k] || 0), 0); if (sc > bv) { bv = sc; best = i; } }); return best; }
 export function resolveChoice(s, id, i) {
-  const ch = s.choices.find((c) => c.id === id); if (!ch) return false; if (ch.xia) return xiaResolve(s, ch, i); const A = ARCS[ch.arc], [text, dv, flag] = A.opts[i], d = s.ds.find((x) => x.id === 'hero');
+  const ch = s.choices.find((c) => c.id === id); if (!ch) return false; if (ch.xia) return xiaResolve(s, ch, i); if (ch.hs) return hsResolve(s, ch, i); const A = ARCS[ch.arc], [text, dv, flag] = A.opts[i], d = s.ds.find((x) => x.id === 'hero');
   for (const [k, x] of Object.entries(dv)) d.values[k] = Math.max(-50, Math.min(50, (d.values[k] || 0) + x));
   [s.hero.main, s.hero.sub] = mainSub(d.values); s.hero.values = d.values;
   const [mk] = mainSub(d.values); if ((dv[mk] || 0) < 0 || Object.entries(dv).some(([k, x]) => x < 0 && (d.values[k] || 0) >= 20)) addWexin(s, d, `抉擇「${text}」違背本心`);

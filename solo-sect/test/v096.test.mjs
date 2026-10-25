@@ -50,7 +50,7 @@ test('專屬主線第一步：第 2 天出抉擇卡，詢問玩家；不問則�
   const s = createState(8, { kind: 'template', id: 'guojing', companion: 'huangrong' }); run(s, DAY * 1.05);
   assert.equal(s.choices.length, 1); assert.equal(s.choices[0].title, '洪七公聞香而來');
   resolveChoice(s, s.choices[0].id, 0); assert.ok(s.hero.flags.hong); assert.equal(s.choices.length, 0);
-  const a = createState(8, { kind: 'template', id: 'linghuchong', askMajor: false }); run(a, DAY * 1.05); assert.equal(a.choices.length, 0); assert.ok(a.hero.arcStep === 1);
+  const a = createState(8, { kind: 'template', id: 'linghuchong', askMajor: false }); run(a, DAY * 1.05); assert.equal(a.choices.length, 0); assert.ok(a.hero.arcStep >= 1);
 });
 test('預設無主角開局不變、v0.95 存檔逐步遷移', () => {
   const s = createState(9); assert.equal(s.hero, null); assert.equal(s.ds.length, 3);

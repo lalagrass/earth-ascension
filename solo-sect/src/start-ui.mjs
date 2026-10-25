@@ -50,7 +50,7 @@ export function choiceUI(S) {
   if (!ch) { el?.remove(); return false; }
   if (el?.dataset.id === ch.id) return true;
   el?.remove(); el = document.createElement('div'); el.id = 'choice'; el.dataset.id = ch.id;
-  el.innerHTML = `<b>【抉擇】${ch.title}</b><p>${ch.text}</p>${ch.opts.map((o, i) => `<button data-pick="${i}">${o}</button>`).join('')}<div class="small">本心：${valLine(S.hero.values)}（違背主價值會添一層違心）</div>`;
+  el.innerHTML = `${ch.portrait ? `<img src="${ch.portrait}" style="float:left;width:72px;height:96px;object-fit:cover;border-radius:6px;margin:0 10px 6px 0;border:1px solid #b89" onerror="this.remove()">` : ''}<b>【抉擇】${ch.title}</b><p>${ch.text}</p>${ch.opts.map((o, i) => `<button data-pick="${i}">${o}</button>`).join('')}<div class="small">本心：${valLine(S.hero.values)}（違背主價值會添一層違心）</div>`;
   el.onclick = (e) => { const b = e.target.closest('[data-pick]'); if (!b) return; resolveChoice(S, ch.id, +b.dataset.pick); el.remove(); };
   document.body.appendChild(el); return true;
 }

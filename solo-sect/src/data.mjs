@@ -192,6 +192,10 @@ export const THOUGHTS = {
   quarrel:   { text: '巡山時跟人吵了一架', v: -5, ttl: 300, tag: 'social' },
   xiaJoin:   { text: '名俠入門，門派有了底氣', v: 6, ttl: 600, tag: 'good' },
   xiaTaught: { text: '得名師親傳絕學', v: 15, ttl: 900, tag: 'good' },
+  jealous:   { text: '首徒的劍比我快……（嫉）', v: -10, ttl: 900, tag: 'bad' },
+  bixieShock:{ text: '掌門變了個人，陰陽怪氣', v: -8, ttl: 1800, tag: 'bad' },
+  zixiaUp:   { text: '紫霞神功又進一層', v: 8, ttl: 600, tag: 'good' },
+  duguGot:   { text: '劍隨意走，無招勝有招', v: 12, ttl: 900, tag: 'good' },
   aspDone:   { text: '志向得償', v: 12, ttl: 900, tag: 'good' },
   expHurt:   { text: '巡山掛了彩', v: -8, ttl: 400, tag: 'fight' },
   btFail:    { text: '衝關失敗，氣血翻湧', v: -5, ttl: 300, tag: 'bad' },
@@ -226,7 +230,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '1.1';
+export const RULES_VERSION = '1.2';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -342,7 +346,7 @@ export const ROUTE = [
   { id: 'peak',   name: '無名絕頂', from: 1250, to: 1600, every: 50, roster: [['hermit', 2], ['ape', 1]], find: { coin: 1, page2: 0.1 }, scale: 1.25 ** 3 },
 ];
 // v1.0 無盡段：無名絕頂之後每 200 步一段、段末固定守關「無名高手」、每段 ×1.25
-export const ENDLESS = { len: 200, mul: 1.25, roster: [['hermit', 2], ['ape', 1], ['python', 1]], find: { coin: 1, page2: 0.15 }, gate: 'peakguard' };
+export const ENDLESS = { len: 200, mul: 1.18, dmgExp: 0.5, roster: [['hermit', 2], ['ape', 1], ['python', 1]], find: { coin: 1, page2: 0.15 }, gate: 'peakguard' };
 // 營地：第三段（山腰）與第五段（斷崖）盡頭；過關即設營，可補給、下次可從營地出發
 export const CAMPS = [{ id: 'camp1', seg: 2, name: '山腰營地' }, { id: 'camp2', seg: 4, name: '斷崖營地' }];
 export const EXP = { maxTeam: 4, thr: [0.3, 0.5, 0.7], thrDefault: 0.5, moodMin: 30, walk: 5, back: 12, gateBail: 0.25, supplyHeal: 35, supplyPer: 2, supplyMax: 6, campCarry: 2, sta: 100, staStep: 0.05, staFight: 1.5, patFight: 1.5, patLazy: 1, orderPatCap: 0.7, scoutAt: 35, scoutBonus: 0.2, scoutT: 3, cool: 90, coolFast: 0.5, quarrel: 6, peaceQing: 3, peaceRaid: 2, peaceSpeed: 1.3, orderMood: -6, classicGuard: 0.6, classicTier: 3, minHp: 50, hurtLight: 60, hurtHeavy: 25 };
@@ -389,3 +393,25 @@ MOVES.push({ id: 'kanglong', skill: 'palm', name: '亢龍有悔', req: 0, range:
 MOVES.push({ id: 'banzi', skill: 'leg', name: '絆字訣', req: 0, range: 40, cd: 0.7, dmg: 9, aoe: 0, color: '#3fae5a', fx: 'staff' });
 MOVES.push({ id: 'chuozi', skill: 'leg', name: '戳字訣', req: 0, range: 50, cd: 0.9, dmg: 14, aoe: 0, color: '#2f9e6a', fx: 'staff' });
 MOVES.push({ id: 'wugou', skill: 'leg', name: '天下無狗', req: 0, range: 80, cd: 1.6, dmg: 26, aoe: 90, color: '#5fd38a', fx: 'staff' });
+
+// ---- v1.2 華山線：紫霞神功（九層）、辟邪劍法（捷徑）、獨孤九劍（九式，口傳不入秘笈） ----
+ARTS.push({ id: 'zixia', name: '紫霞神功', school: 'palm', grade: 3, tags: ['柔'], req: [], techs: [], secret: true, classic: true, layered: true });
+ARTS.push({ id: 'bixie', name: '辟邪劍法', school: 'palm', grade: 4, tags: ['快'], req: [], techs: ['bx1', 'bx2', 'bx3'], tech: 'bx1', secret: true, classic: true });
+ARTS.push({ id: 'dugu', name: '獨孤九劍', school: 'palm', grade: 4, tags: ['巧'], req: [], techs: [], secret: true, classic: true, forms: true });
+MOVES.push({ id: 'bx1', skill: 'palm', name: '流星飛墮', req: 0, range: 60, cd: 0.45, dmg: 9, aoe: 0, color: '#c03060', fx: 'bixie' });
+MOVES.push({ id: 'bx2', skill: 'palm', name: '群邪辟易', req: 0, range: 60, cd: 0.6, dmg: 13, aoe: 60, color: '#d04070', fx: 'bixie' });
+MOVES.push({ id: 'bx3', skill: 'palm', name: '鍾馗抉目', req: 0, range: 70, cd: 0.7, dmg: 18, aoe: 0, color: '#e05080', fx: 'bixie' });
+// 獨孤九劍九式：總訣式是根本；其餘八式要「見過」對應敵人（觀破值）才悟得出
+export const DUGU = [
+  { id: 'dg0', name: '總訣式', foes: [], need: 0, dmg: 16 },
+  { id: 'dg1', name: '破劍式', foes: ['hermit', 'swordtomb'], need: 30, dmg: 24 },
+  { id: 'dg2', name: '破刀式', foes: ['bandit', 'chief'], need: 30, dmg: 22 },
+  { id: 'dg3', name: '破槍式', foes: ['post'], need: 30, dmg: 22 },
+  { id: 'dg4', name: '破鞭式', foes: ['chief'], need: 30, dmg: 22 },
+  { id: 'dg5', name: '破索式', foes: ['python', 'pythonking'], need: 30, dmg: 26 },
+  { id: 'dg6', name: '破掌式', foes: ['ape', 'whiteape', 'bear'], need: 50, dmg: 28 },
+  { id: 'dg7', name: '破箭式', foes: ['archer'], need: 40, dmg: 24 },
+  { id: 'dg8', name: '破氣式', foes: ['peakguard'], need: 60, dmg: 36, inner: true },
+];
+for (const f of DUGU) MOVES.push({ id: f.id, skill: 'palm', name: f.name, req: 0, range: 80, cd: 1.0, dmg: f.dmg, aoe: f.id === 'dg0' || f.inner ? 70 : 0, color: '#9fb8d8', fx: 'dugu' });
+export const HS = { zxNeed: 240, carvPer: 1, carvInsight: 6, cleanDays: 7, zxMoodMin: 60, zxDingMin: 4, zxPow: 0.03, zxGuard: 0.03, bixieDayPow: 0.04, bixieCap: 0.6, songEvery: 4, fengNights: 3, softP: 0.05, duguHeal: 1, secondWind: 0.5, windHp: 0.5 };
