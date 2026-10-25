@@ -1,0 +1,11 @@
+{
+  "stage": "optimization-M8",
+  "author": "Claude Opus 5.5 (Anthropic, via Claude Code)",
+  "runtimeCommit": "76d7a77",
+  "spec": "docs/optimization/M8.md",
+  "model": {"tests": "test/optimization/m8.test.mjs", "report": "evidence/optimization/m8-model/m8-model.json", "regression": "evidence/optimization/m8-model/m8-regression.log"},
+  "normalUI": ["evidence/optimization/m8-ui-accepted-1440/summary.json", "evidence/optimization/m8-ui-accepted-1280/summary.json"],
+  "initialUIRun": "evidence/optimization/m8-ui-initial-1440 (first attempt failed on a driver selector; failure.png kept)",
+  "rootReused": {"sourceCommit": "226b546", "logs": ["evidence/optimization/m7-model/root-python.log", "evidence/optimization/m7-model/root-sect-node.log", "evidence/optimization/m7-model/root-earth-syntax.log"], "reason": "M8 changes only solo-sect-gpt front-end/projection files; no root contract, CI, Earth or sect-chronicle file changed"},
+  "kinds": {"modelFixture": "m8-model", "normalUI": "m8-ui-accepted-*", "authorSelfReview": "docs/optimization/M8.md", "humanPlaytest": "not run"}
+}

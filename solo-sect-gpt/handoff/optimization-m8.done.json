@@ -1,0 +1,13 @@
+{
+  "status": "done",
+  "stage": "optimization-M8",
+  "author": "Claude Opus 5.5 (Anthropic, via Claude Code)",
+  "baseCommit": "6ce2816",
+  "artifactCommit": "76d7a77",
+  "index": "evidence/optimization/m8/index.json",
+  "changedFiles": ["src/person-view.mjs", "src/ui.mjs", "src/render.mjs", "style.css", "assets/manifest.json", "test/optimization/m8.test.mjs", "test/optimization/m8-ui.mjs", "docs/optimization/M8.md"],
+  "checks": {"regression": "131/131", "m8Model": "4/4", "normalUI": "passed 1440x900 and 1280x800", "root": "reused from 226b546 (unaffected)"},
+  "saveCompatibility": "no persistent state added; view-only openSections lives in memory",
+  "notRun": ["human playtest", "independent review", "UI scaling/rearrangement"],
+  "limits": ["author self-review", "Serena unavailable for the GPT worktree in this session; rg used instead"]
+}
