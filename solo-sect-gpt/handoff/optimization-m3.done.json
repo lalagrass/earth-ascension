@@ -1,0 +1,14 @@
+{
+  "status": "done",
+  "stage": "optimization-M3",
+  "author": "GPT / Codex; GPT-6.1 Sol / high",
+  "artifactCommit": "cb553cf006b54976d71a709db48dd886f2d4aaba",
+  "baseCommit": "a9dfc1c05095e87d2f1a1637fefe55cec8c37520",
+  "index": "evidence/optimization/m3/index.json",
+  "entrypoint": "http://127.0.0.1:8878/",
+  "limits": [
+    "author self-review; no independent/human review",
+    "finite controlled trials, not general balance"
+  ],
+  "next": "M4 then M5 then M6; stop after M6"
+}
