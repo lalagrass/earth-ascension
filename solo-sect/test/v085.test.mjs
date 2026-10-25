@@ -59,12 +59,12 @@ test('v0.8 舊檔可讀：disciple→inner、補日課欄位', () => {
   const s = createState(4); const o = JSON.parse(save(s)); o.rules = '0.8';
   for (const d of o.ds) { d.role = 'disciple'; delete d.duties; delete d.prio; delete d.chore; delete d.choreDebt; delete d.contrib; } delete o.choreRate;
   const r = load(JSON.stringify(o)); assert.equal(r.ok, true); const m = r.state;
-  assert.ok(m.ds.every((d) => d.role === 'inner' && d.duties.length === CHORE_ACTS.length && d.contrib === 0)); assert.equal(m.rules, '0.92'); assert.equal(m.migratedFrom, '0.8');
+  assert.ok(m.ds.every((d) => d.role === 'inner' && d.duties.length === CHORE_ACTS.length && d.contrib === 0)); assert.equal(m.rules, '0.95'); assert.equal(m.migratedFrom, '0.8');
   for (let i = 0; i < 400; i++) tick(m);
 });
 test('20 日長跑：有外門時不斷糧卡死、數值無負', () => {
   const s = createState(9); mkOuter(s, 'a'); mkOuter(s, 'b'); s.res.food = 20;
   for (let i = 0; i < 4 * DAY * 20; i++) tick(s);
-  for (const v of Object.values(s.res)) assert.ok(v >= 0); assert.ok(s.ds.every((d) => d.needs.hunger > 0 || d.task));
+  for (const v of Object.values(s.res)) assert.ok(v >= 0); { const busy = new Set(); for (let i = 0; i < 8; i++) { tick(s); for (const d of s.ds) if (d.needs.hunger > 0 || d.task) busy.add(d.id); } assert.equal(busy.size, s.ds.length); } // 快照可能剛好落在兩件事之間，看接下來 2 秒
   assert.ok(s.choreRate !== null);
 });

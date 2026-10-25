@@ -1,4 +1,5 @@
 // v0.9 武學骨架：每門武學各自熟練、五階、前置、悟性門檻、笨功夫倍率
+import { pipeline } from './mul.mjs';
 import { ARTS, TIERS, WUXING_MUL, ART_GAIN, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST } from './data.mjs';
 export const artById = (id) => ARTS.find((a) => a.id === id);
 export const artOfMove = (mv) => ARTS.find((a) => a.tech === mv || a.techs?.includes(mv));
@@ -13,15 +14,15 @@ export function artState(d, a) {
   const miss = reqMissing(d, a); if (miss.length) return { st: 'locked', why: `需${miss.join('、')}` };
   return { st: 'open', why: '條件已足，等師父有空' };
 }
-export function artMul(d, a) {
-  const [basic, adv] = WUXING_MUL[d.root ?? 3] || [1, 1]; let m = a.grade <= 1 ? basic : adv;
-  const p = d.personality || [];
-  if (p.includes('honest')) m *= a.grade <= 1 ? ART_GAIN.honest[0] : ART_GAIN.honest[1];
-  for (const [t, [tag, k]] of Object.entries(ART_GAIN.tagTrait)) if (p.includes(t) && a.tags.includes(tag)) m *= k;
-  m *= 1 + ART_GAIN.reqBonus * a.req.length;
-  if (gated(d, a)) m *= ART_GAIN.gated;
-  return m;
+// 熟練倍率走統一管線：天賦（悟性、憨厚、灑脫/勤奮）＋外部（前置加成）；悟性門檻 ×0.3 是硬規則，管線外另乘
+export function artMulParts(d, a, state = []) {
+  const [basic, adv] = WUXING_MUL[d.root ?? 3] || [1, 1], p = d.personality || [], talent = [['悟性', a.grade <= 1 ? basic : adv]];
+  if (p.includes('honest')) talent.push(['憨厚', a.grade <= 1 ? ART_GAIN.honest[0] : ART_GAIN.honest[1]]);
+  for (const [t, [tag, k]] of Object.entries(ART_GAIN.tagTrait)) if (p.includes(t) && a.tags.includes(tag)) talent.push([t === 'free' ? '灑脫' : '勤奮', k]);
+  const ext = a.req.length ? [['前置', 1 + ART_GAIN.reqBonus * a.req.length]] : [];
+  const r = pipeline({ talent, state, ext }); r.gate = gated(d, a) ? ART_GAIN.gated : 1; r.total *= r.gate; return r;
 }
+export const artMul = (d, a) => artMulParts(d, a).total;
 export const artCap = (d, a) => (gated(d, a) ? ART_GAIN.gateCap : 100);
 export function autoFocus(d) {
   const own = Object.keys(d.arts || {}).map(artById).filter((a) => a && d.arts[a.id].xp < artCap(d, a));
@@ -60,7 +61,8 @@ export function gainArt(d, amt, mf = 1, now = 0) {
   const out = { next: null, moves: [], star: false };
   const id = focusOf(d);
   if (id) { const a = artById(id), r = d.arts[id]; r.rust = rustOf(r, now); r.last = now;
-    const g = amt * ART_GAIN.base * artMul(d, a) * mf * (1 - r.rust);
+    const P = artMulParts(d, a, [['心情', mf], ['荒疏', 1 - r.rust]]); d.growMul = { art: id, total: P.total, talent: P.talent, state: P.state, ext: P.ext, gate: P.gate };
+    const g = amt * ART_GAIN.base * P.total;
     r.rust = Math.max(0, r.rust - RUST.shake);
     if (r.guizhen) { r.sxp = (r.sxp || 0) + g * 0.4; while (r.sxp >= starCost(r)) { r.sxp -= starCost(r); r.stars = (r.stars || 0) + 1; out.star = true; } }
     else { r.xp = Math.min(curCap(d, a), r.xp + g * (1 - r.xp / 130)); out.moves = unlockTechs(d, a); } }

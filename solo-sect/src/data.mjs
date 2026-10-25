@@ -183,6 +183,9 @@ export const TRAITS = {
 };
 // 想法（記憶）：值、持續秒數、分類（給 thoughtMul 用）
 export const THOUGHTS = {
+  recordSect: { text: '本門巡山走出新紀錄', v: 5, ttl: 600, tag: 'good' },
+  recordSelf: { text: '巡山走得比上次更遠', v: 4, ttl: 500, tag: 'good' },
+  expHurt:   { text: '巡山掛了彩', v: -8, ttl: 400, tag: 'fight' },
   btFail:    { text: '衝關失敗，氣血翻湧', v: -5, ttl: 300, tag: 'bad' },
   btWin:     { text: '衝破瓶頸！', v: 18, ttl: 500, tag: 'good' },
   learned:   { text: '學會了新招', v: 15, ttl: 400, tag: 'good' },
@@ -215,7 +218,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '0.92';
+export const RULES_VERSION = '0.95';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -239,7 +242,7 @@ export const QUESTIONS = [
 // ---- v0.8 資源→建設、雇工 ----
 // 香火錢：每日晨起入帳 base + floor(名聲/perRep)；雇工每日工錢 wage，付不出累計 unpaid，達 leaveAfter 日離開
 export const ECON = { coinStart: 4, coinBase: 2, coinPerRep: 5, wage: 2, hireCoin: 4, hireFood: 2, leaveAfter: 2, carry: 2, laborCarry: 3 };
-export const RES_NAMES = { wood: '木', stone: '石', coin: '香火錢', veg: '菜', food: '飯', herb: '藥' };
+export const RES_NAMES = { wood: '木', stone: '石', coin: '香火錢', veg: '菜', food: '飯', herb: '藥', hide: '獸皮', gall: '熊膽', page1: '凡階殘頁', page2: '精階殘頁' };
 // 雇工能做的事（不練武、不聽講、不下廚種菜）；幹活時分數加成
 export const LABOR_ACTS = ['rest', 'eat', 'chat', 'leisure', 'chop', 'quarry', 'build'];
 export const LABOR_WORK_MUL = 1.4;
@@ -293,3 +296,36 @@ export const BREAK = { caps: [54.9, 99.9], moodMin: 45, energyMin: 40, base: 0.3
 export const GUIZHEN = { rootMax: 2, traits: ['diligent', 'honest'], star: 0.04, cost0: 20, costStep: 4 };
 export const RUST = { after: 2 * DAY, perDay: 0.15, max: 0.6, shake: 0.05 };
 export const AURA = { fist: '#b08a5a', palm: '#d0582e', leg: '#6b9a3d', inner: '#8e44ad', step: '#2e86c1' };
+
+// ---- v0.95 敵人種類與圖鑑（觀破值）----
+// kind：獸／人；flee：殘血時逃走機率；loot：整數必得、小數為機率
+export const ENEMIES = {
+  rat:    { name: '山鼠',     kind: '獸', weapon: '利齒', hp: 10,  dmg: 2,  cd: 1.0, flee: 0.5,  loot: {} },
+  hare:   { name: '野兔',     kind: '獸', weapon: '牙爪', hp: 8,   dmg: 1,  cd: 1.2, flee: 0.6,  loot: { food: 1 } },
+  boar:   { name: '野豬',     kind: '獸', weapon: '獠牙', hp: 40,  dmg: 6,  cd: 1.3, flee: 0.1,  loot: { food: 3, hide: 1 } },
+  boars:  { name: '野豬群',   kind: '獸', weapon: '獠牙', hp: 110,  dmg: 11,  cd: 1.1, flee: 0.15, loot: { food: 5, hide: 2 } },
+  wolf:   { name: '狼',       kind: '獸', weapon: '牙爪', hp: 60,  dmg: 10,  cd: 0.9, flee: 0.2,  loot: { hide: 1 } },
+  snake:  { name: '毒蛇',     kind: '獸', weapon: '毒牙', hp: 25,  dmg: 12, cd: 1.5, flee: 0.35, loot: { herb: 2 } },
+  bandit: { name: '山賊嘍囉', kind: '人', weapon: '刀',   hp: 120,  dmg: 14,  cd: 1.2, flee: 0.3,  loot: { coin: 3, page1: 0.15 } },
+  archer: { name: '獵戶暗箭', kind: '人', weapon: '暗器', hp: 75,  dmg: 17, cd: 1.5, flee: 0.45, loot: { coin: 2, page1: 0.1 } },
+  bear:   { name: '黑熊',     kind: '獸', weapon: '熊掌', hp: 420, dmg: 28, cd: 1.6, flee: 0.05, loot: { food: 6, gall: 1 } },
+  chief:  { name: '山賊頭目', kind: '人', weapon: '刀／鞭', hp: 360, dmg: 24, cd: 1.1, flee: 0.2, loot: { coin: 12, page2: 0.35 } },
+};
+// 觀破值：照面 +1、交手 +2、擊倒 +5；10 識其來路、30 熟其招式、60 看破（對其傷害 +10%）
+export const INSIGHT = { see: 1, fight: 2, kill: 5, tiers: [[10, '識其來路'], [30, '熟其招式'], [60, '看破']], dmgAt: 60, dmg: 0.1 };
+// ---- v0.95 巡山遠征：固定名單，從不讀玩家強度 ----
+export const ROUTE = [
+  { id: 'foot',   name: '山腳', from: 0,   to: 100, every: 20, roster: [['hare', 3], ['boar', 1]],               find: { food: 0.5 } },
+  { id: 'wood',   name: '林地', from: 100, to: 250, every: 25, roster: [['boars', 1], ['wolf', 2], ['snake', 2]], find: { herb: 0.5, wood: 0.5 } },
+  { id: 'slope',  name: '山腰', from: 250, to: 450, every: 30, roster: [['bandit', 3], ['archer', 2]],            find: { coin: 0.5 } },
+  { id: 'gorge',  name: '深谷', from: 450, to: 700, every: 35, roster: [['bear', 1], ['chief', 1]],               find: { herb: 0.5 } },
+];
+export const EXP = { maxTeam: 4, thr: [0.3, 0.5, 0.7], thrDefault: 0.5, moodMin: 30, walk: 5, back: 12, supplyHeal: 35, supplyPer: 2, minHp: 50, hurtLight: 60, hurtHeavy: 25 };
+export const RES_NAMES_095 = { page1: '凡階殘頁', page2: '精階殘頁', hide: '獸皮', gall: '熊膽' };
+// 前期節奏：前三天每天一個里程碑；導引旁白可略過
+export const PACE = [
+  { id: 'trial', day: 1, name: '黃昏試煉：首個小成', guide: '師父：「天黑前，木樁場有頭餓瘋的野豬闖進來，讓主角試試身手。」' },
+  { id: 'firstExp', day: 2, name: '第一次巡山', guide: '師父：「後山不太平。挑一到四人去巡山，看看能走多遠——傷到一半就回來。」（下方「巡山遠征」）' },
+  { id: 'firstBuild', day: 3, name: '第一次動工', guide: '師父：「巡山帶回的木料夠了就動工吧，膳房或工寮都行。」（上方「建造」）' },
+];
+export const TRIAL_BOAR = { hp: 24, hit: 1.0 };

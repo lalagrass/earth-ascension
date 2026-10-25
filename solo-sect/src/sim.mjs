@@ -6,9 +6,16 @@ import { clone, dist, clamp, relKey, affKey, log } from './util.mjs';
 import { think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits } from './mind.mjs';
 import { relStage, relAdd, compat, aff, initPair } from './social.mjs';
 import { seasonOf } from './season.mjs';
+import { pipeline, mulText } from './mul.mjs';
+import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf } from './expedition.mjs';
+import { PACE, TRIAL_BOAR } from './data.mjs';
+export { canExpedition, codexRows, reportText, segAt, ROUTE_END, dpsOf };
+const H = { rand: (s) => rand(s), cancelTask: (s, d, w) => cancelTask(s, d, w), grow: (s, d, k, a) => grow(s, d, k, a), think: (s, d, id) => think(s, d, id), gate: NODES.gate };
+export const startExpedition = (s, ids, opt = {}) => startExp0(s, ids, opt, H);
 export { think, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, knownTraits, relStage, relAdd, compat, aff, seasonOf, relKey, log };
 
-export const SAVE_VERSION = 1;
+import { SAVE_VERSION, freshV095 } from './save.mjs';
+export { SAVE_VERSION };
 
 function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 
@@ -38,6 +45,7 @@ export function createState(seed = 1) {
     rel: {}, aff: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
   };
   for (let i = 0; i < s.ds.length; i++) for (let j = i + 1; j < s.ds.length; j++) initPair(s, s.ds[i], s.ds[j], 10);
+  freshV095(s);
   log(s, '師徒三人來到山腳一間破道館。');
   return s;
 }
@@ -60,10 +68,10 @@ export const emergency = (s) => s.res.food <= 0 || s.mons.some((m) => m.raid && 
 export const quotaOf = (d) => QUOTA.points + (d.choreDebt || 0);
 // 內門／首徒免雜務：外門已有人手（≥2）才免；缺糧或野豬下山時全員暫時回來幫忙
 export const skipsChores = (s, d) => (d.role === 'inner' || d.role === 'head') && outers(s).length >= QUOTA.outerMin && !emergency(s);
-export function setDuty(s, id, act, on) { const d = s.ds.find((x) => x.id === id); if (!d || !CHORE_ACTS.includes(act)) return; d.duties = d.duties.filter((a) => a !== act); if (on) d.duties.push(act); }
-export function setPrio(s, id, p) { const d = s.ds.find((x) => x.id === id); if (d && PRIO[p]) d.prio = p; }
+export function setDuty(s, id, act, on) { const d = byId(s, id); if (!d || !CHORE_ACTS.includes(act)) return; d.duties = d.duties.filter((a) => a !== act); if (on) d.duties.push(act); }
+export function setPrio(s, id, p) { const d = byId(s, id); if (d && PRIO[p]) d.prio = p; }
 export function canPromote(s, id) {
-  const d = s.ds.find((x) => x.id === id); if (!d || d.role !== 'outer') return { ok: false, why: '不是外門' };
+  const d = byId(s, id); if (!d || d.role !== 'outer') return { ok: false, why: '不是外門' };
   if (!d.rootKnown) return { ok: false, why: `根骨未明（相處 ${Math.floor(Math.max(d.cowork || 0, d.together || 0))}/${ROOT.revealAt}）` };
   if (d.root < PROMOTE.rootMin) return { ok: false, why: `根骨${ROOT.names[d.root]}，不足入內門` };
   if ((d.contrib || 0) < PROMOTE.contrib) return { ok: false, why: `貢獻不足（${d.contrib || 0}/${PROMOTE.contrib}）` };
@@ -115,6 +123,9 @@ export function mapStage(s) {
   if (s.fac.dorm.stage >= 1 && s.fac.kitchen.stage >= 1) return 'S1';
   return 'S0';
 }
+// v0.95 每 tick 建一次 id→弟子 查表（不入存檔；增人時退回線性搜尋、減人時清表）
+const BYID = new WeakMap();
+export function byId(s, id) { const m = BYID.get(s); const d = m?.get(id); if (d) return d; const x = s.ds.find((o) => o.id === id); if (x && m) m.set(id, x); return x; }
 function rand(s) { const r = rng(s.seed * 7919 + s.rngN++); return r(); }
 export function phaseOf(s) { const f = (s.t % DAY) / DAY; let p = PHASES[0]; for (const x of PHASES) if (f >= x[0]) p = x; return { id: p[1], name: p[2], day: Math.floor(s.t / DAY) + 1, frac: f }; }
 
@@ -146,9 +157,9 @@ function finishBuild(s, id) {
 const siteOf = (s) => { const e = Object.entries(s.fac).find(([, v]) => v.site && !v.site.paused); return e ? [e[0], e[1].site] : null; };
 
 // ---- 指令 ----
-export function setStyle(s, id, st) { const d = s.ds.find((x) => x.id === id); if (d && (st === 'palm' || st === 'leg')) d.style = st; }
+export function setStyle(s, id, st) { const d = byId(s, id); if (d && (st === 'palm' || st === 'leg')) d.style = st; }
 export function setOrder(s, id, order) {
-  const d = s.ds.find((x) => x.id === id); if (!d) return false;
+  const d = byId(s, id); if (!d) return false;
   if (order && order !== 'hunt' && !ACTIVITIES[order]) return false;
   d.order = order || null; cancelTask(s, d, '玩家改派');
   return true;
@@ -159,13 +170,13 @@ function cancelTask(s, d, why) {
   else if (t.act === 'build' && t.mat && t.reservedAmt) { const site = s.fac[t.fac].site; if (site) site.reserved[t.mat] -= t.reservedAmt; }
   if (t.act === 'cook' && t.phase !== 'done') s.vegRes -= 2;
   if (t.act === 'farm' && t.plot >= 0 && s.plots[t.plot]?.busy === d.id) s.plots[t.plot].busy = null;
-  if (t.partner) { const p = s.ds.find((x) => x.id === t.partner); if (p?.task?.partner === d.id) { p.task = null; p.path = []; } }
+  if (t.partner) { const p = byId(s, t.partner); if (p?.task?.partner === d.id) { p.task = null; p.path = []; } }
   d.task = null; d.path = []; d.anim = null; d.reason = why;
 }
 
 // ---- 效用 AI ----
 // 可被邀聊：無玩家指派、未負重、未在施工/狩獵/歇息/聊天中
-function chatMates(s, d) { return s.ds.filter((o) => o !== d && !o.order && o.hp > 30 && !o.carry && !['build', 'hunt', 'rest', 'chat', 'spar', 'learn', 'encourage'].includes(o.task?.act) && o.task?.phase !== 'return'); }
+function chatMates(s, d) { return s.ds.filter((o) => o !== d && !o.away && o.task?.act !== 'trial' && !o.order && o.hp > 30 && !o.carry && !['build', 'hunt', 'rest', 'chat', 'spar', 'learn', 'encourage'].includes(o.task?.act) && o.task?.phase !== 'return'); }
 function offered(s, act) { return FACILITIES.filter((f) => facStage(s, f.id).offers.includes(act)); }
 function bestFac(s, d, act) {
   const fs = offered(s, act).filter((f) => !facStage(s, f.id).laborOnly || isLabor(d)); if (!fs.length) return null;
@@ -180,7 +191,8 @@ export function scoreActs(s, d) {
   const n = d.needs, tr = d.traits, out = [];
   const add = (act, score, why) => { if (score > 0) out.push({ act, score, why }); };
   add('rest', n.energy < 30 ? 100 : (100 - n.energy) * 0.7, n.energy < 30 ? '精力見底，先歇' : '有點累');
-  if (s.res.food > 0) add('eat', n.hunger < 30 ? 95 : (100 - n.hunger) * 0.6, n.hunger < 30 ? '餓了' : '順便吃點');
+  if (d.hp < 40) add('rest', 90, '傷還沒好，躺著養傷');
+  if (s.res.food > 0) add('eat', n.hunger < 15 ? 160 : n.hunger < 30 ? 95 : (100 - n.hunger) * 0.6, n.hunger < 15 ? '餓得發昏，先吃' : n.hunger < 30 ? '餓了' : '順便吃點');
   const others = chatMates(s, d);
   if (others.length) add('chat', (100 - n.social) * 0.6 * (tr.social || 1) * (tr.playful || 1) * 0.8, '想找人說話');
   const fun = n.fun ?? 60; add('leisure', (100 - fun) * 0.55, fun < 25 ? '悶得慌，想偷閒' : '想坐坐看雲');
@@ -203,16 +215,19 @@ export function scoreActs(s, d) {
   const plotWork = s.plots.some((p) => p.st === 'empty' || p.st === 'ripe');
   const cookable = s.res.veg - s.vegRes >= 2 && s.res.food < 10;
   if (cookable) add('cook', 30 + (10 - s.res.food) * 4, '灶上該煮飯了');
-  for (const o of out) { const f = { base: o.score, sched: sch[o.act] || 1, trait: traitMul(d, o.act), mood: moodMul(d, o.act), noise: rand(s) * 8 }; o.f = f; o.score = f.base * f.sched * f.trait * f.mood + f.noise; } // 可解釋：基礎×作息×性格×心情＋雜訊
+  // v0.95 統一倍率管線：作息是時段閘門（管線外），性格→天賦組、心情→狀態組、職責/首徒/雇工→外部組
+  const tparts = (act) => (d.personality || []).map((p) => [TRAITS[p]?.name || p, TRAITS[p]?.mods?.[act] || 1]).filter(([, v]) => v !== 1);
+  for (const o of out) { const f = { base: o.score, sched: sch[o.act] || 1, trait: traitMul(d, o.act), mood: moodMul(d, o.act), noise: rand(s) * 8, P: { talent: tparts(o.act), state: o.act && moodMul(d, o.act) !== 1 ? [['心情', moodMul(d, o.act)]] : [], ext: [] } }; o.f = f; }
   for (let i = out.length - 1; i >= 0; i--) if (out[i].act === 'farm' && !plotWork) out.splice(i, 1);
-  if (isLabor(d)) { for (let i = out.length - 1; i >= 0; i--) { const o = out[i]; if (!LABOR_ACTS.includes(o.act)) out.splice(i, 1); else if (['chop', 'quarry', 'build'].includes(o.act)) { o.score *= LABOR_WORK_MUL; o.f.labor = LABOR_WORK_MUL; } } }
+  if (isLabor(d)) { for (let i = out.length - 1; i >= 0; i--) { const o = out[i]; if (!LABOR_ACTS.includes(o.act)) out.splice(i, 1); else if (['chop', 'quarry', 'build'].includes(o.act)) { o.f.P.ext.push(['雇工', LABOR_WORK_MUL]); o.f.labor = LABOR_WORK_MUL; } } }
   if (!isLabor(d)) {
     const skip = skipsChores(s, d), em = emergency(s), owe = quotaOf(d) - (d.chore || 0);
     for (let i = out.length - 1; i >= 0; i--) { const o = out[i]; if (!CHORE_ACTS.includes(o.act)) continue;
       if (skip) { out.splice(i, 1); continue; }
-      if (d.role === 'outer' && !em) { if (!(d.duties || CHORE_ACTS).includes(o.act)) { out.splice(i, 1); continue; } const m = PRIO[d.prio || 'normal'][0] * (owe > 0 ? QUOTA.dutyMul : 1); o.score *= m; o.f.duty = m; } }
-    if (d.role === 'head') for (const o of out) if (o.act === 'train') { o.score *= QUOTA.headTrain; o.f.head = QUOTA.headTrain; }
+      if (d.role === 'outer' && !em) { if (!(d.duties || CHORE_ACTS).includes(o.act)) { out.splice(i, 1); continue; } const m = PRIO[d.prio || 'normal'][0] * (owe > 0 ? QUOTA.dutyMul : 1); if (PRIO[d.prio || 'normal'][0] !== 1) o.f.P.ext.push(['優先度', PRIO[d.prio || 'normal'][0]]); if (owe > 0) o.f.P.ext.push(['日課未滿', QUOTA.dutyMul]); o.f.duty = m; } }
+    if (d.role === 'head') for (const o of out) if (o.act === 'train') { o.f.P.ext.push(['首徒', QUOTA.headTrain]); o.f.head = QUOTA.headTrain; }
   }
+  for (const o of out) { const f = o.f, p = pipeline(f.P); f.talent = p.talent; f.state = p.state; f.ext = p.ext; f.total = p.total; f.text = mulText(p); o.score = f.base * f.sched * p.total + f.noise; delete f.P; }
   return out.sort((a, b) => b.score - a.score);
 }
 
@@ -274,6 +289,7 @@ function grow(s, d, sk, amt) {
 function doTask(s, d, dt) {
   const t = d.task, A = ACTIVITIES[t.act];
   if (t.act === 'hunt') return;
+  if (t.act === 'trial') return trialStep(s, d, dt);
   if (t.phase === 'fetch' && !d.path.length) { // 建造取料
     s.res[t.mat] -= t.reservedAmt; book(s, 'out', t.mat, t.reservedAmt); d.carry = { [t.mat]: t.reservedAmt }; t.reservedAmt = 0;
     t.phase = 'deliver'; goto(d, facDef(t.fac).node); return;
@@ -282,13 +298,13 @@ function doTask(s, d, dt) {
     const site = s.fac[t.fac].site, n = d.carry[t.mat]; site.reserved[t.mat] -= n; site.delivered[t.mat] += n; log(s, `${d.name}送 ${n} ${t.mat === 'wood' ? '木' : '石'}到工地料堆（${site.delivered[t.mat]}/${site.need[t.mat]}）`); if (!isLabor(d)) d.chore = (d.chore || 0) + 1; d.carry = null; d.task = null; return;
   }
   if (t.phase === 'go' && !d.path.length) {
-  if (t.partner) { const p = s.ds.find((x) => x.id === t.partner); if (!p || p.task?.partner !== d.id) { d.task = null; return; } if (p.path.length) return; }
+  if (t.partner) { const p = byId(s, t.partner); if (!p || p.task?.partner !== d.id) { d.task = null; return; } if (p.path.length) return; }
     t.phase = 'do'; t.timer = 0; d.anim = t.act;
   }
   if (t.phase === 'do') {
     if (t.act === 'build') { const site = s.fac[t.fac].site; if (!site || site.paused || !siteReady(site)) { d.task = null; d.anim = null; return; } }
     t.timer += dt;
-    if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = s.ds.find((x) => x.id === t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
+    if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = byId(s, t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
     if (A.energy) d.needs.energy = clamp(d.needs.energy + A.energy * dt / A.dur, 0, 100);
     if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', s.t); if (t.timer < dt * 1.5) think(s, d, t.fac === 'hall' && s.fac.hall.stage === 0 ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= 80 && t.timer > 4))) finish(s, d); return; }
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
@@ -299,7 +315,7 @@ function doTask(s, d, dt) {
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; book(s, 'out', 'food', 1); }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } }
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? facStage(s, 'yard').trainMul || 1 : 1));
-      if (t.act === 'spar' && t.partner) { const p = s.ds.find((x) => x.id === t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在木樁場切磋`); } }
+      if (t.act === 'spar' && t.partner) { const p = byId(s, t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在木樁場切磋`); } }
       if (A.fun) d.needs.fun = clamp((d.needs.fun ?? 60) + A.fun, 0, 100);
       if (t.act === 'leisure') think(s, d, 'idled');
       if (t.act === 'forage') d.needs.fun = clamp((d.needs.fun ?? 60) + (d.personality.includes('playful') ? 20 : 8), 0, 100);
@@ -307,10 +323,10 @@ function doTask(s, d, dt) {
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
       if (t.act === 'meditate') { const b = btReady(d, s.t); const r = b && resolveBreak(d, b, s.t, rand(s)); if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
       if (t.act === 'learn' && d.pendingArt) { const m = learnArt(d, d.pendingArt, s.t); s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
-      if (t.act === 'chat' && t.partner) { const p = s.ds.find((x) => x.id === t.partner); d.together += 20; if (isLabor(d) && !isLabor(p)) d.cowork = (d.cowork || 0) + 30;
+      if (t.act === 'chat' && t.partner) { const p = byId(s, t.partner); d.together += 20; if (isLabor(d) && !isLabor(p)) d.cowork = (d.cowork || 0) + 30;
         if (t.encouragedBy) { think(s, d, 'encouraged', `（${p.name}）`); }
         else if (d.id < p.id) { const cm = Math.min(compat(d, p), compat(p, d)); if (cm < 1 && rand(s) < (1 - cm) * 0.8) { relAdd(s, d, p, 1); for (const x of [d, p]) think(s, x, 'badChat', `（${x === d ? p.name : d.name}）`); log(s, `${d.name}與${p.name}聊不到一塊`); } else { relAdd(s, d, p, 4 * Math.max(d.traits.social || 1, p.traits.social || 1)); think(s, d, 'goodChat', `（${p.name}）`); think(s, p, 'goodChat', `（${d.name}）`); } } }
-      if (t.act === 'encourage' && t.partner) { const p = s.ds.find((x) => x.id === t.partner); think(s, d, 'helped'); relAdd(s, d, p, 3); log(s, `${d.name}陪心情低落的${p.name}說了好一會兒話`); }
+      if (t.act === 'encourage' && t.partner) { const p = byId(s, t.partner); think(s, d, 'helped'); relAdd(s, d, p, 3); log(s, `${d.name}陪心情低落的${p.name}說了好一會兒話`); }
       if (A.carry) { d.carry = { ...A.carry }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; }
       finish(s, d);
     }
@@ -327,7 +343,7 @@ function finish(s, d) { if (d.task && CHORE_ACTS.includes(d.task.act) && !isLabo
 export function setPost(s, node) { if (POSTS[node] && !s.hunt) { s.post = node; return true; } return false; }
 export function startHunt(s, ids, waves = HUNT_WAVES) {
   if (s.hunt) return false;
-  const team = s.ds.filter((d) => ids.includes(d.id) && d.hp > 30); if (!team.length) return false;
+  const team = s.ds.filter((d) => ids.includes(d.id) && d.hp > 30 && !d.away); if (!team.length) return false;
   s.hunt = { wave: 0, waves, gap: 0, t: 0, kills: 0, escaped: 0, hits: {}, team: team.map((d) => d.id), post: s.post, perWave: [] };
   for (const d of team) { d.order = 'hunt'; cancelTask(s, d, '奉命上後山'); }
   log(s, `${team.map((d) => d.name).join('、')}上山，守在「${POSTS[s.post]}」，預計 ${waves} 波。`);
@@ -367,7 +383,7 @@ function huntStep(s, dt) {
       const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
       const power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t);
       const hitList = mv.aoe ? live.filter((m) => dist(m.pos, tgt.pos) <= mv.aoe) : [tgt];
-      for (const m of hitList) { m.hp -= power; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') s.res.food += 3; } }
+      for (const m of hitList) { m.hp -= power; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', d); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') s.res.food += 3; } }
       h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5);
       d.cool = mv.cd * cdMul(d, mv.id, s.t); d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike';
       { const tier = visTier(d, mv.id), a = artOfMove(mv.id), va = a && variantOf(d, a.id, s.t); s.fx.push({ kind: 'move', name: mv.name, color: mv.color, from: [...d.pos], to: [...tgt.pos], r: mv.aoe || 16, ttl: tier >= 3 ? 1.0 : 0.6, tier, vcolor: va?.color || null, sprite: d.sprite, face: d.face }); if (tier >= 3) s.fx.push({ kind: 'shake', ttl: 0.35 }); }
@@ -441,7 +457,7 @@ function coworkStep(s, d, dt) {
 function checkRoot(s, d) { if (!d.rootKnown && (d.cowork || 0) >= ROOT.revealAt) { d.rootKnown = true; log(s, `一起幹活久了，看出${d.name}根骨「${ROOT.names[d.root]}」${d.root >= ROOT.inviteMin ? '，是塊練武的料！' : '。'}`); } }
 export const avgAff = (s, d) => { const ds = disciples(s); return ds.length ? ds.reduce((a, o) => a + aff(s, o, d), 0) / ds.length : 0; };
 export function canInvite(s, id) {
-  const d = s.ds.find((x) => x.id === id); if (!d || !isLabor(d)) return { ok: false, why: '不是雇工' };
+  const d = byId(s, id); if (!d || !isLabor(d)) return { ok: false, why: '不是雇工' };
   if (!d.rootKnown) return { ok: false, why: `還看不出根骨（共事 ${Math.floor(d.cowork || 0)}/${ROOT.revealAt}）` };
   if (d.root < ROOT.inviteMin) return { ok: false, why: `根骨${ROOT.names[d.root]}，不宜習武` };
   if (avgAff(s, d) < ROOT.inviteAff) return { ok: false, why: `同門對他還不熟（好感 ${avgAff(s, d).toFixed(0)}/${ROOT.inviteAff}）` };
@@ -454,7 +470,7 @@ export function invite(s, id) {
   log(s, `${d.name}放下扁擔，拜入外門（根骨${ROOT.names[d.root]}）。`); return { ok: true, d };
 }
 function dismissLabor(s, d, why) {
-  cancelTask(s, d, why); s.ds.splice(s.ds.indexOf(d), 1); s.laborGone.push(d.id);
+  cancelTask(s, d, why); s.ds.splice(s.ds.indexOf(d), 1); BYID.delete(s); s.laborGone.push(d.id);
   for (const k of Object.keys(s.rel)) if (k.split('|').includes(d.id)) delete s.rel[k];
   for (const k of Object.keys(s.aff)) if (k.split('>').includes(d.id)) delete s.aff[k];
   for (const o of s.ds) if (o.task?.partner === d.id) cancelTask(s, o, `${d.name}走了`);
@@ -480,11 +496,12 @@ export function payday(s) {
 
 // ---- tick ----
 export function tick(s, dt = 0.25) {
-  s.t += dt;
+  s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
   { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); } }
   const se = seasonOf(s); for (const p of s.plots) if (p.st === 'grow' && (p.g += dt / se.grow) >= PLOT_GROW) p.st = 'ripe';
   const seIdx = se.i; if (s.seasonI !== seIdx) { if (s.seasonI !== undefined) log(s, `入${se.name}了。${{ spring: '萬物萌發，菜長得快。', summer: '天長日暖。', autumn: '秋高氣爽，心情開闊。', winter: '天寒地凍，菜長得慢，飯量變大。' }[se.id]}`); s.seasonI = seIdx; }
   for (const d of s.ds) {
+    if (d.away) { moodStep(s, d, dt); continue; } // 巡山中：背景模擬，不在地圖上
     d.needs.hunger = clamp(d.needs.hunger - 0.35 * se.hunger * dt, 0, 100);
     d.needs.fun = clamp((d.needs.fun ?? 60) - 0.22 * dt, 0, 100);
     d.needs.social = clamp(d.needs.social - 0.4 * dt, 0, 100);
@@ -496,34 +513,35 @@ export function tick(s, dt = 0.25) {
   { const em = emergency(s); if (em !== !!s.emergency) { s.emergency = em; if (outers(s).length >= QUOTA.outerMin) log(s, em ? (s.res.food <= 0 ? '斷糧了！內門弟子暫時放下功課回來幫忙。' : '野豬下山！內門弟子暫時回來顧家。') : '危機解除，內門弟子回去練功。'); } }
   huntStep(s, dt);
   ecoStep(s, dt);
+  expStep(s, dt, H);
+  paceStep(s);
   for (const f of s.fx) f.ttl -= dt; s.fx = s.fx.filter((f) => f.ttl > 0);
 }
 
-// ---- 存檔 ----
-export function save(s) { return JSON.stringify({ ...s, fx: [] }); }
-export function load(str) {
-  let o; try { o = JSON.parse(str); } catch { return { ok: false, err: '存檔損毀' }; }
-  if (!o || o.v !== SAVE_VERSION || !Array.isArray(o.ds)) return { ok: false, err: `不支援的存檔版本 ${o?.v}` };
-  return { ok: true, state: migrate(o) };
+// ---- v0.95 前期節奏：第一天黃昏野豬試煉、前三天每天一個里程碑、可略過的導引旁白 ----
+export function guideSay(s, text) { if (s.guide?.on) s.guide.msg = text; }
+export function skipGuide(s, all = false) { if (!s.guide) return; s.guide.msg = null; if (all) s.guide.on = false; }
+function milestone(s, id) { if (s.pace.done.includes(id)) return; const P = PACE.find((p) => p.id === id); s.pace.done.push(id); s.rep = (s.rep || 0) + 3; log(s, `【里程碑】${P.name}（名聲 +3）`); for (const d of disciples(s)) think(s, d, 'wonHunt'); }
+function paceStep(s) {
+  const ph = phaseOf(s), P = s.pace, G = s.guide;
+  for (const m of PACE) if (ph.day >= m.day && !G.seen.includes(m.id) && !P.done.includes(m.id)) { G.seen.push(m.id); guideSay(s, m.guide); }
+  if (ph.day === 1 && ph.frac >= PHASES[2][0] && !P.trial) { const h = byId(s, 'hero'); if (h && !h.away && !s.hunt) {
+    P.trial = 'on'; cancelTask(s, h, '師父命主角試打野豬'); h.order = null; h.task = { act: 'trial', phase: 'go', node: 'yard', timer: 0 }; goto(h, 'yard'); h.reason = '黃昏試煉：木樁場的野豬';
+    const [x, y] = NODES.yard; s.mons.push({ uid: 'trialBoar', k: 'boar', trial: true, hp: TRIAL_BOAR.hp, max: TRIAL_BOAR.hp, pos: [x + 40, y + 6], path: [], cool: 0 }); log(s, '黃昏，一頭餓瘋的小野豬闖進木樁場。師父：「主角，你來。」'); } }
+  if (!P.done.includes('firstExp') && s.lastExp) milestone(s, 'firstExp');
+  if (!P.done.includes('firstBuild') && Object.values(s.fac).some((f) => f.site || f.stage > 0)) milestone(s, 'firstBuild');
 }
-// 規則版本遷移：v0.5（無心情）→v0.6（無雙向好感／揭露／樂趣）→v0.7
-export function migrate(o) {
-  const from = o.rules || (o.ds.some((d) => 'mood' in d) ? '0.6' : '0.5'); o.cap ??= { wood: 12 };
-  const def = Object.fromEntries(DISCIPLES.concat(RECRUIT_POOL).map((d) => [d.id, d]));
-  for (const d of o.ds) {
-    d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= [];
-    if (!d.personality?.length) d.personality = [...(def[d.id]?.personality || [])];
-    d.known ??= d.personality.slice(0, 1); d.together ??= 0; d.needs.fun ??= 60;
-  }
-  o.res.stone ??= 0; o.res.coin ??= ECON.coinStart; o.cap.stone ??= 12; o.laborGone ??= [];
-  for (const f of FACILITIES) o.fac[f.id] ??= { stage: 0, site: null };
-  for (const v of Object.values(o.fac)) { const st = v.site; if (st && typeof st.delivered === 'number') v.site = { need: { wood: st.need.wood || 0, stone: 0 }, delivered: { wood: st.delivered, stone: 0 }, reserved: { wood: 0, stone: 0 }, work: st.work || 0, workNeed: st.workNeed, paused: false }; }
-  for (const d of o.ds) { if (d.task?.act === 'build' && (d.task.reservedWood !== undefined || d.carry?.wood)) { if (d.carry?.wood) o.res.wood += d.carry.wood; d.carry = null; d.task = null; d.path = []; d.anim = null; } d.role ??= 'disciple'; if (d.role === 'disciple') d.role = 'inner'; if (d.role !== 'laborer') { d.duties ??= [...CHORE_ACTS]; d.prio ??= 'normal'; d.chore ??= 0; d.choreDebt ??= 0; d.contrib ??= 0; } }
-  o.choreRate ??= null;
-  for (const d of o.ds) { if (d.root == null) { d.root = def[d.id]?.root ?? 3; d.rootKnown = true; } seedArts(d); }
-  o.day ??= Math.floor(o.t / DAY) + 1; o.ledger ??= { day: o.day, in: {}, out: {} }; o.ledgerPrev ??= null;
-  if (!o.aff) { o.aff = {}; for (const [k, v] of Object.entries(o.rel || {})) { const [a, b] = k.split('|'); o.aff[affKey(a, b)] = v; o.aff[affKey(b, a)] = v; } }
-  o.migratedFrom = from === RULES_VERSION ? o.migratedFrom : from; o.rules = RULES_VERSION;
-  return o;
+function trialStep(s, d, dt) {
+  const t = d.task, m = s.mons.find((x) => x.trial);
+  if (!m) { d.task = null; d.anim = null; return; }
+  if (d.path.length) return;
+  t.phase = 'do'; t.timer += dt; d.face = m.pos[0] >= d.pos[0] ? 1 : -1;
+  if (t.timer >= TRIAL_BOAR.hit) { t.timer = 0; const mv = MOVES.find((x) => x.id === d.moves[d.moves.length - 1]); const p = mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t); m.hp -= p; d.anim = 'strike'; d.cool = 1;
+    s.fx.push({ kind: 'move', name: mv.name, color: mv.color, from: [...d.pos], to: [...m.pos], r: 16, ttl: 0.6, tier: visTier(d, mv.id), sprite: d.sprite, face: d.face }); d.hp = Math.max(30, d.hp - 3);
+    if (m.hp <= 0) { s.mons = s.mons.filter((x) => x !== m); seeEnemy(s, 'boar', 'kill', d); s.res.food += 2;
+      const r = d.arts.basicFist; if (r && r.xp < 25) { r.xp = 25.5; } const o = gainArt(d, 0, 1, s.t); for (const id of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === id).name}」`);
+      log(s, `${d.name}一拳撂倒野豬！師父點撥：「這一下有了火候。」基礎拳入小成。`); think(s, d, 'learned'); s.pace.trial = 'done'; milestone(s, 'trial'); d.task = null; d.anim = null; } }
 }
+// ---- 存檔（v0.95 移到 save.mjs，逐版遷移）----
+export { save, load, migrate, MIGRATIONS } from './save.mjs';
 export { clone };
