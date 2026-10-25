@@ -36,12 +36,12 @@ export const PASS = { minTier: 3, gain: 15, apprBonus: 5, aff: 6, dur: 20, base:
 const able = (d) => d && d.role !== 'laborer' && !d.away && d.adult !== false;
 export function passPick(s, d) {
   if (!able(d) || (d.passDay === s.day)) return null; const P = s.passed || {};
-  const arts = ARTS.filter((a) => !a.secret && !a.classic && artTier(d, a.id) >= PASS.minTier); // 名俠絕學走各自劇情，不走一般傳功 if (!arts.length) return null;
+  const arts = ARTS.filter((a) => !a.secret && !a.classic && artTier(d, a.id) >= PASS.minTier); /* 名俠絕學走各自劇情，不走一般傳功 */ if (!arts.length) return null;
   const cands = s.ds.filter((p) => p !== d && able(p) && !p.task?.partner).sort((x, y) => (y.master === d.id) - (x.master === d.id) || aff(s, d, y) - aff(s, d, x));
   for (const p of cands) for (const a of arts) if (artTier(p, a.id) < PASS.minTier && !P[`${d.id}>${p.id}:${a.id}`]) return { p, art: a.id };
   return null;
 }
-export function passDo(s, d, p, art) {
+export function passDo(s, d, p, art) { 
   const key = `${d.id}>${p.id}:${art}`; (s.passed ??= {}); if (s.passed[key]) return false; s.passed[key] = s.day; d.passDay = s.day;
   const a = learnArt(p, art, s.t), r = p.arts[art], g = PASS.gain + (p.master === d.id ? PASS.apprBonus : 0); r.xp = Math.min(curCap(p, a), r.xp + g); r.last = s.t;
   relAdd(s, d, p, PASS.aff); addMem(s, d, p, 'pass', a.name); log(s, `【傳功】${d.name}帶${p.name}練「${a.name}」，熟練 +${g}`); return true;

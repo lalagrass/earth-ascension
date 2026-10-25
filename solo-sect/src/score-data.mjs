@@ -15,7 +15,7 @@ export const SCORE = [
   { act: 'spar', when: ['sparOk'], v: { pick: [true, 34, 34], mul: ['tr.diligent'] }, why: '找人切磋' },
   { act: 'chop', when: ['woodRoom'], tiers: [{ if: 'shortWood', v: 50, why: '工地缺木' }, { v: 28, why: '備柴' }] },
   { act: 'quarry', when: ['stoneRoom'], tiers: [{ if: 'shortStone', v: 50, why: '工地缺石' }, { v: 14, why: '備石' }] },
-  { act: 'farm', tiers: [{ if: 'ripe', v: 50, why: '菜熟了' }, { v: 30, why: '菜畦空著該播種' }] },
+  { act: 'farm', tiers: [{ if: 'foodLow', v: 'FS.farm', why: '存糧見底，先顧菜畦', layer: 'need' }, { if: 'ripe', v: 50, why: '菜熟了' }, { v: 30, why: '菜畦空著該播種' }] },
   { act: 'forage', v: { pick: [true, 18, 18], mul: ['tr.playful'] }, why: '採藥' },
   { gen: true }, // v1.6 建築活動（ACTIVITIES[].gen）在這個位置展開
   { act: 'build', when: ['siteWork'], v: { pick: [true, 55, 55], mul: [{ pick: ['d.adult', 1, 0.6] }] }, why: '{buildWhy}' },

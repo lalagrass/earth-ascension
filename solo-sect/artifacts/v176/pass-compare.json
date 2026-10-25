@@ -1,0 +1,22 @@
+{
+ "before": {
+  "passCompleted": 5202,
+  "passLogHits": 16,
+  "leadStarts": 5291,
+  "leadEndedInDo": 5246,
+  "leadEndedInGo": 45,
+  "taskStartsBothSides": 10582,
+  "brew": 561,
+  "masters": 160
+ },
+ "after": {
+  "passCompleted": 6799,
+  "passLogHits": 27,
+  "leadStarts": 6912,
+  "leadEndedInDo": 6866,
+  "leadEndedInGo": 46,
+  "taskStartsBothSides": 13824,
+  "brew": 631,
+  "masters": 221
+ }
+}

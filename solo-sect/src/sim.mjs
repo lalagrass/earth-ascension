@@ -8,7 +8,7 @@ import { relStage, relAdd, compat, aff, initPair } from './social.mjs';
 import { seasonOf } from './season.mjs';
 import { pipeline, mulText } from './mul.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf } from './expedition.mjs';
-import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES } from './data.mjs';
+import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC } from './data.mjs';
 import { SCORE } from './score-data.mjs';
 import { addMem, chatLine, passPick, passDo, PASS, apprDaily, apprMul } from './bonds.mjs';
 import { aspStep, likeMeal, likesOf } from './v10.mjs';
@@ -221,12 +221,12 @@ function scoreCtx(s, d) {
   const low = d.adult && d.mood >= 45 ? others.filter((o) => o.mood < 35).sort((a, b) => a.mood - b.mood)[0] : null, site = siteOf(s);
   const haul = !!site && MATS.some((k) => missingOf(site[1], k) > 0 && s.res[k] > 0);
   return { s, d, n, tr: d.traits, others, pp, low, bt, fun: n.fun ?? 60, food: s.res.food, negWexin: -(d.wexin || 0), ph: phaseOf(s).id,
-    shortWood: short('wood'), shortStone: short('stone'), haul, site, PASS,
+    shortWood: short('wood'), shortStone: short('stone'), haul, site, PASS, FS: FOOD_SEC,
     wood: s.res.wood + s.ds.reduce((a, o) => a + (o.task?.act === 'chop' ? 1 : 0), 0), stone: s.res.stone + s.ds.reduce((a, o) => a + (o.task?.act === 'quarry' ? 1 : 0), 0),
     passWhy: pp ? `${PASS.why}：帶${pp.p.name}練「${artById(pp.art).name}」` : '', pendingName: d.pendingArt ? artById(d.pendingArt).name : '', btName: bt ? artById(bt).name : '', buildWhy: haul ? '把料搬到工地料堆' : '料齊了，去施工' };
 }
 export const PRED = {
-  tired: (c) => c.d.tired, wake: (c) => c.n.energy < CORE.wakeAt, hurt: (c) => c.d.hp < 40, hasFood: (c) => c.s.res.food > 0, starving: (c) => !!c.d.famished || c.n.hunger < 15, /* v1.7 遲滯：餓昏後吃到 50 才解除 */ hungry: (c) => c.n.hunger < 30,
+  tired: (c) => c.d.tired, wake: (c) => c.n.energy < CORE.wakeAt, hurt: (c) => c.d.hp < 40, hasFood: (c) => c.s.res.food > 0, foodLow: (c) => foodLow(c.s), starving: (c) => !!c.d.famished || c.n.hunger < 15, /* v1.7 遲滯：餓昏後吃到 50 才解除 */ hungry: (c) => c.n.hunger < 30,
   others: (c) => c.others.length > 0, pp: (c) => !!c.pp, dull: (c) => c.fun < 25, encourageOk: (c) => !!c.low, pending: (c) => !!c.d.pendingArt,
   btOk: (c) => !!c.bt && c.d.mood >= BREAK.moodMin && c.n.energy >= BREAK.energyMin, wexin: (c) => c.d.wexin > 0,
   sparOk: (c) => facStage(c.s, 'yard').offers.includes('spar') && c.n.energy > 45 && c.others.some((o) => o.needs.energy > 45),
@@ -239,6 +239,7 @@ export function valOf(v, c) { if (typeof v === 'number') return v; if (typeof v 
   let x = v.pick ? (path(c, v.pick[0]) ? v.pick[1] : v.pick[2]) : v.lin[1] - path(c, v.lin[0]);
   for (const m of v.mul || []) x *= typeof m === 'number' ? m : typeof m === 'string' ? path(c, m) : valOf(m, c);
   return v.plus != null ? v.plus + x : x; }
+export const foodLow = (s) => s.res.food + s.res.veg < FOOD_SEC.perHead * s.ds.filter((d) => !d.away).length; // v1.76 糧食安全
 export const vegFree = (s) => s.res.veg - stockReserved(s, 'veg');
 const fillWhy = (w, c) => (w || '').replace(/\{([\w.]+)\}/g, (_, p) => path(c, p) ?? '');
 export function scoreActs(s, d) {
@@ -258,6 +259,7 @@ export function scoreActs(s, d) {
     for (let i = out.length - 1; i >= 0; i--) { const o = out[i]; if (!CHORE_ACTS.includes(o.act)) continue;
       if (skip) { out.splice(i, 1); continue; }
       if (d.role === 'outer' && !em) { if (!(d.duties || CHORE_ACTS).includes(o.act)) { out.splice(i, 1); continue; } const m = PRIO[d.prio || 'normal'][0] * (owe > 0 ? QUOTA.dutyMul : 1); if (PRIO[d.prio || 'normal'][0] !== 1) o.f.P.ext.push(['優先度', PRIO[d.prio || 'normal'][0]]); if (owe > 0) o.f.P.ext.push(['日課未滿', QUOTA.dutyMul]); o.f.duty = m; } }
+    if (foodLow(s)) for (const o of out) if (!FOOD_SEC.keep.includes(o.act)) { o.f.P.ext.push(['糧荒', FOOD_SEC.gateMul]); o.f.food = FOOD_SEC.gateMul; } // v1.76 糧荒：非必要活動讓位給種菜煮飯
     if (d.role === 'head') for (const o of out) if (o.act === 'train') { o.f.P.ext.push(['首徒', QUOTA.headTrain]); o.f.head = QUOTA.headTrain; }
   }
   for (const o of out) { const f = o.f, p = pipeline(f.P); f.talent = p.talent; f.state = p.state; f.ext = p.ext; f.total = p.total; f.text = mulText(p); f.bored = boredMul(s, d, o.act); o.score = f.base * f.sched * p.total * f.bored + f.noise; delete f.P;

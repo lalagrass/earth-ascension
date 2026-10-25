@@ -496,3 +496,5 @@ export const DAO = { tagOf: { 巧: '破綻', 剛: '蓄力', 柔: '卸力', 拙: 
   enemy: { rat: '破綻', hare: '破綻', wolf: '破綻', snake: '破綻', archer: '破綻', bat: '破綻', vulture: '破綻', hermit: '破綻',
     boar: '蓄力', boars: '蓄力', bear: '蓄力', bandit: '蓄力', chief: '蓄力', ape: '蓄力', whiteape: '蓄力',
     wolfking: '破綻', post: '蓄力', python: '卸力', pythonking: '卸力', swordtomb: '歸真', peakguard: '歸真' } };
+// ---- v1.76 糧食安全閘（BALANCE-REPORT-v175 P0）：存糧＋菜 < 每人 perHead 份 → 種菜升為需求層、其餘非必要活動 ×gateMul ----
+export const FOOD_SEC = { perHead: 1.5, farm: 75, gateMul: 0.35, keep: ['eat', 'rest', 'farm', 'cook', 'heal', 'watch', 'trial', 'build', 'deliver'] };
