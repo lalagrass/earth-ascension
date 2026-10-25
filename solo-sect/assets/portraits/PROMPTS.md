@@ -41,3 +41,10 @@ Files `artifacts/portrait-review/style2-{wcaricature,storybook,clay,lianhuan}-{h
 - lianhuan: "1960s Chinese lianhuanhua picture-story book illustration, fine realistic ink line with light grey ink wash, a little muted color, plain grounded unidealized face, white paper background. Not anime, not comic".
 Skipped this round: Disco-Elysium-like oil, paper-cut/皮影.
 - inkpretty (活俠傳-inspired direction only, none of its art fed or copied): "clear dark ink linework, light flat watercolor wash with selective soft shading, attractive anime-leaning face, figure cleanly separated from a very pale plain paper background"; identity accessories (黃蓉 peach-blossom hairpin + drumstick + staff; 郭靖 bun + gourd + Mongolian bow). Note: 黃蓉 prompt naming "Huang Rong archetype" was blocked by the provider's content policy; reworded to "clever mischievous young swordswoman".
+
+## Key-art v2 set (2026-10-25) — gender style rule
+Rule (owner decision): female characters = inkpretty; male characters = wcaricature. Files `assets/portraits/v2/{huangrong-v2-a,b, guojing-v2-a,b, axing-v2b-a,b}.png`; sheet `artifacts/portrait-review/keyart-v2.png`; pairing `keyart-v2-pairing.png`.
+Style clauses: inkpretty = "clear dark ink linework, light flat watercolor wash with selective soft shading, attractive anime-leaning face, figure cleanly separated from a very pale plain paper background". wcaricature = "refined watercolor caricature, clear dark ink outline with loose pencil texture, transparent watercolor washes, gently exaggerated features, painterly not comic-strip, very pale plain paper background".
+- 黃蓉 (described as "clever mischievous young swordswoman", no name): a = wink + tongue tip + flicking pebble, staff on shoulder (PICK); b = finger-to-lips sly glance, drumstick hidden behind back.
+- 郭靖: a = proud dim grin holding up bun, headband, bow; b = scratching head, cheeks stuffed with bun, sweat drop (PICK).
+- 阿星 (original stylized, not any real actor): a = black eye, gap-tooth grin, cheek plaster, thumbs-up, white tank top, patched trousers, palm-print booklet in waistband (PICK); b = reading booklet starry-eyed, nose plaster, toothpick (reads younger).
