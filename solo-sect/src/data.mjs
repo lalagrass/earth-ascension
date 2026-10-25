@@ -183,6 +183,11 @@ export const THOUGHTS = {
   paid:      { text: '領了工錢', v: 4, ttl: 300, tag: 'good' },
   unpaid:    { text: '工錢沒著落', v: -10, ttl: 600, tag: 'bad' },
   invited:   { text: '被邀入門', v: 15, ttl: 600, tag: 'good' },
+  quotaMet:  { text: '日課做完了', v: 4, ttl: 300, tag: 'good' },
+  quotaMiss: { text: '日課沒做完', v: -6, ttl: 400, tag: 'bad' },
+  promoted:  { text: '升入內門', v: 18, ttl: 800, tag: 'good' },
+  trialFail: { text: '入內門考核沒過', v: -8, ttl: 400, tag: 'bad' },
+  headDisc:  { text: '成了首徒', v: 15, ttl: 800, tag: 'good' },
   workedWith:{ text: '和人一起幹活', v: 3, ttl: 200, tag: 'social' },
 };
 export const NEED_MOOD = { hunger: [20, -10, 'food'], energy: [30, -8, 'bad'], social: [25, -6, 'social'], fun: [25, -6, 'bad'] };
@@ -191,7 +196,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '0.8';
+export const RULES_VERSION = '0.85';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -229,3 +234,11 @@ export const LABOR_POOL = [
   { id: 'achun', name: '阿春', adult: true, sprite: 'senior', style: 'palm', root: 3, skills: { leg: 2, palm: 4, strength: 8, farming: 7, herbal: 9, agility: 9, cooking: 9 }, traits: {}, personality: ['gentle', 'diligent'] },
   { id: 'tiezi', name: '鐵子', adult: true, sprite: 'hero', style: 'leg', root: 2, skills: { leg: 5, palm: 3, strength: 13, farming: 2, herbal: 1, agility: 8, cooking: 2 }, traits: {}, personality: ['brave', 'worrier'] },
 ];
+
+// v0.85 內外門與日課
+export const CHORE_ACTS = ['chop', 'quarry', 'farm', 'cook', 'build', 'forage'];
+export const CHORE_NAMES = { chop: '砍柴', quarry: '採石', farm: '種菜', cook: '煮飯', build: '營建', forage: '採藥' };
+export const QUOTA = { points: 4, debtMax: 4, outerMin: 2, headRate: 0.8, headTrain: 1.5, dutyMul: 1.4 };
+export const PRIO = { high: [1.5, '優先'], normal: [1, '一般'], low: [0.6, '少做'] };
+export const PROMOTE = { rootMin: 3, contrib: 6, pass: 30, cooldown: 1 };
+export const RANK_NAMES = { head: '首徒', inner: '內門', outer: '外門', laborer: '雇工' };

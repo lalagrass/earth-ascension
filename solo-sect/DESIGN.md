@@ -94,3 +94,12 @@
 - 突破：在地圖上打坐（粒子、進度環），需要心情和精力；失敗只冷卻
 - 視覺：特效隨熟練階段升級；化境有威壓效果
 - 傳承：傳功、抄經、衣缽（第二代）
+
+### 擁有人決定（2026-10-25）
+武學成長照 ROADMAP §9.5：熟練 0–100 加五階；突破只在地圖上打坐，失敗只冷卻；v1.0 只有本門武學樹；荒疏只降效率；變式可以重選；做衣缽第二代；剛柔巧拙四向都做。
+
+## v0.85 內外門與日課
+- `role`：head／inner／outer／laborer。`skipsChores(s, d)`：內門或首徒，外門 ≥ `QUOTA.outerMin`，且不在 `emergency`（飯 ≤0 或有野豬下山）時，才免雜務
+- `CHORE_ACTS` 完成時（`finish`，或搬料送達）`d.chore++`；`payday` 結算日課：超額記 `contrib`，不足記 `choreDebt`（順延）並給 quotaMiss 想法；`s.choreRate` 決定主角是否升首徒
+- 外門計分：職司沒勾的雜務直接移除；勾了的乘 `PRIO`×（還欠日課時 ×`QUOTA.dutyMul`）。首徒練功 ×`headTrain`
+- 升內門：`canPromote` 檢查根骨、貢獻、冷卻和主考人；`startTrial` 讓雙方到木樁場切磋，`finish` 時由 `resolveTrial` 結算
