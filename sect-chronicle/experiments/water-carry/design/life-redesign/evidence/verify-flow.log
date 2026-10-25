@@ -1,0 +1,10 @@
+[VERIFY] v0.1-v0.2 Counterexample 1 (Duplicate Partner Block): PASS
+[VERIFY] v0.1-v0.2 Starter Duo & Sect Origin (鎮北武館 + 實誠與機靈): PASS
+[VERIFY] v0.1-v0.2 Counterexample 2 (Atomic Reservation Single Winner): PASS
+[VERIFY] v0.4 Creek Shortcut (Lv2 via creek_bridge 240 steps vs Lv3 via step_stones 40 steps): PASS
+[VERIFY] v0.5 Counterexample (Outer Disciple Chore Skip Block): PASS
+[VERIFY] v0.6 Patrol Styles (Wei Xiaobao scentAlert=true, Guo Jing escaped=0): PASS
+[VERIFY] v0.7 Counterexample (High Comprehension Capped at Lv5 Luohan): PASS
+[VERIFY] v0.9 Counterexample (Orthodox Filter Blocks Stephen Chow Cast): PASS
+[VERIFY] v1.0 Save Schema v1 Determinism (hash=8654cdb879bef042e4e36c819fbb1d20639ebf070620fc0337590c8f2814faa5, deterministic=true): PASS
+[VERIFY] Demo Model v0.1-v1.0 Action Dispatch & View Sync: PASS
