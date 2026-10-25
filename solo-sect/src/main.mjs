@@ -1,3 +1,5 @@
+import { HOME, HOME_VIEW, CHUNK, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, raidDescent, RINGS, TRAIL } from './world.mjs';
+import { raidMul } from './expedition.mjs';
 import { sideCards, bubbles } from './events.mjs';
 import { statusHtml } from './status.mjs';
 import { milestones } from './expedition.mjs';
@@ -36,7 +38,7 @@ const ACT_ICON = { quarry: '⛏', spar: '🤺', cook: '🍲', deliver: '📦', r
 let BUB = {};
 function bubble(msg, x, y) { const m = msg.length > 18 ? msg.slice(0, 17) + '…' : msg; g.font = '12px sans-serif'; const w = g.measureText(m).width + 14; g.fillStyle = 'rgba(255,255,255,.92)'; g.strokeStyle = '#6b4a2a'; g.lineWidth = 1; g.beginPath(); g.roundRect(x - w / 2, y - 20, w, 20, 8); g.fill(); g.stroke(); g.beginPath(); g.moveTo(x - 4, y); g.lineTo(x, y + 6); g.lineTo(x + 4, y); g.fill(); g.fillStyle = '#3a2f24'; g.textAlign = 'center'; g.fillText(m, x, y - 6); g.textAlign = 'left'; }
 // v1.45 B 級＝右側竹簡（可點推鏡）、A 級＝暫停＋推鏡
-function focusOn(id) { const d = S.ds.find((x) => x.id === id); if (!d || d.away) return false; cam.tx = d.pos[0]; cam.ty = d.pos[1] - 30; cam.until = performance.now() + 2500; const c = document.querySelector(`[data-dcard="${id}"]`); if (c) { c.open = true; c.scrollIntoView({ block: 'nearest' }); } return true; }
+function focusOn(id) { const d = S.ds.find((x) => x.id === id); if (!d || d.away) return false; camFocus(d.pos[0], d.pos[1] - 30, 2.5); const c = document.querySelector(`[data-dcard="${id}"]`); if (c) { c.open = true; c.scrollIntoView({ block: 'nearest' }); } return true; }
 function feed() { let f = document.getElementById('feed'); if (!f) { f = document.createElement('div'); f.id = 'feed'; document.getElementById('wrap').appendChild(f); }
   const html = sideCards(S, 5).map((e) => `<div class="slip ${e.tier}" data-who="${e.who || ''}" title="點一下推鏡到相關人物">${e.tier === 'top' ? '★ ' : ''}[${e.t}s] ${e.msg}</div>`).join(''); if (f.__h !== html) { f.innerHTML = html; f.__h = html; }
   let a = document.getElementById('alert');
@@ -47,8 +49,12 @@ window.__sect.focusOn = (id) => focusOn(id);
 function draw() {
   BUB = bubbles(S);
   const shake = S.fx.find((f) => f.kind === 'shake'); g.save(); if (shake) g.translate((Math.random() - 0.5) * 12 * shake.ttl / 0.35, (Math.random() - 0.5) * 12 * shake.ttl / 0.35);
-  { const on = performance.now() < cam.until, k = 0.08; cam.z += ((on ? 1.6 : 1) - cam.z) * k; if (on) { cam.x += (cam.tx - cam.x) * k * 2; cam.y += (cam.ty - cam.y) * k * 2; } else if (cam.z < 1.02) { cam.x = 800; cam.y = 450; cam.z = 1; }
-    if (cam.z > 1.001) { const cx = Math.min(1600 - 800 / cam.z, Math.max(800 / cam.z, cam.x)), cy = Math.min(900 - 450 / cam.z, Math.max(450 / cam.z, cam.y)); g.translate(800, 450); g.scale(cam.z, cam.z); g.translate(-cx, -cy); } }
+  { const on = performance.now() < cam.until, k = 0.08; // v1.55a 世界鏡頭：大事件短暫拉近後回到原視角；跟隨模式追巡山隊
+    if (on) { if (!cam.prev) cam.prev = { x: cam.ux, y: cam.uy, z: cam.uz }; cam.z += (1.6 - cam.z) * k; cam.x += (cam.tx - cam.x) * k * 2; cam.y += (cam.ty - cam.y) * k * 2; }
+    else { if (cam.prev) cam.prev = null; const pp = cam.follow && partyPos(S); if (pp) { cam.ux += (pp[0] - cam.ux) * 0.1; cam.uy += (pp[1] - 60 - cam.uy) * 0.1; } else if (cam.follow && !S.exp) cam.follow = false;
+      cam.z += (cam.uz - cam.z) * 0.2; cam.x += (cam.ux - cam.x) * 0.3; cam.y += (cam.uy - cam.y) * 0.3; if (Math.abs(cam.z - cam.uz) < 1e-3) cam.z = cam.uz; }
+    const c = clampCam({ x: cam.x, y: cam.y, z: cam.z }, camBounds(S)); if (!on) { const u = clampCam({ x: cam.ux, y: cam.uy, z: cam.uz }, camBounds(S)); cam.ux = u.x; cam.uy = u.y; }
+    g.translate(800, 450); g.scale(c.z, c.z); g.translate(-c.x, -c.y); drawWorld(c); g.save(); g.translate(HOME.x, HOME.y); }
   const ms = mapStage(S); g.drawImage(IMG[MAPS[ms]], 0, 0, 1600, 900);
   if (window.__debugRoads) { g.strokeStyle = 'rgba(200,60,40,.6)'; g.lineWidth = 3; for (const [a, b] of EDGES) { g.beginPath(); g.moveTo(...NODES[a]); g.lineTo(...NODES[b]); g.stroke(); } }
   const items = [];
@@ -122,7 +128,7 @@ function draw() {
     if (f.kind === 'move') { g.strokeStyle = f.color; g.lineWidth = 4; g.globalAlpha = f.ttl / 0.6; g.beginPath(); g.moveTo(f.from[0], f.from[1] - 25); g.lineTo(f.to[0], f.to[1] - 8); g.stroke(); g.beginPath(); g.arc(f.to[0], f.to[1] - 10, f.r, 0, 7); g.stroke(); label(f.name, f.from[0], f.from[1] - 60, f.color); g.globalAlpha = 1; }
     else { g.fillStyle = 'rgba(200,40,40,.6)'; g.beginPath(); g.arc(f.pos[0], f.pos[1] - 30, 10, 0, 7); g.fill(); }
   }
-  g.restore(); expBar();
+  g.restore(); drawWorldTop(); g.restore(); expBar();
 }
 // v0.95 巡山進度條：地圖上只畫這條（背景模擬，不出現在地圖上）
 function expBar() {
@@ -235,7 +241,7 @@ $('reset').onclick = () => newGame();
 $('load').addEventListener('click', () => { if (document.getElementById('start')) { document.getElementById('start').remove(); starting = false; } });
 let last = performance.now(), acc = 0;
 function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now; if (starting || choiceUI(S) || S.alert) acc = 0; feed(); while (acc >= 0.25) { tick(S); acc -= 0.25; }
-  audioStep(); draw(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
+  audioStep(); expToast(); draw(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
 function rbar(n, v, max, c) { const p = Math.max(0, Math.min(1, (v ?? 0) / (max || 1))); return `${n} <span style="display:inline-block;width:80px;height:8px;background:#ddd;vertical-align:middle"><span style="display:block;height:8px;width:${p * 80}px;background:${c}"></span></span> ${Math.max(0, Math.round(v ?? 0))}`; }
 const JH_FX = { anran: ['#7a8ca8', 'arc'], xuantie: ['#2a2a2a', 'heavy'], yunv: ['#eef', 'arc'], kongming: ['#bcb', 'arc'], kuihua: ['#d04050', 'needle'], huagu: ['#9a8aa8', 'arc'], qiankun: ['#e0a040', 'arc'], taiji: ['#ddd', 'arc'], shihou: ['#f0d070', 'ring'], tantui: ['#a07040', 'arc'], tiexian: ['#889', 'heavy'], bagua: ['#8a6a3a', 'arc'], hama: ['#6a8a3a', 'toad'] };
 function drawSect() { // v1.35 匾額＋旗幟（共用破道館地圖，只換字與色）
@@ -313,9 +319,34 @@ function manualHtml() {
 document.addEventListener('click', (e) => { const b = e.target.closest('[data-asm]'); if (b) { assemble(S, b.dataset.asm); panel(); } });
 document.addEventListener('change', (e) => { const s = e.target.closest('[data-lm]'); if (s && s.value) { const r = learnManual(S, +s.dataset.lm, s.value, think10); if (!r.ok) alert(r.why); panel(); } });
 // v1.0 鏡頭：大事件短暫拉近
-const cam = { x: 800, y: 450, z: 1, tx: 800, ty: 450, until: 0 };
-export function camFocus(x, y, sec = 2.5) { cam.tx = x; cam.ty = y; cam.until = performance.now() + sec * 1000; }
-window.__camFocus = camFocus;
+const cam = { x: HOME_VIEW.x, y: HOME_VIEW.y, z: 1, ux: HOME_VIEW.x, uy: HOME_VIEW.y, uz: 1, tx: 0, ty: 0, until: 0, follow: false, prev: null };
+export function camFocus(x, y, sec = 2.5) { cam.tx = x + HOME.x; cam.ty = y + HOME.y; cam.until = performance.now() + sec * 1000; } // 傳入門派座標
+export const camHome = () => { cam.follow = false; Object.assign(cam, { ux: HOME_VIEW.x, uy: HOME_VIEW.y, uz: 1 }); };
+export const camFollow = (on = !cam.follow) => { cam.follow = on && !!S.exp; refreshCamUI(); };
+window.__camFocus = camFocus; window.__cam = cam; window.__camHome = camHome; window.__camFollow = camFollow;
+// ---- v1.55a 世界：256px 區塊第一次進視窗才畫進離屏 canvas，之後每幀只 drawImage ----
+const CHUNKS = new Map(); window.__chunks = CHUNKS;
+function chunkCanvas(cx, cy) { const k = chunkKey(cx, cy); let c = CHUNKS.get(k); if (!c) { c = document.createElement('canvas'); c.width = c.height = CHUNK; paintChunk(c.getContext('2d'), cx, cy); CHUNKS.set(k, c); } return c; }
+function drawWorld(c) { g.fillStyle = '#b9ad8f'; const hw = 800 / c.z, hh = 450 / c.z; g.fillRect(c.x - hw, c.y - hh, hw * 2, hh * 2);
+  for (const [cx, cy] of chunksInView(c)) g.drawImage(chunkCanvas(cx, cy), cx * CHUNK, cy * CHUNK);
+  g.save(); g.strokeStyle = '#7a5a3a'; g.lineWidth = 10; g.setLineDash([18, 10]); g.globalAlpha = 0.7; g.beginPath(); TRAIL.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.stroke(); g.restore(); // 山徑
+  for (const r of RINGS) { const n = S.pop?.[r.id]?.n ?? 0, [x, y] = r.nest; g.fillStyle = '#5a2a1a'; g.beginPath(); g.arc(x, y, 16, 0, 7); g.fill(); g.font = 'bold 22px sans-serif'; g.textAlign = 'center'; g.lineWidth = 5; g.strokeStyle = '#fff';
+    const s = `${r.name}巢・${n}`; g.strokeText(s, x, y - 26); g.fillStyle = '#5a2a1a'; g.fillText(s, x, y - 26); } }
+function drawWorldTop() { const rd = raidDescent(S, raidMul(S)); // 獸襲下山（演出）
+  if (rd) { const [x, y] = rd.pos; sprite(MONSTERS[rd.k].sprite, x, y, SC); label(`${MONSTERS[rd.k].name}下山中`, x, y - 40, '#a33'); }
+  const pp = partyPos(S); if (pp) { g.fillStyle = '#c0392b'; g.beginPath(); g.arc(pp[0], pp[1], 14, 0, 7); g.fill(); label(`巡山隊 ${Math.round(S.exp.dist)} 步`, pp[0], pp[1] - 22, '#7a1a10'); } }
+// 捲動：拖曳地圖、滾輪縮放（邊界由 camBounds 決定）
+{ let drag = null; const k = () => Math.max(1600 / cv.clientWidth, 900 / cv.clientHeight) / cam.uz;
+  cv.addEventListener('pointerdown', (e) => { drag = [e.clientX, e.clientY]; cv.setPointerCapture?.(e.pointerId); });
+  cv.addEventListener('pointermove', (e) => { if (!drag) return; const f = k(); cam.ux -= (e.clientX - drag[0]) * f; cam.uy -= (e.clientY - drag[1]) * f; drag = [e.clientX, e.clientY]; if (cam.follow) { cam.follow = false; refreshCamUI(); } });
+  addEventListener('pointerup', () => { drag = null; });
+  cv.addEventListener('wheel', (e) => { e.preventDefault(); cam.uz = Math.min(1.6, Math.max(0.5, cam.uz * (e.deltaY > 0 ? 0.9 : 1.1))); }, { passive: false }); }
+{ const bar = document.createElement('div'); bar.id = 'camui'; bar.innerHTML = '<button id="cam-home">🏯 回山門</button><button id="cam-follow">👣 跟隨隊伍</button>'; $('wrap').append(bar);
+  const toast = document.createElement('div'); toast.id = 'camtoast'; toast.hidden = true; $('wrap').append(toast);
+  $('cam-home').onclick = () => { camHome(); refreshCamUI(); }; $('cam-follow').onclick = () => camFollow(); toast.onclick = () => { camFollow(true); toast.hidden = true; }; }
+function refreshCamUI() { const b = $('cam-follow'); if (!b) return; b.disabled = !S?.exp; b.classList.toggle('on', cam.follow); }
+let lastExpT = null; function expToast() { const X = S?.exp, t = $('camtoast'); if (X && X.startT !== lastExpT) { lastExpT = X.startT; t.textContent = '👣 巡山隊出發了——點這裡跟著看'; t.hidden = false; clearTimeout(t._h); t._h = setTimeout(() => { t.hidden = true; }, 8000); } if (!X) { lastExpT = null; t.hidden = true; } refreshCamUI(); }
+
 // v0.98 垂直切片：面板漸進解鎖、章節總結、自動存檔、匯出入、音效
 function sliceUI() {
   for (const sec of ALL_SECS) { const el = $(sec); if (!el) continue; const on = secOpen(S, sec), h = el.previousElementSibling; el.hidden = !on; if (h?.tagName === 'H2') { h.hidden = !on; h.classList.toggle('fresh', on && S.newUnlock?.secs?.includes(sec) && S.t - S.newUnlock.t < 60); } }

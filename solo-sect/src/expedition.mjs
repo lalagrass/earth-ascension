@@ -3,6 +3,7 @@ import { secOpen } from './slice.mjs';
 import { ENDLESS, CAMPS } from './data.mjs';
 import { addWexin } from './hero.mjs';
 import { affKey } from './util.mjs';
+import { popKill } from './world.mjs';
 import { ENEMIES, INSIGHT, ROUTE, EXP, MOVES, DAY, EXP_STYLES as STYLES, STYLE_TRAIT, EVADE, TRAITS } from './data.mjs';
 import { moveMul, effectTier, artTier as effectTierOf } from './arts.mjs';
 import { ARTS as ARTS_ALL, HS } from './data.mjs';
@@ -112,11 +113,11 @@ function encounter(s, e, seg, team, H) {
     if (H.rand(s) < pclamp(0.5 + (ev - E.detect) / 100)) { add(X.evaded, e, 1); return 1; }
     X.events.push(`閃${E.name}失手`);
   }
-  X.fights++; const r = fight(s, e, team, H, false, sca); let t = r.t; if (r.won) sg.kill++;
+  X.fights++; const r = fight(s, e, team, H, false, sca); let t = r.t; if (r.won) { sg.kill++; popKill(s, seg.id); }
   if (r.fled) { const stub = team.some((d) => (d.personality || []).includes('stubborn'));
     if (S.chase >= 1 || (S.chase > 0 && stub && H.rand(s) < S.chase)) {
       const ag = Math.max(...team.map((d) => d.skills.agility)); for (let k = 0; k < (S.chase >= 1 ? 2 : 1); k++) { X.chase.n++; t += EVADE.chaseTime;
-        if (H.rand(s) < pclamp(0.5 + (ag - E.speed) / 100)) { X.chase.got++; X.escaped[e]--; if (!X.escaped[e]) delete X.escaped[e]; add(X.kills, e, 1); sg.kill++; seeEnemy(s, e, 'kill', team[0]); lootRoll(s, X.loot, E.loot, H); break; } } } }
+        if (H.rand(s) < pclamp(0.5 + (ag - E.speed) / 100)) { X.chase.got++; X.escaped[e]--; if (!X.escaped[e]) delete X.escaped[e]; add(X.kills, e, 1); sg.kill++; popKill(s, seg.id); seeEnemy(s, e, 'kill', team[0]); lootRoll(s, X.loot, E.loot, H); break; } } } }
   return t;
 }
 function pickEnemy(s, seg, H) { const tot = seg.roster.reduce((a, [, w]) => a + w, 0); let r = H.rand(s) * tot; for (const [k, w] of seg.roster) { r -= w; if (r < 0) return k; } return seg.roster[0][0]; }

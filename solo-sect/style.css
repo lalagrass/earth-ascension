@@ -26,3 +26,7 @@ label.btn { border:1px solid #888; padding:2px 8px; border-radius:4px; cursor:po
 #alert{position:absolute;inset:0;right:380px;display:flex;align-items:flex-start;justify-content:center;padding-top:120px;background:#0003;z-index:40}#alert .card{max-width:440px;font-size:15px;box-shadow:0 4px 18px #0005}
 .ms{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0}.ms .m{font-size:11px;padding:0 5px;border-radius:8px;background:#e5dcc6}.ms .clear{background:#cfe3b8}.ms .open{background:#f5d7a0}.ms .now{background:#9cc0e8;font-weight:bold}.ms .todo{opacity:.5}.ms .hit{outline:2px solid #c0392b}
 .status{border-left:3px solid #6a8cc7;padding-left:6px;margin:3px 0;font-size:12px}.status .tag{background:#6a8cc7;color:#fff;border-radius:6px;padding:0 5px;font-size:11px}
+/* v1.55a 世界鏡頭 */
+#camui{position:absolute;top:8px;left:8px;display:flex;gap:6px;z-index:5}#camui button{font-size:15px;padding:4px 10px;background:#fff8e8;border:1px solid #8a6a3a;border-radius:6px;cursor:pointer}#camui button.on{background:#c0392b;color:#fff}#camui button:disabled{opacity:.45}
+#camtoast{position:absolute;top:48px;left:8px;z-index:5;background:#3a2a1a;color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:15px;box-shadow:0 2px 8px #0005}
+#map{touch-action:none;cursor:grab}

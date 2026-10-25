@@ -83,6 +83,15 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 | SS-EXP-RECALL | v1.5（A2） | 巡山面板按「召回」→ 從目前距離回程、戰利品保留 | **已驗證** | 通過（單元＋瀏覽器實玩點擊 5/5） | src/expedition.mjs, src/main.mjs | `artifacts/v150/flow-v150.mjs` → `flow-v150-result.json` | shots/v150-exp-out.png、shots/v150-exp-recall.png（實玩） | 距離仍抽象（v1.55 才上地圖） |
 | SS-STATUS-V150 | v1.5 | 弟子卡「現在／原因／下一步」：層級讀 d.decision；下一步＝目前任務排著的工序 | 已驗證 | 通過（單元＋實玩） | src/status.mjs | `test/v150.test.mjs`、`test/v145.test.mjs` | shots/v150-status.png（實玩） | — |
 
+### v1.55a 同圖延伸：世界與鏡頭（PATROL-MAP-SAMEMAP-v155.md 混合案；擁有人 t135u「照建議」）
+| Feature ID | 設計來源 | 玩家短流程 | 狀態 | 驗證 | 實作檔案 | 測試命令與結果檔 | 截圖/錄影 | 已知缺口 |
+|---|---|---|---|---|---|---|---|---|
+| SS-WORLD-CAM | SAMEMAP §2.4；v1.55a | 拖曳地圖往右上捲 → 被邊界擋（門派＋已揭露環＋一圈）；出發只跳紙條、點紙條才跟隨；按「回山門」回門派全景 | 已驗證（限拖曳邊界、紙條跟隨、回山門） | 通過（單元＋瀏覽器實點 11/11；反例：未巡山拖不出第一環、出發不自動跟隨） | src/world.mjs camBounds/clampCam, src/main.mjs | `node --test test/v155a.test.mjs`；`artifacts/v155a/flow-v155a.mjs` → `flow-v155a-result.json` | shots/v155a-01-home.png、02-drag-bound、05-depart-toast、06-follow | 「已揭露」暫用清場紀錄／本趟走到的環推算，迷霧 bit 在 v1.55c；縮放只有滾輪連續縮放，三段 LOD 未做 |
+| SS-WORLD-CHUNK | SAMEMAP §2.2；v1.55a | 世界 6400×4800、門派在左下；256px 區塊第一次進視窗才畫進離屏 canvas | 已接線 | 通過（單元：同座標同畫；無頭 Chrome 縮到 0.5 約 60fps、143 塊快取） | src/world.mjs paintChunk/chunksInView, src/main.mjs | `test/v155a.test.mjs`；flow 第 5 步 | shots/v155a-03-world-rings.png | 地形只是各環色塊＋點狀雜訊（tile 美術在 v1.55b/c）；fps 是無頭參考值，非 1440×900 桌機實測 |
+| SS-ENEMY-MERGE | DESIGN-REVIEW §2.5；v1.55a | 家裡狩獵／獸襲與巡山共用 ENEMIES；MONSTERS 只是帶 home 欄位者的檢視；每種敵人標所屬環 | 已接線 | 通過（單元：數值與舊表逐欄相同；核心雜湊不變） | src/data.mjs | `test/v155a.test.mjs` | — | 家裡仍只有山鼠、野豬兩種 |
+| SS-RING-POP | SAMEMAP §2.6/§3；v1.55a | 7 環各有族群數，地圖巢點顯示「某環巢・N」；巡山擊倒扣該環，定時無亂數回補 | 已接線 | 通過（單元＋實跑巡山：扣掉數＝擊倒數） | src/world.mjs popStep/popKill, src/expedition.mjs, src/sim.mjs | `test/v155a.test.mjs` | shots/v155a-03、04 | 族群還不影響遭遇率與獸襲頻率（刻意：保持模擬結果不變） |
+| SS-RAID-DESCENT | SAMEMAP §2.6；v1.55a | 獸襲到點前 20 秒，野豬從山腳巢點沿山徑走到 den，到點後照舊從 den 進菜園 | 已接線 | 通過（單元；瀏覽器流程把 raidT 推到到點前 10 秒後拍到，屬改狀態展示） | src/world.mjs raidDescent, src/main.mjs | `test/v155a.test.mjs`；flow 第 6–7 步 | shots/v155a-04-raid-descent.png | 下山段只是演出（由 raidT 推算、不存檔）；溢出觸發、其他環下山要等族群接進模擬 |
+
 修正：巡山在模擬層也守解鎖（第一章不再在第 1 日記成）；「本門新紀錄」「重傷倒地」由頂級改為中級事件。
 
 ## 三、依賴、未完成、取消／恢復、保存邊界

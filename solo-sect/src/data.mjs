@@ -122,10 +122,8 @@ export const MOVES = [
   { id: 'storm3', skill: 'palm', name: '雷動九天', req: 999, range: 100, cd: 4.0, dmg: 20, aoe: 110, color: '#e9c247' },
 ];
 
-export const MONSTERS = {
-  rat:  { name: '山鼠', hp: 10, speed: 40, dmg: 2, sprite: 'rat' },
-  boar: { name: '野豬', hp: 40, speed: 28, dmg: 6, sprite: 'boar' },
-};
+// v1.55a 敵人表合併：家裡（狩獵／獸襲）與巡山共用 ENEMIES；MONSTERS 只是 ENEMIES 帶 home 欄位者的檢視（見檔尾）
+export const MONSTERS = {};
 export const WAVES = [
   [{ t: 0, k: 'rat' }, { t: 2, k: 'rat' }, { t: 4, k: 'rat' }, { t: 7, k: 'boar' }],
 ];
@@ -441,3 +439,9 @@ export const JH = {
   hiddenMax: 3, hiddenP: 0.35, residueXp: 20, dfbbPow: 40, hyPow: 50, diaoFeeds: 3, honeyHeal: 15,
 };
 Object.assign(TRAITS, { quiet: { name: '清冷', desc: '心情起伏減半，不喜熱鬧', mods: { train: 1.05, leisure: 0.9 } }, chi: { name: '癡', desc: '心情隨意中人起伏', mods: {} } });
+
+// ---- v1.55a 合併敵人表：家裡用的地圖走速與立繪掛在 ENEMIES[k].home；ring＝牠在巡山第幾環（族群歸屬）----
+Object.assign(ENEMIES.rat, { home: { speed: 40, sprite: 'rat' } }); Object.assign(ENEMIES.boar, { home: { speed: 28, sprite: 'boar' } });
+for (const [k, e] of Object.entries(ENEMIES)) { const i = ROUTE.findIndex((g) => g.roster.some(([x]) => x === k)); e.ring = i >= 0 ? ROUTE[i].id : null; }
+ENEMIES.rat.ring = 'foot'; // 山鼠不在巡山名單，棲在山腳
+for (const [k, e] of Object.entries(ENEMIES)) if (e.home) MONSTERS[k] = { name: e.name, hp: e.hp, speed: e.home.speed, dmg: e.dmg, sprite: e.home.sprite, ring: e.ring };
