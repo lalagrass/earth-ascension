@@ -1,0 +1,453 @@
+{
+ "perOpening": {
+  "plain": {
+   "brew": "0–4",
+   "pillMade": "0–4",
+   "pillUsed": "0–4",
+   "pass": "0–4",
+   "masters": "2–3",
+   "waterMade": "78–94",
+   "waterUsed": "66–82",
+   "minHp": "10–30",
+   "raidHurt": "233–413"
+  },
+  "guojing": {
+   "brew": "11–15",
+   "pillMade": "8–11",
+   "pillUsed": "0–2",
+   "pass": "0–1",
+   "masters": "5–5",
+   "waterMade": "116–148",
+   "waterUsed": "104–136",
+   "minHp": "10–45",
+   "raidHurt": "48–338"
+  },
+  "weixiaobao": {
+   "brew": "15–18",
+   "pillMade": "12–15",
+   "pillUsed": "2–5",
+   "pass": "0–1",
+   "masters": "5–5",
+   "waterMade": "94–113",
+   "waterUsed": "82–101",
+   "minHp": "5–34",
+   "raidHurt": "106–204"
+  },
+  "linghuchong": {
+   "brew": "21–31",
+   "pillMade": "17–26",
+   "pillUsed": "7–16",
+   "pass": "0–0",
+   "masters": "4–5",
+   "waterMade": "94–118",
+   "waterUsed": "82–106",
+   "minHp": "0–10",
+   "raidHurt": "198–299"
+  },
+  "yuebuqun": {
+   "brew": "10–16",
+   "pillMade": "10–12",
+   "pillUsed": "0–2",
+   "pass": "0–1",
+   "masters": "4–6",
+   "waterMade": "94–161",
+   "waterUsed": "82–150",
+   "minHp": "10–60",
+   "raidHurt": "58–109"
+  },
+  "zhangwuji": {
+   "brew": "19–23",
+   "pillMade": "15–21",
+   "pillUsed": "5–11",
+   "pass": "0–0",
+   "masters": "5–5",
+   "waterMade": "98–113",
+   "waterUsed": "87–101",
+   "minHp": "1–10",
+   "raidHurt": "162–263"
+  },
+  "axing": {
+   "brew": "18–32",
+   "pillMade": "13–19",
+   "pillUsed": "3–9",
+   "pass": "0–1",
+   "masters": "4–7",
+   "waterMade": "148–184",
+   "waterUsed": "136–172",
+   "minHp": "4–4",
+   "raidHurt": "282–399"
+  }
+ },
+ "all": {
+  "actsTotal": {
+   "train": 122384,
+   "spar": 102478,
+   "chat": 59476,
+   "rest": 50151,
+   "eat": 41282,
+   "study": 31304,
+   "farm": 26556,
+   "meditate": 13072,
+   "pass": 10582,
+   "build": 8023,
+   "water": 7715,
+   "leisure": 6802,
+   "chop": 5058,
+   "cook": 4572,
+   "watch": 3534,
+   "worship": 2798,
+   "quarry": 2649,
+   "forage": 2001,
+   "learn": 1842,
+   "host": 1485,
+   "encourage": 574,
+   "brew": 561,
+   "bell": 431,
+   "heal": 397,
+   "deliver": 61,
+   "trial": 35
+  },
+  "passCases": 8,
+  "passTotal": 16,
+  "brewCases": 34,
+  "masterCases": 35,
+  "pillEnd": "0–10",
+  "waterEnd": "11–12",
+  "okOn": 35,
+  "okOff": 35
+ },
+ "dao": {
+  "identical": 0,
+  "meanBest": -36.4,
+  "meanKills": -9.2,
+  "meanRep": 0.51,
+  "bestUp": 8,
+  "bestDown": 6,
+  "diffs": [
+   {
+    "case": "3|plain",
+    "best": -106,
+    "expN": 0,
+    "rep": 0,
+    "minHp": 29,
+    "kills": -33
+   },
+   {
+    "case": "3|guojing",
+    "best": -789,
+    "expN": -2,
+    "rep": -9.4,
+    "minHp": 11,
+    "kills": -94
+   },
+   {
+    "case": "3|weixiaobao",
+    "best": 0,
+    "expN": 0,
+    "rep": 2.1,
+    "minHp": 0,
+    "kills": -20
+   },
+   {
+    "case": "3|linghuchong",
+    "best": 0,
+    "expN": 0,
+    "rep": 2.2,
+    "minHp": 0,
+    "kills": 4
+   },
+   {
+    "case": "3|yuebuqun",
+    "best": 0,
+    "expN": 0,
+    "rep": 4.3,
+    "minHp": -43,
+    "kills": -28
+   },
+   {
+    "case": "3|zhangwuji",
+    "best": 0,
+    "expN": 0,
+    "rep": 4.5,
+    "minHp": 5,
+    "kills": -11
+   },
+   {
+    "case": "3|axing",
+    "best": 0,
+    "expN": 0,
+    "rep": 11.8,
+    "minHp": 0,
+    "kills": -65
+   },
+   {
+    "case": "7|plain",
+    "best": 106,
+    "expN": 0,
+    "rep": -11.4,
+    "minHp": -10,
+    "kills": 28
+   },
+   {
+    "case": "7|guojing",
+    "best": -269,
+    "expN": -1,
+    "rep": -4.9,
+    "minHp": -29,
+    "kills": 8
+   },
+   {
+    "case": "7|weixiaobao",
+    "best": 0,
+    "expN": 0,
+    "rep": 4.4,
+    "minHp": 0,
+    "kills": 7
+   },
+   {
+    "case": "7|linghuchong",
+    "best": 0,
+    "expN": 0,
+    "rep": 4.7,
+    "minHp": -10,
+    "kills": -11
+   },
+   {
+    "case": "7|yuebuqun",
+    "best": 0,
+    "expN": 0,
+    "rep": 21.8,
+    "minHp": -40,
+    "kills": -149
+   },
+   {
+    "case": "7|zhangwuji",
+    "best": 0,
+    "expN": 0,
+    "rep": 7.7,
+    "minHp": -9,
+    "kills": -20
+   },
+   {
+    "case": "7|axing",
+    "best": 69,
+    "expN": 0,
+    "rep": -15.5,
+    "minHp": 0,
+    "kills": -13
+   },
+   {
+    "case": "11|plain",
+    "best": 0,
+    "expN": 0,
+    "rep": -9.9,
+    "minHp": 0,
+    "kills": -14
+   },
+   {
+    "case": "11|guojing",
+    "best": 199,
+    "expN": 3,
+    "rep": 10.7,
+    "minHp": 10,
+    "kills": 106
+   },
+   {
+    "case": "11|weixiaobao",
+    "best": 0,
+    "expN": 0,
+    "rep": 0.4,
+    "minHp": 24,
+    "kills": 27
+   },
+   {
+    "case": "11|linghuchong",
+    "best": 0,
+    "expN": 0,
+    "rep": -3.1,
+    "minHp": 10,
+    "kills": 39
+   },
+   {
+    "case": "11|yuebuqun",
+    "best": 0,
+    "expN": 0,
+    "rep": -0.7,
+    "minHp": 29,
+    "kills": -14
+   },
+   {
+    "case": "11|zhangwuji",
+    "best": 0,
+    "expN": 0,
+    "rep": 0,
+    "minHp": -6,
+    "kills": 10
+   },
+   {
+    "case": "11|axing",
+    "best": -269,
+    "expN": 0,
+    "rep": 1.6,
+    "minHp": 0,
+    "kills": 53
+   },
+   {
+    "case": "17|plain",
+    "best": 140,
+    "expN": 0,
+    "rep": 6.9,
+    "minHp": 21,
+    "kills": 4
+   },
+   {
+    "case": "17|guojing",
+    "best": -990,
+    "expN": -2,
+    "rep": -12.8,
+    "minHp": 37,
+    "kills": -106
+   },
+   {
+    "case": "17|weixiaobao",
+    "best": 0,
+    "expN": 0,
+    "rep": 8.5,
+    "minHp": -12,
+    "kills": -11
+   },
+   {
+    "case": "17|linghuchong",
+    "best": 20,
+    "expN": 0,
+    "rep": 2.4,
+    "minHp": -5,
+    "kills": 15
+   },
+   {
+    "case": "17|yuebuqun",
+    "best": 466,
+    "expN": 0,
+    "rep": 15.6,
+    "minHp": 1,
+    "kills": 125
+   },
+   {
+    "case": "17|zhangwuji",
+    "best": 0,
+    "expN": 0,
+    "rep": -1.8,
+    "minHp": -2,
+    "kills": -26
+   },
+   {
+    "case": "17|axing",
+    "best": 0,
+    "expN": 0,
+    "rep": -3.4,
+    "minHp": 0,
+    "kills": -1
+   },
+   {
+    "case": "23|plain",
+    "best": -70,
+    "expN": 0,
+    "rep": 1.1,
+    "minHp": 0,
+    "kills": 10
+   },
+   {
+    "case": "23|guojing",
+    "best": 201,
+    "expN": 0,
+    "rep": 1.4,
+    "minHp": -8,
+    "kills": 5
+   },
+   {
+    "case": "23|weixiaobao",
+    "best": 0,
+    "expN": 0,
+    "rep": -7.2,
+    "minHp": -19,
+    "kills": 5
+   },
+   {
+    "case": "23|linghuchong",
+    "best": 18,
+    "expN": 0,
+    "rep": -13.1,
+    "minHp": 10,
+    "kills": -26
+   },
+   {
+    "case": "23|yuebuqun",
+    "best": 0,
+    "expN": 0,
+    "rep": -0.1,
+    "minHp": -14,
+    "kills": -121
+   },
+   {
+    "case": "23|zhangwuji",
+    "best": 0,
+    "expN": 0,
+    "rep": 1.4,
+    "minHp": 10,
+    "kills": 12
+   },
+   {
+    "case": "23|axing",
+    "best": 0,
+    "expN": 0,
+    "rep": -2.4,
+    "minHp": 0,
+    "kills": -17
+   }
+  ]
+ },
+ "pop": {
+  "foot": {
+   "d0": "12–12",
+   "d15": "18–18",
+   "d29": "18–18",
+   "zeroCases": 0
+  },
+  "wood": {
+   "d0": "15–15",
+   "d15": "23–23",
+   "d29": "23–23",
+   "zeroCases": 0
+  },
+  "slope": {
+   "d0": "15–15",
+   "d15": "23–23",
+   "d29": "23–23",
+   "zeroCases": 0
+  },
+  "gorge": {
+   "d0": "6–6",
+   "d15": "9–9",
+   "d29": "9–9",
+   "zeroCases": 0
+  },
+  "cliff": {
+   "d0": "12–12",
+   "d15": "18–18",
+   "d29": "18–18",
+   "zeroCases": 0
+  },
+  "cave": {
+   "d0": "12–12",
+   "d15": "16–18",
+   "d29": "17–18",
+   "zeroCases": 0
+  },
+  "peak": {
+   "d0": "9–9",
+   "d15": "11–14",
+   "d29": "12–14",
+   "zeroCases": 0
+  }
+ }
+}
