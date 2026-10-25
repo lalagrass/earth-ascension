@@ -163,6 +163,8 @@ export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=
   const recipe=a.kind==='craft'?'craft.'+a.args.art:a.args.recipe||'meal',r=a.kind==='craft'?{input:{wood:2},out:{[a.args.art==='staff'?'staff':'sword']:1},seconds:[8,8,8]}:RECIPES[recipe];
   if(!r){blocked(p,a,'未知配方');return;}if(recipe==='ration'&&w.facilities.kitchen.stage<2){blocked(p,a,'乾糧需最終膳房');return;}
   if(a.kind==='craft'&&!w.facilities.hall.stage){blocked(p,a,'需先修補大廳教學');return;}
+  const outputOwner=w.facilities[a.kind==='craft'?'hall':'kitchen'];if(a.phase==='init'&&outputOwner.wip?.output&&!w.activities[outputOwner.wip.activity]&&outputOwner.wip.recipe===recipe)a.resumingBatch??=outputOwner.wip.output.id;if(outputOwner.wip?.output?.doneAt!==undefined&&!w.activities[outputOwner.wip.activity])outputOwner.wip=null;
+  if(a.resumingBatch&&!outputOwner.wip){finish(w,p,a,'原先成品已實際搬交');return;}
   if(a.phase==='init'&&bagWeight(w,p)>0){depositBag(w,p,a);return;}
   if(a.phase==='init'){
    const old=w.facilities[a.kind==='craft'?'hall':'kitchen'].wip;if(old){if(w.activities[old.activity]&&old.activity!==a.id){blocked(p,a,'灶上有他人正在烹調');return;}if(old.recipe!==recipe){blocked(p,a,'灶上仍有在製品：'+old.recipe+'，先續做');return;}a.committed=true;a.phase=old.output?'haulOutput':'perform';a.progress=old.progress;old.activity=a.id;}
