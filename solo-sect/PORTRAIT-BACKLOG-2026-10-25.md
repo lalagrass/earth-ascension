@@ -125,3 +125,17 @@
 
 ## Update: 阿星 v2 candidates (2026-10-25)
 6 candidates in `assets/portraits/v2/axing-cand-*.png`, sheet `artifacts/portrait-review/axing-v2-candidates.png`, prompts in `assets/portraits/PROMPTS.md`. Top 3: 2-beaten, 1-sneer, 6-scheme. Next: lock a character sheet (face shape, hair, vest/patches/red sash) and derive the expression set from 2-beaten via reference-image passes; remove AI-generated text; consistency across images not yet proven.
+
+## 7.2 風格方向評估（2026-10-25，擁有人覺得唯美漫畫風無趣）
+
+樣張：`artifacts/portrait-review/style-directions.png`（郭靖＋黃蓉各 4 風格，含 64/48px 縮圖），提示詞見 `assets/portraits/PROMPTS.md`。依擁有人回饋，排名以黃蓉為重。
+
+| 排名 | 方向 | 黃蓉 | 郭靖 | 縮圖 | 判定 |
+|---|---|---|---|---|---|
+| 1 | 港漫粗線（80 年代武俠漫畫氣勢，原創） | 眨眼＋彈石子，古靈精怪最到位 | 有氣勢但偏帥 | 強 | 主風格；喜劇角色加誇張臉 |
+| 2 | 報紙諷刺漫畫／大頭（老夫子式精神，原創） | 吐舌藏雞腿，最好笑但偏幼 | 啃包子最有郭靖憨味 | 最強 | 周星馳角色與表情差分專用 |
+| 3 | 年畫木刻 | 噓手勢有戲，配色獨特 | 端正但呆 | 中（背景太花） | 抉擇卡／過場 CG、門派旗幟 |
+| 4 | 黑暗重墨（Darkest Dungeon 式） | 像反派，失去可愛 | 酷但不像郭靖 | 弱 | 不採；僅宿敵／魔頭 |
+
+未生成但評估：水墨寫意（縮圖糊、AI 易變唯美）、連環畫小人書（適合事件插圖）、Disco Elysium 油彩（成本高、喜劇弱）、Hades／Slay the Spire（扁平粗線，可借輪廓原則）、RimWorld 極簡（只適合地圖小人）、Cult of the Lamb 可愛詭異、太吾繪卷（同類武俠參考）、浮世繪（日味重）。
+建議：PB-21 以「港漫粗線＋喜劇誇張臉」為 v2 主風格，大頭諷刺版做表情差分與小頭像；先畫 黃蓉／郭靖／阿星三張定調（排 v1.5 美術任務，不改既有 PB-03 暫停決定）。
