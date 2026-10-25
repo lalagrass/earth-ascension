@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "recipes": {
+    "recipe.xishui_bath": {
+      "id": "recipe.xishui_bath",
+      "name": "固本洗髓藥浴",
+      "workTicks": 1200,
+      "herbCost": {
+        "rawHerb": 3,
+        "spiritGinseng": 1
+      },
+      "constitutionBonus": 1,
+      "innerQiRateMultiplier": 1.25,
+      "description": "浸泡後永久提升弟子根骨 +1、內息成長速率 +25%"
+    },
+    "recipe.juyuan_pill": {
+      "id": "recipe.juyuan_pill",
+      "name": "聚元靈丹",
+      "workTicks": 600,
+      "herbCost": {
+        "rawHerb": 2,
+        "spiritGinseng": 1
+      },
+      "restoreQi": 100,
+      "restoreComposure": 100,
+      "description": "服用後瞬間補滿內息與定力"
+    },
+    "recipe.shiquan_tonic": {
+      "id": "recipe.shiquan_tonic",
+      "name": "十全大補靈湯",
+      "workTicks": 1800,
+      "herbCost": {
+        "rawHerb": 5,
+        "spiritGinseng": 2,
+        "lingzhi": 1
+      },
+      "haidafuTriggerChance": 0.75,
+      "haidafuGoldCompensation": 100,
+      "aromaRadius": 400,
+      "dialogueBubble": "咳咳……小桂子，把藥端來……",
+      "description": "熬成散發香氣，有機率引海大富裝瞎摸入偷喝並留下百金"
+    }
+  },
+  "environments": {
+    "cold_jade_bed": {
+      "id": "env.cold_jade_bed",
+      "bedType": "cold_jade_bed",
+      "name": "古墓寒玉床",
+      "facilityId": "fac.quiet.cold_jade",
+      "innerQiRegenPerSec": 2.5,
+      "requiredConstitution": 6,
+      "eligibleArchetypes": ["xiao_longnu", "yang_guo"],
+      "description": "小龍女或高根骨弟子睡覺高速漲內息 (+2.5/s)"
+    },
+    "waterfall_platform": {
+      "id": "env.waterfall_platform",
+      "bedType": "waterfall_platform",
+      "name": "後山山洪瀑布台",
+      "facilityId": "fac.waterfall",
+      "impactForce": 75,
+      "requiredStrength": 7,
+      "swordProficiencyBonus": 1.50,
+      "unlockMove": "torrent_wave_cleave",
+      "knockbackBonus": 80,
+      "description": "抗衡萬鈞激流練劍，熟練度增長 +150%，解鎖重劍巨浪判定"
+    },
+    "jade_bee_hive": {
+      "id": "env.jade_bee_hive",
+      "bedType": "jade_bee_hive",
+      "name": "百花玉蜂箱",
+      "facilityId": "fac.garden.hive",
+      "zhouBotongFriendshipThreshold": 60,
+      "dualWieldSimultaneousMoveWindowMs": 50,
+      "eligibleComprehensionMax": 4,
+      "teachArts": ["art.kongming_fist", "art.dual_wield_mind"],
+      "eligibleArchetypes": ["guo_jing", "xiao_longnu"],
+      "description": "吸引周伯通捉迷藏，好感達標傳授《空明拳》與《左右互搏術》"
+    }
+  },
+  "forge": {
+    "equip.heavy_iron_sword": {
+      "id": "equip.heavy_iron_sword",
+      "name": "七十斤玄鐵重劍",
+      "slot": "weapon_main",
+      "twoHanded": true,
+      "weightUnits": 70,
+      "requiredStrength": 7,
+      "damageMultiplier": 2.2,
+      "knockbackBonus": 80,
+      "slashWaveWidthPx": 60,
+      "pierceRate": 2.0,
+      "exclusiveArchetype": "yang_guo",
+      "materials": {
+        "timber": 5,
+        "coldIron": 10,
+        "blackIron": 5
+      }
+    },
+    "equip.soft_gold_armor": {
+      "id": "equip.soft_gold_armor",
+      "name": "五件金絲軟甲",
+      "slot": "armor_body",
+      "damageReductionRatio": 0.60,
+      "exclusiveArchetype": "wei_xiaobao",
+      "materials": {
+        "goldSilk": 5,
+        "softLeather": 3
+      }
+    },
+    "equip.foreign_flintlock": {
+      "id": "equip.foreign_flintlock",
+      "name": "洋人連珠火銃",
+      "slot": "accessory",
+      "projectileVolley": true,
+      "rangePx": 180,
+      "damage": 65,
+      "exclusiveArchetype": "wei_xiaobao",
+      "materials": {
+        "fineIron": 6,
+        "blackPowder": 4
+      }
+    },
+    "equip.oriental_needle": {
+      "id": "equip.oriental_needle",
+      "name": "東方不敗繡花針",
+      "slot": "weapon_main",
+      "windupSec": 0.05,
+      "multiHitTargetCount": 5,
+      "damage": 38,
+      "exclusiveArchetype": "dongfang_bubai",
+      "materials": {
+        "silverSilk": 2,
+        "needleIron": 1
+      }
+    },
+    "equip.bronze_bell_megaphone": {
+      "id": "equip.bronze_bell_megaphone",
+      "name": "古銅大鐘擴音罩",
+      "slot": "accessory",
+      "soundwaveRangeMultiplier": 2.0,
+      "soundwaveKnockbackBonus": 50,
+      "exclusiveArchetype": "landlady",
+      "materials": {
+        "ancientBronze": 8,
+        "timber": 3
+      }
+    }
+  }
+}

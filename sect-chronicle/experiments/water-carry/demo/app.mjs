@@ -1094,6 +1094,73 @@ function setupLifeV02UI() {
     renderChrome();
   });
 
+  // 藏經閣三軌武學 (v0.7) ＆ 藥浴海大富神兵 (v0.8) 面板與操作按鈕接線
+  const lifeV0708Panel = $('life-v0708-panel');
+  const lifeV0708ToggleBtn = $('life-v0708-toggle');
+  const lifeV0708CloseBtn = $('life-v0708-close');
+
+  function toggleLifeV0708Panel() {
+    if (!lifeV0708Panel) return;
+    lifeV0708Panel.hidden = !lifeV0708Panel.hidden;
+    lifeV0708ToggleBtn?.classList.toggle('on', !lifeV0708Panel.hidden);
+    renderChrome();
+  }
+
+  lifeV0708ToggleBtn?.addEventListener('click', toggleLifeV0708Panel);
+  lifeV0708CloseBtn?.addEventListener('click', () => {
+    if (lifeV0708Panel) lifeV0708Panel.hidden = true;
+    lifeV0708ToggleBtn?.classList.remove('on');
+  });
+
+  $('btn-breakthrough-luohan')?.addEventListener('click', () => {
+    const res = model.life?.breakthroughLuohanLv10 ? model.life.breakthroughLuohanLv10() : model.dispatch({ type: 'BREAKTHROUGH_LUOHAN_LV10' });
+    v = model.view();
+    toast(res?.speechBubble || '基礎羅漢拳突破 Lv10 返璞歸真！');
+    renderChrome();
+  });
+
+  $('btn-trigger-dugu-interrupt')?.addEventListener('click', () => {
+    const res = model.life?.triggerDuguFlawInterrupt ? model.life.triggerDuguFlawInterrupt() : model.dispatch({ type: 'TRIGGER_DUGU_INTERRUPT' });
+    v = model.view();
+    toast(res?.speechBubble || '獨孤九劍 0s 後發先至截擊破綻！');
+    renderChrome();
+  });
+
+  $('btn-synthesize-scripture')?.addEventListener('click', () => {
+    const res = model.life?.synthesizeDualLineageScripture ? model.life.synthesizeDualLineageScripture() : model.dispatch({ type: 'SYNTHESIZE_DUAL_LINEAGE' });
+    v = model.view();
+    toast(res?.speechBubble || '靜室兩派合參著書入閣！');
+    renderChrome();
+  });
+
+  $('btn-brew-supreme-tonic')?.addEventListener('click', () => {
+    const res = model.life?.brewSupremeTonicForHaiDafu ? model.life.brewSupremeTonicForHaiDafu() : model.dispatch({ type: 'BREW_SUPREME_TONIC' });
+    v = model.view();
+    toast(res?.speechBubble || '海大富偷喝十全大補湯留金 100 兩！');
+    renderChrome();
+  });
+
+  $('btn-unlock-dual-wield')?.addEventListener('click', () => {
+    const res = model.life?.unlockZhouBotongDualWield ? model.life.unlockZhouBotongDualWield() : model.dispatch({ type: 'UNLOCK_DUAL_WIELD' });
+    v = model.view();
+    toast(res?.speechBubble || '老頑童周伯通傳授《左右互搏術》！');
+    renderChrome();
+  });
+
+  const wireWeaponBtn = (btnId, weaponKey, label) => {
+    $(btnId)?.addEventListener('click', () => {
+      const res = model.life?.forgeDivineWeapon ? model.life.forgeDivineWeapon(weaponKey) : model.dispatch({ type: 'FORGE_DIVINE_WEAPON', weaponKey });
+      v = model.view();
+      toast(res?.speechBubble || `打造並裝備了${label}！`);
+      renderChrome();
+    });
+  };
+
+  wireWeaponBtn('btn-forge-heavy_iron_sword', 'heavy_iron_sword', '【七十斤玄鐵重劍】');
+  wireWeaponBtn('btn-forge-soft_gold_armor', 'soft_gold_armor', '【五件金絲軟甲】');
+  wireWeaponBtn('btn-forge-foreign_gun', 'foreign_gun', '【洋人連珠火銃】');
+  wireWeaponBtn('btn-forge-copper_bell', 'copper_bell', '【古銅大鐘擴音罩】');
+
   updateCustomSectPreview();
   renderFellowPills();
   updateDuoSynergyPreview();
@@ -1676,6 +1743,181 @@ function renderLifeV0506Panel(life) {
   }
 }
 
+function renderLifeV0708Panel(life) {
+  if (!life) return;
+
+  const v07 = life.v07 || life;
+  const v08 = life.v08 || life;
+
+  // 1. 摘要欄
+  const scriptureSummary = $('v0708-scripture-summary');
+  if (scriptureSummary) {
+    const count = (v07.scripturesAuthored?.length) || (life.scripturesAuthored?.length) || 2;
+    scriptureSummary.textContent = `藏經架：已著書 ${count} 部`;
+  }
+  const alchemySummary = $('v0708-alchemy-summary');
+  if (alchemySummary) {
+    const alc = v08.alchemy || life.alchemy;
+    const tonicCount = alc?.supremeTonicCount ?? 1;
+    const goldLeft = alc?.haiDafuGoldLeft ?? 0;
+    alchemySummary.textContent = `大補湯：${tonicCount} 份 · 海大富留金 ${goldLeft} 兩`;
+  }
+  const forgeSummary = $('v0708-forge-summary');
+  if (forgeSummary) {
+    const forge = v08.divineForge || life.divineForge;
+    forgeSummary.textContent = `神兵：${forge?.activeEquipped || '【五件金絲軟甲】'}`;
+  }
+
+  // 2. 軌道 A
+  const trackA = v07.trackASectEvolution || life.trackASectEvolution;
+  if (trackA) {
+    const tierTag = $('track-a-tier');
+    if (tierTag) {
+      tierTag.textContent = trackA.unlockedTier >= 3 ? '三階上乘絕學大成' : '二階精妙大成 ➔ 三階上乘';
+    }
+    const tier2El = $('track-a-tier2');
+    if (tier2El) tier2El.textContent = trackA.tier2Art || '《養吾劍法／空明拳》';
+    const tier3El = $('track-a-tier3');
+    if (tier3El) tier3El.textContent = trackA.tier3Art || '《紫霞神功／降龍十八掌》';
+  }
+
+  // 3. 軌道 B（羅漢拳）
+  const trackB = v07.trackBLuohan || life.trackBLuohan;
+  if (trackB) {
+    const levelTag = $('track-b-level-tag');
+    if (levelTag) {
+      levelTag.textContent = trackB.stageLabel || (trackB.level === 10 ? 'Lv10 返璞歸真' : `Lv${trackB.level} 登峰造極`);
+      levelTag.className = `tier-tag highlight ${trackB.level === 10 ? 'max-breakthrough' : ''}`;
+    }
+    const windupEl = $('luohan-windup');
+    if (windupEl) {
+      windupEl.textContent = `${trackB.startupSec || 0.22}s (${trackB.level === 10 ? '零前搖瞬發' : '拳隨意動'})`;
+    }
+    const traitEl = $('luohan-trait-badge');
+    if (traitEl) {
+      traitEl.textContent = trackB.level === 10 ? '【強韌霸體·渾然無招·一拳破萬法】' : '【強韌霸體·沉渾拳罡】';
+    }
+    const btnLuohan = $('btn-breakthrough-luohan');
+    if (btnLuohan) {
+      if (trackB.level === 10) {
+        btnLuohan.textContent = '✅ 已突破 Lv10 返璞歸真・渾然天成無破綻 (0.15s)';
+        btnLuohan.classList.add('disabled');
+      } else {
+        btnLuohan.textContent = '⚡ 突破《基礎羅漢拳》Lv10 返璞歸真 (0.15s 零前搖·渾然無招)';
+        btnLuohan.classList.remove('disabled');
+      }
+    }
+  }
+
+  // 4. 軌道 C（獨孤九劍）
+  const trackC = v07.trackCDugu || life.trackCDugu;
+  if (trackC) {
+    const resonanceTag = $('track-c-resonance-tag');
+    if (resonanceTag) {
+      resonanceTag.textContent = trackC.grandmasterResonance
+        ? '✨ 雙宗師切磋共鳴 (至拙無招無破綻)'
+        : '木人樁 0 經驗 · 唯活人有破綻';
+      resonanceTag.className = `tier-tag ${trackC.grandmasterResonance ? 'highlight' : ''}`;
+    }
+    const counters = trackC.counters || {};
+    const swordVal = counters.sword ?? 80;
+    const palmVal = counters.palm ?? 65;
+    const arrowVal = counters.arrow ?? 50;
+    const whipVal = counters.whip ?? 40;
+    const qiVal = counters.qi ?? 60;
+
+    const bSword = $('bar-break-sword');
+    if (bSword) bSword.style.width = `${swordVal}%`;
+    const vSword = $('val-break-sword');
+    if (vSword) vSword.textContent = `${swordVal}%`;
+
+    const bPalm = $('bar-break-palm');
+    if (bPalm) bPalm.style.width = `${palmVal}%`;
+    const vPalm = $('val-break-palm');
+    if (vPalm) vPalm.textContent = `${palmVal}%`;
+
+    const bArrow = $('bar-break-arrow');
+    if (bArrow) bArrow.style.width = `${arrowVal}%`;
+    const vArrow = $('val-break-arrow');
+    if (vArrow) vArrow.textContent = `${arrowVal}%`;
+
+    const bWhip = $('bar-break-whip');
+    if (bWhip) bWhip.style.width = `${whipVal}%`;
+    const vWhip = $('val-break-whip');
+    if (vWhip) vWhip.textContent = `${whipVal}%`;
+
+    const bQi = $('bar-break-qi');
+    if (bQi) bQi.style.width = `${qiVal}%`;
+    const vQi = $('val-break-qi');
+    if (vQi) vQi.textContent = `${qiVal}%`;
+
+    const duguLog = $('dugu-last-log');
+    if (duguLog) {
+      duguLog.textContent = trackC.lastInterruptLog || '後發先至 0s 截擊野豬王起手破綻！';
+    }
+  }
+
+  // 5. 藏經閣與雙脈合參
+  const authored = v07.scripturesAuthored || life.scripturesAuthored || [];
+  const scripturesContainer = $('scriptures-list-container');
+  if (scripturesContainer) {
+    scripturesContainer.innerHTML = authored.map((s) => `<span class="scripture-tag">${s}</span>`).join('');
+  }
+  const syn = v07.crossLineageSynthesis || life.crossLineageSynthesis;
+  if (syn) {
+    const synArtEl = $('syn-art-name');
+    if (synArtEl) synArtEl.textContent = syn.synthesizedArtName || '《剛柔劍掌雙絕（掌門×同門合參）》';
+  }
+
+  // 6. 煉藥房海大富
+  const alchemy = v08.alchemy || life.alchemy;
+  if (alchemy) {
+    const bathEl = $('bath-taken-count');
+    if (bathEl) bathEl.textContent = `${alchemy.medicinalBathsTaken || 1} 次 (根骨+1·內息+25%)`;
+    const tonicEl = $('tonic-batches-count');
+    if (tonicEl) tonicEl.textContent = `${alchemy.supremeTonicCount || 0} 份存量`;
+    const haidafuLog = $('haidafu-event-log');
+    if (haidafuLog) haidafuLog.textContent = alchemy.lastEvent || '紫銅藥鼎正熬製【十全大補靈湯】香氣四溢';
+  }
+
+  // 7. 特殊修練環境
+  const envs = v08.specialEnvironments || life.specialEnvironments;
+  if (envs) {
+    const jadeEl = $('env-jade-rate');
+    if (jadeEl) jadeEl.textContent = `睡眠高速恢復：${envs.jadeBedQiRate || '+2.5 內息/s'}`;
+    const beeEl = $('env-beehive-desc');
+    if (beeEl) beeEl.textContent = envs.beehiveZhouBotong || '老頑童周伯通偷看玉蜂・可傳授《左右互搏術》';
+    const btnDual = $('btn-unlock-dual-wield');
+    if (btnDual) {
+      if (envs.dualWieldUnlocked) {
+        btnDual.textContent = '✅ 周伯通已傳授《左右互搏術》（雙手雙招齊發）';
+        btnDual.classList.add('disabled');
+      } else {
+        btnDual.textContent = '🐝 與周伯通捉迷藏傳授《左右互搏術》（雙手雙招齊發）';
+        btnDual.classList.remove('disabled');
+      }
+    }
+  }
+
+  // 8. 百鍛神兵坊
+  const forge = v08.divineForge || life.divineForge;
+  if (forge) {
+    const activeWeapon = forge.activeEquipped || '【五件金絲軟甲】';
+    const activeEl = $('active-equipped-weapon');
+    if (activeEl) activeEl.textContent = activeWeapon;
+
+    const btnSword = $('btn-forge-heavy_iron_sword');
+    const btnArmor = $('btn-forge-soft_gold_armor');
+    const btnGun = $('btn-forge-foreign_gun');
+    const btnBell = $('btn-forge-copper_bell');
+
+    if (btnSword) btnSword.classList.toggle('active', activeWeapon.includes('重劍'));
+    if (btnArmor) btnArmor.classList.toggle('active', activeWeapon.includes('金絲'));
+    if (btnGun) btnGun.classList.toggle('active', activeWeapon.includes('火銃'));
+    if (btnBell) btnBell.classList.toggle('active', activeWeapon.includes('大鐘'));
+  }
+}
+
 function renderChrome() {
   const id = selectedPerson(), person = v.people[id], profile = profiles[id];
   $('play').textContent = ui.playing ? '❚❚ 暫停' : '▶ 繼續';
@@ -1815,6 +2057,8 @@ function renderChrome() {
     renderLifeV0304Panel(life);
     // 下山義學外門定額與 S0-S5 巡山面板渲染
     renderLifeV0506Panel(life);
+    // 藏經三軌武學與煉藥神兵面板渲染
+    renderLifeV0708Panel(life);
   }
   const cards = IDS.map((who) => {
     const p = v.people[who], info = profiles[who];

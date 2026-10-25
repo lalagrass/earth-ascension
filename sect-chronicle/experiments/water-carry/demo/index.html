@@ -66,6 +66,7 @@
   <button class="btn on" id="autopilot-btn" title="零手動掌門自走">自走中</button>
   <button class="btn" id="life-v0304-toggle" title="切換人間煙火（v0.3 菜園膳房）＆ 雙脈武學場（v0.4）面板">煙火武學</button>
   <button class="btn" id="life-v0506-toggle" title="切換下山義學・外門三隱士 (v0.5) ＆ 後山 S0-S5 巡山 (v0.6) 面板">🏹 義學・S0-S5 巡山</button>
+  <button class="btn" id="life-v0708-toggle" title="切換藏經閣三軌武學・兩派合參 (v0.7) ＆ 藥浴海大富・老頑童神兵 (v0.8) 面板">📜 藏經・神兵 v0.7-v0.8</button>
   <button class="btn" id="roster-toggle" title="R">名冊</button>
   <button class="btn on" id="follow-toggle" title="0 鍵或點擊：切換鏡頭跟隨">🎥 跟隨中</button>
   <a class="legacy-link" href="../../../viewer/" title="舊版修行／目標／招募與原存檔仍在這裡；新版不自動匯入或覆寫">舊版與存檔</a>
@@ -425,6 +426,183 @@
         </div>
       </div>
 
+    </div>
+  </div>
+</aside>
+
+<!-- 藏經閣三軌武學・兩派合參 (v0.7) ＆ 藥浴海大富・老頑童神兵 (v0.8) 綜合面板 -->
+<aside id="life-v0708-panel" class="life-v0708-panel" hidden>
+  <div class="panel-header">
+    <div class="panel-title-row">
+      <span class="panel-title">📜 藏經三軌·兩派合參 (v0.7) ＆ 🍵 藥浴海大富·老頑童神兵 (v0.8)</span>
+      <button id="life-v0708-close" class="btn close-btn">✕</button>
+    </div>
+    <div class="sect-summary-bar">
+      <span class="sect-pill" id="v0708-scripture-summary">藏經架：已著書 2 部</span>
+      <span class="motto-pill" id="v0708-alchemy-summary">大補湯：1 份 · 海大富留金 0 兩</span>
+      <span class="doctrine-pill" id="v0708-forge-summary">神兵：【五件金絲軟甲】</span>
+    </div>
+  </div>
+
+  <div class="panel-sections-grid">
+    <!-- v0.7 三軌武學進階 ＆ 藏經閣著書立說卡 -->
+    <div class="v07-section card-box">
+      <h3>📜 天下霸圖三大武道進階 · 基礎返璞歸真 · 獨孤九劍 (v0.7)</h3>
+
+      <!-- 軌道 A：博學進階流 -->
+      <div class="martial-track-block">
+        <div class="track-header-row">
+          <span class="track-badge track-a">📘 軌道 A：高悟性博學進階流</span>
+          <span class="tier-tag" id="track-a-tier">二階精妙大成 ➔ 三階上乘</span>
+        </div>
+        <div class="track-desc">前置武學 Lv3 ＋ 臂力/身法達標 ➔ 外功場切磋頓悟第二階 ➔ 靜室閉關突破第三階</div>
+        <div class="arts-progression-row">
+          <div class="art-node done">
+            <span class="node-title">一階凡品</span>
+            <small id="track-a-tier1">本門開山外功</small>
+          </div>
+          <div class="node-arrow">➔</div>
+          <div class="art-node done">
+            <span class="node-title">二階良品</span>
+            <small id="track-a-tier2">《養吾劍法／空明拳》</small>
+          </div>
+          <div class="node-arrow">➔</div>
+          <div class="art-node active">
+            <span class="node-title">三階珍品</span>
+            <small id="track-a-tier3">《紫霞神功／降龍十八掌》</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- 軌道 B：大巧不工・羅漢拳 Lv10 返璞歸真 -->
+      <div class="martial-track-block">
+        <div class="track-header-row">
+          <span class="track-badge track-b">🪨 軌道 B：低悟性大巧不工 · 基礎拳返璞歸真</span>
+          <span class="tier-tag highlight" id="track-b-level-tag">Lv8 登峰造極</span>
+        </div>
+        <div class="track-desc">悟性 ≤3 ＋【抱樸守拙】弟子日揮萬拳，打破常規 Lv5 上限，直達 Lv10 一拳破萬法！</div>
+        <div class="luohan-stats-row">
+          <div class="stat-pill"><small>出招起手：</small><b id="luohan-windup">0.22s (拳隨意動)</b></div>
+          <div class="stat-pill"><small>內息消耗：</small><b>0 (永動越戰越勇)</b></div>
+          <div class="stat-pill"><small>特殊判定：</small><b id="luohan-trait-badge">【強韌霸體·沉渾拳罡】</b></div>
+        </div>
+        <button id="btn-breakthrough-luohan" class="btn btn-action primary-btn full-width">⚡ 突破《基礎羅漢拳》Lv10 返璞歸真 (0.15s 零前搖·渾然無招)</button>
+      </div>
+
+      <!-- 軌道 C：獨孤九劍看破前搖流 ＆ 五破圖譜 -->
+      <div class="martial-track-block">
+        <div class="track-header-row">
+          <span class="track-badge track-c">🗡️ 軌道 C：瀟灑劍癡 ·《獨孤九劍》無招破綻流</span>
+          <span class="tier-tag" id="track-c-resonance-tag">木人樁 0 經驗 · 唯活人有破綻</span>
+        </div>
+        <div class="track-desc">木人無招不可練！捉敵 Buildup 前搖紅芒，0s 免除自身前搖後發先至打斷！</div>
+        <div class="five-breaks-grid">
+          <div class="break-item"><span class="break-name">破劍式</span><div class="bar bar-sm"><i id="bar-break-sword" style="width:80%"></i></div><small id="val-break-sword">80%</small></div>
+          <div class="break-item"><span class="break-name">破掌式</span><div class="bar bar-sm"><i id="bar-break-palm" style="width:65%"></i></div><small id="val-break-palm">65%</small></div>
+          <div class="break-item"><span class="break-name">破箭式</span><div class="bar bar-sm"><i id="bar-break-arrow" style="width:50%"></i></div><small id="val-break-arrow">50%</small></div>
+          <div class="break-item"><span class="break-name">破棍式</span><div class="bar bar-sm"><i id="bar-break-whip" style="width:40%"></i></div><small id="val-break-whip">40%</small></div>
+          <div class="break-item"><span class="break-name">破氣式</span><div class="bar bar-sm"><i id="bar-break-qi" style="width:60%"></i></div><small id="val-break-qi">60%</small></div>
+        </div>
+        <div class="dugu-log-box" id="dugu-last-log">後發先至 0s 截擊野豬王起手破綻！強制打斷蓄力！</div>
+        <button id="btn-trigger-dugu-interrupt" class="btn btn-action primary-btn full-width">🎯 0s 後發先至截擊破綻 (五破圖譜經驗+5)</button>
+      </div>
+
+      <!-- 靜室兩派合參 ＆ 藏經閣手札 -->
+      <div class="scripture-pavilion-block">
+        <div class="section-subhead">🏛️ 靜室清幽案頭著書 · 掌門×同門「雙脈合參」</div>
+        <div class="scripture-tags-row" id="scriptures-list-container">
+          <span class="scripture-tag">《青松疊浪手札》</span>
+          <span class="scripture-tag">《羅漢返璞拳譜》</span>
+        </div>
+        <div class="cross-lineage-synthesized-box">
+          <div class="syn-title">當前合參成果：<b id="syn-art-name">《剛柔劍掌雙絕（掌門×同門合參）》</b></div>
+          <div class="syn-desc">掌門本門開山絕學與同門客座武學於靜室對拆參悟，入藏經閣後輩研讀速度 +100%！</div>
+        </div>
+        <button id="btn-synthesize-scripture" class="btn btn-action full-width">☯️ 靜室兩派合參著書入閣</button>
+      </div>
+    </div>
+
+    <!-- v0.8 煉藥洗髓・三大特殊環境・百鍛神兵坊 -->
+    <div class="v08-section card-box">
+      <h3>🍵 煉藥洗髓 · 特殊修練環境 · 百鍛神兵 (v0.8)</h3>
+
+      <!-- 煉藥房升級 ＆ 海大富偷喝留金 -->
+      <div class="alchemy-cauldron-block">
+        <div class="section-subhead">紫銅藥鼎熬藥 · 海大富（海公公）偷喝試藥留金</div>
+        <div class="alchemy-status-row">
+          <div class="alchemy-pill"><span>固本洗髓藥浴：</span><b id="bath-taken-count">1 次 (根骨+1·內息+25%)</b></div>
+          <div class="alchemy-pill"><span>十全大補靈湯：</span><b id="tonic-batches-count">1 份存量</b></div>
+        </div>
+        <div class="haidafu-log-box" id="haidafu-event-log">紫銅藥鼎正熬製【十全大補靈湯】香氣四溢</div>
+        <button id="btn-brew-supreme-tonic" class="btn btn-action primary-btn full-width">🍲 熬製【十全大補靈湯】引海大富偷喝試藥留金 (+100兩)</button>
+      </div>
+
+      <!-- 三大特殊修練環境 -->
+      <div class="special-env-block">
+        <div class="section-subhead">三大特殊修練環境（古墓寒玉床／瀑布台／玉蜂箱）</div>
+        <div class="env-cards-grid">
+          <div class="env-card">
+            <div class="env-icon">🛏️</div>
+            <div class="env-info">
+              <div class="env-title">古墓寒玉床 <small>後院雅室</small></div>
+              <div class="env-effect" id="env-jade-rate">睡眠高速恢復：+2.5 內息/s</div>
+            </div>
+          </div>
+          <div class="env-card">
+            <div class="env-icon">🌊</div>
+            <div class="env-info">
+              <div class="env-title">後山山洪瀑布台 <small>山澗激流</small></div>
+              <div class="env-effect">頂激流練重劍：破甲 +200%·揮舞巨浪</div>
+            </div>
+          </div>
+          <div class="env-card">
+            <div class="env-icon">🐝</div>
+            <div class="env-info">
+              <div class="env-title">百花玉蜂箱 <small>藥園百花叢</small></div>
+              <div class="env-effect" id="env-beehive-desc">老頑童周伯通偷看蜜蜂·捉迷藏</div>
+            </div>
+          </div>
+        </div>
+        <button id="btn-unlock-dual-wield" class="btn btn-action full-width">🐝 與周伯通捉迷藏傳授《左右互搏術》（雙手雙招齊發）</button>
+      </div>
+
+      <!-- 百鍛神兵坊 -->
+      <div class="divine-forge-block">
+        <div class="section-subhead">百鍛神兵坊 · 傳奇神兵寶甲</div>
+        <div class="equipped-weapon-banner">
+          <span>當前裝備：<b id="active-equipped-weapon" class="weapon-name">【五件金絲軟甲】</b></span>
+        </div>
+        <div class="weapons-grid">
+          <button class="btn btn-weapon" id="btn-forge-heavy_iron_sword" data-weapon="heavy_iron_sword">
+            <span class="w-icon">⚔️</span>
+            <div class="w-meta">
+              <b>玄鐵重劍</b>
+              <small>楊過專屬·重劍無鋒破甲巨浪</small>
+            </div>
+          </button>
+          <button class="btn btn-weapon active" id="btn-forge-soft_gold_armor" data-weapon="soft_gold_armor">
+            <span class="w-icon">🛡️</span>
+            <div class="w-meta">
+              <b>金絲軟甲</b>
+              <small>韋小寶專屬·物理減傷 60%</small>
+            </div>
+          </button>
+          <button class="btn btn-weapon" id="btn-forge-foreign_gun" data-weapon="foreign_gun">
+            <span class="w-icon">🔫</span>
+            <div class="w-meta">
+              <b>洋人火銃</b>
+              <small>連珠火繩槍·遠程放冷箭</small>
+            </div>
+          </button>
+          <button class="btn btn-weapon" id="btn-forge-copper_bell" data-weapon="copper_bell">
+            <span class="w-icon">🔔</span>
+            <div class="w-meta">
+              <b>古銅大鐘</b>
+              <small>包租婆大喇叭·獅吼全屏音浪</small>
+            </div>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </aside>

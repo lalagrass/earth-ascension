@@ -1689,3 +1689,415 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
   font-size: 11px;
   color: var(--ink2);
 }
+
+/* ==========================================================================
+   v0.7 藏經閣三軌武學・兩派合參 ＆ v0.8 藥浴海大富・老頑童神兵 綜合面板
+   ========================================================================== */
+.life-v0708-panel {
+  position: fixed;
+  right: 14px;
+  top: calc(var(--hud-h) + 16px);
+  width: 480px;
+  max-width: calc(100% - 28px);
+  max-height: calc(100vh - var(--hud-h) - var(--roster-h) - 40px);
+  overflow-y: auto;
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+  padding: 12px 14px;
+  z-index: 99;
+  font-size: 12px;
+}
+
+/* 軌道樣式 */
+.martial-track-block {
+  background: #fbf8f2;
+  border: 1px solid #d5c8b2;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.track-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.track-badge {
+  font-weight: 700;
+  font-size: 12px;
+  color: #2b1f14;
+}
+
+.tier-tag {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #e6dfd1;
+  color: #5c4730;
+  font-weight: 600;
+}
+
+.tier-tag.highlight {
+  background: #fff3e0;
+  color: #e65100;
+  border: 1px solid #ffcc80;
+  font-weight: 700;
+}
+
+.track-desc {
+  font-size: 11px;
+  color: #6d5b45;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+/* 軌道 A 進階節點 */
+.arts-progression-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f3ece0;
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
+.art-node {
+  flex: 1;
+  text-align: center;
+  padding: 4px 6px;
+  border-radius: 4px;
+  background: #fff;
+  border: 1px solid #dcd1be;
+}
+
+.art-node.done {
+  border-color: #81c784;
+  background: #f1f8e9;
+}
+
+.art-node.active {
+  border-color: #ba68c8;
+  background: #f3e5f5;
+  font-weight: 700;
+}
+
+.node-title {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: #3b2d1c;
+}
+
+.art-node small {
+  display: block;
+  font-size: 9px;
+  color: #6d5b45;
+}
+
+.node-arrow {
+  color: #8c7860;
+  font-size: 10px;
+  user-select: none;
+}
+
+/* 軌道 B 羅漢拳數值 */
+.luohan-stats-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.luohan-stats-row .stat-pill {
+  flex: 1;
+  background: #fff;
+  border: 1px solid #d5c8b2;
+  border-radius: 4px;
+  padding: 4px 6px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.luohan-stats-row .stat-pill small {
+  display: block;
+  font-size: 9px;
+  color: #8c7860;
+}
+
+.luohan-stats-row .stat-pill b {
+  color: #b71c1c;
+}
+
+/* 軌道 C 獨孤九劍五破圖譜 */
+.five-breaks-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.break-item {
+  background: #fff;
+  border: 1px solid #d5c8b2;
+  border-radius: 4px;
+  padding: 4px 2px;
+  text-align: center;
+}
+
+.break-name {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: #1a237e;
+  margin-bottom: 2px;
+}
+
+.bar-sm {
+  height: 4px;
+  background: #e0d7c3;
+  border-radius: 2px;
+  margin: 2px auto;
+  width: 90%;
+  overflow: hidden;
+}
+
+.bar-sm i {
+  display: block;
+  height: 100%;
+  background: #1e88e5;
+  transition: width 0.3s ease;
+}
+
+.break-item small {
+  font-size: 9px;
+  color: #5c4730;
+}
+
+.dugu-log-box {
+  background: #e8eaf6;
+  border: 1px solid #c5cae9;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #1a237e;
+  margin-bottom: 8px;
+}
+
+/* 藏經閣與合參 */
+.scripture-pavilion-block {
+  background: #fbf8f2;
+  border: 1px solid #d5c8b2;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.scripture-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 8px;
+}
+
+.scripture-tag {
+  background: #efebe9;
+  border: 1px solid #bcaaa4;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 10px;
+  color: #4e342e;
+  font-weight: 600;
+}
+
+.cross-lineage-synthesized-box {
+  background: #fff;
+  border: 1px solid #c8b99d;
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+}
+
+.syn-title {
+  font-size: 11px;
+  color: #2b1f14;
+  margin-bottom: 2px;
+}
+
+.syn-title b {
+  color: #6a1b9a;
+}
+
+.syn-desc {
+  font-size: 10px;
+  color: #795548;
+  line-height: 1.3;
+}
+
+/* v0.8 煉藥房海大富 */
+.alchemy-cauldron-block {
+  background: #fbf8f2;
+  border: 1px solid #d5c8b2;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.alchemy-status-row {
+  display: flex;
+  gap: 6px;
+  margin: 6px 0 8px;
+}
+
+.alchemy-pill {
+  flex: 1;
+  background: #fff;
+  border: 1px solid #d5c8b2;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 10px;
+  color: #3b2d1c;
+}
+
+.alchemy-pill b {
+  color: #2e7d32;
+  display: block;
+  font-size: 11px;
+}
+
+.haidafu-log-box {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #e65100;
+  margin-bottom: 8px;
+}
+
+/* 特殊修練環境 */
+.special-env-block {
+  background: #fbf8f2;
+  border: 1px solid #d5c8b2;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.env-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0 8px;
+}
+
+.env-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #dcd1be;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.env-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.env-info {
+  flex: 1;
+}
+
+.env-title {
+  font-weight: 700;
+  font-size: 11px;
+  color: #2b1f14;
+}
+
+.env-title small {
+  font-weight: 400;
+  color: #8c7860;
+  margin-left: 4px;
+}
+
+.env-effect {
+  font-size: 10px;
+  color: #2e7d32;
+}
+
+/* 百鍛神兵坊 */
+.divine-forge-block {
+  background: #fbf8f2;
+  border: 1px solid #d5c8b2;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.equipped-weapon-banner {
+  background: #efebe9;
+  border: 1px solid #d7ccc8;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: 6px 0 8px;
+  font-size: 11px;
+  color: #3e2723;
+}
+
+.weapon-name {
+  color: #c2185b;
+}
+
+.weapons-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.btn-weapon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #d5c8b2;
+  border-radius: 6px;
+  padding: 6px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-weapon:hover {
+  background: #fff8e1;
+  border-color: #ffa000;
+}
+
+.btn-weapon.active {
+  background: #fff3e0;
+  border-color: #ff9800;
+  box-shadow: 0 0 6px rgba(255, 152, 0, 0.4);
+}
+
+.w-icon {
+  font-size: 16px;
+}
+
+.w-meta b {
+  display: block;
+  font-size: 11px;
+  color: #2b1f14;
+}
+
+.w-meta small {
+  display: block;
+  font-size: 9px;
+  color: #8c7860;
+  line-height: 1.2;
+}
+
+.full-width {
+  width: 100%;
+}

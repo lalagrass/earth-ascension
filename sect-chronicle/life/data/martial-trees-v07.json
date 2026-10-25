@@ -1,0 +1,766 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "trackA": {
+    "universal": {
+      "tier2": {
+        "art.dielang_palm": {
+          "id": "art.dielang_palm",
+          "name": "疊浪排雲掌",
+          "tier": 2,
+          "category": "palm",
+          "governingStat": "strength",
+          "prerequisites": {
+            "requiredArts": {
+              "art.qingsong_palm": 3,
+              "art.panshi_breathing": 2
+            },
+            "minStats": {
+              "strength": 4
+            }
+          },
+          "silhouetteHint": "需《青松掌法》Lv3 ＋《磐石吐納》Lv2 ＋ 臂力 4，於外功場切磋或打樁頓悟",
+          "moves": [
+            {
+              "moveId": "move.dielang_surge",
+              "name": "疊浪雙推",
+              "windupSec": 0.35,
+              "buildupTicks": 21,
+              "activeSec": 0.20,
+              "actionTicks": 12,
+              "recoverySec": 0.25,
+              "recoverTicks": 15,
+              "qiCost": 15,
+              "knockback": 65,
+              "damage": 48,
+              "waves": 2,
+              "hitShape": {
+                "type": "cone",
+                "params": {
+                  "radius": 45,
+                  "angleDeg": 75
+                }
+              }
+            }
+          ]
+        },
+        "art.fengche_staff": {
+          "id": "art.fengche_staff",
+          "name": "風車輪轉棍",
+          "tier": 2,
+          "category": "staff",
+          "governingStat": "waistLeg",
+          "prerequisites": {
+            "requiredArts": {
+              "art.qimei_staff": 3,
+              "art.taxue_wuhen": 2
+            },
+            "minStats": {
+              "waistLeg": 4
+            }
+          },
+          "silhouetteHint": "需《齊眉棍法》Lv3 ＋《踏雪無痕》Lv2 ＋ 腰腿 4，於外功場切磋或打樁頓悟",
+          "moves": [
+            {
+              "moveId": "move.fengche_whirl",
+              "name": "輪轉風暴",
+              "windupSec": 0.40,
+              "buildupTicks": 24,
+              "activeSec": 0.30,
+              "actionTicks": 18,
+              "recoverySec": 0.20,
+              "recoverTicks": 12,
+              "qiCost": 18,
+              "knockback": 45,
+              "damage": 42,
+              "slowRate": 0.50,
+              "hitShape": {
+                "type": "circle",
+                "params": {
+                  "radius": 50
+                }
+              }
+            }
+          ]
+        },
+        "art.feiyan_sword": {
+          "id": "art.feiyan_sword",
+          "name": "飛燕穿林劍",
+          "tier": 2,
+          "category": "sword",
+          "governingStat": "agility",
+          "prerequisites": {
+            "requiredArts": {
+              "art.liuyun_sword": 3,
+              "art.taxue_wuhen": 3
+            },
+            "minStats": {
+              "agility": 4
+            }
+          },
+          "silhouetteHint": "需《流雲劍訣》Lv3 ＋《踏雪無痕》Lv3 ＋ 身法 4，於外功場切磋或打樁頓悟",
+          "moves": [
+            {
+              "moveId": "move.feiyan_dash_pierce",
+              "name": "燕穿連環",
+              "windupSec": 0.20,
+              "buildupTicks": 12,
+              "activeSec": 0.20,
+              "actionTicks": 12,
+              "recoverySec": 0.15,
+              "recoverTicks": 9,
+              "qiCost": 20,
+              "knockback": 30,
+              "damage": 55,
+              "penetrateCount": 3,
+              "hitShape": {
+                "type": "line",
+                "params": {
+                  "length": 90,
+                  "width": 20
+                }
+              }
+            }
+          ]
+        }
+      },
+      "tier3": {
+        "art.tiangang_fuhu_fist": {
+          "id": "art.tiangang_fuhu_fist",
+          "name": "天罡伏虎拳",
+          "tier": 3,
+          "category": "fist",
+          "governingStat": "strength",
+          "prerequisites": {
+            "requiredArts": {
+              "art.dielang_palm": 3
+            },
+            "minStats": {
+              "strength": 7,
+              "innerQi": 6
+            }
+          },
+          "silhouetteHint": "需二階掌法精通 ＋ 臂力 7 ＋ 內息 6，於清幽靜室閉關頓悟",
+          "moves": [
+            {
+              "moveId": "move.tiangang_golden_imprint",
+              "name": "金色拳印",
+              "windupSec": 0.30,
+              "buildupTicks": 18,
+              "activeSec": 0.25,
+              "actionTicks": 15,
+              "recoverySec": 0.25,
+              "recoverTicks": 15,
+              "qiCost": 30,
+              "knockback": 85,
+              "damage": 85,
+              "applyStun": true,
+              "pierceShield": true,
+              "hitShape": {
+                "type": "circle",
+                "params": {
+                  "radius": 60
+                }
+              }
+            }
+          ]
+        },
+        "art.bainiao_chaofeng_staff": {
+          "id": "art.bainiao_chaofeng_staff",
+          "name": "百鳥朝鳳棍",
+          "tier": 3,
+          "category": "staff",
+          "governingStat": "waistLeg",
+          "prerequisites": {
+            "requiredArts": {
+              "art.fengche_staff": 3
+            },
+            "minStats": {
+              "waistLeg": 6,
+              "innerQi": 6
+            }
+          },
+          "silhouetteHint": "需二階棍法精通 ＋ 腰腿 6 ＋ 內息 6，於清幽靜室閉關頓悟",
+          "moves": [
+            {
+              "moveId": "move.bainiao_spear_storm",
+              "name": "鳳翼封天",
+              "windupSec": 0.25,
+              "buildupTicks": 15,
+              "activeSec": 0.40,
+              "actionTicks": 24,
+              "recoverySec": 0.20,
+              "recoverTicks": 12,
+              "qiCost": 32,
+              "knockback": 60,
+              "damage": 80,
+              "chokeLock": true,
+              "hitShape": {
+                "type": "cone",
+                "params": {
+                  "radius": 70,
+                  "angleDeg": 120
+                }
+              }
+            }
+          ]
+        },
+        "art.taiqing_sword": {
+          "id": "art.taiqing_sword",
+          "name": "太清御劍術",
+          "tier": 3,
+          "category": "sword",
+          "governingStat": "agility",
+          "prerequisites": {
+            "requiredArts": {
+              "art.feiyan_sword": 3
+            },
+            "minStats": {
+              "agility": 7,
+              "innerQi": 6
+            }
+          },
+          "silhouetteHint": "需二階劍訣精通 ＋ 身法 7 ＋ 內息 6，於清幽靜室閉關頓悟",
+          "moves": [
+            {
+              "moveId": "move.taiqing_flying_swords",
+              "name": "三劍齊出",
+              "windupSec": 0.25,
+              "buildupTicks": 15,
+              "activeSec": 0.40,
+              "actionTicks": 24,
+              "recoverySec": 0.20,
+              "recoverTicks": 12,
+              "qiCost": 35,
+              "knockback": 50,
+              "damage": 95,
+              "flyingSwordsCount": 3,
+              "autoTargetRange": 150,
+              "hitShape": {
+                "type": "line",
+                "params": {
+                  "length": 120,
+                  "width": 22
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "sectOrigins": {
+      "origin.huashan_junzi": {
+        "tier2": {
+          "art.yangwu_sword": {
+            "id": "art.yangwu_sword",
+            "name": "養吾劍法",
+            "tier": 2,
+            "category": "sword",
+            "governingStat": "agility",
+            "prerequisites": {
+              "requiredArts": {
+                "art.huashan_basic_sword": 3,
+                "art.huashan_baoyuan_qi": 2
+              },
+              "minStats": {
+                "agility": 4
+              }
+            },
+            "silhouetteHint": "需《華山基礎劍》Lv3 ＋《華山抱元勁》Lv2 ＋ 身法 4，切磋頓悟",
+            "moves": [
+              {
+                "moveId": "move.yangwu_parry_counter",
+                "name": "浩然正氣反擊",
+                "windupSec": 0.20,
+                "buildupTicks": 12,
+                "actionTicks": 10,
+                "recoverTicks": 12,
+                "qiCost": 15,
+                "parryWindow": true,
+                "damage": 46
+              }
+            ]
+          },
+          "art.xiyi_sword": {
+            "id": "art.xiyi_sword",
+            "name": "希夷劍法",
+            "tier": 2,
+            "category": "sword",
+            "governingStat": "agility",
+            "prerequisites": {
+              "requiredArts": {
+                "art.huashan_basic_sword": 3
+              },
+              "minStats": {
+                "agility": 4
+              }
+            },
+            "silhouetteHint": "需《華山基礎劍》Lv3 ＋ 身法 4，切磋頓悟",
+            "moves": [
+              {
+                "moveId": "move.xiyi_silent_strike",
+                "name": "視之不見",
+                "windupSec": 0.22,
+                "buildupTicks": 13,
+                "actionTicks": 10,
+                "recoverTicks": 14,
+                "qiCost": 16,
+                "damage": 44
+              }
+            ]
+          }
+        },
+        "tier3": {
+          "art.taiyue_three_peaks": {
+            "id": "art.taiyue_three_peaks",
+            "name": "太岳三青峰",
+            "tier": 3,
+            "category": "sword",
+            "governingStat": "agility",
+            "prerequisites": {
+              "requiredArts": {
+                "art.yangwu_sword": 3
+              },
+              "minStats": {
+                "agility": 6,
+                "innerQi": 5
+              }
+            },
+            "silhouetteHint": "需《養吾劍法》Lv3 ＋ 身法 6 ＋ 內息 5，靜室閉關突破",
+            "moves": [
+              {
+                "moveId": "move.taiyue_triple_strike",
+                "name": "三峰疊翠",
+                "windupSec": 0.18,
+                "buildupTicks": 11,
+                "actionTicks": 18,
+                "recoverTicks": 15,
+                "qiCost": 30,
+                "damage": 92,
+                "comboHits": 3
+              }
+            ]
+          },
+          "art.zixia_divine_art": {
+            "id": "art.zixia_divine_art",
+            "name": "紫霞神功",
+            "tier": 3,
+            "category": "internal",
+            "governingStat": "innerQi",
+            "prerequisites": {
+              "requiredArts": {
+                "art.huashan_baoyuan_qi": 5
+              },
+              "minStats": {
+                "innerQi": 6,
+                "constitution": 4
+              }
+            },
+            "silhouetteHint": "需《華山抱元勁》Lv5 ＋ 內息 6 ＋ 根骨 4，靜室閉關滿三旬",
+            "passiveEffects": {
+              "qiRegenMultiplier": 2.0,
+              "purpleAuraShield": true,
+              "disarmOnParry": true
+            }
+          }
+        }
+      },
+      "origin.beixia_palm": {
+        "tier2": {
+          "art.kongming_fist": {
+            "id": "art.kongming_fist",
+            "name": "空明拳",
+            "tier": 2,
+            "category": "fist",
+            "governingStat": "strength",
+            "prerequisites": {
+              "requiredArts": {
+                "art.luohan_open_palm": 3
+              },
+              "minStats": {
+                "strength": 4
+              }
+            },
+            "silhouetteHint": "需《羅漢開山掌》Lv3 ＋ 臂力 4，切磋頓悟",
+            "moves": [
+              {
+                "moveId": "move.kongming_soft_deflect",
+                "name": "以虛化實",
+                "windupSec": 0.28,
+                "buildupTicks": 17,
+                "actionTicks": 12,
+                "recoverTicks": 16,
+                "qiCost": 14,
+                "damage": 45,
+                "softDeflect": true
+              }
+            ]
+          }
+        },
+        "tier3": {
+          "art.xianglong_eighteen_palms": {
+            "id": "art.xianglong_eighteen_palms",
+            "name": "降龍十八掌",
+            "tier": 3,
+            "category": "palm",
+            "governingStat": "strength",
+            "prerequisites": {
+              "requiredArts": {
+                "art.kongming_fist": 3
+              },
+              "minStats": {
+                "strength": 7,
+                "innerQi": 6
+              }
+            },
+            "silhouetteHint": "需《空明拳》Lv3 ＋ 臂力 7 ＋ 內息 6，靜室閉關頓悟",
+            "moves": [
+              {
+                "moveId": "move.xianglong_kanglong",
+                "name": "亢龍有悔",
+                "windupSec": 0.25,
+                "buildupTicks": 15,
+                "actionTicks": 18,
+                "recoverTicks": 18,
+                "qiCost": 35,
+                "damage": 110,
+                "goldenDragonRoar": true,
+                "knockback": 90,
+                "hitShape": {
+                  "type": "cone",
+                  "params": {
+                    "radius": 65,
+                    "angleDeg": 90
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "origin.luding_qimen": {
+        "tier2": {
+          "art.hansha_sheying": {
+            "id": "art.hansha_sheying",
+            "name": "含沙射影",
+            "tier": 2,
+            "category": "special",
+            "governingStat": "agility",
+            "prerequisites": {
+              "requiredArts": {
+                "art.yangzhou_lime_dagger": 3
+              },
+              "minStats": {
+                "agility": 4
+              }
+            },
+            "silhouetteHint": "需《揚州撒灰手》Lv3 ＋ 身法 4，切磋或自創頓悟",
+            "moves": [
+              {
+                "moveId": "move.hansha_needle_burst",
+                "name": "盒中暗箭",
+                "windupSec": 0.15,
+                "buildupTicks": 9,
+                "actionTicks": 8,
+                "recoverTicks": 10,
+                "qiCost": 10,
+                "damage": 40,
+                "poisonTicks": 60
+              }
+            ]
+          },
+          "art.dragon_claw_snatch": {
+            "id": "art.dragon_claw_snatch",
+            "name": "抓奶龍爪手",
+            "tier": 2,
+            "category": "fist",
+            "governingStat": "agility",
+            "prerequisites": {
+              "requiredArts": {
+                "art.yangzhou_lime_dagger": 2
+              },
+              "minStats": {
+                "agility": 4
+              }
+            },
+            "silhouetteHint": "需《揚州撒灰手》Lv2 ＋ 偷師海大富",
+            "moves": [
+              {
+                "moveId": "move.dragon_claw_steal",
+                "name": "偷心龍爪",
+                "windupSec": 0.16,
+                "buildupTicks": 10,
+                "actionTicks": 10,
+                "recoverTicks": 12,
+                "qiCost": 12,
+                "damage": 42,
+                "disorientTarget": true
+              }
+            ]
+          }
+        },
+        "tier3": {
+          "art.shenxing_loach_step": {
+            "id": "art.shenxing_loach_step",
+            "name": "神行泥鰍功",
+            "tier": 3,
+            "category": "special",
+            "governingStat": "agility",
+            "prerequisites": {
+              "requiredArts": {
+                "art.shenxing_basic_step": 3
+              },
+              "minStats": {
+                "agility": 7
+              }
+            },
+            "silhouetteHint": "需《神行百變基礎步》Lv3 ＋ 身法 7，靜室閉關頓悟",
+            "passiveEffects": {
+              "dodgeBonus": 0.70,
+              "oilSlipDisengage": true,
+              "stealthBypass": true
+            }
+          }
+        }
+      },
+      "origin.xiaoyao_sword": {
+        "tier2": {
+          "art.wuyue_counter_sword": {
+            "id": "art.wuyue_counter_sword",
+            "name": "五嶽破招劍",
+            "tier": 2,
+            "category": "sword",
+            "governingStat": "agility",
+            "prerequisites": {
+              "requiredArts": {
+                "art.wuyue_fast_sword": 3
+              },
+              "minStats": {
+                "agility": 4
+              }
+            },
+            "silhouetteHint": "需《五嶽快劍》Lv3 ＋ 身法 4，與同門切磋拆招頓悟",
+            "moves": [
+              {
+                "moveId": "move.wuyue_counter",
+                "name": "料敵機先",
+                "windupSec": 0.15,
+                "buildupTicks": 9,
+                "actionTicks": 10,
+                "recoverTicks": 12,
+                "qiCost": 18,
+                "damage": 50
+              }
+            ]
+          }
+        },
+        "tier3": {
+          "art.dugu_nine_swords": {
+            "id": "art.dugu_nine_swords",
+            "name": "獨孤九劍",
+            "tier": 3,
+            "category": "sword",
+            "governingStat": "agility",
+            "prerequisites": {
+              "requiredArts": {
+                "art.wuyue_counter_sword": 3
+              },
+              "minStats": {
+                "agility": 7,
+                "comprehension": 8
+              }
+            },
+            "silhouetteHint": "需《五嶽破招劍》Lv3 ＋ 悟性 8 ＋ 身法 7，靜室閉關悟得無招勝有招",
+            "moves": [
+              {
+                "moveId": "move.dugu_general_stance",
+                "name": "總決式",
+                "windupSec": 0.0,
+                "buildupTicks": 0,
+                "actionTicks": 12,
+                "recoverTicks": 12,
+                "qiCost": 20,
+                "damage": 95,
+                "flawInterrupt": true
+              }
+            ]
+          }
+        }
+      },
+      "origin.wanfo_palm": {
+        "tier2": {
+          "art.iron_bone_body": {
+            "id": "art.iron_bone_body",
+            "name": "銅皮鐵骨抗擊功",
+            "tier": 2,
+            "category": "internal",
+            "governingStat": "constitution",
+            "prerequisites": {
+              "requiredArts": {
+                "art.booklet_rulai_palm": 2
+              },
+              "minStats": {
+                "constitution": 4
+              }
+            },
+            "silhouetteHint": "需挨打磨練 ＋ 根骨 4，切磋或守山頓悟",
+            "passiveEffects": {
+              "physicalResistance": 0.35,
+              "unflinching": true
+            }
+          },
+          "art.tan_leg_bagua_staff": {
+            "id": "art.tan_leg_bagua_staff",
+            "name": "十二路譚腿八卦棍",
+            "tier": 2,
+            "category": "staff",
+            "governingStat": "waistLeg",
+            "prerequisites": {
+              "minStats": {
+                "waistLeg": 4
+              }
+            },
+            "silhouetteHint": "需城寨雜役隱士指點 ＋ 腰腿 4",
+            "moves": [
+              {
+                "moveId": "move.tan_leg_flurry",
+                "name": "十二路連環掃",
+                "windupSec": 0.25,
+                "buildupTicks": 15,
+                "actionTicks": 16,
+                "recoverTicks": 15,
+                "qiCost": 20,
+                "damage": 55,
+                "knockback": 50
+              }
+            ]
+          }
+        },
+        "tier3": {
+          "art.mummy_chrysalis_breakthrough": {
+            "id": "art.mummy_chrysalis_breakthrough",
+            "name": "白色木乃伊破繭",
+            "tier": 3,
+            "category": "special",
+            "governingStat": "constitution",
+            "prerequisites": {
+              "requiredArts": {
+                "art.iron_bone_body": 3
+              },
+              "minStats": {
+                "constitution": 7
+              }
+            },
+            "silhouetteHint": "需重傷被包為木乃伊繭，藥房破繭打通任督二脈",
+            "passiveEffects": {
+              "openMeridians": true,
+              "rulaiPalmUnlocked": true
+            }
+          }
+        }
+      },
+      "origin.zhulong_compound": {
+        "tier2": {
+          "art.taiji_cloud_hands": {
+            "id": "art.taiji_cloud_hands",
+            "name": "太極雲手",
+            "tier": 2,
+            "category": "fist",
+            "governingStat": "strength",
+            "prerequisites": {
+              "minStats": {
+                "strength": 4,
+                "composure": 4
+              }
+            },
+            "silhouetteHint": "需包租公合傳 ＋ 臂力 4 ＋ 定力 4",
+            "moves": [
+              {
+                "moveId": "move.taiji_circle_deflect",
+                "name": "畫圓卸力",
+                "windupSec": 0.25,
+                "buildupTicks": 15,
+                "actionTicks": 12,
+                "recoverTicks": 15,
+                "qiCost": 15,
+                "damage": 46,
+                "collisionRedirect": true
+              }
+            ]
+          }
+        },
+        "tier3": {
+          "art.fomen_lion_roar": {
+            "id": "art.fomen_lion_roar",
+            "name": "佛門獅子吼",
+            "tier": 3,
+            "category": "special",
+            "governingStat": "innerQi",
+            "prerequisites": {
+              "requiredArts": {
+                "art.hedong_lion_roar": 3
+              },
+              "minStats": {
+                "innerQi": 7,
+                "constitution": 6
+              }
+            },
+            "silhouetteHint": "需《河東獅吼初階》Lv3 ＋ 內息 7 ＋ 根骨 6，清幽靜室閉關頓悟",
+            "moves": [
+              {
+                "moveId": "move.lion_roar_shockwave",
+                "name": "全屏天音",
+                "windupSec": 0.20,
+                "buildupTicks": 12,
+                "actionTicks": 24,
+                "recoverTicks": 20,
+                "qiCost": 35,
+                "damage": 90,
+                "knockback": 95,
+                "soundwaveStun": true,
+                "hitShape": {
+                  "type": "circle",
+                  "params": {
+                    "radius": 150
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "trackB": {
+    "art.luohan_fist": {
+      "id": "art.luohan_fist",
+      "name": "基礎羅漢拳",
+      "category": "fist",
+      "maxNormalLevel": 5,
+      "maxBreakthroughLevel": 10,
+      "maxComprehensionThreshold": 3,
+      "requiredPerks": ["抱樸守拙", "simple_heart", "simple_minded", "篤實守靜", "艮為山", "坤為地"],
+      "levels": {
+        "1": { "windupSec": 0.80, "buildupTicks": 48, "qiCost": 0, "knockback": 15, "damage": 12, "uninterruptible": false },
+        "3": { "windupSec": 0.60, "buildupTicks": 36, "qiCost": 0, "knockback": 20, "damage": 16, "uninterruptible": false },
+        "5": { "windupSec": 0.40, "buildupTicks": 24, "qiCost": 0, "knockback": 25, "damage": 20, "uninterruptible": false },
+        "6": { "windupSec": 0.35, "buildupTicks": 21, "qiCost": 0, "knockback": 35, "damage": 30, "uninterruptible": false },
+        "8": { "windupSec": 0.25, "buildupTicks": 15, "qiCost": 0, "knockback": 55, "damage": 50, "uninterruptible": true, "superArmor": true, "goldenAuraWave": true },
+        "10": { "windupSec": 0.15, "buildupTicks": 9, "qiCost": 0, "knockback": 90, "damage": 100, "uninterruptible": true, "superArmor": true, "shattersShield": true, "pierceShield": true, "flawless": true }
+      }
+    }
+  },
+  "trackC": {
+    "art.dugu_nine_swords": {
+      "id": "art.dugu_nine_swords",
+      "name": "獨孤九劍",
+      "dummyExpMultiplier": 0.0,
+      "flawReactionWindowSec": 0.20,
+      "instantWindupSec": 0.0,
+      "duguStartupTicks": 0,
+      "interceptTick": 12,
+      "interruptKnockback": 40,
+      "breakTypes": ["sword", "palm", "polearm", "arrow", "qi"]
+    }
+  }
+}

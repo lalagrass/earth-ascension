@@ -569,6 +569,52 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     },
   };
 
+  // v0.7 Quiet Room, 3-Track Martial Evolution, Dugu 5-Counters, Luohan Lv10, Cross-Lineage Synthesis, Scripture Pavilion
+  let quietRoomBuilt = true;
+  let scripturesAuthored = ['《青松疊浪手札》', '《羅漢返璞拳譜》'];
+  let trackASectEvolution = {
+    tier2Art: '《養吾劍法／空明拳》',
+    tier3Art: '《紫霞神功／降龍十八掌》',
+    unlockedTier: 2,
+  };
+  let trackBLuohan = {
+    level: 8,
+    maxLevel: 10,
+    stageLabel: 'Lv8 登峰造極 (霸體拳罡)',
+    startupSec: 0.22,
+    flawless: false,
+  };
+  let trackCDugu = {
+    unlocked: true,
+    counters: { sword: 80, palm: 65, arrow: 50, whip: 40, qi: 60 },
+    lastInterruptLog: '後發先至 0s 截擊野豬王起手破綻！',
+    grandmasterResonance: false,
+  };
+  let crossLineageSynthesis = {
+    synthesizedArtName: '《剛柔劍掌雙絕（掌門×同門合參）》',
+    progressPct: 100,
+    authoredInPavilion: true,
+  };
+
+  // v0.8 Alchemy Cauldron, Medicinal Bath, Hai Dafu, 3 Special Environments & Divine Weapons Forge
+  let alchemy = {
+    medicinalBathsTaken: 1,
+    supremeTonicCount: 1,
+    haiDafuVisited: false,
+    haiDafuGoldLeft: 0,
+    lastEvent: '紫銅藥鼎正熬製【十全大補靈湯】香氣四溢',
+  };
+  let specialEnvironments = {
+    jadeBedQiRate: '+2.5 內息/s (古墓寒玉床)',
+    waterfallActive: true,
+    beehiveZhouBotong: '老頑童周伯通偷看玉蜂・可傳授《左右互搏術》',
+    dualWieldUnlocked: false,
+  };
+  let divineForge = {
+    craftedWeapons: ['【七十斤玄鐵重劍】', '【五件金絲軟甲】', '【洋人連珠火銃】', '【古銅大鐘擴音罩】'],
+    activeEquipped: '【五件金絲軟甲】',
+  };
+
   function waterGardenPlot(plotId) {
     let target = null;
     if (plotId) {
@@ -866,6 +912,161 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     };
   }
 
+  // v0.7 & v0.8 Interactive Actions
+  function breakthroughLuohanLv10() {
+    trackBLuohan.level = 10;
+    trackBLuohan.stageLabel = 'Lv10 返璞歸真・一拳破萬法 (0.15s 零前搖・渾然無破綻)';
+    trackBLuohan.startupSec = 0.15;
+    trackBLuohan.flawless = true;
+
+    // 觸發與獨孤九劍傳人（令狐沖）之雙宗師切磋共鳴
+    trackCDugu.grandmasterResonance = true;
+    trackCDugu.lastInterruptLog = '雙宗師切磋共鳴！大師兄直拳渾然天成 (0.15s)，九劍尋不到任何破綻！';
+
+    const scriptureName = '《羅漢返璞拳意真訣》';
+    if (!scripturesAuthored.includes(scriptureName)) {
+      scripturesAuthored.push(scriptureName);
+    }
+
+    s.lastSpeechBubble = {
+      text: '🪨 阿牛打破常規上限！《基礎羅漢拳》突破 Lv10 返璞歸真（0.15s 零前搖・一拳破萬法）！與令狐沖切磋觸發【雙宗師共鳴】！',
+    };
+    syncLifeState();
+    return {
+      ok: true,
+      trackBLuohan: { ...trackBLuohan },
+      trackCDugu: { ...trackCDugu },
+      grandmasterResonance: true,
+      scripturesAuthored: [...scripturesAuthored],
+      speechBubble: s.lastSpeechBubble.text,
+    };
+  }
+
+  function triggerDuguFlawInterrupt() {
+    trackCDugu.counters.sword = Math.min(100, trackCDugu.counters.sword + 5);
+    trackCDugu.counters.palm = Math.min(100, trackCDugu.counters.palm + 5);
+    trackCDugu.counters.arrow = Math.min(100, trackCDugu.counters.arrow + 5);
+    trackCDugu.counters.whip = Math.min(100, trackCDugu.counters.whip + 5);
+    trackCDugu.counters.qi = Math.min(100, trackCDugu.counters.qi + 5);
+    trackCDugu.lastInterruptLog = '🎯 後發先至！0s 免除自身前搖，於 0.2s 搶先刺中破綻，強制打斷敵招！五破圖譜修為提升';
+
+    const manualName = '《獨孤九劍・見招拆招圖譜》';
+    if (!scripturesAuthored.includes(manualName)) {
+      scripturesAuthored.push(manualName);
+    }
+
+    s.lastSpeechBubble = {
+      text: '🗡️ 【後發先至】九劍傳人捕捉起手破綻！0s 免除前搖瞬發疾刺打斷蓄力，【五破圖譜】修為精進，著書入藏經閣！',
+    };
+    syncLifeState();
+    return {
+      ok: true,
+      trackCDugu: { ...trackCDugu, counters: { ...trackCDugu.counters } },
+      scripturesAuthored: [...scripturesAuthored],
+      speechBubble: s.lastSpeechBubble.text,
+    };
+  }
+
+  function synthesizeDualLineageScripture() {
+    const founderName = sectOrigin?.founderArtName?.replace(/[《》]/g, '') || '本門開山絕學';
+    const fellowName = yardDualLineageLoadout?.fellowGuestArt?.replace(/[《》]/g, '') || '同門客座絕學';
+    const comboName = `《${founderName} × ${fellowName}・雙脈合參秘笈》`;
+
+    crossLineageSynthesis.synthesizedArtName = comboName;
+    crossLineageSynthesis.progressPct = 100;
+    crossLineageSynthesis.authoredInPavilion = true;
+
+    if (!scripturesAuthored.includes(comboName)) {
+      scripturesAuthored.push(comboName);
+    }
+
+    s.lastSpeechBubble = {
+      text: `☯️ 掌門與同門知己入清幽靜室閉關合參！創出【${comboName}】，手札入藏經閣，後輩研讀速度 +100%！`,
+    };
+    syncLifeState();
+    return {
+      ok: true,
+      crossLineageSynthesis: { ...crossLineageSynthesis },
+      scripturesAuthored: [...scripturesAuthored],
+      speechBubble: s.lastSpeechBubble.text,
+    };
+  }
+
+  function brewSupremeTonicForHaiDafu() {
+    if (alchemy.supremeTonicCount <= 0) {
+      alchemy.supremeTonicCount = 1;
+    }
+    alchemy.haiDafuVisited = true;
+    alchemy.supremeTonicCount = Math.max(0, alchemy.supremeTonicCount - 1);
+    alchemy.haiDafuGoldLeft += 100;
+    lifeInventory.gold = (lifeInventory.gold || 0) + 100;
+    alchemy.lastEvent = '周星馳版【海大富】邊咳邊偷喝十全大補湯（「咳咳……小桂子，把藥端來……」），留下一袋黃金 +100 兩！';
+
+    s.lastSpeechBubble = {
+      text: '🍲 紫銅藥鼎大補湯香氣四溢！海大富公公裝瞎摸入藥房偷喝試藥（「咳咳……」），湯扣 1 份，山門庫存黃金 +100 兩！',
+    };
+    syncLifeState();
+    return {
+      ok: true,
+      alchemy: { ...alchemy },
+      goldAdded: 100,
+      totalGold: lifeInventory.gold,
+      speechBubble: s.lastSpeechBubble.text,
+    };
+  }
+
+  function unlockZhouBotongDualWield() {
+    specialEnvironments.dualWieldUnlocked = true;
+    specialEnvironments.beehiveZhouBotong = '老頑童周伯通捉迷藏大喜！傳授獨門《左右互搏術》（雙手雙招齊發）！';
+
+    s.lastSpeechBubble = {
+      text: '🐝 藥園玉蜂箱引來老頑童周伯通！捉迷藏好感達標，周伯通手舞足蹈傳授神技【《左右互搏術》】！雙手可同時施展雙招！',
+    };
+    syncLifeState();
+    return {
+      ok: true,
+      specialEnvironments: { ...specialEnvironments },
+      dualWieldUnlocked: true,
+      speechBubble: s.lastSpeechBubble.text,
+    };
+  }
+
+  const weaponMap = {
+    heavy_iron_sword: '【七十斤玄鐵重劍】',
+    soft_gold_armor: '【五件金絲軟甲】',
+    foreign_gun: '【洋人連珠火銃】',
+    copper_bell: '【古銅大鐘擴音罩】',
+  };
+
+  function forgeDivineWeapon(weaponKey) {
+    let targetWeapon = weaponMap[weaponKey] || weaponKey;
+    if (!targetWeapon) {
+      const currentIdx = divineForge.craftedWeapons.indexOf(divineForge.activeEquipped);
+      targetWeapon = divineForge.craftedWeapons[(currentIdx + 1) % divineForge.craftedWeapons.length];
+    }
+    if (!divineForge.craftedWeapons.includes(targetWeapon)) {
+      divineForge.craftedWeapons.push(targetWeapon);
+    }
+    divineForge.activeEquipped = targetWeapon;
+
+    let perkDesc = '神兵出鞘！';
+    if (targetWeapon.includes('重劍')) perkDesc = '（破甲 +200%，揮擊巨浪）';
+    else if (targetWeapon.includes('金絲')) perkDesc = '（物理傷害減免 60%）';
+    else if (targetWeapon.includes('火銃')) perkDesc = '（洋人連發火器放冷箭）';
+    else if (targetWeapon.includes('大鐘')) perkDesc = '（包租婆古鐘獅吼音浪擴音）';
+
+    s.lastSpeechBubble = {
+      text: `⚒️ 百鍛爐火星四濺！巧匠打造並裝備了${targetWeapon}！${perkDesc}`,
+    };
+    syncLifeState();
+    return {
+      ok: true,
+      divineForge: { ...divineForge, craftedWeapons: [...divineForge.craftedWeapons] },
+      activeEquipped: targetWeapon,
+      speechBubble: s.lastSpeechBubble.text,
+    };
+  }
+
   function syncLifeState() {
     if (s.vat < 3) {
       choreQuota.landladyRoarActive = true;
@@ -881,6 +1082,30 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       telemetryComparison: patrolV06.telemetryComparison,
       defenseSlots: patrolV06.defenseSlots,
       visualShowcases: patrolV06.visualShowcases,
+      // v0.7
+      v07: {
+        quietRoomBuilt,
+        scripturesAuthored: [...scripturesAuthored],
+        trackASectEvolution: { ...trackASectEvolution },
+        trackBLuohan: { ...trackBLuohan },
+        trackCDugu: { ...trackCDugu, counters: { ...trackCDugu.counters } },
+        crossLineageSynthesis: { ...crossLineageSynthesis },
+      },
+      quietRoomBuilt,
+      scripturesAuthored: [...scripturesAuthored],
+      trackASectEvolution: { ...trackASectEvolution },
+      trackBLuohan: { ...trackBLuohan },
+      trackCDugu: { ...trackCDugu, counters: { ...trackCDugu.counters } },
+      crossLineageSynthesis: { ...crossLineageSynthesis },
+      // v0.8
+      v08: {
+        alchemy: { ...alchemy },
+        specialEnvironments: { ...specialEnvironments },
+        divineForge: { ...divineForge, craftedWeapons: [...divineForge.craftedWeapons] },
+      },
+      alchemy: { ...alchemy },
+      specialEnvironments: { ...specialEnvironments },
+      divineForge: { ...divineForge, craftedWeapons: [...divineForge.craftedWeapons] },
     };
   }
   syncLifeState();
@@ -2077,6 +2302,24 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       if (cmd.type === 'CYCLE_DEFENSE_STANCE') {
         return cycleDefenseStance(cmd.slotId);
       }
+      if (cmd.type === 'BREAKTHROUGH_LUOHAN_LV10') {
+        return breakthroughLuohanLv10();
+      }
+      if (cmd.type === 'TRIGGER_DUGU_INTERRUPT') {
+        return triggerDuguFlawInterrupt();
+      }
+      if (cmd.type === 'SYNTHESIZE_DUAL_LINEAGE') {
+        return synthesizeDualLineageScripture();
+      }
+      if (cmd.type === 'BREW_SUPREME_TONIC') {
+        return brewSupremeTonicForHaiDafu();
+      }
+      if (cmd.type === 'UNLOCK_DUAL_WIELD') {
+        return unlockZhouBotongDualWield();
+      }
+      if (cmd.type === 'FORGE_DIVINE_WEAPON') {
+        return forgeDivineWeapon(cmd.weaponKey || cmd.weapon);
+      }
     }
 
     if (cmd === 'runOutreach' || cmd === 'outreach') return runOutreachSession();
@@ -2084,6 +2327,12 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (cmd === 'awakenMasters' || cmd === 'awaken') return awakenHiddenMasters();
     if (cmd === 'dispatchPatrol') return dispatchSegmentedPatrol();
     if (cmd === 'cycleDefenseStance') return cycleDefenseStance();
+    if (cmd === 'breakthroughLuohanLv10' || cmd === 'luohanLv10') return breakthroughLuohanLv10();
+    if (cmd === 'triggerDuguInterrupt' || cmd === 'duguInterrupt') return triggerDuguFlawInterrupt();
+    if (cmd === 'synthesizeDualLineage' || cmd === 'synthesizeScripture') return synthesizeDualLineageScripture();
+    if (cmd === 'brewSupremeTonic' || cmd === 'haidafuTonic') return brewSupremeTonicForHaiDafu();
+    if (cmd === 'unlockDualWield' || cmd === 'zhouBotong') return unlockZhouBotongDualWield();
+    if (cmd === 'forgeDivineWeapon') return forgeDivineWeapon();
 
     const p = s.people[id];
     if (!p) return { ok: false, reason: '沒有這個工作者' };
@@ -2683,6 +2932,30 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         telemetryComparison: { ...patrolV06.telemetryComparison },
         defenseSlots: patrolV06.defenseSlots.map((s) => ({ ...s })),
         visualShowcases: { ...patrolV06.visualShowcases },
+        // v0.7 Quiet Room, Martial Evolution, Luohan Lv10, Dugu Nine Swords, Cross-Lineage Scripture
+        v07: {
+          quietRoomBuilt,
+          scripturesAuthored: [...scripturesAuthored],
+          trackASectEvolution: { ...trackASectEvolution },
+          trackBLuohan: { ...trackBLuohan },
+          trackCDugu: { ...trackCDugu, counters: { ...trackCDugu.counters } },
+          crossLineageSynthesis: { ...crossLineageSynthesis },
+        },
+        quietRoomBuilt,
+        scripturesAuthored: [...scripturesAuthored],
+        trackASectEvolution: { ...trackASectEvolution },
+        trackBLuohan: { ...trackBLuohan },
+        trackCDugu: { ...trackCDugu, counters: { ...trackCDugu.counters } },
+        crossLineageSynthesis: { ...crossLineageSynthesis },
+        // v0.8 Alchemy, Medicinal Bath, Hai Dafu, Special Cultivation Beds, Divine Forge
+        v08: {
+          alchemy: { ...alchemy },
+          specialEnvironments: { ...specialEnvironments },
+          divineForge: { ...divineForge, craftedWeapons: [...divineForge.craftedWeapons] },
+        },
+        alchemy: { ...alchemy },
+        specialEnvironments: { ...specialEnvironments },
+        divineForge: { ...divineForge, craftedWeapons: [...divineForge.craftedWeapons] },
       },
     };
   }
@@ -2736,6 +3009,39 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       get patrolV06() { return patrolV06; },
       get defenseSlots() { return patrolV06.defenseSlots; },
       get visualShowcases() { return patrolV06.visualShowcases; },
+      // v0.7 & v0.8 Getters & Methods
+      get v07() {
+        return {
+          quietRoomBuilt,
+          scripturesAuthored: [...scripturesAuthored],
+          trackASectEvolution: { ...trackASectEvolution },
+          trackBLuohan: { ...trackBLuohan },
+          trackCDugu: { ...trackCDugu, counters: { ...trackCDugu.counters } },
+          crossLineageSynthesis: { ...crossLineageSynthesis },
+        };
+      },
+      get v08() {
+        return {
+          alchemy: { ...alchemy },
+          specialEnvironments: { ...specialEnvironments },
+          divineForge: { ...divineForge, craftedWeapons: [...divineForge.craftedWeapons] },
+        };
+      },
+      get quietRoomBuilt() { return quietRoomBuilt; },
+      get scripturesAuthored() { return scripturesAuthored; },
+      get trackASectEvolution() { return trackASectEvolution; },
+      get trackBLuohan() { return trackBLuohan; },
+      get trackCDugu() { return trackCDugu; },
+      get crossLineageSynthesis() { return crossLineageSynthesis; },
+      get alchemy() { return alchemy; },
+      get specialEnvironments() { return specialEnvironments; },
+      get divineForge() { return divineForge; },
+      breakthroughLuohanLv10: () => breakthroughLuohanLv10(),
+      triggerDuguFlawInterrupt: () => triggerDuguFlawInterrupt(),
+      synthesizeDualLineageScripture: () => synthesizeDualLineageScripture(),
+      brewSupremeTonicForHaiDafu: () => brewSupremeTonicForHaiDafu(),
+      unlockZhouBotongDualWield: () => unlockZhouBotongDualWield(),
+      forgeDivineWeapon: (weaponKey) => forgeDivineWeapon(weaponKey),
       setAutopilot: (val) => {
         autopilotActive = !!val;
         if (masterDisciple?.persona?.autopilot) masterDisciple.persona.autopilot.enabled = autopilotActive;
