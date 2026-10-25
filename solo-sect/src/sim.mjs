@@ -1,6 +1,6 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove } from './arts.mjs';
-import { ART_GAIN, BREAK } from './data.mjs';
+import { ART_GAIN, BREAK, EXP } from './data.mjs';
 import { RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE } from './data.mjs';
 import { clone, dist, clamp, relKey, affKey, log } from './util.mjs';
 import { think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits } from './mind.mjs';
@@ -9,7 +9,7 @@ import { seasonOf } from './season.mjs';
 import { pipeline, mulText } from './mul.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf } from './expedition.mjs';
 import { PACE, TRIAL_BOAR } from './data.mjs';
-import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus } from './hero.mjs';
+import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus, awaken, econCoin, cookBonus } from './hero.mjs';
 export { canExpedition, codexRows, reportText, segAt, ROUTE_END, dpsOf };
 const H = { rand: (s) => rand(s), cancelTask: (s, d, w) => cancelTask(s, d, w), grow: (s, d, k, a) => grow(s, d, k, a), think: (s, d, id) => think(s, d, id), gate: NODES.gate };
 export const startExpedition = (s, ids, opt = {}) => startExp0(s, ids, opt, H);
@@ -117,6 +117,7 @@ export function personalityFrom(p, answers = defaultAnswers(p)) {
 export function recruit(s, answers) {
   const c = canRecruit(s); if (!c.ok) return c;
   const { personality, known } = personalityFrom(c.next, answers);
+  if (rand(s) < 0.3) { const x = rand(s) < 0.5 ? 'lazy' : 'stubborn'; if (!personality.includes(x)) personality.push(x); } // v0.97 一般弟子也可能懶散／較真（暗）
   s.res.food -= RECRUIT.food; book(s, 'out', 'food', RECRUIT.food); const d = mkDisciple(c.next, 1, 'gate', personality, known); d.together = 0; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); s.ds.push(d);
   for (const o of s.ds) if (o !== d) initPair(s, o, d, 5);
   log(s, `${d.name}慕名從村路上山，拜入門下。`); return { ok: true, d };
@@ -313,7 +314,7 @@ function doTask(s, d, dt) {
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
     const dur = t.act === 'cook' ? facStage(s, t.fac).cookDur : t.act === 'learn' ? facStage(s, 'hall').learnDur : A.dur;
     if (t.timer >= dur) {
-      if (t.act === 'cook') { const st = facStage(s, t.fac); s.res.veg -= 2; s.vegRes -= 2; t.phase = 'done'; s.res.food += st.cookYield; book(s, 'in', 'food', st.cookYield); log(s, `${d.name}在${st.name}煮好 ${st.cookYield} 份飯`); grow(s, d, 'cooking', 6); finish(s, d); return; }
+      if (t.act === 'cook') { const st = facStage(s, t.fac); s.res.veg -= 2; s.vegRes -= 2; t.phase = 'done'; const yld = st.cookYield + cookBonus(d); s.res.food += yld; book(s, 'in', 'food', yld); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); grow(s, d, 'cooking', 6); finish(s, d); return; }
       if (t.act === 'farm') { const p = s.plots[t.plot]; p.busy = null; grow(s, d, 'farming', 6); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; book(s, 'out', 'food', 1); }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } }
@@ -481,7 +482,7 @@ function dismissLabor(s, d, why) {
 }
 export function payday(s) {
   s.ledgerPrev = s.ledger; s.ledger = { day: s.day, in: {}, out: {} };
-  const inc = ECON.coinBase + Math.floor((s.rep || 0) / ECON.coinPerRep); s.res.coin += inc; book(s, 'in', 'coin', inc);
+  const inc = ECON.coinBase + Math.floor((s.rep || 0) / ECON.coinPerRep) + econCoin(s); s.res.coin += inc; book(s, 'in', 'coin', inc);
   for (const d of laborers(s)) {
     if (s.res.coin >= ECON.wage) { s.res.coin -= ECON.wage; book(s, 'out', 'coin', ECON.wage); d.unpaid = 0; think(s, d, 'paid'); }
     else { d.unpaid = (d.unpaid || 0) + 1; think(s, d, 'unpaid'); log(s, `付不出${d.name}的工錢（欠 ${d.unpaid} 日）`); if (d.unpaid >= ECON.leaveAfter) dismissLabor(s, d, '工錢一直沒著落'); }
@@ -518,7 +519,7 @@ export function tick(s, dt = 0.25) {
   ecoStep(s, dt);
   expStep(s, dt, H);
   paceStep(s);
-  if (s.hero) { heroStep(s); heroAuto(s); for (const d of s.ds) d.pairMul = pairBonus(s, d, aff); }
+  if (s.hero) { const h = byId(s, 'hero'); if (h && !h.away && h.hp <= EXP.hurtHeavy) awaken(s, h); heroStep(s); heroAuto(s); for (const d of s.ds) d.pairMul = pairBonus(s, d, aff); }
   for (const f of s.fx) f.ttl -= dt; s.fx = s.fx.filter((f) => f.ttl > 0);
 }
 

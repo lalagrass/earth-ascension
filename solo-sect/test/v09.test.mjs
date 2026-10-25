@@ -11,7 +11,7 @@ test('五階門檻：入門0 小成25 大成55 圓滿85 化境100', () => {
   assert.deepEqual([0, 24.9, 25, 60, 90, 100].map(tierOf), [0, 0, 1, 2, 3, 4]);
 });
 test('八門武學，前置都指向存在的武學', () => {
-  assert.equal(ARTS.length, 8); for (const a of ARTS) for (const r of a.req) assert.ok(artById(r.art), a.id);
+  assert.equal(ARTS.filter((a) => !a.secret).length, 8); for (const a of ARTS) for (const r of a.req) assert.ok(artById(r.art), a.id);
 });
 test('笨功夫：悟性低練凡階快、練高階慢；悟性高相反', () => {
   const lo = mk(1), hi = mk(5), fist = artById('basicFist'), wave = artById('wavePalm');

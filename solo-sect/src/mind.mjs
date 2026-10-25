@@ -14,6 +14,7 @@ export function moodParts(d, s) {
   for (const p of d.personality || []) if (TRAITS[p]?.moodBase) parts.push([TRAITS[p].name, TRAITS[p].moodBase]);
   for (const th of d.thoughts) parts.push([th.text, th.v]);
   for (const [k, [thr, v, tag]] of Object.entries(NEED_MOOD)) if ((d.needs[k] ?? 100) < thr) { let x = v; for (const p of d.personality || []) { const m = TRAITS[p]?.thoughtMul; if (m?.[tag]) x *= m[tag]; } parts.push([{ hunger: '肚子餓', energy: '累', social: '寂寞', fun: '悶' }[k], Math.round(x)]); }
+  if (d.id === 'hero' && s) { parts.push(['一派之主的心氣', 5]); if (s.t < 3 * 600) parts.push(['開山之初，滿懷期待', 6]); } // v0.97 修正前期主角心情偏低
   if (d.wexin) parts.push([`違心×${d.wexin}`, Math.round(wexinMood(d))]);
   if (s) { const se = seasonOf(s); if (se.mood) parts.push([`${se.name}天`, se.mood]); }
   return parts;

@@ -67,7 +67,7 @@ export function gainArt(d, amt, mf = 1, now = 0) {
     r.rust = Math.max(0, r.rust - RUST.shake);
     if (r.guizhen) { r.sxp = (r.sxp || 0) + g * 0.4; while (r.sxp >= starCost(r)) { r.sxp -= starCost(r); r.stars = (r.stars || 0) + 1; out.star = true; } }
     else { r.xp = Math.min(curCap(d, a), r.xp + g * (1 - r.xp / 130)); out.moves = unlockTechs(d, a); } }
-  if (!d.pendingArt) { const next = ARTS.filter((a) => !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a)).sort((a, b) => (b.school === d.style) - (a.school === d.style))[0]; if (next) { d.pendingArt = next.id; out.next = next; } }
+  if (!d.pendingArt) { const next = ARTS.filter((a) => !a.secret && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a)).sort((a, b) => (b.school === d.style) - (a.school === d.style))[0]; if (next) { d.pendingArt = next.id; out.next = next; } }
   return out;
 }
 export function chooseVariant(d, id, v, now = 0) {
@@ -99,9 +99,9 @@ export function setFocus(s, id, art) { const d = s.ds.find((x) => x.id === id); 
 const ROW = { fist: 0, palm: 1, leg: 2, inner: 3, step: 4 };
 export function artsSvg(d) {
   const W = 118, H = 40, X = (a) => 8 + (a.grade - 1) * (W + 34) + (a.id === 'fengLei' ? 0 : 0), Y = (a) => 8 + ROW[a.school] * (H + 10);
-  const pos = (a) => (a.id === 'fengLei' ? [X(a), 8 + 1.5 * (H + 10)] : [X(a), Y(a)]);
+  const pos = (a) => (a.id === 'rulai' ? [X(a), 8 + 4 * (H + 10)] : a.id === 'fengLei' ? [X(a), 8 + 1.5 * (H + 10)] : [X(a), Y(a)]);
   let lines = '', boxes = '';
-  for (const a of ARTS) {
+  for (const a of ARTS) { if (a.secret && !d.arts?.[a.id]) continue;
     const [x, y] = pos(a), st = artState(d, a);
     for (const r of a.req) { const b = artById(r.art), [bx, by] = pos(b), ok = artTier(d, b.id) >= r.tier; lines += `<line x1="${bx + W}" y1="${by + H / 2}" x2="${x}" y2="${y + H / 2}" stroke="${ok ? '#7a9a5a' : '#bbb'}" stroke-width="2" ${ok ? '' : 'stroke-dasharray="4 3"'}/>`; }
     const fill = { learned: '#e7f0dc', pending: '#f7e6a8', open: '#f2ecd8', locked: '#eee' }[st.st];

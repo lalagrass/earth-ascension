@@ -219,7 +219,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '0.96';
+export const RULES_VERSION = '0.97';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -332,3 +332,25 @@ export const PACE = [
 export const TRIAL_BOAR = { hp: 24, hit: 1.0 };
 
 Object.assign(TRAITS, NEW_TRAITS); // v0.96 主角／同門新特質
+// ---- v0.97 巡山風格（ROADMAP §15.8）----
+// 警覺 detect：閃避門檻；速度 speed：追擊門檻
+Object.assign(ENEMIES.rat, { detect: 15, speed: 30 }); Object.assign(ENEMIES.hare, { detect: 10, speed: 35 }); Object.assign(ENEMIES.boar, { detect: 20, speed: 15 });
+Object.assign(ENEMIES.boars, { detect: 30, speed: 15 }); Object.assign(ENEMIES.wolf, { detect: 45, speed: 40 }); Object.assign(ENEMIES.snake, { detect: 5, speed: 5 });
+Object.assign(ENEMIES.bandit, { detect: 35, speed: 20 }); Object.assign(ENEMIES.archer, { detect: 55, speed: 25 }); Object.assign(ENEMIES.bear, { detect: 30, speed: 20 }); Object.assign(ENEMIES.chief, { detect: 50, speed: 20 });
+ENEMIES.wolfking = { name: '狼王', kind: '獸', weapon: '牙爪', hp: 170, dmg: 14, cd: 1.0, flee: 0, loot: { hide: 2 }, detect: 60, speed: 45 };
+ENEMIES.post = { name: '山賊哨卡', kind: '人', weapon: '刀槍', hp: 300, dmg: 18, cd: 1.1, flee: 0, loot: { coin: 6, page1: 0.4 }, detect: 70, speed: 20 };
+// 段尾守關敵：一定要打、不能繞；打不贏＝回頭
+Object.assign(ROUTE[0], { gate: 'boar', gateName: '擋路的野豬' }); Object.assign(ROUTE[1], { gate: 'wolfking', gateName: '狼王' });
+Object.assign(ROUTE[2], { gate: 'post', gateName: '山賊哨卡' }); Object.assign(ROUTE[3], { gate: 'bear', gateName: '橋頭黑熊' });
+export const EXP_STYLES = {
+  clear:  { name: '清場', speed: 0.7, evade: 'never', chase: 1 },
+  steady: { name: '穩推', speed: 1.0, evade: 'never', chase: 0.3 }, // 穩推中較真者 30% 會追
+  dash:   { name: '疾行', speed: 1.3, evade: 'weak', chase: 0 },     // 打不過才繞
+  slip:   { name: '溜走', speed: 1.5, evade: 'always', chase: 0 },
+};
+export const STYLE_TRAIT = { honest: 2, stubborn: 2, diligent: 1, brave: 1, playful: -1, free: -1, lazy: -2, worrier: -1, rascal: -1, glib: -1 };
+export const EVADE = { lazyBonus: 10, tierPts: 10, chaseTime: 6 };
+Object.assign(TRAITS, { stubborn: { name: '較真', desc: '凡事做到底，逃掉的兔子也要追回來', mods: { train: 1.1, leisure: 0.85 } } });
+ARTS.push({ id: 'rulai', name: '如來神掌', school: 'palm', grade: 3, tags: ['剛'], req: [], techs: ['rulai'], tech: 'rulai', secret: true });
+MOVES.push({ id: 'rulai', skill: 'palm', name: '如來神掌', req: 999, range: 120, cd: 4.0, dmg: 24, aoe: 120, color: '#f2c14e' });
+export const AWAKEN = { gen: 5, li: 2, ding: 1, shen: 1 }; // 阿星覺醒：封印根骨解開（1→5 為 +4，其餘 +4，共 +8）

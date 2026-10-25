@@ -1,7 +1,7 @@
 // v0.96 主角：建立、價值觀 autopilot、違心、同門、專屬主線第一步
 import { STATS, STAT_BUDGET, VALUES, ACT_TAGS, VALUE_K, WEXIN, Q9, HEROES, COMPANIONS, CUSTOM_COMPANIONS, ARCS } from './hero-data.mjs';
-import { NODES, MOOD, CHORE_ACTS, DAY } from './data.mjs';
-import { seedArts } from './arts.mjs';
+import { NODES, MOOD, CHORE_ACTS, DAY, AWAKEN } from './data.mjs';
+import { seedArts, learnArt } from './arts.mjs';
 import { log } from './util.mjs';
 export const heroById = (id) => HEROES.find((h) => h.id === id);
 export const VALUE_NAMES = Object.fromEntries(VALUES);
@@ -93,3 +93,15 @@ export function resolveChoice(s, id, i) {
   log(s, `${d.name}決定：${text}。${flag ? '（主線推進，下一步待續）' : '（主線暫緩）'}`); return true;
 }
 export function heroAuto(s) { if (!s.hero || s.hero.askMajor || s.autoAt == null || s.t < s.autoAt) return; for (const ch of [...s.choices]) resolveChoice(s, ch.id, autoPick(s, ch)); s.autoAt = null; }
+
+// ---- v0.97 模板特色 ----
+// 阿星覺醒：巡山瀕死或重傷時，封印的根骨解開（屬性共 +8）並起手如來神掌
+export function awaken(s, d) {
+  const H = s.hero; if (!H || d.id !== 'hero' || !H.sealed || H.awakened) return false;
+  H.sealed = false; H.awakened = true; d.awakened = true; const st = H.stats; st.gen = AWAKEN.gen; st.li += AWAKEN.li; st.ding += AWAKEN.ding; st.shen += AWAKEN.shen;
+  d.root = st.gen; d.ding = st.ding; d.skills.strength += AWAKEN.li * 3; d.skills.agility += AWAKEN.shen * 3; learnArt(d, 'rulai', s.t); d.hp = Math.max(d.hp, 60);
+  log(s, `${d.name}瀕死之際，任督二脈豁然貫通！封印的根骨解開（屬性 +8），如來神掌起手式自然使出。`); return true;
+}
+// 黃蓉：精打細算（每日香火錢 +2）、她下廚多煮 1 份
+export const econCoin = (s) => (s.hero && s.ds.some((d) => d.id === 'huangrong' && !d.away) ? 2 : 0);
+export const cookBonus = (d) => (d.id === 'huangrong' ? 1 : 0);

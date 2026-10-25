@@ -76,7 +76,7 @@ test('戰報：距離、各類擊倒、逃走、傷、帶回、回頭原因；�
   assert.ok(s.ds.every((d) => d.hp > 0 && !d.away)); assert.ok(s.log.some((l) => /巡山戰報/.test(l.msg)));
 });
 test('固定難度：綜合能力越強走得越遠（同種子）', () => {
-  const d = [0, 60, 90].map((l) => expRun(11, l, 2).rep.dist); assert.ok(d[0] < d[1] && d[1] <= d[2], d.join());
+  const d = [0, 60, 90].map((l) => expRun(11, l, 2).rep.dist); assert.ok(d[0] <= d[1] && d[1] <= d[2] && d[0] < d[2], d.join()); // v0.97 守關敵：同一關擋下的兩隊距離相同
   assert.ok(expRun(11, 90, 4).rep.dist >= ROUTE[3].from, '強隊至少進深谷');
 });
 test('撤退線：70% 比 30% 早回頭；決定性', () => {

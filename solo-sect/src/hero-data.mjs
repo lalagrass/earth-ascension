@@ -26,12 +26,12 @@ export const Q9 = [
 ];
 // 經典模板（屬性可超過 12；人格固定；違心 ×1.5）
 export const HEROES = [
-  { id: 'guojing', name: '郭靖', diff: 1, tag: '憨厚苦練：悟性 1、根骨 5，天天練就會變強', stats: { wu: 1, gen: 5, li: 4, shen: 2, ding: 4, fu: 2 }, personality: ['honest', 'diligent', 'gentle'], values: { xia: 40, sect: 25, qing: 20, free: -10, wu: 10, fame: 0 }, style: 'palm', lore: ['江南七怪雜學', '全真內功入門'], companions: ['huangrong', 'munianci'], arc: 'guojing' },
+  { id: 'guojing', name: '郭靖', diff: 1, tag: '憨厚苦練：悟性 1、根骨 5，天天練就會變強', stats: { wu: 1, gen: 5, li: 4, shen: 2, ding: 4, fu: 2 }, personality: ['honest', 'diligent', 'stubborn'], values: { xia: 40, sect: 25, qing: 20, free: -10, wu: 10, fame: 0 }, style: 'palm', lore: ['江南七怪雜學', '全真內功入門'], companions: ['huangrong', 'munianci'], arc: 'guojing' },
   { id: 'weixiaobao', name: '韋小寶', diff: 3, tag: '不靠武功：經濟、說謊、收人才；巡山專門溜走', stats: { wu: 3, gen: 1, li: 1, shen: 4, ding: 1, fu: 5 }, personality: ['glib', 'lazy', 'optimist'], values: { free: 40, fame: 25, qing: 20, wu: -30, xia: 0, sect: 0 }, style: 'leg', lore: ['神行百變（逃命部分）'], coinMul: 3, companions: ['shuanger', 'ake'], arc: 'weixiaobao' },
   { id: 'linghuchong', name: '令狐沖', diff: 2, tag: '悟性派：灑脫嗜酒，以巧破招；被逐出華山自立門戶', stats: { wu: 5, gen: 3, li: 2, shen: 4, ding: 1, fu: 2 }, personality: ['free', 'drinker', 'sociable'], values: { free: 40, qing: 35, xia: 20, sect: -10, fame: -20, wu: 10 }, style: 'palm', lore: ['華山劍法（精階）', '氣宗內功（低）'], companions: ['yuelingshan', 'renyingying', 'tianboguang'], arc: 'linghuchong' },
   { id: 'yuebuqun', name: '岳不群', diff: 3, tag: '偽君子：紫霞九層、辟邪誘惑、違心越積越多', stats: { wu: 4, gen: 3, li: 2, shen: 3, ding: 4, fu: 2 }, personality: ['worrier', 'diligent', 'hypocrite'], values: { fame: 40, sect: 35, xia: 10, qing: -10, free: -10, wu: 15 }, style: 'palm', lore: ['華山劍法（小成）', '紫霞神功（第一層）'], companions: ['ningzhongze', 'linghuchong'], arc: 'yuebuqun' },
   { id: 'zhangwuji', name: '張無忌', diff: 2, tag: '柔：九陽內功天才，但優柔寡斷，抉擇常拖延', stats: { wu: 4, gen: 5, li: 2, shen: 3, ding: 2, fu: 3 }, personality: ['gentle', 'indecisive', 'kind'], values: { qing: 40, xia: 35, sect: 10, fame: -20, wu: -10, free: 0 }, style: 'palm', lore: ['九陽神功（第一層）', '醫術'], companions: ['zhaomin', 'xiaozhao'], arc: 'zhangwuji' },
-  { id: 'axing', name: '阿星', diff: 4, tag: '大器晚成：根骨被封，瀕死後覺醒如來神掌', stats: { wu: 1, gen: 5, li: 2, shen: 2, ding: 1, fu: 1 }, sealed: true, personality: ['rascal', 'lazy', 'brave'], values: { fame: 40, free: 20, xia: -20, qing: 0, sect: 0, wu: 0 }, style: 'palm', lore: ['街頭打架', '《如來神掌》小冊子（被騙買的）'], companions: ['afang', 'feizaicong'], arc: 'axing' },
+  { id: 'axing', name: '阿星', diff: 4, tag: '大器晚成：根骨被封，瀕死後覺醒如來神掌', stats: { wu: 1, gen: 1, li: 3, shen: 3, ding: 2, fu: 2 }, sealed: true, personality: ['rascal', 'lazy', 'brave'], values: { fame: 40, free: 20, xia: -20, qing: 0, sect: 0, wu: 0 }, style: 'palm', lore: ['街頭打架', '《如來神掌》小冊子（被騙買的）'], companions: ['afang', 'feizaicong'], arc: 'axing' },
 ];
 // 開局同門候選（也是名俠池的一部分；被選中就移出名俠池）
 export const COMPANIONS = {
