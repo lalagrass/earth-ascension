@@ -1,4 +1,4 @@
-import { HOME, HOME_VIEW, CHUNK, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, raidDescent, RINGS, TRAIL } from './world.mjs';
+import { HOME, HOME_VIEW, CHUNK, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, raidDescent, RINGS, TRAIL } from './world.mjs';
 import { raidMul } from './expedition.mjs';
 import { sideCards, bubbles } from './events.mjs';
 import { statusHtml } from './status.mjs';
@@ -241,7 +241,7 @@ $('reset').onclick = () => newGame();
 $('load').addEventListener('click', () => { if (document.getElementById('start')) { document.getElementById('start').remove(); starting = false; } });
 let last = performance.now(), acc = 0;
 function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now; if (starting || choiceUI(S) || S.alert) acc = 0; feed(); while (acc >= 0.25) { tick(S); acc -= 0.25; }
-  audioStep(); expToast(); draw(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
+  audioStep(); expToast(); fightWatch(); draw(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
 function rbar(n, v, max, c) { const p = Math.max(0, Math.min(1, (v ?? 0) / (max || 1))); return `${n} <span style="display:inline-block;width:80px;height:8px;background:#ddd;vertical-align:middle"><span style="display:block;height:8px;width:${p * 80}px;background:${c}"></span></span> ${Math.max(0, Math.round(v ?? 0))}`; }
 const JH_FX = { anran: ['#7a8ca8', 'arc'], xuantie: ['#2a2a2a', 'heavy'], yunv: ['#eef', 'arc'], kongming: ['#bcb', 'arc'], kuihua: ['#d04050', 'needle'], huagu: ['#9a8aa8', 'arc'], qiankun: ['#e0a040', 'arc'], taiji: ['#ddd', 'arc'], shihou: ['#f0d070', 'ring'], tantui: ['#a07040', 'arc'], tiexian: ['#889', 'heavy'], bagua: ['#8a6a3a', 'arc'], hama: ['#6a8a3a', 'toad'] };
 function drawSect() { // v1.35 匾額＋旗幟（共用破道館地圖，只換字與色）
@@ -325,16 +325,37 @@ export const camHome = () => { cam.follow = false; Object.assign(cam, { ux: HOME
 export const camFollow = (on = !cam.follow) => { cam.follow = on && !!S.exp; refreshCamUI(); };
 window.__camFocus = camFocus; window.__cam = cam; window.__camHome = camHome; window.__camFollow = camFollow;
 // ---- v1.55a 世界：256px 區塊第一次進視窗才畫進離屏 canvas，之後每幀只 drawImage ----
-const CHUNKS = new Map(); window.__chunks = CHUNKS;
-function chunkCanvas(cx, cy) { const k = chunkKey(cx, cy); let c = CHUNKS.get(k); if (!c) { c = document.createElement('canvas'); c.width = c.height = CHUNK; paintChunk(c.getContext('2d'), cx, cy); CHUNKS.set(k, c); } return c; }
+const CHUNKS = new Map(); window.__chunks = CHUNKS; const ART = { ground: IMG.ground, grass: IMG.grass, pine: IMG.pine, bamboo: IMG.bamboo };
+function chunkCanvas(cx, cy) { const k = chunkKey(cx, cy); let c = CHUNKS.get(k); if (!c) { c = document.createElement('canvas'); c.width = c.height = CHUNK; paintChunk(c.getContext('2d'), cx, cy, ART); CHUNKS.set(k, c); } return c; }
 function drawWorld(c) { g.fillStyle = '#b9ad8f'; const hw = 800 / c.z, hh = 450 / c.z; g.fillRect(c.x - hw, c.y - hh, hw * 2, hh * 2);
   for (const [cx, cy] of chunksInView(c)) g.drawImage(chunkCanvas(cx, cy), cx * CHUNK, cy * CHUNK);
-  g.save(); g.strokeStyle = '#7a5a3a'; g.lineWidth = 10; g.setLineDash([18, 10]); g.globalAlpha = 0.7; g.beginPath(); TRAIL.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.stroke(); g.restore(); // 山徑
+  { const path = (w, c) => { g.strokeStyle = c; g.lineWidth = w; g.lineCap = g.lineJoin = 'round'; g.beginPath(); TRAIL.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.stroke(); };
+    g.save(); path(30, '#6b4f30'); path(22, '#c9a874'); g.setLineDash([3, 14]); path(6, '#a8875a'); g.restore(); } // v1.55b 山徑（黃土路＋路邊）
+  { const pd = partyDist(S), hit = fightLog.hit; for (const sp of SPOTS) { const done = (pd != null && pd >= sp.d) || hit.has(sp.i), [x, y] = sp.pos; // 固定怪點：本趟走過＝已處理
+    g.save(); g.globalAlpha = done ? 0.35 : 1; const sn = MONSTERS[sp.k]?.sprite; if (sn) sprite(sn, x, y, SC * 0.8); else { g.fillStyle = '#7a2a1a'; g.beginPath(); g.arc(x, y - 10, 11, 0, 7); g.fill(); g.fillStyle = '#fff'; g.font = 'bold 13px sans-serif'; g.textAlign = 'center'; g.fillText(ENEMIES[sp.k].name[0], x, y - 6); }
+    label(done ? '✕' : sp.gate ? `守關・${sp.gate}` : ENEMIES[sp.k].name, x, y + 14, sp.gate ? '#b0301a' : '#7a1a10'); g.restore(); } }
   for (const r of RINGS) { const n = S.pop?.[r.id]?.n ?? 0, [x, y] = r.nest; g.fillStyle = '#5a2a1a'; g.beginPath(); g.arc(x, y, 16, 0, 7); g.fill(); g.font = 'bold 22px sans-serif'; g.textAlign = 'center'; g.lineWidth = 5; g.strokeStyle = '#fff';
     const s = `${r.name}巢・${n}`; g.strokeText(s, x, y - 26); g.fillStyle = '#5a2a1a'; g.fillText(s, x, y - 26); } }
 function drawWorldTop() { const rd = raidDescent(S, raidMul(S)); // 獸襲下山（演出）
   if (rd) { const [x, y] = rd.pos; sprite(MONSTERS[rd.k].sprite, x, y, SC); label(`${MONSTERS[rd.k].name}下山中`, x, y - 40, '#a33'); }
-  const pp = partyPos(S); if (pp) { g.fillStyle = '#c0392b'; g.beginPath(); g.arc(pp[0], pp[1], 14, 0, 7); g.fill(); label(`巡山隊 ${Math.round(S.exp.dist)} 步`, pp[0], pp[1] - 22, '#7a1a10'); } }
+  const pd = partyDist(S); if (pd != null) { const X = S.exp, team = X.team.map((id) => S.ds.find((d) => d.id === id)).filter(Boolean), back = X.phase === 'back', walking = !(X.busy > 0) && !fightLog.cur;
+    team.forEach((d, i) => { const [x, y] = trailAt(Math.max(0, pd + (back ? 1 : -1) * i * 4)), bob = walking ? Math.sin(performance.now() / 90 + i) * 2 : 0, im = IMG[d.sprite]; if (!im?.width) return;
+      g.save(); g.translate(x + (i % 2 ? 10 : -10), y + bob); if (back) g.scale(-1, 1); g.drawImage(im, -im.width * SC * 0.7 / 2, -im.height * SC * 0.7, im.width * SC * 0.7, im.height * SC * 0.7); g.restore(); });
+    const [x, y] = trailAt(pd); label(`巡山隊 ${Math.round(pd)} 步${back ? '・回程' : ''}`, x, y - 70, '#7a1a10'); }
+  const F = fightLog.cur; if (F) { const k = (performance.now() - F.t0) / FIGHT_MS; if (k >= 1) fightLog.cur = null; else { const [x, y] = F.pos; g.save(); // v1.55b 批次戰鬥演出：結果已由模擬算完，這裡只播 2.5 秒
+      const sh = k < 0.7 ? Math.sin(k * 60) * 5 : 0, sn = MONSTERS[F.k]?.sprite, ex = x + 46 + sh; if (sn) sprite(sn, ex, y, SC * 0.9); else { g.fillStyle = '#7a2a1a'; g.beginPath(); g.arc(ex, y - 14, 15, 0, 7); g.fill(); }
+      for (let i = 0; i < 3; i++) { const a = k * 9 + i * 2.1; g.strokeStyle = `rgba(255,240,200,${0.9 - k})`; g.lineWidth = 4; g.beginPath(); g.arc(x + 24, y - 24, 22 + i * 7, a, a + 1.2); g.stroke(); }
+      g.globalAlpha = Math.min(1, 3 * (1 - k)); g.font = 'bold 22px serif'; g.textAlign = 'center'; g.lineWidth = 5; g.strokeStyle = '#fff'; const s = `⚔ ${F.name}${k > 0.55 ? `・${F.res}` : ''}`; g.strokeText(s, x + 24, y - 64); g.fillStyle = '#8a1a10'; g.fillText(s, x + 24, y - 64); g.restore(); } } }
+// v1.55b 讀模擬差異得知剛打了誰（不寫狀態）
+const FIGHT_MS = 2500; const fightLog = { n: null, f: 0, snap: null, cur: null, hit: new Set() }; window.__fightLog = fightLog;
+const tally = (X) => ({ kills: { ...X.kills }, evaded: { ...X.evaded }, escaped: { ...X.escaped } });
+function fightWatch() { const X = S?.exp; if (!X) { fightLog.n = null; fightLog.hit.clear(); return; }
+  if (fightLog.n !== X.startT) { fightLog.n = X.startT; fightLog.f = X.fights; fightLog.ev = Object.values(X.evaded || {}).reduce((a, b) => a + b, 0); fightLog.snap = tally(X); fightLog.hit.clear(); return; }
+  const ev = Object.values(X.evaded || {}).reduce((a, b) => a + b, 0); if (X.fights === fightLog.f && ev === fightLog.ev) return;
+  const now = tally(X), diff = (a, b) => Object.keys(a).find((k) => (a[k] || 0) > (b[k] || 0)); const kk = diff(now.kills, fightLog.snap.kills), ke = diff(now.evaded, fightLog.snap.evaded), kf = diff(now.escaped, fightLog.snap.escaped), k = kk || kf || ke;
+  const sp = SPOTS.filter((s) => s.d <= X.dist + 0.01).pop(); if (sp) fightLog.hit.add(sp.i);
+  fightLog.cur = { t0: performance.now(), k, name: k ? ENEMIES[k].name : '守關', res: kk ? '擊倒' : kf ? '逃了' : ke ? '閃過' : '交手', pos: trailAt(X.dist) };
+  fightLog.f = X.fights; fightLog.ev = ev; fightLog.snap = now; }
 // 捲動：拖曳地圖、滾輪縮放（邊界由 camBounds 決定）
 { let drag = null; const k = () => Math.max(1600 / cv.clientWidth, 900 / cv.clientHeight) / cam.uz;
   cv.addEventListener('pointerdown', (e) => { drag = [e.clientX, e.clientY]; cv.setPointerCapture?.(e.pointerId); });

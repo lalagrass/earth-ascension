@@ -92,6 +92,14 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 | SS-RING-POP | SAMEMAP §2.6/§3；v1.55a | 7 環各有族群數，地圖巢點顯示「某環巢・N」；巡山擊倒扣該環，定時無亂數回補 | 已接線 | 通過（單元＋實跑巡山：扣掉數＝擊倒數） | src/world.mjs popStep/popKill, src/expedition.mjs, src/sim.mjs | `test/v155a.test.mjs` | shots/v155a-03、04 | 族群還不影響遭遇率與獸襲頻率（刻意：保持模擬結果不變） |
 | SS-RAID-DESCENT | SAMEMAP §2.6；v1.55a | 獸襲到點前 20 秒，野豬從山腳巢點沿山徑走到 den，到點後照舊從 den 進菜園 | 已接線 | 通過（單元；瀏覽器流程把 raidT 推到到點前 10 秒後拍到，屬改狀態展示） | src/world.mjs raidDescent, src/main.mjs | `test/v155a.test.mjs`；flow 第 6–7 步 | shots/v155a-04-raid-descent.png | 下山段只是演出（由 raidT 推算、不存檔）；溢出觸發、其他環下山要等族群接進模擬 |
 
+### v1.55b 山徑、山腳／林地素材、固定怪點、召回走回（擁有人 t136u「continue till 1.75」）
+| Feature ID | 設計來源 | 玩家短流程 | 狀態 | 驗證 | 實作檔案 | 測試命令與結果檔 | 截圖/錄影 | 已知缺口 |
+|---|---|---|---|---|---|---|---|---|
+| SS-TRAIL | SAMEMAP §2.5；v1.55b | 派出 → 點紙條跟隨 → 隊員沿彎曲黃土山徑從 den 連續走出（無轉場），位置＝dist 在山徑上的點 | 已驗證（限山腳→林地） | 通過（單元：半徑＝dist×PX、所在環＝模擬段、山徑連續；瀏覽器實點 7/7） | src/world.mjs TRAIL/trailAt/partyPos, src/main.mjs | `node --test test/v155b.test.mjs`；`artifacts/v155b/flow-v155b.mjs` → `flow-v155b-result.json` | shots/v155b-01-walk-out.png | 遠處山徑角度變化大，取樣點間距最多約 160px（仍連續）；外 5 環要等 v1.55c 素材 |
+| SS-TILES-FOOT-WOOD | v1.55b | 山腳：地面紋理＋草叢、石頭；林地：深綠＋松、竹 | 已接線 | 通過（單元：有圖貼素材、無圖退色塊、同座標同畫） | src/world.mjs paintChunk | `test/v155b.test.mjs` | shots/v155b-03-wood-ring.png | 用既有 ground/grass/pine/bamboo 素材程序拼貼，非手繪 tile；樹不跨區塊（區塊邊會略空） |
+| SS-SPOTS-FIGHT | SAMEMAP §2.5；v1.55b | 山腳、林地有固定怪點（含段尾守關）；隊伍走到 → 停下 → 2.5 秒戰鬥演出（⚔ 名稱・擊倒／閃過／逃了）→ 怪點打 ✕ | 已驗證（限演出出現、怪點標記） | 通過（單元：怪點 dist＝模擬遭遇 dist，實跑遭遇都落在怪點；瀏覽器看到演出） | src/world.mjs SPOTS, src/main.mjs fightWatch | 同上 | shots/v155b-02-fight-anim.png | 怪點上畫的種類只是展示，實際對手仍由模擬亂數抽；守關若被宿敵頂替，怪點上仍顯示原守關名；四風格走位在 v1.55c |
+| SS-RECALL-WALK | v1.55b | 按「召回」→ 隊伍沿同一條山徑走回 den → 回到院子、隊員重現在門派地圖 | **已驗證** | 通過（單元：回程位置單調變近並在山徑上；瀏覽器實點：召回→走回→回院子） | src/world.mjs, src/main.mjs | 同上 | shots/v155b-04-recall-walk-back.png、05-back-home | — |
+
 修正：巡山在模擬層也守解鎖（第一章不再在第 1 日記成）；「本門新紀錄」「重傷倒地」由頂級改為中級事件。
 
 ## 三、依賴、未完成、取消／恢復、保存邊界
