@@ -30,3 +30,5 @@ label.btn { border:1px solid #888; padding:2px 8px; border-radius:4px; cursor:po
 #camui{position:absolute;top:8px;left:8px;display:flex;gap:6px;z-index:5}#camui button{font-size:15px;padding:4px 10px;background:#fff8e8;border:1px solid #8a6a3a;border-radius:6px;cursor:pointer}#camui button.on{background:#c0392b;color:#fff}#camui button:disabled{opacity:.45}
 #camtoast{position:absolute;top:48px;left:8px;z-index:5;background:#3a2a1a;color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:15px;box-shadow:0 2px 8px #0005}
 #map{touch-action:none;cursor:grab}
+/* v1.55c 小地圖 */
+#minimap{position:absolute;left:8px;bottom:8px;width:240px;height:180px;border:2px solid #5a3a1a;border-radius:4px;box-shadow:0 2px 8px #0006;cursor:crosshair;z-index:5;background:#c9b48a}

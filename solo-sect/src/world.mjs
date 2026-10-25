@@ -46,7 +46,7 @@ export function raidDescent(s, mul = 1) { const T = RAID_EVERY * mul; if (s.hunt
   const p = Math.min(1, (s.raidT - (T - DESC)) / DESC); return { k, ring, p, pos: alongPath(path, p * pathLen(path)), path }; }
 // ---- 鏡頭邊界：門派＋已揭露各環＋一圈 ----
 export function revealedRing(s) { let best = -1; const seen = { ...(s.records?.clear || {}), ...(s.exp?.seg || {}) }; ROUTE.forEach((g, i) => { if (seen[g.id] != null) best = i; }); if (s.exp) best = Math.max(best, ROUTE.findIndex((g) => (s.exp.dist ?? 0) < g.to)); return best; }
-export function camBounds(s) { const i = Math.min(RINGS.length - 1, revealedRing(s) + 1), R = i >= 0 ? RINGS[i].r1 : 0;
+export function camBounds(s) { if (s.fog != null) { const b = fogBounds(s); return { x0: b.x0, y0: b.y0, x1: Math.max(b.x1, HOME.x + HOME.w), y1: Math.max(b.y1, HOME.y + HOME.h) }; } const i = Math.min(RINGS.length - 1, revealedRing(s) + 1), R = i >= 0 ? RINGS[i].r1 : 0;
   return { x0: HOME.x, y0: Math.max(0, Math.min(HOME.y, DEN[1] - R)), x1: Math.min(WORLD.w, Math.max(HOME.x + HOME.w, DEN[0] + R)), y1: HOME.y + HOME.h }; }
 export function clampCam(c, b, vw = 1600, vh = 900) { const hw = vw / 2 / c.z, hh = vh / 2 / c.z;
   const cl = (v, a, z, h) => (z - a <= 2 * h ? (a + z) / 2 : Math.min(z - h, Math.max(a + h, v)));
@@ -62,14 +62,52 @@ const CELL = 32;
 export function cellColor(x, y) { const r = ringAt([x, y]); return r === 'home' ? null : r === 'void' ? '#b9ad8f' : r === 'cloud' ? CLOUD.col : RING_COL[r]; }
 // 把一個區塊畫進 2D context（離屏 canvas）；同座標永遠畫一樣
 // v1.55b：山腳、林地用正式素材（地面紋理＋草叢／松竹）；其餘環仍是色塊（v1.55c）。art＝{ ground, grass, pine, bamboo }（Image），沒給就只畫色塊
-const TINT = { foot: 'rgba(150,190,100,.42)', wood: 'rgba(60,110,50,.5)' };
+// v1.55c：七環都有素材。每環：底色疊色＋點綴規則 [機率門檻, 種類, 大小]
+const TINT = { foot: 'rgba(150,190,100,.42)', wood: 'rgba(60,110,50,.5)', slope: 'rgba(170,150,90,.45)', gorge: 'rgba(70,95,80,.55)', cliff: 'rgba(130,125,120,.6)', cave: 'rgba(70,60,80,.62)', peak: 'rgba(235,235,245,.62)' };
+const DECO = { foot: [[0.22, 'grass', 0.45], [0.96, 'rock', 0, 1]], wood: [[0.06, 'bamboo', 0.5], [0.3, 'pine', 0.5], [0.85, 'grass', 0.4, 1]],
+  slope: [[0.1, 'pine', 0.45], [0.2, 'grass', 0.4], [0.9, 'rock', 0, 1]], gorge: [[0.12, 'bamboo', 0.45], [0.2, 'pine', 0.4], [0.93, 'water', 0, 1]],
+  cliff: [[0.05, 'pine', 0.35], [0.7, 'rock', 0, 1]], cave: [[0.08, 'cave', 0], [0.75, 'rock', 0, 1]], peak: [[0.04, 'pine', 0.3], [0.6, 'snow', 0, 1]] };
 export function paintChunk(g, cx, cy, art) { const X0 = cx * CHUNK, Y0 = cy * CHUNK, deco = [];
   for (let y = 0; y < CHUNK; y += CELL) for (let x = 0; x < CHUNK; x += CELL) { const wx = X0 + x + CELL / 2, wy = Y0 + y + CELL / 2, c = cellColor(wx, wy); if (!c) continue; const r = ringAt([wx, wy]);
     if (art?.ground?.width && TINT[r]) { const gx = ((X0 + x) % 480 + 480) % 480, gy = ((Y0 + y) % 400 + 400) % 400; g.drawImage(art.ground, gx, gy, CELL, CELL, x, y, CELL, CELL); g.fillStyle = TINT[r]; g.fillRect(x, y, CELL, CELL);
-      const n = h2(X0 + x, Y0 + y, 5); if (r === 'foot' && n < 0.22) deco.push(['grass', x + CELL * h2(x, y, 1), y + CELL * h2(x, y, 2), 0.45 + 0.3 * n]); else if (r === 'foot' && n > 0.96) deco.push(['rock', x + 16, y + 16, 0]);
-      else if (r === 'wood' && n < 0.3) deco.push([n < 0.06 ? 'bamboo' : 'pine', x + CELL * h2(x, y, 1), y + CELL, 0.45 + 0.5 * n]); else if (r === 'wood' && n > 0.85) deco.push(['grass', x + 16, y + 20, 0.4]);
+      const n = h2(X0 + x, Y0 + y, 5); for (const [th, k, sz, hi] of DECO[r]) if (hi ? n > th : n < th) { deco.push([k, x + CELL * h2(x, y, 1), y + (k === 'pine' || k === 'bamboo' ? CELL : CELL * h2(x, y, 2)), sz + 0.4 * n]); break; }
       continue; }
     g.fillStyle = c; g.fillRect(x, y, CELL, CELL);
     const n = h2(X0 + x, Y0 + y); if (n < 0.18) { g.fillStyle = '#0002'; g.beginPath(); g.arc(x + CELL * h2(x, y, 1), y + CELL * h2(x, y, 2), 3 + 6 * n, 0, 7); g.fill(); } }
-  deco.sort((a, b) => a[2] - b[2]); for (const [k, x, y, s] of deco) { if (k === 'rock') { g.fillStyle = '#8c8c8c'; g.beginPath(); g.ellipse(x, y, 9, 6, 0, 0, 7); g.fill(); continue; } const im = art[k]; if (!im?.width) continue; const w = im.width * s, h = im.height * s; if (x - w / 2 < 0 || x + w / 2 > CHUNK || y - h < 0) continue; g.drawImage(im, x - w / 2, y - h, w, h); }
+  deco.sort((a, b) => a[2] - b[2]); for (const [k, x, y, s] of deco) { const BLOB = { rock: ['#8c8c8c', 9, 6], water: ['#5f8fb0', 14, 6], snow: ['#fbfbff', 13, 7], cave: ['#1e1a24', 10, 8] }; if (BLOB[k]) { const [c, rx, ry] = BLOB[k]; if (x < rx || x > CHUNK - rx || y < ry || y > CHUNK - ry) continue; g.fillStyle = c; g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, 7); g.fill(); continue; } const im = art[k]; if (!im?.width) continue; const w = im.width * s, h = im.height * s; if (x - w / 2 < 0 || x + w / 2 > CHUNK || y - h < 0) continue; g.drawImage(im, x - w / 2, y - h, w, h); }
   return deco.length; }
+
+// ---- v1.55c 迷霧：每區塊 1 bit（25×19＝475 塊 → base64 約 80 字）；視野以隊伍為圓心 VISION px ----
+export const FOG_W = Math.ceil(WORLD.w / CHUNK), FOG_H = Math.ceil(WORLD.h / CHUNK), VISION = 420;
+const b64 = (u) => (typeof Buffer !== 'undefined' ? Buffer.from(u).toString('base64') : btoa(String.fromCharCode(...u)));
+const unb64 = (s) => (typeof Buffer !== 'undefined' ? new Uint8Array(Buffer.from(s, 'base64')) : Uint8Array.from(atob(s), (c) => c.charCodeAt(0)));
+const FOGC = new WeakMap(); // 解碼快取，不進存檔
+export const fogBytes = (s) => { let c = FOGC.get(s); if (!c || c.str !== s.fog) { c = { str: s.fog, u: s.fog ? unb64(s.fog) : new Uint8Array(Math.ceil(FOG_W * FOG_H / 8)) }; FOGC.set(s, c); } return c.u; };
+export const fogSave = (s, u) => { s.fog = b64(u); FOGC.set(s, { str: s.fog, u }); };
+export const fogged = (s, cx, cy) => { if (s.fog == null) return false; const i = cy * FOG_W + cx; return !(fogBytes(s)[i >> 3] & (1 << (i & 7))); };
+export function revealAt(s, [x, y], R) { const u = fogBytes(s); let ch = false;
+  for (let cy = Math.max(0, Math.floor((y - R) / CHUNK)); cy <= Math.min(FOG_H - 1, Math.floor((y + R) / CHUNK)); cy++) for (let cx = Math.max(0, Math.floor((x - R) / CHUNK)); cx <= Math.min(FOG_W - 1, Math.floor((x + R) / CHUNK)); cx++) {
+    const nx = Math.max(cx * CHUNK, Math.min(x, cx * CHUNK + CHUNK)), ny = Math.max(cy * CHUNK, Math.min(y, cy * CHUNK + CHUNK)); if (Math.hypot(nx - x, ny - y) > R) continue;
+    const i = cy * FOG_W + cx; if (!(u[i >> 3] & (1 << (i & 7)))) { u[i >> 3] |= 1 << (i & 7); ch = true; } }
+  return ch; }
+export function initFog(s) { s.fog = ''; FOGC.set(s, { str: '', u: new Uint8Array(Math.ceil(FOG_W * FOG_H / 8)) });
+  for (let y = HOME.y; y <= HOME.y + HOME.h; y += CHUNK / 2) for (let x = HOME.x; x <= HOME.x + HOME.w; x += CHUNK / 2) revealAt(s, [x, y], 1);
+  revealAt(s, DEN, 300); const far = ROUTE.reduce((a, g) => (s.records?.clear?.[g.id] != null ? g.to : a), 0); for (let d = 0; d <= far; d += 10) revealAt(s, trailAt(d), VISION); // 舊檔：依清場紀錄補揭
+  fogSave(s, fogBytes(s)); }
+// 每拍（模擬層、無亂數）：巡山隊所在處揭霧
+export function fogStep(s) { if (s.fog == null) initFog(s); const d = partyDist(s); if (d == null) return; if (revealAt(s, trailAt(d), VISION)) fogSave(s, fogBytes(s)); }
+export const fogCount = (s) => { let n = 0; for (const b of fogBytes(s)) for (let k = 0; k < 8; k++) n += (b >> k) & 1; return n; };
+export function fogBounds(s) { let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; for (let cy = 0; cy < FOG_H; cy++) for (let cx = 0; cx < FOG_W; cx++) if (!fogged(s, cx, cy)) { x0 = Math.min(x0, cx); y0 = Math.min(y0, cy); x1 = Math.max(x1, cx); y1 = Math.max(y1, cy); }
+  return { x0: Math.max(0, (x0 - 1) * CHUNK), y0: Math.max(0, (y0 - 1) * CHUNK), x1: Math.min(WORLD.w, (x1 + 2) * CHUNK), y1: Math.min(WORLD.h, (y1 + 2) * CHUNK) }; } // ＋一圈區塊
+export const inVision = (s, p) => { const d = partyDist(s); if (d == null) return false; const q = trailAt(d); return Math.hypot(p[0] - q[0], p[1] - q[1]) <= VISION; };
+// ---- v1.55c 四種風格走位（畫面）：清場繞去每個怪點；穩推走路中央；疾行抄直線；溜走貼另一側路邊 ----
+export const STYLE_PATH = { clear: '繞打每一隻', steady: '只打擋路的', dash: '直線快走', slip: '貼邊閃過' };
+const angAt = (d) => { const p = trailAt(Math.max(1, d)); return Math.atan2(p[1] - DEN[1], p[0] - DEN[0]); };
+export function styledPos(d, style) { if (style === 'dash') { let a = 0, n = 0; for (let k = -60; k <= 60; k += 10) { a += angAt(d + k); n++; } a /= n; const r = Math.max(0, Math.min(TRAIL_END, d)) * PX; return [DEN[0] + Math.cos(a) * r, DEN[1] + Math.sin(a) * r]; }
+  if (style === 'slip') return perp(d, 46 * Math.min(1, d / 15));
+  if (style === 'clear') { const sp = SPOTS.filter((x) => !x.gate).reduce((b, x) => (Math.abs(x.d - d) < Math.abs(b.d - d) ? x : b), { d: 1e9 }), k = Math.max(0, 1 - Math.abs(sp.d - d) / 9); const p = trailAt(d); return sp.pos ? [p[0] + (sp.pos[0] - p[0]) * k, p[1] + (sp.pos[1] - p[1]) * k] : p; }
+  return trailAt(d); }
+export const partyStyledPos = (s) => { const d = partyDist(s); return d == null ? null : styledPos(d, s.exp.style); };
+// ---- v1.55c 溜走留下的殘餘怪：回程經過未清段（模擬的「返程驚獸」）時，從該段閃過的怪點追出來 ----
+export function leftovers(s, evadedSpots) { const X = s.exp; if (!X) return []; const hits = new Set(X.ret?.hits || []);
+  return SPOTS.filter((sp) => evadedSpots.has(sp.i)).map((sp) => ({ ...sp, chasing: hits.has(ROUTE.find((g) => g.id === sp.ring).name) })); }

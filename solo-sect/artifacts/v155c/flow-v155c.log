@@ -1,0 +1,13 @@
+PASS 小地圖出現在畫面左下 ""
+PASS 正常玩到巡山解鎖 ""
+PASS 點「溜走」出發：隊伍走在山徑旁邊（偏離 >40px） {"dist":41.25,"phase":"out","style":"slip","fog":38,"off":46,"cam":[1504,3819],"follow":true,"evaded":[0,1],"chasing":0,"names":["野豬","野兔"]}
+PASS 閃過的怪點變成「殘・怪名」留在原地 {"dist":50.625,"phase":"out","style":"slip","fog":38,"off":46,"cam":[1504,3808],"follow":true,"evaded":[0,1],"chasing":0,"names":["野豬","野兔"]}
+PASS 走過的地方揭霧（已探區塊變多） {"f0":37,"f":38}
+PASS 點小地圖：鏡頭跳過去、取消跟隨（被界線夾在已探區） {"before":[1504,3803],"after":[1504,3522]}
+try 0 {"maxHits":[],"ev":[]}
+try 1 {"maxHits":["山腳"],"ev":[2,100]}
+PASS 回程撞上返程驚獸：從那段閃過的殘餘怪追上來 {"s4":{"dist":137.5,"phase":"back","style":"slip","hits":["山腳"],"fog":48,"off":46,"cam":[1540,3823],"follow":true,"evaded":[2,100],"chasing":2,"names":["野兔","野豬","野豬","野豬","野兔","狼"]},"tries":[{"a":0,"maxHits":[],"evaded":[]},{"a":1,"maxHits":["山腳"],"evaded":[2,100]}]}
+PASS 換「清場」：隊伍繞進怪點打（離開山徑、走向怪） {"dist":20.125,"phase":"out","style":"clear","fog":48,"off":38,"cam":[1511,3839],"follow":true,"evaded":[],"chasing":0,"names":["野兔"]}
+PASS 打過的點顯示實際交手的怪名 ["野兔","野豬"]
+PASS 無頁面錯誤 []
+cleanup done

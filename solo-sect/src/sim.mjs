@@ -11,7 +11,7 @@ import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRo
 import { PACE, TRIAL_BOAR } from './data.mjs';
 import { aspStep, likeMeal, likesOf } from './v10.mjs';
 import { raidMul } from './expedition.mjs';
-import { popStep } from './world.mjs';
+import { popStep, fogStep } from './world.mjs';
 import { xiaStep, onCook, xiaInit } from './wuxia.mjs';
 import { hsStep, hsInit } from './huashan.mjs';
 import { jhStep, jhInit } from './jianghu.mjs';
@@ -525,7 +525,7 @@ export function tick(s, dt = 0.25) {
   huntStep(s, dt);
   ecoStep(s, dt);
   expStep(s, dt, H);
-  popStep(s, dt); // v1.55a 各環族群（無亂數）
+  popStep(s, dt); fogStep(s); // v1.55c 迷霧；v1.55a 各環族群（無亂數）
   paceStep(s); unlockStep(s); chapterStep(s); if (Math.floor(s.t) !== Math.floor(s.t - dt)) aspStep(s, think);
   xiaStep(s, H); hsStep(s, 0.25, H); jhStep(s, 0.25, H); sectStep(s); genStep(s);
   if (s.hero) { const h = byId(s, 'hero'); if (h && !h.away && h.hp <= EXP.hurtHeavy) awaken(s, h); heroStep(s); heroAuto(s); for (const d of s.ds) d.pairMul = pairBonus(s, d, aff); }

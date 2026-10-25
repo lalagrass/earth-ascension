@@ -1,4 +1,4 @@
-import { HOME, HOME_VIEW, CHUNK, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, raidDescent, RINGS, TRAIL } from './world.mjs';
+import { HOME, HOME_VIEW, CHUNK, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, styledPos, fogged, inVision, leftovers, FOG_W, FOG_H, WORLD, cellColor, STYLE_PATH, raidDescent, RINGS, TRAIL } from './world.mjs';
 import { raidMul } from './expedition.mjs';
 import { sideCards, bubbles } from './events.mjs';
 import { statusHtml } from './status.mjs';
@@ -6,7 +6,7 @@ import { milestones } from './expedition.mjs';
 import { ARC13 } from './jianghu.mjs';
 import { GEN, canSucceed, succeed, heirs, heirArt } from './gen.mjs';
 import { SECTS, SECT_K, RULE_LIB } from './sect-data.mjs';
-import { canBuildFac, buildFac, artKind, KIND_NAME, sectFac } from './sect.mjs';
+import { canBuildFac, buildFac, artKind, KIND_NAME, sectFac, rivalGate } from './sect.mjs';
 import { JH, DAY as DAY13 } from './data.mjs';
 import { zxGate } from './huashan.mjs';
 import { HS, DUGU } from './data.mjs';
@@ -241,7 +241,7 @@ $('reset').onclick = () => newGame();
 $('load').addEventListener('click', () => { if (document.getElementById('start')) { document.getElementById('start').remove(); starting = false; } });
 let last = performance.now(), acc = 0;
 function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now; if (starting || choiceUI(S) || S.alert) acc = 0; feed(); while (acc >= 0.25) { tick(S); acc -= 0.25; }
-  audioStep(); expToast(); fightWatch(); draw(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
+  audioStep(); expToast(); fightWatch(); draw(); drawMinimap(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
 function rbar(n, v, max, c) { const p = Math.max(0, Math.min(1, (v ?? 0) / (max || 1))); return `${n} <span style="display:inline-block;width:80px;height:8px;background:#ddd;vertical-align:middle"><span style="display:block;height:8px;width:${p * 80}px;background:${c}"></span></span> ${Math.max(0, Math.round(v ?? 0))}`; }
 const JH_FX = { anran: ['#7a8ca8', 'arc'], xuantie: ['#2a2a2a', 'heavy'], yunv: ['#eef', 'arc'], kongming: ['#bcb', 'arc'], kuihua: ['#d04050', 'needle'], huagu: ['#9a8aa8', 'arc'], qiankun: ['#e0a040', 'arc'], taiji: ['#ddd', 'arc'], shihou: ['#f0d070', 'ring'], tantui: ['#a07040', 'arc'], tiexian: ['#889', 'heavy'], bagua: ['#8a6a3a', 'arc'], hama: ['#6a8a3a', 'toad'] };
 function drawSect() { // v1.35 匾額＋旗幟（共用破道館地圖，只換字與色）
@@ -328,33 +328,40 @@ window.__camFocus = camFocus; window.__cam = cam; window.__camHome = camHome; wi
 const CHUNKS = new Map(); window.__chunks = CHUNKS; const ART = { ground: IMG.ground, grass: IMG.grass, pine: IMG.pine, bamboo: IMG.bamboo };
 function chunkCanvas(cx, cy) { const k = chunkKey(cx, cy); let c = CHUNKS.get(k); if (!c) { c = document.createElement('canvas'); c.width = c.height = CHUNK; paintChunk(c.getContext('2d'), cx, cy, ART); CHUNKS.set(k, c); } return c; }
 function drawWorld(c) { g.fillStyle = '#b9ad8f'; const hw = 800 / c.z, hh = 450 / c.z; g.fillRect(c.x - hw, c.y - hh, hw * 2, hh * 2);
-  for (const [cx, cy] of chunksInView(c)) g.drawImage(chunkCanvas(cx, cy), cx * CHUNK, cy * CHUNK);
+  const fogC = []; for (const [cx, cy] of chunksInView(c)) { if (fogged(S, cx, cy)) { fogC.push([cx, cy]); continue; } g.drawImage(chunkCanvas(cx, cy), cx * CHUNK, cy * CHUNK); }
+  drawWorld.fog = fogC;
   { const path = (w, c) => { g.strokeStyle = c; g.lineWidth = w; g.lineCap = g.lineJoin = 'round'; g.beginPath(); TRAIL.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.stroke(); };
     g.save(); path(30, '#6b4f30'); path(22, '#c9a874'); g.setLineDash([3, 14]); path(6, '#a8875a'); g.restore(); } // v1.55b 山徑（黃土路＋路邊）
-  { const pd = partyDist(S), hit = fightLog.hit; for (const sp of SPOTS) { const done = (pd != null && pd >= sp.d) || hit.has(sp.i), [x, y] = sp.pos; // 固定怪點：本趟走過＝已處理
+  { const pd = partyDist(S), hit = fightLog.hit; for (const sp of SPOTS) { const done = (pd != null && pd >= sp.d) || hit.has(sp.i), [x, y] = sp.pos; if (fogged(S, Math.floor(x / CHUNK), Math.floor(y / CHUNK))) continue; // 固定怪點：本趟走過＝已處理
     g.save(); g.globalAlpha = done ? 0.35 : 1; const sn = MONSTERS[sp.k]?.sprite; if (sn) sprite(sn, x, y, SC * 0.8); else { g.fillStyle = '#7a2a1a'; g.beginPath(); g.arc(x, y - 10, 11, 0, 7); g.fill(); g.fillStyle = '#fff'; g.font = 'bold 13px sans-serif'; g.textAlign = 'center'; g.fillText(ENEMIES[sp.k].name[0], x, y - 6); }
-    label(done ? '✕' : sp.gate ? `守關・${sp.gate}` : ENEMIES[sp.k].name, x, y + 14, sp.gate ? '#b0301a' : '#7a1a10'); g.restore(); } }
+    const gi = ROUTE.findIndex((g) => g.id === sp.ring), gn = sp.gate ? (rivalGate(S, routeSeg(gi), gi)?.gateName || sp.gate) : null, fought = fightLog.names.get(sp.i), ev = fightLog.evaded.has(sp.i);
+    label(ev ? `殘・${fought}` : done ? (fought ? `✕ ${fought}` : '✕') : gn ? `守關・${gn}` : ENEMIES[sp.k].name, x, y + 14, ev ? '#c05010' : sp.gate ? '#b0301a' : '#7a1a10'); g.restore(); } }
   for (const r of RINGS) { const n = S.pop?.[r.id]?.n ?? 0, [x, y] = r.nest; g.fillStyle = '#5a2a1a'; g.beginPath(); g.arc(x, y, 16, 0, 7); g.fill(); g.font = 'bold 22px sans-serif'; g.textAlign = 'center'; g.lineWidth = 5; g.strokeStyle = '#fff';
     const s = `${r.name}巢・${n}`; g.strokeText(s, x, y - 26); g.fillStyle = '#5a2a1a'; g.fillText(s, x, y - 26); } }
-function drawWorldTop() { const rd = raidDescent(S, raidMul(S)); // 獸襲下山（演出）
+function drawFog() { // v1.55c 迷霧：未探＝雲霧遮住；已探但不在視野＝淡化（只在巡山中）
+  for (const [cx, cy] of drawWorld.fog || []) { const x = cx * CHUNK, y = cy * CHUNK; g.fillStyle = '#4a4a56'; g.fillRect(x - 1, y - 1, CHUNK + 2, CHUNK + 2); g.fillStyle = 'rgba(255,255,255,.07)'; for (let k = 0; k < 4; k++) { g.beginPath(); g.arc(x + 40 + k * 60, y + 80 + (k % 2) * 90, 50, 0, 7); g.fill(); } }
+  if (S.exp) { g.fillStyle = 'rgba(240,236,225,.35)'; const c = { x: cam.x, y: cam.y, z: cam.z }; for (const [cx, cy] of chunksInView(c)) { const x = cx * CHUNK, y = cy * CHUNK; if (fogged(S, cx, cy) || (x < HOME.w && y >= HOME.y) || inVision(S, [x + CHUNK / 2, y + CHUNK / 2])) continue; g.fillRect(x, y, CHUNK, CHUNK); } } }
+function drawWorldTop() { drawFog(); const rd = raidDescent(S, raidMul(S)); // 獸襲下山（演出）
   if (rd) { const [x, y] = rd.pos; sprite(MONSTERS[rd.k].sprite, x, y, SC); label(`${MONSTERS[rd.k].name}下山中`, x, y - 40, '#a33'); }
   const pd = partyDist(S); if (pd != null) { const X = S.exp, team = X.team.map((id) => S.ds.find((d) => d.id === id)).filter(Boolean), back = X.phase === 'back', walking = !(X.busy > 0) && !fightLog.cur;
-    team.forEach((d, i) => { const [x, y] = trailAt(Math.max(0, pd + (back ? 1 : -1) * i * 4)), bob = walking ? Math.sin(performance.now() / 90 + i) * 2 : 0, im = IMG[d.sprite]; if (!im?.width) return;
+    const sty = back ? 'steady' : X.style; team.forEach((d, i) => { const [x, y] = styledPos(Math.max(0, pd + (back ? 1 : -1) * i * (sty === 'dash' ? 2 : 4)), sty), bob = walking ? Math.sin(performance.now() / 90 + i) * 2 : 0, im = IMG[d.sprite]; if (!im?.width) return;
       g.save(); g.translate(x + (i % 2 ? 10 : -10), y + bob); if (back) g.scale(-1, 1); g.drawImage(im, -im.width * SC * 0.7 / 2, -im.height * SC * 0.7, im.width * SC * 0.7, im.height * SC * 0.7); g.restore(); });
-    const [x, y] = trailAt(pd); label(`巡山隊 ${Math.round(pd)} 步${back ? '・回程' : ''}`, x, y - 70, '#7a1a10'); }
+    const [x, y] = trailAt(pd); label(`巡山隊 ${Math.round(pd)} 步${back ? '・回程' : `・${STYLE_PATH[X.style] || ''}`}`, x, y - 70, '#7a1a10');
+    for (const L of leftovers(S, fightLog.evaded)) { if (!L.chasing) continue; const t0 = (fightLog.chase[L.i] ??= performance.now()), k = Math.min(1, (performance.now() - t0) / 3000), [px, py] = styledPos(pd, 'steady'), lx = L.pos[0] + (px + 30 - L.pos[0]) * k, ly = L.pos[1] + (py - L.pos[1]) * k; // 溜走的殘餘怪追上來（＝返程驚獸）
+      const sn = MONSTERS[L.k]?.sprite; if (sn) sprite(sn, lx, ly, SC * 0.8); else { g.fillStyle = '#a03010'; g.beginPath(); g.arc(lx, ly - 10, 11, 0, 7); g.fill(); } label(`殘餘${fightLog.names.get(L.i) || ''}追來！`, lx, ly - 30, '#c05010'); } }
   const F = fightLog.cur; if (F) { const k = (performance.now() - F.t0) / FIGHT_MS; if (k >= 1) fightLog.cur = null; else { const [x, y] = F.pos; g.save(); // v1.55b 批次戰鬥演出：結果已由模擬算完，這裡只播 2.5 秒
       const sh = k < 0.7 ? Math.sin(k * 60) * 5 : 0, sn = MONSTERS[F.k]?.sprite, ex = x + 46 + sh; if (sn) sprite(sn, ex, y, SC * 0.9); else { g.fillStyle = '#7a2a1a'; g.beginPath(); g.arc(ex, y - 14, 15, 0, 7); g.fill(); }
       for (let i = 0; i < 3; i++) { const a = k * 9 + i * 2.1; g.strokeStyle = `rgba(255,240,200,${0.9 - k})`; g.lineWidth = 4; g.beginPath(); g.arc(x + 24, y - 24, 22 + i * 7, a, a + 1.2); g.stroke(); }
       g.globalAlpha = Math.min(1, 3 * (1 - k)); g.font = 'bold 22px serif'; g.textAlign = 'center'; g.lineWidth = 5; g.strokeStyle = '#fff'; const s = `⚔ ${F.name}${k > 0.55 ? `・${F.res}` : ''}`; g.strokeText(s, x + 24, y - 64); g.fillStyle = '#8a1a10'; g.fillText(s, x + 24, y - 64); g.restore(); } } }
 // v1.55b 讀模擬差異得知剛打了誰（不寫狀態）
-const FIGHT_MS = 2500; const fightLog = { n: null, f: 0, snap: null, cur: null, hit: new Set() }; window.__fightLog = fightLog;
+const FIGHT_MS = 2500; const fightLog = { n: null, f: 0, snap: null, cur: null, hit: new Set(), names: new Map(), evaded: new Set(), chase: {} }; window.__fightLog = fightLog;
 const tally = (X) => ({ kills: { ...X.kills }, evaded: { ...X.evaded }, escaped: { ...X.escaped } });
-function fightWatch() { const X = S?.exp; if (!X) { fightLog.n = null; fightLog.hit.clear(); return; }
-  if (fightLog.n !== X.startT) { fightLog.n = X.startT; fightLog.f = X.fights; fightLog.ev = Object.values(X.evaded || {}).reduce((a, b) => a + b, 0); fightLog.snap = tally(X); fightLog.hit.clear(); return; }
+function fightWatch() { const X = S?.exp; if (!X) { fightLog.n = null; fightLog.hit.clear(); fightLog.names.clear(); fightLog.evaded.clear(); fightLog.chase = {}; return; }
+  if (fightLog.n !== X.startT) { fightLog.n = X.startT; fightLog.f = X.fights; fightLog.ev = Object.values(X.evaded || {}).reduce((a, b) => a + b, 0); fightLog.snap = tally(X); fightLog.hit.clear(); fightLog.names.clear(); fightLog.evaded.clear(); fightLog.chase = {}; return; }
   const ev = Object.values(X.evaded || {}).reduce((a, b) => a + b, 0); if (X.fights === fightLog.f && ev === fightLog.ev) return;
   const now = tally(X), diff = (a, b) => Object.keys(a).find((k) => (a[k] || 0) > (b[k] || 0)); const kk = diff(now.kills, fightLog.snap.kills), ke = diff(now.evaded, fightLog.snap.evaded), kf = diff(now.escaped, fightLog.snap.escaped), k = kk || kf || ke;
-  const sp = SPOTS.filter((s) => s.d <= X.dist + 0.01).pop(); if (sp) fightLog.hit.add(sp.i);
-  fightLog.cur = { t0: performance.now(), k, name: k ? ENEMIES[k].name : '守關', res: kk ? '擊倒' : kf ? '逃了' : ke ? '閃過' : '交手', pos: trailAt(X.dist) };
+  const back = X.phase === 'back', sp = back ? null : SPOTS.filter((s) => s.d <= X.dist + 0.01).pop(); if (sp) { fightLog.hit.add(sp.i); if (k) fightLog.names.set(sp.i, ENEMIES[k].name); if (ke && !kk && !kf) fightLog.evaded.add(sp.i); }
+  fightLog.cur = { t0: performance.now(), k, name: k ? ENEMIES[k].name : '守關', res: (back ? '返程驚獸・' : '') + (kk ? '擊倒' : kf ? '逃了' : ke ? '閃過' : '交手'), pos: trailAt(back ? (X.backPos ?? X.dist) : X.dist) };
   fightLog.f = X.fights; fightLog.ev = ev; fightLog.snap = now; }
 // 捲動：拖曳地圖、滾輪縮放（邊界由 camBounds 決定）
 { let drag = null; const k = () => Math.max(1600 / cv.clientWidth, 900 / cv.clientHeight) / cam.uz;
@@ -365,6 +372,21 @@ function fightWatch() { const X = S?.exp; if (!X) { fightLog.n = null; fightLog.
 { const bar = document.createElement('div'); bar.id = 'camui'; bar.innerHTML = '<button id="cam-home">🏯 回山門</button><button id="cam-follow">👣 跟隨隊伍</button>'; $('wrap').append(bar);
   const toast = document.createElement('div'); toast.id = 'camtoast'; toast.hidden = true; $('wrap').append(toast);
   $('cam-home').onclick = () => { camHome(); refreshCamUI(); }; $('cam-follow').onclick = () => camFollow(); toast.onclick = () => { camFollow(true); toast.hidden = true; }; }
+// v1.55c 小地圖：全世界縮圖（底圖只畫一次）＋迷霧＋門派／隊伍／巢點＋視窗框；點哪跳哪
+const MM = { w: 240, h: 180 }; MM.k = MM.w / WORLD.w; let mmBase = null;
+function mmBaseImg() { if (mmBase) return mmBase; mmBase = document.createElement('canvas'); mmBase.width = MM.w; mmBase.height = MM.h; const m = mmBase.getContext('2d'), st = 32;
+  for (let y = 0; y < WORLD.h; y += st) for (let x = 0; x < WORLD.w; x += st) { const c = cellColor(x + st / 2, y + st / 2) || '#c9b48a'; m.fillStyle = c; m.fillRect(x * MM.k, y * MM.k, st * MM.k + 0.5, st * MM.k + 0.5); }
+  m.strokeStyle = '#7a5a3a'; m.lineWidth = 1.5; m.beginPath(); TRAIL.forEach((p, i) => (i ? m.lineTo(p[0] * MM.k, p[1] * MM.k) : m.moveTo(p[0] * MM.k, p[1] * MM.k))); m.stroke(); return mmBase; }
+function drawMinimap() { const cv2 = $('minimap'); if (!cv2 || !S) return; const m = cv2.getContext('2d'), k = MM.k; m.drawImage(mmBaseImg(), 0, 0);
+  m.fillStyle = '#3a3a46'; for (let cy = 0; cy < FOG_H; cy++) for (let cx = 0; cx < FOG_W; cx++) if (fogged(S, cx, cy)) m.fillRect(cx * CHUNK * k, cy * CHUNK * k, CHUNK * k + 0.5, CHUNK * k + 0.5);
+  m.fillStyle = '#b5332a'; m.fillRect(HOME.x * k, HOME.y * k, HOME.w * k, HOME.h * k); m.fillStyle = '#fff'; m.font = '10px sans-serif'; m.fillText('山門', 4, MM.h - 6);
+  for (const r of RINGS) { const cx = Math.floor(r.nest[0] / CHUNK), cy = Math.floor(r.nest[1] / CHUNK); if (fogged(S, cx, cy)) continue; m.fillStyle = '#5a2a1a'; m.beginPath(); m.arc(r.nest[0] * k, r.nest[1] * k, 2.5, 0, 7); m.fill(); }
+  const pp = partyPos(S); if (pp) { m.fillStyle = '#ff3020'; m.beginPath(); m.arc(pp[0] * k, pp[1] * k, 4, 0, 7); m.fill(); }
+  const z = cam.z; m.strokeStyle = '#fff'; m.lineWidth = 1.5; m.strokeRect((cam.x - 800 / z) * k, (cam.y - 450 / z) * k, 1600 / z * k, 900 / z * k); }
+export function minimapJump(mx, my) { cam.follow = false; cam.ux = mx / MM.k; cam.uy = my / MM.k; refreshCamUI(); }
+window.__minimapJump = minimapJump;
+{ const c = document.createElement('canvas'); c.id = 'minimap'; c.width = MM.w; c.height = MM.h; $('wrap').append(c);
+  c.addEventListener('click', (e) => { const r = c.getBoundingClientRect(); minimapJump((e.clientX - r.left) * MM.w / r.width, (e.clientY - r.top) * MM.h / r.height); }); }
 function refreshCamUI() { const b = $('cam-follow'); if (!b) return; b.disabled = !S?.exp; b.classList.toggle('on', cam.follow); }
 let lastExpT = null; function expToast() { const X = S?.exp, t = $('camtoast'); if (X && X.startT !== lastExpT) { lastExpT = X.startT; t.textContent = '👣 巡山隊出發了——點這裡跟著看'; t.hidden = false; clearTimeout(t._h); t._h = setTimeout(() => { t.hidden = true; }, 8000); } if (!X) { lastExpT = null; t.hidden = true; } refreshCamUI(); }
 
