@@ -751,6 +751,9 @@ const constructionSiteExample = {
 | **11. 劍道無上魅力《獨孤九劍》（無招勝有招・後發先至）** | **[Cataclysm: DDA](https://github.com/CleverRaven/Cataclysm-DDA)**（CC-BY-SA 3.0，`data/json/techniques.json` 的 `dodge_counter / block_counter` 與 `required_buffs_all` 條件破綻反擊）＋ **[Veloren](https://github.com/veloren/veloren)**（GPLv3，`Buildup` 起手前搖破綻截擊）＋ **《笑傲江湖》獨孤九劍「見招拆招」** | **敵手前搖破綻截擊（`onTargetBuildupFlaw`）＋ 0s 跳過己方前搖後發先至 ＋ 五破圖譜（破掌／破棍／破劍／破箭／破氣）**：對手處於 `Buildup` 起手瞬間亮起破綻紅芒，九劍傳人零前搖疾刺破綻、強制打斷對手大招；且**木人無招不可練，唯有與活人切磋／拆招才能精進對應破式** | 不把獨孤九劍做成無腦全屏飛劍轟炸（那屬於道門《太清御劍術》）；九劍魅力在於「敵越強、招越繁，破綻越明顯」的精準截擊 |
 | **12. 二十一位傳奇宗師與頂級潛力弟子（金庸群俠 × 周星馳《鹿鼎記》《功夫》宇宙）** | **《金庸群俠傳》開源重製社群（[kys-cpp](https://github.com/scarsty/kys-cpp) / [jynew](https://github.com/jynew/jynew) GPLv3）** ＋ **《Dwarf Fortress》個人嗜好** ＋ **《RimWorld》特質驅動（`TraitDef` / `Hospitality`）** ＋ **周星馳《鹿鼎記》《功夫》經典名場面致敬** | **九大系統連動（名菜引洪七公、包租婆水缸 <50% 獅吼催水、阿星重傷木乃伊破繭打通任督二脈領悟《如來神掌》、豬籠城寨三隱士平時打雜危急爆衣、十全大補湯引海大富、韋小寶滔滔江水 0 成本招工＋撒石灰＋抓奶龍爪手）＋ 八大傳奇戰鬥物理機制** | 不做成課金抽卡池；所有傳奇宗師與頂級弟子皆由玩家在山門經營出的美食、水缸、藥湯、寒玉床與義學奇遇自然觸發 |
 | **13. 雙軌開局創角（五維配點＋問卷 vs 選經典角色如岳不群）、天命課金加點與「零手動全自動個性驅動」** | **[Cataclysm: DDA](https://github.com/CleverRaven/Cataclysm-DDA)**（CC-BY-SA 3.0，多池自由配點 `newcharacter.cpp`）＋ **[FreeSO](https://github.com/riperiperi/FreeSO)**（MPL-2.0，高自由意志 AI）＋ **[Progress Quest](https://bitbucket.org/grumdrig/pq)**（GPL，零手動自走 RPG）＋ **[ToME4](https://github.com/NetCoreGames/tome4)**（GPLv3，專屬宿命進階樹） | **統一角色模板（自創五維配點＋天命課金加點＋5 題情境問卷 vs 直接選經典角色當主角，未選者轉入可招募弟子池）＋ 零手動掌門自走引擎（`SectLeaderAutopilot`：玩家不動手時由個性自動修練與自動敲鐘招工／義學收徒）＋ 四階本命武學與宿命分歧樹（如岳不群：抱元勁 ➔ 養吾劍 ➔ 紫霞神功 ➔ 紫霞十重正道 vs 引刀自宮辟邪劍法）** | 不讓經典角色開局就滿級秒殺全場（必須從破道館第一階順著性格一步步練起）；不強制要求玩家每分鐘微操點滑鼠 |
+| **14. 全自動觀影導演鏡頭與「10 秒確定性名場面重播」** | **[OpenTTD](https://github.com/OpenTTD/OpenTTD)**（GPLv2，`Extra Viewport` 子母畫面與新聞快訊）＋ **RimWorld（`LetterStack` 事件分級）** ＋ **[Ikemen GO](https://github.com/ikemen-engine/Ikemen-GO)**（MIT，格鬥確定性重播） | **三級事件分流 ＋ 傳奇名場面自動推鏡慢動作（Director Auto-Zoom）＋ 確定性高光書籤重播（Instant Replay Clip）**：在零手動自走模式下，日常小事不打擾，但遇到「洪七公偷吃、阿星破繭如來神掌、岳不群深夜引刀自宮」時自動推鏡特寫並存下快照，玩家倒水回來也能一鍵重播剛才錯過的 10 秒名場面！ | 不做佔用大量記憶體的影片錄製（直接利用 60Hz deterministic snapshot + 600 ticks 重演，僅佔幾 KB！） |
+| **15. 同圖混戰三層視覺降噪與「0.12s 破招頓幀」** | **[Zero-K](https://github.com/ZeroK-RTS/Zero-K)**（GPLv2，RTS 圖層優先序與地面預警）＋ **[Ikemen GO](https://github.com/ikemen-engine/Ikemen-GO)**（MIT，`Hitstop` 破招頓幀與書法字標） | **地面 25% 水墨陣法層 ＋ 決定性破招 `0.12s` 頓幀（Hitstop）＋ 非戰鬥雜役自動退廊圍觀**：解決 12 人＋20 怪同圖施展金龍、獅吼、龜波氣功時的畫面光害，讓《獨孤九劍》破招與《乾坤大挪移》反彈瞬間清晰無比 | 不做遮擋全螢幕的浮誇粒子特效；不讓挑水路過的雜役卡在戰場正中央 |
+| **16. 純 JSON 宣告式宿命樹引擎與「說書人節奏閥門」** | **[inkjs](https://github.com/y-lohse/inkjs)**（MIT，純資料條件狀態圖）＋ **RimWorld（`Storyteller` 人口與事件節奏控制）** ＋ **[ToME4](https://github.com/NetCoreGames/tome4)**（GPLv3，跨周目天命解鎖池） | **零硬編碼 `destiny-trees.json` ＋ 設施因果門檻（一旬最多 1 位傳奇奇遇）＋ 開局世界畫風濾鏡（正統武俠／星爺無厘頭／全明星）＋ 跨周目天命傳家寶**：新增第 22 位傳奇角色只需填 30 行 JSON；達成名場面可免費獲天命點並解鎖該角色為下局主角！ | 絕不在 `model.mjs` 裡寫 21 套角色專屬 `if-else`；絕不在開局前 10 分鐘把所有神級角色一次塞爆破道館 |
 
 ---
 
@@ -786,6 +789,88 @@ const constructionSiteExample = {
 - **我們的透明化升級方案**：
   1. **領悟線索透明可查**：在藏經閣／武學圖譜 UI 中，還沒領悟的進階武學會以**「水墨剪影＋明確領悟線索」**呈現（例如：`【？？？・中階掌法】線索：需《青松掌法》Lv3 ＋《磐石吐納》Lv2 ＋ 臂力 Lv3，於外功場切磋或靜室閉關領悟`）。玩家永遠有下一個明確的期待目標！
   2. **同圖招式「質變」而非純數值膨脹**：每往上一階，不只是傷害數字變大，而是**幾何形狀與物理機制進化**（如：凡品單發扇形 ➔ 良品二連發排雲氣浪 ➔ 珍品隔空金印震暈 ➔ 絕品護山劍陣領域），在同圖演武與塔防時一眼就能看出「神功大成」的震撼感！
+
+---
+
+### 5.3 架構全面體檢（Design Review）：五大潛在痛點與開源優化方案
+
+經過對目前整體設計（破道館 7 區擴建、四階武學與羅漢拳破限、獨孤九劍、21 位金庸×周星馳傳奇角色、雙軌開局創角與零手動自走掌門）的全面檢視，我們發現這套架構在結合「高度自動化」與「高密度名場面」時，若不提前做好防護，實作後會面臨 **5 個具體的體驗與工程瓶頸**。我們參考開源社群最佳實踐，補齊以下五大優化閉環：
+
+```mermaid
+flowchart TD
+    subgraph Review["架構全面體檢：五大潛在風險與開源解法"]
+        P1["痛點一：全自動掛機時\n玩家倒水錯過名場面"] --> S1["解法一 (OpenTTD + Ikemen GO)\n觀影導演自動推鏡 + 10秒確定性重播書籤"]
+        P2["痛點二：21位傳奇角色\n同時湧入搶戲與畫風衝突"] --> S2["解法二 (RimWorld Storyteller)\n說書人因果節奏閥門 + 開局畫風濾鏡"]
+        P3["痛點三：同圖12人+20怪\n神功齊發導致畫面光害"] --> S3["解法三 (Zero-K + Ikemen GO)\n三層視覺降噪 + 0.12s 破招頓幀 + 雜役退廊"]
+        P4["痛點四：21套宿命成長樹\n硬編碼 if-else 維護地獄"] --> S4["解法四 (inkjs + CDDA)\n純 JSON 宣告式宿命狀態機 (<150行引擎)"]
+        P5["痛點五：天命課金加點\n與單機多周目重玩閉環"] --> S5["解法五 (ToME4 + 太吾繪卷)\n名場面免費賺天命 + 跨周目藏經閣傳家寶"]
+    end
+```
+
+#### 體檢一：「零手動全自動（Autopilot）」下玩家錯過高光名場面問題（Missed Climax Problem）
+- **潛在風險**：當玩家開啟「零手動全自動掌門（`SectLeaderAutopilot`）」放著觀察或去泡咖啡時，山門裡可能剛好發生「洪七公半夜偷吃叫化雞」、「阿星從木乃伊繃帶破繭領悟如來神掌」或「令狐沖一劍刺破對手前搖破綻」。如果沒有鏡頭引導與回放機制，玩家回來只看到一行冷冰冰的文字紀錄，魅力會大打折扣。
+- **開源借鏡**：**[OpenTTD](https://github.com/OpenTTD/OpenTTD)**（GPLv2，`Extra Viewport` 事件子母視窗與底部新聞快訊）＋ **RimWorld（`LetterStack` 事件分級）** ＋ **[Ikemen GO](https://github.com/ikemen-engine/Ikemen-GO)**（MIT，確定性格鬥重播）。
+- **具體優化方案**：
+  1. **三級事件分流（3-Tier Notification）**：
+     - **Tier C（日常瑣事：挑水、砍柴、普通打樁）**：僅顯示頭頂微氣泡，0 視窗打擾。
+     - **Tier B（門派進度：竣工、外門晉升、突破小境界）**：右側浮現水墨竹簡書籤，點擊可將鏡頭平滑移至當事人。
+     - **Tier A（傳奇名場面：宗師造訪、獨孤九劍破招、阿星破繭、岳不群深夜抉擇）**：觸發**「觀影導演鏡頭（Cinema Director Mode）」**——鏡頭自動平滑推近（Zoom `1.35x`）、全場進入 `0.3x` 慢動作特寫 `1.5` 秒，讓玩家像看武俠電影一樣直擊高潮！
+  2. **「10 秒確定性名場面重播（Instant Replay Clip）」**：
+     - 由於我們的底層模擬是 `60Hz` 100% 確定性狀態機（Deterministic State + RNG Seed），每當觸發 Tier A 名場面時，系統只需在記憶體存下一份 **事件前 5 秒的輕量狀態快照（Snapshot，僅約 `4KB`）**。
+     - 就算玩家當時不在電腦前，回來點擊右側竹簡書籤上的 **「🎬 重播名場面（10s）」**，即可在子母畫面或主畫面完美重演剛才那 10 秒的精彩過招！
+
+#### 體檢二：21 位傳奇角色「神仙菜市場／搶戲稀釋」與畫風衝突問題（Spotlight Crowding & Tone Clash）
+- **潛在風險**：如果一局遊戲裡，洪七公、東方不敗、喬峰、包租婆、火雲邪神在短短兩旬內全部湧進破道館，不僅床位與糧食瞬間崩潰，每位傳奇角色的戲份也會被稀釋成普通路人；此外，有玩家某局想玩「正統金庸悲劇武俠（如岳不群走火入魔）」，某局想玩「周星馳無厘頭歡樂功夫」，混在一起可能偶爾出戲。
+- **開源借鏡**：**RimWorld（`Storyteller` 人口曲線與威脅節奏閥門）** ＋ **[Battle for Wesnoth](https://github.com/wesnoth/wesnoth)**（GPLv2，戰役時代篩選器 Era Filter）。
+- **具體優化方案**：
+  1. **「說書人因果節奏閥門（Storyteller Pacing Gate）」**：
+     - **建築階段門檻**：S0 破道館期最多只會遇到 **1 位** 初期落魄奇才（如背柴少年郭靖、混混阿星、或嘴砲韋小寶）；S1 膳房與外功場建成後才解鎖第二梯隊（令狐沖、包租公婆）；S2 藏經閣、瀑布與名菜齊備後才解鎖宗師級奇遇（洪七公、東方不敗、火雲邪神）。
+     - **冷卻與單局精選（Curated Cast per Run）**：每旬最多觸發 **1 次** 傳奇人物奇遇；單局遊戲從 21 人池中依玩家山門建設方向自然觸發 **6～8 位** 核心傳奇人物，確保每位進門的角色都有充足的宿命戲份，且每開新局遇到的組合都不同！
+  2. **開局「江湖畫風濾鏡（World Tone Filter）」**：
+     - 創角時提供一鍵勾選：**`【全明星江湖（預設：金庸＋星爺混搭）】`**、**`【正統金庸武俠（僅金庸群俠）】`**、或 **`【周星馳無厘頭宇宙（僅鹿鼎記＋功夫）】`**，滿足不同心境！
+
+#### 體檢三：同圖 12 人＋20 怪混戰時的「畫面光害與可讀性問題」（Same-Map Visual Clutter）
+- **潛在風險**：當後山獸潮或拜山踢館發生時，同張地圖上有喬峰放金龍、包租婆吼獅吼功、海大富推龜波氣功、東方不敗灑繡花針，還要加上外門雜役挑水路過，畫面很容易變成一團看不清動作的光害。
+- **開源借鏡**：**[Zero-K](https://github.com/ZeroK-RTS/Zero-K)**（GPLv2，RTS 圖層優先序與地面預警圓）＋ **[Ikemen GO](https://github.com/ikemen-engine/Ikemen-GO)**（MIT，`Hitstop` 破招頓幀）。
+- **具體優化方案**：
+  1. **三層視覺優先序（3-Layer Visual Hierarchy）**：
+     - **底層（地面水墨紋，透明度 `25%`）**：太極圖、打狗陣、護山劍陣一律畫在地板人物腳下，絕不遮擋人物肢體。
+     - **中層（半透明氣勁，透明度 `50%`）**：普通拳掌扇形與箭矢。
+     - **頂層（決定性瞬間＋`0.12s` 格鬥破招頓幀 Hitstop）**：只有當觸發**《獨孤九劍》破招截擊、《乾坤大挪移》反彈、或《如來神掌》天降金印**時，全場觸發 `0.12 秒`（7 幀）的格鬥遊戲式「頓幀定格（Hitstop）」＋水墨書法大字（如 **`【破劍式！】`**），打擊感與辨識度瞬間拉滿！
+  2. **非戰鬥人員自動退廊助威（Civilian Auto-Evade & Cheer）**：
+     - 一旦山門進入演武或迎敵狀態，未參戰的外門雜役與工匠會自動放下扁擔、退到走廊屋簷下安全格，並做出「拍手助威／驚呼」動畫，既不擋路又充滿《天下霸圖》與《功夫》豬籠城寨街坊圍觀的熱鬧氣氛！
+
+#### 體檢四：21 位經典角色「四階宿命樹」的工程可維護性（Zero-Hardcode Data-Driven Destiny Graph）
+- **潛在風險**：如果把岳不群、令狐沖、阿星等 21 人的「四階武學解鎖條件＋關鍵宿命抉擇」寫成 `model.mjs` 裡的硬編碼 `if (actor.id === 'yue_buqun') ...`，程式碼會迅速膨脹成難以維護的義大利麵，且極易破壞確定性存檔。
+- **開源借鏡**：**[inkjs](https://github.com/y-lohse/inkjs)**（MIT，純資料條件故事節點）＋ **[Cataclysm: DDA](https://github.com/CleverRaven/Cataclysm-DDA)**（CC-BY-SA 3.0，JSON 條件結構）。
+- **具體優化方案**：
+  - 將所有角色的四階成長抽離為純資料檔案 **`sect-chronicle/life/data/destiny-trees.json`**，引擎只寫一個 `<150` 行的通用檢核器 `evaluateDestinyMilestones(world, actor)`：
+    ```json
+    {
+      "archetypeId": "yue_buqun",
+      "stages": [
+        { "stage": 1, "unlockArt": "baoyuan_jin", "require": { "dayMin": 1 } },
+        { "stage": 2, "unlockArt": "yangwu_sword", "require": { "facility": "hall_repaired", "artLv": { "baoyuan_jin": 2 } } },
+        { "stage": 3, "unlockArt": "zixia_qi", "require": { "facility": "quiet_room", "moralityMin": 70, "artLv": { "yangwu_sword": 4 } } },
+        { "stage": 4, "dilemmaId": "huashan_crisis", "branches": {
+            "orthodox": { "require": { "stat": { "focus": 10 } }, "unlockArt": "zixia_tier10", "title": "華山聖手" },
+            "bixie": { "require": { "item": "kasaya_scroll" }, "unlockArt": "bixie_sword", "applyTrait": "castrated_speed_x3", "title": "紫衣梟雄" }
+          }
+        }
+      ]
+    }
+    ```
+  - **工程效益**：新增第 22 位傳奇角色只需填寫 30 行 JSON，**0 行核心程式碼修改**，且天然支援單元測試與確定性回放！
+
+#### 體檢五：「天命課金加點」與單機多周目重玩價值的良性閉環（Meta-Progression & Fair Monetization）
+- **潛在風險**：玩家可能會擔心「課金加點會不會變成逼課手遊？」或者「打完一局岳不群之後，下一局還有什麼新鮮感？」
+- **開源借鏡**：**[Tales of Maj'Eyal (ToME4)](https://github.com/NetCoreGames/tome4)**（GPLv3，跨周目成就解鎖池與 Donator 便利包）＋ **《太吾繪卷／活俠傳》天命輪迴與傳家寶**。
+- **具體優化方案**：
+  1. **雙軌獲取「天命功德點（Destiny Points）」**：
+     - **免費遊玩成就軌**：在遊戲中每達成一個傳奇里程碑（例如：第一次讓低悟性弟子把《羅漢拳》練到 Lv10、第一次吸引洪七公入駐、或打通岳不群正道／邪道結局），都會永久獲得 **+2～+5 點天命點**，並**免費解鎖該傳奇弟子作為下一局的可選開局主角**！
+     - **支持者課金包軌（Supporter DLC / 課金加速）**：忙碌的上班族玩家若想直接體驗「開局全屬性拉滿的天才自創主角」或「開局直接解鎖全部 21 位經典主角模板」，可透過支持者天命包一鍵解鎖，完全不影響單機平衡，且雙軌玩家都能享受完整內容。
+  2. **「藏經閣秘笈／神兵傳家寶」跨周目繼承（Heirloom Carryover）**：
+     - 上一周目自創主角親手撰寫進藏經閣的鎮派絕學、或是打造的《玄鐵重劍》，在開啟下一周目（例如選岳不群或阿星開局）時，可花費少量天命點作為**「破道館祖傳遺物」**帶入新局，讓每一周目的努力都成為下一段江湖傳奇的基石！
 
 ---
 
