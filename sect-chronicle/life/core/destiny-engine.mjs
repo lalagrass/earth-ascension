@@ -60,6 +60,30 @@ export function evaluateDestinyMilestones(world, actor, customTrees = null) {
           }
         }
       }
+
+      if (meetsRequire && req.sparringCountMin != null) {
+        if ((actor.sparringCount ?? 0) < req.sparringCountMin) {
+          meetsRequire = false;
+        }
+      }
+
+      if (meetsRequire && req.damageTakenMin != null) {
+        if ((actor.damageTaken ?? 0) < req.damageTakenMin) {
+          meetsRequire = false;
+        }
+      }
+
+      if (meetsRequire && req.isCocoonHealed != null) {
+        if (!actor.isCocoonHealed) {
+          meetsRequire = false;
+        }
+      }
+
+      if (meetsRequire && req.hasPartnerBond != null) {
+        if (!actor.starterDuo?.partnerId && !actor.partnerId) {
+          meetsRequire = false;
+        }
+      }
     }
 
     // 分歧判定 (如第四階心魔分歧)

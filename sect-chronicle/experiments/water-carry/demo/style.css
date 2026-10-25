@@ -269,3 +269,391 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .poem-box { margin: 6px 0; padding: 4px 8px; border-left: 3px solid #8a6a3e; background: rgba(138, 106, 62, 0.08); font-style: italic; font-size: 12px; color: #6a4a2a; }
 .decision-explain { background: #fffaf0; border: 1px solid #dfd2be; border-radius: 6px; padding: 6px 8px; margin: 6px 0; font-size: 12px; }
 .decision-explain div { margin-bottom: 2px; }
+
+/* LIFE-V01-V02 Duo & Portrait Integration */
+.duo-dock {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(239, 228, 203, 0.4);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 3px 8px;
+  margin: 0 4px;
+}
+.duo-member {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hud-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid var(--line);
+  background: #3b2d1c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.hud-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hud-mono {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: bold;
+}
+.hud-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.hud-name {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--ink);
+}
+.hud-tag {
+  font-size: 10px;
+  color: var(--ink2);
+}
+.duo-synergy-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #4a3a26;
+  color: #fffaf0;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.duo-synergy-pill .synergy-icon {
+  color: #f7d358;
+}
+
+/* Modal upgrades */
+.creation-modal-box {
+  max-width: 720px;
+  max-height: 92vh;
+}
+.custom-hero-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(239, 228, 203, 0.4);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+.custom-hero-meta {
+  flex: 1;
+}
+.custom-hint {
+  font-size: 12px;
+  color: var(--ink2);
+  margin: 4px 0 0;
+}
+.portrait-box {
+  width: 64px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--line);
+  background: #3b2d1c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.portrait-box.compact {
+  width: 50px;
+  height: 62px;
+}
+.portrait-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.portrait-monogram {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+.stat-note {
+  font-size: 11px;
+  color: var(--ink2);
+  margin-left: 8px;
+}
+
+/* Preset Cards Grid (6 templates) */
+.preset-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.preset-card {
+  background: #fffaf0;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.preset-card:hover {
+  border-color: #8a6a3e;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.preset-card.active {
+  border-color: #4a3a26;
+  background: #faf4e8;
+  box-shadow: 0 0 0 2px #8a6a3e;
+}
+.card-top {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.card-title-box h3 {
+  margin: 0;
+  font-size: 15px;
+  color: #3b2d1c;
+}
+.card-title-box .subtitle {
+  font-size: 12px;
+  color: var(--ink2);
+  margin-bottom: 2px;
+}
+.badge.patrol-badge {
+  display: inline-block;
+  background: #4a3a26;
+  color: #f0e6d6;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.stats-bars {
+  background: rgba(239, 228, 203, 0.4);
+  border-radius: 6px;
+  padding: 4px 6px;
+  margin: 4px 0 6px;
+}
+.stat-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  margin-bottom: 2px;
+}
+.mini-bar {
+  flex: 1;
+  height: 5px;
+  background: #d8cbb5;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.mini-bar i {
+  display: block;
+  height: 100%;
+  background: #8a6a3e;
+  border-radius: 3px;
+}
+.preset-card .perk-p {
+  margin: 2px 0;
+  font-size: 11px;
+}
+.perk-tag {
+  background: #dfd2be;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 600;
+  color: #3b2d1c;
+}
+.preset-card .poem {
+  font-style: italic;
+  font-size: 11px;
+  color: #7a5028;
+  margin: 2px 0;
+}
+.preset-card .note {
+  font-size: 11px;
+  color: var(--ink2);
+  margin: 2px 0 6px;
+  line-height: 1.25;
+}
+.select-hero-btn {
+  width: 100%;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #eee4d0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--ink);
+  margin-top: auto;
+}
+.select-hero-btn.active {
+  background: #4a3a26;
+  color: #fffaf0;
+  border-color: #3b2d1c;
+}
+
+/* Fellow Disciple Selection */
+.fellow-selection-section {
+  margin-top: 14px;
+  border-top: 2px solid var(--line);
+  padding-top: 12px;
+}
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #3b2d1c;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.text-muted {
+  font-size: 11px;
+  font-weight: normal;
+  color: var(--ink2);
+}
+.fellow-pills-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 8px;
+}
+.fellow-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 4px;
+  background: #fffaf0;
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.fellow-pill:hover:not(.disabled) {
+  border-color: #8a6a3e;
+  background: #faf4e8;
+}
+.fellow-pill.active {
+  border-color: #4a3a26;
+  background: #4a3a26;
+  color: #fffaf0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.fellow-pill.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+.fellow-pill .pill-avatar {
+  width: 36px;
+  height: 44px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  margin-bottom: 4px;
+  background: #3b2d1c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fellow-pill .pill-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fellow-pill .pill-name {
+  font-size: 12px;
+  font-weight: 700;
+}
+.fellow-pill .pill-style {
+  font-size: 10px;
+  color: var(--ink2);
+}
+.fellow-pill.active .pill-style {
+  color: #eedfc9;
+}
+
+/* Active Duo Synergy Card */
+.duo-synergy-card {
+  margin-top: 12px;
+  background: linear-gradient(135deg, #fffaf0 0%, #f5ebd8 100%);
+  border: 2px solid #8a6a3e;
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-shadow: 0 2px 8px rgba(138, 106, 62, 0.15);
+}
+.synergy-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.synergy-badge {
+  background: #8a6a3e;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.duo-synergy-card h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #3b2d1c;
+}
+.synergy-title-sub {
+  font-size: 11px;
+  color: var(--ink2);
+}
+.synergy-desc {
+  font-size: 12px;
+  color: var(--ink);
+  margin: 4px 0 6px;
+  line-height: 1.35;
+}
+.synergy-bonus-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.bonus-tag {
+  background: #4a3a26;
+  color: #f7d358;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.large-btn {
+  font-size: 14px;
+  padding: 8px 20px;
+}

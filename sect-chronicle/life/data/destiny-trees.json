@@ -126,6 +126,109 @@
           }
         }
       ]
+    },
+    "destiny.linghu_chong": {
+      "archetypeId": "linghu_chong",
+      "name": "令狐沖",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "狂狷浪子",
+          "unlockArt": "art.huashan_basic_sword",
+          "require": { "dayMin": 1 }
+        },
+        {
+          "stage": 2,
+          "name": "太岳三峰",
+          "unlockArt": "art.taiyue_three_peaks",
+          "require": {
+            "sparringCountMin": 5,
+            "artLevel": { "art.huashan_basic_sword": 3 }
+          }
+        },
+        {
+          "stage": 3,
+          "name": "總決式截擊",
+          "unlockArt": "art.dugu_nine_swords_stance",
+          "require": {
+            "statMin": { "comprehension": 9 },
+            "artLevel": { "art.taiyue_three_peaks": 3 }
+          }
+        },
+        {
+          "stage": 4,
+          "name": "九劍五破易筋經",
+          "unlockArt": "art.five_flaw_mastery_yijinjing",
+          "require": {
+            "artLevel": { "art.dugu_nine_swords_stance": 5 }
+          }
+        }
+      ]
+    },
+    "destiny.ah_sing": {
+      "archetypeId": "ah_sing",
+      "name": "阿星",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "草根無影腳",
+          "unlockArt": "art.shadowless_toe_stomp",
+          "require": { "dayMin": 1 }
+        },
+        {
+          "stage": 2,
+          "name": "銅皮鐵骨",
+          "unlockArt": "art.bronze_skin_iron_bone",
+          "require": { "damageTakenMin": 200 }
+        },
+        {
+          "stage": 3,
+          "name": "木乃伊金光破繭",
+          "unlockArt": "art.meridian_cocoon_breakthrough",
+          "require": { "isCocoonHealed": true }
+        },
+        {
+          "stage": 4,
+          "name": "萬佛朝宗如來神掌",
+          "unlockArt": "art.buddha_palm_ultimate",
+          "require": {
+            "artLevel": { "art.meridian_cocoon_breakthrough": 1 }
+          }
+        }
+      ]
+    },
+    "destiny.landlady": {
+      "archetypeId": "landlady",
+      "name": "包租婆",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "風火輪極速",
+          "unlockArt": "art.hot_wheels_sprint",
+          "require": { "dayMin": 1 }
+        },
+        {
+          "stage": 2,
+          "name": "震退獅吼",
+          "unlockArt": "art.lion_roar_knockback",
+          "require": { "facilityCompleted": "fac.hall" }
+        },
+        {
+          "stage": 3,
+          "name": "古鐘大喇叭擴音",
+          "unlockArt": "art.bronze_bell_megaphonic_roar",
+          "require": {
+            "statMin": { "composure": 8 },
+            "artLevel": { "art.lion_roar_knockback": 3 }
+          }
+        },
+        {
+          "stage": 4,
+          "name": "太極獅吼合擊",
+          "unlockArt": "art.couple_taichi_roar_combo",
+          "require": { "hasPartnerBond": true }
+        }
+      ]
     }
   }
 }

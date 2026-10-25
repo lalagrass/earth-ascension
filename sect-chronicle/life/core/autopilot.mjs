@@ -92,6 +92,66 @@ export class SectLeaderAutopilot {
     return { ok: true, isSmoothTalker, speechBubble };
   }
 
+  // 檢查包租婆水缸催水獅吼 (反例 6)
+  checkLandladySupervision(world, actor) {
+    const isLandlady = actor?.templateId === 'landlady'
+      || actor?.id === 'disc.preset_landlady'
+      || actor?.name === '包租婆'
+      || actor?.traits?.includes('perk.lion_roar_supervise')
+      || actor?.innateStats?.innatePerks?.includes('perk.lion_roar_supervise');
+
+    if (!isLandlady) {
+      return { triggered: false, reason: 'NOT_LANDLADY' };
+    }
+
+    const vatCurrent = world.vat ?? world.waterVat ?? (world.inventory?.water ?? 0);
+    const vatCapacity = world.vatCapacity ?? 8;
+    const waterRatio = vatCapacity > 0 ? (vatCurrent / vatCapacity) : 1.0;
+
+    // 水缸存量 < 50% 精準觸發 (反例 6: 51% 不發動, 49% 精準觸發)
+    const threshold = LIFE_V02_CONSTANTS.supervision?.waterThreshold ?? 0.50;
+    if (waterRatio >= threshold) {
+      world.supervisionActive = false;
+      return { triggered: false, waterRatio, reason: 'WATER_ABOVE_THRESHOLD' };
+    }
+
+    world.supervisionActive = true;
+    const speechBubble = '包租婆～怎麼沒水了呢？！';
+    world.lastSpeechBubble = {
+      actorId: actor.id,
+      text: speechBubble,
+      tick: world.tick || 0,
+    };
+
+    const baseMultiplier = 1.0 + (LIFE_V02_CONSTANTS.supervision?.baseSpeedBonus ?? 0.50); // 1.50
+    const slackerMultiplier = 1.0 + (LIFE_V02_CONSTANTS.supervision?.slackerDuoSpeedBonus ?? 0.65); // 1.65
+
+    return {
+      triggered: true,
+      waterRatio,
+      baseMultiplier,
+      slackerMultiplier,
+      speechBubble,
+    };
+  }
+
+  // 計算指定弟子的移速倍率 (含催水獅吼與搭檔加成)
+  getSpeedMultiplierFor(world, disciple) {
+    if (!world?.supervisionActive) {
+      return 1.0;
+    }
+    const isSlacker = disciple?.templateId === 'ah_sing'
+      || disciple?.templateId === 'wei_xiaobao'
+      || disciple?.id === 'disc.preset_sing'
+      || disciple?.id === 'disc.preset_wei'
+      || disciple?.name === '阿星'
+      || disciple?.name === '韋小寶';
+
+    return isSlacker
+      ? 1.0 + (LIFE_V02_CONSTANTS.supervision?.slackerDuoSpeedBonus ?? 0.65)
+      : 1.0 + (LIFE_V02_CONSTANTS.supervision?.baseSpeedBonus ?? 0.50);
+  }
+
   // 2. 結算建築完工
   completeConstruction(world, facilityId, actor = null) {
     const site = world.facilities?.[facilityId];
@@ -177,6 +237,11 @@ export class SectLeaderAutopilot {
   step(world, actor) {
     if (!actor.persona?.autopilot?.enabled) {
       return;
+    }
+
+    // 包租婆獅吼催水主動檢查
+    if (actor.traits?.includes('perk.lion_roar_supervise') || actor.name === '包租婆' || actor.templateId === 'landlady') {
+      this.checkLandladySupervision(world, actor);
     }
 
     // 若有進行中的 Toil，繼續步進

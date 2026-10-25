@@ -2,7 +2,7 @@
 // HUD、名冊、選單、面板、名牌、提示是 HTML/CSS。世界只有 model.mjs：畫面只讀 view()，下令只走 dispatch()，
 // 推進只經 createClock() 換算的固定步進。暫停、背景、播放倍率與畫面幀率都不改結果。
 import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.min.mjs';
-import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES, QUESTIONNAIRE } from './model.mjs';
+import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES, QUESTIONNAIRE, ICONIC_TEMPLATES, DUO_SYNERGIES, getDuoSynergy, PORTRAIT_MANIFEST } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
 import { saveTo, loadFrom } from './life-save.mjs';
 import { guardedSave, guardedLoad } from './life02.mjs'; // SG-LIFE-02 存讀邊界（SG-TRAIN-01 共用）
@@ -633,7 +633,7 @@ $('boar').addEventListener('click', (e) => {
   const b = e.target.closest('[data-cmd]'); if (b) command(b.dataset.cmd);
 });
 
-// LIFE-V01-V02 創角、Autopilot 與敲鐘招工 UI 接線
+// LIFE-V01-V02 創角、同門搭檔、Autopilot 與敲鐘招工 UI 接線
 function setupLifeV02UI() {
   const modal = $('creation-modal');
   const creationBtn = $('creation-btn');
@@ -644,6 +644,12 @@ function setupLifeV02UI() {
   const contentPreset = $('content-preset');
   const autopilotBtn = $('autopilot-btn');
   const ringBellBtn = $('ring-bell-btn');
+  const submitBtn = $('submit-creation');
+  const fellowPillsContainer = $('fellow-pills-container');
+
+  let currentHeroMode = 'preset';
+  let selectedHeroPreset = 'yue_buqun';
+  let selectedFellowPreset = 'linghu_chong';
 
   const currentStats = { comprehension: 6, constitution: 6, strength: 6, agility: 6, composure: 6 };
   let destinyBonus = 0;
@@ -660,6 +666,62 @@ function setupLifeV02UI() {
     for (const stat of Object.keys(currentStats)) {
       const el = $(`val-${stat}`);
       if (el) el.textContent = currentStats[stat];
+    }
+  }
+
+  function renderFellowPills() {
+    if (!fellowPillsContainer) return;
+    const iconicKeys = ['yue_buqun', 'guo_jing', 'wei_xiaobao', 'linghu_chong', 'ah_sing', 'landlady'];
+    fellowPillsContainer.innerHTML = iconicKeys.map((key) => {
+      const tmpl = ICONIC_TEMPLATES[key];
+      const isHero = currentHeroMode === 'preset' && selectedHeroPreset === key;
+      const isSelected = selectedFellowPreset === key;
+      const meta = PORTRAIT_MANIFEST[key];
+      const disabledClass = isHero ? 'disabled' : '';
+      const activeClass = isSelected ? 'active' : '';
+
+      return `
+        <div class="fellow-pill ${activeClass} ${disabledClass}" data-fellow="${key}" title="${isHero ? '（已被選為掌門，不可重複選擇）' : tmpl.title}">
+          <div class="pill-avatar">
+            <img src="${tmpl.portraitUrl}" alt="${tmpl.name}" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+            <div class="pill-mono" style="display:none;background:${meta?.fallbackPalette?.bg || '#333'};color:${meta?.fallbackPalette?.fg || '#fff'};">${meta?.monogram || '俠'}</div>
+          </div>
+          <span class="pill-name">${tmpl.name}</span>
+          <span class="pill-style">${tmpl.patrolStyle}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function updateDuoSynergyPreview() {
+    const heroKey = currentHeroMode === 'custom' ? 'custom_hero' : selectedHeroPreset;
+    const fellowKey = selectedFellowPreset;
+    const synergy = getDuoSynergy(heroKey, fellowKey);
+
+    const nameEl = $('preview-synergy-name');
+    const titleEl = $('preview-synergy-title');
+    const descEl = $('preview-synergy-desc');
+    const bonusEl = $('preview-synergy-bonus');
+
+    if (nameEl) nameEl.textContent = synergy.name;
+    if (titleEl) titleEl.textContent = synergy.title;
+    if (descEl) descEl.textContent = synergy.desc;
+
+    if (bonusEl && synergy.startingBonus) {
+      const bonusItems = [];
+      const b = synergy.startingBonus;
+      if (b.timber) bonusItems.push(`原木 +${b.timber}`);
+      if (b.stone) bonusItems.push(`青石 +${b.stone}`);
+      if (b.tea) bonusItems.push(`迎客茶 +${b.tea}`);
+      if (b.gold) bonusItems.push(`初始銅錢 +${b.gold}`);
+      if (b.freeArtisan) bonusItems.push('招工 0 成本');
+      if (b.bonusTimberOnComplete) bonusItems.push(`完工贈木 +${b.bonusTimberOnComplete}`);
+      if (b.choreSpeedBonus) bonusItems.push(`備料移速 +${Math.round(b.choreSpeedBonus * 100)}%`);
+      if (b.lionRoarSpeedBonus) bonusItems.push(`獅吼逃命步 +${Math.round(b.lionRoarSpeedBonus * 100)}%`);
+      if (b.prestigeMultiplier) bonusItems.push(`聲望 x${b.prestigeMultiplier}`);
+      if (b.sparringExpMultiplier) bonusItems.push(`切磋領悟 x${b.sparringExpMultiplier}`);
+      if (b.allExpBonus) bonusItems.push(`心得 +${Math.round(b.allExpBonus * 100)}%`);
+      bonusEl.innerHTML = bonusItems.map((txt) => `<span class="bonus-tag">${txt}</span>`).join('');
     }
   }
 
@@ -682,20 +744,29 @@ function setupLifeV02UI() {
   creationBtn?.addEventListener('click', () => {
     modal.hidden = false;
     updatePointsLeft();
+    renderFellowPills();
+    updateDuoSynergyPreview();
   });
   modalClose?.addEventListener('click', () => { modal.hidden = true; });
 
   tabCustom?.addEventListener('click', () => {
+    currentHeroMode = 'custom';
     tabCustom.classList.add('active');
     tabPreset.classList.remove('active');
     contentCustom.hidden = false;
     contentPreset.hidden = true;
+    renderFellowPills();
+    updateDuoSynergyPreview();
   });
+
   tabPreset?.addEventListener('click', () => {
+    currentHeroMode = 'preset';
     tabPreset.classList.add('active');
     tabCustom.classList.remove('active');
     contentPreset.hidden = false;
     contentCustom.hidden = true;
+    renderFellowPills();
+    updateDuoSynergyPreview();
   });
 
   contentCustom?.addEventListener('click', (e) => {
@@ -718,54 +789,96 @@ function setupLifeV02UI() {
     });
   }
 
-  $('submit-custom')?.addEventListener('click', () => {
-    const name = ($('custom-name')?.value || '林玄真').trim();
-    const perk = $('custom-perk')?.value || 'perk.peerless_talent';
-    const answers = [];
-    if (Array.isArray(QUESTIONNAIRE)) {
-      for (const q of QUESTIONNAIRE) {
-        const checked = document.querySelector(`input[name="q_${q.id}"]:checked`);
-        if (checked) answers.push(checked.value);
-      }
+  // 選擇 Preset 掌門卡片
+  contentPreset?.addEventListener('click', (e) => {
+    const card = e.target.closest('.preset-card');
+    if (!card) return;
+    const presetKey = card.dataset.preset;
+    if (!presetKey) return;
+
+    selectedHeroPreset = presetKey;
+    for (const c of document.querySelectorAll('.preset-card')) {
+      const isSel = c.dataset.preset === selectedHeroPreset;
+      c.classList.toggle('active', isSel);
+      const btn = c.querySelector('.select-hero-btn');
+      if (btn) btn.classList.toggle('active', isSel);
     }
-    const res = model.dispatch({
-      type: 'INIT_PERSONA',
-      payload: {
+
+    if (selectedFellowPreset === selectedHeroPreset) {
+      const candidates = ['guo_jing', 'wei_xiaobao', 'yue_buqun', 'linghu_chong', 'ah_sing', 'landlady'].filter((k) => k !== selectedHeroPreset);
+      selectedFellowPreset = candidates[0];
+    }
+
+    renderFellowPills();
+    updateDuoSynergyPreview();
+  });
+
+  // 選擇 Fellow 搭檔
+  fellowPillsContainer?.addEventListener('click', (e) => {
+    const pill = e.target.closest('.fellow-pill');
+    if (!pill || pill.classList.contains('disabled')) return;
+    const fellowKey = pill.dataset.fellow;
+    if (!fellowKey) return;
+
+    selectedFellowPreset = fellowKey;
+    renderFellowPills();
+    updateDuoSynergyPreview();
+  });
+
+  submitBtn?.addEventListener('click', () => {
+    let payload;
+    if (currentHeroMode === 'custom') {
+      const name = ($('custom-name')?.value || '林玄真').trim();
+      const perk = $('custom-perk')?.value || 'perk.peerless_talent';
+      const answers = [];
+      if (Array.isArray(QUESTIONNAIRE)) {
+        for (const q of QUESTIONNAIRE) {
+          const checked = document.querySelector(`input[name="q_${q.id}"]:checked`);
+          if (checked) answers.push(checked.value);
+        }
+      }
+      payload = {
         mode: 'custom',
         name,
         stats: { ...currentStats },
         destinyBonusPoints: destinyBonus,
         innatePerks: [perk],
         questionnaireAnswers: answers,
-      },
+        fellowTemplateId: selectedFellowPreset,
+      };
+    } else {
+      payload = {
+        mode: 'preset',
+        presetKey: selectedHeroPreset,
+        fellowTemplateId: selectedFellowPreset,
+      };
+    }
+
+    const res = model.dispatch({
+      type: 'INIT_PERSONA',
+      payload,
     });
+
     if (!res.ok) {
       toast(`創角失敗：${res.reason}`);
       return;
     }
-    modal.hidden = true;
-    profiles.hero = { name: res.master.name, label: '掌門', role: `${res.master.persona.daoTitle} · 自創掌門` };
-    v = model.view();
-    toast(`掌門【${name}】立匾就任破道館，零手動自走開局！`);
-    renderChrome();
-  });
 
-  contentPreset?.addEventListener('click', (e) => {
-    const btn = e.target.closest('.select-preset-btn');
-    if (!btn) return;
-    const presetKey = btn.dataset.preset;
-    const res = model.dispatch({
-      type: 'INIT_PERSONA',
-      payload: { mode: 'preset', presetKey },
-    });
-    if (!res.ok) {
-      toast(`選擇失敗：${res.reason}`);
-      return;
-    }
     modal.hidden = true;
-    profiles.hero = { name: res.master.name, label: '掌門', role: `${res.master.persona.daoTitle} · 經典傳奇` };
+    profiles.hero = {
+      name: res.master.name,
+      label: '掌門',
+      role: `${res.master.persona?.daoTitle || '掌門'} · ${currentHeroMode === 'custom' ? '自創掌門' : res.master.title}`,
+    };
+    if (res.fellowDisciple) {
+      profiles.cousin = {
+        name: res.fellowDisciple.name,
+        label: '同門',
+        role: `${res.fellowDisciple.title} · 同門相依`,
+      };
+    }
     v = model.view();
-    toast(`經典掌門【${res.master.name}】就任破道館，全自動自走開啟！`);
+    toast(`掌門【${res.master.name}】與同門【${res.fellowDisciple?.name || '搭檔'}】立匾就任破道館，零手動自走開局！`);
     renderChrome();
   });
 
@@ -787,6 +900,9 @@ function setupLifeV02UI() {
     }
     renderChrome();
   });
+
+  renderFellowPills();
+  updateDuoSynergyPreview();
 }
 setupLifeV02UI();
 
@@ -1139,6 +1255,46 @@ function renderChrome() {
       } else {
         bubbleEl.hidden = true;
       }
+    }
+
+    // LIFE-V01-V02 Duo Dock 更新
+    const heroMeta = life.master;
+    const fellowMeta = life.fellow;
+    const duoSynergy = life.activeDuoSynergy || life.duoSynergy;
+
+    if (heroMeta) {
+      const heroNameEl = $('hud-hero-name');
+      if (heroNameEl) heroNameEl.textContent = heroMeta.name;
+      const heroImg = $('hud-hero-img');
+      const heroMono = $('hud-hero-mono');
+      if (heroImg && heroMeta.portraitUrl) {
+        if (!heroImg.src.endsWith(heroMeta.portraitUrl)) {
+          heroImg.src = heroMeta.portraitUrl;
+        }
+        heroImg.style.display = 'block';
+        if (heroMono) heroMono.style.display = 'none';
+      }
+    }
+
+    if (fellowMeta) {
+      const fellowNameEl = $('hud-fellow-name');
+      if (fellowNameEl) fellowNameEl.textContent = fellowMeta.name;
+      const fellowImg = $('hud-fellow-img');
+      const fellowMono = $('hud-fellow-mono');
+      if (fellowImg && fellowMeta.portraitUrl) {
+        if (!fellowImg.src.endsWith(fellowMeta.portraitUrl)) {
+          fellowImg.src = fellowMeta.portraitUrl;
+        }
+        fellowImg.style.display = 'block';
+        if (fellowMono) fellowMono.style.display = 'none';
+      }
+    }
+
+    if (duoSynergy) {
+      const synTitleEl = $('hud-synergy-title');
+      if (synTitleEl) synTitleEl.textContent = duoSynergy.name;
+      const duoDockPill = $('hud-duo-synergy');
+      if (duoDockPill) duoDockPill.title = `${duoSynergy.title}：${duoSynergy.desc}`;
     }
   }
   const cards = IDS.map((who) => {

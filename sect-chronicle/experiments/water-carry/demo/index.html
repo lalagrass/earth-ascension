@@ -26,6 +26,32 @@
   <span class="chip" id="herbs">藥架 0／8 份</span>
   <span class="chip" id="leg">主角 Lv 1</span>
   <span class="chip" id="trips">共挑 0 趟</span>
+  <div id="duo-dock" class="duo-dock">
+    <div class="duo-member" id="hud-hero" title="掌門主角">
+      <div class="hud-avatar">
+        <img id="hud-hero-img" src="/experiments/water-carry/demo/assets/portraits/yue_buqun.png" alt="掌門" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+        <span id="hud-hero-mono" class="hud-mono" style="display:none;background:#4a2545;color:#e8d7f1;">岳</span>
+      </div>
+      <div class="hud-info">
+        <span class="hud-name" id="hud-hero-name">岳不群</span>
+        <span class="hud-tag" id="hud-hero-tag">掌門</span>
+      </div>
+    </div>
+    <div class="duo-synergy-pill" id="hud-duo-synergy" title="同門雙人羈絆">
+      <span class="synergy-icon">⚡</span>
+      <span id="hud-synergy-title">師徒同門・規矩與酒</span>
+    </div>
+    <div class="duo-member" id="hud-fellow" title="同門搭檔">
+      <div class="hud-avatar">
+        <img id="hud-fellow-img" src="/experiments/water-carry/demo/assets/portraits/linghu_chong.png" alt="搭檔" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+        <span id="hud-fellow-mono" class="hud-mono" style="display:none;background:#20324f;color:#cce0ff;">令</span>
+      </div>
+      <div class="hud-info">
+        <span class="hud-name" id="hud-fellow-name">令狐沖</span>
+        <span class="hud-tag" id="hud-fellow-tag">搭檔</span>
+      </div>
+    </div>
+  </div>
   <button class="btn on" id="shadow-toggle" title="S：主角的初始腳力對照，不產水">初始影子</button>
   <button class="btn" id="creation-btn" title="雙軌開局創角">創角</button>
   <button class="btn on" id="autopilot-btn" title="零手動掌門自走">自走中</button>
@@ -53,35 +79,46 @@
 <div id="speech-bubble" class="speech-bubble" hidden></div>
 
 <div id="creation-modal" class="modal-overlay" hidden>
-  <div class="modal-box">
+  <div class="modal-box creation-modal-box">
     <div class="modal-header">
-      <h2>破道館開局 · 掌門雙軌創角</h2>
+      <h2>破道館開局 · 掌門雙軌創角與同門搭檔</h2>
       <button id="modal-close" class="btn">✕</button>
     </div>
     <div class="modal-tabs">
       <button id="tab-custom" class="tab-btn active">模式 A：自創掌門 (30點配點 + 問卷)</button>
-      <button id="tab-preset" class="tab-btn">模式 B：經典傳奇 (岳不群/郭靖/韋小寶)</button>
+      <button id="tab-preset" class="tab-btn">模式 B：經典傳奇 (六大最具反差模板)</button>
     </div>
+
+    <!-- 模式 A：自創掌門 -->
     <div id="content-custom" class="tab-content">
-      <div class="creation-row">
-        <label>掌門姓名：</label>
-        <input type="text" id="custom-name" value="林玄真" maxlength="10">
+      <div class="custom-hero-banner">
+        <div class="portrait-box compact">
+          <img src="/experiments/water-carry/demo/assets/portraits/custom_hero.png" alt="自創掌門" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+          <div class="portrait-monogram" style="display:none;background:#2b3a42;color:#88c0d0;border-color:#4c566a;">天</div>
+        </div>
+        <div class="custom-hero-meta">
+          <div class="creation-row">
+            <label>掌門姓名：</label>
+            <input type="text" id="custom-name" value="林玄真" maxlength="10">
+          </div>
+          <p class="custom-hint">天命掌門，先天五維自由配點，情境問卷推導心印與道家稱號，搭配初始同門護法開局。</p>
+        </div>
       </div>
       <div class="points-pool">
-        <div class="pool-header">先天五維 (剩餘點數：<b id="points-left">0</b>)</div>
-        <div class="stat-row"><span>悟性 (1~10)</span><button class="btn btn-stat" data-stat="comprehension" data-d="-1">-</button><span id="val-comprehension" class="stat-val">6</span><button class="btn btn-stat" data-stat="comprehension" data-d="1">+</button></div>
-        <div class="stat-row"><span>根骨 (1~10)</span><button class="btn btn-stat" data-stat="constitution" data-d="-1">-</button><span id="val-constitution" class="stat-val">6</span><button class="btn btn-stat" data-stat="constitution" data-d="1">+</button></div>
-        <div class="stat-row"><span>臂力 (1~10)</span><button class="btn btn-stat" data-stat="strength" data-d="-1">-</button><span id="val-strength" class="stat-val">6</span><button class="btn btn-stat" data-stat="strength" data-d="1">+</button></div>
-        <div class="stat-row"><span>身法 (1~10)</span><button class="btn btn-stat" data-stat="agility" data-d="-1">-</button><span id="val-agility" class="stat-val">6</span><button class="btn btn-stat" data-stat="agility" data-d="1">+</button></div>
-        <div class="stat-row"><span>定力 (1~10)</span><button class="btn btn-stat" data-stat="composure" data-d="-1">-</button><span id="val-composure" class="stat-val">6</span><button class="btn btn-stat" data-stat="composure" data-d="1">+</button></div>
+        <div class="pool-header">先天五維自由配點 (剩餘可用點數：<b id="points-left">0</b>)</div>
+        <div class="stat-row"><span>悟性 (1~10)</span><button class="btn btn-stat" data-stat="comprehension" data-d="-1">-</button><span id="val-comprehension" class="stat-val">6</span><button class="btn btn-stat" data-stat="comprehension" data-d="1">+</button><small class="stat-note">影響領悟速率與破綻捕捉</small></div>
+        <div class="stat-row"><span>根骨 (1~10)</span><button class="btn btn-stat" data-stat="constitution" data-d="-1">-</button><span id="val-constitution" class="stat-val">6</span><button class="btn btn-stat" data-stat="constitution" data-d="1">+</button><small class="stat-note">影響精力上限與內息容量</small></div>
+        <div class="stat-row"><span>臂力 (1~10)</span><button class="btn btn-stat" data-stat="strength" data-d="-1">-</button><span id="val-strength" class="stat-val">6</span><button class="btn btn-stat" data-stat="strength" data-d="1">+</button><small class="stat-note">影響負重上限與出拳威力</small></div>
+        <div class="stat-row"><span>身法 (1~10)</span><button class="btn btn-stat" data-stat="agility" data-d="-1">-</button><span id="val-agility" class="stat-val">6</span><button class="btn btn-stat" data-stat="agility" data-d="1">+</button><small class="stat-note">影響空手移速與出招前搖</small></div>
+        <div class="stat-row"><span>定力 (1~10)</span><button class="btn btn-stat" data-stat="composure" data-d="-1">-</button><span id="val-composure" class="stat-val">6</span><button class="btn btn-stat" data-stat="composure" data-d="1">+</button><small class="stat-note">影響閉關突破與抗魔心性</small></div>
       </div>
       <div class="destiny-bonus">
         <span>天命加點池：</span>
-        <label><input type="radio" name="destinyBonus" value="0" checked> 標準 (0 點)</label>
-        <label><input type="radio" name="destinyBonus" value="10"> 天命神仙 (+10 點)</label>
+        <label><input type="radio" name="destinyBonus" value="0" checked> 標準凡人 (0 點)</label>
+        <label><input type="radio" name="destinyBonus" value="10"> 天命神仙 (+10 點加點)</label>
       </div>
       <div class="innate-perk">
-        <span>先天詞條：</span>
+        <span>先天命格詞條：</span>
         <select id="custom-perk">
           <option value="perk.peerless_talent" selected>【萬中無一】：武學熟練度提升速率 +50%</option>
           <option value="perk.gentleman_sword">【君子端方】：大廳早課聲望累積翻倍</option>
@@ -90,36 +127,186 @@
         </select>
       </div>
       <div class="questionnaire-box" id="questionnaire-list">
-        <!-- 由 app.mjs 動態生成 5 題問卷 -->
-      </div>
-      <div class="modal-foot">
-        <button id="submit-custom" class="btn primary-btn">立匾開局 (進入破道館)</button>
+        <!-- 由 app.mjs 動態生成 5 題情境性向問卷 -->
       </div>
     </div>
+
+    <!-- 模式 B：經典傳奇六大反差模板 -->
     <div id="content-preset" class="tab-content" hidden>
-      <div class="preset-cards">
-        <div class="preset-card">
-          <h3>岳不群 <small>君子端方 · 紫霞氣宗</small></h3>
-          <p class="stats-p">悟性 7、根骨 6、臂力 5、身法 7、定力 8</p>
-          <p class="perk-p">詞條：【君子端方】 | 心印：☰ 乾為天</p>
+      <div class="preset-cards-grid" id="preset-cards-container">
+        <!-- 岳不群 -->
+        <div class="preset-card active" data-preset="yue_buqun">
+          <div class="card-top">
+            <div class="portrait-box">
+              <img src="/experiments/water-carry/demo/assets/portraits/yue_buqun.png" alt="岳不群" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+              <div class="portrait-monogram" style="display:none;background:#4a2545;color:#e8d7f1;border-color:#7b3e68;">岳</div>
+            </div>
+            <div class="card-title-box">
+              <h3>岳不群</h3>
+              <div class="subtitle">君子端方 · 正邪雙面</div>
+              <span class="badge patrol-badge">正統穩健 (orthodox_steady)</span>
+            </div>
+          </div>
+          <div class="stats-bars">
+            <div class="stat-bar-row"><span>悟7</span><div class="mini-bar"><i style="width:70%"></i></div><span>根6</span><div class="mini-bar"><i style="width:60%"></i></div></div>
+            <div class="stat-bar-row"><span>臂5</span><div class="mini-bar"><i style="width:50%"></i></div><span>身7</span><div class="mini-bar"><i style="width:70%"></i></div></div>
+            <div class="stat-bar-row"><span>定8</span><div class="mini-bar"><i style="width:80%"></i></div></div>
+          </div>
+          <p class="perk-p">特質：<span class="perk-tag">君子端方</span> | 心印：☰ 乾為天</p>
           <p class="poem">「紫氣東來映華山，有所不為立人間」</p>
-          <button class="btn primary-btn select-preset-btn" data-preset="yue_buqun">選擇岳不群開局</button>
+          <p class="note">優先修補大廳屋頂與早課；大廳授課聲望累積翻倍。</p>
+          <button class="btn select-hero-btn active" data-preset="yue_buqun">選為掌門主角</button>
         </div>
-        <div class="preset-card">
-          <h3>郭靖 <small>抱樸守拙 · 至拙苦練</small></h3>
-          <p class="stats-p">悟性 2、根骨 9、臂力 8、身法 4、定力 9</p>
-          <p class="perk-p">詞條：【萬中無一】 | 心印：☷ 坤為地</p>
+
+        <!-- 郭靖 -->
+        <div class="preset-card" data-preset="guo_jing">
+          <div class="card-top">
+            <div class="portrait-box">
+              <img src="/experiments/water-carry/demo/assets/portraits/guo_jing.png" alt="郭靖" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+              <div class="portrait-monogram" style="display:none;background:#3d3021;color:#eedfc9;border-color:#785b3a;">郭</div>
+            </div>
+            <div class="card-title-box">
+              <h3>郭靖</h3>
+              <div class="subtitle">抱樸守拙 · 至拙推土機</div>
+              <span class="badge patrol-badge">全清推土機 (completionist_bulldozer)</span>
+            </div>
+          </div>
+          <div class="stats-bars">
+            <div class="stat-bar-row"><span>悟2</span><div class="mini-bar"><i style="width:20%"></i></div><span>根9</span><div class="mini-bar"><i style="width:90%"></i></div></div>
+            <div class="stat-bar-row"><span>臂8</span><div class="mini-bar"><i style="width:80%"></i></div><span>身4</span><div class="mini-bar"><i style="width:40%"></i></div></div>
+            <div class="stat-bar-row"><span>定9</span><div class="mini-bar"><i style="width:90%"></i></div></div>
+          </div>
+          <p class="perk-p">特質：<span class="perk-tag">抱樸守拙</span> <span class="perk-tag">萬中無一</span> | 心印：☷ 坤為地</p>
           <p class="poem">「抱樸守拙知常在，苦練千回意自純」</p>
-          <button class="btn primary-btn select-preset-btn" data-preset="guo_jing">選擇郭靖開局</button>
+          <p class="note">任勞任怨第一名，除草砍柴挑水備料效率極高；協建體魄成長翻倍。</p>
+          <button class="btn select-hero-btn" data-preset="guo_jing">選為掌門主角</button>
         </div>
-        <div class="preset-card">
-          <h3>韋小寶 <small>滑頭斥候 · 滔滔江水</small></h3>
-          <p class="stats-p">悟性 8、根骨 3、臂力 3、身法 9、定力 7</p>
-          <p class="perk-p">詞條：【滔滔江水】(0成本招工) | 心印：☱ 兌為澤</p>
+
+        <!-- 韋小寶 -->
+        <div class="preset-card" data-preset="wei_xiaobao">
+          <div class="card-top">
+            <div class="portrait-box">
+              <img src="/experiments/water-carry/demo/assets/portraits/wei_xiaobao.png" alt="韋小寶" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+              <div class="portrait-monogram" style="display:none;background:#1f3d36;color:#d0f0c0;border-color:#2e6f5e;">韋</div>
+            </div>
+            <div class="card-title-box">
+              <h3>韋小寶</h3>
+              <div class="subtitle">滑頭斥候 · 滔滔江水</div>
+              <span class="badge patrol-badge">潛行摸金 (stealth_looter)</span>
+            </div>
+          </div>
+          <div class="stats-bars">
+            <div class="stat-bar-row"><span>悟8</span><div class="mini-bar"><i style="width:80%"></i></div><span>根3</span><div class="mini-bar"><i style="width:30%"></i></div></div>
+            <div class="stat-bar-row"><span>臂3</span><div class="mini-bar"><i style="width:30%"></i></div><span>身9</span><div class="mini-bar"><i style="width:90%"></i></div></div>
+            <div class="stat-bar-row"><span>定7</span><div class="mini-bar"><i style="width:70%"></i></div></div>
+          </div>
+          <p class="perk-p">特質：<span class="perk-tag">滔滔江水</span> (0成本招工) | 心印：☱ 兌為澤</p>
           <p class="poem">「神行百變戲王侯，巧舌如簧解千愁」</p>
-          <button class="btn primary-btn select-preset-btn" data-preset="wei_xiaobao">選擇韋小寶開局</button>
+          <p class="note">敲鐘招工觸發【滔滔江水】0 成本免茶水且木匠倒貼原木 +1！</p>
+          <button class="btn select-hero-btn" data-preset="wei_xiaobao">選為掌門主角</button>
+        </div>
+
+        <!-- 令狐沖 -->
+        <div class="preset-card" data-preset="linghu_chong">
+          <div class="card-top">
+            <div class="portrait-box">
+              <img src="/experiments/water-carry/demo/assets/portraits/linghu_chong.png" alt="令狐沖" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+              <div class="portrait-monogram" style="display:none;background:#20324f;color:#cce0ff;border-color:#3b5998;">令</div>
+            </div>
+            <div class="card-title-box">
+              <h3>令狐沖</h3>
+              <div class="subtitle">狂狷浪子 · 破綻劍癡</div>
+              <span class="badge patrol-badge">尋釁挑殺 (challenger_seeker)</span>
+            </div>
+          </div>
+          <div class="stats-bars">
+            <div class="stat-bar-row"><span>悟10</span><div class="mini-bar"><i style="width:100%"></i></div><span>根5</span><div class="mini-bar"><i style="width:50%"></i></div></div>
+            <div class="stat-bar-row"><span>臂6</span><div class="mini-bar"><i style="width:60%"></i></div><span>身9</span><div class="mini-bar"><i style="width:90%"></i></div></div>
+            <div class="stat-bar-row"><span>定4</span><div class="mini-bar"><i style="width:40%"></i></div></div>
+          </div>
+          <p class="perk-p">特質：<span class="perk-tag">破綻劍癡</span> | 心印：☳ 震為雷</p>
+          <p class="poem">「任誕長歌行萬里，不隨流俗自成峰」</p>
+          <p class="note">最愛飲酒與同門切磋拆招；同門切磋經驗獲取速率翻倍。</p>
+          <button class="btn select-hero-btn" data-preset="linghu_chong">選為掌門主角</button>
+        </div>
+
+        <!-- 阿星 -->
+        <div class="preset-card" data-preset="ah_sing">
+          <div class="card-top">
+            <div class="portrait-box">
+              <img src="/experiments/water-carry/demo/assets/portraits/ah_sing.png" alt="阿星" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+              <div class="portrait-monogram" style="display:none;background:#403b2b;color:#fff2b2;border-color:#8c7b3e;">星</div>
+            </div>
+            <div class="card-title-box">
+              <h3>阿星</h3>
+              <div class="subtitle">草根混混 · 如來神掌</div>
+              <span class="badge patrol-badge">絕境逆襲 (underdog_brawler)</span>
+            </div>
+          </div>
+          <div class="stats-bars">
+            <div class="stat-bar-row"><span>悟6</span><div class="mini-bar"><i style="width:60%"></i></div><span>根8</span><div class="mini-bar"><i style="width:80%"></i></div></div>
+            <div class="stat-bar-row"><span>臂6</span><div class="mini-bar"><i style="width:60%"></i></div><span>身9</span><div class="mini-bar"><i style="width:90%"></i></div></div>
+            <div class="stat-bar-row"><span>定8</span><div class="mini-bar"><i style="width:80%"></i></div></div>
+          </div>
+          <p class="perk-p">特質：<span class="perk-tag">金剛破繭</span> | 心印：☲ 離為火</p>
+          <p class="poem">「塵泥不掩如來相，破繭金光照大千」</p>
+          <p class="note">手拿十塊錢小人書，開鎖奇快，被追時逃命步移速 +35%。</p>
+          <button class="btn select-hero-btn" data-preset="ah_sing">選為掌門主角</button>
+        </div>
+
+        <!-- 包租婆 -->
+        <div class="preset-card" data-preset="landlady">
+          <div class="card-top">
+            <div class="portrait-box">
+              <img src="/experiments/water-carry/demo/assets/portraits/landlady.png" alt="包租婆" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+              <div class="portrait-monogram" style="display:none;background:#4f1d24;color:#ffd4d8;border-color:#8a2b38;">包</div>
+            </div>
+            <div class="card-title-box">
+              <h3>包租婆</h3>
+              <div class="subtitle">暴躁當家 · 獅吼催水</div>
+              <span class="badge patrol-badge">霸道執法 (matriarch_enforcer)</span>
+            </div>
+          </div>
+          <div class="stats-bars">
+            <div class="stat-bar-row"><span>悟7</span><div class="mini-bar"><i style="width:70%"></i></div><span>根8</span><div class="mini-bar"><i style="width:80%"></i></div></div>
+            <div class="stat-bar-row"><span>臂7</span><div class="mini-bar"><i style="width:70%"></i></div><span>身10</span><div class="mini-bar"><i style="width:100%"></i></div></div>
+            <div class="stat-bar-row"><span>定8</span><div class="mini-bar"><i style="width:80%"></i></div></div>
+          </div>
+          <p class="perk-p">特質：<span class="perk-tag">獅吼催水</span> | 心印：☵ 坎為水</p>
+          <p class="poem">「獅吼一聲驚萬壑，當家治舍若雷霆」</p>
+          <p class="note">水缸存量 &lt;50% 叉腰獅吼，全場挑水砍柴移速瞬間 +50%！</p>
+          <button class="btn select-hero-btn" data-preset="landlady">選為掌門主角</button>
         </div>
       </div>
+    </div>
+
+    <!-- 雙人開局共同區域：開局同門搭檔選擇與黃金羈絆預覽 -->
+    <div class="fellow-selection-section">
+      <div class="section-title">
+        <span>🤝 選擇開局同門搭檔（相依為命的初始師兄弟/師姐）</span>
+        <small class="text-muted">（不可與掌門為同一人，其餘未選模板自動轉入江湖奇遇池）</small>
+      </div>
+      <div class="fellow-pills-row" id="fellow-pills-container">
+        <!-- 由 app.mjs 動態生成 6 個同門候選卡 -->
+      </div>
+    </div>
+
+    <!-- 同門雙人羈絆預覽卡 -->
+    <div class="duo-synergy-card" id="duo-synergy-preview">
+      <div class="synergy-header">
+        <span class="synergy-badge">⚡ 同門黃金羈絆</span>
+        <h4 id="preview-synergy-name">師徒同門・規矩與酒</h4>
+        <span class="synergy-title-sub" id="preview-synergy-title">華山師徒・正奇相生開局</span>
+      </div>
+      <p class="synergy-desc" id="preview-synergy-desc">師父岳不群修大廳與早課授課聲望翻倍；大徒弟令狐沖每日找岳不群切磋對練，招式經驗與破劍式領悟速率翻倍 (x2.0)！</p>
+      <div class="synergy-bonus-tags" id="preview-synergy-bonus">
+        <span class="bonus-tag">聲望 x2.0</span>
+        <span class="bonus-tag">切磋經驗 x2.0</span>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button id="submit-creation" class="btn primary-btn large-btn">立匾開局 (進入破道館)</button>
     </div>
   </div>
 </div>

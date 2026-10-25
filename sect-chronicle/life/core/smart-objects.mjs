@@ -73,6 +73,12 @@ export const LIFE_V02_CONSTANTS = Object.freeze({
     artisanBonusTimber: 1,
   },
 
+  supervision: {
+    waterThreshold: 0.50,
+    baseSpeedBonus: 0.50,
+    slackerDuoSpeedBonus: 0.65,
+  },
+
   simulation: {
     shichenDurationMs: 60000,
     shichenDurationTicks: 3600,

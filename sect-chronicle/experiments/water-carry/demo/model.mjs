@@ -45,7 +45,22 @@ import { ToilPipeline } from '../../../life/core/toils.mjs';
 import { SmartObjectSystem, LIFE_V02_CONSTANTS } from '../../../life/core/smart-objects.mjs';
 import { evaluateDestinyMilestones } from '../../../life/core/destiny-engine.mjs';
 import { SectLeaderAutopilot } from '../../../life/core/autopilot.mjs';
-import { createPersona, createPresetDisciple, createIconicRoster, QUESTIONNAIRE } from '../../../life/core/persona-creation.mjs';
+import {
+  createPersona,
+  createPresetDisciple,
+  createIconicRoster,
+  QUESTIONNAIRE,
+  ICONIC_TEMPLATES,
+  STARTER_TEMPLATES,
+  CUSTOM_HERO_TEMPLATE,
+  DUO_SYNERGIES,
+  PORTRAIT_MANIFEST,
+  resolvePortrait,
+  getDuoSynergy,
+  selectStarterDuo,
+  createFellowDisciple,
+  createMasterFromTemplate,
+} from '../../../life/core/persona-creation.mjs';
 export {
   ReservationBroker,
   ToilPipeline,
@@ -57,7 +72,182 @@ export {
   createPresetDisciple,
   createIconicRoster,
   QUESTIONNAIRE,
+  ICONIC_TEMPLATES,
+  STARTER_TEMPLATES,
+  CUSTOM_HERO_TEMPLATE,
+  DUO_SYNERGIES,
+  PORTRAIT_MANIFEST,
+  resolvePortrait,
+  getDuoSynergy,
+  selectStarterDuo,
+  createFellowDisciple,
+  createMasterFromTemplate,
 };
+
+// 套用掌門與同門雙人創角及開局羈絆加成
+export function applyPersonaCreation(world, payload = {}) {
+  const duoRes = selectStarterDuo(payload);
+  if (!duoRes.ok) {
+    return duoRes;
+  }
+
+  const { master, fellowDisciple, activeDuoSynergy, recruitPool } = duoRes;
+
+  world.playerPersona = master;
+  world.master = master;
+  world.fellowPersona = fellowDisciple;
+  world.fellowDisciple = fellowDisciple;
+  world.activeDuoSynergy = activeDuoSynergy;
+  world.duoSynergy = activeDuoSynergy;
+  world.recruitPool = recruitPool;
+
+  if (world.disciples) {
+    world.disciples[master.id] = master;
+    world.disciples[fellowDisciple.id] = fellowDisciple;
+  }
+
+  // 同步工作者資訊 (hero = master, cousin = fellowDisciple)
+  if (world.people?.hero) {
+    world.people.hero.name = master.name;
+    world.people.hero.title = master.title;
+    world.people.hero.portraitUrl = master.portraitUrl;
+    world.people.hero.patrolStyle = master.patrolStyle;
+    world.people.hero.traits = master.traits || [];
+  }
+  if (world.people?.cousin) {
+    world.people.cousin.name = fellowDisciple.name;
+    world.people.cousin.title = fellowDisciple.title;
+    world.people.cousin.portraitUrl = fellowDisciple.portraitUrl;
+    world.people.cousin.patrolStyle = fellowDisciple.patrolStyle;
+    world.people.cousin.traits = fellowDisciple.traits || [];
+    world.people.cousin.affinity = fellowDisciple.affinity ?? 65;
+  }
+
+  // 套用同門羈絆之開局加成 (startingBonus)
+  if (activeDuoSynergy?.startingBonus) {
+    const bonus = activeDuoSynergy.startingBonus;
+    if (world.inventory) {
+      if (bonus.timber) world.inventory.timber = (world.inventory.timber || 0) + bonus.timber;
+      if (bonus.stone) world.inventory.stone = (world.inventory.stone || 0) + bonus.stone;
+      if (bonus.tea) world.inventory.tea = (world.inventory.tea || 0) + bonus.tea;
+      if (bonus.gold) world.inventory.gold = (world.inventory.gold || 0) + bonus.gold;
+    }
+    if (bonus.tea && world.vat != null) {
+      world.vat = Math.max(world.vat, (world.inventory?.tea || 1));
+    }
+    if (bonus.bonusTimberOnComplete && world.facilities?.['fac.hall']?.workforce) {
+      world.facilities['fac.hall'].workforce.bonusTimberOnComplete = bonus.bonusTimberOnComplete;
+    }
+    if (bonus.moodFloor != null) {
+      world.moodFloor = bonus.moodFloor;
+    }
+    if (bonus.choreSpeedBonus != null) {
+      world.choreSpeedBonus = bonus.choreSpeedBonus;
+    }
+  }
+
+  return {
+    ok: true,
+    master,
+    playerPersona: master,
+    fellowPersona: fellowDisciple,
+    fellowDisciple,
+    activeDuoSynergy,
+    duoSynergy: activeDuoSynergy,
+    recruitPool,
+  };
+}
+
+export function createInitialState(options = {}) {
+  const broker = new ReservationBroker();
+  const toilPipeline = new ToilPipeline(broker);
+  const autopilot = new SectLeaderAutopilot(toilPipeline, broker);
+  const smartObjects = new SmartObjectSystem();
+
+  const facilities = {
+    'fac.hall': {
+      facilityId: 'fac.hall',
+      name: '大廳屋頂修繕',
+      targetStage: 'S1',
+      phase: 'staging_materials',
+      stagingPile: {
+        timber: { current: 0, required: 4, reservedInFlight: 0 },
+        stone: { current: 0, required: 4, reservedInFlight: 0 },
+        thatch: { current: 0, required: 4, reservedInFlight: 0 },
+      },
+      workforce: {
+        mode: 'hire_artisans',
+        hiredArtisan: null,
+        progressTicks: 0,
+        totalTicks: LIFE_V02_CONSTANTS.blueprints.hallRoofRepair.workTicks,
+        activeWorkerId: null,
+        bonusTimberOnComplete: 0,
+      },
+    },
+    'fac.dorm.a': {
+      facilityId: 'fac.dorm.a',
+      name: '第一間雙人寢舍落成',
+      targetStage: 'S1',
+      phase: 'staging_materials',
+      stagingPile: {
+        timber: { current: 0, required: 6, reservedInFlight: 0 },
+        stone: { current: 0, required: 2, reservedInFlight: 0 },
+        thatch: { current: 0, required: 2, reservedInFlight: 0 },
+      },
+      workforce: {
+        mode: 'hire_artisans',
+        hiredArtisan: null,
+        progressTicks: 0,
+        totalTicks: LIFE_V02_CONSTANTS.blueprints.dormExpansion.workTicks,
+        activeWorkerId: null,
+        bonusTimberOnComplete: 0,
+      },
+    },
+  };
+
+  const housing = {
+    beds: [
+      { id: 'bed-1', owner: null, occupant: null },
+      { id: 'bed-2', owner: null, occupant: null },
+    ],
+  };
+
+  const inventory = {
+    tea: 2,
+    timber: 0,
+    stone: 0,
+    thatch: 0,
+    gold: 0,
+  };
+
+  const state = {
+    tick: 0,
+    day: 1,
+    teaVat: 1,
+    vat: 3,
+    inventory,
+    facilities,
+    housing,
+    disciples: {},
+    broker,
+    toilPipeline,
+    autopilot,
+    smartObjects,
+    playerPersona: null,
+    fellowPersona: null,
+    activeDuoSynergy: null,
+  };
+
+  const personaPayload = options.persona || options.payload || {
+    heroMode: options.heroMode || 'preset',
+    heroTemplateId: options.heroTemplateId || 'yue_buqun',
+    fellowTemplateId: options.fellowTemplateId || 'linghu_chong',
+  };
+
+  applyPersonaCreation(state, personaPayload);
+
+  return state;
+}
 export const STEP_MS = 1000 / 60;
 
 export const RULES = Object.freeze({
@@ -239,8 +429,11 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   const lifePipeline = new ToilPipeline(lifeBroker);
   const lifeAutopilot = new SectLeaderAutopilot(lifePipeline, lifeBroker);
   const lifeSmartObjects = new SmartObjectSystem();
-  let masterDisciple = createPresetDisciple('yue_buqun').master;
-  let recruitPool = createPresetDisciple('yue_buqun').recruitPool;
+  let defaultDuo = selectStarterDuo({ heroTemplateId: 'yue_buqun', fellowTemplateId: 'linghu_chong' });
+  let masterDisciple = defaultDuo.master;
+  let fellowDisciple = defaultDuo.fellowPersona;
+  let activeDuoSynergy = defaultDuo.activeDuoSynergy;
+  let recruitPool = defaultDuo.recruitPool;
   let autopilotActive = false;
 
   const facilities = {
@@ -1351,23 +1544,44 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       }
       if (cmd.type === 'INIT_PERSONA') {
         const payload = cmd.payload || {};
-        if (payload.mode === 'preset') {
-          const res = createPresetDisciple(payload.presetKey);
-          if (!res.ok) return res;
-          masterDisciple = res.master;
-          recruitPool = res.recruitPool;
-        } else {
-          const res = createPersona(payload);
-          if (!res.ok) return res;
-          masterDisciple = res.disciple;
-          recruitPool = createIconicRoster();
-        }
+        const res = applyPersonaCreation({
+          inventory: lifeInventory,
+          facilities,
+          housing,
+          people: s.people,
+          vat: s.vat,
+          disciples: {},
+        }, payload);
+
+        if (!res.ok) return res;
+
+        masterDisciple = res.master;
+        fellowDisciple = res.fellowPersona;
+        activeDuoSynergy = res.activeDuoSynergy;
+        recruitPool = res.recruitPool;
+
+        s.playerPersona = masterDisciple;
+        s.fellowPersona = fellowDisciple;
+        s.activeDuoSynergy = activeDuoSynergy;
+
         autopilotActive = true;
         if (masterDisciple.persona?.autopilot) {
           masterDisciple.persona.autopilot.enabled = true;
         }
         evaluateDestinyMilestones({ day: 1, facilities }, masterDisciple);
-        return { ok: true, master: masterDisciple };
+        if (fellowDisciple) {
+          evaluateDestinyMilestones({ day: 1, facilities }, fellowDisciple);
+        }
+        return {
+          ok: true,
+          master: masterDisciple,
+          playerPersona: masterDisciple,
+          fellowPersona: fellowDisciple,
+          fellowDisciple,
+          activeDuoSynergy,
+          duoSynergy: activeDuoSynergy,
+          recruitPool,
+        };
       }
     }
 
@@ -1878,16 +2092,40 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         master: masterDisciple ? {
           id: masterDisciple.id,
           name: masterDisciple.name,
+          title: masterDisciple.title,
+          portraitId: masterDisciple.portraitId,
+          portraitUrl: masterDisciple.portraitUrl,
+          patrolStyle: masterDisciple.patrolStyle,
           originMode: masterDisciple.originMode,
           destinyTreeId: masterDisciple.destinyTreeId,
           daoTitle: masterDisciple.persona?.daoTitle || '清微持中',
           natalPoem: masterDisciple.persona?.natalPoem || [],
           heartSeal: masterDisciple.persona?.heartSeal || { code: 0b110 },
           innateStats: masterDisciple.innateStats,
+          traits: masterDisciple.traits || masterDisciple.innateStats?.innatePerks || [],
           unlockedArts: masterDisciple.unlockedArts || [],
           explain: masterDisciple.decision?.explain || { doing: '待命', reason: '等待指令', nextPlan: '無' },
           carrying: masterDisciple.carrying,
         } : null,
+        fellow: fellowDisciple ? {
+          id: fellowDisciple.id,
+          name: fellowDisciple.name,
+          title: fellowDisciple.title,
+          portraitId: fellowDisciple.portraitId,
+          portraitUrl: fellowDisciple.portraitUrl,
+          patrolStyle: fellowDisciple.patrolStyle,
+          destinyTreeId: fellowDisciple.destinyTreeId,
+          daoTitle: fellowDisciple.persona?.daoTitle || '同門同心',
+          innateStats: fellowDisciple.innateStats,
+          traits: fellowDisciple.traits || fellowDisciple.innateStats?.innatePerks || [],
+          affinity: fellowDisciple.affinity ?? 65,
+          explain: fellowDisciple.decision?.explain || { doing: '相依為命', reason: '守護破道館', nextPlan: '除草備料' },
+          carrying: fellowDisciple.carrying,
+        } : null,
+        playerPersona: masterDisciple,
+        fellowPersona: fellowDisciple,
+        activeDuoSynergy,
+        duoSynergy: activeDuoSynergy,
         facilities: {
           hall: facilities['fac.hall'],
           dorm: facilities['fac.dorm.a'],
@@ -1919,6 +2157,11 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       autopilot: lifeAutopilot,
       smartObjects: lifeSmartObjects,
       get master() { return masterDisciple; },
+      get playerPersona() { return masterDisciple; },
+      get fellow() { return fellowDisciple; },
+      get fellowPersona() { return fellowDisciple; },
+      get activeDuoSynergy() { return activeDuoSynergy; },
+      get duoSynergy() { return activeDuoSynergy; },
       get facilities() { return facilities; },
       get inventory() { return lifeInventory; },
       get housing() { return housing; },
