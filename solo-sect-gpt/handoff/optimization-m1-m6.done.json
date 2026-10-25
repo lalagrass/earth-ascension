@@ -1,0 +1,85 @@
+{
+  "status": "done",
+  "objective": "finite sequential optimization M1→M2→M3→M4→M5→M6",
+  "author": "GPT / Codex",
+  "model": "GPT-6.1 Sol / high",
+  "artifactCommit": "02218482b72e13b49d0b62627ae0d5effc045a7f",
+  "baseCommit": "cd38a44eac1afe5e1c508cfcbbbede7c0a6b5786",
+  "branch": "codex/solo-sect-gpt",
+  "worktree": "/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension",
+  "scope": "solo-sect-gpt only; original development.done.json unchanged",
+  "stages": [
+    {
+      "id": "M1",
+      "index": "evidence/optimization/m1/index.json",
+      "runtimeCommit": "6273e2682b32c1b56e3181f681afbd5e48e0fdac",
+      "evidenceCheckpoint": "5d826cd3aa7ed6699b2334e4512e3651d7e302b2",
+      "marker": "handoff/optimization-m1.checkpoint.json",
+      "status": "done"
+    },
+    {
+      "id": "M2",
+      "index": "evidence/optimization/m2/index.json",
+      "runtimeCommit": "6392aca6d4a2a52d202693a6b9f990d0a4d30919",
+      "artifactCommit": "13bb1f2c7d0f6599da8c78a874401ee7bf002287",
+      "marker": "handoff/optimization-m1-m2.done.json",
+      "status": "done"
+    },
+    {
+      "id": "M3",
+      "index": "evidence/optimization/m3/index.json",
+      "artifactCommit": "cb553cf006b54976d71a709db48dd886f2d4aaba",
+      "marker": "handoff/optimization-m3.done.json",
+      "status": "done"
+    },
+    {
+      "id": "M4",
+      "index": "evidence/optimization/m4/index.json",
+      "artifactCommit": "96f7ba1adaa1f1e122f7db2398bb66ef3bc55aa6",
+      "marker": "handoff/optimization-m4.done.json",
+      "status": "done"
+    },
+    {
+      "id": "M5",
+      "index": "evidence/optimization/m5/index.json",
+      "artifactCommit": "0520c52488153c48542b032a0e10e7ec374067b4",
+      "marker": "handoff/optimization-m5.done.json",
+      "status": "done"
+    },
+    {
+      "id": "M6",
+      "index": "evidence/optimization/m6/index.json",
+      "marker": "handoff/optimization-m6.done.json",
+      "status": "done",
+      "artifactCommit": "c95a6f46ab9798ae881afc15d3b3f3d7c2ad8b3b"
+    }
+  ],
+  "report": "docs/optimization/DELIVERY.md",
+  "evidenceIndex": "evidence/optimization/index.json",
+  "entrypoint": {
+    "url": "http://127.0.0.1:8878/",
+    "command": "python3 -m http.server 8878 --bind 127.0.0.1 --directory solo-sect-gpt",
+    "showcaseSave": "evidence/optimization/showcase/showcase-all-features.save.json",
+    "instructions": "New game or normal UI Save→Import showcase; load paused, then continue"
+  },
+  "verification": {
+    "fullRegression": "evidence/optimization/m6-model/final-regression.log",
+    "fullRegressionCount": 119,
+    "additionalAllFeaturesCase": "evidence/optimization/m6-model/combined-features.log",
+    "distinctCasesCovered": 120,
+    "showcase": "evidence/optimization/showcase/index.json",
+    "rootReused": [
+      "evidence/optimization/m2-model/root-python.log",
+      "evidence/optimization/m2-model/root-sect-node.log",
+      "evidence/optimization/m2-model/root-earth-syntax.log"
+    ]
+  },
+  "limits": [
+    "author self-review; no human or independent review or hardware audio listening",
+    "M2 baseline0/candidate0interventions; no reduction claim",
+    "finite events/herbs/health-dependent wardens; bounded seed scenarios, not a balance distribution",
+    "M6 bounded JSON families/venues, embedded immutable snapshots; no arbitrary code or same-ID hot replacement"
+  ],
+  "stopped": true,
+  "next": "No next chapter or additional work automatically started. M6 completed; finite authorization is exhausted."
+}
