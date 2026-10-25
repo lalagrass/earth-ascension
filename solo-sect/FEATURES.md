@@ -5,7 +5,7 @@
 | 實際主筆／工具 | Grok Bot（executor 子代理），在 box 上用 Shell、git、node、headless Chrome＋playwright-core 撰寫；commit 作者顯示為 lalagrass。設計決定由擁有人 Yuying Chen 拍板（見 ROADMAP §5／§9.5／§11.6 等）。 |
 | branch | `codex/solo-sect-grok`（單人分支：不開 PR、不併 dev、不碰 8800） |
 | base dev SHA | `fb847663cef54717d9ff4a77f34841b1f1e5abdb`（與 `origin/dev` 的 merge-base，2026-10-25 04:34 台北時間；目前 origin/dev＝`148cfbb`） |
-| head SHA | `77e1b2d6bb654a0a0ee4fce12651855501c63b43`（v1.4；本文件的 commit 在此之上，只加文件與 artifact，不改程式） |
+| head SHA | `77e1b2d6bb654a0a0ee4fce12651855501c63b43`（v1.4 各列的證據）；**v1.45 各列（SS-EXP-RETURN、SS-EVENT-TIERS、SS-EXP-STRIP、SS-STATUS）的證據在 v1.45 commit**（訊息 `v1.45: …`，SHA 見 PROGRESS.md v1.45 段／`git log`），artifact 在 [`artifacts/features/v145/`](artifacts/features/v145/README.md) |
 | 啟動命令與入口 | 在 repo 根目錄執行 `python3 -m http.server`，開 `http://localhost:8000/solo-sect/index.html`（要用 http，不能用 file://）；入口 `index.html` → `src/main.mjs`；新局畫面在 `src/start-ui.mjs`。測試：在 `solo-sect/` 下跑 `node --test test/`。 |
 | 環境版本（實際執行） | node v20.19.2、npm 11.21.1、Google Chrome 156.0.8078.47（headless）、playwright-core 1.59.1；沒有 package.json，也沒有外部相依。 |
 
@@ -66,7 +66,11 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 | SS-GEN-SUCCEED | PROTAGONIST.md；v1.4 | 主角化境 → 「傳位退隱」 → 繼承人接掌 → 世代 +1、宿慧 +1 | 已接線 | 通過（單元） | src/gen.mjs, src/main.mjs | `node --test test/v140.test.mjs` | shots/v140-02、v140-03（腳本） | **繼承人沒有自己的主線劇情**；傳位不能撤回 |
 | SS-SUHUI | PROTAGONIST.md；v1.4 | 宿慧點數存在 localStorage → 自創新局點數 +（上限 +3） | 已接線 | 通過（單元） | src/gen.mjs, src/start-ui.mjs | `node --test test/v140.test.mjs` | shots/v140-03（腳本） | 宿慧不在存檔裡（跨局、跟著瀏覽器）；付費取得延後到 Production（ROADMAP §16） |
 | SS-EXPEL | v1.35 列名單；v1.4 真移除 | 逐出抉擇 → 弟子離開（清好感、關係、家庭、隊伍） | 已接線 | 通過（單元，含「不能移掌門」反例） | src/gen.mjs | `node --test test/v140.test.mjs` | 無 | 逐出不能撤回 |
-| SS-BALANCE-LONG | ROADMAP；擁有人可選項 | 長時間自動試玩 → 平衡報告 | 規劃 | 未跑 | — | — | — | 還沒做（等擁有人點頭） |
+| SS-EXP-RETURN | ADOPTION-PLAN A1；擁有人核准數值（每段 −6 耐力、見底才掉一半、不受傷）；v1.45 | 巡山令「溜走」派出 → 帶戰利品回程 → 每經過一段未清段扣耐力 6 → 戰報「🐾 返程驚獸」 | 已驗證（限溜走帶寶回程、耐力未見底） | 通過（UI：v145 flow 步驟 4–5，實況 2 段 −12）；掉一半戰利品、無寶不引獸、清場 0 損耗、平靖段不算：只有單元 | src/expedition.mjs（returnPlan/returnStep/unclearedSegs）, src/data.mjs EXP.retSta/retLoss, src/main.mjs 戰報卡 | `node --test test/v145.test.mjs`（A1 五項）；[test-full.log](artifacts/features/v145/test-full.log)；[flow-ui.log](artifacts/features/v145/flow-ui.log) | shots/v145-02-return-raid-report.png（真實點擊流程） | UI 沒走到「耐力見底丟寶」；地圖上沒有獸群追趕畫面（v1.55 新地圖再做）；召回仍無（移到 v1.5） |
+| SS-EVENT-TIERS | ADOPTION-PLAN A3；v1.45 | 事件依關鍵字分三級：C＝人物頭上氣泡、B＝地圖右側竹簡（點一下推鏡＋捲到弟子卡）、A＝暫停＋推鏡＋「知道了，繼續」 | 已驗證（A 級暫停、B 級點擊推鏡） | 通過（UI：A 級大事 0.4 秒內時間不動；點竹簡 → 弟子卡捲入視窗）；C 級氣泡只有單元（UI 沒斷言氣泡畫面） | src/events.mjs, src/util.mjs log(), src/main.mjs feed()/bubble()/focusOn(), style.css | `node --test test/v145.test.mjs`（A3 三項）；flow-ui.log | shots/v145-01（竹簡）、shots/v145-03（竹簡＋推鏡後）、artifacts/features/v145/top-alert.png（若該次有出現）；皆真實點擊流程 | 分級靠訊息關鍵字（`TOP_RX/MID_RX`），會有誤判（例：「重傷倒地」算 A 級，可能太吵）；A 級沒有關閉開關；推鏡只在人物在院內時有效 |
+| SS-EXP-STRIP | ADOPTION-PLAN A3＋A16 里程軸；v1.45 | 巡山中面板顯示每段 ✔已清／⚠未清／▶進行中／·未到；地圖頂端進度條同步標 ✔⚠ | 已驗證 | 通過（UI：巡山中 ≥7 段標記可見）；狀態判定有單元 | src/expedition.mjs milestones(), src/main.mjs expBar()/巡山面板 | `node --test test/v145.test.mjs`（里程軸）；flow-ui.log 步驟 3 | shots/v145-01-patrol-strip-feed.png（真實點擊流程） | 無盡段只在走到時才列出；⚠ 的提示只在滑鼠 title |
+| SS-STATUS | ADOPTION-PLAN A5；v1.45 | 弟子卡最上方三行：現在／原因／下一步＋決策層標籤（指令／巡山／生理／作息／性格） | 已驗證（限顯示存在且三行齊） | 通過（UI：點竹簡後該弟子卡含三行）；層級判定有單元 | src/status.mjs, src/main.mjs 弟子卡 | `node --test test/v145.test.mjs`（A5）；flow-ui.log 步驟 7 | shots/v145-03-status-panel.png（真實點擊流程） | 層級用 reason 文字推斷（例：「灶上該煮飯了」被標成「性格」而非「作息」）；「下一步」取評分第二名，不保證真的會做；待命時 reason 會殘留舊文字（截圖可見「名俠入門」） |
+| SS-BALANCE-LONG | ROADMAP §19：排在 v1.46（v1.45 規則上的基準線） | 長時間自動試玩 → 平衡報告 | 規劃 | 未跑 | — | — | — | 還沒做（等擁有人點頭） |
 | SS-PROD | ROADMAP §16 | 版權、平台、付費點數、手機 | 規劃 | 未跑 | — | — | — | 刻意延後 |
 
 ## 三、依賴、未完成、取消／恢復、保存邊界

@@ -1,3 +1,4 @@
+import { tierOf } from './events.mjs';
 // v0.95 存檔：逐版遷移步驟（每步只做「升到該版」需要的事），加上每次讀檔都跑的修補
 import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY } from './data.mjs';
 import { seedArts } from './arts.mjs';
@@ -36,6 +37,7 @@ export const MIGRATIONS = [
   { to: '1.3', note: '江湖群像：神鵰、倚天、鹿鼎、功夫、喜劇卡、晨課令', up(o) { o.jh ??= { cards: {}, comedy: [], comedyOn: true, morningOn: true, morningDay: -1, morning: null, diao: 0, armLost: false, honey: 0, zbt: null, dfbb: 0, hy: 0, hidden: 0, gambleDay: -1, gambleSum: 0, poison: null, arcs: {}, residue: {} }; } },
   { to: '1.35', note: '門派身分：門規、鎮派設施、宿敵守關、外門武學', up(o) { o.sect ??= sectOf(o.hero); } },
   { to: '1.4', note: '第二代：成親、收養、師承、衣缽、宿慧、年齡', up(o) { o.gen ??= genInit(); for (const d of o.ds) d.age ??= d.adult ? 22 : 10; } },
+  { to: '1.45', note: '返程驚獸、三級事件、弟子狀態三行', up(o) { for (const e of o.log || []) { e.tier ??= tierOf(e.msg); } if (o.exp && o.exp.phase === 'back' && !o.exp.ret) { o.exp.ret = { left: [], hits: [], staLost: 0, lost: null }; o.exp.backPos ??= o.exp.dist; } o.alert ??= null; } },
 ];
 // 每次讀檔都跑：補最基本的不變式（手改或殘缺存檔也能讀）
 function repair(o, D) { o.cap ??= { wood: 12, stone: 12 }; for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= []; d.needs.fun ??= 60; if (!d.personality?.length) d.personality = [...(D[d.id]?.personality || [])]; d.known ??= d.personality.slice(0, 1); } freshV095(o); }

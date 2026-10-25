@@ -14,8 +14,8 @@ const other = (s, n = 0) => s.ds.filter((d) => d.id !== 'hero' && d.adult)[n];
 const day = (s) => { s.day++; genStep(s); };
 const wed = (s, a, b) => { s.rel[relKey(a.id, b.id)] = 95; s.families.push(relKey(a.id, b.id)); a.personality = ['gentle']; b.personality = ['gentle']; };
 test('v1.4 版本＋舊檔遷移補 gen 與年齡', () => {
-  assert.equal(RULES_VERSION, '1.4'); const s = mk(); const o = JSON.parse(JSON.stringify(s)); delete o.gen; for (const d of o.ds) delete d.age; o.rules = '1.35'; migrate(o);
-  assert.equal(o.gen.n, 1); assert.ok(o.ds.every((d) => d.age > 0)); assert.equal(o.rules, '1.4');
+  assert.ok(parseFloat(RULES_VERSION) >= 1.4); const s = mk(); const o = JSON.parse(JSON.stringify(s)); delete o.gen; for (const d of o.ds) delete d.age; o.rules = '1.35'; migrate(o);
+  assert.equal(o.gen.n, 1); assert.ok(o.ds.every((d) => d.age > 0)); assert.equal(o.rules, RULES_VERSION);
 });
 test('成親要道侶＋雙向相容 ≥1；成親後跳收養卡', () => {
   const s = mk(); const a = other(s, 0), b = other(s, 1); wed(s, a, b); assert.ok(marriable(s, a, b)); s.gen.lastAdopt = -1e9; s.choices = []; day(s);

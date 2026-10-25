@@ -230,7 +230,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '1.4';
+export const RULES_VERSION = '1.45';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -349,7 +349,7 @@ export const ROUTE = [
 export const ENDLESS = { len: 200, mul: 1.18, dmgExp: 0.5, roster: [['hermit', 2], ['ape', 1], ['python', 1]], find: { coin: 1, page2: 0.15 }, gate: 'peakguard' };
 // 營地：第三段（山腰）與第五段（斷崖）盡頭；過關即設營，可補給、下次可從營地出發
 export const CAMPS = [{ id: 'camp1', seg: 2, name: '山腰營地' }, { id: 'camp2', seg: 4, name: '斷崖營地' }];
-export const EXP = { maxTeam: 4, thr: [0.3, 0.5, 0.7], thrDefault: 0.5, moodMin: 30, walk: 5, back: 12, gateBail: 0.25, supplyHeal: 35, supplyPer: 2, supplyMax: 6, campCarry: 2, sta: 100, staStep: 0.05, staFight: 1.5, patFight: 1.5, patLazy: 1, orderPatCap: 0.7, scoutAt: 35, scoutBonus: 0.2, scoutT: 3, cool: 90, coolFast: 0.5, quarrel: 6, peaceQing: 3, peaceRaid: 2, peaceSpeed: 1.3, orderMood: -6, classicGuard: 0.6, classicTier: 3, minHp: 50, hurtLight: 60, hurtHeavy: 25 };
+export const EXP = { maxTeam: 4, thr: [0.3, 0.5, 0.7], thrDefault: 0.5, moodMin: 30, walk: 5, back: 12, gateBail: 0.25, supplyHeal: 35, supplyPer: 2, supplyMax: 6, campCarry: 2, sta: 100, staStep: 0.05, staFight: 1.5, patFight: 1.5, patLazy: 1, orderPatCap: 0.7, scoutAt: 35, scoutBonus: 0.2, scoutT: 3, cool: 90, coolFast: 0.5, quarrel: 6, peaceQing: 3, peaceRaid: 2, peaceSpeed: 1.3, orderMood: -6, classicGuard: 0.6, classicTier: 3, minHp: 50, hurtLight: 60, hurtHeavy: 25, retSta: 6, retLoss: 0.5 }; // v1.45 返程驚獸：每段未清段扣耐力 6；耐力見底才掉一半戰利品；不受傷
 export const RES_NAMES_095 = { page1: '凡階殘頁', page2: '精階殘頁', hide: '獸皮', gall: '熊膽' };
 // 前期節奏：前三天每天一個里程碑；導引旁白可略過
 export const PACE = [

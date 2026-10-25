@@ -139,10 +139,38 @@ export function expStep(s, dt, H) {
       if (r.won) { sg.kill++; X.gates.push(G.gateName); rivalWon(s, G); const cp = CAMPS.find((c) => c.seg === X.gateI - 1); if (cp) campAt(s, X, cp, team); else if (G.endless || G.id === 'peak') { const w = secondWind(team); if (w > 0) { X.sta = Math.min(EXP.sta, X.sta + EXP.sta * HS.secondWind * w); X.pat = Math.min(X.patMax, X.pat + 10 * w); for (const d of team) if (d.hp > 0 && (guardOf(d) < 0.95 || d.dugu?.length)) d.hp = Math.min(100, d.hp + 100 * HS.windHp); X.events.push(`過了${G.gateName}，眾人回了一口真氣（體力 +${Math.round(HS.secondWind * w * 100)}%）`); } } } else if (r.bail) { X.reason = `被${G.gateName}擋在${G.name}（見勢不妙及早撤退）`; X.blocked = G.gateName; } else if (team.some((d) => d.hp <= 0 && awaken(s, d))) { for (const d of team) d.hp = Math.max(d.hp, 60); X.gateI--; X.events.push(`${team.find((d) => d.awakened)?.name || ''}瀕死覺醒`); } else { for (const d of team) if (d.hp <= 0) d.hp = 10; X.reason = `被${G.gateName}擋在${G.name}`; X.blocked = G.gateName; } }
     else if (X.dist >= X.nextAt) { const seg = segAt(X.nextAt - 0.01); X.nextAt += seg.every; X.busy = encounter(s, pickEnemy(s, seg, H), seg, team, H) / 2; lootRoll(s, X.loot, seg.find, H); }
     if (X.fights > f0) { const lazy = team.filter((d) => (d.personality || []).includes('lazy')).length; X.sta -= (X.fights - f0) * EXP.staFight; X.pat -= (X.fights - f0) * (EXP.patFight + lazy * EXP.patLazy); }
-    const why = X.reason || checkRetreat(s, team); if (why) { X.reason = why; X.phase = 'back'; X.backLeft = X.dist / EXP.back; log(s, `巡山隊在${segAt(X.dist).name}（${X.dist.toFixed(0)} 步）回頭：${why}`); }
+    const why = X.reason || checkRetreat(s, team); if (why) { X.reason = why; X.phase = 'back'; X.backLeft = X.dist / EXP.back; X.backPos = X.dist; X.ret = returnPlan(s, X); log(s, `巡山隊在${segAt(X.dist).name}（${X.dist.toFixed(0)} 步）回頭：${why}`); }
     return;
   }
-  X.backLeft -= dt; if (X.backLeft <= 0) finishExpedition(s, team, H);
+  X.backLeft -= dt; X.backPos = Math.max(0, (X.backPos ?? X.dist) - EXP.back * dt); returnStep(s, X);
+  if (X.backLeft <= 0) finishExpedition(s, team, H);
+}
+// ---- v1.45 返程驚獸（ADOPTION-PLAN A1，擁有人已核准數值）----
+// 未清段＝這趟去程在該段有遭遇但沒全清（閃過、敵逃、守關沒過），且該段尚未平靖。身上沒戰利品就不會引獸。固定值、無亂數。
+export const hasLoot = (X) => Object.values(X.loot || {}).some((v) => v > 0);
+export function unclearedSegs(s, X) {
+  const out = []; const top = segIndex(Math.max(0, X.dist - 0.01));
+  for (let i = 0; i <= top; i++) { const g = routeSeg(i), v = X.seg?.[g.id]; if (v && v.enc > v.kill && !peaceOf(s, g.id)) out.push({ id: g.id, name: g.name, from: g.from, to: Math.min(g.to, X.dist) }); }
+  return out.reverse(); // 回程先經過深處
+}
+export function returnPlan(s, X) { return { left: hasLoot(X) ? unclearedSegs(s, X) : [], hits: [], staLost: 0, lost: null }; }
+export function returnStep(s, X) {
+  const R = X.ret; if (!R) return;
+  while (R.left.length && X.backPos <= R.left[0].to) {
+    const g = R.left.shift(); X.sta = (X.sta ?? EXP.sta) - EXP.retSta; R.staLost += EXP.retSta; R.hits.push(g.name);
+    X.events.push(`返程經過${g.name}，靈物散香驚動山獸，一路奔逃（耐力 −${EXP.retSta}）`);
+    if (X.sta <= 0 && !R.lost) { R.lost = {}; for (const [k, v] of Object.entries(X.loot)) { const l = Math.floor(v * EXP.retLoss); if (l > 0) { X.loot[k] = v - l; R.lost[k] = l; } }
+      X.events.push(`耐力見底，在${g.name}丟下一半戰利品`); log(s, `巡山隊返程在${g.name}被獸群追趕，耐力見底，丟下一半戰利品`); }
+  }
+}
+// v1.45 巡山里程軸：每段 ✔ 已清／⚠ 未清（返程會引獸）／▶ 進行中／· 未到
+export function milestones(s) {
+  const X = s.exp; if (!X) return [];
+  const top = segIndex(Math.max(0, X.dist - 0.01)), n = Math.max(ROUTE.length, top + 1), out = [];
+  for (let i = 0; i < n; i++) { const g = routeSeg(i), v = X.seg?.[g.id];
+    const st = i > top ? 'todo' : i === top && X.phase === 'out' ? 'now' : !v || v.enc === v.kill || peaceOf(s, g.id) ? 'clear' : 'open';
+    out.push({ id: g.id, name: g.name, st, hit: !!X.ret?.hits.includes(g.name) }); }
+  return out;
 }
 function campAt(s, X, cp, team) {
   s.camps ??= {}; if (!s.camps[cp.id]) { s.camps[cp.id] = true; log(s, `【營地】巡山隊在${ROUTE[cp.seg].name}盡頭設下${cp.name}，以後可從這裡出發`); }
@@ -161,7 +189,7 @@ function finishExpedition(s, team, H) {
   const cool = EXP.cool * (fast ? EXP.coolFast : 1); for (const d of team) d.restUntil = s.t + cool;
   const st = team.filter((d) => (d.personality || []).includes('stubborn')), lz = team.filter((d) => (d.personality || []).includes('lazy')), qu = [];
   for (const a of st) for (const b of lz) if (a !== b) { for (const [p, q] of [[a, b], [b, a]]) s.aff[affKey(p.id, q.id)] = (s.aff[affKey(p.id, q.id)] || 0) - EXP.quarrel; H.think(s, a, 'quarrel'); H.think(s, b, 'quarrel'); qu.push(`${a.name}嫌${b.name}偷懶，吵了一架`); }
-  const rep0 = { style: X.style, styleWhy: X.styleWhy, evaded: X.evaded, chase: X.chase, clear, qing, gates: X.gates, blocked: X.blocked || null, time: Math.round(s.t - X.startT), order: X.order, sta: Math.max(0, Math.round(X.sta ?? 0)), pat: Math.max(0, Math.round(X.pat ?? 0)), patMax: X.patMax, scout: X.scout, camps: X.camps || [], from: X.camp, quarrel: qu, cool: Math.round(cool), fast };
+  const rep0 = { ret: X.ret ? { hits: X.ret.hits, staLost: X.ret.staLost, lost: X.ret.lost } : null, style: X.style, styleWhy: X.styleWhy, evaded: X.evaded, chase: X.chase, clear, qing, gates: X.gates, blocked: X.blocked || null, time: Math.round(s.t - X.startT), order: X.order, sta: Math.max(0, Math.round(X.sta ?? 0)), pat: Math.max(0, Math.round(X.pat ?? 0)), patMax: X.patMax, scout: X.scout, camps: X.camps || [], from: X.camp, quarrel: qu, cool: Math.round(cool), fast };
   rep0.story = storyOf(team, rep0, X);
   const rep = { ...rep0, n: X.n, team: team.map((d) => d.name), dist, seg: segAt(Math.max(0, dist - 0.01)).name, kills: X.kills, escaped: X.escaped, hurt, loot: X.loot, reason: X.reason, fights: X.fights, sectRec, personal: rec, day: Math.floor(s.t / DAY) + 1 };
   s.lastExp = rep; s.exp = null;
@@ -173,6 +201,7 @@ function storyOf(team, r, X) {
   const who = team.map((d) => d.name).join('、'), E = (o) => Object.entries(o).map(([k, v]) => `${ENEMIES[k].name}${v}`).join('、');
   const parts = [`${who}以「${STYLES[r.style].name}」上山`];
   if (sum(r.evaded)) parts.push(`一路閃過${E(r.evaded)}`);
+  if (r.ret?.hits?.length) parts.push(`回程帶著靈物經過${r.ret.hits.join('、')}，驚動山獸${r.ret.lost ? '，丟了一半戰利品' : '，咬牙撐了回來'}`);
   if (r.chase.n) parts.push(`追了 ${r.chase.n} 次逃兵，追到 ${r.chase.got}`);
   if (r.from) parts.push(`自${r.from}出發`); if (r.scout) parts.push(`${r.scout}探路搶先手`);
   if (r.gates.length) parts.push(`過了${r.gates.join('、')}`); if (r.camps?.length) parts.push(`在${r.camps.join('、')}補給`); if (r.quarrel?.length) parts.push(r.quarrel.join('、'));
@@ -184,5 +213,5 @@ function storyOf(team, r, X) {
 export function reportText(r) {
   const nm = (o) => Object.entries(o).map(([k, v]) => `${ENEMIES[k].name}×${v}`).join('、') || '無';
   const RN = { food: '飯', hide: '獸皮', herb: '藥', wood: '木', coin: '香火錢', page1: '凡階殘頁', page2: '精階殘頁', gall: '熊膽' };
-  return `擊倒 ${nm(r.kills)}；逃走 ${nm(r.escaped)}；傷 ${r.hurt.map(([n, l]) => `${n}${l}`).join('、') || '無'}；帶回 ${Object.entries(r.loot).map(([k, v]) => `${RN[k] || k}${v}`).join(' ') || '無'}；回頭原因：${r.reason}${r.sectRec ? '｜★ 本門新紀錄' : ''}${r.patMax != null ? `｜體力 ${r.sta}・耐性 ${r.pat}/${r.patMax}${r.order ? '（巡山令）' : ''}・歇 ${r.cool} 秒${r.fast ? '（快腳）' : ''}` : ''}${r.style ? `｜${STYLES[r.style].name}・閃 ${sum(r.evaded)}・追 ${r.chase.got}/${r.chase.n}・清場 ${Object.entries(r.clear).map(([k, v]) => `${ROUTE.find((g) => g.id === k)?.name || k}${Math.round(v * 100)}%`).join(' ')}` : ''}`;
+  return `擊倒 ${nm(r.kills)}；逃走 ${nm(r.escaped)}；傷 ${r.hurt.map(([n, l]) => `${n}${l}`).join('、') || '無'}；帶回 ${Object.entries(r.loot).map(([k, v]) => `${RN[k] || k}${v}`).join(' ') || '無'}；回頭原因：${r.reason}${r.sectRec ? '｜★ 本門新紀錄' : ''}${r.ret?.hits?.length ? `｜返程驚獸 ${r.ret.hits.length} 段（耐力 −${r.ret.staLost}${r.ret.lost ? `，丟下 ${Object.entries(r.ret.lost).map(([k, v]) => `${RN[k] || k}${v}`).join(' ')}` : ''}）` : ''}${r.patMax != null ? `｜體力 ${r.sta}・耐性 ${r.pat}/${r.patMax}${r.order ? '（巡山令）' : ''}・歇 ${r.cool} 秒${r.fast ? '（快腳）' : ''}` : ''}${r.style ? `｜${STYLES[r.style].name}・閃 ${sum(r.evaded)}・追 ${r.chase.got}/${r.chase.n}・清場 ${Object.entries(r.clear).map(([k, v]) => `${ROUTE.find((g) => g.id === k)?.name || k}${Math.round(v * 100)}%`).join(' ')}` : ''}`;
 }

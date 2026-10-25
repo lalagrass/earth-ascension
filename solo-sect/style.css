@@ -18,3 +18,11 @@ table.codex { border-collapse: collapse; font-size: 12px; width: 100%; } table.c
 h2.fresh { color:#c33; } h2.fresh::after { content:" 新開放"; font-size:12px; background:#c33; color:#fff; padding:1px 6px; border-radius:8px; margin-left:6px; }
 #chap.overlay { position:fixed; inset:0; background:#0008; display:flex; align-items:center; justify-content:center; z-index:50; } #chap .card { background:#fbf6ea; color:#222; padding:20px 28px; border-radius:10px; max-width:520px; }
 label.btn { border:1px solid #888; padding:2px 8px; border-radius:4px; cursor:pointer; margin-left:4px; }
+
+/* v1.45 三級事件、里程軸、狀態三行 */
+#wrap{position:relative}#feed{position:absolute;top:84px;right:396px;width:260px;display:flex;flex-direction:column;gap:4px;pointer-events:none}
+.slip{pointer-events:auto;cursor:pointer;background:#f3e6c4ee;border:1px solid #a98a55;border-left:5px solid #8a6a3a;border-radius:4px;padding:3px 6px;font-size:12px;line-height:1.35}
+.slip.top{border-left-color:#c0392b;background:#fff0e0ee;font-weight:bold}
+#alert{position:absolute;inset:0;right:380px;display:flex;align-items:flex-start;justify-content:center;padding-top:120px;background:#0003;z-index:40}#alert .card{max-width:440px;font-size:15px;box-shadow:0 4px 18px #0005}
+.ms{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0}.ms .m{font-size:11px;padding:0 5px;border-radius:8px;background:#e5dcc6}.ms .clear{background:#cfe3b8}.ms .open{background:#f5d7a0}.ms .now{background:#9cc0e8;font-weight:bold}.ms .todo{opacity:.5}.ms .hit{outline:2px solid #c0392b}
+.status{border-left:3px solid #6a8cc7;padding-left:6px;margin:3px 0;font-size:12px}.status .tag{background:#6a8cc7;color:#fff;border-radius:6px;padding:0 5px;font-size:11px}
