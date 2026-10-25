@@ -78,3 +78,10 @@
 - 建設流程：藍圖 → 收集包備料 → 招工（匿名人力）→ 搬到工地料堆 → 施工（工時 ÷ 人數，報酬遞減）→ 完工儀式
 - 弟子流程：自來／下山義教／開山門／施粥 → 三問心印 → 外門（每日雜務額度、貢獻、根基）→ 晉升考核 → 內門（不做雜務）；主角升首徒後不再做雜務
 - 詳細內容、參考來源與節奏見 ROADMAP.md §7
+
+## v0.8 資源→建設＋具名雇工
+- `s.res` 新增 `stone`、`coin`；`s.ledger` 和 `s.ledgerPrev` 記每日收支（由 `book()` 記帳；換日時 `payday()` 入帳香火錢並付工錢）
+- 工地 `site = { need:{wood,stone}, delivered:{…}, reserved:{…}, work, workNeed, paused }`；`build` 任務分 fetch（院倉取料）→ deliver（送到料堆）→ go/do（料齊才施工）
+- 雇工和弟子同樣放在 `s.ds`，靠 `role:'laborer'` 區分。好處是吃睡聊天、心情、好感、特質揭露全部共用；`scoreActs` 用 `LABOR_ACTS` 過濾可做的事，工寮的 `laborOnly` 床位只給雇工
+- 根骨：`root` 1–5、`rootKnown`、`cowork`；`canInvite()` 檢查揭露、根骨、好感、床位，`invite()` 把 role 改成 `outer`
+- 數值都放在 data.mjs 的 `ECON`、`ROOT`、`LABOR_POOL`

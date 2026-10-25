@@ -42,14 +42,16 @@ export const NODES = {
   t5: [1344, 88],
   t6: [1412, 50],
   den: [1475, 22],
+  quarry: [560, 770],
+  shed: [1080, 486],
 };
-export const EDGES = [['hall', 'court'], ['court', 'yard'], ['court', 'dormP'], ['dormP', 'dorm'], ['court', 'mid'], ['mid', 'kitchen'], ['mid', 'south'], ['south', 's1'], ['s1', 's2'], ['s2', 's3'], ['s3', 'g1'], ['g1', 'g2'], ['g2', 'g3'], ['g3', 'forest'], ['forest', 'g4'], ['g4', 'g5'], ['g5', 'g6'], ['g6', 'herb'], ['forest', 'forest2'], ['s1', 'e1'], ['e1', 'e2'], ['e2', 'e3'], ['e3', 'e4'], ['e4', 'e5'], ['e5', 'v1'], ['v1', 'v2'], ['v2', 'gate'], ['e2', 'veg'], ['e5', 'e6'], ['e6', 'trail1'], ['trail1', 't2a'], ['t2a', 'trail2'], ['trail2', 't3'], ['t3', 't4'], ['t4', 'guard'], ['guard', 't5'], ['t5', 't6'], ['t6', 'den']];
+export const EDGES = [['hall', 'court'], ['court', 'yard'], ['court', 'dormP'], ['dormP', 'dorm'], ['court', 'mid'], ['mid', 'kitchen'], ['mid', 'south'], ['south', 's1'], ['s1', 's2'], ['s2', 's3'], ['s3', 'g1'], ['g1', 'g2'], ['g2', 'g3'], ['g3', 'forest'], ['forest', 'g4'], ['g4', 'g5'], ['g5', 'g6'], ['g6', 'herb'], ['forest', 'forest2'], ['s1', 'e1'], ['e1', 'e2'], ['e2', 'e3'], ['e3', 'e4'], ['e4', 'e5'], ['e5', 'v1'], ['v1', 'v2'], ['v2', 'gate'], ['e2', 'veg'], ['e5', 'e6'], ['e6', 'trail1'], ['trail1', 't2a'], ['t2a', 'trail2'], ['trail2', 't3'], ['t3', 't4'], ['t4', 'guard'], ['guard', 't5'], ['t5', 't6'], ['t6', 'den'], ['g3', 'quarry'], ['south', 'shed']];
 
 // 設施：每階段宣告提供的活動（smart object）。stage 0 = 荒廢/空地。
 export const FACILITIES = [
   { id: 'hall', name: '大廳', node: 'hall', stages: [
     { name: '破道館', sprite: 'hall_s0', offers: ['rest', 'learn'], restRate: 3, beds: 3, learnDur: 8 },
-    { name: '大廳', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 4, beds: 2, learnDur: 4, cost: { wood: 12 }, work: 30, rep: 20 },
+    { name: '大廳', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 4, beds: 2, learnDur: 4, cost: { wood: 12, stone: 6, coin: 6 }, work: 30, rep: 20 },
   ] },
   { id: 'yard', name: '外功場', node: 'yard', stages: [
     { name: '空地', sprite: null, offers: ['train'], trainMul: 1 },
@@ -58,7 +60,7 @@ export const FACILITIES = [
   { id: 'dorm', name: '宿舍', node: 'dorm', stages: [
     { name: '破寢舍', sprite: 'dorm_s0', offers: [] },
     { name: '小寢舍', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 2, cost: { wood: 6 }, work: 18 },
-    { name: '宿舍', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 6, cost: { wood: 10 }, work: 24, rep: 12 },
+    { name: '宿舍', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 6, cost: { wood: 10, stone: 4 }, work: 24, rep: 12 },
   ] },
   { id: 'kitchen', name: '膳房', node: 'kitchen', stages: [
     { name: '露天灶', sprite: 'vat', offers: ['cook', 'eat'], cookDur: 12, cookYield: 3, mealBonus: 0 },
@@ -67,6 +69,12 @@ export const FACILITIES = [
   { id: 'veg', name: '菜園', node: 'veg', stages: [{ name: '荒地菜畦', sprite: 'grass', offers: ['farm'], plots: 4 }] },
   { id: 'herb', name: '藥園', node: 'herb', stages: [{ name: '野藥圃', sprite: 'herb', offers: ['forage'] }] },
   { id: 'forest', name: '林緣枯木', node: 'forest2', stages: [{ name: '枯木', sprite: 'log', offers: ['chop'] }] },
+  { id: 'quarry', name: '後山石場', node: 'quarry', stages: [{ name: '亂石坡', sprite: null, offers: ['quarry'] }] },
+  { id: 'shed', name: '工寮', node: 'shed', stages: [
+    { name: '空地', sprite: null, offers: [], laborBeds: 0 },
+    { name: '工寮', sprite: 'dorm_s0', offers: ['rest'], restRate: 6, laborBeds: 2, laborOnly: true, cost: { wood: 6 }, work: 16 },
+    { name: '大工寮', sprite: 'dorm_s1', offers: ['rest'], restRate: 7, laborBeds: 4, laborOnly: true, cost: { wood: 8, stone: 6, coin: 4 }, work: 22, rep: 10 },
+  ] },
   { id: 'store', name: '院倉', node: 'court', stages: [{ name: '柴堆', sprite: 'woodpile', offers: ['chat', 'leisure'] }] },
 ];
 
@@ -77,6 +85,7 @@ export const ACTIVITIES = {
   farm:   { name: '種菜', dur: 8, energy: -8, skill: { farming: 6 } }, // 播種或收成，見 sim plots
   cook:   { name: '煮飯', dur: 0, energy: -3, skill: { cooking: 6 } }, // dur 由灶階段決定
   forage: { name: '採藥', dur: 8, energy: -6, skill: { herbal: 6 }, carry: { herb: 1 } },
+  quarry: { name: '採石', dur: 10, energy: -9, skill: { strength: 6 }, carry: { stone: 1 } },
   chop:   { name: '砍柴', dur: 8, energy: -8, skill: { strength: 5 }, carry: { wood: 1 } },
   train:  { name: '練功', dur: 10, energy: -10, skill: { style: 5 } }, // style＝弟子主修路數
   spar:   { name: '切磋', dur: 8, energy: -10, skill: { style: 4 } },
@@ -119,9 +128,9 @@ export const DAY = 600;
 export const PHASES = [[0, 'dawn', '晨'], [0.2, 'day', '日'], [0.65, 'dusk', '暮'], [0.8, 'night', '夜']];
 export const SCHEDULE = {
   dawn: { train: 1.5, learn: 1.2 },
-  day: { farm: 1.2, chop: 1.2, cook: 1.1, forage: 1.1, build: 1.2 },
+  day: { farm: 1.2, chop: 1.2, quarry: 1.2, cook: 1.1, forage: 1.1, build: 1.2 },
   dusk: { eat: 1.4, chat: 1.6, cook: 1.3, leisure: 1.5, encourage: 1.4 },
-  night: { rest: 2.2, train: 0.3, chop: 0.2, farm: 0.2, forage: 0.2, build: 0.3, chat: 0.6, leisure: 0.4, encourage: 0.5 },
+  night: { rest: 2.2, train: 0.3, chop: 0.2, quarry: 0.2, farm: 0.2, forage: 0.2, build: 0.3, chat: 0.6, leisure: 0.4, encourage: 0.5 },
 };
 export const PLOT_GROW = 90; // 秒，播種到成熟
 export const HARVEST = 3;    // 每畦收菜
@@ -171,14 +180,18 @@ export const THOUGHTS = {
   newLook:   { text: '門派有了新氣象', v: 8, ttl: 600, tag: 'good' },
   wellFed:   { text: '存糧充足，心裡踏實', v: 4, ttl: 300, tag: 'food' },
   idled:     { text: '偷得浮生半日閒', v: 5, ttl: 200, tag: 'good' },
+  paid:      { text: '領了工錢', v: 4, ttl: 300, tag: 'good' },
+  unpaid:    { text: '工錢沒著落', v: -10, ttl: 600, tag: 'bad' },
+  invited:   { text: '被邀入門', v: 15, ttl: 600, tag: 'good' },
+  workedWith:{ text: '和人一起幹活', v: 3, ttl: 200, tag: 'social' },
 };
 export const NEED_MOOD = { hunger: [20, -10, 'food'], energy: [30, -8, 'bad'], social: [25, -6, 'social'], fun: [25, -6, 'bad'] };
 export const MOOD = { base: 50, up: 3, down: 2, low: 30, high: 70 }; // 每秒向目標移動；低／高門檻
-export const WORK_ACTS = ['train', 'chop', 'build', 'spar']; // 低落時被壓低的「可延後」工作；種菜煮飯屬求生，不壓，避免餓→低落→不煮的死亡螺旋
+export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落時被壓低的「可延後」工作；種菜煮飯屬求生，不壓，避免餓→低落→不煮的死亡螺旋
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '0.7';
+export const RULES_VERSION = '0.8';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -197,4 +210,22 @@ export const QUESTIONS = [
   { q: '初見山門，你先？', a: [['拿起掃帚掃落葉', 'diligent'], ['找人攀談', 'sociable'], ['四處張望後山', 'playful']] },
   { q: '同伴受了傷，你？', a: [['包紮熬湯', 'gentle'], ['替他出頭', 'brave'], ['擔心了一整夜', 'worrier']] },
   { q: '一碗熱粥端來，你？', a: [['細細品味', 'glutton'], ['先讓給別人', 'gentle'], ['笑說明天會更好', 'optimist']] },
+];
+
+// ---- v0.8 資源→建設、雇工 ----
+// 香火錢：每日晨起入帳 base + floor(名聲/perRep)；雇工每日工錢 wage，付不出累計 unpaid，達 leaveAfter 日離開
+export const ECON = { coinStart: 4, coinBase: 2, coinPerRep: 5, wage: 2, hireCoin: 4, hireFood: 2, leaveAfter: 2, carry: 2, laborCarry: 3 };
+export const RES_NAMES = { wood: '木', stone: '石', coin: '香火錢', veg: '菜', food: '飯', herb: '藥' };
+// 雇工能做的事（不練武、不聽講、不下廚種菜）；幹活時分數加成
+export const LABOR_ACTS = ['rest', 'eat', 'chat', 'leisure', 'chop', 'quarry', 'build'];
+export const LABOR_WORK_MUL = 1.4;
+// 根骨（隱藏潛力 1–5）：與弟子一起幹活／聊天累積「共事」秒數後揭露；≥ inviteMin 且弟子平均好感 ≥ inviteAff 可邀入門
+export const ROOT = { revealAt: 240, inviteMin: 3, inviteAff: 18, names: ['', '平平', '尚可', '中上', '良材', '奇才'] };
+export const LABOR_POOL = [
+  { id: 'dazhu', name: '大柱', adult: true, sprite: 'hero', style: 'palm', root: 4, skills: { leg: 2, palm: 3, strength: 14, farming: 4, herbal: 1, agility: 7, cooking: 2 }, traits: {}, personality: ['diligent', 'glutton'] },
+  { id: 'erya', name: '二丫', adult: true, sprite: 'senior', style: 'leg', root: 2, skills: { leg: 3, palm: 1, strength: 7, farming: 9, herbal: 6, agility: 10, cooking: 8 }, traits: { social: 1.2 }, personality: ['sociable', 'optimist'] },
+  { id: 'laohuang', name: '老黃', adult: true, sprite: 'hero', style: 'palm', root: 1, skills: { leg: 1, palm: 2, strength: 11, farming: 8, herbal: 3, agility: 5, cooking: 5 }, traits: {}, personality: ['gentle', 'worrier'] },
+  { id: 'xiaoliu', name: '小六', adult: true, sprite: 'cousin', style: 'leg', root: 5, skills: { leg: 6, palm: 2, strength: 6, farming: 3, herbal: 4, agility: 14, cooking: 1 }, traits: { playful: 1.2 }, personality: ['playful', 'brave'] },
+  { id: 'achun', name: '阿春', adult: true, sprite: 'senior', style: 'palm', root: 3, skills: { leg: 2, palm: 4, strength: 8, farming: 7, herbal: 9, agility: 9, cooking: 9 }, traits: {}, personality: ['gentle', 'diligent'] },
+  { id: 'tiezi', name: '鐵子', adult: true, sprite: 'hero', style: 'leg', root: 2, skills: { leg: 5, palm: 3, strength: 13, farming: 2, herbal: 1, agility: 8, cooking: 2 }, traits: {}, personality: ['brave', 'worrier'] },
 ];

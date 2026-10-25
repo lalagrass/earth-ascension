@@ -6,14 +6,14 @@ test('長山路比院內路遠（保留通勤距離）', () => { assert.ok(route
 test('建造木料守恆：庫存+在途+工地不超出也不憑空消失', () => {
   const s = createState(3); s.res.wood = 8; startBuild(s, 'dorm');
   for (let i = 0; i < 2000; i++) { tick(s); const site = s.fac.dorm.site; const carried = s.ds.reduce((a, d) => a + (d.carry?.wood || 0), 0);
-    if (site) assert.ok(site.delivered <= 6 && site.delivered + site.reserved <= 6); assert.ok(s.res.wood >= 0 && carried >= 0); }
+    if (site) assert.ok(site.delivered.wood <= 6 && site.delivered.wood + site.reserved.wood <= 6); assert.ok(s.res.wood >= 0 && carried >= 0); }
   assert.equal(s.fac.dorm.stage, 1);
 });
 test('取消搬料歸還木頭', () => {
   const s = createState(4); s.res.wood = 6; startBuild(s, 'dorm'); s.ds.forEach((d) => setOrder(s, d.id, 'build'));
-  run(s, 6); const before = s.res.wood + s.ds.reduce((a, d) => a + (d.carry?.wood || 0), 0) + s.fac.dorm.site.delivered;
+  run(s, 6); const before = s.res.wood + s.ds.reduce((a, d) => a + (d.carry?.wood || 0), 0) + s.fac.dorm.site.delivered.wood;
   s.ds.forEach((d) => setOrder(s, d.id, 'rest'));
-  assert.equal(s.res.wood + s.fac.dorm.site.delivered, before); assert.equal(s.fac.dorm.site.reserved, 0);
+  assert.equal(s.res.wood + s.fac.dorm.site.delivered.wood, before); assert.equal(s.fac.dorm.site.reserved.wood, 0);
 });
 test('練掌到門檻後向師父學到新招', () => {
   const s = createState(5); const h = s.ds[0]; setOrder(s, 'hero', 'train'); s.res.food = 50; run(s, 400);
@@ -88,7 +88,7 @@ test('招收受名聲、床位、存糧三道門檻；成功扣糧且新人從�
 test('大廳擴建需名聲；母版階段隨建設 S0→S1→S2', () => {
   const s = createState(42); s.res.wood = 12; assert.equal(startBuild(s, 'hall'), false); assert.equal(mapStage(s), 'S0');
   s.fac.dorm.stage = 1; s.fac.kitchen.stage = 1; assert.equal(mapStage(s), 'S1');
-  s.rep = 20; assert.ok(startBuild(s, 'hall')); s.fac.yard.stage = 1; run(s, 600); assert.equal(s.fac.hall.stage, 1); assert.equal(mapStage(s), 'S2');
+  s.rep = 20; s.res.stone = 6; s.res.coin = 6; assert.ok(startBuild(s, 'hall')); s.fac.yard.stage = 1; run(s, 600); assert.equal(s.fac.hall.stage, 1); assert.equal(mapStage(s), 'S2');
 });
 
 // v0.6 性格與心情
