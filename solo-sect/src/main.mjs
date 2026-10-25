@@ -9,6 +9,8 @@ import { ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES,
 import { EXP_STYLES } from './data.mjs';
 import { styleOf, teamStyle } from './expedition.mjs';
 import { openStart, choiceUI, heroCard } from './start-ui.mjs';
+import { UNLOCKS, ALL_SECS, secOpen, CHAPTER1, AUTO, autosave, autoList, autoGet } from './slice.mjs';
+import { SFX, ambient, setMute, isMuted, cuesFrom } from './audio.mjs';
 const cv = document.getElementById('map'), g = cv.getContext('2d');
 const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile', 'kitchen_s1', 'map_s0', 'map_s1', 'map_s2'];
 await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i.onload = r; i.onerror = r; i.src = `assets/${n}.${n === 'ground' || n.startsWith('map_') ? 'jpg' : 'png'}`; IMG[n] = i; })));
@@ -141,7 +143,8 @@ function panel() {
     $('codex').innerHTML = `<table class="codex"><tr><th>敵人</th><th>類</th><th>兵器</th><th>血</th><th>見/倒/逃</th><th>觀破</th></tr>${codexRows(S).map((r) => r.unknown ? `<tr class="k"><td>？？？</td><td colspan="5">未曾照面</td></tr>` : `<tr><td>${r.name}</td><td>${r.kind}</td><td>${r.weapon}</td><td>${r.hp}</td><td>${r.seen}/${r.kills}/${r.fled}</td><td>${r.insight}・${r.tier}</td></tr>`).join('')}</table>`;
     const G = S.guide; $('guide').innerHTML = G?.on && G.msg ? `<div class="guide">${G.msg}<div><button id="g-ok">知道了</button> <button id="g-off">略過所有導引</button></div></div>` : '';
     if (G?.on && G.msg) { $('g-ok').onclick = () => { skipGuide(S); panel(); }; $('g-off').onclick = () => { skipGuide(S, true); panel(); }; }
-    $('pace').innerHTML = [['trial', '第1日 黃昏試煉'], ['firstExp', '第2日 第一次巡山'], ['firstBuild', '第3日 第一次動工']].map(([id, n]) => `<span class="mv ${S.pace.done.includes(id) ? 'new' : ''}">${S.pace.done.includes(id) ? '✔' : '○'} ${n}</span>`).join(''); }
+    $('pace').innerHTML = [['trial', '第1日 黃昏試煉'], ['firstExp', '第2日 第一次巡山'], ['firstBuild', '第3日 第一次動工']].map(([id, n]) => `<span class="mv ${S.pace.done.includes(id) ? 'new' : ''}">${S.pace.done.includes(id) ? '✔' : '○'} ${n}</span>`).join('') + (S.chapter?.done ? `<span class="mv new">✔ ${CHAPTER1.name}</span>` : CHAPTER1.goals.map((g) => `<span class="mv ${g.ok(S) ? 'new' : ''}">${g.ok(S) ? '✔' : '◇'} ${g.name}</span>`).join('')); }
+  sliceUI();
   if (!S.hunt) { $('hunt-go').onclick = () => startHunt(S, [...window.__team]); $('post').onchange = (e) => setPost(S, e.target.value); document.querySelectorAll('.hteam').forEach((c) => (c.onchange = () => { c.checked ? window.__team.add(c.value) : window.__team.delete(c.value); })); }
   { const c = canRecruit(S); let qa = '';
     if (c.ok) { const key = c.next.id; if (window.__ansFor !== key) { window.__ans = defaultAnswers(c.next); window.__ansFor = key; }
@@ -169,5 +172,27 @@ $('reset').onclick = () => newGame();
 $('load').addEventListener('click', () => { if (document.getElementById('start')) { document.getElementById('start').remove(); starting = false; } });
 let last = performance.now(), acc = 0;
 function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now; if (starting || choiceUI(S)) acc = 0; while (acc >= 0.25) { tick(S); acc -= 0.25; }
-  draw(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
+  audioStep(); draw(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
+// v0.98 垂直切片：面板漸進解鎖、章節總結、自動存檔、匯出入、音效
+function sliceUI() {
+  for (const sec of ALL_SECS) { const el = $(sec); if (!el) continue; const on = secOpen(S, sec), h = el.previousElementSibling; el.hidden = !on; if (h?.tagName === 'H2') { h.hidden = !on; h.classList.toggle('fresh', on && S.newUnlock?.secs?.includes(sec) && S.t - S.newUnlock.t < 60); } }
+  const locked = UNLOCKS.filter((u) => S.unlock && !S.unlock.includes(u.id));
+  $('locks').innerHTML = locked.length ? `尚未開放：${locked.map((u) => (u.msg || '基本').split('：')[0]).join('、')}` : '';
+  $('autos').innerHTML = `<option value="">— 自動存檔 —</option>` + autoList(localStorage).map((a) => `<option value="${a.i}">第${a.day}日 ${a.name || ''}（${new Date(a.at).toLocaleTimeString()}）</option>`).join('');
+  $('mute').textContent = isMuted() ? '🔇 靜音' : '🔊 音效';
+  if (S.chapter?.done && !S.chapter.seen && !$('chap')) chapterModal();
+}
+function chapterModal() {
+  const m = S.chapter.summary, d = document.createElement('div'); d.id = 'chap'; d.className = 'overlay';
+  d.innerHTML = `<div class="card"><h2>${CHAPTER1.name}・完成</h2><p>第 ${m.day} 日，山門總算立住了。</p><ul><li>門下：${m.people.join('、')}（${m.people.length} 人）</li><li>名聲 ${m.rep}・巡山最遠 ${m.best} 步・出巡 ${m.exps} 次</li><li>擊倒敵人 ${m.kills}・清場紀錄 ${m.qing}</li><li>庫存：錢 ${Math.round(m.coin)}・糧 ${Math.round(m.food)}</li></ul><p class="k">故事還沒完——江湖更深處還有關卡等著。</p><button id="chap-go">繼續經營</button></div>`;
+  document.body.append(d); $('chap-go').onclick = () => { S.chapter.seen = true; d.remove(); SFX.click(); panel(); };
+}
+let lastAuto = 0; const cue = {};
+function audioStep() { for (const c of cuesFrom(cue, S)) SFX[c]?.(); }
+setInterval(() => { if (!S || S.t - lastAuto < AUTO.every) return; lastAuto = S.t; autosave(localStorage, save(S), { day: Math.floor(S.t / 600) + 1, name: S.hero?.name, at: Date.now() }); }, 1000);
+$('autos').onchange = (e) => { if (e.target.value === '') return; const r = load(autoGet(localStorage, +e.target.value) || ''); if (r.ok) { S = r.state; lastAuto = S.t; document.getElementById('start')?.remove(); starting = false; } else alert(r.err); panel(); };
+$('export').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([save(S)], { type: 'application/json' })); a.download = `solo-sect-day${Math.floor(S.t / 600) + 1}.json`; a.click(); URL.revokeObjectURL(a.href); };
+$('import').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; const r = load(await f.text()); if (r.ok) { S = r.state; lastAuto = S.t; document.getElementById('start')?.remove(); starting = false; } else alert('匯入失敗：' + r.err); e.target.value = ''; panel(); };
+$('mute').onclick = () => { setMute(!isMuted()); ambient(!isMuted()); panel(); };
+document.addEventListener('click', (e) => { if (e.target.closest('button')) { SFX.click(); if (!isMuted()) ambient(true); } }, true);
 panel(); newGame(); requestAnimationFrame(loop);

@@ -9,6 +9,7 @@ import { seasonOf } from './season.mjs';
 import { pipeline, mulText } from './mul.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf } from './expedition.mjs';
 import { PACE, TRIAL_BOAR } from './data.mjs';
+import { unlockStep, chapterStep } from './slice.mjs';
 import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus, awaken, econCoin, cookBonus } from './hero.mjs';
 export { canExpedition, codexRows, reportText, segAt, ROUTE_END, dpsOf };
 const H = { rand: (s) => rand(s), cancelTask: (s, d, w) => cancelTask(s, d, w), grow: (s, d, k, a) => grow(s, d, k, a), think: (s, d, id) => think(s, d, id), gate: NODES.gate };
@@ -48,7 +49,7 @@ export function createState(seed = 1, heroSpec = null) {
   for (let i = 0; i < s.ds.length; i++) for (let j = i + 1; j < s.ds.length; j++) initPair(s, s.ds[i], s.ds[j], 10);
   freshV095(s);
   log(s, '師徒三人來到山腳一間破道館。');
-  s.hero = null; s.choices = []; s.encExclude = []; for (const d of s.ds) d.wu ??= d.root;
+  s.hero = null; s.choices = []; s.encExclude = []; s.unlock = []; s.chapter = { done: false }; for (const d of s.ds) d.wu ??= d.root;
   if (heroSpec) applyHero(s, heroSpec, initPair);
   return s;
 }
@@ -518,7 +519,7 @@ export function tick(s, dt = 0.25) {
   huntStep(s, dt);
   ecoStep(s, dt);
   expStep(s, dt, H);
-  paceStep(s);
+  paceStep(s); unlockStep(s); chapterStep(s);
   if (s.hero) { const h = byId(s, 'hero'); if (h && !h.away && h.hp <= EXP.hurtHeavy) awaken(s, h); heroStep(s); heroAuto(s); for (const d of s.ds) d.pairMul = pairBonus(s, d, aff); }
   for (const f of s.fx) f.ttl -= dt; s.fx = s.fx.filter((f) => f.ttl > 0);
 }

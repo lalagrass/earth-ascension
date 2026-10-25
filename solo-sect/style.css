@@ -15,3 +15,6 @@ button{font:inherit;background:#efe3c4;border:1px solid #a99368;border-radius:4p
 .card { background: #fbf6ea; border: 1px solid #b89c6a; padding: 6px 8px; margin-top: 6px; font-size: 13px; line-height: 1.6; }
 .rec { color: #c0392b; font-weight: bold; }
 table.codex { border-collapse: collapse; font-size: 12px; width: 100%; } table.codex td, table.codex th { border-bottom: 1px solid #e3d6bb; padding: 2px 4px; text-align: left; }
+h2.fresh { color:#c33; } h2.fresh::after { content:" 新開放"; font-size:12px; background:#c33; color:#fff; padding:1px 6px; border-radius:8px; margin-left:6px; }
+#chap.overlay { position:fixed; inset:0; background:#0008; display:flex; align-items:center; justify-content:center; z-index:50; } #chap .card { background:#fbf6ea; color:#222; padding:20px 28px; border-radius:10px; max-width:520px; }
+label.btn { border:1px solid #888; padding:2px 8px; border-radius:4px; cursor:pointer; margin-left:4px; }

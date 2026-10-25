@@ -27,6 +27,7 @@ export const MIGRATIONS = [
   { to: '0.95', note: '敵人圖鑑、巡山遠征、前期里程碑', up(o) { freshV095(o); } },
   { to: '0.96', note: '主角建立：悟性／根骨拆分、價值觀、同門', up(o) { for (const d of o.ds) d.wu ??= d.root; o.hero ??= null; o.choices ??= []; o.encExclude ??= []; } },
   { to: '0.97', note: '巡山風格、守關敵、清場率紀錄', up(o) { o.records ??= {}; o.records.clear ??= {}; o.records.qing ??= {}; if (o.exp) Object.assign(o.exp, { style: o.exp.style || 'steady', styleWhy: o.exp.styleWhy || [], seg: o.exp.seg || {}, evaded: o.exp.evaded || {}, chase: o.exp.chase || { n: 0, got: 0 }, gateI: o.exp.gateI ?? 0, gates: o.exp.gates || [], events: o.exp.events || [], gorgeT: o.exp.gorgeT ?? null }); } },
+  { to: '0.98', note: '漸進解鎖、第一章終點', up(o) { o.unlock ??= ['base', 'arts', 'hunt', 'exp', 'social', 'econ']; o.chapter ??= { done: false }; } },
 ];
 // 每次讀檔都跑：補最基本的不變式（手改或殘缺存檔也能讀）
 function repair(o, D) { o.cap ??= { wood: 12, stone: 12 }; for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= []; d.needs.fun ??= 60; if (!d.personality?.length) d.personality = [...(D[d.id]?.personality || [])]; d.known ??= d.personality.slice(0, 1); } freshV095(o); }

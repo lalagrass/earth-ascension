@@ -219,7 +219,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '0.97';
+export const RULES_VERSION = '0.98';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -321,7 +321,7 @@ export const ROUTE = [
   { id: 'slope',  name: '山腰', from: 250, to: 450, every: 30, roster: [['bandit', 3], ['archer', 2]],            find: { coin: 0.5 } },
   { id: 'gorge',  name: '深谷', from: 450, to: 700, every: 35, roster: [['bear', 1], ['chief', 1]],               find: { herb: 0.5 } },
 ];
-export const EXP = { maxTeam: 4, thr: [0.3, 0.5, 0.7], thrDefault: 0.5, moodMin: 30, walk: 5, back: 12, supplyHeal: 35, supplyPer: 2, minHp: 50, hurtLight: 60, hurtHeavy: 25 };
+export const EXP = { maxTeam: 4, thr: [0.3, 0.5, 0.7], thrDefault: 0.5, moodMin: 30, walk: 5, back: 12, gateBail: 0.25, supplyHeal: 35, supplyPer: 2, minHp: 50, hurtLight: 60, hurtHeavy: 25 };
 export const RES_NAMES_095 = { page1: '凡階殘頁', page2: '精階殘頁', hide: '獸皮', gall: '熊膽' };
 // 前期節奏：前三天每天一個里程碑；導引旁白可略過
 export const PACE = [
