@@ -10,6 +10,10 @@ import { EXP_STYLES } from './data.mjs';
 import { styleOf, teamStyle } from './expedition.mjs';
 import { openStart, choiceUI, heroCard } from './start-ui.mjs';
 import { UNLOCKS, ALL_SECS, secOpen, CHAPTER1, AUTO, autosave, autoList, autoGet } from './slice.mjs';
+import { MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS, statusIcon } from './v10.mjs';
+import { routeSeg, segIndex, campsOpen, scoutOf, peaceOf } from './expedition.mjs';
+import { CAMPS, ENDLESS } from './data.mjs';
+import { think as think10 } from './mind.mjs';
 import { SFX, ambient, setMute, isMuted, cuesFrom } from './audio.mjs';
 const cv = document.getElementById('map'), g = cv.getContext('2d');
 const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile', 'kitchen_s1', 'map_s0', 'map_s1', 'map_s2'];
@@ -20,6 +24,8 @@ window.__sect = { get S() { return S; }, set speed(v) { speed = v; }, freeze: fa
 const ACT_ICON = { quarry: '⛏', spar: '🤺', cook: '🍲', deliver: '📦', rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔', trial: '⚔' };
 function draw() {
   const shake = S.fx.find((f) => f.kind === 'shake'); g.save(); if (shake) g.translate((Math.random() - 0.5) * 12 * shake.ttl / 0.35, (Math.random() - 0.5) * 12 * shake.ttl / 0.35);
+  { const on = performance.now() < cam.until, k = 0.08; cam.z += ((on ? 1.6 : 1) - cam.z) * k; if (on) { cam.x += (cam.tx - cam.x) * k * 2; cam.y += (cam.ty - cam.y) * k * 2; } else if (cam.z < 1.02) { cam.x = 800; cam.y = 450; cam.z = 1; }
+    if (cam.z > 1.001) { const cx = Math.min(1600 - 800 / cam.z, Math.max(800 / cam.z, cam.x)), cy = Math.min(900 - 450 / cam.z, Math.max(450 / cam.z, cam.y)); g.translate(800, 450); g.scale(cam.z, cam.z); g.translate(-cx, -cy); } }
   const ms = mapStage(S); g.drawImage(IMG[MAPS[ms]], 0, 0, 1600, 900);
   if (window.__debugRoads) { g.strokeStyle = 'rgba(200,60,40,.6)'; g.lineWidth = 3; for (const [a, b] of EDGES) { g.beginPath(); g.moveTo(...NODES[a]); g.lineTo(...NODES[b]); g.stroke(); } }
   const items = [];
@@ -51,9 +57,15 @@ function draw() {
     const im = IMG[d.sprite]; g.drawImage(im, -im.width * SC / 2, -im.height * SC, im.width * SC, im.height * SC); g.restore();
     if (d.carry?.stone) { g.fillStyle = '#8c8c8c'; g.beginPath(); g.arc(x + 10, y - 26, 6, 0, 7); g.fill(); } else if (d.carry) sprite('wood', x + 10, y - 18, 0.6);
     if (isLabor(d)) { g.fillStyle = '#2f6f9f'; g.fillRect(x - 9, y - IMG[d.sprite].height * SC + 4, 18, 4); }
-    label(`${d.name}${isLabor(d) ? '（工）' : d.role === 'outer' ? '（外門）' : d.role === 'head' ? '（首徒）' : ''} ${d.task?.act === 'build' && d.task.phase !== 'do' ? '📦' : ACT_ICON[d.anim || d.task?.act] || ''}`, x, y - (IMG[d.sprite].height * SC + 4), '#222');
+    label(`${d.name}${isLabor(d) ? '（工）' : d.role === 'outer' ? '（外門）' : d.role === 'head' ? '（首徒）' : ''} ${statusIcon(d, d.task?.act === 'build' && d.task.phase !== 'do' ? '📦' : ACT_ICON[d.anim || d.task?.act] || '')}`, x, y - (IMG[d.sprite].height * SC + 4), '#222');
     if (S.hunt) hp(x, y - IMG[d.sprite].height * SC - 20, d.hp / 100, '#3a7');
   } });
+  // v1.0 庫存畫成地圖上的物件：柴堆、石堆、米袋、藥簍、錢箱（數量越多堆越高）
+  { const [bx, by] = NODES.court, R = S.res, piles = [['wood', '#8a5a2b', 'log'], ['stone', '#9a9a9a', 'rock'], ['food', '#e8d9a8', 'sack'], ['herb', '#5f9a3a', 'herb'], ['coin', '#d4a017', 'coin']];
+    piles.forEach(([k, c, sh], i) => { const n = Math.min(8, Math.ceil((R[k] || 0) / (k === 'coin' ? 10 : 4))); if (!n) return; const x = bx - 120 + i * 30, y = by + 52;
+      items.push({ y, f: () => { for (let j = 0; j < n; j++) { const yy = y - j * 5, xx = x + ((j % 2) * 6 - 3); g.fillStyle = c; g.strokeStyle = '#0006'; g.lineWidth = 1; g.beginPath();
+        if (sh === 'log') g.rect(xx - 10, yy - 4, 20, 5); else if (sh === 'sack') g.ellipse(xx, yy - 3, 8, 5, 0, 0, 7); else if (sh === 'coin') g.ellipse(xx, yy - 2, 7, 3, 0, 0, 7); else g.arc(xx, yy - 3, 5.5, 0, 7); g.fill(); g.stroke(); }
+        label(`${{ wood: '木', stone: '石', food: '糧', herb: '藥', coin: '錢' }[k]}${Math.floor(R[k])}`, x, y + 14, '#333'); } }); }); }
   items.sort((a, b) => a.y - b.y).forEach((i) => i.f());
   // 菜畦
   S.plots.forEach((p, i) => { const x = NODES.veg[0] + 10 + i * 18, y = NODES.veg[1] + 30; g.fillStyle = p.st === 'empty' ? '#8a6e4b' : p.st === 'ripe' ? '#5f9a3a' : `rgba(110,150,70,${0.3 + 0.5 * p.g / 90})`; g.fillRect(x, y, 15, 8); });
@@ -74,9 +86,10 @@ function draw() {
 // v0.95 巡山進度條：地圖上只畫這條（背景模擬，不出現在地圖上）
 function expBar() {
   const X = S.exp, R = S.lastExp; if (!X && !R && !S.records?.sect) return;
-  const x0 = 360, x1 = 1240, y = 22, W = x1 - x0, px = (v) => x0 + W * Math.min(1, v / ROUTE_END);
+  const x0 = 360, x1 = 1240, y = 22, W = x1 - x0, END = Math.max(ROUTE_END, X ? X.dist + 100 : 0, (S.records?.sect || 0) + 50), px = (v) => x0 + W * Math.min(1, v / END);
   g.fillStyle = 'rgba(255,248,232,.88)'; g.fillRect(x0 - 70, y - 14, W + 150, 46); g.strokeStyle = '#6b4a2a'; g.strokeRect(x0 - 70, y - 14, W + 150, 46);
-  ROUTE.forEach((r, i) => { g.fillStyle = ['#b9cf9a', '#7fa36a', '#b39a72', '#6f6a7f'][i]; g.fillRect(px(r.from), y, px(r.to) - px(r.from), 10); g.fillStyle = '#3a2f24'; g.font = '12px sans-serif'; g.fillText(r.name, px(r.from) + 4, y + 24); });
+  for (let i = 0; i <= segIndex(END - 1) && i < 40; i++) { const r = routeSeg(i); g.fillStyle = r.endless ? (i % 2 ? '#3d3550' : '#4a4060') : ['#b9cf9a', '#7fa36a', '#b39a72', '#6f6a7f', '#8c8a86', '#5a5248', '#c9c2d8'][i]; g.fillRect(px(r.from), y, Math.max(1, px(Math.min(r.to, END)) - px(r.from)), 10); g.fillStyle = '#3a2f24'; g.font = '11px sans-serif'; if (!r.endless || px(r.to) - px(r.from) > 40) g.fillText(r.endless ? `+${i - ROUTE.length + 1}` : r.name, px(r.from) + 3, y + 24); }
+  for (const c of CAMPS) { const cx = px(ROUTE[c.seg].to); g.fillStyle = S.camps?.[c.id] ? '#c0392b' : '#9998'; g.beginPath(); g.moveTo(cx, y - 8); g.lineTo(cx - 6, y + 2); g.lineTo(cx + 6, y + 2); g.fill(); }
   g.font = 'bold 13px sans-serif'; g.fillStyle = '#3a2f24'; g.fillText('巡山', x0 - 62, y + 10);
   if (S.records?.sect) { const rx = px(S.records.sect); g.fillStyle = '#c0392b'; g.fillRect(rx - 1, y - 6, 3, 22); g.font = '11px sans-serif'; g.fillText(`★紀錄 ${S.records.sect}`, rx + 4, y - 3); }
   if (X) { const tx = px(X.dist); g.fillStyle = '#1f4e79'; g.beginPath(); g.moveTo(tx, y - 2); g.lineTo(tx - 7, y - 12); g.lineTo(tx + 7, y - 12); g.fill();
@@ -134,12 +147,17 @@ function panel() {
     const nm = (o) => Object.entries(o || {}).map(([k, v]) => `${ENEMIES[k].name}×${v}`).join('、') || '無';
     const card = R ? `<div class="card"><b>戰報 #${R.n}</b>（第 ${R.day} 日・${R.team.join('、')}）<div>📏 走到 <b>${R.seg}</b> ${R.dist} 步${R.sectRec ? ' <span class="rec">★本門新紀錄</span>' : ''}</div><div>⚔ 擊倒：${nm(R.kills)}</div><div>💨 逃走：${nm(R.escaped)}</div><div>🩹 傷：${R.hurt.map(([n, l]) => n + l).join('、') || '無'}</div><div>🎒 帶回：${Object.entries(R.loot).map(([k, v]) => `${RES_NAMES[k] || k}${v}`).join(' ') || '無'}</div><div>↩ 回頭：${R.reason}</div>${R.style ? `<div>🧭 風格：<b>${EXP_STYLES[R.style].name}</b>・閃避 ${Object.values(R.evaded).reduce((a, b) => a + b, 0)}・追擊 ${R.chase.got}/${R.chase.n}・用時 ${R.time}s</div><div>🗺 清場率：${Object.entries(R.clear).map(([k, v]) => `${ROUTE.find((g) => g.id === k).name} ${Math.round(v * 100)}%${v >= 1 ? '（清山）' : ''}`).join('・') || '—'}</div><div class="story">📜 ${R.story}</div>` : ''}</div>` : '<div class="k">尚未巡山</div>';
     const sty = [...team].map((id) => S.ds.find((d) => d.id === id)).filter(Boolean), styHtml = sty.length ? `<div class="k">隊伍風格：<b>${EXP_STYLES[teamStyle(sty)].name}</b>（多數決）｜${sty.map((d) => { const o = styleOf(d); return `${d.name}${EXP_STYLES[o.id].name}：${o.why}`; }).join('；')}</div>` : '';
-    const rec = `<div class="k">清場紀錄：${ROUTE.map((g) => `${g.name}${Math.round((S.records.clear?.[g.id] || 0) * 100)}%${S.records.qing?.[g.id] ? `・清山${S.records.qing[g.id]}次` : ''}`).join('　')}${S.records.fastGorge != null ? `・最快到深谷 ${S.records.fastGorge}s` : ''}</div><div class="k">本門最遠：${S.records.sect || 0} 步${S.records.who ? `（${S.records.who.join('、')}）` : ''}・個人：${disciples(S).map((d) => `${d.name} ${d.best || 0}`).join('・')}</div>`;
-    $('exp').innerHTML = X ? `<div>巡山中 #${X.n}：${X.team.map((id) => S.ds.find((d) => d.id === id)?.name).join('、')}・${EXP_STYLES[X.style]?.name || ''}・${X.phase === 'out' ? '前進' : '回程'} ${X.dist.toFixed(0)} 步（${segAt(X.dist).name}）・乾糧 ${X.supplies}・撤退線 ${X.thr * 100}%</div><div class="k">擊倒 ${nm(X.kills)}｜逃走 ${nm(X.escaped)}｜閃過 ${nm(X.evaded)}｜追 ${X.chase?.got || 0}/${X.chase?.n || 0}</div>${rec}${card}` :
+    const rec = `${manualHtml()}<div class="k">清場紀錄：${ROUTE.map((g) => `${g.name}${Math.round((S.records.clear?.[g.id] || 0) * 100)}%${S.records.qing?.[g.id] ? `・清山${S.records.qing[g.id]}次${peaceOf(S, g.id) ? '☮' : ''}` : ''}`).join('　')}${S.records.fastGorge != null ? `・最快到深谷 ${S.records.fastGorge}s` : ''}</div><div class="k">本門最遠：${S.records.sect || 0} 步${S.records.who ? `（${S.records.who.join('、')}）` : ''}・個人：${disciples(S).map((d) => `${d.name} ${d.best || 0}`).join('・')}</div>`;
+    $('exp').innerHTML = X ? `<div>巡山中 #${X.n}：${X.team.map((id) => S.ds.find((d) => d.id === id)?.name).join('、')}・${EXP_STYLES[X.style]?.name || ''}・${X.phase === 'out' ? '前進' : '回程'} ${X.dist.toFixed(0)} 步（${segAt(X.dist).name}）・乾糧 ${X.supplies}・撤退線 ${X.thr * 100}%</div><div class="k">${rbar('體力', X.sta, EXP.sta, '#3a7')} ${rbar(`耐性${X.order ? '（巡山令）' : ''}`, X.pat, X.patMax || 100, '#c80')}${X.scout ? `　探路：${X.scout}（先手 +20%）` : ''}${X.camp ? `　自${X.camp}出發` : ''}</div><div class="k">擊倒 ${nm(X.kills)}｜逃走 ${nm(X.escaped)}｜閃過 ${nm(X.evaded)}｜追 ${X.chase?.got || 0}/${X.chase?.n || 0}</div>${rec}${card}` :
       `<div>${disciples(S).map((d) => `<label><input type="checkbox" class="xteam" value="${d.id}" ${team.has(d.id) ? 'checked' : ''}>${d.name}${d.hp < EXP.minHp ? '（傷）' : ''}</label>`).join(' ')}</div>
       ${styHtml}<div>撤退線：<select id="exthr">${EXP.thr.map((v) => `<option value="${v}" ${v === thr ? 'selected' : ''}>氣血 ${v * 100}%</option>`).join('')}</select>（心情 &lt;${EXP.moodMin} 也會回頭）</div>
+      <div>乾糧：<input id="exsup" type="number" min="0" max="${Math.max(1, team.size) * EXP.supplyMax}" value="${window.__exSup ?? Math.max(1, team.size) * EXP.supplyPer}" style="width:3em"> 份（庫存糧 ${Math.floor(S.res.food)}）
+      目標：<select id="extgt">${[...ROUTE.map((r) => [r.to, `${r.name}盡頭 ${r.to}`]), ['inf', '不設限（無盡）']].map(([v, n]) => `<option value="${v}" ${String(window.__exTgt ?? ROUTE[ROUTE.length - 1].to) === String(v) ? 'selected' : ''}>${n}</option>`).join('')}</select>
+      出發：<select id="exfrom"><option value="">山門</option>${campsOpen(S).map((c) => `<option value="${c.id}" ${window.__exFrom === c.id ? 'selected' : ''}>${c.name}（${ROUTE[c.seg].to} 步，多帶 ${EXP.campCarry}/人）</option>`).join('')}</select>
+      巡山令：<select id="exord"><option value="">照性格</option>${Object.entries(EXP_STYLES).map(([k, v]) => `<option value="${k}" ${window.__exOrd === k ? 'selected' : ''}>強令${v.name}</option>`).join('')}</select>
+      <span class="k">${window.__exOrd ? '（不合性格者心情 −6、主角違心；耐性上限 ×0.7）' : ''}${(() => { const sc = scoutOf(sty); return sc ? `　探路：${sc.name}（先手 +20%）` : ''; })()}</span></div>
       <button id="exp-go">派出巡山（${team.size} 人）</button> <span class="k">${canExpedition(S, [...team]).why || ''}</span>${rec}${card}`;
-    if (!X) { $('exp-go').onclick = () => { startExpedition(S, [...team], { thr }); panel(); }; $('exthr').onchange = (e) => { window.__exThr = +e.target.value; }; document.querySelectorAll('.xteam').forEach((c) => (c.onchange = () => { c.checked ? team.add(c.value) : team.delete(c.value); panel(); })); }
+    if (!X) { $('exp-go').onclick = () => { const r = startExpedition(S, [...team], { thr, supplies: +$('exsup').value, target: $('extgt').value === 'inf' ? 'inf' : +$('extgt').value, from: $('exfrom').value || null, order: $('exord').value || null }); if (!r.ok) alert(r.why); panel(); }; $('exsup').onchange = (e) => { window.__exSup = +e.target.value; }; $('extgt').onchange = (e) => { window.__exTgt = e.target.value; }; $('exfrom').onchange = (e) => { window.__exFrom = e.target.value; }; $('exord').onchange = (e) => { window.__exOrd = e.target.value; panel(); }; $('exthr').onchange = (e) => { window.__exThr = +e.target.value; }; document.querySelectorAll('.xteam').forEach((c) => (c.onchange = () => { c.checked ? team.add(c.value) : team.delete(c.value); panel(); })); }
     $('codex').innerHTML = `<table class="codex"><tr><th>敵人</th><th>類</th><th>兵器</th><th>血</th><th>見/倒/逃</th><th>觀破</th></tr>${codexRows(S).map((r) => r.unknown ? `<tr class="k"><td>？？？</td><td colspan="5">未曾照面</td></tr>` : `<tr><td>${r.name}</td><td>${r.kind}</td><td>${r.weapon}</td><td>${r.hp}</td><td>${r.seen}/${r.kills}/${r.fled}</td><td>${r.insight}・${r.tier}</td></tr>`).join('')}</table>`;
     const G = S.guide; $('guide').innerHTML = G?.on && G.msg ? `<div class="guide">${G.msg}<div><button id="g-ok">知道了</button> <button id="g-off">略過所有導引</button></div></div>` : '';
     if (G?.on && G.msg) { $('g-ok').onclick = () => { skipGuide(S); panel(); }; $('g-off').onclick = () => { skipGuide(S, true); panel(); }; }
@@ -152,7 +170,7 @@ function panel() {
       qa = `<div class="qa"><b>三問心印・${c.next.name}</b>${QUESTIONS.map((q, i) => `<div class="k">${q.q} <select data-q="${i}">${q.a.map(([t], j) => `<option value="${j}" ${window.__ans[i] === j ? 'selected' : ''}>${t}</option>`).join('')}</select></div>`).join('')}<div class="k">將成為：${pr.known.map((t) => TRAITS[t].name).join('、')}${pr.personality.length > pr.known.length ? '＋一項天性（相處後揭露）' : ''}（不改就用預選）</div></div>`; }
     $('recruit').innerHTML = `${qa}<button id="rec-go" ${c.ok ? '' : 'disabled'}>招收弟子（名聲 ${recruitNeed(S)}、糧 3）</button> <span class="k">${c.ok ? '' : c.why}</span>`;
     $('rec-go').onclick = () => { recruit(S, window.__ans); panel(); }; }
-  $('ds').innerHTML = disciples(S).map((d) => `<div class="card"><b>${d.name}</b> <span class="k">${d.adult ? '' : '（少年）'}（${RANK_NAMES[d.role] || '內門'}）${d.task ? (ACTIVITIES[d.task.act]?.name || (d.task.act === 'trial' ? '試煉' : '狩獵')) : '待命'}｜${d.reason}</span>
+  $('ds').innerHTML = disciples(S).map((d) => `<div class="card"><b>${d.name}</b> <span class="k">${(() => { const L = likesOf(d), a = aspOf(d); return `愛吃${L.food}・愛喝${L.drink}${a ? `｜志向「${ASPIRATIONS[a.id].name}」${a.done ? '✔' : `：${ASPIRATIONS[a.id].goal}`}` : ''}`; })()}</span><br><span class="k">${d.adult ? '' : '（少年）'}（${RANK_NAMES[d.role] || '內門'}）${d.task ? (ACTIVITIES[d.task.act]?.name || (d.task.act === 'trial' ? '試煉' : '狩獵')) : '待命'}｜${d.reason}</span>
    <div class="k">性格：${d.personality.map((p) => d.known.includes(p) ? `<span title="${TRAITS[p].desc}">${TRAITS[p].name}</span>` : '<span title="相處久了才看得出來">？？</span>').join('、')}｜心情 ${d.mood | 0}（${moodLabel(d.mood)}）</div>${bar(d.mood, '#6a8cc7')}<div class="k" title="心情目標的組成">${moodParts(d, S).slice(1).map(([t, v]) => [d.personality.some((p) => !d.known.includes(p) && TRAITS[p].name === t) ? '某種天性' : t, v]).map(([t, v]) => `${t}${v > 0 ? '+' : ''}${v}`).join('・') || '—'}</div>
    <details class="why"><summary>為什麼${d.task ? (ACTIVITIES[d.task.act]?.name || (d.task.act === 'trial' ? '試煉' : '狩獵')) : '待命'}？</summary>${(d.why || []).map((w, i) => `<div class="k">${i + 1}. ${ACTIVITIES[w.act]?.name || w.act} <b>${w.score}</b> = 基礎${w.f.base.toFixed(0)}×作息${w.f.sched}×${w.f.text ? `［${w.f.text}］` : `性格${w.f.trait.toFixed(2)}×心情${w.f.mood}`}＋雜訊${w.f.noise.toFixed(0)}｜${w.why}</div>`).join('') || '<div class="k">玩家指派或尚未決策</div>'}</details>
    <div class="k">精力 ${d.needs.energy | 0}</div>${bar(d.needs.energy, '#d9a441')}<div class="k">飽足 ${d.needs.hunger | 0}</div>${bar(d.needs.hunger, '#7aa35a')}<div class="k">交流 ${d.needs.social | 0}</div>${bar(d.needs.social, '#c77')}<div class="k">樂趣 ${(d.needs.fun ?? 0) | 0}</div>${bar(d.needs.fun ?? 0, '#a07ac7')}
@@ -173,6 +191,17 @@ $('load').addEventListener('click', () => { if (document.getElementById('start')
 let last = performance.now(), acc = 0;
 function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now; if (starting || choiceUI(S)) acc = 0; while (acc >= 0.25) { tick(S); acc -= 0.25; }
   audioStep(); draw(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
+function rbar(n, v, max, c) { const p = Math.max(0, Math.min(1, (v ?? 0) / (max || 1))); return `${n} <span style="display:inline-block;width:80px;height:8px;background:#ddd;vertical-align:middle"><span style="display:block;height:8px;width:${p * 80}px;background:${c}"></span></span> ${Math.max(0, Math.round(v ?? 0))}`; }
+function manualHtml() {
+  const ms = S.manuals || [], ps = Object.keys(MANUALS);
+  return `<div class="k">秘笈殘章：${ps.map((k) => `${k === 'page1' ? '凡階' : '精階'} ${S.res[k] || 0}/${MANUALS[k].need} <button data-asm="${k}" ${canAssemble(S, k) ? '' : 'disabled'}>湊成${MANUALS[k].name}</button>`).join('　')}${ms.map((m, i) => `<div>📜《${ARTS.find((a) => a.id === m.art).name}》<select data-lm="${i}"><option value="">指定研讀…</option>${disciples(S).filter((d) => !d.arts?.[m.art]).map((d) => `<option value="${d.id}">${d.name}</option>`).join('')}</select></div>`).join('')}</div>`;
+}
+document.addEventListener('click', (e) => { const b = e.target.closest('[data-asm]'); if (b) { assemble(S, b.dataset.asm); panel(); } });
+document.addEventListener('change', (e) => { const s = e.target.closest('[data-lm]'); if (s && s.value) { const r = learnManual(S, +s.dataset.lm, s.value, think10); if (!r.ok) alert(r.why); panel(); } });
+// v1.0 鏡頭：大事件短暫拉近
+const cam = { x: 800, y: 450, z: 1, tx: 800, ty: 450, until: 0 };
+export function camFocus(x, y, sec = 2.5) { cam.tx = x; cam.ty = y; cam.until = performance.now() + sec * 1000; }
+window.__camFocus = camFocus;
 // v0.98 垂直切片：面板漸進解鎖、章節總結、自動存檔、匯出入、音效
 function sliceUI() {
   for (const sec of ALL_SECS) { const el = $(sec); if (!el) continue; const on = secOpen(S, sec), h = el.previousElementSibling; el.hidden = !on; if (h?.tagName === 'H2') { h.hidden = !on; h.classList.toggle('fresh', on && S.newUnlock?.secs?.includes(sec) && S.t - S.newUnlock.t < 60); } }
@@ -188,7 +217,8 @@ function chapterModal() {
   document.body.append(d); $('chap-go').onclick = () => { S.chapter.seen = true; d.remove(); SFX.click(); panel(); };
 }
 let lastAuto = 0; const cue = {};
-function audioStep() { for (const c of cuesFrom(cue, S)) SFX[c]?.(); }
+function audioStep() { for (const c of cuesFrom(cue, S)) { SFX[c]?.(); const p = c === 'breakthrough' ? (S.fx.find((f) => f.kind === 'break')?.pos || NODES.yard) : c === 'record' ? NODES.gate : c === 'chapter' ? NODES.hall : null; if (p) camFocus(p[0], p[1]); }
+  const rd = S.mons.find((m) => m.raid === 'go'); if (rd && cue.raid !== rd.uid) { cue.raid = rd.uid; camFocus(rd.pos[0], rd.pos[1], 2); } }
 setInterval(() => { if (!S || S.t - lastAuto < AUTO.every) return; lastAuto = S.t; autosave(localStorage, save(S), { day: Math.floor(S.t / 600) + 1, name: S.hero?.name, at: Date.now() }); }, 1000);
 $('autos').onchange = (e) => { if (e.target.value === '') return; const r = load(autoGet(localStorage, +e.target.value) || ''); if (r.ok) { S = r.state; lastAuto = S.t; document.getElementById('start')?.remove(); starting = false; } else alert(r.err); panel(); };
 $('export').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([save(S)], { type: 'application/json' })); a.download = `solo-sect-day${Math.floor(S.t / 600) + 1}.json`; a.click(); URL.revokeObjectURL(a.href); };

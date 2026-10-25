@@ -40,7 +40,7 @@ test('匯出 JSON 再匯入 = 同一局', () => {
 test('0.97 存檔遷移到 0.98：舊局全面板開放', () => {
   const s = createState(1); const o = JSON.parse(save(s)); o.rules = '0.97'; delete o.unlock; delete o.chapter;
   const r = load(JSON.stringify(o)); assert.ok(r.ok); assert.equal(r.state.unlock.length, UNLOCKS.length); assert.equal(r.state.chapter.done, false);
-  assert.equal(MIGRATIONS.at(-1).to, RULES_VERSION); assert.equal(RULES_VERSION, '0.98');
+  assert.equal(MIGRATIONS.at(-1).to, RULES_VERSION); assert.ok(['0.98', '1.0'].includes(RULES_VERSION));
 });
 test('音效提示由紀事推出', () => {
   const p = {}, s = { fx: [], log: [{ msg: 'x' }] }; cuesFrom(p, s);

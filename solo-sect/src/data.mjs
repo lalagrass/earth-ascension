@@ -186,6 +186,11 @@ export const TRAITS = {
 export const THOUGHTS = {
   recordSect: { text: '本門巡山走出新紀錄', v: 5, ttl: 600, tag: 'good' },
   recordSelf: { text: '巡山走得比上次更遠', v: 4, ttl: 500, tag: 'good' },
+  likeFood:  { text: '今天的菜正合胃口', v: 4, ttl: 300, tag: 'good' },
+  likeDrink: { text: '喝到愛喝的', v: 3, ttl: 300, tag: 'good' },
+  forcedStyle:{ text: '被巡山令逼著照別人的路子走', v: -6, ttl: 400, tag: 'bad' },
+  quarrel:   { text: '巡山時跟人吵了一架', v: -5, ttl: 300, tag: 'social' },
+  aspDone:   { text: '志向得償', v: 12, ttl: 900, tag: 'good' },
   expHurt:   { text: '巡山掛了彩', v: -8, ttl: 400, tag: 'fight' },
   btFail:    { text: '衝關失敗，氣血翻湧', v: -5, ttl: 300, tag: 'bad' },
   btWin:     { text: '衝破瓶頸！', v: 18, ttl: 500, tag: 'good' },
@@ -219,7 +224,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '0.98';
+export const RULES_VERSION = '1.0';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -311,6 +316,16 @@ export const ENEMIES = {
   archer: { name: '獵戶暗箭', kind: '人', weapon: '暗器', hp: 75,  dmg: 17, cd: 1.5, flee: 0.45, loot: { coin: 2, page1: 0.1 } },
   bear:   { name: '黑熊',     kind: '獸', weapon: '熊掌', hp: 420, dmg: 28, cd: 1.6, flee: 0.05, loot: { food: 6, gall: 1 } },
   chief:  { name: '山賊頭目', kind: '人', weapon: '刀／鞭', hp: 360, dmg: 24, cd: 1.1, flee: 0.2, loot: { coin: 12, page2: 0.35 } },
+  // v1.0 第五段以後（基準數值；實戰再乘路段倍率 ×1.25^k）
+  vulture:{ name: '禿鷲',     kind: '獸', weapon: '鐵喙', hp: 120, dmg: 12, cd: 1.0, flee: 0.4,  loot: { hide: 1 } },
+  ape:    { name: '崖猿',     kind: '獸', weapon: '巨臂', hp: 200, dmg: 15, cd: 1.3, flee: 0.2,  loot: { food: 4, herb: 1 } },
+  bat:    { name: '洞蝠群',   kind: '獸', weapon: '利齒', hp: 150, dmg: 11, cd: 0.8, flee: 0.3,  loot: { herb: 1, page1: 0.2 } },
+  python: { name: '巨蟒',     kind: '獸', weapon: '纏絞', hp: 320, dmg: 18, cd: 1.6, flee: 0.1,  loot: { gall: 1, page1: 0.3 } },
+  hermit: { name: '瘋癲劍客', kind: '人', weapon: '劍',   hp: 300, dmg: 20, cd: 1.0, flee: 0.25, loot: { coin: 10, page2: 0.3 } },
+  whiteape:{ name: '白猿',    kind: '獸', weapon: '巨臂', hp: 480, dmg: 22, cd: 1.2, flee: 0,    loot: { food: 8, page2: 0.5 } },
+  pythonking:{ name: '古洞蟒王', kind: '獸', weapon: '纏絞', hp: 540, dmg: 22, cd: 1.5, flee: 0, loot: { gall: 2, page2: 0.7 } },
+  swordtomb:{ name: '劍塚守者', kind: '人', weapon: '玄鐵重劍', hp: 600, dmg: 24, cd: 1.3, flee: 0, loot: { coin: 30, page2: 1 } },
+  peakguard:{ name: '無名高手', kind: '人', weapon: '？', hp: 560, dmg: 22, cd: 1.2, flee: 0, loot: { coin: 20, page2: 1 } },
 };
 // 觀破值：照面 +1、交手 +2、擊倒 +5；10 識其來路、30 熟其招式、60 看破（對其傷害 +10%）
 export const INSIGHT = { see: 1, fight: 2, kill: 5, tiers: [[10, '識其來路'], [30, '熟其招式'], [60, '看破']], dmgAt: 60, dmg: 0.1 };
@@ -320,8 +335,15 @@ export const ROUTE = [
   { id: 'wood',   name: '林地', from: 100, to: 250, every: 25, roster: [['boars', 1], ['wolf', 2], ['snake', 2]], find: { herb: 0.5, wood: 0.5 } },
   { id: 'slope',  name: '山腰', from: 250, to: 450, every: 30, roster: [['bandit', 3], ['archer', 2]],            find: { coin: 0.5 } },
   { id: 'gorge',  name: '深谷', from: 450, to: 700, every: 35, roster: [['bear', 1], ['chief', 1]],               find: { herb: 0.5 } },
+  { id: 'cliff',  name: '斷崖', from: 700, to: 950, every: 40, roster: [['vulture', 2], ['ape', 2]], find: { herb: 0.5 }, scale: 1.25 },
+  { id: 'cave',   name: '古洞', from: 950, to: 1250, every: 45, roster: [['bat', 3], ['python', 1]], find: { page1: 0.3 }, scale: 1.25 ** 2 },
+  { id: 'peak',   name: '無名絕頂', from: 1250, to: 1600, every: 50, roster: [['hermit', 2], ['ape', 1]], find: { coin: 1, page2: 0.1 }, scale: 1.25 ** 3 },
 ];
-export const EXP = { maxTeam: 4, thr: [0.3, 0.5, 0.7], thrDefault: 0.5, moodMin: 30, walk: 5, back: 12, gateBail: 0.25, supplyHeal: 35, supplyPer: 2, minHp: 50, hurtLight: 60, hurtHeavy: 25 };
+// v1.0 無盡段：無名絕頂之後每 200 步一段、段末固定守關「無名高手」、每段 ×1.25
+export const ENDLESS = { len: 200, mul: 1.25, roster: [['hermit', 2], ['ape', 1], ['python', 1]], find: { coin: 1, page2: 0.15 }, gate: 'peakguard' };
+// 營地：第三段（山腰）與第五段（斷崖）盡頭；過關即設營，可補給、下次可從營地出發
+export const CAMPS = [{ id: 'camp1', seg: 2, name: '山腰營地' }, { id: 'camp2', seg: 4, name: '斷崖營地' }];
+export const EXP = { maxTeam: 4, thr: [0.3, 0.5, 0.7], thrDefault: 0.5, moodMin: 30, walk: 5, back: 12, gateBail: 0.25, supplyHeal: 35, supplyPer: 2, supplyMax: 6, campCarry: 2, sta: 100, staStep: 0.05, staFight: 1.5, patFight: 1.5, patLazy: 1, orderPatCap: 0.7, scoutAt: 35, scoutBonus: 0.2, scoutT: 3, cool: 90, coolFast: 0.5, quarrel: 6, peaceQing: 3, peaceRaid: 2, peaceSpeed: 1.3, orderMood: -6, minHp: 50, hurtLight: 60, hurtHeavy: 25 };
 export const RES_NAMES_095 = { page1: '凡階殘頁', page2: '精階殘頁', hide: '獸皮', gall: '熊膽' };
 // 前期節奏：前三天每天一個里程碑；導引旁白可略過
 export const PACE = [
@@ -342,6 +364,7 @@ ENEMIES.post = { name: '山賊哨卡', kind: '人', weapon: '刀槍', hp: 300, d
 // 段尾守關敵：一定要打、不能繞；打不贏＝回頭
 Object.assign(ROUTE[0], { gate: 'boar', gateName: '擋路的野豬' }); Object.assign(ROUTE[1], { gate: 'wolfking', gateName: '狼王' });
 Object.assign(ROUTE[2], { gate: 'post', gateName: '山賊哨卡' }); Object.assign(ROUTE[3], { gate: 'bear', gateName: '橋頭黑熊' });
+Object.assign(ROUTE[4], { gate: 'whiteape', gateName: '白猿' }); Object.assign(ROUTE[5], { gate: 'pythonking', gateName: '古洞蟒王' }); Object.assign(ROUTE[6], { gate: 'swordtomb', gateName: '劍塚守者' });
 export const EXP_STYLES = {
   clear:  { name: '清場', speed: 0.7, evade: 'never', chase: 1 },
   steady: { name: '穩推', speed: 1.0, evade: 'never', chase: 0.3 }, // 穩推中較真者 30% 會追
