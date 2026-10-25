@@ -1,15 +1,15 @@
 # 山居 · 在山中留下來
 
-私人本機的門派生活第一章，GPT / Codex 獨立實作。原生 ESM、Canvas 2D、程序音效，遊戲執行不需外網或安裝套件。完整第一版的驗收索引、commit與限制見 `handoff/development.done.json`。
+私人本機的門派生活第一章，GPT / Codex 獨立實作。原生 ESM、Canvas 2D、程序音效，遊戲執行不需外網或安裝套件。完整第一版的驗收索引、commit與限制見 `handoff/development.done.json`。目前依新授權進行優化M1→M6；M1已完成，M2在最終正常UI與20分鐘驗證階段，尚不宣稱M1–M6完成。各階段狀態見`PROGRESS.md`。
 
-從本獨立 checkout 啟動，8877 必須空閒；不使用既有 8800：
+從本獨立 checkout 啟動，8878 必須空閒；不使用既有 8800：
 
 ```sh
 cd /Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension
-python3 -m http.server 8877 --bind 127.0.0.1 --directory solo-sect-gpt
+python3 -m http.server 8878 --bind 127.0.0.1 --directory solo-sect-gpt
 ```
 
-以瀏覽器開啟 [本機遊戲](http://127.0.0.1:8877/)。停止服務用該終端的 Ctrl-C。沒有部署、帳號或付費服務。
+以瀏覽器開啟 [本機遊戲](http://127.0.0.1:8878/)。停止服務用該終端的 Ctrl-C。沒有部署、帳號或付費服務。
 
 ## 怎麼開始
 
@@ -24,6 +24,14 @@ python3 -m http.server 8877 --bind 127.0.0.1 --directory solo-sect-gpt
 遠征頁選1–3位成年常住者，備好每人兩份乾糧並休養，人物先領糧再出門。林緣、營地、溪谷、單人窄橋與古洞是同一張連續地圖。可對守路人說明來意或實際交戰；倒地後可請救援，120模擬秒等待之外還要等救援者真走到場。古洞選擇與實際履約分開記錄，保糧後仍可返洞救人。
 
 完成條件在遠征頁逐項顯示。立匾後可關閉回顧繼續生活。靜室、家庭與五人物十節點是第一版功能，雖不強迫作為立匾前置，仍有獨立驗收。
+
+## 建議日課與一次命令（M2）
+
+新局可勾選建議日課；讀入舊檔後，須在人物或日課頁明示採用，才會改用新作息。掌門簿可收合，Esc也可收起；人物頁列出實際現在、接單／受阻原因與接著。日課頁可調工作／修行時段並查看有效補給目標。未手動設定的糧水目標隨常住人數增加；必要補給地板、疲勞自理及最低修行優先於個性偏好。
+
+勾選「臨時一次，完成後回復」再採集、做飯或練功，完成真實單位後會回到原有效單人指令、自主日課或原停工狀態。單次練功是一單位；採集和成品都須搬交。Stop、普通改派和召回取代先前回復目標；遠征／約定／同堂進行中請先完成，或取消勾選作普通改派，不能用單人命令恢復整隊共享流程。取消預約不會移走停工者；若站在作業位，面板會指出誰需讓位。
+
+舊檔未採用仍保存原規則版本；明示採用後使用日課v1與`chapter1-life-1`保存標記，第一版會拒絕此新檔，避免忽略日課。原始匯入檔不改。一般完工／成長只列摘要，需留意可開掌門簿看；常住者倒地才一次暫停。
 
 ## 操作與保存
 
@@ -45,7 +53,7 @@ node --test sect-chronicle/test/*.test.js
 git diff --check
 ```
 
-UI腳本位於 `test/ui/`，需上述本機服務。`harness.mjs` 使用這台機器已備的 Playwright：`/Users/chenyuying/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs` 與 `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`，沒有替根專案新增依賴。示例：`node solo-sect-gpt/test/ui/save-controls.mjs`。長流程各有正常存檔來源；不要把模型fixture當玩家通關。
+UI腳本位於 `test/ui/`，需上述本機服務。`harness.mjs` 使用這台機器已備的 Playwright：`/Users/chenyuying/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs` 與 `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`，沒有替根專案新增依賴。優化正常UI示例：`node solo-sect-gpt/test/optimization/m2-ui.mjs manual`。舊`test/ui/`是第一版的歷史長流程，重現時使用對應artifact commit及其入口，避免把新預設當舊版證據。長流程各有正常存檔來源；不要把模型fixture當玩家通關。
 
 [驗收規格](docs/ACCEPTANCE.md)、[開發進度](PROGRESS.md)、[功能與證據](FEATURES.md)、[素材來源](assets/PROVENANCE.md)。原始輸出／失敗與修補後證據保留在 `evidence/development/`。先前開發版的正常存檔有連續來源，跨版本接續不宣稱逐tick點擊重播相等。固定tick模型golden另列。
 

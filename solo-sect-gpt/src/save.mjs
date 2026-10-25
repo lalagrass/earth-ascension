@@ -1,14 +1,16 @@
+import {validateLifePolicy,LIFE_RULES} from './life-policy.mjs';
 import {VERSION,ITEM,ART,MOVES,FACILITIES,STORY_IDS,RECIPES} from './data.mjs';
 import {invariants,sorted} from './state.mjs';
 import {walkable,position,stations,bedSlots} from './map.mjs';
 export const PREFIX='solo-sect-gpt.chapter1.v1.';
 export function canonical(value){if(value===null||typeof value!=='object')return JSON.stringify(value);if(Array.isArray(value))return '['+value.map(canonical).join(',')+']';return '{'+Object.keys(value).sort().map(k=>JSON.stringify(k)+':'+canonical(value[k])).join(',')+'}';}
 export async function hash(value){const bytes=new TextEncoder().encode(canonical(value)),sum=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(sum)].map(x=>x.toString(16).padStart(2,'0')).join('');}
-export async function encode(world){const payload=structuredClone(world),checksum=await hash(payload);return JSON.stringify({format:'solo-sect-gpt',...VERSION,savedAt:new Date().toISOString(),payload,checksum});}
+export async function encode(world){const payload=structuredClone(world),checksum=await hash(payload);return JSON.stringify({format:'solo-sect-gpt',...VERSION,rulesVersion:payload.rulesVersion,savedAt:new Date().toISOString(),payload,checksum});}
 const record=o=>o!==null&&typeof o==='object'&&!Array.isArray(o),int=(n,min=0,max=Number.MAX_SAFE_INTEGER)=>Number.isSafeInteger(n)&&n>=min&&n<=max;
 const safeId=id=>typeof id==='string'&&/^[-a-zA-Z0-9._]+$/.test(id)&&!['__proto__','constructor','prototype'].includes(id);
 const kinds=new Set(['class','unloadQuest','drink','move','return','gather','build','train','study','rest','sleep','eat','cook','craft','talk','encourage','care','teach','greet','farm','harvestHaul','delivery','school','reception','learn','equip','story','pack','aid','collect','paired']);
 function validate(w){
+ if(w.lifePolicy!==undefined){validateLifePolicy(w.lifePolicy,w.inventories?.vat?.capacity);if(w.rulesVersion!==LIFE_RULES)throw Error('日課版本標記不符');}else if(w.rulesVersion===LIFE_RULES)throw Error('日課版本缺少政策');
  for(const k of ['people','facilities','inventories','activities','reservations','queues','bridge','random','relationships','families','stories','ledger','plots','metrics','facts','seenCommands'])if(!record(w[k]))throw Error('缺少世界欄位：'+k);
  for(const k of ['journal','memories','commands'])if(!Array.isArray(w[k]))throw Error('記錄格式錯誤：'+k);
  if(!int(w.seed,1,4294967295)||!int(w.tick)||!int(w.nextId,1)||!int(w.commandSeq)||!w.people.leader||!w.people.child)throw Error('世界識別／時間不合法');
@@ -21,6 +23,8 @@ function validate(w){
   for(const [item,n]of Object.entries(inv.items))if(!Object.hasOwn(ITEM,item)||!int(n))throw Error('物資種類／數量不合法');
  }
  for(const [id,p]of Object.entries(w.people)){
+  if(p.temporary&&(!w.lifePolicy||!record(p.temporary)||p.temporary.version!==1||!int(p.temporary.revision)||p.temporary.revision!==p.revision||!kinds.has(p.temporary.kind)||typeof p.temporary.auto!=='boolean'||typeof p.temporary.manualStop!=='boolean'||p.temporary.intent!==null&&(!record(p.temporary.intent)||!kinds.has(p.temporary.intent.kind)||!record(p.temporary.intent.args))))throw Error('臨時命令回復版本／引用不合法');
+  if(p.temporary?.intent){const t=p.temporary.intent,k=t.kind,a=t.args;if(['train','study','learn','equip'].includes(k)&&!Object.hasOwn(ART,a.art||'punch')||k==='build'&&!Object.hasOwn(FACILITIES,a.facility)||['talk','encourage','care','teach','greet','aid'].includes(k)&&!w.people[a.target]||k==='cook'&&!Object.hasOwn(RECIPES,a.recipe||'meal')||k==='gather'&&!['wood','stone','water','veg','herb'].includes(a.item)||k==='move'&&(!Array.isArray(a.pos)||a.pos.length!==2||a.pos.some(n=>!Number.isFinite(n))))throw Error('臨時回復意圖引用不合法');}
   if(p.id!==id||!safeId(id)||typeof p.name!=='string'||!p.name.length||p.name.length>40||!/^#[0-9a-fA-F]{6}$/.test(p.color))throw Error('人物欄位不合法');
   if(typeof p.adult!=='boolean'||!['human','rat','boar'].includes(p.kind)||!['resident','visitor','departed','wild','cave','training'].includes(p.residence)||!['leader','worker','outer','inner','family','guest','traveler','wild','warden','training','rescuer'].includes(p.rank))throw Error('人物身份不合法');
   if(!Array.isArray(p.stats)||p.stats.length!==5||p.stats.some(n=>!int(n,1,7))||!Array.isArray(p.traits)||p.traits.length!==2||p.traits.some(n=>!int(n,-2,2))||!int(p.energy,0,10000)||!int(p.injury,0,100)||!int(p.hp,0,p.maxHp)||!int(p.maxHp,1,10000)||!int(p.angle,0,359))throw Error('人物數值不合法');
@@ -64,9 +68,9 @@ function validate(w){
 export async function decode(text){
  if(typeof text!=='string'||new TextEncoder().encode(text).length>8*1024*1024)throw Error('檔案超過8MiB或格式不符');
  const x=JSON.parse(text,(key,v)=>{if(['__proto__','constructor','prototype'].includes(key))throw Error('不允許的欄位');if(typeof v==='number'&&!Number.isFinite(v))throw Error('非有限數');return v;});
- if(x.format!=='solo-sect-gpt')throw Error('非本遊戲存檔');for(const k of Object.keys(VERSION))if(x[k]!==VERSION[k])throw Error('不支援的版本：'+k);
+ if(x.format!=='solo-sect-gpt')throw Error('非本遊戲存檔');for(const k of Object.keys(VERSION))if(k==='rulesVersion'?![VERSION.rulesVersion,LIFE_RULES].includes(x[k]):x[k]!==VERSION[k])throw Error('不支援的版本：'+k);
  if(!x.payload||x.checksum!==await hash(x.payload))throw Error('校驗碼不符，原存檔已保留');
- const w=x.payload;for(const k of Object.keys(VERSION))if(w[k]!==VERSION[k])throw Error('內容版本不符');
+ const w=x.payload;for(const k of Object.keys(VERSION))if(w[k]!==x[k])throw Error('內容版本不符');
  try{validate(w);}catch(e){if(e instanceof TypeError)throw Error('存檔內容欄位缺失／型別不合法');throw e;}return w;
 }
 export async function safeWrite(storage,key,world){const text=await encode(world),temp=PREFIX+'pending';

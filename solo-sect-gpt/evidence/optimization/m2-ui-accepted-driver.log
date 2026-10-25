@@ -1,0 +1,17 @@
+01-legacy-retained
+02-policy-stopped
+03-explicit-block
+04-cancelled
+05-train-walking
+06-train-doing
+07-original-stop-restored
+08-gather-walking
+09-saved-capsule-restored
+10-gather-doing
+11-real-water-carried
+12-water-delivered
+13-recipe-fetching
+14-recipe-doing
+15-recipe-hauling
+16-recipe-delivered
+passed

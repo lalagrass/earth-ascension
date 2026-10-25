@@ -1,0 +1,18 @@
+✔ M2 opt-in leaves old save byte-for-byte state untouched; invalid policy does not adopt (55.127209ms)
+✔ M2 supply floors outrank personality and in-transit commitments are counted once (1.816125ms)
+✔ M2 protected training window and bounded free-time personality choices differ under the same floor (0.588625ms)
+✔ M2 one-time real gather returns to prior persistent intent and original auto state exactly once (446.206541ms)
+✔ M2 fatigue interruption keeps the capsule through save/resume and restores after actual practice (754.433ms)
+✔ M2 temporary reassign keeps original return target; stop clears tokens without refunding carried material (140.173333ms)
+✔ M2 blocked temporary study expires once, restores stop and releases its claims (149.647792ms)
+✔ M2 unknown policy and invalid resume capsules reject checksummed saves (6.1645ms)
+✔ M2 structured projection follows at least twelve actual model states and is read-only (2578.31025ms)
+✔ M2 adopted policy replays deterministically on five fixed seeds (3775.234625ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7993.793209

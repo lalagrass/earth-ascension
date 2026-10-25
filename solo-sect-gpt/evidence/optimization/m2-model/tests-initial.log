@@ -1,0 +1,84 @@
+✔ M2 opt-in leaves old save byte-for-byte state untouched; invalid policy does not adopt (69.961ms)
+✔ M2 supply floors outrank personality and in-transit commitments are counted once (1.806ms)
+✔ M2 protected training window and bounded free-time personality choices differ under the same floor (0.590417ms)
+✖ M2 one-time real gather returns to prior persistent intent and original auto state exactly once (23.041834ms)
+✖ M2 fatigue interruption keeps the capsule through save/resume and restores after actual practice (0.966625ms)
+✖ M2 temporary reassign keeps original return target; stop clears tokens without refunding carried material (1.073125ms)
+✖ M2 blocked temporary study expires once, restores stop and releases its claims (0.6275ms)
+✔ M2 unknown policy and invalid resume capsules reject checksummed saves (6.8665ms)
+✖ M2 structured projection follows at least twelve actual model states and is read-only (174.313583ms)
+✔ M2 adopted policy replays deterministically on five fixed seeds (3985.113625ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 5
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4354.266708
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/optimization/policy.test.mjs:6:1
+✖ M2 one-time real gather returns to prior persistent intent and original auto state exactly once (23.041834ms)
+  Error: World invariant at seed 29 tick 2001: inventory vat water
+      at step (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/world.mjs:86:73)
+      at until (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:2:265)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:6:393)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at solo-sect-gpt/test/optimization/policy.test.mjs:7:1
+✖ M2 fatigue interruption keeps the capsule through save/resume and restores after actual practice (0.966625ms)
+  Error: World invariant at seed 29 tick 2001: inventory vat water
+      at step (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/world.mjs:86:73)
+      at until (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:2:265)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:7:277)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at solo-sect-gpt/test/optimization/policy.test.mjs:8:1
+✖ M2 temporary reassign keeps original return target; stop clears tokens without refunding carried material (1.073125ms)
+  Error: World invariant at seed 29 tick 2001: inventory vat water
+      at step (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/world.mjs:86:73)
+      at until (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:2:265)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:8:254)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at solo-sect-gpt/test/optimization/policy.test.mjs:9:1
+✖ M2 blocked temporary study expires once, restores stop and releases its claims (0.6275ms)
+  Error: World invariant at seed 29 tick 2001: inventory vat water
+      at step (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/world.mjs:86:73)
+      at until (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:2:265)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:9:226)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at solo-sect-gpt/test/optimization/policy.test.mjs:11:1
+✖ M2 structured projection follows at least twelve actual model states and is read-only (174.313583ms)
+  Error: World invariant at seed 29 tick 2001: inventory vat water
+      at step (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/world.mjs:86:73)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:11:412)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)

@@ -1,0 +1,40 @@
+✔ M2 opt-in leaves old save byte-for-byte state untouched; invalid policy does not adopt (50.041916ms)
+✔ M2 supply floors outrank personality and in-transit commitments are counted once (1.919875ms)
+✔ M2 protected training window and bounded free-time personality choices differ under the same floor (0.598875ms)
+✔ M2 one-time real gather returns to prior persistent intent and original auto state exactly once (454.694791ms)
+✔ M2 fatigue interruption keeps the capsule through save/resume and restores after actual practice (772.380583ms)
+✔ M2 temporary reassign keeps original return target; stop clears tokens without refunding carried material (139.165125ms)
+✔ M2 blocked temporary study expires once, restores stop and releases its claims (152.58325ms)
+✔ M2 unknown policy and invalid resume capsules reject checksummed saves (6.613958ms)
+✔ M2 structured projection follows at least twelve actual model states and is read-only (2539.802416ms)
+✔ M2 adopted policy replays deterministically on five fixed seeds (4023.713416ms)
+✖ M2 serious injury still exempts duties and full real stations expose queue ownership, then transfer on cancellation (365.263916ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 10
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8589.077875
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/optimization/policy.test.mjs:13:1
+✖ M2 serious injury still exempts duties and full real stations expose queue ownership, then transfer on cancellation (365.263916ms)
+  AssertionError [ERR_ASSERTION]: bounded model fixture condition
+      at until (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:2:281)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:13:792)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
