@@ -506,6 +506,69 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     targetCombo: `《${sectOrigin.founderArtName.replace(/[《》]/g, '')} × ${yardDualLineageLoadout.fellowGuestArt.replace(/[《》]/g, '')}雙絕》`,
   };
 
+  // v0.5 Outreach, Outer Sect Quota & 3 Hidden Masters
+  let outreach = {
+    sessionsRun: 1,
+    lastRecruitName: '苦力強',
+    lastRecruitTag: '吃苦耐勞・外門挑水夫',
+    sectAttractionBias: '勤勉實幹 +30%',
+  };
+  let choreQuota = {
+    required: 3,
+    completed: 2,
+    martialTokenUnlocked: false,
+    landladyRoarActive: false,
+  };
+  let hiddenMasters = [
+    { id: 'kuli_qiang', name: '苦力強', role: '挑水夫', martialArt: '《十二路譚腿》', awakened: false },
+    { id: 'tailor_hong', name: '裁縫師傅', role: '巧匠裁縫', martialArt: '《洪家鐵線拳》', awakened: false },
+    { id: 'youzha_gui', name: '油炸鬼', role: '膳房早點師', martialArt: '《五郎八卦棍》', awakened: false },
+  ];
+  let coupleDorm = {
+    pairedNames: '掌門 ＆ 同門知己',
+    bondStage: '同門相識 (Lv2)',
+    sharedMemoriesCount: 3,
+  };
+
+  // v0.6 S0–S5 Segmented Patrol, PiP Viewport, Telemetry Comparison & Non-Numeric Strength Showcases
+  let patrolV06 = {
+    segments: [
+      'S0 山門柵欄',
+      'S1 翠竹坡',
+      'S2 亂石坳',
+      'S3 迷霧林緣',
+      'S4 斷崖激流',
+      'S5 幽谷獸王窟',
+    ],
+    activeStyle: 'completionist_bulldozer',
+    currentSegmentIndex: 3,
+    maxDistanceMeters: 780,
+    clearRatePct: 100,
+    escapedCount: 0,
+    bypassedCount: 0,
+    lootedHerb: '上等野豬肉 ×3 ＋ 狼皮 ×2',
+    lootScentAlert: false,
+    retreatReason: '返程精力安全線 (780m 留足 8 點餘裕返院)',
+    telemetryComparison: {
+      prevSegment: 'S1 翠竹坡 (240m)',
+      currSegment: 'S4 斷崖激流 (920m)',
+      distanceDelta: '+680m',
+      prevEscapeRate: '60%',
+      currEscapeRate: '0%',
+      speedDelta: '-64% 耗時',
+    },
+    defenseSlots: [
+      { slotId: 'gate_bridge', label: '山門石橋陣眼', stance: '迎擊攔截', assignee: '掌門' },
+      { slotId: 'yard_flank', label: '演武側翼陣位', stance: '游走護衛', assignee: '同門搭檔' },
+    ],
+    visualShowcases: {
+      postStageLabel: '青石裂痕・木樁震斷 (Stage 3)',
+      leavesShockwave: true,
+      beastIntimidation: true,
+      sectTraceLabel: '掌印深陷／劍氣竹痕',
+    },
+  };
+
   function waterGardenPlot(plotId) {
     let target = null;
     if (plotId) {
@@ -622,6 +685,205 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     };
     return { ok: true, sparringStatus, crossLineageProgress };
   }
+
+  // v0.5 & v0.6 Interactive Actions
+  const outreachCandidates = [
+    { name: '苦力強', tag: '吃苦耐勞・外門挑水夫' },
+    { name: '裁縫師傅', tag: '精細裁縫・鐵環護腕' },
+    { name: '油炸鬼', tag: '早起炸油條・八卦棍影' },
+    { name: '市井阿星', tag: '骨骼驚奇・無影踩腳趾' },
+    { name: '機靈小寶', tag: '滔滔江水・零成本招工' },
+    { name: '農家阿牛', tag: '抱樸守拙・日揮萬拳' },
+    { name: '少年郭靖', tag: '大雨獨練・踏實苦修' },
+  ];
+
+  function runOutreachSession() {
+    outreach.sessionsRun += 1;
+    const c = outreachCandidates[(outreach.sessionsRun - 1) % outreachCandidates.length];
+    outreach.lastRecruitName = c.name;
+    outreach.lastRecruitTag = c.tag;
+    s.lastSpeechBubble = {
+      text: `📢 掌門下山涼亭免費義學第 ${outreach.sessionsRun} 巡！感召村民【${c.name}】（${c.tag}）入外門實幹！`,
+    };
+    syncLifeState();
+    return {
+      ok: true,
+      sessionsRun: outreach.sessionsRun,
+      recruit: c,
+      speechBubble: s.lastSpeechBubble.text,
+    };
+  }
+
+  function completeOuterChore() {
+    choreQuota.completed += 1;
+    if (choreQuota.completed >= choreQuota.required) {
+      choreQuota.completed = choreQuota.required;
+      choreQuota.martialTokenUnlocked = true;
+      s.lastSpeechBubble = {
+        text: `🪣 外門弟子做滿每日定額（${choreQuota.completed}/${choreQuota.required}）！頭頂冒出【✅ 雜務已畢】，解鎖申時外功場練拳牌！內門免役！`,
+      };
+    } else {
+      choreQuota.martialTokenUnlocked = false;
+      s.lastSpeechBubble = {
+        text: `🪣 外門弟子完成挑水砍柴雜務（${choreQuota.completed}/${choreQuota.required}），勤勉打底，筋骨微進！`,
+      };
+    }
+    syncLifeState();
+    return {
+      ok: true,
+      choreQuota: { ...choreQuota },
+      speechBubble: s.lastSpeechBubble.text,
+    };
+  }
+
+  function awakenHiddenMasters() {
+    for (const m of hiddenMasters) {
+      m.awakened = true;
+    }
+    s.lastSpeechBubble = {
+      text: '🔥 警報大作！豬籠城寨三隱士撕下粗布圍裙爆衣！苦力強《十二路譚腿》、裁縫《洪家鐵線拳》、油炸鬼《五郎八卦棍》鎮守山門！',
+    };
+    syncLifeState();
+    return {
+      ok: true,
+      hiddenMasters: hiddenMasters.map((m) => ({ ...m })),
+      speechBubble: s.lastSpeechBubble.text,
+    };
+  }
+
+  function dispatchSegmentedPatrol(styleOverride) {
+    const style = styleOverride || patrolV06.activeStyle || 'completionist_bulldozer';
+    patrolV06.activeStyle = style;
+
+    if (style === 'completionist_bulldozer') {
+      patrolV06.currentSegmentIndex = 3;
+      patrolV06.maxDistanceMeters = 780;
+      patrolV06.clearRatePct = 100;
+      patrolV06.escapedCount = 0;
+      patrolV06.bypassedCount = 0;
+      patrolV06.lootedHerb = '上等野豬肉 ×3 ＋ 狼皮 ×2';
+      patrolV06.lootScentAlert = false;
+      patrolV06.retreatReason = '返程精力安全線 (780m 席地吃完荷葉飯糰，留足 8 點餘裕返院)';
+      patrolV06.telemetryComparison = {
+        prevSegment: 'S1 翠竹坡 (240m)',
+        currSegment: 'S3 迷霧林緣 (780m)',
+        distanceDelta: '+540m',
+        prevEscapeRate: '50%',
+        currEscapeRate: '0%',
+        speedDelta: '-64% 耗時',
+      };
+      s.lastSpeechBubble = {
+        text: '🪨 郭靖攜行軍乾糧袋出發！連逃鼠都追到底，S1～S3 肅清度 100%（逃脫 0、繞避 0）安全帶回野味！',
+      };
+    } else if (style === 'stealth_looter') {
+      patrolV06.currentSegmentIndex = 4;
+      patrolV06.maxDistanceMeters = 1120;
+      patrolV06.clearRatePct = 0;
+      patrolV06.escapedCount = 0;
+      patrolV06.bypassedCount = 9;
+      patrolV06.lootedHerb = '深山百年靈芝';
+      patrolV06.lootScentAlert = true;
+      patrolV06.retreatReason = 'S4 窄橋黑熊封路 (95%) 撒白石灰折返；懷揣靈藥散香驚動沿途野獸！';
+      patrolV06.telemetryComparison = {
+        prevSegment: 'S1 翠竹坡 (240m)',
+        currSegment: 'S4 斷崖激流 (1120m)',
+        distanceDelta: '+880m',
+        prevEscapeRate: '60%',
+        currEscapeRate: '0%',
+        speedDelta: '-72% 耗時 (繞避 9 隻)',
+      };
+      s.lastSpeechBubble = {
+        text: '🎲 韋小寶施展《神行百變》0交手狂飆S4！採得深山百年靈芝，遇黑熊封路撒石灰折返，靈藥散香驚怪！',
+      };
+    } else if (style === 'challenger_seeker') {
+      patrolV06.currentSegmentIndex = 4;
+      patrolV06.maxDistanceMeters = 960;
+      patrolV06.clearRatePct = 65;
+      patrolV06.escapedCount = 4;
+      patrolV06.bypassedCount = 3;
+      patrolV06.lootedHerb = '黑熊掌 ＋ 破式心法心得';
+      patrolV06.lootScentAlert = false;
+      patrolV06.retreatReason = '後發先至一劍打斷黑熊撲擊，獨孤九劍破式經驗大漲，收劍瀟灑返院';
+      patrolV06.telemetryComparison = {
+        prevSegment: 'S2 亂石坳 (450m)',
+        currSegment: 'S4 斷崖激流 (960m)',
+        distanceDelta: '+510m',
+        prevEscapeRate: '40%',
+        currEscapeRate: '15%',
+        speedDelta: '-58% 耗時',
+      };
+      s.lastSpeechBubble = {
+        text: '🍶 令狐沖跨過小老鼠，直取野豬黑熊！看破起手破綻後發先至一劍破招，九劍經驗大漲！',
+      };
+    } else if (style === 'matriarch_enforcer') {
+      patrolV06.currentSegmentIndex = 5;
+      patrolV06.maxDistanceMeters = 1450;
+      patrolV06.clearRatePct = 100;
+      patrolV06.escapedCount = 0;
+      patrolV06.bypassedCount = 0;
+      patrolV06.lootedHerb = '獸王晶核 ＋ 靈山雪參';
+      patrolV06.lootScentAlert = false;
+      patrolV06.retreatReason = '大喇叭獅吼音浪推平幽谷獸王窟，後山百獸辟易，插旗滿載凱旋！';
+      patrolV06.telemetryComparison = {
+        prevSegment: 'S3 迷霧林緣 (780m)',
+        currSegment: 'S5 幽谷獸王窟 (1450m)',
+        distanceDelta: '+670m',
+        prevEscapeRate: '20%',
+        currEscapeRate: '0%',
+        speedDelta: '-80% 橫推',
+      };
+      s.lastSpeechBubble = {
+        text: '📢 包租婆叼菸大喇叭獅吼！金色音浪橫掃幽谷獸王窟，後山萬獸震飛，全段 100% 踏平！',
+      };
+    }
+
+    syncLifeState();
+    return {
+      ok: true,
+      patrol: { ...patrolV06 },
+      speechBubble: s.lastSpeechBubble.text,
+    };
+  }
+
+  const defenseStances = ['固守陣眼', '迎擊攔截', '游走護衛'];
+
+  function cycleDefenseStance(slotId) {
+    const targetSlotId = slotId || (patrolV06.defenseSlots[0] && patrolV06.defenseSlots[0].slotId);
+    const slot = patrolV06.defenseSlots.find((ds) => ds.slotId === targetSlotId) || patrolV06.defenseSlots[0];
+    if (slot) {
+      const idx = defenseStances.indexOf(slot.stance);
+      slot.stance = defenseStances[(idx + 1) % defenseStances.length];
+      s.lastSpeechBubble = {
+        text: `🛡️ 山門防衛調整：【${slot.label}】戰術姿態切換為【${slot.stance}】（負責弟子：${slot.assignee}）`,
+      };
+    }
+    syncLifeState();
+    return {
+      ok: true,
+      slot,
+      defenseSlots: patrolV06.defenseSlots.map((ds) => ({ ...ds })),
+      speechBubble: s.lastSpeechBubble?.text,
+    };
+  }
+
+  function syncLifeState() {
+    if (s.vat < 3) {
+      choreQuota.landladyRoarActive = true;
+    } else {
+      choreQuota.landladyRoarActive = false;
+    }
+    s.life = {
+      outreach,
+      choreQuota,
+      hiddenMasters,
+      coupleDorm,
+      patrol: patrolV06,
+      telemetryComparison: patrolV06.telemetryComparison,
+      defenseSlots: patrolV06.defenseSlots,
+      visualShowcases: patrolV06.visualShowcases,
+    };
+  }
+  syncLifeState();
 
   const facilities = {
     'fac.hall': {
@@ -1516,6 +1778,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     boarStep();
     // LP-08：野豬狀態確定後才判整理安全與完成；不改野豬自身的喝止／退走／碰撞先後。
     fixStep();
+    syncLifeState();
   }
 
   // ---------- LP-06 野豬 ----------
@@ -1799,7 +2062,28 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       if (cmd.type === 'TRIGGER_SPAR') {
         return triggerCrossLineageSpar();
       }
+      if (cmd.type === 'RUN_OUTREACH') {
+        return runOutreachSession();
+      }
+      if (cmd.type === 'COMPLETE_OUTER_CHORE') {
+        return completeOuterChore();
+      }
+      if (cmd.type === 'AWAKEN_HIDDEN_MASTERS') {
+        return awakenHiddenMasters();
+      }
+      if (cmd.type === 'DISPATCH_SEGMENTED_PATROL') {
+        return dispatchSegmentedPatrol(cmd.style || cmd.styleOverride);
+      }
+      if (cmd.type === 'CYCLE_DEFENSE_STANCE') {
+        return cycleDefenseStance(cmd.slotId);
+      }
     }
+
+    if (cmd === 'runOutreach' || cmd === 'outreach') return runOutreachSession();
+    if (cmd === 'completeChore' || cmd === 'chore') return completeOuterChore();
+    if (cmd === 'awakenMasters' || cmd === 'awaken') return awakenHiddenMasters();
+    if (cmd === 'dispatchPatrol') return dispatchSegmentedPatrol();
+    if (cmd === 'cycleDefenseStance') return cycleDefenseStance();
 
     const p = s.people[id];
     if (!p) return { ok: false, reason: '沒有這個工作者' };
@@ -2375,6 +2659,30 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         housing,
         speechBubble: s.lastSpeechBubble || null,
         recruitPool: recruitPool.map((r) => ({ id: r.id, name: r.name, availableForRecruit: r.availableForRecruit })),
+        // v0.5 Outreach, Outer Sect Quota & 3 Hidden Masters
+        outreach: { ...outreach },
+        choreQuota: { ...choreQuota },
+        hiddenMasters: hiddenMasters.map((m) => ({ ...m })),
+        coupleDorm: { ...coupleDorm },
+        // v0.6 S0–S5 Segmented Patrol, PiP Viewport, Telemetry & Defense
+        patrol: {
+          segments: [...patrolV06.segments],
+          activeStyle: patrolV06.activeStyle,
+          currentSegmentIndex: patrolV06.currentSegmentIndex,
+          maxDistanceMeters: patrolV06.maxDistanceMeters,
+          clearRatePct: patrolV06.clearRatePct,
+          escapedCount: patrolV06.escapedCount,
+          bypassedCount: patrolV06.bypassedCount,
+          lootedHerb: patrolV06.lootedHerb,
+          lootScentAlert: patrolV06.lootScentAlert,
+          retreatReason: patrolV06.retreatReason,
+          telemetryComparison: { ...patrolV06.telemetryComparison },
+          defenseSlots: patrolV06.defenseSlots.map((s) => ({ ...s })),
+          visualShowcases: { ...patrolV06.visualShowcases },
+        },
+        telemetryComparison: { ...patrolV06.telemetryComparison },
+        defenseSlots: patrolV06.defenseSlots.map((s) => ({ ...s })),
+        visualShowcases: { ...patrolV06.visualShowcases },
       },
     };
   }
@@ -2420,6 +2728,14 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       get inventory() { return lifeInventory; },
       get housing() { return housing; },
       get autopilotActive() { return autopilotActive; },
+      // v0.5 & v0.6 Getters
+      get outreach() { return outreach; },
+      get choreQuota() { return choreQuota; },
+      get hiddenMasters() { return hiddenMasters; },
+      get coupleDorm() { return coupleDorm; },
+      get patrolV06() { return patrolV06; },
+      get defenseSlots() { return patrolV06.defenseSlots; },
+      get visualShowcases() { return patrolV06.visualShowcases; },
       setAutopilot: (val) => {
         autopilotActive = !!val;
         if (masterDisciple?.persona?.autopilot) masterDisciple.persona.autopilot.enabled = autopilotActive;
@@ -2431,6 +2747,11 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       brewSectWine: (wineType) => brewSectWine(wineType),
       practiceSectArt: (artName) => practiceSectArt(artName),
       triggerCrossLineageSpar: () => triggerCrossLineageSpar(),
+      runOutreachSession: () => runOutreachSession(),
+      completeOuterChore: () => completeOuterChore(),
+      awakenHiddenMasters: () => awakenHiddenMasters(),
+      dispatchSegmentedPatrol: (style) => dispatchSegmentedPatrol(style),
+      cycleDefenseStance: (slotId) => cycleDefenseStance(slotId),
     },
     step, dispatch, assignBed: (bed, pid) => H2.assign(bed, pid), actions, view, setAuto, setUpkeep, setPalm, setAutoClean, pathLength, lengths, rules, exportState, restore
   };

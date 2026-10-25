@@ -1013,6 +1013,87 @@ function setupLifeV02UI() {
     renderChrome();
   });
 
+  // 下山義學・外門三隱士 (v0.5) ＆ 後山 S0–S5 六段巡山 (v0.6) 面板與操作按鈕接線
+  const lifeV0506Panel = $('life-v0506-panel');
+  const lifeV0506ToggleBtn = $('life-v0506-toggle');
+  const lifeV0506CloseBtn = $('life-v0506-close');
+
+  function toggleLifeV0506Panel() {
+    if (!lifeV0506Panel) return;
+    lifeV0506Panel.hidden = !lifeV0506Panel.hidden;
+    lifeV0506ToggleBtn?.classList.toggle('on', !lifeV0506Panel.hidden);
+    renderChrome();
+  }
+
+  lifeV0506ToggleBtn?.addEventListener('click', toggleLifeV0506Panel);
+  lifeV0506CloseBtn?.addEventListener('click', () => {
+    if (lifeV0506Panel) lifeV0506Panel.hidden = true;
+    lifeV0506ToggleBtn?.classList.remove('on');
+  });
+
+  $('action-complete-chore')?.addEventListener('click', () => {
+    const res = model.life?.completeOuterChore ? model.life.completeOuterChore() : model.dispatch({ type: 'COMPLETE_OUTER_CHORE' });
+    v = model.view();
+    toast(res?.speechBubble || '外門弟子完成定額雜務！');
+    renderChrome();
+  });
+
+  $('action-run-outreach')?.addEventListener('click', () => {
+    const res = model.life?.runOutreachSession ? model.life.runOutreachSession() : model.dispatch({ type: 'RUN_OUTREACH' });
+    v = model.view();
+    toast(res?.speechBubble || '下山涼亭免費義學講武！');
+    renderChrome();
+  });
+
+  $('action-awaken-masters')?.addEventListener('click', () => {
+    const res = model.life?.awakenHiddenMasters ? model.life.awakenHiddenMasters() : model.dispatch({ type: 'AWAKEN_HIDDEN_MASTERS' });
+    v = model.view();
+    toast(res?.speechBubble || '城寨三隱士撕圍裙爆衣護山！');
+    renderChrome();
+  });
+
+  $('btn-style-bulldozer')?.addEventListener('click', () => {
+    const res = model.life?.dispatchSegmentedPatrol ? model.life.dispatchSegmentedPatrol('completionist_bulldozer') : model.dispatch({ type: 'DISPATCH_SEGMENTED_PATROL', style: 'completionist_bulldozer' });
+    v = model.view();
+    toast(res?.speechBubble || '派郭靖攜乾糧出發巡山！');
+    renderChrome();
+  });
+
+  $('btn-style-looter')?.addEventListener('click', () => {
+    const res = model.life?.dispatchSegmentedPatrol ? model.life.dispatchSegmentedPatrol('stealth_looter') : model.dispatch({ type: 'DISPATCH_SEGMENTED_PATROL', style: 'stealth_looter' });
+    v = model.view();
+    toast(res?.speechBubble || '派韋小寶神行百變溜邊摸金！');
+    renderChrome();
+  });
+
+  $('btn-style-seeker')?.addEventListener('click', () => {
+    const res = model.life?.dispatchSegmentedPatrol ? model.life.dispatchSegmentedPatrol('challenger_seeker') : model.dispatch({ type: 'DISPATCH_SEGMENTED_PATROL', style: 'challenger_seeker' });
+    v = model.view();
+    toast(res?.speechBubble || '派令狐沖越過小怪專尋強敵！');
+    renderChrome();
+  });
+
+  $('btn-style-enforcer')?.addEventListener('click', () => {
+    const res = model.life?.dispatchSegmentedPatrol ? model.life.dispatchSegmentedPatrol('matriarch_enforcer') : model.dispatch({ type: 'DISPATCH_SEGMENTED_PATROL', style: 'matriarch_enforcer' });
+    v = model.view();
+    toast(res?.speechBubble || '派包租婆獅吼橫推全屏萬獸！');
+    renderChrome();
+  });
+
+  $('btn-cycle-slot-gate_bridge')?.addEventListener('click', () => {
+    const res = model.life?.cycleDefenseStance ? model.life.cycleDefenseStance('gate_bridge') : model.dispatch({ type: 'CYCLE_DEFENSE_STANCE', slotId: 'gate_bridge' });
+    v = model.view();
+    toast(res?.speechBubble || '切換山門石橋陣眼姿態！');
+    renderChrome();
+  });
+
+  $('btn-cycle-slot-yard_flank')?.addEventListener('click', () => {
+    const res = model.life?.cycleDefenseStance ? model.life.cycleDefenseStance('yard_flank') : model.dispatch({ type: 'CYCLE_DEFENSE_STANCE', slotId: 'yard_flank' });
+    v = model.view();
+    toast(res?.speechBubble || '切換演武側翼陣位姿態！');
+    renderChrome();
+  });
+
   updateCustomSectPreview();
   renderFellowPills();
   updateDuoSynergyPreview();
@@ -1387,6 +1468,214 @@ function renderLifeV0304Panel(life) {
   const barCross = $('bar-cross-lineage');
   if (barCross) barCross.style.width = `${crossPct}%`;
 }
+
+function renderLifeV0506Panel(life) {
+  if (!life) return;
+
+  // 1. 摘要欄
+  const dormPill = $('v0506-couple-dorm');
+  if (dormPill && life.coupleDorm) {
+    dormPill.textContent = `道侶雅室：${life.coupleDorm.pairedNames || '掌門 ＆ 同門知己'} (${life.coupleDorm.bondStage || '同門相識 Lv2'})`;
+  }
+  const recruitSummary = $('v0506-recruit-summary');
+  if (recruitSummary && life.outreach) {
+    recruitSummary.textContent = `義學識人：${life.outreach.lastRecruitName || '苦力強'} · ${life.outreach.lastRecruitTag || '吃苦耐勞'}`;
+  }
+  const quotaPill = $('v0506-quota-pill');
+  if (quotaPill && life.choreQuota) {
+    quotaPill.textContent = `外門定額：${life.choreQuota.completed ?? 2}/${life.choreQuota.required ?? 3} 雜務`;
+  }
+
+  // 2. 外門雜務定額 (3/3)
+  const quotaStatus = $('chore-quota-status');
+  if (quotaStatus && life.choreQuota) {
+    quotaStatus.textContent = `${life.choreQuota.completed ?? 2}/${life.choreQuota.required ?? 3} 件`;
+  }
+  const tokenBadge = $('martial-token-badge');
+  if (tokenBadge && life.choreQuota) {
+    if (life.choreQuota.martialTokenUnlocked) {
+      tokenBadge.className = 'token-badge unlocked';
+      tokenBadge.textContent = '申時練拳牌：已解鎖 ✅';
+    } else {
+      tokenBadge.className = 'token-badge locked';
+      tokenBadge.textContent = '申時練拳牌：未解鎖';
+    }
+  }
+  const barQuota = $('bar-chore-quota');
+  if (barQuota && life.choreQuota) {
+    const pct = Math.min(100, Math.round(((life.choreQuota.completed ?? 2) / (life.choreQuota.required ?? 3)) * 100));
+    barQuota.style.width = `${pct}%`;
+  }
+  const roarStatus = $('landlady-roar-status');
+  const roarText = $('landlady-roar-text');
+  if (roarStatus && roarText && life.choreQuota) {
+    if (life.choreQuota.landladyRoarActive) {
+      roarStatus.className = 'landlady-roar-banner active';
+      roarText.textContent = '📢 包租婆獅吼催水！「怎麼沒水了呢？！」全場外門移速 +50%！';
+    } else {
+      roarStatus.className = 'landlady-roar-banner';
+      roarText.textContent = '包租婆催水督導：水缸充足（水缸 <50% 時叉腰獅吼，全場外門移速 +50%）';
+    }
+  }
+
+  // 3. 豬籠城寨三隱士
+  if (Array.isArray(life.hiddenMasters)) {
+    for (const m of life.hiddenMasters) {
+      const card = $(`master-${m.id}`);
+      const statusEl = $(`status-${m.id}`);
+      if (card) {
+        card.classList.toggle('awakened', !!m.awakened);
+      }
+      if (statusEl) {
+        if (m.awakened) {
+          statusEl.textContent = '狀態：🔥 爆衣護山！迎擊山門強敵！';
+          statusEl.style.color = '#c62828';
+          statusEl.style.fontWeight = '700';
+        } else {
+          statusEl.style.color = '';
+          statusEl.style.fontWeight = '';
+          if (m.id === 'kuli_qiang') statusEl.textContent = '狀態：安分挑水 (一次挑4桶)';
+          else if (m.id === 'tailor_hong') statusEl.textContent = '狀態：裁製道袍 (雙臂鐵環暗藏)';
+          else if (m.id === 'youzha_gui') statusEl.textContent = '狀態：揉麵炸油條 (大擀麵棍如棍法)';
+        }
+      }
+    }
+  }
+
+  // 4. 道侶雅室
+  const coupleBondStage = $('couple-bond-stage');
+  if (coupleBondStage && life.coupleDorm) {
+    coupleBondStage.textContent = life.coupleDorm.bondStage || '同門相識 (Lv2)';
+  }
+  const coupleDormDesc = $('couple-dorm-desc');
+  if (coupleDormDesc && life.coupleDorm) {
+    coupleDormDesc.textContent = `同住同門：${life.coupleDorm.pairedNames || '掌門 ＆ 同門知己'} · 共同記憶帳本累積 ${life.coupleDorm.sharedMemoriesCount || 3} 筆 (午膳共食荷葉筍尖湯、並肩守護前坪)`;
+  }
+
+  // 5. 後山 S0-S5 六段里程軌
+  const currStep = life.patrol?.currentSegmentIndex ?? 3;
+  const milestonesRow = $('stages-milestones-row');
+  if (milestonesRow) {
+    const steps = milestonesRow.querySelectorAll('.stage-step');
+    steps.forEach((st) => {
+      const stepIdx = parseInt(st.dataset.step, 10);
+      const dot = st.querySelector('.step-dot');
+      st.classList.remove('done', 'active');
+      if (stepIdx < currStep) {
+        st.classList.add('done');
+        if (dot) dot.textContent = '✔';
+      } else if (stepIdx === currStep) {
+        st.classList.add('active');
+        if (dot) dot.textContent = '●';
+      } else {
+        if (dot) dot.textContent = `${stepIdx}`;
+      }
+    });
+    const lines = milestonesRow.querySelectorAll('.stage-line');
+    lines.forEach((ln, idx) => {
+      ln.classList.toggle('done', idx < currStep);
+    });
+  }
+
+  // 6. PiP Viewport
+  const patrol = life.patrol;
+  if (patrol) {
+    const distTag = $('pip-distance-tag');
+    if (distTag) {
+      const segName = patrol.segments?.[patrol.currentSegmentIndex] || 'S3 迷霧林緣';
+      distTag.textContent = `${patrol.maxDistanceMeters || 780}m (${segName})`;
+    }
+
+    const pipAvatar = $('pip-actor-avatar');
+    const pipTitle = $('pip-style-title');
+    const pipBubble = $('pip-bubble');
+    if (patrol.activeStyle === 'stealth_looter') {
+      if (pipAvatar) pipAvatar.textContent = '🎲';
+      if (pipTitle) pipTitle.textContent = '🎲 韋小寶・滑頭摸金溜邊流';
+      if (pipBubble) pipBubble.textContent = '黑熊把窄橋堵死了！撒白石灰溜了溜了，懷揣靈藥散香驚怪！';
+    } else if (patrol.activeStyle === 'challenger_seeker') {
+      if (pipAvatar) pipAvatar.textContent = '🍶';
+      if (pipTitle) pipTitle.textContent = '🍶 令狐沖・挑食劍癡專尋強敵流';
+      if (pipBubble) pipBubble.textContent = '跨過小老鼠，直取野豬黑熊！看破起手破綻後發先至一劍破招！';
+    } else if (patrol.activeStyle === 'matriarch_enforcer') {
+      if (pipAvatar) pipAvatar.textContent = '📢';
+      if (pipTitle) pipTitle.textContent = '📢 包租婆・霸道橫推音浪流';
+      if (pipBubble) pipBubble.textContent = '大喇叭獅吼金色音浪橫掃幽谷獸王窟，後山百獸辟易！';
+    } else {
+      if (pipAvatar) pipAvatar.textContent = '🪨';
+      if (pipTitle) pipTitle.textContent = '🪨 郭靖・較真推土機除惡務盡流';
+      if (pipBubble) pipBubble.textContent = '連小老鼠鑽進竹林都要追到底！所過之處肅清度紮實 100%！';
+    }
+
+    const clearBadge = $('pip-clear-badge');
+    if (clearBadge) clearBadge.textContent = `肅清率 ${patrol.clearRatePct ?? 100}%`;
+
+    const scentBadge = $('pip-scent-badge');
+    if (scentBadge) {
+      scentBadge.style.display = patrol.lootScentAlert ? 'inline-block' : 'none';
+    }
+
+    // 更新流派按鈕 active 態
+    const styleBtns = document.querySelectorAll('.btn-style[data-style]');
+    styleBtns.forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.style === patrol.activeStyle);
+    });
+  }
+
+  // 7. 戰報對比卡 (Telemetry)
+  const telemetry = life.telemetryComparison;
+  if (telemetry) {
+    const deltaBadge = $('telemetry-delta-badge');
+    if (deltaBadge) deltaBadge.textContent = `${telemetry.distanceDelta || '+680m'} 深入突破`;
+
+    const prevStage = $('tel-prev-stage');
+    if (prevStage) prevStage.textContent = `止步：${telemetry.prevSegment || 'S1 翠竹坡 (240m)'}`;
+
+    const prevEscape = $('tel-prev-escape');
+    if (prevEscape) prevEscape.textContent = `逃脫率：${telemetry.prevEscapeRate || '60%'}`;
+
+    const currStage = $('tel-curr-stage');
+    if (currStage) currStage.textContent = `抵達：${telemetry.currSegment || 'S4 斷崖激流 (920m)'}`;
+
+    const currEscape = $('tel-curr-escape');
+    if (currEscape) currEscape.textContent = `逃脫率：${telemetry.currEscapeRate || '0%'} 零逃脫`;
+
+    const currTime = $('tel-curr-time');
+    if (currTime) currTime.textContent = `耗時降幅：${telemetry.speedDelta || '-64% 耗時'}`;
+
+    const lootText = $('tel-loot-text');
+    if (lootText && patrol) lootText.textContent = patrol.lootedHerb || '上等野豬肉 ×3 ＋ 狼皮 ×2';
+
+    const retreatReason = $('tel-retreat-reason');
+    if (retreatReason && patrol) retreatReason.textContent = patrol.retreatReason || '返程精力安全線';
+  }
+
+  // 8. 四大非數值強度展示
+  const showcases = life.visualShowcases;
+  if (showcases) {
+    const postLabel = $('showcase-post-label');
+    if (postLabel) postLabel.textContent = showcases.postStageLabel || '青石裂痕・木樁震斷 (Stage 3)';
+
+    const traceLabel = $('showcase-trace-label');
+    if (traceLabel) traceLabel.textContent = showcases.sectTraceLabel || '掌印深陷／劍氣竹痕銘刻';
+  }
+
+  // 9. 山門塔防陣位
+  if (Array.isArray(life.defenseSlots)) {
+    for (const slot of life.defenseSlots) {
+      const pill = $(`stance-pill-${slot.slotId}`);
+      if (pill) {
+        pill.textContent = slot.stance;
+        pill.className = `stance-pill ${slot.stance === '固守陣眼' ? 'hold' : slot.stance === '迎擊攔截' ? 'intercept' : 'protect'}`;
+      }
+      const assigneeEl = $(`assignee-${slot.slotId}`);
+      if (assigneeEl) {
+        assigneeEl.textContent = slot.assignee;
+      }
+    }
+  }
+}
+
 function renderChrome() {
   const id = selectedPerson(), person = v.people[id], profile = profiles[id];
   $('play').textContent = ui.playing ? '❚❚ 暫停' : '▶ 繼續';
@@ -1524,6 +1813,8 @@ function renderChrome() {
 
     // 人間煙火與雙脈武學場面板渲染
     renderLifeV0304Panel(life);
+    // 下山義學外門定額與 S0-S5 巡山面板渲染
+    renderLifeV0506Panel(life);
   }
   const cards = IDS.map((who) => {
     const p = v.people[who], info = profiles[who];

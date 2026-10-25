@@ -1,0 +1,245 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "stages": {
+    "S0": {
+      "stageId": "S0",
+      "name": "柵欄巡山口",
+      "startDist": 0,
+      "endDist": 120,
+      "chokepointBlockage": 0.0,
+      "startEnergyMin": 40,
+      "enemies": [],
+      "terrain": "gate_fence",
+      "testFocus": "出發精力門檻檢定"
+    },
+    "S1": {
+      "stageId": "S1",
+      "name": "翠竹坡",
+      "startDist": 120,
+      "endDist": 300,
+      "chokepointBlockage": 0.15,
+      "enemies": ["mouse_normal", "mouse_alert"],
+      "terrain": "bamboo_slope",
+      "testFocus": "起手速度與追擊移速"
+    },
+    "S2": {
+      "stageId": "S2",
+      "name": "亂石坳",
+      "startDist": 300,
+      "endDist": 600,
+      "chokepointBlockage": 0.30,
+      "enemies": ["mouse_stone", "boar_thick_hide"],
+      "terrain": "rocky_pass",
+      "testFocus": "單發掌力與膽識喝止"
+    },
+    "S3": {
+      "stageId": "S3",
+      "name": "迷霧林緣",
+      "startDist": 600,
+      "endDist": 900,
+      "chokepointBlockage": 0.50,
+      "enemies": ["wolf_pack", "scout_blowgun"],
+      "terrain": "misty_edge",
+      "testFocus": "AOE 群攻與破箭閃避"
+    },
+    "S4": {
+      "stageId": "S4",
+      "name": "斷崖激流",
+      "startDist": 900,
+      "endDist": 1200,
+      "chokepointBlockage": 0.95,
+      "enemies": ["bear_armored"],
+      "rareLoot": "item.lingzhi_1000y",
+      "terrain": "cliff_torrent",
+      "testFocus": "輕功飛渡捷徑與破甲內勁"
+    },
+    "S5": {
+      "stageId": "S5",
+      "name": "幽谷獸王窟",
+      "startDist": 1200,
+      "endDist": 1600,
+      "chokepointBlockage": 1.00,
+      "enemies": ["boss_beast_king"],
+      "terrain": "beast_king_lair",
+      "testFocus": "三四階鎮派神功與極限續航"
+    }
+  },
+  "safety": {
+    "energyPerDistanceUnit": 0.02,
+    "combatReserveMargin": 8,
+    "maxOffRoadPursuitDistance": 80,
+    "maxOffRoadPursuitTicks": 180,
+    "maxOffRoadPursuitSec": 3
+  },
+  "patrolStyles": {
+    "stealth_looter": {
+      "styleId": "stealth_looter",
+      "alias": "stealth_bypass",
+      "name": "滑頭斥候・摸金溜邊流",
+      "archetypes": ["wei_xiaobao", "duan_yu"],
+      "bypassSuccessBonus": 0.85,
+      "pursuitDistance": 0,
+      "pursuitTicks": 0,
+      "lootScentAlertCost": 6,
+      "limePouchCapacity": 3,
+      "chokepointRetreatThreshold": 0.90
+    },
+    "completionist_bulldozer": {
+      "styleId": "completionist_bulldozer",
+      "alias": "methodical_clear",
+      "name": "較真推土機・除惡務盡流",
+      "archetypes": ["guo_jing", "a_niu", "kuli_qiang"],
+      "pursuitDistanceMax": 150,
+      "pursuitDurationMaxTicks": 360,
+      "staminaCostReduction": 0.35,
+      "eatRationEnergyAdd": 15,
+      "eatRationSatietyAdd": 25,
+      "targetClearRate": 1.0
+    },
+    "challenger_seeker": {
+      "styleId": "challenger_seeker",
+      "alias": "elite_hunter",
+      "name": "挑食劍癡・專尋強敵流",
+      "archetypes": ["linghu_chong", "yang_guo"],
+      "skipMinors": true,
+      "duguFlawExpMultiplier": 2.0,
+      "targetEliteTypes": ["boar_thick_hide", "bear_armored", "boss_beast_king"]
+    },
+    "overlord_crusher": {
+      "styleId": "overlord_crusher",
+      "alias": "juggernaut",
+      "name": "霸道橫推・秋風掃落葉流",
+      "archetypes": ["qiao_feng", "landlady"],
+      "intimidationRadius": 180,
+      "knockbackMultiplier": 2.5,
+      "autoClearRadius": 100
+    }
+  },
+  "enemiesCatalog": {
+    "mouse_normal": {
+      "typeId": "mouse_normal",
+      "name": "普通林鼠",
+      "stage": "S1",
+      "threatLevel": 1,
+      "speed": 80,
+      "hp": 15,
+      "fleeThreshold": 0.4
+    },
+    "mouse_alert": {
+      "typeId": "mouse_alert",
+      "name": "警覺快鼠",
+      "stage": "S1",
+      "threatLevel": 2,
+      "speed": 120,
+      "hp": 20,
+      "fleeThreshold": 0.8
+    },
+    "mouse_stone": {
+      "typeId": "mouse_stone",
+      "name": "灰背石鼠",
+      "stage": "S2",
+      "threatLevel": 2,
+      "speed": 85,
+      "hp": 30,
+      "armor": 5
+    },
+    "boar_thick_hide": {
+      "typeId": "boar_thick_hide",
+      "name": "厚皮野豬",
+      "stage": "S2",
+      "threatLevel": 4,
+      "speed": 95,
+      "hp": 80,
+      "armor": 15,
+      "chargeDamage": 25
+    },
+    "wolf_pack": {
+      "typeId": "wolf_pack",
+      "name": "夜行荒狼",
+      "stage": "S3",
+      "threatLevel": 5,
+      "speed": 110,
+      "hp": 55,
+      "packCount": 3
+    },
+    "scout_blowgun": {
+      "typeId": "scout_blowgun",
+      "name": "林間吹箭斥候",
+      "stage": "S3",
+      "threatLevel": 4,
+      "speed": 90,
+      "hp": 40,
+      "rangedAttack": true
+    },
+    "bear_armored": {
+      "typeId": "bear_armored",
+      "name": "鐵甲黑熊",
+      "stage": "S4",
+      "threatLevel": 8,
+      "speed": 75,
+      "hp": 220,
+      "armor": 35,
+      "blockageContribution": 0.95
+    },
+    "boss_beast_king": {
+      "typeId": "boss_beast_king",
+      "name": "幽谷百獸王",
+      "stage": "S5",
+      "threatLevel": 10,
+      "speed": 125,
+      "hp": 500,
+      "armor": 50,
+      "boss": true
+    }
+  },
+  "defenseSlots": {
+    "slot.bridge_front": {
+      "slotId": "slot.bridge_front",
+      "name": "橋頭隘口陣眼",
+      "position": [980, 520],
+      "defaultDoctrine": "solid_anchor",
+      "engagementRadius": 40
+    },
+    "slot.gate_arch": {
+      "slotId": "slot.gate_arch",
+      "name": "山門正門樓",
+      "position": [1080, 480],
+      "defaultDoctrine": "intercept_vanguard",
+      "engagementRadius": 120
+    },
+    "slot.inner_steps": {
+      "slotId": "slot.inner_steps",
+      "name": "正堂石階前",
+      "position": [880, 430],
+      "defaultDoctrine": "roaming_guard",
+      "engagementRadius": 80
+    }
+  },
+  "showcaseTiers": {
+    "1": {
+      "tier": 1,
+      "name": "手痛初學",
+      "postEffect": "木人樁紋絲不動，弟子出招手掌微紅甩手",
+      "beastEffect": "野鼠近身 50 單位慢吞吞逃跑"
+    },
+    "2": {
+      "tier": 2,
+      "name": "熟練生巧",
+      "postEffect": "木人樁劇烈搖晃，出招帶起白色水墨氣旋，落葉隨風飛揚",
+      "beastEffect": "野獸近身 100 單位感知危險退避"
+    },
+    "3": {
+      "tier": 3,
+      "name": "登峰造極",
+      "postEffect": "一掌打斷木人樁，青石板浮現蛛網裂紋，刻名鎮山功勳石碑",
+      "beastEffect": "宗師氣場展開，低階野鼠 180 單位外辟易遠遁"
+    },
+    "4": {
+      "tier": 4,
+      "name": "返璞歸真",
+      "postEffect": "演武場留下五指大掌坑，後山瀑布一掌斷流兩秒，氣旋環繞",
+      "beastEffect": "山下惡霸抱頭求饒，同門師弟見面躬身抱拳行禮"
+    }
+  }
+}

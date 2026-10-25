@@ -65,6 +65,7 @@
   <button class="btn" id="creation-btn" title="雙軌開局創角">創角</button>
   <button class="btn on" id="autopilot-btn" title="零手動掌門自走">自走中</button>
   <button class="btn" id="life-v0304-toggle" title="切換人間煙火（v0.3 菜園膳房）＆ 雙脈武學場（v0.4）面板">煙火武學</button>
+  <button class="btn" id="life-v0506-toggle" title="切換下山義學・外門三隱士 (v0.5) ＆ 後山 S0-S5 巡山 (v0.6) 面板">🏹 義學・S0-S5 巡山</button>
   <button class="btn" id="roster-toggle" title="R">名冊</button>
   <button class="btn on" id="follow-toggle" title="0 鍵或點擊：切換鏡頭跟隨">🎥 跟隨中</button>
   <a class="legacy-link" href="../../../viewer/" title="舊版修行／目標／招募與原存檔仍在這裡；新版不自動匯入或覆寫">舊版與存檔</a>
@@ -171,6 +172,259 @@
         </div>
         <button id="action-trigger-spar" class="btn btn-action primary-btn">⚔️ 同門切磋拆招 (12秒)</button>
       </div>
+    </div>
+  </div>
+</aside>
+
+<!-- 下山義學・外門三隱士 (v0.5) ＆ 後山 S0–S5 六段巡山・子母畫面戰報 (v0.6) 綜合面板 -->
+<aside id="life-v0506-panel" class="life-v0506-panel" hidden>
+  <div class="panel-header">
+    <div class="panel-title-row">
+      <span class="panel-title">🏹 下山義學・外門三隱士 (v0.5) ＆ 🏔️ S0–S5 巡山子母戰報 (v0.6)</span>
+      <button id="life-v0506-close" class="btn close-btn">✕</button>
+    </div>
+    <div class="sect-summary-bar">
+      <span class="sect-pill" id="v0506-couple-dorm">道侶雅室：掌門 ＆ 同門知己 (同門相識 Lv2)</span>
+      <span class="motto-pill" id="v0506-recruit-summary">義學識人：苦力強 · 吃苦耐勞</span>
+      <span class="doctrine-pill" id="v0506-quota-pill">外門定額：2/3 雜務</span>
+    </div>
+  </div>
+
+  <div class="panel-sections-grid">
+    <!-- v0.5 外門雜務定額 (3/3) ＆ 下山免費義學 ＆ 豬籠城寨三隱士卡 -->
+    <div class="v05-section card-box">
+      <h3>🪣 外門雜務定額 (3/3) · 免費義學 · 城寨三隱士 (v0.5)</h3>
+
+      <div class="quota-block">
+        <div class="quota-header-row">
+          <span>外門每日雜務定額：<b id="chore-quota-status">2/3 件</b></span>
+          <span id="martial-token-badge" class="token-badge locked">申時練拳牌：未解鎖</span>
+        </div>
+        <div class="bar quota-bar"><i id="bar-chore-quota" style="width:66%"></i></div>
+        <div class="landlady-roar-banner" id="landlady-roar-status">
+          <span class="roar-icon">📢</span>
+          <span id="landlady-roar-text">包租婆催水督導：水缸充足（水缸 &lt;50% 時叉腰獅吼，全場外門移速 +50%）</span>
+        </div>
+        <div class="quota-actions-row">
+          <button id="action-complete-chore" class="btn btn-action">🪣 完成雜務定額 (挑水/砍柴)</button>
+          <button id="action-run-outreach" class="btn btn-action">📢 下山涼亭免費義學 (招賢)</button>
+          <button id="action-awaken-masters" class="btn btn-action danger-btn">🔥 危急！三隱士爆衣護山</button>
+        </div>
+      </div>
+
+      <!-- 豬籠城寨三隱士卡片 -->
+      <div class="hidden-masters-block">
+        <div class="section-subhead">豬籠城寨大隱於市 · 外門三神級雜役</div>
+        <div class="masters-grid" id="hidden-masters-container">
+          <div class="master-card" id="master-kuli_qiang">
+            <div class="master-avatar">💪</div>
+            <div class="master-info">
+              <div class="master-name">苦力強 <small class="master-role">外門挑水夫</small></div>
+              <div class="master-art">武學：<b class="art-name">《十二路譚腿》</b></div>
+              <div class="master-status" id="status-kuli_qiang">狀態：安分挑水 (一次挑4桶)</div>
+            </div>
+          </div>
+          <div class="master-card" id="master-tailor_hong">
+            <div class="master-avatar">🧵</div>
+            <div class="master-info">
+              <div class="master-name">裁縫師傅 <small class="master-role">工坊巧匠裁縫</small></div>
+              <div class="master-art">武學：<b class="art-name">《洪家鐵線拳》</b></div>
+              <div class="master-status" id="status-tailor_hong">狀態：裁製道袍 (雙臂鐵環暗藏)</div>
+            </div>
+          </div>
+          <div class="master-card" id="master-youzha_gui">
+            <div class="master-avatar">🥖</div>
+            <div class="master-info">
+              <div class="master-name">油炸鬼 <small class="master-role">膳房早點師傅</small></div>
+              <div class="master-art">武學：<b class="art-name">《五郎八卦棍》</b></div>
+              <div class="master-status" id="status-youzha_gui">狀態：揉麵炸油條 (大擀麵棍如棍法)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 道侶同住因果記憶卡 -->
+      <div class="couple-dorm-block">
+        <div class="couple-dorm-row">
+          <span class="couple-dorm-title">🛏️ 西廂雙人雅室 (fac.dorm.b)</span>
+          <span class="bond-stage-badge" id="couple-bond-stage">同門相識 (Lv2)</span>
+        </div>
+        <div class="couple-desc" id="couple-dorm-desc">同住同門：掌門 ＆ 同門知己 · 共同記憶帳本累積 3 筆 (午膳共食荷葉筍尖湯、並肩守護前坪)</div>
+      </div>
+    </div>
+
+    <!-- v0.6 後山 S0–S5 六段里程巡山 ＆ PiP 畫中畫 ＆ 四大流派 -->
+    <div class="v06-section card-box">
+      <h3>🏔️ 後山 S0–S5 六段巡山 · 子母畫面 (PiP) · 四大流派 (v0.6)</h3>
+
+      <!-- S0~S5 水墨竹簡里程軸 -->
+      <div class="patrol-stages-track">
+        <div class="section-subhead">後山山徑蜿蜒六段里程 (0~1600+ 單位)</div>
+        <div class="stages-milestones-row" id="stages-milestones-row">
+          <div class="stage-step" data-step="0"><span class="step-dot">0</span><span class="step-label">S0 柵欄</span></div>
+          <div class="stage-line done"></div>
+          <div class="stage-step done" data-step="1"><span class="step-dot">✔</span><span class="step-label">S1 翠竹坡</span></div>
+          <div class="stage-line done"></div>
+          <div class="stage-step done" data-step="2"><span class="step-dot">✔</span><span class="step-label">S2 亂石坳</span></div>
+          <div class="stage-line done"></div>
+          <div class="stage-step active" data-step="3"><span class="step-dot">●</span><span class="step-label">S3 迷霧林</span></div>
+          <div class="stage-line"></div>
+          <div class="stage-step" data-step="4"><span class="step-dot">4</span><span class="step-label">S4 斷崖</span></div>
+          <div class="stage-line"></div>
+          <div class="stage-step" data-step="5"><span class="step-dot">5</span><span class="step-label">S5 獸王窟</span></div>
+        </div>
+      </div>
+
+      <!-- PiP 子母畫面小視窗 -->
+      <div class="pip-viewport-wrapper">
+        <div class="pip-header-bar">
+          <span class="pip-badge">📹 巡山畫中畫 (PiP Viewport) · 即時跟拍</span>
+          <span class="pip-distance-tag" id="pip-distance-tag">780m (S3 迷霧林緣)</span>
+        </div>
+        <div id="patrol-pip-viewport" class="patrol-pip-viewport">
+          <div class="pip-scenery-overlay"></div>
+          <div class="pip-actor-avatar" id="pip-actor-avatar">🪨</div>
+          <div class="pip-live-content">
+            <div class="pip-style-title" id="pip-style-title">🪨 郭靖・較真推土機除惡務盡流</div>
+            <div class="pip-bubble" id="pip-bubble">連小老鼠鑽進竹林都要追到底！所過之處肅清度紮實 100%！</div>
+            <div class="pip-meta-row">
+              <span id="pip-clear-badge" class="pip-meta-pill green">肅清率 100%</span>
+              <span id="pip-retreat-badge" class="pip-meta-pill blue">精力安全線 (餘裕 8)</span>
+              <span id="pip-scent-badge" class="pip-meta-pill amber" style="display:none">⚠️ 靈物散香驚怪</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 四大性格流派一鍵切換與對比 -->
+      <div class="patrol-styles-dispatcher">
+        <div class="section-subhead">派誰巡山？四大性格流派切換驗收</div>
+        <div class="styles-buttons-grid">
+          <button id="btn-style-bulldozer" class="btn btn-style active" data-style="completionist_bulldozer">
+            <span class="style-icon">🪨</span>
+            <div class="style-texts">
+              <b>郭靖 · 較真推土機</b>
+              <small>帶乾糧 100% 肅清，逃鼠必追</small>
+            </div>
+          </button>
+          <button id="btn-style-looter" class="btn btn-style" data-style="stealth_looter">
+            <span class="style-icon">🎲</span>
+            <div class="style-texts">
+              <b>韋小寶 · 滑頭摸金</b>
+              <small>神行百變 0 殺溜邊摸靈芝</small>
+            </div>
+          </button>
+          <button id="btn-style-seeker" class="btn btn-style" data-style="challenger_seeker">
+            <span class="style-icon">🍶</span>
+            <div class="style-texts">
+              <b>令狐沖 · 挑食劍癡</b>
+              <small>越過小怪，專破強敵刷九劍</small>
+            </div>
+          </button>
+          <button id="btn-style-enforcer" class="btn btn-style" data-style="matriarch_enforcer">
+            <span class="style-icon">📢</span>
+            <div class="style-texts">
+              <b>包租婆 · 霸道橫推</b>
+              <small>大喇叭獅吼音浪全屏掃蕩</small>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- 返院「同路成長前後對比戰報卡」 -->
+      <div class="telemetry-card-block" id="patrol-telemetry-card">
+        <div class="telemetry-header">
+          <span class="telemetry-title">📜 返院同路成長前後對比戰報卡</span>
+          <span class="telemetry-delta-badge" id="telemetry-delta-badge">+680m 深入突破</span>
+        </div>
+        <div class="telemetry-comparison-table">
+          <div class="telemetry-col prev-col">
+            <div class="col-head">上次同路巡山</div>
+            <div class="col-item" id="tel-prev-stage">止步：S1 翠竹坡 (240m)</div>
+            <div class="col-item" id="tel-prev-escape">逃脫率：60% (老鼠逃遁)</div>
+            <div class="col-item" id="tel-prev-time">單隻耗時：2.8 秒</div>
+          </div>
+          <div class="telemetry-divider">➔</div>
+          <div class="telemetry-col curr-col">
+            <div class="col-head">本趟巡山表現</div>
+            <div class="col-item highlight" id="tel-curr-stage">抵達：S4 斷崖激流 (920m)</div>
+            <div class="col-item highlight" id="tel-curr-escape">逃脫率：0% 零逃脫</div>
+            <div class="col-item highlight" id="tel-curr-time">耗時降幅：-64% 俐落截擊</div>
+          </div>
+        </div>
+        <div class="telemetry-loot-row">
+          <span>帶回戰利品：<b id="tel-loot-text">上等野豬肉 ×3 ＋ 狼皮 ×2</b></span>
+        </div>
+        <div class="telemetry-retreat-row">
+          <span>折返原因：<small id="tel-retreat-reason">返程精力安全線 (780m 留足 8 點餘裕穩健返院)</small></span>
+        </div>
+      </div>
+
+      <!-- 四大非數值強度視覺徽章 ＆ 山門塔防陣位 -->
+      <div class="strength-and-defense-block">
+        <div class="section-subhead">四大非數值強度視覺展示 (Show, Don't Tell)</div>
+        <div class="showcase-badges-grid" id="strength-showcase-grid">
+          <div class="showcase-badge">
+            <span class="badge-icon">🪵</span>
+            <div class="badge-texts">
+              <b>木樁四階破壞</b>
+              <span id="showcase-post-label">青石裂痕・木樁震斷 (Stage 3)</span>
+            </div>
+          </div>
+          <div class="showcase-badge">
+            <span class="badge-icon">🍃</span>
+            <div class="badge-texts">
+              <b>內力震落葉</b>
+              <span>出招帶白色水墨氣旋·落葉成渦</span>
+            </div>
+          </div>
+          <div class="showcase-badge">
+            <span class="badge-icon">😱</span>
+            <div class="badge-texts">
+              <b>宗師百獸辟易</b>
+              <span>林鼠 180 單位外瑟瑟發抖遠遁</span>
+            </div>
+          </div>
+          <div class="showcase-badge">
+            <span class="badge-icon">🪨</span>
+            <div class="badge-texts">
+              <b>鎮山功勳石碑</b>
+              <span id="showcase-trace-label">掌印深陷／劍氣竹痕銘刻</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 山門塔防守點陣位與三姿態切換 -->
+        <div class="defense-slots-section">
+          <div class="defense-subhead-row">
+            <span class="section-subhead">山門防衛塔防陣位 · 三姿態波次器</span>
+            <small class="text-muted">固守陣眼 ➔ 迎擊攔截 ➔ 游走護衛</small>
+          </div>
+          <div class="defense-slots-grid" id="defense-slots-container">
+            <div class="defense-slot-card" id="slot-card-gate_bridge">
+              <div class="slot-title-row">
+                <span class="slot-name">山門石橋陣眼</span>
+                <span class="stance-pill intercept" id="stance-pill-gate_bridge">迎擊攔截</span>
+              </div>
+              <div class="slot-assignee-row">
+                <span>當前守將：<b id="assignee-gate_bridge">掌門</b></span>
+                <button class="btn btn-sm btn-cycle-stance" id="btn-cycle-slot-gate_bridge" data-slot="gate_bridge">🔄 切換姿態</button>
+              </div>
+            </div>
+            <div class="defense-slot-card" id="slot-card-yard_flank">
+              <div class="slot-title-row">
+                <span class="slot-name">演武側翼陣位</span>
+                <span class="stance-pill protect" id="stance-pill-yard_flank">游走護衛</span>
+              </div>
+              <div class="slot-assignee-row">
+                <span>當前守將：<b id="assignee-yard_flank">同門搭檔</b></span>
+                <button class="btn btn-sm btn-cycle-stance" id="btn-cycle-slot-yard_flank" data-slot="yard_flank">🔄 切換姿態</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </aside>

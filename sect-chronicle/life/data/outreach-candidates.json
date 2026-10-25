@@ -1,0 +1,335 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "reactionTypes": {
+    "insight_prodigy": {
+      "tag": "💡 觸類旁通",
+      "name": "悟性奇才",
+      "description": "步伐沉穩、頭頂浮現微光，對招式原理一點即通",
+      "statFocus": "comprehension",
+      "suitableTrack": "martial_inner"
+    },
+    "endurance_worker": {
+      "tag": "💪 吃苦耐勞",
+      "name": "勤勉棟樑",
+      "description": "大汗淋漓仍咬牙蹲馬步、主動幫忙挑水擔木，下盤極穩",
+      "statFocus": "constitution",
+      "suitableTrack": "outer_chores_and_body"
+    },
+    "herb_affinity": {
+      "tag": "🌱 天生藥感",
+      "name": "百草通靈",
+      "description": "蹲在藥簍旁細聞辨識百草，對草木靈氣感知敏銳",
+      "statFocus": "composure",
+      "suitableTrack": "herbal_and_alchemy"
+    },
+    "craft_talent": {
+      "tag": "🔨 巧匠苗子",
+      "name": "巧手神工",
+      "description": "盯著涼亭榫卯結構比劃，喜愛琢磨機關木石",
+      "statFocus": "agility",
+      "suitableTrack": "artisan_and_crafting"
+    }
+  },
+  "originAffinities": {
+    "origin.huashan_junzi": {
+      "originId": "origin.huashan_junzi",
+      "sectName": "華山別院",
+      "preferredArchetypes": ["scholar_swordsman", "disciplined_youth", "linghu_chong"],
+      "affinityBonus": 0.35,
+      "biasDescription": "氣派端莊吸引讀書劍客與明理少年"
+    },
+    "origin.wanfo_palm": {
+      "originId": "origin.wanfo_palm",
+      "sectName": "萬佛武館",
+      "preferredArchetypes": ["ah_sing", "kuli_qiang", "tailor_hong", "youzha_gui", "street_urchin"],
+      "affinityBonus": 0.45,
+      "biasDescription": "草根大隱於市，吸引市井怪才與城寨三隱士"
+    },
+    "origin.zhulong_compound": {
+      "originId": "origin.zhulong_compound",
+      "sectName": "豬籠寨大院",
+      "preferredArchetypes": ["kuli_qiang", "tailor_hong", "youzha_gui", "market_laborer", "ah_sing"],
+      "affinityBonus": 0.45,
+      "biasDescription": "煙火城寨大院，極易吸引隱姓埋名之頂級老匠與隱士"
+    },
+    "origin.luding_qimen": {
+      "originId": "origin.luding_qimen",
+      "sectName": "通吃山莊",
+      "preferredArchetypes": ["wei_xiaobao", "gambler_trickster", "street_scout", "agile_pickpocket"],
+      "affinityBonus": 0.40,
+      "biasDescription": "江湖奇門，易招募機靈滑頭之斥候與摸金苗子"
+    },
+    "origin.beixia_palm": {
+      "originId": "origin.beixia_palm",
+      "sectName": "鎮北武館",
+      "preferredArchetypes": ["guo_jing", "a_niu", "farmer_boy", "iron_will_apprentice"],
+      "affinityBonus": 0.40,
+      "biasDescription": "抱樸守拙，吸引沈默寡言、苦練不懈的粗布老實苗子"
+    },
+    "origin.xiaoyao_sword": {
+      "originId": "origin.xiaoyao_sword",
+      "sectName": "見性劍廬",
+      "preferredArchetypes": ["linghu_chong", "wine_wanderer", "free_spirit_swordsman"],
+      "affinityBonus": 0.40,
+      "biasDescription": "笑傲不群，吸引嗜酒灑脫、靈性跳脫之劍癡"
+    }
+  },
+  "hiddenMasters": {
+    "kuli_qiang": {
+      "masterId": "kuli_qiang",
+      "name": "苦力強",
+      "alias": "十二路譚腿傳人",
+      "initialRole": "outer_laborer",
+      "choreType": "carry_water",
+      "choreSpeedBonus": 0.40,
+      "awakenedArtId": "art.tan_twelve_kicks",
+      "awakenedArtName": "十二路譚腿",
+      "awakenedArtTier": 3,
+      "awakenedDamageBonus": 0.45,
+      "apronTorn": false,
+      "isAwakened": false,
+      "awakeningQuote": "既然如此，那我這雙腿也該活動活動了！"
+    },
+    "tailor_hong": {
+      "masterId": "tailor_hong",
+      "name": "裁縫師傅",
+      "alias": "洪家鐵線拳宗師",
+      "initialRole": "outer_artisan",
+      "choreType": "crafting",
+      "choreSpeedBonus": 0.40,
+      "awakenedArtId": "art.iron_wire_fist",
+      "awakenedArtName": "洪家鐵線拳",
+      "awakenedArtTier": 3,
+      "awakenedDamageBonus": 0.40,
+      "apronTorn": false,
+      "isAwakened": false,
+      "awakeningQuote": "量體裁衣講究精準，雙臂鐵環出招更不容毫釐差池！"
+    },
+    "youzha_gui": {
+      "masterId": "youzha_gui",
+      "name": "油炸鬼",
+      "alias": "五郎八卦棍宗師",
+      "initialRole": "outer_cook",
+      "choreType": "cooking",
+      "choreSpeedBonus": 0.40,
+      "awakenedArtId": "art.bagua_staff",
+      "awakenedArtName": "五郎八卦棍",
+      "awakenedArtTier": 3,
+      "awakenedDamageBonus": 0.42,
+      "apronTorn": false,
+      "isAwakened": false,
+      "awakeningQuote": "大擀麵棍揉麵炸油條，抄起來便是八卦棍法！"
+    }
+  },
+  "candidates": [
+    {
+      "candidateId": "cand.kuli_qiang",
+      "name": "苦力強",
+      "age": 32,
+      "gender": "male",
+      "archetypeId": "kuli_qiang",
+      "reactionTag": "endurance_worker",
+      "stats": {
+        "comprehension": 5,
+        "constitution": 9,
+        "strength": 9,
+        "agility": 8,
+        "composure": 7
+      },
+      "hiddenMasterKey": "kuli_qiang",
+      "description": "一人扛起四桶水與三大捆原木，面不改色，步伐沉厚穩健",
+      "potential": "legendary_hidden"
+    },
+    {
+      "candidateId": "cand.tailor_hong",
+      "name": "裁縫大叔",
+      "age": 45,
+      "gender": "male",
+      "archetypeId": "tailor_hong",
+      "reactionTag": "craft_talent",
+      "stats": {
+        "comprehension": 6,
+        "constitution": 8,
+        "strength": 8,
+        "agility": 8,
+        "composure": 8
+      },
+      "hiddenMasterKey": "tailor_hong",
+      "description": "手持尺剪縫製道袍，手腕戴著數隻暗沉鐵環，骨力驚人",
+      "potential": "legendary_hidden"
+    },
+    {
+      "candidateId": "cand.youzha_gui",
+      "name": "油炸鬼",
+      "age": 42,
+      "gender": "male",
+      "archetypeId": "youzha_gui",
+      "reactionTag": "craft_talent",
+      "stats": {
+        "comprehension": 6,
+        "constitution": 8,
+        "strength": 7,
+        "agility": 8,
+        "composure": 8
+      },
+      "hiddenMasterKey": "youzha_gui",
+      "description": "每天天不亮在大陶灶前揉麵炸香脆油條，麵棍揮動如棍風破空",
+      "potential": "legendary_hidden"
+    },
+    {
+      "candidateId": "cand.ah_sing",
+      "name": "阿星",
+      "age": 20,
+      "gender": "male",
+      "archetypeId": "ah_sing",
+      "reactionTag": "insight_prodigy",
+      "stats": {
+        "comprehension": 6,
+        "constitution": 8,
+        "strength": 6,
+        "agility": 9,
+        "composure": 8
+      },
+      "description": "懷揣十塊錢買來的《如來神掌》小人書，腳下步法飄忽如神，被狗追練出極限逃命步",
+      "potential": "legendary_growth"
+    },
+    {
+      "candidateId": "cand.wei_xiaobao",
+      "name": "韋小寶",
+      "age": 18,
+      "gender": "male",
+      "archetypeId": "wei_xiaobao",
+      "reactionTag": "craft_talent",
+      "stats": {
+        "comprehension": 8,
+        "constitution": 3,
+        "strength": 3,
+        "agility": 9,
+        "composure": 7
+      },
+      "description": "市井賭坊小廝，一張巧嘴滔滔江水，擅長神行百變抹油溜邊",
+      "potential": "legendary_trickster"
+    },
+    {
+      "candidateId": "cand.guo_jing",
+      "name": "郭靖",
+      "age": 19,
+      "gender": "male",
+      "archetypeId": "guo_jing",
+      "reactionTag": "endurance_worker",
+      "stats": {
+        "comprehension": 2,
+        "constitution": 9,
+        "strength": 8,
+        "agility": 4,
+        "composure": 9
+      },
+      "description": "濃眉大眼、質樸敦厚，眾人散場後獨自在雨中站樁三百遍",
+      "potential": "legendary_master"
+    },
+    {
+      "candidateId": "cand.linghu_chong",
+      "name": "令狐沖",
+      "age": 21,
+      "gender": "male",
+      "archetypeId": "linghu_chong",
+      "reactionTag": "insight_prodigy",
+      "stats": {
+        "comprehension": 10,
+        "constitution": 5,
+        "strength": 6,
+        "agility": 9,
+        "composure": 4
+      },
+      "description": "腰懸酒葫蘆，看似玩世不恭，出劍隨心所欲、直刺破綻",
+      "potential": "legendary_swordsman"
+    },
+    {
+      "candidateId": "cand.a_niu",
+      "name": "阿牛",
+      "age": 17,
+      "gender": "male",
+      "archetypeId": "a_niu",
+      "reactionTag": "endurance_worker",
+      "stats": {
+        "comprehension": 3,
+        "constitution": 8,
+        "strength": 8,
+        "agility": 4,
+        "composure": 8
+      },
+      "description": "農家少年，話少幹活多，蹲馬步如老松紮根，任勞任怨",
+      "potential": "solid_outer"
+    },
+    {
+      "candidateId": "cand.scholar_swordsman",
+      "name": "陸秀才",
+      "age": 22,
+      "gender": "male",
+      "archetypeId": "scholar_swordsman",
+      "reactionTag": "insight_prodigy",
+      "stats": {
+        "comprehension": 8,
+        "constitution": 5,
+        "strength": 5,
+        "agility": 7,
+        "composure": 7
+      },
+      "description": "知書達禮的落魄書生，觀摩劍招時能引經據典，出劍端正",
+      "potential": "solid_inner"
+    },
+    {
+      "candidateId": "cand.village_doctor_daughter",
+      "name": "青靈姑娘",
+      "age": 18,
+      "gender": "female",
+      "archetypeId": "village_doctor_daughter",
+      "reactionTag": "herb_affinity",
+      "stats": {
+        "comprehension": 7,
+        "constitution": 5,
+        "strength": 4,
+        "agility": 6,
+        "composure": 9
+      },
+      "description": "山下老村醫之女，隨身背著竹藥簍，能一眼分辨伴生靈草",
+      "potential": "specialist_herbal"
+    },
+    {
+      "candidateId": "cand.carpenter_youth",
+      "name": "小木匠魯生",
+      "age": 19,
+      "gender": "male",
+      "archetypeId": "carpenter_youth",
+      "reactionTag": "craft_talent",
+      "stats": {
+        "comprehension": 6,
+        "constitution": 7,
+        "strength": 7,
+        "agility": 7,
+        "composure": 6
+      },
+      "description": "山下木匠鋪學徒，對門派演武場的木人樁結構讚不絕口",
+      "potential": "specialist_craft"
+    },
+    {
+      "candidateId": "cand.adopted_child_ling",
+      "name": "小玲兒",
+      "age": 12,
+      "gender": "female",
+      "archetypeId": "adopted_child",
+      "reactionTag": "insight_prodigy",
+      "stats": {
+        "comprehension": 7,
+        "constitution": 4,
+        "strength": 3,
+        "agility": 6,
+        "composure": 6
+      },
+      "isAdopted": true,
+      "description": "道館在山腳收養的孤女，懂事乖巧，永遠純真的師徒與親情牽絆",
+      "potential": "kinship_ward"
+    }
+  ]
+}
