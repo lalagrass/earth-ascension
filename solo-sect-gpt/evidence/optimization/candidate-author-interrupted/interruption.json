@@ -1,0 +1,8 @@
+{
+  "status": "author-interrupted-before-20-minutes",
+  "runtimeCommit": "65e05065aeea0c2bd5ff4509545eeb6eb2382575",
+  "lastWallMs": 250764,
+  "lastTick": 123635,
+  "necessaryInterventionsSoFar": 0,
+  "reason": "Additional preregistered shortage counterexample exposed inaccurate fallback wording and missing noninterrupting shortage banner; fix before full candidate acceptance. This partial run is not a pass."
+}

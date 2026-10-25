@@ -1,0 +1,7 @@
+candidate 0 minutes 103696 episodes 0
+candidate 2 minutes 113299 episodes 0
+candidate 4 minutes 122904 episodes 0
+page.waitForTimeout: Target page, context or browser has been closed
+    at /Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/observe.mjs:13:50 {
+  log: []
+}
