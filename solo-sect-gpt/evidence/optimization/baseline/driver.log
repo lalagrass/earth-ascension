@@ -1,0 +1,11 @@
+baseline 0 minutes 103696 episodes 0
+baseline 2 minutes 113378 episodes 0
+baseline 4 minutes 122988 episodes 0
+baseline 6 minutes 132645 episodes 0
+baseline 8 minutes 142272 episodes 0
+baseline 10 minutes 151951 episodes 0
+baseline 12 minutes 161603 episodes 0
+baseline 14 minutes 171309 episodes 0
+baseline 16 minutes 181001 episodes 0
+baseline 18 minutes 190660 episodes 0
+COMPLETE baseline {"mode":"baseline","status":"completed","wallMs":1201774,"startTick":103607,"endTick":199657,"simulationSeconds":4802.5,"actualRate":3.9961756536586748,"episodes":[],"errors":[],"counts":{"activity-complete":4911,"growth":707,"resource-regrow":18,"ate":88,"command":22,"transfer":200,"recipe-start":23,"recipe-complete":23,"harvest":56,"planted":3,"watered":3,"drill-start":1,"training-enter":4,"action-start":22,"hit":19,"action-end":19,"insight":5,"training-defeated":4,"miss":2,"memory":75,"drill-complete":1,"crop-ready":3,"spar-start":1,"spar-end":2,"promoted":1,"build-order":1,"building-complete":1,"recipe-cooked":20,"crop-harvest":3},"quietCompleted":true,"samples":989}

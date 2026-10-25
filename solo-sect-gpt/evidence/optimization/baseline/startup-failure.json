@@ -1,0 +1,11 @@
+{
+  "mode": "baseline",
+  "status": "failed",
+  "error": "page.evaluate: TypeError: Cannot read properties of undefined (reading 'status')\n    at eval (eval at evaluate (:311:30), <anonymous>:1:19)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at pause (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/observe.mjs:5:241)\n    at /Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/observe.mjs:7:64",
+  "errors": [
+    "Failed to load resource: the server responded with a status of 404 (File not found)",
+    "Failed to load resource: the server responded with a status of 404 (File not found)"
+  ],
+  "wallMs": null,
+  "episodes": []
+}

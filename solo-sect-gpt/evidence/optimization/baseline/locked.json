@@ -1,0 +1,12 @@
+{
+  "status": "completed-and-locked-before-M2-implementation",
+  "lockedAt": "2026-10-25T17:22:25.289Z",
+  "files": {
+    "result.json": "9f326424e4055319c8fd1e94db14aa62e72388fbe32ced1ad7cd13ec3f02b71d",
+    "analysis.json": "00864f724829180ac06ea0c46ea559a844ad5358f0433b03b0d32ec1d1aba722",
+    "samples.jsonl": "26c06b420113e41995d6f76686485355e32f6aa7d95358055448582e037db430",
+    "setup.json": "28bfb5beb3f5633fff5f64abc30820763470b3e30e664960d345c72a017cdb67",
+    "final.save.json": "946e59586172565dc0177ed2238ad532b3c2b9a535149ed43451c1c5b3b59c40",
+    "fingerprint.json": "b02a2d3566ce1a3a7019e7bbcd559647a55aa508246fcdfdd8f6f510d3eb7b10"
+  }
+}

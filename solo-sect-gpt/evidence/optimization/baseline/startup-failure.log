@@ -1,0 +1,8 @@
+page.evaluate: TypeError: Cannot read properties of undefined (reading 'status')
+    at eval (eval at evaluate (:311:30), <anonymous>:1:19)
+    at UtilityScript.evaluate (<anonymous>:313:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+    at pause (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/observe.mjs:5:241)
+    at /Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/observe.mjs:7:64 {
+  log: []
+}

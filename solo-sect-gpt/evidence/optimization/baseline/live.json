@@ -1,0 +1,440 @@
+{
+  "mode": "baseline",
+  "wallSeconds": 1201,
+  "tick": 199644,
+  "episodes": 0,
+  "wallMs": 1200824,
+  "water": 14,
+  "meal": 16,
+  "veg": 18,
+  "quiet": 1,
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        255130,
+        281666
+      ],
+      "distance": 27428657,
+      "energy": 3258,
+      "hp": 100,
+      "injury": 0,
+      "activity": "activity.19505",
+      "kind": "rest",
+      "phase": "init",
+      "progress": 0,
+      "auto": true,
+      "manualStop": false,
+      "reason": "精力低於25：先照料自己，恢復75後續有效指令",
+      "next": "完成當前單位",
+      "blocked": "",
+      "F": 100,
+      "dailyPractice": {
+        "7": 6718,
+        "8": 2775,
+        "9": 1200,
+        "10": 7900,
+        "11": 6000,
+        "12": 6669,
+        "13": 1200,
+        "14": 1200,
+        "15": 1200,
+        "16": 5480
+      },
+      "contribution": {
+        "0": {
+          "units": 18,
+          "ticks": 2960,
+          "exempt": null
+        },
+        "1": {
+          "units": 25,
+          "ticks": 5240,
+          "exempt": null
+        },
+        "2": {
+          "units": 19,
+          "ticks": 4240,
+          "exempt": null
+        },
+        "3": {
+          "units": 19,
+          "ticks": 3760,
+          "exempt": null
+        },
+        "4": {
+          "units": 18,
+          "ticks": 3320,
+          "exempt": null
+        },
+        "5": {
+          "units": 16,
+          "ticks": 4160,
+          "exempt": null
+        },
+        "6": {
+          "units": 23,
+          "ticks": 5280,
+          "exempt": null
+        },
+        "7": {
+          "units": 2,
+          "ticks": 320,
+          "exempt": null
+        },
+        "8": {
+          "units": 3,
+          "ticks": 1800,
+          "exempt": null
+        },
+        "9": {
+          "units": 4,
+          "ticks": 1030,
+          "exempt": null
+        },
+        "10": {
+          "units": 0,
+          "ticks": 320,
+          "exempt": null
+        },
+        "11": {
+          "units": 1,
+          "ticks": 320,
+          "exempt": null
+        },
+        "12": {
+          "units": 1,
+          "ticks": 320,
+          "exempt": null
+        },
+        "13": {
+          "units": 2,
+          "ticks": 2080,
+          "exempt": null
+        },
+        "14": {
+          "units": 2,
+          "ticks": 360,
+          "exempt": null
+        },
+        "15": {
+          "units": 3,
+          "ticks": 1440,
+          "exempt": null
+        },
+        "16": {
+          "units": 0,
+          "ticks": 320,
+          "exempt": null
+        }
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        253139,
+        278891
+      ],
+      "distance": 26670616,
+      "energy": 9851,
+      "hp": 90,
+      "injury": 0,
+      "activity": "activity.19530",
+      "kind": "move",
+      "phase": "walking",
+      "progress": 0,
+      "auto": true,
+      "manualStop": false,
+      "reason": "小禾在院內散步、等家人",
+      "next": "完成當前單位",
+      "blocked": "候路／禮讓",
+      "F": 0,
+      "contribution": {}
+    },
+    {
+      "id": "amu",
+      "pos": [
+        304640,
+        309760
+      ],
+      "distance": 16204908,
+      "energy": 3471,
+      "hp": 100,
+      "injury": 0,
+      "activity": "activity.19420",
+      "kind": "train",
+      "phase": "init",
+      "progress": 225,
+      "auto": true,
+      "manualStop": false,
+      "reason": "保留修行窗口（44；勤勉0／顧人0）",
+      "next": "完成當前單位",
+      "blocked": "",
+      "F": 100,
+      "dailyPractice": {
+        "7": 6928,
+        "8": 566,
+        "9": 6000,
+        "10": 6960,
+        "11": 6000,
+        "12": 6818,
+        "13": 5214,
+        "14": 7186,
+        "15": 5900,
+        "16": 4545
+      },
+      "contribution": {
+        "0": {
+          "units": 10,
+          "ticks": 2720,
+          "exempt": null
+        },
+        "1": {
+          "units": 1,
+          "ticks": 600,
+          "exempt": null
+        },
+        "2": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／無可行工作"
+        },
+        "3": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／無可行工作"
+        },
+        "4": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／無可行工作"
+        },
+        "5": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／無可行工作"
+        },
+        "6": {
+          "units": 6,
+          "ticks": 1520,
+          "exempt": null
+        },
+        "7": {
+          "units": 2,
+          "ticks": 640,
+          "exempt": null
+        },
+        "8": {
+          "units": 2,
+          "ticks": 1694,
+          "exempt": null
+        },
+        "9": {
+          "units": 3,
+          "ticks": 510,
+          "exempt": null
+        },
+        "11": {
+          "units": 1,
+          "ticks": 160,
+          "exempt": null
+        },
+        "12": {
+          "units": 1,
+          "ticks": 0,
+          "exempt": null
+        },
+        "13": {
+          "units": 2,
+          "ticks": 560,
+          "exempt": null
+        },
+        "14": {
+          "units": 1,
+          "ticks": 320,
+          "exempt": null
+        },
+        "15": {
+          "units": 2,
+          "ticks": 480,
+          "exempt": null
+        },
+        "16": {
+          "units": 2,
+          "ticks": 320,
+          "exempt": null
+        }
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        281513,
+        309776
+      ],
+      "distance": 14070286,
+      "energy": 3129,
+      "hp": 100,
+      "injury": 0,
+      "activity": "activity.19501",
+      "kind": "train",
+      "phase": "init",
+      "progress": 60,
+      "auto": true,
+      "manualStop": false,
+      "reason": "保留修行窗口（20；勤勉0／顧人0）",
+      "next": "完成當前單位",
+      "blocked": "",
+      "F": 100,
+      "dailyPractice": {
+        "7": 3600,
+        "8": 4800,
+        "9": 3600,
+        "10": 6243,
+        "11": 3357,
+        "12": 7880,
+        "13": 3600,
+        "14": 2400,
+        "15": 6475,
+        "16": 5825
+      },
+      "contribution": {
+        "7": {
+          "units": 6,
+          "ticks": 880,
+          "exempt": null
+        },
+        "8": {
+          "units": 6,
+          "ticks": 1320,
+          "exempt": null
+        },
+        "9": {
+          "units": 4,
+          "ticks": 2120,
+          "exempt": null
+        },
+        "10": {
+          "units": 1,
+          "ticks": 320,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "11": {
+          "units": 3,
+          "ticks": 1160,
+          "exempt": null
+        },
+        "12": {
+          "units": 0,
+          "ticks": 320,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "13": {
+          "units": 2,
+          "ticks": 0,
+          "exempt": null
+        },
+        "14": {
+          "units": 2,
+          "ticks": 680,
+          "exempt": null
+        },
+        "15": {
+          "units": 1,
+          "ticks": 0,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "16": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／物資達標，無可行雜務"
+        }
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        304640,
+        293120
+      ],
+      "distance": 13601846,
+      "energy": 2766,
+      "hp": 100,
+      "injury": 0,
+      "activity": "activity.19466",
+      "kind": "train",
+      "phase": "init",
+      "progress": 116,
+      "auto": true,
+      "manualStop": false,
+      "reason": "保留修行窗口（20；勤勉0／顧人0）",
+      "next": "完成當前單位",
+      "blocked": "",
+      "F": 100,
+      "dailyPractice": {
+        "7": 1200,
+        "8": 6000,
+        "9": 1200,
+        "10": 1200,
+        "11": 1200,
+        "12": 7506,
+        "13": 7148,
+        "14": 6780,
+        "15": 6419,
+        "16": 5463
+      },
+      "contribution": {
+        "7": {
+          "units": 4,
+          "ticks": 560,
+          "exempt": null
+        },
+        "8": {
+          "units": 1,
+          "ticks": 320,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "9": {
+          "units": 2,
+          "ticks": 560,
+          "exempt": null
+        },
+        "10": {
+          "units": 2,
+          "ticks": 320,
+          "exempt": null
+        },
+        "11": {
+          "units": 2,
+          "ticks": 680,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "12": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "13": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "14": {
+          "units": 1,
+          "ticks": 0,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "15": {
+          "units": 1,
+          "ticks": 0,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "16": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／物資達標，無可行雜務"
+        }
+      }
+    }
+  ]
+}
