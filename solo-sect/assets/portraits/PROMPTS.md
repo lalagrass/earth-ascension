@@ -32,3 +32,11 @@ Shared subject — 郭靖: "broad-shouldered honest young northern hero (Guo Jin
 - caricature: "old Chinese newspaper comic-strip caricature, simple clean black brush outlines, oversized head, flat two-tone color on cream paper, minimal shading, readable at 48px" (郭靖 chewing giant bun, sweat drop; 黃蓉 tongue out hiding stolen chicken leg).
 - woodcut: "Chinese folk woodblock New Year print (nianhua), bold carved outlines, gouge texture, flat mineral colors vermilion/jade/ochre, slight misregistration, cloud patterns, paper grain" (郭靖 open palm; 黃蓉 finger-to-lips smirk, peach blossoms).
 - heavyink: "heavy gothic ink like a dark dungeon-crawler: thick black ink shapes, half-face shadow, desaturated with one accent color, rough paper, rim light, dark background" (郭靖 scarred grim; 黃蓉 scheming smirk, staff on shoulder).
+
+## Style-direction samples round 2 (2026-10-25)
+Files `artifacts/portrait-review/style2-{wcaricature,storybook,clay,lianhuan}-{huangrong,guojing}.png`, sheet `style-directions-2.png` (row 1 黃蓉, row 2 郭靖, 64/48px thumbs). Same subjects/props as round 1 (黃蓉 stolen chicken leg + bamboo staff; 郭靖 steamed bun + gourd). Style clauses:
+- wcaricature: "refined watercolor caricature, loose expressive pencil-and-ink line, transparent watercolor washes with blooms, gently exaggerated features, painterly not comic-strip, white paper background".
+- storybook: "hand-painted gouache children's picture-book illustration, soft matte brushwork, slightly stylized proportions, expressive but not pretty face, warm muted palette, cream background. Not anime, not comic".
+- clay: "handmade clay stop-motion puppet render, plasticine texture with fingerprints, chunky stylized proportions, soft studio lighting, shallow depth of field, plain warm backdrop".
+- lianhuan: "1960s Chinese lianhuanhua picture-story book illustration, fine realistic ink line with light grey ink wash, a little muted color, plain grounded unidealized face, white paper background. Not anime, not comic".
+Skipped this round: Disco-Elysium-like oil, paper-cut/皮影.
