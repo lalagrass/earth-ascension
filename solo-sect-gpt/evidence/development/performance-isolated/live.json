@@ -1,0 +1,340 @@
+{
+  "tick": 200646,
+  "status": {
+    "paused": false,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 1494,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1674,
+        530
+      ],
+      "energy": 8788,
+      "hp": 100,
+      "injury": 0,
+      "intent": {
+        "kind": "expedition",
+        "revision": 53,
+        "args": {
+          "target": "camp"
+        }
+      },
+      "blocked": "",
+      "reason": "沿北門實走到林緣",
+      "bag": {
+        "id": "bag.leader",
+        "items": {
+          "ration": 2
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        923.8984375,
+        1075.1875
+      ],
+      "energy": 9979,
+      "hp": 90,
+      "injury": 0,
+      "activity": {
+        "id": "activity.69156",
+        "actor": "child",
+        "kind": "move",
+        "args": {
+          "pos": [
+            948,
+            1100
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 0,
+        "started": 200563,
+        "units": 0
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "小禾在院內散步、等家人",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        1660,
+        520
+      ],
+      "energy": 7755,
+      "hp": 100,
+      "injury": 0,
+      "intent": {
+        "kind": "expedition",
+        "revision": 20,
+        "args": {
+          "target": "camp"
+        }
+      },
+      "blocked": "",
+      "reason": "沿北門實走到林緣",
+      "bag": {
+        "id": "bag.amu",
+        "items": {
+          "ration": 2
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        1688,
+        540
+      ],
+      "energy": 9424,
+      "hp": 100,
+      "injury": 0,
+      "intent": {
+        "kind": "expedition",
+        "revision": 4,
+        "args": {
+          "target": "camp"
+        }
+      },
+      "blocked": "",
+      "reason": "沿北門實走到林緣",
+      "bag": {
+        "id": "bag.lin",
+        "items": {
+          "ration": 2
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        1100,
+        1145
+      ],
+      "energy": 3329,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.69054",
+        "actor": "shen",
+        "kind": "train",
+        "args": {
+          "art": "punch",
+          "units": 5
+        },
+        "phase": "init",
+        "progress": 132,
+        "revision": 0,
+        "started": 199555,
+        "units": 4,
+        "station": "yard.1",
+        "checked": "yard.1",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "保留修行窗口（20；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.shen",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "legend.hong",
+      "pos": [
+        1190,
+        1145
+      ],
+      "energy": 3226,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.69090",
+        "actor": "legend.hong",
+        "kind": "train",
+        "args": {
+          "art": "punch",
+          "units": 5
+        },
+        "phase": "init",
+        "progress": 60,
+        "revision": 0,
+        "started": 199867,
+        "units": 3,
+        "station": "yard.2",
+        "checked": "yard.2",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "保留修行窗口（20；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.legend.hong",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "legend.linghu",
+      "pos": [
+        1190,
+        1210
+      ],
+      "energy": 3674,
+      "hp": 95,
+      "injury": 0,
+      "activity": {
+        "id": "activity.69135",
+        "actor": "legend.linghu",
+        "kind": "talk",
+        "args": {
+          "target": "amu"
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 200248,
+        "units": 0,
+        "blocked": "對方正在忙，可先叫停再邀"
+      },
+      "intent": null,
+      "blocked": "對方正在忙，可先叫停再邀",
+      "reason": "自由時段：與同門交談（22；勤勉-2／顧人1）",
+      "bag": {
+        "id": "bag.legend.linghu",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "legend.guo",
+      "pos": [
+        1100,
+        1210
+      ],
+      "energy": 5184,
+      "hp": 110,
+      "injury": 0,
+      "activity": {
+        "id": "activity.69115",
+        "actor": "legend.guo",
+        "kind": "train",
+        "args": {
+          "art": "punch",
+          "units": 5
+        },
+        "phase": "init",
+        "progress": 81,
+        "revision": 0,
+        "started": 200086,
+        "units": 2,
+        "station": "yard.3",
+        "checked": "yard.3",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "保留修行窗口（26；勤勉2／顧人2）",
+      "bag": {
+        "id": "bag.legend.guo",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 9,
+        "veg": 32,
+        "herb": 2,
+        "wood": 6,
+        "ration": 2,
+        "water": 1
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 11
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 32
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": {
+    "id": "expedition.54315",
+    "actors": [
+      "amu",
+      "leader",
+      "lin"
+    ],
+    "target": "camp",
+    "phase": "resting",
+    "started": 176607,
+    "packed": [
+      "amu",
+      "lin",
+      "leader"
+    ],
+    "seen": [
+      "forest",
+      "camp"
+    ],
+    "foodTaken": 0,
+    "reservedVisitor": false,
+    "report": null,
+    "returnReason": null,
+    "segment": "camp"
+  },
+  "drill": {
+    "id": "drill.67794",
+    "config": "B",
+    "actors": [
+      "legend.guo",
+      "shen"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 188770,
+    "nextWave": null
+  }
+}

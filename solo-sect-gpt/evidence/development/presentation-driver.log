@@ -1,0 +1,23 @@
+import normal checkpoint
+true bed-side sleeping
+rest for arts
+crafted staff
+learned staff
+physical equip staff
+ready sweep
+actual recovery sweep
+crafted sword
+learned sword
+physical equip sword
+ready thrust
+actual recovery thrust
+returned to fists
+ready punch
+actual recovery punch
+ready push
+actual recovery push
+ready step
+Error: normal move unavailable step
+    at action (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/presentation.mjs:5:329)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/presentation.mjs:10:236
+interrupted

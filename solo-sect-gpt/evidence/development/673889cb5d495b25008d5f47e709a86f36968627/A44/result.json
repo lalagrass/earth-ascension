@@ -1,0 +1,55 @@
+{
+  "caseId": "A44",
+  "status": "passed",
+  "commit": "673889cb5d495b25008d5f47e709a86f36968627",
+  "sourceCommit": "673889cb5d495b25008d5f47e709a86f36968627",
+  "rulesVersion": "chapter1-1",
+  "mapVersion": "gpt-world-1",
+  "suiteSeeds": [
+    11,
+    29,
+    47,
+    71,
+    101
+  ],
+  "seedContext": "See linked trace/save/result; model fixtures default to11 unless their test states otherwise.",
+  "evidenceReuse": "Long UI journeys span development versions; earlier unchanged paths are reused explicitly, with affected-flow revalidation linked.",
+  "environment": "Node24.13 / Chrome156 / macOS26.2 / M2 8GiB",
+  "expected": "docs/ACCEPTANCE.md A44",
+  "operations": "Exact model fixtures and linked normal UI command/event traces; saves retain actual tick and speed context.",
+  "layers": [
+    "M",
+    "U",
+    "V"
+  ],
+  "actual": "完整交付／來源／根檢查／可追溯索引",
+  "evidence": [
+    "test/core.test.mjs",
+    "test/integration/rules.test.mjs",
+    "test/integration/boundaries.test.mjs",
+    "test/integration/bridge-policy.test.mjs",
+    "test/integration/classes.test.mjs",
+    "test/integration/persistence-load.test.mjs",
+    "test/integration/production.test.mjs",
+    "test/integration/final-contract.test.mjs",
+    "evidence/development/sl1/release-regression.log",
+    "evidence/development/sl1/final-contract-verified.log",
+    "evidence/development/sl1/partial-promise.log",
+    "evidence/development/sl1/equipment-guard.log",
+    "README.md",
+    "FEATURES.md",
+    "assets/manifest.json",
+    "assets/PROVENANCE.md",
+    "evidence/development/sl1/root-unittest.log",
+    "evidence/development/sl1/sg-regression.log",
+    "evidence/development/release/final-checks.json"
+  ],
+  "author": "GPT / Codex; author self-review",
+  "limits": [
+    "Author self-review, not independent review.",
+    "Headless WebAudio generation/unlock/mute/volume signal verified; agent did not listen to audio. No auditory-experience pass is claimed.",
+    "Human playtest and public IP clearance not performed; private local prototype only.",
+    "UI journeys span development commits through traceable normal saves. Final runtime has focused affected-flow revalidation and deterministic model checks; older untouched evidence is reused explicitly.",
+    "No formal balance distribution claim from five deterministic seeds. No push, PR, merge, deployment or main/manual release validation."
+  ]
+}

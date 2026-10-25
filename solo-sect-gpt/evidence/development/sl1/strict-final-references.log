@@ -1,0 +1,12 @@
+✔ A37 semantic corruptions are rejected with recomputed checksum and unchanged source (113.11675ms)
+✔ solo-sect-gpt/test/integration/classes.test.mjs (241.700958ms)
+✔ A35 nine exact activity boundaries continue 6000 ticks with identical hashes (73834.700792ms)
+✔ A09/A35 cooked meals stay at the pot then physically travel and survive cancellation with no duplicate production (4016.015167ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 74138.968167

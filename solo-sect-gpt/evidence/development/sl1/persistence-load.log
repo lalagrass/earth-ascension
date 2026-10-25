@@ -1,0 +1,42 @@
+✖ A35 nine exact activity boundaries continue 6000 ticks with identical hashes (25367.174459ms)
+✖ A26 three incapacitated members and two full visitor slots use finite physical rescue trips (38.170792ms)
+✔ A20 both drill formations complete two finite shared-combat waves without changing natural population (2641.819083ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 1
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 28276.381708
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/integration/persistence-load.test.mjs:5:1
+✖ A35 nine exact activity boundaries continue 6000 ticks with identical hashes (25367.174459ms)
+  AssertionError [ERR_ASSERTION]: state not reached at 24000
+      at until (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/persistence-load.test.mjs:3:125)
+      at p (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/persistence-load.test.mjs:5:799)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/persistence-load.test.mjs:5:1286)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/integration/persistence-load.test.mjs:6:1
+✖ A26 three incapacitated members and two full visitor slots use finite physical rescue trips (38.170792ms)
+  TypeError: Cannot read properties of null (reading 'phase')
+      at file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/persistence-load.test.mjs:6:309
+      at until (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/persistence-load.test.mjs:3:95)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/persistence-load.test.mjs:6:285)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)

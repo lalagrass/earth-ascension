@@ -1,0 +1,16 @@
+✔ new world has stable identities and no geometry/ledger errors (3.688791ms)
+✔ all initial stations are reached by legal circle sweeps (412.38675ms)
+✔ build dorm consumes actual harvested materials, duplicate command ignored (2648.75675ms)
+✔ cancellation in transit never refunds or erases carried wood (97.049666ms)
+✔ children cannot be assigned labor, adult activities or expedition work (0.425125ms)
+✔ determinism survives people insertion order and save/resume (5490.905583ms)
+✔ bad saves and failed writes protect the last valid slot (5.204834ms)
+✔ scheduled commands preserve execution tick, order and save-boundary behavior (13.4435ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8761.962208

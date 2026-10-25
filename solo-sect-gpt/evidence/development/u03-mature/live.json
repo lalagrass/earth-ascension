@@ -1,0 +1,127 @@
+{
+  "tick": 1381,
+  "status": {
+    "paused": true,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 154,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        760.984375,
+        1260
+      ],
+      "energy": 9140,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.17",
+        "actor": "leader",
+        "kind": "cook",
+        "args": {
+          "recipe": "meal"
+        },
+        "phase": "perform",
+        "progress": 473,
+        "revision": 0,
+        "started": 544,
+        "units": 0,
+        "fetch": [],
+        "checked": "kitchen.cook",
+        "destination": "kitchen.cook",
+        "blocked": "",
+        "committed": true
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "缺餐備糧（63；勤勉2／顧人2）",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        948,
+        1100
+      ],
+      "energy": 9945,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        946.4453125,
+        1176.484375
+      ],
+      "energy": 9996,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.44",
+        "actor": "amu",
+        "kind": "cook",
+        "args": {
+          "recipe": "meal"
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 1060,
+        "units": 0,
+        "blocked": "灶上有他人正在烹調"
+      },
+      "intent": null,
+      "blocked": "灶上有他人正在烹調",
+      "reason": "缺餐備糧（93；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 30,
+        "veg": 6,
+        "herb": 2
+      },
+      "capacity": 24
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 3
+      },
+      "capacity": 8
+    },
+    "table": {
+      "id": "table",
+      "items": {},
+      "capacity": 96
+    }
+  },
+  "expedition": null,
+  "drill": null
+}

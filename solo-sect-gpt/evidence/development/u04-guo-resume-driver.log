@@ -1,0 +1,20 @@
+import normal checkpoint
+page.evaluate: Target page, context or browser has been closed
+    at snap (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:6:69)
+    at Object.wait (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:11:115)
+    at async build (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/u04-classic.mjs:2:159)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/u04-classic.mjs:13:3 {
+  log: []
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.evaluate: Target page, context or browser has been closed
+    at snap (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:6:69)
+    at Object.close (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:14:124)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/u04-classic.mjs:23:64 {
+  log: []
+}
+
+Node.js v24.13.0

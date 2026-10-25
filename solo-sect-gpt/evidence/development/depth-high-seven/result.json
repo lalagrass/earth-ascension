@@ -1,0 +1,182 @@
+{
+  "layer": "U",
+  "status": "checkpoint",
+  "error": null,
+  "errors": [],
+  "tick": 32806,
+  "commands": [
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "dorm",
+      "id": "ui.1",
+      "tick": 25,
+      "seq": 1,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "hall",
+      "id": "ui.2",
+      "tick": 4806,
+      "seq": 2,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "yard",
+      "id": "ui.3",
+      "tick": 9604,
+      "seq": 3,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "amu",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.4",
+      "tick": 13357,
+      "seq": 4,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "amu",
+      "id": "ui.5",
+      "tick": 13364,
+      "seq": 5,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.6",
+      "tick": 13371,
+      "seq": 6,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "leader",
+      "id": "ui.7",
+      "tick": 14933,
+      "seq": 7,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "drill",
+      "config": "A",
+      "actors": [
+        "amu",
+        "leader"
+      ],
+      "id": "ui.8",
+      "tick": 14967,
+      "seq": 8,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "train",
+      "args": {},
+      "id": "ui.9",
+      "tick": 15750,
+      "seq": 9,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "amu",
+      "kind": "train",
+      "args": {},
+      "id": "ui.10",
+      "tick": 15759,
+      "seq": 10,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "amu",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.11",
+      "tick": 29037,
+      "seq": 11,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "amu",
+      "id": "ui.12",
+      "tick": 30251,
+      "seq": 12,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.13",
+      "tick": 30258,
+      "seq": 13,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "leader",
+      "id": "ui.14",
+      "tick": 32016,
+      "seq": 14,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "drill",
+      "config": "A",
+      "actors": [
+        "amu",
+        "leader"
+      ],
+      "id": "ui.15",
+      "tick": 32037,
+      "seq": 15,
+      "result": {
+        "ok": true
+      }
+    }
+  ]
+}

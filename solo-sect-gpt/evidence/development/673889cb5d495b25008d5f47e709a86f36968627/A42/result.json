@@ -1,0 +1,37 @@
+{
+  "caseId": "A42",
+  "status": "passed",
+  "commit": "673889cb5d495b25008d5f47e709a86f36968627",
+  "sourceCommit": "673889cb5d495b25008d5f47e709a86f36968627",
+  "rulesVersion": "chapter1-1",
+  "mapVersion": "gpt-world-1",
+  "suiteSeeds": [
+    11,
+    29,
+    47,
+    71,
+    101
+  ],
+  "seedContext": "See linked trace/save/result; model fixtures default to11 unless their test states otherwise.",
+  "evidenceReuse": "Long UI journeys span development versions; earlier unchanged paths are reused explicitly, with affected-flow revalidation linked.",
+  "environment": "Node24.13 / Chrome156 / macOS26.2 / M2 8GiB",
+  "expected": "docs/ACCEPTANCE.md A42",
+  "operations": "Exact model fixtures and linked normal UI command/event traces; saves retain actual tick and speed context.",
+  "layers": [
+    "U",
+    "V"
+  ],
+  "actual": "教學、輸入Space、音訊解鎖／設定與視覺時序",
+  "evidence": [
+    "evidence/development/save-controls-release/progress.jsonl",
+    "evidence/development/presentation-continue/progress.jsonl"
+  ],
+  "author": "GPT / Codex; author self-review",
+  "limits": [
+    "Author self-review, not independent review.",
+    "Headless WebAudio generation/unlock/mute/volume signal verified; agent did not listen to audio. No auditory-experience pass is claimed.",
+    "Human playtest and public IP clearance not performed; private local prototype only.",
+    "UI journeys span development commits through traceable normal saves. Final runtime has focused affected-flow revalidation and deterministic model checks; older untouched evidence is reused explicitly.",
+    "No formal balance distribution claim from five deterministic seeds. No push, PR, merge, deployment or main/manual release validation."
+  ]
+}

@@ -1,0 +1,52 @@
+✔ A03/A06 atomic bundle rollback retains FIFO; physical capacity excludes new same-tick deposits (25.123958ms)
+✔ A03 completion IDs and duplicate commands never pay twice (1.093959ms)
+✖ A11/A31 shared practice recovers physically, preserves whole units, roundtrips and cancellation clears both (2315.622042ms)
+✔ A12 four adults queue finite social sessions on shared physical slots (1539.87925ms)
+✔ A19 exact pair changes only punch skill: deep windup/recover remain finite and shorter (2.581625ms)
+✔ A21 finite ecology IDs and retired wildlife never respawn on save/reload (3650.367959ms)
+✖ A27 forced far, blocked LOS, late and interrupted observation all have finite cost and failure (13.004042ms)
+✔ A29 all five identities share young/mature exclusivity and principal cannot be duplicated (103.525958ms)
+✔ A33 finite cave cargo tracks real delivery once, ordinary food consumption and later transfers (0.711083ms)
+✔ A37 semantic corruptions are rejected with recomputed checksum and unchanged source (34.097625ms)
+✔ A38 disabled/quota/corrupted pending storage preserves all foreign keys and valid slot (23.3305ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 9
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7817.571958
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/integration/boundaries.test.mjs:9:1
+✖ A11/A31 shared practice recovers physically, preserves whole units, roundtrips and cancellation clears both (2315.622042ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/boundaries.test.mjs:9:1092)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/integration/boundaries.test.mjs:13:1
+✖ A27 forced far, blocked LOS, late and interrupted observation all have finite cost and failure (13.004042ms)
+  TypeError: Cannot read properties of undefined (reading 'includes')
+      at combatTick (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/combat.mjs:66:42)
+      at step (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/world.mjs:71:13)
+      at run (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/boundaries.test.mjs:5:39)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/boundaries.test.mjs:13:832)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)

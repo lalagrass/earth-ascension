@@ -1,0 +1,13 @@
+✔ determinism survives people insertion order and save/resume (7812.573958ms)
+✔ bad saves and failed writes protect the last valid slot (5.625458ms)
+✔ scheduled commands preserve execution tick, order and save-boundary behavior (17.423584ms)
+✔ A35 in-flight construction, cooking, combat and conversation roundtrip hashes (12770.589583ms)
+✔ A36 encoder snapshots before asynchronous hashing (12.435083ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12872.690375

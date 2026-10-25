@@ -1,0 +1,13 @@
+import normal checkpoint
+actual water delivery 0
+actual water delivery 1
+actual water delivery 2
+actual water delivery 3
+actual water delivery 4
+actual water delivery 5
+full vat visible refusal
+vat-full-refusal
+tea physically frees capacity and arrives at store
+same-world retry succeeds
+water-recovery-complete
+passed full vat visible reason and physical recovery

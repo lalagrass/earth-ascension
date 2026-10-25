@@ -1,0 +1,10 @@
+✔ build dorm consumes actual harvested materials, duplicate command ignored (2738.71025ms)
+✔ A27 lesson reaches a real failed interception and a legal success (712.277584ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2818.860792

@@ -1,0 +1,5 @@
+import normal checkpoint
+final renderer 600 simulated seconds at 4x
+Error: performance thresholds {"layer":"U","status":"failed","seed":11,"start":188778,"end":200876,"wallMs":156107,"actualRate":3.8749063142588094,"frameWorkP95":15.700000047683716,"maxFrameGapMs":5683.199999999999,"frames":8765,"reference":{"os":"25.2.0","cpu":"Apple M2","memory":8589934592,"browser":"156.0.8078.47","viewport":{"width":1440,"height":900}},"residents":8,"visitors":2,"party":3,"drillActors":["legend.guo","shen"],"drillOpponents":["training.1","training.2","training.3","training.4"]}
+    at file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/performance-replay.mjs:2:1935
+interrupted

@@ -1,0 +1,32 @@
+✖ A06 exhausted last resource and full containers release all transactional claims (348.37875ms)
+✔ A07 hall removal preserves legal beds and evacuates walls before changing geometry (2014.226833ms)
+✔ A10 autonomous supplied day reserves practice and real meals; injury exemptions do not become debt (4678.009791ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7213.537375
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/integration/boundaries.test.mjs:18:1
+✖ A06 exhausted last resource and full containers release all transactional claims (348.37875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/boundaries.test.mjs:18:349)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

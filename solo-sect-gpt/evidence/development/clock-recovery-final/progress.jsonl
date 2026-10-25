@@ -1,0 +1,2 @@
+{"label":"passed stalled-frame elapsed preservation","wall":3740,"tick":313,"before":10,"after":311,"ratio":1.0060160427807487,"note":"Deliberate 2.2-second fault injection; not a normal-performance measurement. No World mutation, time jump or debug dispatcher."}
+{"label":"clock-recovery-complete","wall":"2026-10-25T16:09:35.407Z","tick":317}

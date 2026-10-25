@@ -1,0 +1,7 @@
+import normal checkpoint
+Lin physically reached west bridge waypoint
+returning party owns bridge westbound
+Error: timeout actual opposite queue
+    at Object.wait (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:11:394)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/bridge-opposed.mjs:2:1320
+interrupted

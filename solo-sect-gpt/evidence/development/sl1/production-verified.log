@@ -1,0 +1,10 @@
+✔ A09/A35 cooked meals stay at the pot then physically travel and survive cancellation with no duplicate production (2758.490084ms)
+✔ A06 full ration store has physical pickup/eating recovery without losing carried food (117.09125ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2935.032917

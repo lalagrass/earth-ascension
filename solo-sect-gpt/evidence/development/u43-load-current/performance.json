@@ -1,0 +1,71 @@
+{
+  "layer": "U",
+  "seed": 11,
+  "reference": {
+    "platform": "darwin",
+    "release": "25.2.0",
+    "cpu": "Apple M2",
+    "memory": 8589934592,
+    "browser": "156.0.8078.47",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "start": 176649,
+  "end": 188768,
+  "wallMs": 151723,
+  "actualRate": 3.9937913170712416,
+  "frameWorkP95": 14.900000095367432,
+  "maxFrameGapMs": 650,
+  "frames": 8713,
+  "residents": 8,
+  "visitors": 2,
+  "expedition": {
+    "id": "expedition.54315",
+    "actors": [
+      "amu",
+      "leader",
+      "lin"
+    ],
+    "target": "camp",
+    "phase": "resting",
+    "started": 176607,
+    "packed": [
+      "amu",
+      "lin",
+      "leader"
+    ],
+    "seen": [
+      "forest",
+      "camp"
+    ],
+    "foodTaken": 0,
+    "reservedVisitor": false,
+    "report": null,
+    "returnReason": null,
+    "segment": "camp"
+  },
+  "drill": {
+    "id": "drill.54361",
+    "config": "B",
+    "actors": [
+      "legend.guo",
+      "shen"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 176644,
+    "nextWave": null
+  }
+}

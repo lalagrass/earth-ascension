@@ -1,0 +1,711 @@
+{
+  "layer": "U",
+  "status": "failed",
+  "error": "Error: eastward canvas command failed {\"type\":\"task\",\"actor\":\"lin\",\"kind\":\"move\",\"args\":{\"pos\":[2010,475]},\"id\":\"ui.63\",\"tick\":111466,\"seq\":63,\"result\":{\"ok\":false,\"reason\":\"目標無路可達／水域或封閉邊界\",\"reasonCode\":\"task.rejected\"}}\n    at file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/bridge-opposed.mjs:2:1486",
+  "errors": [],
+  "tick": 111466,
+  "commands": [
+    {
+      "type": "goals",
+      "water": 6,
+      "meal": 16,
+      "id": "ui.1",
+      "tick": 21,
+      "seq": 1,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "dorm",
+      "id": "ui.2",
+      "tick": 33,
+      "seq": 2,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "hall",
+      "id": "ui.3",
+      "tick": 4592,
+      "seq": 3,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "resume",
+      "actor": "amu",
+      "id": "ui.4",
+      "tick": 8219,
+      "seq": 4,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "resume",
+      "actor": "leader",
+      "id": "ui.5",
+      "tick": 8227,
+      "seq": 5,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "leader",
+      "id": "ui.6",
+      "tick": 12183,
+      "seq": 6,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "amu",
+      "id": "ui.7",
+      "tick": 12183,
+      "seq": 7,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "talk",
+      "args": {
+        "target": "amu"
+      },
+      "id": "ui.8",
+      "tick": 12183,
+      "seq": 8,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "leader",
+      "id": "ui.9",
+      "tick": 12705,
+      "seq": 9,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "amu",
+      "id": "ui.10",
+      "tick": 12705,
+      "seq": 10,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "teach",
+      "args": {
+        "target": "amu"
+      },
+      "id": "ui.11",
+      "tick": 12705,
+      "seq": 11,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "invite",
+      "actor": "leader",
+      "target": "amu",
+      "id": "ui.12",
+      "tick": 12962,
+      "seq": 12,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "store",
+      "id": "ui.13",
+      "tick": 12980,
+      "seq": 13,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "store",
+      "id": "ui.14",
+      "tick": 15004,
+      "seq": 14,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "kitchen",
+      "id": "ui.15",
+      "tick": 21961,
+      "seq": 15,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "kitchen",
+      "id": "ui.16",
+      "tick": 24896,
+      "seq": 16,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "dining",
+      "id": "ui.17",
+      "tick": 31950,
+      "seq": 17,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "dining",
+      "id": "ui.18",
+      "tick": 35825,
+      "seq": 18,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "yard",
+      "id": "ui.19",
+      "tick": 39050,
+      "seq": 19,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "yard",
+      "id": "ui.20",
+      "tick": 43704,
+      "seq": 20,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "garden",
+      "id": "ui.21",
+      "tick": 49996,
+      "seq": 21,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "herb",
+      "id": "ui.22",
+      "tick": 51767,
+      "seq": 22,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "annex",
+      "id": "ui.23",
+      "tick": 56333,
+      "seq": 23,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "hall",
+      "id": "ui.24",
+      "tick": 69933,
+      "seq": 24,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "resume",
+      "actor": "amu",
+      "id": "ui.25",
+      "tick": 77850,
+      "seq": 25,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "resume",
+      "actor": "leader",
+      "id": "ui.26",
+      "tick": 77858,
+      "seq": 26,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "school",
+      "actor": "leader",
+      "id": "ui.27",
+      "tick": 84012,
+      "seq": 27,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "invite",
+      "actor": "leader",
+      "target": "lin",
+      "id": "ui.28",
+      "tick": 84885,
+      "seq": 28,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "resume",
+      "actor": "amu",
+      "id": "ui.29",
+      "tick": 84896,
+      "seq": 29,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "resume",
+      "actor": "leader",
+      "id": "ui.30",
+      "tick": 84904,
+      "seq": 30,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "fame",
+      "actor": "leader",
+      "id": "ui.31",
+      "tick": 85363,
+      "seq": 31,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "resume",
+      "actor": "amu",
+      "id": "ui.32",
+      "tick": 86080,
+      "seq": 32,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "resume",
+      "actor": "leader",
+      "id": "ui.33",
+      "tick": 86088,
+      "seq": 33,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "invite",
+      "actor": "leader",
+      "target": "shen",
+      "id": "ui.34",
+      "tick": 87256,
+      "seq": 34,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "amu",
+      "kind": "train",
+      "args": {},
+      "id": "ui.35",
+      "tick": 87269,
+      "seq": 35,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "train",
+      "args": {},
+      "id": "ui.36",
+      "tick": 87278,
+      "seq": 36,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "amu",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.37",
+      "tick": 96565,
+      "seq": 37,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "amu",
+      "id": "ui.38",
+      "tick": 98256,
+      "seq": 38,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.39",
+      "tick": 98264,
+      "seq": 39,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "leader",
+      "id": "ui.40",
+      "tick": 100311,
+      "seq": 40,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "drill",
+      "config": "A",
+      "actors": [
+        "amu",
+        "leader"
+      ],
+      "id": "ui.41",
+      "tick": 100337,
+      "seq": 41,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "amu",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.42",
+      "tick": 101112,
+      "seq": 42,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "amu",
+      "id": "ui.43",
+      "tick": 101684,
+      "seq": 43,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.44",
+      "tick": 101693,
+      "seq": 44,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "leader",
+      "id": "ui.45",
+      "tick": 102305,
+      "seq": 45,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "promote",
+      "actor": "leader",
+      "target": "amu",
+      "id": "ui.46",
+      "tick": 102314,
+      "seq": 46,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "cook",
+      "args": {
+        "recipe": "ration"
+      },
+      "id": "ui.47",
+      "tick": 102944,
+      "seq": 47,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "expedition",
+      "actors": [
+        "amu",
+        "leader"
+      ],
+      "target": "cave",
+      "id": "ui.48",
+      "tick": 103624,
+      "seq": 48,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "talkWardens",
+      "id": "ui.49",
+      "tick": 105434,
+      "seq": 49,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "choice",
+      "choice": "food",
+      "id": "ui.50",
+      "tick": 105818,
+      "seq": 50,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "found",
+      "name": "山中自持",
+      "id": "ui.51",
+      "tick": 107063,
+      "seq": 51,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.52",
+      "tick": 107105,
+      "seq": 52,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "leader",
+      "id": "ui.53",
+      "tick": 108222,
+      "seq": 53,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "amu",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.54",
+      "tick": 108231,
+      "seq": 54,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "amu",
+      "id": "ui.55",
+      "tick": 108247,
+      "seq": 55,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "leader",
+      "id": "ui.56",
+      "tick": 108249,
+      "seq": 56,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "amu",
+      "id": "ui.57",
+      "tick": 108249,
+      "seq": 57,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "expedition",
+      "actors": [
+        "amu",
+        "leader"
+      ],
+      "target": "cave",
+      "id": "ui.58",
+      "tick": 108249,
+      "seq": 58,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "talkWardens",
+      "id": "ui.59",
+      "tick": 110088,
+      "seq": 59,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "lin",
+      "kind": "move",
+      "args": {
+        "pos": [
+          1840,
+          440
+        ]
+      },
+      "id": "ui.60",
+      "tick": 110475,
+      "seq": 60,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "lin",
+      "id": "ui.61",
+      "tick": 111201,
+      "seq": 61,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "recallParty",
+      "id": "ui.62",
+      "tick": 111201,
+      "seq": 62,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "lin",
+      "kind": "move",
+      "args": {
+        "pos": [
+          2010,
+          475
+        ]
+      },
+      "id": "ui.63",
+      "tick": 111466,
+      "seq": 63,
+      "result": {
+        "ok": false,
+        "reason": "目標無路可達／水域或封閉邊界",
+        "reasonCode": "task.rejected"
+      }
+    }
+  ]
+}

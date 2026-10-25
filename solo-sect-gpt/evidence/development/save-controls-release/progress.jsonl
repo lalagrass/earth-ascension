@@ -1,0 +1,7 @@
+{"label":"actual wood in transit","wall":"2026-10-25T15:55:51.813Z","tick":1170}
+{"label":"wood-in-transit","wall":"2026-10-25T15:55:52.995Z","tick":1174}
+{"label":"UI export preview cancel import and input Space passed","wall":"2026-10-25T15:55:54.785Z","tick":1174}
+{"label":"three natural autosave intervals","wall":"2026-10-25T15:56:41.274Z","tick":4887}
+{"label":"normal automatic-slot load","wall":"2026-10-25T15:56:42.562Z","tick":4800}
+{"label":"save-controls-complete","wall":"2026-10-25T15:56:43.573Z","tick":4800}
+{"label":"passed current new-game transport refresh export auto3 and controls","wall":"2026-10-25T15:56:43.613Z","tick":4800}

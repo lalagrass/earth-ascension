@@ -1,0 +1,30 @@
+import normal checkpoint
+actual herb harvest carried
+herb-in-transit
+harvest actually deposited
+meal cooked at pot
+four real meals being carried
+cooked-meals-in-transit
+cancelled cook batch actually delivered by next intent
+cancelled-batch-delivered-once
+four vegetables physically traded at village road
+actual-village-delivery
+separated-history-preserved
+page.evaluate: Target page, context or browser has been closed
+    at snap (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:6:78)
+    at Object.wait (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:11:115)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/operations-final.mjs:7:185 {
+  log: []
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.evaluate: Target page, context or browser has been closed
+    at snap (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:6:78)
+    at Object.close (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:14:124)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/operations-final.mjs:9:64 {
+  log: []
+}
+
+Node.js v24.13.0

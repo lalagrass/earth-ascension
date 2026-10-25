@@ -1,0 +1,19 @@
+✖ A41/A44 procedural asset IDs, source hashes, exports, geometry and story coverage are complete (390.226792ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 529.695375
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/assets.test.mjs:2:1
+✖ A41/A44 procedural asset IDs, source hashes, exports, geometry and story coverage are complete (390.226792ms)
+  TypeError: to is not iterable (cannot read property undefined)
+      at findPath (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/map.mjs:67:6)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/assets.test.mjs:2:1061)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)

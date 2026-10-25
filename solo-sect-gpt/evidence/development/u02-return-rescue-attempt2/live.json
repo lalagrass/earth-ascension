@@ -1,0 +1,242 @@
+{
+  "tick": 117702,
+  "status": {
+    "paused": false,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 1469,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        927.11328125,
+        1123.25
+      ],
+      "energy": 9848,
+      "hp": 100,
+      "injury": 0,
+      "intent": {
+        "kind": "expedition",
+        "revision": 31,
+        "args": {
+          "target": "cave"
+        }
+      },
+      "blocked": "",
+      "reason": "沿北門實走到林緣",
+      "bag": {
+        "id": "bag.leader",
+        "items": {
+          "ration": 2
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        1190,
+        1070
+      ],
+      "energy": 9879,
+      "hp": 90,
+      "injury": 0,
+      "activity": {
+        "id": "activity.29468",
+        "actor": "child",
+        "kind": "paired",
+        "partner": "shen",
+        "session": "activity.29465",
+        "args": {},
+        "progress": 0,
+        "phase": "paired",
+        "revision": 0,
+        "started": 117509
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        903.12109375,
+        1123.30078125
+      ],
+      "energy": 9936,
+      "hp": 100,
+      "injury": 0,
+      "intent": {
+        "kind": "expedition",
+        "revision": 12,
+        "args": {
+          "target": "cave"
+        }
+      },
+      "blocked": "",
+      "reason": "沿北門實走到林緣",
+      "bag": {
+        "id": "bag.amu",
+        "items": {
+          "ration": 2
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        909.6015625,
+        930.6953125
+      ],
+      "energy": 10000,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.29646",
+        "actor": "lin",
+        "kind": "talk",
+        "args": {
+          "target": "amu"
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 117625,
+        "units": 0,
+        "blocked": "對方正在忙，可先叫停再邀"
+      },
+      "intent": null,
+      "blocked": "對方正在忙，可先叫停再邀",
+      "reason": "自由時段：與同門交談（24；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.lin",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        1170,
+        1070
+      ],
+      "energy": 9898,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.29465",
+        "actor": "shen",
+        "kind": "talk",
+        "args": {
+          "target": "child"
+        },
+        "phase": "approach",
+        "progress": 71,
+        "revision": 0,
+        "started": 117509,
+        "units": 0,
+        "partner": "child",
+        "session": "activity.29465",
+        "pos": [
+          1170,
+          1070
+        ],
+        "otherPos": [
+          1190,
+          1070
+        ],
+        "checked": "hall.greet",
+        "destination": "hall.greet",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "自由時段：與同門交談（25；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.shen",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 30,
+        "veg": 22,
+        "herb": 2,
+        "ration": 2
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 13
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 22
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": {
+    "id": "expedition.29334",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "target": "cave",
+    "phase": "outbound",
+    "started": 117428,
+    "packed": [
+      "amu",
+      "leader"
+    ],
+    "seen": [],
+    "foodTaken": 0,
+    "reservedVisitor": false,
+    "report": null,
+    "returnReason": null,
+    "segment": "forest"
+  },
+  "drill": {
+    "id": "drill.8498",
+    "config": "A",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 100337,
+    "nextWave": null
+  }
+}

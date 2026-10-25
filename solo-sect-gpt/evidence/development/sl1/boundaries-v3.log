@@ -1,0 +1,19 @@
+✔ A03/A06 atomic bundle rollback retains FIFO; physical capacity excludes new same-tick deposits (52.94525ms)
+✔ A03 completion IDs and duplicate commands never pay twice (1.446ms)
+✔ A11/A31 shared practice recovers physically, preserves whole units, roundtrips and cancellation clears both (3264.012041ms)
+✔ A12 four adults queue finite social sessions on shared physical slots (1106.970125ms)
+✔ A19 exact pair changes only punch skill: deep windup/recover remain finite and shorter (1.281792ms)
+✔ A21 finite ecology IDs and retired wildlife never respawn on save/reload (3789.116458ms)
+✔ A27 forced far, blocked LOS, late and interrupted observation all have finite cost and failure (67.188042ms)
+✔ A29 all five identities share young/mature exclusivity and principal cannot be duplicated (112.110667ms)
+✔ A33 finite cave cargo tracks real delivery once, ordinary food consumption and later transfers (0.818666ms)
+✔ A37 semantic corruptions are rejected with recomputed checksum and unchanged source (33.883083ms)
+✔ A38 disabled/quota/corrupted pending storage preserves all foreign keys and valid slot (27.825917ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8582.609875

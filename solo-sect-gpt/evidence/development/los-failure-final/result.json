@@ -1,0 +1,250 @@
+{
+  "layer": "U",
+  "status": "checkpoint",
+  "error": null,
+  "errors": [],
+  "tick": 26858,
+  "commands": [
+    {
+      "type": "goals",
+      "water": 6,
+      "meal": 16,
+      "id": "ui.1",
+      "tick": 19,
+      "seq": 1,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "dorm",
+      "id": "ui.2",
+      "tick": 31,
+      "seq": 2,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "hall",
+      "id": "ui.3",
+      "tick": 4604,
+      "seq": 3,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "train",
+      "args": {},
+      "id": "ui.4",
+      "tick": 8213,
+      "seq": 4,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "yard",
+      "id": "ui.5",
+      "tick": 9742,
+      "seq": 5,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "quiet",
+      "id": "ui.6",
+      "tick": 13375,
+      "seq": 6,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.7",
+      "tick": 19927,
+      "seq": 7,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "leader",
+      "id": "ui.8",
+      "tick": 21634,
+      "seq": 8,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "amu",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.9",
+      "tick": 21642,
+      "seq": 9,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "amu",
+      "id": "ui.10",
+      "tick": 21648,
+      "seq": 10,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "story",
+      "actor": "leader",
+      "node": "linghu.1",
+      "id": "ui.11",
+      "tick": 21660,
+      "seq": 11,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "story",
+      "actor": "leader",
+      "node": "linghu.2",
+      "id": "ui.12",
+      "tick": 22308,
+      "seq": 12,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "leader",
+      "id": "ui.13",
+      "tick": 23453,
+      "seq": 13,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "auto",
+      "actor": "leader",
+      "value": false,
+      "id": "ui.14",
+      "tick": 23475,
+      "seq": 14,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "amu",
+      "id": "ui.15",
+      "tick": 23483,
+      "seq": 15,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "auto",
+      "actor": "amu",
+      "value": false,
+      "id": "ui.16",
+      "tick": 23491,
+      "seq": 16,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "move",
+      "args": {
+        "pos": [
+          370,
+          880
+        ]
+      },
+      "id": "ui.17",
+      "tick": 26123,
+      "seq": 17,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "leader",
+      "id": "ui.18",
+      "tick": 26480,
+      "seq": 18,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "amu",
+      "kind": "move",
+      "args": {
+        "pos": [
+          390,
+          880
+        ]
+      },
+      "id": "ui.19",
+      "tick": 26480,
+      "seq": 19,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "amu",
+      "id": "ui.20",
+      "tick": 26823,
+      "seq": 20,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "attack",
+      "actor": "leader",
+      "move": "intercept",
+      "target": "amu",
+      "id": "ui.21",
+      "tick": 26823,
+      "seq": 21,
+      "result": {
+        "ok": true
+      }
+    }
+  ]
+}

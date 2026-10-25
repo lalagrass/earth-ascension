@@ -1,0 +1,13 @@
+{"label":"import normal checkpoint","wall":"2026-10-25T15:51:08.445Z","tick":173302,"source":"/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/evidence/development/operations-final/separated-history-preserved.save.json"}
+{"label":"actual water delivery 0","wall":"2026-10-25T15:51:56.384Z","tick":177119}
+{"label":"actual water delivery 1","wall":"2026-10-25T15:52:08.327Z","tick":178076}
+{"label":"actual water delivery 2","wall":"2026-10-25T15:52:20.139Z","tick":179020}
+{"label":"actual water delivery 3","wall":"2026-10-25T15:52:32.437Z","tick":180000}
+{"label":"actual water delivery 4","wall":"2026-10-25T15:52:44.373Z","tick":180960}
+{"label":"actual water delivery 5","wall":"2026-10-25T15:52:54.992Z","tick":181809}
+{"label":"full vat visible refusal","wall":"2026-10-25T15:52:55.646Z","tick":181857}
+{"label":"vat-full-refusal","wall":"2026-10-25T15:52:57.002Z","tick":181869}
+{"label":"tea physically frees capacity and arrives at store","wall":"2026-10-25T15:53:04.500Z","tick":182438}
+{"label":"same-world retry succeeds","wall":"2026-10-25T15:53:43.758Z","tick":185598}
+{"label":"water-recovery-complete","wall":"2026-10-25T15:53:45.251Z","tick":185615}
+{"label":"passed full vat visible reason and physical recovery","wall":"2026-10-25T15:53:45.497Z","tick":185615}

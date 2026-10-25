@@ -1,0 +1,6 @@
+import normal checkpoint
+Lin physically reached west bridge waypoint
+returning party owns bridge westbound
+Error: eastward canvas command failed {"type":"task","actor":"lin","kind":"move","args":{"pos":[2010,475]},"id":"ui.63","tick":111466,"seq":63,"result":{"ok":false,"reason":"目標無路可達／水域或封閉邊界","reasonCode":"task.rejected"}}
+    at file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/bridge-opposed.mjs:2:1486
+interrupted

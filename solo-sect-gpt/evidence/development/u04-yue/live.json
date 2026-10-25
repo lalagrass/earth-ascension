@@ -1,0 +1,154 @@
+{
+  "tick": 40362,
+  "status": {
+    "paused": true,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 5522,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1145.01171875,
+        1073.0234375
+      ],
+      "energy": 7452,
+      "hp": 47,
+      "injury": 24,
+      "activity": {
+        "id": "activity.14645",
+        "actor": "leader",
+        "kind": "gather",
+        "args": {
+          "item": "veg"
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 16,
+        "started": 40344,
+        "units": 0,
+        "checked": "store.drop",
+        "destination": "store.drop"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "補菜以便供餐（80；勤勉1／顧人0）",
+      "bag": {
+        "id": "bag.leader",
+        "items": {
+          "ration": 1
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        948,
+        1100
+      ],
+      "energy": 9894,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        1210,
+        1090
+      ],
+      "energy": 5651,
+      "hp": 100,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "此人已停工；仍可自理",
+      "bag": {
+        "id": "bag.amu",
+        "items": {
+          "ration": 1
+        },
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 30,
+        "herb": 2,
+        "ration": 4
+      },
+      "capacity": 24
+    },
+    "vat": {
+      "id": "vat",
+      "items": {},
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 4
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": {
+    "id": "expedition.2242",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "target": "cave",
+    "phase": "returned",
+    "started": 27612,
+    "packed": [
+      "leader",
+      "amu"
+    ],
+    "seen": [
+      "forest",
+      "camp",
+      "valley",
+      "cave"
+    ],
+    "foodTaken": 4,
+    "reservedVisitor": false,
+    "report": "report.14140",
+    "returnReason": null,
+    "segment": "cave",
+    "usedArts": {
+      "leader": [
+        "punch"
+      ]
+    },
+    "restUntil": 37550,
+    "rested": true,
+    "talkUntil": 38168,
+    "permission": true,
+    "pendingAuto": null,
+    "choice": "food",
+    "collectGoal": 4,
+    "collectActor": 2,
+    "collectParking": false,
+    "collectRouted": false,
+    "unloaded": true
+  },
+  "drill": null
+}

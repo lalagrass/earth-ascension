@@ -1,0 +1,43 @@
+{
+  "caseId": "A15",
+  "status": "passed",
+  "commit": "673889cb5d495b25008d5f47e709a86f36968627",
+  "sourceCommit": "673889cb5d495b25008d5f47e709a86f36968627",
+  "rulesVersion": "chapter1-1",
+  "mapVersion": "gpt-world-1",
+  "suiteSeeds": [
+    11,
+    29,
+    47,
+    71,
+    101
+  ],
+  "seedContext": "See linked trace/save/result; model fixtures default to11 unless their test states otherwise.",
+  "evidenceReuse": "Long UI journeys span development versions; earlier unchanged paths are reused explicitly, with affected-flow revalidation linked.",
+  "environment": "Node24.13 / Chrome156 / macOS26.2 / M2 8GiB",
+  "expected": "docs/ACCEPTANCE.md A15",
+  "operations": "Exact model fixtures and linked normal UI command/event traces; saves retain actual tick and speed context.",
+  "layers": [
+    "M",
+    "U"
+  ],
+  "actual": "8常住＋2訪客、候位與兩日模型",
+  "evidence": [
+    "test/core.test.mjs",
+    "test/integration/rules.test.mjs",
+    "test/integration/boundaries.test.mjs",
+    "test/integration/bridge-policy.test.mjs",
+    "test/integration/classes.test.mjs",
+    "test/integration/persistence-load.test.mjs",
+    "test/integration/production.test.mjs",
+    "test/integration/final-contract.test.mjs",
+    "evidence/development/sl1/release-regression.log",
+    "evidence/development/sl1/final-contract-verified.log",
+    "evidence/development/sl1/partial-promise.log",
+    "evidence/development/sl1/equipment-guard.log",
+    "evidence/development/u43-load-current/normal-eight-plus-two.save.json",
+    "evidence/development/performance-release/performance.json"
+  ],
+  "author": "GPT / Codex; author self-review",
+  "limits": []
+}

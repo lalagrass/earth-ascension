@@ -1,0 +1,231 @@
+{
+  "tick": 110472,
+  "status": {
+    "paused": true,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 1,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        2214,
+        160
+      ],
+      "energy": 9785,
+      "hp": 100,
+      "injury": 0,
+      "intent": {
+        "kind": "expedition",
+        "revision": 32,
+        "args": {
+          "target": "cave"
+        }
+      },
+      "blocked": "",
+      "reason": "沿北門實走到林緣",
+      "bag": {
+        "id": "bag.leader",
+        "items": {
+          "ration": 1
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        948,
+        1100
+      ],
+      "energy": 9961,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        2200,
+        150
+      ],
+      "energy": 9777,
+      "hp": 100,
+      "injury": 0,
+      "intent": {
+        "kind": "expedition",
+        "revision": 13,
+        "args": {
+          "target": "cave"
+        }
+      },
+      "blocked": "",
+      "reason": "沿北門實走到林緣",
+      "bag": {
+        "id": "bag.amu",
+        "items": {
+          "ration": 1
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        799.39453125,
+        1115.07421875
+      ],
+      "energy": 8014,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.18092",
+        "actor": "lin",
+        "kind": "cook",
+        "args": {
+          "recipe": "meal"
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 110445,
+        "units": 0,
+        "blocked": "灶上有他人正在烹調"
+      },
+      "intent": null,
+      "blocked": "灶上有他人正在烹調",
+      "reason": "缺餐備糧（64；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.lin",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        760.80078125,
+        1260
+      ],
+      "energy": 9480,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.17125",
+        "actor": "shen",
+        "kind": "cook",
+        "args": {
+          "recipe": "meal"
+        },
+        "phase": "perform",
+        "progress": 207,
+        "revision": 0,
+        "started": 109849,
+        "units": 0,
+        "fetch": [],
+        "checked": "kitchen.cook",
+        "destination": "kitchen.cook",
+        "blocked": "",
+        "committed": true
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "缺餐備糧（63；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.shen",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 30,
+        "veg": 16,
+        "herb": 2,
+        "ration": 2
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 7
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 14
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": {
+    "id": "expedition.14647",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "target": "cave",
+    "phase": "cave",
+    "started": 108249,
+    "packed": [
+      "amu",
+      "leader"
+    ],
+    "seen": [
+      "forest",
+      "camp",
+      "valley",
+      "cave"
+    ],
+    "foodTaken": 0,
+    "reservedVisitor": false,
+    "report": null,
+    "returnReason": null,
+    "segment": "cave",
+    "restUntil": 109690,
+    "rested": true,
+    "talkUntil": 110288,
+    "permission": true
+  },
+  "drill": {
+    "id": "drill.8498",
+    "config": "A",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 100337,
+    "nextWave": null
+  }
+}

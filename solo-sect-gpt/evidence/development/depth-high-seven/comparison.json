@@ -1,0 +1,1438 @@
+{
+  "layer": "U",
+  "controlled": "same template stats / equipment / empty bags / recovery before config A",
+  "remainingDifference": "leg strength grows during real play; F and contexts are acquired by actual practice and combat; this is not an exact single-variable fixture",
+  "comparisons": [
+    {
+      "label": "before-normal-practice",
+      "start": 14967,
+      "end": 15736,
+      "config": "A",
+      "before": {
+        "leader": {
+          "stats": [
+            3,
+            3,
+            3,
+            7,
+            4
+          ],
+          "energy": 9985,
+          "hp": 95,
+          "bag": {},
+          "weapon": "punch",
+          "skill": {
+            "U": 5,
+            "F": 0,
+            "I": 0,
+            "contexts": [],
+            "practice": 0,
+            "sources": []
+          },
+          "distance": 2332533
+        },
+        "amu": {
+          "stats": [
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "energy": 9944,
+          "hp": 100,
+          "bag": {},
+          "weapon": "punch",
+          "skill": {
+            "U": 5,
+            "F": 15,
+            "I": 0,
+            "contexts": [],
+            "practice": 5,
+            "sources": [
+              {
+                "kind": "train",
+                "tick": 10948,
+                "activity": "activity.457"
+              },
+              {
+                "kind": "train",
+                "tick": 11188,
+                "activity": "activity.457"
+              },
+              {
+                "kind": "train",
+                "tick": 11428,
+                "activity": "activity.457"
+              },
+              {
+                "kind": "train",
+                "tick": 11668,
+                "activity": "activity.457"
+              },
+              {
+                "kind": "train",
+                "tick": 11908,
+                "activity": "activity.457"
+              }
+            ]
+          },
+          "distance": 2857104
+        }
+      },
+      "status": "completed",
+      "events": [
+        {
+          "id": "event.777",
+          "tick": 15225,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.1"
+          ],
+          "action": "action.776",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.778",
+          "tick": 15240,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.1"
+          ],
+          "action": "action.776",
+          "move": "punch",
+          "damage": 8,
+          "safe": true
+        },
+        {
+          "id": "event.780",
+          "tick": 15241,
+          "type": "action-start",
+          "actors": [
+            "training.2",
+            "amu"
+          ],
+          "action": "action.779",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.783",
+          "tick": 15243,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.1"
+          ],
+          "action": "action.782",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.786",
+          "tick": 15256,
+          "type": "hit",
+          "actors": [
+            "training.2",
+            "amu"
+          ],
+          "action": "action.779",
+          "move": "punch",
+          "damage": 8,
+          "safe": true
+        },
+        {
+          "id": "event.788",
+          "tick": 15257,
+          "type": "action-start",
+          "actors": [
+            "training.1",
+            "amu"
+          ],
+          "action": "action.787",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.789",
+          "tick": 15258,
+          "type": "hit",
+          "actors": [
+            "leader",
+            "training.1"
+          ],
+          "action": "action.782",
+          "move": "punch",
+          "damage": 7,
+          "safe": true
+        },
+        {
+          "id": "event.793",
+          "tick": 15260,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.1"
+          ],
+          "action": "action.792",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.799",
+          "tick": 15273,
+          "type": "action-start",
+          "actors": [
+            "training.1",
+            "amu"
+          ],
+          "action": "action.798",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.801",
+          "tick": 15273,
+          "type": "action-start",
+          "actors": [
+            "training.2",
+            "amu"
+          ],
+          "action": "action.800",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.804",
+          "tick": 15275,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.1"
+          ],
+          "action": "action.803",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.805",
+          "tick": 15275,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.1"
+          ],
+          "action": "action.792",
+          "move": "punch",
+          "damage": 5,
+          "safe": true
+        },
+        {
+          "id": "event.809",
+          "tick": 15288,
+          "type": "hit",
+          "actors": [
+            "training.2",
+            "amu"
+          ],
+          "action": "action.800",
+          "move": "punch",
+          "damage": 8,
+          "safe": true
+        },
+        {
+          "id": "event.812",
+          "tick": 15292,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.2"
+          ],
+          "action": "action.811",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.813",
+          "tick": 15292,
+          "type": "miss",
+          "actors": [
+            "leader"
+          ],
+          "action": "action.803",
+          "move": "punch"
+        },
+        {
+          "id": "event.821",
+          "tick": 15305,
+          "type": "action-start",
+          "actors": [
+            "training.2",
+            "amu"
+          ],
+          "action": "action.820",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.823",
+          "tick": 15307,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.2"
+          ],
+          "action": "action.811",
+          "move": "punch",
+          "damage": 8,
+          "safe": true
+        },
+        {
+          "id": "event.826",
+          "tick": 15322,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.2"
+          ],
+          "action": "action.825",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.828",
+          "tick": 15322,
+          "type": "action-start",
+          "actors": [
+            "training.2",
+            "amu"
+          ],
+          "action": "action.827",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.832",
+          "tick": 15324,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.2"
+          ],
+          "action": "action.831",
+          "move": "punch",
+          "wind": 12,
+          "recover": 10
+        },
+        {
+          "id": "event.834",
+          "tick": 15335,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.2"
+          ],
+          "action": "action.831",
+          "move": "punch",
+          "damage": 8,
+          "safe": true
+        },
+        {
+          "id": "event.835",
+          "tick": 15337,
+          "type": "hit",
+          "actors": [
+            "leader",
+            "training.2"
+          ],
+          "action": "action.825",
+          "move": "punch",
+          "damage": 4,
+          "safe": true
+        },
+        {
+          "id": "event.866",
+          "tick": 15570,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.3"
+          ],
+          "action": "action.865",
+          "move": "punch",
+          "wind": 12,
+          "recover": 10
+        },
+        {
+          "id": "event.868",
+          "tick": 15577,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.3"
+          ],
+          "action": "action.867",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.869",
+          "tick": 15581,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.3"
+          ],
+          "action": "action.865",
+          "move": "punch",
+          "damage": 8,
+          "safe": true
+        },
+        {
+          "id": "event.872",
+          "tick": 15592,
+          "type": "hit",
+          "actors": [
+            "leader",
+            "training.3"
+          ],
+          "action": "action.867",
+          "move": "punch",
+          "damage": 7,
+          "safe": true
+        },
+        {
+          "id": "event.875",
+          "tick": 15598,
+          "type": "action-start",
+          "actors": [
+            "training.4",
+            "amu"
+          ],
+          "action": "action.874",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.877",
+          "tick": 15601,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.3"
+          ],
+          "action": "action.876",
+          "move": "punch",
+          "wind": 12,
+          "recover": 10
+        },
+        {
+          "id": "event.881",
+          "tick": 15609,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.3"
+          ],
+          "action": "action.880",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.882",
+          "tick": 15612,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.3"
+          ],
+          "action": "action.876",
+          "move": "punch",
+          "damage": 5,
+          "safe": true
+        },
+        {
+          "id": "event.884",
+          "tick": 15613,
+          "type": "hit",
+          "actors": [
+            "training.4",
+            "amu"
+          ],
+          "action": "action.874",
+          "move": "punch",
+          "damage": 8,
+          "safe": true
+        },
+        {
+          "id": "event.886",
+          "tick": 15624,
+          "type": "hit",
+          "actors": [
+            "leader",
+            "training.4"
+          ],
+          "action": "action.880",
+          "move": "punch",
+          "damage": 7,
+          "safe": true
+        },
+        {
+          "id": "event.888",
+          "tick": 15625,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.4"
+          ],
+          "action": "action.887",
+          "move": "punch",
+          "wind": 12,
+          "recover": 10
+        },
+        {
+          "id": "event.892",
+          "tick": 15630,
+          "type": "action-start",
+          "actors": [
+            "training.4",
+            "amu"
+          ],
+          "action": "action.891",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.893",
+          "tick": 15636,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.4"
+          ],
+          "action": "action.887",
+          "move": "punch",
+          "damage": 8,
+          "safe": true
+        },
+        {
+          "id": "event.899",
+          "tick": 15649,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.4"
+          ],
+          "action": "action.898",
+          "move": "punch",
+          "wind": 12,
+          "recover": 10
+        },
+        {
+          "id": "event.902",
+          "tick": 15654,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.4"
+          ],
+          "action": "action.901",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.903",
+          "tick": 15660,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.4"
+          ],
+          "action": "action.898",
+          "move": "punch",
+          "damage": 5,
+          "safe": true
+        }
+      ]
+    },
+    {
+      "label": "after-normal-practice",
+      "start": 32037,
+      "end": 32793,
+      "config": "A",
+      "before": {
+        "leader": {
+          "stats": [
+            3,
+            3,
+            3,
+            7,
+            4
+          ],
+          "energy": 9995,
+          "hp": 95,
+          "bag": {},
+          "weapon": "punch",
+          "skill": {
+            "U": 5,
+            "F": 100,
+            "I": 10,
+            "contexts": [
+              "guard",
+              "protect"
+            ],
+            "practice": 34,
+            "sources": [
+              {
+                "kind": "guard",
+                "tick": 15258,
+                "source": "action.782"
+              },
+              {
+                "kind": "protect",
+                "tick": 15298,
+                "source": "action.782"
+              },
+              {
+                "kind": "train",
+                "tick": 20756,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 20996,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 21236,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 21476,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 21716,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 21956,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 22196,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 22436,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 22676,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 22916,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 23156,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 23396,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 23636,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 23876,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 24116,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 24356,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 24596,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 24836,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 25076,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 25316,
+                "activity": "activity.918"
+              },
+              {
+                "kind": "train",
+                "tick": 27083,
+                "activity": "activity.1864"
+              },
+              {
+                "kind": "train",
+                "tick": 27323,
+                "activity": "activity.1864"
+              },
+              {
+                "kind": "train",
+                "tick": 27563,
+                "activity": "activity.1864"
+              },
+              {
+                "kind": "train",
+                "tick": 27803,
+                "activity": "activity.1864"
+              },
+              {
+                "kind": "train",
+                "tick": 28043,
+                "activity": "activity.1864"
+              },
+              {
+                "kind": "train",
+                "tick": 28283,
+                "activity": "activity.1864"
+              },
+              {
+                "kind": "train",
+                "tick": 28523,
+                "activity": "activity.1864"
+              },
+              {
+                "kind": "train",
+                "tick": 28763,
+                "activity": "activity.1864"
+              },
+              {
+                "kind": "train",
+                "tick": 29003,
+                "activity": "activity.1864"
+              },
+              {
+                "kind": "train",
+                "tick": 29243,
+                "activity": "activity.1864"
+              },
+              {
+                "kind": "train",
+                "tick": 29483,
+                "activity": "activity.1864"
+              },
+              {
+                "kind": "train",
+                "tick": 29723,
+                "activity": "activity.1864"
+              },
+              {
+                "kind": "train",
+                "tick": 29963,
+                "activity": "activity.1864"
+              },
+              {
+                "kind": "train",
+                "tick": 30203,
+                "activity": "activity.1864"
+              }
+            ]
+          },
+          "distance": 2685057
+        },
+        "amu": {
+          "stats": [
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "energy": 9943,
+          "hp": 100,
+          "bag": {},
+          "weapon": "punch",
+          "skill": {
+            "U": 5,
+            "F": 100,
+            "I": 5,
+            "contexts": [
+              "guard"
+            ],
+            "practice": 45,
+            "sources": [
+              {
+                "kind": "train",
+                "tick": 10948,
+                "activity": "activity.457"
+              },
+              {
+                "kind": "train",
+                "tick": 11188,
+                "activity": "activity.457"
+              },
+              {
+                "kind": "train",
+                "tick": 11428,
+                "activity": "activity.457"
+              },
+              {
+                "kind": "train",
+                "tick": 11668,
+                "activity": "activity.457"
+              },
+              {
+                "kind": "train",
+                "tick": 11908,
+                "activity": "activity.457"
+              },
+              {
+                "kind": "guard",
+                "tick": 15258,
+                "source": "action.782"
+              },
+              {
+                "kind": "train",
+                "tick": 16116,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 16356,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 16596,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 16836,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 17076,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 17316,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 17556,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 17796,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 18036,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 18276,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 18516,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 18756,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 18996,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 19236,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 19476,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 19716,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 19956,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 20196,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 20436,
+                "activity": "activity.920"
+              },
+              {
+                "kind": "train",
+                "tick": 22294,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 22534,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 22774,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 23014,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 23254,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 23494,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 23734,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 23974,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 24214,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 24454,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 24694,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 24934,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 25174,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 25414,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 25654,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 25894,
+                "activity": "activity.1514"
+              },
+              {
+                "kind": "train",
+                "tick": 27914,
+                "activity": "activity.1939"
+              },
+              {
+                "kind": "train",
+                "tick": 28154,
+                "activity": "activity.1939"
+              },
+              {
+                "kind": "train",
+                "tick": 28394,
+                "activity": "activity.1939"
+              },
+              {
+                "kind": "train",
+                "tick": 28634,
+                "activity": "activity.1939"
+              },
+              {
+                "kind": "train",
+                "tick": 28874,
+                "activity": "activity.1939"
+              }
+            ]
+          },
+          "distance": 3368640
+        }
+      },
+      "status": "completed",
+      "events": [
+        {
+          "id": "event.2275",
+          "tick": 32288,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.1"
+          ],
+          "action": "action.2274",
+          "move": "punch",
+          "wind": 10,
+          "recover": 7
+        },
+        {
+          "id": "event.2276",
+          "tick": 32297,
+          "type": "hit",
+          "actors": [
+            "leader",
+            "training.1"
+          ],
+          "action": "action.2274",
+          "move": "punch",
+          "damage": 7,
+          "safe": true
+        },
+        {
+          "id": "event.2281",
+          "tick": 32307,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.1"
+          ],
+          "action": "action.2280",
+          "move": "punch",
+          "wind": 12,
+          "recover": 10
+        },
+        {
+          "id": "event.2283",
+          "tick": 32307,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.1"
+          ],
+          "action": "action.2282",
+          "move": "punch",
+          "wind": 10,
+          "recover": 7
+        },
+        {
+          "id": "event.2284",
+          "tick": 32318,
+          "type": "miss",
+          "actors": [
+            "leader"
+          ],
+          "action": "action.2282",
+          "move": "punch"
+        },
+        {
+          "id": "event.2285",
+          "tick": 32318,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.1"
+          ],
+          "action": "action.2280",
+          "move": "punch",
+          "damage": 8,
+          "safe": true
+        },
+        {
+          "id": "event.2291",
+          "tick": 32335,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.1"
+          ],
+          "action": "action.2290",
+          "move": "punch",
+          "wind": 12,
+          "recover": 10
+        },
+        {
+          "id": "event.2293",
+          "tick": 32337,
+          "type": "action-start",
+          "actors": [
+            "training.2",
+            "amu"
+          ],
+          "action": "action.2292",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.2296",
+          "tick": 32346,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.1"
+          ],
+          "action": "action.2290",
+          "move": "punch",
+          "damage": 5,
+          "safe": true
+        },
+        {
+          "id": "event.2298",
+          "tick": 32352,
+          "type": "hit",
+          "actors": [
+            "training.2",
+            "amu"
+          ],
+          "action": "action.2292",
+          "move": "punch",
+          "damage": 8,
+          "safe": true
+        },
+        {
+          "id": "event.2300",
+          "tick": 32353,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.2"
+          ],
+          "action": "action.2299",
+          "move": "punch",
+          "wind": 10,
+          "recover": 7
+        },
+        {
+          "id": "event.2303",
+          "tick": 32359,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.2"
+          ],
+          "action": "action.2302",
+          "move": "punch",
+          "wind": 12,
+          "recover": 10
+        },
+        {
+          "id": "event.2304",
+          "tick": 32362,
+          "type": "hit",
+          "actors": [
+            "leader",
+            "training.2"
+          ],
+          "action": "action.2299",
+          "move": "punch",
+          "damage": 7,
+          "safe": true
+        },
+        {
+          "id": "event.2309",
+          "tick": 32369,
+          "type": "action-start",
+          "actors": [
+            "training.2",
+            "amu"
+          ],
+          "action": "action.2308",
+          "move": "punch",
+          "wind": 16,
+          "recover": 14
+        },
+        {
+          "id": "event.2310",
+          "tick": 32370,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.2"
+          ],
+          "action": "action.2302",
+          "move": "punch",
+          "damage": 8,
+          "safe": true
+        },
+        {
+          "id": "event.2313",
+          "tick": 32372,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.2"
+          ],
+          "action": "action.2312",
+          "move": "punch",
+          "wind": 10,
+          "recover": 7
+        },
+        {
+          "id": "event.2314",
+          "tick": 32381,
+          "type": "hit",
+          "actors": [
+            "leader",
+            "training.2"
+          ],
+          "action": "action.2312",
+          "move": "punch",
+          "damage": 5,
+          "safe": true
+        },
+        {
+          "id": "event.2326",
+          "tick": 32635,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.3"
+          ],
+          "action": "action.2325",
+          "move": "punch",
+          "wind": 10,
+          "recover": 7
+        },
+        {
+          "id": "event.2328",
+          "tick": 32642,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.3"
+          ],
+          "action": "action.2327",
+          "move": "punch",
+          "wind": 12,
+          "recover": 10
+        },
+        {
+          "id": "event.2329",
+          "tick": 32644,
+          "type": "hit",
+          "actors": [
+            "leader",
+            "training.3"
+          ],
+          "action": "action.2325",
+          "move": "punch",
+          "damage": 7,
+          "safe": true
+        },
+        {
+          "id": "event.2331",
+          "tick": 32653,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.3"
+          ],
+          "action": "action.2327",
+          "move": "punch",
+          "damage": 8,
+          "safe": true
+        },
+        {
+          "id": "event.2333",
+          "tick": 32654,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.3"
+          ],
+          "action": "action.2332",
+          "move": "punch",
+          "wind": 10,
+          "recover": 7
+        },
+        {
+          "id": "event.2334",
+          "tick": 32663,
+          "type": "hit",
+          "actors": [
+            "leader",
+            "training.3"
+          ],
+          "action": "action.2332",
+          "move": "punch",
+          "damage": 5,
+          "safe": true
+        },
+        {
+          "id": "event.2338",
+          "tick": 32672,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.4"
+          ],
+          "action": "action.2337",
+          "move": "punch",
+          "wind": 12,
+          "recover": 10
+        },
+        {
+          "id": "event.2340",
+          "tick": 32683,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.4"
+          ],
+          "action": "action.2337",
+          "move": "punch",
+          "damage": 8,
+          "safe": true
+        },
+        {
+          "id": "event.2342",
+          "tick": 32687,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.4"
+          ],
+          "action": "action.2341",
+          "move": "punch",
+          "wind": 10,
+          "recover": 7
+        },
+        {
+          "id": "event.2345",
+          "tick": 32696,
+          "type": "action-start",
+          "actors": [
+            "amu",
+            "training.4"
+          ],
+          "action": "action.2344",
+          "move": "punch",
+          "wind": 12,
+          "recover": 10
+        },
+        {
+          "id": "event.2346",
+          "tick": 32696,
+          "type": "hit",
+          "actors": [
+            "leader",
+            "training.4"
+          ],
+          "action": "action.2341",
+          "move": "punch",
+          "damage": 7,
+          "safe": true
+        },
+        {
+          "id": "event.2349",
+          "tick": 32706,
+          "type": "action-start",
+          "actors": [
+            "leader",
+            "training.4"
+          ],
+          "action": "action.2348",
+          "move": "punch",
+          "wind": 10,
+          "recover": 7
+        },
+        {
+          "id": "event.2350",
+          "tick": 32707,
+          "type": "hit",
+          "actors": [
+            "amu",
+            "training.4"
+          ],
+          "action": "action.2344",
+          "move": "punch",
+          "damage": 5,
+          "safe": true
+        }
+      ]
+    }
+  ]
+}

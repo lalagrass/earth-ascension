@@ -1,0 +1,111 @@
+{
+  "tick": 26823,
+  "status": {
+    "paused": true,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 515,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        370,
+        880
+      ],
+      "energy": 9508,
+      "hp": 95,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "此人已停工；仍可自理",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        996,
+        1100
+      ],
+      "energy": 9932,
+      "hp": 90,
+      "injury": 0,
+      "activity": {
+        "id": "activity.2300",
+        "actor": "child",
+        "kind": "move",
+        "args": {
+          "pos": [
+            996,
+            1100
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 0,
+        "started": 26823,
+        "units": 0
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "小禾在院內散步、等家人",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        390,
+        880
+      ],
+      "energy": 9616,
+      "hp": 100,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "玩家停工",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 27,
+        "veg": 4,
+        "herb": 2
+      },
+      "capacity": 24
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 2
+      },
+      "capacity": 8
+    },
+    "table": {
+      "id": "table",
+      "items": {},
+      "capacity": 96
+    }
+  },
+  "expedition": null,
+  "drill": null
+}

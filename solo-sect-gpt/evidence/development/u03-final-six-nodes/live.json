@@ -1,0 +1,253 @@
+{
+  "tick": 172434,
+  "status": {
+    "paused": false,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 2399,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1099.375,
+        1145.234375
+      ],
+      "energy": 6619,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.41667",
+        "actor": "leader",
+        "kind": "train",
+        "args": {
+          "art": "punch",
+          "units": 5
+        },
+        "phase": "init",
+        "progress": 51,
+        "revision": 43,
+        "started": 172144,
+        "units": 1,
+        "station": "yard.1",
+        "checked": "yard.1",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "物資已達標，練功與自由（20；勤勉2／顧人2）",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        972,
+        1100
+      ],
+      "energy": 9907,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        1099.90234375,
+        1210.01953125
+      ],
+      "energy": 6368,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.41037",
+        "actor": "amu",
+        "kind": "train",
+        "args": {
+          "art": "punch",
+          "units": 5
+        },
+        "phase": "init",
+        "progress": 199,
+        "revision": 16,
+        "started": 171120,
+        "units": 4,
+        "station": "yard.3",
+        "checked": "yard.3",
+        "destination": "yard.3",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "物資已達標，練功與自由（20；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        980.1171875,
+        1180.1171875
+      ],
+      "energy": 9996,
+      "hp": 100,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "此人已停工；仍可自理",
+      "bag": {
+        "id": "bag.lin",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        1190,
+        1145
+      ],
+      "energy": 7182,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.41510",
+        "actor": "shen",
+        "kind": "train",
+        "args": {
+          "art": "punch",
+          "units": 5
+        },
+        "phase": "init",
+        "progress": 63,
+        "revision": 0,
+        "started": 171892,
+        "units": 2,
+        "station": "yard.2",
+        "checked": "yard.2",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "物資已達標，練功與自由（20；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.shen",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 9,
+        "veg": 12,
+        "herb": 2,
+        "wood": 6,
+        "ration": 4
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 7
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 19
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": {
+    "id": "expedition.10761",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "target": "cave",
+    "phase": "returned",
+    "started": 120244,
+    "packed": [
+      "amu",
+      "leader"
+    ],
+    "seen": [
+      "forest",
+      "camp",
+      "valley",
+      "cave"
+    ],
+    "foodTaken": 2,
+    "reservedVisitor": false,
+    "report": "report.12993",
+    "returnReason": null,
+    "segment": "cave",
+    "usedArts": {
+      "leader": [
+        "punch"
+      ],
+      "amu": [
+        "punch"
+      ]
+    },
+    "restUntil": 121416,
+    "rested": true,
+    "talkUntil": 122001,
+    "permission": true,
+    "pendingAuto": null,
+    "choice": "rescue",
+    "collectGoal": 2,
+    "collectActor": 2,
+    "collectParking": false,
+    "helper": "amu",
+    "collectRouted": false,
+    "attachTicks": 160,
+    "escortAttached": true
+  },
+  "drill": {
+    "id": "drill.30145",
+    "config": "A",
+    "actors": [
+      "leader",
+      "amu"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 153226,
+    "nextWave": null
+  }
+}

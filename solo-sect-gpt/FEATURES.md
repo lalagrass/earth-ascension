@@ -1,24 +1,35 @@
-# 山居第一章：開發狀態（尚未完整交付）
+# 山居第一章：功能與驗收
 
-GPT / Codex，GPT-6.1 Sol / high；作者自校，非獨立 review。base dev `148cfbbb27e43475c66744d53c2451125a9111a0`，spec `0a2e9c393a982d3476da70513e04ac0bed552909`，分支 `codex/solo-sect-gpt`。只改本目錄；無 push／PR／merge／部署。
+GPT / Codex，GPT-6.1 Sol / high；作者自校，非獨立 review。base dev `148cfbbb27e43475c66744d53c2451125a9111a0`，spec `0a2e9c393a982d3476da70513e04ac0bed552909`，分支 `codex/solo-sect-gpt`。修改僅在本目錄，沒有 push／PR／merge／部署。
 
-規劃與規格見 docs/；本表區分接線及實際證據，不把主線立匾等同完整第一版。最終矩陣與完整交付標記仍未成立。
+第一版軟體功能已完成。正式完成標記與 artifact commit 見 `handoff/development.done.json`；44案例、16故事節點與SL0–SL7出口由 `evidence/development/release/build_index.py` 生成版本索引，不能把單次立匾當全功能驗收。
 
-| 功能 | 規劃／展示／接線／驗證 | 實際證據與界線 |
+| 功能 | 已實作及實際驗證 | 證據 |
 |---|---|---|
-| 單一世界、20Hz、固定seed、三人起步 | 已接線；模型及正常UI局部已驗 | src/state.mjs、world.mjs；test/core.test.mjs；evidence/development/sl0、sl1。render不寫World |
-| 採集→手持→搬運→十地塊分階施工／真床 | 正常新局已驗建設主線 | journey-01完整建設命令；S2存檔由正常UI取得。後續幾何與人流修補持續重驗 |
-| 菜藥、配方、在製品、缺餐／精力自理 | 已接線；主線供餐與取消反例已驗部分 | sl1整合測試；journey-02失敗保留，修補後journey-03／04續玩。尚須完整農作與兩日負載矩陣 |
-| 阿木→外門→內門；義學林青／慕名沈禾 | 正常UI已驗 | journey-03／04／05，同ID、真授課／接待／30秒考核；沈禾缺未預約供餐拒絕後正常恢復 |
-| 拳／掌／棍／劍／截擊／短步 | 全部已接線；部分M已驗，完整U進行中 | 基礎拳正常練習F90、演武真攻防取得I10；截擊成功／失敗M；其餘正常習得／裝備待逐項UI驗證 |
-| 同圖演武、森林→溪谷→窄橋→古洞→實走返院 | 正常UI主線已驗；反例擴驗中 | journey-04兩波A；journey-05真旅人扶助返院。B、三人、橋互讓與救援正常UI仍未完成 |
-| 自創／三模板／四題問卷 | 已接線；自創主線已驗 | seed11主線；seed29另一性向新局在跑。三經典主角替代節點尚待U04 |
-| 成年雙意願／家庭／相鄰床位；小禾親情 | 模型與正常UI部分已驗 | u03-family-legends-rerun已取得拒絕／接受／真走同房各床及睡眠；小禾成人事件模型拒絕。家庭後續／全部人物支線仍在驗 |
-| 五名俠各二節點、young／mature互斥 | 已接線；M及U逐項進行中 | Hong／Linghu等節點不靠按鈕直接完成；未完成者不標已驗 |
-| 古洞救人／保糧分歧、立匾回顧 | 救人主線正常UI已到立匾；另分歧M已驗 | journey-05正常存檔可續玩；u02-seed29完整另一新局在跑。第一次完成視窗截圖被同名checkpoint覆蓋，已記錄並修測試檔名，不冒稱有該畫面 |
-| 完整JSON／手動／auto3／匯出入／原子壞檔保護 | 已接線；M及UI部分已驗 | 途中JSON續跑hash、壞檔／quota模型；正常UI跨開局存檔續玩。尚需完整A35–38狀態矩陣與UI反例 |
-| 原創分層程序場景／動作／WebAudio | 已接線；視覺自校進行中 | assets/PROVENANCE.md與manifest（仍待最終hash／視覺核對）；無外部圖音複製；聽感未驗 |
+| 單一World、20Hz、固定seed、三人起步 | M與正常UI；1/2/4批次、集合反序、每千tick hash、存讀及view不改規則；長幀保留經過時間 | core／determinism測試；save-controls-release、clock-recovery-final |
+| 真採集→手持→搬交→分階施工 | 10地塊；最多2施工位；材料／工量與在途取消不回空氣倉 | material-cancel-final；journey-01；交易／幾何M |
+| 菜藥／水／餐／乾糧／茶 | 播種、實搬水、成長、收成地包再入倉；配方在製／出鍋批次／手持搬交及取消續做；滿缸可恢復 | operations-final、water-recovery-final；production測試 |
+| 自主作息／主次職務／貢獻 | 睡眠、用餐、低精力自理、有效意圖續做、修行窗口及傷病／缺料豁免；內門危機幫工 | boundaries A10；正常8＋2長局；u04-guo-resume |
+| 阿木／林青／沈禾 | 原ID、原包裹與關係；共作入門、實走義學、接待、供餐拒絕後恢復與真30秒考核 | journey-03／04／05 |
+| 一師四生／雙人交流 | 固定不同站位、整組預約；退出者不取收益、老師取消清全員；完整課程有學理來源 | classroom-final、classes測試 |
+| 家庭及女孩親情 | 成年雙方意願、拒絕分叉、兩張相鄰床真入房；解除保前史與其他人的床；女孩不勞作／戰鬥／戀愛 | u03-family-legends-rerun、operations-final；模型邊界 |
+| 五門六動作／實際器械 | 拳、掌、掃棍、刺劍、觀察截擊、短步；三階段／LOS／一次命中；棍劍需知識及真裝備 | presentation、presentation-continue；equipment-guard、combat測試 |
+| 廣度／深修／觀察 | U/F/I來源不同；低悟2、高悟7都經正常練習與攻防深修；九劍成功、短起手、佯攻失敗可達 | u04-guo-resume、depth-high-seven、nine-lesson-fixed |
+| 甲乙兩波演武 | 有限4個訓練ID、真入場／退場、安全HP下限；同moves與幾何 | journey-04、u43-load-current；M甲乙／配對 |
+| 有限自然生態 | 三鼠兩豬同ID；受傷回棲地休養一次，不反覆刷驅離事件、不由出征重生 | ecology／replay M；正常森林旅程 |
+| 連續外出／單人橋 | 1–3人真領糧走E1／營地／溪谷／橋／洞口／古洞；岸上候位、傷員優先、有限批次、實走召回 | journey-05、u43-load-current、bridge-opposed-complete |
+| 真失利／扶傷／救援 | 正常守路交戰倒地；等待120秒後援手真走到場／回家；三人分趟、滿日訪槽及橋繩模型 | u05-rescue-current；bridge-policy／persistence-load |
+| 五代表人物／三主角 | 五人各兩節點；郭靖／令狐沖／岳不群主角替代均正常完成；young／mature不複製身份，mature一日離院及不可永久入門 | u03-finish、u04-*、u03-mature-verified、final-contract |
+| 古洞分歧／後續履約 | 救人少帶糧／保4糧／回來救人；物品來源、第一次選擇、歷次承諾／報告分開；三份返院明記partial | u02-seed29、u02-return-rescue-final、partial-promise |
+| 立匾／回顧／續玩 | 真完成條件、實際建物／人物／選擇，關閉回顧後同World生活 | founding-final |
+| 完整保存與保護 | 手動、auto3輪換及讀取、匯出／預覽取消／確認；九狀態各續6000tick hash相同；壞檔／版本／引用／quota保護 | save-controls-release、u05-rescue-current；codec／storage M |
+| 程序分層美術／音效 | 原創341個參數化素材ID，屋體／屋頂／床／物資／四向人物／六招；1440與1280畫面自校，WebAudio解鎖與訊號／設定已驗 | visual-final、presentation*、assets/manifest.json |
+| 本機負載 | Apple M2／8GiB／Chrome156，8常住＋2客、三人外出、4訓練對手，4倍600模擬秒 | performance-release/performance.json；實際約3.996倍、frame工作p95 13.9ms、最大幀間隔約167ms |
 
-已知未完：全部A01–A44適用層、U02–U05、五人物／三模板完整正常UI、正式效能與全部來源manifest檢查、完整最終README及證據index。真人人工試玩與公開IP／發布均未進行。
+模型／整合共有55個不同案例通過（49項完整回歸＋4項末輪合約＋部分履約／器械前置各1）；固定五seed不是平衡分布研究。根53 Python與383 SG快驗沿用本獨立實驗已跑且未受改動的證據；M2與全部新ESM語法重核。未跑舊SG main／manual完整RT，這不是main發布。
 
-程式與美術均為本GPT版本原創；只衍生本分支planning座標，三來源只作觀念參照，來源詳見 assets/PROVENANCE.md。源分支的測試數字不算本分支結果。
+正常UI由新局或可追溯的正常存檔接續，無World注入、賦級、固定戰果或debug dispatcher。長旅程跨開發版本，保留失敗、修補與來源鏈；未受影響項明示復用，針對新物流／候位／故事／保存反例重驗。原始證據與版本hash可核，不宣稱每個早期截圖出自最後同一commit。
+
+**未驗界線：**作者未聽驗音效、未經真人試玩或獨立review。已驗的是音訊產生／首次互動／靜音／音量訊號與視覺時機，沒有把它冒充聽感通過。經典姓名僅供私人原型，公開IP清理、手機、下一章、世代與正式發布都不在本次範圍。
+
+素材／程式為本GPT版本原創，只衍生本分支planning座標。三固定來源僅作觀念參考，沒有搬用外部圖音或整包合併世界；詳見 `assets/PROVENANCE.md`、BRIEF及DECISIONS。

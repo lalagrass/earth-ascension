@@ -1,0 +1,23 @@
+✖ build dorm consumes actual harvested materials, duplicate command ignored (1222.267584ms)
+✔ A27 lesson reaches a real failed interception and a legal success (675.969833ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1320.538167
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/core.test.mjs:9:1
+✖ build dorm consumes actual harvested materials, duplicate command ignored (1222.267584ms)
+  Error: World invariant at seed 11 tick 5373: destination reservations dest:vat:water
+      at step (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/world.mjs:81:73)
+      at run (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/core.test.mjs:6:39)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/core.test.mjs:9:267)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17)

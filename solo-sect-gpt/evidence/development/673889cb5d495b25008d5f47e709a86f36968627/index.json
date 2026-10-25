@@ -1,0 +1,626 @@
+{
+  "journeys": [
+    {
+      "id": "U01",
+      "status": "passed",
+      "evidence": [
+        "evidence/development/journey-01/progress.jsonl",
+        "evidence/development/journey-03/progress.jsonl",
+        "evidence/development/journey-04/progress.jsonl",
+        "evidence/development/journey-05/chapter-complete.save.json",
+        "evidence/development/founding-final/actual-founding-modal.png"
+      ]
+    },
+    {
+      "id": "U02",
+      "status": "passed",
+      "evidence": [
+        "evidence/development/u02-seed29/progress.jsonl",
+        "evidence/development/u02-return-rescue-final/food-then-person-returned.save.json"
+      ]
+    },
+    {
+      "id": "U03",
+      "status": "passed",
+      "evidence": [
+        "evidence/development/u03-family-legends-rerun/progress.jsonl",
+        "evidence/development/u03-finish/five-legends-ten-nodes.save.json",
+        "evidence/development/u03-mature-verified/progress.jsonl"
+      ]
+    },
+    {
+      "id": "U04",
+      "status": "passed",
+      "evidence": [
+        "evidence/development/u04-guo-resume/own-two-nodes-complete.save.json",
+        "evidence/development/u04-linghu/own-two-nodes-complete.save.json",
+        "evidence/development/u04-yue/own-two-nodes-complete.save.json"
+      ]
+    },
+    {
+      "id": "U05",
+      "status": "passed",
+      "evidence": [
+        "evidence/development/u05-rescue-current/progress.jsonl",
+        "evidence/development/bridge-opposed-complete/progress.jsonl",
+        "evidence/development/nine-lesson-fixed/progress.jsonl",
+        "evidence/development/los-failure-final/progress.jsonl"
+      ]
+    }
+  ],
+  "schemaVersion": 1,
+  "status": "complete_with_declared_limits",
+  "sourceCommit": "673889cb5d495b25008d5f47e709a86f36968627",
+  "specCommit": "0a2e9c393a982d3476da70513e04ac0bed552909",
+  "planningCommit": "e530a2c078722fd69732332eef2cd964da99ad24",
+  "author": "GPT / Codex; GPT-6.1 Sol / high; author self-review",
+  "cases": [
+    {
+      "caseId": "A01",
+      "status": "passed",
+      "title": "三個身份、連續世界與合法目的地",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A01/result.json"
+    },
+    {
+      "caseId": "A02",
+      "status": "passed",
+      "title": "固定tick、批次一致與十秒暫停不改World",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A02/result.json"
+    },
+    {
+      "caseId": "A03",
+      "status": "passed",
+      "title": "FIFO、原子預約、重送命令／完成ID",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A03/result.json"
+    },
+    {
+      "caseId": "A04",
+      "status": "passed",
+      "title": "全建物／床側與一師四生不同腳位",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A04/result.json"
+    },
+    {
+      "caseId": "A05",
+      "status": "passed",
+      "title": "手持改派、工地停工與同址續修",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A05/result.json"
+    },
+    {
+      "caseId": "A06",
+      "status": "passed",
+      "title": "最後來源、目的容量及滿缸恢復",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A06/result.json"
+    },
+    {
+      "caseId": "A07",
+      "status": "passed",
+      "title": "逐階施工、齊料與合法遷床／遷出",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A07/result.json"
+    },
+    {
+      "caseId": "A08",
+      "status": "passed",
+      "title": "阿木同身份入門及真考核",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A08/result.json"
+    },
+    {
+      "caseId": "A09",
+      "status": "passed",
+      "title": "菜藥／水／在製品／成品真搬交",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A09/result.json"
+    },
+    {
+      "caseId": "A10",
+      "status": "passed",
+      "title": "自主作息、貢獻、60秒修行與豁免",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A10/result.json"
+    },
+    {
+      "caseId": "A11",
+      "status": "passed",
+      "title": "低精力恢復、有效revision與停工覆寫",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A11/result.json"
+    },
+    {
+      "caseId": "A12",
+      "status": "passed",
+      "title": "雙人與五槽活動退出清理／不發收益",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A12/result.json"
+    },
+    {
+      "caseId": "A13",
+      "status": "passed",
+      "title": "雙意願、拒絕、同房分床與解除保留前史",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A13/result.json"
+    },
+    {
+      "caseId": "A14",
+      "status": "passed",
+      "title": "小禾親情與成人活動模型邊界",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A14/result.json"
+    },
+    {
+      "caseId": "A15",
+      "status": "passed",
+      "title": "8常住＋2訪客、候位與兩日模型",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A15/result.json"
+    },
+    {
+      "caseId": "A16",
+      "status": "passed",
+      "title": "三入口、條件改善與真村路交菜",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A16/result.json"
+    },
+    {
+      "caseId": "A17",
+      "status": "passed",
+      "title": "五門六動作、有限三階段與幾何命中",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A17/result.json"
+    },
+    {
+      "caseId": "A18",
+      "status": "passed",
+      "title": "完整練習與低悟2／高悟7都深修",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A18/result.json"
+    },
+    {
+      "caseId": "A19",
+      "status": "passed",
+      "title": "精確模型配對及正常練前／練後實錄",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A19/result.json"
+    },
+    {
+      "caseId": "A20",
+      "status": "passed",
+      "title": "甲乙兩波、有限訓練ID與安全下限",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A20/result.json"
+    },
+    {
+      "caseId": "A21",
+      "status": "passed",
+      "title": "自然個體來源、休養與不刷新",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A21/result.json"
+    },
+    {
+      "caseId": "A22",
+      "status": "passed",
+      "title": "1／2／3人連續地圖出行與家園同tick",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A22/result.json"
+    },
+    {
+      "caseId": "A23",
+      "status": "passed",
+      "title": "單人橋、雙向召回、優先序與合法退出",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A23/result.json"
+    },
+    {
+      "caseId": "A24",
+      "status": "passed",
+      "title": "非法隊伍／供給／精力／路徑拒絕",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A24/result.json"
+    },
+    {
+      "caseId": "A25",
+      "status": "passed",
+      "title": "實際召回、負重／傷勢與回程預留",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A25/result.json"
+    },
+    {
+      "caseId": "A26",
+      "status": "passed",
+      "title": "正常交戰倒地、120秒與真救援；三人／滿訪客／橋繩模型",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A26/result.json"
+    },
+    {
+      "caseId": "A27",
+      "status": "passed",
+      "title": "真觀察／短起手／成功／佯攻與精準失敗反例",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A27/result.json"
+    },
+    {
+      "caseId": "A28",
+      "status": "passed",
+      "title": "固定20點、非法創角與三模板正常開局",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A28/result.json"
+    },
+    {
+      "caseId": "A29",
+      "status": "passed",
+      "title": "全身份唯一、young／mature與一日退出",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A29/result.json"
+    },
+    {
+      "caseId": "A30",
+      "status": "passed",
+      "title": "洪七公兩節點真餐／授掌",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A30/result.json"
+    },
+    {
+      "caseId": "A31",
+      "status": "passed",
+      "title": "令狐沖／郭靖普通及主角替代節點",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A31/result.json"
+    },
+    {
+      "caseId": "A32",
+      "status": "passed",
+      "title": "喬峰真護送／護衛與岳不群承諾回應",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A32/result.json"
+    },
+    {
+      "caseId": "A33",
+      "status": "passed",
+      "title": "救人／保糧／後續救人／履約與分支前史",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A33/result.json"
+    },
+    {
+      "caseId": "A34",
+      "status": "passed",
+      "title": "實際條件立匾、回顧與續玩",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A34/result.json"
+    },
+    {
+      "caseId": "A35",
+      "status": "passed",
+      "title": "九狀態續6000tick；木／橋／扶助正常保存接續",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A35/result.json"
+    },
+    {
+      "caseId": "A36",
+      "status": "passed",
+      "title": "手動／auto3、刷新、匯出預覽／取消／確認",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A36/result.json"
+    },
+    {
+      "caseId": "A37",
+      "status": "passed",
+      "title": "錯檔／版本／校驗／引用／非有限／上限拒絕",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A37/result.json"
+    },
+    {
+      "caseId": "A38",
+      "status": "passed",
+      "title": "quota／disabled／暫存損壞與外key保護",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A38/result.json"
+    },
+    {
+      "caseId": "A39",
+      "status": "passed",
+      "title": "五seed正式固定命令／原golden與有意差異",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A39/result.json"
+    },
+    {
+      "caseId": "A40",
+      "status": "passed",
+      "title": "離鏡／不render／view查詢及批次不改規則",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A40/result.json"
+    },
+    {
+      "caseId": "A41",
+      "status": "passed",
+      "title": "兩尺寸、分層屋頂、床與動作／錨點",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A41/result.json"
+    },
+    {
+      "caseId": "A42",
+      "status": "passed",
+      "title": "教學、輸入Space、音訊解鎖／設定與視覺時序",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A42/result.json"
+    },
+    {
+      "caseId": "A43",
+      "status": "passed",
+      "title": "本機8＋2、3人外出、4對手、4倍600秒",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A43/result.json"
+    },
+    {
+      "caseId": "A44",
+      "status": "passed",
+      "title": "完整交付／來源／根檢查／可追溯索引",
+      "result": "evidence/development/673889cb5d495b25008d5f47e709a86f36968627/A44/result.json"
+    }
+  ],
+  "stories": [
+    {
+      "id": "recruit.worker",
+      "status": "passed",
+      "source": "journey-05/chapter-complete.save.json",
+      "completedAt": null,
+      "cast": []
+    },
+    {
+      "id": "recruit.school",
+      "status": "passed",
+      "source": "journey-05/chapter-complete.save.json",
+      "completedAt": null,
+      "cast": []
+    },
+    {
+      "id": "recruit.fame",
+      "status": "passed",
+      "source": "journey-05/chapter-complete.save.json",
+      "completedAt": null,
+      "cast": []
+    },
+    {
+      "id": "hong.1",
+      "status": "passed",
+      "source": "u03-finish/five-legends-ten-nodes.save.json",
+      "completedAt": 135440,
+      "cast": [
+        "leader",
+        "legend.hong"
+      ]
+    },
+    {
+      "id": "hong.2",
+      "status": "passed",
+      "source": "u03-finish/five-legends-ten-nodes.save.json",
+      "completedAt": 145411,
+      "cast": [
+        "leader",
+        "legend.hong"
+      ]
+    },
+    {
+      "id": "linghu.1",
+      "status": "passed",
+      "source": "u03-finish/five-legends-ten-nodes.save.json",
+      "completedAt": 146462,
+      "cast": [
+        "leader",
+        "legend.linghu"
+      ]
+    },
+    {
+      "id": "linghu.2",
+      "status": "passed",
+      "source": "u03-finish/five-legends-ten-nodes.save.json",
+      "completedAt": 147433,
+      "cast": [
+        "leader",
+        "legend.linghu"
+      ]
+    },
+    {
+      "id": "guo.1",
+      "status": "passed",
+      "source": "u03-finish/five-legends-ten-nodes.save.json",
+      "completedAt": 152603,
+      "cast": [
+        "leader",
+        "legend.guo"
+      ]
+    },
+    {
+      "id": "guo.2",
+      "status": "passed",
+      "source": "u03-finish/five-legends-ten-nodes.save.json",
+      "completedAt": 154236,
+      "cast": [
+        "leader",
+        "legend.guo"
+      ]
+    },
+    {
+      "id": "qiao.1",
+      "status": "passed",
+      "source": "u03-finish/five-legends-ten-nodes.save.json",
+      "completedAt": 158019,
+      "cast": [
+        "leader",
+        "legend.qiao"
+      ]
+    },
+    {
+      "id": "qiao.2",
+      "status": "passed",
+      "source": "u03-finish/five-legends-ten-nodes.save.json",
+      "completedAt": 160017,
+      "cast": [
+        "leader",
+        "legend.qiao"
+      ]
+    },
+    {
+      "id": "yue.1",
+      "status": "passed",
+      "source": "u03-finish/five-legends-ten-nodes.save.json",
+      "completedAt": 155473,
+      "cast": [
+        "leader",
+        "legend.yue"
+      ]
+    },
+    {
+      "id": "yue.2",
+      "status": "passed",
+      "source": "u03-finish/five-legends-ten-nodes.save.json",
+      "completedAt": 155726,
+      "cast": [
+        "leader",
+        "legend.yue"
+      ]
+    },
+    {
+      "id": "cave.see",
+      "status": "passed",
+      "source": "journey-05/chapter-complete.save.json",
+      "completedAt": null,
+      "cast": []
+    },
+    {
+      "id": "cave.choice",
+      "status": "passed",
+      "source": "journey-05/chapter-complete.save.json",
+      "completedAt": null,
+      "cast": []
+    },
+    {
+      "id": "cave.return",
+      "status": "passed",
+      "source": "journey-05/chapter-complete.save.json",
+      "completedAt": null,
+      "cast": []
+    }
+  ],
+  "milestones": [
+    {
+      "id": "SL0",
+      "status": "passed",
+      "cases": [
+        "A01",
+        "A02",
+        "A03",
+        "A04"
+      ]
+    },
+    {
+      "id": "SL1",
+      "status": "passed",
+      "cases": [
+        "A05",
+        "A07",
+        "A11",
+        "A14"
+      ]
+    },
+    {
+      "id": "SL2",
+      "status": "passed",
+      "cases": [
+        "A08",
+        "A09",
+        "A16"
+      ]
+    },
+    {
+      "id": "SL3",
+      "status": "passed",
+      "cases": [
+        "A10",
+        "A12",
+        "A13",
+        "A15"
+      ]
+    },
+    {
+      "id": "SL4",
+      "status": "passed",
+      "cases": [
+        "A17",
+        "A20",
+        "A21",
+        "A22",
+        "A23",
+        "A24",
+        "A25",
+        "A26"
+      ]
+    },
+    {
+      "id": "SL5",
+      "status": "passed",
+      "cases": [
+        "A18",
+        "A19",
+        "A27",
+        "A29",
+        "A30",
+        "A31",
+        "A32"
+      ]
+    },
+    {
+      "id": "SL6",
+      "status": "passed",
+      "cases": [
+        "A28",
+        "A33"
+      ]
+    },
+    {
+      "id": "SL7",
+      "status": "passed",
+      "cases": [
+        "A34",
+        "A35",
+        "A36",
+        "A37",
+        "A38",
+        "A39",
+        "A40",
+        "A41",
+        "A42",
+        "A43",
+        "A44"
+      ]
+    }
+  ],
+  "performance": {
+    "layer": "U",
+    "status": "passed",
+    "seed": 11,
+    "start": 188770,
+    "end": 200806,
+    "wallMs": 150590,
+    "actualRate": 3.9962812935785905,
+    "frameWorkP95": 13.900000095367432,
+    "maxFrameWork": 158,
+    "maxFrameGapMs": 166.70000000000005,
+    "frames": 9005,
+    "reference": {
+      "os": "25.2.0",
+      "cpu": "Apple M2",
+      "memory": 8589934592,
+      "browser": "156.0.8078.47",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      }
+    },
+    "residents": 8,
+    "visitors": 2,
+    "party": 3,
+    "drillActors": [
+      "legend.guo",
+      "shen"
+    ],
+    "drillOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ]
+  },
+  "runtimeFingerprint": {
+    "src/activities.mjs": "5a7d70ec52b706867bfeff7b5e9ac13b37dfe931598e97237d63ddc4ab5d03a7",
+    "src/audio.mjs": "cc003bc350426a0cfb0a1817b5d2d5217d158b2e711d88cdc17c8de72601dbd1",
+    "src/classes.mjs": "3159e1231bbb92a5022cc5c1250bbd3f345181d8f6bb8eab2d403e3061d5d378",
+    "src/combat.mjs": "27657ba41bb951a1b6cf3fb2dfd73ded3d5ac004ec52ffe3833e42e96c0335af",
+    "src/data.mjs": "1dd53f83f3fe8360872cdb7c52869c6859c48ffcedfd181f67fff457598324ec",
+    "src/expedition.mjs": "332dfa1db041eb5b0f88e16a74c07ab4c1bfbc728a16193562d4a2ebe1b8d45c",
+    "src/life.mjs": "9079a7c48ec2b400b1f141c7331d2faf77e063f7d1568d3d814b849fda181c4a",
+    "src/map.mjs": "43114f2f5fa7358cc31b646359f3868215d69dffadd85074d8a2eb26c4755c92",
+    "src/navigation.mjs": "a9e92a647d67c0ee31c2bbc7e8bd838b62bbd953dbae111a79d60d22158cfe0a",
+    "src/render.mjs": "7f7c138f57b10a85e1006749abfee616ab531e6a4cef300efccd5f994a7e60ce",
+    "src/save.mjs": "439f6548c423d2708a527ae503e87f733f06bb959367f541aff36fb3d0767594",
+    "src/state.mjs": "cf57c29f05c7e5092967c6ad1a800a71f661e9cf0ead172e47fb3f8b92a3bfe7",
+    "src/stories.mjs": "084955587c8ab78ffd769ac7f1d28023b28850df87b6b7abf05cd3d8acba6961",
+    "src/ui.mjs": "e7ae06a520ff32fd71a94192eec8c7b4c22330e96987c77994c294c22d1ce060",
+    "src/view.mjs": "12a5ddba2a572f9f3e16c7e7b0e717bfea83584d9ca713f0b8c9478e93667c70",
+    "src/world.mjs": "6b69df29ec9ed80b794be2f131f531976450dec6dc5d1385526aa7a1774a38cd"
+  },
+  "declaredUnverified": {
+    "audioListening": "not_verified_by_agent",
+    "humanPlaytest": "not_performed",
+    "independentReview": "not_performed"
+  },
+  "limits": [
+    "Author self-review, not independent review.",
+    "Headless WebAudio generation/unlock/mute/volume signal verified; agent did not listen to audio. No auditory-experience pass is claimed.",
+    "Human playtest and public IP clearance not performed; private local prototype only.",
+    "UI journeys span development commits through traceable normal saves. Final runtime has focused affected-flow revalidation and deterministic model checks; older untouched evidence is reused explicitly.",
+    "No formal balance distribution claim from five deterministic seeds. No push, PR, merge, deployment or main/manual release validation."
+  ]
+}

@@ -1,0 +1,10 @@
+normal-template-start
+built dorm
+built hall
+normal template practice
+built yard
+Error: timeout own story guo.1
+    at Object.wait (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:11:394)
+    at async story (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/u04-classic.mjs:4:117)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/u04-classic.mjs:12:23
+interrupted

@@ -1,0 +1,10 @@
+✔ A04/A12 one teacher plus four separate real slots, withdrawal receives no gain and continuation hashes match (3552.967375ms)
+✔ A12 teacher stop clears all students and reservations; child cannot teach or attend (27.101292ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3665.548375

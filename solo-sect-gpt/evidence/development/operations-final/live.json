@@ -1,0 +1,231 @@
+{
+  "tick": 175661,
+  "status": {
+    "paused": false,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 754,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        604.8046875,
+        1731.51953125
+      ],
+      "energy": 7488,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.48759",
+        "actor": "leader",
+        "kind": "gather",
+        "args": {
+          "item": "water"
+        },
+        "phase": "gather",
+        "progress": 0,
+        "revision": 73,
+        "started": 173314,
+        "units": 0,
+        "load": 4,
+        "checked": "water.take",
+        "destination": "water.take"
+      },
+      "intent": {
+        "kind": "gather",
+        "args": {
+          "item": "water"
+        },
+        "revision": 73
+      },
+      "blocked": "候路／禮讓",
+      "reason": "玩家指令：採集",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        996,
+        1100
+      ],
+      "energy": 9849,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        857.34375,
+        1261.890625
+      ],
+      "energy": 8444,
+      "hp": 100,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "此人已停工；仍可自理",
+      "bag": {
+        "id": "bag.amu",
+        "items": {
+          "water": 1
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        1039.7109375,
+        1180.19140625
+      ],
+      "energy": 9996,
+      "hp": 100,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "此人已停工；仍可自理",
+      "bag": {
+        "id": "bag.lin",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        600,
+        1720
+      ],
+      "energy": 8746,
+      "hp": 100,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "此人已停工；仍可自理",
+      "bag": {
+        "id": "bag.shen",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 15,
+        "veg": 2,
+        "herb": 4,
+        "wood": 2,
+        "ration": 4,
+        "staff": 1
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 2
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 21
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": {
+    "id": "expedition.10761",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "target": "cave",
+    "phase": "returned",
+    "started": 120244,
+    "packed": [
+      "amu",
+      "leader"
+    ],
+    "seen": [
+      "forest",
+      "camp",
+      "valley",
+      "cave"
+    ],
+    "foodTaken": 2,
+    "reservedVisitor": false,
+    "report": "report.12993",
+    "returnReason": null,
+    "segment": "cave",
+    "usedArts": {
+      "leader": [
+        "punch"
+      ],
+      "amu": [
+        "punch"
+      ]
+    },
+    "restUntil": 121416,
+    "rested": true,
+    "talkUntil": 122001,
+    "permission": true,
+    "pendingAuto": null,
+    "choice": "rescue",
+    "collectGoal": 2,
+    "collectActor": 2,
+    "collectParking": false,
+    "helper": "amu",
+    "collectRouted": false,
+    "attachTicks": 160,
+    "escortAttached": true
+  },
+  "drill": {
+    "id": "drill.30130",
+    "config": "A",
+    "actors": [
+      "leader",
+      "amu"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 153194,
+    "witnessId": "legend.guo",
+    "witnessPoint": [
+      1390,
+      1155
+    ],
+    "nextWave": null
+  }
+}

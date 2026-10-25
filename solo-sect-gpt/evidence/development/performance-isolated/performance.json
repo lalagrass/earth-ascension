@@ -1,0 +1,36 @@
+{
+  "layer": "U",
+  "status": "passed",
+  "seed": 11,
+  "start": 188770,
+  "end": 200790,
+  "wallMs": 150387,
+  "actualRate": 3.9963560680111976,
+  "frameWorkP95": 14.200000047683716,
+  "maxFrameWork": 159.59999990463257,
+  "maxFrameGapMs": 166.70000000000005,
+  "frames": 8959,
+  "reference": {
+    "os": "25.2.0",
+    "cpu": "Apple M2",
+    "memory": 8589934592,
+    "browser": "156.0.8078.47",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "residents": 8,
+  "visitors": 2,
+  "party": 3,
+  "drillActors": [
+    "legend.guo",
+    "shen"
+  ],
+  "drillOpponents": [
+    "training.1",
+    "training.2",
+    "training.3",
+    "training.4"
+  ]
+}

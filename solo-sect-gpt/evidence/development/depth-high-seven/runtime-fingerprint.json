@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-25T15:41:25.273Z",
+  "files": {
+    "src/activities.mjs": "05b35baa4f7fd4a624cc71a78aaa050f3ff13d176a3ae4ce735f3972fb060d72",
+    "src/audio.mjs": "cc003bc350426a0cfb0a1817b5d2d5217d158b2e711d88cdc17c8de72601dbd1",
+    "src/classes.mjs": "3159e1231bbb92a5022cc5c1250bbd3f345181d8f6bb8eab2d403e3061d5d378",
+    "src/combat.mjs": "bbfd3593c452a0d347aa0c08f677d504ec6f19f917641154ff3673e7a211b6a7",
+    "src/data.mjs": "1dd53f83f3fe8360872cdb7c52869c6859c48ffcedfd181f67fff457598324ec",
+    "src/expedition.mjs": "45712ec028b0a855849704541a65ee2a636df36125c1efaa32f8812a9856bfd3",
+    "src/life.mjs": "8882b34582d88c83ea694b4508978f07aef43fd632e23ef12cb0fcc133ebdbb2",
+    "src/map.mjs": "75e1e87ad86411c915e1ccdef9409421c8f7e575ce85859590cf582684f20bfd",
+    "src/navigation.mjs": "a9e92a647d67c0ee31c2bbc7e8bd838b62bbd953dbae111a79d60d22158cfe0a",
+    "src/render.mjs": "154df20ca7b9ce3dde6e1f0bdb792144e383b6364a3b34e43a7f322d5d02a3d3",
+    "src/save.mjs": "0a68c6739beaee79ca51fdd7d5294e828d14f73fe26d94659919c312b502cb7f",
+    "src/state.mjs": "4e075bae6a7a356680eb02fe0e31394da85c44a4acab19a982c6f139a55ffb8c",
+    "src/stories.mjs": "084955587c8ab78ffd769ac7f1d28023b28850df87b6b7abf05cd3d8acba6961",
+    "src/ui.mjs": "f0896adea038b3554cf2bbe4aab178534f2361440eea0581ab85d4cdfc314bb5",
+    "src/view.mjs": "12a5ddba2a572f9f3e16c7e7b0e717bfea83584d9ca713f0b8c9478e93667c70",
+    "src/world.mjs": "6b69df29ec9ed80b794be2f131f531976450dec6dc5d1385526aa7a1774a38cd"
+  }
+}

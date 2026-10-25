@@ -1,0 +1,122 @@
+{
+  "tick": 34550,
+  "status": {
+    "paused": false,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 2574,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1100,
+        1145
+      ],
+      "energy": 2499,
+      "hp": 110,
+      "injury": 0,
+      "activity": {
+        "id": "activity.1318",
+        "actor": "leader",
+        "kind": "story",
+        "args": {
+          "node": "guo.1",
+          "partner": "amu"
+        },
+        "phase": "init",
+        "progress": 756,
+        "revision": 5,
+        "started": 15327,
+        "units": 0,
+        "otherRouted": true,
+        "checked": "story:guo.1",
+        "destination": "story:guo.1",
+        "blocked": ""
+      },
+      "intent": {
+        "kind": "story",
+        "args": {
+          "node": "guo.1",
+          "partner": "amu"
+        },
+        "revision": 5
+      },
+      "blocked": "同練需精力25以上，可暫停休養後續單位",
+      "reason": "玩家指令：約定",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        972,
+        1100
+      ],
+      "energy": 9930,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        1190,
+        1145
+      ],
+      "energy": 9016,
+      "hp": 100,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "接受有限約定",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 27,
+        "veg": 2,
+        "herb": 2
+      },
+      "capacity": 24
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 1
+      },
+      "capacity": 8
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 8
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": null,
+  "drill": null
+}

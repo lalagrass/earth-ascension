@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "server": {
+    "pid": 65546,
+    "command": "/opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python -m http.server 8877 --bind 127.0.0.1 --directory solo-sect-gpt",
+    "action": "SIGTERM to this task-owned server",
+    "port8877Closed": true
+  },
+  "uiDriversActive": [],
+  "browsers": "Completed harnesses call browser.close(); no active solo-sect-gpt UI driver.",
+  "untouched": "No action on port8800, other services or original checkout",
+  "at": "2026-10-25T16:17:03.633469+00:00",
+  "additionalServer": {
+    "action": "SIGTERM sent to uniquely matched task-owned 8877 server after final LOS run",
+    "port8877Closed": true,
+    "note": "Immediate socket check raced process shutdown; subsequent process and socket checks both confirm stopped."
+  }
+}

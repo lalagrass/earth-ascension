@@ -1,0 +1,16 @@
+passed journey-05/chapter-complete.save.json tick 124671
+passed u02-seed29/food-branch-complete.save.json tick 107095
+passed u02-return-rescue-final/food-then-person-returned.save.json tick 112910
+passed u03-finish/five-legends-ten-nodes.save.json tick 160041
+passed u04-guo-resume/own-two-nodes-complete.save.json tick 54783
+passed u04-linghu/own-two-nodes-complete.save.json tick 23366
+passed u04-yue/own-two-nodes-complete.save.json tick 40362
+passed u05-rescue-current/normal-failed-journey-rescued.save.json tick 112838
+passed material-cancel-final/material-cancel-complete.save.json tick 5486
+passed water-recovery-final/water-recovery-complete.save.json tick 185615
+passed classroom-final/student-withdrew-without-learning.save.json tick 163918
+passed nine-lesson-fixed/normal-observation-and-feint-complete.save.json tick 23445
+passed depth-high-seven/normal-high-seven-deep.save.json tick 32804
+passed save-controls-release/save-controls-complete.save.json tick 4800
+passed performance-release/600s-final.save.json tick 200806
+15 normal UI leaf saves valid under final codec

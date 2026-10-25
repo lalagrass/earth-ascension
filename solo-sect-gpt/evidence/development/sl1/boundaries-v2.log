@@ -1,0 +1,42 @@
+✔ A03/A06 atomic bundle rollback retains FIFO; physical capacity excludes new same-tick deposits (54.995833ms)
+✔ A03 completion IDs and duplicate commands never pay twice (1.199708ms)
+✔ A11/A31 shared practice recovers physically, preserves whole units, roundtrips and cancellation clears both (2310.90225ms)
+✔ A12 four adults queue finite social sessions on shared physical slots (1190.570208ms)
+✔ A19 exact pair changes only punch skill: deep windup/recover remain finite and shorter (0.720208ms)
+✔ A21 finite ecology IDs and retired wildlife never respawn on save/reload (3782.257167ms)
+✖ A27 forced far, blocked LOS, late and interrupted observation all have finite cost and failure (583.927125ms)
+✔ A29 all five identities share young/mature exclusivity and principal cannot be duplicated (100.45575ms)
+✔ A33 finite cave cargo tracks real delivery once, ordinary food consumption and later transfers (0.63475ms)
+✔ A37 semantic corruptions are rejected with recomputed checksum and unchanged source (33.209083ms)
+✔ A38 disabled/quota/corrupted pending storage preserves all foreign keys and valid slot (28.200125ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 10
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8199.539958
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/integration/boundaries.test.mjs:13:1
+✖ A27 forced far, blocked LOS, late and interrupted observation all have finite cost and failure (583.927125ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(pair)
+
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/boundaries.test.mjs:13:796)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

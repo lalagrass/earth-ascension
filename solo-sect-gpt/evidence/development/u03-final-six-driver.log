@@ -1,0 +1,8 @@
+import normal checkpoint
+rest leader
+rest amu
+Error: timeout fulfilled guo.2
+    at Object.wait (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:11:394)
+    at async story (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/u03-resume.mjs:2:117)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/u03-resume.mjs:8:2
+interrupted

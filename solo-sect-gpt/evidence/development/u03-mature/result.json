@@ -1,0 +1,42 @@
+{
+  "layer": "U",
+  "status": "checkpoint",
+  "error": null,
+  "errors": [],
+  "tick": 1381,
+  "commands": [
+    {
+      "type": "visit",
+      "legend": "hong",
+      "id": "ui.1",
+      "tick": 15,
+      "seq": 1,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "invite",
+      "actor": "legend.hong",
+      "target": "leader",
+      "id": "ui.2",
+      "tick": 823,
+      "seq": 2,
+      "result": {
+        "ok": false,
+        "reason": "已是門人",
+        "reasonCode": "invite.rejected"
+      }
+    },
+    {
+      "type": "depart",
+      "legend": "hong",
+      "id": "ui.3",
+      "tick": 832,
+      "seq": 3,
+      "result": {
+        "ok": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "tick": 5486,
+  "status": {
+    "paused": true,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 635,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        915.76171875,
+        1043.12109375
+      ],
+      "energy": 4919,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.538",
+        "actor": "leader",
+        "kind": "train",
+        "args": {
+          "art": "punch",
+          "units": 5
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 4,
+        "started": 5464,
+        "units": 0,
+        "station": "yard.1",
+        "checked": "yard.1",
+        "destination": "yard.1"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "物資已達標，練功與自由（20；勤勉2／顧人2）",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        986.6953125,
+        1095.2265625
+      ],
+      "energy": 9838,
+      "hp": 90,
+      "injury": 0,
+      "activity": {
+        "id": "activity.537",
+        "actor": "child",
+        "kind": "paired",
+        "partner": "amu",
+        "session": "activity.536",
+        "args": {},
+        "progress": 0,
+        "phase": "paired",
+        "revision": 0,
+        "started": 5460
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        982.29296875,
+        1066.04296875
+      ],
+      "energy": 6328,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.536",
+        "actor": "amu",
+        "kind": "talk",
+        "args": {
+          "target": "child"
+        },
+        "phase": "approach",
+        "progress": 0,
+        "revision": 0,
+        "started": 5460,
+        "units": 0,
+        "partner": "child",
+        "session": "activity.536",
+        "pos": [
+          1170,
+          1070
+        ],
+        "otherPos": [
+          1190,
+          1070
+        ],
+        "checked": "hall.greet",
+        "destination": "hall.greet"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "自由時段：與同門交談（25；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 30,
+        "veg": 6,
+        "herb": 2
+      },
+      "capacity": 24
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 7
+      },
+      "capacity": 8
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 6
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": null,
+  "drill": null
+}

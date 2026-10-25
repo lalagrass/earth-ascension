@@ -1,0 +1,31 @@
+✔ new world has stable identities and no geometry/ledger errors (3.155541ms)
+✔ all initial stations are reached by legal circle sweeps (410.561375ms)
+✔ build dorm consumes actual harvested materials, duplicate command ignored (2678.421083ms)
+✔ cancellation in transit never refunds or erases carried wood (168.345916ms)
+✔ children cannot be assigned labor, adult activities or expedition work (0.638792ms)
+✔ determinism survives people insertion order and save/resume (5617.129875ms)
+✔ bad saves and failed writes protect the last valid slot (5.521583ms)
+✔ scheduled commands preserve execution tick, order and save-boundary behavior (15.458583ms)
+✔ A04 built rooms and stations have legal non-teleport routes (299.607708ms)
+✔ A05/A09 in-process recipe survives cancel without duplicate input or output (477.081708ms)
+✔ A08 worker identity and bag preserved at invitation; capacity rejects cleanly (0.553375ms)
+✔ A12 participant cancellation releases both actors and station locks (23.684ms)
+✔ A13/A14 child rejected at relationship model boundary; mutual adult consent required (0.460083ms)
+✔ A17 hits are geometry based, one target per action, finite windup/recovery (7.879792ms)
+✔ A18 low and high intelligence share depth conditions; practice never supplies insight (416.894875ms)
+✔ A23 bridge cancellation preserves token to actual exit (131.225667ms)
+✔ A24 invalid dispatch leaves no extra activity, supply or reservation (1.90925ms)
+✔ A27 lesson reaches a real failed interception and a legal success (532.174875ms)
+✔ A33 actual travel and return fulfills rescue and food promises independently (9732.510708ms)
+✔ A35 in-flight construction, cooking, combat and conversation roundtrip hashes (10364.529375ms)
+✔ A26 rescue waits 120s and physically brings a downed member home (1787.153083ms)
+✔ A15 eight residents and two visitors finish accepted meals without overlap (25702.416375ms)
+✔ A36 encoder snapshots before asynchronous hashing (24.624042ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 49605.743334

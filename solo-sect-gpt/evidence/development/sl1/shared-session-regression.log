@@ -1,0 +1,69 @@
+✔ new world has stable identities and no geometry/ledger errors (3.3095ms)
+✔ all initial stations are reached by legal circle sweeps (398.885708ms)
+✖ build dorm consumes actual harvested materials, duplicate command ignored (1028.989417ms)
+✔ cancellation in transit never refunds or erases carried wood (88.449791ms)
+✔ children cannot be assigned labor, adult activities or expedition work (0.458667ms)
+✔ determinism survives people insertion order and save/resume (4946.929209ms)
+✔ bad saves and failed writes protect the last valid slot (3.836167ms)
+✔ scheduled commands preserve execution tick, order and save-boundary behavior (13.791583ms)
+✔ A04 built rooms and stations have legal non-teleport routes (300.989959ms)
+✔ A05/A09 in-process recipe survives cancel without duplicate input or output (392.356833ms)
+✔ A08 worker identity and bag preserved at invitation; capacity rejects cleanly (1.322958ms)
+✔ A12 participant cancellation releases both actors and station locks (11.422334ms)
+✔ A13/A14 child rejected at relationship model boundary; mutual adult consent required (0.350125ms)
+✔ A17 hits are geometry based, one target per action, finite windup/recovery (6.372917ms)
+✔ A18 low and high intelligence share depth conditions; practice never supplies insight (367.741666ms)
+✔ A23 bridge cancellation preserves token to actual exit (98.446292ms)
+✔ A24 invalid dispatch leaves no extra activity, supply or reservation (0.694542ms)
+✖ A27 lesson reaches a real failed interception and a legal success (252.285125ms)
+✔ A33 actual travel and return fulfills rescue and food promises independently (8953.551416ms)
+✔ A35 in-flight construction, cooking, combat and conversation roundtrip hashes (12565.774ms)
+✔ A26 rescue waits 120s and physically brings a downed member home (1630.445333ms)
+✔ A15 eight residents and two visitors finish accepted meals without overlap (25666.523041ms)
+✔ A36 encoder snapshots before asynchronous hashing (21.828ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 21
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 50355.150083
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/core.test.mjs:9:1
+✖ build dorm consumes actual harvested materials, duplicate command ignored (1028.989417ms)
+  Error: World invariant at seed 11 tick 5373: destination reservations dest:vat:water
+      at step (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/src/world.mjs:81:73)
+      at run (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/core.test.mjs:6:39)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/core.test.mjs:9:267)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:21:1
+✖ A27 lesson reaches a real failed interception and a legal success (252.285125ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'active'
+  - 'completed'
+
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:21:352)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'active',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

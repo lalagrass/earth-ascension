@@ -1,0 +1,10 @@
+✔ A17 hits are geometry based, one target per action, finite windup/recovery (177.01975ms)
+✔ A27 lesson reaches a real failed interception and a legal success (550.633833ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 809.579208

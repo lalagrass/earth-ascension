@@ -1,0 +1,11 @@
+✔ A05/A09 in-process recipe survives cancel without duplicate input or output (515.645875ms)
+✔ A35 in-flight construction, cooking, combat and conversation roundtrip hashes (11617.0885ms)
+✔ A36 encoder snapshots before asynchronous hashing (15.8175ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12301.515792

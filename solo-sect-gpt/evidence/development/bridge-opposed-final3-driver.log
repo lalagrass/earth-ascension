@@ -1,0 +1,23 @@
+import normal checkpoint
+Lin physically reached west bridge waypoint
+returning party owns bridge westbound
+actual opposite queue
+opposed-single-token
+page.evaluate: Target page, context or browser has been closed
+    at snap (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:6:78)
+    at Object.wait (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:11:115)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/bridge-opposed.mjs:2:1832 {
+  log: []
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.evaluate: Target page, context or browser has been closed
+    at snap (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:6:78)
+    at Object.close (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:14:124)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/bridge-opposed.mjs:2:2121 {
+  log: []
+}
+
+Node.js v24.13.0

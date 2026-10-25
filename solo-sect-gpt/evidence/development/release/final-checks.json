@@ -1,0 +1,131 @@
+{
+  "status": "passed",
+  "branch": "codex/solo-sect-gpt",
+  "baseSHA": "148cfbbb27e43475c66744d53c2451125a9111a0",
+  "node": "v24.13.0",
+  "python": "3.14.8",
+  "syntax": [
+    {
+      "file": "solo-sect-gpt/maps/runtime/layout.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/activities.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/audio.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/classes.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/combat.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/data.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/expedition.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/life.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/map.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/navigation.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/render.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/save.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/state.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/stories.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/ui.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/view.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    },
+    {
+      "file": "solo-sect-gpt/src/world.mjs",
+      "exit": 0,
+      "diagnostics": ""
+    }
+  ],
+  "m2Syntax": "passed",
+  "scope": "all changes limited to solo-sect-gpt/",
+  "rootPython": {
+    "status": "reused_pass",
+    "tests": 53,
+    "evidence": "sl1/root-unittest.log",
+    "reason": "Root code/dependencies/CI unchanged throughout the independent experiment."
+  },
+  "rootSG": {
+    "status": "reused_pass",
+    "tests": 383,
+    "evidence": "sl1/sg-regression.log",
+    "reason": "sect-chronicle/ code and tests unchanged."
+  },
+  "fullRT": "not_run: main/manual release matrix; no main release in scope",
+  "modelCases": 55,
+  "normalUILeafSavesValidated": 15,
+  "runtimeCommit": "673889cb5d495b25008d5f47e709a86f36968627",
+  "performanceEvidenceReuse": {
+    "src/activities.mjs": "Only unsupported-equipment command rejection added; not exercised by the punch-only benchmark.",
+    "src/combat.mjs": "Staff/sword physical-equipment gate; measured actors use punches.",
+    "src/save.mjs": "Equipment reference validation only; benchmark save is valid.",
+    "src/ui.mjs": "Unequipped move filter and elapsed>1s preservation; benchmark maximum gap was167ms so the measured frame path is unchanged."
+  },
+  "rawLogArchive": {
+    "path": "evidence/development/release/raw-logs.tar.gz",
+    "files": 171,
+    "sha256": "1e8ab2a78572d8477e26174b7c11cf071e6b54f001e1afbbb2aac05ba0d06738",
+    "note": "Lossless raw logs retained here; text views only have trailing spaces normalized for diff hygiene.",
+    "textViewsNormalized": [
+      "sl1/boundaries-v2.log",
+      "sl1/boundaries.log",
+      "sl1/life-transaction-boundaries.log",
+      "sl1/production-current.log",
+      "sl1/shared-session-regression.log"
+    ]
+  }
+}

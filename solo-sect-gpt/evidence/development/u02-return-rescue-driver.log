@@ -1,0 +1,5 @@
+import normal checkpoint
+Error: Cannot read properties of undefined (reading 'kind')
+    at Object.wait (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:11:182)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/u02-return-rescue.mjs:7:2
+interrupted

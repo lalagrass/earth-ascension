@@ -1,0 +1,278 @@
+{
+  "tick": 171205,
+  "status": {
+    "paused": false,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 16,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1347.98046875,
+        1635.33203125
+      ],
+      "energy": 9419,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.48520",
+        "actor": "leader",
+        "kind": "sleep",
+        "args": {},
+        "phase": "init",
+        "progress": 0,
+        "revision": 68,
+        "started": 171139,
+        "units": 0,
+        "checked": "annex.bed.3",
+        "destination": "annex.bed.3"
+      },
+      "intent": {
+        "kind": "sleep",
+        "args": {},
+        "revision": 68
+      },
+      "blocked": "",
+      "reason": "玩家指令：就寢",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        952.203125,
+        1100
+      ],
+      "energy": 9936,
+      "hp": 90,
+      "injury": 0,
+      "activity": {
+        "id": "activity.48592",
+        "actor": "child",
+        "kind": "move",
+        "args": {
+          "pos": [
+            972,
+            1100
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 0,
+        "started": 171203,
+        "units": 0
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "小禾在院內散步、等家人",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        967.47265625,
+        1271.20703125
+      ],
+      "energy": 8409,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.47749",
+        "actor": "amu",
+        "kind": "farm",
+        "args": {
+          "crop": "garden"
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 16,
+        "started": 170500,
+        "units": 0,
+        "plot": "garden.0",
+        "checked": "garden.work",
+        "destination": "garden.work",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "耕作維持菜供應（60；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.amu",
+        "items": {
+          "water": 1
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        1039.7109375,
+        1180.19140625
+      ],
+      "energy": 9996,
+      "hp": 100,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "此人已停工；仍可自理",
+      "bag": {
+        "id": "bag.lin",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        600,
+        1720
+      ],
+      "energy": 8642,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.48156",
+        "actor": "shen",
+        "kind": "gather",
+        "args": {
+          "item": "water"
+        },
+        "phase": "gather",
+        "progress": 21,
+        "revision": 0,
+        "started": 170835,
+        "units": 1,
+        "load": 4,
+        "checked": "water.take",
+        "destination": "water.take",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "低於水目標6（51；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.shen",
+        "items": {
+          "water": 2
+        },
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 9,
+        "veg": 8,
+        "herb": 1,
+        "wood": 2,
+        "ration": 4,
+        "staff": 1
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 3
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 17
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": {
+    "id": "expedition.10761",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "target": "cave",
+    "phase": "returned",
+    "started": 120244,
+    "packed": [
+      "amu",
+      "leader"
+    ],
+    "seen": [
+      "forest",
+      "camp",
+      "valley",
+      "cave"
+    ],
+    "foodTaken": 2,
+    "reservedVisitor": false,
+    "report": "report.12993",
+    "returnReason": null,
+    "segment": "cave",
+    "usedArts": {
+      "leader": [
+        "punch"
+      ],
+      "amu": [
+        "punch"
+      ]
+    },
+    "restUntil": 121416,
+    "rested": true,
+    "talkUntil": 122001,
+    "permission": true,
+    "pendingAuto": null,
+    "choice": "rescue",
+    "collectGoal": 2,
+    "collectActor": 2,
+    "collectParking": false,
+    "helper": "amu",
+    "collectRouted": false,
+    "attachTicks": 160,
+    "escortAttached": true
+  },
+  "drill": {
+    "id": "drill.30130",
+    "config": "A",
+    "actors": [
+      "leader",
+      "amu"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 153194,
+    "witnessId": "legend.guo",
+    "witnessPoint": [
+      1390,
+      1155
+    ],
+    "nextWave": null
+  }
+}

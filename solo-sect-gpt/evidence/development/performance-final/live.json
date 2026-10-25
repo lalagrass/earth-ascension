@@ -1,0 +1,324 @@
+{
+  "tick": 200789,
+  "status": {
+    "paused": false,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 1325,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1674,
+        530
+      ],
+      "energy": 8788,
+      "hp": 100,
+      "injury": 0,
+      "intent": {
+        "kind": "expedition",
+        "revision": 53,
+        "args": {
+          "target": "camp"
+        }
+      },
+      "blocked": "",
+      "reason": "沿北門實走到林緣",
+      "bag": {
+        "id": "bag.leader",
+        "items": {
+          "ration": 2
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        972,
+        1100
+      ],
+      "energy": 9972,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        1660,
+        520
+      ],
+      "energy": 7755,
+      "hp": 100,
+      "injury": 0,
+      "intent": {
+        "kind": "expedition",
+        "revision": 20,
+        "args": {
+          "target": "camp"
+        }
+      },
+      "blocked": "",
+      "reason": "沿北門實走到林緣",
+      "bag": {
+        "id": "bag.amu",
+        "items": {
+          "ration": 2
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        1688,
+        540
+      ],
+      "energy": 9424,
+      "hp": 100,
+      "injury": 0,
+      "intent": {
+        "kind": "expedition",
+        "revision": 4,
+        "args": {
+          "target": "camp"
+        }
+      },
+      "blocked": "",
+      "reason": "沿北門實走到林緣",
+      "bag": {
+        "id": "bag.lin",
+        "items": {
+          "ration": 2
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        1190.2421875,
+        1210.73046875
+      ],
+      "energy": 2538,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.80071",
+        "actor": "shen",
+        "kind": "train",
+        "args": {
+          "art": "punch",
+          "units": 5
+        },
+        "phase": "init",
+        "progress": 75,
+        "revision": 0,
+        "started": 199755,
+        "units": 4,
+        "station": "yard.4",
+        "checked": "yard.4",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "保留修行窗口（19；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.shen",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "legend.hong",
+      "pos": [
+        985.9921875,
+        1123.74609375
+      ],
+      "energy": 2445,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.81069",
+        "actor": "legend.hong",
+        "kind": "rest",
+        "args": {
+          "until": 7500
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 200667,
+        "units": 0,
+        "station": "safe.7",
+        "checked": "safe.7",
+        "destination": "safe.7"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "精力低於25：先照料自己，恢復75後續有效指令",
+      "bag": {
+        "id": "bag.legend.hong",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "legend.linghu",
+      "pos": [
+        972,
+        1124
+      ],
+      "energy": 3507,
+      "hp": 95,
+      "injury": 0,
+      "activity": {
+        "id": "activity.80823",
+        "actor": "legend.linghu",
+        "kind": "rest",
+        "args": {
+          "until": 7500
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 200428,
+        "units": 0,
+        "station": "safe.8",
+        "checked": "safe.8",
+        "destination": "safe.8",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "精力低於25：先照料自己，恢復75後續有效指令",
+      "bag": {
+        "id": "bag.legend.linghu",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "legend.guo",
+      "pos": [
+        975.42578125,
+        1111.55859375
+      ],
+      "energy": 2415,
+      "hp": 110,
+      "injury": 0,
+      "activity": {
+        "id": "activity.80923",
+        "actor": "legend.guo",
+        "kind": "rest",
+        "args": {
+          "until": 7500
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 200526,
+        "units": 0,
+        "station": "safe.6",
+        "checked": "safe.6",
+        "destination": "safe.6"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "精力低於25：先照料自己，恢復75後續有效指令",
+      "bag": {
+        "id": "bag.legend.guo",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 9,
+        "veg": 32,
+        "herb": 2,
+        "wood": 6,
+        "ration": 2
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 12
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 36
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": {
+    "id": "expedition.54315",
+    "actors": [
+      "amu",
+      "leader",
+      "lin"
+    ],
+    "target": "camp",
+    "phase": "resting",
+    "started": 176607,
+    "packed": [
+      "amu",
+      "lin",
+      "leader"
+    ],
+    "seen": [
+      "forest",
+      "camp"
+    ],
+    "foodTaken": 0,
+    "reservedVisitor": false,
+    "report": null,
+    "returnReason": null,
+    "segment": "camp"
+  },
+  "drill": {
+    "id": "drill.67804",
+    "config": "B",
+    "actors": [
+      "legend.guo",
+      "shen"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 188778,
+    "nextWave": null
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "tick": 32804,
+  "status": {
+    "paused": true,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 3637,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1311.59375,
+        1187.93359375
+      ],
+      "energy": 8298,
+      "hp": 95,
+      "injury": 0,
+      "activity": {
+        "id": "activity.2353",
+        "actor": "leader",
+        "kind": "sleep",
+        "args": {},
+        "phase": "init",
+        "progress": 0,
+        "revision": 8,
+        "started": 32724,
+        "units": 0,
+        "checked": "dorm.bed.3",
+        "destination": "dorm.bed.3"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "作息：夜間睡眠",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        974.1015625,
+        1100
+      ],
+      "energy": 9973,
+      "hp": 90,
+      "injury": 0,
+      "activity": {
+        "id": "activity.2362",
+        "actor": "child",
+        "kind": "move",
+        "args": {
+          "pos": [
+            996,
+            1100
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 0,
+        "started": 32803,
+        "units": 0
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "小禾在院內散步、等家人",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        1292.18359375,
+        1181.625
+      ],
+      "energy": 8644,
+      "hp": 92,
+      "injury": 0,
+      "activity": {
+        "id": "activity.2352",
+        "actor": "amu",
+        "kind": "sleep",
+        "args": {},
+        "phase": "init",
+        "progress": 0,
+        "revision": 5,
+        "started": 32720,
+        "units": 0,
+        "checked": "dorm.bed.1",
+        "destination": "dorm.bed.1"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "作息：夜間睡眠",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 27,
+        "veg": 6,
+        "herb": 2
+      },
+      "capacity": 24
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 3
+      },
+      "capacity": 8
+    },
+    "table": {
+      "id": "table",
+      "items": {},
+      "capacity": 96
+    }
+  },
+  "expedition": null,
+  "drill": {
+    "id": "drill.2244",
+    "config": "A",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 32037,
+    "nextWave": null
+  }
+}

@@ -1,0 +1,22 @@
+{"label":"import normal checkpoint","wall":"2026-10-25T15:19:34.976Z","tick":160041,"source":"/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/evidence/development/u03-finish/five-legends-ten-nodes.save.json"}
+{"label":"return visit hong","wall":"2026-10-25T15:19:46.356Z","tick":160942}
+{"label":"actual food for hong","wall":"2026-10-25T15:19:46.457Z","tick":160951}
+{"label":"same identity recruited hong","wall":"2026-10-25T15:19:46.670Z","tick":160968}
+{"label":"return visit linghu","wall":"2026-10-25T15:19:53.530Z","tick":161516}
+{"label":"actual food for linghu","wall":"2026-10-25T15:19:53.718Z","tick":161526}
+{"label":"same identity recruited linghu","wall":"2026-10-25T15:19:54.070Z","tick":161559}
+{"label":"return visit guo","wall":"2026-10-25T15:20:06.502Z","tick":162555}
+{"label":"actual food for guo","wall":"2026-10-25T15:20:06.594Z","tick":162562}
+{"label":"same identity recruited guo","wall":"2026-10-25T15:20:06.783Z","tick":162578}
+{"label":"two final guests arrived","wall":"2026-10-25T15:20:14.059Z","tick":163159}
+{"label":"normal-eight-plus-two","wall":"2026-10-25T15:20:15.171Z","tick":163167}
+{"label":"physical bag cleared leader","wall":"2026-10-25T15:20:16.766Z","tick":163288}
+{"label":"ready leader","wall":"2026-10-25T15:20:25.730Z","tick":164005}
+{"label":"physical bag cleared amu","wall":"2026-10-25T15:20:26.123Z","tick":164024}
+{"label":"ready amu","wall":"2026-10-25T15:20:40.189Z","tick":165150}
+{"label":"physical bag cleared lin","wall":"2026-10-25T15:20:40.813Z","tick":165178}
+{"label":"ready lin","wall":"2026-10-25T15:20:53.782Z","tick":166217}
+{"label":"cooked expedition provisions","wall":"2026-10-25T15:23:03.277Z","tick":176557}
+{"label":"600 simulated seconds at four speed","wall":"2026-10-25T15:25:35.132Z","tick":188673}
+{"label":"normal-loaded-world-after-600s","wall":"2026-10-25T15:25:39.871Z","tick":188768}
+{"label":"passed A43 local performance","wall":"2026-10-25T15:25:39.971Z","tick":188768,"layer":"U","seed":11,"reference":{"platform":"darwin","release":"25.2.0","cpu":"Apple M2","memory":8589934592,"browser":"156.0.8078.47","viewport":{"width":1440,"height":900}},"start":176649,"end":188768,"wallMs":151723,"actualRate":3.9937913170712416,"frameWorkP95":14.900000095367432,"maxFrameGapMs":650,"frames":8713,"residents":8,"visitors":2,"expedition":{"id":"expedition.54315","actors":["amu","leader","lin"],"target":"camp","phase":"resting","started":176607,"packed":["amu","lin","leader"],"seen":["forest","camp"],"foodTaken":0,"reservedVisitor":false,"report":null,"returnReason":null,"segment":"camp"},"drill":{"id":"drill.54361","config":"B","actors":["legend.guo","shen"],"status":"completed","wave":2,"opponents":["training.3","training.4"],"allOpponents":["training.1","training.2","training.3","training.4"],"started":176644,"nextWave":null}}

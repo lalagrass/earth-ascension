@@ -1,0 +1,248 @@
+{
+  "tick": 109016,
+  "status": {
+    "paused": false,
+    "speed": 1,
+    "audio": {
+      "state": "running",
+      "emitted": 1,
+      "muted": true,
+      "volume": 0.3
+    },
+    "lowMotion": true
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1100,
+        1145
+      ],
+      "energy": 8877,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.9403",
+        "actor": "leader",
+        "kind": "train",
+        "args": {
+          "art": "punch",
+          "units": 5
+        },
+        "phase": "init",
+        "progress": 145,
+        "revision": 26,
+        "started": 107984,
+        "units": 3,
+        "station": "yard.1",
+        "checked": "yard.1",
+        "destination": "yard.1",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "保留修行窗口（17；勤勉-2／顧人-2）",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        996,
+        1100
+      ],
+      "energy": 9967,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        930.00390625,
+        1160.00390625
+      ],
+      "energy": 9907,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.9460",
+        "actor": "amu",
+        "kind": "eat",
+        "args": {},
+        "phase": "init",
+        "progress": 107,
+        "revision": 7,
+        "started": 108900,
+        "units": 0,
+        "station": "dining.1",
+        "checked": "dining.1",
+        "destination": "dining.1",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "作息：用餐",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        960.33203125,
+        1160.1171875
+      ],
+      "energy": 8428,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.9463",
+        "actor": "lin",
+        "kind": "eat",
+        "args": {},
+        "phase": "init",
+        "progress": 34,
+        "revision": 0,
+        "started": 108905,
+        "units": 0,
+        "station": "dining.2",
+        "checked": "dining.2",
+        "destination": "dining.2",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "作息：用餐",
+      "bag": {
+        "id": "bag.lin",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        2094.62890625,
+        281.5234375
+      ],
+      "energy": 6200,
+      "hp": 0,
+      "injury": 52,
+      "intent": {
+        "kind": "expedition",
+        "revision": 3,
+        "args": {
+          "target": "cave"
+        }
+      },
+      "blocked": "倒地；可請求救援",
+      "reason": "倒地待救",
+      "bag": {
+        "id": "bag.shen",
+        "items": {
+          "ration": 1
+        },
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 30,
+        "veg": 24,
+        "herb": 2,
+        "ration": 2
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 12
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 15
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": {
+    "id": "expedition.9004",
+    "actors": [
+      "shen"
+    ],
+    "target": "cave",
+    "phase": "gateFight",
+    "started": 104592,
+    "packed": [
+      "shen"
+    ],
+    "seen": [
+      "forest",
+      "camp",
+      "valley"
+    ],
+    "foodTaken": 0,
+    "reservedVisitor": false,
+    "report": null,
+    "returnReason": null,
+    "segment": "valley",
+    "restUntil": 105882,
+    "rested": true,
+    "battleStarted": 106265,
+    "usedArts": {
+      "shen": [
+        "punch"
+      ]
+    },
+    "rescue": {
+      "requested": 106631,
+      "ready": 109031,
+      "helpers": [],
+      "phase": "waiting",
+      "returned": [],
+      "costPaid": false
+    }
+  },
+  "drill": {
+    "id": "drill.8498",
+    "config": "A",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 100337,
+    "nextWave": null
+  }
+}

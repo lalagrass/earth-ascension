@@ -1,0 +1,235 @@
+{
+  "tick": 114387,
+  "status": {
+    "paused": true,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 474,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        930.3203125,
+        1160.77734375
+      ],
+      "energy": 9004,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.23755",
+        "actor": "leader",
+        "kind": "eat",
+        "args": {},
+        "phase": "init",
+        "progress": 113,
+        "revision": 33,
+        "started": 114004,
+        "units": 0,
+        "station": "dining.1",
+        "checked": "dining.1",
+        "destination": "dining.1",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "作息：用餐",
+      "bag": {
+        "id": "bag.leader",
+        "items": {
+          "ration": 1
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        972,
+        1100
+      ],
+      "energy": 9840,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        959.734375,
+        1160.08984375
+      ],
+      "energy": 9988,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.24166",
+        "actor": "amu",
+        "kind": "eat",
+        "args": {},
+        "phase": "init",
+        "progress": 113,
+        "revision": 14,
+        "started": 114260,
+        "units": 0,
+        "station": "dining.2",
+        "checked": "dining.2",
+        "destination": "dining.2",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "作息：用餐",
+      "bag": {
+        "id": "bag.amu",
+        "items": {
+          "ration": 1
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        1787.19921875,
+        470.17578125
+      ],
+      "energy": 7829,
+      "hp": 100,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "此人已停工；仍可自理",
+      "bag": {
+        "id": "bag.lin",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        1100,
+        1145
+      ],
+      "energy": 4762,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.22448",
+        "actor": "shen",
+        "kind": "train",
+        "args": {
+          "art": "punch",
+          "units": 5
+        },
+        "phase": "init",
+        "progress": 239,
+        "revision": 0,
+        "started": 113189,
+        "units": 4,
+        "station": "yard.1",
+        "checked": "yard.1",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "物資已達標，練功與自由（20；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.shen",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 30,
+        "veg": 16,
+        "herb": 2,
+        "ration": 2
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 7
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 17
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": {
+    "id": "expedition.14647",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "target": "cave",
+    "phase": "returned",
+    "started": 108249,
+    "packed": [
+      "amu",
+      "leader"
+    ],
+    "seen": [
+      "forest",
+      "camp",
+      "valley",
+      "cave"
+    ],
+    "foodTaken": 0,
+    "reservedVisitor": false,
+    "report": "report.21298",
+    "returnReason": "玩家召回",
+    "segment": "cave",
+    "restUntil": 109690,
+    "rested": true,
+    "talkUntil": 110288,
+    "permission": true,
+    "unloaded": true
+  },
+  "drill": {
+    "id": "drill.8498",
+    "config": "A",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 100337,
+    "nextWave": null
+  }
+}

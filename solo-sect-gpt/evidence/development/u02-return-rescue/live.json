@@ -1,0 +1,253 @@
+{
+  "tick": 112700,
+  "status": {
+    "paused": false,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 931,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        924,
+        1100
+      ],
+      "energy": 9254,
+      "hp": 100,
+      "injury": 0,
+      "intent": {
+        "kind": "return",
+        "revision": 33,
+        "args": {}
+      },
+      "blocked": "",
+      "reason": "玩家改派",
+      "bag": {
+        "id": "bag.leader",
+        "items": {
+          "ration": 1
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        948,
+        1100
+      ],
+      "energy": 9938,
+      "hp": 90,
+      "injury": 0,
+      "activity": {
+        "id": "activity.21028",
+        "actor": "child",
+        "kind": "encourage",
+        "args": {
+          "target": "amu"
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 112303,
+        "units": 0,
+        "blocked": "對方正在忙，可先叫停再邀"
+      },
+      "intent": null,
+      "blocked": "對方正在忙，可先叫停再邀",
+      "reason": "小禾想陪伴受挫的家人",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        900,
+        1100
+      ],
+      "energy": 8880,
+      "hp": 100,
+      "injury": 0,
+      "intent": {
+        "kind": "return",
+        "revision": 14,
+        "args": {}
+      },
+      "blocked": "",
+      "reason": "玩家改派",
+      "bag": {
+        "id": "bag.amu",
+        "items": {
+          "ration": 1
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        622,
+        1744
+      ],
+      "energy": 6811,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.20850",
+        "actor": "lin",
+        "kind": "gather",
+        "args": {
+          "item": "water"
+        },
+        "phase": "gather",
+        "progress": 0,
+        "revision": 0,
+        "started": 112185,
+        "units": 0,
+        "load": 4,
+        "checked": "water.take",
+        "destination": "water.take.queue",
+        "blocked": "候位：water.take／沈禾"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "低於水目標6（48；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.lin",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        600.18359375,
+        1719.66015625
+      ],
+      "energy": 8155,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.20673",
+        "actor": "shen",
+        "kind": "gather",
+        "args": {
+          "item": "water"
+        },
+        "phase": "gather",
+        "progress": 20,
+        "revision": 0,
+        "started": 112069,
+        "units": 2,
+        "load": 4,
+        "checked": "water.take",
+        "destination": "water.take",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "低於水目標6（49；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.shen",
+        "items": {
+          "water": 4
+        },
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 30,
+        "veg": 20,
+        "herb": 2,
+        "ration": 2
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 5
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 22
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": {
+    "id": "expedition.14647",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "target": "cave",
+    "phase": "return",
+    "started": 108249,
+    "packed": [
+      "amu",
+      "leader"
+    ],
+    "seen": [
+      "forest",
+      "camp",
+      "valley",
+      "cave"
+    ],
+    "foodTaken": 0,
+    "reservedVisitor": true,
+    "report": null,
+    "returnReason": null,
+    "segment": "cave",
+    "restUntil": 109690,
+    "rested": true,
+    "talkUntil": 110288,
+    "permission": true,
+    "choice": "rescue",
+    "collectGoal": 0,
+    "collectActor": 0,
+    "pendingAuto": null,
+    "collectParking": false,
+    "helper": "amu",
+    "attachTicks": 160,
+    "escortAttached": true
+  },
+  "drill": {
+    "id": "drill.8498",
+    "config": "A",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 100337,
+    "nextWave": null
+  }
+}

@@ -1,0 +1,277 @@
+{
+  "tick": 166224,
+  "status": {
+    "paused": false,
+    "speed": 1,
+    "audio": {
+      "state": "running",
+      "emitted": 807,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1099.98828125,
+        1335.08984375
+      ],
+      "energy": 9600,
+      "hp": 100,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "恢復完成",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        951.90234375,
+        1100
+      ],
+      "energy": 9940,
+      "hp": 90,
+      "injury": 0,
+      "activity": {
+        "id": "activity.42915",
+        "actor": "child",
+        "kind": "move",
+        "args": {
+          "pos": [
+            948,
+            1100
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 0,
+        "started": 166203,
+        "units": 0
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "小禾在院內散步、等家人",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        1060.3359375,
+        1335.83984375
+      ],
+      "energy": 6754,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.42215",
+        "actor": "amu",
+        "kind": "sleep",
+        "args": {},
+        "phase": "init",
+        "progress": 0,
+        "revision": 16,
+        "started": 165580,
+        "units": 0,
+        "checked": "annex.bed.2",
+        "destination": "annex.bed.2",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "作息：夜間睡眠",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        1190,
+        1070
+      ],
+      "energy": 9921,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.42788",
+        "actor": "lin",
+        "kind": "paired",
+        "partner": "shen",
+        "session": "activity.42786",
+        "args": {},
+        "progress": 0,
+        "phase": "paired",
+        "revision": 0,
+        "started": 166095
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "此人已停工；仍可自理",
+      "bag": {
+        "id": "bag.lin",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        1181.6015625,
+        1430
+      ],
+      "energy": 9935,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.42786",
+        "actor": "shen",
+        "kind": "talk",
+        "args": {
+          "target": "lin"
+        },
+        "phase": "approach",
+        "progress": 0,
+        "revision": 0,
+        "started": 166095,
+        "units": 0,
+        "partner": "lin",
+        "session": "activity.42786",
+        "pos": [
+          1170,
+          1070
+        ],
+        "otherPos": [
+          1190,
+          1070
+        ],
+        "checked": "hall.greet",
+        "destination": "hall.greet"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "自由時段：與同門交談（22；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.shen",
+        "items": {
+          "veg": 2,
+          "water": 1
+        },
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 9,
+        "veg": 12,
+        "herb": 2,
+        "wood": 2,
+        "ration": 4,
+        "staff": 1
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 8
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 15
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": {
+    "id": "expedition.10761",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "target": "cave",
+    "phase": "returned",
+    "started": 120244,
+    "packed": [
+      "amu",
+      "leader"
+    ],
+    "seen": [
+      "forest",
+      "camp",
+      "valley",
+      "cave"
+    ],
+    "foodTaken": 2,
+    "reservedVisitor": false,
+    "report": "report.12993",
+    "returnReason": null,
+    "segment": "cave",
+    "usedArts": {
+      "leader": [
+        "punch"
+      ],
+      "amu": [
+        "punch"
+      ]
+    },
+    "restUntil": 121416,
+    "rested": true,
+    "talkUntil": 122001,
+    "permission": true,
+    "pendingAuto": null,
+    "choice": "rescue",
+    "collectGoal": 2,
+    "collectActor": 2,
+    "collectParking": false,
+    "helper": "amu",
+    "collectRouted": false,
+    "attachTicks": 160,
+    "escortAttached": true
+  },
+  "drill": {
+    "id": "drill.30130",
+    "config": "A",
+    "actors": [
+      "leader",
+      "amu"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 153194,
+    "witnessId": "legend.guo",
+    "witnessPoint": [
+      1390,
+      1155
+    ],
+    "nextWave": null
+  }
+}

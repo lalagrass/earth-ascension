@@ -1,0 +1,14 @@
+✔ determinism survives people insertion order and save/resume (5689.496333ms)
+✔ scheduled commands preserve execution tick, order and save-boundary behavior (14.059583ms)
+✔ A17 hits are geometry based, one target per action, finite windup/recovery (163.343ms)
+✔ A27 lesson reaches a real failed interception and a legal success (571.670333ms)
+✔ A33 actual travel and return fulfills rescue and food promises independently (9114.242916ms)
+✔ A35 in-flight construction, cooking, combat and conversation roundtrip hashes (9747.29425ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 19687.274459

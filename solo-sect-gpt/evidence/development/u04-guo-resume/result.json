@@ -1,0 +1,235 @@
+{
+  "layer": "U",
+  "status": "checkpoint",
+  "error": null,
+  "errors": [],
+  "tick": 54783,
+  "commands": [
+    {
+      "type": "goals",
+      "water": 6,
+      "meal": 16,
+      "id": "ui.1",
+      "tick": 31,
+      "seq": 1,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "dorm",
+      "id": "ui.2",
+      "tick": 56,
+      "seq": 2,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "hall",
+      "id": "ui.3",
+      "tick": 4668,
+      "seq": 3,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "train",
+      "args": {},
+      "id": "ui.4",
+      "tick": 8437,
+      "seq": 4,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "yard",
+      "id": "ui.5",
+      "tick": 11607,
+      "seq": 5,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "story",
+      "actor": "leader",
+      "node": "guo.1",
+      "id": "ui.6",
+      "tick": 15327,
+      "seq": 6,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "yard",
+      "id": "ui.7",
+      "tick": 34595,
+      "seq": 7,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "story",
+      "actor": "leader",
+      "node": "guo.1",
+      "id": "ui.8",
+      "tick": 39011,
+      "seq": 8,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "train",
+      "args": {},
+      "id": "ui.9",
+      "tick": 39865,
+      "seq": 9,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "amu",
+      "kind": "train",
+      "args": {},
+      "id": "ui.10",
+      "tick": 39872,
+      "seq": 10,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "amu",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.11",
+      "tick": 48624,
+      "seq": 11,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "amu",
+      "id": "ui.12",
+      "tick": 50115,
+      "seq": 12,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.13",
+      "tick": 50123,
+      "seq": 13,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "leader",
+      "id": "ui.14",
+      "tick": 51685,
+      "seq": 14,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "drill",
+      "config": "A",
+      "actors": [
+        "amu",
+        "leader"
+      ],
+      "id": "ui.15",
+      "tick": 51710,
+      "seq": 15,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "amu",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.16",
+      "tick": 52496,
+      "seq": 16,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "amu",
+      "id": "ui.17",
+      "tick": 53026,
+      "seq": 17,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "task",
+      "actor": "leader",
+      "kind": "rest",
+      "args": {},
+      "id": "ui.18",
+      "tick": 53034,
+      "seq": 18,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "stop",
+      "actor": "leader",
+      "id": "ui.19",
+      "tick": 53920,
+      "seq": 19,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "type": "story",
+      "actor": "leader",
+      "node": "guo.2",
+      "id": "ui.20",
+      "tick": 53931,
+      "seq": 20,
+      "result": {
+        "ok": true
+      }
+    }
+  ]
+}

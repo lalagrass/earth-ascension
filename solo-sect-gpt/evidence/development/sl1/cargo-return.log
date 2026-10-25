@@ -1,0 +1,12 @@
+✔ scheduled commands preserve execution tick, order and save-boundary behavior (172.787625ms)
+✔ A33 actual travel and return fulfills rescue and food promises independently (9415.223833ms)
+✔ A35 in-flight construction, cooking, combat and conversation roundtrip hashes (9253.475125ms)
+✔ A36 encoder snapshots before asynchronous hashing (10.2535ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18760.867417

@@ -1,0 +1,148 @@
+{
+  "tick": 54722,
+  "status": {
+    "paused": false,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 2016,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1355.078125,
+        1201.66015625
+      ],
+      "energy": 8720,
+      "hp": 110,
+      "injury": 0,
+      "activity": {
+        "id": "activity.4640",
+        "actor": "leader",
+        "kind": "eat",
+        "args": {},
+        "phase": "init",
+        "progress": 0,
+        "revision": 12,
+        "started": 54644,
+        "units": 0,
+        "station": "dining.1",
+        "checked": "dining.1",
+        "destination": "dining.1"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "作息：用餐",
+      "bag": {
+        "id": "bag.leader",
+        "items": {
+          "veg": 1
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        948,
+        1100
+      ],
+      "energy": 9479,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        1327.4453125,
+        1224.07421875
+      ],
+      "energy": 7902,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.4638",
+        "actor": "amu",
+        "kind": "eat",
+        "args": {},
+        "phase": "init",
+        "progress": 0,
+        "revision": 5,
+        "started": 54640,
+        "units": 0,
+        "station": "dining.1",
+        "checked": "dining.1",
+        "destination": "dining.1"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "作息：用餐",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 21,
+        "veg": 2,
+        "herb": 2
+      },
+      "capacity": 24
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 1
+      },
+      "capacity": 8
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 4
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": null,
+  "drill": {
+    "id": "drill.4497",
+    "config": "A",
+    "actors": [
+      "leader",
+      "amu"
+    ],
+    "status": "exiting",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 53931,
+    "nextWave": null
+  }
+}

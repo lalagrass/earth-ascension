@@ -1,0 +1,141 @@
+{
+  "tick": 317,
+  "status": {
+    "paused": true,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 45,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        952.66796875,
+        1155.71875
+      ],
+      "energy": 9987,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.7",
+        "actor": "leader",
+        "kind": "eat",
+        "args": {},
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 284,
+        "units": 0,
+        "station": "dining.2",
+        "checked": "dining.2",
+        "destination": "dining.2"
+      },
+      "intent": null,
+      "blocked": "候路／禮讓",
+      "reason": "作息：用餐",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        960.69921875,
+        1167.07421875
+      ],
+      "energy": 9923,
+      "hp": 90,
+      "injury": 0,
+      "activity": {
+        "id": "activity.2",
+        "actor": "child",
+        "kind": "eat",
+        "args": {},
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 3,
+        "units": 0,
+        "station": "dining.1",
+        "checked": "dining.1",
+        "destination": "dining.1",
+        "blocked": "候位：dining.1／雲生"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "作息：用餐",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        952,
+        1184
+      ],
+      "energy": 9978,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.4",
+        "actor": "amu",
+        "kind": "eat",
+        "args": {},
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 20,
+        "units": 0,
+        "station": "dining.1",
+        "checked": "dining.1",
+        "destination": "dining.1.queue",
+        "blocked": "候位：dining.1／小禾"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "作息：用餐",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 30,
+        "veg": 8,
+        "herb": 2
+      },
+      "capacity": 24
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 4
+      },
+      "capacity": 8
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 5
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": null,
+  "drill": null
+}

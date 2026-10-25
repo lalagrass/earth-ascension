@@ -1,0 +1,133 @@
+{
+  "tick": 4799,
+  "status": {
+    "paused": false,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 1,
+      "muted": true,
+      "volume": 0.3
+    },
+    "lowMotion": true
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        712.77734375,
+        1401.86328125
+      ],
+      "energy": 8231,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.434",
+        "actor": "leader",
+        "kind": "gather",
+        "args": {
+          "item": "water"
+        },
+        "phase": "gather",
+        "progress": 0,
+        "revision": 1,
+        "started": 4384,
+        "units": 0,
+        "blocked": "目的容量已預約",
+        "load": 2,
+        "checked": "water.take",
+        "destination": "water.take"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "低於水目標6（49；勤勉2／顧人2）",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        996,
+        1100
+      ],
+      "energy": 9868,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        1099.97265625,
+        1145.015625
+      ],
+      "energy": 6656,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.460",
+        "actor": "amu",
+        "kind": "train",
+        "args": {
+          "art": "punch",
+          "units": 5
+        },
+        "phase": "init",
+        "progress": 4,
+        "revision": 0,
+        "started": 4620,
+        "units": 0,
+        "station": "yard.1",
+        "checked": "yard.1",
+        "destination": "yard.1",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "物資已達標，練功與自由（20；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 30,
+        "veg": 8,
+        "herb": 2,
+        "wood": 4
+      },
+      "capacity": 24
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 6
+      },
+      "capacity": 8
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 8
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": null,
+  "drill": null
+}

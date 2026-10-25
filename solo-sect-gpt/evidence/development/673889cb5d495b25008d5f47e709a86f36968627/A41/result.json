@@ -1,0 +1,34 @@
+{
+  "caseId": "A41",
+  "status": "passed",
+  "commit": "673889cb5d495b25008d5f47e709a86f36968627",
+  "sourceCommit": "673889cb5d495b25008d5f47e709a86f36968627",
+  "rulesVersion": "chapter1-1",
+  "mapVersion": "gpt-world-1",
+  "suiteSeeds": [
+    11,
+    29,
+    47,
+    71,
+    101
+  ],
+  "seedContext": "See linked trace/save/result; model fixtures default to11 unless their test states otherwise.",
+  "evidenceReuse": "Long UI journeys span development versions; earlier unchanged paths are reused explicitly, with affected-flow revalidation linked.",
+  "environment": "Node24.13 / Chrome156 / macOS26.2 / M2 8GiB",
+  "expected": "docs/ACCEPTANCE.md A41",
+  "operations": "Exact model fixtures and linked normal UI command/event traces; saves retain actual tick and speed context.",
+  "layers": [
+    "U",
+    "V"
+  ],
+  "actual": "兩尺寸、分層屋頂、床與動作／錨點",
+  "evidence": [
+    "evidence/development/presentation/home-s2-build-1280.png",
+    "evidence/development/visual-final/bed-sleep-final.png",
+    "evidence/development/visual-final/bed-1280.png",
+    "evidence/development/founding-final/scene-valley.png",
+    "evidence/development/sl1/asset-check-final.log"
+  ],
+  "author": "GPT / Codex; author self-review",
+  "limits": []
+}

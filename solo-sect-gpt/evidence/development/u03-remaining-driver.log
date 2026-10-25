@@ -1,0 +1,12 @@
+import normal checkpoint
+departed linghu
+rested leader
+rested amu
+arrived guo
+fulfilled guo.1
+guo-1
+Error: timeout fulfilled guo.2
+    at Object.wait (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:11:394)
+    at async story (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/u03-remaining-legends.mjs:3:117)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/u03-remaining-legends.mjs:8:42
+interrupted

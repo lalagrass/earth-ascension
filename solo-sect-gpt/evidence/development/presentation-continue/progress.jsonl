@@ -1,0 +1,12 @@
+{"label":"import normal checkpoint","wall":"2026-10-25T15:21:22.038Z","tick":166281,"source":"/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/evidence/development/presentation/interrupted.save.json"}
+{"label":"normal canvas move to clear practice ground","wall":"2026-10-25T15:21:25.121Z","tick":166513}
+{"label":"finite recovery step","wall":"2026-10-25T15:21:27.288Z","tick":166551}
+{"label":"finite recovery intercept","wall":"2026-10-25T15:21:29.547Z","tick":166589}
+{"label":"real tea brewed","wall":"2026-10-25T15:21:37.704Z","tick":167216}
+{"label":"real tea transported and consumed","wall":"2026-10-25T15:21:43.626Z","tick":167694}
+{"label":"five-arts-and-tea","wall":"2026-10-25T15:21:44.827Z","tick":167705}
+{"label":"real herb crop watered","wall":"2026-10-25T15:21:57.499Z","tick":168711}
+{"label":"herb growth completed","wall":"2026-10-25T15:22:27.659Z","tick":171124}
+{"label":"herb-cycle","wall":"2026-10-25T15:22:28.759Z","tick":171132}
+{"label":"passed presentation continuation and quota","wall":"2026-10-25T15:22:29.879Z","tick":171134,"sentinels":["Earth untouched","Life untouched"],"audio":{"state":"running","emitted":865,"muted":false,"volume":0.3},"heard":false}
+{"label":"presentation-complete","wall":"2026-10-25T15:22:30.899Z","tick":171134}

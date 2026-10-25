@@ -1,0 +1,130 @@
+{
+  "tick": 23309,
+  "status": {
+    "paused": false,
+    "speed": 4,
+    "audio": {
+      "state": "running",
+      "emitted": 3104,
+      "muted": false,
+      "volume": 0.3
+    },
+    "lowMotion": false
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1340,
+        1220
+      ],
+      "energy": 8804,
+      "hp": 79,
+      "injury": 0,
+      "activity": {
+        "id": "activity.1895",
+        "actor": "leader",
+        "kind": "story",
+        "args": {
+          "node": "linghu.2",
+          "partner": "amu"
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 8,
+        "started": 22300,
+        "units": 0,
+        "otherRouted": true,
+        "checked": "story:linghu.2",
+        "destination": "story:linghu.2",
+        "blocked": "",
+        "intro": 400,
+        "introFinished": true,
+        "demo": {
+          "count": 3,
+          "lastEnd": 23291,
+          "session": "lesson.1981",
+          "failSeen": true
+        }
+      },
+      "intent": {
+        "kind": "story",
+        "args": {
+          "node": "linghu.2",
+          "partner": "amu"
+        },
+        "revision": 8
+      },
+      "blocked": "",
+      "reason": "玩家指令：約定",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        996,
+        1100
+      ],
+      "energy": 9933,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        1362,
+        1220
+      ],
+      "energy": 8272,
+      "hp": 79,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "接受有限約定",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 30,
+        "veg": 4,
+        "herb": 2
+      },
+      "capacity": 24
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 2
+      },
+      "capacity": 8
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 6
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": null,
+  "drill": null
+}

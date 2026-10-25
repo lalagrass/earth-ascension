@@ -1,0 +1,7 @@
+{"label":"import normal checkpoint","wall":"2026-10-25T15:16:28.906Z","tick":110470,"source":"/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/evidence/development/u02-return-rescue/before-second-choice.save.json"}
+{"label":"before-second-choice","wall":"2026-10-25T15:16:30.163Z","tick":110474}
+{"label":"real assistance started","wall":"2026-10-25T15:16:30.956Z","tick":110524}
+{"label":"second-rescue-attaching","wall":"2026-10-25T15:16:32.224Z","tick":110531}
+{"label":"person rescued after food","wall":"2026-10-25T15:17:01.906Z","tick":112894}
+{"label":"food-then-person-returned","wall":"2026-10-25T15:17:03.095Z","tick":112910}
+{"label":"passed U02 continuation","wall":"2026-10-25T15:17:03.259Z","tick":112910,"reports":{"report.12703":{"id":"report.12703","expedition":"expedition.8944","actors":["amu","leader"],"choice":"food","summary":"prior development checkpoint report","food":4},"report.21894":{"id":"report.21894","expedition":"expedition.14647","actors":["amu","leader"],"started":108249,"ended":112875,"choice":"rescue","food":0,"rescued":true,"usedArts":{}}},"promiseHistory":[{"choice":"food","tick":105818,"status":"fulfilled","foodExpected":4,"personExpected":false,"foodDelivered":4,"personDelivered":false,"expedition":"expedition.8944"}]}

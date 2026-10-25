@@ -1,7 +1,7 @@
 {
   "version": 1,
   "author": "GPT / Codex",
-  "status": "candidate",
+  "status": "validated_author_self_review",
   "coordinateSpace": "DU; procedural source is authoritative, no baked sprite frames",
   "rulesVersion": "chapter1-1",
   "mapVersion": "gpt-world-1",
@@ -19,7 +19,7 @@
           2400,
           1800
         ],
-        "transparent": true,
+        "transparent": false,
         "colorMode": "sRGB"
       },
       "provenance": {
@@ -67,7 +67,7 @@
           2400,
           1800
         ],
-        "transparent": true,
+        "transparent": false,
         "colorMode": "sRGB"
       },
       "provenance": {
@@ -115,7 +115,7 @@
           2400,
           1800
         ],
-        "transparent": true,
+        "transparent": false,
         "colorMode": "sRGB"
       },
       "provenance": {
@@ -163,7 +163,7 @@
           2400,
           1800
         ],
-        "transparent": true,
+        "transparent": false,
         "colorMode": "sRGB"
       },
       "provenance": {
@@ -211,7 +211,7 @@
           256,
           256
         ],
-        "transparent": true,
+        "transparent": false,
         "colorMode": "sRGB"
       },
       "provenance": {
@@ -259,7 +259,7 @@
           256,
           256
         ],
-        "transparent": true,
+        "transparent": false,
         "colorMode": "sRGB"
       },
       "provenance": {
@@ -307,7 +307,7 @@
           256,
           256
         ],
-        "transparent": true,
+        "transparent": false,
         "colorMode": "sRGB"
       },
       "provenance": {
@@ -355,7 +355,7 @@
           256,
           256
         ],
-        "transparent": true,
+        "transparent": false,
         "colorMode": "sRGB"
       },
       "provenance": {
@@ -403,7 +403,7 @@
           256,
           256
         ],
-        "transparent": true,
+        "transparent": false,
         "colorMode": "sRGB"
       },
       "provenance": {
@@ -451,7 +451,7 @@
           256,
           256
         ],
-        "transparent": true,
+        "transparent": false,
         "colorMode": "sRGB"
       },
       "provenance": {
@@ -15491,8 +15491,8 @@
           0,
           0
         ],
-        "transparent": true,
-        "colorMode": "sRGB"
+        "transparent": null,
+        "colorMode": null
       },
       "provenance": {
         "kind": "original",
@@ -15527,8 +15527,8 @@
           0,
           0
         ],
-        "transparent": true,
-        "colorMode": "sRGB"
+        "transparent": null,
+        "colorMode": null
       },
       "provenance": {
         "kind": "original",
@@ -15563,8 +15563,8 @@
           0,
           0
         ],
-        "transparent": true,
-        "colorMode": "sRGB"
+        "transparent": null,
+        "colorMode": null
       },
       "provenance": {
         "kind": "original",
@@ -15599,8 +15599,8 @@
           0,
           0
         ],
-        "transparent": true,
-        "colorMode": "sRGB"
+        "transparent": null,
+        "colorMode": null
       },
       "provenance": {
         "kind": "original",
