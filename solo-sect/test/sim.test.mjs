@@ -108,3 +108,50 @@ test('心情低落時工作分數下降、休閒上升；多慮放大壞事', ()
 test('舊（v0.5）存檔缺心情欄位也能讀入並補預設', () => {
   const s = createState(54); for (const d of s.ds) { delete d.mood; delete d.thoughts; } const r = load(save(s)); assert.ok(r.ok); assert.equal(r.state.ds[0].mood, 50);
 });
+
+// v0.7 心智與社交
+import { relAdd, compat, aff, seasonOf, defaultAnswers, personalityFrom, recruit as recruit7, canRecruit as canRec7, migrate, moodParts } from '../src/sim.mjs';
+import { RULES_VERSION, RECRUIT_POOL, DAY, SEASON_DAYS } from '../src/data.mjs';
+const run7 = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
+test('決策可解釋：最高分＝基礎×作息×性格×心情＋雜訊', () => {
+  const s = createState(71); tick(s); const w = s.ds[0].why[0]; assert.ok(w && w.f);
+  assert.ok(Math.abs(w.f.base * w.f.sched * w.f.trait * w.f.mood + w.f.noise - w.score) < 1);
+});
+test('雙向好感：對立性格的人好感長得慢，且兩方向可以不同', () => {
+  const s = createState(72); const [hero, senior, cousin] = s.ds; // 勤奮×貪玩對立、多慮欣賞溫和
+  assert.ok(compat(hero, cousin) < 1 && compat(hero, senior) > 1);
+  relAdd(s, hero, senior, 10); relAdd(s, hero, cousin, 10);
+  assert.ok(aff(s, hero, senior) > aff(s, hero, cousin)); assert.notEqual(aff(s, cousin, hero), aff(s, senior, hero));
+});
+test('鼓勵：心情低落者會被成年同門陪伴並得到「被鼓勵」', () => {
+  const s = createState(73); s.res.food = 99; const c = s.ds[2]; let got = false;
+  for (let i = 0; i < 4 * 300 && !got; i++) { c.mood = Math.min(c.mood, 20); tick(s); got = c.thoughts.some((t) => t.id === 'encouraged'); }
+  assert.ok(got);
+});
+test('樂趣需求：會衰減，閒坐看雲補回', () => {
+  const s = createState(74); s.res.food = 99; let leisure = 0; for (let i = 0; i < 4 * 1200; i++) { tick(s); for (const d of s.ds) if (d.task?.act === 'leisure') leisure++; }
+  assert.ok(leisure > 0); assert.ok(s.ds.every((d) => d.needs.fun > 0));
+});
+test('三問心印：預設答案沿用天性；改答案改變明面性格，天性為暗', () => {
+  const p = RECRUIT_POOL[0]; const def = personalityFrom(p); assert.ok(p.personality.every((t) => def.personality.includes(t)));
+  const r = personalityFrom(p, [1, 2, 2]); assert.deepEqual(r.known, ['sociable', 'worrier']); assert.equal(r.personality.length, 3); assert.ok(!r.known.includes(r.personality[2]));
+  const s = createState(75); s.rep = 99; s.res.food = 20; s.fac.dorm.stage = 2; const o = recruit7(s, [1, 2, 2]); assert.ok(o.ok); assert.deepEqual(o.d.known, ['sociable', 'worrier']);
+});
+test('特質揭露：初始三人第二特質相處 300 秒後才看得出來', () => {
+  const s = createState(76); s.res.food = 99; assert.equal(s.ds[0].known.length, 1); run7(s, 320); assert.ok(s.ds.every((d) => d.known.length === 2));
+});
+test('季節：每季 7 日，冬天菜長得慢、春天心情加成', () => {
+  const s = createState(77); assert.equal(seasonOf(s).id, 'spring'); s.t = DAY * SEASON_DAYS * 3 + 1; assert.equal(seasonOf(s).id, 'winter'); assert.ok(seasonOf(s).grow > 1);
+  s.t = 1; assert.ok(moodParts(s.ds[0], s).some(([n]) => n === '春天'));
+});
+test('心情能回升：10 日平均心情 ≥ 40，低落時間 < 15%', () => {
+  const s = createState(78); let sum = 0, n = 0, low = 0; for (let i = 0; i < 4 * 6000; i++) { tick(s); if (i % 40 === 0) for (const d of s.ds) { sum += d.mood; n++; if (d.mood < 30) low++; } }
+  assert.ok(sum / n >= 40, `avg ${sum / n}`); assert.ok(low / n < 0.15, `low ${low / n}`);
+});
+test('存檔帶規則版本；v0.5 與 v0.6 形狀的舊檔都能讀入並遷移', () => {
+  const s = createState(79); run7(s, 30); assert.equal(JSON.parse(save(s)).rules, RULES_VERSION);
+  const v06 = JSON.parse(save(s)); delete v06.rules; delete v06.aff; for (const d of v06.ds) { delete d.known; delete d.together; delete d.needs.fun; delete d.why; }
+  const r6 = load(JSON.stringify(v06)); assert.ok(r6.ok); assert.equal(r6.state.migratedFrom, '0.6'); assert.equal(r6.state.rules, RULES_VERSION); assert.ok(Object.keys(r6.state.aff).length === 6);
+  const v05 = JSON.parse(JSON.stringify(v06)); for (const d of v05.ds) { delete d.mood; delete d.thoughts; delete d.personality; }
+  const r5 = load(JSON.stringify(v05)); assert.ok(r5.ok); assert.equal(r5.state.migratedFrom, '0.5'); assert.deepEqual(r5.state.ds[0].personality, ['diligent', 'worrier']); tick(r5.state);
+});

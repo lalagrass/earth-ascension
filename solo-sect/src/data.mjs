@@ -67,7 +67,7 @@ export const FACILITIES = [
   { id: 'veg', name: '菜園', node: 'veg', stages: [{ name: '荒地菜畦', sprite: 'grass', offers: ['farm'], plots: 4 }] },
   { id: 'herb', name: '藥園', node: 'herb', stages: [{ name: '野藥圃', sprite: 'herb', offers: ['forage'] }] },
   { id: 'forest', name: '林緣枯木', node: 'forest2', stages: [{ name: '枯木', sprite: 'log', offers: ['chop'] }] },
-  { id: 'store', name: '院倉', node: 'court', stages: [{ name: '柴堆', sprite: 'woodpile', offers: ['chat'] }] },
+  { id: 'store', name: '院倉', node: 'court', stages: [{ name: '柴堆', sprite: 'woodpile', offers: ['chat', 'leisure'] }] },
 ];
 
 // 活動：時間、需求變化、技能經驗、產出
@@ -82,7 +82,9 @@ export const ACTIVITIES = {
   spar:   { name: '切磋', dur: 8, energy: -10, skill: { style: 4 } },
   learn:  { name: '聽師父講武', dur: 8, energy: -2, skill: { palm: 3 }, social: 10 },
   build:  { name: '施工', dur: 6, energy: -6, skill: { strength: 2 } },
-  chat:   { name: '聊天', dur: 6, social: 35 },
+  chat:   { name: '聊天', dur: 6, social: 35, fun: 20 },
+  encourage: { name: '鼓勵同門', dur: 6, social: 20 },
+  leisure: { name: '閒坐看雲', dur: 8, fun: 45, energy: 3 },
   deliver: { name: '送回院倉', dur: 0 },
 };
 
@@ -118,8 +120,8 @@ export const PHASES = [[0, 'dawn', '晨'], [0.2, 'day', '日'], [0.65, 'dusk', '
 export const SCHEDULE = {
   dawn: { train: 1.5, learn: 1.2 },
   day: { farm: 1.2, chop: 1.2, cook: 1.1, forage: 1.1, build: 1.2 },
-  dusk: { eat: 1.4, chat: 1.6, cook: 1.3 },
-  night: { rest: 2.2, train: 0.3, chop: 0.2, farm: 0.2, forage: 0.2, build: 0.3, chat: 0.6 },
+  dusk: { eat: 1.4, chat: 1.6, cook: 1.3, leisure: 1.5, encourage: 1.4 },
+  night: { rest: 2.2, train: 0.3, chop: 0.2, farm: 0.2, forage: 0.2, build: 0.3, chat: 0.6, leisure: 0.4, encourage: 0.5 },
 };
 export const PLOT_GROW = 90; // 秒，播種到成熟
 export const HARVEST = 3;    // 每畦收菜
@@ -163,8 +165,36 @@ export const THOUGHTS = {
   hurt:      { text: '狩獵受傷', v: -12, ttl: 400, tag: 'fight' },
   wonHunt:   { text: '守住了後山', v: 8, ttl: 300, tag: 'good' },
   cropLost:  { text: '菜被野豬拱了', v: -5, ttl: 200, tag: 'bad' },
+  encouraged:{ text: '被同門鼓勵', v: 12, ttl: 300, tag: 'social' },
+  helped:    { text: '幫人打了氣', v: 4, ttl: 200, tag: 'good' },
+  badChat:   { text: '話不投機', v: -4, ttl: 150, tag: 'social' },
+  newLook:   { text: '門派有了新氣象', v: 8, ttl: 600, tag: 'good' },
+  wellFed:   { text: '存糧充足，心裡踏實', v: 4, ttl: 300, tag: 'food' },
+  idled:     { text: '偷得浮生半日閒', v: 5, ttl: 200, tag: 'good' },
 };
-export const NEED_MOOD = { hunger: [20, -10, 'food'], energy: [30, -8, 'bad'], social: [25, -6, 'social'] };
+export const NEED_MOOD = { hunger: [20, -10, 'food'], energy: [30, -8, 'bad'], social: [25, -6, 'social'], fun: [25, -6, 'bad'] };
 export const MOOD = { base: 50, up: 3, down: 2, low: 30, high: 70 }; // 每秒向目標移動；低／高門檻
 export const WORK_ACTS = ['train', 'chop', 'build', 'spar']; // 低落時被壓低的「可延後」工作；種菜煮飯屬求生，不壓，避免餓→低落→不煮的死亡螺旋
-export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat'];
+export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
+
+// ---- v0.7 ----
+export const RULES_VERSION = '0.7';
+// 季節：沿用一日 600 秒，每季 7 日
+export const SEASON_DAYS = 7;
+export const SEASONS = [
+  { id: 'spring', name: '春', grow: 0.8, mood: 3, hunger: 1 },
+  { id: 'summer', name: '夏', grow: 1.0, mood: 0, hunger: 1 },
+  { id: 'autumn', name: '秋', grow: 0.9, mood: 2, hunger: 1 },
+  { id: 'winter', name: '冬', grow: 1.8, mood: -3, hunger: 1.2 },
+];
+// 相容度：對立特質扣、欣賞特質加（a 看 b，有方向）
+export const OPPOSE = [['diligent', 'playful'], ['optimist', 'worrier'], ['gentle', 'brave']];
+export const LIKES = { glutton: ['gentle'], worrier: ['optimist', 'gentle'], sociable: ['sociable', 'optimist'], diligent: ['diligent'], playful: ['playful', 'sociable'], brave: ['brave'], gentle: ['worrier'], optimist: [] };
+// 特質揭露：第 i 個特質在「相處」累積 REVEAL_AT[i] 秒後才看得出來（聊天加速）
+export const REVEAL_AT = [0, 300, 900];
+// 三問心印：每題答案對應一個特質；前兩個不重複者成為明面性格，人選原本的天性為第三個（暗）
+export const QUESTIONS = [
+  { q: '初見山門，你先？', a: [['拿起掃帚掃落葉', 'diligent'], ['找人攀談', 'sociable'], ['四處張望後山', 'playful']] },
+  { q: '同伴受了傷，你？', a: [['包紮熬湯', 'gentle'], ['替他出頭', 'brave'], ['擔心了一整夜', 'worrier']] },
+  { q: '一碗熱粥端來，你？', a: [['細細品味', 'glutton'], ['先讓給別人', 'gentle'], ['笑說明天會更好', 'optimist']] },
+];

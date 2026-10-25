@@ -1,10 +1,12 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { TRAITS, THOUGHTS, NEED_MOOD, MOOD, WORK_ACTS, LEISURE_ACTS, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED } from './data.mjs';
+import { RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED } from './data.mjs';
+import { clone, dist, clamp, relKey, affKey, log } from './util.mjs';
+import { think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits } from './mind.mjs';
+import { relStage, relAdd, compat, aff, initPair } from './social.mjs';
+import { seasonOf } from './season.mjs';
+export { think, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, knownTraits, relStage, relAdd, compat, aff, seasonOf, relKey, log };
 
 export const SAVE_VERSION = 1;
-const clone = (o) => JSON.parse(JSON.stringify(o));
-const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 
@@ -25,56 +27,28 @@ export const routeLength = (a, b) => { const p = route(a, b); let L = 0; for (le
 
 export const facDef = (id) => FACILITIES.find((f) => f.id === id);
 export const facStage = (s, id) => facDef(id).stages[s.fac[id].stage];
-export const relKey = (a, b) => [a, b].sort().join('|');
-export const relStage = (v) => { let n = REL_STAGES[0][1]; for (const [t, name] of REL_STAGES) if (v >= t) n = name; return n; };
 
 export function createState(seed = 1) {
   const s = {
-    v: SAVE_VERSION, seed, t: 0, res: { wood: 0, food: 6, herb: 0, veg: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })), vegRes: 0, cap: { wood: 12 },
+    v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, res: { wood: 0, food: 6, herb: 0, veg: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })), vegRes: 0, cap: { wood: 12 },
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
     ds: DISCIPLES.map((d, i) => mkDisciple(d, i)),
-    rel: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
+    rel: {}, aff: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
   };
-  for (let i = 0; i < s.ds.length; i++) for (let j = i + 1; j < s.ds.length; j++) s.rel[relKey(s.ds[i].id, s.ds[j].id)] = 10;
+  for (let i = 0; i < s.ds.length; i++) for (let j = i + 1; j < s.ds.length; j++) initPair(s, s.ds[i], s.ds[j], 10);
   log(s, '師徒三人來到山腳一間破道館。');
   return s;
 }
-function mkDisciple(d, i, at = 'court') {
+function mkDisciple(d, i, at = 'court', personality = d.personality || [], known = personality.slice(0, 1)) {
   return ({
-      id: d.id, name: d.name, style: d.style, personality: [...(d.personality || [])], mood: MOOD.base, thoughts: [], adult: d.adult, sprite: d.sprite, traits: d.traits,
+      id: d.id, name: d.name, style: d.style, personality: [...personality], known: [...known], together: 0, mood: MOOD.base, thoughts: [], why: [], adult: d.adult, sprite: d.sprite, traits: d.traits,
       skills: { ...d.skills }, moves: ['fist'], pendingMove: null,
-      needs: { energy: 80, hunger: 70 - i * 10, social: 50 }, hp: 100,
+      needs: { energy: 80, hunger: 70 - i * 10, social: 50, fun: 60 }, hp: 100,
       at, pos: [...NODES[at]].map((v, k) => v + (k ? 0 : (i - 1) * 16)), path: [],
       task: null, order: null, reason: at === 'gate' ? '慕名上山' : '剛到道館', carry: null, cool: 0, walked: 0, face: 1, anim: null,
     });
 }
 // ---- v0.6 性格與心情 ----
-export function think(s, d, id, extra = '') {
-  const T = THOUGHTS[id]; if (!T) return;
-  let v = T.v; for (const p of d.personality || []) { const m = TRAITS[p]?.thoughtMul; if (m?.[T.tag]) v *= m[T.tag]; if (m?.bad && v < 0 && T.tag !== 'bad') v *= 1; }
-  const ex = d.thoughts.find((x) => x.id === id);
-  if (ex) { ex.left = T.ttl; ex.v = Math.round(v); } else d.thoughts.push({ id, text: T.text + extra, v: Math.round(v), left: T.ttl });
-}
-export function moodTarget(d) {
-  let t = MOOD.base;
-  for (const p of d.personality || []) t += TRAITS[p]?.moodBase || 0;
-  for (const th of d.thoughts) t += th.v;
-  for (const [k, [thr, v, tag]] of Object.entries(NEED_MOOD)) if (d.needs[k] < thr) { let x = v; for (const p of d.personality || []) { const m = TRAITS[p]?.thoughtMul; if (m?.[tag]) x *= m[tag]; } t += x; }
-  return clamp(t, 0, 100);
-}
-function moodStep(d, dt) {
-  for (const th of d.thoughts) th.left -= dt; d.thoughts = d.thoughts.filter((x) => x.left > 0);
-  const tgt = moodTarget(d), diff = tgt - d.mood; d.mood = clamp(d.mood + clamp(diff, -MOOD.down * dt, MOOD.up * dt), 0, 100);
-}
-export function traitMul(d, act) { let m = 1; for (const p of d.personality || []) m *= TRAITS[p]?.mods?.[act] || 1; return m; }
-export function moodMul(d, act) {
-  if (d.mood < MOOD.low) return WORK_ACTS.includes(act) ? 0.6 : LEISURE_ACTS.includes(act) ? 1.35 : 1;
-  if (d.mood > MOOD.high) return WORK_ACTS.includes(act) ? 1.15 : 1;
-  return 1;
-}
-export const focusMul = (d) => 0.8 + 0.4 * (d.mood / 100); // DF focus：心情影響成長 0.8–1.2
-export const moodLabel = (m) => (m < 15 ? '崩潰邊緣' : m < MOOD.low ? '低落' : m < MOOD.high ? '平穩' : m < 90 ? '愉快' : '意氣風發');
-
 // ---- v0.5 名聲、床位、招收、母版階段 ----
 export function capacity(s) { return FACILITIES.reduce((a, f) => a + (facStage(s, f.id).beds || 0), 0); }
 export function recruitNeed(s) { return RECRUIT.baseRep + RECRUIT.stepRep * (s.ds.length - 3); }
@@ -86,10 +60,18 @@ export function canRecruit(s) {
   if (s.res.food < RECRUIT.food) return { ok: false, why: `存糧不足 ${RECRUIT.food}` };
   return { ok: true, next };
 }
-export function recruit(s) {
+// 三問心印：預設答案取人選天性；答案→前兩個不重複特質為明面，人選天性補為第三（暗，相處 900 秒揭露）
+export function defaultAnswers(p) { return QUESTIONS.map((q) => { const i = q.a.findIndex(([, t]) => (p.personality || []).includes(t)); return i < 0 ? 0 : i; }); }
+export function personalityFrom(p, answers = defaultAnswers(p)) {
+  const shown = []; QUESTIONS.forEach((q, i) => { const t = q.a[answers[i] ?? 0]?.[1]; if (t && !shown.includes(t) && shown.length < 2) shown.push(t); });
+  const hidden = (p.personality || []).find((t) => !shown.includes(t));
+  return { personality: hidden ? [...shown, hidden] : shown, known: shown };
+}
+export function recruit(s, answers) {
   const c = canRecruit(s); if (!c.ok) return c;
-  s.res.food -= RECRUIT.food; const d = mkDisciple(c.next, 1, 'gate'); s.ds.push(d);
-  for (const o of s.ds) if (o !== d) s.rel[relKey(o.id, d.id)] = 5;
+  const { personality, known } = personalityFrom(c.next, answers);
+  s.res.food -= RECRUIT.food; const d = mkDisciple(c.next, 1, 'gate', personality, known); d.together = 0; s.ds.push(d);
+  for (const o of s.ds) if (o !== d) initPair(s, o, d, 5);
   log(s, `${d.name}慕名從村路上山，拜入門下。`); return { ok: true, d };
 }
 export function mapStage(s) {
@@ -99,7 +81,6 @@ export function mapStage(s) {
 }
 function rand(s) { const r = rng(s.seed * 7919 + s.rngN++); return r(); }
 export function phaseOf(s) { const f = (s.t % DAY) / DAY; let p = PHASES[0]; for (const x of PHASES) if (f >= x[0]) p = x; return { id: p[1], name: p[2], day: Math.floor(s.t / DAY) + 1, frac: f }; }
-export function log(s, msg) { s.log.unshift({ t: Math.floor(s.t), msg }); if (s.log.length > 60) s.log.pop(); }
 
 // ---- 建造 ----
 export function startBuild(s, id) {
@@ -112,7 +93,7 @@ export function startBuild(s, id) {
 }
 function finishBuild(s, id) {
   const f = facDef(id), st = s.fac[id]; st.stage++; st.site = null; s.rep = (s.rep || 0) + REP.build;
-  log(s, `完工：${f.name}成了「${f.stages[st.stage].name}」，解鎖：${f.stages[st.stage].offers.map((a) => ACTIVITIES[a].name).join('、')}`);
+  for (const d of s.ds) think(s, d, 'newLook'); log(s, `完工：${f.name}成了「${f.stages[st.stage].name}」，解鎖：${f.stages[st.stage].offers.map((a) => ACTIVITIES[a].name).join('、')}`);
 }
 const siteOf = (s) => { const e = Object.entries(s.fac).find(([, v]) => v.site); return e ? [e[0], e[1].site] : null; };
 
@@ -136,7 +117,7 @@ function cancelTask(s, d, why) {
 
 // ---- 效用 AI ----
 // 可被邀聊：無玩家指派、未負重、未在施工/狩獵/歇息/聊天中
-function chatMates(s, d) { return s.ds.filter((o) => o !== d && !o.order && o.hp > 30 && !o.carry && !['build', 'hunt', 'rest', 'chat', 'spar', 'learn'].includes(o.task?.act) && o.task?.phase !== 'return'); }
+function chatMates(s, d) { return s.ds.filter((o) => o !== d && !o.order && o.hp > 30 && !o.carry && !['build', 'hunt', 'rest', 'chat', 'spar', 'learn', 'encourage'].includes(o.task?.act) && o.task?.phase !== 'return'); }
 function offered(s, act) { return FACILITIES.filter((f) => facStage(s, f.id).offers.includes(act)); }
 function bestFac(s, d, act) {
   const fs = offered(s, act); if (!fs.length) return null;
@@ -154,6 +135,8 @@ export function scoreActs(s, d) {
   if (s.res.food > 0) add('eat', n.hunger < 30 ? 95 : (100 - n.hunger) * 0.6, n.hunger < 30 ? '餓了' : '順便吃點');
   const others = chatMates(s, d);
   if (others.length) add('chat', (100 - n.social) * 0.6 * (tr.social || 1) * (tr.playful || 1) * 0.8, '想找人說話');
+  const fun = n.fun ?? 60; add('leisure', (100 - fun) * 0.55, fun < 25 ? '悶得慌，想偷閒' : '想坐坐看雲');
+  if (d.adult && d.mood >= 45) { const low = others.filter((o) => o.mood < 35).sort((a, b) => a.mood - b.mood)[0]; if (low) add('encourage', 40 + (35 - low.mood) * 1.5, `${low.name}心情低落，去打打氣`); }
   if (d.pendingMove) add('learn', 80, `師父能傳「${MOVES.find((m) => m.id === d.pendingMove).name}」`);
   add('train', (d.adult ? 40 : 18) * (tr.diligent || 1), '練功變強');
   if (facStage(s, 'yard').offers.includes('spar') && n.energy > 45 && chatMates(s, d).some((o) => o.needs.energy > 45)) add('spar', 34 * (tr.diligent || 1), '找人切磋');
@@ -168,7 +151,7 @@ export function scoreActs(s, d) {
   const plotWork = s.plots.some((p) => p.st === 'empty' || p.st === 'ripe');
   const cookable = s.res.veg - s.vegRes >= 2 && s.res.food < 10;
   if (cookable) add('cook', 30 + (10 - s.res.food) * 4, '灶上該煮飯了');
-  for (const o of out) { o.score *= (sch[o.act] || 1) * traitMul(d, o.act) * moodMul(d, o.act); o.score += rand(s) * 8; } // 作息×性格×心情＋雜訊
+  for (const o of out) { const f = { base: o.score, sched: sch[o.act] || 1, trait: traitMul(d, o.act), mood: moodMul(d, o.act), noise: rand(s) * 8 }; o.f = f; o.score = f.base * f.sched * f.trait * f.mood + f.noise; } // 可解釋：基礎×作息×性格×心情＋雜訊
   for (let i = out.length - 1; i >= 0; i--) if (out[i].act === 'farm' && !plotWork) out.splice(i, 1);
   return out.sort((a, b) => b.score - a.score);
 }
@@ -183,12 +166,12 @@ function assign(s, d, act, why) {
     else return false;
     d.reason = why; return true;
   }
-  if (act === 'chat' || act === 'spar') {
-    const p = chatMates(s, d).sort((a, b) => (s.rel[relKey(b.id, d.id)] || 0) - (s.rel[relKey(a.id, d.id)] || 0))[0];
+  if (act === 'chat' || act === 'spar' || act === 'encourage') {
+    const p = act === 'encourage' ? chatMates(s, d).filter((o) => o.mood < 35).sort((a, b) => a.mood - b.mood)[0] : chatMates(s, d).sort((a, b) => aff(s, d, b) - aff(s, d, a))[0];
     if (!p) return false;
     if (p.task) cancelTask(s, p, `被${d.name}拉去${act === 'spar' ? '切磋' : '聊天'}`);
     const node = act === 'spar' ? 'yard' : 'court'; d.task = { act, fac: 'yard', node, phase: 'go', partner: p.id }; p.task = { act, fac: 'yard', node, phase: 'go', partner: d.id };
-    goto(d, node); goto(p, node); d.reason = why; p.reason = act === 'spar' ? `${d.name}邀來切磋` : `${d.name}找來聊天`; return true;
+    goto(d, node); goto(p, node); d.reason = why; p.reason = act === 'spar' ? `${d.name}邀來切磋` : act === 'encourage' ? `${d.name}來陪我說說話` : `${d.name}找來聊天`; if (act === 'encourage') p.task.act = 'chat', p.task.encouragedBy = d.id; return true;
   }
   if (act === 'eat' && s.res.food <= 0) return false;
   if (act === 'cook') { if (s.res.veg - s.vegRes < 2) return false; s.vegRes += 2; }
@@ -205,7 +188,8 @@ function decide(s, d) {
     if (assign(s, d, o, '玩家指派')) return true;
     d.reason = `指派「${o === 'hunt' ? '狩獵' : ACTIVITIES[o].name}」暫不可行`; return false;
   }
-  for (const c of scoreActs(s, d)) if (assign(s, d, c.act, c.why)) return true;
+  const sc = scoreActs(s, d); d.why = sc.slice(0, 3).map((c) => ({ act: c.act, score: Math.round(c.score), f: c.f, why: c.why }));
+  for (const c of sc) if (assign(s, d, c.act, c.why)) { d.picked = c.act; return true; }
   return false;
 }
 
@@ -225,16 +209,6 @@ function grow(s, d, sk, amt) {
   if (sk === 'style') sk = d.style;
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
   for (const m of MOVES) if (m.skill === sk && !d.moves.includes(m.id) && d.skills[sk] >= m.req && d.pendingMove !== m.id && !d.pendingMove) { d.pendingMove = m.id; log(s, `${d.name}${sk === 'palm' ? '掌法' : '腿法'}到了火候，可向師父求學「${m.name}」`); }
-}
-
-function relAdd(s, a, b, amt) {
-  const k = relKey(a.id, b.id), before = s.rel[k] || 0;
-  let v = before + amt; if (!(a.adult && b.adult)) v = Math.min(v, 89); // 未成年不進道侶
-  s.rel[k] = clamp(v, 0, 100);
-  if (relStage(before) !== relStage(s.rel[k])) {
-    log(s, `${a.name}與${b.name}成了「${relStage(s.rel[k])}」`);
-    if (s.rel[k] >= 90 && !s.families.includes(k)) { s.families.push(k); log(s, `${a.name}與${b.name}結為道侶，門中多了一個家。`); }
-  }
 }
 
 function doTask(s, d, dt) {
@@ -266,9 +240,16 @@ function doTask(s, d, dt) {
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } }
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? facStage(s, 'yard').trainMul : 1));
       if (t.act === 'spar' && t.partner) { const p = s.ds.find((x) => x.id === t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在木樁場切磋`); } }
+      if (A.fun) d.needs.fun = clamp((d.needs.fun ?? 60) + A.fun, 0, 100);
+      if (t.act === 'leisure') think(s, d, 'idled');
+      if (t.act === 'forage') d.needs.fun = clamp((d.needs.fun ?? 60) + (d.personality.includes('playful') ? 20 : 8), 0, 100);
+      if (t.act === 'eat' && s.res.food >= 8) think(s, d, 'wellFed');
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
       if (t.act === 'learn' && d.pendingMove) { const m = MOVES.find((x) => x.id === d.pendingMove); d.moves.push(m.id); d.pendingMove = null; s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
-      if (t.act === 'chat' && t.partner) { const p = s.ds.find((x) => x.id === t.partner); if (d.id < p.id) relAdd(s, d, p, 4 * Math.max(d.traits.social || 1, p.traits.social || 1)); think(s, d, 'goodChat', `（${p.name}）`); }
+      if (t.act === 'chat' && t.partner) { const p = s.ds.find((x) => x.id === t.partner); d.together += 20;
+        if (t.encouragedBy) { think(s, d, 'encouraged', `（${p.name}）`); }
+        else if (d.id < p.id) { const cm = Math.min(compat(d, p), compat(p, d)); if (cm < 1 && rand(s) < (1 - cm) * 0.8) { relAdd(s, d, p, 1); for (const x of [d, p]) think(s, x, 'badChat', `（${x === d ? p.name : d.name}）`); log(s, `${d.name}與${p.name}聊不到一塊`); } else { relAdd(s, d, p, 4 * Math.max(d.traits.social || 1, p.traits.social || 1)); think(s, d, 'goodChat', `（${p.name}）`); think(s, p, 'goodChat', `（${d.name}）`); } } }
+      if (t.act === 'encourage' && t.partner) { const p = s.ds.find((x) => x.id === t.partner); think(s, d, 'helped'); relAdd(s, d, p, 3); log(s, `${d.name}陪心情低落的${p.name}說了好一會兒話`); }
       if (A.carry) { d.carry = { ...A.carry }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; }
       finish(s, d);
     }
@@ -365,7 +346,7 @@ function ecoStep(s, dt) {
   for (const m of s.mons) if (m.raid) {
     if (monWalk(m, MONSTERS.boar.speed * dt)) {
       if (m.raid === 'go') { const p = s.plots.find((x) => x.st === 'ripe') || s.plots.find((x) => x.st === 'grow'); if (p) { p.st = 'empty'; p.g = 0; log(s, '野豬拱壞了一畦菜，吃飽回山。'); for (const d of s.ds) think(s, d, 'cropLost'); } else log(s, '野豬在菜園沒找到吃的，回山了。'); m.raid = 'back'; m.path = route('veg', 'den').slice(1); }
-      else { m.gone = true; s.eco.boar.n++; }
+      else { m.gone = true; s.eco.boar.n = Math.min(ECO.boar.max, s.eco.boar.n + 1); }
     }
   }
   s.mons = s.mons.filter((m) => !m.gone);
@@ -374,11 +355,13 @@ function ecoStep(s, dt) {
 // ---- tick ----
 export function tick(s, dt = 0.25) {
   s.t += dt;
-  for (const p of s.plots) if (p.st === 'grow' && (p.g += dt) >= PLOT_GROW) p.st = 'ripe';
+  const se = seasonOf(s); for (const p of s.plots) if (p.st === 'grow' && (p.g += dt / se.grow) >= PLOT_GROW) p.st = 'ripe';
+  const seIdx = se.i; if (s.seasonI !== seIdx) { if (s.seasonI !== undefined) log(s, `入${se.name}了。${{ spring: '萬物萌發，菜長得快。', summer: '天長日暖。', autumn: '秋高氣爽，心情開闊。', winter: '天寒地凍，菜長得慢，飯量變大。' }[se.id]}`); s.seasonI = seIdx; }
   for (const d of s.ds) {
-    d.needs.hunger = clamp(d.needs.hunger - 0.35 * dt, 0, 100);
+    d.needs.hunger = clamp(d.needs.hunger - 0.35 * se.hunger * dt, 0, 100);
+    d.needs.fun = clamp((d.needs.fun ?? 60) - 0.22 * dt, 0, 100);
     d.needs.social = clamp(d.needs.social - 0.4 * dt, 0, 100);
-    moodStep(d, dt);
+    moodStep(s, d, dt); revealStep(s, d, dt);
     if (!d.task) decide(s, d);
     if (d.task) { moveStep(d, dt); doTask(s, d, dt); }
     if (d.anim === 'strike' && d.cool < 0.6) d.anim = null;
@@ -393,7 +376,19 @@ export function save(s) { return JSON.stringify({ ...s, fx: [] }); }
 export function load(str) {
   let o; try { o = JSON.parse(str); } catch { return { ok: false, err: '存檔損毀' }; }
   if (!o || o.v !== SAVE_VERSION || !Array.isArray(o.ds)) return { ok: false, err: `不支援的存檔版本 ${o?.v}` };
-  for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.personality ??= []; } // v0.5 檔補預設
-  return { ok: true, state: o };
+  return { ok: true, state: migrate(o) };
+}
+// 規則版本遷移：v0.5（無心情）→v0.6（無雙向好感／揭露／樂趣）→v0.7
+export function migrate(o) {
+  const from = o.rules || (o.ds.some((d) => 'mood' in d) ? '0.6' : '0.5');
+  const def = Object.fromEntries(DISCIPLES.concat(RECRUIT_POOL).map((d) => [d.id, d]));
+  for (const d of o.ds) {
+    d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= [];
+    if (!d.personality?.length) d.personality = [...(def[d.id]?.personality || [])];
+    d.known ??= d.personality.slice(0, 1); d.together ??= 0; d.needs.fun ??= 60;
+  }
+  if (!o.aff) { o.aff = {}; for (const [k, v] of Object.entries(o.rel || {})) { const [a, b] = k.split('|'); o.aff[affKey(a, b)] = v; o.aff[affKey(b, a)] = v; } }
+  o.migratedFrom = from === RULES_VERSION ? o.migratedFrom : from; o.rules = RULES_VERSION;
+  return o;
 }
 export { clone };

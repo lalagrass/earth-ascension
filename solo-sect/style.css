@@ -7,3 +7,4 @@ button{font:inherit;background:#efe3c4;border:1px solid #a99368;border-radius:4p
 .bar{height:6px;background:#e2d8c0;border-radius:3px;overflow:hidden;margin:1px 0 3px}.bar i{display:block;height:100%}
 .k{color:#8a7a5a;font-size:12px}.mv{display:inline-block;background:#f0dcc8;border-radius:3px;padding:0 5px;margin:1px;font-size:12px}.mv.new{background:#f5c96b}
 #log{padding-left:18px;font-size:12px;max-height:240px;overflow:auto}select{font:inherit}
+.why summary{cursor:pointer;font-size:12px;color:#6a5a3a}.qa{border:1px dashed #b9a77f;border-radius:6px;padding:4px 6px;margin:4px 0;background:#fffaf0}
