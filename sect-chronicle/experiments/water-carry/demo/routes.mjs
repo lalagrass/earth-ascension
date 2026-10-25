@@ -197,3 +197,53 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   };
 }
 const WATER = { down: 1, dip: 1, up: 1, pour: 1 };
+
+// LIFE-V04 踏雪無痕輕功溪石捷徑 vs 東南溪橋常規路 (Section 1.2(4) & LIFE_V04_CONSTANTS)
+export const STEP_STONES = Object.freeze({
+  id: 'step_stones',
+  name: '溪石躍點捷徑',
+  coords: [[810, 620], [890, 640]],
+  stepCost: 40,
+  bridgeCost: 240,
+  minQinggongLevel: 3,
+});
+
+export const CREEK_CROSSING = Object.freeze({
+  standard: Object.freeze({
+    id: 'creek_bridge',
+    name: '東南溪橋',
+    steps: 240,
+    requiredQinggongLevel: 0,
+    path: [[810, 620], [850, 680], [890, 640]],
+  }),
+  shortcut: Object.freeze({
+    id: 'step_stones',
+    name: '溪石躍點',
+    steps: 40,
+    requiredQinggongLevel: 3,
+    path: [[810, 620], [890, 640]],
+  }),
+});
+
+export function resolveCreekRoute(qinggongLevel = 0) {
+  if (qinggongLevel >= 3) {
+    return {
+      type: 'shortcut',
+      id: 'step_stones',
+      name: '溪石躍點（輕功飛躍）',
+      steps: 40,
+      path: [[810, 620], [890, 640]],
+      unlocked: true,
+      timeSavedPercent: 83.3,
+    };
+  }
+  return {
+    type: 'bridge',
+    id: 'creek_bridge',
+    name: '東南溪橋（迂迴常規路）',
+    steps: 240,
+    path: [[810, 620], [850, 680], [890, 640]],
+    unlocked: false,
+    unlockRequirement: '需《踏雪無痕》輕功達 Lv3 解鎖飛躍',
+  };
+}

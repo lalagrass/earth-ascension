@@ -52,9 +52,19 @@
       </div>
     </div>
   </div>
+  <div id="sect-plaque-badge" class="sect-plaque-badge" title="門派開山道統與鎮山匾額">
+    <div class="plaque-inner">
+      <span class="plaque-icon">🏛️</span>
+      <span id="hud-sect-name" class="plaque-name">華山別院</span>
+      <span id="hud-plaque-motto" class="plaque-motto">『氣冠紫霞』</span>
+      <span id="hud-doctrine-tag" class="plaque-doctrine">紫霞養氣・君子端方</span>
+      <span id="hud-dual-arts-tag" class="plaque-arts-tag" title="本門開山 + 同門客座雙脈">《華山基礎劍法》· 《五嶽快劍基礎》</span>
+    </div>
+  </div>
   <button class="btn on" id="shadow-toggle" title="S：主角的初始腳力對照，不產水">初始影子</button>
   <button class="btn" id="creation-btn" title="雙軌開局創角">創角</button>
   <button class="btn on" id="autopilot-btn" title="零手動掌門自走">自走中</button>
+  <button class="btn" id="life-v0304-toggle" title="切換人間煙火（v0.3 菜園膳房）＆ 雙脈武學場（v0.4）面板">煙火武學</button>
   <button class="btn" id="roster-toggle" title="R">名冊</button>
   <button class="btn on" id="follow-toggle" title="0 鍵或點擊：切換鏡頭跟隨">🎥 跟隨中</button>
   <a class="legacy-link" href="../../../viewer/" title="舊版修行／目標／招募與原存檔仍在這裡；新版不自動匯入或覆寫">舊版與存檔</a>
@@ -77,6 +87,93 @@
 </aside>
 <aside id="boar" class="boarcard" aria-label="野豬狀態"></aside>
 <div id="speech-bubble" class="speech-bubble" hidden></div>
+
+<!-- 人間煙火 (v0.3) ＆ 雙脈武學場 (v0.4) 綜合面板 -->
+<aside id="life-v0304-panel" class="life-v0304-panel" hidden>
+  <div class="panel-header">
+    <div class="panel-title-row">
+      <span class="panel-title">🏮 人間煙火 (v0.3) ＆ 🥋 雙脈武學場 (v0.4)</span>
+      <button id="life-v0304-close" class="btn close-btn">✕</button>
+    </div>
+    <div class="sect-summary-bar">
+      <span class="sect-pill" id="v0304-sect-name">華山別院</span>
+      <span class="motto-pill" id="v0304-plaque-motto">『氣冠紫霞』</span>
+      <span class="doctrine-pill" id="v0304-doctrine-title">紫霞養氣・君子端方</span>
+    </div>
+  </div>
+
+  <div class="panel-sections-grid">
+    <!-- v0.3 人間煙火 -->
+    <div class="v03-section card-box">
+      <h3>🥬 東南菜園與西院膳房 (v0.3)</h3>
+      <div class="garden-summary">
+        <div class="section-subhead">四季菜園藥圃</div>
+        <div id="garden-plots-container" class="plots-grid">
+          <!-- 由 app.mjs 動態生成菜園地塊 -->
+        </div>
+        <button id="action-water-garden" class="btn btn-action">💧 引水澆灌菜園</button>
+      </div>
+
+      <div class="kitchen-summary">
+        <div class="section-subhead">西院膳房大陶灶</div>
+        <div class="kitchen-status-row">
+          <span>陶灶規格：<b id="kitchen-tier-text">雙眼大陶灶 (良品)</b></span>
+          <span id="aroma-badge" class="aroma-badge">♨️ 菜香四溢</span>
+        </div>
+        <div class="dish-card" id="active-dish-box">
+          <div class="dish-name" id="dish-name">叫化燒雞 (珍饈)</div>
+          <div class="dish-desc" id="dish-desc">飽足 +75，精力回復 +25%，出鍋散發菜香吸引弟子</div>
+        </div>
+        <div class="ration-box">
+          <span>隨身行軍乾糧袋：<b id="ration-pouch-text">荷葉飯糰 x1, 叫化雞腿 x1 (2/2)</b></span>
+        </div>
+        <div class="kitchen-actions-row">
+          <button id="action-cook-dish" class="btn btn-action">🍳 烹調名菜 / 裝備口糧</button>
+          <button id="action-brew-wine" class="btn btn-action">🍶 釀造後院百果酒</button>
+        </div>
+        <div class="wine-cask-status">
+          <span id="wine-cask-text">酒缸：猴兒百果酒 (發酵完成，微醺劍意 +15% 破綻捕捉)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- v0.4 雙脈武學場 -->
+    <div class="v04-section card-box">
+      <h3>🥋 外功演練場 · 雙脈武學 (v0.4)</h3>
+      <div class="apparatus-card">
+        <div class="apparatus-label">門派道統專屬器材</div>
+        <div class="apparatus-title" id="training-post-title">青竹君子劍靶</div>
+        <div class="apparatus-effect" id="doctrine-effect-text">早課講學與讀書領悟 +25%</div>
+      </div>
+
+      <div class="martial-arts-loadout">
+        <div class="section-subhead">「2 通用 + 1 本門開山 + 1 同門客座」四招配置</div>
+        <div class="arts-grid" id="unlocked-arts-container">
+          <!-- 4 門武學標籤 -->
+        </div>
+        <div class="qinggong-shortcut-status" id="qinggong-shortcut-box">
+          <span class="shortcut-icon">🪨</span>
+          <span id="qinggong-shortcut-text">輕功捷徑：未解鎖（《踏雪無痕》達 Lv3 可 40 步飛躍溪石）</span>
+          <button id="action-practice-art" class="btn btn-action btn-sm">🥋 修練本門/踏雪</button>
+        </div>
+      </div>
+
+      <div class="sparring-box">
+        <div class="section-subhead">同圖雙人點到為止切磋</div>
+        <div class="sparring-status" id="sparring-status-text">當前狀態：待命中，隨時可發起拆招比試</div>
+        <div class="cross-lineage-progress-bar">
+          <div class="progress-label">
+            <span>兩派合參進度</span>
+            <span id="cross-lineage-target">《剛柔劍掌雙絕》</span>
+            <span id="cross-lineage-percent">45%</span>
+          </div>
+          <div class="bar"><i id="bar-cross-lineage" style="width:45%"></i></div>
+        </div>
+        <button id="action-trigger-spar" class="btn btn-action primary-btn">⚔️ 同門切磋拆招 (12秒)</button>
+      </div>
+    </div>
+  </div>
+</aside>
 
 <div id="creation-modal" class="modal-overlay" hidden>
   <div class="modal-box creation-modal-box">
@@ -126,6 +223,32 @@
           <option value="perk.food_master">【食神轉世】：膳房料理品質提升一階</option>
         </select>
       </div>
+
+      <!-- 開山門派道統卡 (Sect Origin Selector & Preview) -->
+      <div class="custom-sect-origin-card">
+        <div class="sect-card-header">
+          <span class="badge sect-badge">🏛️ 開山門派道統</span>
+          <div class="custom-sect-name-box">
+            <label>門派名號：</label>
+            <input type="text" id="custom-sect-name" value="青雲門" maxlength="12" placeholder="門派名號">
+          </div>
+        </div>
+        <div class="sect-branches-selector">
+          <span class="selector-label">道統宗派：</span>
+          <div class="branch-btn-group" id="custom-branch-group">
+            <button type="button" class="btn branch-btn active" data-branch="palm">👊 拳掌剛猛宗</button>
+            <button type="button" class="btn branch-btn" data-branch="sword">⚔️ 百兵劍道宗</button>
+            <button type="button" class="btn branch-btn" data-branch="internal">☯️ 玄門內家宗</button>
+            <button type="button" class="btn branch-btn" data-branch="qimen">🎲 奇門百藝宗</button>
+          </div>
+        </div>
+        <div class="sect-origin-preview-body" id="custom-sect-preview">
+          <div class="preview-line"><span class="lbl">鎮山匾額：</span><b class="plaque-text" id="custom-preview-motto">『剛毅雄健』</b> · <span id="custom-preview-doctrine-title" class="doctrine-text">以拳證道・百煉金剛</span></div>
+          <div class="preview-line"><span class="lbl">門規家風：</span><span id="custom-preview-doctrine-effect" class="effect-text">拳掌外功威力 +20%，破甲擊退增強</span></div>
+          <div class="preview-line"><span class="lbl">外功器材：</span><b id="custom-preview-apparatus">青石開山練拳樁</b> ｜ <span class="lbl">開山武學：</span><b id="custom-preview-founder-art">《開山霹靂掌》</b></div>
+        </div>
+      </div>
+
       <div class="questionnaire-box" id="questionnaire-list">
         <!-- 由 app.mjs 動態生成 5 題情境性向問卷 -->
       </div>
@@ -153,6 +276,7 @@
             <div class="stat-bar-row"><span>定8</span><div class="mini-bar"><i style="width:80%"></i></div></div>
           </div>
           <p class="perk-p">特質：<span class="perk-tag">君子端方</span> | 心印：☰ 乾為天</p>
+          <p class="sect-origin-line">🏛️ 道統：<b>華山別院</b> · 『氣冠紫霞』 | 開山：<b>《華山基礎劍法》</b></p>
           <p class="poem">「紫氣東來映華山，有所不為立人間」</p>
           <p class="note">優先修補大廳屋頂與早課；大廳授課聲望累積翻倍。</p>
           <button class="btn select-hero-btn active" data-preset="yue_buqun">選為掌門主角</button>
@@ -177,6 +301,7 @@
             <div class="stat-bar-row"><span>定9</span><div class="mini-bar"><i style="width:90%"></i></div></div>
           </div>
           <p class="perk-p">特質：<span class="perk-tag">抱樸守拙</span> <span class="perk-tag">萬中無一</span> | 心印：☷ 坤為地</p>
+          <p class="sect-origin-line">🏛️ 道統：<b>鎮北武館</b> · 『俠之大者』 | 開山：<b>《基礎羅漢開山掌》</b></p>
           <p class="poem">「抱樸守拙知常在，苦練千回意自純」</p>
           <p class="note">任勞任怨第一名，除草砍柴挑水備料效率極高；協建體魄成長翻倍。</p>
           <button class="btn select-hero-btn" data-preset="guo_jing">選為掌門主角</button>
@@ -201,6 +326,7 @@
             <div class="stat-bar-row"><span>定7</span><div class="mini-bar"><i style="width:70%"></i></div></div>
           </div>
           <p class="perk-p">特質：<span class="perk-tag">滔滔江水</span> (0成本招工) | 心印：☱ 兌為澤</p>
+          <p class="sect-origin-line">🏛️ 道統：<b>通吃山莊</b> · 『鹿鼎奇門』 | 開山：<b>《揚州撒灰手・袖裡匕》</b></p>
           <p class="poem">「神行百變戲王侯，巧舌如簧解千愁」</p>
           <p class="note">敲鐘招工觸發【滔滔江水】0 成本免茶水且木匠倒貼原木 +1！</p>
           <button class="btn select-hero-btn" data-preset="wei_xiaobao">選為掌門主角</button>
@@ -225,6 +351,7 @@
             <div class="stat-bar-row"><span>定4</span><div class="mini-bar"><i style="width:40%"></i></div></div>
           </div>
           <p class="perk-p">特質：<span class="perk-tag">破綻劍癡</span> | 心印：☳ 震為雷</p>
+          <p class="sect-origin-line">🏛️ 道統：<b>見性劍廬</b> · 『笑傲江湖』 | 開山：<b>《五嶽快劍基礎》</b></p>
           <p class="poem">「任誕長歌行萬里，不隨流俗自成峰」</p>
           <p class="note">最愛飲酒與同門切磋拆招；同門切磋經驗獲取速率翻倍。</p>
           <button class="btn select-hero-btn" data-preset="linghu_chong">選為掌門主角</button>
@@ -249,6 +376,7 @@
             <div class="stat-bar-row"><span>定8</span><div class="mini-bar"><i style="width:80%"></i></div></div>
           </div>
           <p class="perk-p">特質：<span class="perk-tag">金剛破繭</span> | 心印：☲ 離為火</p>
+          <p class="sect-origin-line">🏛️ 道統：<b>萬佛武館</b> · 『萬中無一』 | 開山：<b>《地攤如來神掌圖冊》</b></p>
           <p class="poem">「塵泥不掩如來相，破繭金光照大千」</p>
           <p class="note">手拿十塊錢小人書，開鎖奇快，被追時逃命步移速 +35%。</p>
           <button class="btn select-hero-btn" data-preset="ah_sing">選為掌門主角</button>
@@ -273,6 +401,7 @@
             <div class="stat-bar-row"><span>定8</span><div class="mini-bar"><i style="width:80%"></i></div></div>
           </div>
           <p class="perk-p">特質：<span class="perk-tag">獅吼催水</span> | 心印：☵ 坎為水</p>
+          <p class="sect-origin-line">🏛️ 道統：<b>豬籠寨大院</b> · 『大隱於市』 | 開山：<b>《河東獅吼初階》</b></p>
           <p class="poem">「獅吼一聲驚萬壑，當家治舍若雷霆」</p>
           <p class="note">水缸存量 &lt;50% 叉腰獅吼，全場挑水砍柴移速瞬間 +50%！</p>
           <button class="btn select-hero-btn" data-preset="landlady">選為掌門主角</button>
@@ -302,6 +431,28 @@
       <div class="synergy-bonus-tags" id="preview-synergy-bonus">
         <span class="bonus-tag">聲望 x2.0</span>
         <span class="bonus-tag">切磋經驗 x2.0</span>
+      </div>
+
+      <!-- 雙脈武學開局配置預覽卡 (Dual-lineage loadout) -->
+      <div class="dual-lineage-preview-box" id="preview-dual-lineage">
+        <div class="lineage-preview-header">
+          <span class="lineage-badge">🥋 外院演武場 · 開局雙脈四招武學配置</span>
+          <span class="apparatus-tag" id="preview-apparatus-tag">器材：<b id="preview-apparatus-name">青竹君子劍靶</b></span>
+        </div>
+        <div class="lineage-arts-list">
+          <div class="lineage-item founder-item">
+            <span class="lineage-type">👑 掌門開山功</span>
+            <span class="lineage-art-name" id="preview-founder-art">《華山基礎劍法》</span>
+          </div>
+          <div class="lineage-item fellow-item">
+            <span class="lineage-type">🤝 同門客座家傳功</span>
+            <span class="lineage-art-name" id="preview-fellow-art">《五嶽快劍基礎》</span>
+          </div>
+          <div class="lineage-item universal-item">
+            <span class="lineage-type">🛡️ 門派通用築基功</span>
+            <span class="lineage-art-name">《基礎鐵布衫》＋《基礎踏雪無痕》</span>
+          </div>
+        </div>
       </div>
     </div>
 

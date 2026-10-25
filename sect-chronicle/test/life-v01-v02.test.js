@@ -18,6 +18,9 @@ import {
   resolvePortrait,
   getDuoSynergy,
   selectStarterDuo,
+  CUSTOM_SECT_BRANCHES,
+  SECT_ORIGINS,
+  resolveSectOrigin,
 } from '../life/core/persona-creation.mjs';
 
 import { ReservationBroker } from '../life/core/reservation.mjs';
@@ -587,4 +590,133 @@ test('DoD C & D：零手動 Autopilot 端到端跨日閉關與同門羈絆 (破�
   world.tick = LIFE_V02_CONSTANTS.simulation.shichenDurationTicks * 3; // 卯時
   world.autopilot.step(world, master);
   assert.match(master.decision.explain.doing, /演練/);
+});
+
+test('SECT_ORIGINS 與 CUSTOM_SECT_BRANCHES 完整定義及 7 大道統註冊', () => {
+  const expectedLineages = ['yue_buqun', 'guo_jing', 'wei_xiaobao', 'linghu_chong', 'ah_sing', 'landlady', 'custom'];
+  for (const key of expectedLineages) {
+    const origin = SECT_ORIGINS[key];
+    assert.ok(origin, `SECT_ORIGINS 必須包含 ${key}`);
+    assert.ok(origin.sectName, `${key} 必須有名號`);
+    assert.ok(origin.plaqueMotto, `${key} 必須有匾額題字`);
+    assert.ok(origin.doctrineTitle, `${key} 必須有門規道統`);
+    assert.ok(origin.doctrineEffect, `${key} 必須有道統效果`);
+    assert.ok(origin.trainingPostName, `${key} 必須有專屬演武器材`);
+    assert.ok(origin.founderArtName, `${key} 必須有開山外功武學`);
+    assert.ok(origin.internalArtName, `${key} 必須有內功身法`);
+  }
+
+  const expectedBranches = ['palm', 'sword', 'internal', 'qimen'];
+  for (const b of expectedBranches) {
+    const branch = CUSTOM_SECT_BRANCHES[b];
+    assert.ok(branch, `CUSTOM_SECT_BRANCHES 必須包含 ${b}`);
+    assert.equal(branch.branch, b);
+    assert.ok(branch.branchTitle);
+    assert.ok(branch.plaqueMotto);
+    assert.ok(branch.doctrineTitle);
+    assert.ok(branch.doctrineEffect);
+    assert.ok(branch.trainingPostName);
+    assert.ok(branch.founderArtName);
+  }
+});
+
+test('resolveSectOrigin 解析經典模板與自創門派道統分支', () => {
+  // 經典模板
+  const yue = resolveSectOrigin('yue_buqun');
+  assert.equal(yue.sectName, '華山別院');
+  assert.equal(yue.plaqueMotto, '氣冠紫霞');
+  assert.equal(yue.trainingPostName, '青竹君子劍靶');
+  assert.equal(yue.founderArtName, '《華山基礎劍法》');
+
+  const guo = resolveSectOrigin('guo_jing');
+  assert.equal(guo.sectName, '鎮北武館');
+  assert.equal(guo.plaqueMotto, '俠之大者');
+  assert.equal(guo.trainingPostName, '千斤重砂木人樁');
+  assert.equal(guo.founderArtName, '《基礎羅漢開山掌》');
+
+  // 自創道統四宗分支與自定義門派名
+  const customSword = resolveSectOrigin('sword', '天劍門');
+  assert.equal(customSword.sectName, '天劍門');
+  assert.equal(customSword.branch, 'sword');
+  assert.equal(customSword.plaqueMotto, '青雲仗劍');
+  assert.equal(customSword.founderArtName, '《青雲流光劍》');
+  assert.equal(customSword.trainingPostName, '青鋒懸石試劍架');
+
+  const customInternal = resolveSectOrigin('internal', '太極觀');
+  assert.equal(customInternal.sectName, '太極觀');
+  assert.equal(customInternal.branch, 'internal');
+  assert.equal(customInternal.founderArtName, '《太乙化形綿掌》');
+  assert.equal(customInternal.trainingPostName, '太極乾坤運氣樁');
+
+  const customDefault = resolveSectOrigin('unknown_branch');
+  assert.equal(customDefault.sectName, '青雲門');
+  assert.equal(customDefault.founderArtName, '《開山霹靂掌》');
+});
+
+test('selectStarterDuo 返回 sectOrigin 與 2 Universal + 1 Founder + 1 Fellow 雙脈配置', () => {
+  // 1. 經典搭檔：岳不群 + 令狐沖
+  const duoYueLing = selectStarterDuo({
+    mode: 'preset',
+    presetKey: 'yue_buqun',
+    fellowTemplateId: 'linghu_chong',
+  });
+  assert.ok(duoYueLing.ok);
+  assert.equal(duoYueLing.master.sectOrigin.sectName, '華山別院');
+  assert.equal(duoYueLing.fellowDisciple.sectOrigin.sectName, '見性劍廬');
+
+  const loadoutYueLing = duoYueLing.yardDualLineageLoadout;
+  assert.ok(loadoutYueLing);
+  assert.equal(loadoutYueLing.founderArt, '《華山基礎劍法》');
+  assert.equal(loadoutYueLing.fellowArt, '《五嶽快劍基礎》');
+  assert.equal(loadoutYueLing.trainingPost, '青竹君子劍靶');
+  assert.deepEqual(loadoutYueLing.universalArts, ['《基礎鐵布衫》', '《基礎踏雪無痕》']);
+  assert.deepEqual(loadoutYueLing.arts, [
+    '《基礎鐵布衫》',
+    '《基礎踏雪無痕》',
+    '《華山基礎劍法》',
+    '《五嶽快劍基礎》',
+  ]);
+
+  // 2. 經典搭檔：郭靖 + 韋小寶
+  const duoGuoWei = selectStarterDuo({
+    mode: 'preset',
+    presetKey: 'guo_jing',
+    fellowTemplateId: 'wei_xiaobao',
+  });
+  assert.ok(duoGuoWei.ok);
+  assert.equal(duoGuoWei.yardDualLineageLoadout.founderArt, '《基礎羅漢開山掌》');
+  assert.equal(duoGuoWei.yardDualLineageLoadout.fellowArt, '《揚州撒灰手・袖裡匕》');
+  assert.equal(duoGuoWei.yardDualLineageLoadout.trainingPost, '千斤重砂木人樁');
+
+  // 3. 自創掌門 (百兵劍道宗) + 包租婆
+  const duoCustom = selectStarterDuo({
+    mode: 'custom',
+    name: '林孤鴻',
+    sectName: '孤鴻劍宗',
+    customBranch: 'sword',
+    stats: { comprehension: 8, constitution: 6, strength: 5, agility: 7, composure: 4 },
+    fellowTemplateId: 'landlady',
+  });
+  assert.ok(duoCustom.ok);
+  assert.equal(duoCustom.master.sectOrigin.sectName, '孤鴻劍宗');
+  assert.equal(duoCustom.master.sectOrigin.founderArtName, '《青雲流光劍》');
+  assert.equal(duoCustom.fellowDisciple.sectOrigin.sectName, '豬籠寨大院');
+  assert.equal(duoCustom.yardDualLineageLoadout.founderArt, '《青雲流光劍》');
+  assert.equal(duoCustom.yardDualLineageLoadout.fellowArt, '《河東獅吼初階》');
+  assert.equal(duoCustom.yardDualLineageLoadout.trainingPost, '青鋒懸石試劍架');
+});
+
+test('applyPersonaCreation 與 Demo Model 視圖 life 正確注入門派道統與演武配置', () => {
+  const world = createInitialTestWorld();
+  const res = applyPersonaCreation(world, {
+    mode: 'preset',
+    presetKey: 'guo_jing',
+    fellowTemplateId: 'linghu_chong',
+  });
+  assert.ok(res.ok);
+  assert.ok(world.sectOrigin);
+  assert.equal(world.sectOrigin.sectName, '鎮北武館');
+  assert.equal(world.yardDualLineageLoadout.trainingPost, '千斤重砂木人樁');
+  assert.equal(world.yardDualLineageLoadout.founderArt, '《基礎羅漢開山掌》');
+  assert.equal(world.yardDualLineageLoadout.fellowArt, '《五嶽快劍基礎》');
 });

@@ -2,7 +2,7 @@
 // HUD、名冊、選單、面板、名牌、提示是 HTML/CSS。世界只有 model.mjs：畫面只讀 view()，下令只走 dispatch()，
 // 推進只經 createClock() 換算的固定步進。暫停、背景、播放倍率與畫面幀率都不改結果。
 import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.min.mjs';
-import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES, QUESTIONNAIRE, ICONIC_TEMPLATES, DUO_SYNERGIES, getDuoSynergy, PORTRAIT_MANIFEST } from './model.mjs';
+import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES, QUESTIONNAIRE, ICONIC_TEMPLATES, DUO_SYNERGIES, getDuoSynergy, PORTRAIT_MANIFEST, CUSTOM_SECT_BRANCHES, SECT_ORIGINS, resolveSectOrigin } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
 import { saveTo, loadFrom } from './life-save.mjs';
 import { guardedSave, guardedLoad } from './life02.mjs'; // SG-LIFE-02 存讀邊界（SG-TRAIN-01 共用）
@@ -650,6 +650,10 @@ function setupLifeV02UI() {
   let currentHeroMode = 'preset';
   let selectedHeroPreset = 'yue_buqun';
   let selectedFellowPreset = 'linghu_chong';
+  let currentCustomBranch = 'palm';
+
+  const customBranchGroup = $('custom-branch-group');
+  const customSectNameInput = $('custom-sect-name');
 
   const currentStats = { comprehension: 6, constitution: 6, strength: 6, agility: 6, composure: 6 };
   let destinyBonus = 0;
@@ -667,6 +671,22 @@ function setupLifeV02UI() {
       const el = $(`val-${stat}`);
       if (el) el.textContent = currentStats[stat];
     }
+  }
+
+  function updateCustomSectPreview() {
+    const sectName = (customSectNameInput?.value || '青雲門').trim();
+    const sect = resolveSectOrigin(currentCustomBranch, sectName);
+    const mottoEl = $('custom-preview-motto');
+    const doctrineTitleEl = $('custom-preview-doctrine-title');
+    const doctrineEffectEl = $('custom-preview-doctrine-effect');
+    const apparatusEl = $('custom-preview-apparatus');
+    const founderArtEl = $('custom-preview-founder-art');
+
+    if (mottoEl) mottoEl.textContent = `『${sect.plaqueMotto}』`;
+    if (doctrineTitleEl) doctrineTitleEl.textContent = sect.doctrineTitle;
+    if (doctrineEffectEl) doctrineEffectEl.textContent = sect.doctrineEffect;
+    if (apparatusEl) apparatusEl.textContent = sect.trainingPostName;
+    if (founderArtEl) founderArtEl.textContent = sect.founderArtName;
   }
 
   function renderFellowPills() {
@@ -723,6 +743,21 @@ function setupLifeV02UI() {
       if (b.allExpBonus) bonusItems.push(`心得 +${Math.round(b.allExpBonus * 100)}%`);
       bonusEl.innerHTML = bonusItems.map((txt) => `<span class="bonus-tag">${txt}</span>`).join('');
     }
+
+    // 雙脈武學開局配置預覽更新 (2 Universal + 1 Founder + 1 Fellow)
+    const customSectName = (customSectNameInput?.value || '青雲門').trim();
+    const heroSect = currentHeroMode === 'custom'
+      ? resolveSectOrigin(currentCustomBranch, customSectName)
+      : resolveSectOrigin(selectedHeroPreset);
+    const fellowSect = resolveSectOrigin(selectedFellowPreset);
+
+    const previewFounderArt = $('preview-founder-art');
+    const previewFellowArt = $('preview-fellow-art');
+    const previewApparatusName = $('preview-apparatus-name');
+
+    if (previewFounderArt) previewFounderArt.textContent = heroSect.founderArtName;
+    if (previewFellowArt) previewFellowArt.textContent = fellowSect.founderArtName;
+    if (previewApparatusName) previewApparatusName.textContent = heroSect.trainingPostName;
   }
 
   // 渲染 5 題情境性向問卷
@@ -825,11 +860,31 @@ function setupLifeV02UI() {
     updateDuoSynergyPreview();
   });
 
+  // 道統宗派切換與門派名號輸入
+  customBranchGroup?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.branch-btn');
+    if (!btn) return;
+    const branch = btn.dataset.branch;
+    if (!branch) return;
+    currentCustomBranch = branch;
+    for (const b of customBranchGroup.querySelectorAll('.branch-btn')) {
+      b.classList.toggle('active', b.dataset.branch === branch);
+    }
+    updateCustomSectPreview();
+    updateDuoSynergyPreview();
+  });
+
+  customSectNameInput?.addEventListener('input', () => {
+    updateCustomSectPreview();
+    updateDuoSynergyPreview();
+  });
+
   submitBtn?.addEventListener('click', () => {
     let payload;
     if (currentHeroMode === 'custom') {
       const name = ($('custom-name')?.value || '林玄真').trim();
       const perk = $('custom-perk')?.value || 'perk.peerless_talent';
+      const sectName = (customSectNameInput?.value || '青雲門').trim();
       const answers = [];
       if (Array.isArray(QUESTIONNAIRE)) {
         for (const q of QUESTIONNAIRE) {
@@ -845,6 +900,8 @@ function setupLifeV02UI() {
         innatePerks: [perk],
         questionnaireAnswers: answers,
         fellowTemplateId: selectedFellowPreset,
+        sectName,
+        customBranch: currentCustomBranch,
       };
     } else {
       payload = {
@@ -901,6 +958,62 @@ function setupLifeV02UI() {
     renderChrome();
   });
 
+  // 人間煙火 (v0.3) ＆ 雙脈武學場 (v0.4) 面板與操作按鈕接線
+  const lifePanel = $('life-v0304-panel');
+  const lifeToggleBtn = $('life-v0304-toggle');
+  const lifeCloseBtn = $('life-v0304-close');
+  const sectPlaqueBadge = $('sect-plaque-badge');
+
+  function toggleLifePanel() {
+    if (!lifePanel) return;
+    lifePanel.hidden = !lifePanel.hidden;
+    lifeToggleBtn?.classList.toggle('on', !lifePanel.hidden);
+    renderChrome();
+  }
+
+  lifeToggleBtn?.addEventListener('click', toggleLifePanel);
+  lifeCloseBtn?.addEventListener('click', () => {
+    if (lifePanel) lifePanel.hidden = true;
+    lifeToggleBtn?.classList.remove('on');
+  });
+  sectPlaqueBadge?.addEventListener('click', toggleLifePanel);
+
+  $('action-water-garden')?.addEventListener('click', () => {
+    const res = model.life?.waterGardenPlot ? model.life.waterGardenPlot('plot_southeast') : model.dispatch({ type: 'WATER_GARDEN' });
+    v = model.view();
+    toast(res?.speechBubble || '引水灌溉四季菜園藥圃！');
+    renderChrome();
+  });
+
+  $('action-cook-dish')?.addEventListener('click', () => {
+    const res = model.life?.cookSignatureDish ? model.life.cookSignatureDish('roast_chicken') : model.dispatch({ type: 'COOK_DISH' });
+    v = model.view();
+    toast(res?.speechBubble || '膳房大陶灶出鍋！');
+    renderChrome();
+  });
+
+  $('action-brew-wine')?.addEventListener('click', () => {
+    const res = model.life?.brewSectWine ? model.life.brewSectWine('fruit_wine') : model.dispatch({ type: 'BREW_WINE' });
+    v = model.view();
+    toast(res?.speechBubble || '後院酒缸開始釀造百果酒！');
+    renderChrome();
+  });
+
+  $('action-practice-art')?.addEventListener('click', () => {
+    const res = model.life?.practiceSectArt ? model.life.practiceSectArt('《踏雪無痕》') : model.dispatch({ type: 'PRACTICE_ART' });
+    v = model.view();
+    toast(res?.speechBubble || '弟子在演武場精進輕功身法！');
+    renderChrome();
+  });
+
+  $('action-trigger-spar')?.addEventListener('click', () => {
+    const res = model.life?.triggerCrossLineageSpar ? model.life.triggerCrossLineageSpar() : model.dispatch({ type: 'TRIGGER_SPAR' });
+    v = model.view();
+    toast(res?.speechBubble || '兩位同門在演武場點到為止拆招切磋！');
+    renderChrome();
+  });
+
+  updateCustomSectPreview();
   renderFellowPills();
   updateDuoSynergyPreview();
 }
@@ -1183,6 +1296,97 @@ function bannerText() {
   if (!ui.playing) return '❚❚ 已暫停';
   return '';
 }
+
+function renderLifeV0304Panel(life) {
+  if (!life) return;
+  const sectOrigin = life.sectOrigin;
+  const loadout = life.yardDualLineageLoadout;
+
+  if (sectOrigin) {
+    const sName = $('v0304-sect-name');
+    const sMotto = $('v0304-plaque-motto');
+    const sDoctrine = $('v0304-doctrine-title');
+    if (sName) sName.textContent = sectOrigin.sectName || '華山別院';
+    if (sMotto) sMotto.textContent = `『${sectOrigin.plaqueMotto || '氣冠紫霞'}』`;
+    if (sDoctrine) sDoctrine.textContent = sectOrigin.doctrineTitle || '紫霞養氣・君子端方';
+
+    const apparatusTitle = $('training-post-title');
+    const doctrineEffect = $('doctrine-effect-text');
+    if (apparatusTitle) apparatusTitle.textContent = loadout?.trainingPost || sectOrigin.trainingPostName || '青竹君子劍靶';
+    if (doctrineEffect) doctrineEffect.textContent = sectOrigin.doctrineEffect || '早課講學與讀書領悟 +25%';
+  }
+
+  // v0.3 四季菜園藥圃地塊
+  const gardenContainer = $('garden-plots-container');
+  if (gardenContainer && Array.isArray(life.gardenPlots)) {
+    gardenContainer.innerHTML = life.gardenPlots.map((plot) => `
+      <div class="plot-item">
+        <div class="plot-name">${plot.name}</div>
+        <div class="plot-crop">🌱 ${plot.crop}</div>
+        <div class="plot-moisture">濕度 ${plot.moisture}%</div>
+        <div class="moisture-bar"><i style="width:${plot.moisture}%"></i></div>
+      </div>
+    `).join('');
+  }
+
+  // v0.3 膳房大陶灶
+  const kitchenTier = $('kitchen-tier-text');
+  if (kitchenTier) kitchenTier.textContent = life.kitchenTier || '雙眼大陶灶 (良品)';
+
+  const dishName = $('dish-name');
+  const dishDesc = $('dish-desc');
+  if (dishName && life.activeDish) dishName.textContent = `${life.activeDish.name} (${life.activeDish.tier})`;
+  if (dishDesc && life.activeDish) dishDesc.textContent = life.activeDish.desc;
+
+  const aromaBadge = $('aroma-badge');
+  if (aromaBadge) {
+    aromaBadge.style.display = life.aromaAdActive ? 'inline-block' : 'none';
+  }
+
+  const rationPouch = $('ration-pouch-text');
+  if (rationPouch && life.rationPouch) {
+    const items = life.rationPouch.items?.join(', ') || '空';
+    rationPouch.textContent = `${items} (${life.rationPouch.count}/${life.rationPouch.capacity})`;
+  }
+
+  const wineCask = $('wine-cask-text');
+  if (wineCask && life.wineCask) {
+    wineCask.textContent = `酒缸：${life.wineCask.name} (${life.wineCask.status})`;
+  }
+
+  // v0.4 雙脈武學配置 (4 招)
+  const artsContainer = $('unlocked-arts-container');
+  if (artsContainer && loadout) {
+    artsContainer.innerHTML = `
+      <div class="art-pill founder"><span>👑 本門開山</span><b>${loadout.founderArt}</b></div>
+      <div class="art-pill fellow"><span>🤝 同門客座</span><b>${loadout.fellowArt}</b></div>
+      <div class="art-pill"><span>🛡️ 門派通用</span><b>${loadout.universalArts?.[0] || '《基礎鐵布衫》'}</b></div>
+      <div class="art-pill"><span>🛡️ 門派通用</span><b>${loadout.universalArts?.[1] || '《基礎踏雪無痕》'}</b></div>
+    `;
+  }
+
+  // v0.4 輕功捷徑
+  const shortcutText = $('qinggong-shortcut-text');
+  if (shortcutText) {
+    shortcutText.textContent = life.qinggongShortcutUnlocked
+      ? '輕功捷徑：已解鎖！弟子可踏溪石飛躍 (40 步過河)'
+      : '輕功捷徑：未解鎖（《踏雪無痕》達 Lv3 可 40 步飛躍溪石）';
+  }
+
+  // v0.4 切磋與兩派合參
+  const sparringStatus = $('sparring-status-text');
+  if (sparringStatus) sparringStatus.textContent = `當前狀態：${life.sparringStatus || '待命中，隨時可發起拆招比試'}`;
+
+  const crossTarget = $('cross-lineage-target');
+  if (crossTarget) crossTarget.textContent = life.crossLineageArt || '《剛柔劍掌雙絕》';
+
+  const crossPct = Math.round(life.crossLineageProgress || 45);
+  const crossPctEl = $('cross-lineage-percent');
+  if (crossPctEl) crossPctEl.textContent = `${crossPct}%`;
+
+  const barCross = $('bar-cross-lineage');
+  if (barCross) barCross.style.width = `${crossPct}%`;
+}
 function renderChrome() {
   const id = selectedPerson(), person = v.people[id], profile = profiles[id];
   $('play').textContent = ui.playing ? '❚❚ 暫停' : '▶ 繼續';
@@ -1296,6 +1500,30 @@ function renderChrome() {
       const duoDockPill = $('hud-duo-synergy');
       if (duoDockPill) duoDockPill.title = `${duoSynergy.title}：${duoSynergy.desc}`;
     }
+
+    // 門派鎮山匾額徽章（Sect Plaque Badge）
+    const sectOrigin = life.sectOrigin;
+    if (sectOrigin) {
+      const hudSectName = $('hud-sect-name');
+      const hudPlaqueMotto = $('hud-plaque-motto');
+      const hudDoctrineTag = $('hud-doctrine-tag');
+      const hudDualArtsTag = $('hud-dual-arts-tag');
+
+      if (hudSectName) hudSectName.textContent = sectOrigin.sectName || '華山別院';
+      if (hudPlaqueMotto) hudPlaqueMotto.textContent = `『${sectOrigin.plaqueMotto || '氣冠紫霞'}』`;
+      if (hudDoctrineTag) hudDoctrineTag.textContent = sectOrigin.doctrineTitle || '紫霞養氣・君子端方';
+
+      if (hudDualArtsTag) {
+        const loadout = life.yardDualLineageLoadout;
+        if (loadout) {
+          hudDualArtsTag.textContent = `${loadout.founderArt} · ${loadout.fellowArt}`;
+          hudDualArtsTag.title = `本門：${loadout.founderArt} ｜ 同門：${loadout.fellowArt} ｜ 通用：${loadout.universalArts?.join('、')}`;
+        }
+      }
+    }
+
+    // 人間煙火與雙脈武學場面板渲染
+    renderLifeV0304Panel(life);
   }
   const cards = IDS.map((who) => {
     const p = v.people[who], info = profiles[who];

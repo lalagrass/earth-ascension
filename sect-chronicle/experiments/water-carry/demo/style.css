@@ -657,3 +657,521 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
   font-size: 14px;
   padding: 8px 20px;
 }
+
+/* =====================================================================
+   Sect Origin & Life v0.3-v0.4 Components
+   ===================================================================== */
+
+/* Traditional Wooden/Gold Sect Plaque Badge in HUD */
+.sect-plaque-badge {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #3d2714 0%, #2b180d 50%, #4a2f18 100%);
+  border: 1.5px solid #d4af37;
+  border-radius: 6px;
+  padding: 2px 8px;
+  color: #f7e7c4;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 235, 160, 0.3);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s, box-shadow 0.15s;
+}
+.sect-plaque-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45), inset 0 1px 2px rgba(255, 235, 160, 0.5);
+}
+.plaque-inner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.plaque-icon {
+  font-size: 13px;
+}
+.plaque-name {
+  font-weight: 700;
+  color: #ffd700;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+.plaque-motto {
+  color: #ffecd2;
+  font-weight: 600;
+  font-size: 10px;
+}
+.plaque-doctrine {
+  background: rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 3px;
+  padding: 0 4px;
+  color: #e6c887;
+  font-size: 10px;
+}
+.plaque-arts-tag {
+  color: #b5c7d3;
+  font-size: 10px;
+  max-width: 170px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 800px) {
+  .plaque-arts-tag, .plaque-doctrine {
+    display: none;
+  }
+}
+
+/* Custom Mode Sect Origin Selector */
+.custom-sect-origin-card {
+  margin-top: 10px;
+  background: rgba(239, 228, 203, 0.45);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.sect-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.sect-badge {
+  background: #3d2714;
+  color: #ffd700;
+  border: 1px solid #d4af37;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.custom-sect-name-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+.custom-sect-name-box input {
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #fffaf0;
+  width: 110px;
+}
+.sect-branches-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.selector-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #3b2d1c;
+  white-space: nowrap;
+}
+.branch-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.branch-btn {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: #fffaf0;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  color: var(--ink);
+  transition: all 0.15s;
+}
+.branch-btn:hover {
+  background: #f5ebd8;
+  border-color: #8a6a3e;
+}
+.branch-btn.active {
+  background: #3d2714;
+  color: #ffd700;
+  border-color: #d4af37;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+.sect-origin-preview-body {
+  background: #fffaf0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.preview-line {
+  margin-bottom: 2px;
+}
+.preview-line .lbl {
+  color: var(--ink2);
+}
+.plaque-text {
+  color: #8a4a1e;
+  font-weight: 700;
+}
+.doctrine-text {
+  color: #3b2d1c;
+  font-weight: 600;
+}
+.effect-text {
+  color: #246830;
+  font-weight: 600;
+}
+.sect-origin-line {
+  font-size: 11px;
+  color: #5d4037;
+  margin: 3px 0;
+  padding: 2px 4px;
+  background: rgba(239, 228, 203, 0.35);
+  border-radius: 4px;
+  border-left: 2px solid #8a6a3e;
+}
+
+/* Dual-Lineage Martial Yard Preview Box in Persona Modal */
+.dual-lineage-preview-box {
+  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px dashed #8a6a3e;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.lineage-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+.lineage-badge {
+  font-weight: 700;
+  color: #3b2d1c;
+}
+.apparatus-tag {
+  color: #8a4a1e;
+  font-size: 11px;
+}
+.lineage-arts-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 6px;
+}
+.lineage-item {
+  display: flex;
+  flex-direction: column;
+  background: #fffaf0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 11px;
+}
+.lineage-type {
+  font-size: 10px;
+  color: var(--ink2);
+  margin-bottom: 1px;
+}
+.lineage-art-name {
+  font-weight: 700;
+  color: #2b180d;
+}
+.lineage-item.founder-item {
+  border-color: #c8962e;
+  background: #fffdf5;
+}
+.lineage-item.fellow-item {
+  border-color: #4f78a8;
+  background: #f5f8fd;
+}
+.lineage-item.universal-item {
+  border-color: #8a96a3;
+  background: #fbfbfb;
+}
+
+/* 人間煙火 (v0.3) ＆ 雙脈武學場 (v0.4) 綜合面板 */
+.life-v0304-panel {
+  position: fixed;
+  right: 14px;
+  top: calc(var(--hud-h) + 16px);
+  width: 440px;
+  max-width: calc(100% - 28px);
+  max-height: calc(100vh - var(--hud-h) - var(--roster-h) - 40px);
+  overflow-y: auto;
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+  padding: 12px 14px;
+  z-index: 99;
+  font-size: 12px;
+}
+.panel-header {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+.panel-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.panel-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2f2a24;
+}
+.close-btn {
+  padding: 1px 6px;
+  font-size: 11px;
+  line-height: 1;
+}
+.sect-summary-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 6px;
+}
+.sect-pill {
+  background: #3d2714;
+  color: #ffd700;
+  font-weight: 700;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.motto-pill {
+  color: #8a4a1e;
+  font-weight: 700;
+  font-size: 11px;
+}
+.doctrine-pill {
+  background: #efe4cb;
+  color: #4a3a26;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.panel-sections-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.card-box {
+  background: #fffaf0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.card-box h3 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: #3b2d1c;
+  border-bottom: 1px dashed var(--line);
+  padding-bottom: 4px;
+}
+.section-subhead {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink2);
+  margin-bottom: 4px;
+}
+.plots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.plot-item {
+  background: #fbf7ee;
+  border: 1px solid #d5c8b2;
+  border-radius: 6px;
+  padding: 4px 6px;
+  text-align: center;
+}
+.plot-name {
+  font-weight: 700;
+  font-size: 11px;
+  color: #2f2a24;
+}
+.plot-crop {
+  font-size: 10px;
+  color: #246830;
+}
+.plot-moisture {
+  font-size: 10px;
+  color: var(--ink2);
+}
+.moisture-bar {
+  height: 4px;
+  background: #e0d7c3;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+.moisture-bar i {
+  display: block;
+  height: 100%;
+  background: #4c8fb8;
+}
+.kitchen-summary {
+  margin-top: 10px;
+  border-top: 1px dashed var(--line);
+  padding-top: 8px;
+}
+.kitchen-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.aroma-badge {
+  background: #e65100;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.dish-card {
+  background: #faf4e8;
+  border: 1px solid #cbb896;
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+}
+.dish-name {
+  font-weight: 700;
+  color: #8a4a1e;
+  font-size: 12px;
+}
+.dish-desc {
+  font-size: 11px;
+  color: var(--ink2);
+}
+.ration-box, .wine-cask-status {
+  font-size: 11px;
+  color: #3b2d1c;
+  margin-bottom: 6px;
+}
+.kitchen-actions-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.apparatus-card {
+  background: #f4eee1;
+  border: 1px solid #c2b090;
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+}
+.apparatus-label {
+  font-size: 10px;
+  color: var(--ink2);
+}
+.apparatus-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #3d2714;
+}
+.apparatus-effect {
+  font-size: 11px;
+  color: #246830;
+}
+.arts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.art-pill {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+}
+.art-pill.founder {
+  border-color: #c8962e;
+  font-weight: 700;
+}
+.art-pill.fellow {
+  border-color: #4f78a8;
+  font-weight: 700;
+}
+.qinggong-shortcut-status {
+  background: #eef3f7;
+  border: 1px solid #b8ccd8;
+  border-radius: 6px;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 11px;
+}
+.sparring-box {
+  background: #fbf7ee;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+.sparring-status {
+  font-size: 11px;
+  color: var(--ink2);
+  margin-bottom: 4px;
+}
+.cross-lineage-progress-bar {
+  margin-bottom: 8px;
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--ink2);
+  margin-bottom: 2px;
+}
+.btn-action {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  background: #fffaf0;
+  border: 1px solid #8a6a3e;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #3b2d1c;
+  transition: all 0.15s;
+}
+.btn-action:hover {
+  background: #f4eee1;
+  border-color: #3b2d1c;
+}
+.btn-action.primary-btn {
+  background: #4a3a26;
+  color: #ffd700;
+  border-color: #3b2d1c;
+  width: 100%;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+.btn-action.primary-btn:hover {
+  background: #362919;
+}
+.btn-sm {
+  padding: 2px 6px;
+  font-size: 10px;
+}

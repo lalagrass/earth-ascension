@@ -1,0 +1,204 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "origins": {
+    "origin.huashan_junzi": {
+      "originId": "origin.huashan_junzi",
+      "archetypeId": "yue_buqun",
+      "sectName": "華山別院",
+      "plaque": "氣冠紫霞",
+      "doctrine": "紫霞養氣・君子端方",
+      "doctrinePassive": {
+        "description": "早課講學與藏經閣讀書領悟 +25%；外門違反雜務定額扣體面",
+        "lectureExpBonus": 0.25,
+        "readingStudyBonus": 0.25
+      },
+      "trainingPostTheme": "bamboo_sword_target",
+      "trainingPostName": "青竹君子劍靶",
+      "founderArtId": "art.huashan_basic_sword",
+      "internalArtId": "art.huashan_baoyuan_qi",
+      "founderArtName": "華山基礎劍法",
+      "internalArtName": "華山抱元勁",
+      "starterArts": ["art.huashan_basic_sword", "art.huashan_baoyuan_qi"]
+    },
+    "origin.beixia_palm": {
+      "originId": "origin.beixia_palm",
+      "archetypeId": "guo_jing",
+      "sectName": "鎮北武館",
+      "plaque": "俠之大者",
+      "doctrine": "抱樸守拙・苦練樁功",
+      "doctrinePassive": {
+        "description": "低悟性弟子打樁與外功熟練度 +30%，膳房行軍乾糧袋容量 +1",
+        "lowComprehensionExpBonus": 0.30,
+        "rationCapacityBonus": 1
+      },
+      "trainingPostTheme": "heavy_sand_post",
+      "trainingPostName": "千斤重砂木人樁",
+      "founderArtId": "art.luohan_open_palm",
+      "internalArtId": "art.quanzhen_jinyan",
+      "founderArtName": "羅漢開山掌",
+      "internalArtName": "全真金雁吐納",
+      "starterArts": ["art.luohan_open_palm", "art.quanzhen_jinyan"]
+    },
+    "origin.luding_qimen": {
+      "originId": "origin.luding_qimen",
+      "archetypeId": "wei_xiaobao",
+      "sectName": "通吃山莊",
+      "plaque": "鹿鼎奇門",
+      "doctrine": "義氣聚財・奇門暗器",
+      "doctrinePassive": {
+        "description": "招工、採買與義學募捐銀兩 +35%，不設死板早課，賭坊茶寮回心情翻倍",
+        "hireTradeSilverBonus": 0.35,
+        "teaRelaxBonus": 1.0
+      },
+      "trainingPostTheme": "nine_palace_poles",
+      "trainingPostName": "九宮泥鰍梅花樁",
+      "founderArtId": "art.yangzhou_lime_dagger",
+      "internalArtId": "art.shenxing_basic_step",
+      "founderArtName": "揚州撒灰手",
+      "internalArtName": "神行百變基礎步",
+      "starterArts": ["art.yangzhou_lime_dagger", "art.shenxing_basic_step"]
+    },
+    "origin.xiaoyao_sword": {
+      "originId": "origin.xiaoyao_sword",
+      "archetypeId": "linghu_chong",
+      "sectName": "見性劍廬",
+      "plaque": "笑傲江湖",
+      "doctrine": "無招勝有招・美酒論劍",
+      "doctrinePassive": {
+        "description": "釀酒坊與雙人切磋拆招效率 +30%，飲酒獲「微醺劍意」（破綻感知提升）",
+        "brewerySparringBonus": 0.30,
+        "tipsySwordFlawBonus": 0.15
+      },
+      "trainingPostTheme": "cliff_rock_post",
+      "trainingPostName": "思過崖懸石劍樁",
+      "founderArtId": "art.wuyue_fast_sword",
+      "internalArtId": "art.drunken_snow_step",
+      "founderArtName": "五嶽快劍",
+      "internalArtName": "醉酒踏雪步",
+      "starterArts": ["art.wuyue_fast_sword", "art.drunken_snow_step"]
+    },
+    "origin.wanfo_palm": {
+      "originId": "origin.wanfo_palm",
+      "archetypeId": "ah_sing",
+      "sectName": "萬佛武館",
+      "plaque": "萬中無一",
+      "doctrine": "懲惡揚善・絕境逢生",
+      "doctrinePassive": {
+        "description": "開局最窮困，但挨打、切磋落敗或重傷休養獲「筋骨寸進」加成；義學極易吸引市井奇才與三隱士",
+        "underdogGrowthBonus": 0.50,
+        "streetProdigyAttract": true
+      },
+      "trainingPostTheme": "sandbag_straw_dummy",
+      "trainingPostName": "破麻袋鐵砂草人",
+      "founderArtId": "art.booklet_rulai_palm",
+      "internalArtId": "art.street_shadow_step",
+      "founderArtName": "地攤如來神掌圖冊",
+      "internalArtName": "無影踩腳趾市井步",
+      "starterArts": ["art.booklet_rulai_palm", "art.street_shadow_step"]
+    },
+    "origin.zhulong_compound": {
+      "originId": "origin.zhulong_compound",
+      "archetypeId": "landlady",
+      "sectName": "豬籠寨大院",
+      "plaque": "大隱於市",
+      "doctrine": "包租當家・一吼百應",
+      "doctrinePassive": {
+        "description": "外門挑水砍柴種菜產出 +30%，水缸 <50% 獅吼督工常駐，大院防禦陣位堅韌度 +25%",
+        "choresOutputBonus": 0.30,
+        "vatLowSpeedBonus": 0.50
+      },
+      "trainingPostTheme": "bronze_echo_gong",
+      "trainingPostName": "震音青銅試音鑼",
+      "founderArtId": "art.hedong_lion_roar",
+      "internalArtId": "art.windfire_chase_step",
+      "founderArtName": "河東獅吼初階",
+      "internalArtName": "風火輪追命步",
+      "starterArts": ["art.hedong_lion_roar", "art.windfire_chase_step"]
+    },
+    "origin.custom_palm": {
+      "originId": "origin.custom_palm",
+      "archetypeId": "custom_palm",
+      "sectName": "青松掌宗",
+      "plaque": "松風傲骨",
+      "doctrine": "心如磐石・掌勢如松",
+      "doctrinePassive": {
+        "description": "拳掌招式威力 +10%，破防擊退距離 +15%",
+        "palmDamageBonus": 0.10
+      },
+      "trainingPostTheme": "pine_wooden_dummy",
+      "trainingPostName": "青松木人樁",
+      "founderArtId": "art.qingsong_palm",
+      "internalArtId": "art.panshi_breathing",
+      "founderArtName": "青松掌法",
+      "internalArtName": "磐石吐納",
+      "starterArts": ["art.qingsong_palm", "art.panshi_breathing"]
+    },
+    "origin.custom_sword": {
+      "originId": "origin.custom_sword",
+      "archetypeId": "custom_sword",
+      "sectName": "流雲劍閣",
+      "plaque": "劍破流雲",
+      "doctrine": "出招如雲・變幻莫測",
+      "doctrinePassive": {
+        "description": "劍訣出招前搖 -10%，身法閃避 +15%",
+        "swordSpeedBonus": 0.10
+      },
+      "trainingPostTheme": "sword_practice_post",
+      "trainingPostName": "流雲劍靶樁",
+      "founderArtId": "art.liuyun_sword",
+      "internalArtId": "art.taxue_wuhen",
+      "founderArtName": "流雲劍訣",
+      "internalArtName": "踏雪無痕",
+      "starterArts": ["art.liuyun_sword", "art.taxue_wuhen"]
+    },
+    "origin.custom_internal": {
+      "originId": "origin.custom_internal",
+      "archetypeId": "custom_internal",
+      "sectName": "磐石玄門",
+      "plaque": "氣定神閒",
+      "doctrine": "呼吸綿綿・厚德載物",
+      "doctrinePassive": {
+        "description": "調息內氣回復速度 +25%，精力上限 +20%",
+        "internalQiRegenBonus": 0.25
+      },
+      "trainingPostTheme": "meditation_stone",
+      "trainingPostName": "調息磐石墩",
+      "founderArtId": "art.panshi_breathing",
+      "internalArtId": "art.panshi_breathing",
+      "founderArtName": "磐石吐納",
+      "internalArtName": "磐石吐納",
+      "starterArts": ["art.panshi_breathing"]
+    },
+    "origin.custom_qimen": {
+      "originId": "origin.custom_qimen",
+      "archetypeId": "custom_qimen",
+      "sectName": "齊眉百兵閣",
+      "plaque": "掃蕩群魔",
+      "doctrine": "勢大力沉・橫掃千軍",
+      "doctrinePassive": {
+        "description": "長兵攻擊範圍 +15%，命中群體減速效果 +20%",
+        "staffRangeBonus": 0.15
+      },
+      "trainingPostTheme": "staff_training_poles",
+      "trainingPostName": "百兵齊眉樁",
+      "founderArtId": "art.qimei_staff",
+      "internalArtId": "art.taxue_wuhen",
+      "founderArtName": "齊眉棍法",
+      "internalArtName": "踏雪無痕",
+      "starterArts": ["art.qimei_staff", "art.taxue_wuhen"]
+    }
+  },
+  "archetypeMap": {
+    "yue_buqun": "origin.huashan_junzi",
+    "guo_jing": "origin.beixia_palm",
+    "wei_xiaobao": "origin.luding_qimen",
+    "linghu_chong": "origin.xiaoyao_sword",
+    "ah_sing": "origin.wanfo_palm",
+    "landlady": "origin.zhulong_compound",
+    "custom_palm": "origin.custom_palm",
+    "custom_sword": "origin.custom_sword",
+    "custom_internal": "origin.custom_internal",
+    "custom_qimen": "origin.custom_qimen"
+  }
+}

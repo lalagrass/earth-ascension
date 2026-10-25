@@ -60,6 +60,9 @@ import {
   selectStarterDuo,
   createFellowDisciple,
   createMasterFromTemplate,
+  CUSTOM_SECT_BRANCHES,
+  SECT_ORIGINS,
+  resolveSectOrigin,
 } from '../../../life/core/persona-creation.mjs';
 export {
   ReservationBroker,
@@ -82,6 +85,9 @@ export {
   selectStarterDuo,
   createFellowDisciple,
   createMasterFromTemplate,
+  CUSTOM_SECT_BRANCHES,
+  SECT_ORIGINS,
+  resolveSectOrigin,
 };
 
 // 套用掌門與同門雙人創角及開局羈絆加成
@@ -91,7 +97,7 @@ export function applyPersonaCreation(world, payload = {}) {
     return duoRes;
   }
 
-  const { master, fellowDisciple, activeDuoSynergy, recruitPool } = duoRes;
+  const { master, fellowDisciple, activeDuoSynergy, recruitPool, sectOrigin, founderMartialSeed, fellowMartialSeed, yardDualLineageLoadout } = duoRes;
 
   world.playerPersona = master;
   world.master = master;
@@ -100,6 +106,10 @@ export function applyPersonaCreation(world, payload = {}) {
   world.activeDuoSynergy = activeDuoSynergy;
   world.duoSynergy = activeDuoSynergy;
   world.recruitPool = recruitPool;
+  world.sectOrigin = sectOrigin;
+  world.founderMartialSeed = founderMartialSeed;
+  world.fellowMartialSeed = fellowMartialSeed;
+  world.yardDualLineageLoadout = yardDualLineageLoadout;
 
   if (world.disciples) {
     world.disciples[master.id] = master;
@@ -113,6 +123,8 @@ export function applyPersonaCreation(world, payload = {}) {
     world.people.hero.portraitUrl = master.portraitUrl;
     world.people.hero.patrolStyle = master.patrolStyle;
     world.people.hero.traits = master.traits || [];
+    world.people.hero.sectOrigin = sectOrigin;
+    world.people.hero.yardDualLineageLoadout = yardDualLineageLoadout;
   }
   if (world.people?.cousin) {
     world.people.cousin.name = fellowDisciple.name;
@@ -121,6 +133,7 @@ export function applyPersonaCreation(world, payload = {}) {
     world.people.cousin.patrolStyle = fellowDisciple.patrolStyle;
     world.people.cousin.traits = fellowDisciple.traits || [];
     world.people.cousin.affinity = fellowDisciple.affinity ?? 65;
+    world.people.cousin.sectOrigin = fellowDisciple.sectOrigin;
   }
 
   // 套用同門羈絆之開局加成 (startingBonus)
@@ -154,6 +167,10 @@ export function applyPersonaCreation(world, payload = {}) {
     fellowDisciple,
     activeDuoSynergy,
     duoSynergy: activeDuoSynergy,
+    sectOrigin,
+    founderMartialSeed,
+    fellowMartialSeed,
+    yardDualLineageLoadout,
     recruitPool,
   };
 }
@@ -236,6 +253,10 @@ export function createInitialState(options = {}) {
     playerPersona: null,
     fellowPersona: null,
     activeDuoSynergy: null,
+    sectOrigin: null,
+    founderMartialSeed: null,
+    fellowMartialSeed: null,
+    yardDualLineageLoadout: null,
   };
 
   const personaPayload = options.persona || options.payload || {
@@ -434,7 +455,173 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   let fellowDisciple = defaultDuo.fellowPersona;
   let activeDuoSynergy = defaultDuo.activeDuoSynergy;
   let recruitPool = defaultDuo.recruitPool;
+  let sectOrigin = defaultDuo.sectOrigin;
+  let yardDualLineageLoadout = defaultDuo.yardDualLineageLoadout;
   let autopilotActive = false;
+
+  // v0.3 Homestead & Gourmet Kitchen
+  const gardenPlots = [
+    { plotId: 'plot.cabbage_1', type: 'vegetable', name: '東南菜畦甲', stage: 'growing', cropName: '小白菜', moisture: 60, yieldItem: 'item.cabbage', yieldCount: 2 },
+    { plotId: 'plot.bamboo_2', type: 'vegetable', name: '東南菜畦乙', stage: 'sprouting', cropName: '冬筍', moisture: 45, yieldItem: 'item.bamboo_shoot', yieldCount: 2 },
+    { plotId: 'plot.herb_1', type: 'herb', name: '東南藥圃甲', stage: 'mature', cropName: '紫花地丁', moisture: 80, yieldItem: 'item.herbal_diting', yieldCount: 2 },
+    { plotId: 'plot.herb_2', type: 'herb', name: '東南藥圃乙', stage: 'empty', cropName: '田七', moisture: 30, yieldItem: 'item.tianqi', yieldCount: 1 },
+  ];
+  let kitchenTier = 'fine';
+  let activeDish = {
+    dishId: 'recipe.beggar_chicken',
+    name: '叫化燒雞',
+    tier: 'rare',
+    tierName: '珍饈',
+    aromaRadius: 300,
+    satietyRestore: 75,
+    energyBuffPercent: 25,
+    desc: '外酥裡嫩、荷葉清香四溢（菜香廣告吸引全派與訪客）',
+  };
+  let aromaAdActive = true;
+  let rationPouch = {
+    capacity: 2,
+    count: 2,
+    items: ['荷葉飯糰', '叫化雞腿'],
+  };
+  let wineCask = {
+    wineId: 'monkey_wine',
+    name: '猴兒百果酒',
+    status: '發酵成熟',
+    buff: '微醺劍意 (+15% 破綻捕捉)',
+    flawCaptureBonus: 0.15,
+  };
+
+  // v0.4 Outer Martial Yard
+  let qinggongShortcutUnlocked = false;
+  let sparringStatus = {
+    active: false,
+    roundsCompleted: 0,
+    lastResult: '點到為止，各獲精進',
+    challenger: masterDisciple.name,
+    opponent: fellowDisciple.name,
+  };
+  let crossLineageProgress = {
+    percent: 45,
+    stage: '雙脈對拆參悟中',
+    targetCombo: `《${sectOrigin.founderArtName.replace(/[《》]/g, '')} × ${yardDualLineageLoadout.fellowGuestArt.replace(/[《》]/g, '')}雙絕》`,
+  };
+
+  function waterGardenPlot(plotId) {
+    let target = null;
+    if (plotId) {
+      target = gardenPlots.find((p) => p.plotId === plotId);
+    }
+    if (!target) {
+      target = [...gardenPlots].sort((a, b) => a.moisture - b.moisture)[0];
+    }
+    if (target) {
+      target.moisture = Math.min(100, target.moisture + 40);
+      if (target.stage === 'empty') target.stage = 'sprouting';
+      else if (target.stage === 'sprouting') target.stage = 'growing';
+    }
+    if (s.vat > 0) {
+      s.vat = Math.max(0, s.vat - 1);
+    }
+    s.lastSpeechBubble = {
+      text: `💧 ${masterDisciple.name}提桶澆灌了【${target ? target.name : '四季菜園'}】，土壤潤澤，生機勃勃！`,
+    };
+    return { ok: true, plot: target, gardenPlots };
+  }
+
+  function cookSignatureDish(recipeId) {
+    if (recipeId === 'plum_blossom') {
+      activeDish = {
+        dishId: 'recipe.plum_blossom',
+        name: '玉笛誰家聽落梅',
+        tier: 'legendary',
+        tierName: '絕味',
+        aromaRadius: 600,
+        satietyRestore: 100,
+        energyBuffPercent: 40,
+        desc: '二十四橋明月夜，廚仙傳奇絕品，香飄數里，引動宗師神馳',
+      };
+    } else if (recipeId === 'bamboo_soup') {
+      activeDish = {
+        dishId: 'recipe.bamboo_soup',
+        name: '香煎雪筍',
+        tier: 'fine',
+        tierName: '佳餚',
+        aromaRadius: 100,
+        satietyRestore: 50,
+        energyBuffPercent: 10,
+        desc: '脆嫩雪筍清炒，清爽解膩，凝神益氣',
+      };
+    } else {
+      activeDish = {
+        dishId: 'recipe.beggar_chicken',
+        name: '叫化燒雞',
+        tier: 'rare',
+        tierName: '珍饈',
+        aromaRadius: 300,
+        satietyRestore: 75,
+        energyBuffPercent: 25,
+        desc: '荷葉裹泥烘烤，外酥裡嫩，菜香廣播引來同門搶食',
+      };
+    }
+    aromaAdActive = true;
+    rationPouch.items = ['荷葉飯糰', '叫化雞腿'];
+    rationPouch.count = 2;
+    s.lastSpeechBubble = {
+      text: `🍳 膳房大陶灶烹製出【${activeDish.name}】（${activeDish.tierName}），菜香四溢！隨身乾糧袋已備滿！`,
+    };
+    return { ok: true, activeDish, rationPouch };
+  }
+
+  function brewSectWine(wineType) {
+    if (wineType === 'strong_liquor') {
+      wineCask = {
+        wineId: 'strong_liquor',
+        name: '關外燒刀子',
+        status: '發酵成熟',
+        buff: '豪飲戰意 (+20 威脅喝止)',
+        flawCaptureBonus: 0,
+        roarThreatBonus: 20,
+      };
+    } else {
+      wineCask = {
+        wineId: 'monkey_wine',
+        name: '猴兒百果酒',
+        status: '發酵成熟',
+        buff: '微醺劍意 (+15% 破綻捕捉)',
+        flawCaptureBonus: 0.15,
+        roarThreatBonus: 0,
+      };
+    }
+    s.lastSpeechBubble = {
+      text: `🍶 後院青石酒缸釀出【${wineCask.name}】！酒香醇郁，弟子身心微醺、劍意敏銳！`,
+    };
+    return { ok: true, wineCask };
+  }
+
+  function practiceSectArt(artName) {
+    const targetArt = artName || (yardDualLineageLoadout ? yardDualLineageLoadout.founderArt : '《基礎踏雪無痕》');
+    if (targetArt.includes('踏雪') || targetArt.includes('步')) {
+      qinggongShortcutUnlocked = true;
+    }
+    s.lastSpeechBubble = {
+      text: `🥋 弟子在【${yardDualLineageLoadout?.trainingPostName || '木人樁'}】苦練 ${targetArt}！${qinggongShortcutUnlocked ? '【輕功突破】已解鎖溪石飛躍捷徑！' : '修為精進！'}`,
+    };
+    return { ok: true, artName: targetArt, qinggongShortcutUnlocked };
+  }
+
+  function triggerCrossLineageSpar() {
+    sparringStatus.active = true;
+    sparringStatus.roundsCompleted += 1;
+    sparringStatus.lastResult = `${masterDisciple.name} 與 ${fellowDisciple.name} 切磋拆招 12 秒，點到為止！`;
+    crossLineageProgress.percent = Math.min(100, crossLineageProgress.percent + 20);
+    if (crossLineageProgress.percent >= 100) {
+      crossLineageProgress.stage = '大成領悟，可合參著書';
+    }
+    s.lastSpeechBubble = {
+      text: `⚔️ 【同門切磋】${masterDisciple.name} 使出 ${yardDualLineageLoadout?.founderArt || '本門開山功'}，${fellowDisciple.name} 以 ${yardDualLineageLoadout?.fellowGuestArt || '客座武學'} 見招拆招，雙方大有精進！`,
+    };
+    return { ok: true, sparringStatus, crossLineageProgress };
+  }
 
   const facilities = {
     'fac.hall': {
@@ -1559,10 +1746,20 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         fellowDisciple = res.fellowPersona;
         activeDuoSynergy = res.activeDuoSynergy;
         recruitPool = res.recruitPool;
+        sectOrigin = res.sectOrigin;
+        yardDualLineageLoadout = res.yardDualLineageLoadout;
 
         s.playerPersona = masterDisciple;
         s.fellowPersona = fellowDisciple;
         s.activeDuoSynergy = activeDuoSynergy;
+        s.sectOrigin = sectOrigin;
+        s.yardDualLineageLoadout = yardDualLineageLoadout;
+
+        sparringStatus.challenger = masterDisciple.name;
+        sparringStatus.opponent = fellowDisciple.name;
+        if (sectOrigin && yardDualLineageLoadout) {
+          crossLineageProgress.targetCombo = `《${sectOrigin.founderArtName.replace(/[《》]/g, '')} × ${yardDualLineageLoadout.fellowGuestArt.replace(/[《》]/g, '')}雙絕》`;
+        }
 
         autopilotActive = true;
         if (masterDisciple.persona?.autopilot) {
@@ -1580,8 +1777,27 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
           fellowDisciple,
           activeDuoSynergy,
           duoSynergy: activeDuoSynergy,
+          sectOrigin,
+          founderMartialSeed: sectOrigin?.founderArtName,
+          fellowMartialSeed: yardDualLineageLoadout?.fellowGuestArt,
+          yardDualLineageLoadout,
           recruitPool,
         };
+      }
+      if (cmd.type === 'WATER_GARDEN') {
+        return waterGardenPlot(cmd.plotId);
+      }
+      if (cmd.type === 'COOK_DISH') {
+        return cookSignatureDish(cmd.recipeId);
+      }
+      if (cmd.type === 'BREW_WINE') {
+        return brewSectWine(cmd.wineType);
+      }
+      if (cmd.type === 'PRACTICE_ART') {
+        return practiceSectArt(cmd.artName);
+      }
+      if (cmd.type === 'TRIGGER_SPAR') {
+        return triggerCrossLineageSpar();
       }
     }
 
@@ -2089,6 +2305,28 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       home02: H2.world(),
       life: {
         autopilotActive,
+        sectOrigin,
+        yardDualLineageLoadout,
+        founderMartialSeed: sectOrigin?.founderArtName,
+        fellowGuestArt: yardDualLineageLoadout?.fellowGuestArt,
+        // v0.3 Homestead & Gourmet Kitchen
+        gardenPlots: gardenPlots.map((p) => ({ ...p })),
+        kitchenTier,
+        activeDish: activeDish ? { ...activeDish } : null,
+        aromaAdActive,
+        rationPouch: { ...rationPouch, items: [...rationPouch.items] },
+        wineCask: { ...wineCask },
+        // v0.4 Outer Martial Yard
+        trainingPostName: yardDualLineageLoadout?.trainingPostName || sectOrigin?.trainingPostName || '木人樁',
+        unlockedArts: yardDualLineageLoadout?.unlockedArts || [
+          '《基礎鐵布衫》',
+          '《基礎踏雪無痕》',
+          sectOrigin?.founderArtName || '《華山基礎劍法》',
+          yardDualLineageLoadout?.fellowGuestArt || '《五嶽快劍基礎》',
+        ],
+        qinggongShortcutUnlocked,
+        sparringStatus: { ...sparringStatus },
+        crossLineageProgress: { ...crossLineageProgress },
         master: masterDisciple ? {
           id: masterDisciple.id,
           name: masterDisciple.name,
@@ -2103,7 +2341,9 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
           heartSeal: masterDisciple.persona?.heartSeal || { code: 0b110 },
           innateStats: masterDisciple.innateStats,
           traits: masterDisciple.traits || masterDisciple.innateStats?.innatePerks || [],
-          unlockedArts: masterDisciple.unlockedArts || [],
+          sectOrigin: masterDisciple.sectOrigin || sectOrigin,
+          yardDualLineageLoadout: masterDisciple.yardDualLineageLoadout || yardDualLineageLoadout,
+          unlockedArts: masterDisciple.unlockedArts || yardDualLineageLoadout?.unlockedArts || [],
           explain: masterDisciple.decision?.explain || { doing: '待命', reason: '等待指令', nextPlan: '無' },
           carrying: masterDisciple.carrying,
         } : null,
@@ -2118,6 +2358,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
           daoTitle: fellowDisciple.persona?.daoTitle || '同門同心',
           innateStats: fellowDisciple.innateStats,
           traits: fellowDisciple.traits || fellowDisciple.innateStats?.innatePerks || [],
+          sectOrigin: fellowDisciple.sectOrigin,
           affinity: fellowDisciple.affinity ?? 65,
           explain: fellowDisciple.decision?.explain || { doing: '相依為命', reason: '守護破道館', nextPlan: '除草備料' },
           carrying: fellowDisciple.carrying,
@@ -2162,6 +2403,19 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       get fellowPersona() { return fellowDisciple; },
       get activeDuoSynergy() { return activeDuoSynergy; },
       get duoSynergy() { return activeDuoSynergy; },
+      get sectOrigin() { return sectOrigin; },
+      get yardDualLineageLoadout() { return yardDualLineageLoadout; },
+      get gardenPlots() { return gardenPlots; },
+      get kitchenTier() { return kitchenTier; },
+      get activeDish() { return activeDish; },
+      get aromaAdActive() { return aromaAdActive; },
+      get rationPouch() { return rationPouch; },
+      get wineCask() { return wineCask; },
+      get trainingPostName() { return yardDualLineageLoadout?.trainingPostName || sectOrigin?.trainingPostName || '木人樁'; },
+      get unlockedArts() { return yardDualLineageLoadout?.unlockedArts || []; },
+      get qinggongShortcutUnlocked() { return qinggongShortcutUnlocked; },
+      get sparringStatus() { return sparringStatus; },
+      get crossLineageProgress() { return crossLineageProgress; },
       get facilities() { return facilities; },
       get inventory() { return lifeInventory; },
       get housing() { return housing; },
@@ -2172,6 +2426,11 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       },
       initPersona: (payload) => dispatch({ type: 'INIT_PERSONA', payload }),
       ringBell: (facId) => dispatch({ type: 'RING_BELL', facilityId: facId }),
+      waterGardenPlot: (plotId) => waterGardenPlot(plotId),
+      cookSignatureDish: (recipeId) => cookSignatureDish(recipeId),
+      brewSectWine: (wineType) => brewSectWine(wineType),
+      practiceSectArt: (artName) => practiceSectArt(artName),
+      triggerCrossLineageSpar: () => triggerCrossLineageSpar(),
     },
     step, dispatch, assignBed: (bed, pid) => H2.assign(bed, pid), actions, view, setAuto, setUpkeep, setPalm, setAutoClean, pathLength, lengths, rules, exportState, restore
   };

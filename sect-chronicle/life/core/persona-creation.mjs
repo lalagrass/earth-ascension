@@ -82,6 +82,166 @@ export const INNATE_PERKS = Object.freeze({
   'perk.food_master': { id: 'perk.food_master', name: '食神轉世', desc: '膳房料理品質提升一階' },
 });
 
+// -------------------------------------------------------------
+// 門派起源與道統註冊表 (Section 2.3.4(3) 掌門即道統)
+// -------------------------------------------------------------
+export const CUSTOM_SECT_BRANCHES = Object.freeze({
+  palm: Object.freeze({
+    id: 'origin.custom_palm',
+    branch: 'palm',
+    branchTitle: '拳掌剛猛宗',
+    sectName: '青雲門',
+    plaqueMotto: '剛毅雄健',
+    doctrineTitle: '以拳證道・百煉金剛',
+    doctrineEffect: '拳掌外功威力 +20%，破甲擊退增強',
+    trainingPostName: '青石開山練拳樁',
+    founderArtName: '《開山霹靂掌》',
+    internalArtName: '《磐石吐納功》',
+  }),
+  sword: Object.freeze({
+    id: 'origin.custom_sword',
+    branch: 'sword',
+    branchTitle: '百兵劍道宗',
+    sectName: '青雲門',
+    plaqueMotto: '青雲仗劍',
+    doctrineTitle: '劍意凌霄・身隨劍動',
+    doctrineEffect: '劍法攻速 +20%，身法身段靈動',
+    trainingPostName: '青鋒懸石試劍架',
+    founderArtName: '《青雲流光劍》',
+    internalArtName: '《流雲踏風步》',
+  }),
+  internal: Object.freeze({
+    id: 'origin.custom_internal',
+    branch: 'internal',
+    branchTitle: '玄門內家宗',
+    sectName: '青雲門',
+    plaqueMotto: '道法自然',
+    doctrineTitle: '清靜無為・陰陽調和',
+    doctrineEffect: '吐納回氣速率 +25%，靜室領悟提升',
+    trainingPostName: '太極乾坤運氣樁',
+    founderArtName: '《太乙化形綿掌》',
+    internalArtName: '《太乙引氣真經》',
+  }),
+  qimen: Object.freeze({
+    id: 'origin.custom_qimen',
+    branch: 'qimen',
+    branchTitle: '奇門百藝宗',
+    sectName: '青雲門',
+    plaqueMotto: '千變萬化',
+    doctrineTitle: '機變無方・百藝齊全',
+    doctrineEffect: '百藝製造與奇門身法 +25%',
+    trainingPostName: '八卦奇門機關樁',
+    founderArtName: '《奇門梅花暗影匕》',
+    internalArtName: '《迷蹤步法》',
+  }),
+});
+
+export const SECT_ORIGINS = Object.freeze({
+  yue_buqun: Object.freeze({
+    id: 'origin.huashan_junzi',
+    sectName: '華山別院',
+    plaqueMotto: '氣冠紫霞',
+    doctrineTitle: '紫霞養氣・君子端方',
+    doctrineEffect: '早課講學與讀書領悟 +25%',
+    trainingPostName: '青竹君子劍靶',
+    founderArtName: '《華山基礎劍法》',
+    internalArtName: '《華山抱元勁》',
+  }),
+  guo_jing: Object.freeze({
+    id: 'origin.beixia_palm',
+    sectName: '鎮北武館',
+    plaqueMotto: '俠之大者',
+    doctrineTitle: '抱樸守拙・苦練樁功',
+    doctrineEffect: '低悟性打樁熟練 +30%，乾糧袋容量 +1',
+    trainingPostName: '千斤重砂木人樁',
+    founderArtName: '《基礎羅漢開山掌》',
+    internalArtName: '《全真金雁吐納》',
+  }),
+  wei_xiaobao: Object.freeze({
+    id: 'origin.luding_qimen',
+    sectName: '通吃山莊',
+    plaqueMotto: '鹿鼎奇門',
+    doctrineTitle: '義氣聚財・奇門暗器',
+    doctrineEffect: '招工採買與募捐銀兩 +35%',
+    trainingPostName: '九宮泥鰍梅花樁',
+    founderArtName: '《揚州撒灰手・袖裡匕》',
+    internalArtName: '《神行百變基礎步》',
+  }),
+  linghu_chong: Object.freeze({
+    id: 'origin.xiaoyao_sword',
+    sectName: '見性劍廬',
+    plaqueMotto: '笑傲江湖',
+    doctrineTitle: '無招勝有招・美酒論劍',
+    doctrineEffect: '釀酒與切磋拆招效率 +30%，飲酒微醺劍意',
+    trainingPostName: '思過崖懸石劍樁',
+    founderArtName: '《五嶽快劍基礎》',
+    internalArtName: '《醉酒踏雪步》',
+  }),
+  ah_sing: Object.freeze({
+    id: 'origin.wanfo_palm',
+    sectName: '萬佛武館',
+    plaqueMotto: '萬中無一',
+    doctrineTitle: '懲惡揚善・絕境逢生',
+    doctrineEffect: '挨打切磋獲筋骨寸進，義學易招奇才與三隱士',
+    trainingPostName: '破麻袋鐵砂草人',
+    founderArtName: '《地攤如來神掌圖冊》',
+    internalArtName: '《無影踩腳趾飛毛腿》',
+  }),
+  landlady: Object.freeze({
+    id: 'origin.zhulong_compound',
+    sectName: '豬籠寨大院',
+    plaqueMotto: '大隱於市',
+    doctrineTitle: '包租當家・一吼百應',
+    doctrineEffect: '外門雜務產出 +30%，獅吼督工常駐，陣位堅韌 +25%',
+    trainingPostName: '震音青銅試音鑼',
+    founderArtName: '《河東獅吼初階》',
+    internalArtName: '《風火輪追命步》',
+  }),
+  custom: Object.freeze(CUSTOM_SECT_BRANCHES.palm),
+});
+
+export function resolveSectOrigin(templateIdOrCustomBranch, customSectName) {
+  let key = templateIdOrCustomBranch;
+  let name = customSectName;
+  let branch = 'palm';
+
+  if (typeof templateIdOrCustomBranch === 'object' && templateIdOrCustomBranch !== null) {
+    key = templateIdOrCustomBranch.templateId || templateIdOrCustomBranch.heroTemplateId || templateIdOrCustomBranch.branch || templateIdOrCustomBranch.customBranch || templateIdOrCustomBranch.id || 'custom';
+    name = templateIdOrCustomBranch.sectName || templateIdOrCustomBranch.customSectName || customSectName;
+    branch = templateIdOrCustomBranch.branch || templateIdOrCustomBranch.customBranch || 'palm';
+  }
+
+  if (key === 'custom' || key === 'custom_hero' || key === 'origin.custom_sect' || !key) {
+    const brKey = (branch && CUSTOM_SECT_BRANCHES[branch]) ? branch : 'palm';
+    const base = CUSTOM_SECT_BRANCHES[brKey] || CUSTOM_SECT_BRANCHES.palm;
+    return {
+      ...base,
+      sectName: (name && String(name).trim()) ? String(name).trim() : '青雲門',
+    };
+  }
+
+  if (CUSTOM_SECT_BRANCHES[key]) {
+    const base = CUSTOM_SECT_BRANCHES[key];
+    return {
+      ...base,
+      sectName: (name && String(name).trim()) ? String(name).trim() : '青雲門',
+    };
+  }
+
+  const found = SECT_ORIGINS[key];
+  if (found) {
+    return {
+      ...found,
+      sectName: (name && String(name).trim()) ? String(name).trim() : found.sectName,
+    };
+  }
+
+  return {
+    ...CUSTOM_SECT_BRANCHES.palm,
+    sectName: (name && String(name).trim()) ? String(name).trim() : '青雲門',
+  };
+}
+
 export const QUESTIONNAIRE = Object.freeze([
   {
     id: 'q1',
@@ -734,6 +894,7 @@ export function getDuoSynergy(heroTemplateId, fellowTemplateId) {
 
 export function createFellowDisciple(fellowTemplateId, masterId, synergyId = null) {
   const tmpl = ICONIC_TEMPLATES[fellowTemplateId] || ICONIC_TEMPLATES.guo_jing;
+  const fellowSectOrigin = resolveSectOrigin(fellowTemplateId);
   return {
     id: `disc.fellow_${fellowTemplateId}`,
     templateId: fellowTemplateId,
@@ -748,6 +909,7 @@ export function createFellowDisciple(fellowTemplateId, masterId, synergyId = nul
     patrolStyle: tmpl.patrolStyle,
     starterNote: tmpl.starterNote,
     autopilotWeights: { ...tmpl.autopilotWeights },
+    sectOrigin: fellowSectOrigin,
     affinity: 65,
     stats: { ...tmpl.stats },
     traits: [...tmpl.traits],
@@ -788,13 +950,14 @@ export function createFellowDisciple(fellowTemplateId, masterId, synergyId = nul
         nextPlan: '清除前坪雜草備料',
       },
     },
-    unlockedArts: [],
+    unlockedArts: [fellowSectOrigin.founderArtName],
     artLevels: {},
   };
 }
 
 export function createMasterFromTemplate(heroTemplateId) {
   const tmpl = ICONIC_TEMPLATES[heroTemplateId] || ICONIC_TEMPLATES.yue_buqun;
+  const masterSectOrigin = resolveSectOrigin(heroTemplateId);
   return {
     id: tmpl.id,
     templateId: heroTemplateId,
@@ -809,6 +972,7 @@ export function createMasterFromTemplate(heroTemplateId) {
     patrolStyle: tmpl.patrolStyle,
     starterNote: tmpl.starterNote,
     autopilotWeights: { ...tmpl.autopilotWeights },
+    sectOrigin: masterSectOrigin,
     stats: { ...tmpl.stats },
     traits: [...tmpl.traits],
     innateStats: {
@@ -843,7 +1007,7 @@ export function createMasterFromTemplate(heroTemplateId) {
         nextPlan: '清除前坪雜草備料',
       },
     },
-    unlockedArts: [],
+    unlockedArts: [masterSectOrigin.founderArtName],
     artLevels: {},
   };
 }
@@ -876,6 +1040,35 @@ export function selectStarterDuo(options = {}) {
       synergyPerkId: duoSynergy.id,
     };
     master.activeDuoSynergy = duoSynergy;
+
+    const masterSectOrigin = master.sectOrigin || resolveSectOrigin(customOpts.customBranch || customOpts.branch || 'palm', customOpts.sectName || customOpts.customSectName);
+    const fellowSectOrigin = fellowPersona.sectOrigin || resolveSectOrigin(fellowTemplateId);
+    master.sectOrigin = masterSectOrigin;
+    fellowPersona.sectOrigin = fellowSectOrigin;
+
+    const yardDualLineageLoadout = {
+      trainingPost: masterSectOrigin.trainingPostName,
+      trainingPostName: masterSectOrigin.trainingPostName,
+      founderArt: masterSectOrigin.founderArtName,
+      fellowArt: fellowSectOrigin.founderArtName,
+      fellowGuestArt: fellowSectOrigin.founderArtName,
+      universalArts: ['《基礎鐵布衫》', '《基礎踏雪無痕》'],
+      arts: [
+        '《基礎鐵布衫》',
+        '《基礎踏雪無痕》',
+        masterSectOrigin.founderArtName,
+        fellowSectOrigin.founderArtName,
+      ],
+      unlockedArts: [
+        '《基礎鐵布衫》',
+        '《基礎踏雪無痕》',
+        masterSectOrigin.founderArtName,
+        fellowSectOrigin.founderArtName,
+      ],
+    };
+    master.yardDualLineageLoadout = yardDualLineageLoadout;
+    master.unlockedArts = [...yardDualLineageLoadout.unlockedArts];
+
     const roster = createIconicRoster([fellowTemplateId]);
     const recruitPool = roster.filter((d) => d.availableForRecruit);
     return {
@@ -886,6 +1079,10 @@ export function selectStarterDuo(options = {}) {
       fellowDisciple: fellowPersona,
       activeDuoSynergy: duoSynergy,
       duoSynergy,
+      sectOrigin: masterSectOrigin,
+      founderMartialSeed: masterSectOrigin.founderArtName,
+      fellowMartialSeed: fellowSectOrigin.founderArtName,
+      yardDualLineageLoadout,
       recruitPool,
       roster,
     };
@@ -926,6 +1123,34 @@ export function selectStarterDuo(options = {}) {
   };
   master.activeDuoSynergy = duoSynergy;
 
+  const masterSectOrigin = master.sectOrigin || resolveSectOrigin(heroTemplateId, options.sectName || options.customSectName);
+  const fellowSectOrigin = fellowPersona.sectOrigin || resolveSectOrigin(fellowTemplateId);
+  master.sectOrigin = masterSectOrigin;
+  fellowPersona.sectOrigin = fellowSectOrigin;
+
+  const yardDualLineageLoadout = {
+    trainingPost: masterSectOrigin.trainingPostName,
+    trainingPostName: masterSectOrigin.trainingPostName,
+    founderArt: masterSectOrigin.founderArtName,
+    fellowArt: fellowSectOrigin.founderArtName,
+    fellowGuestArt: fellowSectOrigin.founderArtName,
+    universalArts: ['《基礎鐵布衫》', '《基礎踏雪無痕》'],
+    arts: [
+      '《基礎鐵布衫》',
+      '《基礎踏雪無痕》',
+      masterSectOrigin.founderArtName,
+      fellowSectOrigin.founderArtName,
+    ],
+    unlockedArts: [
+      '《基礎鐵布衫》',
+      '《基礎踏雪無痕》',
+      masterSectOrigin.founderArtName,
+      fellowSectOrigin.founderArtName,
+    ],
+  };
+  master.yardDualLineageLoadout = yardDualLineageLoadout;
+  master.unlockedArts = [...yardDualLineageLoadout.unlockedArts];
+
   const roster = createIconicRoster([heroTemplateId, fellowTemplateId]);
   const recruitPool = roster.filter((d) => d.availableForRecruit);
 
@@ -937,6 +1162,10 @@ export function selectStarterDuo(options = {}) {
     fellowDisciple: fellowPersona,
     activeDuoSynergy: duoSynergy,
     duoSynergy,
+    sectOrigin: masterSectOrigin,
+    founderMartialSeed: masterSectOrigin.founderArtName,
+    fellowMartialSeed: fellowSectOrigin.founderArtName,
+    yardDualLineageLoadout,
     recruitPool,
     roster,
   };
@@ -996,6 +1225,29 @@ export function createPersona(options = {}) {
   // 2. 確定性性向與批命推導
   const derived = derivePersonaFromAnswers(questionnaireAnswers);
 
+  const masterSectOrigin = resolveSectOrigin(options.customBranch || options.branch || 'palm', options.sectName || options.customSectName || '青雲門');
+  const fellowSectOrigin = resolveSectOrigin(fellowTemplateId);
+  const yardDualLineageLoadout = {
+    trainingPost: masterSectOrigin.trainingPostName,
+    trainingPostName: masterSectOrigin.trainingPostName,
+    founderArt: masterSectOrigin.founderArtName,
+    fellowArt: fellowSectOrigin.founderArtName,
+    fellowGuestArt: fellowSectOrigin.founderArtName,
+    universalArts: ['《基礎鐵布衫》', '《基礎踏雪無痕》'],
+    arts: [
+      '《基礎鐵布衫》',
+      '《基礎踏雪無痕》',
+      masterSectOrigin.founderArtName,
+      fellowSectOrigin.founderArtName,
+    ],
+    unlockedArts: [
+      '《基礎鐵布衫》',
+      '《基礎踏雪無痕》',
+      masterSectOrigin.founderArtName,
+      fellowSectOrigin.founderArtName,
+    ],
+  };
+
   const disciple = {
     id,
     templateId: 'custom_hero',
@@ -1010,6 +1262,8 @@ export function createPersona(options = {}) {
     availableForRecruit: false,
     starterNote: '天命掌門，先天五維自由配點，情境問卷推導心印與道家稱號，搭配初始同門護法開局',
     autopilotWeights: { build: 0.60, chore: 0.60, train: 0.60, socialize: 0.60, explore: 0.60 },
+    sectOrigin: masterSectOrigin,
+    yardDualLineageLoadout,
     stats: { ...normalizedStats },
     traits: [...innatePerks],
     innateStats: {
@@ -1061,7 +1315,7 @@ export function createPersona(options = {}) {
         nextPlan: '清除前坪雜草',
       },
     },
-    unlockedArts: [],
+    unlockedArts: [...yardDualLineageLoadout.unlockedArts],
     artLevels: {},
   };
 
@@ -1083,6 +1337,10 @@ export function createPersona(options = {}) {
     fellowDisciple: fellowPersona,
     activeDuoSynergy: duoSynergy,
     duoSynergy,
+    sectOrigin: masterSectOrigin,
+    founderMartialSeed: masterSectOrigin.founderArtName,
+    fellowMartialSeed: fellowSectOrigin.founderArtName,
+    yardDualLineageLoadout,
   };
 }
 
@@ -1098,6 +1356,7 @@ export function createIconicRoster(chosenKeys = []) {
     const isMaster = (k === heroKey);
     const isFellow = (k === fellowKey);
     const isChosen = isMaster || isFellow;
+    const sectOrigin = resolveSectOrigin(k);
 
     const disciple = {
       id: tmpl.id,
@@ -1113,6 +1372,7 @@ export function createIconicRoster(chosenKeys = []) {
       patrolStyle: tmpl.patrolStyle,
       starterNote: tmpl.starterNote,
       autopilotWeights: { ...tmpl.autopilotWeights },
+      sectOrigin,
       stats: { ...tmpl.stats },
       traits: [...tmpl.traits],
       innateStats: {
@@ -1153,7 +1413,7 @@ export function createIconicRoster(chosenKeys = []) {
           nextPlan: isMaster ? '清除前坪雜草備料' : isFellow ? '除草備料' : '等待機緣',
         },
       },
-      unlockedArts: [],
+      unlockedArts: [sectOrigin.founderArtName],
       artLevels: {},
     };
     roster.push(disciple);
@@ -1178,6 +1438,10 @@ export function createPresetDisciple(presetKey, options = {}) {
     fellowDisciple: duoRes.fellowDisciple,
     activeDuoSynergy: duoRes.activeDuoSynergy,
     duoSynergy: duoRes.duoSynergy,
+    sectOrigin: duoRes.sectOrigin,
+    founderMartialSeed: duoRes.founderMartialSeed,
+    fellowMartialSeed: duoRes.fellowMartialSeed,
+    yardDualLineageLoadout: duoRes.yardDualLineageLoadout,
     recruitPool: duoRes.recruitPool,
     roster: duoRes.roster,
   };

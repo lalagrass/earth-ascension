@@ -1,0 +1,252 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "recipes": {
+    "recipe.vege_rice": {
+      "recipeId": "recipe.vege_rice",
+      "name": "粗糧菜飯",
+      "tier": "common",
+      "tierName": "凡菜",
+      "requiredCookingLevel": 1,
+      "cookSec": 6,
+      "cookDurationTicks": 360,
+      "satiety": 30,
+      "satietyRestore": 30,
+      "energyBuff": 0,
+      "buffDurationTicks": 0,
+      "aromaRadius": 0,
+      "canPackRation": true,
+      "packRationId": "ration.rice_ball",
+      "ingredients": [{ "itemId": "item.cabbage", "count": 1 }],
+      "woodCost": 1,
+      "waterCost": 1
+    },
+    "recipe.vege_tofu_soup": {
+      "recipeId": "recipe.vege_tofu_soup",
+      "name": "青菜豆腐湯",
+      "tier": "common",
+      "tierName": "凡菜",
+      "requiredCookingLevel": 1,
+      "cookSec": 6,
+      "cookDurationTicks": 360,
+      "satiety": 30,
+      "satietyRestore": 30,
+      "energyBuff": 0,
+      "buffDurationTicks": 0,
+      "aromaRadius": 0,
+      "canPackRation": false,
+      "ingredients": [{ "itemId": "item.cabbage", "count": 1 }],
+      "woodCost": 1,
+      "waterCost": 1
+    },
+    "recipe.bamboo_tofu_soup": {
+      "recipeId": "recipe.bamboo_tofu_soup",
+      "name": "冬筍豆腐湯",
+      "tier": "common",
+      "tierName": "凡菜",
+      "requiredCookingLevel": 1,
+      "cookSec": 6,
+      "cookDurationTicks": 360,
+      "satiety": 35,
+      "satietyRestore": 35,
+      "energyBuff": 0,
+      "buffDurationTicks": 0,
+      "aromaRadius": 0,
+      "canPackRation": false,
+      "ingredients": [{ "itemId": "item.cabbage", "count": 1 }],
+      "woodCost": 1,
+      "waterCost": 1
+    },
+    "recipe.bamboo_soup": {
+      "recipeId": "recipe.bamboo_soup",
+      "name": "香煎雪筍",
+      "tier": "fine",
+      "tierName": "佳餚",
+      "requiredCookingLevel": 2,
+      "cookSec": 10,
+      "cookDurationTicks": 600,
+      "satiety": 50,
+      "satietyRestore": 50,
+      "energyBuff": 0.10,
+      "buffDurationTicks": 21600,
+      "aromaRadius": 100,
+      "canPackRation": true,
+      "packRationId": "ration.rice_ball",
+      "ingredients": [{ "itemId": "item.bamboo_shoot", "count": 2 }],
+      "woodCost": 1,
+      "waterCost": 1
+    },
+    "recipe.stir_fried_vege": {
+      "recipeId": "recipe.stir_fried_vege",
+      "name": "清炒野菜",
+      "tier": "fine",
+      "tierName": "佳餚",
+      "requiredCookingLevel": 2,
+      "cookSec": 10,
+      "cookDurationTicks": 600,
+      "satiety": 50,
+      "satietyRestore": 50,
+      "energyBuff": 0.10,
+      "buffDurationTicks": 21600,
+      "aromaRadius": 100,
+      "canPackRation": false,
+      "ingredients": [{ "itemId": "item.cabbage", "count": 2 }],
+      "woodCost": 1,
+      "waterCost": 1
+    },
+    "recipe.beggar_chicken": {
+      "recipeId": "recipe.beggar_chicken",
+      "name": "叫化燒雞",
+      "tier": "rare",
+      "tierName": "珍饈",
+      "requiredCookingLevel": 3,
+      "cookSec": 16,
+      "cookDurationTicks": 960,
+      "satiety": 75,
+      "satietyRestore": 75,
+      "energyBuff": 0.25,
+      "buffDurationTicks": 21600,
+      "aromaRadius": 300,
+      "canPackRation": true,
+      "packRationId": "ration.chicken_leg",
+      "ingredients": [
+        { "itemId": "item.meat", "count": 2 },
+        { "itemId": "item.bamboo_shoot", "count": 1 }
+      ],
+      "woodCost": 2,
+      "waterCost": 1
+    },
+    "recipe.lotus_bamboo_soup": {
+      "recipeId": "recipe.lotus_bamboo_soup",
+      "name": "荷葉筍尖湯",
+      "tier": "rare",
+      "tierName": "珍饈",
+      "requiredCookingLevel": 3,
+      "cookSec": 16,
+      "cookDurationTicks": 960,
+      "satiety": 75,
+      "satietyRestore": 75,
+      "energyBuff": 0.25,
+      "buffDurationTicks": 21600,
+      "aromaRadius": 300,
+      "canPackRation": true,
+      "packRationId": "ration.rice_ball",
+      "ingredients": [
+        { "itemId": "item.bamboo_shoot", "count": 2 },
+        { "itemId": "item.cabbage", "count": 1 }
+      ],
+      "woodCost": 2,
+      "waterCost": 1
+    },
+    "recipe.plum_blossom": {
+      "recipeId": "recipe.plum_blossom",
+      "name": "玉笛誰家聽落梅",
+      "tier": "legendary",
+      "tierName": "絕味",
+      "requiredCookingLevel": 4,
+      "cookSec": 24,
+      "cookDurationTicks": 1440,
+      "satiety": 100,
+      "satietyRestore": 100,
+      "energyBuff": 0.40,
+      "buffDurationTicks": 43200,
+      "aromaRadius": 600,
+      "canPackRation": true,
+      "packRationId": "ration.chicken_leg",
+      "attracts": ["hong_qigong", "hungry_disciples"],
+      "ingredients": [
+        { "itemId": "item.meat", "count": 3 },
+        { "itemId": "item.bamboo_shoot", "count": 2 }
+      ],
+      "woodCost": 3,
+      "waterCost": 2
+    }
+  },
+  "brews": {
+    "brew.monkey_wine": {
+      "brewId": "brew.monkey_wine",
+      "name": "猴兒百果酒",
+      "brewSec": 30,
+      "brewDurationTicks": 1800,
+      "buffId": "tipsy_sword_flaw_bonus",
+      "buffName": "微醺劍意",
+      "buffDurationSec": 120,
+      "buffDurationTicks": 7200,
+      "flawCaptureBonus": 0.15,
+      "description": "身法輕盈、出招破綻捕捉率 +15%（令狐沖最愛）",
+      "ingredients": [
+        { "itemId": "item.wild_fruit", "count": 3 },
+        { "itemId": "water", "count": 1 }
+      ]
+    },
+    "brew.strong_liquor": {
+      "brewId": "brew.strong_liquor",
+      "name": "關外燒刀子",
+      "brewSec": 30,
+      "brewDurationTicks": 1800,
+      "buffId": "bold_threat_bonus",
+      "buffName": "豪飲戰意",
+      "buffDurationSec": 120,
+      "buffDurationTicks": 7200,
+      "roarThreatBonus": 20,
+      "description": "臂力激盪、威脅喝止度 +20（喬峰最愛）",
+      "ingredients": [
+        { "itemId": "item.sorghum", "count": 3 },
+        { "itemId": "water", "count": 1 }
+      ]
+    }
+  },
+  "rations": {
+    "defaultMaxCapacity": 2,
+    "items": {
+      "ration.rice_ball": {
+        "rationId": "ration.rice_ball",
+        "name": "荷葉飯糰",
+        "satietyAmount": 25,
+        "energyAmount": 15,
+        "eatDurationSec": 2,
+        "eatDurationTicks": 120
+      },
+      "ration.chicken_leg": {
+        "rationId": "ration.chicken_leg",
+        "name": "叫化雞腿",
+        "satietyAmount": 40,
+        "energyAmount": 25,
+        "eatDurationSec": 2,
+        "eatDurationTicks": 120
+      }
+    }
+  },
+  "crops": {
+    "crop.cabbage": {
+      "cropId": "crop.cabbage",
+      "name": "小白菜",
+      "type": "vegetable",
+      "matureTicks": 3600,
+      "yieldItem": "item.cabbage",
+      "yieldCount": 2,
+      "rareChance": 0.15,
+      "rareItem": "item.bamboo_shoot"
+    },
+    "crop.bamboo_shoot": {
+      "cropId": "crop.bamboo_shoot",
+      "name": "冬筍",
+      "type": "vegetable",
+      "matureTicks": 4800,
+      "yieldItem": "item.bamboo_shoot",
+      "yieldCount": 2,
+      "rareChance": 0.15,
+      "rareItem": "item.rain_bamboo_shoot"
+    },
+    "crop.herbal_diting": {
+      "cropId": "crop.herbal_diting",
+      "name": "紫花地丁",
+      "type": "herb",
+      "matureTicks": 5400,
+      "yieldItem": "item.herbal_diting",
+      "yieldCount": 2,
+      "rareChance": 0.15,
+      "rareItem": "item.golden_herb"
+    }
+  }
+}

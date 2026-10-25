@@ -1,0 +1,229 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "universalArts": [
+    "art.basic_iron_shirt",
+    "art.taxue_wuhen"
+  ],
+  "arts": {
+    "art.qingsong_palm": {
+      "artId": "art.qingsong_palm",
+      "name": "青松掌法",
+      "category": "palm",
+      "governingStat": "strength",
+      "tier": 1,
+      "moves": {
+        "move.pine_push": {
+          "moveId": "move.pine_push",
+          "name": "推山掌",
+          "hitShape": "cone",
+          "buildupTicks": [48, 42, 36, 30, 24, 20],
+          "actionTicks": 12,
+          "recoverTicks": [36, 32, 28, 24, 20, 18],
+          "radius": [28, 30, 32, 34, 36, 38],
+          "angleDeg": [50, 55, 60, 65, 70, 75],
+          "knockback": [40, 46, 52, 58, 64, 70],
+          "damage": [15, 18, 22, 26, 30, 35]
+        }
+      }
+    },
+    "art.qimei_staff": {
+      "artId": "art.qimei_staff",
+      "name": "齊眉棍法",
+      "category": "staff",
+      "governingStat": "legwork",
+      "tier": 1,
+      "moves": {
+        "move.staff_sweep": {
+          "moveId": "move.staff_sweep",
+          "name": "橫掃千軍",
+          "hitShape": "arc",
+          "buildupTicks": [54, 48, 42, 36, 30, 26],
+          "actionTicks": 16,
+          "recoverTicks": [42, 38, 32, 28, 24, 20],
+          "radius": [36, 38, 41, 44, 46, 48],
+          "angleDeg": [140, 148, 156, 164, 172, 180],
+          "knockback": [25, 30, 35, 40, 45, 50],
+          "damage": [12, 15, 19, 23, 27, 32],
+          "slowRate": 0.40
+        }
+      }
+    },
+    "art.liuyun_sword": {
+      "artId": "art.liuyun_sword",
+      "name": "流雲劍訣",
+      "category": "sword",
+      "governingStat": "agility",
+      "tier": 1,
+      "moves": {
+        "move.cloud_pierce": {
+          "moveId": "move.cloud_pierce",
+          "name": "穿雲刺",
+          "hitShape": "line",
+          "buildupTicks": [36, 32, 28, 24, 20, 16],
+          "actionTicks": 8,
+          "recoverTicks": [28, 25, 22, 19, 16, 14],
+          "length": [55, 60, 66, 72, 78, 85],
+          "width": 16,
+          "knockback": [10, 15, 20, 25, 30, 35],
+          "damage": [18, 22, 27, 32, 38, 45]
+        }
+      }
+    },
+    "art.taxue_wuhen": {
+      "artId": "art.taxue_wuhen",
+      "name": "踏雪無痕",
+      "category": "footwork",
+      "governingStat": "legwork",
+      "tier": 1,
+      "speedMultiplier": [1.10, 1.15, 1.20, 1.25, 1.30, 1.35],
+      "shortcutUnlockLevel": 3,
+      "stepStonesCoords": [[810, 620], [890, 640]],
+      "moves": {}
+    },
+    "art.panshi_breathing": {
+      "artId": "art.panshi_breathing",
+      "name": "磐石吐納",
+      "category": "internal",
+      "governingStat": "qi",
+      "tier": 1,
+      "maxQiMultiplier": [1.10, 1.20, 1.30, 1.45, 1.60, 1.80],
+      "moves": {}
+    },
+    "art.basic_iron_shirt": {
+      "artId": "art.basic_iron_shirt",
+      "name": "基礎鐵布衫",
+      "category": "iron_shirt",
+      "governingStat": "strength",
+      "tier": 1,
+      "damageReduction": [0.05, 0.08, 0.12, 0.16, 0.20, 0.25],
+      "moves": {}
+    },
+    "art.huashan_basic_sword": {
+      "artId": "art.huashan_basic_sword",
+      "name": "華山基礎劍法",
+      "category": "sword",
+      "governingStat": "agility",
+      "tier": 1,
+      "moves": {
+        "move.huashan_thrust": {
+          "moveId": "move.huashan_thrust",
+          "name": "白雲出岫",
+          "hitShape": "line",
+          "buildupTicks": [38, 34, 30, 26, 22, 18],
+          "actionTicks": 10,
+          "recoverTicks": [26, 23, 20, 17, 14, 12],
+          "length": [50, 56, 62, 68, 74, 80],
+          "width": 14,
+          "knockback": [15, 20, 25, 30, 35, 40],
+          "damage": [16, 20, 25, 30, 36, 42]
+        }
+      }
+    },
+    "art.luohan_open_palm": {
+      "artId": "art.luohan_open_palm",
+      "name": "羅漢開山掌",
+      "category": "palm",
+      "governingStat": "strength",
+      "tier": 1,
+      "moves": {
+        "move.luohan_break": {
+          "moveId": "move.luohan_break",
+          "name": "羅漢開山",
+          "hitShape": "cone",
+          "buildupTicks": [46, 40, 34, 28, 22, 18],
+          "actionTicks": 12,
+          "recoverTicks": [34, 30, 26, 22, 18, 15],
+          "radius": [30, 32, 35, 38, 41, 45],
+          "angleDeg": [55, 60, 65, 70, 75, 80],
+          "knockback": [45, 52, 60, 68, 76, 85],
+          "damage": [16, 20, 24, 29, 34, 40]
+        }
+      }
+    },
+    "art.yangzhou_lime_dagger": {
+      "artId": "art.yangzhou_lime_dagger",
+      "name": "揚州撒灰手",
+      "category": "qimen",
+      "governingStat": "agility",
+      "tier": 1,
+      "moves": {
+        "move.lime_spray": {
+          "moveId": "move.lime_spray",
+          "name": "撒灰刺心",
+          "hitShape": "cone",
+          "buildupTicks": [28, 24, 20, 16, 13, 10],
+          "actionTicks": 8,
+          "recoverTicks": [24, 21, 18, 15, 12, 10],
+          "radius": [25, 28, 32, 36, 40, 45],
+          "angleDeg": [60, 68, 75, 82, 90, 100],
+          "knockback": [10, 14, 18, 22, 26, 30],
+          "damage": [14, 17, 21, 25, 30, 36],
+          "blindDurationTicks": 120
+        }
+      }
+    },
+    "art.wuyue_fast_sword": {
+      "artId": "art.wuyue_fast_sword",
+      "name": "五嶽快劍",
+      "category": "sword",
+      "governingStat": "agility",
+      "tier": 1,
+      "moves": {
+        "move.wuyue_flurry": {
+          "moveId": "move.wuyue_flurry",
+          "name": "快劍連環",
+          "hitShape": "sector",
+          "buildupTicks": [30, 26, 22, 18, 14, 12],
+          "actionTicks": 8,
+          "recoverTicks": [22, 19, 16, 13, 11, 9],
+          "radius": [35, 38, 42, 46, 50, 55],
+          "angleDeg": [45, 50, 55, 60, 65, 70],
+          "knockback": [15, 18, 22, 26, 30, 35],
+          "damage": [17, 21, 26, 31, 37, 44],
+          "flawInterruptPower": 25
+        }
+      }
+    },
+    "art.booklet_rulai_palm": {
+      "artId": "art.booklet_rulai_palm",
+      "name": "地攤如來神掌圖冊",
+      "category": "palm",
+      "governingStat": "strength",
+      "tier": 1,
+      "moves": {
+        "move.rulai_stomp": {
+          "moveId": "move.rulai_stomp",
+          "name": "踩腳推掌",
+          "hitShape": "circle",
+          "buildupTicks": [50, 44, 38, 32, 26, 20],
+          "actionTicks": 14,
+          "recoverTicks": [38, 33, 28, 23, 18, 15],
+          "radius": [20, 24, 28, 32, 38, 45],
+          "knockback": [20, 25, 32, 40, 48, 58],
+          "damage": [13, 16, 20, 25, 30, 38]
+        }
+      }
+    },
+    "art.hedong_lion_roar": {
+      "artId": "art.hedong_lion_roar",
+      "name": "河東獅吼初階",
+      "category": "internal",
+      "governingStat": "qi",
+      "tier": 1,
+      "moves": {
+        "move.lion_wave": {
+          "moveId": "move.lion_wave",
+          "name": "丹田音浪",
+          "hitShape": "circle",
+          "buildupTicks": [45, 39, 33, 27, 22, 18],
+          "actionTicks": 16,
+          "recoverTicks": [40, 35, 30, 25, 20, 16],
+          "radius": [40, 48, 56, 65, 75, 85],
+          "knockback": [35, 42, 50, 58, 66, 75],
+          "damage": [15, 19, 24, 29, 35, 42]
+        }
+      }
+    }
+  }
+}
