@@ -1,0 +1,21 @@
+{
+ "canvas": [
+  1600,
+  900
+ ],
+ "t": 901,
+ "ds": 4,
+ "fac": {
+  "hall": 0,
+  "yard": 0,
+  "dorm": 0,
+  "kitchen": 0,
+  "veg": 0,
+  "herb": 0,
+  "forest": 0,
+  "quarry": 0,
+  "shed": 0,
+  "store": 0
+ },
+ "mons": 0
+}
