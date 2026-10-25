@@ -1,4 +1,6 @@
 import { ARC13 } from './jianghu.mjs';
+import { SECTS, SECT_K, RULE_LIB } from './sect-data.mjs';
+import { canBuildFac, buildFac, artKind, KIND_NAME, sectFac } from './sect.mjs';
 import { JH, DAY as DAY13 } from './data.mjs';
 import { zxGate } from './huashan.mjs';
 import { HS, DUGU } from './data.mjs';
@@ -77,6 +79,7 @@ function draw() {
   // 日夜
   const ph = phaseOf(S), dark = ph.id === 'night' ? 0.38 : ph.id === 'dusk' ? 0.15 : ph.id === 'dawn' ? 0.1 : 0;
   if (dark) { g.fillStyle = ph.id === 'dusk' ? `rgba(120,60,30,${dark})` : `rgba(20,30,70,${dark})`; g.fillRect(0, 0, 1600, 900); }
+  drawSect();
   if (S.xia?.teacher) { const [x, y] = [NODES.kitchen[0] + 60, NODES.kitchen[1] + 30], im = IMG.hero; g.save(); if (im?.width) { g.filter = 'sepia(0.8) brightness(0.8)'; g.drawImage(im, x - 22, y - 56, 44, 56); g.filter = 'none'; } g.fillStyle = '#b5651d'; g.beginPath(); g.ellipse(x + 16, y - 30, 7, 10, 0, 0, 7); g.fill(); g.font = 'bold 15px sans-serif'; g.textAlign = 'center'; g.lineWidth = 4; g.strokeStyle = '#fff'; g.strokeText(`洪七公 🍶 傳功${S.xia.teacher.stage}/3`, x, y - 62); g.fillStyle = '#6a3b10'; g.fillText(`洪七公 🍶 傳功${S.xia.teacher.stage}/3`, x, y - 62); g.restore(); }
   for (const f of S.fx) {
     if (f.kind === 'shake') continue;
@@ -168,7 +171,7 @@ function panel() {
     const nm = (o) => Object.entries(o || {}).map(([k, v]) => `${ENEMIES[k].name}×${v}`).join('、') || '無';
     const card = R ? `<div class="card"><b>戰報 #${R.n}</b>（第 ${R.day} 日・${R.team.join('、')}）<div>📏 走到 <b>${R.seg}</b> ${R.dist} 步${R.sectRec ? ' <span class="rec">★本門新紀錄</span>' : ''}</div><div>⚔ 擊倒：${nm(R.kills)}</div><div>💨 逃走：${nm(R.escaped)}</div><div>🩹 傷：${R.hurt.map(([n, l]) => n + l).join('、') || '無'}</div><div>🎒 帶回：${Object.entries(R.loot).map(([k, v]) => `${RES_NAMES[k] || k}${v}`).join(' ') || '無'}</div><div>↩ 回頭：${R.reason}</div>${R.style ? `<div>🧭 風格：<b>${EXP_STYLES[R.style].name}</b>・閃避 ${Object.values(R.evaded).reduce((a, b) => a + b, 0)}・追擊 ${R.chase.got}/${R.chase.n}・用時 ${R.time}s</div><div>🗺 清場率：${Object.entries(R.clear).map(([k, v]) => `${(ROUTE.find((g) => g.id === k)?.name || k.replace(/^end(\d+)$/, '絕頂之上・第$1重'))} ${Math.round(v * 100)}%${v >= 1 ? '（清山）' : ''}`).join('・') || '—'}</div><div class="story">📜 ${R.story}</div>` : ''}</div>` : '<div class="k">尚未巡山</div>';
     const sty = [...team].map((id) => S.ds.find((d) => d.id === id)).filter(Boolean), styHtml = sty.length ? `<div class="k">隊伍風格：<b>${EXP_STYLES[teamStyle(sty)].name}</b>（多數決）｜${sty.map((d) => { const o = styleOf(d); return `${d.name}${EXP_STYLES[o.id].name}：${o.why}`; }).join('；')}</div>` : '';
-    const rec = `${xiaHtml()}${hsHtml()}${jhHtml()}${manualHtml()}<div class="k">清場紀錄：${ROUTE.map((g) => `${g.name}${Math.round((S.records.clear?.[g.id] || 0) * 100)}%${S.records.qing?.[g.id] ? `・清山${S.records.qing[g.id]}次${peaceOf(S, g.id) ? '☮' : ''}` : ''}`).join('　')}${S.records.fastGorge != null ? `・最快到深谷 ${S.records.fastGorge}s` : ''}</div><div class="k">本門最遠：${S.records.sect || 0} 步${S.records.who ? `（${S.records.who.join('、')}）` : ''}・個人：${disciples(S).map((d) => `${d.name} ${d.best || 0}`).join('・')}</div>`;
+    const rec = `${xiaHtml()}${sectHtml()}${hsHtml()}${jhHtml()}${manualHtml()}<div class="k">清場紀錄：${ROUTE.map((g) => `${g.name}${Math.round((S.records.clear?.[g.id] || 0) * 100)}%${S.records.qing?.[g.id] ? `・清山${S.records.qing[g.id]}次${peaceOf(S, g.id) ? '☮' : ''}` : ''}`).join('　')}${S.records.fastGorge != null ? `・最快到深谷 ${S.records.fastGorge}s` : ''}</div><div class="k">本門最遠：${S.records.sect || 0} 步${S.records.who ? `（${S.records.who.join('、')}）` : ''}・個人：${disciples(S).map((d) => `${d.name} ${d.best || 0}`).join('・')}</div>`;
     $('exp').innerHTML = X ? `<div>巡山中 #${X.n}：${X.team.map((id) => S.ds.find((d) => d.id === id)?.name).join('、')}・${EXP_STYLES[X.style]?.name || ''}・${X.phase === 'out' ? '前進' : '回程'} ${X.dist.toFixed(0)} 步（${segAt(X.dist).name}）・乾糧 ${X.supplies}・撤退線 ${X.thr * 100}%</div><div class="k">${rbar('體力', X.sta, EXP.sta, '#3a7')} ${rbar(`耐性${X.order ? '（巡山令）' : ''}`, X.pat, X.patMax || 100, '#c80')}${X.scout ? `　探路：${X.scout}（先手 +20%）` : ''}${X.camp ? `　自${X.camp}出發` : ''}</div><div class="k">擊倒 ${nm(X.kills)}｜逃走 ${nm(X.escaped)}｜閃過 ${nm(X.evaded)}｜追 ${X.chase?.got || 0}/${X.chase?.n || 0}</div>${rec}${card}` :
       `<div>${disciples(S).map((d) => `<label><input type="checkbox" class="xteam" value="${d.id}" ${team.has(d.id) ? 'checked' : ''}>${d.name}${d.hp < EXP.minHp ? '（傷）' : ''}</label>`).join(' ')}</div>
       ${styHtml}<div>撤退線：<select id="exthr">${EXP.thr.map((v) => `<option value="${v}" ${v === thr ? 'selected' : ''}>氣血 ${v * 100}%</option>`).join('')}</select>（心情 &lt;${EXP.moodMin} 也會回頭）</div>
@@ -214,6 +217,29 @@ function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = n
   audioStep(); draw(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
 function rbar(n, v, max, c) { const p = Math.max(0, Math.min(1, (v ?? 0) / (max || 1))); return `${n} <span style="display:inline-block;width:80px;height:8px;background:#ddd;vertical-align:middle"><span style="display:block;height:8px;width:${p * 80}px;background:${c}"></span></span> ${Math.max(0, Math.round(v ?? 0))}`; }
 const JH_FX = { anran: ['#7a8ca8', 'arc'], xuantie: ['#2a2a2a', 'heavy'], yunv: ['#eef', 'arc'], kongming: ['#bcb', 'arc'], kuihua: ['#d04050', 'needle'], huagu: ['#9a8aa8', 'arc'], qiankun: ['#e0a040', 'arc'], taiji: ['#ddd', 'arc'], shihou: ['#f0d070', 'ring'], tantui: ['#a07040', 'arc'], tiexian: ['#889', 'heavy'], bagua: ['#8a6a3a', 'arc'], hama: ['#6a8a3a', 'toad'] };
+function drawSect() { // v1.35 匾額＋旗幟（共用破道館地圖，只換字與色）
+  const T = S.sect; if (!T) return; const [hx, hy] = NODES.hall, x = hx, y = hy - 118;
+  g.save(); g.font = 'bold 20px serif'; const w = g.measureText(T.plaque).width + 28;
+  g.fillStyle = '#2a1a0e'; g.fillRect(x - w / 2 - 4, y - 20, w + 8, 34); g.fillStyle = T.color; g.fillRect(x - w / 2, y - 16, w, 26);
+  g.strokeStyle = '#e8c26a'; g.lineWidth = 2; g.strokeRect(x - w / 2, y - 16, w, 26); g.fillStyle = '#ffe9a8'; g.textAlign = 'center'; g.fillText(T.plaque, x, y + 4);
+  for (const fx of [x - w / 2 - 34, x + w / 2 + 34]) { g.fillStyle = '#4a3420'; g.fillRect(fx - 2, y - 40, 4, 92); g.fillStyle = T.color; g.beginPath(); g.moveTo(fx + 2, y - 40); g.lineTo(fx + 40, y - 30); g.lineTo(fx + 2, y - 4); g.fill(); g.fillStyle = '#fff4d0'; g.font = 'bold 16px serif'; g.fillText(T.flag, fx + 16, y - 16); }
+  if (T.fac) { const F = sectFac(S); g.font = 'bold 13px sans-serif'; g.lineWidth = 4; g.strokeStyle = '#fff'; g.strokeText(`🏯 ${F.name}`, x, y + 32); g.fillStyle = T.color; g.fillText(`🏯 ${F.name}`, x, y + 32); }
+  g.restore();
+}
+function sectHtml() {
+  const T = S.sect; if (!T) return ''; const F = sectFac(S), c = canBuildFac(S), out = [];
+  const bias = Object.entries(T.bias).map(([k, v]) => `${k}${v > 0 ? '+' : ''}${Math.round(v * 100)}%`).join('・') || '無';
+  out.push(`🏮 <b style="color:${T.color}">${T.plaque}</b>　門派聲望 <b>${T.rep}</b>　流派偏向：${bias}`);
+  out.push(`📜 門規：${T.rules.map((k) => { const R = RULE_LIB[k], last = T.viol[k]; return `${R.text}${R.flavor ? '' : last != null && S.t - last < 3 * DAY13 ? '<span style="color:#c0392b">（近日違反）</span>' : '<span style="color:#2e7d32">（遵守中）</span>'}`; }).join('；') || '無'}`);
+  if (T.tree.length) out.push(`🥋 本門武學：${T.tree.map((id) => ARTS.find((a) => a.id === id)?.name).join('、')}${T.ban.length ? `　禁學：${T.ban.map((id) => ARTS.find((a) => a.id === id)?.name).join('、')}` : ''}`);
+  const ext = []; for (const d of S.ds) for (const id of Object.keys(d.arts || {})) { const k = artKind(S, d, id); if (k === 'outside' || k === 'guest' || k === 'ban') ext.push(`${d.name}・${ARTS.find((a) => a.id === id)?.name}〔${KIND_NAME[k]}〕`); }
+  if (ext.length) out.push(`🔀 外來武學（外門 ×${SECT_K.outside}，客傳不罰）：${ext.join('、')}`);
+  out.push(`⚔ 宿敵：${T.rivals.map((r) => `${r}${T.beaten[r] ? `（擊退 ${T.beaten[r]}）` : ''}`).join('、') || '—'}（守巡山第 2、4… 道關）`);
+  if (F) out.push(T.fac ? `🏯 鎮派設施：<b>${F.name}</b>——${F.desc}` : `🏯 ${F.name}：${F.desc}　<button data-sectfac="1" ${c.ok ? '' : 'disabled'}>建造（${Object.entries(F.cost).map(([k, v]) => `${RES_NAMES[k] || k}${v}`).join('、')}；聲望 ${SECT_K.facRep}）</button>${c.ok ? '' : `<span class="small">${c.why}</span>`}`);
+  if (T.expelled.length) out.push(`🚪 逐出：${T.expelled.join('、')}`);
+  return `<div class="k"><b>門派身分</b><br>${out.join('<br>')}</div>`;
+}
+document.addEventListener('click', (e) => { if (e.target.closest('[data-sectfac]')) { buildFac(S); panel(); } });
 function jhHtml() {
   const J = S.jh; if (!J) return ''; const out = [], nm = (id) => S.ds.find((d) => d.xia === id || (d.id === 'hero' && S.hero?.id === id));
   const yg = nm('yangguo'); if (yg) out.push(`🦅 楊過：神鵰 ${Math.min(J.diao, JH.diaoFeeds)}/${JH.diaoFeeds}${J.armLost ? '・已斷臂（玄鐵劍法）' : ''}・心情 ${Math.round(yg.mood)}（黯然 ×${(yg.jhMul || 1).toFixed(2)}）`);

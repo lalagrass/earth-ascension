@@ -2,6 +2,7 @@
 import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY } from './data.mjs';
 import { seedArts } from './arts.mjs';
 import { affKey } from './util.mjs';
+import { sectOf } from './sect.mjs';
 export const SAVE_VERSION = 1;
 const ver = (r) => parseFloat(r);
 const defs = () => Object.fromEntries(DISCIPLES.concat(RECRUIT_POOL).map((d) => [d.id, d]));
@@ -32,6 +33,7 @@ export const MIGRATIONS = [
   { to: '1.1', note: '名俠奇遇、招牌武學', up(o) { o.xia ??= { done: {}, declined: {}, joinT: {}, cooks: 0, lastT: -1e9, pending: null, teacher: null, left: {} }; } },
   { to: '1.2', note: '華山線：紫霞、辟邪、九劍、風清揚', up(o) { o.hs ??= { zx: 0, cave: false, carv: 0, lastCarvDay: -1, bixie: 0, bixieT: null, songN: 0, songLast: 0, siguo: false, feng: null, fengLeft: false, fengTries: 0, jealous: false, lhc: 'stay', cards: {}, arcN: 0 }; } },
   { to: '1.3', note: '江湖群像：神鵰、倚天、鹿鼎、功夫、喜劇卡、晨課令', up(o) { o.jh ??= { cards: {}, comedy: [], comedyOn: true, morningOn: true, morningDay: -1, morning: null, diao: 0, armLost: false, honey: 0, zbt: null, dfbb: 0, hy: 0, hidden: 0, gambleDay: -1, gambleSum: 0, poison: null, arcs: {}, residue: {} }; } },
+  { to: '1.35', note: '門派身分：門規、鎮派設施、宿敵守關、外門武學', up(o) { o.sect ??= sectOf(o.hero); } },
 ];
 // 每次讀檔都跑：補最基本的不變式（手改或殘缺存檔也能讀）
 function repair(o, D) { o.cap ??= { wood: 12, stone: 12 }; for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= []; d.needs.fun ??= 60; if (!d.personality?.length) d.personality = [...(D[d.id]?.personality || [])]; d.known ??= d.personality.slice(0, 1); } freshV095(o); }

@@ -1,4 +1,5 @@
 // v0.9 武學骨架：每門武學各自熟練、五階、前置、悟性門檻、笨功夫倍率
+import { sectBiasMul } from './sect-data.mjs';
 import { pipeline } from './mul.mjs';
 import { ARTS, TIERS, WUXING_MUL, ART_GAIN, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST } from './data.mjs';
 export const artById = (id) => ARTS.find((a) => a.id === id);
@@ -20,8 +21,9 @@ export function artMulParts(d, a, state = []) {
   if (p.includes('honest')) talent.push(['憨厚', a.grade <= 1 ? ART_GAIN.honest[0] : ART_GAIN.honest[1]]);
   for (const [t, [tag, k]] of Object.entries(ART_GAIN.tagTrait)) if (p.includes(t) && a.tags.includes(tag)) talent.push([t === 'free' ? '灑脫' : '勤奮', k]);
   const ext = a.req.length ? [['前置', 1 + ART_GAIN.reqBonus * a.req.length]] : [];
-  if (d.pairMul > 0) ext.push(['同門默契', 1 + d.pairMul]); // v0.96 郭靖＋黃蓉最多 +25%
-  const r = pipeline({ talent, state, ext }); r.gate = gated(d, a) ? ART_GAIN.gated : 1; r.total *= r.gate; return r;
+  if (d.pairMul > 0) ext.push(['同門默契', 1 + d.pairMul]);
+  const [bm, om] = sectBiasMul(d, a); if (bm !== 1) talent.push(['門派偏向', bm]); if ((d.sgain || 1) !== 1) ext.push(['鎮派設施', d.sgain]); // v1.35 // v0.96 郭靖＋黃蓉最多 +25%
+  const r = pipeline({ talent, state, ext }); r.gate = gated(d, a) ? ART_GAIN.gated : 1; r.total *= r.gate; r.outside = om; r.total *= om; return r; // v1.35 外門 ×0.7 是真乘數
 }
 export const artMul = (d, a) => artMulParts(d, a).total;
 export const artCap = (d, a) => (gated(d, a) ? ART_GAIN.gateCap : 100);

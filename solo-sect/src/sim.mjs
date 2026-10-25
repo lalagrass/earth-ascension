@@ -14,6 +14,7 @@ import { raidMul } from './expedition.mjs';
 import { xiaStep, onCook, xiaInit } from './wuxia.mjs';
 import { hsStep, hsInit } from './huashan.mjs';
 import { jhStep, jhInit } from './jianghu.mjs';
+import { sectStep, sectInit, sectRecruit } from './sect.mjs';
 import { unlockStep, chapterStep } from './slice.mjs';
 import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus, awaken, econCoin, cookBonus } from './hero.mjs';
 export { canExpedition, codexRows, reportText, segAt, ROUTE_END, dpsOf };
@@ -56,6 +57,7 @@ export function createState(seed = 1, heroSpec = null) {
   log(s, '師徒三人來到山腳一間破道館。');
   s.hero = null; s.choices = []; s.encExclude = []; s.unlock = []; s.chapter = { done: false }; for (const d of s.ds) d.wu ??= d.root;
   if (heroSpec) applyHero(s, heroSpec, initPair);
+  sectInit(s);
   return s;
 }
 function mkDisciple(d, i, at = 'court', personality = d.personality || [], known = personality.slice(0, 1)) {
@@ -125,7 +127,7 @@ export function recruit(s, answers) {
   const { personality, known } = personalityFrom(c.next, answers);
   if (rand(s) < 0.3) { const x = rand(s) < 0.5 ? 'lazy' : 'stubborn'; if (!personality.includes(x)) personality.push(x); } // v0.97 一般弟子也可能懶散／較真（暗）
   s.res.food -= RECRUIT.food; book(s, 'out', 'food', RECRUIT.food); const d = mkDisciple(c.next, 1, 'gate', personality, known); d.together = 0; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); s.ds.push(d);
-  for (const o of s.ds) if (o !== d) initPair(s, o, d, 5);
+  for (const o of s.ds) if (o !== d) initPair(s, o, d, 5); sectRecruit(s, d);
   log(s, `${d.name}慕名從村路上山，拜入門下。`); return { ok: true, d };
 }
 export function mapStage(s) {
@@ -525,7 +527,7 @@ export function tick(s, dt = 0.25) {
   ecoStep(s, dt);
   expStep(s, dt, H);
   paceStep(s); unlockStep(s); chapterStep(s); if (Math.floor(s.t) !== Math.floor(s.t - dt)) aspStep(s, think);
-  xiaStep(s, H); hsStep(s, 0.25, H); jhStep(s, 0.25, H);
+  xiaStep(s, H); hsStep(s, 0.25, H); jhStep(s, 0.25, H); sectStep(s);
   if (s.hero) { const h = byId(s, 'hero'); if (h && !h.away && h.hp <= EXP.hurtHeavy) awaken(s, h); heroStep(s); heroAuto(s); for (const d of s.ds) d.pairMul = pairBonus(s, d, aff); }
   for (const f of s.fx) f.ttl -= dt; s.fx = s.fx.filter((f) => f.ttl > 0);
 }

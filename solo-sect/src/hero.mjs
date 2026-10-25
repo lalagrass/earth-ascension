@@ -3,6 +3,7 @@ import { STATS, STAT_BUDGET, VALUES, ACT_TAGS, VALUE_K, WEXIN, Q9, HEROES, COMPA
 import { NODES, MOOD, CHORE_ACTS, DAY, AWAKEN } from './data.mjs';
 import { seedArts, learnArt } from './arts.mjs';
 import { log } from './util.mjs';
+import { sectResolve } from './sect.mjs';
 export const heroById = (id) => HEROES.find((h) => h.id === id);
 export const VALUE_NAMES = Object.fromEntries(VALUES);
 export const STAT_NAMES = Object.fromEntries(STATS);
@@ -88,9 +89,9 @@ export function heroStep(s) {
   s.choices.push(ch); log(s, `【抉擇】${A.title}：${A.text}`); H.arcStep = 0.5;
   if (!H.askMajor) s.autoAt = s.t + (ch.delay || 0);
 }
-export function autoPick(s, ch) { if (ch.xia) return 0; if (ch.jh) return jhAutoPick(s, ch); if (ch.hs) return hsAutoPick(s, ch); const A = ARCS[ch.arc], v = s.hero.values; let best = 0, bv = -1e9; A.opts.forEach(([, dv], i) => { const sc = Object.entries(dv).reduce((a, [k, x]) => a + x * (v[k] || 0), 0); if (sc > bv) { bv = sc; best = i; } }); return best; }
+export function autoPick(s, ch) { if (ch.xia || ch.sect) return 0; if (ch.jh) return jhAutoPick(s, ch); if (ch.hs) return hsAutoPick(s, ch); const A = ARCS[ch.arc], v = s.hero.values; let best = 0, bv = -1e9; A.opts.forEach(([, dv], i) => { const sc = Object.entries(dv).reduce((a, [k, x]) => a + x * (v[k] || 0), 0); if (sc > bv) { bv = sc; best = i; } }); return best; }
 export function resolveChoice(s, id, i) {
-  const ch = s.choices.find((c) => c.id === id); if (!ch) return false; if (ch.xia) return xiaResolve(s, ch, i); if (ch.jh) return jhResolve(s, ch, i); if (ch.hs) return hsResolve(s, ch, i); const A = ARCS[ch.arc], [text, dv, flag] = A.opts[i], d = s.ds.find((x) => x.id === 'hero');
+  const ch = s.choices.find((c) => c.id === id); if (!ch) return false; if (ch.xia) return xiaResolve(s, ch, i); if (ch.sect) return sectResolve(s, ch, i); if (ch.jh) return jhResolve(s, ch, i); if (ch.hs) return hsResolve(s, ch, i); const A = ARCS[ch.arc], [text, dv, flag] = A.opts[i], d = s.ds.find((x) => x.id === 'hero');
   for (const [k, x] of Object.entries(dv)) d.values[k] = Math.max(-50, Math.min(50, (d.values[k] || 0) + x));
   [s.hero.main, s.hero.sub] = mainSub(d.values); s.hero.values = d.values;
   const [mk] = mainSub(d.values); if ((dv[mk] || 0) < 0 || Object.entries(dv).some(([k, x]) => x < 0 && (d.values[k] || 0) >= 20)) addWexin(s, d, `抉擇「${text}」違背本心`);
