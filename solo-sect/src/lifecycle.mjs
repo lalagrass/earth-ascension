@@ -3,10 +3,11 @@
 // 工地 reserved 同步記帳。任何取消／移出都必須把預留與手上的料一併釋放或退回。
 import { log } from './util.mjs';
 import { FACILITIES } from './data.mjs';
+import { stockReserved } from './core.mjs';
 const find = (s, id) => s.ds.find((o) => o.id === id && !o.removed);
 const bookIn = (s, k, v) => { if (!v || !s.ledger) return; const L = s.ledger.in; L[k] = (L[k] || 0) + v; };
 // 其他人已預留、尚未取走的倉庫庫存
-export function whReserved(s, k, except = null) { let n = 0; for (const o of s.ds) { const t = o.task; if (o !== except && t?.act === 'build' && t.phase === 'fetch' && t.mat === k) n += t.reservedAmt || 0; } return n; }
+export const whReserved = (s, k, except = null) => stockReserved(s, k, except); // v1.7 由預約表推得
 export const whAvail = (s, k, except = null) => (s.res[k] || 0) - whReserved(s, k, except);
 export function cancelTask(s, d, why) {
   const t = d.task; if (!t) return;
@@ -14,7 +15,6 @@ export function cancelTask(s, d, why) {
   // v1.5 不瞬移：搬運途中被取消，料留在手上，下一拍由 decide 走回院倉（act deliver）；只有移出門派時才直接入庫
   if (t.act === 'build' && t.mat && d.carry?.[t.mat]) { const n = d.carry[t.mat]; if (site) site.reserved[t.mat] = Math.max(0, site.reserved[t.mat] - n); }
   else if (t.act === 'build' && t.mat && t.reservedAmt) { if (site) site.reserved[t.mat] = Math.max(0, site.reserved[t.mat] - t.reservedAmt); t.reservedAmt = 0; }
-  if (t.act === 'cook' && t.phase !== 'done') s.vegRes = Math.max(0, s.vegRes - 2);
   if (s.resv) for (const k of t.resv || []) if (s.resv[k] === d.id) delete s.resv[k];
   if (t.partner) { const p = find(s, t.partner); if (p?.task?.partner === d.id) { p.task = null; p.path = []; p.anim = null; } }
   d.task = null; d.path = []; d.anim = null; d.reason = why;
@@ -44,7 +44,8 @@ export function invariants(s) {
   for (const [fid, f] of Object.entries(s.fac || {})) { const v = f.site; if (!v) continue;
     for (const k of ['wood', 'stone']) { let exp = 0; for (const o of s.ds) { const t = o.task; if (t?.act === 'build' && t.fac === fid && t.mat === k) exp += t.phase === 'fetch' ? t.reservedAmt || 0 : o.carry?.[k] || 0; }
       if (v.reserved[k] !== exp) bad.push(`site ${fid}.${k} reserved ${v.reserved[k]} != in-flight ${exp}`); if (v.delivered[k] > v.need[k]) bad.push(`site ${fid}.${k} over-delivered`); } }
-  if (s.vegRes < 0 || s.vegRes > s.res.veg) bad.push(`vegRes ${s.vegRes} vs veg ${s.res.veg}`);
+  { const vr = stockReserved(s, 'veg'); if (vr > s.res.veg) bad.push(`veg reserved ${vr} > veg ${s.res.veg}`); }
+  for (const [k, id] of Object.entries(s.resv || {})) if (k.startsWith('stock:') && !find(s, id)) bad.push(`stock key ${k} held by missing ${id}`);
   for (const d of s.ds) { if (!(d.needs.energy >= 0)) bad.push(`${d.id}.energy=${d.needs.energy}`); if (d.task?.partner && !find(s, d.task.partner)) bad.push(`${d.id} partner gone`); }
   // v1.5：床位不超收——每個非地鋪的歇息任務都持有一個本設施的床位 key；同設施床位數 ≤ 階段 beds
   const R = s.resv || {}, beds = {};

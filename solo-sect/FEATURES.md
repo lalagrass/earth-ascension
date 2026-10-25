@@ -117,6 +117,11 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 | SS-XIA-FILTER | v1.65 | 名俠池畫風濾鏡：全明星／純金庸／純周星馳（開局選單），只過濾名俠池 | **已驗證** | 實點開局選「純金庸」→ 名俠池全為金庸角色、包租公婆不在（反例：純周星馳只剩周星馳角色，單元測試） | src/bonds.mjs src/wuxia.mjs src/start-ui.mjs src/hero.mjs | artifacts/v165/flow-v165.mjs | shots/v165-01-start-style.png | — |
 | SS-PASS | v1.65 | 傳功：圓滿以上的人自走帶人練同一門（名俠絕學除外），對方熟練 +15（徒弟 +20），每門每對一次、每人每日一次，好感 +6 | **已接線** | 瀏覽器：主角基礎拳改到 90（狀態修改）後自走去傳功、紀事出現【傳功】，只算畫面證據；前一輪自然遊玩曾自然發生（楊過→郭靖，絕學，之後已排除） | src/bonds.mjs src/sim.mjs | test/v165.test.mjs | shots/v165-04-pass.png | — |
 | SS-APPRENTICE | v1.65 | 收徒：內門／首徒與外門互有好感 ≥30 → 每日自動收一名，或點「收為徒」；師父在場徒弟練功 ×1.15 | **已接線** | 瀏覽器：角色與好感為狀態修改，再實點按鈕→師徒成立、寫入記憶；另一輪看到自然形成（小石<楊過） | src/bonds.mjs src/sim.mjs src/main.mjs | artifacts/v165/flow-v165.mjs | shots/v165-05-apprentice.png | — |
+| SS-SCORE-DATA | v1.7 | 活動評分純資料：src/score-data.mjs 一列一活動（when 述詞、tiers、v 規格），sim 只剩解譯器與乘數管線 | **已接線** | 單元測試＋core golden 雜湊不變（重構前後評分一字不差） | src/score-data.mjs src/sim.mjs | test/v170.test.mjs | — |
+| SS-STOCK-RESV | v1.7 | 菜庫／倉庫預留併入預約表：stock:<料>:<人> 鍵，數量依 STOCK_RESV 由任務推得；s.vegRes 移除；舊檔自動補鍵；孤兒鍵進不變式 | **已接線** | 單元測試；瀏覽器自然遊玩看到煮飯者握 stock:veg、不變式為空（預約表不在畫面上，截圖只是現場） | src/core.mjs src/lifecycle.mjs src/sim.mjs src/save.mjs | artifacts/v170/flow-v170.mjs | shots/v170-01-cook-stock-resv.png |
+| SS-HYST | v1.7 | 遲滯推廣為資料表 HYST：精力（30→80）之外加餓昏（15→50），吃飯第一優先跟旗走；社交／悶慌是線性評分，加遲滯無益，未加 | **已接線** | 單元測試；seed 42 行為不變 | src/core.mjs src/sim.mjs | test/v170.test.mjs | — |
+| SS-SUHUI-SAVE | v1.7 | 宿慧入存檔：save 帶 legacy.suhui；開局取 localStorage／手動檔／自動檔最大；讀檔同步回 localStorage；自動檔 meta 快取 | **已接線** | 瀏覽器實點存檔→重開→自創點數 12→14（反例：無檔 12），實點讀檔→localStorage=2；但宿慧 2 是狀態修改（S.gen.suhui=2），故只算畫面證據 | src/slice.mjs src/save.mjs src/start-ui.mjs src/main.mjs | artifacts/v170/flow-v170.mjs | shots/v170-02-saved-legacy.png shots/v170-03-start-suhui-from-save.png shots/v170-04-loaded-synced.png |
+| SS-DAO-RING | v1.7 | 四大武道相剋環（A17）：破綻→蓄力→卸力→歸真→破綻；弟子武道＝最熟武學的 tag，敵人查 DAO.enemy；巡山傷害雙向 ×1.1／×0.9（v1.46：威脅偏低、開局弱→只取 ±10%） | **已接線** | 單元測試；瀏覽器自然巡山記下隊員與遇敵武道；A/B 五種子無系統性偏移（artifacts/v170/dao-ab.json） | src/data.mjs src/expedition.mjs | artifacts/v170/dao-ab.mjs | shots/v170-05-expedition-dao.png |
 
 修正：巡山在模擬層也守解鎖（第一章不再在第 1 日記成）；「本門新紀錄」「重傷倒地」由頂級改為中級事件。
 

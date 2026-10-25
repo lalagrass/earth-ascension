@@ -43,3 +43,13 @@ export function autoList(store) {
 export const autoGet = (store, i) => store.getItem(AUTO.prefix + i);
 // v1.5 測試/腳本用：直接開啟巡山解鎖（模擬層 canExpedition 已守解鎖）
 export const openExp = (s) => { if (s.unlock && !s.unlock.includes('exp')) s.unlock.push('exp'); return s; };
+// ---- v1.7 宿慧入存檔：存檔帶 legacy.suhui；開局取 localStorage、手動檔、自動檔三者最大；讀檔時同步回 localStorage ----
+export const LEGACY = { key: 'solo-sect-suhui', save: 'solo-sect-save', max: 3 };
+export const suhuiOf = (o) => Math.min(LEGACY.max, Math.max(0, +o?.legacy?.suhui || 0, +o?.gen?.suhui || 0, +o?.gen?.suhuiStart || 0));
+const parseSuhui = (str) => { if (!str) return 0; try { return suhuiOf(JSON.parse(str)); } catch { return 0; } };
+export function legacyBest(store) {
+  let n = +store.getItem(LEGACY.key) || 0; n = Math.max(n, parseSuhui(store.getItem(LEGACY.save)));
+  for (const a of autoList(store)) n = Math.max(n, a.suhui != null ? +a.suhui || 0 : parseSuhui(autoGet(store, a.i)));
+  return Math.min(LEGACY.max, n);
+}
+export function syncLegacy(store, s) { const n = Math.max(+store.getItem(LEGACY.key) || 0, suhuiOf(s)); if (n > 0) store.setItem(LEGACY.key, String(Math.min(LEGACY.max, n))); return n; }

@@ -4,7 +4,7 @@ import { createState, tick } from '../src/sim.mjs'; import { save, load } from '
 import { DAY, ENEMIES, MONSTERS, ROUTE, NODES, RAID_EVERY } from '../src/data.mjs';
 import * as W from '../src/world.mjs';
 const runDays = (s, n) => { for (let i = 0; i < n * DAY * 4; i++) tick(s); };
-const core = (s) => { const o = JSON.parse(save(s)); delete o.pop; delete o.fog; /* v1.6 新增欄位（未建時不影響行為）剝掉後應與 v1.5 一字不差 */ for (const k of ['water', 'pill']) { delete o.res[k]; delete o.cap[k]; } for (const k of ['library', 'quiet', 'shrine', 'alchemy', 'clinic', 'guest', 'well', 'bell', 'watch', 'sig']) delete o.fac[k]; delete o.daily; delete o.watch; delete o.watched; return crypto.createHash('sha256').update(JSON.stringify(o)).digest('hex').slice(0, 16); };
+const core = (s) => { const o = JSON.parse(save(s)); delete o.pop; delete o.fog; /* v1.7 菜／倉預留改入預約表、宿慧 legacy、famished 遲滯旗：剝掉後應一字不差 */ delete o.vegRes; delete o.legacy; for (const d of o.ds || []) delete d.famished; for (const k of Object.keys(o.resv || {})) if (k.startsWith('stock:')) delete o.resv[k]; for (const d of o.ds || []) if (d.task?.resv) { d.task.resv = d.task.resv.filter((k) => !k.startsWith('stock:')); if (!d.task.resv.length && d.task.act === 'build') delete d.task.resv; } /* v1.6 新增欄位（未建時不影響行為）剝掉後應與 v1.5 一字不差 */ for (const k of ['water', 'pill']) { delete o.res[k]; delete o.cap[k]; } for (const k of ['library', 'quiet', 'shrine', 'alchemy', 'clinic', 'guest', 'well', 'bell', 'watch', 'sig']) delete o.fac[k]; delete o.daily; delete o.watch; delete o.watched; return crypto.createHash('sha256').update(JSON.stringify(o)).digest('hex').slice(0, 16); };
 
 test('核心雜湊＝v1.5 黃金值（新欄位 pop 以外的模擬結果一字不差）', () => {
   const s = createState(42); runDays(s, 30);

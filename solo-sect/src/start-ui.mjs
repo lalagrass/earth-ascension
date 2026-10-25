@@ -2,6 +2,7 @@
 import { STATS, VALUES, Q9, HEROES, COMPANIONS } from './hero-data.mjs';
 import { budgetOf, spent, validStats, defaultStats, readHeart, companionsFor, VALUE_NAMES, resolveChoice } from './hero.mjs';
 import { TRAITS } from './data.mjs';
+import { legacyBest } from './slice.mjs';
 import { SECTS, HERO_SECT } from './sect-data.mjs';
 const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index:50;overflow:auto;color:#f3e7cf;font:14px/1.5 serif}
 #start .box{max-width:1640px;margin:8px auto;padding:14px 20px;background:#2b2118;border:2px solid #a07a44;border-radius:10px}
@@ -12,7 +13,7 @@ const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index
 #start .stat{display:inline-block;margin:3px 10px 3px 0}#start .q{margin:3px 0}#start select{max-width:260px}#start .go{font-size:18px;padding:6px 26px;margin-top:10px;background:#c9a061;border:0;border-radius:6px}
 #choice{position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:40;background:#2b2118;color:#f3e7cf;border:2px solid #ffd27a;border-radius:10px;padding:14px 20px;max-width:560px;font:15px/1.6 serif;box-shadow:0 6px 30px #000a}
 #choice button{display:block;margin:6px 0;width:100%;text-align:left;font-size:15px}`;
-const SUHUI = (() => { try { return Math.min(3, +localStorage.getItem('solo-sect-suhui') || 0); } catch { return 0; } })();
+const SUHUI = (() => { try { return legacyBest(localStorage); } catch { return 0; } })(); // v1.7 也讀存檔裡的宿慧
 const st = { tab: 'classic', hero: 'guojing', comp: null, name: '無名', stats: defaultStats(), ans: Array(9).fill(0), ask: true };
 const tn = (t) => TRAITS[t]?.name || t;
 const statLine = (s) => STATS.map(([k, n]) => `${n}${s?.[k] ?? '—'}`).join(' ');

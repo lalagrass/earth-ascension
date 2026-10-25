@@ -5,6 +5,7 @@ import { seedArts } from './arts.mjs';
 import { affKey } from './util.mjs';
 import { sectOf } from './sect.mjs';
 import { genInit } from './gen.mjs';
+import { suhuiOf } from './slice.mjs';
 export const SAVE_VERSION = 1;
 const ver = (r) => parseFloat(r);
 const defs = () => Object.fromEntries(DISCIPLES.concat(RECRUIT_POOL).map((d) => [d.id, d]));
@@ -44,12 +45,14 @@ export const MIGRATIONS = [
 export function v150Up(o) {
   o.resv ??= {}; const R = o.resv; const take = (d, k) => { if (R[k] && R[k] !== d.id) return false; R[k] = d.id; (d.task.resv ??= []).push(k); return true; };
   (o.plots || []).forEach((p, i) => { const d = p.busy && o.ds.find((x) => x.id === p.busy); if (d?.task?.act === 'farm') { d.task.plot = i; take(d, `plot:${i}`); } delete p.busy; });
-  for (const d of o.ds) { d.tired ??= (d.needs?.energy ?? 100) <= 30; d.bored ??= {}; const t = d.task; if (!t) continue;
+  for (const d of o.ds) { d.tired ??= (d.needs?.energy ?? 100) <= 30; d.famished ??= (d.needs?.hunger ?? 100) <= 15; d.bored ??= {}; const t = d.task; if (!t) continue;
     if (t.partner) take(d, `actor:${t.partner}`);
-    if (t.act === 'rest' || t.act === 'cook') { const st = FACILITIES.find((f) => f.id === t.fac)?.stages[o.fac?.[t.fac]?.stage || 0]; const cap = t.act === 'cook' ? 1 : st?.beds ?? 1; let ok = false; for (let i = 0; i < cap && !ok; i++) ok = take(d, `${t.fac}:${t.act}:${i}`); if (!ok && t.act === 'rest') { t.floor = true; take(d, `hall:floor:${d.id}`); } else if (!ok) { o.vegRes = Math.max(0, (o.vegRes || 0) - 2); d.task = null; } } }
+    if (t.act === 'rest' || t.act === 'cook') { const st = FACILITIES.find((f) => f.id === t.fac)?.stages[o.fac?.[t.fac]?.stage || 0]; const cap = t.act === 'cook' ? 1 : st?.beds ?? 1; let ok = false; for (let i = 0; i < cap && !ok; i++) ok = take(d, `${t.fac}:${t.act}:${i}`); if (!ok && t.act === 'rest') { t.floor = true; take(d, `hall:floor:${d.id}`); } else if (!ok) d.task = null; } }
 }
 // 每次讀檔都跑：補最基本的不變式（手改或殘缺存檔也能讀）
-function repair(o, D) { o.cap ??= { wood: 12, stone: 12 }; o.fac ??= {}; for (const f of FACILITIES) o.fac[f.id] ??= { stage: 0, site: null }; o.cap.water ??= 12; o.cap.pill ??= 10; o.res.water ??= 0; o.res.pill ??= 0; if (o.sect?.fac && o.fac?.sig) o.fac.sig.stage = 1; for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= []; d.needs.fun ??= 60; if (!d.personality?.length) d.personality = [...(D[d.id]?.personality || [])]; d.known ??= d.personality.slice(0, 1); } freshV095(o); }
+function repair(o, D) { // v1.7 菜庫／倉庫預留改由預約表 stock:* 推得
+  delete o.vegRes; o.resv ??= {}; for (const d of o.ds || []) { const t = d.task; const k = t?.act === 'cook' && t.phase !== 'done' ? 'veg' : t?.act === 'build' && t.phase === 'fetch' && t.mat ? t.mat : null; if (!k) continue; const key = `stock:${k}:${d.id}`; t.resv ??= []; if (!t.resv.includes(key)) t.resv.push(key); o.resv[key] ??= d.id; }
+ o.cap ??= { wood: 12, stone: 12 }; o.fac ??= {}; for (const f of FACILITIES) o.fac[f.id] ??= { stage: 0, site: null }; o.cap.water ??= 12; o.cap.pill ??= 10; o.res.water ??= 0; o.res.pill ??= 0; if (o.sect?.fac && o.fac?.sig) o.fac.sig.stage = 1; for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= []; d.needs.fun ??= 60; if (!d.personality?.length) d.personality = [...(D[d.id]?.personality || [])]; d.known ??= d.personality.slice(0, 1); } freshV095(o); }
 export function migrate(o) {
   const from = o.rules || (o.ds.some((d) => 'mood' in d) ? '0.6' : '0.5'), D = defs();
   const steps = MIGRATIONS.filter((m) => ver(m.to) > ver(from));
@@ -59,7 +62,7 @@ export function migrate(o) {
   return o;
 }
 export const knownRules = (r) => typeof r === 'string' && (['0.5', '0.6', RULES_VERSION].includes(r) || MIGRATIONS.some((m) => m.to === r)) && ver(r) <= ver(RULES_VERSION);
-export function save(s) { return JSON.stringify({ ...s, fx: [] }); }
+export function save(s) { return JSON.stringify({ ...s, fx: [], legacy: { suhui: suhuiOf(s) } }); } // v1.7 宿慧隨檔
 export function load(str) {
   let o; try { o = JSON.parse(str); } catch { return { ok: false, err: '存檔損毀' }; }
   if (!o || o.v !== SAVE_VERSION || !Array.isArray(o.ds)) return { ok: false, err: `不支援的存檔版本 ${o?.v}` };

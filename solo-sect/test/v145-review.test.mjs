@@ -46,8 +46,8 @@ test('P1-3 衣缽傳給一般內門（林師姐）：主角卡可正常投影', 
   assert.doesNotThrow(() => { for (let i = 0; i < 40; i++) tick(s); });
 });
 test('P2-1 煮飯耗力依灶的實際時長：一拍只扣一點點', () => {
-  const s = mk(); const d = s.ds[1]; s.res.veg = 2; s.vegRes = 2; d.needs.energy = 80; d.needs.hunger = 100; d.order = null;
-  d.task = { act: 'cook', fac: 'kitchen', node: 'kitchen', phase: 'do', timer: 0 }; d.path = [];
+  const s = mk(); const d = s.ds[1]; s.res.veg = 2; s.resv[`stock:veg:${d.id}`] = d.id; d.needs.energy = 80; d.needs.hunger = 100; d.order = null;
+  d.task = { act: 'cook', fac: 'kitchen', node: 'kitchen', phase: 'do', timer: 0, resv: [`stock:veg:${d.id}`] }; d.path = [];
   tick(s); assert.ok(d.needs.energy > 79 && Number.isFinite(d.needs.energy), `energy=${d.needs.energy}`);
 });
 test('P2-2 未來規則版本拒讀、原檔不變', () => {

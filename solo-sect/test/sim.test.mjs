@@ -35,9 +35,10 @@ test('存檔往返與壞檔拒絕', () => {
 
 // v0.2
 import { phaseOf } from '../src/sim.mjs';
+import { stockReserved } from '../src/core.mjs'; // v1.7：s.vegRes → 預約表
 test('菜畦→收菜→煮飯：菜與預約不為負，飯會增加', () => {
   const s = createState(11); s.res.food = 2; let maxFood = 0;
-  for (let i = 0; i < 4 * 900; i++) { tick(s); assert.ok(s.res.veg >= 0 && s.vegRes >= 0 && s.vegRes <= s.res.veg, `veg ${s.res.veg} res ${s.vegRes}`); maxFood = Math.max(maxFood, s.res.food); }
+  for (let i = 0; i < 4 * 900; i++) { tick(s); const vr = stockReserved(s, 'veg'); assert.ok(s.res.veg >= 0 && vr >= 0 && vr <= s.res.veg, `veg ${s.res.veg} res ${vr}`); maxFood = Math.max(maxFood, s.res.food); }
   assert.ok(s.log.some((l) => /煮好/.test(l.msg))); assert.ok(maxFood > 2);
 });
 test('入夜多數人去歇息', () => {

@@ -23,7 +23,7 @@ import { ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES,
 import { EXP_STYLES } from './data.mjs';
 import { styleOf, teamStyle } from './expedition.mjs';
 import { openStart, choiceUI, heroCard } from './start-ui.mjs';
-import { UNLOCKS, ALL_SECS, secOpen, CHAPTER1, AUTO, autosave, autoList, autoGet } from './slice.mjs';
+import { UNLOCKS, ALL_SECS, secOpen, CHAPTER1, AUTO, autosave, autoList, autoGet, suhuiOf, syncLegacy } from './slice.mjs';
 import { MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS, statusIcon } from './v10.mjs';
 import { routeSeg, segIndex, campsOpen, scoutOf, peaceOf } from './expedition.mjs';
 import { CAMPS, ENDLESS } from './data.mjs';
@@ -238,7 +238,7 @@ document.addEventListener('change', (e) => { if (e.target.dataset.variant) { con
 // review fix：存讀檔改用非阻斷提示（原本 alert() 會卡住瀏覽器自動化與遊戲迴圈）
 function toast(msg, bad = false) { let t = document.getElementById('toast'); if (!t) { t = document.createElement('div'); t.id = 'toast'; t.style.cssText = 'position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:99;padding:6px 14px;border-radius:6px;font-size:14px;pointer-events:none'; document.body.appendChild(t); } t.textContent = msg; t.style.background = bad ? '#7a2a1e' : '#3a5a2a'; t.style.color = '#fff'; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => { t.style.display = 'none'; }, 2000); }
 $('save').onclick = () => { try { localStorage.setItem('solo-sect-save', save(S)); toast(`已存檔（第 ${Math.floor(S.t / 600) + 1} 日）`); } catch (e) { toast('存檔失敗：' + e.message, true); } };
-$('load').onclick = () => { const r = load(localStorage.getItem('solo-sect-save') || ''); if (r.ok) { S = r.state; lastAuto = S.t; toast('已讀檔'); } else toast(r.err, true); panel(); };
+$('load').onclick = () => { const r = load(localStorage.getItem('solo-sect-save') || ''); if (r.ok) { S = r.state; lastAuto = S.t; try { syncLegacy(localStorage, S); } catch {} toast('已讀檔'); } else toast(r.err, true); panel(); };
 $('reset').onclick = () => newGame();
 $('load').addEventListener('click', () => { if (document.getElementById('start')) { document.getElementById('start').remove(); starting = false; } });
 let last = performance.now(), acc = 0;
@@ -435,10 +435,10 @@ function chapterModal() {
 let lastAuto = 0; const cue = {};
 function audioStep() { for (const c of cuesFrom(cue, S)) { SFX[c]?.(); const p = c === 'breakthrough' ? (S.fx.find((f) => f.kind === 'break')?.pos || NODES.yard) : c === 'record' ? NODES.gate : c === 'chapter' ? NODES.hall : null; if (p) camFocus(p[0], p[1]); }
   const rd = S.mons.find((m) => m.raid === 'go'); if (rd && cue.raid !== rd.uid) { cue.raid = rd.uid; camFocus(rd.pos[0], rd.pos[1], 2); } }
-setInterval(() => { if (!S || S.t - lastAuto < AUTO.every) return; lastAuto = S.t; autosave(localStorage, save(S), { day: Math.floor(S.t / 600) + 1, name: S.hero?.name, at: Date.now() }); }, 1000);
-$('autos').onchange = (e) => { if (e.target.value === '') return; const r = load(autoGet(localStorage, +e.target.value) || ''); if (r.ok) { S = r.state; lastAuto = S.t; document.getElementById('start')?.remove(); starting = false; } else alert(r.err); panel(); };
+setInterval(() => { if (!S || S.t - lastAuto < AUTO.every) return; lastAuto = S.t; autosave(localStorage, save(S), { day: Math.floor(S.t / 600) + 1, name: S.hero?.name, suhui: suhuiOf(S), at: Date.now() }); }, 1000);
+$('autos').onchange = (e) => { if (e.target.value === '') return; const r = load(autoGet(localStorage, +e.target.value) || ''); if (r.ok) { S = r.state; lastAuto = S.t; try { syncLegacy(localStorage, S); } catch {} document.getElementById('start')?.remove(); starting = false; } else alert(r.err); panel(); };
 $('export').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([save(S)], { type: 'application/json' })); a.download = `solo-sect-day${Math.floor(S.t / 600) + 1}.json`; a.click(); URL.revokeObjectURL(a.href); };
-$('import').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; const r = load(await f.text()); if (r.ok) { S = r.state; lastAuto = S.t; document.getElementById('start')?.remove(); starting = false; } else alert('匯入失敗：' + r.err); e.target.value = ''; panel(); };
+$('import').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; const r = load(await f.text()); if (r.ok) { S = r.state; lastAuto = S.t; try { syncLegacy(localStorage, S); } catch {} document.getElementById('start')?.remove(); starting = false; } else alert('匯入失敗：' + r.err); e.target.value = ''; panel(); };
 $('mute').onclick = () => { setMute(!isMuted()); ambient(!isMuted()); panel(); };
 document.addEventListener('click', (e) => { if (e.target.closest('button')) { SFX.click(); if (!isMuted()) ambient(true); } }, true);
 panel(); newGame(); requestAnimationFrame(loop);

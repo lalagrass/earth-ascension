@@ -1,0 +1,9 @@
+PASS 反例：無宿慧無存檔 → 自創點數基準 12
+PASS 自然遊玩：煮飯者握 stock:veg 鍵、s.vegRes 不存在、預留＝2×煮飯人數、不變式為空 {"day":1,"stock":[["stock:veg:senior","senior"]],"cooking":["林師姐"],"vegReserved":2,"veg":3,"inv":[],"exp":false}
+STATE EDIT: S.gen.suhui=2（模擬已傳兩代）
+PASS 實點存檔 → 檔內帶 legacy.suhui=2 {"suhui":2}
+PASS 重開：localStorage 無宿慧鍵，自創點數仍從存檔取得 +2 {"b0":12,"b1":14}
+PASS 實點讀檔 → localStorage 宿慧同步為 2 "2"
+PASS 巡山（自然遊玩）：隊員武道與遇敵武道都有定義（相剋 ±10% 只算已接線） {"team":[["郭靖","蓄力"],["林師姐","歸真"],["堂弟","歸真"]],"met":[["boar","蓄力"],["hare","破綻"],["snake","破綻"],["wolf","破綻"],["boars","蓄力"],["wolfking","破綻"]]}
+PASS 全程不變式為空 []
+PASS 無頁面錯誤 []

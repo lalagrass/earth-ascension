@@ -10,6 +10,10 @@ import { moveMul, effectTier, artTier as effectTierOf } from './arts.mjs';
 import { ARTS as ARTS_ALL, HS } from './data.mjs';
 import { awaken } from './hero.mjs';
 import { log } from './util.mjs';
+import { DAO } from './data.mjs';
+// v1.7 相剋：a 剋 b → DAO.up；b 剋 a → DAO.down；其餘 1
+export function daoOf(d) { let best = null, bx = -1; for (const [id, r] of Object.entries(d.arts || {})) { const a = ARTS_ALL.find((x) => x.id === id); const tag = a?.tags?.find((g) => DAO.tagOf[g]); if (!tag || a.effect) continue; const x = r?.xp || 0; if (x > bx) { bx = x; best = DAO.tagOf[tag]; } } return best || '歸真'; }
+export function counterMul(a, b) { const R = DAO.ring, i = R.indexOf(a), j = R.indexOf(b); if (i < 0 || j < 0) return 1; if ((i + 1) % R.length === j) return DAO.up; if ((j + 1) % R.length === i) return DAO.down; return 1; }
 import { rivalGate, rivalWon } from './sect.mjs';
 export const ROUTE_END = ROUTE[ROUTE.length - 1].to;
 // v1.0 路段：前七段固定，之後無盡（每 200 步一段、段末固定守關、每段 ×1.25）
@@ -93,10 +97,10 @@ function fight(s, e, team, H, gate = false, scale = 1) {
   const bonus = (s.codex[e]?.insight || 0) >= INSIGHT.dmgAt ? 1 + INSIGHT.dmg : 1;
   while (hp > 0 && t < 90) {
     const alive = team.filter((d) => d.hp > 0); if (!alive.length) break;
-    t += 0.5; const fs = X.scout && t <= EXP.scoutT ? 1 + EXP.scoutBonus : 1; for (const d of alive) { hp -= dpsOf(s, d) * 0.5 * bonus * fs; if (d.dugu?.length) d.hp = Math.min(100, d.hp + HS.duguHeal); } // v1.2 九劍只攻不守：不格擋，但料敵機先回氣血 // v1.0 探路者先手 +20%
+    t += 0.5; const fs = X.scout && t <= EXP.scoutT ? 1 + EXP.scoutBonus : 1; for (const d of alive) { hp -= dpsOf(s, d) * 0.5 * bonus * fs * counterMul(daoOf(d), DAO.enemy[e]); if (d.dugu?.length) d.hp = Math.min(100, d.hp + HS.duguHeal); } // v1.2 九劍只攻不守：不格擋，但料敵機先回氣血 // v1.0 探路者先手 +20%
     if (gate && hp > E.hp * 0.4 && alive.some((d) => d.hp < 100 * EXP.gateBail)) { X.events.push(`見勢不妙，在${E.name}前及早撤退`); return { t, won: false, fled: false, bail: true }; } // v0.98 守關敵打不過：及早撤退
     if (!gate && hp > 0 && hp < E.hp * 0.35 && !fled) { fled = true; if (H.rand(s) < E.flee) { add(X.escaped, e, 1); seeEnemy(s, e, 'fled'); return { t, won: false, fled: true }; } }
-    cd -= 0.5; if (cd <= 0 && hp > 0) { cd = E.cd; const d = alive[Math.floor(H.rand(s) * alive.length)]; if (d.dugu?.length && H.rand(s) < Math.min(0.6, 0.2 + (s.codex[e]?.insight || 0) / 200)) { d.hp = Math.min(100, d.hp + 2); continue; } const def = d.dugu?.length ? 1 : (1 - Math.min(0.4, (d.skills.agility + d.skills.strength) / 400)) * guardOf(d); d.hp = Math.max(0, d.hp - E.dmg * def * (d.takeMul || 1)); if (d.reflect) hp -= E.dmg * def * d.reflect; }
+    cd -= 0.5; if (cd <= 0 && hp > 0) { cd = E.cd; const d = alive[Math.floor(H.rand(s) * alive.length)]; if (d.dugu?.length && H.rand(s) < Math.min(0.6, 0.2 + (s.codex[e]?.insight || 0) / 200)) { d.hp = Math.min(100, d.hp + 2); continue; } const def = d.dugu?.length ? 1 : (1 - Math.min(0.4, (d.skills.agility + d.skills.strength) / 400)) * guardOf(d); d.hp = Math.max(0, d.hp - E.dmg * def * (d.takeMul || 1) * counterMul(DAO.enemy[e], daoOf(d))); if (d.reflect) hp -= E.dmg * def * d.reflect; }
   }
   if (hp <= 0) { const alive = team.filter((d) => d.hp > 0); const k = alive[Math.floor(H.rand(s) * alive.length)]; add(X.kills, e, 1); seeEnemy(s, e, 'kill', k); lootRoll(s, X.loot, E.loot, H); for (const d of alive) H.grow(s, d, 'style', 3); }
   return { t, won: hp <= 0, fled: false };

@@ -49,8 +49,18 @@ export function stepsOf(t) {
 }
 export function nextStep(t) { const st = stepsOf(t), n = st.find((x) => x.state === 'next'); return n ? n.name : null; }
 // ---- 需求遲滯與厭倦 ----
+// v1.7 遲滯推廣成資料表：flag 在 need ≤ on 時亮，直到 need ≥ off 才熄（避免門檻附近來回抖）
+export const HYST = { tired: { need: 'energy', on: CORE.sleepAt, off: CORE.wakeAt }, famished: { need: 'hunger', on: 15, off: 50 } };
 export function needStep(d) {
-  const e = d.needs.energy; if (e <= CORE.sleepAt) d.tired = true; else if (e >= CORE.wakeAt) d.tired = false;
+  for (const [flag, h] of Object.entries(HYST)) { const v = d.needs[h.need]; if (v == null) continue; if (v <= h.on) d[flag] = true; else if (v >= h.off) d[flag] = false; }
 }
 export const boredMul = (s, d, act) => (CORE.boredActs.includes(act) && d.bored?.[act] != null && s.t - d.bored[act] < CORE.boredFor ? CORE.boredMul : 1);
 export function markDone(s, d, act) { if (CORE.boredActs.includes(act)) (d.bored ??= {})[act] = s.t; }
+
+// ---- v1.7 倉庫／菜庫預留併入預約表：key＝stock:<物資>:<人>，數量由持有人當下的任務依 STOCK_RESV 推得 ----
+export const STOCK_RESV = { cook: { mat: 'veg', amt: 2, untilPhase: 'done' }, build: { mat: 'task', amt: 'reservedAmt', phase: 'fetch' } };
+export const stockKey = (k, d) => `stock:${k}:${d.id}`;
+export function stockAmt(o, k) { const t = o?.task, R = t && STOCK_RESV[t.act]; if (!R) return 0; if (R.mat === 'veg' ? k !== 'veg' : t.mat !== k) return 0;
+  if (R.untilPhase && t.phase === R.untilPhase) return 0; if (R.phase && t.phase !== R.phase) return 0; return typeof R.amt === 'number' ? R.amt : t[R.amt] || 0; }
+export function stockReserved(s, k, except = null) { const R = resvOf(s), pre = `stock:${k}:`; let n = 0;
+  for (const [key, id] of Object.entries(R)) if (key.startsWith(pre) && id !== except?.id) n += stockAmt(s.ds.find((o) => o.id === id), k); return n; }
