@@ -48,3 +48,6 @@ Style clauses: inkpretty = "clear dark ink linework, light flat watercolor wash 
 - 黃蓉 (described as "clever mischievous young swordswoman", no name): a = wink + tongue tip + flicking pebble, staff on shoulder (PICK); b = finger-to-lips sly glance, drumstick hidden behind back.
 - 郭靖: a = proud dim grin holding up bun, headband, bow; b = scratching head, cheeks stuffed with bun, sweat drop (PICK).
 - 阿星 (original stylized, not any real actor): a = black eye, gap-tooth grin, cheek plaster, thumbs-up, white tank top, patched trousers, palm-print booklet in waistband (PICK); b = reading booklet starry-eyed, nose plaster, toothpick (reads younger).
+
+### Reference change (2026-10-25)
+黃蓉 locked reference is now `assets/portraits/v2/huangrong-v2-ref.png` (copy of `artifacts/portrait-review/style2-inkpretty-huangrong.png`, the "inkpretty" round-2 prompt: wink + grin, roast drumstick, bamboo staff, peach-blossom hairpin). Owner: 俏皮有英氣. `huangrong-v2-a` (tongue-out) kept, not a reference: read as 嫵媚. Future female prompts: playful/heroic; avoid tongue-out, sultry eyes, coy poses.
