@@ -1,0 +1,14 @@
+{
+  "status": "done",
+  "stage": "optimization-M4",
+  "author": "GPT / Codex; GPT-6.1 Sol / high",
+  "artifactCommit": "96f7ba1adaa1f1e122f7db2398bb66ef3bc55aa6",
+  "baseCommit": "9f27f66",
+  "index": "evidence/optimization/m4/index.json",
+  "entrypoint": "http://127.0.0.1:8878/",
+  "limits": [
+    "author self-review",
+    "three finite life events, not general story engine"
+  ],
+  "next": "M5 then M6; stop after M6"
+}
