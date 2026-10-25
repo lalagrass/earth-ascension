@@ -14,6 +14,7 @@ export function cancel(w,p,reason='玩家改派'){
 }
 export function begin(w,p,kind,args={},manual=false){
  if(!['class','unloadQuest','drink','move','return','gather','build','train','study','rest','sleep','eat','cook','craft','talk','encourage','care','teach','greet','farm','harvestHaul','delivery','school','reception','learn','equip','story','pack','aid','collect'].includes(kind))return {ok:false,reason:'未知活動'};
+ if(kind==='equip'&&!['punch','staff','sword'].includes(args.art))return {ok:false,reason:'換裝只支援拳、木棍與木劍'};
  if(kind==='gather'&&!['wood','stone','water','veg','herb'].includes(args.item))return {ok:false,reason:'未知採集物'};
  if(kind==='move'&&(!Array.isArray(args.pos)||args.pos.length!==2||args.pos.some(n=>!Number.isFinite(n))||!findPath(w,position(p),args.pos)))return {ok:false,reason:'目標無路可達／水域或封閉邊界'};
  if(kind==='cook'&&!RECIPES[args.recipe||'meal'])return {ok:false,reason:'未知配方'};

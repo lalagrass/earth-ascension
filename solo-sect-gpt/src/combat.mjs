@@ -1,7 +1,7 @@
 import {Q,MOVES,ART} from './data.mjs';
 import directions from '../data/directions.mjs';
 import {position,los,sweep,stations,inRect,walkable} from './map.mjs';
-import {uid,event,sorted,bagWeight,inventory,transfer,makePerson} from './state.mjs';
+import {uid,event,sorted,bagWeight,inventory,transfer,makePerson,qty} from './state.mjs';
 import {route,arrived} from './navigation.mjs';
 import {cancel,begin,memory} from './activities.mjs';
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y)/Q;
@@ -21,6 +21,7 @@ export function startAction(w,p,move,target=null,forced=false){
  if(!p.adult)return {ok:false,reason:'未成年不參戰'};
  if(p.action||p.stun||p.hp<=0)return {ok:false,reason:'仍在起手／收勢／失能'};
  if(!p.skill[m.art]&&p.kind==='human')return {ok:false,reason:'尚未學會這門武學'};
+ if(['staff','sword'].includes(m.art)&&(p.weapon!==m.art||!qty(w,p.equipment,m.art)))return {ok:false,reason:'先到倉庫實際領用並裝備這種器械'};
  if(move==='push'&&!p.pushLearned)return {ok:false,reason:'推掌需洪七公真授課'};
  if(move==='sweep'&&(inRect(p.x/Q,p.y/Q,[1854,415,102,50])||!sweepRoom(w,p)))return {ok:false,reason:'窄橋空間不足，不能棍掃'};
  if(move==='step'){const v=directions[p.angle],at=position(p),to=[at[0]+v[0]/10000*24,at[1]+v[1]/10000*24];if(!sweep(w,at,to)||inRect(to[0],to[1],[1860,415,90,50])&&w.bridge.holder!==p.id||sorted(w.people).some(o=>o.id!==p.id&&o.residence!=='departed'&&!o.inactive&&Math.hypot(o.x/Q-to[0],o.y/Q-to[1])<12))return {ok:false,reason:'短步無合法落腳；不能穿牆、越溪或搶橋'};}

@@ -24,6 +24,7 @@ function validate(w){
   if(p.id!==id||!safeId(id)||typeof p.name!=='string'||!p.name.length||p.name.length>40||!/^#[0-9a-fA-F]{6}$/.test(p.color))throw Error('人物欄位不合法');
   if(typeof p.adult!=='boolean'||!['human','rat','boar'].includes(p.kind)||!['resident','visitor','departed','wild','cave','training'].includes(p.residence)||!['leader','worker','outer','inner','family','guest','traveler','wild','warden','training','rescuer'].includes(p.rank))throw Error('人物身份不合法');
   if(!Array.isArray(p.stats)||p.stats.length!==5||p.stats.some(n=>!int(n,1,7))||!Array.isArray(p.traits)||p.traits.length!==2||p.traits.some(n=>!int(n,-2,2))||!int(p.energy,0,10000)||!int(p.injury,0,100)||!int(p.hp,0,p.maxHp)||!int(p.maxHp,1,10000)||!int(p.angle,0,359))throw Error('人物數值不合法');
+  if(!['punch','staff','sword'].includes(p.weapon)||p.weapon!=='punch'&&!(w.inventories[p.equipment]?.items[p.weapon]>0))throw Error('裝備與實際器械不符');
   if(!w.inventories[p.bag]||p.equipment&&!w.inventories[p.equipment])throw Error('人物包裹引用失效');
   if(!Array.isArray(p.path)||!int(p.routeAt,0,p.path.length)||p.path.some(q=>!Array.isArray(q)||q.length!==2||q.some(n=>!Number.isSafeInteger(n))))throw Error('路徑索引／座標不合法');
   if(!record(p.skill))throw Error('武學欄位缺失');for(const [art,s]of Object.entries(p.skill))if(!Object.hasOwn(ART,art)||!record(s)||!int(s.U,0,100)||!int(s.F,0,100)||!int(s.I,0,100)||!Array.isArray(s.contexts)||new Set(s.contexts).size!==s.contexts.length||s.contexts.some(c=>!['guard','dodge','protect','return'].includes(c)))throw Error('武學來源／數值不合法');
