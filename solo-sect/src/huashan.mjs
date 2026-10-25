@@ -5,6 +5,7 @@ import { learnArt, artTier } from './arts.mjs';
 import { addWexin, mkComp } from './hero.mjs';
 import { think } from './mind.mjs';
 import { log } from './util.mjs';
+import { removeActor } from './lifecycle.mjs';
 import { initPair } from './social.mjs';
 import { xidOf, present } from './wuxia.mjs';
 export const hsInit = () => ({ zx: 0, cave: false, carv: 0, lastCarvDay: -1, bixie: 0, bixieT: null, songN: 0, songLast: 0, siguo: false, feng: null, fengLeft: false, fengTries: 0, jealous: false, lhc: 'stay', cards: {}, arcN: 0 });
@@ -88,7 +89,7 @@ export function learnDugu(s, d, id) {
   if (d.dugu.length >= 3) arc(s, 4, '九劍湊齊三式'); return true;
 }
 // ---- 逐出令狐沖 ----
-function expel(s) { const l = find(s, 'linghuchong'); s.hs.lhc = 'expelled'; if (!l) return; s.ds = s.ds.filter((d) => d !== l); s.xia && (s.xia.left.linghuchong = true);
+function expel(s) { const l = find(s, 'linghuchong'); s.hs.lhc = 'expelled'; if (!l) return; removeActor(s, l, '', { quiet: true }); s.xia && (s.xia.left.linghuchong = true);
   log(s, `【逐出師門】${l.name}跪著磕了三個頭，背起酒葫蘆下山。江湖從此多了個浪子。`); arc(s, 5, '令狐沖去留：逐出'); }
 // ---- 主線（岳不群 5 步、令狐沖 5 步） ----
 export const ARC_YUE = ['林平之上山', '暗查劍譜', '辟邪或焚譜', '紫霞七層', '令狐沖去留'];

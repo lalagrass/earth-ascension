@@ -5,6 +5,7 @@ import { DAY, NODES } from './data.mjs';
 import { seedArts, learnArt, artTier, artById } from './arts.mjs';
 import { compat } from './social.mjs';
 import { affKey, relKey, log } from './util.mjs';
+import { removeActor, cancelTask } from './lifecycle.mjs';
 export const GEN = { yearDays: 28, childYearDays: 3, adoptAge: 6, adultAge: 14, adoptEvery: 7, adoptFood: 6, maxKids: 4, lineMul: 1.2, lineTier: 2, heirShare: 0.5, suhuiMax: 3, startAge: 22 };
 export const genInit = () => ({ n: 1, couples: [], kids: [], lineage: [], retired: [], lastAdopt: -1e9, suhui: 0, day: -1, kidN: 0 });
 const KID_NAMES = ['小石', '阿蓮', '小虎', '青兒', '小滿', '念慈', '承志', '若蘭', '小魚', '阿福'];
@@ -12,14 +13,7 @@ const hero = (s) => s.ds.find((d) => d.id === 'hero');
 // ---- 移出門派（逐出、退隱、名人離開共用）：清掉任務、隊伍、好感鍵 ----
 export function removeDisciple(s, d, why) {
   if (!d || d.id === 'hero') return false;
-  s.ds = s.ds.filter((x) => x !== d);
-  if (s.hunt?.team) s.hunt.team = s.hunt.team.filter((id) => id !== d.id);
-  if (s.exp?.team) s.exp.team = s.exp.team.filter((id) => id !== d.id);
-  for (const k of Object.keys(s.aff)) if (k.startsWith(d.id + '>') || k.endsWith('>' + d.id)) delete s.aff[k];
-  for (const k of Object.keys(s.rel)) if (k.split('|').includes(d.id)) delete s.rel[k];
-  s.families = (s.families || []).filter((k) => !k.split('|').includes(d.id));
-  if (s.gen) s.gen.couples = s.gen.couples.filter((c) => !c.includes(d.id));
-  log(s, `${d.name}${why}`); return true;
+  return removeActor(s, d, why);
 }
 // ---- 成親：道侶＋雙向相容 ≥1 ----
 export function marriable(s, a, b) { return a.adult && b.adult && (s.rel[relKey(a.id, b.id)] || 0) >= 90 && compat(a, b) * compat(b, a) >= 1; }
@@ -71,9 +65,14 @@ export function succeed(s, heirId, artId) {
   s.families = (s.families || []).map((k) => k.split('|').map((x) => (x === 'hero' ? '__old' : x === oldId ? 'hero' : x)).sort().join('|')).filter((k) => !k.includes('__old'));
   G.couples = G.couples.filter((c) => !c.includes('hero')).map((c) => c.map((x) => (x === oldId ? 'hero' : x)).sort());
   for (const d of s.ds) { if (d.master === 'hero') d.master = null; if (d.master === oldId) d.master = 'hero'; if (d.spouse === 'hero') d.spouse = null; if (d.spouse === oldId) d.spouse = 'hero'; if (d.child) d.child.parents = d.child.parents.map((x) => (x === 'hero' ? `退隱的${oldName}` : x === oldId ? 'hero' : x)); }
-  const idx = s.ds.indexOf(h); s.ds.splice(idx, 1); s.ds = s.ds.map((d) => (d === n ? Object.assign(n, { id: 'hero', role: 'inner' }) : d));
+  cancelTask(s, h, '退隱'); if (h.carry) { for (const [k, v] of Object.entries(h.carry)) s.res[k] = (s.res[k] || 0) + v; h.carry = null; } for (const o of s.ds) if (o.task?.partner === 'hero' && o !== h) cancelTask(s, o, `${oldName}退隱了`);
+  const idx = s.ds.indexOf(h); s.ds.splice(idx, 1); h.removed = true; s.ds = s.ds.map((d) => (d === n ? Object.assign(n, { id: 'hero', role: 'inner' }) : d));
+  // review P1-3：傳人補齊主角欄位（價值觀、違心、已知性格），卡片/面板投影一致
+  const baseVals = { xia: 0, sect: 0, qing: 0, free: 0, wu: 0, fame: 0 };
+  n.values = { ...baseVals, ...(n.values || s.hero?.values || {}) }; n.wexin ??= 0; n.personality ??= []; n.known ??= n.personality.slice(0, 1); n.adult = true;
+  if (n.task) cancelTask(s, n, '接掌門派');
   G.n++; G.suhui = Math.min(GEN.suhuiMax, G.suhui + 1);
-  s.hero = { ...(s.hero || {}), kind: 'heir', id: 'heir', name: n.name, gen: G.n, arc: null, arcStep: 0, values: n.values || s.hero?.values, stats: s.hero?.stats };
+  s.hero = { ...(s.hero || {}), kind: 'heir', id: 'heir', name: n.name, gen: G.n, arc: null, arcStep: 0, values: n.values, stats: s.hero?.stats || { wu: n.wu ?? n.root ?? 2, gen: n.root ?? 2, li: 2, shen: 2, ding: 2, fu: 2 }, companion: s.hero?.companion };
   log(s, `【衣缽】${oldName}把${artById(art).name}（五成火候＋一顆星）傳給${n.name}，飄然退隱。${s.sect?.name || '門派'}第 ${G.n} 代掌門接位。宿慧 +1（${G.suhui}/${GEN.suhuiMax}）。`);
   return { ok: true, heir: n, keepPos };
 }

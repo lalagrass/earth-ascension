@@ -49,9 +49,12 @@ export function migrate(o) {
   o.migratedFrom = from === RULES_VERSION ? o.migratedFrom : from; o.rules = RULES_VERSION; o.migSteps = steps.map((m) => m.to);
   return o;
 }
+export const knownRules = (r) => typeof r === 'string' && (['0.5', '0.6', RULES_VERSION].includes(r) || MIGRATIONS.some((m) => m.to === r)) && ver(r) <= ver(RULES_VERSION);
 export function save(s) { return JSON.stringify({ ...s, fx: [] }); }
 export function load(str) {
   let o; try { o = JSON.parse(str); } catch { return { ok: false, err: '存檔損毀' }; }
   if (!o || o.v !== SAVE_VERSION || !Array.isArray(o.ds)) return { ok: false, err: `不支援的存檔版本 ${o?.v}` };
+  // review P2-2：規則版本必須是已知版本（不得為未來版本），否則拒讀、不動原檔
+  if (o.rules != null && !knownRules(o.rules)) return { ok: false, err: `不支援的規則版本 ${o.rules}（目前 ${RULES_VERSION}）` };
   return { ok: true, state: migrate(o) };
 }

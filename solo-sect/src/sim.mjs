@@ -24,6 +24,7 @@ export const startExpedition = (s, ids, opt = {}) => startExp0(s, ids, opt, H);
 export { think, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, knownTraits, relStage, relAdd, compat, aff, seasonOf, relKey, log };
 
 import { SAVE_VERSION, freshV095 } from './save.mjs';
+import { cancelTask, removeActor, whAvail } from './lifecycle.mjs';
 export { SAVE_VERSION };
 
 function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
@@ -138,7 +139,7 @@ export function mapStage(s) {
 }
 // v0.95 每 tick 建一次 id→弟子 查表（不入存檔；增人時退回線性搜尋、減人時清表）
 const BYID = new WeakMap();
-export function byId(s, id) { const m = BYID.get(s); const d = m?.get(id); if (d) return d; const x = s.ds.find((o) => o.id === id); if (x && m) m.set(id, x); return x; }
+export function byId(s, id) { const m = BYID.get(s); const d = m?.get(id); if (d && !d.removed) return d; const x = s.ds.find((o) => o.id === id); if (x && m) m.set(id, x); return x; }
 function rand(s) { const r = rng(s.seed * 7919 + s.rngN++); return r(); }
 export function phaseOf(s) { const f = (s.t % DAY) / DAY; let p = PHASES[0]; for (const x of PHASES) if (f >= x[0]) p = x; return { id: p[1], name: p[2], day: Math.floor(s.t / DAY) + 1, frac: f }; }
 
@@ -177,15 +178,6 @@ export function setOrder(s, id, order) {
   d.order = order || null; cancelTask(s, d, '玩家改派');
   return true;
 }
-function cancelTask(s, d, why) {
-  const t = d.task; if (!t) return;
-  if (t.act === 'build' && t.mat && d.carry?.[t.mat]) { const site = s.fac[t.fac].site, n = d.carry[t.mat]; if (site) site.reserved[t.mat] -= n; s.res[t.mat] += n; book(s, 'in', t.mat, n); d.carry = null; }
-  else if (t.act === 'build' && t.mat && t.reservedAmt) { const site = s.fac[t.fac].site; if (site) site.reserved[t.mat] -= t.reservedAmt; }
-  if (t.act === 'cook' && t.phase !== 'done') s.vegRes -= 2;
-  if (t.act === 'farm' && t.plot >= 0 && s.plots[t.plot]?.busy === d.id) s.plots[t.plot].busy = null;
-  if (t.partner) { const p = byId(s, t.partner); if (p?.task?.partner === d.id) { p.task = null; p.path = []; } }
-  d.task = null; d.path = []; d.anim = null; d.reason = why;
-}
 
 // ---- 效用 AI ----
 // 可被邀聊：無玩家指派、未負重、未在施工/狩獵/歇息/聊天中
@@ -214,7 +206,7 @@ export function scoreActs(s, d) {
   { const b = btReady(d, s.t); if (b && d.mood >= BREAK.moodMin && n.energy >= BREAK.energyMin) add('meditate', 75, `「${artById(b).name}」卡在瓶頸，打坐衝關`); else if (d.wexin > 0) add('meditate', 30 + 20 * d.wexin, '心中違心，閉關靜坐'); }
   add('train', (d.adult ? 40 : 18) * (tr.diligent || 1), '練功變強');
   if (facStage(s, 'yard').offers.includes('spar') && n.energy > 45 && chatMates(s, d).some((o) => o.needs.energy > 45)) add('spar', 34 * (tr.diligent || 1), '找人切磋');
-  const site0 = siteOf(s)?.[1], short = (k) => site0 && site0.need[k] > site0.delivered[k] + site0.reserved[k] + s.res[k];
+  const site0 = siteOf(s)?.[1], short = (k) => site0 && site0.need[k] > site0.delivered[k] + site0.reserved[k] + whAvail(s, k);
   const wood = s.res.wood + s.ds.reduce((a, o) => a + (o.task?.act === 'chop' ? 1 : 0), 0);
   if (wood < s.cap.wood) add('chop', short('wood') ? 50 : 28, short('wood') ? '工地缺木' : '備柴');
   const stone = s.res.stone + s.ds.reduce((a, o) => a + (o.task?.act === 'quarry' ? 1 : 0), 0);
@@ -248,8 +240,8 @@ function assign(s, d, act, why) {
   if (act === 'hunt') { const post = s.hunt?.post || s.post; d.task = { act: 'hunt', node: post, phase: 'go' }; goto(d, post); d.reason = why || '後山守點'; return true; }
   if (act === 'build') {
     const site = siteOf(s); if (!site) return false; const [fid, v] = site;
-    const mat = MATS.find((k) => missingOf(v, k) > 0 && s.res[k] > 0);
-    if (mat) { const take = Math.min(isLabor(d) ? ECON.laborCarry : ECON.carry, missingOf(v, mat), s.res[mat]); v.reserved[mat] += take; d.task = { act, fac: fid, phase: 'fetch', mat, reservedAmt: take, node: 'court' }; goto(d, 'court'); }
+    const mat = MATS.find((k) => missingOf(v, k) > 0 && whAvail(s, k) > 0);
+    if (mat) { const take = Math.min(isLabor(d) ? ECON.laborCarry : ECON.carry, missingOf(v, mat), whAvail(s, mat)); v.reserved[mat] += take; d.task = { act, fac: fid, phase: 'fetch', mat, reservedAmt: take, node: 'court' }; goto(d, 'court'); }
     else if (siteReady(v)) { d.task = { act, fac: fid, phase: 'go', node: facDef(fid).node }; goto(d, facDef(fid).node); }
     else return false;
     d.reason = why; return true;
@@ -304,7 +296,10 @@ function doTask(s, d, dt) {
   if (t.act === 'hunt') return;
   if (t.act === 'trial') return trialStep(s, d, dt);
   if (t.phase === 'fetch' && !d.path.length) { // 建造取料
-    s.res[t.mat] -= t.reservedAmt; book(s, 'out', t.mat, t.reservedAmt); d.carry = { [t.mat]: t.reservedAmt }; t.reservedAmt = 0;
+    const site = s.fac[t.fac]?.site, n = Math.min(t.reservedAmt, Math.max(0, s.res[t.mat])); // 取料當下原子驗證：倉裡不夠就只拿有的，差額釋放
+    if (site) site.reserved[t.mat] -= t.reservedAmt - n; t.reservedAmt = 0;
+    if (!site || n <= 0) { if (site && n > 0) site.reserved[t.mat] -= n; d.task = null; d.reason = '院倉的料被搬光了'; return; }
+    s.res[t.mat] -= n; book(s, 'out', t.mat, n); d.carry = { [t.mat]: n };
     t.phase = 'deliver'; goto(d, facDef(t.fac).node); return;
   }
   if (t.phase === 'deliver' && !d.path.length) {
@@ -317,11 +312,13 @@ function doTask(s, d, dt) {
   if (t.phase === 'do') {
     if (t.act === 'build') { const site = s.fac[t.fac].site; if (!site || site.paused || !siteReady(site)) { d.task = null; d.anim = null; return; } }
     t.timer += dt;
+    if (t.partner && !byId(s, t.partner)) { cancelTask(s, d, '對手不在了'); return; }
     if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = byId(s, t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
-    if (A.energy) d.needs.energy = clamp(d.needs.energy + A.energy * dt / A.dur, 0, 100);
+    const effDur = t.act === 'cook' ? facStage(s, t.fac).cookDur : t.act === 'learn' ? facStage(s, 'hall').learnDur : A.dur;
+    if (A.energy && effDur > 0) d.needs.energy = clamp(d.needs.energy + A.energy * dt / effDur, 0, 100);
     if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', s.t); if (t.timer < dt * 1.5) think(s, d, t.fac === 'hall' && s.fac.hall.stage === 0 ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= 80 && t.timer > 4))) finish(s, d); return; }
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
-    const dur = t.act === 'cook' ? facStage(s, t.fac).cookDur : t.act === 'learn' ? facStage(s, 'hall').learnDur : A.dur;
+    const dur = effDur;
     if (t.timer >= dur) {
       if (t.act === 'cook') { const st = facStage(s, t.fac); s.res.veg -= 2; s.vegRes -= 2; t.phase = 'done'; const yld = st.cookYield + cookBonus(d); onCook(s, d); s.res.food += yld; book(s, 'in', 'food', yld); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); grow(s, d, 'cooking', 6); finish(s, d); return; }
       if (t.act === 'farm') { const p = s.plots[t.plot]; p.busy = null; grow(s, d, 'farming', 6); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
@@ -483,10 +480,7 @@ export function invite(s, id) {
   log(s, `${d.name}放下扁擔，拜入外門（根骨${ROOT.names[d.root]}）。`); return { ok: true, d };
 }
 function dismissLabor(s, d, why) {
-  cancelTask(s, d, why); s.ds.splice(s.ds.indexOf(d), 1); BYID.delete(s); s.laborGone.push(d.id);
-  for (const k of Object.keys(s.rel)) if (k.split('|').includes(d.id)) delete s.rel[k];
-  for (const k of Object.keys(s.aff)) if (k.split('>').includes(d.id)) delete s.aff[k];
-  for (const o of s.ds) if (o.task?.partner === d.id) cancelTask(s, o, `${d.name}走了`);
+  removeActor(s, d, why, { quiet: true }); BYID.delete(s); s.laborGone.push(d.id);
   log(s, `${d.name}${why}，下山去了。`);
 }
 export function payday(s) {
@@ -560,3 +554,5 @@ function trialStep(s, d, dt) {
 // ---- 存檔（v0.95 移到 save.mjs，逐版遷移）----
 export { save, load, migrate, MIGRATIONS } from './save.mjs';
 export { clone };
+
+export { cancelTask, removeActor };

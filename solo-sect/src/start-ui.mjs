@@ -15,8 +15,8 @@ const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index
 const SUHUI = (() => { try { return Math.min(3, +localStorage.getItem('solo-sect-suhui') || 0); } catch { return 0; } })();
 const st = { tab: 'classic', hero: 'guojing', comp: null, name: '無名', stats: defaultStats(), ans: Array(9).fill(0), ask: true };
 const tn = (t) => TRAITS[t]?.name || t;
-const statLine = (s) => STATS.map(([k, n]) => `${n}${s[k]}`).join(' ');
-const valLine = (v) => Object.entries(v).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, x]) => `${VALUE_NAMES[k]}${x > 0 ? '+' : ''}${x}`).join('・');
+const statLine = (s) => STATS.map(([k, n]) => `${n}${s?.[k] ?? '—'}`).join(' ');
+const valLine = (v) => Object.entries(v || {}).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, x]) => `${VALUE_NAMES[k]}${x > 0 ? '+' : ''}${x}`).join('・');
 function compCards(heroId) {
   const ids = companionsFor(heroId); if (!ids.includes(st.comp)) st.comp = ids[0];
   return `<h3>選一位開局同門（另一位留在江湖，日後或可相遇）</h3><div class="comp">${ids.map((id) => { const c = COMPANIONS[id]; return `<div class="card ${st.comp === id ? 'on' : ''}" data-comp="${id}"><img src="assets/portraits/${id}.png"><b>${c.name}</b><div class="small">悟性${c.wu}・根骨${c.root}・${c.personality.map(tn).join('/')}</div><div class="small">${c.tag}</div></div>`; }).join('')}</div>`;

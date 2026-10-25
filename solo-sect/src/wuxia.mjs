@@ -6,6 +6,7 @@ import { think } from './mind.mjs';
 import { encounterPool, mkComp, heroById } from './hero.mjs';
 import { learnArt, artById } from './arts.mjs';
 import { log } from './util.mjs';
+import { removeActor } from './lifecycle.mjs';
 import { initPair } from './social.mjs';
 import { onJoin13 } from './jianghu.mjs';
 export const xidOf = (s, d) => (d.id === 'hero' ? s.hero?.id || 'hero' : d.id);
@@ -118,7 +119,7 @@ function leaveTeacher(s) {
 // 名俠不會死，只會離開：心情長期低落（一整天低於 15）就下山
 function leaveStep(s) {
   for (const d of [...s.ds]) { if (!d.xia || d.away) continue; d.lowT = d.mood < 15 ? (d.lowT || 0) + 0.25 : 0;
-    if (d.lowT >= DAY) { s.ds = s.ds.filter((x) => x !== d); s.xia.left[d.xia] = true; log(s, `${d.name}心灰意冷，留書一封，下山去了。（名俠不死，只是離開）`); } }
+    if (d.lowT >= DAY) { removeActor(s, d, '', { quiet: true }); s.xia.left[d.xia] = true; log(s, `${d.name}心灰意冷，留書一封，下山去了。（名俠不死，只是離開）`); } }
 }
 // 郭靖模板主線：一、洪七公聞香（v0.96）→ 二、吃人嘴軟（洪七公留下）→ 三、降龍傳人 → 四、華山論劍之約
 export const GUOJING_ARC = ['洪七公聞香而來', '吃人嘴軟', '降龍傳人', '華山論劍之約'];

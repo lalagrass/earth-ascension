@@ -1,0 +1,52 @@
+{
+ "days": 3,
+ "seeds": [
+  7
+ ],
+ "opens": [
+  "plain",
+  "guojing"
+ ],
+ "pass": 2,
+ "total": 2,
+ "cases": [
+  {
+   "seed": 7,
+   "opening": "plain",
+   "ok": true,
+   "t": 1800,
+   "violation": null,
+   "built": [
+    "yard",
+    "dorm",
+    "dorm",
+    "hall",
+    "kitchen",
+    "shed",
+    "shed"
+   ],
+   "recruits": 3,
+   "exps": 1,
+   "days": 3
+  },
+  {
+   "seed": 7,
+   "opening": "guojing",
+   "ok": true,
+   "t": 1800,
+   "violation": null,
+   "built": [
+    "yard",
+    "dorm",
+    "dorm",
+    "hall",
+    "kitchen",
+    "shed",
+    "shed"
+   ],
+   "recruits": 1,
+   "exps": 1,
+   "days": 3
+  }
+ ]
+}

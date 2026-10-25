@@ -22,7 +22,7 @@ export function learnManual(s, i, did, think) {
 export const FOODS = ['紅燒肉', '叫化雞', '陽春麵', '饅頭鹹菜'], DRINKS = ['女兒紅', '竹葉青', '清茶'];
 const h = (x) => [...String(x)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
 export function likesOf(d) {
-  if (!d.likes) { const k = h(d.id + d.name); d.likes = { food: FOODS[k % FOODS.length], drink: (d.personality || []).includes('drinker') ? '女兒紅' : DRINKS[(k >> 3) % DRINKS.length] }; }
+  if (!d.likes) { const k = h(d.id + d.name); d.likes = { food: FOODS[k % FOODS.length], drink: (d.personality || []).includes('drinker') ? '女兒紅' : DRINKS[(k >>> 3) % DRINKS.length] }; }
   return d.likes;
 }
 export const menuOf = (s) => { const day = Math.floor(s.t / DAY); return { food: FOODS[day % FOODS.length], drink: DRINKS[day % DRINKS.length] }; };
