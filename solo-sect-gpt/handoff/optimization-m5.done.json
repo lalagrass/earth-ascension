@@ -1,0 +1,14 @@
+{
+  "status": "done",
+  "stage": "optimization-M5",
+  "author": "GPT / Codex; GPT-6.1 Sol / high",
+  "artifactCommit": "0520c52488153c48542b032a0e10e7ec374067b4",
+  "baseCommit": "9746097",
+  "index": "evidence/optimization/m5/index.json",
+  "entrypoint": "http://127.0.0.1:8878/",
+  "limits": [
+    "author self-review",
+    "finite herbs and health-dependent existing spar partners; no infinite respawn"
+  ],
+  "next": "M6 only; stop after M6"
+}
