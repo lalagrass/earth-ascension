@@ -59,7 +59,7 @@ test('v0.8 舊檔可讀：disciple→inner、補日課欄位', () => {
   const s = createState(4); const o = JSON.parse(save(s)); o.rules = '0.8';
   for (const d of o.ds) { d.role = 'disciple'; delete d.duties; delete d.prio; delete d.chore; delete d.choreDebt; delete d.contrib; } delete o.choreRate;
   const r = load(JSON.stringify(o)); assert.equal(r.ok, true); const m = r.state;
-  assert.ok(m.ds.every((d) => d.role === 'inner' && d.duties.length === CHORE_ACTS.length && d.contrib === 0)); assert.equal(m.rules, '0.85'); assert.equal(m.migratedFrom, '0.8');
+  assert.ok(m.ds.every((d) => d.role === 'inner' && d.duties.length === CHORE_ACTS.length && d.contrib === 0)); assert.equal(m.rules, '0.9'); assert.equal(m.migratedFrom, '0.8');
   for (let i = 0; i < 400; i++) tick(m);
 });
 test('20 日長跑：有外門時不斷糧卡死、數值無負', () => {

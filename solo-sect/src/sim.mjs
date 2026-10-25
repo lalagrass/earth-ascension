@@ -1,4 +1,6 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
+import { seedArts, gainArt, learnArt, moveMul, effectTier, artById } from './arts.mjs';
+import { ART_GAIN } from './data.mjs';
 import { RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE } from './data.mjs';
 import { clone, dist, clamp, relKey, affKey, log } from './util.mjs';
 import { think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits } from './mind.mjs';
@@ -40,8 +42,8 @@ export function createState(seed = 1) {
   return s;
 }
 function mkDisciple(d, i, at = 'court', personality = d.personality || [], known = personality.slice(0, 1)) {
-  return ({
-      id: d.id, name: d.name, style: d.style, personality: [...personality], known: [...known], together: 0, mood: MOOD.base, thoughts: [], why: [], adult: d.adult, sprite: d.sprite, traits: d.traits,
+  return seedArts({
+      id: d.id, name: d.name, root: d.root ?? 3, rootKnown: true, style: d.style, personality: [...personality], known: [...known], together: 0, mood: MOOD.base, thoughts: [], why: [], adult: d.adult, sprite: d.sprite, traits: d.traits,
       skills: { ...d.skills }, moves: ['fist'], pendingMove: null,
       needs: { energy: 80, hunger: 70 - i * 10, social: 50, fun: 60 }, hp: 100,
       at, pos: [...NODES[at]].map((v, k) => v + (k ? 0 : (i - 1) * 16)), path: [],
@@ -183,7 +185,7 @@ export function scoreActs(s, d) {
   if (others.length) add('chat', (100 - n.social) * 0.6 * (tr.social || 1) * (tr.playful || 1) * 0.8, '想找人說話');
   const fun = n.fun ?? 60; add('leisure', (100 - fun) * 0.55, fun < 25 ? '悶得慌，想偷閒' : '想坐坐看雲');
   if (d.adult && d.mood >= 45) { const low = others.filter((o) => o.mood < 35).sort((a, b) => a.mood - b.mood)[0]; if (low) add('encourage', 40 + (35 - low.mood) * 1.5, `${low.name}心情低落，去打打氣`); }
-  if (d.pendingMove) add('learn', 80, `師父能傳「${MOVES.find((m) => m.id === d.pendingMove).name}」`);
+  if (d.pendingArt) add('learn', 80, `師父能傳「${artById(d.pendingArt).name}」`);
   add('train', (d.adult ? 40 : 18) * (tr.diligent || 1), '練功變強');
   if (facStage(s, 'yard').offers.includes('spar') && n.energy > 45 && chatMates(s, d).some((o) => o.needs.energy > 45)) add('spar', 34 * (tr.diligent || 1), '找人切磋');
   const site0 = siteOf(s)?.[1], short = (k) => site0 && site0.need[k] > site0.delivered[k] + site0.reserved[k] + s.res[k];
@@ -250,7 +252,7 @@ function decide(s, d) {
   return false;
 }
 
-export function speedOf(d) { return BASE_SPEED * (1 + d.skills.agility / 100) * (d.carry ? 0.7 : 1) * (d.needs.energy < 30 ? 0.8 : 1); }
+export function speedOf(d) { return BASE_SPEED * (1 + d.skills.agility / 100) * (d.carry ? 0.7 : 1) * (d.needs.energy < 30 ? 0.8 : 1) * (1 + ART_GAIN.speedPerTier * Math.max(0, effectTier(d, 'speed') + 1)); }
 
 function moveStep(d, dt) {
   let left = speedOf(d) * dt;
@@ -265,7 +267,7 @@ function moveStep(d, dt) {
 function grow(s, d, sk, amt) {
   if (sk === 'style') sk = d.style;
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
-  for (const m of MOVES) if (m.skill === sk && !d.moves.includes(m.id) && d.skills[sk] >= m.req && d.pendingMove !== m.id && !d.pendingMove) { d.pendingMove = m.id; log(s, `${d.name}${sk === 'palm' ? '掌法' : '腿法'}到了火候，可向師父求學「${m.name}」`); }
+  if (sk === d.style) { const a = gainArt(d, amt, focusMul(d)); if (a) log(s, `${d.name}功夫到了火候，可向師父求學「${a.name}」`); }
 }
 
 function doTask(s, d, dt) {
@@ -287,7 +289,7 @@ function doTask(s, d, dt) {
     t.timer += dt;
     if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = s.ds.find((x) => x.id === t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
     if (A.energy) d.needs.energy = clamp(d.needs.energy + A.energy * dt / A.dur, 0, 100);
-    if (t.act === 'rest') { const rate = facStage(s, t.fac).restRate || 3; if (t.timer < dt * 1.5) think(s, d, t.fac === 'hall' && s.fac.hall.stage === 0 ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= 80 && t.timer > 4))) finish(s, d); return; }
+    if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)); if (t.timer < dt * 1.5) think(s, d, t.fac === 'hall' && s.fac.hall.stage === 0 ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= 80 && t.timer > 4))) finish(s, d); return; }
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
     const dur = t.act === 'cook' ? facStage(s, t.fac).cookDur : t.act === 'learn' ? facStage(s, 'hall').learnDur : A.dur;
     if (t.timer >= dur) {
@@ -302,7 +304,7 @@ function doTask(s, d, dt) {
       if (t.act === 'forage') d.needs.fun = clamp((d.needs.fun ?? 60) + (d.personality.includes('playful') ? 20 : 8), 0, 100);
       if (t.act === 'eat' && s.res.food >= 8) think(s, d, 'wellFed');
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
-      if (t.act === 'learn' && d.pendingMove) { const m = MOVES.find((x) => x.id === d.pendingMove); d.moves.push(m.id); d.pendingMove = null; s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
+      if (t.act === 'learn' && d.pendingArt) { const m = learnArt(d, d.pendingArt); s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
       if (t.act === 'chat' && t.partner) { const p = s.ds.find((x) => x.id === t.partner); d.together += 20; if (isLabor(d) && !isLabor(p)) d.cowork = (d.cowork || 0) + 30;
         if (t.encouragedBy) { think(s, d, 'encouraged', `（${p.name}）`); }
         else if (d.id < p.id) { const cm = Math.min(compat(d, p), compat(p, d)); if (cm < 1 && rand(s) < (1 - cm) * 0.8) { relAdd(s, d, p, 1); for (const x of [d, p]) think(s, x, 'badChat', `（${x === d ? p.name : d.name}）`); log(s, `${d.name}與${p.name}聊不到一塊`); } else { relAdd(s, d, p, 4 * Math.max(d.traits.social || 1, p.traits.social || 1)); think(s, d, 'goodChat', `（${p.name}）`); think(s, p, 'goodChat', `（${d.name}）`); } } }
@@ -361,7 +363,7 @@ function huntStep(s, dt) {
     for (const mv of ms) {
       const lv = d.skills[mv.skill]; const reach = mv.range * (1 + lv / 200);
       const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
-      const power = mv.dmg * (1 + lv / 50);
+      const power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id);
       const hitList = mv.aoe ? live.filter((m) => dist(m.pos, tgt.pos) <= mv.aoe) : [tgt];
       for (const m of hitList) { m.hp -= power; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') s.res.food += 3; } }
       h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5);
@@ -516,6 +518,7 @@ export function migrate(o) {
   for (const v of Object.values(o.fac)) { const st = v.site; if (st && typeof st.delivered === 'number') v.site = { need: { wood: st.need.wood || 0, stone: 0 }, delivered: { wood: st.delivered, stone: 0 }, reserved: { wood: 0, stone: 0 }, work: st.work || 0, workNeed: st.workNeed, paused: false }; }
   for (const d of o.ds) { if (d.task?.act === 'build' && (d.task.reservedWood !== undefined || d.carry?.wood)) { if (d.carry?.wood) o.res.wood += d.carry.wood; d.carry = null; d.task = null; d.path = []; d.anim = null; } d.role ??= 'disciple'; if (d.role === 'disciple') d.role = 'inner'; if (d.role !== 'laborer') { d.duties ??= [...CHORE_ACTS]; d.prio ??= 'normal'; d.chore ??= 0; d.choreDebt ??= 0; d.contrib ??= 0; } }
   o.choreRate ??= null;
+  for (const d of o.ds) { if (d.root == null) { d.root = def[d.id]?.root ?? 3; d.rootKnown = true; } seedArts(d); }
   o.day ??= Math.floor(o.t / DAY) + 1; o.ledger ??= { day: o.day, in: {}, out: {} }; o.ledgerPrev ??= null;
   if (!o.aff) { o.aff = {}; for (const [k, v] of Object.entries(o.rel || {})) { const [a, b] = k.split('|'); o.aff[affKey(a, b)] = v; o.aff[affKey(b, a)] = v; } }
   o.migratedFrom = from === RULES_VERSION ? o.migratedFrom : from; o.rules = RULES_VERSION;
