@@ -1,0 +1,4 @@
+import normal checkpoint
+Error: timeout leader recovered
+    at Object.wait (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/harness.mjs:11:395)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/continue-u01.mjs:6:2

@@ -5,3 +5,17 @@ first-hall
 built store
 built store
 built kitchen
+built kitchen
+built dining
+built dining
+built yard
+built yard
+built garden
+built herb
+built annex
+built hall
+built quiet
+s2-construction
+Error: timeout social talk
+    at wait (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/journey.mjs:11:394)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/journey.mjs:21:96

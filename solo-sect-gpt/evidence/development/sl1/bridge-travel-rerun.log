@@ -1,0 +1,27 @@
+✔ A23 bridge cancellation preserves token to actual exit (475.70625ms)
+✖ A33 actual travel and return fulfills rescue and food promises independently (14305.840167ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14990.929333
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:22:1
+✖ A33 actual travel and return fulfills rescue and food promises independently (14305.840167ms)
+  AssertionError [ERR_ASSERTION]: {"id":"expedition.2","actors":["leader","amu"],"target":"cave","phase":"return","started":0,"packed":["amu","leader"],"seen":["forest","camp","valley","cave"],"foodTaken":2,"reservedVisitor":true,"report":null,"returnReason":null,"segment":"cave","restUntil":1691,"rested":true,"talkUntil":2468,"permission":true,"choice":"rescue","collectGoal":2,"collectActor":2,"pendingAuto":null,"collectParking":false,"helper":"leader","collectRouted":false}
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:22:530)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

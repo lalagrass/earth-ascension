@@ -1,0 +1,120 @@
+{
+  "tick": 110139,
+  "status": {
+    "paused": false,
+    "speed": 4
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1230,
+        1370
+      ],
+      "energy": 6894,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.8899",
+        "actor": "leader",
+        "kind": "farm",
+        "args": {
+          "crop": "garden"
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 16,
+        "started": 101684,
+        "units": 0
+      },
+      "intent": null,
+      "blocked": "畦田成長中或有人作業",
+      "reason": "耕作維持菜供應（55；勤勉2／顧人2）",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        972,
+        1100
+      ],
+      "energy": 9946,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        1223.50390625,
+        1380.97265625
+      ],
+      "energy": 4371,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.8831",
+        "actor": "amu",
+        "kind": "farm",
+        "args": {
+          "crop": "garden"
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 101040,
+        "units": 0,
+        "plot": "garden.0",
+        "checked": "garden.work",
+        "destination": "garden.work"
+      },
+      "intent": null,
+      "blocked": "候路／禮讓",
+      "reason": "耕作維持菜供應（55；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 6,
+        "veg": 10,
+        "herb": 2,
+        "wood": 6
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 4
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 14
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": null,
+  "drill": null
+}

@@ -1,0 +1,114 @@
+{
+  "tick": 60600,
+  "status": {
+    "paused": false,
+    "speed": 4
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        430.703125,
+        960.703125
+      ],
+      "energy": 3125,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.4639",
+        "actor": "leader",
+        "kind": "build",
+        "args": {
+          "facility": "annex"
+        },
+        "phase": "gather",
+        "progress": 38,
+        "revision": 17,
+        "started": 56333,
+        "units": 10,
+        "material": "wood",
+        "load": 2,
+        "checked": "wood",
+        "destination": "wood",
+        "blocked": ""
+      },
+      "intent": {
+        "kind": "build",
+        "args": {
+          "facility": "annex"
+        },
+        "revision": 17
+      },
+      "blocked": "",
+      "reason": "玩家指令：施工",
+      "bag": {
+        "id": "bag.leader",
+        "items": {
+          "wood": 2
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        996,
+        1100
+      ],
+      "energy": 9899,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        950,
+        1180
+      ],
+      "energy": 9995,
+      "hp": 100,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "此人已停工；仍可自理",
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 30,
+        "veg": 10,
+        "herb": 2
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 1
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {},
+      "capacity": 96
+    }
+  },
+  "expedition": null,
+  "drill": null
+}

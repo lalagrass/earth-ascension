@@ -1,0 +1,3 @@
+Error: timeout social talk
+    at wait (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/journey.mjs:11:394)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/ui/journey.mjs:21:96

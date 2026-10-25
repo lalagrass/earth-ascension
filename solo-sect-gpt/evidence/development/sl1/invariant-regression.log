@@ -1,0 +1,27 @@
+✔ new world has stable identities and no geometry/ledger errors (2.77475ms)
+✔ all initial stations are reached by legal circle sweeps (408.601584ms)
+✔ build dorm consumes actual harvested materials, duplicate command ignored (1006.861083ms)
+✔ cancellation in transit never refunds or erases carried wood (33.780792ms)
+✔ children cannot be assigned labor, adult activities or expedition work (0.403ms)
+✔ determinism survives people insertion order and save/resume (1770.763708ms)
+✔ bad saves and failed writes protect the last valid slot (4.717542ms)
+✔ A04 built rooms and stations have legal non-teleport routes (312.910584ms)
+✔ A05/A09 in-process recipe survives cancel without duplicate input or output (248.048834ms)
+✔ A08 worker identity and bag preserved at invitation; capacity rejects cleanly (0.416459ms)
+✔ A12 participant cancellation releases both actors and station locks (6.329ms)
+✔ A13/A14 child rejected at relationship model boundary; mutual adult consent required (0.499791ms)
+✔ A17 hits are geometry based, one target per action, finite windup/recovery (4.525916ms)
+✔ A18 low and high intelligence share depth conditions; practice never supplies insight (144.074542ms)
+✔ A23 bridge cancellation preserves token to actual exit (122.667875ms)
+✔ A24 invalid dispatch leaves no extra activity, supply or reservation (0.842375ms)
+✔ A27 lesson reaches a real failed interception and a legal success (261.703667ms)
+✔ A33 actual travel and return fulfills rescue and food promises independently (9106.490583ms)
+✔ A35 in-flight construction, cooking, combat and conversation roundtrip hashes (4274.116125ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14559.648042

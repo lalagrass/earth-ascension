@@ -1,0 +1,51 @@
+✖ A23 bridge cancellation preserves token to actual exit (286.288791ms)
+✖ A33 actual travel and return fulfills rescue and food promises independently (47459.414125ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 47908.196708
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:19:1
+✖ A23 bridge cancellation preserves token to actual exit (286.288791ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  'leader' !== null
+
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:19:276)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'leader',
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/integration/rules.test.mjs:22:1
+✖ A33 actual travel and return fulfills rescue and food promises independently (47459.414125ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'unfulfilled'
+  - 'fulfilled'
+
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:22:578)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'unfulfilled',
+    expected: 'fulfilled',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

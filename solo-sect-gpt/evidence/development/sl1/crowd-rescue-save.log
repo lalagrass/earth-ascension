@@ -1,0 +1,11 @@
+✔ A26 rescue waits 120s and physically brings a downed member home (1211.296834ms)
+✔ A15 eight residents and two visitors finish accepted meals without overlap (14973.37275ms)
+✔ A36 encoder snapshots before asynchronous hashing (42.663417ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16315.713042

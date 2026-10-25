@@ -1,0 +1,230 @@
+{
+  "tick": 139908,
+  "status": {
+    "paused": true,
+    "speed": 4
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1190,
+        1145
+      ],
+      "energy": 3972,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.21947",
+        "actor": "leader",
+        "kind": "train",
+        "args": {
+          "art": "punch",
+          "units": 5
+        },
+        "phase": "init",
+        "progress": 25,
+        "revision": 32,
+        "started": 139404,
+        "units": 2,
+        "station": "yard.2",
+        "checked": "yard.2",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "保留修行窗口（46；勤勉2／顧人2）",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        948,
+        1100
+      ],
+      "energy": 9842,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        900,
+        1100
+      ],
+      "energy": 8799,
+      "hp": 0,
+      "injury": 52,
+      "intent": null,
+      "blocked": "",
+      "reason": "玩家停工",
+      "bag": {
+        "id": "bag.amu",
+        "items": {
+          "ration": 1
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        979.21875,
+        1179.8203125
+      ],
+      "energy": 9995,
+      "hp": 100,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "此人已停工；仍可自理",
+      "bag": {
+        "id": "bag.lin",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        996.4375,
+        1123.5625
+      ],
+      "energy": 3977,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.21991",
+        "actor": "shen",
+        "kind": "rest",
+        "args": {
+          "until": 7500
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 139469,
+        "units": 0,
+        "station": "safe.9",
+        "checked": "safe.9",
+        "destination": "safe.9",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "精力低於25：先照料自己，恢復75後續有效指令",
+      "bag": {
+        "id": "bag.shen",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 9,
+        "veg": 18,
+        "herb": 2,
+        "wood": 6,
+        "ration": 3
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 8
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 14
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": {
+    "id": "expedition.10761",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "target": "cave",
+    "phase": "returned",
+    "started": 120244,
+    "packed": [
+      "amu",
+      "leader"
+    ],
+    "seen": [
+      "forest",
+      "camp",
+      "valley",
+      "cave"
+    ],
+    "foodTaken": 2,
+    "reservedVisitor": false,
+    "report": "report.12993",
+    "returnReason": null,
+    "segment": "cave",
+    "usedArts": {
+      "leader": [
+        "punch"
+      ],
+      "amu": [
+        "punch"
+      ]
+    },
+    "restUntil": 121416,
+    "rested": true,
+    "talkUntil": 122001,
+    "permission": true,
+    "pendingAuto": null,
+    "choice": "rescue",
+    "collectGoal": 2,
+    "collectActor": 2,
+    "collectParking": false,
+    "helper": "amu",
+    "collectRouted": false,
+    "attachTicks": 160,
+    "escortAttached": true
+  },
+  "drill": {
+    "id": "drill.10302",
+    "config": "A",
+    "actors": [
+      "amu",
+      "leader"
+    ],
+    "status": "completed",
+    "wave": 2,
+    "opponents": [
+      "training.3",
+      "training.4"
+    ],
+    "allOpponents": [
+      "training.1",
+      "training.2",
+      "training.3",
+      "training.4"
+    ],
+    "started": 117010,
+    "nextWave": null
+  }
+}

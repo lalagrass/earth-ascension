@@ -1,6 +1,6 @@
 import {Q,LEGENDS,ART,FACILITIES} from './data.mjs';
-import {stations,position,los} from './map.mjs';
-import {event,sorted,qty,add,transfer,reserve,release,uid,makePerson} from './state.mjs';
+import {stations,position,los,bedSlots} from './map.mjs';
+import {event,sorted,availableQty as qty,add,transfer,reserve,release,uid,makePerson} from './state.mjs';
 import {begin,cancel,approach,finish,memory} from './activities.mjs';
 import {beginSpar,startAction,interceptionReason,startDrill} from './combat.mjs';
 import {route,arrived} from './navigation.mjs';
@@ -15,6 +15,7 @@ export function story(w,p,node){const s=w.stories[node];if(!s)return {ok:false,r
  if(key==='hong'&&part==='1'&&qty(w,'table','meal')<2)return {ok:false,reason:'需自製並備好兩餐才能招待'};
  if(key==='hong'&&part==='1'&&!w.facts['recipe-complete'])return {ok:false,reason:'請先親手製成一鍋餐'};
  if(key==='linghu'&&part==='1'&&w.facilities.yard.stage<1)return {ok:false,reason:'需兩位外功場，請先修場'};
+ if(key==='guo'&&part==='1'&&w.facilities.yard.stage<1)return {ok:false,reason:'同練需兩個可用樁位，先修外功場'};
  if(key==='guo'&&part==='1'&&p.skill.punch.F<18)return {ok:false,reason:'先讓一位成人基礎拳熟練18'};
  if(key==='guo'&&part==='2'&&(p.skill.punch.F<90||p.skill.punch.I<10))return {ok:false,reason:'先以真攻防兩種情境取得體悟10、熟練90'};
  if(key==='yue'&&(!w.facilities.hall.stage||w.people.amu.rank==='worker'))return {ok:false,reason:'修廳且至少一人入門，才能共定門派承諾'};
@@ -28,20 +29,21 @@ export function story(w,p,node){const s=w.stories[node];if(!s)return {ok:false,r
  const result=begin(w,p,'story',{node,partner:o.id},true);if(result.ok){cancel(w,o,'接受有限約定');o.storyBusy=true;p.storyBusy=true;}return result;
 }
 function pairApproach(w,p,o,a,one,two){if(!reserve(w,a,'participant:'+o.id)){p.blocked='同伴有其他約定';return false;}if(!a.otherRouted){route(w,o,two);a.otherRouted=true;}return approach(w,p,a,'story:'+a.args.node,one)&&arrived(o)&&Math.hypot(o.x/Q-two[0],o.y/Q-two[1])<2;}
-function end(w,p,o,a,extra){p.storyBusy=false;o.storyBusy=false;mark(w,a.args.node,[p.id,o.id],extra);finish(w,p,a,'約定已完成');}
+function end(w,p,o,a,extra){p.storyBusy=false;o.storyBusy=false;const at=position(o);route(w,o,[at[0]+20,at[1]+20]);mark(w,a.args.node,[p.id,o.id],extra);finish(w,p,a,'約定已完成');}
 export function storyActivityTick(w,p){const a=w.activities[p.activity];if(!a||a.kind!=='story')return false;
  const node=a.args.node,[key,part]=node.split('.'),o=w.people[a.args.partner],s=w.stories[node];if(!o||o.residence==='departed'||o.hp<=0){cancel(w,p,'同伴離去／受傷；可以重約');p.storyBusy=false;if(o)o.storyBusy=false;s.status='active';return true;}
  if(key==='hong'){
-  const first=part==='1',one=first?stations['dining.1']:stations['yard.1'],two=first?stations['dining.2']:stations['yard.2'];
+  const first=part==='1';if(first&&!reserve(w,a,'source:table:meal',2,qty(w,'table','meal'))){p.blocked='兩份餐尚未空出，先補餐';return true;}const one=first?stations['dining.1']:stations['yard.1'],two=first?stations['dining.2']:stations['yard.2'];
   if(!pairApproach(w,p,o,a,one,two))return true;p.pose=first?'eat':'practice';o.pose=first?'eat':'teach';a.progress++;
-  if(a.progress>=(first?200:400)){if(first){if(qty(w,'table','meal')<2){p.blocked='餐已用完，補做後可繼續招待';return true;}add(w,'table','meal',-2,'hospitality');memory(w,'talk',p,o,a.id);}else{p.pushLearned=true;p.skill.punch.U=Math.min(100,p.skill.punch.U+6+p.stats[3]);memory(w,'teach',p,o,a.id);}end(w,p,o,a);}return true;
+  if(a.progress>=(first?200:400)){if(first){if(qty(w,'table','meal')<2){p.blocked='餐已用完，補做後可繼續招待';return true;}add(w,'table','meal',-2,'hospitality');for(const q of [p,o]){q.meals++;if(q.meals<=2)q.energy=Math.min(10000,q.energy+1500);}memory(w,'talk',p,o,a.id);}else{p.pushLearned=true;p.skill.punch.U=Math.min(100,p.skill.punch.U+6+p.stats[3]);memory(w,'teach',p,o,a.id);}end(w,p,o,a);}return true;
  }
  if(key==='guo'&&part==='1'){
-  if(!pairApproach(w,p,o,a,stations['yard.1'],stations['yard.2']))return true;p.pose=o.pose='practice';a.progress++;
+  if(!pairApproach(w,p,o,a,stations['yard.1'],stations['yard.2']))return true;if(p.energy<2500||o.energy<2500){p.blocked='同練需精力25以上，可暫停休養後續單位';return true;}p.energy=Math.max(0,p.energy-1);o.energy=Math.max(0,o.energy-1);p.pose=o.pose='practice';a.progress++;
   if(a.progress%240===0){for(const q of [p,o]){q.skill.punch.F=Math.min(100,q.skill.punch.F+3);q.skill.punch.practice++;}s.progress++;event(w,'growth',[p.id,o.id],{art:'punch',source:'guo-practice',unit:s.progress});}
   if(s.progress>=6){memory(w,'teach',p,o,a.id);end(w,p,o,a);}return true;
  }
  if(key==='linghu'&&part==='2'){
+  if(!a.introFinished){const one=s.own?stations['quiet.book']:stations['yard.1'],two=s.own?[1325,1020]:stations['yard.2'];if(!pairApproach(w,p,o,a,one,two))return true;p.pose=s.own?'read':'listen';o.pose='teach';a.intro=(a.intro||0)+1;if(a.intro>=400){p.skill.nine??={U:5,F:0,I:0,contexts:[],practice:0,sources:[{kind:s.own?'quiet-study':'linghu-teaching',tick:w.tick}]};a.introFinished=true;a.otherRouted=false;a.destination=null;release(w,a.id);}return true;}
   if(!pairApproach(w,p,o,a,stations['guard.front'],[1362,1220]))return true;
   if(!a.demo){a.demo={count:0,lastEnd:w.tick,session:uid(w,'lesson'),failSeen:false};p.skill.nine??={U:5,F:0,I:0,contexts:[],practice:0,sources:[{kind:'linghu-teaching',tick:w.tick}]};for(const q of [p,o]){q.combatSession=a.demo.session;q.team=q===p?'student':'teacher';q.combatTarget=null;}o.pushLearned=true;}
   const d=a.demo;
@@ -58,7 +60,8 @@ export function storyActivityTick(w,p){const a=w.activities[p.activity];if(!a||a
    a.escortPhase='out';route(w,p,[1660,520]);route(w,o,[1625,525]);route(w,traveler,[1645,520]);a.otherRouted=true;
    event(w,'escort-start',[p.id,o.id,traveler.id],{node});return true;
   }
-  if(a.escortPhase==='out'&&arrived(p)&&arrived(o)&&arrived(traveler)){
+  if(a.escortPhase==='out'&&arrived(p)&&Math.hypot(p.x/Q-1660,p.y/Q-520)>3&&!p.combatTarget&&!p.action)route(w,p,[1660,520]);
+  if(a.escortPhase==='out'&&arrived(p)&&arrived(o)&&arrived(traveler)&&Math.hypot(p.x/Q-1660,p.y/Q-520)<4){
    if(part==='2'){
     a.escortPhase='obstruction';const guard=w.people['warden.0'];guard.storyBusy=true;guard.combatTarget=null;guard.hostile=false;route(w,guard,[1665,535]);a.guard=guard.id;a.exercise=uid(w,'road-exercise');
     for(const q of [p,traveler,guard]){q.combatSession=a.exercise;q.team=q===guard?'obstruction':'escort';q.trainingDefeated=false;}
@@ -91,6 +94,6 @@ export function storiesTick(w){
  }
 }
 export function completionConditions(w){const result=[];for(const id of ['hall','dorm','annex','store','kitchen','dining','yard','garden','herb'])result.push({id:'building.'+id,label:FACILITIES[id].name+'可用'+(['hall','store','kitchen','dining','yard'].includes(id)?'最終階段':''),ok:w.facilities[id].stage>=(['hall','store','kitchen','dining','yard'].includes(id)?FACILITIES[id].stages.length:1)});
- result.push({id:'adults',label:'至少四位成年門人',ok:sorted(w.people).filter(p=>p.adult&&p.residence==='resident'&&['leader','outer','inner'].includes(p.rank)).length>=4},{id:'amu',label:'阿木自願入門',ok:w.people.amu.rank!=='worker'},{id:'inner',label:'一位外門經真考核晉內門',ok:sorted(w.people).some(p=>p.id!=='leader'&&p.rank==='inner')},{id:'child',label:'小禾有合法床位',ok:!!w.people.child.bed&&bedSlotsSafe(w).includes(w.people.child.bed)},{id:'depth',label:'基礎拳深修 F90／I10',ok:sorted(w.people).some(p=>p.skill.punch?.F>=90&&p.skill.punch?.I>=10)},{id:'drill',label:'完整兩波演武',ok:!!w.facts['drill-complete']},{id:'cave',label:'古洞選擇與全隊真返院',ok:w.stories['cave.return'].status==='completed'});return result;}
+ result.push({id:'adults',label:'至少四位成年門人',ok:sorted(w.people).filter(p=>p.adult&&p.residence==='resident'&&['leader','outer','inner'].includes(p.rank)).length>=4},{id:'amu',label:'阿木自願入門',ok:w.people.amu.rank!=='worker'},{id:'inner',label:'一位外門經真考核晉內門',ok:sorted(w.people).some(p=>p.id!=='leader'&&p.rank==='inner')},{id:'child',label:'小禾有合法床位',ok:!!w.people.child.bed&&bedSlots(w).includes(w.people.child.bed)},{id:'depth',label:'基礎拳深修 F90／I10',ok:sorted(w.people).some(p=>p.skill.punch?.F>=90&&p.skill.punch?.I>=10)},{id:'drill',label:'完整兩波演武',ok:!!w.facts['drill-complete']},{id:'cave',label:'古洞選擇與全隊真返院',ok:w.stories['cave.return'].status==='completed'});return result;}
 function bedSlotsSafe(w){const a=[];for(const p of sorted(w.people))if(p.bed)a.push(p.bed);return a;}
 export function found(w,name){const missing=completionConditions(w).filter(c=>!c.ok);if(missing.length)return {ok:false,reason:'尚缺：'+missing.map(c=>c.label).join('、')};if(w.completed)return {ok:false,reason:'已立匾，可以繼續生活'};w.completed=true;w.sectName=(name||'山中留人').trim().slice(0,20);w.completedAt=w.tick;event(w,'chapter-complete',sorted(w.people).filter(p=>p.residence==='resident').map(p=>p.id),{text:w.sectName+'：在山中留下來。',choice:w.storyChoice});return {ok:true};}

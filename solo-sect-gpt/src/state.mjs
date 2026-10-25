@@ -5,8 +5,12 @@ export const uid=(w,prefix)=>prefix+'.'+w.nextId++;
 export function event(w,type,actors=[],data={}){const e={id:uid(w,'event'),tick:w.tick,type,actors:[...actors],...data};w.journal.push(e);if(w.journal.length>500)w.journal.shift();w.facts[type]=(w.facts[type]||0)+1;return e;}
 export function draw(w,stream='world'){let s=w.random[stream],x=s.value;x^=x<<13;x^=x>>>17;x^=x<<5;s.value=x>>>0;s.draws++;return s.value;}
 export function inventory(w,id,items={},capacity=96){w.inventories[id]={id,items:{...items},capacity};return id;}
+const opening=new WeakMap();
+export function openTick(w){opening.set(w,Object.fromEntries(Object.entries(w.inventories).map(([id,inv])=>[id,{...inv.items}])));}
+export function closeTick(w){opening.delete(w);}
+export function availableQty(w,id,item){const supply=opening.get(w)?.[id];return supply?Math.min(qty(w,id,item),supply[item]||0):qty(w,id,item);}
 export const qty=(w,id,item)=>w.inventories[id]?.items[item]||0;
-export function add(w,id,item,n,source){const inv=w.inventories[id];inv.items[item]=(inv.items[item]||0)+n;if(inv.items[item]<0)throw Error('negative '+id+' '+item);if(!inv.items[item])delete inv.items[item];if(source){w.ledger[item]??={initial:0,produced:0,consumed:0};w.ledger[item][n>0?'produced':'consumed']+=Math.abs(n);}}
+export function add(w,id,item,n,source){const inv=w.inventories[id];const supply=opening.get(w)?.[id];if(supply&&n<0)supply[item]=Math.max(0,(supply[item]||0)+n);inv.items[item]=(inv.items[item]||0)+n;if(inv.items[item]<0)throw Error('negative '+id+' '+item);if(!inv.items[item])delete inv.items[item];if(source){w.ledger[item]??={initial:0,produced:0,consumed:0};w.ledger[item][n>0?'produced':'consumed']+=Math.abs(n);}}
 export function transfer(w,from,to,item,n){if(n<=0||qty(w,from,item)<n)throw Error('invalid transfer');add(w,from,item,-n);add(w,to,item,n);event(w,'transfer',[],{from,to,item,n});}
 export const sourceFor=item=>item==='water'?'vat':item==='meal'?'table':'store';
 export const itemTotal=(w,item)=>sorted(w.inventories).reduce((n,i)=>n+(i.items[item]||0),0);
@@ -19,8 +23,8 @@ export function makePerson(w,id,name,pos,options={}){
   activity:null,intent:null,revision:0,manualStop:false,path:[],routeAt:0,distance:0,walkRemainder:0,energyRemainder:0,
   skill:{punch:{U:5,F:0,I:0,contexts:[],practice:0,sources:[]}},weapon:'punch',move:'punch',action:null,stun:0,
   observation:{},known:{},meals:0,mealDay:0,contribution:{},reason:'等候方針',next:'自由活動',blocked:'',auto:true,
-  moving:false,waitSince:null,recovering:false,visits:0,...structuredClone(options),stats:[...stats],traits:[...(options.traits||[0,0])]};
- w.people[id]=p;inventory(w,p.bag,{},4);return p;
+  primary:options.rank==='worker'?'build':'gather',secondary:'production',moving:false,waitSince:null,recovering:false,visits:0,...structuredClone(options),stats:[...stats],traits:[...(options.traits||[0,0])]};
+ w.people[id]=p;inventory(w,p.bag,{},4);p.equipment='equipment.'+id;inventory(w,p.equipment,{},2);return p;
 }
 export function createWorld(config={}){
  const seed=Number(config.seed??11),template=config.template||'custom',t=TEMPLATES[template];
@@ -55,18 +59,26 @@ export function release(w,id){for(const [key,q]of Object.entries(w.queues))w.que
 export function assignBeds(w){const available=bedSlots(w),used=new Set();for(const p of sorted(w.people).filter(p=>p.residence==='resident')){
  if(p.bed&&available.includes(p.bed)&&!used.has(p.bed)){used.add(p.bed);continue;}p.bed=null;
  }for(const p of sorted(w.people).filter(p=>p.residence==='resident'&&!p.bed)){p.bed=available.find(b=>!used.has(b))||null;if(p.bed)used.add(p.bed);}}
-export function invariants(w){const errors=[],ids=new Set(),beds=new Set();for(const p of sorted(w.people)){
- if(ids.has(p.id))errors.push('duplicate '+p.id);ids.add(p.id);
+export function invariants(w){const errors=[],ids=new Set(),beds=new Set(),identities=new Set();for(const p of sorted(w.people)){
+ if(ids.has(p.id))errors.push('duplicate '+p.id);ids.add(p.id);if(p.canonicalIdentity){if(identities.has(p.canonicalIdentity))errors.push('duplicate identity');identities.add(p.canonicalIdentity);}
  if(!Number.isSafeInteger(p.x)||!Number.isSafeInteger(p.y))errors.push('position '+p.id);
  if(p.residence!=='departed'&&!walkable(w,...position(p)))errors.push('geometry '+p.id+' '+position(p));
- if(p.bed){if(beds.has(p.bed))errors.push('double bed');beds.add(p.bed);}
+ if(p.bed){if(!bedSlots(w).includes(p.bed))errors.push('invalid bed '+p.id);if(beds.has(p.bed))errors.push('double bed');beds.add(p.bed);}
  if(p.activity&&!w.activities[p.activity])errors.push('activity '+p.id);
  if(p.energy<0||p.energy>10000||p.hp<0||p.hp>p.maxHp)errors.push('vitals '+p.id);
  }
- for(const inv of sorted(w.inventories))for(const [item,n]of Object.entries(inv.items))if(!Number.isSafeInteger(n)||n<0)errors.push('inventory '+inv.id+' '+item);
+ for(const inv of sorted(w.inventories))for(const [item,n]of Object.entries(inv.items))if(!Number.isSafeInteger(n)||n<0||item!=='money'&&n>inv.capacity)errors.push('inventory '+inv.id+' '+item);
+ for(const p of sorted(w.people))if(bagWeight(w,p)>4)errors.push('carry capacity '+p.id);
+ const sourceKeys=new Set(Object.values(w.reservations).map(r=>r.key).filter(k=>k.startsWith('source:')));for(const key of sourceKeys){const [,id,item]=key.split(':');const n=Object.values(w.reservations).filter(r=>r.key===key).reduce((n,r)=>n+r.n,0);if(!w.inventories[id]||n>qty(w,id,item))errors.push('source reservations '+key);}
+ const destKeys=new Set(Object.values(w.reservations).map(r=>r.key).filter(k=>k.startsWith('dest:')));for(const key of destKeys){const [,id,item]=key.split(':');const n=Object.values(w.reservations).filter(r=>r.key===key).reduce((n,r)=>n+r.n,0);if(!w.inventories[id]||n+qty(w,id,item)>w.inventories[id].capacity)errors.push('destination reservations '+key);}
  for(const [item,l]of Object.entries(w.ledger))if(l.initial+l.produced-l.consumed!==itemTotal(w,item))errors.push('ledger '+item);
  if(sorted(w.people).filter(p=>p.residence==='resident').length>8)errors.push('resident cap');
  if(sorted(w.people).filter(p=>p.residence==='visitor').length>2)errors.push('visitor cap');
  for(const r of Object.values(w.reservations))if(!w.activities[r.activity])errors.push('orphan token');
+ if(w.bridge.holder&&!w.people[w.bridge.holder])errors.push('bridge owner');
+ for(const p of sorted(w.people))if(p.residence!=='departed'&&!p.inactive&&inRectBridge(p)&&w.bridge.holder!==p.id)errors.push('bridge capacity '+p.id);
+ for(const [id,a]of Object.entries(w.activities))if(a.id!==id||!w.people[a.actor]||w.people[a.actor].activity!==id)errors.push('orphan activity '+id);
  return errors;
 }
+
+function inRectBridge(p){return p.x/256>=1870&&p.x/256<=1940&&p.y/256>=425&&p.y/256<=455;}

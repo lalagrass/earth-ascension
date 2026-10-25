@@ -24,9 +24,9 @@
 test at solo-sect-gpt/test/integration/rules.test.mjs:15:1
 ✖ A12 participant cancellation releases both actors and station locks (3.65425ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-  
+
   1 !== 0
-  
+
       at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/integration/rules.test.mjs:15:268)
       at Test.runInAsyncScope (node:async_hooks:214:14)
       at Test.run (node:internal/test_runner/test:1106:25)

@@ -30,6 +30,7 @@ export function moveAll(w){
   let x=nx,y=ny;
   if(!free(x,y)){
    p.waitSince??=w.tick;p.blocked='候路／禮讓';
+   if(w.tick-(p.lastDetourTick||0)>=40&&w.bridge.holder!==p.id){p.lastDetourTick=w.tick;const goal=p.path.at(-1)?.map(n=>n/Q),avoid=others.map(position);if(goal){const detour=findPath(w,position(p),goal,avoid);if(detour){p.path=detour;p.routeAt=0;continue;}}}
    // Deterministic reciprocal avoidance; waiters can move sideways on legal ground.
    const sign=p.id.localeCompare(others.find(o=>(o.x-nx)**2+(o.y-ny)**2<(12*Q)**2)?.id||'')<0?1:-1;
    const vectors=[[-dy*sign,dx*sign],[dy*sign,-dx*sign],[-dx,-dy]];let ok=false;
@@ -39,6 +40,6 @@ export function moveAll(w){
   const walked=Math.round(Math.hypot(x-p.x,y-p.y));p.x=x;p.y=y;p.distance+=walked;w.metrics.walked+=walked;p.moving=walked>0;
   if(p.moving&&!p.action)p.angle=(Math.round(Math.atan2(dy,dx)*180/Math.PI)+360)%360;
   if(n===d&&x===nx&&y===ny)p.routeAt++;
-  if(bridge.holder===p.id){const end=bridge.direction==='east'?p.x/Q>=1952:p.x/Q<=1858;if(end){event(w,'bridge-exit',[p.id]);bridge.holder=null;bridge.direction=null;if(p.bridgeExit){p.bridgeExit=false;p.path=[];p.routeAt=0;const pending=p.bridgePendingTarget;p.bridgePendingTarget=null;if(pending)route(w,p,pending);}}}
+  if(bridge.holder===p.id){const end=bridge.direction==='east'?p.x/Q>=1952:p.x/Q<=1858;if(end){event(w,'bridge-exit',[p.id],{x:p.x,y:p.y,direction:bridge.direction});bridge.holder=null;bridge.direction=null;if(p.bridgeExit){p.bridgeExit=false;p.path=[];p.routeAt=0;const pending=p.bridgePendingTarget;p.bridgePendingTarget=null;if(pending)route(w,p,pending);}}}
  }
 }

@@ -1,0 +1,165 @@
+{
+  "tick": 102453,
+  "status": {
+    "paused": false,
+    "speed": 4
+  },
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        1170,
+        1070
+      ],
+      "energy": 7164,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.8952",
+        "actor": "leader",
+        "kind": "reception",
+        "args": {
+          "target": "shen"
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 20,
+        "started": 102031,
+        "units": 0,
+        "checked": "hall.greet",
+        "destination": "hall.greet",
+        "blocked": ""
+      },
+      "intent": {
+        "kind": "reception",
+        "args": {
+          "target": "shen"
+        },
+        "revision": 20
+      },
+      "blocked": "",
+      "reason": "玩家指令：reception",
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        996,
+        1100
+      ],
+      "energy": 9600,
+      "hp": 90,
+      "injury": 0,
+      "intent": null,
+      "blocked": "",
+      "reason": "已抵達",
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        1192.859375,
+        1295.734375
+      ],
+      "energy": 5676,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.8892",
+        "actor": "amu",
+        "kind": "farm",
+        "args": {
+          "crop": "garden"
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 1,
+        "started": 101520,
+        "units": 0,
+        "plot": "garden.0",
+        "checked": "garden.work",
+        "destination": "garden.work",
+        "blocked": ""
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "耕作維持菜供應（55；勤勉0／顧人0）",
+      "bag": {
+        "id": "bag.amu",
+        "items": {
+          "veg": 2,
+          "water": 1
+        },
+        "capacity": 4
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        1045.33984375,
+        1195.1953125
+      ],
+      "energy": 9875,
+      "hp": 100,
+      "injury": 0,
+      "activity": {
+        "id": "activity.8948",
+        "actor": "lin",
+        "kind": "eat",
+        "args": {},
+        "phase": "init",
+        "progress": 0,
+        "revision": 0,
+        "started": 102005,
+        "units": 0,
+        "station": "dining.1",
+        "checked": "dining.1",
+        "destination": "dining.1"
+      },
+      "intent": null,
+      "blocked": "",
+      "reason": "作息：用餐",
+      "bag": {
+        "id": "bag.lin",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ],
+  "stocks": {
+    "store": {
+      "id": "store",
+      "items": {
+        "money": 9,
+        "veg": 10,
+        "herb": 2,
+        "wood": 6
+      },
+      "capacity": 96
+    },
+    "vat": {
+      "id": "vat",
+      "items": {
+        "water": 5
+      },
+      "capacity": 24
+    },
+    "table": {
+      "id": "table",
+      "items": {
+        "meal": 12
+      },
+      "capacity": 96
+    }
+  },
+  "expedition": null,
+  "drill": null
+}
