@@ -1,0 +1,8 @@
+// Records the P2 with the unmodified base runtime (run once at 292bc9a); output is a controlled model fixture, not UI.
+import fs from'node:fs/promises';import{createWorld,command,step}from'../../src/world.mjs';import{add}from'../../src/state.mjs';import{encode}from'../../src/save.mjs';
+const out=new URL('../../evidence/optimization/m7-model/',import.meta.url),summary=[];
+for(const variant of['spar','recall','task']){const w=createWorld();for(const p of Object.values(w.people))p.auto=false;add(w,'store','ration',4,'M7 test fixture: isolated P2 reproduction');
+ const a=command(w,{type:'expedition',actors:['leader'],target:'forest'}),b=variant==='spar'?command(w,{type:'spar',actor:'leader',target:'amu'}):variant==='recall'?command(w,{type:'recall',actor:'leader'}):command(w,{type:'task',actor:'leader',kind:'gather',args:{item:'wood'}});for(let i=0;i<2000;i++)step(w);
+ const L=w.people.leader,s={variant,dispatch:a,second:b,tick:w.tick,phase:w.expedition.phase,packed:w.expedition.packed,activity:L.activity,intent:L.intent,storyBusy:L.storyBusy,combatSession:L.combatSession,reservations:Object.values(w.reservations).filter(r=>r.actor==='leader'),storeRation:w.inventories.store.items.ration||0,bagRation:w.inventories[L.bag].items.ration||0};summary.push(s);
+ await fs.writeFile(new URL('stuck-prepare-'+variant+'.save.json',out),await encode(w));}
+await fs.writeFile(new URL('stuck-reproduction.json',out),JSON.stringify({source:'base runtime 292bc9a, controlled model fixture (ration added as labeled test fixture), not UI',summary},null,2));console.log(JSON.stringify(summary,null,1));

@@ -1,0 +1,81 @@
+{
+  "source": "base runtime 292bc9a, controlled model fixture (ration added as labeled test fixture), not UI",
+  "summary": [
+    {
+      "variant": "spar",
+      "dispatch": {
+        "ok": true
+      },
+      "second": {
+        "ok": true
+      },
+      "tick": 2000,
+      "phase": "prepare",
+      "packed": [],
+      "activity": null,
+      "intent": {
+        "kind": "expedition",
+        "revision": 1,
+        "args": {
+          "target": "forest"
+        }
+      },
+      "storyBusy": true,
+      "combatSession": null,
+      "reservations": [],
+      "storeRation": 4,
+      "bagRation": 0
+    },
+    {
+      "variant": "recall",
+      "dispatch": {
+        "ok": true
+      },
+      "second": {
+        "ok": true
+      },
+      "tick": 2000,
+      "phase": "prepare",
+      "packed": [],
+      "activity": null,
+      "intent": null,
+      "storyBusy": true,
+      "reservations": [],
+      "storeRation": 4,
+      "bagRation": 0
+    },
+    {
+      "variant": "task",
+      "dispatch": {
+        "ok": true
+      },
+      "second": {
+        "ok": true
+      },
+      "tick": 2000,
+      "phase": "halted",
+      "packed": [],
+      "activity": "activity.29",
+      "intent": null,
+      "storyBusy": false,
+      "reservations": [
+        {
+          "activity": "activity.29",
+          "actor": "leader",
+          "key": "source:table:meal",
+          "n": 1,
+          "tick": 2000
+        },
+        {
+          "activity": "activity.29",
+          "actor": "leader",
+          "key": "station:dining.1",
+          "n": 1,
+          "tick": 2000
+        }
+      ],
+      "storeRation": 4,
+      "bagRation": 0
+    }
+  ]
+}

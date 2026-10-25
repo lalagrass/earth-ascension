@@ -1,0 +1,18 @@
+v24.13.0
+✔ M2 ordinary recall replaces a capsule; changed auto preference survives its return; shared journeys reject temporary takeover before mutation (70.736ms)
+✔ M2 growing plots do not block training; empty sources and full containers never report supplies reached (0.559417ms)
+✔ M2 invalid stock goals are atomic under the adopted policy (0.131083ms)
+✔ M2 injury arriving during a temporary work order interrupts into real recovery before resuming (9142.045833ms)
+✔ M2 departing a visitor supersedes its one-time return capsule (8.957583ms)
+✔ M2 a temporary recipe finished by another worker during selfcare does not cook a duplicate batch on return (479.152916ms)
+ℹ tests 120
+ℹ suites 0
+ℹ pass 120
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 69025.865625
+node --test solo-sect-gpt/test/*.test.mjs    321.65s user 6.20s system 474% cpu 1:09.14 total
+
+[exited with code 0]
