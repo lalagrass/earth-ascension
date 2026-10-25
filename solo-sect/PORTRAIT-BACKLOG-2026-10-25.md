@@ -178,7 +178,7 @@
 | PB-26 | 張無忌（`zhangwuji`）・主角 | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
 | PB-27 | 阿芳（`afang`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
 | PB-28 | 阿珂（`ake`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
-| PB-29 | 包租婆（`baozupo`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
+| PB-29 | 包租婆（`baozupo`） | 女 | wcaricature（喜劇例外） | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
 | PB-30 | 彩鳳（`caifeng`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
 | PB-31 | 穆念慈（`munianci`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
 | PB-32 | 寧中則（`ningzhongze`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
@@ -188,7 +188,7 @@
 | PB-36 | 小昭（`xiaozhao`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
 | PB-37 | 岳靈珊（`yuelingshan`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
 | PB-38 | 趙敏（`zhaomin`） | 女 | inkpretty | huangrong-v2-a | v1.5 美術任務 |
-| PB-39 | 東方不敗（`dongfangbubai`） | 待定 | inkpretty（預設，請擁有人確認） | huangrong-v2-a | v1.5 美術任務 |
+| PB-39 | 東方不敗（`dongfangbubai`） | — | inkpretty（已定案） | huangrong-v2-a | v1.5 美術任務 |
 | PB-40 | 包租公（`baozugong`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
 | PB-41 | 肥仔聰（`feizaicong`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
 | PB-42 | 風清揚（`fengqingyang`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
@@ -203,4 +203,4 @@
 | PB-51 | 周伯通（`zhoubotong`） | 男 | wcaricature | guojing-v2-b / axing-v2b-a | v1.5 美術任務 |
 | PB-52 | 批次後製：PB-15～19 套用於全部 v2 新圖與舊圖 | — | 依 PB-22 | — | v1.5 美術任務 |
 
-附註：包租婆照規則用 inkpretty，但角色靠誇張喜感，表情上限放寬到壞笑、怒吼。東方不敗的性別風格待擁有人確認，預設 inkpretty。每位各畫 2 張候選，挑 1 張，另附 64/48px 縮圖。驗收標準是跟三張定調圖並排不衝突。
+附註：**喜劇例外規則（2026-10-25 擁有人核准）**：周星馳系的喜劇女性角色可以改用 wcaricature，目前適用的是包租婆。東方不敗已經定案用 inkpretty。每位各畫 2 張候選，挑 1 張，另附 64/48px 縮圖。驗收標準是跟三張定調圖並排不衝突。
