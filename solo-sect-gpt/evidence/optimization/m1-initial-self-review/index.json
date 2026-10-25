@@ -1,0 +1,526 @@
+{
+  "mode": "candidate",
+  "status": "failed",
+  "error": "page.evaluate: Target page, context or browser has been closed\n    at snap (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m1-ui.mjs:3:21)\n    at wait (/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m1-ui.mjs:3:617)\n    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m1-ui.mjs:11:144",
+  "errors": [],
+  "evidence": [
+    {
+      "label": "s0-1440",
+      "tick": 40,
+      "selected": "leader",
+      "people": [
+        {
+          "id": "leader",
+          "x": 232960,
+          "y": 291968,
+          "pose": "idle",
+          "moving": true,
+          "kind": "eat",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "child",
+          "x": 235599,
+          "y": 287963,
+          "pose": "idle",
+          "moving": true,
+          "kind": "eat",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 231302,
+          "y": 288846,
+          "pose": "idle",
+          "moving": true,
+          "kind": "eat",
+          "progress": 0,
+          "bag": {}
+        }
+      ]
+    },
+    {
+      "label": "s0-1280",
+      "tick": 40,
+      "selected": "leader",
+      "people": [
+        {
+          "id": "leader",
+          "x": 232960,
+          "y": 291968,
+          "pose": "idle",
+          "moving": true,
+          "kind": "eat",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "child",
+          "x": 235599,
+          "y": 287963,
+          "pose": "idle",
+          "moving": true,
+          "kind": "eat",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 231302,
+          "y": 288846,
+          "pose": "idle",
+          "moving": true,
+          "kind": "eat",
+          "progress": 0,
+          "bag": {}
+        }
+      ]
+    },
+    {
+      "label": "s2-1440",
+      "tick": 171453,
+      "selected": "leader",
+      "people": [
+        {
+          "id": "leader",
+          "x": 281600,
+          "y": 341760,
+          "pose": "sleep",
+          "moving": false,
+          "kind": "sleep",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "child",
+          "x": 254976,
+          "y": 281600,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 314880,
+          "y": 350720,
+          "pose": "farm",
+          "moving": false,
+          "kind": "farm",
+          "progress": 53,
+          "bag": {
+            "water": 1
+          }
+        },
+        {
+          "id": "lin",
+          "x": 266166,
+          "y": 302129,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "shen",
+          "x": 159012,
+          "y": 429746,
+          "pose": "idle",
+          "moving": true,
+          "kind": "gather",
+          "progress": 0,
+          "bag": {
+            "water": 4
+          }
+        }
+      ]
+    },
+    {
+      "label": "s2-1280",
+      "tick": 171453,
+      "selected": "leader",
+      "people": [
+        {
+          "id": "leader",
+          "x": 281600,
+          "y": 341760,
+          "pose": "sleep",
+          "moving": false,
+          "kind": "sleep",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "child",
+          "x": 254976,
+          "y": 281600,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 314880,
+          "y": 350720,
+          "pose": "farm",
+          "moving": false,
+          "kind": "farm",
+          "progress": 53,
+          "bag": {
+            "water": 1
+          }
+        },
+        {
+          "id": "lin",
+          "x": 266166,
+          "y": 302129,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "shen",
+          "x": 159012,
+          "y": 429746,
+          "pose": "idle",
+          "moving": true,
+          "kind": "gather",
+          "progress": 0,
+          "bag": {
+            "water": 4
+          }
+        }
+      ]
+    },
+    {
+      "label": "eat",
+      "tick": 171698,
+      "selected": "leader",
+      "people": [
+        {
+          "id": "leader",
+          "x": 238033,
+          "y": 297031,
+          "pose": "eat",
+          "moving": false,
+          "kind": "eat",
+          "progress": 14,
+          "bag": {}
+        },
+        {
+          "id": "child",
+          "x": 242688,
+          "y": 281600,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 314880,
+          "y": 350720,
+          "pose": "idle",
+          "moving": false,
+          "bag": {
+            "water": 1
+          }
+        },
+        {
+          "id": "lin",
+          "x": 266166,
+          "y": 302129,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "shen",
+          "x": 159012,
+          "y": 429746,
+          "pose": "idle",
+          "moving": false,
+          "bag": {
+            "water": 4
+          }
+        }
+      ]
+    },
+    {
+      "label": "eat-motion",
+      "tick": 171735,
+      "selected": "leader",
+      "people": [
+        {
+          "id": "leader",
+          "x": 238033,
+          "y": 297031,
+          "pose": "eat",
+          "moving": false,
+          "kind": "eat",
+          "progress": 51,
+          "bag": {}
+        },
+        {
+          "id": "child",
+          "x": 242688,
+          "y": 281600,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 314880,
+          "y": 350720,
+          "pose": "idle",
+          "moving": false,
+          "bag": {
+            "water": 1
+          }
+        },
+        {
+          "id": "lin",
+          "x": 266166,
+          "y": 302129,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "shen",
+          "x": 159012,
+          "y": 429746,
+          "pose": "idle",
+          "moving": false,
+          "bag": {
+            "water": 4
+          }
+        }
+      ]
+    },
+    {
+      "label": "train",
+      "tick": 172232,
+      "selected": "amu",
+      "people": [
+        {
+          "id": "leader",
+          "x": 307202,
+          "y": 335372,
+          "pose": "idle",
+          "moving": true,
+          "kind": "farm",
+          "progress": 0,
+          "bag": {
+            "water": 1
+          }
+        },
+        {
+          "id": "child",
+          "x": 242688,
+          "y": 281600,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 281600,
+          "y": 293120,
+          "pose": "practice",
+          "moving": false,
+          "kind": "train",
+          "progress": 15,
+          "bag": {}
+        },
+        {
+          "id": "lin",
+          "x": 266166,
+          "y": 302129,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "shen",
+          "x": 159012,
+          "y": 429746,
+          "pose": "idle",
+          "moving": false,
+          "bag": {
+            "water": 4
+          }
+        }
+      ]
+    },
+    {
+      "label": "train-motion",
+      "tick": 172268,
+      "selected": "amu",
+      "people": [
+        {
+          "id": "leader",
+          "x": 313804,
+          "y": 348570,
+          "pose": "idle",
+          "moving": true,
+          "kind": "farm",
+          "progress": 0,
+          "bag": {
+            "water": 1
+          }
+        },
+        {
+          "id": "child",
+          "x": 242688,
+          "y": 281600,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 281600,
+          "y": 293120,
+          "pose": "practice",
+          "moving": false,
+          "kind": "train",
+          "progress": 51,
+          "bag": {}
+        },
+        {
+          "id": "lin",
+          "x": 266166,
+          "y": 302129,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "shen",
+          "x": 159012,
+          "y": 429746,
+          "pose": "idle",
+          "moving": false,
+          "bag": {
+            "water": 4
+          }
+        }
+      ]
+    },
+    {
+      "label": "carry",
+      "tick": 173490,
+      "selected": "lin",
+      "people": [
+        {
+          "id": "leader",
+          "x": 174749,
+          "y": 346280,
+          "pose": "idle",
+          "moving": true,
+          "kind": "gather",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "child",
+          "x": 242688,
+          "y": 281600,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 281600,
+          "y": 293120,
+          "pose": "practice",
+          "moving": false,
+          "kind": "train",
+          "progress": 73,
+          "bag": {}
+        },
+        {
+          "id": "lin",
+          "x": 113675,
+          "y": 247830,
+          "pose": "idle",
+          "moving": true,
+          "kind": "gather",
+          "progress": 0,
+          "bag": {
+            "wood": 4
+          }
+        },
+        {
+          "id": "shen",
+          "x": 159012,
+          "y": 429746,
+          "pose": "idle",
+          "moving": false,
+          "bag": {
+            "water": 4
+          }
+        }
+      ]
+    },
+    {
+      "label": "carry-motion",
+      "tick": 173519,
+      "selected": "lin",
+      "people": [
+        {
+          "id": "leader",
+          "x": 161218,
+          "y": 354034,
+          "pose": "idle",
+          "moving": true,
+          "kind": "gather",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "child",
+          "x": 242688,
+          "y": 281600,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 281600,
+          "y": 293120,
+          "pose": "practice",
+          "moving": false,
+          "kind": "train",
+          "progress": 102,
+          "bag": {}
+        },
+        {
+          "id": "lin",
+          "x": 121395,
+          "y": 252273,
+          "pose": "idle",
+          "moving": true,
+          "kind": "gather",
+          "progress": 0,
+          "bag": {
+            "wood": 4
+          }
+        },
+        {
+          "id": "shen",
+          "x": 159012,
+          "y": 429746,
+          "pose": "idle",
+          "moving": false,
+          "bag": {
+            "water": 4
+          }
+        }
+      ]
+    }
+  ]
+}

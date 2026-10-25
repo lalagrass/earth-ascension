@@ -1,0 +1,1889 @@
+{
+  "status": "passed",
+  "errors": [],
+  "bridgeOwned": true,
+  "trace": [
+    {
+      "leg": "outbound",
+      "tick": 171453,
+      "pos": [
+        281600,
+        341760
+      ],
+      "distance": 28181212,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171498,
+      "pos": [
+        280181,
+        364661
+      ],
+      "distance": 28204748,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171521,
+      "pos": [
+        291814,
+        366080
+      ],
+      "distance": 28216969,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171543,
+      "pos": [
+        303641,
+        366080
+      ],
+      "distance": 28228796,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171564,
+      "pos": [
+        310200,
+        357518
+      ],
+      "distance": 28240003,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171587,
+      "pos": [
+        316930,
+        347154
+      ],
+      "distance": 28252359,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171610,
+      "pos": [
+        323659,
+        336791
+      ],
+      "distance": 28264713,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171631,
+      "pos": [
+        329804,
+        327328
+      ],
+      "distance": 28275995,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171654,
+      "pos": [
+        336534,
+        316964
+      ],
+      "distance": 28288351,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171679,
+      "pos": [
+        343849,
+        305699
+      ],
+      "distance": 28301781,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171704,
+      "pos": [
+        351164,
+        294434
+      ],
+      "distance": 28315211,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171726,
+      "pos": [
+        357601,
+        284521
+      ],
+      "distance": 28327029,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171747,
+      "pos": [
+        363746,
+        275055
+      ],
+      "distance": 28338314,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171771,
+      "pos": [
+        370768,
+        264231
+      ],
+      "distance": 28351216,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171794,
+      "pos": [
+        377498,
+        253858
+      ],
+      "distance": 28363581,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171815,
+      "pos": [
+        383642,
+        244387
+      ],
+      "distance": 28374870,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171835,
+      "pos": [
+        389494,
+        235367
+      ],
+      "distance": 28385622,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171863,
+      "pos": [
+        397687,
+        222739
+      ],
+      "distance": 28400675,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171887,
+      "pos": [
+        401189,
+        210663
+      ],
+      "distance": 28413426,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171907,
+      "pos": [
+        403221,
+        200111
+      ],
+      "distance": 28424178,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171928,
+      "pos": [
+        405353,
+        189032
+      ],
+      "distance": 28435467,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171951,
+      "pos": [
+        407685,
+        176897
+      ],
+      "distance": 28447832,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171975,
+      "pos": [
+        410117,
+        164235
+      ],
+      "distance": 28460734,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 171998,
+      "pos": [
+        412160,
+        152525
+      ],
+      "distance": 28472646,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 172019,
+      "pos": [
+        419902,
+        145233
+      ],
+      "distance": 28483810,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 172040,
+      "pos": [
+        428594,
+        138200
+      ],
+      "distance": 28494988,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 172066,
+      "pos": [
+        439259,
+        129961
+      ],
+      "distance": 28508528,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 172091,
+      "pos": [
+        451553,
+        125026
+      ],
+      "distance": 28521783,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 172115,
+      "pos": [
+        463471,
+        120059
+      ],
+      "distance": 28534685,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 172167,
+      "pos": [
+        489882,
+        112640
+      ],
+      "distance": 28562567,
+      "hp": 100,
+      "bridge": {
+        "holder": "leader",
+        "direction": "east",
+        "batch": 2,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 172194,
+      "pos": [
+        503173,
+        108907
+      ],
+      "distance": 28576852,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 2,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48872",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1975,
+            420
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 70,
+        "started": 171453,
+        "units": 0
+      }
+    },
+    {
+      "leg": "outbound",
+      "tick": 172220,
+      "pos": [
+        505600,
+        107520
+      ],
+      "distance": 28579648,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 2,
+        "lastDirection": "east",
+        "queue": []
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172232,
+      "pos": [
+        505600,
+        107520
+      ],
+      "distance": 28579648,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 2,
+        "lastDirection": "east",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172277,
+      "pos": [
+        483328,
+        112640
+      ],
+      "distance": 28603009,
+      "hp": 100,
+      "bridge": {
+        "holder": "leader",
+        "direction": "west",
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172301,
+      "pos": [
+        471271,
+        115745
+      ],
+      "distance": 28615681,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172322,
+      "pos": [
+        460842,
+        120090
+      ],
+      "distance": 28626971,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172345,
+      "pos": [
+        449420,
+        124848
+      ],
+      "distance": 28639336,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172366,
+      "pos": [
+        439702,
+        130419
+      ],
+      "distance": 28650551,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172386,
+      "pos": [
+        430954,
+        136420
+      ],
+      "distance": 28661177,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172409,
+      "pos": [
+        421188,
+        144012
+      ],
+      "distance": 28673544,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172433,
+      "pos": [
+        411443,
+        151841
+      ],
+      "distance": 28686061,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172454,
+      "pos": [
+        403912,
+        160254
+      ],
+      "distance": 28697351,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172475,
+      "pos": [
+        396381,
+        168667
+      ],
+      "distance": 28708641,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172498,
+      "pos": [
+        388134,
+        177880
+      ],
+      "distance": 28721005,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172526,
+      "pos": [
+        378097,
+        189097
+      ],
+      "distance": 28736058,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172549,
+      "pos": [
+        369860,
+        198314
+      ],
+      "distance": 28748426,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172569,
+      "pos": [
+        367105,
+        206348
+      ],
+      "distance": 28758066,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172595,
+      "pos": [
+        355521,
+        214190
+      ],
+      "distance": 28772058,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172618,
+      "pos": [
+        345277,
+        221126
+      ],
+      "distance": 28784431,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172641,
+      "pos": [
+        335360,
+        227840
+      ],
+      "distance": 28796410,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172665,
+      "pos": [
+        322457,
+        227840
+      ],
+      "distance": 28809313,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172686,
+      "pos": [
+        318928,
+        236377
+      ],
+      "distance": 28820371,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172713,
+      "pos": [
+        317128,
+        250784
+      ],
+      "distance": 28834886,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172734,
+      "pos": [
+        315729,
+        261990
+      ],
+      "distance": 28846176,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172755,
+      "pos": [
+        310707,
+        269842
+      ],
+      "distance": 28857338,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172777,
+      "pos": [
+        299232,
+        272712
+      ],
+      "distance": 28869165,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172798,
+      "pos": [
+        288279,
+        275450
+      ],
+      "distance": 28880454,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      },
+      "activity": {
+        "id": "activity.48965",
+        "actor": "leader",
+        "kind": "move",
+        "args": {
+          "pos": [
+            1110,
+            1080
+          ]
+        },
+        "phase": "walking",
+        "progress": 0,
+        "revision": 71,
+        "started": 172232,
+        "units": 0
+      }
+    },
+    {
+      "leg": "homebound",
+      "tick": 172822,
+      "pos": [
+        284160,
+        276480
+      ],
+      "distance": 28884699,
+      "hp": 100,
+      "bridge": {
+        "holder": null,
+        "direction": null,
+        "batch": 1,
+        "lastDirection": "west",
+        "queue": []
+      }
+    }
+  ]
+}

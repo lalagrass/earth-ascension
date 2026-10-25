@@ -1,0 +1,7 @@
+file 1
+import-click 
+ground-command {"type":"task","actor":"leader","kind":"move","args":{"pos":[1975,420]},"id":"ui.119","tick":171453,"seq":119,"result":{"ok":true}}
+failed AssertionError [ERR_ASSERTION]: outbound actual arrival
+    at file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m1-walk.mjs:4:969
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at process.processImmediate (node:internal/timers:472:9)

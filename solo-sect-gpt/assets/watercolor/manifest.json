@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "author": "GPT / Codex",
+  "entries": [
+    {
+      "id": "roof",
+      "source": "assets/watercolor/roof-v1.png",
+      "sha256": "654e8093d8aa9832c3cc15eae984bae77d1cc79d0f632c810cd6ce7a6e301e31",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 716641,
+      "opaqueOrAlmost": 809515,
+      "anchor": "building footprint with raised eave",
+      "layer": "roof foreground, fades with nearby/inside people",
+      "generation": "built-in image_gen; independent asset, transparent_background true",
+      "prompt": "prompts.json#roof",
+      "verification": "evidence/optimization/m1-candidate-accepted/index.json",
+      "limits": "No external style references embedded; generated alpha preserved. Renderer consumes source rectangles, no bitmap post-edit."
+    },
+    {
+      "id": "tree",
+      "source": "assets/watercolor/tree-v1.png",
+      "sha256": "2ec0715d716b12d6fcfbfe7e5da42fd2e36cf4054b782aad7f8879a28366102b",
+      "size": [
+        1214,
+        1295
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixels": 837744,
+      "opaqueOrAlmost": 386463,
+      "anchor": "trunk foot bottom center",
+      "layer": "foot-y sorted with actors",
+      "generation": "built-in image_gen; independent asset, transparent_background true",
+      "prompt": "prompts.json#tree",
+      "verification": "evidence/optimization/m1-candidate-accepted/index.json",
+      "limits": "No external style references embedded; generated alpha preserved. Renderer consumes source rectangles, no bitmap post-edit."
+    },
+    {
+      "id": "bridge",
+      "source": "assets/watercolor/bridge-v1.png",
+      "sha256": "582056d4213646130f1fb382e98a3a7cb4ff3c7455647aaaabdf801f5fa39a8e",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixels": 807907,
+      "opaqueOrAlmost": 667347,
+      "anchor": "deck aligned to physical bridge rect, lower rail foreground",
+      "layer": "deck then lower-rail slice",
+      "generation": "built-in image_gen; independent asset, transparent_background true",
+      "prompt": "prompts.json#bridge",
+      "verification": "evidence/optimization/m1-candidate-accepted/index.json",
+      "limits": "No external style references embedded; generated alpha preserved. Renderer consumes source rectangles, no bitmap post-edit."
+    },
+    {
+      "id": "meadow",
+      "source": "assets/watercolor/meadow-v1.png",
+      "sha256": "366b3f3d4f92ddefe3fcb0a57e02d52fef50f217413fc18d0b2430df50efb5c9",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "alphaRange": null,
+      "anchor": "world origin, repeated 627 DU terrain material",
+      "layer": "terrain only; .28 opacity over cached color wash",
+      "generation": "built-in image_gen; opaque material, transparent_background false",
+      "prompt": "meadow-prompt.txt",
+      "verification": "evidence/optimization/m1-candidate-accepted/index.json",
+      "limits": "Tiled meadow material only, no baked roads/buildings/characters."
+    }
+  ]
+}

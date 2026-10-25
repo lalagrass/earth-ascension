@@ -1,0 +1,20 @@
+s0-1440
+s0-1280
+s2-1440
+s2-1280
+eat
+eat-motion
+train
+train-motion
+carry
+carry-motion
+talk
+talk-motion
+body-click
+forest
+bridge
+cutaway
+candidate-final Error: timeout doorway
+    at wait (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m1-ui.mjs:3:759)
+    at async move (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m1-ui.mjs:16:288)
+    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m1-ui.mjs:16:395

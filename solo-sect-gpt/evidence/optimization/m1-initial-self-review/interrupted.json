@@ -1,0 +1,4 @@
+{
+  "status": "interrupted",
+  "reason": "Author camera refinement and UI fixture correction: explicitly stop the talk target before invitation; first run requested a target already busy with autonomous work. No gameplay state injection."
+}

@@ -1,0 +1,195 @@
+{
+  "mode": "baseline",
+  "status": "passed",
+  "errors": [],
+  "evidence": [
+    {
+      "label": "s0-1440",
+      "tick": 57,
+      "selected": "leader",
+      "people": [
+        {
+          "id": "leader",
+          "x": 234496,
+          "y": 296960,
+          "pose": "idle",
+          "moving": true,
+          "kind": "eat",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "child",
+          "x": 234285,
+          "y": 288578,
+          "pose": "idle",
+          "moving": true,
+          "kind": "eat",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 229841,
+          "y": 292394,
+          "pose": "idle",
+          "moving": true,
+          "kind": "eat",
+          "progress": 0,
+          "bag": {}
+        }
+      ]
+    },
+    {
+      "label": "s0-1280",
+      "tick": 57,
+      "selected": "leader",
+      "people": [
+        {
+          "id": "leader",
+          "x": 234496,
+          "y": 296960,
+          "pose": "idle",
+          "moving": true,
+          "kind": "eat",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "child",
+          "x": 234285,
+          "y": 288578,
+          "pose": "idle",
+          "moving": true,
+          "kind": "eat",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 229841,
+          "y": 292394,
+          "pose": "idle",
+          "moving": true,
+          "kind": "eat",
+          "progress": 0,
+          "bag": {}
+        }
+      ]
+    },
+    {
+      "label": "s2-1440",
+      "tick": 171453,
+      "selected": "leader",
+      "people": [
+        {
+          "id": "leader",
+          "x": 281600,
+          "y": 341760,
+          "pose": "sleep",
+          "moving": false,
+          "kind": "sleep",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "child",
+          "x": 254976,
+          "y": 281600,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 314880,
+          "y": 350720,
+          "pose": "farm",
+          "moving": false,
+          "kind": "farm",
+          "progress": 53,
+          "bag": {
+            "water": 1
+          }
+        },
+        {
+          "id": "lin",
+          "x": 266166,
+          "y": 302129,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "shen",
+          "x": 159012,
+          "y": 429746,
+          "pose": "idle",
+          "moving": true,
+          "kind": "gather",
+          "progress": 0,
+          "bag": {
+            "water": 4
+          }
+        }
+      ]
+    },
+    {
+      "label": "s2-1280",
+      "tick": 171453,
+      "selected": "leader",
+      "people": [
+        {
+          "id": "leader",
+          "x": 281600,
+          "y": 341760,
+          "pose": "sleep",
+          "moving": false,
+          "kind": "sleep",
+          "progress": 0,
+          "bag": {}
+        },
+        {
+          "id": "child",
+          "x": 254976,
+          "y": 281600,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "amu",
+          "x": 314880,
+          "y": 350720,
+          "pose": "farm",
+          "moving": false,
+          "kind": "farm",
+          "progress": 53,
+          "bag": {
+            "water": 1
+          }
+        },
+        {
+          "id": "lin",
+          "x": 266166,
+          "y": 302129,
+          "pose": "idle",
+          "moving": false,
+          "bag": {}
+        },
+        {
+          "id": "shen",
+          "x": 159012,
+          "y": 429746,
+          "pose": "idle",
+          "moving": true,
+          "kind": "gather",
+          "progress": 0,
+          "bag": {
+            "water": 4
+          }
+        }
+      ]
+    }
+  ]
+}
