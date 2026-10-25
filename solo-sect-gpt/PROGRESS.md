@@ -1,6 +1,6 @@
 # 優化進行中：M1→M6
 
-2026-10-26新增授權；單一作者GPT / Codex，GPT-6.1 Sol / high。原第一版交付仍有效，`handoff/development.done.json`保留不動。新優化從`cd38a44eac1afe5e1c508cfcbbbede7c0a6b5786`開始，各階段有新spec、正常UI證據與checkpoint；M1/M2計畫見`docs/optimization/M1-M2.md`。完成M6才總結，沒有push／PR／合併／部署。M2首輪runtime `65e0506`已通過13項政策＋54項舊回歸及16個正常UI狀態；補缺料反例時主動中止250.764秒候選，未宣稱20分鐘完成，已修提示。306650c探索270.12秒再中止作邊界修補；目前18項政策／保存／在製品交接案例、54舊回歸與最終正常UI均過，等待新候選封存。根Python53／SG dev383已通過。M3–M6尚未開始。M1已完成，runtime `6273e2682b32c1b56e3181f681afbd5e48e0fdac`，正常UI與橋行走索引見`evidence/optimization/m1/index.json`。
+2026-10-26新增授權；單一作者GPT / Codex，GPT-6.1 Sol / high。原第一版交付仍有效，`handoff/development.done.json`保留不動。新優化從`cd38a44eac1afe5e1c508cfcbbbede7c0a6b5786`開始，各階段有新spec、正常UI證據與checkpoint；M1/M2計畫見`docs/optimization/M1-M2.md`。完成M6才總結，沒有push／PR／合併／部署。M2已完成：runtime `6392aca6d4a2a52d202693a6b9f990d0a4d30919`，18項政策／保存／在製品交接、54舊回歸、2素材、正常UI16狀態及完整20分鐘均通過；候選1201.957真實秒／4801.5模擬秒／3.994735×，必要介入與基線同為0，完整日每位成人至少120秒實際修行。根Python53／SG dev383／Earth語法已通過。兩次主動中止探索與修補失敗留存，不計通過。詳見`evidence/optimization/m2/index.json`。M3–M6尚未開始，接著依序盤點／spec／實作／正常UI封存。M1已完成，runtime `6273e2682b32c1b56e3181f681afbd5e48e0fdac`，正常UI與橋行走索引見`evidence/optimization/m1/index.json`。
 
 ---
 

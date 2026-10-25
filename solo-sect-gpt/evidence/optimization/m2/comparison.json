@@ -1,0 +1,494 @@
+{
+  "status": "passed",
+  "conditions": {
+    "baselineCompleted": true,
+    "candidateCompleted": true,
+    "twentyRealMinutes": true,
+    "noErrors": true,
+    "noMoreInterventions": true,
+    "quietCompleted": true,
+    "livingAndPracticeContinue": true,
+    "allAdultsPracticeInEveryFullObservedDay": true,
+    "savedPolicyRetained": true
+  },
+  "baseline": {
+    "runtimeCommit": "cd38a44eac1afe5e1c508cfcbbbede7c0a6b5786",
+    "analysisVersion": 2,
+    "mode": "baseline",
+    "fullyObservedDays": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "status": "completed",
+    "wallSeconds": 1201.774,
+    "simulationSeconds": 4802.5,
+    "actualRate": 3.9961756536586748,
+    "necessaryInterventionEpisodes": 0,
+    "quietCompleted": true,
+    "errors": [],
+    "countsAfterStart": {
+      "activity-complete": 4612,
+      "ate": 80,
+      "build-order": 1,
+      "building-complete": 1,
+      "command": 11,
+      "crop-harvest": 3,
+      "crop-ready": 2,
+      "growth": 652,
+      "harvest": 52,
+      "memory": 73,
+      "planted": 2,
+      "recipe-complete": 20,
+      "recipe-cooked": 20,
+      "recipe-start": 20,
+      "resource-regrow": 16,
+      "transfer": 192,
+      "watered": 2
+    },
+    "samples": 989,
+    "sampleIntervalWallMs": {
+      "median": 1156,
+      "p95": 1527,
+      "max": 3900
+    },
+    "changes": {
+      "leader": {
+        "sampledReplacements": 190,
+        "observedThresholdWindows": 0,
+        "workKinds": [
+          "build",
+          "eat",
+          "cook",
+          "gather",
+          "train",
+          "move",
+          "talk",
+          "paired",
+          "sleep",
+          "rest"
+        ],
+        "practiceTicksByDay": {
+          "7": 6718,
+          "8": 2775,
+          "9": 1200,
+          "10": 7900,
+          "11": 6000,
+          "12": 6669,
+          "13": 1200,
+          "14": 1200,
+          "15": 1200,
+          "16": 5480
+        },
+        "practiceSecondsByDay": {
+          "7": 335.9,
+          "8": 138.75,
+          "9": 60,
+          "10": 395,
+          "11": 300,
+          "12": 333.45,
+          "13": 60,
+          "14": 60,
+          "15": 60,
+          "16": 274
+        }
+      },
+      "amu": {
+        "sampledReplacements": 113,
+        "observedThresholdWindows": 0,
+        "workKinds": [
+          "gather",
+          "build",
+          "sleep",
+          "eat",
+          "cook",
+          "paired",
+          "farm",
+          "harvestHaul",
+          "train",
+          "rest"
+        ],
+        "practiceTicksByDay": {
+          "7": 6928,
+          "8": 566,
+          "9": 6000,
+          "10": 6960,
+          "11": 6000,
+          "12": 6818,
+          "13": 5214,
+          "14": 7186,
+          "15": 5900,
+          "16": 4545
+        },
+        "practiceSecondsByDay": {
+          "7": 346.4,
+          "8": 28.3,
+          "9": 300,
+          "10": 348,
+          "11": 300,
+          "12": 340.9,
+          "13": 260.7,
+          "14": 359.3,
+          "15": 295,
+          "16": 227.25
+        }
+      },
+      "lin": {
+        "sampledReplacements": 151,
+        "observedThresholdWindows": 0,
+        "workKinds": [
+          "build",
+          "gather",
+          "sleep",
+          "talk",
+          "paired",
+          "eat",
+          "cook",
+          "train",
+          "move",
+          "rest"
+        ],
+        "practiceTicksByDay": {
+          "7": 3600,
+          "8": 4800,
+          "9": 3600,
+          "10": 6243,
+          "11": 3357,
+          "12": 7880,
+          "13": 3600,
+          "14": 2400,
+          "15": 6475,
+          "16": 5825
+        },
+        "practiceSecondsByDay": {
+          "7": 180,
+          "8": 240,
+          "9": 180,
+          "10": 312.15,
+          "11": 167.85,
+          "12": 394,
+          "13": 180,
+          "14": 120,
+          "15": 323.75,
+          "16": 291.25
+        }
+      },
+      "shen": {
+        "sampledReplacements": 166,
+        "observedThresholdWindows": 0,
+        "workKinds": [
+          "train",
+          "sleep",
+          "build",
+          "eat",
+          "paired",
+          "cook",
+          "gather",
+          "farm",
+          "talk",
+          "move",
+          "rest"
+        ],
+        "practiceTicksByDay": {
+          "7": 1200,
+          "8": 6000,
+          "9": 1200,
+          "10": 1200,
+          "11": 1200,
+          "12": 7506,
+          "13": 7148,
+          "14": 6780,
+          "15": 6419,
+          "16": 5463
+        },
+        "practiceSecondsByDay": {
+          "7": 60,
+          "8": 300,
+          "9": 60,
+          "10": 60,
+          "11": 60,
+          "12": 375.3,
+          "13": 357.4,
+          "14": 339,
+          "15": 320.95,
+          "16": 273.15
+        }
+      }
+    },
+    "limitations": [
+      "Nominal one-second sampling includes browser/file overhead; actual intervals are reported.",
+      "Only events with tick >= startTick counted; raw result retains the initial journal.",
+      "Replacement bursts are a lower bound from sampled activity IDs; short intermediate changes can be missed at 4x."
+    ]
+  },
+  "candidate": {
+    "runtimeCommit": "6392aca6d4a2a52d202693a6b9f990d0a4d30919",
+    "analysisVersion": 2,
+    "mode": "candidate",
+    "fullyObservedDays": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "status": "completed",
+    "wallSeconds": 1201.957,
+    "simulationSeconds": 4801.5,
+    "actualRate": 3.9947352525922306,
+    "necessaryInterventionEpisodes": 0,
+    "quietCompleted": true,
+    "errors": [],
+    "countsAfterStart": {
+      "activity-complete": 2712,
+      "ate": 80,
+      "build-order": 1,
+      "building-complete": 1,
+      "command": 12,
+      "crop-harvest": 3,
+      "crop-ready": 2,
+      "growth": 688,
+      "harvest": 56,
+      "life-policy-adopted": 1,
+      "memory": 79,
+      "planted": 2,
+      "recipe-complete": 20,
+      "recipe-cooked": 20,
+      "recipe-start": 20,
+      "resource-regrow": 16,
+      "transfer": 173,
+      "watered": 2
+    },
+    "samples": 1076,
+    "sampleIntervalWallMs": {
+      "median": 1104,
+      "p95": 1157,
+      "max": 3307
+    },
+    "changes": {
+      "leader": {
+        "sampledReplacements": 157,
+        "observedThresholdWindows": 0,
+        "workKinds": [
+          "build",
+          "rest",
+          "gather",
+          "move",
+          "train",
+          "eat",
+          "sleep",
+          "talk",
+          "paired",
+          "farm",
+          "cook"
+        ],
+        "practiceTicksByDay": {
+          "7": 6718,
+          "8": 2775,
+          "9": 3163,
+          "10": 5400,
+          "11": 7037,
+          "12": 6000,
+          "13": 4800,
+          "14": 6000,
+          "15": 2400,
+          "16": 3158
+        },
+        "practiceSecondsByDay": {
+          "7": 335.9,
+          "8": 138.75,
+          "9": 158.15,
+          "10": 270,
+          "11": 351.85,
+          "12": 300,
+          "13": 240,
+          "14": 300,
+          "15": 120,
+          "16": 157.9
+        }
+      },
+      "amu": {
+        "sampledReplacements": 156,
+        "observedThresholdWindows": 0,
+        "workKinds": [
+          "gather",
+          "train",
+          "sleep",
+          "move",
+          "paired",
+          "talk",
+          "eat",
+          "rest",
+          "cook",
+          "farm",
+          "harvestHaul"
+        ],
+        "practiceTicksByDay": {
+          "7": 6928,
+          "8": 2773,
+          "9": 3929,
+          "10": 6097,
+          "11": 5644,
+          "12": 4923,
+          "13": 5580,
+          "14": 6472,
+          "15": 5656,
+          "16": 2909
+        },
+        "practiceSecondsByDay": {
+          "7": 346.4,
+          "8": 138.65,
+          "9": 196.45,
+          "10": 304.85,
+          "11": 282.2,
+          "12": 246.15,
+          "13": 279,
+          "14": 323.6,
+          "15": 282.8,
+          "16": 145.45
+        }
+      },
+      "lin": {
+        "sampledReplacements": 144,
+        "observedThresholdWindows": 0,
+        "workKinds": [
+          "rest",
+          "train",
+          "sleep",
+          "move",
+          "paired",
+          "eat",
+          "talk",
+          "gather",
+          "cook"
+        ],
+        "practiceTicksByDay": {
+          "7": 3600,
+          "8": 6190,
+          "9": 4610,
+          "10": 6457,
+          "11": 4742,
+          "12": 4243,
+          "13": 6158,
+          "14": 4800,
+          "15": 3963,
+          "16": 5637
+        },
+        "practiceSecondsByDay": {
+          "7": 180,
+          "8": 309.5,
+          "9": 230.5,
+          "10": 322.85,
+          "11": 237.1,
+          "12": 212.15,
+          "13": 307.9,
+          "14": 240,
+          "15": 198.15,
+          "16": 281.85
+        }
+      },
+      "shen": {
+        "sampledReplacements": 169,
+        "observedThresholdWindows": 0,
+        "workKinds": [
+          "train",
+          "sleep",
+          "talk",
+          "paired",
+          "move",
+          "eat",
+          "build",
+          "farm",
+          "harvestHaul",
+          "rest",
+          "cook",
+          "gather"
+        ],
+        "practiceTicksByDay": {
+          "7": 1200,
+          "8": 6000,
+          "9": 4800,
+          "10": 6000,
+          "11": 5480,
+          "12": 4636,
+          "13": 5617,
+          "14": 6648,
+          "15": 3840,
+          "16": 2579
+        },
+        "practiceSecondsByDay": {
+          "7": 60,
+          "8": 300,
+          "9": 240,
+          "10": 300,
+          "11": 274,
+          "12": 231.8,
+          "13": 280.85,
+          "14": 332.4,
+          "15": 192,
+          "16": 128.95
+        }
+      }
+    },
+    "limitations": [
+      "Nominal one-second sampling includes browser/file overhead; actual intervals are reported.",
+      "Only events with tick >= startTick counted; raw result retains the initial journal.",
+      "Replacement bursts are a lower bound from sampled activity IDs; short intermediate changes can be missed at 4x."
+    ]
+  },
+  "practiceSecondsInFullyObservedDays": {
+    "leader": {
+      "9": 158.15,
+      "10": 270,
+      "11": 351.85,
+      "12": 300,
+      "13": 240,
+      "14": 300,
+      "15": 120
+    },
+    "amu": {
+      "9": 196.45,
+      "10": 304.85,
+      "11": 282.2,
+      "12": 246.15,
+      "13": 279,
+      "14": 323.6,
+      "15": 282.8
+    },
+    "lin": {
+      "9": 230.5,
+      "10": 322.85,
+      "11": 237.1,
+      "12": 212.15,
+      "13": 307.9,
+      "14": 240,
+      "15": 198.15
+    },
+    "shen": {
+      "9": 240,
+      "10": 300,
+      "11": 274,
+      "12": 231.8,
+      "13": 280.85,
+      "14": 332.4,
+      "15": 192
+    }
+  },
+  "initialPhysicalStateEqual": true,
+  "sourceSha256": "4380d417b5c033dbebd42a82b4894b04d8eb06e31afb8700a199b6d0fe54587d",
+  "normalUiStatusSamples": "m2-ui-final-current/index.json",
+  "modelChecks": "m2-model/tests-final-current.log",
+  "limits": [
+    "Both necessary-intervention counts are compared as observed, never described as a reduction if baseline is zero.",
+    "Replacement windows use sampled IDs and can miss short intermediate activities; this does not prove all possible future stalls absent.",
+    "First and final partial activity days are excluded from full-day practice table.",
+    "Two author-interrupted explorations are preserved separately and not counted as 20-minute passes.",
+    "Author self-review; no independent review or human playtest."
+  ]
+}

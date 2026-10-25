@@ -1,6 +1,6 @@
 # 山居 · 在山中留下來
 
-私人本機的門派生活第一章，GPT / Codex 獨立實作。原生 ESM、Canvas 2D、程序音效，遊戲執行不需外網或安裝套件。完整第一版的驗收索引、commit與限制見 `handoff/development.done.json`。目前依新授權進行優化M1→M6；M1已完成，M2在最終正常UI與20分鐘驗證階段，尚不宣稱M1–M6完成。各階段狀態見`PROGRESS.md`。
+私人本機的門派生活第一章，GPT / Codex 獨立實作。原生 ESM、Canvas 2D、程序音效，遊戲執行不需外網或安裝套件。完整第一版的驗收索引、commit與限制見 `handoff/development.done.json`。目前依新授權進行優化M1→M6；M1＋M2已完成，接著依序進行M3→M6，尚不宣稱M1–M6完成。各階段狀態見`PROGRESS.md`。
 
 從本獨立 checkout 啟動，8878 必須空閒；不使用既有 8800：
 

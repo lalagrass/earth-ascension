@@ -1,0 +1,623 @@
+{
+  "mode": "candidate",
+  "wallSeconds": 1201,
+  "tick": 199616,
+  "episodes": 0,
+  "wallMs": 1200657,
+  "water": 13,
+  "meal": 16,
+  "veg": 22,
+  "quiet": 1,
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        304640,
+        293120
+      ],
+      "distance": 29808473,
+      "energy": 9029,
+      "hp": 100,
+      "injury": 0,
+      "activity": "activity.15715",
+      "kind": "train",
+      "phase": "init",
+      "progress": 38,
+      "auto": true,
+      "manualStop": false,
+      "reason": "修行時段：保留今日60秒（24；勤勉-2／顧人-2）",
+      "next": "完成當前單位",
+      "blocked": "",
+      "F": 100,
+      "dailyPractice": {
+        "7": 6718,
+        "8": 2775,
+        "9": 3163,
+        "10": 5400,
+        "11": 7037,
+        "12": 6000,
+        "13": 4800,
+        "14": 6000,
+        "15": 2400,
+        "16": 3158
+      },
+      "contribution": {
+        "0": {
+          "units": 18,
+          "ticks": 2960,
+          "exempt": null
+        },
+        "1": {
+          "units": 25,
+          "ticks": 5240,
+          "exempt": null
+        },
+        "2": {
+          "units": 19,
+          "ticks": 4240,
+          "exempt": null
+        },
+        "3": {
+          "units": 19,
+          "ticks": 3760,
+          "exempt": null
+        },
+        "4": {
+          "units": 18,
+          "ticks": 3320,
+          "exempt": null
+        },
+        "5": {
+          "units": 16,
+          "ticks": 4160,
+          "exempt": null
+        },
+        "6": {
+          "units": 23,
+          "ticks": 5280,
+          "exempt": null
+        },
+        "7": {
+          "units": 2,
+          "ticks": 320,
+          "exempt": null
+        },
+        "8": {
+          "units": 3,
+          "ticks": 2537,
+          "exempt": null
+        },
+        "9": {
+          "units": 4,
+          "ticks": 1609,
+          "exempt": null
+        },
+        "11": {
+          "units": 0,
+          "ticks": 240,
+          "exempt": null
+        },
+        "12": {
+          "units": 1,
+          "ticks": 640,
+          "exempt": null
+        },
+        "14": {
+          "units": 1,
+          "ticks": 680,
+          "exempt": null
+        },
+        "15": {
+          "units": 3,
+          "ticks": 1440,
+          "exempt": null
+        },
+        "16": {
+          "units": 1,
+          "ticks": 640,
+          "exempt": null
+        }
+      },
+      "life": {
+        "version": 1,
+        "actor": "leader",
+        "activityId": "activity.15715",
+        "kind": "train",
+        "phase": "doing",
+        "progress": 38,
+        "current": "練功",
+        "why": "接單時：修行時段：保留今日60秒",
+        "next": "完成本輪後依日課重選",
+        "destination": "yard.2",
+        "destinationName": "演武木樁 2",
+        "carried": [],
+        "queue": [
+          {
+            "key": "station:yard.2",
+            "place": 1,
+            "owner": "leader"
+          }
+        ],
+        "held": [
+          {
+            "activity": "activity.15715",
+            "actor": "leader",
+            "key": "station:yard.2",
+            "n": 1,
+            "tick": 199616
+          }
+        ],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "train",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 5,
+          "waterTarget": 12,
+          "mealTarget": 16,
+          "water": 13,
+          "meals": 16,
+          "physicalWater": 13,
+          "physicalMeals": 16
+        },
+        "temporary": null
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        281267,
+        280242
+      ],
+      "distance": 31244769,
+      "energy": 9553,
+      "hp": 90,
+      "injury": 0,
+      "activity": "activity.15759",
+      "kind": "move",
+      "phase": "walking",
+      "progress": 0,
+      "auto": true,
+      "manualStop": false,
+      "reason": "小禾在院內散步、等家人",
+      "next": "完成當前單位",
+      "blocked": "",
+      "F": 0,
+      "contribution": {},
+      "life": {
+        "version": 1,
+        "actor": "child",
+        "activityId": "activity.15759",
+        "kind": "move",
+        "phase": "walking",
+        "progress": 0,
+        "current": "行走 · 行走",
+        "why": "已受理的行走，正在赴作業位",
+        "next": "完成本次後依原安排",
+        "destination": [
+          972,
+          1100
+        ],
+        "destinationName": "指定位置",
+        "carried": [],
+        "queue": [],
+        "held": [],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "train",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 5,
+          "waterTarget": 12,
+          "mealTarget": 16,
+          "water": 13,
+          "meals": 16,
+          "physicalWater": 13,
+          "physicalMeals": 16
+        },
+        "temporary": null
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        281600,
+        293120
+      ],
+      "distance": 16157410,
+      "energy": 9704,
+      "hp": 100,
+      "injury": 0,
+      "activity": "activity.15748",
+      "kind": "train",
+      "phase": "init",
+      "progress": 217,
+      "auto": true,
+      "manualStop": false,
+      "reason": "修行時段：保留今日60秒（23；勤勉0／顧人0）",
+      "next": "完成當前單位",
+      "blocked": "",
+      "F": 100,
+      "dailyPractice": {
+        "7": 6928,
+        "8": 2773,
+        "9": 3929,
+        "10": 6097,
+        "11": 5644,
+        "12": 4923,
+        "13": 5580,
+        "14": 6472,
+        "15": 5656,
+        "16": 2909
+      },
+      "contribution": {
+        "0": {
+          "units": 10,
+          "ticks": 2720,
+          "exempt": null
+        },
+        "1": {
+          "units": 1,
+          "ticks": 600,
+          "exempt": null
+        },
+        "2": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／無可行工作"
+        },
+        "3": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／無可行工作"
+        },
+        "4": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／無可行工作"
+        },
+        "5": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／無可行工作"
+        },
+        "6": {
+          "units": 6,
+          "ticks": 1520,
+          "exempt": null
+        },
+        "7": {
+          "units": 2,
+          "ticks": 640,
+          "exempt": null
+        },
+        "8": {
+          "units": 1,
+          "ticks": 294,
+          "exempt": null
+        },
+        "9": {
+          "units": 3,
+          "ticks": 1000,
+          "exempt": null
+        },
+        "10": {
+          "units": 1,
+          "ticks": 640,
+          "exempt": null
+        },
+        "11": {
+          "units": 2,
+          "ticks": 640,
+          "exempt": null
+        },
+        "12": {
+          "units": 1,
+          "ticks": 160,
+          "exempt": null
+        },
+        "13": {
+          "units": 1,
+          "ticks": 640,
+          "exempt": null
+        },
+        "15": {
+          "units": 2,
+          "ticks": 160,
+          "exempt": null
+        }
+      },
+      "life": {
+        "version": 1,
+        "actor": "amu",
+        "activityId": "activity.15748",
+        "kind": "train",
+        "phase": "doing",
+        "progress": 217,
+        "current": "練功",
+        "why": "接單時：修行時段：保留今日60秒",
+        "next": "完成本輪後依日課重選",
+        "destination": "yard.1",
+        "destinationName": "演武木樁 1",
+        "carried": [],
+        "queue": [
+          {
+            "key": "station:yard.1",
+            "place": 1,
+            "owner": "amu"
+          }
+        ],
+        "held": [
+          {
+            "activity": "activity.15748",
+            "actor": "amu",
+            "key": "station:yard.1",
+            "n": 1,
+            "tick": 199616
+          }
+        ],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "train",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 5,
+          "waterTarget": 12,
+          "mealTarget": 16,
+          "water": 13,
+          "meals": 16,
+          "physicalWater": 13,
+          "physicalMeals": 16
+        },
+        "temporary": null
+      }
+    },
+    {
+      "id": "lin",
+      "pos": [
+        230400,
+        287744
+      ],
+      "distance": 13875937,
+      "energy": 5016,
+      "hp": 100,
+      "injury": 0,
+      "activity": "activity.15746",
+      "kind": "rest",
+      "phase": "init",
+      "progress": 0,
+      "auto": true,
+      "manualStop": false,
+      "reason": "自由選擇：坐坐養足精神（28；勤勉0／顧人0）",
+      "next": "完成當前單位",
+      "blocked": "",
+      "F": 100,
+      "dailyPractice": {
+        "7": 3600,
+        "8": 6190,
+        "9": 4610,
+        "10": 6457,
+        "11": 4742,
+        "12": 4243,
+        "13": 6158,
+        "14": 4800,
+        "15": 3963,
+        "16": 5637
+      },
+      "contribution": {
+        "7": {
+          "units": 6,
+          "ticks": 880,
+          "exempt": null
+        },
+        "8": {
+          "units": 5,
+          "ticks": 960,
+          "exempt": null
+        },
+        "9": {
+          "units": 2,
+          "ticks": 1160,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "10": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "11": {
+          "units": 2,
+          "ticks": 1120,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "12": {
+          "units": 3,
+          "ticks": 1480,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "13": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "14": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "15": {
+          "units": 3,
+          "ticks": 1320,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "16": {
+          "units": 0,
+          "ticks": 0,
+          "exempt": "缺料／物資達標，無可行雜務"
+        }
+      },
+      "life": {
+        "version": 1,
+        "actor": "lin",
+        "activityId": "activity.15746",
+        "kind": "rest",
+        "phase": "doing",
+        "progress": 0,
+        "current": "坐休",
+        "why": "精力 50，先養足體力",
+        "next": "精力至少100後回修行",
+        "destination": "safe.5",
+        "destinationName": "庭院歇腳處",
+        "carried": [],
+        "queue": [
+          {
+            "key": "station:safe.5",
+            "place": 1,
+            "owner": "lin"
+          }
+        ],
+        "held": [
+          {
+            "activity": "activity.15746",
+            "actor": "lin",
+            "key": "station:safe.5",
+            "n": 1,
+            "tick": 199616
+          }
+        ],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "train",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 5,
+          "waterTarget": 12,
+          "mealTarget": 16,
+          "water": 13,
+          "meals": 16,
+          "physicalWater": 13,
+          "physicalMeals": 16
+        },
+        "temporary": null
+      }
+    },
+    {
+      "id": "shen",
+      "pos": [
+        265422,
+        284618
+      ],
+      "distance": 14637711,
+      "energy": 9952,
+      "hp": 100,
+      "injury": 0,
+      "activity": "activity.15758",
+      "kind": "move",
+      "phase": "walking",
+      "progress": 0,
+      "auto": true,
+      "manualStop": false,
+      "reason": "自由選擇：回庭院歇腳（24；勤勉0／顧人0）",
+      "next": "完成當前單位",
+      "blocked": "",
+      "F": 100,
+      "dailyPractice": {
+        "7": 1200,
+        "8": 6000,
+        "9": 4800,
+        "10": 6000,
+        "11": 5480,
+        "12": 4636,
+        "13": 5617,
+        "14": 6648,
+        "15": 3840,
+        "16": 2579
+      },
+      "contribution": {
+        "7": {
+          "units": 4,
+          "ticks": 560,
+          "exempt": null
+        },
+        "8": {
+          "units": 1,
+          "ticks": 320,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "9": {
+          "units": 2,
+          "ticks": 554,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "10": {
+          "units": 2,
+          "ticks": 320,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "11": {
+          "units": 2,
+          "ticks": 360,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "12": {
+          "units": 1,
+          "ticks": 560,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "13": {
+          "units": 2,
+          "ticks": 680,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "14": {
+          "units": 2,
+          "ticks": 320,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "15": {
+          "units": 2,
+          "ticks": 0,
+          "exempt": "缺料／物資達標，無可行雜務"
+        },
+        "16": {
+          "units": 1,
+          "ticks": 0,
+          "exempt": "缺料／物資達標，無可行雜務"
+        }
+      },
+      "life": {
+        "version": 1,
+        "actor": "shen",
+        "activityId": "activity.15758",
+        "kind": "move",
+        "phase": "walking",
+        "progress": 0,
+        "current": "行走 · 行走",
+        "why": "接單時：自由選擇：回庭院歇腳",
+        "next": "完成本次後依日課重選",
+        "destination": [
+          996,
+          1124
+        ],
+        "destinationName": "指定位置",
+        "carried": [],
+        "queue": [],
+        "held": [],
+        "resources": [],
+        "bodyBlockers": [],
+        "period": "train",
+        "supply": {
+          "waterFloor": 4,
+          "mealFloor": 5,
+          "waterTarget": 12,
+          "mealTarget": 16,
+          "water": 13,
+          "meals": 16,
+          "physicalWater": 13,
+          "physicalMeals": 16
+        },
+        "temporary": null
+      }
+    }
+  ]
+}
