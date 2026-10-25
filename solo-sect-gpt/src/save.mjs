@@ -7,13 +7,14 @@ export async function hash(value){const bytes=new TextEncoder().encode(canonical
 export async function encode(world){const payload=structuredClone(world),checksum=await hash(payload);return JSON.stringify({format:'solo-sect-gpt',...VERSION,savedAt:new Date().toISOString(),payload,checksum});}
 const record=o=>o!==null&&typeof o==='object'&&!Array.isArray(o),int=(n,min=0,max=Number.MAX_SAFE_INTEGER)=>Number.isSafeInteger(n)&&n>=min&&n<=max;
 const safeId=id=>typeof id==='string'&&/^[-a-zA-Z0-9._]+$/.test(id)&&!['__proto__','constructor','prototype'].includes(id);
-const kinds=new Set(['unloadQuest','drink','move','return','gather','build','train','study','rest','sleep','eat','cook','craft','talk','encourage','care','teach','greet','farm','harvestHaul','delivery','school','reception','learn','equip','story','pack','aid','collect','paired']);
+const kinds=new Set(['class','unloadQuest','drink','move','return','gather','build','train','study','rest','sleep','eat','cook','craft','talk','encourage','care','teach','greet','farm','harvestHaul','delivery','school','reception','learn','equip','story','pack','aid','collect','paired']);
 function validate(w){
  for(const k of ['people','facilities','inventories','activities','reservations','queues','bridge','random','relationships','families','stories','ledger','plots','metrics','facts','seenCommands'])if(!record(w[k]))throw Error('缺少世界欄位：'+k);
  for(const k of ['journal','memories','commands'])if(!Array.isArray(w[k]))throw Error('記錄格式錯誤：'+k);
  if(!int(w.seed,1,4294967295)||!int(w.tick)||!int(w.nextId,1)||!int(w.commandSeq)||!w.people.leader||!w.people.child)throw Error('世界識別／時間不合法');
  for(const key of ['world','events','npc']){const s=w.random[key];if(!record(s)||!int(s.value,1,4294967295)||!int(s.draws))throw Error('亂數流不合法');}
  for(const [id,f]of Object.entries(FACILITIES))if(!w.facilities[id]||!int(w.facilities[id].stage,0,f.stages.length)||!int(w.facilities[id].work))throw Error('設施階段／工量不合法');
+ for(const f of Object.values(w.facilities)){const b=f.wip?.output;if(b&&(!Object.hasOwn(ITEM,b.item)||!w.inventories[b.source]||!w.inventories[b.target]||!w.people[b.actor]||!record(b.locations)||!int(b.total,1,4)||!int(b.delivered,0,b.total)||!int(b.consumed,0,b.total)||Object.entries(b.locations).some(([id,n])=>!w.inventories[id]||!int(n,1,b.total)||(w.inventories[id].items[b.item]||0)<n)||Object.values(b.locations).reduce((n,v)=>n+v,0)+b.delivered+b.consumed!==b.total))throw Error('成品批次引用／數量不合法');}
  for(const id of STORY_IDS)if(!w.stories[id]||!['unseen','active','completed'].includes(w.stories[id].status))throw Error('故事節點缺失');
  for(const [id,inv]of Object.entries(w.inventories)){
   if(inv.id!==id||!safeId(id)||!record(inv.items)||!int(inv.capacity,1,100000))throw Error('物資位置／容量不合法');
@@ -26,6 +27,7 @@ function validate(w){
   if(!w.inventories[p.bag]||p.equipment&&!w.inventories[p.equipment])throw Error('人物包裹引用失效');
   if(!Array.isArray(p.path)||!int(p.routeAt,0,p.path.length)||p.path.some(q=>!Array.isArray(q)||q.length!==2||q.some(n=>!Number.isSafeInteger(n))))throw Error('路徑索引／座標不合法');
   if(!record(p.skill))throw Error('武學欄位缺失');for(const [art,s]of Object.entries(p.skill))if(!Object.hasOwn(ART,art)||!record(s)||!int(s.U,0,100)||!int(s.F,0,100)||!int(s.I,0,100)||!Array.isArray(s.contexts)||new Set(s.contexts).size!==s.contexts.length||s.contexts.some(c=>!['guard','dodge','protect','return'].includes(c)))throw Error('武學來源／數值不合法');
+  if(p.classSession&&(!w.activities[p.classSession]||w.activities[p.classSession].kind!=='class'||![w.activities[p.classSession].actor,...w.activities[p.classSession].args.students].includes(p.id)))throw Error('人物授課引用失效');
   if(!record(p.observation)||Object.entries(p.observation).some(([id,o])=>!w.people[id]||!record(o)||!int(o.continuous)||!int(o.patterns)||!Array.isArray(o.seen)))throw Error('觀察引用／進度不合法');
   const a=p.action;if(a&&(!Object.hasOwn(MOVES,a.move)||!['windup','active','recover'].includes(a.phase)||!int(a.remaining,1,10000)||!int(a.wind,1,1000)||!int(a.active,1,1000)||!int(a.recover,1,1000)||a.target&&!w.people[a.target]||!Array.isArray(a.hitSet)||new Set(a.hitSet).size!==a.hitSet.length||a.hitSet.some(id=>!w.people[id])))throw Error('進行中招式不合法');
  }
@@ -37,6 +39,7 @@ function validate(w){
   if(a.kind==='cook'&&!Object.hasOwn(RECIPES,a.args.recipe||'meal')||a.kind==='craft'&&!['staff','sword'].includes(a.args.art))throw Error('配方引用失效');
   if(['train','study','learn','equip'].includes(a.kind)&&!Object.hasOwn(ART,a.args.art||'punch'))throw Error('武學引用失效');
   if(a.kind==='story'&&a.selfcare&&Object.entries(a.selfcare).some(([id,c])=>![a.actor,a.args.partner].includes(id)||!stations[c.key]||!['sleep','rest'].includes(c.kind)))throw Error('約定自理引用失效');
+  if(a.kind==='class'&&(!Array.isArray(a.args.students)||a.args.students.length>4||new Set(a.args.students).size!==a.args.students.length||a.args.students.some(id=>!w.people[id]?.adult||w.people[id].classSession!==a.id)||!record(a.classSlots)||Object.entries(a.classSlots).some(([id,key])=>!a.args.students.includes(id)||!/^hall\.student\.[0-3]$/.test(key))||new Set(Object.values(a.classSlots)).size!==a.args.students.length))throw Error('同堂授課引用失效');
   if(a.kind==='build'&&!Object.hasOwn(FACILITIES,a.args.facility))throw Error('工地引用失效');
   if(a.kind==='farm'&&a.plot&&!w.plots[a.plot])throw Error('田畦引用失效');
   if(a.kind==='harvestHaul'&&!w.inventories[a.harvest]||a.kind==='collect'&&!w.inventories[a.args.inventory])throw Error('搬運來源引用失效');
@@ -52,7 +55,7 @@ function validate(w){
  if(w.bridge.holder){const p=w.people[w.bridge.holder];if(!p||!['east','west'].includes(w.bridge.direction)||p.x/256<1840||p.x/256>1970||p.y/256<410||p.y/256>470)throw Error('橋上通行權不合法');}
  if(!Array.isArray(w.bridge.queue)||w.bridge.queue.some(q=>!w.people[q.id]||!int(q.tick,0,w.tick)||!['east','west'].includes(q.dir)))throw Error('候橋順序不合法');
  if(w.pendingCommands&&(!Array.isArray(w.pendingCommands)||w.pendingCommands.some(c=>!safeId(c.id)||!int(c.executeTick,w.tick+1)||c.actor&&!Object.hasOwn(w.people,c.actor))))throw Error('排程指令不合法');
- if(w.caveCargo){if(!Array.isArray(w.caveCargo)||w.caveCargo.length!==4||new Set(w.caveCargo.map(t=>t.id)).size!==4)throw Error('古洞有限糧身份不合法');const held={};for(const t of w.caveCargo){if(t.owner&&!w.inventories[t.owner]||t.deliveredAt!==null&&!int(t.deliveredAt,0,w.tick)||t.consumedAt!==null&&!int(t.consumedAt,0,w.tick))throw Error('古洞糧來源引用失效');if(t.owner)held[t.owner]=(held[t.owner]||0)+1;}for(const [id,n]of Object.entries(held))if((w.inventories[id].items.ration||0)<n)throw Error('古洞糧來源大於實物');}
+ if(w.caveCargo){if(!Array.isArray(w.caveCargo)||w.caveCargo.length!==4||new Set(w.caveCargo.map(t=>t.id)).size!==4)throw Error('古洞有限糧身份不合法');const held={};for(const t of w.caveCargo){if(!/^cave\.ration\.[1-4]$/.test(t.id)||t.owner&&!w.inventories[t.owner]||t.deliveredAt!==null&&!int(t.deliveredAt,0,w.tick)||t.consumedAt!==null&&!int(t.consumedAt,0,w.tick))throw Error('古洞糧來源引用失效');if(t.owner)held[t.owner]=(held[t.owner]||0)+1;}for(const [id,n]of Object.entries(held))if((w.inventories[id].items.ration||0)<n)throw Error('古洞糧來源大於實物');}
  const allocated=[...w.journal.map(e=>e.id),...Object.keys(w.activities),...w.memories.map(m=>m.id),...Object.keys(w.families),...(w.pendingCommands||[]).map(c=>c.id),...Object.values(w.people).map(p=>p.action?.id).filter(Boolean)];
  const largest=allocated.reduce((n,id)=>{const m=/^(event|activity|action|memory|family|queued-command)\.(\d+)$/.exec(id);return m?Math.max(n,Number(m[2])):n;},0);if(w.nextId<=largest)throw Error('下一個身份序號會覆蓋既有記錄');
  const e=invariants(w);if(e.length)throw Error('存檔事實不合法：'+e.slice(0,4).join('、'));

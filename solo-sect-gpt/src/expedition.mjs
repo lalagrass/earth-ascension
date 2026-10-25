@@ -1,6 +1,6 @@
 import {Q,HZ,DAY} from './data.mjs';
 import {stations,position,findPath,los,inRect,walkable} from './map.mjs';
-import {event,uid,availableQty as qty,transfer,add,sorted,bagWeight,makePerson,reserve,caveFoodCarried,caveFoodDelivered,ensureCaveCargo} from './state.mjs';
+import {event,uid,availableQty as qty,transfer,add,sorted,bagWeight,makePerson,reserve,caveFoodCarried,caveFoodDelivered,ensureCaveCargo,inventorySpace} from './state.mjs';
 import {begin,cancel,approach,finish,memory} from './activities.mjs';
 import {route,arrived,speed} from './navigation.mjs';
 import {insight} from './combat.mjs';
@@ -60,11 +60,12 @@ function rescuedTick(w,e){const r=e.rescue;if(!r)return;
   event(w,'rescue-arrived',[helper.id,victim.id],{elapsed:w.tick-r.requested});
  }
 }
-export function travelActivityTick(w,p){const a=w.activities[p.activity];if(!a)return false;if(a.kind==='unloadQuest'){const n=caveFoodCarried(w,p,a.args.origin);if(n){if(!approach(w,p,a,'store.drop'))return true;transfer(w,p.bag,'store','ration',n);}finish(w,p,a,'古洞糧已實際交到倉庫',true);route(w,p,stations['safe.'+w.expedition.actors.indexOf(p.id)]);return true;}if(a.kind==='pack'){
+export function travelActivityTick(w,p){const a=w.activities[p.activity];if(!a)return false;if(a.kind==='unloadQuest'){const n=caveFoodCarried(w,p,a.args.origin);if(n){if(inventorySpace(w,'store','ration',a.id)<n){p.blocked='乾糧倉滿，先讓另一位同門取用乾糧；古洞糧保留在手中';return true;}if(!approach(w,p,a,'store.drop'))return true;transfer(w,p.bag,'store','ration',n);}finish(w,p,a,'古洞糧已實際交到倉庫',true);route(w,p,stations['safe.'+w.expedition.actors.indexOf(p.id)]);return true;}if(a.kind==='pack'){
  const n=a.args.needed??Math.max(0,2-qty(w,p.bag,'ration'));if(qty(w,'store','ration')<n){p.blocked='倉內乾糧不足，補齊再出發';return true;}
  if(n&&!approach(w,p,a,'store.drop'))return true;if(n)transfer(w,'store',p.bag,'ration',n);w.expedition.packed.push(p.id);finish(w,p,a,'已領糧，等待集合',true);route(w,p,stations['safe.'+(5+w.expedition.actors.indexOf(p.id))]);return true;
  }return false;}
 export function expeditionTick(w){const e=w.expedition;if(!e||e.phase==='returned'||e.phase==='cancelled')return;
+ if(e.permission&&!e.wardensParkedVersion){for(const [i,g]of sorted(w.people).filter(p=>p.rank==='warden'&&!p.hostile&&!p.storyBusy&&p.hp>0).entries())route(w,g,i?[2260,130]:[2255,210]);e.wardensParkedVersion=1;}
  const party=e.actors.map(id=>w.people[id]);for(const p of party){p.returnReserve=returnReserveCached(w,p);if(p.hp<=0){p.blocked='倒地；可請求救援';continue;}if(!e.rescue&&p.energy<=p.returnReserve&&e.phase!=='return'&&e.phase!=='prepare'){recallParty(w,'精力抵回程預留');break;}}
  if(e.rescue){rescuedTick(w,e);if(e.rescue.phase!=='completed')return;}
  if(e.phase==='prepare'&&e.packed.length===e.actors.length&&party.every(p=>arrived(p))){e.phase='outbound';for(const [i,p]of party.entries()){travelRoute(w,p,[1450+i*16,670]);p.reason='沿北門實走到林緣';}e.segment='forest';}
@@ -78,7 +79,7 @@ export function expeditionTick(w){const e=w.expedition;if(!e||e.phase==='returne
   e.segment=next;for(const [i,p]of party.entries()){const to=stations[next];travelRoute(w,p,[to[0]+i*14,to[1]+i*10]);}
  }
  if(e.phase==='campRest'&&w.tick>=e.restUntil){for(const p of party)if(qty(w,p.bag,'ration')>0){add(w,p.bag,'ration',-1,'trail-meal');p.energy=Math.min(10000,p.energy+1500);}e.rested=true;e.phase='outbound';event(w,'camp-meal',e.actors);}
- if(e.phase==='negotiate'&&party.every(p=>arrived(p))&&w.tick>=e.talkUntil){e.permission=true;e.segment='cave';e.phase='outbound';for(const p of sorted(w.people).filter(p=>p.rank==='warden')){p.hostile=false;p.combatTarget=null;route(w,p,[p.id.endsWith('0')?2115:2185,245]);}for(const [i,p]of party.entries())travelRoute(w,p,[2200+i*14,150+i*10]);event(w,'passage-granted',e.actors);}
+ if(e.phase==='negotiate'&&party.every(p=>arrived(p))&&w.tick>=e.talkUntil){e.permission=true;e.segment='cave';e.phase='outbound';for(const p of sorted(w.people).filter(p=>p.rank==='warden')){p.hostile=false;p.combatTarget=null;route(w,p,p.id.endsWith('0')?[2255,210]:[2260,130]);}for(const [i,p]of party.entries())travelRoute(w,p,[2200+i*14,150+i*10]);event(w,'passage-granted',e.actors);}
  if(e.phase==='gateFight'){const guards=sorted(w.people).filter(p=>p.rank==='warden'&&p.hp>0&&!p.inactive);if(!guards.length){e.permission=true;e.segment='cave';e.phase='outbound';for(const [i,p]of party.entries()){p.combatTarget=null;travelRoute(w,p,[2200+i*14,150+i*10]);}event(w,'passage-won',e.actors);}else for(const g of guards)if(!g.combatTarget)g.combatTarget=party.find(p=>p.hp>0)?.id||null;}
  if(e.phase==='cave'){
   const hero=w.people.leader;if(hero.auto&&party.includes(hero)&&!w.storyChoice){e.pendingAuto??=w.tick+100;hero.reason=hero.traits[1]>=0?'自主預覽：顧人，先救旅人（5秒內可覆寫）':'自主預覽：自持，先保口糧（5秒內可覆寫）';if(w.tick>=e.pendingAuto)chooseCave(w,hero.traits[1]>=0?'rescue':'food');}

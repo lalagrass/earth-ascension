@@ -52,7 +52,7 @@ export function storyActivityTick(w,p){const a=w.activities[p.activity];if(!a||a
   if(s.progress>=6){memory(w,'teach',p,o,a.id);end(w,p,o,a);}return true;
  }
  if(key==='linghu'&&part==='2'){
-  if(!a.introFinished){const one=s.own?stations['quiet.book']:stations['yard.1'],two=s.own?[1325,1020]:stations['yard.2'];if(!pairApproach(w,p,o,a,one,two))return true;p.pose=s.own?'read':'listen';o.pose='teach';a.intro=(a.intro||0)+1;if(a.intro>=400){p.skill.nine??={U:5,F:0,I:0,contexts:[],practice:0,sources:[{kind:s.own?'quiet-study':'linghu-teaching',tick:w.tick}]};a.introFinished=true;a.otherRouted=false;a.destination=null;release(w,a.id);}return true;}
+  if(!a.introFinished){const one=s.own?stations['quiet.book']:stations['yard.1'],two=s.own?[1325,950]:stations['yard.2'];if(!pairApproach(w,p,o,a,one,two))return true;p.pose=s.own?'read':'listen';o.pose='teach';a.intro=(a.intro||0)+1;if(a.intro>=400){p.skill.nine??={U:5,F:0,I:0,contexts:[],practice:0,sources:[{kind:s.own?'quiet-study':'linghu-teaching',tick:w.tick}]};a.introFinished=true;a.otherRouted=false;a.destination=null;release(w,a.id);}return true;}
   if(!pairApproach(w,p,o,a,stations['guard.front'],[1362,1220]))return true;
   if(!a.demo){a.demo={count:0,lastEnd:w.tick,session:uid(w,'lesson'),failSeen:false};p.skill.nine??={U:5,F:0,I:0,contexts:[],practice:0,sources:[{kind:'linghu-teaching',tick:w.tick}]};for(const q of [p,o]){q.combatSession=a.demo.session;q.team=q===p?'student':'teacher';q.combatTarget=null;}o.pushLearned=true;}
   const d=a.demo;

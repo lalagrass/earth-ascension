@@ -133,7 +133,7 @@ export function ecologyTick(w){
   if(p.mode==='home-visit'&&w.tick>=p.visitUntil){p.mode='returning';p.recoverAt=w.tick+12000;p.combatTarget=null;route(w,p,p.habitat);event(w,'natural-avoided',[p.id]);}
   const nearby=sorted(w.people).filter(t=>t.adult&&t.kind==='human'&&t.residence==='resident'&&dist(p,t)<(p.kind==='boar'?36:22)&&los(w,position(p),position(t)));
   if(nearby.length&&p.kind==='boar'&&!['returning','recovering','evade'].includes(p.mode)){const t=nearby[0];p.combatTarget=t.id;t.combatTarget=p.id;}
-  if(p.hp<=p.maxHp/2&&p.mode!=='returning'){p.mode='returning';p.combatTarget=null;for(const t of sorted(w.people))if(t.combatTarget===p.id)t.combatTarget=null;p.recoverAt=w.tick+12000;route(w,p,p.habitat);event(w,'natural-driven',[p.id]);}
+  if(p.hp<=p.maxHp/2&&!['returning','recovering','evade'].includes(p.mode)){p.mode='returning';p.combatTarget=null;for(const t of sorted(w.people))if(t.combatTarget===p.id)t.combatTarget=null;p.recoverAt=w.tick+12000;route(w,p,p.habitat);event(w,'natural-driven',[p.id]);}
   if(p.mode==='returning'&&arrived(p)){p.mode='recovering';p.combatTarget=null;for(const t of nearby)if(t.combatTarget===p.id)t.combatTarget=null;}
   if(p.mode==='recovering'&&p.recoverAt===undefined){p.recoverAt=w.tick+12000;event(w,'recovery-scheduled',[p.id]);}
   if(p.mode==='recovering'&&w.tick>p.recoverAt){p.mode='forage';p.hp=p.maxHp;}

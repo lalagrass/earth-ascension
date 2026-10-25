@@ -7,7 +7,7 @@ export const stations=Object.fromEntries(layout.home.stations.map(s=>[s.id,home(
 Object.assign(stations,{
  wood:[430,960],stone:[480,1200],veg:[600,1400],herb:[650,1435],south:[1450,1700],spawn:[1480,1780],
  'hall.teach':[1110,1070],'hall.greet':[1170,1070],'hall.work':[1110,1060],'dorm.work':[865,1025],
- 'store.work':[800,1120],'kitchen.work':[800,1260],'dining.work':[1040,1250],'annex.work':[1090,1440],
+ 'store.work':[800,1120],'table.drop':[1040,1250],'kitchen.work':[800,1260],'dining.work':[1040,1250],'annex.work':[1090,1440],
  'quiet.work':[1325,1020],'yard.work':[1270,1240],'garden.worksite':[1220,1420],'herb.worksite':[1220,1550],
  forest:[1490,630],camp:[1660,520],valley:[1770,480],cave:[2200,150],'cave.food':[2220,160],
  'cave.talk':[2150,230],'quiet.book':[1290,950], 'guard.prep':[1490,1230]

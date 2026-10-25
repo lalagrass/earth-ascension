@@ -1,3 +1,4 @@
+import {beginClass,classActivityTick} from './classes.mjs';
 import {Q,FACILITIES} from './data.mjs';
 import {createWorld,event,sorted,invariants,bagWeight,day,openTick,closeTick,uid} from './state.mjs';
 import {begin,cancel,activityTick,autonomy,buildOrder} from './activities.mjs';
@@ -32,7 +33,8 @@ export function command(w,c){
   const actors=c.actors||[p.id];if(actors.some(id=>!w.people[id]?.adult||w.people[id].residence!=='resident'||w.people[id].kind!=='human'))result={ok:false,reason:'施工指令需成年常住者'};else result=buildOrder(w,c.facility);if(result.ok){const actors=c.actors||[p.id];for(const id of actors)if(w.people[id])begin(w,w.people[id],'build',{facility:c.facility},true);}
  }else if(c.type==='pauseBuild'){
   const f=w.facilities[c.facility];if(!f)result={ok:false,reason:'不存在工地'};else{f.active=false;for(const o of sorted(w.people))if(w.activities[o.activity]?.args.facility===f.id)cancel(w,o,'工地停工');}
- }else if(c.type==='story')result=story(w,p,c.node);
+ }else if(c.type==='class')result=beginClass(w,p,c.students,c.art);
+ else if(c.type==='story')result=story(w,p,c.node);
  else if(c.type==='found')result=found(w,c.name);
  else if(c.type==='expedition')result=dispatch(w,c.actors||[],c.target);
  else if(c.type==='recallParty')result=recallParty(w);
@@ -73,7 +75,7 @@ export function step(w,batch=[]){for(const c of batch)command(w,c);w.tick++;w.pe
  const activityOrder=sorted(w.people).sort((a,b)=>(w.activities[a.activity]?.started??Infinity)-(w.activities[b.activity]?.started??Infinity)||a.id.localeCompare(b.id));
  for(const p of activityOrder){
   if(p.moving){p.energyRemainder+=(bagWeight(w,p)?10:5);while(p.energyRemainder>=20){p.energy=Math.max(0,p.energy-1);p.energyRemainder-=20;}}
-  if(!travelActivityTick(w,p)&&!storyActivityTick(w,p)&&!lifeActivityTick(w,p))activityTick(w,p);
+  if(!classActivityTick(w,p)&&!travelActivityTick(w,p)&&!storyActivityTick(w,p)&&!lifeActivityTick(w,p))activityTick(w,p);
   // Energy uses a fixed hundredth-point accumulator; no renderer state enters rules.
   p.energy=Math.round(p.energy*1000)/1000;
  }

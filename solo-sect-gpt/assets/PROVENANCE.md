@@ -9,4 +9,4 @@
 - `maps/runtime/layout.mjs`／`base.json`：上述設計資料的明示衍生副本；實際牆、水、家具、樹幹、可達路徑與站位由 `src/map.mjs` 定義。
 - 經典人物只用私人原型姓名與自寫有限事件，沒有搬原作對白或外部圖音；公開IP清理是未來另案，不代表已取得公開商用許可。
 
-manifest 的 hash 指實際生成模組／資料檔，不虛構已烘焙的 PNG。視覺與音訊驗收須連到 development 的真實證據；目前狀態仍為開發中。
+manifest 的 hash 指實際生成模組／資料檔，不虛構已烘焙的 PNG。視覺與音訊驗收須連到 development 的真實證據；程序素材已做作者視覺自校與來源hash核對；實際截圖在 visual-final、presentation 及 presentation-continue。WebAudio 已驗首次互動解鎖、合成訊號、靜音及音量控制；無音訊硬體，未做真人聽感驗收。manifest 的局部腳錨為 [0,0]，其世界錨是 people[id].x/Q、y/Q；不是虛構 atlas 座標。

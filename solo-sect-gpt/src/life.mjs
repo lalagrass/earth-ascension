@@ -1,6 +1,6 @@
 import {Q,HZ,DAY,LEGENDS,MEMORY} from './data.mjs';
 import {stations,position,bedSlots} from './map.mjs';
-import {event,availableQty as qty,add,transfer,inventory,makePerson,sorted,assignBeds,day,reserve,release,uid,bagWeight} from './state.mjs';
+import {event,availableQty as qty,add,transfer,inventory,makePerson,sorted,assignBeds,day,reserve,release,uid,bagWeight,inventorySpace} from './state.mjs';
 import {approach,begin,cancel,finish,memory,workTick,countWork} from './activities.mjs';
 import {route,arrived} from './navigation.mjs';
 import {beginSpar} from './combat.mjs';
@@ -61,7 +61,7 @@ export function lifeActivityTick(w,p){const a=w.activities[p.activity];if(!a)ret
  if(a.kind==='collect'){
   const inv=w.inventories[a.args.inventory];if(!inv?.pos){p.blocked='沒有這個地面包裹';return true;}
   if(a.phase==='init'){if(!approach(w,p,a,'ground:'+inv.id,inv.pos))return true;for(const [item,n]of Object.entries(inv.items)){const amount=Math.min(n,Math.floor((4-bagWeight(w,p))/(item==='stone'?2:1)));if(amount>0)transfer(w,inv.id,p.bag,item,amount);}release(w,a.id);a.destination=null;a.phase='deliver';}
-  if(a.phase==='deliver'&&approach(w,p,a,'store.drop')){for(const [item,n]of Object.entries(w.inventories[p.bag].items))transfer(w,p.bag,'store',item,n);finish(w,p,a,'地面物資已搬回');}return true;
+  if(a.phase==='deliver'&&Object.entries(w.inventories[p.bag].items).some(([i,n])=>inventorySpace(w,'store',i,a.id)<n)){release(w,a.id);a.destination=null;p.blocked='目的倉滿，手中物資保留';return true;}if(a.phase==='deliver'&&approach(w,p,a,'store.drop')){for(const [item,n]of Object.entries(w.inventories[p.bag].items))transfer(w,p.bag,'store',item,n);finish(w,p,a,'地面物資已搬回');}return true;
  }
  if(a.kind==='farm'){
   const kind=a.args.crop||'garden';if(!w.facilities[kind].stage){p.blocked='先開墾'+(kind==='garden'?'菜園':'藥園');return true;}
@@ -79,7 +79,7 @@ export function lifeActivityTick(w,p){const a=w.activities[p.activity];if(!a)ret
  }
  if(a.kind==='harvestHaul'){
   const inv=w.inventories[a.harvest],item=Object.keys(inv.items)[0];if(!item&&!bagWeight(w,p)){finish(w,p,a,'收成已搬入倉');return true;}
-  if(!bagWeight(w,p)){const key='harvest.'+a.harvest;if(approach(w,p,a,key,inv.pos)){transfer(w,a.harvest,p.bag,item,Math.min(4,qty(w,a.harvest,item)));release(w,a.id);a.destination=null;}}else if(approach(w,p,a,'store.drop')){for(const [i,n]of Object.entries(w.inventories[p.bag].items))transfer(w,p.bag,'store',i,n);release(w,a.id);a.destination=null;}
+  if(!bagWeight(w,p)){const key='harvest.'+a.harvest;if(approach(w,p,a,key,inv.pos)){transfer(w,a.harvest,p.bag,item,Math.min(4,qty(w,a.harvest,item)));release(w,a.id);a.destination=null;}}else if(Object.entries(w.inventories[p.bag].items).some(([i,n])=>inventorySpace(w,'store',i,a.id)<n)){release(w,a.id);a.destination=null;p.blocked='目的倉滿，收成仍在手中';return true;}else if(approach(w,p,a,'store.drop')){for(const [i,n]of Object.entries(w.inventories[p.bag].items))transfer(w,p.bag,'store',i,n);release(w,a.id);a.destination=null;}
   return true;
  }
  if(a.kind==='delivery'){
@@ -112,6 +112,7 @@ export function lifeActivityTick(w,p){const a=w.activities[p.activity];if(!a)ret
 export function lifeTick(w){
  for(const plot of sorted(w.plots))if(plot.stage==='growing'&&plot.watered){plot.progress++;if(plot.progress>=(plot.kind==='garden'?90:120)*HZ){plot.stage='ready';event(w,'crop-ready',[],{plot:plot.id});}}
  for(const p of sorted(w.people)){
+  if(w.identityMode==='matureGuest'&&p.canonicalIdentity&&p.residence==='visitor'&&!p.storyBusy&&!p.departing&&p.visitStarted!==undefined&&w.tick-p.visitStarted>=DAY)depart(w,p.id);
   if(p.departing&&arrived(p)&&Math.hypot(p.x/Q-stations.spawn[0],p.y/Q-stations.spawn[1])<2){p.residence='departed';p.departing=false;event(w,'departed',[p.id]);}
   if(p.rank==='worker'&&day(w)>p.paidThrough&&w.tick%DAY===0){if(qty(w,'store','money')>=3){add(w,'store','money',-3,'wages');p.paidThrough=day(w);event(w,'wage-paid',[p.id]);}else{p.manualStop=true;cancel(w,p,'工資不足，契約暫停；可交菜恢復');}}
   if(p.pendingPromotion&&p.sparHistory?.some(r=>r.duration>=600&&r.hits>=3)){p.pendingPromotion=false;promote(w,p);}

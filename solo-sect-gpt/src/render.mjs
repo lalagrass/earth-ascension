@@ -31,9 +31,10 @@ export function render(canvas,w,view){
  const labels=[],labelOffsets={};for(const p of [...actors].sort((a,b)=>(b.id===view.selected)-(a.id===view.selected)||a.id.localeCompare(b.id))){const x=p.x/Q;let y=p.y/Q-51;while(labels.some(r=>Math.abs(r.x-x)<66&&Math.abs(r.y-y)<20))y-=20;labels.push({x,y});labelOffsets[p.id]=y-(p.y/Q-51);}
  const props=[];
  for(const t of trees)props.push({y:t.y,fn:()=>drawTree(ctx,t.x,t.y,t.variant)});
- for(const p of actors)props.push({y:p.y/Q,fn:()=>drawPerson(ctx,w,p,view,labelOffsets[p.id])});
+ for(const p of actors)props.push({y:p.y/Q,fn:()=>drawPerson(ctx,w,p,view,labelOffsets[p.id],false)});
  props.sort((a,b)=>a.y-b.y);for(const p of props)p.fn();
  for(const f of Object.values(rects))drawBuilding(ctx,w,f,true,view);
+ for(const p of actors)drawLabel(ctx,w,p,view,labelOffsets[p.id]);
  for(const [x,y,a,b]of [[1795,385,16,24],[2040,355,20,24]]){poly([[x,y+b],[x+2,y+5],[x+a*.6,y],[x+a,y+b*.5],[x+a-2,y+b]],'#8f9986','#74846f');ctx.strokeStyle='#c1c4a8';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+3,y+6);ctx.lineTo(x+a*.6,y+5);ctx.stroke();}
  drawResources(ctx,w);drawMarkers(ctx,w,view);
  // Foreground trees fade around selected actor, never alter LOS.
@@ -65,10 +66,11 @@ export function drawBuilding(c,w,f,roof,view){const[x,y,a,b]=f.rect,stage=w.faci
  if(active){const req=FACILITIES[f.id].stages[stage];c.fillStyle='#e6d8af';c.fillRect(x,y+b-7,a,5);c.fillStyle='#8f995c';c.fillRect(x,y+b-7,a*Math.min(1,w.facilities[f.id].work/(req[2]*20)),5);}
 }
 function drawBed(c,x,y,mat=false){c.fillStyle=mat?'#b29d70':'#9f825a';c.fillRect(x-12,y-36,24,36);c.fillStyle='#d4c49d';c.fillRect(x-9,y-32,18,29);c.fillStyle='#eee3c8';c.fillRect(x-8,y-31,16,7);}
-export function drawPerson(c,w,p,v,labelOffset=0){const x=p.x/Q,y=p.y/Q,a=w.activities[p.activity],selected=p.id===v.selected;
+export function drawPerson(c,w,p,v,labelOffset=0,labels=true){const x=p.x/Q,y=p.y/Q,a=w.activities[p.activity],selected=p.id===v.selected;
  c.save();c.translate(x,y);if(selected){c.strokeStyle='#d8b451';c.lineWidth=2;c.beginPath();c.ellipse(0,1,10,5,0,0,7);c.stroke();}
  c.fillStyle='#48583c30';c.beginPath();c.ellipse(0,2,8,3,0,0,7);c.fill();
  if(p.kind!=='human'){c.fillStyle=p.kind==='rat'?'#8a8173':'#786255';c.beginPath();c.ellipse(0,-5,p.kind==='rat'?8:14,p.kind==='rat'?5:8,0,0,7);c.fill();c.fillStyle='#473e35';c.fillRect(7,-7,4,3);c.restore();return;}
+ if(p.pose==='sleep'&&!p.moving){c.fillStyle='#ded2af';c.fillRect(-10,-30,20,30);c.fillStyle=p.color;c.fillRect(-9,-24,18,23);c.fillStyle='#e8dcc3';c.fillRect(-10,-29,20,7);c.fillStyle='#c9a986';c.beginPath();c.arc(0,-30,5,0,7);c.fill();c.strokeStyle='#4b4b3d';c.lineWidth=1;c.beginPath();c.moveTo(-3,-30);c.lineTo(-1,-30);c.moveTo(1,-30);c.lineTo(3,-30);c.stroke();c.fillStyle='#748069';c.font='9px serif';c.fillText('z',12,-31);c.restore();if(labels)drawLabel(c,w,p,v,labelOffset);return;}
  const child=!p.adult,scale=child?0.76:1;c.scale(scale,scale);const sleep=a?.kind==='sleep'&&a.progress!==0||p.pose==='sleep'&&!p.moving,down=p.hp<=0;
  if(down){c.rotate(-Math.PI/2);c.translate(5,0);}else if(sleep){c.translate(0,-8);c.scale(.85,.65);}
  const frame=Math.floor(p.distance/(5*Q))%4,walk=p.moving?[-2,0,2,0][frame]:0;
@@ -86,9 +88,12 @@ export function drawPerson(c,w,p,v,labelOffset=0){const x=p.x/Q,y=p.y/Q,a=w.acti
  const items=Object.keys(w.inventories[p.bag].items);if(items.length){const item=items[0];if(item==='tea'){c.fillStyle='#e4ddc7';c.fillRect(7,-19,7,6);c.strokeStyle='#afa384';c.strokeRect(7,-19,7,6);}c.fillStyle=item==='water'?'#7a8c83':item==='stone'?'#8b8a7b':'#9d8059';if(item==='wood'){c.save();c.rotate(-0.2);c.fillRect(-17,-22,34,5);c.restore();}else c.fillRect(6,-17,9,10);}
  c.restore();
  if(a&&['talk','encourage','care','teach','paired','story'].includes(a.kind)&&!p.moving){c.fillStyle='#f5eddb';c.beginPath();c.ellipse(x+13,y-32,8,5,0,0,7);c.fill();c.fillStyle='#7c856b';c.font='9px system-ui';c.fillText('…',x+9,y-30);}
- if(selected||p.residence==='resident'||p.residence==='visitor'){c.save();c.font='11px system-ui';c.textAlign='center';c.fillStyle='#f5edd9dd';c.fillRect(x-31,y-51+labelOffset,62,18);c.fillStyle='#344638';c.fillText(p.name,x,y-38+labelOffset);if(labelOffset){c.strokeStyle='#8b967c88';c.lineWidth=1;c.beginPath();c.moveTo(x,y-33+labelOffset);c.lineTo(x,y-28);c.stroke();}
+ if(labels)drawLabel(c,w,p,v,labelOffset);
+}
+function drawLabel(c,w,p,v,labelOffset=0){const x=p.x/Q,y=p.y/Q,a=w.activities[p.activity];
+ if(p.id===v.selected||p.residence==='resident'||p.residence==='visitor'){c.save();c.font='11px system-ui';c.textAlign='center';c.fillStyle='#f5edd9dd';c.fillRect(x-31,y-51+labelOffset,62,18);c.fillStyle='#344638';c.fillText(p.name,x,y-38+labelOffset);if(labelOffset){c.strokeStyle='#8b967c88';c.lineWidth=1;c.beginPath();c.moveTo(x,y-33+labelOffset);c.lineTo(x,y-28);c.stroke();}
   if(p.action){c.fillStyle=p.action.phase==='windup'?'#b47b37':p.action.phase==='active'?'#9f533d':'#6f847b';c.fillText(MOVES[p.action.move].name+' · '+({windup:'起手',active:'出招',recover:'收勢'}[p.action.phase]),x,y+16);}
-  else if(selected){c.fillText(p.blocked?'候位':TASKNAME[a?.kind]||'閒步',x,y+16);}c.restore();}
+  else if(p.id===v.selected){c.fillText(p.blocked?'候位':TASKNAME[a?.kind]||'閒步',x,y+16);}c.restore();}
 }
 function drawResources(c,w){for(const inv of Object.values(w.inventories))if(inv.pos&&Object.values(inv.items).some(n=>n>0)){c.fillStyle='#aa895c';c.fillRect(inv.pos[0]-6,inv.pos[1]-9,12,10);c.strokeStyle='#e1d0a4';c.strokeRect(inv.pos[0]-6,inv.pos[1]-9,12,10);}for(const [id,label]of [['wood','柴林'],['stone','石場'],['veg','野菜'],['herb','野藥'],['water.take','山潭取水']]){const p=stations[id];c.fillStyle='#58674d';c.font='14px system-ui';c.fillText(label,p[0]-25,p[1]+25);if(id==='stone'){c.fillStyle='#919386';for(let i=0;i<4;i++){c.beginPath();c.ellipse(p[0]-12+i*8,p[1]-10,10,7,0,0,7);c.fill();}}}
  const st=stations['store.drop'];for(let i=0;i<Math.min(8,qty(w,'store','wood'));i++){c.fillStyle='#937657';c.fillRect(st[0]-45+(i%4)*9,st[1]-16-Math.floor(i/4)*6,18,5);}

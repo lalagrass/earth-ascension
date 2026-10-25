@@ -7,9 +7,10 @@ function heading(dx,dy){let best=-Infinity,angle=0;for(let i=0;i<360;i++){const 
 export function speed(w,p){let level=p.distance>=18000*Q?3:p.distance>=9000*Q?2:p.distance>=3000*Q?1:0;let n=(bagWeight(w,p)?20:30)+level*4;if(p.kind==='rat')n=24;if(p.kind==='boar')n=22;if(p.rank==='warden'||p.rank==='training')n=26;if(p.injury>60)n*=0.6;else if(p.injury>30)n*=0.8;if(p.energy<2500)n*=0.8;if(p.helping||p.helpedBy)n*=0.65;return Math.max(6,n);}
 export function route(w,p,target){if(w.bridge.holder===p.id){p.bridgeExit=true;p.bridgePendingTarget=[...target];return true;}const path=findPath(w,position(p),target);if(!path){p.blocked='無可通行路徑';p.path=[];return false;}p.path=path;p.routeAt=0;p.blocked='';return true;}
 export const arrived=p=>p.routeAt>=p.path.length;
-function bridgePermit(w,p,x,y){const b=w.bridge,on=inRect(x,y,[1863,419,84,42]);
+function bridgePermit(w,p,x,y){const b=w.bridge,on=inRect(x,y,[1840,410,130,60]);
  if(b.holder===p.id)return true;
  if(!on)return true;
+ if(p.x/Q<1870&&x<p.x/Q||p.x/Q>1940&&x>p.x/Q)return true;
  if(!b.queue.some(q=>q.id===p.id))b.queue.push({id:p.id,tick:w.tick,dir:p.x/Q<1905?'east':'west',priority:p.helpedBy||p.rank==='rescuer'?2:p.intent?.kind==='return'?1:0});
  b.queue=b.queue.filter(q=>w.people[q.id]&&w.people[q.id].residence!=='departed');
  const priority=q=>q.priority+Math.floor((w.tick-q.tick)/600);
@@ -21,10 +22,11 @@ export function moveAll(w){
  const people=sorted(w.people).filter(p=>p.residence!=='departed'&&!p.inactive);
  for(const p of people){p.moving=false;if(p.stun||p.hp<=0||p.action&&p.action.phase!=='recover')continue;if(w.bridge.holder===p.id&&arrived(p)&&!p.action)p.bridgeExit=true;
   if(arrived(p)&&!p.bridgeExit)continue;
-  let target=p.path[p.routeAt]||[p.x,p.y];if(w.bridge.holder===p.id&&p.bridgeExit)target=[(w.bridge.direction==='east'?1954:1856)*Q,440*Q];let dx=target[0]-p.x,dy=target[1]-p.y,d=isqrt(dx*dx+dy*dy);p.walkRemainder=(p.walkRemainder||0)+Math.round(speed(w,p)*Q*1000);const step=Math.floor(p.walkRemainder/20000);p.walkRemainder%=20000;if(d<2){p.routeAt++;continue;}
+  if(w.bridge.holder===p.id&&p.bridgeExit&&!p.bridgeExitPath){const exit=w.bridge.direction==='east'?1954:1856,path=findPath(w,position(p),[exit,440]);if(!path){p.blocked='橋口退出路徑受阻';continue;}p.path=path;p.routeAt=0;p.bridgeExitPath=true;}
+  let target=p.path[p.routeAt]||[p.x,p.y];let dx=target[0]-p.x,dy=target[1]-p.y,d=isqrt(dx*dx+dy*dy);p.walkRemainder=(p.walkRemainder||0)+Math.round(speed(w,p)*Q*1000);const step=Math.floor(p.walkRemainder/20000);p.walkRemainder%=20000;if(d<2){p.routeAt++;continue;}
   const bridge=w.bridge;if(bridge.holder===p.id){const exit=bridge.direction==='east'?1954:1856;
    // Cancellation in the middle preserves ownership and must finish crossing first.
-   if(p.bridgeExit){target=[exit*Q,440*Q];dx=target[0]-p.x;dy=target[1]-p.y;d=isqrt(dx*dx+dy*dy);}
+   // Exit follows its saved legal path, including bank alignment before the water.
   }
   const n=Math.min(step,d),nx=p.x+Math.round(dx/d*n),ny=p.y+Math.round(dy/d*n);
   if(!bridgePermit(w,p,nx/Q,ny/Q))continue;
@@ -43,6 +45,6 @@ export function moveAll(w){
   const walked=Math.round(Math.hypot(x-p.x,y-p.y));p.x=x;p.y=y;p.distance+=walked;w.metrics.walked+=walked;p.moving=walked>0;
   if(p.moving&&!p.action)p.angle=heading(dx,dy);
   if(n===d&&x===nx&&y===ny)p.routeAt++;
-  if(bridge.holder===p.id){const end=bridge.direction==='east'?p.x/Q>=1952:p.x/Q<=1858;if(end){event(w,'bridge-exit',[p.id],{x:p.x,y:p.y,direction:bridge.direction});bridge.holder=null;bridge.direction=null;if(p.bridgeExit){p.bridgeExit=false;p.path=[];p.routeAt=0;const pending=p.bridgePendingTarget;p.bridgePendingTarget=null;if(pending)route(w,p,pending);}}}
+  if(bridge.holder===p.id){const end=bridge.direction==='east'?p.x/Q>=1952:p.x/Q<=1858;if(end){event(w,'bridge-exit',[p.id],{x:p.x,y:p.y,direction:bridge.direction});bridge.holder=null;bridge.direction=null;if(p.bridgeExit){p.bridgeExit=false;p.bridgeExitPath=false;p.path=[];p.routeAt=0;const pending=p.bridgePendingTarget;p.bridgePendingTarget=null;if(pending)route(w,p,pending);}}}
  }
 }

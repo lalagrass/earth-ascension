@@ -1,11 +1,52 @@
-# 山居 · 第一章（開發中）
+# 山居 · 在山中留下來
 
-獨立 GPT 原型，仍在 SL0–SL7 連續開發；目前不能視為完整交付。
+私人本機的門派生活第一章，GPT / Codex 獨立實作。原生 ESM、Canvas 2D、程序音效，遊戲執行不需外網或安裝套件。**目前仍在最後驗收，完成狀態以 `handoff/development.done.json` 是否存在為準。**
 
-從此獨立 checkout 啟動（先確認 8877 空閒，不使用 8800）：
+從本獨立 checkout 啟動，8877 必須空閒；不使用既有 8800：
 
 ```sh
+cd /Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension
 python3 -m http.server 8877 --bind 127.0.0.1 --directory solo-sect-gpt
 ```
 
-開啟 http://127.0.0.1:8877/ 。原生 ESM、Canvas 2D，無 runtime 外網依賴。
+以瀏覽器開啟 [本機遊戲](http://127.0.0.1:8877/)。停止服務用該終端的 Ctrl-C。沒有部署、帳號或付費服務。
+
+## 怎麼開始
+
+創角固定20點，每項1–7；四題性向可預覽，也可選三位經典人物的成長模板。同一江湖身份全局只有一位。先選掌門、到建設修宿舍；人物會取木石、搬到工地，再施工。修廳前會安置臨鋪，女孩始終是家人。
+
+人物頁可以分派採集、菜藥耕作、烹調、休養、修行、交談及主次職務。新鮮成品在灶旁出鍋，由人物搬到餐桌／倉庫；手中物資和在製品在取消後保留。精力不足先自理，再續仍有效的指令。停工、關閉自主及新指令都能覆寫原計畫。選好成年同門也可同堂授課，一位老師最多四位學生，各用實際站位。
+
+與阿木共作、交談／指點形成互信後邀入門。義學及慕名入口在江湖頁。供餐、空床與本人意願都要成立；考核需要貢獻記錄、熟練與真實對練。結伴由兩位成年人各自接受，再安排同房的兩張床。
+
+基礎拳要完整練習到熟練90，並由至少兩種真實攻防情境取得體悟10才稱深修。棍劍先製作、學原理、到倉換裝；推掌與九劍由有限故事取得。九劍要觀察、距離、視線及足夠起手時間，佯攻會使截擊失敗。
+
+遠征頁選1–3位成年常住者，備好每人兩份乾糧並休養，人物先領糧再出門。林緣、營地、溪谷、單人窄橋與古洞是同一張連續地圖。可對守路人說明來意或實際交戰；倒地後可請救援，120模擬秒等待之外還要等救援者真走到場。古洞選擇與實際履約分開記錄，保糧後仍可返洞救人。
+
+完成條件在遠征頁逐項顯示。立匾後可關閉回顧繼續生活。靜室、家庭與五人物十節點是第一版功能，雖不強迫作為立匾前置，仍有獨立驗收。
+
+## 操作與保存
+
+- Space 暫停／繼續；輸入欄內的空白不會搶暫停。1／2／4倍只改時鐘累積，不改規則。
+- 拖曳畫布移鏡、滾輪縮放，點人物選取、點合法地面移動；上方可切區或跟隨。屋頂會在有人入室時剖開。
+- 存檔頁有手動槽、匯出、匯入預覽及設定；每1200 tick輪換三個自動槽。讀取後暫停，離線不補時間。
+- 僅寫 `solo-sect-gpt.chapter1.v1.` 前綴。壞JSON、版本／checksum／引用不合法會拒絕；儲存失敗保留最後有效槽。不要匯入其他分支格式。
+- 靜音、音量、低動態是觀看設定。首次互動解鎖 WebAudio；沒有聲音也可從畫面讀取出招三階段。
+
+## 測試與證據
+
+模型／整合測試只需 Node；作者測試環境為 Node24.13、macOS26.2、Apple M2／8GiB、Chrome156，瀏覽器證據為正常表單與DOM／畫布操作，`window.__game` 僅提供副本及唯讀遙測。
+
+```sh
+node --test solo-sect-gpt/test/*.test.mjs solo-sect-gpt/test/integration/*.test.mjs
+python3 -m unittest discover -s tests -v
+node --check earth_ascension/static/m2.js
+node --test sect-chronicle/test/*.test.js
+git diff --check
+```
+
+UI腳本位於 `test/ui/`，需上述本機服務。`harness.mjs` 使用這台機器已備的 Playwright：`/Users/chenyuying/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs` 與 `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`，沒有替根專案新增依賴。示例：`node solo-sect-gpt/test/ui/save-controls.mjs`。長流程各有正常存檔來源；不要把模型fixture當玩家通關。
+
+[驗收規格](docs/ACCEPTANCE.md)、[開發進度](PROGRESS.md)、[功能與證據](FEATURES.md)、[素材來源](assets/PROVENANCE.md)。原始輸出／失敗與修補後證據保留在 `evidence/development/`。先前開發版的正常存檔有連續來源，跨版本接續不宣稱逐tick點擊重播相等。固定tick模型golden另列。
+
+作者自校不是獨立review，也尚無真人試玩／音訊硬體聽感回饋。經典人物及素材僅供私人原型；沒有公開IP清理、main發布、PR、push、合併或部署授權。舊SG main／manual完整RT不等於本機原型驗收，此次未作發布矩陣。
