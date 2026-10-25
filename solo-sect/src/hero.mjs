@@ -33,7 +33,7 @@ export const wexinMood = (d) => (d.wexin ? WEXIN.mood * d.wexin * (d.classic ? W
 // 指派的工作與價值觀強烈牴觸時累積違心
 export function onAssign(s, d, act, byPlayer) { if (!d.values || !byPlayer) return; if (valueOfAct(d, act) <= WEXIN.at) addWexin(s, d, `被派去${act}`); }
 
-function mkComp(id, i) {
+export function mkComp(id, i) {
   const c = COMPANIONS[id], [x, y] = NODES.court;
   return seedArts({ id, name: c.name, root: c.root, wu: c.wu, rootKnown: true, style: c.style, personality: [...c.personality], known: c.personality.slice(0, 2), together: 0, mood: MOOD.base, thoughts: [], why: [], adult: true, sprite: c.sprite, traits: {},
     skills: { ...c.skills }, moves: ['fist'], pendingMove: null, needs: { energy: 80, hunger: 60, social: 50, fun: 60 }, hp: 100, at: 'court', pos: [x + 32, y + 8], path: [],
@@ -68,7 +68,11 @@ export function applyHero(s, spec, initPair) {
 // 名俠池：所有模板＋同門候選，扣掉已在門中者
 export function encounterPool(s) { const ex = new Set(s.encExclude || []); return [...HEROES.map((h) => h.id), ...Object.keys(COMPANIONS)].filter((id, i, a) => a.indexOf(id) === i && !ex.has(id)); }
 // 同門默契：郭靖＋黃蓉 練功最多 +25%（隨好感線性），其他組合 +10%
+import { xiaResolve, pairBest } from './wuxia.mjs';
 export function pairBonus(s, d, aff) {
+  if (!s.hero) return 0; return pairBest(s, d, aff, (a, b) => { const c = s.hero.companion; return (a.id === 'hero' && b.id === c) || (b.id === 'hero' && a.id === c) ? COMPANIONS[c]?.pair?.[s.hero.id] ?? 0.1 : 0; });
+}
+export function pairBonusOld(s, d, aff) {
   if (!s.hero) return 0; const h = s.ds.find((x) => x.id === 'hero'), c = s.ds.find((x) => x.id === s.hero.companion);
   if (!h || !c || h.away !== c.away || (d !== h && d !== c)) return 0;
   const cap = COMPANIONS[c.id]?.pair?.[s.hero.id] ?? 0.1; return cap * Math.min(1, Math.max(0, aff(s, h, c)) / 60);
@@ -82,9 +86,9 @@ export function heroStep(s) {
   s.choices.push(ch); log(s, `【抉擇】${A.title}：${A.text}`); H.arcStep = 0.5;
   if (!H.askMajor) s.autoAt = s.t + (ch.delay || 0);
 }
-export function autoPick(s, ch) { const A = ARCS[ch.arc], v = s.hero.values; let best = 0, bv = -1e9; A.opts.forEach(([, dv], i) => { const sc = Object.entries(dv).reduce((a, [k, x]) => a + x * (v[k] || 0), 0); if (sc > bv) { bv = sc; best = i; } }); return best; }
+export function autoPick(s, ch) { if (ch.xia) return 0; const A = ARCS[ch.arc], v = s.hero.values; let best = 0, bv = -1e9; A.opts.forEach(([, dv], i) => { const sc = Object.entries(dv).reduce((a, [k, x]) => a + x * (v[k] || 0), 0); if (sc > bv) { bv = sc; best = i; } }); return best; }
 export function resolveChoice(s, id, i) {
-  const ch = s.choices.find((c) => c.id === id); if (!ch) return false; const A = ARCS[ch.arc], [text, dv, flag] = A.opts[i], d = s.ds.find((x) => x.id === 'hero');
+  const ch = s.choices.find((c) => c.id === id); if (!ch) return false; if (ch.xia) return xiaResolve(s, ch, i); const A = ARCS[ch.arc], [text, dv, flag] = A.opts[i], d = s.ds.find((x) => x.id === 'hero');
   for (const [k, x] of Object.entries(dv)) d.values[k] = Math.max(-50, Math.min(50, (d.values[k] || 0) + x));
   [s.hero.main, s.hero.sub] = mainSub(d.values); s.hero.values = d.values;
   const [mk] = mainSub(d.values); if ((dv[mk] || 0) < 0 || Object.entries(dv).some(([k, x]) => x < 0 && (d.values[k] || 0) >= 20)) addWexin(s, d, `抉擇「${text}」違背本心`);

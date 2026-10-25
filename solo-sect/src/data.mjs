@@ -190,6 +190,8 @@ export const THOUGHTS = {
   likeDrink: { text: '喝到愛喝的', v: 3, ttl: 300, tag: 'good' },
   forcedStyle:{ text: '被巡山令逼著照別人的路子走', v: -6, ttl: 400, tag: 'bad' },
   quarrel:   { text: '巡山時跟人吵了一架', v: -5, ttl: 300, tag: 'social' },
+  xiaJoin:   { text: '名俠入門，門派有了底氣', v: 6, ttl: 600, tag: 'good' },
+  xiaTaught: { text: '得名師親傳絕學', v: 15, ttl: 900, tag: 'good' },
   aspDone:   { text: '志向得償', v: 12, ttl: 900, tag: 'good' },
   expHurt:   { text: '巡山掛了彩', v: -8, ttl: 400, tag: 'fight' },
   btFail:    { text: '衝關失敗，氣血翻湧', v: -5, ttl: 300, tag: 'bad' },
@@ -224,7 +226,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '1.0';
+export const RULES_VERSION = '1.1';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -323,7 +325,7 @@ export const ENEMIES = {
   python: { name: '巨蟒',     kind: '獸', weapon: '纏絞', hp: 320, dmg: 18, cd: 1.6, flee: 0.1,  loot: { gall: 1, page1: 0.3 } },
   hermit: { name: '瘋癲劍客', kind: '人', weapon: '劍',   hp: 300, dmg: 20, cd: 1.0, flee: 0.25, loot: { coin: 10, page2: 0.3 } },
   whiteape:{ name: '白猿',    kind: '獸', weapon: '巨臂', hp: 480, dmg: 22, cd: 1.2, flee: 0,    loot: { food: 8, page2: 0.5 } },
-  pythonking:{ name: '古洞蟒王', kind: '獸', weapon: '纏絞', hp: 540, dmg: 22, cd: 1.5, flee: 0, loot: { gall: 2, page2: 0.7 } },
+  pythonking:{ name: '古洞蟒王', kind: '獸', weapon: '纏絞', hp: 260, dmg: 22, cd: 1.5, flee: 0, loot: { gall: 2, page2: 0.7 } },
   swordtomb:{ name: '劍塚守者', kind: '人', weapon: '玄鐵重劍', hp: 600, dmg: 24, cd: 1.3, flee: 0, loot: { coin: 30, page2: 1 } },
   peakguard:{ name: '無名高手', kind: '人', weapon: '？', hp: 560, dmg: 22, cd: 1.2, flee: 0, loot: { coin: 20, page2: 1 } },
 };
@@ -343,7 +345,7 @@ export const ROUTE = [
 export const ENDLESS = { len: 200, mul: 1.25, roster: [['hermit', 2], ['ape', 1], ['python', 1]], find: { coin: 1, page2: 0.15 }, gate: 'peakguard' };
 // 營地：第三段（山腰）與第五段（斷崖）盡頭；過關即設營，可補給、下次可從營地出發
 export const CAMPS = [{ id: 'camp1', seg: 2, name: '山腰營地' }, { id: 'camp2', seg: 4, name: '斷崖營地' }];
-export const EXP = { maxTeam: 4, thr: [0.3, 0.5, 0.7], thrDefault: 0.5, moodMin: 30, walk: 5, back: 12, gateBail: 0.25, supplyHeal: 35, supplyPer: 2, supplyMax: 6, campCarry: 2, sta: 100, staStep: 0.05, staFight: 1.5, patFight: 1.5, patLazy: 1, orderPatCap: 0.7, scoutAt: 35, scoutBonus: 0.2, scoutT: 3, cool: 90, coolFast: 0.5, quarrel: 6, peaceQing: 3, peaceRaid: 2, peaceSpeed: 1.3, orderMood: -6, minHp: 50, hurtLight: 60, hurtHeavy: 25 };
+export const EXP = { maxTeam: 4, thr: [0.3, 0.5, 0.7], thrDefault: 0.5, moodMin: 30, walk: 5, back: 12, gateBail: 0.25, supplyHeal: 35, supplyPer: 2, supplyMax: 6, campCarry: 2, sta: 100, staStep: 0.05, staFight: 1.5, patFight: 1.5, patLazy: 1, orderPatCap: 0.7, scoutAt: 35, scoutBonus: 0.2, scoutT: 3, cool: 90, coolFast: 0.5, quarrel: 6, peaceQing: 3, peaceRaid: 2, peaceSpeed: 1.3, orderMood: -6, classicGuard: 0.6, classicTier: 3, minHp: 50, hurtLight: 60, hurtHeavy: 25 };
 export const RES_NAMES_095 = { page1: '凡階殘頁', page2: '精階殘頁', hide: '獸皮', gall: '熊膽' };
 // 前期節奏：前三天每天一個里程碑；導引旁白可略過
 export const PACE = [
@@ -377,3 +379,13 @@ Object.assign(TRAITS, { stubborn: { name: '較真', desc: '凡事做到底，逃
 ARTS.push({ id: 'rulai', name: '如來神掌', school: 'palm', grade: 3, tags: ['剛'], req: [], techs: ['rulai'], tech: 'rulai', secret: true });
 MOVES.push({ id: 'rulai', skill: 'palm', name: '如來神掌', req: 999, range: 120, cd: 4.0, dmg: 24, aoe: 120, color: '#f2c14e' });
 export const AWAKEN = { gen: 5, li: 2, ding: 1, shen: 1 }; // 阿星覺醒：封印根骨解開（1→5 為 +4，其餘 +4，共 +8）
+
+// ---- v1.1 名俠奇遇：招牌武學（各三招；只能由本人或親傳取得） ----
+ARTS.push({ id: 'xianglong', name: '降龍十八掌', school: 'palm', grade: 3, tags: ['剛', '拙'], req: [], techs: ['jianlong', 'feilong', 'kanglong'], tech: 'jianlong', secret: true, classic: true, signature: 'hongqigong' });
+ARTS.push({ id: 'dagou', name: '打狗棒法', school: 'palm', grade: 3, tags: ['巧'], req: [], techs: ['banzi', 'chuozi', 'wugou'], tech: 'banzi', secret: true, classic: true, signature: 'hongqigong' });
+MOVES.push({ id: 'jianlong', skill: 'palm', name: '見龍在田', req: 0, range: 50, cd: 1.0, dmg: 14, aoe: 0, color: '#e8b33a', fx: 'dragon' });
+MOVES.push({ id: 'feilong', skill: 'palm', name: '飛龍在天', req: 0, range: 70, cd: 1.4, dmg: 20, aoe: 80, color: '#f0c040', fx: 'dragon' });
+MOVES.push({ id: 'kanglong', skill: 'palm', name: '亢龍有悔', req: 0, range: 90, cd: 1.6, dmg: 30, aoe: 100, color: '#ffd24a', fx: 'dragon' });
+MOVES.push({ id: 'banzi', skill: 'leg', name: '絆字訣', req: 0, range: 40, cd: 0.7, dmg: 9, aoe: 0, color: '#3fae5a', fx: 'staff' });
+MOVES.push({ id: 'chuozi', skill: 'leg', name: '戳字訣', req: 0, range: 50, cd: 0.9, dmg: 14, aoe: 0, color: '#2f9e6a', fx: 'staff' });
+MOVES.push({ id: 'wugou', skill: 'leg', name: '天下無狗', req: 0, range: 80, cd: 1.6, dmg: 26, aoe: 90, color: '#5fd38a', fx: 'staff' });

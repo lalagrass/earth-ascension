@@ -3,7 +3,8 @@ import { ENDLESS, CAMPS } from './data.mjs';
 import { addWexin } from './hero.mjs';
 import { affKey } from './util.mjs';
 import { ENEMIES, INSIGHT, ROUTE, EXP, MOVES, DAY, EXP_STYLES as STYLES, STYLE_TRAIT, EVADE, TRAITS } from './data.mjs';
-import { moveMul, effectTier } from './arts.mjs';
+import { moveMul, effectTier, artTier as effectTierOf } from './arts.mjs';
+import { ARTS as ARTS_ALL } from './data.mjs';
 import { awaken } from './hero.mjs';
 import { log } from './util.mjs';
 export const ROUTE_END = ROUTE[ROUTE.length - 1].to;
@@ -88,11 +89,13 @@ function fight(s, e, team, H, gate = false, scale = 1) {
     t += 0.5; const fs = X.scout && t <= EXP.scoutT ? 1 + EXP.scoutBonus : 1; for (const d of alive) hp -= dpsOf(s, d) * 0.5 * bonus * fs; // v1.0 探路者先手 +20%
     if (gate && hp > E.hp * 0.4 && alive.some((d) => d.hp < 100 * EXP.gateBail)) { X.events.push(`見勢不妙，在${E.name}前及早撤退`); return { t, won: false, fled: false, bail: true }; } // v0.98 守關敵打不過：及早撤退
     if (!gate && hp > 0 && hp < E.hp * 0.35 && !fled) { fled = true; if (H.rand(s) < E.flee) { add(X.escaped, e, 1); seeEnemy(s, e, 'fled'); return { t, won: false, fled: true }; } }
-    cd -= 0.5; if (cd <= 0 && hp > 0) { cd = E.cd; const d = alive[Math.floor(H.rand(s) * alive.length)]; const def = 1 - Math.min(0.4, (d.skills.agility + d.skills.strength) / 400); d.hp = Math.max(0, d.hp - E.dmg * def); }
+    cd -= 0.5; if (cd <= 0 && hp > 0) { cd = E.cd; const d = alive[Math.floor(H.rand(s) * alive.length)]; const def = (1 - Math.min(0.4, (d.skills.agility + d.skills.strength) / 400)) * guardOf(d); d.hp = Math.max(0, d.hp - E.dmg * def); }
   }
   if (hp <= 0) { const alive = team.filter((d) => d.hp > 0); const k = alive[Math.floor(H.rand(s) * alive.length)]; add(X.kills, e, 1); seeEnemy(s, e, 'kill', k); lootRoll(s, X.loot, E.loot, H); for (const d of alive) H.grow(s, d, 'style', 3); }
   return { t, won: hp <= 0, fled: false };
 }
+// v1.1 招牌武學練到圓滿：護體（受傷 ×0.6）
+export const guardOf = (d) => (ARTS_ALL.some((a) => a.classic && d.arts?.[a.id] && effectTierOf(d, a.id) >= EXP.classicTier) ? EXP.classicGuard : 1);
 // 遭遇：可繞就閃（隊伍取最差身法）；逃兵依風格追擊；記入該段清場率
 function encounter(s, e, seg, team, H) {
   const X = s.exp, sca = seg.scale || 1, E = { ...ENEMIES[e], hp: ENEMIES[e].hp * sca }, S = STYLES[X.style], sg = (X.seg[seg.id] ??= { enc: 0, kill: 0 }); sg.enc++;

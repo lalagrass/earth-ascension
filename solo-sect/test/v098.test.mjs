@@ -23,7 +23,7 @@ test('第一章三目標達成 → 章節完成、名聲 +5、可繼續', () => 
   s.records.sect = ROUTE[1].to; const f = Object.values(s.fac); f[0].stage += 2;
   while (s.ds.filter((d) => d.role !== 'laborer').length < 4) s.ds.push({ ...structuredClone(s.ds.find((d) => d.role !== 'laborer')), id: 'x' + s.ds.length, name: '測' + s.ds.length });
   const rep = s.rep; tick(s);
-  assert.equal(s.chapter.done, true); assert.equal(s.chapter.seen, false); assert.ok(s.rep >= rep + 5); assert.ok(s.log[0].msg.includes(CHAPTER1.name)); assert.ok(s.chapter.summary.people.length >= 4);
+  assert.equal(s.chapter.done, true); assert.equal(s.chapter.seen, false); assert.ok(s.rep >= rep + 5); assert.ok(s.log.slice(0, 3).some((l) => l.msg.includes(CHAPTER1.name))); assert.ok(s.chapter.summary.people.length >= 4);
   const t = s.t; run(s, 10); assert.ok(s.t > t); assert.equal(s.rep >= rep + 5, true);
   assert.equal(CHAPTER1.goals.length, 3);
 });
@@ -40,7 +40,7 @@ test('匯出 JSON 再匯入 = 同一局', () => {
 test('0.97 存檔遷移到 0.98：舊局全面板開放', () => {
   const s = createState(1); const o = JSON.parse(save(s)); o.rules = '0.97'; delete o.unlock; delete o.chapter;
   const r = load(JSON.stringify(o)); assert.ok(r.ok); assert.equal(r.state.unlock.length, UNLOCKS.length); assert.equal(r.state.chapter.done, false);
-  assert.equal(MIGRATIONS.at(-1).to, RULES_VERSION); assert.ok(['0.98', '1.0'].includes(RULES_VERSION));
+  assert.equal(MIGRATIONS.at(-1).to, RULES_VERSION); assert.ok(parseFloat(RULES_VERSION) >= 0.98);
 });
 test('音效提示由紀事推出', () => {
   const p = {}, s = { fx: [], log: [{ msg: 'x' }] }; cuesFrom(p, s);

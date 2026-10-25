@@ -74,5 +74,5 @@ test('頭頂只一個狀態圖示，有優先序', () => {
 });
 test('0.98 存檔遷移到 1.0', () => {
   const o = JSON.parse(save(createState(1))); o.rules = '0.98'; delete o.camps; delete o.manuals; const r = load(JSON.stringify(o));
-  assert.ok(r.ok); assert.deepEqual(r.state.migSteps, ['1.0']); assert.deepEqual(r.state.camps, {}); assert.equal(RULES_VERSION, '1.0');
+  assert.ok(r.ok); assert.equal(r.state.migSteps[0], '1.0'); assert.deepEqual(r.state.camps, {}); assert.ok(parseFloat(RULES_VERSION) >= 1);
 });
