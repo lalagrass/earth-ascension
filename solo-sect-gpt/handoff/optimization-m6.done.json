@@ -1,0 +1,27 @@
+{
+  "status": "done",
+  "stage": "optimization-M6",
+  "author": "GPT / Codex",
+  "model": "GPT-6.1 Sol / high",
+  "artifactCommit": "c95a6f46ab9798ae881afc15d3b3f3d7c2ad8b3b",
+  "baseCommit": "f34747bc06f4bc4c3a93bacf15837172eae1fbde",
+  "index": "evidence/optimization/m6/index.json",
+  "format": "content/FORMAT.md",
+  "normalUI": "evidence/optimization/m6-ui-final/index.json",
+  "showcaseSave": "evidence/optimization/showcase/showcase-all-features.save.json",
+  "checks": {
+    "fullRegression": 119,
+    "additionalAllFeaturesCase": 1,
+    "distinctCasesCovered": 120,
+    "normalUI": "passed",
+    "coreValuesAndGolden": "unchanged",
+    "scopeAndSyntax": "passed"
+  },
+  "entrypoint": "http://127.0.0.1:8878/",
+  "limits": [
+    "author self-review; no independent/human review or hardware audio listening",
+    "bounded JSON families/venues, four packs; no arbitrary code or same-ID hot replacement",
+    "bounded scenarios/seeds, not a balance distribution"
+  ],
+  "next": "Stop after M6; no next chapter automatically authorized"
+}
