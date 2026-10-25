@@ -22,6 +22,7 @@
         "why": "目的倉滿：water",
         "next": "等待進展；連續30秒無進展則回原安排",
         "destination": null,
+        "destinationName": "待選作業位",
         "carried": [],
         "queue": [],
         "held": [],
@@ -71,6 +72,7 @@
         "why": "接單時：可行選擇：加練",
         "next": "完成本輪後依日課重選",
         "destination": "yard.1",
+        "destinationName": "演武木樁 1",
         "carried": [],
         "queue": [],
         "held": [],
@@ -117,9 +119,10 @@
         "phase": "walking",
         "progress": 0,
         "current": "行走 · 練功",
-        "why": "候位 yard.1 · 阿木使用中",
+        "why": "候位 演武木樁 1 · 阿木使用中",
         "next": "條件可用後續做；可改派或停工",
         "destination": "yard.1.queue",
+        "destinationName": "演武木樁 1",
         "carried": [],
         "queue": [
           {
@@ -175,6 +178,7 @@
         "why": "接單時：可行選擇：加練",
         "next": "完成本輪後依日課重選",
         "destination": "yard.1.queue",
+        "destinationName": "演武木樁 1",
         "carried": [],
         "queue": [
           {
@@ -230,6 +234,7 @@
         "why": "臨時一次 · 保留原安排",
         "next": "交付完成後回自主日課",
         "destination": "store.drop",
+        "destinationName": "倉前料堆",
         "carried": [],
         "queue": [],
         "held": [
@@ -312,6 +317,7 @@
         "why": "臨時一次 · 保留原安排",
         "next": "交付完成後回自主日課",
         "destination": "store.drop",
+        "destinationName": "倉前料堆",
         "carried": [],
         "queue": [],
         "held": [
@@ -394,6 +400,7 @@
         "why": "臨時一次 · 保留原安排",
         "next": "交付完成後回自主日課",
         "destination": "kitchen.vat",
+        "destinationName": "膳房水缸",
         "carried": [
           [
             "veg",
@@ -474,6 +481,7 @@
         "why": "臨時一次 · 保留原安排",
         "next": "交付完成後回自主日課",
         "destination": "kitchen.cook",
+        "destinationName": "膳房爐灶",
         "carried": [
           [
             "veg",
@@ -551,6 +559,7 @@
         "why": "臨時一次 · 保留原安排",
         "next": "交付完成後回自主日課",
         "destination": "kitchen.cook",
+        "destinationName": "膳房爐灶",
         "carried": [],
         "queue": [
           {
@@ -615,6 +624,7 @@
         "why": "臨時一次 · 保留原安排",
         "next": "實際交餐／入倉後才算完成",
         "destination": "table.drop",
+        "destinationName": "餐桌交餐處",
         "carried": [
           [
             "meal",
@@ -671,6 +681,7 @@
         "why": "臨時一次 · 保留原安排",
         "next": "交付完成後回自主日課",
         "destination": "yard.1",
+        "destinationName": "演武木樁 1",
         "carried": [],
         "queue": [
           {
@@ -726,6 +737,7 @@
         "why": "工作時段，等待可行單位",
         "next": "補給不足先處理，否則下一時段／可行活動",
         "destination": null,
+        "destinationName": "待選作業位",
         "carried": [],
         "queue": [],
         "held": [],
@@ -766,6 +778,7 @@
         "why": "先建靜室",
         "next": "等待進展；連續30秒無進展則回原安排",
         "destination": null,
+        "destinationName": "待選作業位",
         "carried": [],
         "queue": [],
         "held": [],
@@ -809,6 +822,7 @@
         "why": "已受理的paired，正在赴作業位",
         "next": "等雙人活動完成",
         "destination": null,
+        "destinationName": "待選作業位",
         "carried": [],
         "queue": [],
         "held": [],
@@ -849,6 +863,7 @@
         "why": "已受理的paired",
         "next": "等雙人活動完成",
         "destination": null,
+        "destinationName": "待選作業位",
         "carried": [],
         "queue": [],
         "held": [],
@@ -887,8 +902,9 @@
         "progress": 0,
         "current": "坐休",
         "why": "精力 58，先養足體力",
-        "next": "恢復至100後續有效指令",
+        "next": "精力至少100後續有效指令",
         "destination": "safe.4",
+        "destinationName": "庭院歇腳處",
         "carried": [],
         "queue": [],
         "held": [],
@@ -930,8 +946,9 @@
         "progress": 0,
         "current": "行走 · 坐休",
         "why": "精力 58，先養足體力",
-        "next": "恢復至100後續有效指令",
+        "next": "精力至少100後續有效指令",
         "destination": "safe.4",
+        "destinationName": "庭院歇腳處",
         "carried": [],
         "queue": [],
         "held": [],

@@ -27,7 +27,7 @@ export function visit(w,legend){const l=Object.hasOwn(LEGENDS,legend)?LEGENDS[le
 }
 export function depart(w,id){const p=w.people[id]||sorted(w.people).find(p=>p.canonicalIdentity===id);if(!p||p.residence!=='visitor')return {ok:false,reason:'此人不是可送走的日訪客'};
  if(p.rank==='rescuer'&&w.expedition?.rescue&&!['completed'].includes(w.expedition.rescue.phase))return {ok:false,reason:'救援者仍在照料傷員，完成這趟承諾才離開'};
- cancel(w,p,'送客沿南路離去');p.intent=null;p.auto=false;p.departing=true;route(w,p,stations.spawn);return {ok:true};}
+ cancel(w,p,'送客沿南路離去');delete p.temporary;p.intent=null;p.auto=false;p.departing=true;route(w,p,stations.spawn);return {ok:true};}
 export function school(w,p){if(!w.facilities.hall.stage||qty(w,'table','meal')<4)return {ok:false,reason:'義學需修補大廳、備四餐'};return begin(w,p,'school',{},true);}
 export function fame(w,p){if(w.people.amu.rank==='worker'||!w.facilities.dorm.stage)return {ok:false,reason:'慕名接待需阿木入門與宿舍可用'};if(w.people.shen&&w.people.shen.residence!=='departed')return begin(w,p,'greet',{target:'shen'},true);if(visitorCount(w)>=2)return {ok:false,reason:'日訪兩人已滿，先送客'};
  const o=w.people.shen||makePerson(w,'shen','沈禾',stations.spawn,{rank:'guest',residence:'visitor',color:'#797c99',auto:false});o.residence='visitor';o.departing=false;o.storyBusy=true;route(w,o,[1190,1095]);w.stories['recruit.fame'].status='active';const result=begin(w,p,'reception',{target:o.id},true);if(result.ok)w.activities[p.activity].partner=o.id;return result;

@@ -9,6 +9,7 @@ export async function encode(world){const payload=structuredClone(world),checksu
 const record=o=>o!==null&&typeof o==='object'&&!Array.isArray(o),int=(n,min=0,max=Number.MAX_SAFE_INTEGER)=>Number.isSafeInteger(n)&&n>=min&&n<=max;
 const safeId=id=>typeof id==='string'&&/^[-a-zA-Z0-9._]+$/.test(id)&&!['__proto__','constructor','prototype'].includes(id);
 const kinds=new Set(['class','unloadQuest','drink','move','return','gather','build','train','study','rest','sleep','eat','cook','craft','talk','encourage','care','teach','greet','farm','harvestHaul','delivery','school','reception','learn','equip','story','pack','aid','collect','paired']);
+const validOrigin=(w,id)=>safeId(id)&&id.startsWith('activity.')&&int(Number(id.slice(9)),1,w.nextId-1);
 function validate(w){
  if(w.lifePolicy!==undefined){validateLifePolicy(w.lifePolicy,w.inventories?.vat?.capacity);if(w.rulesVersion!==LIFE_RULES)throw Error('日課版本標記不符');}else if(w.rulesVersion===LIFE_RULES)throw Error('日課版本缺少政策');
  for(const k of ['people','facilities','inventories','activities','reservations','queues','bridge','random','relationships','families','stories','ledger','plots','metrics','facts','seenCommands'])if(!record(w[k]))throw Error('缺少世界欄位：'+k);
@@ -16,7 +17,7 @@ function validate(w){
  if(!int(w.seed,1,4294967295)||!int(w.tick)||!int(w.nextId,1)||!int(w.commandSeq)||!w.people.leader||!w.people.child)throw Error('世界識別／時間不合法');
  for(const key of ['world','events','npc']){const s=w.random[key];if(!record(s)||!int(s.value,1,4294967295)||!int(s.draws))throw Error('亂數流不合法');}
  for(const [id,f]of Object.entries(FACILITIES))if(!w.facilities[id]||!int(w.facilities[id].stage,0,f.stages.length)||!int(w.facilities[id].work))throw Error('設施階段／工量不合法');
- for(const f of Object.values(w.facilities)){const b=f.wip?.output;if(b&&(!Object.hasOwn(ITEM,b.item)||!w.inventories[b.source]||!w.inventories[b.target]||!w.people[b.actor]||!record(b.locations)||!int(b.total,1,4)||!int(b.delivered,0,b.total)||!int(b.consumed,0,b.total)||Object.entries(b.locations).some(([id,n])=>!w.inventories[id]||!int(n,1,b.total)||(w.inventories[id].items[b.item]||0)<n)||Object.values(b.locations).reduce((n,v)=>n+v,0)+b.delivered+b.consumed!==b.total))throw Error('成品批次引用／數量不合法');}
+ for(const f of Object.values(w.facilities)){const b=f.wip?.output;if(f.wip?.orderOrigin!==undefined&&!validOrigin(w,f.wip.orderOrigin)||b?.orderOrigin!==undefined&&!validOrigin(w,b.orderOrigin))throw Error('在製品來源身份不合法');if(b&&(!Object.hasOwn(ITEM,b.item)||!w.inventories[b.source]||!w.inventories[b.target]||!w.people[b.actor]||!record(b.locations)||!int(b.total,1,4)||!int(b.delivered,0,b.total)||!int(b.consumed,0,b.total)||Object.entries(b.locations).some(([id,n])=>!w.inventories[id]||!int(n,1,b.total)||(w.inventories[id].items[b.item]||0)<n)||Object.values(b.locations).reduce((n,v)=>n+v,0)+b.delivered+b.consumed!==b.total))throw Error('成品批次引用／數量不合法');}
  for(const id of STORY_IDS)if(!w.stories[id]||!['unseen','active','completed'].includes(w.stories[id].status))throw Error('故事節點缺失');
  for(const [id,inv]of Object.entries(w.inventories)){
   if(inv.id!==id||!safeId(id)||!record(inv.items)||!int(inv.capacity,1,100000))throw Error('物資位置／容量不合法');
@@ -24,6 +25,7 @@ function validate(w){
  }
  for(const [id,p]of Object.entries(w.people)){
   if(p.temporary&&(!w.lifePolicy||!record(p.temporary)||p.temporary.version!==1||!int(p.temporary.revision)||p.temporary.revision!==p.revision||!kinds.has(p.temporary.kind)||typeof p.temporary.auto!=='boolean'||typeof p.temporary.manualStop!=='boolean'||p.temporary.intent!==null&&(!record(p.temporary.intent)||!kinds.has(p.temporary.intent.kind)||!record(p.temporary.intent.args))))throw Error('臨時命令回復版本／引用不合法');
+  if(p.temporary&&(p.temporary.originId!==undefined&&!validOrigin(w,p.temporary.originId)||p.temporary.unitDelivered!==undefined&&typeof p.temporary.unitDelivered!=='boolean'))throw Error('臨時工作批次身份不合法');
   if(p.temporary?.intent){const t=p.temporary.intent,k=t.kind,a=t.args;if(['train','study','learn','equip'].includes(k)&&!Object.hasOwn(ART,a.art||'punch')||k==='build'&&!Object.hasOwn(FACILITIES,a.facility)||['talk','encourage','care','teach','greet','aid'].includes(k)&&!w.people[a.target]||k==='cook'&&!Object.hasOwn(RECIPES,a.recipe||'meal')||k==='gather'&&!['wood','stone','water','veg','herb'].includes(a.item)||k==='move'&&(!Array.isArray(a.pos)||a.pos.length!==2||a.pos.some(n=>!Number.isFinite(n))))throw Error('臨時回復意圖引用不合法');}
   if(p.id!==id||!safeId(id)||typeof p.name!=='string'||!p.name.length||p.name.length>40||!/^#[0-9a-fA-F]{6}$/.test(p.color))throw Error('人物欄位不合法');
   if(typeof p.adult!=='boolean'||!['human','rat','boar'].includes(p.kind)||!['resident','visitor','departed','wild','cave','training'].includes(p.residence)||!['leader','worker','outer','inner','family','guest','traveler','wild','warden','training','rescuer'].includes(p.rank))throw Error('人物身份不合法');

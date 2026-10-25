@@ -1,0 +1,25 @@
+✔ M2 opt-in leaves old save byte-for-byte state untouched; invalid policy does not adopt (49.298375ms)
+✔ M2 supply floors outrank personality and in-transit commitments are counted once (2.090459ms)
+✔ M2 protected training window and bounded free-time personality choices differ under the same floor (0.625666ms)
+✔ M2 one-time real gather returns to prior persistent intent and original auto state exactly once (498.435584ms)
+✔ M2 fatigue interruption keeps the capsule through save/resume and restores after actual practice (774.241333ms)
+✔ M2 temporary reassign keeps original return target; stop clears tokens without refunding carried material (130.446667ms)
+✔ M2 blocked temporary study expires once, restores stop and releases its claims (141.534458ms)
+✔ M2 unknown policy and invalid resume capsules reject checksummed saves (3.99175ms)
+✔ M2 structured projection follows at least twelve actual model states and is read-only (2517.37075ms)
+✔ M2 adopted policy replays deterministically on five fixed seeds (19492.958542ms)
+✔ M2 serious injury still exempts duties and full real stations expose queue ownership, then transfer on cancellation (71.896375ms)
+✔ M2 adopted saves carry a rules marker that the frozen first-version reader rejects (11.304334ms)
+✔ M2 ordinary recall replaces a capsule; changed auto preference survives its return; shared journeys reject temporary takeover before mutation (65.637625ms)
+✔ M2 growing plots do not block training; empty sources and full containers never report supplies reached (0.446875ms)
+✔ M2 invalid stock goals are atomic under the adopted policy (0.112417ms)
+✔ M2 injury arriving during a temporary work order interrupts into real recovery before resuming (8209.6055ms)
+✔ M2 departing a visitor supersedes its one-time return capsule (3.131583ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 32059.882375

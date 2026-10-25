@@ -1,0 +1,30 @@
+✖ M2 a temporary recipe finished by another worker during selfcare does not cook a duplicate batch on return (759.033208ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 853.019709
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/optimization/policy.test.mjs:20:1
+✖ M2 a temporary recipe finished by another worker during selfcare does not cook a duplicate batch on return (759.033208ms)
+  AssertionError [ERR_ASSERTION]: one actual batch only
+
+  8 !== 4
+
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:20:693)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 8,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

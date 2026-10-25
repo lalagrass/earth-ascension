@@ -1,0 +1,12 @@
+✔ M2 invalid stock goals are atomic under the adopted policy (2.08175ms)
+✔ M2 injury arriving during a temporary work order interrupts into real recovery before resuming (10136.536042ms)
+✔ M2 departing a visitor supersedes its one-time return capsule (12.973541ms)
+✔ M2 a temporary recipe finished by another worker during selfcare does not cook a duplicate batch on return (462.316334ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10711.869209

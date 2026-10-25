@@ -1,0 +1,85 @@
+✖ M2 invalid stock goals are atomic under the adopted policy (4.471958ms)
+✖ M2 injury arriving during a temporary work order interrupts into real recovery before resuming (5.648667ms)
+✖ M2 departing a visitor supersedes its one-time return capsule (1.192875ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 88.372167
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/optimization/policy.test.mjs:17:1
+✖ M2 invalid stock goals are atomic under the adopted policy (4.471958ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    {
+  +   manual: true,
+  +   meal: 2,
+  -   meal: 6,
+      water: 6
+    }
+
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:17:188)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { water: 6, meal: 2, manual: true },
+    expected: { water: 6, meal: 6 },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/optimization/policy.test.mjs:18:1
+✖ M2 injury arriving during a temporary work order interrupts into real recovery before resuming (5.648667ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(['rest','sleep'].includes(w.activities[w.people.leader.activity].kind))
+
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:18:308)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/optimization/policy.test.mjs:19:1
+✖ M2 departing a visitor supersedes its one-time return capsule (1.192875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + {
+  +   auto: false,
+  +   intent: null,
+  +   kind: 'move',
+  +   manualStop: false,
+  +   revision: 1,
+  +   version: 1
+  + }
+  - undefined
+
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/policy.test.mjs:19:484)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { version: 1, revision: 1, kind: 'move', auto: false, manualStop: false, intent: null },
+    expected: undefined,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

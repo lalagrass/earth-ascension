@@ -1,0 +1,8 @@
+{
+  "status": "author-interrupted-boundary-repair",
+  "runtimeCommit": "306650c4e3945d679d3628b896bad8e075eab160",
+  "lastWallMs": 270120,
+  "lastTick": 125180,
+  "necessaryInterventionsSoFar": 0,
+  "reason": "Preregistered injury/cancellation/configuration audit found active-injury interruption, invalid-goals atomicity and departing visitor capsule cleanup gaps. Three failing controlled model cases retained, this exploration is not an accepted 20-minute run."
+}
