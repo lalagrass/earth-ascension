@@ -1,0 +1,21 @@
+{
+  "status": "done",
+  "stage": "optimization-M1",
+  "author": "GPT / Codex",
+  "model": "GPT-6.1 Sol / high",
+  "baseCommit": "cd38a44eac1afe5e1c508cfcbbbede7c0a6b5786",
+  "artifactCommit": "6273e2682b32c1b56e3181f681afbd5e48e0fdac",
+  "evidenceIndex": "evidence/optimization/m1/index.json",
+  "scope": "Layered watercolor home, readable living activities, collapsible ledger, real continuous bridge walking; no simulation or save behavior change",
+  "checks": [
+    "54 model regression passed",
+    "2 asset tests passed",
+    "M1 normal UI accepted and walk accepted passed",
+    "git diff --check stdout whitespace cleanup in checkpoint"
+  ],
+  "next": "M2 implementation only after old normal-UI 20-minute baseline completes and is locked; then M3→M6 sequentially",
+  "limits": [
+    "Author self-review only; no independent review/human playtest",
+    "Old development.done remains the first-version marker; this checkpoint does not mark M2–M6 complete"
+  ]
+}

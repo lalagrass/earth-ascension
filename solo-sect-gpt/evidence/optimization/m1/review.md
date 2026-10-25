@@ -9,3 +9,5 @@
 失敗紀錄：初始基線副本漏directions導致建局前失敗，後補base原檔；首輪聊天未先叫停忙碌對象而中止；兩次門口／一次長走以每200ms位置判抵達，漏掉抵達後3tick即接續自主活動的實況。模型原樣重播在171762到1110,1000、171765開始下一工作；改按accepted move的completionId確認、透過UI關自主／先用餐後正常重驗，未改遊戲規則。另有一次匯入欄位被refresh重建，已保留原DOM input並正常重驗。舊失敗截圖／存檔／index／影片保留，不混入通過成績。
 
 外觀判定僅作者自校；人物仍是原生Canvas動畫骨架，沒有宣稱真人滿意或整套手繪逐幀立繪。水彩素材內建image_gen生成並已進專案，完整prompt／alpha／hash見assets/watercolor。
+
+封存時只正規化driver log行尾空白，原始文字含空白版本仍在M1 artifact commit；未更動事件、失敗結論或畫面。

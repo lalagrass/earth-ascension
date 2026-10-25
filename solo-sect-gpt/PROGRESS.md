@@ -1,6 +1,6 @@
 # 優化進行中：M1→M6
 
-2026-10-26新增授權；單一作者GPT / Codex，GPT-6.1 Sol / high。原第一版交付仍有效，`handoff/development.done.json`保留不動。新優化從`cd38a44eac1afe5e1c508cfcbbbede7c0a6b5786`開始，各階段有新spec、正常UI證據與checkpoint；M1/M2計畫見`docs/optimization/M1-M2.md`。完成M6才總結，沒有push／PR／合併／部署。
+2026-10-26新增授權；單一作者GPT / Codex，GPT-6.1 Sol / high。原第一版交付仍有效，`handoff/development.done.json`保留不動。新優化從`cd38a44eac1afe5e1c508cfcbbbede7c0a6b5786`開始，各階段有新spec、正常UI證據與checkpoint；M1/M2計畫見`docs/optimization/M1-M2.md`。完成M6才總結，沒有push／PR／合併／部署。M1已完成，runtime `6273e2682b32c1b56e3181f681afbd5e48e0fdac`，正常UI與橋行走索引見`evidence/optimization/m1/index.json`。
 
 ---
 

@@ -1,7 +1,7 @@
 file 1
-import-click 
+import-click
 ground-command {"type":"task","actor":"leader","kind":"move","args":{"pos":[1975,420]},"id":"ui.120","tick":171453,"seq":120,"result":{"ok":true}}
 outbound arrived
 ground-command {"type":"task","actor":"leader","kind":"move","args":{"pos":[1110,1080]},"id":"ui.121","tick":172232,"seq":121,"result":{"ok":true}}
 homebound arrived
-passed 
+passed
