@@ -159,3 +159,7 @@ v0.6 候選：成家後生活（同住、子嗣不做或另議）、新人個性
 - P1-1 倉庫預留、P1-2 共用移出生命週期、P1-3 傳人欄位、P2-1 煮飯耗力、P2-2 未來規則拒讀、愛喝undefined、存檔改非阻斷提示。
 - 新增 `src/lifecycle.mjs`（cancelTask／removeActor／invariants）、`test/v145-review.test.mjs` 8 項；全套 213 通過；golden 重產。
 - 35 案長跑延後（擁有人指示），腳本 `artifacts/review-fix/longrun.mjs`。
+
+## v1.46 長時間試玩基準（舊核心）
+- 35 案（5 種子 × 7 開局 × 30 日）全部跑完、0 不變式違反；未發現新 bug，不需修正。
+- 報告 `BALANCE-BASELINE-v146.md`；原始資料 `artifacts/v146-baseline/`。長跑腳本加入每日指標快照（資源、人數、建築階段、最遠步數、聲望、章節）。

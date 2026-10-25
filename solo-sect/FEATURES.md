@@ -70,7 +70,7 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 | SS-EVENT-TIERS | ADOPTION-PLAN A3；v1.45 | 事件依關鍵字分三級：C＝人物頭上氣泡、B＝地圖右側竹簡（點一下推鏡＋捲到弟子卡）、A＝暫停＋推鏡＋「知道了，繼續」 | 已驗證（A 級暫停、B 級點擊推鏡） | 通過（UI：A 級大事 0.4 秒內時間不動；點竹簡 → 弟子卡捲入視窗）；C 級氣泡只有單元（UI 沒斷言氣泡畫面） | src/events.mjs, src/util.mjs log(), src/main.mjs feed()/bubble()/focusOn(), style.css | `node --test test/v145.test.mjs`（A3 三項）；flow-ui.log | shots/v145-01（竹簡）、shots/v145-03（竹簡＋推鏡後）、artifacts/features/v145/top-alert.png（若該次有出現）；皆真實點擊流程 | 分級靠訊息關鍵字（`TOP_RX/MID_RX`），會有誤判（例：「重傷倒地」算 A 級，可能太吵）；A 級沒有關閉開關；推鏡只在人物在院內時有效 |
 | SS-EXP-STRIP | ADOPTION-PLAN A3＋A16 里程軸；v1.45 | 巡山中面板顯示每段 ✔已清／⚠未清／▶進行中／·未到；地圖頂端進度條同步標 ✔⚠ | 已驗證 | 通過（UI：巡山中 ≥7 段標記可見）；狀態判定有單元 | src/expedition.mjs milestones(), src/main.mjs expBar()/巡山面板 | `node --test test/v145.test.mjs`（里程軸）；flow-ui.log 步驟 3 | shots/v145-01-patrol-strip-feed.png（真實點擊流程） | 無盡段只在走到時才列出；⚠ 的提示只在滑鼠 title |
 | SS-STATUS | ADOPTION-PLAN A5；v1.45 | 弟子卡最上方三行：現在／原因／下一步＋決策層標籤（指令／巡山／生理／作息／性格） | 已驗證（限顯示存在且三行齊） | 通過（UI：點竹簡後該弟子卡含三行）；層級判定有單元 | src/status.mjs, src/main.mjs 弟子卡 | `node --test test/v145.test.mjs`（A5）；flow-ui.log 步驟 7 | shots/v145-03-status-panel.png（真實點擊流程） | 層級用 reason 文字推斷（例：「灶上該煮飯了」被標成「性格」而非「作息」）；「下一步」取評分第二名，不保證真的會做；待命時 reason 會殘留舊文字（截圖可見「名俠入門」） |
-| SS-BALANCE-LONG | ROADMAP §19：排在 v1.46（v1.45 規則上的基準線） | 長時間自動試玩 → 平衡報告 | 規劃 | 未跑 | — | — | — | 還沒做（等擁有人點頭） |
+| SS-BALANCE-LONG | ROADMAP §19：排在 v1.46（v1.45 規則上的基準線） | 長時間自動試玩 → 平衡報告 | 已接線（v1.46 基準已跑） | **通過（不變式）**：35/35 跑完 30 日、0 違反（`artifacts/v146-baseline/longrun.log`、`longrun-results.json`；報告 `BALANCE-BASELINE-v146.md`）。限：腳本玩家只用一般指令、固定種子；平衡結論見報告，未做真人試玩 | — | — | — | 還沒做（等擁有人點頭） |
 | SS-PROD | ROADMAP §16 | 版權、平台、付費點數、手機 | 規劃 | 未跑 | — | — | — | 刻意延後 |
 
 ## 三、依賴、未完成、取消／恢復、保存邊界
@@ -117,4 +117,4 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 | UI 存讀往返 | 未驗證 | alert() 阻斷 | 改非阻斷 toast | `flow-save-roundtrip.mjs` 5/5 PASS（`flow-save.log`） | 通過 |
 
 - 全套：213/213（`artifacts/review-fix/test-full.log`）。golden 重產：耗力時長與取料規則改變。`sim.test.mjs` 閒坐測試改看 seed 74–77 合計（seed 74 規則改後不再閒坐）。
-- 35 案長跑矩陣：腳本 `artifacts/review-fix/longrun.mjs` 已寫好，**依擁有人指示延後到版本完成後再跑**；只跑 smoke（seed 7 × plain、郭靖 × 3 日：2/2 通過，`longrun-results-smoke.json`）。矩陣驗證欄＝未跑。
+- 35 案長跑矩陣：腳本 `artifacts/review-fix/longrun.mjs` 已寫好，**依擁有人指示延後到版本完成後再跑**；只跑 smoke（seed 7 × plain、郭靖 × 3 日：2/2 通過，`longrun-results-smoke.json`）。矩陣驗證欄＝未跑（d2692d9 當時）。**更新**：v1.46 於 0675f23 跑完整矩陣 35/35 通過，見 `artifacts/v146-baseline/`。
