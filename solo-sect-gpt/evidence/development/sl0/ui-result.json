@@ -1,0 +1,94 @@
+{
+  "layer": "U",
+  "seed": 11,
+  "tick": 1474,
+  "pauseStable": true,
+  "errors": [],
+  "commands": [
+    {
+      "type": "build",
+      "actor": "leader",
+      "facility": "dorm",
+      "id": "ui.1",
+      "tick": 2,
+      "seq": 1,
+      "result": {
+        "ok": true
+      }
+    }
+  ],
+  "people": [
+    {
+      "id": "leader",
+      "pos": [
+        882.6328125,
+        1024.94921875
+      ],
+      "task": {
+        "id": "activity.3",
+        "actor": "leader",
+        "kind": "build",
+        "args": {
+          "facility": "dorm"
+        },
+        "phase": "init",
+        "progress": 0,
+        "revision": 1,
+        "started": 2,
+        "units": 4,
+        "material": "wood",
+        "load": 2,
+        "checked": "dorm.delivery",
+        "destination": null,
+        "blocked": "工地材料在途"
+      },
+      "bag": {
+        "id": "bag.leader",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "child",
+      "pos": [
+        972,
+        1100
+      ],
+      "bag": {
+        "id": "bag.child",
+        "items": {},
+        "capacity": 4
+      }
+    },
+    {
+      "id": "amu",
+      "pos": [
+        902.2421875,
+        1149.16796875
+      ],
+      "task": {
+        "id": "activity.31",
+        "actor": "amu",
+        "kind": "build",
+        "args": {
+          "facility": "dorm"
+        },
+        "phase": "gather",
+        "progress": 0,
+        "revision": 0,
+        "started": 680,
+        "units": 0,
+        "material": "wood",
+        "load": 4,
+        "blocked": "工地材料在途",
+        "checked": "wood",
+        "destination": "wood"
+      },
+      "bag": {
+        "id": "bag.amu",
+        "items": {},
+        "capacity": 4
+      }
+    }
+  ]
+}
