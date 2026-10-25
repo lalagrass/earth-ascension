@@ -1,0 +1,20 @@
+✔ M5 actual journey gather/main/meal (2506.558792ms)
+✔ M5 actual journey escort/ridge/rest (2270.511458ms)
+✔ M5 actual journey spar/main/meal (1649.642167ms)
+✔ M5 actual journey explore/main/meal (1553.357833ms)
+✔ M5 actual journey explore/ridge/rest (1661.4025ms)
+✔ M5 finite herbs, real camps and cancellation, unknown plans/minors reject (4.427875ms)
+✔ M5 meal consumes real carried ration; slow rest takes twice the time and keeps it (1135.964541ms)
+✔ M5 five fixed seeds preserve adopted journey mid-walk continuation (5232.981292ms)
+✔ M5 recall after one actual herb retains it and records partial delivery without duplication (1023.546ms)
+✔ M5 adopted same-bank movement never claims a crossing; actual crossings still have a physical owner (52.069ms)
+✔ M5 mid-ridge state saves and continues; a missing convoy reference rejects before execution (2240.806625ms)
+✔ M5 route distance is observed in a controlled same-camp pair; invalid unload cannot start (1567.550667ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21006.93675

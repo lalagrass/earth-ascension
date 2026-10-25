@@ -4,12 +4,14 @@ import {findPath,position,sweep,walkable,inRect} from './map.mjs';
 import {bagWeight,event,sorted} from './state.mjs';
 function isqrt(n){let v=Math.floor(Math.sqrt(n));while((v+1)*(v+1)<=n)v++;while(v*v>n)v--;return v;}
 function heading(dx,dy){let best=-Infinity,angle=0;for(let i=0;i<360;i++){const v=directions[i],dot=dx*v[0]+dy*v[1];if(dot>best){best=dot;angle=i;}}return angle;}
-export function speed(w,p){let level=p.distance>=18000*Q?3:p.distance>=9000*Q?2:p.distance>=3000*Q?1:0;let n=(bagWeight(w,p)?20:30)+level*4;if(p.kind==='rat')n=24;if(p.kind==='boar')n=22;if(p.rank==='warden'||p.rank==='training')n=26;if(p.injury>60)n*=0.6;else if(p.injury>30)n*=0.8;if(p.energy<2500)n*=0.8;if(p.helping||p.helpedBy)n*=0.65;return Math.max(6,n);}
+export function speed(w,p){let level=p.distance>=18000*Q?3:p.distance>=9000*Q?2:p.distance>=3000*Q?1:0;let n=(bagWeight(w,p)?20:30)+level*4;if(p.kind==='rat')n=24;if(p.kind==='boar')n=22;if(p.rank==='warden'||p.rank==='training')n=26;if(p.injury>60)n*=0.6;else if(p.injury>30)n*=0.8;if(p.energy<2500)n*=0.8;if(p.helping||p.helpedBy)n*=0.65;if(w.expedition?.journey?.escort===p.id&&w.expedition.phase==='outbound')n=Math.min(n,...w.expedition.actors.map(id=>speed(w,w.people[id])));return Math.max(6,n);}
 export function route(w,p,target){if(w.bridge.holder===p.id){p.bridgeExit=true;p.bridgePendingTarget=[...target];return true;}const path=findPath(w,position(p),target);if(!path){p.blocked='無可通行路徑';p.path=[];return false;}p.path=path;p.routeAt=0;p.blocked='';return true;}
 export const arrived=p=>p.routeAt>=p.path.length;
 function bridgePermit(w,p,x,y){const b=w.bridge,on=inRect(x,y,[1840,410,130,60]);
  if(b.holder===p.id)return true;
  if(!on)return true;
+ // Trail v1: walking along the same bank must not acquire a crossing token.
+ if(w.trailPlan&&((p.x/Q<1870&&!p.path.slice(p.routeAt).some(pt=>pt[0]/Q>=1870))||(p.x/Q>1940&&!p.path.slice(p.routeAt).some(pt=>pt[0]/Q<=1940))))return true;
  if(p.x/Q<1870&&x<p.x/Q||p.x/Q>1940&&x>p.x/Q)return true;
  if(!b.queue.some(q=>q.id===p.id))b.queue.push({id:p.id,tick:w.tick,dir:p.x/Q<1905?'east':'west',priority:p.helpedBy||p.rank==='rescuer'?2:p.intent?.kind==='return'?1:0});
  b.queue=b.queue.filter(q=>w.people[q.id]&&w.people[q.id].residence!=='departed');

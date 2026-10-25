@@ -1,0 +1,291 @@
+{
+  "status": "passed",
+  "author": "GPT / Codex; GPT-6.1 Sol / high",
+  "baseCommit": "9746097",
+  "spec": "docs/optimization/M5.md",
+  "normalUI": "evidence/optimization/m5-ui-accepted/index.json",
+  "model": "evidence/optimization/m5-model/final-coach.log",
+  "regression": "evidence/optimization/m5-model/regression.log",
+  "assets": "evidence/optimization/m5-model/assets-final.log",
+  "pairedRoute": "evidence/optimization/m5-model/route-pair.json",
+  "counts": {
+    "journey": 13,
+    "oldM3M4Regression": 77,
+    "assetsIncludedInRegression": 2,
+    "normalUICases": 4
+  },
+  "cases": [
+    {
+      "goal": "gather",
+      "route": "main",
+      "camp": "meal",
+      "sourceSha256": "1ff5d8f59e19d15bef9140f95f667777203dff5d86256e9d4d5e3c3ae78a89ad",
+      "before": {
+        "tick": 171453,
+        "store": {
+          "money": 9,
+          "veg": 8,
+          "herb": 1,
+          "wood": 2,
+          "ration": 4,
+          "staff": 1
+        }
+      },
+      "after": {
+        "tick": 173181,
+        "store": {
+          "money": 9,
+          "veg": 8,
+          "herb": 3,
+          "wood": 2,
+          "ration": 2,
+          "staff": 1
+        },
+        "history": [
+          {
+            "version": 1,
+            "objective": "gather",
+            "route": "main",
+            "camp": "meal",
+            "phase": "home",
+            "progress": 120,
+            "harvested": 2,
+            "delivered": 2,
+            "started": 171453,
+            "homeRecorded": true,
+            "ended": 173166,
+            "completed": true,
+            "expedition": "expedition.48879",
+            "actors": [
+              "leader"
+            ],
+            "elapsed": 1713,
+            "energy": [
+              {
+                "id": "leader",
+                "energy": 8875,
+                "injury": 0,
+                "bag": {
+                  "ration": 2
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "goal": "escort",
+      "route": "ridge",
+      "camp": "rest",
+      "sourceSha256": "1ff5d8f59e19d15bef9140f95f667777203dff5d86256e9d4d5e3c3ae78a89ad",
+      "before": {
+        "tick": 171453,
+        "store": {
+          "money": 9,
+          "veg": 8,
+          "herb": 1,
+          "wood": 2,
+          "ration": 4,
+          "staff": 1
+        }
+      },
+      "after": {
+        "tick": 174095,
+        "store": {
+          "money": 9,
+          "veg": 8,
+          "herb": 1,
+          "wood": 2,
+          "ration": 2,
+          "staff": 1
+        },
+        "history": [
+          {
+            "version": 1,
+            "objective": "escort",
+            "route": "ridge",
+            "camp": "rest",
+            "phase": "home",
+            "progress": 0,
+            "harvested": 0,
+            "delivered": 0,
+            "started": 171453,
+            "homeRecorded": true,
+            "escort": "escort.traveler",
+            "ridgeAt": 6,
+            "ridgeStarted": 172971,
+            "ridgeWalkers": {
+              "leader": {
+                "node": 6,
+                "sent": false,
+                "done": true
+              },
+              "escort.traveler": {
+                "node": 6,
+                "sent": false,
+                "done": true
+              }
+            },
+            "escortedToGoal": true,
+            "ended": 174081,
+            "completed": true,
+            "expedition": "expedition.48879",
+            "actors": [
+              "leader"
+            ],
+            "elapsed": 2628,
+            "energy": [
+              {
+                "id": "leader",
+                "energy": 9463,
+                "injury": 0,
+                "bag": {
+                  "ration": 2
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "goal": "spar",
+      "route": "main",
+      "camp": "meal",
+      "sourceSha256": "1ff5d8f59e19d15bef9140f95f667777203dff5d86256e9d4d5e3c3ae78a89ad",
+      "before": {
+        "tick": 171453,
+        "store": {
+          "money": 9,
+          "veg": 8,
+          "herb": 1,
+          "wood": 2,
+          "ration": 4,
+          "staff": 1
+        }
+      },
+      "after": {
+        "tick": 174034,
+        "store": {
+          "money": 9,
+          "veg": 8,
+          "herb": 1,
+          "wood": 2,
+          "ration": 2,
+          "staff": 1
+        },
+        "history": [
+          {
+            "version": 1,
+            "objective": "spar",
+            "route": "main",
+            "camp": "meal",
+            "phase": "home",
+            "progress": 0,
+            "harvested": 0,
+            "delivered": 0,
+            "started": 171453,
+            "homeRecorded": true,
+            "coach": "warden.1",
+            "sparPartner": "warden.1",
+            "sparSession": "spar.48962",
+            "sparStarted": 172763,
+            "duelStarted": 173261,
+            "duelResult": "completed",
+            "actions": 4,
+            "ended": 174019,
+            "completed": true,
+            "expedition": "expedition.48879",
+            "actors": [
+              "leader"
+            ],
+            "elapsed": 2566,
+            "energy": [
+              {
+                "id": "leader",
+                "energy": 8851,
+                "injury": 0,
+                "bag": {
+                  "ration": 1
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "goal": "explore",
+      "route": "main",
+      "camp": "meal",
+      "sourceSha256": "1ff5d8f59e19d15bef9140f95f667777203dff5d86256e9d4d5e3c3ae78a89ad",
+      "before": {
+        "tick": 171453,
+        "store": {
+          "money": 9,
+          "veg": 8,
+          "herb": 1,
+          "wood": 2,
+          "ration": 4,
+          "staff": 1
+        }
+      },
+      "after": {
+        "tick": 174061,
+        "store": {
+          "money": 9,
+          "veg": 8,
+          "herb": 1,
+          "wood": 2,
+          "ration": 2,
+          "staff": 1
+        },
+        "history": [
+          {
+            "version": 1,
+            "objective": "explore",
+            "route": "main",
+            "camp": "meal",
+            "phase": "home",
+            "progress": 0,
+            "harvested": 0,
+            "delivered": 0,
+            "started": 171453,
+            "homeRecorded": true,
+            "ended": 174050,
+            "completed": false,
+            "expedition": "expedition.48879",
+            "actors": [
+              "leader"
+            ],
+            "elapsed": 2597,
+            "energy": [
+              {
+                "id": "leader",
+                "energy": 9362,
+                "injury": 0,
+                "bag": {
+                  "ration": 1
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "limits": [
+    "Author self-review, not human or independent review",
+    "Four finite herbs; existing wardens must really be healthy/free, no infinite respawn",
+    "Ordinary task stop halts a shared journey; whole-party recall completes safe cleanup",
+    "Reused unaffected M4 policy18 and M2 root Python53/SGdev383/Earth syntax"
+  ],
+  "repairs": [
+    "Gate phase begins before the physical crossing; acceptance now checks actual right bank",
+    "Side-bank movement in adopted trail mode does not claim crossing ownership; real water crossing still requires one owner",
+    "Narrow side route uses sequential same-speed convoy; wrong initial waypoint assumptions and failures retained",
+    "S2 first warden was 30/60, select an actually healthy second existing warden; no healing injection",
+    "Guard positive unload and saved convoy references; interrupted one-herb delivery remains partial"
+  ]
+}

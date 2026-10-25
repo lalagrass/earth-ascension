@@ -1,0 +1,17 @@
+{
+  "source": "controlled same-camp actual movement",
+  "pair": [
+    {
+      "route": "main",
+      "ticks": 2162,
+      "distance": 1802.92578125,
+      "energy": 9757
+    },
+    {
+      "route": "ridge",
+      "ticks": 2548,
+      "distance": 2180.2421875,
+      "energy": 9567
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "source": "controlled model fixtures, not UI",
+  "results": [
+    {
+      "goal": "gather",
+      "route": "main",
+      "camp": "meal",
+      "journey": {
+        "version": 1,
+        "objective": "gather",
+        "route": "main",
+        "camp": "meal",
+        "phase": "home",
+        "progress": 120,
+        "harvested": 2,
+        "delivered": 2,
+        "started": 2000,
+        "homeRecorded": true,
+        "ended": 6015,
+        "completed": true
+      },
+      "tick": 6015,
+      "store": {
+        "money": 30,
+        "veg": 8,
+        "herb": 4,
+        "ration": 10
+      },
+      "person": {
+        "energy": 7959,
+        "injury": 0
+      }
+    },
+    {
+      "goal": "escort",
+      "route": "ridge",
+      "camp": "rest",
+      "journey": {
+        "version": 1,
+        "objective": "escort",
+        "route": "ridge",
+        "camp": "rest",
+        "phase": "home",
+        "progress": 0,
+        "harvested": 0,
+        "delivered": 0,
+        "started": 2000,
+        "homeRecorded": true,
+        "escort": "escort.traveler",
+        "ridgeAt": 6,
+        "ridgeStarted": 3867,
+        "ridgeWalkers": {
+          "leader": {
+            "node": 6,
+            "sent": false,
+            "done": true
+          },
+          "escort.traveler": {
+            "node": 6,
+            "sent": false,
+            "done": true
+          }
+        },
+        "escortedToGoal": true,
+        "ended": 5520,
+        "completed": true
+      },
+      "tick": 5520,
+      "store": {
+        "money": 30,
+        "veg": 8,
+        "herb": 2,
+        "ration": 10
+      },
+      "person": {
+        "energy": 9188,
+        "injury": 0
+      }
+    },
+    {
+      "goal": "spar",
+      "route": "main",
+      "camp": "meal",
+      "journey": {
+        "version": 1,
+        "objective": "spar",
+        "route": "main",
+        "camp": "meal",
+        "phase": "home",
+        "progress": 0,
+        "harvested": 0,
+        "delivered": 0,
+        "started": 2000,
+        "homeRecorded": true,
+        "coach": "warden.0",
+        "sparPartner": "warden.0",
+        "sparSession": "spar.15",
+        "sparStarted": 3476,
+        "duelStarted": 3900,
+        "duelResult": "completed",
+        "actions": 5,
+        "ended": 5112,
+        "completed": true
+      },
+      "tick": 5112,
+      "store": {
+        "money": 30,
+        "veg": 8,
+        "herb": 2,
+        "ration": 10
+      },
+      "person": {
+        "energy": 8450,
+        "injury": 0
+      }
+    },
+    {
+      "goal": "explore",
+      "route": "main",
+      "camp": "meal",
+      "journey": {
+        "version": 1,
+        "objective": "explore",
+        "route": "main",
+        "camp": "meal",
+        "phase": "home",
+        "progress": 0,
+        "harvested": 0,
+        "delivered": 0,
+        "started": 2000,
+        "homeRecorded": true,
+        "ended": 5411,
+        "completed": false
+      },
+      "tick": 5411,
+      "store": {
+        "money": 30,
+        "veg": 8,
+        "herb": 2,
+        "ration": 10
+      },
+      "person": {
+        "energy": 9032,
+        "injury": 0
+      }
+    },
+    {
+      "goal": "explore",
+      "route": "ridge",
+      "camp": "rest",
+      "journey": {
+        "version": 1,
+        "objective": "explore",
+        "route": "ridge",
+        "camp": "rest",
+        "phase": "home",
+        "progress": 0,
+        "harvested": 0,
+        "delivered": 0,
+        "started": 2000,
+        "homeRecorded": true,
+        "ridgeAt": 6,
+        "ridgeStarted": 3676,
+        "ridgeWalkers": {
+          "leader": {
+            "node": 6,
+            "sent": false,
+            "done": true
+          }
+        },
+        "ended": 5936,
+        "completed": false
+      },
+      "tick": 5936,
+      "store": {
+        "money": 30,
+        "veg": 8,
+        "herb": 2,
+        "ration": 10
+      },
+      "person": {
+        "energy": 8873,
+        "injury": 0
+      }
+    }
+  ]
+}

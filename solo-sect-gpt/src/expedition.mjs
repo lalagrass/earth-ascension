@@ -1,3 +1,4 @@
+import{TRAIL_ROUTES}from'./journey-data.mjs';import{stopJourneySpar}from'./journey.mjs';
 import {Q,HZ,DAY} from './data.mjs';
 import {stations,position,findPath,los,inRect,walkable} from './map.mjs';
 import {event,uid,availableQty as qty,transfer,add,sorted,bagWeight,makePerson,reserve,caveFoodCarried,caveFoodDelivered,ensureCaveCargo,inventorySpace} from './state.mjs';
@@ -22,7 +23,7 @@ export function dispatch(w,ids,target='cave'){
 }
 export function recallParty(w,reason='玩家召回'){
  const e=w.expedition;if(!e||['returned','cancelled'].includes(e.phase))return {ok:false,reason:'沒有外出隊伍'};
- e.phase='return';e.returnReason=reason;for(const g of sorted(w.people).filter(p=>p.rank==='warden'&&p.hostile)){g.hostile=false;g.combatTarget=null;if(g.action){g.action.phase='recover';g.action.remaining=g.action.recover;}route(w,g,g.home);}for(const [i,id]of e.actors.entries()){const p=w.people[id];cancel(w,p,reason);p.combatTarget=null;p.action=p.action?.phase==='recover'?p.action:null;p.intent={kind:'return',revision:++p.revision,args:{}};p.reason='召回：不再沿路新採集';route(w,p,stations['safe.'+i]);}
+ stopJourneySpar(w,e);if(e.journey)e.journey.phase='return';e.phase='return';e.returnReason=reason;if(e.journey?.escort)route(w,w.people[e.journey.escort],stations['safe.7']);for(const g of sorted(w.people).filter(p=>p.rank==='warden'&&p.hostile)){g.hostile=false;g.combatTarget=null;if(g.action){g.action.phase='recover';g.action.remaining=g.action.recover;}route(w,g,g.home);}for(const [i,id]of e.actors.entries()){const p=w.people[id];cancel(w,p,reason);p.combatTarget=null;p.action=p.action?.phase==='recover'?p.action:null;p.intent={kind:'return',revision:++p.revision,args:{}};p.reason='召回：不再沿路新採集';route(w,p,stations['safe.'+i]);}
  if(w.people.zhou.helpedBy){const z=w.people.zhou;route(w,z,stations['safe.4']);}event(w,'expedition-recall',e.actors,{reason});return {ok:true};
 }
 export function negotiate(w){const e=w.expedition;if(!e||e.phase!=='gate')return {ok:false,reason:'須先沿路抵達古洞守路處'};
@@ -60,25 +61,28 @@ function rescuedTick(w,e){const r=e.rescue;if(!r)return;
   event(w,'rescue-arrived',[helper.id,victim.id],{elapsed:w.tick-r.requested});
  }
 }
-export function travelActivityTick(w,p){const a=w.activities[p.activity];if(!a)return false;if(a.kind==='unloadQuest'){const n=caveFoodCarried(w,p,a.args.origin);if(n){if(inventorySpace(w,'store','ration',a.id)<n){p.blocked='乾糧倉滿，先讓另一位同門取用乾糧；古洞糧保留在手中';return true;}if(!approach(w,p,a,'store.drop'))return true;transfer(w,p.bag,'store','ration',n);}finish(w,p,a,'古洞糧已實際交到倉庫',true);route(w,p,stations['safe.'+w.expedition.actors.indexOf(p.id)]);return true;}if(a.kind==='pack'){
+export function travelActivityTick(w,p){const a=w.activities[p.activity];if(!a)return false;if(a.kind==='trailUnload'){const n=Math.min(qty(w,p.bag,'herb'),a.args.amount);if(n){if(inventorySpace(w,'store','herb',a.id)<n){p.blocked='草藥倉滿，先騰出空間；草藥仍在手中';return true;}if(!approach(w,p,a,'store.drop'))return true;transfer(w,p.bag,'store','herb',n);w.expedition.journey.delivered+=n;}finish(w,p,a,'藥草已真正交倉',true);route(w,p,stations['safe.'+w.expedition.actors.indexOf(p.id)]);return true;}if(a.kind==='unloadQuest'){const n=caveFoodCarried(w,p,a.args.origin);if(n){if(inventorySpace(w,'store','ration',a.id)<n){p.blocked='乾糧倉滿，先讓另一位同門取用乾糧；古洞糧保留在手中';return true;}if(!approach(w,p,a,'store.drop'))return true;transfer(w,p.bag,'store','ration',n);}finish(w,p,a,'古洞糧已實際交到倉庫',true);route(w,p,stations['safe.'+w.expedition.actors.indexOf(p.id)]);return true;}if(a.kind==='pack'){
  const n=a.args.needed??Math.max(0,2-qty(w,p.bag,'ration'));if(qty(w,'store','ration')<n){p.blocked='倉內乾糧不足，補齊再出發';return true;}
  if(n&&!approach(w,p,a,'store.drop'))return true;if(n)transfer(w,'store',p.bag,'ration',n);w.expedition.packed.push(p.id);finish(w,p,a,'已領糧，等待集合',true);route(w,p,stations['safe.'+(5+w.expedition.actors.indexOf(p.id))]);return true;
  }return false;}
 export function expeditionTick(w){const e=w.expedition;if(!e||e.phase==='returned'||e.phase==='cancelled')return;
  if(e.permission&&!e.wardensParkedVersion){for(const [i,g]of sorted(w.people).filter(p=>p.rank==='warden'&&!p.hostile&&!p.storyBusy&&p.hp>0).entries())route(w,g,i?[2260,130]:[2255,210]);e.wardensParkedVersion=1;}
- const party=e.actors.map(id=>w.people[id]);for(const p of party){p.returnReserve=returnReserveCached(w,p);if(p.hp<=0){p.blocked='倒地；可請求救援';continue;}if(!e.rescue&&p.energy<=p.returnReserve&&e.phase!=='return'&&e.phase!=='prepare'){recallParty(w,'精力抵回程預留');break;}}
+ const party=e.actors.map(id=>w.people[id]),walkers=e.journey?.escort?[...party,w.people[e.journey.escort]]:party;for(const p of party){p.returnReserve=returnReserveCached(w,p);if(p.hp<=0){p.blocked='倒地；可請求救援';continue;}if(!e.rescue&&p.energy<=p.returnReserve&&e.phase!=='return'&&e.phase!=='prepare'){recallParty(w,'精力抵回程預留');break;}}
  if(e.rescue){rescuedTick(w,e);if(e.rescue.phase!=='completed')return;}
- if(e.phase==='prepare'&&e.packed.length===e.actors.length&&party.every(p=>arrived(p))){e.phase='outbound';for(const [i,p]of party.entries()){travelRoute(w,p,[1450+i*16,670]);p.reason='沿北門實走到林緣';}e.segment='forest';}
- if(e.phase==='outbound'){for(const p of party)if(!p.combatTarget&&!p.action&&arrived(p)&&p.travelGoal&&distance(p,p.travelGoal)>2)route(w,p,p.travelGoal);}
- if(e.phase==='outbound'&&party.every(p=>arrived(p)&&(!p.travelGoal||distance(p,p.travelGoal)<3))){
+ if(e.phase==='prepare'&&e.packed.length===e.actors.length&&walkers.every(p=>arrived(p))){e.phase='outbound';for(const [i,p]of walkers.entries()){travelRoute(w,p,[1450+i*16,670]);p.reason='沿北門實走到林緣';}e.segment='forest';}
+ if(e.phase==='outbound'){for(const p of walkers)if(!p.combatTarget&&!p.action&&arrived(p)&&p.travelGoal&&distance(p,p.travelGoal)>2)route(w,p,p.travelGoal);}
+ if(e.phase==='outbound'&&e.segment==='ridge'){const j=e.journey;for(const [i,p]of walkers.entries()){const r=j.ridgeWalkers[p.id];if(r.done||w.tick<j.ridgeStarted+i*40)continue;if(!r.sent){if(travelRoute(w,p,TRAIL_ROUTES.ridge.points[r.node]))r.sent=true;}else if(arrived(p)&&distance(p,p.travelGoal)<3){r.node++;r.sent=false;if(r.node>=TRAIL_ROUTES.ridge.points.length)r.done=true;}}j.ridgeAt=Math.min(...Object.values(j.ridgeWalkers).map(r=>r.node));if(Object.values(j.ridgeWalkers).every(r=>r.done))e.segment='valley';else return;}
+ if(e.phase==='outbound'&&walkers.every(p=>arrived(p)&&(!p.travelGoal||distance(p,p.travelGoal)<3))){
   if(!e.seen.includes(e.segment)){e.seen.push(e.segment);event(w,'waypoint-reached',e.actors,{target:e.segment});}
+  if(e.journey&&e.segment==='camp'&&!e.rested){e.phase='campRest';e.restUntil=w.tick+(e.journey.camp==='rest'?400:200);return;}
   if(e.segment===e.target){if(e.target==='cave'){e.phase='cave';w.stories['cave.see'].status='completed';event(w,'cave-seen',e.actors,{text:(w.people.zhou.residence==='cave'?'親眼看見周行。':'周行已安置。')+'洞中還有'+qty(w,'cave.food','ration')+'份有限糧袋。'});}else{e.phase='resting';event(w,'waypoint-reached',e.actors,{target:e.target});}return;}
-  if(e.segment==='camp'&&!e.rested){e.phase='campRest';e.restUntil=w.tick+200;return;}
+  if(e.segment==='camp'&&!e.rested){e.phase='campRest';e.restUntil=w.tick+(e.journey?.camp==='rest'?400:200);return;}
   const next=e.segment==='forest'?'camp':e.segment==='camp'?'valley':e.segment==='valley'?'gate':'cave';
+  if(next==='valley'&&e.journey?.route==='ridge'){e.segment='ridge';e.journey.ridgeAt=0;e.journey.ridgeStarted=w.tick;e.journey.ridgeWalkers=Object.fromEntries(walkers.map(p=>[p.id,{node:0,sent:false,done:false}]));event(w,'journey-ridge-enter',e.actors);return;}
   if(next==='gate'){e.phase='gate';for(const [i,p]of party.entries())travelRoute(w,p,[2070+i*10,300+i*10]);event(w,'gate-arrival',e.actors,{text:'前方兩位守路人。可說明救人來意，或交戰後通行。'});return;}
-  e.segment=next;for(const [i,p]of party.entries()){const to=stations[next];travelRoute(w,p,[to[0]+i*14,to[1]+i*10]);}
+  e.segment=next;for(const [i,p]of walkers.entries()){const to=stations[next];travelRoute(w,p,[to[0]+i*14,to[1]+i*10]);}
  }
- if(e.phase==='campRest'&&w.tick>=e.restUntil){for(const p of party)if(qty(w,p.bag,'ration')>0){add(w,p.bag,'ration',-1,'trail-meal');p.energy=Math.min(10000,p.energy+1500);}e.rested=true;e.phase='outbound';event(w,'camp-meal',e.actors);}
+ if(e.phase==='campRest'&&w.tick>=e.restUntil){for(const p of walkers)if(e.journey?.camp!=='rest'&&qty(w,p.bag,'ration')>0){add(w,p.bag,'ration',-1,'trail-meal');p.energy=Math.min(10000,p.energy+1500);}e.rested=true;e.phase='outbound';event(w,e.journey?.camp==='rest'?'camp-slow-rest':'camp-meal',e.actors);}
  if(e.phase==='negotiate'&&party.every(p=>arrived(p))&&w.tick>=e.talkUntil){e.permission=true;e.segment='cave';e.phase='outbound';for(const p of sorted(w.people).filter(p=>p.rank==='warden')){p.hostile=false;p.combatTarget=null;route(w,p,p.id.endsWith('0')?[2255,210]:[2260,130]);}for(const [i,p]of party.entries())travelRoute(w,p,[2200+i*14,150+i*10]);event(w,'passage-granted',e.actors);}
  if(e.phase==='gateFight'){const guards=sorted(w.people).filter(p=>p.rank==='warden'&&p.hp>0&&!p.inactive);if(!guards.length){e.permission=true;e.segment='cave';e.phase='outbound';for(const [i,p]of party.entries()){p.combatTarget=null;travelRoute(w,p,[2200+i*14,150+i*10]);}event(w,'passage-won',e.actors);}else for(const g of guards)if(!g.combatTarget)g.combatTarget=party.find(p=>p.hp>0)?.id||null;}
  if(e.phase==='cave'){
@@ -95,8 +99,8 @@ export function expeditionTick(w){const e=w.expedition;if(!e||e.phase==='returne
  if(e.phase==='return'){
   const z=w.people.zhou;if(z.helpedBy){const h=w.people[z.helpedBy];if(h.hp<=0){z.path=[];z.blocked='扶助者倒地，先救援';}else if(arrived(z)&&distance(z,stations['safe.4'])>30)route(w,z,stations['safe.4']);}
   const home=party.every(p=>p.hp>0&&distance(p,stations['safe.'+party.indexOf(p)])<20);
-  if(home&&(!z.helpedBy||distance(z,stations['safe.4'])<20)){
-   if(!e.unloaded){e.phase='unload';for(const p of party){if(caveFoodCarried(w,p,e.id)>0)begin(w,p,'unloadQuest',{origin:e.id});}if(party.every(p=>!p.activity)){e.unloaded=true;e.phase='return';}return;}
+  if(home&&(!e.journey?.escort||distance(w.people[e.journey.escort],stations['safe.7'])<20)&&(!z.helpedBy||distance(z,stations['safe.4'])<20)){
+   if(!e.unloaded){e.phase='unload';for(const p of party){if(caveFoodCarried(w,p,e.id)>0)begin(w,p,'unloadQuest',{origin:e.id});else if(e.journey?.objective==='gather'&&qty(w,p.bag,'herb')>0)begin(w,p,'trailUnload',{amount:qty(w,p.bag,'herb')});}if(party.every(p=>!p.activity)){e.unloaded=true;e.phase='return';}return;}
    let food=caveFoodDelivered(w,e.id);for(const p of party){p.caveFood=0;p.storyBusy=false;p.intent=null;p.manualStop=true;if(p.injury>0)for(const art of (e.usedArts?.[p.id]||[]))insight(w,p,art,'return',e.id);}
    const rescued=!!z.helpedBy;if(rescued){w.people[z.helpedBy].helping=null;z.helpedBy=null;z.residence='visitor';z.rank='traveler';z.willingness=6;z.storyBusy=false;memory(w,'care',party[0],z,e.id);}
    e.reservedVisitor=false;e.phase='returned';e.report=uid(w,'report');w.reports??={};w.reports[e.report]={id:e.report,expedition:e.id,actors:[...e.actors],started:e.started,ended:w.tick,choice:e.choice||null,food,rescued,usedArts:structuredClone(e.usedArts||{})};if(w.promises.cave&&(w.promises.cave.expedition===e.id||!w.promises.cave.expedition&&e.choice)){const p=w.promises.cave;p.foodDelivered=food;p.personDelivered=rescued;p.status=(p.personExpected?rescued:food>=p.foodExpected)?'fulfilled':food>0||rescued?'partial':'unfulfilled';w.stories['cave.return'].status='completed';w.stories['cave.return'].completedAt??=w.tick;w.stories['cave.return'].facts.push(e.report);}

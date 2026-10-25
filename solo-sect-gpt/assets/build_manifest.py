@@ -17,6 +17,7 @@ for person in ['leader','child','amu','lin','shen','zhou','hong','linghu','qiao'
   asset('person.'+person+'.'+pose,'src/render.mjs','drawPerson',[-48,-64,96,80],person)
 for fx in ['punch','push','sweep','thrust','intercept','step','miss','hit']:asset('fx.'+fx,'src/render.mjs','drawPerson',[0,0,128,128],fx)
 for id,export in [('paint','paintedGround'),('wall','buildingShell'),('watercolor-roof','roofLayer'),('watercolor-tree','treeLayer'),('watercolor-bridge','bridgeLayer'),('life-props','lifeProps')]:asset('scene.'+id,'src/scene-art.mjs',export,[0,0,2400,1800])
+asset('scene.journey','src/render.mjs','drawJourney',[1600,320,280,260],'existing camp and side route')
 asset('scene.sect-life','src/render.mjs','drawSectLife',[880,1030,400,250],'cosmetic, existing kitchen/hall/yard')
 asset('fx.combat-telegraph','src/render.mjs','drawCombatTelegraph',[-40,-40,80,80],'actual range and windup aim')
 for sound in ['footstep','work','martial','complete']:asset('audio.'+sound,'src/audio.mjs','AudioPalette',[0,0,0,0],kind='audio',presentation=dict(generator='oscillator/envelope v1',voices=8,firstInteraction=True))

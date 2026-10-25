@@ -1,0 +1,67 @@
+✔ M5 actual journey gather/main/meal (1361.517166ms)
+✖ M5 actual journey escort/ridge/rest (4147.110292ms)
+✔ M5 actual journey spar/main/meal (1041.226791ms)
+✖ M5 actual journey explore/main/meal (659.33175ms)
+✖ M5 actual journey explore/ridge/rest (834.414333ms)
+✔ M5 finite herbs, real camps and cancellation, unknown plans/minors reject (2.453042ms)
+✔ M5 meal consumes real carried ration; slow rest takes twice the time and keeps it (893.1395ms)
+✔ M5 five fixed seeds preserve adopted journey mid-walk continuation (3735.2325ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 5
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12763.292834
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/optimization/journey.test.mjs:2:159
+✖ M5 actual journey escort/ridge/rest (4147.110292ms)
+  AssertionError [ERR_ASSERTION]: {"id":"expedition.4","actors":["leader"],"target":"valley","phase":"outbound","started":2000,"packed":["leader"],"seen":["forest","camp","ridge"],"foodTaken":0,"reservedVisitor":false,"report":null,"returnReason":null,"journey":{"version":1,"objective":"escort","route":"ridge","camp":"rest","phase":"travel","progress":0,"harvested":0,"delivered":0,"started":2000,"homeRecorded":false,"escort":"escort.traveler","ridgeAt":3},"segment":"ridge","restUntil":3866,"rested":true}
+      at until (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/journey.test.mjs:1:526)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/journey.test.mjs:2:560)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/optimization/journey.test.mjs:2:159
+✖ M5 actual journey explore/main/meal (659.33175ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(w.people.leader.x>1940*256)
+
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/journey.test.mjs:2:500)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/optimization/journey.test.mjs:2:159
+✖ M5 actual journey explore/ridge/rest (834.414333ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(w.people.leader.x>1940*256)
+
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/journey.test.mjs:2:500)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

@@ -16,7 +16,8 @@ export function cancel(w,p,reason='玩家改派'){
  p.reason=reason;p.blocked='';p.pose='idle';
 }
 export function begin(w,p,kind,args={},manual=false){
- if(!['culture','class','unloadQuest','drink','move','return','gather','build','train','study','rest','sleep','eat','cook','craft','talk','encourage','care','teach','greet','farm','harvestHaul','delivery','school','reception','learn','equip','story','pack','aid','collect'].includes(kind))return {ok:false,reason:'未知活動'};
+ if(!['trailUnload','culture','class','unloadQuest','drink','move','return','gather','build','train','study','rest','sleep','eat','cook','craft','talk','encourage','care','teach','greet','farm','harvestHaul','delivery','school','reception','learn','equip','story','pack','aid','collect'].includes(kind))return {ok:false,reason:'未知活動'};
+ if(kind==='trailUnload'&&(!w.expedition?.journey||w.expedition.journey.objective!=='gather'||!w.expedition.actors.includes(p.id)||!Number.isSafeInteger(args.amount)||args.amount<1||args.amount>2))return{ok:false,reason:'返院交藥草需有效遠行及1–2株實物'};
  if(kind==='equip'&&!['punch','staff','sword'].includes(args.art))return {ok:false,reason:'換裝只支援拳、木棍與木劍'};
  if(kind==='gather'&&!['wood','stone','water','veg','herb'].includes(args.item))return {ok:false,reason:'未知採集物'};
  if(kind==='move'&&(!Array.isArray(args.pos)||args.pos.length!==2||args.pos.some(n=>!Number.isFinite(n))||!findPath(w,position(p),args.pos)))return {ok:false,reason:'目標無路可達／水域或封閉邊界'};

@@ -1,3 +1,4 @@
+import{TRAIL_ROUTES}from'./journey-data.mjs';
 import{SECT_LIFE}from'./culture-data.mjs';
 import {Q,FACILITIES,ITEM,MOVES,TASKNAME} from './data.mjs';
 import {MAP,rects,stations,corridors,position,inRect,trees} from './map.mjs';
@@ -28,7 +29,7 @@ export function render(canvas,w,view){
  ctx.fillStyle=COLORS.water;ctx.fillRect(1870,0,70,425);ctx.fillRect(1870,455,70,1345);
  drawBridge(ctx,[1870,425,70,30]);drawBridge(ctx,[260,1515,38,280]);
  ctx.fillStyle='#b5b99a';ctx.beginPath();ctx.ellipse(2210,160,95,100,0,0,Math.PI*2);ctx.fill();
- drawCave(ctx,w);
+ drawCave(ctx,w);drawJourney(ctx,w);
  // Building floors and furniture; roof is a separate foreground pass.
  for(const f of Object.values(rects))drawBuilding(ctx,w,f,false,view);
  const actors=sorted(w.people).filter(p=>p.residence!=='departed'&&!p.inactive&&visibleEntity(w,p)).sort((a,b)=>a.y-b.y||a.id.localeCompare(b.id));
@@ -115,3 +116,5 @@ function drawMarkers(c,w,v){c.fillStyle='#506052';c.font='16px system-ui';for(co
 export function drawCombatTelegraph(c,w,p,v){const a=p.action,x=p.x/Q,y=p.y/Q,style=STYLES[w.martialPlan?.styles[p.id]||'arhat'];c.save();c.translate(x,y);if(p.id===v.selected){c.strokeStyle=style.color+'88';c.lineWidth=1;c.setLineDash([3,5]);c.beginPath();c.arc(0,0,style.move==='intercept'?30:MOVES[style.move].range+6,0,Math.PI*2);c.stroke();c.setLineDash([]);}if(a?.phase==='windup'){c.rotate(Math.atan2(a.aim[1],a.aim[0]));c.fillStyle='#c5913c30';c.beginPath();c.moveTo(0,0);c.arc(0,0,MOVES[a.move].range+6,-.35,.35);c.closePath();c.fill();c.strokeStyle='#ad844d77';c.lineWidth=1;c.beginPath();c.moveTo(0,0);c.lineTo(MOVES[a.move].range+6,0);c.stroke();}c.restore();}
 
 export function drawSectLife(c,w){if(!w.culturePlan)return;const a=SECT_LIFE[w.culturePlan.pack],pos={hearth:[907,1180],discipline:[1160,1114],freedom:[1240,1220]}[w.culturePlan.pack],x=pos[0],y=pos[1];c.save();c.strokeStyle='#776d51';c.lineWidth=3;c.beginPath();c.moveTo(x,y);c.lineTo(x,y-86);c.stroke();c.fillStyle=a.color;c.beginPath();c.moveTo(x,y-84);c.lineTo(x+35,y-80);c.lineTo(x+32,y-32);c.lineTo(x,y-37);c.fill();c.fillStyle='#f7eed8';c.font='18px serif';c.fillText(a.symbol,x+7,y-55);if(w.culturePlan.pack==='freedom'){c.fillStyle='#b8b28b';c.fillRect(x+8,y+8,60,14);c.strokeStyle='#8c906d';c.lineWidth=1;for(let i=0;i<10;i++){c.beginPath();c.moveTo(x+10+i*6,y+8);c.lineTo(x+10+i*6,y+22);c.stroke();}}else{c.fillStyle=a.color+'55';c.fillRect(x+5,y+4,46,12);}c.restore();}
+
+export function drawJourney(c,w){const j=w.expedition?.journey;if(!w.trailPlan)return;c.save();c.strokeStyle='#7f7853';c.lineWidth=2;c.strokeRect(1638,532,45,10);c.fillStyle='#bfb28a';c.fillRect(1640,533,41,8);c.fillStyle='#9b805a';for(let i=0;i<3;i++){c.beginPath();c.ellipse(1620+i*9,548,5,3,0,0,7);c.fill();}c.font='12px system-ui';c.fillStyle='#455d4d';c.fillText('營地 · '+(w.expedition?.phase==='campRest'?(j?.camp==='rest'?'留糧慢休':'實糧用餐'):'歇腳／召回'),1610,570);if(j){c.strokeStyle=j.route==='ridge'?'#bd8e5a99':'#628f8b99';c.lineWidth=3;c.setLineDash([6,6]);roadPath(c,[[1660,520],...(TRAIL_ROUTES[j.route].points.length?TRAIL_ROUTES[j.route].points:[[1740,480],[1770,480]])]);c.stroke();c.setLineDash([]);}c.restore();}

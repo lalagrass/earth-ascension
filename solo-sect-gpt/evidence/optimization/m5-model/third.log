@@ -1,0 +1,34 @@
+✔ M5 actual journey gather/main/meal (1392.379333ms)
+✖ M5 actual journey escort/ridge/rest (4098.90475ms)
+✔ M5 actual journey spar/main/meal (1139.51575ms)
+✔ M5 actual journey explore/main/meal (1086.649542ms)
+✔ M5 actual journey explore/ridge/rest (1444.43225ms)
+✔ M5 finite herbs, real camps and cancellation, unknown plans/minors reject (2.702666ms)
+✔ M5 meal consumes real carried ration; slow rest takes twice the time and keeps it (861.27275ms)
+✔ M5 five fixed seeds preserve adopted journey mid-walk continuation (3637.887ms)
+✔ M5 recall after one actual herb retains it and records partial delivery without duplication (814.111125ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 8
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14557.206708
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/optimization/journey.test.mjs:2:159
+✖ M5 actual journey escort/ridge/rest (4098.90475ms)
+  AssertionError [ERR_ASSERTION]: {"id":"expedition.4","actors":["leader"],"target":"valley","phase":"outbound","started":2000,"packed":["leader"],"seen":["forest","camp","ridge"],"foodTaken":0,"reservedVisitor":false,"report":null,"returnReason":null,"journey":{"version":1,"objective":"escort","route":"ridge","camp":"rest","phase":"travel","progress":0,"harvested":0,"delivered":0,"started":2000,"homeRecorded":false,"escort":"escort.traveler","ridgeAt":2},"segment":"ridge","restUntil":3866,"rested":true}
+      at until (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/journey.test.mjs:1:572)
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/journey.test.mjs:2:586)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

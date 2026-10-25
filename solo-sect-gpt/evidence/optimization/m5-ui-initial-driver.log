@@ -1,0 +1,15 @@
+gather-main-meal-prepare
+gather-main-meal-gather
+journey-1280
+gather-main-meal-home
+escort-ridge-rest-prepare
+escort-ridge-rest-campRest
+escort-ridge-rest-ridge
+escort-ridge-rest-home
+spar-main-meal-prepare
+failure
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert.ok((await snap()).expedition.journey)
+
+    at file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m5-ui.mjs:2:1469

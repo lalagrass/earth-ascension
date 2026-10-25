@@ -1,3 +1,4 @@
+import{adoptTrail,launchJourney,journeyTick,stopJourneySpar}from'./journey.mjs';
 import{adoptCulture,selectCulture,startLife,cultureActivityTick,stopLife}from'./culture.mjs';
 import {rulesFor} from './save-features.mjs';
 import {adoptMartial,setFocus,chooseStyle,startPractice,martialTick,cancelPractice} from './martial.mjs';
@@ -22,7 +23,7 @@ export function command(w,c){
  let result={ok:true};const p=w.people[c.actor||'leader'];
  if(w.martialPlan&&p&&!['resident','visitor'].includes(p.residence)&&['task','stop','resume','recall','guard','roles','auto','attack','preferred','martialFocus','martialStyle','practice','practiceStop'].includes(c.type))return {ok:false,reason:'教習／野外人物只供觀察，不能代下門人命令'};
  if(w.lifePolicy&&c.temporary&&(p?.storyBusy||p?.classSession||w.expedition?.actors.includes(p?.id)&&!['returned','cancelled'].includes(w.expedition.phase)))return {ok:false,reason:'遠征／約定／同堂進行中不支援一次回復；請先完成或取消勾選作普通改派'};
- if(['task','stop'].includes(c.type)&&w.expedition?.actors.includes(p?.id)&&!['returned','cancelled'].includes(w.expedition.phase)){w.expedition.phase='halted';w.expedition.haltReason='隊員接到新指令／停工';p.storyBusy=false;if(w.people.zhou.helpedBy===p.id){const z=w.people.zhou;cancel(w,z,'扶助已中止');z.helpedBy=null;p.helping=null;w.expedition.reservedVisitor=false;event(w,'escort-interrupted',[p.id,z.id]);}}
+ if(['task','stop'].includes(c.type)&&w.expedition?.actors.includes(p?.id)&&!['returned','cancelled'].includes(w.expedition.phase)){stopJourneySpar(w,w.expedition);w.expedition.phase='halted';w.expedition.haltReason='隊員接到新指令／停工';p.storyBusy=false;if(w.people.zhou.helpedBy===p.id){const z=w.people.zhou;cancel(w,z,'扶助已中止');z.helpedBy=null;p.helping=null;w.expedition.reservedVisitor=false;event(w,'escort-interrupted',[p.id,z.id]);}}
  if(['task','stop','recall'].includes(c.type)&&p?.combatSession){cancelPractice(w,p);interruptCombat(w,p);}
  if(c.type==='task'){
   if(!p)result={ok:false,reason:'人物不存在'};
@@ -32,6 +33,8 @@ export function command(w,c){
  }else if(c.type==='resume'){if(p.temporary){cancel(w,p,'取消臨時工作，恢復自主');delete p.temporary;}p.manualStop=false;p.intent=null;p.auto=true;}
  else if(c.type==='recall'){result=begin(w,p,'return',{},true);}
  else if(c.type==='lifePolicy'){try{const policy=structuredClone(c.policy||DEFAULT_LIFE_POLICY);validateLifePolicy(policy,w.inventories.vat.capacity);w.lifePolicy=policy;w.rulesVersion=rulesFor(w);event(w,'life-policy-adopted',[],{version:policy.version});}catch(e){result={ok:false,reason:e.message};}}
+ else if(c.type==='adoptTrail')result=adoptTrail(w);
+ else if(c.type==='journey')result=launchJourney(w,c.actors||[],c.objective,c.route,c.camp);
  else if(c.type==='adoptCulture')result=adoptCulture(w);
  else if(c.type==='culturePack')result=selectCulture(w,c.pack);
  else if(c.type==='cultureEvent')result=startLife(w,p,c.event,c.choice,c.mode,c.callback);
@@ -78,7 +81,7 @@ export function command(w,c){
  else if(c.type==='attack')result=startAction(w,p,c.move,w.people[c.target],true);
  else if(c.type==='tutorial'){w.tutorial=c.value;}
  else result={ok:false,reason:'尚未支援的指令：'+c.type};
- if(result.ok&&w.lifePolicy&&['class','spar','expedition','drill','recallParty'].includes(c.type)){const ids=c.type==='class'?[p.id,...c.students]:c.type==='spar'?[p.id,c.target]:c.type==='recallParty'?w.expedition?.actors||[]:c.actors||[];for(const id of ids)if(w.people[id])delete w.people[id].temporary;}
+ if(result.ok&&w.lifePolicy&&['class','spar','journey','expedition','drill','recallParty'].includes(c.type)){const ids=c.type==='class'?[p.id,...c.students]:c.type==='spar'?[p.id,c.target]:c.type==='recallParty'?w.expedition?.actors||[]:c.actors||[];for(const id of ids)if(w.people[id])delete w.people[id].temporary;}
  if(!result.ok&&!result.reasonCode)result.reasonCode=c.type+'.rejected';
  w.commandSeq++;w.commands.push({...c,id,tick:w.tick,seq:w.commandSeq,result});w.seenCommands[id]=result;
  event(w,result.ok?'command':'rejected',p?[p.id]:[],{commandId:id,command:c.type,reason:result.reason||null});return result;
@@ -97,7 +100,7 @@ export function step(w,batch=[]){for(const c of batch)command(w,c);w.tick++;w.pe
   // Energy uses a fixed hundredth-point accumulator; no renderer state enters rules.
   p.energy=Math.round(p.energy*1000)/1000;
  }
- lifeTick(w);expeditionTick(w);storiesTick(w);discover(w);
+ lifeTick(w);expeditionTick(w);journeyTick(w);storiesTick(w);discover(w);
  for(const item of ['veg','herb']){const s=w.ecology[item];if(s.day<day(w)){s.day=day(w);s.remaining=8;event(w,'resource-regrow',[],{item});}}
  closeTick(w);const violations=invariants(w);if(violations.length)throw Error('World invariant at seed '+w.seed+' tick '+w.tick+': '+violations.join('; '));return w;
 }
