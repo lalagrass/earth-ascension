@@ -119,7 +119,13 @@
 - 招式由武學開出；狩獵傷害 × (1 + 0.1 × 階)
 
 ## 名俠來訪（規劃，ROADMAP §13）
+- 決定（2026-10-25）：只有郭靖、黃蓉可以入門，其他人都是客卿；降龍分三段傳；正邪暫時不影響結局；名俠只會離開，身世危機時例外
 - 角色、武學一律用金庸原著名稱（版權延後處理；**公開發行前一定要先解決**）；資料驅動：`LEGENDS[]` {id, name, archetype, personality, root, taste, drink, align, signature[], encounter{where, when, need, weight, once}, mode: visitor|guest|disciple, ties[]}
 - 新系統依序：食好／菜譜 → 酒 → 知名度／正邪 → `ARTS.signature`＋`unlock` 條件 → `role` 新增 visitor／guest → `ENCOUNTERS` 限時抉擇卡 → 預設人際網
 - 新特質（草案）：饕、聰穎、嗜酒、豪邁、書呆、守戒、優柔
 - 平衡：每季最多一次奇遇、最多兩位客卿；客卿不當狩獵主力；招牌武學只給到入門
+
+## v0.92 招式與瓶頸（ROADMAP §14）
+- arts.mjs：curCap/stuckAt/breakChance/resolveBreak、unlockTechs、gainArt（荒疏、歸真星）、chooseVariant/variantOf、moveMul/cdMul/effectMul、visTier
+- data.mjs：BREAK、GUIZHEN、RUST、VARIANTS、PERKS、AURA；行動 meditate（打坐衝關）
+- sim：衝關的評分是 75；出招時帶上 tier 和變式色；階數 ≥3 會震屏；main：氣旋、進度環、殘影、變式環、大字招名、光暈、面板上的變式選單

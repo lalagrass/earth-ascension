@@ -28,7 +28,7 @@ test('悟性門檻：風雷掌腿需悟性3，悟性2只能練到小成', () => 
   const d = mk(2); d.arts.wavePalm = { xp: 60 }; d.arts.whirlLeg = { xp: 60 }; learnArt(d, 'fengLei'); d.focus = 'fengLei';
   for (let i = 0; i < 20000; i++) gainArt(d, 5);
   assert.equal(artTier(d, 'fengLei'), 1); assert.ok(d.arts.fengLei.xp < 55); assert.match(artState(d, artById('fengLei')).why, /悟性不足/);
-  const e = mk(3); e.arts.wavePalm = { xp: 60 }; e.arts.whirlLeg = { xp: 60 }; learnArt(e, 'fengLei'); e.focus = 'fengLei'; for (let i = 0; i < 20000; i++) gainArt(e, 5);
+  const e = mk(3); e.arts.wavePalm = { xp: 60 }; e.arts.whirlLeg = { xp: 60 }; learnArt(e, 'fengLei'); Object.assign(e.arts.fengLei, { bt1: true, bt2: true }); e.focus = 'fengLei'; for (let i = 0; i < 20000; i++) gainArt(e, 5);
   assert.equal(artTier(e, 'fengLei'), 4);
 });
 test('前置未達：鎖住並說明；達成後成為可求學，學會開出招式', () => {
@@ -37,7 +37,7 @@ test('前置未達：鎖住並說明；達成後成為可求學，學會開出�
   d.pendingArt = null; d.arts.basicFist.xp = 30; let n = 0; while (!d.arts.pushPalm && n++ < 5) { const x = gainArt(d, 0); if (x) learnArt(d, x.id); }
   assert.ok(d.arts.pushPalm && d.moves.includes('push'));
 });
-test('階數加傷害：圓滿 ×1.3', () => { const d = mk(3); d.arts.basicFist.xp = 90; assert.ok(Math.abs(moveMul(d, 'fist') - 1.3) < 1e-9); });
+test('階數加傷害：圓滿 ×1.3，再乘圓滿效果 ×1.15', () => { const d = mk(3); d.arts.basicFist.xp = 90; assert.ok(Math.abs(moveMul(d, 'fist') - 1.3 * 1.15) < 1e-9); });
 test('模擬中練功：主角掌法學到推山掌，熟練累積；專修可指定', () => {
   const s = createState(9); s.res.food = 99; setOrder(s, 'hero', 'train'); run(s, 600); setOrder(s, 'hero', null); run(s, 400);
   const h = s.ds[0]; assert.ok(h.arts.basicFist.xp > 25); assert.ok(h.arts.pushPalm, Object.keys(h.arts).join()); assert.ok(h.moves.includes('push'));

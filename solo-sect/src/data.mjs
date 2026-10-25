@@ -54,8 +54,8 @@ export const FACILITIES = [
     { name: '大廳', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 4, beds: 2, learnDur: 4, cost: { wood: 12, stone: 6, coin: 6 }, work: 30, rep: 20 },
   ] },
   { id: 'yard', name: '外功場', node: 'yard', stages: [
-    { name: '空地', sprite: null, offers: ['train'], trainMul: 1 },
-    { name: '木樁場', sprite: null, offers: ['train', 'spar'], trainMul: 1.6, dummies: 3, cost: { wood: 6 }, work: 15 },
+    { name: '空地', sprite: null, offers: ['train', 'meditate'], trainMul: 1 },
+    { name: '木樁場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 1.6, dummies: 3, cost: { wood: 6 }, work: 15 },
   ] },
   { id: 'dorm', name: '宿舍', node: 'dorm', stages: [
     { name: '破寢舍', sprite: 'dorm_s0', offers: [] },
@@ -88,6 +88,7 @@ export const ACTIVITIES = {
   quarry: { name: '採石', dur: 10, energy: -9, skill: { strength: 6 }, carry: { stone: 1 } },
   chop:   { name: '砍柴', dur: 8, energy: -8, skill: { strength: 5 }, carry: { wood: 1 } },
   train:  { name: '練功', dur: 10, energy: -10, skill: { style: 5 } }, // style＝弟子主修路數
+  meditate: { name: '打坐衝關', dur: 12, energy: -8 },
   spar:   { name: '切磋', dur: 8, energy: -10, skill: { style: 4 } },
   learn:  { name: '聽師父講武', dur: 8, energy: -2, skill: { palm: 3 }, social: 10 },
   build:  { name: '施工', dur: 6, energy: -6, skill: { strength: 2 } },
@@ -105,6 +106,19 @@ export const MOVES = [
   { id: 'kick', skill: 'leg', name: '掃堂腿', req: 20, range: 40, cd: 1.4, dmg: 6, aoe: 40, color: '#6b8a3d' },
   { id: 'whirl', skill: 'leg', name: '旋風腿', req: 50, range: 55, cd: 2.4, dmg: 9, aoe: 60, color: '#8a3d7a' },
   { id: 'storm', skill: 'palm', name: '風雷掌腿', req: 999, range: 90, cd: 3.4, dmg: 14, aoe: 90, color: '#c9a227' },
+  // v0.92 每門三招（入門／小成／大成）
+  { id: 'fist2', skill: 'palm', name: '連環拳', req: 999, range: 36, cd: 0.8, dmg: 5, aoe: 0, color: '#9a7a5a' },
+  { id: 'fist3', skill: 'palm', name: '崩拳', req: 999, range: 38, cd: 1.6, dmg: 9, aoe: 30, color: '#7a5a3a' },
+  { id: 'push2', skill: 'palm', name: '排雲推手', req: 999, range: 70, cd: 1.8, dmg: 10, aoe: 0, color: '#c0583e' },
+  { id: 'push3', skill: 'palm', name: '開山掌', req: 999, range: 64, cd: 2.4, dmg: 13, aoe: 50, color: '#a0381e' },
+  { id: 'wave2', skill: 'palm', name: '回風拂柳', req: 999, range: 84, cd: 2.8, dmg: 8, aoe: 80, color: '#4d7b9a' },
+  { id: 'wave3', skill: 'palm', name: '狂風捲', req: 999, range: 90, cd: 3.6, dmg: 10, aoe: 100, color: '#2d5b7a' },
+  { id: 'kick2', skill: 'leg', name: '掃葉腿', req: 999, range: 44, cd: 1.5, dmg: 7, aoe: 50, color: '#7b9a4d' },
+  { id: 'kick3', skill: 'leg', name: '鐵掃帚', req: 999, range: 46, cd: 2.0, dmg: 10, aoe: 60, color: '#5b7a2d' },
+  { id: 'whirl2', skill: 'leg', name: '連環旋踢', req: 999, range: 58, cd: 2.4, dmg: 10, aoe: 65, color: '#9a4d8a' },
+  { id: 'whirl3', skill: 'leg', name: '龍捲腿', req: 999, range: 62, cd: 3.0, dmg: 13, aoe: 80, color: '#7a2d6a' },
+  { id: 'storm2', skill: 'palm', name: '風捲雷鳴', req: 999, range: 95, cd: 3.4, dmg: 16, aoe: 95, color: '#d9b237' },
+  { id: 'storm3', skill: 'palm', name: '雷動九天', req: 999, range: 100, cd: 4.0, dmg: 20, aoe: 110, color: '#e9c247' },
 ];
 
 export const MONSTERS = {
@@ -169,6 +183,8 @@ export const TRAITS = {
 };
 // 想法（記憶）：值、持續秒數、分類（給 thoughtMul 用）
 export const THOUGHTS = {
+  btFail:    { text: '衝關失敗，氣血翻湧', v: -5, ttl: 300, tag: 'bad' },
+  btWin:     { text: '衝破瓶頸！', v: 18, ttl: 500, tag: 'good' },
   learned:   { text: '學會了新招', v: 15, ttl: 400, tag: 'good' },
   goodChat:  { text: '和人聊得開心', v: 6, ttl: 150, tag: 'social' },
   bedSleep:  { text: '睡在床上', v: 5, ttl: 300, tag: 'good' },
@@ -199,7 +215,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '0.9';
+export const RULES_VERSION = '0.92';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -251,15 +267,29 @@ export const TIERS = [[0, '入門'], [25, '小成'], [55, '大成'], [85, '圓�
 export const GRADES = ['', '凡', '良', '精', '絕', '神'];
 export const SCHOOLS = { fist: '拳', palm: '掌', leg: '腿', inner: '內功', step: '身法' };
 export const ARTS = [
-  { id: 'basicFist', name: '基礎拳', school: 'fist', grade: 1, tags: ['拙'], req: [], tech: 'fist' },
-  { id: 'pushPalm', name: '推山掌', school: 'palm', grade: 1, tags: ['剛'], req: [{ art: 'basicFist', tier: 1 }], tech: 'push' },
-  { id: 'wavePalm', name: '迴風掌', school: 'palm', grade: 2, tags: ['巧'], req: [{ art: 'pushPalm', tier: 2 }], tech: 'wave', wuxingMin: 2 },
-  { id: 'sweepLeg', name: '掃堂腿', school: 'leg', grade: 1, tags: ['拙'], req: [{ art: 'basicFist', tier: 1 }], tech: 'kick' },
-  { id: 'whirlLeg', name: '旋風腿', school: 'leg', grade: 2, tags: ['巧'], req: [{ art: 'sweepLeg', tier: 2 }], tech: 'whirl', wuxingMin: 2 },
-  { id: 'breath', name: '吐納', school: 'inner', grade: 1, tags: ['柔'], req: [], tech: null, effect: 'rest' },
-  { id: 'snowStep', name: '踏雪步', school: 'step', grade: 1, tags: ['巧'], req: [{ art: 'sweepLeg', tier: 1 }], tech: null, effect: 'speed' },
-  { id: 'fengLei', name: '風雷掌腿', school: 'palm', grade: 3, tags: ['剛'], req: [{ art: 'wavePalm', tier: 2 }, { art: 'whirlLeg', tier: 2 }], tech: 'storm', wuxingMin: 3 },
+  { id: 'basicFist', name: '基礎拳', school: 'fist', grade: 1, tags: ['拙'], req: [], techs: ['fist', 'fist2', 'fist3'], tech: 'fist' },
+  { id: 'pushPalm', name: '推山掌', school: 'palm', grade: 1, tags: ['剛'], req: [{ art: 'basicFist', tier: 1 }], techs: ['push', 'push2', 'push3'], tech: 'push' },
+  { id: 'wavePalm', name: '迴風掌', school: 'palm', grade: 2, tags: ['巧'], req: [{ art: 'pushPalm', tier: 2 }], techs: ['wave', 'wave2', 'wave3'], tech: 'wave', wuxingMin: 2 },
+  { id: 'sweepLeg', name: '掃堂腿', school: 'leg', grade: 1, tags: ['拙'], req: [{ art: 'basicFist', tier: 1 }], techs: ['kick', 'kick2', 'kick3'], tech: 'kick' },
+  { id: 'whirlLeg', name: '旋風腿', school: 'leg', grade: 2, tags: ['巧'], req: [{ art: 'sweepLeg', tier: 2 }], techs: ['whirl', 'whirl2', 'whirl3'], tech: 'whirl', wuxingMin: 2 },
+  { id: 'breath', name: '吐納', school: 'inner', grade: 1, tags: ['柔'], req: [], tech: null, techs: ['調息', '綿息', '胎息'], effect: 'rest' },
+  { id: 'snowStep', name: '踏雪步', school: 'step', grade: 1, tags: ['巧'], req: [{ art: 'sweepLeg', tier: 1 }], tech: null, techs: ['輕身', '踏雪無痕', '凌空步'], effect: 'speed' },
+  { id: 'fengLei', name: '風雷掌腿', school: 'palm', grade: 3, tags: ['剛'], req: [{ art: 'wavePalm', tier: 2 }, { art: 'whirlLeg', tier: 2 }], techs: ['storm', 'storm2', 'storm3'], tech: 'storm', wuxingMin: 3 },
 ];
 // 悟性（根骨）× 品階：低悟性練凡階更快（笨功夫），高悟性練高階更快
 export const WUXING_MUL = { 1: [1.4, 0.7], 2: [1.2, 0.85], 3: [1, 1], 4: [0.9, 1.2], 5: [0.85, 1.45] };
 export const ART_GAIN = { base: 0.35, gated: 0.3, gateCap: 54.9, reqBonus: 0.1, tierDmg: 0.1, honest: [1.3, 0.8], tagTrait: { free: ['巧', 1.1], diligent: ['拙', 1.1] }, restPerTier: 0.06, speedPerTier: 0.04 };
+
+// v0.92 突破、變式、歸真、荒疏
+export const PERKS = { small: { name: '熟極而流', cd: 0.9 }, full: { name: '圓轉如意', dmg: 1.15 } };
+export const VARIANTS = {
+  fist: [{ id: 'gang', name: '沉猛', dmg: 1.2, cd: 1.1, color: '#c0392b' }, { id: 'ling', name: '迅捷', dmg: 0.95, cd: 0.8, color: '#2e86c1' }],
+  palm: [{ id: 'gang', name: '剛猛', dmg: 1.2, cd: 1.1, color: '#c0392b' }, { id: 'ling', name: '輕靈', dmg: 0.95, cd: 0.8, color: '#2e86c1' }],
+  leg: [{ id: 'gang', name: '重腿', dmg: 1.2, cd: 1.1, color: '#c0392b' }, { id: 'ling', name: '飛腿', dmg: 0.95, cd: 0.8, color: '#2e86c1' }],
+  inner: [{ id: 'gang', name: '綿長', eff: 1.3, color: '#8e44ad' }, { id: 'ling', name: '精純', eff: 1.15, energy: 0.8, color: '#16a085' }],
+  step: [{ id: 'gang', name: '疾行', eff: 1.3, color: '#d35400' }, { id: 'ling', name: '飄忽', eff: 1.15, energy: 0.8, color: '#27ae60' }],
+};
+export const BREAK = { caps: [54.9, 99.9], moodMin: 45, energyMin: 40, base: 0.35, cooldown: DAY, rechoose: DAY / 2 };
+export const GUIZHEN = { rootMax: 2, traits: ['diligent', 'honest'], star: 0.04, cost0: 20, costStep: 4 };
+export const RUST = { after: 2 * DAY, perDay: 0.15, max: 0.6, shake: 0.05 };
+export const AURA = { fist: '#b08a5a', palm: '#d0582e', leg: '#6b9a3d', inner: '#8e44ad', step: '#2e86c1' };

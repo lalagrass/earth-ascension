@@ -1,5 +1,5 @@
-import { artsSvg, setFocus, focusOf, artById, artMul, artState } from './arts.mjs';
-import { ARTS, TIERS } from './data.mjs';
+import { artsSvg, setFocus, focusOf, artById, artMul, artState, topTier, chooseVariant, variantOf, stuckAt, breakChance, rustOf, starCost, guizhenOk } from './arts.mjs';
+import { ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2 } from './data.mjs';
 import { outers, skipsChores, emergency, quotaOf, setDuty, setPrio, canPromote, startTrial } from './sim.mjs';
 import { CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES } from './data.mjs';
 import { isLabor, disciples, laborers, laborCap, canHire, hire, canInvite, invite, avgAff, togglePause, MATS, moodLabel, moodParts, seasonOf, aff, compat, defaultAnswers, personalityFrom, capacity, canRecruit, recruit, recruitNeed, mapStage, setPost, phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf } from './sim.mjs';
@@ -11,6 +11,7 @@ let S = createState(Date.now() % 100000 | 0), speed = 1;
 window.__sect = { get S() { return S; }, set speed(v) { speed = v; }, freeze: false, panel: () => panel() };
 const ACT_ICON = { quarry: '⛏', spar: '🤺', cook: '🍲', deliver: '📦', rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔' };
 function draw() {
+  const shake = S.fx.find((f) => f.kind === 'shake'); g.save(); if (shake) g.translate((Math.random() - 0.5) * 12 * shake.ttl / 0.35, (Math.random() - 0.5) * 12 * shake.ttl / 0.35);
   const ms = mapStage(S); g.drawImage(IMG[MAPS[ms]], 0, 0, 1600, 900);
   if (window.__debugRoads) { g.strokeStyle = 'rgba(200,60,40,.6)'; g.lineWidth = 3; for (const [a, b] of EDGES) { g.beginPath(); g.moveTo(...NODES[a]); g.lineTo(...NODES[b]); g.stroke(); } }
   const items = [];
@@ -33,6 +34,10 @@ function draw() {
   for (const m of S.mons) items.push({ y: m.pos[1], f: () => { sprite(MONSTERS[m.k].sprite, m.pos[0], m.pos[1], SC); if (!m.raid) hp(m.pos[0], m.pos[1] - 30, m.hp / m.max, '#a33'); else label('下山拱菜', m.pos[0], m.pos[1] - 40, '#a33'); } });
   for (const d of S.ds) items.push({ y: d.pos[1], f: () => {
     const bob = d.path.length ? Math.sin(S.t * 10) * 2 : 0, [x, y] = d.pos;
+    { const tt = topTier(d); if (tt.t >= 4) { const c = AURA[tt.a.school], gr = g.createRadialGradient(x, y - 20, 4, x, y - 20, 34 + Math.sin(S.t * 4) * 3); gr.addColorStop(0, c + 'aa'); gr.addColorStop(1, c + '00'); g.fillStyle = gr; g.beginPath(); g.ellipse(x, y - 20, 36, 42, 0, 0, 7); g.fill(); } }
+    if (d.task?.act === 'meditate' && d.task.phase === 'do') { const A = ACTS2.meditate, pr = Math.min(1, d.task.timer / A.dur);
+      for (let k = 0; k < 10; k++) { const an = S.t * 3 + k * 0.63, rr = 26 + 6 * Math.sin(S.t * 2 + k); g.fillStyle = `rgba(120,170,230,${0.35 + 0.4 * ((k % 3) / 3)})`; g.beginPath(); g.arc(x + Math.cos(an) * rr, y - 22 + Math.sin(an) * rr * 0.6, 2.5, 0, 7); g.fill(); }
+      g.strokeStyle = '#0003'; g.lineWidth = 5; g.beginPath(); g.arc(x, y - 70, 12, 0, 7); g.stroke(); g.strokeStyle = '#4a90d9'; g.beginPath(); g.arc(x, y - 70, 12, -Math.PI / 2, -Math.PI / 2 + pr * Math.PI * 2); g.stroke(); label('衝關', x, y - 88, '#2a5a9a'); }
     g.save(); g.translate(x, y + bob); if (d.face < 0) g.scale(-1, 1); if (d.anim === 'strike') g.rotate(0.15);
     if (d.task?.phase === 'do' && d.anim === 'rest') g.rotate(-1.3);
     const im = IMG[d.sprite]; g.drawImage(im, -im.width * SC / 2, -im.height * SC, im.width * SC, im.height * SC); g.restore();
@@ -48,9 +53,15 @@ function draw() {
   const ph = phaseOf(S), dark = ph.id === 'night' ? 0.38 : ph.id === 'dusk' ? 0.15 : ph.id === 'dawn' ? 0.1 : 0;
   if (dark) { g.fillStyle = ph.id === 'dusk' ? `rgba(120,60,30,${dark})` : `rgba(20,30,70,${dark})`; g.fillRect(0, 0, 1600, 900); }
   for (const f of S.fx) {
+    if (f.kind === 'shake') continue;
+    if (f.kind === 'break') { const k = 1 - f.ttl / 1.2; g.strokeStyle = `rgba(255,215,80,${f.ttl / 1.2})`; g.lineWidth = 5; g.beginPath(); g.arc(f.pos[0], f.pos[1] - 25, 10 + k * 70, 0, 7); g.stroke(); continue; }
+    if (f.kind === 'move' && f.tier >= 1 && f.sprite) { const im = IMG[f.sprite]; if (im?.width) for (let k = 1; k <= 2; k++) { g.save(); g.globalAlpha = 0.25 / k * (f.ttl / 0.6); g.translate(f.from[0] - (f.face || 1) * 12 * k, f.from[1]); if ((f.face || 1) < 0) g.scale(-1, 1); g.drawImage(im, -im.width * SC / 2, -im.height * SC, im.width * SC, im.height * SC); g.restore(); } }
+    if (f.kind === 'move' && f.tier >= 2 && f.vcolor) { g.save(); g.strokeStyle = f.vcolor; g.lineWidth = 3; g.globalAlpha = Math.min(1, f.ttl); g.setLineDash([6, 4]); g.beginPath(); g.arc(f.to[0], f.to[1] - 10, f.r * 1.4 + (1 - f.ttl) * 20, 0, 7); g.stroke(); g.restore(); }
+    if (f.kind === 'move' && f.tier >= 3) { g.save(); g.globalAlpha = Math.min(1, f.ttl * 1.5); g.font = 'bold 44px serif'; g.textAlign = 'center'; g.lineWidth = 7; g.strokeStyle = '#fff8e8'; g.strokeText(`「${f.name}」`, f.to[0], f.to[1] - 70); g.fillStyle = '#a0281e'; g.fillText(`「${f.name}」`, f.to[0], f.to[1] - 70); g.restore(); }
     if (f.kind === 'move') { g.strokeStyle = f.color; g.lineWidth = 4; g.globalAlpha = f.ttl / 0.6; g.beginPath(); g.moveTo(f.from[0], f.from[1] - 25); g.lineTo(f.to[0], f.to[1] - 8); g.stroke(); g.beginPath(); g.arc(f.to[0], f.to[1] - 10, f.r, 0, 7); g.stroke(); label(f.name, f.from[0], f.from[1] - 60, f.color); g.globalAlpha = 1; }
     else { g.fillStyle = 'rgba(200,40,40,.6)'; g.beginPath(); g.arc(f.pos[0], f.pos[1] - 30, 10, 0, 7); g.fill(); }
   }
+  g.restore();
 }
 const SC = 0.55;
 function sprite(n, x, y, k = 1) { const i = IMG[n]; if (i?.width) g.drawImage(i, x - i.width * k / 2, y - i.height * k, i.width * k, i.height * k); }
@@ -79,6 +90,9 @@ function panel() {
     if (cur) $('arts').innerHTML = `<select data-artsof>${ds.map((d) => `<option value="${d.id}" ${d.id === cur.id ? 'selected' : ''}>${d.name}</option>`).join('')}</select>
       <select data-focus="${cur.id}"><option value="">專修：自動（${artById(focusOf(cur) || 'basicFist').name}）</option>${Object.keys(cur.arts).map((id) => `<option value="${id}" ${cur.focus === id ? 'selected' : ''}>專修：${artById(id).name}</option>`).join('')}</select>
       <div class="k">悟性 ${cur.rootKnown ? `${cur.root}（${ROOT.names[cur.root]}）` : '未明'}｜${ARTS.filter((a) => cur.arts[a.id]).map((a) => `${a.name}×${artMul(cur, a).toFixed(2)}`).join('・')}</div>${artsSvg(cur)}
+      ${ARTS.filter((a) => cur.arts[a.id]).map((a) => { const r = cur.arts[a.id], st = stuckAt(cur, a, S.t), t = artState(cur, a).tier, va = variantOf(cur, a.id, S.t), rust = rustOf(r, S.t);
+        return `<div class="k artrow">${a.name}・${TIERS[t][1]} ${r.xp.toFixed(1)}${r.guizhen ? `・歸真 ${'★'.repeat(Math.min(r.stars || 0, 10))}${(r.stars || 0) > 10 ? '+' + (r.stars - 10) : ''}（${(r.sxp || 0).toFixed(1)}/${starCost(r)}）` : ''}${st ? `・<b style="color:#2a5a9a">瓶頸${st === 3 ? '（可歸真）' : ''}，衝關成功率 ${Math.round(breakChance(cur) * 100)}%${cur.mood < BREAK.moodMin || cur.needs.energy < BREAK.energyMin ? '（心情或精力不足）' : ''}</b>` : (r.btCd || 0) > S.t ? `・衝關冷卻 ${Math.ceil(r.btCd - S.t)}s` : ''}${rust > 0.01 ? `・荒疏 −${Math.round(rust * 100)}%` : ''}
+          ${t >= 2 ? `<select data-variant="${cur.id}|${a.id}"><option value="">大成變式：未選</option>${VARIANTS[a.school].map((v) => `<option value="${v.id}" ${r.variant === v.id ? 'selected' : ''}>${v.name}</option>`).join('')}</select>${r.variant && !va ? '（換路重練中）' : ''}` : ''}</div>`; }).join('')}
       <div class="k">${ARTS.filter((a) => artState(cur, a).st === 'locked').map((a) => `${a.name}：${artState(cur, a).why}`).join('；') || '全部解鎖'}</div>`; }
   { const os = outers(S), hero = S.ds.find((d) => d.id === 'hero'), em = emergency(S);
     $('ranks').innerHTML = `<div class="k">首徒：${hero?.role === 'head' ? `主角（練功 ×${QUOTA.headTrain}）` : `未立（需外門 ≥${QUOTA.outerMin} 人且日課完成率 ≥${QUOTA.headRate * 100}%；目前外門 ${os.length}、昨日完成率 ${S.choreRate == null ? '—' : Math.round(S.choreRate * 100) + '%'}）`}</div>
@@ -115,7 +129,7 @@ function panel() {
   $('log').innerHTML = S.log.slice(0, 30).map((l) => `<li>[${l.t}s] ${l.msg}</li>`).join('');
 }
 document.addEventListener('click', (e) => { const b = e.target.closest('[data-build],[data-speed],[data-pause],[data-invite],[data-promote]'); if (!b) return; if (b.dataset.promote) startTrial(S, b.dataset.promote); if (b.dataset.pause) togglePause(S, b.dataset.pause); if (b.dataset.invite) invite(S, b.dataset.invite); if (b.dataset.build) startBuild(S, b.dataset.build); if (b.dataset.speed) speed = +b.dataset.speed; panel(); });
-document.addEventListener('change', (e) => { if ('artsof' in e.target.dataset) { window.__artsOf = e.target.value; panel(); return; } if (e.target.dataset.focus) { setFocus(S, e.target.dataset.focus, e.target.value || null); panel(); return; } if (e.target.dataset.q) { window.__ans[+e.target.dataset.q] = +e.target.value; panel(); return; } if (e.target.dataset.duty) { setDuty(S, e.target.dataset.duty, e.target.value, e.target.checked); panel(); return; } if (e.target.dataset.prio) { setPrio(S, e.target.dataset.prio, e.target.value); panel(); return; } if (e.target.dataset.style) setStyle(S, e.target.dataset.style, e.target.value); if (e.target.dataset.ord) { setOrder(S, e.target.dataset.ord, e.target.value || null); panel(); } });
+document.addEventListener('change', (e) => { if (e.target.dataset.variant) { const [id, art] = e.target.dataset.variant.split('|'); const d = S.ds.find((x) => x.id === id); if (d && e.target.value) chooseVariant(d, art, e.target.value, S.t); panel(); return; } if ('artsof' in e.target.dataset) { window.__artsOf = e.target.value; panel(); return; } if (e.target.dataset.focus) { setFocus(S, e.target.dataset.focus, e.target.value || null); panel(); return; } if (e.target.dataset.q) { window.__ans[+e.target.dataset.q] = +e.target.value; panel(); return; } if (e.target.dataset.duty) { setDuty(S, e.target.dataset.duty, e.target.value, e.target.checked); panel(); return; } if (e.target.dataset.prio) { setPrio(S, e.target.dataset.prio, e.target.value); panel(); return; } if (e.target.dataset.style) setStyle(S, e.target.dataset.style, e.target.value); if (e.target.dataset.ord) { setOrder(S, e.target.dataset.ord, e.target.value || null); panel(); } });
 $('save').onclick = () => { localStorage.setItem('solo-sect-save', save(S)); alert('已存檔'); };
 $('load').onclick = () => { const r = load(localStorage.getItem('solo-sect-save') || ''); if (r.ok) S = r.state; else alert(r.err); panel(); };
 $('reset').onclick = () => { S = createState(Date.now() % 100000 | 0); panel(); };

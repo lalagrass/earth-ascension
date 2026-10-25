@@ -1,7 +1,7 @@
 // v0.9 武學骨架：每門武學各自熟練、五階、前置、悟性門檻、笨功夫倍率
-import { ARTS, TIERS, WUXING_MUL, ART_GAIN, MOVES } from './data.mjs';
+import { ARTS, TIERS, WUXING_MUL, ART_GAIN, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST } from './data.mjs';
 export const artById = (id) => ARTS.find((a) => a.id === id);
-export const artOfMove = (mv) => ARTS.find((a) => a.tech === mv);
+export const artOfMove = (mv) => ARTS.find((a) => a.tech === mv || a.techs?.includes(mv));
 export const tierOf = (xp) => { let t = 0; for (let i = 0; i < TIERS.length; i++) if (xp >= TIERS[i][0]) t = i; return t; };
 export const artTier = (d, id) => (d.arts?.[id] ? tierOf(d.arts[id].xp) : -1);
 export const tierName = (t) => (t < 0 ? '未學' : TIERS[t][1]);
@@ -33,23 +33,62 @@ export const focusOf = (d) => (d.focus && d.arts?.[d.focus] ? d.focus : autoFocu
 // 只自動求學：主修系、拳、內功、身法，或前置含主修系的合擊武學
 export const fits = (d, a) => ['fist', 'inner', 'step', d.style].includes(a.school) || a.req.some((r) => artById(r.art).school === d.style);
 // 回傳新可求學的武學 id（若有）
-export function gainArt(d, amt, mf = 1) {
-  const id = focusOf(d); if (id) { const a = artById(id), r = d.arts[id]; r.xp = Math.min(artCap(d, a), r.xp + amt * ART_GAIN.base * artMul(d, a) * (1 - r.xp / 130) * mf); }
-  if (d.pendingArt) return null;
-  const next = ARTS.filter((a) => !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a)).sort((a, b) => (b.school === d.style) - (a.school === d.style))[0]; if (next) { d.pendingArt = next.id; return next; }
-  return null;
+export const guizhenOk = (d, a) => a.grade <= 1 && ((d.root ?? 3) <= GUIZHEN.rootMax || GUIZHEN.traits.some((t) => (d.personality || []).includes(t)));
+export const starCost = (r) => GUIZHEN.cost0 + GUIZHEN.costStep * (r.stars || 0);
+// 目前上限：悟性門檻 → 54.9；未破第一關 → 54.9；未破第二關 → 99.9
+export function curCap(d, a) { const r = d.arts[a.id]; if (gated(d, a)) return ART_GAIN.gateCap; if (!r.bt1) return BREAK.caps[0]; if (!r.bt2) return BREAK.caps[1]; return 100; }
+// 卡在哪一關：1、2、3（歸真）；冷卻中或沒卡回 0
+export function stuckAt(d, a, now = 0) {
+  const r = d.arts?.[a.id]; if (!r || gated(d, a) || (r.btCd || 0) > now) return 0;
+  if (!r.bt1 && r.xp >= BREAK.caps[0] - 1e-6) return 1; if (r.bt1 && !r.bt2 && r.xp >= BREAK.caps[1] - 1e-6) return 2;
+  if (r.bt2 && !r.guizhen && guizhenOk(d, a)) return 3; return 0;
 }
-export function learnArt(d, id) { d.arts[id] ??= { xp: 0 }; const a = artById(id); if (a.tech && !d.moves.includes(a.tech)) d.moves.push(a.tech); if (d.pendingArt === id) d.pendingArt = null; return a; }
-export const moveMul = (d, mvId) => { const a = artOfMove(mvId); return 1 + ART_GAIN.tierDmg * Math.max(0, a ? artTier(d, a.id) : 0); };
+export const btReady = (d, now = 0) => ARTS.find((a) => stuckAt(d, a, now))?.id || null;
+export function breakChance(d) { return Math.max(0.1, Math.min(0.9, BREAK.base + ((d.mood ?? 50) - 50) / 100 + ((d.root ?? 3) - 3) * 0.08 + ((d.needs?.energy ?? 50) - BREAK.energyMin) / 200)); }
+// 衝關結算：回傳 {ok, stage, art}
+export function resolveBreak(d, id, now, roll) {
+  const a = artById(id), r = d.arts[id], st = stuckAt(d, a, now); if (!st) return null;
+  const ok = roll < breakChance(d); const res = { ok, stage: st, art: a };
+  if (!ok) { r.btCd = now + BREAK.cooldown; return res; }
+  if (st === 1) { r.bt1 = true; r.xp = 55; } else if (st === 2) { r.bt2 = true; r.xp = 100; } else { r.guizhen = true; r.stars = 0; r.sxp = 0; }
+  res.newMoves = unlockTechs(d, a); return res;
+}
+export function unlockTechs(d, a) { const out = []; const t = artTier(d, a.id); (a.techs || []).forEach((m, k) => { if (k <= t && MOVES.find((x) => x.id === m) && !d.moves.includes(m)) { d.moves.push(m); out.push(m); } }); return out; }
+export function rustOf(r, now) { const idle = now - (r.last ?? now); return Math.min(RUST.max, Math.max(r.rust || 0, idle > RUST.after ? ((idle - RUST.after) / 600) * RUST.perDay : 0)); }
+// 回傳 {next 可求學武學, moves 新招}
+export function gainArt(d, amt, mf = 1, now = 0) {
+  const out = { next: null, moves: [], star: false };
+  const id = focusOf(d);
+  if (id) { const a = artById(id), r = d.arts[id]; r.rust = rustOf(r, now); r.last = now;
+    const g = amt * ART_GAIN.base * artMul(d, a) * mf * (1 - r.rust);
+    r.rust = Math.max(0, r.rust - RUST.shake);
+    if (r.guizhen) { r.sxp = (r.sxp || 0) + g * 0.4; while (r.sxp >= starCost(r)) { r.sxp -= starCost(r); r.stars = (r.stars || 0) + 1; out.star = true; } }
+    else { r.xp = Math.min(curCap(d, a), r.xp + g * (1 - r.xp / 130)); out.moves = unlockTechs(d, a); } }
+  if (!d.pendingArt) { const next = ARTS.filter((a) => !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a)).sort((a, b) => (b.school === d.style) - (a.school === d.style))[0]; if (next) { d.pendingArt = next.id; out.next = next; } }
+  return out;
+}
+export function chooseVariant(d, id, v, now = 0) {
+  const r = d.arts?.[id], a = artById(id); if (!r || artTier(d, id) < 2 || !VARIANTS[a.school].some((x) => x.id === v)) return false;
+  if (r.variant && r.variant !== v) r.until = now + BREAK.rechoose; r.variant = v; return true;
+}
+export const variantOf = (d, id, now = 0) => { const r = d.arts?.[id], a = artById(id); if (!r?.variant || (r.until || 0) > now) return null; return VARIANTS[a.school].find((x) => x.id === r.variant); };
+export const cdMul = (d, mvId, now = 0) => { const a = artOfMove(mvId); if (!a || !d.arts?.[a.id]) return 1; const t = artTier(d, a.id); return (t >= 1 ? PERKS.small.cd : 1) * (variantOf(d, a.id, now)?.cd || 1); };
+export const visTier = (d, mvId) => { const a = artOfMove(mvId); return a && d.arts?.[a.id] ? artTier(d, a.id) : 0; };
+export const topTier = (d) => ARTS.reduce((m, a) => (artTier(d, a.id) > m.t ? { t: artTier(d, a.id), a } : m), { t: -1, a: null });
+export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; const a = artById(id); unlockTechs(d, a); if (d.pendingArt === id) d.pendingArt = null; return a; }
+export const moveMul = (d, mvId, now = 0) => { const a = artOfMove(mvId); if (!a || !d.arts?.[a.id]) return 1; const t = artTier(d, a.id), r = d.arts[a.id]; return (1 + ART_GAIN.tierDmg * t) * (t >= 3 ? PERKS.full.dmg : 1) * (variantOf(d, a.id, now)?.dmg || 1) * (1 + GUIZHEN.star * (r.stars || 0)); };
 export const effectTier = (d, eff) => ARTS.filter((a) => a.effect === eff).reduce((m, a) => Math.max(m, artTier(d, a.id)), -1);
+export const effectMul = (d, eff, now = 0) => ARTS.filter((a) => a.effect === eff && d.arts?.[a.id]).reduce((m, a) => m * (variantOf(d, a.id, now)?.eff || 1) * (artTier(d, a.id) >= 3 ? PERKS.full.dmg : 1), 1);
 // 由舊招式／技能推出武學熟練（新建或舊檔）
 export function seedArts(d) {
   d.arts ??= {}; const moves = d.moves || ['fist'];
   for (const mv of moves) { const a = artOfMove(mv); if (!a) continue; const m = MOVES.find((x) => x.id === mv); const base = Math.max(0, (d.skills?.[m.skill] || 0) - (mv === 'fist' ? 0 : m.req)); d.arts[a.id] ??= { xp: Math.min(artCap(d, a), mv === 'fist' ? Math.max(d.skills?.palm || 0, d.skills?.leg || 0) : base) }; }
   if (d.pendingMove) { const a = artOfMove(d.pendingMove); if (a && !d.arts[a.id]) d.pendingArt = a.id; }
   delete d.pendingMove; d.pendingArt ??= null; d.focus ??= null;
+  for (const [id, r] of Object.entries(d.arts)) { r.bt1 ??= r.xp >= 55; r.bt2 ??= r.xp >= 100; if (!r.bt1 && r.xp > BREAK.caps[0]) r.xp = BREAK.caps[0]; if (r.bt1 && !r.bt2 && r.xp > BREAK.caps[1]) r.xp = BREAK.caps[1]; r.last ??= 0; r.rust ??= 0; }
   // 舊檔的已學招式可能早於前置，補齊前置至需求階
   for (const id of Object.keys(d.arts)) for (const r of artById(id).req) { const need = TIERS[r.tier][0]; d.arts[r.art] ??= { xp: need }; if (d.arts[r.art].xp < need) d.arts[r.art].xp = need; }
+  for (const id of Object.keys(d.arts)) { const r = d.arts[id]; r.bt1 ??= r.xp >= 55; r.bt2 ??= r.xp >= 100; r.last ??= 0; r.rust ??= 0; unlockTechs(d, artById(id)); }
   return d;
 }
 export function setFocus(s, id, art) { const d = s.ds.find((x) => x.id === id); if (!d) return false; d.focus = art && d.arts[art] ? art : null; return true; }
