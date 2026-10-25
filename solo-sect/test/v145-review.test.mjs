@@ -55,7 +55,7 @@ test('P2-2 未來規則版本拒讀、原檔不變', () => {
   const r = load(str); assert.equal(r.ok, false); assert.match(r.err, /規則版本/); assert.equal(JSON.parse(str).rules, '99.0');
   o.rules = 'banana'; assert.equal(load(JSON.stringify(o)).ok, false);
   o.rules = RULES_VERSION; assert.equal(load(JSON.stringify(o)).ok, true);
-  o.rules = '1.4'; const r2 = load(JSON.stringify(o)); assert.ok(r2.ok); assert.deepEqual(r2.state.migSteps, ['1.45']);
+  o.rules = '1.4'; const r2 = load(JSON.stringify(o)); assert.ok(r2.ok); assert.deepEqual(r2.state.migSteps, ['1.45', '1.5']);
 });
 test('外觀：堂弟（與所有人）的喜好不會是 undefined', () => {
   const s = mk(); for (const d of s.ds) { delete d.likes; const L = likesOf(d); assert.ok(FOODS.includes(L.food) && DRINKS.includes(L.drink), `${d.name} ${L.drink}`); }

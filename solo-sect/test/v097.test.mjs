@@ -1,10 +1,11 @@
+import { openExp } from "../src/slice.mjs";
 import test from 'node:test'; import assert from 'node:assert/strict';
 import { createState, tick, startExpedition, payday, load, save, moodParts } from '../src/sim.mjs';
 import { styleOf, teamStyle, evadeScore } from '../src/expedition.mjs';
 import { ROUTE, RULES_VERSION, ENEMIES } from '../src/data.mjs';
 const H = (id, comp) => createState(21, { kind: 'template', id, companion: comp });
 const go = (s, ids, lvl) => { tick(s); for (const d of s.ds) if (ids.includes(d.id) && lvl != null) { d.skills.palm = d.skills.leg = Math.max(d.skills.palm, lvl); d.skills.strength = lvl / 2; }
-  s.res.food = 20; startExpedition(s, ids); let i = 0; while (s.exp && i++ < 60000) tick(s); return s.lastExp; };
+  s.res.food = 20; startExpedition(openExp(s), ids); let i = 0; while (s.exp && i++ < 60000) tick(s); return s.lastExp; };
 const hero = (s) => s.ds.find((d) => d.id === 'hero');
 
 test('風格從性格／價值觀／武學推出並附說明：郭靖清場、韋小寶溜走', () => {

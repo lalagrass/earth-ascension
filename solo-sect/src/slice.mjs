@@ -41,3 +41,5 @@ export function autoList(store) {
   return out.sort((a, b) => b.at - a.at);
 }
 export const autoGet = (store, i) => store.getItem(AUTO.prefix + i);
+// v1.5 測試/腳本用：直接開啟巡山解鎖（模擬層 canExpedition 已守解鎖）
+export const openExp = (s) => { if (s.unlock && !s.unlock.includes('exp')) s.unlock.push('exp'); return s; };

@@ -1,3 +1,4 @@
+import { openExp } from "../src/slice.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startExpedition, canExpedition, load, save } from '../src/sim.mjs';
@@ -19,18 +20,18 @@ test('無盡段：每 200 步一段、段末固定守關、每段再 ×ENDLESS.m
 });
 test('營地設在第三段、第五段盡頭；過關設營、可從營地出發', () => {
   assert.deepEqual(CAMPS.map((c) => ROUTE[c.seg].to), [450, 950]);
-  const s = createState(4); tick(s); s.res.food = 0; assert.equal(startExpedition(s, ['hero'], { from: 'camp1' }).ok, false);
-  s.camps = { camp1: true }; s.res.food = 10; const r = startExpedition(s, ['hero'], { from: 'camp1', supplies: 1 });
+  const s = createState(4); tick(s); s.res.food = 0; assert.equal(startExpedition(openExp(s), ['hero'], { from: 'camp1' }).ok, false);
+  s.camps = { camp1: true }; s.res.food = 10; const r = startExpedition(openExp(s), ['hero'], { from: 'camp1', supplies: 1 });
   assert.ok(r.ok); assert.equal(s.exp.dist, 450); assert.equal(s.exp.gateI, 3); assert.equal(s.exp.supplies, 1); assert.equal(s.res.food, 10 - EXP.campCarry - 1);
 });
 test('強隊一路過關會在山腰設營並補給', () => {
   const s = createState(11); tick(s); const ids = s.ds.slice(0, 4).map((d) => d.id); buff(s, ids, 200); s.res.food = 30;
-  startExpedition(s, ids, { thr: 0.3, target: 600 }); const rep = run(s);
+  startExpedition(openExp(s), ids, { thr: 0.3, target: 600 }); const rep = run(s);
   assert.ok(rep.dist >= 450, rep.reason); assert.ok(s.camps.camp1); assert.ok(rep.camps.includes('山腰營地'));
 });
 test('乾糧可選、目標距離可設；體力與耐性會消耗', () => {
   const s = createState(5); tick(s); buff(s, ['hero'], 40); s.res.food = 20;
-  startExpedition(s, ['hero'], { supplies: 5, target: 120 }); assert.equal(s.exp.supplies, 5); const rep = run(s);
+  startExpedition(openExp(s), ['hero'], { supplies: 5, target: 120 }); assert.equal(s.exp.supplies, 5); const rep = run(s);
   assert.ok(rep.dist <= 120); assert.ok(rep.sta < EXP.sta); assert.ok(rep.patMax > 0);
 });
 test('探路者：身法夠才有，先手 +20%', () => {
@@ -38,18 +39,18 @@ test('探路者：身法夠才有，先手 +20%', () => {
   assert.equal(EXP.scoutBonus, 0.2);
 });
 test('巡山令：強制風格、不合者心情下降、耐性上限 ×0.7', () => {
-  const mk = (order) => { const s = createState(8); tick(s); s.ds[0].mood = 80; s.ds[0].personality = ['honest', 'stubborn']; s.res.food = 10; startExpedition(s, ['hero'], { order }); return s; };
+  const mk = (order) => { const s = createState(8); tick(s); s.ds[0].mood = 80; s.ds[0].personality = ['honest', 'stubborn']; s.res.food = 10; startExpedition(openExp(s), ['hero'], { order }); return s; };
   const a = mk(null), b = mk('slip'); assert.equal(b.exp.style, 'slip'); assert.equal(b.exp.order, 'slip');
   assert.ok(b.exp.patMax <= Math.round(a.exp.patMax * 0.7) + 1); assert.ok(b.ds[0].mood < 80);
 });
 test('較真與懶散同隊：回來吵架、好感下降', () => {
   const s = createState(9); tick(s); const [a, b] = s.ds.filter((d) => d.role !== 'laborer'); a.personality = ['stubborn']; b.personality = ['lazy']; buff(s, [a.id, b.id], 30); s.res.food = 10;
-  const before = s.aff[affKey(a.id, b.id)] || 0; startExpedition(s, [a.id, b.id], { target: 60 }); const rep = run(s);
+  const before = s.aff[affKey(a.id, b.id)] || 0; startExpedition(openExp(s), [a.id, b.id], { target: 60 }); const rep = run(s);
   assert.equal(s.aff[affKey(a.id, b.id)], before - EXP.quarrel); assert.ok(rep.quarrel.length);
 });
 test('出巡後要歇；快腳（衝刺或深谷最快紀錄）歇一半', () => {
-  const s = createState(10); tick(s); buff(s, ['hero'], 40); s.res.food = 10; startExpedition(s, ['hero'], { target: 60, order: 'dash' }); const rep = run(s);
-  assert.equal(rep.cool, EXP.cool * EXP.coolFast); assert.equal(canExpedition(s, ['hero']).ok, false); for (let i = 0; i < rep.cool * 4 + 4; i++) tick(s); s.ds[0].hp = 100; assert.equal(canExpedition(s, ['hero']).ok, true);
+  const s = createState(10); tick(s); buff(s, ['hero'], 40); s.res.food = 10; startExpedition(openExp(s), ['hero'], { target: 60, order: 'dash' }); const rep = run(s);
+  assert.equal(rep.cool, EXP.cool * EXP.coolFast); assert.equal(canExpedition(openExp(s), ['hero']).ok, false); for (let i = 0; i < rep.cool * 4 + 4; i++) tick(s); s.ds[0].hp = 100; assert.equal(canExpedition(openExp(s), ['hero']).ok, true);
 });
 test('清山 3 次的路段：野豬少下山、路走得快', () => {
   const s = createState(1); assert.equal(raidMul(s), 1); s.records.qing = { foot: 3 }; assert.ok(peaceOf(s, 'foot')); assert.equal(raidMul(s), EXP.peaceRaid);

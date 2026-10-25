@@ -1,3 +1,4 @@
+import { secOpen } from './slice.mjs';
 // v0.95 巡山遠征（ROADMAP §15）：背景模擬＋戰報；地圖只畫進度條。固定名單、決定性、不會死。
 import { ENDLESS, CAMPS } from './data.mjs';
 import { addWexin } from './hero.mjs';
@@ -36,8 +37,11 @@ export function dpsOf(s, d) {
   let best = 0; for (const id of d.moves) { const mv = MOVES.find((m) => m.id === id); if (!mv) continue; const p = mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t) * (mv.aoe ? 1.3 : 1) / mv.cd; if (p > best) best = p; }
   return best;
 }
+// v1.5 召回（A2）：隊伍從目前距離往回走，戰利品照拿；返程仍走 returnPlan（含驚獸）
+export function recallExpedition(s) { const X = s.exp; if (!X || X.phase === 'back' || X.phase === 'done') return false; X.reason = '掌門傳令召回'; X.recalled = true; return true; }
 export function canExpedition(s, ids) {
   if (s.exp) return { ok: false, why: '已有隊伍在外' };
+  if (!secOpen(s, 'exp')) return { ok: false, why: '巡山還沒解鎖（第一天黃昏試煉後或第三天）' }; // v1.5：模擬層也守解鎖，章節不再第一天就記
   if (!ids.length || ids.length > EXP.maxTeam) return { ok: false, why: `派 1–${EXP.maxTeam} 人` };
   for (const id of ids) { const d = s.ds.find((x) => x.id === id); if (!d) return { ok: false, why: '查無此人' }; if (d.role === 'laborer') return { ok: false, why: `${d.name}是雇工` }; if (d.hp < EXP.minHp) return { ok: false, why: `${d.name}傷還沒好` }; if (s.hunt?.team.includes(id)) return { ok: false, why: `${d.name}正在狩獵` }; if ((d.restUntil || 0) > s.t) return { ok: false, why: `${d.name}剛巡山回來，還要歇 ${Math.ceil(d.restUntil - s.t)} 秒` }; }
   return { ok: true };

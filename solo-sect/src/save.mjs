@@ -38,7 +38,16 @@ export const MIGRATIONS = [
   { to: '1.35', note: '門派身分：門規、鎮派設施、宿敵守關、外門武學', up(o) { o.sect ??= sectOf(o.hero); } },
   { to: '1.4', note: '第二代：成親、收養、師承、衣缽、宿慧、年齡', up(o) { o.gen ??= genInit(); for (const d of o.ds) d.age ??= d.adult ? 22 : 10; } },
   { to: '1.45', note: '返程驚獸、三級事件、弟子狀態三行', up(o) { for (const e of o.log || []) { e.tier ??= tierOf(e.msg); } if (o.exp && o.exp.phase === 'back' && !o.exp.ret) { o.exp.ret = { left: [], hits: [], staLost: 0, lost: null }; o.exp.backPos ??= o.exp.dist; } o.alert ??= null; } },
+  { to: '1.5', note: '新模擬核心：統一預約表、工序、需求遲滯/厭倦、巡山召回、結構化狀態', up(o) { v150Up(o); } },
 ];
+// 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
+export function v150Up(o) {
+  o.resv ??= {}; const R = o.resv; const take = (d, k) => { if (R[k] && R[k] !== d.id) return false; R[k] = d.id; (d.task.resv ??= []).push(k); return true; };
+  (o.plots || []).forEach((p, i) => { const d = p.busy && o.ds.find((x) => x.id === p.busy); if (d?.task?.act === 'farm') { d.task.plot = i; take(d, `plot:${i}`); } delete p.busy; });
+  for (const d of o.ds) { d.tired ??= (d.needs?.energy ?? 100) <= 30; d.bored ??= {}; const t = d.task; if (!t) continue;
+    if (t.partner) take(d, `actor:${t.partner}`);
+    if (t.act === 'rest' || t.act === 'cook') { const st = FACILITIES.find((f) => f.id === t.fac)?.stages[o.fac?.[t.fac]?.stage || 0]; const cap = t.act === 'cook' ? 1 : st?.beds ?? 1; let ok = false; for (let i = 0; i < cap && !ok; i++) ok = take(d, `${t.fac}:${t.act}:${i}`); if (!ok && t.act === 'rest') { t.floor = true; take(d, `hall:floor:${d.id}`); } else if (!ok) { o.vegRes = Math.max(0, (o.vegRes || 0) - 2); d.task = null; } } }
+}
 // 每次讀檔都跑：補最基本的不變式（手改或殘缺存檔也能讀）
 function repair(o, D) { o.cap ??= { wood: 12, stone: 12 }; for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= []; d.needs.fun ??= 60; if (!d.personality?.length) d.personality = [...(D[d.id]?.personality || [])]; d.known ??= d.personality.slice(0, 1); } freshV095(o); }
 export function migrate(o) {

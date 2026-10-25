@@ -73,6 +73,18 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 | SS-BALANCE-LONG | ROADMAP §19：排在 v1.46（v1.45 規則上的基準線） | 長時間自動試玩 → 平衡報告 | 已接線（v1.46 基準已跑） | **通過（不變式）**：35/35 跑完 30 日、0 違反（`artifacts/v146-baseline/longrun.log`、`longrun-results.json`；報告 `BALANCE-BASELINE-v146.md`）。限：腳本玩家只用一般指令、固定種子；平衡結論見報告，未做真人試玩 | — | — | — | 還沒做（等擁有人點頭） |
 | SS-PROD | ROADMAP §16 | 版權、平台、付費點數、手機 | 規劃 | 未跑 | — | — | — | 刻意延後 |
 
+### v1.5 新模擬核心（ROADMAP §19）
+| Feature ID | 設計來源 | 玩家短流程 | 狀態 | 驗證 | 實作檔案 | 測試命令與結果檔 | 截圖/錄影 | 已知缺口 |
+|---|---|---|---|---|---|---|---|---|
+| SS-CORE-REGISTRY | ROADMAP §19 v1.5；DESIGN-REVIEW §3 | 新設施只加資料：階段宣告 offers/beds/slots，登錄表推出容量與時長 | 已接線 | 通過（單元） | src/core.mjs, src/data.mjs | `node --test test/v150.test.mjs` | — | 活動廣告需求（`ad`）欄位已預留但打分仍在 scoreActs，未改成純資料驅動 |
+| SS-CORE-RESV | v1.5 | 床位、灶位、菜畦、切磋/聊天夥伴走同一張 s.resv；床滿打地鋪 | 已接線 | 通過（單元＋10 日每拍不變式＋長跑 smoke 9/9） | src/core.mjs, src/sim.mjs, src/lifecycle.mjs | `test/v150.test.mjs`；`artifacts/v150/longrun-smoke.json` | — | 倉庫料仍由 whReserved 從任務推得（沒搬進 s.resv）；vegRes 仍是計數器；「物資總量守恆」不變式未做 |
+| SS-CORE-TOIL | v1.5 | 工序清單 stepsOf；搬料途中取消不瞬移，料拿在手上走回院倉 | 已接線 | 通過（單元） | src/core.mjs, src/lifecycle.mjs | `test/v150.test.mjs` | shots/v150-status.png（實玩） | 工序仍由 phase 推導，不是逐步執行的 step 物件；撤銷（undo）未做 |
+| SS-CORE-NEEDS | v1.5 | 精力 ≤30 想睡、到 80 才起；休閒/聊天/採藥/鼓勵做完 60 秒內 ×0.3 | 已接線 | 通過（單元） | src/core.mjs, src/sim.mjs | `test/v150.test.mjs` | — | 只有精力有遲滯；飢餓沿用舊門檻 |
+| SS-EXP-RECALL | v1.5（A2） | 巡山面板按「召回」→ 從目前距離回程、戰利品保留 | **已驗證** | 通過（單元＋瀏覽器實玩點擊 5/5） | src/expedition.mjs, src/main.mjs | `artifacts/v150/flow-v150.mjs` → `flow-v150-result.json` | shots/v150-exp-out.png、shots/v150-exp-recall.png（實玩） | 距離仍抽象（v1.55 才上地圖） |
+| SS-STATUS-V150 | v1.5 | 弟子卡「現在／原因／下一步」：層級讀 d.decision；下一步＝目前任務排著的工序 | 已驗證 | 通過（單元＋實玩） | src/status.mjs | `test/v150.test.mjs`、`test/v145.test.mjs` | shots/v150-status.png（實玩） | — |
+
+修正：巡山在模擬層也守解鎖（第一章不再在第 1 日記成）；「本門新紀錄」「重傷倒地」由頂級改為中級事件。
+
 ## 三、依賴、未完成、取消／恢復、保存邊界
 - **依賴**
   - 巡山要等巡山面板解鎖（COM-UNLOCK）。

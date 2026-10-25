@@ -1,0 +1,6 @@
+PASS 巡山解鎖後面板出現（模擬層守解鎖） {"t":408,"unlock":["base","arts","social","hunt","exp"]}
+PASS 派出後面板有「召回」按鈕 ["hero","senior"]
+PASS 按召回：隊伍從目前距離回程、原因是召回 {"d0":20.125,"X":{"phase":"back","dist":21,"backPos":21,"reason":"掌門傳令召回","loot":{"food":1}}}
+PASS 弟子卡：現在/原因/下一步（下一步＝工序或重新評估），無 undefined {"sample":"現在：待命 待命原因：巡山歸來下一步：馬上重新評估要做什麼"}
+PASS 無 pageerror／dialog []
+5/5 PASS

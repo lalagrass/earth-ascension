@@ -1,3 +1,4 @@
+import { openExp } from "../src/slice.mjs";
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startExpedition, save, load } from '../src/sim.mjs';
@@ -11,9 +12,9 @@ const mk = () => { const s = createState(7); tick(s); return s; };
 // 走到 X.dist、seg 紀錄可自訂的回程情境
 const backX = (s, seg, loot, sta = 100, dist = 500) => { s.exp = { team: [], dist, phase: 'back', backPos: dist, seg, loot: { ...loot }, sta, events: [], records: {} }; s.exp.ret = returnPlan(s, s.exp); return s.exp; };
 test('v1.45 版本號＋舊檔一步遷移（log 標級、回程隊伍補 ret）', () => {
-  assert.equal(RULES_VERSION, '1.45'); const s = mk(); const o = JSON.parse(save(s)); o.rules = '1.4'; for (const e of o.log) delete e.tier; delete o.alert;
+  assert.ok(['1.45', '1.5'].includes(RULES_VERSION)); const s = mk(); const o = JSON.parse(save(s)); o.rules = '1.4'; for (const e of o.log) delete e.tier; delete o.alert;
   o.exp = { phase: 'back', dist: 120, team: [], seg: {}, loot: {}, events: [] }; migrate(o);
-  assert.deepEqual(o.migSteps, ['1.45']); assert.ok(o.log.every((e) => e.tier)); assert.ok(o.exp.ret && o.exp.backPos === 120); assert.equal(o.alert, null);
+  assert.deepEqual(o.migSteps, ['1.45', '1.5']); assert.ok(o.log.every((e) => e.tier)); assert.ok(o.exp.ret && o.exp.backPos === 120); assert.equal(o.alert, null);
 });
 test('A1 返程驚獸：每段未清段扣耐力 6，固定值', () => {
   const s = mk(); const X = backX(s, { foot: { enc: 3, kill: 3 }, wood: { enc: 4, kill: 2 }, [ROUTE[2].id]: { enc: 2, kill: 0 } }, { herb: 4 });
@@ -34,7 +35,7 @@ test('A1 已平靖段不算未清', () => {
   const s = mk(); s.records.qing = { wood: EXP.peaceQing }; const X = { dist: 300, seg: { wood: { enc: 4, kill: 1 } }, loot: { herb: 1 } }; assert.equal(unclearedSegs(s, X).length, 0);
 });
 test('A1 整趟巡山端到端：戰報含返程欄位、決定性', () => {
-  const run = () => { const s = mk(); for (const d of s.ds) { d.hp = 100; d.mood = 80; } const ids = s.ds.filter((d) => d.role !== 'laborer').slice(0, 2).map((d) => d.id); const r = startExpedition(s, ids, { order: 'slip', target: ROUTE[3].to }); assert.ok(r.ok, r.why); for (let i = 0; i < 40000 && s.exp; i++) tick(s); return s.lastExp; };
+  const run = () => { const s = mk(); for (const d of s.ds) { d.hp = 100; d.mood = 80; } const ids = s.ds.filter((d) => d.role !== 'laborer').slice(0, 2).map((d) => d.id); const r = startExpedition(openExp(s), ids, { order: 'slip', target: ROUTE[3].to }); assert.ok(r.ok, r.why); for (let i = 0; i < 40000 && s.exp; i++) tick(s); return s.lastExp; };
   const a = run(), b = run(); assert.ok(a && 'ret' in a); assert.deepEqual(a.ret, b.ret); assert.equal(typeof reportText(a), 'string');
   if (a.ret?.hits.length) assert.match(reportText(a), /返程驚獸/);
 });
@@ -53,8 +54,8 @@ test('A3/A16 里程軸：✔/⚠/▶/·', () => {
 });
 test('A5 現在／原因／下一步，標出決策層', () => {
   const s = mk(); for (let i = 0; i < 200; i++) tick(s); const d = s.ds.find((x) => x.task) || s.ds[0]; const x = statusOf(s, d);
-  assert.ok(x.now && x.why && x.next); assert.ok(['指令', '生理', '作息', '性格', '巡山'].includes(x.layer));
-  d.order = 'train'; assert.equal(statusOf(s, d).layer, '指令'); d.order = null; d.reason = '精力見底，先歇'; assert.equal(statusOf(s, d).layer, '生理');
+  assert.ok(x.now && x.why && x.next); assert.ok(['指令', '生理', '作息', '性格', '巡山', '職司', '工序', '待命'].includes(x.layer));
+  d.order = 'train'; assert.equal(statusOf(s, d).layer, '指令'); d.order = null; d.task ??= { act: 'rest', phase: 'go' }; d.decision = { layer: 'need', act: 'rest' }; d.reason = '隨便寫的文字'; assert.equal(statusOf(s, d).layer, '生理'); // v1.5：層級來自結構化 decision
   s.exp = { team: [d.id], phase: 'out', dist: 30, target: 300, style: 'clear', reason: null }; d.away = true; assert.equal(statusOf(s, d).layer, '巡山');
 });
 test('v1.45 存讀檔保留 ret 與 alert', () => { const s = mk(); s.alert = { msg: 'x', who: null, t: 0 }; const r = load(save(s)); assert.ok(r.ok); assert.equal(r.state.alert.msg, 'x'); });

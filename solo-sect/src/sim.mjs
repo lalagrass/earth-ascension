@@ -20,11 +20,13 @@ import { unlockStep, chapterStep } from './slice.mjs';
 import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus, awaken, econCoin, cookBonus } from './hero.mjs';
 export { canExpedition, codexRows, reportText, segAt, ROUTE_END, dpsOf };
 const H = { rand: (s) => rand(s), cancelTask: (s, d, w) => cancelTask(s, d, w), grow: (s, d, k, a) => grow(s, d, k, a), think: (s, d, id) => think(s, d, id), gate: NODES.gate };
+export { recallExpedition } from './expedition.mjs';
 export const startExpedition = (s, ids, opt = {}) => startExp0(s, ids, opt, H);
 export { think, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, knownTraits, relStage, relAdd, compat, aff, seasonOf, relKey, log };
 
 import { SAVE_VERSION, freshV095 } from './save.mjs';
 import { cancelTask, removeActor, whAvail } from './lifecycle.mjs';
+import { freeSlot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE } from './core.mjs';
 export { SAVE_VERSION };
 
 function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
@@ -181,23 +183,22 @@ export function setOrder(s, id, order) {
 
 // ---- 效用 AI ----
 // 可被邀聊：無玩家指派、未負重、未在施工/狩獵/歇息/聊天中
-function chatMates(s, d) { return s.ds.filter((o) => o !== d && !o.away && o.task?.act !== 'trial' && !o.order && o.hp > 30 && !o.carry && !['build', 'hunt', 'rest', 'chat', 'spar', 'learn', 'encourage'].includes(o.task?.act) && o.task?.phase !== 'return'); }
+function chatMates(s, d) { return s.ds.filter((o) => o !== d && !o.away && o.task?.act !== 'trial' && !o.order && o.hp > 30 && !o.carry && !['build', 'hunt', 'rest', 'chat', 'spar', 'learn', 'encourage'].includes(o.task?.act) && o.task?.phase !== 'return' && !actorBusy(s, o.id)); }
 function offered(s, act) { return FACILITIES.filter((f) => facStage(s, f.id).offers.includes(act)); }
+// v1.5：依登錄表找「有空 slot」的設施；床滿了就打地鋪（大廳 floor，明確記帳、不算床位）
 function bestFac(s, d, act) {
   const fs = offered(s, act).filter((f) => !facStage(s, f.id).laborOnly || isLabor(d)); if (!fs.length) return null;
-  if (act === 'rest') {
-    fs.sort((a, b) => (facStage(s, b.id).restRate || 0) - (facStage(s, a.id).restRate || 0));
-    const used = (id) => s.ds.filter((o) => o !== d && o.task?.act === 'rest' && o.task.fac === id).length;
-    return fs.find((f) => used(f.id) < (facStage(s, f.id).beds || 1)) || fs[fs.length - 1];
-  }
-  return fs[0];
+  if (act === 'rest') fs.sort((a, b) => (facStage(s, b.id).restRate || 0) - (facStage(s, a.id).restRate || 0));
+  for (const f of fs) { const key = freeSlot(s, f.id, act, d); if (key) return { f, key }; }
+  if (act === 'rest') { const f = facDef('hall'); return { f, key: `hall:floor:${d.id}`, floor: true }; }
+  return null;
 }
 export function scoreActs(s, d) {
   const n = d.needs, tr = d.traits, out = [];
   const add = (act, score, why) => { if (score > 0) out.push({ act, score, why }); };
-  add('rest', n.energy < 30 ? 100 : (100 - n.energy) * 0.7, n.energy < 30 ? '精力見底，先歇' : '有點累');
-  if (d.hp < 40) add('rest', 90, '傷還沒好，躺著養傷');
-  if (s.res.food > 0) add('eat', n.hunger < 15 ? 160 : n.hunger < 30 ? 95 : (100 - n.hunger) * 0.6, n.hunger < 15 ? '餓得發昏，先吃' : n.hunger < 30 ? '餓了' : '順便吃點');
+  needStep(d); add('rest', d.tired ? 130 : n.energy < CORE.wakeAt ? (100 - n.energy) * 0.6 : 0, d.tired ? '精力見底，睡到飽再起' : '有點累'); if (d.tired) out[out.length - 1].layer = 'need';
+  if (d.hp < 40) { add('rest', 90, '傷還沒好，躺著養傷'); out[out.length - 1].layer = 'need'; }
+  if (s.res.food > 0) add('eat', n.hunger < 15 ? 160 : n.hunger < 30 ? 95 : (100 - n.hunger) * 0.6, n.hunger < 15 ? '餓得發昏，先吃' : n.hunger < 30 ? '餓了' : '順便吃點'); if (s.res.food > 0 && n.hunger < 30) out[out.length - 1].layer = 'need';
   const others = chatMates(s, d);
   if (others.length) add('chat', (100 - n.social) * 0.6 * (tr.social || 1) * (tr.playful || 1) * 0.8, '想找人說話');
   const fun = n.fun ?? 60; add('leisure', (100 - fun) * 0.55, fun < 25 ? '悶得慌，想偷閒' : '想坐坐看雲');
@@ -232,7 +233,8 @@ export function scoreActs(s, d) {
       if (d.role === 'outer' && !em) { if (!(d.duties || CHORE_ACTS).includes(o.act)) { out.splice(i, 1); continue; } const m = PRIO[d.prio || 'normal'][0] * (owe > 0 ? QUOTA.dutyMul : 1); if (PRIO[d.prio || 'normal'][0] !== 1) o.f.P.ext.push(['優先度', PRIO[d.prio || 'normal'][0]]); if (owe > 0) o.f.P.ext.push(['日課未滿', QUOTA.dutyMul]); o.f.duty = m; } }
     if (d.role === 'head') for (const o of out) if (o.act === 'train') { o.f.P.ext.push(['首徒', QUOTA.headTrain]); o.f.head = QUOTA.headTrain; }
   }
-  for (const o of out) { const f = o.f, p = pipeline(f.P); f.talent = p.talent; f.state = p.state; f.ext = p.ext; f.total = p.total; f.text = mulText(p); o.score = f.base * f.sched * p.total + f.noise; delete f.P; }
+  for (const o of out) { const f = o.f, p = pipeline(f.P); f.talent = p.talent; f.state = p.state; f.ext = p.ext; f.total = p.total; f.text = mulText(p); f.bored = boredMul(s, d, o.act); o.score = f.base * f.sched * p.total * f.bored + f.noise; delete f.P;
+    o.layer ??= f.duty || f.labor ? 'duty' : f.sched >= 1.3 ? 'sched' : 'trait'; }
   return out.sort((a, b) => b.score - a.score);
 }
 
@@ -250,26 +252,27 @@ function assign(s, d, act, why) {
     const p = act === 'encourage' ? chatMates(s, d).filter((o) => o.mood < 35).sort((a, b) => a.mood - b.mood)[0] : chatMates(s, d).sort((a, b) => aff(s, d, b) - aff(s, d, a))[0];
     if (!p) return false;
     if (p.task) cancelTask(s, p, `被${d.name}拉去${act === 'spar' ? '切磋' : '聊天'}`);
-    const node = act === 'spar' ? 'yard' : 'court'; d.task = { act, fac: 'yard', node, phase: 'go', partner: p.id }; p.task = { act, fac: 'yard', node, phase: 'go', partner: d.id };
+    const node = act === 'spar' ? 'yard' : 'court'; d.task = { act, fac: 'yard', node, phase: 'go', partner: p.id, resv: [`actor:${p.id}`] }; p.task = { act, fac: 'yard', node, phase: 'go', partner: d.id, resv: [`actor:${d.id}`] }; reserve(s, d, `actor:${p.id}`); reserve(s, p, `actor:${d.id}`);
     goto(d, node); goto(p, node); d.reason = why; p.reason = act === 'spar' ? `${d.name}邀來切磋` : act === 'encourage' ? `${d.name}來陪我說說話` : `${d.name}找來聊天`; if (act === 'encourage') p.task.act = 'chat', p.task.encouragedBy = d.id; return true;
   }
   if (act === 'eat' && s.res.food <= 0) return false;
   if (act === 'cook') { if (s.res.veg - s.vegRes < 2) return false; s.vegRes += 2; }
-  if (act === 'farm') { const i = s.plots.findIndex((p) => (p.st === 'ripe' || p.st === 'empty') && !p.busy); if (i < 0) return false; s.plots[i].busy = d.id; }
-  const f = bestFac(s, d, act); if (!f) return false;
-  d.task = { act, fac: f.id, node: f.node, phase: 'go', plot: act === 'farm' ? s.plots.findIndex((p) => p.busy === d.id) : undefined }; goto(d, f.node); d.reason = why; return true;
+  let plot; if (act === 'farm') { plot = s.plots.findIndex((p, i) => (p.st === 'ripe' || p.st === 'empty') && !holder(s, `plot:${i}`)); if (plot < 0) return false; }
+  const b = bestFac(s, d, act); if (!b) { if (act === 'cook') s.vegRes -= 2; return false; } const f = b.f;
+  const resv = [b.key]; if (act === 'farm') resv.push(`plot:${plot}`); for (const k of resv) reserve(s, d, k);
+  d.task = { act, fac: f.id, node: f.node, phase: 'go', plot, resv, floor: b.floor || undefined }; goto(d, f.node); d.reason = why; return true;
 }
 function goto(d, node) { const p = route(d.at, node); d.path = p.slice(1).map((n) => ({ n, xy: NODES[n] })); if (!d.path.length) d.path = [{ n: node, xy: NODES[node] }]; }
 
 function decide(s, d) {
-  if (d.carry) { d.task = { act: 'deliver', phase: 'return', node: 'court', walkStart: d.walked }; goto(d, 'court'); d.reason = '先把東西送回院倉'; return true; }
+  if (d.carry) { d.task = { act: 'deliver', phase: 'return', node: 'court', walkStart: d.walked }; goto(d, 'court'); d.reason = '先把東西送回院倉'; d.decision = { layer: 'carry', act: 'deliver', why: d.reason }; return true; }
   if (d.order) {
-    const o = d.order; if (o !== 'hunt' && (d.needs.energy < 15 || (o !== 'eat' && d.needs.hunger < 10 && s.res.food > 0))) return assign(s, d, d.needs.energy < 15 ? 'rest' : 'eat', '指派中先自理');
-    if (assign(s, d, o, '玩家指派')) { onAssign(s, d, o, true); return true; }
+    const o = d.order; if (o !== 'hunt' && (d.needs.energy < 15 || (o !== 'eat' && d.needs.hunger < 10 && s.res.food > 0))) { const a = d.needs.energy < 15 ? 'rest' : 'eat'; d.decision = { layer: 'need', act: a, why: '指派中先自理' }; return assign(s, d, a, '指派中先自理'); }
+    if (assign(s, d, o, '玩家指派')) { onAssign(s, d, o, true); d.decision = { layer: 'order', act: o, why: '玩家指派' }; return true; }
     d.reason = `指派「${o === 'hunt' ? '狩獵' : ACTIVITIES[o].name}」暫不可行`; return false;
   }
   const sc = scoreActs(s, d); d.why = sc.slice(0, 3).map((c) => ({ act: c.act, score: Math.round(c.score), f: c.f, why: c.why }));
-  for (const c of sc) if (assign(s, d, c.act, c.why)) { d.picked = c.act; return true; }
+  for (const c of sc) if (assign(s, d, c.act, c.why)) { d.picked = c.act; d.decision = { layer: c.layer, act: c.act, why: c.why }; return true; }
   return false;
 }
 
@@ -314,14 +317,14 @@ function doTask(s, d, dt) {
     t.timer += dt;
     if (t.partner && !byId(s, t.partner)) { cancelTask(s, d, '對手不在了'); return; }
     if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = byId(s, t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
-    const effDur = t.act === 'cook' ? facStage(s, t.fac).cookDur : t.act === 'learn' ? facStage(s, 'hall').learnDur : A.dur;
+    const effDur = durOf(s, t);
     if (A.energy && effDur > 0) d.needs.energy = clamp(d.needs.energy + A.energy * dt / effDur, 0, 100);
-    if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', s.t); if (t.timer < dt * 1.5) think(s, d, t.fac === 'hall' && s.fac.hall.stage === 0 ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= 80 && t.timer > 4))) finish(s, d); return; }
+    if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (t.floor ? 0.6 : 1) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', s.t); if (t.timer < dt * 1.5) think(s, d, t.floor || (t.fac === 'hall' && s.fac.hall.stage === 0) ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= CORE.wakeAt && t.timer > 4))) finish(s, d); return; }
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
     const dur = effDur;
     if (t.timer >= dur) {
       if (t.act === 'cook') { const st = facStage(s, t.fac); s.res.veg -= 2; s.vegRes -= 2; t.phase = 'done'; const yld = st.cookYield + cookBonus(d); onCook(s, d); s.res.food += yld; book(s, 'in', 'food', yld); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); grow(s, d, 'cooking', 6); finish(s, d); return; }
-      if (t.act === 'farm') { const p = s.plots[t.plot]; p.busy = null; grow(s, d, 'farming', 6); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
+      if (t.act === 'farm') { const p = s.plots[t.plot]; t.resv = []; grow(s, d, 'farming', 6); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; book(s, 'out', 'food', 1); }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? facStage(s, 'yard').trainMul || 1 : 1));
@@ -347,7 +350,7 @@ function doTask(s, d, dt) {
     d.carry = null; finish(s, d);
   }
 }
-function finish(s, d) { if (d.task && CHORE_ACTS.includes(d.task.act) && !isLabor(d)) d.chore = (d.chore || 0) + 1; if (d.task?.trial) resolveTrial(s, d); d.task = null; d.anim = null; }
+function finish(s, d) { if (d.task) markDone(s, d, d.task.act); if (d.task && CHORE_ACTS.includes(d.task.act) && !isLabor(d)) d.chore = (d.chore || 0) + 1; if (d.task?.trial) resolveTrial(s, d); d.task = null; d.anim = null; }
 
 // ---- 狩獵（同圖塔防波次，v0.4 接生態） ----
 export function setPost(s, node) { if (POSTS[node] && !s.hunt) { s.post = node; return true; } return false; }
@@ -524,6 +527,7 @@ export function tick(s, dt = 0.25) {
   paceStep(s); unlockStep(s); chapterStep(s); if (Math.floor(s.t) !== Math.floor(s.t - dt)) aspStep(s, think);
   xiaStep(s, H); hsStep(s, 0.25, H); jhStep(s, 0.25, H); sectStep(s); genStep(s);
   if (s.hero) { const h = byId(s, 'hero'); if (h && !h.away && h.hp <= EXP.hurtHeavy) awaken(s, h); heroStep(s); heroAuto(s); for (const d of s.ds) d.pairMul = pairBonus(s, d, aff); }
+  sweepResv(s);
   for (const f of s.fx) f.ttl -= dt; s.fx = s.fx.filter((f) => f.ttl > 0);
 }
 

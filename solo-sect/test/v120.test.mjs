@@ -1,3 +1,4 @@
+import { openExp } from "../src/slice.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startExpedition } from '../src/sim.mjs';
@@ -70,7 +71,7 @@ test('奇遇卡帶立繪；洪七公立繪已補', () => {
 });
 function party(mode) { const s = createState(11); tick(s); const ids = s.ds.filter((d) => d.role !== 'laborer').slice(0, 4).map((d) => d.id);
   for (const d of s.ds) if (ids.includes(d.id)) { for (const k of Object.keys(d.skills)) d.skills[k] = 100; for (const a of ARTS) { if ((a.classic && mode === 'normal') || a.id === 'rulai' || a.layered || a.forms || a.id === 'bixie') continue; learnArt(d, a.id, 0); Object.assign(d.arts[a.id], { xp: 1e6, bt1: true, bt2: true, bt3: true, last: 1e9 }); learnArt(d, a.id, 0); } d.mood = 95; }
-  s.res.food = 200; startExpedition(s, ids, { thr: 0.3, target: 'inf', supplies: 24 }); let i = 0; while (s.exp && i++ < 2000000) tick(s); return s.lastExp; }
+  s.res.food = 200; startExpedition(openExp(s), ids, { thr: 0.3, target: 'inf', supplies: 24 }); let i = 0; while (s.exp && i++ < 2000000) tick(s); return s.lastExp; }
 test('無盡段體力牆修正：招牌武學練滿的隊伍過一重回一口真氣，能推到第 4 重以後；一般武學仍止於 1600 內', () => {
   const n = party('normal'), c = party('classic'); assert.ok(n.dist <= 1600); assert.ok(c.dist >= 2400, `classic ${c.dist}`); assert.ok(c.events?.some?.((e) => /真氣/.test(e)) ?? true);
 });
