@@ -1,0 +1,42 @@
+{
+  "status": "done",
+  "stages": [
+    "optimization-M1",
+    "optimization-M2"
+  ],
+  "author": "GPT / Codex",
+  "model": "GPT-6.1 Sol / high",
+  "artifactCommit": "13bb1f2c7d0f6599da8c78a874401ee7bf002287",
+  "baseCommit": "cd38a44eac1afe5e1c508cfcbbbede7c0a6b5786",
+  "runtimeCommits": {
+    "M1": "6273e2682b32c1b56e3181f681afbd5e48e0fdac",
+    "M2": "6392aca6d4a2a52d202693a6b9f990d0a4d30919"
+  },
+  "indexes": {
+    "M1": "evidence/optimization/m1/index.json",
+    "M2": "evidence/optimization/m2/index.json",
+    "comparison": "evidence/optimization/m2/comparison.md"
+  },
+  "entrypoint": {
+    "directory": "solo-sect-gpt",
+    "command": "python3 -m http.server 8878 --bind 127.0.0.1 --directory solo-sect-gpt",
+    "url": "http://127.0.0.1:8878/"
+  },
+  "observation": {
+    "realSeconds": 1201.957,
+    "simulationSeconds": 4801.5,
+    "actualRate": 3.9947352525922306,
+    "necessaryInterventionEpisodes": {
+      "baseline": 0,
+      "candidate": 0
+    },
+    "notAClaimOfReduction": true
+  },
+  "limits": [
+    "Author self-review, no independent review or human playtest/audio listening",
+    "Observational threshold checks are bounded to the registered seed29 scenario; sampled activity replacement counts can miss short transitions",
+    "Temp orders restore valid individual intent; shared sessions require completion or ordinary reassign; actual stopped bodies remain in place",
+    "Old first-version marker remains unchanged; M3–M6 are pending, not implied done"
+  ],
+  "next": "Proceed sequentially M3, M4, M5, M6 under docs/optimization/M1-M6-scope.md; seal each only after actual acceptance. Stop after M6; no push/PR/merge/deploy/other chat or 8800."
+}
