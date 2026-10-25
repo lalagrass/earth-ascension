@@ -1,0 +1,19 @@
+Design static audit — not runtime pathfinding / LOS / crowd verification.
+life: 521.056 DU / 1042.111 WU
+haul: 759.229 DU / 1518.457 WU
+visitor: 1303.234 DU / 2606.468 WU
+enemy: 465.471 DU / 930.941 WU
+retreat: 678.686 DU / 1357.371 WU
+wood: 451.817 DU / 903.633 WU
+build: 860.711 DU / 1721.421 WU
+garden: 652.691 DU / 1305.382 WU
+north: 610.089 DU / 1220.179 WU
+bridge: 538.301 DU / 1076.603 WU
+stone: 208.098 DU / 416.197 WU
+quiet: 295.000 DU / 590.000 WU
+Facility footprints disjoint: True
+Route centerline samples outside solid interiors: True
+6 SVG XML documents parsed; local Markdown links checked; world/home portal coordinates match.
+Actor-radius swept collision, indoor paths, doors, occupancy, LOS, terrain and crowd flow NOT tested.
+Use /usr/bin/python3 here: Homebrew Python 3.14 XML expat library failed in this environment. No environment repair performed.
+PASS

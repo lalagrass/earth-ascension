@@ -1,0 +1,7 @@
+Planning checks — 2026-10-25 Asia/Taipei
+Root unittest: 53 PASS; Python 3.14.8; 11.946 s; root-unittest.log
+m2.js syntax: PASS, exit 0, Node 24.13.0
+Design HTML inline JS syntax: PASS
+SVG XML / layout / local links: see layout-check.txt
+git diff --cached --check: PASS, exit 0 (all planning files staged)
+No game runtime modified; SG / full RT / seed experiment not run.

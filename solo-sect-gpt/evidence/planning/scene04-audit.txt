@@ -1,0 +1,45 @@
+SCENE04 source audit; design MU, not collision truth.
+source dev: 148cfbbb27e43475c66744d53c2451125a9111a0
+fac.hall: box=[765, 135, 975, 275] door=[900, 270] stations={'teach': [880, 300], 'greet': [920, 292]} stages={'S0': 'ruin', 'S1': 'built', 'S2': 'built'}
+fac.yard: box=[860, 280, 1010, 375] door=None stations={'post1': [895, 300], 'post2': [935, 338], 'rack': [990, 300]} stages={'S0': 'wild', 'S1': 'basic', 'S2': 'built'}
+fac.dorm.a: box=[690, 95, 800, 165] door=[745, 158] stations={'bedside': '見 F4 內景', 'door': [745, 170]} stages={'S0': 'wild', 'S1': 'built', 'S2': 'built'}
+fac.dorm.b: box=[795, 80, 900, 155] door=[850, 150] stations={'door': [850, 162]} stages={'S0': 'wild', 'S1': 'repair', 'S2': 'built'}
+fac.quiet: box=[895, 115, 965, 180] door=[945, 178] stations={} stages={'S0': 'wild', 'S1': 'wild', 'S2': 'built'}
+fac.kitchen: box=[595, 215, 690, 290] door=[640, 285] stations={'stove': [625, 295], 'vat': [675, 292], 'well': [548, 205]} stages={'S0': 'basic', 'S1': 'built', 'S2': 'built'}
+fac.store: box=[680, 155, 760, 215] door=[700, 212] stations={'drop': [705, 225]} stages={'S0': 'wild', 'S1': 'built', 'S2': 'built'}
+fac.dining: box=[730, 300, 800, 370] door=None stations={'table': [760, 345], 'seat_n': 8} stages={'S0': 'wild', 'S1': 'wild', 'S2': 'built'}
+fac.annex: box=[680, 270, 760, 335] door=[715, 335] stations={} stages={'S0': 'wild', 'S1': 'built', 'S2': 'built'}
+fac.herbstore: box=[965, 225, 1100, 340] door=[1050, 330] stations={'rack': [1080, 345]} stages={'S0': 'wild', 'S1': 'wild', 'S2': 'built'}
+fac.guest: box=[800, 325, 925, 445] door=[835, 440] stations={'wait': [815, 455]} stages={'S0': 'wild', 'S1': 'wild', 'S2': 'built'}
+fac.garden: box=[935, 360, 1170, 500] door=[945, 405] stations={'work': [1000, 430], 'dry': [1100, 385]} stages={'S0': 'ruin', 'S1': 'built', 'S2': 'built'}
+fac.gate: box=[1145, 260, 1245, 365] door=[1195, 350] stations={'guard': [1175, 370]} stages={'S0': 'wild', 'S1': 'basic', 'S2': 'built'}
+fac.tower: box=[1040, 25, 1105, 120] door=[1075, 118] stations={'watch': [1075, 125]} stages={'S0': 'wild', 'S1': 'wild', 'S2': 'built'}
+wat.spring: box=[160, 120, 230, 300] door=None stations={} stages={'S0': 'built', 'S1': 'built', 'S2': 'built'}
+wat.basin: box=[175, 275, 230, 320] door=None stations={} stages={'S0': 'built', 'S1': 'built', 'S2': 'built'}
+wat.bridge: box=[365, 500, 500, 545] door=None stations={'west': [365, 532], 'east': [500, 525]} stages={'S0': 'built', 'S1': 'built', 'S2': 'built'}
+wat.intake: box=[485, 650, 555, 705] door=None stations={'stand': [532, 668], 'bucket': [520, 652]} stages={'S0': 'built', 'S1': 'built', 'S2': 'built'}
+wat.outlet: box=[480, 665, 560, 720] door=None stations={'wash': [555, 680]} stages={'S0': 'built', 'S1': 'built', 'S2': 'built'}
+rt.village: box=None door=None stations={} stages={'S0': 'built', 'S1': 'built', 'S2': 'built'}
+rt.farherb: box=None door=None stations={} stages={'S0': 'built', 'S1': 'built', 'S2': 'built'}
+rt.upper: box=None door=None stations={} stages={'S0': 'built', 'S1': 'built', 'S2': 'built'}
+risk.backwood: box=[1110, 0, 1280, 90] door=None stations={} stages={'S0': 'built', 'S1': 'built', 'S2': 'built'}
+route water: 543.8 MU
+route farherb: 997.4 MU
+route patrol: 1302.8 MU
+route village: 851.6 MU
+route social: 293.5 MU
+route dorm: 216.6 MU
+route rest2train: 244.8 MU
+visual bounding boxes overlap: fac.hall / fac.dorm.a: 35x30 MU; needs physical footprint separation, not proof of actual collision
+visual bounding boxes overlap: fac.hall / fac.dorm.b: 105x20 MU; needs physical footprint separation, not proof of actual collision
+visual bounding boxes overlap: fac.hall / fac.quiet: 70x45 MU; needs physical footprint separation, not proof of actual collision
+visual bounding boxes overlap: fac.hall / fac.herbstore: 10x50 MU; needs physical footprint separation, not proof of actual collision
+visual bounding boxes overlap: fac.yard / fac.herbstore: 45x60 MU; needs physical footprint separation, not proof of actual collision
+visual bounding boxes overlap: fac.yard / fac.guest: 65x50 MU; needs physical footprint separation, not proof of actual collision
+visual bounding boxes overlap: fac.yard / fac.garden: 75x15 MU; needs physical footprint separation, not proof of actual collision
+visual bounding boxes overlap: fac.dorm.a / fac.dorm.b: 5x60 MU; needs physical footprint separation, not proof of actual collision
+visual bounding boxes overlap: fac.dorm.a / fac.store: 70x10 MU; needs physical footprint separation, not proof of actual collision
+visual bounding boxes overlap: fac.dorm.b / fac.quiet: 5x40 MU; needs physical footprint separation, not proof of actual collision
+visual bounding boxes overlap: fac.kitchen / fac.annex: 10x20 MU; needs physical footprint separation, not proof of actual collision
+visual bounding boxes overlap: fac.dining / fac.annex: 30x35 MU; needs physical footprint separation, not proof of actual collision
+visual bounding boxes overlap: fac.garden / fac.gate: 25x5 MU; needs physical footprint separation, not proof of actual collision
