@@ -1,0 +1,156 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 42.838,
+  "errors": [],
+  "steps": [
+    {
+      "label": "new-game-card",
+      "wallSeconds": 1.489,
+      "tick": 17,
+      "card": "\n 現在 行走 · 用餐原因 已受理的用餐，正在赴作業位接著 餐位用餐10秒後回原安排作業位 餐位 1 \n \n 練拳坐休吃飯停工",
+      "overflow": 0
+    },
+    {
+      "label": "sections-persist",
+      "wallSeconds": 2.121,
+      "tick": 17
+    },
+    {
+      "label": "canvas-select",
+      "wallSeconds": 2.173,
+      "tick": 17,
+      "selected": "amu"
+    },
+    {
+      "label": "showcase-loaded",
+      "wallSeconds": 2.726,
+      "tick": 183574
+    },
+    {
+      "label": "expedition-card",
+      "wallSeconds": 3.29,
+      "tick": 183574,
+      "card": "⚑ 遠征隊：隊伍階段：領糧集合；同行 雲生。隊員不接個別改派，召回是全隊一起。\n 現在 領糧集合原因 玩家已受理的遠征接著 完成當前有效指令作業位 待選作業位 \n \n 前往遠征頁全隊取消出發"
+    },
+    {
+      "label": "expedition-cancel-from-card",
+      "wallSeconds": 3.676,
+      "tick": 183574,
+      "toast": "尚未出門：全隊取消出發，已領的乾糧仍在手中。"
+    },
+    {
+      "label": "student-left-from-card",
+      "wallSeconds": 4.689,
+      "tick": 183574
+    },
+    {
+      "label": "teacher-ended-from-card",
+      "wallSeconds": 4.943,
+      "tick": 183574
+    },
+    {
+      "label": "spar-ordered",
+      "wallSeconds": 5.921,
+      "tick": 183574,
+      "toast": "尚未出門：全隊取消出發，已領的乾糧仍在手中。"
+    },
+    {
+      "label": "panel-hidden-states",
+      "wallSeconds": 40.329,
+      "tick": 186312,
+      "seen": {
+        "✕": {
+          "tick": 183574,
+          "person": "amu",
+          "text": "對練",
+          "shot": "0"
+        },
+        "▣": {
+          "tick": 183574,
+          "person": "lin",
+          "text": "搬菜",
+          "shot": "0"
+        },
+        "➤": {
+          "tick": 183648,
+          "person": "leader",
+          "text": "赴採集",
+          "shot": "1"
+        },
+        "◆": {
+          "tick": 185485,
+          "person": "leader",
+          "text": "練功",
+          "shot": "24"
+        },
+        "☾": {
+          "tick": 186247,
+          "person": "amu",
+          "text": "坐休",
+          "shot": "33"
+        }
+      }
+    },
+    {
+      "label": "follow-roof",
+      "wallSeconds": 40.86,
+      "tick": 186312,
+      "status": {
+        "paused": true,
+        "speed": 4,
+        "audio": {
+          "state": "running",
+          "emitted": 451,
+          "muted": false,
+          "volume": 0.3
+        },
+        "lowMotion": false
+      }
+    },
+    {
+      "label": "low-motion",
+      "wallSeconds": 42.836,
+      "tick": 186434,
+      "before": false,
+      "after": true
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "statesSeen": {
+    "✕": {
+      "tick": 183574,
+      "person": "amu",
+      "text": "對練",
+      "shot": "0"
+    },
+    "▣": {
+      "tick": 183574,
+      "person": "lin",
+      "text": "搬菜",
+      "shot": "0"
+    },
+    "➤": {
+      "tick": 183648,
+      "person": "leader",
+      "text": "赴採集",
+      "shot": "1"
+    },
+    "◆": {
+      "tick": 185485,
+      "person": "leader",
+      "text": "練功",
+      "shot": "24"
+    },
+    "☾": {
+      "tick": 186247,
+      "person": "amu",
+      "text": "坐休",
+      "shot": "33"
+    }
+  }
+}

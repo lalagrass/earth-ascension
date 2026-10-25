@@ -4,3 +4,15 @@
 /* M1: the scene owns the window; the ledger can be opened when needed. */
 header{height:74px;padding:9px 18px;background:linear-gradient(110deg,#faf3df,#e6e7d0)}main{height:calc(100vh - 74px);grid-template-columns:minmax(0,1fr) 330px}.panel-hidden{grid-template-columns:minmax(0,1fr)}.panel-hidden aside{display:none}.brand{min-width:220px}.seal{padding:5px 3px;font-size:16px}h1{font-size:20px}.camera{right:auto;max-width:calc(100% - 24px)}.camera button{border-radius:18px;padding:7px 12px;background:#f9f2dcf0}.hint{bottom:40px;max-width:330px;background:#fcf4dedc}aside{box-shadow:-7px 0 24px #344d3b12}.tabs{grid-template-columns:repeat(3,1fr)}#panel-toggle{background:#486b5b;color:#fcf3dc}
 .tabs{grid-template-columns:repeat(4,1fr)}#notices{position:absolute;right:15px;bottom:38px;max-width:390px;background:#f6efdbdf;border-radius:6px;padding:7px 11px;font-size:12px;pointer-events:none}#notices:empty{display:none}#notices.attention{border-left:3px solid #b59150}#notices.emergency{border-left:4px solid #a45942;background:#f5e2ce}#life-status{border-left:3px solid #8da07b;margin-bottom:10px}
+/* M8 readable people: text-first status, contrast ≥4.5:1, shape not colour alone */
+:root{--muted:#5c6250}
+.person-list button.active{font-weight:650;outline:2px solid #2f4d43;outline-offset:1px}
+.badge-mini{font-size:11px;opacity:.85}
+.vitals{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;align-items:center;font-size:12px;margin:0 0 10px}.vitals>span:last-child{grid-column:1/-1}.vitals .bar{margin:0}.bar.hp i{background:#9a6e55}
+.situation{border:1px solid #cfcbb0;border-radius:6px;padding:8px;margin:0 0 10px;background:#f9f4e6}
+.situation .owner{font-size:12px;line-height:1.7;margin-bottom:6px;color:#2f3f33;border-left:3px solid #6a5a2c;padding-left:7px}
+.situation .blocked{font-size:12px;line-height:1.7;margin:6px 0;color:#5a3418;background:#f6e8d6;border-left:3px solid #9c5a2c;padding:5px 7px}
+.situation .note{font-size:12px;color:#4a3a2a}
+.sit{display:inline-flex;flex-direction:column;gap:2px;max-width:100%}.why-not{color:#6b3d22;font-size:11px;max-width:150px}
+details.group{border-top:1px solid var(--line);padding:6px 0}details.group summary{cursor:pointer;font-weight:600;padding:4px 0;list-style-position:inside}details.group summary::after{content:' · 展開';font-weight:400;color:var(--muted);font-size:11px}details.group[open] summary::after{content:' · 收合'}
+.warn{color:#6b3a16;font-weight:550}
