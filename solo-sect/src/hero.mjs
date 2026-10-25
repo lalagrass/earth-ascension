@@ -4,13 +4,14 @@ import { NODES, MOOD, CHORE_ACTS, DAY, AWAKEN } from './data.mjs';
 import { seedArts, learnArt } from './arts.mjs';
 import { log } from './util.mjs';
 import { sectResolve } from './sect.mjs';
+import { genResolve } from './gen.mjs';
 export const heroById = (id) => HEROES.find((h) => h.id === id);
 export const VALUE_NAMES = Object.fromEntries(VALUES);
 export const STAT_NAMES = Object.fromEntries(STATS);
 // 自創：六項 1–5，總和 = 12（悟性 1 時 13，退一點＝笨功夫）
-export const budgetOf = (st) => STAT_BUDGET + (st.wu === 1 ? 1 : 0);
+export const budgetOf = (st, bonus = 0) => STAT_BUDGET + (st.wu === 1 ? 1 : 0) + Math.max(0, Math.min(3, bonus)); // v1.4 宿慧：每代 +1，最多 +3
 export const spent = (st) => STATS.reduce((a, [k]) => a + (st[k] || 0), 0);
-export function validStats(st) { return STATS.every(([k]) => st[k] >= 1 && st[k] <= 5) && spent(st) === budgetOf(st); }
+export function validStats(st, bonus = 0) { return STATS.every(([k]) => st[k] >= 1 && st[k] <= 5) && spent(st) === budgetOf(st, bonus); }
 export function defaultStats() { return { wu: 2, gen: 2, li: 2, shen: 2, ding: 2, fu: 2 }; }
 export function companionsFor(heroId) { return heroId ? heroById(heroId).companions : CUSTOM_COMPANIONS; }
 // 九問 → 價值觀（主／副）＋兩個明面特質＋一個暗特質
@@ -51,9 +52,9 @@ export function applyHero(s, spec, initPair) {
     d.classic = true; d.portrait = `assets/portraits/${T.id}.png`; d.style = T.style;
     if (T.coinMul) s.res.coin *= T.coinMul;
   } else {
-    const st = spec.stats || defaultStats(); if (!validStats(st)) throw new Error('點數不合法');
+    const st = spec.stats || defaultStats(); if (!validStats(st, spec.bonus || 0)) throw new Error('點數不合法');
     const r = readHeart(spec.answers || []); const pers = [...r.visible]; if (st.wu === 1 && !pers.includes('honest')) pers.unshift('honest');
-    H = { kind: 'custom', id: 'custom', name: spec.name || '主角', stats: { ...st }, values: r.values, personality: pers.slice(0, 2).concat(r.hidden && !pers.includes(r.hidden) ? [r.hidden] : []), hidden: r.hidden, lore: [], arc: null };
+    H = { kind: 'custom', id: 'custom', name: spec.name || '主角', stats: { ...st }, values: r.values, personality: pers.slice(0, 2).concat(r.hidden && !pers.includes(r.hidden) ? [r.hidden] : []), hidden: r.hidden, lore: [], arc: null, suhui: spec.bonus || 0 };
   }
   const st = H.stats; [H.main, H.sub] = mainSub(H.values);
   Object.assign(d, { name: H.name, wu: st.wu, root: H.sealed ? 1 : st.gen, ding: st.ding, values: H.values, wexin: 0, personality: H.personality, known: H.personality.slice(0, 2), traits: H.personality.includes('diligent') ? { diligent: 1.2 } : {} });
@@ -89,9 +90,9 @@ export function heroStep(s) {
   s.choices.push(ch); log(s, `【抉擇】${A.title}：${A.text}`); H.arcStep = 0.5;
   if (!H.askMajor) s.autoAt = s.t + (ch.delay || 0);
 }
-export function autoPick(s, ch) { if (ch.xia || ch.sect) return 0; if (ch.jh) return jhAutoPick(s, ch); if (ch.hs) return hsAutoPick(s, ch); const A = ARCS[ch.arc], v = s.hero.values; let best = 0, bv = -1e9; A.opts.forEach(([, dv], i) => { const sc = Object.entries(dv).reduce((a, [k, x]) => a + x * (v[k] || 0), 0); if (sc > bv) { bv = sc; best = i; } }); return best; }
+export function autoPick(s, ch) { if (ch.xia || ch.sect || ch.gen) return 0; if (ch.jh) return jhAutoPick(s, ch); if (ch.hs) return hsAutoPick(s, ch); const A = ARCS[ch.arc], v = s.hero.values; let best = 0, bv = -1e9; A.opts.forEach(([, dv], i) => { const sc = Object.entries(dv).reduce((a, [k, x]) => a + x * (v[k] || 0), 0); if (sc > bv) { bv = sc; best = i; } }); return best; }
 export function resolveChoice(s, id, i) {
-  const ch = s.choices.find((c) => c.id === id); if (!ch) return false; if (ch.xia) return xiaResolve(s, ch, i); if (ch.sect) return sectResolve(s, ch, i); if (ch.jh) return jhResolve(s, ch, i); if (ch.hs) return hsResolve(s, ch, i); const A = ARCS[ch.arc], [text, dv, flag] = A.opts[i], d = s.ds.find((x) => x.id === 'hero');
+  const ch = s.choices.find((c) => c.id === id); if (!ch) return false; if (ch.xia) return xiaResolve(s, ch, i); if (ch.sect) return sectResolve(s, ch, i); if (ch.gen) return genResolve(s, ch, i); if (ch.jh) return jhResolve(s, ch, i); if (ch.hs) return hsResolve(s, ch, i); const A = ARCS[ch.arc], [text, dv, flag] = A.opts[i], d = s.ds.find((x) => x.id === 'hero');
   for (const [k, x] of Object.entries(dv)) d.values[k] = Math.max(-50, Math.min(50, (d.values[k] || 0) + x));
   [s.hero.main, s.hero.sub] = mainSub(d.values); s.hero.values = d.values;
   const [mk] = mainSub(d.values); if ((dv[mk] || 0) < 0 || Object.entries(dv).some(([k, x]) => x < 0 && (d.values[k] || 0) >= 20)) addWexin(s, d, `抉擇「${text}」違背本心`);

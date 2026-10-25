@@ -15,6 +15,7 @@ import { xiaStep, onCook, xiaInit } from './wuxia.mjs';
 import { hsStep, hsInit } from './huashan.mjs';
 import { jhStep, jhInit } from './jianghu.mjs';
 import { sectStep, sectInit, sectRecruit } from './sect.mjs';
+import { genStep, genInit } from './gen.mjs';
 import { unlockStep, chapterStep } from './slice.mjs';
 import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus, awaken, econCoin, cookBonus } from './hero.mjs';
 export { canExpedition, codexRows, reportText, segAt, ROUTE_END, dpsOf };
@@ -57,7 +58,7 @@ export function createState(seed = 1, heroSpec = null) {
   log(s, '師徒三人來到山腳一間破道館。');
   s.hero = null; s.choices = []; s.encExclude = []; s.unlock = []; s.chapter = { done: false }; for (const d of s.ds) d.wu ??= d.root;
   if (heroSpec) applyHero(s, heroSpec, initPair);
-  sectInit(s);
+  sectInit(s); s.gen = genInit(); if (heroSpec?.bonus) s.gen.suhuiStart = heroSpec.bonus;
   return s;
 }
 function mkDisciple(d, i, at = 'court', personality = d.personality || [], known = personality.slice(0, 1)) {
@@ -527,7 +528,7 @@ export function tick(s, dt = 0.25) {
   ecoStep(s, dt);
   expStep(s, dt, H);
   paceStep(s); unlockStep(s); chapterStep(s); if (Math.floor(s.t) !== Math.floor(s.t - dt)) aspStep(s, think);
-  xiaStep(s, H); hsStep(s, 0.25, H); jhStep(s, 0.25, H); sectStep(s);
+  xiaStep(s, H); hsStep(s, 0.25, H); jhStep(s, 0.25, H); sectStep(s); genStep(s);
   if (s.hero) { const h = byId(s, 'hero'); if (h && !h.away && h.hp <= EXP.hurtHeavy) awaken(s, h); heroStep(s); heroAuto(s); for (const d of s.ds) d.pairMul = pairBonus(s, d, aff); }
   for (const f of s.fx) f.ttl -= dt; s.fx = s.fx.filter((f) => f.ttl > 0);
 }

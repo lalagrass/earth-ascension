@@ -12,6 +12,7 @@ const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index
 #start .stat{display:inline-block;margin:3px 10px 3px 0}#start .q{margin:3px 0}#start select{max-width:260px}#start .go{font-size:18px;padding:6px 26px;margin-top:10px;background:#c9a061;border:0;border-radius:6px}
 #choice{position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:40;background:#2b2118;color:#f3e7cf;border:2px solid #ffd27a;border-radius:10px;padding:14px 20px;max-width:560px;font:15px/1.6 serif;box-shadow:0 6px 30px #000a}
 #choice button{display:block;margin:6px 0;width:100%;text-align:left;font-size:15px}`;
+const SUHUI = (() => { try { return Math.min(3, +localStorage.getItem('solo-sect-suhui') || 0); } catch { return 0; } })();
 const st = { tab: 'classic', hero: 'guojing', comp: null, name: '無名', stats: defaultStats(), ans: Array(9).fill(0), ask: true };
 const tn = (t) => TRAITS[t]?.name || t;
 const statLine = (s) => STATS.map(([k, n]) => `${n}${s[k]}`).join(' ');
@@ -26,12 +27,12 @@ function render(el) {
     h += `<div class="cards" style="margin-top:8px">${HEROES.map((x) => `<div class="card ${st.hero === x.id ? 'on' : ''}" data-hero="${x.id}"><img src="assets/portraits/${x.id}.png"><b>${x.name}</b> <span class="small">難度${'★'.repeat(x.diff)}</span><div class="small">${statLine(x.stats)}</div><div class="small">${x.personality.map(tn).join('/')}・${valLine(x.values)}</div><div class="small">${x.tag}</div><div class="small" style="color:#ffd27a">門派：${SECTS[HERO_SECT[x.id]].plaque}</div></div>`).join('')}</div>`;
     h += compCards(st.hero);
   } else if (st.tab === 'custom') {
-    const b = budgetOf(st.stats), left = b - spent(st.stats), r = readHeart(st.ans);
-    h += `<div style="margin-top:8px">名字 <input id="st-name" value="${st.name}" maxlength="6"> 剩餘點數 <b>${left}</b>／${b}${st.stats.wu === 1 ? '（悟性 1：退 1 點，得「笨功夫」憨厚）' : ''}<div>${STATS.map(([k, n]) => `<span class="stat">${n} <button data-st="${k}|-1">−</button> <b>${st.stats[k]}</b> <button data-st="${k}|1">＋</button></span>`).join('')}</div>`;
+    const b = budgetOf(st.stats, SUHUI), left = b - spent(st.stats), r = readHeart(st.ans);
+    h += `<div style="margin-top:8px">名字 <input id="st-name" value="${st.name}" maxlength="6"> 剩餘點數 <b>${left}</b>／${b}${st.stats.wu === 1 ? '（悟性 1：退 1 點，得「笨功夫」憨厚）' : ''}${SUHUI ? `　<b style="color:#9fd3ff">宿慧 +${SUHUI}（宿慧開局）</b>` : ''}<div>${STATS.map(([k, n]) => `<span class="stat">${n} <button data-st="${k}|-1">−</button> <b>${st.stats[k]}</b> <button data-st="${k}|1">＋</button></span>`).join('')}</div>`;
     h += `<h3>九問問心</h3>${Q9.map((q, i) => `<div class="q">${i + 1}. ${q.q}：<select data-q9="${i}">${q.a.map((a, j) => `<option value="${j}" ${st.ans[i] === j ? 'selected' : ''}>${a[0]}</option>`).join('')}</select></div>`).join('')}`;
     h += `<div>→ 主價值 <b>${VALUE_NAMES[r.main]}</b>・副 <b>${VALUE_NAMES[r.sub]}</b>　特質 <b>${r.visible.map(tn).join('、')}</b>＋一個暗特質（相處後才看得出）</div></div>` + compCards(null);
   } else h += `<p>沿用 v0.95 的無名主角、林師姐、堂弟開局（不帶價值觀與同門）。</p>`;
-  const ok = st.tab !== 'custom' || validStats(st.stats);
+  const ok = st.tab !== 'custom' || validStats(st.stats, SUHUI);
   h += `<div><label><input type="checkbox" id="st-ask" ${st.ask ? 'checked' : ''}> 重大抉擇每次詢問我（取消則依價值觀自動決定）</label></div><button class="go" id="st-go" ${ok ? '' : 'disabled'}>開山立派</button></div>`;
   el.innerHTML = h;
 }
@@ -40,9 +41,9 @@ export function openStart(onStart) {
   const el = document.createElement('div'); el.id = 'start'; document.body.appendChild(el); render(el);
   el.addEventListener('click', (e) => { const t = e.target.closest('[data-tab],[data-hero],[data-comp],[data-st],#st-go,#st-ask'); if (!t) return;
     if (t.dataset.tab) st.tab = t.dataset.tab; if (t.dataset.hero) { st.hero = t.dataset.hero; st.comp = null; } if (t.dataset.comp) st.comp = t.dataset.comp;
-    if (t.dataset.st) { const [k, dv] = t.dataset.st.split('|'); const v = st.stats[k] + +dv; if (v >= 1 && v <= 5) { const n = { ...st.stats, [k]: v }; if (spent(n) <= budgetOf(n) || +dv < 0) st.stats = n; } }
+    if (t.dataset.st) { const [k, dv] = t.dataset.st.split('|'); const v = st.stats[k] + +dv; if (v >= 1 && v <= 5) { const n = { ...st.stats, [k]: v }; if (spent(n) <= budgetOf(n, SUHUI) || +dv < 0) st.stats = n; } }
     if (t.id === 'st-ask') st.ask = t.checked;
-    if (t.id === 'st-go') { const spec = st.tab === 'classic' ? { kind: 'template', id: st.hero, companion: st.comp, askMajor: st.ask } : st.tab === 'custom' ? { kind: 'custom', name: st.name, stats: st.stats, answers: st.ans, companion: st.comp, askMajor: st.ask } : null; el.remove(); onStart(spec); return; }
+    if (t.id === 'st-go') { const spec = st.tab === 'classic' ? { kind: 'template', id: st.hero, companion: st.comp, askMajor: st.ask } : st.tab === 'custom' ? { kind: 'custom', name: st.name, stats: st.stats, answers: st.ans, companion: st.comp, askMajor: st.ask, bonus: SUHUI } : null; el.remove(); onStart(spec); return; }
     render(el); });
   el.addEventListener('change', (e) => { if (e.target.dataset.q9) { st.ans[+e.target.dataset.q9] = +e.target.value; render(el); } if (e.target.id === 'st-name') st.name = e.target.value || '無名'; });
 }

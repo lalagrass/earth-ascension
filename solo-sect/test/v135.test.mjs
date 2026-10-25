@@ -14,7 +14,7 @@ const day = (s) => { s.day++; sectStep(s); };
 const hero = (s) => s.ds.find((d) => d.id === 'hero');
 const A = (id) => ARTS.find((a) => a.id === id);
 test('v1.35 版本；六位主角各有門派，自創＝無名小派', () => {
-  assert.equal(RULES_VERSION, '1.35');
+  assert.ok(parseFloat(RULES_VERSION) >= 1.35);
   const m = { guojing: 'gaibang', yuebuqun: 'qizong', linghuchong: 'jianzong', zhangwuji: 'mingjiao', weixiaobao: 'tiandihui', axing: 'zhulong' };
   for (const [h, sid] of Object.entries(m)) { const s = mk(h); assert.equal(s.sect.id, sid); assert.ok(s.sect.plaque && s.sect.color); }
   const c = createState(7, { kind: 'custom', name: '阿木', stats: { wu: 2, gen: 2, li: 2, shen: 2, ding: 2, fu: 2 }, answers: Array(9).fill(0) });
@@ -60,5 +60,5 @@ test('名俠加權：本派名俠排前面', () => {
   assert.deepEqual(favSort(s, ['x', 'baozupo']), ['baozupo', 'x']);
 });
 test('舊存檔遷移 1.3 → 1.35 補上門派', () => {
-  const s = mk('linghuchong'); const o = JSON.parse(JSON.stringify(s)); delete o.sect; o.rules = '1.3'; migrate(o); assert.equal(o.sect.id, 'jianzong'); assert.equal(o.rules, '1.35');
+  const s = mk('linghuchong'); const o = JSON.parse(JSON.stringify(s)); delete o.sect; o.rules = '1.3'; migrate(o); assert.equal(o.sect.id, 'jianzong'); assert.equal(o.rules, RULES_VERSION);
 });

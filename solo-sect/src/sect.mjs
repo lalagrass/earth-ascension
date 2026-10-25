@@ -5,6 +5,7 @@ import { artTier, artById } from './arts.mjs';
 import { addWexin } from './hero.mjs';
 import { log } from './util.mjs';
 import { xidOf } from './wuxia.mjs';
+import { removeDisciple } from './gen.mjs';
 export function sectOf(hero) {
   const id = hero?.kind === 'template' ? HERO_SECT[hero.id] || 'wuming' : 'wuming', B = SECTS[id];
   const o = { id, name: B.name, plaque: B.plaque, color: B.color, flag: B.flag, bias: { ...B.bias }, tree: [...B.tree], ban: [...B.ban], rules: [...B.rules], rivals: [...B.rivals], rep: 0, fac: false, viol: {}, violN: 0, lastViolT: -1e9, keptDay: 0, day: -1, questioned: {}, defect: {}, expelled: [], beaten: {}, rivalI: 0 };
@@ -45,7 +46,7 @@ function checkArts(s) {
   const S = s.sect;
   for (const d of s.ds) for (const id of Object.keys(d.arts || {})) {
     const k = artKind(s, d, id), key = `${d.id}:${id}`;
-    if (k === 'ban' && !S.defect[key]) { S.defect[key] = s.t; const n = Object.keys(S.defect).filter((x) => x.startsWith(d.id + ':')).length; S.rep = Math.max(0, S.rep - SECT_K.defectRep); const h = heroD(s); if (h) addWexin(s, h, `${d.name}偷學禁學「${artById(id).name}」`); log(s, `【叛派】${d.name}學了門規明禁的${artById(id).name}（門派聲望 −${SECT_K.defectRep}）。`); if (n >= SECT_K.expelAt && d.id !== 'hero' && !S.expelled.includes(d.id)) { S.expelled.push(d.id); log(s, `【叛派】${d.name}三犯門規，被逐出${S.name}。`); } }
+    if (k === 'ban' && !S.defect[key]) { S.defect[key] = s.t; const n = Object.keys(S.defect).filter((x) => x.startsWith(d.id + ':')).length; S.rep = Math.max(0, S.rep - SECT_K.defectRep); const h = heroD(s); if (h) addWexin(s, h, `${d.name}偷學禁學「${artById(id).name}」`); log(s, `【叛派】${d.name}學了門規明禁的${artById(id).name}（門派聲望 −${SECT_K.defectRep}）。`); if (n >= SECT_K.expelAt && d.id !== 'hero' && !S.expelled.includes(d.id)) { S.expelled.push(d.name); removeDisciple(s, d, `三犯門規，被逐出${S.name}，收拾包袱下山去了。`); return; } }
     if (k === 'outside' && artTier(d, id) >= 2 && !S.questioned[key] && s.choices) { S.questioned[key] = s.t; s.choices.push({ id: `sect-q-${key}-${Math.floor(s.t)}`, sect: 'question', who: d.id, art: id, title: `【師門質疑】${d.name}的${artById(id).name}`, text: `同門議論紛紛：「${d.name}練的${artById(id).name}不是本門功夫，已到大成——這還算${S.name}的人嗎？」（外門武學練速 ×${SECT_K.outside}）`, opts: ['准他續練：武學無門戶之見', '命他收手：本門功夫要緊（該武學 −10）'], portrait: null, at: s.t }); if (!s.hero?.askMajor) s.autoAt = s.t; }
   }
 }

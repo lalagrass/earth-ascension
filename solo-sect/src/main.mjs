@@ -1,4 +1,5 @@
 import { ARC13 } from './jianghu.mjs';
+import { GEN, canSucceed, succeed, heirs, heirArt } from './gen.mjs';
 import { SECTS, SECT_K, RULE_LIB } from './sect-data.mjs';
 import { canBuildFac, buildFac, artKind, KIND_NAME, sectFac } from './sect.mjs';
 import { JH, DAY as DAY13 } from './data.mjs';
@@ -61,7 +62,7 @@ function draw() {
       g.strokeStyle = '#0003'; g.lineWidth = 5; g.beginPath(); g.arc(x, y - 70, 12, 0, 7); g.stroke(); g.strokeStyle = '#4a90d9'; g.beginPath(); g.arc(x, y - 70, 12, -Math.PI / 2, -Math.PI / 2 + pr * Math.PI * 2); g.stroke(); label('衝關', x, y - 88, '#2a5a9a'); }
     g.save(); g.translate(x, y + bob); if (d.face < 0) g.scale(-1, 1); if (d.anim === 'strike') g.rotate(0.15);
     if (d.task?.phase === 'do' && d.anim === 'rest') g.rotate(-1.3);
-    const im = IMG[d.sprite]; g.drawImage(im, -im.width * SC / 2, -im.height * SC, im.width * SC, im.height * SC); g.restore();
+    const im = IMG[d.sprite], sc = SC * (d.adult === false && d.child ? 0.62 + 0.03 * ((d.age || 6) - 6) : 1); g.drawImage(im, -im.width * sc / 2, -im.height * sc, im.width * sc, im.height * sc); g.restore(); if (d.child && !d.adult) label(`${d.age}歲`, x, y + 14, '#7a4a8a');
     if (d.carry?.stone) { g.fillStyle = '#8c8c8c'; g.beginPath(); g.arc(x + 10, y - 26, 6, 0, 7); g.fill(); } else if (d.carry) sprite('wood', x + 10, y - 18, 0.6);
     if (isLabor(d)) { g.fillStyle = '#2f6f9f'; g.fillRect(x - 9, y - IMG[d.sprite].height * SC + 4, 18, 4); }
     label(`${d.name}${isLabor(d) ? '（工）' : d.role === 'outer' ? '（外門）' : d.role === 'head' ? '（首徒）' : ''} ${statusIcon(d, d.task?.act === 'build' && d.task.phase !== 'do' ? '📦' : ACT_ICON[d.anim || d.task?.act] || '')}`, x, y - (IMG[d.sprite].height * SC + 4), '#222');
@@ -171,7 +172,7 @@ function panel() {
     const nm = (o) => Object.entries(o || {}).map(([k, v]) => `${ENEMIES[k].name}×${v}`).join('、') || '無';
     const card = R ? `<div class="card"><b>戰報 #${R.n}</b>（第 ${R.day} 日・${R.team.join('、')}）<div>📏 走到 <b>${R.seg}</b> ${R.dist} 步${R.sectRec ? ' <span class="rec">★本門新紀錄</span>' : ''}</div><div>⚔ 擊倒：${nm(R.kills)}</div><div>💨 逃走：${nm(R.escaped)}</div><div>🩹 傷：${R.hurt.map(([n, l]) => n + l).join('、') || '無'}</div><div>🎒 帶回：${Object.entries(R.loot).map(([k, v]) => `${RES_NAMES[k] || k}${v}`).join(' ') || '無'}</div><div>↩ 回頭：${R.reason}</div>${R.style ? `<div>🧭 風格：<b>${EXP_STYLES[R.style].name}</b>・閃避 ${Object.values(R.evaded).reduce((a, b) => a + b, 0)}・追擊 ${R.chase.got}/${R.chase.n}・用時 ${R.time}s</div><div>🗺 清場率：${Object.entries(R.clear).map(([k, v]) => `${(ROUTE.find((g) => g.id === k)?.name || k.replace(/^end(\d+)$/, '絕頂之上・第$1重'))} ${Math.round(v * 100)}%${v >= 1 ? '（清山）' : ''}`).join('・') || '—'}</div><div class="story">📜 ${R.story}</div>` : ''}</div>` : '<div class="k">尚未巡山</div>';
     const sty = [...team].map((id) => S.ds.find((d) => d.id === id)).filter(Boolean), styHtml = sty.length ? `<div class="k">隊伍風格：<b>${EXP_STYLES[teamStyle(sty)].name}</b>（多數決）｜${sty.map((d) => { const o = styleOf(d); return `${d.name}${EXP_STYLES[o.id].name}：${o.why}`; }).join('；')}</div>` : '';
-    const rec = `${xiaHtml()}${sectHtml()}${hsHtml()}${jhHtml()}${manualHtml()}<div class="k">清場紀錄：${ROUTE.map((g) => `${g.name}${Math.round((S.records.clear?.[g.id] || 0) * 100)}%${S.records.qing?.[g.id] ? `・清山${S.records.qing[g.id]}次${peaceOf(S, g.id) ? '☮' : ''}` : ''}`).join('　')}${S.records.fastGorge != null ? `・最快到深谷 ${S.records.fastGorge}s` : ''}</div><div class="k">本門最遠：${S.records.sect || 0} 步${S.records.who ? `（${S.records.who.join('、')}）` : ''}・個人：${disciples(S).map((d) => `${d.name} ${d.best || 0}`).join('・')}</div>`;
+    const rec = `${xiaHtml()}${genHtml()}${sectHtml()}${hsHtml()}${jhHtml()}${manualHtml()}<div class="k">清場紀錄：${ROUTE.map((g) => `${g.name}${Math.round((S.records.clear?.[g.id] || 0) * 100)}%${S.records.qing?.[g.id] ? `・清山${S.records.qing[g.id]}次${peaceOf(S, g.id) ? '☮' : ''}` : ''}`).join('　')}${S.records.fastGorge != null ? `・最快到深谷 ${S.records.fastGorge}s` : ''}</div><div class="k">本門最遠：${S.records.sect || 0} 步${S.records.who ? `（${S.records.who.join('、')}）` : ''}・個人：${disciples(S).map((d) => `${d.name} ${d.best || 0}`).join('・')}</div>`;
     $('exp').innerHTML = X ? `<div>巡山中 #${X.n}：${X.team.map((id) => S.ds.find((d) => d.id === id)?.name).join('、')}・${EXP_STYLES[X.style]?.name || ''}・${X.phase === 'out' ? '前進' : '回程'} ${X.dist.toFixed(0)} 步（${segAt(X.dist).name}）・乾糧 ${X.supplies}・撤退線 ${X.thr * 100}%</div><div class="k">${rbar('體力', X.sta, EXP.sta, '#3a7')} ${rbar(`耐性${X.order ? '（巡山令）' : ''}`, X.pat, X.patMax || 100, '#c80')}${X.scout ? `　探路：${X.scout}（先手 +20%）` : ''}${X.camp ? `　自${X.camp}出發` : ''}</div><div class="k">擊倒 ${nm(X.kills)}｜逃走 ${nm(X.escaped)}｜閃過 ${nm(X.evaded)}｜追 ${X.chase?.got || 0}/${X.chase?.n || 0}</div>${rec}${card}` :
       `<div>${disciples(S).map((d) => `<label><input type="checkbox" class="xteam" value="${d.id}" ${team.has(d.id) ? 'checked' : ''}>${d.name}${d.hp < EXP.minHp ? '（傷）' : ''}</label>`).join(' ')}</div>
       ${styHtml}<div>撤退線：<select id="exthr">${EXP.thr.map((v) => `<option value="${v}" ${v === thr ? 'selected' : ''}>氣血 ${v * 100}%</option>`).join('')}</select>（心情 &lt;${EXP.moodMin} 也會回頭）</div>
@@ -226,6 +227,17 @@ function drawSect() { // v1.35 匾額＋旗幟（共用破道館地圖，只換�
   if (T.fac) { const F = sectFac(S); g.font = 'bold 13px sans-serif'; g.lineWidth = 4; g.strokeStyle = '#fff'; g.strokeText(`🏯 ${F.name}`, x, y + 32); g.fillStyle = T.color; g.fillText(`🏯 ${F.name}`, x, y + 32); }
   g.restore();
 }
+function genHtml() { // v1.4 傳承
+  const G = S.gen; if (!G) return ''; const out = [], nm = (id) => S.ds.find((d) => d.id === id)?.name || id;
+  out.push(`🏛 ${S.sect?.name || '本門'}第 <b>${G.n}</b> 代掌門：${S.ds.find((d) => d.id === 'hero')?.name}　宿慧 ${'◆'.repeat(G.suhui)}${'◇'.repeat(GEN.suhuiMax - G.suhui)}（每傳一代，新開局自創 +1 點）`);
+  if (G.couples.length) out.push(`💞 夫妻：${G.couples.map((c) => c.map(nm).join('＆')).join('、')}`);
+  const kids = S.ds.filter((d) => d.child); if (kids.length) out.push(`🧒 第二代：${kids.map((d) => `${d.name}（${d.age}歲${d.adult ? '・已成年' : ''}；養父母 ${d.child.parents.map(nm).join('、')}；悟${d.wu}根${d.root}）`).join('、')}`);
+  const ms = S.ds.filter((d) => d.master); if (ms.length) out.push(`📿 師承（師父大成武學 ×${1.2}）：${ms.map((d) => `${nm(d.master)}→${d.name}${d.lineArts?.length ? `〔${d.lineArts.map((a) => ARTS.find((x) => x.id === a)?.name).join('、')}〕` : ''}`).join('、')}`);
+  if (G.lineage.length) out.push(`📜 衣缽譜：${G.lineage.map((x) => `第${x.gen}代 ${x.name} ─${x.art}→ ${x.heir}`).join('；')}`);
+  const c = canSucceed(S); out.push(c.ok ? `🎎 傳衣缽：<select id="heir">${heirs(S).map((d) => `<option value="${d.id}">${d.name}</option>`).join('')}</select> 傳 ${ARTS.find((a) => a.id === heirArt(S.ds.find((d) => d.id === 'hero')))?.name} <button data-succeed="1">傳位退隱</button>` : `🎎 衣缽：${c.why}`);
+  return `<div class="k"><b>傳承・第二代</b><br>${out.join('<br>')}</div>`;
+}
+document.addEventListener('click', (e) => { if (e.target.closest('[data-succeed]')) { const r = succeed(S, document.getElementById('heir')?.value); if (r.ok) { try { localStorage.setItem('solo-sect-suhui', String(Math.max(+localStorage.getItem('solo-sect-suhui') || 0, S.gen.suhui))); } catch {} } else alert(r.why); panel(); } });
 function sectHtml() {
   const T = S.sect; if (!T) return ''; const F = sectFac(S), c = canBuildFac(S), out = [];
   const bias = Object.entries(T.bias).map(([k, v]) => `${k}${v > 0 ? '+' : ''}${Math.round(v * 100)}%`).join('・') || '無';
