@@ -14,7 +14,11 @@ import {invite,visit,depart,school,fame,partnerProposal,acceptPartner,cohabit,se
 import {dispatch,recallParty,negotiate,challengeWardens,chooseCave,requestRescue,travelActivityTick,expeditionTick} from './expedition.mjs';
 import {story,storyActivityTick,storiesTick,found} from './stories.mjs';
 import {discover} from './view.mjs';
+import {ownershipGate,commitmentOf} from './commitment.mjs';
+import {beginError} from './activities.mjs';
 export {createWorld,invariants};
+// Validate solo orders before they interrupt a sparring session or anything else.
+function preflight(w,c,p){if(c.type==='task'){if(!p)return{ok:false,reason:'人物不存在'};if(p.residence==='visitor'&&p.canonicalIdentity&&w.identityMode==='matureGuest'&&!['move','rest','sleep','eat','talk','encourage','care'].includes(c.kind))return{ok:false,reason:'成熟宗師只作客，請透過約定交流'};if(p.kind!=='human')return{ok:false,reason:'野生個體不能接受門派勞作命令'};return beginError(w,p,c.kind,c.args||{});}if(c.type==='recall'&&p)return beginError(w,p,'return',{});return null;}
 export function command(w,c){
  if(c?.temporary!==undefined&&typeof c.temporary!=='boolean')return {ok:false,reason:'臨時指令需布林值'};
  if(!c||typeof c.type!=='string'||c.actor!==undefined&&!Object.hasOwn(w.people,c.actor)||c.id!==undefined&&(typeof c.id!=='string'||!/^[-a-zA-Z0-9._]+$/.test(c.id)||['__proto__','constructor','prototype'].includes(c.id)))return {ok:false,reason:'人物／指令識別不合法',reasonCode:'invalid_command'};
@@ -24,7 +28,9 @@ export function command(w,c){
  let result={ok:true};const p=w.people[c.actor||'leader'];
  if(w.martialPlan&&p&&!['resident','visitor'].includes(p.residence)&&['task','stop','resume','recall','guard','roles','auto','attack','preferred','martialFocus','martialStyle','practice','practiceStop'].includes(c.type))return {ok:false,reason:'教習／野外人物只供觀察，不能代下門人命令'};
  if(w.lifePolicy&&c.temporary&&(p?.storyBusy||p?.classSession||w.expedition?.actors.includes(p?.id)&&!['returned','cancelled'].includes(w.expedition.phase)))return {ok:false,reason:'遠征／約定／同堂進行中不支援一次回復；請先完成或取消勾選作普通改派'};
- if(['task','stop'].includes(c.type)&&w.expedition?.actors.includes(p?.id)&&!['returned','cancelled'].includes(w.expedition.phase)){stopJourneySpar(w,w.expedition);w.expedition.phase='halted';w.expedition.haltReason='隊員接到新指令／停工';p.storyBusy=false;if(w.people.zhou.helpedBy===p.id){const z=w.people.zhou;cancel(w,z,'扶助已中止');z.helpedBy=null;p.helping=null;w.expedition.reservedVisitor=false;event(w,'escort-interrupted',[p.id,z.id]);}}
+ const gate=ownershipGate(w,c,p)||preflight(w,c,p);if(gate)result=gate;
+ else if(c.type==='recall'&&commitmentOf(w,p)?.owner==='expedition'){const before=w.expedition.phase;result=recallParty(w,p.name+'個別召回：全隊一起'+(before==='prepare'?'取消出發':'返院'));if(result.ok)result={...result,transfer:before==='prepare'?'expedition-cancel':'party-recall'};}
+ else{
  if(['task','stop','recall'].includes(c.type)&&p?.combatSession){cancelPractice(w,p);interruptCombat(w,p);}
  if(c.type==='task'){
   if(!p)result={ok:false,reason:'人物不存在'};
@@ -87,6 +93,7 @@ export function command(w,c){
  else if(c.type==='attack')result=startAction(w,p,c.move,w.people[c.target],true);
  else if(c.type==='tutorial'){w.tutorial=c.value;}
  else result={ok:false,reason:'尚未支援的指令：'+c.type};
+ }
  if(result.ok&&w.lifePolicy&&['class','spar','journey','expedition','drill','recallParty'].includes(c.type)){const ids=c.type==='class'?[p.id,...c.students]:c.type==='spar'?[p.id,c.target]:c.type==='recallParty'?w.expedition?.actors||[]:c.actors||[];for(const id of ids)if(w.people[id])delete w.people[id].temporary;}
  if(!result.ok&&!result.reasonCode)result.reasonCode=c.type+'.rejected';
  w.commandSeq++;w.commands.push({...c,id,tick:w.tick,seq:w.commandSeq,result});w.seenCommands[id]=result;

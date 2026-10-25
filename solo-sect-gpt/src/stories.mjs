@@ -1,3 +1,4 @@
+import{commitmentOf,OWNER_LABEL}from'./commitment.mjs';
 import {Q,LEGENDS,ART,FACILITIES} from './data.mjs';
 import {stations,position,los,bedSlots} from './map.mjs';
 import {event,sorted,availableQty as qty,add,transfer,reserve,reserveBundle,release,uid,makePerson} from './state.mjs';
@@ -11,6 +12,7 @@ export function story(w,p,node){const s=w.stories[node];if(!s)return {ok:false,r
  if(!o||o.residence==='departed')return {ok:false,reason:'先約訪，等客人沿南路入院'};
  if(o.storyBusy&& !Object.values(w.activities).some(a=>a.actor===p.id&&a.args.node===node))return {ok:false,reason:'同伴正在另一個約定中'};
  if(o.id===p.id)return {ok:false,reason:'請讓另一位成人一起參與自身故事'};
+ {const k=commitmentOf(w,o);if(k&&!o.storyBusy&&o.id!==p.id)return {ok:false,reason:o.name+'正在'+OWNER_LABEL[k.owner]+'中，先等對方結束',reasonCode:'commitment.'+k.owner};}
  if(part==='2'&&w.stories[key+'.1'].status!=='completed')return {ok:false,reason:'先完成第一個約定'};
  if(!p.adult||p.hp<=0||o.hp<=0)return {ok:false,reason:'約定需可參與的成人'};
  if(key==='hong'&&part==='1'&&qty(w,'table','meal')<2)return {ok:false,reason:'需自製並備好兩餐才能招待'};

@@ -1,4 +1,5 @@
 import{isPackMove}from'./catalog.mjs';
+import{commitmentOf}from'./commitment.mjs';
 import {trainingArt,homeSlotIndex} from './martial-config.mjs';
 import {applyLifePolicy,supply,shouldYield} from './life-policy.mjs';
 import {detachClass} from './classes.mjs';
@@ -16,7 +17,12 @@ export function cancel(w,p,reason='玩家改派'){
  if(w.bridge.holder===p.id){p.bridgeExit=true;p.bridgePendingTarget=null;}else{p.path=[];p.routeAt=0;w.bridge.queue=w.bridge.queue.filter(q=>q.id!==p.id);}
  p.reason=reason;p.blocked='';p.pose='idle';
 }
-export function begin(w,p,kind,args={},manual=false){
+export function begin(w,p,kind,args={},manual=false){const error=beginError(w,p,kind,args);if(error)return error;
+ cancel(w,p);if(manual){delete p.temporary;p.revision++;p.intent={kind,args:{...args},revision:p.revision};p.manualStop=false;}
+ const a={id:uid(w,'activity'),actor:p.id,kind,args:{...args},phase:'init',progress:0,revision:p.revision,started:w.tick,units:0};w.activities[a.id]=a;p.activity=a.id;p.reason=(manual?'玩家指令：':'自主：')+(TASKNAME[kind]||kind);p.next='完成當前單位';return {ok:true};
+}
+// Pure validation shared by begin and the command layer, so a rejected order mutates nothing.
+export function beginError(w,p,kind,args={}){
  if(!['contentStudy','trailUnload','culture','class','unloadQuest','drink','move','return','gather','build','train','study','rest','sleep','eat','cook','craft','talk','encourage','care','teach','greet','farm','harvestHaul','delivery','school','reception','learn','equip','story','pack','aid','collect'].includes(kind))return {ok:false,reason:'未知活動'};
  if(kind==='contentStudy'&&(!w.contentState||!isPackMove(w,args.move)))return{ok:false,reason:'內容研讀引用失效'};
  if(kind==='trailUnload'&&(!w.expedition?.journey||w.expedition.journey.objective!=='gather'||!w.expedition.actors.includes(p.id)||!Number.isSafeInteger(args.amount)||args.amount<1||args.amount>2))return{ok:false,reason:'返院交藥草需有效遠行及1–2株實物'};
@@ -31,8 +37,7 @@ export function begin(w,p,kind,args={},manual=false){
  if(kind==='encourage'){const o=w.people[args.target];if((!o?.frustration||(o.encouragedSources||[]).includes(o.frustration.source))&&!o?.injury)return {ok:false,reason:'對方目前沒有受挫／傷病記錄，可先交談'};}
  if(p.hp<=0)return {ok:false,reason:'倒地者需要救援'};
  if(p.injury>60&&!['return','rest','sleep','eat','care','move'].includes(kind))return {ok:false,reason:'傷勢過重，請先照料／休息'};
- cancel(w,p);if(manual){delete p.temporary;p.revision++;p.intent={kind,args:{...args},revision:p.revision};p.manualStop=false;}
- const a={id:uid(w,'activity'),actor:p.id,kind,args:{...args},phase:'init',progress:0,revision:p.revision,started:w.tick,units:0};w.activities[a.id]=a;p.activity=a.id;p.reason=(manual?'玩家指令：':'自主：')+(TASKNAME[kind]||kind);p.next='完成當前單位';return {ok:true};
+ return null;
 }
 export function restoreTemporary(w,p,a,blocked=false){const t=p.temporary;if(!t||t.revision!==a.revision||!(a.kind===t.kind||t.kind==='farm'&&a.kind==='harvestHaul'))return false;delete p.temporary;p.revision++;p.auto=t.auto;p.manualStop=t.manualStop;p.intent=t.intent?{...structuredClone(t.intent),revision:p.revision}:null;event(w,blocked?'temporary-blocked':'temporary-return',[p.id],{kind:t.kind,revision:t.revision,returnTo:p.intent?.kind||(p.manualStop||!p.auto?'stopped':'schedule')});return true;}
 export function finish(w,p,a,text='完成',keepIntent=false){if(!w.activities[a.id]||w.completionIds[a.id])return;w.completionIds[a.id]=true;release(w,a.id);delete w.activities[a.id];p.activity=null;p.pose='idle';p.reason=text;p.path=[];p.routeAt=0;if(!keepIntent&&p.intent?.revision===a.revision&&(p.intent.kind===a.kind||a.kind==='harvestHaul'&&p.intent.kind==='farm'))p.intent=null;restoreTemporary(w,p,a);event(w,'activity-complete',[p.id],{kind:a.kind,completionId:a.id,units:a.units});if(['class','drink','gather','cook','craft','farm','harvestHaul','school','reception','eat','talk','encourage','care','teach'].includes(a.kind)){const at=position(p);route(w,p,[at[0]+20,at[1]+20]);}}
@@ -66,7 +71,7 @@ export function buildOrder(w,id){const f=Object.hasOwn(w.facilities,id)?w.facili
   const slots=bedSlots(w).filter(b=>!b.startsWith('hall.'));const resident=sorted(w.people).filter(p=>p.residence==='resident');const keep=f.stage===0?2:0;
   if(slots.length+keep<resident.length)return {ok:false,reason:'需先修宿舍／側舍，遷出臨鋪'};
   let occupied=new Set(resident.filter(p=>p.bed&&!p.bed.startsWith('hall.')).map(p=>p.bed));
-  for(const p of resident.filter(p=>p.bed?.startsWith('hall.'))){const b=slots.find(b=>!occupied.has(b));if(b){occupied.add(b);p.bed=b;cancel(w,p,'臨鋪遷床');if(inRect(p.x/Q,p.y/Q,rects.hall.rect))begin(w,p,'move',{pos:stations['safe.'+(resident.indexOf(p)%10)]});}}
+  for(const p of resident.filter(p=>p.bed?.startsWith('hall.'))){const b=slots.find(b=>!occupied.has(b));if(b){occupied.add(b);p.bed=b;if(commitmentOf(w,p))continue;cancel(w,p,'臨鋪遷床');if(inRect(p.x/Q,p.y/Q,rects.hall.rect))begin(w,p,'move',{pos:stations['safe.'+(resident.indexOf(p)%10)]});}}
  }
  f.active=true;event(w,'build-order',[],{facility:id,stage:f.stage+1});return {ok:true};
 }

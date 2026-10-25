@@ -1,0 +1,118 @@
+✖ M7 P2 spar: rejected before mutation; packing continues and the party leaves; save continues (223.252875ms)
+✖ M7 P2 recall: whole-party cancel before departure, locks and reservations released, rations kept in hand (77.300708ms)
+✖ M7 base-runtime stuck saves are diagnosed without repair, then recover through party recall (29.566625ms)
+✖ M7 shared sessions cannot steal people; rejected orders leave no trace (179.123041ms)
+✖ M7 after departure an individual recall becomes a physical whole-party return (155.435ms)
+✔ M7 camp sparring inside an adopted journey still runs (internal transfer, not a player order) (1016.63325ms)
+✖ M7 five-seed command sequences keep invariants, liveness and save continuation (830.1925ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 1
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2607.228125
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/optimization/m7.test.mjs:9:1
+✖ M7 P2 spar: rejected before mutation; packing continues and the party leaves; save continues (223.252875ms)
+  AssertionError [ERR_ASSERTION]: {"type":"spar","actor":"leader","target":"amu"}
+
+  true !== false
+
+      at unchanged (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/base/solo-sect-gpt/test/optimization/m7.test.mjs:7:82)
+      at async TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/base/solo-sect-gpt/test/optimization/m7.test.mjs:9:220)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/optimization/m7.test.mjs:10:1
+✖ M7 P2 recall: whole-party cancel before departure, locks and reservations released, rations kept in hand (77.300708ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + undefined
+  - 'expedition-cancel'
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/base/solo-sect-gpt/test/optimization/m7.test.mjs:10:308)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'expedition-cancel',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/optimization/m7.test.mjs:11:1
+✖ M7 base-runtime stuck saves are diagnosed without repair, then recover through party recall (29.566625ms)
+  TypeError: Cannot read properties of undefined (reading 'code')
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/base/solo-sect-gpt/test/optimization/m7.test.mjs:11:483)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at solo-sect-gpt/test/optimization/m7.test.mjs:14:1
+✖ M7 shared sessions cannot steal people; rejected orders leave no trace (179.123041ms)
+  AssertionError [ERR_ASSERTION]: {"type":"class","actor":"leader","students":["disciple.a"],"art":"punch"}
+
+  true !== false
+
+      at unchanged (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/base/solo-sect-gpt/test/optimization/m7.test.mjs:7:82)
+      at async TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/base/solo-sect-gpt/test/optimization/m7.test.mjs:14:687)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/optimization/m7.test.mjs:18:1
+✖ M7 after departure an individual recall becomes a physical whole-party return (155.435ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'outbound'
+  - 'return'
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/base/solo-sect-gpt/test/optimization/m7.test.mjs:18:325)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'outbound',
+    expected: 'return',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/optimization/m7.test.mjs:24:1
+✖ M7 five-seed command sequences keep invariants, liveness and save continuation (830.1925ms)
+  Error: seed 11 order 20 {"type":"recall","actor":"leader"} liveness [{"code":"pack-missing","actors":["leader"],"hint":"領糧活動已被取代；召回全隊可取消出發"}]
+      at exec (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/base/solo-sect-gpt/test/optimization/m7.test.mjs:24:494)
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/base/solo-sect-gpt/test/optimization/m7.test.mjs:25:82)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)

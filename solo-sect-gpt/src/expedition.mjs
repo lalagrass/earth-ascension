@@ -6,6 +6,7 @@ import {begin,cancel,approach,finish,memory} from './activities.mjs';
 import {route,arrived,speed} from './navigation.mjs';
 import {insight} from './combat.mjs';
 import {visitorCount} from './life.mjs';
+import {commitmentOf} from './commitment.mjs';
 function travelRoute(w,p,to){const candidates=[];for(let r=0;r<=40;r+=8)for(let dx=-r;dx<=r;dx+=8)for(let dy=-r;dy<=r;dy+=8)if(Math.max(Math.abs(dx),Math.abs(dy))===r)candidates.push([to[0]+dx,to[1]+dy]);const legal=candidates.find(q=>walkable(w,...q)&&!sorted(w.people).some(o=>o.id!==p.id&&((o.travelGoal&&Math.hypot(o.travelGoal[0]-q[0],o.travelGoal[1]-q[1])<14)||Math.hypot(o.x/Q-q[0],o.y/Q-q[1])<14)));if(!legal){p.blocked='路標周邊無合法空位';return false;}p.travelGoal=legal;return route(w,p,legal);}
 const distance=(p,to)=>Math.hypot(p.x/Q-to[0],p.y/Q-to[1]);
 export function returnReserve(w,p){const path=findPath(w,position(p),stations['safe.0']);if(!path)return null;let at=position(p),len=0;for(const point of path){const to=point.map(n=>n/Q);len+=Math.hypot(to[0]-at[0],to[1]-at[1]);at=to;}return Math.ceil(len/speed(w,p)*(bagWeight(w,p)?10:5))+1000+(p.x/Q>1870?200:0);}
@@ -23,9 +24,16 @@ export function dispatch(w,ids,target='cave'){
 }
 export function recallParty(w,reason='玩家召回'){
  const e=w.expedition;if(!e||['returned','cancelled'].includes(e.phase))return {ok:false,reason:'沒有外出隊伍'};
- stopJourneySpar(w,e);if(e.journey)e.journey.phase='return';e.phase='return';e.returnReason=reason;if(e.journey?.escort)route(w,w.people[e.journey.escort],stations['safe.7']);for(const g of sorted(w.people).filter(p=>p.rank==='warden'&&p.hostile)){g.hostile=false;g.combatTarget=null;if(g.action){g.action.phase='recover';g.action.remaining=g.action.recover;}route(w,g,g.home);}for(const [i,id]of e.actors.entries()){const p=w.people[id];cancel(w,p,reason);p.combatTarget=null;p.action=p.action?.phase==='recover'?p.action:null;p.intent={kind:'return',revision:++p.revision,args:{}};p.reason='召回：不再沿路新採集';route(w,p,stations['safe.'+i]);}
+ if(e.phase==='prepare')return cancelPreparation(w,e,reason);
+ stopJourneySpar(w,e);if(e.journey)e.journey.phase='return';e.phase='return';e.returnReason=reason;if(e.journey?.escort)route(w,w.people[e.journey.escort],stations['safe.7']);for(const g of sorted(w.people).filter(p=>p.rank==='warden'&&p.hostile)){g.hostile=false;g.combatTarget=null;if(g.action){g.action.phase='recover';g.action.remaining=g.action.recover;}route(w,g,g.home);}for(const [i,id]of e.actors.entries()){const p=w.people[id];cancel(w,p,reason);p.combatTarget=null;p.action=p.action?.phase==='recover'?p.action:null;p.intent={kind:'return',revision:++p.revision,args:{}};p.storyBusy=true;p.reason='召回：不再沿路新採集';route(w,p,stations['safe.'+i]);}
  if(w.people.zhou.helpedBy){const z=w.people.zhou;route(w,z,stations['safe.4']);}event(w,'expedition-recall',e.actors,{reason});return {ok:true};
 }
+// Nobody has left home yet: end the expedition's ownership for the whole party in one step.
+export function cancelPreparation(w,e,reason){for(const id of e.actors){const p=w.people[id];cancel(w,p,reason);p.storyBusy=false;p.intent=null;p.manualStop=true;p.revision++;p.reason='遠征已取消出發：'+reason;p.next='已領的乾糧仍在手中，可照常搬交';}
+ const j=e.journey;if(j?.escort){const q=w.people[j.escort];if(q){q.storyBusy=false;q.departing=true;q.auto=false;route(w,q,stations.spawn);}}
+ e.phase='cancelled';e.cancelReason=reason;e.cancelledAt=w.tick;e.reservedVisitor=false;delete e.stall;
+ if(j){j.phase='home';j.cancelled=true;j.completed=false;j.homeRecorded=true;j.ended=w.tick;w.trailPlan.history.push({...structuredClone(j),expedition:e.id,actors:[...e.actors],elapsed:w.tick-j.started,energy:e.actors.map(id=>{const p=w.people[id];return{id,energy:p.energy,injury:p.injury,bag:{...w.inventories[p.bag].items}};})});if(w.trailPlan.history.length>12)w.trailPlan.history.shift();}
+ event(w,'expedition-cancelled',e.actors,{reason,packed:[...e.packed],text:'尚未出門，全隊解除遠征安排；已領的乾糧仍在各自手中。'});return {ok:true,transfer:'expedition-cancel'};}
 export function negotiate(w){const e=w.expedition;if(!e||e.phase!=='gate')return {ok:false,reason:'須先沿路抵達古洞守路處'};
  if(e.actors.some(id=>w.people[id].combatTarget))return {ok:false,reason:'交戰中先停止追擊、拉開距離'};e.talkUntil=w.tick+200;e.phase='negotiate';event(w,'gate-talk',e.actors,{text:'向守路人說明救人來意，交談10秒。'});return {ok:true};}
 export function challengeWardens(w){const e=w.expedition;if(!e||e.phase!=='gate'||e.actors.some(id=>!arrived(w.people[id])))return {ok:false,reason:'須先全隊沿路抵達守路處'};const guards=sorted(w.people).filter(p=>p.rank==='warden'&&p.hp>0&&!p.inactive);if(!guards.length)return {ok:false,reason:'守路人已失能，可直接沿已通行山路前進'};e.phase='gateFight';e.battleStarted=w.tick;for(const [i,g]of guards.entries()){g.hostile=true;g.combatTarget=e.actors[i%e.actors.length];}for(const [i,id]of e.actors.entries()){w.people[id].combatTarget=guards[i%guards.length].id;}event(w,'gate-challenge',e.actors,{guards:guards.map(p=>p.id)});return {ok:true};}
@@ -45,7 +53,7 @@ function startReturn(w,e){if(e.choice==='rescue'&&!e.escortAttached){e.phase='at
 }
 function rescuedTick(w,e){const r=e.rescue;if(!r)return;
  if(r.phase==='waiting'&&w.tick>=r.ready){
-  const local=sorted(w.people).find(p=>p.adult&&p.residence==='resident'&&!e.actors.includes(p.id)&&p.hp>0&&p.injury<50);
+  const local=sorted(w.people).find(p=>p.adult&&p.residence==='resident'&&!e.actors.includes(p.id)&&p.hp>0&&p.injury<50&&!commitmentOf(w,p));
   let helper=local;if(!helper){if(visitorCount(w)>=2){const guest=sorted(w.people).find(p=>p.residence==='visitor'&&p.id!=='zhou');if(guest&&!guest.departing){cancel(w,guest);guest.departing=true;guest.auto=false;route(w,guest,stations.spawn);}return;}const helperId=['rescue.village.1','rescue.village.2'].find(id=>!w.people[id]||w.people[id].residence==='departed');if(!helperId)return;helper=w.people[helperId]||makePerson(w,helperId,helperId.endsWith('1')?'杜衡・救援者':'季梨・救援者',stations.spawn,{residence:'visitor',rank:'rescuer',color:'#776b9a',auto:false});helper.residence='visitor';helper.departing=false;}
   cancel(w,helper);helper.storyBusy=true;helper.rankBeforeRescue=helper.rank;helper.rank='rescuer';r.helpers.push(helper.id);r.phase='outbound';event(w,'rescue-departed',[helper.id],{requested:r.requested,wait:w.tick-r.requested});
  }
@@ -69,6 +77,7 @@ export function expeditionTick(w){const e=w.expedition;if(!e||e.phase==='returne
  if(e.permission&&!e.wardensParkedVersion){for(const [i,g]of sorted(w.people).filter(p=>p.rank==='warden'&&!p.hostile&&!p.storyBusy&&p.hp>0).entries())route(w,g,i?[2260,130]:[2255,210]);e.wardensParkedVersion=1;}
  const party=e.actors.map(id=>w.people[id]),walkers=e.journey?.escort?[...party,w.people[e.journey.escort]]:party;for(const p of party){p.returnReserve=returnReserveCached(w,p);if(p.hp<=0){p.blocked='倒地；可請求救援';continue;}if(!e.rescue&&p.energy<=p.returnReserve&&e.phase!=='return'&&e.phase!=='prepare'){recallParty(w,'精力抵回程預留');break;}}
  if(e.rescue){rescuedTick(w,e);if(e.rescue.phase!=='completed')return;}
+ if(e.phase==='prepare'&&!e.stall){const lost=e.actors.filter(id=>!e.packed.includes(id)&&w.activities[w.people[id].activity]?.kind!=='pack');if(lost.length){e.stall={version:1,code:'pack-missing',actors:lost,since:w.tick};event(w,'expedition-stalled',lost,{code:'pack-missing',text:'遠征準備中斷：'+lost.map(id=>w.people[id].name).join('、')+'沒有領糧活動。可召回全隊取消出發。'});}}
  if(e.phase==='prepare'&&e.packed.length===e.actors.length&&walkers.every(p=>arrived(p))){e.phase='outbound';for(const [i,p]of walkers.entries()){travelRoute(w,p,[1450+i*16,670]);p.reason='沿北門實走到林緣';}e.segment='forest';}
  if(e.phase==='outbound'){for(const p of walkers)if(!p.combatTarget&&!p.action&&arrived(p)&&p.travelGoal&&distance(p,p.travelGoal)>2)route(w,p,p.travelGoal);}
  if(e.phase==='outbound'&&e.segment==='ridge'){const j=e.journey;for(const [i,p]of walkers.entries()){const r=j.ridgeWalkers[p.id];if(r.done||w.tick<j.ridgeStarted+i*40)continue;if(!r.sent){if(travelRoute(w,p,TRAIL_ROUTES.ridge.points[r.node]))r.sent=true;}else if(arrived(p)&&distance(p,p.travelGoal)<3){r.node++;r.sent=false;if(r.node>=TRAIL_ROUTES.ridge.points.length)r.done=true;}}j.ridgeAt=Math.min(...Object.values(j.ridgeWalkers).map(r=>r.node));if(Object.values(j.ridgeWalkers).every(r=>r.done))e.segment='valley';else return;}

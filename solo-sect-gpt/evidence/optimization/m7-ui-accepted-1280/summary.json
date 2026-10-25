@@ -1,0 +1,67 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 19.193,
+  "errors": [],
+  "steps": [
+    {
+      "label": "dispatched",
+      "wallSeconds": 2.623,
+      "tick": 171453,
+      "phase": "prepare",
+      "activity": "pack"
+    },
+    {
+      "label": "spar-rejected",
+      "wallSeconds": 2.818,
+      "tick": 171453,
+      "toast": "雲生在遠征隊中（準備領糧）；請到遠征頁「召回全隊」，返院後再改派"
+    },
+    {
+      "label": "recall-cancelled",
+      "wallSeconds": 3.121,
+      "tick": 171453,
+      "toast": "尚未出門：全隊取消出發，已領的乾糧仍在手中。",
+      "phase": "cancelled"
+    },
+    {
+      "label": "outbound-again",
+      "wallSeconds": 12.624,
+      "tick": 172182
+    },
+    {
+      "label": "outbound-recall",
+      "wallSeconds": 12.919,
+      "tick": 172182,
+      "toast": "個別召回改為全隊實走返院。"
+    },
+    {
+      "label": "returned-home",
+      "wallSeconds": 18.124,
+      "tick": 172572
+    },
+    {
+      "label": "stuck-diagnosed",
+      "wallSeconds": 18.66,
+      "tick": 2000,
+      "warning": "⚠ 領糧活動已被取代；召回全隊可取消出發：雲生"
+    },
+    {
+      "label": "stuck-recovered",
+      "wallSeconds": 18.873,
+      "tick": 2000,
+      "phase": "cancelled",
+      "toast": "尚未出門：全隊取消出發，已領的乾糧仍在手中。"
+    },
+    {
+      "label": "redispatch-after-recovery",
+      "wallSeconds": 19.193,
+      "tick": 2000
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null
+}

@@ -1,0 +1,77 @@
+{
+  "source": "controlled model fixtures (labeled rations/hall/extra adults), not UI",
+  "cases": [
+    {
+      "case": "p2-spar",
+      "reason": "雲生在遠征隊中（準備領糧）；請到遠征頁「召回全隊」，返院後再改派",
+      "phase": "resting"
+    },
+    {
+      "case": "p2-recall",
+      "phase": "cancelled",
+      "rations": 12
+    },
+    {
+      "case": "stuck-spar",
+      "recovered": "cancelled"
+    },
+    {
+      "case": "stuck-recall",
+      "recovered": "cancelled"
+    },
+    {
+      "case": "legacy-halted",
+      "recovered": "returned"
+    },
+    {
+      "case": "conflicts",
+      "rejected": 17
+    },
+    {
+      "case": "outbound-recall",
+      "ticks": 1085
+    }
+  ],
+  "sequences": [
+    {
+      "seed": 11,
+      "orders": 64,
+      "accepted": 42,
+      "rejected": 22,
+      "finalTick": 3156,
+      "expedition": "returned"
+    },
+    {
+      "seed": 29,
+      "orders": 64,
+      "accepted": 39,
+      "rejected": 25,
+      "finalTick": 3232,
+      "expedition": "returned"
+    },
+    {
+      "seed": 73,
+      "orders": 64,
+      "accepted": 34,
+      "rejected": 30,
+      "finalTick": 3179,
+      "expedition": "cancelled"
+    },
+    {
+      "seed": 101,
+      "orders": 64,
+      "accepted": 37,
+      "rejected": 27,
+      "finalTick": 3117,
+      "expedition": "returned"
+    },
+    {
+      "seed": 211,
+      "orders": 64,
+      "accepted": 44,
+      "rejected": 20,
+      "finalTick": 3098,
+      "expedition": "cancelled"
+    }
+  ]
+}

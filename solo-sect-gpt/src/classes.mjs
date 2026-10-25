@@ -9,7 +9,7 @@ export function beginClass(w,p,students,art='punch'){
 }
 export function detachClass(w,p,reason){if(!p.classSession)return;const a=w.activities[p.classSession];if(!a||a.kind!=='class'){p.classSession=null;return;}const ids=p.id===a.actor?[p.id,...a.args.students]:[p.id];
  for(const id of ids){const q=w.people[id];q.classSession=null;q.storyBusy=false;q.pose='idle';q.reason=reason;if(id!==a.actor){q.path=[];q.routeAt=0;const key=a.classSlots[id];for(const [rid,r]of Object.entries(w.reservations))if(r.activity===a.id&&["participant:"+id,"station:"+key].includes(r.key))delete w.reservations[rid];for(const k of Object.keys(w.queues))w.queues[k]=w.queues[k].filter(r=>r.activity!==a.id||k!=='station:'+key);}}
- if(p.id===a.actor)for(const [i,id]of a.args.students.entries())route(w,w.people[id],stations['safe.'+(i+5)]);
+ if(p.id===a.actor){if(p.intent?.kind==='class')p.intent=null;for(const [i,id]of a.args.students.entries())route(w,w.people[id],stations['safe.'+(i+5)]);}
  if(p.id!==a.actor){a.args.students=a.args.students.filter(id=>id!==p.id);delete a.classSlots[p.id];event(w,'class-left',[p.id],{activity:a.id,reason});}
 }
 export function classActivityTick(w,p){const a=w.activities[p.activity];if(!a||a.kind!=='class')return false;const students=a.args.students.map(id=>w.people[id]);if(!students.length||[p,...students].some(q=>q.hp<=0||q.energy<2500||q.residence!=='resident')){cancel(w,p,'授課有人失能／需休養，完整課程前不給學理');return true;}
