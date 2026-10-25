@@ -1,0 +1,16 @@
+{
+  "stage": "optimization-M7",
+  "author": "Claude Opus 5.5 (Anthropic, via Claude Code)",
+  "runtimeCommit": "226b546",
+  "spec": "docs/optimization/M7.md",
+  "model": {
+    "tests": "test/optimization/m7.test.mjs",
+    "report": "evidence/optimization/m7-model/m7-model.json",
+    "regression": "evidence/optimization/m7-model/m7-regression.log",
+    "baseFailure": "evidence/optimization/m7-model/m7-tests-against-base-292bc9a.log",
+    "stuckSavesFromBase": ["evidence/optimization/m7-model/stuck-prepare-spar.save.json","evidence/optimization/m7-model/stuck-prepare-recall.save.json","evidence/optimization/m7-model/stuck-prepare-task.save.json"],
+    "root": ["evidence/optimization/m7-model/root-python.log","evidence/optimization/m7-model/root-sect-node.log","evidence/optimization/m7-model/root-earth-syntax.log"]
+  },
+  "normalUI": ["evidence/optimization/m7-ui-accepted-1440/summary.json","evidence/optimization/m7-ui-accepted-1280/summary.json"],
+  "kinds": {"modelFixture":"m7-model","normalUI":"m7-ui-accepted-*","authorSelfReview":"docs/optimization/M7.md","humanPlaytest":"not run"}
+}

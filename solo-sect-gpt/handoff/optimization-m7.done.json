@@ -1,0 +1,13 @@
+{
+  "status": "done",
+  "stage": "optimization-M7",
+  "author": "Claude Opus 5.5 (Anthropic, via Claude Code)",
+  "baseCommit": "292bc9a3eab4e85716810ca1b9dc7c04aedb2027",
+  "artifactCommit": "226b546",
+  "index": "evidence/optimization/m7/index.json",
+  "changedFiles": ["src/commitment.mjs","src/world.mjs","src/activities.mjs","src/expedition.mjs","src/classes.mjs","src/stories.mjs","src/save.mjs","src/ui.mjs","test/optimization/m7.test.mjs","test/optimization/m7-ui.mjs","test/optimization/ui-kit.mjs","test/optimization/m7-make-stuck.mjs","docs/optimization/M7.md","docs/optimization/M7-M11-scope.md"],
+  "checks": {"regression": "127/127", "m7Model": "7/7", "baseRunOfM7Tests": "1/7 pass (P2 reproduced)", "rootPython": "53 OK", "sectDev": "383/383", "earthSyntax": "OK", "normalUI": "passed 1440x900 and 1280x800"},
+  "saveCompatibility": "no new rules version; optional expedition.stall {version:1} validated, unknown version rejected; legacy stuck/halted saves load, are diagnosed, recover by party recall without copying goods",
+  "notRun": ["human playtest", "independent review", "SG main/manual full RT matrix"],
+  "limits": ["author self-review", "deterministic sequence generator, not fast-check shrinking", "richer person-panel explanations deferred to M8"]
+}
