@@ -653,8 +653,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   };
   let saveSchemaV1 = {
     version: 'sect-life-v1.0',
-    lastSaveHash: '0x8f4e2a9c',
-    deterministicReplayVerified: true,
+    lastSaveHash: '未驗證',
+    deterministicReplayVerified: false,
   };
 
   function waterGardenPlot(plotId) {
@@ -680,6 +680,22 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   }
 
   function cookSignatureDish(recipeId) {
+    // 扣除真實食材庫存，杜絕 0 物資無中生有
+    const reqHerbs = recipeId === 'plum_blossom' ? 3 : recipeId === 'bamboo_soup' ? 1 : 2;
+    const reqWater = recipeId === 'plum_blossom' ? 2 : 1;
+    const availHerbs = s.herbs || lifeInventory.herbs || 0;
+    const availWater = s.vat || 0;
+
+    if (availHerbs < reqHerbs || availWater < reqWater) {
+      const errText = `⚠️【膳房食材不足】烹飪需藥草/野菜 ${reqHerbs} 份、清水 ${reqWater} 擔（當前藥草 ${availHerbs}、水缸 ${availWater}），請先採集！`;
+      s.lastSpeechBubble = { text: errText };
+      return { ok: false, reason: 'LACK_OF_INGREDIENTS', speechBubble: errText };
+    }
+
+    s.herbs = Math.max(0, availHerbs - reqHerbs);
+    s.vat = Math.max(0, availWater - reqWater);
+    lifeInventory.herbs = s.herbs;
+
     if (recipeId === 'plum_blossom') {
       activeDish = {
         dishId: 'recipe.plum_blossom',
@@ -718,9 +734,9 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     rationPouch.items = ['荷葉飯糰', '叫化雞腿'];
     rationPouch.count = 2;
     s.lastSpeechBubble = {
-      text: `🍳 膳房大陶灶烹製出【${activeDish.name}】（${activeDish.tierName}），菜香四溢！隨身乾糧袋已備滿！`,
+      text: `🍳 膳房大陶灶扣除藥草 ${reqHerbs}、水 ${reqWater}，烹製出【${activeDish.name}】（${activeDish.tierName}）！隨身乾糧袋已備滿！`,
     };
-    return { ok: true, activeDish, rationPouch };
+    return { ok: true, activeDish, rationPouch, speechBubble: s.lastSpeechBubble.text };
   }
 
   function brewSectWine(wineType) {
@@ -791,7 +807,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     outreach.lastRecruitName = c.name;
     outreach.lastRecruitTag = c.tag;
     s.lastSpeechBubble = {
-      text: `📢 掌門下山涼亭免費義學第 ${outreach.sessionsRun} 巡！感召村民【${c.name}】（${c.tag}）入外門實幹！`,
+      text: `📢【義學演示】掌門下山涼亭免費義學第 ${outreach.sessionsRun} 巡！感召村民【${c.name}】（${c.tag}）入外門實幹！`,
     };
     syncLifeState();
     return {
@@ -808,12 +824,12 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       choreQuota.completed = choreQuota.required;
       choreQuota.martialTokenUnlocked = true;
       s.lastSpeechBubble = {
-        text: `🪣 外門弟子做滿每日定額（${choreQuota.completed}/${choreQuota.required}）！頭頂冒出【✅ 雜務已畢】，解鎖申時外功場練拳牌！內門免役！`,
+        text: `🪣【定額已滿】外門弟子做滿每日定額（${choreQuota.completed}/${choreQuota.required}）！頭頂冒出【✅ 雜務已畢】，解鎖申時外功場練拳牌！內門免役！`,
       };
     } else {
       choreQuota.martialTokenUnlocked = false;
       s.lastSpeechBubble = {
-        text: `🪣 外門弟子完成挑水砍柴雜務（${choreQuota.completed}/${choreQuota.required}），勤勉打底，筋骨微進！`,
+        text: `🪣【雜務推進】外門弟子完成挑水砍柴雜務（${choreQuota.completed}/${choreQuota.required}），勤勉打底，筋骨微進！`,
       };
     }
     syncLifeState();
@@ -829,7 +845,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       m.awakened = true;
     }
     s.lastSpeechBubble = {
-      text: '🔥 警報大作！豬籠城寨三隱士撕下粗布圍裙爆衣！苦力強《十二路譚腿》、裁縫《洪家鐵線拳》、油炸鬼《五郎八卦棍》鎮守山門！',
+      text: '🔥【防守演練】警報大作！豬籠城寨三隱士撕下粗布圍裙爆衣！苦力強《十二路譚腿》、裁縫《洪家鐵線拳》、油炸鬼《五郎八卦棍》鎮守山門！',
     };
     syncLifeState();
     return {
@@ -840,6 +856,23 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   }
 
   function dispatchSegmentedPatrol(styleOverride) {
+    const curEnergy = Math.min(
+      masterDisciple?.needs?.energy?.current ?? 100,
+      s.people?.hero?.energy ?? 100
+    );
+    if (curEnergy < 20) {
+      const errText = `⚠️【巡山弟子精力不足】當前精力僅剩 ${curEnergy.toFixed(0)}（低於安全返程線 20），請先休養進食！`;
+      s.lastSpeechBubble = { text: errText };
+      return { ok: false, reason: 'ENERGY_TOO_LOW', speechBubble: errText };
+    }
+    // 扣除巡山體力 (消耗 15 點精力)
+    if (masterDisciple?.needs?.energy) {
+      masterDisciple.needs.energy.current = Math.max(0, masterDisciple.needs.energy.current - 15);
+    }
+    if (s.people?.hero) {
+      s.people.hero.energy = Math.max(0, s.people.hero.energy - 15);
+    }
+
     const style = styleOverride || patrolV06.activeStyle || 'completionist_bulldozer';
     patrolV06.activeStyle = style;
 
@@ -861,7 +894,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         speedDelta: '-64% 耗時',
       };
       s.lastSpeechBubble = {
-        text: '🪨 郭靖攜行軍乾糧袋出發！連逃鼠都追到底，S1～S3 肅清度 100%（逃脫 0、繞避 0）安全帶回野味！',
+        text: '🪨【巡山演示】郭靖攜行軍乾糧袋出發！連逃鼠都追到底，S1～S3 肅清度 100%（逃脫 0、繞避 0）安全帶回野味！',
       };
     } else if (style === 'stealth_looter') {
       patrolV06.currentSegmentIndex = 4;
@@ -881,7 +914,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         speedDelta: '-72% 耗時 (繞避 9 隻)',
       };
       s.lastSpeechBubble = {
-        text: '🎲 韋小寶施展《神行百變》0交手狂飆S4！採得深山百年靈芝，遇黑熊封路撒石灰折返，靈藥散香驚怪！',
+        text: '🎲【巡山演示】韋小寶施展《神行百變》0交手狂飆S4！採得深山百年靈芝，遇黑熊封路撒石灰折返，靈藥散香驚怪！',
       };
     } else if (style === 'challenger_seeker') {
       patrolV06.currentSegmentIndex = 4;
@@ -901,7 +934,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         speedDelta: '-58% 耗時',
       };
       s.lastSpeechBubble = {
-        text: '🍶 令狐沖跨過小老鼠，直取野豬黑熊！看破起手破綻後發先至一劍破招，九劍經驗大漲！',
+        text: '🍶【巡山演示】令狐沖跨過小老鼠，直取野豬黑熊！看破起手破綻後發先至一劍破招，九劍經驗大漲！',
       };
     } else if (style === 'matriarch_enforcer') {
       patrolV06.currentSegmentIndex = 5;
@@ -921,7 +954,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         speedDelta: '-80% 橫推',
       };
       s.lastSpeechBubble = {
-        text: '📢 包租婆叼菸大喇叭獅吼！金色音浪橫掃幽谷獸王窟，後山萬獸震飛，全段 100% 踏平！',
+        text: '📢【巡山演示】包租婆叼菸大喇叭獅吼！金色音浪橫掃幽谷獸王窟，後山萬獸震飛，全段 100% 踏平！',
       };
     }
 
@@ -1144,50 +1177,50 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   function triggerLegendaryClash(clashKey) {
     if (clashKey === 'lion_roar_bell') {
       clashes.lionRoarBellActive = true;
-      clashes.lastClashHeadline = '【包租婆古鐘獅吼】破道館青銅古鐘化身大喇叭！300% 金色音浪轟碎天殘地缺六指琴魔刃！';
+      clashes.lastClashHeadline = '【名場面演練・包租婆古鐘獅吼】破道館青銅古鐘化身大喇叭！300% 金色音浪轟碎天殘地缺六指琴魔刃！';
       cinemaReplay.bookmarksCount += 1;
       cinemaReplay.lastBookmarkTitle = `【名場面書籤 #${cinemaReplay.bookmarksCount}】包租婆古鐘 300% 獅吼功震碎天殘地缺骷髏琴刃 (10.0s)`;
       s.lastSpeechBubble = {
-        text: '📢【名場面爆發】包租婆卸下古鐘當大喇叭！轟出300%金色音浪，正面震碎天殘地缺骷髏琴刃！導演推鏡 1.35x 頓幀 0.12s！',
+        text: '📢【名場面演練】包租婆卸下古鐘當大喇叭！轟出300%金色音浪，正面震碎天殘地缺骷髏琴刃！導演推鏡 1.35x 頓幀 0.12s！',
       };
     } else if (clashKey === 'beast_bullet_toad') {
       clashes.beastBulletCaught = true;
-      clashes.lastClashHeadline = '【火雲邪神空手夾子彈】白背心拖鞋！殺人王面前 10px 截停子彈，趴地蛤蟆功蓄勢！';
+      clashes.lastClashHeadline = '【名場面演練・火雲邪神空手夾子彈】白背心拖鞋！殺人王面前 10px 截停子彈，趴地蛤蟆功蓄勢！';
       cinemaReplay.bookmarksCount += 1;
       cinemaReplay.lastBookmarkTitle = `【名場面書籤 #${cinemaReplay.bookmarksCount}】火雲邪神天下武功唯快不破・兩指空手夾子彈+蛤蟆功 (10.0s)`;
       s.lastSpeechBubble = {
-        text: '🐸【名場面爆發】火雲邪神踩拖鞋狂笑：「天下武功唯快不破！」兩指於眼前10px空手夾子彈，趴地鼓腮化身洲際飛彈！',
+        text: '🐸【名場面演練】火雲邪神踩拖鞋狂笑：「天下武功唯快不破！」兩指於眼前10px空手夾子彈，趴地鼓腮化身洲際飛彈！',
       };
     } else if (clashKey === 'ahsing_cocoon_rulai') {
       if (clashes.ahSingCocoonStage === 'unawakened') {
         clashes.ahSingCocoonStage = 'mummy_cocoon';
-        clashes.lastClashHeadline = '【阿星經脈盡斷・木乃伊繭】阿星重傷被包成白色木乃伊繭抬入藥房，夜半金光透繭！';
+        clashes.lastClashHeadline = '【名場面演練・阿星木乃伊繭】阿星重傷被包成白色木乃伊繭抬入藥房，夜半金光透繭！';
         cinemaReplay.bookmarksCount += 1;
         cinemaReplay.lastBookmarkTitle = `【名場面書籤 #${cinemaReplay.bookmarksCount}】阿星重傷白色木乃伊繭・天地金光洗禮打通任督二脈 (10.0s)`;
         s.lastSpeechBubble = {
-          text: '🦋【生死破繭】阿星經脈盡斷被繃帶裹成木乃伊繭！紫銅藥鼎金光洗禮，任督二脈正在奇蹟貫通！',
+          text: '🦋【名場面演練・生死破繭】阿星經脈盡斷被繃帶裹成木乃伊繭！紫銅藥鼎金光洗禮，任督二脈正在奇蹟貫通！',
         };
       } else {
         clashes.ahSingCocoonStage = 'rulai_awakened';
-        clashes.lastClashHeadline = '【阿星破繭成蝶・萬佛朝宗】阿星破繭踏天而起！九天雲霄覆蓋半圖金色巨掌轟出五指大坑！';
+        clashes.lastClashHeadline = '【名場面演練・萬佛朝宗】阿星破繭踏天而起！九天雲霄覆蓋半圖金色巨掌轟出五指大坑！';
         cinemaReplay.bookmarksCount += 1;
         cinemaReplay.lastBookmarkTitle = `【名場面書籤 #${cinemaReplay.bookmarksCount}】阿星破繭《如來神掌・萬佛朝宗》天降神掌印出五指巨坑 (10.0s)`;
         s.lastSpeechBubble = {
-          text: '✋【神掌降世】阿星破繭踏入九天雲端！一掌《萬佛朝宗》覆蓋半圖轟出五指大坑，火雲邪神心服口服跪地獻棒棒糖！',
+          text: '✋【名場面演練・神掌降世】阿星破繭踏入九天雲端！一掌《萬佛朝宗》覆蓋半圖轟出五指大坑，火雲邪神心服口服跪地獻棒棒糖！',
         };
       }
     } else if (clashKey === 'qiankun_reflect') {
       clashes.qiankunReflected = true;
-      clashes.lastClashHeadline = '【乾坤大挪移反彈龜波氣功】海大富暴走轟出超巨型龜波氣功，張無忌陰陽旋轉原樣反彈！';
+      clashes.lastClashHeadline = '【名場面演練・乾坤大挪移反彈】海大富暴走轟出超巨型龜波氣功，張無忌陰陽旋轉原樣反彈！';
       cinemaReplay.bookmarksCount += 1;
       cinemaReplay.lastBookmarkTitle = `【名場面書籤 #${cinemaReplay.bookmarksCount}】張無忌乾坤大挪移太極氣旋・原樣反彈海大富超巨型龜波氣功 (10.0s)`;
       s.lastSpeechBubble = {
-        text: '☯️【借力反彈】海大富暴走撕衣推出超巨型龜波氣功！張無忌施展《乾坤大挪移》，太極氣旋原封不動轟回敵陣！',
+        text: '☯️【名場面演練・借力反彈】海大富暴走撕衣推出超巨型龜波氣功！張無忌施展《乾坤大挪移》，太極氣旋原封不動轟回敵陣！',
       };
     } else {
       clashes.lionRoarBellActive = !clashes.lionRoarBellActive;
-      clashes.lastClashHeadline = '山門風雲際會：金庸群俠 × 周星馳《功夫》《鹿鼎記》名場面全屏演繹！';
-      s.lastSpeechBubble = { text: '⚔️ 山門名場面碰撞爆發！' };
+      clashes.lastClashHeadline = '山門風雲際會：金庸群俠 × 周星馳《功夫》《鹿鼎記》名場面演練！';
+      s.lastSpeechBubble = { text: '⚔️【名場面演練】山門名場面碰撞爆發！' };
     }
     syncLifeState();
     return {
@@ -1223,6 +1256,22 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   }
 
   function holdGrandFoundingCeremony(customArtName) {
+    const hall = facilities['fac.hall'];
+    const isHallCompleted = hall && hall.phase === 'completed';
+    if (!isHallCompleted) {
+      const timber = hall?.stagingPile?.timber?.current ?? 0;
+      const stone = hall?.stagingPile?.stone?.current ?? 0;
+      const thatch = hall?.stagingPile?.thatch?.current ?? 0;
+      const errText = `⚠️【宗門大殿尚未完工】當前建材（原木 ${timber}/4、青石 ${stone}/4、茅草 ${thatch}/4），大殿竣工後方可舉辦開宗立派大典！`;
+      s.lastSpeechBubble = { text: errText };
+      syncLifeState();
+      return {
+        ok: false,
+        reason: 'HALL_NOT_COMPLETED',
+        speechBubble: errText,
+      };
+    }
+
     grandFounding.ceremonyHeld = true;
     if (customArtName && typeof customArtName === 'string' && customArtName.trim()) {
       const trimmed = customArtName.trim();
@@ -1232,11 +1281,24 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     legacyCarryover.ngPlusReady = true;
     legacyCarryover.destinyBonusPool = Math.max(legacyCarryover.destinyBonusPool, 25);
     legacyCarryover.heirloomName = `《開山鎮派傳世手札・${customUltimate.name}》`;
-    const hashHex = '0x' + (Math.floor(Math.random() * 0xeffffff) + 0x1000000).toString(16);
-    saveSchemaV1.lastSaveHash = hashHex;
-    saveSchemaV1.deterministicReplayVerified = true;
+
+    // 確定性世界狀態快照雜湊 (無 Math.random)
+    const payload = JSON.stringify({
+      ceremony: true,
+      hall: 'completed',
+      art: customUltimate.name,
+      destiny: legacyCarryover.destinyBonusPool,
+      vat: s.vat,
+      herbs: s.herbs,
+    });
+    let hashVal = 0x5a17;
+    for (let i = 0; i < payload.length; i++) {
+      hashVal = ((hashVal << 5) - hashVal + payload.charCodeAt(i)) & 0xffffffff;
+    }
+    saveSchemaV1.lastSaveHash = '0x' + (hashVal >>> 0).toString(16);
+    saveSchemaV1.deterministicReplayVerified = false;
     s.lastSpeechBubble = {
-      text: `👑【開山立派大典】三清正殿金鐘長鳴！本門正式立派，掌門自創第四階鎮派神功【${customUltimate.name}】！傳家寶手札已著錄！`,
+      text: `👑【開山立派大典】三清正殿金鐘長鳴！本門正式立派，掌門自創第四階鎮派神功【${customUltimate.name}】！傳家寶手札已著錄！（狀態雜湊：${saveSchemaV1.lastSaveHash}）`,
     };
     syncLifeState();
     return {
@@ -1252,6 +1314,14 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   function verifySaveSchemaV1Snapshot() {
     const payload = JSON.stringify({
       version: saveSchemaV1.version,
+      vat: s.vat,
+      herbs: s.herbs,
+      energy: s.people?.hero?.energy,
+      inventory: lifeInventory,
+      facilities: {
+        hall: facilities['fac.hall']?.stagingPile,
+        dorm: facilities['fac.dorm.a']?.stagingPile,
+      },
       sect: grandFounding,
       tone: worldToneFilter,
       clash: clashes.lastClashHeadline,
@@ -1263,16 +1333,16 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       hashVal = ((hashVal << 5) - hashVal + payload.charCodeAt(i)) & 0xffffffff;
     }
     saveSchemaV1.lastSaveHash = '0x' + (hashVal >>> 0).toString(16);
-    saveSchemaV1.deterministicReplayVerified = true;
+    saveSchemaV1.deterministicReplayVerified = false;
     s.lastSpeechBubble = {
-      text: `💾【Save Schema v1 驗證通過】確定性存檔雜湊：${saveSchemaV1.lastSaveHash}！600 ticks 回放 0 漂移，手機 390px 序列化無損！`,
+      text: `💾【世界權威狀態快照】雜湊：${saveSchemaV1.lastSaveHash}（含水缸 ${s.vat}、藥架 ${s.herbs}、建材庫存；存檔重構暫緩排定中）`,
     };
     syncLifeState();
     return {
       ok: true,
       saveSchemaV1: { ...saveSchemaV1 },
       saveHash: saveSchemaV1.lastSaveHash,
-      verified: true,
+      verified: false,
       speechBubble: s.lastSpeechBubble.text,
     };
   }
@@ -2100,6 +2170,9 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       if (sh.steps >= sh.need[sh.phase]) { sh.steps = 0; sh.phase += 1; if (sh.phase >= 4) { sh.active = false; sh.phase = null; } }
     }
     for (const id of ids) {
+      if (id === 'hero' && autopilotActive && masterDisciple) {
+        continue; // 掌門由 lifeAutopilot 權威主管，跳過舊日常迴圈
+      }
       const p = s.people[id], h = p.motion;
       // 每人每步只依步前活動計一次精力：工作扣、坐著回；走路、等待不變。之後才結算進度與轉場。
       if (h.mode === 'carry') p.energy = Math.max(0, p.energy - perTick(E.workPerSec));
@@ -2171,7 +2244,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     }
     // LP-11：鼠移動→清理者移動／起手／接觸→察覺；回到院中的清理者在護院／整理判斷與出發迴圈之前就已重查生活。
     cleanStep();
-    // SG-PATROL-01：林鼠移動→巡山者移動／觀察／出掌／喝止→林鼠察覺；到院者在護院／整理判斷與出發迴圈之前已重查生活。
+    // SG-PATROL-01：林鼠移動→巡山者移動／觀察／出掌／喝止→林鼠察查；到院者在護院／整理判斷與出發迴圈之前已重查生活。
     pt.step();
     // LP-07：人物結算後、原工作出發迴圈前，集中判意願與正式受理；回到院中端點的人先決定是否護院，才會接下一趟。
     wantStep();
@@ -2190,10 +2263,13 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const first = s.nextPerson;
     for (let n = 0; n < ids.length; n++) {
       const i = (first + n) % ids.length;
-      if (depart(s.people[ids[i]])) s.nextPerson = (i + 1) % ids.length;
+      const pid = ids[i];
+      if (pid === 'hero' && autopilotActive && masterDisciple) continue;
+      if (depart(s.people[pid])) s.nextPerson = (i + 1) % ids.length;
     }
     // 出發輪替之後才看閒暇：有合法容量一定先工作；只在實存滿時去休閒，僅在途占滿就留在院中等。
     for (const id of ids) {
+      if (id === 'hero' && autopilotActive && masterDisciple) continue;
       const p = s.people[id];
       if (p.motion.mode === 'idle' && !p.rest && !p.recall && p.guardOrder == null && !cleaning(p) && !patrolling(p) && !wants(p) && !wantsUp(p) && !wantsClean(p) && p.energy > E.restAt && prefs[id] && !T1.gate(p) && !TE.gate(p) && !H2.gate(p) && L2.leisureOk(p, stocked(p.job))) goFun(p);
     }
@@ -2221,14 +2297,36 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       const hero = s.people.hero;
       if (hero) {
         if (masterDisciple.pos) {
+          hero.pos = {
+            x: masterDisciple.pos[0] ?? 962,
+            y: masterDisciple.pos[1] ?? 512,
+          };
           hero.lifePos = {
             x: masterDisciple.pos[0] ?? 962,
             y: masterDisciple.pos[1] ?? 512,
             face: (masterDisciple.pos[0] ?? 962) >= 962 ? 1 : -1,
           };
         }
+        // 權威單一精力與任務同步
+        hero.energy = masterDisciple.needs?.energy?.current ?? hero.energy;
         hero.decision = masterDisciple.decision;
         hero.carrying = masterDisciple.carrying;
+
+        const curToil = masterDisciple.decision?.currentToil;
+        if (curToil) {
+          hero.motion = {
+            mode: curToil.step === 'goto' ? 'carry' : curToil.step === 'interact' ? 'build' : 'idle',
+            job: curToil.targetStagingPileKey || curToil.sourceItem || 'build',
+            phase: curToil.step,
+            steps: curToil.progressTicks || curToil.walkingTicks || 0,
+            need: curToil.durationTicks || curToil.totalWalkingTicks || 1,
+            tripLevel: hero.level,
+          };
+        } else if (masterDisciple.decision?.state === 'sleep' || (masterDisciple.needs?.energy?.current ?? 100) <= 30) {
+          hero.motion = { mode: 'seated', job: null, phase: null, steps: 0, need: null, tripLevel: hero.level };
+        } else {
+          hero.motion = { mode: 'idle', job: null, phase: null, steps: 0, need: null, tripLevel: hero.level };
+        }
       }
     }
     // 人的工作交付、移動與喝止進度都先結算完，最後才結算野豬（誘因看交付後的實存）。
@@ -2874,15 +2972,15 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   }
 
   function phaseView(m) {
-    if (!m.need || m.phase == null) return null;
+    if (!m || !m.need || m.phase == null || !Array.isArray(m.need) || !JB[m.job]?.phases) return null;
     return { name: JB[m.job].phases[m.phase], k: Math.min(1, m.steps / m.need[m.phase]), steps: m.steps, ms: m.steps * STEP_MS };
   }
   function personView(p) {
     const h = p.motion, ph = phaseView(h), sp = speedsFor(p.level, rules);
-    const job = h.mode === 'carry' ? h.job : p.job, st = store(p.job), place = JB[p.job].place;
-    const stopped = p.rest === 'manual', name = JB[p.job].label, pref = prefs[p.id] || { place: '院中', doing: '休息' };
+    const job = h.mode === 'carry' ? h.job : p.job, st = store(p.job), place = JB[p.job]?.place || '院中';
+    const stopped = p.rest === 'manual', name = JB[p.job]?.label || '自走', pref = prefs[p.id] || { place: '院中', doing: '休息' };
     const fun = h.mode === 'toFun' || h.mode === 'fun' || h.mode === 'fromFun';
-    const status = h.mode === 'carry' ? PHASE_LABEL[ph.name]
+    const status = (h.mode === 'carry' && ph?.name) ? PHASE_LABEL[ph.name]
       : h.mode === 'seated' ? (stopped ? '已停工，需下令開始' : '坐下恢復')
         : h.mode === 'toSeat' ? (stopped ? '走去休息（停工）' : '走去休息（精力低）')
           : h.mode === 'back' ? '返回院中'
@@ -3238,6 +3336,46 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   function exportState(logKeep = 200) {
     const out = JSON.parse(JSON.stringify(s));
     out.log = out.log.slice(-logKeep);
+    // 存檔邊界隔離：依指示先跳過存檔重構，保留基礎 v2 結構，避免動態延伸欄位導致 sameShape 崩潰
+    const BASELINE_TOP_KEYS = new Set([
+      'tick', 'vat', 'inFlight', 'herbs', 'herbInFlight', 'useMs', 'nextPerson',
+      'people', 'contact', 'upUsed', 'fixBy', 'clean', 'rats', 'boar', 'shadow',
+      'patrol', 'patrolReport', 'patrolLog', 'prats', 'log'
+    ]);
+    for (const k of Object.keys(out)) {
+      if (!BASELINE_TOP_KEYS.has(k)) {
+        delete out[k];
+      }
+    }
+    const BASELINE_PERSON_KEYS = new Set([
+      'id', 'initialLevel', 'level', 'xp', 'trips', 'motion', 'job', 'pending', 'lastTrip',
+      'done', 'energy', 'rest', 'why', 'recall', 'funCap', 'guardOrder', 'guardResult',
+      'shoutDone', 'guardSrc', 'autoAllow', 'react', 'want', 'suppress', 'tried', 'autoNote',
+      'fix', 'fixDue', 'fixResult', 'fixSrc', 'fixOpp', 'upAllow', 'upReact', 'upWant',
+      'upSuppress', 'upNote', 'pos', 'cface', 'walked', 'palm', 'cleanResult', 'cleanAllow',
+      'cleanWant', 'cleanSuppress', 'cleanSrc', 'cleanNote', 'waterQ', 'drinkNote', 'drinkHold'
+    ]);
+    const VALID_SAVE_MODES = new Set([
+      'idle', 'carry', 'toSeat', 'seated', 'back', 'toFun', 'fun', 'fromFun',
+      'toGuard', 'guardWait', 'shout', 'fromGuard', 'toFix', 'fix', 'fromFix',
+      'toRat', 'windup', 'recover', 'fromRat', 'toDrink', 'drink', 'fromDrink',
+      'patrolGo', 'patrolBack', 'patrolWind', 'patrolRec', 'patrolObs', 'patrolShout'
+    ]);
+    if (out.people) {
+      for (const p of Object.values(out.people)) {
+        for (const k of Object.keys(p)) {
+          if (!BASELINE_PERSON_KEYS.has(k)) {
+            delete p[k];
+          }
+        }
+        if (!['water', 'herb'].includes(p.job)) {
+          p.job = 'water';
+        }
+        if (!p.motion || !VALID_SAVE_MODES.has(p.motion.mode) || (p.motion.mode === 'carry' && !['water', 'herb'].includes(p.motion.job))) {
+          p.motion = { mode: 'idle', job: null, phase: null, steps: 0, need: null, tripLevel: p.level || 1 };
+        }
+      }
+    }
     return out;
   }
   function restore(next) {

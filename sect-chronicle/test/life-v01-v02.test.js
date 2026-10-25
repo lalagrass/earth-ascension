@@ -720,3 +720,58 @@ test('applyPersonaCreation 與 Demo Model 視圖 life 正確注入門派道統�
   assert.equal(world.yardDualLineageLoadout.founderArt, '《基礎羅漢開山掌》');
   assert.equal(world.yardDualLineageLoadout.fellowArt, '《五嶽快劍基礎》');
 });
+
+test('ToilPipeline: requireStock=true 在零庫存時立即拒絕 (LACK_OF_MATERIAL)，庫存充足時扣減庫存', () => {
+  const broker = new ReservationBroker();
+  const pipeline = new ToilPipeline(broker);
+  const world = {
+    inventory: { timber: 0 },
+    facilities: {},
+  };
+  const actor = {
+    id: 'hero',
+    pos: [962, 512],
+    decision: {},
+    needs: { energy: { current: 100 } },
+  };
+
+  // 1. 庫存為 0 時下達需物資工序 -> 必須拒絕
+  const resFail = pipeline.startToil(world, actor, {
+    toilId: 'haul_timber',
+    sourceItem: 'timber',
+    requireStock: true,
+    amount: 1,
+  });
+  assert.equal(resFail.ok, false);
+  assert.equal(resFail.reason, 'LACK_OF_MATERIAL');
+  assert.equal(actor.decision.currentToil, null);
+
+  // 2. 補入庫存 timber: 3 -> 成功預約
+  world.inventory.timber = 3;
+  const resOk = pipeline.startToil(world, actor, {
+    toilId: 'haul_timber',
+    sourceItem: 'timber',
+    requireStock: true,
+    amount: 1,
+    durationTicks: 1,
+  });
+  assert.equal(resOk.ok, true);
+  assert.equal(resOk.step, 'goto');
+
+  // 推進至 interact
+  actor.decision.currentToil.walkingTicks = actor.decision.currentToil.totalWalkingTicks;
+  const stepInteract = pipeline.stepToil(world, actor);
+  assert.equal(stepInteract.step, 'interact');
+
+  // 推進至 transfer
+  actor.decision.currentToil.progressTicks = actor.decision.currentToil.durationTicks;
+  const stepTransfer = pipeline.stepToil(world, actor);
+  assert.equal(stepTransfer.step, 'transfer');
+
+  // transfer 結算後，倉庫原木扣減為 2，actor 攜帶 1
+  const stepComplete = pipeline.stepToil(world, actor);
+  assert.equal(stepComplete.step, 'complete');
+  assert.equal(world.inventory.timber, 2);
+  assert.equal(actor.carrying.item, 'timber');
+  assert.equal(actor.carrying.amount, 1);
+});

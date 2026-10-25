@@ -1232,7 +1232,7 @@ function setupLifeV02UI() {
     const customName = customArtInput?.value?.trim() || '《太清萬劍歸宗》';
     const res = model.life?.holdGrandFoundingCeremony ? model.life.holdGrandFoundingCeremony(customName) : model.dispatch({ type: 'HOLD_GRAND_FOUNDING', customArtName: customName });
     v = model.view();
-    toast(res?.speechBubble || `舉辦開宗立派大典！自創第四階鎮派絕學【${customName}】！`);
+    toast(res?.speechBubble || (res?.ok ? `舉辦開宗立派大典！自創第四階鎮派絕學【${customName}】！` : '大殿尚未完工，無法開宗立派'));
     renderChrome();
   });
 
@@ -1240,7 +1240,7 @@ function setupLifeV02UI() {
   $('btn-verify-save-schema')?.addEventListener('click', () => {
     const res = model.life?.verifySaveSchemaV1Snapshot ? model.life.verifySaveSchemaV1Snapshot() : model.dispatch({ type: 'VERIFY_SAVE_SCHEMA_V1' });
     v = model.view();
-    toast(res?.speechBubble || 'Save Schema v1 確定性存檔雜湊驗證通過！');
+    toast(res?.speechBubble || '已計算世界權威狀態雜湊！');
     renderChrome();
   });
 
@@ -2150,11 +2150,11 @@ function renderLifeV0910Panel(life) {
   // 9. Save Schema v1
   const saveSchema = v10.saveSchemaV1 || {};
   const saveHashEl = $('v10-save-hash');
-  if (saveHashEl) saveHashEl.textContent = saveSchema.lastSaveHash || '0x8f4e2a9c';
+  if (saveHashEl) saveHashEl.textContent = saveSchema.lastSaveHash || '未驗證';
 
   const replayVerifiedEl = $('v10-replay-verified');
   if (replayVerifiedEl) {
-    replayVerifiedEl.textContent = saveSchema.deterministicReplayVerified ? '確定性 600t 回放驗證 PASS (0 漂移)' : '未驗證';
+    replayVerifiedEl.textContent = saveSchema.deterministicReplayVerified ? '已通過狀態比對' : '存檔系統重構暫緩排定中';
   }
 }
 

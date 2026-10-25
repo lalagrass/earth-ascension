@@ -33,6 +33,7 @@ export class ToilPipeline {
       targetPos: toilDef.targetPos || toilDef.stationPos || [962, 512],
       sourceItem: toilDef.sourceItem || null,
       amount: toilDef.amount || 1,
+      requireStock: Boolean(toilDef.requireStock),
       targetFacilityId: toilDef.targetFacilityId || null,
       targetStagingPileKey: toilDef.targetStagingPileKey || toilDef.sourceItem || null,
       durationTicks: toilDef.durationTicks || Math.ceil((toilDef.durationMs || 6000) / STEP_MS),
@@ -160,6 +161,10 @@ export class ToilPipeline {
 
       case 'transfer': {
         // 物資所有權移轉 (守恆保證)
+        if (ctx.sourceItem && ctx.requireStock && world.inventory) {
+          world.inventory[ctx.sourceItem] = Math.max(0, (world.inventory[ctx.sourceItem] || 0) - ctx.amount);
+        }
+
         if (ctx.sourceItem && !ctx.targetFacilityId) {
           // 採集完成：物資產出至 actor 手中
           actor.carrying = {
