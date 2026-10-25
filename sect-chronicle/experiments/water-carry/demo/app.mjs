@@ -1161,6 +1161,89 @@ function setupLifeV02UI() {
   wireWeaponBtn('btn-forge-foreign_gun', 'foreign_gun', '【洋人連珠火銃】');
   wireWeaponBtn('btn-forge-copper_bell', 'copper_bell', '【古銅大鐘擴音罩】');
 
+  // 群俠踢館·名場面導演鏡頭 (v0.9) ＆ 開宗立派大典·跨局傳承存檔 (v1.0) 面板與操作按鈕接線
+  const lifeV0910Panel = $('life-v0910-panel');
+  const lifeV0910ToggleBtn = $('life-v0910-toggle');
+  const lifeV0910CloseBtn = $('life-v0910-close');
+
+  function toggleLifeV0910Panel() {
+    if (!lifeV0910Panel) return;
+    lifeV0910Panel.hidden = !lifeV0910Panel.hidden;
+    lifeV0910ToggleBtn?.classList.toggle('on', !lifeV0910Panel.hidden);
+    renderChrome();
+  }
+
+  lifeV0910ToggleBtn?.addEventListener('click', toggleLifeV0910Panel);
+  lifeV0910CloseBtn?.addEventListener('click', () => {
+    if (lifeV0910Panel) lifeV0910Panel.hidden = true;
+    lifeV0910ToggleBtn?.classList.remove('on');
+  });
+
+  // v0.9 世界畫風濾鏡按鈕
+  const wireToneBtn = (btnId, mode) => {
+    $(btnId)?.addEventListener('click', () => {
+      const res = model.life?.setWorldToneFilter ? model.life.setWorldToneFilter(mode) : model.dispatch({ type: 'SET_WORLD_TONE_FILTER', mode });
+      v = model.view();
+      toast(res?.speechBubble || `世界畫風已切換為【${mode}】！`);
+      renderChrome();
+    });
+  };
+  wireToneBtn('btn-tone-orthodox', 'orthodox');
+  wireToneBtn('btn-tone-stephen_chow', 'stephen_chow');
+  wireToneBtn('btn-tone-hybrid', 'hybrid');
+
+  // v0.9 四大傳奇名場面按鈕
+  const wireClashBtn = (btnId, clashKey, defaultMsg) => {
+    $(btnId)?.addEventListener('click', () => {
+      const res = model.life?.triggerLegendaryClash ? model.life.triggerLegendaryClash(clashKey) : model.dispatch({ type: 'TRIGGER_LEGENDARY_CLASH', clashKey });
+      v = model.view();
+      toast(res?.speechBubble || defaultMsg);
+      renderChrome();
+    });
+  };
+  wireClashBtn('btn-clash-lion_roar_bell', 'lion_roar_bell', '包租婆古鐘獅吼轟碎六指琴魔刃！');
+  wireClashBtn('btn-clash-beast_bullet_toad', 'beast_bullet_toad', '火雲邪神空手夾子彈，蛤蟆功蓄勢！');
+  wireClashBtn('btn-clash-ahsing_cocoon_rulai', 'ahsing_cocoon_rulai', '阿星生死破繭，如來神掌萬佛朝宗！');
+  wireClashBtn('btn-clash-qiankun_reflect', 'qiankun_reflect', '張無忌乾坤大挪移反彈龜波氣功！');
+
+  // v0.9 導演鏡頭 10s 重播書籤按鈕
+  $('btn-replay-bookmark')?.addEventListener('click', () => {
+    const v09 = model.view().life?.v09 || model.view().life;
+    const bookmark = v09?.cinemaReplay?.lastBookmarkTitle || '最新名場面 (10.0s)';
+    toast(`🎬【確定性重演 10 秒名場面】${bookmark}！1.35x 導演慢動作 + 0.12s 破招頓幀！`);
+    renderChrome();
+  });
+
+  // v1.0 岳不群宿命分歧按鈕
+  const wireYueBtn = (btnId, branch, defaultMsg) => {
+    $(btnId)?.addEventListener('click', () => {
+      const res = model.life?.triggerYueBuqunDestinyFork ? model.life.triggerYueBuqunDestinyFork(branch) : model.dispatch({ type: 'TRIGGER_YUE_DESTINY_FORK', branch });
+      v = model.view();
+      toast(res?.speechBubble || defaultMsg);
+      renderChrome();
+    });
+  };
+  wireYueBtn('btn-yue-orthodox', 'orthodox_zixia', '岳不群當眾焚毀袈裟，勘破心魔自創紫霞十重護山劍陣！');
+  wireYueBtn('btn-yue-demonic', 'demonic_bixie', '岳不群深夜引刀自宮，辟邪劍法0.05s疾影出鞘！');
+
+  // v1.0 開宗立派大典按鈕
+  $('btn-hold-grand-founding')?.addEventListener('click', () => {
+    const customArtInput = $('input-custom-ultimate-name');
+    const customName = customArtInput?.value?.trim() || '《太清萬劍歸宗》';
+    const res = model.life?.holdGrandFoundingCeremony ? model.life.holdGrandFoundingCeremony(customName) : model.dispatch({ type: 'HOLD_GRAND_FOUNDING', customArtName: customName });
+    v = model.view();
+    toast(res?.speechBubble || `舉辦開宗立派大典！自創第四階鎮派絕學【${customName}】！`);
+    renderChrome();
+  });
+
+  // v1.0 Save Schema v1 確定性驗證按鈕
+  $('btn-verify-save-schema')?.addEventListener('click', () => {
+    const res = model.life?.verifySaveSchemaV1Snapshot ? model.life.verifySaveSchemaV1Snapshot() : model.dispatch({ type: 'VERIFY_SAVE_SCHEMA_V1' });
+    v = model.view();
+    toast(res?.speechBubble || 'Save Schema v1 確定性存檔雜湊驗證通過！');
+    renderChrome();
+  });
+
   updateCustomSectPreview();
   renderFellowPills();
   updateDuoSynergyPreview();
@@ -1918,6 +2001,163 @@ function renderLifeV0708Panel(life) {
   }
 }
 
+function renderLifeV0910Panel(life) {
+  if (!life) return;
+
+  const v09 = life.v09 || life;
+  const v10 = life.v10 || life;
+
+  // 1. 頂部摘要
+  const toneSummary = $('v0910-tone-summary');
+  if (toneSummary) {
+    const filter = v09.worldToneFilter || 'hybrid';
+    const filterLabel = filter === 'orthodox' ? '正統金庸武俠' : filter === 'stephen_chow' ? '周星馳無厘頭' : '混搭全開 (21位傳奇)';
+    toneSummary.textContent = `畫風：${filterLabel}`;
+  }
+
+  const threatSummary = $('v0910-threat-summary');
+  if (threatSummary) {
+    const boss = v09.storyteller?.activeRaidBoss || '火雲邪神 ＆ 天殘地缺';
+    threatSummary.textContent = `踢館強敵：${boss}`;
+  }
+
+  const foundingSummary = $('v0910-founding-summary');
+  if (foundingSummary) {
+    const gf = v10.grandFounding;
+    foundingSummary.textContent = `宗門：${gf?.sectRankTitle || '一代宗師'} (${gf?.ceremonyHeld ? '已立匾' : '未立匾'})`;
+  }
+
+  const saveSummary = $('v0910-save-summary');
+  if (saveSummary) {
+    const hash = v10.saveSchemaV1?.lastSaveHash || '0x8f4e2a9c';
+    saveSummary.textContent = `存檔：v1.0 (Hash: ${hash})`;
+  }
+
+  // 2. v0.9 世界畫風濾鏡
+  const currentFilter = v09.worldToneFilter || 'hybrid';
+  const toneTag = $('current-tone-tag');
+  if (toneTag) {
+    toneTag.textContent = `當前：${currentFilter === 'orthodox' ? '正統金庸武俠' : currentFilter === 'stephen_chow' ? '周星馳無厘頭' : '混搭全明星江湖'}`;
+  }
+  const btnOrthodox = $('btn-tone-orthodox');
+  const btnStephenChow = $('btn-tone-stephen_chow');
+  const btnHybrid = $('btn-tone-hybrid');
+  if (btnOrthodox) btnOrthodox.classList.toggle('active', currentFilter === 'orthodox');
+  if (btnStephenChow) btnStephenChow.classList.toggle('active', currentFilter === 'stephen_chow');
+  if (btnHybrid) btnHybrid.classList.toggle('active', currentFilter === 'hybrid');
+
+  // 3. 說書人狀態
+  const threatLabel = $('v09-threat-label');
+  if (threatLabel) threatLabel.textContent = v09.storyteller?.currentThreatLabel || '蓄勢待發・名門拜山與火雲邪神踢館';
+  const activeBoss = $('v09-active-boss');
+  if (activeBoss) activeBoss.textContent = v09.storyteller?.activeRaidBoss || '火雲邪神 ＆ 天殘地缺';
+
+  // 4. 四大名場面徽章
+  const clashes = v09.clashes || {};
+  const badgeLion = $('badge-lion-roar');
+  if (badgeLion) {
+    badgeLion.textContent = clashes.lionRoarBellActive ? '✅ 震碎琴魔刃' : '未觸發';
+    badgeLion.classList.toggle('active', !!clashes.lionRoarBellActive);
+  }
+
+  const badgeBullet = $('badge-beast-bullet');
+  if (badgeBullet) {
+    badgeBullet.textContent = clashes.beastBulletCaught ? '✅ 夾停子彈' : '未觸發';
+    badgeBullet.classList.toggle('active', !!clashes.beastBulletCaught);
+  }
+
+  const badgeAhsing = $('badge-ahsing-cocoon');
+  if (badgeAhsing) {
+    const stage = clashes.ahSingCocoonStage || 'unawakened';
+    if (stage === 'rulai_awakened') {
+      badgeAhsing.textContent = '✅ 萬佛朝宗';
+      badgeAhsing.classList.add('active');
+    } else if (stage === 'mummy_cocoon') {
+      badgeAhsing.textContent = '🦋 木乃伊破繭中';
+      badgeAhsing.classList.add('active');
+    } else {
+      badgeAhsing.textContent = '未覺醒';
+      badgeAhsing.classList.remove('active');
+    }
+  }
+
+  const badgeQiankun = $('badge-qiankun-reflect');
+  if (badgeQiankun) {
+    badgeQiankun.textContent = clashes.qiankunReflected ? '✅ 原樣反彈' : '未觸發';
+    badgeQiankun.classList.toggle('active', !!clashes.qiankunReflected);
+  }
+
+  // 5. 戰況頭條與 10s 重播書籤
+  const headlineEl = $('v09-clash-headline');
+  if (headlineEl) headlineEl.textContent = clashes.lastClashHeadline || '山門風雲際會：金庸群俠 × 周星馳《功夫》《鹿鼎記》21位傳奇齊聚！';
+
+  const replay = v09.cinemaReplay || {};
+  const bookmarkCountEl = $('v09-bookmark-count');
+  if (bookmarkCountEl) bookmarkCountEl.textContent = `書籤 #${replay.bookmarksCount || 1}`;
+
+  const bookmarkDetailEl = $('v09-bookmark-detail');
+  if (bookmarkDetailEl) bookmarkDetailEl.textContent = replay.lastBookmarkTitle || '【名場面書籤 #1】包租婆古鐘獅吼破琴魔・阿星如來神掌從天而降 (10.0s)';
+
+  // 6. 岳不群宿命分歧
+  const grandFounding = v10.grandFounding || {};
+  const isDemonic = grandFounding.yueBuqunBranch === 'demonic_bixie';
+  const yueBadge = $('yue-branch-badge');
+  if (yueBadge) {
+    yueBadge.textContent = isDemonic ? '🩸 執念入魔・辟邪劍法' : '🌕 堅守本心・紫霞十重';
+    yueBadge.className = `branch-tag ${isDemonic ? 'demonic' : ''}`;
+  }
+  const btnYueOrthodox = $('btn-yue-orthodox');
+  const btnYueDemonic = $('btn-yue-demonic');
+  if (btnYueOrthodox) btnYueOrthodox.classList.toggle('active', !isDemonic);
+  if (btnYueDemonic) btnYueDemonic.classList.toggle('active', isDemonic);
+
+  // 7. 開宗立派大典與自創神功
+  const sectRankEl = $('v10-sect-rank');
+  if (sectRankEl) sectRankEl.textContent = grandFounding.sectRankTitle || '開山立派・一代宗師';
+
+  const ceremonyStatusEl = $('v10-ceremony-status');
+  if (ceremonyStatusEl) {
+    ceremonyStatusEl.textContent = grandFounding.ceremonyHeld ? '✅ 開宗立派立匾大典圓滿禮成！' : '大典籌備完成，待掌門金鐘立匾';
+  }
+
+  const ultimateArtEl = $('v10-ultimate-art-name');
+  if (ultimateArtEl) {
+    ultimateArtEl.textContent = grandFounding.ultimateArtName || '《萬佛朝宗・如來神掌》／《紫霞十重・混元太華劍陣》';
+  }
+
+  const customUltimate = v10.customUltimate || {};
+  const ultimateStyleDesc = $('txt-custom-ultimate-style');
+  if (ultimateStyleDesc) {
+    ultimateStyleDesc.textContent = `絕學風格：${customUltimate.style || '剛柔並濟・全屏鎮派絕學'}（融會四道絕學，著入鎮派寶典傳承百代）`;
+  }
+
+  const btnFounding = $('btn-hold-grand-founding');
+  if (btnFounding) {
+    btnFounding.textContent = grandFounding.ceremonyHeld ? '🔔 重新舉辦立匾大典' : '🔔 舉辦立匾大典！';
+  }
+
+  // 8. 跨局傳承
+  const legacy = v10.legacyCarryover || {};
+  const destinyPoolEl = $('v10-destiny-pool');
+  if (destinyPoolEl) destinyPoolEl.textContent = `${legacy.destinyBonusPool ?? 15} 點 (成就免費累積)`;
+
+  const heirloomEl = $('v10-heirloom-name');
+  if (heirloomEl) heirloomEl.textContent = legacy.heirloomName || '《開山鎮派傳世手札》';
+
+  const ngplusEl = $('v10-ngplus-ready');
+  if (ngplusEl) ngplusEl.textContent = legacy.ngPlusReady ? 'NG+ 跨局傳承就緒' : '未就緒';
+
+  // 9. Save Schema v1
+  const saveSchema = v10.saveSchemaV1 || {};
+  const saveHashEl = $('v10-save-hash');
+  if (saveHashEl) saveHashEl.textContent = saveSchema.lastSaveHash || '0x8f4e2a9c';
+
+  const replayVerifiedEl = $('v10-replay-verified');
+  if (replayVerifiedEl) {
+    replayVerifiedEl.textContent = saveSchema.deterministicReplayVerified ? '確定性 600t 回放驗證 PASS (0 漂移)' : '未驗證';
+  }
+}
+
 function renderChrome() {
   const id = selectedPerson(), person = v.people[id], profile = profiles[id];
   $('play').textContent = ui.playing ? '❚❚ 暫停' : '▶ 繼續';
@@ -2059,6 +2299,8 @@ function renderChrome() {
     renderLifeV0506Panel(life);
     // 藏經三軌武學與煉藥神兵面板渲染
     renderLifeV0708Panel(life);
+    // 群俠踢館名場面與開宗立派傳承存檔終極面板渲染
+    renderLifeV0910Panel(life);
   }
   const cards = IDS.map((who) => {
     const p = v.people[who], info = profiles[who];

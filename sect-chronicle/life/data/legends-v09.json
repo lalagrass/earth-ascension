@@ -1,0 +1,411 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "0.9.0",
+  "worldToneFilters": {
+    "orthodox": {
+      "filterMode": "orthodox",
+      "aliases": ["orthodox_jinyong"],
+      "name": "正統金庸武俠",
+      "allowedUniverses": ["jinyong"],
+      "blockedArchetypes": [
+        "the_beast",
+        "huoyun_xieshen",
+        "landlady",
+        "landlord",
+        "ah_sing",
+        "hai_dafu",
+        "wei_xiaobao",
+        "tiancan_dique",
+        "kuli_qiang",
+        "tailor_hong",
+        "youzha_gui"
+      ]
+    },
+    "stephen_chow": {
+      "filterMode": "stephen_chow",
+      "aliases": ["stephen_chow_universe"],
+      "name": "周星馳無厘頭宇宙",
+      "allowedUniverses": ["stephen_chow"],
+      "blockedArchetypes": [
+        "yue_buqun",
+        "linghu_chong",
+        "guo_jing",
+        "qiao_feng",
+        "huang_rong",
+        "yang_guo",
+        "xiaolongnu",
+        "zhang_wuji",
+        "duan_yu",
+        "hong_qigong",
+        "zhou_botong",
+        "dongfang_bubai"
+      ]
+    },
+    "hybrid": {
+      "filterMode": "hybrid",
+      "aliases": ["all_stars"],
+      "name": "全明星江湖",
+      "allowedUniverses": ["jinyong", "stephen_chow"],
+      "blockedArchetypes": []
+    }
+  },
+  "stageRequirements": {
+    "S0": {
+      "stage": "S0",
+      "name": "破道館期",
+      "maxInitialProdigies": 1,
+      "allowedArchetypes": ["guo_jing", "ah_sing", "wei_xiaobao", "yue_buqun"],
+      "cooldownTicks": 0
+    },
+    "S1": {
+      "stage": "S1",
+      "name": "膳房與演武場落成",
+      "requiredFacilities": ["fac.kitchen", "fac.yard"],
+      "allowedArchetypes": [
+        "linghu_chong",
+        "landlady",
+        "landlord",
+        "kuli_qiang",
+        "tailor_hong",
+        "youzha_gui",
+        "huang_rong",
+        "yang_guo",
+        "xiaolongnu",
+        "duan_yu"
+      ],
+      "cooldownTicks": 3600
+    },
+    "S2": {
+      "stage": "S2",
+      "name": "藏經閣與三清殿齊備",
+      "requiredFacilities": ["fac.quiet", "fac.hall_sanqing"],
+      "allowedArchetypes": [
+        "hong_qigong",
+        "tiancan_dique",
+        "dongfang_bubai",
+        "the_beast",
+        "hai_dafu",
+        "zhang_wuji",
+        "qiao_feng",
+        "zhou_botong"
+      ],
+      "cooldownTicks": 3600
+    }
+  },
+  "characters": {
+    "yue_buqun": {
+      "archetypeId": "yue_buqun",
+      "name": "岳不群",
+      "universe": "jinyong",
+      "unlockStage": "S0",
+      "baseSchool": "flaw_exploiter",
+      "elementalAttribute": "agile",
+      "signatureMoves": ["art.huashan_basic_sword", "art.yangwu_sword", "art.zixia_qi"],
+      "destinyChoice": "orthodox_or_bixie"
+    },
+    "linghu_chong": {
+      "archetypeId": "linghu_chong",
+      "name": "令狐沖",
+      "universe": "jinyong",
+      "unlockStage": "S1",
+      "baseSchool": "flaw_exploiter",
+      "elementalAttribute": "agile",
+      "signatureMoves": ["art.dugu_nine_swords_stance", "art.taiyue_three_peaks"]
+    },
+    "guo_jing": {
+      "archetypeId": "guo_jing",
+      "name": "郭靖",
+      "universe": "jinyong",
+      "unlockStage": "S0",
+      "baseSchool": "simple_instant",
+      "elementalAttribute": "fierce",
+      "signatureMoves": ["art.luohan_fist", "art.luohan_fist_tier10", "art.dragon_palm"]
+    },
+    "qiao_feng": {
+      "archetypeId": "qiao_feng",
+      "name": "喬峰",
+      "universe": "jinyong",
+      "unlockStage": "S2",
+      "baseSchool": "simple_instant",
+      "elementalAttribute": "fierce",
+      "signatureMoves": ["art.taizu_changquan", "art.dragon_palm"]
+    },
+    "huang_rong": {
+      "archetypeId": "huang_rong",
+      "name": "黃蓉",
+      "universe": "jinyong",
+      "unlockStage": "S1",
+      "baseSchool": "flaw_exploiter",
+      "elementalAttribute": "agile",
+      "signatureMoves": ["art.dog_beating_staff", "art.peach_blossom_formation"]
+    },
+    "yang_guo": {
+      "archetypeId": "yang_guo",
+      "name": "楊過",
+      "universe": "jinyong",
+      "unlockStage": "S1",
+      "baseSchool": "charge_ultimate",
+      "elementalAttribute": "fierce",
+      "signatureMoves": ["art.heavy_sword_wave", "art.melancholy_palm"]
+    },
+    "xiaolongnu": {
+      "archetypeId": "xiaolongnu",
+      "name": "小龍女",
+      "universe": "jinyong",
+      "unlockStage": "S1",
+      "baseSchool": "deflect_counter",
+      "elementalAttribute": "soft",
+      "signatureMoves": ["art.jade_maiden_sword", "art.dual_wield_sword"]
+    },
+    "zhang_wuji": {
+      "archetypeId": "zhang_wuji",
+      "name": "張無忌",
+      "universe": "jinyong",
+      "unlockStage": "S2",
+      "baseSchool": "deflect_counter",
+      "elementalAttribute": "soft",
+      "signatureMoves": ["art.qiankun_danuoyi", "art.jiuyang_shengong", "art.taiji_fist"]
+    },
+    "duan_yu": {
+      "archetypeId": "duan_yu",
+      "name": "段譽",
+      "universe": "jinyong",
+      "unlockStage": "S1",
+      "baseSchool": "deflect_counter",
+      "elementalAttribute": "soft",
+      "signatureMoves": ["art.lingbo_weibu", "art.six_vein_sword"]
+    },
+    "hong_qigong": {
+      "archetypeId": "hong_qigong",
+      "name": "洪七公",
+      "universe": "jinyong",
+      "unlockStage": "S2",
+      "baseSchool": "simple_instant",
+      "elementalAttribute": "fierce",
+      "signatureMoves": ["art.dragon_palm", "art.dog_beating_eight_tricks"]
+    },
+    "zhou_botong": {
+      "archetypeId": "zhou_botong",
+      "name": "周伯通",
+      "universe": "jinyong",
+      "unlockStage": "S2",
+      "baseSchool": "deflect_counter",
+      "elementalAttribute": "soft",
+      "signatureMoves": ["art.kongming_fist", "art.dual_wield_technique"]
+    },
+    "dongfang_bubai": {
+      "archetypeId": "dongfang_bubai",
+      "name": "東方不敗",
+      "universe": "jinyong",
+      "unlockStage": "S2",
+      "baseSchool": "flaw_exploiter",
+      "elementalAttribute": "agile",
+      "signatureMoves": ["art.oriental_needle_rush"]
+    },
+    "wei_xiaobao": {
+      "archetypeId": "wei_xiaobao",
+      "name": "韋小寶",
+      "universe": "stephen_chow",
+      "unlockStage": "S0",
+      "baseSchool": "flaw_exploiter",
+      "elementalAttribute": "agile",
+      "signatureMoves": ["art.lime_spray", "art.dragon_claw_snatch", "art.foreign_musket"]
+    },
+    "hai_dafu": {
+      "archetypeId": "hai_dafu",
+      "name": "海大富",
+      "universe": "stephen_chow",
+      "unlockStage": "S2",
+      "baseSchool": "charge_ultimate",
+      "elementalAttribute": "soft",
+      "signatureMoves": ["art.bone_melting_palm", "art.haidafu_turtle_wave"]
+    },
+    "ah_sing": {
+      "archetypeId": "ah_sing",
+      "name": "阿星",
+      "universe": "stephen_chow",
+      "unlockStage": "S0",
+      "baseSchool": "charge_ultimate",
+      "elementalAttribute": "fierce",
+      "signatureMoves": ["art.shadowless_toe_stomp", "art.meridian_cocoon", "art.buddha_palm_ultimate"]
+    },
+    "landlady": {
+      "archetypeId": "landlady",
+      "name": "包租婆",
+      "universe": "stephen_chow",
+      "unlockStage": "S1",
+      "baseSchool": "charge_ultimate",
+      "elementalAttribute": "fierce",
+      "signatureMoves": ["art.hot_wheels_sprint", "art.lion_roar_bell"]
+    },
+    "landlord": {
+      "archetypeId": "landlord",
+      "name": "包租公",
+      "universe": "stephen_chow",
+      "unlockStage": "S1",
+      "baseSchool": "deflect_counter",
+      "elementalAttribute": "soft",
+      "signatureMoves": ["art.true_taiji_circle"]
+    },
+    "the_beast": {
+      "archetypeId": "the_beast",
+      "alias": "huoyun_xieshen",
+      "name": "火雲邪神",
+      "universe": "stephen_chow",
+      "unlockStage": "S2",
+      "baseSchool": "charge_ultimate",
+      "elementalAttribute": "fierce",
+      "signatureMoves": ["art.barehand_bullet_catch", "art.toad_missile_charge", "art.lotus_poison_dart"]
+    },
+    "tiancan_dique": {
+      "archetypeId": "tiancan_dique",
+      "name": "天殘地缺",
+      "universe": "stephen_chow",
+      "unlockStage": "S2",
+      "baseSchool": "flaw_exploiter",
+      "elementalAttribute": "agile",
+      "signatureMoves": ["art.harp_wave_blade", "art.skeleton_soundwave"]
+    },
+    "kuli_qiang": {
+      "archetypeId": "kuli_qiang",
+      "name": "苦力強",
+      "universe": "stephen_chow",
+      "unlockStage": "S1",
+      "baseSchool": "simple_instant",
+      "elementalAttribute": "fierce",
+      "signatureMoves": ["art.tan_twelve_kicks"]
+    },
+    "tailor_hong": {
+      "archetypeId": "tailor_hong",
+      "name": "裁縫師傅",
+      "universe": "stephen_chow",
+      "unlockStage": "S1",
+      "baseSchool": "simple_instant",
+      "elementalAttribute": "fierce",
+      "signatureMoves": ["art.iron_wire_fist"]
+    },
+    "youzha_gui": {
+      "archetypeId": "youzha_gui",
+      "name": "油炸鬼",
+      "universe": "stephen_chow",
+      "unlockStage": "S1",
+      "baseSchool": "simple_instant",
+      "elementalAttribute": "fierce",
+      "signatureMoves": ["art.bagua_staff"]
+    }
+  },
+  "combatPhysics": {
+    "dragonPalm": {
+      "windupSec": 0.30,
+      "activeSec": 0.35,
+      "recoverySec": 0.25,
+      "qiCost": 40,
+      "shape": { "type": "line", "length": 160, "width": 40 },
+      "damage": 120,
+      "knockback": 110
+    },
+    "landladyBellRoar": {
+      "windupSec": 0.40,
+      "activeSec": 0.50,
+      "recoverySec": 0.30,
+      "qiCost": 50,
+      "shape": { "type": "circle", "radius": 180 },
+      "damage": 90,
+      "shatterProjectiles": true,
+      "rangeMultiplier": 2.0,
+      "knockback": 130
+    },
+    "toadMissileCharge": {
+      "windupSec": 0.60,
+      "activeSec": 0.25,
+      "recoverySec": 0.35,
+      "qiCost": 45,
+      "shape": { "type": "line", "length": 200, "width": 30 },
+      "damage": 140,
+      "knockback": 150
+    },
+    "starBuddhaPalm": {
+      "windupSec": 0.75,
+      "activeSec": 0.60,
+      "recoverySec": 0.40,
+      "qiCost": 80,
+      "shape": { "type": "circle", "radius": 240 },
+      "damage": 220,
+      "groundCraterPermanent": true,
+      "knockback": 180
+    },
+    "haidafuTurtleWave": {
+      "windupSec": 0.50,
+      "activeSec": 0.45,
+      "recoverySec": 0.40,
+      "qiCost": 60,
+      "shape": { "type": "line", "length": 250, "width": 50 },
+      "damage": 160
+    },
+    "orientalNeedleRush": {
+      "windupSec": 0.05,
+      "activeSec": 0.15,
+      "recoverySec": 0.10,
+      "qiCost": 20,
+      "shape": { "type": "point", "count": 5 },
+      "damage": 85
+    }
+  },
+  "directorConstants": {
+    "cinematicZoom": {
+      "targetZoom": 1.35,
+      "panDurationMs": 600,
+      "slowMotionMultiplier": 0.30,
+      "slowMotionDurationMs": 1500
+    },
+    "hitstop": {
+      "durationMs": 120,
+      "durationTicks": 7,
+      "screenShakeIntensityPx": 3
+    },
+    "replay": {
+      "snapshotMaxSizeBytes": 4096,
+      "replayDurationTicks": 600,
+      "snapshotPreRollTicks": 300
+    }
+  },
+  "martialCounterMatrix": {
+    "flaw_exploiter": {
+      "counters": ["charge_ultimate"],
+      "counteredBy": ["simple_instant"],
+      "calligraphy": "【破劍式！】"
+    },
+    "charge_ultimate": {
+      "counters": ["deflect_counter"],
+      "counteredBy": ["flaw_exploiter"],
+      "calligraphy": "【萬佛朝宗！】"
+    },
+    "deflect_counter": {
+      "counters": ["simple_instant"],
+      "counteredBy": ["charge_ultimate"],
+      "calligraphy": "【乾坤挪移！】"
+    },
+    "simple_instant": {
+      "counters": ["flaw_exploiter"],
+      "counteredBy": ["deflect_counter"],
+      "calligraphy": "【一拳破萬法！】"
+    }
+  },
+  "elementalCounterMatrix": {
+    "fierce": {
+      "counters": ["agile"],
+      "counteredBy": ["soft"],
+      "name": "剛猛"
+    },
+    "agile": {
+      "counters": ["soft"],
+      "counteredBy": ["fierce"],
+      "name": "奇巧"
+    },
+    "soft": {
+      "counters": ["fierce"],
+      "counteredBy": ["agile"],
+      "name": "陰柔"
+    }
+  }
+}

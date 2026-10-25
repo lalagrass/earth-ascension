@@ -67,6 +67,7 @@
   <button class="btn" id="life-v0304-toggle" title="切換人間煙火（v0.3 菜園膳房）＆ 雙脈武學場（v0.4）面板">煙火武學</button>
   <button class="btn" id="life-v0506-toggle" title="切換下山義學・外門三隱士 (v0.5) ＆ 後山 S0-S5 巡山 (v0.6) 面板">🏹 義學・S0-S5 巡山</button>
   <button class="btn" id="life-v0708-toggle" title="切換藏經閣三軌武學・兩派合參 (v0.7) ＆ 藥浴海大富・老頑童神兵 (v0.8) 面板">📜 藏經・神兵 v0.7-v0.8</button>
+  <button class="btn" id="life-v0910-toggle" title="切換群俠踢館・名場面導演鏡頭 (v0.9) ＆ 開宗立派大典・跨局傳承存檔 (v1.0) 終極面板">👑 踢館・開宗 v0.9-v1.0</button>
   <button class="btn" id="roster-toggle" title="R">名冊</button>
   <button class="btn on" id="follow-toggle" title="0 鍵或點擊：切換鏡頭跟隨">🎥 跟隨中</button>
   <a class="legacy-link" href="../../../viewer/" title="舊版修行／目標／招募與原存檔仍在這裡；新版不自動匯入或覆寫">舊版與存檔</a>
@@ -602,6 +603,207 @@
             </div>
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- 群俠踢館・名場面導演鏡頭 (v0.9) ＆ 開宗立派大典・跨局傳承存檔 (v1.0) 終極面板 -->
+<aside id="life-v0910-panel" class="life-v0910-panel" hidden>
+  <div class="panel-header">
+    <div class="panel-title-row">
+      <span class="panel-title">👑 群俠踢館·導演鏡頭 (v0.9) ＆ 🏛️ 開宗立派·傳承存檔 (v1.0)</span>
+      <button id="life-v0910-close" class="btn close-btn">✕</button>
+    </div>
+    <div class="sect-summary-bar">
+      <span class="sect-pill" id="v0910-tone-summary">畫風：混搭全開 (21位傳奇)</span>
+      <span class="motto-pill" id="v0910-threat-summary">踢館強敵：火雲邪神 ＆ 天殘地缺</span>
+      <span class="doctrine-pill" id="v0910-founding-summary">宗門：一代宗師 (未立匾)</span>
+      <span class="save-pill" id="v0910-save-summary">存檔：v1.0 (Hash: 0x8f4e2a9c)</span>
+    </div>
+  </div>
+
+  <div class="panel-sections-grid">
+    <!-- v0.9 世界畫風濾鏡 ＆ 四大傳奇名場面導演鏡頭 -->
+    <div class="v09-section card-box">
+      <h3>🎬 世界畫風濾鏡 · 說書人節奏 · 四大傳奇名場面 (v0.9)</h3>
+
+      <!-- 畫風濾鏡切換器 -->
+      <div class="tone-filter-block">
+        <div class="block-header-row">
+          <span class="block-badge">🎨 世界畫風濾鏡 (World Tone Filter)</span>
+          <span class="filter-status-tag" id="current-tone-tag">當前：混搭全明星江湖</span>
+        </div>
+        <div class="tone-buttons-row">
+          <button id="btn-tone-orthodox" class="btn btn-tone" data-tone="orthodox">
+            <b>正統金庸武俠</b>
+            <small>名門拜山·遮蔽無厘頭</small>
+          </button>
+          <button id="btn-tone-stephen_chow" class="btn btn-tone" data-tone="stephen_chow">
+            <b>周星馳無厘頭</b>
+            <small>功夫城寨·鹿鼎天地會</small>
+          </button>
+          <button id="btn-tone-hybrid" class="btn btn-tone active" data-tone="hybrid">
+            <b>混搭全明星江湖</b>
+            <small>21位傳奇同台大亂鬥</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- 說書人節奏與踢館狀態 -->
+      <div class="storyteller-block">
+        <div class="block-header-row">
+          <span class="block-badge">🪘 說書人因果節奏閥門 (Storyteller Pacing Gate)</span>
+          <span class="cooldown-tag" id="v09-cooldown-tag">每旬至多 1 次奇遇</span>
+        </div>
+        <div class="storyteller-status-box">
+          <div class="threat-line"><b>當前山門態勢：</b><span id="v09-threat-label">蓄勢待發・名門拜山與火雲邪神踢館</span></div>
+          <div class="boss-line"><b>排隊拜山強敵：</b><span id="v09-active-boss">火雲邪神 ＆ 天殘地缺</span></div>
+        </div>
+      </div>
+
+      <!-- 四大傳奇名場面一鍵演繹卡 -->
+      <div class="iconic-clashes-block">
+        <div class="block-header-row">
+          <span class="block-badge">⚡ 四大傳奇名場面一鍵演繹卡 (Tier A Climax)</span>
+          <span class="hitstop-tag">0.12s 頓幀 · 1.35x 導演鏡頭</span>
+        </div>
+        <div class="clashes-grid">
+          <!-- 名場面 1: 包租婆古鐘獅吼 -->
+          <div class="clash-card">
+            <div class="clash-header">
+              <span class="clash-icon">📢</span>
+              <b>包租婆古鐘獅吼功</b>
+              <span class="clash-badge" id="badge-lion-roar">未觸發</span>
+            </div>
+            <div class="clash-desc">大廳青銅古鐘化身大喇叭！300%金色音浪正面震碎天殘地缺六指琴魔音波刃！</div>
+            <button id="btn-clash-lion_roar_bell" class="btn btn-clash full-width">📢 演繹：古鐘獅吼破六指琴魔</button>
+          </div>
+
+          <!-- 名場面 2: 火雲邪神夾子彈+蛤蟆功 -->
+          <div class="clash-card">
+            <div class="clash-header">
+              <span class="clash-icon">🐸</span>
+              <b>火雲邪神夾子彈＋蛤蟆功</b>
+              <span class="clash-badge" id="badge-beast-bullet">未觸發</span>
+            </div>
+            <div class="clash-desc">天下武功唯快不破！白背心拖鞋於面前10px兩指空手夾子彈，趴地鼓腮洲際衝撞！</div>
+            <button id="btn-clash-beast_bullet_toad" class="btn btn-clash full-width">🐸 演繹：空手夾子彈＋蛤蟆功</button>
+          </div>
+
+          <!-- 名場面 3: 阿星白色木乃伊破繭如來神掌 -->
+          <div class="clash-card">
+            <div class="clash-header">
+              <span class="clash-icon">🦋</span>
+              <b>阿星木乃伊破繭·如來神掌</b>
+              <span class="clash-badge" id="badge-ahsing-cocoon">未覺醒</span>
+            </div>
+            <div class="clash-desc">重傷被裹成木乃伊繭！紫銅鼎金光洗禮打通任督二脈，躍入九天覆蓋半圖五指大坑！</div>
+            <button id="btn-clash-ahsing_cocoon_rulai" class="btn btn-clash full-width">🦋 演繹：生死破繭·萬佛朝宗</button>
+          </div>
+
+          <!-- 名場面 4: 張無忌乾坤大挪移反彈龜波氣功 -->
+          <div class="clash-card">
+            <div class="clash-header">
+              <span class="clash-icon">☯️</span>
+              <b>乾坤大挪移反彈龜波氣功</b>
+              <span class="clash-badge" id="badge-qiankun-reflect">未觸發</span>
+            </div>
+            <div class="clash-desc">海大富暴走轟出超巨型龜波氣功！張無忌守住陣眼，太極氣旋原封不動轟回敵陣！</div>
+            <button id="btn-clash-qiankun_reflect" class="btn btn-clash full-width">☯️ 演繹：乾坤太極反彈龜波氣功</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 戰況頭條與 10s 導演重播書籤 -->
+      <div class="cinema-replay-block">
+        <div class="block-header-row">
+          <span class="block-badge">🎬 導演鏡頭 10 秒確定性重播書籤 (4KB Snapshot)</span>
+          <span class="bookmark-count-tag" id="v09-bookmark-count">書籤 #1</span>
+        </div>
+        <div class="clash-headline-box" id="v09-clash-headline">山門風雲際會：金庸群俠 × 周星馳《功夫》《鹿鼎記》21位傳奇齊聚！</div>
+        <div class="bookmark-detail-box" id="v09-bookmark-detail">【名場面書籤 #1】包租婆古鐘獅吼破琴魔・阿星如來神掌從天而降 (10.0s)</div>
+        <button id="btn-replay-bookmark" class="btn btn-action primary-btn full-width">▶️ 一鍵回放 10 秒確定性名場面 (慢動作 1.35x + 頓幀 0.12s)</button>
+      </div>
+    </div>
+
+    <!-- v1.0 開宗立派大典、岳不群宿命分歧、自創第四階鎮派絕學 ＆ 正式存檔 -->
+    <div class="v10-section card-box">
+      <h3>🏛️ 開宗立派大典 · 岳不群宿命分歧 · 鎮派絕學 · 正式存檔 (v1.0)</h3>
+
+      <!-- 岳不群宿命終局雙分歧 -->
+      <div class="destiny-fork-block">
+        <div class="block-header-row">
+          <span class="block-badge">⚔️ 岳不群宿命終局雙分歧 (心魔考驗)</span>
+          <span class="branch-tag" id="yue-branch-badge">🌕 正道・紫霞十重</span>
+        </div>
+        <div class="fork-desc">嵩山強敵拜山心魔考驗：究竟是堅守君子本心焚毀袈裟，或是深夜引刀自宮入魔速成？</div>
+        <div class="fork-buttons-row">
+          <button id="btn-yue-orthodox" class="btn btn-fork active" data-branch="orthodox_zixia">
+            <b>🌕 堅守君子本心</b>
+            <small>焚毀袈裟·紫霞十重護山劍陣</small>
+          </button>
+          <button id="btn-yue-demonic" class="btn btn-fork" data-branch="demonic_bixie">
+            <b>🩸 執念入魔梟雄</b>
+            <small>深夜引刀·辟邪劍法 0.05s 極速</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- 開宗立派大典與自創第四階鎮派神功 -->
+      <div class="grand-founding-block">
+        <div class="block-header-row">
+          <span class="block-badge">👑 開山立派大典 ＆ 自創第四階鎮派神功</span>
+          <span class="sect-rank-tag" id="v10-sect-rank">開山立派・一代宗師</span>
+        </div>
+        <div class="founding-status-box">
+          <div class="status-line"><b>宗門道統狀態：</b><span id="v10-ceremony-status">大典籌備完成，待掌門金鐘立匾</span></div>
+          <div class="status-line"><b>鎮派絕學名號：</b><span id="v10-ultimate-art-name" class="art-name-highlight">《萬佛朝宗・如來神掌》／《紫霞十重・混元太華劍陣》</span></div>
+        </div>
+        <div class="custom-ultimate-form">
+          <label for="input-custom-ultimate-name">自創鎮派絕學自訂名號：</label>
+          <div class="input-row">
+            <input type="text" id="input-custom-ultimate-name" class="inp" value="《太清萬劍歸宗》" placeholder="輸入自創神功名號 (如《松風萬壑劍陣》)">
+            <button id="btn-hold-grand-founding" class="btn btn-action primary-btn">🔔 舉辦立匾大典！</button>
+          </div>
+          <div class="ultimate-style-desc" id="txt-custom-ultimate-style">絕學風格：剛柔並濟・全屏鎮派絕學（融會四道絕學，著入鎮派寶典傳承百代）</div>
+        </div>
+      </div>
+
+      <!-- 跨周目天命功德池與傳家寶繼承 -->
+      <div class="legacy-carryover-block">
+        <div class="block-header-row">
+          <span class="block-badge">🌟 雙軌天命功德池 ＆ 傳家寶跨局繼承</span>
+          <span class="ngplus-tag" id="v10-ngplus-ready">NG+ 跨局傳承就緒</span>
+        </div>
+        <div class="legacy-grid">
+          <div class="legacy-item">
+            <span class="item-label">天命功德點池：</span>
+            <b id="v10-destiny-pool" class="merit-points">15 點 (成就免費累積)</b>
+          </div>
+          <div class="legacy-item">
+            <span class="item-label">新開局主角解鎖：</span>
+            <b>阿星、郭靖、令狐沖可選</b>
+          </div>
+          <div class="legacy-item full-span">
+            <span class="item-label">繼承傳家寶：</span>
+            <b id="v10-heirloom-name">《開山鎮派傳世手札》</b>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save Schema v1 確定性存讀檔與驗證 -->
+      <div class="save-schema-block">
+        <div class="block-header-row">
+          <span class="block-badge">💾 正式版 Save Schema v1 確定性存檔</span>
+          <span class="save-version-tag">Schema v1.0</span>
+        </div>
+        <div class="save-meta-box">
+          <div class="meta-row"><span>單一 JSON 權威存檔：</span><b>sect-life-v1.0</b></div>
+          <div class="meta-row"><span>確定性雜湊簽名：</span><b id="v10-save-hash" class="hash-code">0x8f4e2a9c</b></div>
+          <div class="meta-row"><span>長時回放驗證：</span><b id="v10-replay-verified" class="verified-tag">確定性 600t 回放驗證 PASS (0 漂移)</b></div>
+        </div>
+        <button id="btn-verify-save-schema" class="btn btn-action full-width">🔍 序列化並驗證 Save Schema v1 確定性狀態雜湊</button>
       </div>
     </div>
   </div>

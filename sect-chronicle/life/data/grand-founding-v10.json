@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "schemaVersion": "sect-life-v1.0",
+  "foundingRequirements": {
+    "minReputation": 80,
+    "minDisciples": 8,
+    "minScriptures": 3,
+    "minHallStage": 2,
+    "requiredFacility": "fac.hall_sanqing"
+  },
+  "sectOriginsTier4Arts": {
+    "origin.huashan_junzi": {
+      "originId": "origin.huashan_junzi",
+      "founder": "yue_buqun",
+      "branches": {
+        "orthodox": {
+          "artId": "art.zixia_tier10",
+          "name": "《紫霞十重・混元太華劍陣》",
+          "category": "sword_domain",
+          "windupSec": 0.25,
+          "damage": 180,
+          "qiCost": 50,
+          "domainAura": {
+            "radiusPx": 120,
+            "damagePerSec": 45,
+            "knockbackWave": true
+          },
+          "title": "華山聖手",
+          "moralityShift": "orthodox"
+        },
+        "demonic": {
+          "artId": "art.bixie_sword",
+          "name": "《辟邪劍法》",
+          "category": "needle_ghost",
+          "windupSec": 0.05,
+          "damage": 260,
+          "combatPowerBonus": 3.0,
+          "speedMultiplier": 3.0,
+          "moralityShift": "demonic",
+          "title": "紫衣梟雄"
+        }
+      }
+    },
+    "origin.beixia_palm": {
+      "originId": "origin.beixia_palm",
+      "founder": "guo_jing",
+      "art": {
+        "artId": "art.dual_wield_dragon_fist",
+        "name": "《左右互搏・九陰降龍雙掌》",
+        "category": "golden_fist_burst",
+        "damage": 240,
+        "doubleCast": true,
+        "knockback": 120,
+        "qiCost": 40
+      }
+    },
+    "origin.luding_qimen": {
+      "originId": "origin.luding_qimen",
+      "founder": "wei_xiaobao",
+      "art": {
+        "artId": "art.foreign_musket_volley",
+        "name": "《鹿鼎火銃連發・滿門神仙助陣》",
+        "category": "bullet_volley",
+        "damage": 200,
+        "projectiles": 8,
+        "qiCost": 20
+      }
+    },
+    "origin.xiaoyao_sword": {
+      "originId": "origin.xiaoyao_sword",
+      "founder": "linghu_chong",
+      "art": {
+        "artId": "art.five_flaw_mastery_yijinjing",
+        "name": "《笑傲九劍・無招破萬法》",
+        "category": "flawless_sword",
+        "damage": 220,
+        "instantInterrupt": true,
+        "qiCost": 35
+      }
+    },
+    "origin.wanfo_palm": {
+      "originId": "origin.wanfo_palm",
+      "founder": "ah_sing",
+      "art": {
+        "artId": "art.buddha_palm_ultimate",
+        "name": "《如來神掌・萬佛朝宗》",
+        "category": "buddha_palm",
+        "damage": 220,
+        "radiusPx": 240,
+        "groundCrater": true,
+        "qiCost": 80
+      }
+    },
+    "origin.zhulong_compound": {
+      "originId": "origin.zhulong_compound",
+      "founder": "landlady",
+      "art": {
+        "artId": "art.couple_taichi_roar_combo",
+        "name": "《古鐘大喇叭擴音・太極獅吼合擊》",
+        "category": "soundwave_taiji",
+        "damage": 190,
+        "rangeMultiplier": 2.0,
+        "shatterProjectiles": true,
+        "qiCost": 50
+      }
+    }
+  },
+  "customUltimateArtBudget": {
+    "maxBudgetPoints": 100,
+    "weights": {
+      "damage": 0.35,
+      "radiusPx": 0.25,
+      "knockback": 0.20,
+      "qiCostDiscount": 0.20,
+      "cooldownDiscount": 5.0
+    }
+  },
+  "heirloomCatalog": {
+    "equip.heavy_iron_sword": {
+      "itemId": "equip.heavy_iron_sword",
+      "name": "七十斤玄鐵重劍",
+      "type": "equipment",
+      "slot": "weapon_main",
+      "meritCost": 4,
+      "weight": 70,
+      "strengthRequirement": 8,
+      "damageBonus": 80,
+      "knockbackBonus": 60
+    },
+    "scripture.custom_founding_art": {
+      "itemId": "scripture.custom_founding_art",
+      "name": "宗門自創鎮派寶典手札",
+      "type": "scripture",
+      "slot": "scripture",
+      "meritCost": 3,
+      "allowsDirectStudy": true
+    },
+    "equip.soft_gold_armor": {
+      "itemId": "equip.soft_gold_armor",
+      "name": "五件金絲軟甲",
+      "type": "equipment",
+      "slot": "armor",
+      "meritCost": 3,
+      "damageReduction": 0.60
+    }
+  },
+  "chronicleTemplates": {
+    "s0_repair": {
+      "id": "s0_repair",
+      "title": "破道館起家",
+      "template": "建元元年：掌門於破道館起家，修漏頂、開菜畦、立基立業。"
+    },
+    "ah_sing_cocoon": {
+      "id": "ah_sing_cocoon",
+      "title": "生死破繭・如來神掌退強敵",
+      "template": "建元三年：阿星保衛山門破繭打通任督二脈，以如來神掌退火雲邪神，留五指巨坑。"
+    },
+    "grand_founding": {
+      "id": "grand_founding",
+      "title": "開宗立匾・自創鎮派神功",
+      "template": "建元五年：三清正殿敲響宗門金鐘，舉辦立匾大典，自創鎮派神功，門徒傳承百代！"
+    }
+  }
+}
