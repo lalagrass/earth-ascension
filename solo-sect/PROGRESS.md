@@ -154,3 +154,8 @@ v0.6 候選：成家後生活（同住、子嗣不做或另議）、新人個性
 - 存檔遷移 1.45（舊 log 補分級、回程中的隊伍補 `ret`、補 `alert`）；golden 以 `UPDATE_GOLDEN=1` 重產（返程規則與 log 欄位改變）。
 - 測試 205 全過（新增 `test/v145.test.mjs` 12 項）。
 - 截圖（真實點擊流程 `artifacts/features/v145/flow-ui-v145.mjs`，8/8 PASS，只有按鈕/下拉/勾選，沒有改狀態）：`shots/v145-01-patrol-strip-feed.png`、`shots/v145-02-return-raid-report.png`、`shots/v145-03-status-panel.png`。
+
+## v1.45 review 修正（GPT review of 77e1b2d）
+- P1-1 倉庫預留、P1-2 共用移出生命週期、P1-3 傳人欄位、P2-1 煮飯耗力、P2-2 未來規則拒讀、愛喝undefined、存檔改非阻斷提示。
+- 新增 `src/lifecycle.mjs`（cancelTask／removeActor／invariants）、`test/v145-review.test.mjs` 8 項；全套 213 通過；golden 重產。
+- 35 案長跑延後（擁有人指示），腳本 `artifacts/review-fix/longrun.mjs`。
