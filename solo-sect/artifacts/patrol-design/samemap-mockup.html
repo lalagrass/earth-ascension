@@ -1,0 +1,15 @@
+<html><body style="margin:0;background:#222"><canvas id=c width=1600 height=1000></canvas><script>
+const c=document.getElementById('c').getContext('2d');const S=1600/6400;// world 6400x4000 shown at 1/4
+c.fillStyle='#e9dcc0';c.fillRect(0,0,1600,1000);
+const rings=[['山腳','#cfd8a0'],['林地','#9fbf80'],['山腰','#b9a982'],['深谷','#8f8a7a'],['斷崖','#a09a90'],['古洞','#6e665c'],['無名絕頂','#c8c8d0']];
+const ox=0,oy=1000; // home anchored bottom-left
+for(let i=rings.length;i>=0;i--){const r=(1700+i*560)*S;c.beginPath();c.arc(ox+1475*S,oy-(900-22)*S,r,0,Math.PI*2);c.fillStyle=i==rings.length?'#dfe4ea':rings[i][1];c.fill();}
+c.fillStyle='rgba(255,255,255,.75)';c.fillRect(1100,0,500,1000);c.fillRect(0,0,1600,120);c.fillStyle='#555';c.font='28px sans-serif';c.fillText('☁ 雲霧（程序生成區塊・迷霧）',1150,60);
+c.fillStyle='#d8c39a';c.fillRect(0,oy-900*S,1600*S,900*S);c.strokeStyle='#5a3b1a';c.lineWidth=3;c.strokeRect(0,oy-900*S,1600*S,900*S);c.fillStyle='#5a3b1a';c.fillText('門派 1600×900',20,oy-100);
+rings.forEach((r,i)=>{c.fillStyle='#333';c.font='22px sans-serif';c.fillText(r[0],ox+1475*S+(1700+i*560)*S*0.62-40,oy-(900-22)*S-(1700+i*560)*S*0.62-20);});
+c.strokeStyle='#7a2';c.lineWidth=5;c.setLineDash([12,8]);c.beginPath();let x=1475*S,y=oy-878*S;c.moveTo(x,y);const pts=[[480,620],[560,520],[640,470],[720,380],[800,330],[880,250],[960,190],[1040,140]];pts.forEach(p=>c.lineTo(...p));c.stroke();c.setLineDash([]);
+c.fillStyle='#c22';[[560,520],[720,380],[880,250]].forEach(p=>{c.beginPath();c.arc(p[0]+20,p[1]+10,10,0,7);c.fill();});
+c.fillStyle='#1450c8';c.beginPath();c.arc(640,470,14,0,7);c.fill();c.fillStyle='#000';c.fillText('隊伍（溜走）',660,465);
+c.strokeStyle='#fff';c.lineWidth=3;c.strokeRect(1360,800,220,180);c.fillStyle='#fff';c.fillText('小地圖',1420,830);
+c.fillStyle='#fff';c.fillRect(20,20,260,50);c.fillStyle='#000';c.fillText('🏯 回山門  👣 跟隨隊伍',30,55);
+</script></body></html>
