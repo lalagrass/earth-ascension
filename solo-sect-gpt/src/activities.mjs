@@ -1,29 +1,31 @@
 import {Q,HZ,DAY,FACILITIES,RECIPES,TASKNAME,ART,MEMORY} from './data.mjs';
 import {stations,rects,position,bedSlots,findPath,inRect,walkable,los} from './map.mjs';
-import {uid,event,inventory,availableQty as qty,add,transfer,sourceFor,bagWeight,reserve,release,sorted,assignBeds,day} from './state.mjs';
+import {uid,event,inventory,availableQty as qty,qty as physicalQty,add,transfer,sourceFor,bagWeight,reserve,reserveBundle,release,sorted,assignBeds,day} from './state.mjs';
 import {route,arrived} from './navigation.mjs';
 export function cancel(w,p,reason='玩家改派'){
- const a=w.activities[p.activity];if(a){if(['school','reception'].includes(a.kind)&&a.partner&&w.people[a.partner])w.people[a.partner].storyBusy=false;if(a.kind==='story'){p.storyBusy=false;const partner=w.people[a.args.partner];if(partner){partner.storyBusy=false;partner.path=[];partner.routeAt=0;if(partner.combatSession===p.combatSession){partner.combatSession=null;partner.combatTarget=null;p.combatSession=null;p.combatTarget=null;}}if(w.stories[a.args.node])w.stories[a.args.node].status='active';}release(w,a.id);delete w.activities[a.id];p.activity=null;
+ const shared=Object.values(w.activities).find(a=>a.kind==='story'&&a.args.partner===p.id&&a.actor!==p.id);if(shared)cancel(w,w.people[shared.actor],reason);
+ const a=w.activities[p.activity];if(a){if(['school','reception'].includes(a.kind)&&a.partner&&w.people[a.partner])w.people[a.partner].storyBusy=false;if(a.kind==='story'){p.storyBusy=false;for(const id of [a.traveler,a.guard].filter(Boolean)){const q=w.people[id];if(q){q.storyBusy=false;q.combatTarget=null;q.combatSession=null;if(q.action){q.action.phase='recover';q.action.remaining=q.action.recover;}if(q.id==='escort.traveler'){q.departing=true;route(w,q,stations.spawn);}else if(q.home)route(w,q,q.home);}}const partner=w.people[a.args.partner];if(partner){partner.storyBusy=false;partner.pose='idle';partner.path=[];partner.routeAt=0;if(partner.combatSession===p.combatSession){partner.combatSession=null;partner.combatTarget=null;p.combatSession=null;p.combatTarget=null;}}if(w.stories[a.args.node])w.stories[a.args.node].status='active';}release(w,a.id);delete w.activities[a.id];p.activity=null;
   if(a.partner){const o=w.people[a.partner];if(o&&w.activities[o.activity]?.session===a.session){release(w,o.activity);delete w.activities[o.activity];o.activity=null;o.path=[];o.reason='同伴已中止活動';}}
  }
  if(w.bridge.holder===p.id)p.bridgeExit=true;else{p.path=[];p.routeAt=0;w.bridge.queue=w.bridge.queue.filter(q=>q.id!==p.id);}
  p.reason=reason;p.blocked='';p.pose='idle';
 }
 export function begin(w,p,kind,args={},manual=false){
- if(!['move','return','gather','build','train','study','rest','sleep','eat','cook','craft','talk','encourage','care','teach','greet','farm','harvestHaul','delivery','school','reception','learn','equip','story','pack','aid','collect'].includes(kind))return {ok:false,reason:'未知活動'};
+ if(!['unloadQuest','drink','move','return','gather','build','train','study','rest','sleep','eat','cook','craft','talk','encourage','care','teach','greet','farm','harvestHaul','delivery','school','reception','learn','equip','story','pack','aid','collect'].includes(kind))return {ok:false,reason:'未知活動'};
  if(kind==='gather'&&!['wood','stone','water','veg','herb'].includes(args.item))return {ok:false,reason:'未知採集物'};
  if(kind==='move'&&(!Array.isArray(args.pos)||args.pos.length!==2||args.pos.some(n=>!Number.isFinite(n))||!findPath(w,position(p),args.pos)))return {ok:false,reason:'目標無路可達／水域或封閉邊界'};
  if(kind==='cook'&&!RECIPES[args.recipe||'meal'])return {ok:false,reason:'未知配方'};
  if(kind==='farm'&&!['garden','herb'].includes(args.crop||'garden'))return {ok:false,reason:'未知畦田'};
- if(!p.adult&&!['move','rest','sleep','eat','talk','encourage','return'].includes(kind))return {ok:false,reason:'小禾只參與親情、陪伴與生活'};
+ if(!p.adult&&!['drink','move','rest','sleep','eat','talk','encourage','return'].includes(kind))return {ok:false,reason:'小禾只參與親情、陪伴與生活'};
+ if(kind==='drink'&&p.teaUntil>w.tick)return {ok:false,reason:'藥茶仍在120秒調養間隔內'};
  if(kind==='care'&&!(w.people[args.target]?.injury>0||w.people[args.target]?.hp<w.people[args.target]?.maxHp))return {ok:false,reason:'對方目前不需傷病照料，可先交談／指點'};
- if(kind==='encourage'){const o=w.people[args.target];if(!o?.frustration&&!o?.injury)return {ok:false,reason:'對方目前沒有受挫／傷病記錄，可先交談'};}
+ if(kind==='encourage'){const o=w.people[args.target];if((!o?.frustration||(o.encouragedSources||[]).includes(o.frustration.source))&&!o?.injury)return {ok:false,reason:'對方目前沒有受挫／傷病記錄，可先交談'};}
  if(p.hp<=0)return {ok:false,reason:'倒地者需要救援'};
  if(p.injury>60&&!['return','rest','sleep','eat','care','move'].includes(kind))return {ok:false,reason:'傷勢過重，請先照料／休息'};
  cancel(w,p);if(manual){p.revision++;p.intent={kind,args:{...args},revision:p.revision};p.manualStop=false;}
  const a={id:uid(w,'activity'),actor:p.id,kind,args:{...args},phase:'init',progress:0,revision:p.revision,started:w.tick,units:0};w.activities[a.id]=a;p.activity=a.id;p.reason=(manual?'玩家指令：':'自主：')+(TASKNAME[kind]||kind);p.next='完成當前單位';return {ok:true};
 }
-export function finish(w,p,a,text='完成',keepIntent=false){if(!w.activities[a.id])return;release(w,a.id);delete w.activities[a.id];p.activity=null;p.pose='idle';p.reason=text;p.path=[];p.routeAt=0;if(!keepIntent&&p.intent?.revision===a.revision&&(p.intent.kind===a.kind||a.kind==='harvestHaul'&&p.intent.kind==='farm'))p.intent=null;event(w,'activity-complete',[p.id],{kind:a.kind,completionId:a.id,units:a.units});if(['gather','cook','craft','farm','harvestHaul','school','reception','eat','talk','encourage','care','teach'].includes(a.kind)){const at=position(p);route(w,p,[at[0]+20,at[1]+20]);}}
+export function finish(w,p,a,text='完成',keepIntent=false){if(!w.activities[a.id]||w.completionIds[a.id])return;w.completionIds[a.id]=true;release(w,a.id);delete w.activities[a.id];p.activity=null;p.pose='idle';p.reason=text;p.path=[];p.routeAt=0;if(!keepIntent&&p.intent?.revision===a.revision&&(p.intent.kind===a.kind||a.kind==='harvestHaul'&&p.intent.kind==='farm'))p.intent=null;event(w,'activity-complete',[p.id],{kind:a.kind,completionId:a.id,units:a.units});if(['drink','gather','cook','craft','farm','harvestHaul','school','reception','eat','talk','encourage','care','teach'].includes(a.kind)){const at=position(p);route(w,p,[at[0]+20,at[1]+20]);}}
 function blocked(p,a,text){p.frustration={reason:text,source:a.id,tick:p.simTick||a.started};a.blocked=text;p.blocked=text;p.next='改善條件後重試';}
 export function approach(w,p,a,key,pos){
  const target=pos||stations[key];if(!target){blocked(p,a,'站位不存在：'+key);return false;}
@@ -41,14 +43,15 @@ export function approach(w,p,a,key,pos){
 const clearStation=(w,a)=>{for(const k of Object.keys(w.reservations))if(w.reservations[k].activity===a.id&&w.reservations[k].key.startsWith('station:'))delete w.reservations[k];for(const [key,q]of Object.entries(w.queues))if(key.startsWith('station:'))w.queues[key]=q.filter(r=>r.activity!==a.id);a.destination=null;};
 function work(p,rate=30){p.workRemainder=(p.workRemainder||0)+rate;const n=Math.floor(p.workRemainder/20);p.energy=Math.max(0,p.energy-n);p.workRemainder%=20;}
 function duration(a,ticks){a.progress++;return a.progress>=ticks;}
-function countWork(w,p,a,units=1){const d=String(day(w));p.contribution[d]??={units:0,ticks:0,exempt:null};p.contribution[d].units+=units;p.contribution[d].ticks+=a.progress;}
+export function workTick(w,p){const d=String(day(w));p.contribution[d]??={units:0,ticks:0,exempt:null};p.contribution[d].ticks++;}
+export function countWork(w,p,a,units=1){const d=String(day(w));p.contribution[d]??={units:0,ticks:0,exempt:null};p.contribution[d].units+=units;}
 export function memory(w,kind,one,two,source){if(!one||!two||one.id===two.id)return false;const pair=[one.id,two.id].sort(),key=pair.join('|')+'|'+kind;
  if(w.memories.some(m=>m.key===key&&w.tick-m.tick<2400))return false;
  const id=uid(w,'memory'),m={id,key,kind,actors:pair,tick:w.tick,pos:position(one),source};w.memories.push(m);
  for(const [p,o]of [[one,two],[two,one]]){const k=p.id+'|'+o.id;w.relationships[k]??={trust:0,willingness:0,types:[],events:[],accepted:false};const r=w.relationships[k];r.trust+=MEMORY[kind][1];r.willingness+=kind==='talk'?1:3;if(!r.types.includes(kind))r.types.push(kind);r.events.push(id);}
  event(w,'memory',pair,{kind,text:MEMORY[kind][0],source});return true;
 }
-export function buildOrder(w,id){const f=w.facilities[id];if(!f||f.stage>=FACILITIES[id].stages.length)return {ok:false,reason:'已完成此建物'};
+export function buildOrder(w,id){const f=Object.hasOwn(w.facilities,id)?w.facilities[id]:null;if(!f||f.stage>=FACILITIES[id].stages.length)return {ok:false,reason:'已完成此建物'};
  if(id==='hall'){
   const slots=bedSlots(w).filter(b=>!b.startsWith('hall.'));const resident=sorted(w.people).filter(p=>p.residence==='resident');const keep=f.stage===0?2:0;
   if(slots.length+keep<resident.length)return {ok:false,reason:'需先修宿舍／側舍，遷出臨鋪'};
@@ -60,7 +63,7 @@ export function buildOrder(w,id){const f=w.facilities[id];if(!f||f.stage>=FACILI
 function sitePoint(w,id,p){const base=stations[id+'.work']||stations[id+'.worksite'];const other=sorted(w.people).filter(o=>o.id<p.id&&w.activities[o.activity]?.kind==='build'&&w.activities[o.activity]?.args.facility===id).length;return [base[0]+(other%2)*18,base[1]];}
 function depositBag(w,p,a){
  const items=Object.entries(w.inventories[p.bag].items);if(!items.length)return true;const [item,n]=items[0],dest=sourceFor(item),key=dest==='vat'?'kitchen.vat':dest==='table'?'dining.1':'store.drop';
- const cap=w.inventories[dest].capacity,available=cap-qty(w,dest,item);if(available<=0){blocked(p,a,'目的倉滿：'+item);return false;}
+ const cap=w.inventories[dest].capacity,held=Object.values(w.reservations).filter(r=>r.key==='dest:'+dest+':'+item&&r.activity!==a.id).reduce((n,r)=>n+r.n,0),available=cap-physicalQty(w,dest,item)-held;if(available<=0){blocked(p,a,'目的倉滿：'+item);return false;}
  if(approach(w,p,a,key)){transfer(w,p.bag,dest,item,Math.min(n,available));clearStation(w,a);}return false;
 }
 function gatherTick(w,p,a,dest='store',desiredItem=null){
@@ -77,17 +80,17 @@ function gatherTick(w,p,a,dest='store',desiredItem=null){
  }
  if(a.phase==='gather'){
   if(!approach(w,p,a,item==='water'?'water.take':item))return;
-  work(p);if(duration(a,(item==='water'?6:item==='wood'?8:item==='stone'?10:8)*HZ)){
+  work(p);workTick(w,p);if(duration(a,(item==='water'?6:item==='wood'?8:item==='stone'?10:8)*HZ)){
    const n=Math.min(out,a.load-qty(w,p.bag,item),item==='stone'?Math.floor(cap/2):cap,source?.remaining??out);
-   if(n>0){if(source)source.remaining-=n;add(w,p.bag,item,n,'gather');event(w,'harvest',[p.id],{item,n});a.units++;countWork(w,p,a);}
+   if(n>0){if(source)source.remaining-=n;add(w,p.bag,item,n,'gather');event(w,'harvest',[p.id],{item,n});a.units++;}
    a.progress=0;if(qty(w,p.bag,item)>=a.load||source&&source.remaining<=0){a.phase='deliver';clearStation(w,a);}
   }
  }
  if(a.phase==='deliver'){
   const destKey=dest.startsWith('site.')?dest.slice(5)+'.delivery':dest==='vat'?'kitchen.vat':'store.drop';const pos=dest.startsWith('site.')?sitePoint(w,dest.slice(5),p):null;
   if(approach(w,p,a,destKey,pos)){
-   let n=qty(w,p.bag,item);if(dest.startsWith('site.')){const f=w.facilities[dest.slice(5)],req=FACILITIES[f.id].stages[f.stage];n=Math.min(n,(item==='wood'?req[0]:req[1])-(w.inventories[dest].items[item]||0));}
-   if(n>0)transfer(w,p.bag,dest,item,n);release(w,a.id);a.destination=null;a.phase='init';a.progress=0;
+   const held=Object.values(w.reservations).filter(r=>r.key==='dest:'+dest+':'+item&&r.activity!==a.id).reduce((n,r)=>n+r.n,0);let n=Math.min(qty(w,p.bag,item),w.inventories[dest].capacity-physicalQty(w,dest,item)-held);if(n<=0){blocked(p,a,'目的容量已預約／目的倉滿：'+item);return;}if(dest.startsWith('site.')){const f=w.facilities[dest.slice(5)],req=FACILITIES[f.id].stages[f.stage];n=Math.min(n,(item==='wood'?req[0]:req[1])-(w.inventories[dest].items[item]||0));}
+   if(n>0){transfer(w,p.bag,dest,item,n);countWork(w,p,a);}release(w,a.id);a.destination=null;a.phase='init';a.progress=0;
    if(a.kind==='gather')finish(w,p,a,'採集搬交完成');
   }
  }
@@ -108,7 +111,7 @@ function buildTick(w,p,a){const id=a.args.facility,f=w.facilities[id];if(!f?.act
   else {a.phase='init';gatherTick(w,p,a,'site.'+id,missing);}return;
  }
  const pos=sitePoint(w,id,p),key=id+'.builder.'+(pos[0]);if(!approach(w,p,a,key,pos))return;
- work(p);f.work++;a.progress++;if(a.progress%200===0)countWork(w,p,a);const peers=sorted(w.people).filter(o=>o.id!==p.id&&w.activities[o.activity]?.kind==='build'&&w.activities[o.activity]?.args.facility===id&&Math.hypot(o.x-p.x,o.y-p.y)<60*Q);
+ if(f.work<req[2]*HZ){work(p);workTick(w,p);f.work++;a.progress++;if(a.progress%200===0)countWork(w,p,a);}const peers=sorted(w.people).filter(o=>o.id!==p.id&&w.activities[o.activity]?.kind==='build'&&w.activities[o.activity]?.args.facility===id&&Math.hypot(o.x-p.x,o.y-p.y)<60*Q);
  for(const o of peers)if(w.tick-a.started>=400)memory(w,'cowork',p,o,a.id);
  if(f.work>=req[2]*HZ){
   const upcoming={facilities:{...w.facilities,[id]:{...f,stage:f.stage+1}}};const unsafe=sorted(w.people).filter(o=>o.residence!=='departed'&&!o.inactive&&!walkable(upcoming,...position(o)));if(unsafe.length){f.work=req[2]*HZ;for(const [i,o]of unsafe.entries()){const at=sitePoint(w,id,o);begin(w,o,'move',{pos:[at[0]+(i+1)*18,at[1]+20]});o.intent=null;o.reason='建物變更前安全遷出';event(w,'construction-evacuate',[o.id],{facility:id});}blocked(p,a,'等候住者沿路遷出，材料工量保留');return;}
@@ -119,6 +122,7 @@ function buildTick(w,p,a){const id=a.args.facility,f=w.facilities[id];if(!f?.act
  }
 }
 function stationAvailable(w,base,count,p){const candidates=Array.from({length:count},(_,i)=>base+(i+1));return candidates.find(k=>!Object.values(w.reservations).some(r=>r.key==='station:'+k&&r.actor!==p.id))||candidates[0];}
+export function recoverTick(w,p,kind,key){const gain=kind==='sleep'?(key.startsWith('hall')?120:200):80;p.restRemainder=(p.restRemainder||0)+gain*(kind==='sleep'&&!p.meals?3:4);const energy=Math.floor(p.restRemainder/80);p.restRemainder%=80;p.energy=Math.min(10000,p.energy+energy);p.hpRemainder=(p.hpRemainder||0)+1;if(p.hpRemainder>=20){p.hp=Math.min(p.maxHp,p.hp+1);p.hpRemainder-=20;}if(w.tick%200===0)p.injury=Math.max(0,p.injury-1);}
 export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=0||p.stun)return;if(p.action&&a.kind!=='train')return;
  if(a.kind==='gather'){gatherTick(w,p,a,p.args?.item==='water'?'vat':a.args.item==='water'?'vat':'store');return;}
  if(a.kind==='build'){buildTick(w,p,a);return;}
@@ -147,8 +151,7 @@ export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=
   if(a.kind==='eat'){
    if(duration(a,10*HZ)){add(w,'table','meal',-1,'eat');p.meals++;if(p.meals<=2)p.energy=Math.min(10000,p.energy+1500);event(w,'ate',[p.id]);finish(w,p,a,'已用餐');}
   }else{
-   const gain=a.kind==='sleep'?(key.startsWith('hall')?120:200):80;
-   p.restRemainder=(p.restRemainder||0)+gain*(a.kind==='sleep'&&!p.meals?3:4);const energy=Math.floor(p.restRemainder/80);p.restRemainder%=80;p.energy=Math.min(10000,p.energy+energy);p.hpRemainder=(p.hpRemainder||0)+1;if(p.hpRemainder>=20){p.hp=Math.min(p.maxHp,p.hp+1);p.hpRemainder-=20;}if(w.tick%200===0)p.injury=Math.max(0,p.injury-1);
+   recoverTick(w,p,a.kind,key);
    if(p.energy>= (a.args.until||10000)&&p.hp>=p.maxHp&&p.injury===0){finish(w,p,a,'恢復完成');p.recovering=false;}
   }return;
  }
@@ -177,20 +180,20 @@ export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=
    for(const [item,n]of Object.entries(r.input))add(w,p.bag,item,-n,'recipe');
    a.committed=true;w.facilities[a.kind==='craft'?'hall':'kitchen'].wip={recipe,progress:0,activity:a.id,out:r.out};event(w,'recipe-start',[p.id],{recipe});
   }
-  work(p);a.progress++;const owner=w.facilities[a.kind==='craft'?'hall':'kitchen'];owner.wip.progress=a.progress;
+  work(p);workTick(w,p);a.progress++;const owner=w.facilities[a.kind==='craft'?'hall':'kitchen'];owner.wip.progress=a.progress;
   if(a.progress>=r.seconds[w.facilities.kitchen.stage]*HZ){for(const [item,n]of Object.entries(r.out))add(w,item==='meal'?'table':'store',item,n,'recipe');owner.wip=null;countWork(w,p,a);event(w,'recipe-complete',[p.id],{recipe});finish(w,p,a,'成品已完成');}return;
  }
  if(['talk','encourage','care','teach','greet'].includes(a.kind)){
   const o=w.people[a.args.target];if(!o||o.residence==='departed'||o.hp<=0){finish(w,p,a,'對象已離去／失能');return;}
   if(a.phase==='init'){
-   if(o.activity&&w.activities[o.activity]?.partner!==p.id){blocked(p,a,'對方正在忙，可先叫停再邀');return;}
-   if(!reserve(w,a,'participant:'+o.id)){blocked(p,a,'對方另有約定');return;}
+   if(o.storyBusy||o.activity&&w.activities[o.activity]?.partner!==p.id){blocked(p,a,'對方正在忙，可先叫停再邀');return;}
+   if(!reserveBundle(w,a,[['participant:'+o.id],['station:hall.greet'],['station:point.1190.1070']])){blocked(p,a,'雙人站位候位／對方另有約定');return;}
    a.partner=o.id;a.session=a.id;const b={id:uid(w,'activity'),actor:o.id,kind:'paired',partner:p.id,session:a.id,args:{},progress:0,phase:'paired',revision:o.revision,started:w.tick};w.activities[b.id]=b;o.activity=b.id;
    const at=stations['hall.greet'];a.pos=[...at];a.otherPos=[at[0]+20,at[1]];route(w,o,a.otherPos);a.phase='approach';
   }
-  if(!approach(w,p,a,'pair.'+a.id,a.pos)||!arrived(o)||Math.hypot(o.x/Q-a.otherPos[0],o.y/Q-a.otherPos[1])>1)return;
+  if(!approach(w,p,a,'hall.greet',a.pos)||!arrived(o)||Math.hypot(o.x/Q-a.otherPos[0],o.y/Q-a.otherPos[1])>1)return;
   p.pose=a.kind==='teach'?'teach':a.kind==='care'?'help':a.kind==='encourage'?'encourage':'talk';o.pose='listen';if(duration(a,(a.kind==='care'?12:10)*HZ)){
-   const kind=a.kind==='greet'?'talk':a.kind;memory(w,kind,p,o,a.id);if(kind==='care')o.injury=Math.max(0,o.injury-5);
+   const kind=a.kind==='greet'?'talk':a.kind;memory(w,kind,p,o,a.id);if(kind==='encourage'&&o.frustration){o.encouragedSources??=[];if(!o.encouragedSources.includes(o.frustration.source))o.encouragedSources.push(o.frustration.source);o.frustration=null;}if(kind==='care')o.injury=Math.max(0,o.injury-5);
    if(o.id==='amu'&&w.memories.some(m=>m.kind==='cowork'&&m.actors.includes('amu'))){w.stories['recruit.worker'].status='completed';o.willingness=6;}
    const b=w.activities[o.activity];if(b){release(w,b.id);delete w.activities[b.id];o.activity=null;o.reason='交談完成';route(w,o,[a.otherPos[0]+20,a.otherPos[1]+20]);}finish(w,p,a,'雙人活動完成');
   }return;
@@ -198,30 +201,32 @@ export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=
 }
 export function autonomy(w,p){
  if(!['resident','visitor'].includes(p.residence)||p.hp<=0||p.rank==='rescuer'||p.combatSession||p.combatTarget||p.departing||p.storyBusy)return;
- if(p.mealDay!==day(w)){p.mealDay=day(w);p.meals=0;const prior=p.contribution[day(w)-1];if(p.rank==='outer'&&!prior)p.contribution[day(w)-1]={units:0,ticks:0,exempt:p.injury?'傷病':'缺料／無可行工作'};}
- const down=sorted(w.people).find(o=>o.id!==p.id&&o.residence==='resident'&&o.hp<=0&&Math.hypot(o.x-p.x,o.y-p.y)<120*Q&&los(w,position(p),position(o)));if(down&&p.adult&&p.injury<=60&&w.activities[p.activity]?.kind!=='aid'){const intent=p.intent;begin(w,p,'aid',{target:down.id});p.intent=intent;p.reason='優先照料眼前倒地同門';return;}
- if(p.activity){const a=w.activities[p.activity];if(!['rest','sleep','eat','return','paired'].includes(a.kind)&&p.energy<2500){const intent=p.intent;p.recovering=true;begin(w,p,'rest',{until:7500});p.intent=intent;p.reason='精力低於25：先照料自己，恢復75後續有效指令';}return;}
+ if(p.mealDay!==day(w)){p.mealDay=day(w);p.meals=0;const prior=p.contribution[day(w)-1];if(p.rank==='outer'&&!prior)p.contribution[day(w)-1]={units:0,ticks:0,exempt:p.injury>60?'傷病休養':null};}
+ const down=sorted(w.people).find(o=>o.id!==p.id&&o.residence==='resident'&&o.hp<=0&&Math.hypot(o.x-p.x,o.y-p.y)<120*Q&&los(w,position(p),position(o)));if(down&&p.adult&&p.injury<=60&&w.activities[p.activity]?.kind!=='aid'){const intent=p.intent;begin(w,p,'aid',{target:down.id});p.intent=intent;p.reason='優先照料眼前倒地同門';p.contribution[day(w)]??={units:0,ticks:0,exempt:null};p.contribution[day(w)].exempt='必要照料倒地同門';return;}
+ if(p.activity){const a=w.activities[p.activity];if(!p.intent&&(p.blocked||a.blocked)&&w.tick-a.started>600&&!['rest','sleep','eat','paired','aid'].includes(a.kind)){p.lastBlockedTask={kind:a.kind,args:structuredClone(a.args),until:w.tick+200,reason:p.blocked};cancel(w,p,'自主作業受阻，先改選可行工作');return;}if(!['rest','sleep','eat','return','paired'].includes(a.kind)&&p.energy<2500){const intent=p.intent;p.recovering=true;begin(w,p,'rest',{until:7500});p.intent=intent;p.reason='精力低於25：先照料自己，恢復75後續有效指令';}return;}
  if(p.recovering&&p.energy<7500){begin(w,p,'rest',{until:7500});return;}p.recovering=false;
  if(p.intent&&!p.manualStop){begin(w,p,p.intent.kind,p.intent.args);return;}
- if(p.energy<2500||p.injury>60){begin(w,p,p.bed?'sleep':'rest',{until:7500});p.reason='必要自理：休息至75';return;}
+ if(p.energy<2500||p.injury>60){if(p.injury>60){p.contribution[day(w)]??={units:0,ticks:0,exempt:null};p.contribution[day(w)].exempt='傷病休養';}begin(w,p,p.bed?'sleep':'rest',{until:7500});p.reason='必要自理：休息至75';return;}
  if(p.taskWaitUntil&&w.tick<p.taskWaitUntil){p.reason='等候作物生長，讓出作業位';return;}
  const phase=w.tick%DAY;
  if(phase>=8400&&p.energy<9900){begin(w,p,p.bed?'sleep':'rest');p.reason='作息：夜間睡眠';return;}
  if(p.meals<2&&qty(w,'table','meal')>0&&(phase<2000||phase>=6000&&phase<8400)){begin(w,p,'eat');p.reason='作息：用餐';return;}
  if(p.manualStop||!p.auto){p.reason='此人已停工；仍可自理';return;}
- if(!p.adult){begin(w,p,'move',{pos:stations['safe.'+(2+(Math.floor(w.tick/200)%3))]});p.reason='小禾在院內散步、等家人';return;}
- const candidates=[];const addC=(kind,args,score,reason)=>candidates.push({kind,args,score,reason});
+ if(!p.adult){const adult=sorted(w.people).find(o=>o.adult&&o.residence==='resident'&&!o.activity&&!o.manualStop&&o.hp>0&&Math.hypot(o.x-p.x,o.y-p.y)<120*Q&&los(w,position(p),position(o))&&((o.frustration&&!(o.encouragedSources||[]).includes(o.frustration.source))||o.injury)&&!w.memories.some(m=>m.kind==='encourage'&&m.actors.includes(p.id)&&m.actors.includes(o.id)&&w.tick-m.tick<2400));if(adult){begin(w,p,'encourage',{target:adult.id});p.reason='小禾想陪伴受挫的家人';return;}begin(w,p,'move',{pos:stations['safe.'+(2+(Math.floor(w.tick/200)%3))]});p.reason='小禾在院內散步、等家人';return;}
+ const candidates=[];const addC=(kind,args,score,reason)=>{if(p.lastBlockedTask&&w.tick<p.lastBlockedTask.until&&p.lastBlockedTask.kind===kind&&JSON.stringify(p.lastBlockedTask.args)===JSON.stringify(args))return;candidates.push({kind,args,score,reason});};const unreserved=(id,item)=>qty(w,id,item)-Object.values(w.reservations).filter(r=>r.key==='source:'+id+':'+item).reduce((n,r)=>n+r.n,0);
  const residents=sorted(w.people).filter(o=>o.residence==='resident').length,manualGoals=w.goals.manual??w.commands.some(c=>c.type==='goals');const waterTarget=Math.min(w.inventories.vat.capacity,manualGoals?w.goals.water:2*residents),mealTarget=manualGoals?w.goals.meal:2*residents;
- if(qty(w,'table','meal')<mealTarget&&qty(w,'store','veg')>=2&&qty(w,'vat','water')>=1)addC('cook',{recipe:'meal'},qty(w,'table','meal')===0?90:60,'缺餐備糧');
+ if(qty(w,'table','meal')<mealTarget&&unreserved('store','veg')>=2&&unreserved('vat','water')>=1)addC('cook',{recipe:'meal'},qty(w,'table','meal')===0?90:60,'缺餐備糧');
  for(const f of sorted(w.facilities))if(f.active)addC('build',{facility:f.id},50+(w.policy==='build'?20:0),'已開工的'+FACILITIES[f.id].name);
  if(qty(w,'vat','water')<waterTarget)addC('gather',{item:'water'},qty(w,'vat','water')===0&&qty(w,'table','meal')===0?98:40,'低於水目標'+waterTarget);
  if(w.facilities.garden.stage&&qty(w,'store','veg')<mealTarget&&sorted(w.plots).some(o=>o.kind==='garden'&&Number(o.id.split('.')[1])<w.facilities.garden.stage&&o.stage!=='growing'&&!Object.values(w.reservations).some(r=>r.key==='plot:'+o.id&&r.actor!==p.id)))addC('farm',{crop:'garden'},55,'耕作維持菜供應');
  if(qty(w,'store','veg')<mealTarget&&w.ecology.veg.remaining)addC('gather',{item:'veg'},qty(w,'table','meal')===0?95:qty(w,'table','meal')<mealTarget?65:30,'補菜以便供餐');
  const record=p.contribution[day(w)],met=record?.units>=2||record?.ticks>=2400;
- if(p.rank==='outer'&&met||phase>=6000||w.policy==='train')addC('train',{art:'punch',units:5},40+(w.policy==='train'?20:0)+p.traits[0]*3,'保留修行窗口');
+ if(p.rank==='outer'&&met||phase>=6000||w.policy==='train')addC('train',{art:'punch',units:5},((p.dailyPractice?.[day(w)]||0)<1200?40:20)+(w.policy==='train'?20:0),'保留修行窗口');
  if(met&&(p.dailyPractice?.[day(w)]||0)>=1200){const friend=sorted(w.people).find(o=>o.id!==p.id&&o.residence==='resident'&&!o.activity&&!o.combatSession&&!w.memories.some(m=>m.kind==='talk'&&m.actors.includes(p.id)&&m.actors.includes(o.id)&&w.tick-m.tick<2400));if(friend)addC('talk',{target:friend.id},25,'自由時段：與同門交談');else addC('move',{pos:stations['safe.'+(sorted(w.people).findIndex(o=>o.id===p.id)%10)]},21,'自由時段：散步歇腳');}
  if(p.primary==='care'){const hurt=sorted(w.people).find(o=>o.id!==p.id&&o.residence==='resident'&&o.injury>10&&!o.activity);if(hurt)addC('care',{target:hurt.id},55,'照料受傷同門');}
- for(const c of candidates){const job=c.kind==='gather'?'gather':['cook','farm'].includes(c.kind)?'production':c.kind==='build'?'build':c.kind==='care'?'care':c.kind==='teach'?'teach':null;if(job===p.primary)c.score+=15;else if(job===p.secondary)c.score+=5;}
+ for(const c of candidates){const job=c.kind==='gather'?'gather':['cook','farm'].includes(c.kind)?'production':c.kind==='build'?'build':c.kind==='care'?'care':c.kind==='teach'?'teach':null;if(job===(p.primary||'gather'))c.score+=15;else if(job===(p.secondary||'production'))c.score+=5;let trait=0;if(['build','train'].includes(c.kind))trait=Math.max(0,p.traits[0]*3);if(['care','talk','encourage'].includes(c.kind))trait=Math.max(0,p.traits[1]*5);if(c.kind==='move')trait=Math.max(0,-p.traits[0]*3);c.traitScore=Math.min(10,trait);c.score+=c.traitScore;const where=c.kind==='gather'?stations[c.args.item==='water'?'water.take':c.args.item]:c.kind==='build'?(stations[c.args.facility+'.work']||stations[c.args.facility+'.worksite']):c.kind==='cook'?stations['kitchen.cook']:c.kind==='train'?stations['yard.1']:c.kind==='talk'||c.kind==='care'?position(w.people[c.args.target]):c.args.pos;c.commutePenalty=where?Math.floor(Math.hypot(p.x/Q-where[0],p.y/Q-where[1])/100):0;c.score=Math.max(0,c.score-c.commutePenalty);}
+ if(p.rank==='outer'&&!candidates.some(c=>['build','gather','cook','farm'].includes(c.kind))){p.contribution[day(w)]??={units:0,ticks:0,exempt:null};if(p.contribution[day(w)].units<2&&p.contribution[day(w)].ticks<2400)p.contribution[day(w)].exempt='缺料／物資達標，無可行雜務';}
  if(!candidates.length)addC('train',{art:'punch',units:5},20,'物資已達標，練功與自由');
+ if(!candidates.length){p.reason='目前可行候選仍受阻，稍候重選';p.taskWaitUntil=w.tick+40;return;}
  candidates.sort((a,b)=>b.score-a.score||a.kind.localeCompare(b.kind));const c=candidates[0];p.candidates=candidates.slice(0,3);begin(w,p,c.kind,c.args);p.reason=c.reason+'（'+c.score+'；勤勉'+p.traits[0]+'／顧人'+p.traits[1]+'）';
 }

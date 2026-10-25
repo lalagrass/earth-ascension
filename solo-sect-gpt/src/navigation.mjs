@@ -1,6 +1,9 @@
+import directions from '../data/directions.mjs';
 import {Q} from './data.mjs';
 import {findPath,position,sweep,walkable,inRect} from './map.mjs';
 import {bagWeight,event,sorted} from './state.mjs';
+function isqrt(n){let v=Math.floor(Math.sqrt(n));while((v+1)*(v+1)<=n)v++;while(v*v>n)v--;return v;}
+function heading(dx,dy){let best=-Infinity,angle=0;for(let i=0;i<360;i++){const v=directions[i],dot=dx*v[0]+dy*v[1];if(dot>best){best=dot;angle=i;}}return angle;}
 export function speed(w,p){let level=p.distance>=18000*Q?3:p.distance>=9000*Q?2:p.distance>=3000*Q?1:0;let n=(bagWeight(w,p)?20:30)+level*4;if(p.kind==='rat')n=24;if(p.kind==='boar')n=22;if(p.rank==='warden'||p.rank==='training')n=26;if(p.injury>60)n*=0.6;else if(p.injury>30)n*=0.8;if(p.energy<2500)n*=0.8;if(p.helping||p.helpedBy)n*=0.65;return Math.max(6,n);}
 export function route(w,p,target){if(w.bridge.holder===p.id){p.bridgeExit=true;p.bridgePendingTarget=[...target];return true;}const path=findPath(w,position(p),target);if(!path){p.blocked='無可通行路徑';p.path=[];return false;}p.path=path;p.routeAt=0;p.blocked='';return true;}
 export const arrived=p=>p.routeAt>=p.path.length;
@@ -18,10 +21,10 @@ export function moveAll(w){
  const people=sorted(w.people).filter(p=>p.residence!=='departed'&&!p.inactive);
  for(const p of people){p.moving=false;if(p.stun||p.hp<=0||p.action&&p.action.phase!=='recover')continue;if(w.bridge.holder===p.id&&arrived(p)&&!p.action)p.bridgeExit=true;
   if(arrived(p)&&!p.bridgeExit)continue;
-  let target=p.path[p.routeAt]||[p.x,p.y];if(w.bridge.holder===p.id&&p.bridgeExit)target=[(w.bridge.direction==='east'?1954:1856)*Q,440*Q];let dx=target[0]-p.x,dy=target[1]-p.y,d=Math.hypot(dx,dy),step=Math.round(speed(w,p)*Q/20);if(d<2){p.routeAt++;continue;}
+  let target=p.path[p.routeAt]||[p.x,p.y];if(w.bridge.holder===p.id&&p.bridgeExit)target=[(w.bridge.direction==='east'?1954:1856)*Q,440*Q];let dx=target[0]-p.x,dy=target[1]-p.y,d=isqrt(dx*dx+dy*dy);p.walkRemainder=(p.walkRemainder||0)+Math.round(speed(w,p)*Q*1000);const step=Math.floor(p.walkRemainder/20000);p.walkRemainder%=20000;if(d<2){p.routeAt++;continue;}
   const bridge=w.bridge;if(bridge.holder===p.id){const exit=bridge.direction==='east'?1954:1856;
    // Cancellation in the middle preserves ownership and must finish crossing first.
-   if(p.bridgeExit){target=[exit*Q,440*Q];dx=target[0]-p.x;dy=target[1]-p.y;d=Math.hypot(dx,dy);}
+   if(p.bridgeExit){target=[exit*Q,440*Q];dx=target[0]-p.x;dy=target[1]-p.y;d=isqrt(dx*dx+dy*dy);}
   }
   const n=Math.min(step,d),nx=p.x+Math.round(dx/d*n),ny=p.y+Math.round(dy/d*n);
   if(!bridgePermit(w,p,nx/Q,ny/Q))continue;
@@ -38,7 +41,7 @@ export function moveAll(w){
    if(!ok)continue;
   }else {p.waitSince=null;if(p.blocked.startsWith('候'))p.blocked='';}
   const walked=Math.round(Math.hypot(x-p.x,y-p.y));p.x=x;p.y=y;p.distance+=walked;w.metrics.walked+=walked;p.moving=walked>0;
-  if(p.moving&&!p.action)p.angle=(Math.round(Math.atan2(dy,dx)*180/Math.PI)+360)%360;
+  if(p.moving&&!p.action)p.angle=heading(dx,dy);
   if(n===d&&x===nx&&y===ny)p.routeAt++;
   if(bridge.holder===p.id){const end=bridge.direction==='east'?p.x/Q>=1952:p.x/Q<=1858;if(end){event(w,'bridge-exit',[p.id],{x:p.x,y:p.y,direction:bridge.direction});bridge.holder=null;bridge.direction=null;if(p.bridgeExit){p.bridgeExit=false;p.path=[];p.routeAt=0;const pending=p.bridgePendingTarget;p.bridgePendingTarget=null;if(pending)route(w,p,pending);}}}
  }

@@ -1,7 +1,7 @@
 import {Q,HZ,DAY,LEGENDS,MEMORY} from './data.mjs';
 import {stations,position,bedSlots} from './map.mjs';
 import {event,availableQty as qty,add,transfer,inventory,makePerson,sorted,assignBeds,day,reserve,release,uid,bagWeight} from './state.mjs';
-import {approach,begin,cancel,finish,memory} from './activities.mjs';
+import {approach,begin,cancel,finish,memory,workTick,countWork} from './activities.mjs';
 import {route,arrived} from './navigation.mjs';
 import {beginSpar} from './combat.mjs';
 export function recruitmentReason(w,p){
@@ -18,7 +18,7 @@ export function recruitmentReason(w,p){
  return null;
 }
 export function invite(w,id){const p=w.people[id],reason=recruitmentReason(w,p);if(reason)return {ok:false,reason};p.rank='outer';p.residence='resident';p.auto=true;p.visits++;assignBeds(w);p.paidThrough=day(w);event(w,'joined',[p.id],{text:p.name+'願意留在門中；原有工作與物品仍在。'});if(id==='amu')w.stories['recruit.worker'].status='completed';return {ok:true};}
-export function visit(w,legend){const l=LEGENDS[legend];if(!l)return {ok:false,reason:'未知來客'};
+export function visit(w,legend){const l=Object.hasOwn(LEGENDS,legend)?LEGENDS[legend]:null;if(!l)return {ok:false,reason:'未知來客'};
  if(w.people.leader.canonicalIdentity===legend)return {ok:false,reason:'此人就是掌門；約定改為自身故事'};
  const existing=sorted(w.people).find(p=>p.canonicalIdentity===legend);
  if(existing&&existing.residence!=='departed')return {ok:false,reason:'此人已在世界中'};
@@ -50,6 +50,11 @@ export function promote(w,p){if(!p||p.rank!=='outer')return {ok:false,reason:'�
  if(!p.sparHistory?.some(r=>r.duration>=600&&r.hits>=3)){p.pendingPromotion=true;return beginSpar(w,p,w.people.leader,true);}
  p.rank='inner';event(w,'promoted',[p.id],{text:p.name+'完成考核，自願接下內門責任。'});return {ok:true};}
 export function lifeActivityTick(w,p){const a=w.activities[p.activity];if(!a)return false;
+ if(a.kind==='drink'){
+  if(p.teaUntil>w.tick){p.blocked='藥茶120秒間隔尚未到';return true;}
+  if(a.phase==='init'){if(!qty(w,p.bag,'tea')){if(qty(w,'store','tea')<1||bagWeight(w,p)>3){release(w,a.id);p.blocked='需要一杯現成藥茶與空手位';return true;}if(!reserve(w,a,'source:store:tea',1,qty(w,'store','tea'))){p.blocked='藥茶已預約';return true;}if(!approach(w,p,a,'store.drop'))return true;transfer(w,'store',p.bag,'tea',1);release(w,a.id);a.destination=null;}a.phase='sit';}
+  a.seat??=Array.from({length:[3,6,8][w.facilities.dining.stage]},(_,i)=>'dining.'+(i+1)).find(k=>!Object.values(w.reservations).some(r=>r.key==='station:'+k))||'dining.1';if(!approach(w,p,a,a.seat))return true;p.pose='drink';if(++a.progress>=80){add(w,p.bag,'tea',-1,'drink');p.energy=Math.min(10000,p.energy+2500);p.injury=Math.max(0,p.injury-3);p.teaUntil=w.tick+2400;event(w,'tea-drunk',[p.id],{source:a.id});finish(w,p,a,'藥茶飲畢，休養間隔120秒');}return true;
+ }
  if(a.kind==='aid'){
   const o=w.people[a.args.target];if(!o||o.hp>0){finish(w,p,a,'傷員已獲扶起');return true;}const pos=[o.x/Q-16,o.y/Q+8];if(!approach(w,p,a,'aid:'+o.id,pos))return true;p.pose='help';a.progress++;if(a.progress>=160){o.hp=10;o.injury=Math.max(70,o.injury);o.combatTarget=null;o.action=null;o.manualStop=true;memory(w,'care',p,o,a.id);event(w,'aided',[p.id,o.id],{text:'近身照料8秒後扶起，仍需休養。'});finish(w,p,a,'已扶起傷員');}return true;
  }
@@ -65,11 +70,11 @@ export function lifeActivityTick(w,p){const a=w.activities[p.activity];if(!a)ret
   if(plot.stage==='planted'&&!plot.watered){
    if(!qty(w,p.bag,'water')){if(qty(w,'vat','water')<1){p.blocked='需要搬1水澆灌';return true;}if(approach(w,p,a,'kitchen.vat')){transfer(w,'vat',p.bag,'water',1);release(w,a.id);reserve(w,a,'plot:'+plot.id);a.destination=null;}return true;}
   }
-  if(!approach(w,p,a,station))return true;p.pose='farm';a.progress++;p.energy=Math.max(0,p.energy-1);
+  if(!approach(w,p,a,station))return true;p.pose='farm';a.progress++;workTick(w,p);p.energy=Math.max(0,p.energy-1);
   const n=plot.stage==='planted'?80:160;if(a.progress<n)return true;a.progress=0;
   if(plot.stage==='empty'){plot.stage='planted';event(w,'planted',[p.id],{plot:plot.id});release(w,a.id);reserve(w,a,'plot:'+plot.id);a.destination=null;}
   else if(plot.stage==='planted'){add(w,p.bag,'water',-1,'irrigation');plot.watered=true;plot.stage='growing';plot.progress=0;event(w,'watered',[p.id],{plot:plot.id});finish(w,p,a,'已澆水，等待生長',true);}
-  else if(plot.stage==='ready'){const item=kind==='garden'?'veg':'herb',n=kind==='garden'?6:3;const pile=inventory(w,uid(w,'harvest'),{[item]:n},8);w.inventories[pile].pos=stations[station];w.ledger[item].produced+=n;a.harvest=pile;a.phase='haul';plot.stage='empty';plot.watered=false;event(w,'crop-harvest',[p.id],{plot:plot.id,n,item});}
+  else if(plot.stage==='ready'){const item=kind==='garden'?'veg':'herb',n=kind==='garden'?6:3;const pile=inventory(w,uid(w,'harvest'),{[item]:n},8);w.inventories[pile].pos=stations[station];w.ledger[item].produced+=n;a.harvest=pile;a.phase='haul';plot.stage='empty';plot.watered=false;countWork(w,p,a);event(w,'crop-harvest',[p.id],{plot:plot.id,n,item});}
   if(a.phase==='haul')a.kind='harvestHaul';return true;
  }
  if(a.kind==='harvestHaul'){

@@ -1,7 +1,7 @@
 import {Q,LEGENDS,ART,FACILITIES} from './data.mjs';
 import {stations,position,los,bedSlots} from './map.mjs';
-import {event,sorted,availableQty as qty,add,transfer,reserve,release,uid,makePerson} from './state.mjs';
-import {begin,cancel,approach,finish,memory} from './activities.mjs';
+import {event,sorted,availableQty as qty,add,transfer,reserve,reserveBundle,release,uid,makePerson} from './state.mjs';
+import {begin,cancel,approach,finish,memory,recoverTick} from './activities.mjs';
 import {beginSpar,startAction,interceptionReason,startDrill} from './combat.mjs';
 import {route,arrived} from './navigation.mjs';
 const mark=(w,node,actors,extra={})=>{const s=w.stories[node];s.status='completed';s.completedAt=w.tick;s.cast=actors;event(w,'story-complete',actors,{node,...extra});const npc=actors.map(id=>w.people[id]).find(p=>p?.canonicalIdentity&&p.id!=='leader');if(npc){npc.willingness=(npc.willingness||0)+3;npc.storyBusy=false;}return {ok:true};};
@@ -9,6 +9,7 @@ export function story(w,p,node){const s=w.stories[node];if(!s)return {ok:false,r
  const [key,part]=node.split('.'),npc=sorted(w.people).find(o=>o.canonicalIdentity===key),own=w.people.leader.canonicalIdentity===key;
  let o=own?sorted(w.people).find(o=>o.adult&&o.residence==='resident'&&o.id!==p.id):npc;
  if(!o||o.residence==='departed')return {ok:false,reason:'先約訪，等客人沿南路入院'};
+ if(o.storyBusy&& !Object.values(w.activities).some(a=>a.actor===p.id&&a.args.node===node))return {ok:false,reason:'同伴正在另一個約定中'};
  if(o.id===p.id)return {ok:false,reason:'請讓另一位成人一起參與自身故事'};
  if(part==='2'&&w.stories[key+'.1'].status!=='completed')return {ok:false,reason:'先完成第一個約定'};
  if(!p.adult||p.hp<=0||o.hp<=0)return {ok:false,reason:'約定需可參與的成人'};
@@ -24,11 +25,19 @@ export function story(w,p,node){const s=w.stories[node];if(!s)return {ok:false,r
  if(key==='qiao'&&part==='1'&&!w.expedition?.seen?.includes('forest')&&!w.facts['waypoint-reached'])return {ok:false,reason:'先正常出門發現林緣，再約護送'};
  if(key==='linghu'&&part==='2'&&own&&!w.facilities.quiet.stage)return {ok:false,reason:'自身故事先建靜室研讀'};
  s.status='active';s.cast=[p.id,o.id];s.started=w.tick;s.own=own;
- if(key==='linghu'&&part==='1'){const result=beginSpar(w,p,o);if(!result.ok){s.status='unseen';return result;}s.session=p.combatSession;return result;}
- if(key==='guo'&&part==='2'){const result=startDrill(w,[p.id,o.id],'A');if(!result.ok){s.status='active';return result;}s.session=w.drill.id;s.before={F:p.skill.punch.F,I:p.skill.punch.I,energy:p.energy,weapon:p.weapon};return result;}
- const result=begin(w,p,'story',{node,partner:o.id},true);if(result.ok){cancel(w,o,'接受有限約定');o.storyBusy=true;p.storyBusy=true;}return result;
+ if(key==='linghu'&&part==='1'){const result=beginSpar(w,p,o,true);if(!result.ok){s.status='unseen';return result;}s.session=p.combatSession;return result;}
+ if(key==='guo'&&part==='2'){const helper=sorted(w.people).find(q=>q.id!==p.id&&q.adult&&q.residence==='resident'&&q.hp>=q.maxHp*.8&&q.injury<=30);const actors=[p.id,...(helper?[helper.id]:[])];const result=startDrill(w,actors,'A');if(o.residence==='visitor'){cancel(w,o,'接受演武見證之約');o.storyBusy=true;route(w,o,[1390,1155]);w.drill.witnessId=o.id;w.drill.witnessPoint=[1390,1155];}s.witnessed=[];s.needsRetry=false;if(!result.ok){s.status='active';return result;}s.session=w.drill.id;s.before={F:p.skill.punch.F,I:p.skill.punch.I,energy:p.energy,weapon:p.weapon};return result;}
+ cancel(w,o,'接受有限約定');const result=begin(w,p,'story',{node,partner:o.id},true);if(result.ok){o.storyBusy=true;p.storyBusy=true;}return result;
 }
-function pairApproach(w,p,o,a,one,two){if(!reserve(w,a,'participant:'+o.id)){p.blocked='同伴有其他約定';return false;}if(!a.otherRouted){route(w,o,two);a.otherRouted=true;}return approach(w,p,a,'story:'+a.args.node,one)&&arrived(o)&&Math.hypot(o.x/Q-two[0],o.y/Q-two[1])<2;}
+function slotKey(pos){return Object.keys(stations).find(k=>stations[k][0]===pos[0]&&stations[k][1]===pos[1])||'point.'+pos.join('.');}
+function pairApproach(w,p,o,a,one,two){const left=slotKey(one),right=slotKey(two);if(!reserveBundle(w,a,[['participant:'+o.id],['station:'+left],['station:'+right]])){p.blocked='雙人站位候位';return false;}if(!a.otherRouted||arrived(o)&&Math.hypot(o.x/Q-two[0],o.y/Q-two[1])>2){route(w,o,two);a.otherRouted=true;}return approach(w,p,a,left,one)&&arrived(o)&&Math.hypot(o.x/Q-two[0],o.y/Q-two[1])<2;}
+function pairedRest(w,p,o,a){
+ if(!a.selfcare&&(p.energy<2500||o.energy<2500||p.injury>60||o.injury>60)){release(w,a.id);a.selfcare={};a.progress=0;a.otherRouted=false;a.destination=null;a.checked=null;for(const [i,q]of [p,o].entries()){const key=q.bed||'safe.'+(i+5),pos=stations[key];a.selfcare[q.id]={key,pos,kind:q.bed?'sleep':'rest'};q.pose='idle';route(w,q,pos);}event(w,'story-selfcare',[p.id,o.id],{node:a.args.node,completedUnits:w.stories[a.args.node].progress});}
+ if(!a.selfcare)return false;
+ for(const q of [p,o]){const c=a.selfcare[q.id];q.reason='共同練功暫歇：恢復75後續練';if(!reserve(w,a,'station:'+c.key))continue;if(arrived(q)&&Math.hypot(q.x/Q-c.pos[0],q.y/Q-c.pos[1])<2){q.pose=c.kind;recoverTick(w,q,c.kind,c.key);}else if(arrived(q))route(w,q,c.pos);}
+ if([p,o].every(q=>q.energy>=7500&&q.injury<=60)){release(w,a.id);delete a.selfcare;a.otherRouted=false;a.destination=null;a.checked=null;for(const q of [p,o]){q.pose='idle';q.blocked='';q.reason='已恢復，接續未完成同練單位';}}
+ return true;
+}
 function end(w,p,o,a,extra){p.storyBusy=false;o.storyBusy=false;const at=position(o);route(w,o,[at[0]+20,at[1]+20]);mark(w,a.args.node,[p.id,o.id],extra);finish(w,p,a,'約定已完成');}
 export function storyActivityTick(w,p){const a=w.activities[p.activity];if(!a||a.kind!=='story')return false;
  const node=a.args.node,[key,part]=node.split('.'),o=w.people[a.args.partner],s=w.stories[node];if(!o||o.residence==='departed'||o.hp<=0){cancel(w,p,'同伴離去／受傷；可以重約');p.storyBusy=false;if(o)o.storyBusy=false;s.status='active';return true;}
@@ -38,7 +47,7 @@ export function storyActivityTick(w,p){const a=w.activities[p.activity];if(!a||a
   if(a.progress>=(first?200:400)){if(first){if(qty(w,'table','meal')<2){p.blocked='餐已用完，補做後可繼續招待';return true;}add(w,'table','meal',-2,'hospitality');for(const q of [p,o]){q.meals++;if(q.meals<=2)q.energy=Math.min(10000,q.energy+1500);}memory(w,'talk',p,o,a.id);}else{p.pushLearned=true;p.skill.punch.U=Math.min(100,p.skill.punch.U+6+p.stats[3]);memory(w,'teach',p,o,a.id);}end(w,p,o,a);}return true;
  }
  if(key==='guo'&&part==='1'){
-  if(!pairApproach(w,p,o,a,stations['yard.1'],stations['yard.2']))return true;if(p.energy<2500||o.energy<2500){p.blocked='同練需精力25以上，可暫停休養後續單位';return true;}p.energy=Math.max(0,p.energy-1);o.energy=Math.max(0,o.energy-1);p.pose=o.pose='practice';a.progress++;
+  if(pairedRest(w,p,o,a))return true;if(!pairApproach(w,p,o,a,stations['yard.1'],stations['yard.2']))return true;p.energy=Math.max(0,p.energy-1);o.energy=Math.max(0,o.energy-1);p.pose=o.pose='practice';a.progress++;
   if(a.progress%240===0){for(const q of [p,o]){q.skill.punch.F=Math.min(100,q.skill.punch.F+3);q.skill.punch.practice++;}s.progress++;event(w,'growth',[p.id,o.id],{art:'punch',source:'guo-practice',unit:s.progress});}
   if(s.progress>=6){memory(w,'teach',p,o,a.id);end(w,p,o,a);}return true;
  }
@@ -47,16 +56,17 @@ export function storyActivityTick(w,p){const a=w.activities[p.activity];if(!a||a
   if(!pairApproach(w,p,o,a,stations['guard.front'],[1362,1220]))return true;
   if(!a.demo){a.demo={count:0,lastEnd:w.tick,session:uid(w,'lesson'),failSeen:false};p.skill.nine??={U:5,F:0,I:0,contexts:[],practice:0,sources:[{kind:'linghu-teaching',tick:w.tick}]};for(const q of [p,o]){q.combatSession=a.demo.session;q.team=q===p?'student':'teacher';q.combatTarget=null;}o.pushLearned=true;}
   const d=a.demo;
-  if(!o.action&&w.tick-d.lastEnd>=40){const move=d.count===2?'punch':'push';o.angle=0;startAction(w,o,move,null);event(w,'lesson-demonstration',[o.id,p.id],{move,text:d.count===2?'短起手反例':'朝空地完整示範長起手，讓學生觀察'});d.count++;d.lastEnd=w.tick;}
+  if(!o.action&&w.tick-d.lastEnd>=40){const move=d.count===2?'punch':'push';o.angle=0;startAction(w,o,move,null);event(w,'lesson-demonstration',[o.id,p.id],{move,text:d.count===2?'短起手反例':'朝空地完整示範長起手，讓學生觀察'});d.count++;if(d.count===5&&o.action){o.action.feintTick=w.tick+17;o.action.feintLesson=true;}d.lastEnd=w.tick;}
   if(o.action?.phase==='windup'&&d.count>=3&&!p.action){const reason=interceptionReason(w,p,o);if(!reason)startAction(w,p,'intercept',o);else if(d.count===3&&!d.failSeen&&p.observation[o.id]?.last===o.action?.id&&(p.observation[o.id]?.continuous||0)>=12){const result=startAction(w,p,'intercept',o,true);if(result.ok){d.failSeen=true;event(w,'lesson-short-start',[p.id,o.id],{reason:reason||'短起手反例'});}}}
   const success=w.journal.some(e=>e.type==='intercept-success'&&e.actors[0]===p.id&&e.tick>=s.started),failure=w.journal.some(e=>e.type==='intercept-failed'&&e.actors[0]===p.id&&e.tick>=s.started);
-  if(success&&failure){for(const q of [p,o]){q.combatSession=null;q.combatTarget=null;q.action=null;q.trainingDefeated=false;}memory(w,'teach',p,o,a.id);end(w,p,o,a,{success:true,failure:true});}return true;
+  const feintFailure=w.journal.some(e=>e.type==='intercept-failed'&&e.actors[0]===p.id&&e.tick>=s.started&&e.reason==='對方佯攻已收手');
+  if(success&&failure&&feintFailure){for(const q of [p,o]){q.combatSession=null;q.combatTarget=null;q.action=null;q.trainingDefeated=false;}memory(w,'teach',p,o,a.id);end(w,p,o,a,{success:true,failure:true});}return true;
  }
  if(key==='qiao'){
   let traveler=w.people['escort.traveler'];
   if(!a.escortPhase){
    if(!traveler)traveler=makePerson(w,'escort.traveler','往來村人',stations.spawn,{residence:'visitor',rank:'guest',color:'#ac9374',auto:false});
-   traveler.residence='visitor';traveler.storyBusy=true;traveler.departing=false;
+   a.traveler=traveler.id;traveler.residence='visitor';traveler.storyBusy=true;traveler.departing=false;
    a.escortPhase='out';route(w,p,[1660,520]);route(w,o,[1625,525]);route(w,traveler,[1645,520]);a.otherRouted=true;
    event(w,'escort-start',[p.id,o.id,traveler.id],{node});return true;
   }
@@ -87,7 +97,8 @@ export function storyActivityTick(w,p){const a=w.activities[p.activity];if(!a||a
 function faceTeacher(o,p){const dx=p.x-o.x,dy=p.y-o.y;o.angle=Math.abs(dx)>Math.abs(dy)?(dx>0?0:180):(dy>0?90:270);}
 export function storiesTick(w){
  const linghu=w.stories['linghu.1'];if(linghu.status==='active'&&linghu.session&&linghu.cast.some(id=>w.people[id].sparHistory?.some(h=>h.tick>=linghu.started))){mark(w,'linghu.1',linghu.cast);}
- const guo=w.stories['guo.2'];if(guo.status==='active'&&w.drill?.id===guo.session&&w.drill.status==='completed')mark(w,'guo.2',guo.cast,{before:guo.before});
+ const guo=w.stories['guo.2'];if(guo.status==='active'&&w.drill?.id===guo.session){const witness=w.people[guo.cast[1]];guo.witnessed??=[];for(const id of w.drill.actors){const q=w.people[id];if(q.id!==witness.id&&q.action&&Math.hypot(q.x-witness.x,q.y-witness.y)<=120*Q&&los(w,position(q),position(witness))&&!guo.witnessed.includes(q.action.id))guo.witnessed.push(q.action.id);}if(w.drill.status==='completed'&&guo.witnessed.length<3&&!guo.needsRetry){guo.needsRetry=true;witness.storyBusy=false;event(w,'story-retry',guo.cast,{node:'guo.2',reason:'見證者未看清三個攻防動作，可重新約演武'});}
+ if(w.drill.status==='completed'&&guo.witnessed.length>=3){witness.storyBusy=false;mark(w,'guo.2',guo.cast,{before:guo.before,witnessed:guo.witnessed.length});}}
  const qiao=w.stories['qiao.2'];if(qiao.status==='active'&&qiao.awaitProtection&&qiao.cast.some(id=>w.people[id].sparHistory?.some(h=>h.tick>=qiao.started))){
   // Completion still requires an actual protective interrupt, not merely a completed spar.
   if(w.memories.some(m=>m.kind==='protect'&&m.actors.some(id=>qiao.cast.includes(id))&&m.tick>=qiao.started))mark(w,'qiao.2',qiao.cast);else{qiao.awaitProtection=false;event(w,'story-retry',qiao.cast,{node:'qiao.2',reason:'護衛行動尚未成立，可再約'});}

@@ -10,8 +10,8 @@ export function openTick(w){opening.set(w,Object.fromEntries(Object.entries(w.in
 export function closeTick(w){opening.delete(w);}
 export function availableQty(w,id,item){const supply=opening.get(w)?.[id];return supply?Math.min(qty(w,id,item),supply[item]||0):qty(w,id,item);}
 export const qty=(w,id,item)=>w.inventories[id]?.items[item]||0;
-export function add(w,id,item,n,source){const inv=w.inventories[id];const supply=opening.get(w)?.[id];if(supply&&n<0)supply[item]=Math.max(0,(supply[item]||0)+n);inv.items[item]=(inv.items[item]||0)+n;if(inv.items[item]<0)throw Error('negative '+id+' '+item);if(!inv.items[item])delete inv.items[item];if(source){w.ledger[item]??={initial:0,produced:0,consumed:0};w.ledger[item][n>0?'produced':'consumed']+=Math.abs(n);}}
-export function transfer(w,from,to,item,n){if(n<=0||qty(w,from,item)<n)throw Error('invalid transfer');add(w,from,item,-n);add(w,to,item,n);event(w,'transfer',[],{from,to,item,n});}
+export function add(w,id,item,n,source,internalTransfer=false){if(item==='ration'&&n<0&&!internalTransfer){const cargo=ensureCaveCargo(w).filter(t=>t.owner===id&&!t.consumedAt);const plain=qty(w,id,item)-cargo.length;for(const t of cargo.slice(0,Math.max(0,-n-plain))){t.owner=null;t.consumedAt=w.tick;}}const inv=w.inventories[id];const supply=opening.get(w)?.[id];if(supply&&n<0)supply[item]=Math.max(0,(supply[item]||0)+n);inv.items[item]=(inv.items[item]||0)+n;if(inv.items[item]<0)throw Error('negative '+id+' '+item);if(!inv.items[item])delete inv.items[item];if(source){w.ledger[item]??={initial:0,produced:0,consumed:0};w.ledger[item][n>0?'produced':'consumed']+=Math.abs(n);}}
+export function transfer(w,from,to,item,n){if(n<=0||qty(w,from,item)<n)throw Error('invalid transfer');const tags=item==='ration'?ensureCaveCargo(w).filter(t=>t.owner===from&&!t.consumedAt).slice(0,n):[];add(w,from,item,-n,undefined,true);add(w,to,item,n,undefined,true);for(const t of tags){t.owner=to;if(from==='cave.food')t.origin=w.expedition?.id||null;}const moved=event(w,'transfer',[],{from,to,item,n});if(to==='store'&&tags.some(t=>t.deliveredAt===null)){const fresh=tags.filter(t=>t.deliveredAt===null);const delivery=event(w,'cave-cargo-delivered',[],{tokens:fresh.map(t=>t.id),from,to,n:fresh.length});w.keyFacts??={};w.keyFacts[delivery.id]={...delivery};for(const t of fresh){t.deliveredAt=w.tick;t.deliveryEvent=delivery.id;}const promise=w.promises.cave;if(promise&&['partial','unfulfilled'].includes(promise.status)&&promise.expedition){const count=ensureCaveCargo(w).filter(t=>t.origin===promise.expedition&&t.deliveredAt!==null).length;promise.foodDelivered=count;if(!promise.personExpected&&count>=promise.foodExpected){promise.status='fulfilled';event(w,'promise-later-fulfilled',[],{expedition:promise.expedition});}}}}
 export const sourceFor=item=>item==='water'?'vat':item==='meal'?'table':'store';
 export const itemTotal=(w,item)=>sorted(w.inventories).reduce((n,i)=>n+(i.items[item]||0),0);
 export const bagWeight=(w,p)=>Object.entries(w.inventories[p.bag].items).reduce((n,[i,q])=>n+q*(i==='stone'?2:i==='money'?0:1),0);
@@ -27,11 +27,11 @@ export function makePerson(w,id,name,pos,options={}){
  w.people[id]=p;inventory(w,p.bag,{},4);p.equipment='equipment.'+id;inventory(w,p.equipment,{},2);return p;
 }
 export function createWorld(config={}){
- const seed=Number(config.seed??11),template=config.template||'custom',t=TEMPLATES[template];
+ const seed=Number(config.seed??11),template=config.template||'custom',t=Object.hasOwn(TEMPLATES,template)?TEMPLATES[template]:null;
  if(!Number.isInteger(seed)||seed<1||seed>4294967295)throw Error('種子需為 1–4294967295 整數');
  if(!t)throw Error('未知模板');const stats=config.stats||t.stats;
  if(stats.length!==5||stats.some(v=>!Number.isInteger(v)||v<1||v>7)||stats.reduce((a,b)=>a+b,0)!==20)throw Error('五屬性每項1–7，合計20點');
- const w={...VERSION,seed,worldId:'gpt-'+seed,nextId:1,tick:0,commandSeq:0,commands:[],seenCommands:{},
+ const w={...VERSION,seed,worldId:'gpt-'+seed,nextId:1,tick:0,commandSeq:0,commandArrivalSeq:0,pendingCommands:[],commands:[],seenCommands:{},
   random:Object.fromEntries([['world',0x9e3779b9],['events',0x85ebca6b],['npc',0xc2b2ae35]].map(([k,v])=>[k,{value:(seed^v)>>>0||0x6d2b79f5,draws:0}])),
   people:{},facilities:{},inventories:{},activities:{},reservations:{},queues:{},bridge:{holder:null,direction:null,batch:0,lastDirection:null,queue:[]},
   journal:[],facts:{},ledger:{},relationships:{},families:{},memories:[],stories:Object.fromEntries(STORY_IDS.map(id=>[id,{id,status:'unseen',progress:0,cast:[],facts:[]} ])),
@@ -51,19 +51,22 @@ export function createWorld(config={}){
  for(const item of ['wood','stone','veg','herb']){w.ecology[item]={remaining:item==='wood'?240:item==='stone'?160:8,day:0};}
  for(const id of ['garden','herb'])for(let i=0;i<2;i++)w.plots[id+'.'+i]={id:id+'.'+i,kind:id,stage:'empty',progress:0,watered:false};
  for(const [item,n]of Object.entries(w.inventories).flatMap(([,v])=>Object.entries(v.items))) {w.ledger[item]??={initial:0,produced:0,consumed:0};w.ledger[item].initial+=n;}
- event(w,'new-world',['leader','amu','child'],{text:'破廳仍可棲身。先取木石修宿舍，留下小禾的床。'});
+ ensureCaveCargo(w);event(w,'new-world',['leader','amu','child'],{text:'破廳仍可棲身。先取木石修宿舍，留下小禾的床。'});
  hero.reason='依你的配點與性向，先安置家人';return w;
 }
-export function reserve(w,activity,key,n=1,limit=1){if(key.startsWith('station:')){const q=w.queues[key]??=[];if(!q.some(r=>r.activity===activity.id))q.push({activity:activity.id,actor:activity.actor,tick:w.tick});q.sort((a,b)=>a.tick-b.tick||a.actor.localeCompare(b.actor));const owns=Object.values(w.reservations).some(r=>r.activity===activity.id&&r.key===key);if(!owns&&q[0]?.activity!==activity.id)return false;}const others=Object.values(w.reservations).filter(r=>r.key===key&&r.activity!==activity.id).reduce((a,r)=>a+r.n,0);if(others+n>limit)return false;w.reservations[activity.id+'|'+key]={activity:activity.id,actor:activity.actor,key,n,tick:w.tick};return true;}
+export function reserve(w,activity,key,n=1,limit=1){if(key.startsWith('dest:')){const [,id,item]=key.split(':');limit=Math.min(limit,(w.inventories[id]?.capacity||0)-qty(w,id,item));}if(key.startsWith('station:')){const q=w.queues[key]??=[];if(!q.some(r=>r.activity===activity.id))q.push({activity:activity.id,actor:activity.actor,tick:w.tick});q.sort((a,b)=>a.tick-b.tick||a.actor.localeCompare(b.actor));const owns=Object.values(w.reservations).some(r=>r.activity===activity.id&&r.key===key);if(!owns&&q[0]?.activity!==activity.id)return false;}const others=Object.values(w.reservations).filter(r=>r.key===key&&r.activity!==activity.id).reduce((a,r)=>a+r.n,0);if(others+n>limit)return false;w.reservations[activity.id+'|'+key]={activity:activity.id,actor:activity.actor,key,n,tick:w.tick};return true;}
+// Acquire a whole shared session or retain only its FIFO requests, never partial locks.
+export function reserveBundle(w,a,requests){const before=new Set(Object.keys(w.reservations));let ok=true;for(const [key,n=1,limit=1]of requests)if(!reserve(w,a,key,n,limit))ok=false;if(!ok)for(const [id,r]of Object.entries(w.reservations))if(r.activity===a.id&&!before.has(id))delete w.reservations[id];return ok;}
 export function release(w,id){for(const [key,q]of Object.entries(w.queues))w.queues[key]=q.filter(r=>r.activity!==id);for(const key of Object.keys(w.reservations))if(w.reservations[key].activity===id)delete w.reservations[key];}
 export function assignBeds(w){const available=bedSlots(w),used=new Set();for(const p of sorted(w.people).filter(p=>p.residence==='resident')){
  if(p.bed&&available.includes(p.bed)&&!used.has(p.bed)){used.add(p.bed);continue;}p.bed=null;
  }for(const p of sorted(w.people).filter(p=>p.residence==='resident'&&!p.bed)){p.bed=available.find(b=>!used.has(b))||null;if(p.bed)used.add(p.bed);}}
-export function invariants(w){const errors=[],ids=new Set(),beds=new Set(),identities=new Set();for(const p of sorted(w.people)){
+export function invariants(w){const errors=[],ids=new Set(),beds=new Set(),identities=new Set();if(w.people.child?.adult!==false||w.people.child?.kind!=='human'||w.people.leader?.rank!=='leader'||w.people.leader?.adult!==true)errors.push('fixed identity boundary');for(const p of sorted(w.people)){
  if(ids.has(p.id))errors.push('duplicate '+p.id);ids.add(p.id);if(p.canonicalIdentity){if(identities.has(p.canonicalIdentity))errors.push('duplicate identity');identities.add(p.canonicalIdentity);}
  if(!Number.isSafeInteger(p.x)||!Number.isSafeInteger(p.y))errors.push('position '+p.id);
  if(p.residence!=='departed'&&!walkable(w,...position(p)))errors.push('geometry '+p.id+' '+position(p));
  if(p.bed){if(!bedSlots(w).includes(p.bed))errors.push('invalid bed '+p.id);if(beds.has(p.bed))errors.push('double bed');beds.add(p.bed);}
+ if(p.action&&!p.adult)errors.push('minor action');
  if(p.activity&&!w.activities[p.activity])errors.push('activity '+p.id);
  if(p.energy<0||p.energy>10000||p.hp<0||p.hp>p.maxHp)errors.push('vitals '+p.id);
  }
@@ -75,6 +78,7 @@ export function invariants(w){const errors=[],ids=new Set(),beds=new Set(),ident
  if(sorted(w.people).filter(p=>p.residence==='resident').length>8)errors.push('resident cap');
  if(sorted(w.people).filter(p=>p.residence==='visitor').length>2)errors.push('visitor cap');
  for(const r of Object.values(w.reservations))if(!w.activities[r.activity])errors.push('orphan token');
+ const exclusive={};for(const r of Object.values(w.reservations))if(r.key.startsWith('station:')||r.key.startsWith('participant:')||r.key.startsWith('plot:'))exclusive[r.key]=(exclusive[r.key]||0)+r.n;for(const [key,n]of Object.entries(exclusive))if(n>1)errors.push('exclusive token '+key);
  if(w.bridge.holder&&!w.people[w.bridge.holder])errors.push('bridge owner');
  for(const p of sorted(w.people))if(p.residence!=='departed'&&!p.inactive&&inRectBridge(p)&&w.bridge.holder!==p.id)errors.push('bridge capacity '+p.id);
  for(const [id,a]of Object.entries(w.activities))if(a.id!==id||!w.people[a.actor]||w.people[a.actor].activity!==id)errors.push('orphan activity '+id);
@@ -82,3 +86,16 @@ export function invariants(w){const errors=[],ids=new Set(),beds=new Set(),ident
 }
 
 function inRectBridge(p){return p.x/256>=1870&&p.x/256<=1940&&p.y/256>=425&&p.y/256<=455;}
+
+// Four finite food units retain origin and first home delivery without duplicating inventory.
+export function ensureCaveCargo(w){
+ if(w.caveCargo)return w.caveCargo;w.caveCargo=[];let index=1;
+ const put=(owner,n,origin=null,deliveredAt=null)=>{for(let i=0;i<n&&index<=4;i++)w.caveCargo.push({id:'cave.ration.'+index++,owner,origin,deliveredAt,consumedAt:null});};
+ put('cave.food',qty(w,'cave.food','ration'));
+ for(const p of sorted(w.people))put(p.bag,Math.min(p.caveFood||0,qty(w,p.bag,'ration')),w.expedition?.id||null);
+ const previous=w.promises?.cave?.foodDelivered||0,stored=Math.min(previous,qty(w,'store','ration'),5-index);put('store',stored,w.expedition?.id||null,w.tick);
+ while(index<=4)w.caveCargo.push({id:'cave.ration.'+index++,owner:null,origin:w.expedition?.id||null,deliveredAt:previous?w.tick:null,consumedAt:w.tick||1});
+ return w.caveCargo;
+}
+export function caveFoodCarried(w,person,origin=null){return ensureCaveCargo(w).filter(t=>t.owner===person.bag&&!t.consumedAt&&(!origin||t.origin===origin)).length;}
+export function caveFoodDelivered(w,origin){return ensureCaveCargo(w).filter(t=>t.origin===origin&&t.deliveredAt!==null).length;}

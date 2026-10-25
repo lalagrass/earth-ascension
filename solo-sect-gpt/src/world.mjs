@@ -1,15 +1,18 @@
 import {Q,FACILITIES} from './data.mjs';
-import {createWorld,event,sorted,invariants,bagWeight,day,openTick,closeTick} from './state.mjs';
+import {createWorld,event,sorted,invariants,bagWeight,day,openTick,closeTick,uid} from './state.mjs';
 import {begin,cancel,activityTick,autonomy,buildOrder} from './activities.mjs';
 import {moveAll} from './navigation.mjs';
 import {combatAI,combatTick,sessionsTick,ecologyTick,beginSpar,startDrill,startAction,interruptCombat} from './combat.mjs';
 import {invite,visit,depart,school,fame,partnerProposal,acceptPartner,cohabit,separate,promote,lifeTick,lifeActivityTick} from './life.mjs';
-import {dispatch,recallParty,negotiate,chooseCave,requestRescue,travelActivityTick,expeditionTick} from './expedition.mjs';
+import {dispatch,recallParty,negotiate,challengeWardens,chooseCave,requestRescue,travelActivityTick,expeditionTick} from './expedition.mjs';
 import {story,storyActivityTick,storiesTick,found} from './stories.mjs';
 import {discover} from './view.mjs';
 export {createWorld,invariants};
 export function command(w,c){
- const id=c.id||'cmd.'+(w.commandSeq+1);if(w.seenCommands[id])return w.seenCommands[id];
+ if(!c||typeof c.type!=='string'||c.actor!==undefined&&!Object.hasOwn(w.people,c.actor)||c.id!==undefined&&(typeof c.id!=='string'||!/^[-a-zA-Z0-9._]+$/.test(c.id)||['__proto__','constructor','prototype'].includes(c.id)))return {ok:false,reason:'人物／指令識別不合法',reasonCode:'invalid_command'};
+ if(c.executeTick!==undefined&&(!Number.isSafeInteger(c.executeTick)||c.executeTick<0))return {ok:false,reason:'排程tick需非負整數',reasonCode:'invalid_execute_tick'};
+ const id=c.id||(c.executeTick>w.tick?uid(w,'queued-command'):'cmd.'+(w.commandSeq+1));if(Object.hasOwn(w.seenCommands,id))return w.seenCommands[id];
+ w.pendingCommands??=[];if(c.executeTick>w.tick){const existing=w.pendingCommands.find(q=>q.id===id);if(existing)return {ok:true,queued:true};w.commandArrivalSeq=(w.commandArrivalSeq||0)+1;w.pendingCommands.push({...structuredClone(c),id,arrivalSeq:w.commandArrivalSeq});return {ok:true,queued:true};}
  let result={ok:true};const p=w.people[c.actor||'leader'];
  if(['task','stop'].includes(c.type)&&w.expedition?.actors.includes(p?.id)&&!['returned','cancelled'].includes(w.expedition.phase)){w.expedition.phase='halted';w.expedition.haltReason='隊員接到新指令／停工';p.storyBusy=false;if(w.people.zhou.helpedBy===p.id){const z=w.people.zhou;cancel(w,z,'扶助已中止');z.helpedBy=null;p.helping=null;w.expedition.reservedVisitor=false;event(w,'escort-interrupted',[p.id,z.id]);}}
  if(['task','stop','recall'].includes(c.type)&&p?.combatSession)interruptCombat(w,p);
@@ -33,6 +36,7 @@ export function command(w,c){
  else if(c.type==='found')result=found(w,c.name);
  else if(c.type==='expedition')result=dispatch(w,c.actors||[],c.target);
  else if(c.type==='recallParty')result=recallParty(w);
+ else if(c.type==='challengeWardens')result=challengeWardens(w);
  else if(c.type==='talkWardens')result=negotiate(w);
  else if(c.type==='choice')result=chooseCave(w,c.choice);
  else if(c.type==='rescue')result=requestRescue(w);
@@ -50,6 +54,7 @@ export function command(w,c){
  else if(c.type==='drill')result=startDrill(w,c.actors,c.config);
  else if(c.type==='endDrill'){if(w.drill)w.drill.status='cancelled';for(const o of sorted(w.people))if(o.combatSession===w.drill?.id){o.combatSession=null;o.combatTarget=null;if(o.action){o.action.phase='recover';o.action.remaining=o.action.recover;}o.manualStop=false;if(o.rank==='training'){o.trainingDefeated=true;}}}
  else if(c.type==='preferred'){if(c.move==='push'&&p.pushLearned||c.move==='punch')p.move=c.move;else result={ok:false,reason:'偏好只選已學拳／掌；棍劍請先換裝'};}
+ else if(c.type==='attack'&&(p.kind!=='human'||p.residence!=='resident'))result={ok:false,reason:'試招請選成年門人；訪客透過同意的約定交流'};
  else if(c.type==='attack'&&p.residence==='visitor'&&p.canonicalIdentity&&w.identityMode==='matureGuest'&&!p.combatSession)result={ok:false,reason:'成熟宗師不接受代打指令'};
  else if(c.type==='attack')result=startAction(w,p,c.move,w.people[c.target],true);
  else if(c.type==='tutorial'){w.tutorial=c.value;}
@@ -58,14 +63,15 @@ export function command(w,c){
  w.commandSeq++;w.commands.push({...c,id,tick:w.tick,seq:w.commandSeq,result});w.seenCommands[id]=result;
  event(w,result.ok?'command':'rejected',p?[p.id]:[],{commandId:id,command:c.type,reason:result.reason||null});return result;
 }
-export function step(w,batch=[]){for(const c of batch)command(w,c);openTick(w);w.tick++;
+export function step(w,batch=[]){for(const c of batch)command(w,c);w.tick++;w.pendingCommands??=[];const due=w.pendingCommands.filter(c=>c.executeTick<=w.tick).sort((a,b)=>a.executeTick-b.executeTick||a.arrivalSeq-b.arrivalSeq);w.pendingCommands=w.pendingCommands.filter(c=>c.executeTick>w.tick);for(const c of due)command(w,c);openTick(w);
  for(const p of sorted(w.people)){
   p.simTick=w.tick;if(p.stun)p.stun--;
   if(w.tick%20===sorted(w.people).findIndex(o=>o.id===p.id)%20)autonomy(w,p);
  }
  ecologyTick(w);sessionsTick(w);combatAI(w);
  moveAll(w);combatTick(w);
- for(const p of sorted(w.people)){
+ const activityOrder=sorted(w.people).sort((a,b)=>(w.activities[a.activity]?.started??Infinity)-(w.activities[b.activity]?.started??Infinity)||a.id.localeCompare(b.id));
+ for(const p of activityOrder){
   if(p.moving){p.energyRemainder+=(bagWeight(w,p)?10:5);while(p.energyRemainder>=20){p.energy=Math.max(0,p.energy-1);p.energyRemainder-=20;}}
   if(!travelActivityTick(w,p)&&!storyActivityTick(w,p)&&!lifeActivityTick(w,p))activityTick(w,p);
   // Energy uses a fixed hundredth-point accumulator; no renderer state enters rules.

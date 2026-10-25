@@ -6,19 +6,19 @@
   "inputCommit": "8d30a9ea9a87bdf9a1d1ff1527f3c618b4bffe6c",
   "specCommit": "0a2e9c393a982d3476da70513e04ac0bed552909",
   "author": "GPT / Codex, author self-review",
-  "completed": "SL0/SL1 playable checkpoints, later SL systems partially wired; validation continues",
+  "completed": "Normal U01/U02 founding; U02 later rescue; U03 ten legend nodes and family; U04 three principal paths; U05 real failed combat rescue; model five-seed and nine-save-state checks. Consolidation incomplete.",
   "evidence": [
     "solo-sect-gpt/evidence/development/sl0/summary.md",
     "solo-sect-gpt/evidence/development/sl1/ui-result.json",
     "solo-sect-gpt/PROGRESS.md"
   ],
   "remaining": [
-    "all milestone exit consolidation",
-    "full A01-A44",
-    "U01-U05",
-    "asset manifest and final visual QA",
-    "README and FEATURES"
+    "A01-A44 final evidence consolidation and applicable missing cases",
+    "normal 8+2 population / performance run",
+    "presentation and remaining martial/crop UI checks",
+    "final regression / asset hash manifest / README / FEATURES"
   ],
   "blockers": [],
-  "next": "finish long normal UI construction, repair navigation/bridge cases and validate life/combat/stories"
+  "next": "Finish loaded normal-world performance and presentation paths, resolve failures, consolidate acceptance evidence; do not mark done early.",
+  "HEAD": "8a3369d"
 }
