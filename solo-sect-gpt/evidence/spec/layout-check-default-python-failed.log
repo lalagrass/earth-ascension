@@ -1,0 +1,34 @@
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/lib/python3.14/xml/etree/ElementTree.py", line 1542, in __init__
+    from xml.parsers import expat
+  File "/opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/lib/python3.14/xml/parsers/expat.py", line 4, in <module>
+    from pyexpat import *
+ImportError: dlopen(/opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/pyexpat.cpython-314-darwin.so, 0x0002): Symbol not found: _XML_SetAllocTrackerActivationThreshold
+  Referenced from: <3E5EDC6B-FAC1-3077-AFE0-E21F8A8894A1> /opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/pyexpat.cpython-314-darwin.so
+  Expected in:     <4D62FA9D-D86A-3DD0-98F2-C6D0718849E8> /usr/lib/libexpat.1.dylib
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/lib/python3.14/xml/etree/ElementTree.py", line 1545, in __init__
+    import pyexpat as expat
+ImportError: dlopen(/opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/pyexpat.cpython-314-darwin.so, 0x0002): Symbol not found: _XML_SetAllocTrackerActivationThreshold
+  Referenced from: <3E5EDC6B-FAC1-3077-AFE0-E21F8A8894A1> /opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/pyexpat.cpython-314-darwin.so
+  Expected in:     <4D62FA9D-D86A-3DD0-98F2-C6D0718849E8> /usr/lib/libexpat.1.dylib
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/maps/design/check_layout.py", line 20, in <module>
+    for f in (root/'maps/design').glob('*.svg'):ET.parse(f)
+                                                ~~~~~~~~^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/lib/python3.14/xml/etree/ElementTree.py", line 1223, in parse
+    tree.parse(source, parser)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/lib/python3.14/xml/etree/ElementTree.py", line 571, in parse
+    parser = XMLParser()
+  File "/opt/homebrew/Cellar/python@3.14/3.14.8/Frameworks/Python.framework/Versions/3.14/lib/python3.14/xml/etree/ElementTree.py", line 1547, in __init__
+    raise ImportError(
+        "No module named expat; use SimpleXMLTreeBuilder instead"
+        )
+ImportError: No module named expat; use SimpleXMLTreeBuilder instead
