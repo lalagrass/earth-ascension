@@ -111,3 +111,16 @@ export const partyStyledPos = (s) => { const d = partyDist(s); return d == null 
 // ---- v1.55c 溜走留下的殘餘怪：回程經過未清段（模擬的「返程驚獸」）時，從該段閃過的怪點追出來 ----
 export function leftovers(s, evadedSpots) { const X = s.exp; if (!X) return []; const hits = new Set(X.ret?.hits || []);
   return SPOTS.filter((sp) => evadedSpots.has(sp.i)).map((sp) => ({ ...sp, chasing: hits.has(ROUTE.find((g) => g.id === sp.ring).name) })); }
+// ---- v1.55d 雲海：絕頂之上的無盡段不再往外延伸世界，改在一張循環「雲海圖」（1600×900 本地座標）上繞圈，每重繞一圈 ----
+import { ENDLESS } from './data.mjs';
+export const CLOUD_MAP = { w: 1600, h: 900, cx: 800, cy: 470, rx: 560, ry: 250 };
+export function cloudAt(d) { if (d == null || d < TRAIL_END) return null; const u = d - TRAIL_END, k = Math.floor(u / ENDLESS.len) + 1; return { k, f: (u % ENDLESS.len) / ENDLESS.len, d }; }
+// 圈上位置：f=0 從左下入口出發，順時針繞一圈回到入口＝下一重；邊緣加一點起伏，每重起伏不同（只看 k，決定性）
+export function cloudPos(f, k = 1) { const a = Math.PI * 0.75 + f * Math.PI * 2, w = 1 + 0.08 * Math.sin(a * 3); // 起伏只看角度：一圈頭尾接得上，三重連續跑
+  return [CLOUD_MAP.cx + Math.cos(a) * CLOUD_MAP.rx * w, CLOUD_MAP.cy + Math.sin(a) * CLOUD_MAP.ry * w]; }
+// 每重的固定點：每 every 步一個遭遇點，段末守關
+export const cloudSpots = (k) => [0.25, 0.5, 0.75].map((f, i) => ({ f, i, pos: cloudPos(f, k), gate: false })).concat([{ f: 0.97, i: 3, pos: cloudPos(0.97, k), gate: true }]);
+export const partyCloud = (s) => cloudAt(partyDist(s));
+// v1.55d 三段縮放（Songs of Syx 式 LOD）：近＝立繪小人；中＝圓點＋名字；遠＝只畫環色塊與族群圖示
+export const ZOOMS = { near: 1.6, mid: 1, far: 0.3 };
+export const lodOf = (z) => (z >= 1.15 ? 'near' : z >= 0.55 ? 'mid' : 'far');

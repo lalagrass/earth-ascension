@@ -1,0 +1,187 @@
+{
+ "steps": [
+  {
+   "n": "正常玩到巡山解鎖（自然遊玩）",
+   "pass": true
+  },
+  {
+   "n": "按「近」：立繪小人",
+   "pass": true,
+   "d": {
+    "dist": 43.75,
+    "phase": "out",
+    "cloud": null,
+    "on": false,
+    "z": 1.6,
+    "lod": "near",
+    "chunks": 38,
+    "follow": true,
+    "btn": null
+   }
+  },
+  {
+   "n": "按「中」：圓點＋名字",
+   "pass": true,
+   "d": {
+    "dist": 59.5,
+    "phase": "out",
+    "cloud": null,
+    "on": false,
+    "z": 1,
+    "lod": "mid",
+    "chunks": 38,
+    "follow": true,
+    "btn": null
+   }
+  },
+  {
+   "n": "按「遠」：只畫環色塊與族群圖示；最遠仍流暢（≥30fps、不新建區塊）",
+   "pass": true,
+   "d": {
+    "zf": {
+     "dist": 77.875,
+     "phase": "out",
+     "cloud": null,
+     "on": false,
+     "z": 0.3,
+     "lod": "far",
+     "chunks": 38,
+     "follow": true,
+     "btn": null
+    },
+    "F": {
+     "fps": 60.1,
+     "worstMs": 16.8
+    },
+    "chunksAfter": 38
+   }
+  },
+  {
+   "n": "滾輪仍可在三段之間連續縮放",
+   "pass": true,
+   "d": {
+    "dist": 120.125,
+    "phase": "out",
+    "cloud": null,
+    "on": false,
+    "z": 0.52,
+    "lod": "far",
+    "chunks": 38,
+    "follow": true,
+    "btn": null
+   }
+  },
+  {
+   "n": "走到雲霧入口前",
+   "pass": true,
+   "d": {
+    "dist": 1571.75,
+    "phase": "out",
+    "cloud": null,
+    "on": false,
+    "z": 1.6,
+    "lod": "near",
+    "chunks": 175,
+    "follow": true,
+    "btn": null
+   }
+  },
+  {
+   "n": "過絕頂：入口拉近轉場（白霧＋鏡頭拉近）→ 換雲海圖",
+   "pass": true,
+   "d": {
+    "dist": 1600,
+    "phase": "out",
+    "cloud": {
+     "k": 1,
+     "f": 0
+    },
+    "on": true,
+    "z": 1.6,
+    "lod": "near",
+    "chunks": 182,
+    "follow": true,
+    "btn": "⛰ 回山圖"
+   }
+  },
+  {
+   "n": "雲海連跑 3 重：第 1→2→3 重都在同一張循環圖上，沒有回山圖",
+   "pass": true,
+   "d": {
+    "seen": [
+     1,
+     2,
+     3
+    ],
+    "s": {
+     "dist": 2000,
+     "phase": "out",
+     "cloud": {
+      "k": 3,
+      "f": 0
+     },
+     "on": true,
+     "z": 1.6,
+     "lod": "near",
+     "chunks": 182,
+     "follow": true,
+     "btn": "⛰ 回山圖"
+    }
+   }
+  },
+  {
+   "n": "按「⛰ 回山圖」：退出雲海、看回七環大地圖（隊伍停在絕頂入口）",
+   "pass": true,
+   "d": {
+    "dist": 2021.125,
+    "phase": "out",
+    "cloud": {
+     "k": 3,
+     "f": 0.11
+    },
+    "on": false,
+    "z": 1.6,
+    "lod": "near",
+    "chunks": 182,
+    "follow": true,
+    "btn": "☁ 雲海"
+   }
+  },
+  {
+   "n": "再按「☁ 雲海」：回到雲海圖",
+   "pass": true,
+   "d": {
+    "dist": 2030.875,
+    "phase": "out",
+    "cloud": {
+     "k": 3,
+     "f": 0.15
+    },
+    "on": true,
+    "z": 1.6,
+    "lod": "near",
+    "chunks": 182,
+    "follow": true,
+    "btn": "⛰ 回山圖"
+   }
+  },
+  {
+   "n": "無頁面錯誤",
+   "pass": true,
+   "d": [
+    "dialog:郭靖剛巡山回來，還要歇 14 秒",
+    "dialog:郭靖剛巡山回來，還要歇 5 秒"
+   ]
+  }
+ ],
+ "errs": [
+  "dialog:郭靖剛巡山回來，還要歇 14 秒",
+  "dialog:郭靖剛巡山回來，還要歇 5 秒"
+ ],
+ "farFps": {
+  "fps": 60.1,
+  "worstMs": 16.8
+ },
+ "edit": "buffed skills=3000 hp=100 food>=60: hero,senior,cousin,huangrong",
+ "went": true
+}
