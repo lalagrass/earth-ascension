@@ -117,3 +117,9 @@
 - `ARTS[]`：{id, name, school, grade, tags, req:[{art, tier}], tech(招式 id 或 null), wuxingMin, effect}；`TIERS` 五階；`artMul(d, art)` ＝ 悟性 × 特質 × 前置
 - `d.arts[id] = {xp}`、`d.pendingArt`、`d.focus`（null 表示自動）；`gainArt` 掛在 grow('style')；`artTier`、`artLocked`（前置或門檻）
 - 招式由武學開出；狩獵傷害 × (1 + 0.1 × 階)
+
+## 名俠來訪（規劃，ROADMAP §13）
+- 原創名稱，保留原著神韻；資料驅動：`LEGENDS[]` {id, name, archetype, personality, root, taste, drink, align, signature[], encounter{where, when, need, weight, once}, mode: visitor|guest|disciple, ties[]}
+- 新系統依序：食好／菜譜 → 酒 → 知名度／正邪 → `ARTS.signature`＋`unlock` 條件 → `role` 新增 visitor／guest → `ENCOUNTERS` 限時抉擇卡 → 預設人際網
+- 新特質（草案）：饕、聰穎、嗜酒、豪邁、書呆、守戒、優柔
+- 平衡：每季最多一次奇遇、最多兩位客卿；客卿不當狩獵主力；招牌武學只給到入門
