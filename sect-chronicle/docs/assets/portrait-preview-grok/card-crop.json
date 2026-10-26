@@ -1,12 +1,12 @@
 {
   "_note": "人物卡預覽裁切映射（審閱用，非 runtime）。量測方式：20 格網格目測，搭配簡單邊界框；數值皆為原圖高度比例（寬比例以 x 計）。crown＝頭頂（不含髮髻飾物），chin＝下巴，eye＝雙眼中線，faceX＝臉中心。目標：卡片立繪框（3:4）內頭高 32%、眼線 36%、安全區為框內上下左右各 6%。",
   "target": { "headFrac": 0.32, "eyeLine": 0.36, "safeInset": 0.06 },
-  "artCommit": "cadb937",
+  "artCommit": { "axing": "edaf2ed", "huangrong": "edaf2ed", "dongfangbubai": "edaf2ed", "xiaolongnv": "cadb937", "limochou": "6760f21" },
   "chars": {
     "axing":         { "src": "v2/axing-v2b-a.png",       "crown": 0.04, "eye": 0.25, "chin": 0.38, "faceX": 0.46 },
     "huangrong":     { "src": "v2/huangrong-v2-ref.png",  "crown": 0.08, "eye": 0.25, "chin": 0.35, "faceX": 0.47 },
     "xiaolongnv":    { "src": "v2/xiaolongnv-v2-c.png",   "crown": 0.09, "eye": 0.33, "chin": 0.46, "faceX": 0.48 },
-    "limochou":      { "src": "v2/limochou-v2-c.png",     "crown": 0.09, "eye": 0.28, "chin": 0.40, "faceX": 0.52 },
+    "limochou":      { "src": "v2/limochou-v2-h.png",     "crown": 0.14, "eye": 0.32, "chin": 0.44, "faceX": 0.52 },
     "dongfangbubai": { "src": "v2/dongfangbubai-v2-a.png","crown": 0.08, "eye": 0.25, "chin": 0.35, "faceX": 0.47 }
   }
 }
