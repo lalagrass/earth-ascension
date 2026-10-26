@@ -10,6 +10,7 @@ import { log } from './util.mjs';
 import { removeActor } from './lifecycle.mjs';
 import { initPair } from './social.mjs';
 import { onJoin13 } from './jianghu.mjs';
+import { TREES } from './destiny.mjs';
 export const xidOf = (s, d) => (d.id === 'hero' ? s.hero?.id || 'hero' : d.id);
 export const present = (s, x) => s.ds.some((d) => xidOf(s, d) === x);
 const kitchenLv = (s) => s.fac?.kitchen?.stage || 0;
@@ -123,7 +124,7 @@ function leaveStep(s) {
     if (d.lowT >= DAY) { removeActor(s, d, '', { quiet: true }); s.xia.left[d.xia] = true; log(s, `${d.name}心灰意冷，留書一封，下山去了。（名俠不死，只是離開）`); } }
 }
 // 郭靖模板主線：一、洪七公聞香（v0.96）→ 二、吃人嘴軟（洪七公留下）→ 三、降龍傳人 → 四、華山論劍之約
-export const GUOJING_ARC = ['洪七公聞香而來', '吃人嘴軟', '降龍傳人', '華山論劍之約'];
+export const GUOJING_ARC = TREES.arcs.guojing;
 function arcAdvance(s, n, text) { const H = s.hero; if (!H || H.id !== 'guojing' || (H.arcStep || 0) >= n) return; H.arcStep = n; s.rep = (s.rep || 0) + 2; log(s, `【主線 ${n}/4】${text}`); }
 export const onCook = (s, d) => { if (s.xia && xidOf(s, d) === 'huangrong') { s.xia.cooks++; if (s.xia.teacher) s.xia.teacher.meals++; } };
 // 同門默契：名俠配對（郭靖＋黃蓉 25%）、主角＋同門預設 10%；上限 25%

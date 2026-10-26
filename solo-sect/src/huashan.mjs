@@ -8,6 +8,7 @@ import { log, resAdd } from './util.mjs';
 import { removeActor } from './lifecycle.mjs';
 import { initPair } from './social.mjs';
 import { xidOf, present } from './wuxia.mjs';
+import { TREES, buildCards } from './destiny.mjs';
 export const hsInit = () => ({ zx: 0, cave: false, carv: 0, lastCarvDay: -1, bixie: 0, bixieT: null, songN: 0, songLast: 0, siguo: false, feng: null, fengLeft: false, fengTries: 0, jealous: false, lhc: 'stay', cards: {}, arcN: 0 });
 const heroD = (s) => s.ds.find((d) => d.id === 'hero');
 const isHero = (s, id) => s.hero?.kind === 'template' && s.hero.id === id;
@@ -15,15 +16,17 @@ const find = (s, x) => s.ds.find((d) => xidOf(s, d) === x);
 const once = (s, k) => { if (s.hs.cards[k]) return false; s.hs.cards[k] = true; return true; };
 // ---- 抉擇卡（自動駕駛依價值觀；偽君子做虧心事一律添違心） ----
 const P = (k) => `assets/portraits/${k}.png`;
-export const CARDS = {
-  lin2: { title: '暗中查探劍譜', who: 'linpingzhi', text: '林平之夜裡抱著包袱發呆。據說林家《辟邪劍譜》就藏在福州老宅……', opts: [['暗中派人查探（正邪 −10）', { fame: 5, sect: 5, xia: -10 }, (s) => { s.hs.bixie = 2; s.align = (s.align ?? 40) - 10; const l = find(s, 'linghuchong'); if (l) bump(s, l, heroD(s), -15); }], ['光明正大，不去打聽', { xia: 5 }, (s) => { s.hs.bixie = -1; }]] },
-  lin3: { title: '欲練神功，必先自宮', who: 'yuebuqun', text: '袈裟上的字跡斑斑：「武林稱雄，揮劍自宮」。練成了，華山再無人能欺。代價是七情斷絕，與寧中則再無夫妻之情。', opts: [['揮刀自宮，修練辟邪劍法', { fame: 10, wu: 10, qing: -20 }, (s) => bixie(s, heroD(s))], ['把袈裟燒了', { xia: 10, qing: 5 }, (s) => { s.hs.bixie = -1; log(s, '袈裟化作灰燼。華山派仍得一步一步練紫霞。'); }]] },
-  song: { title: '嵩山派施壓：五嶽併派', who: 'yuebuqun', text: '左冷禪的使者帶著五嶽盟主令旗上山：「五嶽合併，華山就別再擺架子了。」', opts: [['虛與委蛇，暗中拖延', { fame: 5, sect: 5, xia: -5 }, (s) => { s.rep = (s.rep || 0) + 1; }], ['嚴詞拒絕（嵩山派會來找麻煩）', { xia: 5, sect: 5 }, (s) => { s.raidT = 1e9; s.rep = (s.rep || 0) + 3; }], ['低頭交出掌門令旗', { sect: -15, fame: -10 }, (s) => { s.rep = Math.max(0, (s.rep || 0) - 5); resAdd(s, 'coin', 30); }]] },
-  siguo: { title: '罰令狐沖上思過崖', who: 'linghuchong', text: '令狐沖又喝醉了，還跟田伯光稱兄道弟。按門規該罰他上思過崖面壁。', opts: [['罰他面壁思過', { sect: 5, fame: 5 }, (s) => { s.hs.siguo = true; log(s, '令狐沖背著酒葫蘆上了思過崖。'); }], ['算了，罵兩句就好', { qing: 5 }, () => {}]] },
-  feng: { title: '思過崖的老人', who: 'fengqingyang', text: '崖洞裡走出一個青袍老者：「華山派的劍法，學得這麼死板？小子，你過來。」', opts: [['恭恭敬敬請教', { wu: 5, free: 5 }, (s) => fengStart(s)], ['怕是魔教奸細，不理', { sect: 5 }, (s) => { s.hs.fengTries = 99; }]] },
-  cave: { title: '華山祕洞', who: 'yuebuqun', text: '後山石壁塌了一角，露出一個石洞：壁上刻滿五嶽劍法，以及一招招的破法。', opts: [['進洞研讀壁刻', { wu: 5, sect: 5 }, (s) => { s.hs.cave = true; log(s, '【華山祕洞】開啟：每日可讀壁刻（紫霞四至六層要靠它，觀破值同時增加）'); }], ['封住洞口，免得門人亂學', { sect: 5, free: -5 }, (s) => { s.hs.cave = 'sealed'; }]] },
-  expel: { title: '逐出令狐沖？', who: 'linghuchong', text: '令狐沖的劍已經比掌門快了。江湖上有人說，華山真正的高手是首徒。', opts: [['逐出師門（維護名望）', { fame: 10, sect: 5, qing: -15 }, (s) => expel(s)], ['容下他——做個不像岳不群的岳不群', { xia: 10, qing: 10, fame: -10 }, (s) => { s.hs.lhc = 'kept'; log(s, '岳不群拍拍令狐沖的肩：「華山有你，是華山的福氣。」'); }]] },
+// v2.0 A8：卡文字／選項／價值觀移至 destiny-trees.json；此處只留效果函式（依選項序號）
+const FX = {
+  lin2: [(s) => { s.hs.bixie = 2; s.align = (s.align ?? 40) - 10; const l = find(s, 'linghuchong'); if (l) bump(s, l, heroD(s), -15); }, (s) => { s.hs.bixie = -1; }],
+  lin3: [(s) => bixie(s, heroD(s)), (s) => { s.hs.bixie = -1; log(s, '袈裟化作灰燼。華山派仍得一步一步練紫霞。'); }],
+  song: [(s) => { s.rep = (s.rep || 0) + 1; }, (s) => { s.raidT = 1e9; s.rep = (s.rep || 0) + 3; }, (s) => { s.rep = Math.max(0, (s.rep || 0) - 5); resAdd(s, 'coin', 30); }],
+  siguo: [(s) => { s.hs.siguo = true; log(s, '令狐沖背著酒葫蘆上了思過崖。'); }, () => {}],
+  feng: [(s) => fengStart(s), (s) => { s.hs.fengTries = 99; }],
+  cave: [(s) => { s.hs.cave = true; log(s, '【華山祕洞】開啟：每日可讀壁刻（紫霞四至六層要靠它，觀破值同時增加）'); }, (s) => { s.hs.cave = 'sealed'; }],
+  expel: [(s) => expel(s), (s) => { s.hs.lhc = 'kept'; log(s, '岳不群拍拍令狐沖的肩：「華山有你，是華山的福氣。」'); }],
 };
+export const CARDS = buildCards(TREES.cards.huashan, FX);
 function bump(s, a, b, v) { if (!a || !b) return; const k = `${a.id}>${b.id}`; s.aff[k] = Math.max(-100, Math.min(100, (s.aff[k] || 0) + v)); }
 export function card(s, id) {
   if (!once(s, id) && id !== 'song') return null; const C = CARDS[id];
@@ -92,8 +95,8 @@ export function learnDugu(s, d, id) {
 function expel(s) { const l = find(s, 'linghuchong'); s.hs.lhc = 'expelled'; if (!l) return; removeActor(s, l, '', { quiet: true }); s.xia && (s.xia.left.linghuchong = true);
   log(s, `【逐出師門】${l.name}跪著磕了三個頭，背起酒葫蘆下山。江湖從此多了個浪子。`); arc(s, 5, '令狐沖去留：逐出'); }
 // ---- 主線（岳不群 5 步、令狐沖 5 步） ----
-export const ARC_YUE = ['林平之上山', '暗查劍譜', '辟邪或焚譜', '紫霞七層', '令狐沖去留'];
-export const ARC_LHC = ['思過崖的老人', '風清揚', '總訣式', '九劍三式', '自立門戶'];
+export const ARC_YUE = TREES.arcs.yuebuqun;
+export const ARC_LHC = TREES.arcs.linghuchong;
 function arc(s, n, text) { const H = s.hero; if (!H || H.kind !== 'template' || !['yuebuqun', 'linghuchong'].includes(H.id)) return; if ((H.arcStep || 0) >= n) return; H.arcStep = n; s.rep = (s.rep || 0) + 2; log(s, `【主線 ${n}/5】${text}`); }
 // ---- 每 tick ----
 export function hsStep(s, dt, H) {

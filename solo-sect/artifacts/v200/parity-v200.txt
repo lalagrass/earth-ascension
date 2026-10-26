@@ -1,0 +1,22 @@
+plain        seed 3   before a80bf86e48fc278d after a80bf86e48fc278d arcStep -/- SAME
+plain        seed 7   before a073d73d1c806213 after a073d73d1c806213 arcStep -/- SAME
+plain        seed 11  before 9e0a3bbbd118ef17 after 9e0a3bbbd118ef17 arcStep -/- SAME
+yuebuqun     seed 3   before 167fc6e3b81bc06f after 167fc6e3b81bc06f arcStep 5/5 SAME
+yuebuqun     seed 7   before 256fee015337bd87 after 256fee015337bd87 arcStep 5/5 SAME
+yuebuqun     seed 11  before 6eb5fd4a76f94f37 after 6eb5fd4a76f94f37 arcStep 5/5 SAME
+linghuchong  seed 3   before 7cd5d28e526a25d5 after 7cd5d28e526a25d5 arcStep 3/3 SAME
+linghuchong  seed 7   before d70aae5b90a8817a after d70aae5b90a8817a arcStep 3/3 SAME
+linghuchong  seed 11  before d3313909422e3afb after d3313909422e3afb arcStep 3/3 SAME
+zhangwuji    seed 3   before 7959361b37881cde after 7959361b37881cde arcStep 5/5 SAME
+zhangwuji    seed 7   before cb2f4c2295c8d5ec after cb2f4c2295c8d5ec arcStep 5/5 SAME
+zhangwuji    seed 11  before 32e9a20f3bccdd9f after 32e9a20f3bccdd9f arcStep 5/5 SAME
+weixiaobao   seed 3   before 7eca0e719708428b after 7eca0e719708428b arcStep 5/5 SAME
+weixiaobao   seed 7   before 381a60023e76228a after 381a60023e76228a arcStep 5/5 SAME
+weixiaobao   seed 11  before 01be718b54c1f62b after 01be718b54c1f62b arcStep 5/5 SAME
+axing        seed 3   before c0c11c11255175ba after c0c11c11255175ba arcStep 5/5 SAME
+axing        seed 7   before 050b43f89163b69a after 050b43f89163b69a arcStep 5/5 SAME
+axing        seed 11  before 6a8ecbacd809c313 after 6a8ecbacd809c313 arcStep 5/5 SAME
+guojing      seed 3   before 37ed596a99d7285c after 37ed596a99d7285c arcStep 4/4 SAME
+guojing      seed 7   before 67c790f8fd048aec after 67c790f8fd048aec arcStep 4/4 SAME
+guojing      seed 11  before e083db37a27c16fa after e083db37a27c16fa arcStep 4/4 SAME
+ALL SAME (21 runs, 30 days each)

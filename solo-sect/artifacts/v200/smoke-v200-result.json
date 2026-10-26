@@ -1,0 +1,20 @@
+{
+ "arcLine": "📜 主線：天地會來人 → 賭坊開張 → 海大富 → 寶衣護身 → 皇上的朋友 晨課令　 喜劇卡（本週 0/2）秘笈殘章",
+ "arcStep": 0,
+ "arcOk": true,
+ "destinyJson": [
+  [
+   "destiny-trees.json",
+   200
+  ],
+  [
+   "destiny-trees.json",
+   200
+  ]
+ ],
+ "t0": 1,
+ "t1": 321.25,
+ "ticks": true,
+ "errs": [],
+ "pass": true
+}
