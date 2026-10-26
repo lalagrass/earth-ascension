@@ -162,7 +162,7 @@ W11、W12、W18可由人物卡跨域技藝區引用，不為湊「武學數量�
 | 阿星 | `axing`（hero-data.mjs:34） | 擁有人偏好 v2：比讚和秘笈比 v1 更具辨識度，且不仿演員臉 | Grok Bot GenerateImage，2026-10-25 生成（commit 0aa722d）；風格 wcaricature；提示與參考見 solo-sect/assets/portraits/PROMPTS.md；以 edaf2ed 固定引用 | 見下方權限說明 | [對照](assets/portrait-preview-grok/axing-compare.png)／[卡](assets/portrait-preview-grok/axing-card.png) |
 | 黃蓉 | `huangrong`（hero-data.mjs:38） | v2 啃雞腿為女性風格基準 | GenerateImage 2026-10-25（0aa722d）；inkpretty（本圖即風格參考，見 PROMPTS.md）；以 edaf2ed 固定引用 | 同上 | [對照](assets/portrait-preview-grok/huangrong-compare.png)／[卡](assets/portrait-preview-grok/huangrong-card.png) |
 | 小龍女 | `xiaolongnv`（wuxia.mjs:33） | v1 偏中性；v2 依女性 inkpretty 規則，清冷出塵；v2-c 改近景並加深背景暈染，讓白衣輪廓更清楚（b 取景遠、白衣貼近背景） | GenerateImage 2026-10-26；inkpretty；v2-c 以 v2-b 為參考；cadb937（a、b 保留於 edaf2ed） | 同上 | [對照](assets/portrait-preview-grok/xiaolongnv-compare.png)／[卡](assets/portrait-preview-grok/xiaolongnv-card.png) |
-| 東方不敗 | `dongfangbubai`（sect-data.mjs:6、data.mjs:435） | 統一 inkpretty（核准例外），陰柔危險 | 同上 | 同上 | [對照](assets/portrait-preview-grok/dongfangbubai-compare.png)／[卡](assets/portrait-preview-grok/dongfangbubai-card.png) |
+| 東方不敗 | `dongfangbubai`（sect-data.mjs:6、data.mjs:435） | 統一 inkpretty（核准例外），陰柔危險 | Grok Bot GenerateImage 2026-10-26；inkpretty；edaf2ed 固定引用（東方不敗 v2-a） | 同上 | [對照](assets/portrait-preview-grok/dongfangbubai-compare.png)／[卡](assets/portrait-preview-grok/dongfangbubai-card.png) |
 | 李莫愁 | 未建角（建議 `limochou`） | 新增，無舊圖；擁有人覺得 a 雙手都拿東西顯得生硬、c 的拂塵畫得怪，改選 h：毒針加敞襟（擁有人要求的例外），暗紅外袍罩杏黃道袍，配銀冠 | GenerateImage 2026-10-26；inkpretty；h 以 e 為參考；6760f21 | 同上 | [對照](assets/portrait-preview-grok/limochou-compare.png)／[卡](assets/portrait-preview-grok/limochou-card.png) |
 
 **權限說明**：
