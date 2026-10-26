@@ -1,11 +1,10 @@
 // v1.45 review fix：任務取消與角色移出共用生命週期（GPT review P1-1/P1-2）
 // 規則：倉庫庫存 s.res 只在取料當下扣；取料前的「倉庫預留」由各人的 fetch 任務 reservedAmt 推得（whReserved），
 // 工地 reserved 同步記帳。任何取消／移出都必須把預留與手上的料一併釋放或退回。
-import { log } from './util.mjs';
+import { log, resAdd } from './util.mjs';
 import { FACILITIES } from './data.mjs';
 import { stockReserved } from './core.mjs';
 const find = (s, id) => s.ds.find((o) => o.id === id && !o.removed);
-const bookIn = (s, k, v) => { if (!v || !s.ledger) return; const L = s.ledger.in; L[k] = (L[k] || 0) + v; };
 // 其他人已預留、尚未取走的倉庫庫存
 export const whReserved = (s, k, except = null) => stockReserved(s, k, except); // v1.7 由預約表推得
 export const whAvail = (s, k, except = null) => (s.res[k] || 0) - whReserved(s, k, except);
@@ -23,7 +22,7 @@ export function cancelTask(s, d, why) {
 export function removeActor(s, d, why, { quiet = false } = {}) {
   if (!d || !s.ds.includes(d)) return false;
   cancelTask(s, d, why);
-  if (d.carry) { for (const [k, v] of Object.entries(d.carry)) { if (!v) continue; s.res[k] = (s.res[k] || 0) + v; bookIn(s, k, v); } d.carry = null; }
+  if (d.carry) { for (const [k, v] of Object.entries(d.carry)) { if (!v) continue; resAdd(s, k, v); } d.carry = null; }
   for (const o of s.ds) if (o !== d && o.task?.partner === d.id) cancelTask(s, o, `${d.name}走了`);
   if (s.resv) for (const k of Object.keys(s.resv)) if (s.resv[k] === d.id) delete s.resv[k];
   s.ds = s.ds.filter((x) => x !== d); d.removed = true;

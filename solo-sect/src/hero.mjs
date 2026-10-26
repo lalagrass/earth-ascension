@@ -2,7 +2,7 @@
 import { STATS, STAT_BUDGET, VALUES, ACT_TAGS, VALUE_K, WEXIN, Q9, HEROES, COMPANIONS, CUSTOM_COMPANIONS, ARCS } from './hero-data.mjs';
 import { NODES, MOOD, CHORE_ACTS, DAY, AWAKEN } from './data.mjs';
 import { seedArts, learnArt } from './arts.mjs';
-import { log } from './util.mjs';
+import { log, resSet } from './util.mjs';
 import { sectResolve } from './sect.mjs';
 import { genResolve } from './gen.mjs';
 export const heroById = (id) => HEROES.find((h) => h.id === id);
@@ -50,7 +50,7 @@ export function applyHero(s, spec, initPair) {
     const T = heroById(spec.id); if (!T) throw new Error('未知模板 ' + spec.id);
     H = { kind: 'template', id: T.id, name: T.name, stats: { ...T.stats }, values: { ...T.values }, personality: [...T.personality], hidden: null, lore: T.lore, sealed: !!T.sealed, arc: T.arc };
     d.classic = true; d.portrait = `assets/portraits/${T.id}.png`; d.style = T.style;
-    if (T.coinMul) s.res.coin *= T.coinMul;
+    if (T.coinMul) resSet(s, 'coin', s.res.coin * T.coinMul);
   } else {
     const st = spec.stats || defaultStats(); if (!validStats(st, spec.bonus || 0)) throw new Error('點數不合法');
     const r = readHeart(spec.answers || []); const pers = [...r.visible]; if (st.wu === 1 && !pers.includes('honest')) pers.unshift('honest');

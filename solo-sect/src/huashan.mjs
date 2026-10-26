@@ -4,7 +4,7 @@ import { DAY, HS, DUGU, TIERS, MOVES } from './data.mjs';
 import { learnArt, artTier } from './arts.mjs';
 import { addWexin, mkComp } from './hero.mjs';
 import { think } from './mind.mjs';
-import { log } from './util.mjs';
+import { log, resAdd } from './util.mjs';
 import { removeActor } from './lifecycle.mjs';
 import { initPair } from './social.mjs';
 import { xidOf, present } from './wuxia.mjs';
@@ -18,7 +18,7 @@ const P = (k) => `assets/portraits/${k}.png`;
 export const CARDS = {
   lin2: { title: '暗中查探劍譜', who: 'linpingzhi', text: '林平之夜裡抱著包袱發呆。據說林家《辟邪劍譜》就藏在福州老宅……', opts: [['暗中派人查探（正邪 −10）', { fame: 5, sect: 5, xia: -10 }, (s) => { s.hs.bixie = 2; s.align = (s.align ?? 40) - 10; const l = find(s, 'linghuchong'); if (l) bump(s, l, heroD(s), -15); }], ['光明正大，不去打聽', { xia: 5 }, (s) => { s.hs.bixie = -1; }]] },
   lin3: { title: '欲練神功，必先自宮', who: 'yuebuqun', text: '袈裟上的字跡斑斑：「武林稱雄，揮劍自宮」。練成了，華山再無人能欺。代價是七情斷絕，與寧中則再無夫妻之情。', opts: [['揮刀自宮，修練辟邪劍法', { fame: 10, wu: 10, qing: -20 }, (s) => bixie(s, heroD(s))], ['把袈裟燒了', { xia: 10, qing: 5 }, (s) => { s.hs.bixie = -1; log(s, '袈裟化作灰燼。華山派仍得一步一步練紫霞。'); }]] },
-  song: { title: '嵩山派施壓：五嶽併派', who: 'yuebuqun', text: '左冷禪的使者帶著五嶽盟主令旗上山：「五嶽合併，華山就別再擺架子了。」', opts: [['虛與委蛇，暗中拖延', { fame: 5, sect: 5, xia: -5 }, (s) => { s.rep = (s.rep || 0) + 1; }], ['嚴詞拒絕（嵩山派會來找麻煩）', { xia: 5, sect: 5 }, (s) => { s.raidT = 1e9; s.rep = (s.rep || 0) + 3; }], ['低頭交出掌門令旗', { sect: -15, fame: -10 }, (s) => { s.rep = Math.max(0, (s.rep || 0) - 5); s.res.coin += 30; }]] },
+  song: { title: '嵩山派施壓：五嶽併派', who: 'yuebuqun', text: '左冷禪的使者帶著五嶽盟主令旗上山：「五嶽合併，華山就別再擺架子了。」', opts: [['虛與委蛇，暗中拖延', { fame: 5, sect: 5, xia: -5 }, (s) => { s.rep = (s.rep || 0) + 1; }], ['嚴詞拒絕（嵩山派會來找麻煩）', { xia: 5, sect: 5 }, (s) => { s.raidT = 1e9; s.rep = (s.rep || 0) + 3; }], ['低頭交出掌門令旗', { sect: -15, fame: -10 }, (s) => { s.rep = Math.max(0, (s.rep || 0) - 5); resAdd(s, 'coin', 30); }]] },
   siguo: { title: '罰令狐沖上思過崖', who: 'linghuchong', text: '令狐沖又喝醉了，還跟田伯光稱兄道弟。按門規該罰他上思過崖面壁。', opts: [['罰他面壁思過', { sect: 5, fame: 5 }, (s) => { s.hs.siguo = true; log(s, '令狐沖背著酒葫蘆上了思過崖。'); }], ['算了，罵兩句就好', { qing: 5 }, () => {}]] },
   feng: { title: '思過崖的老人', who: 'fengqingyang', text: '崖洞裡走出一個青袍老者：「華山派的劍法，學得這麼死板？小子，你過來。」', opts: [['恭恭敬敬請教', { wu: 5, free: 5 }, (s) => fengStart(s)], ['怕是魔教奸細，不理', { sect: 5 }, (s) => { s.hs.fengTries = 99; }]] },
   cave: { title: '華山祕洞', who: 'yuebuqun', text: '後山石壁塌了一角，露出一個石洞：壁上刻滿五嶽劍法，以及一招招的破法。', opts: [['進洞研讀壁刻', { wu: 5, sect: 5 }, (s) => { s.hs.cave = true; log(s, '【華山祕洞】開啟：每日可讀壁刻（紫霞四至六層要靠它，觀破值同時增加）'); }], ['封住洞口，免得門人亂學', { sect: 5, free: -5 }, (s) => { s.hs.cave = 'sealed'; }]] },

@@ -4,7 +4,7 @@
 import { DAY, NODES } from './data.mjs';
 import { seedArts, learnArt, artTier, artById } from './arts.mjs';
 import { compat } from './social.mjs';
-import { affKey, relKey, log } from './util.mjs';
+import { affKey, relKey, log, resAdd, resSet } from './util.mjs';
 import { removeActor, cancelTask } from './lifecycle.mjs';
 export const GEN = { yearDays: 28, childYearDays: 3, adoptAge: 6, adultAge: 14, adoptEvery: 7, adoptFood: 6, maxKids: 4, lineMul: 1.2, lineTier: 2, heirShare: 0.5, suhuiMax: 3, startAge: 22 };
 export const genInit = () => ({ n: 1, couples: [], kids: [], lineage: [], retired: [], lastAdopt: -1e9, suhui: 0, day: -1, kidN: 0 });
@@ -65,7 +65,7 @@ export function succeed(s, heirId, artId) {
   s.families = (s.families || []).map((k) => k.split('|').map((x) => (x === 'hero' ? '__old' : x === oldId ? 'hero' : x)).sort().join('|')).filter((k) => !k.includes('__old'));
   G.couples = G.couples.filter((c) => !c.includes('hero')).map((c) => c.map((x) => (x === oldId ? 'hero' : x)).sort());
   for (const d of s.ds) { if (d.master === 'hero') d.master = null; if (d.master === oldId) d.master = 'hero'; if (d.spouse === 'hero') d.spouse = null; if (d.spouse === oldId) d.spouse = 'hero'; if (d.child) d.child.parents = d.child.parents.map((x) => (x === 'hero' ? `退隱的${oldName}` : x === oldId ? 'hero' : x)); }
-  cancelTask(s, h, '退隱'); if (h.carry) { for (const [k, v] of Object.entries(h.carry)) s.res[k] = (s.res[k] || 0) + v; h.carry = null; } for (const o of s.ds) if (o.task?.partner === 'hero' && o !== h) cancelTask(s, o, `${oldName}退隱了`);
+  cancelTask(s, h, '退隱'); if (h.carry) { for (const [k, v] of Object.entries(h.carry)) resAdd(s, k, v); h.carry = null; } for (const o of s.ds) if (o.task?.partner === 'hero' && o !== h) cancelTask(s, o, `${oldName}退隱了`);
   const idx = s.ds.indexOf(h); s.ds.splice(idx, 1); h.removed = true; s.ds = s.ds.map((d) => (d === n ? Object.assign(n, { id: 'hero', role: 'inner' }) : d));
   // review P1-3：傳人補齊主角欄位（價值觀、違心、已知性格），卡片/面板投影一致
   const baseVals = { xia: 0, sect: 0, qing: 0, free: 0, wu: 0, fame: 0 };
@@ -90,6 +90,6 @@ export function genStep(s) {
 }
 export function genResolve(s, ch, i) {
   s.choices = s.choices.filter((c) => c !== ch);
-  if (ch.gen === 'adopt') { if (i === 0) { const [a, b] = ch.pair.map((id) => s.ds.find((d) => d.id === id)); s.res.food = Math.max(0, s.res.food - GEN.adoptFood); adopt(s, a, b, () => ((s.gen.kidN * 37 + s.day) % 100) / 100); } else { s.gen.lastAdopt = s.t; log(s, '孩子被送去山下善堂。'); } }
+  if (ch.gen === 'adopt') { if (i === 0) { const [a, b] = ch.pair.map((id) => s.ds.find((d) => d.id === id)); resSet(s, 'food', Math.max(0, s.res.food - GEN.adoptFood)); adopt(s, a, b, () => ((s.gen.kidN * 37 + s.day) % 100) / 100); } else { s.gen.lastAdopt = s.t; log(s, '孩子被送去山下善堂。'); } }
   return true;
 }

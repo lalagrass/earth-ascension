@@ -3,7 +3,7 @@ import { SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS } fr
 import { DAY } from './data.mjs';
 import { artTier, artById } from './arts.mjs';
 import { addWexin } from './hero.mjs';
-import { log } from './util.mjs';
+import { log, resAdd } from './util.mjs';
 import { xidOf } from './wuxia.mjs';
 import { removeDisciple } from './gen.mjs';
 export function sectOf(hero) {
@@ -64,12 +64,12 @@ export function canBuildFac(s) {
 }
 export function buildFac(s, force) {
   const c = canBuildFac(s); if (!c.ok && !force) return c; const F = sectFac(s);
-  if (!force) for (const [k, v] of Object.entries(F.cost)) s.res[k] -= v;
+  if (!force) for (const [k, v] of Object.entries(F.cost)) resAdd(s, k, -v);
   s.sect.fac = true; if (s.fac.sig) s.fac.sig.stage = 1; log(s, `【鎮派】${F.name}落成：${F.desc}`); return { ok: true };
 }
 function facDaily(s) {
   const F = sectFac(s); if (!s.sect.fac || !F) return;
-  for (const [k, v] of Object.entries(F.daily || {})) { if (k === 'rep') s.rep = (s.rep || 0) + v; else s.res[k] = (s.res[k] || 0) + v; }
+  for (const [k, v] of Object.entries(F.daily || {})) { if (k === 'rep') s.rep = (s.rep || 0) + v; else resAdd(s, k, v); }
   const h = heroD(s); if (F.mood && h) h.mood = Math.min(100, h.mood + F.mood);
   if (F.ease && h?.wexin > 0 && s.day % F.ease === 0) { h.wexin--; log(s, `${h.name}在${F.name}面壁，違心稍解（${h.wexin}）。`); }
 }

@@ -9,7 +9,7 @@ import { ENEMIES, INSIGHT, ROUTE, EXP, MOVES, DAY, EXP_STYLES as STYLES, STYLE_T
 import { moveMul, effectTier, artTier as effectTierOf } from './arts.mjs';
 import { ARTS as ARTS_ALL, HS } from './data.mjs';
 import { awaken } from './hero.mjs';
-import { log } from './util.mjs';
+import { log, resAdd } from './util.mjs';
 import { DAO } from './data.mjs';
 // v1.7 相剋：a 剋 b → DAO.up；b 剋 a → DAO.down；其餘 1
 export function daoOf(d) { let best = null, bx = -1; for (const [id, r] of Object.entries(d.arts || {})) { const a = ARTS_ALL.find((x) => x.id === id); const tag = a?.tags?.find((g) => DAO.tagOf[g]); if (!tag || a.effect) continue; const x = r?.xp || 0; if (x > bx) { bx = x; best = DAO.tagOf[tag]; } } return best || '歸真'; }
@@ -75,9 +75,9 @@ export function startExpedition(s, ids, opt = {}, H) {
   const c = canExpedition(s, ids); if (!c.ok) return c;
   const thr = EXP.thr.includes(opt.thr) ? opt.thr : EXP.thrDefault, target = opt.target === 'inf' ? 1e9 : Math.max(50, opt.target || ROUTE_END);
   const camp = opt.from ? CAMPS.find((c) => c.id === opt.from && s.camps?.[c.id]) : null; if (opt.from && !camp) return { ok: false, why: '營地還沒設' };
-  const carry = camp ? EXP.campCarry * ids.length : 0; if (s.res.food < carry) return { ok: false, why: `從營地出發要帶 ${carry} 份糧上山` }; s.res.food -= carry;
+  const carry = camp ? EXP.campCarry * ids.length : 0; if (s.res.food < carry) return { ok: false, why: `從營地出發要帶 ${carry} 份糧上山` }; resAdd(s, 'food', -carry);
   const want = opt.supplies == null ? ids.length * EXP.supplyPer : Math.max(0, Math.min(opt.supplies, ids.length * EXP.supplyMax));
-  const supplies = Math.min(Math.floor(s.res.food), want); s.res.food -= supplies;
+  const supplies = Math.min(Math.floor(s.res.food), want); resAdd(s, 'food', -supplies);
   for (const id of ids) { const d = s.ds.find((x) => x.id === id); H.cancelTask(s, d, '出發巡山'); d.order = null; d.away = true; d.path = []; d.reason = '巡山中'; }
   s.expN = (s.expN || 0) + 1;
   const tm = ids.map((id) => s.ds.find((x) => x.id === id)), order = STYLES[opt.order] ? opt.order : null, style = order || teamStyle(tm);
@@ -188,7 +188,7 @@ function campAt(s, X, cp, team) {
 }
 function finishExpedition(s, team, H) {
   const X = s.exp, dist = Math.round(X.dist);
-  for (const [k, v] of Object.entries(X.loot)) s.res[k] = (s.res[k] || 0) + v;
+  for (const [k, v] of Object.entries(X.loot)) resAdd(s, k, v);
   const hurt = []; for (const d of team) { d.away = false; d.task = null; d.path = []; d.at = 'gate'; d.pos = [...(H.gate || d.pos)]; d.reason = '巡山歸來';
     if (d.hp <= EXP.hurtHeavy) { hurt.push([d.name, '重傷']); H.think(s, d, 'expHurt'); } else if (d.hp <= EXP.hurtLight) hurt.push([d.name, '輕傷']); }
   const rec = []; for (const d of team) if (dist > (d.best || 0)) { if (d.best) { H.think(s, d, 'recordSelf'); rec.push(d.name); } d.best = dist; }
