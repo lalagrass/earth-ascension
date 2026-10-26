@@ -1,0 +1,51 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 26.831,
+  "errors": [],
+  "steps": [
+    {
+      "label": "school-done",
+      "wallSeconds": 12.205,
+      "tick": 102025
+    },
+    {
+      "label": "segment-1",
+      "wallSeconds": 22.065,
+      "tick": 102719
+    },
+    {
+      "label": "segment-2",
+      "wallSeconds": 26.211,
+      "tick": 102965
+    },
+    {
+      "label": "done",
+      "wallSeconds": 26.829,
+      "tick": 102965,
+      "answer": "accept"
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "before": "後續\n義學、共作、同住之後的事會有下文；回應只看已發生的事。\n採用後續 v1",
+    "adopted": "後續\n義學之後 · 雲生與林青 起點：第9日的指點\n尚未開始\n回訪\n共作之後\n尚未開始\n談入門還沒有和非門人一起做過工\n同住之後\n尚未開始\n共同生活還沒有兩位成年人結伴",
+    "stopped": [
+      "lin",
+      "leader",
+      "lin",
+      "leader"
+    ],
+    "seg1": "後續\n義學之後 · 雲生與林青 起點：第9日的指點\n✓ 回訪\n再邀\n共作之後\n尚未開始\n談入門還沒有和非門人一起做過工\n同住之後\n尚未開始\n共同生活還沒有兩位成年人結伴",
+    "seg2": "後續\n義學之後 · 雲生與林青 起點：第9日的指點\n✓ 回訪 · ✓ 再邀（答應）\n這條後續已完成\n共作之後\n尚未開始\n談入門還沒有和非門人一起做過工\n同住之後\n尚未開始\n共同生活還沒有兩位成年人結伴",
+    "answer": "accept",
+    "journal": [
+      "義學之後・回訪：林青回來看雲生，兩人談起那堂義學。",
+      "義學之後・再邀：林青說願意；入門仍照門規（床位、供餐）辦理。"
+    ]
+  }
+}

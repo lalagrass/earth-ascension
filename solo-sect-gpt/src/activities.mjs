@@ -1,6 +1,6 @@
 import{isPackMove}from'./catalog.mjs';
 import{commitmentOf}from'./commitment.mjs';
-import{recordMemory,completeEvent}from'./mentor.mjs';
+import{recordMemory,completeEvent}from'./mentor.mjs';import {completeFollowup} from './followups.mjs';
 import {trainingArt,homeSlotIndex} from './martial-config.mjs';
 import {applyLifePolicy,supply,shouldYield,period} from './life-policy.mjs';
 import {detachClass} from './classes.mjs';
@@ -222,7 +222,7 @@ export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=
   }
   if(!approach(w,p,a,'hall.greet',a.pos)||!arrived(o)||Math.hypot(o.x/Q-a.otherPos[0],o.y/Q-a.otherPos[1])>1)return;
   p.pose=a.kind==='teach'?'teach':a.kind==='care'?'help':a.kind==='encourage'?'encourage':'talk';o.pose='listen';if(duration(a,(a.kind==='care'?12:10)*HZ)){
-   const kind=a.kind==='greet'?'talk':a.kind;memory(w,kind,p,o,a.id);if(a.args.mentorEvent)completeEvent(w,a,p,o);if(kind==='encourage'&&o.frustration){o.encouragedSources??=[];if(!o.encouragedSources.includes(o.frustration.source))o.encouragedSources.push(o.frustration.source);o.frustration=null;}if(kind==='care')o.injury=Math.max(0,o.injury-5);
+   const kind=a.kind==='greet'?'talk':a.kind;memory(w,kind,p,o,a.id);if(a.args.mentorEvent)completeEvent(w,a,p,o);if(a.args.followup)completeFollowup(w,a,p,o);if(kind==='encourage'&&o.frustration){o.encouragedSources??=[];if(!o.encouragedSources.includes(o.frustration.source))o.encouragedSources.push(o.frustration.source);o.frustration=null;}if(kind==='care')o.injury=Math.max(0,o.injury-5);
    if(o.id==='amu'&&w.memories.some(m=>m.kind==='cowork'&&m.actors.includes('amu'))){w.stories['recruit.worker'].status='completed';o.willingness=6;}
    const b=w.activities[o.activity];if(b){release(w,b.id);delete w.activities[b.id];o.activity=null;o.reason='交談完成';route(w,o,[a.otherPos[0]+20,a.otherPos[1]+20]);}finish(w,p,a,'雙人活動完成');
   }return;

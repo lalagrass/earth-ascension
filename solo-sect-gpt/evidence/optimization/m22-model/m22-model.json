@@ -1,0 +1,49 @@
+{
+  "source": "model tests on saved normal-UI states (journey-03, M16 demo) and a fresh seed-29 world; labeled fixtures noted inline",
+  "cases": [
+    {
+      "case": "school",
+      "accept": [
+        {
+          "at": 102650,
+          "activity": "activity.8945",
+          "outcome": "done"
+        },
+        {
+          "at": 102851,
+          "activity": "activity.9020",
+          "outcome": "accept"
+        }
+      ],
+      "later": {
+        "early": "義學之後：對方說再想想：第12日後可再問",
+        "afterThreeDays": "accept"
+      }
+    },
+    {
+      "case": "cowork",
+      "insufficient": "還沒有和非門人一起做過工",
+      "natural": "accept",
+      "decline": "decline"
+    },
+    {
+      "case": "household",
+      "waitReason": "條件不足：同住之後還沒有照料過受傷的對方",
+      "segs": [
+        "done",
+        "remembered"
+      ]
+    },
+    {
+      "case": "edges",
+      "busy": "義學之後：雲生正在忙，等結束或先叫停",
+      "rejected": [
+        "version",
+        "line",
+        "answer",
+        "actor",
+        "seg"
+      ]
+    }
+  ]
+}
