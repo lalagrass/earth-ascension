@@ -159,9 +159,9 @@ W11、W12、W18可由人物卡跨域技藝區引用，不為湊「武學數量�
 
 | 人物 | actorId（solo-sect src） | 替換原因 | 素材來源 | 使用權限 | 對照／卡片預覽 |
 |---|---|---|---|---|---|
-| 阿星 | `axing`（hero-data.mjs:34） | 擁有人偏好 v2：比讚和秘笈比 v1 更具辨識度，且不仿演員臉 | Grok Bot GenerateImage，2026-10-26 前生成；風格 wcaricature，參考圖 guojing-v2-b；固定於 edaf2ed | 見下方權限說明 | [對照](assets/portrait-preview-grok/axing-compare.png)／[卡](assets/portrait-preview-grok/axing-card.png) |
-| 黃蓉 | `huangrong`（hero-data.mjs:38） | v2 啃雞腿為女性風格基準 | 同上；風格 inkpretty（本圖即風格參考） | 同上 | [對照](assets/portrait-preview-grok/huangrong-compare.png)／[卡](assets/portrait-preview-grok/huangrong-card.png) |
-| 小龍女 | `xiaolongnv`（wuxia.mjs:33） | v1 性別觀感不符；v2 清冷出塵 | GenerateImage 2026-10-26；inkpretty；參考 huangrong-v2-ref；edaf2ed | 同上 | [對照](assets/portrait-preview-grok/xiaolongnv-compare.png)／[卡](assets/portrait-preview-grok/xiaolongnv-card.png) |
+| 阿星 | `axing`（hero-data.mjs:34） | 擁有人偏好 v2：比讚和秘笈比 v1 更具辨識度，且不仿演員臉 | Grok Bot GenerateImage，2026-10-25 生成（commit 0aa722d）；風格 wcaricature；提示與參考見 solo-sect/assets/portraits/PROMPTS.md；以 edaf2ed 固定引用 | 見下方權限說明 | [對照](assets/portrait-preview-grok/axing-compare.png)／[卡](assets/portrait-preview-grok/axing-card.png) |
+| 黃蓉 | `huangrong`（hero-data.mjs:38） | v2 啃雞腿為女性風格基準 | GenerateImage 2026-10-25（0aa722d）；inkpretty（本圖即風格參考，見 PROMPTS.md）；以 edaf2ed 固定引用 | 同上 | [對照](assets/portrait-preview-grok/huangrong-compare.png)／[卡](assets/portrait-preview-grok/huangrong-card.png) |
+| 小龍女 | `xiaolongnv`（wuxia.mjs:33） | v1 偏中性；v2 依女性 inkpretty 規則，清冷出塵 | GenerateImage 2026-10-26；inkpretty；參考 huangrong-v2-ref；edaf2ed | 同上 | [對照](assets/portrait-preview-grok/xiaolongnv-compare.png)／[卡](assets/portrait-preview-grok/xiaolongnv-card.png) |
 | 東方不敗 | `dongfangbubai`（sect-data.mjs:6、data.mjs:435） | 統一 inkpretty（核准例外），陰柔危險 | 同上 | 同上 | [對照](assets/portrait-preview-grok/dongfangbubai-compare.png)／[卡](assets/portrait-preview-grok/dongfangbubai-card.png) |
 | 李莫愁 | 未建角（建議 `limochou`） | 新增，無舊圖；高傲淒厲帶恨 | 同上 | 同上 | [對照](assets/portrait-preview-grok/limochou-compare.png)／[卡](assets/portrait-preview-grok/limochou-card.png) |
 
