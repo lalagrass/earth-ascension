@@ -22,3 +22,4 @@ table.ops{width:100%;border-collapse:collapse;font-size:12px;margin:6px 0}table.
 table.ops th,table.ops thead th{white-space:nowrap}table.ops td:nth-child(5){white-space:nowrap}
 /* M11 mentor */
 #mentor-events .sit{display:flex;flex-direction:row;align-items:center;gap:8px;margin:4px 0}#mentor-events .why-not{max-width:none}#mentor-memories{padding-left:18px;margin:4px 0}
+#mentor-arc{padding-left:18px;margin:4px 0;font-size:12px;line-height:1.7}#mentor-arc li.done b{color:#2f4d43}

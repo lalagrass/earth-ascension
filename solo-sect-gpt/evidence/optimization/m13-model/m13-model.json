@@ -1,0 +1,68 @@
+{
+  "source": "controlled model fixtures (labeled), not UI",
+  "cases": [
+    {
+      "case": "depth-arc",
+      "steps": [
+        [
+          "最初的共同經歷",
+          "第1日309秒 與雲生共作（memory.18）"
+        ],
+        [
+          "入門",
+          "第2日41秒 入門（event.82）"
+        ],
+        [
+          "真實指點",
+          "第1日486秒 雲生指點（memory.52）"
+        ],
+        [
+          "拜師成立",
+          "第2日204秒（bond.113）"
+        ],
+        [
+          "選定方向",
+          "第3日298秒 定向：深修基礎拳（基礎拳，基準熟練30）"
+        ],
+        [
+          "練出進度",
+          "基礎拳熟練30→42（已達門檻，4次真練）"
+        ],
+        [
+          "一同遠行",
+          "第3日581秒 返院（expedition.398），弟子沒有出手"
+        ],
+        [
+          "返院後續",
+          "第4日67秒 歸來相談（unused）"
+        ]
+      ],
+      "texts": [
+        "初次指點：師父把最基本的架勢再講一遍，弟子這次聽懂了。",
+        "定向之約：師父說：先把基礎拳練到不用想。阿木點頭記下。",
+        "練成驗收：驗收基礎拳：熟練30→42，成立方向後真練了4次。",
+        "歸來相談：這趟沒機會用上基礎拳：兩人說好下次先在營地對練。"
+      ]
+    },
+    {
+      "case": "weapon-arc",
+      "usedArts": [
+        "punch"
+      ],
+      "variant": "unused",
+      "text": "歸來相談：這趟沒機會用上齊眉棍：兩人說好下次先在營地對練。",
+      "note": "the staff was equipped, yet the recorded hits were punches; the combat AI falls back to a punch whenever a sweep cannot start (cause per swing not recorded). The follow-up correctly reads it as not using the staff"
+    },
+    {
+      "case": "used-variant",
+      "usedArts": [
+        "punch"
+      ],
+      "text": "歸來相談：這趟真的出手用上了基礎拳：弟子說和樁上練的不一樣，師父指出哪一下太早。",
+      "trust": 4
+    },
+    {
+      "case": "rejections"
+    }
+  ]
+}

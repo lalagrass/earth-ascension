@@ -1,0 +1,88 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 125.722,
+  "errors": [],
+  "steps": [
+    {
+      "label": "memory-teach",
+      "wallSeconds": 13.399,
+      "tick": 184277
+    },
+    {
+      "label": "memory-talk",
+      "wallSeconds": 16.845,
+      "tick": 184512
+    },
+    {
+      "label": "cooldown-mentor.first-lesson",
+      "wallSeconds": 17.997,
+      "tick": 184525
+    },
+    {
+      "label": "done-mentor.first-lesson",
+      "wallSeconds": 21.511,
+      "tick": 184771
+    },
+    {
+      "label": "cooldown-mentor.direction-set",
+      "wallSeconds": 37.395,
+      "tick": 185973
+    },
+    {
+      "label": "done-mentor.direction-set",
+      "wallSeconds": 40.851,
+      "tick": 186212
+    },
+    {
+      "label": "trained-plus-10",
+      "wallSeconds": 60.573,
+      "tick": 187727
+    },
+    {
+      "label": "cooldown-mentor.practice-check",
+      "wallSeconds": 62.087,
+      "tick": 187757
+    },
+    {
+      "label": "done-mentor.practice-check",
+      "wallSeconds": 67.02,
+      "tick": 188090
+    },
+    {
+      "label": "returned-together",
+      "wallSeconds": 106.832,
+      "tick": 190512
+    },
+    {
+      "label": "cooldown-mentor.homecoming",
+      "wallSeconds": 108.931,
+      "tick": 190572
+    },
+    {
+      "label": "done-mentor.homecoming",
+      "wallSeconds": 123.817,
+      "tick": 191497
+    }
+  ],
+  "label": "initial",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: all eight steps done\n    at file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m13-ui.mjs:21:144",
+  "story": {
+    "arcAfterBond": "○ 共作 還沒有共作紀錄\n✓ 入門 已入門；入門紀錄早於紀事保留範圍\n✓ 真實指點 第9日299秒 雲生指點（memory.8942）\n✓ 拜師成立 第16日225秒（bond.50256）\n○ 選定方向 師父尚未提出方向\n○ 練出進度 先定方向\n○ 一同遠行 定向之後還沒有一起遠行\n○ 返院後續 返院後約歸來相談",
+    "mentor.first-lesson": "初次指點：師父把最基本的架勢再講一遍，弟子這次聽懂了。",
+    "mentor.direction-set": "定向之約：師父說：先把基礎拳練到不用想。林青點頭記下。",
+    "baseline": 0,
+    "trained": {
+      "from": 0,
+      "to": 12
+    },
+    "arcAfterTraining": "○ 共作 還沒有共作紀錄\n✓ 入門 已入門；入門紀錄早於紀事保留範圍\n✓ 真實指點 第9日299秒 雲生指點（memory.8942）\n✓ 拜師成立 第16日225秒（bond.50256）\n✓ 選定方向 第16日309秒 定向：深修基礎拳（基礎拳，基準熟練0）\n○ 練出進度 基礎拳熟練0→12（已達門檻，4次真練）\n○ 一同遠行 定向之後還沒有一起遠行\n○ 返院後續 返院後約歸來相談",
+    "mentor.practice-check": "練成驗收：驗收基礎拳：熟練0→12，成立方向後真練了4次。",
+    "mentor.homecoming": "歸來相談：這趟沒機會用上基礎拳：兩人說好下次先在營地對練。",
+    "variant": "unused",
+    "arcDone": "○ 共作 還沒有共作紀錄\n✓ 入門 已入門；入門紀錄早於紀事保留範圍\n✓ 真實指點 第9日299秒 雲生指點（memory.8942）\n✓ 拜師成立 第16日225秒（bond.50256）\n✓ 選定方向 第16日309秒 定向：深修基礎拳（基礎拳，基準熟練0）\n✓ 練出進度 基礎拳熟練0→12（已達門檻，4次真練）\n✓ 一同遠行 第16日519秒 返院（expedition.50637），弟子沒有出手\n✓ 返院後續 第16日570秒 歸來相談（unused）"
+  }
+}
