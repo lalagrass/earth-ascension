@@ -15,6 +15,21 @@ GPT / Codex，GPT-6.1 Sol / high，單一作者；獨立worktree的solo-sect-gpt
 
 下方保留第一版歷史紀錄；原development.done與當時報告不覆寫。
 
+
+---
+
+# 優化 M7–M11（Claude Opus 5.5，作者自校）
+
+| 階段 | 玩家可見改變 | 主要證據 |
+| --- | --- | --- |
+| M7 | 共享安排所有權閘門；個別叫回轉全隊語義；卡局診斷與恢復 | evidence/optimization/m7/index.json |
+| M8 | 情境卡、具體阻擋建議、可收合分組、地圖狀態膠囊、對比 ≥4.5 | evidence/optimization/m8/index.json |
+| M9 | 經營簿：來源流量、分欄、時間分配、瓶頸；備糧方針生效；事前比較 | evidence/optimization/m9/index.json |
+| M10 | 遠行 v2：份數／撤退線、出發前預估、沿途紀錄、返院報告（一項事前方向未通過） | evidence/optimization/m10/index.json |
+| M11 | 一師一徒：同意、約定、共同記憶、依歷史的一次性後續 | evidence/optimization/m11/index.json |
+
+150 項模型／整合回歸通過；根 Python 53、SG dev 383、Earth 語法於 048f6b6 實跑通過。真人試玩未執行。
+
 ---
 
 # 山居第一章：功能與驗收

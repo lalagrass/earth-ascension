@@ -1,0 +1,24 @@
+{
+  "status": "done_with_exception",
+  "objective": "sequential optimization M7→M8→M9→M10→M11 on the GPT solo prototype",
+  "author": "Claude Opus 5.5 (Anthropic, via Claude Code)",
+  "authorization": "owner message 2026-10-26 granting M7–M11 to Opus, replacing the 'stop after M6' limit",
+  "branch": "codex/solo-sect-gpt",
+  "worktree": "/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension",
+  "baseCommit": "292bc9a3eab4e85716810ca1b9dc7c04aedb2027",
+  "artifactCommit": "048f6b6",
+  "scope": "solo-sect-gpt only (0 files changed outside); M1–M6 GPT markers and evidence unchanged",
+  "stages": [
+    {"id": "M7", "runtimeCommit": "226b546", "marker": "handoff/optimization-m7.done.json", "status": "done"},
+    {"id": "M8", "runtimeCommit": "76d7a77", "marker": "handoff/optimization-m8.done.json", "status": "done"},
+    {"id": "M9", "runtimeCommit": "145e639", "marker": "handoff/optimization-m9.done.json", "status": "done"},
+    {"id": "M10", "runtimeCommit": "5732a27", "marker": "handoff/optimization-m10.done.json", "status": "done_with_exception", "exception": "preregistered direction 'three rations arrive with more energy than one' did not hold at full starting energy"},
+    {"id": "M11", "runtimeCommit": "048f6b6", "marker": "handoff/optimization-m11.done.json", "status": "done"}
+  ],
+  "p2": {"cause": "spar and individual recall cancelled the packing activity without releasing or transferring expedition ownership; expeditionTick never noticed nobody was packing; invariants had no liveness check", "fix": "derived ownership + pre-side-effect ownership gate; recall becomes whole-party cancel/return; legacy stuck saves diagnosed and recoverable by party recall without copying goods"},
+  "verification": {"regression": "evidence/optimization/m11-model/m11-regression.log (150/150)", "root": ["evidence/optimization/m11-model/root-python.log", "evidence/optimization/m11-model/root-sect-node.log", "evidence/optimization/m11-model/root-earth-syntax.log"], "diffCheck": "evidence/optimization/m11-model/diff-check-292bc9a-range.log", "normalUI": "evidence/optimization/m7..m11-ui-accepted-{1440,1280}"},
+  "report": "docs/optimization/DELIVERY-M7-M11.md",
+  "entrypoint": {"command": "python3 -m http.server 8879 --bind 127.0.0.1 --directory solo-sect-gpt", "url": "http://127.0.0.1:8879/", "showcaseSave": "evidence/optimization/showcase/showcase-all-features.save.json"},
+  "notRun": ["human playtest (plan only: docs/optimization/PLAYTEST.md)", "independent review", "SG main/manual full RT matrix"],
+  "limits": ["author self-review", "M9 comparison has two truly independent starts and no active construction", "two M10 v2 gaps fixed during M11 and recorded in M10.md", "Serena not used (activated on the wrong root in this session)"]
+}

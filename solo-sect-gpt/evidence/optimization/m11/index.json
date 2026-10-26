@@ -1,0 +1,10 @@
+{
+  "stage": "optimization-M11",
+  "author": "Claude Opus 5.5 (Anthropic, via Claude Code)",
+  "runtimeCommit": "048f6b6",
+  "spec": "docs/optimization/M11.md",
+  "model": {"tests": "test/optimization/m11.test.mjs", "report": "evidence/optimization/m11-model/m11-model.json", "regression": "evidence/optimization/m11-model/m11-regression.log", "root": ["evidence/optimization/m11-model/root-python.log", "evidence/optimization/m11-model/root-sect-node.log", "evidence/optimization/m11-model/root-earth-syntax.log", "evidence/optimization/m11-model/diff-check-292bc9a-range.log"]},
+  "normalUI": ["evidence/optimization/m11-ui-accepted-1440/summary.json", "evidence/optimization/m11-ui-accepted-1280/summary.json"],
+  "notCountedUI": ["evidence/optimization/m11-ui-initial-1440", "evidence/optimization/m11-ui-before-text-fix-1440", "evidence/optimization/m11-ui-before-text-fix-1280", "evidence/optimization/m11-ui-before-reroute-1440", "evidence/optimization/m11-ui-failed-return-stall-1280"],
+  "kinds": {"modelFixture": "m11-model", "normalUI": "m11-ui-accepted-*", "humanPlaytest": "not run (docs/optimization/PLAYTEST.md)"}
+}

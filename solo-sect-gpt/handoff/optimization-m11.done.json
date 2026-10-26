@@ -1,0 +1,13 @@
+{
+  "status": "done",
+  "stage": "optimization-M11",
+  "author": "Claude Opus 5.5 (Anthropic, via Claude Code)",
+  "baseCommit": "f388227",
+  "artifactCommit": "048f6b6",
+  "index": "evidence/optimization/m11/index.json",
+  "changedFiles": ["src/mentor.mjs", "src/activities.mjs", "src/world.mjs", "src/commitment.mjs", "src/save.mjs", "src/save-features.mjs", "src/journey.mjs", "src/ui.mjs", "style.css", "test/optimization/m11*.mjs", "test/optimization/m10.test.mjs", "docs/optimization/M11.md", "docs/optimization/M10.md", "docs/optimization/PLAYTEST.md"],
+  "checks": {"regression": "150/150", "m11Model": "6/6", "normalUI": "passed 1440x900 and 1280x800", "rootPython": "53 OK", "sectDev": "383/383", "earthSyntax": "OK", "diffCheck": "292bc9a..HEAD clean"},
+  "saveCompatibility": "opt-in mentorPlan v1 with label chapter1-mentor-1; people, memories, journeys, follow-up IDs and one-master-one-disciple validated; unknown version rejected; unadopted worlds unchanged",
+  "notRun": ["human playtest", "independent review", "SG main/manual full RT"],
+  "limits": ["five follow-ups with three road-talk variants", "one active bond per person by design", "author self-review"]
+}

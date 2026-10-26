@@ -78,3 +78,21 @@ UI腳本位於 `test/ui/`，需上述本機服務。`harness.mjs` 使用這台�
 包的版本與完整快照保存於本局；相同ID不熱換、未知／衝突／缺引用拒絕，舊檔未遷移仍可沿原規則繼續。格式、範例、限制、驗證器與不覆寫來源的遷移工具見[內容格式](content/FORMAT.md)。完成後的正常UI示範存檔和各階段證據由[總交付索引](evidence/optimization/index.json)列出。
 
 示範現局：在存檔頁匯入`evidence/optimization/showcase/showcase-all-features.save.json`，已正常啟用所有新方針並恢復成人自主；讀入後暫停，可按繼續。這是正常UI來源，沒有注入World；新開局仍可從破廳開始。
+
+## 優化 M7–M11（Claude Opus 接手）
+
+2026-10-26 起由 Claude Opus 5.5（Anthropic）接手，範圍與來源見 [M7–M11 範圍](docs/optimization/M7-M11-scope.md)，交付總覽見 [M7–M11 交付](docs/optimization/DELIVERY-M7-M11.md)，總標記 `handoff/optimization-m7-m11.done.json`。M1–M6 的 GPT 交付與標記保持原樣。
+
+- **M7 指令可靠**：遠征中的人不會再被切磋、授課或個別改派拆掉領糧而永久卡住；個別叫回＝全隊取消出發或全隊返院；舊卡住存檔在遠征頁顯示警示，按「全隊召回／取消出發」即可恢復。
+- **M8 看懂人物**：人物頁先顯示情境卡（在哪個共享安排、現在／原因／接著、卡在哪、可以按什麼），其餘按鈕收進可展開分組；地圖狀態膠囊用「符號＋字」標示搬運、行走、休息、練功、交手、受阻。
+- **M9 經營簿**：在「經營」頁明示採用；記錄每天物資來源／去處、庫存／預約／手上／工地分欄、每人時間分配與卡關原因；「備糧」方針採用後才真正生效。
+- **M10 遠行 v2**：遠征頁「升級遠行方針 v2」後可選每人乾糧 1–3 份與撤退線，出發前看預估與風險，沿途紀錄與返院報告。
+- **M11 師徒**：人物頁「師徒」分組採用後，一師一徒、兩步同意、三日約定、只記成立後的共同經歷、五個一次性後續。
+
+啟動同上；本次驗證用的是隔離埠 `python3 -m http.server 8879 --bind 127.0.0.1 --directory solo-sect-gpt`（8878 若已被他人使用不要停掉）。新存檔標記依啟用功能為 `chapter1-ops-1`／`chapter1-journey-2`／`chapter1-mentor-1`，較早的程式會明確拒絕。測試入口：
+
+```sh
+node --test solo-sect-gpt/test/*.test.mjs solo-sect-gpt/test/integration/*.test.mjs solo-sect-gpt/test/optimization/*.test.mjs
+```
+
+正常 UI 腳本：`node solo-sect-gpt/test/optimization/m7-ui.mjs accepted 1440 900`（m8～m11 同形；需先啟動 8879 服務）。作者自校，真人試玩尚未執行（計畫見 [PLAYTEST](docs/optimization/PLAYTEST.md)）。
