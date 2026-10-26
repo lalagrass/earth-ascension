@@ -21,7 +21,7 @@
 | 小龍女 | `cadb937fb7ed54f44c72e562639fc598a6a1e646` | `solo-sect/assets/portraits/v2/xiaolongnv-v2-c.png` | 864×1152 | 2026-10-26 試一版長髮與白緞帶，跟黃蓉的雙髻分開。清冷與白衣留著。上列路徑只作身份參考。 |
 | 李莫愁 | `6760f21c342cbf72fc9fb4baf0aec8655abd0dd2` | `solo-sect/assets/portraits/v2/limochou-v2-h.png` | 480×640 | 擁有人已選的版本。 |
 | 東方不敗 | `edaf2ed60954808221447640efb79f0215dbc278` | `solo-sect/assets/portraits/v2/dongfangbubai-v2-a.png` | 480×640 | 已選的陰柔危險樣子。不改成搞笑。 |
-| 包租婆 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/baozupo.png` | 864×1152 | 2026-10-26 改掉擬真，收到漫畫墨線。大聲的房東、髮卷、香煙和碎花罩衫留著。上列路徑只作身份參考。 |
+| 包租婆 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/baozupo.png` | 480×640 | 功夫研究已引用的公開職業圖。2026-10-27 擁有人不要漫畫重畫，換回這張。 |
 | 包租公 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/baozugong.png` | 864×1152 | 2026-10-26 跟包租婆一起改掉擬真。髮卷少幾顆、一顆豎起，汗衫和懶笑留著。上列路徑只作身份參考。 |
 | 苦力強 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/kulijiang.png` | 864×1152 | 2026-10-26 依阿星風格重畫，隨後把身材收成街坊叔叔。竹竿與汗留著。上列路徑只作身份參考。 |
 | 裁縫 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/caifeng.png` | 864×1152 | 2026-10-26 依阿星風格重畫的搞笑稿。上列路徑只作身份參考。 |
@@ -35,7 +35,7 @@
 
 每張已知圖都有：作者 Grok Bot、來源提交、原路徑 `source.originPath`、複製後路徑、sha256、寬高、`alpha.channel: false`、錨點 `{x:0.5, y:1}`。配方類型是 `portrait`，矩形等於整張圖。生成紀錄來自 `6760f21:solo-sect/assets/portraits/PROMPTS.md`：工具 Grok Bot GenerateImage，模型版本未量測，3:4，無參考圖，無 seed。阿星與郭靖的風格記號是 `wcaricature`，黃蓉是 `inkpretty`。其餘未重畫檔的提示紀錄沒有逐檔風格記號，欄位寫 `unrecorded-for-this-file`。
 
-2026-10-26 擁有人指定：男角搞笑對齊阿星，女角清秀對齊黃蓉，周伯通對齊郭靖。因此裁縫、苦力強、油炸鬼、火雲邪神改以阿星為風格重畫，周伯通改以郭靖為風格重畫。新像素的工具是 Grok Build Imagine `image_edit`，模型版本與 seed 未記錄，權利是 `owner-requested-generation; third-party-rights-unverified`。同日又補兩處：包租公戴上與包租婆相同的髮卷，苦力強的身材收到跟裁縫、油炸鬼同一種街坊叔叔。小龍女另試一版長髮與白緞帶，跟黃蓉分開。包租婆與包租公隨後一起改成漫畫墨線。包租婆收斂過的一版已換回。黃蓉、東方不敗、阿星、郭靖維持原採用圖。
+2026-10-26 擁有人指定：男角搞笑對齊阿星，女角清秀對齊黃蓉，周伯通對齊郭靖。因此裁縫、苦力強、油炸鬼、火雲邪神改以阿星為風格重畫，周伯通改以郭靖為風格重畫。新像素的工具是 Grok Build Imagine `image_edit`，模型版本與 seed 未記錄，權利是 `owner-requested-generation; third-party-rights-unverified`。同日又補兩處：包租公戴上與包租婆相同的髮卷，苦力強的身材收到跟裁縫、油炸鬼同一種街坊叔叔。小龍女另試一版長髮與白緞帶，跟黃蓉分開。包租公隨後改成漫畫墨線。包租婆的漫畫稿已於 2026-10-27 換回採用的原圖。黃蓉、東方不敗、阿星、郭靖維持原採用圖。
 
 卡片氣泡顯示的 `source.path` 是複製後的 `sect-chronicle/` 路徑。pin 驗證只接受這種路徑。原路徑寫在 `originPath` 和 `recipe.derivedFrom`。
 

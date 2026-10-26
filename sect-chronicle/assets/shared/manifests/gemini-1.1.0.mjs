@@ -466,11 +466,11 @@ export default {
     {
       "assetId": "person.research.baozupo.portrait",
       "path": "sect-chronicle/assets/shared/portraits/1.1.0/baozupo.png",
-      "sha256": "454f8cf406ff5a8f205e7d2df3434de13212ddfecb55150f0311419073f238fa",
+      "sha256": "b743a09c4c40eb48b7bf64216d98442508f120dfdc2f24fae2b3d30c102d89a4",
       "availability": "known",
       "dimensions": {
-        "width": 864,
-        "height": 1152
+        "width": 480,
+        "height": 640
       },
       "alpha": {
         "channel": false,
@@ -481,14 +481,14 @@ export default {
         "commit": "6db09fd97cac3d9a66cde49103978d7793317418",
         "path": "sect-chronicle/assets/shared/portraits/1.1.0/baozupo.png",
         "originPath": "solo-sect/assets/portraits/baozupo.png",
-        "author": "Grok（本機 Grok Build）",
-        "bytesNote": "Pixels are a new edit drawn 2026-10-26. They are not the blob at source.commit. source.commit and originPath name the identity reference only."
+        "author": "Grok Bot",
+        "sameBlobAt": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2"
       },
       "rights": {
-        "status": "owner-requested-generation; third-party-rights-unverified",
+        "status": "repository-research-reuse; third-party-rights-unverified",
         "evidenceCommit": "6db09fd97cac3d9a66cde49103978d7793317418",
         "evidencePath": "solo-sect/assets/portraits/baozupo.png",
-        "note": "Owner asked on 2026-10-26 to leave the realistic rendering. Model version and seed are unrecorded. Not a commercial-rights upgrade."
+        "note": "Existing repository research bytes only. Movie and novel rights, model version, and seeds are unrecorded. Private prototype use is not a commercial-rights upgrade. Not a final public design."
       },
       "use": "Research character card portrait. Not a walk atlas, collision shape, or playable opening.",
       "anchor": {
@@ -501,21 +501,19 @@ export default {
         "rect": {
           "x": 0,
           "y": 0,
-          "w": 864,
-          "h": 1152
+          "w": 480,
+          "h": 640
         },
         "derivedFrom": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/baozupo.png",
-        "selection": "2026-10-26 擁有人要求改掉擬真，收到漫畫墨線。大聲的房東、髮卷、香煙和碎花罩衫留著。",
+        "selection": "功夫研究已引用的公開職業圖。保留房東原貌。",
         "generation": {
-          "tool": "Grok Build Imagine image_edit",
+          "tool": "Grok Bot GenerateImage",
           "modelVersion": "未量測",
           "aspect": "3:4",
-          "referenceImages": true,
+          "referenceImages": false,
           "seed": "未記錄",
-          "style": "comic-ink",
-          "styleReference": "person.research.caifeng.portrait",
-          "identityReference": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/baozupo.png",
-          "drawnOn": "2026-10-26"
+          "style": "unrecorded-for-this-file",
+          "promptLog": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2:solo-sect/assets/portraits/PROMPTS.md"
         }
       }
     },
