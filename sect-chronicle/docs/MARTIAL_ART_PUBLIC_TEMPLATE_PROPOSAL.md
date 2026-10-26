@@ -81,6 +81,8 @@
 
 [CDDA Martial arts and Techniques文件](https://docs.cataclysmdda.org/JSON/MARTIALART_JSON.html)將武學style、所含techniques、使用條件與效果分層。可借這種組織方式，不搬回合制、四維屬性、JSON執行引擎或現成倍率；資料可配並不代表適合直接安裝。
 
+追加[金庸社群／公開源碼可重用研究](JINYONG_COMMUNITY_REUSE_RESEARCH.md)：優先評jy-skill靜態人物／武學資料與MUD分階段學習，jynew／kys-cpp實際授權另核。已核固定版本、可直借的分類與待評轉接，不導入外部公式／數值／素材／第三方skill，也不新增本輪評估必做工作。
+
 下一輪三方評估只需各取九劍／降龍（沒有就一門現有武學），填來源、取得／入門／精通／施展、人物進度、特性助益與動畫支援，最多兩個例。已有#340報告只補差異，不重貼原碼／重跑世界矩陣。
 
 先由擁有人選首批公共欄位與一條可見流程，再決定實作人物卡／武學卡及adapter。暫不新建package、通用條件引擎、三版共用存檔或全套武學。保存升版與手機末位、既有開發不停。
