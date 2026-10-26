@@ -1,8 +1,10 @@
 # 公版人物卡提案：欄位聯集與先天／後天分層
 
-狀態：**評估稿，未批准系統改造**。2026-10-26，擁有人授權整理設計、三分支對照與三份評估提示詞；後續補充納入武學動畫與不同人物共用動作的分工。主 [#340](https://github.com/lalagrass/earth-ascension/issues/340)，素材庫另見 [#339](https://github.com/lalagrass/earth-ascension/issues/339)。
+狀態：**R2已獲擁有人同意作為三分支評估基準；未批准系統改造**。2026-10-26，擁有人授權整理設計、三分支對照與三份評估提示詞；後續補充納入武學動畫與不同人物共用動作的分工。主 [#340](https://github.com/lalagrass/earth-ascension/issues/340)，素材庫另見 [#339](https://github.com/lalagrass/earth-ascension/issues/339)。
 
 R2修訂：依擁有人本輪review，起點改為時間快照，不與可成長能力互斥；腳力拆義、腿法分層與經典對照詳見 [第二輪研究](CHARACTER_CARD_CLASSIC_REVIEW.md)。所有新增能力／公式仍待選，不直接改系統。
+
+2026-10-26擁有人確認本次R2修訂，授GPT／Gemini／Grok依各自當前分支評估並具名回覆#340。這是套用評估授權，不是新增能力、改成長公式或動畫runtime的授權；研究可直接讀提案分支，不必等待PR #341合入dev。原始盤點SHA只供差異參考，不要求作者退版／reset或先合其他分支。
 
 讀 [屬性對照](CHARACTER_CARD_BRANCH_MAPPING.md) 與 [三位 agent 提示詞](CHARACTER_CARD_AGENT_PROMPTS.md)。既有 [人物面板研究](CHARACTER_PANEL_RESEARCH.md)／D45 的生活總覽＋武學成長為版面起點，不改原 dev 的統一生活補給；獨立分支目前多需求系統是盤點事實，不等於本提案批准原 dev 增加飢餓／口渴。
 
