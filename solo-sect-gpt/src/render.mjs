@@ -123,6 +123,8 @@ export function drawSites(c,w){c.save();c.font='11px system-ui';c.textAlign='cen
  const busy=k=>Object.values(w.people).some(p=>w.activities[p.activity]?.kind===k&&!p.moving&&(w.activities[p.activity].progress||0)>0);
  if(busy('cook')){c.fillStyle='#d8d6cc99';for(let i=0;i<3;i++){const t=(w.tick/6+i*12)%36;c.beginPath();c.arc(760+Math.sin(t/6)*3,1228-t,4+t/10,0,7);c.fill();}}
  if(Object.values(w.people).some(p=>p.pose==='read'&&!p.moving)&&rects.quiet){const [x,y]=rects.quiet.rect;c.fillStyle='#f1d98a55';c.beginPath();c.ellipse(x+53,y+20,46,12,0,0,7);c.fill();}
+ // M27: a small '設' badge on the three facilities with a card; clicking it opens the card (same hit circle as facility-view).
+ for(const id of['store','kitchen','yard']){const rr=rects[id]?.rect;if(!rr)continue;const bx=rr[0]+rr[2]-12,by=rr[1]+12;c.fillStyle='#f5edd9ee';c.beginPath();c.arc(bx,by,10,0,7);c.fill();c.strokeStyle='#7c6a4e';c.lineWidth=1.5;c.stroke();c.fillStyle='#344638';c.fillText('設',bx,by+4);}
  const d=w.drill,j=d?.joint;if(j?.version===2&&!j.reviewed&&['assembling','running'].includes(d.status)){c.strokeStyle='#a35f43aa';c.lineWidth=2;c.setLineDash([6,5]);c.beginPath();c.moveTo(1300,1140);c.lineTo(1300,1340);c.stroke();c.setLineDash([]);c.fillStyle='#a35f43';c.fillText('前線',1300,1134);const r=readiness(w)||{};
   for(const id of d.actors){const [px,py]=j.points[id];c.strokeStyle=j.roles[id]==='line'?'#607c6e':'#ac7e43';c.lineWidth=2;c.beginPath();c.arc(px,py,6,0,7);if(r[id]==='ready'){c.fillStyle=c.strokeStyle;c.fill();}c.stroke();}}
  c.restore();}

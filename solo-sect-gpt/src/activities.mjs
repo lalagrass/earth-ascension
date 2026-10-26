@@ -138,6 +138,8 @@ function buildTick(w,p,a){const id=a.args.facility,f=w.facilities[id];if(!f?.act
   event(w,'building-complete',[p.id],{facility:id,stage:f.stage});finish(w,p,a,FACILITIES[id].name+'完成');
  }
 }
+// Usable training stakes by yard stage; shared by the core and the read-only facility card.
+export const yardStakes=w=>w.facilities.yard.stage===2?4:w.facilities.yard.stage===1?2:1;
 function stationAvailable(w,base,count,p){const candidates=Array.from({length:count},(_,i)=>base+(i+1));return candidates.find(k=>!Object.values(w.reservations).some(r=>r.key==='station:'+k&&r.actor!==p.id))||candidates[0];}
 export function recoverTick(w,p,kind,key){const gain=kind==='sleep'?(key.startsWith('hall')?120:200):80;p.restRemainder=(p.restRemainder||0)+gain*(kind==='sleep'&&!p.meals?3:4);const energy=Math.floor(p.restRemainder/80);p.restRemainder%=80;p.energy=Math.min(10000,p.energy+energy);p.hpRemainder=(p.hpRemainder||0)+1;if(p.hpRemainder>=20){p.hp=Math.min(p.maxHp,p.hp+1);p.hpRemainder-=20;}if(w.tick%200===0)p.injury=Math.max(0,p.injury-1);}
 export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=0||p.stun)return;if(p.action&&a.kind!=='train')return;
@@ -151,7 +153,7 @@ export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=
  if(a.kind==='train'||a.kind==='study'){
   if(!p.adult){finish(w,p,a);return;}const art=a.args.art||'punch';if(!p.skill[art]){blocked(p,a,'尚未學會這門武學，請先授課');return;}if(w.martialPlan&&a.kind==='train'&&['staff','sword','nine'].includes(art)){const weapon=art==='nine'?'sword':art;if(p.weapon!==weapon||!qty(w,p.equipment,weapon)){blocked(p,a,'先實際領用並裝備'+(weapon==='staff'?'木棍':'木劍')+'再練');return;}}
   if(bagWeight(w,p)){depositBag(w,p,a);return;}
-  const key=a.kind==='study'?'quiet.book':(a.station||=stationAvailable(w,'yard.',w.facilities.yard.stage===2?4:w.facilities.yard.stage===1?2:1,p));
+  const key=a.kind==='study'?'quiet.book':(a.station||=stationAvailable(w,'yard.',yardStakes(w),p));
   if(a.kind==='study'&&!w.facilities.quiet.stage){blocked(p,a,'先建靜室');return;}
   if(!approach(w,p,a,key))return;work(p,25);p.pose='practice';p.dailyPractice??={};p.dailyPractice[day(w)]=(p.dailyPractice[day(w)]||0)+1;
   if(duration(a,(a.kind==='train'?12:20)*HZ)){

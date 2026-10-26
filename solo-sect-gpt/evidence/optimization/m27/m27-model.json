@@ -1,0 +1,19 @@
+{
+  "source": "model tests on the M23 demo save (normal UI)",
+  "cases": [
+    {
+      "case": "read-only",
+      "stakes": 4,
+      "incomingSeen": null
+    },
+    {
+      "case": "occupancy",
+      "checks": 960,
+      "seenUsers": 145
+    },
+    {
+      "case": "stale",
+      "reason": "傷勢過重，請先照料／休息"
+    }
+  ]
+}

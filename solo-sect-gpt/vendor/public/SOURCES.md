@@ -8,14 +8,16 @@
 | `ef823ac/martial-view/contract.mjs` | `sect-chronicle/martial-view/contract.mjs` | c8b9514424f923f0ffad604eacf9bcc454cb2fc6c95d842d81fe7abe77d915dc | 採用（只加來源註解） |
 | `ef823ac/martial-view/render.mjs` | `sect-chronicle/martial-view/render.mjs` | 9fb95d4581c010833ef6604a414dc9cb786aa4cc447437aa30170f82aceb7ce7 | 採用；import 改指本地 `text.mjs` |
 | `ef823ac/character-card/text.mjs` | `sect-chronicle/character-card/render.mjs`（部分） | 3c8b7f0103d60acbbaf266564fc2e2e3725437540cbd51e94a4b30375277eeaa | 只摘 `labels`、`escape`、`valueText`；加「不適用」標籤；不帶 portrait 與 DOM 監聽 |
+| `ef823ac/facility-view/contract.mjs` | `sect-chronicle/facility-view/contract.mjs` | f0be545ea9fa27cfd0c4e3da218e49d44e63083da64428f155db96d5ec686ba6 | 採用（M27，只加來源註解） |
 
 ## 依賴閉包
 
-`martial-view/render.mjs` → `character-card/text.mjs`；`martial-view/contract.mjs` → `character-card/contract.mjs`。四個檔案都沒有其他 import，沒有時鐘、RNG、存檔或命令。
+`martial-view/render.mjs` → `character-card/text.mjs`；`martial-view/contract.mjs` → `character-card/contract.mjs`。`facility-view/contract.mjs` → `character-card/contract.mjs`。這些檔案都沒有其他 import，沒有時鐘、RNG、存檔或命令。
 
 ## 不採用
 
 - `character-card/gpt.mjs`：import `scene-shared/sources/gpt/...` 舊核心（`GPT_SHA=6cbd3e6`），並公開所有人的五項屬性；本地改由 `src/public-view.mjs` 的 `publicCard` 綁目前核心。
 - `character-card/render.mjs` 其餘、`portrait.mjs`、`style.css`：另一套卡片版面與素材解析；本版沿用 M19 面板。素材另見 M29。
 - `martial-view/official.mjs`、`motion.mjs`：官方掌法規則與呈現，不是本版規則。
+- `facility-view/gpt.mjs`（綁 6cbd3e6 舊核心、把使用者／容量／排隊／命令都標 unsupported）、`render.mjs`（另一套命令按鈕）：本地改由 `src/facility-view.mjs` 綁目前核心。
 - `scene-shared/`、`assets/shared/` 的執行碼與舊核心快照：本階段不需要。
