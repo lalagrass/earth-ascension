@@ -1,0 +1,232 @@
+{
+  "prereg": "docs/optimization/M25.md",
+  "round": "r1",
+  "source": "fresh seed-29 worlds; labeled fixtures (P2 depleted stone, recovery: others stood down and leader hurt to 70); model runs",
+  "wallSeconds": 39.097,
+  "directions": {
+    "R1_invalidRepicksFewer": [
+      {
+        "t": "guo",
+        "old": 7,
+        "new": 5,
+        "ok": true
+      },
+      {
+        "t": "linghu",
+        "old": 8,
+        "new": 3,
+        "ok": true
+      }
+    ],
+    "R2_backToOrder": [
+      {
+        "t": "guo",
+        "healed": 13999,
+        "back": 14003,
+        "ok": true
+      },
+      {
+        "t": "linghu",
+        "healed": 13999,
+        "back": 14003,
+        "ok": true
+      }
+    ],
+    "R3_noStarving": [
+      {
+        "t": "guo",
+        "P2": [
+          834,
+          834
+        ],
+        "ok": true
+      },
+      {
+        "t": "linghu",
+        "P2": [
+          954,
+          954
+        ],
+        "ok": true
+      }
+    ]
+  },
+  "rows": [
+    {
+      "template": "guo",
+      "scenario": "P2",
+      "autonomy": false,
+      "critical": 834,
+      "people": {
+        "leader": {
+          "invalid": 4,
+          "repicksAny": 5,
+          "blockedTicks": 1601
+        },
+        "child": {
+          "invalid": 0,
+          "repicksAny": 181,
+          "blockedTicks": 317
+        },
+        "amu": {
+          "invalid": 3,
+          "repicksAny": 4,
+          "blockedTicks": 1510
+        }
+      }
+    },
+    {
+      "template": "guo",
+      "scenario": "P2",
+      "autonomy": true,
+      "critical": 834,
+      "people": {
+        "leader": {
+          "invalid": 4,
+          "repicksAny": 4,
+          "blockedTicks": 1625
+        },
+        "child": {
+          "invalid": 0,
+          "repicksAny": 137,
+          "blockedTicks": 326
+        },
+        "amu": {
+          "invalid": 1,
+          "repicksAny": 2,
+          "blockedTicks": 1377
+        }
+      }
+    },
+    {
+      "template": "linghu",
+      "scenario": "P2",
+      "autonomy": false,
+      "critical": 954,
+      "people": {
+        "leader": {
+          "invalid": 3,
+          "repicksAny": 75,
+          "blockedTicks": 1324
+        },
+        "child": {
+          "invalid": 4,
+          "repicksAny": 127,
+          "blockedTicks": 1569
+        },
+        "amu": {
+          "invalid": 1,
+          "repicksAny": 5,
+          "blockedTicks": 621
+        }
+      }
+    },
+    {
+      "template": "linghu",
+      "scenario": "P2",
+      "autonomy": true,
+      "critical": 954,
+      "people": {
+        "leader": {
+          "invalid": 2,
+          "repicksAny": 78,
+          "blockedTicks": 933
+        },
+        "child": {
+          "invalid": 0,
+          "repicksAny": 89,
+          "blockedTicks": 326
+        },
+        "amu": {
+          "invalid": 1,
+          "repicksAny": 3,
+          "blockedTicks": 1467
+        }
+      }
+    }
+  ],
+  "recovery": [
+    {
+      "template": "guo",
+      "autonomy": false,
+      "healedAfter": 13999,
+      "backToOrderAfter": 14003,
+      "intentKept": null,
+      "kinds": {
+        "build": 4732,
+        "rest": 13996,
+        "idle": 225,
+        "cook": 4670,
+        "eat": 1365,
+        "sleep": 2597,
+        "gather": 4696,
+        "train": 2764,
+        "talk": 955
+      },
+      "dormStage": 1,
+      "dormWork": 0
+    },
+    {
+      "template": "guo",
+      "autonomy": true,
+      "healedAfter": 13999,
+      "backToOrderAfter": 14003,
+      "intentKept": null,
+      "kinds": {
+        "build": 4732,
+        "rest": 13996,
+        "idle": 225,
+        "cook": 4670,
+        "eat": 1365,
+        "sleep": 2597,
+        "gather": 4696,
+        "train": 2764,
+        "talk": 955
+      },
+      "dormStage": 1,
+      "dormWork": 0
+    },
+    {
+      "template": "linghu",
+      "autonomy": false,
+      "healedAfter": 13999,
+      "backToOrderAfter": 14003,
+      "intentKept": null,
+      "kinds": {
+        "build": 4732,
+        "rest": 15578,
+        "idle": 1174,
+        "cook": 4670,
+        "eat": 1365,
+        "sleep": 1291,
+        "gather": 4696,
+        "train": 1353,
+        "talk": 700,
+        "move": 441
+      },
+      "dormStage": 1,
+      "dormWork": 0
+    },
+    {
+      "template": "linghu",
+      "autonomy": true,
+      "healedAfter": 13999,
+      "backToOrderAfter": 14003,
+      "intentKept": null,
+      "kinds": {
+        "build": 4732,
+        "rest": 15578,
+        "idle": 1174,
+        "cook": 4670,
+        "eat": 1365,
+        "sleep": 1291,
+        "gather": 4696,
+        "train": 1353,
+        "talk": 700,
+        "move": 441
+      },
+      "dormStage": 1,
+      "dormWork": 0
+    }
+  ]
+}

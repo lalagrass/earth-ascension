@@ -115,9 +115,11 @@ export function sessionsTick(w){
  const active=d.opponents.map(id=>w.people[id]).filter(p=>!p.trainingDefeated&&!p.inactive);
  if(!active.length){if(d.wave===2){d.status='exiting';for(const id of [...d.actors,...(d.allOpponents||d.opponents)]){const p=w.people[id];if(p.combatSession!==d.id)continue;p.combatSession=null;p.combatTarget=null;p.action=null;p.manualStop=false;}return;}
   d.nextWave??=w.tick+200;if(w.tick<d.nextWave)return;d.wave++;d.nextWave=null;d.opponents=[];
-  for(let i=0;i<2;i++){
-   const id='training.'+((d.wave-1)*2+i+1),prep=[1490+(i%2)*24,1170+(d.wave-1)*110+i*25];
-   let p=w.people[id];if(!p)p=makePerson(w,id,'演武對手'+((d.wave-1)*2+i+1),prep,{residence:'training',rank:'training',hp:40,maxHp:40,auto:false,color:'#8f7168',prep});
+  // M25: the joint-drill v2 'flank' arrival sends three per wave from the east edge (the third through the south gate), clear of where earlier drill opponents stand; every other drill keeps two.
+  const per=d.joint?.arrival==='flank'?3:2;
+  for(let i=0;i<per;i++){
+   const id='training.'+(per===3?'f':'')+((d.wave-1)*per+i+1),prep=per===3?(i===2?[1530+(d.wave-1)*20,1350]:[1530+(i%2)*20,1170+(d.wave-1)*110+i*25]):[1490+(i%2)*24,1170+(d.wave-1)*110+i*25];
+   let p=w.people[id];if(!p)p=makePerson(w,id,'演武對手'+((d.wave-1)*per+i+1),prep,{residence:'training',rank:'training',hp:40,maxHp:40,auto:false,color:'#8f7168',prep});
    p.hp=40;p.energy=10000;p.injury=0;p.skill={punch:{U:5,F:0,I:0,contexts:[],practice:0,sources:[]}};p.observation={};p.combatSession=d.id;p.team='opponents';p.trainingDefeated=false;p.drillLeaked=false;p.combatTarget=null;p.manualStop=true;p.action=null;p.path=[];p.routeAt=0;d.opponents.push(id);d.allOpponents.push(id);event(w,'training-enter',[id],{session:d.id,wave:d.wave});
   }
  }

@@ -1,0 +1,17 @@
+{
+  "source": "model tests; labeled fixtures noted inline",
+  "cases": [
+    {
+      "case": "flank",
+      "targetsAtStart": [
+        "training.f1",
+        "training.f2"
+      ],
+      "review": "held"
+    },
+    {
+      "case": "child-stroll",
+      "picks": []
+    }
+  ]
+}

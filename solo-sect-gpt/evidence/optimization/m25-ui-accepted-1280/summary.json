@@ -1,0 +1,169 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 236.004,
+  "errors": [],
+  "steps": [
+    {
+      "label": "rest-amu",
+      "wallSeconds": 6.966,
+      "tick": 188573
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 22.097,
+      "tick": 188863
+    },
+    {
+      "label": "three-enter",
+      "wallSeconds": 24.645,
+      "tick": 188906
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 35.406,
+      "tick": 189719
+    },
+    {
+      "label": "resting",
+      "wallSeconds": 44.246,
+      "tick": 113432
+    },
+    {
+      "label": "back-to-schedule",
+      "wallSeconds": 235.202,
+      "tick": 128655
+    },
+    {
+      "label": "done",
+      "wallSeconds": 236.004,
+      "tick": 128655,
+      "back": {
+        "tick": 128655,
+        "afterTicks": 15817,
+        "wallSeconds": 190.864,
+        "kind": "move",
+        "decision": {
+          "version": 1,
+          "layer": "choice",
+          "code": "free-choice",
+          "reason": "自由選擇：回庭院歇腳",
+          "chosenAt": 128589,
+          "score": 25,
+          "baseScore": 25,
+          "roleBonus": 0,
+          "traitScore": 0,
+          "commutePenalty": 0
+        }
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "review": "上次回顧：失守 · 兩翼包抄 · 漏過0 · 擊退4 · 集合15秒、交手42秒\n阿木（前攔）短打快拳12 · 命中11 · 受擊4 · 耗精力32 · 傷勢+0\n林青（守線）直拳7 · 命中4 · 受擊7 · 耗精力14 · 傷勢+0\n攔截位置（前線 x1300）：演武對手1 在 x1497 被阿木攔下；演武對手2 在 x1493 被阿木攔下；演武對手3 在 x1349 被林青攔下；演武對手4 在 x1473 被阿木攔下；演武對手6 在 x1338 被林青攔下",
+    "reviewData": {
+      "version": 2,
+      "drill": "drill.50766",
+      "config": "A",
+      "outcome": "failed",
+      "started": 188573,
+      "ended": 189703,
+      "leaked": 0,
+      "defeated": 4,
+      "roles": {
+        "amu": "front",
+        "lin": "line"
+      },
+      "people": {
+        "amu": {
+          "moves": {
+            "advanced.closefist": 12
+          },
+          "hits": 11,
+          "received": 4
+        },
+        "lin": {
+          "moves": {
+            "punch": 7
+          },
+          "hits": 4,
+          "received": 7
+        }
+      },
+      "arrival": "flank",
+      "goAt": 188863,
+      "spans": {
+        "amu": {
+          "joined": 188573,
+          "left": 189470
+        },
+        "lin": {
+          "joined": 188573,
+          "left": null
+        }
+      },
+      "body": {
+        "amu": {
+          "energyUsed": 3210,
+          "injuryGained": 0
+        },
+        "lin": {
+          "energyUsed": 1432,
+          "injuryGained": 0
+        }
+      },
+      "intercepts": {
+        "training.f1": {
+          "x": 1497,
+          "by": "amu"
+        },
+        "training.f2": {
+          "x": 1493,
+          "by": "amu"
+        },
+        "training.f3": {
+          "x": 1349,
+          "by": "lin"
+        },
+        "training.f4": {
+          "x": 1473,
+          "by": "amu"
+        },
+        "training.f6": {
+          "x": 1338,
+          "by": "lin"
+        }
+      }
+    },
+    "start": {
+      "tick": 112838,
+      "injury": 70,
+      "hp": 10
+    },
+    "refused": "傷勢過重，請先照料／休息",
+    "resting": "現在 行走 · 就寢\n原因 精力 45，傷勢 70\n接著 傷勢降至0、生命回滿、精力至少75後回工作\n作業位 側舍床位 1\n• 傷勢過重，只能休養\n練拳\n不能：傷勢過重，請先照料／休息\n坐休\n吃飯\n停工",
+    "back": {
+      "tick": 128655,
+      "afterTicks": 15817,
+      "wallSeconds": 190.864,
+      "kind": "move",
+      "decision": {
+        "version": 1,
+        "layer": "choice",
+        "code": "free-choice",
+        "reason": "自由選擇：回庭院歇腳",
+        "chosenAt": 128589,
+        "score": 25,
+        "baseScore": 25,
+        "roleBonus": 0,
+        "traitScore": 0,
+        "commutePenalty": 0
+      }
+    },
+    "backCard": "現在 行走 · 行走\n原因 接單時：自由選擇：回庭院歇腳\n目標來源 自由選擇\n接著 完成本次後依日課重選\n作業位 指定位置\n練拳\n坐休\n吃飯\n停工"
+  }
+}
