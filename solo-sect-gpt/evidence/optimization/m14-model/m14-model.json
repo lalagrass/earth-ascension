@@ -1,0 +1,9 @@
+{
+  "source": "labeled model fixtures, not UI",
+  "cases": [
+    {
+      "case": "rules",
+      "novice": "先完成基礎拳原理5／熟練30"
+    }
+  ]
+}

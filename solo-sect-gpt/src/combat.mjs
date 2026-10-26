@@ -64,7 +64,7 @@ export function combatAI(w){
   const desired=w.martialPlan?.styles[p.id]==='counter'?26:moveFor(w,move).range-2;
   if(dist(p,target)>desired){if(w.tick%10===0){let dx=p.x-target.x,dy=p.y-target.y,d=Math.hypot(dx,dy)||1;const to=[target.x/Q+dx/d*(desired-2),target.y/Q+dy/d*(desired-2)];route(w,p,to);}continue;}
   if(p.assessment){const window=Math.floor((w.tick-p.sparStarted)/200);if(p.assessmentWindow===window)continue;p.assessmentWindow=window;}
-  face(p,target);if(w.martialPlan?.styles[p.id]==='counter'&&p.skill.nine&&p.weapon==='sword'){if(!target.action||target.action.phase==='recover')continue;if(target.action.phase==='windup'&&target.action.wind>=21){if(!interceptionReason(w,p,target))startAction(w,p,'intercept',target);continue;}}if(p.skill.nine&&!interceptionReason(w,p,target))startAction(w,p,'intercept',target);else {const r=startAction(w,p,move,target);if(!r.ok&&move==='sweep')startAction(w,p,'punch',target);}
+  face(p,target);if(w.martialPlan?.styles[p.id]==='counter'&&p.skill.nine&&p.weapon==='sword'){if(!target.action||target.action.phase==='recover')continue;if(target.action.phase==='windup'&&target.action.wind>=21){if(!interceptionReason(w,p,target))startAction(w,p,'intercept',target);continue;}}if(p.skill.nine&&!interceptionReason(w,p,target))startAction(w,p,'intercept',target);else {const r=startAction(w,p,move,target);if(!r.ok&&(moveFor(w,move)?.base||move)==='sweep')startAction(w,p,'punch',target);}
  }
 }
 export function combatTick(w){

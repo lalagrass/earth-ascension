@@ -1,0 +1,47 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 20.029,
+  "errors": [],
+  "steps": [
+    {
+      "label": "studied",
+      "wallSeconds": 14.5,
+      "tick": 184437
+    },
+    {
+      "label": "first-quick-punch",
+      "wallSeconds": 17.003,
+      "tick": 184538
+    },
+    {
+      "label": "spar-ended",
+      "wallSeconds": 19.673,
+      "tick": 184711
+    },
+    {
+      "label": "done",
+      "wallSeconds": 20.028,
+      "tick": 184711,
+      "story": {
+        "preview": "進階三式\nadvanced @ 1.1.0 · schema1\n人物 0／招式 3／事件 0／門派活動 0\n驗證通過；尚未改本局。安裝這個已驗證快照",
+        "linReason": "先完成基礎拳原理5／熟練30",
+        "amuQuickPunches": 9,
+        "amuHits": 9,
+        "amuReceived": 0
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "preview": "進階三式\nadvanced @ 1.1.0 · schema1\n人物 0／招式 3／事件 0／門派活動 0\n驗證通過；尚未改本局。安裝這個已驗證快照",
+    "linReason": "先完成基礎拳原理5／熟練30",
+    "amuQuickPunches": 9,
+    "amuHits": 9,
+    "amuReceived": 0
+  }
+}
