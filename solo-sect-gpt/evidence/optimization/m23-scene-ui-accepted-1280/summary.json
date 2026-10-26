@@ -1,0 +1,187 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 293.121,
+  "errors": [],
+  "steps": [
+    {
+      "label": "site-progress",
+      "wallSeconds": 53.963,
+      "tick": 4198
+    },
+    {
+      "label": "02-carrying",
+      "wallSeconds": 163.075,
+      "tick": 12848
+    },
+    {
+      "label": "03-talk-listen",
+      "wallSeconds": 184.384,
+      "tick": 14482
+    },
+    {
+      "label": "04-practice",
+      "wallSeconds": 204.34,
+      "tick": 16013
+    },
+    {
+      "label": "05-rest-sit",
+      "wallSeconds": 252.089,
+      "tick": 19771
+    },
+    {
+      "label": "shen-reading",
+      "wallSeconds": 255.724,
+      "tick": 188376
+    },
+    {
+      "label": "shen-done",
+      "wallSeconds": 261.58,
+      "tick": 188778
+    },
+    {
+      "label": "walking",
+      "wallSeconds": 265.302,
+      "tick": 188841
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 287.529,
+      "tick": 189269
+    },
+    {
+      "label": "amu-recover",
+      "wallSeconds": 292.149,
+      "tick": 189343
+    },
+    {
+      "label": "done",
+      "wallSeconds": 293.121,
+      "tick": 189343,
+      "shots": 9
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "shots": [
+      {
+        "name": "01-site-progress",
+        "id": "leader",
+        "tick": 4198,
+        "what": "site",
+        "pose": "idle",
+        "activity": "build",
+        "bag": [],
+        "action": null
+      },
+      {
+        "name": "02-carrying",
+        "id": "amu",
+        "tick": 12848,
+        "what": "carry",
+        "pose": "idle",
+        "activity": "cook",
+        "bag": [
+          "veg"
+        ],
+        "action": null
+      },
+      {
+        "name": "03-talk-listen",
+        "id": "child",
+        "tick": 14482,
+        "what": "listen",
+        "pose": "listen",
+        "activity": "paired",
+        "bag": [],
+        "action": null
+      },
+      {
+        "name": "04-practice",
+        "id": "amu",
+        "tick": 16013,
+        "what": "practice",
+        "pose": "practice",
+        "activity": "train",
+        "bag": [],
+        "action": null
+      },
+      {
+        "name": "05-rest-sit",
+        "id": "amu",
+        "tick": 19771,
+        "what": "sit",
+        "pose": "rest",
+        "activity": "rest",
+        "bag": [],
+        "action": null
+      },
+      {
+        "name": "06-reading",
+        "id": "shen",
+        "tick": 188376,
+        "what": "read",
+        "pose": "read",
+        "activity": "contentStudy",
+        "bag": [],
+        "action": null
+      },
+      {
+        "name": "07-assembly-walking",
+        "tick": 188841,
+        "what": "posts",
+        "readiness": [
+          [
+            "amu",
+            [
+              1440,
+              1200
+            ]
+          ],
+          [
+            "lin",
+            [
+              1316,
+              1228
+            ]
+          ]
+        ]
+      },
+      {
+        "name": "07b-assembly-ready",
+        "tick": 189269,
+        "what": "posts-ready",
+        "readiness": [
+          [
+            "amu",
+            [
+              1440,
+              1200
+            ]
+          ],
+          [
+            "lin",
+            [
+              1316,
+              1228
+            ]
+          ]
+        ]
+      },
+      {
+        "name": "08-recover",
+        "id": "amu",
+        "tick": 189343,
+        "what": "recover",
+        "pose": "idle",
+        "activity": null,
+        "bag": [],
+        "action": null
+      }
+    ]
+  }
+}

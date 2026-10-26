@@ -1,0 +1,120 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 47.817,
+  "errors": [],
+  "steps": [
+    {
+      "label": "household-1",
+      "wallSeconds": 8.05,
+      "tick": 188596
+    },
+    {
+      "label": "rest-amu",
+      "wallSeconds": 11.496,
+      "tick": 188821
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 37.328,
+      "tick": 189323
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 47.007,
+      "tick": 190065
+    },
+    {
+      "label": "done",
+      "wallSeconds": 47.816,
+      "tick": 190065,
+      "save": {
+        "tick": 190065,
+        "rulesVersion": "chapter1-follow-1"
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "household": [
+      "同住之後・共同生活：阿木和雲生談起同住以來的日子。"
+    ],
+    "review": {
+      "version": 2,
+      "drill": "drill.50806",
+      "config": "A",
+      "outcome": "held",
+      "started": 188821,
+      "ended": 190039,
+      "leaked": 0,
+      "defeated": 4,
+      "roles": {
+        "amu": "front",
+        "lin": "line"
+      },
+      "people": {
+        "amu": {
+          "moves": {
+            "advanced.closefist": 16
+          },
+          "hits": 16,
+          "received": 0
+        },
+        "lin": {
+          "moves": {},
+          "hits": 0,
+          "received": 0
+        }
+      },
+      "arrival": "staggered",
+      "goAt": 189323,
+      "spans": {
+        "amu": {
+          "joined": 188821,
+          "left": null
+        },
+        "lin": {
+          "joined": 188821,
+          "left": null
+        }
+      },
+      "body": {
+        "amu": {
+          "energyUsed": 4191,
+          "injuryGained": 0
+        },
+        "lin": {
+          "energyUsed": 0,
+          "injuryGained": 0
+        }
+      },
+      "intercepts": {
+        "training.1": {
+          "x": 1469,
+          "by": "amu"
+        },
+        "training.2": {
+          "x": 1491,
+          "by": "amu"
+        },
+        "training.3": {
+          "x": 1476,
+          "by": "amu"
+        },
+        "training.4": {
+          "x": 1524,
+          "by": "amu"
+        }
+      }
+    },
+    "save": {
+      "tick": 190065,
+      "rulesVersion": "chapter1-follow-1"
+    },
+    "demoWritten": "evidence/optimization/showcase-m23/showcase-m17-m23.save.json"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "source": "model: all view-only draw functions run periodically (every 20 ticks over a day, every 5 ticks in the drill) on a recording fake canvas; world hash compared before/after",
+  "cases": [
+    {
+      "case": "day",
+      "checks": 600,
+      "calls": 852400,
+      "poses": [
+        "idle",
+        "eat",
+        "practice",
+        "rest",
+        "encourage",
+        "listen",
+        "talk",
+        "sleep"
+      ],
+      "carried": [
+        "veg",
+        "water",
+        "meal",
+        "wood"
+      ]
+    },
+    {
+      "case": "drill",
+      "assembling": {
+        "checks": 60,
+        "calls": 111759,
+        "poses": [
+          "idle"
+        ],
+        "carried": [
+          "veg"
+        ]
+      },
+      "running": {
+        "checks": 300,
+        "calls": 550129,
+        "poses": [
+          "idle",
+          "sleep"
+        ],
+        "carried": [
+          "veg"
+        ]
+      }
+    }
+  ]
+}

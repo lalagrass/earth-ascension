@@ -1,0 +1,82 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 44.779,
+  "errors": [],
+  "steps": [
+    {
+      "label": "amu-schedule",
+      "wallSeconds": 18.52,
+      "tick": 191326
+    },
+    {
+      "label": "amu-trial",
+      "wallSeconds": 19.969,
+      "tick": 191329
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 34.294,
+      "tick": 191595
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 43.613,
+      "tick": 192312
+    },
+    {
+      "label": "amu-back",
+      "wallSeconds": 44.482,
+      "tick": 192326
+    },
+    {
+      "label": "done",
+      "wallSeconds": 44.778,
+      "tick": 192326,
+      "wall": 44.7
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "marks": [
+      {
+        "step": "import",
+        "wallSeconds": 1.598
+      },
+      {
+        "step": "card",
+        "wallSeconds": 1.988
+      },
+      {
+        "step": "schedule",
+        "wallSeconds": 18.925
+      },
+      {
+        "step": "followup",
+        "wallSeconds": 19.138
+      },
+      {
+        "step": "trial",
+        "wallSeconds": 20.229
+      },
+      {
+        "step": "drill",
+        "wallSeconds": 43.948
+      },
+      {
+        "step": "life",
+        "wallSeconds": 44.7
+      }
+    ],
+    "r1": "短打快拳 內容包 advanced 1.1.0\n規則：起手0.5秒 · 出招0.1秒 · 收勢0.4秒 · 距離18DU · 寬8DU · 耗能2.6 · 傷害6\n林青此刻：起手0.5秒 · 收勢0.4秒\n研讀前置：理解5／熟練30，靜室研讀20秒\n未達前置：先完成基礎拳原理5／熟練30 · 不能出手：先實際研讀這個內容招式\n到靜室研讀20秒\n不能：先完成基礎拳原理5／熟練30\n朝空地試招（不給成長）",
+    "r2": "現在 交談\n原因 候位 廊前接待處 · 林青使用中\n目標來源 自由選擇\n接著 條件可用後續做；可改派或停工\n作業位 待選作業位 · 第2位 · 第2位\n⚠ 雙人站位候位／對方另有約定\n對方另有安排，等對方結束或先叫停對方。\n練拳\n坐休\n吃飯\n停工",
+    "r3": "後續\n義學之後 · 雲生與林青 起點：第16日的指點\n尚未開始\n回訪林青已入門，這條後續不適用\n共作之後\n尚未開始\n談入門還沒有和非門人一起做過工\n同住之後 · 阿木與雲生 起點：結伴\n✓ 共同生活\n傷後照料條件不足：同住之後還沒有照料過受傷的對方",
+    "r5": "上次回顧：守住 · 同時抵達 · 漏過0 · 擊退4 · 集合13秒、交手34秒\n阿木（前攔）短打快拳13 · 命中13 · 受擊1 · 耗精力34 · 傷勢+0\n沈禾（守線）直拳2 · 命中2 · 受擊0 · 耗精力4 · 傷勢+0\n攔截位置（前線 x1300）：演武對手1 在 x1469 被阿木攔下；演武對手2 在 x1359 被沈禾攔下；演武對手3 在 x1446 被阿木攔下；演武對手4 在 x1436 被阿木攔下",
+    "r6": "現在 行走 · 用餐\n原因 已受理的用餐，正在赴作業位\n接著 餐位用餐10秒後回原安排\n作業位 餐位 2\n練拳\n坐休\n吃飯\n停工",
+    "wallSeconds": 44.7
+  }
+}
