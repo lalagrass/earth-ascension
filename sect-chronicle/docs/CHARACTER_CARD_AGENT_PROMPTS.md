@@ -4,6 +4,8 @@
 
 2026-10-26擁有人已同意R2作評估基準：**只評估、回覆#340、先不改系統**。評估可直接讀本提案分支，不必等待文件PR #341合入dev；不要求reset、重開正在進行的包或互合三版程式。三方各留具名新留言，不共用一份可覆寫的報告；有舊回覆只補差異。
 
+人物視覺追加：卡首頭像、展開立繪與地圖sprite分用途；共用asset位置／固定版本取用只列待評，不搬圖／改loader。[立繪與共用素材規劃](CHARACTER_SHARED_ASSETS_PLAN.md)。
+
 [公版提案](CHARACTER_CARD_PUBLIC_PROPOSAL.md)｜[三分支對照與共同回覆表](CHARACTER_CARD_BRANCH_MAPPING.md)。
 
 ## GPT
@@ -17,6 +19,8 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_CARD_BRANCH_MAPPING.md
 本輪review（必讀，含經典來源、腳力拆義與腿法）：
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_CARD_CLASSIC_REVIEW.md
+人物立繪與素材共用（本輪追加評估）：
+https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_SHARED_ASSETS_PLAN.md
 主issue：https://github.com/lalagrass/earth-ascension/issues/340
 
 目的：先取欄位目錄的聯集。區分稟賦、身體能力、生活技能／武學、當下狀態、性格價值與關係；起點是每項能力可有的開局快照，並非與可成長能力互斥。base代表目前常態，不等於天生或初始；公版容納差異，不要求三版新增同一套屬性或硬湊六角。先有唯讀投影，玩法與數值仍由各核心負責。
@@ -32,7 +36,8 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 4. 紙上追蹤一段現有生活流程：核心更新→可讀快照→人物卡；說明權威狀態與同一角色ID，不新增實作。
 5. 一招的規則phase→呈現模板→motion/圖格→人物外觀接法。評估兩個既有人物能否共用動作、是否相容體型/兵器、需補哪些圖格與fallback。逐格換頭像不會自動生成全套動作；核心控制真時長/命中/耗能/位移，動畫只演出，不另跑戰鬥。
 6. 補紙上案例：初始力量/身法/耐力（若有）→日常成長→學腿招→疲累。分清行走/跑速、腿部出力、身法、腿法、輕功；缺項不新增。評估共同力量是否已足夠、何時才值得獨立腿力，不能用一個腳力值重複計分。
-7. 建議採用/保留擴充/拒絕對應、必須改核心才做得到的項目、最小工程包與成本粗估（小/中/大＋理由）、未定事項。
+7. 人物卡視覺：給一名現有人物actorId→視覺design/skin→頭像/半身或全身立繪/地圖sprite的檔案對應；缺圖如實寫缺。評估共用原圖來源位置、各版固定版本/本地載入/縮放圖集adapter、腳錨與動作族相容性，原素材provenance與BRIEF例外待核。只評估，不搬圖、不生成新圖、不改loader或採用新依賴；素材工程仍歸#339未排程。
+8. 建議採用/保留擴充/拒絕對應、必須改核心才做得到的項目、最小工程包與成本粗估（小/中/大＋理由）、未定事項。
 
 跨版不以0–100、同名招式或px/s直接比較。先天與後天雷達分開，不納入精力、福緣或隱藏性格湊實戰六角。未知/未支援/未揭露分開；隱藏值不要放進回覆或畫面資料。保留來源與原有已知規則。
 
@@ -59,6 +64,8 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_CARD_BRANCH_MAPPING.md
 本輪review（必讀，含經典來源、腳力拆義與腿法）：
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_CARD_CLASSIC_REVIEW.md
+人物立繪與素材共用（本輪追加評估）：
+https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_SHARED_ASSETS_PLAN.md
 主issue：https://github.com/lalagrass/earth-ascension/issues/340
 
 目的：先取欄位目錄的聯集。區分稟賦、身體能力、生活技能／武學、當下狀態、性格價值與關係；起點是每項能力可有的開局快照，並非與可成長能力互斥。base代表目前常態，不等於天生或初始；公版容納差異，不要求三版新增同一套屬性或硬湊六角。先有唯讀投影，玩法與數值仍由各核心負責。
@@ -74,7 +81,8 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 4. 紙上追蹤一段現有生活流程：核心更新→可讀快照→人物卡；說明權威狀態與同一角色ID，不新增實作。
 5. 一招的規則phase→呈現模板→motion/圖格→人物外觀接法。評估兩個既有人物能否共用動作、是否相容體型/兵器、需補哪些圖格與fallback。逐格換頭像不會自動生成全套動作；核心控制真時長/命中/耗能/位移，動畫只演出，不另跑戰鬥。
 6. 補紙上案例：初始力量/身法/耐力（若有）→日常成長→學腿招→疲累。分清行走/跑速、腿部出力、身法、腿法、輕功；缺項不新增。評估共同力量是否已足夠、何時才值得獨立腿力，不能用一個腳力值重複計分。
-7. 建議採用/保留擴充/拒絕對應、必須改核心才做得到的項目、最小工程包與成本粗估（小/中/大＋理由）、未定事項。
+7. 人物卡視覺：給一名現有人物actorId→視覺design/skin→頭像/半身或全身立繪/地圖sprite的檔案對應；缺圖如實寫缺。評估共用原圖來源位置、各版固定版本/本地載入/縮放圖集adapter、腳錨與動作族相容性，原素材provenance與BRIEF例外待核。只評估，不搬圖、不生成新圖、不改loader或採用新依賴；素材工程仍歸#339未排程。
+8. 建議採用/保留擴充/拒絕對應、必須改核心才做得到的項目、最小工程包與成本粗估（小/中/大＋理由）、未定事項。
 
 跨版不以0–100、同名招式或px/s直接比較。先天與後天雷達分開，不納入精力、福緣或隱藏性格湊實戰六角。未知/未支援/未揭露分開；隱藏值不要放進回覆或畫面資料。保留來源與原有已知規則。
 
@@ -103,6 +111,8 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_CARD_BRANCH_MAPPING.md
 本輪review（必讀，含經典來源、腳力拆義與腿法）：
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_CARD_CLASSIC_REVIEW.md
+人物立繪與素材共用（本輪追加評估）：
+https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_SHARED_ASSETS_PLAN.md
 主issue：https://github.com/lalagrass/earth-ascension/issues/340
 
 目的：先取欄位目錄的聯集。區分稟賦、身體能力、生活技能／武學、當下狀態、性格價值與關係；起點是每項能力可有的開局快照，並非與可成長能力互斥。base代表目前常態，不等於天生或初始；公版容納差異，不要求三版新增同一套屬性或硬湊六角。先有唯讀投影，玩法與數值仍由各核心負責。
@@ -118,7 +128,8 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 4. 紙上追蹤一段現有生活流程：核心更新→可讀快照→人物卡；說明權威狀態與同一角色ID，不新增實作。
 5. 一招的規則phase→呈現模板→motion/圖格→人物外觀接法。評估兩個既有人物能否共用動作、是否相容體型/兵器、需補哪些圖格與fallback。逐格換頭像不會自動生成全套動作；核心控制真時長/命中/耗能/位移，動畫只演出，不另跑戰鬥。
 6. 補紙上案例：初始力量/身法/耐力（若有）→日常成長→學腿招→疲累。分清行走/跑速、腿部出力、身法、腿法、輕功；缺項不新增。評估共同力量是否已足夠、何時才值得獨立腿力，不能用一個腳力值重複計分。
-7. 建議採用/保留擴充/拒絕對應、必須改核心才做得到的項目、最小工程包與成本粗估（小/中/大＋理由）、未定事項。
+7. 人物卡視覺：給一名現有人物actorId→視覺design/skin→頭像/半身或全身立繪/地圖sprite的檔案對應；缺圖如實寫缺。評估共用原圖來源位置、各版固定版本/本地載入/縮放圖集adapter、腳錨與動作族相容性，原素材provenance與BRIEF例外待核。只評估，不搬圖、不生成新圖、不改loader或採用新依賴；素材工程仍歸#339未排程。
+8. 建議採用/保留擴充/拒絕對應、必須改核心才做得到的項目、最小工程包與成本粗估（小/中/大＋理由）、未定事項。
 
 跨版不以0–100、同名招式或px/s直接比較。先天與後天雷達分開，不納入精力、福緣或隱藏性格湊實戰六角。未知/未支援/未揭露分開；隱藏值不要放進回覆或畫面資料。保留來源與原有已知規則。
 
