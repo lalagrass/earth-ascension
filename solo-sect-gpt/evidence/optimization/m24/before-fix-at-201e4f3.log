@@ -1,0 +1,126 @@
+✖ M24 cancelling a direction during its setting talk stops both sides and nothing is recorded or rewarded (284.914209ms)
+✖ M24 redirect after cancelling: the new direction must be set by its own talk, the old one stays in history (1688.868125ms)
+✖ M24 a stale talk is void even if it was not cancelled (save/load and replaced-direction fixture) (2562.281875ms)
+✖ M24 old drill ending (amu also leaves) leaves the new spar between shen and leader untouched (530.781833ms)
+✔ M24 old drill ending (player ends it) leaves the new spar between shen and leader untouched (1154.852625ms)
+✖ M24 old drill ending (left to run, with a save/load first) leaves the new spar between shen and leader untouched (1759.387ms)
+✖ M24 old drill ending (amu and lin finish both waves) leaves the new spar between shen and leader untouched (2327.911542ms)
+✔ M24 report (3.519875ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 2
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10460.980292
+
+✖ failing tests:
+
+test at test/optimization/m24.test.mjs:9:1
+✖ M24 cancelling a direction during its setting talk stops both sides and nothing is recorded or rewarded (284.914209ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + undefined
+  - 188195
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m24-base/solo-sect-gpt/test/optimization/m24.test.mjs:9:296)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 188195,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m24.test.mjs:12:1
+✖ M24 redirect after cancelling: the new direction must be set by its own talk, the old one stays in history (1688.868125ms)
+  AssertionError [ERR_ASSERTION]: old talk did not set the new direction
+
+  'set' !== 'accepted'
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m24-base/solo-sect-gpt/test/optimization/m24.test.mjs:12:415)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'set',
+    expected: 'accepted',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m24.test.mjs:14:1
+✖ M24 a stale talk is void even if it was not cancelled (save/load and replaced-direction fixture) (2562.281875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  'set' !== 'accepted'
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m24-base/solo-sect-gpt/test/optimization/m24.test.mjs:16:52)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'set',
+    expected: 'accepted',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m24.test.mjs:21:70
+✖ M24 old drill ending (amu also leaves) leaves the new spar between shen and leader untouched (530.781833ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + null
+  - 'spar.50780'
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m24-base/solo-sect-gpt/test/optimization/m24.test.mjs:24:167)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: 'spar.50780',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m24.test.mjs:21:70
+✖ M24 old drill ending (left to run, with a save/load first) leaves the new spar between shen and leader untouched (1759.387ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(w.drill.joint.left?.shen!==undefined)
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m24-base/solo-sect-gpt/test/optimization/m24.test.mjs:21:677)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at test/optimization/m24.test.mjs:21:70
+✖ M24 old drill ending (amu and lin finish both waves) leaves the new spar between shen and leader untouched (2327.911542ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + null
+  - 'spar.50779'
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m24-base/solo-sect-gpt/test/optimization/m24.test.mjs:24:167)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: 'spar.50779',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

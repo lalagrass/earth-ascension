@@ -56,7 +56,7 @@ export function command(w,c){
  else if(c.type==='mentorDirection')result=proposeDirection(w,p,c.kind,c.art);
  else if(c.type==='mentorDirectionCancel')result=cancelDirection(w,p);
  else if(c.type==='mentorDirectionRespond')result=respondDirection(w,p,c.accept===true);
- else if(c.type==='mentorEvent'){const b=activeBond(w,p.id),def=Object.hasOwn(MENTOR_EVENTS,c.event)?MENTOR_EVENTS[c.event]:null;if(!b||!def)result={ok:false,reason:'沒有有效師徒關係或未知後續'};else{const st=eventStatus(w,b,c.event);if(!st.ok)result={ok:false,reason:def.name+'：'+st.reason};else result=begin(w,p,'talk',{target:b.master===p.id?b.disciple:b.master,mentorEvent:c.event},true);}}
+ else if(c.type==='mentorEvent'){const b=activeBond(w,p.id),def=Object.hasOwn(MENTOR_EVENTS,c.event)?MENTOR_EVENTS[c.event]:null;if(!b||!def)result={ok:false,reason:'沒有有效師徒關係或未知後續'};else{const st=eventStatus(w,b,c.event);if(!st.ok)result={ok:false,reason:def.name+'：'+st.reason};else result=begin(w,p,'talk',{target:b.master===p.id?b.disciple:b.master,mentorEvent:c.event,...(['mentor.direction-set','mentor.practice-check','mentor.homecoming'].includes(c.event)&&b.direction?{dir:b.direction.proposedAt}:{})},true);}}
  else if(c.type==='adoptContent')result=adoptContent(w);
  else if(c.type==='installContent')result=installPack(w,c.pack);
  else if(c.type==='inviteContent')result=inviteContent(w,c.person);

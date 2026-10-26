@@ -1,0 +1,198 @@
+{
+  "source": "model command sequences on the M16 demo save (normal UI); labeled fixtures noted inline",
+  "cases": [
+    {
+      "case": "cancel-during-talk",
+      "state": "cancelled",
+      "trust": [
+        14,
+        14
+      ]
+    },
+    {
+      "case": "redirect",
+      "history": [
+        [
+          "depth",
+          "cancelled"
+        ],
+        [
+          "weapon",
+          "cancelled"
+        ]
+      ],
+      "now": [
+        "depth",
+        "set"
+      ]
+    },
+    {
+      "case": "stale-void",
+      "voided": true
+    },
+    {
+      "case": "drill-all-left",
+      "status": "cancelled",
+      "before": [
+        {
+          "session": "spar.50780",
+          "target": "leader",
+          "until": 189039,
+          "partner": "leader",
+          "manualStop": true
+        },
+        {
+          "session": "spar.50780",
+          "target": "shen",
+          "until": 189039,
+          "partner": "shen",
+          "manualStop": true
+        }
+      ],
+      "after": [
+        {
+          "session": "spar.50780",
+          "target": "leader",
+          "until": 189039,
+          "partner": "leader",
+          "manualStop": true
+        },
+        {
+          "session": "spar.50780",
+          "target": "shen",
+          "until": 189039,
+          "partner": "shen",
+          "manualStop": true
+        }
+      ],
+      "shenAtLeave": {
+        "moves": {},
+        "hits": 0,
+        "received": 0
+      }
+    },
+    {
+      "case": "drill-player-ends",
+      "status": "cancelled",
+      "before": [
+        {
+          "session": "spar.50780",
+          "target": "leader",
+          "until": 189039,
+          "partner": "leader",
+          "manualStop": true
+        },
+        {
+          "session": "spar.50780",
+          "target": "shen",
+          "until": 189039,
+          "partner": "shen",
+          "manualStop": true
+        }
+      ],
+      "after": [
+        {
+          "session": "spar.50780",
+          "target": "leader",
+          "until": 189039,
+          "partner": "leader",
+          "manualStop": true
+        },
+        {
+          "session": "spar.50780",
+          "target": "shen",
+          "until": 189039,
+          "partner": "shen",
+          "manualStop": true
+        }
+      ],
+      "shenAtLeave": {
+        "moves": {},
+        "hits": 0,
+        "received": 0
+      }
+    },
+    {
+      "case": "drill-natural",
+      "status": "cancelled",
+      "before": [
+        {
+          "session": "spar.50780",
+          "target": "leader",
+          "until": 189039,
+          "partner": "leader",
+          "manualStop": true
+        },
+        {
+          "session": "spar.50780",
+          "target": "shen",
+          "until": 189039,
+          "partner": "shen",
+          "manualStop": true
+        }
+      ],
+      "after": [
+        {
+          "session": null,
+          "target": null,
+          "until": null,
+          "partner": "leader",
+          "manualStop": false
+        },
+        {
+          "session": null,
+          "target": null,
+          "until": null,
+          "partner": "shen",
+          "manualStop": false
+        }
+      ],
+      "shenAtLeave": {
+        "moves": {},
+        "hits": 0,
+        "received": 0
+      }
+    },
+    {
+      "case": "drill-completed",
+      "status": "completed",
+      "before": [
+        {
+          "session": "spar.50779",
+          "target": "leader",
+          "until": 189039,
+          "partner": "leader",
+          "manualStop": true
+        },
+        {
+          "session": "spar.50779",
+          "target": "shen",
+          "until": 189039,
+          "partner": "shen",
+          "manualStop": true
+        }
+      ],
+      "after": [
+        {
+          "session": null,
+          "target": null,
+          "until": null,
+          "partner": "leader",
+          "manualStop": false
+        },
+        {
+          "session": null,
+          "target": null,
+          "until": null,
+          "partner": "shen",
+          "manualStop": false
+        }
+      ],
+      "shenAtLeave": {
+        "moves": {},
+        "hits": 0,
+        "received": 0
+      }
+    }
+  ]
+}

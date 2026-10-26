@@ -105,14 +105,15 @@ export function beginSpar(w,p,o,assessment=false){if(!p?.adult||!o?.adult||p.id=
 export function sessionsTick(w){
  const people=sorted(w.people);
  for(const p of people)if(p.sparUntil&&(w.tick>=p.sparUntil||p.trainingDefeated||w.people[p.sparPartner]?.trainingDefeated)){
-  const o=w.people[p.sparPartner];p.sparHistory??=[];p.sparHistory.push({tick:w.tick,duration:w.tick-p.sparStarted,hits:w.journal.filter(e=>e.type==='hit'&&e.tick>=p.sparStarted&&e.actors.includes(p.id)).length});p.combatSession=null;p.combatTarget=null;p.sparUntil=null;p.assessment=false;if(p.action){p.action.phase='recover';p.action.remaining=p.action.recover;}p.trainingDefeated=false;p.manualStop=false;memory(w,'teach',p,o,'spar');event(w,'spar-end',[p.id,o.id]);
+  // M24: a spar ends for both sides at once; ending one side alone left the partner in a half-closed session.
+  const o=w.people[p.sparPartner],session=p.combatSession;for(const q of[p,o])if(q&&q.sparUntil&&q.combatSession===session){q.sparHistory??=[];q.sparHistory.push({tick:w.tick,duration:w.tick-q.sparStarted,hits:w.journal.filter(e=>e.type==='hit'&&e.tick>=q.sparStarted&&e.actors.includes(q.id)).length});q.combatSession=null;q.combatTarget=null;q.sparUntil=null;q.assessment=false;if(q.action){q.action.phase='recover';q.action.remaining=q.action.recover;}q.trainingDefeated=false;q.manualStop=false;}memory(w,'teach',p,o,'spar');event(w,'spar-end',[p.id,o.id]);
  }
  const d=w.drill;if(!d||d.status==='completed'||d.status==='cancelled'||d.status==='assembling')return;
  if(d.witnessId&&d.wave===0){const observer=w.people[d.witnessId],at=d.witnessPoint;if(!observer||!arrived(observer)||Math.hypot(observer.x/Q-at[0],observer.y/Q-at[1])>2){d.nextWave=null;return;}}
  if(d.status==='exiting'){if(d.allOpponents.every(id=>arrived(w.people[id]))){d.status='completed';for(const id of d.allOpponents){const p=w.people[id];p.hp=p.maxHp;p.combatSession=null;p.combatTarget=null;p.action=null;}event(w,'drill-complete',d.actors,{config:d.config,session:d.id,leaked:d.leaked||0});}return;}
  for(const id of d.opponents){const p=w.people[id];if(!p.trainingDefeated&&p.x/Q<1300){p.trainingDefeated=true;p.drillLeaked=true;p.combatTarget=null;p.action=null;route(w,p,p.prep);d.leaked=(d.leaked||0)+1;event(w,'drill-leaked',[id],{session:d.id});}}
  const active=d.opponents.map(id=>w.people[id]).filter(p=>!p.trainingDefeated&&!p.inactive);
- if(!active.length){if(d.wave===2){d.status='exiting';for(const id of [...d.actors,...(d.allOpponents||d.opponents)]){const p=w.people[id];p.combatSession=null;p.combatTarget=null;p.action=null;p.manualStop=false;}return;}
+ if(!active.length){if(d.wave===2){d.status='exiting';for(const id of [...d.actors,...(d.allOpponents||d.opponents)]){const p=w.people[id];if(p.combatSession!==d.id)continue;p.combatSession=null;p.combatTarget=null;p.action=null;p.manualStop=false;}return;}
   d.nextWave??=w.tick+200;if(w.tick<d.nextWave)return;d.wave++;d.nextWave=null;d.opponents=[];
   for(let i=0;i<2;i++){
    const id='training.'+((d.wave-1)*2+i+1),prep=[1490+(i%2)*24,1170+(d.wave-1)*110+i*25];
@@ -124,7 +125,7 @@ export function sessionsTick(w){
  const inSession=id=>{const p=w.people[id];return p.combatSession===d.id&&!p.trainingDefeated;};
  for(const id of d.actors){const p=w.people[id];if(inSession(id)&&(!p.combatTarget||w.people[p.combatTarget]?.trainingDefeated||!d.opponents.includes(p.combatTarget)))p.combatTarget=d.opponents.find(id=>!w.people[id].trainingDefeated);}
  for(const id of d.opponents){const p=w.people[id];if(!p.trainingDefeated)p.combatTarget=d.actors.find(inSession);}
- if(!d.actors.some(inSession)){d.status='cancelled';event(w,'drill-failed',d.actors,{reason:'全員已退出'});for(const id of d.actors){const p=w.people[id];p.combatSession=null;p.combatTarget=null;p.action=null;p.manualStop=false;}}
+ if(!d.actors.some(inSession)){d.status='cancelled';event(w,'drill-failed',d.actors,{reason:'全員已退出'});for(const id of d.actors){const p=w.people[id];if(p.combatSession!==d.id)continue;p.combatSession=null;p.combatTarget=null;p.action=null;p.manualStop=false;}}
 }
 export function startDrill(w,actors,config='A'){
  if(w.drill&&!['completed','cancelled'].includes(w.drill.status))return {ok:false,reason:'演武仍在進行'};
