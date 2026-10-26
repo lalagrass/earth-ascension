@@ -39,7 +39,7 @@ test('official work and training cards follow real completion, stop and latest r
  assert.notDeepEqual(after.fields.filter(f=>['leg.level','leg.xp'].includes(f.semanticId)&&f.layer==='base'),initial.fields.filter(f=>['leg.level','leg.xp'].includes(f.semanticId)&&f.layer==='base'));
  assert.equal(geminiCommand(model,id,'train').ok,true);
  for(let n=0;n<30000 && !model.view().people[id].train01.adept;n++)model.step();
- assert.ok(model.view().people[id].train01.adept);assert.equal(geminiCard(model,id).martial[0].id,'adept');
+ assert.ok(model.view().people[id].train01.adept);assert.equal(geminiCard(model,id).martial[0].id,'basic-palm:first');assert.match(geminiCard(model,id).martial[0].proficiency.value,/熟練/);
  const tick=model.view().tick;geminiCommand(model,id,'work:water');geminiCommand(model,id,'restAfterTrip');
  assert.equal(model.view().tick,tick);assert.ok(model.view().people[id].pending==='rest'||model.view().people[id].resting);
 });

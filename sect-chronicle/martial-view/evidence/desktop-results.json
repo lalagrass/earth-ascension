@@ -1,0 +1,250 @@
+{
+  "checkpoint": "ed5a68b8b44a9e4e906697306d4d1e3928634040",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "checks": [
+    "single official entry",
+    "card follows original learned first palm",
+    "four condition layers expose unsupported/unknown without safety inference",
+    "paused person/tab changes preserve full authority",
+    "true training windup uses shared semantic and original palm overlay",
+    "second real person uses the same martial semantics",
+    "two skins retain distinct shoulder adaptation",
+    "paused rate/selection and repeated render do not advance or replay authority",
+    "strike display is inside original recovery and does not award premature training",
+    "true complete windup/strike/recovery presentation",
+    "both original training results complete at 4x",
+    "exactly one original adept event per person",
+    "card updates to true learned proficiency with native tick units",
+    "final observation remains paused"
+  ],
+  "errors": [],
+  "screenshots": [
+    "official-martial-card.jpg",
+    "official-two-skins-windup.jpg",
+    "official-palm-strike.jpg",
+    "official-trained-card.jpg"
+  ],
+  "browser": "154.0.8037.57",
+  "windup": {
+    "tick": 154,
+    "hero": {
+      "actionId": "martial.basic-palm",
+      "phase": "windup",
+      "corePhase": "windup",
+      "steps": 38,
+      "clip": "herbHand",
+      "requestedClip": "herbDeliver",
+      "fx": "vector-palm",
+      "face": 1,
+      "anchor": {
+        "x": 0.47368421052631576,
+        "y": 0.8598130841121495
+      },
+      "attachments": {
+        "foot": [
+          0,
+          0
+        ],
+        "shoulder": [
+          -0.2,
+          -60.8
+        ]
+      },
+      "availability": "known",
+      "fallback": "掌法借既有底圖＋向量手臂；strike 是核心收勢內的出掌定格"
+    },
+    "cousin": {
+      "actionId": "martial.basic-palm",
+      "phase": "windup",
+      "corePhase": "windup",
+      "steps": 16,
+      "clip": "herbHand",
+      "requestedClip": "herbDeliver",
+      "fx": "vector-palm",
+      "face": 1,
+      "anchor": {
+        "x": 0.47368421052631576,
+        "y": 0.8598130841121495
+      },
+      "attachments": {
+        "foot": [
+          0,
+          0
+        ],
+        "shoulder": [
+          -1,
+          -61
+        ]
+      },
+      "availability": "known",
+      "fallback": "掌法借既有底圖＋向量手臂；strike 是核心收勢內的出掌定格"
+    },
+    "energy": [
+      99.3666666666667,
+      99.73333333333335
+    ]
+  },
+  "strike": {
+    "tick": 179,
+    "motion": {
+      "actionId": "martial.basic-palm",
+      "phase": "recover",
+      "corePhase": "recover",
+      "steps": 15,
+      "clip": "herbHand",
+      "requestedClip": "herbDeliver",
+      "fx": "vector-palm",
+      "face": 1,
+      "anchor": {
+        "x": 0.47368421052631576,
+        "y": 0.8598130841121495
+      },
+      "attachments": {
+        "foot": [
+          0,
+          0
+        ],
+        "shoulder": [
+          -0.2,
+          -60.8
+        ]
+      },
+      "availability": "known",
+      "fallback": "掌法借既有底圖＋向量手臂；strike 是核心收勢內的出掌定格"
+    },
+    "unitK": 0.0875
+  },
+  "recovery": {
+    "tick": 191,
+    "motion": {
+      "actionId": "martial.basic-palm",
+      "phase": "recover",
+      "corePhase": "recover",
+      "steps": 27,
+      "clip": "herbHand",
+      "requestedClip": "herbDeliver",
+      "fx": "vector-palm",
+      "face": 1,
+      "anchor": {
+        "x": 0.47368421052631576,
+        "y": 0.8598130841121495
+      },
+      "attachments": {
+        "foot": [
+          0,
+          0
+        ],
+        "shoulder": [
+          -0.2,
+          -60.8
+        ]
+      },
+      "availability": "known",
+      "fallback": "掌法借既有底圖＋向量手臂；strike 是核心收勢內的出掌定格"
+    }
+  },
+  "completed": {
+    "tick": 6171,
+    "hero": {
+      "palm": "adept",
+      "train01": {
+        "goal": false,
+        "units": 6,
+        "max": 6,
+        "unitK": 0,
+        "unitSec": 0,
+        "unitMax": 12,
+        "adept": true,
+        "palm": {
+          "windup": 24,
+          "recover": 18,
+          "from": {
+            "label": "初學",
+            "windup": 48,
+            "recover": 36
+          },
+          "to": {
+            "label": "熟練",
+            "windup": 24,
+            "recover": 18
+          }
+        },
+        "training": false,
+        "leg": null,
+        "cyc": null,
+        "now": null,
+        "src": null,
+        "why": "這一式練熟了：起手、收勢變快",
+        "next": null,
+        "status": null
+      },
+      "energy": 68.0666666666713
+    },
+    "cousin": {
+      "palm": "adept",
+      "train01": {
+        "goal": false,
+        "units": 6,
+        "max": 6,
+        "unitK": 0,
+        "unitSec": 0,
+        "unitMax": 12,
+        "adept": true,
+        "palm": {
+          "windup": 24,
+          "recover": 18,
+          "from": {
+            "label": "初學",
+            "windup": 48,
+            "recover": 36
+          },
+          "to": {
+            "label": "熟練",
+            "windup": 24,
+            "recover": 18
+          }
+        },
+        "training": true,
+        "leg": {
+          "a": 1,
+          "b": 0,
+          "k": 0.43795620437956206,
+          "u": 0.5620437956204379
+        },
+        "cyc": null,
+        "now": "走回院中",
+        "src": "玩家指派：練掌到熟練（師父的基礎指點）",
+        "why": "這一式練熟了：起手、收勢變快",
+        "next": "回院休息待命",
+        "status": "練完走回院中"
+      },
+      "energy": 68.0666666666713
+    },
+    "skills": [
+      {
+        "tick": 6051,
+        "person": "hero",
+        "kind": "palm:skill",
+        "skill": "adept",
+        "src": "train"
+      },
+      {
+        "tick": 6111,
+        "person": "cousin",
+        "kind": "palm:skill",
+        "skill": "adept",
+        "src": "train"
+      }
+    ]
+  },
+  "passed": true,
+  "cleanup": {
+    "pageClosed": true,
+    "browserClosed": true,
+    "serverStopped": true,
+    "viewport": "owned viewport restored then browser closed"
+  }
+}

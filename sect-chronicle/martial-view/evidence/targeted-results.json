@@ -1,0 +1,29 @@
+{
+  "base": "95402dcaf6adff4b39a799c930af58c536273b6a",
+  "runtimeCheckpoint": "ed5a68b8b44a9e4e906697306d4d1e3928634040",
+  "targeted": {
+    "command": "node --test --test-isolation=none sect-chronicle/martial-view/checks/martial.test.mjs sect-chronicle/character-card/checks/card.test.mjs",
+    "passed": 12,
+    "failed": 0,
+    "afterStationaryBreathChange": {
+      "command": "node --test --test-isolation=none sect-chronicle/martial-view/checks/martial.test.mjs",
+      "passed": 4,
+      "failed": 0
+    }
+  },
+  "directRisks": [
+    "three true cores native IDs, learned bindings, units and hidden masking",
+    "two actual skins: walk/load/palm, foot anchors, per-frame sockets, shoulder overrides and fallback",
+    "two people actual clean flow windup/strike/recover; full state/log parity versus original model without display reads",
+    "1-tick versus 4-tick batches: identical full state and once-only event stream",
+    "paused reads and actor selection do not advance or repeat events"
+  ],
+  "desktop": "desktop-results.json",
+  "unchangedEvidenceReused": [
+    342,
+    345,
+    348,
+    349
+  ],
+  "coreRuleSchemaRngSaveFilesChanged": false
+}

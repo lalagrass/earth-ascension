@@ -12,6 +12,8 @@ import { createOfficialFacilityAdapter } from '../../../facility-view/official.m
 import { pickFacility } from '../../../facility-view/contract.mjs';
 import { facilityHtml, tooltipText } from '../../../facility-view/render.mjs';
 import { geminiCard } from '../../../character-card/gemini.mjs';
+import { martialHtml } from '../../../martial-view/render.mjs';
+import { resolveMotion, SHOULDER } from '../../../martial-view/motion.mjs';
 import { identityHtml, actionHtml, fieldsHtml } from '../../../character-card/render.mjs';
 import { saveTo, loadFrom } from './life-save.mjs';
 import { guardedSave, guardedLoad } from './life02.mjs'; // SG-LIFE-02 存讀邊界（SG-TRAIN-01 共用）
@@ -90,33 +92,18 @@ const FUN_TICKS_PER_POSE = 36;
 const FIX_BEAT = 45, FIX_BEND = 30; // 每 45 tick 一拍：前彎 30 tick、站直 15 tick（只是畫面節奏，進度只看模型步數）
 // LP-11 掌法：沒有專用掌法幀。底圖借模板空手站姿（交藥站姿 herbHand）／蹲身（採藥 herbGather），身體依掌勢前後傾，
 // 再由 armG 補一隻向量手臂與立掌（沿 LP10 畫稿姿勢表）；不畫背簍、扁擔等工具。接觸後收勢前 STRIKE_TICKS 顯示出掌定格，只是畫面。
-const STRIKE_TICKS = 12;
-const PALM_POSE = {
-  windup: { novice: { base: 'herbHand', lean: -12, elbow: [-8, -33], hand: [-14, -26], palm: -70 }, adept: { base: 'herbHand', lean: -3, elbow: [1, -36], hand: [-1, -31], palm: -85 } },
-  strike: { novice: { base: 'herbGather', lean: 0, shoulder: [10.5, -34], elbow: [18, -22], hand: [22, -10], palm: 10 }, adept: { base: 'herbGather', lean: 4, shoulder: [10.5, -34], elbow: [19, -21], hand: [24, -9], palm: 0 } },
-  recover: { novice: { base: 'herbHand', lean: -6, elbow: [2, -30], hand: [8, -24], palm: -40 }, adept: { base: 'herbHand', lean: 0, elbow: [6, -34], hand: [12, -32], palm: -90 } },
-};
-const SHOULDER = [6.6, -45.6]; // herbHand-0 的肩點（場景單位，相對腳底，朝右）
-function palmPose(person) {
-  if (person.mode === 'windup' || person.mode === 'patrolWind') return PALM_POSE.windup[person.palm];
-  if (person.mode === 'recover' || person.mode === 'patrolRec') return PALM_POSE[person.palmStep.steps < STRIKE_TICKS ? 'strike' : 'recover'][person.palm];
-  return null;
-}
 // SG-LIFE-02 招呼：往返用空手步態；站位時輪到自己說話用「舒展筋骨」前彎那幀（拱手／點頭的借用姿勢），否則站直；面板如實標借用。
 const SAY = { greet: { hero: '師兄辛苦了！', cousin: '師弟，腳力見長！' }, reply: { hero: '多謝師兄，一起加油！', cousin: '你也辛苦了！' } };
 function meetTurn(person) { const m = person.life02 && person.life02.meet; if (!m || m.phase !== 'talk' || person.mode !== 'meet') return null; return (m.k < 0.5) === (m.role === 'greet') ? m.role : null; }
 // SG-TRAIN-01 練掌：往返空手步態；站位上照模型給的節奏（起手／出掌收勢／調息）借清鼠掌法姿勢＋向量手臂，調息用站直幀。
-function trainPose(person) {
-  const c = person.train01 && person.train01.cyc;
-  if (!c || c.phase === 'breath') return null;
-  return palmPose({ mode: c.phase === 'windup' ? 'windup' : 'recover', palm: person.palm, palmStep: { steps: c.steps } });
-}
 function poseOf(id, person) {
+  const meta = sheets[id].data.meta;
+  const motion = resolveMotion(person, { animator: animators[id], at: geo.of(id, person), skin: meta,
+    anchor: { x: meta.anchorPx.x / meta.frameSize.w, y: meta.anchorPx.y / meta.frameSize.h } });
+  if (motion) return motion;
   if (person.train01 && person.train01.training) {
-    const at = geo.of(id, person), a = animators[id], pp = person.mode === 'train' ? trainPose(person) : null;
-    const pick = pp ? a.pick({ phase: pp.base === 'herbGather' ? 'herbGather' : 'herbDeliver', k: 0, travelled: 0 })
-      : person.mode === 'train' ? a.pick({ phase: 'stretch', k: 0, travelled: 0 }) : a.pick({ phase: 'herbOut', k: 0, travelled: at.travelled });
-    return { x: at.x, y: at.y, face: at.face, ...pick, travelled: at.travelled, phase: person.mode, palm: pp, borrowed: person.mode === 'train' };
+    const at = geo.of(id, person);
+    return { ...at, ...animators[id].pick({ phase: 'herbOut', k: 0, travelled: at.travelled }), phase: person.mode };
   }
   if (person.life02 && person.life02.meeting) {
     const at = geo.of(id, person), a = animators[id], turn = meetTurn(person);
@@ -125,9 +112,8 @@ function poseOf(id, person) {
   }
   // SG-PATROL-01：巡山沿用清理的畫法（空手步態＋掌法姿勢）；觀察／喝止用站直那幀。
   if (person.cleaning || person.patrolling) {
-    const at = geo.of(id, person), a = animators[id], pp = palmPose(person);
-    const pick = pp ? a.pick({ phase: pp.base === 'herbGather' ? 'herbGather' : 'herbDeliver', k: 0, travelled: 0 }) : a.pick({ phase: 'herbOut', k: 0, travelled: at.travelled });
-    return { x: at.x, y: at.y, face: at.face, ...pick, travelled: at.travelled, phase: person.mode, palm: pp, borrowed: !!pp };
+    const at = geo.of(id, person), a = animators[id];
+    return { ...at, ...a.pick({ phase: 'herbOut', k: 0, travelled: at.travelled }), phase: person.mode };
   }
   if (person.fixing) {
     const at = geo.of(id, person), a = animators[id];
@@ -304,13 +290,13 @@ function drawRat(c, r, now) {
 // 掌法疊圖：一隻向量手臂＋立掌，畫在人物 sprite 上面（同一腳底原點、同一翻面）。
 const armGs = Object.fromEntries(['hero', 'cousin'].map((id) => { const g = new Graphics(); g.visible = false; sorted.addChild(g); return [id, g]; }));
 const rot = ([x, y], deg) => { const a = deg * Math.PI / 180; return [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)]; };
-function drawArm(g, p, id) {
+function drawArm(g, p, id, attachments) {
   // LP-17：與 Grok D32 主角藍短衫／堂親橄欖褐村衣、膚色協調
   // D35：袖色對齊 Grok 手繪新皮（主角青藍短襖／熟手褐麻衣）
   const robe = id === 'hero' ? 0x3b5f85 : 0x7a6646, edge = id === 'hero' ? 0x264260 : 0x4e4030;
   const skin = id === 'hero' ? 0xf3c9a4 : 0xd6a77c, skinEdge = id === 'hero' ? 0xd6a47e : 0xb0805a;
   // 新皮肩點與舊 LP17 不同：sheet meta.palmShoulder 給實量肩點，整隻手臂（肩／肘／手）一起平移，掌法姿勢表與命中不動
-  const sh0 = p.shoulder || SHOULDER, ns = sheets[id].data.meta.palmShoulder?.[p.base];
+  const sh0 = p.shoulder || SHOULDER, ns = attachments?.shoulder || sheets[id].data.meta.palmShoulder?.[p.base];
   const dv = ns ? [ns[0] - sh0[0], ns[1] - sh0[1]] : [0, 0], mv = ([x, y]) => [x + dv[0], y + dv[1]];
   const sh = rot(mv(sh0), p.lean), el = rot(mv(p.elbow), p.lean * 0.5), hd = rot(mv(p.hand), p.lean * 0.3);
   g.clear();
@@ -503,7 +489,7 @@ const sceneAdapter = createGeminiAdapter({ getModel: () => model, geometry: geo,
   facilities: Object.entries(places).map(([id, p]) => ({ id, label: p.label, x: p.x, y: p.y })),
   appearance: (id, person, at) => {
     const p = poseOf(id, person), h = sheets[id].data.meta;
-    return { asset: id, frame: p.frame, body: bodies[id], anchor: { x: h.anchorPx.x / h.frameSize.w, y: h.anchorPx.y / h.frameSize.h } };
+    return { asset: id, frame: p.frame, motion: p.motion, body: bodies[id], anchor: { x: h.anchorPx.x / h.frameSize.w, y: h.anchorPx.y / h.frameSize.h } };
   },
 });
 const facilityAdapter = createOfficialFacilityAdapter({ getModel: () => model, places });
@@ -1007,7 +993,8 @@ function renderChrome() {
           <tr><td>去程（空手／空桶）</td><td class="now">${sn.empty.toFixed(1)}</td><td class="init">${si.empty.toFixed(1)}</td></tr>
           <tr><td>回程（負重）</td><td class="now">${sn.load.toFixed(1)}</td><td class="init">${si.load.toFixed(1)}</td></tr>
           <tr><td>下趟${JOBX[person.nextJob].label}（Lv ${person.level}）</td><td class="now">${sec(person.tripSeconds)}</td><td class="init">${sec(person.tripSecondsInitial)}</td></tr></table>
-        <h4>掌法</h4><div class="row"><b>${person.palmLabel}</b><span class="muted">起手 ${person.palmTicks.windup}・收勢 ${person.palmTicks.recover} tick</span></div>
+        ${martialHtml(publicCard)}
+        ${positions[id].motion ? `<div class="muted" data-motion-status>動作：${({windup:'起手',strike:'施展',recover:'收勢',breath:'調息',travel:'行走',down:'空桶下山',up:'負重返院'})[positions[id].motion.phase] || '通用靜態'} · ${positions[id].motion.fallback || '沿核心階段／步數；不結算命中'}</div>` : ''}
         ${trainHtml(person)}
         <h4>巡山戰報（本局真實紀錄）</h4>${martialPatrol(v, id)}`);
   }
@@ -1099,7 +1086,7 @@ app.ticker.add((t) => {
     const arm = armGs[id];
     arm.visible = !!p.palm;
     if (p.palm) {
-      if (arm.pose !== p.palm) { drawArm(arm, p.palm, id); arm.pose = p.palm; }
+      if (arm.pose !== p.palm) { drawArm(arm, p.palm, id, p.motion?.attachments); arm.pose = p.palm; }
       sprite.rotation = p.palm.lean * Math.PI / 180 * p.face;
       arm.scale.x = p.face; arm.position.set(p.x, p.y); arm.zIndex = p.y + 0.02;
     } else sprite.rotation = 0;
@@ -1238,7 +1225,7 @@ renderChrome();
 function personSnapshot(id) {
   const person = v.people[id], p = positions[id], sprite = sprites[id], b = bodyBox(id);
   return { ...person, phase: person.phase && person.phase.name, phaseProgress: person.phase?.k || 0,
-    frame: p.frame, action: p.action, requestedAction: p.requested, fallback: p.fallback, face: p.face, travelled: p.travelled, x: p.x, y: p.y,
+    motion: p.motion || null, frame: p.frame, action: p.action, requestedAction: p.requested, fallback: p.fallback, face: p.face, travelled: p.travelled, x: p.x, y: p.y,
     screen: toScreen(b.x + b.w / 2, b.y + b.h / 2), bodyScreen: screenBox(b), tapScreen: screenBox(tapBox(id)), footScreen: toScreen(p.x, p.y),
     sprite: { resolution: sprite.texture.source.resolution, width: sprite.texture.orig.width, height: sprite.texture.orig.height,
       anchor: { x: sprite.anchor.x, y: sprite.anchor.y }, scale: { x: sprite.scale.x, y: sprite.scale.y }, z: sprite.zIndex,

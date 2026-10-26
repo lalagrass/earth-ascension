@@ -30,6 +30,7 @@ export function createGeminiAdapter({ getModel, geometry, appearance, source, fa
         id: person.id, x: at.x, y: at.y, face: at.face ?? 1, depth: at.y,
         asset: look.asset ?? person.id, frame: look.frame, anchor: { ...look.anchor }, body: { ...look.body },
         scale: look.scale ?? 1, rotation: look.rotation ?? 0,
+        motion: look.motion ? structuredClone(look.motion) : null,
         action: { id: person.job, phase: person.phase?.name || person.mode, progress: person.phase?.k ?? 0, travelled: at.travelled ?? 0 },
         load: ['up', 'pour', 'herbBack', 'herbDeliver', 'woodBack', 'woodDeliver'].includes(person.phase?.name) ? 1 : raw.carrying ? 1 : 0,
         speed: person.tripSpeeds ? { ...person.tripSpeeds } : null,
