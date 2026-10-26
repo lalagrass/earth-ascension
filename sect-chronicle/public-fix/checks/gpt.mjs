@@ -13,6 +13,6 @@ let state;
 function paint(){const snap=adapter.snapshot({paused:true});renderer.render(snap);for(const s of renderer.actors.values()){s.width=16;s.height=24;}
  renderer.world.position.set(innerWidth/2-target.x/Q,innerHeight/2-target.y/Q);state={target:target.id,visible:visibleEntity(world,target),rendered:renderer.actors.has(target.id),picked:renderer.pick(target.x/Q,target.y/Q-8,1),card:!!gptCard(world,target.id),actors:snap.actors.map(a=>a.id),tick:world.tick};
  document.getElementById('proof').textContent=JSON.stringify(state,null,2);return state;}
-document.getElementById('reveal').onclick=()=>{resident.x=target.x+60*Q;resident.y=target.y;paint();};
+document.getElementById('reveal').onclick=()=>{resident.x=target.x-60*Q;resident.y=target.y;paint();};
 document.getElementById('conceal').onclick=()=>{Object.assign(resident,home);paint();};
 paint();window.visibilityProof={snapshot:()=>structuredClone(state),world:()=>structuredClone(world)};

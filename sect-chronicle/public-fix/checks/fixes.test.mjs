@@ -23,11 +23,9 @@ test('F1 original GPT visibility controls the same renderer, pick and card; only
  const target=hidden[0],resident=world.people.leader;
  // A bounded visibility fixture moves only the observer at the original map;
  // no production core/LOS/discovery function is replaced.
- resident.x=target.x;resident.y=target.y;assert.equal(visibleEntity(world,target),true);
+ resident.x=target.x-60*Q;resident.y=target.y;assert.equal(visibleEntity(world,target),true);
  const revealed=adapter.snapshot();renderer.render(revealed);assert.ok(renderer.actors.has(target.id));assert.ok(gptCard(world,target.id));
- // At overlapping feet, pick may choose either visible person; isolate the
- // snapshot actor in the same production picker without altering authority.
- assert.equal(revealed.actors.some(a=>a.id===target.id),true);
+ assert.equal(renderer.pick(target.x/Q,target.y/Q-8,1),target.id,'visible target can be picked in the real renderer');
  resident.x=before.people.leader.x;resident.y=before.people.leader.y;
  renderer.render(adapter.snapshot());assert.equal(renderer.actors.has(target.id),false);renderer.destroy();
 });

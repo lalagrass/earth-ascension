@@ -20,7 +20,7 @@ try{
  await page.goto(origin);await wait(()=>window.demo?.snapshot().frames>3);await pause();await page.click('#reset');await actor('hero');
  check(new URL(page.url()).pathname==='/experiments/water-carry/demo/','single official player entry');
  const baseline=await page.evaluate(()=>{const d=document.createElement('div');d.innerHTML='<details open><summary>baseline</summary><p>1</p></details>';document.body.append(d);d.querySelector('summary').focus();d.innerHTML='<details><summary>baseline</summary><p>2</p></details>';const lost=!d.querySelector('details').open&&document.activeElement!==d.querySelector('summary');d.remove();return lost;});check(baseline,'F3 baseline raw innerHTML demonstrably loses open and summary focus');
- await page.click('#p-cmds [data-cmd="restAfterTrip"]');await actor('cousin');await page.click('#p-cmds [data-cmd="work:herb"]');await page.click('[data-speed="4"]');await page.click('#play');
+ await page.click('#p-cmds [data-cmd="work:herb"]');await actor('cousin');await page.click('#p-cmds [data-cmd="work:herb"]');await page.click('[data-speed="4"]');await page.click('#play');
  await page.click('#panel [data-tab="martial"]');await page.locator('.public-fields summary').click();await page.locator('.public-martial summary').click();
  const before=await snap();await page.waitForTimeout(1400);const after=await snap();
  check(after.tick>before.tick&&after.people.cousin.energy<before.people.cousin.energy,'F3 original work and energy continue while inspecting');
@@ -42,7 +42,8 @@ try{
  await page.click('#p-cmds [data-cmd="restAfterTrip"]');check((await page.locator('.public-action').innerText()).includes('玩家改令'),'F2 stopping tea displays the real cancel event');
  await page.click('#panel [data-tab="martial"]');await page.locator('.public-fields summary').click();await page.locator('.public-martial summary').click();await page.locator('.public-fields summary').focus();
  await page.click('#play');await page.locator('.public-fields summary').focus();
- await wait(()=>demo.snapshot().people.hero.mode==='seated');const recovery=await snap();await page.waitForTimeout(600);
+ await wait(()=>demo.snapshot().people.hero.mode==='seated');const recovery=await snap();await page.waitForTimeout(600);const recovered=await snap();
+ check(recovered.people.hero.energy>recovery.people.hero.energy,'F3 real recovering energy rises while details remain under live refresh');
  check(await page.locator('.public-fields').evaluate(e=>e.open)&&await page.locator('.public-martial details').evaluate(e=>e.open),'F3 recovery updates preserve both open panels');
  check(await page.evaluate(()=>document.activeElement?.matches('.public-fields summary')),'F3 focus survives recovery refresh');
  await pause();result.recovery={tick:recovery.tick,mode:recovery.people.hero.mode,energy:recovery.people.hero.energy};
