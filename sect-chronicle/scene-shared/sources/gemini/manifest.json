@@ -20,5 +20,68 @@
     "sect-chronicle/experiments/water-carry/demo/routes.mjs": "051220bc3c03dc6c7752c702d24fa4f2ae98ee0e373341e933f99f458e5563d2",
     "sect-chronicle/experiments/water-carry/template/animator.mjs": "c9a7b965d5e1ed1062e0c931b2cc9397895a1554254967ce55b8759d1d5e7db3",
     "sect-chronicle/experiments/water-carry/demo/water-layout.mjs": "be185454fa1f89b172e67818335c7f4796971c216d40184f96adb4c5d797f662"
-  }
+  },
+  "dependency_roots": [
+    "sect-chronicle/experiments/water-carry/demo/model.mjs",
+    "sect-chronicle/experiments/water-carry/demo/routes.mjs",
+    "sect-chronicle/experiments/water-carry/demo/water-layout.mjs"
+  ],
+  "imported_by": {
+    "sect-chronicle/experiments/water-carry/demo/model.mjs": [],
+    "sect-chronicle/experiments/water-carry/demo/palm.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/model.mjs",
+      "sect-chronicle/experiments/water-carry/demo/patrol.mjs",
+      "sect-chronicle/experiments/water-carry/demo/patrol-layout.mjs"
+    ],
+    "sect-chronicle/experiments/water-carry/demo/patrol.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/model.mjs"
+    ],
+    "sect-chronicle/experiments/water-carry/demo/patrol-layout.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/patrol.mjs"
+    ],
+    "sect-chronicle/experiments/water-carry/demo/life02.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/model.mjs"
+    ],
+    "sect-chronicle/experiments/water-carry/demo/train01.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/model.mjs"
+    ],
+    "sect-chronicle/experiments/water-carry/demo/tea.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/model.mjs"
+    ],
+    "sect-chronicle/experiments/water-carry/demo/home02.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/model.mjs"
+    ],
+    "sect-chronicle/life/core/reservation.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/model.mjs"
+    ],
+    "sect-chronicle/life/core/toils.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/model.mjs"
+    ],
+    "sect-chronicle/life/core/smart-objects.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/model.mjs",
+      "sect-chronicle/life/core/autopilot.mjs"
+    ],
+    "sect-chronicle/life/core/destiny-engine.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/model.mjs",
+      "sect-chronicle/life/core/autopilot.mjs"
+    ],
+    "sect-chronicle/life/data/destiny-trees.json": [
+      "sect-chronicle/life/core/destiny-engine.mjs"
+    ],
+    "sect-chronicle/life/core/autopilot.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/model.mjs"
+    ],
+    "sect-chronicle/life/core/persona-creation.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/model.mjs"
+    ],
+    "sect-chronicle/experiments/water-carry/demo/routes.mjs": [],
+    "sect-chronicle/experiments/water-carry/template/animator.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/routes.mjs",
+      "sect-chronicle/experiments/water-carry/demo/water-layout.mjs"
+    ],
+    "sect-chronicle/experiments/water-carry/demo/water-layout.mjs": [
+      "sect-chronicle/experiments/water-carry/demo/routes.mjs"
+    ]
+  },
+  "rights": "Owner-authorized exact same-repository source for issue #342; no repository-wide OSS license declared. Source snapshot only, not official gameplay adoption."
 }

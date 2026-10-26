@@ -8,6 +8,7 @@ import { buildWatercolorScene } from '../../experiments/water-carry/demo/scene/w
 import { createWorld } from '../sources/gpt/solo-sect-gpt/src/world.mjs';
 import { createGPTAdapter, GPT_STEP_MS, gptDefinition } from '../adapters/gpt.mjs';
 import { nativeGPTMap } from './gpt-map.mjs';
+import { Q } from '../sources/gpt/solo-sect-gpt/src/data.mjs';
 const demo = new URL('../../experiments/water-carry/demo/', import.meta.url);
 const isGPT = new URL(location.href).searchParams.get('core') === 'gpt';
 const world = isGPT ? createWorld({ seed: 11 }) : null;
@@ -40,7 +41,7 @@ const adapter = !isGPT ? createGeminiAdapter({ getModel: () => model, geometry, 
   }
   const id = p.id === 'leader' ? 'hero' : 'cousin', h = sheets[id].data.meta, r = Number(h.scale);
   const phase = p.moving ? state.load ? 'up' : 'down' : state.activity?.kind === 'gather' && state.activity.phase === 'gather' ? 'herbGather' : 'idle';
-  const pick = animators[id].pick({ phase, k: 0, travelled: p.distance / 256 });
+  const pick = animators[id].pick({ phase, k: 0, travelled: p.distance / Q });
   return { asset: id, frame: pick.frame, scale: p.kind === 'human' ? p.adult ? 1 : .7 : .5,
     anchor: { x: h.anchorPx.x / h.frameSize.w, y: h.anchorPx.y / h.frameSize.h },
     body: { x: (h.hitbox.x - h.anchorPx.x) / r, y: (h.hitbox.y - h.anchorPx.y) / r, w: h.hitbox.w / r, h: h.hitbox.h / r } };
