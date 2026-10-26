@@ -660,10 +660,6 @@ $('panel').addEventListener('click', (e) => {
   if (evt) { ui.eventsOpen = !ui.eventsOpen; renderChrome(); measure(); return; }
   const adv = e.target.closest('[data-ui="toggleAdv"]');
   if (adv) { ui.advancedByPerson[selectedPerson()] = !ui.advancedByPerson[selectedPerson()]; renderChrome(); measure(); return; }
-  const a = e.target.closest('[data-auto]');
-  if (a) { autoSet(a.dataset.auto); return; }
-  const u = e.target.closest('[data-up]');
-  if (u) { upSet(u.dataset.up); return; }
   const ca = e.target.closest('[data-autoclean]');
   if (ca) { cleanAutoSet(ca.dataset.autoclean); return; }
   // SG-HOME-02 床牌：只改床主，不推進 tick、不派工。
@@ -758,22 +754,6 @@ function command(cmd) {
   ui.selected = person;
   if (ui.menu) closeMenu(); else renderChrome();
 }
-// LP-07 自主護院設定：允許開關與兩種傾向；暫停時也可改，只改設定不推進世界。
-function autoSet(what) {
-  const id = selectedPerson(), p = v.people[id];
-  const r = model.setAuto(id, what === 'allow' ? { allow: !p.auto.allow } : { react: what });
-  v = model.view();
-  toast(r.ok ? `${profiles[id].label}：${r.text}` : `做不到：${r.reason}`);
-  renderChrome();
-}
-// LP-09 自主整理設定：與護院分開的允許開關與兩種傾向；暫停時也可改，只改設定不推進世界。
-function upSet(what) {
-  const id = selectedPerson(), p = v.people[id];
-  const r = model.setUpkeep(id, what === 'allow' ? { allow: !p.up.allow } : { react: what });
-  v = model.view();
-  toast(r.ok ? `${profiles[id].label}：${r.text}` : `做不到：${r.reason}`);
-  renderChrome();
-}
 // LP-11 掌法比較 fixture：初學／熟練；只在全場沒有清理任務時可換，暫停時也可改（只改設定）。
 function palmSet(skill) {
   const id = selectedPerson(), r = model.setPalm(id, skill);
@@ -814,8 +794,6 @@ new ResizeObserver(measure).observe($('banner'));
 const writeView = createViewWriter();
 const put = (key, el, html) => writeView(key, el, html, key.startsWith('p-') ? ui.selected || 'none' : 'global');
 // 面板按鈕：途中改另一份工作＝「交付後改…」；有待執行時再按當趟工作＝取消、繼續。
-const cmdLabel = (a, p) => !a.id.startsWith('work:') || p.mode !== 'carry' ? a.label
-  : a.id !== 'work:' + p.job ? `交付後改${JOBX[a.id.slice(5)].label}` : p.pending ? `繼續${p.jobLabel}` : a.label;
 const pendText = (p) => p.pending === 'rest' ? '本趟後停工' : `交付後改去${JOBX[p.pending].label}`;
 const en = (p) => Math.floor(p.energy);
 const srcText = (p) => p.rest === 'manual' ? '玩家停工' : p.rest === 'auto' ? '自主恢復' : p.mode === 'back' ? '自主恢復完成' : p.leisure ? '閒暇（不扣不回）' : p.guarding ? '驅離往返（不扣不回）'

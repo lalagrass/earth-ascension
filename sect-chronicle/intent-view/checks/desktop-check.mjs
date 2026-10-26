@@ -36,11 +36,11 @@ try{
  check((await page.locator('.public-intent').innerText()).includes('回滿也不續工'),'shared panel exposes native manual-stop guarantee');
  await click('dispatch:start');check((await snap()).people.hero.rest!=='manual'&&(await snap()).people.cousin.rest==='manual','original start clears only selected hero stop');
  await page.goto(origin+'/intent-view/checks/gpt.html');await wait(()=>window.intentHarness);
- check((await page.locator('.public-intent').innerText()).includes('原生pendingCommands'),'same HTML renderer preserves second-core native queue distinction');
+ await page.locator('.public-intent summary').click();check((await page.locator('.public-intent').innerText()).includes('原生pendingCommands'),'same HTML renderer preserves second-core native queue distinction');
  const c=await page.evaluate(()=>intentHarness.snapshot().commands.find(c=>c.nativeId==='stop'));
  await page.locator('[data-intent-command]').filter({hasText:'停工'}).click();check(await page.evaluate(()=>intentHarness.world().people.leader.manualStop),'same renderer sends a true original GPT stop command');
  await page.click('#play');await page.waitForTimeout(300);await page.click('#play');check(await page.evaluate(()=>intentHarness.world().people.leader.manualStop),'GPT manual stop retains its original persistent intent');
- await page.locator('.public-intent summary').click();await shot('gpt-native-intent.jpg');
+ await shot('gpt-native-intent.jpg');
  await page.locator('[data-intent-command]').filter({hasText:'恢復自主'}).click();check(!(await page.evaluate(()=>intentHarness.world().people.leader.manualStop)),'GPT native resume uses original command payload');
  result.gpt={stopPayload:c.payload,snapshot:await page.evaluate(()=>intentHarness.snapshot())};assert.deepEqual(result.errors,[]);result.passed=true;
 }catch(e){result.passed=false;result.failure=e.stack||String(e);process.exitCode=1;if(page)await page.screenshot({path:'/tmp/intent359-failure.jpg'}).catch(()=>{});}
