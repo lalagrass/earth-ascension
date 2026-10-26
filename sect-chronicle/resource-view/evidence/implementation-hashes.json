@@ -1,0 +1,14 @@
+{
+  "sect-chronicle/experiments/water-carry/demo/app.mjs": "0f119daad59cd00d8cdcb4167cd0bd72cc12f0bfd6a74932ffc42ace0e48efec",
+  "sect-chronicle/experiments/water-carry/demo/index.html": "50b3694faec969f9554383a2521784523f3a10c892c3a96965bc7283b5f6dbb1",
+  "sect-chronicle/facility-view/official.mjs": "afeaf446aa6417cfe8a334da3099a3021b6c82f250dc835174cbde1567b16d3e",
+  "sect-chronicle/facility-view/render.mjs": "1c4f986db8e222c7c97f17a15fbfad21f84550d78df6f7dc2aefb7ab2566554d",
+  "sect-chronicle/resource-view/checks/gpt-harness.mjs": "b3e98583e8a3e1f755596e43c5435588bf83de8937c2385a9bcdb20c4b8dd6a7",
+  "sect-chronicle/resource-view/checks/gpt.html": "1a891719ba5188ffde4109847416e194f5e21156e0e0ec381632eda568461a22",
+  "sect-chronicle/resource-view/contract.mjs": "b4bf4c760744592b6886e0dec05620b0c32681ec781f00a2e9e020651e15b184",
+  "sect-chronicle/resource-view/gpt.mjs": "faeed9e1d2d2cb9417025f9ae7dcfa3fe81d6f2e9a251ce77539b9f7b549b1f9",
+  "sect-chronicle/resource-view/grok.mjs": "61196cf3bcb3a23eb621014e652f8d29a27a5ebb825ac6eabf02dec085d667fb",
+  "sect-chronicle/resource-view/official.mjs": "30eedbc02a7707dbb71bf610f1e6f4a5d3dac1209eb3ef91508f77e7dbf2c45f",
+  "sect-chronicle/resource-view/render.mjs": "414fe411b39285b69ac8736d28ba5f94afd6139aec4327a766ea20eded3c9828",
+  "sect-chronicle/resource-view/style.css": "1574427a5543e7be1fe560479717fdc45429bc282d720337a1c13854852ceb1e"
+}

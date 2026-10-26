@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="../../../character-card/style.css">
 <link rel="stylesheet" href="../../../event-view/style.css">
+<link rel="stylesheet" href="../../../resource-view/style.css">
 </head>
 <body>
 <div id="stage"></div>
@@ -26,6 +27,7 @@
   <span class="chip" id="clock">0:00</span>
   <span class="chip" id="vat">水缸 3／8 擔</span>
   <span class="chip" id="herbs">藥架 0／8 份</span>
+  <button class="btn" id="resource-toggle" aria-expanded="false" aria-controls="resources">資源</button>
   <span class="chip" id="leg">主角 Lv 1</span>
   <span class="chip" id="trips">共挑 0 趟</span>
   <button class="btn on" id="shadow-toggle" title="S：主角的初始腳力對照，不產水">初始影子</button>
@@ -38,6 +40,7 @@
 <div id="menu" class="menu" hidden role="dialog" aria-label="地點操作"></div>
 <aside id="panel" class="panel" hidden aria-live="polite"></aside>
 <aside id="boar" class="boarcard" aria-label="野豬狀態"></aside>
+<aside id="resources" class="resource-overview" aria-label="資源總覽" hidden></aside>
 <footer id="roster" class="roster"></footer>
 <div id="toast" class="toast" hidden role="status"></div>
 <div class="hint">點兩人看工作與腳力；在面板或點水缸／泉水／藥圃／藥架對選中的人下令（挑水、採藥、本趟後休息） · 拖曳平移 · 滾輪或 +/- 縮放 · 0 重設鏡頭 · 工作扣精力、≤30 交付後自己去石凳恢復、可派去茶座泡茶（水 1＋藥草 1，喝完 +40）、≥80 回原工作；停工＝坐到滿也不自己開工；工作的存放處滿了就各去喜好處（主角看山、熟手舒展筋骨，不回精力），有空位自己回，可叫回／恢復自主；野豬精力夠、不害怕且院內有水或藥草才來撞西坡護欄，累了／害怕就逃回棲地，可派人去防守點喝止；體態不隨升級改變</div>

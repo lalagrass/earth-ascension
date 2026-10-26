@@ -1,13 +1,13 @@
 import { escape, valueText } from '../character-card/render.mjs';
 const val = f => `<span title="${escape(f.source)}">${escape(valueText(f))}</span>`;
 export function tooltipText(view) {
-  return `${view.label} · ${view.activities.map(a => a.label).join('／') || '活動不支援'}${view.stock ? ` · 實存 ${valueText(view.stock.amount)}／容量 ${valueText(view.stock.capacity)} · 在途 ${valueText(view.stock.reserved)}` : ''}`;
+  return `${view.label} · ${view.activities.map(a => a.label).join('／') || '活動不支援'}${view.stock ? ` · 實存 ${valueText(view.stock.amount)}／容量 ${valueText(view.stock.capacity)} · 在途 ${valueText(view.stock.incoming)}` : ''}`;
 }
 export function facilityHtml(view, { actorId, actors }) {
   const users = view.users.availability === 'known' ? view.users.value : [];
   return `<section class="facility-detail" data-facility-id="${escape(view.id)}"><h3>${escape(view.label)}</h3>
     <p class="muted">${escape(view.interactionPoint.id)}</p>
-    ${view.stock ? `<p>實存 ${val(view.stock.amount)}／容量 ${val(view.stock.capacity)}<br>在途預約 ${val(view.stock.reserved)}（物資，非座位）</p>` : ''}
+    ${view.stock ? `<p>實存 ${val(view.stock.amount)}／容量 ${val(view.stock.capacity)}<br>在途 ${val(view.stock.incoming)}（原交付額度，非耗用預約／座位）</p>` : ''}
     <p title="${escape(view.users.source)}">正在此處：${view.users.availability !== 'known' ? val(view.users) : users.length ? users.map(p => `<button class="btn mini" data-facility-card="${escape(p.actorId)}">${escape(actors[p.actorId]?.name || p.actorId)} · ${escape(p.status)}</button>`).join(' ') : '目前無人在原地工作階段'}</p>
     <label>指派對象 <select data-facility-actor aria-label="設施指派對象">${Object.entries(actors).map(([id, p]) => `<option value="${escape(id)}" ${id === actorId ? 'selected' : ''}>${escape(p.name)}</option>`).join('')}</select></label>
     <button class="btn mini" data-facility-card="${escape(actorId)}">人物卡</button>

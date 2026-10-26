@@ -23,7 +23,8 @@ test('detached source-labelled views, stable IDs, unsupported station capabiliti
     assert.deepEqual(v.interactionPoint.entrance.value, { x: 962, y: 512 });
     assert.notDeepEqual(v.interactionPoint.entrance.value, v.interactionPoint.anchor.value);
     assert.equal(v.stock.amount.value, model.view().herbs);
-    assert.equal(v.stock.reserved.value, model.view().herbInFlight);
+    assert.equal(v.stock.incoming.value, model.view().herbInFlight);
+    assert.equal(Object.hasOwn(v.stock,'reserved'),false,'incoming must not retain a misleading consumption alias');
     assert.equal(v.capabilities.stationReservations.availability, 'unsupported');
     assert.equal(Object.hasOwn(v.capabilities.stationReservations, 'value'), false);
     assert.equal(v.stage.availability, 'unsupported');
