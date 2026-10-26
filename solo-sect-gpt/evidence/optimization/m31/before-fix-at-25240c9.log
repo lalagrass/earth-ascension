@@ -1,0 +1,144 @@
+✖ M31 mentor events with native non-numeric ids reach the chronicle, including a repeated id after a redirect (5718.95175ms)
+✖ M31 cursor survives same-tick bursts, ring rollover with mixed ids and repeated reads (8.147584ms)
+✖ M31 the drill counts shen only up to leaving (three-punches) (787.083041ms)
+✖ M31 the drill counts shen only up to leaving (work) (735.27575ms)
+✖ M31 the drill counts shen only up to leaving (rest) (721.71475ms)
+✖ M31 the drill counts shen only up to leaving (hurt) (716.174875ms)
+✖ M31 the drill counts shen only up to leaving (save-load) (712.151583ms)
+✖ M31 an old mid-drill save without the leave snapshot writes null instead of a guess (951.556333ms)
+✖ M31 a capacity hold is not goods on the way: empty bag shows nothing in transit until the carrier walks back (135.693667ms)
+✔ M31 report (0.964209ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 1
+ℹ fail 9
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10632.729583
+
+✖ failing tests:
+
+test at test/optimization/m31.test.mjs:6:1
+✖ M31 mentor events with native non-numeric ids reach the chronicle, including a repeated id after a redirect (5718.95175ms)
+  AssertionError [ERR_ASSERTION]: the new direction-set talk is received
+
+  0 !== 1
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m31-base/solo-sect-gpt/test/optimization/m31.test.mjs:9:56)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m31.test.mjs:12:1
+✖ M31 cursor survives same-tick bursts, ring rollover with mixed ids and repeated reads (8.147584ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  0 !== 40
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m31-base/solo-sect-gpt/test/optimization/m31.test.mjs:14:23)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 40,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m31.test.mjs:21:71
+✖ M31 the drill counts shen only up to leaving (three-punches) (787.083041ms)
+  TypeError: Cannot read properties of undefined (reading 'shen')
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m31-base/solo-sect-gpt/test/optimization/m31.test.mjs:21:203)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at test/optimization/m31.test.mjs:21:71
+✖ M31 the drill counts shen only up to leaving (work) (735.27575ms)
+  TypeError: Cannot read properties of undefined (reading 'shen')
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m31-base/solo-sect-gpt/test/optimization/m31.test.mjs:21:203)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at test/optimization/m31.test.mjs:21:71
+✖ M31 the drill counts shen only up to leaving (rest) (721.71475ms)
+  TypeError: Cannot read properties of undefined (reading 'shen')
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m31-base/solo-sect-gpt/test/optimization/m31.test.mjs:21:203)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at test/optimization/m31.test.mjs:21:71
+✖ M31 the drill counts shen only up to leaving (hurt) (716.174875ms)
+  TypeError: Cannot read properties of undefined (reading 'shen')
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m31-base/solo-sect-gpt/test/optimization/m31.test.mjs:21:203)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at test/optimization/m31.test.mjs:21:71
+✖ M31 the drill counts shen only up to leaving (save-load) (712.151583ms)
+  TypeError: Cannot read properties of undefined (reading 'shen')
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m31-base/solo-sect-gpt/test/optimization/m31.test.mjs:21:203)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at test/optimization/m31.test.mjs:25:1
+✖ M31 an old mid-drill save without the leave snapshot writes null instead of a guess (951.556333ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + {
+  +   energyUsed: 600,
+  +   injuryGained: 0
+  + }
+  - null
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m31-base/solo-sect-gpt/test/optimization/m31.test.mjs:26:90)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { energyUsed: 600, injuryGained: 0 },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m31.test.mjs:28:1
+✖ M31 a capacity hold is not goods on the way: empty bag shows nothing in transit until the carrier walks back (135.693667ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   {
+  +     actorId: 'amu',
+  +     item: 'wood',
+  +     n: 4
+  +   }
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/m31-base/solo-sect-gpt/test/optimization/m31.test.mjs:28:298)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { item: 'wood', n: 4, actorId: 'amu' } ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
