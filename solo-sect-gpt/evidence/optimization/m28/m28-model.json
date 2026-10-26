@@ -1,0 +1,26 @@
+{
+  "source": "model tests on the M23 demo save; labeled fixtures noted inline",
+  "cases": [
+    {
+      "case": "bounded",
+      "cacheSize": 120,
+      "listed": 24,
+      "before": "event.51023"
+    },
+    {
+      "case": "load",
+      "failedLoad": "非本遊戲存檔",
+      "epochs": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "hidden",
+      "newest": [
+        "natural-down",
+        "activity-complete"
+      ]
+    }
+  ]
+}

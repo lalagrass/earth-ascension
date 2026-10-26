@@ -1,0 +1,16 @@
+import assert from'node:assert/strict';import fs from'node:fs/promises';import{launch}from'./ui-kit.mjs';
+// Normal-UI M28: recent chronicle -> a real cooking record -> person card -> kitchen card; a refused bad file keeps the list, a good import starts a new epoch. Usage: node m28-ui.mjs <label> <w> <h>
+const [label='initial',width='1440',height='900']=process.argv.slice(2),k=await launch('m28-ui-'+label+'-'+width,{width:Number(width),height:Number(height)}),page=k.page,story={};
+const demo=new URL('../../evidence/optimization/showcase-m23/showcase-m17-m23.save.json',import.meta.url).pathname,other=new URL('../../evidence/optimization/showcase-m16/showcase-m12-m16.save.json',import.meta.url).pathname,bad=new URL('bad.save.json',k.out).pathname;
+const recent=async()=>{await k.tab('records');const r=page.locator('#recent-events');await r.scrollIntoViewIfNeeded();return{epoch:await r.getAttribute('data-epoch'),first:await r.locator('li[data-event-id]').first().getAttribute('data-event-id').catch(()=>null),text:await r.innerText()};};
+let failure=null;
+try{const x=JSON.parse(await fs.readFile(demo,'utf8'));x.checksum='0'.repeat(64);await fs.writeFile(bad,JSON.stringify(x));
+ await k.open();await k.newGame();await k.importSave(demo);await k.calm();await k.person('amu');await k.click('[data-person-tab="life"]');{const d=page.locator('details[data-section="work"]');if(!await d.evaluate(e=>e.open))await d.locator('summary').click();}await k.click('[data-cook="meal"]');let w=await k.until(x=>x.journal.some(e=>e.type==='activity-complete'&&e.kind==='cook'&&e.actors[0]==='amu'),'amu-cooked',600000);
+ story.r1=await recent();assert.match(story.r1.text,/烹調完成/);await k.shot('01-recent');const row=page.locator('#recent-events li',{hasText:'烹調完成'}).first();await row.locator('[data-event-actor="amu"]').click();assert.match(await page.locator('.portrait h3').innerText(),/阿木/);
+ await recent();await page.locator('#recent-events li',{hasText:'烹調完成'}).first().locator('[data-event-facility="kitchen"]').click();assert.equal(await page.locator('#facility-card').getAttribute('data-facility'),'kitchen');await k.shot('02-to-kitchen');
+ const before=await recent(),w0=JSON.stringify(await k.snap());await k.tab('save');await page.locator('#import-file').setInputFiles(bad);await k.click('[data-special="import"]');await page.waitForTimeout(300);story.badToast=await k.toast();const afterBad=await recent();assert.equal(afterBad.epoch,before.epoch);assert.equal(afterBad.first,before.first);assert.equal(JSON.stringify(await k.snap()),w0);
+ await k.importSave(other);const afterGood=await recent();story.epochs=[before.epoch,afterGood.epoch];assert.notEqual(afterGood.epoch,before.epoch);await k.shot('03-after-import');
+ // Toggling the list and filters does not touch the world.
+ const w1=JSON.stringify(await k.snap());await k.click('[data-event-filter="martial"]');await k.click('[data-ui="toggleEvents"]');await k.click('[data-ui="toggleEvents"]');assert.equal(JSON.stringify(await k.snap()),w1);await k.log('done',{epochs:story.epochs});
+}catch(e){failure=e.stack;await k.shot('failure').catch(()=>{});}
+const s=await k.finish({label,viewport:[width,height],failure,story});console.log(failure?'FAILED':'PASSED',s.wallSeconds);if(failure){console.error(failure);process.exit(1);}

@@ -9,10 +9,12 @@
 | `ef823ac/martial-view/render.mjs` | `sect-chronicle/martial-view/render.mjs` | 9fb95d4581c010833ef6604a414dc9cb786aa4cc447437aa30170f82aceb7ce7 | 採用；import 改指本地 `text.mjs` |
 | `ef823ac/character-card/text.mjs` | `sect-chronicle/character-card/render.mjs`（部分） | 3c8b7f0103d60acbbaf266564fc2e2e3725437540cbd51e94a4b30375277eeaa | 只摘 `labels`、`escape`、`valueText`；加「不適用」標籤；不帶 portrait 與 DOM 監聽 |
 | `ef823ac/facility-view/contract.mjs` | `sect-chronicle/facility-view/contract.mjs` | f0be545ea9fa27cfd0c4e3da218e49d44e63083da64428f155db96d5ec686ba6 | 採用（M27，只加來源註解） |
+| `ef823ac/event-view/contract.mjs` | `sect-chronicle/event-view/contract.mjs` | 7aacf57217f7dddfcc870ccc32e92b985c728c363c72bfac33216182526000b2 | 採用（M28，只加來源註解） |
+| `ef823ac/event-view/render.mjs` | `sect-chronicle/event-view/render.mjs` | 072fa82212d3c0c60f780077bc7b55e0ebd9cd817f92e76305c0c5d6fef411dc | 採用（M28）；import 改指本地 `text.mjs` |
 
 ## 依賴閉包
 
-`martial-view/render.mjs` → `character-card/text.mjs`；`martial-view/contract.mjs` → `character-card/contract.mjs`。`facility-view/contract.mjs` → `character-card/contract.mjs`。這些檔案都沒有其他 import，沒有時鐘、RNG、存檔或命令。
+`martial-view/render.mjs` → `character-card/text.mjs`；`martial-view/contract.mjs` → `character-card/contract.mjs`。`facility-view/contract.mjs` → `character-card/contract.mjs`；`event-view/render.mjs` → `character-card/text.mjs`；`event-view/contract.mjs` → `character-card/contract.mjs`。這些檔案都沒有其他 import，沒有時鐘、RNG、存檔或命令。
 
 ## 不採用
 
@@ -20,4 +22,5 @@
 - `character-card/render.mjs` 其餘、`portrait.mjs`、`style.css`：另一套卡片版面與素材解析；本版沿用 M19 面板。素材另見 M29。
 - `martial-view/official.mjs`、`motion.mjs`：官方掌法規則與呈現，不是本版規則。
 - `facility-view/gpt.mjs`（綁 6cbd3e6 舊核心、把使用者／容量／排隊／命令都標 unsupported）、`render.mjs`（另一套命令按鈕）：本地改由 `src/facility-view.mjs` 綁目前核心。
+- `event-view/adapters.mjs`：GPT 轉接綁 6cbd3e6，並用讀到的物件集合比對環形 journal；本地改由 `src/event-feed.mjs` 以原生 `event.N` 序號為游標。
 - `scene-shared/`、`assets/shared/` 的執行碼與舊核心快照：本階段不需要。
