@@ -1,5 +1,5 @@
-import {escape,valueText} from '../character-card/render.mjs';
-const value=f=>`<span title="${escape(f?.source)}">${escape(valueText(f))}</span>`;
+import {escape,publicValueHtml} from '../public-ui/values.mjs';
+const value = publicValueHtml;
 export function commandHtml(view,commands=view.commands){return commands.map(c=>`<button class="btn${c.pressed?' on':''}" data-cmd="${escape(c.nativeId)}" data-intent-command="${escape(c.id)}" data-intent-actor="${escape(view.actorId)}" data-intent-payload="${escape(JSON.stringify(c.payload))}" ${c.enabled?'':'disabled'} ${c.pressed==null?'':`aria-pressed="${c.pressed}"`} title="${escape(c.enabled?c.detail||c.label:c.reason||'未知')}">${escape(c.label)}</button>${!c.enabled&&c.reason?`<small class="intent-disabled">${escape(c.reason)}</small>`:''}`).join(' ');}
 export function policiesHtml(v){return `<div class="public-policies">${v.policies.map(p=>`<section data-policy="${escape(p.id)}"><b>${escape(p.label)}</b><p>允許：${value(p.allow)} · 傾向：${value(p.reaction)}</p><p>現在：${value(p.state)} · ${value(p.reason)}</p>${commandHtml(v,v.commands.filter(c=>p.commandIds.includes(c.id)))}</section>`).join('')}</div>`;}
 export function intentHtml(v,{controls=true,policies=true,result=null}={}){if(!v)return '<p>此人物意圖不可見或不支援。</p>';

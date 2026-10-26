@@ -1,4 +1,4 @@
-import { escape, valueText } from '../character-card/render.mjs';
+import { escape, valueText } from '../public-ui/values.mjs';
 const facts = {job:'工作',trips:'累計趟',level:'腳力Lv',grew:'腳力升級',skill:'掌法階段',units:'完成單位',steps:'已進行tick',downs:'擊退數',vat:'水缸實存',rest:'停工來源',src:'來源',U:'U',F:'F',I:'I',item:'物資',n:'數量',stage:'設施階段',returnTo:'回復安排',kind:'活動',art:'武學'};
 const labels = {water:'挑水',herb:'採藥',wood:'砍柴',novice:'初學',adept:'熟練',manual:'玩家',auto:'自主',train:'練掌','activity-complete':'活動完成',growth:'武學成長',harvest:'採集完成', 'building-complete':'建物完成', returned:'已返院', 'temporary-return':'回復原安排','temporary-blocked':'原安排受阻'};
 const title=e=>e.result.availability==='known'&&typeof e.result.value==='object' ? e.result.value.text||labels[e.kind]||e.kind : labels[e.kind]||e.kind||valueText(e.result);

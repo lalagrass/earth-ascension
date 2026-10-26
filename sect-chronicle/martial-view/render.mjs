@@ -1,6 +1,6 @@
-import { escape, valueText } from '../character-card/render.mjs';
+import { escape, publicValueHtml } from '../public-ui/values.mjs';
 const NAMES = { entry: '入門／理解', capacity: '承載', control: '控制', special: '特殊前提' };
-const val = f => `<span title="${escape(f?.source)}">${escape(valueText(f))}</span>`;
+const val = publicValueHtml;
 export function martialHtml(c) {
   return `<section class="public-martial"><h4>所學與可施展</h4>${c.martial.map(m => `<article data-martial-id="${escape(m.id)}"><b>${escape(m.name)}</b>
     <p>所學：${val(m.learned)}</p><p>熟練：${val(m.proficiency)}</p><p>此刻可施展：${val(m.execution)}</p>

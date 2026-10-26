@@ -1,0 +1,31 @@
+/* Shared paper/ink presentation only. No layout, world state, or theme switch. */
+:root {
+  --public-ink:#2f2a24; --public-muted:#625947; --public-paper:#f8f2e4;
+  --public-surface:#f7f0dfb8; --public-edge:#8b9a76; --public-line:#cec1a4;
+  --public-focus:#866016; --public-error:#8a3029; --public-control:#fffaf0;
+  --public-space:12px; --public-text:13px; --public-text-small:12px;
+  --public-radius:6px; --public-leading:1.5;
+}
+.public-action,.public-martial article,.public-events,.public-intent {
+  color:var(--public-ink); background:var(--public-surface);
+  border-left:3px solid var(--public-edge); padding:var(--public-space); margin:var(--public-space) 0;
+  font-size:var(--public-text); line-height:var(--public-leading);
+}
+:is(.public-fields,.public-background,.portrait-expand,.public-martial,.public-intent,.public-events,.resource-row) summary {
+  cursor:pointer; font-weight:600; padding:4px 0; line-height:var(--public-leading);
+}
+:is(.public-fields,.public-background,.portrait-expand,.public-martial,.public-intent,.public-events,.resource-row) summary:focus-visible,
+.btn:focus-visible,select:focus-visible {
+  outline:2px solid var(--public-focus); outline-offset:2px; border-radius:2px;
+}
+[data-availability="unknown"],[data-availability="hidden"],[data-availability="unsupported"],.intent-disabled {
+  color:var(--public-muted); font-size:var(--public-text-small);
+}
+.btn {
+  font:inherit; border:1px solid var(--public-line); background:var(--public-control);
+  border-radius:var(--public-radius); padding:2px 9px; cursor:pointer; color:var(--public-ink);
+}
+.btn.on { background:var(--public-ink); color:#fff; }
+.btn:disabled { opacity:1; color:var(--public-muted); background:#e9e2d3; border-style:dashed; cursor:default; }
+[data-intent-result] { border-top:1px solid var(--public-line); padding-top:6px; overflow-wrap:anywhere; }
+[role="alert"] { color:var(--public-error); border-left:3px solid currentColor; padding-left:8px; }

@@ -1,6 +1,6 @@
-import { escape, valueText } from '../character-card/render.mjs';
+import { escape, publicValueHtml } from '../public-ui/values.mjs';
 const labels={amount:'實存',capacity:'容量',incoming:'在途',reserved:'耗用預約',available:'可用（原查詢）'};
-const val=f=>`<span data-availability="${escape(f.availability)}" title="${escape(f.source)}">${escape(valueText(f))}</span>`;
+const val = publicValueHtml;
 export function resourcesHtml(views,{interactive=false}={}) {
   views=views.filter(v=>v.availability!=='hidden');
   return `<h3>資源總覽</h3><p class="muted">在途未入實存；耗用預約另列。可用保留原核心查詢的作用範圍。</p>${views.map(v=>`<details class="resource-row" data-resource="${escape(v.nativeId)}" data-view-key="resource:${escape(v.nativeId)}"><summary><b>${escape(v.label)}</b> · 實存 ${val(v.fields.amount)}／容量 ${val(v.fields.capacity)}</summary>
