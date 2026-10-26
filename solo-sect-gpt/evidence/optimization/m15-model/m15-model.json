@@ -1,0 +1,51 @@
+{
+  "source": "showcase normal-UI save + model commands; not UI",
+  "cases": [
+    {
+      "case": "rejections"
+    },
+    {
+      "case": "line-holds",
+      "ticksOnLine": 244
+    },
+    {
+      "case": "endings",
+      "held": "held",
+      "cancelled": "cancelled",
+      "failed": "failed"
+    },
+    {
+      "case": "m14-move",
+      "review": {
+        "version": 1,
+        "drill": "drill.50236",
+        "config": "A",
+        "outcome": "held",
+        "started": 184415,
+        "ended": 185610,
+        "leaked": 0,
+        "defeated": 4,
+        "roles": {
+          "amu": "front",
+          "lin": "line"
+        },
+        "people": {
+          "amu": {
+            "moves": {
+              "advanced.closefist": 16
+            },
+            "hits": 12,
+            "received": 7
+          },
+          "lin": {
+            "moves": {
+              "punch": 3
+            },
+            "hits": 3,
+            "received": 2
+          }
+        }
+      }
+    }
+  ]
+}

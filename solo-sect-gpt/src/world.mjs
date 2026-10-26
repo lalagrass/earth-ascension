@@ -16,6 +16,7 @@ import {story,storyActivityTick,storiesTick,found} from './stories.mjs';
 import {discover} from './view.mjs';
 import {ownershipGate,commitmentOf} from './commitment.mjs';
 import {adoptOps,opsTick} from './economy.mjs';
+import {adoptJoint,startJoint,jointTick} from './joint-drill.mjs';
 import {adoptMentor,propose,respond,activeBond,eventStatus,mentorTick,MENTOR_EVENTS,proposeDirection,respondDirection} from './mentor.mjs';
 import {beginError} from './activities.mjs';
 export {createWorld,invariants};
@@ -44,6 +45,8 @@ export function command(w,c){
  else if(c.type==='lifePolicy'){try{const policy=structuredClone(c.policy||DEFAULT_LIFE_POLICY);validateLifePolicy(policy,w.inventories.vat.capacity);w.lifePolicy=policy;w.rulesVersion=rulesFor(w);event(w,'life-policy-adopted',[],{version:policy.version});}catch(e){result={ok:false,reason:e.message};}}
  else if(c.type==='adoptOps')result=adoptOps(w);
  else if(c.type==='adoptMentor')result=adoptMentor(w);
+ else if(c.type==='adoptJoint')result=adoptJoint(w);
+ else if(c.type==='jointDrill')result=startJoint(w,c.actors,c.config,c.roles);
  else if(c.type==='mentorPropose')result=propose(w,p,w.people[c.target],c.promise);
  else if(c.type==='mentorRespond')result=respond(w,p,c.accept===true);
  else if(c.type==='mentorDirection')result=proposeDirection(w,p,c.kind,c.art);
@@ -114,7 +117,7 @@ export function step(w,batch=[]){for(const c of batch)command(w,c);w.tick++;w.pe
   p.simTick=w.tick;if(p.stun)p.stun--;
   if(w.tick%20===sorted(w.people).findIndex(o=>o.id===p.id)%20)autonomy(w,p);
  }
- ecologyTick(w);martialTick(w);sessionsTick(w);combatAI(w);
+ ecologyTick(w);martialTick(w);sessionsTick(w);jointTick(w);combatAI(w);
  moveAll(w);combatTick(w);martialTick(w);
  const activityOrder=sorted(w.people).sort((a,b)=>(w.activities[a.activity]?.started??Infinity)-(w.activities[b.activity]?.started??Infinity)||a.id.localeCompare(b.id));
  for(const p of activityOrder){

@@ -1,0 +1,5 @@
+{"cell":"C1","roles":{"lin":"front"},"outcome":"partial","leaked":2,"defeated":2,"ticks":1031,"people":{"lin":{"moves":{"punch":6},"hits":6,"received":6}},"liveness":0,"invariants":0}
+{"cell":"C2","roles":{"lin":"line"},"outcome":"partial","leaked":2,"defeated":2,"ticks":1123,"people":{"lin":{"moves":{"punch":7},"hits":6,"received":6}},"liveness":0,"invariants":0}
+{"cell":"C3","roles":{"amu":"front","lin":"front"},"outcome":"partial","leaked":1,"defeated":3,"ticks":926,"people":{"amu":{"moves":{"punch":9},"hits":8,"received":2},"lin":{"moves":{"punch":4},"hits":2,"received":1}},"liveness":0,"invariants":0}
+{"cell":"C4","roles":{"amu":"front","lin":"line"},"outcome":"partial","leaked":1,"defeated":3,"ticks":914,"people":{"amu":{"moves":{"punch":12},"hits":10,"received":3},"lin":{"moves":{},"hits":0,"received":0}},"liveness":0,"invariants":0}
+{"C2_lineLeaksNotMore":true,"C4_lineLeaksNotMore":true}

@@ -1,0 +1,161 @@
+{
+  "prereg": "docs/optimization/M15.md",
+  "source": "showcase normal-UI save; model runs; one deterministic run per cell",
+  "wallSeconds": 12.844,
+  "directions": {
+    "A_splitLeaksNotMore": true,
+    "B_splitLeaksNotMore": true,
+    "A_frontNotSlower": true,
+    "B_frontNotSlower": false
+  },
+  "rows": [
+    {
+      "cell": "A-front",
+      "config": "A",
+      "roles": {
+        "amu": "front",
+        "shen": "front",
+        "lin": "front"
+      },
+      "outcome": "held",
+      "leaked": 0,
+      "defeated": 4,
+      "ticks": 832,
+      "people": {
+        "amu": {
+          "moves": {
+            "punch": 8
+          },
+          "hits": 7,
+          "received": 2
+        },
+        "shen": {
+          "moves": {
+            "punch": 7
+          },
+          "hits": 5,
+          "received": 0
+        },
+        "lin": {
+          "moves": {},
+          "hits": 0,
+          "received": 0
+        }
+      },
+      "opponentsActiveAfter": 0,
+      "liveness": 0,
+      "invariants": 0
+    },
+    {
+      "cell": "A-split",
+      "config": "A",
+      "roles": {
+        "amu": "front",
+        "shen": "front",
+        "lin": "line"
+      },
+      "outcome": "held",
+      "leaked": 0,
+      "defeated": 4,
+      "ticks": 832,
+      "people": {
+        "amu": {
+          "moves": {
+            "punch": 8
+          },
+          "hits": 7,
+          "received": 2
+        },
+        "shen": {
+          "moves": {
+            "punch": 7
+          },
+          "hits": 5,
+          "received": 0
+        },
+        "lin": {
+          "moves": {},
+          "hits": 0,
+          "received": 0
+        }
+      },
+      "opponentsActiveAfter": 0,
+      "liveness": 0,
+      "invariants": 0
+    },
+    {
+      "cell": "B-front",
+      "config": "B",
+      "roles": {
+        "amu": "front",
+        "shen": "front",
+        "lin": "front"
+      },
+      "outcome": "held",
+      "leaked": 0,
+      "defeated": 4,
+      "ticks": 810,
+      "people": {
+        "amu": {
+          "moves": {
+            "punch": 6
+          },
+          "hits": 7,
+          "received": 2
+        },
+        "shen": {
+          "moves": {
+            "punch": 5
+          },
+          "hits": 5,
+          "received": 0
+        },
+        "lin": {
+          "moves": {},
+          "hits": 0,
+          "received": 0
+        }
+      },
+      "opponentsActiveAfter": 0,
+      "liveness": 0,
+      "invariants": 0
+    },
+    {
+      "cell": "B-split",
+      "config": "B",
+      "roles": {
+        "amu": "front",
+        "shen": "front",
+        "lin": "line"
+      },
+      "outcome": "held",
+      "leaked": 0,
+      "defeated": 4,
+      "ticks": 795,
+      "people": {
+        "amu": {
+          "moves": {
+            "punch": 6
+          },
+          "hits": 7,
+          "received": 2
+        },
+        "shen": {
+          "moves": {
+            "punch": 5
+          },
+          "hits": 5,
+          "received": 0
+        },
+        "lin": {
+          "moves": {},
+          "hits": 0,
+          "received": 0
+        }
+      },
+      "opponentsActiveAfter": 0,
+      "liveness": 0,
+      "invariants": 0
+    }
+  ]
+}

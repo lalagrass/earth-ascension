@@ -1,0 +1,186 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 23.526,
+  "errors": [],
+  "steps": [
+    {
+      "label": "wave-1",
+      "wallSeconds": 6.255,
+      "tick": 183786
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 14.296,
+      "tick": 184383
+    },
+    {
+      "label": "field-quiet",
+      "wallSeconds": 15.061,
+      "tick": 184399
+    },
+    {
+      "label": "running-15s",
+      "wallSeconds": 19.596,
+      "tick": 184729
+    },
+    {
+      "label": "stopped",
+      "wallSeconds": 20.11,
+      "tick": 184742
+    },
+    {
+      "label": "settle",
+      "wallSeconds": 23.014,
+      "tick": 184953
+    },
+    {
+      "label": "done",
+      "wallSeconds": 23.526,
+      "tick": 184953,
+      "story": {
+        "first": {
+          "version": 1,
+          "drill": "drill.50148",
+          "config": "A",
+          "outcome": "held",
+          "started": 183574,
+          "ended": 184367,
+          "leaked": 0,
+          "defeated": 4,
+          "roles": {
+            "amu": "front",
+            "lin": "line",
+            "shen": "front"
+          },
+          "people": {
+            "amu": {
+              "moves": {
+                "punch": 6
+              },
+              "hits": 6,
+              "received": 1
+            },
+            "lin": {
+              "moves": {},
+              "hits": 0,
+              "received": 0
+            },
+            "shen": {
+              "moves": {
+                "punch": 6
+              },
+              "hits": 6,
+              "received": 0
+            }
+          }
+        },
+        "firstText": "上次回顧：守住 · 漏過0 · 擊退4 · 40秒\n阿木（前攔）直拳6 · 命中6 · 受擊1\n林青（守線） · 命中0 · 受擊0\n沈禾（前攔）直拳6 · 命中6 · 受擊0",
+        "second": {
+          "version": 1,
+          "drill": "drill.50302",
+          "config": "B",
+          "outcome": "cancelled",
+          "started": 184399,
+          "ended": 184730,
+          "leaked": 0,
+          "defeated": 1,
+          "roles": {
+            "amu": "front",
+            "lin": "line"
+          },
+          "people": {
+            "amu": {
+              "moves": {
+                "punch": 6
+              },
+              "hits": 3,
+              "received": 3
+            },
+            "lin": {
+              "moves": {},
+              "hits": 0,
+              "received": 0
+            }
+          }
+        },
+        "card_amu": "現在 庭院歇息\n原因 玩家設定停工／關自主\n接著 仍可必要自理；按恢復自主才接工作\n作業位 待選作業位\n練拳\n坐休\n吃飯\n恢復自主",
+        "card_lin": "現在 庭院歇息\n原因 玩家設定停工／關自主\n接著 仍可必要自理；按恢復自主才接工作\n作業位 待選作業位\n練拳\n坐休\n吃飯\n恢復自主"
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "first": {
+      "version": 1,
+      "drill": "drill.50148",
+      "config": "A",
+      "outcome": "held",
+      "started": 183574,
+      "ended": 184367,
+      "leaked": 0,
+      "defeated": 4,
+      "roles": {
+        "amu": "front",
+        "lin": "line",
+        "shen": "front"
+      },
+      "people": {
+        "amu": {
+          "moves": {
+            "punch": 6
+          },
+          "hits": 6,
+          "received": 1
+        },
+        "lin": {
+          "moves": {},
+          "hits": 0,
+          "received": 0
+        },
+        "shen": {
+          "moves": {
+            "punch": 6
+          },
+          "hits": 6,
+          "received": 0
+        }
+      }
+    },
+    "firstText": "上次回顧：守住 · 漏過0 · 擊退4 · 40秒\n阿木（前攔）直拳6 · 命中6 · 受擊1\n林青（守線） · 命中0 · 受擊0\n沈禾（前攔）直拳6 · 命中6 · 受擊0",
+    "second": {
+      "version": 1,
+      "drill": "drill.50302",
+      "config": "B",
+      "outcome": "cancelled",
+      "started": 184399,
+      "ended": 184730,
+      "leaked": 0,
+      "defeated": 1,
+      "roles": {
+        "amu": "front",
+        "lin": "line"
+      },
+      "people": {
+        "amu": {
+          "moves": {
+            "punch": 6
+          },
+          "hits": 3,
+          "received": 3
+        },
+        "lin": {
+          "moves": {},
+          "hits": 0,
+          "received": 0
+        }
+      }
+    },
+    "card_amu": "現在 庭院歇息\n原因 玩家設定停工／關自主\n接著 仍可必要自理；按恢復自主才接工作\n作業位 待選作業位\n練拳\n坐休\n吃飯\n恢復自主",
+    "card_lin": "現在 庭院歇息\n原因 玩家設定停工／關自主\n接著 仍可必要自理；按恢復自主才接工作\n作業位 待選作業位\n練拳\n坐休\n吃飯\n恢復自主"
+  }
+}
