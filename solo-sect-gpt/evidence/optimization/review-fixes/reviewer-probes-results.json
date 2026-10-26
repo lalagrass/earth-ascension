@@ -1,0 +1,75 @@
+[
+  {
+    "case": "pre-bond-expedition",
+    "expeditionEnded": 7371,
+    "formed": 7391,
+    "afterStep": {
+      "journeys": [],
+      "promise": {
+        "kind": "journey",
+        "due": 43391,
+        "progress": 0,
+        "result": null
+      }
+    },
+    "roadTalk": {
+      "ok": false,
+      "reason": "還沒有一起遠行並返院過"
+    }
+  },
+  {
+    "case": "followup-after-completion",
+    "intent": null,
+    "activity": {
+      "id": "activity.35",
+      "actor": "leader",
+      "kind": "eat",
+      "args": {},
+      "phase": "init",
+      "progress": 0,
+      "revision": 3,
+      "started": 6004,
+      "units": 0,
+      "station": "dining.1",
+      "checked": "dining.1",
+      "destination": "dining.1"
+    },
+    "events": {
+      "mentor.first-lesson": {
+        "tick": 5571,
+        "variant": null,
+        "trust": 2
+      }
+    }
+  },
+  {
+    "case": "missing-promise",
+    "proposals": []
+  },
+  {
+    "case": "disciple-stops-followup",
+    "masterIntent": null,
+    "discipleStopped": true
+  },
+  {
+    "case": "gather-save-roundtrip",
+    "results": [
+      {
+        "version": 1,
+        "tick": 6015,
+        "phase": "returned",
+        "delivered": 2,
+        "hasOwnFullSince": false,
+        "valueType": "undefined"
+      },
+      {
+        "version": 2,
+        "tick": 4099,
+        "phase": "returned",
+        "delivered": 2,
+        "hasOwnFullSince": false,
+        "valueType": "undefined"
+      }
+    ]
+  }
+]

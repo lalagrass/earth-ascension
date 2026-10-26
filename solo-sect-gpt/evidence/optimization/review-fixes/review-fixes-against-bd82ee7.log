@@ -1,0 +1,90 @@
+✖ P1: herb gathering leaves saves loadable for v1 and v2, including after a later expedition (607.24325ms)
+✖ P2: an expedition finished before the bond is not shared history (1115.114334ms)
+✖ P2: either participant stopping a follow-up cancels it; it can be rebooked; save after cancel continues (430.699542ms)
+✖ P2: missing, null or invalid promises reject before any mutation and the save still loads (435.999375ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 0
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2680.440541
+
+✖ failing tests:
+
+test at solo-sect-gpt/test/optimization/review-fixes.test.mjs:11:1
+✖ P1: herb gathering leaves saves loadable for v1 and v2, including after a later expedition (607.24325ms)
+  Error: 校驗碼不符，原存檔已保留
+      at decode (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/bd/solo-sect-gpt/src/save.mjs:93:58)
+      at async TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/bd/solo-sect-gpt/test/optimization/review-fixes.test.mjs:11:399)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)
+
+test at solo-sect-gpt/test/optimization/review-fixes.test.mjs:12:1
+✖ P2: an expedition finished before the bond is not shared history (1115.114334ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/bd/solo-sect-gpt/test/optimization/review-fixes.test.mjs:12:370)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/optimization/review-fixes.test.mjs:13:1
+✖ P2: either participant stopping a follow-up cancels it; it can be rebooked; save after cancel continues (430.699542ms)
+  AssertionError [ERR_ASSERTION]: amu stop leaves no restartable intent
+  + actual - expected
+
+  + 'mentor.first-lesson'
+  - undefined
+
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/bd/solo-sect-gpt/test/optimization/review-fixes.test.mjs:13:416)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'mentor.first-lesson',
+    expected: undefined,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at solo-sect-gpt/test/optimization/review-fixes.test.mjs:14:1
+✖ P2: missing, null or invalid promises reject before any mutation and the save still loads (435.999375ms)
+  AssertionError [ERR_ASSERTION]: Got unwanted exception.
+  Actual message: "Cannot read properties of undefined (reading 'name')"
+      at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/bd/solo-sect-gpt/test/optimization/review-fixes.test.mjs:14:263)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: TypeError: Cannot read properties of undefined (reading 'name')
+        at propose (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/bd/solo-sect-gpt/src/mentor.mjs:20:403)
+        at command (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/bd/solo-sect-gpt/src/world.mjs:47:42)
+        at cmd (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/bd/solo-sect-gpt/test/optimization/review-fixes.test.mjs:4:28)
+        at file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/bd/solo-sect-gpt/test/optimization/review-fixes.test.mjs:14:283
+        at getActual (node:assert:611:5)
+        at strict.doesNotThrow (node:assert:779:32)
+        at TestContext.<anonymous> (file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/bd/solo-sect-gpt/test/optimization/review-fixes.test.mjs:14:263)
+        at async Test.run (node:internal/test_runner/test:1113:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:788:7),
+    expected: undefined,
+    operator: 'doesNotThrow',
+    diff: 'simple'
+  }

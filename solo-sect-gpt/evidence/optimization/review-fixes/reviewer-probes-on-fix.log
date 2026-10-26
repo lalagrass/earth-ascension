@@ -1,0 +1,13 @@
+✔ M11 must not count an expedition completed before the bond formed (2122.83875ms)
+✔ M11 completed follow-up must not remain in manual intent and silently repeat forever (878.879084ms)
+✔ M11 missing promise must reject without throwing or leaving an invalid proposal (649.460458ms)
+✔ M11 the disciple stopping a follow-up must cancel it without later settling (676.27925ms)
+✔ M10 normal gathering must still produce a loadable save (v1 and v2) (1426.698958ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5938.25

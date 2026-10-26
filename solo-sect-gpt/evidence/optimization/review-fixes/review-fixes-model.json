@@ -1,0 +1,33 @@
+{
+  "source": "controlled model fixtures, not UI",
+  "cases": [
+    {
+      "case": "gather-save",
+      "version": 1,
+      "ok": true
+    },
+    {
+      "case": "gather-save",
+      "version": 2,
+      "ok": true
+    },
+    {
+      "case": "pre-bond-expedition",
+      "journeys": 0
+    },
+    {
+      "case": "stop-followup",
+      "who": "amu",
+      "rebooked": true
+    },
+    {
+      "case": "stop-followup",
+      "who": "leader",
+      "rebooked": true
+    },
+    {
+      "case": "invalid-promise",
+      "rejected": 5
+    }
+  ]
+}

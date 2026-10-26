@@ -1,0 +1,93 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 66.764,
+  "errors": [],
+  "steps": [
+    {
+      "label": "first-herb",
+      "wallSeconds": 19.411,
+      "tick": 184456
+    },
+    {
+      "label": "returned",
+      "wallSeconds": 29.493,
+      "tick": 185142
+    },
+    {
+      "label": "memory-teach",
+      "wallSeconds": 40.217,
+      "tick": 185840
+    },
+    {
+      "label": "memory-talk",
+      "wallSeconds": 44.159,
+      "tick": 186102
+    },
+    {
+      "label": "disciple-walking",
+      "wallSeconds": 45.363,
+      "tick": 186120
+    },
+    {
+      "label": "waited-60s",
+      "wallSeconds": 61.461,
+      "tick": 187346
+    },
+    {
+      "label": "rebooked-done",
+      "wallSeconds": 65.716,
+      "tick": 187569
+    },
+    {
+      "label": "done",
+      "wallSeconds": 66.761,
+      "tick": 187569,
+      "story": {
+        "midSave": {
+          "toast": "手動保存完成",
+          "tick": 184456
+        },
+        "delivered": 2,
+        "afterSave": {
+          "toast": "手動保存完成",
+          "tick": 185142
+        },
+        "afterStop": {
+          "toast": "手動保存完成",
+          "tick": 187346
+        },
+        "cardAfterStop": "初次指點\n歸途夜談\n還沒有一起遠行並返院過\n照料之恩\n成立後還沒有照料過對方\n守約\n約定尚未到期或未守成\n失約後的坦白\n約定沒有失守",
+        "finalSave": {
+          "toast": "手動保存完成",
+          "tick": 187569
+        }
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "midSave": {
+      "toast": "手動保存完成",
+      "tick": 184456
+    },
+    "delivered": 2,
+    "afterSave": {
+      "toast": "手動保存完成",
+      "tick": 185142
+    },
+    "afterStop": {
+      "toast": "手動保存完成",
+      "tick": 187346
+    },
+    "cardAfterStop": "初次指點\n歸途夜談\n還沒有一起遠行並返院過\n照料之恩\n成立後還沒有照料過對方\n守約\n約定尚未到期或未守成\n失約後的坦白\n約定沒有失守",
+    "finalSave": {
+      "toast": "手動保存完成",
+      "tick": 187569
+    }
+  }
+}
