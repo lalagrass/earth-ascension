@@ -29,6 +29,9 @@ export { think, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, k
 
 import { SAVE_VERSION, freshV095 } from './save.mjs';
 import { cancelTask, removeActor, whAvail } from './lifecycle.mjs';
+import { econDaily, schoolStep, startSchool, E as econOf } from './economy.mjs';
+import { removeDisciple } from './gen.mjs';
+const EH = { rand: (s) => rand(s), cancelTask: (s, d, w) => cancelTask(s, d, w), think: (s, d, id) => think(s, d, id), removeDisciple: (s, d, w) => removeDisciple(s, d, w), gate: NODES.gate };
 import { freeSlot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE, STOCK_RESV, stockKey, stockReserved } from './core.mjs';
 export { SAVE_VERSION };
 
@@ -115,10 +118,10 @@ export { book }; // v1.8 移到 util.mjs（各模組共用）
 export function capacity(s) { return FACILITIES.reduce((a, f) => a + (facStage(s, f.id).beds || 0), 0); }
 export function recruitNeed(s) { return RECRUIT.baseRep + RECRUIT.stepRep * (disciples(s).length - 3); }
 export function canRecruit(s) {
-  const next = RECRUIT_POOL.find((p) => !s.ds.some((d) => d.id === p.id));
+  const next = RECRUIT_POOL.find((p) => !s.ds.some((d) => d.id === p.id)) || econOf(s).pool[0]; /* v1.85 A10：名冊用完後收義學帶回的人 */
   if (!next) return { ok: false, why: '暫無人選' };
   if (disciples(s).length >= capacity(s)) return { ok: false, why: `床位已滿（${disciples(s).length}/${capacity(s)}），先擴建宿舍` };
-  if (s.rep < recruitNeed(s)) return { ok: false, why: `名聲不足（${s.rep}/${recruitNeed(s)}）` };
+  if (!next.school && s.rep < recruitNeed(s)) return { ok: false, why: `名聲不足（${s.rep}/${recruitNeed(s)}）` };
   if (s.res.food < RECRUIT.food) return { ok: false, why: `存糧不足 ${RECRUIT.food}` };
   return { ok: true, next };
 }
@@ -133,7 +136,7 @@ export function recruit(s, answers) {
   const c = canRecruit(s); if (!c.ok) return c;
   const { personality, known } = personalityFrom(c.next, answers);
   if (rand(s) < 0.3) { const x = rand(s) < 0.5 ? 'lazy' : 'stubborn'; if (!personality.includes(x)) personality.push(x); } // v0.97 一般弟子也可能懶散／較真（暗）
-  s.res.food -= RECRUIT.food; book(s, 'out', 'food', RECRUIT.food); const d = mkDisciple(c.next, 1, 'gate', personality, known); d.together = 0; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); s.ds.push(d);
+  s.res.food -= RECRUIT.food; book(s, 'out', 'food', RECRUIT.food); const d = mkDisciple(c.next, 1, 'gate', personality, known); d.together = 0; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); s.ds.push(d); if (c.next.school) econOf(s).pool.shift();
   for (const o of s.ds) if (o !== d) initPair(s, o, d, 5); sectRecruit(s, d);
   log(s, `${d.name}慕名從村路上山，拜入門下。`); return { ok: true, d };
 }
@@ -551,7 +554,8 @@ export function payday(s) {
 // ---- tick ----
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
-  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); apprDaily(s); } }
+  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); } }
+  schoolStep(s, EH);
   const se = seasonOf(s); for (const p of s.plots) if (p.st === 'grow' && (p.g += dt / se.grow) >= PLOT_GROW) p.st = 'ripe';
   const seIdx = se.i; if (s.seasonI !== seIdx) { if (s.seasonI !== undefined) log(s, `入${se.name}了。${{ spring: '萬物萌發，菜長得快。', summer: '天長日暖。', autumn: '秋高氣爽，心情開闊。', winter: '天寒地凍，菜長得慢，飯量變大。' }[se.id]}`); s.seasonI = seIdx; }
   for (const d of s.ds) {
@@ -605,3 +609,5 @@ export { save, load, migrate, MIGRATIONS } from './save.mjs';
 export { clone };
 
 export { cancelTask, removeActor };
+
+export const startSchoolTrip = (s) => startSchool(s, EH); // v1.85 A10 下山義學

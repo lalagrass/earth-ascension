@@ -1,0 +1,47 @@
+{
+ "d30": {
+  "n": 35,
+  "ok": 35,
+  "coinRatioAvg": 1.66,
+  "coinRatioMax": 4.41,
+  "coinRatioAgg": 1.4,
+  "over2": [
+   "plain3",
+   "plain7",
+   "guojing7",
+   "guojing11",
+   "plain17",
+   "yuebuqun17",
+   "plain23",
+   "guojing23"
+  ],
+  "bankrupt": 0,
+  "missesAvg": 0.74,
+  "leftMax": 0,
+  "starve5": 0.17,
+  "couplesMax": 5,
+  "couplesAvg": 4.17,
+  "yue1600": "4/5",
+  "guo1600": "3/5",
+  "guojing": "3:1480 7:1600 11:1600 17:1331 23:1600",
+  "plainDs": "12 12 12 12 12",
+  "plainBest": "515 515 551 515 515",
+  "pillEnd": 8.6,
+  "coinEnd": 248.14
+ },
+ "d60": {
+  "n": 35,
+  "ok": 35,
+  "coin60over10": 2.57,
+  "coin30over10": 1.69,
+  "bankrupt": 0,
+  "missesAvg": 0.69,
+  "foodLowDays": 1.12,
+  "couplesMax": 5,
+  "yue1600": "5/5",
+  "guo1600": "5/5",
+  "plainDs": "12 12 12 12 12",
+  "pillEnd": 7.51,
+  "coinEnd": 344.06
+ }
+}

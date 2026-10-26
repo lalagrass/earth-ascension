@@ -62,6 +62,7 @@ export const FACILITIES = [
     { name: '破寢舍', sprite: 'dorm_s0', offers: [] },
     { name: '小寢舍', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 2, cost: { wood: 6 }, work: 18 },
     { name: '宿舍', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 6, cost: { wood: 10, stone: 4 }, work: 24, rep: 12 },
+    { name: '大通鋪', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 10, cost: { wood: 16, stone: 8, coin: 40 }, work: 30, rep: 10 }, // v1.85 I-5：plain 能收到 10 人以上
   ] },
   { id: 'kitchen', name: '膳房', node: 'kitchen', stages: [
     { name: '露天灶', sprite: 'vat', offers: ['cook', 'eat'], cookDur: 12, cookYield: 3, mealBonus: 0 },
@@ -228,7 +229,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '1.8';
+export const RULES_VERSION = '1.85';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [

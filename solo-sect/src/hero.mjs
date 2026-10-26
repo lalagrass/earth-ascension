@@ -1,7 +1,7 @@
 // v0.96 主角：建立、價值觀 autopilot、違心、同門、專屬主線第一步
 import { STATS, STAT_BUDGET, VALUES, ACT_TAGS, VALUE_K, WEXIN, Q9, HEROES, COMPANIONS, CUSTOM_COMPANIONS, ARCS } from './hero-data.mjs';
-import { NODES, MOOD, CHORE_ACTS, DAY, AWAKEN } from './data.mjs';
-import { seedArts, learnArt } from './arts.mjs';
+import { NODES, MOOD, CHORE_ACTS, DAY, AWAKEN, BREAK } from './data.mjs';
+import { seedArts, learnArt, unlockTechs, artById } from './arts.mjs';
 import { log, resSet } from './util.mjs';
 import { sectResolve } from './sect.mjs';
 import { genResolve } from './gen.mjs';
@@ -83,7 +83,10 @@ export function pairBonusOld(s, d, aff) {
   const cap = COMPANIONS[c.id]?.pair?.[s.hero.id] ?? 0.1; return cap * Math.min(1, Math.max(0, aff(s, h, c)) / 60);
 }
 // 專屬主線第一步：到日子就出抉擇卡；askMajor → 等玩家；否則依價值觀自動選
+// v1.85（ROADMAP I-5）：郭靖標為困難開局；前 days 日降龍掌練到小成瓶頸時，洪七公帶他破第一關一次（憨厚肯練的小補償）
+export const GUOJING_EARLY = { days: 20, art: 'xianglong', mul: 1.35 }; // 前 days 日降龍掌傷害 ×mul
 export function heroStep(s) {
+  if (s.hero?.id === 'guojing') { const h = s.ds.find((d) => d.id === 'hero'); if (h) h.early = s.t < GUOJING_EARLY.days * DAY ? { art: GUOJING_EARLY.art, mul: GUOJING_EARLY.mul } : null; const r = h?.arts?.[GUOJING_EARLY.art]; if (r && !r.bt1 && !h.away && s.t < GUOJING_EARLY.days * DAY && r.xp >= BREAK.caps[0] - 1e-6) { r.bt1 = true; r.xp = 55; unlockTechs(h, artById(GUOJING_EARLY.art)); log(s, '洪七公一掌拍在郭靖背上：「笨小子，氣沉丹田！」降龍十八掌破了第一關。'); } }
   const H = s.hero; if (!H || !H.arc || H.arcStep > 0) return; const A = ARCS[H.arc];
   if (s.day < A.day || s.choices.some((c) => c.arc === H.arc)) return;
   const ch = { id: `${H.arc}-1`, arc: H.arc, title: A.title, text: A.text, opts: A.opts.map(([t]) => t), at: s.t };
