@@ -1,0 +1,83 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 311.688,
+  "errors": [],
+  "steps": [
+    {
+      "label": "cook-0",
+      "wallSeconds": 41.459,
+      "tick": 197456
+    },
+    {
+      "label": "cook-1",
+      "wallSeconds": 64.789,
+      "tick": 199275
+    },
+    {
+      "label": "lin-back",
+      "wallSeconds": 209.167,
+      "tick": 205018
+    },
+    {
+      "label": "veg-in",
+      "wallSeconds": 213.167,
+      "tick": 205295
+    },
+    {
+      "label": "meal",
+      "wallSeconds": 311.248,
+      "tick": 213106
+    },
+    {
+      "label": "done",
+      "wallSeconds": 311.688,
+      "tick": 213106,
+      "meals": [
+        1,
+        4
+      ]
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "start": {
+      "amount": "4 原生計數",
+      "incoming": "0 原生計數",
+      "reserved": "0 原生計數",
+      "available": "4 原生計數"
+    },
+    "empty": {
+      "amount": "0 原生計數",
+      "incoming": "0 原生計數",
+      "reserved": "0 原生計數",
+      "available": "0 原生計數"
+    },
+    "transit": {
+      "amount": "0 原生計數",
+      "incoming": "4 原生計數",
+      "reserved": "0 原生計數",
+      "available": "0 原生計數"
+    },
+    "delivered": {
+      "amount": "4 原生計數",
+      "incoming": "0 原生計數",
+      "reserved": "0 原生計數",
+      "available": "4 原生計數"
+    },
+    "meals": [
+      1,
+      4
+    ],
+    "after": {
+      "amount": "4 原生計數",
+      "incoming": "0 原生計數",
+      "reserved": "0 原生計數",
+      "available": "4 原生計數"
+    }
+  }
+}

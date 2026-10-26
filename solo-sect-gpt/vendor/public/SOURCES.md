@@ -35,3 +35,18 @@
 | `assets/shared/ef823ac/{hero.png,hero.json,bamboo.png,boulder_l.png,boulder_s.png}` | `sect-chronicle/experiments/water-carry/demo/assets/art184-production/` | 與 manifest 各筆相同 | 位元組原樣複製，不另存裁圖 |
 
 權利照上游記錄：owner-reuse-documented; third-party-rights-unverified。hero 圖集只用 `idle-0` 一格作卡片，不當走路或出招圖集。
+
+## 第二個固定來源：dev 6f959f5（M31–M36）
+
+固定 `lalagrass/earth-ascension` 提交 `6f959f534e9a00994f1cea7c230b4110e60db8c6`，以 `gh api` 按 SHA 讀取。放在 `vendor/public/6f959f5/`，上面 ef823ac 的檔案保留不動（舊介面仍在用）。
+
+| 本地檔 | 上游路徑 | 上游 sha256 | 處理 |
+| --- | --- | --- | --- |
+| `6f959f5/character-card/contract.mjs` | `sect-chronicle/character-card/contract.mjs` | 61e52cbd433e70a3ccef1391cd9c86f42cae881fae4853a1994e7942d3110d6e | 採用（M32）；改寫：`AVAILABILITY` 加 `notApplicable`；含 `sanitizeProfile` |
+| `6f959f5/public-ui/values.mjs` | `sect-chronicle/public-ui/values.mjs` | beefc2246ed938f364d9917d1901471bd236c68c3c002c5f8de4ab76777b79e4 | 採用（M32）；改寫：加「不適用」標籤 |
+| `6f959f5/resource-view/contract.mjs` | `sect-chronicle/resource-view/contract.mjs` | b4bf4c760744592b6886e0dec05620b0c32681ec781f00a2e9e020651e15b184 | 採用（M32） |
+| `6f959f5/resource-view/render.mjs` | `sect-chronicle/resource-view/render.mjs` | f33e293436aa325f0483a0e255014b2cb65b890280024a197dffd3041e1ffe35 | 採用（M32） |
+
+依賴閉包：`resource-view/render.mjs` → `public-ui/values.mjs`；`resource-view/contract.mjs` → `character-card/contract.mjs`；沒有其他 import。
+
+不採用：`resource-view/gpt.mjs`（import `scene-shared/sources/gpt` 舊核心）；本地 `src/resource-view.mjs` 綁目前核心，並沿它對本核心的說明（`dest:` 不是在途、`availableQty` 不是淨額）。

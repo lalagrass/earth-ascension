@@ -1,0 +1,30 @@
+{
+  "source": "model command sequences on fresh seed-29 worlds and the M30 showcase; labeled fixtures noted inline",
+  "cases": [
+    {
+      "case": "twin",
+      "ticks": 3000
+    },
+    {
+      "case": "queries",
+      "woodAmount": {
+        "semanticId": "resource.amount",
+        "layer": "base",
+        "source": "gpt-local:solo-sect-gpt/src/state.mjs:qty(store,wood)",
+        "unit": "原生計數",
+        "availability": "known",
+        "value": 0
+      }
+    },
+    {
+      "case": "transit"
+    },
+    {
+      "case": "reserve",
+      "held": [
+        2,
+        1
+      ]
+    }
+  ]
+}
