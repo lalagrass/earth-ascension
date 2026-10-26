@@ -6,7 +6,7 @@
     "axing":         { "src": "v2/axing-v2b-a.png",       "crown": 0.04, "eye": 0.25, "chin": 0.38, "faceX": 0.46 },
     "huangrong":     { "src": "v2/huangrong-v2-ref.png",  "crown": 0.08, "eye": 0.25, "chin": 0.35, "faceX": 0.47 },
     "xiaolongnv":    { "src": "v2/xiaolongnv-v2-c.png",   "crown": 0.09, "eye": 0.33, "chin": 0.46, "faceX": 0.48 },
-    "limochou":      { "src": "v2/limochou-v2-a.png",     "crown": 0.07, "eye": 0.25, "chin": 0.36, "faceX": 0.51 },
+    "limochou":      { "src": "v2/limochou-v2-c.png",     "crown": 0.09, "eye": 0.28, "chin": 0.40, "faceX": 0.52 },
     "dongfangbubai": { "src": "v2/dongfangbubai-v2-a.png","crown": 0.08, "eye": 0.25, "chin": 0.35, "faceX": 0.47 }
   }
 }
