@@ -123,6 +123,8 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 | SS-SUHUI-SAVE | v1.7 | 宿慧入存檔：save 帶 legacy.suhui；開局取 localStorage／手動檔／自動檔最大；讀檔同步回 localStorage；自動檔 meta 快取 | **已接線** | 瀏覽器實點存檔→重開→自創點數 12→14（反例：無檔 12），實點讀檔→localStorage=2；但宿慧 2 是狀態修改（S.gen.suhui=2），故只算畫面證據 | src/slice.mjs src/save.mjs src/start-ui.mjs src/main.mjs | artifacts/v170/flow-v170.mjs | shots/v170-02-saved-legacy.png shots/v170-03-start-suhui-from-save.png shots/v170-04-loaded-synced.png |
 | SS-DAO-RING | v1.7 | 四大武道相剋環（A17）：破綻→蓄力→卸力→歸真→破綻；弟子武道＝最熟武學的 tag，敵人查 DAO.enemy；巡山傷害雙向 ×1.1／×0.9（v1.46：威脅偏低、開局弱→只取 ±10%） | **已接線** | 單元測試；瀏覽器自然巡山記下隊員與遇敵武道；A/B 五種子無系統性偏移（artifacts/v170/dao-ab.json）；v1.75 長跑 A/B（相剋開／關，35 案）：最遠步數平均 −36、擊殺 −9.2，8 案升 6 案降，落在雜訊內 | src/data.mjs src/expedition.mjs | artifacts/v170/dao-ab.mjs | shots/v170-05-expedition-dao.png |
 | SS-FOOD-SEC | v1.76 | 糧食安全閘（FOOD_SEC）：存糧＋菜 < 每人 1.5 份 → 種菜升需求層（75），吃／睡／種／煮／療傷／守望／建造以外的活動 ×0.35 | **已接線** | 單元測試；長跑自然遊玩 35 案：前 5 日斷糧平均 3.9→0.3 天，有斷糧的案 35→10 | src/data.mjs src/sim.mjs src/score-data.mjs | test/v176.test.mjs artifacts/v176/ | — |
+| SS-MED-SECLUDE | v1.78 | 閉關不見客：冥想中的人不會被拉去聊天／切磋／鼓勵／傳功（修岳不群因違心化解不了、心情 <30 巡山中止的回歸） | **已接線** | 單元測試（舊碼 22 次被拉、新碼 0）；30 日 35 案長跑：岳不群到 1600 3/5→4/5（另一案 1580）、心情 49.6→53.6 | src/sim.mjs src/bonds.mjs | test/v178.test.mjs artifacts/v178/ | — |
+| SS-RES-AUDIT | v1.78 | 資源總量不變式：s.res 每筆寫入走白名單管道、期末＝期初＋Σ異動、永不為負（只是測試，不改模擬） | **已接線** | 單元測試 3 案 × 15 日；帳本缺口列於 BALANCE-v178.md | test/v178.test.mjs | test/v178.test.mjs | — |
 
 修正：巡山在模擬層也守解鎖（第一章不再在第 1 日記成）；「本門新紀錄」「重傷倒地」由頂級改為中級事件。
 

@@ -1,0 +1,213 @@
+{
+ "ok": "35/35",
+ "curve": [
+  {
+   "day": 10,
+   "coin": 453.4,
+   "coinMin": 218,
+   "coinMax": 585,
+   "built": 16,
+   "raids": 30,
+   "hurt": 27.6,
+   "deaths": 0.1,
+   "best": 1133.7,
+   "endless": 0,
+   "endlessMax": 0,
+   "ds": 12.7,
+   "couples": 3.8,
+   "pill": 3.5,
+   "pop": {
+    "foot": 17.1,
+    "wood": 20.4,
+    "slope": 20,
+    "gorge": 6,
+    "cliff": 15.5,
+    "cave": 15,
+    "peak": 13.4
+   }
+  },
+  {
+   "day": 20,
+   "coin": 1268.7,
+   "coinMin": 623,
+   "coinMax": 1553,
+   "built": 16,
+   "raids": 42.4,
+   "hurt": 27.6,
+   "deaths": 0.1,
+   "best": 1444.3,
+   "endless": 0.6,
+   "endlessMax": 3,
+   "ds": 14.1,
+   "couples": 9,
+   "pill": 8,
+   "pop": {
+    "foot": 18,
+    "wood": 23,
+    "slope": 22.3,
+    "gorge": 8.1,
+    "cliff": 16.9,
+    "cave": 16.3,
+    "peak": 12.7
+   }
+  },
+  {
+   "day": 30,
+   "coin": 2116.3,
+   "coinMin": 1064,
+   "coinMax": 2548,
+   "built": 16,
+   "raids": 54.9,
+   "hurt": 27.6,
+   "deaths": 0.1,
+   "best": 1536.5,
+   "endless": 0.9,
+   "endlessMax": 3,
+   "ds": 15.2,
+   "couples": 14.9,
+   "pill": 8.8,
+   "pop": {
+    "foot": 18,
+    "wood": 23,
+    "slope": 23,
+    "gorge": 9,
+    "cliff": 18,
+    "cave": 17.9,
+    "peak": 13.8
+   }
+  },
+  {
+   "day": 40,
+   "coin": 3103.1,
+   "coinMin": 1568,
+   "coinMax": 3734,
+   "built": 16,
+   "raids": 67,
+   "hurt": 27.6,
+   "deaths": 0.1,
+   "best": 1605.2,
+   "endless": 1.3,
+   "endlessMax": 3,
+   "ds": 15.2,
+   "couples": 21,
+   "pill": 8.2,
+   "pop": {
+    "foot": 17.7,
+    "wood": 22.2,
+    "slope": 22.1,
+    "gorge": 8.2,
+    "cliff": 15.5,
+    "cave": 15.4,
+    "peak": 11.3
+   }
+  },
+  {
+   "day": 50,
+   "coin": 4079,
+   "coinMin": 2105,
+   "coinMax": 4810,
+   "built": 16,
+   "raids": 78.8,
+   "hurt": 27.6,
+   "deaths": 0.1,
+   "best": 1628.3,
+   "endless": 1.5,
+   "endlessMax": 3,
+   "ds": 15.2,
+   "couples": 26.9,
+   "pill": 8.5,
+   "pop": {
+    "foot": 18,
+    "wood": 23,
+    "slope": 22.8,
+    "gorge": 8.7,
+    "cliff": 16.7,
+    "cave": 16.4,
+    "peak": 12.4
+   }
+  },
+  {
+   "day": 60,
+   "coin": 5071.1,
+   "coinMin": 2657,
+   "coinMax": 5963,
+   "built": 16,
+   "raids": 91.1,
+   "hurt": 27.6,
+   "deaths": 0.1,
+   "best": 1650,
+   "endless": 1.6,
+   "endlessMax": 4,
+   "ds": 15.2,
+   "couples": 30.1,
+   "pill": 8.6,
+   "pop": {
+    "foot": 18,
+    "wood": 23,
+    "slope": 23,
+    "gorge": 9,
+    "cliff": 18,
+    "cave": 17.9,
+    "peak": 13.4
+   }
+  }
+ ],
+ "opens": {
+  "plain": {
+   "foodLowDays": 0.8,
+   "best": 578.6,
+   "endless": 0,
+   "reached1600": "0/5",
+   "coin60": 2697.6,
+   "built60": 16
+  },
+  "guojing": {
+   "foodLowDays": 1.1,
+   "best": 1568.4,
+   "endless": 0.2,
+   "reached1600": "3/5",
+   "coin60": 4612.8,
+   "built60": 16
+  },
+  "weixiaobao": {
+   "foodLowDays": 1.1,
+   "best": 1960.8,
+   "endless": 2.2,
+   "reached1600": "5/5",
+   "coin60": 5770.8,
+   "built60": 16
+  },
+  "linghuchong": {
+   "foodLowDays": 1.1,
+   "best": 1800,
+   "endless": 2,
+   "reached1600": "5/5",
+   "coin60": 5572.4,
+   "built60": 16
+  },
+  "yuebuqun": {
+   "foodLowDays": 1.3,
+   "best": 2040,
+   "endless": 3.2,
+   "reached1600": "5/5",
+   "coin60": 5368.6,
+   "built60": 16
+  },
+  "zhangwuji": {
+   "foodLowDays": 1,
+   "best": 1806,
+   "endless": 2,
+   "reached1600": "5/5",
+   "coin60": 5735,
+   "built60": 16
+  },
+  "axing": {
+   "foodLowDays": 1.6,
+   "best": 1796,
+   "endless": 1.8,
+   "reached1600": "5/5",
+   "coin60": 5740.2,
+   "built60": 16
+  }
+ }
+}

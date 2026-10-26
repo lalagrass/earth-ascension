@@ -186,7 +186,7 @@ export function setOrder(s, id, order) {
 
 // ---- 效用 AI ----
 // 可被邀聊：無玩家指派、未負重、未在施工/狩獵/歇息/聊天中
-function chatMates(s, d) { return s.ds.filter((o) => o !== d && !o.away && o.task?.act !== 'trial' && !o.order && o.hp > 30 && !o.carry && !['build', 'hunt', 'rest', 'chat', 'spar', 'learn', 'encourage'].includes(o.task?.act) && o.task?.phase !== 'return' && !actorBusy(s, o.id)); }
+function chatMates(s, d) { return s.ds.filter((o) => o !== d && !o.away && o.task?.act !== 'trial' && !o.order && o.hp > 30 && !o.carry && !['build', 'hunt', 'rest', 'chat', 'spar', 'learn', 'encourage', 'meditate'].includes(o.task?.act) && o.task?.phase !== 'return' && !actorBusy(s, o.id)); }
 function offered(s, act) { return FACILITIES.filter((f) => facStage(s, f.id).offers.includes(act)); }
 // v1.5：依登錄表找「有空 slot」的設施；床滿了就打地鋪（大廳 floor，明確記帳、不算床位）
 function bestFac(s, d, act) {
