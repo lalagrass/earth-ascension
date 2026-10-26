@@ -303,11 +303,11 @@ export default {
     {
       "assetId": "person.research.xiaolongnv.portrait",
       "path": "sect-chronicle/assets/shared/portraits/1.1.0/xiaolongnv.png",
-      "sha256": "d42fe3c8bc452814736c994add7621445952355bd9f32faffa3923ec6a2184f6",
+      "sha256": "342fb503ecac118608a041c1aa040d60d9fdde33403f9b8854475cdb7637f75b",
       "availability": "known",
       "dimensions": {
-        "width": 480,
-        "height": 640
+        "width": 864,
+        "height": 1152
       },
       "alpha": {
         "channel": false,
@@ -318,14 +318,14 @@ export default {
         "commit": "cadb937fb7ed54f44c72e562639fc598a6a1e646",
         "path": "sect-chronicle/assets/shared/portraits/1.1.0/xiaolongnv.png",
         "originPath": "solo-sect/assets/portraits/v2/xiaolongnv-v2-c.png",
-        "author": "Grok Bot",
-        "sameBlobAt": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2"
+        "author": "Grok（本機 Grok Build）",
+        "bytesNote": "Pixels are a new edit drawn 2026-10-26. They are not the blob at source.commit. source.commit and originPath name the identity reference only."
       },
       "rights": {
-        "status": "repository-research-reuse; third-party-rights-unverified",
+        "status": "owner-requested-generation; third-party-rights-unverified",
         "evidenceCommit": "cadb937fb7ed54f44c72e562639fc598a6a1e646",
         "evidencePath": "solo-sect/assets/portraits/v2/xiaolongnv-v2-c.png",
-        "note": "Existing repository research bytes only. Movie and novel rights, model version, and seeds are unrecorded. Private prototype use is not a commercial-rights upgrade. Not a final public design."
+        "note": "Owner asked on 2026-10-26 to try a colder hairstyle. Model version and seed are unrecorded. Not a commercial-rights upgrade."
       },
       "use": "Research character card portrait. Not a walk atlas, collision shape, or playable opening.",
       "anchor": {
@@ -338,19 +338,20 @@ export default {
         "rect": {
           "x": 0,
           "y": 0,
-          "w": 480,
-          "h": 640
+          "w": 864,
+          "h": 1152
         },
         "derivedFrom": "cadb937fb7ed54f44c72e562639fc598a6a1e646:solo-sect/assets/portraits/v2/xiaolongnv-v2-c.png",
-        "selection": "已選的清冷特寫。不是電影裡的包租婆。",
+        "selection": "2026-10-26 擁有人要求試一版：長髮配一條白緞帶，跟黃蓉的雙髻分開。清冷表情與白衣留著。",
         "generation": {
-          "tool": "Grok Bot GenerateImage",
+          "tool": "Grok Build Imagine image_edit",
           "modelVersion": "未量測",
           "aspect": "3:4",
-          "referenceImages": false,
+          "referenceImages": true,
           "seed": "未記錄",
-          "style": "unrecorded-for-this-file",
-          "promptLog": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2:solo-sect/assets/portraits/PROMPTS.md"
+          "style": "long-hair-white-ribbon",
+          "identityReference": "cadb937fb7ed54f44c72e562639fc598a6a1e646:solo-sect/assets/portraits/v2/xiaolongnv-v2-c.png",
+          "drawnOn": "2026-10-26"
         }
       }
     },
