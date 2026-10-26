@@ -275,6 +275,8 @@
     const pers = (key, title) => `<span role="radiogroup" aria-label="${title}">${title}：${CHOICES.personality[key].map((o) => `<label><input type="radio" name="${key}" value="${esc(o.value)}" ${o.value === c.personality[key] ? 'checked' : ''}>${esc(o.label)}</label>`).join('')}</span>`;
     $('setup-character').innerHTML = `<legend>主角</legend>
       <div class="choice" role="radiogroup" aria-label="出身">出身：${tpl}</div>
+      <p class="hint" id="origin-blurb"></p>
+      <details class="origin-background"><summary>背景</summary><p id="origin-background"></p><small>開局資源與能力以旁邊的出身模板為準，介紹不另寫數字。</small></details>
       <div class="choice">配點（共 ${CHOICES.freePoints} 點，最終每項 ${CHOICES.min}～${CHOICES.max}）：${alloc} <span id="alloc-left"></span></div>
       <div class="choice">${pers('risk', '性格・行事')} ${pers('bond', '性格・待人')}</div>
       <p class="hint">性格只影響事件建議與台詞，不改效率。</p>`;
@@ -283,7 +285,10 @@
 
   function updateCharacterSummary() {
     const c = setup.characterOptions;
-    const base = CHOICES.templates.find((t) => t.id === c.templateId).base;
+    const selected = CHOICES.templates.find((t) => t.id === c.templateId);
+    const base = selected.base;
+    setText($('origin-blurb'), selected.blurb || '');
+    setText($('origin-background'), selected.background || '');
     let used = 0;
     for (const a of CHOICES.attributes) {
       used += Number(c.allocation[a.key]) || 0;
