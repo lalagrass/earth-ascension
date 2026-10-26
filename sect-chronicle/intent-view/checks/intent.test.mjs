@@ -47,3 +47,14 @@ test('fixed true GPT uses same HTML and native command with original stop semant
  const rat=w.people['rat.1'];rat.x=2300*Q;rat.y=1700*Q;assert.equal(a.snapshot(rat.id),null);
  w.people.leader.secretPersonality='HIDDEN-TALENT';assert.ok(!JSON.stringify(a.snapshot('leader')).includes('HIDDEN-TALENT'));
 });
+
+
+test('review correction: true GPT activity cause never becomes an undisclosed policy cause',()=>{
+ const world=createWorld(),adapter=createGPTIntentAdapter({getWorld:()=>world});
+ assert.ok(command(world,{type:'task',actor:'leader',kind:'rest',args:{}}).ok);
+ const before=structuredClone(world),view=adapter.snapshot('leader');
+ assert.equal(view.current.reason.availability,'known');assert.ok(view.current.reason.value,'original accepted rest activity has a real cause');
+ assert.equal(view.policies[0].reason.availability,'unsupported');assert.equal(Object.hasOwn(view.policies[0].reason,'value'),false);
+ assert.ok(!JSON.stringify(view.policies[0]).includes(view.current.reason.value),'activity-local cause never enters policy payload');
+ intentHtml(view);assert.deepEqual(world,before,'corrected policy projection remains read-only');
+});

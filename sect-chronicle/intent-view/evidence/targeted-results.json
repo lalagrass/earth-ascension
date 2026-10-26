@@ -21,5 +21,13 @@
     "#357",
     "#358",
     "#346"
-  ]
+  ],
+  "reviewCorrection": {
+    "review": "https://github.com/lalagrass/earth-ascension/pull/362#issuecomment-6416593063",
+    "change": "GPT policy.reason unsupported with no value; original activity reason retained only in current",
+    "command": "node --test --test-isolation=none sect-chronicle/intent-view/checks/intent.test.mjs",
+    "passed": 5,
+    "failed": 0,
+    "desktop": "prior official and native command evidence reused; historical GPT policy reason field superseded by targeted correction"
+  }
 }

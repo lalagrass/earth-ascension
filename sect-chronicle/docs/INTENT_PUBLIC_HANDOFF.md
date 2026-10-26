@@ -23,7 +23,7 @@
 | 核心／固定來源 | 此包可證投影與指令 | 缺項／限制 |
 |---|---|---|
 | 正式Gemini衍生dev5e7f366…，`demo/model.mjs:view/actions/setAuto/setUpkeep` | 真活動、工作、唯一pending、manual／auto、叫回及原政策；全部原可見actions仍可用，必要hidden開始／取消只在原合法狀態顯示 | 沒有原生FIFO，queue標unsupported；不新增策略／數值 |
-| GPT6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc，`src/person-view.mjs:situation`／`world.mjs:command` | 同renderer讀原current、intent.kind、manualStop、recovering、auto、primary／secondary；原pendingCommands只列本人已排定命令的ID／type／kind／executeTick。真stop／resume等原可見commands透過原command送出 | 與正式版單一pending不同；沒有共用護院／整理reaction或獨立recall映射，標unsupported，原因缺失unknown，不強制互換休息語義 |
+| GPT6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc，`src/person-view.mjs:situation`／`world.mjs:command` | 同renderer讀原current、intent.kind、manualStop、recovering、auto、primary／secondary；原pendingCommands只列本人已排定命令的ID／type／kind／executeTick。真stop／resume等原可見commands透過原command送出 | 與正式版單一pending不同；沒有共用護院／整理reaction或獨立recall映射，標unsupported，原生自主政策原因未公開，標unsupported，不挪用current.reason活動原因；其他原因缺失unknown，不強制互換休息語義 |
 | Grok6760f21c342cbf72fc9fb4baf0aec8655abd0dd2，沿既有`character-card/grok.mjs`與`status.mjs:statusOf` | 既有card已有原order／task／now／why／next、原setOrder入口；本包保其原來源／mask與玩法，不更新副本 | 本包未新增IntentView runtime，不冒充與正式或GPT政策／pending／永久停工等價；控制薄接線另案才可宣稱 |
 
 GPT adapter先沿原visibleEntity，再排inactive／departed；未發現人物無intent／commands，沒有隱藏人格或出生值payload。原固定核心檔與hash不改，來源沿scene-shared/SOURCES.md及各manifest。只在明標開發頁展示第二真核心，不開第二玩家版本。
@@ -53,3 +53,8 @@ Chromium154.0.8037.57、1440×1000、runtime checkpoint `54045715125be2491b2bcba
 ![同renderer的固定真GPT原stop／自主與能力差異](../intent-view/evidence/gpt-native-intent.jpg)
 
 原護院setter回覆的真圖另存`official-policy-source.jpg`；控制操作／只改所選人物與原因在原結果中逐項核對。finally pageClosed／contextClosed／browserClosed／serverStopped全true，viewport復原後關閉；事後無8821 server或本包desktop程序殘留。
+
+
+### PR362唯一來源補修
+
+非作者[review6416593063](https://github.com/lalagrass/earth-ascension/pull/362#issuecomment-6416593063)指出GPT政策原因誤用了card.action.reason。最小改為policy.reason unsupported且無value，current.reason保持原活動來源；新增真核心已受理坐休、原活動原因已知而政策原因仍未公開的反例。`node --test --test-isolation=none sect-chronicle/intent-view/checks/intent.test.mjs`：5/5通過。既有正式A/B/D、真stop/resume、20項桌面及真圖清理證據復用，不重開頁／服務／長路／矩陣。桌面JSON是原checkpoint的實測記錄，其舊GPT policy reason欄不作補修後政策來源的證據；補修後以此定向反例及新headCI為準。
