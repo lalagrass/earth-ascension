@@ -15,7 +15,7 @@ try{
  check(new URL(page.url()).pathname==='/experiments/water-carry/demo/','single official entry with shared intent control');
  await page.click('[data-speed="4"]');await page.click('#play');await wait(()=>demo.snapshot().people.hero.mode==='carry');await pause();
  await click('dispatch:work:water');check((await snap()).people.hero.pending==='water','native single pending is reassign-to-water');
- await page.locator('.public-intent summary').click();await shot('official-single-pending.jpg');
+ await page.locator('.public-intent details[data-view-key="intent"] > summary').click();await shot('official-single-pending.jpg');
  await click('dispatch:cancel');check((await snap()).people.hero.pending===null,'native cancel removes only the original pending');
  await page.click('#panel [data-ui="toggleAdv"]');await click('policy:guard:allow');let s=await snap();check(s.people.hero.auto.allow&&!s.people.cousin.auto.allow,'original guard setter changes only bound hero');
  await click('policy:guard:late');await shot('official-policy-source.jpg');await click('policy:guard:allow');
@@ -24,7 +24,7 @@ try{
  check(await page.locator('#p-cmds [data-intent-actor="cousin"]').count()>0&&await page.locator('#p-cmds [data-intent-actor="hero"]').count()===0,'switch renders only current actor command bindings');
  await page.click('#roster [data-person="hero"]');assert.deepEqual(await page.evaluate(()=>demo.exportState()),frozen);result.checks.push('paused person switch and view state leave complete original authority unchanged');
  check(await page.locator('.public-intent details').evaluate(e=>e.open),'returning hero recovers its own expansion');
- await page.click('#play');await page.locator('.public-intent summary').focus();await page.waitForTimeout(900);
+ await page.click('#play');await page.locator('.public-intent details[data-view-key="intent"] > summary').focus();await page.waitForTimeout(900);
  check(await page.locator('.public-intent details').evaluate(e=>e.open)&&await page.evaluate(()=>document.activeElement?.matches('.public-intent summary')),'live intent update keeps expansion and summary focus');
  await wait(()=>demo.snapshot().people.hero.rest==='auto');await pause();s=await snap();check(s.people.hero.intent.fields.rest.value==='自主恢復'&&!s.people.hero.resting,'true low-energy recovery is distinct from manual stop');
  result.autoRecovery={tick:s.tick,energy:s.people.hero.energy,rest:s.people.hero.rest,trips:s.people.hero.trips};await shot('official-auto-recovery.jpg');
@@ -36,7 +36,7 @@ try{
  check((await page.locator('.public-intent').innerText()).includes('回滿也不續工'),'shared panel exposes native manual-stop guarantee');
  await click('dispatch:start');check((await snap()).people.hero.rest!=='manual'&&(await snap()).people.cousin.rest==='manual','original start clears only selected hero stop');
  await page.goto(origin+'/intent-view/checks/gpt.html');await wait(()=>window.intentHarness);
- await page.locator('.public-intent summary').click();check((await page.locator('.public-intent').innerText()).includes('原生pendingCommands'),'same HTML renderer preserves second-core native queue distinction');
+ await page.locator('.public-intent details[data-view-key="intent"] > summary').click();check((await page.locator('.public-intent').innerText()).includes('原生pendingCommands'),'same HTML renderer preserves second-core native queue distinction');
  const c=await page.evaluate(()=>intentHarness.snapshot().commands.find(c=>c.nativeId==='stop'));
  await page.locator('[data-intent-command]').filter({hasText:'停工'}).click();check(await page.evaluate(()=>intentHarness.world().people.leader.manualStop),'same renderer sends a true original GPT stop command');
  await page.click('#play');await page.waitForTimeout(300);await page.click('#play');check(await page.evaluate(()=>intentHarness.world().people.leader.manualStop),'GPT manual stop retains its original persistent intent');
