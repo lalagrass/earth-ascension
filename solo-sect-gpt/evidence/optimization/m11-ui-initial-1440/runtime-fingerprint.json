@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-26T01:08:10.300Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "files": {
+    "activities.mjs": "273baa3a2b09493c9127b7122f97276f4921c189257fac67036f34871a0db52a",
+    "audio.mjs": "cc003bc350426a0cfb0a1817b5d2d5217d158b2e711d88cdc17c8de72601dbd1",
+    "catalog.mjs": "82539c178d1b31b93845e65a2c77c0821695c99bf8689a8f8878f9b38e362c8a",
+    "classes.mjs": "9244a2f3873b3ff8452359206e757d0fea44d42c5f7f2ce1e6524e253fa60639",
+    "combat.mjs": "74d35022efda2c2485fbc48de8b27a636fb5ef331b365d1d2a594f3c767340b3",
+    "commitment.mjs": "8dd2801d238b5c210b364c29a01e2ee0d6fb9b54cf127aec06ba79df778c6b82",
+    "content.mjs": "601cdc74fbf9491a2ee76e231c16b94640dace71558ab9b9560b33540e0eb7b7",
+    "culture-data.mjs": "1e9f10170f3536d2583cec589608434cf10961898fc2aa9d3069cacf7a2f9198",
+    "culture.mjs": "04ab1ffc09e3afe290a59bb4f3902784ceaecb94d4bd941b1dd8f7add9cab433",
+    "data.mjs": "bd168ac57ae19d1430e7bd9a496935b79a1018b0da77d9985b988668d72541de",
+    "economy.mjs": "521bd4eca802cf0c59cbbf5165a4b3218dda5910548e232ea8af935f11754922",
+    "expedition.mjs": "4c13fc8110d3dca15e4023165947fd5d34d2c76e6b29e2c26e6be54ab6af6153",
+    "journey-data.mjs": "3c370269b3c093418fe465f1786cf1263652d446f7b0a4938bb7ccbe8e2a5e26",
+    "journey-forecast.mjs": "22c675c4bc4ef44bdae8553911bafc201c0c6709fa5c968a495c3c21e485019f",
+    "journey.mjs": "4a401c7659f82e954ae57ee9e3a7f8ecead839b518630a687f35376c9a523b0d",
+    "life-policy.mjs": "2a215f3a23b2b6a0c12c4afe989bdfabc41849b7528903444caff695a7a195c9",
+    "life.mjs": "cf87a3a82b7d89f3e77c60629a5248a1568fbf1dde57645820244a877a6c07a3",
+    "map.mjs": "43114f2f5fa7358cc31b646359f3868215d69dffadd85074d8a2eb26c4755c92",
+    "martial-config.mjs": "d774d5619f1e2889c8008f70380f376af1fbe11aa9ff0f76fa7c03a0d1b9ba68",
+    "martial.mjs": "fc885693679fcff2a6001c197d417e7734023825bde693fe5e246970d8e579c1",
+    "mentor.mjs": "34e4e034adc5f951f4dec0284f670882c3eda04c4d30d7fe858b0342d15fd199",
+    "navigation.mjs": "527f40f6da810ef406bda9224bf360f0863ae52042ae0106f424bc34330f9474",
+    "pack-schema.mjs": "3d209f3d630da27b5d9e4357014133dda47cbcb37fbe4fef5eb187f8aff69175",
+    "person-view.mjs": "0b48966e9f653e8fbbcea76c58f3bd49a8f9a9efcc3aa50cf42cd86acd4c3958",
+    "render.mjs": "2b1255cd8460d67c70cb323640dc573cb6fb156cdd8face39700dbd26646105c",
+    "save-features.mjs": "cdca09736f39264c060412e76ae1f9569d7bcddc1373cf7c0069863475483040",
+    "save.mjs": "82685ee0fe7aa1ca5c3ec3bfcef5fe00750af0c5885e9a675dfee51d1dd6eecb",
+    "scene-art.mjs": "785cffc8756fa5b65ea7a6fb52f2561a6c18e2777e476a94e51432ece0ccda95",
+    "state.mjs": "adaed775702c9104a074e92de39dcba9ad2fa170ff8e32cbbaa056caae219ce0",
+    "stories.mjs": "a46311390fc8f0387b5db96fb3ddf66d458f1921ef916b38b8d66652e3609976",
+    "ui.mjs": "91c2acabba03fdf5dc1032e5bd684b5ad2302ed9128a47032b8124336fc45adf",
+    "view.mjs": "12a5ddba2a572f9f3e16c7e7b0e717bfea83584d9ca713f0b8c9478e93667c70",
+    "world.mjs": "ccc8e4f525a0c95ea6c639a920c58929719a6785e47917beacae9d2482f6abbd"
+  }
+}

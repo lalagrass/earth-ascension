@@ -1,5 +1,6 @@
 import{isPackMove}from'./catalog.mjs';
 import{commitmentOf}from'./commitment.mjs';
+import{recordMemory,completeEvent}from'./mentor.mjs';
 import {trainingArt,homeSlotIndex} from './martial-config.mjs';
 import {applyLifePolicy,supply,shouldYield} from './life-policy.mjs';
 import {detachClass} from './classes.mjs';
@@ -64,7 +65,7 @@ export function memory(w,kind,one,two,source){if(!one||!two||one.id===two.id)ret
  if(w.memories.some(m=>m.key===key&&w.tick-m.tick<2400))return false;
  const id=uid(w,'memory'),m={id,key,kind,actors:pair,tick:w.tick,pos:position(one),source};w.memories.push(m);
  for(const [p,o]of [[one,two],[two,one]]){const k=p.id+'|'+o.id;w.relationships[k]??={trust:0,willingness:0,types:[],events:[],accepted:false};const r=w.relationships[k];r.trust+=MEMORY[kind][1];r.willingness+=kind==='talk'?1:3;if(!r.types.includes(kind))r.types.push(kind);r.events.push(id);}
- event(w,'memory',pair,{kind,text:MEMORY[kind][0],source});return true;
+ if(w.mentorPlan)recordMemory(w,kind,one,two,m);event(w,'memory',pair,{kind,text:MEMORY[kind][0],source});return true;
 }
 export function buildOrder(w,id){const f=Object.hasOwn(w.facilities,id)?w.facilities[id]:null;if(!f||f.stage>=FACILITIES[id].stages.length)return {ok:false,reason:'已完成此建物'};
  if(id==='hall'){
@@ -221,7 +222,7 @@ export function activityTick(w,p){const a=w.activities[p.activity];if(!a||p.hp<=
   }
   if(!approach(w,p,a,'hall.greet',a.pos)||!arrived(o)||Math.hypot(o.x/Q-a.otherPos[0],o.y/Q-a.otherPos[1])>1)return;
   p.pose=a.kind==='teach'?'teach':a.kind==='care'?'help':a.kind==='encourage'?'encourage':'talk';o.pose='listen';if(duration(a,(a.kind==='care'?12:10)*HZ)){
-   const kind=a.kind==='greet'?'talk':a.kind;memory(w,kind,p,o,a.id);if(kind==='encourage'&&o.frustration){o.encouragedSources??=[];if(!o.encouragedSources.includes(o.frustration.source))o.encouragedSources.push(o.frustration.source);o.frustration=null;}if(kind==='care')o.injury=Math.max(0,o.injury-5);
+   const kind=a.kind==='greet'?'talk':a.kind;memory(w,kind,p,o,a.id);if(a.args.mentorEvent)completeEvent(w,a,p,o);if(kind==='encourage'&&o.frustration){o.encouragedSources??=[];if(!o.encouragedSources.includes(o.frustration.source))o.encouragedSources.push(o.frustration.source);o.frustration=null;}if(kind==='care')o.injury=Math.max(0,o.injury-5);
    if(o.id==='amu'&&w.memories.some(m=>m.kind==='cowork'&&m.actors.includes('amu'))){w.stories['recruit.worker'].status='completed';o.willingness=6;}
    const b=w.activities[o.activity];if(b){release(w,b.id);delete w.activities[b.id];o.activity=null;o.reason='交談完成';route(w,o,[a.otherPos[0]+20,a.otherPos[1]+20]);}finish(w,p,a,'雙人活動完成');
   }return;

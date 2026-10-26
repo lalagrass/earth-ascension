@@ -16,6 +16,7 @@ import {story,storyActivityTick,storiesTick,found} from './stories.mjs';
 import {discover} from './view.mjs';
 import {ownershipGate,commitmentOf} from './commitment.mjs';
 import {adoptOps,opsTick} from './economy.mjs';
+import {adoptMentor,propose,respond,activeBond,eventStatus,mentorTick,MENTOR_EVENTS} from './mentor.mjs';
 import {beginError} from './activities.mjs';
 export {createWorld,invariants};
 // Validate solo orders before they interrupt a sparring session or anything else.
@@ -42,6 +43,10 @@ export function command(w,c){
  else if(c.type==='recall'){result=begin(w,p,'return',{},true);}
  else if(c.type==='lifePolicy'){try{const policy=structuredClone(c.policy||DEFAULT_LIFE_POLICY);validateLifePolicy(policy,w.inventories.vat.capacity);w.lifePolicy=policy;w.rulesVersion=rulesFor(w);event(w,'life-policy-adopted',[],{version:policy.version});}catch(e){result={ok:false,reason:e.message};}}
  else if(c.type==='adoptOps')result=adoptOps(w);
+ else if(c.type==='adoptMentor')result=adoptMentor(w);
+ else if(c.type==='mentorPropose')result=propose(w,p,w.people[c.target],c.promise);
+ else if(c.type==='mentorRespond')result=respond(w,p,c.accept===true);
+ else if(c.type==='mentorEvent'){const b=activeBond(w,p.id),def=Object.hasOwn(MENTOR_EVENTS,c.event)?MENTOR_EVENTS[c.event]:null;if(!b||!def)result={ok:false,reason:'沒有有效師徒關係或未知後續'};else{const st=eventStatus(w,b,c.event);if(!st.ok)result={ok:false,reason:def.name+'：'+st.reason};else result=begin(w,p,'talk',{target:b.master===p.id?b.disciple:b.master,mentorEvent:c.event},true);}}
  else if(c.type==='adoptContent')result=adoptContent(w);
  else if(c.type==='installContent')result=installPack(w,c.pack);
  else if(c.type==='inviteContent')result=inviteContent(w,c.person);
@@ -118,5 +123,5 @@ export function step(w,batch=[]){for(const c of batch)command(w,c);w.tick++;w.pe
  }
  lifeTick(w);contentTick(w);expeditionTick(w);journeyTick(w);storiesTick(w);discover(w);
  for(const item of ['veg','herb']){const s=w.ecology[item];if(s.day<day(w)){s.day=day(w);s.remaining=8;event(w,'resource-regrow',[],{item});}}
- opsTick(w);closeTick(w);const violations=invariants(w);if(violations.length)throw Error('World invariant at seed '+w.seed+' tick '+w.tick+': '+violations.join('; '));return w;
+ opsTick(w);mentorTick(w);closeTick(w);const violations=invariants(w);if(violations.length)throw Error('World invariant at seed '+w.seed+' tick '+w.tick+': '+violations.join('; '));return w;
 }

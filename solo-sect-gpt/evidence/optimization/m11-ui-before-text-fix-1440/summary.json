@@ -1,0 +1,86 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 81.135,
+  "errors": [],
+  "steps": [
+    {
+      "label": "accept-refused",
+      "wallSeconds": 15.724,
+      "tick": 183574,
+      "toast": "暫時無法答應：林青對雲生的互信需8（目前3）"
+    },
+    {
+      "label": "memory-teach",
+      "wallSeconds": 25.255,
+      "tick": 184280
+    },
+    {
+      "label": "memory-talk",
+      "wallSeconds": 28.944,
+      "tick": 184522
+    },
+    {
+      "label": "formed",
+      "wallSeconds": 30.068,
+      "tick": 184522
+    },
+    {
+      "label": "first-lesson",
+      "wallSeconds": 34.784,
+      "tick": 184849
+    },
+    {
+      "label": "unloaded-lin",
+      "wallSeconds": 44.338,
+      "tick": 185228
+    },
+    {
+      "label": "returned-together",
+      "wallSeconds": 71.921,
+      "tick": 187249
+    },
+    {
+      "label": "cooldown-over",
+      "wallSeconds": 73.869,
+      "tick": 187282
+    },
+    {
+      "label": "road-talk",
+      "wallSeconds": 80.352,
+      "tick": 187737
+    },
+    {
+      "label": "slice-complete",
+      "wallSeconds": 81.133,
+      "tick": 187737,
+      "story": {
+        "proposed": "已匯入；按繼續",
+        "firstAnswer": "暫時無法答應：林青對雲生的互信需8（目前3）",
+        "formed": 184522,
+        "firstLesson": "初次指點：師父把最基本的架勢再講一遍，弟子這次聽懂了。",
+        "unloaded_lin": true,
+        "busyEvent": "✓ 初次指點\n已完成\n歸途夜談\n還沒有一起遠行並返院過\n照料之恩\n成立後還沒有照料過對方\n守約\n約定尚未到期或未守成\n失約後的坦白\n約定沒有失守",
+        "roadTalk": "歸途夜談：談起那趟順利完成的路：弟子說最記得過橋那一刻。",
+        "variant": "completed",
+        "afterRoadTalk": "✓ 初次指點\n已完成\n✓ 歸途夜談\n已完成\n照料之恩\n成立後還沒有照料過對方\n守約\n上一段後續剛結束，58秒後再約\n失約後的坦白\n約定沒有失守"
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "proposed": "已匯入；按繼續",
+    "firstAnswer": "暫時無法答應：林青對雲生的互信需8（目前3）",
+    "formed": 184522,
+    "firstLesson": "初次指點：師父把最基本的架勢再講一遍，弟子這次聽懂了。",
+    "unloaded_lin": true,
+    "busyEvent": "✓ 初次指點\n已完成\n歸途夜談\n還沒有一起遠行並返院過\n照料之恩\n成立後還沒有照料過對方\n守約\n約定尚未到期或未守成\n失約後的坦白\n約定沒有失守",
+    "roadTalk": "歸途夜談：談起那趟順利完成的路：弟子說最記得過橋那一刻。",
+    "variant": "completed",
+    "afterRoadTalk": "✓ 初次指點\n已完成\n✓ 歸途夜談\n已完成\n照料之恩\n成立後還沒有照料過對方\n守約\n上一段後續剛結束，58秒後再約\n失約後的坦白\n約定沒有失守"
+  }
+}

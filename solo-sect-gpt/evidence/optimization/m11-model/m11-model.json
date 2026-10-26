@@ -1,0 +1,42 @@
+{
+  "source": "controlled model fixtures (labeled), not UI",
+  "cases": [
+    {
+      "case": "formation",
+      "reasons": [
+        "兩人之間還沒有真實的指點記憶",
+        "雙方都需是成年常住人物（未成年與訪客不收徒）",
+        "雙方都需是成年常住人物（未成年與訪客不收徒）",
+        "需要兩個不同的人",
+        "未知約定；兩人之間還沒有真實的指點記憶",
+        "暫時無法答應：阿木對雲生的互信需8（目前3）",
+        "弟子剛婉拒，600秒後才能再提",
+        "一師一徒：其中一方已有師徒關係"
+      ]
+    },
+    {
+      "case": "busy"
+    },
+    {
+      "case": "dedupe",
+      "memories": 1,
+      "preTeach": 0
+    },
+    {
+      "case": "variants",
+      "completed": {
+        "text": "歸途夜談：談起順利完成的「林緣採藥」：兩人把路上真的遇到的事各說一遍。",
+        "trust": 3
+      },
+      "injured": {
+        "text": "歸途夜談：談起「探古洞」途中受傷撤退：師父先問傷，再說撤得對。",
+        "trust": 4,
+        "cause": "cautious-retreat"
+      }
+    },
+    {
+      "case": "promise-missed",
+      "decided": 41346
+    }
+  ]
+}

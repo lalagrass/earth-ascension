@@ -1,0 +1,86 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 70.618,
+  "errors": [],
+  "steps": [
+    {
+      "label": "accept-refused",
+      "wallSeconds": 9.439,
+      "tick": 183574,
+      "toast": "暫時無法答應：林青對雲生的互信需8（目前3）"
+    },
+    {
+      "label": "memory-teach",
+      "wallSeconds": 19.995,
+      "tick": 184320
+    },
+    {
+      "label": "memory-talk",
+      "wallSeconds": 24.55,
+      "tick": 184610
+    },
+    {
+      "label": "formed",
+      "wallSeconds": 26.566,
+      "tick": 184610
+    },
+    {
+      "label": "first-lesson",
+      "wallSeconds": 30.213,
+      "tick": 184860
+    },
+    {
+      "label": "unloaded-lin",
+      "wallSeconds": 35.768,
+      "tick": 185235
+    },
+    {
+      "label": "returned-together",
+      "wallSeconds": 62.84,
+      "tick": 187237
+    },
+    {
+      "label": "cooldown-over",
+      "wallSeconds": 63.842,
+      "tick": 187254
+    },
+    {
+      "label": "road-talk",
+      "wallSeconds": 69.915,
+      "tick": 187703
+    },
+    {
+      "label": "slice-complete",
+      "wallSeconds": 70.617,
+      "tick": 187703,
+      "story": {
+        "proposed": "已匯入；按繼續",
+        "firstAnswer": "暫時無法答應：林青對雲生的互信需8（目前3）",
+        "formed": 184610,
+        "firstLesson": "初次指點：師父把最基本的架勢再講一遍，弟子這次聽懂了。",
+        "unloaded_lin": true,
+        "busyEvent": "✓ 初次指點\n已完成\n歸途夜談\n還沒有一起遠行並返院過\n照料之恩\n成立後還沒有照料過對方\n守約\n約定尚未到期或未守成\n失約後的坦白\n約定沒有失守",
+        "roadTalk": "歸途夜談：談起順利完成的「林緣採藥」：兩人把路上真的遇到的事各說一遍。",
+        "variant": "completed",
+        "afterRoadTalk": "✓ 初次指點\n已完成\n✓ 歸途夜談\n已完成\n照料之恩\n成立後還沒有照料過對方\n守約\n上一段後續剛結束，59秒後再約\n失約後的坦白\n約定沒有失守"
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "proposed": "已匯入；按繼續",
+    "firstAnswer": "暫時無法答應：林青對雲生的互信需8（目前3）",
+    "formed": 184610,
+    "firstLesson": "初次指點：師父把最基本的架勢再講一遍，弟子這次聽懂了。",
+    "unloaded_lin": true,
+    "busyEvent": "✓ 初次指點\n已完成\n歸途夜談\n還沒有一起遠行並返院過\n照料之恩\n成立後還沒有照料過對方\n守約\n約定尚未到期或未守成\n失約後的坦白\n約定沒有失守",
+    "roadTalk": "歸途夜談：談起順利完成的「林緣採藥」：兩人把路上真的遇到的事各說一遍。",
+    "variant": "completed",
+    "afterRoadTalk": "✓ 初次指點\n已完成\n✓ 歸途夜談\n已完成\n照料之恩\n成立後還沒有照料過對方\n守約\n上一段後續剛結束，59秒後再約\n失約後的坦白\n約定沒有失守"
+  }
+}

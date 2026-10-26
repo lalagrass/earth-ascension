@@ -1,0 +1,52 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 631.731,
+  "errors": [],
+  "steps": [
+    {
+      "label": "accept-refused",
+      "wallSeconds": 6.643,
+      "tick": 183574,
+      "toast": "暫時無法答應：林青對雲生的互信需8（目前3）"
+    },
+    {
+      "label": "memory-teach",
+      "wallSeconds": 15.887,
+      "tick": 184277
+    },
+    {
+      "label": "memory-talk",
+      "wallSeconds": 19.56,
+      "tick": 184527
+    },
+    {
+      "label": "formed",
+      "wallSeconds": 20.535,
+      "tick": 184527
+    },
+    {
+      "label": "first-lesson",
+      "wallSeconds": 23.869,
+      "tick": 184764
+    },
+    {
+      "label": "unloaded-lin",
+      "wallSeconds": 29.39,
+      "tick": 185146
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": "Error: UI timeout: returned-together\n    at Object.until (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/ui-kit.mjs:19:435)\n    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m11-ui.mjs:18:4",
+  "story": {
+    "proposed": "已匯入；按繼續",
+    "firstAnswer": "暫時無法答應：林青對雲生的互信需8（目前3）",
+    "formed": 184527,
+    "firstLesson": "初次指點：師父把最基本的架勢再講一遍，弟子這次聽懂了。",
+    "unloaded_lin": true,
+    "busyEvent": "✓ 初次指點\n已完成\n歸途夜談\n還沒有一起遠行並返院過\n照料之恩\n成立後還沒有照料過對方\n守約\n約定尚未到期或未守成\n失約後的坦白\n約定沒有失守"
+  }
+}
