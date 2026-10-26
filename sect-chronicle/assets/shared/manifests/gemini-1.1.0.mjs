@@ -519,11 +519,11 @@ export default {
     {
       "assetId": "person.research.baozugong.portrait",
       "path": "sect-chronicle/assets/shared/portraits/1.1.0/baozugong.png",
-      "sha256": "c97b973a3fe5ea04d1952c9f7c60a60cea04bc835c63969ec8ae042dd79afa92",
+      "sha256": "9b7af8a12a5d1bed677edd377bae69bb6b9d85c79bf27d59618856b840cb93f4",
       "availability": "known",
       "dimensions": {
-        "width": 480,
-        "height": 640
+        "width": 864,
+        "height": 1152
       },
       "alpha": {
         "channel": false,
@@ -534,14 +534,14 @@ export default {
         "commit": "6db09fd97cac3d9a66cde49103978d7793317418",
         "path": "sect-chronicle/assets/shared/portraits/1.1.0/baozugong.png",
         "originPath": "solo-sect/assets/portraits/baozugong.png",
-        "author": "Grok Bot",
-        "sameBlobAt": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2"
+        "author": "Grok（本機 Grok Build）",
+        "bytesNote": "Pixels are a new edit drawn 2026-10-26. They are not the blob at source.commit. source.commit and originPath name the identity reference only."
       },
       "rights": {
-        "status": "repository-research-reuse; third-party-rights-unverified",
+        "status": "owner-requested-generation; third-party-rights-unverified",
         "evidenceCommit": "6db09fd97cac3d9a66cde49103978d7793317418",
         "evidencePath": "solo-sect/assets/portraits/baozugong.png",
-        "note": "Existing repository research bytes only. Movie and novel rights, model version, and seeds are unrecorded. Private prototype use is not a commercial-rights upgrade. Not a final public design."
+        "note": "Owner asked on 2026-10-26 for this adjustment. Model version and seed are unrecorded. Not a commercial-rights upgrade."
       },
       "use": "Research character card portrait. Not a walk atlas, collision shape, or playable opening.",
       "anchor": {
@@ -554,26 +554,28 @@ export default {
         "rect": {
           "x": 0,
           "y": 0,
-          "w": 480,
-          "h": 640
+          "w": 864,
+          "h": 1152
         },
         "derivedFrom": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/baozugong.png",
-        "selection": "功夫研究已引用的公開職業圖。",
+        "selection": "2026-10-26 擁有人要求與包租婆共用粉紅與藍色髮卷，一顆戴歪。汗衫與懶樣留著，手上的白圈拿掉。",
         "generation": {
-          "tool": "Grok Bot GenerateImage",
+          "tool": "Grok Build Imagine image_edit",
           "modelVersion": "未量測",
           "aspect": "3:4",
-          "referenceImages": false,
+          "referenceImages": true,
           "seed": "未記錄",
-          "style": "unrecorded-for-this-file",
-          "promptLog": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2:solo-sect/assets/portraits/PROMPTS.md"
+          "style": "matched-to-baozupo-rollers",
+          "styleReference": "person.research.baozupo.portrait",
+          "identityReference": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/baozugong.png",
+          "drawnOn": "2026-10-26"
         }
       }
     },
     {
       "assetId": "person.research.kulijiang.portrait",
       "path": "sect-chronicle/assets/shared/portraits/1.1.0/kulijiang.png",
-      "sha256": "aec0fb623cabb839268d13b0aac29819abc774cb90cd28695a77efc8a554a073",
+      "sha256": "9607070c742d7c91b34f4edde595c7d4c8c82240be6ce5a2a42fc2ca9a5f831f",
       "availability": "known",
       "dimensions": {
         "width": 864,
@@ -589,13 +591,13 @@ export default {
         "path": "sect-chronicle/assets/shared/portraits/1.1.0/kulijiang.png",
         "originPath": "solo-sect/assets/portraits/kulijiang.png",
         "author": "Grok（本機 Grok Build）",
-        "bytesNote": "Pixels are a new caricature drawn 2026-10-26. They are not the blob at source.commit. source.commit and originPath name the identity reference only."
+        "bytesNote": "Pixels are a new edit drawn 2026-10-26. They are not the blob at source.commit. source.commit and originPath name the identity reference only."
       },
       "rights": {
         "status": "owner-requested-generation; third-party-rights-unverified",
         "evidenceCommit": "6db09fd97cac3d9a66cde49103978d7793317418",
         "evidencePath": "solo-sect/assets/portraits/kulijiang.png",
-        "note": "Owner asked on 2026-10-26 for a comic redraw. Model version and seed are unrecorded. Not a commercial-rights upgrade. The earlier research file is only the identity reference."
+        "note": "Owner asked on 2026-10-26 for this adjustment. Model version and seed are unrecorded. Not a commercial-rights upgrade."
       },
       "use": "Research character card portrait. Not a walk atlas, collision shape, or playable opening.",
       "anchor": {
@@ -612,7 +614,7 @@ export default {
           "h": 1152
         },
         "derivedFrom": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/kulijiang.png",
-        "selection": "2026-10-26 擁有人要求改成阿星那種搞笑水彩。身份仍是舊搬運圖，風格參考阿星。",
+        "selection": "2026-10-26 擁有人要求把健美身材收成跟裁縫、油炸鬼一樣的街坊叔叔。竹竿、汗和笑容留著。",
         "generation": {
           "tool": "Grok Build Imagine image_edit",
           "modelVersion": "未量測",
