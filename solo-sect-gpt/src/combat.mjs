@@ -110,7 +110,8 @@ export function sessionsTick(w){
  }
  const d=w.drill;if(!d||d.status==='completed'||d.status==='cancelled'||d.status==='assembling')return;
  if(d.witnessId&&d.wave===0){const observer=w.people[d.witnessId],at=d.witnessPoint;if(!observer||!arrived(observer)||Math.hypot(observer.x/Q-at[0],observer.y/Q-at[1])>2){d.nextWave=null;return;}}
- if(d.status==='exiting'){if(d.allOpponents.every(id=>arrived(w.people[id]))){d.status='completed';for(const id of d.allOpponents){const p=w.people[id];p.hp=p.maxHp;p.combatSession=null;p.combatTarget=null;p.action=null;}event(w,'drill-complete',d.actors,{config:d.config,session:d.id,leaked:d.leaked||0});}return;}
+ // M30: in a joint drill v2 an opponent standing within a body width of its entry counts as off the field, so a body-blocked last step cannot hold the drill open.
+ if(d.status==='exiting'){if(d.allOpponents.every(id=>{const o=w.people[id];return arrived(o)||d.joint?.version===2&&o.prep&&Math.hypot(o.x/Q-o.prep[0],o.y/Q-o.prep[1])<=12;})){d.status='completed';for(const id of d.allOpponents){const p=w.people[id];p.hp=p.maxHp;p.combatSession=null;p.combatTarget=null;p.action=null;}event(w,'drill-complete',d.actors,{config:d.config,session:d.id,leaked:d.leaked||0});}return;}
  for(const id of d.opponents){const p=w.people[id];if(!p.trainingDefeated&&p.x/Q<1300){p.trainingDefeated=true;p.drillLeaked=true;p.combatTarget=null;p.action=null;route(w,p,p.prep);d.leaked=(d.leaked||0)+1;event(w,'drill-leaked',[id],{session:d.id});}}
  const active=d.opponents.map(id=>w.people[id]).filter(p=>!p.trainingDefeated&&!p.inactive);
  if(!active.length){if(d.wave===2){d.status='exiting';for(const id of [...d.actors,...(d.allOpponents||d.opponents)]){const p=w.people[id];if(p.combatSession!==d.id)continue;p.combatSession=null;p.combatTarget=null;p.action=null;p.manualStop=false;}return;}
@@ -118,7 +119,7 @@ export function sessionsTick(w){
   // M25: the joint-drill v2 'flank' arrival sends three per wave from the east edge (the third through the south gate), clear of where earlier drill opponents stand; every other drill keeps two.
   const per=d.joint?.arrival==='flank'?3:2;
   for(let i=0;i<per;i++){
-   const id='training.'+(per===3?'f':'')+((d.wave-1)*per+i+1),prep=per===3?(i===2?[1530+(d.wave-1)*20,1350]:[1530+(i%2)*20,1170+(d.wave-1)*110+i*25]):[1490+(i%2)*24,1170+(d.wave-1)*110+i*25];
+   const id='training.'+(per===3?'f':'')+((d.wave-1)*per+i+1),prep=per===3?(i===2?[1535+(d.wave-1)*17,1368]:[1530+(i%2)*20,1170+(d.wave-1)*110+i*25]):[1490+(i%2)*24,1170+(d.wave-1)*110+i*25];
    let p=w.people[id];if(!p)p=makePerson(w,id,'演武對手'+((d.wave-1)*per+i+1),prep,{residence:'training',rank:'training',hp:40,maxHp:40,auto:false,color:'#8f7168',prep});
    p.hp=40;p.energy=10000;p.injury=0;p.skill={punch:{U:5,F:0,I:0,contexts:[],practice:0,sources:[]}};p.observation={};p.combatSession=d.id;p.team='opponents';p.trainingDefeated=false;p.drillLeaked=false;p.combatTarget=null;p.manualStop=true;p.action=null;p.path=[];p.routeAt=0;d.opponents.push(id);d.allOpponents.push(id);event(w,'training-enter',[id],{session:d.id,wave:d.wave});
   }

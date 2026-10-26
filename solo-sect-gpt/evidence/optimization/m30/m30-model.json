@@ -1,0 +1,20 @@
+{
+  "source": "model save round-trips of this batch's mid-way states; labeled fixtures noted inline",
+  "cases": [
+    {
+      "case": "showcase",
+      "tick": 194962
+    },
+    {
+      "case": "mid-way",
+      "v1Left": {
+        "shen": 188456
+      },
+      "flankOpponents": [
+        "training.f4",
+        "training.f5",
+        "training.f6"
+      ]
+    }
+  ]
+}

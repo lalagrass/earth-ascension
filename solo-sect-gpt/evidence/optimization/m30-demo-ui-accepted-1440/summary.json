@@ -1,0 +1,78 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 80.969,
+  "errors": [],
+  "steps": [
+    {
+      "label": "meal",
+      "wallSeconds": 37.573,
+      "tick": 192743
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 66.584,
+      "tick": 193311
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 80.133,
+      "tick": 194362
+    },
+    {
+      "label": "done",
+      "wallSeconds": 80.969,
+      "tick": 194362,
+      "save": {
+        "tick": 194362,
+        "rulesVersion": "chapter1-follow-1"
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "meals": [
+      7,
+      8
+    ],
+    "review": {
+      "outcome": "held",
+      "arrival": "flank",
+      "intercepts": {
+        "training.f1": {
+          "x": 1494,
+          "by": "amu"
+        },
+        "training.f2": {
+          "x": 1493,
+          "by": "amu"
+        },
+        "training.f3": {
+          "x": 1349,
+          "by": "lin"
+        },
+        "training.f4": {
+          "x": 1473,
+          "by": "amu"
+        },
+        "training.f5": {
+          "x": 1463,
+          "by": "amu"
+        },
+        "training.f6": {
+          "x": 1356,
+          "by": "lin"
+        }
+      }
+    },
+    "save": {
+      "tick": 194362,
+      "rulesVersion": "chapter1-follow-1"
+    },
+    "demoWritten": "evidence/optimization/m30/showcase-m24-m30.save.json"
+  }
+}
