@@ -1,6 +1,7 @@
 // 宗門編年生活開發版：PixiJS＋HTML/CSS。場景（背景、可排序物件、兩人與影子、選取圈）畫在 Pixi；
 // HUD、名冊、選單、面板、名牌、提示是 HTML/CSS。世界只有 model.mjs：畫面只讀 view()，下令只走 dispatch()，
 // 推進只經 createClock() 換算的固定步進。暫停、背景、播放倍率與畫面幀率都不改結果。
+import { createViewWriter } from '../../../public-fix/view-state.mjs';
 import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.min.mjs';
 import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
@@ -785,16 +786,8 @@ new ResizeObserver(measure).observe($('panel'));
 new ResizeObserver(measure).observe($('banner'));
 
 // ---------- HTML 介面：只在內容變了才寫 DOM，避免播放中吃掉點擊／焦點 ----------
-const last = {};
-// 內容變了要重寫時，若焦點在裡面的某個操作上，寫完後把焦點交回同一個操作（同 data-cmd／data-person）
-const put = (key, el, html) => {
-  if (last[key] === html) return;
-  last[key] = html;
-  const f = el.contains(document.activeElement) ? document.activeElement : null;
-  const sel = f && (f.dataset.cmd ? `[data-cmd="${f.dataset.cmd}"]` : f.dataset.person ? `[data-person="${f.dataset.person}"]` : null);
-  el.innerHTML = html;
-  if (sel) el.querySelector(sel)?.focus();
-};
+const writeView = createViewWriter();
+const put = (key, el, html) => writeView(key, el, html, key.startsWith('p-') ? ui.selected || 'none' : 'global');
 // 面板按鈕：途中改另一份工作＝「交付後改…」；有待執行時再按當趟工作＝取消、繼續。
 const cmdLabel = (a, p) => !a.id.startsWith('work:') || p.mode !== 'carry' ? a.label
   : a.id !== 'work:' + p.job ? `交付後改${JOBX[a.id.slice(5)].label}` : p.pending ? `繼續${p.jobLabel}` : a.label;

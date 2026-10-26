@@ -10,9 +10,14 @@ export function geminiCard(model, actorId, { fixed = false, identity = {} } = {}
   const source = `${branch}:${sha}:model.view.people.${actorId}`;
   const f = (id, value, layer = 'base', unit = '') => field(id, value, { source, layer, unit });
   const t = p.train01, training = !!(t?.goal || t?.training);
-  const reason = training ? t.why : p.tea?.active ? p.tea.why : p.life02?.why || p.why;
+  const tea = p.tea?.active ? p.tea : null;
+  // tea.reason is a command-disable reason, not the current activity's cause.
+  // Only a real event for this person supplies the current tea intent/result.
+  const teaCause = tea ? [...(v.teaEvents || [])].reverse().find(e => e.person === actorId && ['order','cancel','fail','drank'].includes(e.kind)) : null;
+  const teaCancelled = teaCause && ['cancel','fail'].includes(teaCause.kind);
+  const reason = tea ? teaCause?.text : training ? t.why : p.life02?.why || p.why;
   const load = ['up','pour','herbBack','herbDeliver','woodBack','woodDeliver'].includes(p.phase?.name);
-  const progress = training ? t.unitK : p.mode === 'carry' ? p.tripProgress : null;
+  const progress = tea ? tea.mode === 'brew' ? tea.brewK : tea.mode === 'sip' ? tea.sipK : null : training ? t.unitK : p.mode === 'carry' ? p.tripProgress : null;
   const fields = [f('energy', p.energy, 'effective', '精力點'), f('energy.max', p.energyMax, 'base', '精力點'),
     f('load', load ? 1 : 0, 'effective', '趟負載（非重量）'),
     f('leg.level', p.initialLevel, 'initial', 'Lv'), f('leg.level', p.level, 'base', 'Lv'),
@@ -26,11 +31,11 @@ export function geminiCard(model, actorId, { fixed = false, identity = {} } = {}
   }
   if (!persona) fields.push(field('innate', null, { source, layer: 'innate', availability: 'unsupported' }));
   return card({ branch, sha, actorId, identity: { name: identity.name || actorId, role: identity.role || '原 worker', portrait: portrait(branch,actorId) },
-    action: { id: training ? 'train' : p.job, current: training ? t.now : p.tea?.now || p.status,
-      phase: p.phase?.name || p.mode, reason: field('action.reason', reason || null, { source }),
-      next: p.next, target: training ? `${t.units}／${t.max} 單位` : p.jobLabel,
+    action: { id: tea ? 'tea' : training ? 'train' : p.job, current: tea ? tea.now : training ? t.now : p.status,
+      phase: tea ? tea.mode || 'pending' : p.phase?.name || p.mode, reason: field('action.reason', reason || null, { source: tea ? `${source}:view.teaEvents.${teaCause?.kind || 'missing'}` : source }),
+      next: tea ? teaCancelled ? null : tea.next : training ? t.next : p.next, target: tea ? tea.mode === 'fromTea' ? '院中' : '茶座' : training ? `${t.units}／${t.max} 單位` : p.jobLabel,
       progress: field('action.progress', progress, { source, unit: 'ratio' }),
-      stopReason: field('action.stopReason', p.why || (training ? t?.why : null) || null, { source }) }, fields,
+      stopReason: field('action.stopReason', tea ? teaCancelled ? teaCause.text : null : p.why || (training ? t?.why : null) || null, { source }) }, fields,
     martial: officialMartial(model, p, source),
     commands: model.actions(actorId).filter(a => !a.hidden).map(a => ({ id:a.id, label:a.label, enabled:a.enabled, reason:a.reason || null })) });
 }

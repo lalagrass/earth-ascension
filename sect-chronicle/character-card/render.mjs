@@ -28,6 +28,6 @@ export function actionHtml(c) {
 }
 export function fieldsHtml(c) {
  const layer={initial:'起始快照',base:'目前常態',effective:'當下有效',innate:'先天天賦'};
- return `<details class="public-fields"><summary>起始／常態／有效值與先天天賦</summary><table><thead><tr><th>欄位</th><th>時點</th><th>原值／單位</th></tr></thead><tbody>${c.fields.map(f=>`<tr><td>${escape(names[f.semanticId] || f.semanticId)}</td><td>${layer[f.layer] || escape(f.layer)}</td><td title="${escape(f.source)}${f.availability==='known' ? ` · 原值 ${escape(JSON.stringify(f.value))}` : ''}">${text(f)}</td></tr>`).join('')}</tbody></table><small>未知不等於 0；缺失初值不由目前值倒推。滑鼠停在值上可查來源。</small></details>`;
+ return `<details class="public-fields" data-view-key="attributes"><summary>起始／常態／有效值與先天天賦</summary><table><thead><tr><th>欄位</th><th>時點</th><th>原值／單位</th></tr></thead><tbody>${c.fields.map(f=>`<tr><td>${escape(names[f.semanticId] || f.semanticId)}</td><td>${layer[f.layer] || escape(f.layer)}</td><td title="${escape(f.source)}${f.availability==='known' ? ` · 原值 ${escape(JSON.stringify(f.value))}` : ''}">${text(f)}</td></tr>`).join('')}</tbody></table><small>未知不等於 0；缺失初值不由目前值倒推。滑鼠停在值上可查來源。</small></details>`;
 }
 export function renderCard(c){return identityHtml(c)+actionHtml(c)+fieldsHtml(c)+martialHtml(c);}
