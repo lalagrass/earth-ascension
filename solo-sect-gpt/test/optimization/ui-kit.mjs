@@ -6,7 +6,7 @@ export async function launch(dir,viewport={width:1440,height:900}){const out=new
  const k={out,page,errors,steps,browser,
   snap:()=>page.evaluate(()=>window.__game.snapshot()),status:()=>page.evaluate(()=>window.__game.status()),
   click:async s=>{await page.locator(s).first().click();},
-  pause:async v=>{if((await k.status()).paused!==v)await k.click('#pause');},
+  pause:async v=>{for(let i=0;i<6&&(await k.status()).paused!==v;i++){await k.click('#pause');await page.waitForTimeout(60);}if((await k.status()).paused!==v)throw Error('pause toggle did not take effect');},
   speed:async n=>k.click('[data-speed="'+n+'"]'),
   tab:async t=>{if(await page.locator('main.panel-hidden').count())await k.click('#panel-toggle');await k.click('[data-tab="'+t+'"]');},
   person:async id=>{await k.tab('people');await k.click('[data-person="'+id+'"]');},

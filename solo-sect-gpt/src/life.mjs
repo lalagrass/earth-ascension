@@ -1,3 +1,4 @@
+import{recordProduced}from'./state.mjs';
 import {Q,HZ,DAY,LEGENDS,MEMORY} from './data.mjs';
 import {stations,position,bedSlots} from './map.mjs';
 import {event,availableQty as qty,add,transfer,inventory,makePerson,sorted,assignBeds,day,reserve,release,uid,bagWeight,inventorySpace} from './state.mjs';
@@ -74,7 +75,7 @@ export function lifeActivityTick(w,p){const a=w.activities[p.activity];if(!a)ret
   const n=plot.stage==='planted'?80:160;if(a.progress<n)return true;a.progress=0;
   if(plot.stage==='empty'){plot.stage='planted';event(w,'planted',[p.id],{plot:plot.id});release(w,a.id);reserve(w,a,'plot:'+plot.id);a.destination=null;}
   else if(plot.stage==='planted'){add(w,p.bag,'water',-1,'irrigation');plot.watered=true;plot.stage='growing';plot.progress=0;event(w,'watered',[p.id],{plot:plot.id});finish(w,p,a,'已澆水，等待生長',true);}
-  else if(plot.stage==='ready'){const item=kind==='garden'?'veg':'herb',n=kind==='garden'?6:3;const pile=inventory(w,uid(w,'harvest'),{[item]:n},8);w.inventories[pile].pos=stations[station];w.ledger[item].produced+=n;a.harvest=pile;a.phase='haul';plot.stage='empty';plot.watered=false;countWork(w,p,a);event(w,'crop-harvest',[p.id],{plot:plot.id,n,item});}
+  else if(plot.stage==='ready'){const item=kind==='garden'?'veg':'herb',n=kind==='garden'?6:3;const pile=inventory(w,uid(w,'harvest'),{[item]:n},8);w.inventories[pile].pos=stations[station];w.ledger[item].produced+=n;if(w.opsPlan)recordProduced(w,item,n,'harvest');a.harvest=pile;a.phase='haul';plot.stage='empty';plot.watered=false;countWork(w,p,a);event(w,'crop-harvest',[p.id],{plot:plot.id,n,item});}
   if(a.phase==='haul')a.kind='harvestHaul';return true;
  }
  if(a.kind==='harvestHaul'){

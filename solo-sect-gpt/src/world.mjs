@@ -15,6 +15,7 @@ import {dispatch,recallParty,negotiate,challengeWardens,chooseCave,requestRescue
 import {story,storyActivityTick,storiesTick,found} from './stories.mjs';
 import {discover} from './view.mjs';
 import {ownershipGate,commitmentOf} from './commitment.mjs';
+import {adoptOps,opsTick} from './economy.mjs';
 import {beginError} from './activities.mjs';
 export {createWorld,invariants};
 // Validate solo orders before they interrupt a sparring session or anything else.
@@ -40,6 +41,7 @@ export function command(w,c){
  }else if(c.type==='resume'){if(p.temporary){cancel(w,p,'取消臨時工作，恢復自主');delete p.temporary;}p.manualStop=false;p.intent=null;p.auto=true;}
  else if(c.type==='recall'){result=begin(w,p,'return',{},true);}
  else if(c.type==='lifePolicy'){try{const policy=structuredClone(c.policy||DEFAULT_LIFE_POLICY);validateLifePolicy(policy,w.inventories.vat.capacity);w.lifePolicy=policy;w.rulesVersion=rulesFor(w);event(w,'life-policy-adopted',[],{version:policy.version});}catch(e){result={ok:false,reason:e.message};}}
+ else if(c.type==='adoptOps')result=adoptOps(w);
  else if(c.type==='adoptContent')result=adoptContent(w);
  else if(c.type==='installContent')result=installPack(w,c.pack);
  else if(c.type==='inviteContent')result=inviteContent(w,c.person);
@@ -56,7 +58,7 @@ export function command(w,c){
  else if(c.type==='martialStyle')result=chooseStyle(w,p,c.style);
  else if(c.type==='practice')result=startPractice(w,p,c.pattern);
  else if(c.type==='practiceStop'){cancelPractice(w,p);interruptCombat(w,p);p.manualStop=true;p.intent=null;martialTick(w);}
- else if(c.type==='policy'){w.policy=c.policy;}
+ else if(c.type==='policy'){if(!['build','food','train'].includes(c.policy))result={ok:false,reason:'未知門派方針'};else{w.policy=c.policy;if(w.opsPlan)event(w,'ops-focus',[],{policy:c.policy});}}
  else if(c.type==='guard'){if(!p.adult||p.kind!=='human')result={ok:false,reason:'守點需成年門人'};else{const pos=c.point==='B'?[1430,1150]:[1340,1220];p.guardPoint=pos;p.protect=c.protect||null;p.chaseLimit=Number(c.limit)||100;result=begin(w,p,'move',{pos},true);p.manualStop=true;p.team='residents';}}
  else if(c.type==='roles'){if(['gather','production','build','teach','care'].includes(c.primary)&&['gather','production','build','teach','care'].includes(c.secondary)){p.primary=c.primary;p.secondary=c.secondary;}else result={ok:false,reason:'未知職務'};}
  else if(c.type==='goals'){if(w.lifePolicy){const water=Number(c.water),meal=Number(c.meal);if(!Number.isInteger(water)||water<0||water>w.inventories.vat.capacity||!Number.isInteger(meal)||meal<0||meal>96)result={ok:false,reason:'目標超出容量／需整數；未修改原目標'};else w.goals={...w.goals,manual:true,water,meal};}else{w.goals.manual=true;for(const k of ['water','meal']){const n=Number(c[k]);if(Number.isInteger(n)&&n>=0&&n<=(k==='water'?w.inventories.vat.capacity:96))w.goals[k]=n;else result={ok:false,reason:'目標超出容量／需整數'};}}}
@@ -115,5 +117,5 @@ export function step(w,batch=[]){for(const c of batch)command(w,c);w.tick++;w.pe
  }
  lifeTick(w);contentTick(w);expeditionTick(w);journeyTick(w);storiesTick(w);discover(w);
  for(const item of ['veg','herb']){const s=w.ecology[item];if(s.day<day(w)){s.day=day(w);s.remaining=8;event(w,'resource-regrow',[],{item});}}
- closeTick(w);const violations=invariants(w);if(violations.length)throw Error('World invariant at seed '+w.seed+' tick '+w.tick+': '+violations.join('; '));return w;
+ opsTick(w);closeTick(w);const violations=invariants(w);if(violations.length)throw Error('World invariant at seed '+w.seed+' tick '+w.tick+': '+violations.join('; '));return w;
 }

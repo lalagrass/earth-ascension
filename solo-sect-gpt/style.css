@@ -16,3 +16,7 @@ header{height:74px;padding:9px 18px;background:linear-gradient(110deg,#faf3df,#e
 .sit{display:inline-flex;flex-direction:column;gap:2px;max-width:100%}.why-not{color:#6b3d22;font-size:11px;max-width:150px}
 details.group{border-top:1px solid var(--line);padding:6px 0}details.group summary{cursor:pointer;font-weight:600;padding:4px 0;list-style-position:inside}details.group summary::after{content:' · 展開';font-weight:400;color:var(--muted);font-size:11px}details.group[open] summary::after{content:' · 收合'}
 .warn{color:#6b3a16;font-weight:550}
+/* M9 operations ledger */
+table.ops{width:100%;border-collapse:collapse;font-size:12px;margin:6px 0}table.ops th,table.ops td{border-bottom:1px solid #dcd8bf;padding:3px 4px;text-align:left;vertical-align:top}table.ops thead th{color:#3f4a3a;font-weight:600}
+.card.focus{padding:6px 0;border-bottom:1px dashed #d6d2b8}.card.focus.chosen{border-left:3px solid #42695d;padding-left:6px}.time-row{margin:4px 0;font-size:12px}#ops-blocked{padding-left:18px;font-size:12px;line-height:1.6}
+table.ops th,table.ops thead th{white-space:nowrap}table.ops td:nth-child(5){white-space:nowrap}
