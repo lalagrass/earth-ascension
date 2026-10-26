@@ -1,0 +1,29 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 232.837,
+  "errors": [],
+  "steps": [
+    {
+      "label": "temporary-done",
+      "wallSeconds": 49.297,
+      "tick": 197979
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": "Error: UI timeout: recovering\n    at Object.until (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/ui-kit.mjs:19:435)\n    at async file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m33-ui.mjs:25:4",
+  "story": {
+    "original": "工作目標／待辦與停工\n\n執行中：行走 · 採集 · 下一步：採集後搬回入倉\n\n活動原因：玩家已受理的採集\n\n既有工作目標：採集（木）\n\n待改派：[]\n\n明確停工：false · 恢復：false\n\n玩家叫回：不支援\n\n已有其他目標：{\"primary\":null,\"secondary\":null}\n\n原生佇列能力：原生 pendingCommands（可多筆、依 executeTick）；臨時工作另記在 temporary\n待改派：[] · false停工 恢復自主\n\n已送出：停工\n\n坐休 回床睡 吃飯 取用乾糧 停工 恢復自主 開啟自主 叫回\n自主政策與原原因\n臨時工作：不適用 · 自主：false · 共享安排：不適用 · 目標來源：玩家指令",
+    "temporary": "工作目標／待辦與停工\n\n執行中：行走 · 採集 · 下一步：交付完成後回原採集\n\n活動原因：臨時一次 · 保留原安排\n\n既有工作目標：採集（菜）\n\n待改派：[]\n\n明確停工：false · 恢復：false\n\n玩家叫回：不支援\n\n已有其他目標：{\"primary\":null,\"secondary\":null}\n\n原生佇列能力：原生 pendingCommands（可多筆、依 executeTick）；臨時工作另記在 temporary\n待改派：[] · false停工 恢復自主\n\n已送出：停工\n\n坐休 回床睡 吃飯 取用乾糧 停工 恢復自主 開啟自主 叫回\n自主政策與原原因\n臨時工作：採集 → 回原指令：採集（木） · 自主：false · 共享安排：不適用 · 目標來源：臨時指令",
+    "returned": "工作目標／待辦與停工\n\n執行中：行走 · 採集 · 下一步：採集後搬回入倉\n\n活動原因：玩家已受理的採集\n\n既有工作目標：採集（木）\n\n待改派：[]\n\n明確停工：false · 恢復：false\n\n玩家叫回：不支援\n\n已有其他目標：{\"primary\":null,\"secondary\":null}\n\n原生佇列能力：原生 pendingCommands（可多筆、依 executeTick）；臨時工作另記在 temporary\n待改派：[] · false停工 恢復自主\n\n已送出：停工\n\n坐休 回床睡 吃飯 取用乾糧 停工 恢復自主 開啟自主 叫回\n自主政策與原原因\n臨時工作：不適用 · 自主：false · 共享安排：不適用 · 目標來源：玩家指令",
+    "stopped": "工作目標／待辦與停工\n\n執行中：行走 · 赴約 · 下一步：仍可必要自理；按恢復自主才接工作\n\n活動原因：玩家設定停工／關自主\n\n既有工作目標：沒有已受理的玩家指令\n\n待改派：[]\n\n明確停工：true · 恢復：false\n\n玩家叫回：不支援\n\n已有其他目標：{\"primary\":null,\"secondary\":null}\n\n原生佇列能力：原生 pendingCommands（可多筆、依 executeTick）；臨時工作另記在 temporary\n待改派：[] · true停工 恢復自主\n\n已送出：停工\n\n坐休 回床睡 吃飯 取用乾糧 停工 恢復自主 開啟自主 叫回\n自主政策與原原因\n臨時工作：不適用 · 自主：false · 共享安排：不適用 · 目標來源：不支援",
+    "staleToast": "人物已切換：請在目前人物面板重新下令",
+    "amuResult": "未送出：人物已切換：請在目前人物面板重新下令",
+    "hurt": {
+      "injury": 70
+    }
+  }
+}

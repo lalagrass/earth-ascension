@@ -46,6 +46,8 @@
 | `6f959f5/public-ui/values.mjs` | `sect-chronicle/public-ui/values.mjs` | beefc2246ed938f364d9917d1901471bd236c68c3c002c5f8de4ab76777b79e4 | 採用（M32）；改寫：加「不適用」標籤 |
 | `6f959f5/resource-view/contract.mjs` | `sect-chronicle/resource-view/contract.mjs` | b4bf4c760744592b6886e0dec05620b0c32681ec781f00a2e9e020651e15b184 | 採用（M32） |
 | `6f959f5/resource-view/render.mjs` | `sect-chronicle/resource-view/render.mjs` | f33e293436aa325f0483a0e255014b2cb65b890280024a197dffd3041e1ffe35 | 採用（M32） |
+| `6f959f5/intent-view/contract.mjs` | `sect-chronicle/intent-view/contract.mjs` | de555b468c91e616ae919e33b621c91dd7677fd34b3a608209c145e8b4787acb | 採用（M33，只加來源註解）；不採用同目錄 `gpt.mjs`（import 舊核心），本地轉接在 `src/intent-view.mjs` |
+| `6f959f5/intent-view/render.mjs` | `sect-chronicle/intent-view/render.mjs` | 10c096cf42296099155de039ab33e5327ff367865b708861756024da63637193 | 採用（M33，只加來源註解） |
 
 依賴閉包：`resource-view/render.mjs` → `public-ui/values.mjs`；`resource-view/contract.mjs` → `character-card/contract.mjs`；沒有其他 import。
 

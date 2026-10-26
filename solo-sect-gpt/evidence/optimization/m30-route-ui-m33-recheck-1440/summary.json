@@ -1,0 +1,31 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 19.715,
+  "errors": [],
+  "steps": [
+    {
+      "label": "lin-carrying",
+      "wallSeconds": 19.284,
+      "tick": 194943
+    }
+  ],
+  "label": "m33-recheck",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /正在送來：菜\\d+（林青）/. Input:\n\n'倉庫\\n' +\n  '膳房\\n' +\n  '外功場\\n' +\n  '在地圖上看\\n' +\n  '倉庫 · 第2階 入口：門口 (800,1100) · 互動點：倉前料堆、倉庫作業處（每處一次一人，其餘排隊）\\n' +\n  '物資（只算歸屬這裡的）\\n' +\n  '倉內：錢9、菜4、藥草1、乾糧4、木棍1 · 容量 96\\n' +\n  '正在送來：無 · 預留入庫容量：菜4（林青） · 已被預約取走：無\\n' +\n  '人\\n' +\n  '在場：無\\n' +\n  '路途中：無\\n' +\n  '排隊：無\\n' +\n  '派工\\n' +\n  '派給\\n' +\n  '阿木\\n' +\n  '雲生\\n' +\n  '林青\\n' +\n  '沈禾\\n' +\n  '採木入倉\\n' +\n  '採石入倉\\n' +\n  '採菜入倉\\n' +\n  '採藥草入倉\\n' +\n  '按下後由核心重新判定；能不能真的做到（例如採集點今天已採完）以人物卡的原因為準。'\n\n    at file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m30-route-ui.mjs:11:369",
+  "story": {
+    "marks": [
+      {
+        "step": "import",
+        "wallSeconds": 3.96
+      },
+      {
+        "step": "person",
+        "wallSeconds": 4.346
+      }
+    ],
+    "store": "倉庫\n膳房\n外功場\n在地圖上看\n倉庫 · 第2階 入口：門口 (800,1100) · 互動點：倉前料堆、倉庫作業處（每處一次一人，其餘排隊）\n物資（只算歸屬這裡的）\n倉內：錢9、菜4、藥草1、乾糧4、木棍1 · 容量 96\n正在送來：無 · 預留入庫容量：菜4（林青） · 已被預約取走：無\n人\n在場：無\n路途中：無\n排隊：無\n派工\n派給\n阿木\n雲生\n林青\n沈禾\n採木入倉\n採石入倉\n採菜入倉\n採藥草入倉\n按下後由核心重新判定；能不能真的做到（例如採集點今天已採完）以人物卡的原因為準。"
+  }
+}

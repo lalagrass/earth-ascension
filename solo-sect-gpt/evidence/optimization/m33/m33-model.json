@@ -1,0 +1,64 @@
+{
+  "source": "model command sequences on seed-29 worlds; labeled fixtures noted inline",
+  "cases": [
+    {
+      "case": "twin",
+      "ticks": 3000
+    },
+    {
+      "case": "fields",
+      "temporary": {
+        "kind": "採集",
+        "returnTo": "回原指令：採集（木）"
+      },
+      "pending": "停工（tick 1439 執行）"
+    },
+    {
+      "case": "limits",
+      "guestEnabled": [
+        "坐休",
+        "回床睡",
+        "吃飯",
+        "取用乾糧",
+        "停工",
+        "恢復自主",
+        "開啟自主",
+        "叫回"
+      ],
+      "guestDisabled": []
+    },
+    {
+      "case": "stale",
+      "commands": 3
+    },
+    {
+      "case": "button-vs-core",
+      "checked": 64,
+      "disabled": [
+        "downed amu 坐休",
+        "downed amu 回床睡",
+        "downed amu 吃飯",
+        "downed amu 取用乾糧",
+        "downed amu 叫回",
+        "expedition leader 坐休",
+        "expedition leader 回床睡",
+        "expedition leader 吃飯",
+        "expedition leader 取用乾糧",
+        "expedition leader 停工",
+        "expedition leader 恢復自主",
+        "expedition amu 坐休",
+        "expedition amu 回床睡",
+        "expedition amu 吃飯",
+        "expedition amu 取用乾糧",
+        "expedition amu 停工",
+        "expedition amu 恢復自主",
+        "expedition-out amu 坐休",
+        "expedition-out amu 回床睡",
+        "expedition-out amu 吃飯",
+        "expedition-out amu 取用乾糧",
+        "expedition-out amu 停工",
+        "expedition-out amu 恢復自主"
+      ]
+    }
+  ]
+}

@@ -23,6 +23,7 @@ export function predict(w,c){const p=w.people[c.actor||'leader'];const g=ownersh
  if(c.type==='task'){if(p.kind!=='human')return'野生個體不能接受門派勞作命令';return beginError(w,p,c.kind,c.args||{})?.reason||null;}
  if(c.type==='studyContent')return studyError(w,p,c.move);
  if(c.type==='preferContent')return preferError(w,p,c.move);
+ if(c.type==='recall')return beginError(w,p,'return',{})?.reason||null;// M33: same preflight the core runs before an individual recall
  if(c.type==='recallParty')return w.expedition&&!['returned','cancelled'].includes(w.expedition.phase)?null:'沒有外出或準備中的隊伍';
  if(c.type==='cultureStop')return w.culturePlan?.active?.status==='running'?null:'沒有進行中的相處';
  if(c.type==='endDrill')return w.drill&&!['completed','cancelled'].includes(w.drill.status)?null:'沒有進行中的演武';
