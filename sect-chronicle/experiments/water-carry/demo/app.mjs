@@ -8,6 +8,8 @@ import { createSceneRenderer } from '../../../scene-shared/renderer.mjs';
 import { createGeminiAdapter } from '../../../scene-shared/adapters/gemini.mjs';
 import { createCamera } from '../../../scene-shared/camera.mjs';
 import { bodyBox as actorBodyBox } from '../../../scene-shared/contract.mjs';
+import { geminiCard } from '../../../character-card/gemini.mjs';
+import { identityHtml, actionHtml, fieldsHtml } from '../../../character-card/render.mjs';
 import { saveTo, loadFrom } from './life-save.mjs';
 import { guardedSave, guardedLoad } from './life02.mjs'; // SG-LIFE-02 存讀邊界（SG-TRAIN-01 共用）
 import { TRAIN_POSTS } from './routes.mjs';
@@ -945,6 +947,7 @@ function renderChrome() {
   const panel = $('panel');
   panel.hidden = !IDS.includes(ui.selected);
   if (!panel.hidden) {
+    const publicCard = geminiCard(model, id, { identity: profile });
     const si = person.speedsInitial, sn = person.mode === 'carry' ? person.tripSpeeds : person.speeds;
     const work = person.cleaning ? `清理測試鼠（回來${person.jobLabel}）` : person.fixing ? `整理護欄（回來${person.jobLabel}）` : person.guarding ? `驅離野豬（回來${person.jobLabel}）` : person.mode === 'carry' ? `${person.jobLabel}（持續）· 第 ${person.trips + 1} 趟` : person.resting ? `停工（原工作：${person.jobLabel}）`
       : person.leisure ? `閒暇：${person.pref.doing}（原工作：${person.jobLabel}）` : person.recall ? `${person.jobLabel}（玩家叫回）` : `${person.jobLabel}（持續）`;
@@ -958,19 +961,15 @@ function renderChrome() {
       .map((a) => `<button class="btn" data-cmd="${a.id}" ${a.enabled ? '' : 'disabled'} title="${a.enabled ? a.detail : a.reason}">${cmdLabel(a, person)}</button>`).join(' ');
     if (!panel.firstElementChild) panel.innerHTML = '<div id="p-core"></div><div id="p-tabs" class="ptabs" role="tablist"></div><div id="p-life"></div><div id="p-martial"></div>';
     // HOME-01 固定人物資訊：名字、身分、精力、院中存量（都讀模型 view；沒有血量／內力／總戰力）。
-    put('p-core', $('p-core'), `<h2>${profile.name}<small>${profile.role}</small></h2>
+    put('p-core', $('p-core'), `${identityHtml(publicCard)}
       <h4>精力</h4><div class="row"><b>${en(person)}／${person.energyMax}</b><span class="muted">${srcText(person) ? `來源：${srcText(person)}` : '工作每秒 −1 · 坐下每秒 +5 · 喝茶 +40'}</span></div>
       <div class="bar energy ${person.energy <= 30 ? 'low' : ''}"><i style="width:${person.energy / person.energyMax * 100}%"></i><s style="left:30%"></s><s style="left:80%"></s></div>
       <div class="row stock" id="stock-${id}"><span>水缸 ${v.vat}／${v.vatCapacity}${v.inFlight ? `（在途 ${v.inFlight}）` : ''}</span><span>藥草 ${v.herbs}／${v.herbCapacity}${v.herbInFlight ? `（在途 ${v.herbInFlight}）` : ''}</span><span class="muted">茶可用：水 ${Math.max(0, v.teaAvail.water)}・藥草 ${Math.max(0, v.teaAvail.herb)}</span></div>`);
     put('p-tabs', $('p-tabs'), `<button class="btn tab ${ui.tab === 'life' ? 'on' : ''}" role="tab" aria-selected="${ui.tab === 'life'}" data-tab="life">生活總覽</button><button class="btn tab ${ui.tab === 'martial' ? 'on' : ''}" role="tab" aria-selected="${ui.tab === 'martial'}" data-tab="martial">武學成長</button>`);
     $('p-life').hidden = ui.tab !== 'life';
     $('p-martial').hidden = ui.tab !== 'martial';
-    if (ui.tab === 'life') put('p-life', $('p-life'), `<div class="job-card">
-        <div class="row"><b>現在：${person.tea && person.tea.now ? person.tea.now : person.status}</b><span>${work}</span></div>
-        <div class="bar"><i style="width:${Math.round((person.mode === 'carry' ? person.tripProgress : person.tea && person.tea.mode === 'brew' ? person.tea.brewK : person.tea && person.tea.mode === 'sip' ? person.tea.sipK : person.restLeg ? person.restLeg.k : person.funLeg ? person.funLeg.k : person.fixLeg ? person.fixLeg.k : person.fixWork ? person.fixWork.k : person.drinkLeg ? person.drinkLeg.k : 0) * 100)}%"></i></div>
-        <div class="muted">來源：${sourceText(person)}</div>
-        <div class="next-box"><b>下一步：</b>${person.next}</div>
-        ${person.why ? `<div class="muted stop-reason">狀態原因：${person.why}</div>` : ''}
+    if (ui.tab === 'life') put('p-life', $('p-life'), `${actionHtml(publicCard)}<div class="job-card">
+        <div class="muted">${work} · ${sourceText(person)}</div>
         ${teaHtml(person)}
         ${home02Html(person)}
         ${life02Html(person)}
@@ -991,7 +990,7 @@ function renderChrome() {
         ${positions[id].borrowed ? `<div class="muted">${positions[id].palm ? '動作借用：掌法沒有專用幀，暫用空手站姿／蹲身底圖＋向量手臂立掌疊圖（專用 atlas 另案）' : '動作借用：整理護欄沒有專用幀，暫用「舒展筋骨」前彎／站直兩幀交替'}</div>` : ''}
         ${positions[id].fallback ? `<div class="muted">動作沿用：${positions[id].requested === 'rest' ? '坐下歇（此人尚無坐姿幀，暫用蹲姿）' : template.actions[positions[id].action].label}</div>` : ''}
       </div></div>`);
-    else put('p-martial', $('p-martial'), `<div class="leg-badge"><b>腳力 Lv ${person.level}／${person.maxLevel}</b><span class="muted">${person.nextNeed ? `（再 ${person.nextNeed - person.xp} 趟升 Lv ${person.level + 1}）` : '（已封頂）'}</span></div>
+    else put('p-martial', $('p-martial'), `${fieldsHtml(publicCard)}<div class="leg-badge"><b>腳力 Lv ${person.level}／${person.maxLevel}</b><span class="muted">${person.nextNeed ? `（再 ${person.nextNeed - person.xp} 趟升 Lv ${person.level + 1}）` : '（已封頂）'}</span></div>
         <div class="bar xp"><i style="width:${person.nextNeed ? Math.round(person.xp / person.nextNeed * 100) : 100}%"></i></div>
         <table class="cmp"><tr><td>場景單位／秒</td><td class="now">${person.mode === 'carry' ? `本趟 Lv ${person.tripLevel}` : `現在 Lv ${person.level}`}</td><td class="init">起始 Lv ${person.initialLevel}</td></tr>
           <tr><td>去程（空手／空桶）</td><td class="now">${sn.empty.toFixed(1)}</td><td class="init">${si.empty.toFixed(1)}</td></tr>

@@ -1,0 +1,25 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "checks": [
+    "public card in single official entry",
+    "pause camera leaves authority unchanged",
+    "legal herb command, long follow, real delivery",
+    "growth sources and initial separation",
+    "Grok true core native scene and same card"
+  ],
+  "errors": [],
+  "screenshots": [
+    "official-card.jpg",
+    "official-growth.jpg",
+    "grok-native-card.jpg"
+  ],
+  "status": "passed",
+  "cleaned": {
+    "pageClosed": true,
+    "browserClosed": true,
+    "serverStopped": true
+  }
+}
