@@ -44,6 +44,31 @@ test('girl/classic/unknown IDs use readable fallback and never a borrowed senior
  assert.equal(portrait('dev','girl').availability,'missing');
  assert.equal(portrait('gpt','child').availability,'missing');
  assert.equal(portrait('grok','limochou').availability,'unsupported');
+ assert.equal(pins.gemini.manifest.version,'gemini-1.1.0');
+ assert.equal(pins.gpt.manifest.version,'gpt-1.0.0');
+ assert.equal(pins.grok.manifest.version,'grok-1.0.0');
+ assert.equal(pins.gemini.manifest.portraits['dev:hero'],'person.hero.sheet');
+ assert.equal(pins.gemini.manifest.portraits['gemini:hero'],'person.hero.sheet');
+ assert.equal(pins.gemini.manifest.portraits['gemini:girl'],'person.adopted-girl.portrait');
+ assert.equal(portrait('dev','hero').label,'既有活動圖裁切（非新立繪）');
+ for (const id of ['axing','huangrong','xiaolongnv','limochou','dongfangbubai','baozupo','baozugong','kulijiang','caifeng','youzhagui','huoyunxieshen','linghuchong','zhoubotong','guojing']) {
+  const assetId=`person.research.${id}.portrait`;
+  const asset=pins.gemini.manifest.assets.find(a=>a.assetId===assetId);
+  assert.equal(asset.availability,'known');
+  assert.equal(asset.alpha.channel,false);
+  assert.equal(asset.recipe.type,'portrait');
+  assert.deepEqual(asset.recipe.rect,{x:0,y:0,w:asset.dimensions.width,h:asset.dimensions.height});
+  assert.equal(asset.anchor.x,0.5);assert.equal(asset.anchor.y,1);
+  assert.equal(pins.gemini.manifest.portraits[`dev:${id}`],assetId);
+  assert.equal(pins.gemini.manifest.portraits[`gemini:${id}`],undefined);
+  assert.equal(pins.gpt.manifest.portraits[`dev:${id}`],undefined);
+  assert.equal(pins.grok.manifest.portraits[`dev:${id}`],undefined);
+  assert.equal(portrait('dev',id).portraitAssetId,assetId);
+  assert.equal(portrait('dev',id).label,'公開立繪');
+  assert.equal(portrait('gemini',id).availability,'unsupported');
+  assert.notEqual(assetId,'person.adopted-girl.portrait');
+  assert.notEqual(assetId,'person.hero.sheet');
+ }
  assert.match(resolveAsset(pins.grok,'bad').label,/不支援/);
  assert.match(identityHtml({branch:'dev',actorId:'girl',identity:{name:'女孩',role:'家人',portrait:portrait('dev','girl')}}),/來源／權利未知/);
 });

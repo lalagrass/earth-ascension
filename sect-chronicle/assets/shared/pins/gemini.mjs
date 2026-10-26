@@ -1,4 +1,4 @@
-import manifest from '../manifests/gemini-1.0.0.mjs';
+import manifest from '../manifests/gemini-1.1.0.mjs';
 import { createPin } from '../resolve.mjs';
 // Independent snapshot: never import another branch's mapping or a latest alias.
-export const pin = createPin(manifest, '8f99f488360e19deaaf675b71e321b0c1e1c0ce44cb2894516d707653cf1f252');
+export const pin = createPin(manifest, '9971444c86b031a62975bea442acd56e8f7941afca747dd20572dc9ec856f50a');
