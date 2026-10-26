@@ -13,6 +13,9 @@ import { pickFacility } from '../../../facility-view/contract.mjs';
 import { facilityHtml, tooltipText } from '../../../facility-view/render.mjs';
 import { geminiCard } from '../../../character-card/gemini.mjs';
 import { martialHtml } from '../../../martial-view/render.mjs';
+import { createOfficialEventAdapter } from '../../../event-view/adapters.mjs';
+import { createRecentEvents } from '../../../event-view/contract.mjs';
+import { recentHtml } from '../../../event-view/render.mjs';
 import { resolveMotion, SHOULDER } from '../../../martial-view/motion.mjs';
 import { identityHtml, actionHtml, fieldsHtml } from '../../../character-card/render.mjs';
 import { saveTo, loadFrom } from './life-save.mjs';
@@ -473,7 +476,7 @@ const SENSE = { placeOf: geo.of, boarAt: geo.boarAt, meetLengths: geo.meetLength
   woodLength: r1(geo.woodLength), siteLength: r1(geo.siteLength), bedLengths: Object.fromEntries(Object.entries(geo.bedLengths).map(([k, v]) => [k, r1(v)])) }; // SG-HOME-02 新路長也走 sense，不進 LENGTHS // SG-LIFE-02 招呼路長度不進 LENGTHS（存檔幾何識別不變）
 let model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
 const clock = createClock();
-const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null, boarExpanded: false, advancedOpen: false, tab: 'life', eventsOpen: false };
+const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null, boarExpanded: false, advancedOpen: false, tab: 'life', eventsOpen: true, eventCategory: 'all' };
 let v = model.view();
 let positions = Object.fromEntries(IDS.map((id) => [id, poseOf(id, v.people[id])]));
 const fx = []; // 浮字（只是畫面效果）
@@ -492,11 +495,14 @@ const sceneAdapter = createGeminiAdapter({ getModel: () => model, geometry: geo,
     return { asset: id, frame: p.frame, motion: p.motion, body: bodies[id], anchor: { x: h.anchorPx.x / h.frameSize.w, y: h.anchorPx.y / h.frameSize.h } };
   },
 });
+const eventAdapter = createOfficialEventAdapter({ getModel: () => model });
+const recentEvents = createRecentEvents();
 const facilityAdapter = createOfficialFacilityAdapter({ getModel: () => model, places });
 let sceneSnapshot;
 function renderShared() {
   sceneSnapshot = sceneAdapter.snapshot({ view: v, paused: !ui.playing, rate: ui.speed });
   const events = sharedScene.render(sceneSnapshot);
+  recentEvents.ingest(eventAdapter.snapshot());
   for (const actor of sceneSnapshot.actors) { sprites[actor.id] = sharedScene.sprite(actor.id); positions[actor.id] = { ...poseOf(actor.id, v.people[actor.id]), x: actor.x, y: actor.y, face: actor.face, travelled: actor.action.travelled }; }
   return events;
 }
@@ -608,7 +614,7 @@ function saveGame() { const r = guardedSave(model, () => saveTo(storage, model))
 function loadGame() {
   if (ui.menu) closeMenu(false);
   const r = guardedLoad(model, () => loadFrom(storage, model, SAVE_TEMPLATE)); // 失敗時暫態也不變（life-save 試跑一步可能推動暫態）
-  if (r.ok) { ui.playing = false; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); sceneAdapter.reset(); v = model.view(); renderShared(); fx.length = 0; }
+  if (r.ok) { ui.playing = false; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); sceneAdapter.reset(); eventAdapter.reset(); recentEvents.reset(); v = model.view(); renderShared(); fx.length = 0; }
   toast(r.text); renderChrome(); return r;
 }
 $('save').addEventListener('click', saveGame);
@@ -616,6 +622,12 @@ $('load').addEventListener('click', loadGame);
 $('roster').addEventListener('click', (e) => { const b = e.target.closest('[data-person]'); if (b) select(b.dataset.person); });
 $('panel').addEventListener('click', (e) => {
   // HOME-01：分頁／小事件只切顯示，不派令、不推 tick。
+  const filter = e.target.closest('[data-event-filter]');
+  if (filter) { ui.eventCategory = filter.dataset.eventFilter; renderChrome(); measure(); return; }
+  const actor = e.target.closest('[data-event-actor]');
+  if (actor) { select(actor.dataset.eventActor); return; }
+  const place = e.target.closest('[data-event-facility]');
+  if (place) { openMenu(place.dataset.eventFacility); return; }
   const tab = e.target.closest('[data-tab]');
   if (tab) { ui.tab = tab.dataset.tab; renderChrome(); measure(); return; }
   const evt = e.target.closest('[data-ui="toggleEvents"]');
@@ -650,7 +662,7 @@ function reset() {
   if (ui.menu) closeMenu(false);
   model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
   clock.clear();
-  sceneAdapter.reset();
+  sceneAdapter.reset(); eventAdapter.reset(); recentEvents.reset();
   v = model.view();
   renderShared();
   fx.length = 0;
@@ -956,7 +968,7 @@ function renderChrome() {
           : '<div class="muted">沒有</div>';
     const cmds = model.actions(id).filter((a) => !a.hidden && a.id !== 'pourNow' && a.id !== 'fixCancel' && a.id !== 'upCancel' && a.id !== 'cleanCancel') // 取消整理／整理意願／清理放在各自狀態列旁
       .map((a) => `<button class="btn" data-cmd="${a.id}" ${a.enabled ? '' : 'disabled'} title="${a.enabled ? a.detail : a.reason}">${cmdLabel(a, person)}</button>`).join(' ');
-    if (!panel.firstElementChild) panel.innerHTML = '<div id="p-core"></div><div id="p-tabs" class="ptabs" role="tablist"></div><div id="p-life"></div><div id="p-martial"></div>';
+    if (!panel.firstElementChild) panel.innerHTML = '<div id="p-core"></div><div id="p-tabs" class="ptabs" role="tablist"></div><div id="p-life"></div><div id="p-martial"></div><div id="p-events"></div>';
     // HOME-01 固定人物資訊：名字、身分、精力、院中存量（都讀模型 view；沒有血量／內力／總戰力）。
     put('p-core', $('p-core'), `${identityHtml(publicCard)}
       <h4>精力</h4><div class="row"><b>${en(person)}／${person.energyMax}</b><span class="muted">${srcText(person) ? `來源：${srcText(person)}` : '工作每秒 −1 · 坐下每秒 +5 · 喝茶 +40'}</span></div>
@@ -973,7 +985,6 @@ function renderChrome() {
       </div>
       <div id="p-pend">${pend}</div>
       <div id="p-cmds" class="cmds">${cmds}</div>
-      ${eventsHtml(id)}
       <div class="adv-section">
       <button class="btn toggle-adv" data-ui="toggleAdv">${ui.advancedOpen ? '▾ 收起進階設定' : '▸ 進階設定（自主政策）'}</button>
       <div class="adv-body" ${ui.advancedOpen ? '' : 'hidden'}>
@@ -997,6 +1008,8 @@ function renderChrome() {
         ${positions[id].motion ? `<div class="muted" data-motion-status>動作：${({windup:'起手',strike:'施展',recover:'收勢',breath:'調息',travel:'行走',down:'空桶下山',up:'負重返院'})[positions[id].motion.phase] || '通用靜態'} · ${positions[id].motion.fallback || '沿核心階段／步數；不結算命中'}</div>` : ''}
         ${trainHtml(person)}
         <h4>巡山戰報（本局真實紀錄）</h4>${martialPatrol(v, id)}`);
+    recentEvents.ingest(eventAdapter.snapshot());
+    put('p-events', $('p-events'), eventsHtml(id));
   }
 }
 
@@ -1033,8 +1046,8 @@ function teaHtml(p) {
   return `<div class="tea" id="tea-${p.id}">${t.now ? `<div><b>茶座：</b>${t.now}</div>` : ''}${t.note ? `<div class="muted">最近：${t.note}</div>` : ''}${t.active ? `<div class="muted">預約：水 ${t.resv.water}・藥草 ${t.resv.herb}${t.seat ? `・座位 ${profiles[t.seat].name}` : ''}</div>` : ''}</div>`;
 }
 function eventsHtml(id) {
-  const evs = v.teaEvents.filter((e) => e.person === id).slice(-8).reverse();
-  return `<div class="events"><button class="btn toggle-adv" data-ui="toggleEvents">${ui.eventsOpen ? '▾' : '▸'} 小事件（本局 ${evs.length}）</button>${ui.eventsOpen ? `<ul>${evs.map((e) => `<li>${(e.tick / 60).toFixed(0)}s ${e.text}</li>`).join('') || '<li class="muted">本局還沒有</li>'}</ul>` : ''}</div>`;
+  return recentHtml(recentEvents.list({ actorId: id, category: ui.eventCategory }), {
+    category: ui.eventCategory, names: profiles, expanded: ui.eventsOpen, size: recentEvents.size });
 }
 function martialPatrol(v, id) {
   const r = v.patrolReport;
@@ -1248,6 +1261,7 @@ window.demo = {
       heroScreen: people.hero.screen,
       vatScreen: toScreen(scene.places.vat.x, scene.places.vat.y - 20), springScreen: toScreen(places.spring.x, places.spring.y - 10),
       facilities: facilityAdapter.snapshot(selectedPerson()),
+      recentEvents: recentEvents.list({ actorId: selectedPerson(), category: ui.eventCategory }), eventCacheSize: recentEvents.size, eventCategory: ui.eventCategory,
       sceneSource: sceneSnapshot.source, sceneEvents: sceneSnapshot.events, sceneActors: sceneSnapshot.actors,
       sceneOcclusion: { bridgeFrontDepth: wc.front.zIndex, fadedProps: wc.props.filter((q) => q.s.alpha < 1).map((q) => ({ id: q.p.id, x: q.p.x, y: q.p.y, alpha: q.s.alpha })) },
       firstFrameMs, frames, stepMs: STEP_MS, cups: Object.fromEntries(IDS.map((id) => [id, cups[id].visible])),
