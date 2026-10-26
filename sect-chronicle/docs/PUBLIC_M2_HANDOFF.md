@@ -6,9 +6,9 @@
 
 | 工作包 | 有限範圍／目前狀態 | 下一條件 |
 |---|---|---|
-| #357 PUBLIC-FIX-01 | 本PR候選：GPT可見性／事件遮罩、茶行動來源、播放中每人物details／焦點；見下方 | grass非作者review、#67、dev＋postCI後才done |
-| #358 RESOURCE-VIEW-01 | 已批准但未在本PR實作：原水／藥及有可靠view的木；實存／在途／耗用預約／可用／容量及用途原單位分清；第二真核心薄證明 | #357 dev＋postCI後獨立認領，不預占 |
-| #359 INTENT-VIEW-01 | 已批准但未在本PR實作：原工作／待改派／停工／自主許可、合法指令與真拒絕原因；第二真核心原差異 | #358 dev＋postCI後獨立認領，完成收據後休息 |
+| #357 PUBLIC-FIX-01 | PR360已合dev2937dd017f8b5e6dea0a05e1ae120bd25499dc15，postCI40319800609五success；GPT遮罩／茶來源／展開焦點補修 | 已接受／證據復用 |
+| #358 RESOURCE-VIEW-01 | PR361已合dev5e7f36682272ef44190bc0d908030213e4ab8ca0，postCI40323071547五success；原資源逐欄來源與第二GPT證明 | 已接受／證據復用 |
+| #359 INTENT-VIEW-01 | 本PR作者候選，原意圖／單一pending／停工／自主政策與共用命令真接線；[正式包](INTENT_PUBLIC_HANDOFF.md)／[補修prompt](INTENT_PUBLIC_AUTHOR_PROMPT.md) | 非作者review／dev／postCI後才done，之後休息 |
 
 三核心玩法保持獨立；新關係／社交共用視圖、設施建造／床位、人格／天賦效果、完整圖庫／女孩正式圖、小地圖／編輯器仍候選。#337原作者範圍不變，D53親情陪伴／鼓勵無buff保留。手機與新增保存升版仍最後，不把上述候選授成runtime。
 
@@ -51,3 +51,10 @@ Chromium154.0.8037.57、1440×1000、桌面checkpoint `a5c26fe45785876c05382307c
 ![明標GPT開發證明，原可見範圍內才render／pick／顯示人物卡](../public-fix/evidence/gpt-visibility-revealed.jpg)
 
 finally回報pageClosed／contextClosed／browserClosed／serverStopped全true，自有viewport還原後關閉；事後無8819 server或本包desktop程序殘留。工程交付待grass非作者review／#67，不自merge或啟後包。
+
+
+## #356 三包累計收據與停止線（#359候選）
+
+#357／PR360已合dev2937dd017f8b5e6dea0a05e1ae120bd25499dc15、postCI40319800609五success；#358／PR361已合dev5e7f36682272ef44190bc0d908030213e4ab8ca0、postCI40323071547五success。#359本PR交原工作／自主設定共用視圖、原命令重核與第二真核心能力／缺項，尚待grass非作者review／dev／必要postCI，不將候選寫成已合。[正式包](INTENT_PUBLIC_HANDOFF.md)／[作者補修prompt](INTENT_PUBLIC_AUTHOR_PROMPT.md)保存直接證據與限制；最終接受SHA／postCI以#359與#356完成留言回填，不再新增文件gate。
+
+本輪只沿BL-U01／U02、G05／A01–A04已存在資料抽取呈現；沒有新queue、AI、共同閾值、物流／自主規則、保存升版或手機。Grok本包只有來源能力對照，未假稱已完成IntentView接線；GPT與正式版的休息、pending、政策差異保持。#359與必要同PR補修完成後作者／grass休息，不自行接關係／社交、建造床位、人格天賦、完整圖庫／女孩圖、小地圖／編輯器等新backlog；原母願景與#337作者邊界不變。

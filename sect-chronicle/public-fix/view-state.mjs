@@ -9,7 +9,7 @@ export function createViewWriter() {
       const d = active.parentElement, index = details(el).indexOf(d);
       return { detail: keyOf(d, index) };
     }
-    for (const attr of ['data-cmd','data-person','data-tab','data-ui','id']) {
+    for (const attr of ['data-intent-command','data-cmd','data-person','data-tab','data-ui','id']) {
       const value = active.getAttribute(attr);
       if (value) return { attr, value };
     }

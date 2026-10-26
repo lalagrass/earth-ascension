@@ -26,7 +26,14 @@
 | 包 | 狀態／範圍 | 下一條件 |
 |---|---|---|
 | #357 PUBLIC-FIX-01 | PR360已合dev2937dd017f8b5e6dea0a05e1ae120bd25499dc15，push postCI40319800609五success；GPT原可見性／scene事件遮罩、茶真活動來源、每人物details／焦點保留 | 已接受，沿原證據復用 |
-| #358 RESOURCE-VIEW-01 | 本PR作者候選：原水／藥／木五欄逐項來源，修正facility incoming誤名、真茶resv/avail、第二固定GPT原計數與缺項、Grok能力盤點。見[工作包](RESOURCE_PUBLIC_HANDOFF.md)／[prompt](RESOURCE_PUBLIC_AUTHOR_PROMPT.md) | grass非作者review／dev／postCI後才done，不解鎖#359 |
-| #359 INTENT-VIEW-01 | 已批准未開：目前工作／原生待改派／停工／自主許可與合法命令／真原因，第二真核心原差異 | #358 dev＋postCI後獨立認領；完成後休息 |
+| #358 RESOURCE-VIEW-01 | PR361已合dev5e7f36682272ef44190bc0d908030213e4ab8ca0，push postCI40323071547五success；原水／藥／木五欄逐項來源、facility incoming誤名修正、真茶resv/avail與第二GPT薄證明。見[工作包](RESOURCE_PUBLIC_HANDOFF.md) | 已接受，沿原證據復用 |
+| #359 INTENT-VIEW-01 | 本PR作者候選：原工作／唯一pending／停工／恢復／叫回與原護院整理政策、共用原命令／最新人物payload重核、第二真GPT原stop/resume與能力缺項。見[工作包](INTENT_PUBLIC_HANDOFF.md)／[補修prompt](INTENT_PUBLIC_AUTHOR_PROMPT.md) | grass非作者review／dev／postCI後才done；本輪最後包，完成及必要補修後休息 |
 
 再後的RelationView、建造／床位、人格／天賦效果、完整圖庫與小地圖／編輯器仍候選，原#337作者邊界保持。採#356既有開源設計參考、沿Pixi＋DOM薄投影，不搬第三方引擎或原作資產。手機／新增保存升版仍最後，Mac只真人；各包復用未變證據，不新建永久循環或排程。
+
+
+## #356 三包累計收據與停止線（#359候選）
+
+#357／PR360已合dev2937dd017f8b5e6dea0a05e1ae120bd25499dc15、postCI40319800609五success；#358／PR361已合dev5e7f36682272ef44190bc0d908030213e4ab8ca0、postCI40323071547五success。#359本PR交原工作／自主設定共用視圖、原命令重核與第二真核心能力／缺項，尚待grass非作者review／dev／必要postCI，不將候選寫成已合。[正式包](INTENT_PUBLIC_HANDOFF.md)／[作者補修prompt](INTENT_PUBLIC_AUTHOR_PROMPT.md)保存直接證據與限制；最終接受SHA／postCI以#359與#356完成留言回填，不再新增文件gate。
+
+本輪只沿BL-U01／U02、G05／A01–A04已存在資料抽取呈現；沒有新queue、AI、共同閾值、物流／自主規則、保存升版或手機。Grok本包只有來源能力對照，未假稱已完成IntentView接線；GPT與正式版的休息、pending、政策差異保持。#359與必要同PR補修完成後作者／grass休息，不自行接關係／社交、建造床位、人格天賦、完整圖庫／女孩圖、小地圖／編輯器等新backlog；原母願景與#337作者邊界不變。
