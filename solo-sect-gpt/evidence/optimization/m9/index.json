@@ -1,0 +1,11 @@
+{
+  "stage": "optimization-M9",
+  "author": "Claude Opus 5.5 (Anthropic, via Claude Code)",
+  "runtimeCommit": "145e639",
+  "spec": "docs/optimization/M9.md",
+  "model": {"tests": "test/optimization/m9.test.mjs", "regression": "evidence/optimization/m9-model/m9-regression.log", "comparison": "evidence/optimization/m9-model/comparison.json", "comparisonLog": "evidence/optimization/m9-model/comparison.log", "interrupted": "evidence/optimization/m9-model/comparison-interrupted-before-harvest-flow-fix.log"},
+  "normalUI": ["evidence/optimization/m9-ui-accepted-1440/summary.json", "evidence/optimization/m9-ui-accepted-1280/summary.json"],
+  "notCountedUI": ["evidence/optimization/m9-ui-initial-1440 (passed; header wrapping fixed afterwards)", "evidence/optimization/m9-ui-contended-1440", "evidence/optimization/m9-ui-contended-1280 (two browsers in parallel; missed day windows)"],
+  "rootReused": {"sourceCommit": "226b546", "reason": "only solo-sect-gpt changed"},
+  "kinds": {"modelFixture": "m9-model", "normalUI": "m9-ui-accepted-*", "humanPlaytest": "not run"}
+}

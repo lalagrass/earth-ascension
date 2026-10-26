@@ -1,0 +1,13 @@
+{
+  "status": "done",
+  "stage": "optimization-M9",
+  "author": "Claude Opus 5.5 (Anthropic, via Claude Code)",
+  "baseCommit": "5f0ca0e",
+  "artifactCommit": "145e639",
+  "index": "evidence/optimization/m9/index.json",
+  "changedFiles": ["src/economy.mjs", "src/state.mjs", "src/life.mjs", "src/activities.mjs", "src/life-policy.mjs", "src/world.mjs", "src/save.mjs", "src/save-features.mjs", "src/ui.mjs", "index.html", "style.css", "test/optimization/m9*.mjs", "test/optimization/ui-kit.mjs", "docs/optimization/M9.md"],
+  "checks": {"regression": "136/136", "m9Model": "5/5", "comparison": "6 starts x 3 focuses x 24000 ticks", "normalUI": "passed 1440x900 and 1280x800 (one full activity day per focus)"},
+  "saveCompatibility": "opt-in opsPlan v1 with label chapter1-ops-1 (validated; unknown version/focus/day/person rejected); unadopted worlds unchanged; base reader does not support the label",
+  "notRun": ["human playtest", "independent review"],
+  "limits": ["new-game seeds produce identical runs: effectively two independent starts", "no active construction in either start, so the build focus benefit is not measured", "food focus ration reserve competes with meals for vegetables (reported, not tuned)"]
+}
