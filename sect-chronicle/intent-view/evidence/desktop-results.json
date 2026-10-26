@@ -1,0 +1,273 @@
+{
+  "checkpoint": "54045715125be2491b2bcba4c6a7b4ffa8cb38d5",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "checks": [
+    "single official entry with shared intent control",
+    "native single pending is reassign-to-water",
+    "native cancel removes only the original pending",
+    "original guard setter changes only bound hero",
+    "other person has independent intent expansion",
+    "other person has independent advanced policy expansion",
+    "switch renders only current actor command bindings",
+    "paused person switch and view state leave complete original authority unchanged",
+    "returning hero recovers its own expansion",
+    "live intent update keeps expansion and summary focus",
+    "true low-energy recovery is distinct from manual stop",
+    "native auto recovery actually resumes original work",
+    "manual stop remains the one native pending",
+    "explicit stop remains stopped after full recovery",
+    "shared panel exposes native manual-stop guarantee",
+    "original start clears only selected hero stop",
+    "same HTML renderer preserves second-core native queue distinction",
+    "same renderer sends a true original GPT stop command",
+    "GPT manual stop retains its original persistent intent",
+    "GPT native resume uses original command payload"
+  ],
+  "errors": [],
+  "screenshots": [
+    "official-single-pending.jpg",
+    "official-policy-source.jpg",
+    "official-auto-recovery.jpg",
+    "official-manual-stop.jpg",
+    "gpt-native-intent.jpg"
+  ],
+  "browser": "154.0.8037.57",
+  "autoRecovery": {
+    "tick": 5075,
+    "energy": 17.45000000000472,
+    "rest": "auto",
+    "trips": 3
+  },
+  "manualStop": {
+    "tick": 8154,
+    "energy": 100,
+    "trips": 4
+  },
+  "gpt": {
+    "stopPayload": {
+      "method": "command",
+      "command": {
+        "type": "stop",
+        "actor": "leader"
+      }
+    },
+    "snapshot": {
+      "version": 1,
+      "key": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader:leader",
+      "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader",
+      "actorId": "leader",
+      "current": {
+        "id": "eat",
+        "current": "行走 · 用餐",
+        "reason": {
+          "semanticId": "action.reason",
+          "layer": "base",
+          "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader",
+          "unit": "",
+          "availability": "known",
+          "value": "已受理的用餐，正在赴作業位"
+        },
+        "next": "餐位用餐10秒後回原安排",
+        "target": "eat",
+        "phase": "init",
+        "progress": {
+          "semanticId": "action.progress",
+          "layer": "base",
+          "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader",
+          "unit": "",
+          "availability": "unknown"
+        },
+        "stopReason": {
+          "semanticId": "action.stopReason",
+          "layer": "base",
+          "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader",
+          "unit": "",
+          "availability": "unknown"
+        }
+      },
+      "fields": {
+        "workGoal": {
+          "semanticId": "intent.kind",
+          "layer": "base",
+          "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader.intent.kind",
+          "unit": "",
+          "availability": "known",
+          "value": "沒有已受理人工目標"
+        },
+        "pending": {
+          "semanticId": "pendingCommands",
+          "layer": "base",
+          "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader.pendingCommands",
+          "unit": "",
+          "availability": "known",
+          "value": []
+        },
+        "stop": {
+          "semanticId": "manualStop",
+          "layer": "base",
+          "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader.manualStop",
+          "unit": "",
+          "availability": "known",
+          "value": false
+        },
+        "rest": {
+          "semanticId": "recovering",
+          "layer": "base",
+          "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader.recovering",
+          "unit": "",
+          "availability": "known",
+          "value": false
+        },
+        "recall": {
+          "semanticId": "recall",
+          "layer": "base",
+          "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader",
+          "unit": "",
+          "availability": "unsupported"
+        },
+        "goals": {
+          "semanticId": "primary/secondary",
+          "layer": "base",
+          "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader.primary/secondary",
+          "unit": "",
+          "availability": "known",
+          "value": {
+            "primary": "gather",
+            "secondary": "production"
+          }
+        },
+        "queue": {
+          "semanticId": "queue",
+          "layer": "base",
+          "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader.queue",
+          "unit": "",
+          "availability": "known",
+          "value": "原生pendingCommands；非正式版單一pending"
+        }
+      },
+      "policies": [
+        {
+          "id": "native-auto",
+          "label": "原生自主",
+          "allow": {
+            "semanticId": "auto",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader.auto",
+            "unit": "",
+            "availability": "known",
+            "value": true
+          },
+          "reaction": {
+            "semanticId": "reaction",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader",
+            "unit": "",
+            "availability": "unsupported"
+          },
+          "state": {
+            "semanticId": "state",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader",
+            "unit": "",
+            "availability": "unsupported"
+          },
+          "reason": {
+            "semanticId": "action.reason",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:world.people.leader",
+            "unit": "",
+            "availability": "known",
+            "value": "已受理的用餐，正在赴作業位"
+          },
+          "commandIds": []
+        }
+      ],
+      "commands": [
+        {
+          "id": "native:{\"type\":\"task\",\"actor\":\"leader\",\"kind\":\"train\",\"args\":{\"art\":\"punch\"}}",
+          "nativeId": "task",
+          "label": "練拳",
+          "enabled": true,
+          "reason": null,
+          "detail": null,
+          "group": "action",
+          "payload": {
+            "method": "command",
+            "command": {
+              "type": "task",
+              "actor": "leader",
+              "kind": "train",
+              "args": {
+                "art": "punch"
+              }
+            }
+          }
+        },
+        {
+          "id": "native:{\"type\":\"task\",\"actor\":\"leader\",\"kind\":\"rest\",\"args\":{}}",
+          "nativeId": "task",
+          "label": "坐休",
+          "enabled": true,
+          "reason": null,
+          "detail": null,
+          "group": "action",
+          "payload": {
+            "method": "command",
+            "command": {
+              "type": "task",
+              "actor": "leader",
+              "kind": "rest",
+              "args": {}
+            }
+          }
+        },
+        {
+          "id": "native:{\"type\":\"task\",\"actor\":\"leader\",\"kind\":\"eat\",\"args\":{}}",
+          "nativeId": "task",
+          "label": "吃飯",
+          "enabled": true,
+          "reason": null,
+          "detail": null,
+          "group": "action",
+          "payload": {
+            "method": "command",
+            "command": {
+              "type": "task",
+              "actor": "leader",
+              "kind": "eat",
+              "args": {}
+            }
+          }
+        },
+        {
+          "id": "native:{\"type\":\"stop\",\"actor\":\"leader\"}",
+          "nativeId": "stop",
+          "label": "停工",
+          "enabled": true,
+          "reason": null,
+          "detail": null,
+          "group": "action",
+          "payload": {
+            "method": "command",
+            "command": {
+              "type": "stop",
+              "actor": "leader"
+            }
+          }
+        }
+      ],
+      "shortcuts": []
+    }
+  },
+  "passed": true,
+  "cleanup": {
+    "pageClosed": true,
+    "contextClosed": true,
+    "browserClosed": true,
+    "serverStopped": true,
+    "viewport": "owned viewport restored then context closed"
+  }
+}

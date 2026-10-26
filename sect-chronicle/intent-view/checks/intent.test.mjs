@@ -10,6 +10,8 @@ test('official projection shares current action and separates one pending, manua
  for(let i=0;i<20;i++)intentHtml(adapter.snapshot(i%2?'hero':'cousin'));
  assert.deepEqual(model.exportState(Infinity),before);v.fields.workGoal.value='fake';v.commands[0].payload.actorId='fake';assert.equal(model.view().people.hero.job,'water');
  assert.ok(adapter.snapshot('hero').commands.some(c=>c.nativeId==='work:wood'),'all original visible commands retained');
+ let calls=0;const bridged=createOfficialIntentAdapter({getModel:()=>model,dispatch:(action,id)=>{calls++;return model.dispatch(action,id);}});
+ assert.ok(send(bridged,'hero','work:herb').ok);assert.equal(calls,1,'one submitted control calls original scene dispatch exactly once');
 });
 test('actual official work/reassign/cancel/manual stop/recovery/resume retains original complete state and no duplicate dispatch',()=>{
  const {model:m,adapter:a}=setup(),t=createGeminiCore().model;

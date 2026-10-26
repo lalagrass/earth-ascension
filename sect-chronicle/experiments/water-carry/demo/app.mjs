@@ -632,7 +632,7 @@ function saveGame() { const r = guardedSave(model, () => saveTo(storage, model))
 function loadGame() {
   if (ui.menu) closeMenu(false);
   const r = guardedLoad(model, () => loadFrom(storage, model, SAVE_TEMPLATE)); // 失敗時暫態也不變（life-save 試跑一步可能推動暫態）
-  if (r.ok) { ui.playing = false; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); sceneAdapter.reset(); eventAdapter.reset(); recentEvents.reset(); v = model.view(); renderShared(); fx.length = 0; }
+  if (r.ok) { intentResults.clear(); ui.playing = false; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); sceneAdapter.reset(); eventAdapter.reset(); recentEvents.reset(); v = model.view(); renderShared(); fx.length = 0; }
   toast(r.text); renderChrome(); return r;
 }
 $('save').addEventListener('click', saveGame);
@@ -682,6 +682,7 @@ function toggleShadow() { ui.shadow = !ui.shadow; renderChrome(); }
 function select(id) { if (ui.menu) closeMenu(false); ui.selected = id; if (IDS.includes(id)) ui.follow = true; renderChrome(); }
 function reset() {
   if (ui.menu) closeMenu(false);
+  intentResults.clear();
   model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
   clock.clear();
   sceneAdapter.reset(); eventAdapter.reset(); recentEvents.reset();

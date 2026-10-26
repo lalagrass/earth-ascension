@@ -1,0 +1,25 @@
+{
+  "base": "5e7f36682272ef44190bc0d908030213e4ab8ca0",
+  "desktopCheckpoint": "54045715125be2491b2bcba4c6a7b4ffa8cb38d5",
+  "direct": {
+    "command": "node --test --test-isolation=none sect-chronicle/intent-view/checks/intent.test.mjs sect-chronicle/character-card/checks/card.test.mjs",
+    "passed": 12,
+    "failed": 0
+  },
+  "finalBridgeCounter": {
+    "command": "node --test --test-isolation=none sect-chronicle/intent-view/checks/intent.test.mjs",
+    "passed": 4,
+    "failed": 0
+  },
+  "desktop": {
+    "checks": 20,
+    "errors": 0,
+    "results": "desktop-results.json"
+  },
+  "unchangedCoreRuleSchemaRngSave": true,
+  "reusedEvidence": [
+    "#357",
+    "#358",
+    "#346"
+  ]
+}
