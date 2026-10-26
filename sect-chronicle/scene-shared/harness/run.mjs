@@ -1,4 +1,4 @@
-import { Application, Assets } from '../../experiments/water-carry/demo/vendor/pixi.min.mjs';
+import { Application, Assets, Spritesheet } from '../../experiments/water-carry/demo/vendor/pixi.min.mjs';
 import { createSceneRenderer } from '../renderer.mjs';
 import { createGeminiAdapter } from '../adapters/gemini.mjs';
 import { createCamera } from '../camera.mjs';
@@ -9,13 +9,24 @@ import { createWorld } from '../sources/gpt/solo-sect-gpt/src/world.mjs';
 import { createGPTAdapter, GPT_STEP_MS, gptDefinition } from '../adapters/gpt.mjs';
 import { nativeGPTMap } from './gpt-map.mjs';
 import { Q } from '../sources/gpt/solo-sect-gpt/src/data.mjs';
+import { pin as gptAssetPin } from '../../assets/shared/pins/gpt.mjs';
+import { pin as geminiAssetPin } from '../../assets/shared/pins/gemini.mjs';
+import { resolveAsset, localAssetURL } from '../../assets/shared/resolve.mjs';
 const demo = new URL('../../experiments/water-carry/demo/', import.meta.url);
 const isGPT = new URL(location.href).searchParams.get('core') === 'gpt';
+const assetPin = isGPT ? gptAssetPin : geminiAssetPin;
+const resolvedHero = resolveAsset(assetPin, 'person.hero.sheet');
 const world = isGPT ? createWorld({ seed: 11 }) : null;
 const core = isGPT ? { model: world, definition: gptDefinition(), source: 'gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc', stepMs: GPT_STEP_MS } : createGeminiCore(true);
 const { model, geometry } = core;
 const template = await (await fetch(new URL('../template/actions.json', demo))).json();
-const sheets = Object.fromEntries(await Promise.all(['hero', 'cousin'].map(async (id) => [id, await Assets.load(new URL(`assets/art184-production/${id}.json`, demo).href)])));
+const sheets = Object.fromEntries(await Promise.all(['hero', 'cousin'].map(async (id) => {
+  if (id !== 'hero') return [id, await Assets.load(new URL(`assets/art184-production/${id}.json`, demo).href)];
+  const data = await (await fetch(localAssetURL(resolvedHero.recipe.metadataPath))).json();
+  const sheet = new Spritesheet({ texture: await Assets.load(resolvedHero.url), data });
+  await sheet.parse();
+  return [id,sheet];
+})));
 const animators = Object.fromEntries(Object.entries(sheets).map(([id, sheet]) => [id, createAnimator(template, sheet.data)]));
 const app = new Application(); await app.init({ resizeTo: window, antialias: true, background: '#ded3ba' }); document.body.prepend(app.canvas);
 const animalTextures = isGPT ? Object.fromEntries(await Promise.all(['boar_walk', 'rat_sniff'].map(async (id) => [id, await Assets.load(new URL(`assets/art184-watercolor/${id}.png`, demo).href)]))) : {};
@@ -52,7 +63,7 @@ const clock = { clear() { accumulator = 0; }, feed(dtMs, rate) { accumulator += 
 let playing = true, rate = 4, selected = null, drag;
 const gather = (item) => isGPT ? adapter.command({ actorId: 'leader', action: { type: 'task', kind: 'gather', args: { item } } }) : adapter.command({ actorId: 'cousin', action: `work:${item}` });
 gather('herb');
-document.getElementById('source').textContent = core.source;
+document.getElementById('source').textContent = `${core.source} · assets ${assetPin.manifest.version}`;
 document.getElementById('play').onclick = () => { playing = !playing; clock.clear(); document.getElementById('play').textContent = playing ? '暫停' : '播放'; };
 for (const button of document.querySelectorAll('[data-rate]')) button.onclick = () => { rate = Number(button.dataset.rate); };
 document.getElementById('herb').onclick = () => gather('herb');
@@ -70,4 +81,4 @@ app.ticker.add((t) => {
   const v = isGPT ? { tick: world.tick, vat: world.inventories.vat.items.water, vatCapacity: world.inventories.vat.capacity, herbs: world.inventories.store.items.herb, herbCapacity: world.inventories.store.capacity } : model.view(); document.getElementById('state').textContent = `tick ${v.tick} · ${rate}× · ${playing ? '播放' : '暫停'}\n水 ${v.vat} / ${v.vatCapacity} · 藥 ${v.herbs} / ${v.herbCapacity}\n` + lastSnapshot.actors.filter((a) => !isGPT || ['leader','amu','child'].includes(a.id)).map((a) => `${a.id} · ${a.action.phase} · 負重 ${a.load}\n腳底 ${a.x.toFixed(1)}, ${a.y.toFixed(1)} · ${a.positionSource}`).join('\n') + `\n選取 ${selected || '—'}`;
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { playing = false; clock.clear(); } });
-window.sceneHarness = { snapshot: () => structuredClone(lastSnapshot), state: () => isGPT ? structuredClone(world) : model.exportState(), pause() { playing = false; clock.clear(); } };
+window.sceneHarness = { assetReceipt: { version:assetPin.manifest.version, coreCommit:assetPin.manifest.coreCommit, hero:resolvedHero }, snapshot: () => structuredClone(lastSnapshot), state: () => isGPT ? structuredClone(world) : model.exportState(), pause() { playing = false; clock.clear(); } };

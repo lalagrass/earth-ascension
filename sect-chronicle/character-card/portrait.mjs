@@ -1,5 +1,9 @@
-// #343 previews are NOT production portraits. No same-name or arbitrary fallback.
-export const PORTRAITS = Object.freeze({});
+// #343 previews remain candidates. No same-name or arbitrary role substitution.
+import { pin as gemini } from '../assets/shared/pins/gemini.mjs';
+import { pin as gpt } from '../assets/shared/pins/gpt.mjs';
+import { pin as grok } from '../assets/shared/pins/grok.mjs';
+import { portraitFor } from '../assets/shared/resolve.mjs';
+export const PORTRAITS = Object.freeze({ dev: gemini, gemini, gpt, grok });
 export function portrait(branch, actorId) {
-  return PORTRAITS[`${branch}:${actorId}`] || { portraitAssetId: null, source: null, crop: null, availability: 'unsupported', label: '尚無此角色正式立繪' };
+  return portraitFor(PORTRAITS[branch], branch, actorId);
 }
