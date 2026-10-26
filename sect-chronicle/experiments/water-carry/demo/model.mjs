@@ -673,6 +673,16 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (s.vat > 0) {
       s.vat = Math.max(0, s.vat - 1);
     }
+    if (s.people?.hero) {
+      s.people.hero.mode = 'waterCrops';
+      s.people.hero.lifePos = { x: 1320, y: 680, face: 1 };
+      if (s.people.hero.motion) {
+        s.people.hero.motion.mode = 'waterCrops';
+        s.people.hero.motion.steps = 0;
+        s.people.hero.motion.need = 180;
+      }
+      if (masterDisciple) masterDisciple.pos = [1320, 680];
+    }
     s.lastSpeechBubble = {
       text: `💧 ${masterDisciple.name}提桶澆灌了【${target ? target.name : '四季菜園'}】，土壤潤澤，生機勃勃！`,
     };
@@ -733,6 +743,16 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     aromaAdActive = true;
     rationPouch.items = ['荷葉飯糰', '叫化雞腿'];
     rationPouch.count = 2;
+    if (s.people?.hero) {
+      s.people.hero.mode = 'cook';
+      s.people.hero.lifePos = { x: 1040, y: 480, face: 1 };
+      if (s.people.hero.motion) {
+        s.people.hero.motion.mode = 'cook';
+        s.people.hero.motion.steps = 0;
+        s.people.hero.motion.need = 180;
+      }
+      if (masterDisciple) masterDisciple.pos = [1040, 480];
+    }
     s.lastSpeechBubble = {
       text: `🍳 膳房大陶灶扣除藥草 ${reqHerbs}、水 ${reqWater}，烹製出【${activeDish.name}】（${activeDish.tierName}）！隨身乾糧袋已備滿！`,
     };
@@ -740,6 +760,16 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   }
 
   function brewSectWine(wineType) {
+    if (s.people?.hero) {
+      s.people.hero.mode = 'cook';
+      s.people.hero.lifePos = { x: 1040, y: 480, face: 1 };
+      if (s.people.hero.motion) {
+        s.people.hero.motion.mode = 'cook';
+        s.people.hero.motion.steps = 0;
+        s.people.hero.motion.need = 180;
+      }
+      if (masterDisciple) masterDisciple.pos = [1040, 480];
+    }
     if (wineType === 'strong_liquor') {
       wineCask = {
         wineId: 'strong_liquor',
@@ -770,6 +800,16 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     if (targetArt.includes('踏雪') || targetArt.includes('步')) {
       qinggongShortcutUnlocked = true;
     }
+    if (s.people?.hero) {
+      s.people.hero.mode = 'spar';
+      s.people.hero.lifePos = { x: 860, y: 530, face: 1 };
+      if (s.people.hero.motion) {
+        s.people.hero.motion.mode = 'spar';
+        s.people.hero.motion.steps = 0;
+        s.people.hero.motion.need = 180;
+      }
+      if (masterDisciple) masterDisciple.pos = [860, 530];
+    }
     s.lastSpeechBubble = {
       text: `🥋 弟子在【${yardDualLineageLoadout?.trainingPostName || '木人樁'}】苦練 ${targetArt}！${qinggongShortcutUnlocked ? '【輕功突破】已解鎖溪石飛躍捷徑！' : '修為精進！'}`,
     };
@@ -783,6 +823,26 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     crossLineageProgress.percent = Math.min(100, crossLineageProgress.percent + 20);
     if (crossLineageProgress.percent >= 100) {
       crossLineageProgress.stage = '大成領悟，可合參著書';
+    }
+    if (s.people?.hero) {
+      s.people.hero.mode = 'spar';
+      s.people.hero.lifePos = { x: 840, y: 530, face: 1 };
+      if (s.people.hero.motion) {
+        s.people.hero.motion.mode = 'spar';
+        s.people.hero.motion.steps = 0;
+        s.people.hero.motion.need = 240;
+      }
+      if (masterDisciple) masterDisciple.pos = [840, 530];
+    }
+    if (s.people?.cousin) {
+      s.people.cousin.mode = 'spar';
+      s.people.cousin.lifePos = { x: 880, y: 530, face: -1 };
+      if (s.people.cousin.motion) {
+        s.people.cousin.motion.mode = 'spar';
+        s.people.cousin.motion.steps = 0;
+        s.people.cousin.motion.need = 240;
+      }
+      if (fellowDisciple) fellowDisciple.pos = [880, 530];
     }
     s.lastSpeechBubble = {
       text: `⚔️ 【同門切磋】${masterDisciple.name} 使出 ${yardDualLineageLoadout?.founderArt || '本門開山功'}，${fellowDisciple.name} 以 ${yardDualLineageLoadout?.fellowGuestArt || '客座武學'} 見招拆招，雙方大有精進！`,
@@ -820,6 +880,16 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
 
   function completeOuterChore() {
     choreQuota.completed += 1;
+    if (s.people?.cousin) {
+      s.people.cousin.mode = 'waterCrops';
+      s.people.cousin.lifePos = { x: 1320, y: 680, face: 1 };
+      if (s.people.cousin.motion) {
+        s.people.cousin.motion.mode = 'waterCrops';
+        s.people.cousin.motion.steps = 0;
+        s.people.cousin.motion.need = 180;
+      }
+      if (fellowDisciple) fellowDisciple.pos = [1320, 680];
+    }
     if (choreQuota.completed >= choreQuota.required) {
       choreQuota.completed = choreQuota.required;
       choreQuota.martialTokenUnlocked = true;
@@ -871,6 +941,14 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     }
     if (s.people?.hero) {
       s.people.hero.energy = Math.max(0, s.people.hero.energy - 15);
+      s.people.hero.mode = 'toPatrol';
+      s.people.hero.lifePos = { x: 640, y: 410, face: -1 };
+      if (s.people.hero.motion) {
+        s.people.hero.motion.mode = 'toPatrol';
+        s.people.hero.motion.steps = 0;
+        s.people.hero.motion.need = 180;
+      }
+      if (masterDisciple) masterDisciple.pos = [640, 410];
     }
 
     const style = styleOverride || patrolV06.activeStyle || 'completionist_bulldozer';
@@ -1891,11 +1969,15 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   // routes.of() 需要的最少欄位：模式、工作／階段進度與各往返腿進度；清理中直接用模型 pos。
   function geoView(p) {
     const h = p.motion, k = h.need && h.mode !== 'carry' ? Math.min(1, h.steps / h.need) : 0, leg = { k };
+    const phaseName = JB[h.job]?.phases?.[h.phase] || (typeof h.phase === 'string' ? h.phase : (h.phase?.name || 'goto'));
+    const phaseNeed = Array.isArray(h.need) ? h.need[h.phase] : h.need;
+    const phaseK = phaseNeed ? Math.min(1, h.steps / phaseNeed) : 0;
     return { mode: h.mode, job: h.mode === 'carry' ? h.job : p.job,
-      phase: h.mode === 'carry' ? { name: JB[h.job].phases[h.phase], k: Math.min(1, h.steps / h.need[h.phase]) } : null,
+      phase: h.mode === 'carry' ? { name: phaseName, k: phaseK } : null,
       restLeg: leg, funLeg: leg, guardLeg: leg, fixLeg: leg,
       drinkLeg: DRINK_MODES.includes(h.mode) ? { k, span: h.span ?? 1, from: h.from } : null,
       cleaning: CLEAN_MODES.includes(h.mode), patrolling: PATROL_MODES.includes(h.mode), pos: p.pos, cface: p.cface, walked: p.walked,
+      lifePos: p.lifePos || null,
       life02: MEET_MODES.includes(h.mode) ? L2.view(p) : null, train01: TRAIN_MODES.includes(h.mode) ? T1.view(p) : null, tea: TEA_MODES.includes(h.mode) ? TE.view(p) : null };
   }
   // 人物目前的場景位置：清理中讀模型 pos；其餘由共用純幾何取樣（沒提供就沒有位置）。
@@ -2170,7 +2252,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       if (sh.steps >= sh.need[sh.phase]) { sh.steps = 0; sh.phase += 1; if (sh.phase >= 4) { sh.active = false; sh.phase = null; } }
     }
     for (const id of ids) {
-      if (id === 'hero' && autopilotActive && masterDisciple) {
+      if (id === 'hero' && autopilotActive && masterDisciple && !['cook', 'waterCrops', 'spar', 'toPatrol'].includes(s.people[id]?.motion?.mode)) {
         continue; // 掌門由 lifeAutopilot 權威主管，跳過舊日常迴圈
       }
       const p = s.people[id], h = p.motion;
@@ -2240,6 +2322,13 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       else if (TRAIN_MODES.includes(h.mode)) T1.move(p);
       else if (TEA_MODES.includes(h.mode)) TE.move(p);
       else if (H2_MODES.includes(h.mode)) H2.move(p);
+      else if (['cook', 'waterCrops', 'spar', 'toPatrol'].includes(h.mode)) {
+        h.steps = (h.steps || 0) + 1;
+        if (h.steps >= (h.need || 180)) {
+          p.lifePos = null;
+          atHome(p);
+        }
+      }
       else if (h.mode === 'idle' && !p.rest && p.energy <= E.restAt) atHome(p);
     }
     // LP-11：鼠移動→清理者移動／起手／接觸→察覺；回到院中的清理者在護院／整理判斷與出發迴圈之前就已重查生活。
@@ -2296,36 +2385,38 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
 
       const hero = s.people.hero;
       if (hero) {
-        if (masterDisciple.pos) {
-          hero.pos = {
-            x: masterDisciple.pos[0] ?? 962,
-            y: masterDisciple.pos[1] ?? 512,
-          };
-          hero.lifePos = {
-            x: masterDisciple.pos[0] ?? 962,
-            y: masterDisciple.pos[1] ?? 512,
-            face: (masterDisciple.pos[0] ?? 962) >= 962 ? 1 : -1,
-          };
-        }
-        // 權威單一精力與任務同步
-        hero.energy = masterDisciple.needs?.energy?.current ?? hero.energy;
-        hero.decision = masterDisciple.decision;
-        hero.carrying = masterDisciple.carrying;
+        if (!['cook', 'waterCrops', 'spar', 'toPatrol'].includes(hero.motion?.mode)) {
+          if (masterDisciple.pos) {
+            hero.pos = {
+              x: masterDisciple.pos[0] ?? 962,
+              y: masterDisciple.pos[1] ?? 512,
+            };
+            hero.lifePos = {
+              x: masterDisciple.pos[0] ?? 962,
+              y: masterDisciple.pos[1] ?? 512,
+              face: (masterDisciple.pos[0] ?? 962) >= 962 ? 1 : -1,
+            };
+          }
+          // 權威單一精力與任務同步
+          hero.energy = masterDisciple.needs?.energy?.current ?? hero.energy;
+          hero.decision = masterDisciple.decision;
+          hero.carrying = masterDisciple.carrying;
 
-        const curToil = masterDisciple.decision?.currentToil;
-        if (curToil) {
-          hero.motion = {
-            mode: curToil.step === 'goto' ? 'carry' : curToil.step === 'interact' ? 'build' : 'idle',
-            job: curToil.targetStagingPileKey || curToil.sourceItem || 'build',
-            phase: curToil.step,
-            steps: curToil.progressTicks || curToil.walkingTicks || 0,
-            need: curToil.durationTicks || curToil.totalWalkingTicks || 1,
-            tripLevel: hero.level,
-          };
-        } else if (masterDisciple.decision?.state === 'sleep' || (masterDisciple.needs?.energy?.current ?? 100) <= 30) {
-          hero.motion = { mode: 'seated', job: null, phase: null, steps: 0, need: null, tripLevel: hero.level };
-        } else {
-          hero.motion = { mode: 'idle', job: null, phase: null, steps: 0, need: null, tripLevel: hero.level };
+          const curToil = masterDisciple.decision?.currentToil;
+          if (curToil) {
+            hero.motion = {
+              mode: curToil.step === 'goto' ? 'carry' : curToil.step === 'interact' ? 'build' : 'idle',
+              job: curToil.targetStagingPileKey || curToil.sourceItem || 'build',
+              phase: curToil.step,
+              steps: curToil.progressTicks || curToil.walkingTicks || 0,
+              need: curToil.durationTicks || curToil.totalWalkingTicks || 1,
+              tripLevel: hero.level,
+            };
+          } else if (masterDisciple.decision?.state === 'sleep' || (masterDisciple.needs?.energy?.current ?? 100) <= 30) {
+            hero.motion = { mode: 'seated', job: null, phase: null, steps: 0, need: null, tripLevel: hero.level };
+          } else {
+            hero.motion = { mode: 'idle', job: null, phase: null, steps: 0, need: null, tripLevel: hero.level };
+          }
         }
       }
     }
@@ -3077,6 +3168,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       water: D ? p.waterQ / WQ : null, waterMax: D ? D.max : null, thirsty: thirsty(p), drinking: DRINK_MODES.includes(h.mode),
       drinkFrom: DRINK_MODES.includes(h.mode) ? h.from : null, drinkNote: p.drinkNote, drinkText: drinkText(p),
       drinkLeg: DRINK_MODES.includes(h.mode) ? { k: h.need ? Math.min(1, h.steps / h.need) : 0, steps: h.steps, need: h.need, span: h.span ?? 1, from: h.from } : null,
+      lifePos: p.lifePos || null,
     };
   }
   function drinkText(p) {

@@ -18,6 +18,8 @@ import { ROUTE, S0, PATROL_END } from './patrol.mjs';
 import { WAYPOINTS as WP0, MAIN_LENGTH } from './patrol-layout.mjs';
 const WAYPOINTS = WP0.map((w) => ({ ...w, x: ROUTE[S0 + w.node][0], y: ROUTE[S0 + w.node][1] }));
 import { drawRefinedRack, drawRefinedBasket, getRefinedBasketPlacement } from './assets/lp16/herb-decor.mjs';
+import { PUBLIC_FACILITIES, drawKitchenStove, drawVegetableGarden, drawMartialGround, drawPatrolGate, drawCharacterAccessory } from './facilities.mjs';
+import { SOUND } from './audio.mjs';
 
 // SG-HOME-02：對外 JOBS 不含砍柴（舊存檔），畫面查名稱另補一份。
 const JOBX = { ...JOBS, wood: { label: '砍柴', unit: '捆', place: '柴堆' } };
@@ -57,6 +59,10 @@ const places = {
   view: { label: '觀景石', x: FUN.hero.stone.x, y: FUN.hero.stone.y, rx: 34, ry: 16, sub: '院子西側草坡 · 主角愛來看山（閒暇，不回精力）' },
   fence: { label: '西坡竹護欄', x: BOAR.fence.x, y: BOAR.fence.y2 - 10, rx: 46, ry: 46, sub: '非關鍵護欄 · 內側是防守點' },
   yard: { label: '院邊空地', x: FUN.cousin.points.at(-1)[0], y: FUN.cousin.points.at(-1)[1] + 6, rx: 34, ry: 14, sub: '道館門前院中 · 熟手愛來舒展筋骨（閒暇，不回精力）' },
+  kitchen: { label: '膳房大陶灶', x: 1040, y: 480, rx: 35, ry: 25, sub: '雙口青磚柴灶 · 烹調名菜與乾糧' },
+  garden: { label: '四季菜畦', x: 1320, y: 680, rx: 45, ry: 30, sub: '東南翻土壟溝 · 澆水蔬菜生長' },
+  martial: { label: '雙脈演武坪', x: 860, y: 530, rx: 40, ry: 25, sub: '青石壓實地坪 · 雙脈試劍樁' },
+  patrolGate: { label: '後山巡山界碑', x: 640, y: 410, rx: 30, ry: 25, sub: '西坡風化石碑 · 通往 S0-S5 哨卡' },
 };
 const GROWN_FROM = 3; // 本趟腳力到 Lv 3 起換成長後步態
 
@@ -155,6 +161,21 @@ function poseOf(id, person) {
     // 往返用空手往藥圃的步態（不畫背簍），不扛扁擔。
     const view = person.mode === 'fun' ? { phase: FUN[id].act, k: 0, travelled: person.funSteps / FUN_TICKS_PER_POSE } : { phase: 'herbOut', k: 0, travelled: at.travelled };
     return { x: at.x, y: at.y, face: at.face, ...a.pick(view), travelled: at.travelled, phase: person.mode };
+  }
+  // SG-LIFE-V03-V06：四大公版設施動作（烹飪看火、澆灌傾倒、切磋拆招、巡山啟程）
+  if (['cook', 'toKitchen', 'fromKitchen', 'waterCrops', 'toGarden', 'fromGarden', 'spar', 'toMartial', 'fromMartial', 'toPatrol', 'fromPatrol'].includes(person.mode)) {
+    const at = geo.of(id, person), a = animators[id];
+    const isWalk = person.mode.startsWith('to') || person.mode.startsWith('from');
+    const view = isWalk
+      ? { phase: 'herbOut', k: 0, travelled: at.travelled }
+      : person.mode === 'cook'
+        ? { phase: 'herbGather', k: 0.5, travelled: 0 }
+        : person.mode === 'waterCrops'
+          ? { phase: 'herbDeliver', k: 0.5, travelled: 0 }
+          : person.mode === 'spar'
+            ? { phase: 'stretch', k: 0, travelled: 3 }
+            : { phase: 'herbHand', k: 0, travelled: 0 };
+    return { x: at.x, y: at.y, face: at.face, ...a.pick(view), travelled: at.travelled, phase: person.mode, borrowed: !isWalk };
   }
   if (person.mode !== 'toSeat' && person.mode !== 'back' && person.mode !== 'seated') return pose(person.phase, person.tripLevel, person.mode, false, id, person.job);
   const at = geo.of(id, person), a = animators[id];
@@ -418,6 +439,24 @@ function placeCup(id, p, person) {
 
 const placeMark = new Graphics();
 world.addChild(placeMark);
+
+// ---------- 公版四大實體設施圖層 (Public Facilities) ----------
+const facKitchenG = new Graphics(); facKitchenG.position.set(1040, 480); facKitchenG.zIndex = 480; sorted.addChild(facKitchenG);
+const facGardenG = new Graphics(); facGardenG.position.set(1320, 680); facGardenG.zIndex = 680; sorted.addChild(facGardenG);
+const facMartialG = new Graphics(); facMartialG.position.set(860, 530); facMartialG.zIndex = 529; sorted.addChild(facMartialG);
+const facPatrolGateG = new Graphics(); facPatrolGateG.position.set(640, 410); facPatrolGateG.zIndex = 410; sorted.addChild(facPatrolGateG);
+
+drawKitchenStove(facKitchenG, false);
+drawVegetableGarden(facGardenG, 0.5);
+drawMartialGround(facMartialG, 0);
+drawPatrolGate(facPatrolGateG);
+
+// 角色專屬水墨特徵飾品容器
+const accessories = Object.fromEntries(IDS.map((id) => {
+  const g = new Graphics();
+  sorted.addChild(g);
+  return [id, g];
+}));
 
 // ---------- 鏡頭 ----------
 const cam = Object.assign({}, scene.camera.start);
@@ -947,6 +986,7 @@ function setupLifeV02UI() {
   });
 
   ringBellBtn?.addEventListener('click', () => {
+    SOUND.bell();
     const facId = v.life?.facilities?.hall?.phase !== 'completed' ? 'fac.hall' : 'fac.dorm.a';
     const res = model.dispatch({ type: 'RING_BELL', facilityId: facId });
     v = model.view();
@@ -979,6 +1019,7 @@ function setupLifeV02UI() {
   sectPlaqueBadge?.addEventListener('click', toggleLifePanel);
 
   $('action-water-garden')?.addEventListener('click', () => {
+    SOUND.cook();
     const res = model.life?.waterGardenPlot ? model.life.waterGardenPlot('plot_southeast') : model.dispatch({ type: 'WATER_GARDEN' });
     v = model.view();
     toast(res?.speechBubble || '引水灌溉四季菜園藥圃！');
@@ -986,6 +1027,7 @@ function setupLifeV02UI() {
   });
 
   $('action-cook-dish')?.addEventListener('click', () => {
+    SOUND.cook();
     const res = model.life?.cookSignatureDish ? model.life.cookSignatureDish('roast_chicken') : model.dispatch({ type: 'COOK_DISH' });
     v = model.view();
     toast(res?.speechBubble || '膳房大陶灶出鍋！');
@@ -993,6 +1035,7 @@ function setupLifeV02UI() {
   });
 
   $('action-brew-wine')?.addEventListener('click', () => {
+    SOUND.cook();
     const res = model.life?.brewSectWine ? model.life.brewSectWine('fruit_wine') : model.dispatch({ type: 'BREW_WINE' });
     v = model.view();
     toast(res?.speechBubble || '後院酒缸開始釀造百果酒！');
@@ -1000,6 +1043,7 @@ function setupLifeV02UI() {
   });
 
   $('action-practice-art')?.addEventListener('click', () => {
+    SOUND.punch();
     const res = model.life?.practiceSectArt ? model.life.practiceSectArt('《踏雪無痕》') : model.dispatch({ type: 'PRACTICE_ART' });
     v = model.view();
     toast(res?.speechBubble || '弟子在演武場精進輕功身法！');
@@ -1007,6 +1051,7 @@ function setupLifeV02UI() {
   });
 
   $('action-trigger-spar')?.addEventListener('click', () => {
+    SOUND.punch();
     const res = model.life?.triggerCrossLineageSpar ? model.life.triggerCrossLineageSpar() : model.dispatch({ type: 'TRIGGER_SPAR' });
     v = model.view();
     toast(res?.speechBubble || '兩位同門在演武場點到為止拆招切磋！');
@@ -1113,6 +1158,7 @@ function setupLifeV02UI() {
   });
 
   $('btn-breakthrough-luohan')?.addEventListener('click', () => {
+    SOUND.breakthrough();
     const res = model.life?.breakthroughLuohanLv10 ? model.life.breakthroughLuohanLv10() : model.dispatch({ type: 'BREAKTHROUGH_LUOHAN_LV10' });
     v = model.view();
     toast(res?.speechBubble || '基礎羅漢拳突破 Lv10 返璞歸真！');
@@ -2494,6 +2540,13 @@ app.ticker.add((t) => {
     tag(`${id}-say`, 'say', turn ? SAY[turn][id] : null, p.x, p.y - 96);
     tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level} · 精力 ${en(person)}`, p.x, p.y, 6);
     tag(`${id}-pill`, `pill ${person.resting ? 'stop' : person.rest || person.mode === 'back' ? 'rest' : person.guarding || person.fixing ? 'guard' : person.leisure ? 'fun' : person.recall ? 'recall' : ''}`, person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.mode === 'fix' ? `${person.status} ${Math.round(person.fixWork.k * 100)}%` : person.status, p.x, p.y - (person.mode === 'seated' ? 64 : 80));
+    const acc = accessories[id];
+    if (acc) {
+      const personaId = id === 'hero' ? (v.life?.master?.portraitId || 'custom_hero') : 'fellow_disciple';
+      drawCharacterAccessory(acc, personaId, p.face);
+      acc.position.set(p.x, p.y);
+      acc.zIndex = p.y + 0.05;
+    }
   }
   // SG-HOME-02 世界件：柴堆分級、寢舍階段、床（修好才出現）、木屑、名牌。
   {
@@ -2589,6 +2642,10 @@ app.ticker.add((t) => {
   tag('ghost', 'ghost', showGhost ? '主角初始影子・不入帳' : null, g ? g.x : 0, g ? g.y : 0, 6);
   tag('master', '', '師父 · 打坐', 1300, 512, 6);
   tag('senior', '', '師兄 · 掃地', 1120, 528, 6);
+  tag('kitchen', 'place', places.kitchen.label, places.kitchen.x, places.kitchen.y - 45);
+  tag('garden', 'place', places.garden.label, places.garden.x, places.garden.y - 45);
+  tag('martial', 'place', places.martial.label, places.martial.x, places.martial.y - 45);
+  tag('patrolGate', 'place', places.patrolGate.label, places.patrolGate.x, places.patrolGate.y - 45);
   // now 已在上方取得
   for (let i = fx.length - 1; i >= 0; i--) if (fx[i].until < now) fx.splice(i, 1);
   for (let i = 0; i < 3; i++) { const f = fx[i]; tag(`fx${i}`, 'gain', f ? f.text : null, f ? f.x : 0, f ? f.y - (1 - (f.until - now) / 1600) * 14 : 0); }

@@ -66,6 +66,12 @@ export const RUBBLE_PATH = { points: [[962, 512], [930, 460], [900, 360], [880, 
 export const BELL_PATH = { points: [[962, 512], [936, 496], [910, 480]], station: { x: 910, y: 480 } };
 export const HALL_ROOF_PATH = { points: [[962, 512], [930, 460], [890, 320], [870, 205]], station: { x: 870, y: 205 }, scaffoldingBox: [765, 135, 975, 275] };
 
+// LIFE-V03-V06 四大功能設施實體路徑：膳房大陶灶、四季菜畦、雙脈演武坪、後山巡山界碑
+export const KITCHEN_PATH = { points: [[962, 512], [996, 500], [1040, 480]], station: { x: 1040, y: 480 }, face: 1 };
+export const GARDEN_PATH = { points: [[962, 512], [1050, 560], [1160, 620], [1250, 650], [1320, 680]], station: { x: 1320, y: 680 }, face: 1 };
+export const MARTIAL_PATH = { points: [[962, 512], [910, 524], [860, 530]], station: { x: 860, y: 530 }, face: -1 };
+export const PATROL_GATE_PATH = { points: [[962, 512], [850, 490], [740, 450], [640, 410]], station: { x: 640, y: 410 }, face: -1 };
+
 export function createRoutes(waterPoints = WATER_POINTS) {
   const routes = { water: pathTool(waterPoints), herb: pathTool(HERB.points) };
   const seats = { hero: pathTool(SEATS.hero.points), cousin: pathTool(SEATS.cousin.points) };
@@ -113,6 +119,10 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   const rubblePath = pathTool(RUBBLE_PATH.points);
   const bellPath = pathTool(BELL_PATH.points);
   const hallRoofPath = pathTool(HALL_ROOF_PATH.points);
+  const kitchenPath = pathTool(KITCHEN_PATH.points);
+  const gardenPath = pathTool(GARDEN_PATH.points);
+  const martialPath = pathTool(MARTIAL_PATH.points);
+  const patrolGatePath = pathTool(PATROL_GATE_PATH.points);
   const drinks = { home: pathTool(DRINK.points), hero: pathTool([...SEATS.hero.points].reverse().concat(DRINK.points.slice(1))), cousin: pathTool([...SEATS.cousin.points].reverse().concat(DRINK.points.slice(1))) };
   // 去／喝／回：u=0 出發點、u=1 飲水站；回程只走 span（取消去程時走回已走的那段）。喝水時面向水缸。
   function drinkPlace(id, d) {
@@ -164,8 +174,10 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   // LP-08 整理護欄：沿同一條防守路往返，到點在防守點面向護欄動手。
   const FIX_AS = { toFix: 'toGuard', fromFix: 'fromGuard', fix: 'guardWait' };
   function of(id, p) {
-    // LP-11：清理中直接用模型在權威 tick 取樣的場景位置（palm.mjs 同一幾何），畫面不另算。
-    if (p.lifePos) return { x: p.lifePos.x, y: p.lifePos.y, face: p.lifePos.face ?? 1, route: null, geo: p.mode || 'toil', travelled: 0 };
+    // SG-LIFE-V03-V06: 公版實體設施落位（烹調、澆灌、切磋、巡山界碑）
+    if (p.lifePos && ['cook', 'toKitchen', 'fromKitchen', 'waterCrops', 'toGarden', 'fromGarden', 'spar', 'toMartial', 'fromMartial', 'toPatrol', 'fromPatrol'].includes(p.mode)) {
+      return { x: p.lifePos.x, y: p.lifePos.y, face: p.lifePos.face ?? 1, route: null, geo: p.mode || 'toil', travelled: 0 };
+    }
     if (p.drinkLeg) return drinkPlace(id, { ...p.drinkLeg, mode: p.mode });
     if (p.life02 && p.life02.leg) return meetPlace(id, { ...p.life02.leg, mode: p.mode });
     if (p.home02 && p.home02.leg) return sitePlace({ ...p.home02.leg, mode: p.mode });
@@ -173,6 +185,26 @@ export function createRoutes(waterPoints = WATER_POINTS) {
     if (p.bed && p.mode === 'seated') return bedPlace(p.bed, 'seated', 1);
     if (p.tea && p.tea.leg) return teaPlace({ ...p.tea.leg, mode: p.mode });
     if (p.train01 && p.train01.leg) return trainPlace(id, { ...p.train01.leg, mode: p.mode });
+    if (p.mode === 'toKitchen' || p.mode === 'cook' || p.mode === 'fromKitchen') {
+      const u = p.mode === 'toKitchen' ? p.kitchenLeg?.k ?? 1 : p.mode === 'fromKitchen' ? 1 - (p.kitchenLeg?.k ?? 0) : 1;
+      const pt = kitchenPath.at(u);
+      return { x: pt.x, y: pt.y, face: p.mode === 'cook' ? KITCHEN_PATH.face : pt.dx >= 0 ? 1 : -1, route: kitchenPath, geo: p.mode, travelled: 0 };
+    }
+    if (p.mode === 'toGarden' || p.mode === 'waterCrops' || p.mode === 'fromGarden') {
+      const u = p.mode === 'toGarden' ? p.gardenLeg?.k ?? 1 : p.mode === 'fromGarden' ? 1 - (p.gardenLeg?.k ?? 0) : 1;
+      const pt = gardenPath.at(u);
+      return { x: pt.x, y: pt.y, face: p.mode === 'waterCrops' ? GARDEN_PATH.face : pt.dx >= 0 ? 1 : -1, route: gardenPath, geo: p.mode, travelled: 0 };
+    }
+    if (p.mode === 'toMartial' || p.mode === 'spar' || p.mode === 'fromMartial') {
+      const u = p.mode === 'toMartial' ? p.martialLeg?.k ?? 1 : p.mode === 'fromMartial' ? 1 - (p.martialLeg?.k ?? 0) : 1;
+      const pt = martialPath.at(u);
+      return { x: pt.x, y: pt.y, face: p.mode === 'spar' ? (id === 'hero' ? 1 : -1) : pt.dx >= 0 ? 1 : -1, route: martialPath, geo: p.mode, travelled: 0 };
+    }
+    if (p.mode === 'toPatrol' || p.mode === 'fromPatrol') {
+      const u = p.mode === 'toPatrol' ? p.patrolGateLeg?.k ?? 1 : 1 - (p.patrolGateLeg?.k ?? 0);
+      const pt = patrolGatePath.at(u);
+      return { x: pt.x, y: pt.y, face: pt.dx >= 0 ? 1 : -1, route: patrolGatePath, geo: p.mode, travelled: 0 };
+    }
     if (p.patrolling) return { x: p.pos.x, y: p.pos.y, face: p.cface, route: null, geo: p.mode, travelled: p.walked }; // SG-PATROL-01：巡山同用模型 pos
     if (p.cleaning) return { x: p.pos.x, y: p.pos.y, face: p.cface, route: null, geo: p.mode, travelled: p.walked };
     if (p.mode === 'toFix' || p.mode === 'fromFix') return { ...guardPlace(FIX_AS[p.mode], p.fixLeg.k), geo: p.mode };
@@ -194,6 +226,8 @@ export function createRoutes(waterPoints = WATER_POINTS) {
     drinks, drinkPlace, drinkLengths: { home: drinks.home.length, seat: { hero: drinks.hero.length, cousin: drinks.cousin.length } },
     weedsPath, rubblePath, bellPath, hallRoofPath,
     weedsLength: weedsPath.length, rubbleLength: rubblePath.length, bellLength: bellPath.length, hallRoofLength: hallRoofPath.length,
+    kitchenPath, gardenPath, martialPath, patrolGatePath,
+    kitchenLength: kitchenPath.length, gardenLength: gardenPath.length, martialLength: martialPath.length, patrolGateLength: patrolGatePath.length,
   };
 }
 const WATER = { down: 1, dip: 1, up: 1, pour: 1 };
