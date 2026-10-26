@@ -2,6 +2,8 @@
 
 主 [#340](https://github.com/lalagrass/earth-ascension/issues/340)；讀 [公版設計](CHARACTER_CARD_PUBLIC_PROPOSAL.md)／[評估提示詞](CHARACTER_CARD_AGENT_PROMPTS.md)。這是欄位語義盤點，不是三版功能 review／畫面驗收，也不批准改任何分支系統。
 
+R2修訂：參照 [起點／腿法／經典review](CHARACTER_CARD_CLASSIC_REVIEW.md)。起點是可選開局快照，身體能力可有起始值及成長；不再把baseline當互斥能力類別。原欄位與量尺保持，以下只是候選對應。
+
 ## 1. 固定快照與讀取邊界
 
 2026-10-26 盤點。三邊仍持續開發，agent 回覆時補自己的實際 HEAD 與相對下列快照的差異即可，不重查未變欄位。
@@ -16,7 +18,7 @@ GPT 用已提交 Git 物件唯讀取樣，沒有讀取／搬用未提交成果�
 
 符號：**有**＝原碼已有對應定義／欄位；**近似**＝語義或來源尚不能合一；**未核得**＝本次沒有獨立、可信的對應，不宣稱全分支一定不存在。所有「有」仍待各 agent 確認權威來源及真實效果。
 
-## 2. 起點／稟賦聯集
+## 2. 能力／稟賦聯集（起點為時間快照）
 
 GPT stats 的欄位名稱取自 ui.mjs 創角標籤，順序不能憑索引跨版猜。其自創主角五項1–7、總20；Grok 自創六項1–5、基礎總12，另有低悟性／宿慧特例；Gemini 自創五項1–10、基本池30，另有 expanded 別名／模板。這些是各自創角預算，不是公版新規則或所有 NPC 的硬域。
 
@@ -24,25 +26,25 @@ GPT stats 的欄位名稱取自 ui.mjs 創角標籤，順序不能憑索引跨�
 |---|---|---|---|---|
 | 悟性 aptitude.comprehension | p.stats[3]；授課／研讀增量引用 | innateStats.comprehension；亦有 stats.comprehension | 主角 H.stats.wu→d.wu；部分舊寫法 d.wu ?? d.root | 同學習題材，效果／量尺不同；Grok 缺wu的fallback不等於根骨就是悟性 |
 | 根骨 aptitude.root | 未核得獨立根骨，不能把stats[0]直接當根骨 | innateStats.bone；自創路徑 bone=constitution，模板資料可能另填 | H.stats.gen→d.root；rootKnown 控揭露 | 保留獨立；Gemini 自創別名不能算兩種天賦，Grok先遮罩再輸出 |
-| 體魄 baseline.physique／來源待判 | p.stats[0]，初始 maxHp=80+stats[0]×5 | innateStats.constitution；另有後天 skills.physique | 六項創角未有同名獨立項 | 不用根骨／生命反算體魄；Gemini先天constitution與後天physique分開 |
-| 臂力 baseline.strength／來源待判 | p.stats[1]，傷害有引用 | innateStats.strength；另見breathing別名 | H.stats.li，創角時 skills.strength=4+li×3 | 起始臂力與練成的力氣分開，Grok不得把增長skills反寫回li |
-| 身法 baseline.agility／來源待判 | p.stats[2]，轉向／出招部分時序引用 | innateStats.agility | H.stats.shen，創角時 skills.agility=4+shen×3 | 與後天腳力、輕功、當前速度為不同欄 |
-| 定力 baseline.composure／來源待判 | p.stats[4]，觀察保留有引用 | innateStats.composure；另見temperament | H.stats.ding→d.ding | 各版效果另說明；不能把性格溫柔當定力高 |
+| 體魄 capability.physique／來源待判 | p.stats[0]，初始 maxHp=80+stats[0]×5 | innateStats.constitution；另有後天 skills.physique | 六項創角未有同名獨立項 | 不用根骨／生命反算體魄；Gemini先天constitution與後天physique分開 |
+| 臂力 capability.strength／來源待判 | p.stats[1]，傷害有引用 | innateStats.strength；另見breathing別名 | H.stats.li，創角時 skills.strength=4+li×3 | 起始臂力與練成的力氣分開，Grok不得把增長skills反寫回li |
+| 身法 capability.agility／來源待判 | p.stats[2]，轉向／出招部分時序引用 | innateStats.agility | H.stats.shen，創角時 skills.agility=4+shen×3 | 與後天腳力、輕功、當前速度為不同欄 |
+| 定力 capability.composure／來源待判 | p.stats[4]，觀察保留有引用 | innateStats.composure；另見temperament | H.stats.ding→d.ding | 各版效果另說明；不能把性格溫柔當定力高 |
 | 吐納資質 extension.gemini.breathing | 未核得 | innateStats.breathing；自創路徑 breathing=strength | 未核得同義獨立項 | 原標籤與來源保留；不能當作已練內力／真氣槽 |
 | 心性值 extension.gemini.temperament | traits另列，不強映射 | innateStats.temperament；自創 temperament=composure | personality／values另列，不強映射 | Gemini是否別名／獨立規則由作者核，不重複計分 |
 | 福緣 aptitude.fortune | 未核得 | destinyBonusPoints為配點獎勵，不能當福緣 | H.stats.fu／s.hero.fu | 公版可容納；別版不補0、不加新掉落公式 |
 | 天賦／特殊能力 | 需區分模板／後續已學能力來源 | innatePerks／traits含模板能力 | traits倍率、模板封印／覺醒等 | 以有來源的標籤／效果列表，保持人物可知範圍 |
 | 創角預算／宿慧／命運點 | 五項預算20 | destinyBonusPoints | STAT_BUDGET／suhui等 | 創角／劇情元資料，不當作戰力軸 |
 
-**先天與後天的核心歧義**：GPT 五項是創角起點，本次未核得每項獨立訓練增長；Gemini叫 innateStats 但同時有 stats 與後天 skills；Grok把創角 li／shen 轉成當前 skills 初值。公版保留「起點」作第三類，請作者證明真先天與可練部分。沒有歷史快照時，不能回溯宣稱已分解出生值＋鍛鍊值。
+**先天與後天的核心歧義**：GPT 五項是創角起點，本次未核得每項獨立訓練增長；Gemini叫 innateStats 但同時有 stats 與後天 skills；Grok把創角 li／shen 轉成當前 skills 初值。公版把「起點」改為同一能力的可選初始快照，請作者證明真先天與可練部分；base為目前常態，不等於開局。沒有歷史快照時，不能回溯宣稱已分解出生值＋鍛鍊值。
 
 ## 3. 後天能力、生活技能與武學聯集
 
 | 候選語義 | GPT | Gemini | Grok | 公版處置 |
 |---|---|---|---|---|
-| 腳力／移動本領 skill.locomotion | 不把stats[2]直接視為獨立腳力成長 | 舊people.level／xp／initialLevel；新persona.skills.legStrength.level／exp／nextExp | d.skills.agility；speedOf有使用 | Gemini雙軌先核哪份權威；不同類等級不可直接相加 |
+| 移動相關本領（原腳力，需拆義） | 不把stats[2]直接視為獨立腳力成長 | 舊people.level／xp／initialLevel；新persona.skills.legStrength.level／exp／nextExp | d.skills.agility；speedOf有使用 | Gemini雙軌先核哪份權威；不同類等級不可直接相加 |
 | 後天力氣 capability.strength | 本次未核得獨立於stats[1]的力氣訓練值 | skills.physique非同義，不能直接充當臂力 | d.skills.strength；chop／quarry等有skill增量設定 | 可顯示現有力氣，缺獨立值則不新增 |
-| 後天體能／耐力 | energy是狀態，非耐力成長 | skills.physique（名稱定義）；energy仍另列 | energy是狀態，未核得獨立耐力值 | 不用精力剩餘推算耐力；請作者核physique效果 |
+| 後天體能／耐力 | energy是狀態，非耐力成長 | skills.physique（名稱定義）；energy仍另列 | energy是狀態，未核得獨立耐力值 | 不用精力剩餘推算耐力；請作者核physique效果；耐力可有初始值，不用energy充當 |
 | 採藥／農事／烹飪 | 有相應活動；本次未核得每項獨立技能等級 | 有相關系統／配方，不等於每項有個人熟練 | skills.herbal／farming／cooking | 「能做工作」與「有個人成長值」分開；聯集容納，不補假等級 |
 | 營造 | build活動／貢獻，不直接當熟練 | persona.skills.construction | build活動、strength增量，未核得獨立construction | 貢獻、工地進度、技能經驗不同 |
 | 武學理解／熟練／體悟 | p.skill[art].U／F／I＋contexts／sources；三軌 | 舊people.palm novice／adept、train01進度；新martialArts及其他解鎖資料 | d.arts[id].xp／階段／突破與變體；另有skills.palm／leg | 三軌、一條XP、解鎖旗標不能硬壓成同一百分比 |
@@ -75,11 +77,25 @@ GPT stats 的欄位名稱取自 ui.mjs 創角標籤，順序不能憑索引跨�
 
 只建議「武學規則→呈現模板→相容動作族＋人物外觀→素材目錄」。每人不必每招獨畫，逐格水彩仍需各外觀相容圖格；有自訂演法不等於另加傷害／位移。
 
-## 6. 三方共同回覆表
+## 6. R2：力量、腿力、身法與腿法
+
+以下補釐清語義，非新增欄位命令：
+
+| 問題 | 現有快照證據 | 對公版的影響 |
+|---|---|---|
+| 腿法是否就是腳力 | Grok data.MOVES 的kick／掃堂腿引用skill='leg'，style另有leg；speedOf引用skills.agility | leg是技術維度，不映射成腿部出力或移速；同字leg不能猜同義 |
+| 掃堂腿需要新增腿力嗎 | 各版可以用原有通用力量或真獨立腿力，具體傷害連接待作者核 | 可選capability.legPower，不能由skills.leg／agility反算；公版不要求補系統 |
+| 初始力氣能不能成長 | Grok創角li轉strength初值；GPT基礎stats與GeminiinnateStats/skills分工各不同 | 來源時間initial與目前base同屬一能力，不把兩者當兩項力量相加 |
+| 腳力是不是身法 | Gemini legStrength名稱、舊level、Grok agility、GPT stats[2]的用途不完全一樣 | 報函式效果後再定；原字段可保留擴充，禁止1值同時塞進多軸 |
+| 耐力／精力 | 目前多有消耗的energy，但不證明有獨立耐力能力 | 能撐多久與剩多少能量分開；未支援耐力就缺項，起始energy也不當先天耐力 |
+
+請各版給「初始能力→日常成長→學腿招→疲累出招」紙上案例。若本版尚無腿法，只報可擴充位置與成本，不寫招式。腿部受傷／多肢體模擬未授；動畫仍讀真phase與結果，沒有新耗能或戰力公式。
+
+## 7. 三方共同回覆表
 
 各自在 #340 新增一份具名回覆（無法寫GitHub可貼原聊天給擁有人轉貼），不互相編輯別人的報告：
 
-| 公版語義ID | 原路徑／函式與固定HEAD | 真正含義／單位／方向 | 先天／起點／後天／當下 | 誰寫入／何時改變／核心效果 | 對應類型 | 可見範圍與限制 | 最小接法／代價 |
+| 公版語義ID | 原路徑／函式與固定HEAD | 真正含義／單位／方向 | 資料類別＋初始／目前常態／當下 | 誰寫入／何時改變／核心效果 | 對應類型 | 可見範圍與限制 | 最小接法／代價 |
 |---|---|---|---|---|---|---|---|
 
 對應類型填：可直接投影／有損近似／同名異義／未支援／雙來源待釐清；未核實效果另外註記，不以字面同名判定。另附：
