@@ -139,3 +139,16 @@ W11、W12、W18可由人物卡跨域技藝區引用，不為湊「武學數量�
 ## 9. MBTI候選與仙俠補充
 
 十二人已補[MBTI v0.1](CHARACTER_MBTI_CANDIDATES.md#3-十二人先放一版)：型號僅候選摘要，S社群標示與P暫擬／原創語氣分開，不改C／W研究號、先天、所學或既有規則。李莫愁／程靈素缺已核分類則暫擬並明標，不冒充社群共識；同型不強行拉開數字。另見[仙俠欄位研究](XIANXIA_ATTRIBUTE_CANDIDATES.md)，所有新增稟賦／資源／狀態仍待選，沒有追溯填經典角色靈根、神識或新公式。
+
+## Grok v2立繪補充（2026-10-26，非最終）
+
+擁有人偏好Grok v2立繪。下列只以固定SHA引用 `codex/solo-sect-grok` 的PNG，沒有複製到dev、沒有改各版載入或建立#339共用庫，也未接入Grok runtime切換。
+
+| 人物 | v2立繪預覽 | 固定來源／狀態 |
+|---|---|---|
+| 黃蓉 | <img src="https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/huangrong-v2-ref.png?raw=true" width="120" alt="黃蓉v2分支立繪"> | [Grok v2/huangrong-v2-ref.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/huangrong-v2-ref.png)；864×1152；既有v2女性風格基準（啃雞腿），俏皮機靈 |
+| 小龍女 | <img src="https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/xiaolongnv-v2-b.png?raw=true" width="120" alt="小龍女v2分支立繪"> | [Grok v2/xiaolongnv-v2-b.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/xiaolongnv-v2-b.png)；480×640；本輪選定；清冷出塵、平靜無笑；白衣、白綾、玉蜂；候選a [xiaolongnv-v2-a.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/xiaolongnv-v2-a.png) |
+| 李莫愁 | <img src="https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/limochou-v2-a.png?raw=true" width="120" alt="李莫愁v2分支立繪"> | [Grok v2/limochou-v2-a.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/limochou-v2-a.png)；480×640；本輪選定；高傲淒厲帶恨；杏黃道袍、拂塵、捏碎紅花；本版無遊戲角色，只是美術；候選b [limochou-v2-b.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/limochou-v2-b.png) |
+| 東方不敗 | <img src="https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/dongfangbubai-v2-a.png?raw=true" width="120" alt="東方不敗v2分支立繪"> | [Grok v2/dongfangbubai-v2-a.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/dongfangbubai-v2-a.png)；480×640；本輪選定；陰柔危險；紅袍、繡花針與紅線；inkpretty為核准例外；候選b [dongfangbubai-v2-b.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/dongfangbubai-v2-b.png) |
+
+來源：Grok Bot以GenerateImage於2026-10-26生成，風格style2-inkpretty（女性與東方不敗；男性另用wcaricature），以 `v2/huangrong-v2-ref.png` 為風格參考圖。個別情緒依人物性格決定，不統一為俏皮：小龍女清冷出塵、李莫愁高傲淒厲帶恨、東方不敗陰柔危險。規則：不吐舌、不媚眼、不作嬌羞姿態，不仿任何真人演員臉。電影／小說人物權利、模型版本與種子未記，仍待#339核；不是最終公版造型。
