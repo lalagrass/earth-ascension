@@ -1,0 +1,196 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 68.117,
+  "errors": [],
+  "steps": [
+    {
+      "label": "memory-teach",
+      "wallSeconds": 13.066,
+      "tick": 184280
+    },
+    {
+      "label": "memory-talk",
+      "wallSeconds": 16.572,
+      "tick": 184521
+    },
+    {
+      "label": "cooldown",
+      "wallSeconds": 17.488,
+      "tick": 184534
+    },
+    {
+      "label": "mentor.first-lesson",
+      "wallSeconds": 20.869,
+      "tick": 184772
+    },
+    {
+      "label": "cooldown",
+      "wallSeconds": 36.52,
+      "tick": 185979
+    },
+    {
+      "label": "mentor.direction-set",
+      "wallSeconds": 41.81,
+      "tick": 186366
+    },
+    {
+      "label": "studied",
+      "wallSeconds": 54.707,
+      "tick": 187280
+    },
+    {
+      "label": "drill-reviewed",
+      "wallSeconds": 66.289,
+      "tick": 188062
+    },
+    {
+      "label": "done",
+      "wallSeconds": 68.117,
+      "tick": 188062,
+      "story": {
+        "steps": [
+          {
+            "name": "ops-build",
+            "tick": 183574,
+            "wall": 3.385
+          },
+          {
+            "name": "disciple",
+            "tick": 186366,
+            "wall": 42.121
+          },
+          {
+            "name": "advanced-move",
+            "tick": 187280,
+            "wall": 55.19
+          },
+          {
+            "name": "joint-drill",
+            "tick": 188062,
+            "wall": 66.681
+          }
+        ],
+        "guideBefore": "上手提示（0/4）\n○ 先看這段時間該修屋、備糧還是修行\n經營頁採用經營簿，看方針卡「此刻」一行；再到建設頁下令一處工地，修屋才有用。 前往\n○ 帶一名普通同門成為弟子\n先真的指點、交談，再在人物頁師徒分組提出拜師；弟子本人答應後，向他提出練功方向。 前往\n○ 學一招看得出差別的招式\n內容頁預覽並安裝「進階三式」，選一位前置已足的門人到靜室研讀，再設為交手偏好、切磋試試。 前往\n○ 一起守住外功場前線\n遠征頁採用聯合演練，替最多三人選前攔或守線，開始後看回顧裡誰做了什麼。守線的人要先在附近。 前往",
+        "buildNow": "已開工 菜園（還缺木2、石0；倉中木2、石0，不足要去採）；修屋會讓自主門人優先接這些工地",
+        "arc": "✓ 最初的共同經歷 第9日299秒 與雲生指點（memory.8942）\n✓ 入門 已入門；入門紀錄早於紀事保留範圍\n✓ 真實指點 第9日299秒 雲生指點（memory.8942）\n✓ 拜師成立 第16日226秒（bond.50266）\n✓ 選定方向 第16日316秒 定向：深修基礎拳（基礎拳，基準熟練0）\n○ 練出進度 基礎拳熟練0→0，需再+10\n○ 一同遠行 定向之後還沒有一起遠行\n○ 返院後續 返院後約歸來相談",
+        "performance": {
+          "samples": 603,
+          "workP95": 9.799999952316284,
+          "workMax": 44,
+          "maxGapMs": 100,
+          "speed": 4
+        },
+        "review": {
+          "version": 1,
+          "drill": "drill.50568",
+          "config": "A",
+          "outcome": "held",
+          "started": 187280,
+          "ended": 188017,
+          "leaked": 0,
+          "defeated": 5,
+          "roles": {
+            "amu": "front",
+            "shen": "front"
+          },
+          "people": {
+            "amu": {
+              "moves": {
+                "advanced.closefist": 10
+              },
+              "hits": 8,
+              "received": 3
+            },
+            "shen": {
+              "moves": {
+                "punch": 6
+              },
+              "hits": 5,
+              "received": 0
+            }
+          }
+        },
+        "guideAfter": "上手提示（4/4）\n✓ 先看這段時間該修屋、備糧還是修行\n經營頁採用經營簿，看方針卡「此刻」一行；再到建設頁下令一處工地，修屋才有用。 前往\n✓ 帶一名普通同門成為弟子\n先真的指點、交談，再在人物頁師徒分組提出拜師；弟子本人答應後，向他提出練功方向。 前往\n✓ 學一招看得出差別的招式\n內容頁預覽並安裝「進階三式」，選一位前置已足的門人到靜室研讀，再設為交手偏好、切磋試試。 前往\n✓ 一起守住外功場前線\n遠征頁採用聯合演練，替最多三人選前攔或守線，開始後看回顧裡誰做了什麼。守線的人要先在附近。 前往",
+        "save": {
+          "tick": 188062,
+          "rulesVersion": "chapter1-joint-1"
+        }
+      }
+    }
+  ],
+  "label": "initial",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "steps": [
+      {
+        "name": "ops-build",
+        "tick": 183574,
+        "wall": 3.385
+      },
+      {
+        "name": "disciple",
+        "tick": 186366,
+        "wall": 42.121
+      },
+      {
+        "name": "advanced-move",
+        "tick": 187280,
+        "wall": 55.19
+      },
+      {
+        "name": "joint-drill",
+        "tick": 188062,
+        "wall": 66.681
+      }
+    ],
+    "guideBefore": "上手提示（0/4）\n○ 先看這段時間該修屋、備糧還是修行\n經營頁採用經營簿，看方針卡「此刻」一行；再到建設頁下令一處工地，修屋才有用。 前往\n○ 帶一名普通同門成為弟子\n先真的指點、交談，再在人物頁師徒分組提出拜師；弟子本人答應後，向他提出練功方向。 前往\n○ 學一招看得出差別的招式\n內容頁預覽並安裝「進階三式」，選一位前置已足的門人到靜室研讀，再設為交手偏好、切磋試試。 前往\n○ 一起守住外功場前線\n遠征頁採用聯合演練，替最多三人選前攔或守線，開始後看回顧裡誰做了什麼。守線的人要先在附近。 前往",
+    "buildNow": "已開工 菜園（還缺木2、石0；倉中木2、石0，不足要去採）；修屋會讓自主門人優先接這些工地",
+    "arc": "✓ 最初的共同經歷 第9日299秒 與雲生指點（memory.8942）\n✓ 入門 已入門；入門紀錄早於紀事保留範圍\n✓ 真實指點 第9日299秒 雲生指點（memory.8942）\n✓ 拜師成立 第16日226秒（bond.50266）\n✓ 選定方向 第16日316秒 定向：深修基礎拳（基礎拳，基準熟練0）\n○ 練出進度 基礎拳熟練0→0，需再+10\n○ 一同遠行 定向之後還沒有一起遠行\n○ 返院後續 返院後約歸來相談",
+    "performance": {
+      "samples": 603,
+      "workP95": 9.799999952316284,
+      "workMax": 44,
+      "maxGapMs": 100,
+      "speed": 4
+    },
+    "review": {
+      "version": 1,
+      "drill": "drill.50568",
+      "config": "A",
+      "outcome": "held",
+      "started": 187280,
+      "ended": 188017,
+      "leaked": 0,
+      "defeated": 5,
+      "roles": {
+        "amu": "front",
+        "shen": "front"
+      },
+      "people": {
+        "amu": {
+          "moves": {
+            "advanced.closefist": 10
+          },
+          "hits": 8,
+          "received": 3
+        },
+        "shen": {
+          "moves": {
+            "punch": 6
+          },
+          "hits": 5,
+          "received": 0
+        }
+      }
+    },
+    "guideAfter": "上手提示（4/4）\n✓ 先看這段時間該修屋、備糧還是修行\n經營頁採用經營簿，看方針卡「此刻」一行；再到建設頁下令一處工地，修屋才有用。 前往\n✓ 帶一名普通同門成為弟子\n先真的指點、交談，再在人物頁師徒分組提出拜師；弟子本人答應後，向他提出練功方向。 前往\n✓ 學一招看得出差別的招式\n內容頁預覽並安裝「進階三式」，選一位前置已足的門人到靜室研讀，再設為交手偏好、切磋試試。 前往\n✓ 一起守住外功場前線\n遠征頁採用聯合演練，替最多三人選前攔或守線，開始後看回顧裡誰做了什麼。守線的人要先在附近。 前往",
+    "save": {
+      "tick": 188062,
+      "rulesVersion": "chapter1-joint-1"
+    }
+  }
+}

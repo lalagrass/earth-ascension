@@ -1,0 +1,40 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 11.431,
+  "errors": [],
+  "steps": [
+    {
+      "label": "continued-30s",
+      "wallSeconds": 10.702,
+      "tick": 188814
+    },
+    {
+      "label": "done",
+      "wallSeconds": 11.43,
+      "story": {
+        "badToast": "校驗碼不符，原存檔已保留",
+        "preview": "匯入預覽\n\nseed 11 · 第16日 · schema 1\n\n確認後替換當局；手動槽保留。\n\n確認替換當局",
+        "continued": {
+          "from": 188195,
+          "to": 188814
+        },
+        "afterReload": 2
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "badToast": "校驗碼不符，原存檔已保留",
+    "preview": "匯入預覽\n\nseed 11 · 第16日 · schema 1\n\n確認後替換當局；手動槽保留。\n\n確認替換當局",
+    "continued": {
+      "from": 188195,
+      "to": 188814
+    },
+    "afterReload": 2
+  }
+}

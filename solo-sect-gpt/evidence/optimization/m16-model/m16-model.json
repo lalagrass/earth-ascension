@@ -1,0 +1,55 @@
+{
+  "source": "normal-UI saves from every stage plus the base-runtime stuck save; model continuation, not UI",
+  "saves": [
+    {
+      "save": "optimization/showcase/showcase-all-features.save.json",
+      "rulesVersion": "chapter1-content-1",
+      "tickEnd": 184774
+    },
+    {
+      "save": "optimization/showcase-m16/showcase-m12-m16.save.json",
+      "rulesVersion": "chapter1-joint-1",
+      "tickEnd": 189395
+    },
+    {
+      "save": "optimization/m5-ui-accepted/gather-main-meal-home.save.json",
+      "rulesVersion": "chapter1-trail-1",
+      "tickEnd": 174381
+    },
+    {
+      "save": "optimization/m5-ui-accepted/escort-ridge-rest-ridge.save.json",
+      "rulesVersion": "chapter1-trail-1",
+      "tickEnd": 174184
+    },
+    {
+      "save": "optimization/m2-ui-sealed/mid-temporary.save.json",
+      "rulesVersion": "chapter1-life-1",
+      "tickEnd": 105876
+    },
+    {
+      "save": "optimization/m4-ui-final/table-classic-done.save.json",
+      "rulesVersion": "chapter1-culture-1",
+      "tickEnd": 137368
+    },
+    {
+      "save": "optimization/m3-ui-initial/counter-feint-completed.save.json",
+      "rulesVersion": "chapter1-martial-1",
+      "tickEnd": 174518
+    },
+    {
+      "save": "development/journey-05/chapter-complete.save.json",
+      "rulesVersion": "chapter1-1",
+      "tickEnd": 125871
+    },
+    {
+      "save": "development/save-controls-release/save-controls-complete.save.json",
+      "rulesVersion": "chapter1-1",
+      "tickEnd": 6000
+    },
+    {
+      "save": "optimization/m7-model/stuck-prepare-spar.save.json",
+      "rulesVersion": "chapter1-1",
+      "tickEnd": 3200
+    }
+  ]
+}

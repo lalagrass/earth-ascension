@@ -23,3 +23,5 @@ table.ops th,table.ops thead th{white-space:nowrap}table.ops td:nth-child(5){whi
 /* M11 mentor */
 #mentor-events .sit{display:flex;flex-direction:row;align-items:center;gap:8px;margin:4px 0}#mentor-events .why-not{max-width:none}#mentor-memories{padding-left:18px;margin:4px 0}
 #mentor-arc{padding-left:18px;margin:4px 0;font-size:12px;line-height:1.7}#mentor-arc li.done b{color:#2f4d43}
+/* M16 guide */
+.guide-tip{font-size:12px;line-height:1.6;margin:6px 0;padding-left:6px;border-left:3px solid #c9c7ae}.guide-tip.done{border-left-color:#42695d}.guide-tip button{font-size:11px;padding:2px 8px}

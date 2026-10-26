@@ -96,3 +96,15 @@ node --test solo-sect-gpt/test/*.test.mjs solo-sect-gpt/test/integration/*.test.
 ```
 
 正常 UI 腳本：`node solo-sect-gpt/test/optimization/m7-ui.mjs accepted 1440 900`（m8～m11 同形；需先啟動 8879 服務）。作者自校，真人試玩尚未執行（計畫見 [PLAYTEST](docs/optimization/PLAYTEST.md)）。
+
+## 優化 M12–M16（Claude Opus 接手）
+
+規劃由 GPT / Codex 撰寫（[M12–M16 規劃](docs/optimization/M12-M16-PLAN.md)），實作由 Claude Opus 5.5 單一作者完成；交付與 5–10 分鐘展示路線見 [M12–M16 交付](docs/optimization/DELIVERY-M12-M16.md)，總標記 `handoff/optimization-m12-m16.done.json`。
+
+- **M12**：經營頁方針卡寫出「此刻選它有沒有用」；遠行預估寫出每份乾糧會怎麼用、何時不加精力；返院報告指出途中放在地上的包裹。
+- **M13**：師徒分組有八步成長路線（每步標來源），師父提出、弟子答應的練功方向，以及依真實練習與共同遠行的三段後續。
+- **M14**：內容頁可安裝隨附「進階三式」（短打快拳、攔路棍、前探長刺），都要真研讀與裝備。
+- **M15**：遠征頁的聯合演練：守住外功場前線、前攔／守線分工、結束後的回顧。
+- **M16**：紀事頁的上手提示；新示範存檔 `evidence/optimization/showcase-m16/showcase-m12-m16.save.json`（舊示範保留）。
+
+新存檔標記依啟用功能為 `chapter1-mentor-2`／`chapter1-joint-1`，較早的程式會明確拒絕。正常 UI 腳本：`node solo-sect-gpt/test/optimization/m16-ui.mjs accepted 1440 900`（需先啟動 8879 服務）。真人試玩尚未執行。

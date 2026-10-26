@@ -16,6 +16,21 @@ GPT / Codex，GPT-6.1 Sol / high，單一作者；獨立worktree的solo-sect-gpt
 下方保留第一版歷史紀錄；原development.done與當時報告不覆寫。
 
 
+
+---
+
+# 優化 M12–M16（Claude Opus 5.5，作者自校）
+
+| 階段 | 玩家可見改變 | 主要證據 |
+| --- | --- | --- |
+| M12 | 方針「此刻」、用糧計畫、地包回報；三起點比較（缺餐方向未成立） | evidence/optimization/m12/index.json |
+| M13 | 普通弟子八步路線、練功方向、三段依歷史後續 | evidence/optimization/m13/index.json |
+| M14 | 進階三式內容包與「下一招」；三次比較（第三次全成立） | evidence/optimization/m14/index.json |
+| M15 | 聯合演練守線與回顧（守線好處未證實） | evidence/optimization/m15/index.json |
+| M16 | 上手提示、新示範存檔、相容與匯入保護、效能紀錄 | evidence/optimization/m16/index.json |
+
+171 項模型／整合回歸通過；根 Python 53、SG dev 383、Earth 語法實跑通過。真人試玩未執行。
+
 ---
 
 # 優化 M7–M11（Claude Opus 5.5，作者自校）
