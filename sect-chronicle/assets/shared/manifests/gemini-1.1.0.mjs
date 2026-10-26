@@ -466,7 +466,7 @@ export default {
     {
       "assetId": "person.research.baozupo.portrait",
       "path": "sect-chronicle/assets/shared/portraits/1.1.0/baozupo.png",
-      "sha256": "879cfbee523bf4bf844ef1a9681d8b422c02fd1bf03acd53fcc8049a5bf37bbc",
+      "sha256": "454f8cf406ff5a8f205e7d2df3434de13212ddfecb55150f0311419073f238fa",
       "availability": "known",
       "dimensions": {
         "width": 864,
@@ -505,7 +505,7 @@ export default {
           "h": 1152
         },
         "derivedFrom": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/baozupo.png",
-        "selection": "2026-10-26 擁有人要求漫畫墨線再收一點。大聲的房東、髮卷、香煙和碎花罩衫留著。",
+        "selection": "2026-10-26 擁有人要求改掉擬真，收到漫畫墨線。大聲的房東、髮卷、香煙和碎花罩衫留著。",
         "generation": {
           "tool": "Grok Build Imagine image_edit",
           "modelVersion": "未量測",
