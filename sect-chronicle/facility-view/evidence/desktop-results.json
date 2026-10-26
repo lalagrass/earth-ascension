@@ -1,0 +1,1094 @@
+{
+  "checkpoint": "35c341f4899c6fa9ba41491a855ff5dd32b264a5",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "checks": [
+    "single official entry",
+    "facility tooltip exposes real stock reservation",
+    "stock reservations distinct from unsupported station reservation",
+    "paused inspect leaves whole authority unchanged",
+    "facility targets existing selected person",
+    "changing facility target updates the actual command actor",
+    "two facility assignments at pause do not move or deliver",
+    "native herb entrance reached while longer water trip continues",
+    "real herb delivery user appears at original rack entrance",
+    "facility user opens existing character card",
+    "long water commute reaches original spring; herbs already delivered",
+    "both original work loops update real resources",
+    "actor click does not select a facility underneath",
+    "final facility panel remains paused with unchanged full state"
+  ],
+  "errors": [],
+  "screenshots": [
+    "official-vat-detail.jpg",
+    "official-rack-user.jpg",
+    "official-delivered-vat.jpg"
+  ],
+  "browser": "154.0.8037.57",
+  "herbGather": {
+    "tick": 480,
+    "people": {
+      "hero": {
+        "id": "hero",
+        "initialLevel": 1,
+        "level": 1,
+        "xp": 0,
+        "trips": 0,
+        "done": {
+          "water": 0,
+          "herb": 0
+        },
+        "job": "water",
+        "jobLabel": "挑水",
+        "pending": null,
+        "nextJob": "water",
+        "nextNeed": 1,
+        "maxLevel": 5,
+        "tripLevel": 1,
+        "speeds": {
+          "empty": 60,
+          "load": 40
+        },
+        "tripSpeeds": {
+          "empty": 60,
+          "load": 40
+        },
+        "speedsInitial": {
+          "empty": 60,
+          "load": 40
+        },
+        "atCap": false,
+        "tripSeconds": 78.88333333333334,
+        "tripSecondsNow": 78.88333333333334,
+        "tripSecondsInitial": 78.88333333333334,
+        "lastTrip": null,
+        "mode": "carry",
+        "phase": "down",
+        "status": "下山（空桶）",
+        "tripProgress": 0.0627508979505599,
+        "restOrder": false,
+        "resting": false,
+        "energy": 95.05000000000028,
+        "energyMax": 100,
+        "rest": null,
+        "why": null,
+        "next": "交付後繼續挑水",
+        "life02": {
+          "fill": false,
+          "filling": false,
+          "round": false,
+          "now": null,
+          "src": "持續工作（原規則）",
+          "why": null,
+          "next": null,
+          "status": null,
+          "meeting": false,
+          "meet": null,
+          "leg": null,
+          "ready": true
+        },
+        "train01": {
+          "goal": false,
+          "units": 0,
+          "max": 6,
+          "unitK": 0,
+          "unitSec": 0,
+          "unitMax": 12,
+          "adept": false,
+          "palm": {
+            "windup": 48,
+            "recover": 36,
+            "from": {
+              "label": "初學",
+              "windup": 48,
+              "recover": 36
+            },
+            "to": {
+              "label": "熟練",
+              "windup": 24,
+              "recover": 18
+            }
+          },
+          "training": false,
+          "leg": null,
+          "cyc": null,
+          "now": null,
+          "src": null,
+          "why": null,
+          "next": null,
+          "status": null
+        },
+        "tea": {
+          "want": false,
+          "active": false,
+          "mode": null,
+          "leg": null,
+          "seat": null,
+          "resv": {
+            "water": 0,
+            "herb": 0
+          },
+          "avail": {
+            "water": 3,
+            "herb": 0
+          },
+          "note": null,
+          "now": null,
+          "next": null,
+          "brewK": 0,
+          "sipK": 0,
+          "reason": "缺料：藥草可用 0（需水 1＋藥草 1，已扣他人預約）"
+        },
+        "home02": {
+          "want": false,
+          "active": false,
+          "mode": null,
+          "leg": null,
+          "note": null,
+          "now": null,
+          "next": null,
+          "reason": "缺木料：工地還缺 6，院倉可用 0（先砍柴）",
+          "carrying": false,
+          "bundle": 0
+        },
+        "bed": null,
+        "bedWhy": null,
+        "restLeg": null,
+        "pref": {
+          "id": "view",
+          "label": "看山",
+          "place": "觀景石",
+          "doing": "看山"
+        },
+        "recall": false,
+        "leisure": false,
+        "funLeg": null,
+        "funSteps": 0,
+        "guardOrder": null,
+        "guardResult": null,
+        "guarding": false,
+        "guardSrc": null,
+        "auto": {
+          "allow": false,
+          "react": "late",
+          "reactLabel": "受擾再處理",
+          "wanting": false,
+          "suppressed": false,
+          "state": "off",
+          "text": "尚未允許自主護院（仍可由玩家派遣）"
+        },
+        "up": {
+          "allow": false,
+          "react": "late",
+          "reactLabel": "累積再整理",
+          "wanting": false,
+          "opp": 0,
+          "used": false,
+          "state": "off",
+          "text": "尚未允許自主整理（仍可由玩家派遣）"
+        },
+        "fixSrc": null,
+        "guardLeg": null,
+        "shoutK": 0,
+        "fix": null,
+        "fixing": false,
+        "fixResult": null,
+        "fixLeg": null,
+        "fixWork": null,
+        "patrolling": false,
+        "patrol": null,
+        "cleaning": false,
+        "clean": null,
+        "cleanResult": null,
+        "pos": {
+          "x": 962,
+          "y": 512
+        },
+        "cface": -1,
+        "walked": 0,
+        "palm": "novice",
+        "palmLabel": "初學",
+        "palmTicks": {
+          "windup": 48,
+          "recover": 36
+        },
+        "palmStep": null,
+        "cleanLeg": null,
+        "autoClean": {
+          "allow": false,
+          "wanting": false,
+          "suppressed": true,
+          "state": "off",
+          "text": "尚未允許自主清鼠（仍可由玩家派遣）"
+        },
+        "cleanSrc": null,
+        "water": 80,
+        "waterMax": 100,
+        "thirsty": false,
+        "drinking": false,
+        "drinkFrom": null,
+        "drinkNote": null,
+        "drinkText": "不渴（水分 ≤ 20 才想喝）",
+        "drinkLeg": null,
+        "scenePosition": {
+          "x": 701.7258480120383,
+          "y": 653.0185608630227,
+          "face": -1,
+          "travelled": 296.9882710654453
+        },
+        "phaseProgress": 0.1746031746031746,
+        "frame": "walkEmpty-0",
+        "action": "walkEmpty",
+        "requestedAction": "walkEmpty",
+        "fallback": false,
+        "face": -1,
+        "travelled": 296.9882710654453,
+        "x": 701.7258480120383,
+        "y": 653.0185608630227,
+        "screen": {
+          "x": 272.2436024156498,
+          "y": 705.4241291219295
+        },
+        "bodyScreen": {
+          "x": 255.99360241564978,
+          "y": 670.9741291219295,
+          "w": 32.5,
+          "h": 68.9
+        },
+        "tapScreen": {
+          "x": 250.24360241564983,
+          "y": 670.9741291219295,
+          "w": 44,
+          "h": 68.9
+        },
+        "footScreen": {
+          "x": 272.2436024156498,
+          "y": 737.9241291219295
+        },
+        "sprite": {
+          "resolution": 2,
+          "width": 95,
+          "height": 107,
+          "anchor": {
+            "x": 0.47368421052631576,
+            "y": 0.8598130841121495
+          },
+          "scale": {
+            "x": -1,
+            "y": 1
+          },
+          "z": 653.0185608630227,
+          "bounds": {
+            "x": 207.2436024156499,
+            "y": 618.3241291219294,
+            "w": 123.5,
+            "h": 139.10000000000002
+          }
+        }
+      },
+      "cousin": {
+        "id": "cousin",
+        "initialLevel": 3,
+        "level": 3,
+        "xp": 0,
+        "trips": 0,
+        "done": {
+          "water": 0,
+          "herb": 0
+        },
+        "job": "herb",
+        "jobLabel": "採藥",
+        "pending": null,
+        "nextJob": "herb",
+        "nextNeed": 3,
+        "maxLevel": 5,
+        "tripLevel": 3,
+        "speeds": {
+          "empty": 74.4,
+          "load": 52
+        },
+        "tripSpeeds": {
+          "empty": 74.4,
+          "load": 52
+        },
+        "speedsInitial": {
+          "empty": 74.4,
+          "load": 52
+        },
+        "atCap": false,
+        "tripSeconds": 24.85,
+        "tripSecondsNow": 24.85,
+        "tripSecondsInitial": 24.85,
+        "lastTrip": null,
+        "mode": "carry",
+        "phase": "herbGather",
+        "status": "採藥",
+        "tripProgress": 0.32193158953722334,
+        "restOrder": false,
+        "resting": false,
+        "energy": 92.00000000000045,
+        "energyMax": 100,
+        "rest": null,
+        "why": null,
+        "next": "交付後繼續採藥",
+        "life02": {
+          "fill": false,
+          "filling": false,
+          "round": false,
+          "now": null,
+          "src": "持續工作（原規則）",
+          "why": null,
+          "next": null,
+          "status": null,
+          "meeting": false,
+          "meet": null,
+          "leg": null,
+          "ready": true
+        },
+        "train01": {
+          "goal": false,
+          "units": 0,
+          "max": 6,
+          "unitK": 0,
+          "unitSec": 0,
+          "unitMax": 12,
+          "adept": false,
+          "palm": {
+            "windup": 48,
+            "recover": 36,
+            "from": {
+              "label": "初學",
+              "windup": 48,
+              "recover": 36
+            },
+            "to": {
+              "label": "熟練",
+              "windup": 24,
+              "recover": 18
+            }
+          },
+          "training": false,
+          "leg": null,
+          "cyc": null,
+          "now": null,
+          "src": null,
+          "why": null,
+          "next": null,
+          "status": null
+        },
+        "tea": {
+          "want": false,
+          "active": false,
+          "mode": null,
+          "leg": null,
+          "seat": null,
+          "resv": {
+            "water": 0,
+            "herb": 0
+          },
+          "avail": {
+            "water": 3,
+            "herb": 0
+          },
+          "note": null,
+          "now": null,
+          "next": null,
+          "brewK": 0,
+          "sipK": 0,
+          "reason": "缺料：藥草可用 0（需水 1＋藥草 1，已扣他人預約）"
+        },
+        "home02": {
+          "want": false,
+          "active": false,
+          "mode": null,
+          "leg": null,
+          "note": null,
+          "now": null,
+          "next": null,
+          "reason": "缺木料：工地還缺 6，院倉可用 0（先砍柴）",
+          "carrying": false,
+          "bundle": 0
+        },
+        "bed": null,
+        "bedWhy": null,
+        "restLeg": null,
+        "pref": {
+          "id": "stretch",
+          "label": "舒展筋骨",
+          "place": "院邊空地",
+          "doing": "舒展筋骨"
+        },
+        "recall": false,
+        "leisure": false,
+        "funLeg": null,
+        "funSteps": 0,
+        "guardOrder": null,
+        "guardResult": null,
+        "guarding": false,
+        "guardSrc": null,
+        "auto": {
+          "allow": false,
+          "react": "early",
+          "reactLabel": "主動照看",
+          "wanting": false,
+          "suppressed": false,
+          "state": "off",
+          "text": "尚未允許自主護院（仍可由玩家派遣）"
+        },
+        "up": {
+          "allow": false,
+          "react": "early",
+          "reactLabel": "順手照看",
+          "wanting": false,
+          "opp": 0,
+          "used": false,
+          "state": "off",
+          "text": "尚未允許自主整理（仍可由玩家派遣）"
+        },
+        "fixSrc": null,
+        "guardLeg": null,
+        "shoutK": 0,
+        "fix": null,
+        "fixing": false,
+        "fixResult": null,
+        "fixLeg": null,
+        "fixWork": null,
+        "patrolling": false,
+        "patrol": null,
+        "cleaning": false,
+        "clean": null,
+        "cleanResult": null,
+        "pos": {
+          "x": 962,
+          "y": 512
+        },
+        "cface": -1,
+        "walked": 0,
+        "palm": "novice",
+        "palmLabel": "初學",
+        "palmTicks": {
+          "windup": 48,
+          "recover": 36
+        },
+        "palmStep": null,
+        "cleanLeg": null,
+        "autoClean": {
+          "allow": false,
+          "wanting": false,
+          "suppressed": true,
+          "state": "off",
+          "text": "尚未允許自主清鼠（仍可由玩家派遣）"
+        },
+        "cleanSrc": null,
+        "water": 80,
+        "waterMax": 100,
+        "thirsty": false,
+        "drinking": false,
+        "drinkFrom": null,
+        "drinkNote": null,
+        "drinkText": "不渴（水分 ≤ 20 才想喝）",
+        "drinkLeg": null,
+        "scenePosition": {
+          "x": 1398,
+          "y": 772,
+          "face": 1,
+          "travelled": 0
+        },
+        "phaseProgress": 0.26666666666666666,
+        "frame": "herbGather-0",
+        "action": "herbGather",
+        "requestedAction": "herbGather",
+        "fallback": false,
+        "face": 1,
+        "travelled": 0,
+        "x": 1398,
+        "y": 772,
+        "screen": {
+          "x": 1177.4,
+          "y": 861.075
+        },
+        "bodyScreen": {
+          "x": 1161.8,
+          "y": 827.6,
+          "w": 31.200000000000003,
+          "h": 66.95
+        },
+        "tapScreen": {
+          "x": 1155.4,
+          "y": 827.6,
+          "w": 44,
+          "h": 66.95
+        },
+        "footScreen": {
+          "x": 1177.4,
+          "y": 892.6
+        },
+        "sprite": {
+          "resolution": 2,
+          "width": 95,
+          "height": 107,
+          "anchor": {
+            "x": 0.47368421052631576,
+            "y": 0.8598130841121495
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "z": 772,
+          "bounds": {
+            "x": 1118.9,
+            "y": 773,
+            "w": 123.5,
+            "h": 139.10000000000002
+          }
+        }
+      }
+    },
+    "herbs": 0
+  },
+  "completed": {
+    "tick": 4970,
+    "vat": 4,
+    "herbs": 3,
+    "people": {
+      "hero": {
+        "id": "hero",
+        "initialLevel": 1,
+        "level": 2,
+        "xp": 0,
+        "trips": 1,
+        "done": {
+          "water": 1,
+          "herb": 0
+        },
+        "job": "water",
+        "jobLabel": "挑水",
+        "pending": null,
+        "nextJob": "water",
+        "nextNeed": 2,
+        "maxLevel": 5,
+        "tripLevel": 2,
+        "speeds": {
+          "empty": 67.2,
+          "load": 46
+        },
+        "tripSpeeds": {
+          "empty": 67.2,
+          "load": 46
+        },
+        "speedsInitial": {
+          "empty": 60,
+          "load": 40
+        },
+        "atCap": false,
+        "tripSeconds": 70.3,
+        "tripSecondsNow": null,
+        "tripSecondsInitial": 78.88333333333334,
+        "lastTrip": {
+          "job": "water",
+          "level": 1,
+          "seconds": 78.88333333333334
+        },
+        "mode": "toSeat",
+        "phase": null,
+        "status": "走去休息（精力低）",
+        "tripProgress": 0,
+        "restOrder": false,
+        "resting": false,
+        "energy": 21.11666666667115,
+        "energyMax": 100,
+        "rest": "auto",
+        "why": "精力 21 ≤ 30，自己去恢復",
+        "next": "恢復至 80 後返回挑水",
+        "life02": {
+          "fill": false,
+          "filling": false,
+          "round": false,
+          "now": null,
+          "src": "持續工作（原規則）",
+          "why": null,
+          "next": null,
+          "status": null,
+          "meeting": false,
+          "meet": null,
+          "leg": null,
+          "ready": true
+        },
+        "train01": {
+          "goal": false,
+          "units": 0,
+          "max": 6,
+          "unitK": 0,
+          "unitSec": 0,
+          "unitMax": 12,
+          "adept": false,
+          "palm": {
+            "windup": 48,
+            "recover": 36,
+            "from": {
+              "label": "初學",
+              "windup": 48,
+              "recover": 36
+            },
+            "to": {
+              "label": "熟練",
+              "windup": 24,
+              "recover": 18
+            }
+          },
+          "training": false,
+          "leg": null,
+          "cyc": null,
+          "now": null,
+          "src": null,
+          "why": null,
+          "next": null,
+          "status": null
+        },
+        "tea": {
+          "want": false,
+          "active": false,
+          "mode": null,
+          "leg": null,
+          "seat": null,
+          "resv": {
+            "water": 0,
+            "herb": 0
+          },
+          "avail": {
+            "water": 4,
+            "herb": 3
+          },
+          "note": null,
+          "now": null,
+          "next": null,
+          "brewK": 0,
+          "sipK": 0,
+          "reason": null
+        },
+        "home02": {
+          "want": false,
+          "active": false,
+          "mode": null,
+          "leg": null,
+          "note": null,
+          "now": null,
+          "next": null,
+          "reason": "缺木料：工地還缺 6，院倉可用 0（先砍柴）",
+          "carrying": false,
+          "bundle": 0
+        },
+        "bed": null,
+        "bedWhy": "寢舍未修好：在石凳恢復",
+        "restLeg": {
+          "k": 0.6666666666666666,
+          "steps": 54,
+          "need": 81
+        },
+        "pref": {
+          "id": "view",
+          "label": "看山",
+          "place": "觀景石",
+          "doing": "看山"
+        },
+        "recall": false,
+        "leisure": false,
+        "funLeg": null,
+        "funSteps": 0,
+        "guardOrder": null,
+        "guardResult": null,
+        "guarding": false,
+        "guardSrc": null,
+        "auto": {
+          "allow": false,
+          "react": "late",
+          "reactLabel": "受擾再處理",
+          "wanting": false,
+          "suppressed": false,
+          "state": "off",
+          "text": "尚未允許自主護院（仍可由玩家派遣）"
+        },
+        "up": {
+          "allow": false,
+          "react": "late",
+          "reactLabel": "累積再整理",
+          "wanting": false,
+          "opp": 3,
+          "used": false,
+          "state": "off",
+          "text": "尚未允許自主整理（仍可由玩家派遣）"
+        },
+        "fixSrc": null,
+        "guardLeg": null,
+        "shoutK": 0,
+        "fix": null,
+        "fixing": false,
+        "fixResult": null,
+        "fixLeg": null,
+        "fixWork": null,
+        "patrolling": false,
+        "patrol": null,
+        "cleaning": false,
+        "clean": null,
+        "cleanResult": null,
+        "pos": {
+          "x": 962,
+          "y": 512
+        },
+        "cface": -1,
+        "walked": 0,
+        "palm": "novice",
+        "palmLabel": "初學",
+        "palmTicks": {
+          "windup": 48,
+          "recover": 36
+        },
+        "palmStep": null,
+        "cleanLeg": null,
+        "autoClean": {
+          "allow": false,
+          "wanting": false,
+          "suppressed": true,
+          "state": "off",
+          "text": "尚未允許自主清鼠（仍可由玩家派遣）"
+        },
+        "cleanSrc": null,
+        "water": 80,
+        "waterMax": 100,
+        "thirsty": false,
+        "drinking": false,
+        "drinkFrom": null,
+        "drinkNote": null,
+        "drinkText": "不渴（水分 ≤ 20 才想喝）",
+        "drinkLeg": null,
+        "scenePosition": {
+          "x": 947.541793921138,
+          "y": 453.28172720426784,
+          "face": -1,
+          "travelled": 60.476558789890994
+        },
+        "phaseProgress": 0,
+        "frame": "walkEmpty-1",
+        "action": "walkEmpty",
+        "requestedAction": "walkEmpty",
+        "fallback": false,
+        "face": -1,
+        "travelled": 60.476558789890994,
+        "x": 947.541793921138,
+        "y": 453.28172720426784,
+        "screen": {
+          "x": 660.3609218819913,
+          "y": 523.4271444068644
+        },
+        "bodyScreen": {
+          "x": 644.1109218819913,
+          "y": 488.9771444068644,
+          "w": 32.5,
+          "h": 68.9
+        },
+        "tapScreen": {
+          "x": 638.3609218819913,
+          "y": 488.9771444068644,
+          "w": 44,
+          "h": 68.9
+        },
+        "footScreen": {
+          "x": 660.3609218819913,
+          "y": 555.9271444068644
+        },
+        "sprite": {
+          "resolution": 2,
+          "width": 95,
+          "height": 107,
+          "anchor": {
+            "x": 0.47368421052631576,
+            "y": 0.8598130841121495
+          },
+          "scale": {
+            "x": -1,
+            "y": 1
+          },
+          "z": 453.28172720426784,
+          "bounds": {
+            "x": 595.3609218819915,
+            "y": 436.32714440686436,
+            "w": 123.5,
+            "h": 139.10000000000002
+          }
+        }
+      },
+      "cousin": {
+        "id": "cousin",
+        "initialLevel": 3,
+        "level": 4,
+        "xp": 0,
+        "trips": 3,
+        "done": {
+          "water": 0,
+          "herb": 3
+        },
+        "job": "herb",
+        "jobLabel": "採藥",
+        "pending": null,
+        "nextJob": "herb",
+        "nextNeed": 4,
+        "maxLevel": 5,
+        "tripLevel": 4,
+        "speeds": {
+          "empty": 81.6,
+          "load": 58
+        },
+        "tripSpeeds": {
+          "empty": 81.6,
+          "load": 58
+        },
+        "speedsInitial": {
+          "empty": 74.4,
+          "load": 52
+        },
+        "atCap": false,
+        "tripSeconds": 23.2,
+        "tripSecondsNow": null,
+        "tripSecondsInitial": 24.85,
+        "lastTrip": {
+          "job": "herb",
+          "level": 3,
+          "seconds": 24.85
+        },
+        "mode": "seated",
+        "phase": null,
+        "status": "坐下恢復",
+        "tripProgress": 0,
+        "restOrder": false,
+        "resting": false,
+        "energy": 60.11666666667161,
+        "energyMax": 100,
+        "rest": "auto",
+        "why": "精力 25 ≤ 30，自己去恢復",
+        "next": "恢復至 80 後返回採藥",
+        "life02": {
+          "fill": false,
+          "filling": false,
+          "round": false,
+          "now": null,
+          "src": "持續工作（原規則）",
+          "why": null,
+          "next": null,
+          "status": null,
+          "meeting": false,
+          "meet": null,
+          "leg": null,
+          "ready": true
+        },
+        "train01": {
+          "goal": false,
+          "units": 0,
+          "max": 6,
+          "unitK": 0,
+          "unitSec": 0,
+          "unitMax": 12,
+          "adept": false,
+          "palm": {
+            "windup": 48,
+            "recover": 36,
+            "from": {
+              "label": "初學",
+              "windup": 48,
+              "recover": 36
+            },
+            "to": {
+              "label": "熟練",
+              "windup": 24,
+              "recover": 18
+            }
+          },
+          "training": false,
+          "leg": null,
+          "cyc": null,
+          "now": null,
+          "src": null,
+          "why": null,
+          "next": null,
+          "status": null
+        },
+        "tea": {
+          "want": false,
+          "active": false,
+          "mode": null,
+          "leg": null,
+          "seat": null,
+          "resv": {
+            "water": 0,
+            "herb": 0
+          },
+          "avail": {
+            "water": 4,
+            "herb": 3
+          },
+          "note": null,
+          "now": null,
+          "next": null,
+          "brewK": 0,
+          "sipK": 0,
+          "reason": null
+        },
+        "home02": {
+          "want": false,
+          "active": false,
+          "mode": null,
+          "leg": null,
+          "note": null,
+          "now": null,
+          "next": null,
+          "reason": "缺木料：工地還缺 6，院倉可用 0（先砍柴）",
+          "carrying": false,
+          "bundle": 0
+        },
+        "bed": null,
+        "bedWhy": "寢舍未修好：在石凳恢復",
+        "restLeg": null,
+        "pref": {
+          "id": "stretch",
+          "label": "舒展筋骨",
+          "place": "院邊空地",
+          "doing": "舒展筋骨"
+        },
+        "recall": false,
+        "leisure": false,
+        "funLeg": null,
+        "funSteps": 0,
+        "guardOrder": null,
+        "guardResult": null,
+        "guarding": false,
+        "guardSrc": null,
+        "auto": {
+          "allow": false,
+          "react": "early",
+          "reactLabel": "主動照看",
+          "wanting": false,
+          "suppressed": false,
+          "state": "off",
+          "text": "尚未允許自主護院（仍可由玩家派遣）"
+        },
+        "up": {
+          "allow": false,
+          "react": "early",
+          "reactLabel": "順手照看",
+          "wanting": false,
+          "opp": 3,
+          "used": false,
+          "state": "off",
+          "text": "尚未允許自主整理（仍可由玩家派遣）"
+        },
+        "fixSrc": null,
+        "guardLeg": null,
+        "shoutK": 0,
+        "fix": null,
+        "fixing": false,
+        "fixResult": null,
+        "fixLeg": null,
+        "fixWork": null,
+        "patrolling": false,
+        "patrol": null,
+        "cleaning": false,
+        "clean": null,
+        "cleanResult": null,
+        "pos": {
+          "x": 962,
+          "y": 512
+        },
+        "cface": -1,
+        "walked": 0,
+        "palm": "novice",
+        "palmLabel": "初學",
+        "palmTicks": {
+          "windup": 48,
+          "recover": 36
+        },
+        "palmStep": null,
+        "cleanLeg": null,
+        "autoClean": {
+          "allow": false,
+          "wanting": false,
+          "suppressed": true,
+          "state": "off",
+          "text": "尚未允許自主清鼠（仍可由玩家派遣）"
+        },
+        "cleanSrc": null,
+        "water": 80,
+        "waterMax": 100,
+        "thirsty": false,
+        "drinking": false,
+        "drinkFrom": null,
+        "drinkNote": null,
+        "drinkText": "不渴（水分 ≤ 20 才想喝）",
+        "drinkLeg": null,
+        "scenePosition": {
+          "x": 994,
+          "y": 420,
+          "face": 1,
+          "travelled": 0
+        },
+        "phaseProgress": 0,
+        "frame": "rest-0",
+        "action": "rest",
+        "requestedAction": "rest",
+        "fallback": false,
+        "face": 1,
+        "travelled": 0,
+        "x": 994,
+        "y": 420,
+        "screen": {
+          "x": 720.7565897845119,
+          "y": 481.13589904131624
+        },
+        "bodyScreen": {
+          "x": 705.1565897845119,
+          "y": 447.6608990413162,
+          "w": 31.200000000000003,
+          "h": 66.95
+        },
+        "tapScreen": {
+          "x": 698.7565897845119,
+          "y": 447.6608990413162,
+          "w": 44,
+          "h": 66.95
+        },
+        "footScreen": {
+          "x": 720.7565897845119,
+          "y": 512.6608990413163
+        },
+        "sprite": {
+          "resolution": 2,
+          "width": 95,
+          "height": 107,
+          "anchor": {
+            "x": 0.47368421052631576,
+            "y": 0.8598130841121495
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "z": 420,
+          "bounds": {
+            "x": 662.256589784512,
+            "y": 393.06089904131613,
+            "w": 123.5,
+            "h": 139.10000000000002
+          }
+        }
+      }
+    }
+  },
+  "passed": true,
+  "cleanup": {
+    "pageClosed": true,
+    "browserClosed": true,
+    "serverStopped": true,
+    "viewport": "owned viewport restored then browser closed"
+  }
+}

@@ -6,8 +6,8 @@
 |---|---|---|
 | #342 共用場景 | PR344已交：固定GPT/Gemini真核心、同Pixi renderer；dev490b9ae/postCI40294390608成功 | 已復用 |
 | #345 人物卡／行動 | PR347已合dev457aa0be902c26691bebaea2881820d86e5330db，postCI40301296266五成功；Grok真核心薄接線、來源／缺項語義 | 已復用，不追溯新增美術驗收 |
-| [#348 素材版本](https://github.com/lalagrass/earth-ascension/issues/348) | 本PR候選：三獨立pin、正式主角既有圖裁切、女孩缺圖／權利未知、最多三景物、真GPT harness。見[工作包與交付](PUBLIC_ASSETS_HANDOFF.md)及[接手prompt](PUBLIC_ASSETS_AUTHOR_PROMPT.md) | 非作者review／dev／postCI後才done |
-| #349 設施／互動點 | 尚未認領；沿#315/#321呈現邊界 | #348完成後由grass派單 |
+| [#348 素材版本](https://github.com/lalagrass/earth-ascension/issues/348) | PR352已合dev23b511db75f2fb2862241194a8a999aa357534aa、push postCI40304567407五成功：三獨立pin、正式主角既有圖裁切、女孩缺圖／權利未知、最多三景物、真GPT harness。見[工作包與交付](PUBLIC_ASSETS_HANDOFF.md)及[接手prompt](PUBLIC_ASSETS_AUTHOR_PROMPT.md) | 已復用 |
+| #349 設施／互動點 | Codex Cloud `/root/facility349_author` 已認領6413439961；本PR候選：原正式入口公版設施詳情／tooltip／真水藥指派、原入口及來源／能力語義，第二真GPT薄適配。見[FACILITY_PUBLIC_HANDOFF](FACILITY_PUBLIC_HANDOFF.md)／[作者prompt](FACILITY_PUBLIC_AUTHOR_PROMPT.md) | grass非作者review／dev／必要postCI後才done；本作者不啟後包 |
 | #350 武學卡／動作 | 尚未認領；既有掌法／生活動作，沿#181/#318 | #349完成後派單 |
 | #351 近期事件／整合 | 尚未認領；只已有可證事件，沿#120 | #350完成後派單；有限序列到此停止 |
 

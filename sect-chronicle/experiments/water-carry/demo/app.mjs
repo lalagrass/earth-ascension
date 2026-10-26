@@ -8,6 +8,9 @@ import { createSceneRenderer } from '../../../scene-shared/renderer.mjs';
 import { createGeminiAdapter } from '../../../scene-shared/adapters/gemini.mjs';
 import { createCamera } from '../../../scene-shared/camera.mjs';
 import { bodyBox as actorBodyBox } from '../../../scene-shared/contract.mjs';
+import { createOfficialFacilityAdapter } from '../../../facility-view/official.mjs';
+import { pickFacility } from '../../../facility-view/contract.mjs';
+import { facilityHtml, tooltipText } from '../../../facility-view/render.mjs';
 import { geminiCard } from '../../../character-card/gemini.mjs';
 import { identityHtml, actionHtml, fieldsHtml } from '../../../character-card/render.mjs';
 import { saveTo, loadFrom } from './life-save.mjs';
@@ -503,6 +506,7 @@ const sceneAdapter = createGeminiAdapter({ getModel: () => model, geometry: geo,
     return { asset: id, frame: p.frame, body: bodies[id], anchor: { x: h.anchorPx.x / h.frameSize.w, y: h.anchorPx.y / h.frameSize.h } };
   },
 });
+const facilityAdapter = createOfficialFacilityAdapter({ getModel: () => model, places });
 let sceneSnapshot;
 function renderShared() {
   sceneSnapshot = sceneAdapter.snapshot({ view: v, paused: !ui.playing, rate: ui.speed });
@@ -522,35 +526,45 @@ function hitTest(sx, sy) {
   const w = toWorld(sx, sy);
   const front = sharedScene.pick(w.x, w.y, cam.zoom);
   if (front) return { kind: 'person', id: front };
-  for (const [id, pl] of Object.entries(places)) {
-    const dx = (w.x - pl.x) / pl.rx, dy = (w.y - (pl.y - pl.ry * 0.6)) / (pl.ry * 1.6);
-    if (dx * dx + dy * dy <= 1) return { kind: 'place', id };
-  }
+  const facility = pickFacility(facilityAdapter.snapshot(selectedPerson()), w.x, w.y);
+  if (facility) return { kind: 'place', id: facility.nativeId };
   return null;
 }
 
 // ---------- 輸入 ----------
+const facilityTip = document.createElement('div');
+facilityTip.id = 'facility-tooltip'; facilityTip.className = 'facility-tooltip';
+facilityTip.setAttribute('role', 'tooltip'); facilityTip.hidden = true;
+document.body.appendChild(facilityTip);
 let drag = null;
 app.canvas.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY, cx: cam.x, cy: cam.y, moved: false }; app.canvas.setPointerCapture(e.pointerId); });
 app.canvas.addEventListener('pointermove', (e) => {
-  if (!drag) return;
+  if (!drag) {
+    const hit = hitTest(e.offsetX, e.offsetY);
+    const facility = hit?.kind === 'place' && facilityAdapter.snapshot(selectedPerson()).find(f => f.nativeId === hit.id);
+    facilityTip.hidden = !facility || !!ui.menu;
+    if (facility) { facilityTip.textContent = tooltipText(facility); facilityTip.style.left = `${Math.max(10, Math.min(innerWidth - 340, e.clientX + 14))}px`; facilityTip.style.top = `${Math.min(innerHeight - 70, e.clientY + 18)}px`; }
+    return;
+  }
+  facilityTip.hidden = true;
   const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
   if (Math.abs(dx) + Math.abs(dy) > 5) drag.moved = true;
   if (drag.moved) { ui.follow = false; cam.x = drag.cx - dx / cam.zoom; cam.y = drag.cy - dy / cam.zoom; applyCam(); }
 });
+app.canvas.addEventListener('pointerleave', () => { facilityTip.hidden = true; });
 app.canvas.addEventListener('pointerup', (e) => {
   const d = drag; drag = null;
   if (!d || d.moved) return;
   const hit = hitTest(e.offsetX, e.offsetY);
   if (!hit) { if (ui.menu) closeMenu(); return; }
-  if (hit.kind === 'person') select(ui.selected === hit.id ? null : hit.id);
+  if (hit.kind === 'person') { const next = ui.selected === hit.id ? null : hit.id; if (ui.menu) closeMenu(); select(next); }
   else openMenu(hit.id);
 });
 app.canvas.addEventListener('wheel', (e) => { e.preventDefault(); zoomAt(e.offsetX, e.offsetY, cam.zoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1)); }, { passive: false });
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && ui.menu) { e.preventDefault(); closeMenu(); return; }
   if (e.target.closest && e.target.closest('.menu')) {
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); moveFocus(e.key === 'ArrowDown' ? 1 : -1); }
+    if (e.target.matches('.opt') && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) { e.preventDefault(); moveFocus(e.key === 'ArrowDown' ? 1 : -1); }
     if (e.key === 'Tab') { e.preventDefault(); moveFocus(e.shiftKey ? -1 : 1); } // 焦點留在選單裡
     return;
   }
@@ -645,7 +659,7 @@ function togglePlay() { if (ui.menu) closeMenu(false); ui.playing = !ui.playing;
 function setSpeed(s) { ui.speed = s; renderChrome(); }
 function toggleRoster() { ui.rosterOpen = !ui.rosterOpen; renderChrome(); }
 function toggleShadow() { ui.shadow = !ui.shadow; renderChrome(); }
-function select(id) { ui.selected = id; if (IDS.includes(id)) ui.follow = true; renderChrome(); }
+function select(id) { if (ui.menu) closeMenu(false); ui.selected = id; if (IDS.includes(id)) ui.follow = true; renderChrome(); }
 function reset() {
   if (ui.menu) closeMenu(false);
   model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
@@ -658,25 +672,20 @@ function reset() {
   renderChrome();
 }
 
-function menuOptions(id, person) {
-  // 地點自己的工作排第一，其次本趟後休息，再來另一份工作。
-  const here = id === 'herb' || id === 'rack' ? 'herb' : 'water', rank = id === 'fence' ? { fix: 0, fixCancel: 0, guard: 1 } : id === 'bench' ? { restAfterTrip: 0 } : id === 'view' || id === 'yard' ? { recall: 0, resume: 1 } : { [`work:${here}`]: 0, restAfterTrip: 1, guard: 3 };
-  const opts = model.actions(person).filter((a) => !a.hidden && !(here === 'herb' && a.id === 'pourNow'))
-    .sort((a, b) => (rank[a.id] ?? 2) - (rank[b.id] ?? 2));
-  if (id === 'spring') return opts.filter((a) => a.id !== 'pourNow').concat([{ id: 'more', label: '在這裡多裝一桶', enabled: false, reason: '扁擔只掛得了兩桶' }]);
-  return opts;
-}
-function openMenu(id) {
+function openMenu(id, actorId = selectedPerson()) {
+  const facility = facilityAdapter.snapshot(actorId).find(f => f.nativeId === id);
+  if (!facility) return;
   if (ui.playing) { ui.playing = false; ui.pausedByMenu = true; clock.clear(); }
+  if (!ui.menu) ui.returnFocus = document.activeElement !== document.body ? document.activeElement : null;
   ui.menu = id;
-  ui.menuPerson = selectedPerson();
-  ui.returnFocus = document.activeElement !== document.body ? document.activeElement : null;
-  const pl = places[id];
+  ui.menuPerson = actorId;
+  facilityTip.hidden = true;
   const m = $('menu');
-  m.innerHTML = `<h3>${pl.label}<small>${pl.sub}</small></h3><div class="muted">對象：${profiles[ui.menuPerson].name}（腳力 Lv ${v.people[ui.menuPerson].level}）</div>` +
-    menuOptions(id, ui.menuPerson).map((o) => `<button class="opt" data-cmd="${o.id}" ${o.enabled ? '' : 'disabled'}><b>${o.label}</b><span>${o.enabled ? o.detail : o.reason}</span></button>`).join('') +
-    '<div class="foot"><span>↑↓ 選擇　Enter 下令</span><span>Esc 關閉</span></div>';
+  m.innerHTML = facilityHtml(facility, { actorId, actors: profiles });
   for (const b of m.querySelectorAll('.opt:not([disabled])')) b.addEventListener('click', () => { command(b.dataset.cmd); });
+  m.querySelector('[data-facility-actor]').addEventListener('change', e => { ui.selected = e.target.value; openMenu(id, e.target.value); });
+  for (const b of m.querySelectorAll('[data-facility-card]')) b.addEventListener('click', () => { const person = b.dataset.facilityCard; closeMenu(false); select(person); });
+  m.querySelector('[data-facility-close]').addEventListener('click', () => closeMenu());
   m.hidden = false;
   document.body.classList.add('menu-open');
   placeMenu();
@@ -699,7 +708,7 @@ function placeMenu() {
   m.style.top = `${Math.max(60, Math.min(window.innerHeight - h - 40, y))}px`;
 }
 function moveFocus(d) {
-  const opts = [...$('menu').querySelectorAll('.opt:not([disabled])')];
+  const opts = [...$('menu').querySelectorAll('button:not([disabled]), select, summary')];
   const i = opts.indexOf(document.activeElement);
   opts[(i + d + opts.length) % opts.length]?.focus();
 }
@@ -717,7 +726,9 @@ function closeMenu(resume = true) {
 }
 function command(cmd) {
   const person = ui.menu ? ui.menuPerson : selectedPerson();
-  const r = sceneAdapter.command({ actorId: person, action: cmd });
+  const r = ui.menu
+    ? facilityAdapter.command({ actorId: person, facilityId: `official:facility:${ui.menu}`, action: cmd })
+    : sceneAdapter.command({ actorId: person, action: cmd });
   v = model.view(); // 暫停下令也立即顯示最新意圖，不等待下一個畫面幀。
   toast(r.ok ? `${profiles[person].label}：${r.text}` : `做不到：${r.reason}`);
   ui.selected = person;
@@ -1249,6 +1260,7 @@ window.demo = {
       selected: ui.selected, menu: ui.menu, menuPerson: ui.menuPerson, cam: { ...cam }, hidden: document.hidden,
       heroScreen: people.hero.screen,
       vatScreen: toScreen(scene.places.vat.x, scene.places.vat.y - 20), springScreen: toScreen(places.spring.x, places.spring.y - 10),
+      facilities: facilityAdapter.snapshot(selectedPerson()),
       sceneSource: sceneSnapshot.source, sceneEvents: sceneSnapshot.events, sceneActors: sceneSnapshot.actors,
       sceneOcclusion: { bridgeFrontDepth: wc.front.zIndex, fadedProps: wc.props.filter((q) => q.s.alpha < 1).map((q) => ({ id: q.p.id, x: q.p.x, y: q.p.y, alpha: q.s.alpha })) },
       firstFrameMs, frames, stepMs: STEP_MS, cups: Object.fromEntries(IDS.map((id) => [id, cups[id].visible])),
