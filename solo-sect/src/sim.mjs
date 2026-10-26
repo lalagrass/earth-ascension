@@ -10,7 +10,7 @@ import { pipeline, mulText } from './mul.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf } from './expedition.mjs';
 import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC } from './data.mjs';
 import { SCORE, SCORE_POST } from './score-data.mjs';
-import { addMem, chatLine, passPick, passDo, PASS, apprDaily, apprMul } from './bonds.mjs';
+import { addMem, chatLine, passPick, passDo, PASS, passScore, passReserve, apprDaily, apprMul } from './bonds.mjs';
 import { aspStep, likeMeal, likesOf } from './v10.mjs';
 import { raidMul } from './expedition.mjs';
 import { popStep, fogStep } from './world.mjs';
@@ -221,7 +221,7 @@ function scoreCtx(s, d) {
   const low = d.adult && d.mood >= 45 ? others.filter((o) => o.mood < 35).sort((a, b) => a.mood - b.mood)[0] : null, site = siteOf(s);
   const haul = !!site && MATS.some((k) => missingOf(site[1], k) > 0 && s.res[k] > 0);
   return { s, d, n, tr: d.traits, others, pp, low, bt, fun: n.fun ?? 60, food: s.res.food, negWexin: -(d.wexin || 0), ph: phaseOf(s).id,
-    shortWood: short('wood'), shortStone: short('stone'), haul, site, PASS, FS: FOOD_SEC,
+    shortWood: short('wood'), shortStone: short('stone'), haul, site, PASS, FS: FOOD_SEC, passScore: pp ? passScore(s) : 0,
     wood: s.res.wood + s.ds.reduce((a, o) => a + (o.task?.act === 'chop' ? 1 : 0), 0), stone: s.res.stone + s.ds.reduce((a, o) => a + (o.task?.act === 'quarry' ? 1 : 0), 0),
     passWhy: pp ? `${PASS.why}：帶${pp.p.name}練「${artById(pp.art).name}」` : '', pendingName: d.pendingArt ? artById(d.pendingArt).name : '', btName: bt ? artById(bt).name : '', buildWhy: haul ? '把料搬到工地料堆' : '料齊了，去施工' };
 }
@@ -283,7 +283,7 @@ function assign(s, d, act, why) {
     else return false;
     d.reason = why; return true;
   }
-  if (act === 'pass') { const pp = passPick(s, d); if (!pp) return false; const p = pp.p; if (p.task) cancelTask(s, p, `被${d.name}叫去傳功`);
+  if (act === 'pass') { const pp = passPick(s, d); if (!pp) return false; passReserve(s); const p = pp.p; if (p.task) cancelTask(s, p, `被${d.name}叫去傳功`);
     d.task = { act, fac: 'hall', node: 'hall', phase: 'go', partner: p.id, art: pp.art, lead: true, resv: [`actor:${p.id}`] }; p.task = { act, fac: 'hall', node: 'hall', phase: 'go', partner: d.id, art: pp.art, resv: [`actor:${d.id}`] };
     reserve(s, d, `actor:${p.id}`); reserve(s, p, `actor:${d.id}`); goto(d, 'hall'); goto(p, 'hall'); d.reason = why; p.reason = `${d.name}要傳功`; return true; }
   if (act === 'chat' || act === 'spar' || act === 'encourage') {

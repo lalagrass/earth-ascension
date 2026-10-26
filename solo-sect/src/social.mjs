@@ -16,6 +16,6 @@ export function relAdd(s, a, b, amt) {
   s.rel[k] = (aff(s, a, b) + aff(s, b, a)) / 2;
   if (relStage(before) !== relStage(s.rel[k])) {
     log(s, `${a.name}與${b.name}成了「${relStage(s.rel[k])}」`);
-    if (s.rel[k] >= 90 && !s.families.includes(k)) { s.families.push(k); log(s, `${a.name}與${b.name}結為道侶，門中多了一個家。`); }
+    if (s.rel[k] >= 90 && !s.families.includes(k) && (!a.sweet || a.sweet === b.id) && (!b.sweet || b.sweet === a.id)) { s.families.push(k); a.sweet = b.id; b.sweet = a.id; log(s, `${a.name}與${b.name}結為道侶，認定了彼此是心上人。`); } // v1.8 心上人唯一
   }
 }

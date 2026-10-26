@@ -228,7 +228,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '1.5';
+export const RULES_VERSION = '1.8';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -378,13 +378,13 @@ export const EXP_STYLES = {
 export const STYLE_TRAIT = { honest: 2, stubborn: 2, diligent: 1, brave: 1, playful: -1, free: -1, lazy: -2, worrier: -1, rascal: -1, glib: -1 };
 export const EVADE = { lazyBonus: 10, tierPts: 10, chaseTime: 6 };
 Object.assign(TRAITS, { stubborn: { name: '較真', desc: '凡事做到底，逃掉的兔子也要追回來', mods: { train: 1.1, leisure: 0.85 } } });
-ARTS.push({ id: 'rulai', name: '如來神掌', school: 'palm', grade: 3, tags: ['剛'], req: [], techs: ['rulai'], tech: 'rulai', secret: true });
+ARTS.push({ id: 'rulai', name: '如來神掌', school: 'palm', grade: 3, tags: ['剛'], req: [], techs: ['rulai'], tech: 'rulai', secret: true, hint: '阿星開局：重傷瀕死時覺醒，封印的根骨解開而自悟' });
 MOVES.push({ id: 'rulai', skill: 'palm', name: '如來神掌', req: 999, range: 120, cd: 4.0, dmg: 24, aoe: 120, color: '#f2c14e' });
 export const AWAKEN = { gen: 5, li: 2, ding: 1, shen: 1 }; // 阿星覺醒：封印根骨解開（1→5 為 +4，其餘 +4，共 +8）
 
 // ---- v1.1 名俠奇遇：招牌武學（各三招；只能由本人或親傳取得） ----
-ARTS.push({ id: 'xianglong', name: '降龍十八掌', school: 'palm', grade: 3, tags: ['剛', '拙'], req: [], techs: ['jianlong', 'feilong', 'kanglong'], tech: 'jianlong', secret: true, classic: true, signature: 'hongqigong' });
-ARTS.push({ id: 'dagou', name: '打狗棒法', school: 'palm', grade: 3, tags: ['巧'], req: [], techs: ['banzi', 'chuozi', 'wugou'], tech: 'banzi', secret: true, classic: true, signature: 'hongqigong' });
+ARTS.push({ id: 'xianglong', name: '降龍十八掌', school: 'palm', grade: 3, tags: ['剛', '拙'], req: [], techs: ['jianlong', 'feilong', 'kanglong'], tech: 'jianlong', secret: true, hint: '洪七公上山後，每煮一頓合他胃口的飯傳一段（共三段），挑資質憨直的人當傳人', classic: true, signature: 'hongqigong' });
+ARTS.push({ id: 'dagou', name: '打狗棒法', school: 'palm', grade: 3, tags: ['巧'], req: [], techs: ['banzi', 'chuozi', 'wugou'], tech: 'banzi', secret: true, hint: '洪七公傳到降龍第二段起，會把打狗棒法傳給主角', classic: true, signature: 'hongqigong' });
 MOVES.push({ id: 'jianlong', skill: 'palm', name: '見龍在田', req: 0, range: 50, cd: 1.0, dmg: 14, aoe: 0, color: '#e8b33a', fx: 'dragon' });
 MOVES.push({ id: 'feilong', skill: 'palm', name: '飛龍在天', req: 0, range: 70, cd: 1.4, dmg: 20, aoe: 80, color: '#f0c040', fx: 'dragon' });
 MOVES.push({ id: 'kanglong', skill: 'palm', name: '亢龍有悔', req: 0, range: 90, cd: 1.6, dmg: 30, aoe: 100, color: '#ffd24a', fx: 'dragon' });
@@ -393,9 +393,9 @@ MOVES.push({ id: 'chuozi', skill: 'leg', name: '戳字訣', req: 0, range: 50, c
 MOVES.push({ id: 'wugou', skill: 'leg', name: '天下無狗', req: 0, range: 80, cd: 1.6, dmg: 26, aoe: 90, color: '#5fd38a', fx: 'staff' });
 
 // ---- v1.2 華山線：紫霞神功（九層）、辟邪劍法（捷徑）、獨孤九劍（九式，口傳不入秘笈） ----
-ARTS.push({ id: 'zixia', name: '紫霞神功', school: 'palm', grade: 3, tags: ['柔'], req: [], techs: [], secret: true, classic: true, layered: true });
-ARTS.push({ id: 'bixie', name: '辟邪劍法', school: 'palm', grade: 4, tags: ['快'], req: [], techs: ['bx1', 'bx2', 'bx3'], tech: 'bx1', secret: true, classic: true });
-ARTS.push({ id: 'dugu', name: '獨孤九劍', school: 'palm', grade: 4, tags: ['巧'], req: [], techs: [], secret: true, classic: true, forms: true });
+ARTS.push({ id: 'zixia', name: '紫霞神功', school: 'palm', grade: 3, tags: ['柔'], req: [], techs: [], secret: true, hint: '岳不群開局：開局即得第一層，之後在華山劇情中逐層修煉', classic: true, layered: true });
+ARTS.push({ id: 'bixie', name: '辟邪劍法', school: 'palm', grade: 4, tags: ['快'], req: [], techs: ['bx1', 'bx2', 'bx3'], tech: 'bx1', secret: true, hint: '岳不群開局：華山劇情中選擇練辟邪劍譜（自宮＋斷情）', classic: true });
+ARTS.push({ id: 'dugu', name: '獨孤九劍', school: 'palm', grade: 4, tags: ['巧'], req: [], techs: [], secret: true, hint: '華山劇情「思過崖的老人」：請教風清揚三晚，第四晚過招後得總訣；其餘各式要對該敵人有足夠觀破', classic: true, forms: true });
 MOVES.push({ id: 'bx1', skill: 'palm', name: '流星飛墮', req: 0, range: 60, cd: 0.45, dmg: 9, aoe: 0, color: '#c03060', fx: 'bixie' });
 MOVES.push({ id: 'bx2', skill: 'palm', name: '群邪辟易', req: 0, range: 60, cd: 0.6, dmg: 13, aoe: 60, color: '#d04070', fx: 'bixie' });
 MOVES.push({ id: 'bx3', skill: 'palm', name: '鍾馗抉目', req: 0, range: 70, cd: 0.7, dmg: 18, aoe: 0, color: '#e05080', fx: 'bixie' });
@@ -428,9 +428,9 @@ A13('jiuyang', '九陽神功', 'palm', 3, ['剛', '內'], [], { signature: 'zhan
 A13('qiankun', '乾坤大挪移', 'palm', 4, ['巧'], [['qk1', '借力打力', 1.2, 20, 40, '#e0a040']], { signature: 'zhangwuji' });
 A13('taiji', '太極拳', 'palm', 3, ['柔'], [['tj1', '攬雀尾', 1.0, 12, 0, '#d8d8d8'], ['tj2', '雲手', 1.2, 16, 60, '#c8c8c8']], { signature: 'zhangwuji' });
 A13('shihou', '獅子吼', 'palm', 3, ['剛'], [['sh1', '獅子吼', 2.0, 18, 140, '#f0d070']], { signature: 'baozupo' });
-A13('tantui', '十二路譚腿', 'leg', 2, ['剛'], [['tt1', '十二路譚腿', 0.8, 14, 0, '#a07040']]);
-A13('tiexian', '洪家鐵線拳', 'palm', 2, ['剛'], [['tx1', '鐵線拳', 1.0, 16, 0, '#808890']]);
-A13('bagua', '五郎八卦棍', 'leg', 2, ['剛'], [['bg1', '五郎八卦棍', 1.0, 15, 50, '#8a6a3a']]);
+A13('tantui', '十二路譚腿', 'leg', 2, ['剛'], [['tt1', '十二路譚腿', 0.8, 14, 0, '#a07040']], { hint: '深藏不露的雜工身懷此功：斧頭幫上山勒索時讓他出手才會現身' });
+A13('tiexian', '洪家鐵線拳', 'palm', 2, ['剛'], [['tx1', '鐵線拳', 1.0, 16, 0, '#808890']], { hint: '深藏不露的雜工身懷此功：斧頭幫上山勒索時讓他出手才會現身' });
+A13('bagua', '五郎八卦棍', 'leg', 2, ['剛'], [['bg1', '五郎八卦棍', 1.0, 15, 50, '#8a6a3a']], { hint: '深藏不露的雜工身懷此功：斧頭幫上山勒索時讓他出手才會現身' });
 A13('hama', '蛤蟆功', 'palm', 4, ['剛', '蓄'], [['hm1', '蛤蟆功', 2.2, 40, 60, '#6a8a3a']], { signature: 'huoyunxieshen' });
 export const JH = {
   comedyWeek: 2, comedyDays: 7, morningOpts: 3,

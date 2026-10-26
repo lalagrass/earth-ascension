@@ -12,7 +12,7 @@ import { JH, DAY as DAY13 } from './data.mjs';
 import { zxGate } from './huashan.mjs';
 import { HS, DUGU } from './data.mjs';
 import { XIA, xiaPool, pickStudent } from './wuxia.mjs';
-import { artsSvg, setFocus, focusOf, artById, artMul, artState, topTier, chooseVariant, variantOf, stuckAt, breakChance, rustOf, starCost, guizhenOk } from './arts.mjs';
+import { artsSvg, artHintsHtml, setFocus, focusOf, artById, artMul, artState, topTier, chooseVariant, variantOf, stuckAt, breakChance, rustOf, starCost, guizhenOk } from './arts.mjs';
 import { ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2 } from './data.mjs';
 import { startExpedition, recallExpedition, canExpedition, codexRows, reportText, segAt, ROUTE_END, skipGuide } from './sim.mjs';
 import { ROUTE, EXP, ENEMIES } from './data.mjs';
@@ -172,7 +172,7 @@ function panel() {
   { const ds = disciples(S), cur = ds.find((d) => d.id === window.__artsOf) || ds[0];
     if (cur) $('arts').innerHTML = `<select data-artsof>${ds.map((d) => `<option value="${d.id}" ${d.id === cur.id ? 'selected' : ''}>${d.name}</option>`).join('')}</select>
       <select data-focus="${cur.id}"><option value="">專修：自動（${artById(focusOf(cur) || 'basicFist').name}）</option>${Object.keys(cur.arts).map((id) => `<option value="${id}" ${cur.focus === id ? 'selected' : ''}>專修：${artById(id).name}</option>`).join('')}</select>
-      <div class="k">悟性 ${cur.rootKnown ? `${cur.wu ?? cur.root}（${ROOT.names[cur.wu ?? cur.root]}）` : '未明'}｜${ARTS.filter((a) => cur.arts[a.id]).map((a) => `${a.name}×${artMul(cur, a).toFixed(2)}`).join('・')}</div>${artsSvg(cur)}
+      <div class="k">悟性 ${cur.rootKnown ? `${cur.wu ?? cur.root}（${ROOT.names[cur.wu ?? cur.root]}）` : '未明'}｜${ARTS.filter((a) => cur.arts[a.id]).map((a) => `${a.name}×${artMul(cur, a).toFixed(2)}`).join('・')}</div>${artsSvg(cur)}${artHintsHtml(cur, (k) => XIA[k]?.name || k)}
       ${ARTS.filter((a) => cur.arts[a.id]).map((a) => { const r = cur.arts[a.id], st = stuckAt(cur, a, S.t), t = artState(cur, a).tier, va = variantOf(cur, a.id, S.t), rust = rustOf(r, S.t);
         return `<div class="k artrow">${a.name}・${TIERS[t][1]} ${r.xp.toFixed(1)}${r.guizhen ? `・歸真 ${'★'.repeat(Math.min(r.stars || 0, 10))}${(r.stars || 0) > 10 ? '+' + (r.stars - 10) : ''}（${(r.sxp || 0).toFixed(1)}/${starCost(r)}）` : ''}${st ? `・<b style="color:#2a5a9a">瓶頸${st === 3 ? '（可歸真）' : ''}，衝關成功率 ${Math.round(breakChance(cur) * 100)}%${cur.mood < BREAK.moodMin || cur.needs.energy < BREAK.energyMin ? '（心情或精力不足）' : ''}</b>` : (r.btCd || 0) > S.t ? `・衝關冷卻 ${Math.ceil(r.btCd - S.t)}s` : ''}${rust > 0.01 ? `・荒疏 −${Math.round(rust * 100)}%` : ''}
           ${t >= 2 ? `<select data-variant="${cur.id}|${a.id}"><option value="">大成變式：未選</option>${VARIANTS[a.school].map((v) => `<option value="${v.id}" ${r.variant === v.id ? 'selected' : ''}>${v.name}</option>`).join('')}</select>${r.variant && !va ? '（換路重練中）' : ''}` : ''}</div>`; }).join('')}
@@ -449,3 +449,6 @@ function bondsHtml(S) { const out = ['<h3 style="margin:6px 0 2px">師徒</h3>']
   const P = Object.keys(S.passed || {}); if (P.length) out.push(`<div class="k">已傳功 ${P.length} 次</div>`);
   out.push(`<div class="k" id="xia-style">名俠池畫風：${(XIA_STYLES[S.xiaStyle || 'all'] || XIA_STYLES.all).name}</div>`);
   return out.length > 2 || P.length ? out.join('') : out.join('') + '<div class="k">尚無師徒（內門與外門互有好感 30 才能收徒）</div>'; }
+// v1.8 畫像新舊開關（PB-15/16/18）
+import { bindPortraitSet } from './portrait-set.mjs';
+try { bindPortraitSet(document, localStorage, document.getElementById('pset')); } catch (e) { console.warn('portrait set', e); }

@@ -1,0 +1,30 @@
+{
+ "new": {
+  "n": 35,
+  "couples": 3.8,
+  "cMin": 1,
+  "cMax": 5,
+  "passPerDay": 0.85,
+  "passMax": "0.90",
+  "foodLowDays": 1.31,
+  "coin": 4687.29,
+  "best": 1675.4,
+  "yue1600": "5/5",
+  "guojing": "3:1600 7:1831 11:1430 17:1530 23:1600",
+  "ok": 35
+ },
+ "old": {
+  "n": 35,
+  "couples": 30.14,
+  "cMin": 5,
+  "cMax": 44,
+  "passPerDay": 0,
+  "passMax": "0.00",
+  "foodLowDays": 1.15,
+  "coin": 5071.06,
+  "best": 1649.97,
+  "yue1600": "5/5",
+  "guojing": "3:1631 7:1600 11:1430 17:1600 23:1581",
+  "ok": 35
+ }
+}

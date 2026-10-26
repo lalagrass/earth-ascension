@@ -14,7 +14,7 @@ for (const seed of seeds) for (const op of opens) {
   const r = { seed, opening: op, ok: true, snaps: [], foodLowTicks: 0, raids: 0, hurt: 0, deaths: 0, expStarts: 0 }; const seen = new Set(); let ids = new Set(s.ds.map((d) => d.id));
   const snap = () => r.snaps.push({ day: Math.round(s.t / DAY), coin: s.res.coin, food: s.res.food, pill: s.res.pill || 0, stages: Object.fromEntries(FACILITIES.map((f) => [f.id, s.fac[f.id]?.stage || 0])),
     built: FACILITIES.reduce((a, f) => a + (s.fac[f.id]?.stage || 0), 0), pop: Object.fromEntries(Object.entries(s.pop || {}).map(([k, v]) => [k, v.n])), eco: Object.fromEntries(Object.entries(s.eco || {}).map(([k, v]) => [k, v.n])),
-    raids: r.raids, hurt: Math.round(r.hurt), deaths: r.deaths, best: s.records?.sect || 0, endless: depth(s.records?.sect || 0), ds: s.ds.filter((d) => d.role !== 'laborer').length, couples: s.gen?.couples?.length || 0, rep: s.rep || 0 });
+    raids: r.raids, hurt: Math.round(r.hurt), deaths: r.deaths, best: s.records?.sect || 0, endless: depth(s.records?.sect || 0), ds: s.ds.filter((d) => d.role !== 'laborer').length, couples: s.gen?.couples?.length || 0, pass: Object.keys(s.passed || {}).length, rep: s.rep || 0 });
   try {
     for (let i = 0; s.t < D * DAY; i++) {
       const hp0 = new Map(s.ds.map((d) => [d.id, d.hp])); const d0 = Math.floor(s.t / DAY); tick(s);

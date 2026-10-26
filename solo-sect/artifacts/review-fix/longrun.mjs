@@ -26,7 +26,7 @@ for (const seed of seeds) for (const op of opens) {
       const bad = invariants(s); if (bad.length) { r.ok = false; r.violation = bad; break; }
     }
   } catch (e) { r.ok = false; r.violation = [String(e.stack || e)]; }
-  r.final = { res: { ...s.res }, ds: s.ds.filter((d) => d.role !== 'laborer').length, stages: Object.fromEntries(Object.entries(s.fac).map(([k, f]) => [k, f.stage])), best: s.records?.sect || 0, expN: s.expN || 0, rep: s.rep || 0, chapterDay: s.chapter?.done ? s.chapter.day : null, gen: s.gen?.n, kids: s.gen?.kids?.length || 0, couples: s.gen?.couples?.length || 0, ko: (s.log || []).filter((e) => /重傷|倒地|昏/.test(e.msg)).length, left: (s.log || []).filter((e) => /下山去了|逐出/.test(e.msg)).length, avgMood: +(s.ds.reduce((a, d) => a + d.mood, 0) / s.ds.length).toFixed(1) };
+  r.final = { res: { ...s.res }, ds: s.ds.filter((d) => d.role !== 'laborer').length, stages: Object.fromEntries(Object.entries(s.fac).map(([k, f]) => [k, f.stage])), best: s.records?.sect || 0, expN: s.expN || 0, rep: s.rep || 0, chapterDay: s.chapter?.done ? s.chapter.day : null, gen: s.gen?.n, kids: s.gen?.kids?.length || 0, couples: s.gen?.couples?.length || 0, pass: Object.keys(s.passed || {}).length, families: (s.families || []).length, ko: (s.log || []).filter((e) => /重傷|倒地|昏/.test(e.msg)).length, left: (s.log || []).filter((e) => /下山去了|逐出/.test(e.msg)).length, avgMood: +(s.ds.reduce((a, d) => a + d.mood, 0) / s.ds.length).toFixed(1) };
   r.t = s.t; r.days = +(s.t / DAY).toFixed(2); out.push(r); console.log(JSON.stringify({ seed, op, ok: r.ok, days: r.days, v: r.violation?.[0] }));
 }
 const f = process.env.OUT || new URL(`./longrun-results${process.env.TAG ? '-' + process.env.TAG : ''}.json`, import.meta.url);

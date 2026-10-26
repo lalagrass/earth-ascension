@@ -1,0 +1,30 @@
+{
+ "new": {
+  "n": 35,
+  "couples": 3.71,
+  "couplesMin": 1,
+  "couplesMax": 5,
+  "passPerDay": 0.74,
+  "passMax": 0.8,
+  "starve5": 0.26,
+  "coin": 1651.43,
+  "best": 1404.66,
+  "yue1600": "4/5",
+  "guojing": "3:1380 7:1480 11:1430 17:1530 23:1380",
+  "ok": 35
+ },
+ "old": {
+  "n": 35,
+  "couples": 14.8,
+  "couplesMin": 4,
+  "couplesMax": 24,
+  "passPerDay": 0,
+  "passMax": 0,
+  "starve5": 0.31,
+  "coin": 2107.31,
+  "best": 1416.14,
+  "yue1600": "4/5",
+  "guojing": "3:1600 7:1380 11:1430 17:805 23:1581",
+  "ok": 35
+ }
+}

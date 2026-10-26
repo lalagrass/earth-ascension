@@ -40,6 +40,7 @@ export const MIGRATIONS = [
   { to: '1.4', note: '第二代：成親、收養、師承、衣缽、宿慧、年齡', up(o) { o.gen ??= genInit(); for (const d of o.ds) d.age ??= d.adult ? 22 : 10; } },
   { to: '1.45', note: '返程驚獸、三級事件、弟子狀態三行', up(o) { for (const e of o.log || []) { e.tier ??= tierOf(e.msg); } if (o.exp && o.exp.phase === 'back' && !o.exp.ret) { o.exp.ret = { left: [], hits: [], staLost: 0, lost: null }; o.exp.backPos ??= o.exp.dist; } o.alert ??= null; } },
   { to: '1.5', note: '新模擬核心：統一預約表、工序、需求遲滯/厭倦、巡山召回、結構化狀態', up(o) { v150Up(o); } },
+  { to: '1.8', note: '成親：心上人唯一、喜事冷卻', up(o) { const by = (id) => o.ds.find((d) => d.id === id); for (const c of o.gen?.couples || []) { const [a, b] = c.map(by); if (a && b) { a.sweet = b.id; b.sweet = a.id; } } for (const k of o.families || []) { const [a, b] = k.split('|').map(by); if (a && b && !a.sweet && !b.sweet) { a.sweet = b.id; b.sweet = a.id; } } if (o.gen) o.gen.lastWed ??= o.t; } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

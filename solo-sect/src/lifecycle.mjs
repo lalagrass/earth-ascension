@@ -32,6 +32,7 @@ export function removeActor(s, d, why, { quiet = false } = {}) {
   for (const k of Object.keys(s.rel || {})) if (k.split('|').includes(d.id)) delete s.rel[k];
   s.families = (s.families || []).filter((k) => !k.split('|').includes(d.id));
   if (s.gen) s.gen.couples = s.gen.couples.filter((c) => !c.includes(d.id));
+  for (const o of s.ds) { if (o.sweet === d.id) o.sweet = null; if (o.spouse === d.id) o.spouse = null; } // v1.8 心上人／配偶離開後解鎖
   if (!quiet && why) log(s, `${d.name}${why}`);
   return true;
 }

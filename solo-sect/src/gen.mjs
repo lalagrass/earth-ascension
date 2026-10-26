@@ -16,10 +16,13 @@ export function removeDisciple(s, d, why) {
   return removeActor(s, d, why);
 }
 // ---- 成親：道侶＋雙向相容 ≥1 ----
-export function marriable(s, a, b) { return a.adult && b.adult && (s.rel[relKey(a.id, b.id)] || 0) >= 90 && compat(a, b) * compat(b, a) >= 1; }
+// v1.8（ROADMAP I-3，擁有人預設）：門派最多 cap 對、每 everyDays 日最多 1 對（第一場不早於第 everyDays 日）、好感 ≥rel、心上人互相鎖定、喜事花 cost 香火錢
+export const MARRY = { cap: 5, everyDays: 5, rel: 90, cost: 100 };
+export function marriable(s, a, b) { return a.adult && b.adult && !a.spouse && !b.spouse && a.sweet === b.id && b.sweet === a.id && (s.rel[relKey(a.id, b.id)] || 0) >= MARRY.rel && compat(a, b) * compat(b, a) >= 1; }
+export const weddingWhy = (s) => { const G = s.gen; if (G.couples.length >= MARRY.cap) return `門派已有 ${MARRY.cap} 對夫妻`; if (s.t - (G.lastWed ?? 0) < MARRY.everyDays * DAY) return `喜事每 ${MARRY.everyDays} 日最多一場`; if ((s.res.coin || 0) < MARRY.cost) return `辦喜事要 ${MARRY.cost} 香火錢`; return null; };
 function checkCouples(s) {
   const G = s.gen;
-  for (const k of s.families || []) { if (G.couples.some((c) => c.join('|') === k)) continue; const [a, b] = k.split('|').map((id) => s.ds.find((d) => d.id === id)); if (a && b && marriable(s, a, b)) { G.couples.push([a.id, b.id].sort()); a.spouse = b.id; b.spouse = a.id; log(s, `【成親】${a.name}與${b.name}在大廳拜堂，${s.sect?.name || '門派'}上下喝了一夜喜酒。`); } }
+  for (const k of s.families || []) { if (G.couples.some((c) => c.join('|') === k)) continue; const [a, b] = k.split('|').map((id) => s.ds.find((d) => d.id === id)); if (a && b && marriable(s, a, b) && !weddingWhy(s)) { resAdd(s, 'coin', -MARRY.cost); G.lastWed = s.t; G.couples.push([a.id, b.id].sort()); a.spouse = b.id; b.spouse = a.id; log(s, `【成親】${a.name}與${b.name}在大廳拜堂（喜事花了 ${MARRY.cost} 香火錢），${s.sect?.name || '門派'}上下喝了一夜喜酒。`); } }
 }
 // ---- 收養：承襲養父母傾向（性格各取一、價值觀平均之半、悟性根骨部分承襲） ----
 export function adopt(s, pa, pb, rnd = Math.random) {

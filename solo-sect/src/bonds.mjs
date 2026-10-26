@@ -32,15 +32,20 @@ export const srcOf = (k) => XIA_SRC[k] || 'jin';
 export const styleOk = (s, k) => (XIA_STYLES[s.xiaStyle || 'all'] || XIA_STYLES.all).src.includes(srcOf(k));
 
 // ---- 傳功（ROADMAP §G）：圓滿以上帶人練同一門，對方熟練 +15，每門每對一次，好感 +6 ----
-export const PASS = { minTier: 3, gain: 15, apprBonus: 5, aff: 6, dur: 20, base: 80, why: '傳功' };
+// v1.8 降頻（ROADMAP I-4）：基礎分 80→60；同一對 pairDays 日內不再傳；門派當日每傳一次，下一次分數 ×sat（飽和衰減）
+export const PASS = { minTier: 3, gain: 15, apprBonus: 5, aff: 6, dur: 20, base: 60, pairDays: 2, sat: 0.3, perDay: 2, why: '傳功' };
+export const passToday = (s) => (s.passN?.day === s.day ? s.passN.n : 0);
+export const passScore = (s) => (passToday(s) >= PASS.perDay ? 0 : PASS.base * PASS.sat ** passToday(s));
+const pairRecent = (s, a, b) => Object.entries(s.passed || {}).some(([k, day]) => k.startsWith(`${a}>${b}:`) && s.day - day < PASS.pairDays);
 const able = (d) => d && d.role !== 'laborer' && !d.away && d.adult !== false;
 export function passPick(s, d) {
-  if (!able(d) || (d.passDay === s.day)) return null; const P = s.passed || {};
+  if (!able(d) || (d.passDay === s.day) || passToday(s) >= PASS.perDay) return null; /* v1.8：門派每日傳功上限 */ const P = s.passed || {};
   const arts = ARTS.filter((a) => !a.secret && !a.classic && artTier(d, a.id) >= PASS.minTier); /* 名俠絕學走各自劇情，不走一般傳功 */ if (!arts.length) return null;
   const cands = s.ds.filter((p) => p !== d && able(p) && !p.task?.partner && p.task?.act !== 'meditate').sort((x, y) => (y.master === d.id) - (x.master === d.id) || aff(s, d, y) - aff(s, d, x));
-  for (const p of cands) for (const a of arts) if (artTier(p, a.id) < PASS.minTier && !P[`${d.id}>${p.id}:${a.id}`]) return { p, art: a.id };
+  for (const p of cands) if (!pairRecent(s, d.id, p.id)) for (const a of arts) if (artTier(p, a.id) < PASS.minTier && !P[`${d.id}>${p.id}:${a.id}`]) return { p, art: a.id };
   return null;
 }
+export const passReserve = (s) => { s.passN = { day: s.day, n: passToday(s) + 1 }; }; // 開始傳功即佔當日名額（多人同時起手不會超量）
 export function passDo(s, d, p, art) { 
   const key = `${d.id}>${p.id}:${art}`; (s.passed ??= {}); if (s.passed[key]) return false; s.passed[key] = s.day; d.passDay = s.day;
   const a = learnArt(p, art, s.t), r = p.arts[art], g = PASS.gain + (p.master === d.id ? PASS.apprBonus : 0); r.xp = Math.min(curCap(p, a), r.xp + g); r.last = s.t;
