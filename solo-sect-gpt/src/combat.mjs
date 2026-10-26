@@ -107,7 +107,7 @@ export function sessionsTick(w){
  for(const p of people)if(p.sparUntil&&(w.tick>=p.sparUntil||p.trainingDefeated||w.people[p.sparPartner]?.trainingDefeated)){
   const o=w.people[p.sparPartner];p.sparHistory??=[];p.sparHistory.push({tick:w.tick,duration:w.tick-p.sparStarted,hits:w.journal.filter(e=>e.type==='hit'&&e.tick>=p.sparStarted&&e.actors.includes(p.id)).length});p.combatSession=null;p.combatTarget=null;p.sparUntil=null;p.assessment=false;if(p.action){p.action.phase='recover';p.action.remaining=p.action.recover;}p.trainingDefeated=false;p.manualStop=false;memory(w,'teach',p,o,'spar');event(w,'spar-end',[p.id,o.id]);
  }
- const d=w.drill;if(!d||d.status==='completed'||d.status==='cancelled')return;
+ const d=w.drill;if(!d||d.status==='completed'||d.status==='cancelled'||d.status==='assembling')return;
  if(d.witnessId&&d.wave===0){const observer=w.people[d.witnessId],at=d.witnessPoint;if(!observer||!arrived(observer)||Math.hypot(observer.x/Q-at[0],observer.y/Q-at[1])>2){d.nextWave=null;return;}}
  if(d.status==='exiting'){if(d.allOpponents.every(id=>arrived(w.people[id]))){d.status='completed';for(const id of d.allOpponents){const p=w.people[id];p.hp=p.maxHp;p.combatSession=null;p.combatTarget=null;p.action=null;}event(w,'drill-complete',d.actors,{config:d.config,session:d.id,leaked:d.leaked||0});}return;}
  for(const id of d.opponents){const p=w.people[id];if(!p.trainingDefeated&&p.x/Q<1300){p.trainingDefeated=true;p.drillLeaked=true;p.combatTarget=null;p.action=null;route(w,p,p.prep);d.leaked=(d.leaked||0)+1;event(w,'drill-leaked',[id],{session:d.id});}}
@@ -120,9 +120,11 @@ export function sessionsTick(w){
    p.hp=40;p.energy=10000;p.injury=0;p.skill={punch:{U:5,F:0,I:0,contexts:[],practice:0,sources:[]}};p.observation={};p.combatSession=d.id;p.team='opponents';p.trainingDefeated=false;p.drillLeaked=false;p.combatTarget=null;p.manualStop=true;p.action=null;p.path=[];p.routeAt=0;d.opponents.push(id);d.allOpponents.push(id);event(w,'training-enter',[id],{session:d.id,wave:d.wave});
   }
  }
- for(const id of d.actors){const p=w.people[id];if(!p.trainingDefeated&&(!p.combatTarget||w.people[p.combatTarget]?.trainingDefeated||!d.opponents.includes(p.combatTarget)))p.combatTarget=d.opponents.find(id=>!w.people[id].trainingDefeated);}
- for(const id of d.opponents){const p=w.people[id];if(!p.trainingDefeated)p.combatTarget=d.actors.find(id=>!w.people[id].trainingDefeated);}
- if(d.actors.every(id=>w.people[id].trainingDefeated)){d.status='cancelled';event(w,'drill-failed',d.actors,{reason:'全員已退出'});for(const id of d.actors){const p=w.people[id];p.combatSession=null;p.combatTarget=null;p.action=null;p.manualStop=false;}}
+ // Only people still in this session; someone who left and later sparred elsewhere is no longer managed here.
+ const inSession=id=>{const p=w.people[id];return p.combatSession===d.id&&!p.trainingDefeated;};
+ for(const id of d.actors){const p=w.people[id];if(inSession(id)&&(!p.combatTarget||w.people[p.combatTarget]?.trainingDefeated||!d.opponents.includes(p.combatTarget)))p.combatTarget=d.opponents.find(id=>!w.people[id].trainingDefeated);}
+ for(const id of d.opponents){const p=w.people[id];if(!p.trainingDefeated)p.combatTarget=d.actors.find(inSession);}
+ if(!d.actors.some(inSession)){d.status='cancelled';event(w,'drill-failed',d.actors,{reason:'全員已退出'});for(const id of d.actors){const p=w.people[id];p.combatSession=null;p.combatTarget=null;p.action=null;p.manualStop=false;}}
 }
 export function startDrill(w,actors,config='A'){
  if(w.drill&&!['completed','cancelled'].includes(w.drill.status))return {ok:false,reason:'演武仍在進行'};

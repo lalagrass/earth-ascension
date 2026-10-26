@@ -16,7 +16,7 @@ import {story,storyActivityTick,storiesTick,found} from './stories.mjs';
 import {discover} from './view.mjs';
 import {ownershipGate,commitmentOf} from './commitment.mjs';
 import {adoptOps,opsTick} from './economy.mjs';
-import {adoptJoint,startJoint,jointTick} from './joint-drill.mjs';
+import {adoptJoint,goJoint,startJoint,jointTick} from './joint-drill.mjs';
 import {adoptMentor,propose,respond,activeBond,eventStatus,mentorTick,MENTOR_EVENTS,proposeDirection,respondDirection,cancelDirection} from './mentor.mjs';
 import {beginError} from './activities.mjs';
 export {createWorld,invariants};
@@ -45,8 +45,9 @@ export function command(w,c){
  else if(c.type==='lifePolicy'){try{const policy=structuredClone(c.policy||DEFAULT_LIFE_POLICY);validateLifePolicy(policy,w.inventories.vat.capacity);w.lifePolicy=policy;w.rulesVersion=rulesFor(w);event(w,'life-policy-adopted',[],{version:policy.version});}catch(e){result={ok:false,reason:e.message};}}
  else if(c.type==='adoptOps')result=adoptOps(w);
  else if(c.type==='adoptMentor')result=adoptMentor(w);
- else if(c.type==='adoptJoint')result=adoptJoint(w);
- else if(c.type==='jointDrill')result=startJoint(w,c.actors,c.config,c.roles);
+ else if(c.type==='adoptJoint')result=adoptJoint(w,c.version);
+ else if(c.type==='jointDrill')result=startJoint(w,c.actors,c.config,c.roles,c.arrival);
+ else if(c.type==='jointDrillGo')result=goJoint(w);
  else if(c.type==='mentorPropose')result=propose(w,p,w.people[c.target],c.promise);
  else if(c.type==='mentorRespond')result=respond(w,p,c.accept===true);
  else if(c.type==='mentorDirection')result=proposeDirection(w,p,c.kind,c.art);
