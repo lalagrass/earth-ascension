@@ -28,7 +28,8 @@ export function createOfficialFacilityAdapter({ getModel, places }) {
           entrance: f('entrance', entry ? { x: entry[0], y: entry[1] } : null, `${root}${b.path}`, '場景單位'),
           hit: { x: pl.x, y: pl.y - pl.ry * .6, rx: pl.rx, ry: pl.ry * 1.6 } },
         stage: unsupported('stage'),
-        stock: store ? { amount: f('stock.amount', v[store[0]], `${src}.${store[0]}`, store[3]), capacity: f('stock.capacity', v[store[1]], `${src}.${store[1]}`, store[3]), reserved: f('stock.reserved', v[store[2]], `${src}.${store[2]}`, `在途${store[3]}`) } : null,
+        // Historical stock.reserved held incoming delivery admission, NOT consumption.
+        stock: store ? { amount: f('stock.amount', v[store[0]], `${src}.${store[0]}`, store[3]), capacity: f('stock.capacity', v[store[1]], `${src}.${store[1]}`, store[3]), incoming: f('stock.incoming', v[store[2]], `${src}.${store[2]}`, store[3]) } : null,
         users: f('users', users, `${src}.people:原地工作階段`),
         actorStatus: f('actor.status', { current: v.people[actorId]?.status, reason: v.people[actorId]?.why, next: v.people[actorId]?.next }, `${src}.people.${actorId}.{status,why,next}`),
         activities: options.filter(a => b.commands.includes(a.id) && !a.hidden).map(a => ({ ...a, source: `${root}model.mjs:actions(${actorId}).${a.id}`, reason: f('activity.reason', a.enabled ? a.detail : a.reason, `${root}model.mjs:actions(${actorId}).${a.id}`) })),

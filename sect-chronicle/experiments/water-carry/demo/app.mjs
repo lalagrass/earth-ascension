@@ -17,6 +17,8 @@ import { martialHtml } from '../../../martial-view/render.mjs';
 import { createOfficialEventAdapter } from '../../../event-view/adapters.mjs';
 import { createRecentEvents } from '../../../event-view/contract.mjs';
 import { recentHtml } from '../../../event-view/render.mjs';
+import { officialResources } from '../../../resource-view/official.mjs';
+import { resourcesHtml } from '../../../resource-view/render.mjs';
 import { resolveMotion, SHOULDER } from '../../../martial-view/motion.mjs';
 import { identityHtml, actionHtml, fieldsHtml } from '../../../character-card/render.mjs';
 import { saveTo, loadFrom } from './life-save.mjs';
@@ -604,6 +606,17 @@ window.addEventListener('resize', () => { applyCam(); measure(); });
 $('play').addEventListener('click', togglePlay);
 for (const b of document.querySelectorAll('[data-speed]')) b.addEventListener('click', () => setSpeed(Number(b.dataset.speed)));
 $('roster-toggle').addEventListener('click', toggleRoster);
+$('resource-toggle').addEventListener('click', () => {
+  $('resources').hidden = !$('resources').hidden;
+  $('resource-toggle').setAttribute('aria-expanded', String(!$('resources').hidden));
+  renderChrome();
+});
+$('resources').addEventListener('click', e => {
+  const b = e.target.closest('[data-resource-link]');
+  if (!b || b.disabled) return;
+  if (b.dataset.resourceKind === 'facility') openMenu(b.dataset.resourceLink);
+  else if (b.dataset.resourceKind === 'view') { select(selectedPerson()); ui.tab = 'life'; look(b.dataset.resourceLink); }
+});
 $('shadow-toggle').addEventListener('click', toggleShadow);
 $('follow-toggle').addEventListener('click', () => { ui.follow = !ui.follow; applyCam(); renderChrome(); });
 $('reset').addEventListener('click', reset);
@@ -934,6 +947,7 @@ function renderChrome() {
   $('clock').textContent = fmt(v.seconds);
   $('vat').textContent = `水缸 ${v.vat}／${v.vatCapacity} · 在途 ${v.inFlight}`;
   $('herbs').textContent = `藥架 ${v.herbs}／${v.herbCapacity} · 在途 ${v.herbInFlight}`;
+  if (!$('resources').hidden) put('resources', $('resources'), resourcesHtml(officialResources(model,id), { interactive:true }));
   $('leg').textContent = `${profile.label} Lv ${person.level}`;
   $('trips').textContent = `共完成 ${IDS.reduce((n, who) => n + v.people[who].trips, 0)} 趟`;
   $('follow-toggle').classList.toggle('on', ui.follow);
@@ -1254,6 +1268,7 @@ window.demo = {
       heroScreen: people.hero.screen,
       vatScreen: toScreen(scene.places.vat.x, scene.places.vat.y - 20), springScreen: toScreen(places.spring.x, places.spring.y - 10),
       facilities: facilityAdapter.snapshot(selectedPerson()),
+      resources: officialResources(model,selectedPerson()),
       recentEvents: recentEvents.list({ actorId: selectedPerson(), category: ui.eventCategory }), eventCacheSize: recentEvents.size, eventCategory: ui.eventCategory,
       sceneSource: sceneSnapshot.source, sceneEvents: sceneSnapshot.events, sceneActors: sceneSnapshot.actors,
       sceneOcclusion: { bridgeFrontDepth: wc.front.zIndex, fadedProps: wc.props.filter((q) => q.s.alpha < 1).map((q) => ({ id: q.p.id, x: q.p.x, y: q.p.y, alpha: q.s.alpha })) },

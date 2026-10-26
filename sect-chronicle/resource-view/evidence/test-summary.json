@@ -1,0 +1,43 @@
+{
+  "base": "2937dd017f8b5e6dea0a05e1ae120bd25499dc15",
+  "host": "bd5f96b62f8a",
+  "authorTask": "/root/asset348_author",
+  "testCommands": {
+    "targeted": "node --test --test-isolation=none sect-chronicle/resource-view/checks/resources.test.mjs sect-chronicle/facility-view/checks/facility.test.mjs",
+    "gameFast": "node --test sect-chronicle/test/*.test.js",
+    "root": "python3 -m unittest discover -s tests -v"
+  },
+  "tests": {
+    "targeted": {
+      "passed": 10,
+      "failed": 0,
+      "logSha256": "7f7ebe6e6687beeda7c28a0219a885d99df6fa968b9fe44d56a2d9e853dff137"
+    },
+    "gameFast": {
+      "passed": 431,
+      "failed": 0,
+      "logSha256": "60a50e3a8cd829cf461da247b9a548d53857d3d53a7a022a3726f40a8221ca7a"
+    },
+    "root": {
+      "passed": 53,
+      "failed": 0,
+      "logSha256": "788657ffeb4df22bc6c1d0a51e64c37fc8b5b0e7dab962efb57c3a248c2b743f"
+    }
+  },
+  "desktop": {
+    "checks": 15,
+    "errors": 0,
+    "cleanup": {
+      "pageClosed": true,
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverStopped": true,
+      "viewport": "owned viewport restored then context closed"
+    }
+  },
+  "notes": [
+    "Core/source snapshot bytes are unchanged.",
+    "Desktop checkpoint is base plus the working implementation; implementation-hashes.json fingerprints the runtime files exercised.",
+    "No long acceptance matrix, mobile, new save/schema or original author branch update."
+  ]
+}

@@ -1,0 +1,443 @@
+{
+  "checkpoint": "2937dd017f8b5e6dea0a05e1ae120bd25499dc15",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "checks": [
+    "single official player entry",
+    "known zero herb remains listed with original unit and source link",
+    "opening resources and paused inspection do not mutate world",
+    "water link opens existing facility with corrected incoming wording",
+    "water incoming reads native inFlight without entering stock",
+    "herb incoming is separate from true consumption reservation",
+    "resource expansion remains stable while original world plays",
+    "resource summary focus survives live refresh",
+    "original water/herb long routes actually deliver into original stores",
+    "original tea seat reserves water/herb once at brew",
+    "original tea available matches held consumption and never subtracts incoming again",
+    "native cancellation releases holds without spending stored resources",
+    "wood resource link uses existing dorm camera and original person operations",
+    "second fixed real GPT core harvests and returns to original warehouse",
+    "same renderer preserves second-core native count and missing incoming capability"
+  ],
+  "errors": [],
+  "screenshots": [
+    "official-resource-delivery.jpg",
+    "official-resource-tea-held.jpg",
+    "gpt-resource-source.jpg"
+  ],
+  "browser": "154.0.8037.57",
+  "delivered": {
+    "tick": 4987,
+    "water": {
+      "amount": {
+        "semanticId": "resource.amount",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.vat",
+        "unit": "擔",
+        "availability": "known",
+        "value": 4
+      },
+      "capacity": {
+        "semanticId": "resource.capacity",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.vatCapacity",
+        "unit": "擔",
+        "availability": "known",
+        "value": 8
+      },
+      "incoming": {
+        "semanticId": "resource.incoming",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.inFlight",
+        "unit": "擔",
+        "availability": "known",
+        "value": 0
+      },
+      "reserved": {
+        "semanticId": "resource.reserved",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/tea.mjs:view.resv.water",
+        "unit": "擔",
+        "availability": "known",
+        "value": 0
+      },
+      "available": {
+        "semanticId": "resource.available",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.teaAvail.water ← tea.mjs:avail",
+        "unit": "擔",
+        "availability": "known",
+        "value": 4
+      }
+    },
+    "herb": {
+      "amount": {
+        "semanticId": "resource.amount",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.herbs",
+        "unit": "份",
+        "availability": "known",
+        "value": 3
+      },
+      "capacity": {
+        "semanticId": "resource.capacity",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.herbCapacity",
+        "unit": "份",
+        "availability": "known",
+        "value": 8
+      },
+      "incoming": {
+        "semanticId": "resource.incoming",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.herbInFlight",
+        "unit": "份",
+        "availability": "known",
+        "value": 0
+      },
+      "reserved": {
+        "semanticId": "resource.reserved",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/tea.mjs:view.resv.herb",
+        "unit": "份",
+        "availability": "known",
+        "value": 0
+      },
+      "available": {
+        "semanticId": "resource.available",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.teaAvail.herb ← tea.mjs:avail",
+        "unit": "份",
+        "availability": "known",
+        "value": 3
+      }
+    }
+  },
+  "brew": {
+    "tick": 5899,
+    "water": {
+      "amount": {
+        "semanticId": "resource.amount",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.vat",
+        "unit": "擔",
+        "availability": "known",
+        "value": 4
+      },
+      "capacity": {
+        "semanticId": "resource.capacity",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.vatCapacity",
+        "unit": "擔",
+        "availability": "known",
+        "value": 8
+      },
+      "incoming": {
+        "semanticId": "resource.incoming",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.inFlight",
+        "unit": "擔",
+        "availability": "known",
+        "value": 0
+      },
+      "reserved": {
+        "semanticId": "resource.reserved",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/tea.mjs:view.resv.water",
+        "unit": "擔",
+        "availability": "known",
+        "value": 1
+      },
+      "available": {
+        "semanticId": "resource.available",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.teaAvail.water ← tea.mjs:avail",
+        "unit": "擔",
+        "availability": "known",
+        "value": 3
+      }
+    },
+    "herb": {
+      "amount": {
+        "semanticId": "resource.amount",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.herbs",
+        "unit": "份",
+        "availability": "known",
+        "value": 3
+      },
+      "capacity": {
+        "semanticId": "resource.capacity",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.herbCapacity",
+        "unit": "份",
+        "availability": "known",
+        "value": 8
+      },
+      "incoming": {
+        "semanticId": "resource.incoming",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.herbInFlight",
+        "unit": "份",
+        "availability": "known",
+        "value": 1
+      },
+      "reserved": {
+        "semanticId": "resource.reserved",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/tea.mjs:view.resv.herb",
+        "unit": "份",
+        "availability": "known",
+        "value": 1
+      },
+      "available": {
+        "semanticId": "resource.available",
+        "layer": "base",
+        "source": "official:2937dd017f8b5e6dea0a05e1ae120bd25499dc15:sect-chronicle/experiments/water-carry/demo/model.mjs:view.teaAvail.herb ← tea.mjs:avail",
+        "unit": "份",
+        "availability": "known",
+        "value": 2
+      }
+    }
+  },
+  "gpt": {
+    "tick": 1600,
+    "resources": [
+      {
+        "version": 1,
+        "id": "gpt:resource:water",
+        "namespace": "gpt",
+        "sha": "6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc",
+        "nativeId": "water",
+        "label": "水",
+        "unit": "原生計數（未標量綱）",
+        "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:world.inventories.vat",
+        "availability": "known",
+        "fields": {
+          "amount": {
+            "semanticId": "resource.amount",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:qty(world,vat,water)",
+            "unit": "原生計數（未標量綱）",
+            "availability": "known",
+            "value": 3
+          },
+          "capacity": {
+            "semanticId": "resource.capacity",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:world.inventories.vat.capacity",
+            "unit": "原生計數（未標量綱）",
+            "availability": "known",
+            "value": 8
+          },
+          "incoming": {
+            "semanticId": "resource.incoming",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/activities.mjs:gatherTick / state.mjs:dest reservations",
+            "unit": "原生計數（未標量綱）",
+            "availability": "unsupported"
+          },
+          "reserved": {
+            "semanticId": "resource.reserved",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:world.reservations[key=source:vat:water].n (exact sum)",
+            "unit": "原生計數（未標量綱）",
+            "availability": "known",
+            "value": 0
+          },
+          "available": {
+            "semanticId": "resource.available",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:availableQty(world,vat,water)",
+            "unit": "原生計數（未標量綱）",
+            "availability": "known",
+            "value": 3
+          }
+        },
+        "uses": {
+          "semanticId": "resource.uses",
+          "layer": "base",
+          "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/data.mjs:RECIPES.input",
+          "unit": "",
+          "availability": "known",
+          "value": [
+            "原配方 meal：水 1（原生計數）",
+            "原配方 ration：水 1（原生計數）",
+            "原配方 tea：水 1（原生計數）"
+          ]
+        },
+        "links": [
+          {
+            "kind": "native",
+            "id": "kitchen",
+            "label": "原廚房水缸"
+          }
+        ],
+        "commands": [],
+        "notes": [
+          "原 capacity 是本核心每品項容量，沒有換算成正式版擔／份／捆。",
+          "incoming無同口徑公開查詢：dest預約只是容量，並不證明貨已在路上，不能當incoming。",
+          "availableQty是原同tick供料查詢，未宣稱已扣所有source預約；原值與耗用預約分列，公版不猜淨額。"
+        ]
+      },
+      {
+        "version": 1,
+        "id": "gpt:resource:herb",
+        "namespace": "gpt",
+        "sha": "6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc",
+        "nativeId": "herb",
+        "label": "藥草",
+        "unit": "原生計數（未標量綱）",
+        "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:world.inventories.store",
+        "availability": "known",
+        "fields": {
+          "amount": {
+            "semanticId": "resource.amount",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:qty(world,store,herb)",
+            "unit": "原生計數（未標量綱）",
+            "availability": "known",
+            "value": 6
+          },
+          "capacity": {
+            "semanticId": "resource.capacity",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:world.inventories.store.capacity",
+            "unit": "原生計數（未標量綱）",
+            "availability": "known",
+            "value": 24
+          },
+          "incoming": {
+            "semanticId": "resource.incoming",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/activities.mjs:gatherTick / state.mjs:dest reservations",
+            "unit": "原生計數（未標量綱）",
+            "availability": "unsupported"
+          },
+          "reserved": {
+            "semanticId": "resource.reserved",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:world.reservations[key=source:store:herb].n (exact sum)",
+            "unit": "原生計數（未標量綱）",
+            "availability": "known",
+            "value": 0
+          },
+          "available": {
+            "semanticId": "resource.available",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:availableQty(world,store,herb)",
+            "unit": "原生計數（未標量綱）",
+            "availability": "known",
+            "value": 6
+          }
+        },
+        "uses": {
+          "semanticId": "resource.uses",
+          "layer": "base",
+          "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/data.mjs:RECIPES.input",
+          "unit": "",
+          "availability": "known",
+          "value": [
+            "原配方 tea：藥草 1（原生計數）"
+          ]
+        },
+        "links": [
+          {
+            "kind": "native",
+            "id": "store",
+            "label": "原庫房"
+          }
+        ],
+        "commands": [],
+        "notes": [
+          "原 capacity 是本核心每品項容量，沒有換算成正式版擔／份／捆。",
+          "incoming無同口徑公開查詢：dest預約只是容量，並不證明貨已在路上，不能當incoming。",
+          "availableQty是原同tick供料查詢，未宣稱已扣所有source預約；原值與耗用預約分列，公版不猜淨額。"
+        ]
+      },
+      {
+        "version": 1,
+        "id": "gpt:resource:wood",
+        "namespace": "gpt",
+        "sha": "6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc",
+        "nativeId": "wood",
+        "label": "木",
+        "unit": "原生計數（未標量綱）",
+        "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:world.inventories.store",
+        "availability": "known",
+        "fields": {
+          "amount": {
+            "semanticId": "resource.amount",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:qty(world,store,wood)",
+            "unit": "原生計數（未標量綱）",
+            "availability": "known",
+            "value": 0
+          },
+          "capacity": {
+            "semanticId": "resource.capacity",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:world.inventories.store.capacity",
+            "unit": "原生計數（未標量綱）",
+            "availability": "known",
+            "value": 24
+          },
+          "incoming": {
+            "semanticId": "resource.incoming",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/activities.mjs:gatherTick / state.mjs:dest reservations",
+            "unit": "原生計數（未標量綱）",
+            "availability": "unsupported"
+          },
+          "reserved": {
+            "semanticId": "resource.reserved",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:world.reservations[key=source:store:wood].n (exact sum)",
+            "unit": "原生計數（未標量綱）",
+            "availability": "known",
+            "value": 0
+          },
+          "available": {
+            "semanticId": "resource.available",
+            "layer": "base",
+            "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/state.mjs:availableQty(world,store,wood)",
+            "unit": "原生計數（未標量綱）",
+            "availability": "known",
+            "value": 0
+          }
+        },
+        "uses": {
+          "semanticId": "resource.uses",
+          "layer": "base",
+          "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc:solo-sect-gpt/src/data.mjs:RECIPES.input",
+          "unit": "",
+          "availability": "unsupported"
+        },
+        "links": [
+          {
+            "kind": "native",
+            "id": "store",
+            "label": "原庫房"
+          }
+        ],
+        "commands": [],
+        "notes": [
+          "原 capacity 是本核心每品項容量，沒有換算成正式版擔／份／捆。",
+          "incoming無同口徑公開查詢：dest預約只是容量，並不證明貨已在路上，不能當incoming。",
+          "availableQty是原同tick供料查詢，未宣稱已扣所有source預約；原值與耗用預約分列，公版不猜淨額。"
+        ]
+      }
+    ],
+    "delivered": 1
+  },
+  "passed": true,
+  "cleanup": {
+    "pageClosed": true,
+    "contextClosed": true,
+    "browserClosed": true,
+    "serverStopped": true,
+    "viewport": "owned viewport restored then context closed"
+  }
+}

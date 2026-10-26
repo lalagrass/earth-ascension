@@ -25,8 +25,8 @@
 
 | 包 | 狀態／範圍 | 下一條件 |
 |---|---|---|
-| #357 PUBLIC-FIX-01 | Codex Cloud task /root/martial350_author、claim6415190543；本PR候選交GPT原可見性／scene事件遮罩、茶真活動來源、每人物details／焦點保留 | 非作者review／dev／postCI後才done |
-| #358 RESOURCE-VIEW-01 | 已批准未開：原水／藥／有可靠view的木，實存／在途／耗用預約／可用／容量和用途原單位分清，第二真核心薄證明 | #357 dev＋postCI後獨立認領，不預占 |
+| #357 PUBLIC-FIX-01 | PR360已合dev2937dd017f8b5e6dea0a05e1ae120bd25499dc15，push postCI40319800609五success；GPT原可見性／scene事件遮罩、茶真活動來源、每人物details／焦點保留 | 已接受，沿原證據復用 |
+| #358 RESOURCE-VIEW-01 | 本PR作者候選：原水／藥／木五欄逐項來源，修正facility incoming誤名、真茶resv/avail、第二固定GPT原計數與缺項、Grok能力盤點。見[工作包](RESOURCE_PUBLIC_HANDOFF.md)／[prompt](RESOURCE_PUBLIC_AUTHOR_PROMPT.md) | grass非作者review／dev／postCI後才done，不解鎖#359 |
 | #359 INTENT-VIEW-01 | 已批准未開：目前工作／原生待改派／停工／自主許可與合法命令／真原因，第二真核心原差異 | #358 dev＋postCI後獨立認領；完成後休息 |
 
 再後的RelationView、建造／床位、人格／天賦效果、完整圖庫與小地圖／編輯器仍候選，原#337作者邊界保持。採#356既有開源設計參考、沿Pixi＋DOM薄投影，不搬第三方引擎或原作資產。手機／新增保存升版仍最後，Mac只真人；各包復用未變證據，不新建永久循環或排程。

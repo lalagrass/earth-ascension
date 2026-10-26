@@ -2,7 +2,7 @@
 
 ## 2026-10-26 公版後續有限序列 #356 已批准
 
-前序#346全部已交，最後#351／PR355合dev ef823ac277f48d9426cc3806f74468126a9cf91d、postCI40312921799五success。擁有人已批准[#356](https://github.com/lalagrass/earth-ascension/issues/356) **#357補修→#358資源總覽→#359工作／自主設定呈現**；一包dev＋postCI才派下一包，全部完成後休息。工作包／作者prompt隨工程交，見[PUBLIC_M2_HANDOFF](PUBLIC_M2_HANDOFF.md)／[提示詞](PUBLIC_M2_AUTHOR_PROMPT.md)與[路線](SHARED_PUBLIC_ROADMAP.md)。本PR只交#357候選，不把未合三包寫done或預占後包。
+前序#346全部已交，最後#351／PR355合dev ef823ac277f48d9426cc3806f74468126a9cf91d、postCI40312921799五success。擁有人已批准[#356](https://github.com/lalagrass/earth-ascension/issues/356) **#357補修→#358資源總覽→#359工作／自主設定呈現**；一包dev＋postCI才派下一包，全部完成後休息。工作包／作者prompt隨工程交，見[PUBLIC_M2_HANDOFF](PUBLIC_M2_HANDOFF.md)／[提示詞](PUBLIC_M2_AUTHOR_PROMPT.md)與[路線](SHARED_PUBLIC_ROADMAP.md)。PR360／#357已合dev2937dd017f8b5e6dea0a05e1ae120bd25499dc15、postCI40319800609五success。當前#358資源總覽作者候選見[RESOURCE_PUBLIC_HANDOFF](RESOURCE_PUBLIC_HANDOFF.md)，只讀原水／藥／可靠木view，另有固定GPT真來源與Grok缺項盤點；尚待非作者review/dev/postCI，不預占#359，不授完整物流#160。
 
 | 既有母題 | 本輪有限提取 | 仍候選／排除 |
 |---|---|---|
