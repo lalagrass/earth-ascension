@@ -1,0 +1,21 @@
+{
+  "base": "0e891274b211bb8f9b97f80f1070670ccd7d9d7c",
+  "author": "independent Codex Cloud /root; not grass",
+  "model": "not exposed by runtime; preference not verified",
+  "tests": {
+    "targeted": "8/8",
+    "gameDevFast": "397/397",
+    "python": "53/53",
+    "syntax": "passed"
+  },
+  "reusedEvidence": "#342/PR344 unchanged scene, pause, worker water/herb and GPT resource loop",
+  "desktop": "passed; 5 checks, zero page errors, 3 screenshots; finally cleaned",
+  "grokSource": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2",
+  "scope": "sect-chronicle only; no root dependency or save changes",
+  "browserRuntime": "@sparticuz/chromium@153.0.0 in scratch only",
+  "initialFailures": [
+    "Playwright browser missing; CDN archive invalid; apt permissions",
+    "Grok opening water order accepted but facility unavailable; native movement test uses legal train",
+    "Collapsed details require explicit expansion in browser assertion"
+  ]
+}
