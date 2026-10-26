@@ -1,0 +1,234 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "trees": {
+    "destiny.yue_buqun": {
+      "archetypeId": "yue_buqun",
+      "name": "岳不群",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "落魄華山",
+          "unlockArt": "art.huashan_basic_sword",
+          "unlockInternal": "art.huashan_baoyuan_jin",
+          "require": { "dayMin": 1 }
+        },
+        {
+          "stage": 2,
+          "name": "君子名劍",
+          "unlockArt": "art.yangwu_sword",
+          "require": {
+            "facilityCompleted": "fac.hall",
+            "artLevel": { "art.huashan_basic_sword": 2 }
+          }
+        },
+        {
+          "stage": 3,
+          "name": "紫氣東來",
+          "unlockArt": "art.zixia_qi",
+          "require": {
+            "statMin": { "composure": 8 },
+            "artLevel": { "art.yangwu_sword": 3 }
+          }
+        },
+        {
+          "stage": 4,
+          "name": "宿命心魔",
+          "dilemmaId": "dilemma.huashan_crisis",
+          "branches": {
+            "orthodox": {
+              "name": "堅守君子本心",
+              "require": { "composureMin": 9, "currentSafeMin": 0.80 },
+              "unlockArt": "art.zixia_tier10",
+              "title": "華山聖手"
+            },
+            "bixie": {
+              "name": "辟邪速成入魔",
+              "require": { "composureMax": 6 },
+              "unlockArt": "art.bixie_sword",
+              "applyPerk": "perk.bixie_ghost_speed",
+              "title": "紫衣梟雄"
+            }
+          }
+        }
+      ]
+    },
+    "destiny.guo_jing": {
+      "archetypeId": "guo_jing",
+      "name": "郭靖",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "荒漠少年",
+          "unlockArt": "art.luohan_fist",
+          "require": { "dayMin": 1 }
+        },
+        {
+          "stage": 2,
+          "name": "返璞歸真",
+          "unlockArt": "art.luohan_fist_tier10",
+          "require": {
+            "statMax": { "comprehension": 3 },
+            "artLevel": { "art.luohan_fist": 5 }
+          }
+        },
+        {
+          "stage": 3,
+          "name": "名菜神丐",
+          "unlockArt": "art.dragon_palm",
+          "require": {
+            "facilityCompleted": "fac.dorm.a",
+            "statMin": { "constitution": 8 }
+          }
+        },
+        {
+          "stage": 4,
+          "name": "左右雙絕",
+          "unlockArt": "art.dual_wield_dragon_fist",
+          "require": {
+            "artLevel": { "art.dragon_palm": 3, "art.luohan_fist_tier10": 1 }
+          }
+        }
+      ]
+    },
+    "destiny.wei_xiaobao": {
+      "archetypeId": "wei_xiaobao",
+      "name": "韋小寶",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "街頭小滑頭",
+          "unlockArt": "art.lime_spray_claw",
+          "require": { "dayMin": 1 }
+        },
+        {
+          "stage": 2,
+          "name": "泥鰍抹油步",
+          "unlockArt": "art.shenxing_baibian",
+          "require": {
+            "facilityCompleted": "fac.hall",
+            "statMin": { "agility": 8 }
+          }
+        },
+        {
+          "stage": 3,
+          "name": "五甲保命",
+          "unlockArt": "art.five_armor_turtle",
+          "require": {
+            "statMin": { "composure": 7 }
+          }
+        },
+        {
+          "stage": 4,
+          "name": "火銃連天神仙下凡",
+          "unlockArt": "art.foreign_musket_volley",
+          "require": {
+            "facilityCompleted": "fac.dorm.a"
+          }
+        }
+      ]
+    },
+    "destiny.linghu_chong": {
+      "archetypeId": "linghu_chong",
+      "name": "令狐沖",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "狂狷浪子",
+          "unlockArt": "art.huashan_basic_sword",
+          "require": { "dayMin": 1 }
+        },
+        {
+          "stage": 2,
+          "name": "太岳三峰",
+          "unlockArt": "art.taiyue_three_peaks",
+          "require": {
+            "sparringCountMin": 5,
+            "artLevel": { "art.huashan_basic_sword": 3 }
+          }
+        },
+        {
+          "stage": 3,
+          "name": "總決式截擊",
+          "unlockArt": "art.dugu_nine_swords_stance",
+          "require": {
+            "statMin": { "comprehension": 9 },
+            "artLevel": { "art.taiyue_three_peaks": 3 }
+          }
+        },
+        {
+          "stage": 4,
+          "name": "九劍五破易筋經",
+          "unlockArt": "art.five_flaw_mastery_yijinjing",
+          "require": {
+            "artLevel": { "art.dugu_nine_swords_stance": 5 }
+          }
+        }
+      ]
+    },
+    "destiny.ah_sing": {
+      "archetypeId": "ah_sing",
+      "name": "阿星",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "草根無影腳",
+          "unlockArt": "art.shadowless_toe_stomp",
+          "require": { "dayMin": 1 }
+        },
+        {
+          "stage": 2,
+          "name": "銅皮鐵骨",
+          "unlockArt": "art.bronze_skin_iron_bone",
+          "require": { "damageTakenMin": 200 }
+        },
+        {
+          "stage": 3,
+          "name": "木乃伊金光破繭",
+          "unlockArt": "art.meridian_cocoon_breakthrough",
+          "require": { "isCocoonHealed": true }
+        },
+        {
+          "stage": 4,
+          "name": "萬佛朝宗如來神掌",
+          "unlockArt": "art.buddha_palm_ultimate",
+          "require": {
+            "artLevel": { "art.meridian_cocoon_breakthrough": 1 }
+          }
+        }
+      ]
+    },
+    "destiny.landlady": {
+      "archetypeId": "landlady",
+      "name": "包租婆",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "風火輪極速",
+          "unlockArt": "art.hot_wheels_sprint",
+          "require": { "dayMin": 1 }
+        },
+        {
+          "stage": 2,
+          "name": "震退獅吼",
+          "unlockArt": "art.lion_roar_knockback",
+          "require": { "facilityCompleted": "fac.hall" }
+        },
+        {
+          "stage": 3,
+          "name": "古鐘大喇叭擴音",
+          "unlockArt": "art.bronze_bell_megaphonic_roar",
+          "require": {
+            "statMin": { "composure": 8 },
+            "artLevel": { "art.lion_roar_knockback": 3 }
+          }
+        },
+        {
+          "stage": 4,
+          "name": "太極獅吼合擊",
+          "unlockArt": "art.couple_taichi_roar_combo",
+          "require": { "hasPartnerBond": true }
+        }
+      ]
+    }
+  }
+}
