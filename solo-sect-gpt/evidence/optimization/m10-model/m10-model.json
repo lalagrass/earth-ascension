@@ -1,0 +1,492 @@
+{
+  "source": "controlled model fixtures (labeled), not UI",
+  "matrix": [
+    {
+      "seed": 11,
+      "route": "main",
+      "rations": 1,
+      "camp": "rest",
+      "ticks": 3089,
+      "forecastSeconds": 143,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 11,
+      "route": "main",
+      "rations": 3,
+      "camp": "meal",
+      "ticks": 2889,
+      "forecastSeconds": 133,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 1,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 11,
+      "route": "main",
+      "rations": 3,
+      "camp": "rest",
+      "ticks": 3089,
+      "forecastSeconds": 143,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 11,
+      "route": "ridge",
+      "rations": 1,
+      "camp": "rest",
+      "ticks": 3492,
+      "forecastSeconds": 162,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 11,
+      "route": "ridge",
+      "rations": 3,
+      "camp": "meal",
+      "ticks": 3292,
+      "forecastSeconds": 152,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 1,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 11,
+      "route": "ridge",
+      "rations": 3,
+      "camp": "rest",
+      "ticks": 3492,
+      "forecastSeconds": 162,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 29,
+      "route": "main",
+      "rations": 1,
+      "camp": "rest",
+      "ticks": 3089,
+      "forecastSeconds": 143,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 29,
+      "route": "main",
+      "rations": 3,
+      "camp": "meal",
+      "ticks": 2889,
+      "forecastSeconds": 133,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 1,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 29,
+      "route": "main",
+      "rations": 3,
+      "camp": "rest",
+      "ticks": 3089,
+      "forecastSeconds": 143,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 29,
+      "route": "ridge",
+      "rations": 1,
+      "camp": "rest",
+      "ticks": 3492,
+      "forecastSeconds": 162,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 29,
+      "route": "ridge",
+      "rations": 3,
+      "camp": "meal",
+      "ticks": 3292,
+      "forecastSeconds": 152,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 1,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 29,
+      "route": "ridge",
+      "rations": 3,
+      "camp": "rest",
+      "ticks": 3492,
+      "forecastSeconds": 162,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 73,
+      "route": "main",
+      "rations": 1,
+      "camp": "rest",
+      "ticks": 3089,
+      "forecastSeconds": 143,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 73,
+      "route": "main",
+      "rations": 3,
+      "camp": "meal",
+      "ticks": 2889,
+      "forecastSeconds": 133,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 1,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 73,
+      "route": "main",
+      "rations": 3,
+      "camp": "rest",
+      "ticks": 3089,
+      "forecastSeconds": 143,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 73,
+      "route": "ridge",
+      "rations": 1,
+      "camp": "rest",
+      "ticks": 3492,
+      "forecastSeconds": 162,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 73,
+      "route": "ridge",
+      "rations": 3,
+      "camp": "meal",
+      "ticks": 3292,
+      "forecastSeconds": 152,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 1,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 73,
+      "route": "ridge",
+      "rations": 3,
+      "camp": "rest",
+      "ticks": 3492,
+      "forecastSeconds": 162,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 101,
+      "route": "main",
+      "rations": 1,
+      "camp": "rest",
+      "ticks": 3089,
+      "forecastSeconds": 143,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 101,
+      "route": "main",
+      "rations": 3,
+      "camp": "meal",
+      "ticks": 2889,
+      "forecastSeconds": 133,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 1,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 101,
+      "route": "main",
+      "rations": 3,
+      "camp": "rest",
+      "ticks": 3089,
+      "forecastSeconds": 143,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 101,
+      "route": "ridge",
+      "rations": 1,
+      "camp": "rest",
+      "ticks": 3492,
+      "forecastSeconds": 162,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 101,
+      "route": "ridge",
+      "rations": 3,
+      "camp": "meal",
+      "ticks": 3292,
+      "forecastSeconds": 152,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 1,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 101,
+      "route": "ridge",
+      "rations": 3,
+      "camp": "rest",
+      "ticks": 3492,
+      "forecastSeconds": 162,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 211,
+      "route": "main",
+      "rations": 1,
+      "camp": "rest",
+      "ticks": 3089,
+      "forecastSeconds": 143,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 211,
+      "route": "main",
+      "rations": 3,
+      "camp": "meal",
+      "ticks": 2889,
+      "forecastSeconds": 133,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 1,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 211,
+      "route": "main",
+      "rations": 3,
+      "camp": "rest",
+      "ticks": 3089,
+      "forecastSeconds": 143,
+      "forecastArrival": 10000,
+      "actualArrival": 9939,
+      "endEnergy": 9390,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 211,
+      "route": "ridge",
+      "rations": 1,
+      "camp": "rest",
+      "ticks": 3492,
+      "forecastSeconds": 162,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 211,
+      "route": "ridge",
+      "rations": 3,
+      "camp": "meal",
+      "ticks": 3292,
+      "forecastSeconds": 152,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 1,
+      "completed": true,
+      "cause": "objective"
+    },
+    {
+      "seed": 211,
+      "route": "ridge",
+      "rations": 3,
+      "camp": "rest",
+      "ticks": 3492,
+      "forecastSeconds": 162,
+      "forecastArrival": 10000,
+      "actualArrival": 9751,
+      "endEnergy": 9202,
+      "rationsUsed": 0,
+      "completed": true,
+      "cause": "objective"
+    }
+  ],
+  "cases": [
+    {
+      "case": "gather",
+      "report": "目標已達成；返程原因：目標處理完畢。接下來：雲生手上還有2份乾糧，記得搬回倉；帶回2株藥草已入倉，可煮藥茶調養"
+    },
+    {
+      "case": "escort",
+      "report": "目標已達成；返程原因：目標處理完畢。接下來：雲生手上還有2份乾糧，記得搬回倉；護送的村人留下了照料的記憶"
+    },
+    {
+      "case": "spar",
+      "report": "目標已達成；返程原因：目標處理完畢。接下來：雲生生命76/100，休息即可回復；雲生手上還有1份乾糧，記得搬回倉"
+    },
+    {
+      "case": "gather-3-rations",
+      "report": "目標未完成；返程原因：包裹已滿。接下來：雲生手上還有3份乾糧，記得搬回倉；帶回1株藥草已入倉，可煮藥茶調養"
+    },
+    {
+      "case": "recall",
+      "report": "目標未完成；返程原因：玩家召回。接下來：雲生手上還有2份乾糧，記得搬回倉"
+    },
+    {
+      "case": "retreat",
+      "out": {
+        "cautious": {
+          "phase": "return",
+          "cause": "cautious-retreat",
+          "injury": 32,
+          "hp": 36
+        },
+        "steady": {
+          "phase": "gateFight",
+          "cause": null,
+          "injury": 52,
+          "hp": 0
+        }
+      }
+    }
+  ],
+  "preregisteredDirection": {
+    "ridgeLongerThanMain": true,
+    "threeRationsArriveHigherThanOne": false,
+    "note": "recorded as observed; not asserted after the fact"
+  },
+  "supplementaryTired": {
+    "fixture": "leader energy set to 4200 before departure (labeled fixture)",
+    "out": [
+      {
+        "rations": 1,
+        "camp": "rest",
+        "arrival": 5128,
+        "end": 4579,
+        "ate": [],
+        "used": 0
+      },
+      {
+        "rations": 3,
+        "camp": "rest",
+        "arrival": 5128,
+        "end": 6079,
+        "ate": [
+          "leader"
+        ],
+        "used": 1
+      }
+    ]
+  }
+}

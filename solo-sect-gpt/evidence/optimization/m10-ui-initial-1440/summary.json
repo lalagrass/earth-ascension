@@ -1,0 +1,121 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 57.093,
+  "errors": [],
+  "steps": [
+    {
+      "label": "returned-three-rations-gather",
+      "wallSeconds": 33.318,
+      "tick": 185681
+    },
+    {
+      "label": "flow-three-rations-gather",
+      "wallSeconds": 34.152,
+      "tick": 185681,
+      "ticks": 2107,
+      "cause": "bag-full",
+      "delivered": 1
+    },
+    {
+      "label": "returned-one-ration-gather",
+      "wallSeconds": 56.224,
+      "tick": 187364
+    },
+    {
+      "label": "flow-one-ration-gather",
+      "wallSeconds": 57.087,
+      "tick": 187364,
+      "ticks": 1683,
+      "cause": "objective",
+      "delivered": 2
+    }
+  ],
+  "label": "initial",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "flows": {
+    "three-rations-gather": {
+      "who": "leader",
+      "choice": [
+        "gather",
+        "main",
+        "meal",
+        3,
+        "steady"
+      ],
+      "forecast": "出發前預估（以實際移動結算）\n雲生：去855／回846 DU · 抵達精力約87 · 回程預留13（餘裕74）· 返院約83 · 約78秒 · 剩糧3\n⚠ 雲生帶3份乾糧時，第二株藥草可能裝不下（包裹上限4）\n⚠ 林緣一帶有5隻野生動物活動，靠近可能被攻擊",
+      "ticks": 2107,
+      "report": {
+        "version": 1,
+        "outcome": false,
+        "cause": "bag-full",
+        "people": [
+          {
+            "id": "leader",
+            "name": "雲生",
+            "rationsUsed": 0,
+            "rationsLeft": 3,
+            "injury": 0,
+            "hp": 100,
+            "maxHp": 100
+          }
+        ],
+        "next": [
+          "雲生手上還有3份乾糧，記得搬回倉",
+          "帶回1株藥草已入倉，可煮藥茶調養"
+        ],
+        "elapsed": 2095,
+        "text": "目標未完成；返程原因：包裹已滿。接下來：雲生手上還有3份乾糧，記得搬回倉；帶回1株藥草已入倉，可煮藥茶調養"
+      },
+      "delivered": 1,
+      "herbsLeft": 3,
+      "bag": {
+        "ration": 3
+      },
+      "card": "現在 雙人相伴\n原因 已受理的paired，正在赴作業位\n接著 等雙人活動完成\n作業位 待選作業位\n• 剛返院：雲生手上還有3份乾糧，記得搬回倉\n• 剛返院：帶回1株藥草已入倉，可煮藥茶調養\n練拳\n坐休\n吃飯\n恢復自主"
+    },
+    "one-ration-gather": {
+      "who": "amu",
+      "choice": [
+        "gather",
+        "main",
+        "rest",
+        1,
+        "steady"
+      ],
+      "forecast": "出發前預估（以實際移動結算）\n阿木：去855／回846 DU · 抵達精力約76 · 回程預留13（餘裕64）· 返院約73 · 約83秒 · 剩糧1\n⚠ 林緣一帶有5隻野生動物活動，靠近可能被攻擊",
+      "ticks": 1683,
+      "report": {
+        "version": 1,
+        "outcome": true,
+        "cause": "objective",
+        "people": [
+          {
+            "id": "amu",
+            "name": "阿木",
+            "rationsUsed": 0,
+            "rationsLeft": 1,
+            "injury": 0,
+            "hp": 100,
+            "maxHp": 100
+          }
+        ],
+        "next": [
+          "阿木手上還有1份乾糧，記得搬回倉",
+          "帶回2株藥草已入倉，可煮藥茶調養"
+        ],
+        "elapsed": 1648,
+        "text": "目標已達成；返程原因：目標處理完畢。接下來：阿木手上還有1份乾糧，記得搬回倉；帶回2株藥草已入倉，可煮藥茶調養"
+      },
+      "delivered": 2,
+      "herbsLeft": 1,
+      "bag": {
+        "ration": 1
+      },
+      "card": "現在 雙人相伴\n原因 已受理的paired，正在赴作業位\n接著 等雙人活動完成\n作業位 待選作業位\n• 剛返院：阿木手上還有1份乾糧，記得搬回倉\n• 剛返院：帶回2株藥草已入倉，可煮藥茶調養\n練拳\n坐休\n吃飯\n恢復自主"
+    }
+  }
+}

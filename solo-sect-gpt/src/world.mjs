@@ -1,5 +1,5 @@
 import{adoptContent,installPack,inviteContent,studyContent,preferContent,contentActivityTick,contentTick}from'./content.mjs';
-import{adoptTrail,launchJourney,journeyTick,stopJourneySpar}from'./journey.mjs';
+import{adoptTrail,adoptTrail2,launchJourney,journeyTick,stopJourneySpar}from'./journey.mjs';
 import{adoptCulture,selectCulture,startLife,cultureActivityTick,stopLife}from'./culture.mjs';
 import {rulesFor} from './save-features.mjs';
 import {adoptMartial,setFocus,chooseStyle,startPractice,martialTick,cancelPractice} from './martial.mjs';
@@ -48,7 +48,8 @@ export function command(w,c){
  else if(c.type==='studyContent')result=studyContent(w,p,c.move);
  else if(c.type==='preferContent')result=preferContent(w,p,c.move);
  else if(c.type==='adoptTrail')result=adoptTrail(w);
- else if(c.type==='journey')result=launchJourney(w,c.actors||[],c.objective,c.route,c.camp);
+ else if(c.type==='adoptTrail2')result=adoptTrail2(w);
+ else if(c.type==='journey')result=launchJourney(w,c.actors||[],c.objective,c.route,c.camp,c.rations??2,c.retreat??'steady');
  else if(c.type==='adoptCulture')result=adoptCulture(w);
  else if(c.type==='culturePack')result=selectCulture(w,c.pack);
  else if(c.type==='cultureEvent')result=startLife(w,p,c.event,c.choice,c.mode,c.callback);

@@ -1,0 +1,15 @@
+✔ M10 paired matrix on 5 seeds: routes, rations and camp choices with forecast vs actual (32602.975083ms)
+✔ M10 supplementary (not preregistered): a tired leader is where a third ration pays off (2370.383917ms)
+✔ M10 completions, the bag-full consequence of three rations, and honest return causes (2952.5415ms)
+✔ M10 not enough rations rejects without mutation and the forecast says so; one ration requires slow rest (29.646416ms)
+✔ M10 player recall on the way home is recorded as such (792.7885ms)
+✔ M10 cautious retreat follows real warden injuries; steady does not; bridge is crossed one at a time (2387.20325ms)
+✔ M10 v2 saves continue mid-journey; malformed v2 data rejects; no upgrade during a v1 journey (1372.61725ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 42711.322
