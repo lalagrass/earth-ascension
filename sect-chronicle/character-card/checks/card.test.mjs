@@ -31,7 +31,7 @@ test('GPT true world readonly / native units / legal command only',()=>{const w=
 test('Grok masking follows rootKnown/known, no inferred initial skills',()=>{const s=createState();const d=s.ds[0];d.rootKnown=false;d.root=987654;d.wu=876543;d.personality=['hidden-secret'];d.known=[];const before=JSON.stringify(s),c=grokCard(s,d.id);assert.equal(JSON.stringify(s),before);const out=JSON.stringify(c);assert.ok(!out.includes('987654'));assert.ok(!out.includes('876543'));assert.ok(!out.includes('hidden-secret'));assert.equal(c.fields.find(f=>f.semanticId==='skills.strength'&&f.layer==='initial').availability,'unknown');assert.equal(grokCommand(s,d.id,'fake').ok,false);assert.equal(grokCommand(s,d.id,'water').ok,true);});
 test('Grok source hash closure is unchanged',()=>{const base=new URL('../../scene-shared/sources/grok/',import.meta.url),m=JSON.parse(readFileSync(new URL('manifest.json',base)));for(const [path,hash]of Object.entries(m.files))assert.equal(createHash('sha256').update(readFileSync(new URL(path,base))).digest('hex'),hash,path);});
 test('Grok actual core movement uses native positions; snapshot does not mutate',()=>{const s=createState(),id=s.ds[0].id;const adapter=createGrokAdapter({state:s,appearance:()=>({asset:'dot',frame:0,anchor:{x:.5,y:1},body:{x:-10,y:-30,w:20,h:30}})});assert.equal(adapter.command({actorId:id,action:'train'}),true);const start=s.ds[0].pos.slice();for(let i=0;i<80;i++)adapter.observeStep();const before=JSON.stringify(s),snap=adapter.snapshot();assert.equal(JSON.stringify(s),before);assert.deepEqual([snap.actors[0].x,snap.actors[0].y],s.ds[0].pos);assert.notDeepEqual(s.ds[0].pos,start);assert.equal(snap.actors[0].positionSource,'core.pos');});
-test('same renderer escapes source values and portraits never borrow #343 candidates',()=>{const {model}=createGeminiCore();const c=geminiCard(model,'hero',{identity:{name:'<script>alert(1)</script>'}});assert.ok(!renderCard(c).includes('<script>'));for(const id of ['cousin','child','limochou'])assert.equal(portrait('dev',id).portraitAssetId,null);});
+test('same renderer escapes source values and portraits never borrow #343 candidates',()=>{const {model}=createGeminiCore();const c=geminiCard(model,'hero',{identity:{name:'<script>alert(1)</script>'}});assert.ok(!renderCard(c).includes('<script>'));for(const id of ['cousin','child'])assert.equal(portrait('dev',id).portraitAssetId,null);const mochou=portrait('dev','limochou');assert.equal(mochou.portraitAssetId,'person.research.limochou.portrait');assert.notEqual(mochou.portraitAssetId,'person.hero.sheet');assert.notEqual(mochou.portraitAssetId,'person.adopted-girl.portrait');});
 test('profiles stay public, escaped, and absent from old cards',()=>{
  const hidden=sanitizeProfile({visibility:'hidden',profileId:'x',displayName:'名',shortIntro:'SECRET-FACE',secret:'SECRET-FACE',personality:'sealed-root'});
  assert.equal(hidden,null);
@@ -60,9 +60,16 @@ test('life cards use real people and research cards stay unplayable',()=>{
  assert.ok(!JSON.stringify(kuli).includes('譚腿'));
  assert.ok(!JSON.stringify(star).includes('如來神掌'));
  assert.ok(!/自宮|其實是男|變性/.test(JSON.stringify(east)));
- assert.match(renderCard(kuli),/立繪未備/);
+ assert.match(renderCard(kuli),/展開立繪/);
+ assert.match(renderCard(kuli),/公開立繪/);
+ assert.equal(kuli.identity.portrait.portraitAssetId,'person.research.kulijiang.portrait');
+ assert.match(renderCard(presentCard('tiancan')),/立繪未備/);
+ assert.match(renderCard(presentCard('dique')),/立繪未備/);
  assert.match(renderCard(presentCard('life-hero')),/展開立繪/);
+ assert.equal(presentCard('life-hero').identity.portrait.portraitAssetId,'person.hero.sheet');
+ assert.match(renderCard(presentCard('life-cousin')),/尚無此角色正式立繪/);
  assert.match(renderCard(presentCard('life-girl')),/沒有可載入的立繪/);
+ for (const id of ['azi','wangyuyan','chenglingsu','xuzhu','duanyu']) assert.equal(portrait('dev',id).availability,'unsupported');
  assert.ok(listProfiles().some(p=>p.profileId==='tiancan')&&listProfiles().some(p=>p.profileId==='dique'));
  assert.ok(!renderCard(presentCard('tiancan')).includes('catalog'));
 });

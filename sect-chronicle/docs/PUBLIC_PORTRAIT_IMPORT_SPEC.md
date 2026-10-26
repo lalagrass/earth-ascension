@@ -1,0 +1,56 @@
+# 有限立繪匯入（#368）
+
+玩家在角色卡展示頁能看到已核對過的研究立繪。切換人物後，短介和背景仍在，已採用的人可以展開整張 3:4 圖。沒有圖的人繼續用文字。這包不新增開局，也不把研究角色做成可玩人物。
+
+## 玩家結果
+
+- 入口：`sect-chronicle/character-card/showcase.html`。選擇人物後看短介，打開背景，再按「展開立繪」。
+- 已採用的 14 人：頭像和展開圖用同一張整圖，不再另切頭部。展開後圖在卡片裡往下長。
+- 主角仍是既有活動圖的 idle-0 裁切。熟手同伴、道館女孩、天殘、地缺、阿紫、王語嫣、程靈素、虛竹、段譽沒有新臉。
+- 圖片檔讀不到時，卡片寫「本地圖片缺失，使用文字代替。」，其餘文字還在。
+- 研究展示不是角色創建。合法開局仍只有採藥童、農家子、道館學徒。女孩仍是資料記錄，生活名冊還沒有把她收成可選的人。
+
+## 採用清單
+
+來源分支固定 `6760f21c342cbf72fc9fb4baf0aec8655abd0dd2`。下表的 blob 與該分支相同。新檔在 `sect-chronicle/assets/shared/portraits/1.1.0/{id}.png`。資產編號是 `person.research.{id}.portrait`，只綁 `dev:{id}`。
+
+| 人物 | 來源提交 | 原路徑 | 尺寸 | 採用原因 |
+|---|---|---|---|---|
+| 阿星 | `edaf2ed60954808221447640efb79f0215dbc278` | `solo-sect/assets/portraits/v2/axing-v2b-a.png` | 864×1152 | 文件已選 v2。v1 `axing.png` 不匯入。 |
+| 黃蓉 | `edaf2ed60954808221447640efb79f0215dbc278` | `solo-sect/assets/portraits/v2/huangrong-v2-ref.png` | 864×1152 | 提示紀錄鎖定的俏皮有英氣參考圖。 |
+| 小龍女 | `cadb937fb7ed54f44c72e562639fc598a6a1e646` | `solo-sect/assets/portraits/v2/xiaolongnv-v2-c.png` | 480×640 | 已選的清冷特寫，不是電影包租婆。 |
+| 李莫愁 | `6760f21c342cbf72fc9fb4baf0aec8655abd0dd2` | `solo-sect/assets/portraits/v2/limochou-v2-h.png` | 480×640 | 擁有人已選的版本。 |
+| 東方不敗 | `edaf2ed60954808221447640efb79f0215dbc278` | `solo-sect/assets/portraits/v2/dongfangbubai-v2-a.png` | 480×640 | 已選的陰柔危險樣子。不改成搞笑。 |
+| 包租婆 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/baozupo.png` | 480×640 | 功夫研究已引用的公開職業圖。 |
+| 包租公 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/baozugong.png` | 480×640 | 同上。 |
+| 苦力強 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/kulijiang.png` | 480×640 | 同上。 |
+| 裁縫 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/caifeng.png` | 480×640 | 同上。 |
+| 油炸鬼 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/youzhagui.png` | 480×640 | 同上。 |
+| 火雲邪神 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/huoyunxieshen.png` | 480×640 | 同上。 |
+| 令狐沖 | `6760f21c342cbf72fc9fb4baf0aec8655abd0dd2` | `solo-sect/assets/portraits/linghuchong.png` | 480×640 | 此來源只有這一張原圖。 |
+| 周伯通 | `6760f21c342cbf72fc9fb4baf0aec8655abd0dd2` | `solo-sect/assets/portraits/zhoubotong.png` | 480×640 | 原圖即搞笑長輩。 |
+| 郭靖 | `6760f21c342cbf72fc9fb4baf0aec8655abd0dd2` | `solo-sect/assets/portraits/v2/guojing-v2-b.png` | 864×1152 | 提示紀錄標為採用的搞笑稿。`guojing-v2-a.png` 不採用。 |
+
+## 欄位
+
+每張已知圖都有：作者 Grok Bot、來源提交、原路徑 `source.originPath`、複製後路徑、sha256、寬高、`alpha.channel: false`、錨點 `{x:0.5, y:1}`。配方類型是 `portrait`，矩形等於整張圖。生成紀錄來自 `6760f21:solo-sect/assets/portraits/PROMPTS.md`：工具 Grok Bot GenerateImage，模型版本未量測，3:4，無參考圖，無 seed。阿星與郭靖的風格記號是 `wcaricature`，黃蓉是 `inkpretty`。其餘檔的提示紀錄沒有逐檔風格記號，欄位寫 `unrecorded-for-this-file`。
+
+卡片氣泡顯示的 `source.path` 是複製後的 `sect-chronicle/` 路徑。pin 驗證只接受這種路徑。原路徑寫在 `originPath` 和 `recipe.derivedFrom`。
+
+權利狀態：`repository-research-reuse; third-party-rights-unverified`。不把私人試作寫成商業授權，也不補造 seed 或授權條款。
+
+隱藏身分只用公開職業名。資產編號、替代文字和提示都不寫未公開的身份。
+
+## 相容
+
+- 新 manifest：`sect-chronicle/assets/shared/manifests/gemini-1.1.0.mjs`。`gemini-1.0.0.mjs`、`gpt-1.0.0.mjs`、`grok-1.0.0.mjs` 不改。
+- 只改 `pins/gemini.mjs` 的 import 和 digest。GPT、Grok 的 pin 不變。
+- `gemini:hero` 與 `gemini:girl` 維持原記錄。不新增 `gemini:`、`gpt:`、`grok:` 的研究鍵。
+- 主角、場景、女孩缺圖記錄的位元組與編號不變。
+- 腳錨是圖的底邊中點，不是走路或碰撞點。不做地圖行走、動作圖集、腳速或權限。
+- 不改世界、RNG、能力、關係、戰鬥或存檔格式。
+- `resolve.mjs` 對 `recipe.type === 'portrait'` 標成「公開立繪」。活動圖裁切維持原標籤。卡片上那行「既有活動圖裁切」仍由既有 renderer 寫出，這包不改那個檔。
+
+## 不做
+
+天殘和地缺沒有具名立繪，而且是兩個人。阿紫、王語嫣、程靈素、虛竹、段譽在固定來源上沒有立繪檔。道館女孩維持 `person.adopted-girl.portrait` 缺圖。不把堂親或女孩套成經典人物或功夫人物的臉。不生成缺圖。

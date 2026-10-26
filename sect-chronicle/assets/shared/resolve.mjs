@@ -58,5 +58,5 @@ export function portraitFor(pin, branch, actorId) {
   if (!id) return fallback(null, 'unsupported', '尚無此角色正式立繪');
   const a = resolveAsset(pin,id);
   return { ...a, portraitAssetId: a.availability === 'known' ? id : null, crop: a.recipe?.rect || null,
-    label: a.availability === 'known' ? '既有活動圖裁切（非新立繪）' : a.label };
+    label: a.availability === 'known' ? (a.recipe?.type === 'portrait' ? '公開立繪' : '既有活動圖裁切（非新立繪）') : a.label };
 }
