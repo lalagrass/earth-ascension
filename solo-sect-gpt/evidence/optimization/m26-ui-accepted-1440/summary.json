@@ -1,0 +1,26 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 3.524,
+  "errors": [],
+  "steps": [
+    {
+      "label": "done",
+      "wallSeconds": 3.522,
+      "tick": 188195,
+      "unchanged": true
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "lin": "條件四層（公版）\n所學與可施展\n基礎拳\n\n所學：已學（skill 記錄）；下一招可學：松風緩拳（先完成基礎拳原理5／熟練18）\n\n熟練：理解 7／熟練 0／體悟 0（入門） 原生 U／F／I（各自 0–100）\n\n此刻可施展：直拳：可出手（按下時由核心再判定距離、空間、收勢）；推掌：推掌需洪七公真授課；松風緩拳：先實際研讀這個內容招式；近身短拳：先實際研讀這個內容招式；短打快拳：先實際研讀這個內容招式\n\n入門／承載／控制／特殊前提與來源\n\n入門／理解 · 學會／研讀內容招\n直拳：已學會；推掌：未學（推掌需洪七公真授課）；松風緩拳：未達前置（先完成基礎拳原理5／熟練18）；近身短拳：未達前置（先完成基礎拳原理5／熟練18）；短打快拳：未達前置（先完成基礎拳原理5／熟練30）\nskill 記錄；content.movePrerequisite\n\n承載 · 出手當下\n直拳 耗能2，現有足夠；推掌 耗能4，現有足夠；松風緩拳 耗能2.5，現有足夠；近身短拳 耗能2.2，現有足夠；短打快拳 耗能2.6，現有足夠（現有精力 74）\ncombat.startAction 的精力檢查\n\n控制 · 起手／收勢時序\n直拳 起手16／收勢14 tick；推掌 起手26／收勢22 tick；松風緩拳 起手20／收勢18 tick；近身短拳 起手12／收勢12 tick；短打快拳 起手10／收勢8 tick\ncombat.actionTiming 依熟練18、熟練90且體悟10兩個階段\n\n特殊前提 · 出手前\n推掌：推掌需洪七公真授課\ncombat.moveKitError：持棍／劍、九劍需木劍、推掌需真授\n\n風險評估：未知；未知不表示安全。\n\n來源：gpt-local:codex/solo-sect-gpt current core:world.people.lin.skill.punch",
+    "leader": "條件四層（公版）\n所學與可施展\n九劍入門\n\n所學：已學（skill 記錄）\n\n熟練：理解 5／熟練 2／體悟 0（入門） 原生 U／F／I（各自 0–100）\n\n此刻可施展：辨隙截擊：九劍需實際領用並裝備木劍\n\n入門／承載／控制／特殊前提與來源\n\n入門／理解 · 學會／研讀內容招\n辨隙截擊：已學會\nskill 記錄；content.movePrerequisite\n\n承載 · 出手當下\n辨隙截擊 耗能4，現有足夠（現有精力 66）\ncombat.startAction 的精力檢查\n\n控制 · 起手／收勢時序\n辨隙截擊 起手8／收勢20 tick\ncombat.actionTiming 依熟練18、熟練90且體悟10兩個階段\n\n特殊前提 · 出手前\n辨隙截擊：九劍需實際領用並裝備木劍\ncombat.moveKitError：持棍／劍、九劍需木劍、推掌需真授\n\n風險評估：未知；未知不表示安全。\n\n來源：gpt-local:codex/solo-sect-gpt current core:world.people.leader.skill.nine",
+    "amu": "條件四層（公版）\n所學與可施展\n基礎拳\n\n所學：已學（skill 記錄）；下一招可學：松風緩拳（可研讀）\n\n熟練：理解 5／熟練 100／體悟 10（深修） 原生 U／F／I（各自 0–100）\n\n此刻可施展：直拳：可出手（按下時由核心再判定距離、空間、收勢）；推掌：推掌需洪七公真授課；松風緩拳：先實際研讀這個內容招式；近身短拳：先實際研讀這個內容招式；短打快拳：可出手（按下時由核心再判定距離、空間、收勢）\n\n入門／承載／控制／特殊前提與來源\n\n入門／理解 · 學會／研讀內容招\n直拳：已學會；推掌：未學（推掌需洪七公真授課）；松風緩拳：可研讀；近身短拳：可研讀；短打快拳：已學會\nskill 記錄；content.movePrerequisite\n\n承載 · 出手當下\n直拳 耗能2，現有足夠；推掌 耗能4，現有足夠；松風緩拳 耗能2.5，現有足夠；近身短拳 耗能2.2，現有足夠；短打快拳 耗能2.6，現有足夠（現有精力 49）\ncombat.startAction 的精力檢查\n\n控制 · 起手／收勢時序\n直拳 起手10／收勢7 tick；推掌 起手26／收勢18 tick；松風緩拳 起手20／收勢15 tick；近身短拳 起手12／收勢10 tick；短打快拳 起手10／收勢7 tick\ncombat.actionTiming 依熟練18、熟練90且體悟10兩個階段\n\n特殊前提 · 出手前\n推掌：推掌需洪七公真授課\ncombat.moveKitError：持棍／劍、九劍需木劍、推掌需真授\n\n風險評估：未知；未知不表示安全。\n\n來源：gpt-local:codex/solo-sect-gpt current core:world.people.amu.skill.punch",
+    "child": "條件四層（公版）\n所學與可施展\n基礎拳\n\n所學：已學（skill 記錄）；下一招可學：松風緩拳（請選成年常住門人）\n\n熟練：理解 5／熟練 0／體悟 0（入門） 原生 U／F／I（各自 0–100）\n\n此刻可施展：直拳：未成年不參戰；推掌：未成年不參戰；松風緩拳：先實際研讀這個內容招式；近身短拳：先實際研讀這個內容招式；短打快拳：先實際研讀這個內容招式\n\n入門／承載／控制／特殊前提與來源\n\n入門／理解 · 學會／研讀內容招\n直拳：已學會；推掌：未學（推掌需洪七公真授課）；松風緩拳：未達前置（請選成年常住門人）；近身短拳：未達前置（請選成年常住門人）；短打快拳：未達前置（請選成年常住門人）\nskill 記錄；content.movePrerequisite\n\n承載 · 出手當下\n直拳 耗能2，現有足夠；推掌 耗能4，現有足夠；松風緩拳 耗能2.5，現有足夠；近身短拳 耗能2.2，現有足夠；短打快拳 耗能2.6，現有足夠（現有精力 97）\ncombat.startAction 的精力檢查\n\n控制 · 起手／收勢時序\n直拳 起手16／收勢14 tick；推掌 起手26／收勢22 tick；松風緩拳 起手20／收勢18 tick；近身短拳 起手12／收勢12 tick；短打快拳 起手10／收勢8 tick\ncombat.actionTiming 依熟練18、熟練90且體悟10兩個階段\n\n特殊前提 · 出手前\n無額外前提\ncombat.moveKitError：持棍／劍、九劍需木劍、推掌需真授\n\n風險評估：未知；未知不表示安全。\n\n來源：gpt-local:codex/solo-sect-gpt current core:world.people.child.skill.punch",
+    "unchanged": true
+  }
+}

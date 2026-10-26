@@ -1,0 +1,51 @@
+{
+  "source": "model tests on the M16 demo save; labeled fixtures noted inline",
+  "cases": [
+    {
+      "case": "no-mutation",
+      "key": "gpt:current-core:amu"
+    },
+    {
+      "case": "availability",
+      "leaderComprehension": [
+        {
+          "semanticId": "aptitude.comprehension",
+          "layer": "base",
+          "source": "gpt-local:codex/solo-sect-gpt current core:people.stats[3]",
+          "unit": "點",
+          "availability": "known",
+          "value": 4
+        },
+        {
+          "semanticId": "aptitude.comprehension",
+          "layer": "initial",
+          "source": "gpt-local:codex/solo-sect-gpt current core:world.people.leader.stats (no opening snapshot)",
+          "unit": "",
+          "availability": "unknown"
+        }
+      ]
+    },
+    {
+      "case": "conditions",
+      "amuPunch": [
+        [
+          "entry",
+          "直拳：已學會；推掌：未學（推掌需洪七公真授課）；松風緩拳：可研讀；近身短拳：可研讀；短打快拳：已學會"
+        ],
+        [
+          "capacity",
+          "直拳 耗能2，現有足夠；推掌 耗能4，現有足夠；松風緩拳 耗能2.5，現有足夠；近身短拳 耗能2.2，現有足夠；短打快拳 耗能2.6，現有足夠（現有精力 49）"
+        ],
+        [
+          "control",
+          "直拳 起手10／收勢7 tick；推掌 起手26／收勢18 tick；松風緩拳 起手20／收勢15 tick；近身短拳 起手12／收勢10 tick；短打快拳 起手10／收勢7 tick"
+        ],
+        [
+          "special",
+          "推掌：推掌需洪七公真授課"
+        ]
+      ],
+      "leaderNine": "辨隙截擊：九劍需實際領用並裝備木劍"
+    }
+  ]
+}

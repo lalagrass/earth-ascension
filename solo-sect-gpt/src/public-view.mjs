@@ -1,6 +1,7 @@
 // M18 read-only adapter from GPT World to the public character-card / martial-template semantics (upstream proposal 6e5e69d, evaluation baseline).
 // Four jobs only: person snapshot, art/move definitions, a person's learned arts, available-action descriptions. Never mutates World; every output is a fresh plain object.
 import{ART,VERSION,Q}from'./data.mjs';import{CORE,movesFor,moveFor}from'./catalog.mjs';import{situation,predict}from'./person-view.mjs';import{speed}from'./navigation.mjs';import{bagWeight,day}from'./state.mjs';import{actionTiming,moveLearnError,moveKitError}from'./combat.mjs';import{movePrerequisite}from'./content.mjs';
+import{card,field,missing}from'../vendor/public/ef823ac/character-card/contract.mjs';import{martialEntry}from'../vendor/public/ef823ac/martial-view/contract.mjs';
 export const ADAPTER={id:'gpt-public-adapter',version:1,upstream:{commit:'6e5e69dbe3fa166f06659d7835feb510deb9f08b',docs:['sect-chronicle/docs/CHARACTER_CARD_PUBLIC_PROPOSAL.md','sect-chronicle/docs/MARTIAL_ART_PUBLIC_TEMPLATE_PROPOSAL.md'],status:'evaluation-baseline'}};
 const RANK={leader:'掌門',worker:'雇工',outer:'外門',inner:'內門',family:'家人',guest:'客人',traveler:'旅人',warden:'守路人',wild:'野生',training:'教習'};
 // stats[i] meaning and the rules that actually read it (checked against src at M18; 臂力 and 定力 are read by no rule).
@@ -65,3 +66,23 @@ export function personActions(w,id){const p=w.people[id];if(!p)return null;if(!m
 // Legal fallback for a remembered selection: a missing art falls back to the person's first art, a missing move to none, each with a one-line notice.
 export function pickArt(arts,wanted){const list=arts?.arts||[],hit=list.find(a=>a.artId===wanted),art=hit||list[0]||null;return{art,notice:wanted&&!hit&&art?'原選的'+(ART[wanted]||wanted)+'此人沒有學，改看'+art.name+'。':null};}
 export function pickMove(art,wanted){const hit=art?.moves.find(m=>m.moveId===wanted)||null;return{move:hit,notice:wanted&&!hit?'原選的招式不在'+(art?.name||'這門武學')+'的招式清單（此局可能沒有安裝它的內容包），已回到招式清單。':null};}
+// M26: the same projections wrapped in the adopted public card / martial-entry shapes (vendor/public/ef823ac, see SOURCES.md).
+// Bound to this branch's current core; the stable key carries no upstream SHA and the old 6cbd3e6 adapter is not used.
+export const CORE_SOURCE='gpt-local:codex/solo-sect-gpt current core';
+const pub=(e,layer='base')=>{const source=CORE_SOURCE+':'+(e.provenance?.source||e.semanticId);if(e.availability==='known')return field(e.semanticId,e.current!==undefined&&e.max!==undefined?{current:e.current,max:e.max}:e.rawValue,{source,unit:e.unit||'',layer});return field(e.semanticId,null,{source,layer,availability:e.availability==='ambiguous'?'unknown':e.availability});};
+function martialFor(w,p,a){const src=CORE_SOURCE+':world.people.'+p.id+'.skill.'+a.artId,f=(id,v,unit='',availability)=>field(id,v,{source:src,unit,...(availability?{availability}:{})}),moves=a.moves,next=moves.find(m=>m.learn.state==='can-study')||moves.find(m=>m.learn.state==='blocked')||null;
+ if(!moves.length&&!p.adult)return martialEntry({id:a.artId,name:a.name,source:src,learned:f('learned','已學（skill 記錄）'),proficiency:f('proficiency','理解 '+a.U.rawValue+'／熟練 '+a.F.rawValue+'／體悟 '+a.I.rawValue,'原生 U／F／I（各自 0–100）'),execution:f('execution',null,'','notApplicable'),risk:f('risk',null)});
+ return martialEntry({id:a.artId,name:a.name,source:src,moves:moves.map(m=>({id:m.moveId,name:m.name,source:src})),
+  learned:f('learned','已學（skill 記錄）'+(next?'；下一招可學：'+next.name+(next.learn.reason?'（'+next.learn.reason+'）':'（可研讀）'):'')),
+  proficiency:f('proficiency','理解 '+a.U.rawValue+'／熟練 '+a.F.rawValue+'／體悟 '+a.I.rawValue+'（'+a.stage+'）','原生 U／F／I（各自 0–100）'),
+  execution:f('execution',moves.length?moves.map(m=>m.name+'：'+(m.useNow.ok?'可出手（按下時由核心再判定距離、空間、收勢）':m.useNow.reason)).join('；'):null,'',moves.length?undefined:'unknown'),
+  conditions:{entry:{appliesTo:'學會／研讀內容招',policy:'skill 記錄；content.movePrerequisite',result:f('condition.entry',moves.map(m=>m.name+'：'+({learned:'已學會','can-study':'可研讀',blocked:'未達前置','not-learned':'未學'}[m.learn.state])+(m.learn.reason?'（'+m.learn.reason+'）':'')).join('；')||null)},
+   capacity:{appliesTo:'出手當下',policy:'combat.startAction 的精力檢查',result:f('condition.capacity',moves.length?moves.map(m=>{const c=moveFor(w,m.moveId).cost;return m.name+' 耗能'+c/100+(p.energy>=c?'，現有足夠':'，現有不足');}).join('；')+'（現有精力 '+Math.round(p.energy/100)+'）':null)},
+   control:{appliesTo:'起手／收勢時序',policy:'combat.actionTiming 依熟練18、熟練90且體悟10兩個階段',result:f('condition.control',moves.filter(m=>m.timing).map(m=>m.name+' 起手'+m.timing.wind+'／收勢'+m.timing.recover+' tick').join('；')||null)},
+   special:{appliesTo:'出手前',policy:'combat.moveKitError：持棍／劍、九劍需木劍、推掌需真授',result:f('condition.special',moves.map(m=>m.useNow.reason&&/器械|木劍|真授/.test(m.useNow.reason)?m.name+'：'+m.useNow.reason:null).filter(Boolean).join('；')||'無額外前提')}},
+  risk:f('risk',null)});}
+export function publicCard(w,id){const p=w.people[id];if(!p)return null;const s=personSnapshot(w,id),arts=personArts(w,id),acts=personActions(w,id),src=CORE_SOURCE+':world.people.'+id;
+ const stats=[...s.capability,...s.aptitude];return card({branch:'gpt',sha:'current-core',actorId:id,identity:{name:s.identity.name,role:s.identity.rankLabel,adult:s.identity.adult},
+  action:{current:s.now.current,reason:field('action.reason',s.now.why??null,{source:src}),next:s.now.next??null,stopReason:field('action.stopReason',s.now.blocked?.text??null,{source:src}),owner:s.now.owner?.label??null},
+  fields:[...s.state.map(e=>pub(e,'effective')),...stats.map(e=>pub(e,'base')),...stats.map(e=>e.availability==='known'?missing(e.semanticId,src+'.stats (no opening snapshot)'):field(e.semanticId,null,{source:src,layer:'initial',availability:e.availability})),...s.persona.map(e=>pub(e,'base')),...s.performance.map(e=>pub(e,'effective'))],
+  martial:arts.arts.map(a=>martialFor(w,p,a)),commands:(acts.actions||[]).filter(a=>a.intent).map(a=>({id:a.label,label:a.label,command:a.intent,enabled:a.enabledAtSnapshot,reason:a.reasonAtSnapshot}))});}
