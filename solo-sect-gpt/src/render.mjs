@@ -2,7 +2,7 @@ import{statusBadge,BADGE_STYLE}from'./person-view.mjs';
 import{activitiesFor,movesFor,moveFor}from'./catalog.mjs';
 import{TRAIL_ROUTES}from'./journey-data.mjs';
 import{SECT_LIFE}from'./culture-data.mjs';
-import {Q,HZ,FACILITIES,ITEM,MOVES,TASKNAME} from './data.mjs';import {readiness} from './joint-drill.mjs';
+import {Q,HZ,FACILITIES,ITEM,MOVES,TASKNAME} from './data.mjs';import {readiness} from './joint-drill.mjs';import {SCENERY} from './appearance.mjs';import {motionFor} from './motion-view.mjs';
 import {MAP,rects,stations,corridors,position,inRect,trees} from './map.mjs';
 import {sorted,qty,bagWeight} from './state.mjs';
 import {paintedGround,buildingShell,roofLayer,treeLayer,bridgeLayer,lifeProps,roadPath} from './scene-art.mjs';
@@ -39,6 +39,7 @@ export function render(canvas,w,view){
  for(const p of actors)if(w.martialPlan&&p.combatSession)drawCombatTelegraph(ctx,w,p,view);
  const props=[];
  for(const t of trees)props.push({y:t.y,fn:()=>{const p=w.people[view.selected];if(!treeLayer(ctx,t.x,t.y,t.variant,p&&Math.abs(p.x/Q-t.x)<43&&p.y/Q<t.y+15&&p.y/Q>t.y-85))drawTree(ctx,t.x,t.y,t.variant);}});
+ for(const s of SCENERY)if(s.asset.availability==='known')props.push({y:s.at[1],fn:()=>drawScenery(ctx,s)});
  for(const p of actors)props.push({y:p.y/Q,fn:()=>drawPerson(ctx,w,p,view,labelOffsets[p.id],false)});
  props.sort((a,b)=>a.y-b.y);for(const p of props)p.fn();
  for(const f of Object.values(rects))drawBuilding(ctx,w,f,true,view);
@@ -93,7 +94,7 @@ export function drawPerson(c,w,p,v,labelOffset=0,labels=true){const x=p.x/Q,y=p.
  let ax=7,ay=-14,bx=-7,by=-14;if(p.pose==='teach'){ax=12;ay=-25;}else if(still&&p.pose==='listen'){ax=3;ay=-15;bx=-3;by=-15;}else if(still&&p.pose==='read'){ax=6;ay=-19;bx=-6;by=-19;}else if(crouch){ax=13;ay=-11;}else if(sit){ax=6;ay=-10;bx=-6;by=-10;}
  if(p.action){const ac=p.action,m=moveFor(w,ac.contentMove||ac.move),dir=p.angle*Math.PI/180,phase=ac.phase;ax=Math.cos(dir)*(phase==='active'?19:phase==='windup'?3:9);ay=-17+Math.sin(dir)*(phase==='active'?13:-2);
   c.strokeStyle=ac.move==='sweep'?'#9c7549':'#cebd89';c.lineWidth=3;
-  if(['sweep','thrust','intercept'].includes(ac.move)){c.beginPath();c.moveTo(ax,ay);c.lineTo(ax+Math.cos(dir)*(ac.move==='sweep'?24:22),ay+Math.sin(dir)*18);c.stroke();}
+  const mo=motionFor(w,p);if(['staff','sword','sword-nine'].includes(mo?.family)){c.beginPath();c.moveTo(ax,ay);c.lineTo(ax+Math.cos(dir)*(ac.move==='sweep'?24:22),ay+Math.sin(dir)*18);c.stroke();}
   if(phase==='recover'){c.strokeStyle='#8a8f8099';c.lineWidth=1.5;c.beginPath();c.arc(0,1,11,0,Math.PI);c.stroke();}
   if(phase==='active'){c.save();c.translate(0,-10);c.rotate(dir);c.strokeStyle=ac.move==='push'?'#a77a45':ac.move==='intercept'?'#d2bb68':'#eee3b9';c.lineWidth=ac.move==='thrust'?2:4;c.beginPath();if(ac.move==='sweep'||ac.move==='push')c.arc(0,0,m.range,-Math.PI/2,Math.PI/2);else if(ac.move==='step'){for(let i=0;i<3;i++){c.moveTo(-i*8,-3);c.lineTo(-i*8-3,3);}}else if(ac.move==='intercept'){c.moveTo(m.range-4,-6);c.lineTo(m.range+4,6);c.moveTo(m.range-4,6);c.lineTo(m.range+4,-6);}else{c.moveTo(6,0);c.lineTo(m.range,0);}c.stroke();c.restore();}
  }else if(a?.kind==='eat'&&!p.moving){ax=7;ay=-23+(v.lowMotion?0:Math.sin((a.progress||0)/7))*3;bx=-4;by=-15;}else if(a?.kind==='talk'&&!p.moving){ax=12;ay=-22+(v.lowMotion?0:Math.sin((a.progress||0)/10))*5;}else if(a?.kind==='train'&&!p.moving){ax=7+(v.lowMotion?0:Math.sin((a.progress||0)/6))*7;ay=-17;}else if(['build','gather','farm','cook'].includes(a?.kind)&&!p.moving){ax=9;ay=-17-(v.lowMotion?0:Math.sin((a.progress||0)/8))*9;}
@@ -108,6 +109,9 @@ export function drawPerson(c,w,p,v,labelOffset=0,labels=true){const x=p.x/Q,y=p.
  else if(a&&['class','talk','encourage','care','teach','paired','story'].includes(a.kind)&&!p.moving){c.fillStyle='#f5eddb';c.beginPath();c.ellipse(x+13,y-32,8,5,0,0,7);c.fill();c.fillStyle='#7c856b';c.font='9px system-ui';c.fillText('…',x+9,y-30);}
  if(labels)drawLabel(c,w,p,v,labelOffset);
 }
+// M29 pinned local scenery (bamboo, boulders): drawn at its foot anchor in y order with people and trees; view-only, never collision. A missing or failed image draws nothing.
+const IMAGES={};function image(url){if(typeof Image==='undefined'||!url)return null;let i=IMAGES[url];if(!i){i=new Image();i.src=url;IMAGES[url]=i;}return i.complete&&i.naturalWidth?i:null;}
+export function drawScenery(c,s){const a=s.asset,img=image(a.url);if(!img)return;const scale=.5,wd=a.dimensions.width*scale,ht=a.dimensions.height*scale;c.drawImage(img,s.at[0]-wd*a.anchor.x,s.at[1]-ht*a.anchor.y,wd,ht);}
 // What is really in the bag, drawn as the thing itself: wood bundle, stones, bucket, basket, bowl, pack, sprigs, tea.
 function drawCarried(c,item){c.save();if(item==='wood'){c.fillStyle='#9d8059';c.rotate(-0.2);c.fillRect(-17,-22,34,5);c.fillStyle='#7d6545';c.fillRect(-17,-22,3,5);}
  else if(item==='stone'){c.fillStyle='#8b8a7b';for(const [dx,dy]of[[-9,-17],[-5,-21],[-11,-22]]){c.beginPath();c.ellipse(dx,dy,4,3,0,0,7);c.fill();}}

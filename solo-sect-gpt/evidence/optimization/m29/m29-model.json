@@ -1,0 +1,51 @@
+{
+  "source": "model tests; local files and fresh/demo worlds",
+  "cases": [
+    {
+      "case": "assets",
+      "rows": [
+        [
+          "person.hero.sheet",
+          "7a0f42ac86c9"
+        ],
+        [
+          "scene.bamboo",
+          "23bed590ec5e"
+        ],
+        [
+          "scene.boulder.large",
+          "5757f2b15698"
+        ],
+        [
+          "scene.boulder.small",
+          "f18764f0f745"
+        ]
+      ],
+      "manifestSha": "a57ff4b0d56c6274c502727bf321d66844c796639482b70cdac738ae99b5feed"
+    },
+    {
+      "case": "binding",
+      "leaderByTemplate": {
+        "custom": "known",
+        "guo": "unsupported",
+        "linghu": "unsupported",
+        "yue": "unsupported"
+      }
+    },
+    {
+      "case": "phase",
+      "seen": {
+        "leader": [
+          "windup",
+          "active",
+          "recover"
+        ],
+        "amu": [
+          "windup",
+          "active",
+          "recover"
+        ]
+      }
+    }
+  ]
+}

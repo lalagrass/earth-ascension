@@ -24,3 +24,14 @@
 - `facility-view/gpt.mjs`（綁 6cbd3e6 舊核心、把使用者／容量／排隊／命令都標 unsupported）、`render.mjs`（另一套命令按鈕）：本地改由 `src/facility-view.mjs` 綁目前核心。
 - `event-view/adapters.mjs`：GPT 轉接綁 6cbd3e6，並用讀到的物件集合比對環形 journal；本地改由 `src/event-feed.mjs` 以原生 `event.N` 序號為游標。
 - `scene-shared/`、`assets/shared/` 的執行碼與舊核心快照：本階段不需要。
+
+## 素材（M29，放在 `assets/shared/`）
+
+| 本地檔 | 上游 | 上游 sha256 | 處理 |
+| --- | --- | --- | --- |
+| `assets/shared/resolve.mjs` | `sect-chronicle/assets/shared/resolve.mjs` | eea9e811dc3c13db0836f5cff3b986857fad702a7a0c29e1416cb3c913bef34f | 採用；改寫：合法本地路徑前綴改為 `assets/shared/`，來源路徑另以 `sect-chronicle/` 驗證 |
+| `assets/shared/manifest-gpt-local-1.0.0.mjs` | 由 `sect-chronicle/assets/shared/manifests/gpt-1.0.0.mjs` 派生 | 6e892877931d57e18d770826a80aba1fdc40bd17f1958e1fae59e46f08cbc4ee | 新版本號；`coreCommit` 改為本分支 a1bb5be…；每筆保留上游原路徑（`upstreamPath`）、原提交 ac7148d…、作者、權利、用途、腳錨與 sha256 |
+| `assets/shared/pin-gpt-local.mjs` | 仿 `pins/gpt.mjs` | — | 鎖本地 manifest 檔的 sha256 |
+| `assets/shared/ef823ac/{hero.png,hero.json,bamboo.png,boulder_l.png,boulder_s.png}` | `sect-chronicle/experiments/water-carry/demo/assets/art184-production/` | 與 manifest 各筆相同 | 位元組原樣複製，不另存裁圖 |
+
+權利照上游記錄：owner-reuse-documented; third-party-rights-unverified。hero 圖集只用 `idle-0` 一格作卡片，不當走路或出招圖集。
