@@ -33,7 +33,7 @@ export function geminiCard(model, actorId, { fixed = false, identity = {} } = {}
   return card({ branch, sha, actorId, identity: { name: identity.name || actorId, role: identity.role || '原 worker', portrait: portrait(branch,actorId) },
     action: { id: tea ? 'tea' : training ? 'train' : p.job, current: tea ? tea.now : training ? t.now : p.status,
       phase: tea ? tea.mode || 'pending' : p.phase?.name || p.mode, reason: field('action.reason', reason || null, { source: tea ? `${source}:view.teaEvents.${teaCause?.kind || 'missing'}` : source }),
-      next: tea ? teaCancelled ? null : tea.next : training ? t.next : p.next, target: tea ? tea.mode === 'fromTea' ? '院中' : '茶座' : training ? `${t.units}／${t.max} 單位` : p.jobLabel,
+      next: tea ? teaCancelled ? null : tea.next : p.next, target: tea ? tea.mode === 'fromTea' ? '院中' : '茶座' : training ? `${t.units}／${t.max} 單位` : p.jobLabel,
       progress: field('action.progress', progress, { source, unit: 'ratio' }),
       stopReason: field('action.stopReason', tea ? teaCancelled ? teaCause.text : null : p.why || (training ? t?.why : null) || null, { source }) }, fields,
     martial: officialMartial(model, p, source),
