@@ -24,7 +24,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .tag.place { font-weight: 700; transform: translate(-50%, -100%); box-shadow: 0 1px 4px rgba(0, 0, 0, .08); }
 .tag.pill { transform: translate(-50%, -100%); background: rgba(47, 42, 36, .88); color: #f6e7c4; border: 0; }
 .tag.gain { transform: translate(-50%, -100%); background: none; border: 0; color: #246830; font-weight: 700; font-size: 14px; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.95), 0 0 5px rgba(255, 255, 255, 0.8); }
-.menu { position: fixed; width: 310px; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; z-index: 4;
+.menu { position: fixed; width: 330px; max-height: calc(100vh - 100px); overflow: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; z-index: 4;
   box-shadow: 0 8px 24px rgba(0, 0, 0, .18); }
 .menu h3 { margin: 0 0 6px; font-size: 16px; } .menu h3 small { color: var(--ink2); font-weight: 400; font-size: 12px; margin-left: 6px; }
 .opt { display: block; width: 100%; text-align: left; font: inherit; border: 1px solid transparent; border-radius: 6px; background: none; padding: 4px 6px; cursor: pointer; color: var(--ink); }
@@ -163,3 +163,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 .btn.mini { padding: 1px 6px; font-size: 12px; margin-left: 2px; }
 .bar.site i { background: #8a6a3e; }
 .home02 .unsaved { color: #8a4a2a; }
+
+.facility-detail p { margin: 7px 0; font-size: 12px; }
+.facility-detail h4 { margin: 9px 0 4px; }
+.facility-detail select { max-width: 150px; font: inherit; }
+.facility-sources { font-size: 12px; margin: 9px 0; }
+.facility-tooltip { position: fixed; z-index: 6; max-width: 320px; pointer-events: none; background: #fcf4df; border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px; font-size: 12px; box-shadow: 0 3px 12px #0002; }
