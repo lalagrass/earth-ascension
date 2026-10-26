@@ -10,7 +10,7 @@ const port=Number(process.env.PUBLIC_FIX_TEST_PORT||8819),origin=`http://127.0.0
 const check=(v,label)=>{assert.ok(v,label);result.checks.push(label);console.log('PASS',label);},snap=()=>page.evaluate(()=>demo.snapshot());
 const wait=fn=>page.waitForFunction(fn,undefined,{polling:50,timeout:120000});
 const pause=async()=>{if((await snap()).playing)await page.click('#play');};
-async function shot(name){await page.screenshot({path:new URL(name,out).pathname});result.screenshots.push(name);}
+async function shot(name){if(name.includes('action'))await page.locator('.public-action').scrollIntoViewIfNeeded();await page.screenshot({path:new URL(name,out).pathname});result.screenshots.push(name);}
 async function actor(id){await page.click(`#roster [data-person="${id}"]`);}
 try{
  browser=await chromium.launch({executablePath:process.env.CHROMIUM||'/usr/bin/chromium',headless:true,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});result.browser=browser.version();
