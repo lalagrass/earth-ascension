@@ -22,3 +22,15 @@ export const SCORE = [
   { act: 'rest', when: ['nightRest'], v: 60, why: '入夜歇息' },
   { act: 'cook', when: ['cookable'], v: { lin: ['food', 10], mul: [4], plus: 30 }, why: '灶上該煮飯了' },
 ];
+// v1.8 打分後處理＝純資料（原 scoreActs 內的 if）：依序套用；sim.mjs 的 postRows() 是唯一解讀器。
+// who：labor／notLabor；if：前提（POST_PRED 名，「!」開頭取反）；acts／except：作用範圍（陣列或 K.* 常數名）；
+// drop：true 或述詞名 → 移除；muls：[{ name, v, if?, hide1? }] → 推入外部組倍率並把乘積寫到 f[key]
+export const SCORE_POST = [
+  { acts: ['farm'], drop: '!plotWork' },
+  { who: 'labor', except: 'K.LABOR_ACTS', drop: true },
+  { who: 'labor', acts: ['chop', 'quarry', 'build'], muls: [{ name: '雇工', v: 'K.LABOR_WORK_MUL' }], key: 'labor' },
+  { who: 'notLabor', acts: 'K.CHORE_ACTS', if: ['skip'], drop: true },
+  { who: 'notLabor', acts: 'K.CHORE_ACTS', if: ['outer', '!em'], drop: '!myDuty', muls: [{ name: '優先度', v: 'prioMul', hide1: true }, { name: '日課未滿', v: 'K.QUOTA.dutyMul', if: 'owe' }], key: 'duty' },
+  { who: 'notLabor', if: ['foodLow'], except: 'FS.keep', muls: [{ name: '糧荒', v: 'FS.gateMul' }], key: 'food' }, // v1.76 糧荒
+  { who: 'notLabor', if: ['head'], acts: ['train'], muls: [{ name: '首徒', v: 'K.QUOTA.headTrain' }], key: 'head' },
+];

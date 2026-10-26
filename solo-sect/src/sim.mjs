@@ -9,7 +9,7 @@ import { seasonOf } from './season.mjs';
 import { pipeline, mulText } from './mul.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf } from './expedition.mjs';
 import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC } from './data.mjs';
-import { SCORE } from './score-data.mjs';
+import { SCORE, SCORE_POST } from './score-data.mjs';
 import { addMem, chatLine, passPick, passDo, PASS, apprDaily, apprMul } from './bonds.mjs';
 import { aspStep, likeMeal, likesOf } from './v10.mjs';
 import { raidMul } from './expedition.mjs';
@@ -242,6 +242,21 @@ export function valOf(v, c) { if (typeof v === 'number') return v; if (typeof v 
 export const foodLow = (s) => s.res.food + s.res.veg < FOOD_SEC.perHead * s.ds.filter((d) => !d.away).length; // v1.76 糧食安全
 export const vegFree = (s) => s.res.veg - stockReserved(s, 'veg');
 const fillWhy = (w, c) => (w || '').replace(/\{([\w.]+)\}/g, (_, p) => path(c, p) ?? '');
+// v1.8 後處理解讀器（規則在 score-data.mjs 的 SCORE_POST）
+const POST_PRED = { plotWork: (c) => c.plotWork, skip: (c) => c.skip, outer: (c) => c.d.role === 'outer', em: (c) => c.em, myDuty: (c, o) => (c.d.duties || CHORE_ACTS).includes(o.act), owe: (c) => c.owe > 0, foodLow: (c) => foodLow(c.s), head: (c) => c.d.role === 'head' };
+const postTest = (k, c, o) => (k === true ? true : k[0] === '!' ? !POST_PRED[k.slice(1)](c, o) : POST_PRED[k](c, o));
+function postRows(s, d, out, plotWork) {
+  const lab = isLabor(d), c = { s, d, plotWork, FS: FOOD_SEC, K: { LABOR_ACTS, LABOR_WORK_MUL, CHORE_ACTS, QUOTA } };
+  if (!lab) { c.skip = skipsChores(s, d); c.em = emergency(s); c.owe = quotaOf(d) - (d.chore || 0); c.prioMul = PRIO[d.prio || 'normal'][0]; }
+  const list = (v) => (typeof v === 'string' ? path(c, v) : v);
+  for (const R of SCORE_POST) {
+    if (R.who === 'labor' ? !lab : R.who === 'notLabor' ? lab : false) continue; if (R.if && !R.if.every((k) => postTest(k, c))) continue;
+    const acts = R.acts && list(R.acts), exc = R.except && list(R.except);
+    for (let i = out.length - 1; i >= 0; i--) { const o = out[i]; if (acts && !acts.includes(o.act)) continue; if (exc && exc.includes(o.act)) continue;
+      if (R.drop && postTest(R.drop, c, o)) { out.splice(i, 1); continue; }
+      if (R.muls) { let m = 1; for (const M of R.muls) { if (M.if && !postTest(M.if, c, o)) continue; const v = path(c, M.v); m *= v; if (!(M.hide1 && v === 1)) o.f.P.ext.push([M.name, v]); } o.f[R.key] = m; } }
+  }
+}
 export function scoreActs(s, d) {
   const out = []; needStep(d); const c = scoreCtx(s, d);
   for (const R of SCORE) { if (R.gen) { for (const [act, A] of GEN_ACTS) { if (!offered(s, act).length) continue; const g = genOf(s, act, A); if (!g || !GEN_COND[g.cond]?.(s, d) || !dayOk(s, act, g.perDay)) continue; if (g.base > 0) out.push({ act, score: g.base, why: g.why, ...(g.layer ? { layer: g.layer } : {}) }); } continue; }
@@ -252,16 +267,7 @@ export function scoreActs(s, d) {
   // v0.95 統一倍率管線：作息是時段閘門（管線外），性格→天賦組、心情→狀態組、職責/首徒/雇工→外部組
   const tparts = (act) => { const r = (d.personality || []).map((p) => [TRAITS[p]?.name || p, TRAITS[p]?.mods?.[act] || 1]).filter(([, v]) => v !== 1); const vm = valueMul(d, act); if (vm !== 1) r.push(['價值觀', vm]); return r; };
   for (const o of out) { const f = { base: o.score, sched: sch[o.act] || 1, trait: traitMul(d, o.act), mood: moodMul(d, o.act), noise: rand(s) * 8, P: { talent: tparts(o.act), state: o.act && moodMul(d, o.act) !== 1 ? [['心情', moodMul(d, o.act)]] : [], ext: [] } }; o.f = f; }
-  for (let i = out.length - 1; i >= 0; i--) if (out[i].act === 'farm' && !plotWork) out.splice(i, 1);
-  if (isLabor(d)) { for (let i = out.length - 1; i >= 0; i--) { const o = out[i]; if (!LABOR_ACTS.includes(o.act)) out.splice(i, 1); else if (['chop', 'quarry', 'build'].includes(o.act)) { o.f.P.ext.push(['雇工', LABOR_WORK_MUL]); o.f.labor = LABOR_WORK_MUL; } } }
-  if (!isLabor(d)) {
-    const skip = skipsChores(s, d), em = emergency(s), owe = quotaOf(d) - (d.chore || 0);
-    for (let i = out.length - 1; i >= 0; i--) { const o = out[i]; if (!CHORE_ACTS.includes(o.act)) continue;
-      if (skip) { out.splice(i, 1); continue; }
-      if (d.role === 'outer' && !em) { if (!(d.duties || CHORE_ACTS).includes(o.act)) { out.splice(i, 1); continue; } const m = PRIO[d.prio || 'normal'][0] * (owe > 0 ? QUOTA.dutyMul : 1); if (PRIO[d.prio || 'normal'][0] !== 1) o.f.P.ext.push(['優先度', PRIO[d.prio || 'normal'][0]]); if (owe > 0) o.f.P.ext.push(['日課未滿', QUOTA.dutyMul]); o.f.duty = m; } }
-    if (foodLow(s)) for (const o of out) if (!FOOD_SEC.keep.includes(o.act)) { o.f.P.ext.push(['糧荒', FOOD_SEC.gateMul]); o.f.food = FOOD_SEC.gateMul; } // v1.76 糧荒：非必要活動讓位給種菜煮飯
-    if (d.role === 'head') for (const o of out) if (o.act === 'train') { o.f.P.ext.push(['首徒', QUOTA.headTrain]); o.f.head = QUOTA.headTrain; }
-  }
+  postRows(s, d, out, plotWork);
   for (const o of out) { const f = o.f, p = pipeline(f.P); f.talent = p.talent; f.state = p.state; f.ext = p.ext; f.total = p.total; f.text = mulText(p); f.bored = boredMul(s, d, o.act); o.score = f.base * f.sched * p.total * f.bored + f.noise; delete f.P;
     o.layer ??= f.duty || f.labor ? 'duty' : f.sched >= 1.3 ? 'sched' : 'trait'; }
   return out.sort((a, b) => b.score - a.score);
