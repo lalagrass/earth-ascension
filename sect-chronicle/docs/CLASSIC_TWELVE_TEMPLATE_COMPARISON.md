@@ -139,3 +139,56 @@ W11、W12、W18可由人物卡跨域技藝區引用，不為湊「武學數量�
 ## 9. MBTI候選與仙俠補充
 
 十二人已補[MBTI v0.1](CHARACTER_MBTI_CANDIDATES.md#3-十二人先放一版)：型號僅候選摘要，S社群標示與P暫擬／原創語氣分開，不改C／W研究號、先天、所學或既有規則。李莫愁／程靈素缺已核分類則暫擬並明標，不冒充社群共識；同型不強行拉開數字。另見[仙俠欄位研究](XIANXIA_ATTRIBUTE_CANDIDATES.md)，所有新增稟賦／資源／狀態仍待選，沒有追溯填經典角色靈根、神識或新公式。
+
+## Grok v2立繪補充（2026-10-26，非最終）
+
+擁有人偏好Grok v2立繪。下列只以固定SHA引用 `codex/solo-sect-grok` 的PNG，沒有複製到dev、沒有改各版載入或建立#339共用庫，也未接入Grok runtime切換。
+
+| 人物 | v2立繪預覽 | 固定來源／狀態 |
+|---|---|---|
+| 黃蓉 | <img src="https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/huangrong-v2-ref.png?raw=true" width="120" alt="黃蓉v2分支立繪"> | [Grok v2/huangrong-v2-ref.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/huangrong-v2-ref.png)；864×1152；既有v2女性風格基準（啃雞腿），俏皮機靈 |
+| 小龍女 | <img src="https://github.com/lalagrass/earth-ascension/blob/cadb937fb7ed54f44c72e562639fc598a6a1e646/solo-sect/assets/portraits/v2/xiaolongnv-v2-c.png?raw=true" width="120" alt="小龍女v2分支立繪"> | [Grok v2/xiaolongnv-v2-c.png](https://github.com/lalagrass/earth-ascension/blob/cadb937fb7ed54f44c72e562639fc598a6a1e646/solo-sect/assets/portraits/v2/xiaolongnv-v2-c.png)；480×640；本輪選定（近景、加深輪廓）；清冷出塵、平靜無笑；白衣、灰藍暈染背景；前一版 b [xiaolongnv-v2-b.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/xiaolongnv-v2-b.png)（全身、白綾、玉蜂）；候選a [xiaolongnv-v2-a.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/xiaolongnv-v2-a.png) |
+| 李莫愁 | <img src="https://github.com/lalagrass/earth-ascension/blob/6760f21c342cbf72fc9fb4baf0aec8655abd0dd2/solo-sect/assets/portraits/v2/limochou-v2-h.png?raw=true" width="120" alt="李莫愁v2分支立繪"> | [Grok v2/limochou-v2-h.png](https://github.com/lalagrass/earth-ascension/blob/6760f21c342cbf72fc9fb4baf0aec8655abd0dd2/solo-sect/assets/portraits/v2/limochou-v2-h.png)；480×640；擁有人選定；成熟淒厲、冷眼警告；手拈冰魄銀針，針尖帶綠色毒光；暗紅外袍（黑金滾邊、金色紋繡）罩杏黃道袍，黑金腰封配玉珮；高髻配銀冠、紅珠長簪、紅緞帶；衣襟敞開，是擁有人要求的個別例外（不露點、不挑逗）；本版無遊戲角色，只是美術；先前版本 a／c／e／g 都保留（[c](https://github.com/lalagrass/earth-ascension/blob/c219776eedc707fc763820edfa661b05c71df483/solo-sect/assets/portraits/v2/limochou-v2-c.png)） |
+| 東方不敗 | <img src="https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/dongfangbubai-v2-a.png?raw=true" width="120" alt="東方不敗v2分支立繪"> | [Grok v2/dongfangbubai-v2-a.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/dongfangbubai-v2-a.png)；480×640；本輪選定；陰柔危險；紅袍、繡花針與紅線；inkpretty為核准例外；候選b [dongfangbubai-v2-b.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/dongfangbubai-v2-b.png) |
+
+來源：Grok Bot以GenerateImage於2026-10-26生成，風格style2-inkpretty（女性與東方不敗；男性另用wcaricature），以 `v2/huangrong-v2-ref.png` 為風格參考圖。個別情緒依人物性格決定，不統一為俏皮：小龍女清冷出塵、李莫愁高傲淒厲帶恨、東方不敗陰柔危險。規則：不吐舌、不媚眼、不作嬌羞姿態，不仿任何真人演員臉。電影／小說人物權利、模型版本與種子未記，仍待#339核；不是最終公版造型。
+
+### 新舊對照、人物卡預覽與權限（審閱用）
+
+預覽圖放在 `docs/assets/portrait-preview-grok/`，是 PIL 合成的靜態審閱圖，**不是 runtime 素材**。人物卡畫面標「示意」，只顯示立繪、姓名和 actorId，不含任何數值或隱藏欄位。
+
+| 人物 | actorId（solo-sect src） | 替換原因 | 素材來源 | 使用權限 | 對照／卡片預覽 |
+|---|---|---|---|---|---|
+| 阿星 | `axing`（hero-data.mjs:34） | 擁有人偏好 v2：比讚和秘笈比 v1 更具辨識度，且不仿演員臉 | Grok Bot GenerateImage，2026-10-25 生成（commit 0aa722d）；風格 wcaricature；提示與參考見 solo-sect/assets/portraits/PROMPTS.md；以 edaf2ed 固定引用 | 見下方權限說明 | [對照](assets/portrait-preview-grok/axing-compare.png)／[卡](assets/portrait-preview-grok/axing-card.png) |
+| 黃蓉 | `huangrong`（hero-data.mjs:38） | v2 啃雞腿為女性風格基準 | GenerateImage 2026-10-25（0aa722d）；inkpretty（本圖即風格參考，見 PROMPTS.md）；以 edaf2ed 固定引用 | 同上 | [對照](assets/portrait-preview-grok/huangrong-compare.png)／[卡](assets/portrait-preview-grok/huangrong-card.png) |
+| 小龍女 | `xiaolongnv`（wuxia.mjs:33） | v1 偏中性；v2 依女性 inkpretty 規則，清冷出塵；v2-c 改近景並加深背景暈染，讓白衣輪廓更清楚（b 取景遠、白衣貼近背景） | GenerateImage 2026-10-26；inkpretty；v2-c 以 v2-b 為參考；cadb937（a、b 保留於 edaf2ed） | 同上 | [對照](assets/portrait-preview-grok/xiaolongnv-compare.png)／[卡](assets/portrait-preview-grok/xiaolongnv-card.png) |
+| 東方不敗 | `dongfangbubai`（sect-data.mjs:6、data.mjs:435） | 統一 inkpretty（核准例外），陰柔危險 | Grok Bot GenerateImage 2026-10-26；inkpretty；edaf2ed 固定引用（東方不敗 v2-a） | 同上 | [對照](assets/portrait-preview-grok/dongfangbubai-compare.png)／[卡](assets/portrait-preview-grok/dongfangbubai-card.png) |
+| 李莫愁 | 未建角（建議 `limochou`） | 新增，無舊圖；擁有人覺得 a 雙手都拿東西顯得生硬、c 的拂塵畫得怪，改選 h：毒針加敞襟（擁有人要求的例外），暗紅外袍罩杏黃道袍，配銀冠 | GenerateImage 2026-10-26；inkpretty；h 以 e 為參考；6760f21 | 同上 | [對照](assets/portrait-preview-grok/limochou-compare.png)／[卡](assets/portrait-preview-grok/limochou-card.png) |
+
+**權限說明**：
+- 這些圖是 AI 生成的，**沒有核對過任何第三方權利**。
+- 模型與條款以影像生成服務為準，模型版本和種子沒有記錄。
+- 原著人物屬於各小說或電影的權利人。
+- 目前只供本機個人研究使用，**不宣稱任何授權**。
+- provenance 和 BRIEF 例外待 #339 確認。
+
+#### 人物卡裁切一致化（2026-10-26）
+
+五張卡片預覽統一用 [`card-crop.json`](assets/portrait-preview-grok/card-crop.json) 的裁切映射，不重畫原圖。
+- 量測方式：20 格網格目測，加上簡單的頭頂、眼睛、下巴邊界框。
+- 目標：頭高佔立繪框 32%、眼線在 36%，安全區內縮 6%。
+- QA 圖：[card-crop-qa.png](assets/portrait-preview-grok/card-crop-qa.png)。
+- 阿星原圖頭部較大，裁切框超出原圖的部分以底色補邊。
+
+#### 後續候選（不在本 PR）
+
+- 阿星：健康常態版（無傷、無黑眼圈）
+- 黃蓉：空手版（不拿雞腿）
+
+#### 李莫愁服裝與髮型參考（只讀文字，沒有看劇照）
+
+以下只依據文章對各版劇照的文字描述整理，沒有打開任何劇照圖片，也沒有參考任何演員的臉。
+- 杏黃道袍是原著和最受好評版本（1995 TVB）的核心；2006 黑道袍、2014 紫長衣評價較差。所以保留杏黃道袍為底，外罩暗紅。
+- 「帶發修行的富家小姐」、「蛇蝎美人」：用金色紋繡滾邊、華麗腰封和玉珮表現富貴。
+- 髮型方面，冲天丸子頭（1984）、毛線頭假髮（1998 新加坡版）、挑染飄髮（2006）、厚重假髮（1983 邵氏）都被批評。所以採用端正的高道髻配銀冠和長簪。
+- 來源：https://www.xinjiapo.news/news/173166 、https://www.163.com/dy/article/JE1TCQDQ053745HP.html 、https://www.xinjiapo.news/news/235085 、http://bj.bendibao.com/live/201396/116196.shtm
