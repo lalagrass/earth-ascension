@@ -1,0 +1,51 @@
+{
+  "source": "model checks on created worlds and existing saves; no fixture changes the world",
+  "cases": [
+    {
+      "case": "catalog",
+      "profiles": [
+        "gpt-custom",
+        "gpt-guo",
+        "gpt-linghu",
+        "gpt-yue",
+        "gpt-child",
+        "gpt-amu"
+      ]
+    },
+    {
+      "case": "binding"
+    },
+    {
+      "case": "saves",
+      "rows": [
+        [
+          "evidence/optimization/showcase-m16/showcase-m12-m16.save.json",
+          "gpt-custom"
+        ],
+        [
+          "evidence/optimization/showcase-m23/showcase-m17-m23.save.json",
+          "gpt-custom"
+        ],
+        [
+          "evidence/optimization/m30/showcase-m24-m30.save.json",
+          "gpt-custom"
+        ],
+        [
+          "evidence/development/u04-guo/normal-template-start.save.json",
+          "gpt-guo"
+        ],
+        [
+          "evidence/development/u04-yue/normal-template-start.save.json",
+          "gpt-yue"
+        ]
+      ]
+    },
+    {
+      "case": "safety"
+    },
+    {
+      "case": "no-world",
+      "ticks": 600
+    }
+  ]
+}

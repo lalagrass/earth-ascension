@@ -1,0 +1,17 @@
+import assert from'node:assert/strict';import{launch}from'./ui-kit.mjs';
+// Normal-UI M34: four openings show their introductions in the start dialog; the chosen one shows on the person card; 小禾 and 阿木 have their own; a renamed custom leader keeps the custom profile; old saves keep theirs. Usage: node m34-ui.mjs <label> <w> <h>
+const [label='initial',width='1440',height='900']=process.argv.slice(2),k=await launch('m34-ui-'+label+'-'+width,{width:Number(width),height:Number(height)}),page=k.page,story={dialog:{}};
+const guoSave=new URL('../../evidence/development/u04-guo/normal-template-start.save.json',import.meta.url).pathname,demo=new URL('../../evidence/optimization/m30/showcase-m24-m30.save.json',import.meta.url).pathname;
+const card=async id=>{await k.person(id);await k.click('[data-person-tab="life"]');const box=page.locator('#panel .portrait+.public-profile');return await box.count()?{id:await box.getAttribute('data-profile-id'),text:await box.innerText()}:null;};
+let failure=null;
+try{await k.open();
+ for(const[t,name]of[['custom','自創掌門'],['guo','郭靖'],['linghu','令狐沖'],['yue','岳不群']]){await page.locator('#template').selectOption(t);const box=page.locator('#creation-profile');await box.locator('details summary').click();const text=await box.innerText();assert.equal(await box.locator('.public-profile').getAttribute('data-profile-id'),'gpt-'+t);assert.match(text,/背景/);assert.match(text,/能力摘要（表單目前配點，與模板預設相同）/);assert.doesNotMatch(text,/只供對照|不是可選開局|沒有他的開局/);story.dialog[t]=text;await k.shot('01-dialog-'+t);}
+ await page.locator('[name="stat0"]').fill('5');await page.locator('[name="stat1"]').fill('4');story.edited=await page.locator('#creation-ability').innerText();assert.match(story.edited,/已改過模板預設/);assert.match(story.edited,/體魄 5 · 臂力 4/);
+ await page.locator('#template').selectOption('guo');await k.newGame();let w=await k.snap();assert.equal(w.template,'guo');assert.equal(w.people.leader.name,'郭靖');
+ let c=await card('leader');assert.equal(c.id,'gpt-guo');story.guoCard=c.text;await page.locator('#panel .portrait+.public-profile .public-background summary').click();await k.until(x=>x.tick>(w.tick+60),'refreshes',60000,1);assert.equal(await page.locator('#panel .portrait+.public-profile .public-background').evaluate(e=>e.open),true,'background closed by refresh');await k.shot('02-guo-card');
+ c=await card('child');assert.equal(c.id,'gpt-child');story.child=c.text;c=await card('amu');assert.equal(c.id,'gpt-amu');story.amu=c.text;assert.equal(await page.locator('#panel .portrait+.public-profile .public-background').evaluate(e=>e.open),false,'leader open state leaked to amu');await k.shot('03-amu-card');
+ await k.open();await page.locator('#template').selectOption('custom');await page.locator('#creation [name="name"]').fill('郭靖<b>長名字測試十二三四五');await k.newGame();w=await k.snap();story.customName=w.people.leader.name;c=await card('leader');assert.equal(c.id,'gpt-custom');assert.equal(await page.locator('.portrait h3').innerText(),w.people.leader.name);await k.shot('04-custom-renamed');
+ await k.importSave(guoSave);c=await card('leader');assert.equal(c.id,'gpt-guo');await k.importSave(demo);c=await card('leader');assert.equal(c.id,'gpt-custom');c=await card('lin');assert.equal(c,null);await k.shot('05-old-save-lin');
+ await k.log('done',{});
+}catch(e){failure=e.stack;await k.shot('failure').catch(()=>{});}
+const s=await k.finish({label,viewport:[width,height],failure,story});console.log(failure?'FAILED':'PASSED',s.wallSeconds);if(failure){console.error(failure);process.exit(1);}

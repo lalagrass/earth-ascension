@@ -48,6 +48,8 @@
 | `6f959f5/resource-view/render.mjs` | `sect-chronicle/resource-view/render.mjs` | f33e293436aa325f0483a0e255014b2cb65b890280024a197dffd3041e1ffe35 | 採用（M32） |
 | `6f959f5/intent-view/contract.mjs` | `sect-chronicle/intent-view/contract.mjs` | de555b468c91e616ae919e33b621c91dd7677fd34b3a608209c145e8b4787acb | 採用（M33，只加來源註解）；不採用同目錄 `gpt.mjs`（import 舊核心），本地轉接在 `src/intent-view.mjs` |
 | `6f959f5/intent-view/render.mjs` | `sect-chronicle/intent-view/render.mjs` | 10c096cf42296099155de039ab33e5327ff367865b708861756024da63637193 | 採用（M33，只加來源註解） |
+| `6f959f5/character-card/profile-html.mjs` | `sect-chronicle/character-card/render.mjs`（只摘 `profileHtml`） | 8637150d624dcbe8ceaa1cb8bd7c75d8e47f854da3efb338f8e956708a9d88a5 | 採用（M34）；改寫：拿掉研究頁用的「只供對照，不是可選開局」；import 改指本地 `public-ui/values.mjs` |
+| （文字，不複製檔案）`src/profiles.mjs` | `sect-chronicle/character-card/profiles.mjs` 的 `guojing`、`linghuchong` 短介 | 1057517afb78b5f889887e4f66dc9765205746050d43b3bdf36d9ff1af3492f7 | M34 借兩句短介（令狐沖刪去師門身分）；背景、其他四筆為本版新寫；研究目錄其餘人物、dev `hero/cousin/girl` 綁定與「沒有開局」說明不採用 |
 
 依賴閉包：`resource-view/render.mjs` → `public-ui/values.mjs`；`resource-view/contract.mjs` → `character-card/contract.mjs`；沒有其他 import。
 
