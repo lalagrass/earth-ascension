@@ -1,5 +1,7 @@
 # 公版人物卡立繪與三分支共用素材取用提案
 
+2026-10-26有限工程狀態補充：#346批准的#345／#348／#349／#350已合dev及postCI；#351本PR交既有事件與整合收尾候選。已交／未交、三版能力及固定來源見[公版路線](SHARED_PUBLIC_ROADMAP.md)與[#351工作包](EVENT_PUBLIC_HANDOFF.md)。本提案下方歷史「只規劃／未實裝」僅在上述已交有限呈現範圍被更新；新能力／公式、完整圖庫與三原作者最新分支全面採用仍未交／未授權，不因本序列一併完成。
+
 2026-10-26，擁有人追加「人物面板是否有立繪、共用asset位置／使用方式」。主 [#340人物卡評估](https://github.com/lalagrass/earth-ascension/issues/340)，素材實作仍歸 [#339未排程backlog](https://github.com/lalagrass/earth-ascension/issues/339)。**本輪只規劃／請三方評估，不建立素材庫、不搬圖、不安裝工具、不改載入或遊戲系統。**
 
 [公版](CHARACTER_CARD_PUBLIC_PROPOSAL.md)／[對照](CHARACTER_CARD_BRANCH_MAPPING.md)／[三位agent提示詞](CHARACTER_CARD_AGENT_PROMPTS.md)。公版設計已同意作為評估基準，這裡新增的路徑、打包方式與素材清單仍是待評方案，不自動授權共用原本獨立分支的素材。

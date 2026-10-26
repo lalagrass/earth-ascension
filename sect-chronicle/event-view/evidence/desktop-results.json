@@ -1,0 +1,91 @@
+{
+  "checkpoint": "be0cec1ec295486fa4d03eb7e1c0252cfcc2e8ce",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "checks": [
+    "single official entry combines prior public slices",
+    "selected real person shows native current action and reason",
+    "original learned palm remains visible",
+    "paused cards and event filter leave authority unchanged",
+    "facility reassignment at pause neither moves nor delivers",
+    "true native long route and distinct two-person speeds retained",
+    "herbs really delivered while slow long water commute continues",
+    "recent record reflects true original herb completion",
+    "visible recent list obeys 24-row cap",
+    "event links to actual supported facility",
+    "event links back to original person card",
+    "true water trip updates original vat",
+    "person selection filters original water completion",
+    "martial filter never substitutes nearby work as training",
+    "repeated paused render neither duplicates events nor changes world",
+    "reset removes previous run presentation without core history edits"
+  ],
+  "errors": [],
+  "screenshots": [
+    "official-herb-recent.jpg",
+    "official-water-recent.jpg"
+  ],
+  "browser": "154.0.8037.57",
+  "start": {
+    "tick": 0,
+    "lengths": {
+      "water": 1700.9,
+      "herb": 515.2,
+      "seat": {
+        "hero": 90.7148381848365,
+        "cousin": 108.87455954080002
+      },
+      "fun": {
+        "hero": 208.55200726889586,
+        "cousin": 233.69607918779758
+      },
+      "boar": {
+        "edge": 220,
+        "total": 735.1,
+        "seen": 50.002066073015904
+      },
+      "guard": 283.4,
+      "drink": 39.7,
+      "drinkSeat": {
+        "hero": 130.4,
+        "cousin": 148.6
+      }
+    },
+    "heroSpeed": {
+      "empty": 60,
+      "load": 40
+    },
+    "cousinSpeed": {
+      "empty": 74.4,
+      "load": 52
+    }
+  },
+  "firstDelivery": {
+    "tick": 1555,
+    "hero": {
+      "phase": "down",
+      "x": 676.450294109698,
+      "y": 1199.3646817763038,
+      "water": 0
+    },
+    "cousin": {
+      "herb": 1
+    },
+    "herbs": 1
+  },
+  "waterDelivered": {
+    "tick": 4974,
+    "vat": 4,
+    "herbs": 3,
+    "heroDone": 1
+  },
+  "passed": true,
+  "cleanup": {
+    "pageClosed": true,
+    "browserClosed": true,
+    "serverStopped": true,
+    "viewport": "owned viewport restored then browser closed"
+  }
+}
