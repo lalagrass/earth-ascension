@@ -152,3 +152,22 @@ W11、W12、W18可由人物卡跨域技藝區引用，不為湊「武學數量�
 | 東方不敗 | <img src="https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/dongfangbubai-v2-a.png?raw=true" width="120" alt="東方不敗v2分支立繪"> | [Grok v2/dongfangbubai-v2-a.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/dongfangbubai-v2-a.png)；480×640；本輪選定；陰柔危險；紅袍、繡花針與紅線；inkpretty為核准例外；候選b [dongfangbubai-v2-b.png](https://github.com/lalagrass/earth-ascension/blob/edaf2ed60954808221447640efb79f0215dbc278/solo-sect/assets/portraits/v2/dongfangbubai-v2-b.png) |
 
 來源：Grok Bot以GenerateImage於2026-10-26生成，風格style2-inkpretty（女性與東方不敗；男性另用wcaricature），以 `v2/huangrong-v2-ref.png` 為風格參考圖。個別情緒依人物性格決定，不統一為俏皮：小龍女清冷出塵、李莫愁高傲淒厲帶恨、東方不敗陰柔危險。規則：不吐舌、不媚眼、不作嬌羞姿態，不仿任何真人演員臉。電影／小說人物權利、模型版本與種子未記，仍待#339核；不是最終公版造型。
+
+### 新舊對照、人物卡預覽與權限（審閱用）
+
+預覽圖放在 `docs/assets/portrait-preview-grok/`，是 PIL 合成的靜態審閱圖，**不是 runtime 素材**。人物卡畫面標「示意」，只顯示立繪、姓名和 actorId，不含任何數值或隱藏欄位。
+
+| 人物 | actorId（solo-sect src） | 替換原因 | 素材來源 | 使用權限 | 對照／卡片預覽 |
+|---|---|---|---|---|---|
+| 阿星 | `axing`（hero-data.mjs:34） | 擁有人偏好 v2：比讚和秘笈比 v1 更具辨識度，且不仿演員臉 | Grok Bot GenerateImage，2026-10-26 前生成；風格 wcaricature，參考圖 guojing-v2-b；固定於 edaf2ed | 見下方權限說明 | [對照](assets/portrait-preview-grok/axing-compare.png)／[卡](assets/portrait-preview-grok/axing-card.png) |
+| 黃蓉 | `huangrong`（hero-data.mjs:38） | v2 啃雞腿為女性風格基準 | 同上；風格 inkpretty（本圖即風格參考） | 同上 | [對照](assets/portrait-preview-grok/huangrong-compare.png)／[卡](assets/portrait-preview-grok/huangrong-card.png) |
+| 小龍女 | `xiaolongnv`（wuxia.mjs:33） | v1 性別觀感不符；v2 清冷出塵 | GenerateImage 2026-10-26；inkpretty；參考 huangrong-v2-ref；edaf2ed | 同上 | [對照](assets/portrait-preview-grok/xiaolongnv-compare.png)／[卡](assets/portrait-preview-grok/xiaolongnv-card.png) |
+| 東方不敗 | `dongfangbubai`（sect-data.mjs:6、data.mjs:435） | 統一 inkpretty（核准例外），陰柔危險 | 同上 | 同上 | [對照](assets/portrait-preview-grok/dongfangbubai-compare.png)／[卡](assets/portrait-preview-grok/dongfangbubai-card.png) |
+| 李莫愁 | 未建角（建議 `limochou`） | 新增，無舊圖；高傲淒厲帶恨 | 同上 | 同上 | [對照](assets/portrait-preview-grok/limochou-compare.png)／[卡](assets/portrait-preview-grok/limochou-card.png) |
+
+**權限說明**：
+- 這些圖是 AI 生成的，**沒有核對過任何第三方權利**。
+- 模型與條款以影像生成服務為準，模型版本和種子沒有記錄。
+- 原著人物屬於各小說或電影的權利人。
+- 目前只供本機個人研究使用，**不宣稱任何授權**。
+- provenance 和 BRIEF 例外待 #339 確認。
