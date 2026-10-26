@@ -1,0 +1,2 @@
+export const TRAIL_ROUTES={main:{name:'沿溪主路',description:'營地後沿谷地走；過溪仍只用單人窄橋。',points:[]},ridge:{name:'營地側稜路',description:'繞既有林地高路，路長、回程預留增加；最後仍匯入同一座橋。',points:[[1740,480],[1770,360],[1840,330],[1845,370],[1855,440],[1770,480]]}};
+export const TRAIL_GOALS={gather:{name:'林緣採藥',target:'forest',description:'採兩株有限藥草，手上有重量，返院交倉才算完成。'},escort:{name:'陪村人到溪谷',target:'valley',description:'等同一位村人從南路走來，陪到溪谷再一同返院。'},spar:{name:'營地約切磋',target:'camp',description:'守路人真走來，在營地安全交手30秒／半血止，帶著記憶回家。'},explore:{name:'沿原路探古洞',target:'cave',description:'沿原有古洞／糧袋／救人履約流程，可在過橋後召回。'}};

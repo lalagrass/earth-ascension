@@ -1,0 +1,9 @@
+{
+  "responses": [],
+  "console": [],
+  "pageErrors": [],
+  "cleanup": {
+    "browserClosed": true,
+    "serverStopped": true
+  }
+}

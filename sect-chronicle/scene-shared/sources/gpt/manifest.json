@@ -1,0 +1,248 @@
+{
+  "original_commit": "6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc",
+  "original_author": "Claude Opus 5.5",
+  "purpose": "Exact committed source export for issue #342; no art assets or history; not a merge candidate",
+  "files": {
+    "solo-sect-gpt/content/core-v1.json": "4cdde7254ff92134b6019416b603afaf655645a7c4d2c9d002ca6d4118734eb8",
+    "solo-sect-gpt/data/directions.mjs": "e48346afd85fb56deed64dbe8ce94d9c722d991a79adbbbccd5619c89b5f6205",
+    "solo-sect-gpt/maps/runtime/layout.mjs": "ba50f19b05c37e23c26b103ba0cb1956eb040495d29522bb9941ebfe824971c8",
+    "solo-sect-gpt/src/activities.mjs": "b5b0888954b252843f42469e49182d85a8778e30404d7c9041abfabacacb48ad",
+    "solo-sect-gpt/src/catalog.mjs": "82539c178d1b31b93845e65a2c77c0821695c99bf8689a8f8878f9b38e362c8a",
+    "solo-sect-gpt/src/classes.mjs": "9244a2f3873b3ff8452359206e757d0fea44d42c5f7f2ce1e6524e253fa60639",
+    "solo-sect-gpt/src/combat.mjs": "7bc5573a85e8f7cd2d13f51f863a6868b33dacaaa8c40de74122c95b88eda9ef",
+    "solo-sect-gpt/src/commitment.mjs": "5b7444ed403ce394b288a665b900d257bde00d37efaba0e3a3a9fa987c12ef6c",
+    "solo-sect-gpt/src/content.mjs": "601cdc74fbf9491a2ee76e231c16b94640dace71558ab9b9560b33540e0eb7b7",
+    "solo-sect-gpt/src/culture-data.mjs": "1e9f10170f3536d2583cec589608434cf10961898fc2aa9d3069cacf7a2f9198",
+    "solo-sect-gpt/src/culture.mjs": "04ab1ffc09e3afe290a59bb4f3902784ceaecb94d4bd941b1dd8f7add9cab433",
+    "solo-sect-gpt/src/data.mjs": "bd168ac57ae19d1430e7bd9a496935b79a1018b0da77d9985b988668d72541de",
+    "solo-sect-gpt/src/economy.mjs": "5115fca76088cf439190233894734f4bf7464713601d7a5f0a9e2f364715d8ce",
+    "solo-sect-gpt/src/expedition.mjs": "4c13fc8110d3dca15e4023165947fd5d34d2c76e6b29e2c26e6be54ab6af6153",
+    "solo-sect-gpt/src/joint-drill.mjs": "80a117d4719b1b619a6285f0e6f9f09b7e15a883cd4ce63a4fae5425ec78ed70",
+    "solo-sect-gpt/src/journey-data.mjs": "3c370269b3c093418fe465f1786cf1263652d446f7b0a4938bb7ccbe8e2a5e26",
+    "solo-sect-gpt/src/journey.mjs": "e292f20be9fd737c0fb54562365e70e47ad1f4493abccdc66342c02cd70d198b",
+    "solo-sect-gpt/src/life-policy.mjs": "2a215f3a23b2b6a0c12c4afe989bdfabc41849b7528903444caff695a7a195c9",
+    "solo-sect-gpt/src/life.mjs": "cf87a3a82b7d89f3e77c60629a5248a1568fbf1dde57645820244a877a6c07a3",
+    "solo-sect-gpt/src/map.mjs": "43114f2f5fa7358cc31b646359f3868215d69dffadd85074d8a2eb26c4755c92",
+    "solo-sect-gpt/src/martial-config.mjs": "d774d5619f1e2889c8008f70380f376af1fbe11aa9ff0f76fa7c03a0d1b9ba68",
+    "solo-sect-gpt/src/martial.mjs": "fc885693679fcff2a6001c197d417e7734023825bde693fe5e246970d8e579c1",
+    "solo-sect-gpt/src/mentor.mjs": "0ef4a5927d87c21ba069fbc53b97b96021eba1b5253d898a5744635ef433dc59",
+    "solo-sect-gpt/src/navigation.mjs": "527f40f6da810ef406bda9224bf360f0863ae52042ae0106f424bc34330f9474",
+    "solo-sect-gpt/src/pack-schema.mjs": "3d209f3d630da27b5d9e4357014133dda47cbcb37fbe4fef5eb187f8aff69175",
+    "solo-sect-gpt/src/person-view.mjs": "0b48966e9f653e8fbbcea76c58f3bd49a8f9a9efcc3aa50cf42cd86acd4c3958",
+    "solo-sect-gpt/src/save-features.mjs": "1ae5f9033a42c9601014f5824c739e5b2876cdb79762a0e9f4f95faf40a9512c",
+    "solo-sect-gpt/src/state.mjs": "adaed775702c9104a074e92de39dcba9ad2fa170ff8e32cbbaa056caae219ce0",
+    "solo-sect-gpt/src/stories.mjs": "a46311390fc8f0387b5db96fb3ddf66d458f1921ef916b38b8d66652e3609976",
+    "solo-sect-gpt/src/view.mjs": "12a5ddba2a572f9f3e16c7e7b0e717bfea83584d9ca713f0b8c9478e93667c70",
+    "solo-sect-gpt/src/world.mjs": "adb83db946c12058ba33909267432c66fadbfeeffedcbe623a638c546c04cc68"
+  },
+  "transport_commit": "27be5b11fed8a9c33f2dc7e37c252932ebf709ac",
+  "archive_sha256": "bc75a8c3812af40cf0ef12be1be195936c2e43ba4e80ecac74f471771e42b0b7",
+  "dependency_roots": [
+    "solo-sect-gpt/src/world.mjs",
+    "solo-sect-gpt/src/map.mjs"
+  ],
+  "imported_by": {
+    "solo-sect-gpt/content/core-v1.json": [
+      "solo-sect-gpt/src/catalog.mjs"
+    ],
+    "solo-sect-gpt/data/directions.mjs": [
+      "solo-sect-gpt/src/combat.mjs",
+      "solo-sect-gpt/src/navigation.mjs"
+    ],
+    "solo-sect-gpt/maps/runtime/layout.mjs": [
+      "solo-sect-gpt/src/map.mjs"
+    ],
+    "solo-sect-gpt/src/activities.mjs": [
+      "solo-sect-gpt/src/classes.mjs",
+      "solo-sect-gpt/src/combat.mjs",
+      "solo-sect-gpt/src/content.mjs",
+      "solo-sect-gpt/src/culture.mjs",
+      "solo-sect-gpt/src/expedition.mjs",
+      "solo-sect-gpt/src/journey.mjs",
+      "solo-sect-gpt/src/life.mjs",
+      "solo-sect-gpt/src/martial.mjs",
+      "solo-sect-gpt/src/person-view.mjs",
+      "solo-sect-gpt/src/stories.mjs",
+      "solo-sect-gpt/src/world.mjs",
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/catalog.mjs": [
+      "solo-sect-gpt/src/activities.mjs",
+      "solo-sect-gpt/src/combat.mjs",
+      "solo-sect-gpt/src/content.mjs",
+      "solo-sect-gpt/src/culture-data.mjs",
+      "solo-sect-gpt/src/culture.mjs",
+      "solo-sect-gpt/src/data.mjs",
+      "solo-sect-gpt/src/pack-schema.mjs"
+    ],
+    "solo-sect-gpt/src/classes.mjs": [
+      "solo-sect-gpt/src/activities.mjs",
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/combat.mjs": [
+      "solo-sect-gpt/src/expedition.mjs",
+      "solo-sect-gpt/src/joint-drill.mjs",
+      "solo-sect-gpt/src/journey.mjs",
+      "solo-sect-gpt/src/life.mjs",
+      "solo-sect-gpt/src/martial.mjs",
+      "solo-sect-gpt/src/stories.mjs",
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/commitment.mjs": [
+      "solo-sect-gpt/src/activities.mjs",
+      "solo-sect-gpt/src/economy.mjs",
+      "solo-sect-gpt/src/expedition.mjs",
+      "solo-sect-gpt/src/mentor.mjs",
+      "solo-sect-gpt/src/person-view.mjs",
+      "solo-sect-gpt/src/stories.mjs",
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/content.mjs": [
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/culture-data.mjs": [
+      "solo-sect-gpt/src/culture.mjs"
+    ],
+    "solo-sect-gpt/src/culture.mjs": [
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/data.mjs": [
+      "solo-sect-gpt/src/activities.mjs",
+      "solo-sect-gpt/src/classes.mjs",
+      "solo-sect-gpt/src/combat.mjs",
+      "solo-sect-gpt/src/content.mjs",
+      "solo-sect-gpt/src/culture.mjs",
+      "solo-sect-gpt/src/economy.mjs",
+      "solo-sect-gpt/src/economy.mjs",
+      "solo-sect-gpt/src/expedition.mjs",
+      "solo-sect-gpt/src/joint-drill.mjs",
+      "solo-sect-gpt/src/journey.mjs",
+      "solo-sect-gpt/src/life-policy.mjs",
+      "solo-sect-gpt/src/life.mjs",
+      "solo-sect-gpt/src/map.mjs",
+      "solo-sect-gpt/src/martial-config.mjs",
+      "solo-sect-gpt/src/martial.mjs",
+      "solo-sect-gpt/src/mentor.mjs",
+      "solo-sect-gpt/src/navigation.mjs",
+      "solo-sect-gpt/src/person-view.mjs",
+      "solo-sect-gpt/src/state.mjs",
+      "solo-sect-gpt/src/stories.mjs",
+      "solo-sect-gpt/src/view.mjs",
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/economy.mjs": [
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/expedition.mjs": [
+      "solo-sect-gpt/src/journey.mjs",
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/joint-drill.mjs": [
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/journey-data.mjs": [
+      "solo-sect-gpt/src/expedition.mjs",
+      "solo-sect-gpt/src/journey.mjs"
+    ],
+    "solo-sect-gpt/src/journey.mjs": [
+      "solo-sect-gpt/src/expedition.mjs",
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/life-policy.mjs": [
+      "solo-sect-gpt/src/activities.mjs",
+      "solo-sect-gpt/src/person-view.mjs",
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/life.mjs": [
+      "solo-sect-gpt/src/content.mjs",
+      "solo-sect-gpt/src/expedition.mjs",
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/map.mjs": [
+      "solo-sect-gpt/src/activities.mjs",
+      "solo-sect-gpt/src/classes.mjs",
+      "solo-sect-gpt/src/combat.mjs",
+      "solo-sect-gpt/src/content.mjs",
+      "solo-sect-gpt/src/culture.mjs",
+      "solo-sect-gpt/src/expedition.mjs",
+      "solo-sect-gpt/src/journey.mjs",
+      "solo-sect-gpt/src/life-policy.mjs",
+      "solo-sect-gpt/src/life.mjs",
+      "solo-sect-gpt/src/navigation.mjs",
+      "solo-sect-gpt/src/state.mjs",
+      "solo-sect-gpt/src/stories.mjs",
+      "solo-sect-gpt/src/view.mjs"
+    ],
+    "solo-sect-gpt/src/martial-config.mjs": [
+      "solo-sect-gpt/src/activities.mjs",
+      "solo-sect-gpt/src/life-policy.mjs",
+      "solo-sect-gpt/src/martial.mjs"
+    ],
+    "solo-sect-gpt/src/martial.mjs": [
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/mentor.mjs": [
+      "solo-sect-gpt/src/activities.mjs",
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/navigation.mjs": [
+      "solo-sect-gpt/src/activities.mjs",
+      "solo-sect-gpt/src/classes.mjs",
+      "solo-sect-gpt/src/combat.mjs",
+      "solo-sect-gpt/src/content.mjs",
+      "solo-sect-gpt/src/culture.mjs",
+      "solo-sect-gpt/src/expedition.mjs",
+      "solo-sect-gpt/src/joint-drill.mjs",
+      "solo-sect-gpt/src/journey.mjs",
+      "solo-sect-gpt/src/life.mjs",
+      "solo-sect-gpt/src/martial.mjs",
+      "solo-sect-gpt/src/stories.mjs",
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/pack-schema.mjs": [
+      "solo-sect-gpt/src/content.mjs"
+    ],
+    "solo-sect-gpt/src/person-view.mjs": [
+      "solo-sect-gpt/src/economy.mjs"
+    ],
+    "solo-sect-gpt/src/save-features.mjs": [
+      "solo-sect-gpt/src/content.mjs",
+      "solo-sect-gpt/src/culture.mjs",
+      "solo-sect-gpt/src/economy.mjs",
+      "solo-sect-gpt/src/joint-drill.mjs",
+      "solo-sect-gpt/src/journey.mjs",
+      "solo-sect-gpt/src/life-policy.mjs",
+      "solo-sect-gpt/src/martial.mjs",
+      "solo-sect-gpt/src/mentor.mjs",
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/state.mjs": [
+      "solo-sect-gpt/src/activities.mjs",
+      "solo-sect-gpt/src/classes.mjs",
+      "solo-sect-gpt/src/combat.mjs",
+      "solo-sect-gpt/src/content.mjs",
+      "solo-sect-gpt/src/culture.mjs",
+      "solo-sect-gpt/src/economy.mjs",
+      "solo-sect-gpt/src/expedition.mjs",
+      "solo-sect-gpt/src/joint-drill.mjs",
+      "solo-sect-gpt/src/journey.mjs",
+      "solo-sect-gpt/src/life-policy.mjs",
+      "solo-sect-gpt/src/life.mjs",
+      "solo-sect-gpt/src/life.mjs",
+      "solo-sect-gpt/src/martial.mjs",
+      "solo-sect-gpt/src/mentor.mjs",
+      "solo-sect-gpt/src/navigation.mjs",
+      "solo-sect-gpt/src/person-view.mjs",
+      "solo-sect-gpt/src/stories.mjs",
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/stories.mjs": [
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/view.mjs": [
+      "solo-sect-gpt/src/world.mjs"
+    ],
+    "solo-sect-gpt/src/world.mjs": []
+  },
+  "rights": "Owner-authorized exact same-repository source for issue #342; no repository-wide OSS license declared. Source snapshot only, not official gameplay adoption."
+}

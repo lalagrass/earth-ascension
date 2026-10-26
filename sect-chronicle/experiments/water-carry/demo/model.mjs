@@ -1559,7 +1559,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
             : p.recall && st.amount + st.inFlight >= st.cap ? `等${place}有空位再${name}；做完一趟才解除叫回，或按「恢復自主」`
               : st.amount + st.inFlight >= st.cap ? (st.amount >= st.cap ? `${place}已滿，去${pref.place}${pref.doing}` : `等${place}有空位再${name}（有人在補位）`) : `出發${name}`;
     const l2 = L2.view(p), t1 = T1.view(p), te = TE.view(p), h2 = H2.view(p);
-    return {
+    const result = {
       id: p.id, initialLevel: p.initialLevel, level: p.level, xp: p.xp, trips: p.trips, done: { ...p.done },
       job, jobLabel: JB[job].label, pending: p.pending, nextJob,
       nextNeed: p.level < rules.maxLevel ? rules.tripsToNext[p.level - 1] : null, maxLevel: rules.maxLevel,
@@ -1599,6 +1599,13 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       drinkFrom: DRINK_MODES.includes(h.mode) ? h.from : null, drinkNote: p.drinkNote, drinkText: drinkText(p),
       drinkLeg: DRINK_MODES.includes(h.mode) ? { k: h.need ? Math.min(1, h.steps / h.need) : 0, steps: h.steps, need: h.need, span: h.span ?? 1, from: h.from } : null,
     };
+    // Shared scene boundary: core projects its confirmed phase through its own
+    // geometry. No renderer position or wall time is read here; saves unchanged.
+    if (sense.placeOf) {
+      const at = sense.placeOf(p.id, result);
+      result.scenePosition = { x: at.x, y: at.y, face: at.face, travelled: at.travelled ?? 0 };
+    }
+    return result;
   }
   function drinkText(p) {
     if (!D) return null;

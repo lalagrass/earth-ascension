@@ -4,6 +4,10 @@
 import { Application, Assets, Container, Graphics, Sprite } from './vendor/pixi.min.mjs';
 import { createModel, createClock, PEOPLE, JOBS, STEP_MS, RULES } from './model.mjs';
 import { createAnimator } from '../template/animator.mjs';
+import { createSceneRenderer } from '../../../scene-shared/renderer.mjs';
+import { createGeminiAdapter } from '../../../scene-shared/adapters/gemini.mjs';
+import { createCamera } from '../../../scene-shared/camera.mjs';
+import { bodyBox as actorBodyBox } from '../../../scene-shared/contract.mjs';
 import { saveTo, loadFrom } from './life-save.mjs';
 import { guardedSave, guardedLoad } from './life02.mjs'; // SG-LIFE-02 存讀邊界（SG-TRAIN-01 共用）
 import { TRAIN_POSTS } from './routes.mjs';
@@ -165,8 +169,12 @@ function poseOf(id, person) {
 }
 
 // ---------- 場景 ----------
-const world = new Container();
-app.stage.addChild(world);
+// Core-neutral renderer owns actor sprites, foot anchors, depth and selection.
+const sharedScene = createSceneRenderer({ stage: app.stage,
+  definition: { id: 'gemini-home', width: WORLD_SIZE.w, height: WORLD_SIZE.h, layers: [] },
+  bindings: { texture: (asset, frame) => sheets[asset].textures[frame] },
+});
+const { world, sorted } = sharedScene;
 // D37：地面（草坡、院坪、全段長路、溪與深潭、石階泉台）是一張烘焙水彩底圖，見 scene/watercolor.mjs
 const ground = new Graphics(); // 只剩介面提示（清理區虛線、出口箭頭）
 // SG-PATROL-01：西坡巡山小徑（虛線）、四個路標與三隻林鼠的逃路；只是畫面提示，位置與判定只讀 patrol-layout.mjs。
@@ -196,8 +204,7 @@ const patrolG = new Graphics();
 }
 world.addChild(ground);
 world.addChild(patrolG);
-const sorted = new Container();
-sorted.sortableChildren = true; // 依腳底 y 排序：人物走到樹叢後面時被遮住
+// Shared sorted layer includes actors and the original watercolor foreground.
 world.addChild(sorted);
 // D37：烘焙地面、貼片（藥畦、溪岸、橋板）、依腳底排序的屋舍樹石、師父／師兄；溪橋前欄 z=1060 拆層
 const wc = buildWatercolorScene({ world, sorted, tex: WT, manifest: WC });
@@ -351,7 +358,7 @@ const ghost = personSprite('hero', 0.38, 0x9aa7b4);
 const ring = new Graphics().ellipse(0, 2, 18, 5.5).stroke({ width: 2.4, color: 0xc8962e });
 ring.visible = false;
 sorted.addChild(ring);
-const sprites = Object.fromEntries(IDS.map((id) => [id, personSprite(id)]));
+const sprites = {}; // Populated by sharedScene.render at the initial snapshot.
 // ---------- SG-HOME-02 場景件（只讀 view().home02 與人物 view；不另存狀態） ----------
 const h2Sprite = (name, x, y, h, z = y) => { const s = new Sprite(HT(name)); s.anchor.set(0.5, 1); s.scale.set(h / s.texture.height); s.position.set(x, y); s.zIndex = z; sorted.addChild(s); return s; };
 const deadLog = h2Sprite('dead_log', WOOD_PATH.log.x, WOOD_PATH.log.y + 8, 34);
@@ -420,23 +427,13 @@ const placeMark = new Graphics();
 world.addChild(placeMark);
 
 // ---------- 鏡頭 ----------
-const cam = Object.assign({}, scene.camera.start);
+const sceneCamera = createCamera(scene.camera.start, { width: WORLD_SIZE.w, height: WORLD_SIZE.h }, scene.camera);
+const cam = sceneCamera.state;
 const clampZoom = (z) => Math.min(scene.camera.maxZoom, Math.max(scene.camera.minZoom, z));
-const toScreen = (x, y) => ({ x: (x - cam.x) * cam.zoom + app.screen.width / 2, y: (y - cam.y) * cam.zoom + app.screen.height / 2 });
-const toWorld = (sx, sy) => ({ x: (sx - app.screen.width / 2) / cam.zoom + cam.x, y: (sy - app.screen.height / 2) / cam.zoom + cam.y });
-function applyCam() {
-  cam.x = Math.min(WORLD_SIZE.w, Math.max(0, cam.x));
-  cam.y = Math.min(WORLD_SIZE.h, Math.max(0, cam.y));
-  world.scale.set(cam.zoom);
-  world.position.set(app.screen.width / 2 - cam.x * cam.zoom, app.screen.height / 2 - cam.y * cam.zoom);
-}
-function zoomAt(sx, sy, z) {
-  const before = toWorld(sx, sy);
-  cam.zoom = clampZoom(z);
-  const after = toWorld(sx, sy);
-  cam.x += before.x - after.x; cam.y += before.y - after.y;
-  applyCam();
-}
+const toScreen = (x, y) => { sceneCamera.resize(app.screen.width, app.screen.height); return sceneCamera.toScreen(x, y); };
+const toWorld = (x, y) => { sceneCamera.resize(app.screen.width, app.screen.height); return sceneCamera.toWorld(x, y); };
+function applyCam() { sceneCamera.resize(app.screen.width, app.screen.height); sceneCamera.apply(world); }
+function zoomAt(sx, sy, z) { sceneCamera.resize(app.screen.width, app.screen.height); sceneCamera.zoomAt(sx, sy, z); applyCam(); }
 // 鏡頭跟隨：桌機與窄螢幕均跟隨選取人物（預設主角）；拖曳後停止跟隨，按 0 或點選人物／名冊恢復
 const narrow = () => window.innerWidth <= 640;
 if (narrow()) cam.zoom = 0.85;
@@ -491,15 +488,28 @@ let positions = Object.fromEntries(IDS.map((id) => [id, poseOf(id, v.people[id])
 const fx = []; // 浮字（只是畫面效果）
 const selectedPerson = () => IDS.includes(ui.selected) ? ui.selected : 'hero';
 
-// sheet 碰框是像素；換成相對腳底的場景單位，翻面時身體碰框跟著翻。
+// Pixel hitboxes are bound once to the sheet's foot anchor, in map units.
 const bodies = Object.fromEntries(IDS.map((id) => {
   const h = sheets[id].data.meta, r = Number(h.scale);
   return [id, { x: (h.hitbox.x - h.anchorPx.x) / r, y: (h.hitbox.y - h.anchorPx.y) / r, w: h.hitbox.w / r, h: h.hitbox.h / r }];
 }));
-function bodyBox(id) {
-  const p = positions[id], body = bodies[id];
-  return { x: p.x + (p.face > 0 ? body.x : -(body.x + body.w)), y: p.y + body.y, w: body.w, h: body.h };
+const sceneAdapter = createGeminiAdapter({ getModel: () => model, geometry: geo,
+  source: 'dev:9ef497e86a5837539cc8e461855695b0fe468dbd:gemini-derived',
+  facilities: Object.entries(places).map(([id, p]) => ({ id, label: p.label, x: p.x, y: p.y })),
+  appearance: (id, person, at) => {
+    const p = poseOf(id, person), h = sheets[id].data.meta;
+    return { asset: id, frame: p.frame, body: bodies[id], anchor: { x: h.anchorPx.x / h.frameSize.w, y: h.anchorPx.y / h.frameSize.h } };
+  },
+});
+let sceneSnapshot;
+function renderShared() {
+  sceneSnapshot = sceneAdapter.snapshot({ view: v, paused: !ui.playing, rate: ui.speed });
+  const events = sharedScene.render(sceneSnapshot);
+  for (const actor of sceneSnapshot.actors) { sprites[actor.id] = sharedScene.sprite(actor.id); positions[actor.id] = { ...poseOf(actor.id, v.people[actor.id]), x: actor.x, y: actor.y, face: actor.face, travelled: actor.action.travelled }; }
+  return events;
 }
+renderShared();
+function bodyBox(id) { return actorBodyBox(sceneSnapshot.actors.find((a) => a.id === id)); }
 function tapBox(id) {
   const b = bodyBox(id);
   const px = Math.max(0, (44 / cam.zoom - b.w) / 2), py = Math.max(0, (44 / cam.zoom - b.h) / 2);
@@ -508,11 +518,7 @@ function tapBox(id) {
 function screenBox(b) { return { ...toScreen(b.x, b.y), w: b.w * cam.zoom, h: b.h * cam.zoom }; }
 function hitTest(sx, sy) {
   const w = toWorld(sx, sy);
-  let front = null;
-  for (const id of IDS) {
-    const b = tapBox(id);
-    if (w.x >= b.x && w.x <= b.x + b.w && w.y >= b.y && w.y <= b.y + b.h && (!front || positions[id].y >= positions[front].y)) front = id;
-  }
+  const front = sharedScene.pick(w.x, w.y, cam.zoom);
   if (front) return { kind: 'person', id: front };
   for (const [id, pl] of Object.entries(places)) {
     const dx = (w.x - pl.x) / pl.rx, dy = (w.y - (pl.y - pl.ry * 0.6)) / (pl.ry * 1.6);
@@ -600,7 +606,7 @@ function saveGame() { const r = guardedSave(model, () => saveTo(storage, model))
 function loadGame() {
   if (ui.menu) closeMenu(false);
   const r = guardedLoad(model, () => loadFrom(storage, model, SAVE_TEMPLATE)); // 失敗時暫態也不變（life-save 試跑一步可能推動暫態）
-  if (r.ok) { ui.playing = false; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); v = model.view(); fx.length = 0; }
+  if (r.ok) { ui.playing = false; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); sceneAdapter.reset(); v = model.view(); renderShared(); fx.length = 0; }
   toast(r.text); renderChrome(); return r;
 }
 $('save').addEventListener('click', saveGame);
@@ -642,7 +648,9 @@ function reset() {
   if (ui.menu) closeMenu(false);
   model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
   clock.clear();
+  sceneAdapter.reset();
   v = model.view();
+  renderShared();
   fx.length = 0;
   toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份；野豬回棲地精力 60、威脅 0，護欄損痕 0；休息、休閒、叫回、驅離、整理與待執行指令已清除；自主護院回到兩人未允許（熟手主動照看、主角受擾再處理）；三隻測試鼠回原位、清理名額清空、掌法比較回初學');
   renderChrome();
@@ -707,7 +715,7 @@ function closeMenu(resume = true) {
 }
 function command(cmd) {
   const person = ui.menu ? ui.menuPerson : selectedPerson();
-  const r = model.dispatch(cmd, person);
+  const r = sceneAdapter.command({ actorId: person, action: cmd });
   v = model.view(); // 暫停下令也立即顯示最新意圖，不等待下一個畫面幀。
   toast(r.ok ? `${profiles[person].label}：${r.text}` : `做不到：${r.reason}`);
   ui.selected = person;
@@ -1069,17 +1077,13 @@ function tag(id, cls, text, x, y, dy = 0) {
 // ---------- 每幀 ----------
 let frames = 0, firstFrameMs = null, fenceHit = -1e9;
 app.ticker.add((t) => {
-  if (ui.playing) { const n = clock.feed(t.deltaMS, ui.speed); for (let i = 0; i < n; i++) model.step(); }
+  if (ui.playing) { const n = clock.feed(t.deltaMS, ui.speed); for (let i = 0; i < n; i++) sceneAdapter.observeStep(); }
   const prev = v;
   v = model.view();
+  const sceneEvents = renderShared();
   for (const id of IDS) {
-    const person = v.people[id], p = poseOf(id, person);
-    positions[id] = p;
+    const person = v.people[id], p = positions[id];
     const sprite = sprites[id];
-    sprite.texture = sheets[id].textures[p.frame];
-    sprite.scale.x = p.face;
-    sprite.position.set(p.x, p.y);
-    sprite.zIndex = p.y;
     placeBasket(id, p, person);
     placeCup(id, p, person);
     const arm = armGs[id];
@@ -1091,10 +1095,12 @@ app.ticker.add((t) => {
     } else sprite.rotation = 0;
     placeHome02(id, p, person); // SG-HOME-02：扛柴、躺下／起身與被褥
     if (p.phase === 'woodChop' && person.phase && person.phase.steps % FIX_BEAT === FIX_BEND) chips.push({ x: WOOD_PATH.log.x + 6, y: WOOD_PATH.log.y - 10, t: 0 });
-    if (person.trips > prev.people[id].trips) {
-      const herb = person.lastTrip.job === 'herb', wood = person.lastTrip.job === 'wood', at = wood ? DORM.woodpile : places[herb ? 'rack' : 'vat'];
+    // Consume every core trip event once, including several authoritative ticks
+    // batched at 4×. The old frame-to-frame counter comparison could coalesce them.
+    for (const event of sceneEvents.filter((e) => e.actorId === id && e.kind === 'trip')) {
+      const done = event.data, herb = done.job === 'herb', wood = done.job === 'wood', at = wood ? DORM.woodpile : places[herb ? 'rack' : 'vat'];
       fx.push({ text: `${profiles[id].label} +1 ${wood ? '捆柴' : herb ? '份藥' : '擔'}`, x: at.x, y: at.y - 70, until: performance.now() + 1600 });
-      if (person.level > prev.people[id].level) fx.push({ text: `${profiles[id].label}腳力 Lv ${person.level}`, x: p.x, y: p.y - 100, until: performance.now() + 2200 });
+      if (done.grew) fx.push({ text: `${profiles[id].label}腳力 Lv ${done.level}`, x: p.x, y: p.y - 100, until: performance.now() + 2200 });
     }
     const as = person.auto.state, ap = prev.people[id].auto.state;
     if (as !== ap && AUTO_FX[as]) fx.push({ text: `${profiles[id].label}：${AUTO_FX[as]}`, x: p.x, y: p.y - 112, until: performance.now() + 2000 });
@@ -1207,7 +1213,7 @@ app.ticker.add((t) => {
   // now 已在上方取得
   for (let i = fx.length - 1; i >= 0; i--) if (fx[i].until < now) fx.splice(i, 1);
   for (let i = 0; i < 3; i++) { const f = fx[i]; tag(`fx${i}`, 'gain', f ? f.text : null, f ? f.x : 0, f ? f.y - (1 - (f.until - now) / 1600) * 14 : 0); }
-  wc.tick(t.deltaMS, ui.playing, IDS.map((id) => positions[id]).filter(Boolean)); // D37：遮擋淡出／竹影／水光，只是畫面
+  wc.tick(sceneSnapshot.timeMs, IDS.map((id) => positions[id]).filter(Boolean)); // D37：遮擋淡出／竹影／水光，只是畫面
   if (ui.follow) follow();
   placeMenu();
   if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next || prev.people[id].auto.text !== v.people[id].auto.text || prev.people[id].up.text !== v.people[id].up.text || prev.people[id].fix !== v.people[id].fix || prev.people[id].fixResult !== v.people[id].fixResult || prev.people[id].cleanResult !== v.people[id].cleanResult) || JSON.stringify(prev.clean) !== JSON.stringify(v.clean) || prev.rats.some((r, i) => r.mode !== v.rats[i].mode) || prev.prats.some((r, i) => r.mode !== v.prats[i].mode) || JSON.stringify(prev.patrol) !== JSON.stringify(v.patrol) || (prev.patrolReport && prev.patrolReport.endTick) !== (v.patrolReport && v.patrolReport.endTick) || prev.boar.marks !== v.boar.marks || prev.boar.seen !== v.boar.seen || frames % 15 === 0) renderChrome();
@@ -1244,6 +1250,8 @@ window.demo = {
       selected: ui.selected, menu: ui.menu, menuPerson: ui.menuPerson, cam: { ...cam }, hidden: document.hidden,
       heroScreen: people.hero.screen,
       vatScreen: toScreen(scene.places.vat.x, scene.places.vat.y - 20), springScreen: toScreen(places.spring.x, places.spring.y - 10),
+      sceneSource: sceneSnapshot.source, sceneEvents: sceneSnapshot.events, sceneActors: sceneSnapshot.actors,
+      sceneOcclusion: { bridgeFrontDepth: wc.front.zIndex, fadedProps: wc.props.filter((q) => q.s.alpha < 1).map((q) => ({ id: q.p.id, x: q.p.x, y: q.p.y, alpha: q.s.alpha })) },
       firstFrameMs, frames, stepMs: STEP_MS, cups: Object.fromEntries(IDS.map((id) => [id, cups[id].visible])),
       home02: v.home02, h2: Object.fromEntries(IDS.map((id) => [id, { mode: v.people[id].mode, bed: v.people[id].bed, bundle: bundles[id].visible, quilt: quilts[id].visible, rot: sprites[id].rotation, phase: v.people[id].phase && v.people[id].phase.name }])),
     };

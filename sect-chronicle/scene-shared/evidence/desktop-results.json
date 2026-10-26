@@ -1,0 +1,426 @@
+{
+  "head": "d96585b54f4c4b39cf394f774f16c019bb103df2",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "checks": [
+    "single official entry redirects to accepted demo",
+    "normal UI reset while paused has zero world progress",
+    "original hero card displays actual empty 60 / loaded 40",
+    "original skilled-worker card displays actual empty 74.4 / loaded 52",
+    "same real route/time: skilled worker actually travels farther",
+    "paused pan/zoom leaves complete world state unchanged",
+    "paused real command queues herb after original water delivery",
+    "newest stop replaces earlier stop/work intent without advancing tick",
+    "true loaded return passes behind original front bridge rail",
+    "occluded world-body click selects original hero card",
+    "actual sprite anchor agrees with confirmed core foot position",
+    "actual sprite anchor agrees with confirmed core foot position",
+    "real two-worker water/herb loop visible together on original long map",
+    "original water and herb round trips deliver; newest stop remains in force",
+    "final paused world remains byte-identical",
+    "same renderer genuinely displays fixed Gemini core, not a fixture",
+    "same renderer displays true GPT harvest→bag→store on native map",
+    "GPT foot positions come from real fixed-point core, not Gemini routes"
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (File not found)"
+  ],
+  "screenshots": [
+    "official-bridge-card.png",
+    "official-water-herb.png",
+    "gpt-native-map.png"
+  ],
+  "browser": "154.0.8037.57",
+  "initialSpeed": {
+    "tick": 667,
+    "playing": false,
+    "vat": 3,
+    "herbs": 0,
+    "cam": {
+      "x": 624.3418526945637,
+      "y": 845.7572799275251,
+      "zoom": 1
+    },
+    "selected": "cousin",
+    "people": {
+      "hero": {
+        "mode": "carry",
+        "phase": "down",
+        "pending": null,
+        "load": 0,
+        "x": 547.0245389108048,
+        "y": 915.6958342209076,
+        "done": {
+          "water": 0,
+          "herb": 0
+        },
+        "speed": {
+          "empty": 60,
+          "load": 40
+        },
+        "resting": false
+      },
+      "cousin": {
+        "mode": "carry",
+        "phase": "down",
+        "pending": null,
+        "load": 0,
+        "x": 696.2536649148211,
+        "y": 969.7887644899155,
+        "done": {
+          "water": 0,
+          "herb": 0
+        },
+        "speed": {
+          "empty": 74.4,
+          "load": 52
+        },
+        "resting": false
+      }
+    }
+  },
+  "pauseHashes": {
+    "before": "3e8f49133f851ea98556580f8728b1821cb17afa8408ce56e9b72f735d5d6b0e",
+    "after": "3e8f49133f851ea98556580f8728b1821cb17afa8408ce56e9b72f735d5d6b0e",
+    "tick": 667
+  },
+  "bridge": {
+    "tick": 2927,
+    "playing": false,
+    "vat": 3,
+    "herbs": 0,
+    "cam": {
+      "x": 856.5080203808911,
+      "y": 1011.1355668782728,
+      "zoom": 1.5
+    },
+    "selected": "hero",
+    "people": {
+      "hero": {
+        "mode": "carry",
+        "phase": "up",
+        "pending": "rest",
+        "load": 1,
+        "x": 904.2335031740926,
+        "y": 1030.129723985607,
+        "done": {
+          "water": 0,
+          "herb": 0
+        },
+        "speed": {
+          "empty": 60,
+          "load": 40
+        },
+        "resting": false
+      },
+      "cousin": {
+        "mode": "carry",
+        "phase": "up",
+        "pending": "herb",
+        "load": 1,
+        "x": 508.51245502395045,
+        "y": 826.2455524075706,
+        "done": {
+          "water": 0,
+          "herb": 0
+        },
+        "speed": {
+          "empty": 74.4,
+          "load": 52
+        },
+        "resting": false
+      }
+    }
+  },
+  "twoJobs": {
+    "tick": 3887,
+    "playing": false,
+    "vat": 4,
+    "herbs": 0,
+    "cam": {
+      "x": 800,
+      "y": 675,
+      "zoom": 0.7407407407407407
+    },
+    "selected": "hero",
+    "people": {
+      "hero": {
+        "mode": "carry",
+        "phase": "up",
+        "pending": "rest",
+        "load": 1,
+        "x": 609.8132905087813,
+        "y": 708.3046499736766,
+        "done": {
+          "water": 0,
+          "herb": 0
+        },
+        "speed": {
+          "empty": 60,
+          "load": 40
+        },
+        "resting": false
+      },
+      "cousin": {
+        "mode": "carry",
+        "phase": "herbOut",
+        "pending": null,
+        "load": 0,
+        "x": 1022.9857276820234,
+        "y": 569.8540056264497,
+        "done": {
+          "water": 1,
+          "herb": 0
+        },
+        "speed": {
+          "empty": 74.4,
+          "load": 52
+        },
+        "resting": false
+      }
+    }
+  },
+  "completed": {
+    "tick": 5355,
+    "playing": false,
+    "vat": 5,
+    "herbs": 1,
+    "cam": {
+      "x": 800,
+      "y": 675,
+      "zoom": 0.7407407407407407
+    },
+    "selected": "hero",
+    "people": {
+      "hero": {
+        "mode": "seated",
+        "phase": null,
+        "pending": null,
+        "load": 0,
+        "x": 940,
+        "y": 424,
+        "done": {
+          "water": 1,
+          "herb": 0
+        },
+        "speed": {
+          "empty": 67.2,
+          "load": 46
+        },
+        "resting": true
+      },
+      "cousin": {
+        "mode": "toSeat",
+        "phase": null,
+        "pending": null,
+        "load": 0,
+        "x": 961.3492209257993,
+        "y": 456.7552703551177,
+        "done": {
+          "water": 1,
+          "herb": 1
+        },
+        "speed": {
+          "empty": 74.4,
+          "load": 52
+        },
+        "resting": false
+      }
+    }
+  },
+  "fixedGemini": {
+    "source": "gemini:bae43412dced2a2f0d9d82008d5cdf8b3acfb8f9",
+    "tick": 36,
+    "actors": [
+      {
+        "id": "hero",
+        "x": 929.5319778660885,
+        "y": 525.0663991514522,
+        "face": -1,
+        "depth": 525.0663991514522,
+        "asset": "hero",
+        "frame": "walkEmpty-1",
+        "anchor": {
+          "x": 0.47368421052631576,
+          "y": 0.8598130841121495
+        },
+        "body": {
+          "x": -12.5,
+          "y": -51.5,
+          "w": 25,
+          "h": 53
+        },
+        "scale": 1,
+        "rotation": 0,
+        "action": {
+          "id": "water",
+          "phase": "down",
+          "progress": 0.0205761316872428,
+          "travelled": 34.99861780232521
+        },
+        "load": 0,
+        "speed": {
+          "empty": 60,
+          "load": 40
+        },
+        "label": "下山（空桶）",
+        "positionSource": "core.routeProjection"
+      },
+      {
+        "id": "cousin",
+        "x": 985.9363387898701,
+        "y": 549.6142466697959,
+        "face": 1,
+        "depth": 549.6142466697959,
+        "asset": "cousin",
+        "frame": "herbWalk-2",
+        "anchor": {
+          "x": 0.47368421052631576,
+          "y": 0.8598130841121495
+        },
+        "body": {
+          "x": -12,
+          "y": -50,
+          "w": 24,
+          "h": 51.5
+        },
+        "scale": 1,
+        "rotation": 0,
+        "action": {
+          "id": "herb",
+          "phase": "herbOut",
+          "progress": 0.08653846153846154,
+          "travelled": 44.58452497447622
+        },
+        "load": 0,
+        "speed": {
+          "empty": 74.4,
+          "load": 52
+        },
+        "label": "往藥圃（空簍）",
+        "positionSource": "core.routeProjection"
+      }
+    ]
+  },
+  "fixedGPT": {
+    "source": "gpt:6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc",
+    "tick": 1454,
+    "seed": 11,
+    "worldHash": "4528c8c296f4cc807fd405fc670dc3807b0834d86b2f4dc6529824381479b989",
+    "delivery": {
+      "id": "event.106",
+      "tick": 1449,
+      "type": "transfer",
+      "actors": [],
+      "from": "bag.leader",
+      "to": "store",
+      "item": "herb",
+      "n": 4
+    },
+    "actors": [
+      {
+        "id": "leader",
+        "x": 805.26953125,
+        "y": 1120.40625,
+        "depth": 1120.40625,
+        "face": 1,
+        "asset": "hero",
+        "frame": "walkEmpty-1",
+        "anchor": {
+          "x": 0.47368421052631576,
+          "y": 0.8598130841121495
+        },
+        "body": {
+          "x": -12.5,
+          "y": -51.5,
+          "w": 25,
+          "h": 53
+        },
+        "scale": 1,
+        "action": {
+          "id": "idle",
+          "phase": "walking",
+          "progress": null,
+          "elapsedTicks": 0,
+          "travelled": 804.1015625
+        },
+        "load": 0,
+        "speed": 30,
+        "label": "雲生",
+        "positionSource": "core.fixedPointPosition"
+      },
+      {
+        "id": "child",
+        "x": 972,
+        "y": 1100,
+        "depth": 1100,
+        "face": 1,
+        "asset": "cousin",
+        "frame": "idle-0",
+        "anchor": {
+          "x": 0.47368421052631576,
+          "y": 0.8598130841121495
+        },
+        "body": {
+          "x": -12,
+          "y": -50,
+          "w": 24,
+          "h": 51.5
+        },
+        "scale": 0.7,
+        "action": {
+          "id": "idle",
+          "phase": "idle",
+          "progress": null,
+          "elapsedTicks": 0,
+          "travelled": 487.328125
+        },
+        "load": 0,
+        "speed": 30,
+        "label": "小禾",
+        "positionSource": "core.fixedPointPosition"
+      },
+      {
+        "id": "amu",
+        "x": 760.77734375,
+        "y": 1259.98828125,
+        "depth": 1259.98828125,
+        "face": -1,
+        "asset": "cousin",
+        "frame": "idle-0",
+        "anchor": {
+          "x": 0.47368421052631576,
+          "y": 0.8598130841121495
+        },
+        "body": {
+          "x": -12,
+          "y": -50,
+          "w": 24,
+          "h": 51.5
+        },
+        "scale": 1,
+        "action": {
+          "id": "cook",
+          "phase": "perform",
+          "progress": null,
+          "elapsedTicks": 354,
+          "travelled": 568.49609375
+        },
+        "load": 0,
+        "speed": 30,
+        "label": "阿木",
+        "positionSource": "core.fixedPointPosition"
+      }
+    ]
+  },
+  "failure": "AssertionError [ERR_ASSERTION]: Cloud desktop flow has no page or console errors\n    at check (file:///workspace/scene-shared-01/sect-chronicle/scene-shared/checks/desktop-check.mjs:18:38)\n    at file:///workspace/scene-shared-01/sect-chronicle/scene-shared/checks/desktop-check.mjs:105:3",
+  "cleanup": {
+    "pages": 0,
+    "browserClosed": true,
+    "serverStopped": true,
+    "serverPid": 1776,
+    "viewport": "owned context restored then closed"
+  }
+}

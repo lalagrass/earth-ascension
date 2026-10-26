@@ -47,9 +47,8 @@ export function buildWatercolorScene({ world, sorted, tex, manifest }) {
   for (let i = 0; i < 6; i++) lines.push({ x: POOL.x - 50 + (i * 23) % 90, y: POOL.y - 24 + (i * 13) % 44, l: 12 + (i % 3) * 5, ph: i * 2.1, pool: true });
   const props = PROPS.map((p) => ({ p, s: place(p, sorted) }));
   const npcs = Object.fromEntries(NPCS.map((n) => [n.id, place(n, sorted)]));
-  let vt = 0; // 視覺時間：只在播放中累加
-  function tick(dtMs, playing, feet) {
-    if (playing) vt += dtMs / 1000;
+  function tick(timeMs, feet) {
+    const vt = timeMs / 1000; // Authoritative world time, including rate/pause; no second clock.
     shimmer.clear();
     feetG.clear();
     for (const f of feet) feetG.ellipse(f.x, f.y + 1, 11, 3.6).fill({ color: 0x2a2618, alpha: 0.28 }).ellipse(f.x, f.y + 1, 6.5, 2.2).fill({ color: 0x2a2618, alpha: 0.2 });
@@ -63,7 +62,7 @@ export function buildWatercolorScene({ world, sorted, tex, manifest }) {
       const half = Math.abs(s.width) * 0.38, top = p.y - s.height * 0.92;
       const hidden = feet.some((f) => f.y < p.y - 2 && f.y > top + 30 && Math.abs(f.x - p.x) < half);
       const target = hidden ? p.fade : 1;
-      s.alpha += (target - s.alpha) * Math.min(1, dtMs / 160);
+      s.alpha = target; // Occlusion also responds immediately while paused.
     }
   }
   return { groundSprite, decals, npcs, props, tick, front, deck };
