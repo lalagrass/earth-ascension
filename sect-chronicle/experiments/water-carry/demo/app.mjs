@@ -1,3 +1,5 @@
+import { createOfficialIntentAdapter } from '../../../intent-view/official.mjs';
+import { intentHtml, commandHtml, policiesHtml } from '../../../intent-view/render.mjs';
 // 宗門編年生活開發版：PixiJS＋HTML/CSS。場景（背景、可排序物件、兩人與影子、選取圈）畫在 Pixi；
 // HUD、名冊、選單、面板、名牌、提示是 HTML/CSS。世界只有 model.mjs：畫面只讀 view()，下令只走 dispatch()，
 // 推進只經 createClock() 換算的固定步進。暫停、背景、播放倍率與畫面幀率都不改結果。
@@ -479,7 +481,7 @@ const SENSE = { placeOf: geo.of, boarAt: geo.boarAt, meetLengths: geo.meetLength
   woodLength: r1(geo.woodLength), siteLength: r1(geo.siteLength), bedLengths: Object.fromEntries(Object.entries(geo.bedLengths).map(([k, v]) => [k, r1(v)])) }; // SG-HOME-02 新路長也走 sense，不進 LENGTHS // SG-LIFE-02 招呼路長度不進 LENGTHS（存檔幾何識別不變）
 let model = createModel(LENGTHS, undefined, undefined, undefined, SENSE);
 const clock = createClock();
-const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null, boarExpanded: false, advancedOpen: false, tab: 'life', eventsOpen: true, eventCategory: 'all' };
+const ui = { follow: true, playing: true, speed: 1, autoPaused: false, pausedByMenu: false, selected: null, menu: null, menuPerson: null, rosterOpen: true, shadow: true, returnFocus: null, boarExpanded: false, advancedByPerson: {}, tab: 'life', eventsOpen: true, eventCategory: 'all' };
 let v = model.view();
 let positions = Object.fromEntries(IDS.map((id) => [id, poseOf(id, v.people[id])]));
 const fx = []; // 浮字（只是畫面效果）
@@ -500,6 +502,8 @@ const sceneAdapter = createGeminiAdapter({ getModel: () => model, geometry: geo,
 });
 const eventAdapter = createOfficialEventAdapter({ getModel: () => model });
 const recentEvents = createRecentEvents();
+const intentAdapter = createOfficialIntentAdapter({ getModel: () => model, dispatch: (action, actorId) => sceneAdapter.command({ actorId, action }) });
+const intentResults = new Map();
 const facilityAdapter = createOfficialFacilityAdapter({ getModel: () => model, places });
 let sceneSnapshot;
 function renderShared() {
@@ -635,6 +639,14 @@ $('save').addEventListener('click', saveGame);
 $('load').addEventListener('click', loadGame);
 $('roster').addEventListener('click', (e) => { const b = e.target.closest('[data-person]'); if (b) select(b.dataset.person); });
 $('panel').addEventListener('click', (e) => {
+  const intentButton = e.target.closest('[data-intent-command]');
+  if (intentButton) {
+    const actorId = intentButton.dataset.intentActor;
+    const r = intentAdapter.command({ actorId, commandId: intentButton.dataset.intentCommand, payload: JSON.parse(intentButton.dataset.intentPayload) }, { expectedActorId: selectedPerson() });
+    const text = r.ok ? r.text || '原核心已受理' : `做不到：${r.reason}`;
+    intentResults.set(actorId, text); v = model.view(); toast(text); renderChrome(); return;
+  }
+
   // HOME-01：分頁／小事件只切顯示，不派令、不推 tick。
   const filter = e.target.closest('[data-event-filter]');
   if (filter) { ui.eventCategory = filter.dataset.eventFilter; renderChrome(); measure(); return; }
@@ -647,7 +659,7 @@ $('panel').addEventListener('click', (e) => {
   const evt = e.target.closest('[data-ui="toggleEvents"]');
   if (evt) { ui.eventsOpen = !ui.eventsOpen; renderChrome(); measure(); return; }
   const adv = e.target.closest('[data-ui="toggleAdv"]');
-  if (adv) { ui.advancedOpen = !ui.advancedOpen; renderChrome(); measure(); return; }
+  if (adv) { ui.advancedByPerson[selectedPerson()] = !ui.advancedByPerson[selectedPerson()]; renderChrome(); measure(); return; }
   const a = e.target.closest('[data-auto]');
   if (a) { autoSet(a.dataset.auto); return; }
   const u = e.target.closest('[data-up]');
@@ -820,21 +832,6 @@ const RESULT_TEXT = { success: '喝止成功，野豬逃走', late: '晚到：�
 const guardText = (p) => p.guardOrder != null ? (p.guarding ? `驅離野豬：${p.status}` : '待驅離野豬（交付／恢復後野豬還在才去）') : null;
 const B = RULES.boar;
 // 自主護院：允許（預設關）＋可交換傾向＋目前原因；有候補時給「取消這次意願」（＝取消待執行，本訪不再自己去）。
-function autoHtml(p) {
-  const a = p.auto;
-  const react = (r, label) => `<button class="btn ${a.react === r ? 'on' : ''}" data-auto="${r}" aria-pressed="${a.react === r}">${label}</button>`;
-  return `<div class="auto ${a.state}"><div class="row"><b>自主護院</b><button class="btn ${a.allow ? 'on' : ''}" data-auto="allow" aria-pressed="${a.allow}">${a.allow ? '允許中' : '未允許'}</button></div>
-    <div class="row"><span class="group">${react('early', '主動照看')}${react('late', '受擾再處理')}</span>${a.wanting ? '<button class="btn" data-cmd="cancel" title="取消這次自己去護院的意願；本訪不再自己去">取消意願</button>' : ''}</div>
-    <div class="muted">${a.text}</div></div>`;
-}
-// 自主整理：允許（預設關，與護院分開）＋可交換傾向＋目前原因；有候補時給「取消整理意願」（只抑制這一輪）。
-function upHtml(p) {
-  const a = p.up;
-  const react = (r, label) => `<button class="btn ${a.react === r ? 'on' : ''}" data-up="${r}" aria-pressed="${a.react === r}">${label}</button>`;
-  return `<div class="auto up ${a.state}"><div class="row"><b>自主整理護欄</b><button class="btn ${a.allow ? 'on' : ''}" data-up="allow" aria-pressed="${a.allow}">${a.allow ? '允許中' : '未允許'}</button></div>
-    <div class="row"><span class="group">${react('early', '順手照看')}${react('late', '累積再整理')}</span>${a.wanting ? '<button class="btn" data-cmd="upCancel" title="只取消這輪自己去整理的意願；下一次護欄被撞才再想">取消整理意願</button>' : ''}</div>
-    <div class="muted">${a.text}</div></div>`;
-}
 // LP-11 清理：目前目標、等待交付／恢復、前往、起手／收勢、取消返回、結束原因與成本；比較 fixture 明標且任務中鎖定。
 // LP-12 自主清鼠：允許開關、短理由與來源標籤。
 const PHASE_TEXT = { wait: '等待出發', go: '清理中', back: '返院中' };
@@ -964,17 +961,10 @@ function renderChrome() {
   panel.hidden = !IDS.includes(ui.selected);
   if (!panel.hidden) {
     const publicCard = geminiCard(model, id, { identity: profile });
+    const publicIntent = intentAdapter.snapshot(id);
     const si = person.speedsInitial, sn = person.mode === 'carry' ? person.tripSpeeds : person.speeds;
     const work = person.cleaning ? `清理測試鼠（回來${person.jobLabel}）` : person.fixing ? `整理護欄（回來${person.jobLabel}）` : person.guarding ? `驅離野豬（回來${person.jobLabel}）` : person.mode === 'carry' ? `${person.jobLabel}（持續）· 第 ${person.trips + 1} 趟` : person.resting ? `停工（原工作：${person.jobLabel}）`
       : person.leisure ? `閒暇：${person.pref.doing}（原工作：${person.jobLabel}）` : person.recall ? `${person.jobLabel}（玩家叫回）` : `${person.jobLabel}（持續）`;
-    const other = person.job === 'water' ? 'herb' : 'water';
-    const pend = person.pending
-      ? `<div class="pending"><span><b>${pendText(person)}</b><br><small>本趟${person.jobLabel}交付時生效；再下指令只保留最新一個</small></span><button class="btn" data-cmd="cancel">取消</button></div>`
-      : person.resting ? `<div class="pending"><span><b>已停工</b><br><small>回滿也不會自己出發；下令開始才解除</small></span><span><button class="btn" data-cmd="start">開始${person.jobLabel}</button> <button class="btn" data-cmd="work:${other}">改${JOBX[other].label}</button></span></div>`
-        : person.recall ? `<div class="pending"><span><b>玩家叫回</b><br><small>回院中${person.jobLabel}；滿了就待命，完成返院後的一趟才解除</small></span><button class="btn" data-cmd="resume">恢復自主</button></div>`
-          : '<div class="muted">沒有</div>';
-    const cmds = model.actions(id).filter((a) => !a.hidden && a.id !== 'pourNow' && a.id !== 'fixCancel' && a.id !== 'upCancel' && a.id !== 'cleanCancel') // 取消整理／整理意願／清理放在各自狀態列旁
-      .map((a) => `<button class="btn" data-cmd="${a.id}" ${a.enabled ? '' : 'disabled'} title="${a.enabled ? a.detail : a.reason}">${cmdLabel(a, person)}</button>`).join(' ');
     if (!panel.firstElementChild) panel.innerHTML = '<div id="p-core"></div><div id="p-tabs" class="ptabs" role="tablist"></div><div id="p-life"></div><div id="p-martial"></div><div id="p-events"></div>';
     // HOME-01 固定人物資訊：名字、身分、精力、院中存量（都讀模型 view；沒有血量／內力／總戰力）。
     put('p-core', $('p-core'), `${identityHtml(publicCard)}
@@ -990,16 +980,15 @@ function renderChrome() {
         ${home02Html(person)}
         ${life02Html(person)}
       </div>
-      <div id="p-pend">${pend}</div>
-      <div id="p-cmds" class="cmds">${cmds}</div>
+      ${intentHtml(publicIntent, { controls: false, policies: false, result: intentResults.get(id) })}
+      <div id="p-cmds" class="cmds">${commandHtml(publicIntent, publicIntent.commands.filter(c => c.group === 'action' && !c.hidden && !['pourNow','fixCancel','upCancel','cleanCancel'].includes(c.nativeId)))}</div>
       <div class="adv-section">
-      <button class="btn toggle-adv" data-ui="toggleAdv">${ui.advancedOpen ? '▾ 收起進階設定' : '▸ 進階設定（自主政策）'}</button>
-      <div class="adv-body" ${ui.advancedOpen ? '' : 'hidden'}>
+      <button class="btn toggle-adv" data-ui="toggleAdv">${ui.advancedByPerson[id] ? '▾ 收起進階設定' : '▸ 進階設定（自主政策）'}</button>
+      <div class="adv-body" ${ui.advancedByPerson[id] ? '' : 'hidden'}>
         ${guardText(person) ? `<div class="guardline">${guardText(person)}</div>` : person.guardResult ? `<div class="muted">驅離結果：${RESULT_TEXT[person.guardResult.kind]}</div>` : ''}
         ${fixHtml(person)}
         ${cleanHtml(person, id)}
-        ${autoHtml(person)}
-        ${upHtml(person)}
+        ${policiesHtml(publicIntent)}
         <div class="muted">偏好：${person.pref ? `${person.pref.label}（${person.pref.place}）· ${person.job === 'herb' ? '藥架' : '水缸'}實存滿才去，有空位就回` : '無'}</div>
         <h4>收穫（此人交付）</h4><div class="row"><span>挑水 ${person.done.water} 擔</span><span>採藥 ${person.done.herb} 份</span></div>
         ${positions[id].borrowed ? `<div class="muted">${positions[id].palm ? '動作借用：掌法沒有專用幀，暫用空手站姿／蹲身底圖＋向量手臂立掌疊圖（專用 atlas 另案）' : '動作借用：整理護欄沒有專用幀，暫用「舒展筋骨」前彎／站直兩幀交替'}</div>` : ''}
@@ -1245,7 +1234,7 @@ renderChrome();
 function personSnapshot(id) {
   const person = v.people[id], p = positions[id], sprite = sprites[id], b = bodyBox(id);
   return { ...person, phase: person.phase && person.phase.name, phaseProgress: person.phase?.k || 0,
-    motion: p.motion || null, frame: p.frame, action: p.action, requestedAction: p.requested, fallback: p.fallback, face: p.face, travelled: p.travelled, x: p.x, y: p.y,
+    intent: intentAdapter.snapshot(id), motion: p.motion || null, frame: p.frame, action: p.action, requestedAction: p.requested, fallback: p.fallback, face: p.face, travelled: p.travelled, x: p.x, y: p.y,
     screen: toScreen(b.x + b.w / 2, b.y + b.h / 2), bodyScreen: screenBox(b), tapScreen: screenBox(tapBox(id)), footScreen: toScreen(p.x, p.y),
     sprite: { resolution: sprite.texture.source.resolution, width: sprite.texture.orig.width, height: sprite.texture.orig.height,
       anchor: { x: sprite.anchor.x, y: sprite.anchor.y }, scale: { x: sprite.scale.x, y: sprite.scale.y }, z: sprite.zIndex,
