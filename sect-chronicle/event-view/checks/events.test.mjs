@@ -47,6 +47,18 @@ test('mask before cache/filter/link/HTML; hidden native actors never expose payl
  const e=eventView({id:'safe',source:'test',stream:'log',sequence:1,tick:9,unit:'原tick',kind:'secret-kind',actors:['secret-actor'],facility:'secret-fac',action:'secret-art',result:'secret-result',reason:'secret-cause',visibility:'hidden'}),c=createRecentEvents();c.ingest({source:'test',epoch:1,events:[e]});const html=recentHtml(c.list());assert.ok(!JSON.stringify(c.list()).includes('secret-'));assert.ok(!html.includes('secret-'));assert.equal(c.list({actorId:'secret-actor'}).length,0);assert.equal(e.result.availability,'hidden');
  const w=createWorld({seed:11}),r=createGPTEventAdapter({getWorld:()=>w});r.snapshot();w.journal.push({id:'hidden-native',type:'growth',tick:w.tick,actors:['rat.1'],art:'secret-art',U:99,reason:'secret-cause'});const hidden=r.snapshot().events[0];assert.equal(hidden.visibility,'hidden');assert.ok(!JSON.stringify(hidden).includes('secret-'));
 });
+test('hidden GPT event existence/time never reaches player rows, filters or counts; cursor still consumes replay',()=>{
+ const w=createWorld({seed:11}),r=createGPTEventAdapter({getWorld:()=>w}),cache=createRecentEvents();cache.ingest(r.snapshot());
+ const publicRows=cache.list(),publicCount=cache.size;
+ w.journal.push({id:'private-event-unique',type:'growth',tick:987654321,actors:['rat.1'],art:'secret-art',U:99,reason:'secret-cause'});
+ const hidden=r.snapshot();assert.equal(hidden.events.length,1);assert.equal(hidden.events[0].visibility,'hidden');
+ cache.ingest(hidden);cache.ingest(hidden);
+ assert.deepEqual(cache.list(),publicRows);assert.equal(cache.size,publicCount);assert.equal(cache.dedupSize,publicCount);
+ assert.deepEqual(cache.list({actorId:'rat.1'}),[]);assert.deepEqual(cache.list({category:'martial'}),[]);
+ const html=recentHtml(cache.list(),{size:cache.size});assert.ok(!html.includes('987654321'));assert.ok(!html.includes('private-event-unique'));assert.ok(!html.includes('secret-'));assert.ok(!html.includes('hidden'));
+ const directHtml=recentHtml(hidden.events,{size:1});assert.ok(!directHtml.includes('<time>'));assert.ok(!directHtml.includes('987654321'));assert.ok(directHtml.includes('此人 0／快取 0'));
+ assert.deepEqual(r.snapshot().events,[],'hidden native ring record cannot replay');
+});
 test('UI bounds and repeated evicted batch never replay, core switch/reset isolate identity, repeated same tick records stay distinct',()=>{
  const c=createRecentEvents({capacity:3}),records=Array.from({length:250},(_,i)=>eventView({id:`a:${i}`,source:'a',stream:'log',sequence:i+1,tick:i,unit:'tick',kind:'event',actors:['hero'],result:i})),snapshot={source:'a',epoch:1,events:records};c.ingest(snapshot);const saved=c.list();c.ingest(snapshot);assert.deepEqual(c.list(),saved);assert.equal(c.size,3);assert.equal(c.dedupSize,3);assert.equal(c.cursorSize,1);
  c.ingest({source:'b',epoch:1,events:[]});assert.equal(c.size,0);c.ingest(snapshot);c.ingest({source:'a',epoch:2,events:[]});assert.equal(c.size,0);

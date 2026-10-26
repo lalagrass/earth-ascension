@@ -24,6 +24,9 @@ export function createRecentEvents({ capacity = CACHE_LIMIT } = {}) {
         if (e.sequence <= (watermarks.get(e.stream) || 0)) continue;
         if (!watermarks.has(e.stream) && watermarks.size >= 8) throw Error('Too many UI event streams');
         watermarks.set(e.stream, e.sequence);
+        // Consume hidden cursors, but retain neither their existence nor time
+        // in any player list, filter or count.
+        if (e.visibility === 'hidden') continue;
         if (ids.has(e.id)) continue;
         rows.push(structuredClone(e)); ids.add(e.id);
         if (rows.length > capacity) ids.delete(rows.shift().id);

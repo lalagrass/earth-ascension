@@ -4,6 +4,10 @@ const labels = {water:'挑水',herb:'採藥',wood:'砍柴',novice:'初學',adept
 const title=e=>e.result.availability==='known'&&typeof e.result.value==='object' ? e.result.value.text||labels[e.kind]||e.kind : labels[e.kind]||e.kind||valueText(e.result);
 const resultText=e=>e.result.availability!=='known'||typeof e.result.value!=='object'?valueText(e.result):Object.entries(e.result.value).filter(([k])=>facts[k]).map(([k,v])=>`${facts[k]}：${labels[v]||String(v)}`).join(' · ')||e.result.value.text||e.kind;
 export function recentHtml(events, { category = 'all', names = {}, expanded = true, size = events.length } = {}) {
+  // Defense for direct renderer consumers as well as the bounded store.
+  const hiddenCount = events.filter(e => e.visibility === 'hidden').length;
+  events = events.filter(e => e.visibility !== 'hidden');
+  size = Math.max(0, size - hiddenCount);
   const namesByKind={all:'全部',work:'工作',martial:'武學',life:'生活'};
   return `<section class="public-events"><button class="btn toggle-adv" data-ui="toggleEvents" aria-expanded="${expanded}">${expanded?'▾':'▸'} 近期紀錄（此人 ${events.length}／快取 ${size}）</button>${expanded?`
     <div class="event-filters" role="group" aria-label="近期紀錄篩選">${Object.entries(namesByKind).map(([id,label])=>`<button class="btn mini ${category===id?'on':''}" data-event-filter="${id}" aria-pressed="${category===id}">${label}</button>`).join(' ')}</div>

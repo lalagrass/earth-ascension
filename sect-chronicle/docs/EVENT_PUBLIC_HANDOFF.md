@@ -6,7 +6,7 @@
 
 ## 範圍、原事件與呈現記憶
 
-`event-view/contract.mjs` 的 EventView version1 是**呈現物件**，沒有寫入 canonical world／save。每筆包含來源、stream、穩定原 ID 或可重現 adapterID、原 tick／單位、角色、已證設施／行動、真結果、可見性與事件自身原因。值復用公版 field；hidden 在入快取前刪除原值、角色、設施、行動及類別，不能從 tooltip／連結／篩選洩漏。HTML 文字全部 escape。
+`event-view/contract.mjs` 的 EventView version1 是**呈現物件**，沒有寫入 canonical world／save。每筆包含來源、stream、穩定原 ID 或可重現 adapterID、原 tick／單位、角色、已證設施／行動、真結果、可見性與事件自身原因。值復用公版 field；hidden 在投影時刪除原值、角色、設施、行動及類別，cursor消費後不放入玩家快取，清單／篩選／計數均不顯示其存在或原時間；直接render也過濾hidden，不能從 tooltip／連結／篩選洩漏。HTML 文字全部 escape。
 
 正式／Gemini adapter 讀 `model.state.log`、原 `tea.state.events`／`home02.state.events`／`train01.state.log`／`life02.state.log`。核心主 log 是一個 offset，原生小 ring 只記該 ring 視窗的參照（最多40筆），沒有另複製無界歷史；正式核心既有未保存練功／茶／木床事件依原界線只本局。所有新增資訊在 UI，核心物件與原日誌不改。原有不同 stream 的同一件事可以有不同視角記錄，不宣稱跨 stream 為同一 canonical 事件。原記錄的 `kind='note'` 和 `why` 才作原因，不借目前人物 why、鄰近事件或時間排序倒推原因；缺因果鏈不顯示「因此」。
 
@@ -60,10 +60,15 @@ UI復用既有 `field`／`escape`／`valueText`、原 `.btn`／`.mini`／`toggle
 
 ### 最終Cloud桌面收據
 
-runtime checkpoint `be0cec1ec295486fa4d03eb7e1c0252cfcc2e8ce`（之後只有檢查腳本、文件與證據更新）；Chromium154.0.8037.57、1440×1000，16項檢查通過、零page／console錯誤。真水路1700.9、採藥515.2場景單位，主角空手60／負重40、熟手74.4／52；tick1555時熟手已交藥1、主角仍下山且交水0，tick4974時主角交水1、水缸4、藥草3。事件原始完成tick1491／4916與觀察tick區分，近期不改寫時間。讀卡、篩選、連結與暫停重render保持完整權威state；重來清空UI快取。
+runtime checkpoint `be0cec1ec295486fa4d03eb7e1c0252cfcc2e8ce`（原Cloud桌面checkpoint；後續hidden補修按下節9/9定向核對，未變圖／流程復用）；Chromium154.0.8037.57、1440×1000，16項檢查通過、零page／console錯誤。真水路1700.9、採藥515.2場景單位，主角空手60／負重40、熟手74.4／52；tick1555時熟手已交藥1、主角仍下山且交水0，tick4974時主角交水1、水缸4、藥草3。事件原始完成tick1491／4916與觀察tick區分，近期不改寫時間。讀卡、篩選、連結與暫停重render保持完整權威state；重來清空UI快取。
 
 [原始16項結果與cleanup](../event-view/evidence/desktop-results.json)／[定向結果摘要](../event-view/evidence/targeted-results.json)。finally確認pageClosed／browserClosed／serverStopped全true，自有viewport還原後關閉。
 
 ![原設施改派後，熟手真交藥、主角仍在長水路，近期紀錄可回人物卡／藥架](../event-view/evidence/official-herb-recent.jpg)
 
 ![主角真交水及腳力變化，選中人物近期顯示原tick與未知原因](../event-view/evidence/official-water-recent.jpg)
+
+
+### PR355 集中review同PR補修
+
+grass [集中review6414448272](https://github.com/lalagrass/earth-ascension/pull/355#issuecomment-6414448272)指出hidden GPT事件雖已遮payload，原time與事件存在仍可能在未限人物的近期列表顯示。本PR最小補修在cache消費cursor後跳過hidden，玩家rows／filters／size／dedup計數都不保留；renderer直接輸入也過濾hidden。新增真GPT journal反例核隱藏事件原tick987654321／ID／內容不出現在DOM，計數保持原公開數，重送不重播。定向測試更新為9/9；未變正式累積流程、兩真圖與cleanup沿原16項證據復用，沒有重跑桌面／矩陣。原核心／save／公式／RNG未改。

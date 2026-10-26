@@ -1,7 +1,7 @@
 {
   "command": "node --test --test-isolation=none sect-chronicle/event-view/checks/events.test.mjs",
-  "tests": 8,
-  "passed": 8,
+  "tests": 9,
+  "passed": 9,
   "failed": 0,
   "coverage": [
     "official and fixed Gemini exact paired state/events/batched IDs",
@@ -11,7 +11,8 @@
     "pre-cache masking / no hidden filter or link leak",
     "bounded rows/dedup/cursors and evicted snapshot replay",
     "same-tick distinct events / reset / core switch",
-    "HTML escaping / event-local cause only"
+    "HTML escaping / event-local cause only",
+    "review repair: hidden native event existence/time excluded from player rows, filters and counts while cursor consumes replay"
   ],
   "fullMatrixRun": false,
   "sources": "existing committed fixed snapshots; original branch latest adoption not claimed"
