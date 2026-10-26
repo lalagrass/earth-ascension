@@ -1,3 +1,4 @@
+import { martialHtml } from '../martial-view/render.mjs';
 const labels = { known:'已知', unknown:'未知', hidden:'隱藏', unsupported:'不支援' };
 export const escape = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const valueText = f => f?.availability === 'known' ? `${typeof f.value === 'number' ? (Number.isInteger(f.value) ? f.value : Math.round(f.value*100)/100) : typeof f.value === 'object' ? JSON.stringify(f.value) : f.value}${f.unit ? ` ${f.unit}` : ''}` : labels[f?.availability] || '未知';
@@ -29,4 +30,4 @@ export function fieldsHtml(c) {
  const layer={initial:'起始快照',base:'目前常態',effective:'當下有效',innate:'先天天賦'};
  return `<details class="public-fields"><summary>起始／常態／有效值與先天天賦</summary><table><thead><tr><th>欄位</th><th>時點</th><th>原值／單位</th></tr></thead><tbody>${c.fields.map(f=>`<tr><td>${escape(names[f.semanticId] || f.semanticId)}</td><td>${layer[f.layer] || escape(f.layer)}</td><td title="${escape(f.source)}${f.availability==='known' ? ` · 原值 ${escape(JSON.stringify(f.value))}` : ''}">${text(f)}</td></tr>`).join('')}</tbody></table><small>未知不等於 0；缺失初值不由目前值倒推。滑鼠停在值上可查來源。</small></details>`;
 }
-export function renderCard(c){return identityHtml(c)+actionHtml(c)+fieldsHtml(c)+`<h4>所學武學</h4>${c.martial.map(m=>`<p title="${escape(m.source)}">${escape(m.name)} · ${escape(m.progress || '未知')}</p>`).join('')}`;}
+export function renderCard(c){return identityHtml(c)+actionHtml(c)+fieldsHtml(c)+martialHtml(c);}

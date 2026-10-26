@@ -1,7 +1,8 @@
 import { card, field, missing } from './contract.mjs';
+import { officialMartial } from '../martial-view/official.mjs';
 import { portrait } from './portrait.mjs';
 export const GEMINI_SHA = 'bae43412dced2a2f0d9d82008d5cdf8b3acfb8f9';
-export const OFFICIAL_SHA = '0e891274b211bb8f9b97f80f1070670ccd7d9d7c';
+export const OFFICIAL_SHA = '95402dcaf6adff4b39a799c930af58c536273b6a';
 export function geminiCard(model, actorId, { fixed = false, identity = {} } = {}) {
   const v = model.view(), p = v.people[actorId];
   if (!p) throw new Error('Unknown actor');
@@ -30,7 +31,7 @@ export function geminiCard(model, actorId, { fixed = false, identity = {} } = {}
       next: p.next, target: training ? `${t.units}／${t.max} 單位` : p.jobLabel,
       progress: field('action.progress', progress, { source, unit: 'ratio' }),
       stopReason: field('action.stopReason', p.why || (training ? t?.why : null) || null, { source }) }, fields,
-    martial: [{ id: p.palm, name: p.palmLabel, source, progress: t ? `${t.units}／${t.max} 單位` : null }],
+    martial: officialMartial(model, p, source),
     commands: model.actions(actorId).filter(a => !a.hidden).map(a => ({ id:a.id, label:a.label, enabled:a.enabled, reason:a.reason || null })) });
 }
 export function geminiCommand(model, actorId, action) {
