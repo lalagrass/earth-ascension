@@ -1,0 +1,54 @@
+{
+ "d30": {
+  "n": 35,
+  "ok": 35,
+  "maxStages": 22,
+  "topDayMedian": 31,
+  "toppedBy30": 0,
+  "builtFrac10": 0.55,
+  "builtFrac20": 0.58,
+  "stillBuildable25": 35,
+  "lotsBoughtAvg": 0.83,
+  "rareEnd": {
+   "tiemu": 14.54,
+   "lingshi": 9.83
+  },
+  "raidsAvg": 4.37,
+  "homeHurtAvg": 1.66,
+  "homeHurtRange": [
+   0,
+   3
+  ],
+  "deaths": 0,
+  "raidedCases": 35,
+  "paidCases": 30,
+  "payShare": 0.42,
+  "styles": {
+   "dash": 55,
+   "clear": 142,
+   "slip": 10,
+   "steady": 61
+  },
+  "coinRatioAvg": 1.15,
+  "coinRatioMax": 7.21,
+  "coinRatioAgg": 0.76,
+  "over2": [
+   "guojing11",
+   "plain17",
+   "weixiaobao17"
+  ],
+  "bankrupt": 0,
+  "missesAvg": 0.83,
+  "starve5": 0.2,
+  "couplesMax": 5,
+  "couplesAvg": 4.09,
+  "yue1600": "2/5",
+  "guo1600": "4/5",
+  "guojing": "3:1600 7:1600 11:1600 17:1430 23:1600",
+  "bestAvg": 1410.86,
+  "plainDs": "12 12 12 12 12",
+  "plainBest": "1100 656 700 657 621",
+  "coinEnd": 124.77
+ },
+ "d60": null
+}

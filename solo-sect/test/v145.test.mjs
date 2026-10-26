@@ -12,9 +12,9 @@ const mk = () => { const s = createState(7); tick(s); return s; };
 // 走到 X.dist、seg 紀錄可自訂的回程情境
 const backX = (s, seg, loot, sta = 100, dist = 500) => { s.exp = { team: [], dist, phase: 'back', backPos: dist, seg, loot: { ...loot }, sta, events: [], records: {} }; s.exp.ret = returnPlan(s, s.exp); return s.exp; };
 test('v1.45 版本號＋舊檔一步遷移（log 標級、回程隊伍補 ret）', () => {
-  assert.ok(['1.45', '1.5', '1.8', '1.85'].includes(RULES_VERSION)); const s = mk(); const o = JSON.parse(save(s)); o.rules = '1.4'; for (const e of o.log) delete e.tier; delete o.alert;
+  assert.ok(['1.45', '1.5', '1.8', '1.85', '1.9'].includes(RULES_VERSION)); const s = mk(); const o = JSON.parse(save(s)); o.rules = '1.4'; for (const e of o.log) delete e.tier; delete o.alert;
   o.exp = { phase: 'back', dist: 120, team: [], seg: {}, loot: {}, events: [] }; migrate(o);
-  assert.deepEqual(o.migSteps, ['1.45', '1.5', '1.8', '1.85']); assert.ok(o.log.every((e) => e.tier)); assert.ok(o.exp.ret && o.exp.backPos === 120); assert.equal(o.alert, null);
+  assert.deepEqual(o.migSteps, ['1.45', '1.5', '1.8', '1.85', '1.9']); assert.ok(o.log.every((e) => e.tier)); assert.ok(o.exp.ret && o.exp.backPos === 120); assert.equal(o.alert, null);
 });
 test('A1 返程驚獸：每段未清段扣耐力 6，固定值', () => {
   const s = mk(); const X = backX(s, { foot: { enc: 3, kill: 3 }, wood: { enc: 4, kill: 2 }, [ROUTE[2].id]: { enc: 2, kill: 0 } }, { herb: 4 });

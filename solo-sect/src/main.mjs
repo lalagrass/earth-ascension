@@ -156,11 +156,11 @@ const ORD = [['', '自主'], ...['train', 'spar', 'chop', 'farm', 'cook', 'forag
 let lastPanel = 0;
 function panel() {
   const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×`;
-  $('res').innerHTML = `木 ${S.res.wood}/${S.cap.wood}　石 ${S.res.stone}/${S.cap.stone}　香火錢 ${S.res.coin}　菜 ${S.res.veg}　飯 ${S.res.food}　藥 ${S.res.herb}　水 ${S.res.water}/${S.cap.water}　療傷丹 ${S.res.pill}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
+  $('res').innerHTML = `木 ${S.res.wood}/${S.cap.wood}　石 ${S.res.stone}/${S.cap.stone}　香火錢 ${S.res.coin}　菜 ${S.res.veg}　飯 ${S.res.food}　藥 ${S.res.herb}　水 ${S.res.water}/${S.cap.water}　療傷丹 ${S.res.pill}　鐵木 ${S.res.tiemu || 0}　靈石 ${S.res.lingshi || 0}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
   $('build').innerHTML = FACILITIES.filter((f) => f.stages.length > 1 && !f.sig).map((f) => { const st = S.fac[f.id], nx = f.stages[st.stage + 1];
-    const cost = nx ? Object.entries(nx.cost).map(([k, v]) => `${RES_NAMES[k]}${v}`).join('・') : '';
+    const cost = nx ? Object.entries({ ...nx.cost, ...(nx.rare || {}) }).map(([k, v]) => `${RES_NAMES[k]}${v}`).join('・') : ''; const why = nx ? buildWhy(S, f.id) : null;
     const bundle = st.site ? `<div class="k">收集包：${MATS.filter((k) => st.site.need[k]).map((k) => `${RES_NAMES[k]} ${st.site.delivered[k]}/${st.site.need[k]}${st.site.reserved[k] ? `（在途${st.site.reserved[k]}）` : ''}`).join('　')}｜工時 ${st.site.work.toFixed(0)}/${st.site.workNeed}s</div>${bar(100 * MATS.reduce((a, k) => a + st.site.delivered[k], 0) / Math.max(1, MATS.reduce((a, k) => a + st.site.need[k], 0)), '#a0461e')}` : '';
-    return `<div>${f.name}：${f.stages[st.stage].name} ${nx ? (st.site ? `<button data-pause="${f.id}">${st.site.paused ? '復工' : '暫停'}</button>` : `<button data-build="${f.id}" ${(nx.rep && S.rep < nx.rep) || (nx.cost.coin || 0) > S.res.coin ? 'disabled' : ''}>藍圖：${nx.name}（${cost}${nx.rep ? '・名聲' + nx.rep : ''}）</button>`) : '✓'}${bundle}</div>`; }).join('');
+    return `<div>${f.name}：${f.stages[st.stage].name} ${nx ? (st.site ? `<button data-pause="${f.id}">${st.site.paused ? '復工' : '暫停'}</button>` : `<button data-build="${f.id}" ${why ? `disabled title="${why}"` : ''}>藍圖：${nx.name}（${cost}${nx.rep ? '・名聲' + nx.rep : ''}）</button>${why && why !== '施工中' ? `<span class="k why">${why}</span>` : ''}`) : '✓'}${bundle}</div>`; }).join('') + `<div class="lots" data-lots>地塊 ${lotsUsed(S)}/${lotsOf(S).n} <button data-lot ${lotWhy(S) ? 'disabled' : ''}>擴地（${lotCost(S)} 錢）</button> <span class="k">${lotWhy(S) || ''}</span></div>`;
   { const c = canHire(S);
     $('labor').innerHTML = `<button id="hire-go" ${c.ok ? '' : 'disabled'}>雇工（香火錢 ${ECON.hireCoin}、糧 ${ECON.hireFood}；日薪 ${ECON.wage}）</button> <span class="k">${c.ok ? `應徵：${c.next.name}` : c.why}</span>` +
       laborers(S).map((d) => { const iv = canInvite(S, d.id);
@@ -187,7 +187,7 @@ function panel() {
         <button data-promote="${d.id}" ${pc.ok ? '' : 'disabled'}>切磋考核入內門</button> <span class="k">${pc.ok ? `主考：${pc.ex.name}・門檻 ${PROMOTE.pass}` : pc.why}${d.trialScore ? `｜上次 ${d.trialScore}` : ''}</span></div>`; }).join('') : '<div class="k">尚無外門弟子（招收或邀雇工入門）</div>');
   }
   { const L = S.ledger, P = S.ledgerPrev, row = (x) => Object.entries(x).filter(([, v]) => v).map(([k, v]) => `${RES_NAMES[k] || k}${v}`).join('・') || '—';
-    $('ledger').innerHTML = `<div class="k">今日（第 ${L.day} 日）收：${row(L.in)}</div><div class="k">今日支：${row(L.out)}</div>${P ? `<div class="k">昨日收：${row(P.in)}｜支：${row(P.out)}</div>` : ''}<div class="k">明晨預計：香火 +${ECON.coinBase + Math.floor(S.rep / ECON.coinPerRep)}・工錢 −${laborers(S).length * ECON.wage}</div>${econHtml(S)}`; }
+    $('ledger').innerHTML = `<div class="k">今日（第 ${L.day} 日）收：${row(L.in)}</div><div class="k">今日支：${row(L.out)}</div>${P ? `<div class="k">昨日收：${row(P.in)}｜支：${row(P.out)}</div>` : ''}<div class="k">明晨預計：香火 +${ECON.coinBase + Math.floor(S.rep / ECON.coinPerRep)}・工錢 −${laborers(S).length * ECON.wage}</div>${econHtml(S)}${threatHtml(S)}`; }
   const eco = `山中：山鼠 ${S.eco.rat.n}・野豬 ${S.eco.boar.n}`;
   $('hunt').innerHTML = S.hunt ? `${eco}<div>進行中（${POSTS[S.hunt.post]}）第 ${S.hunt.wave + 1}/${S.hunt.waves} 波：擊退 ${S.hunt.kills}・溜走 ${S.hunt.escaped}</div>` :
     `${eco}<div>守點：<select id="post">${Object.entries(POSTS).map(([k, n]) => `<option value="${k}" ${S.post === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
@@ -206,7 +206,7 @@ function panel() {
       出發：<select id="exfrom"><option value="">山門</option>${campsOpen(S).map((c) => `<option value="${c.id}" ${window.__exFrom === c.id ? 'selected' : ''}>${c.name}（${ROUTE[c.seg].to} 步，多帶 ${EXP.campCarry}/人）</option>`).join('')}</select>
       巡山令：<select id="exord"><option value="">照性格</option>${Object.entries(EXP_STYLES).map(([k, v]) => `<option value="${k}" ${window.__exOrd === k ? 'selected' : ''}>強令${v.name}</option>`).join('')}</select>
       <span class="k">${window.__exOrd ? '（不合性格者心情 −6、主角違心；耐性上限 ×0.7）' : ''}${(() => { const sc = scoutOf(sty); return sc ? `　探路：${sc.name}（先手 +20%）` : ''; })()}</span></div>
-      <button id="exp-go">派出巡山（${team.size} 人）</button> <span class="k">${canExpedition(S, [...team]).why || ''}</span>${rec}${card}`;
+      <button id="exp-suggest">因才派巡</button> <span class="k" id="exp-why">${(window.__exWhy || []).join('；')}</span><br><button id="exp-go">派出巡山（${team.size} 人）</button> <span class="k">${canExpedition(S, [...team]).why || ''}</span>${rec}${card}`;
     if (X && $('exp-recall')) $('exp-recall').onclick = () => { recallExpedition(S); panel(); };
     if (!X) { $('exp-go').onclick = () => { const r = startExpedition(S, [...team], { thr, supplies: +$('exsup').value, target: $('extgt').value === 'inf' ? 'inf' : +$('extgt').value, from: $('exfrom').value || null, order: $('exord').value || null }); if (!r.ok) alert(r.why); panel(); }; $('exsup').onchange = (e) => { window.__exSup = +e.target.value; }; $('extgt').onchange = (e) => { window.__exTgt = e.target.value; }; $('exfrom').onchange = (e) => { window.__exFrom = e.target.value; }; $('exord').onchange = (e) => { window.__exOrd = e.target.value; panel(); }; $('exthr').onchange = (e) => { window.__exThr = +e.target.value; }; document.querySelectorAll('.xteam').forEach((c) => (c.onchange = () => { c.checked ? team.add(c.value) : team.delete(c.value); panel(); })); }
     $('codex').innerHTML = `<table class="codex"><tr><th>敵人</th><th>類</th><th>兵器</th><th>血</th><th>見/倒/逃</th><th>觀破</th></tr>${codexRows(S).map((r) => r.unknown ? `<tr class="k"><td>？？？</td><td colspan="5">未曾照面</td></tr>` : `<tr><td>${r.name}</td><td>${r.kind}</td><td>${r.weapon}</td><td>${r.hp}</td><td>${r.seen}/${r.kills}/${r.fled}</td><td>${r.insight}・${r.tier}</td></tr>`).join('')}</table>`;
@@ -457,3 +457,13 @@ try { bindPortraitSet(document, localStorage, document.getElementById('pset')); 
 import { econHtml, marketDo } from './economy.mjs';
 import { startSchoolTrip } from './sim.mjs';
 document.addEventListener('click', (e) => { const m = e.target.closest('[data-mkt]'); if (m && S) { const r = marketDo(S, m.dataset.mkt); toast(r.ok ? `成交 ${r.p}` : r.why, !r.ok); return; } if (e.target.closest('[data-school]') && S) { const r = startSchoolTrip(S); toast(r.ok ? `${r.d.name}下山義學去了` : r.why, !r.ok); } });
+
+// v1.9 I-2 擴地、I-6 山賊勒索、A9 因才派巡
+import { buildWhy, lotsUsed, lotsOf, lotCost, lotWhy, buyLot, resolveRaid } from './sim.mjs';
+import { threatHtml } from './threat.mjs';
+import { suggestTeam } from './expedition.mjs';
+document.addEventListener('click', (e) => {
+  if (!S) return; const l = e.target.closest('[data-lot]'); if (l) { const r = buyLot(S); toast(r.ok ? `擴地花了 ${r.c}` : r.why, !r.ok); panel(); return; }
+  const rb = e.target.closest('[data-raid]'); if (rb) { const r = resolveRaid(S, +rb.dataset.raid); toast(!r.ok ? r.why : r.paid ? `付了 ${r.paid}` : r.win ? '打退山賊' : '敗了', !r.ok || r.win === false); panel(); return; }
+  if (e.target.id === 'exp-suggest') { const g = suggestTeam(S, 2); window.__exTeam = new Set(g.ids); window.__exWhy = g.why; panel(); }
+});

@@ -1,0 +1,80 @@
+{
+ "d30": {
+  "n": 35,
+  "ok": 35,
+  "maxStages": 22,
+  "topDayMedian": 31,
+  "toppedBy30": 0,
+  "builtFrac10": 0.55,
+  "builtFrac20": 0.62,
+  "stillBuildable25": 35,
+  "lotsBoughtAvg": 1.31,
+  "rareEnd": {
+   "tiemu": 18.37,
+   "lingshi": 18.23
+  },
+  "raidsAvg": 4.31,
+  "homeHurtAvg": 1.83,
+  "homeHurtRange": [
+   0,
+   3
+  ],
+  "deaths": 0,
+  "raidedCases": 35,
+  "paidCases": 31,
+  "payShare": 0.4,
+  "styles": {
+   "dash": 167,
+   "clear": 29,
+   "slip": 58,
+   "steady": 45
+  },
+  "coinRatioAvg": 0.93,
+  "coinRatioMax": 2.85,
+  "coinRatioAgg": 0.77,
+  "over2": [
+   "plain7",
+   "plain17"
+  ],
+  "bankrupt": 0,
+  "missesAvg": 0.77,
+  "starve5": 0.14,
+  "couplesMax": 5,
+  "couplesAvg": 4.26,
+  "yue1600": "4/5",
+  "guo1600": "3/5",
+  "guojing": "3:1600 7:1581 11:656 17:1600 23:1600",
+  "bestAvg": 1397.74,
+  "plainDs": "12 12 12 12 12",
+  "plainBest": "482 515 551 515 515",
+  "coinEnd": 133.89
+ },
+ "d60": {
+  "n": 35,
+  "ok": 35,
+  "topSnapMedian": 61,
+  "toppedBy60": 0,
+  "raidsAvg": 9.2,
+  "homeHurtAvg": 4.17,
+  "deathsThreat": 0,
+  "departures": 5,
+  "paidCases": 35,
+  "coin60over10": 1.62,
+  "coin30over10": 0.9,
+  "bankrupt": 0,
+  "missesAvg": 0.69,
+  "foodLowDays": 0.99,
+  "couplesMax": 5,
+  "yue1600": "5/5",
+  "guo1600": "4/5",
+  "plainDs": "12 12 12 12 12",
+  "bestAvg": 1654.11,
+  "coinEnd": 169.57,
+  "styles": {
+   "dash": 246,
+   "clear": 95,
+   "slip": 229,
+   "steady": 95
+  }
+ }
+}

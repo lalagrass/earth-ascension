@@ -8,7 +8,7 @@ import { relStage, relAdd, compat, aff, initPair } from './social.mjs';
 import { seasonOf } from './season.mjs';
 import { pipeline, mulText } from './mul.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf } from './expedition.mjs';
-import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC } from './data.mjs';
+import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS } from './data.mjs';
 import { SCORE, SCORE_POST } from './score-data.mjs';
 import { addMem, chatLine, passPick, passDo, PASS, passScore, passReserve, apprDaily, apprMul } from './bonds.mjs';
 import { aspStep, likeMeal, likesOf } from './v10.mjs';
@@ -30,6 +30,7 @@ export { think, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, k
 import { SAVE_VERSION, freshV095 } from './save.mjs';
 import { cancelTask, removeActor, whAvail } from './lifecycle.mjs';
 import { econDaily, schoolStep, startSchool, E as econOf } from './economy.mjs';
+import { threatDaily, threatStep, raidResolve } from './threat.mjs';
 import { removeDisciple } from './gen.mjs';
 const EH = { rand: (s) => rand(s), cancelTask: (s, d, w) => cancelTask(s, d, w), think: (s, d, id) => think(s, d, id), removeDisciple: (s, d, w) => removeDisciple(s, d, w), gate: NODES.gate };
 import { freeSlot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE, STOCK_RESV, stockKey, stockReserved } from './core.mjs';
@@ -57,7 +58,7 @@ export const facStage = (s, id) => { const S = facDef(id).stages; return S[Math.
 
 export function createState(seed = 1, heroSpec = null) {
   const s = {
-    v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
+    v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
     ds: DISCIPLES.map((d, i) => mkDisciple(d, i)),
     rel: {}, aff: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
@@ -153,12 +154,27 @@ export function phaseOf(s) { const f = (s.t % DAY) / DAY; let p = PHASES[0]; for
 
 // ---- 建造 ----
 export const MATS = ['wood', 'stone'];
+// v1.9 I-2：v1.6 建築佔地；地塊上限 s.lots.n，擴地花錢（每塊 ×LOTS.rise）
+export const lotsOf = (s) => (s.lots ??= { n: LOTS.start, bought: 0 });
+export const lotsUsed = (s) => FACILITIES.filter((f) => f.v16 && !f.sig && (s.fac[f.id]?.stage > 0 || s.fac[f.id]?.site)).length;
+export const lotCost = (s) => Math.round(LOTS.cost * LOTS.rise ** lotsOf(s).bought);
+export function lotWhy(s) { const L = lotsOf(s); if (L.n >= LOTS.max) return '山頭已經沒有地可擴'; if (s.res.coin < lotCost(s)) return `錢不夠（擴地 ${lotCost(s)}）`; return null; }
+export function buyLot(s) { const w = lotWhy(s); if (w) return { ok: false, why: w }; const c = lotCost(s), L = lotsOf(s); resAdd(s, 'coin', -c); L.n++; L.bought++; log(s, `擴地：花 ${c} 錢整出一塊新地（地塊 ${lotsUsed(s)}/${L.n}）`); return { ok: true, c }; }
+export function buildWhy(s, id) {
+  const f = facDef(id), st = s.fac[id], next = f.stages[st.stage + 1];
+  if (!next) return '已到頂'; if (st.site) return '施工中'; if (f.sig || next.noBlueprint) return '鎮派建築走門派面板';
+  if (next.rep && (s.rep || 0) < next.rep) return `名聲不足（${Math.floor(s.rep || 0)}/${next.rep}）`;
+  for (const [k, v] of Object.entries(next.rare || {})) if ((s.res[k] || 0) < v) return `${RARE[k]}不足（${s.res[k] || 0}/${v}，巡山遠段才撿得到）`;
+  if (f.v16 && st.stage === 0 && lotsUsed(s) >= lotsOf(s).n) return `沒有空地（${lotsUsed(s)}/${lotsOf(s).n}），先擴地`;
+  if (s.res.coin < (next.cost.coin || 0)) return `錢不夠（${next.cost.coin}）`;
+  return null;
+}
 export function startBuild(s, id) {
   const f = facDef(id), st = s.fac[id], next = f.stages[st.stage + 1];
-  if (!next || st.site || f.sig || next.noBlueprint) return false; // v1.6 鎮派建築只能走門派面板
-  if (next.rep && (s.rep || 0) < next.rep) return false;
-  const coin = next.cost.coin || 0; if (s.res.coin < coin) return false;
+  if (buildWhy(s, id)) return false; // v1.6 鎮派建築只能走門派面板；v1.9 名聲／稀有料／地塊
+  const coin = next.cost.coin || 0;
   s.res.coin -= coin; book(s, 'out', 'coin', coin);
+  for (const [k, v] of Object.entries(next.rare || {})) resAdd(s, k, -v);
   const need = Object.fromEntries(MATS.map((k) => [k, next.cost[k] || 0]));
   st.site = { need, delivered: { wood: 0, stone: 0 }, reserved: { wood: 0, stone: 0 }, work: 0, workNeed: next.work, paused: false };
   log(s, `立藍圖：${f.name} → ${next.name}（收集包：${MATS.filter((k) => need[k]).map((k) => `${k === 'wood' ? '木' : '石'} ${need[k]}`).join('、')}${coin ? `，香火錢 ${coin} 已付` : ''}；工時 ${next.work}s）`);
@@ -554,8 +570,8 @@ export function payday(s) {
 // ---- tick ----
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
-  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); } }
-  schoolStep(s, EH);
+  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); } }
+  schoolStep(s, EH); threatStep(s, EH);
   const se = seasonOf(s); for (const p of s.plots) if (p.st === 'grow' && (p.g += dt / se.grow) >= PLOT_GROW) p.st = 'ripe';
   const seIdx = se.i; if (s.seasonI !== seIdx) { if (s.seasonI !== undefined) log(s, `入${se.name}了。${{ spring: '萬物萌發，菜長得快。', summer: '天長日暖。', autumn: '秋高氣爽，心情開闊。', winter: '天寒地凍，菜長得慢，飯量變大。' }[se.id]}`); s.seasonI = seIdx; }
   for (const d of s.ds) {
@@ -611,3 +627,5 @@ export { clone };
 export { cancelTask, removeActor };
 
 export const startSchoolTrip = (s) => startSchool(s, EH); // v1.85 A10 下山義學
+
+export const resolveRaid = (s, i) => raidResolve(s, i, EH); // v1.9 I-6：玩家按鈕

@@ -53,10 +53,14 @@ export const FACILITIES = [
   { id: 'hall', name: '大廳', node: 'hall', stages: [
     { name: '破道館', sprite: 'hall_s0', offers: ['rest', 'learn'], restRate: 3, beds: 3, learnDur: 8 },
     { name: '大廳', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 4, beds: 2, learnDur: 4, cost: { wood: 12, stone: 6, coin: 6 }, work: 30, rep: 20 },
+    { name: '正殿', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 5, beds: 2, learnDur: 3, cost: { wood: 16, stone: 10, coin: 60 }, rare: { tiemu: 2 }, work: 40, rep: 40 }, // v1.9 I-2 三階：名聲＋巡山遠段稀有料
+    { name: '大殿', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 6, beds: 3, learnDur: 2, cost: { wood: 20, stone: 14, coin: 120 }, rare: { tiemu: 3, lingshi: 2 }, work: 50, rep: 70 },
   ] },
   { id: 'yard', name: '外功場', node: 'yard', stages: [
     { name: '空地', sprite: null, offers: ['train', 'meditate'], trainMul: 1 },
     { name: '木樁場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 1.6, dummies: 3, cost: { wood: 6 }, work: 15 },
+    { name: '演武場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 1.8, dummies: 4, cost: { wood: 12, stone: 8, coin: 40 }, rare: { tiemu: 2 }, work: 30, rep: 30 },
+    { name: '演武廣場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 2.0, dummies: 5, cost: { wood: 14, stone: 12, coin: 90 }, rare: { tiemu: 2, lingshi: 1 }, work: 40, rep: 60 },
   ] },
   { id: 'dorm', name: '宿舍', node: 'dorm', stages: [
     { name: '破寢舍', sprite: 'dorm_s0', offers: [] },
@@ -67,6 +71,7 @@ export const FACILITIES = [
   { id: 'kitchen', name: '膳房', node: 'kitchen', stages: [
     { name: '露天灶', sprite: 'vat', offers: ['cook', 'eat'], cookDur: 12, cookYield: 3, mealBonus: 0 },
     { name: '膳房', sprite: 'kitchen_s1', offers: ['cook', 'eat'], cookDur: 6, cookYield: 4, mealBonus: 15, cost: { wood: 8 }, work: 20 },
+    { name: '大膳房', sprite: 'kitchen_s1', offers: ['cook', 'eat'], cookDur: 5, cookYield: 5, mealBonus: 18, cost: { wood: 12, stone: 6, coin: 40 }, rare: { tiemu: 1 }, work: 26, rep: 25 },
   ] },
   { id: 'veg', name: '菜園', node: 'veg', stages: [{ name: '荒地菜畦', sprite: 'grass', offers: ['farm'], plots: 4 }] },
   { id: 'herb', name: '藥園', node: 'herb', stages: [{ name: '野藥圃', sprite: 'herb', offers: ['forage'] }] },
@@ -197,6 +202,7 @@ export const THOUGHTS = {
   duguGot:   { text: '劍隨意走，無招勝有招', v: 12, ttl: 900, tag: 'good' },
   aspDone:   { text: '志向得償', v: 12, ttl: 900, tag: 'good' },
   expHurt:   { text: '巡山掛了彩', v: -8, ttl: 400, tag: 'fight' },
+  raidHurt:  { text: '守山門被山賊打成重傷', v: -10, ttl: 500, tag: 'fight' }, // v1.9 I-6
   btFail:    { text: '衝關失敗，氣血翻湧', v: -5, ttl: 300, tag: 'bad' },
   btWin:     { text: '衝破瓶頸！', v: 18, ttl: 500, tag: 'good' },
   learned:   { text: '學會了新招', v: 15, ttl: 400, tag: 'good' },
@@ -229,7 +235,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '1.85';
+export const RULES_VERSION = '1.9';
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -253,7 +259,7 @@ export const QUESTIONS = [
 // ---- v0.8 資源→建設、雇工 ----
 // 香火錢：每日晨起入帳 base + floor(名聲/perRep)；雇工每日工錢 wage，付不出累計 unpaid，達 leaveAfter 日離開
 export const ECON = { coinStart: 4, coinBase: 2, coinPerRep: 5, wage: 2, hireCoin: 4, hireFood: 2, leaveAfter: 2, carry: 2, laborCarry: 3 };
-export const RES_NAMES = { wood: '木', stone: '石', coin: '香火錢', veg: '菜', food: '飯', herb: '藥', hide: '獸皮', gall: '熊膽', page1: '凡階殘頁', page2: '精階殘頁' };
+export const RES_NAMES = { wood: '木', stone: '石', coin: '香火錢', veg: '菜', food: '飯', herb: '藥', hide: '獸皮', gall: '熊膽', page1: '凡階殘頁', page2: '精階殘頁', tiemu: '鐵木', lingshi: '靈石' };
 // 雇工能做的事（不練武、不聽講、不下廚種菜）；幹活時分數加成
 export const LABOR_ACTS = ['rest', 'eat', 'chat', 'leisure', 'chop', 'quarry', 'build'];
 export const LABOR_WORK_MUL = 1.4;
@@ -336,16 +342,19 @@ export const ENEMIES = {
 export const INSIGHT = { see: 1, fight: 2, kill: 5, tiers: [[10, '識其來路'], [30, '熟其招式'], [60, '看破']], dmgAt: 60, dmg: 0.1 };
 // ---- v0.95 巡山遠征：固定名單，從不讀玩家強度 ----
 export const ROUTE = [
-  { id: 'foot',   name: '山腳', from: 0,   to: 100, every: 20, roster: [['hare', 3], ['boar', 1]],               find: { food: 0.5 } },
+  { id: 'foot',   name: '山腳', from: 0,   to: 100, every: 20, roster: [['hare', 3], ['boar', 1]],               find: { food: 0.5 } }, // v1.9：tiemu 鐵木（深谷起）、lingshi 靈石（古洞起）＝三四階建築的稀有料
   { id: 'wood',   name: '林地', from: 100, to: 250, every: 25, roster: [['boars', 1], ['wolf', 2], ['snake', 2]], find: { herb: 0.5, wood: 0.5 } },
   { id: 'slope',  name: '山腰', from: 250, to: 450, every: 30, roster: [['bandit', 3], ['archer', 2]],            find: { coin: 0.5 } },
-  { id: 'gorge',  name: '深谷', from: 450, to: 700, every: 35, roster: [['bear', 1], ['chief', 1]],               find: { herb: 0.5 } },
-  { id: 'cliff',  name: '斷崖', from: 700, to: 950, every: 40, roster: [['vulture', 2], ['ape', 2]], find: { herb: 0.5 }, scale: 1.25 },
-  { id: 'cave',   name: '古洞', from: 950, to: 1250, every: 45, roster: [['bat', 3], ['python', 1]], find: { page1: 0.3 }, scale: 1.25 ** 2 },
-  { id: 'peak',   name: '無名絕頂', from: 1250, to: 1600, every: 50, roster: [['hermit', 2], ['ape', 1]], find: { coin: 1, page2: 0.1 }, scale: 1.25 ** 3 },
+  { id: 'gorge',  name: '深谷', from: 450, to: 700, every: 35, roster: [['bear', 1], ['chief', 1]],               find: { herb: 0.5, tiemu: 0.25 } },
+  { id: 'cliff',  name: '斷崖', from: 700, to: 950, every: 40, roster: [['vulture', 2], ['ape', 2]], find: { herb: 0.5, tiemu: 0.35 }, scale: 1.25 },
+  { id: 'cave',   name: '古洞', from: 950, to: 1250, every: 45, roster: [['bat', 3], ['python', 1]], find: { page1: 0.3, lingshi: 0.3 }, scale: 1.25 ** 2 },
+  { id: 'peak',   name: '無名絕頂', from: 1250, to: 1600, every: 50, roster: [['hermit', 2], ['ape', 1]], find: { coin: 1, page2: 0.1, lingshi: 0.4 }, scale: 1.25 ** 3 },
 ];
 // v1.0 無盡段：無名絕頂之後每 200 步一段、段末固定守關「無名高手」、每段 ×1.25
-export const ENDLESS = { len: 200, mul: 1.18, dmgExp: 0.5, roster: [['hermit', 2], ['ape', 1], ['python', 1]], find: { coin: 1, page2: 0.15 }, gate: 'peakguard' };
+export const ENDLESS = { len: 200, mul: 1.18, dmgExp: 0.5, roster: [['hermit', 2], ['ape', 1], ['python', 1]], find: { coin: 1, page2: 0.15, lingshi: 0.4 }, gate: 'peakguard' };
+// v1.9 I-2：稀有料名稱；建築槽位（藏經閣等 v1.6 建築各佔一塊地，開山 4 塊，擴地花錢、每塊 ×1.5）
+export const RARE = { tiemu: '鐵木', lingshi: '靈石' };
+export const LOTS = { start: 4, cost: 50, rise: 1.5, max: 10 };
 // 營地：第三段（山腰）與第五段（斷崖）盡頭；過關即設營，可補給、下次可從營地出發
 export const CAMPS = [{ id: 'camp1', seg: 2, name: '山腰營地' }, { id: 'camp2', seg: 4, name: '斷崖營地' }];
 export const EXP = { maxTeam: 4, thr: [0.3, 0.5, 0.7], thrDefault: 0.5, moodMin: 30, walk: 5, back: 12, gateBail: 0.25, supplyHeal: 35, supplyPer: 2, supplyMax: 6, campCarry: 2, sta: 100, staStep: 0.05, staFight: 1.5, patFight: 1.5, patLazy: 1, orderPatCap: 0.7, scoutAt: 35, scoutBonus: 0.2, scoutT: 3, cool: 90, coolFast: 0.5, quarrel: 6, peaceQing: 3, peaceRaid: 2, peaceSpeed: 1.3, orderMood: -6, classicGuard: 0.6, classicTier: 3, minHp: 50, hurtLight: 60, hurtHeavy: 25, retSta: 6, retLoss: 0.5 }; // v1.45 返程驚獸：每段未清段扣耐力 6；耐力見底才掉一半戰利品；不受傷

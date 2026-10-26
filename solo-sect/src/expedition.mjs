@@ -4,6 +4,7 @@ import { secOpen } from './slice.mjs';
 import { ENDLESS, CAMPS } from './data.mjs';
 import { addWexin } from './hero.mjs';
 import { affKey } from './util.mjs';
+import { aff } from './social.mjs';
 import { popKill } from './world.mjs';
 import { ENEMIES, INSIGHT, ROUTE, EXP, MOVES, DAY, EXP_STYLES as STYLES, STYLE_TRAIT, EVADE, TRAITS } from './data.mjs';
 import { moveMul, effectTier, artTier as effectTierOf } from './arts.mjs';
@@ -68,6 +69,24 @@ export function teamStyle(team) {
   const best = ORDER.reduce((b, k) => ((n[k] || 0) > (n[b] || 0) ? k : b), ORDER.find((k) => n[k]));
   return best;
 }
+// ---- v1.9 A9 因才派巡（ONI 優先度）：依「需要」＋「專長」排序，第二人起偏好跟隊上／上一趟不同的風格 ----
+// 專長＝出手（dpsOf，佔 80 分）；需要＝多久沒巡山（每日 +5，上限 20）＋心情低想出門透氣（最多 10）；
+// 第二人起：搭檔默契（上一趟同隊 +25、好感 /100×20）＋換個走法 +6。v1.9 長跑：沒有默契項時岳不群 30 日到頂 1/5（隊友輪來輪去），加了才回 ≥4/5
+export const A9 = { minHp: 70, dps: 80, perDay: 5, idleCap: 20, mood: 10, diverse: 6, keep: 25, bond: 20 };
+export function suggestTeam(s, n = 2) {
+  const ok = s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > A9.minHp && !((d.restUntil || 0) > s.t) && !s.hunt?.team.includes(d.id));
+  if (!ok.length) return { ids: [], why: [] }; const top = Math.max(...ok.map((d) => dpsOf(s, d))) || 1, last = s.lastExp?.style;
+  const base = (d) => { const idle = Math.min(A9.idleCap, ((s.t - (d.lastExp ?? -DAY * 9)) / DAY) * A9.perDay), m = Math.max(0, (60 - d.mood) / 60) * A9.mood; return { sp: (dpsOf(s, d) / top) * A9.dps, idle, m }; };
+  const pick = [], why = [], lastTeam = s.lastExp?.ids || [];
+  while (pick.length < Math.min(n, ok.length)) {
+    const used = new Set(pick.map((d) => styleOf(d).id)); if (last && pick.length) used.add(last);
+    let best = null, bv = -1e9, bw = '';
+    for (const d of ok) { if (pick.includes(d)) continue; const b = base(d), dv = pick.length && !used.has(styleOf(d).id) ? A9.diverse : 0, kp = pick.length && lastTeam.includes(d.id) && lastTeam.includes(pick[0].id) ? A9.keep : 0, bd = pick.length ? Math.max(0, aff(s, pick[0], d)) / 100 * A9.bond : 0, v = b.sp + b.idle + b.m + dv + kp + bd;
+      if (v > bv) { bv = v; best = d; bw = `${d.name}：專長 ${Math.round(b.sp)}・久未巡山 ${Math.round(b.idle)}${b.m >= 1 ? `・想出門 ${Math.round(b.m)}` : ''}${kp ? `・老搭檔 +${kp}` : ''}${bd >= 1 ? `・默契 ${Math.round(bd)}` : ''}${dv ? `・換個走法（${STYLES[styleOf(d).id].name}）+${dv}` : ''}`; } }
+    pick.push(best); why.push(bw);
+  }
+  return { ids: pick.map((d) => d.id), why };
+}
 export const evadeScore = (d) => d.skills.agility + Math.max(0, effectTier(d, 'speed') + 1) * EVADE.tierPts + ((d.personality || []).includes('lazy') ? EVADE.lazyBonus : 0);
 const pclamp = (x) => Math.max(0.05, Math.min(0.95, x));
 // H：sim 內部工具 { rand, cancelTask, grow, think }
@@ -81,6 +100,7 @@ export function startExpedition(s, ids, opt = {}, H) {
   for (const id of ids) { const d = s.ds.find((x) => x.id === id); H.cancelTask(s, d, '出發巡山'); d.order = null; d.away = true; d.path = []; d.reason = '巡山中'; }
   s.expN = (s.expN || 0) + 1;
   const tm = ids.map((id) => s.ds.find((x) => x.id === id)), order = STYLES[opt.order] ? opt.order : null, style = order || teamStyle(tm);
+  for (const d of tm) d.lastExp = s.t; // v1.9 A9：記上次巡山時刻（因才派巡的「需要」）
   if (order) for (const d of tm) if (styleOf(d).id !== order) { if (d.values) addWexin(s, d, '巡山令'); else H.think(s, d, 'forcedStyle'); d.mood = Math.max(0, d.mood + EXP.orderMood); }
   const patMax = Math.round(tm.reduce((a, d) => a + d.mood, 0) / tm.length * (order ? EXP.orderPatCap : 1)), sc = scoutOf(tm), from = camp ? ROUTE[camp.seg].to : 0;
   s.exp = { events: [], n: s.expN, team: [...ids], thr, target, supplies, dist: from, from, camp: camp?.name || null, phase: 'out', busy: 0, nextAt: from + routeSeg(camp ? camp.seg + 1 : 0).every, order, sta: EXP.sta, pat: patMax, patMax, scout: sc?.name || null, camps: [], kills: {}, escaped: {}, loot: {}, hurt: {}, reason: null, startT: s.t, fights: 0,
@@ -201,7 +221,7 @@ function finishExpedition(s, team, H) {
   for (const a of st) for (const b of lz) if (a !== b) { for (const [p, q] of [[a, b], [b, a]]) s.aff[affKey(p.id, q.id)] = (s.aff[affKey(p.id, q.id)] || 0) - EXP.quarrel; H.think(s, a, 'quarrel'); H.think(s, b, 'quarrel'); qu.push(`${a.name}嫌${b.name}偷懶，吵了一架`); }
   const rep0 = { ret: X.ret ? { hits: X.ret.hits, staLost: X.ret.staLost, lost: X.ret.lost } : null, style: X.style, styleWhy: X.styleWhy, evaded: X.evaded, chase: X.chase, clear, qing, gates: X.gates, blocked: X.blocked || null, time: Math.round(s.t - X.startT), order: X.order, sta: Math.max(0, Math.round(X.sta ?? 0)), pat: Math.max(0, Math.round(X.pat ?? 0)), patMax: X.patMax, scout: X.scout, camps: X.camps || [], from: X.camp, quarrel: qu, cool: Math.round(cool), fast };
   rep0.story = storyOf(team, rep0, X);
-  const rep = { ...rep0, n: X.n, team: team.map((d) => d.name), dist, seg: segAt(Math.max(0, dist - 0.01)).name, kills: X.kills, escaped: X.escaped, hurt, loot: X.loot, reason: X.reason, fights: X.fights, sectRec, personal: rec, day: Math.floor(s.t / DAY) + 1 };
+  const rep = { ...rep0, n: X.n, team: team.map((d) => d.name), ids: team.map((d) => d.id), dist, seg: segAt(Math.max(0, dist - 0.01)).name, kills: X.kills, escaped: X.escaped, hurt, loot: X.loot, reason: X.reason, fights: X.fights, sectRec, personal: rec, day: Math.floor(s.t / DAY) + 1 };
   for (let i = 0; i < team.length; i++) for (let j = i + 1; j < team.length; j++) addMem(s, team[i], team[j], 'patrol', rep.seg); // v1.65 並肩巡山
   s.lastExp = rep; s.exp = null;
   log(s, `巡山戰報 #${rep.n}：走到${rep.seg} ${dist} 步｜${reportText(rep)}`);
