@@ -1,0 +1,70 @@
+{
+  "source": "model tests on the M16 demo save with a labeled rest fixture, not UI",
+  "cases": [
+    {
+      "case": "versions",
+      "v1": "running immediately",
+      "v2": "chapter1-joint-2"
+    },
+    {
+      "case": "assembly",
+      "earlyReason": "林青還在路上，就位後再開始",
+      "posts": {
+        "amu": [
+          1440,
+          1200
+        ],
+        "lin": [
+          1316,
+          1228
+        ]
+      }
+    },
+    {
+      "case": "withdrawn",
+      "review": {
+        "outcome": "withdrawn",
+        "spans": {
+          "amu": {
+            "joined": 188195,
+            "left": null
+          },
+          "shen": {
+            "joined": 188195,
+            "left": null
+          }
+        }
+      }
+    },
+    {
+      "case": "left-then-spar",
+      "statsAtLeave": {
+        "moves": {},
+        "hits": 0,
+        "received": 0
+      },
+      "spans": {
+        "amu": {
+          "joined": 188195,
+          "left": null
+        },
+        "lin": {
+          "joined": 188195,
+          "left": 188461
+        }
+      }
+    },
+    {
+      "case": "save",
+      "rejected": [
+        "version3",
+        "phase",
+        "points",
+        "arrival",
+        "stranger",
+        "assemblingV1",
+        "goAt"
+      ]
+    }
+  ]
+}

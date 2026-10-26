@@ -1,0 +1,411 @@
+{
+  "prereg": "docs/optimization/M20.md",
+  "round": "r3",
+  "source": "M16 demo save (normal UI); labeled rest fixture; model runs; one deterministic run per cell",
+  "wallSeconds": 16.38,
+  "directions": {
+    "D1_S2_lineFewerLeaks": false,
+    "D2_S1_lineNotMoreLeaks": true,
+    "D3_S3_frontNotMoreLeaksAndFaster": true,
+    "D4_frontInterceptsFurtherEast": [
+      null,
+      null,
+      null
+    ],
+    "D4_note": "null = the line holder never intercepted in that cell"
+  },
+  "rows": [
+    {
+      "scenario": "S1",
+      "arrangement": "X",
+      "arrival": "together",
+      "roles": {
+        "amu": "front",
+        "lin": "front"
+      },
+      "assembled": 221,
+      "outcome": "held",
+      "leaked": 0,
+      "defeated": 4,
+      "fight": 633,
+      "intercepts": {
+        "training.1": {
+          "x": 1469,
+          "by": "amu"
+        },
+        "training.2": {
+          "x": 1467,
+          "by": "amu"
+        },
+        "training.3": {
+          "x": 1474,
+          "by": "lin"
+        },
+        "training.4": {
+          "x": 1461,
+          "by": "amu"
+        }
+      },
+      "interceptMean": {
+        "amu": 1466,
+        "lin": 1474
+      },
+      "body": {
+        "amu": {
+          "energyUsed": 2137,
+          "injuryGained": 0
+        },
+        "lin": {
+          "energyUsed": 1650,
+          "injuryGained": 0
+        }
+      },
+      "people": {
+        "amu": {
+          "moves": {
+            "advanced.closefist": 8
+          },
+          "actions": 8,
+          "hits": 6,
+          "received": 5
+        },
+        "lin": {
+          "moves": {
+            "punch": 8
+          },
+          "actions": 8,
+          "hits": 6,
+          "received": 2
+        }
+      },
+      "liveness": 0,
+      "invariants": 0
+    },
+    {
+      "scenario": "S1",
+      "arrangement": "Y",
+      "arrival": "together",
+      "roles": {
+        "amu": "front",
+        "lin": "line"
+      },
+      "assembled": 145,
+      "outcome": "held",
+      "leaked": 0,
+      "defeated": 4,
+      "fight": 767,
+      "intercepts": {
+        "training.1": {
+          "x": 1469,
+          "by": "amu"
+        },
+        "training.2": {
+          "x": 1472,
+          "by": "amu"
+        },
+        "training.3": {
+          "x": 1472,
+          "by": "amu"
+        },
+        "training.4": {
+          "x": 1471,
+          "by": "amu"
+        }
+      },
+      "interceptMean": {
+        "amu": 1471,
+        "lin": null
+      },
+      "body": {
+        "amu": {
+          "energyUsed": 4715,
+          "injuryGained": 0
+        },
+        "lin": {
+          "energyUsed": 27,
+          "injuryGained": 0
+        }
+      },
+      "people": {
+        "amu": {
+          "moves": {
+            "advanced.closefist": 18
+          },
+          "actions": 18,
+          "hits": 16,
+          "received": 6
+        },
+        "lin": {
+          "moves": {},
+          "actions": 0,
+          "hits": 0,
+          "received": 0
+        }
+      },
+      "liveness": 0,
+      "invariants": 0
+    },
+    {
+      "scenario": "S2",
+      "arrangement": "X",
+      "arrival": "staggered",
+      "roles": {
+        "amu": "front",
+        "lin": "front"
+      },
+      "assembled": 221,
+      "outcome": "held",
+      "leaked": 0,
+      "defeated": 4,
+      "fight": 622,
+      "intercepts": {
+        "training.1": {
+          "x": 1469,
+          "by": "amu"
+        },
+        "training.2": {
+          "x": 1500,
+          "by": "amu"
+        },
+        "training.3": {
+          "x": 1479,
+          "by": "lin"
+        },
+        "training.4": {
+          "x": 1524,
+          "by": "lin"
+        }
+      },
+      "interceptMean": {
+        "amu": 1485,
+        "lin": 1502
+      },
+      "body": {
+        "amu": {
+          "energyUsed": 1875,
+          "injuryGained": 0
+        },
+        "lin": {
+          "energyUsed": 1457,
+          "injuryGained": 0
+        }
+      },
+      "people": {
+        "amu": {
+          "moves": {
+            "advanced.closefist": 7
+          },
+          "actions": 7,
+          "hits": 7,
+          "received": 0
+        },
+        "lin": {
+          "moves": {
+            "punch": 7
+          },
+          "actions": 7,
+          "hits": 6,
+          "received": 0
+        }
+      },
+      "liveness": 0,
+      "invariants": 0
+    },
+    {
+      "scenario": "S2",
+      "arrangement": "Y",
+      "arrival": "staggered",
+      "roles": {
+        "amu": "front",
+        "lin": "line"
+      },
+      "assembled": 145,
+      "outcome": "held",
+      "leaked": 0,
+      "defeated": 4,
+      "fight": 724,
+      "intercepts": {
+        "training.1": {
+          "x": 1469,
+          "by": "amu"
+        },
+        "training.2": {
+          "x": 1508,
+          "by": "amu"
+        },
+        "training.3": {
+          "x": 1479,
+          "by": "amu"
+        },
+        "training.4": {
+          "x": 1524,
+          "by": "amu"
+        }
+      },
+      "interceptMean": {
+        "amu": 1495,
+        "lin": null
+      },
+      "body": {
+        "amu": {
+          "energyUsed": 4197,
+          "injuryGained": 0
+        },
+        "lin": {
+          "energyUsed": 6,
+          "injuryGained": 0
+        }
+      },
+      "people": {
+        "amu": {
+          "moves": {
+            "advanced.closefist": 16
+          },
+          "actions": 16,
+          "hits": 16,
+          "received": 0
+        },
+        "lin": {
+          "moves": {},
+          "actions": 0,
+          "hits": 0,
+          "received": 0
+        }
+      },
+      "liveness": 0,
+      "invariants": 0
+    },
+    {
+      "scenario": "S3",
+      "arrangement": "X",
+      "arrival": "together",
+      "roles": {
+        "amu": "front",
+        "shen": "front"
+      },
+      "assembled": 32,
+      "outcome": "held",
+      "leaked": 0,
+      "defeated": 4,
+      "fight": 585,
+      "intercepts": {
+        "training.1": {
+          "x": 1469,
+          "by": "amu"
+        },
+        "training.2": {
+          "x": 1473,
+          "by": "shen"
+        },
+        "training.3": {
+          "x": 1479,
+          "by": "shen"
+        },
+        "training.4": {
+          "x": 1466,
+          "by": "amu"
+        }
+      },
+      "interceptMean": {
+        "amu": 1468,
+        "shen": 1476
+      },
+      "body": {
+        "amu": {
+          "energyUsed": 1874,
+          "injuryGained": 0
+        },
+        "shen": {
+          "energyUsed": 1632,
+          "injuryGained": 0
+        }
+      },
+      "people": {
+        "amu": {
+          "moves": {
+            "advanced.closefist": 7
+          },
+          "actions": 7,
+          "hits": 5,
+          "received": 4
+        },
+        "shen": {
+          "moves": {
+            "punch": 8
+          },
+          "actions": 8,
+          "hits": 7,
+          "received": 0
+        }
+      },
+      "liveness": 0,
+      "invariants": 0
+    },
+    {
+      "scenario": "S3",
+      "arrangement": "Y",
+      "arrival": "together",
+      "roles": {
+        "amu": "front",
+        "shen": "line"
+      },
+      "assembled": 78,
+      "outcome": "held",
+      "leaked": 0,
+      "defeated": 4,
+      "fight": 935,
+      "intercepts": {
+        "training.1": {
+          "x": 1469,
+          "by": "amu"
+        },
+        "training.2": {
+          "x": 1471,
+          "by": "amu"
+        },
+        "training.3": {
+          "x": 1460,
+          "by": "amu"
+        },
+        "training.4": {
+          "x": 1455,
+          "by": "amu"
+        }
+      },
+      "interceptMean": {
+        "amu": 1464,
+        "shen": null
+      },
+      "body": {
+        "amu": {
+          "energyUsed": 4761,
+          "injuryGained": 0
+        },
+        "shen": {
+          "energyUsed": 231,
+          "injuryGained": 0
+        }
+      },
+      "people": {
+        "amu": {
+          "moves": {
+            "advanced.closefist": 18
+          },
+          "actions": 18,
+          "hits": 14,
+          "received": 6
+        },
+        "shen": {
+          "moves": {
+            "punch": 1
+          },
+          "actions": 1,
+          "hits": 1,
+          "received": 0
+        }
+      },
+      "liveness": 0,
+      "invariants": 0
+    }
+  ]
+}

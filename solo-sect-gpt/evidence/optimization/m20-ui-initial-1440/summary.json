@@ -1,0 +1,55 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 33.987,
+  "errors": [],
+  "steps": [
+    {
+      "label": "rest-amu",
+      "wallSeconds": 7.606,
+      "tick": 188556
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 22.409,
+      "tick": 188834
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 32.516,
+      "tick": 189593
+    },
+    {
+      "label": "withdrawn-review",
+      "wallSeconds": 33.48,
+      "tick": 189596
+    },
+    {
+      "label": "done",
+      "wallSeconds": 33.986,
+      "tick": 189596,
+      "withdrawPeople": [
+        "leader",
+        "amu"
+      ]
+    }
+  ],
+  "label": "initial",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "candidates": [
+      "受傷：先休養到生命八成、傷勢30以下",
+      "可參加",
+      "可參加",
+      "可參加"
+    ],
+    "assembling": "集合準備（錯開抵達）\n阿木（前攔）：路程中\n林青（守線）：路程中\n開始\n撤回\n全員就位後才能開始；對手不會先入場。",
+    "assembled": "集合準備（錯開抵達）\n阿木（前攔）：已就位\n林青（守線）：已就位\n開始\n撤回",
+    "review": "上次回顧：守住 · 錯開抵達 · 漏過0 · 擊退4 · 集合14秒、交手37秒\n阿木（前攔）短打快拳16 · 命中16 · 受擊0 · 耗精力42 · 傷勢+0\n林青（守線） · 命中0 · 受擊0 · 耗精力0 · 傷勢+0\n攔截位置（前線 x1300）：演武對手1 在 x1469 被阿木攔下；演武對手2 在 x1508 被阿木攔下；演武對手3 在 x1479 被阿木攔下；演武對手4 在 x1524 被阿木攔下",
+    "withdrawn": "上次回顧：準備中撤回 · 同時抵達 · 漏過0 · 擊退0 · 0秒\n阿木（守線） · 命中0 · 受擊0\n雲生（前攔） · 命中0 · 受擊0",
+    "afterWithdraw": "現在 行走 · 赴約\n原因 夜間作息\n接著 補給不足先處理，否則下一時段／可行活動\n作業位 待選作業位\n練拳\n坐休\n吃飯\n停工"
+  }
+}
