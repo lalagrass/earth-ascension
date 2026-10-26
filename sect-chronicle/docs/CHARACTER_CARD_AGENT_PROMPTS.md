@@ -1,13 +1,13 @@
-# 十二人公版人物／武學：三方差異評估提示詞
+# 經典角色與《功夫》公版人物／武學：三方差異評估提示詞
 
-2026-10-26，擁有人確認十二人紙上對照，並要求**先檢查模板是否需要優化**。本輪範圍見[完整對照](CLASSIC_TWELVE_TEMPLATE_COMPARISON.md)；原更多角色保留備選。舊#340報告沿用，不重做全套，不改系統。
+2026-10-26，擁有人確認十二人紙上對照，並要求**先檢查模板是否需要優化**。本輪範圍見[完整對照](CLASSIC_TWELVE_TEMPLATE_COMPARISON.md)；追加[《功夫》八案例／九人與既有立繪](KUNGFU_HUSTLE_TEMPLATE_COMPARISON.md)，作替換案例池；其他更多角色保留備選。舊#340報告沿用，不重做全套，不改系統。
 
 [人物卡適配](CHARACTER_CARD_PUBLIC_PROPOSAL.md#9-十二人適配審查與最小補充)｜[武學適配](MARTIAL_ART_PUBLIC_TEMPLATE_PROPOSAL.md#9-十二人適配條目粒度合用與資源)。三段各可手動貼，未代送或啟動agent；可直接讀PR #341提案分支，不必先merge進自己的分支。
 
 ## GPT
 
 ```text
-你是GPT／Codex。本輪只評估十二人與對應條目如何投影到公版人物卡／武學模板，先審模板是否足夠，不開始實作。
+你是GPT／Codex。本輪只評估原十二人及《功夫》替換樣本與對應條目如何投影到公版人物卡／武學模板，先審模板是否足夠，不開始實作。
 分支：codex/solo-sect-gpt；舊盤點SHA 79c1665328c186e7208dbeae3a4f7b20fcb3898f。以你當前已提交HEAD為準並附SHA，不reset、不互合程式、不讀他人未公開修改。
 沿用已交報告：https://github.com/lalagrass/earth-ascension/issues/340#issuecomment-6408206643；只補本輪差異。
 
@@ -18,7 +18,13 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/MARTIAL_ART_PUBLIC_TEMPLATE_PROPOSAL.md
 回覆：https://github.com/lalagrass/earth-ascension/issues/340
 
-限定12人：郭靖、令狐沖、東方不敗、小龍女、李莫愁、黃蓉、阿紫、王語嫣、程靈素、虛竹、周伯通、段譽。W01–W18含體系、單門技藝、合用、知識／生活，不是18門攻擊功法；C／W研究號不要求改runtime主鍵。
+本輪另讀《功夫》補充（已有分支設定、外部線索與立繪，不需重搜）：
+https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/KUNGFU_HUSTLE_TEMPLATE_COMPARISON.md
+K01–K08＝阿星、包租婆、包租公、苦力強、裁縫、油炸鬼、火雲邪神及天殘／地缺雙人合奏（八案例九人）。八類主武學另記KM號，不改actor/art主鍵。可用其中一個替換下列原案例，整體仍最多三組案例／原碼至多兩門已有武學，不額外做電影全表。
+先審模板可否表達作品／故事階段、阿星發現vs獲得vs啟動、隱居高手揭露、腿法vs通勤速度、音波／器具、多人合奏。包租婆別稱小龍女不等小說C04，電影同名功法不自動共用金庸規則。沒有就報缺，不新增音波／腿力／覺醒基本屬性。
+立繪已有Grok七人固定PNG與Gemini阿星／包租婆來源；只引用已存在圖與生成紀錄，缺的天殘／地缺留白待補，不畫新圖、不搬素材庫。外部MUGEN線索與作者技能設計只參考，北俠同名功法不等電影版，授權／包內容未核不得聲稱可直接套用。分支自訂倍率／先天值與電影參考分開。
+
+原12人基準：郭靖、令狐沖、東方不敗、小龍女、李莫愁、黃蓉、阿紫、王語嫣、程靈素、虛竹、周伯通、段譽。W01–W18含體系、單門技藝、合用、知識／生活，不是18門攻擊功法；C／W研究號不要求改runtime主鍵。
 先天與起始能力、後天所學、性情／價值、當下狀態分開；成熟／傳功後能力不倒填出生。D是已讀外部JSON，N為敘事參考，P為本作紙上選擇，B是本版證據，不能拼成同一份角色真值。
 上游12檔都存在，但郭靖／東方／小龍女／黃蓉／虛竹多個武學配對不符本輪樣本；保留原觀察，不自動替換。MIT文本不等於小說／圖像權利已核。缺版次、階段、人格／價值、特性、材料或圖格就明記；資料有來源與玩家可見是兩回事。
 
@@ -36,7 +42,7 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 ## Gemini
 
 ```text
-你是Gemini。本輪只評估十二人與對應條目如何投影到公版人物卡／武學模板，先審模板是否足夠，不開始實作。
+你是Gemini。本輪只評估原十二人及《功夫》替換樣本與對應條目如何投影到公版人物卡／武學模板，先審模板是否足夠，不開始實作。
 分支：plan/sect-life-architecture-redesign；舊盤點SHA bae43412dced2a2f0d9d82008d5cdf8b3acfb8f9。以你當前已提交HEAD為準並附SHA，不reset、不互合程式、不讀他人未公開修改。
 若已交#340報告附連結，只補差異；不因PO未見就重交全套。
 
@@ -47,7 +53,13 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/MARTIAL_ART_PUBLIC_TEMPLATE_PROPOSAL.md
 回覆：https://github.com/lalagrass/earth-ascension/issues/340
 
-限定12人：郭靖、令狐沖、東方不敗、小龍女、李莫愁、黃蓉、阿紫、王語嫣、程靈素、虛竹、周伯通、段譽。W01–W18含體系、單門技藝、合用、知識／生活，不是18門攻擊功法；C／W研究號不要求改runtime主鍵。
+本輪另讀《功夫》補充（已有分支設定、外部線索與立繪，不需重搜）：
+https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/KUNGFU_HUSTLE_TEMPLATE_COMPARISON.md
+K01–K08＝阿星、包租婆、包租公、苦力強、裁縫、油炸鬼、火雲邪神及天殘／地缺雙人合奏（八案例九人）。八類主武學另記KM號，不改actor/art主鍵。可用其中一個替換下列原案例，整體仍最多三組案例／原碼至多兩門已有武學，不額外做電影全表。
+先審模板可否表達作品／故事階段、阿星發現vs獲得vs啟動、隱居高手揭露、腿法vs通勤速度、音波／器具、多人合奏。包租婆別稱小龍女不等小說C04，電影同名功法不自動共用金庸規則。沒有就報缺，不新增音波／腿力／覺醒基本屬性。
+立繪已有Grok七人固定PNG與Gemini阿星／包租婆來源；只引用已存在圖與生成紀錄，缺的天殘／地缺留白待補，不畫新圖、不搬素材庫。外部MUGEN線索與作者技能設計只參考，北俠同名功法不等電影版，授權／包內容未核不得聲稱可直接套用。分支自訂倍率／先天值與電影參考分開。
+
+原12人基準：郭靖、令狐沖、東方不敗、小龍女、李莫愁、黃蓉、阿紫、王語嫣、程靈素、虛竹、周伯通、段譽。W01–W18含體系、單門技藝、合用、知識／生活，不是18門攻擊功法；C／W研究號不要求改runtime主鍵。
 先天與起始能力、後天所學、性情／價值、當下狀態分開；成熟／傳功後能力不倒填出生。D是已讀外部JSON，N為敘事參考，P為本作紙上選擇，B是本版證據，不能拼成同一份角色真值。
 上游12檔都存在，但郭靖／東方／小龍女／黃蓉／虛竹多個武學配對不符本輪樣本；保留原觀察，不自動替換。MIT文本不等於小說／圖像權利已核。缺版次、階段、人格／價值、特性、材料或圖格就明記；資料有來源與玩家可見是兩回事。
 
@@ -65,7 +77,7 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 ## Grok
 
 ```text
-你是Grok Bot。本輪只評估十二人與對應條目如何投影到公版人物卡／武學模板，先審模板是否足夠，不開始實作。
+你是Grok Bot。本輪只評估原十二人及《功夫》替換樣本與對應條目如何投影到公版人物卡／武學模板，先審模板是否足夠，不開始實作。
 分支：codex/solo-sect-grok；舊盤點SHA 6db09fd97cac3d9a66cde49103978d7793317418。以你當前已提交HEAD為準並附SHA，不reset、不互合程式、不讀他人未公開修改。
 沿用已交報告：https://github.com/lalagrass/earth-ascension/issues/340#issuecomment-6408140530；只補本輪差異。
 
@@ -76,7 +88,13 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/MARTIAL_ART_PUBLIC_TEMPLATE_PROPOSAL.md
 回覆：https://github.com/lalagrass/earth-ascension/issues/340
 
-限定12人：郭靖、令狐沖、東方不敗、小龍女、李莫愁、黃蓉、阿紫、王語嫣、程靈素、虛竹、周伯通、段譽。W01–W18含體系、單門技藝、合用、知識／生活，不是18門攻擊功法；C／W研究號不要求改runtime主鍵。
+本輪另讀《功夫》補充（已有分支設定、外部線索與立繪，不需重搜）：
+https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/KUNGFU_HUSTLE_TEMPLATE_COMPARISON.md
+K01–K08＝阿星、包租婆、包租公、苦力強、裁縫、油炸鬼、火雲邪神及天殘／地缺雙人合奏（八案例九人）。八類主武學另記KM號，不改actor/art主鍵。可用其中一個替換下列原案例，整體仍最多三組案例／原碼至多兩門已有武學，不額外做電影全表。
+先審模板可否表達作品／故事階段、阿星發現vs獲得vs啟動、隱居高手揭露、腿法vs通勤速度、音波／器具、多人合奏。包租婆別稱小龍女不等小說C04，電影同名功法不自動共用金庸規則。沒有就報缺，不新增音波／腿力／覺醒基本屬性。
+立繪已有Grok七人固定PNG與Gemini阿星／包租婆來源；只引用已存在圖與生成紀錄，缺的天殘／地缺留白待補，不畫新圖、不搬素材庫。外部MUGEN線索與作者技能設計只參考，北俠同名功法不等電影版，授權／包內容未核不得聲稱可直接套用。分支自訂倍率／先天值與電影參考分開。
+
+原12人基準：郭靖、令狐沖、東方不敗、小龍女、李莫愁、黃蓉、阿紫、王語嫣、程靈素、虛竹、周伯通、段譽。W01–W18含體系、單門技藝、合用、知識／生活，不是18門攻擊功法；C／W研究號不要求改runtime主鍵。
 先天與起始能力、後天所學、性情／價值、當下狀態分開；成熟／傳功後能力不倒填出生。D是已讀外部JSON，N為敘事參考，P為本作紙上選擇，B是本版證據，不能拼成同一份角色真值。
 上游12檔都存在，但郭靖／東方／小龍女／黃蓉／虛竹多個武學配對不符本輪樣本；保留原觀察，不自動替換。MIT文本不等於小說／圖像權利已核。缺版次、階段、人格／價值、特性、材料或圖格就明記；資料有來源與玩家可見是兩回事。
 
