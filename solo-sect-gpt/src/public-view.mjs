@@ -52,7 +52,7 @@ function moveStatus(w,p,id){const m=moveFor(w,id),base=m.base||id;let learn;
  return{moveId:id,name:m.name,source:m.base?'pack':'core',learn,useNow:{ok:!use,reason:use,situational:'距離、空間、精力與收勢在按下時由核心判定'},timing:p.skill[m.art]?actionTiming(p,id,w):null};}
 export function personArts(w,id){const p=w.people[id];if(!p)return null;const moves=Object.entries(movesFor(w)).filter(([mid])=>!WILD_MOVES.includes(mid));
  const arts=Object.entries(p.skill).map(([art,s])=>({artId:art,name:ART[art]||art,U:known('art.U','理解','martial',s.U),F:known('art.F','熟練','martial',s.F),I:known('art.I','體悟','martial',s.I),stage:stage(s),contexts:[...s.contexts],
-  sources:s.sources.map(x=>({kind:x.kind,tick:x.tick,ref:x.source||x.activity||x.teacher||null})),gpt:{sourcesRetained:'complete-since-acquired',note:art==='punch'&&!s.sources.length?'建角時的基礎拳沒有來源紀錄':'來源只記事件，不記前後值'},
+  sources:s.sources.map(x=>({kind:x.kind,tick:x.tick,ref:x.source||x.activity||x.teacher||null})),gpt:{sourcesRetained:'complete-since-acquired',note:s.sources.length?'來源只記事件，不記前後值':'人物出現或此門出現時的起始值沒有來源紀錄'},
   moves:member(p)?moves.filter(([,m])=>m.art===art).map(([mid])=>moveStatus(w,p,mid)):[]}));
  return structuredClone({...head(w),actorId:p.id,arts,unlearned:Object.keys(ART).filter(a=>!p.skill[a]),contentMoves:[...(p.contentMoves||[])],preferred:p.contentPreferred||null});}
 // 4. Action descriptions: an intent plus the core's prediction at snapshot time. The UI must send the intent to command() again; enabledAtSnapshot is never authority.
@@ -62,3 +62,6 @@ export function personActions(w,id){const p=w.people[id];if(!p)return null;if(!m
  for(const art of Object.keys(p.skill).filter(a=>ART[a]))add('martial','練'+ART[art],{type:'task',actor:id,kind:'train',args:{art}});
  if(w.contentState)for(const [mid,m]of Object.entries(movesFor(w)).filter(([,m])=>m.base)){if(!p.contentMoves?.includes(mid))add('martial','研讀'+m.name,{type:'studyContent',actor:id,move:mid});else add('martial','交手偏好'+m.name,{type:'preferContent',actor:id,move:mid});}
  return structuredClone({...head(w),actorId:id,actions:list.map(a=>({...a,enabledAtSnapshot:a.intent?!a.reasonAtSnapshot:true,revalidate:'core'}))});}
+// Legal fallback for a remembered selection: a missing art falls back to the person's first art, a missing move to none, each with a one-line notice.
+export function pickArt(arts,wanted){const list=arts?.arts||[],hit=list.find(a=>a.artId===wanted),art=hit||list[0]||null;return{art,notice:wanted&&!hit&&art?'原選的'+(ART[wanted]||wanted)+'此人沒有學，改看'+art.name+'。':null};}
+export function pickMove(art,wanted){const hit=art?.moves.find(m=>m.moveId===wanted)||null;return{move:hit,notice:wanted&&!hit?'原選的招式不在'+(art?.name||'這門武學')+'的招式清單（此局可能沒有安裝它的內容包），已回到招式清單。':null};}

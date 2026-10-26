@@ -1,0 +1,29 @@
+import assert from'node:assert/strict';import{launch}from'./ui-kit.mjs';
+// Normal-UI M19: person card with two entries; blocked -> reason -> real condition -> practice -> real growth -> same-map trial, plus busy, missing weapon, unknown data, role switch and fallback. Usage: node m19-ui.mjs <label> <w> <h>
+const [label='initial',width='1440',height='900']=process.argv.slice(2),k=await launch('m19-ui-'+label+'-'+width,{width:Number(width),height:Number(height)}),page=k.page;
+const demo=new URL('../../evidence/optimization/showcase-m16/showcase-m12-m16.save.json',import.meta.url).pathname,old=new URL('../../evidence/optimization/candidate/final.save.json',import.meta.url).pathname,story={};
+const entry=async(who,tab)=>{await k.person(who);await k.click('[data-person-tab="'+tab+'"]');};
+const pickMove=async(who,art,move)=>{await entry(who,'martial');await k.click('[data-person-art="'+art+'"]');if(move)await k.click('[data-person-move="'+move+'"]');const d=page.locator(move?'#move-detail':'#art-detail');await d.scrollIntoViewIfNeeded();return d.innerText();};
+const noDigits=async()=>{for(const h of await page.locator('.pub-row[data-availability="hidden"]').evaluateAll(r=>r.map(x=>x.outerHTML)))assert.doesNotMatch(h.replace(/data-semantic="[^"]*"/,''),/\d/,'hidden row carries a number');};
+const P=x=>x.people.lin.skill.punch;
+let failure=null;
+try{await k.open();await k.newGame();await k.importSave(demo);const before=JSON.stringify(await k.snap());
+ story.blocked=await pickMove('lin','punch','advanced.closefist');assert.match(story.blocked,/未達前置/);assert.match(story.blocked,/熟練30/);await k.shot('01-lin-blocked');
+ story.weapon=await pickMove('leader','nine','intercept');assert.match(story.weapon,/九劍需實際領用並裝備木劍/);assert.ok(await page.locator('#move-detail [data-equip="sword"]').count());assert.match(await page.locator('#art-detail').innerText(),/不是完整獨孤九劍/);await k.shot('02-leader-missing-sword');
+ await entry('amu','martial');story.amuAbilities=await page.locator('#martial-growth').innerText();assert.match(story.amuAbilities,/未揭露/);await noDigits();await entry('leader','martial');assert.match(await page.locator('#martial-growth').innerText(),/起始：未知/);await k.shot('03-leader-unknown-initial');
+ await entry('child','martial');story.child=await page.locator('#martial-growth').innerText();assert.equal(await page.locator('details[data-section="combat"]').count(),0);assert.equal(await page.locator('[data-train-art]').count(),0);assert.match(await page.locator('#panel').innerText(),/未成年家人不參加/);await noDigits();await k.shot('04-child-restricted');
+ await entry('lin','life');assert.ok(await page.locator('#situation-card').count());await entry('lin','martial');assert.equal(await page.locator('#art-detail').getAttribute('data-art'),'punch','selection kept across role switch');
+ story.viewOnlyUnchanged=JSON.stringify(await k.snap())===before;assert.ok(story.viewOnlyUnchanged,'viewing changed the world');
+ // Busy: amu and shen spar, then amu's study button is refused by the core reason.
+ let w=await k.snap();for(const id of['amu','shen'])if(w.people[id].hp<w.people[id].maxHp*.8||w.people[id].injury>30){await entry(id,'life');await k.click('[data-task="rest"]');await k.until(x=>x.people[id].hp>=x.people[id].maxHp*.8&&x.people[id].injury<=30,'rest-'+id,600000);await entry(id,'life');await k.click('[data-action="stop"]');}
+ await entry('amu','life');await page.locator('details[data-section="social"] summary').click();await page.locator('#target').selectOption('shen');await k.click('[data-action="spar"]');w=await k.snap();assert.ok(w.people.amu.combatSession,'spar started: '+await k.toast());story.busy=await pickMove('amu','punch','shortform.closefist');assert.match(story.busy,/不能：阿木正在切磋中/);assert.ok(await page.locator('#move-detail [data-content-study]').isDisabled());await k.shot('05-amu-busy');
+ // Practice for real until the prerequisite is met.
+ await entry('lin','life');const temp=page.locator('#temporary-order');if(await temp.count()&&await temp.isChecked())await temp.uncheck();const src0=(await k.snap()).people.lin.skill.punch.sources.length;await pickMove('lin','punch');await k.click('[data-train-art="punch"]');w=await k.until(x=>P(x).F>=30,'lin-F30',600000);await entry('lin','life');await k.click('[data-action="stop"]');w=await k.snap();story.growth={F:P(w).F,sourcesBefore:src0,sourcesAfter:P(w).sources.length};assert.ok(P(w).sources.length>src0);
+ story.ready=await pickMove('lin','punch','advanced.closefist');assert.match(story.ready,/可研讀/);assert.match(await page.locator('#art-progress').innerText(),new RegExp('熟練 '+P(w).F));await k.shot('06-lin-ready');
+ await k.click('#move-detail [data-content-study]');w=await k.until(x=>x.people.lin.contentMoves?.includes('advanced.closefist'),'lin-studied',300000);story.learned=await pickMove('lin','punch','advanced.closefist');assert.match(story.learned,/已學會/);assert.match(await page.locator('#art-sources').innerText(),new RegExp('共 '+P(w).sources.length+' 筆'));assert.match(await page.locator('#art-detail').innerText(),/研讀招式/);await k.shot('07-lin-learned');
+ const t0=(await k.snap()).tick;await k.click('#move-detail [data-content-attack]');w=await k.until(x=>x.journal.some(e=>e.tick>=t0&&e.type==='action-start'&&e.actors[0]==='lin'&&e.move==='advanced.closefist'),'lin-trial',60000);story.trial=true;await k.shot('08-lin-trial');
+ // Fallback: the remembered pack move does not exist in an older save without content packs.
+ await k.importSave(old);await entry('leader','martial');story.fallback=await page.locator('#art-detail').innerText();await k.shot('09-fallback');assert.ok(k.errors.length===0,k.errors.join('\n'));
+ await k.log('done',{growth:story.growth});
+}catch(e){failure=e.stack;await k.shot('failure').catch(()=>{});}
+const s=await k.finish({label,viewport:[width,height],failure,story});console.log(failure?'FAILED':'PASSED',s.wallSeconds);if(failure){console.error(failure);process.exit(1);}
