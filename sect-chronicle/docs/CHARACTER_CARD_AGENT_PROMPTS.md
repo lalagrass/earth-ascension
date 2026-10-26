@@ -1,6 +1,6 @@
 # 經典角色與《功夫》公版人物／武學：三方差異評估提示詞
 
-2026-10-26，擁有人確認十二人紙上對照，並要求**先檢查模板是否需要優化**。本輪範圍見[完整對照](CLASSIC_TWELVE_TEMPLATE_COMPARISON.md)；追加[《功夫》八案例／九人與既有立繪](KUNGFU_HUSTLE_TEMPLATE_COMPARISON.md)，作替換案例池；其他更多角色保留備選。舊#340報告沿用，不重做全套，不改系統。
+2026-10-26，擁有人確認十二人紙上對照，並要求**先檢查模板是否需要優化**。本輪範圍見[完整對照](CLASSIC_TWELVE_TEMPLATE_COMPARISON.md)；追加[《功夫》八案例／九人與既有立繪](KUNGFU_HUSTLE_TEMPLATE_COMPARISON.md)，作替換案例池；其他更多角色保留備選。舊#340報告沿用，不重做全套，不改系統。[MBTI候選v0.1](CHARACTER_MBTI_CANDIDATES.md)已追加；[仙俠屬性](XIANXIA_ATTRIBUTE_CANDIDATES.md)仍是研究備選。
 
 [人物卡適配](CHARACTER_CARD_PUBLIC_PROPOSAL.md#9-十二人適配審查與最小補充)｜[武學適配](MARTIAL_ART_PUBLIC_TEMPLATE_PROPOSAL.md#9-十二人適配條目粒度合用與資源)。三段各可手動貼，未代送或啟動agent；可直接讀PR #341提案分支，不必先merge進自己的分支。
 
@@ -17,6 +17,14 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_CARD_PUBLIC_PROPOSAL.md
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/MARTIAL_ART_PUBLIC_TEMPLATE_PROPOSAL.md
 回覆：https://github.com/lalagrass/earth-ascension/issues/340
+
+擁有人已同意先加MBTI紙上候選v0.1：
+https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_MBTI_CANDIDATES.md
+在原案例內順帶用一例說明型號摘要能否呈現：S社群標示／P暫擬與B本版真值分開，保留故事窗口、異說與未定。型號不反推人格權重、悟性、靈根、傷害或武學前提；同型不同價值／所學仍可區分。電影七人為P暫擬、天殘／地缺留白，不補21人×16型矩陣或新問答／AI／UI。
+仙俠只列研究候選：
+https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/XIANXIA_ATTRIBUTE_CANDIDATES.md
+根骨／悟性／福緣不是全部人物資料；若本版已有氣感／神識／靈根，於原短表順帶指出同義／異義即可，無就缺。心境／道心／體質／靈元不全當先天，不新增數字／需求；D45不重開口渴。兩份追加仍沿原最多三組案例／原碼兩門上限，不另交全套評估。
+
 
 本輪另讀《功夫》補充（已有分支設定、外部線索與立繪，不需重搜）：
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/KUNGFU_HUSTLE_TEMPLATE_COMPARISON.md
@@ -53,6 +61,14 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/MARTIAL_ART_PUBLIC_TEMPLATE_PROPOSAL.md
 回覆：https://github.com/lalagrass/earth-ascension/issues/340
 
+擁有人已同意先加MBTI紙上候選v0.1：
+https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_MBTI_CANDIDATES.md
+在原案例內順帶用一例說明型號摘要能否呈現：S社群標示／P暫擬與B本版真值分開，保留故事窗口、異說與未定。型號不反推人格權重、悟性、靈根、傷害或武學前提；同型不同價值／所學仍可區分。電影七人為P暫擬、天殘／地缺留白，不補21人×16型矩陣或新問答／AI／UI。
+仙俠只列研究候選：
+https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/XIANXIA_ATTRIBUTE_CANDIDATES.md
+根骨／悟性／福緣不是全部人物資料；若本版已有氣感／神識／靈根，於原短表順帶指出同義／異義即可，無就缺。心境／道心／體質／靈元不全當先天，不新增數字／需求；D45不重開口渴。兩份追加仍沿原最多三組案例／原碼兩門上限，不另交全套評估。
+
+
 本輪另讀《功夫》補充（已有分支設定、外部線索與立繪，不需重搜）：
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/KUNGFU_HUSTLE_TEMPLATE_COMPARISON.md
 K01–K08＝阿星、包租婆、包租公、苦力強、裁縫、油炸鬼、火雲邪神及天殘／地缺雙人合奏（八案例九人）。八類主武學另記KM號，不改actor/art主鍵。可用其中一個替換下列原案例，整體仍最多三組案例／原碼至多兩門已有武學，不額外做電影全表。
@@ -87,6 +103,14 @@ https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-pr
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_CARD_PUBLIC_PROPOSAL.md
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/MARTIAL_ART_PUBLIC_TEMPLATE_PROPOSAL.md
 回覆：https://github.com/lalagrass/earth-ascension/issues/340
+
+擁有人已同意先加MBTI紙上候選v0.1：
+https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/CHARACTER_MBTI_CANDIDATES.md
+在原案例內順帶用一例說明型號摘要能否呈現：S社群標示／P暫擬與B本版真值分開，保留故事窗口、異說與未定。型號不反推人格權重、悟性、靈根、傷害或武學前提；同型不同價值／所學仍可區分。電影七人為P暫擬、天殘／地缺留白，不補21人×16型矩陣或新問答／AI／UI。
+仙俠只列研究候選：
+https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/XIANXIA_ATTRIBUTE_CANDIDATES.md
+根骨／悟性／福緣不是全部人物資料；若本版已有氣感／神識／靈根，於原短表順帶指出同義／異義即可，無就缺。心境／道心／體質／靈元不全當先天，不新增數字／需求；D45不重開口渴。兩份追加仍沿原最多三組案例／原碼兩門上限，不另交全套評估。
+
 
 本輪另讀《功夫》補充（已有分支設定、外部線索與立繪，不需重搜）：
 https://github.com/lalagrass/earth-ascension/blob/codex/public-character-card-proposal/sect-chronicle/docs/KUNGFU_HUSTLE_TEMPLATE_COMPARISON.md
