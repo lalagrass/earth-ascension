@@ -1,0 +1,95 @@
+{
+  "checkpoint": "a5c26fe45785876c05382307c3138bf8448a9402",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "checks": [
+    "single official player entry",
+    "F3 baseline raw innerHTML demonstrably loses open and summary focus",
+    "F3 original work and energy continue while inspecting",
+    "F3 both details stay expanded through live value updates",
+    "F3 summary focus survives HTML refresh",
+    "F3 new person does not inherit previous open state",
+    "F3 returning person recovers own detail state",
+    "F2 tea travel displays its real order cause and tea target",
+    "F2 brew current/phase/target are one activity",
+    "F2 sip next comes from original tea view",
+    "F2 stopping tea displays the real cancel event",
+    "F3 real recovering energy rises while details remain under live refresh",
+    "F3 recovery updates preserve both open panels",
+    "F3 focus survives recovery refresh",
+    "F2 reassigned activity returns to native herb action source",
+    "paused observation leaves complete original authority unchanged",
+    "F1 hidden original GPT actor absent from render, pick and card",
+    "F1 original LOS reveal appears and can be picked with same renderer",
+    "F1 conceal removes existing sprite and pick surface"
+  ],
+  "errors": [],
+  "screenshots": [
+    "official-live-details.jpg",
+    "official-brew-action.jpg",
+    "official-sip-action.jpg",
+    "gpt-visibility-revealed.jpg"
+  ],
+  "browser": "154.0.8037.57",
+  "toTea": {
+    "tick": 1824,
+    "action": "目前行動\n煮茶 0／6 秒\n\n階段：煮茶 0／6 秒 · 目標：茶座\n\n真實原因：玩家指派：去茶座泡一杯茶\n\n負重：0 趟負載（非重量）\n\n下一步：煮好才扣料，接著喝 4 秒\n\n停止原因：未知\n\n2%"
+  },
+  "recovery": {
+    "tick": 2347,
+    "mode": "seated",
+    "energy": 71.01666666666831
+  },
+  "visibility": {
+    "hidden": {
+      "target": "rat.1",
+      "visible": false,
+      "rendered": false,
+      "picked": null,
+      "card": false,
+      "actors": [
+        "leader",
+        "child",
+        "amu"
+      ],
+      "tick": 0
+    },
+    "shown": {
+      "target": "rat.1",
+      "visible": true,
+      "rendered": true,
+      "picked": "rat.1",
+      "card": true,
+      "actors": [
+        "leader",
+        "child",
+        "amu",
+        "rat.1"
+      ],
+      "tick": 0
+    },
+    "concealed": {
+      "target": "rat.1",
+      "visible": false,
+      "rendered": false,
+      "picked": null,
+      "card": false,
+      "actors": [
+        "leader",
+        "child",
+        "amu"
+      ],
+      "tick": 0
+    }
+  },
+  "passed": true,
+  "cleanup": {
+    "pageClosed": true,
+    "contextClosed": true,
+    "browserClosed": true,
+    "serverStopped": true,
+    "viewport": "owned viewport restored then context closed"
+  }
+}

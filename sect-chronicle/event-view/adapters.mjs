@@ -1,3 +1,4 @@
+import { gptJournalVisible } from '../scene-shared/adapters/gpt-visibility.mjs';
 import { eventView } from './contract.mjs';
 // Provenance pins only: loading this presentation never imports another engine.
 export const GPT_SHA = '6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc';
@@ -73,7 +74,7 @@ export function createGPTEventAdapter({ getWorld }) {
     const events=r.read('journal',w.journal,{ring:true}).map(({record:e,sequence})=>{
       // The native journal is not a historical visibility journal. Conservatively
       // mask wild/cave/departed/missing actors, even if one can be seen now.
-      const visible=e.visibility!=='hidden'&&(e.actors||[]).every(id=>{const p=w.people[id];return p&&!p.inactive&&!['wild','cave','departed'].includes(p.residence);});
+      const visible=gptJournalVisible(w,e);
       const martial=!!(e.art||e.move), supported=['activity-complete','growth','harvest','building-complete','returned','temporary-return','temporary-blocked','culture-cancelled','command'].includes(e.type);
       return eventView({sequence,id:`${source}:${epoch}:${e.id}`,source,stream:'journal',tick:e.tick,unit:'20Hz tick（1/20 遊戲秒）',kind:e.type,actors:e.actors,facility:e.facility||null,
         action:e.art||e.move||e.kind||null,category:martial?'martial':e.type==='activity-complete'||e.type==='harvest'?'work':'life',

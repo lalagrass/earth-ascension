@@ -1,0 +1,21 @@
+{
+  "base": "ef823ac277f48d9426cc3806f74468126a9cf91d",
+  "desktopCheckpoint": "a5c26fe45785876c05382307c3138bf8448a9402",
+  "combined": {
+    "command": "node --test --test-isolation=none sect-chronicle/public-fix/checks/fixes.test.mjs sect-chronicle/character-card/checks/card.test.mjs sect-chronicle/event-view/checks/events.test.mjs",
+    "pass": 21,
+    "fail": 0
+  },
+  "finalDirect": {
+    "command": "node --test --test-isolation=none sect-chronicle/public-fix/checks/fixes.test.mjs sect-chronicle/character-card/checks/card.test.mjs",
+    "pass": 12,
+    "fail": 0
+  },
+  "desktop": {
+    "result": "desktop-results.json",
+    "checks": 19,
+    "errors": 0
+  },
+  "unchangedEvidence": "#346 accepted long routes, skins, rules, resources and event matrix reused",
+  "coreRuleSchemaRngSaveChanged": false
+}
