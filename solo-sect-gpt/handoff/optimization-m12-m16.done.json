@@ -1,0 +1,24 @@
+{
+  "status": "done_with_exception",
+  "objective": "finite sequential optimization M12→M13→M14→M15→M16 on the GPT solo prototype",
+  "author": "Claude Opus 5.5 (Anthropic, via Claude Code)",
+  "planningAuthor": "GPT / Codex (docs/optimization/M12-M16-PLAN.md at 54ede04)",
+  "branch": "codex/solo-sect-gpt",
+  "worktree": "/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension",
+  "baseCommit": "54ede046db42face16859623798b04e91b527a45",
+  "artifactCommit": "6252550",
+  "scope": "solo-sect-gpt only; earlier GPT and Claude markers and evidence unchanged",
+  "stages": [
+    {"id": "M12", "runtimeCommit": "e4565ae", "marker": "handoff/optimization-m12.done.json", "status": "done_with_exception", "exception": "meal-shortage direction did not hold (start invalid, then no difference)"},
+    {"id": "M13", "runtimeCommit": "726e3aa", "marker": "handoff/optimization-m13.done.json", "status": "done"},
+    {"id": "M14", "runtimeCommit": "3de4c0f", "marker": "handoff/optimization-m14.done.json", "status": "done", "note": "run1/run2 failures kept; run3 after a registered redesign passed"},
+    {"id": "M15", "runtimeCommit": "1c77393", "marker": "handoff/optimization-m15.done.json", "status": "done_with_exception", "exception": "line role benefit not demonstrated; front-not-slower failed in config B"},
+    {"id": "M16", "runtimeCommit": "6252550", "marker": "handoff/optimization-m16.done.json", "status": "done"}
+  ],
+  "report": "docs/optimization/DELIVERY-M12-M16.md",
+  "entrypoint": {"command": "python3 -m http.server 8879 --bind 127.0.0.1 --directory solo-sect-gpt", "url": "http://127.0.0.1:8879/", "demoSave": "evidence/optimization/showcase-m16/showcase-m12-m16.save.json", "oldShowcase": "evidence/optimization/showcase/showcase-all-features.save.json"},
+  "verification": {"regression": "evidence/optimization/m16-model/regression.log (171/171)", "root": ["evidence/optimization/m16-model/root-python.log", "evidence/optimization/m16-model/root-sect-node.log", "evidence/optimization/m16-model/root-earth-syntax.log"], "normalUI": "evidence/optimization/m12..m16-*-accepted-{1440,1280}"},
+  "notRun": ["human playtest (plan: docs/optimization/PLAYTEST.md)", "independent review", "SG main/manual full RT matrix", "mobile, character template #340, shared assets #339 (excluded)"],
+  "stopped": true,
+  "next": "M16 delivered; no M17, cross-version integration or loop started"
+}
