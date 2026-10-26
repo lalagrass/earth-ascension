@@ -50,6 +50,8 @@ test('two real skins share walk/load/palm meanings, keep per-frame foot/socket g
   const p={mode:'windup',palm:'novice',palmStep:{steps:4}};
   const x=resolveMotion(p,{animator,skin,at});assert.equal(x.motion.actionId,'martial.basic-palm');assert.equal(x.motion.phase,'windup');
   assert.deepEqual(x.motion.attachments.shoulder,skin.palmShoulder.herbHand);
+  const breath=resolveMotion({mode:'train',palm:'novice',train01:{cyc:{phase:'breath',steps:1}}},{animator,skin,at});
+  assert.equal(breath.index,0,'stationary breath keeps original standing frame, not a walking-distance cycle');
   const override=resolveMotion(p,{animator,skin:{...skin,clips:{'martial.basic-palm':{windup:{clip:'stretch',fx:'vector-palm'}}}},at});assert.equal(override.action,'stretch');
   const absent=resolveMotion({...p,palm:null},{animator,skin,at});assert.equal(absent.motion.availability,'unsupported');assert.equal(absent.palm,null);assert.equal(absent.action,'idle');assert.match(absent.motion.fallback,/缺技能不授予/);
   const fallback=resolveMotion(p,{animator:createAnimator(template,{animations:{idle:['idle-0']}}),skin,at});assert.equal(fallback.motion.availability,'unsupported');assert.equal(fallback.action,'idle');

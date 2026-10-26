@@ -36,7 +36,7 @@ export function resolveMotion(p, { animator, skin = {}, at, anchor = { x: .5, y:
   const palm = intent.actionId === 'martial.basic-palm' && intent.phase !== 'breath' ? PALM_POSE[intent.phase]?.[p.palm] : null;
   const missingSkill = intent.actionId === 'martial.basic-palm' && !Object.hasOwn(PALM_POSE.windup, p.palm);
   const clip = !binding || missingSkill ? 'idle' : binding.clip;
-  const pick = animator.pick({ phase: clip, k: p.phase?.k || 0, travelled: at.travelled || 0 }, { grown: p.tripLevel >= 3 });
+  const pick = animator.pick({ phase: clip, k: p.phase?.k || 0, travelled: intent.actionId === 'martial.basic-palm' ? 0 : at.travelled || 0 }, { grown: p.tripLevel >= 3 });
   const fallback = !binding || missingSkill || pick.fallback;
   const sockets = skin.attach?.[pick.frame];
   const held = sockets && skin.anchorPx ? Object.fromEntries(Object.entries(sockets).map(([id, xy]) => [id,
