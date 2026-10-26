@@ -19,16 +19,16 @@ function sweepRoom(w,p,aim=directions[p.angle]){const at=position(p),side=[-aim[
 export function actionTiming(p,move,w=null){const m=moveFor(w,move);const s=p.skill[m.art],level=s?.F>=90&&s?.I>=10?2:s?.F>=18?1:0;
  let wind=m.wind,recover=m.recover;if(move==='punch'){wind=[16,12,10][level];recover=[14,10,7][level];}else recover=Math.ceil(recover*[1,.9,.8][level]);
  if(move==='step')recover=Math.max(12,recover+4-p.stats[2]);return{wind,active:m.active,recover,cost:m.cost,range:m.range};}
+// Persistent move conditions shared by startAction and read-only projections; situational checks stay in startAction.
+export function moveLearnError(w,p,id){const m=moveFor(w,id);if(!m)return'未知招式';if(m.base&&!p.contentMoves?.includes(id))return'先實際研讀這個內容招式';if(m.base&&(!p.skill[m.art]||p.skill[m.art].U<m.requires.U||p.skill[m.art].F<m.requires.F))return'武學前置不足';return null;}
+export function moveKitError(w,p,move){const m=moveFor(w,move);if(!p.skill[m.art]&&p.kind==='human')return'尚未學會這門武學';if(['staff','sword'].includes(m.art)&&(p.weapon!==m.art||!qty(w,p.equipment,m.art)))return'先到倉庫實際領用並裝備這種器械';if(w.martialPlan&&move==='intercept'&&(p.weapon!=='sword'||!qty(w,p.equipment,'sword')))return'九劍需實際領用並裝備木劍';if(move==='push'&&!p.pushLearned)return'推掌需洪七公真授課';return null;}
 export function startAction(w,p,move,target=null,forced=false){
  const requestedMove=move,m=moveFor(w,move);if(!m)return {ok:false,reason:'未知招式'};
- if(m.base&&!p.contentMoves?.includes(requestedMove))return{ok:false,reason:'先實際研讀這個內容招式'};if(m.base&&(!p.skill[m.art]||p.skill[m.art].U<m.requires.U||p.skill[m.art].F<m.requires.F))return{ok:false,reason:'武學前置不足'};move=m.base||move;
+ const learn=moveLearnError(w,p,requestedMove);if(learn)return{ok:false,reason:learn};move=m.base||move;
  if(target&&!target.adult)return {ok:false,reason:'未成年不能成為攻防或切磋對象'};
  if(!p.adult)return {ok:false,reason:'未成年不參戰'};
  if(p.action||p.stun||p.hp<=0)return {ok:false,reason:'仍在起手／收勢／失能'};
- if(!p.skill[m.art]&&p.kind==='human')return {ok:false,reason:'尚未學會這門武學'};
- if(['staff','sword'].includes(m.art)&&(p.weapon!==m.art||!qty(w,p.equipment,m.art)))return {ok:false,reason:'先到倉庫實際領用並裝備這種器械'};
- if(w.martialPlan&&move==='intercept'&&(p.weapon!=='sword'||!qty(w,p.equipment,'sword')))return {ok:false,reason:'九劍需實際領用並裝備木劍'};
- if(move==='push'&&!p.pushLearned)return {ok:false,reason:'推掌需洪七公真授課'};
+ const kit=moveKitError(w,p,move);if(kit)return {ok:false,reason:kit};
  if(move==='sweep'&&(inRect(p.x/Q,p.y/Q,[1854,415,102,50])||!sweepRoom(w,p)))return {ok:false,reason:'窄橋空間不足，不能棍掃'};
  if(move==='step'){const v=directions[p.angle],at=position(p),to=[at[0]+v[0]/10000*24,at[1]+v[1]/10000*24];if(!sweep(w,at,to)||inRect(to[0],to[1],[1860,415,90,50])&&w.bridge.holder!==p.id||sorted(w.people).some(o=>o.id!==p.id&&o.residence!=='departed'&&!o.inactive&&Math.hypot(o.x/Q-to[0],o.y/Q-to[1])<12))return {ok:false,reason:'短步無合法落腳；不能穿牆、越溪或搶橋'};}
  if(p.energy<m.cost)return {ok:false,reason:'精力不足'};

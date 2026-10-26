@@ -1,0 +1,353 @@
+{
+  "source": "model tests on the M16 demo save and labeled fixtures, not UI",
+  "adapter": {
+    "id": "gpt-public-adapter",
+    "version": 1,
+    "upstream": {
+      "commit": "6e5e69dbe3fa166f06659d7835feb510deb9f08b",
+      "docs": [
+        "sect-chronicle/docs/CHARACTER_CARD_PUBLIC_PROPOSAL.md",
+        "sect-chronicle/docs/MARTIAL_ART_PUBLIC_TEMPLATE_PROPOSAL.md"
+      ],
+      "status": "evaluation-baseline"
+    }
+  },
+  "cases": [
+    {
+      "case": "no-mutation",
+      "hash": "455ff6558f63941297ea26debeeded025cd0ee2135dc8adfcf9c8fa058fea2cf",
+      "people": 25,
+      "ticksCompared": 600
+    },
+    {
+      "case": "availability",
+      "leader": [
+        [
+          "體魄",
+          "known",
+          4,
+          "known"
+        ],
+        [
+          "臂力",
+          "known",
+          4,
+          "unsupported"
+        ],
+        [
+          "身法",
+          "known",
+          4,
+          "known"
+        ],
+        [
+          "悟性",
+          "known",
+          4,
+          "known"
+        ],
+        [
+          "定力",
+          "known",
+          4,
+          "unsupported"
+        ]
+      ],
+      "amu": [
+        [
+          "體魄",
+          "hidden"
+        ],
+        [
+          "臂力",
+          "hidden"
+        ],
+        [
+          "身法",
+          "hidden"
+        ],
+        [
+          "悟性",
+          "hidden"
+        ],
+        [
+          "定力",
+          "hidden"
+        ],
+        [
+          "勤勉／隨興",
+          "hidden"
+        ],
+        [
+          "顧人／自持",
+          "hidden"
+        ]
+      ],
+      "warden": [
+        "notApplicable",
+        "notApplicable",
+        "notApplicable"
+      ],
+      "knownZero": {
+        "energy": 0,
+        "injury": 0,
+        "punchF": 0
+      }
+    },
+    {
+      "case": "arts",
+      "nine": "本版九劍入門只有「辨隙截擊」一招：先看兩次起手，守距離與窗口；快拳、遮擋與佯攻會破局。不是完整獨孤九劍九式。",
+      "closefist": {
+        "kind": "pack",
+        "pack": "advanced",
+        "version": "1.1.0",
+        "base": "punch"
+      },
+      "checked": [
+        [
+          "leader",
+          "punch",
+          true,
+          true
+        ],
+        [
+          "leader",
+          "push",
+          true,
+          true
+        ],
+        [
+          "leader",
+          "breeze.slowfist",
+          true,
+          true
+        ],
+        [
+          "leader",
+          "shortform.closefist",
+          true,
+          true
+        ],
+        [
+          "leader",
+          "advanced.closefist",
+          false,
+          false
+        ],
+        [
+          "leader",
+          "step",
+          true,
+          true
+        ],
+        [
+          "leader",
+          "intercept",
+          false,
+          false
+        ],
+        [
+          "leader",
+          "sweep",
+          false,
+          false
+        ],
+        [
+          "leader",
+          "advanced.barstaff",
+          false,
+          false
+        ],
+        [
+          "leader",
+          "thrust",
+          false,
+          false
+        ],
+        [
+          "leader",
+          "advanced.reachthrust",
+          false,
+          false
+        ],
+        [
+          "amu",
+          "punch",
+          true,
+          true
+        ],
+        [
+          "amu",
+          "push",
+          false,
+          false
+        ],
+        [
+          "amu",
+          "breeze.slowfist",
+          false,
+          false
+        ],
+        [
+          "amu",
+          "shortform.closefist",
+          false,
+          false
+        ],
+        [
+          "amu",
+          "advanced.closefist",
+          true,
+          true
+        ],
+        [
+          "amu",
+          "step",
+          true,
+          true
+        ],
+        [
+          "lin",
+          "punch",
+          true,
+          true
+        ],
+        [
+          "lin",
+          "push",
+          false,
+          false
+        ],
+        [
+          "lin",
+          "breeze.slowfist",
+          false,
+          false
+        ],
+        [
+          "lin",
+          "shortform.closefist",
+          false,
+          false
+        ],
+        [
+          "lin",
+          "advanced.closefist",
+          false,
+          false
+        ],
+        [
+          "shen",
+          "punch",
+          true,
+          true
+        ],
+        [
+          "shen",
+          "push",
+          false,
+          false
+        ],
+        [
+          "shen",
+          "breeze.slowfist",
+          false,
+          false
+        ],
+        [
+          "shen",
+          "shortform.closefist",
+          false,
+          false
+        ],
+        [
+          "shen",
+          "advanced.closefist",
+          false,
+          false
+        ],
+        [
+          "shen",
+          "step",
+          true,
+          true
+        ],
+        [
+          "child",
+          "punch",
+          false,
+          false
+        ],
+        [
+          "child",
+          "push",
+          false,
+          false
+        ],
+        [
+          "child",
+          "breeze.slowfist",
+          false,
+          false
+        ],
+        [
+          "child",
+          "shortform.closefist",
+          false,
+          false
+        ],
+        [
+          "child",
+          "advanced.closefist",
+          false,
+          false
+        ]
+      ]
+    },
+    {
+      "case": "restricted-and-stale",
+      "child": [
+        [
+          "坐休",
+          null
+        ],
+        [
+          "吃飯",
+          null
+        ],
+        [
+          "停工",
+          null
+        ],
+        [
+          "練基礎拳",
+          "小禾只參與親情、陪伴與生活"
+        ],
+        [
+          "研讀松風緩拳",
+          "請選成年常住門人"
+        ],
+        [
+          "研讀近身短拳",
+          "請選成年常住門人"
+        ],
+        [
+          "研讀短打快拳",
+          "請選成年常住門人"
+        ],
+        [
+          "研讀攔路棍",
+          "請選成年常住門人"
+        ],
+        [
+          "研讀前探長刺",
+          "請選成年常住門人"
+        ]
+      ],
+      "stale": {
+        "snapshotEnabled": true,
+        "pressed": "阿木正在演武中；請先叫停或等它完成"
+      }
+    }
+  ]
+}

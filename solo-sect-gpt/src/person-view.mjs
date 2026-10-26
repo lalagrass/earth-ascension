@@ -1,5 +1,5 @@
 // M8 read-only projections for the person panel and map badges; never mutates World.
-import{ITEM,TASKNAME,ART}from'./data.mjs';import{commitmentOf,ownershipGate,OWNER_LABEL}from'./commitment.mjs';import{beginError}from'./activities.mjs';import{describeLife,placeName}from'./life-policy.mjs';import{bagWeight}from'./state.mjs';
+import{ITEM,TASKNAME,ART}from'./data.mjs';import{commitmentOf,ownershipGate,OWNER_LABEL}from'./commitment.mjs';import{beginError}from'./activities.mjs';import{describeLife,placeName}from'./life-policy.mjs';import{bagWeight}from'./state.mjs';import{studyError,preferError}from'./content.mjs';
 const itemName=s=>s.replace(/(wood|stone|water|veg|herb|meal|ration|tea|money|staff|sword)\b/g,m=>ITEM[m]||m);
 const PHASE={prepare:'領糧集合',outbound:'沿路前進',ridge:'側稜窄路',campRest:'營地休整',resting:'到達目的地',gate:'守路人前',gateFight:'守路處交手',negotiate:'說明來意',cave:'古洞抉擇',collect:'搬取糧袋',attach:'扶助周行',unload:'回倉交付',return:'實走返程',halted:'舊檔暫停'};
 // Turns a raw blocked string into who/what is in the way and what the player can do.
@@ -21,6 +21,8 @@ export function blockedAdvice(w,p,raw){if(!raw)return null;const text=String(raw
 // What a single order would do right now, without doing it.
 export function predict(w,c){const p=w.people[c.actor||'leader'];const g=ownershipGate(w,c,p);if(g)return g.reason;
  if(c.type==='task'){if(p.kind!=='human')return'野生個體不能接受門派勞作命令';return beginError(w,p,c.kind,c.args||{})?.reason||null;}
+ if(c.type==='studyContent')return studyError(w,p,c.move);
+ if(c.type==='preferContent')return preferError(w,p,c.move);
  if(c.type==='recallParty')return w.expedition&&!['returned','cancelled'].includes(w.expedition.phase)?null:'沒有外出或準備中的隊伍';
  if(c.type==='cultureStop')return w.culturePlan?.active?.status==='running'?null:'沒有進行中的相處';
  if(c.type==='endDrill')return w.drill&&!['completed','cancelled'].includes(w.drill.status)?null:'沒有進行中的演武';
