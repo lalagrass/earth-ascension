@@ -16,4 +16,15 @@ export function summary(w,d=day(w)){const t=w.opsPlan?.days[String(d)];if(!t)ret
  const time=Object.entries(t.time).map(([id,c])=>({id,name:w.people[id]?.name||id,total:Object.values(c).reduce((a,b)=>a+b,0),parts:Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,n])=>({key:k,label:CATEGORIES[k],ticks:n}))}));
  const blocked=Object.entries(t.blocked).sort((a,b)=>b[1].ticks-a[1].ticks).slice(0,5).map(([text,b])=>({text,seconds:Math.round(b.ticks/20),people:b.people.map(id=>w.people[id]?.name||id),first:b.first,raw:b.raw}));
  return{day:d,ticks:t.ticks,flows,time,blocked};}
-export const FOCUS_TEXT={build:{name:'修屋',does:'已開工的工地施工分數 +20。',cost:'庫存只維持日課補給地板與一般目標；修行與補給讓位給施工。'},food:{name:'備糧',does:'水目標拉到水缸容量、餐目標每位常住 3 份；取水、採菜、耕作、烹調 +15；最終膳房後以每位成人 2 份乾糧為儲備。',cost:'勞作時段多花在補給與烹調，施工較慢；真的耗用菜與水。'},train:{name:'修行',does:'練功分數 +20。',cost:'施工與補給只做到必要程度，庫存緩衝較薄。'}};
+export const FOCUS_TEXT={build:{name:'修屋',does:'已開工的工地施工分數 +20。',cost:'庫存只維持日課補給地板與一般目標；修行與補給讓位給施工。'},food:{name:'備糧',does:'水目標拉到水缸容量、餐目標每位常住 3 份；取水、採菜、耕作、烹調 +15；最終膳房後以每位成人 2 份乾糧為儲備。',cost:'勞作時段多花在補給與烹調，施工較慢；真的耗用菜與水。這是提前囤，已經斷餐時不會讓第一鍋更快。'},train:{name:'修行',does:'練功分數 +20。',cost:'施工與補給只做到必要程度，庫存緩衝較薄。'}};
+
+// M12: what each focus would change right now, read from real state.
+export function focusNow(w){const sites=Object.values(w.facilities).filter(f=>f.active),need=f=>{const st=FACILITY_STAGES(f);return st?{wood:Math.max(0,st[0]-(w.inventories['site.'+f.id]?.items.wood||0)),stone:Math.max(0,st[1]-(w.inventories['site.'+f.id]?.items.stone||0))}:null;};
+ const store=w.inventories.store.items,res=sorted(w.people).filter(p=>p.residence==='resident'),adults=res.filter(p=>p.adult),d=String(day(w));
+ const build=sites.length?'已開工 '+sites.map(f=>{const n=need(f);return(FAC_NAME[f.id]||f.id)+(n&&(n.wood||n.stone)?'（還缺木'+n.wood+'、石'+n.stone+'；倉中木'+(store.wood||0)+'、石'+(store.stone||0)+'，不足要去採）':'（料已齊，等施工）');}).join('、')+'；修屋會讓自主門人優先接這些工地':'目前沒有已開工的工地，修屋不會改變任何人的安排；先到建設頁下令';
+ const meals=w.inventories.table.items.meal||0,water=w.inventories.vat.items.water||0,kitchen=w.facilities.kitchen.stage,rations=store.ration||0;
+ const food=(meals===0?'桌上已無餐：補給本來就最優先，備糧不會讓這一鍋更快，要更快請多派人取水、採菜或做飯；':'')+'桌上餐'+meals+'、缸中水'+water+'／'+w.inventories.vat.capacity+(kitchen>=2?'；乾糧'+rations+'／儲備目標'+2*adults.length:'；膳房尚未到最終階段，不會囤乾糧')+'；採用後水目標拉到缸容量、餐目標每人3份';
+ const yard=w.facilities.yard.stage,posts=yard===2?4:yard===1?2:1,avg=adults.length?Math.round(adults.reduce((n,p)=>n+(p.dailyPractice?.[d]||0),0)/adults.length/20):0;
+ const train='外功場樁位'+posts+'個，'+adults.length+'位成人今日平均修行'+avg+'秒'+(w.lifePolicy?'；日課下修行分數 +20':'；沒有採用日課時修行 +20 照舊')+(adults.length>posts?'（人比樁位多，會排隊）':'');
+ return{build,food,train};}
+import{FACILITIES}from'./data.mjs';const FACILITY_STAGES=f=>FACILITIES[f.id]?.stages[f.stage]||null,FAC_NAME=Object.fromEntries(Object.entries(FACILITIES).map(([k,v])=>[k,v.name]));

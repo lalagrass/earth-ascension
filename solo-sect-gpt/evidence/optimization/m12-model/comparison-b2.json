@@ -1,0 +1,98 @@
+{
+  "prereg": "docs/optimization/M12.md",
+  "source": "controlled model runs from normal-UI saves; one deterministic run per scenario x focus (seeds are not treated as samples)",
+  "ticksPerRun": 24000,
+  "wallSeconds": 42.77,
+  "directions": {
+    "B2_foodFewestZeroMeal": false
+  },
+  "rows": [
+    {
+      "scenario": "B2-meal-shortage-resumed",
+      "policy": "build",
+      "ticks": 24000,
+      "buildWorkTicks": 0,
+      "stagesCompleted": 0,
+      "quietStageEnd": 1,
+      "zeroMealTicks": 1214,
+      "meal": {
+        "start": 0,
+        "end": 16,
+        "min": 0
+      },
+      "water": {
+        "start": 2,
+        "end": 7,
+        "min": 0
+      },
+      "ration": {
+        "start": 0,
+        "end": 0,
+        "min": 0
+      },
+      "practiceSecondsPerAdult": 207,
+      "blockedSeconds": 114,
+      "avgEnergyEnd": 82,
+      "adults": 2,
+      "invariants": 0
+    },
+    {
+      "scenario": "B2-meal-shortage-resumed",
+      "policy": "food",
+      "ticks": 24000,
+      "buildWorkTicks": 0,
+      "stagesCompleted": 0,
+      "quietStageEnd": 1,
+      "zeroMealTicks": 1214,
+      "meal": {
+        "start": 0,
+        "end": 16,
+        "min": 0
+      },
+      "water": {
+        "start": 2,
+        "end": 8,
+        "min": 0
+      },
+      "ration": {
+        "start": 0,
+        "end": 0,
+        "min": 0
+      },
+      "practiceSecondsPerAdult": 207,
+      "blockedSeconds": 195,
+      "avgEnergyEnd": 80,
+      "adults": 2,
+      "invariants": 0
+    },
+    {
+      "scenario": "B2-meal-shortage-resumed",
+      "policy": "train",
+      "ticks": 24000,
+      "buildWorkTicks": 0,
+      "stagesCompleted": 0,
+      "quietStageEnd": 1,
+      "zeroMealTicks": 1214,
+      "meal": {
+        "start": 0,
+        "end": 16,
+        "min": 0
+      },
+      "water": {
+        "start": 2,
+        "end": 7,
+        "min": 0
+      },
+      "ration": {
+        "start": 0,
+        "end": 0,
+        "min": 0
+      },
+      "practiceSecondsPerAdult": 480,
+      "blockedSeconds": 23,
+      "avgEnergyEnd": 82,
+      "adults": 2,
+      "invariants": 0
+    }
+  ]
+}

@@ -1,0 +1,274 @@
+{
+  "prereg": "docs/optimization/M12.md",
+  "source": "controlled model runs from normal-UI saves; one deterministic run per scenario x focus (seeds are not treated as samples)",
+  "ticksPerRun": 24000,
+  "wallSeconds": 180.238,
+  "directions": {
+    "A_buildMostWork": true,
+    "B_foodFewestZeroMeal": false,
+    "C_trainMostPractice": true
+  },
+  "rows": [
+    {
+      "scenario": "A-construction",
+      "policy": "build",
+      "ticks": 24000,
+      "buildWorkTicks": 699,
+      "stagesCompleted": 1,
+      "quietStageEnd": 1,
+      "zeroMealTicks": 1972,
+      "meal": {
+        "start": 16,
+        "end": 12,
+        "min": 0
+      },
+      "water": {
+        "start": 5,
+        "end": 5,
+        "min": 3
+      },
+      "ration": {
+        "start": 4,
+        "end": 4,
+        "min": 4
+      },
+      "practiceSecondsPerAdult": 15,
+      "blockedSeconds": 596,
+      "avgEnergyEnd": 99,
+      "adults": 4,
+      "invariants": 0
+    },
+    {
+      "scenario": "A-construction",
+      "policy": "food",
+      "ticks": 24000,
+      "buildWorkTicks": 0,
+      "stagesCompleted": 0,
+      "quietStageEnd": 0,
+      "zeroMealTicks": 754,
+      "meal": {
+        "start": 16,
+        "end": 12,
+        "min": 0
+      },
+      "water": {
+        "start": 5,
+        "end": 5,
+        "min": 3
+      },
+      "ration": {
+        "start": 4,
+        "end": 4,
+        "min": 4
+      },
+      "practiceSecondsPerAdult": 30,
+      "blockedSeconds": 1257,
+      "avgEnergyEnd": 93,
+      "adults": 4,
+      "invariants": 0
+    },
+    {
+      "scenario": "A-construction",
+      "policy": "train",
+      "ticks": 24000,
+      "buildWorkTicks": 0,
+      "stagesCompleted": 0,
+      "quietStageEnd": 0,
+      "zeroMealTicks": 399,
+      "meal": {
+        "start": 16,
+        "end": 16,
+        "min": 0
+      },
+      "water": {
+        "start": 5,
+        "end": 4,
+        "min": 3
+      },
+      "ration": {
+        "start": 4,
+        "end": 4,
+        "min": 4
+      },
+      "practiceSecondsPerAdult": 60,
+      "blockedSeconds": 442,
+      "avgEnergyEnd": 83,
+      "adults": 4,
+      "invariants": 0
+    },
+    {
+      "scenario": "B-meal-shortage",
+      "policy": "build",
+      "ticks": 24000,
+      "buildWorkTicks": 0,
+      "stagesCompleted": 0,
+      "quietStageEnd": 1,
+      "zeroMealTicks": 24000,
+      "meal": {
+        "start": 0,
+        "end": 0,
+        "min": 0
+      },
+      "water": {
+        "start": 2,
+        "end": 2,
+        "min": 2
+      },
+      "ration": {
+        "start": 0,
+        "end": 0,
+        "min": 0
+      },
+      "practiceSecondsPerAdult": 0,
+      "blockedSeconds": 0,
+      "avgEnergyEnd": 100,
+      "adults": 2,
+      "invariants": 0
+    },
+    {
+      "scenario": "B-meal-shortage",
+      "policy": "food",
+      "ticks": 24000,
+      "buildWorkTicks": 0,
+      "stagesCompleted": 0,
+      "quietStageEnd": 1,
+      "zeroMealTicks": 24000,
+      "meal": {
+        "start": 0,
+        "end": 0,
+        "min": 0
+      },
+      "water": {
+        "start": 2,
+        "end": 2,
+        "min": 2
+      },
+      "ration": {
+        "start": 0,
+        "end": 0,
+        "min": 0
+      },
+      "practiceSecondsPerAdult": 0,
+      "blockedSeconds": 0,
+      "avgEnergyEnd": 100,
+      "adults": 2,
+      "invariants": 0
+    },
+    {
+      "scenario": "B-meal-shortage",
+      "policy": "train",
+      "ticks": 24000,
+      "buildWorkTicks": 0,
+      "stagesCompleted": 0,
+      "quietStageEnd": 1,
+      "zeroMealTicks": 24000,
+      "meal": {
+        "start": 0,
+        "end": 0,
+        "min": 0
+      },
+      "water": {
+        "start": 2,
+        "end": 2,
+        "min": 2
+      },
+      "ration": {
+        "start": 0,
+        "end": 0,
+        "min": 0
+      },
+      "practiceSecondsPerAdult": 0,
+      "blockedSeconds": 0,
+      "avgEnergyEnd": 100,
+      "adults": 2,
+      "invariants": 0
+    },
+    {
+      "scenario": "C-stable",
+      "policy": "build",
+      "ticks": 24000,
+      "buildWorkTicks": 0,
+      "stagesCompleted": 0,
+      "quietStageEnd": 1,
+      "zeroMealTicks": 20,
+      "meal": {
+        "start": 7,
+        "end": 8,
+        "min": 0
+      },
+      "water": {
+        "start": 9,
+        "end": 6,
+        "min": 4
+      },
+      "ration": {
+        "start": 4,
+        "end": 4,
+        "min": 4
+      },
+      "practiceSecondsPerAdult": 465,
+      "blockedSeconds": 526,
+      "avgEnergyEnd": 87,
+      "adults": 4,
+      "invariants": 0
+    },
+    {
+      "scenario": "C-stable",
+      "policy": "food",
+      "ticks": 24000,
+      "buildWorkTicks": 0,
+      "stagesCompleted": 0,
+      "quietStageEnd": 1,
+      "zeroMealTicks": 434,
+      "meal": {
+        "start": 7,
+        "end": 5,
+        "min": 0
+      },
+      "water": {
+        "start": 9,
+        "end": 17,
+        "min": 6
+      },
+      "ration": {
+        "start": 4,
+        "end": 8,
+        "min": 4
+      },
+      "practiceSecondsPerAdult": 360,
+      "blockedSeconds": 740,
+      "avgEnergyEnd": 85,
+      "adults": 4,
+      "invariants": 0
+    },
+    {
+      "scenario": "C-stable",
+      "policy": "train",
+      "ticks": 24000,
+      "buildWorkTicks": 0,
+      "stagesCompleted": 0,
+      "quietStageEnd": 1,
+      "zeroMealTicks": 0,
+      "meal": {
+        "start": 7,
+        "end": 10,
+        "min": 1
+      },
+      "water": {
+        "start": 9,
+        "end": 6,
+        "min": 4
+      },
+      "ration": {
+        "start": 4,
+        "end": 4,
+        "min": 4
+      },
+      "practiceSecondsPerAdult": 496,
+      "blockedSeconds": 780,
+      "avgEnergyEnd": 85,
+      "adults": 4,
+      "invariants": 0
+    }
+  ]
+}
