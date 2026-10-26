@@ -1,0 +1,9 @@
+{"status":"done_with_exception","batch":"optimization-M17-M23","author":"Claude Opus 5.5 (Anthropic, via Claude Code), single author, self-checked","planningAuthor":"GPT / Codex (docs/optimization/M17-M23-PLAN.md, PUBLIC-PANELS-ADOPTION.md at 422139a)","branch":"codex/solo-sect-gpt (local commits only)","base":"19b5ff5","delivery":"docs/optimization/DELIVERY-M17-M23.md","demoSave":"evidence/optimization/showcase-m23/showcase-m17-m23.save.json","stages":[
+{"stage":"M17","status":"done","spec":"docs/optimization/M17.md","artifactCommit":"10b3526","marker":"handoff/optimization-m17.done.json"},
+{"stage":"M18","status":"done","spec":"docs/optimization/M18.md","artifactCommit":"5bca5ad","marker":"handoff/optimization-m18.done.json"},
+{"stage":"M19","status":"done","spec":"docs/optimization/M19.md","artifactCommit":"1703d28","marker":"handoff/optimization-m19.done.json"},
+{"stage":"M20","status":"done_with_exception","spec":"docs/optimization/M20.md","artifactCommit":"543a1c2","marker":"handoff/optimization-m20.done.json","exception":"line role reduced leaks in none of four preregistered scenarios"},
+{"stage":"M21","status":"done_with_exception","spec":"docs/optimization/M21.md","artifactCommit":"a20d995","marker":"handoff/optimization-m21.done.json","exception":"A1 failed for one template; A4 not measurable within one simulated day"},
+{"stage":"M22","status":"done","spec":"docs/optimization/M22.md","artifactCommit":"1909d81","marker":"handoff/optimization-m22.done.json"},
+{"stage":"M23","status":"done","spec":"docs/optimization/M23.md","artifactCommit":"ded684a","marker":"handoff/optimization-m23.done.json"}],
+"finalRegression":"203/203 (evidence/optimization/m23-model/regression.log)","notRun":["human playtest","independent review","mobile","#339 assets","M24"],"limits":["non-leader constitution derivable from public max HP (M18)","M12/M15/M10 earlier exceptions unchanged"]}
