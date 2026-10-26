@@ -1,0 +1,30 @@
+[
+  {
+    "assetId": "person.hero.sheet",
+    "commit": "ac7148d3a4d9f6b07cf2576b61cb4a2faad8c0df",
+    "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-production/hero.png",
+    "sha256": "7a0f42ac86c9ea804611964cf86634e77bbf10c79e886d482e75f65ba71cccd3",
+    "verifiedAgainstGitObject": true
+  },
+  {
+    "assetId": "scene.bamboo",
+    "commit": "ac7148d3a4d9f6b07cf2576b61cb4a2faad8c0df",
+    "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-production/bamboo.png",
+    "sha256": "23bed590ec5e4d329046584dd1d2dc44c5acabd3808af748c95089c275768103",
+    "verifiedAgainstGitObject": true
+  },
+  {
+    "assetId": "scene.boulder.large",
+    "commit": "ac7148d3a4d9f6b07cf2576b61cb4a2faad8c0df",
+    "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-production/boulder_l.png",
+    "sha256": "5757f2b15698f22cdc9653df154fe2dcf10e696cf46c88474f1c7c6d85a6ac35",
+    "verifiedAgainstGitObject": true
+  },
+  {
+    "assetId": "scene.boulder.small",
+    "commit": "ac7148d3a4d9f6b07cf2576b61cb4a2faad8c0df",
+    "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-production/boulder_s.png",
+    "sha256": "f18764f0f745ff870bd97b0e49cb6f20383503ba87fed4d8f8ce922d1fab92f8",
+    "verifiedAgainstGitObject": true
+  }
+]

@@ -1,0 +1,33 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "checks": [
+    "single official entry: local pinned hero frame, correct source and crop",
+    "paused image load/render leaves real authority unchanged",
+    "failed local image uses readable fallback",
+    "true fixed GPT source harness uses independently pinned local atlas in existing renderer"
+  ],
+  "errors": [],
+  "status": "passed",
+  "portrait": {
+    "assetId": "person.hero.sheet",
+    "source": "Grok Bot (D35); accepted squash commit author is transport identity · ac7148d3a4d9f6b07cf2576b61cb4a2faad8c0df:sect-chronicle/experiments/water-carry/demo/assets/art184-production/hero.png · gemini-1.0.0",
+    "src": "http://127.0.0.1:8817/experiments/water-carry/demo/assets/art184-production/hero.png",
+    "naturalWidth": 950,
+    "crop": "aspect-ratio:190/214"
+  },
+  "harness": {
+    "version": "gpt-1.0.0",
+    "coreCommit": "6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc",
+    "heroSha256": "7a0f42ac86c9ea804611964cf86634e77bbf10c79e886d482e75f65ba71cccd3",
+    "tick": 9,
+    "actorCount": 11
+  },
+  "cleaned": {
+    "pageClosed": true,
+    "browserClosed": true,
+    "serverStopped": true
+  }
+}
