@@ -1,0 +1,13 @@
+{
+  "status": "done_with_exception",
+  "stage": "optimization-M10",
+  "author": "Claude Opus 5.5 (Anthropic, via Claude Code)",
+  "baseCommit": "145e639",
+  "artifactCommit": "5732a27",
+  "index": "evidence/optimization/m10/index.json",
+  "acceptance": {"1-matrix-run": "pass", "1-direction-ridge-longer": "pass", "1-direction-three-rations-arrive-higher": "FAIL (equal at full starting energy; recorded, criterion unchanged)", "2-completions": "pass", "3-insufficient": "pass", "4-recall": "pass", "5-retreat": "pass", "6-bridge": "pass", "7-save": "pass", "8-settlement": "pass", "9-regression": "pass 143/143", "10-normal-ui": "pass 1440x900 and 1280x800"},
+  "changedFiles": ["src/journey-forecast.mjs", "src/journey.mjs", "src/expedition.mjs", "src/save.mjs", "src/save-features.mjs", "src/world.mjs", "src/person-view.mjs", "src/ui.mjs", "test/optimization/m10*.mjs", "docs/optimization/M10.md"],
+  "saveCompatibility": "journey plan v2 is an explicit upgrade with label chapter1-journey-2; v2 fields validated, unknown versions rejected; v1 saves and v1 journeys unchanged; no upgrade during an active v1 journey",
+  "notRun": ["human playtest", "independent review"],
+  "limits": ["five seeds follow one identical path", "forecast excludes random combat outcomes", "home-slot fix applies to v2 only"]
+}

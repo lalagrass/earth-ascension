@@ -1,0 +1,11 @@
+{
+  "stage": "optimization-M10",
+  "author": "Claude Opus 5.5 (Anthropic, via Claude Code)",
+  "runtimeCommit": "5732a27",
+  "spec": "docs/optimization/M10.md",
+  "model": {"tests": "test/optimization/m10.test.mjs", "report": "evidence/optimization/m10-model/m10-model.json", "regression": "evidence/optimization/m10-model/m10-regression.log", "earlyRun": "evidence/optimization/m10-model/m10-tests.log (before the last trace-label tweak)"},
+  "normalUI": ["evidence/optimization/m10-ui-accepted-1440/summary.json", "evidence/optimization/m10-ui-accepted-1280/summary.json"],
+  "initialUIRun": "evidence/optimization/m10-ui-initial-1440 (first attempt failed: stale forecast while paused)",
+  "rootReused": {"sourceCommit": "226b546", "reason": "only solo-sect-gpt changed"},
+  "kinds": {"modelFixture": "m10-model", "normalUI": "m10-ui-accepted-*", "humanPlaytest": "not run"}
+}
