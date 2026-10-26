@@ -23,17 +23,19 @@
 | 東方不敗 | `edaf2ed60954808221447640efb79f0215dbc278` | `solo-sect/assets/portraits/v2/dongfangbubai-v2-a.png` | 480×640 | 已選的陰柔危險樣子。不改成搞笑。 |
 | 包租婆 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/baozupo.png` | 480×640 | 功夫研究已引用的公開職業圖。 |
 | 包租公 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/baozugong.png` | 480×640 | 同上。 |
-| 苦力強 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/kulijiang.png` | 480×640 | 同上。 |
-| 裁縫 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/caifeng.png` | 480×640 | 同上。 |
-| 油炸鬼 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/youzhagui.png` | 480×640 | 同上。 |
-| 火雲邪神 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/huoyunxieshen.png` | 480×640 | 同上。 |
+| 苦力強 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/kulijiang.png` | 864×1152 | 2026-10-26 依阿星風格重畫的搞笑稿。上列路徑只作身份參考。 |
+| 裁縫 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/caifeng.png` | 864×1152 | 2026-10-26 依阿星風格重畫的搞笑稿。上列路徑只作身份參考。 |
+| 油炸鬼 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/youzhagui.png` | 864×1152 | 2026-10-26 依阿星風格重畫的搞笑稿。上列路徑只作身份參考。 |
+| 火雲邪神 | `6db09fd97cac3d9a66cde49103978d7793317418` | `solo-sect/assets/portraits/huoyunxieshen.png` | 864×1152 | 2026-10-26 依擁有人要求改走阿星的搞笑路線。上列路徑只作身份參考。 |
 | 令狐沖 | `6760f21c342cbf72fc9fb4baf0aec8655abd0dd2` | `solo-sect/assets/portraits/linghuchong.png` | 480×640 | 此來源只有這一張原圖。 |
-| 周伯通 | `6760f21c342cbf72fc9fb4baf0aec8655abd0dd2` | `solo-sect/assets/portraits/zhoubotong.png` | 480×640 | 原圖即搞笑長輩。 |
+| 周伯通 | `6760f21c342cbf72fc9fb4baf0aec8655abd0dd2` | `solo-sect/assets/portraits/zhoubotong.png` | 864×1152 | 2026-10-26 依擁有人要求對齊郭靖：抓頭、嘴裡塞著饅頭。上列路徑只作身份參考。 |
 | 郭靖 | `6760f21c342cbf72fc9fb4baf0aec8655abd0dd2` | `solo-sect/assets/portraits/v2/guojing-v2-b.png` | 864×1152 | 提示紀錄標為採用的搞笑稿。`guojing-v2-a.png` 不採用。 |
 
 ## 欄位
 
-每張已知圖都有：作者 Grok Bot、來源提交、原路徑 `source.originPath`、複製後路徑、sha256、寬高、`alpha.channel: false`、錨點 `{x:0.5, y:1}`。配方類型是 `portrait`，矩形等於整張圖。生成紀錄來自 `6760f21:solo-sect/assets/portraits/PROMPTS.md`：工具 Grok Bot GenerateImage，模型版本未量測，3:4，無參考圖，無 seed。阿星與郭靖的風格記號是 `wcaricature`，黃蓉是 `inkpretty`。其餘檔的提示紀錄沒有逐檔風格記號，欄位寫 `unrecorded-for-this-file`。
+每張已知圖都有：作者 Grok Bot、來源提交、原路徑 `source.originPath`、複製後路徑、sha256、寬高、`alpha.channel: false`、錨點 `{x:0.5, y:1}`。配方類型是 `portrait`，矩形等於整張圖。生成紀錄來自 `6760f21:solo-sect/assets/portraits/PROMPTS.md`：工具 Grok Bot GenerateImage，模型版本未量測，3:4，無參考圖，無 seed。阿星與郭靖的風格記號是 `wcaricature`，黃蓉是 `inkpretty`。其餘未重畫檔的提示紀錄沒有逐檔風格記號，欄位寫 `unrecorded-for-this-file`。
+
+2026-10-26 擁有人指定：男角搞笑對齊阿星，女角清秀對齊黃蓉，周伯通對齊郭靖。因此裁縫、苦力強、油炸鬼、火雲邪神改以阿星為風格重畫，周伯通改以郭靖為風格重畫。新像素的工具是 Grok Build Imagine `image_edit`，模型版本與 seed 未記錄，權利是 `owner-requested-generation; third-party-rights-unverified`。包租公、包租婆、黃蓉、東方不敗、阿星、郭靖維持原採用圖。
 
 卡片氣泡顯示的 `source.path` 是複製後的 `sect-chronicle/` 路徑。pin 驗證只接受這種路徑。原路徑寫在 `originPath` 和 `recipe.derivedFrom`。
 

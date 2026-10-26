@@ -573,11 +573,11 @@ export default {
     {
       "assetId": "person.research.kulijiang.portrait",
       "path": "sect-chronicle/assets/shared/portraits/1.1.0/kulijiang.png",
-      "sha256": "137b9c9894f719d3a63948cfc5fba0bb5c6b469b43b15a7f013a961c37e42713",
+      "sha256": "aec0fb623cabb839268d13b0aac29819abc774cb90cd28695a77efc8a554a073",
       "availability": "known",
       "dimensions": {
-        "width": 480,
-        "height": 640
+        "width": 864,
+        "height": 1152
       },
       "alpha": {
         "channel": false,
@@ -588,14 +588,14 @@ export default {
         "commit": "6db09fd97cac3d9a66cde49103978d7793317418",
         "path": "sect-chronicle/assets/shared/portraits/1.1.0/kulijiang.png",
         "originPath": "solo-sect/assets/portraits/kulijiang.png",
-        "author": "Grok Bot",
-        "sameBlobAt": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2"
+        "author": "Grok（本機 Grok Build）",
+        "bytesNote": "Pixels are a new caricature drawn 2026-10-26. They are not the blob at source.commit. source.commit and originPath name the identity reference only."
       },
       "rights": {
-        "status": "repository-research-reuse; third-party-rights-unverified",
+        "status": "owner-requested-generation; third-party-rights-unverified",
         "evidenceCommit": "6db09fd97cac3d9a66cde49103978d7793317418",
         "evidencePath": "solo-sect/assets/portraits/kulijiang.png",
-        "note": "Existing repository research bytes only. Movie and novel rights, model version, and seeds are unrecorded. Private prototype use is not a commercial-rights upgrade. Not a final public design."
+        "note": "Owner asked on 2026-10-26 for a comic redraw. Model version and seed are unrecorded. Not a commercial-rights upgrade. The earlier research file is only the identity reference."
       },
       "use": "Research character card portrait. Not a walk atlas, collision shape, or playable opening.",
       "anchor": {
@@ -608,30 +608,32 @@ export default {
         "rect": {
           "x": 0,
           "y": 0,
-          "w": 480,
-          "h": 640
+          "w": 864,
+          "h": 1152
         },
         "derivedFrom": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/kulijiang.png",
-        "selection": "功夫研究已引用的公開職業圖。",
+        "selection": "2026-10-26 擁有人要求改成阿星那種搞笑水彩。身份仍是舊搬運圖，風格參考阿星。",
         "generation": {
-          "tool": "Grok Bot GenerateImage",
+          "tool": "Grok Build Imagine image_edit",
           "modelVersion": "未量測",
           "aspect": "3:4",
-          "referenceImages": false,
+          "referenceImages": true,
           "seed": "未記錄",
-          "style": "unrecorded-for-this-file",
-          "promptLog": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2:solo-sect/assets/portraits/PROMPTS.md"
+          "style": "wcaricature",
+          "styleReference": "person.research.axing.portrait",
+          "identityReference": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/kulijiang.png",
+          "drawnOn": "2026-10-26"
         }
       }
     },
     {
       "assetId": "person.research.caifeng.portrait",
       "path": "sect-chronicle/assets/shared/portraits/1.1.0/caifeng.png",
-      "sha256": "4dff433e1c0dbe87c793dd0587ab6ffeb7588284d741c0d3882c84789fb87ac2",
+      "sha256": "be4afadb90fb882eb2b2238b328e9b5cd71d4bcb81584572a397caf689bdeef5",
       "availability": "known",
       "dimensions": {
-        "width": 480,
-        "height": 640
+        "width": 864,
+        "height": 1152
       },
       "alpha": {
         "channel": false,
@@ -642,14 +644,14 @@ export default {
         "commit": "6db09fd97cac3d9a66cde49103978d7793317418",
         "path": "sect-chronicle/assets/shared/portraits/1.1.0/caifeng.png",
         "originPath": "solo-sect/assets/portraits/caifeng.png",
-        "author": "Grok Bot",
-        "sameBlobAt": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2"
+        "author": "Grok（本機 Grok Build）",
+        "bytesNote": "Pixels are a new caricature drawn 2026-10-26. They are not the blob at source.commit. source.commit and originPath name the identity reference only."
       },
       "rights": {
-        "status": "repository-research-reuse; third-party-rights-unverified",
+        "status": "owner-requested-generation; third-party-rights-unverified",
         "evidenceCommit": "6db09fd97cac3d9a66cde49103978d7793317418",
         "evidencePath": "solo-sect/assets/portraits/caifeng.png",
-        "note": "Existing repository research bytes only. Movie and novel rights, model version, and seeds are unrecorded. Private prototype use is not a commercial-rights upgrade. Not a final public design."
+        "note": "Owner asked on 2026-10-26 for a comic redraw. Model version and seed are unrecorded. Not a commercial-rights upgrade. The earlier research file is only the identity reference."
       },
       "use": "Research character card portrait. Not a walk atlas, collision shape, or playable opening.",
       "anchor": {
@@ -662,30 +664,32 @@ export default {
         "rect": {
           "x": 0,
           "y": 0,
-          "w": 480,
-          "h": 640
+          "w": 864,
+          "h": 1152
         },
         "derivedFrom": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/caifeng.png",
-        "selection": "功夫研究已引用的公開職業圖。",
+        "selection": "2026-10-26 擁有人要求改成阿星那種搞笑水彩。身份仍是舊裁縫圖，風格參考阿星。",
         "generation": {
-          "tool": "Grok Bot GenerateImage",
+          "tool": "Grok Build Imagine image_edit",
           "modelVersion": "未量測",
           "aspect": "3:4",
-          "referenceImages": false,
+          "referenceImages": true,
           "seed": "未記錄",
-          "style": "unrecorded-for-this-file",
-          "promptLog": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2:solo-sect/assets/portraits/PROMPTS.md"
+          "style": "wcaricature",
+          "styleReference": "person.research.axing.portrait",
+          "identityReference": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/caifeng.png",
+          "drawnOn": "2026-10-26"
         }
       }
     },
     {
       "assetId": "person.research.youzhagui.portrait",
       "path": "sect-chronicle/assets/shared/portraits/1.1.0/youzhagui.png",
-      "sha256": "f77ec9796b9d8ca56dc64fc7dd7b4b21c71ba82ebd9bd29d742cef708773c236",
+      "sha256": "b92d61a6e4604b903d92b4846e5046ca592a0e409c08f4dd400c81a71dc69d39",
       "availability": "known",
       "dimensions": {
-        "width": 480,
-        "height": 640
+        "width": 864,
+        "height": 1152
       },
       "alpha": {
         "channel": false,
@@ -696,14 +700,14 @@ export default {
         "commit": "6db09fd97cac3d9a66cde49103978d7793317418",
         "path": "sect-chronicle/assets/shared/portraits/1.1.0/youzhagui.png",
         "originPath": "solo-sect/assets/portraits/youzhagui.png",
-        "author": "Grok Bot",
-        "sameBlobAt": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2"
+        "author": "Grok（本機 Grok Build）",
+        "bytesNote": "Pixels are a new caricature drawn 2026-10-26. They are not the blob at source.commit. source.commit and originPath name the identity reference only."
       },
       "rights": {
-        "status": "repository-research-reuse; third-party-rights-unverified",
+        "status": "owner-requested-generation; third-party-rights-unverified",
         "evidenceCommit": "6db09fd97cac3d9a66cde49103978d7793317418",
         "evidencePath": "solo-sect/assets/portraits/youzhagui.png",
-        "note": "Existing repository research bytes only. Movie and novel rights, model version, and seeds are unrecorded. Private prototype use is not a commercial-rights upgrade. Not a final public design."
+        "note": "Owner asked on 2026-10-26 for a comic redraw. Model version and seed are unrecorded. Not a commercial-rights upgrade. The earlier research file is only the identity reference."
       },
       "use": "Research character card portrait. Not a walk atlas, collision shape, or playable opening.",
       "anchor": {
@@ -716,30 +720,32 @@ export default {
         "rect": {
           "x": 0,
           "y": 0,
-          "w": 480,
-          "h": 640
+          "w": 864,
+          "h": 1152
         },
         "derivedFrom": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/youzhagui.png",
-        "selection": "功夫研究已引用的公開職業圖。",
+        "selection": "2026-10-26 擁有人要求改成阿星那種搞笑水彩。身份仍是舊早餐攤圖，風格參考阿星。",
         "generation": {
-          "tool": "Grok Bot GenerateImage",
+          "tool": "Grok Build Imagine image_edit",
           "modelVersion": "未量測",
           "aspect": "3:4",
-          "referenceImages": false,
+          "referenceImages": true,
           "seed": "未記錄",
-          "style": "unrecorded-for-this-file",
-          "promptLog": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2:solo-sect/assets/portraits/PROMPTS.md"
+          "style": "wcaricature",
+          "styleReference": "person.research.axing.portrait",
+          "identityReference": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/youzhagui.png",
+          "drawnOn": "2026-10-26"
         }
       }
     },
     {
       "assetId": "person.research.huoyunxieshen.portrait",
       "path": "sect-chronicle/assets/shared/portraits/1.1.0/huoyunxieshen.png",
-      "sha256": "d5baa7212c3195a9ab0f9cdfe2ef42cacb7080c1c6123440ca2f779d50ab30ab",
+      "sha256": "c21a4067f3df6056b1bdd906e644c63b0c25abedc2e67ccc4ae27411b63ce6f4",
       "availability": "known",
       "dimensions": {
-        "width": 480,
-        "height": 640
+        "width": 864,
+        "height": 1152
       },
       "alpha": {
         "channel": false,
@@ -750,14 +756,14 @@ export default {
         "commit": "6db09fd97cac3d9a66cde49103978d7793317418",
         "path": "sect-chronicle/assets/shared/portraits/1.1.0/huoyunxieshen.png",
         "originPath": "solo-sect/assets/portraits/huoyunxieshen.png",
-        "author": "Grok Bot",
-        "sameBlobAt": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2"
+        "author": "Grok（本機 Grok Build）",
+        "bytesNote": "Pixels are a new caricature drawn 2026-10-26. They are not the blob at source.commit. source.commit and originPath name the identity reference only."
       },
       "rights": {
-        "status": "repository-research-reuse; third-party-rights-unverified",
+        "status": "owner-requested-generation; third-party-rights-unverified",
         "evidenceCommit": "6db09fd97cac3d9a66cde49103978d7793317418",
         "evidencePath": "solo-sect/assets/portraits/huoyunxieshen.png",
-        "note": "Existing repository research bytes only. Movie and novel rights, model version, and seeds are unrecorded. Private prototype use is not a commercial-rights upgrade. Not a final public design."
+        "note": "Owner asked on 2026-10-26 for a comic redraw. Model version and seed are unrecorded. Not a commercial-rights upgrade. The earlier research file is only the identity reference."
       },
       "use": "Research character card portrait. Not a walk atlas, collision shape, or playable opening.",
       "anchor": {
@@ -770,19 +776,21 @@ export default {
         "rect": {
           "x": 0,
           "y": 0,
-          "w": 480,
-          "h": 640
+          "w": 864,
+          "h": 1152
         },
         "derivedFrom": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/huoyunxieshen.png",
-        "selection": "功夫研究已引用的公開職業圖。",
+        "selection": "2026-10-26 擁有人要求火雲邪神也走搞笑路線，對齊阿星。身份仍是舊公開職業圖。",
         "generation": {
-          "tool": "Grok Bot GenerateImage",
+          "tool": "Grok Build Imagine image_edit",
           "modelVersion": "未量測",
           "aspect": "3:4",
-          "referenceImages": false,
+          "referenceImages": true,
           "seed": "未記錄",
-          "style": "unrecorded-for-this-file",
-          "promptLog": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2:solo-sect/assets/portraits/PROMPTS.md"
+          "style": "wcaricature",
+          "styleReference": "person.research.axing.portrait",
+          "identityReference": "6db09fd97cac3d9a66cde49103978d7793317418:solo-sect/assets/portraits/huoyunxieshen.png",
+          "drawnOn": "2026-10-26"
         }
       }
     },
@@ -843,11 +851,11 @@ export default {
     {
       "assetId": "person.research.zhoubotong.portrait",
       "path": "sect-chronicle/assets/shared/portraits/1.1.0/zhoubotong.png",
-      "sha256": "352a7f431504c93fc0ea2bec9c8c7dd4211ff6a21f1a7e5b92cd96539a2be4a7",
+      "sha256": "22d3c1900f1c248d5d75161649572b0095606dc292eedf62b91ba0393974eef0",
       "availability": "known",
       "dimensions": {
-        "width": 480,
-        "height": 640
+        "width": 864,
+        "height": 1152
       },
       "alpha": {
         "channel": false,
@@ -858,14 +866,14 @@ export default {
         "commit": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2",
         "path": "sect-chronicle/assets/shared/portraits/1.1.0/zhoubotong.png",
         "originPath": "solo-sect/assets/portraits/zhoubotong.png",
-        "author": "Grok Bot",
-        "sameBlobAt": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2"
+        "author": "Grok（本機 Grok Build）",
+        "bytesNote": "Pixels are a new caricature drawn 2026-10-26. They are not the blob at source.commit. source.commit and originPath name the identity reference only."
       },
       "rights": {
-        "status": "repository-research-reuse; third-party-rights-unverified",
+        "status": "owner-requested-generation; third-party-rights-unverified",
         "evidenceCommit": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2",
         "evidencePath": "solo-sect/assets/portraits/zhoubotong.png",
-        "note": "Existing repository research bytes only. Movie and novel rights, model version, and seeds are unrecorded. Private prototype use is not a commercial-rights upgrade. Not a final public design."
+        "note": "Owner asked on 2026-10-26 for a comic redraw. Model version and seed are unrecorded. Not a commercial-rights upgrade. The earlier research file is only the identity reference."
       },
       "use": "Research character card portrait. Not a walk atlas, collision shape, or playable opening.",
       "anchor": {
@@ -878,19 +886,21 @@ export default {
         "rect": {
           "x": 0,
           "y": 0,
-          "w": 480,
-          "h": 640
+          "w": 864,
+          "h": 1152
         },
         "derivedFrom": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2:solo-sect/assets/portraits/zhoubotong.png",
-        "selection": "原圖即搞笑長輩，手持圓方。",
+        "selection": "2026-10-26 擁有人要求對齊郭靖：抓頭、嘴裡塞著饅頭。身份仍是舊周伯通圖。",
         "generation": {
-          "tool": "Grok Bot GenerateImage",
+          "tool": "Grok Build Imagine image_edit",
           "modelVersion": "未量測",
           "aspect": "3:4",
-          "referenceImages": false,
+          "referenceImages": true,
           "seed": "未記錄",
-          "style": "unrecorded-for-this-file",
-          "promptLog": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2:solo-sect/assets/portraits/PROMPTS.md"
+          "style": "wcaricature",
+          "styleReference": "person.research.guojing.portrait",
+          "identityReference": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2:solo-sect/assets/portraits/zhoubotong.png",
+          "drawnOn": "2026-10-26"
         }
       }
     },
