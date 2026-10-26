@@ -1,0 +1,52 @@
+{
+  "source": "labeled model fixtures, not UI",
+  "cases": [
+    {
+      "case": "reachability",
+      "reasons": {
+        "89": "ok",
+        "90": "ok",
+        "91": "阿木的基礎拳已熟練91，再+10會超過上限100",
+        "100": "阿木的基礎拳已熟練100，再+10會超過上限100",
+        "staffnull": "ok",
+        "staff94": "ok",
+        "staff95": "阿木的齊眉棍已熟練95，再+6會超過上限100"
+      }
+    },
+    {
+      "case": "cancel-redirect",
+      "history": [
+        [
+          "depth",
+          "completed",
+          [
+            "mentor.direction-set",
+            "mentor.practice-check"
+          ]
+        ]
+      ]
+    },
+    {
+      "case": "joint-validation",
+      "rejected": [
+        "emptyStats",
+        "missingMoves",
+        "badMove",
+        "negHits",
+        "missingActor",
+        "extraKey",
+        "historyEmpty",
+        "historyRoles"
+      ]
+    },
+    {
+      "case": "tip-permanent",
+      "days": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ]
+    }
+  ]
+}

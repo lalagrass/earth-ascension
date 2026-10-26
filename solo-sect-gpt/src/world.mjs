@@ -17,7 +17,7 @@ import {discover} from './view.mjs';
 import {ownershipGate,commitmentOf} from './commitment.mjs';
 import {adoptOps,opsTick} from './economy.mjs';
 import {adoptJoint,startJoint,jointTick} from './joint-drill.mjs';
-import {adoptMentor,propose,respond,activeBond,eventStatus,mentorTick,MENTOR_EVENTS,proposeDirection,respondDirection} from './mentor.mjs';
+import {adoptMentor,propose,respond,activeBond,eventStatus,mentorTick,MENTOR_EVENTS,proposeDirection,respondDirection,cancelDirection} from './mentor.mjs';
 import {beginError} from './activities.mjs';
 export {createWorld,invariants};
 // Validate solo orders before they interrupt a sparring session or anything else.
@@ -50,6 +50,7 @@ export function command(w,c){
  else if(c.type==='mentorPropose')result=propose(w,p,w.people[c.target],c.promise);
  else if(c.type==='mentorRespond')result=respond(w,p,c.accept===true);
  else if(c.type==='mentorDirection')result=proposeDirection(w,p,c.kind,c.art);
+ else if(c.type==='mentorDirectionCancel')result=cancelDirection(w,p);
  else if(c.type==='mentorDirectionRespond')result=respondDirection(w,p,c.accept===true);
  else if(c.type==='mentorEvent'){const b=activeBond(w,p.id),def=Object.hasOwn(MENTOR_EVENTS,c.event)?MENTOR_EVENTS[c.event]:null;if(!b||!def)result={ok:false,reason:'沒有有效師徒關係或未知後續'};else{const st=eventStatus(w,b,c.event);if(!st.ok)result={ok:false,reason:def.name+'：'+st.reason};else result=begin(w,p,'talk',{target:b.master===p.id?b.disciple:b.master,mentorEvent:c.event},true);}}
  else if(c.type==='adoptContent')result=adoptContent(w);
