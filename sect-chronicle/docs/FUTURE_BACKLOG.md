@@ -1,5 +1,12 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## 2026-10-26 公版有限序列 #365 已批准
+
+前序 #356 三包與 #363／PR364 已合 dev／必要 postCI，最新 base `bb251ab78e4bc0579e3e750afd0cc7fe2a9c6dd5`。本輪只授 #366 外觀／狀態一致化與輕量元件 preview → #367 真可見場景導覽，逐包非作者 review／#67／dev／postCI 才接下一包。詳見[路線](SHARED_PUBLIC_ROADMAP.md#365-有限序列介面外觀--場景導覽2026-10-26)及[#366 handoff／prompt](UI_PRESENTATION01_HANDOFF.md)。#366 本 PR 為作者交付候選，尚未當已合；#367 未認領。
+
+BL-U01／U02 只提取現有公版紙墨 tokens、原 renderer 的 0／缺項／disabled／focus，及後包已知點/camera 投影；不授完整 UI framework、theme 產品、地圖編輯器或世界重建。#337 關係公版待真公開資料，#315/#321 建造床位、#340/#106 人格天賦、#339 完整圖庫／女孩圖仍候選或原獨立包；Grok 立繪主筆／素材不動。Cloud 工程、同一正式入口、三核心獨立／原規則／長通勤速度／D45/D53 保持，BL-P01 手機與 BL-P02 新增保存升版繼續最後。
+
+
 ## 2026-10-26 公版後續有限序列 #356 已批准
 
 前序#346全部已交，最後#351／PR355合dev ef823ac277f48d9426cc3806f74468126a9cf91d、postCI40312921799五success。擁有人已批准[#356](https://github.com/lalagrass/earth-ascension/issues/356) **#357補修→#358資源總覽→#359工作／自主設定呈現**；一包dev＋postCI才派下一包，全部完成後休息。工作包／作者prompt隨工程交，見[PUBLIC_M2_HANDOFF](PUBLIC_M2_HANDOFF.md)／[提示詞](PUBLIC_M2_AUTHOR_PROMPT.md)與[路線](SHARED_PUBLIC_ROADMAP.md)。PR360／#357已合dev2937dd017f8b5e6dea0a05e1ae120bd25499dc15、postCI40319800609五success。當前#358資源總覽作者候選見[RESOURCE_PUBLIC_HANDOFF](RESOURCE_PUBLIC_HANDOFF.md)，只讀原水／藥／可靠木view，另有固定GPT真來源與Grok缺項盤點；尚待非作者review/dev/postCI，不預占#359，不授完整物流#160。

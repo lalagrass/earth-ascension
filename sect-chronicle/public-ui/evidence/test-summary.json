@@ -1,0 +1,10 @@
+{
+  "base": "bb251ab78e4bc0579e3e750afd0cc7fe2a9c6dd5",
+  "focused": "card/resource/intent/event/martial/public-fix/public-ui 7 test modules passed",
+  "python": "53 passed",
+  "m2Syntax": "passed",
+  "diffCheck": "passed",
+  "gameFast": "25/28 files passed in default sandbox; production/progression/story subprocess files failed without diagnostics; same 3 unchanged files with Cloud process capability and concurrency=1: 85/85 passed",
+  "scope": "presentation only; no world seed, mobile or save matrix",
+  "browser": "19 checks passed, zero page errors; finally all cleanup true"
+}

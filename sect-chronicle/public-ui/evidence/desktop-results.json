@@ -1,0 +1,63 @@
+{
+  "base": "bb251ab78e4bc0579e3e750afd0cc7fe2a9c6dd5",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "checks": [
+    "same official entry and true core",
+    "summary has effective visible keyboard focus",
+    "working playback retains own details and focus",
+    "other person does not inherit details",
+    "person switch does not retain old actor bindings",
+    "returning person restores details",
+    "paused UI reads and person switches preserve complete original authority",
+    "original work command remains the one native pending",
+    "original command result is retained in shared status",
+    "sitting playback retains details and focus",
+    "native manual stop remains distinct from automatic recovery",
+    "real resource values retain availability and original source",
+    "existing showcase explicitly labels developer preview",
+    "long public background wraps inside preview",
+    "hidden fixture has label only and no tooltip",
+    "known zero is visibly distinct",
+    "disabled control remains readable and visibly disabled",
+    "fixture error is visually distinct with explicit wording",
+    "preview action is clearly a fixture result"
+  ],
+  "errors": [],
+  "screenshots": [
+    "official-before.jpg",
+    "official-after.jpg",
+    "preview-states.jpg"
+  ],
+  "browser": "154.0.8037.57",
+  "focusStyle": {
+    "style": "solid",
+    "width": "2px",
+    "color": "rgb(134, 96, 22)"
+  },
+  "disabledStyle": {
+    "color": "rgb(98, 89, 71)",
+    "opacity": "1",
+    "border": "dashed"
+  },
+  "errorStyle": {
+    "color": "rgb(138, 48, 41)",
+    "border": "solid"
+  },
+  "passed": true,
+  "cleanup": {
+    "pageClosed": true,
+    "contextClosed": true,
+    "browserClosed": true,
+    "serverStopped": true,
+    "viewport": "owned viewport restored then context closed"
+  },
+  "author": "Codex Cloud /root/presentation366_author",
+  "host": "bd5f96b62f8a",
+  "attemptNotes": [
+    "Default sandbox stopped at spawnSync git EPERM before browser/server startup; rerun used Cloud network/process capability.",
+    "Two preliminary scenario attempts cleaned all resources; assertions were corrected to use keyboard focus-visible modality and expand fixture details before inspecting visible text. Final scenario passed."
+  ]
+}

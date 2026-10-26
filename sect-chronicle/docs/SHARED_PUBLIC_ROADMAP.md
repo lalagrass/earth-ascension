@@ -37,3 +37,15 @@
 #357／PR360已合dev2937dd017f8b5e6dea0a05e1ae120bd25499dc15、postCI40319800609五success；#358／PR361已合dev5e7f36682272ef44190bc0d908030213e4ab8ca0、postCI40323071547五success。#359本PR交原工作／自主設定共用視圖、原命令重核與第二真核心能力／缺項，尚待grass非作者review／dev／必要postCI，不將候選寫成已合。[正式包](INTENT_PUBLIC_HANDOFF.md)／[作者補修prompt](INTENT_PUBLIC_AUTHOR_PROMPT.md)保存直接證據與限制；最終接受SHA／postCI以#359與#356完成留言回填，不再新增文件gate。
 
 本輪只沿BL-U01／U02、G05／A01–A04已存在資料抽取呈現；沒有新queue、AI、共同閾值、物流／自主規則、保存升版或手機。Grok本包只有來源能力對照，未假稱已完成IntentView接線；GPT與正式版的休息、pending、政策差異保持。#359與必要同PR補修完成後作者／grass休息，不自行接關係／社交、建造床位、人格天賦、完整圖庫／女孩圖、小地圖／編輯器等新backlog；原母願景與#337作者邊界不變。
+
+
+## #365 有限序列：介面外觀 → 場景導覽（2026-10-26）
+
+前序 #356 已完成：#359／PR362 合 dev `7dda0fbf7b966c4016114de2ab3d4192faf8abbc`、postCI40327857984 五 success；#363／PR364 公開簡介合 dev `bb251ab78e4bc0579e3e750afd0cc7fe2a9c6dd5`、postCI40335155271 五 success。以上取代上方當時候選快照，原證據復用。
+
+| 包 | 狀態／範圍 | 下一條件 |
+|---|---|---|
+| [#366 UI-PRESENTATION-01](https://github.com/lalagrass/earth-ascension/issues/366) | 本 PR 作者候選：既有水彩紙墨 tokens、重複 value/source markup、狀態與 focus；擴原 showcase 復用五種 production renderer、fixture 明標。見[短 handoff／補修 prompt](UI_PRESENTATION01_HANDOFF.md) | grass 非作者 review／#67／dev＋必要 postCI 後才 done |
+| [#367 SCENE-NAV-01](https://github.com/lalagrass/earth-ascension/issues/367) | 已批准後包：真可見角色／既有功能點／camera 導覽，有公開權威路徑才畫線 | 等 #366 dev/postCI；本作者未認領、不預占 |
+
+借 Unciv 外觀分層／單元件預覽概念；沿現有 DOM/Pixi，無新框架或皮膚產品。#337 公開關係未穩定、建造床位 #315/#321、人格天賦 #340/#106、完整素材庫 #339／女孩圖及編輯器仍原 backlog；Grok 的有限立繪第二包保持原指派，#366 不改素材。三原作者分支不假稱自動更新。Cloud 工程／Mac 真人、同一正式入口、原世界數值／長路速度／D45／D53 保持，新增保存與手機最後。#366→#367 完成及必要補修後停止，不啟永久循環。

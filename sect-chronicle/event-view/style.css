@@ -1,3 +1,2 @@
-:root{--public-surface:#f7f0dfb8;--public-edge:#8b9a76;--public-line:#cec1a4;--public-space:12px;--public-text-small:12px}
-.public-action,.public-martial article,.public-events{background:var(--public-surface);border-left:3px solid var(--public-edge);padding:var(--public-space);margin:var(--public-space) 0}
+@import url("../public-ui/style.css");
 .public-events ol{list-style:none;padding:0;margin:8px 0}.public-events li{padding:10px 0;border-bottom:1px solid var(--public-line)}.public-events p{line-height:1.5;margin:6px 0}.public-events time,.public-events small{font-size:var(--public-text-small);overflow-wrap:anywhere}.public-events details{margin:6px 0;font-size:var(--public-text-small)}.public-events summary{cursor:pointer}.event-filters{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}

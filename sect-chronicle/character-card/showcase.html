@@ -2,19 +2,31 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<title>公版人物簡介展示 · 不可玩</title>
+<title>公版元件開發預覽 · 不可玩</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../resource-view/style.css">
+<link rel="stylesheet" href="../intent-view/style.css">
+<link rel="stylesheet" href="../event-view/style.css">
 <style>
-body{margin:24px auto;max-width:720px;background:#e9dfc8;color:#3c483b;font:16px/1.5 sans-serif}
+body{margin:24px auto;max-width:760px;padding:0 20px;background:#e9dfc8;color:var(--public-ink);font:14px/1.5 sans-serif}
 .banner{background:#f7f0df;border:1px solid #a99470;padding:12px;margin:0 0 16px}
 select{font:16px sans-serif;margin:8px 0 16px}
 </style>
 </head>
 <body>
-<p class="banner"><b>研究展示，不是創角。</b>切換只換這張卡的文字和立繪回退，不會建立角色，也不會改世界。</p>
+<h1>公版元件開發預覽</h1>
+<p class="banner"><b>開發工具，不可玩。</b>復用正式 renderer；下方 fixture 全是明標的排版示意，不會建立角色、執行本局指令或改世界。<a href="../index.html">正式生活入口</a></p>
+<h2>公開人物目錄（既有資料）</h2>
 <label>人物 <select id="who"></select></label>
 <div id="card"></div>
+<h2>狀態 fixture（全部示意）</h2>
+<p>已知 0／未知／隱藏／不支援分列。隱藏欄位沒有資料 payload；這裡不是隱藏資料檢視器。</p>
+<div id="fixture-card"></div>
+<section id="fixture-resources" aria-label="示意資源"></section>
+<div id="fixture-intent"></div>
+<p role="alert">示意錯誤：指令被原核心拒絕。這不是本局錯誤。</p>
+<div id="fixture-events"></div>
 <script type="module" src="showcase.mjs"></script>
 </body>
 </html>
