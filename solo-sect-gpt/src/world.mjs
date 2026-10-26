@@ -3,7 +3,7 @@ import{adoptTrail,adoptTrail2,launchJourney,journeyTick,stopJourneySpar}from'./j
 import{adoptCulture,selectCulture,startLife,cultureActivityTick,stopLife}from'./culture.mjs';
 import {rulesFor} from './save-features.mjs';
 import {adoptMartial,setFocus,chooseStyle,startPractice,martialTick,cancelPractice} from './martial.mjs';
-import {DEFAULT_LIFE_POLICY,validateLifePolicy,LIFE_RULES} from './life-policy.mjs';
+import {DEFAULT_LIFE_POLICY,validateLifePolicy,LIFE_RULES,adoptAutonomy} from './life-policy.mjs';
 import {beginClass,classActivityTick} from './classes.mjs';
 import {Q,FACILITIES} from './data.mjs';
 import {createWorld,event,sorted,invariants,bagWeight,day,openTick,closeTick,uid} from './state.mjs';
@@ -44,6 +44,7 @@ export function command(w,c){
  else if(c.type==='recall'){result=begin(w,p,'return',{},true);}
  else if(c.type==='lifePolicy'){try{const policy=structuredClone(c.policy||DEFAULT_LIFE_POLICY);validateLifePolicy(policy,w.inventories.vat.capacity);w.lifePolicy=policy;w.rulesVersion=rulesFor(w);event(w,'life-policy-adopted',[],{version:policy.version});}catch(e){result={ok:false,reason:e.message};}}
  else if(c.type==='adoptOps')result=adoptOps(w);
+ else if(c.type==='adoptAutonomy')result=adoptAutonomy(w);
  else if(c.type==='adoptMentor')result=adoptMentor(w);
  else if(c.type==='adoptJoint')result=adoptJoint(w,c.version);
  else if(c.type==='jointDrill')result=startJoint(w,c.actors,c.config,c.roles,c.arrival);

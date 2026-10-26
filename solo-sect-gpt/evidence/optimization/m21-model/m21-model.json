@@ -1,0 +1,36 @@
+{
+  "source": "model tests on fresh seed-29 worlds with labeled fixtures, not UI",
+  "cases": [
+    {
+      "case": "adopt",
+      "refused": "先採用建議日課"
+    },
+    {
+      "case": "save",
+      "counts": [
+        5,
+        5
+      ],
+      "rejected": [
+        "version",
+        "extra",
+        "count",
+        "noPlan"
+      ]
+    },
+    {
+      "case": "no-trait-values",
+      "sources": [
+        "自由選擇",
+        "補給地板＋職務加成",
+        "工作時段＋職務加成",
+        "工作時段"
+      ]
+    },
+    {
+      "case": "maxed-and-trust",
+      "talk": "amu",
+      "source": null
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 161.174,
+  "errors": [],
+  "steps": [
+    {
+      "label": "sample-1",
+      "wallSeconds": 38.347,
+      "tick": 2577
+    },
+    {
+      "label": "sample-2",
+      "wallSeconds": 84.218,
+      "tick": 6171
+    },
+    {
+      "label": "sample-3",
+      "wallSeconds": 103.817,
+      "tick": 7685
+    },
+    {
+      "label": "temporary-done",
+      "wallSeconds": 123.053,
+      "tick": 9135
+    },
+    {
+      "label": "full-day",
+      "wallSeconds": 160.616,
+      "tick": 12084
+    },
+    {
+      "label": "done",
+      "wallSeconds": 161.174,
+      "tick": 12084,
+      "end": {
+        "tick": 12084,
+        "simSeconds": 601,
+        "wallSeconds": 153.912,
+        "speed": 4
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "samples": [
+      {
+        "id": "leader",
+        "tick": 2577,
+        "text": "現在 採集 · 5秒\n原因 接單時：補給地板優先：補水\n目標來源 補給地板＋職務加成\n接著 採好後實際搬回水缸\n作業位 山潭取水處\n練拳\n坐休\n吃飯\n停工"
+      },
+      {
+        "id": "amu",
+        "tick": 2577,
+        "text": "現在 坐休\n原因 精力 96，先養足體力\n目標來源 自由選擇\n接著 精力至少100後回工作\n作業位 庭院歇腳處\n練拳\n坐休\n吃飯\n停工"
+      },
+      {
+        "id": "leader",
+        "tick": 6171,
+        "text": "現在 練功\n原因 接單時：可行選擇：加練\n目標來源 工作時段\n接著 完成本輪後依日課重選\n作業位 演武木樁 1 · 第2位\n⚠ 等候 演武木樁 1（阿木 正在使用）\n依先後順序輪到才開始；不想等可改派其他工作。\n停工改派\n練拳\n坐休\n吃飯\n停工"
+      },
+      {
+        "id": "amu",
+        "tick": 6171,
+        "text": "現在 練功 · 8秒\n原因 接單時：可行選擇：加練\n目標來源 工作時段\n接著 完成本輪後依日課重選\n作業位 演武木樁 1\n練拳\n坐休\n吃飯\n停工"
+      },
+      {
+        "id": "leader",
+        "tick": 7685,
+        "text": "現在 練功 · 10秒\n原因 接單時：修行時段：今日60秒已滿，加練\n目標來源 自由選擇\n接著 完成本輪後依日課重選\n作業位 演武木樁 1\n練拳\n坐休\n吃飯\n停工"
+      },
+      {
+        "id": "amu",
+        "tick": 7685,
+        "text": "現在 坐休\n原因 精力 74，先養足體力\n目標來源 自由選擇\n接著 精力至少100後回修行\n作業位 庭院歇腳處\n練拳\n坐休\n吃飯\n停工"
+      }
+    ],
+    "adopted": "自主生活 v1：閒暇依關係找人；顧人的人會照料受傷同門；做不成的事冷卻加倍、不反覆；武學練滿就不再空練。",
+    "start": {
+      "tick": 64,
+      "speed": 4
+    },
+    "temporaryAt": 7685,
+    "temporaryCard": "現在 採集\n原因 臨時一次 · 保留原安排\n目標來源 臨時指令\n接著 交付完成後回自主日課\n作業位 待選作業位\n練拳\n坐休\n吃飯\n停工",
+    "restoredAt": 9135,
+    "afterTemporary": "現在 行走 · 就寢\n原因 精力 59，先養足體力\n接著 精力至少100後回夜間\n作業位 大廳床位 2\n練拳\n坐休\n吃飯\n停工",
+    "end": {
+      "tick": 12084,
+      "simSeconds": 601,
+      "wallSeconds": 153.912,
+      "speed": 4
+    },
+    "meals": {
+      "leader": [
+        1,
+        0
+      ],
+      "child": [
+        1,
+        0
+      ],
+      "amu": [
+        1,
+        0
+      ]
+    }
+  }
+}

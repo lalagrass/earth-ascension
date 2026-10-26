@@ -1,0 +1,1326 @@
+{
+  "prereg": "docs/optimization/M21.md",
+  "source": "fresh seed-29 worlds; labeled scenario fixtures; model runs, one simulated day each, no intervention",
+  "wallSeconds": 34.939,
+  "directions": {
+    "A1_P2_fewerRepicksAndBlocked": [
+      {
+        "t": "guo",
+        "old": [
+          3,
+          3428
+        ],
+        "new": [
+          2,
+          3328
+        ],
+        "ok": true
+      },
+      {
+        "t": "linghu",
+        "old": [
+          14,
+          3514
+        ],
+        "new": [
+          16,
+          4269
+        ],
+        "ok": false
+      }
+    ],
+    "A2_noStarving": [
+      {
+        "t": "guo",
+        "s": "P1",
+        "critical": [
+          834,
+          834
+        ],
+        "ate": [
+          0.6666666666666666,
+          0.6666666666666666
+        ],
+        "ok": true
+      },
+      {
+        "t": "guo",
+        "s": "P2",
+        "critical": [
+          834,
+          834
+        ],
+        "ate": [
+          0.6666666666666666,
+          0.6666666666666666
+        ],
+        "ok": true
+      },
+      {
+        "t": "guo",
+        "s": "P3",
+        "critical": [
+          981,
+          981
+        ],
+        "ate": [
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "ok": true
+      },
+      {
+        "t": "guo",
+        "s": "P4",
+        "critical": [
+          834,
+          369
+        ],
+        "ate": [
+          0.6666666666666666,
+          0.6666666666666666
+        ],
+        "ok": true
+      },
+      {
+        "t": "linghu",
+        "s": "P1",
+        "critical": [
+          954,
+          954
+        ],
+        "ate": [
+          0.6666666666666666,
+          0.6666666666666666
+        ],
+        "ok": true
+      },
+      {
+        "t": "linghu",
+        "s": "P2",
+        "critical": [
+          954,
+          954
+        ],
+        "ate": [
+          0.6666666666666666,
+          0.6666666666666666
+        ],
+        "ok": true
+      },
+      {
+        "t": "linghu",
+        "s": "P3",
+        "critical": [
+          981,
+          981
+        ],
+        "ate": [
+          0.3333333333333333,
+          0.3333333333333333
+        ],
+        "ok": true
+      },
+      {
+        "t": "linghu",
+        "s": "P4",
+        "critical": [
+          954,
+          369
+        ],
+        "ate": [
+          0.6666666666666666,
+          0.6666666666666666
+        ],
+        "ok": true
+      }
+    ],
+    "A3_personality": {
+      "guoTrainBuild": 6939,
+      "linghuTrainBuild": 2953,
+      "guoMoveRest": 0,
+      "linghuMoveRest": 2224,
+      "ok": true
+    },
+    "A4_backToGoal": [
+      {
+        "t": "guo",
+        "old": null,
+        "new": null,
+        "ok": false
+      },
+      {
+        "t": "linghu",
+        "old": null,
+        "new": null,
+        "ok": false
+      }
+    ],
+    "A5_noMaxedPractice": [
+      {
+        "t": "guo",
+        "old": 6939,
+        "new": 0,
+        "ok": true
+      },
+      {
+        "t": "linghu",
+        "old": 2953,
+        "new": 0,
+        "ok": true
+      }
+    ],
+    "A6_talkTrust": [
+      {
+        "t": "guo",
+        "s": "P1",
+        "old": 1,
+        "new": 1,
+        "ok": true
+      },
+      {
+        "t": "guo",
+        "s": "P2",
+        "old": null,
+        "new": 2,
+        "ok": true
+      },
+      {
+        "t": "guo",
+        "s": "P3",
+        "old": 1,
+        "new": 1,
+        "ok": true
+      },
+      {
+        "t": "guo",
+        "s": "P4",
+        "old": 1,
+        "new": 1.5,
+        "ok": true
+      },
+      {
+        "t": "linghu",
+        "s": "P1",
+        "old": 1,
+        "new": 1,
+        "ok": true
+      },
+      {
+        "t": "linghu",
+        "s": "P2",
+        "old": 1,
+        "new": 2,
+        "ok": true
+      },
+      {
+        "t": "linghu",
+        "s": "P3",
+        "old": 1,
+        "new": 1,
+        "ok": true
+      },
+      {
+        "t": "linghu",
+        "s": "P4",
+        "old": 1,
+        "new": 1.5,
+        "ok": true
+      }
+    ],
+    "interventions": [
+      {
+        "t": "guo",
+        "s": "P1",
+        "old": 0,
+        "new": 0
+      },
+      {
+        "t": "guo",
+        "s": "P2",
+        "old": 0,
+        "new": 0
+      },
+      {
+        "t": "guo",
+        "s": "P3",
+        "old": 0,
+        "new": 0
+      },
+      {
+        "t": "guo",
+        "s": "P4",
+        "old": 0,
+        "new": 0
+      },
+      {
+        "t": "linghu",
+        "s": "P1",
+        "old": 0,
+        "new": 0
+      },
+      {
+        "t": "linghu",
+        "s": "P2",
+        "old": 0,
+        "new": 0
+      },
+      {
+        "t": "linghu",
+        "s": "P3",
+        "old": 0,
+        "new": 0
+      },
+      {
+        "t": "linghu",
+        "s": "P4",
+        "old": 0,
+        "new": 0
+      }
+    ]
+  },
+  "rows": [
+    {
+      "template": "guo",
+      "scenario": "P1",
+      "autonomy": false,
+      "critical": 834,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 150,
+            "eat": 501,
+            "train": 6939,
+            "gather": 2714,
+            "sleep": 1696
+          },
+          "switches": 12,
+          "blocked": 1686,
+          "repicks": 3,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "child": {
+          "kinds": {
+            "idle": 8114,
+            "eat": 758,
+            "move": 1990,
+            "paired": 807,
+            "sleep": 331
+          },
+          "switches": 469,
+          "blocked": 317,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 152,
+            "eat": 958,
+            "cook": 2379,
+            "rest": 1588,
+            "gather": 1359,
+            "talk": 807,
+            "train": 4371,
+            "sleep": 386
+          },
+          "switches": 14,
+          "blocked": 1608,
+          "repicks": 1,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 1
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "guo",
+      "scenario": "P1",
+      "autonomy": true,
+      "critical": 834,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 150,
+            "eat": 501,
+            "train": 6939,
+            "gather": 2714,
+            "sleep": 1696
+          },
+          "switches": 12,
+          "blocked": 1686,
+          "repicks": 3,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "child": {
+          "kinds": {
+            "idle": 8114,
+            "eat": 758,
+            "move": 1990,
+            "paired": 807,
+            "sleep": 331
+          },
+          "switches": 469,
+          "blocked": 317,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 152,
+            "eat": 958,
+            "cook": 2379,
+            "rest": 1588,
+            "gather": 1359,
+            "talk": 807,
+            "train": 4371,
+            "sleep": 386
+          },
+          "switches": 14,
+          "blocked": 1608,
+          "repicks": 1,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 1
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "guo",
+      "scenario": "P2",
+      "autonomy": false,
+      "critical": 834,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 187,
+            "eat": 501,
+            "train": 4410,
+            "gather": 2818,
+            "build": 1240,
+            "cook": 1221,
+            "sleep": 1623
+          },
+          "switches": 13,
+          "blocked": 1601,
+          "repicks": 1,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "child": {
+          "kinds": {
+            "idle": 8422,
+            "eat": 758,
+            "move": 2059,
+            "encourage": 408,
+            "sleep": 353
+          },
+          "switches": 484,
+          "blocked": 317,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 176,
+            "eat": 958,
+            "cook": 1205,
+            "rest": 1629,
+            "build": 2880,
+            "paired": 408,
+            "train": 4362,
+            "sleep": 382
+          },
+          "switches": 13,
+          "blocked": 1510,
+          "repicks": 2,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": null
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "guo",
+      "scenario": "P2",
+      "autonomy": true,
+      "critical": 834,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 190,
+            "eat": 501,
+            "train": 4654,
+            "gather": 2818,
+            "build": 1000,
+            "cook": 1221,
+            "sleep": 1616
+          },
+          "switches": 13,
+          "blocked": 1625,
+          "repicks": 1,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "child": {
+          "kinds": {
+            "idle": 8249,
+            "eat": 758,
+            "move": 2028,
+            "encourage": 408,
+            "paired": 232,
+            "sleep": 325
+          },
+          "switches": 477,
+          "blocked": 326,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 157,
+            "eat": 958,
+            "cook": 1205,
+            "rest": 1618,
+            "build": 2800,
+            "paired": 408,
+            "talk": 232,
+            "train": 4200,
+            "sleep": 422
+          },
+          "switches": 13,
+          "blocked": 1377,
+          "repicks": 1,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 2
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "guo",
+      "scenario": "P3",
+      "autonomy": false,
+      "critical": 981,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 3,
+            "sleep": 11997
+          },
+          "switches": 1,
+          "blocked": 0,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": null
+        },
+        "child": {
+          "kinds": {
+            "idle": 8180,
+            "eat": 518,
+            "move": 2136,
+            "paired": 831,
+            "sleep": 335
+          },
+          "switches": 475,
+          "blocked": 2,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 148,
+            "eat": 718,
+            "cook": 1205,
+            "gather": 1303,
+            "talk": 831,
+            "train": 5588,
+            "rest": 1438,
+            "sleep": 769
+          },
+          "switches": 14,
+          "blocked": 289,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 1
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "guo",
+      "scenario": "P3",
+      "autonomy": true,
+      "critical": 981,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 3,
+            "sleep": 11997
+          },
+          "switches": 1,
+          "blocked": 0,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": null
+        },
+        "child": {
+          "kinds": {
+            "idle": 8180,
+            "eat": 518,
+            "move": 2136,
+            "paired": 831,
+            "sleep": 335
+          },
+          "switches": 475,
+          "blocked": 2,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 148,
+            "eat": 718,
+            "cook": 1205,
+            "gather": 1303,
+            "talk": 831,
+            "train": 5588,
+            "rest": 1438,
+            "sleep": 769
+          },
+          "switches": 14,
+          "blocked": 289,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 1
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "guo",
+      "scenario": "P4",
+      "autonomy": false,
+      "critical": 834,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 150,
+            "eat": 501,
+            "train": 6939,
+            "gather": 2714,
+            "sleep": 1696
+          },
+          "switches": 12,
+          "blocked": 1686,
+          "repicks": 3,
+          "interventions": 0,
+          "maxedPunchTrain": 6939,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "child": {
+          "kinds": {
+            "idle": 8114,
+            "eat": 758,
+            "move": 1990,
+            "paired": 807,
+            "sleep": 331
+          },
+          "switches": 469,
+          "blocked": 317,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 152,
+            "eat": 958,
+            "cook": 2379,
+            "rest": 1588,
+            "gather": 1359,
+            "talk": 807,
+            "train": 4371,
+            "sleep": 386
+          },
+          "switches": 14,
+          "blocked": 1608,
+          "repicks": 1,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 1
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "guo",
+      "scenario": "P4",
+      "autonomy": true,
+      "critical": 369,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 3480,
+            "eat": 501,
+            "move": 1259,
+            "cook": 2416,
+            "rest": 1061,
+            "gather": 1299,
+            "talk": 1039,
+            "paired": 372,
+            "sleep": 573
+          },
+          "switches": 23,
+          "blocked": 46,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": 1
+        },
+        "child": {
+          "kinds": {
+            "idle": 4648,
+            "eat": 758,
+            "move": 3997,
+            "paired": 1852,
+            "encourage": 224,
+            "sleep": 521
+          },
+          "switches": 279,
+          "blocked": 2269,
+          "repicks": 20,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 129,
+            "eat": 960,
+            "talk": 1517,
+            "gather": 2780,
+            "paired": 556,
+            "train": 4161,
+            "rest": 1133,
+            "sleep": 764
+          },
+          "switches": 17,
+          "blocked": 546,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 2
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "linghu",
+      "scenario": "P1",
+      "autonomy": false,
+      "critical": 954,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 1679,
+            "eat": 501,
+            "move": 1221,
+            "train": 2953,
+            "gather": 2717,
+            "paired": 808,
+            "rest": 1003,
+            "sleep": 763,
+            "talk": 355
+          },
+          "switches": 97,
+          "blocked": 423,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": 2
+        },
+        "child": {
+          "kinds": {
+            "idle": 6115,
+            "eat": 758,
+            "move": 3552,
+            "paired": 701,
+            "sleep": 521,
+            "encourage": 353
+          },
+          "switches": 358,
+          "blocked": 1823,
+          "repicks": 35,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 191,
+            "eat": 958,
+            "cook": 2379,
+            "rest": 1586,
+            "gather": 1479,
+            "talk": 801,
+            "train": 3901,
+            "sleep": 705
+          },
+          "switches": 14,
+          "blocked": 740,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 0
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "linghu",
+      "scenario": "P1",
+      "autonomy": true,
+      "critical": 954,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 1679,
+            "eat": 501,
+            "move": 1221,
+            "train": 2953,
+            "gather": 2717,
+            "paired": 808,
+            "rest": 1003,
+            "sleep": 763,
+            "talk": 355
+          },
+          "switches": 97,
+          "blocked": 423,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": 2
+        },
+        "child": {
+          "kinds": {
+            "idle": 6115,
+            "eat": 758,
+            "move": 3552,
+            "paired": 701,
+            "sleep": 521,
+            "encourage": 353
+          },
+          "switches": 358,
+          "blocked": 1823,
+          "repicks": 35,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 191,
+            "eat": 958,
+            "cook": 2379,
+            "rest": 1586,
+            "gather": 1479,
+            "talk": 801,
+            "train": 3901,
+            "sleep": 705
+          },
+          "switches": 14,
+          "blocked": 740,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 0
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "linghu",
+      "scenario": "P2",
+      "autonomy": false,
+      "critical": 954,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 1655,
+            "eat": 501,
+            "move": 632,
+            "train": 1305,
+            "gather": 2792,
+            "build": 1240,
+            "cook": 1219,
+            "rest": 1409,
+            "paired": 353,
+            "talk": 685,
+            "sleep": 209
+          },
+          "switches": 95,
+          "blocked": 1324,
+          "repicks": 1,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": 1
+        },
+        "child": {
+          "kinds": {
+            "idle": 6381,
+            "eat": 758,
+            "move": 3212,
+            "encourage": 761,
+            "sleep": 534,
+            "paired": 354
+          },
+          "switches": 374,
+          "blocked": 1569,
+          "repicks": 12,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 158,
+            "eat": 958,
+            "cook": 1205,
+            "rest": 1617,
+            "build": 2880,
+            "paired": 739,
+            "train": 3912,
+            "sleep": 531
+          },
+          "switches": 14,
+          "blocked": 621,
+          "repicks": 1,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": null
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "linghu",
+      "scenario": "P2",
+      "autonomy": true,
+      "critical": 954,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 1066,
+            "eat": 501,
+            "move": 443,
+            "train": 2597,
+            "gather": 2792,
+            "build": 900,
+            "cook": 1219,
+            "rest": 1359,
+            "paired": 303,
+            "sleep": 466,
+            "talk": 354
+          },
+          "switches": 63,
+          "blocked": 934,
+          "repicks": 1,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": 2
+        },
+        "child": {
+          "kinds": {
+            "idle": 5925,
+            "eat": 758,
+            "move": 3514,
+            "encourage": 711,
+            "paired": 586,
+            "sleep": 506
+          },
+          "switches": 348,
+          "blocked": 1888,
+          "repicks": 13,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 141,
+            "eat": 958,
+            "cook": 1205,
+            "rest": 1638,
+            "build": 2800,
+            "paired": 408,
+            "talk": 232,
+            "train": 4234,
+            "sleep": 384
+          },
+          "switches": 13,
+          "blocked": 1447,
+          "repicks": 2,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 2
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "linghu",
+      "scenario": "P3",
+      "autonomy": false,
+      "critical": 981,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 3,
+            "sleep": 11997
+          },
+          "switches": 1,
+          "blocked": 0,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": null
+        },
+        "child": {
+          "kinds": {
+            "idle": 8180,
+            "eat": 518,
+            "move": 2136,
+            "paired": 831,
+            "sleep": 335
+          },
+          "switches": 475,
+          "blocked": 2,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 148,
+            "eat": 718,
+            "cook": 1205,
+            "gather": 1303,
+            "talk": 831,
+            "train": 5588,
+            "rest": 1438,
+            "sleep": 769
+          },
+          "switches": 14,
+          "blocked": 289,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 1
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "linghu",
+      "scenario": "P3",
+      "autonomy": true,
+      "critical": 981,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 3,
+            "sleep": 11997
+          },
+          "switches": 1,
+          "blocked": 0,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": null
+        },
+        "child": {
+          "kinds": {
+            "idle": 8180,
+            "eat": 518,
+            "move": 2136,
+            "paired": 831,
+            "sleep": 335
+          },
+          "switches": 475,
+          "blocked": 2,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 148,
+            "eat": 718,
+            "cook": 1205,
+            "gather": 1303,
+            "talk": 831,
+            "train": 5588,
+            "rest": 1438,
+            "sleep": 769
+          },
+          "switches": 14,
+          "blocked": 289,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 1
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "linghu",
+      "scenario": "P4",
+      "autonomy": false,
+      "critical": 954,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 1679,
+            "eat": 501,
+            "move": 1221,
+            "train": 2953,
+            "gather": 2717,
+            "paired": 808,
+            "rest": 1003,
+            "sleep": 763,
+            "talk": 355
+          },
+          "switches": 97,
+          "blocked": 423,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 2953,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": 2
+        },
+        "child": {
+          "kinds": {
+            "idle": 6115,
+            "eat": 758,
+            "move": 3552,
+            "paired": 701,
+            "sleep": 521,
+            "encourage": 353
+          },
+          "switches": 358,
+          "blocked": 1823,
+          "repicks": 35,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 191,
+            "eat": 958,
+            "cook": 2379,
+            "rest": 1586,
+            "gather": 1479,
+            "talk": 801,
+            "train": 3901,
+            "sleep": 705
+          },
+          "switches": 14,
+          "blocked": 740,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 0
+        }
+      },
+      "invariants": 0
+    },
+    {
+      "template": "linghu",
+      "scenario": "P4",
+      "autonomy": true,
+      "critical": 369,
+      "people": {
+        "leader": {
+          "kinds": {
+            "idle": 3480,
+            "eat": 501,
+            "move": 1259,
+            "cook": 2416,
+            "rest": 1061,
+            "gather": 1299,
+            "talk": 1039,
+            "paired": 372,
+            "sleep": 573
+          },
+          "switches": 23,
+          "blocked": 46,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": 1
+        },
+        "child": {
+          "kinds": {
+            "idle": 4648,
+            "eat": 758,
+            "move": 3997,
+            "paired": 1852,
+            "encourage": 224,
+            "sleep": 521
+          },
+          "switches": 279,
+          "blocked": 2269,
+          "repicks": 20,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": true,
+          "talkTrustMean": null
+        },
+        "amu": {
+          "kinds": {
+            "idle": 129,
+            "eat": 960,
+            "talk": 1517,
+            "gather": 2780,
+            "paired": 556,
+            "train": 4161,
+            "rest": 1133,
+            "sleep": 764
+          },
+          "switches": 17,
+          "blocked": 546,
+          "repicks": 0,
+          "interventions": 0,
+          "maxedPunchTrain": 0,
+          "backToGoalAt": null,
+          "ateToday": false,
+          "talkTrustMean": 2
+        }
+      },
+      "invariants": 0
+    }
+  ]
+}

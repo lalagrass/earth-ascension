@@ -1,0 +1,42 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 40.604,
+  "errors": [],
+  "steps": [
+    {
+      "label": "card-sample",
+      "wallSeconds": 39.94,
+      "tick": 3032
+    },
+    {
+      "label": "done",
+      "wallSeconds": 40.604,
+      "tick": 3032
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "samples": [
+      {
+        "id": "leader",
+        "tick": 3032,
+        "text": "現在 搬運 · 水 4\n原因 接單時：補給地板優先：補水\n目標來源 補給地板＋職務加成\n接著 交到目的料堆／倉位才算貢獻\n作業位 膳房水缸\n練拳\n坐休\n吃飯\n停工"
+      },
+      {
+        "id": "amu",
+        "tick": 3032,
+        "text": "現在 烹調 · 2秒\n原因 接單時：缺餐備糧\n目標來源 工作時段＋職務加成\n接著 煮好後搬餐上桌\n作業位 膳房爐灶\n練拳\n坐休\n吃飯\n停工"
+      }
+    ],
+    "adopted": "自主生活 v1：閒暇依關係找人；顧人的人會照料受傷同門；做不成的事冷卻加倍、不反覆；武學練滿就不再空練。",
+    "start": {
+      "tick": 19,
+      "speed": 4
+    }
+  }
+}
