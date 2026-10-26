@@ -235,9 +235,9 @@
       fallback: { combo: '你憑自己的判斷行事。', suggestion: '依你的判斷選擇最合適的做法。', line: '「我想好了。」' },
     },
     templates: {
-      'herb-child': { origin: 'new-in-this-version', label: '採藥童', blurb: '從小在山邊採藥，眼力與手藝都不錯。' },
-      'farmer-child': { origin: 'new-in-this-version', label: '農家子', blurb: '在田裡長大，身子結實，肯吃苦。' },
-      'dojo-apprentice': { origin: 'new-in-this-version', label: '道館學徒', blurb: '在道館裡長大，讀得進拳經口訣。' },
+      'herb-child': { origin: 'new-in-this-version', label: '採藥童', blurb: '從小在山邊採藥，眼力與手藝都不錯。', background: '山邊長大，認得常見藥草，手腳穩，還沒走出這座山。出身只說明生活，開局能做什麼仍只看規則裡的模板。' },
+      'farmer-child': { origin: 'new-in-this-version', label: '農家子', blurb: '在田裡長大，身子結實，肯吃苦。', background: '田裡長大，習慣早起和粗活。介紹不另寫力氣或收成，配點與最終能力以畫面上的規則為準。' },
+      'dojo-apprentice': { origin: 'new-in-this-version', label: '道館學徒', blurb: '在道館裡長大，讀得進拳經口訣。', background: '在道館裡識字、跟拳，聽得進口訣。這段不承諾已經學會哪一門武功。' },
     },
   };
   const STORY_DATA = deepFreeze(DATA);
@@ -373,6 +373,7 @@
     for (const t of Object.keys(data.templates || {})) {
       add(`templates.${t}.label`, data.templates[t].label);
       add(`templates.${t}.blurb`, data.templates[t].blurb);
+      add(`templates.${t}.background`, data.templates[t].background);
     }
     return out;
   }

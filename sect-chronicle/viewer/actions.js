@@ -389,9 +389,10 @@
   function characterChoices(Rules, StoryData) {
     const L = Rules.CHARACTER_OPTION_LIMITS;
     return {
-      templates: Object.keys(L.templates).map((id) => ({
-        id, label: StoryData.STORY_DATA.templates[id] ? StoryData.STORY_DATA.templates[id].label : id, base: Object.assign({}, L.templates[id]),
-      })),
+      templates: Object.keys(L.templates).map((id) => {
+        const story = StoryData.STORY_DATA.templates[id] || {};
+        return { id, label: story.label || id, blurb: story.blurb || '', background: story.background || '', base: Object.assign({}, L.templates[id]) };
+      }),
       attributes: Object.keys(ATTRIBUTE_NAMES).map((k) => ({ key: k, label: ATTRIBUTE_NAMES[k] })),
       freePoints: L.freePoints, min: L.attributeMin, max: L.attributeMax,
       personality: {

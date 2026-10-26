@@ -1,6 +1,7 @@
 import { card, field, missing } from './contract.mjs';
 import { officialMartial } from '../martial-view/official.mjs';
 import { portrait } from './portrait.mjs';
+import { profileForBranchActor } from './profiles.mjs';
 export const GEMINI_SHA = 'bae43412dced2a2f0d9d82008d5cdf8b3acfb8f9';
 export const OFFICIAL_SHA = '95402dcaf6adff4b39a799c930af58c536273b6a';
 export function geminiCard(model, actorId, { fixed = false, identity = {} } = {}) {
@@ -31,6 +32,7 @@ export function geminiCard(model, actorId, { fixed = false, identity = {} } = {}
   }
   if (!persona) fields.push(field('innate', null, { source, layer: 'innate', availability: 'unsupported' }));
   return card({ branch, sha, actorId, identity: { name: identity.name || actorId, role: identity.role || '原 worker', portrait: portrait(branch,actorId) },
+    profile: profileForBranchActor(branch, actorId),
     action: { id: tea ? 'tea' : training ? 'train' : p.job, current: tea ? tea.now : training ? t.now : p.status,
       phase: tea ? tea.mode || 'pending' : p.phase?.name || p.mode, reason: field('action.reason', reason || null, { source: tea ? `${source}:view.teaEvents.${teaCause?.kind || 'missing'}` : source }),
       next: tea ? teaCancelled ? null : tea.next : p.next, target: tea ? tea.mode === 'fromTea' ? '院中' : '茶座' : training ? `${t.units}／${t.max} 單位` : p.jobLabel,

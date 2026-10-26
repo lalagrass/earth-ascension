@@ -8,6 +8,8 @@ One detached view: `identity`, `action`, `fields`, `martial`, `commands`. All fi
 
 `render.mjs` renders all three cards. The official watercolor entry uses its identity/action/field components; its existing command panel, actual progress and martial reports remain. No parallel player entry is added. `checks/harness.html` is developer-only, imports the real Grok core and shared renderer, and uses native nodes/edges/actor positions. Its buttons advance the original 0.25-second core, never a second simulation.
 
+Public introductions live in `profiles.mjs`: a short line and an expandable background. Official life cards for `hero` and `cousin` show them. The adopted girl has a profile and still has no production portrait. Classic and film samples render only on `showcase.html`, which is not character creation. Opening blurbs stay in `js/story-data.js` and are not copied into the save.
+
 Portrait registry deliberately contains no approved production portraits. Missing art is a clear named placeholder; #343's static previews are not runtime assets. In particular there is no Li Mochou → child/cousin mapping. Future approved records must use the exact branch/actor key plus portraitAssetId/source/crop; no arbitrary same-name fallback.
 
 Gemini innate numeric values are conservatively masked pending an explicit visibility contract. Persona traits, heart seals and perks are never sent to this UI. This does not assert Gemini's agreement.

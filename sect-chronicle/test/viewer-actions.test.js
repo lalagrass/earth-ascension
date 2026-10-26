@@ -210,4 +210,9 @@ test('畫面自己的拒絕有中文說明；引擎的拒絕沿用引擎原因',
   const c = Actions.characterChoices(Rules, StoryData);
   assert.deepEqual(c.templates.map((t) => t.id), Object.keys(Rules.CHARACTER_OPTION_LIMITS.templates));
   assert.equal(c.freePoints, 3);
+  for (const t of c.templates) {
+    assert.equal(t.blurb, StoryData.STORY_DATA.templates[t.id].blurb);
+    assert.equal(t.background, StoryData.STORY_DATA.templates[t.id].background);
+    assert.doesNotMatch(`${t.blurb}${t.background}`, /[0-9０-９]/);
+  }
 });
