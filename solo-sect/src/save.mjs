@@ -43,6 +43,7 @@ export const MIGRATIONS = [
   { to: '1.8', note: '成親：心上人唯一、喜事冷卻', up(o) { const by = (id) => o.ds.find((d) => d.id === id); for (const c of o.gen?.couples || []) { const [a, b] = c.map(by); if (a && b) { a.sweet = b.id; b.sweet = a.id; } } for (const k of o.families || []) { const [a, b] = k.split('|').map(by); if (a && b && !a.sweet && !b.sweet) { a.sweet = b.id; b.sweet = a.id; } } if (o.gen) o.gen.lastWed ??= o.t; } },
   { to: '1.85', note: '錢有出口：月俸／維護從讀檔後下一個結算日起算（給 5 日寬限），市集、義學狀態', up(o) { o.econ ??= { warn: 0, left: 0, misses: 0, paid: 0, disrepair: false, lastBill: null, market: { cycle: -1, sold: {} }, school: null, schoolN: 0, pool: [] }; o.econ.graceUntil ??= (o.day || 0) + 5; } },
   { to: '1.9', note: '三四階建築要名聲＋稀有料（鐵木、靈石）；v1.6 建築佔地（舊檔已蓋的照算，地塊至少 4）；山賊勒索從讀檔後第 8 日起', up(o) { o.res ??= {}; o.res.tiemu ??= 0; o.res.lingshi ??= 0; const used = Object.entries(o.fac || {}).filter(([k, v]) => ['library', 'quiet', 'shrine', 'alchemy', 'clinic', 'guest', 'well', 'bell', 'watch'].includes(k) && (v.stage > 0 || v.site)).length; o.lots ??= { n: Math.max(4, used), bought: 0 }; o.threat ??= { next: (o.day || 0) + 8, n: 0, paid: 0, fought: 0, won: 0, homeHurt: 0, deaths: 0, pending: null, rng: 0, hist: [] }; } },
+  { to: '1.95', note: '生態：各環族群上限隨巢穴與擊殺壓力變動、會回升；回補進度歸零重算', up(o) { for (const e of Object.values(o.pop || {})) { e.t = 0; e.kp ??= 0; e.den ??= 0; } } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

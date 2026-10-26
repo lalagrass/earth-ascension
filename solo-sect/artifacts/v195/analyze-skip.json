@@ -1,0 +1,163 @@
+{
+ "d30": {
+  "n": 35,
+  "ok": 35,
+  "maxStages": 22,
+  "topDayMedian": 31,
+  "toppedBy30": 0,
+  "builtFrac10": 0.55,
+  "builtFrac20": 0.6,
+  "stillBuildable25": 35,
+  "lotsBoughtAvg": 1.2,
+  "rareEnd": {
+   "tiemu": 17.69,
+   "lingshi": 18.66
+  },
+  "raidsAvg": 4.29,
+  "homeHurtAvg": 1.83,
+  "homeHurtRange": [
+   0,
+   3
+  ],
+  "deaths": 0,
+  "raidedCases": 35,
+  "paidCases": 31,
+  "payShare": 0.4,
+  "styles": {
+   "dash": 166,
+   "clear": 20,
+   "slip": 59,
+   "steady": 45
+  },
+  "coinRatioAvg": 0.87,
+  "coinRatioMax": 2.85,
+  "coinRatioAgg": 0.67,
+  "over2": [
+   "plain7",
+   "weixiaobao7",
+   "plain17"
+  ],
+  "bankrupt": 0,
+  "missesAvg": 0.86,
+  "starve5": 0.14,
+  "couplesMax": 5,
+  "couplesAvg": 4.2,
+  "yue1600": "3/5",
+  "guo1600": "0/5",
+  "guojing": "3:1581 7:700 11:656 17:1480 23:1320",
+  "bestAvg": 1353.49,
+  "plainDs": "12 12 12 12 12",
+  "plainBest": "482 515 551 515 515",
+  "coinEnd": 115.03,
+  "eco": {
+   "casesLow": "35/35",
+   "casesLowAndRecover": "35/35",
+   "recDaysMedian": 2.64,
+   "recDaysMax": 14.92,
+   "notRecovered": [
+    "cave",
+    "peak"
+   ],
+   "ringsHitZero": 92,
+   "rings": {
+    "foot": {
+     "low": 35,
+     "razed": 121
+    },
+    "wood": {
+     "low": 35,
+     "razed": 123
+    },
+    "slope": {
+     "low": 34,
+     "razed": 134
+    },
+    "gorge": {
+     "low": 30,
+     "razed": 87
+    },
+    "cliff": {
+     "low": 23,
+     "razed": 99
+    },
+    "cave": {
+     "low": 22,
+     "razed": 90
+    },
+    "peak": {
+     "low": 21,
+     "razed": 71
+    }
+   }
+  }
+ },
+ "d60": {
+  "n": 35,
+  "ok": 35,
+  "topSnapMedian": 61,
+  "toppedBy60": 0,
+  "raidsAvg": 9.23,
+  "homeHurtAvg": 4.31,
+  "deathsThreat": 0,
+  "departures": 5,
+  "paidCases": 35,
+  "coin60over10": 1.65,
+  "coin30over10": 0.93,
+  "bankrupt": 0,
+  "missesAvg": 0.74,
+  "foodLowDays": 0.99,
+  "couplesMax": 5,
+  "yue1600": "5/5",
+  "guo1600": "4/5",
+  "plainDs": "12 12 12 12 12",
+  "bestAvg": 1641.09,
+  "coinEnd": 172.26,
+  "styles": {
+   "dash": 256,
+   "clear": 95,
+   "slip": 219,
+   "steady": 95
+  },
+  "payShare60": 0.4,
+  "builtFrac60": 0.84,
+  "builtFracMax60": 0.95,
+  "eco": {
+   "casesLow": "35/35",
+   "casesLowAndRecover": "35/35",
+   "recDaysMedian": 2.67,
+   "recDaysMax": 32.88,
+   "notRecovered": [],
+   "ringsHitZero": 114,
+   "rings": {
+    "foot": {
+     "low": 35,
+     "razed": 223
+    },
+    "wood": {
+     "low": 35,
+     "razed": 233
+    },
+    "slope": {
+     "low": 35,
+     "razed": 253
+    },
+    "gorge": {
+     "low": 31,
+     "razed": 170
+    },
+    "cliff": {
+     "low": 28,
+     "razed": 222
+    },
+    "cave": {
+     "low": 28,
+     "razed": 212
+    },
+    "peak": {
+     "low": 28,
+     "razed": 191
+    }
+   }
+  }
+ }
+}

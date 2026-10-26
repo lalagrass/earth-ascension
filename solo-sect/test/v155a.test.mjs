@@ -36,7 +36,7 @@ test('合併敵人表：MONSTERS 由 ENEMIES 產生，數值與舊表一致；�
 test('各環族群：無亂數回補、巡山擊倒會扣、存檔增量 < 1KB、舊檔讀入自動補', () => {
   const s = createState(5); tick(s); assert.deepEqual(Object.keys(s.pop), ROUTE.map((g) => g.id)); const n0 = s.rngN;
   s.pop.foot.n = 0; W.popStep(s, W.POP.foot.regen); assert.equal(s.pop.foot.n, 1); assert.equal(s.rngN, n0);
-  W.popKill(s, 'wood', 2); assert.equal(s.pop.wood.n, W.POP.wood.start - 2);
+  const w0 = s.pop.wood.n; W.popKill(s, 'wood', 2); assert.equal(s.pop.wood.n, w0 - 2); // v1.95：popStep 會讓林地繁殖（logistic），改比扣前數
   assert.ok(JSON.stringify(s.pop).length < 1024);
   const o = JSON.parse(save(s)); delete o.pop; const r = load(JSON.stringify(o)); assert.ok(r.ok); tick(r.state); assert.ok(r.state.pop.peak.n > 0);
 });

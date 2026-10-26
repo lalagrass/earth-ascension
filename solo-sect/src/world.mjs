@@ -1,6 +1,6 @@
 // v1.55a 同圖延伸：世界座標、7 環、巢點與山徑、各環族群、獸襲下山（演出）、鏡頭邊界、256px 區塊
 // 原則：權威模擬不看鏡頭；這裡只有 popStep 會寫狀態，而且不用亂數。
-import { ROUTE, NODES, ENEMIES, RAID_EVERY } from './data.mjs';
+import { ROUTE, NODES, ENEMIES, RAID_EVERY, DAY } from './data.mjs';
 export const WORLD = { w: 6400, h: 4800 };
 export const HOME = { x: 0, y: 3900, w: 1600, h: 900 }; // 門派地圖放左下角
 export const CHUNK = 256;
@@ -36,9 +36,20 @@ export function partyPos(s) { const X = s.exp; if (!X) return null; const d = X.
 export const partyDist = (s) => { const X = s.exp; return X ? (X.phase === 'back' ? (X.backPos ?? X.dist) : X.dist) : null; };
 // ---- 各環族群：開局值＝名單權重×3；無亂數定時回補；巡山擊倒扣該環 ----
 export const POP = Object.fromEntries(ROUTE.map((g) => { const n = g.roster.reduce((a, [, w]) => a + w, 0) * 3; return [g.id, { start: n, max: Math.ceil(n * 1.5), regen: g.every * 6 }]; }));
-export const initPop = () => Object.fromEntries(Object.entries(POP).map(([k, p]) => [k, { n: p.start, t: 0 }]));
-export function popStep(s, dt) { const P = (s.pop ??= initPop()); for (const [k, p] of Object.entries(POP)) { const e = (P[k] ??= { n: p.start, t: 0 }); if (e.n < p.max) { e.t += dt; if (e.t >= p.regen) { e.n++; e.t = 0; } } else e.t = 0; } }
-export function popKill(s, id, n = 1) { const e = s.pop?.[id]; if (e) e.n = Math.max(0, e.n - n); }
+// v1.95 I-7 生態：上限＝基本上限×(巢被搗 ? 0.5 : 1)×(1−擊殺壓力)；回補＝遷入（巢在 1、巢毀 0.3）＋繁殖（n/cap·(1−n/cap)·4·br）每 regen 秒一隻的倍數；超過上限時每 regen 秒少一隻。
+// 擊殺壓力：每隻 +kill，每日 ×decay，影響上限最多 killMax。巢：同一趟在該環擊倒 ≥denAt 隻→搗巢，上限減半 denDays 日，之後巢重築（清過不等於永久安全）。全程無亂數。
+export const ECO2 = { immig: 1, immigNoDen: 0.5, br: 2, kill: 0.02, killMax: 0.3, decay: 0.85, denAt: 4, denDays: 5, denCut: 0.5 };
+export const initPop = () => Object.fromEntries(Object.entries(POP).map(([k, p]) => [k, { n: p.start, t: 0, kp: 0, den: 0 }]));
+const DAYS = DAY;
+export const denDown = (s, k) => (s.pop?.[k]?.den || 0) > s.t;
+export function capOf(s, k) { const e = s.pop?.[k], p = POP[k]; if (!e || !p) return 0; return Math.max(1, p.max * (denDown(s, k) ? ECO2.denCut : 1) * (1 - Math.min(ECO2.killMax, e.kp || 0))); }
+export function popStep(s, dt) { const P = (s.pop ??= initPop()); for (const [k, p] of Object.entries(POP)) { const e = (P[k] ??= { n: p.start, t: 0, kp: 0, den: 0 }); e.kp = (e.kp || 0) * ECO2.decay ** (dt / DAYS);
+  const cap = capOf(s, k), x = e.n / cap; let r;
+  if (e.n > cap) r = -1; else if (e.n >= Math.floor(cap)) r = 0; else r = (denDown(s, k) ? ECO2.immigNoDen : ECO2.immig) + ECO2.br * 4 * x * (1 - x);
+  if (!r || (r > 0) !== (e.t >= 0)) e.t = 0; if (!r) continue; e.t += (dt / p.regen) * r; // 方向改變時進度歸零
+  while (e.t >= 1) { e.n++; e.t -= 1; } while (e.t <= -1 && e.n > 0) { e.n--; e.t += 1; } e.lo = Math.min(e.lo ?? 1, e.n / p.max); } }
+export function popKill(s, id, n = 1) { const e = s.pop?.[id]; if (e) { e.n = Math.max(0, e.n - n); e.kp = (e.kp || 0) + ECO2.kill * n; e.lo = Math.min(e.lo ?? 1, e.n / (POP[id]?.max || 1)); } }
+export function denRaze(s, id) { const e = s.pop?.[id]; if (!e || denDown(s, id)) return false; e.den = s.t + ECO2.denDays * DAYS; e.razed = (e.razed || 0) + 1; return true; }
 // ---- 獸襲下山（演出）：權威獸襲仍在 raidT 到點時從 den 出現；之前 DESC 秒，畫面上讓牠從所屬環巢點沿山徑走到 den ----
 export const DESC = 20;
 export function raidDescent(s, mul = 1) { const T = RAID_EVERY * mul; if (s.hunt || !(s.eco?.boar?.n > 0) || s.mons?.some((m) => m.raid) || s.raidT < T - DESC) return null;
