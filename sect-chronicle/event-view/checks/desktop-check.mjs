@@ -25,6 +25,7 @@ try{
  await page.click('#panel [data-tab="martial"]');check((await page.locator('.public-martial').innerText()).includes('已學既有第一式'),'original learned palm remains visible');await page.click('#panel [data-tab="life"]');
  await page.click('#panel [data-event-filter="work"]');assert.deepEqual(await page.evaluate(()=>demo.exportState()),before);result.checks.push('paused cards and event filter leave authority unchanged');
  // Facility commands are the same native commands introduced in #349.
+ await page.click('#p-cmds [data-cmd="restAfterTrip"]');
  await facility('vat');await page.click('#menu [data-cmd="work:water"]');
  await page.click('#roster [data-person="cousin"]');await facility('rack');await page.click('#menu [data-cmd="work:herb"]');
  let s=await snap();check(s.tick===0&&s.people.cousin.done.herb===0,'facility reassignment at pause neither moves nor delivers');
