@@ -1,30 +1,57 @@
 {
   "schemaVersion": 1,
   "id": "advanced",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": "進階三式",
   "people": {},
   "moves": {
     "advanced.closefist": {
-      "name": "貼身短拳",
-      "description": "熟練30就能更快出手、更快收手；但只打得到14DU內、比直拳輕。深修的直拳仍同樣快且打得更遠。",
+      "name": "短打快拳",
+      "description": "熟練30就能比直拳更快出手、更快收手；傷害較輕（6對8），距離與直拳相同。深修90的直拳時序相近且更重，低悟性深修不被淘汰。",
       "base": "punch",
-      "wind": 10, "active": 2, "recover": 8, "range": 14, "width": 8, "damage": 6, "cost": 260,
-      "requires": { "U": 5, "F": 30 }
+      "wind": 10,
+      "active": 2,
+      "recover": 8,
+      "range": 18,
+      "width": 8,
+      "damage": 6,
+      "cost": 260,
+      "requires": {
+        "U": 5,
+        "F": 30
+      }
     },
     "advanced.barstaff": {
       "name": "攔路棍",
       "description": "比棍掃起手快、省力，仍可同時掃到三人；距離較短，兩側要淨空，窄處一樣起不了手。",
       "base": "sweep",
-      "wind": 20, "active": 3, "recover": 20, "range": 28, "width": 28, "damage": 6, "cost": 450,
-      "requires": { "U": 8, "F": 18 }
+      "wind": 20,
+      "active": 3,
+      "recover": 20,
+      "range": 28,
+      "width": 28,
+      "damage": 6,
+      "cost": 450,
+      "requires": {
+        "U": 8,
+        "F": 18
+      }
     },
     "advanced.reachthrust": {
       "name": "前探長刺",
       "description": "打得最遠（38DU），但判定最窄、起手與收勢都長；對方側步就容易落空。",
       "base": "thrust",
-      "wind": 24, "active": 2, "recover": 24, "range": 38, "width": 4, "damage": 9, "cost": 350,
-      "requires": { "U": 8, "F": 18 }
+      "wind": 24,
+      "active": 2,
+      "recover": 24,
+      "range": 38,
+      "width": 4,
+      "damage": 9,
+      "cost": 350,
+      "requires": {
+        "U": 8,
+        "F": 18
+      }
     }
   },
   "events": {},

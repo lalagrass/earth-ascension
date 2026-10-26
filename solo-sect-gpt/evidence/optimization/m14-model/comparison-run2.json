@@ -1,0 +1,226 @@
+{
+  "prereg": "docs/optimization/M14.md",
+  "source": "labeled model fixtures; moves learned by real study/equipment; one deterministic 600-tick safe spar per cell",
+  "wallSeconds": 2.64,
+  "directions": {
+    "S1_closefistMoreActions": false,
+    "S2_reachFartherHits": true,
+    "S2_reachMissRateNotLower": true,
+    "S3_narrowOnlyPunches": true,
+    "S3_openBarstaffCheaperPerAction": true
+  },
+  "rows": [
+    {
+      "scenario": "S1-close-quick",
+      "weapon": "punch",
+      "prefer": "(core)",
+      "opp": "quick",
+      "narrow": false,
+      "actions": {
+        "punch": 7
+      },
+      "hits": 7,
+      "misses": 0,
+      "received": 6,
+      "hitDistances": [
+        22,
+        22,
+        22,
+        22,
+        22,
+        22,
+        22
+      ],
+      "firstHit": 54,
+      "totalActions": 7,
+      "energySpent": 1432,
+      "missRate": 0,
+      "meanHitDistance": 22,
+      "energyPerAction": 205,
+      "ticks": 354,
+      "invariants": 0
+    },
+    {
+      "scenario": "S1-close-quick",
+      "weapon": "punch",
+      "prefer": "advanced.closefist",
+      "opp": "quick",
+      "narrow": false,
+      "actions": {},
+      "hits": 0,
+      "misses": 0,
+      "received": 7,
+      "hitDistances": [],
+      "firstHit": null,
+      "totalActions": 0,
+      "energySpent": 37,
+      "missRate": 0,
+      "meanHitDistance": null,
+      "energyPerAction": null,
+      "ticks": 173,
+      "invariants": 0
+    },
+    {
+      "scenario": "S2-long-side",
+      "weapon": "sword",
+      "prefer": "(core)",
+      "opp": "side",
+      "narrow": false,
+      "actions": {
+        "thrust": 7
+      },
+      "hits": 7,
+      "misses": 0,
+      "received": 7,
+      "hitDistances": [
+        36,
+        21,
+        20,
+        20,
+        20,
+        20,
+        21
+      ],
+      "firstHit": 161,
+      "totalActions": 7,
+      "energySpent": 2146,
+      "missRate": 0,
+      "meanHitDistance": 22.6,
+      "energyPerAction": 307,
+      "ticks": 461,
+      "invariants": 0
+    },
+    {
+      "scenario": "S2-long-side",
+      "weapon": "sword",
+      "prefer": "advanced.reachthrust",
+      "opp": "side",
+      "narrow": false,
+      "actions": {
+        "advanced.reachthrust": 8
+      },
+      "hits": 1,
+      "misses": 0,
+      "received": 7,
+      "hitDistances": [
+        32
+      ],
+      "firstHit": 166,
+      "totalActions": 8,
+      "energySpent": 2836,
+      "missRate": 0,
+      "meanHitDistance": 32,
+      "energyPerAction": 355,
+      "ticks": 338,
+      "invariants": 0
+    },
+    {
+      "scenario": "S3-narrow",
+      "weapon": "staff",
+      "prefer": "(core)",
+      "opp": "plain",
+      "narrow": true,
+      "actions": {
+        "punch": 8
+      },
+      "hits": 7,
+      "misses": 1,
+      "received": 0,
+      "hitDistances": [
+        13,
+        14,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "firstHit": 36,
+      "totalActions": 8,
+      "energySpent": 1600,
+      "missRate": 0.13,
+      "meanHitDistance": 12.4,
+      "energyPerAction": 200,
+      "ticks": 181,
+      "invariants": 0
+    },
+    {
+      "scenario": "S3-narrow",
+      "weapon": "staff",
+      "prefer": "advanced.barstaff",
+      "opp": "plain",
+      "narrow": true,
+      "actions": {
+        "punch": 8
+      },
+      "hits": 7,
+      "misses": 1,
+      "received": 0,
+      "hitDistances": [
+        13,
+        14,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "firstHit": 36,
+      "totalActions": 8,
+      "energySpent": 1600,
+      "missRate": 0.13,
+      "meanHitDistance": 12.4,
+      "energyPerAction": 200,
+      "ticks": 181,
+      "invariants": 0
+    },
+    {
+      "scenario": "S3-open",
+      "weapon": "staff",
+      "prefer": "(core)",
+      "opp": "plain",
+      "narrow": false,
+      "actions": {
+        "sweep": 8
+      },
+      "hits": 1,
+      "misses": 0,
+      "received": 7,
+      "hitDistances": [
+        13
+      ],
+      "firstHit": 61,
+      "totalActions": 8,
+      "energySpent": 4009,
+      "missRate": 0,
+      "meanHitDistance": 13,
+      "energyPerAction": 501,
+      "ticks": 244,
+      "invariants": 0
+    },
+    {
+      "scenario": "S3-open",
+      "weapon": "staff",
+      "prefer": "advanced.barstaff",
+      "opp": "plain",
+      "narrow": false,
+      "actions": {
+        "advanced.barstaff": 8
+      },
+      "hits": 1,
+      "misses": 0,
+      "received": 7,
+      "hitDistances": [
+        28
+      ],
+      "firstHit": 59,
+      "totalActions": 8,
+      "energySpent": 3610,
+      "missRate": 0,
+      "meanHitDistance": 28,
+      "energyPerAction": 451,
+      "ticks": 229,
+      "invariants": 0
+    }
+  ]
+}
