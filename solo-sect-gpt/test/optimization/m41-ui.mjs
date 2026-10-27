@@ -1,0 +1,18 @@
+import assert from'node:assert/strict';import{launch}from'./ui-kit.mjs';
+// Normal-UI M41: a joint drill fought out to its natural end; pause while it is exiting, 沈禾 punches at the air, then play to the review.
+// The review counts only up to the freeze recorded at the natural end (read from the paused snapshot), not the punch. Usage: node m41-ui.mjs <label> <w> <h>
+const [label='initial',width='1440',height='900']=process.argv.slice(2),k=await launch('m41-ui-'+label+'-'+width,{width:Number(width),height:Number(height)}),page=k.page,story={};
+const demo=new URL('../../evidence/optimization/m36/showcase-m31-m36.save.json',import.meta.url).pathname;
+const life=async id=>{await k.person(id);await k.click('[data-person-tab="life"]');};
+let failure=null;
+try{await k.open();await k.newGame();await k.importSave(demo);await k.calm();
+ for(const id of['amu','shen']){let w=await k.snap();const p=w.people[id];if(p.hp<p.maxHp*.8||p.injury>30){await life(id);await k.click('#p-cmds [data-task="rest"]');await k.until(x=>x.people[id].hp>=x.people[id].maxHp*.8&&x.people[id].injury<=30,'rest-'+id,600000);await life(id);await k.click('#p-cmds [data-action="stop"]');}}
+ await k.tab('travel');for(const el of await page.locator('[data-joint-role]').all()){const id=await el.getAttribute('data-joint-role');await el.selectOption({amu:'front',shen:'front'}[id]||'');}await page.locator('#joint-arrival').selectOption('together');await k.click('[data-joint-start="A"]');
+ let w=await k.until(x=>{const d=x.drill,j=d.joint;return d.actors.every(id=>{const p=x.people[id],at=j.points[id];return p.routeAt>=p.path.length&&Math.hypot(p.x/256-at[0],p.y/256-at[1])<=6;});},'assembled',120000,1);await k.tab('travel');await k.click('[data-joint-go]');
+ w=await k.until(x=>x.drill.status==='exiting'||x.drill.joint.reviewed,'exiting',600000,1);assert.equal(w.drill.status,'exiting','paused while the drill is exiting');const start=w.drill.joint.body.shen.energy,frozen=w.drill.joint.bodyAt?.shen;story.exit={tick:w.tick,closedAt:w.drill.joint.closedAt,start,frozen,energy:w.people.shen.energy,session:w.people.shen.combatSession??null};assert.ok(frozen,'frozen at the natural end');assert.equal(story.exit.session,null);await k.shot('01-exiting');
+ await life('shen');await k.click('[data-person-tab="martial"]');await k.click('[data-person-art="punch"]');await k.click('[data-person-move="punch"]');await k.click('#move-detail [data-content-attack]');w=await k.snap();story.punch={tick:w.tick,energy:w.people.shen.energy};assert.equal(story.punch.tick,story.exit.tick,'same paused tick');assert.ok(story.punch.energy<story.exit.energy,'the punch spent energy');await k.shot('02-punch');
+ w=await k.until(x=>x.drill.joint.reviewed,'reviewed',300000,1);story.review=w.jointDrill.history.at(-1);assert.equal(story.review.body.shen.energyUsed,start-frozen.energy);assert.ok(story.review.body.shen.energyUsed<start-story.punch.energy,'the punch is not in the review');
+ await life('shen');await k.tab('travel');story.reviewText=await page.locator('#joint-review').innerText();story.shown=Number(story.reviewText.match(/沈禾（前攔）[^\n]*耗精力(\d+)/)?.[1]);assert.equal(story.shown,Math.round((start-frozen.energy)/100));await page.locator('#joint-review').scrollIntoViewIfNeeded();await k.shot('03-review');
+ await k.log('done',{exit:story.exit,punch:story.punch,used:story.review.body.shen.energyUsed});
+}catch(e){failure=e.stack;await k.shot('failure').catch(()=>{});}
+const s=await k.finish({label,viewport:[width,height],failure,story});console.log(failure?'FAILED':'PASSED',s.wallSeconds);if(failure){console.error(failure);process.exit(1);}

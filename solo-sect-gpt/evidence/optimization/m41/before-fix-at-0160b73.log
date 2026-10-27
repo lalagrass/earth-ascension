@@ -1,0 +1,105 @@
+✖ M41 a naturally finished drill freezes at the exit, with no command at all (2242.447917ms)
+✖ M41 a punch in the exit tick, and life afterwards, do not count (1852.972042ms)
+✖ M41 one member leaves by hand, the other finishes naturally: each keeps their own cut-off (1930.570542ms)
+✖ M41 saved in the exit tick before any command: the loaded game goes on the same way (2169.209833ms)
+✖ M41 an old exiting file without the freeze loads and is cut at its first tick after loading (1837.357875ms)
+✔ M41 report (3.124459ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 1
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10182.273917
+
+✖ failing tests:
+
+test at test/optimization/m41.test.mjs:13:1
+✖ M41 a naturally finished drill freezes at the exit, with no command at all (2242.447917ms)
+  AssertionError [ERR_ASSERTION]: amu
+  
+  1839 !== 1837
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m41.test.mjs:14:39)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1839,
+    expected: 1837,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m41.test.mjs:15:1
+✖ M41 a punch in the exit tick, and life afterwards, do not count (1852.972042ms)
+  AssertionError [ERR_ASSERTION]: punch after exit
+  
+  1614 !== 1414
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m41.test.mjs:15:317)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1614,
+    expected: 1414,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m41.test.mjs:17:1
+✖ M41 one member leaves by hand, the other finishes naturally: each keeps their own cut-off (1930.570542ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2151 !== 2108
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m41.test.mjs:18:116)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2151,
+    expected: 2108,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m41.test.mjs:19:1
+✖ M41 saved in the exit tick before any command: the loaded game goes on the same way (2169.209833ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'f16f8910f70bd61b8ae9a024bfdda4e201d42eac574517b5194fc4424a06561c'
+  - '57680ca4f500dde9b98b84ccdbc37bcc07d8451e170c5b007023d7045f8f4904'
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m41.test.mjs:19:290)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'f16f8910f70bd61b8ae9a024bfdda4e201d42eac574517b5194fc4424a06561c',
+    expected: '57680ca4f500dde9b98b84ccdbc37bcc07d8451e170c5b007023d7045f8f4904',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m41.test.mjs:20:1
+✖ M41 an old exiting file without the freeze loads and is cut at its first tick after loading (1837.357875ms)
+  AssertionError [ERR_ASSERTION]: cut at the first tick
+  + actual - expected
+  
+  + undefined
+  - 190789
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m41.test.mjs:21:117)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 190789,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

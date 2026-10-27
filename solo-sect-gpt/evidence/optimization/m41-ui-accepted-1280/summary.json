@@ -1,0 +1,145 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 50.399,
+  "errors": [],
+  "steps": [
+    {
+      "label": "rest-amu",
+      "wallSeconds": 7.338,
+      "tick": 199206
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 21.7,
+      "tick": 199479
+    },
+    {
+      "label": "exiting",
+      "wallSeconds": 45.775,
+      "tick": 199952
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 49.894,
+      "tick": 200009
+    },
+    {
+      "label": "done",
+      "wallSeconds": 50.398,
+      "tick": 200009,
+      "exit": {
+        "tick": 199952,
+        "closedAt": 199949,
+        "start": 8994,
+        "frozen": {
+          "energy": 7772,
+          "injury": 0,
+          "tick": 199949
+        },
+        "energy": 7772,
+        "session": null
+      },
+      "punch": {
+        "tick": 199952,
+        "energy": 7572
+      },
+      "used": 1222
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "exit": {
+      "tick": 199952,
+      "closedAt": 199949,
+      "start": 8994,
+      "frozen": {
+        "energy": 7772,
+        "injury": 0,
+        "tick": 199949
+      },
+      "energy": 7772,
+      "session": null
+    },
+    "punch": {
+      "tick": 199952,
+      "energy": 7572
+    },
+    "review": {
+      "version": 2,
+      "drill": "drill.52126",
+      "config": "A",
+      "outcome": "held",
+      "started": 199206,
+      "ended": 200003,
+      "leaked": 0,
+      "defeated": 4,
+      "roles": {
+        "amu": "front",
+        "shen": "front"
+      },
+      "people": {
+        "amu": {
+          "moves": {
+            "advanced.closefist": 8
+          },
+          "hits": 8,
+          "received": 0
+        },
+        "shen": {
+          "moves": {
+            "punch": 6
+          },
+          "hits": 6,
+          "received": 2
+        }
+      },
+      "arrival": "together",
+      "goAt": 199479,
+      "spans": {
+        "amu": {
+          "joined": 199206,
+          "left": null
+        },
+        "shen": {
+          "joined": 199206,
+          "left": null
+        }
+      },
+      "body": {
+        "amu": {
+          "energyUsed": 2097,
+          "injuryGained": 0
+        },
+        "shen": {
+          "energyUsed": 1222,
+          "injuryGained": 0
+        }
+      },
+      "intercepts": {
+        "training.1": {
+          "x": 1469,
+          "by": "amu"
+        },
+        "training.2": {
+          "x": 1479,
+          "by": "shen"
+        },
+        "training.4": {
+          "x": 1513,
+          "by": "shen"
+        },
+        "training.3": {
+          "x": 1485,
+          "by": "amu"
+        }
+      }
+    },
+    "reviewText": "上次回顧：守住 · 同時抵達 · 漏過0 · 擊退4 · 集合14秒、交手26秒\n阿木（前攔）短打快拳8 · 命中8 · 受擊0 · 耗精力21 · 傷勢+0\n沈禾（前攔）直拳6 · 命中6 · 受擊2 · 耗精力12 · 傷勢+0\n攔截位置（前線 x1300）：演武對手1 在 x1469 被阿木攔下；演武對手2 在 x1479 被沈禾攔下；演武對手4 在 x1513 被沈禾攔下；演武對手3 在 x1485 被阿木攔下",
+    "shown": 12
+  }
+}

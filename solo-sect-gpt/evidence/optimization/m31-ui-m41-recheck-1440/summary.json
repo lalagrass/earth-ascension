@@ -1,0 +1,109 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 64.937,
+  "errors": [],
+  "steps": [
+    {
+      "label": "cooldown",
+      "wallSeconds": 3.162,
+      "tick": 188209
+    },
+    {
+      "label": "set",
+      "wallSeconds": 6.774,
+      "tick": 188458
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 20.123,
+      "tick": 190290
+    },
+    {
+      "label": "wave",
+      "wallSeconds": 22.779,
+      "tick": 190335
+    },
+    {
+      "label": "left",
+      "wallSeconds": 23.434,
+      "tick": 190338
+    },
+    {
+      "label": "punch-0",
+      "wallSeconds": 26.893,
+      "tick": 190395
+    },
+    {
+      "label": "punch-1",
+      "wallSeconds": 30.473,
+      "tick": 190454
+    },
+    {
+      "label": "punch-2",
+      "wallSeconds": 34.068,
+      "tick": 190511
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 34.695,
+      "tick": 190514
+    },
+    {
+      "label": "gather-started",
+      "wallSeconds": 35.797,
+      "tick": 2
+    },
+    {
+      "label": "walking-back",
+      "wallSeconds": 64.639,
+      "tick": 1136
+    },
+    {
+      "label": "done",
+      "wallSeconds": 64.929,
+      "tick": 1136,
+      "review": {
+        "amu": {
+          "energyUsed": 797,
+          "injuryGained": 0
+        },
+        "shen": {
+          "energyUsed": 0,
+          "injuryGained": 0
+        }
+      }
+    }
+  ],
+  "label": "m41-recheck",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "chronicle": "▾ 近期紀錄（此人 24／快取 120）\n全部 工作 武學 生活\n交談完成 · 188433 20Hz tick（1/20 遊戲秒）\n\n活動：talk · 完成單位：0\n\n可證原因：未知\n雲生 人物卡\n來源與原時間\n定向之約：師父說：先學齊眉棍的道理，再實際領一把來練。林青點頭記下。 · 188433 20Hz tick（1/20 遊戲秒）\n\n定向之約：師父說：先學齊眉棍的道理，再實際領一把來練。林青點頭記下。\n\n可證原因：未知\n雲生 人物卡 林青 人物卡\n來源與原時間\n行走完成 · 188385 20Hz tick（1/20 遊戲秒）\n\n活動：move · 完成單位：0\n\n可證原因：未知\n小禾 人物卡\n來源與原時間\n行走完成 · 188365 20Hz tick（1/20 遊戲秒）\n\n活動：move · 完成單位：0\n\n可證原因：未知\n小禾 人物卡\n來源與原時間\n行走完成 · 188345 20Hz tick（1/20 遊戲秒）\n\n活動：move · 完成單位：0\n\n可證原因：未知\n小禾 人物卡\n來源與原時間\n行走完成 · 188325 20Hz tick（1/20 遊戲秒）\n\n活動：move · 完成單位：0\n\n可證原因：未知\n小禾 人物卡\n來源與原時間\n行走完成 · 188309 20Hz tick（1/20 遊戲秒）\n\n活動：move · 完成單位：0\n\n可證原因：未知\n小",
+    "atLeave": {
+      "energy": 9946,
+      "injury": 0,
+      "tick": 190335
+    },
+    "start": {
+      "energy": 9946,
+      "injury": 0
+    },
+    "atEnd": 9321,
+    "review": {
+      "amu": {
+        "energyUsed": 797,
+        "injuryGained": 0
+      },
+      "shen": {
+        "energyUsed": 0,
+        "injuryGained": 0
+      }
+    },
+    "reviewText": "上次回顧：失守 · 兩翼包抄 · 漏過0 · 擊退0 · 集合11秒、交手9秒\n阿木（前攔）短打快拳3 · 命中4 · 受擊4 · 耗精力8 · 傷勢+0\n沈禾（守線） · 命中0 · 受擊0 · 耗精力0 · 傷勢+0\n攔截位置（前線 x1300）：演武對手1 在 x1494 被阿木攔下；演武對手2 在 x1489 被阿木攔下",
+    "atStart": "倉內：錢30、菜8、藥草2 · 容量 24\n正在送來：無 · 預留入庫容量：木4（阿木） · 已被預約取走：無",
+    "onWay": "倉內：錢30、菜8、藥草2 · 容量 24\n正在送來：木4（阿木） · 預留入庫容量：木4（阿木） · 已被預約取走：無"
+  }
+}

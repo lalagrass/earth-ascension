@@ -1,0 +1,36 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 51.17,
+  "errors": [],
+  "steps": [
+    {
+      "label": "rest-amu",
+      "wallSeconds": 11.116,
+      "tick": 199210
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 25.767,
+      "tick": 199484
+    },
+    {
+      "label": "exiting",
+      "wallSeconds": 50.138,
+      "tick": 199958
+    }
+  ],
+  "label": "before-fix-at-0160b73",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: frozen at the natural end\n    at file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/snap-0160b73/solo-sect-gpt/test/optimization/m41-ui.mjs:12:391",
+  "story": {
+    "exit": {
+      "tick": 199958,
+      "start": 8994,
+      "energy": 7579,
+      "session": null
+    }
+  }
+}

@@ -31,6 +31,8 @@ export function jointCut(w){const d=w.drill,j=d?.joint;if(!j||j.reviewed||j.clos
 export function jointTick(w){const d=w.drill,j=d?.joint;if(!j||j.reviewed)return;
  // M24: both versions record when a participant left; only what happened before that tick counts for this drill.
  const v2=j.version===2;if(['assembling','running'].includes(d.status))for(const id of d.actors)if(j.left?.[id]===undefined&&!inSession(w,d,id)){j.left??={};j.left[id]=w.tick;if(v2&&j.body[id]){const q=w.people[id];j.bodyAt??={};j.bodyAt[id]={energy:q.energy,injury:q.injury,tick:w.tick};}}absorb(w,d,j);
+ // M41: a drill that ended on its own this step (sessionsTick turned it to exiting and cleared everyone's session) is frozen here, before combatAI, activities or any later command can spend energy.
+ jointCut(w);
  if(v2&&d.status==='assembling'&&d.actors.every(id=>j.left[id]!==undefined)){d.status='cancelled';for(const id of d.actors){const p=w.people[id];if(p.combatSession===d.id){p.combatSession=null;p.combatTarget=null;p.manualStop=false;}}}
  if(v2&&d.status==='running'){for(const [i,id]of d.opponents.entries())if(j.release[id]===undefined){const late=['staggered','twoLanes'].includes(j.arrival)&&i===1;j.release[id]=w.tick+(late&&j.arrival==='staggered'?STAGGER:0);if(late){const o=w.people[id],gate=[SOUTH_GATE[0]+(d.wave-1)*24,SOUTH_GATE[1]];j.home[id]=[...o.prep];o.prep=gate;o.x=gate[0]*Q;o.y=gate[1]*Q;o.path=[];o.routeAt=0;}}
   const active=d.actors.filter(id=>inSession(w,d,id)&&j.left[id]===undefined);for(const id of d.opponents){const o=w.people[id];if(o.trainingDefeated)continue;if(w.tick<j.release[id]){o.combatTarget=null;o.path=[];continue;}

@@ -1,0 +1,39 @@
+{
+  "source": "model command sequences on the M23 showcase; labeled fixtures noted inline",
+  "cases": [
+    {
+      "case": "natural",
+      "tick": 190818,
+      "body": {
+        "amu": {
+          "energyUsed": 1837,
+          "injuryGained": 0
+        },
+        "shen": {
+          "energyUsed": 1414,
+          "injuryGained": 0
+        }
+      },
+      "outcome": "held"
+    },
+    {
+      "case": "exit-punch",
+      "start": 9935,
+      "atExit": 8521,
+      "counted": 1414
+    },
+    {
+      "case": "exit-work"
+    },
+    {
+      "case": "mixed",
+      "outcome": "partial"
+    },
+    {
+      "case": "save-at-exit"
+    },
+    {
+      "case": "old-exiting"
+    }
+  ]
+}
