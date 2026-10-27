@@ -45,7 +45,7 @@ python3 -m http.server 8879 --bind 127.0.0.1 --directory solo-sect-gpt
 | M33 | 人物頁一個工作目標面板：原指令、臨時工作回哪裡、排程命令、停工、必要休養／自理、共享安排；按鈕送出前重驗 | 378a65b | 08f8a2b | optimization-m33.done.json |
 | M34 | 開局對話框與人物卡共用公開簡介（四個開局、小禾、阿木） | 8af2d3c | fcd37d9 | optimization-m34.done.json |
 | M35 | 值寫「是／否」；展開狀態跟著人物；重繪不丟焦點；空白鍵在按鈕上不暫停；公版紙墨樣式 | da20c73 | b8d6d17 | optimization-m35.done.json |
-| M36 | 新展示檔、兩段路線、相容收尾、本文件 | 6ebbf68 | 見總標記 | optimization-m36.done.json |
+| M36 | 新展示檔、兩段路線、相容收尾、本文件 | 6ebbf68 | 121fce2 | optimization-m36.done.json |
 
 ## 新公版 6f959f5 採用清單
 
