@@ -1,0 +1,100 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 59.666,
+  "errors": [],
+  "steps": [
+    {
+      "label": "continued-30s",
+      "wallSeconds": 12.099,
+      "tick": 203913
+    },
+    {
+      "label": "run-showcase-m24-m30.save.json",
+      "wallSeconds": 21.147,
+      "tick": 194984
+    },
+    {
+      "label": "run-showcase-m31-m36.save.json",
+      "wallSeconds": 29.817,
+      "tick": 199451
+    },
+    {
+      "label": "run-showcase-m37-m40.save.json",
+      "wallSeconds": 39.255,
+      "tick": 201886
+    },
+    {
+      "label": "run-showcase-m41-m44.save.json",
+      "wallSeconds": 48.666,
+      "tick": 203929
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 50.652,
+      "tick": 203295
+    },
+    {
+      "label": "missing-image-plays",
+      "wallSeconds": 59.428,
+      "tick": 221
+    },
+    {
+      "label": "done",
+      "wallSeconds": 59.66,
+      "tick": 221,
+      "runs": 4
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "runs": [
+      {
+        "file": "m30/showcase-m24-m30.save.json",
+        "from": 194362,
+        "to": 194984
+      },
+      {
+        "file": "m36/showcase-m31-m36.save.json",
+        "from": 198837,
+        "to": 199451
+      },
+      {
+        "file": "m40/showcase-m37-m40.save.json",
+        "from": 201219,
+        "to": 201886
+      },
+      {
+        "file": "m44/showcase-m41-m44.save.json",
+        "from": 203294,
+        "to": 203929
+      }
+    ],
+    "badToast": "校驗碼不符，原存檔已保留",
+    "preview": "匯入預覽\n\nseed 11 · 第17日 · schema 1\n\n確認後替換當局；手動槽保留。\n\n確認替換當局",
+    "viewState": {
+      "epochBefore": "1"
+    },
+    "continued": {
+      "from": 203294,
+      "to": 203913
+    },
+    "afterReload": 1,
+    "midReview": {
+      "amu": {
+        "energyUsed": 2096,
+        "injuryGained": 0
+      },
+      "shen": {
+        "energyUsed": 1415,
+        "injuryGained": 0
+      }
+    },
+    "midReviewText": "上次回顧：守住 · 同時抵達 · 漏過0 · 擊退4 · 集合14秒、交手24秒\n阿木（前攔）短打快拳8 · 命中8 · 受擊0 · 耗精力21 · 傷勢+0\n沈禾（前攔）直拳7 · 命中6 · 受擊2 · 耗精力14 · 傷勢+0\n攔截位置（前線 x1300）：演武對手1 在 x1469 被阿木攔下；演武對手2 在 x1470 被沈禾攔下；演武對手4 在 x1509 被沈禾攔下；演武對手3 在 x1481 被阿木攔下",
+    "nav": "kept on refused load; rebuilt on tick-back, new game"
+  }
+}

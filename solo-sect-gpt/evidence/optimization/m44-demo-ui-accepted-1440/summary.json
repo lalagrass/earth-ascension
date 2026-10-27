@@ -1,0 +1,110 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 76.256,
+  "errors": [],
+  "steps": [
+    {
+      "label": "meal",
+      "wallSeconds": 29.684,
+      "tick": 202230
+    },
+    {
+      "label": "rest-amu",
+      "wallSeconds": 34.156,
+      "tick": 202532
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 48.442,
+      "tick": 202802
+    },
+    {
+      "label": "exiting",
+      "wallSeconds": 73.029,
+      "tick": 203284
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 75.293,
+      "tick": 203294
+    },
+    {
+      "label": "done",
+      "wallSeconds": 76.256,
+      "tick": 203294,
+      "save": {
+        "tick": 203294
+      },
+      "review": {
+        "amu": {
+          "energyUsed": 2096,
+          "injuryGained": 0
+        },
+        "shen": {
+          "energyUsed": 1415,
+          "injuryGained": 0
+        }
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "meals": [
+      2,
+      6
+    ],
+    "exit": {
+      "tick": 203284,
+      "closedAt": 203278,
+      "bodyAt": {
+        "amu": {
+          "energy": 2960,
+          "injury": 0,
+          "tick": 203278
+        },
+        "shen": {
+          "energy": 8520,
+          "injury": 0,
+          "tick": 203278
+        }
+      },
+      "start": {
+        "amu": {
+          "energy": 5056,
+          "injury": 0
+        },
+        "shen": {
+          "energy": 9935,
+          "injury": 0
+        }
+      }
+    },
+    "punch": {
+      "tick": 203284,
+      "before": 8518,
+      "after": 8318
+    },
+    "review": {
+      "amu": {
+        "energyUsed": 2096,
+        "injuryGained": 0
+      },
+      "shen": {
+        "energyUsed": 1415,
+        "injuryGained": 0
+      }
+    },
+    "save": {
+      "tick": 203294
+    },
+    "demoWritten": [
+      "evidence/optimization/m44/showcase-m41-m44.save.json",
+      "evidence/optimization/m44/drill-exit-midway.save.json"
+    ]
+  }
+}

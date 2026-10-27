@@ -106,6 +106,9 @@ export function expeditionTick(w){const e=w.expedition;if(!e||e.phase==='returne
  if(e.phase==='attach'){const h=w.people[e.helper],z=w.people.zhou;if(arrived(h)&&Math.hypot(h.x-z.x,h.y-z.y)<=24*Q){e.attachTicks++;h.pose='help';if(e.attachTicks>=160){e.escortAttached=true;z.helpedBy=h.id;h.helping=z.id;event(w,'escort-attached',[h.id,z.id]);startReturn(w,e);}}}
  if(e.phase==='unload'&&party.every(p=>!p.activity&&(arrived(p)||e.journey?.plan===2&&distance(p,stations['safe.'+party.indexOf(p)])<48))){e.phase='return';e.unloaded=true;}
  if(e.phase==='return'){
+   // M44: the same walk-on as journey.mjs (M10) for expeditions without a v2 journey: a returnee whose walk home was cut short by a fight
+   // on the way (e.g. a boar) stands idle with no path; send them on home again. Journeys keep their own M10 rule and record.
+   if(!e.journey&&w.tick%20===0)for(const p of party)if(p.hp>0&&!p.action&&!p.combatTarget&&!p.activity&&arrived(p)&&distance(p,stations['safe.'+party.indexOf(p)])>48)route(w,p,stations['safe.'+party.indexOf(p)]);
   const z=w.people.zhou;if(z.helpedBy){const h=w.people[z.helpedBy];if(h.hp<=0){z.path=[];z.blocked='扶助者倒地，先救援';}else if(arrived(z)&&distance(z,stations['safe.4'])>30)route(w,z,stations['safe.4']);}
   // v2: an idle body standing on the home slot should not keep a returnee circling forever.
   const slotTaken=(p,to)=>sorted(w.people).some(o=>o.id!==p.id&&o.residence!=='departed'&&!o.inactive&&Math.hypot(o.x/Q-to[0],o.y/Q-to[1])<14),home=party.every(p=>{const to=stations['safe.'+party.indexOf(p)],d=distance(p,to);return p.hp>0&&(d<20||e.journey?.plan===2&&d<48&&slotTaken(p,to));});

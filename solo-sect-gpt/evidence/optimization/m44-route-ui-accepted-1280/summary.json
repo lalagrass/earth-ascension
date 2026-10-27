@@ -1,0 +1,246 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 140.791,
+  "errors": [],
+  "steps": [
+    {
+      "label": "carrying",
+      "wallSeconds": 24.905,
+      "tick": 202062
+    },
+    {
+      "label": "on-table",
+      "wallSeconds": 29.963,
+      "tick": 202235
+    },
+    {
+      "label": "rest-amu",
+      "wallSeconds": 34.732,
+      "tick": 202541
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 49.398,
+      "tick": 202813
+    },
+    {
+      "label": "exiting",
+      "wallSeconds": 74.418,
+      "tick": 203296
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 76.657,
+      "tick": 203317
+    },
+    {
+      "label": "rest-amu",
+      "wallSeconds": 99.892,
+      "tick": 204984
+    },
+    {
+      "label": "home",
+      "wallSeconds": 140.125,
+      "tick": 207193
+    },
+    {
+      "label": "done",
+      "wallSeconds": 140.787,
+      "tick": 207193,
+      "marks": [
+        [
+          "A-start",
+          2.9,
+          201219
+        ],
+        [
+          "cook",
+          3.5,
+          201219
+        ],
+        [
+          "carrying",
+          25.3,
+          202062
+        ],
+        [
+          "on-table",
+          30.1,
+          202235
+        ],
+        [
+          "drill-go",
+          49.8,
+          202813
+        ],
+        [
+          "exit-punch",
+          75.2,
+          203296
+        ],
+        [
+          "A-done",
+          77.1,
+          203317
+        ],
+        [
+          "rested",
+          100.2,
+          204984
+        ],
+        [
+          "B-depart",
+          100.8,
+          204984
+        ],
+        [
+          "follow-wild",
+          116.4,
+          205874
+        ],
+        [
+          "wild-gone",
+          127.3,
+          206256
+        ],
+        [
+          "B-done",
+          140.6,
+          207193
+        ]
+      ]
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "marks": [
+      [
+        "A-start",
+        2.9,
+        201219
+      ],
+      [
+        "cook",
+        3.5,
+        201219
+      ],
+      [
+        "carrying",
+        25.3,
+        202062
+      ],
+      [
+        "on-table",
+        30.1,
+        202235
+      ],
+      [
+        "drill-go",
+        49.8,
+        202813
+      ],
+      [
+        "exit-punch",
+        75.2,
+        203296
+      ],
+      [
+        "A-done",
+        77.1,
+        203317
+      ],
+      [
+        "rested",
+        100.2,
+        204984
+      ],
+      [
+        "B-depart",
+        100.8,
+        204984
+      ],
+      [
+        "follow-wild",
+        116.4,
+        205874
+      ],
+      [
+        "wild-gone",
+        127.3,
+        206256
+      ],
+      [
+        "B-done",
+        140.6,
+        207193
+      ]
+    ],
+    "carryFrame": [
+      70.76171875,
+      712.6519736842106,
+      1430,
+      1087.3480263157894
+    ],
+    "carryAt": [
+      785.76171875,
+      1259.0625
+    ],
+    "carry": {
+      "amount": "2 原生計數",
+      "incoming": "4 原生計數"
+    },
+    "onTable": {
+      "amount": "6 原生計數",
+      "incoming": "0 原生計數"
+    },
+    "review": {
+      "energyUsed": 1222,
+      "injuryGained": 0
+    },
+    "reviewText": "上次回顧：守住 · 同時抵達 · 漏過0 · 擊退4 · 集合14秒、交手25秒\n阿木（前攔）短打快拳8 · 命中8 · 受擊0 · 耗精力21 · 傷勢+0\n沈禾（前攔）直拳6 · 命中6 · 受擊2 · 耗精力12 · 傷勢+0\n攔截位置（前線 x1300）：演武對手1 在 x1469 被阿木攔下；演武對手2 在 x1473 被沈禾攔下；演武對手4 在 x1511 被沈禾攔下；演武對手3 在 x1483 被阿木攔下",
+    "wild": {
+      "id": "boar.1",
+      "tick": 205874,
+      "phase": "outbound"
+    },
+    "lost": {
+      "tick": 206192,
+      "raw": [
+        1510,
+        720
+      ],
+      "frame": [
+        795,
+        173.5894736842106,
+        1430,
+        1092.8210526315788
+      ],
+      "list": "阿木\n柳青岫\n小禾\n雲生\n喬峰\n林青\n沈禾\n演武對手1\n演武對手2\n演武對手3\n演武對手4\n演武對手1\n演武對手2\n演武對手3\n演武對手4\n演武對手5\n演武對手6\n林鼠\n林鼠\n林鼠\n野豬"
+    },
+    "lostLater": {
+      "raw": [
+        1510,
+        720
+      ],
+      "frame": [
+        795,
+        173.5894736842106,
+        1430,
+        1092.8210526315788
+      ]
+    },
+    "home": {
+      "phase": "returned",
+      "tick": 207193,
+      "lin": [
+        924,
+        1100
+      ]
+    }
+  }
+}

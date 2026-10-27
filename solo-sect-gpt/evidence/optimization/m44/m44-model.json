@@ -1,0 +1,28 @@
+{
+  "source": "the M44 showcase and mid-drill file (normal UI saves); one labeled energy fixture",
+  "cases": [
+    {
+      "case": "recall",
+      "recallAfter": 1300,
+      "ticksHome": 869
+    },
+    {
+      "case": "recall",
+      "recallAfter": 2000,
+      "ticksHome": 865
+    },
+    {
+      "case": "twin",
+      "file": "m44/showcase-m41-m44.save.json"
+    },
+    {
+      "case": "twin",
+      "file": "m44/drill-exit-midway.save.json"
+    },
+    {
+      "case": "exit-file",
+      "start": 9935,
+      "cut": 8520
+    }
+  ]
+}
