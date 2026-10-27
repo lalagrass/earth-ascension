@@ -1,0 +1,58 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 286.87,
+  "errors": [],
+  "steps": [
+    {
+      "label": "rest-amu",
+      "wallSeconds": 58.708,
+      "tick": 199620
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 137.986,
+      "tick": 200192
+    },
+    {
+      "label": "wave",
+      "wallSeconds": 173.065,
+      "tick": 200530
+    },
+    {
+      "label": "play-on",
+      "wallSeconds": 254.835,
+      "tick": 201287
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 281.013,
+      "tick": 201424
+    }
+  ],
+  "label": "before-fix-at-2acc64a",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n809 !== 609\n\n    at file:///private/tmp/claude-501/-Users-chenyuying-workspace-earth-ascension/1b3ff2fb-0493-4534-86ad-32912d3f58ba/scratchpad/snap-2acc64a/solo-sect-gpt/test/optimization/m37-ui.mjs:15:232",
+  "story": {
+    "leave": {
+      "tick": 200530,
+      "energy": 8400
+    },
+    "punch": {
+      "tick": 200530,
+      "energy": 8200
+    },
+    "review": {
+      "amu": {
+        "energyUsed": 5032,
+        "injuryGained": 0
+      },
+      "shen": {
+        "energyUsed": 809,
+        "injuryGained": 0
+      }
+    }
+  }
+}

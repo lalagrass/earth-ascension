@@ -1,0 +1,145 @@
+✖ M37 drill: practiceStop then a same-tick punch is not counted (1678.540625ms)
+✖ M37 drill: stop then a same-tick punch is not counted (1072.161625ms)
+✖ M37 drill: reassign then a same-tick punch is not counted (896.130458ms)
+✔ M37 drill: spar then a same-tick punch is not counted (3064.444292ms)
+✔ M37 drill: a punch before leaving in the same tick still counts (924.70825ms)
+✖ M37 drill: both leave in one tick; ending the drill then punching in the same tick (1186.23275ms)
+✖ M37 drill: leave, save before any step, load, punch; leave then just play on (1295.741083ms)
+✔ M37 drill: falling down inside a step keeps the step-time path (2411.474125ms)
+✖ M37 transit: a pot of food is on its way to the table only while really carried (4003.233791ms)
+✔ M37 transit: gathering, a full store and a ground pile (972.185667ms)
+✖ M37 chronicle: a mentor talk first in the window after the cursor left the ring is read (36.725875ms)
+✔ M37 report (175.880667ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 5
+ℹ fail 7
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18610.790833
+
+✖ failing tests:
+
+test at test/optimization/m37.test.mjs:13:46
+✖ M37 drill: practiceStop then a same-tick punch is not counted (1678.540625ms)
+  AssertionError [ERR_ASSERTION]: only energy used before leaving
+  
+  200 !== 0
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m37.test.mjs:15:9)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 200,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m37.test.mjs:13:46
+✖ M37 drill: stop then a same-tick punch is not counted (1072.161625ms)
+  AssertionError [ERR_ASSERTION]: only energy used before leaving
+  
+  200 !== 0
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m37.test.mjs:15:9)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 200,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m37.test.mjs:13:46
+✖ M37 drill: reassign then a same-tick punch is not counted (896.130458ms)
+  AssertionError [ERR_ASSERTION]: only energy used before leaving
+  
+  200 !== 0
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m37.test.mjs:15:9)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 200,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m37.test.mjs:17:1
+✖ M37 drill: both leave in one tick; ending the drill then punching in the same tick (1186.23275ms)
+  AssertionError [ERR_ASSERTION]: shen
+  
+  201 !== 1
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m37.test.mjs:17:468)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 201,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m37.test.mjs:19:1
+✖ M37 drill: leave, save before any step, load, punch; leave then just play on (1295.741083ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  200 !== 0
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m37.test.mjs:19:356)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 200,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m37.test.mjs:25:1
+✖ M37 transit: a pot of food is on its way to the table only while really carried (4003.233791ms)
+  AssertionError [ERR_ASSERTION]: carried meal is on its way
+  
+  0 !== 4
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m37.test.mjs:27:172)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/m37.test.mjs:36:1
+✖ M37 chronicle: a mentor talk first in the window after the cursor left the ring is read (36.725875ms)
+  AssertionError [ERR_ASSERTION]: every entry still in the ring
+  
+  499 !== 500
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m37.test.mjs:38:75)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 499,
+    expected: 500,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

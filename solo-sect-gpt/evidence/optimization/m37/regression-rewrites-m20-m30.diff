@@ -1,0 +1,26 @@
+diff --git a/solo-sect-gpt/evidence/optimization/m20-model/m20-model.json b/solo-sect-gpt/evidence/optimization/m20-model/m20-model.json
+index 5de6c0b..a5c693b 100644
+--- a/solo-sect-gpt/evidence/optimization/m20-model/m20-model.json
++++ b/solo-sect-gpt/evidence/optimization/m20-model/m20-model.json
+@@ -50,7 +50,7 @@
+         },
+         "lin": {
+           "joined": 188195,
+-          "left": 188461
++          "left": 188460
+         }
+       }
+     },
+diff --git a/solo-sect-gpt/evidence/optimization/m30/m30-model.json b/solo-sect-gpt/evidence/optimization/m30/m30-model.json
+index 45b6295..b155658 100644
+--- a/solo-sect-gpt/evidence/optimization/m30/m30-model.json
++++ b/solo-sect-gpt/evidence/optimization/m30/m30-model.json
+@@ -8,7 +8,7 @@
+     {
+       "case": "mid-way",
+       "v1Left": {
+-        "shen": 188456
++        "shen": 188455
+       },
+       "flankOpponents": [
+         "training.f4",

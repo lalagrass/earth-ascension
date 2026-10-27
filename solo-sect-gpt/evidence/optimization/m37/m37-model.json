@@ -1,0 +1,66 @@
+{
+  "source": "model command sequences; labeled fixtures noted inline",
+  "cases": [
+    {
+      "case": "drill-practiceStop",
+      "start": 9946,
+      "atLeave": 9946,
+      "counted": 0
+    },
+    {
+      "case": "drill-stop",
+      "start": 9946,
+      "atLeave": 9946,
+      "counted": 0
+    },
+    {
+      "case": "drill-reassign",
+      "start": 9946,
+      "atLeave": 9946,
+      "counted": 0
+    },
+    {
+      "case": "drill-spar",
+      "start": 9946,
+      "atLeave": 9946,
+      "counted": 0
+    },
+    {
+      "case": "drill-punch-before",
+      "counted": 200
+    },
+    {
+      "case": "drill-both-and-end"
+    },
+    {
+      "case": "drill-save-and-play"
+    },
+    {
+      "case": "drill-downed"
+    },
+    {
+      "case": "drill-save-fields"
+    },
+    {
+      "case": "meal",
+      "bag": 4,
+      "table": [
+        0,
+        4
+      ]
+    },
+    {
+      "case": "meal-interrupted",
+      "blocked": "成品由原搬運者持有，請其先搬交"
+    },
+    {
+      "case": "gather",
+      "fullItem": "veg",
+      "blocked": null
+    },
+    {
+      "case": "ring",
+      "lastWindow": 500
+    }
+  ]
+}

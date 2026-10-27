@@ -1,0 +1,105 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 60.194,
+  "errors": [],
+  "steps": [
+    {
+      "label": "rest-amu",
+      "wallSeconds": 8.902,
+      "tick": 199226
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 23.566,
+      "tick": 199500
+    },
+    {
+      "label": "wave",
+      "wallSeconds": 26.351,
+      "tick": 199545
+    },
+    {
+      "label": "play-on",
+      "wallSeconds": 29.805,
+      "tick": 199591
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 30.366,
+      "tick": 199595
+    },
+    {
+      "label": "carrying-meal",
+      "wallSeconds": 53.399,
+      "tick": 200438
+    },
+    {
+      "label": "meal-on-table",
+      "wallSeconds": 59.638,
+      "tick": 200644
+    },
+    {
+      "label": "done",
+      "wallSeconds": 60.192,
+      "tick": 200644,
+      "review": {
+        "amu": {
+          "energyUsed": 526,
+          "injuryGained": 0
+        },
+        "shen": {
+          "energyUsed": 0,
+          "injuryGained": 0
+        }
+      },
+      "bag": 4,
+      "table": [
+        0,
+        4
+      ]
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "leave": {
+      "tick": 199545,
+      "energy": 9009
+    },
+    "punch": {
+      "tick": 199545,
+      "energy": 8809
+    },
+    "review": {
+      "amu": {
+        "energyUsed": 526,
+        "injuryGained": 0
+      },
+      "shen": {
+        "energyUsed": 0,
+        "injuryGained": 0
+      }
+    },
+    "reviewText": "上次回顧：終止 · 兩翼包抄 · 漏過0 · 擊退0 · 集合14秒、交手5秒\n阿木（前攔）短打快拳2 · 命中1 · 受擊0 · 耗精力5 · 傷勢+0\n沈禾（守線） · 命中0 · 受擊0 · 耗精力0 · 傷勢+0\n攔截位置（前線 x1300）：演武對手1 在 x1500 被阿木攔下",
+    "shownUsed": "0",
+    "carry": {
+      "amount": "0 原生計數",
+      "incoming": "4 原生計數",
+      "notes": "餐 · 實存 0 原生計數／容量 96 原生計數\n實存\n0 原生計數\n容量\n96 原生計數\n在途\n4 原生計數\n耗用預約\n0 原生計數\n可用（原查詢）\n0 原生計數\n\n已有用途：用餐：每人每日最多兩餐\n\n每欄來源／原單位與限制\ngpt-local · 53cd42c0f64c2eff580c3f20399695b2600c83b4\n原生ID meal · 單位 原生計數\ngpt-local:solo-sect-gpt/src/state.mjs:world.inventories.table\n實存：known · gpt-local:solo-sect-gpt/src/state.mjs:qty(table,meal)\n容量：known · gpt-local:solo-sect-gpt/src/state.mjs:world.inventories.table.capacity（每品項）\n在途：known · gpt-local:solo-sect-gpt/src/src/transit.mjs: deliver / haulOutput / collect with goods in the bag (M37)\n耗用預約：known · gpt-local:solo-sect-gpt/src/world.reservations source:table:meal (exact sum)\n可用（原查詢）：known · gpt-local:solo-sect-gpt/src/state.mjs:availableQty(table,meal)\n預留入庫容量 4：有人接了往這裡交的工作，先保留的容量，不是貨已在路上。 正在送來：阿木 4。\n可用（原查詢）是核心同 tick 供料的口徑，沒有扣掉所有耗用預約；不要拿實存減預約當可用。\n餐桌不屬三張設施卡之一，沒有連結。"
+    },
+    "bag": 4,
+    "after": {
+      "amount": "4 原生計數",
+      "incoming": "0 原生計數",
+      "notes": "餐 · 實存 4 原生計數／容量 96 原生計數\n實存\n4 原生計數\n容量\n96 原生計數\n在途\n0 原生計數\n耗用預約\n0 原生計數\n可用（原查詢）\n4 原生計數\n\n已有用途：用餐：每人每日最多兩餐\n\n每欄來源／原單位與限制\ngpt-local · 53cd42c0f64c2eff580c3f20399695b2600c83b4\n原生ID meal · 單位 原生計數\ngpt-local:solo-sect-gpt/src/state.mjs:world.inventories.table\n實存：known · gpt-local:solo-sect-gpt/src/state.mjs:qty(table,meal)\n容量：known · gpt-local:solo-sect-gpt/src/state.mjs:world.inventories.table.capacity（每品項）\n在途：known · gpt-local:solo-sect-gpt/src/src/transit.mjs: deliver / haulOutput / collect with goods in the bag (M37)\n耗用預約：known · gpt-local:solo-sect-gpt/src/world.reservations source:table:meal (exact sum)\n可用（原查詢）：known · gpt-local:solo-sect-gpt/src/state.mjs:availableQty(table,meal)\n預留入庫容量 0：有人接了往這裡交的工作，先保留的容量，不是貨已在路上。\n可用（原查詢）是核心同 tick 供料的口徑，沒有扣掉所有耗用預約；不要拿實存減預約當可用。\n餐桌不屬三張設施卡之一，沒有連結。"
+    },
+    "table": [
+      0,
+      4
+    ]
+  }
+}

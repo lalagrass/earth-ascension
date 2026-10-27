@@ -16,7 +16,7 @@ import {story,storyActivityTick,storiesTick,found} from './stories.mjs';
 import {discover} from './view.mjs';
 import {ownershipGate,commitmentOf} from './commitment.mjs';
 import {adoptOps,opsTick} from './economy.mjs';import {adoptFollowups,startFollowup} from './followups.mjs';
-import {adoptJoint,goJoint,startJoint,jointTick} from './joint-drill.mjs';
+import {adoptJoint,goJoint,startJoint,jointTick,jointCut} from './joint-drill.mjs';
 import {adoptMentor,propose,respond,activeBond,eventStatus,mentorTick,MENTOR_EVENTS,proposeDirection,respondDirection,cancelDirection} from './mentor.mjs';
 import {beginError} from './activities.mjs';
 export {createWorld,invariants};
@@ -113,6 +113,7 @@ export function command(w,c){
  else result={ok:false,reason:'尚未支援的指令：'+c.type};
  }
  if(result.ok&&w.lifePolicy&&['class','spar','journey','expedition','drill','recallParty'].includes(c.type)){const ids=c.type==='class'?[p.id,...c.students]:c.type==='spar'?[p.id,c.target]:c.type==='recallParty'?w.expedition?.actors||[]:c.actors||[];for(const id of ids)if(w.people[id])delete w.people[id].temporary;}
+ jointCut(w);
  if(!result.ok&&!result.reasonCode)result.reasonCode=c.type+'.rejected';
  w.commandSeq++;w.commands.push({...c,id,tick:w.tick,seq:w.commandSeq,result});w.seenCommands[id]=result;
  event(w,result.ok?'command':'rejected',p?[p.id]:[],{commandId:id,command:c.type,reason:result.reason||null});return result;
