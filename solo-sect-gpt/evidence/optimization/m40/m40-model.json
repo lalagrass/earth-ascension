@@ -1,0 +1,28 @@
+{
+  "source": "the M40 showcase and mid-drill file, both saved through the normal UI",
+  "cases": [
+    {
+      "case": "twin",
+      "file": "m40/showcase-m37-m40.save.json",
+      "tick": 201819
+    },
+    {
+      "case": "twin",
+      "file": "m40/drill-cut-midway.save.json",
+      "tick": 201769
+    },
+    {
+      "case": "cut",
+      "bodyAt": {
+        "energy": 9946,
+        "injury": 0,
+        "tick": 201169
+      },
+      "energyAfterPunch": 9746,
+      "review": {
+        "energyUsed": 0,
+        "injuryGained": 0
+      }
+    }
+  ]
+}

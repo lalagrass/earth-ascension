@@ -1,0 +1,121 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 65.629,
+  "errors": [],
+  "steps": [
+    {
+      "label": "meal",
+      "wallSeconds": 28.143,
+      "tick": 199848
+    },
+    {
+      "label": "cooldown",
+      "wallSeconds": 29.54,
+      "tick": 199863
+    },
+    {
+      "label": "set",
+      "wallSeconds": 38.954,
+      "tick": 200577
+    },
+    {
+      "label": "rest-amu",
+      "wallSeconds": 42.642,
+      "tick": 200826
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 56.677,
+      "tick": 201093
+    },
+    {
+      "label": "wave",
+      "wallSeconds": 60.42,
+      "tick": 201160
+    },
+    {
+      "label": "play-on",
+      "wallSeconds": 64.174,
+      "tick": 201204
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 64.705,
+      "tick": 201207
+    },
+    {
+      "label": "done",
+      "wallSeconds": 65.628,
+      "tick": 201207,
+      "save": {
+        "tick": 201207,
+        "rulesVersion": "chapter1-follow-1"
+      },
+      "review": {
+        "amu": {
+          "energyUsed": 786,
+          "injuryGained": 0
+        },
+        "shen": {
+          "energyUsed": 0,
+          "injuryGained": 0
+        }
+      }
+    }
+  ],
+  "label": "recheck",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "meals": [
+      0,
+      4
+    ],
+    "mentor": {
+      "kind": "weapon",
+      "art": "sword",
+      "state": "set",
+      "proposedAt": 199848,
+      "decidedAt": 199848,
+      "setAt": 200561,
+      "baseline": {
+        "U": 0,
+        "F": 0,
+        "I": 0,
+        "had": false
+      }
+    },
+    "leave": {
+      "tick": 201160,
+      "energy": 9946
+    },
+    "punch": {
+      "tick": 201160,
+      "energy": 9746
+    },
+    "midSave": {
+      "tick": 201160,
+      "cut": {
+        "shen": 201160
+      }
+    },
+    "review": {
+      "amu": {
+        "energyUsed": 786,
+        "injuryGained": 0
+      },
+      "shen": {
+        "energyUsed": 0,
+        "injuryGained": 0
+      }
+    },
+    "startEnergy": 9946,
+    "save": {
+      "tick": 201207,
+      "rulesVersion": "chapter1-follow-1"
+    }
+  }
+}

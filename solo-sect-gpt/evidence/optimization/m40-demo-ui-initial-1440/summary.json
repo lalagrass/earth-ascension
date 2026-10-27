@@ -1,0 +1,116 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 66.738,
+  "errors": [],
+  "steps": [
+    {
+      "label": "meal",
+      "wallSeconds": 29.74,
+      "tick": 199852
+    },
+    {
+      "label": "cooldown",
+      "wallSeconds": 31.206,
+      "tick": 199870
+    },
+    {
+      "label": "set",
+      "wallSeconds": 43.358,
+      "tick": 200801
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 56.993,
+      "tick": 201059
+    },
+    {
+      "label": "wave",
+      "wallSeconds": 60.903,
+      "tick": 201127
+    },
+    {
+      "label": "play-on",
+      "wallSeconds": 65.128,
+      "tick": 201169
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 65.75,
+      "tick": 201173
+    },
+    {
+      "label": "done",
+      "wallSeconds": 66.738,
+      "tick": 201173,
+      "save": {
+        "tick": 201173,
+        "rulesVersion": "chapter1-follow-1"
+      },
+      "review": {
+        "amu": {
+          "energyUsed": 786,
+          "injuryGained": 0
+        },
+        "shen": {
+          "energyUsed": 0,
+          "injuryGained": 0
+        }
+      }
+    }
+  ],
+  "label": "initial",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "meals": [
+      0,
+      4
+    ],
+    "mentor": {
+      "kind": "weapon",
+      "art": "sword",
+      "state": "set",
+      "proposedAt": 199852,
+      "decidedAt": 199852,
+      "setAt": 200780,
+      "baseline": {
+        "U": 0,
+        "F": 0,
+        "I": 0,
+        "had": false
+      }
+    },
+    "leave": {
+      "tick": 201127,
+      "energy": 9946
+    },
+    "punch": {
+      "tick": 201127,
+      "energy": 9746
+    },
+    "midSave": {
+      "tick": 201127,
+      "cut": {
+        "shen": 201127
+      }
+    },
+    "review": {
+      "amu": {
+        "energyUsed": 786,
+        "injuryGained": 0
+      },
+      "shen": {
+        "energyUsed": 0,
+        "injuryGained": 0
+      }
+    },
+    "startEnergy": 9946,
+    "save": {
+      "tick": 201173,
+      "rulesVersion": "chapter1-follow-1"
+    }
+  }
+}

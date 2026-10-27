@@ -1,0 +1,125 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 66.791,
+  "errors": [],
+  "steps": [
+    {
+      "label": "meal",
+      "wallSeconds": 28.527,
+      "tick": 199844
+    },
+    {
+      "label": "cooldown",
+      "wallSeconds": 30.011,
+      "tick": 199862
+    },
+    {
+      "label": "set",
+      "wallSeconds": 39.453,
+      "tick": 200580
+    },
+    {
+      "label": "rest-amu",
+      "wallSeconds": 43.128,
+      "tick": 200831
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 57.378,
+      "tick": 201100
+    },
+    {
+      "label": "wave",
+      "wallSeconds": 61.294,
+      "tick": 201169
+    },
+    {
+      "label": "play-on",
+      "wallSeconds": 65.147,
+      "tick": 201216
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 65.733,
+      "tick": 201219
+    },
+    {
+      "label": "done",
+      "wallSeconds": 66.79,
+      "tick": 201219,
+      "save": {
+        "tick": 201219,
+        "rulesVersion": "chapter1-follow-1"
+      },
+      "review": {
+        "amu": {
+          "energyUsed": 786,
+          "injuryGained": 0
+        },
+        "shen": {
+          "energyUsed": 0,
+          "injuryGained": 0
+        }
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "meals": [
+      0,
+      4
+    ],
+    "mentor": {
+      "kind": "weapon",
+      "art": "sword",
+      "state": "set",
+      "proposedAt": 199844,
+      "decidedAt": 199844,
+      "setAt": 200561,
+      "baseline": {
+        "U": 0,
+        "F": 0,
+        "I": 0,
+        "had": false
+      }
+    },
+    "leave": {
+      "tick": 201169,
+      "energy": 9946
+    },
+    "punch": {
+      "tick": 201169,
+      "energy": 9746
+    },
+    "midSave": {
+      "tick": 201169,
+      "cut": {
+        "shen": 201169
+      }
+    },
+    "review": {
+      "amu": {
+        "energyUsed": 786,
+        "injuryGained": 0
+      },
+      "shen": {
+        "energyUsed": 0,
+        "injuryGained": 0
+      }
+    },
+    "startEnergy": 9946,
+    "save": {
+      "tick": 201219,
+      "rulesVersion": "chapter1-follow-1"
+    },
+    "demoWritten": [
+      "evidence/optimization/m40/showcase-m37-m40.save.json",
+      "evidence/optimization/m40/drill-cut-midway.save.json"
+    ]
+  }
+}

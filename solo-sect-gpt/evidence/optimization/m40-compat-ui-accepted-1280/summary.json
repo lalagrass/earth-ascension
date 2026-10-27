@@ -1,0 +1,89 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 46.343,
+  "errors": [],
+  "steps": [
+    {
+      "label": "continued-30s",
+      "wallSeconds": 11.895,
+      "tick": 201844
+    },
+    {
+      "label": "run-showcase-m24-m30.save.json",
+      "wallSeconds": 21.185,
+      "tick": 194996
+    },
+    {
+      "label": "run-showcase-m31-m36.save.json",
+      "wallSeconds": 29.939,
+      "tick": 199470
+    },
+    {
+      "label": "run-showcase-m37-m40.save.json",
+      "wallSeconds": 38.503,
+      "tick": 201842
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 39.457,
+      "tick": 201172
+    },
+    {
+      "label": "missing-image-plays",
+      "wallSeconds": 46.165,
+      "tick": 205
+    },
+    {
+      "label": "done",
+      "wallSeconds": 46.342,
+      "tick": 205,
+      "runs": 3
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "runs": [
+      {
+        "file": "m30/showcase-m24-m30.save.json",
+        "from": 194362,
+        "to": 194996
+      },
+      {
+        "file": "m36/showcase-m31-m36.save.json",
+        "from": 198837,
+        "to": 199470
+      },
+      {
+        "file": "m40/showcase-m37-m40.save.json",
+        "from": 201219,
+        "to": 201842
+      }
+    ],
+    "badToast": "校驗碼不符，原存檔已保留",
+    "preview": "匯入預覽\n\nseed 11 · 第17日 · schema 1\n\n確認後替換當局；手動槽保留。\n\n確認替換當局",
+    "viewState": {
+      "epochBefore": "1"
+    },
+    "continued": {
+      "from": 201219,
+      "to": 201844
+    },
+    "afterReload": 2,
+    "midReview": {
+      "amu": {
+        "energyUsed": 266,
+        "injuryGained": 0
+      },
+      "shen": {
+        "energyUsed": 0,
+        "injuryGained": 0
+      }
+    },
+    "midReviewText": "上次回顧：終止 · 兩翼包抄 · 漏過0 · 擊退0 · 集合13秒、交手4秒\n阿木（前攔）短打快拳1 · 命中0 · 受擊0 · 耗精力3 · 傷勢+0\n沈禾（守線） · 命中0 · 受擊0 · 耗精力0 · 傷勢+0"
+  }
+}

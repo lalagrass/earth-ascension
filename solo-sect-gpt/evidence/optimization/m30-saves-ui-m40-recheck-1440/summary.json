@@ -1,0 +1,68 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 35.755,
+  "errors": [],
+  "steps": [
+    {
+      "label": "run-showcase-m12-m16.save.json",
+      "wallSeconds": 9.343,
+      "tick": 188825
+    },
+    {
+      "label": "run-showcase-m17-m23.save.json",
+      "wallSeconds": 17.942,
+      "tick": 190691
+    },
+    {
+      "label": "run-amu-joined.save.json",
+      "wallSeconds": 26.16,
+      "tick": 101823
+    },
+    {
+      "label": "run-showcase-m24-m30.save.json",
+      "wallSeconds": 34.598,
+      "tick": 194977
+    },
+    {
+      "label": "done",
+      "wallSeconds": 35.755,
+      "tick": 199637,
+      "runs": 4
+    }
+  ],
+  "label": "m40-recheck",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "runs": [
+      {
+        "file": "optimization/showcase-m16/showcase-m12-m16.save.json",
+        "rules": "chapter1-joint-1",
+        "from": 188195,
+        "to": 188825
+      },
+      {
+        "file": "optimization/showcase-m23/showcase-m17-m23.save.json",
+        "rules": "chapter1-follow-1",
+        "from": 190065,
+        "to": 190691
+      },
+      {
+        "file": "development/journey-03/amu-joined.save.json",
+        "rules": "chapter1-1",
+        "from": 101214,
+        "to": 101823
+      },
+      {
+        "file": "optimization/m30/showcase-m24-m30.save.json",
+        "rules": "chapter1-follow-1",
+        "from": 194362,
+        "to": 194977
+      }
+    ],
+    "fallback": "原選的招式不在基礎拳的招式清單（此局可能沒有安裝它的內容包），已回到招式清單。\n基礎拳（拳） · 深修\n階段：入門 → 熟練（熟練18）→ 深修（熟練90且體悟10）\n理解 5 ／ 熟練 100 ／ 體悟 10\n實戰情境：守點體悟、護人體悟 · 下一步：已深修\n練這門（一單位）\n條件四層（公版）\n成長紀錄\n共 199 筆 · 自學會起完整保存，未截斷；來源只記事件，不記前後值\n第17日 378秒 · 練功\n第17日 366秒 · 練功\n第17日 354秒 · 練功\n第17日 288秒 · 練功\n第17日 276秒 · 練功\n招式\n直拳 已學會 · 可出手\n推掌 未學：推掌需洪七公真授課 · 不能出手：推掌需洪七公真授課"
+  }
+}
