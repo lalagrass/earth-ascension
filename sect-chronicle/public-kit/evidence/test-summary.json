@@ -1,0 +1,33 @@
+{
+  "base": "00f4dbe26be5765a9622957b7c6a636ab5039f96",
+  "candidateRuntimeSource": "0972c2dc8f79f7def38024a0a2f58e2aeb52734d",
+  "package": "public-kit@1.0.0",
+  "manifestSha256": "5bd159aca9fbc81695ca239c9217a81ce24b00819eee0c2f9fd48f091c3ea992",
+  "contentSha256": "5d9e5b6e56e7f3b45e2a94b2cb80489ea9323e79f91222f5756e0540b152fd46",
+  "runtimeFiles": 30,
+  "optionalSceneFiles": 5,
+  "manifestUnchangedFromCandidate": true,
+  "focused": {
+    "passed": 5,
+    "failed": 0
+  },
+  "python": {
+    "passed": 53,
+    "failed": 0
+  },
+  "gameFast": {
+    "passed": 450,
+    "failed": 0,
+    "note": "Final tooling-only adapter-reference hash negative case was added afterwards and focused5/5 rerun; runtime/manifest unchanged."
+  },
+  "m2Syntax": "passed",
+  "diffCheck": "passed",
+  "desktop": {
+    "checks": 9,
+    "pageErrors": 0,
+    "attempts": 1,
+    "core": "fixed GPT 6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc",
+    "cleanup": "page/context/browser/server closed, viewport restored"
+  },
+  "finalPublication": "final PR/accepted SHA receipt posted externally; candidate implementation SHA above is not an acceptance claim"
+}

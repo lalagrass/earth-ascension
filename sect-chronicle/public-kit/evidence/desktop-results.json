@@ -1,0 +1,48 @@
+{
+  "author": "Codex Cloud /root/presentation366_author",
+  "host": "dddd1088786f",
+  "receipt": {
+    "receiptVersion": 1,
+    "package": "public-kit@1.0.0",
+    "sourceSha": "0972c2dc8f79f7def38024a0a2f58e2aeb52734d",
+    "manifestSha256": "5bd159aca9fbc81695ca239c9217a81ce24b00819eee0c2f9fd48f091c3ea992",
+    "assetPin": {
+      "path": "assets/shared/pins/gpt.mjs",
+      "version": "gpt-1.0.0",
+      "manifestSha256": "e0a3e53581aa722a5b2b4e145e89ae5a0138e138914e580b71970b98e28985fb"
+    },
+    "adapter": {
+      "id": "central.fixed-gpt",
+      "sourceSha": "0972c2dc8f79f7def38024a0a2f58e2aeb52734d",
+      "coreSha": "6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc"
+    }
+  },
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "checks": [
+    "formal existing facility still reads original stock",
+    "formal affected facility/resource reads never dispatch work or change authority",
+    "browser caller pin equals exact git-source receipt and manifest/asset/adapter/core locks",
+    "existing isolated harness visibly identifies package release and separate asset version",
+    "thin runtime renderer reads true public fixed-GPT card",
+    "absent initial/history fields remain explicitly unknown",
+    "native selection/card/details/facility navigation preserve the complete paused true core",
+    "true core retains native map scale and unsupported actual-path capability",
+    "new thin entry retains existing visibility/layer boundary"
+  ],
+  "errors": [],
+  "screenshots": [
+    "fixed-gpt-release-pilot.jpg"
+  ],
+  "browser": "154.0.8037.57",
+  "passed": true,
+  "cleanup": {
+    "pageClosed": true,
+    "contextClosed": true,
+    "browserClosed": true,
+    "serverStopped": true,
+    "viewport": "owned viewport restored then context closed"
+  }
+}

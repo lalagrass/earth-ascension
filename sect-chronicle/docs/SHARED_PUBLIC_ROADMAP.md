@@ -56,3 +56,12 @@
 #366／PR369 已接受及 postCI 完成；其後 #368／PR370 Grok 有限立繪合 dev `3079a03de5c2e8c79af64b0962ae3da75f274466`、postCI40412033087 五成功，原圖與作者保持。#367 現為本作者交付候選，未冒稱合入；[場景導覽 handoff](SCENE_NAV01_HANDOFF.md)保存 A–D、三版缺項、來源與清理。最終接受SHA／postCI由grass在#367/#365回填，不新增文件gate。
 
 已提取簡潔小地圖，不等於完整世界地圖／探索記憶／路徑編輯器；關係、建造、人格、完整圖庫與其他玩法依原議程。#367及必要同PR補修完成後停止，不代啟新包；保存升版、手機最後。
+
+
+## #375 PUBLIC-RELEASE-01（2026-10-28 新批准獨立包）
+
+#365 已由 #367／PR371 完成，接受 dev `00f4dbe26be5765a9622957b7c6a636ab5039f96`、postCI40500543161 五成功；上方候選是當時作者快照，完成以GitHub總收據為準。#375 是新批准的中央發布／契約與升級流程，不重開前序。
+
+本PR作者候選 `public-kit@1.0.0`：薄DOM/data入口、optional Pixi入口、可重跑必要runtime閉包/hash與明選素材pack，adapter/host與開發core分開；相容來源遮罩及optional觀察/位置持有/region原點helper、SemVer政策/changelog/00f4dbe遷移、中央真固定GPT試點。見[整包handoff／migration／prompt](PUBLIC_KIT_RELEASE_HANDOFF.md)與[API／版本／發布流程](../public-kit/README.md)。尚待grass非作者review／#67／dev/postCI，以新接受SHA收據封存首次整包，**不稱00f4dbe已發布1.0.0**。
+
+#372～#374各自仍固定00f4dbe，不新增#375前置、不改scope/DoD、不代啟或進原作者分支/box。版本/素材pin/save分開，不npm/全局release/根依賴CI/權限/新玩法；保存升版、手機最後。這包及必要同PR補修、發布收據完成後休息，不接新backlog或巡檢。

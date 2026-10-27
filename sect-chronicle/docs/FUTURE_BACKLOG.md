@@ -1,5 +1,12 @@
 # 未來構想 backlog：生活、輕功、領地防衛、角色自主與門派經營參考
 
+## 2026-10-28 公版可升級產品 #375（新單包）
+
+依[#340擁有人追加批准](https://github.com/lalagrass/earth-ascension/issues/340#issuecomment-6455230459)，中央 #375 交首次整包public-kit@1.0.0候選：可核runtime/optional Pixi/明選素材閉包與hash、相容optional metadata/位置owner/region原點、版本pin/changelog/00f4dbe遷移及一個真固定GPT隔離試點。見[handoff／遷移／短prompt](PUBLIC_KIT_RELEASE_HANDOFF.md)／[版本政策與發布清單](../public-kit/README.md)。需新PR/接受SHA與CI收據，舊00f4dbe不改稱歷史release。
+
+#372～#374繼續各自固定`00f4dbe26be5765a9622957b7c6a636ab5039f96`、不等本包、不改DoD/作者成果；消費者升級獨立安排。未定breaking不偷改v1也不阻擋相容交付。不授公式統一、完整圖庫、保存升版/手機、npm/global release/main/根依賴CI/權限。#375是新有限單包，完成及必要補修收尾後休息，不自開其他backlog。
+
+
 ## 2026-10-26 公版有限序列 #365 已批准
 
 前序 #356 三包與 #363／PR364 已合 dev／必要 postCI，最新 base `bb251ab78e4bc0579e3e750afd0cc7fe2a9c6dd5`。本輪只授 #366 外觀／狀態一致化與輕量元件 preview → #367 真可見場景導覽，逐包非作者 review／#67／dev／postCI 才接下一包。詳見[路線](SHARED_PUBLIC_ROADMAP.md#365-有限序列介面外觀--場景導覽2026-10-26)及[#366 handoff／prompt](UI_PRESENTATION01_HANDOFF.md)。#366／PR369 已合 dev `6f959f534e9a00994f1cea7c230b4110e60db8c6`、postCI40340938923 五成功；Grok #368／PR370 已合 dev `3079a03de5c2e8c79af64b0962ae3da75f274466`、postCI40412033087 五成功。#367 本 PR 是最後包作者候選，原座標snapshot小地圖／camera框、可見人物／已知點與原跟隨定位已交，公開route缺項明示；待grass非作者review/dev/postCI。見[場景導覽handoff／prompt／能力表](SCENE_NAV01_HANDOFF.md)，未將候選寫成已合。
