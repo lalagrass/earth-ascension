@@ -51,7 +51,7 @@ python3 -m http.server 8879 --bind 127.0.0.1 --directory solo-sect-gpt
 | M37 | 暫停退出後的試拳不算進演練；搬運中的飯算在途；紀事保留窗第一筆不漏 | 2acc64a | f302d05 | optimization-m37.done.json |
 | M38 | （素材包）兩張立繪可離線解析、來源可核 | a21cc8a | 13986b6 | optimization-m38.done.json |
 | M39 | 開局與人物卡看得到郭靖、令狐沖 | 252884b | 3b2b7a4 | optimization-m39.done.json |
-| M40 | 新展示檔、兩段路線、相容收尾、本文件 | 578cf93 | 見總標記 | optimization-m40.done.json |
+| M40 | 新展示檔、兩段路線、相容收尾、本文件 | 578cf93 | e3fbfbd | optimization-m40.done.json |
 
 ## 驗收摘要
 
