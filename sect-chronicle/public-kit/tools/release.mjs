@@ -70,7 +70,7 @@ export async function checkManifest(manifest,read=p=>readFile(path.join(root,p))
  for(const group of [manifest.runtime,manifest.optionalScene]) {
   const actual=await closure(group.entries,read);if(JSON.stringify(actual)!==JSON.stringify(group.files))throw Error('Runtime dependency closure/hash mismatch');
  }
- for(const f of [manifest.optionalScene.license,...Object.values(manifest.assetPacks).flatMap(p=>p.files)])if(!safe(f.path)||digest(await read(f.path))!==f.sha256)throw Error(`Missing/changed selected content: ${f.path}`);
+ for(const f of [manifest.optionalScene.license,...manifest.adapterExamples,...Object.values(manifest.assetPacks).flatMap(p=>p.files)])if(!safe(f.path)||digest(await read(f.path))!==f.sha256)throw Error(`Missing/changed selected content: ${f.path}`);
  return {package:manifest.package,contentSha256,runtimeFiles:manifest.runtime.files.length,optionalSceneFiles:manifest.optionalScene.files.length};
 }
 export async function receiptAt(sourceSha,asset,adapterId,coreSha) {

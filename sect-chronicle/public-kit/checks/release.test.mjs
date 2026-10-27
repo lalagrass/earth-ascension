@@ -19,6 +19,7 @@ test('release is deterministic; DOM runtime imports only the manifest closure, n
  bytes.delete('public-ui/values.mjs');await assert.rejects(closure(m.runtime.entries,staged),/Missing staged dependency/);
  bytes.set('public-ui/values.mjs',Buffer.from("import './checks/private-payload.mjs';"));await assert.rejects(closure(m.runtime.entries,staged),/Forbidden runtime/);
  await assert.rejects(checkManifest({...m,contentSha256:'0'.repeat(64)}),/summary mismatch/);
+ await assert.rejects(checkManifest(m,async p=>p===m.adapterExamples[0].path?Buffer.from('changed adapter'):readFile(path.join(root,p))),/Missing\/changed selected content/);
 });
 test('package pin rejects legacy/floating source and keeps package, contracts, assets, adapter/core and save separate',()=>{
  const data={sourceSha:'a'.repeat(40),manifestSha256:'b'.repeat(64),assetPin:{path:'assets/shared/pins/gpt.mjs',version:'gpt-1.0.0',manifestSha256:'c'.repeat(64)},adapter:{id:'my.native-adapter',sourceSha:'d'.repeat(40),coreSha:'e'.repeat(40)}};

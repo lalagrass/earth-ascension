@@ -70,3 +70,12 @@ const navigation = Navigation.navigationView(input);
 ## 同PR補修短prompt
 
 > 只補#375原PR：先核有效claim/head/base、草稿/接受狀態、closure內容及grass新差異。保留v1呼叫與舊00f4dbe三方pin；breaking列next major/preview，不默改v1。runtime不攜core/fixtures，receipt鎖新來源SHA＋release manifest hash＋明選assetpin＋adapter/core，不將舊baseline宣稱1.0.0。僅驗受影響反例/必要CI，既有真固定GPT隔離試點與finally清理；不進原作者branch/box、根/CI/依賴/保存/手機。交grass集中非作者review，不自審合或占#67票；本新單包收尾後休息，不啟後包/巡檢。
+
+
+### 作者實際驗證收據（待非作者review）
+
+實作候選來源 `0972c2dc8f79f7def38024a0a2f58e2aeb52734d` 已供上述真試點pin。發布JSON實檔SHA256 `5bd159aca9fbc81695ca239c9217a81ce24b00819eee0c2f9fd48f091c3ea992`；內容摘要 `5d9e5b6e56e7f3b45e2a94b2cb80489ea9323e79f91222f5756e0540b152fd46`。DOM/data30檔、optionalScene5檔＋license；確切清單在manifest，不含固定core/測試。
+
+局部5/5、必要Python53/53、現行game快驗450/450、m2/app語法與diff通過。之後僅加工具對adapter參考hash的校驗/負例並重跑局部5/5，runtime/manifest從候選來源至最終head內容不變；不重跑無關矩陣。Cloud Chromium154桌面9checks／0pageerrors，一次通過；[真試點圖](../public-kit/evidence/fixed-gpt-release-pilot.jpg)、[desktop實際receipt／清理](../public-kit/evidence/desktop-results.json)、[摘要](../public-kit/evidence/test-summary.json)。正式設施/資源讀取、中央真core選人/讀卡/定位前後完整world相同；初值缺項、原生2400×1800／route unsupported保持。
+
+所有自有page/context/browser/server已關，自有viewport還原；事後無8838或本包browser-check殘留。最終PR-head receipt及當前CI在PR/#375回填，接受SHA/postCI由grass完成；不將候選source稱為已發布。Mac/他人服務未動，未開後包或巡檢。
