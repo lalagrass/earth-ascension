@@ -1,3 +1,5 @@
+import { navigationView } from '../../navigation-view/contract.mjs';
+import { createNavigationRenderer } from '../../navigation-view/render.mjs';
 import { Application, Texture } from '../../experiments/water-carry/demo/vendor/pixi.min.mjs';
 import { createWorld } from '../../scene-shared/sources/gpt/solo-sect-gpt/src/world.mjs';
 import { createGPTAdapter, gptDefinition } from '../../scene-shared/adapters/gpt.mjs';
@@ -10,9 +12,12 @@ const adapter=createGPTAdapter({world,appearance:()=>({asset:'dot',frame:0,ancho
 const app=new Application();await app.init({resizeTo:window,background:'#e8dfc8',antialias:true});document.body.prepend(app.canvas);
 const renderer=createSceneRenderer({stage:app.stage,definition:{...gptDefinition(),layers:[]},bindings:{texture:()=>Texture.WHITE}});
 let state;
+const navigation=createNavigationRenderer({root:document.getElementById('navigation')});
 function paint(){const snap=adapter.snapshot({paused:true});renderer.render(snap);for(const s of renderer.actors.values()){s.width=16;s.height=24;}
  renderer.world.position.set(innerWidth/2-target.x/Q,innerHeight/2-target.y/Q);state={target:target.id,visible:visibleEntity(world,target),rendered:renderer.actors.has(target.id),picked:renderer.pick(target.x/Q,target.y/Q-8,1),card:!!gptCard(world,target.id),actors:snap.actors.map(a=>a.id),tick:world.tick};
+ navigation.render(navigationView({definition:gptDefinition(),snapshot:snap,camera:{x:target.x/Q,y:target.y/Q,zoom:1},viewport:{width:innerWidth,height:innerHeight}}));
  document.getElementById('proof').textContent=JSON.stringify(state,null,2);return state;}
 document.getElementById('reveal').onclick=()=>{resident.x=target.x-60*Q;resident.y=target.y;paint();};
 document.getElementById('conceal').onclick=()=>{Object.assign(resident,home);paint();};
-paint();window.visibilityProof={snapshot:()=>structuredClone(state),world:()=>structuredClone(world)};
+document.getElementById('epoch').onclick=()=>{adapter.reset();paint();};
+paint();window.visibilityProof={navigation:()=>navigation.snapshot(),snapshot:()=>structuredClone(state),world:()=>structuredClone(world)};

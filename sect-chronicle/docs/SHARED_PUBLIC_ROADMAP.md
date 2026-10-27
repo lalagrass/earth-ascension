@@ -45,7 +45,14 @@
 
 | 包 | 狀態／範圍 | 下一條件 |
 |---|---|---|
-| [#366 UI-PRESENTATION-01](https://github.com/lalagrass/earth-ascension/issues/366) | 本 PR 作者候選：既有水彩紙墨 tokens、重複 value/source markup、狀態與 focus；擴原 showcase 復用五種 production renderer、fixture 明標。見[短 handoff／補修 prompt](UI_PRESENTATION01_HANDOFF.md) | grass 非作者 review／#67／dev＋必要 postCI 後才 done |
-| [#367 SCENE-NAV-01](https://github.com/lalagrass/earth-ascension/issues/367) | 已批准後包：真可見角色／既有功能點／camera 導覽，有公開權威路徑才畫線 | 等 #366 dev/postCI；本作者未認領、不預占 |
+| [#366 UI-PRESENTATION-01](https://github.com/lalagrass/earth-ascension/issues/366) | PR369 已合 dev `6f959f534e9a00994f1cea7c230b4110e60db8c6`，postCI40340938923 五成功；紙墨 tokens／狀態focus與原 showcase。見[handoff](UI_PRESENTATION01_HANDOFF.md) | 已接受，未變證據復用 |
+| [#367 SCENE-NAV-01](https://github.com/lalagrass/earth-ascension/issues/367) | 本 PR 作者候選：原snapshot/camera小地圖、可見人物/已知點/視窗框，原選取跟隨定位；第二真GPT原尺度、可見性/epoch/pick清理。公開實際route未提供即明示缺項。見[handoff／prompt／能力表](SCENE_NAV01_HANDOFF.md) | grass非作者review／#67／dev＋必要postCI後才done；本序列最後包，完成總收據後休息 |
 
 借 Unciv 外觀分層／單元件預覽概念；沿現有 DOM/Pixi，無新框架或皮膚產品。#337 公開關係未穩定、建造床位 #315/#321、人格天賦 #340/#106、完整素材庫 #339／女孩圖及編輯器仍原 backlog；Grok 的有限立繪第二包保持原指派，#366 不改素材。三原作者分支不假稱自動更新。Cloud 工程／Mac 真人、同一正式入口、原世界數值／長路速度／D45／D53 保持，新增保存與手機最後。#366→#367 完成及必要補修後停止，不啟永久循環。
+
+
+### #365 累計與目前交付（2026-10-27）
+
+#366／PR369 已接受及 postCI 完成；其後 #368／PR370 Grok 有限立繪合 dev `3079a03de5c2e8c79af64b0962ae3da75f274466`、postCI40412033087 五成功，原圖與作者保持。#367 現為本作者交付候選，未冒稱合入；[場景導覽 handoff](SCENE_NAV01_HANDOFF.md)保存 A–D、三版缺項、來源與清理。最終接受SHA／postCI由grass在#367/#365回填，不新增文件gate。
+
+已提取簡潔小地圖，不等於完整世界地圖／探索記憶／路徑編輯器；關係、建造、人格、完整圖庫與其他玩法依原議程。#367及必要同PR補修完成後停止，不代啟新包；保存升版、手機最後。

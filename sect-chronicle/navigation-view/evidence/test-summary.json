@@ -1,0 +1,32 @@
+{
+  "base": "3079a03de5c2e8c79af64b0962ae3da75f274466",
+  "localFastGame": {
+    "passed": 444,
+    "failed": 0,
+    "command": "node --test sect-chronicle/test/*.test.js",
+    "note": "Cloud process capability; prior to final fifth public-anchor source test and immediate host refresh corrections; no engine diff. Final navigation5/5 and complete desktop26/26 cover those differences; current-head CI remains required."
+  },
+  "focusedFinal": {
+    "passed": 5,
+    "failed": 0,
+    "command": "node --test sect-chronicle/navigation-view/checks/navigation.test.mjs"
+  },
+  "python": {
+    "passed": 53,
+    "failed": 0
+  },
+  "syntax": "m2.js and changed app/harness/proof modules passed",
+  "diffCheck": "passed",
+  "desktop": {
+    "checks": 26,
+    "errors": 0,
+    "cleanup": {
+      "pageClosed": true,
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverStopped": true,
+      "viewport": "owned viewport restored then context closed"
+    }
+  },
+  "reuse": "#342 camera/renderer, #357 visibility, #366 tokens/state/focus, #370 portrait evidence unchanged; no new long seed/mobile/save matrix"
+}

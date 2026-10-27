@@ -1,3 +1,5 @@
+import { navigationView } from '../../navigation-view/contract.mjs';
+import { createNavigationRenderer } from '../../navigation-view/render.mjs';
 import { Application, Assets, Spritesheet } from '../../experiments/water-carry/demo/vendor/pixi.min.mjs';
 import { createSceneRenderer } from '../renderer.mjs';
 import { createGeminiAdapter } from '../adapters/gemini.mjs';
@@ -72,13 +74,21 @@ app.canvas.onpointerdown = (e) => { drag = { x: e.clientX, y: e.clientY, cx: cam
 app.canvas.onpointermove = (e) => { if (drag) { camera.state.x = drag.cx - (e.clientX - drag.x) / camera.state.zoom; camera.state.y = drag.cy - (e.clientY - drag.y) / camera.state.zoom; } };
 app.canvas.onpointerup = (e) => { if (drag && Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) < 4) { const at = camera.toWorld(e.clientX, e.clientY); selected = renderer.pick(at.x, at.y, camera.state.zoom); } drag = null; };
 app.canvas.addEventListener('wheel', (e) => { e.preventDefault(); camera.zoomAt(e.clientX, e.clientY, camera.state.zoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1)); }, { passive: false });
-let lastSnapshot;
+let lastSnapshot,lastEpoch;
+const navigation=createNavigationRenderer({root:document.getElementById('navigation'),
+ onActor(id) {const point=lastSnapshot.actors.find(a=>a.id===id);if(point){selected=id;camera.state.x=point.x;camera.state.y=point.y;}},
+ onFacility(id) {const point=lastSnapshot.facilities.find(p=>p.id===id);if(point){camera.state.x=point.x;camera.state.y=point.y;}},
+});
+document.getElementById('navigation-toggle').onclick=()=>{const root=document.getElementById('navigation');root.hidden=!root.hidden;document.getElementById('navigation-toggle').setAttribute('aria-expanded',String(!root.hidden));};
 app.ticker.add((t) => {
   if (playing) for (let i = clock.feed(t.deltaMS, rate); i > 0; i--) adapter.observeStep();
   lastSnapshot = adapter.snapshot({ paused: !playing, rate }); renderer.render(lastSnapshot);
+  if(lastEpoch!==lastSnapshot.epoch || !lastSnapshot.actors.some(a=>a.id===selected))selected=null;
+  lastEpoch=lastSnapshot.epoch;
   camera.resize(app.screen.width, app.screen.height); camera.apply(renderer.world);
+  navigation.render(navigationView({definition:core.definition,snapshot:lastSnapshot,camera:camera.state,viewport:app.screen,selectedId:selected}));
   scenery?.tick(lastSnapshot.timeMs, lastSnapshot.actors);
   const v = isGPT ? { tick: world.tick, vat: world.inventories.vat.items.water, vatCapacity: world.inventories.vat.capacity, herbs: world.inventories.store.items.herb, herbCapacity: world.inventories.store.capacity } : model.view(); document.getElementById('state').textContent = `tick ${v.tick} · ${rate}× · ${playing ? '播放' : '暫停'}\n水 ${v.vat} / ${v.vatCapacity} · 藥 ${v.herbs} / ${v.herbCapacity}\n` + lastSnapshot.actors.filter((a) => !isGPT || ['leader','amu','child'].includes(a.id)).map((a) => `${a.id} · ${a.action.phase} · 負重 ${a.load}\n腳底 ${a.x.toFixed(1)}, ${a.y.toFixed(1)} · ${a.positionSource}`).join('\n') + `\n選取 ${selected || '—'}`;
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { playing = false; clock.clear(); } });
-window.sceneHarness = { assetReceipt: { version:assetPin.manifest.version, coreCommit:assetPin.manifest.coreCommit, hero:resolvedHero }, snapshot: () => structuredClone(lastSnapshot), state: () => isGPT ? structuredClone(world) : model.exportState(), pause() { playing = false; clock.clear(); } };
+window.sceneHarness = { assetReceipt: { version:assetPin.manifest.version, coreCommit:assetPin.manifest.coreCommit, hero:resolvedHero }, navigation: () => navigation.snapshot(), snapshot: () => structuredClone(lastSnapshot), state: () => isGPT ? structuredClone(world) : model.exportState(), pause() { playing = false; clock.clear(); } };

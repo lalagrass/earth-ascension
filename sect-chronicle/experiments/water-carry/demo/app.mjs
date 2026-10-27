@@ -1,3 +1,6 @@
+import { officialNavigationFacilities } from '../../../navigation-view/official.mjs';
+import { navigationView } from '../../../navigation-view/contract.mjs';
+import { createNavigationRenderer } from '../../../navigation-view/render.mjs';
 import { createOfficialIntentAdapter } from '../../../intent-view/official.mjs';
 import { intentHtml, commandHtml, policiesHtml } from '../../../intent-view/render.mjs';
 // 宗門編年生活開發版：PixiJS＋HTML/CSS。場景（背景、可排序物件、兩人與影子、選取圈）畫在 Pixi；
@@ -494,7 +497,7 @@ const bodies = Object.fromEntries(IDS.map((id) => {
 }));
 const sceneAdapter = createGeminiAdapter({ getModel: () => model, geometry: geo,
   source: 'dev:9ef497e86a5837539cc8e461855695b0fe468dbd:gemini-derived',
-  facilities: Object.entries(places).map(([id, p]) => ({ id, label: p.label, x: p.x, y: p.y })),
+  facilities: officialNavigationFacilities(places),
   appearance: (id, person, at) => {
     const p = poseOf(id, person), h = sheets[id].data.meta;
     return { asset: id, frame: p.frame, motion: p.motion, body: bodies[id], anchor: { x: h.anchorPx.x / h.frameSize.w, y: h.anchorPx.y / h.frameSize.h } };
@@ -506,6 +509,18 @@ const intentAdapter = createOfficialIntentAdapter({ getModel: () => model, dispa
 const intentResults = new Map();
 const facilityAdapter = createOfficialFacilityAdapter({ getModel: () => model, places });
 let sceneSnapshot;
+const navigation = createNavigationRenderer({root:$('navigation'),
+  onActor(id) { if(IDS.includes(id) && sceneSnapshot.actors.some(a=>a.id===id)) { select(id); renderNavigation(); } },
+  onFacility(id) {
+    const point=sceneSnapshot.facilities.find(p=>p.id===id);
+    if(point) locateView(VIEWS[id] || {x:point.x,y:point.y,zoom:cam.zoom});
+  },
+});
+function renderNavigation() {
+  navigation.render(navigationView({definition:{width:WORLD_SIZE.w,height:WORLD_SIZE.h},snapshot:sceneSnapshot,
+    camera:cam,viewport:app.screen,selectedId:ui.selected,names:Object.fromEntries(IDS.map(id=>[id,profiles[id].name]))}));
+}
+
 function renderShared() {
   sceneSnapshot = sceneAdapter.snapshot({ view: v, paused: !ui.playing, rate: ui.speed });
   const events = sharedScene.render(sceneSnapshot);
@@ -582,8 +597,8 @@ window.addEventListener('keydown', (e) => {
   else if (k === 'Enter' && IDS.includes(ui.selected)) { e.preventDefault(); openMenu('vat'); } // 不讓同一次 Enter 落到剛拿到焦點的選項上
 });
 // D37 地標快看：只移鏡頭（停止跟隨），不推進世界、不改任何狀態；按 0 回到跟隨。
-function look(name) {
-  const vw = VIEWS[name];
+function look(name) { return locateView(VIEWS[name]); }
+function locateView(vw) {
   if (!vw) return false;
   ui.follow = false;
   cam.zoom = clampZoom(vw.zoom === 'fit' ? Math.min(app.screen.width / WORLD_SIZE.w, app.screen.height / WORLD_SIZE.h) : vw.zoom * (narrow() ? 0.7 : 1));
@@ -609,6 +624,11 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('resize', () => { applyCam(); measure(); });
 $('play').addEventListener('click', togglePlay);
 for (const b of document.querySelectorAll('[data-speed]')) b.addEventListener('click', () => setSpeed(Number(b.dataset.speed)));
+$('navigation-toggle').addEventListener('click', () => {
+  $('navigation').hidden=!$('navigation').hidden;
+  $('navigation-toggle').setAttribute('aria-expanded',String(!$('navigation').hidden));
+  renderNavigation();
+});
 $('roster-toggle').addEventListener('click', toggleRoster);
 $('resource-toggle').addEventListener('click', () => {
   $('resources').hidden = !$('resources').hidden;
@@ -632,7 +652,7 @@ function saveGame() { const r = guardedSave(model, () => saveTo(storage, model))
 function loadGame() {
   if (ui.menu) closeMenu(false);
   const r = guardedLoad(model, () => loadFrom(storage, model, SAVE_TEMPLATE)); // 失敗時暫態也不變（life-save 試跑一步可能推動暫態）
-  if (r.ok) { intentResults.clear(); ui.playing = false; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); sceneAdapter.reset(); eventAdapter.reset(); recentEvents.reset(); v = model.view(); renderShared(); fx.length = 0; }
+  if (r.ok) { intentResults.clear(); ui.playing = false; ui.autoPaused = false; ui.pausedByMenu = false; clock.clear(); sceneAdapter.reset(); eventAdapter.reset(); recentEvents.reset(); v = model.view(); renderShared(); renderNavigation(); fx.length = 0; }
   toast(r.text); renderChrome(); return r;
 }
 $('save').addEventListener('click', saveGame);
@@ -688,6 +708,7 @@ function reset() {
   sceneAdapter.reset(); eventAdapter.reset(); recentEvents.reset();
   v = model.view();
   renderShared();
+  renderNavigation();
   fx.length = 0;
   toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份；野豬回棲地精力 60、威脅 0，護欄損痕 0；休息、休閒、叫回、驅離、整理與待執行指令已清除；自主護院回到兩人未允許（熟手主動照看、主角受擾再處理）；三隻測試鼠回原位、清理名額清空、掌法比較回初學');
   renderChrome();
@@ -1200,12 +1221,14 @@ app.ticker.add((t) => {
   for (let i = 0; i < 3; i++) { const f = fx[i]; tag(`fx${i}`, 'gain', f ? f.text : null, f ? f.x : 0, f ? f.y - (1 - (f.until - now) / 1600) * 14 : 0); }
   wc.tick(sceneSnapshot.timeMs, IDS.map((id) => positions[id]).filter(Boolean)); // D37：遮擋淡出／竹影／水光，只是畫面
   if (ui.follow) follow();
+  renderNavigation();
   placeMenu();
   if (prev.boar.mode !== v.boar.mode || prev.boar.why !== v.boar.why || IDS.some((id) => prev.people[id].trips !== v.people[id].trips || prev.people[id].guardOrder !== v.people[id].guardOrder || prev.people[id].status !== v.people[id].status || prev.people[id].restOrder !== v.people[id].restOrder || prev.people[id].resting !== v.people[id].resting || prev.people[id].next !== v.people[id].next || prev.people[id].auto.text !== v.people[id].auto.text || prev.people[id].up.text !== v.people[id].up.text || prev.people[id].fix !== v.people[id].fix || prev.people[id].fixResult !== v.people[id].fixResult || prev.people[id].cleanResult !== v.people[id].cleanResult) || JSON.stringify(prev.clean) !== JSON.stringify(v.clean) || prev.rats.some((r, i) => r.mode !== v.rats[i].mode) || prev.prats.some((r, i) => r.mode !== v.prats[i].mode) || JSON.stringify(prev.patrol) !== JSON.stringify(v.patrol) || (prev.patrolReport && prev.patrolReport.endTick) !== (v.patrolReport && v.patrolReport.endTick) || prev.boar.marks !== v.boar.marks || prev.boar.seen !== v.boar.seen || frames % 15 === 0) renderChrome();
   frames++;
   if (firstFrameMs == null) firstFrameMs = performance.now() - t0;
 });
 applyCam();
+renderNavigation();
 measure();
 renderChrome();
 
@@ -1221,6 +1244,7 @@ function personSnapshot(id) {
   };
 }
 window.demo = {
+  navigation: () => navigation.snapshot(),
   snapshot: () => {
     const people = Object.fromEntries(IDS.map((id) => [id, personSnapshot(id)]));
     return { ...people.hero, people, tick: v.tick, seconds: v.seconds, vat: v.vat, vatCapacity: v.vatCapacity, inFlight: v.inFlight,
