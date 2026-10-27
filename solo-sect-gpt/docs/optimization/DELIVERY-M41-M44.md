@@ -49,7 +49,7 @@ dev `00f4dbe26be5765a9622957b7c6a636ab5039f96`（PR #371）。只取 `navigation
 | M41 | 演練自然打完後的試招不算進回顧 | 0160b73 | c42c330 | optimization-m41.done.json |
 | M42 | （資料層）導覽快照：只看得到的人、三個地點、鏡頭框 | a4ee913 | c788356 | optimization-m42.done.json |
 | M43 | 「導覽」面板：點人選取跟隨、點地點移鏡頭、圖層、鍵盤不穿透、換局清除；跟隨的人離開視線就不再跟 | 52979ec | c4da25c | optimization-m43.done.json |
-| M44 | 兩條路線、新展示檔、召回停住的修正、相容收尾、本文件 | 49415fa | MARK44 | optimization-m44.done.json |
+| M44 | 兩條路線、新展示檔、召回停住的修正、相容收尾、本文件 | 49415fa | ae0f7dc | optimization-m44.done.json |
 
 ## 驗收摘要
 
