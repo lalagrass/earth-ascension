@@ -1,0 +1,78 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 14.467,
+  "errors": [],
+  "steps": [
+    {
+      "label": "playing",
+      "wallSeconds": 6.974,
+      "tick": 100
+    },
+    {
+      "label": "playing-missing",
+      "wallSeconds": 14.001,
+      "tick": 63
+    },
+    {
+      "label": "done",
+      "wallSeconds": 14.466,
+      "tick": 63,
+      "requests": {
+        "before": 1,
+        "after": 1
+      }
+    }
+  ],
+  "label": "m43-recheck",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "dialog": {
+      "custom": {
+        "appearance": "known",
+        "asset": "person.hero.sheet",
+        "text": "既有活動圖裁切（非新立繪）"
+      },
+      "guo": {
+        "appearance": "known",
+        "asset": "person.research.guojing.portrait",
+        "text": "公開立繪"
+      },
+      "linghu": {
+        "appearance": "known",
+        "asset": "person.research.linghuchong.portrait",
+        "text": "公開立繪"
+      },
+      "yue": {
+        "appearance": "unsupported",
+        "asset": null,
+        "text": "岳\n經典範本掌門沒有核准的外觀，使用文字替代"
+      }
+    },
+    "full": {
+      "box": {
+        "x": 1126,
+        "y": 484.75,
+        "width": 299,
+        "height": 398.65625
+      },
+      "nat": [
+        864,
+        1152
+      ]
+    },
+    "layout": {
+      "scrollW": 329,
+      "clientW": 329
+    },
+    "dialogMissing": "本地圖片缺失，使用文字代替。\n公開立繪",
+    "missingCard": "郭\n郭靖\n掌門 成人 · 已有床\n· 庭院歇息",
+    "requests": {
+      "before": 1,
+      "after": 1
+    }
+  }
+}

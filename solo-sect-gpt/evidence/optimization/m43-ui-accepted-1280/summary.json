@@ -1,0 +1,248 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 37.478,
+  "errors": [],
+  "steps": [
+    {
+      "label": "play",
+      "wallSeconds": 30.776,
+      "tick": 199103
+    },
+    {
+      "label": "done",
+      "wallSeconds": 37.47,
+      "tick": 194362,
+      "failed": []
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "checks": [
+      {
+        "name": "list-has-residents",
+        "pass": true,
+        "detail": {
+          "list": [
+            "阿木",
+            "柳青岫",
+            "小禾",
+            "雲生",
+            "喬峰",
+            "林青",
+            "沈禾",
+            "演武對手1",
+            "演武對手2",
+            "演武對手3",
+            "演武對手4",
+            "演武對手1",
+            "演武對手2",
+            "演武對手3",
+            "演武對手4",
+            "演武對手5",
+            "演武對手6"
+          ],
+          "expected": [
+            "雲生",
+            "小禾",
+            "阿木",
+            "林青",
+            "沈禾",
+            "喬峰",
+            "柳青岫"
+          ]
+        }
+      },
+      {
+        "name": "places",
+        "pass": true,
+        "detail": [
+          "選擇地點",
+          "倉庫",
+          "膳房",
+          "外功場"
+        ]
+      },
+      {
+        "name": "route-unsupported",
+        "pass": true
+      },
+      {
+        "name": "selected-amu",
+        "pass": true
+      },
+      {
+        "name": "frame-on-amu",
+        "pass": true,
+        "detail": {
+          "f": [
+            768.60546875,
+            638.3316611842106,
+            1430,
+            1092.8210526315788
+          ],
+          "amu": [
+            1483.60546875,
+            1184.7421875
+          ]
+        }
+      },
+      {
+        "name": "no-command-on-select",
+        "pass": true
+      },
+      {
+        "name": "marker-moves-with-amu",
+        "pass": true,
+        "detail": {
+          "m": [
+            1483.60546875,
+            1184.7421875
+          ],
+          "at": [
+            1483.60546875,
+            1184.7421875
+          ]
+        }
+      },
+      {
+        "name": "frame-follows",
+        "pass": true,
+        "detail": {
+          "f": [
+            768.60546875,
+            638.3316611842106,
+            1430,
+            1092.8210526315788
+          ]
+        }
+      },
+      {
+        "name": "preset-drag-zoom-update-paused",
+        "pass": true,
+        "detail": {
+          "f1": [
+            290,
+            698.5894736842106,
+            1430,
+            1092.8210526315788
+          ],
+          "f2": [
+            576,
+            807.8715881347657,
+            1430,
+            992.1284118652343
+          ],
+          "f3": [
+            490.19999999999993,
+            742.3023249768709,
+            1601.6000000000004,
+            1057.6976750231292
+          ]
+        }
+      },
+      {
+        "name": "paused-world-unchanged",
+        "pass": true
+      },
+      {
+        "name": "kitchen-centre",
+        "pass": true,
+        "detail": [
+          505,
+          991.3052631578947,
+          520,
+          397.38947368421043
+        ]
+      },
+      {
+        "name": "no-command-on-place",
+        "pass": true
+      },
+      {
+        "name": "card-is-kitchen",
+        "pass": true
+      },
+      {
+        "name": "layer-off",
+        "pass": true
+      },
+      {
+        "name": "layer-on",
+        "pass": true
+      },
+      {
+        "name": "space-in-panel-no-play",
+        "pass": true
+      },
+      {
+        "name": "wheel-in-panel-no-zoom",
+        "pass": true,
+        "detail": {
+          "fa": [
+            505,
+            991.3052631578947,
+            520,
+            397.38947368421043
+          ],
+          "fs1": [
+            505,
+            871.3052631578947,
+            520,
+            397.38947368421043
+          ]
+        }
+      },
+      {
+        "name": "panel-click-no-command",
+        "pass": true
+      },
+      {
+        "name": "escape-closes",
+        "pass": true
+      },
+      {
+        "name": "main-panel-not-hidden",
+        "pass": true
+      },
+      {
+        "name": "new-world-new-markers",
+        "pass": true
+      },
+      {
+        "name": "no-page-errors",
+        "pass": true,
+        "detail": []
+      }
+    ],
+    "list": [
+      "阿木",
+      "柳青岫",
+      "小禾",
+      "雲生",
+      "喬峰",
+      "林青",
+      "沈禾",
+      "演武對手1",
+      "演武對手2",
+      "演武對手3",
+      "演武對手4",
+      "演武對手1",
+      "演武對手2",
+      "演武對手3",
+      "演武對手4",
+      "演武對手5",
+      "演武對手6"
+    ],
+    "places": [
+      "選擇地點",
+      "倉庫",
+      "膳房",
+      "外功場"
+    ]
+  }
+}
