@@ -1,6 +1,9 @@
 // M29 explicit appearance binding: actorId -> design rule -> pinned local asset. Appearance never changes identity, rights or rules.
-import{pin}from'../assets/shared/pin-gpt-local.mjs';import{portraitFor,resolveAsset}from'../assets/shared/resolve.mjs';
-// The pinned hero idle-0 crop fits only the self-created leader (no canonical look); classic templates and everyone else keep the text fallback.
-export function appearanceFor(w,id){const p=w.people[id];if(!p)return null;if(id==='leader'&&w.template!=='custom')return{availability:'unsupported',url:null,crop:null,label:'經典範本掌門沒有核准的外觀，使用文字替代'};if(!['leader','child'].includes(id))return{availability:'unsupported',url:null,crop:null,label:'尚無此角色正式立繪'};
- const a=portraitFor(pin,'gpt',id);return{availability:a.availability,url:a.url,crop:a.crop,dimensions:a.dimensions||null,label:a.label,assetId:a.portraitAssetId,version:a.version||null,source:a.source||null};}
+// M39: the leader follows the opening template (w.template; old saves: canonicalIdentity; else custom). custom keeps the hero idle-0 crop;
+// guo / linghu use the whole research portraits bound in the M38 manifest; yue and everyone else keep the text fallback. Never by name.
+import{pin}from'../assets/shared/pin-gpt-local.mjs';import{portraitFor,resolveAsset,templateAppearance}from'../assets/shared/resolve.mjs';import{TEMPLATES}from'./data.mjs';
+const shape=a=>({availability:a.availability,url:a.url,crop:a.crop,dimensions:a.dimensions||null,label:a.label,assetId:a.portraitAssetId,version:a.version||null,source:a.source||null,kind:a.availability==='known'?(a.recipe?.type==='portrait'?'portrait':'crop'):null});
+export const templateOf=w=>{const p=w?.people?.leader;return Object.hasOwn(TEMPLATES,w?.template)?w.template:Object.hasOwn(TEMPLATES,p?.canonicalIdentity||'')?p.canonicalIdentity:'custom';};
+export function appearanceForTemplate(template){if(template==='custom')return shape(portraitFor(pin,'gpt','leader'));const a=templateAppearance(pin,'gpt',template);return a.availability==='known'?shape(a):{availability:'unsupported',url:null,crop:null,label:'經典範本掌門沒有核准的外觀，使用文字替代',kind:null};}
+export function appearanceFor(w,id){const p=w.people[id];if(!p)return null;if(id==='leader')return appearanceForTemplate(templateOf(w));if(id!=='child')return{availability:'unsupported',url:null,crop:null,label:'尚無此角色正式立繪',kind:null};return shape(portraitFor(pin,'gpt',id));}
 export const SCENERY=[{assetId:'scene.bamboo',at:[1640,1000]},{assetId:'scene.boulder.large',at:[900,1480]},{assetId:'scene.boulder.small',at:[860,1500]}].map(s=>({...s,asset:resolveAsset(pin,s.assetId)}));

@@ -1,0 +1,32 @@
+{
+  "source": "created worlds and existing saves; one labeled fixture",
+  "cases": [
+    {
+      "case": "binding"
+    },
+    {
+      "case": "saves",
+      "rows": [
+        [
+          "development/u04-guo/normal-template-start.save.json",
+          "person.research.guojing.portrait"
+        ],
+        [
+          "development/u04-yue/normal-template-start.save.json",
+          null
+        ],
+        [
+          "optimization/m30/showcase-m24-m30.save.json",
+          "person.hero.sheet"
+        ],
+        [
+          "optimization/m36/showcase-m31-m36.save.json",
+          "person.hero.sheet"
+        ]
+      ]
+    },
+    {
+      "case": "no-world"
+    }
+  ]
+}
