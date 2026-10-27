@@ -1,0 +1,656 @@
+{
+  "formatVersion": 1,
+  "package": "public-kit@1.0.0",
+  "legacyBase": "00f4dbe26be5765a9622957b7c6a636ab5039f96",
+  "contracts": {
+    "character": 1,
+    "martial": 1,
+    "facility": 1,
+    "event": 1,
+    "resource": 1,
+    "intent": 1,
+    "navigation": 1,
+    "scene": 1
+  },
+  "publication": {
+    "receipt": "New reviewed PR head / accepted SHA in #375; legacyBase is not this release",
+    "sourceSha": "Supply exact new checkout SHA in consumer receipt; no self-referential SHA in content manifest"
+  },
+  "runtime": {
+    "entries": [
+      "public-kit/index.mjs",
+      "public-kit/style.css"
+    ],
+    "files": [
+      {
+        "path": "assets/shared/resolve.mjs",
+        "bytes": 4380,
+        "sha256": "7ab8af62d4c437de0afe003eb07a0cb76b38217c48381f329eca8a26a705aa2a",
+        "imports": []
+      },
+      {
+        "path": "character-card/contract.mjs",
+        "bytes": 1914,
+        "sha256": "61e52cbd433e70a3ccef1391cd9c86f42cae881fae4853a1994e7942d3110d6e",
+        "imports": []
+      },
+      {
+        "path": "character-card/render.mjs",
+        "bytes": 6170,
+        "sha256": "8637150d624dcbe8ceaa1cb8bd7c75d8e47f854da3efb338f8e956708a9d88a5",
+        "imports": [
+          "martial-view/render.mjs",
+          "public-ui/values.mjs"
+        ]
+      },
+      {
+        "path": "character-card/style.css",
+        "bytes": 2184,
+        "sha256": "c113aef233623f0ac41ef457faa5618e87117460af968214e70e79d1c0415c5f",
+        "imports": [
+          "public-ui/style.css"
+        ]
+      },
+      {
+        "path": "event-view/contract.mjs",
+        "bytes": 2951,
+        "sha256": "7aacf57217f7dddfcc870ccc32e92b985c728c363c72bfac33216182526000b2",
+        "imports": [
+          "character-card/contract.mjs"
+        ]
+      },
+      {
+        "path": "event-view/render.mjs",
+        "bytes": 3195,
+        "sha256": "659dd4bdd3dc61282fb166eacf403a244300b3f3f230f983408a3bbe6297897b",
+        "imports": [
+          "public-ui/values.mjs"
+        ]
+      },
+      {
+        "path": "event-view/style.css",
+        "bytes": 493,
+        "sha256": "14032d9c8d2651c549378458649364513b2da11a820b96e149909ce935ecd850",
+        "imports": [
+          "public-ui/style.css"
+        ]
+      },
+      {
+        "path": "facility-view/contract.mjs",
+        "bytes": 725,
+        "sha256": "f0be545ea9fa27cfd0c4e3da218e49d44e63083da64428f155db96d5ec686ba6",
+        "imports": [
+          "character-card/contract.mjs"
+        ]
+      },
+      {
+        "path": "facility-view/render.mjs",
+        "bytes": 2789,
+        "sha256": "8c2c7d08521f935e0c2a1861bdc531b71f42a05b3abbf739b1192059bae6bec9",
+        "imports": [
+          "public-ui/values.mjs"
+        ]
+      },
+      {
+        "path": "intent-view/contract.mjs",
+        "bytes": 945,
+        "sha256": "de555b468c91e616ae919e33b621c91dd7677fd34b3a608209c145e8b4787acb",
+        "imports": [
+          "character-card/contract.mjs"
+        ]
+      },
+      {
+        "path": "intent-view/render.mjs",
+        "bytes": 2322,
+        "sha256": "10c096cf42296099155de039ab33e5327ff367865b708861756024da63637193",
+        "imports": [
+          "public-ui/values.mjs"
+        ]
+      },
+      {
+        "path": "intent-view/style.css",
+        "bytes": 317,
+        "sha256": "6df29e396480f3ec88b7918819f02e6370d56e7edd9b47edef3350d251d6659d",
+        "imports": [
+          "public-ui/style.css"
+        ]
+      },
+      {
+        "path": "martial-view/contract.mjs",
+        "bytes": 1029,
+        "sha256": "c8b9514424f923f0ffad604eacf9bcc454cb2fc6c95d842d81fe7abe77d915dc",
+        "imports": [
+          "character-card/contract.mjs"
+        ]
+      },
+      {
+        "path": "martial-view/motion.mjs",
+        "bytes": 4335,
+        "sha256": "fa54147b81dac30ddb08d944981b92d2e1f24e5fcd946958070aedfa281c9d95",
+        "imports": []
+      },
+      {
+        "path": "martial-view/render.mjs",
+        "bytes": 991,
+        "sha256": "bbf241b6a08da283ecdde3c208ef77f3504e5043df8e07632868a5c60be8a5c7",
+        "imports": [
+          "public-ui/values.mjs"
+        ]
+      },
+      {
+        "path": "navigation-view/contract.mjs",
+        "bytes": 2883,
+        "sha256": "da43ab2b915d7eed8256b0d8cdeaeea24c4cab3a7eaba2b11d29a731f2cb961a",
+        "imports": []
+      },
+      {
+        "path": "navigation-view/render.mjs",
+        "bytes": 5940,
+        "sha256": "c352e0b938fef1e5039ee876160921390303a9ba64403169ce57d84eca393499",
+        "imports": [
+          "navigation-view/contract.mjs"
+        ]
+      },
+      {
+        "path": "navigation-view/style.css",
+        "bytes": 2248,
+        "sha256": "4e7748d76eb2703fff741d8475658ea291d6eed59a64501002792bb46d9aa2f0",
+        "imports": [
+          "public-ui/style.css"
+        ]
+      },
+      {
+        "path": "public-fix/view-state.mjs",
+        "bytes": 1836,
+        "sha256": "c13c498ac1b0b9e7f95ac88f2d6d4f54ee545cd896b607295503c26b00ab92df",
+        "imports": []
+      },
+      {
+        "path": "public-kit/context.mjs",
+        "bytes": 1767,
+        "sha256": "a8d132ed89cf63e9decfb6a132b4fa94ec48bafd44d6c02a4a63f931735d6afd",
+        "imports": []
+      },
+      {
+        "path": "public-kit/index.mjs",
+        "bytes": 1398,
+        "sha256": "387b8c3f17a634c2b1fb5624e63e6fdf1c2416a9e4dca942ad0ef5e36f23dc38",
+        "imports": [
+          "assets/shared/resolve.mjs",
+          "character-card/contract.mjs",
+          "character-card/render.mjs",
+          "event-view/contract.mjs",
+          "event-view/render.mjs",
+          "facility-view/contract.mjs",
+          "facility-view/render.mjs",
+          "intent-view/contract.mjs",
+          "intent-view/render.mjs",
+          "martial-view/contract.mjs",
+          "martial-view/motion.mjs",
+          "martial-view/render.mjs",
+          "navigation-view/contract.mjs",
+          "navigation-view/render.mjs",
+          "public-fix/view-state.mjs",
+          "public-kit/context.mjs",
+          "public-kit/receipt.mjs",
+          "public-kit/version.mjs",
+          "public-ui/values.mjs",
+          "resource-view/contract.mjs",
+          "resource-view/render.mjs",
+          "scene-shared/camera.mjs"
+        ]
+      },
+      {
+        "path": "public-kit/receipt.mjs",
+        "bytes": 1138,
+        "sha256": "910b1d71717b0188600860a96d50c65d6d6aa9ef9b95efc5c76a71b951c7f4d2",
+        "imports": [
+          "public-kit/version.mjs"
+        ]
+      },
+      {
+        "path": "public-kit/style.css",
+        "bytes": 941,
+        "sha256": "c5bddcc8d6b466f9aa8b0c68663120dd1443f07f664464fbeedf3f9ab66c2afa",
+        "imports": [
+          "character-card/style.css",
+          "event-view/style.css",
+          "intent-view/style.css",
+          "navigation-view/style.css",
+          "resource-view/style.css"
+        ]
+      },
+      {
+        "path": "public-kit/version.mjs",
+        "bytes": 416,
+        "sha256": "1bb0eff02c757a6f50b8eac821c427c71cd0230bf9c414689e98b9df18b953c2",
+        "imports": []
+      },
+      {
+        "path": "public-ui/style.css",
+        "bytes": 1956,
+        "sha256": "58659ff5c5054d84018faf266551b6336b3ed7c2dbe3318d389096ab507fdf1a",
+        "imports": []
+      },
+      {
+        "path": "public-ui/values.mjs",
+        "bytes": 1065,
+        "sha256": "beefc2246ed938f364d9917d1901471bd236c68c3c002c5f8de4ab76777b79e4",
+        "imports": []
+      },
+      {
+        "path": "resource-view/contract.mjs",
+        "bytes": 1358,
+        "sha256": "b4bf4c760744592b6886e0dec05620b0c32681ec781f00a2e9e020651e15b184",
+        "imports": [
+          "character-card/contract.mjs"
+        ]
+      },
+      {
+        "path": "resource-view/render.mjs",
+        "bytes": 2144,
+        "sha256": "9920ab0ea715cd1cd1671cb15b4998c259531eeeb2ce6302f21637776534faa3",
+        "imports": [
+          "public-ui/values.mjs"
+        ]
+      },
+      {
+        "path": "resource-view/style.css",
+        "bytes": 865,
+        "sha256": "9b3dd5c74c29b3685177fbf5d57339bb4b997f2f6617af28faaa1d5c24b176bf",
+        "imports": [
+          "public-ui/style.css"
+        ]
+      },
+      {
+        "path": "scene-shared/camera.mjs",
+        "bytes": 1131,
+        "sha256": "a51c11e91f1f0c4db9401c9e716c87471e1783f116f25af95fe490cc4ec61f5b",
+        "imports": []
+      }
+    ]
+  },
+  "optionalScene": {
+    "entries": [
+      "public-kit/scene.mjs"
+    ],
+    "files": [
+      {
+        "path": "experiments/water-carry/demo/vendor/pixi.min.mjs",
+        "bytes": 709970,
+        "sha256": "4fbdb6e0a4b032e644049741cddc0169ab5f501aba70ec9a5bacb3199c5eb572",
+        "imports": []
+      },
+      {
+        "path": "public-kit/scene.mjs",
+        "bytes": 182,
+        "sha256": "972dc7e502c5ae76d4ff6cb09dab8ccf5366f18531efbd108f9d08aa088b0492",
+        "imports": [
+          "scene-shared/contract.mjs",
+          "scene-shared/renderer.mjs"
+        ]
+      },
+      {
+        "path": "scene-shared/contract.mjs",
+        "bytes": 2319,
+        "sha256": "68efb6688d768b7806ed7ea19a5dff56910d27a822bad78877e43790ae9e91af",
+        "imports": []
+      },
+      {
+        "path": "scene-shared/events.mjs",
+        "bytes": 1044,
+        "sha256": "5ea70e540847f75a5b89236fd55f7d786069c1c8637cb673ecbb8ba659063378",
+        "imports": []
+      },
+      {
+        "path": "scene-shared/renderer.mjs",
+        "bytes": 2426,
+        "sha256": "a08c546a7cb0fb09dc9233f97414e2c2d218b445e64562ebc52d67b579262017",
+        "imports": [
+          "experiments/water-carry/demo/vendor/pixi.min.mjs",
+          "scene-shared/contract.mjs",
+          "scene-shared/events.mjs"
+        ]
+      }
+    ],
+    "dependency": {
+      "name": "pixi.js",
+      "version": "8.14.0",
+      "path": "experiments/water-carry/demo/vendor/pixi.min.mjs",
+      "license": "MIT",
+      "licensePath": "experiments/water-carry/demo/vendor/LICENSE"
+    },
+    "license": {
+      "path": "experiments/water-carry/demo/vendor/LICENSE",
+      "sha256": "5ce7447bc57f7349ffc48338782fbcabe613696e00712b20d66bc58e780f9473",
+      "bytes": 1092
+    }
+  },
+  "assetPacks": {
+    "gpt": {
+      "pinPath": "assets/shared/pins/gpt.mjs",
+      "version": "gpt-1.0.0",
+      "manifestSha256": "e0a3e53581aa722a5b2b4e145e89ae5a0138e138914e580b71970b98e28985fb",
+      "coreSha": "6cbd3e6fccb8bc376e95e2f406ce6cead2a30fdc",
+      "files": [
+        {
+          "path": "assets/shared/manifests/gpt-1.0.0.mjs",
+          "sha256": "6e892877931d57e18d770826a80aba1fdc40bd17f1958e1fae59e46f08cbc4ee",
+          "bytes": 8185
+        },
+        {
+          "path": "assets/shared/pins/gpt.mjs",
+          "sha256": "a15288ab83fb786359180f41630e7ca4343c24342f04ba6899d41528fda60e31",
+          "bytes": 285
+        },
+        {
+          "path": "assets/shared/resolve.mjs",
+          "sha256": "7ab8af62d4c437de0afe003eb07a0cb76b38217c48381f329eca8a26a705aa2a",
+          "bytes": 4380
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/bamboo.png",
+          "sha256": "23bed590ec5e4d329046584dd1d2dc44c5acabd3808af748c95089c275768103",
+          "bytes": 85111
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/boulder_l.png",
+          "sha256": "5757f2b15698f22cdc9653df154fe2dcf10e696cf46c88474f1c7c6d85a6ac35",
+          "bytes": 10677
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/boulder_s.png",
+          "sha256": "f18764f0f745ff870bd97b0e49cb6f20383503ba87fed4d8f8ce922d1fab92f8",
+          "bytes": 5084
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/hero.json",
+          "sha256": "e324ecee1885661eae760cc445784ee5f1d573c7452ca4b739dd1919edab3965",
+          "bytes": 14012
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/hero.png",
+          "sha256": "7a0f42ac86c9ea804611964cf86634e77bbf10c79e886d482e75f65ba71cccd3",
+          "bytes": 580324
+        }
+      ]
+    },
+    "gemini": {
+      "pinPath": "assets/shared/pins/gemini.mjs",
+      "version": "gemini-1.1.0",
+      "manifestSha256": "9971444c86b031a62975bea442acd56e8f7941afca747dd20572dc9ec856f50a",
+      "coreSha": "bae43412dced2a2f0d9d82008d5cdf8b3acfb8f9",
+      "files": [
+        {
+          "path": "assets/shared/manifests/gemini-1.1.0.mjs",
+          "sha256": "f563dda4bee4e1cde5b278b4f6e01a1c441fce1aa642522047aae15245c401c6",
+          "bytes": 42326
+        },
+        {
+          "path": "assets/shared/pins/gemini.mjs",
+          "sha256": "b23abbfa1c561021837a8069c8a487ad158de0ba4393a091a47f109e207233e8",
+          "bytes": 288
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/axing.png",
+          "sha256": "3d12c5faf14dcb7fc0b2dbe0b1bc39e9991e1f50984f26d2263a73f96ea1b808",
+          "bytes": 1553726
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/baozugong.png",
+          "sha256": "127092424534d359d8a6c5ed3890e4add566338c2d6cda98e7569aaaf2a91946",
+          "bytes": 1427430
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/baozupo.png",
+          "sha256": "b743a09c4c40eb48b7bf64216d98442508f120dfdc2f24fae2b3d30c102d89a4",
+          "bytes": 528791
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/caifeng.png",
+          "sha256": "be4afadb90fb882eb2b2238b328e9b5cd71d4bcb81584572a397caf689bdeef5",
+          "bytes": 1484139
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/dongfangbubai.png",
+          "sha256": "c949f97be663c5b4c67919100403a495864cc95ba384d21a1397c6e657b2b76c",
+          "bytes": 584520
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/guojing.png",
+          "sha256": "9ca10bf0686f8efcb1f6a446025d47ed2a1622127403b655cc43a99cde1f326c",
+          "bytes": 1734784
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/huangrong.png",
+          "sha256": "36098c393bbf8e05357a6dd40df4b9a62517a4d8d80d3e1415e3c86d68b9a08a",
+          "bytes": 1639224
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/huoyunxieshen.png",
+          "sha256": "c21a4067f3df6056b1bdd906e644c63b0c25abedc2e67ccc4ae27411b63ce6f4",
+          "bytes": 1414868
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/kulijiang.png",
+          "sha256": "9607070c742d7c91b34f4edde595c7d4c8c82240be6ce5a2a42fc2ca9a5f831f",
+          "bytes": 1286041
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/limochou.png",
+          "sha256": "c6061f1e3d9fbda34f33e69ba43ebd09ab603964feb01362e10185151fe017ab",
+          "bytes": 516043
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/linghuchong.png",
+          "sha256": "55a3e9e6abd9562bbe065b9dd0fe49613b73aa729f3dee36c268ad5401ad11e2",
+          "bytes": 631907
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/xiaolongnv.png",
+          "sha256": "342fb503ecac118608a041c1aa040d60d9fdde33403f9b8854475cdb7637f75b",
+          "bytes": 1125737
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/youzhagui.png",
+          "sha256": "b92d61a6e4604b903d92b4846e5046ca592a0e409c08f4dd400c81a71dc69d39",
+          "bytes": 1425849
+        },
+        {
+          "path": "assets/shared/portraits/1.1.0/zhoubotong.png",
+          "sha256": "22d3c1900f1c248d5d75161649572b0095606dc292eedf62b91ba0393974eef0",
+          "bytes": 1310862
+        },
+        {
+          "path": "assets/shared/resolve.mjs",
+          "sha256": "7ab8af62d4c437de0afe003eb07a0cb76b38217c48381f329eca8a26a705aa2a",
+          "bytes": 4380
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/bamboo.png",
+          "sha256": "23bed590ec5e4d329046584dd1d2dc44c5acabd3808af748c95089c275768103",
+          "bytes": 85111
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/boulder_l.png",
+          "sha256": "5757f2b15698f22cdc9653df154fe2dcf10e696cf46c88474f1c7c6d85a6ac35",
+          "bytes": 10677
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/boulder_s.png",
+          "sha256": "f18764f0f745ff870bd97b0e49cb6f20383503ba87fed4d8f8ce922d1fab92f8",
+          "bytes": 5084
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/hero.json",
+          "sha256": "e324ecee1885661eae760cc445784ee5f1d573c7452ca4b739dd1919edab3965",
+          "bytes": 14012
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/hero.png",
+          "sha256": "7a0f42ac86c9ea804611964cf86634e77bbf10c79e886d482e75f65ba71cccd3",
+          "bytes": 580324
+        }
+      ]
+    },
+    "grok": {
+      "pinPath": "assets/shared/pins/grok.mjs",
+      "version": "grok-1.0.0",
+      "manifestSha256": "4fc0069fa5baafa1969da57e4a2f5d2ab3213ac8abed95b008ad21928de471c2",
+      "coreSha": "6760f21c342cbf72fc9fb4baf0aec8655abd0dd2",
+      "files": [
+        {
+          "path": "assets/shared/manifests/grok-1.0.0.mjs",
+          "sha256": "5fe3165685c05e7586e48710d7689bbfae472875ec6064a3ae38d3f7efce73ca",
+          "bytes": 8097
+        },
+        {
+          "path": "assets/shared/pins/grok.mjs",
+          "sha256": "a0b4289152c2931df9e795b45e86c8872f6ce1163a3a779d6e65fdec349acad2",
+          "bytes": 286
+        },
+        {
+          "path": "assets/shared/resolve.mjs",
+          "sha256": "7ab8af62d4c437de0afe003eb07a0cb76b38217c48381f329eca8a26a705aa2a",
+          "bytes": 4380
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/bamboo.png",
+          "sha256": "23bed590ec5e4d329046584dd1d2dc44c5acabd3808af748c95089c275768103",
+          "bytes": 85111
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/boulder_l.png",
+          "sha256": "5757f2b15698f22cdc9653df154fe2dcf10e696cf46c88474f1c7c6d85a6ac35",
+          "bytes": 10677
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/boulder_s.png",
+          "sha256": "f18764f0f745ff870bd97b0e49cb6f20383503ba87fed4d8f8ce922d1fab92f8",
+          "bytes": 5084
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/hero.json",
+          "sha256": "e324ecee1885661eae760cc445784ee5f1d573c7452ca4b739dd1919edab3965",
+          "bytes": 14012
+        },
+        {
+          "path": "experiments/water-carry/demo/assets/art184-production/hero.png",
+          "sha256": "7a0f42ac86c9ea804611964cf86634e77bbf10c79e886d482e75f65ba71cccd3",
+          "bytes": 580324
+        }
+      ]
+    }
+  },
+  "adapterExamples": [
+    {
+      "path": "character-card/gpt.mjs",
+      "sha256": "0050d64459c11858d6dbd5fbce38717fb1e1eb1fe3999e1d30cc6a1f76eb7552",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "character-card/gemini.mjs",
+      "sha256": "37aafc0baa1f4a617a1009a3c82a31ed08ef89d8b724c199337b3974bef443a3",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "character-card/grok.mjs",
+      "sha256": "c2d5eff5194a4e4c98e4c0c443e9372f4aff79d5282e121d32cce68bd57d0cce",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "character-card/portrait.mjs",
+      "sha256": "2ca106d21dc9b840907df90b28cd27681f14a37c54db6866086e2cd073ca99b9",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "character-card/profiles.mjs",
+      "sha256": "9f84f78a2713a49e087112b37acf34afe97434032797e0f7d5593c1fc9cf1354",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "martial-view/official.mjs",
+      "sha256": "2cdc9e27eac76e1f861cfb508fd3bcdd659f5bbc6d336de880b97d83d47d6803",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "facility-view/official.mjs",
+      "sha256": "afeaf446aa6417cfe8a334da3099a3021b6c82f250dc835174cbde1567b16d3e",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "facility-view/gpt.mjs",
+      "sha256": "6bee99da1912849f01a63dd289c5c57b8ccbc4cf4fc4d65a92b1a0bbef888092",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "resource-view/official.mjs",
+      "sha256": "30eedbc02a7707dbb71bf610f1e6f4a5d3dac1209eb3ef91508f77e7dbf2c45f",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "resource-view/gpt.mjs",
+      "sha256": "faeed9e1d2d2cb9417025f9ae7dcfa3fe81d6f2e9a251ce77539b9f7b549b1f9",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "resource-view/grok.mjs",
+      "sha256": "61196cf3bcb3a23eb621014e652f8d29a27a5ebb825ac6eabf02dec085d667fb",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "intent-view/official.mjs",
+      "sha256": "7a2879fb22310453dba82a66f03dec43049d92a7589846a931d27b56cf7fb8c9",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "intent-view/gpt.mjs",
+      "sha256": "8310d490cd890d125f228fbdcc07cadb3049966ea7fe2dcb40f2066691a980b8",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "event-view/adapters.mjs",
+      "sha256": "1097243eacdcb8918f59d0ec842d3a9c30e6097667b373ba60058fdc9e99db8a",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "navigation-view/official.mjs",
+      "sha256": "39789f9cbb8a3fa37c30eda36c0234497d086ce0bf1030061eeda0ca2f8d93aa",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "scene-shared/adapters/gpt.mjs",
+      "sha256": "b81a660de49dc0d88f4937010bf65903705dee297e477f29158df6bf3cf1e383",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "scene-shared/adapters/gemini.mjs",
+      "sha256": "f4a71f6c1c4eee6922e6702c40ca62221c6612c236986f0f50b06e690ba3487e",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    },
+    {
+      "path": "scene-shared/adapters/grok.mjs",
+      "sha256": "f608ab429ebf4ad4afb1bb2189d2bdfeb851c6c6d4b774885fd99d86952beaed",
+      "scope": "Reference only; core/host imports are NOT runtime dependencies"
+    }
+  ],
+  "developmentOnly": {
+    "hosts": [
+      "scene-shared/harness/",
+      "public-fix/checks/"
+    ],
+    "checks": [
+      "public-kit/checks/",
+      "test/"
+    ],
+    "evidence": [
+      "public-kit/evidence/"
+    ],
+    "fixedCoreManifests": [
+      "scene-shared/sources/gpt/manifest.json",
+      "scene-shared/sources/gemini/manifest.json",
+      "scene-shared/sources/grok/manifest.json"
+    ]
+  },
+  "contentSha256": "5d9e5b6e56e7f3b45e2a94b2cb80489ea9323e79f91222f5756e0540b152fd46"
+}

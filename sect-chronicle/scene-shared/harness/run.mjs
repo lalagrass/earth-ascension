@@ -1,9 +1,9 @@
-import { navigationView } from '../../navigation-view/contract.mjs';
-import { createNavigationRenderer } from '../../navigation-view/render.mjs';
+import { Navigation, createNavigationRenderer, createCamera, renderCard, withObservation, createConsumerReceipt, createViewWriter, PUBLIC_KIT_VERSION } from '../../public-kit/index.mjs';
+const { navigationView } = Navigation;
+import { gptCard } from '../../character-card/gpt.mjs';
 import { Application, Assets, Spritesheet } from '../../experiments/water-carry/demo/vendor/pixi.min.mjs';
-import { createSceneRenderer } from '../renderer.mjs';
+import { createSceneRenderer } from '../../public-kit/scene.mjs';
 import { createGeminiAdapter } from '../adapters/gemini.mjs';
-import { createCamera } from '../camera.mjs';
 import { createGeminiCore } from '../checks/cores.mjs';
 import { createAnimator } from '../../experiments/water-carry/template/animator.mjs';
 import { buildWatercolorScene } from '../../experiments/water-carry/demo/scene/watercolor.mjs';
@@ -66,6 +66,23 @@ let playing = true, rate = 4, selected = null, drag;
 const gather = (item) => isGPT ? adapter.command({ actorId: 'leader', action: { type: 'task', kind: 'gather', args: { item } } }) : adapter.command({ actorId: 'cousin', action: `work:${item}` });
 gather('herb');
 document.getElementById('source').textContent = `${core.source} · assets ${assetPin.manifest.version}`;
+const releaseSha=new URL(location.href).searchParams.get('releaseSha');
+let kitReceipt=null;
+if(releaseSha){
+ const text=await (await fetch('../../public-kit/releases/1.0.0.json')).text();
+ const bytes=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)));
+ kitReceipt=createConsumerReceipt({sourceSha:releaseSha,manifestSha256:[...bytes].map(b=>b.toString(16).padStart(2,'0')).join(''),
+  assetPin:{path:`assets/shared/pins/${isGPT?'gpt':'gemini'}.mjs`,version:assetPin.manifest.version,manifestSha256:assetPin.expectedSha256},
+  adapter:{id:isGPT?'central.fixed-gpt':'central.fixed-gemini',sourceSha:releaseSha,coreSha:assetPin.manifest.coreCommit}});
+}
+document.getElementById('kit-source').textContent=`public-kit@${PUBLIC_KIT_VERSION} · ${kitReceipt?`caller pin ${kitReceipt.sourceSha}`:'candidate / unsealed (supply releaseSha)'} · contract 1 · assets ${assetPin.manifest.version}`;
+const writeKitCard=createViewWriter();
+function renderKitCard(){
+ const c=isGPT&&selected?gptCard(world,selected):null;
+ const view=c&&withObservation(c,{branch:'fixed-gpt',sha:assetPin.manifest.coreCommit,writer:'original GPT 20Hz world',mode:'native',tick:world.tick});
+ writeKitCard('kit-card',document.getElementById('kit-card-content'),view?renderCard(view):'<p>選取公開人物讀卡；第二core只證本固定GPT，不代原分支升級。</p>',selected||'none');
+}
+
 document.getElementById('play').onclick = () => { playing = !playing; clock.clear(); document.getElementById('play').textContent = playing ? '暫停' : '播放'; };
 for (const button of document.querySelectorAll('[data-rate]')) button.onclick = () => { rate = Number(button.dataset.rate); };
 document.getElementById('herb').onclick = () => gather('herb');
@@ -87,8 +104,9 @@ app.ticker.add((t) => {
   lastEpoch=lastSnapshot.epoch;
   camera.resize(app.screen.width, app.screen.height); camera.apply(renderer.world);
   navigation.render(navigationView({definition:core.definition,snapshot:lastSnapshot,camera:camera.state,viewport:app.screen,selectedId:selected}));
+  renderKitCard();
   scenery?.tick(lastSnapshot.timeMs, lastSnapshot.actors);
   const v = isGPT ? { tick: world.tick, vat: world.inventories.vat.items.water, vatCapacity: world.inventories.vat.capacity, herbs: world.inventories.store.items.herb, herbCapacity: world.inventories.store.capacity } : model.view(); document.getElementById('state').textContent = `tick ${v.tick} · ${rate}× · ${playing ? '播放' : '暫停'}\n水 ${v.vat} / ${v.vatCapacity} · 藥 ${v.herbs} / ${v.herbCapacity}\n` + lastSnapshot.actors.filter((a) => !isGPT || ['leader','amu','child'].includes(a.id)).map((a) => `${a.id} · ${a.action.phase} · 負重 ${a.load}\n腳底 ${a.x.toFixed(1)}, ${a.y.toFixed(1)} · ${a.positionSource}`).join('\n') + `\n選取 ${selected || '—'}`;
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { playing = false; clock.clear(); } });
-window.sceneHarness = { assetReceipt: { version:assetPin.manifest.version, coreCommit:assetPin.manifest.coreCommit, hero:resolvedHero }, navigation: () => navigation.snapshot(), snapshot: () => structuredClone(lastSnapshot), state: () => isGPT ? structuredClone(world) : model.exportState(), pause() { playing = false; clock.clear(); } };
+window.sceneHarness = { kitReceipt:()=>structuredClone(kitReceipt), assetReceipt: { version:assetPin.manifest.version, coreCommit:assetPin.manifest.coreCommit, hero:resolvedHero }, navigation: () => navigation.snapshot(), snapshot: () => structuredClone(lastSnapshot), state: () => isGPT ? structuredClone(world) : model.exportState(), pause() { playing = false; clock.clear(); } };
