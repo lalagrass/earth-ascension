@@ -1,0 +1,35 @@
+{
+  "source": "local asset files and manifests; no world fixtures",
+  "cases": [
+    {
+      "case": "bytes",
+      "id": "person.research.guojing.portrait",
+      "sha": "9ca10bf0686f8efcb1f6a446025d47ed2a1622127403b655cc43a99cde1f326c",
+      "size": [
+        864,
+        1152
+      ],
+      "colorType": 2
+    },
+    {
+      "case": "bytes",
+      "id": "person.research.linghuchong.portrait",
+      "sha": "55a3e9e6abd9562bbe065b9dd0fe49613b73aa729f3dee36c268ad5401ad11e2",
+      "size": [
+        480,
+        640
+      ],
+      "colorType": 2
+    },
+    {
+      "case": "pins",
+      "v110": "bd0afa259aeec8ccf597b6fab3e931d79007c947a5d4c96ae5d0b1e60684d109"
+    },
+    {
+      "case": "resolver"
+    },
+    {
+      "case": "no-world"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 // Source: lalagrass/earth-ascension@ef823ac277f48d9426cc3806f74468126a9cf91d sect-chronicle/assets/shared/resolve.mjs.
 // Local change: the safe local-path prefix is this game's 'assets/shared/' (root = solo-sect-gpt/) instead of 'sect-chronicle/'.
+// M38: the 'portrait' label split from lalagrass/earth-ascension@3079a03 resolve.mjs; local checks that a portrait recipe is the whole image and
+// that template bindings point at real entries; templateAppearance() reads those bindings.
 const root = new URL('../../', import.meta.url);
 const fullCommit = /^[a-f0-9]{40}$/;
 const hash = /^[a-f0-9]{64}$/;
@@ -31,8 +33,13 @@ export function validateManifest(m) {
       const r = a.recipe.rect;
       if (!localPath(a.recipe.metadataPath) || !hash.test(a.recipe.metadataSha256 || '') || !a.recipe.frame || !r || ![r.x,r.y,r.w,r.h].every(Number.isInteger) || r.x < 0 || r.y < 0 || r.w <= 0 || r.h <= 0 || r.x+r.w > a.dimensions?.width || r.y+r.h > a.dimensions?.height) errors.push(`${id}: invalid frame recipe`);
     }
+    if (a.recipe?.type === 'portrait') {
+      const r = a.recipe.rect;
+      if (!r || r.x !== 0 || r.y !== 0 || r.w !== a.dimensions?.width || r.h !== a.dimensions?.height) errors.push(`${id}: portrait recipe must be the whole image`);
+    }
   }
   for (const [actor,id] of Object.entries(m.portraits || {})) if (!ids.has(id)) errors.push(`${actor}: missing mapped entry ${id}`);
+  for (const [tpl,id] of Object.entries(m.templates || {})) if (!ids.has(id)) errors.push(`${tpl}: missing template entry ${id}`);
   return errors;
 }
 export function createPin(manifest, expectedSha256) {
@@ -61,5 +68,12 @@ export function portraitFor(pin, branch, actorId) {
   if (!id) return fallback(null, 'unsupported', '尚無此角色正式立繪');
   const a = resolveAsset(pin,id);
   return { ...a, portraitAssetId: a.availability === 'known' ? id : null, crop: a.recipe?.rect || null,
-    label: a.availability === 'known' ? '既有活動圖裁切（非新立繪）' : a.label };
+    label: a.availability === 'known' ? (a.recipe?.type === 'portrait' ? '公開立繪' : '既有活動圖裁切（非新立繪）') : a.label };
+}
+export function templateAppearance(pin, branch, template) {
+  const id = pin?.manifest?.templates?.[`${branch}:${template}`];
+  if (!id) return fallback(null, 'unsupported', '此開局沒有核准的外觀，使用文字替代');
+  const a = resolveAsset(pin, id);
+  return { ...a, portraitAssetId: a.availability === 'known' ? id : null, crop: a.recipe?.rect || null,
+    label: a.availability === 'known' ? (a.recipe?.type === 'portrait' ? '公開立繪' : '既有活動圖裁切（非新立繪）') : a.label };
 }

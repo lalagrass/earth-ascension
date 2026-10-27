@@ -57,3 +57,16 @@
 依賴閉包：`resource-view/render.mjs` → `public-ui/values.mjs`；`resource-view/contract.mjs` → `character-card/contract.mjs`；沒有其他 import。
 
 不採用：`resource-view/gpt.mjs`（import `scene-shared/sources/gpt` 舊核心）；本地 `src/resource-view.mjs` 綁目前核心，並沿它對本核心的說明（`dest:` 不是在途、`availableQty` 不是淨額）。
+
+## 第三個固定來源：dev 3079a03（M37–M40，只取兩張立繪）
+
+固定 `lalagrass/earth-ascension` 提交 `3079a03de5c2e8c79af64b0962ae3da75f274466`（相對 6f959f5 只多了已合的 PR #370 立繪包），以 `gh api` 按 SHA 讀取。資源／意圖／簡介／共用樣式仍用上面 6f959f5 的版本，沒有重搬。
+
+| 本地檔 | 上游 | 上游 sha256 | 處理 |
+| --- | --- | --- | --- |
+| `assets/shared/3079a03/guojing.png` | `sect-chronicle/assets/shared/portraits/1.1.0/guojing.png`（原 `6760f21…:solo-sect/assets/portraits/v2/guojing-v2-b.png`，同一 blob，Grok Bot） | 9ca10bf0686f8efcb1f6a446025d47ed2a1622127403b655cc43a99cde1f326c | 位元組原樣；864×1152 RGB 無 alpha；只綁本版 `gpt:guo` 模板 |
+| `assets/shared/3079a03/linghuchong.png` | `sect-chronicle/assets/shared/portraits/1.1.0/linghuchong.png`（原 `6760f21…:solo-sect/assets/portraits/linghuchong.png`，同一 blob，Grok Bot） | 55a3e9e6abd9562bbe065b9dd0fe49613b73aa729f3dee36c268ad5401ad11e2 | 位元組原樣；480×640 RGB 無 alpha；只綁本版 `gpt:linghu` 模板 |
+| `assets/shared/manifest-gpt-local-1.1.0.mjs` | 兩筆資產記錄取自 `sect-chronicle/assets/shared/manifests/gemini-1.1.0.mjs` | 本地檔 bd0afa259aeec8ccf597b6fab3e931d79007c947a5d4c96ae5d0b1e60684d109 | 新版本；1.0.0 五筆原樣；兩筆另記 `acceptedCommit`、本地 `use`；新增 `templates` 對照；`coreCommit` 寫本分支提交 |
+| `assets/shared/resolve.mjs` | `sect-chronicle/assets/shared/resolve.mjs`（3079a03） | 7ab8af62d4c437de0afe003eb07a0cb76b38217c48381f329eca8a26a705aa2a | 只採 `portrait` 標籤分流；本地加整圖矩形與 `templates` 檢查、`templateAppearance()` |
+
+不採用：其餘 12 張研究立繪、證據截圖、`dev:` 綁定、gemini pin 與 manifest 其他欄位、被退回的候選稿或較早的 originPath 版本。權利照上游：`repository-research-reuse; third-party-rights-unverified`；私人原型使用，不是商業授權或公開發布。
