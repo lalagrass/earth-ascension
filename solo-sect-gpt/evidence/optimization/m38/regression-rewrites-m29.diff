@@ -1,0 +1,23 @@
+diff --git a/solo-sect-gpt/evidence/optimization/m29/m29-model.json b/solo-sect-gpt/evidence/optimization/m29/m29-model.json
+index e289931..b2d77f1 100644
+--- a/solo-sect-gpt/evidence/optimization/m29/m29-model.json
++++ b/solo-sect-gpt/evidence/optimization/m29/m29-model.json
+@@ -19,9 +19,17 @@
+         [
+           "scene.boulder.small",
+           "f18764f0f745"
++        ],
++        [
++          "person.research.guojing.portrait",
++          "9ca10bf0686f"
++        ],
++        [
++          "person.research.linghuchong.portrait",
++          "55a3e9e6abd9"
+         ]
+       ],
+-      "manifestSha": "a57ff4b0d56c6274c502727bf321d66844c796639482b70cdac738ae99b5feed"
++      "manifestSha": "bd0afa259aeec8ccf597b6fab3e931d79007c947a5d4c96ae5d0b1e60684d109"
+     },
+     {
+       "case": "binding",
