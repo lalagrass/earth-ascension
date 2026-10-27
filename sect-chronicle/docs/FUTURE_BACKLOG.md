@@ -2,9 +2,9 @@
 
 ## 2026-10-26 公版有限序列 #365 已批准
 
-前序 #356 三包與 #363／PR364 已合 dev／必要 postCI，最新 base `bb251ab78e4bc0579e3e750afd0cc7fe2a9c6dd5`。本輪只授 #366 外觀／狀態一致化與輕量元件 preview → #367 真可見場景導覽，逐包非作者 review／#67／dev／postCI 才接下一包。詳見[路線](SHARED_PUBLIC_ROADMAP.md#365-有限序列介面外觀--場景導覽2026-10-26)及[#366 handoff／prompt](UI_PRESENTATION01_HANDOFF.md)。#366 本 PR 為作者交付候選，尚未當已合；#367 未認領。
+前序 #356 三包與 #363／PR364 已合 dev／必要 postCI，最新 base `bb251ab78e4bc0579e3e750afd0cc7fe2a9c6dd5`。本輪只授 #366 外觀／狀態一致化與輕量元件 preview → #367 真可見場景導覽，逐包非作者 review／#67／dev／postCI 才接下一包。詳見[路線](SHARED_PUBLIC_ROADMAP.md#365-有限序列介面外觀--場景導覽2026-10-26)及[#366 handoff／prompt](UI_PRESENTATION01_HANDOFF.md)。#366／PR369 已合 dev `6f959f534e9a00994f1cea7c230b4110e60db8c6`、postCI40340938923 五成功；Grok #368／PR370 已合 dev `3079a03de5c2e8c79af64b0962ae3da75f274466`、postCI40412033087 五成功。#367 本 PR 是最後包作者候選，原座標snapshot小地圖／camera框、可見人物／已知點與原跟隨定位已交，公開route缺項明示；待grass非作者review/dev/postCI。見[場景導覽handoff／prompt／能力表](SCENE_NAV01_HANDOFF.md)，未將候選寫成已合。
 
-BL-U01／U02 只提取現有公版紙墨 tokens、原 renderer 的 0／缺項／disabled／focus，及後包已知點/camera 投影；不授完整 UI framework、theme 產品、地圖編輯器或世界重建。#337 關係公版待真公開資料，#315/#321 建造床位、#340/#106 人格天賦、#339 完整圖庫／女孩圖仍候選或原獨立包；Grok 立繪主筆／素材不動。Cloud 工程、同一正式入口、三核心獨立／原規則／長通勤速度／D45/D53 保持，BL-P01 手機與 BL-P02 新增保存升版繼續最後。
+BL-U01／U02 只提取現有公版紙墨 tokens、原 renderer 的 0／缺項／disabled／focus，及 #367 已知點/camera 投影；不授完整 UI framework、theme 產品、地圖編輯器或世界重建。#337 關係公版待真公開資料，#315/#321 建造床位、#340/#106 人格天賦、#339 完整圖庫／女孩圖仍候選或原獨立包；Grok 立繪主筆／素材不動。簡潔導覽不授完整地圖／探索記憶／編輯器或UI尋路；本最後包與必要補修完成、總收據後休息，不開其他公版。Cloud 工程、同一正式入口、三核心獨立／原規則／長通勤速度／D45/D53 保持，BL-P01 手機與 BL-P02 新增保存升版繼續最後。
 
 
 ## 2026-10-26 公版後續有限序列 #356 已批准

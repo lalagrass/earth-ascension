@@ -1,0 +1,64 @@
+{
+  "author": "Codex Cloud /root/presentation366_author",
+  "base": "3079a03de5c2e8c79af64b0962ae3da75f274466",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "checks": [
+    "one existing official player entry",
+    "official bounds retain original 1600x1350 scale",
+    "map actor click calls original person selection and follow (cousin/cousin)",
+    "map facility uses same original landmark camera positioning",
+    "viewport frame equals original camera after landmark locate",
+    "viewport frame tracks original scene drag",
+    "viewport frame tracks original scene zoom",
+    "selection/location/drag/zoom preserve complete paused world and native pending/commands",
+    "actor layer removes DOM/pick surface and titles",
+    "facility layer removes list and marker surfaces",
+    "navigation keyboard space never reaches global play command",
+    "official navigation collapses",
+    "navigation controls never open scene work menu or pass through",
+    "long commute map markers match true scene feet exactly",
+    "original speed difference remains unchanged",
+    "native tick and absent route are shown without invented lines",
+    "paused minimap has no separate clock",
+    "official reset epoch discards old markers/focus/tooltip nodes",
+    "same renderer retains true GPT 2400x1800 native map",
+    "second-core navigation uses original visible SceneSnapshot",
+    "second-core missing route stays explicit and interactions change no world",
+    "original GPT hidden actor absent from nav payload, DOM, title, list and pick",
+    "original LOS reveal creates current navigation marker",
+    "conceal deletes old marker, focus/title/list and payload with no history",
+    "presentation epoch recreates public markers and clears old DOM",
+    "presentation epoch reset does not modify true GPT authority"
+  ],
+  "errors": [],
+  "screenshots": [
+    "official-navigation.jpg",
+    "official-long-route.jpg",
+    "gpt-native-navigation.jpg"
+  ],
+  "browser": "154.0.8037.57",
+  "passed": true,
+  "cleanup": {
+    "pageClosed": true,
+    "contextClosed": true,
+    "browserClosed": true,
+    "serverStopped": true,
+    "viewport": "owned viewport restored then context closed"
+  },
+  "host": "c39a8ded2b44",
+  "attemptNotes": [
+    "Two preliminary desktop attempts exposed same-frame selection/reset navigation refresh; original UI host now refreshes navigation immediately after select/reset/successful load. All attempts finally closed owned page/context/browser/server. Final complete scenario passed."
+  ],
+  "sourceHashes": {
+    "sect-chronicle/navigation-view/contract.mjs": "da43ab2b915d7eed8256b0d8cdeaeea24c4cab3a7eaba2b11d29a731f2cb961a",
+    "sect-chronicle/navigation-view/official.mjs": "39789f9cbb8a3fa37c30eda36c0234497d086ce0bf1030061eeda0ca2f8d93aa",
+    "sect-chronicle/navigation-view/render.mjs": "c352e0b938fef1e5039ee876160921390303a9ba64403169ce57d84eca393499",
+    "sect-chronicle/navigation-view/style.css": "4e7748d76eb2703fff741d8475658ea291d6eed59a64501002792bb46d9aa2f0",
+    "sect-chronicle/experiments/water-carry/demo/app.mjs": "6546e1ce9e172396a409b2e9cdbb53ff0b530c2786ab9ad0843e0e4c1602bd0e",
+    "sect-chronicle/scene-shared/harness/run.mjs": "fb657ed96c0fd1002f5d82e09bb26ae7e07bfd0708c32767d6526a5fe28d7fb8",
+    "sect-chronicle/public-fix/checks/gpt.mjs": "b2b8738dab2fa86c9ed9d5459453c31161d512f827c1731bf63e7fb0806fe50c"
+  }
+}
