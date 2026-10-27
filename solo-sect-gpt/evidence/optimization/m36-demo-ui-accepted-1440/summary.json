@@ -1,0 +1,122 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 84.251,
+  "errors": [],
+  "steps": [
+    {
+      "label": "temporary-return",
+      "wallSeconds": 48.714,
+      "tick": 197987
+    },
+    {
+      "label": "cooldown",
+      "wallSeconds": 50.117,
+      "tick": 198007
+    },
+    {
+      "label": "set",
+      "wallSeconds": 55.061,
+      "tick": 198365
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 68.11,
+      "tick": 198614
+    },
+    {
+      "label": "wave",
+      "wallSeconds": 70.711,
+      "tick": 198658
+    },
+    {
+      "label": "left",
+      "wallSeconds": 71.485,
+      "tick": 198661
+    },
+    {
+      "label": "punch-0",
+      "wallSeconds": 75.673,
+      "tick": 198717
+    },
+    {
+      "label": "punch-1",
+      "wallSeconds": 79.121,
+      "tick": 198774
+    },
+    {
+      "label": "punch-2",
+      "wallSeconds": 82.801,
+      "tick": 198833
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 83.414,
+      "tick": 198837
+    },
+    {
+      "label": "done",
+      "wallSeconds": 84.246,
+      "tick": 198837,
+      "save": {
+        "tick": 198837,
+        "rulesVersion": "chapter1-follow-1"
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "pair": [
+      "leader",
+      "lin"
+    ],
+    "mentor": {
+      "kind": "weapon",
+      "art": "staff",
+      "state": "set",
+      "proposedAt": 197987,
+      "decidedAt": 197987,
+      "setAt": 198338,
+      "baseline": {
+        "U": 0,
+        "F": 0,
+        "I": 0,
+        "had": false
+      }
+    },
+    "atLeave": {
+      "energy": 9609,
+      "injury": 0,
+      "tick": 198659
+    },
+    "start": {
+      "energy": 9609,
+      "injury": 0
+    },
+    "midSave": {
+      "tick": 198661
+    },
+    "review": {
+      "amu": {
+        "energyUsed": 2346,
+        "injuryGained": 0
+      },
+      "shen": {
+        "energyUsed": 0,
+        "injuryGained": 0
+      }
+    },
+    "save": {
+      "tick": 198837,
+      "rulesVersion": "chapter1-follow-1"
+    },
+    "demoWritten": [
+      "evidence/optimization/m36/showcase-m31-m36.save.json",
+      "evidence/optimization/m36/drill-left-midway.save.json"
+    ]
+  }
+}

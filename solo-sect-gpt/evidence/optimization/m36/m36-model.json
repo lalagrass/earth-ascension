@@ -1,0 +1,35 @@
+{
+  "source": "the M36 showcase and mid-drill file, both saved through the normal UI",
+  "cases": [
+    {
+      "case": "twin",
+      "file": "m36/showcase-m31-m36.save.json",
+      "tick": 199437
+    },
+    {
+      "case": "twin",
+      "file": "m36/drill-left-midway.save.json",
+      "tick": 199261
+    },
+    {
+      "case": "cut-off",
+      "left": {
+        "energy": 9609,
+        "injury": 0,
+        "tick": 198659
+      },
+      "start": {
+        "energy": 9609,
+        "injury": 0
+      },
+      "review": {
+        "energyUsed": 0,
+        "injuryGained": 0
+      }
+    },
+    {
+      "case": "showcase-review",
+      "shenEnergyAfter": 9009
+    }
+  ]
+}

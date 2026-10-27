@@ -1,0 +1,118 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 84.69,
+  "errors": [],
+  "steps": [
+    {
+      "label": "temporary-return",
+      "wallSeconds": 49.196,
+      "tick": 197973
+    },
+    {
+      "label": "cooldown",
+      "wallSeconds": 50.711,
+      "tick": 197994
+    },
+    {
+      "label": "set",
+      "wallSeconds": 55.622,
+      "tick": 198349
+    },
+    {
+      "label": "assembled",
+      "wallSeconds": 68.96,
+      "tick": 198604
+    },
+    {
+      "label": "wave",
+      "wallSeconds": 71.587,
+      "tick": 198649
+    },
+    {
+      "label": "left",
+      "wallSeconds": 72.285,
+      "tick": 198653
+    },
+    {
+      "label": "punch-0",
+      "wallSeconds": 76.498,
+      "tick": 198711
+    },
+    {
+      "label": "punch-1",
+      "wallSeconds": 79.948,
+      "tick": 198764
+    },
+    {
+      "label": "punch-2",
+      "wallSeconds": 83.281,
+      "tick": 198818
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 83.828,
+      "tick": 198821
+    },
+    {
+      "label": "done",
+      "wallSeconds": 84.689,
+      "tick": 198821,
+      "save": {
+        "tick": 198821,
+        "rulesVersion": "chapter1-follow-1"
+      }
+    }
+  ],
+  "label": "initial",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "pair": [
+      "leader",
+      "lin"
+    ],
+    "mentor": {
+      "kind": "weapon",
+      "art": "staff",
+      "state": "set",
+      "proposedAt": 197973,
+      "decidedAt": 197973,
+      "setAt": 198325,
+      "baseline": {
+        "U": 0,
+        "F": 0,
+        "I": 0,
+        "had": false
+      }
+    },
+    "atLeave": {
+      "energy": 9609,
+      "injury": 0,
+      "tick": 198650
+    },
+    "start": {
+      "energy": 9609,
+      "injury": 0
+    },
+    "midSave": {
+      "tick": 198653
+    },
+    "review": {
+      "amu": {
+        "energyUsed": 2345,
+        "injuryGained": 0
+      },
+      "shen": {
+        "energyUsed": 0,
+        "injuryGained": 0
+      }
+    },
+    "save": {
+      "tick": 198821,
+      "rulesVersion": "chapter1-follow-1"
+    }
+  }
+}

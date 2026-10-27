@@ -1,0 +1,84 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 39.514,
+  "errors": [],
+  "steps": [
+    {
+      "label": "continued-30s",
+      "wallSeconds": 11.825,
+      "tick": 199450
+    },
+    {
+      "label": "run-showcase-m17-m23.save.json",
+      "wallSeconds": 20.765,
+      "tick": 190690
+    },
+    {
+      "label": "run-showcase-m24-m30.save.json",
+      "wallSeconds": 29.5,
+      "tick": 194987
+    },
+    {
+      "label": "run-showcase-m31-m36.save.json",
+      "wallSeconds": 38.189,
+      "tick": 199467
+    },
+    {
+      "label": "reviewed",
+      "wallSeconds": 39.177,
+      "tick": 198664
+    },
+    {
+      "label": "done",
+      "wallSeconds": 39.512,
+      "tick": 198664,
+      "runs": 3
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "runs": [
+      {
+        "file": "showcase-m23/showcase-m17-m23.save.json",
+        "from": 190065,
+        "to": 190690
+      },
+      {
+        "file": "m30/showcase-m24-m30.save.json",
+        "from": 194362,
+        "to": 194987
+      },
+      {
+        "file": "m36/showcase-m31-m36.save.json",
+        "from": 198837,
+        "to": 199467
+      }
+    ],
+    "badToast": "校驗碼不符，原存檔已保留",
+    "preview": "匯入預覽\n\nseed 11 · 第17日 · schema 1\n\n確認後替換當局；手動槽保留。\n\n確認替換當局",
+    "viewState": {
+      "epochBefore": "1"
+    },
+    "continued": {
+      "from": 198837,
+      "to": 199450
+    },
+    "afterReload": 2,
+    "midReview": {
+      "amu": {
+        "energyUsed": 1,
+        "injuryGained": 0
+      },
+      "shen": {
+        "energyUsed": 0,
+        "injuryGained": 0
+      }
+    },
+    "midReviewText": "上次回顧：終止 · 兩翼包抄 · 漏過0 · 擊退0 · 集合12秒、交手2秒\n阿木（前攔） · 命中0 · 受擊0 · 耗精力0 · 傷勢+0\n沈禾（守線） · 命中0 · 受擊0 · 耗精力0 · 傷勢+0"
+  }
+}
