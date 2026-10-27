@@ -1,0 +1,1778 @@
+{
+  "status": "passed",
+  "errors": [],
+  "source": "/Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/evidence/development/visual-final/visual-final.save.json",
+  "sourceSha256": "1ff5d8f59e19d15bef9140f95f667777203dff5d86256e9d4d5e3c3ae78a89ad",
+  "proof": {
+    "adoptionPreserved": [
+      "people",
+      "inventories",
+      "random",
+      "tick"
+    ],
+    "previewPure": true,
+    "actualAirAction": {
+      "id": "action.48962",
+      "move": "punch",
+      "target": null,
+      "phase": "windup",
+      "remaining": 20,
+      "wind": 20,
+      "active": 2,
+      "recover": 15,
+      "hitSet": [],
+      "aim": [
+        -6018,
+        -7986
+      ],
+      "started": 172210,
+      "initialThreat": false,
+      "failure": null,
+      "expectedTargetAction": null,
+      "energyCost": 250,
+      "contentMove": "breeze.slowfist"
+    },
+    "actionSaveLoad": true,
+    "combatActions": [
+      {
+        "id": "event.49010",
+        "tick": 172496,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49009",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49020",
+        "tick": 172533,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49019",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49031",
+        "tick": 172570,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49030",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49041",
+        "tick": 172607,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49040",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49052",
+        "tick": 172644,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49051",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49062",
+        "tick": 172681,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49061",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49073",
+        "tick": 172718,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49072",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49084",
+        "tick": 172755,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49083",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49095",
+        "tick": 172792,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49094",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49104",
+        "tick": 172829,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49103",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49115",
+        "tick": 172866,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49114",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49124",
+        "tick": 172903,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49123",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49135",
+        "tick": 172940,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49134",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      },
+      {
+        "id": "event.49146",
+        "tick": 172977,
+        "type": "action-start",
+        "actors": [
+          "leader",
+          "practice.slow"
+        ],
+        "action": "action.49145",
+        "move": "breeze.slowfist",
+        "wind": 20,
+        "recover": 15,
+        "energyCost": 250
+      }
+    ],
+    "arrival": {
+      "x": 258795,
+      "y": 296916,
+      "tick": 174132
+    },
+    "event": {
+      "version": 1,
+      "event": "breeze.seat",
+      "choice": "practice",
+      "casting": {
+        "cast": [
+          "leader",
+          "amu",
+          "breeze.liu"
+        ],
+        "peer": "amu",
+        "voice": "breeze.liu",
+        "mode": "classic",
+        "reason": "以本人現時身份參與，不強制正史"
+      },
+      "callback": false,
+      "status": "completed",
+      "phase": "together",
+      "activity": "activity.49224",
+      "started": 174132,
+      "progress": 240,
+      "ended": 174514,
+      "callbackDone": true,
+      "callbackAt": 174703
+    },
+    "secondJSONAction": {
+      "id": "action.49368",
+      "move": "punch",
+      "target": null,
+      "phase": "windup",
+      "remaining": 12,
+      "wind": 12,
+      "active": 2,
+      "recover": 10,
+      "hitSet": [],
+      "aim": [
+        6018,
+        7986
+      ],
+      "started": 175307,
+      "initialThreat": false,
+      "failure": null,
+      "expectedTargetAction": null,
+      "energyCost": 220,
+      "contentMove": "shortform.closefist"
+    },
+    "fullRefreshRoundtrip": true,
+    "invalidPackPreserved": true,
+    "corruptSavePreserved": true
+  },
+  "checkpoints": [
+    {
+      "label": "mid-study",
+      "tick": 171895
+    },
+    {
+      "label": "authored-action",
+      "tick": 172210
+    },
+    {
+      "label": "real-duel-done",
+      "tick": 173010
+    },
+    {
+      "label": "data-event-mid",
+      "tick": 174286
+    },
+    {
+      "label": "data-event-complete",
+      "tick": 174722
+    },
+    {
+      "label": "content-final",
+      "tick": 175340
+    }
+  ],
+  "trace": [
+    {
+      "tick": 172261,
+      "trial": "approach",
+      "pos": [
+        330240,
+        243200
+      ],
+      "energy": 8987,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172274,
+      "trial": "approach",
+      "pos": [
+        334434,
+        248790
+      ],
+      "energy": 8984,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172286,
+      "trial": "approach",
+      "pos": [
+        337967,
+        253975
+      ],
+      "energy": 8981,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172298,
+      "trial": "approach",
+      "pos": [
+        338528,
+        260402
+      ],
+      "energy": 8978,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172310,
+      "trial": "approach",
+      "pos": [
+        339088,
+        266830
+      ],
+      "energy": 8975,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172324,
+      "trial": "approach",
+      "pos": [
+        339740,
+        274328
+      ],
+      "energy": 8971,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172339,
+      "trial": "approach",
+      "pos": [
+        340439,
+        282362
+      ],
+      "energy": 8968,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172354,
+      "trial": "approach",
+      "pos": [
+        341138,
+        290396
+      ],
+      "energy": 8964,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172366,
+      "trial": "approach",
+      "pos": [
+        341695,
+        296823
+      ],
+      "energy": 8961,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172378,
+      "trial": "approach",
+      "pos": [
+        342253,
+        303250
+      ],
+      "energy": 8958,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172390,
+      "trial": "approach",
+      "pos": [
+        342811,
+        309678
+      ],
+      "energy": 8955,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172402,
+      "trial": "observe",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8954,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172414,
+      "trial": "observe",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8954,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172426,
+      "trial": "observe",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8954,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172436,
+      "trial": "observe",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8954,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172448,
+      "trial": "observe",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8954,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172460,
+      "trial": "observe",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8954,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172472,
+      "trial": "observe",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8954,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172484,
+      "trial": "observe",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8954,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172496,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8704,
+      "hp": 100,
+      "action": {
+        "id": "action.49009",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 19,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          5736,
+          8192
+        ],
+        "started": 172496,
+        "initialThreat": false,
+        "failure": null,
+        "expectedTargetAction": null,
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172509,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8704,
+      "hp": 100,
+      "action": {
+        "id": "action.49009",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 6,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172496,
+        "initialThreat": false,
+        "failure": null,
+        "expectedTargetAction": null,
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172523,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8704,
+      "hp": 100,
+      "action": {
+        "id": "action.49009",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 9,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172496,
+        "initialThreat": false,
+        "failure": null,
+        "expectedTargetAction": null,
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172535,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8454,
+      "hp": 100,
+      "action": {
+        "id": "action.49019",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 17,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172533,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49011",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172546,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8454,
+      "hp": 100,
+      "action": {
+        "id": "action.49019",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 6,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172533,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49011",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172557,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8454,
+      "hp": 100,
+      "action": {
+        "id": "action.49019",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 12,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172533,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49011",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172569,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8454,
+      "hp": 100,
+      "action": null
+    },
+    {
+      "tick": 172582,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8204,
+      "hp": 100,
+      "action": {
+        "id": "action.49030",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 7,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172570,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49022",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172595,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 8204,
+      "hp": 100,
+      "action": {
+        "id": "action.49030",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 11,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172570,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49022",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172608,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 7954,
+      "hp": 100,
+      "action": {
+        "id": "action.49040",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 18,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172607,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49033",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172622,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 7954,
+      "hp": 100,
+      "action": {
+        "id": "action.49040",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 4,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172607,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49033",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172638,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 7954,
+      "hp": 100,
+      "action": {
+        "id": "action.49040",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 5,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172607,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49033",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172650,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 7704,
+      "hp": 100,
+      "action": {
+        "id": "action.49051",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 13,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172644,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49043",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172662,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 7704,
+      "hp": 100,
+      "action": {
+        "id": "action.49051",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 1,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172644,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49043",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172674,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 7704,
+      "hp": 100,
+      "action": {
+        "id": "action.49051",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 6,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172644,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49043",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172686,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 7454,
+      "hp": 100,
+      "action": {
+        "id": "action.49061",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 14,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172681,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49055",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172700,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 7454,
+      "hp": 100,
+      "action": {
+        "id": "action.49061",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "active",
+        "remaining": 2,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172681,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49055",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172712,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 7454,
+      "hp": 100,
+      "action": {
+        "id": "action.49061",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 5,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172681,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49055",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172725,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 7204,
+      "hp": 100,
+      "action": {
+        "id": "action.49072",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 12,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172718,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49066",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172738,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 7204,
+      "hp": 100,
+      "action": {
+        "id": "action.49072",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "active",
+        "remaining": 1,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172718,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49066",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172752,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 7204,
+      "hp": 100,
+      "action": {
+        "id": "action.49072",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 2,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172718,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49066",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172764,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 6954,
+      "hp": 100,
+      "action": {
+        "id": "action.49083",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 10,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172755,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49075",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172777,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 6954,
+      "hp": 100,
+      "action": {
+        "id": "action.49083",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 14,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172755,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49075",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172789,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 6954,
+      "hp": 100,
+      "action": {
+        "id": "action.49083",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 2,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172755,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49075",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172805,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 6704,
+      "hp": 100,
+      "action": {
+        "id": "action.49094",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 6,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172792,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49086",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172817,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 6704,
+      "hp": 100,
+      "action": {
+        "id": "action.49094",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 11,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172792,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49086",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172829,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 6454,
+      "hp": 100,
+      "action": {
+        "id": "action.49103",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 19,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172829,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49097",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172842,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 6454,
+      "hp": 100,
+      "action": {
+        "id": "action.49103",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 6,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172829,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49097",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172854,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 6454,
+      "hp": 100,
+      "action": {
+        "id": "action.49103",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 11,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172829,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49097",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172869,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 6204,
+      "hp": 100,
+      "action": {
+        "id": "action.49114",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 16,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172866,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49106",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172880,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 6204,
+      "hp": 100,
+      "action": {
+        "id": "action.49114",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 5,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172866,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49106",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172896,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 6204,
+      "hp": 100,
+      "action": {
+        "id": "action.49114",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 6,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172866,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49106",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172909,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 5954,
+      "hp": 100,
+      "action": {
+        "id": "action.49123",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 13,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172903,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49117",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172921,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 5954,
+      "hp": 100,
+      "action": {
+        "id": "action.49123",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 1,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172903,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49117",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172933,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 5954,
+      "hp": 100,
+      "action": {
+        "id": "action.49123",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 6,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172903,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49117",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172945,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 5704,
+      "hp": 100,
+      "action": {
+        "id": "action.49134",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 14,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172940,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49128",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172957,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 5704,
+      "hp": 100,
+      "action": {
+        "id": "action.49134",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 2,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172940,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49128",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172969,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 5704,
+      "hp": 100,
+      "action": {
+        "id": "action.49134",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 7,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [
+          "practice.slow"
+        ],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172940,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49128",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172981,
+      "trial": "duel",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 5454,
+      "hp": 100,
+      "action": {
+        "id": "action.49145",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "windup",
+        "remaining": 15,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172977,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49138",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    },
+    {
+      "tick": 172996,
+      "trial": "ended",
+      "pos": [
+        343040,
+        312320
+      ],
+      "energy": 5454,
+      "hp": 100,
+      "action": {
+        "id": "action.49145",
+        "move": "punch",
+        "target": "practice.slow",
+        "phase": "recover",
+        "remaining": 13,
+        "wind": 20,
+        "active": 2,
+        "recover": 15,
+        "hitSet": [],
+        "aim": [
+          10000,
+          0
+        ],
+        "started": 172977,
+        "initialThreat": true,
+        "failure": null,
+        "expectedTargetAction": "action.49138",
+        "energyCost": 250,
+        "contentMove": "breeze.slowfist"
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+import test from'node:test';import assert from'node:assert/strict';
+import{field}from'../../vendor/public/6f959f5/character-card/contract.mjs';import{valueText,publicValueHtml}from'../../vendor/public/6f959f5/public-ui/values.mjs';
+const f=(v,availability)=>field('x',v,{source:'test',...(availability?{availability}:{})});
+test('M35 values: known 0 and false stay known and read as words; lists join; other states keep their labels; hidden has no tooltip',()=>{assert.equal(valueText(f(0)),'0');assert.equal(valueText(f(false)),'否');assert.equal(valueText(f(true)),'是');assert.equal(valueText(f([])),'無');assert.equal(valueText(f(['甲','乙'])),'甲、乙');assert.equal(valueText(f('')),'');
+ for(const[a,label]of[['unknown','未知'],['hidden','隱藏'],['unsupported','不支援'],['notApplicable','不適用']])assert.equal(valueText(f(null,a)),label);assert.doesNotMatch(publicValueHtml(f(null,'hidden')),/title=/);assert.match(publicValueHtml(f(false)),/data-availability="known"[^>]*>否</);assert.match(publicValueHtml(f('<b>')),/&lt;b&gt;/);});

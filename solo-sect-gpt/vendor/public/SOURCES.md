@@ -43,7 +43,10 @@
 | 本地檔 | 上游路徑 | 上游 sha256 | 處理 |
 | --- | --- | --- | --- |
 | `6f959f5/character-card/contract.mjs` | `sect-chronicle/character-card/contract.mjs` | 61e52cbd433e70a3ccef1391cd9c86f42cae881fae4853a1994e7942d3110d6e | 採用（M32）；改寫：`AVAILABILITY` 加 `notApplicable`；含 `sanitizeProfile` |
-| `6f959f5/public-ui/values.mjs` | `sect-chronicle/public-ui/values.mjs` | beefc2246ed938f364d9917d1901471bd236c68c3c002c5f8de4ab76777b79e4 | 採用（M32）；改寫：加「不適用」標籤 |
+| `6f959f5/public-ui/values.mjs` | `sect-chronicle/public-ui/values.mjs` | beefc2246ed938f364d9917d1901471bd236c68c3c002c5f8de4ab76777b79e4 | 採用（M32）；改寫：加「不適用」標籤；M35 再改：known 布林寫「是／否」、清單以「、」相接、空清單寫「無」 |
+| `6f959f5/public-ui/style.css` | `sect-chronicle/public-ui/style.css` | 58659ff5c5054d84018faf266551b6336b3ed7c2dbe3318d389096ab507fdf1a | 採用（M35，只加來源註解），在 `style.css` 之後載入 |
+| （原則，不複製檔案） | `sect-chronicle/public-fix/view-state.mjs` | c13c498ac1b0b9e7f95ac88f2d6d4f54ee545cd896b607295503c26b00ab92df | M35 借每人物 scope、穩定 key、同人刷新保留焦點的原則，寫在 `ui.mjs`；檔案本身不採用（本版有段落依開合決定是否產生內容） |
+| （不採用） | `sect-chronicle/public-ui/preview-fixtures.mjs` | — | 依賴 dev 研究目錄與 `presentCard`；本批不做開發預覽頁 |
 | `6f959f5/resource-view/contract.mjs` | `sect-chronicle/resource-view/contract.mjs` | b4bf4c760744592b6886e0dec05620b0c32681ec781f00a2e9e020651e15b184 | 採用（M32） |
 | `6f959f5/resource-view/render.mjs` | `sect-chronicle/resource-view/render.mjs` | f33e293436aa325f0483a0e255014b2cb65b890280024a197dffd3041e1ffe35 | 採用（M32） |
 | `6f959f5/intent-view/contract.mjs` | `sect-chronicle/intent-view/contract.mjs` | de555b468c91e616ae919e33b621c91dd7677fd34b3a608209c145e8b4787acb | 採用（M33，只加來源註解）；不採用同目錄 `gpt.mjs`（import 舊核心），本地轉接在 `src/intent-view.mjs` |

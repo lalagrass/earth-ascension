@@ -1,0 +1,137 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 8.239,
+  "errors": [],
+  "steps": [
+    {
+      "label": "done",
+      "wallSeconds": 8.024,
+      "tick": 194362,
+      "failed": [
+        "values-words",
+        "intent-not-shared",
+        "work-not-shared",
+        "art-not-shared",
+        "resource-global",
+        "focus-kept",
+        "enter-once",
+        "space-summary",
+        "space-button",
+        "good-load-resets"
+      ]
+    }
+  ],
+  "label": "before-fix-at-84b000f",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": "Error: checks failed: values-words, intent-not-shared, work-not-shared, art-not-shared, resource-global, focus-kept, enter-once, space-summary, space-button, good-load-resets\n    at file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/m35-ui.mjs:33:121",
+  "story": {
+    "checks": [
+      {
+        "name": "values-words",
+        "pass": false,
+        "detail": "明確停工：false "
+      },
+      {
+        "name": "intent-not-shared",
+        "pass": false
+      },
+      {
+        "name": "work-not-shared",
+        "pass": false
+      },
+      {
+        "name": "amu-kept-intent",
+        "pass": true
+      },
+      {
+        "name": "amu-kept-work",
+        "pass": true
+      },
+      {
+        "name": "art-not-shared",
+        "pass": false,
+        "detail": "only one art "
+      },
+      {
+        "name": "resource-global",
+        "pass": false
+      },
+      {
+        "name": "focus-kept",
+        "pass": false,
+        "detail": [
+          {
+            "tag": "BUTTON",
+            "cmd": "native:{\"type\":\"resume\",\"actor\":\"amu\"}",
+            "text": "恢復自主"
+          },
+          {
+            "tag": "BUTTON",
+            "cmd": null,
+            "text": "1×"
+          }
+        ]
+      },
+      {
+        "name": "enter-once",
+        "pass": false
+      },
+      {
+        "name": "space-summary",
+        "pass": false,
+        "detail": {
+          "p0": false,
+          "o0": false
+        }
+      },
+      {
+        "name": "space-button",
+        "pass": false,
+        "detail": {
+          "p0": true
+        }
+      },
+      {
+        "name": "space-pauses",
+        "pass": true
+      },
+      {
+        "name": "disabled-reason",
+        "pass": true,
+        "detail": 0
+      },
+      {
+        "name": "refused-load-keeps",
+        "pass": true,
+        "detail": "校驗碼不符，原存檔已保留"
+      },
+      {
+        "name": "good-load-resets",
+        "pass": false
+      },
+      {
+        "name": "no-page-errors",
+        "pass": true,
+        "detail": []
+      }
+    ],
+    "intentText": "工作目標／待辦與停工\n\n執行中：行走 · 就寢 · 下一步：生命回滿、精力至少75後回生活\n\n活動原因：精力 13，先養足體力\n\n既有工作目標：沒有已受理的玩家指令\n\n待改派：沒有\n\n明確停工：false · 恢復：必要自理：休息至75\n\n玩家叫回：沒有\n\n已有其他目標：未設主副職\n\n原生佇列能力：原生 pendingCommands（可多筆、依 executeTick）；臨時工作另記在 temporary\n待改派：沒有 · false停工 恢復自主\n坐休 回床睡 吃飯 取用乾糧 停工 恢復自主 開啟自主 叫回\n自主政策與原原因",
+    "focus": [
+      {
+        "tag": "BUTTON",
+        "cmd": "native:{\"type\":\"resume\",\"actor\":\"amu\"}",
+        "text": "恢復自主"
+      },
+      {
+        "tag": "BUTTON",
+        "cmd": null,
+        "text": "1×"
+      }
+    ],
+    "childText": "工作目標／待辦與停工\n\n執行中：庭院歇息 · 下一步：補給不足先處理，否則下一時段／可行活動\n\n活動原因：工作時段，等待可行單位\n\n既有工作目標：沒有已受理的玩家指令\n\n待改派：沒有\n\n明確停工：false · 恢復：沒有\n\n玩家叫回：沒有\n\n已有其他目標：未設主副職\n\n原生佇列能力：原生 pendingCommands（可多筆、依 executeTick）；臨時工作另記在 temporary\n待改派：沒有 · false停工 恢復自主\n坐休 回床睡 吃飯 取用乾糧 停工 恢復自主 關閉自主 叫回\n自主政策與原原因",
+    "badToast": "校驗碼不符，原存檔已保留"
+  }
+}
