@@ -1,0 +1,28 @@
+{
+  "source": "model worlds; placement fixtures are labeled inline and are not player movement",
+  "cases": [
+    {
+      "case": "whitelist",
+      "actors": 3,
+      "facilities": [
+        "store",
+        "kitchen",
+        "yard"
+      ]
+    },
+    {
+      "case": "visibility",
+      "seenWhenNear": true
+    },
+    {
+      "case": "epoch"
+    },
+    {
+      "case": "frame"
+    },
+    {
+      "case": "read-only",
+      "ticks": 600
+    }
+  ]
+}

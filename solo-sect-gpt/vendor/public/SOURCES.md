@@ -70,3 +70,17 @@
 | `assets/shared/resolve.mjs` | `sect-chronicle/assets/shared/resolve.mjs`（3079a03） | 7ab8af62d4c437de0afe003eb07a0cb76b38217c48381f329eca8a26a705aa2a | 只採 `portrait` 標籤分流；本地加整圖矩形與 `templates` 檢查、`templateAppearance()` |
 
 不採用：其餘 12 張研究立繪、證據截圖、`dev:` 綁定、gemini pin 與 manifest 其他欄位、被退回的候選稿或較早的 originPath 版本。權利照上游：`repository-research-reuse; third-party-rights-unverified`；私人原型使用，不是商業授權或公開發布。
+
+## 第四個固定來源：dev 00f4dbe（M41–M44，只取場景導覽）
+
+固定 `lalagrass/earth-ascension` 提交 `00f4dbe26be5765a9622957b7c6a636ab5039f96`（PR #371 已合，SCENE-NAV-01），以 `gh api` 按 SHA 讀取。先前採用的人物、資源、意圖、簡介、樣式（6f959f5）與兩張立繪（3079a03）沿原 pin，沒有重搬。
+
+| 本地檔 | 上游路徑 | 上游 sha256 | 本地 sha256 | 處理 |
+| --- | --- | --- | --- | --- |
+| `00f4dbe/navigation-view/contract.mjs` | `sect-chronicle/navigation-view/contract.mjs` | da43ab2b915d7eed8256b0d8cdeaeea24c4cab3a7eaba2b11d29a731f2cb961a | 4a4aca1412414334bf7d11aa11044ae0686e676e869ad399e7f6c99aa61d1f17 | 採用（M42，只加來源註解） |
+| `00f4dbe/navigation-view/render.mjs` | `sect-chronicle/navigation-view/render.mjs` | c352e0b938fef1e5039ee876160921390303a9ba64403169ce57d84eca393499 | 256ecd3f716b2e9d5a38b3eef2d5ce7f6113ce443364e978de038dbb511c2605 | 採用（M42，只加來源註解）；import `./contract.mjs` |
+| `00f4dbe/navigation-view/style.css` | `sect-chronicle/navigation-view/style.css` | 4e7748d76eb2703fff741d8475658ea291d6eed59a64501002792bb46d9aa2f0 | 221bbc77be93258da12d4bd1827bfbf4dce07dd38689869714125a31f4b8f34d | 採用（M42）；改寫：`@import` 改指 `../../6f959f5/public-ui/style.css`（00f4dbe 的 `public-ui/style.css` 與它逐位元組相同，sha256 58659ff5c5054d84018faf266551b6336b3ed7c2dbe3318d389096ab507fdf1a） |
+
+依賴閉包：`render.mjs` → `contract.mjs`；`style.css` → 6f959f5 `public-ui/style.css`。不採用：`official.mjs`（Gemini 正式入口接線）、`checks/`、`evidence/`、`scene-shared` harness、Pixi、舊 GPT 核心 `6cbd3e6…`。本地轉接 `src/navigation-view.mjs` 讀目前 GPT 世界。上游沒有公開路線，本地照舊 unsupported。
+
+公版採用備註（不代發上游）：本版需要的薄轉接是 span→zoom（`zoom = canvas CSS 寬 / span`）、以 Canvas CSS 尺寸當 viewport、成功換局才換 epoch、點選時重核當下公開人物。
