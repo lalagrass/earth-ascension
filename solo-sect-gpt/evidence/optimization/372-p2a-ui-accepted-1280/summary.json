@@ -1,0 +1,136 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 2.651,
+  "errors": [],
+  "steps": [
+    {
+      "label": "done",
+      "wallSeconds": 2.65,
+      "tick": 11,
+      "failed": []
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "checks": [
+      {
+        "name": "book-closed-by-default",
+        "pass": true
+      },
+      {
+        "name": "visible-with-book-closed",
+        "pass": true,
+        "detail": {
+          "display": "flex",
+          "w": 300,
+          "h": 498,
+          "inView": true,
+          "hidden": false,
+          "expanded": "true"
+        }
+      },
+      {
+        "name": "visible-book-open",
+        "pass": true,
+        "detail": {
+          "display": "flex",
+          "w": 300,
+          "h": 498,
+          "inView": true,
+          "hidden": false,
+          "expanded": "true"
+        }
+      },
+      {
+        "name": "frame-follows-canvas",
+        "pass": true,
+        "detail": {
+          "fClosed": {
+            "h": 811.078125,
+            "w": 1430,
+            "cw": 1280,
+            "ch": 726
+          },
+          "fOpen": {
+            "h": 1092.8210526315788,
+            "w": 1430,
+            "cw": 950,
+            "ch": 726
+          }
+        }
+      },
+      {
+        "name": "visible-book-closed-again",
+        "pass": true,
+        "detail": {
+          "display": "flex",
+          "w": 300,
+          "h": 498,
+          "inView": true,
+          "hidden": false,
+          "expanded": "true"
+        }
+      },
+      {
+        "name": "own-toggle-closes",
+        "pass": true,
+        "detail": {
+          "display": "none",
+          "w": 0,
+          "h": 0,
+          "inView": false,
+          "hidden": true,
+          "expanded": "false"
+        }
+      },
+      {
+        "name": "escape-closes-focus-returns",
+        "pass": true,
+        "detail": {
+          "display": "none",
+          "w": 0,
+          "h": 0,
+          "inView": false,
+          "hidden": true,
+          "expanded": "false"
+        }
+      },
+      {
+        "name": "paused-world-unchanged",
+        "pass": true
+      },
+      {
+        "name": "no-page-errors",
+        "pass": true,
+        "detail": []
+      }
+    ],
+    "closedBook": {
+      "display": "flex",
+      "w": 300,
+      "h": 498,
+      "inView": true,
+      "hidden": false,
+      "expanded": "true"
+    },
+    "frames": {
+      "fClosed": {
+        "h": 811.078125,
+        "w": 1430,
+        "cw": 1280,
+        "ch": 726
+      },
+      "fOpen": {
+        "h": 1092.8210526315788,
+        "w": 1430,
+        "cw": 950,
+        "ch": 726
+      }
+    }
+  }
+}
