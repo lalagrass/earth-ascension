@@ -75,9 +75,16 @@ export function createLife02(ctx) {
   }
   const uNow = (h) => (h.mode === 'meet' ? 1 : h.mode === 'toMeet' || h.mode === 'fromMeet' ? h.a + (h.b - h.a) * Math.min(1, h.steps / h.need) : 0);
   function lines(kind, p, q) {
-    if (kind === 'encourage') return t.cause.kind === 'delivery'
-      ? { first: '剛才那趟辛苦了，慢慢來，我陪你。', reply: '有妳在，這院子更像家了。' }
-      : { first: '歇會兒再來也好，我陪你。', reply: '好，我們一起慢慢來。' };
+    if (kind === 'encourage') {
+      const delivered = t.cause.kind === 'delivery';
+      return (t.serial % 2) === 0
+        ? delivered
+          ? { first: '剛才那趟辛苦了，慢慢來，我陪你。', reply: '有妳在，這院子更像家了。' }
+          : { first: '歇會兒再來也好，我陪你。', reply: '好，我們一起慢慢來。' }
+        : delivered
+          ? { first: '那趟做完了，先喘口氣，我陪你。', reply: '好，等會兒再一起做事。' }
+          : { first: '今天照自己的步子走就好，我陪你。', reply: '嗯，和妳說幾句就安心了。' };
+    }
     return (t.serial % 2) === 0
       ? { first: `${nameOf(q.id)}，院裡的風真舒服。`, reply: '嗯，坐一會兒再忙吧。' }
       : { first: '今天院子又熱鬧了些。', reply: '有人一起說話，日子就暖些。' };
