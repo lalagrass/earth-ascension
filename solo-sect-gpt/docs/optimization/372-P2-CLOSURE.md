@@ -68,3 +68,17 @@
 | 回歸 | 321 項全過；M28、M33、M41、M43 正常 UI 驅動重跑通過 | 372-p2-closure/regression-health.log、*-372h-recheck-1440 |
 
 限制：分類界線（80%、50%）本身仍給出比例範圍，不是消除所有推測；存檔、開發 fixture 與 `window.__game` 遙測仍是原始世界資料，不是公開卡，本包不動。
+
+## #372 兩個 renderer 換 00f4dbe 版（PO 原批准）
+
+- 對照：00f4dbe 的 `martial-view/render.mjs`（sha256 bbf241b6…）相對 ef823ac：值改用 `publicValueHtml`、條件 details 加 `data-view-key="martial:<id>"`；`event-view/render.mjs`（659dd4bd…）只把 escape／valueText 的來源換到 `public-ui/values`。
+- 取用：新增 `vendor/public/00f4dbe/{martial-view,event-view}/render.mjs`，只把 import 改指已鎖的 6f959f5 `public-ui/values.mjs`（保留本版的 notApplicable 與布林／清單文字）；ef823ac 舊副本保留（M26、M28 舊測試仍用）。`ui.mjs` 正式入口改用新版本。hash 與依賴記在 `SOURCES.md`。不帶 `*/gpt.mjs`、舊核心、Pixi。
+- 新版的 `martial:<id>` 展開鍵落在 M35 的每人物狀態下（非 `resource:`／`section:guide` 的鍵都依人物保存），所以條件細節依人物＋條目保存，不另寫一套。
+
+| 項目 | 結果 | 證據 |
+| --- | --- | --- |
+| 模型 | M44 展示檔阿木、林青、小禾：新舊 martial render 去掉標記後文字完全相同（U/F/I、條件四層、來源），每個條目都有 `martial:<id>` 鍵，hidden 值沒有 tooltip；known 0、是／否、清單「甲、乙」、不支援、`<script>` 轉義都正確；event render 對真實紀事列的輸出與 ef823ac 版逐字相同；讀取不改世界 | 372-p2-closure/render-model.json |
+| 正常 UI | 1440×900、1280×800：阿木拳的條件細節展開後播放 100 tick 仍展開；切到林青是收合；回阿木仍展開；條件區有 `data-availability`、沒有 true／false；讀壞檔被拒後仍展開；讀好檔後收合；近期紀事照常 | 372-render-ui-accepted-1440／1280 |
+| 回歸 | 326 項全過；M28、M29、M35 正常 UI 驅動重跑通過 | 372-p2-closure/regression-render.log、*-372r-recheck-1440 |
+
+沒有發現新版有無關回歸，所以沒有保留舊版在正式入口。

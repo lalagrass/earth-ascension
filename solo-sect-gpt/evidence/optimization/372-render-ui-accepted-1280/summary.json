@@ -1,0 +1,75 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 6.724,
+  "errors": [],
+  "steps": [
+    {
+      "label": "redraws",
+      "wallSeconds": 4.988,
+      "tick": 203406
+    },
+    {
+      "label": "done",
+      "wallSeconds": 6.724,
+      "tick": 203294,
+      "failed": []
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "checks": [
+      {
+        "name": "keyed",
+        "pass": true,
+        "detail": "martial:punch"
+      },
+      {
+        "name": "opened",
+        "pass": true
+      },
+      {
+        "name": "kept-while-playing",
+        "pass": true
+      },
+      {
+        "name": "not-carried-to-lin",
+        "pass": true
+      },
+      {
+        "name": "back-to-amu-open",
+        "pass": true
+      },
+      {
+        "name": "values-shared-markup",
+        "pass": true
+      },
+      {
+        "name": "no-true-false",
+        "pass": true
+      },
+      {
+        "name": "refused-load-keeps",
+        "pass": true
+      },
+      {
+        "name": "good-load-resets",
+        "pass": true
+      },
+      {
+        "name": "chronicle-renders",
+        "pass": true
+      },
+      {
+        "name": "no-page-errors",
+        "pass": true,
+        "detail": []
+      }
+    ],
+    "key": "martial:punch"
+  }
+}
