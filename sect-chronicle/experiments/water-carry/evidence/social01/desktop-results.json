@@ -1,0 +1,26 @@
+{
+  "entry": "/experiments/water-carry/demo/",
+  "browser": "154.0.8037.57",
+  "viewport": {
+    "width": 1400,
+    "height": 820
+  },
+  "firstTick": 0,
+  "readyTick": 144,
+  "invitedTick": 144,
+  "talkTick": 308,
+  "doneTick": 604,
+  "actorAsset": "social-girl",
+  "relation": "家人・多聊了一些",
+  "source": {
+    "kind": "none",
+    "label": "一般陪伴",
+    "tick": 0
+  },
+  "eventCount": 1,
+  "pageErrors": [],
+  "screenshots": [
+    "girl-encourages.png",
+    "relationship-source.png"
+  ]
+}

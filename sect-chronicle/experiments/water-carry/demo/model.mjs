@@ -200,7 +200,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
   // SG-LIFE-02：暫態在 L2 閉包，不進 s；busy＝必要自理／人工／護院巡山承諾或候補、待執行（招呼不能插隊）。
   const L2 = createLife02({ s, ids, rules, meetLengths: sense.meetLengths, walkSteps, nameOf: (id) => nameOf(id), funLen: (id) => funLen(id), order: AUTO_ORDER,
     atHome: (p) => atHome(p), store: (job) => store(job), cleaning: (p) => cleaning(p), patrolling: (p) => patrolling(p), thirsty: (p) => thirsty(p),
-    busy: (p) => !!p.rest || p.recall || T1.active(p) || TE.active(p) || H2.active(p) || p.pending != null || p.guardOrder != null || !!p.fix || cleaning(p) || patrolling(p) || wants(p) || wantsUp(p) || wantsClean(p) || (thirsty(p) && s.vat >= D.cost) || p.energy <= E.restAt });
+    busy: (p, allowStopped = false) => (!!p.rest && !(allowStopped && p.rest === 'manual' && p.energy >= E.backAt)) || p.recall || T1.active(p) || TE.active(p) || H2.active(p) || p.pending != null || p.guardOrder != null || !!p.fix || cleaning(p) || patrolling(p) || wants(p) || wantsUp(p) || wantsClean(p) || (thirsty(p) && s.vat >= D.cost) || p.energy <= E.restAt });
   // SG-TRAIN-01：練掌暫態在 T1 閉包；blocked＝人工／護院巡山等既有承諾（這些先照原規則做完或被玩家取消）。
   const T1 = createTrain01({ s, ids, rules, SKILLS, walkSteps, nameOf: (id) => nameOf(id), trainLengths: sense.trainLengths,
     atHome: (p) => atHome(p), thirsty: (p) => thirsty(p), canDrink: () => !!D && s.vat >= D.cost,
@@ -236,7 +236,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     else { reserve(job, -1); if (job === 'herb') s.herbs += 1; else s.vat += 1; }
     p.trips += 1;
     if (job !== 'wood') p.done[job] += 1;
-    L2.tripDone(p); // SG-LIFE-02：完成一趟新工作才可再發起招呼
+    L2.tripDone(p, job); // SOCIAL01：真交付才產生新生活 context；舊招呼條件仍沿原工作完成
     // 叫回只在休閒中可下，所以叫回時人一定不在工作；此後交付的第一趟必是返院後新開始的，完成即解除。
     if (p.recall) { p.recall = false; s.log.push({ tick: s.tick, person: p.id, kind: 'recallDone' }); }
     p.lastTrip = { job, level: p.motion.tripLevel, steps: s.tick - p.motion.tripStart };
@@ -1095,7 +1095,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
       b.t = Math.min(B.max * Q, b.t + B.shoutThreat * Q);
       result(shouter, 'success');
       leaveGuard(shouter);
-      boarFlee(`被${shouter.id === 'hero' ? '主角' : '熟手'}喝止，害怕`);
+      boarFlee(`被${shouter.id === 'hero' ? '主角' : '小女孩'}喝止，害怕`);
       return;
     }
     b.steps += 1;
@@ -1218,6 +1218,8 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     const a = actions(id).find((x) => x.id === cmd);
     if (!a) return { ok: false, reason: '沒有這個指令' };
     if (!a.enabled) return { ok: false, reason: a.reason };
+    // SOCIAL01：邀請是嘗試／拒絕，不會先取消工作、茶、床、練掌或當前有效玩家意圖。
+    if (cmd === 'invite:chat' || cmd === 'invite:encourage') return L2.invite(p, cmd === 'invite:chat' ? 'chat' : 'encourage');
     // SG-LIFE-02：玩家任何有效指令先取消此人所在的招呼（雙方釋放、各自走回）；改派／停工／巡山等退出自主補水方針。
     const metCanceled = L2.cancelBy(p);
     // SG-TRAIN-01：較新的任何有效指令都取消練掌目標與未完成單位（「練掌」本身是新目標，另處理）。
@@ -1381,7 +1383,7 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
     return { ok: true, text };
   }
   const guardBusy = (p) => ['toGuard', 'guardWait', 'shout'].includes(p.motion.mode);
-  const nameOf = (id) => (id === 'hero' ? '主角' : id === 'cousin' ? '熟手' : id);
+  const nameOf = (id) => (id === 'hero' ? '主角' : id === 'cousin' ? '小女孩' : id);
   // SG-PATROL-01：巡山者喝止時沿用同一 visit 的唯一處理名額（不搶別人的）。
   const assignee = () => (s.boar.active ? ids.find((id) => s.people[id].guardOrder === s.boar.visit) || (s.patrol && s.patrol.boarVisit === s.boar.visit ? s.patrol.by : null) : null);
   // 派遣驅離：只接受這次有效來訪；同一來訪最多一人；已在處理不重啟。工作／恢復中只記意圖，交付或恢復到 80 後目標仍在才出發。
@@ -1439,7 +1441,11 @@ export function createModel(routes, rules = RULES, characters = PEOPLE, prefs = 
         enabled: !ev.reason, reason: ev.reason }))(TE.view(p)),
       { id: 'teaCancel', label: '取消泡茶', detail: '煮好前取消：座位與預約全退、不扣料；煮好後取消：料不退、沒喝完沒有精力。之後回院中待命', enabled: TE.active(p), hidden: !TE.active(p), reason: '沒有泡茶' },
       { id: 'trainCancel', label: '停止練掌', detail: '未完成的單位不算，已完成單位保留；回院中待命', enabled: T1.active(p), hidden: !T1.active(p), reason: '沒有練掌目標' },
-      { id: 'meetCancel', label: '取消招呼', detail: '兩人各自從所在處走回院中', enabled: !!lv.meet, hidden: !lv.meet, reason: '沒有進行中的招呼' },
+      { id: 'meetCancel', label: '取消聊天', detail: '兩人各自從所在處走回院中', enabled: !!lv.meet, hidden: !lv.meet, reason: '沒有進行中的聊天' },
+      { id: 'invite:chat', label: '邀她聊聊', detail: '兩人有空才沿原路走到院中對談；本局相處，不加數值',
+        enabled: !lv.meet && lv.cooldown === 0, reason: lv.meet ? '兩人正在聊天' : `冷卻還有 ${lv.cooldown} 遊戲秒` },
+      { id: 'invite:encourage', label: '聽她鼓勵', detail: '小女孩先關心，主角回應；真交付才提剛才成果，沒有精力或能力 buff',
+        enabled: !lv.meet && lv.cooldown === 0, reason: lv.meet ? '兩人正在聊天' : `冷卻還有 ${lv.cooldown} 遊戲秒` },
       { id: 'start', label: `開始${JB[cur].label}（持續）`, detail: '恢復目前工作', hidden: true,
         enabled: stopped || p.pending != null, reason: `已在持續${JB[cur].label}中` },
       { id: 'recall', label: '叫回工作', detail: `回院中${JB[cur].label}；滿了就待命，做完一趟才解除`, hidden: !fun && !p.recall,

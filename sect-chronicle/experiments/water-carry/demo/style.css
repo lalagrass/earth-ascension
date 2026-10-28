@@ -147,6 +147,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #d7e3e2; col
 /* SG-LIFE-02 招呼氣泡與人物卡補充 */
 .tag.say { transform: translate(-50%, -100%); background: #fffaf0; color: #2f2a24; border: 1px solid #8a7a5a; border-radius: 10px; font-size: 13px; padding: 2px 8px; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
 .life02 { margin-top: 6px; padding: 4px 6px; border-left: 3px solid #5d7f4a; background: rgba(93, 127, 74, .08); font-size: 12px; }
+.social-events { margin: 4px 0 6px; padding-left: 20px; max-height: 126px; overflow: auto; }
+.social-events li { margin: 0 0 5px; line-height: 1.45; }
 
 /* SG-TRAIN-01 掌法進度 */
 .train01 { margin-top: 6px; padding: 4px 6px; border-left: 3px solid #8b6b3e; background: rgba(139, 107, 62, .08); font-size: 12px; }
