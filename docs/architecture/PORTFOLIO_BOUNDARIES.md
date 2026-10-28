@@ -122,5 +122,6 @@ flowchart LR
 - [#111](https://github.com/lalagrass/earth-ascension/issues/111)：Earth 與 SG 的資源優先序（擁有人）。本文件不假設任何一方凍結；兩者邊界在任一選項下都成立。
 - [#112](https://github.com/lalagrass/earth-ascension/issues/112)：分支規則與 agent 帳號（擁有人設定）。
 - [#113](https://github.com/lalagrass/earth-ascension/issues/113)：CI 路徑篩選（Earth PO 評估）。
+- [#380](https://github.com/lalagrass/earth-ascension/issues/380)：遊戲公版與三個獨立版本的依賴方向、取用方式與分支模型，見 [SHARED_BASE_AND_VARIANTS](SHARED_BASE_AND_VARIANTS.md)（提案）。
 - [#118](https://github.com/lalagrass/earth-ascension/issues/118)：SG RNG 是否升版（擁有人）；rng1 在決定前維持有效。
 - [#123](https://github.com/lalagrass/earth-ascension/issues/123)：小說語氣／視角／選擇節奏／存讀語意與 runtime 授權（擁有人）。
