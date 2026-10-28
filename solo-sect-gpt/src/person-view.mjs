@@ -1,5 +1,5 @@
 // M8 read-only projections for the person panel and map badges; never mutates World.
-import{ITEM,TASKNAME,ART}from'./data.mjs';import{commitmentOf,ownershipGate,OWNER_LABEL}from'./commitment.mjs';import{beginError}from'./activities.mjs';import{describeLife,placeName}from'./life-policy.mjs';import{bagWeight}from'./state.mjs';import{studyError,preferError}from'./content.mjs';
+import{maskHealthText}from'./health-view.mjs';import{ITEM,TASKNAME,ART}from'./data.mjs';import{commitmentOf,ownershipGate,OWNER_LABEL}from'./commitment.mjs';import{beginError}from'./activities.mjs';import{describeLife,placeName}from'./life-policy.mjs';import{bagWeight}from'./state.mjs';import{studyError,preferError}from'./content.mjs';
 const itemName=s=>s.replace(/(wood|stone|water|veg|herb|meal|ration|tea|money|staff|sword)\b/g,m=>ITEM[m]||m);
 const PHASE={prepare:'領糧集合',outbound:'沿路前進',ridge:'側稜窄路',campRest:'營地休整',resting:'到達目的地',gate:'守路人前',gateFight:'守路處交手',negotiate:'說明來意',cave:'古洞抉擇',collect:'搬取糧袋',attach:'扶助周行',unload:'回倉交付',return:'實走返程',halted:'舊檔暫停'};
 // Turns a raw blocked string into who/what is in the way and what the player can do.
@@ -42,7 +42,7 @@ export function situation(w,p){const life=describeLife(w,p),k=commitmentOf(w,p),
  if(p.hp<=0){actions=[];}
  else if(!owner){if(blocked)actions.push(...blocked.actions);if(p.adult)actions.push({label:'練拳',cmd:{type:'task',actor:id,kind:'train',args:{art:'punch'}}});actions.push({label:'坐休',cmd:{type:'task',actor:id,kind:'rest',args:{}}},{label:'吃飯',cmd:{type:'task',actor:id,kind:'eat',args:{}}});actions.push(p.manualStop||!p.auto?{label:'恢復自主',cmd:{type:'resume',actor:id}}:{label:'停工',cmd:{type:'stop',actor:id}});}
  const seen=new Set();actions=actions.filter(x=>{const key=x.label;if(seen.has(key))return false;seen.add(key);return true;}).slice(0,6).map(x=>x.cmd?{...x,reason:predict(w,x.cmd)}:x);
- const last=w.trailPlan?.history?.at(-1),home=last?.report&&last.actors?.includes(id)&&w.tick-(last.ended||0)<12000?last.report.next.filter(t=>t.startsWith(p.name)||!/^\S+(受傷|生命|手上)/.test(t)):[];const vitals=[...home.map(t=>'剛返院：'+t),p.energy<2500?'精力偏低，會先坐休':null,p.injury>60?'傷勢過重，只能休養':p.injury>30?'有傷，不能切磋':null,p.hp<=0?'倒地，需要同門扶起或救援':null].filter(Boolean);
+ const last=w.trailPlan?.history?.at(-1),home=last?.report&&last.actors?.includes(id)&&w.tick-(last.ended||0)<12000?last.report.next.filter(t=>t.startsWith(p.name)||!/^\S+(受傷|生命|手上)/.test(t)):[];const vitals=[...home.map(t=>'剛返院：'+maskHealthText(w,t)),p.energy<2500?'精力偏低，會先坐休':null,p.injury>60?'傷勢過重，只能休養':p.injury>30?'有傷，不能切磋':null,p.hp<=0?'倒地，需要同門扶起或救援':null].filter(Boolean);
  return{version:1,actor:id,current:life.current,why:life.why,next:life.next,owner,blocked,vitals,actions,carried:life.carried.map(([i,n])=>ITEM[i]+' '+n),weight:bagWeight(w,p)};}
 // Shape-first map badge: a glyph plus short text, never colour alone.
 export function statusBadge(w,p){const a=w.activities[p.activity||p.classSession],load=Object.entries(w.inventories[p.bag]?.items||{}).find(([,n])=>n>0),k=commitmentOf(w,p),raw=p.blocked||a?.blocked||'';

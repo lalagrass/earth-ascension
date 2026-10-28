@@ -53,3 +53,18 @@
 | 受影響 | M7、M10（含 v2 旅程 `rerouted`）、M44 召回反例照過；完整回歸 316 項全過 | 372-p2-closure/regression-p2c.log |
 
 邊界測試第一版取「最接近目標值」的軌跡點，20.1 實際拿到 19.93（仍在 20 內），改成取「剛在界內／剛在界外」最近的真實軌跡點；修前紀錄是用第一版跑的。這項沒有另跑正常 UI：路線 B 的正常 UI（M44）已驗召回返院；20–48 DU 內的打斷由模型以正常命令序列重現與驗證。
+
+## #372 健康資訊遮罩（PO 原批准）
+
+- 問題：揭露政策只公開掌門的五項 stats（`public-view.disclosed`）；但 `makePerson` 的生命上限＝80＋5×體魄，非掌門的精確 hp／maxHp 直接把隱藏的體魄反算出來。之前公開快照 `state.hp` 帶 rawValue／current／max，人物頁寫「生命 64/80」、血條寬度是精確比例，野外觀察卡、返院報告、畫布上的交手血條也有。
+- 修正：新增 `src/health-view.mjs`：`hpDisclosed`（與 stats 揭露同條件：掌門）、`healthBand`（完好／輕傷 ≥80%／帶傷 ≥50%／重傷／倒地，80% 對齊演練門檻）、`healthView`（掌門精確，其他人分類與固定寬度）、`maskHealthText`（顯示時把「某人生命 a/b」換成分類，只要同名的人有任何一位未揭露就遮）。套用處：`public-view.personSnapshot`（非掌門 `state.hp` 改 hidden、不帶任何原值，另加 known 的 `state.health` 分類）、`ui.mjs` 情境卡生命列與血條（文字、`aria-label`、寬度都用分類）、野外／教習觀察卡、返院報告、舊紀事與需留意清單、`person-view` 的「剛返院」行、`event-feed` 結果文字、`render.mjs` 交手血條寬度。核心 hp／maxHp、傷害、治療、門檻、RNG、存檔都不改；體魄仍是 hidden。`render.mjs` 改了，`assets/manifest.json` 對它的 sha256 隨之更新（55728465… → df836dbc…）。
+- 不改的：掌門照舊精確；傷勢 0–100、精力原值本來就公開，不在本項。
+
+| 項目 | 結果 | 證據 |
+| --- | --- | --- |
+| 修前 | e78b98b 正常 UI（Mac 本機）：沈禾（傷 70）人物頁「生命 10/100」、血條 10%；阿木「100/100」；切頁、播放重繪後都還有精確數字 | 372-health-ui-before-fix-at-e78b98b-1440 |
+| 模型 | 兩位隱藏體魄不同（2 與 7，生命上限 90 與 115，標註 fixture）的人放在同一分類（滿、九成、六成、三成）：快照與公開卡的 hp 欄位 hidden、無 rawValue／current／max／base／effective、不含 maxHp；兩人的健康欄位與 `healthView` 完全相同；掌門照舊精確；阿木傷勢 0 仍是 known 0；體魄 hidden；報告文字遮罩與掌門不遮；遮罩讀取 400 tick 不改 hash／RNG | 372-p2-closure/health-model.json |
+| 正常 UI | 1440×900、1280×800：沈禾「健康 重傷」、血條 30%；阿木「健康 完好」100%；掌門「生命 100/100」；側欄所有文字、title、aria、data-*、style 都找不到精確 hp/maxHp；切武學頁再回來、播放 200 tick 後仍沒有；人物、遠征、紀事、建設頁都沒有 | 372-health-ui-accepted-1440／1280 |
+| 回歸 | 321 項全過；M28、M33、M41、M43 正常 UI 驅動重跑通過 | 372-p2-closure/regression-health.log、*-372h-recheck-1440 |
+
+限制：分類界線（80%、50%）本身仍給出比例範圍，不是消除所有推測；存檔、開發 fixture 與 `window.__game` 遙測仍是原始世界資料，不是公開卡，本包不動。

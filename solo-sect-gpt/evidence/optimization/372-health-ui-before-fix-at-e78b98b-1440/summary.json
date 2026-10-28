@@ -1,0 +1,102 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 8.498,
+  "errors": [],
+  "steps": [
+    {
+      "label": "redraws",
+      "wallSeconds": 7.729,
+      "tick": 113052
+    },
+    {
+      "label": "done",
+      "wallSeconds": 8.285,
+      "tick": 113052,
+      "failed": [
+        "shen-band",
+        "shen-no-exact",
+        "shen-bar-band-width",
+        "amu-full-band",
+        "amu-no-exact",
+        "after-redraw-no-exact",
+        "after-redraw-band",
+        "tab-people-no-exact"
+      ]
+    }
+  ],
+  "label": "before-fix-at-e78b98b",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": "Error: checks failed: shen-band, shen-no-exact, shen-bar-band-width, amu-full-band, amu-no-exact, after-redraw-no-exact, after-redraw-band, tab-people-no-exact\n    at file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/health372-ui.mjs:20:121",
+  "story": {
+    "checks": [
+      {
+        "name": "shen-band",
+        "pass": false,
+        "detail": {
+          "bar": "10%"
+        }
+      },
+      {
+        "name": "shen-no-exact",
+        "pass": false
+      },
+      {
+        "name": "shen-bar-band-width",
+        "pass": false,
+        "detail": "10%"
+      },
+      {
+        "name": "amu-full-band",
+        "pass": false,
+        "detail": "100%"
+      },
+      {
+        "name": "amu-no-exact",
+        "pass": false
+      },
+      {
+        "name": "leader-exact",
+        "pass": true,
+        "detail": "生命 100/100"
+      },
+      {
+        "name": "after-redraw-no-exact",
+        "pass": false,
+        "detail": {
+          "hp": 10
+        }
+      },
+      {
+        "name": "after-redraw-band",
+        "pass": false
+      },
+      {
+        "name": "tab-people-no-exact",
+        "pass": false
+      },
+      {
+        "name": "tab-travel-no-exact",
+        "pass": true
+      },
+      {
+        "name": "tab-records-no-exact",
+        "pass": true
+      },
+      {
+        "name": "tab-build-no-exact",
+        "pass": true
+      },
+      {
+        "name": "no-page-errors",
+        "pass": true,
+        "detail": []
+      }
+    ],
+    "shen": {
+      "bar": "10%"
+    }
+  }
+}

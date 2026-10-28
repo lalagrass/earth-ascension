@@ -1,0 +1,95 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 8.639,
+  "errors": [],
+  "steps": [
+    {
+      "label": "redraws",
+      "wallSeconds": 8.053,
+      "tick": 113055
+    },
+    {
+      "label": "done",
+      "wallSeconds": 8.638,
+      "tick": 113055,
+      "failed": []
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1280",
+    "800"
+  ],
+  "failure": null,
+  "story": {
+    "checks": [
+      {
+        "name": "shen-band",
+        "pass": true,
+        "detail": {
+          "bar": "30%",
+          "excerpt": "健康 重傷"
+        }
+      },
+      {
+        "name": "shen-no-exact",
+        "pass": true
+      },
+      {
+        "name": "shen-bar-band-width",
+        "pass": true,
+        "detail": "30%"
+      },
+      {
+        "name": "amu-full-band",
+        "pass": true,
+        "detail": "100%"
+      },
+      {
+        "name": "amu-no-exact",
+        "pass": true
+      },
+      {
+        "name": "leader-exact",
+        "pass": true,
+        "detail": "生命 100/100"
+      },
+      {
+        "name": "after-redraw-no-exact",
+        "pass": true,
+        "detail": {
+          "hp": 10
+        }
+      },
+      {
+        "name": "after-redraw-band",
+        "pass": true
+      },
+      {
+        "name": "tab-people-no-exact",
+        "pass": true
+      },
+      {
+        "name": "tab-travel-no-exact",
+        "pass": true
+      },
+      {
+        "name": "tab-records-no-exact",
+        "pass": true
+      },
+      {
+        "name": "tab-build-no-exact",
+        "pass": true
+      },
+      {
+        "name": "no-page-errors",
+        "pass": true,
+        "detail": []
+      }
+    ],
+    "shen": {
+      "bar": "30%",
+      "excerpt": "健康 重傷"
+    }
+  }
+}

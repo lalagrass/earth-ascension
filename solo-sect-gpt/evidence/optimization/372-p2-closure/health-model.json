@@ -1,0 +1,50 @@
+{
+  "source": "created worlds; labeled fixtures inline",
+  "cases": [
+    {
+      "case": "pair",
+      "frac": 1,
+      "band": "完好",
+      "maxHp": [
+        90,
+        115
+      ]
+    },
+    {
+      "case": "pair",
+      "frac": 0.9,
+      "band": "輕傷",
+      "maxHp": [
+        90,
+        115
+      ]
+    },
+    {
+      "case": "pair",
+      "frac": 0.6,
+      "band": "帶傷",
+      "maxHp": [
+        90,
+        115
+      ]
+    },
+    {
+      "case": "pair",
+      "frac": 0.3,
+      "band": "重傷",
+      "maxHp": [
+        90,
+        115
+      ]
+    },
+    {
+      "case": "states"
+    },
+    {
+      "case": "text"
+    },
+    {
+      "case": "read-only"
+    }
+  ]
+}
