@@ -1,4 +1,4 @@
-import{LINES,validFollowPlan}from'./followups.mjs';import{validateContentState}from'./pack-schema.mjs';import{movesFor,moveFor,isPackMove,isPackPerson,activitiesFor,eventsFor}from'./catalog.mjs';
+import{jointCut}from'./joint-drill.mjs';import{LINES,validFollowPlan}from'./followups.mjs';import{validateContentState}from'./pack-schema.mjs';import{movesFor,moveFor,isPackMove,isPackPerson,activitiesFor,eventsFor}from'./catalog.mjs';
 import{TRAIL_ROUTES,TRAIL_GOALS}from'./journey-data.mjs';
 import{SECT_LIFE,LIFE_EVENTS}from'./culture-data.mjs';
 import {SUPPORTED_RULES,rulesFor} from './save-features.mjs';
@@ -105,7 +105,10 @@ export async function decode(text){
  if(x.format!=='solo-sect-gpt')throw Error('非本遊戲存檔');for(const k of Object.keys(VERSION))if(k==='rulesVersion'?!SUPPORTED_RULES.includes(x[k]):x[k]!==VERSION[k])throw Error('不支援的版本：'+k);
  if(!x.payload||x.checksum!==await hash(x.payload))throw Error('校驗碼不符，原存檔已保留');
  const w=x.payload;for(const k of Object.keys(VERSION))if(w[k]!==x[k])throw Error('內容版本不符');
- try{validate(w);}catch(e){if(e instanceof TypeError)throw Error('存檔內容欄位缺失／型別不合法');throw e;}return w;
+ try{validate(w);}catch(e){if(e instanceof TypeError)throw Error('存檔內容欄位缺失／型別不合法');throw e;}
+ // #372 P2-B: an old exiting drill without the M41 freeze is frozen here, at the successful load, before any command or step can spend energy.
+ // Spending before the old save cannot be told apart; nothing after the load counts. Files that already carry closedAt are left as they are.
+ jointCut(w);return w;
 }
 export async function safeWrite(storage,key,world){const text=await encode(world),temp=PREFIX+'pending';
  try{storage.setItem(temp,text);const check=storage.getItem(temp);if(check!==text)throw Error('暫存重讀失敗');await decode(check);storage.setItem(key,text);storage.removeItem(temp);}catch(e){try{storage.removeItem(temp);}catch{}throw Error('保存失敗：'+e.message);}return text;}

@@ -1,0 +1,34 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 3.16,
+  "errors": [],
+  "steps": [
+    {
+      "label": "reviewed",
+      "wallSeconds": 2.884,
+      "tick": 203293
+    }
+  ],
+  "label": "before-fix-at-4e8f05f",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: counted to the load, not the punch\n\n1617 !== 1417\n\n    at file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/p2b-ui.mjs:11:123",
+  "story": {
+    "load": {
+      "tick": 203284,
+      "energy": 8518,
+      "start": 9935,
+      "closedAt": null
+    },
+    "punch": {
+      "tick": 203284,
+      "energy": 8318
+    },
+    "review": {
+      "energyUsed": 1617,
+      "injuryGained": 0
+    }
+  }
+}

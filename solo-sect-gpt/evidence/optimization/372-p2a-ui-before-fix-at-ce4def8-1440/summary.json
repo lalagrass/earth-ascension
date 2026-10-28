@@ -1,0 +1,140 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 3.254,
+  "errors": [],
+  "steps": [
+    {
+      "label": "done",
+      "wallSeconds": 3.035,
+      "tick": 14,
+      "failed": [
+        "visible-with-book-closed",
+        "visible-book-closed-again",
+        "escape-closes-focus-returns"
+      ]
+    }
+  ],
+  "label": "before-fix-at-ce4def8",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": "Error: checks failed: visible-with-book-closed, visible-book-closed-again, escape-closes-focus-returns\n    at file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/p2a-ui.mjs:18:121",
+  "story": {
+    "checks": [
+      {
+        "name": "book-closed-by-default",
+        "pass": true
+      },
+      {
+        "name": "visible-with-book-closed",
+        "pass": false,
+        "detail": {
+          "display": "none",
+          "w": 0,
+          "h": 0,
+          "inView": false,
+          "hidden": false,
+          "expanded": "true"
+        }
+      },
+      {
+        "name": "visible-book-open",
+        "pass": true,
+        "detail": {
+          "display": "flex",
+          "w": 300,
+          "h": 498,
+          "inView": true,
+          "hidden": false,
+          "expanded": "true"
+        }
+      },
+      {
+        "name": "frame-follows-canvas",
+        "pass": true,
+        "detail": {
+          "fClosed": {
+            "h": 820.2638888888887,
+            "w": 1430,
+            "cw": 1440,
+            "ch": 826
+          },
+          "fOpen": {
+            "h": 1064.126126126126,
+            "w": 1430,
+            "cw": 1110,
+            "ch": 826
+          }
+        }
+      },
+      {
+        "name": "visible-book-closed-again",
+        "pass": false,
+        "detail": {
+          "display": "none",
+          "w": 0,
+          "h": 0,
+          "inView": false,
+          "hidden": false,
+          "expanded": "true"
+        }
+      },
+      {
+        "name": "own-toggle-closes",
+        "pass": true,
+        "detail": {
+          "display": "none",
+          "w": 0,
+          "h": 0,
+          "inView": false,
+          "hidden": true,
+          "expanded": "false"
+        }
+      },
+      {
+        "name": "escape-closes-focus-returns",
+        "pass": false,
+        "detail": {
+          "display": "none",
+          "w": 0,
+          "h": 0,
+          "inView": false,
+          "hidden": false,
+          "expanded": "true"
+        }
+      },
+      {
+        "name": "paused-world-unchanged",
+        "pass": true
+      },
+      {
+        "name": "no-page-errors",
+        "pass": true,
+        "detail": []
+      }
+    ],
+    "closedBook": {
+      "display": "none",
+      "w": 0,
+      "h": 0,
+      "inView": false,
+      "hidden": false,
+      "expanded": "true"
+    },
+    "frames": {
+      "fClosed": {
+        "h": 820.2638888888887,
+        "w": 1430,
+        "cw": 1440,
+        "ch": 826
+      },
+      "fOpen": {
+        "h": 1064.126126126126,
+        "w": 1430,
+        "cw": 1110,
+        "ch": 826
+      }
+    }
+  }
+}

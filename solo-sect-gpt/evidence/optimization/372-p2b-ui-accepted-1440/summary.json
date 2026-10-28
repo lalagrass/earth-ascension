@@ -1,0 +1,54 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 4.343,
+  "errors": [],
+  "steps": [
+    {
+      "label": "reviewed",
+      "wallSeconds": 3.755,
+      "tick": 203294
+    },
+    {
+      "label": "done",
+      "wallSeconds": 4.342,
+      "tick": 203294,
+      "load": {
+        "tick": 203284,
+        "energy": 8518,
+        "start": 9935,
+        "closedAt": 203284
+      },
+      "punch": {
+        "tick": 203284,
+        "energy": 8318
+      },
+      "review": {
+        "energyUsed": 1417,
+        "injuryGained": 0
+      }
+    }
+  ],
+  "label": "accepted",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "load": {
+      "tick": 203284,
+      "energy": 8518,
+      "start": 9935,
+      "closedAt": 203284
+    },
+    "punch": {
+      "tick": 203284,
+      "energy": 8318
+    },
+    "review": {
+      "energyUsed": 1417,
+      "injuryGained": 0
+    },
+    "reviewText": "上次回顧：守住 · 同時抵達 · 漏過0 · 擊退4 · 集合14秒、交手24秒\n阿木（前攔）短打快拳8 · 命中8 · 受擊0 · 耗精力21 · 傷勢+0\n沈禾（前攔）直拳7 · 命中6 · 受擊2 · 耗精力14 · 傷勢+0\n攔截位置（前線 x1300）：演武對手1 在 x1469 被阿木攔下；演武對手2 在 x1470 被沈禾攔下；演武對手4 在 x1509 被沈禾攔下；演武對手3 在 x1481 被阿木攔下"
+  }
+}

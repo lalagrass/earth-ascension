@@ -108,10 +108,12 @@ export function expeditionTick(w){const e=w.expedition;if(!e||e.phase==='returne
  if(e.phase==='return'){
    // M44: the same walk-on as journey.mjs (M10) for expeditions without a v2 journey: a returnee whose walk home was cut short by a fight
    // on the way (e.g. a boar) stands idle with no path; send them on home again. Journeys keep their own M10 rule and record.
-   if(!e.journey&&w.tick%20===0)for(const p of party)if(p.hp>0&&!p.action&&!p.combatTarget&&!p.activity&&arrived(p)&&distance(p,stations['safe.'+party.indexOf(p)])>48)route(w,p,stations['safe.'+party.indexOf(p)]);
-  const z=w.people.zhou;if(z.helpedBy){const h=w.people[z.helpedBy];if(h.hp<=0){z.path=[];z.blocked='扶助者倒地，先救援';}else if(arrived(z)&&distance(z,stations['safe.4'])>30)route(w,z,stations['safe.4']);}
+   // #372 P2-C: "walk on" uses the same per-person at-home test as the return completion below, so a stop 20-48 DU from home is not left standing.
   // v2: an idle body standing on the home slot should not keep a returnee circling forever.
-  const slotTaken=(p,to)=>sorted(w.people).some(o=>o.id!==p.id&&o.residence!=='departed'&&!o.inactive&&Math.hypot(o.x/Q-to[0],o.y/Q-to[1])<14),home=party.every(p=>{const to=stations['safe.'+party.indexOf(p)],d=distance(p,to);return p.hp>0&&(d<20||e.journey?.plan===2&&d<48&&slotTaken(p,to));});
+  const slotTaken=(p,to)=>sorted(w.people).some(o=>o.id!==p.id&&o.residence!=='departed'&&!o.inactive&&Math.hypot(o.x/Q-to[0],o.y/Q-to[1])<14),atHome=p=>{const to=stations['safe.'+party.indexOf(p)],d=distance(p,to);return d<20||e.journey?.plan===2&&d<48&&slotTaken(p,to);};
+   if(!e.journey&&w.tick%20===0)for(const p of party)if(p.hp>0&&!p.action&&!p.combatTarget&&!p.activity&&arrived(p)&&!atHome(p))route(w,p,stations['safe.'+party.indexOf(p)]);
+  const z=w.people.zhou;if(z.helpedBy){const h=w.people[z.helpedBy];if(h.hp<=0){z.path=[];z.blocked='扶助者倒地，先救援';}else if(arrived(z)&&distance(z,stations['safe.4'])>30)route(w,z,stations['safe.4']);}
+  const home=party.every(p=>p.hp>0&&atHome(p));
   if(home&&(!e.journey?.escort||distance(w.people[e.journey.escort],stations['safe.7'])<20)&&(!z.helpedBy||distance(z,stations['safe.4'])<20)){
    if(!e.unloaded){e.phase='unload';for(const p of party){if(caveFoodCarried(w,p,e.id)>0)begin(w,p,'unloadQuest',{origin:e.id});else if(e.journey?.objective==='gather'&&qty(w,p.bag,'herb')>0)begin(w,p,'trailUnload',{amount:qty(w,p.bag,'herb')});}if(party.every(p=>!p.activity)){e.unloaded=true;e.phase='return';}return;}
    let food=caveFoodDelivered(w,e.id);for(const p of party){p.caveFood=0;p.storyBusy=false;p.intent=null;p.manualStop=true;if(p.injury>0)for(const art of (e.usedArts?.[p.id]||[]))insight(w,p,art,'return',e.id);}

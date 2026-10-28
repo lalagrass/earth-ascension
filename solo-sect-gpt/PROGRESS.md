@@ -20,3 +20,7 @@
 明示界線：未真人試玩、未獨立review、代理未聽驗音效；音訊產生／解鎖／靜音／音量訊號及視覺時機有驗證。公開IP清理及main／manual發布矩陣不在此次私人本機交付範圍。數值與節奏觀察見 `evidence/development/release/calibration.md`，不以五seed宣稱平衡分布成立。
 
 所有規劃／spec來源與ready標記保留。開發在done後停止寫入，不自啟下一章或其他聊天。
+
+## 2026-10-28 #372 P2 收尾與 PUBLIC-ADOPT-GPT-01（Claude Opus 5.5）
+
+在 `codex/solo-sect-gpt` 上，基線 9d7f62d：P2-A 導覽在掌門簿收起時也看得到（4e8f05f）、P2-B 舊格式退場檔在讀檔時就截止（23e544b）、P2-C 召回近院被打斷後續走（e78b98b）、非掌門生命改顯示健康分類（b701c1d）、martial／event render 換 00f4dbe（1a10f7d）。驗證都在擁有人 Mac 本機（擁有人明示的例外，不是 Cloud）。交付見 `docs/optimization/DELIVERY-372-P2-CLOSURE.md`；交 Earth 非作者 review，未 merge。

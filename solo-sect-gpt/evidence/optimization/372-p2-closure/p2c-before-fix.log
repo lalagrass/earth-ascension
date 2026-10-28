@@ -1,0 +1,74 @@
+✖ P2-C a legal punch 20-48 DU from home stops the walk; he walks on and really returns (31299.572042ms)
+✖ P2-C stopped at 19.9 / 20.1 / 47.9 / 48.1 DU on his real track: every one gets home (66577.527833ms)
+✖ P2-C saved while stopped near home: loaded and original walk on the same way (24354.311375ms)
+✔ P2-C report (2.447792ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 1
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 122359.915167
+
+✖ failing tests:
+
+test at test/optimization/p2c.test.mjs:10:1
+✖ P2-C a legal punch 20-48 DU from home stops the walk; he walks on and really returns (31299.572042ms)
+  AssertionError [ERR_ASSERTION]: walked on after 2000
+  + actual - expected
+  
+  + 'return'
+  - 'returned'
+           ^
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/p2c.test.mjs:12:30)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'return',
+    expected: 'returned',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/p2c.test.mjs:13:1
+✖ P2-C stopped at 19.9 / 20.1 / 47.9 / 48.1 DU on his real track: every one gets home (66577.527833ms)
+  AssertionError [ERR_ASSERTION]: 47.9 DU (47.11)
+  + actual - expected
+  
+  + 'return'
+  - 'returned'
+           ^
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/p2c.test.mjs:15:31)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'return',
+    expected: 'returned',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/optimization/p2c.test.mjs:16:1
+✖ P2-C saved while stopped near home: loaded and original walk on the same way (24354.311375ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'return'
+  - 'returned'
+           ^
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/p2c.test.mjs:16:466)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'return',
+    expected: 'returned',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

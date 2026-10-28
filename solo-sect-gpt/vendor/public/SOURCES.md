@@ -81,6 +81,9 @@
 | `00f4dbe/navigation-view/render.mjs` | `sect-chronicle/navigation-view/render.mjs` | c352e0b938fef1e5039ee876160921390303a9ba64403169ce57d84eca393499 | 256ecd3f716b2e9d5a38b3eef2d5ce7f6113ce443364e978de038dbb511c2605 | 採用（M42，只加來源註解）；import `./contract.mjs` |
 | `00f4dbe/navigation-view/style.css` | `sect-chronicle/navigation-view/style.css` | 4e7748d76eb2703fff741d8475658ea291d6eed59a64501002792bb46d9aa2f0 | 221bbc77be93258da12d4bd1827bfbf4dce07dd38689869714125a31f4b8f34d | 採用（M42）；改寫：`@import` 改指 `../../6f959f5/public-ui/style.css`（00f4dbe 的 `public-ui/style.css` 與它逐位元組相同，sha256 58659ff5c5054d84018faf266551b6336b3ed7c2dbe3318d389096ab507fdf1a） |
 
-依賴閉包：`render.mjs` → `contract.mjs`；`style.css` → 6f959f5 `public-ui/style.css`。不採用：`official.mjs`（Gemini 正式入口接線）、`checks/`、`evidence/`、`scene-shared` harness、Pixi、舊 GPT 核心 `6cbd3e6…`。本地轉接 `src/navigation-view.mjs` 讀目前 GPT 世界。上游沒有公開路線，本地照舊 unsupported。
+| `00f4dbe/martial-view/render.mjs` | `sect-chronicle/martial-view/render.mjs` | bbf241b6a08da283ecdde3c208ef77f3504e5043df8e07632868a5c60be8a5c7 | e91ddaac3cbca5cb114805af24ad1d235303dd7e26cd6b5d4d521a54f537b901 | 採用（#372）；改寫：import 改指 `../../6f959f5/public-ui/values.mjs`（保留本版 notApplicable 與布林／清單文字）。相對 ef823ac：值改用 `publicValueHtml`、條件 details 加 `data-view-key="martial:<id>"`。ef823ac 舊副本保留（M26 舊測試仍用） |
+| `00f4dbe/event-view/render.mjs` | `sect-chronicle/event-view/render.mjs` | 659dd4bdd3dc61282fb166eacf403a244300b3f3f230f983408a3bbe6297897b | 64dcc677a8de1b0f54bd76435fa6a27e5636cc2fddcbb47592d84434940127da | 採用（#372）；改寫：import 改指 `../../6f959f5/public-ui/values.mjs`。相對 ef823ac 只換 escape／valueText 的來源。ef823ac 舊副本保留（M28 舊測試仍用） |
+
+依賴閉包：`render.mjs` → `contract.mjs`；`style.css` → 6f959f5 `public-ui/style.css`。 #372 的兩個 render 只依賴 6f959f5 `public-ui/values.mjs`（自足，不再引入其他檔）。不採用：`official.mjs`（Gemini 正式入口接線）、`checks/`、`evidence/`、`scene-shared` harness、Pixi、舊 GPT 核心 `6cbd3e6…`。本地轉接 `src/navigation-view.mjs` 讀目前 GPT 世界。上游沒有公開路線，本地照舊 unsupported。
 
 公版採用備註（不代發上游）：本版需要的薄轉接是 span→zoom（`zoom = canvas CSS 寬 / span`）、以 Canvas CSS 尺寸當 viewport、成功換局才換 epoch、點選時重核當下公開人物。

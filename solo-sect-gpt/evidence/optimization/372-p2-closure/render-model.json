@@ -1,0 +1,18 @@
+{
+  "source": "M44 showcase and created worlds; one labeled event fixture",
+  "cases": [
+    {
+      "case": "martial"
+    },
+    {
+      "case": "values"
+    },
+    {
+      "case": "events",
+      "rows": 24
+    },
+    {
+      "case": "read-only"
+    }
+  ]
+}

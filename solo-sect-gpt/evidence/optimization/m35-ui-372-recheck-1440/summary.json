@@ -1,0 +1,136 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 8.712,
+  "errors": [],
+  "steps": [
+    {
+      "label": "done",
+      "wallSeconds": 8.711,
+      "tick": 194362,
+      "failed": []
+    }
+  ],
+  "label": "372-recheck",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "checks": [
+      {
+        "name": "values-words",
+        "pass": true,
+        "detail": "明確停工：否 "
+      },
+      {
+        "name": "intent-not-shared",
+        "pass": true
+      },
+      {
+        "name": "work-not-shared",
+        "pass": true
+      },
+      {
+        "name": "amu-kept-intent",
+        "pass": true
+      },
+      {
+        "name": "amu-kept-work",
+        "pass": true
+      },
+      {
+        "name": "art-not-shared",
+        "pass": true,
+        "detail": [
+          "punch",
+          "step"
+        ]
+      },
+      {
+        "name": "art-kept",
+        "pass": true
+      },
+      {
+        "name": "resource-global",
+        "pass": true
+      },
+      {
+        "name": "focus-kept",
+        "pass": true,
+        "detail": [
+          {
+            "tag": "BUTTON",
+            "cmd": "native:{\"type\":\"resume\",\"actor\":\"amu\"}",
+            "text": "恢復自主"
+          },
+          {
+            "tag": "BUTTON",
+            "cmd": "native:{\"type\":\"resume\",\"actor\":\"amu\"}",
+            "text": "恢復自主"
+          },
+          true
+        ]
+      },
+      {
+        "name": "enter-once",
+        "pass": true
+      },
+      {
+        "name": "space-summary",
+        "pass": true,
+        "detail": {
+          "p0": false,
+          "o0": false
+        }
+      },
+      {
+        "name": "space-button",
+        "pass": true,
+        "detail": {
+          "p0": false
+        }
+      },
+      {
+        "name": "space-pauses",
+        "pass": true
+      },
+      {
+        "name": "disabled-reason",
+        "pass": true,
+        "detail": 0
+      },
+      {
+        "name": "refused-load-keeps",
+        "pass": true,
+        "detail": "校驗碼不符，原存檔已保留"
+      },
+      {
+        "name": "good-load-resets",
+        "pass": true
+      },
+      {
+        "name": "no-page-errors",
+        "pass": true,
+        "detail": []
+      }
+    ],
+    "intentText": "工作目標／待辦與停工\n\n執行中：行走 · 就寢 · 下一步：生命回滿、精力至少75後回生活\n\n活動原因：精力 13，先養足體力\n\n既有工作目標：沒有已受理的玩家指令\n\n待改派：沒有\n\n明確停工：否 · 恢復：必要自理：休息至75\n\n玩家叫回：沒有\n\n已有其他目標：未設主副職\n\n原生佇列能力：原生 pendingCommands（可多筆、依 executeTick）；臨時工作另記在 temporary\n待改派：沒有 · 否停工 恢復自主\n坐休 回床睡 吃飯 取用乾糧 停工 恢復自主 開啟自主 叫回\n自主政策與原原因",
+    "redrawn": true,
+    "focusTicks": 32,
+    "focus": [
+      {
+        "tag": "BUTTON",
+        "cmd": "native:{\"type\":\"resume\",\"actor\":\"amu\"}",
+        "text": "恢復自主"
+      },
+      {
+        "tag": "BUTTON",
+        "cmd": "native:{\"type\":\"resume\",\"actor\":\"amu\"}",
+        "text": "恢復自主"
+      }
+    ],
+    "childText": "工作目標／待辦與停工\n待改派：沒有 · 否停工 恢復自主\n坐休 回床睡 吃飯 取用乾糧 停工 恢復自主 關閉自主 叫回\n自主政策與原原因",
+    "badToast": "校驗碼不符，原存檔已保留"
+  }
+}

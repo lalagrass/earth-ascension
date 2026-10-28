@@ -1,0 +1,88 @@
+{
+  "source": "normal UI only (forms/buttons); no World injection",
+  "wallSeconds": 152.499,
+  "errors": [],
+  "steps": [
+    {
+      "label": "attack-leader",
+      "wallSeconds": 64.419,
+      "tick": 190068
+    },
+    {
+      "label": "attack-amu",
+      "wallSeconds": 65.881,
+      "tick": 190074
+    },
+    {
+      "label": "lin-carry",
+      "wallSeconds": 117.38,
+      "tick": 191651
+    },
+    {
+      "label": "shen-train",
+      "wallSeconds": 121.616,
+      "tick": 191916
+    },
+    {
+      "label": "done",
+      "wallSeconds": 152.498,
+      "tick": 1,
+      "scenery": [
+        "shared/ef823ac/bamboo.png",
+        "shared/ef823ac/boulder_s.png",
+        "shared/ef823ac/boulder_l.png"
+      ]
+    }
+  ],
+  "label": "372r-recheck",
+  "viewport": [
+    "1440",
+    "900"
+  ],
+  "failure": null,
+  "story": {
+    "leader": {
+      "appearance": "known",
+      "title": "既有活動圖裁切（非新立繪） · gpt-local-1.1.0 · ac7148d:sect-chronicle/experiments/water-carry/demo/assets/art184-production/hero.png",
+      "motion": null
+    },
+    "amu": {
+      "appearance": "unsupported",
+      "title": "尚無此角色正式立繪",
+      "motion": "行走"
+    },
+    "child": {
+      "appearance": "missing",
+      "title": "收養女孩正式立繪尚缺；來源／權利未知",
+      "motion": null
+    },
+    "scenery": [
+      "shared/ef823ac/bamboo.png",
+      "shared/ef823ac/boulder_s.png",
+      "shared/ef823ac/boulder_l.png"
+    ],
+    "motion-leader": {
+      "core": "windup",
+      "text": "直拳 起手（核心階段，剩 0.35 秒）"
+    },
+    "motion-amu": {
+      "core": "windup",
+      "text": "短打快拳 起手（核心階段，剩 0.20 秒）"
+    },
+    "carry": {
+      "appearance": "unsupported",
+      "title": "尚無此角色正式立繪",
+      "motion": "搬運中"
+    },
+    "train": {
+      "appearance": "unsupported",
+      "title": "尚無此角色正式立繪",
+      "motion": "練功"
+    },
+    "guo": {
+      "appearance": "unsupported",
+      "title": "經典範本掌門沒有核准的外觀，使用文字替代",
+      "motion": null
+    }
+  }
+}
