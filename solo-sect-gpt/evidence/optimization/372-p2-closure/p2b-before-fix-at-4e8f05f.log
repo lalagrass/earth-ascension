@@ -1,0 +1,32 @@
+✖ P2-B old exiting file: a punch before any step is not counted (202.773833ms)
+✔ P2-B old exiting file: work right after loading, or just playing on, is not counted either (477.938458ms)
+✔ P2-B rejected and repeated commands change nothing; a new file keeps its own freeze; a bad file is still refused (70.650833ms)
+✔ P2-B loading twice gives the same world; save after load reloads the same (82.927542ms)
+✔ P2-B report (1.262167ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 4
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 976.177666
+
+✖ failing tests:
+
+test at test/optimization/p2b.test.mjs:8:1
+✖ P2-B old exiting file: a punch before any step is not counted (202.773833ms)
+  AssertionError [ERR_ASSERTION]: same as not punching
+  
+  1617 !== 1417
+  
+      at TestContext.<anonymous> (file:///Users/chenyuying/.codex/worktrees/solo-sect-gpt/earth-ascension/solo-sect-gpt/test/optimization/p2b.test.mjs:9:171)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1617,
+    expected: 1417,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

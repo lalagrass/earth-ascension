@@ -1,0 +1,21 @@
+{
+  "source": "the M44 natural-exit file (normal UI save) and an old-shape copy of it (labeled fixture: closedAt/bodyAt removed, checksum recomputed)",
+  "cases": [
+    {
+      "case": "punch",
+      "atLoad": 8518,
+      "start": 9935,
+      "control": 1417,
+      "withPunch": 1417
+    },
+    {
+      "case": "work-and-play"
+    },
+    {
+      "case": "contracts"
+    },
+    {
+      "case": "stable"
+    }
+  ]
+}
