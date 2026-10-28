@@ -71,6 +71,35 @@ test('S3：拒絕與取消不扣相處、不消耗 context 成功額度；冷卻
   assert.equal(m.life02.events().length, 1);
 });
 
+test('S1/S3：對方忙時自主只做資格檢查、不送假邀請；同 context 真成立後只一次', () => {
+  const m = mk();
+  assert.ok(stepUntil(m, () => bothFun(m)));
+  assert.ok(m.dispatch('fill', 'hero').ok);
+  assert.ok(m.dispatch('fill', 'cousin').ok);
+  const t = m.life02.state, context = t.context;
+  t.ready.hero = t.ready.cousin = true;
+  m.state.people.cousin.pending = 'water'; // 定向忙碌 fixture；直接調 LIFE02 資格檢查，不讓核心 tick 消耗待令
+  m.life02.step();
+  assert.notEqual(t.autoTried, context, '雙方資格未齊，未送自主邀請');
+  assert.equal(t.meet, null);
+  assert.equal(t.cooldown, 0, '沒有建立／拒絕邀請，就不啟 30 秒冷卻');
+  assert.equal(t.ready.hero, false, '原 LIFE02 發起者等新工作才再查');
+  assert.equal(t.ready.cousin, true, '另一方可在有空時送出本 context 唯一真邀請');
+  m.state.people.cousin.pending = null;
+  m.life02.step();
+  assert.ok(t.meet && t.meet.source === 'auto', '雙方都可用時才送出第一個真自主邀請');
+  assert.equal(t.autoTried, context);
+  assert.equal(t.context, context);
+  assert.equal(t.count, 0);
+  assert.ok(m.dispatch('meetCancel', 'hero').ok);
+  m.state.tick = t.cooldown;
+  t.ready.hero = t.ready.cousin = true; // 即使外部重新給 ready，同 context 也不能第二次自主邀
+  m.state.people.hero.motion = { mode: 'fun', job: null };
+  m.state.people.cousin.motion = { mode: 'fun', job: null };
+  m.life02.step();
+  assert.equal(t.meet, null);
+});
+
 test('S1/C：較新工作在發話中有效，兩人從真位置返院，不覆寫新命令或誤續停工', () => {
   const m = mk(); assert.ok(stepUntil(m, () => bothFun(m)));
   assert.ok(m.dispatch('invite:chat', 'cousin').ok);

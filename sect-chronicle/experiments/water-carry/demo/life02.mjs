@@ -164,10 +164,10 @@ export function createLife02(ctx) {
       const p = s.people[id];
       if (t.autoTried === t.context || coolLeft() || !t.ready[id] || !filling(p) || !free(p)) continue; // 每個真生活 context 最多一次自主機會
       const q = s.people[ids.find((x) => x !== id)];
-      t.ready[id] = false; // 一次機會：成功或被拒都要完成一趟新工作才再發起
+      t.ready[id] = false; // 舊 LIFE02 一人一次資格檢查；忙碌時不送邀、不追趕，此人等新工作才再查
       // 接收方也要本局明確選了自主補水；人工持續工作者滿庫去休閒不等於同意新社交。
       if (q && free(q) && filling(q)) { t.autoTried = t.context; start(p, q); }
-      else if (q) { t.cooldown = s.tick + COOLDOWN; note(p, filling(q) ? busyText(q) : `${nameOf(q.id)}在持續原工作（未選自主補水），這次不邀`); }
+      else if (q) note(p, `${filling(q) ? busyText(q) : `${nameOf(q.id)}在持續原工作（未選自主補水），這次不邀`}；雙方資格未齊，未發出邀請`);
       return;
     }
   }
