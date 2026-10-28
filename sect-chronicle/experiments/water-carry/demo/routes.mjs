@@ -67,8 +67,11 @@ export function createRoutes(waterPoints = WATER_POINTS) {
   // SG-LIFE-02：休閒點 → 院中端點 → 招呼站位（u=0 休閒點、u=1 站位；院中端點在 meetHome[id]）。
   const meets = Object.fromEntries(['hero', 'cousin'].map((id) => [id, pathTool([...FUN[id].points].reverse().concat(MEET[id].points.slice(1)))]));
   const meetHome = Object.fromEntries(['hero', 'cousin'].map((id) => [id, pathTool(FUN[id].points).length]));
+  // SOCIAL01 手動邀聊可從院中端點或停工座位出發；三種起點皆沿既有折線接同一會合站位。
+  const meetHomes = Object.fromEntries(['hero', 'cousin'].map((id) => [id, pathTool(MEET[id].points)]));
+  const meetSeats = Object.fromEntries(['hero', 'cousin'].map((id) => [id, pathTool([...SEATS[id].points].reverse().concat(MEET[id].points.slice(1)))]));
   function meetPlace(id, l) {
-    const r = meets[id], p = r.at(Math.max(0, Math.min(1, l.u)));
+    const r = l.origin === 'seat' ? meetSeats[id] : l.origin === 'home' ? meetHomes[id] : meets[id], p = r.at(Math.max(0, Math.min(1, l.u)));
     const back = l.b < l.a;
     const face = l.mode === 'meet' ? MEET[id].face : (back ? -p.dx : p.dx) >= 0 ? 1 : -1;
     return { x: p.x, y: p.y, face, route: r, geo: l.mode, travelled: l.mode === 'meet' ? 0 : Math.abs(l.u - l.a) * r.length };
@@ -179,7 +182,8 @@ export function createRoutes(waterPoints = WATER_POINTS) {
     teaPath, teaPlace, teaLength: teaPath.length,
     sitePath, sitePlace, bedPlace, beds, woodLength: routes.wood.length, siteLength: sitePath.length, bedLengths: Object.fromEntries(Object.entries(beds).map(([id, r]) => [id, r.length])),
     trains, trainPlace, trainLengths: Object.fromEntries(['hero', 'cousin'].map((id) => [id, trains[id].length])),
-    meets, meetPlace, meetLengths: Object.fromEntries(['hero', 'cousin'].map((id) => [id, { total: meets[id].length, home: meetHome[id] }])),
+    meets, meetPlace, meetLengths: Object.fromEntries(['hero', 'cousin'].map((id) => [id, { total: meets[id].length, home: meetHome[id],
+      origins: { home: { total: meetHomes[id].length, home: 0 }, seat: { total: meetSeats[id].length, home: seats[id].length } } }])),
     drinks, drinkPlace, drinkLengths: { home: drinks.home.length, seat: { hero: drinks.hero.length, cousin: drinks.cousin.length } } };
 }
 const WATER = { down: 1, dip: 1, up: 1, pour: 1 };

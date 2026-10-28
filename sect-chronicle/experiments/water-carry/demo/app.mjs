@@ -50,8 +50,10 @@ const scene = await (await fetch(SHARED + 'scene.json')).json();
 const template = await (await fetch('../template/actions.json')).json();
 const IDS = PEOPLE.map((p) => p.id);
 const sheets = Object.fromEntries(await Promise.all(IDS.map(async (id) => [id, await Assets.load(`${ART}${id}.json`)])));
+// SOCIAL01：沿已收錄女孩水彩設計圖製作的單張透明呈現；真位置／動作時鐘仍全由模型決定，沒有假裝已有逐幀 atlas。
+const girlTexture = await Assets.load('assets/social01/girl-static.png');
 const animators = Object.fromEntries(IDS.map((id) => [id, createAnimator(template, sheets[id].data)]));
-const profiles = { hero: { name: scene.ui.hero.name, label: '主角', role: '初學者 · 起始腳力 Lv 1' }, cousin: { name: '熟手同伴', label: '熟手', role: '熟手 · 起始腳力 Lv 3' } };
+const profiles = { hero: { name: scene.ui.hero.name, label: '主角', role: '初學者 · 起始腳力 Lv 1' }, cousin: { name: '道館收養的小女孩', label: '小女孩', role: '道館家人 · 沿原第二人腳力 Lv 3' } };
 const $ = (id) => document.getElementById(id);
 
 const app = new Application();
@@ -78,7 +80,7 @@ const places = {
   bench: { label: '休息石凳', x: SEATS.bench.x, y: SEATS.bench.y + 6, rx: 50, ry: 18, sub: '松樹下 · 兩人各一席' },
   view: { label: '觀景石', x: FUN.hero.stone.x, y: FUN.hero.stone.y, rx: 34, ry: 16, sub: '院子西側草坡 · 主角愛來看山（閒暇，不回精力）' },
   fence: { label: '西坡竹護欄', x: BOAR.fence.x, y: BOAR.fence.y2 - 10, rx: 46, ry: 46, sub: '非關鍵護欄 · 內側是防守點' },
-  yard: { label: '院邊空地', x: FUN.cousin.points.at(-1)[0], y: FUN.cousin.points.at(-1)[1] + 6, rx: 34, ry: 14, sub: '道館門前院中 · 熟手愛來舒展筋骨（閒暇，不回精力）' },
+  yard: { label: '院邊空地', x: FUN.cousin.points.at(-1)[0], y: FUN.cousin.points.at(-1)[1] + 6, rx: 34, ry: 14, sub: '道館門前院中 · 小女孩愛來舒展筋骨（閒暇，不回精力）' },
 };
 const GROWN_FROM = 3; // 本趟腳力到 Lv 3 起換成長後步態
 
@@ -104,8 +106,7 @@ const FIX_BEAT = 45, FIX_BEND = 30; // 每 45 tick 一拍：前彎 30 tick、站
 // LP-11 掌法：沒有專用掌法幀。底圖借模板空手站姿（交藥站姿 herbHand）／蹲身（採藥 herbGather），身體依掌勢前後傾，
 // 再由 armG 補一隻向量手臂與立掌（沿 LP10 畫稿姿勢表）；不畫背簍、扁擔等工具。接觸後收勢前 STRIKE_TICKS 顯示出掌定格，只是畫面。
 // SG-LIFE-02 招呼：往返用空手步態；站位時輪到自己說話用「舒展筋骨」前彎那幀（拱手／點頭的借用姿勢），否則站直；面板如實標借用。
-const SAY = { greet: { hero: '師兄辛苦了！', cousin: '師弟，腳力見長！' }, reply: { hero: '多謝師兄，一起加油！', cousin: '你也辛苦了！' } };
-function meetTurn(person) { const m = person.life02 && person.life02.meet; if (!m || m.phase !== 'talk' || person.mode !== 'meet') return null; return (m.k < 0.5) === (m.role === 'greet') ? m.role : null; }
+function meetTurn(person) { return person.life02?.meet?.say || null; }
 // SG-TRAIN-01 練掌：往返空手步態；站位上照模型給的節奏（起手／出掌收勢／調息）借清鼠掌法姿勢＋向量手臂，調息用站直幀。
 function poseOf(id, person) {
   const meta = sheets[id].data.meta;
@@ -174,7 +175,7 @@ function poseOf(id, person) {
 // Core-neutral renderer owns actor sprites, foot anchors, depth and selection.
 const sharedScene = createSceneRenderer({ stage: app.stage,
   definition: { id: 'gemini-home', width: WORLD_SIZE.w, height: WORLD_SIZE.h, layers: [] },
-  bindings: { texture: (asset, frame) => sheets[asset].textures[frame] },
+  bindings: { texture: (asset, frame) => asset === 'social-girl' ? girlTexture : sheets[asset].textures[frame] },
 });
 const { world, sorted } = sharedScene;
 // D37：地面（草坡、院坪、全段長路、溪與深潭、石階泉台）是一張烘焙水彩底圖，見 scene/watercolor.mjs
@@ -390,8 +391,9 @@ function placeHome02(id, p, person) {
   if (lie > 0) {
     // 躺在房內床上：身體中心對齊床心（腳底錨點往床腳側推半身長），屋內比例縮小，被褥蓋在床上。
     const bedAt = DORM.beds[person.bed].points.at(-1), k = 1 - 0.4 * lie;
-    sp.scale.set(p.face * k, k); sp.rotation = -Math.PI / 2 * lie * p.face;
-    const half = (sp.texture.height * k) / 2;
+    const base = id === 'cousin' ? 0.067 : 1;
+    sp.scale.set(p.face * k * base, k * base); sp.rotation = -Math.PI / 2 * lie * p.face;
+    const half = (sp.texture.height * k * base) / 2;
     sp.position.set(p.x + (bedAt[0] + half * p.face - p.x) * lie, p.y + (bedAt[1] - 4 - p.y) * lie);
   }
   q.visible = lie > 0.6;
@@ -500,7 +502,9 @@ const sceneAdapter = createGeminiAdapter({ getModel: () => model, geometry: geo,
   facilities: officialNavigationFacilities(places),
   appearance: (id, person, at) => {
     const p = poseOf(id, person), h = sheets[id].data.meta;
-    return { asset: id, frame: p.frame, motion: p.motion, body: bodies[id], anchor: { x: h.anchorPx.x / h.frameSize.w, y: h.anchorPx.y / h.frameSize.h } };
+    return id === 'cousin'
+      ? { asset: 'social-girl', frame: 'stand', motion: null, body: bodies[id], anchor: { x: 0.5, y: 0.98 }, scale: 0.067 }
+      : { asset: id, frame: p.frame, motion: p.motion, body: bodies[id], anchor: { x: h.anchorPx.x / h.frameSize.w, y: h.anchorPx.y / h.frameSize.h } };
   },
 });
 const eventAdapter = createOfficialEventAdapter({ getModel: () => model });
@@ -710,7 +714,7 @@ function reset() {
   renderShared();
   renderNavigation();
   fx.length = 0;
-  toast('已重來：主角 Lv 1、熟手 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份；野豬回棲地精力 60、威脅 0，護欄損痕 0；休息、休閒、叫回、驅離、整理與待執行指令已清除；自主護院回到兩人未允許（熟手主動照看、主角受擾再處理）；三隻測試鼠回原位、清理名額清空、掌法比較回初學');
+  toast('已重來：主角 Lv 1、小女孩沿原第二人 Lv 3，兩人挑水、精力 100；水缸 3 擔、藥架 0 份；野豬回棲地精力 60、威脅 0，護欄損痕 0；休息、休閒、叫回、驅離、整理與待執行指令已清除；自主護院回到兩人未允許（原第二人主動照看、主角受擾再處理）；三隻測試鼠回原位、清理名額清空、掌法比較回初學');
   renderChrome();
 }
 
@@ -1053,8 +1057,12 @@ function martialPatrol(v, id) {
 // SG-LIFE-02 人物卡：只補「現在／來源／原因／下一步」，不重排 HUD。
 function life02Html(person) {
   const l = person.life02;
-  if (!l || (!l.fill && !l.meeting && !l.why)) return '';
-  return `<div class="life02" id="life02-${person.id}">${l.now ? `<div><b>現在：</b>${l.now}</div>` : ''}<div class="muted">來源：${l.src}</div>${l.why ? `<div class="muted">原因：${l.why}</div>` : ''}${l.next && l.next !== person.next ? `<div class="muted">下一步：${l.next}</div>` : ''}${l.meeting ? '<div class="muted">動作借用：招呼用「舒展筋骨」前彎／站直幀；這段互動不存檔</div>' : ''}</div>`;
+  if (!l) return '';
+  const records = l.events.map((e) => `<li><b>${e.kind === 'encourage' ? '鼓勵' : '閒聊'}</b> · ${e.cause.label}（情境 ${e.context}，${Math.floor(e.tick / 60)} 遊戲秒）<br>${e.speech.first}／${e.speech.reply} · 完成一次</li>`).join('');
+  return `<div class="life02" id="life02-${person.id}"><h4>兩人相處（只本局）</h4><div class="row"><b>${l.relation}</b><span>${l.relationCount} 件不同生活片段</span></div>
+    ${l.now ? `<div><b>現在：</b>${l.now}</div>` : ''}${l.src ? `<div class="muted">來源：${l.src}</div>` : ''}${l.why ? `<div class="muted">原因：${l.why}</div>` : ''}${l.next && l.next !== person.next ? `<div class="muted">下一步：${l.next}</div>` : ''}
+    ${l.cooldown ? `<div class="muted">再次邀聊：${l.cooldown} 遊戲秒後</div>` : ''}<div class="muted">最近相處來源（最多 6 筆；裁舊不倒退）</div><ol class="social-events">${records || '<li>尚無完成的聊天；家人本來就彼此相伴。</li>'}</ol>
+    <div class="muted unsaved">女孩目前沿設計圖單張水彩呈現；真移動與面向由原路徑／模型決定，逐幀動作尚未接入。聊天／相處與自主補水方針不存檔。</div></div>`;
 }
 // SG-TRAIN-01 人物卡：腳力與這一式進度分開；現在／來源／原因／下一步讀模型，動畫只呈現。
 function trainHtml(person) {
@@ -1093,8 +1101,8 @@ app.ticker.add((t) => {
     placeBasket(id, p, person);
     placeCup(id, p, person);
     const arm = armGs[id];
-    arm.visible = !!p.palm;
-    if (p.palm) {
+    arm.visible = !!p.palm && id !== 'cousin'; // 女孩目前只有誠實的單張水彩圖，沒有逐幀掌法／手臂圖
+    if (p.palm && id !== 'cousin') {
       if (arm.pose !== p.palm) { drawArm(arm, p.palm, id, p.motion?.attachments); arm.pose = p.palm; }
       sprite.rotation = p.palm.lean * Math.PI / 180 * p.face;
       arm.scale.x = p.face; arm.position.set(p.x, p.y); arm.zIndex = p.y + 0.02;
@@ -1118,7 +1126,7 @@ app.ticker.add((t) => {
     if (gr && gr !== pg && (!pg || gr.tick !== pg.tick)) fx.push({ text: `${profiles[id].label}：${RESULT_TEXT[gr.kind]}`, x: p.x, y: p.y - 96, until: performance.now() + 2200 });
     if (stakes[id]) { const c = person.train01 && person.train01.cyc, hit = c && c.phase === 'recover' && c.steps < 12 ? 1 - c.steps / 12 : 0; if (hit || stakes[id].hit) { drawStake(stakes[id], hit); stakes[id].hit = hit > 0; } }
     const turn = meetTurn(person);
-    tag(`${id}-say`, 'say', turn ? SAY[turn][id] : null, p.x, p.y - 96);
+    tag(`${id}-say`, 'say', turn, p.x, p.y - 96);
     tag(id, `hero ${ui.selected === id ? 'sel' : ''}`, `${profiles[id].label} Lv ${person.level} · 精力 ${en(person)}`, p.x, p.y, 6);
     tag(`${id}-pill`, `pill ${person.resting ? 'stop' : person.rest || person.mode === 'back' ? 'rest' : person.guarding || person.fixing ? 'guard' : person.leisure ? 'fun' : person.recall ? 'recall' : ''}`, person.mode === 'carry' ? `${person.status} ${Math.round(person.phase.k * 100)}%` : person.mode === 'fix' ? `${person.status} ${Math.round(person.fixWork.k * 100)}%` : person.status, p.x, p.y - (person.mode === 'seated' ? 64 : 80));
   }
