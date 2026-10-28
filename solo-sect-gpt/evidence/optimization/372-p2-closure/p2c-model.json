@@ -1,0 +1,43 @@
+{
+  "source": "M44 showcase (normal UI save); labeled fixtures inline",
+  "cases": [
+    {
+      "case": "stop",
+      "distance": 43.91219046918245,
+      "pathAfterPunch": 0
+    },
+    {
+      "case": "punch-near-home",
+      "distance": 43.91219046918245,
+      "ticksHome": 0,
+      "controlTicks": 16
+    },
+    {
+      "case": "boundary",
+      "want": 19.9,
+      "actual": 19.928,
+      "ticksHome": 2
+    },
+    {
+      "case": "boundary",
+      "want": 20.1,
+      "actual": 21.528,
+      "ticksHome": 11
+    },
+    {
+      "case": "boundary",
+      "want": 47.9,
+      "actual": 47.112,
+      "ticksHome": 27
+    },
+    {
+      "case": "boundary",
+      "want": 48.1,
+      "actual": 48.709,
+      "ticksHome": 28
+    },
+    {
+      "case": "save-load"
+    }
+  ]
+}
