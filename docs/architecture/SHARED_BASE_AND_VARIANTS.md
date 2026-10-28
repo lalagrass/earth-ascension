@@ -108,6 +108,18 @@ dev（唯一主幹）
 | **B. 主幹上各自目錄（推薦，分階段）** | 每版一個目錄（GPT、Grok 已是 `solo-sect-gpt/`、`solo-sect/`），作者在自己目錄開短 PR 回 dev；以目錄劃分所有權，review 只看該目錄＋契約樣本 | 同一 commit 看得到公版與所有消費者；公版改壞誰立刻在 CI 看到；不再需要凍結快照 | 需要先做 P4（否則 GPT 1.7 GB 證據會進 dev）；需訂各目錄的 review／合併權責 |
 | C. 公版拆獨立 repo，三版各自 repo | public-kit 用 tag／release 發布 | 邊界最清楚 | 權限、clone、跨 repo 協調成本最高；現階段太重 |
 
+### 選 B 時避免互相等待
+
+搬到主幹不等於三版都要走 dev 公版的完整流程（認領、集中 review、#67 串行 queue）。若照搬，開發一定變慢。建議依路徑分兩級：
+
+| 改動範圍 | 流程 | 是否要等別人 |
+|---|---|---|
+| 只動自己的目錄（如 `games/gpt/**`）＋自己的契約樣本 | 該版作者開短 PR，該目錄 CI＋契約測試綠燈就可合（擁有人預先授權該版的合併人或 auto-merge）；不進 #67 queue、不需跨版 review | 不用 |
+| 動 `packages/public-kit/**`、`contracts/` 規則、根目錄、CI | 照現行 CONTRIBUTING：issue、跨版 review、queue | 要，但這類改動少 |
+| dev 正式版（`sect-chronicle/`） | 照現行 D51 grass 流程 | 照舊 |
+
+配套：CI 依路徑只跑受影響目錄的測試＋契約測試（#113 路徑篩選）；以 GitHub ruleset／CODEOWNERS 限定各版只能改自己的目錄。公版升級由各版自行決定時機，不被公版發版卡住。這需要擁有人調整 CONTRIBUTING 的合併權責，所以列在 P5 一起決定。若擁有人不想放寬合併權，選項 A（維持分支，只採 P1–P3）反而比較不會變慢。
+
 Gemini 的特殊情況：它直接改 dev 正式入口的同一批檔。不論選 A 或 B，都建議二擇一：(1) Gemini 把自己的版本搬到獨立目錄（如 `sect-chronicle/life/` 已有一部分），正式入口留給 dev；或 (2) 明確定義 dev 正式版就是 Gemini 線，由同一條線維護，不再雙頭改。目前兩邊同時改，五個檔已衝突。
 
 ## 6. 重算本文數字
