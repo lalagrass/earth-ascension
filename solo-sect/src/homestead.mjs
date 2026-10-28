@@ -195,15 +195,24 @@ export function loadHomestead(json) {
     const p = s.person, t = p.task, c = p.carry;
     if (!Number.isFinite(s.t) || s.t < 0 || s.day !== 1 + Math.floor(s.t / DAY) || !Array.isArray(p.pos) || p.pos.length !== 2 || p.pos.some((x) => !Number.isFinite(x)) || !Number.isFinite(p.hunger) || p.hunger < 0 || p.hunger > 100 || !Number.isFinite(p.energy) || p.energy < 0 || p.energy > 100 || typeof p.name !== 'string' || !['quiet', 'sociable', 'diligent'].includes(p.personality)) return { ok: false, error: '存檔狀態不合法' };
     if (['berries', 'wood', 'seeds', 'veg', 'meal'].some((k) => !Number.isInteger(s.stock[k]) || s.stock[k] < 0 || !Number.isInteger(s.cap[k]) || s.cap[k] < 1 || s.stock[k] > s.cap[k]) || ![0, 1, 2].includes(s.fac.hut.stage) || ['garden', 'kitchen', 'store'].some((k) => ![0, 1].includes(s.fac[k].stage)) || !['empty', 'growing', 'ripe'].includes(s.plot.state) || !Number.isFinite(s.plot.growth)) return { ok: false, error: '存檔資源不合法' };
-    if (['berries', 'wood'].some((k) => !Number.isFinite(s.wild[k]) || s.wild[k] < 0 || s.wild[k] > 4)) return { ok: false, error: '野外資源不合法' };
+    if (['berries', 'wood'].some((k) => !Number.isFinite(s.wild[k]) || s.wild[k] < 0 || s.wild[k] > 4 || s.fac[k]?.stage !== 0)) return { ok: false, error: '野外資源不合法' };
     for (const id of ['hut', 'garden', 'kitchen', 'store']) {
       const v = s.fac[id].site; if (!v) continue;
       if (!FACILITIES[id].stages[s.fac[id].stage + 1] || !Number.isFinite(v.work) || v.work < 0 || !Number.isFinite(v.workNeed) || v.workNeed <= 0 || ['need', 'delivered', 'reserved'].some((field) => !v[field] || !Number.isInteger(v[field].wood) || v[field].wood < 0) || v.delivered.wood + v.reserved.wood > v.need.wood) return { ok: false, error: '工地資料不合法' };
+      const inTransit = t?.act === 'build' && t.phase === 'deliver' && t.place === id && c?.origin === 'site' && c.kind === 'wood' ? c.amount : 0;
+      if (v.reserved.wood !== inTransit) return { ok: false, error: '工地預約與在途材料不符' };
     }
-    if (c && (!['berries', 'wood', 'veg'].includes(c.kind) || !Number.isInteger(c.amount) || c.amount < 1 || !['wild', 'site'].includes(c.origin))) return { ok: false, error: '背包資料不合法' };
-    if (t && (!['return', ...Object.keys(ACTIONS)].includes(t.act) || !['go', 'do', 'fetch', 'deliver'].includes(t.phase) || !['home', ...Object.keys(PLACES)].includes(t.place) || !Number.isFinite(t.timer) || t.timer < 0)) return { ok: false, error: '任務資料不合法' };
-    if (c?.origin === 'site' && !(t?.act === 'build' && t.phase === 'deliver' && s.fac[t.place]?.site?.reserved[c.kind] >= c.amount)) return { ok: false, error: '在途材料不合法' };
-    if (['hut', 'garden', 'kitchen', 'store'].some((id) => s.fac[id].site?.reserved.wood && !(t?.act === 'build' && t.phase === 'deliver' && t.place === id && c?.origin === 'site'))) return { ok: false, error: '工地預約不合法' };
+    if (c && (!['berries', 'wood', 'veg'].includes(c.kind) || !Number.isInteger(c.amount) || c.amount < 1 || !['wild', 'site'].includes(c.origin) || (c.bonus && (Object.keys(c.bonus).length !== 1 || ![1, 2].includes(c.bonus.seeds) || !['berries', 'veg'].includes(c.kind))))) return { ok: false, error: '背包資料不合法' };
+    if (t) {
+      if (!Number.isFinite(t.timer) || t.timer < 0 || !['go', 'do', 'fetch', 'deliver'].includes(t.phase)) return { ok: false, error: '任務資料不合法' };
+      if (t.act === 'return') { if (t.phase !== 'go' || t.place !== 'home' || !c) return { ok: false, error: '返回任務不合法' }; }
+      else if (t.act === 'build') {
+        if (!['hut', 'garden', 'kitchen', 'store'].includes(t.place) || !s.fac[t.place].site || !['go', 'do', 'fetch', 'deliver'].includes(t.phase) || (['fetch', 'deliver'].includes(t.phase) && t.mat !== 'wood') || (t.phase === 'fetch' && c) || (t.phase === 'deliver' && !(c?.origin === 'site' && c.kind === 'wood'))) return { ok: false, error: '建造任務不合法' };
+      } else {
+        if (!ACTIONS[t.act] || t.place !== ACTIONS[t.act].place || !['go', 'do'].includes(t.phase) || (t.act === 'farm' && !offers(s, 'garden', 'farm')) || (t.act === 'cook' && !offers(s, 'kitchen', 'cook'))) return { ok: false, error: '活動任務不合法' };
+      }
+    }
+    if (c?.origin === 'site' && !(t?.act === 'build' && t.phase === 'deliver' && s.fac[t.place]?.site?.reserved[c.kind] === c.amount)) return { ok: false, error: '在途材料不合法' };
     return { ok: true, state: s };
   } catch { return { ok: false, error: 'JSON 格式不合法' }; }
 }

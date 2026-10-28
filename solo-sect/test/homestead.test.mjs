@@ -94,4 +94,13 @@ test('H2：異常的在途、工地和需求存檔拒讀', () => {
   assert.equal(loadHomestead(saveHomestead(bad)).ok, false);
   bad.fac.garden.site.reserved.wood = 0; bad.person.hunger = Number.NaN;
   assert.equal(loadHomestead(saveHomestead(bad)).ok, false);
+  const wrongPlace = structuredClone(s); wrongPlace.person.task = { act: 'build', phase: 'fetch', place: 'home', timer: 0, mat: 'wood' };
+  assert.equal(loadHomestead(saveHomestead(wrongPlace)).ok, false, '建造取料的地點不可為 home');
+  const transit = createHomestead(); transit.stock.wood = 2; startBlueprint(transit, 'hut'); setOrder(transit, 'build');
+  for (let i = 0; i < 100 && transit.person.task?.phase !== 'deliver'; i++) tickHomestead(transit);
+  assert.equal(loadHomestead(saveHomestead(transit)).ok, true, '正常在途檔可讀');
+  transit.fac.hut.site.reserved.wood = 2;
+  assert.equal(loadHomestead(saveHomestead(transit)).ok, false, '多出的一份預約會卡住工地，必須拒讀');
+  const missingWild = createHomestead(); delete missingWild.fac.berries;
+  assert.equal(loadHomestead(saveHomestead(missingWild)).ok, false, '缺少野果地塊不能載入後崩潰');
 });
