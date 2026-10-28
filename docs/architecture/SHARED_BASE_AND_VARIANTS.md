@@ -32,14 +32,14 @@ dev 想做「公版」給三版用，目前已有 `public-kit@1.0.0`（#375）�
 
 具體觀察：
 
-1. **依賴方向反了。** 共用套件裡放著三個消費者的 adapter（`scene-shared/adapters/gpt.mjs` 直接 `import` `../sources/gpt/solo-sect-gpt/src/world.mjs`），還放了三份凍結的原生 core。結果是：任何一版改了自己的 core，公版就要另開 PR 重新匯出快照、改 adapter，才算「支援」。dev 驗證 GPT 用的 core `6cbd3e6` 已落後 GPT 分支 102 個 commit。
-2. **取用方式是手工複製多個版本並混用。** GPT 的 `ui.mjs` 同時 import `vendor/public/6f959f5/…`、`ef823ac/…`、`00f4dbe/…` 三個公版快照，另有一份與 dev 不同步的 `assets/shared/resolve.mjs`（差 20 行）。沒有鎖檔說明「這一版用的是 public-kit 哪個版本」，`public-kit` 的 receipt 機制目前只在 dev 中央 harness 使用。
+1. **發布 runtime 方向正確，缺的是消費端自己的 adapter 與驗證。** public-kit 1.0.0 的 runtime closure 已排除 core／host（`releases/1.0.0.json`、README 的 adapterExamples／developmentOnly）；綁凍結 core 的 `scene-shared/adapters/*.mjs`、`character-card/{gpt,grok,gemini}.mjs` 是中央 reference／development-only harness，不是 runtime 耦合。待補的是：各版自主取用、adapter 由各版擁有、升級時的驗證方式。目前中央 harness 是唯一的跨版驗證，而它驗的 GPT core `6cbd3e6` 已落後 GPT 分支 102 個 commit，也就是驗證覆蓋會隨三版進度變舊。
+2. **取用有來源紀錄，但沒有機器可驗證的鎖檔。** GPT 的 `ui.mjs` 同時 import `vendor/public/6f959f5/…`、`ef823ac/…`、`00f4dbe/…` 三個公版快照；`vendor/public/SOURCES.md` 已逐檔記錄 SHA、sha256 與改寫原因（如 `notApplicable`、import 改指本地），並拒用舊 core adapter、改由本版 adapter 讀目前世界。缺的是工具可驗證的鎖檔：多個 SHA 與本地改寫只能人工比對，`public-kit` 的 receipt 目前也只在 dev 中央 harness 使用。另有一份與 dev 差 20 行的 `assets/shared/resolve.mjs`。
 3. **Gemini 與 dev 正式版改同一批檔。** Gemini 直接在 `sect-chronicle/experiments/water-carry/demo/` 上開發（`model.mjs` +1889 行、`style.css` +2362 行），而那正是 dev 的正式遊戲入口。`git merge-tree` 顯示 Gemini 與 dev 在 `app.mjs`、`index.html`、`model.mjs`、`routes.mjs`、`style.css` 五檔衝突；GPT（`solo-sect-gpt/`）與 Grok（`solo-sect/`）各在自己目錄，與 dev 可乾淨合併。
 4. **dev 同時是「共用套件」和「第四個遊戲」。** 正式入口 `sect-chronicle/index.html` 跑的是 Gemini 衍生的挑水生活版，公版元件也放在同一個 `sect-chronicle/` 底下，兩者的版本、review 權責與 CI 混在一起。
 5. **證據檔讓 repo 變得很重。** clone 後 `.git` 約 2.0 GB（pack 1.95 GB）。GPT 分支工作樹 1.9 GB，其中 `solo-sect-gpt/evidence/` 有 2854 個檔、約 1.69 GB；dev 工作樹 225 MB，其中 `experiments/` 下截圖與證據約 128 MB。每個新的 Cloud session、每位 AI 作者都要先付這個成本。
 6. **長期分支沒有回到主幹的路。** 三版都沒有指向 dev 的 PR（#377 是 review-only，base 為 `codex/372-gpt-review-base`）。共享 workflow 只跑 `sect-chronicle/test/*.test.js` 與 Earth 測試，`solo-sect-gpt/test/`、`solo-sect/test/` 不在其中。公版改壞某一版，要等該版下次手動同步才發現。
 
-結論：現在的「公版」比較像**由 dev 去追三個版本並各寫一份對接**，而不是**三個版本各自依賴一個穩定的公版**。這會讓 dev 的工作量隨三版的進度線性成長，也是「dev 進展慢」的原因之一。
+結論：公版 runtime 的邊界已經對了；目前的落差在**消費端取用與驗證**：跨版相容只靠 dev 的中央 harness 與凍結 core 來證明，消費端沒有機器可驗證的鎖檔，也沒有自己產生、可在共享 CI 跑的驗證。這會讓「確認公版沒改壞三版」的成本落在 dev 一方。本文沒有量測能證明這就是 dev 進展慢的原因，只是可以降低的固定成本。
 
 ## 2. 開源專案常見做法
 
@@ -92,21 +92,23 @@ dev（唯一主幹）
 
 | # | 提案 | 需要誰決定 | 會改什麼 | 不改什麼 |
 |---|---|---|---|---|
-| P1（[#382](https://github.com/lalagrass/earth-ascension/issues/382)） | 依賴方向：adapter 與凍結 core 移回各版，dev 只留契約＋自己的 adapter | PO 排程 | 新的 adapter 由各版維護；dev 的 `scene-shared/sources/` 與三份 adapter 在三版各自取用後退場（保留歷史 SHA 可查） | 公版 v1 契約語義、renderer、正式入口玩法 |
+| P1（[#382](https://github.com/lalagrass/earth-ascension/issues/382)） | adapter 所有權：各版擁有自己的 adapter，dev 正式版（dev-life）先做消費者試點 | PO 排程 | 新 adapter 由各版維護；dev 的 `scene-shared/sources/` 與三份 reference adapter **在 P3＋消費端語義測試提供等價 coverage 之後**才逐一退場（保留歷史 SHA 可查） | 公版 v1 契約語義、renderer、正式入口玩法 |
 | P2（[#383](https://github.com/lalagrass/earth-ascension/issues/383)） | 單一取用機制：`public-kit.lock.json`＋`vendor` 同步工具，每版只鎖一個版本 | PO 排程 | 新增一支 `tools/vendor.mjs`（讀 `releases/*.json`、照 hash 複製、寫鎖檔）；GPT 現有三個 SHA 的混用在下一次自己升級時收斂 | 不強迫任何一版立即升級；#372–#374 照原 `00f4dbe` 收尾 |
-| P3（[#384](https://github.com/lalagrass/earth-ascension/issues/384)） | 消費者契約測試：各版提交 payload 樣本，dev CI 對全部驗 | Earth（共用 CI 主筆） | `contracts/consumers/*/` 小 JSON＋一個 node test；公版改動若讓任一版樣本失效就紅 | 不把三版完整測試搬進 dev CI |
+| P3（[#384](https://github.com/lalagrass/earth-ascension/issues/384)） | 消費者契約測試：各版用自己的 adapter 產生 payload 樣本（記 core／adapter／package SHA），dev CI 對全部驗 | Earth（共用 CI 主筆） | `contracts/consumers/*/` 小 JSON＋一個 node test；公版改動若讓任一版樣本失效就紅。這是**補強**：只驗 shape／renderer／disclosure，不能單獨證明 adapter 沒漂移、Worker／Persona 切換、命令與時間語義，這些仍由消費端語義測試與必要的真 core 流程負責 | 不把三版完整測試搬進 dev CI |
 | P4（[#381](https://github.com/lalagrass/earth-ascension/issues/381)） | 證據與大檔不進主樹 | 擁有人（政策）＋Earth | 新證據的截圖／錄影改放 CI artifact 或 Release；repo 只留摘要與少量縮圖；CI 加檔案大小預算檢查 | 不重寫既有歷史、不刪他人分支 |
 | P5（[#385](https://github.com/lalagrass/earth-ascension/issues/385)） | 分支模型：長期獨立分支 vs 主幹上各自目錄；以及 Gemini 與 dev 正式版的同檔衝突 | **擁有人** | 見下節選項 | 不合併三版玩法、不換 dev 的引擎 |
 
-建議順序：P4（止血，越晚越重）→ P1＋P2（同一批，先讓 dev 的正式版自己當第一個消費者示範）→ P3 → P5（看前四項效果再決定）。P1–P3 都可以在不碰三版分支的前提下，先在 dev 完成「dev 正式版作為消費者」的示範。
+建議順序（依 grass 技術評估修訂，[#380 留言](https://github.com/lalagrass/earth-ascension/issues/380#issuecomment-6473540242)）：P4 只止新增大檔 → #378 完成後，P2＋dev-life 消費者／adapter 小試點＋P3 → 有等價 coverage 才退役舊 harness 與凍結 core（P1 的退場部分）→ 最後再決定 P5。第一包不需要搬成 `packages/`，也不強迫三版立即升級；第 3 節的結構是終點，不是第一步。接受本文研究不等於批准 P1–P5 實作。
 
 ## 5. P5 的選項（擁有人決定）
 
 | 選項 | 做法 | 好處 | 代價 |
 |---|---|---|---|
-| A. 維持獨立分支，只改取用方式 | 三版照現在各自在分支開發，靠 P1–P3 的鎖檔與契約樣本對接 | 交接成本最低，不打斷三位作者 | 三版測試仍不在共享 CI；分支持續變大、和 dev 漸行漸遠 |
-| **B. 主幹上各自目錄（推薦，分階段）** | 每版一個目錄（GPT、Grok 已是 `solo-sect-gpt/`、`solo-sect/`），作者在自己目錄開短 PR 回 dev；以目錄劃分所有權，review 只看該目錄＋契約樣本 | 同一 commit 看得到公版與所有消費者；公版改壞誰立刻在 CI 看到；不再需要凍結快照 | 需要先做 P4（否則 GPT 1.7 GB 證據會進 dev）；需訂各目錄的 review／合併權責 |
+| **A. 維持獨立分支，只改取用方式（短期推薦）** | 三版照現在各自在分支開發，靠 P1–P3 的鎖檔與契約樣本對接 | 交接成本最低，不打斷三位作者 | 三版測試仍不在共享 CI；分支持續變大、和 dev 漸行漸遠 |
+| B. 主幹上各自目錄（長期候選） | 每版一個目錄（GPT、Grok 已是 `solo-sect-gpt/`、`solo-sect/`），作者在自己目錄開短 PR 回 dev；以目錄劃分所有權，review 只看該目錄＋契約樣本 | 同一 commit 看得到公版與所有消費者；公版改壞誰立刻在 CI 看到；不再需要凍結快照 | 需要先做 P4（否則 GPT 1.7 GB 證據會進 dev）；需訂各目錄的 review／合併權責 |
 | C. 公版拆獨立 repo，三版各自 repo | public-kit 用 tag／release 發布 | 邊界最清楚 | 權限、clone、跨 repo 協調成本最高；現階段太重 |
+
+推薦：短期採 A＋P2／P3 的取用與驗證機制；先釐清 Gemini 與 dev 正式入口由誰維護（見下），再按實際成本決定是否走 B。獨立版本的 commit 分歧本身不代表必須合回主幹，搬目錄也不會自動產生跨版相容保障。
 
 ### 選 B 時避免互相等待
 
