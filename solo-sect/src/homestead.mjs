@@ -1,10 +1,11 @@
+import {at,feel,FEELINGS,restRate} from './homestead-living.mjs';
 import { freshSkills, workCost, gainWork, SKILLS } from './homestead-skills.mjs';
 // 荒居：獨立生活狀態。設施階段宣告可提供的活動，任務只讀此登錄表。
 export const SAVE_KEY = 'solo-sect.homestead.v1';
 export const VERSION = 3;
 export const DAY = 240;
 export const HOME = [445, 345];
-export const PLACES = { berries: [155, 340], wood: [730, 250], herbs: [145, 185], herbGarden: [135, 90], visitor: [825, 450], hut: [440, 225], garden: [270, 170], kitchen: [605, 365], store: [555, 470], bench: [352, 412], flowers: [340, 300] };
+export const PLACES = { berries: [155, 340], wood: [730, 250], herbs: [145, 185], herbGarden: [135, 90], visitor: [825, 450], hut: [440, 225], garden: [270, 170], kitchen: [605, 365], store: [555, 470], bench: [352, 412], flowers: [340, 300], bed: [440, 225] };
 export const FACILITIES = {
   hut: { label: '住處', stages: [
     { name: '空地', offers: ['rest'], rest: 3 },
@@ -23,13 +24,14 @@ export const FACILITIES = {
   store: { label: '儲物處', stages: [
     { name: '露天物堆', offers: [] }, { name: '儲物棚', offers: [], cost: { wood: 4 }, work: 10 },
   ] },
+  bed: { label: '屋內床鋪', stages: [{name:'席地鋪蓋',offers:[]},{name:'木床鋪',offers:[],cost:{wood:3},work:10}] },
   bench: { label: '屋前座位', stages: [{ name: '空屋前', offers: [] }, { name: '屋前長凳', offers: ['leisure'], cost: {wood: 2}, work: 8 }] },
   flowers: { label: '庭院植栽', stages: [{ name: '空庭院', offers: [] }, { name: '庭院花叢', offers: [], cost: {wood: 3}, work: 10 }] },
   berries: { label: '野果叢', stages: [{ name: '野果叢', offers: ['forage'] }] },
   wood: { label: '林緣枯木', stages: [{ name: '林緣枯木', offers: ['chop'] }] },
   herbs: { label: '草藥坡', stages: [{ name: '草藥坡', offers: ['herbal'] }] },
 };
-export const BUILDABLE = ['hut', 'garden', 'herbGarden', 'kitchen', 'store', 'bench', 'flowers'];
+export const BUILDABLE = ['hut', 'garden', 'herbGarden', 'kitchen', 'store', 'bench', 'flowers', 'bed'];
 export const ACTIONS = {
   forage: { skill: 'gather', name: '採野果', place: 'berries', duration: 6, energy: 5 },
   chop: { skill: 'gather', name: '砍柴', place: 'wood', duration: 7, energy: 7 },
@@ -60,9 +62,9 @@ const inbound = (s, k) => [s.person, s.helper].reduce((n, p) => n + (p?.carry?.o
 
 export function createHomestead({ name = '無名', personality = 'quiet', mode = 'legacy' } = {}) {
   const s = { kind: 'homestead', version: VERSION, mode: mode === 'solo' ? 'solo' : 'legacy', t: 0, day: 1, speed: 1,
-    person: { name: String(name).trim().slice(0, 12) || '無名', personality: ['quiet', 'sociable', 'diligent'].includes(personality) ? personality : 'quiet', pos: [...HOME], hunger: 65, energy: 68, herbalSkill: 0, careDay: 0, skills: freshSkills(), task: null, order: null, carry: null, work: 0, leisure: 0 },
+    person: { name: String(name).trim().slice(0, 12) || '無名', personality: ['quiet', 'sociable', 'diligent'].includes(personality) ? personality : 'quiet', pos: [...HOME], hunger: 65, energy: 68, herbalSkill: 0, careDay: 0, skills: freshSkills(), feelings: {}, task: null, order: null, carry: null, work: 0, leisure: 0 },
     stock: { berries: 0, wood: 0, seeds: 2, veg: 0, meal: 0, herbs: 0 }, cap: { berries: 8, wood: 8, seeds: 5, veg: 8, meal: 8, herbs: 6 }, wild: { berries: 4, wood: 4, herbs: 3 },
-    fac: { hut: { stage: 0, site: null }, garden: { stage: 0, site: null }, herbGarden: { stage: 0, site: null }, bench: { stage: 0, site: null }, flowers: { stage: 0, site: null }, kitchen: { stage: 0, site: null }, store: { stage: 0, site: null }, berries: { stage: 0 }, wood: { stage: 0 }, herbs: { stage: 0 } }, plot: { state: 'empty', growth: 0 }, herbPlot: { state: 'empty', growth: 0 },
+    fac: { hut: { stage: 0, site: null }, garden: { stage: 0, site: null }, herbGarden: { stage: 0, site: null }, bed: { stage: 0, site: null }, bench: { stage: 0, site: null }, flowers: { stage: 0, site: null }, kitchen: { stage: 0, site: null }, store: { stage: 0, site: null }, berries: { stage: 0 }, wood: { stage: 0 }, herbs: { stage: 0 } }, plot: { state: 'empty', growth: 0 }, herbPlot: { state: 'empty', growth: 0 },
     visitor: { name: '阿蓮', role: 'visitor', trust: 0, lastChat: 0, lastGift: 0, cared: false, willing: false, inviteDay: 0, inviteTime: 0, apprenticeDay: 0, injury: false, hunger: 68, energy: 72, herbalSkill: 0, careDay: 0 }, helper: null,
     leases: { wood: null, garden: null, herbGarden: null }, log: [] };
   note(s, `${s.person.name}來到荒地。先找吃的，再搭一間能安睡的木屋。`); return s;
@@ -70,6 +72,7 @@ export function createHomestead({ name = '無名', personality = 'quiet', mode =
 
 export function startBlueprint(s, id) {
   const f = FACILITIES[id], st = s.fac[id], next = f?.stages[st?.stage + 1];
+  if (id==='bed' && s.mode!=='solo')return false;
   if (!next || st.site || (id !== 'hut' && s.fac.hut.stage === 0)) return false;
   st.site = { need: { ...next.cost }, delivered: Object.fromEntries(Object.keys(next.cost).map((k) => [k, 0])), reserved: Object.fromEntries(Object.keys(next.cost).map((k) => [k, 0])), work: 0, workNeed: next.work };
   note(s, `立下「${next.name}」藍圖。`); return true;
@@ -259,8 +262,8 @@ function complete(s, t) {
     if (s.wild[k] >= 1 && s.stock[k] + inbound(s, k) < s.cap[k]) { s.wild[k] -= 1; p.carry = { kind: k, amount: 1, origin: 'wild', ...(k === 'berries' && s.stock.seeds === 0 ? { bonus: { seeds: 1 } } : {}) }; p.energy = clamp(p.energy - (ACTIONS[t.act].skill ? workCost(s,ACTIONS[t.act].skill,ACTIONS[t.act].energy) : ACTIONS[t.act].energy)); gainWork(s,ACTIONS[t.act].skill); p.work++; if (k === 'herbs') p.herbalSkill++; note(s, { berries: '採到野果，帶回住處。', wood: '砍得一根木料，帶回住處。', herbs: '採到一份虛構草藥，帶回住處。' }[k]); }
     freeLease(s, p, 'person'); p.task = null; return;
   }
-  if (t.act === 'eat') { if (s.stock.meal > 0) { s.stock.meal--; p.hunger = clamp(p.hunger + 52); note(s, '吃了一份熱飯。'); } else if (s.stock.berries > 0) { s.stock.berries--; p.hunger = clamp(p.hunger + 26); note(s, '吃了野果。'); } }
-  if (t.act === 'leisure') { p.leisure++; p.energy = clamp(p.energy + 5); }
+  if (t.act === 'eat') { if (s.stock.meal > 0) { s.stock.meal--; p.hunger = clamp(p.hunger + 52); if(at(p,HOME))feel(s,'warmMeal'); note(s, '吃了一份熱飯。'); } else if (s.stock.berries > 0) { s.stock.berries--; p.hunger = clamp(p.hunger + 26); note(s, '吃了野果。'); } }
+  if (t.act === 'leisure') { p.leisure++; p.energy = clamp(p.energy + 5); if(t.place==='bench'&&s.fac.bench.stage&&at(p,PLACES.bench)){feel(s,'seated');if(s.fac.flowers.stage)feel(s,'flowers');} }
   if (t.act === 'farm') {
     if (s.plot.state === 'empty' && s.stock.seeds > 0) { s.stock.seeds--; s.plot.state = 'growing'; s.plot.growth = 0; skilledWork=true; note(s, '在小菜園播下種子。'); }
     else if (s.plot.state === 'ripe' && s.stock.veg + inbound(s, 'veg') <= s.cap.veg - 2) { s.plot.state = 'empty'; p.carry = { kind: 'veg', amount: 2, origin: 'wild', bonus: { seeds: 2 } }; skilledWork=true; note(s, '收下青菜與種子，帶回住處。'); }
@@ -372,8 +375,9 @@ export function tickHomestead(s, dt = 0.25) {
     p.task = null; return;
   }
   if (t.act === 'rest') {
-    p.energy = clamp(p.energy + stage(s, 'hut').rest * dt);
-    if (p.energy >= (p.order === 'rest' ? 100 : 85)) p.task = null;
+    const before=p.energy, target=p.order==='rest'?100:85;
+    p.energy = clamp(p.energy + restRate(s) * dt);
+    if (p.energy >= target){if(before<target&&s.fac.bed.stage&&at(p,PLACES.hut))feel(s,'rested');p.task=null;}
     return;
   }
   if (t.act === 'build') {
@@ -414,7 +418,9 @@ export function loadHomestead(json) {
       if (s.helper) { s.helper.herbalSkill = 0; s.helper.careDay = 0; }
       s.leases.herbGarden = null;
     }
-    for (const id of ['bench','flowers']) s.fac[id] ??= structuredClone(h2.fac[id]);
+    for (const id of ['bench','flowers','bed']) s.fac[id] ??= structuredClone(h2.fac[id]);
+    if(s.person.feelings===undefined)s.person.feelings={};
+    if(!s.person.feelings || Array.isArray(s.person.feelings) || Object.entries(s.person.feelings).some(([id,until])=>!FEELINGS[id]||!Number.isFinite(until)||until<0||until>s.t+FEELINGS[id].duration))return {ok:false,error:'感受資料不合法'};
     if(s.person.skills===undefined)s.person.skills=freshSkills();
     if(!s.person.skills || Array.isArray(s.person.skills) || Object.keys(SKILLS).some(id=>!Number.isFinite(s.person.skills[id]) || s.person.skills[id]<0 || s.person.skills[id]>SKILLS[id].thresholds.at(-1)))return {ok:false,error:'技能資料不合法'};
     const p = s.person, t = p.task, c = p.carry;

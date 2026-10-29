@@ -13,7 +13,7 @@ export function activityText(s, p = s.person) {
   if (t.phase === 'go') return `走向${target}，準備${ACTIONS[t.act]?.name || '休息'}`;
   if (t.act === 'farm') return s.plot.state === 'ripe' ? '正在收青菜' : '正在菜園播種';
   if (t.act === 'herbFarm') return s.herbPlot.state === 'ripe' ? '正在收藥田草藥' : '正在藥田插穗';
-  if (t.act === 'rest') return s.fac.hut.stage ? `在${FACILITIES.hut.stages[s.fac.hut.stage].name}休息` : '在空地席地休息';
+  if (t.act === 'rest') return s.fac.hut.stage ? `在${FACILITIES.hut.stages[s.fac.hut.stage].name}${s.fac.bed?.stage?'的床鋪':''}休息` : '在空地席地休息';
   if (t.act === 'leisure') return t.place === 'bench' ? '坐在屋前長凳看雲' : '在屋前閒坐看雲';
   return `正在${ACTIONS[t.act]?.name || '生活'}`;
 }
@@ -37,8 +37,9 @@ export function facilityEffect(id, stage) {
   if (id === 'garden') return stage.offers.includes('farm') ? '可播種；生長34秒後收2菜與2種' : '尚不能種菜';
   if (id === 'kitchen') return stage.offers.includes('cook') ? '2菜＋1木 → 3份熱飯' : '尚不能料理';
   if (id === 'herbGarden') return stage.offers.includes('herbFarm') ? '1草藥插穗；生長50秒後收2–3草藥' : '尚不能栽藥';
-  if (id === 'bench') return stage.offers.includes('leisure') ? '閒坐改在長凳；無額外數值加成' : '尚無座位';
-  if (id === 'flowers') return stage.name === '庭院花叢' ? '純外觀，不增加產量或能力' : '尚未植栽';
+  if (id === 'bed') return stage.name==='木床鋪' ? '在屋內使用時休息每秒額外+1精力；休息完成短暫安睡感受' : '尚無木床，不增加休息效率';
+  if (id === 'bench') return stage.offers.includes('leisure') ? '到長凳閒坐完成後，舒服感受+2持續60秒；不加工作增益' : '尚無座位';
+  if (id === 'flowers') return stage.name === '庭院花叢' ? '長凳小憩完成可得看花感受+1持續60秒；不增加產量' : '尚未植栽';
   return '';
 }
 export function buildingInfo(s,id) {
@@ -61,6 +62,7 @@ export function nextStep(s) {
   if(!s.fac.hut.stage)return '第一個家：在下方立「簡陋木屋」藍圖；需5木，會逐根搬料。';
   if(!s.fac.garden.stage || !s.fac.kitchen.stage)return '有屋可睡了。可選菜園與露天灶，慢慢把野果生活變成熱飯生活。';
   if(s.fac.hut.stage===1)return '吃住漸穩。修繕小屋讓休息每秒6→9；也可以先建儲物棚或留居。';
+  if(s.mode==='solo'&&!s.fac.bed?.stage)return '可鋪一張木床：在屋內休息每秒再恢復1精力，也可以先做長凳或花叢。';
   return s.fac.bench && (!s.fac.bench.stage || !s.fac.flowers.stage) ? '生活安穩後，可自由選長凳或庭院花叢；不做也能繼續住。' : s.mode === 'solo' ? '小家已是自己的樣子。可以留居休閒，也可自行選擇既有轉接去向。' : '小家已是自己的樣子。留居、與人相識或接回山門紀，都由你決定。';
 }
 export function foodDays(s) { return ((s.stock.meal*52+s.stock.berries*26)/((s.helper?2:1)*.14*DAY)).toFixed(1); }

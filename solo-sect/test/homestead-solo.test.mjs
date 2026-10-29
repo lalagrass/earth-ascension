@@ -16,3 +16,15 @@ test('H15：實際四種工作新手/滿級產出相同、耗力可比較',()=>{
   assert.ok(Math.abs(results[0].person.energy-(100-base))<1e-9);assert.ok(Math.abs(results[1].person.energy-(100-base*.8))<1e-9);assert.deepEqual(results[0].stock,results[1].stock);assert.deepEqual(results[0].person.carry,results[1].person.carry);assert.equal(results[0].person.skills[skill],1);
  }
 });
+import {currentFeelings,restRate}from'../src/homestead-living.mjs';
+import {HOME,PLACES}from'../src/homestead.mjs';
+test('H16：床鋪只有到屋內使用才加休息率，休息完成才有安睡感受',()=>{
+ const s=createHomestead({mode:'solo'});s.fac.hut.stage=1;s.person.pos=[...PLACES.hut];assert.equal(restRate(s),6);s.fac.bed.stage=1;assert.equal(restRate(s),7);s.person.pos=[...HOME];assert.equal(restRate(s),6);s.person.task={act:'rest',phase:'go',place:'hut',timer:0};tickHomestead(s);assert.equal(currentFeelings(s).value,0);
+ s.person.pos=[...PLACES.hut];s.person.task={act:'rest',phase:'do',place:'hut',timer:0};s.person.energy=84;tickHomestead(s);assert.equal(s.person.energy,85.75);assert.equal(s.person.feelings.rested,s.t+60);assert.ok(loadHomestead(saveHomestead(s)).ok);
+});
+test('H16：吃飯與小憩有效完成才給感受，有時效且不能無限疊加',()=>{
+ const s=createHomestead({mode:'solo'});s.fac.hut.stage=1;s.fac.bench.stage=1;s.fac.flowers.stage=1;s.stock.meal=1;s.person.hunger=30;s.person.pos=[...HOME];s.person.task={act:'eat',phase:'do',place:'home',timer:1.75};tickHomestead(s);assert.equal(s.stock.meal,0);assert.ok(Math.abs(s.person.hunger-81.965)<1e-8);assert.equal(currentFeelings(s).value,2);
+ s.person.pos=[...PLACES.bench];for(let i=0;i<4;i++){s.person.task={act:'leisure',phase:'do',place:'bench',timer:7.75};tickHomestead(s);}assert.equal(currentFeelings(s).value,5);assert.equal(Object.keys(s.person.feelings).length,3);
+ s.t+=61;s.day=1+Math.floor(s.t/240);assert.equal(currentFeelings(s).value,0);assert.ok(loadHomestead(saveHomestead(s)).ok);
+ const unused=createHomestead({mode:'solo'});unused.fac.bench.stage=1;unused.fac.flowers.stage=1;step(unused,1);assert.equal(currentFeelings(unused).value,0);
+});

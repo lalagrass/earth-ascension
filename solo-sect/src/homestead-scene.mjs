@@ -1,4 +1,5 @@
 // Canvas 表現只讀狀態：時間來自世界，不另設動畫時鐘。
+import {currentFeelings} from './homestead-living.mjs';
 import {FACILITIES,PLACES,HOME,DAY,visitorHere} from './homestead.mjs';
 export function sceneFacts(s) {
  const people=[s.person,s.helper].filter(Boolean);
@@ -38,6 +39,7 @@ export function drawHomestead(g,s) {
    for(let y=139;y<182;y+=11)line([[444-(y-113)*1.32,y],[444+(y-113)*1.32,y]],'#573d33',2);
    rect(367,179,152,7,'#d0b685');rect(388,203,23,24,'#e7d6a2');rect(478,203,23,24,'#e7d6a2');line([[399,203],[399,227]],'#866b49',2);line([[489,203],[489,227]],'#866b49',2);rect(415,277,60,8,'#baaa8c');
   }
+  if(s.fac.bed?.stage){rect(378,245,42,23,'#6c533c');rect(381,246,36,16,'#e5dbbf');rect(382,247,10,13,'#f2ead4');}
   rect(431,225,30,56,'#493728');circle(455,252,2,'#d5b17d');
  }
  function plot(id,x,y,w,h,p,growth,color){
@@ -65,6 +67,7 @@ export function drawHomestead(g,s) {
   if(p.carry)rect(x+12,y-24,16,12,p.carry.kind==='wood'?'#8f6238':'#bc8b55');
   if(t?.act==='build'&&t.phase==='do'){line([[x+9,y-29],[x+27,y-45]],'#715232',4);line([[x+21,y-48],[x+32,y-41]],'#aaa797',6);}
   tag(p.name,x,y-(rest?58:76),true);
+  if(p===s.person&&currentFeelings(s).value>0){circle(x+23,y-45,8,'#e8cc73');g.fillStyle='#715c35';g.font='12px sans-serif';g.fillText('♪',x+20,y-41);}
  }
  person(s.person,'#3e6481');if(s.helper)person(s.helper,'#a46652');else if(visitorHere(s))person({pos:PLACES.visitor,name:s.visitor.name},'#a46652');
  g.textAlign='left';
