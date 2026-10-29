@@ -182,8 +182,12 @@ export function blockReason(s, act, who = 'person') {
   }
   return null;
 }
+// 自主夠用目標（試玩值）；不是容量上限，手動指派仍可補到實際容量。
+export function supplyTargets(s) {
+  return { meal: (s.helper ? 2 : 1) * 2, berries: 2, veg: 4, herbs: 3, wood: s.person.personality === 'diligent' ? 5 : s.helper ? 3 : 2 };
+}
 function pick(s) {
-  const p = s.person;
+  const p = s.person, target = supplyTargets(s);
   if (p.carry) return 'return';
   if (p.hunger < 38 && canDo(s, 'eat')) return 'eat';
   if (p.hunger < 38 && canDo(s, 'forage')) return 'forage';
@@ -194,18 +198,17 @@ function pick(s) {
   if (p.personality === 'sociable' && canDo(s, 'chat') && p.hunger > 50 && p.energy > 45) return 'chat';
   if (p.personality === 'sociable' && canDo(s, 'talkHelper') && p.hunger > 50 && p.energy > 45) return 'talkHelper';
   if (p.personality === 'diligent' && canDo(s, 'care') && p.energy > 40) return 'care';
-  if (p.hunger < 56 && canDo(s, 'forage')) return 'forage';
+  // 有現成菜時先補夠用熱飯，施工不拿走唯一的下一餐燃料。
+  if (s.stock.meal < target.meal && canDo(s, 'cook')) return 'cook';
+  if (s.fac.kitchen.stage && s.stock.meal < target.meal && s.stock.veg >= 2 && !s.stock.wood && canDo(s, 'chop')) return 'chop';
   if (canDo(s, 'build')) return 'build';
   if (Object.values(s.fac).some((st) => st.site && st.site.delivered.wood + st.site.reserved.wood < st.site.need.wood) && canDo(s, 'chop')) return 'chop';
-  if (s.stock.berries < 2 && canDo(s, 'forage')) return 'forage';
+  if (s.stock.berries < target.berries && canDo(s, 'forage')) return 'forage';
   if (s.fac.hut.stage === 0 && s.stock.wood < 5 && canDo(s, 'chop')) return 'chop';
-  if (s.fac.kitchen.stage > 0 && s.stock.veg >= 2 && s.stock.wood < 2 && canDo(s, 'chop')) return 'chop';
-  if (canDo(s, 'cook') && s.stock.meal < 4) return 'cook';
-  if (canDo(s, 'farm') && (s.stock.veg < 4 || s.plot.state === 'ripe')) return 'farm';
-  if (canDo(s, 'herbFarm') && (s.herbPlot.state === 'ripe' || s.stock.herbs >= 2)) return 'herbFarm';
+  if (canDo(s, 'farm') && s.stock.veg < target.veg) return 'farm';
+  if (canDo(s, 'herbFarm') && s.stock.herbs < target.herbs) return 'herbFarm';
   if (p.energy < 65) return 'rest';
-  if (p.personality === 'diligent' && s.stock.wood < s.cap.wood && canDo(s, 'chop')) return 'chop';
-  if (p.personality === 'sociable' && p.leisure % 2 === 0 && s.fac.kitchen.stage && canDo(s, 'cook')) return 'cook';
+  if (s.stock.wood < target.wood && canDo(s, 'chop')) return 'chop';
   return 'leisure';
 }
 function begin(s, act) {
@@ -270,7 +273,7 @@ function tickHelper(s, dt) {
     else if (p.order === 'chop' && !s.leases.wood && s.stock.wood + inbound(s, 'wood') < s.cap.wood) act = 'chop';
     else if (p.order === 'farm' && !s.leases.garden && offers(s, 'garden', 'farm') && (s.plot.state === 'ripe' && s.stock.veg + inbound(s, 'veg') <= s.cap.veg - 2 || s.plot.state === 'empty' && s.stock.seeds > 0)) act = 'farm';
     else if (p.order === 'herbFarm' && s.visitor.role === 'apprentice' && !s.leases.herbGarden && offers(s, 'herbGarden', 'herbFarm') && (s.herbPlot.state === 'ripe' && s.stock.herbs + inbound(s, 'herbs') <= s.cap.herbs - (p.herbalSkill >= 3 ? 3 : 2) || s.herbPlot.state === 'empty' && s.stock.herbs > 0)) act = 'herbFarm';
-    else if (!s.leases.garden && offers(s, 'garden', 'farm') && (s.plot.state === 'ripe' && s.stock.veg + inbound(s, 'veg') <= s.cap.veg - 2 || s.plot.state === 'empty' && s.stock.seeds > 0 && s.stock.veg < 2)) act = 'farm';
+    else if (!s.leases.garden && offers(s, 'garden', 'farm') && s.stock.veg < supplyTargets(s).veg && (s.plot.state === 'ripe' && s.stock.veg + inbound(s, 'veg') <= s.cap.veg - 2 || s.plot.state === 'empty' && s.stock.seeds > 0)) act = 'farm';
     else if (!s.leases.wood && s.stock.wood + inbound(s, 'wood') < 3) act = 'chop';
     else if (p.energy < 70) act = 'rest';
     else act = 'leisure';
@@ -401,7 +404,8 @@ export function loadHomestead(json) {
     if (['berries', 'wood', 'veg', 'herbs'].some((k) => s.stock[k] + inbound(s, k) > s.cap[k])) return { ok: false, error: '在途物資超過容量' };
     for (const id of BUILDABLE) {
       const v = s.fac[id].site; if (!v) continue;
-      if (!FACILITIES[id].stages[s.fac[id].stage + 1] || !Number.isFinite(v.work) || v.work < 0 || !Number.isFinite(v.workNeed) || v.workNeed <= 0 || ['need', 'delivered', 'reserved'].some((field) => !v[field] || !Number.isInteger(v[field].wood) || v[field].wood < 0) || v.delivered.wood + v.reserved.wood > v.need.wood) return { ok: false, error: '工地資料不合法' };
+      const recipe = FACILITIES[id].stages[s.fac[id].stage + 1];
+      if (!recipe || v.need?.wood !== recipe.cost.wood || v.workNeed !== recipe.work || !Number.isFinite(v.work) || v.work < 0 || !Number.isFinite(v.workNeed) || v.workNeed <= 0 || ['need', 'delivered', 'reserved'].some((field) => !v[field] || !Number.isInteger(v[field].wood) || v[field].wood < 0) || v.delivered.wood + v.reserved.wood > v.need.wood) return { ok: false, error: '工地資料不合法' };
       const inTransit = t?.act === 'build' && t.phase === 'deliver' && t.place === id && c?.origin === 'site' && c.kind === 'wood' ? c.amount : 0;
       if (v.reserved.wood !== inTransit) return { ok: false, error: '工地預約與在途材料不符' };
     }

@@ -1,6 +1,6 @@
 import { drawHomestead } from './homestead-scene.mjs';
 import { activityText, activityReason, buildingInfo, nextStep, foodDays } from './homestead-view.mjs';
-import { ACTIONS, BUILDABLE, FACILITIES, PLACES, HOME, DAY, SAVE_KEY, offers, blockReason, visitorHere, createHomestead, startBlueprint, setOrder, setHelperOrder, inviteHelper, acceptApprentice, askHelperLeave, tickHomestead, saveHomestead, loadHomestead } from './homestead.mjs';
+import { ACTIONS, BUILDABLE, FACILITIES, PLACES, HOME, DAY, SAVE_KEY, offers, supplyTargets, blockReason, visitorHere, createHomestead, startBlueprint, setOrder, setHelperOrder, inviteHelper, acceptApprentice, askHelperLeave, tickHomestead, saveHomestead, loadHomestead } from './homestead.mjs';
 import { mountTransferManager, downloadBytes } from './transfer-manager-ui.mjs';
 import { previewTransfer, commitTransfer, transferSlots, validateTransferSave, exportTransferBackup } from './homestead-transfer.mjs';
 const $ = (id) => document.getElementById(id);
@@ -55,7 +55,8 @@ function render() {
   const focused = document.activeElement; const focusSelector = focused?.id ? '#' + CSS.escape(focused.id) : ['act','build','social','helper'].find(k => focused?.dataset?.[k]) ? Object.entries(focused.dataset).map(([k,v]) => `[data-${k}="${CSS.escape(v)}"]`).join('') : null;
   const p = s.person, task = p.task;
   $('time').textContent = `第 ${s.day} 日 · ${Math.floor((s.t % DAY) / DAY * 24).toString().padStart(2, '0')}:00`;
-  $('home-summary').textContent = `${FACILITIES.hut.stages[s.fac.hut.stage].name} · ${s.helper ? '兩人同住' : '一人生活'} · 現成食物約 ${foodDays(s)} 日`;
+  const target = supplyTargets(s);
+  $('home-summary').textContent = `${FACILITIES.hut.stages[s.fac.hut.stage].name} · ${s.helper ? '兩人同住' : '一人生活'} · 現成食物約 ${foodDays(s)} 日；自主夠用目標：飯${target.meal}／果${target.berries}／菜${target.veg}／木${target.wood}／藥${target.herbs}（非容量限制，手動可多備）`;
   $('next-step').textContent = nextStep(s);
   $('status').innerHTML = `<h2>${esc(p.name)} · ${p.personality === 'quiet' ? '喜靜' : p.personality === 'diligent' ? '勤勞' : '好交往'}</h2><div>飢餓 ${Math.round(p.hunger)} / 100</div><div class="meter"><span style="width:${p.hunger}%"></span></div><div>精力 ${Math.round(p.energy)} / 100</div><div class="meter energy"><span style="width:${p.energy}%"></span></div><p class="activity">${esc(activityText(s))}</p><div class="muted">${esc(activityReason(s))}</div><div class="muted">工作 ${Math.floor(p.work)} · 閒暇 ${p.leisure} · 識藥 ${p.herbalSkill}</div>`;
   $('orders').innerHTML = Object.entries(ACTIONS).filter(([id]) => id === 'talkHelper' || id === 'helperCare' ? !!s.helper : id === 'selfCare' ? p.herbalSkill > 0 || s.stock.herbs > 0 : id === 'herbFarm' ? s.fac.hut.stage > 0 : !['chat', 'gift', 'care'].includes(id) || visitorHere(s)).map(([id, a]) => { const locked = id === 'farm' ? !offers(s, 'garden', 'farm') : id === 'herbFarm' ? !offers(s, 'herbGarden', 'herbFarm') : id === 'cook' ? !offers(s, 'kitchen', 'cook') : id === 'build' ? !Object.values(s.fac).some((x) => x.site) : id === 'gift' ? !s.stock.meal || s.visitor.lastGift === s.day : id === 'care' ? !s.visitor.injury || s.visitor.cared || !s.stock.herbs : id === 'helperCare' ? s.helper?.leaving : id === 'talkHelper' ? s.helper?.leaving || s.visitor.lastChat === s.day : id === 'chat' ? s.visitor.lastChat === s.day : false; return `<button data-act="${id}" class="${p.order === id ? 'active' : ''}" ${locked ? 'disabled' : ''}>${a.name}</button>`; }).join('');

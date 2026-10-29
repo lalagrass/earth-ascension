@@ -31,3 +31,13 @@ test('H11：新工地在途取消與重載守恆，舊檔補地塊且拒絕未�
  setOrder(s,'leisure');assert.equal(s.fac.flowers.site.reserved.wood,0);assert.equal(all(),3);until(s,()=>!s.person.carry);assert.equal(all(),3);const r=loadHomestead(saveHomestead(s));assert.ok(r.ok);assert.equal(saveHomestead(r.state),saveHomestead(s));
  const old=createHomestead();delete old.fac.bench;delete old.fac.flowers;assert.ok(loadHomestead(saveHomestead(old)).ok);old.fac.bench={stage:0,site:null};old.person.task={act:'leisure',place:'bench',phase:'go',timer:0};assert.equal(loadHomestead(saveHomestead(old)).ok,false);
 });
+import {homeScenario} from './helpers/home-scenario.mjs';
+test('H12：三性格×單雙人×低庫存/滿倉/中斷20日，糧木逐拍守恆與閒暇',()=>{
+ for(const personality of ['quiet','sociable','diligent'])for(const apprentice of [false,true])for(const condition of ['low','full','interrupted']){
+ const r=homeScenario({personality,apprentice,condition});assert.ok(r.minH>0 && r.minE>0,JSON.stringify({personality,apprentice,condition,H:r.minH,E:r.minE}));assert.equal(r.zero,0);assert.ok(r.completedAt!==null);if(condition!=='full')assert.ok(r.harvests>=6);else assert.ok(r.daily.at(-1).meal<=r.initialMeal,'滿倉先用現存食物，不硬做無需的收成');assert.ok(r.final.person.leisure>0);assert.equal(r.daily.length,20);assert.ok(loadHomestead(saveHomestead(r.final)).ok);
+ const control=homeScenario({personality,apprentice,condition,reload:false});assert.equal(saveHomestead(control.final),saveHomestead(r.final),'中途讀取與原流程相同');
+ }
+});
+test('H11/H12：異常低成本工地拒讀；手動指派仍可超過自主目標',()=>{
+ const s=createHomestead();s.fac.hut.stage=1;startBlueprint(s,'flowers');s.fac.flowers.site.need.wood=0;assert.equal(loadHomestead(saveHomestead(s)).ok,false);s.fac.flowers.site=null;setOrder(s,'chop');until(s,()=>s.stock.wood===s.cap.wood);assert.equal(s.stock.wood,8);
+});

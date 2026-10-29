@@ -273,7 +273,7 @@ test('H5a：學徒可照料藥田；改令釋放地塊，在途草藥離開前�
   until(s, () => s.helper.carry?.kind === 'herbs'); const amount = s.helper.carry.amount;
   assert.ok([2, 3].includes(amount)); assert.equal(loadHomestead(saveHomestead(s)).ok, true);
   assert.equal(askHelperLeave(s), true); until(s, () => !s.helper);
-  assert.equal(s.stock.herbs, amount); assert.equal(s.leases.herbGarden, null);
+  assert.equal(s.stock.herbs, amount); assert.notEqual(s.leases.herbGarden, 'helper', '幫手離開須釋放；主角可接手空地塊'); assert.equal(loadHomestead(saveHomestead(s)).ok, true);
 });
 
 test('H5a：v1/v2 舊檔遷移及異常藥田預約、在途拒讀', () => {

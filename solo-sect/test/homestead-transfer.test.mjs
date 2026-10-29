@@ -110,7 +110,7 @@ test('H5 補證：每日記錄獨居／雙人的產出、食用與庫存，十�
     assert.equal(days.length, 12);
     for (const day of days) { assert.equal(day.stockMeals, day.producedMeals - day.eatenMeals); assert.ok(day.stockMeals >= 0); }
     assert.ok(days.at(-1).producedMeals > days.at(-1).eatenMeals, `${people} 人食物淨收支`);
-    assert.ok(days.at(-1).harvests >= 6 && days.at(-1).stockMeals >= 4);
-    assert.equal(days.at(-1).stockBerries, 8, '野果作求生備糧，熱飯仍由菜園持續產出');
+    assert.ok(days.at(-1).harvests >= 6 && days.at(-1).stockMeals >= 1);
+    assert.ok(days.at(-1).stockBerries >= 1 && days.at(-1).stockBerries <= 3, 'H12自主野果目標2份，容許雙人已在途1份；熱飯仍由菜園持續產出');
   }
 });
