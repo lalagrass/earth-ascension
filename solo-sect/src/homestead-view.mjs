@@ -18,7 +18,7 @@ export function activityText(s, p = s.person) {
   return `正在${ACTIONS[t.act]?.name || '生活'}`;
 }
 export function activityReason(s, p = s.person, who = 'person') {
-  if (p.carry) return '採下的物資要實際搬回，才會入庫。';
+  if (p.carry) return p.carry.origin === 'site' ? '這根木料已從儲物處取出，送達工地才算交料。' : '採下的物資要實際搬回，才會入庫。';
   const blocked = p.order && p.task?.act !== p.order ? blockReason(s, p.order, who) : null;
   if (blocked) return `指派暫候：${blocked}；先${activityText(s,p)}。`;
   if (p.order && p.task?.act === p.order) return '正在執行你的指派；缺糧或疲累時會先照顧自己。';
