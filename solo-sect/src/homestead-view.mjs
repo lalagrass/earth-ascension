@@ -61,6 +61,11 @@ export function nextStep(s) {
   if(!s.fac.hut.stage)return '第一個家：在下方立「簡陋木屋」藍圖；需5木，會逐根搬料。';
   if(!s.fac.garden.stage || !s.fac.kitchen.stage)return '有屋可睡了。可選菜園與露天灶，慢慢把野果生活變成熱飯生活。';
   if(s.fac.hut.stage===1)return '吃住漸穩。修繕小屋讓休息每秒6→9；也可以先建儲物棚或留居。';
-  return s.fac.bench && (!s.fac.bench.stage || !s.fac.flowers.stage) ? '生活安穩後，可自由選長凳或庭院花叢；不做也能繼續住。' : '小家已是自己的樣子。留居、與人相識或接回山門紀，都由你決定。';
+  return s.fac.bench && (!s.fac.bench.stage || !s.fac.flowers.stage) ? '生活安穩後，可自由選長凳或庭院花叢；不做也能繼續住。' : s.mode === 'solo' ? '小家已是自己的樣子。可以留居休閒，也可自行選擇既有轉接去向。' : '小家已是自己的樣子。留居、與人相識或接回山門紀，都由你決定。';
 }
 export function foodDays(s) { return ((s.stock.meal*52+s.stock.berries*26)/((s.helper?2:1)*.14*DAY)).toFixed(1); }
+
+export function resourceSummary(s) {
+ const sites=Object.values(s.fac).filter(f=>f.site);
+ return {available:{...s.stock},delivered:sites.reduce((n,f)=>n+f.site.delivered.wood,0),reserved:sites.reduce((n,f)=>n+f.site.reserved.wood,0),incoming:[s.person,s.helper].filter(p=>p?.carry?.origin==='wild').map(p=>({...p.carry})),...projectMaterials(s)};
+}
