@@ -41,3 +41,14 @@ test('H12：三性格×單雙人×低庫存/滿倉/中斷20日，糧木逐拍守
 test('H11/H12：異常低成本工地拒讀；手動指派仍可超過自主目標',()=>{
  const s=createHomestead();s.fac.hut.stage=1;startBlueprint(s,'flowers');s.fac.flowers.site.need.wood=0;assert.equal(loadHomestead(saveHomestead(s)).ok,false);s.fac.flowers.site=null;setOrder(s,'chop');until(s,()=>s.stock.wood===s.cap.wood);assert.equal(s.stock.wood,8);
 });
+import {blockReason} from '../src/homestead.mjs';
+test('H13：已吃飽、缺食物、當日聊過與訪客不在不再顯示空白原因',()=>{
+ const s=createHomestead();s.person.hunger=90;assert.match(blockReason(s,'eat'),/沒有.*食物/);assert.match(blockReason(s,'chat'),/不在村路/);s.t=70;s.visitor.lastChat=1;assert.match(blockReason(s,'chat'),/已經談/);assert.match(blockReason(s,'gift'),/缺熱飯/);s.stock.berries=1;s.person.hunger=100;assert.match(blockReason(s,'eat'),/吃飽/);
+});
+test('H13 review：多工地提示與正在施工的對象相同',()=>{
+ const s=createHomestead();s.fac.hut.stage=1;startBlueprint(s,'flowers');s.fac.flowers.site.delivered.wood=3;startBlueprint(s,'bench');s.person.task={act:'build',phase:'do',place:'flowers',timer:0};assert.ok(loadHomestead(saveHomestead(s)).ok);assert.match(nextStep(s),/目前工程：庭院花叢/);s.person.task=null;assert.match(nextStep(s),/目前工程：庭院花叢/);
+});
+import {projectMaterials} from '../src/homestead-view.mjs';
+test('H13 review：兩工地不可把同一庫存宣稱各自已保留',()=>{
+ const s=createHomestead();s.fac.hut.stage=1;s.stock.wood=3;startBlueprint(s,'bench');startBlueprint(s,'flowers');assert.deepEqual(projectMaterials(s),{count:2,needed:5,shortage:2});assert.match(nextStep(s),/合計尚缺2木/);s.fac.bench.site.delivered.wood=2;s.stock.wood=1;assert.deepEqual(projectMaterials(s),{count:2,needed:3,shortage:2});
+});

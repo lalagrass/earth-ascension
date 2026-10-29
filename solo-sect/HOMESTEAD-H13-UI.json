@@ -1,0 +1,32 @@
+{
+  "route": "normal UI only; no state/material injection, paused/16x mixed; not human time",
+  "result": {
+    "day": 6,
+    "t": 1205,
+    "stock": {
+      "berries": 2,
+      "wood": 2,
+      "seeds": 6,
+      "veg": 4,
+      "meal": 4,
+      "herbs": 0
+    },
+    "hunger": 78.30000000001644,
+    "energy": 89,
+    "work": 56.57142857142839,
+    "leisure": 42,
+    "stages": {
+      "hut": 2,
+      "garden": 1,
+      "herbGarden": 0,
+      "bench": 1,
+      "flowers": 1,
+      "kitchen": 1,
+      "store": 1,
+      "berries": 0,
+      "wood": 0,
+      "herbs": 0
+    }
+  },
+  "pageerrors": []
+}

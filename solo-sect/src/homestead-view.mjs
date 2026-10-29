@@ -46,11 +46,18 @@ export function buildingInfo(s,id) {
   const missing=site ? Math.max(0,site.need.wood-site.delivered.wood-site.reserved.wood) : (next?.cost.wood||0);
   return {current:facilityEffect(id,f.stages[st.stage]), next:next ? facilityEffect(id,next):null, missing, shortage:Math.max(0,missing-s.stock.wood)};
 }
+export function projectMaterials(s) {
+  const sites=Object.values(s.fac).filter(f=>f.site);
+  const needed=sites.reduce((n,f)=>n+Math.max(0,f.site.need.wood-f.site.delivered.wood-f.site.reserved.wood),0);
+  return {count:sites.length,needed,shortage:Math.max(0,needed-s.stock.wood)};
+}
 export function nextStep(s) {
   if (s.person.hunger < 38) return '先吃點東西；缺糧時採野果，搬回後才能吃。';
-  if (s.person.energy < 24) return '先歇息。木屋建好後，精力恢復會更快。';
-  const pending=Object.keys(s.fac).find(id=>s.fac[id].site);
-  if(pending) {const b=buildingInfo(s,pending);return `目前工程：${FACILITIES[pending].stages[s.fac[pending].stage+1].name}。${b.shortage ? `還缺${b.shortage}木，可砍柴補足。` : '自主生活會接著搬料施工；也可指派建造。'}`;}
+  if (s.person.energy < 24) return `先歇息。${FACILITIES.hut.stages[s.fac.hut.stage].name}每秒恢復${FACILITIES.hut.stages[s.fac.hut.stage].rest}精力。`;
+  const sites=Object.keys(s.fac).filter(id=>s.fac[id].site);
+  const active=s.person.task?.act==='build' ? s.person.task.place : null;
+  const pending=(active && s.fac[active]?.site ? active : null) || sites.find(id=>s.fac[id].site.delivered.wood>=s.fac[id].site.need.wood) || sites[0];
+  if(pending) {const b=buildingInfo(s,pending), all=projectMaterials(s);return `目前工程：${FACILITIES[pending].stages[s.fac[pending].stage+1].name}。${b.shortage ? `此項還缺${b.shortage}木，可砍柴補足。` : '自主生活會接著搬料施工；也可指派建造。'}${all.count>1 ? ` 共${all.count}項工程共用庫存；待運${all.needed}木，現存${s.stock.wood}木，合計尚缺${all.shortage}木。` : ''}`;}
   if(!s.fac.hut.stage)return '第一個家：在下方立「簡陋木屋」藍圖；需5木，會逐根搬料。';
   if(!s.fac.garden.stage || !s.fac.kitchen.stage)return '有屋可睡了。可選菜園與露天灶，慢慢把野果生活變成熱飯生活。';
   if(s.fac.hut.stage===1)return '吃住漸穩。修繕小屋讓休息每秒6→9；也可以先建儲物棚或留居。';

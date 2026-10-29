@@ -173,6 +173,22 @@ export function blockReason(s, act, who = 'person') {
     if (!sites.length) return '還沒有藍圖';
     if (!canDo(s, 'build')) return sites.some((site) => site.reserved.wood) ? '材料正在搬往工地' : '缺建材，先砍柴';
   }
+  if (act === 'eat') {
+    if (!s.stock.meal && !s.stock.berries) return '還沒有搬回可吃的食物';
+    if (p.hunger >= 95) return '目前已經吃飽';
+  }
+  if (['chat','gift','care'].includes(act)) {
+    if (!visitorHere(s)) return '阿蓮目前不在村路；白天會再來';
+    if (act === 'chat' && s.visitor.lastChat === s.day) return '今天已經談過天';
+    if (act === 'gift' && s.visitor.lastGift === s.day) return '今天已經送過飯';
+    if (act === 'gift' && !s.stock.meal) return '缺熱飯1份';
+    if (act === 'care' && (!s.visitor.injury || s.visitor.cared)) return '目前沒有需要照料的扭傷';
+    if (act === 'care' && !s.stock.herbs) return '缺草藥1份';
+  }
+  if (act === 'talkHelper') {
+    if (!s.helper) return '目前沒有同住幫手';
+    if (s.visitor.lastChat === s.day) return '今天已經談過天';
+  }
   if (act === 'selfCare' || act === 'helperCare') {
     const target = act === 'selfCare' ? s.person : s.helper;
     if (!target) return '目前沒有幫手';

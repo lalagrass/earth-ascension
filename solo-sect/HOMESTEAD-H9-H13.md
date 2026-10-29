@@ -35,3 +35,9 @@ Canvas 分出只讀 `homestead-scene.mjs`，保留原幾何風格，補屋頂／
 三性格×獨居／學徒×低庫存／滿倉／中斷，共18路各20日，另每路有不重載對照；逐拍木材＝庫存＋在途＋工地／完工投入＋料理耗柴，熱飯＝初始＋產出−食用，皆成立。中途重載與不重載最終完全相同。最低飢餓35.39、精力17、飢餓歸零0秒，長凳／花叢皆完成（絕對世界時間34–179.75秒；雙人從t70開始，不能當真人完成時間）。低庫存獨居20日產15飯／吃12／末存3；雙人產30／吃26／末存4，各性格均有閒暇。逐日原始量測與配對見 `HOMESTEAD-H12-METRICS.json`，只支持指定情境，不宣稱所有玩法平衡。
 
 相關＋本篇核心 `node --test solo-sect/test/homestead*.test.mjs solo-sect/test/sim.test.mjs` 84/84。兩個舊測試曾失敗：H5硬寫莓8與租用者必null已不符合本輪補庫2／主角可接手；改驗仍有備糧、十二日糧帳／收成、離開者確實釋放且存讀合法，不刪經濟或守恆要求。另初跑全部test（repo cwd）374/378，另兩失敗為舊立繪測試相對cwd；在solo-sect cwd重跑對應v096/v180均通過，未改素材與舊測試。完整其它產品CI未執行。新工地驗證順便核對既有配方木數／工時，拒絕偽造免費建造；不是新增存檔功能。
+
+## H13 最終節點
+
+完成正常UI三日留居與兩項個人選擇，真圖／原始終點／可重跑瀏覽器流程與真人腳本已保存，詳 `HOMESTEAD-H9-H13-REVIEW.md`。新增缺食物／已吃飽／訪客不在／今天聊過的實際暫候原因；補多工地目標與共用材料說明。非作者複驗10/10 home測試、43/43相關聚焦回歸與新局零注入首屋／兩裝飾真頁，舊v1/v2/v3、新舊幫手閒坐、料理／工程優先皆過，修復後無剩餘具體阻擋；沒有把獨立reviewer未走的H13長留居路徑算成其驗收。
+
+最終作者命令 `node --test solo-sect/test/homestead*.test.mjs solo-sect/test/sim.test.mjs` **87/87**；`node --check solo-sect/src/homestead-ui.mjs`、`node --check solo-sect/src/homestead-scene.mjs`、`node --check solo-sect/tools/homestead-home-browser.mjs` 與 `git diff --check` 通過。Chromium針對性重驗長按900ms跨重繪仍可立藍圖、暫停時不重設工地、鍵盤焦點、多工地共用短缺／活動對象與提示相符，無pageerror。正常UI終點數據在 `HOMESTEAD-H13-UI.json`；所有fixture圖與正常UI圖明確分開。真人／輔具未執行，Firefox/WebKit原403不重試，沒有新增H14。清理自己的HTTP／瀏覽器，保留可審查本地提交；本輪不推送與上傳。
