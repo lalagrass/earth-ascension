@@ -1,0 +1,436 @@
+[
+  {
+    "personality": "quiet",
+    "apprentice": false,
+    "minHunger": 18.287,
+    "maxZeroSeconds": 0,
+    "acts": [
+      [
+        "farm",
+        null,
+        "chop",
+        "rest",
+        "eat",
+        "cook",
+        "leisure"
+      ]
+    ],
+    "days": [
+      {
+        "elapsedDays": 1,
+        "food": 8,
+        "veg": 3,
+        "wood": 5,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 35,
+            "energy": 100
+          }
+        ]
+      },
+      {
+        "elapsedDays": 2,
+        "food": 10,
+        "veg": 20,
+        "wood": 6,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 48.287,
+            "energy": 100
+          }
+        ]
+      },
+      {
+        "elapsedDays": 3,
+        "food": 10,
+        "veg": 39,
+        "wood": 9,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 18.287,
+            "energy": 100
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "personality": "quiet",
+    "apprentice": true,
+    "minHunger": 19.362,
+    "maxZeroSeconds": 0,
+    "acts": [
+      [
+        "farm",
+        null,
+        "eat",
+        "rest",
+        "leisure",
+        "chat",
+        "chop",
+        "cook",
+        "forage"
+      ],
+      [
+        "farm",
+        null,
+        "eat",
+        "rest",
+        "chat",
+        "leisure",
+        "chop",
+        "cook",
+        "forage"
+      ]
+    ],
+    "days": [
+      {
+        "elapsedDays": 1,
+        "food": 11,
+        "veg": 11,
+        "wood": 7,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 23.475,
+            "energy": 100
+          },
+          {
+            "id": "homestead-apprentice",
+            "hunger": 23.912,
+            "energy": 100
+          }
+        ]
+      },
+      {
+        "elapsedDays": 2,
+        "food": 9,
+        "veg": 37,
+        "wood": 12,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 49.462,
+            "energy": 100
+          },
+          {
+            "id": "homestead-apprentice",
+            "hunger": 40.937,
+            "energy": 100
+          }
+        ]
+      },
+      {
+        "elapsedDays": 3,
+        "food": 10,
+        "veg": 67,
+        "wood": 12,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 52.925,
+            "energy": 100
+          },
+          {
+            "id": "homestead-apprentice",
+            "hunger": 59.05,
+            "energy": 100
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "personality": "sociable",
+    "apprentice": false,
+    "minHunger": 21.087,
+    "maxZeroSeconds": 0,
+    "acts": [
+      [
+        "farm",
+        null,
+        "chop",
+        "rest",
+        "eat",
+        "cook",
+        "leisure"
+      ]
+    ],
+    "days": [
+      {
+        "elapsedDays": 1,
+        "food": 8,
+        "veg": 6,
+        "wood": 4,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 35,
+            "energy": 100
+          }
+        ]
+      },
+      {
+        "elapsedDays": 2,
+        "food": 10,
+        "veg": 20,
+        "wood": 6,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 51.087,
+            "energy": 100
+          }
+        ]
+      },
+      {
+        "elapsedDays": 3,
+        "food": 10,
+        "veg": 42,
+        "wood": 8,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 21.087,
+            "energy": 100
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "personality": "sociable",
+    "apprentice": true,
+    "minHunger": 5.5,
+    "maxZeroSeconds": 0,
+    "acts": [
+      [
+        "farm",
+        null,
+        "eat",
+        "rest",
+        "leisure",
+        "chat",
+        "chop",
+        "cook",
+        "forage"
+      ],
+      [
+        "farm",
+        null,
+        "eat",
+        "rest",
+        "chat",
+        "leisure",
+        "chop",
+        "cook",
+        "forage",
+        "quarry"
+      ]
+    ],
+    "days": [
+      {
+        "elapsedDays": 1,
+        "food": 11,
+        "veg": 8,
+        "wood": 7,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 23.475,
+            "energy": 100
+          },
+          {
+            "id": "homestead-apprentice",
+            "hunger": 23.912,
+            "energy": 100
+          }
+        ]
+      },
+      {
+        "elapsedDays": 2,
+        "food": 12,
+        "veg": 29,
+        "wood": 12,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 43.3,
+            "energy": 100
+          },
+          {
+            "id": "homestead-apprentice",
+            "hunger": 49.775,
+            "energy": 100
+          }
+        ]
+      },
+      {
+        "elapsedDays": 3,
+        "food": 12,
+        "veg": 61,
+        "wood": 12,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 9.437,
+            "energy": 100
+          },
+          {
+            "id": "homestead-apprentice",
+            "hunger": 5.5,
+            "energy": 100
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "personality": "diligent",
+    "apprentice": false,
+    "minHunger": 0,
+    "maxZeroSeconds": 2,
+    "acts": [
+      [
+        "farm",
+        null,
+        "chop",
+        "eat",
+        "cook",
+        "rest",
+        "leisure"
+      ]
+    ],
+    "days": [
+      {
+        "elapsedDays": 1,
+        "food": 8,
+        "veg": 3,
+        "wood": 5,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 33.15,
+            "energy": 100
+          }
+        ]
+      },
+      {
+        "elapsedDays": 2,
+        "food": 11,
+        "veg": 11,
+        "wood": 10,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 3.15,
+            "energy": 100
+          }
+        ]
+      },
+      {
+        "elapsedDays": 3,
+        "food": 10,
+        "veg": 30,
+        "wood": 12,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 33.85,
+            "energy": 100
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "personality": "diligent",
+    "apprentice": true,
+    "minHunger": 14.25,
+    "maxZeroSeconds": 0,
+    "acts": [
+      [
+        "farm",
+        null,
+        "eat",
+        "rest",
+        "chop",
+        "chat",
+        "cook",
+        "leisure",
+        "forage",
+        "quarry"
+      ],
+      [
+        "farm",
+        null,
+        "eat",
+        "rest",
+        "chat",
+        "leisure",
+        "chop",
+        "cook",
+        "forage"
+      ]
+    ],
+    "days": [
+      {
+        "elapsedDays": 1,
+        "food": 11,
+        "veg": 11,
+        "wood": 7,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 23.475,
+            "energy": 100
+          },
+          {
+            "id": "homestead-apprentice",
+            "hunger": 23.912,
+            "energy": 100
+          }
+        ]
+      },
+      {
+        "elapsedDays": 2,
+        "food": 12,
+        "veg": 32,
+        "wood": 12,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 49.25,
+            "energy": 100
+          },
+          {
+            "id": "homestead-apprentice",
+            "hunger": 51.787,
+            "energy": 100
+          }
+        ]
+      },
+      {
+        "elapsedDays": 3,
+        "food": 10,
+        "veg": 64,
+        "wood": 12,
+        "needs": [
+          {
+            "id": "hero",
+            "hunger": 60.45,
+            "energy": 100
+          },
+          {
+            "id": "homestead-apprentice",
+            "hunger": 60.362,
+            "energy": 100
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -289,7 +289,7 @@ export function scoreActs(s, d) {
   postRows(s, d, out, plotWork);
   for (const o of out) { const f = o.f, p = pipeline(f.P); f.talent = p.talent; f.state = p.state; f.ext = p.ext; f.total = p.total; f.text = mulText(p); f.bored = boredMul(s, d, o.act); o.score = f.base * f.sched * p.total * f.bored + f.noise; delete f.P;
     o.layer ??= f.duty || f.labor ? 'duty' : f.sched >= 1.3 ? 'sched' : 'trait'; }
-  return out.sort((a, b) => b.score - a.score);
+  return out.filter(o => !s.homesteadOrigin || s.homesteadOrigin.lifeOnly === false || ['rest', 'eat', 'farm', 'cook', 'chop', 'quarry', 'forage', 'build', 'chat', 'leisure', 'encourage'].includes(o.act)).sort((a, b) => b.score - a.score);
 }
 
 function assign(s, d, act, why) {
@@ -602,8 +602,8 @@ export function skipGuide(s, all = false) { if (!s.guide) return; s.guide.msg = 
 function milestone(s, id) { if (s.pace.done.includes(id)) return; const P = PACE.find((p) => p.id === id); s.pace.done.push(id); s.rep = (s.rep || 0) + 3; log(s, `【里程碑】${P.name}（名聲 +3）`); for (const d of disciples(s)) think(s, d, 'wonHunt'); }
 function paceStep(s) {
   const ph = phaseOf(s), P = s.pace, G = s.guide;
-  for (const m of PACE) if (ph.day >= m.day && !G.seen.includes(m.id) && !P.done.includes(m.id)) { G.seen.push(m.id); guideSay(s, m.guide); }
-  if (ph.day === 1 && ph.frac >= PHASES[2][0] && !P.trial) { const h = byId(s, 'hero'); if (h && !h.away && !s.hunt) {
+  for (const m of PACE) if (!s.homesteadOrigin && ph.day >= m.day && !G.seen.includes(m.id) && !P.done.includes(m.id)) { G.seen.push(m.id); guideSay(s, m.guide); }
+  if (!s.homesteadOrigin && ph.day === 1 && ph.frac >= PHASES[2][0] && !P.trial) { const h = byId(s, 'hero'); if (h && !h.away && !s.hunt) {
     P.trial = 'on'; cancelTask(s, h, '師父命主角試打野豬'); h.order = null; h.task = { act: 'trial', phase: 'go', node: 'yard', timer: 0 }; goto(h, 'yard'); h.reason = '黃昏試煉：木樁場的野豬';
     const [x, y] = NODES.yard; s.mons.push({ uid: 'trialBoar', k: 'boar', trial: true, hp: TRIAL_BOAR.hp, max: TRIAL_BOAR.hp, pos: [x + 40, y + 6], path: [], cool: 0 }); log(s, '黃昏，一頭餓瘋的小野豬闖進木樁場。師父：「主角，你來。」'); } }
   if (!P.done.includes('firstExp') && s.lastExp) milestone(s, 'firstExp');
