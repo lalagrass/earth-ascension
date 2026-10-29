@@ -162,11 +162,14 @@ let lastPanel = 0;
 function panel() {
   const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×`;
   const hint = $('transfer-hint');
-  if (S.homesteadOrigin) {
+  const hintKey = JSON.stringify(S.homesteadOrigin ? [S.homesteadOrigin.hutStage, S.homesteadOrigin.herbGarden, !!S.homesteadOrigin.hintsHidden, S.homesteadOrigin.lifeOnly] : null); const hintFocus = document.activeElement?.id;
+  if (S.homesteadOrigin && hint.dataset.key !== hintKey) {
+    hint.dataset.key = hintKey;
     const o = S.homesteadOrigin;
     hint.textContent = o.hintsHidden ? '荒居生活提示已收合。' : `原木屋休息 ${o.hutStage === 2 ? 9 : 6}→8，現為小寢舍；菜畦可直接種菜；${o.herbGarden ? '原藥田栽種能力不保留，' : ''}本篇藥圃只野採。武學自由選擇，生活工作可在弟子欄指派。存檔後保留提示選擇。`;
     const b = document.createElement('button'); b.id = 'toggle-transfer-hint'; b.textContent = o.hintsHidden ? '重看提示' : '收合提示'; hint.append(b); const life = document.createElement('button'); life.id = 'toggle-transfer-life'; life.textContent = o.lifeOnly === false ? '改為自主生活優先' : '允許自主習武'; hint.append(life);
-  } else hint.replaceChildren();
+  } else if (!S.homesteadOrigin) { hint.replaceChildren(); delete hint.dataset.key; }
+  if (['toggle-transfer-hint','toggle-transfer-life'].includes(hintFocus)) document.getElementById(hintFocus)?.focus({preventScroll:true});
   $('res').innerHTML = `木 ${S.res.wood}/${S.cap.wood}　石 ${S.res.stone}/${S.cap.stone}　香火錢 ${S.res.coin}　菜 ${S.res.veg}　飯 ${S.res.food}　藥 ${S.res.herb}　水 ${S.res.water}/${S.cap.water}　療傷丹 ${S.res.pill}　鐵木 ${S.res.tiemu || 0}　靈石 ${S.res.lingshi || 0}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
   $('build').innerHTML = FACILITIES.filter((f) => f.stages.length > 1 && !f.sig).map((f) => { const st = S.fac[f.id], nx = f.stages[st.stage + 1];
     const cost = nx ? Object.entries({ ...nx.cost, ...(nx.rare || {}) }).map(([k, v]) => `${RES_NAMES[k]}${v}`).join('・') : ''; const why = nx ? buildWhy(S, f.id) : null;

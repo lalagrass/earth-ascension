@@ -11,24 +11,30 @@ let usedDraft = false;
 const esc = (v) => String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const show = (msg) => { $('message').textContent = msg; };
 const stored = () => { try { return localStorage.getItem(SAVE_KEY); } catch { return null; } };
-function clearTransfer() { transferDraft = null; $('transfer-detail').replaceChildren(); }
-function begin(state) { clearTransfer(); s = state; speed = 1; acc = 0; $('start').style.display = 'none'; last = performance.now(); render(); }
+function clearTransfer() { transferDraft = null; $('transfer-dialog').close(); $('transfer-detail').replaceChildren(); }
+function openPreview() { $('transfer-dialog').showModal(); $('transfer-title').focus(); }
+$('transfer-dialog').addEventListener('keydown', (e) => { if (e.key !== 'Tab') return; const items = [...$('transfer-dialog').querySelectorAll('button:not(:disabled),input:not(:disabled),a[href]')].filter(el => el.getClientRects().length); const first = items[0], last = items.at(-1); if (!first) return; if (e.shiftKey && (document.activeElement === first || document.activeElement === $('transfer-title'))) {e.preventDefault();last.focus();} else if (!e.shiftKey && document.activeElement === last) {e.preventDefault();first.focus();} });
+$('transfer-dialog').addEventListener('cancel', (e) => { e.preventDefault(); clearTransfer(); show('已取消轉接；存檔未改。'); });
+function startScreen(on) { $('start').style.display = on ? 'grid' : 'none'; document.querySelector('main').inert = on; document.querySelector('header').inert = on; if (on) $('name').focus(); }
+$('start').addEventListener('keydown', (e) => { if (e.key === 'Escape' && s) { e.preventDefault(); startScreen(false); $('new').focus(); } if (e.key !== 'Tab') return; const items = [...$('start').querySelectorAll('a[href],button:not(:disabled),input,select')].filter(el => el.getClientRects().length); const first = items[0], last = items.at(-1); if (e.shiftKey && document.activeElement === first) {e.preventDefault();last.focus();} else if (!e.shiftKey && document.activeElement === last) {e.preventDefault();first.focus();} });
+function begin(state) { clearTransfer(); s = state; speed = 1; acc = 0; startScreen(false); last = performance.now(); render(); }
 $('resume').disabled = !stored();
 $('begin').onclick = () => begin(createHomestead({ name: $('name').value, personality: $('personality').value }));
 $('resume').onclick = () => { const r = loadHomestead(stored()); if (r.ok) begin(r.state); else show(r.error); };
-$('new').onclick = () => { clearTransfer(); speed = 0; $('start').style.display = 'grid'; $('resume').disabled = !stored(); };
+$('new').onclick = () => { clearTransfer(); speed = 0; startScreen(true); $('resume').disabled = !stored(); };
 $('save').onclick = () => { if (!s) return; try { localStorage.setItem(SAVE_KEY, saveHomestead(s)); clearTransfer(); show('荒居已存檔。'); } catch { show('無法寫入本機存檔。'); } };
 $('load').onclick = () => { const r = loadHomestead(stored()); if (r.ok) { clearTransfer(); s = r.state; show('荒居讀檔完成。'); render(); } else show(r.error); };
 $('transfer-preview').onclick = () => {
   speed = 0; const raw = stored(); const r = previewTransfer(raw);
-  clearTransfer(); if (!r.ok) { $('transfer-detail').textContent = r.error; return; }
+  clearTransfer(); if (!r.ok) { $('transfer-detail').textContent = r.error; const back = document.createElement('button'); back.id = 'transfer-cancel'; back.textContent = '返回'; $('transfer-detail').append(back); openPreview(); return; }
   transferDraft = r; usedDraft = false;
   let unknownLegacy = false; try { unknownLegacy = transferSlots(localStorage).some(x => x.valid && !validateTransferSave(x.raw).state.homesteadOrigin.receipt); } catch {}
   $('transfer-detail').innerHTML = `<p>已儲存荒居 v${r.sourceVersion} → 本篇新槽；${r.apprentice ? '學徒同行' : '獨自前往'}。</p><b>帶入</b><ul>${r.carried.map((x) => `<li>${esc(x)}</li>`).join('')}</ul><b>不帶入或能力改變</b><ul>${r.dropped.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>${unknownLegacy ? '<p><label><input type="checkbox" id="legacy-confirm">舊 H6 檔已遊玩時無法精確比對來源；我確認這是另一局。</label></p>' : ''}<button id="transfer-confirm">確認另開本篇新局</button><button id="transfer-cancel">取消</button>`;
+  openPreview();
 };
 $('transfer-detail').onclick = (e) => {
   if (e.target.id === 'transfer-cancel') { clearTransfer(); show('已取消轉接；存檔未改。'); }
-  if (e.target.id === 'transfer-confirm' && !usedDraft) { usedDraft = true; let r; try { r = commitTransfer(localStorage, transferDraft, { allowLegacy: !!document.getElementById('legacy-confirm')?.checked }); } catch { r = { ok: false, error: '瀏覽器禁止讀寫本機存檔；未轉接。' }; } if (!r.ok) { clearTransfer(); show(r.error); if (r.recovery) { const b = exportTransferBackup(r.recovery); const btn = document.createElement('button'); btn.textContent = '下載回復位元'; btn.onclick = () => { if (b.ok) downloadBytes(b.bytes, 'homestead-recovery.json'); }; $('message').append(btn); } } else { clearTransfer(); location.assign(`index.html?homestead=${r.slot}`); } }
+  if (e.target.id === 'transfer-confirm' && !usedDraft) { usedDraft = true; let r; try { r = commitTransfer(localStorage, transferDraft, { allowLegacy: !!document.getElementById('legacy-confirm')?.checked }); } catch { r = { ok: false, error: '瀏覽器禁止讀寫本機存檔；未轉接。' }; } if (!r.ok) { clearTransfer(); show(r.error); if (r.recovery) { const b = exportTransferBackup(r.recovery); const btn = document.createElement('button'); btn.textContent = '下載回復位元'; btn.onclick = () => { if (b.ok) downloadBytes(b.bytes, 'homestead-recovery.json'); }; $('message').append(btn); } $('message').tabIndex = -1; $('message').focus(); } else { clearTransfer(); location.assign(`index.html?homestead=${r.slot}`); } }
 };
 $('clear').onclick = () => { setOrder(s, null); render(); };
 $('speed').onclick = (e) => { const b = e.target.closest('[data-speed]'); if (b) { speed = Number(b.dataset.speed); render(); } };
@@ -75,6 +81,7 @@ function draw() {
 }
 function render() {
   if (!s) return;
+  const focused = document.activeElement; const focusSelector = focused?.id ? '#' + CSS.escape(focused.id) : ['act','build','social','helper'].find(k => focused?.dataset?.[k]) ? Object.entries(focused.dataset).map(([k,v]) => `[data-${k}="${CSS.escape(v)}"]`).join('') : null;
   const p = s.person, task = p.task;
   $('time').textContent = `第 ${s.day} 日 · ${Math.floor((s.t % DAY) / DAY * 24).toString().padStart(2, '0')}:00`;
   const heroReason = p.order && task?.act !== p.order ? blockReason(s, p.order) : null;
@@ -89,6 +96,7 @@ function render() {
   const helperReason = h?.order && h.task?.act !== h.order ? blockReason(s, h.order, 'helper') : null;
   $('helper-orders').innerHTML = h ? `<div>${esc(h.name)}：飢餓 ${Math.round(h.hunger)} · 精力 ${Math.round(h.energy)} · 雜務 ${Math.floor(h.work)} · 識藥 ${h.herbalSkill} · ${h.carry ? '正在搬運' : h.task ? ACTIONS[h.task.act]?.name || '回村' : '找事做'}</div>${helperReason ? `<div class="blocked">派工暫停：${esc(helperReason)}</div>` : ''}<div class="row">${[['auto', '自主'], ['chop', '砍柴'], ['farm', '菜園'], ...(v.role === 'apprentice' ? [['herbFarm', '藥田']] : [])].map(([id, label]) => `<button data-helper="${id}" class="${h.order === (id === 'auto' ? null : id) ? 'active' : ''}" ${(id === 'farm' && !offers(s, 'garden', 'farm')) || (id === 'herbFarm' && !offers(s, 'herbGarden', 'herbFarm')) ? 'disabled' : ''}>${label}</button>`).join('')}</div>` : '<div class="muted">目前獨居；可一直維持這樣。</div>';
   $('log').innerHTML = s.log.slice(0, 9).map((x) => `<li>第${x.day}日 · ${esc(x.msg)}</li>`).join(''); draw();
+  if (focusSelector && !focused.isConnected) document.querySelector(focusSelector)?.focus({preventScroll:true});
 }
 function loop(now) {
   if (s && speed) { acc += Math.min(0.1, (now - last) / 1000) * speed; let n = 0; while (acc >= .25 && n++ < 16) { tickHomestead(s); acc -= .25; } }
@@ -97,3 +105,5 @@ function loop(now) {
 }
 requestAnimationFrame(loop);
 Object.defineProperty(window, '__homestead', { get: () => s });
+
+startScreen(true);
