@@ -1,5 +1,7 @@
 # 荒居：山門之前 — H1–H4 試玩規格
 
+**最新方向：先獨居求生、把自己過好。** 見 [產品方向與現有差異](HOMESTEAD-DIRECTION.md)。既有阿蓮／學徒內容仍在，尚未刪改；後續不再擴社交，也不以招募作生活改善門檻。此為規劃更新，沒有開始新功能。
+
 目前 H9–H13 家園切片已本地實作，見 [規格與逐包紀錄](HOMESTEAD-H9-H13.md)、[結果／來源／驗收界線](HOMESTEAD-H9-H13-REVIEW.md)、[啟動與真人試玩腳本](HOMESTEAD-PLAYTEST.md)。以下為前輪歷史規格，不代表本輪仍禁止已批准功能。
 
 H5a–H5b 的事前驗收與本輪結果分別見 [HOMESTEAD-H5.md](HOMESTEAD-H5.md) 和 [HOMESTEAD-H5-REVIEW.md](HOMESTEAD-H5-REVIEW.md)。本頁保留前四包的原始試玩規格；存檔內部版本目前為 v3，仍沿用獨立的 `solo-sect.homestead.v1` 鍵。
