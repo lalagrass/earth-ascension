@@ -1,6 +1,6 @@
 # H25–H26：把既有成果用在想用的時候
 
-主筆Cloud Codex，擁有人新指派先review／來源對照→有限規劃→實作。base `4edbeb63ccc1900fa36ca7c90e789dc5df52f8e5`，分支 `codex/solo-sect-homestead-h25-h26`；先核clean並保留原分支。事前範圍 `ef0b396`，產品實作／修復 `44bfe4b`，最後交付提交只補工具／圖／量測／文件。本輪沒有push、PR、merge、上傳、公開部署或Mac操作。
+主筆Cloud Codex，擁有人新指派先review／來源對照→有限規劃→實作。base `4edbeb63ccc1900fa36ca7c90e789dc5df52f8e5`，分支 `codex/solo-sect-homestead-h25-h26`；先核clean並保留原分支。事前範圍 `ef0b396`，產品實作／修復 `44bfe4b`，最後交付提交只補工具／圖／量測／文件。本輪實作交付時沒有push、PR、merge、上傳、公開部署或Mac操作；後續擁有人另授權正常push，c9250f6已推送至隔離分支，現況與界線見[推送交接](HOMESTEAD-PUBLICATION.md)。
 
 ## 先review才決定做什麼
 
