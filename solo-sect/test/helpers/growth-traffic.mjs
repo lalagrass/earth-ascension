@@ -1,12 +1,12 @@
-import{createHomestead,startBlueprint,setOrder,pauseProject,requestRecipe,tickHomestead,saveHomestead,loadHomestead,FACILITIES,BUILDABLE}from'../../src/homestead.mjs';
+import{createHomestead,startBlueprint,requestFood,setOrder,pauseProject,requestRecipe,tickHomestead,saveHomestead,loadHomestead,FACILITIES,BUILDABLE}from'../../src/homestead.mjs';
 import{RECIPES,preparedCount}from'../../src/homestead-content.mjs';
-export function growthTraffic(seed){
+export function growthTraffic(seed,{chooseMeals=false}={}){
  let rng=seed,roll=()=>((rng=(rng*1664525+1013904223)>>>0)/2**32),s=createHomestead({mode:'solo',personality:['quiet','sociable','diligent'][(seed-1)%3]});
  s.fac.hut.stage=1;s.fac.garden.stage=1;s.fac.kitchen.stage=1;s.stock.wood=2;const base=Object.fromEntries(BUILDABLE.map(id=>[id,s.fac[id].stage]));
  const made={basic:0,salad:0,stew:0},ate={basic:0,salad:0,stew:0};let wood=0,fruit=0,fruitEaten=0,sown=0,harvest=0,last=s.log[0],loads=0,minH=100,minE=100;
  for(let i=0;i<20000;i++){
   if(i%193===0){for(const id of['hut','bench','flowers','bed','workbench','kitchen'])startBlueprint(s,id);}
-  if(i%97===0){const act=[null,'farm','cook','chop','rest','forage','leisure','build'][Math.floor(roll()*8)];if(act==='cook')requestRecipe(s,['basic','salad','stew'][Math.floor(roll()*3)]);else setOrder(s,act);}
+  if(i%97===0){const act=[null,'farm','cook','chop','rest','forage','leisure','build',...(chooseMeals?['eat']:[])][Math.floor(roll()*(chooseMeals?9:8))];if(act==='eat')requestFood(s,['basic','salad','stew'][Math.floor(roll()*3)]);else if(act==='cook')requestRecipe(s,['basic','salad','stew'][Math.floor(roll()*3)]);else setOrder(s,act);}
   if(i%347===0){const id=BUILDABLE[Math.floor(roll()*BUILDABLE.length)];if(s.fac[id].site)pauseProject(s,id,roll()<.3);}
   tickHomestead(s);
   for(let j=0;s.log[j]&&s.log[j]!==last;j++){const m=s.log[j].msg;if(m.includes('砍得一根木料'))wood++;if(m.includes('採到野果'))fruit++;if(m.includes('吃了野果'))fruitEaten++;if(m.includes('播下種子'))sown++;if(m.includes('收下青菜與種子'))harvest++;if(m.includes('煮出三份熱飯'))made.basic++;if(m.includes('吃了一份熱飯'))ate.basic++;for(const id of['salad','stew']){if(m.includes('做成'+RECIPES[id].name))made[id]++;if(m.includes('吃下'+RECIPES[id].name))ate[id]++;}}

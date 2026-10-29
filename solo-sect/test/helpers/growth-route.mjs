@@ -1,9 +1,9 @@
-import{createHomestead,startBlueprint,requestRecipe,setOrder,tickHomestead,saveHomestead,loadHomestead,DAY}from'../../src/homestead.mjs';
+import{createHomestead,startBlueprint,requestFood,requestRecipe,setOrder,tickHomestead,saveHomestead,loadHomestead,DAY}from'../../src/homestead.mjs';
 import{recipeReason}from'../../src/homestead-content.mjs';
 // No state/XP grants. Acts only through the same command functions used by UI.
-export function growthRoute(personality='quiet',{reload=true}={}){
+export function growthRoute(personality='quiet',{reload=true,chooseMeals=false}={}){
  let s=createHomestead({mode:'solo',personality}),phase=0,last=s.log[0],minH=100,minE=100;const commands=[],events=[],made={basic:0,salad:0,stew:0},ate={basic:0,salad:0,stew:0};
- const command=(type,id)=>{const ok=type==='build'?startBlueprint(s,id):type==='recipe'?requestRecipe(s,id):setOrder(s,id);if(!ok&&type!=='order')throw Error(`command failed ${type}/${id}`);commands.push({t:s.t,type,id});};
+ const command=(type,id)=>{const ok=type==='build'?startBlueprint(s,id):type==='recipe'?requestRecipe(s,id):type==='food'?requestFood(s,id):setOrder(s,id);if(!ok&&type!=='order')throw Error(`command failed ${type}/${id}`);commands.push({t:s.t,type,id});};
  const record=name=>events.push({name,t:s.t,day:s.day,skills:{...s.person.skills},stock:{...s.stock}});
  command('build','hut');
  for(let i=0;i<DAY*30*4;i++){
@@ -14,7 +14,8 @@ export function growthRoute(personality='quiet',{reload=true}={}){
   else if(phase===1&&s.fac.garden.stage===1){command('build','kitchen');phase++;}
   else if(phase===2&&s.fac.kitchen.stage===1){command('build','bed');phase++;}
   else if(phase===3&&s.fac.bed.stage===1&&made.basic&&!recipeReason(s,'salad')){record('basic and cooking Lv1');command('recipe','salad');phase++;}
-  else if(phase===4&&ate.salad){record('salad eaten');command('build','workbench');phase++;}
+  else if(phase===4&&chooseMeals&&made.salad&&s.stock.salad>0&&s.person.hunger<75){command('food','salad');phase=4.5;}
+  else if((phase===4||phase===4.5)&&ate.salad){record('salad eaten');command('build','workbench');phase=5;}
   else if(phase===5&&s.fac.workbench.stage===1){command('build','kitchen');phase++;}
   else if(phase===6&&s.fac.kitchen.stage===2){command('build','bed');phase++;}
   else if(phase===7&&s.fac.bed.stage===2){record('comfortable bed built');command('order','rest');phase++;}
@@ -23,10 +24,11 @@ export function growthRoute(personality='quiet',{reload=true}={}){
   else if(phase===10&&s.fac.store.stage===1){command('build','bench');phase++;}
   else if(phase===11&&s.fac.bench.stage===1){command('build','flowers');phase++;}
   else if(phase===12&&s.fac.flowers.stage===1&&!recipeReason(s,'stew')){record('cooking Lv2 and stove2');command('recipe','stew');phase++;}
-  else if(phase===13&&ate.stew){record('stew eaten');command('order','leisure');phase++;}
+  else if(phase===13&&chooseMeals&&made.stew&&s.stock.stew>0&&s.person.hunger<=55){command('food','stew');phase=13.5;}
+  else if((phase===13||phase===13.5)&&ate.stew){record('stew eaten');command('order','leisure');phase=14;}
   else if(phase===14&&s.person.feelings.flowers>s.t){record('chosen leisure');return{personality,seconds:s.t,days:s.t/DAY,minH,minE,made,ate,commands,events,final:s};}
   if(reload&&i%503===0){const r=loadHomestead(saveHomestead(s));if(!r.ok)throw Error(r.error);s=r.state;last=s.log[0];}
  }
  throw Error(`growth route exceeded30days ${personality}/${phase}`);
 }
-export function replayGrowth(route,dt){const s=createHomestead({mode:'solo',personality:route.personality});let index=0;while(s.t+(s.subtick||0)<route.seconds-1e-9){while(index<route.commands.length&&Math.abs(route.commands[index].t-s.t-(s.subtick||0))<1e-8){const c=route.commands[index++];if(c.type==='build')startBlueprint(s,c.id);else if(c.type==='recipe')requestRecipe(s,c.id);else setOrder(s,c.id);}const boundary=Math.min(route.seconds,route.commands[index]?.t??Infinity),left=boundary-s.t-(s.subtick||0);tickHomestead(s,Math.min(dt,left));}return s;}
+export function replayGrowth(route,dt){const s=createHomestead({mode:'solo',personality:route.personality});let index=0;while(s.t+(s.subtick||0)<route.seconds-1e-9){while(index<route.commands.length&&Math.abs(route.commands[index].t-s.t-(s.subtick||0))<1e-8){const c=route.commands[index++];if(c.type==='build')startBlueprint(s,c.id);else if(c.type==='recipe')requestRecipe(s,c.id);else if(c.type==='food')requestFood(s,c.id);else setOrder(s,c.id);}const boundary=Math.min(route.seconds,route.commands[index]?.t??Infinity),left=boundary-s.t-(s.subtick||0);tickHomestead(s,Math.min(dt,left));}return s;}

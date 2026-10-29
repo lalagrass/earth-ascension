@@ -3,7 +3,7 @@ import {FEELINGS,currentFeelings,restRate} from './homestead-living.mjs';
 import {SKILLS,skillInfo} from './homestead-skills.mjs';
 import { drawHomestead } from './homestead-scene.mjs';
 import { activityText, activityReason, buildingInfo, nextStep, foodDays, resourceSummary } from './homestead-view.mjs';
-import { ACTIONS, BUILDABLE, FACILITIES, PLACES, HOME, DAY, SAVE_KEY, offers, supplyTargets, blockReason, visitorHere, createHomestead, startBlueprint, pauseProject, requestRecipe, setOrder, setHelperOrder, inviteHelper, acceptApprentice, askHelperLeave, tickHomestead, saveHomestead, loadHomestead } from './homestead.mjs';
+import { ACTIONS, BUILDABLE, FACILITIES, PLACES, HOME, DAY, SAVE_KEY, offers, supplyTargets, blockReason, visitorHere, createHomestead, startBlueprint, pauseProject, requestRecipe, requestFood, setOrder, setHelperOrder, inviteHelper, acceptApprentice, askHelperLeave, tickHomestead, saveHomestead, loadHomestead } from './homestead.mjs';
 import { mountTransferManager, downloadBytes } from './transfer-manager-ui.mjs';
 import { previewTransfer, commitTransfer, transferSlots, validateTransferSave, exportTransferBackup } from './homestead-transfer.mjs';
 const $ = (id) => document.getElementById(id);
@@ -46,9 +46,10 @@ $('transfer-detail').onclick = (e) => {
   if (e.target.id === 'transfer-cancel') { clearTransfer(); show('已取消轉接；存檔未改。'); }
   if (e.target.id === 'transfer-confirm' && !usedDraft) { usedDraft = true; let r; try { r = commitTransfer(localStorage, transferDraft, { allowLegacy: !!document.getElementById('legacy-confirm')?.checked }); } catch { r = { ok: false, error: '瀏覽器禁止讀寫本機存檔；未轉接。' }; } if (!r.ok) { clearTransfer(); show(r.error); if (r.recovery) { const b = exportTransferBackup(r.recovery); const btn = document.createElement('button'); btn.textContent = '下載回復位元'; btn.onclick = () => { if (b.ok) downloadBytes(b.bytes, 'homestead-recovery.json'); }; $('message').append(btn); } $('message').tabIndex = -1; $('message').focus(); } else { clearTransfer(); location.assign(`index.html?homestead=${r.slot}`); } }
 };
+for(const[id,target]of[['to-food','recipe-card'],['to-build','build-card']])$(id).onclick=()=>{$(target).scrollIntoView({block:'start'});$(target).focus({preventScroll:true});};
 $('clear').onclick = () => { setOrder(s, null); render(); };
 $('speed').onclick = (e) => { const b = e.target.closest('[data-speed]'); if (b) { speed = Number(b.dataset.speed); render(); } };
-$('recipes').onclick=(e)=>{const b=e.target.closest('[data-recipe]');if(b){if(!requestRecipe(s,b.dataset.recipe))show(recipeReason(s,b.dataset.recipe));else show('已選這一鍋，完成後恢復自主生活；可改令取消。');render();}};
+$('recipes').onclick=(e)=>{const food=e.target.closest('[data-eat]');if(food){if(requestFood(s,food.dataset.eat))show('已選這一份；吃完恢復自主生活，可改令取消。');else show('這份料理已無庫存或目前已吃飽；未改動指派。');render();return;}const b=e.target.closest('[data-recipe]');if(b){if(!requestRecipe(s,b.dataset.recipe))show(recipeReason(s,b.dataset.recipe));else show('已選這一鍋，完成後恢復自主生活；可改令取消。');render();}};
 $('orders').onclick = (e) => { const b = e.target.closest('[data-act]'); if (b) { if(s.mode==='solo'&&b.dataset.act==='cook')requestRecipe(s,'basic');else setOrder(s, b.dataset.act); render(); } };
 $('build').onclick = (e) => { const project=e.target.closest('[data-project]');if(project){pauseProject(s,project.dataset.project,!s.fac[project.dataset.project].site.paused);render();return;} const b = e.target.closest('[data-build]'); if (b) { if (startBlueprint(s, b.dataset.build)) show('藍圖已立，主角會搬料施工。'); render(); } };
 $('community').onclick = (e) => { const b = e.target.closest('[data-social]'); if (!b) return; const action = { invite: inviteHelper, apprentice: acceptApprentice, leave: askHelperLeave }[b.dataset.social]; if (action?.(s)) show('已記入荒居紀事。'); render(); };
@@ -57,19 +58,22 @@ $('helper-orders').onclick = (e) => { const b = e.target.closest('[data-helper]'
 function draw() { if(s) drawHomestead(ctx,s); }
 function render() {
   if (!s || pointerHeld) return;
-  const focused = document.activeElement; const focusSelector = focused?.id ? '#' + CSS.escape(focused.id) : ['act','recipe','build','project','social','helper'].find(k => focused?.dataset?.[k]) ? Object.entries(focused.dataset).map(([k,v]) => `[data-${k}="${CSS.escape(v)}"]`).join('') : null;
+  const focused = document.activeElement; const focusSelector = focused?.id ? '#' + CSS.escape(focused.id) : ['act','recipe','eat','build','project','social','helper'].find(k => focused?.dataset?.[k]) ? Object.entries(focused.dataset).map(([k,v]) => `[data-${k}="${CSS.escape(v)}"]`).join('') : null;
   const p = s.person, task = p.task;
   $('time').textContent = `第 ${s.day} 日 · ${Math.floor((s.t % DAY) / DAY * 24).toString().padStart(2, '0')}:00`;
   const feeling=currentFeelings(s);
   const target = supplyTargets(s), resources=resourceSummary(s);
   $('social-card').hidden=s.mode==='solo';
+  $('home-nav').hidden=s.mode!=='solo';
+  $('meal-result').hidden=s.mode!=='solo';
+  $('meal-result').textContent=s.log.find(x=>x.msg.startsWith('這一餐：'))?.msg||'可在料理卡選一份現成菜；吃完會回到自主生活。';
   $('resource-top').textContent=`木料可用 ${resources.available.wood} · 料理共${preparedCount(s)}份（熱飯${s.stock.meal}／拌食${s.stock.salad||0}／燉菜${s.stock.stew||0}）／野果 ${s.stock.berries} · 種子 ${s.stock.seeds} · 青菜 ${s.stock.veg}`;
   $('resource-detail').textContent=`施工已交 ${resources.delivered} 木／運往工地 ${resources.reserved} 木（已離庫，不可再花）；待運${resources.needed}木，共用庫存尚缺${resources.shortage}木。回倉／採集在途：${resources.incoming.map(c=>`${{wood:'木',berries:'野果',veg:'菜',herbs:'藥'}[c.kind]}${c.amount}`).join('、')||'無'}。`;
   $('home-summary').textContent = `${FACILITIES.hut.stages[s.fac.hut.stage].name} · ${s.helper ? '兩人同住' : '一人生活'} · 現成食物約 ${foodDays(s)} 日；自主夠用目標：料理${target.meal}份／果${target.berries}／菜${target.veg}／木${target.wood}／藥${target.herbs}（非容量限制，手動可多備）`;
   $('next-step').textContent = nextStep(s);
   $('status').innerHTML = `<h2>${esc(p.name)} · ${p.personality === 'quiet' ? '喜靜' : p.personality === 'diligent' ? '勤勞' : s.mode === 'solo' ? '開朗' : '好交往'}</h2><div>飢餓 ${Math.round(p.hunger)} / 100</div><div class="meter"><span style="width:${p.hunger}%"></span></div><div>精力 ${Math.round(p.energy)} / 100</div><div class="meter energy"><span style="width:${p.energy}%"></span></div><p class="activity">${esc(activityText(s))}</p>${s.mode==='solo'?`<div class="feeling">感受 ${feeling.value}/5 · ${feeling.active.map(f=>`${f.name}（${f.left}秒）`).join('、')||'平靜'}<div class="muted">來自實際使用，會消退；不抵銷飢餓或轉為工作增益。</div></div>`:''}<div class="muted">${esc(activityReason(s))}</div><div class="muted">工作 ${Math.floor(p.work)} · 閒暇 ${p.leisure} · 識藥 ${p.herbalSkill}</div>`;
   $('recipe-card').hidden=s.mode!=='solo';
-  $('recipes').innerHTML=Object.entries(RECIPES).map(([id,r])=>`<div class="facility"><b>${r.name} · 料理Lv${r.skill}</b><div class="muted">${Object.entries(r.ingredients).map(([k,n])=>`${RESOURCE_NAMES[k]}${n}`).join('＋')} → ${r.servings}份；每份飽腹${r.hunger}${r.energy?`、精力+${r.energy}`:''}；製作${r.duration}秒。${r.facility===2?'需改良灶具':'需露天灶'}；實吃感受+${FEELINGS[r.feeling].value}，${FEELINGS[r.feeling].duration}秒。</div><div>${recipeReason(s,id)||'已具備做這一鍋的條件'}</div><button data-recipe="${id}" class="${p.cookRequest===id?'active':''}" ${recipeReason(s,id)?'disabled':''}>只做這一鍋${r.name}</button></div>`).join('');
+  $('recipes').innerHTML=Object.entries(RECIPES).map(([id,r])=>`<div class="facility"><b>${r.name} · 料理Lv${r.skill}</b><div class="muted">${Object.entries(r.ingredients).map(([k,n])=>`${RESOURCE_NAMES[k]}${n}`).join('＋')} → ${r.servings}份；每份飽腹${r.hunger}${r.energy?`、精力+${r.energy}`:''}；製作${r.duration}秒。${r.facility===2?'需改良灶具':'需露天灶'}；實吃感受+${FEELINGS[r.feeling].value}，${FEELINGS[r.feeling].duration}秒。</div><div>${recipeReason(s,id)||'已具備做這一鍋的條件'}</div><div>現成 ${s.stock[r.output]||0}份；現在吃可補飽腹${Math.min(100-p.hunger,r.hunger).toFixed(1)}${r.energy?`、精力${Math.min(100-p.energy,r.energy).toFixed(1)}`:''}。</div><button data-eat="${id}" class="${p.foodRequest===id?'active':''}" ${!s.stock[r.output]||p.hunger>=95?'disabled':''}>吃一份${r.name}</button><button data-recipe="${id}" class="${p.cookRequest===id?'active':''}" ${recipeReason(s,id)?'disabled':''}>只做這一鍋${r.name}</button></div>`).join('');
   $('unlocks').textContent=`建造路線：Lv1木作台／改良灶具 → Lv2且有木作台與木床可做舒適床。已學會：${s.unlocked?.join('、')||'先做好第一間家與第一鍋熱飯'}。`;
   $('skills-card').hidden=s.mode!=='solo';
   $('skills').innerHTML=`<p class="muted">${task&&ACTIONS[task.act]?.skill?`正在做${SKILLS[ACTIONS[task.act].skill].name}工作；有效${task.act==='build'?'施工量':'成果完成'}才累積`:'走路、搬運和休息不發技能經驗。'}</p>`+Object.keys(SKILLS).map(id=>{const k=skillInfo(s,id);return `<div class="skill"><b>${k.name} Lv${k.level}</b> · XP ${Number(k.xp.toFixed(2))}${k.next!==null?`／${k.next}`:'（等級效果封頂）'}<div class="muted">${k.base}體力 → 現在耗${k.costPercent}%${k.nextPercent!==null?`；下級耗${k.nextPercent}%`:'；已達最高效果'}。產量與時間不變。${nextUnlocks(s,id)}</div></div>`;}).join('');
