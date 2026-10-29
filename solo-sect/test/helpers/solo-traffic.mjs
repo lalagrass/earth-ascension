@@ -11,7 +11,7 @@ export function soloTraffic(seed){
   const invested=projects.reduce((n,id)=>n+(s.fac[id].stage?FACILITIES[id].stages[1].cost.wood:s.fac[id].site.delivered.wood),0),progress=projects.reduce((n,id)=>n+(s.fac[id].stage?FACILITIES[id].stages[1].work:s.fac[id].site.work),0);
   if(2+wood!==s.stock.wood+(s.person.carry?.kind==='wood'?s.person.carry.amount:0)+invested+cooks)throw Error(`wood ${seed}/${i}`);
   if(s.stock.meal!==cooks*3-eaten)throw Error(`food ${seed}/${i}`);
-  const expected={gather:Math.min(12,gather),farm:Math.min(12,farm),cook:Math.min(8,cooks),build:Math.min(40,progress)};
+  const expected={gather:Math.min(12,gather),farm:Math.min(12,farm),cook:Math.min(8,cooks*2),build:Math.min(40,progress)};
   for(const id of Object.keys(expected))if(Math.abs(s.person.skills[id]-expected[id])>1e-9)throw Error(`xp ${id} ${seed}/${i}`);
   minH=Math.min(minH,s.person.hunger);minE=Math.min(minE,s.person.energy);
   if(i%53===0){const raw=saveHomestead(s),r=loadHomestead(raw);if(!r.ok||saveHomestead(r.state)!==raw)throw Error(`reload ${seed}/${i}: ${r.error}`);s=r.state;last=s.log[0];loads++;}

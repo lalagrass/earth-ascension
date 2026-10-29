@@ -13,7 +13,7 @@ test('H15：四技能上限與實際耗力，施工依有效工量，失敗料�
 test('H15：實際四種工作新手/滿級產出相同、耗力可比較',()=>{
  for(const [act,skill,base,place,duration]of[['chop','gather',7,'wood',7],['farm','farm',5,'garden',7],['cook','cook',4,'kitchen',8]]){
   const results=[];for(const xp of[0,{gather:12,farm:12,cook:8}[skill]]){const s=createHomestead({mode:'solo'});s.person.skills[skill]=xp;s.fac.hut.stage=1;s.fac.garden.stage=1;s.fac.kitchen.stage=1;s.stock.wood=1;s.stock.veg=2;s.person.energy=100;s.person.hunger=90;s.person.task={act,phase:'do',place,timer:duration-.25};if(act==='chop')s.leases.wood='person';if(act==='farm')s.leases.garden='person';tickHomestead(s);results.push(s);}
-  assert.ok(Math.abs(results[0].person.energy-(100-base))<1e-9);assert.ok(Math.abs(results[1].person.energy-(100-base*.8))<1e-9);assert.deepEqual(results[0].stock,results[1].stock);assert.deepEqual(results[0].person.carry,results[1].person.carry);assert.equal(results[0].person.skills[skill],1);
+  assert.ok(Math.abs(results[0].person.energy-(100-base))<1e-9);assert.ok(Math.abs(results[1].person.energy-(100-base*.8))<1e-9);assert.deepEqual(results[0].stock,results[1].stock);assert.deepEqual(results[0].person.carry,results[1].person.carry);assert.equal(results[0].person.skills[skill],act==='cook'?2:1);
  }
 });
 import {currentFeelings,restRate}from'../src/homestead-living.mjs';

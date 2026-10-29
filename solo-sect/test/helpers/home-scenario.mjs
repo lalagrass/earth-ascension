@@ -1,7 +1,7 @@
 import {createHomestead,tickHomestead,pauseProject,inviteHelper,startBlueprint,setOrder,setHelperOrder,loadHomestead,saveHomestead,DAY,FACILITIES} from '../../src/homestead.mjs';
 export function homeScenario({personality='quiet',apprentice=false,condition='low',reload=true,days=20,mode='legacy',buildBed=false}={}) {
  let s=createHomestead({personality,mode});s.fac.hut.stage=2;for(const id of ['garden','kitchen','store','herbGarden'])s.fac[id].stage=1;s.cap={berries:20,wood:20,seeds:10,veg:16,meal:15,herbs:10};s.stock.wood=1;s.stock.herbs=1;
- if(condition==='full')s.stock={...s.cap};
+ if(condition==='full')s.stock={...s.cap,salad:0,stew:0};
  if(apprentice){s.t=70;s.visitor.trust=4;s.visitor.willing=true;inviteHelper(s);s.visitor.role='apprentice';s.visitor.apprenticeDay=1;}
  const initialWood=s.stock.wood,initialMeal=s.stock.meal;
  const projects=['bench','flowers',...(buildBed?['bed']:[])];for(const id of projects)startBlueprint(s,id);let pausedId=null;let harvestedWood=0,produced=0,eaten=0,minH=100,minE=100,zero=0,harvests=0,completedAt=null;const daily=[];let last=s.log[0];

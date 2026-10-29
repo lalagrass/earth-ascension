@@ -1,3 +1,4 @@
+import {RECIPES,edibleEnergy,preparedCount} from './homestead-content.mjs';
 import {restRate} from './homestead-living.mjs';
 // 純顯示：只讀現有狀態，不推進世界、不替人物作決定。
 import { ACTIONS, FACILITIES, DAY, blockReason } from './homestead.mjs';
@@ -11,7 +12,9 @@ export function activityText(s, p = s.person) {
   if (t.act === 'return') return `把${materialName[p.carry?.kind] || '物資'}帶回儲物處`;
   if (t.act === 'build') return t.phase === 'go' ? `走向「${target}」工地` : `正在建造「${target}」`;
   if (t.act === 'leave') return '沿村路回村';
+  if(t.act==='cook')return t.phase==='go'?`走向露天灶，準備${RECIPES[t.recipe||'basic'].name}`:`正在做${RECIPES[t.recipe||'basic'].name}${t.manual?'（這一鍋）':''}`;
   if (t.phase === 'go') return `走向${target}，準備${ACTIONS[t.act]?.name || '休息'}`;
+  if(t.act==='eat'&&t.foodId)return `正在吃${RECIPES[t.foodId].name}`;
   if (t.act === 'farm') return s.plot.state === 'ripe' ? '正在收青菜' : '正在菜園播種';
   if (t.act === 'herbFarm') return s.herbPlot.state === 'ripe' ? '正在收藥田草藥' : '正在藥田插穗';
   if (t.act === 'rest') return s.fac.hut.stage ? `在${FACILITIES.hut.stages[s.fac.hut.stage].name}${s.fac.bed?.stage?'的床鋪':''}休息` : '在空地席地休息';
@@ -26,7 +29,7 @@ export function activityReason(s, p = s.person, who = 'person') {
   if (p.task?.act === 'eat' || p.task?.act === 'forage') return '先照顧吃飯與可用食物。';
   if (p.task?.act === 'rest') return '先補回精力，休息後再繼續。';
   if(p.task?.act==='chop')return Object.values(s.fac).some(f=>f.site&&!f.site.paused) ? '已有工程需要木料，先準備可用建材／燃料。' : '補足日常柴火；達到夠用存量就歇一會。';
-  if(p.task?.act==='cook')return '把菜與柴煮成熱飯，補足日常食物。';
+  if(p.task?.act==='cook')return p.task.recipe==='salad'?'用菜與野果拌食，這一鍋不耗柴。':p.task.recipe==='stew'?'用較多菜與柴慢燉，換較飽足的一餐與有限恢復。':'用菜與柴煮成基本熱飯，補足日常食物。';
   if(p.task?.act==='farm')return '照料一塊菜園，供日後料理；田間收成要搬回才可用。';
   if (p.task?.act === 'build') return '已有家園藍圖，正逐件備料施工。';
   if (p.task?.act === 'leisure') {
@@ -73,7 +76,7 @@ export function nextStep(s) {
   if(s.mode==='solo'&&!s.fac.bed?.stage)return '可鋪一張木床：在屋內休息每秒再恢復1精力，也可以先做長凳或花叢。';
   return s.fac.bench && (!s.fac.bench.stage || !s.fac.flowers.stage) ? '生活安穩後，可自由選長凳或庭院花叢；不做也能繼續住。' : s.mode === 'solo' ? '小家已是自己的樣子。可以留居休閒，也可自行選擇既有轉接去向。' : '小家已是自己的樣子。留居、與人相識或接回山門紀，都由你決定。';
 }
-export function foodDays(s) { return ((s.stock.meal*52+s.stock.berries*26)/((s.helper?2:1)*.14*DAY)).toFixed(1); }
+export function foodDays(s) { return ((edibleEnergy(s))/((s.helper?2:1)*.14*DAY)).toFixed(1); }
 
 export function resourceSummary(s) {
  const sites=Object.values(s.fac).filter(f=>f.site);
