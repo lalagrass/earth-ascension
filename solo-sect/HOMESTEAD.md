@@ -2,6 +2,8 @@
 
 H5a–H5b 的事前驗收與本輪結果分別見 [HOMESTEAD-H5.md](HOMESTEAD-H5.md) 和 [HOMESTEAD-H5-REVIEW.md](HOMESTEAD-H5-REVIEW.md)。本頁保留前四包的原始試玩規格；存檔內部版本目前為 v3，仍沿用獨立的 `solo-sect.homestead.v1` 鍵。
 
+H6 單向轉接的映射與結果見 [HOMESTEAD-H6.md](HOMESTEAD-H6.md)、[HOMESTEAD-H6-REVIEW.md](HOMESTEAD-H6-REVIEW.md)。
+
 ## H3–H4 本輪試玩規格（2026-10-28）
 
 H3 相識：同一名訪客每日白天沿村路來去，是否交談由玩家或主角性情偏好決定；獨居不會卡關。可聊天、送一份熱飯、採一份虛構草藥照料一次扭傷。信任、每日互動紀錄、照料事件及草藥背包均存檔。當日重複互動不重領信任；讀檔不重置。草藥純遊戲物資，無現實醫療建議。

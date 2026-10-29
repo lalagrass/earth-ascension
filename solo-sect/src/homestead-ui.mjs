@@ -1,17 +1,30 @@
 import { ACTIONS, FACILITIES, PLACES, HOME, DAY, SAVE_KEY, offers, blockReason, visitorHere, createHomestead, startBlueprint, setOrder, setHelperOrder, inviteHelper, acceptApprentice, askHelperLeave, tickHomestead, saveHomestead, loadHomestead } from './homestead.mjs';
+import { previewTransfer, commitTransfer } from './homestead-transfer.mjs';
 const $ = (id) => document.getElementById(id);
 const ctx = $('land').getContext('2d');
 let s = null, speed = 1, last = performance.now(), acc = 0, painted = 0;
+let transferDraft = null;
 const esc = (v) => String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const show = (msg) => { $('message').textContent = msg; };
 const stored = () => { try { return localStorage.getItem(SAVE_KEY); } catch { return null; } };
-function begin(state) { s = state; speed = 1; acc = 0; $('start').style.display = 'none'; last = performance.now(); render(); }
+function clearTransfer() { transferDraft = null; $('transfer-detail').replaceChildren(); }
+function begin(state) { clearTransfer(); s = state; speed = 1; acc = 0; $('start').style.display = 'none'; last = performance.now(); render(); }
 $('resume').disabled = !stored();
 $('begin').onclick = () => begin(createHomestead({ name: $('name').value, personality: $('personality').value }));
 $('resume').onclick = () => { const r = loadHomestead(stored()); if (r.ok) begin(r.state); else show(r.error); };
-$('new').onclick = () => { speed = 0; $('start').style.display = 'grid'; $('resume').disabled = !stored(); };
-$('save').onclick = () => { if (!s) return; try { localStorage.setItem(SAVE_KEY, saveHomestead(s)); show('荒居已存檔。'); } catch { show('無法寫入本機存檔。'); } };
-$('load').onclick = () => { const r = loadHomestead(stored()); if (r.ok) { s = r.state; show('荒居讀檔完成。'); render(); } else show(r.error); };
+$('new').onclick = () => { clearTransfer(); speed = 0; $('start').style.display = 'grid'; $('resume').disabled = !stored(); };
+$('save').onclick = () => { if (!s) return; try { localStorage.setItem(SAVE_KEY, saveHomestead(s)); clearTransfer(); show('荒居已存檔。'); } catch { show('無法寫入本機存檔。'); } };
+$('load').onclick = () => { const r = loadHomestead(stored()); if (r.ok) { clearTransfer(); s = r.state; show('荒居讀檔完成。'); render(); } else show(r.error); };
+$('transfer-preview').onclick = () => {
+  speed = 0; const raw = stored(); const r = previewTransfer(raw);
+  clearTransfer(); if (!r.ok) { $('transfer-detail').textContent = r.error; return; }
+  transferDraft = r;
+  $('transfer-detail').innerHTML = `<p>已儲存荒居 v${r.sourceVersion} → 本篇新槽；${r.apprentice ? '學徒同行' : '獨自前往'}。</p><b>帶入</b><ul>${r.carried.map((x) => `<li>${esc(x)}</li>`).join('')}</ul><b>不帶入或能力改變</b><ul>${r.dropped.map((x) => `<li>${esc(x)}</li>`).join('')}</ul><button id="transfer-confirm">確認另開本篇新局</button><button id="transfer-cancel">取消</button>`;
+};
+$('transfer-detail').onclick = (e) => {
+  if (e.target.id === 'transfer-cancel') { clearTransfer(); show('已取消轉接；存檔未改。'); }
+  if (e.target.id === 'transfer-confirm') { const r = commitTransfer(localStorage, transferDraft); if (!r.ok) { clearTransfer(); show(r.error); } else { clearTransfer(); location.assign('index.html?homestead=1'); } }
+};
 $('clear').onclick = () => { setOrder(s, null); render(); };
 $('speed').onclick = (e) => { const b = e.target.closest('[data-speed]'); if (b) { speed = Number(b.dataset.speed); render(); } };
 $('orders').onclick = (e) => { const b = e.target.closest('[data-act]'); if (b) { setOrder(s, b.dataset.act); render(); } };

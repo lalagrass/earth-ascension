@@ -23,6 +23,7 @@ import { ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES,
 import { EXP_STYLES } from './data.mjs';
 import { styleOf, teamStyle } from './expedition.mjs';
 import { openStart, choiceUI, heroCard } from './start-ui.mjs';
+import { TRANSFER_KEY } from './homestead-transfer.mjs';
 import { UNLOCKS, ALL_SECS, secOpen, CHAPTER1, AUTO, autosave, autoList, autoGet, suhuiOf, syncLegacy } from './slice.mjs';
 import { MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS, statusIcon } from './v10.mjs';
 import { routeSeg, segIndex, campsOpen, scoutOf, peaceOf } from './expedition.mjs';
@@ -33,7 +34,9 @@ const cv = document.getElementById('map'), g = cv.getContext('2d');
 const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile', 'kitchen_s1', 'map_s0', 'map_s1', 'map_s2'];
 await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i.onload = r; i.onerror = r; i.src = `assets/${n}.${n === 'ground' || n.startsWith('map_') ? 'jpg' : 'png'}`; IMG[n] = i; })));
 let S = createState(Date.now() % 100000 | 0), speed = 1, starting = true;
-const newGame = () => { starting = true; openStart((spec) => { S = createState(Date.now() % 100000 | 0, spec); starting = false; panel(); }); };
+let transferMode = false;
+const exitTransferMode = () => { transferMode = false; if (new URLSearchParams(location.search).has('homestead')) history.replaceState(null, '', 'index.html'); };
+const newGame = (opening = false) => { if (!opening) exitTransferMode(); starting = true; openStart((spec) => { exitTransferMode(); S = createState(Date.now() % 100000 | 0, spec); starting = false; panel(); }); };
 window.__sect = { get S() { return S; }, set speed(v) { speed = v; }, freeze: false, panel: () => panel(), get starting() { return starting; } };
 const ACT_ICON = { quarry: '⛏', spar: '🤺', cook: '🍲', deliver: '📦', rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔', trial: '⚔' };
 let BUB = {};
@@ -156,6 +159,7 @@ const ORD = [['', '自主'], ...['train', 'spar', 'chop', 'farm', 'cook', 'forag
 let lastPanel = 0;
 function panel() {
   const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×`;
+  if (S.homesteadOrigin) $('clock').textContent += `｜荒居轉接（原小屋階 ${S.homesteadOrigin.hutStage} → 小寢舍；${S.homesteadOrigin.herbGarden ? '原藥田折作野採藥圃' : '野採藥圃為本篇新局預設'}）${transferMode ? '・獨立新槽' : ''}`;
   $('res').innerHTML = `木 ${S.res.wood}/${S.cap.wood}　石 ${S.res.stone}/${S.cap.stone}　香火錢 ${S.res.coin}　菜 ${S.res.veg}　飯 ${S.res.food}　藥 ${S.res.herb}　水 ${S.res.water}/${S.cap.water}　療傷丹 ${S.res.pill}　鐵木 ${S.res.tiemu || 0}　靈石 ${S.res.lingshi || 0}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
   $('build').innerHTML = FACILITIES.filter((f) => f.stages.length > 1 && !f.sig).map((f) => { const st = S.fac[f.id], nx = f.stages[st.stage + 1];
     const cost = nx ? Object.entries({ ...nx.cost, ...(nx.rare || {}) }).map(([k, v]) => `${RES_NAMES[k]}${v}`).join('・') : ''; const why = nx ? buildWhy(S, f.id) : null;
@@ -238,8 +242,8 @@ document.addEventListener('click', (e) => { const b = e.target.closest('[data-bu
 document.addEventListener('change', (e) => { if (e.target.dataset.variant) { const [id, art] = e.target.dataset.variant.split('|'); const d = S.ds.find((x) => x.id === id); if (d && e.target.value) chooseVariant(d, art, e.target.value, S.t); panel(); return; } if ('artsof' in e.target.dataset) { window.__artsOf = e.target.value; panel(); return; } if (e.target.dataset.focus) { setFocus(S, e.target.dataset.focus, e.target.value || null); panel(); return; } if (e.target.dataset.q) { window.__ans[+e.target.dataset.q] = +e.target.value; panel(); return; } if (e.target.dataset.duty) { setDuty(S, e.target.dataset.duty, e.target.value, e.target.checked); panel(); return; } if (e.target.dataset.prio) { setPrio(S, e.target.dataset.prio, e.target.value); panel(); return; } if (e.target.dataset.style) setStyle(S, e.target.dataset.style, e.target.value); if (e.target.dataset.ord) { setOrder(S, e.target.dataset.ord, e.target.value || null); panel(); } });
 // review fix：存讀檔改用非阻斷提示（原本 alert() 會卡住瀏覽器自動化與遊戲迴圈）
 function toast(msg, bad = false) { let t = document.getElementById('toast'); if (!t) { t = document.createElement('div'); t.id = 'toast'; t.style.cssText = 'position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:99;padding:6px 14px;border-radius:6px;font-size:14px;pointer-events:none'; document.body.appendChild(t); } t.textContent = msg; t.style.background = bad ? '#7a2a1e' : '#3a5a2a'; t.style.color = '#fff'; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => { t.style.display = 'none'; }, 2000); }
-$('save').onclick = () => { try { localStorage.setItem('solo-sect-save', save(S)); toast(`已存檔（第 ${Math.floor(S.t / 600) + 1} 日）`); } catch (e) { toast('存檔失敗：' + e.message, true); } };
-$('load').onclick = () => { const r = load(localStorage.getItem('solo-sect-save') || ''); if (r.ok) { S = r.state; lastAuto = S.t; try { syncLegacy(localStorage, S); } catch {} toast('已讀檔'); } else toast(r.err, true); panel(); };
+$('save').onclick = () => { try { localStorage.setItem(transferMode ? TRANSFER_KEY : 'solo-sect-save', save(S)); toast(`已存檔（第 ${Math.floor(S.t / 600) + 1} 日）`); } catch (e) { toast('存檔失敗：' + e.message, true); } };
+$('load').onclick = () => { const r = load(localStorage.getItem(transferMode ? TRANSFER_KEY : 'solo-sect-save') || ''); if (r.ok) { S = r.state; lastAuto = S.t; if (!transferMode) try { syncLegacy(localStorage, S); } catch {} toast('已讀檔'); } else toast(r.err, true); panel(); };
 $('reset').onclick = () => newGame();
 $('load').addEventListener('click', () => { if (document.getElementById('start')) { document.getElementById('start').remove(); starting = false; } });
 let last = performance.now(), acc = 0;
@@ -436,13 +440,20 @@ function chapterModal() {
 let lastAuto = 0; const cue = {};
 function audioStep() { for (const c of cuesFrom(cue, S)) { SFX[c]?.(); const p = c === 'breakthrough' ? (S.fx.find((f) => f.kind === 'break')?.pos || NODES.yard) : c === 'record' ? NODES.gate : c === 'chapter' ? NODES.hall : null; if (p) camFocus(p[0], p[1]); }
   const rd = S.mons.find((m) => m.raid === 'go'); if (rd && cue.raid !== rd.uid) { cue.raid = rd.uid; camFocus(rd.pos[0], rd.pos[1], 2); } }
-setInterval(() => { if (!S || S.t - lastAuto < AUTO.every) return; lastAuto = S.t; autosave(localStorage, save(S), { day: Math.floor(S.t / 600) + 1, name: S.hero?.name, suhui: suhuiOf(S), at: Date.now() }); }, 1000);
-$('autos').onchange = (e) => { if (e.target.value === '') return; const r = load(autoGet(localStorage, +e.target.value) || ''); if (r.ok) { S = r.state; lastAuto = S.t; try { syncLegacy(localStorage, S); } catch {} document.getElementById('start')?.remove(); starting = false; } else alert(r.err); panel(); };
+setInterval(() => { if (!S || transferMode || S.t - lastAuto < AUTO.every) return; lastAuto = S.t; autosave(localStorage, save(S), { day: Math.floor(S.t / 600) + 1, name: S.hero?.name, suhui: suhuiOf(S), at: Date.now() }); }, 1000);
+$('autos').onchange = (e) => { if (e.target.value === '') return; const r = load(autoGet(localStorage, +e.target.value) || ''); if (r.ok) { exitTransferMode(); S = r.state; lastAuto = S.t; try { syncLegacy(localStorage, S); } catch {} document.getElementById('start')?.remove(); starting = false; } else alert(r.err); panel(); };
 $('export').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([save(S)], { type: 'application/json' })); a.download = `solo-sect-day${Math.floor(S.t / 600) + 1}.json`; a.click(); URL.revokeObjectURL(a.href); };
-$('import').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; const r = load(await f.text()); if (r.ok) { S = r.state; lastAuto = S.t; try { syncLegacy(localStorage, S); } catch {} document.getElementById('start')?.remove(); starting = false; } else alert('匯入失敗：' + r.err); e.target.value = ''; panel(); };
+$('import').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; const r = load(await f.text()); if (r.ok) { exitTransferMode(); S = r.state; lastAuto = S.t; try { syncLegacy(localStorage, S); } catch {} document.getElementById('start')?.remove(); starting = false; } else alert('匯入失敗：' + r.err); e.target.value = ''; panel(); };
 $('mute').onclick = () => { setMute(!isMuted()); ambient(!isMuted()); panel(); };
 document.addEventListener('click', (e) => { if (e.target.closest('button')) { SFX.click(); if (!isMuted()) ambient(true); } }, true);
-panel(); newGame(); requestAnimationFrame(loop);
+panel(); newGame(true);
+if (new URLSearchParams(location.search).get('homestead') === '1') {
+  let raw = null; try { raw = localStorage.getItem(TRANSFER_KEY); } catch {}
+  const r = load(raw || '');
+  if (r.ok && r.state.homesteadOrigin) { S = r.state; transferMode = true; lastAuto = S.t; document.getElementById('start')?.remove(); starting = false; panel(); }
+  else toast('荒居轉接檔無法讀取；保留原存檔。', true);
+}
+requestAnimationFrame(loop);
 
 // v1.65 師徒與傳功面板
 function bondsHtml(S) { const out = ['<h3 style="margin:6px 0 2px">師徒</h3>'];
