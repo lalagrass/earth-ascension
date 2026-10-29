@@ -1,3 +1,4 @@
+import {RECIPES,recipeReason,recipeAccess,buildAccess,availableUnlocks,preparedCount,edibleEnergy,autoRecipe,chooseFood} from './homestead-content.mjs';
 import {at,feel,FEELINGS,restRate} from './homestead-living.mjs';
 import { freshSkills, workCost, gainWork, SKILLS } from './homestead-skills.mjs';
 // 荒居：獨立生活狀態。設施階段宣告可提供的活動，任務只讀此登錄表。
@@ -66,12 +67,13 @@ export function createHomestead({ name = '無名', personality = 'quiet', mode =
     stock: { berries: 0, wood: 0, seeds: 2, veg: 0, meal: 0, herbs: 0 }, cap: { berries: 8, wood: 8, seeds: 5, veg: 8, meal: 8, herbs: 6 }, wild: { berries: 4, wood: 4, herbs: 3 },
     fac: { hut: { stage: 0, site: null }, garden: { stage: 0, site: null }, herbGarden: { stage: 0, site: null }, bed: { stage: 0, site: null }, bench: { stage: 0, site: null }, flowers: { stage: 0, site: null }, kitchen: { stage: 0, site: null }, store: { stage: 0, site: null }, berries: { stage: 0 }, wood: { stage: 0 }, herbs: { stage: 0 } }, plot: { state: 'empty', growth: 0 }, herbPlot: { state: 'empty', growth: 0 },
     visitor: { name: '阿蓮', role: 'visitor', trust: 0, lastChat: 0, lastGift: 0, cared: false, willing: false, inviteDay: 0, inviteTime: 0, apprenticeDay: 0, injury: false, hunger: 68, energy: 72, herbalSkill: 0, careDay: 0 }, helper: null,
-    leases: { wood: null, garden: null, herbGarden: null }, log: [] };
+    leases: { wood: null, garden: null, herbGarden: null }, unlocked: [], log: [] };
   note(s, `${s.person.name}來到荒地。先找吃的，再搭一間能安睡的木屋。`); return s;
 }
 
 export function startBlueprint(s, id) {
   const f = FACILITIES[id], st = s.fac[id], next = f?.stages[st?.stage + 1];
+  if(buildAccess(s,id,st?.stage+1))return false;
   if (id==='bed' && s.mode!=='solo')return false;
   if (!next || st.site || (id !== 'hut' && s.fac.hut.stage === 0)) return false;
   st.site = { need: { ...next.cost }, delivered: Object.fromEntries(Object.keys(next.cost).map((k) => [k, 0])), reserved: Object.fromEntries(Object.keys(next.cost).map((k) => [k, 0])), work: 0, workNeed: next.work, paused: false };
@@ -347,7 +349,7 @@ export function tickHomestead(s, dt = 0.25) {
   if (!(dt > 0 && dt <= 1)) throw new Error('bad dt');
   const total=(s.subtick||0)+dt, count=Math.floor((total+1e-10)/.25);
   s.subtick=Math.max(0,Number((total-count*.25).toFixed(12)));
-  for(let i=0;i<count;i++)tickQuarter(s,.25);
+  for(let i=0;i<count;i++){tickQuarter(s,.25);for(const key of availableUnlocks(s)){if(!s.unlocked.includes(key)){s.unlocked.push(key);note(s,`學會新做法：${key}。`);}}}
 }
 function tickQuarter(s,dt) {
   s.t += dt; const oldDay = s.day; s.day = 1 + Math.floor(s.t / DAY);
@@ -437,7 +439,7 @@ export function loadHomestead(json) {
     if(s.person.feelings===undefined)s.person.feelings={};
     if(!s.person.feelings || typeof s.person.feelings!=='object' || Array.isArray(s.person.feelings) || Object.entries(s.person.feelings).some(([id,until])=>!FEELINGS[id]||!Number.isFinite(until)||until<0||until>s.t+FEELINGS[id].duration))return {ok:false,error:'感受資料不合法'};
     if(s.person.skills===undefined)s.person.skills=freshSkills();
-    if(!s.person.skills || Array.isArray(s.person.skills) || Object.keys(SKILLS).some(id=>!Number.isFinite(s.person.skills[id]) || s.person.skills[id]<0 || s.person.skills[id]>SKILLS[id].thresholds.at(-1)))return {ok:false,error:'技能資料不合法'};
+    if(!s.person.skills || Array.isArray(s.person.skills) || Object.keys(SKILLS).some(id=>!Number.isFinite(s.person.skills[id]) || s.person.skills[id]<0 || s.person.skills[id]>(SKILLS[id].cap??SKILLS[id].thresholds.at(-1))))return {ok:false,error:'技能資料不合法'};
     const p = s.person, t = p.task, c = p.carry;
     if(s.mode==='solo'&&(!Array.isArray(p.pos)||p.pos[0]<0||p.pos[0]>900||p.pos[1]<0||p.pos[1]>560))return {ok:false,error:'人物位置超出家園範圍'};
     if (!Number.isFinite(s.t) || s.t < 0 || s.day !== 1 + Math.floor(s.t / DAY) || !Array.isArray(p.pos) || p.pos.length !== 2 || p.pos.some((x) => !Number.isFinite(x)) || !Number.isFinite(p.hunger) || p.hunger < 0 || p.hunger > 100 || !Number.isFinite(p.energy) || p.energy < 0 || p.energy > 100 || !Number.isInteger(p.herbalSkill) || p.herbalSkill < 0 || !Number.isInteger(p.careDay) || p.careDay < 0 || p.careDay > s.day || typeof p.name !== 'string' || !['quiet', 'sociable', 'diligent'].includes(p.personality)) return { ok: false, error: '存檔狀態不合法' };
@@ -475,6 +477,8 @@ export function loadHomestead(json) {
       if (hc && (!['wood', 'berries', 'veg', 'herbs'].includes(hc.kind) || hc.origin !== 'wild' || (hc.kind === 'herbs' ? ![2, 3].includes(hc.amount) : hc.amount !== (hc.kind === 'veg' ? 2 : 1)) || (hc.bonus && (hc.kind !== 'veg' || Object.keys(hc.bonus).length !== 1 || hc.bonus.seeds !== 2)))) return { ok: false, error: '幫手背包不合法' };
       if (ht && (!['return', 'leave', 'eat', 'forage', 'chop', 'farm', 'herbFarm', 'rest', 'leisure'].includes(ht.act) || !['go', 'do'].includes(ht.phase) || !Number.isFinite(ht.timer) || ht.timer < 0 || (ht.act === 'leisure' ? !(ht.place === 'home' || ht.place === 'bench' && s.fac.bench.stage === 1) : ht.place !== (ht.act === 'return' || ht.act === 'eat' ? 'home' : ht.act === 'leave' ? 'visitor' : ACTIONS[ht.act]?.place)) || (ht.act === 'return' && !hc) || (ht.act === 'leave' && (!h.leaving || hc)) || (hc && ht.act !== 'return') || (ht.act === 'farm' && !offers(s, 'garden', 'farm')) || (ht.act === 'herbFarm' && (v.role !== 'apprentice' || !offers(s, 'herbGarden', 'herbFarm'))))) return { ok: false, error: '幫手任務不合法' };
     }
+    s.unlocked ??= availableUnlocks(s);
+    if(!Array.isArray(s.unlocked)||new Set(s.unlocked).size!==s.unlocked.length||s.unlocked.some(x=>!['食譜：蔬果拌食','食譜：家常燉菜','木作台','改良灶具','舒適床鋪'].includes(x)))return {ok:false,error:'解鎖紀錄不合法'};
     return { ok: true, state: s };
   } catch { return { ok: false, error: 'JSON 格式不合法' }; }
 }

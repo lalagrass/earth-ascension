@@ -1,0 +1,6 @@
+import test from'node:test';import assert from'node:assert/strict';
+import{createHomestead,tickHomestead,saveHomestead,loadHomestead,startBlueprint}from'../src/homestead.mjs';
+import{recipeReason,recipeAccess,buildAccess}from'../src/homestead-content.mjs';
+import{skillLevel}from'../src/homestead-skills.mjs';
+test('H19：技能、設施、材料缺因分開，舊XP不降低能力',()=>{const s=createHomestead({mode:'solo'});assert.match(recipeAccess(s,'salad'),/Lv1/);s.person.skills.cook=2;assert.equal(skillLevel(s,'cook'),1);assert.match(recipeReason(s,'salad'),/露天灶/);s.fac.kitchen.stage=1;assert.match(recipeReason(s,'salad'),/缺青菜/);s.person.skills.cook=8;assert.equal(loadHomestead(saveHomestead(s)).state.person.skills.cook,8);assert.match(buildAccess(s,'workbench',1),/Lv1/);s.person.skills.build=12;s.fac.hut.stage=1;assert.equal(buildAccess(s,'workbench',1),null);});
+test('H19：解鎖提示只記一次，重載不重發',()=>{const s=createHomestead({mode:'solo'});s.fac.hut.stage=1;s.person.skills.build=12;s.person.skills.cook=2;s.fac.kitchen.stage=1;tickHomestead(s);const events=s.log.filter(x=>x.msg.startsWith('學會新做法')).length;assert.equal(events,3);tickHomestead(s);assert.equal(s.log.filter(x=>x.msg.startsWith('學會新做法')).length,events);const r=loadHomestead(saveHomestead(s));assert.ok(r.ok);tickHomestead(r.state);assert.equal(r.state.log.filter(x=>x.msg.startsWith('學會新做法')).length,events);});
