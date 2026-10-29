@@ -1,0 +1,260 @@
+{
+  "route": "normal UI only, paused/16x mixed; no state/material/XP injection; AI not human",
+  "engine": "154.0.8037.57",
+  "events": [
+    {
+      "name": "first house",
+      "t": 100.75,
+      "day": 1,
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "herbs": 0
+      },
+      "hunger": 50.895000000001374,
+      "energy": 26.349999999999994,
+      "skills": {
+        "gather": 5,
+        "build": 15,
+        "farm": 0,
+        "cook": 0
+      }
+    },
+    {
+      "name": "garden",
+      "t": 174.25,
+      "day": 1,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "herbs": 0
+      },
+      "hunger": 40.60500000000238,
+      "energy": 70.15000000000009,
+      "skills": {
+        "gather": 8,
+        "build": 23,
+        "farm": 0,
+        "cook": 0
+      }
+    },
+    {
+      "name": "kitchen",
+      "t": 248.5,
+      "day": 2,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "herbs": 0
+      },
+      "hunger": 56.21000000000339,
+      "energy": 42.25000000000021,
+      "skills": {
+        "gather": 12,
+        "build": 33,
+        "farm": 0,
+        "cook": 0
+      }
+    },
+    {
+      "name": "bed",
+      "t": 339.75,
+      "day": 2,
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "herbs": 0
+      },
+      "hunger": 43.435000000004635,
+      "energy": 81.60000000000036,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 0,
+        "cook": 0
+      }
+    },
+    {
+      "name": "bed used",
+      "t": 344.25,
+      "day": 2,
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "herbs": 0
+      },
+      "hunger": 42.805000000004696,
+      "energy": 100,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 0,
+        "cook": 0
+      }
+    },
+    {
+      "name": "store",
+      "t": 437,
+      "day": 2,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 1,
+        "veg": 0,
+        "meal": 0,
+        "herbs": 0
+      },
+      "hunger": 55.82000000000596,
+      "energy": 68.60000000000025,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 1,
+        "cook": 0
+      }
+    },
+    {
+      "name": "hut",
+      "t": 643.5,
+      "day": 3,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 3,
+        "herbs": 0
+      },
+      "hunger": 52.91000000000878,
+      "energy": 65.80000000000071,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 2,
+        "cook": 1
+      }
+    },
+    {
+      "name": "bench",
+      "t": 701.25,
+      "day": 3,
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 3,
+        "herbs": 0
+      },
+      "hunger": 44.82500000000957,
+      "energy": 47.40000000000066,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 2,
+        "cook": 1
+      }
+    },
+    {
+      "name": "flowers",
+      "t": 779.25,
+      "day": 4,
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 2,
+        "herbs": 0
+      },
+      "hunger": 85.90500000001063,
+      "energy": 21.6000000000006,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 3,
+        "cook": 1
+      }
+    },
+    {
+      "name": "ate cooked meal",
+      "t": 779.25,
+      "day": 4,
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 2,
+        "herbs": 0
+      },
+      "hunger": 85.90500000001063,
+      "energy": 21.6000000000006,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 3,
+        "cook": 1
+      }
+    }
+  ],
+  "result": {
+    "mode": "solo",
+    "t": 1441.5,
+    "day": 7,
+    "stock": {
+      "berries": 2,
+      "wood": 2,
+      "seeds": 6,
+      "veg": 4,
+      "meal": 4,
+      "herbs": 0
+    },
+    "skills": {
+      "gather": 12,
+      "build": 40,
+      "farm": 8,
+      "cook": 2
+    },
+    "feelings": {
+      "rested": 847.25,
+      "warmMeal": 1187,
+      "seated": 1499,
+      "flowers": 1499
+    },
+    "hunger": 45.190000000019666,
+    "energy": 100,
+    "leisure": 65,
+    "visitorUnchanged": true,
+    "helper": null,
+    "fac": {
+      "hut": 2,
+      "garden": 1,
+      "herbGarden": 0,
+      "bed": 1,
+      "bench": 1,
+      "flowers": 1,
+      "kitchen": 1,
+      "store": 1,
+      "berries": 0,
+      "wood": 0,
+      "herbs": 0
+    }
+  },
+  "pageerrors": []
+}

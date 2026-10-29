@@ -39,7 +39,7 @@ export function drawHomestead(g,s) {
    for(let y=139;y<182;y+=11)line([[444-(y-113)*1.32,y],[444+(y-113)*1.32,y]],'#573d33',2);
    rect(367,179,152,7,'#d0b685');rect(388,203,23,24,'#e7d6a2');rect(478,203,23,24,'#e7d6a2');line([[399,203],[399,227]],'#866b49',2);line([[489,203],[489,227]],'#866b49',2);rect(415,277,60,8,'#baaa8c');
   }
-  if(s.fac.bed?.stage){rect(378,245,42,23,'#6c533c');rect(381,246,36,16,'#e5dbbf');rect(382,247,10,13,'#f2ead4');}
+  if(s.fac.bed?.stage){rect(420,205,44,23,'#6c533c');rect(422,206,40,16,'#e5dbbf');rect(422,207,11,13,'#f2ead4');}
   rect(431,225,30,56,'#493728');circle(455,252,2,'#d5b17d');
  }
  function plot(id,x,y,w,h,p,growth,color){

@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {createHomestead,tickHomestead,startBlueprint,setOrder,visitorHere,inviteHelper,loadHomestead,saveHomestead} from '../src/homestead.mjs';
+import {createHomestead,blockReason,tickHomestead,startBlueprint,setOrder,visitorHere,inviteHelper,loadHomestead,saveHomestead} from '../src/homestead.mjs';
 import {resourceSummary} from '../src/homestead-view.mjs';
 const step=(s,n)=>{for(let i=0;i<n*4;i++)tickHomestead(s);};
 test('H14：新solo三種性格無訪客/扭傷/社交仍可從零建家',()=>{for(const personality of ['quiet','sociable','diligent']){const s=createHomestead({mode:'solo',personality});startBlueprint(s,'hut');step(s,720);assert.equal(s.fac.hut.stage,1);assert.equal(visitorHere(s),false);assert.equal(inviteHelper(s),false);assert.equal(setOrder(s,'chat'),false);assert.equal(s.visitor.injury,false);assert.ok(!s.log.some(x=>x.msg.includes('阿蓮')));assert.equal(loadHomestead(saveHomestead(s)).state.mode,'solo');}});
@@ -37,4 +37,10 @@ test('H18：新版獨居三性格×低糧/滿倉/中斷/暫停20日，與重載�
  for(const personality of['quiet','sociable','diligent'])for(const condition of['low','full','interrupted','paused']){
   const r=homeScenario({personality,condition,mode:'solo',buildBed:true});assert.ok(r.minH>0&&r.minE>0,JSON.stringify({personality,condition,H:r.minH,E:r.minE}));assert.equal(r.zero,0);assert.ok(r.completedAt!==null);assert.ok(r.final.person.leisure>0);assert.ok(!r.final.helper&&!r.final.visitor.injury);assert.ok(r.final.person.skills.build>0);if(condition!=='full')assert.ok(r.final.person.skills.farm>0&&r.final.person.skills.cook>0,'低庫存須有真正耕作料理；滿倉可先用現存量');const control=homeScenario({personality,condition,mode:'solo',buildBed:true,reload:false});assert.equal(saveHomestead(control.final),saveHomestead(r.final));
  }
+});
+import {soloTraffic}from'./helpers/solo-traffic.mjs';
+test('H18：固定五組各20000拍改令/暫停/重載，逐拍糧木與四技能對實績',()=>{for(const seed of[1,2,3,4,5]){const r=soloTraffic(seed);assert.ok(r.minH>0&&r.minE>0,JSON.stringify(r));}});
+test('H18：獨居缺糧零精力仍自救；滿倉不硬採，休息不反覆起落',()=>{
+ const poor=createHomestead({mode:'solo'});poor.person.hunger=0;poor.person.energy=0;setOrder(poor,'chop');step(poor,200);assert.ok(poor.person.hunger>0&&poor.person.energy>0);assert.ok(poor.log.some(x=>x.msg.includes('吃了野果')));
+ const s=createHomestead({mode:'solo'});s.fac.hut.stage=2;s.fac.bed.stage=1;s.fac.garden.stage=1;s.fac.kitchen.stage=1;Object.assign(s.stock,{berries:8,wood:2,meal:2,veg:4,herbs:3});s.person.energy=0;s.person.hunger=90;setOrder(s,'forage');let starts=0,last=null;for(let i=0;i<240;i++){tickHomestead(s);if(s.person.task?.act==='rest'&&s.person.task!==last)starts++;last=s.person.task;}assert.equal(starts,1);assert.equal(s.stock.berries,8);assert.equal(s.person.skills.gather,0);assert.ok(s.person.leisure>0);assert.match(blockReason(s,'forage'),/野果倉已滿/);
 });
