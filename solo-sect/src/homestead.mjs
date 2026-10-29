@@ -1,3 +1,4 @@
+import { freshSkills, workCost, gainWork, SKILLS } from './homestead-skills.mjs';
 // 荒居：獨立生活狀態。設施階段宣告可提供的活動，任務只讀此登錄表。
 export const SAVE_KEY = 'solo-sect.homestead.v1';
 export const VERSION = 3;
@@ -30,14 +31,14 @@ export const FACILITIES = {
 };
 export const BUILDABLE = ['hut', 'garden', 'herbGarden', 'kitchen', 'store', 'bench', 'flowers'];
 export const ACTIONS = {
-  forage: { name: '採野果', place: 'berries', duration: 6, energy: 5 },
-  chop: { name: '砍柴', place: 'wood', duration: 7, energy: 7 },
+  forage: { skill: 'gather', name: '採野果', place: 'berries', duration: 6, energy: 5 },
+  chop: { skill: 'gather', name: '砍柴', place: 'wood', duration: 7, energy: 7 },
   eat: { name: '吃東西', place: 'home', duration: 2 },
   rest: { name: '歇息', place: 'hut' },
-  build: { name: '搬料與施工', place: 'hut' },
+  build: { skill: 'build', name: '搬料與施工', place: 'hut' },
   leisure: { name: '閒坐看雲', place: 'home', duration: 8 },
-  farm: { name: '照料菜園', place: 'garden', duration: 7, energy: 5 },
-  cook: { name: '煮飯', place: 'kitchen', duration: 8, energy: 4 },
+  farm: { skill: 'farm', name: '照料菜園', place: 'garden', duration: 7, energy: 5 },
+  cook: { skill: 'cook', name: '煮飯', place: 'kitchen', duration: 8, energy: 4 },
   herbal: { name: '採草藥', place: 'herbs', duration: 7, energy: 5 },
   herbFarm: { name: '照料藥田', place: 'herbGarden', duration: 7, energy: 5 },
   selfCare: { name: '草藥調養自己', place: 'home', duration: 3 },
@@ -59,7 +60,7 @@ const inbound = (s, k) => [s.person, s.helper].reduce((n, p) => n + (p?.carry?.o
 
 export function createHomestead({ name = '無名', personality = 'quiet', mode = 'legacy' } = {}) {
   const s = { kind: 'homestead', version: VERSION, mode: mode === 'solo' ? 'solo' : 'legacy', t: 0, day: 1, speed: 1,
-    person: { name: String(name).trim().slice(0, 12) || '無名', personality: ['quiet', 'sociable', 'diligent'].includes(personality) ? personality : 'quiet', pos: [...HOME], hunger: 65, energy: 68, herbalSkill: 0, careDay: 0, task: null, order: null, carry: null, work: 0, leisure: 0 },
+    person: { name: String(name).trim().slice(0, 12) || '無名', personality: ['quiet', 'sociable', 'diligent'].includes(personality) ? personality : 'quiet', pos: [...HOME], hunger: 65, energy: 68, herbalSkill: 0, careDay: 0, skills: freshSkills(), task: null, order: null, carry: null, work: 0, leisure: 0 },
     stock: { berries: 0, wood: 0, seeds: 2, veg: 0, meal: 0, herbs: 0 }, cap: { berries: 8, wood: 8, seeds: 5, veg: 8, meal: 8, herbs: 6 }, wild: { berries: 4, wood: 4, herbs: 3 },
     fac: { hut: { stage: 0, site: null }, garden: { stage: 0, site: null }, herbGarden: { stage: 0, site: null }, bench: { stage: 0, site: null }, flowers: { stage: 0, site: null }, kitchen: { stage: 0, site: null }, store: { stage: 0, site: null }, berries: { stage: 0 }, wood: { stage: 0 }, herbs: { stage: 0 } }, plot: { state: 'empty', growth: 0 }, herbPlot: { state: 'empty', growth: 0 },
     visitor: { name: '阿蓮', role: 'visitor', trust: 0, lastChat: 0, lastGift: 0, cared: false, willing: false, inviteDay: 0, inviteTime: 0, apprenticeDay: 0, injury: false, hunger: 68, energy: 72, herbalSkill: 0, careDay: 0 }, helper: null,
@@ -252,29 +253,33 @@ function travel(p, target, dt) {
 }
 function complete(s, t) {
   const p = s.person;
+  let skilledWork = false;
   if (t.act === 'forage' || t.act === 'chop' || t.act === 'herbal') {
     const k = t.act === 'forage' ? 'berries' : t.act === 'chop' ? 'wood' : 'herbs';
-    if (s.wild[k] >= 1 && s.stock[k] + inbound(s, k) < s.cap[k]) { s.wild[k] -= 1; p.carry = { kind: k, amount: 1, origin: 'wild', ...(k === 'berries' && s.stock.seeds === 0 ? { bonus: { seeds: 1 } } : {}) }; p.energy = clamp(p.energy - ACTIONS[t.act].energy); p.work++; if (k === 'herbs') p.herbalSkill++; note(s, { berries: '採到野果，帶回住處。', wood: '砍得一根木料，帶回住處。', herbs: '採到一份虛構草藥，帶回住處。' }[k]); }
+    if (s.wild[k] >= 1 && s.stock[k] + inbound(s, k) < s.cap[k]) { s.wild[k] -= 1; p.carry = { kind: k, amount: 1, origin: 'wild', ...(k === 'berries' && s.stock.seeds === 0 ? { bonus: { seeds: 1 } } : {}) }; p.energy = clamp(p.energy - (ACTIONS[t.act].skill ? workCost(s,ACTIONS[t.act].skill,ACTIONS[t.act].energy) : ACTIONS[t.act].energy)); gainWork(s,ACTIONS[t.act].skill); p.work++; if (k === 'herbs') p.herbalSkill++; note(s, { berries: '採到野果，帶回住處。', wood: '砍得一根木料，帶回住處。', herbs: '採到一份虛構草藥，帶回住處。' }[k]); }
     freeLease(s, p, 'person'); p.task = null; return;
   }
   if (t.act === 'eat') { if (s.stock.meal > 0) { s.stock.meal--; p.hunger = clamp(p.hunger + 52); note(s, '吃了一份熱飯。'); } else if (s.stock.berries > 0) { s.stock.berries--; p.hunger = clamp(p.hunger + 26); note(s, '吃了野果。'); } }
   if (t.act === 'leisure') { p.leisure++; p.energy = clamp(p.energy + 5); }
   if (t.act === 'farm') {
-    if (s.plot.state === 'empty' && s.stock.seeds > 0) { s.stock.seeds--; s.plot.state = 'growing'; s.plot.growth = 0; note(s, '在小菜園播下種子。'); }
-    else if (s.plot.state === 'ripe' && s.stock.veg + inbound(s, 'veg') <= s.cap.veg - 2) { s.plot.state = 'empty'; p.carry = { kind: 'veg', amount: 2, origin: 'wild', bonus: { seeds: 2 } }; note(s, '收下青菜與種子，帶回住處。'); }
+    if (s.plot.state === 'empty' && s.stock.seeds > 0) { s.stock.seeds--; s.plot.state = 'growing'; s.plot.growth = 0; skilledWork=true; note(s, '在小菜園播下種子。'); }
+    else if (s.plot.state === 'ripe' && s.stock.veg + inbound(s, 'veg') <= s.cap.veg - 2) { s.plot.state = 'empty'; p.carry = { kind: 'veg', amount: 2, origin: 'wild', bonus: { seeds: 2 } }; skilledWork=true; note(s, '收下青菜與種子，帶回住處。'); }
   }
   if (t.act === 'herbFarm') {
     if (s.herbPlot.state === 'empty' && s.stock.herbs > 0) { s.stock.herbs--; s.herbPlot.state = 'growing'; s.herbPlot.growth = 0; p.herbalSkill++; note(s, '用一份草藥在藥田插穗。'); }
     else if (s.herbPlot.state === 'ripe') { const amount = p.herbalSkill >= 3 ? 3 : 2; if (s.stock.herbs + inbound(s, 'herbs') <= s.cap.herbs - amount) { s.herbPlot.state = 'empty'; p.carry = { kind: 'herbs', amount, origin: 'wild' }; p.herbalSkill++; note(s, `收下 ${amount} 份藥田草藥，正帶回住處。`); } }
   }
-  if (t.act === 'cook' && canDo(s, 'cook')) { s.stock.veg -= 2; s.stock.wood--; s.stock.meal += 3; note(s, '用兩份菜與一根柴煮出三份熱飯。'); }
+  if (t.act === 'cook' && canDo(s, 'cook')) { s.stock.veg -= 2; s.stock.wood--; s.stock.meal += 3; skilledWork=true; note(s, '用兩份菜與一根柴煮出三份熱飯。'); }
   if (t.act === 'chat' && canDo(s, 'chat')) { s.visitor.lastChat = s.day; s.visitor.trust++; note(s, `與${s.visitor.name}談了些日常。`); }
   if (t.act === 'talkHelper' && canDo(s, 'talkHelper')) { s.visitor.lastChat = s.day; s.visitor.trust++; note(s, `與短住的${s.visitor.name}談了談往後的日子。`); }
   if (t.act === 'gift' && canDo(s, 'gift')) { s.stock.meal--; s.visitor.lastGift = s.day; s.visitor.trust++; s.visitor.willing = true; note(s, `送${s.visitor.name}一份熱飯，對方也願意日後幫忙。`); }
   if (t.act === 'care' && canDo(s, 'care')) { s.stock.herbs--; s.visitor.cared = true; s.visitor.trust += 2; s.visitor.willing = true; note(s, `用虛構草藥照料${s.visitor.name}的扭傷。`); }
   if (t.act === 'selfCare' && canDo(s, 'selfCare')) { s.stock.herbs--; p.energy = clamp(p.energy + 45); p.careDay = s.day; p.herbalSkill++; note(s, '用一份草藥調養自己，減輕疲勞。'); }
   if (t.act === 'helperCare' && canDo(s, 'helperCare')) { s.stock.herbs--; s.helper.energy = clamp(s.helper.energy + 45); s.helper.careDay = s.day; p.herbalSkill++; note(s, `用一份草藥替${s.helper.name}調養，減輕疲勞。`); }
-  if (t.act === 'farm' || t.act === 'cook' || t.act === 'herbFarm') { p.energy = clamp(p.energy - ACTIONS[t.act].energy); p.work++; }
+  if (t.act === 'farm' || t.act === 'cook' || t.act === 'herbFarm') {
+    if(s.mode!=='solo'||skilledWork||t.act==='herbFarm'){p.energy=clamp(p.energy-(ACTIONS[t.act].skill?workCost(s,ACTIONS[t.act].skill,ACTIONS[t.act].energy):ACTIONS[t.act].energy));p.work++;}
+    if(skilledWork)gainWork(s,ACTIONS[t.act].skill);
+  }
   freeLease(s, p, 'person'); p.task = null;
 }
 function tickHelper(s, dt) {
@@ -374,7 +379,7 @@ export function tickHomestead(s, dt = 0.25) {
   if (t.act === 'build') {
     const v = s.fac[t.place]?.site;
     if (!v || Object.keys(v.need).some((k) => v.delivered[k] < v.need[k])) { p.task = null; return; }
-    v.work += dt; p.energy = clamp(p.energy - 0.5 * dt); p.work += dt / 7;
+    const effort=Math.min(dt,v.workNeed-v.work);v.work += effort; p.energy = clamp(p.energy - workCost(s,'build',0.5*effort)); p.work += effort / 7; gainWork(s,'build',effort);
     if (v.work >= v.workNeed) { s.fac[t.place].stage++; s.fac[t.place].site = null; if (t.place === 'store') s.cap = { ...s.cap, berries: 20, wood: 20, seeds: 10, veg: 16, meal: 15, herbs: 10 }; note(s, `完工：${stage(s, t.place).name}。`); p.task = null; }
     return;
   }
@@ -410,6 +415,8 @@ export function loadHomestead(json) {
       s.leases.herbGarden = null;
     }
     for (const id of ['bench','flowers']) s.fac[id] ??= structuredClone(h2.fac[id]);
+    if(s.person.skills===undefined)s.person.skills=freshSkills();
+    if(!s.person.skills || Array.isArray(s.person.skills) || Object.keys(SKILLS).some(id=>!Number.isFinite(s.person.skills[id]) || s.person.skills[id]<0 || s.person.skills[id]>SKILLS[id].thresholds.at(-1)))return {ok:false,error:'技能資料不合法'};
     const p = s.person, t = p.task, c = p.carry;
     if (!Number.isFinite(s.t) || s.t < 0 || s.day !== 1 + Math.floor(s.t / DAY) || !Array.isArray(p.pos) || p.pos.length !== 2 || p.pos.some((x) => !Number.isFinite(x)) || !Number.isFinite(p.hunger) || p.hunger < 0 || p.hunger > 100 || !Number.isFinite(p.energy) || p.energy < 0 || p.energy > 100 || !Number.isInteger(p.herbalSkill) || p.herbalSkill < 0 || !Number.isInteger(p.careDay) || p.careDay < 0 || p.careDay > s.day || typeof p.name !== 'string' || !['quiet', 'sociable', 'diligent'].includes(p.personality)) return { ok: false, error: '存檔狀態不合法' };
     if (['berries', 'wood', 'seeds', 'veg', 'meal', 'herbs'].some((k) => !Number.isInteger(s.stock[k]) || s.stock[k] < 0 || !Number.isInteger(s.cap[k]) || s.cap[k] < 1 || s.stock[k] > s.cap[k]) || ![0, 1, 2].includes(s.fac.hut.stage) || BUILDABLE.filter(k=>k!=='hut').some((k) => ![0, 1].includes(s.fac[k]?.stage)) || !['empty', 'growing', 'ripe'].includes(s.plot.state) || !Number.isFinite(s.plot.growth) || !['empty', 'growing', 'ripe'].includes(s.herbPlot?.state) || !Number.isFinite(s.herbPlot.growth) || (s.fac.herbGarden.stage === 0 && s.herbPlot.state !== 'empty')) return { ok: false, error: '存檔資源不合法' };
