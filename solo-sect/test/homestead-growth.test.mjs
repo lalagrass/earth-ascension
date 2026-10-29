@@ -27,3 +27,24 @@ test('H22：同屋同精力舒適床實休至少快20%，不削弱木床、不�
 });
 
 test('H21 review：加工與安裝必須在實際位置，不能用壞任務跳過搬回',()=>{for(const step of['craft','pickup','install']){const s=pantry();s.fac.bed.stage=1;s.fac.workbench.stage=1;s.person.skills.build=40;startBlueprint(s,'bed');const v=s.fac.bed.site;v.delivered.wood=4;if(step!=='craft'){v.crafted=12;v.assemblyAt=[...PLACES.workbench];}s.person.pos=step==='craft'?[...HOME]:[...PLACES.workbench];s.person.task={act:'build',phase:'do',place:'bed',timer:0,step};assert.equal(loadHomestead(saveHomestead(s)).ok,false,step);}});
+import{autoRecipe,chooseFood,nextUnlocks}from'../src/homestead-content.mjs';
+test('H23：自主食譜有用途且保留基本求生，夠用不為XP工作',()=>{
+ const s=pantry();s.person.skills.cook=5;s.person.skills.build=40;s.fac.kitchen.stage=2;s.person.energy=40;assert.equal(autoRecipe(s),'stew');startBlueprint(s,'workbench');assert.equal(autoRecipe(s),'basic');s.stock.wood=0;assert.equal(autoRecipe(s),'salad');s.stock.berries=0;assert.equal(autoRecipe(s),null);
+ s.stock.meal=1;s.person.hunger=20;s.person.order='cook';s.person.cookRequest='stew';s.person.task=null;tickHomestead(s);assert.equal(s.person.task.act,'eat');assert.equal(s.person.task.foodId,'basic');
+ const full=pantry();full.fac.hut.stage=2;full.fac.bed.stage=2;full.fac.workbench.stage=1;full.fac.kitchen.stage=2;full.fac.garden.stage=1;full.person.skills.build=40;full.person.skills.cook=5;Object.assign(full.stock,{wood:8,berries:8,veg:8,meal:8});const xp=structuredClone(full.person.skills);run(full,30);assert.deepEqual(full.person.skills,xp);assert.ok(full.person.leisure>0);assert.equal(full.stock.meal,8);
+ assert.match(nextUnlocks(s,'build'),/所有等級/);s.person.skills.cook=2;assert.match(nextUnlocks(s,'cook'),/燉菜.*改良灶具/);
+});
+test('H23：工程在途木不被料理花掉，成品滿倉/中斷不發XP，吃哪道按需要',()=>{
+ const s=pantry();s.person.skills.build=40;s.person.skills.cook=5;s.fac.kitchen.stage=2;s.stock.wood=1;startBlueprint(s,'workbench');setOrder(s,'build');for(let i=0;i<100&&s.person.task?.phase!=='deliver';i++)tickHomestead(s);assert.equal(s.stock.wood,0);assert.equal(s.fac.workbench.site.reserved.wood,1);assert.equal(requestRecipe(s,'stew'),false);assert.equal(s.fac.workbench.site.reserved.wood,1);setOrder(s,'leisure');run(s,10);assert.equal(s.stock.wood,1);assert.equal(s.fac.workbench.site.reserved.wood,0);
+ s.stock.salad=1;s.stock.meal=1;s.stock.stew=1;s.person.energy=80;s.person.hunger=37;assert.equal(chooseFood(s),'salad');s.person.energy=30;assert.equal(chooseFood(s),'stew');s.stock.stew=0;assert.equal(chooseFood(s),'basic');
+ for(const id of['basic','salad','stew']){const v=pantry();v.person.skills.cook=5;v.fac.kitchen.stage=2;v.person.pos=[...PLACES.kitchen];v.person.energy=90;requestRecipe(v,id);for(let i=0;i<4;i++)tickHomestead(v);const stock=structuredClone(v.stock),xp=v.person.skills.cook;setOrder(v,'rest');assert.deepEqual(v.stock,stock);assert.equal(v.person.skills.cook,xp);}
+});
+import{growthTraffic}from'./helpers/growth-traffic.mjs';
+test('H24：五組各20000拍含新食譜/升級/加工/改令/暫停/重載，逐拍守恆',()=>{const results=[1,2,3,4,5].map(growthTraffic);for(const r of results){assert.ok(r.minH>0&&r.minE>0,JSON.stringify(r));assert.equal(r.fac.bed,2);}assert.ok(results.reduce((n,r)=>n+r.made.salad,0)>0);assert.ok(results.reduce((n,r)=>n+r.made.stew,0)>0);});
+import{growthRoute,replayGrowth}from'./helpers/growth-route.mjs';
+test('H24：三性格從零到兩新菜與舒適床，有限完整路徑；新成果不同dt回放一致',()=>{for(const personality of['quiet','sociable','diligent']){const r=growthRoute(personality);assert.ok(r.days<=20&&r.minH>0&&r.minE>0,JSON.stringify(r.events));assert.ok(r.made.basic&&r.ate.salad&&r.ate.stew);for(const dt of[.1,1])assert.equal(saveHomestead(replayGrowth(r,dt)),saveHomestead(r.final));}});
+test('H24：舊v1/v2/v3必要相容、基本餐不改身份，未知版/壞新欄位拒讀',()=>{
+ for(const version of[1,2,3]){const s=pantry();s.version=version;s.person.skills.cook=8;s.person.skills.build=40;s.stock.meal=2;delete s.stock.salad;delete s.stock.stew;delete s.person.cookRequest;delete s.fac.workbench;delete s.unlocked;const r=loadHomestead(saveHomestead(s));assert.ok(r.ok,r.error);assert.equal(r.state.stock.meal,2);assert.equal(r.state.stock.salad,0);assert.equal(r.state.stock.stew,0);assert.equal(r.state.person.skills.cook,8);assert.equal(r.state.fac.workbench.stage,0);}
+ const invalid=[s=>{s.version=4},s=>{s.stock.salad=8;s.stock.meal=1},s=>{s.stock.stew=-1},s=>{s.stock.salad=.5},s=>{s.person.task={act:'constructor',phase:'go',timer:0}},s=>{s.person.feelings=JSON.parse('{"__proto__":4}')}];for(const mutate of invalid){const s=pantry();mutate(s);assert.equal(loadHomestead(saveHomestead(s)).ok,false);}
+ const s=pantry();s.person.skills.cook=5;s.person.skills.build=40;s.fac.kitchen.stage=2;s.person.pos=[...PLACES.kitchen];requestRecipe(s,'stew');run(s,4);const r=loadHomestead(saveHomestead(s));assert.ok(r.ok);run(s,20);run(r.state,20);assert.equal(saveHomestead(s),saveHomestead(r.state));
+});

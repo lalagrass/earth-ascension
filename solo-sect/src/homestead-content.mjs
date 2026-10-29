@@ -21,4 +21,6 @@ export function autoRecipe(s){
  if(!s.stock.wood&&!recipeReason(s,'salad'))return 'salad';
  return null;
 }
-export function chooseFood(s){if(s.stock.stew>0&&(s.person.energy<60||s.person.hunger<30))return 'stew';if(s.stock.meal>0)return 'basic';if(s.stock.salad>0)return 'salad';if(s.stock.stew>0)return 'stew';return null;}
+export function chooseFood(s){if(s.stock.stew>0&&(s.person.energy<60||s.person.hunger<30))return 'stew';if(s.stock.salad>0&&s.person.energy>=60&&s.person.hunger>=30)return 'salad';if(s.stock.meal>0)return 'basic';if(s.stock.salad>0)return 'salad';if(s.stock.stew>0)return 'stew';return null;}
+
+export function nextUnlocks(s,skill){const level=skillLevel(s,skill)+1;if(level>2)return '已學會本輪所有等級做法；不必繼續刷工作。';if(skill==='cook')return `下級新做法：${Object.values(RECIPES).filter(r=>r.skill===level).map(r=>`${r.name}（需${r.facility===2?'改良灶具':'露天灶'}）`).join('、')}。`;if(skill==='build')return `下級新做法：${Object.entries(BUILD_GATES).filter(([,g])=>g.level===level).map(([id])=>({workbench:'木作台','kitchen:2':'改良灶具','bed:2':'舒適床鋪（需木床與木作台）'}[id])).join('、')}。`;return '下級讓有效工作更省體力；沒有額外配方樹。';}

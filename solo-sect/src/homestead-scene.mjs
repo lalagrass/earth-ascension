@@ -1,4 +1,5 @@
 // Canvas 表現只讀狀態：時間來自世界，不另設動畫時鐘。
+import{preparedCount}from'./homestead-content.mjs';
 import {currentFeelings} from './homestead-living.mjs';
 import {FACILITIES,PLACES,HOME,DAY,visitorHere} from './homestead.mjs';
 export function sceneFacts(s) {
@@ -57,8 +58,8 @@ export function drawHomestead(g,s) {
  if(s.fac.workbench?.stage){rect(637,448,78,9,'#ae8256');rect(643,457,6,31,'#69503b');rect(702,457,6,31,'#69503b');rect(650,441,30,6,'#7a6048');line([[687,439],[702,444]],'#c1c2b5',4);}
  if(s.fac.store.stage){rect(505,437,99,60,'#8b7653');g.fillStyle='#64523b';g.beginPath();g.moveTo(493,437);g.lineTo(555,410);g.lineTo(617,437);g.fill();rect(512,448,85,4,'#bba577');}
  for(let i=0;i<Math.min(10,s.stock.wood);i++){rect(515+(i%2)*33,489-Math.floor(i/2)*8,30,6,'#765337');circle(542+(i%2)*33,492-Math.floor(i/2)*8,3,'#ba925d');}
- for(let i=0;i<Math.min(4,Math.ceil((s.stock.berries+s.stock.veg+s.stock.meal)/4));i++){rect(575+i%2*17,480-Math.floor(i/2)*17,14,13,'#b5a174');rect(577+i%2*17,482-Math.floor(i/2)*17,10,3,'#69805a');}
- for(const [id,f]of Object.entries(s.fac))if(f.site){const recipe=FACILITIES[id].stages[f.stage+1],point=recipe?.craft&&f.site.crafted<recipe.craft?PLACES.workbench:PLACES[id];const[x,y]=point;g.setLineDash([8,5]);g.strokeStyle='#f6e4ae';g.lineWidth=3;g.strokeRect(x-45,y-40,90,70);g.setLineDash([]);line([[x-45,y+30],[x-45,y-45],[x+45,y-45],[x+45,y+30]],'#917450',4);for(let i=0;i<f.site.delivered.wood;i++)rect(x-28,y+22-i*6,55,4,'#9d7347');if(f.site.work>0){rect(x-40,y+34,80,5,'#6b654e');rect(x-40,y+34,80*Math.min(1,f.site.work/f.site.workNeed),5,'#edc473');}}
+ for(let i=0;i<Math.min(4,Math.ceil((s.stock.berries+s.stock.veg+preparedCount(s))/4));i++){rect(575+i%2*17,480-Math.floor(i/2)*17,14,13,'#b5a174');rect(577+i%2*17,482-Math.floor(i/2)*17,10,3,'#69805a');}
+ for(const [id,f]of Object.entries(s.fac))if(f.site){const recipe=FACILITIES[id].stages[f.stage+1],point=recipe?.craft&&f.site.crafted<recipe.craft?PLACES.workbench:PLACES[id];const[x,y]=point;g.setLineDash([8,5]);g.strokeStyle='#f6e4ae';g.lineWidth=3;g.strokeRect(x-45,y-40,90,70);g.setLineDash([]);line([[x-45,y+30],[x-45,y-45],[x+45,y-45],[x+45,y+30]],'#917450',4);for(let i=0;i<(!recipe.craft||f.site.crafted<recipe.craft?f.site.delivered.wood:0);i++)rect(x-28,y+22-i*6,55,4,'#9d7347');if(f.site.work>0){rect(x-40,y+34,80,5,'#6b654e');rect(x-40,y+34,80*Math.min(1,f.site.work/f.site.workNeed),5,'#edc473');}}
  for(const f of Object.values(s.fac))if(f.site?.assemblyAt){const[x,y]=f.site.assemblyAt;rect(x-18,y-12,36,12,'#8d6d48');line([[x-20,y-14],[x+20,y-14]],'#d1b37d',4);}
  if(s.fac.bench?.stage){rect(318,397,68,10,'#996f44');rect(322,407,6,16,'#655139');rect(376,407,6,16,'#655139');line([[321,390],[383,390]],'#b08a5b',6);}
  if(s.fac.flowers?.stage)for(let i=0;i<7;i++){const x=302+i*12,y=291+(i%2)*10;line([[x,y],[x,y-14]],'#53804d',3);circle(x,y-16,6,i%2?'#cb8e8c':'#e4be67');circle(x,y-16,2,'#f5df98');}

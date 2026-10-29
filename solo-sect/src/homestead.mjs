@@ -460,7 +460,7 @@ export function loadHomestead(json) {
     }
     for (const id of ['bench','flowers','bed','workbench']) s.fac[id] ??= structuredClone(h2.fac[id]);
     if(s.person.feelings===undefined)s.person.feelings={};
-    if(!s.person.feelings || typeof s.person.feelings!=='object' || Array.isArray(s.person.feelings) || Object.entries(s.person.feelings).some(([id,until])=>!FEELINGS[id]||!Number.isFinite(until)||until<0||until>s.t+FEELINGS[id].duration))return {ok:false,error:'感受資料不合法'};
+    if(!s.person.feelings || typeof s.person.feelings!=='object' || Array.isArray(s.person.feelings) || Object.entries(s.person.feelings).some(([id,until])=>!Object.hasOwn(FEELINGS,id)||!Number.isFinite(until)||until<0||until>s.t+FEELINGS[id].duration))return {ok:false,error:'感受資料不合法'};
     if(s.person.skills===undefined)s.person.skills=freshSkills();
     if(!s.person.skills || Array.isArray(s.person.skills) || Object.keys(SKILLS).some(id=>!Number.isFinite(s.person.skills[id]) || s.person.skills[id]<0 || s.person.skills[id]>(SKILLS[id].cap??SKILLS[id].thresholds.at(-1))))return {ok:false,error:'技能資料不合法'};
     const p = s.person, t = p.task, c = p.carry;
@@ -495,7 +495,7 @@ export function loadHomestead(json) {
       else if (t.act === 'build') {
         if (!BUILDABLE.includes(t.place) || !s.fac[t.place].site || s.fac[t.place].site.paused || !['go', 'do', 'fetch', 'deliver'].includes(t.phase) || (['fetch', 'deliver'].includes(t.phase) && t.mat !== 'wood') || (t.phase === 'fetch' && c) || (t.phase === 'deliver' && !(c?.origin === 'site' && c.kind === 'wood'))) return { ok: false, error: '建造任務不合法' };
       } else {
-        if (!ACTIONS[t.act] || (t.act === 'leisure' ? !(t.place === 'home' || t.place === 'bench' && s.fac.bench.stage === 1) : t.place !== ACTIONS[t.act].place) || !['go', 'do'].includes(t.phase) || (t.act === 'farm' && !offers(s, 'garden', 'farm')) || (t.act === 'herbFarm' && !offers(s, 'herbGarden', 'herbFarm')) || (t.act === 'cook' && !offers(s, 'kitchen', 'cook'))) return { ok: false, error: '活動任務不合法' };
+        if (typeof t.act!=='string'||!Object.hasOwn(ACTIONS,t.act) || (t.act === 'leisure' ? !(t.place === 'home' || t.place === 'bench' && s.fac.bench.stage === 1) : t.place !== ACTIONS[t.act].place) || !['go', 'do'].includes(t.phase) || (t.act === 'farm' && !offers(s, 'garden', 'farm')) || (t.act === 'herbFarm' && !offers(s, 'herbGarden', 'herbFarm')) || (t.act === 'cook' && !offers(s, 'kitchen', 'cook'))) return { ok: false, error: '活動任務不合法' };
       }
     }
     if(t?.act==='build'&&t.step!==undefined&&(t.place!=='bed'||s.fac.bed.stage!==1||!['craft','pickup','install'].includes(t.step)||!['go','do'].includes(t.phase)||t.step==='craft'&&s.fac.bed.site.crafted>=12||t.step!=='craft'&&!s.fac.bed.site.assemblyAt))return {ok:false,error:'床鋪加工任務不合法'};
