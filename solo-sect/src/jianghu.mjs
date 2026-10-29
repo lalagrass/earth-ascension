@@ -49,6 +49,11 @@ const FX = {
   wxb5: [(s) => { s.rep = (s.rep || 0) + 10; arc(s, 'weixiaobao', 5, '皇上的朋友'); }],
   ax3: [(s) => { const d = heroD(s); d.hp = Math.min(d.hp, 4); arc(s, 'axing', 3, '火雲邪神'); }, () => {}],
   morning: [(s) => { for (const d of fighters(s)) for (const k of ['palm', 'leg', 'strength']) d.skills[k] = Math.min(100, d.skills[k] + 1); }, (s) => { for (const d of fighters(s)) mood(d, 5); }, (s) => { resAdd(s, 'coin', 3); }],
+  // v2.1 無名主線：兩條都把本門風雷掌腿教到大成。照舊開局無人值守時走第一條。
+  wuming: [
+    (s) => { const d = heroD(s); if (d) teachJ(s, d, 'fengLei', DA); s.jh.wuming = s.t || 1; log(s, '主角在木樁前把風雷掌腿悟到了大成。'); },
+    (s) => { const d = heroD(s); if (d) teachJ(s, d, 'fengLei', DA); s.jh.wuming = s.t || 1; s.jh.guestUntil = s.t + 7 * DAY; log(s, '過路拳師住了七日，把風雷掌腿教到大成，之後下山去了。'); },
+  ],
 };
 export const CARDS = buildCards(TREES.cards.jianghu, FX);
 const once = (s, k) => { if (s.jh.cards[k]) return false; s.jh.cards[k] = true; return true; };
@@ -119,6 +124,12 @@ export function jhStep(s, dt, H) {
   // 隱藏高手：新雇的具名雜工擲一次（每圖最多 3）
   const NAMES = [['kulijiang', '苦力強', 'tantui'], ['caifeng', '裁縫', 'tiexian'], ['youzhagui', '油炸鬼', 'bagua']];
   for (const d of s.ds) if (d.role === 'laborer' && !d.hiddenRolled) { d.hiddenRolled = true; if (J.hidden < JH.hiddenMax && R(s, H) < JH.hiddenP) { const [id, nm, art] = NAMES[J.hidden]; J.hidden++; d.name = nm; d.portrait = P(id); d.hidden = { art, shown: false }; } }
+  // v2.1：照舊開局沒有模板主角。檢核在 destiny-trees.json。已掛著的江湖卡不會擋它；沒有人點選，就當場走第一條。
+  if (!s.hero && heroD(s) && destinyStep(s, 'plain', { d0: heroD(s), card, arc, artTier })) {
+    const ch = (s.choices || []).find((c) => c.jh === 'wuming');
+    if (ch) jhResolve(s, ch, jhAutoPick(s, ch), H);
+    return;
+  }
   if (s.choices?.some((c) => c.jh && c.jh !== 'morning')) return; // 一次一張
   const d0 = heroD(s);
   // 楊過：神鵰（三次餵食）→ 斷臂；小龍女：玉蜂

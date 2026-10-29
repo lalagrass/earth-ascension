@@ -259,6 +259,8 @@ export const QUESTIONS = [
 // ---- v0.8 資源→建設、雇工 ----
 // 香火錢：每日晨起入帳 base + floor(名聲/perRep)；雇工每日工錢 wage，付不出累計 unpaid，達 leaveAfter 日離開
 export const ECON = { coinStart: 4, coinBase: 2, coinPerRep: 5, wage: 2, hireCoin: 4, hireFood: 2, leaveAfter: 2, carry: 2, laborCarry: 3 };
+// v2.1：照舊開局（沒有 hero 模板）前 earlyDays 日的香火多 earlyBonus；之後只把「聲望帶來的那一段」乘 repMul。經典開局不走這條，維護費也不動。
+export const PLAIN = { earlyDays: 10, earlyBonus: 4, repMul: 0.6 };
 export const RES_NAMES = { wood: '木', stone: '石', coin: '香火錢', veg: '菜', food: '飯', herb: '藥', hide: '獸皮', gall: '熊膽', page1: '凡階殘頁', page2: '精階殘頁', tiemu: '鐵木', lingshi: '靈石' };
 // 雇工能做的事（不練武、不聽講、不下廚種菜）；幹活時分數加成
 export const LABOR_ACTS = ['rest', 'eat', 'chat', 'leisure', 'chop', 'quarry', 'build'];

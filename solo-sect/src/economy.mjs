@@ -1,7 +1,7 @@
 // v1.85 錢有出口（ROADMAP I-1／I-8／A10，擁有人預設）：月俸＋建築維護、山下市集、丹藥販售與陳化、下山義學。
 // 規則全在下面幾張表；sim.mjs 在換日時呼叫 econDaily(s, H)，H＝{ rand, cancelTask, think, removeDisciple }。
 import { DAY } from './data.mjs';
-import { log, resAdd } from './util.mjs';
+import { log, resAdd, pillNote } from './util.mjs';
 
 // 月俸：內門／首徒每 5 日領俸，外門半份；總額 c·N^exp（比人數長得快）但封頂。寬限：第 graceDay 日起才開始結算。
 export const UPKEEP = { every: 5, graceDay: 10, wageC: 9, exp: 1.5, cap: 400, w: { head: 1.5, inner: 1, outer: 0.25 },
@@ -39,7 +39,7 @@ export function marketWhy(s, k) {
 }
 export function marketDo(s, k) {
   const why = marketWhy(s, k); if (why) return { ok: false, why }; const p = priceOf(s, k), M = market(s);
-  if (k === 'pill') { resAdd(s, 'pill', -1); resAdd(s, 'coin', p); M.sold.pill = (M.sold.pill || 0) + 1; log(s, `山下藥舖收了一顆療傷丹，得 ${p} 香火錢。`); return { ok: true, p }; }
+  if (k === 'pill') { resAdd(s, 'pill', -1); pillNote(s, 'sold', 1); resAdd(s, 'coin', p); M.sold.pill = (M.sold.pill || 0) + 1; log(s, `山下藥舖收了一顆療傷丹，得 ${p} 香火錢。`); return { ok: true, p }; }
   resAdd(s, 'coin', -p); M.sold[k] = (M.sold[k] || 0) + 1;
   if (k === 'herb') { resAdd(s, 'herb', 3); log(s, `在山下市集買了 3 份靈草，花 ${p}。`); }
   else { const d = armable(s); d.weapon = true; d.powMul = (d.powMul || 1) * MARKET.weaponMul; log(s, `在山下市集替${d.name}買了一把兵器（招式威力 ×${MARKET.weaponMul}），花 ${p}。`); }
@@ -47,7 +47,7 @@ export function marketDo(s, k) {
 }
 // 丹藥陳化：存丹超過 keep，每 5 日少 10%（至少 1 顆）
 export const PILL_AGE = { keep: 10, every: 5, rate: 0.1 };
-export function agePills(s) { const n = s.res.pill || 0; if (n <= PILL_AGE.keep || s.day % PILL_AGE.every) return 0; const lost = Math.max(1, Math.floor(n * PILL_AGE.rate)); resAdd(s, 'pill', -lost); log(s, `丹房存丹太多，${lost} 顆療傷丹受潮失效。`); return lost; }
+export function agePills(s) { const n = s.res.pill || 0; if (n <= PILL_AGE.keep || s.day % PILL_AGE.every) return 0; const lost = Math.max(1, Math.floor(n * PILL_AGE.rate)); resAdd(s, 'pill', -lost); pillNote(s, 'aged', lost); log(s, `丹房存丹太多，${lost} 顆療傷丹受潮失效。`); return lost; }
 
 // A10 下山義學：派一名弟子下山一天，帶回一位想入門的年輕人（不看名聲，仍要床位與糧）；費用遞增
 export const SCHOOL = { cost: 20, rise: 1.2, dur: DAY, poolMax: 2 };

@@ -7,12 +7,15 @@ import { log, resAdd } from './util.mjs';
 import { power } from './jianghu.mjs';
 
 export const RAID = { minPop: 8, first: 8, every: 6, jitter: 2, w: { coin: 1, food: 1, pill: 8, herb: 1, stage: 25 }, div: 2, dayK: 30, dayMax: 2, cap: 900,
+  logAfter: 30, logK: 0.2, hurtCool: 2, // v2.1：第 30 日後天數係數改對數；山門重傷後下次上門再晚 hurtCool 日
   demand: { base: 20, k: 0.6, coinMax: 0.35, min: 10 }, wait: DAY / 2, hurtCost: 80, hurtHp: 15, winHurt: 0.4, steal: { coin: 0.15, food: 0.2 }, rep: 3 };
 export function T(s) { return (s.threat ??= { next: RAID.first, n: 0, paid: 0, fought: 0, won: 0, homeHurt: 0, deaths: 0, pending: null, rng: 0, hist: [] }); }
 const R = (s) => { const X = T(s); X.rng = ((X.rng || ((s.seed || 1) * 7477 + 29) % 2147483647) * 16807) % 2147483647; return X.rng / 2147483647; };
 export const headcount = (s) => s.ds.filter((d) => !d.removed).length;
 export function wealth(s) { const W = RAID.w, r = s.res; return Math.max(0, r.coin || 0) * W.coin + (r.food || 0) * W.food + (r.pill || 0) * W.pill + (r.herb || 0) * W.herb + FACILITIES.reduce((a, f) => a + (s.fac[f.id]?.stage || 0), 0) * W.stage; }
-export const dayMul = (s) => Math.min(RAID.dayMax, 0.5 + (s.day || 0) / RAID.dayK);
+const linMul = (day) => Math.min(RAID.dayMax, 0.5 + day / RAID.dayK);
+// 第 logAfter 日以前與舊線性相同；之後從當天的值接著以對數成長，不再爬到 dayMax。
+export const dayMul = (s) => { const d = s.day || 0; if (d <= RAID.logAfter) return linMul(d); return Math.min(RAID.dayMax, linMul(RAID.logAfter) + Math.log(1 + (d - RAID.logAfter) / RAID.logAfter) * RAID.logK); };
 export function points(s) { if (headcount(s) < RAID.minPop) return 0; return Math.min(RAID.cap, Math.round(wealth(s) / RAID.div * dayMul(s))); }
 export const defense = (s) => power(s);
 export const winP = (s, pts) => { const d = defense(s); return Math.max(0.1, Math.min(0.9, d / (d + pts))); };
@@ -33,7 +36,7 @@ export function threatDaily(s) {
 export function threatStep(s, H) { const P = T(s).pending; if (P && s.t >= P.until) raidResolve(s, raidAuto(s), H, true); }
 function hurtOne(s, H) {
   const c = s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > RAID.hurtHp); // 孩子不上陣 if (!c.length) return null;
-  const d = c[Math.floor(R(s) * c.length)]; d.hp = Math.min(d.hp, RAID.hurtHp); d.raidHurt = (d.raidHurt || 0) + 1; T(s).homeHurt++; H?.think?.(s, d, 'raidHurt'); return d;
+  const d = c[Math.floor(R(s) * c.length)]; d.hp = Math.min(d.hp, RAID.hurtHp); d.raidHurt = (d.raidHurt || 0) + 1; const X = T(s); X.homeHurt++; X.next = (X.next || s.day || 0) + RAID.hurtCool; H?.think?.(s, d, 'raidHurt'); return d;
 }
 // i：0 付錢、1 迎戰；付不起就只能迎戰
 export function raidResolve(s, i, H, auto = false) {

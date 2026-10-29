@@ -1,6 +1,6 @@
 import test from 'node:test'; import assert from 'node:assert/strict';
 import { createState, tick, startBuild, togglePause, setOrder, save, load, hire, canHire, invite, canInvite, laborers, disciples, scoreActs, payday, capacity, MATS } from '../src/sim.mjs';
-import { ECON, ROOT, RULES_VERSION, DAY } from '../src/data.mjs';
+import { ECON, PLAIN, ROOT, RULES_VERSION, DAY } from '../src/data.mjs';
 const run = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
 const withShed = (seed) => { const s = createState(seed); s.fac.shed.stage = 1; s.res.food = 60; s.res.coin = 20; return s; };
 
@@ -38,6 +38,7 @@ test('雇工只幹活不練武', () => {
 });
 test('每日入帳與工錢；付不出兩日雇工離開且關係表清乾淨', () => {
   const s = withShed(107); s.res.coin = 4; hire(s); const id = laborers(s)[0].id; s.res.coin = 0; s.rep = 0;
+  s.day = PLAIN.earlyDays + 1; // v2.1 照舊開局前 10 日另有早補；欠薪這條走之後的底數（聲望 0 時仍是入帳 2）
   payday(s); assert.equal(s.res.coin, 0); assert.equal(laborers(s).length, 1); // 入帳 2 付 2
   s.res.coin = -0; laborers(s)[0].unpaid = 1; s.res.coin = 0; s.rep = -10; payday(s);
   assert.equal(laborers(s).length, 0); assert.ok(!Object.keys(s.aff).some((k) => k.includes(id))); assert.ok(s.laborGone.includes(id)); assert.ok(s.ledgerPrev);

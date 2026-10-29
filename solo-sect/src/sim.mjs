@@ -1,8 +1,8 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove } from './arts.mjs';
 import { ART_GAIN, BREAK, EXP } from './data.mjs';
-import { RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE } from './data.mjs';
-import { clone, dist, clamp, relKey, affKey, log, book, resAdd } from './util.mjs';
+import { RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE } from './data.mjs';
+import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote } from './util.mjs';
 import { think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits } from './mind.mjs';
 import { relStage, relAdd, compat, aff, initPair } from './social.mjs';
 import { seasonOf } from './season.mjs';
@@ -226,8 +226,8 @@ const dayUse = (s, act) => { const D = (s.daily ??= {}), c = D[act]; if (!c || c
 // 效果：use 不夠就改用 alt；全部由資料決定，無亂數
 export function applyEff(s, d, E, actName) { if (!E) return;
   if (E.use && Object.entries(E.use).some(([k, v]) => (s.res[k] || 0) < v)) return applyEff(s, d, E.alt, actName);
-  for (const [k, v] of Object.entries(E.use || {})) { s.res[k] -= v; book(s, 'out', k, v); }
-  for (const [k, v] of Object.entries(E.res || {})) { const nv = Math.min(s.cap[k] ?? Infinity, (s.res[k] || 0) + v); book(s, 'in', k, nv - (s.res[k] || 0)); s.res[k] = nv; }
+  for (const [k, v] of Object.entries(E.use || {})) { s.res[k] -= v; book(s, 'out', k, v); if (k === 'pill') pillNote(s, 'used', v); }
+  for (const [k, v] of Object.entries(E.res || {})) { const nv = Math.min(s.cap[k] ?? Infinity, (s.res[k] || 0) + v); const got = nv - (s.res[k] || 0); book(s, 'in', k, got); s.res[k] = nv; if (k === 'pill') pillNote(s, 'made', got); }
   if (E.hp) d.hp = clamp(d.hp + E.hp, 0, 100); if (E.mood) d.mood = clamp(d.mood + E.mood, 0, 100); if (E.rep) s.rep = Math.round(((s.rep || 0) + E.rep) * 10) / 10;
   if (E.wexin) for (let i = 0; i < E.wexin; i++) easeWexin(s, d);
   if (E.allMood) { for (const o of s.ds) if (!o.away) o.mood = clamp(o.mood + E.allMood, 0, 100); log(s, `${d.name}敲響晨鐘，全派精神一振`); }
@@ -549,9 +549,17 @@ function dismissLabor(s, d, why) {
   removeActor(s, d, why, { quiet: true }); BYID.delete(s); s.laborGone.push(d.id);
   log(s, `${d.name}${why}，下山去了。`);
 }
+// 香火＝底數＋聲望段＋同伴加成。照舊開局才套 PLAIN：前 10 日底數略高，之後聲望段乘 repMul。
+export function incenseOf(s) {
+  const rep = Math.floor((s.rep || 0) / ECON.coinPerRep);
+  const base = ECON.coinBase + econCoin(s);
+  if (s.hero) return base + rep;
+  if ((s.day || 1) <= PLAIN.earlyDays) return base + PLAIN.earlyBonus + rep;
+  return base + Math.floor(rep * PLAIN.repMul);
+}
 export function payday(s) {
   s.ledgerPrev = s.ledger; s.ledger = { day: s.day, in: {}, out: {} };
-  const inc = ECON.coinBase + Math.floor((s.rep || 0) / ECON.coinPerRep) + econCoin(s); s.res.coin += inc; book(s, 'in', 'coin', inc);
+  const inc = incenseOf(s); s.res.coin += inc; book(s, 'in', 'coin', inc);
   for (const d of laborers(s)) {
     if (s.res.coin >= ECON.wage) { s.res.coin -= ECON.wage; book(s, 'out', 'coin', ECON.wage); d.unpaid = 0; think(s, d, 'paid'); }
     else { d.unpaid = (d.unpaid || 0) + 1; think(s, d, 'unpaid'); log(s, `付不出${d.name}的工錢（欠 ${d.unpaid} 日）`); if (d.unpaid >= ECON.leaveAfter) dismissLabor(s, d, '工錢一直沒著落'); }

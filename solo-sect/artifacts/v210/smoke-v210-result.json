@@ -1,0 +1,28 @@
+{
+ "plain": {
+  "forecast": 6,
+  "hero": null,
+  "comp": null,
+  "day": 1,
+  "rep": 0,
+  "text": "明晨預計：香火 +6・工錢 −0月俸與維護：第 "
+ },
+ "guojing": {
+  "forecast": 4,
+  "hero": "guojing",
+  "comp": "huangrong",
+  "day": 1,
+  "rep": 0,
+  "text": "明晨預計：香火 +4・工錢 −0月俸與維護：第 "
+ },
+ "munianci": {
+  "forecast": 2,
+  "hero": "guojing",
+  "comp": "munianci",
+  "day": 1,
+  "rep": 0,
+  "text": "明晨預計：香火 +2・工錢 −0月俸與維護：第 "
+ },
+ "errs": [],
+ "pass": true
+}

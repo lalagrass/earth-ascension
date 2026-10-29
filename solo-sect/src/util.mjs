@@ -9,4 +9,6 @@ export function log(s, msg, tier) { const e = classify(s, { t: Math.floor(s.t), 
 // v1.8 每日帳本：所有 s.res 異動都要記（book），resAdd／resSet 是「改庫存＋記帳」的唯一捷徑
 export function book(s, dir, k, v) { if (!v || !s.ledger) return; const L = s.ledger; L[dir][k] = (L[dir][k] || 0) + v; }
 export function resAdd(s, k, v) { const o = s.res[k] || 0; s.res[k] = o + v; const d = s.res[k] - o; if (d) book(s, d > 0 ? 'in' : 'out', k, Math.abs(d)); }
+// v2.1：療傷丹產出／治傷／賣出／陳化分開累計。只記帳，不改數量。
+export function pillNote(s, k, n) { if (!n) return; const P = (s.pills ??= { made: 0, used: 0, sold: 0, aged: 0 }); P[k] = (P[k] || 0) + n; }
 export const resSet = (s, k, nv) => resAdd(s, k, nv - (s.res[k] || 0));
