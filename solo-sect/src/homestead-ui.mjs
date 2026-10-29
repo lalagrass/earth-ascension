@@ -1,3 +1,4 @@
+import { drawHomestead } from './homestead-scene.mjs';
 import { activityText, activityReason, buildingInfo, nextStep, foodDays } from './homestead-view.mjs';
 import { ACTIONS, FACILITIES, PLACES, HOME, DAY, SAVE_KEY, offers, blockReason, visitorHere, createHomestead, startBlueprint, setOrder, setHelperOrder, inviteHelper, acceptApprentice, askHelperLeave, tickHomestead, saveHomestead, loadHomestead } from './homestead.mjs';
 import { mountTransferManager, downloadBytes } from './transfer-manager-ui.mjs';
@@ -48,42 +49,7 @@ $('build').onclick = (e) => { const b = e.target.closest('[data-build]'); if (b)
 $('community').onclick = (e) => { const b = e.target.closest('[data-social]'); if (!b) return; const action = { invite: inviteHelper, apprentice: acceptApprentice, leave: askHelperLeave }[b.dataset.social]; if (action?.(s)) show('已記入荒居紀事。'); render(); };
 $('helper-orders').onclick = (e) => { const b = e.target.closest('[data-helper]'); if (b) { setHelperOrder(s, b.dataset.helper === 'auto' ? null : b.dataset.helper); render(); } };
 
-function draw() {
-  if (!s) return;
-  const g = ctx, w = 900, h = 560;
-  const sky = g.createLinearGradient(0, 0, 0, h); sky.addColorStop(0, '#d5e4ce'); sky.addColorStop(1, '#9db47f'); g.fillStyle = sky; g.fillRect(0, 0, w, h);
-  g.fillStyle = '#8d9f72'; for (let i = 0; i < 26; i++) { const x = 20 + i * 37, y = 48 + ((i * 71) % 460); g.beginPath(); g.ellipse(x, y, 21, 9, (i % 3) * .6, 0, Math.PI * 2); g.fill(); }
-  g.strokeStyle = '#c8b98a'; g.lineWidth = 38; g.lineCap = 'round'; g.beginPath(); g.moveTo(...PLACES.berries); g.quadraticCurveTo(430, 440, ...HOME); g.quadraticCurveTo(620, 420, ...PLACES.wood); g.stroke();
-  g.fillStyle = '#786744'; g.beginPath(); g.ellipse(...HOME, 75, 45, 0, 0, Math.PI * 2); g.fill();
-  // 野果、樹木、固定住處地塊。
-  for (let i = 0; i < 5; i++) { const x = 105 + i * 24, y = 316 + (i % 2) * 35; g.fillStyle = '#456b40'; g.beginPath(); g.arc(x, y, 23, 0, 7); g.fill(); g.fillStyle = '#b24f45'; for (let j = 0; j < 3; j++) { g.beginPath(); g.arc(x - 11 + j * 11, y - 5 + (j % 2) * 9, 4, 0, 7); g.fill(); } }
-  for (let i = 0; i < 5; i++) { const x = 670 + i * 30, y = 210 + (i % 2) * 65; g.fillStyle = '#6b4c35'; g.fillRect(x - 6, y, 12, 68); g.fillStyle = '#3f6641'; g.beginPath(); g.arc(x, y - 8, 31, 0, 7); g.fill(); }
-  g.fillStyle = '#4e754e'; for (let i = 0; i < 5; i++) { g.beginPath(); g.arc(110 + i * 17, 175 + (i % 2) * 15, 8, 0, 7); g.fill(); }
-  const hut = s.fac.hut;
-  if (hut.stage) { g.fillStyle = hut.stage === 2 ? '#ab825b' : '#8e6847'; g.fillRect(372, 177, 142, 104); g.fillStyle = hut.stage === 2 ? '#685240' : '#564531'; g.beginPath(); g.moveTo(357, 181); g.lineTo(444, 116); g.lineTo(529, 181); g.fill(); g.fillStyle = '#422f25'; g.fillRect(431, 225, 30, 56); if (hut.stage === 2) { g.fillStyle = '#ebd5a3'; g.fillRect(389, 205, 22, 23); g.fillRect(480, 205, 22, 23); } }
-  else if (hut.site) { g.strokeStyle = '#7e6c48'; g.lineWidth = 4; g.setLineDash([10, 7]); g.strokeRect(370, 172, 145, 105); g.setLineDash([]); g.fillStyle = '#a58253'; for (let i = 0; i < hut.site.delivered.wood; i++) g.fillRect(390, 260 - i * 7, 58, 6); }
-  else { g.strokeStyle = '#95836a'; g.lineWidth = 2; g.setLineDash([7, 8]); g.strokeRect(370, 172, 145, 105); g.setLineDash([]); }
-  // H2：菜園、露天灶、儲物棚各佔一個固定地塊。
-  const garden = s.fac.garden, kitchen = s.fac.kitchen, store = s.fac.store;
-  g.fillStyle = '#75593e'; g.fillRect(210, 127, 120, 78);
-  if (garden.stage) { for (let i = 0; i < 4; i++) { g.fillStyle = '#9d7a4a'; g.fillRect(218, 136 + i * 17, 102, 9); if (s.plot.state !== 'empty') { g.fillStyle = s.plot.state === 'ripe' ? '#5b934d' : '#86a765'; for (let j = 0; j < 5; j++) g.fillRect(224 + j * 19, 131 + i * 17, 9, 9); } } }
-  if (garden.site) { g.strokeStyle = '#f5e5b0'; g.lineWidth = 3; g.strokeRect(210, 127, 120, 78); }
-  const herbGarden = s.fac.herbGarden;
-  g.fillStyle = '#76634b'; g.fillRect(80, 58, 110, 66);
-  if (herbGarden.stage) { for (let i = 0; i < 3; i++) { g.fillStyle = '#9c7e58'; g.fillRect(88, 67 + i * 19, 94, 7); if (s.herbPlot.state !== 'empty') { g.fillStyle = s.herbPlot.state === 'ripe' ? '#5a8b60' : '#82a883'; for (let j = 0; j < 5; j++) { g.beginPath(); g.arc(96 + j * 19, 65 + i * 19, s.herbPlot.state === 'ripe' ? 6 : 4, 0, 7); g.fill(); } } } }
-  if (herbGarden.site) { g.strokeStyle = '#f5e5b0'; g.lineWidth = 3; g.strokeRect(80, 58, 110, 66); }
-  g.fillStyle = '#5f5547'; g.beginPath(); g.arc(...PLACES.kitchen, 31, 0, 7); g.fill();
-  if (kitchen.stage) { g.fillStyle = '#d47b37'; g.beginPath(); g.moveTo(590, 356); g.lineTo(603, 324); g.lineTo(616, 356); g.fill(); g.fillStyle = '#efbb5f'; g.beginPath(); g.moveTo(601, 356); g.lineTo(607, 340); g.lineTo(612, 356); g.fill(); }
-  if (store.stage) { g.fillStyle = '#776149'; g.fillRect(505, 437, 99, 60); g.fillStyle = '#4c3d32'; g.beginPath(); g.moveTo(493, 437); g.lineTo(555, 410); g.lineTo(617, 437); g.fill(); }
-  else { g.fillStyle = '#aa8352'; for (let i = 0; i < Math.min(4, s.stock.wood); i++) g.fillRect(525, 478 - i * 7, 62, 6); }
-  for (const id of ['kitchen', 'store']) if (s.fac[id].site) { g.strokeStyle = '#f5e5b0'; g.lineWidth = 3; g.strokeRect(PLACES[id][0] - 43, PLACES[id][1] - 34, 86, 68); }
-  const p = s.person; g.fillStyle = '#342c27'; g.beginPath(); g.ellipse(p.pos[0], p.pos[1] + 5, 16, 7, 0, 0, 7); g.fill(); g.fillStyle = '#365677'; g.fillRect(p.pos[0] - 10, p.pos[1] - 33, 20, 35); g.fillStyle = '#e2bb8f'; g.beginPath(); g.arc(p.pos[0], p.pos[1] - 41, 11, 0, 7); g.fill(); if (p.carry) { g.fillStyle = p.carry.kind === 'wood' ? '#7f5734' : '#a44c43'; g.fillRect(p.pos[0] + 12, p.pos[1] - 25, 16, 12); }
-  if (visitorHere(s) || s.helper) { const q = s.helper || { pos: PLACES.visitor, name: s.visitor.name }; g.fillStyle = '#4f3436'; g.beginPath(); g.ellipse(q.pos[0], q.pos[1] + 5, 15, 7, 0, 0, 7); g.fill(); g.fillStyle = '#9d624c'; g.fillRect(q.pos[0] - 10, q.pos[1] - 33, 20, 35); g.fillStyle = '#e4bf98'; g.beginPath(); g.arc(q.pos[0], q.pos[1] - 41, 11, 0, 7); g.fill(); if (q.carry) { g.fillStyle = '#7f5734'; g.fillRect(q.pos[0] + 12, q.pos[1] - 25, 16, 12); } g.fillStyle = '#28362a'; g.fillText(q.name, q.pos[0], q.pos[1] - 59); }
-  g.font = 'bold 17px sans-serif'; g.textAlign = 'center'; g.fillStyle = '#28362a'; for (const [text, point, lift] of [['野果叢', PLACES.berries, 56], ['林緣枯木', PLACES.wood, 95], [FACILITIES.hut.stages[hut.stage].name, PLACES.hut, 132], [FACILITIES.garden.stages[garden.stage].name, PLACES.garden, 77], [FACILITIES.kitchen.stages[kitchen.stage].name, PLACES.kitchen, 73], [FACILITIES.store.stages[store.stage].name, PLACES.store, 101]]) g.fillText(text, point[0], point[1] - lift);
-  g.textAlign = 'left'; g.fillText('草藥坡', 22, 195); g.fillText(FACILITIES.herbGarden.stages[herbGarden.stage].name, 207, 72); g.textAlign = 'center';
-  g.fillText(p.name, p.pos[0], p.pos[1] - 59);
-  g.fillText('村路', PLACES.visitor[0], PLACES.visitor[1] + 45);
-}
+function draw() { if(s) drawHomestead(ctx,s); }
 function render() {
   if (!s || pointerHeld) return;
   const focused = document.activeElement; const focusSelector = focused?.id ? '#' + CSS.escape(focused.id) : ['act','build','social','helper'].find(k => focused?.dataset?.[k]) ? Object.entries(focused.dataset).map(([k,v]) => `[data-${k}="${CSS.escape(v)}"]`).join('') : null;

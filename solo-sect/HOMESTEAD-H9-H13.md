@@ -19,3 +19,7 @@
 ## H9 實際節點
 
 完成家園／需求／建造在前，純顯示模組將取料／運料／施工翻成具體中文，顯示下一級休息率、容量或配方與缺料。成果清單從已建地塊衍生，提示不再要求重立已完成木屋。按住 pointer 時不重建按鈕，保留原鍵盤焦點回復。`node --test solo-sect/test/homestead-home.test.mjs` 1/1；Chromium 真實頁面暫停2.2秒完整state不變、成本／效果、跨重繪Space指派和焦點、無pageerror通過。真圖 `shots/homestead-h9-new.png`、`homestead-h9-plan.png`。尚待整輪獨立review與完整流程；沒有把H8舊測試當本輪通過。
+
+## H10 實際節點
+
+Canvas 分出只讀 `homestead-scene.mjs`，保留原幾何風格，補屋頂／板牆／修繕窗台、工地木架／交料與施工條、作物生長大小、儲物箱與實存木料、睡眠／坐姿。灶火與蒸氣只在料理do階段出現；未作業只有冷鍋。標籤有底色並避讓已放置標籤，人物標籤另找鄰近位置。色彩只依既有日內時間。建築成果固定由stage顯示，不被日常log沖掉。相關2/2測試；Chromium同視角 `homestead-h10-before/cooking/after.png`（後兩張為明列呈現fixture，不冒稱正常建造流程）、熱灶／冷灶像素不同、無pageerror。未改tick、時間或資源規則。
