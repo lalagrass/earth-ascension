@@ -10,6 +10,9 @@ export function activityText(s, p = s.person) {
   if (t.phase === 'fetch') return `去儲物處取${materialName[t.mat] || t.mat}，準備建${target}`;
   if (t.phase === 'deliver') return `搬${p.carry?.amount || 1}根木料到「${target}」工地`;
   if (t.act === 'return') return `把${materialName[p.carry?.kind] || '物資'}帶回儲物處`;
+  if(t.act==='build'&&t.step==='craft')return t.phase==='go'?'走向木作台，準備加工床部件':'在木作台製作舒適床部件';
+  if(t.act==='build'&&t.step==='pickup')return '去取回上次放下的床部件';
+  if(t.act==='build'&&t.step==='install'&&t.phase==='go')return '把已做好的床部件搬回屋內';
   if (t.act === 'build') return t.phase === 'go' ? `走向「${target}」工地` : `正在建造「${target}」`;
   if (t.act === 'leave') return '沿村路回村';
   if(t.act==='cook')return t.phase==='go'?`走向露天灶，準備${RECIPES[t.recipe||'basic'].name}`:`正在做${RECIPES[t.recipe||'basic'].name}${t.manual?'（這一鍋）':''}`;
@@ -27,7 +30,7 @@ export function activityReason(s, p = s.person, who = 'person') {
   if (blocked) return `指派暫候：${blocked}；先${activityText(s,p)}。`;
   if (p.order && p.task?.act === p.order) return '正在執行你的指派；缺糧或疲累時會先照顧自己。';
   if (p.task?.act === 'eat' || p.task?.act === 'forage') return '先照顧吃飯與可用食物。';
-  if (p.task?.act === 'rest') return '先補回精力，休息後再繼續。';
+  if(p.task?.act==='rest')return `先補回精力。到屋內使用${s.fac.bed?.stage===2?'舒適床鋪':s.fac.bed?.stage?'木床鋪':'現有鋪蓋'}時，每秒恢復${restRate(s,{pos:[440,225]})}精力；休息後再繼續。`;
   if(p.task?.act==='chop')return Object.values(s.fac).some(f=>f.site&&!f.site.paused) ? '已有工程需要木料，先準備可用建材／燃料。' : '補足日常柴火；達到夠用存量就歇一會。';
   if(p.task?.act==='cook')return p.task.recipe==='salad'?'用菜與野果拌食，這一鍋不耗柴。':p.task.recipe==='stew'?'用較多菜與柴慢燉，換較飽足的一餐與有限恢復。':'用菜與柴煮成基本熱飯，補足日常食物。';
   if(p.task?.act==='farm')return '照料一塊菜園，供日後料理；田間收成要搬回才可用。';
@@ -42,8 +45,11 @@ export function facilityEffect(id, stage, mode='solo') {
   if (id === 'hut') return `休息每秒恢復 ${stage.rest} 精力`;
   if (id === 'store') return stage.name === '儲物棚' ? '容量：果20／木20／種10／菜16／飯15／藥10' : '容量：果8／木8／種5／菜8／飯8／藥6';
   if (id === 'garden') return stage.offers.includes('farm') ? '可播種；生長34秒後收2菜與2種' : '尚不能種菜';
+  if(id==='workbench')return stage.offers.includes('craft')?'可在台前加工床部件，之後搬回屋內安裝':'尚無家具加工處';
+  if(id==='kitchen'&&stage.name==='改良灶具')return '保留基本熱飯與拌食，料理Lv2可做燉菜；不免費省柴';
   if (id === 'kitchen') return stage.offers.includes('cook') ? '2菜＋1木 → 3份熱飯' : '尚不能料理';
   if (id === 'herbGarden') return stage.offers.includes('herbFarm') ? '1草藥插穗；生長50秒後收2–3草藥' : '尚不能栽藥';
+  if(id==='bed'&&stage.name==='舒適床鋪')return '木作台加工12秒＋屋內安裝6秒；使用時床休息額外+5/秒（原木床+1）';
   if (id === 'bed') return stage.name==='木床鋪' ? '在屋內使用時休息每秒額外+1精力；休息完成短暫安睡感受' : '尚無木床，不增加休息效率';
   if(mode==='legacy'&&id==='bench')return stage.offers.includes('leisure')?'閒坐改在長凳；舊版無額外加成':'尚無座位';
   if(mode==='legacy'&&id==='flowers')return stage.name==='庭院花叢'?'舊版純外觀，不增加產量或能力':'尚未植栽';

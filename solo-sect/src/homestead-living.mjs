@@ -3,4 +3,4 @@ export const FEELINGS={freshMeal:{name:'清爽拌食',value:1,duration:45},heart
 export const at=(p,point)=>Math.hypot(p.pos[0]-point[0],p.pos[1]-point[1])<1;
 export function feel(s,id){if(s.mode==='solo')s.person.feelings[id]=s.t+FEELINGS[id].duration;}
 export function currentFeelings(s){const active=Object.entries(s.person.feelings||{}).filter(([,until])=>until>s.t).map(([id,until])=>({id,...FEELINGS[id],left:Math.ceil(until-s.t)}));return {active,value:Math.min(5,active.reduce((n,f)=>n+f.value,0))};}
-export function restRate(s,p=s.person){return [3,6,9][s.fac.hut.stage]+(s.mode==='solo'&&s.fac.bed?.stage&&at(p,[440,225])?1:0);}
+export function restRate(s,p=s.person){return [3,6,9][s.fac.hut.stage]+(s.mode==='solo'&&s.fac.bed?.stage&&at(p,[440,225])?(s.fac.bed.stage===2?5:1):0);}
