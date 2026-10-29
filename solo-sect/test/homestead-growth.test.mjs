@@ -20,9 +20,9 @@ test('H21：建造技能鎖，台前加工、部件實搬、暫停續讀與屋�
 
 import{restRate}from'../src/homestead-living.mjs';
 test('H22：同屋同精力舒適床實休至少快20%，不削弱木床、不用不給',()=>{
- const timings=[];
- for(const bed of[1,2]){const s=pantry();s.fac.hut.stage=1;s.fac.bed.stage=bed;s.fac.workbench.stage=bed===2?1:0;s.person.skills.build=40;s.person.pos=[...PLACES.hut];s.person.hunger=90;s.person.energy=20;s.person.task={act:'rest',phase:'do',place:'hut',timer:0};assert.equal(restRate(s),bed===1?7:11);let seconds=0;while(s.person.energy<85){tickHomestead(s);seconds+=.25;}timings.push(seconds);assert.ok(s.person.feelings.rested>s.t);}
- assert.deepEqual(timings,[9.5,6]);assert.ok(timings[1]<=timings[0]*.8);
+ for(const hut of[1,2]){const timings=[];
+ for(const bed of[1,2]){const s=pantry();s.fac.hut.stage=hut;s.fac.bed.stage=bed;s.fac.workbench.stage=bed===2?1:0;s.person.skills.build=40;s.person.pos=[...PLACES.hut];s.person.hunger=90;s.person.energy=20;s.person.task={act:'rest',phase:'do',place:'hut',timer:0};assert.equal(restRate(s),(hut===1?6:9)+(bed===1?1:5));let seconds=0;while(s.person.energy<85){tickHomestead(s);seconds+=.25;}timings.push(seconds);assert.ok(s.person.feelings.rested>s.t);}
+ assert.deepEqual(timings,hut===1?[9.5,6]:[6.5,4.75]);assert.ok(timings[1]<=timings[0]*.8);}
  const s=pantry();s.person.skills.build=40;s.fac.bed.stage=1;s.fac.workbench.stage=1;startBlueprint(s,'bed');pauseProject(s,'bed');s.person.pos=[...PLACES.hut];assert.equal(restRate(s),7);s.fac.bed.site=null;s.fac.bed.stage=2;s.person.pos=[...HOME];assert.equal(restRate(s),6);s.person.energy=20;s.person.task={act:'leisure',phase:'do',place:'home',timer:0};tickHomestead(s);assert.equal(s.person.energy,20);assert.equal(s.person.feelings.rested,undefined);
 });
 

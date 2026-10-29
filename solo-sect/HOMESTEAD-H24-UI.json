@@ -1,0 +1,973 @@
+{
+  "route": "new solo, normal UI only, no material/XP/state grants; mixed pause/16x; AI not human; world DAY=240s",
+  "engine": "154.0.8037.57",
+  "events": [
+    {
+      "name": "new solitary game",
+      "wallSeconds": 0.446,
+      "speed": 0,
+      "t": 0,
+      "day": 1,
+      "skills": {
+        "gather": 0,
+        "build": 0,
+        "farm": 0,
+        "cook": 0
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 65,
+      "energy": 68,
+      "feelings": {},
+      "unlocked": [],
+      "fac": {
+        "hut": 0,
+        "garden": 0,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 0,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "first house",
+      "wallSeconds": 6.794,
+      "speed": 16,
+      "t": 100.25,
+      "day": 1,
+      "skills": {
+        "gather": 5,
+        "build": 15,
+        "farm": 0,
+        "cook": 0
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 50.96500000000137,
+      "energy": 26.349999999999994,
+      "feelings": {},
+      "unlocked": [
+        "木作台",
+        "改良灶具"
+      ],
+      "fac": {
+        "hut": 1,
+        "garden": 0,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 0,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "garden 1",
+      "wallSeconds": 11.51,
+      "speed": 16,
+      "t": 174.25,
+      "day": 1,
+      "skills": {
+        "gather": 8,
+        "build": 23,
+        "farm": 0,
+        "cook": 0
+      },
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 40.60500000000238,
+      "energy": 70.15000000000009,
+      "feelings": {},
+      "unlocked": [
+        "木作台",
+        "改良灶具"
+      ],
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 0,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "kitchen 1",
+      "wallSeconds": 16.143,
+      "speed": 16,
+      "t": 248.5,
+      "day": 2,
+      "skills": {
+        "gather": 12,
+        "build": 33,
+        "farm": 0,
+        "cook": 0
+      },
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 56.21000000000339,
+      "energy": 42.25000000000021,
+      "feelings": {},
+      "unlocked": [
+        "木作台",
+        "改良灶具"
+      ],
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 1,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "bed 1",
+      "wallSeconds": 21.842,
+      "speed": 16,
+      "t": 339.75,
+      "day": 2,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 0,
+        "cook": 0
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 43.435000000004635,
+      "energy": 81.60000000000036,
+      "feelings": {},
+      "unlocked": [
+        "木作台",
+        "改良灶具"
+      ],
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 1,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 1,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "basic meal made; cooking Lv1",
+      "wallSeconds": 26.909,
+      "speed": 16,
+      "t": 420.75,
+      "day": 2,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 2,
+        "cook": 2
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 1,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 58.09500000000574,
+      "energy": 52.400000000000375,
+      "feelings": {},
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食"
+      ],
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 1,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 1,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "salad made",
+      "wallSeconds": 31.843,
+      "speed": 16,
+      "t": 499.75,
+      "day": 3,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 4,
+        "cook": 3
+      },
+      "stock": {
+        "berries": 1,
+        "wood": 2,
+        "seeds": 4,
+        "veg": 1,
+        "meal": 3,
+        "salad": 2,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 47.03500000000682,
+      "energy": 81.70000000000039,
+      "feelings": {
+        "rested": 500.5
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食"
+      ],
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 1,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 1,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "salad actually eaten",
+      "wallSeconds": 36.675,
+      "speed": 16,
+      "t": 577,
+      "day": 3,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 6,
+        "cook": 3
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 5,
+        "veg": 3,
+        "meal": 3,
+        "salad": 1,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 74.22000000000787,
+      "energy": 88.70000000000039,
+      "feelings": {
+        "rested": 500.5,
+        "freshMeal": 622
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食"
+      ],
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 1,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 1,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "workbench 1",
+      "wallSeconds": 39.942,
+      "speed": 16,
+      "t": 629.25,
+      "day": 3,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 7,
+        "cook": 3
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 4,
+        "veg": 3,
+        "meal": 3,
+        "salad": 1,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 66.90500000000858,
+      "energy": 74.60000000000062,
+      "feelings": {
+        "rested": 500.5,
+        "freshMeal": 622
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食",
+        "舒適床鋪"
+      ],
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 1,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 1,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "kitchen 2",
+      "wallSeconds": 45.859,
+      "speed": 16,
+      "t": 724,
+      "day": 4,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 8,
+        "cook": 3
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 5,
+        "veg": 5,
+        "meal": 3,
+        "salad": 1,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 53.64000000000988,
+      "energy": 42.90000000000055,
+      "feelings": {
+        "rested": 500.5,
+        "freshMeal": 622
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食",
+        "舒適床鋪"
+      ],
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 1,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "bed 2",
+      "wallSeconds": 52.391,
+      "speed": 16,
+      "t": 828.5,
+      "day": 4,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 8,
+        "cook": 3
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 5,
+        "veg": 5,
+        "meal": 3,
+        "salad": 1,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 39.0100000000113,
+      "energy": 57.05000000000048,
+      "feelings": {
+        "rested": 793,
+        "freshMeal": 622
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食",
+        "舒適床鋪"
+      ],
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "comfortable bed actually used",
+      "wallSeconds": 52.681,
+      "speed": 0,
+      "t": 833,
+      "day": 4,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 8,
+        "cook": 3
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 5,
+        "veg": 5,
+        "meal": 3,
+        "salad": 1,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 38.380000000011364,
+      "energy": 100,
+      "feelings": {
+        "rested": 892.5,
+        "freshMeal": 622
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食",
+        "舒適床鋪"
+      ],
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "hut 2",
+      "wallSeconds": 63.445,
+      "speed": 16,
+      "t": 1003.25,
+      "day": 5,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 8,
+        "cook": 3
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 5,
+        "veg": 5,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 52.54500000001369,
+      "energy": 67.8000000000005,
+      "feelings": {
+        "rested": 892.5,
+        "freshMeal": 895
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食",
+        "舒適床鋪"
+      ],
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "store 1",
+      "wallSeconds": 70.041,
+      "speed": 16,
+      "t": 1109,
+      "day": 5,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 8,
+        "cook": 3
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 5,
+        "veg": 5,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 37.74000000001513,
+      "energy": 75.90000000000074,
+      "feelings": {
+        "rested": 1086,
+        "freshMeal": 895
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食",
+        "舒適床鋪"
+      ],
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "bench 1",
+      "wallSeconds": 73.54,
+      "speed": 16,
+      "t": 1165,
+      "day": 5,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 8,
+        "cook": 3
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 5,
+        "veg": 5,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 81.9000000000159,
+      "energy": 66.50000000000094,
+      "feelings": {
+        "rested": 1086,
+        "freshMeal": 895,
+        "warmMeal": 1173
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食",
+        "舒適床鋪"
+      ],
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 1,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "flowers 1",
+      "wallSeconds": 79.108,
+      "speed": 16,
+      "t": 1254,
+      "day": 6,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 8,
+        "cook": 3
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 5,
+        "veg": 5,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 69.44000000001711,
+      "energy": 80.20000000000118,
+      "feelings": {
+        "rested": 1246.75,
+        "freshMeal": 895,
+        "warmMeal": 1173,
+        "seated": 1285.5
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食",
+        "舒適床鋪"
+      ],
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 1,
+        "flowers": 1,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "cooking Lv2 naturally reached",
+      "wallSeconds": 94.19,
+      "speed": 16,
+      "t": 1495.25,
+      "day": 7,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 8,
+        "cook": 5
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 1,
+        "seeds": 5,
+        "veg": 3,
+        "meal": 4,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 87.6650000000204,
+      "energy": 96.4,
+      "feelings": {
+        "rested": 1246.75,
+        "freshMeal": 895,
+        "warmMeal": 1545.25,
+        "seated": 1541.75,
+        "flowers": 1541.75
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食",
+        "舒適床鋪",
+        "食譜：家常燉菜"
+      ],
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 1,
+        "flowers": 1,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "stew made",
+      "wallSeconds": 97.14,
+      "speed": 16,
+      "t": 1542.5,
+      "day": 7,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 9,
+        "cook": 7
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 4,
+        "veg": 0,
+        "meal": 4,
+        "salad": 0,
+        "stew": 2,
+        "herbs": 0
+      },
+      "hunger": 81.05000000002104,
+      "energy": 83.10000000000001,
+      "feelings": {
+        "rested": 1246.75,
+        "freshMeal": 895,
+        "warmMeal": 1545.25,
+        "seated": 1541.75,
+        "flowers": 1541.75
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食",
+        "舒適床鋪",
+        "食譜：家常燉菜"
+      ],
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 1,
+        "flowers": 1,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "stew actually eaten",
+      "wallSeconds": 209.835,
+      "speed": 16,
+      "t": 3345.75,
+      "day": 14,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 12,
+        "cook": 7
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 7,
+        "veg": 4,
+        "meal": 0,
+        "salad": 0,
+        "stew": 1,
+        "herbs": 0
+      },
+      "hunger": 100,
+      "energy": 100,
+      "feelings": {
+        "rested": 1664,
+        "freshMeal": 895,
+        "warmMeal": 3032.75,
+        "seated": 3402.25,
+        "flowers": 3402.25,
+        "heartyMeal": 3465.75
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食",
+        "舒適床鋪",
+        "食譜：家常燉菜"
+      ],
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 1,
+        "flowers": 1,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "stable home and chosen leisure",
+      "wallSeconds": 210.041,
+      "speed": 0,
+      "t": 3348.75,
+      "day": 14,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 12,
+        "cook": 7
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 7,
+        "veg": 4,
+        "meal": 0,
+        "salad": 0,
+        "stew": 1,
+        "herbs": 0
+      },
+      "hunger": 99.58000000000004,
+      "energy": 100,
+      "feelings": {
+        "rested": 1664,
+        "freshMeal": 895,
+        "warmMeal": 3032.75,
+        "seated": 3402.25,
+        "flowers": 3402.25,
+        "heartyMeal": 3465.75
+      },
+      "unlocked": [
+        "木作台",
+        "改良灶具",
+        "食譜：蔬果拌食",
+        "舒適床鋪",
+        "食譜：家常燉菜"
+      ],
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 1,
+        "flowers": 1,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    }
+  ],
+  "errors": []
+}
