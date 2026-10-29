@@ -61,7 +61,7 @@ const freeLease = (s, p, owner) => { const key = leaseOf(p.task?.act); if (key &
 const inbound = (s, k) => [s.person, s.helper].reduce((n, p) => n + (p?.carry?.origin === 'wild' && p.carry.kind === k ? p.carry.amount : 0), 0);
 
 export function createHomestead({ name = '無名', personality = 'quiet', mode = 'legacy' } = {}) {
-  const s = { kind: 'homestead', version: VERSION, mode: mode === 'solo' ? 'solo' : 'legacy', t: 0, day: 1, speed: 1,
+  const s = { kind: 'homestead', version: VERSION, mode: mode === 'solo' ? 'solo' : 'legacy', t: 0, subtick: 0, day: 1, speed: 1,
     person: { name: String(name).trim().slice(0, 12) || '無名', personality: ['quiet', 'sociable', 'diligent'].includes(personality) ? personality : 'quiet', pos: [...HOME], hunger: 65, energy: 68, herbalSkill: 0, careDay: 0, skills: freshSkills(), feelings: {}, task: null, order: null, carry: null, work: 0, leisure: 0 },
     stock: { berries: 0, wood: 0, seeds: 2, veg: 0, meal: 0, herbs: 0 }, cap: { berries: 8, wood: 8, seeds: 5, veg: 8, meal: 8, herbs: 6 }, wild: { berries: 4, wood: 4, herbs: 3 },
     fac: { hut: { stage: 0, site: null }, garden: { stage: 0, site: null }, herbGarden: { stage: 0, site: null }, bed: { stage: 0, site: null }, bench: { stage: 0, site: null }, flowers: { stage: 0, site: null }, kitchen: { stage: 0, site: null }, store: { stage: 0, site: null }, berries: { stage: 0 }, wood: { stage: 0 }, herbs: { stage: 0 } }, plot: { state: 'empty', growth: 0 }, herbPlot: { state: 'empty', growth: 0 },
@@ -74,8 +74,15 @@ export function startBlueprint(s, id) {
   const f = FACILITIES[id], st = s.fac[id], next = f?.stages[st?.stage + 1];
   if (id==='bed' && s.mode!=='solo')return false;
   if (!next || st.site || (id !== 'hut' && s.fac.hut.stage === 0)) return false;
-  st.site = { need: { ...next.cost }, delivered: Object.fromEntries(Object.keys(next.cost).map((k) => [k, 0])), reserved: Object.fromEntries(Object.keys(next.cost).map((k) => [k, 0])), work: 0, workNeed: next.work };
+  st.site = { need: { ...next.cost }, delivered: Object.fromEntries(Object.keys(next.cost).map((k) => [k, 0])), reserved: Object.fromEntries(Object.keys(next.cost).map((k) => [k, 0])), work: 0, workNeed: next.work, paused: false };
   note(s, `立下「${next.name}」藍圖。`); return true;
+}
+
+export function pauseProject(s,id,paused=true){
+  const site=s.fac[id]?.site;if(!site||typeof paused!=='boolean')return false;
+  site.paused=paused;
+  if(paused&&s.person.task?.act==='build'&&s.person.task.place===id){cancelTask(s);if(s.person.order==='build')s.person.order=null;}
+  note(s,`${paused?'暫停':'繼續'}「${FACILITIES[id].stages[s.fac[id].stage+1].name}」工程，材料與已施工進度保留。`);return true;
 }
 
 export function cancelTask(s, p = s.person, owner = 'person') {
@@ -121,7 +128,7 @@ function canDo(s, act) {
   if (act === 'forage') return s.wild.berries >= 1 && offers(s, 'berries', 'forage') && s.stock.berries + inbound(s, 'berries') < s.cap.berries;
   if (act === 'chop') return s.wild.wood >= 1 && offers(s, 'wood', 'chop') && s.stock.wood + inbound(s, 'wood') < s.cap.wood;
   if (act === 'eat') return s.stock.berries + s.stock.meal >= 1 && s.person.hunger < 95;
-  if (act === 'build') return Object.values(s.fac).some((st) => { const v = st.site; return !!v && (Object.keys(v.need).some((k) => v.delivered[k] + v.reserved[k] < v.need[k] && s.stock[k] > 0) || Object.keys(v.need).every((k) => v.delivered[k] >= v.need[k])); });
+  if (act === 'build') return Object.values(s.fac).some((st) => { const v = st.site; return !!v && !v.paused && (Object.keys(v.need).some((k) => v.delivered[k] + v.reserved[k] < v.need[k] && s.stock[k] > 0) || Object.keys(v.need).every((k) => v.delivered[k] >= v.need[k])); });
   if (act === 'farm') return offers(s, 'garden', 'farm') && (s.plot.state === 'ripe' && s.stock.veg + inbound(s, 'veg') <= s.cap.veg - 2 || s.plot.state === 'empty' && s.stock.seeds > 0);
   if (act === 'herbFarm') {
     const amount = s.person.herbalSkill >= 3 ? 3 : 2;
@@ -176,6 +183,7 @@ export function blockReason(s, act, who = 'person') {
   }
   if (act === 'build') {
     const sites = Object.values(s.fac).map((f) => f.site).filter(Boolean);
+    if(sites.length&&sites.every(site=>site.paused))return '工程已由你暫停，材料與進度保留';
     if (!sites.length) return '還沒有藍圖';
     if (!canDo(s, 'build')) return sites.some((site) => site.reserved.wood) ? '材料正在搬往工地' : '缺建材，先砍柴';
   }
@@ -224,7 +232,7 @@ function pick(s) {
   if (s.stock.meal < target.meal && canDo(s, 'cook')) return 'cook';
   if (s.fac.kitchen.stage && s.stock.meal < target.meal && s.stock.veg >= 2 && !s.stock.wood && canDo(s, 'chop')) return 'chop';
   if (canDo(s, 'build')) return 'build';
-  if (Object.values(s.fac).some((st) => st.site && st.site.delivered.wood + st.site.reserved.wood < st.site.need.wood) && canDo(s, 'chop')) return 'chop';
+  if (Object.values(s.fac).some((st) => st.site && !st.site.paused && st.site.delivered.wood + st.site.reserved.wood < st.site.need.wood) && canDo(s, 'chop')) return 'chop';
   if (s.stock.berries < target.berries && canDo(s, 'forage')) return 'forage';
   if (s.fac.hut.stage === 0 && s.stock.wood < 5 && canDo(s, 'chop')) return 'chop';
   if (canDo(s, 'farm') && s.stock.veg < target.veg) return 'farm';
@@ -240,7 +248,7 @@ function begin(s, act) {
   const key = leaseOf(act);
   if (key) { if (s.leases[key]) return; s.leases[key] = 'person'; }
   if (act === 'build') {
-    const target = Object.keys(s.fac).find((id) => { const v = s.fac[id].site; return v && (Object.keys(v.need).some((k) => v.delivered[k] + v.reserved[k] < v.need[k] && s.stock[k] > 0) || Object.keys(v.need).every((k) => v.delivered[k] >= v.need[k])); });
+    const target = Object.keys(s.fac).find((id) => { const v = s.fac[id].site; return v && !v.paused && (Object.keys(v.need).some((k) => v.delivered[k] + v.reserved[k] < v.need[k] && s.stock[k] > 0) || Object.keys(v.need).every((k) => v.delivered[k] >= v.need[k])); });
     if (!target) return;
     const v = s.fac[target].site;
     const mat = Object.keys(v.need).find((k) => v.delivered[k] + v.reserved[k] < v.need[k] && s.stock[k] > 0);
@@ -337,6 +345,11 @@ function tickHelper(s, dt) {
 }
 export function tickHomestead(s, dt = 0.25) {
   if (!(dt > 0 && dt <= 1)) throw new Error('bad dt');
+  const total=(s.subtick||0)+dt, count=Math.floor((total+1e-10)/.25);
+  s.subtick=Math.max(0,Number((total-count*.25).toFixed(12)));
+  for(let i=0;i<count;i++)tickQuarter(s,.25);
+}
+function tickQuarter(s,dt) {
   s.t += dt; const oldDay = s.day; s.day = 1 + Math.floor(s.t / DAY);
   if (s.day !== oldDay) note(s, `第 ${s.day} 日。`);
   if (s.mode !== 'solo' && s.day >= 2 && s.visitor.role === 'visitor' && !s.visitor.cared && !s.visitor.injury) { s.visitor.injury = true; note(s, `${s.visitor.name}在村路扭傷，或許可採草藥照料。`); }
@@ -399,6 +412,8 @@ export function loadHomestead(json) {
     // H1 檔沒有 H2 的地塊與資源，補上後繼續原本的生活，不碰本篇存檔。
     const h2 = createHomestead();
     s.mode ??= 'legacy';
+    s.subtick ??=0;
+    if(!Number.isFinite(s.subtick)||s.subtick<0||s.subtick>=.25)return {ok:false,error:'時間餘量不合法'};
     if (!['solo','legacy'].includes(s.mode) || s.mode === 'solo' && (s.helper || s.visitor?.role && s.visitor.role !== 'visitor' || ['chat','talkHelper','gift','care','helperCare'].includes(s.person.order) || ['chat','talkHelper','gift','care','helperCare'].includes(s.person.task?.act))) return {ok:false,error:'生活模式不合法'};
     for (const k of ['seeds', 'veg', 'meal']) s.stock[k] ??= h2.stock[k];
     for (const k of ['seeds', 'veg', 'meal']) s.cap[k] ??= h2.cap[k];
@@ -420,10 +435,11 @@ export function loadHomestead(json) {
     }
     for (const id of ['bench','flowers','bed']) s.fac[id] ??= structuredClone(h2.fac[id]);
     if(s.person.feelings===undefined)s.person.feelings={};
-    if(!s.person.feelings || Array.isArray(s.person.feelings) || Object.entries(s.person.feelings).some(([id,until])=>!FEELINGS[id]||!Number.isFinite(until)||until<0||until>s.t+FEELINGS[id].duration))return {ok:false,error:'感受資料不合法'};
+    if(!s.person.feelings || typeof s.person.feelings!=='object' || Array.isArray(s.person.feelings) || Object.entries(s.person.feelings).some(([id,until])=>!FEELINGS[id]||!Number.isFinite(until)||until<0||until>s.t+FEELINGS[id].duration))return {ok:false,error:'感受資料不合法'};
     if(s.person.skills===undefined)s.person.skills=freshSkills();
     if(!s.person.skills || Array.isArray(s.person.skills) || Object.keys(SKILLS).some(id=>!Number.isFinite(s.person.skills[id]) || s.person.skills[id]<0 || s.person.skills[id]>SKILLS[id].thresholds.at(-1)))return {ok:false,error:'技能資料不合法'};
     const p = s.person, t = p.task, c = p.carry;
+    if(s.mode==='solo'&&(!Array.isArray(p.pos)||p.pos[0]<0||p.pos[0]>900||p.pos[1]<0||p.pos[1]>560))return {ok:false,error:'人物位置超出家園範圍'};
     if (!Number.isFinite(s.t) || s.t < 0 || s.day !== 1 + Math.floor(s.t / DAY) || !Array.isArray(p.pos) || p.pos.length !== 2 || p.pos.some((x) => !Number.isFinite(x)) || !Number.isFinite(p.hunger) || p.hunger < 0 || p.hunger > 100 || !Number.isFinite(p.energy) || p.energy < 0 || p.energy > 100 || !Number.isInteger(p.herbalSkill) || p.herbalSkill < 0 || !Number.isInteger(p.careDay) || p.careDay < 0 || p.careDay > s.day || typeof p.name !== 'string' || !['quiet', 'sociable', 'diligent'].includes(p.personality)) return { ok: false, error: '存檔狀態不合法' };
     if (['berries', 'wood', 'seeds', 'veg', 'meal', 'herbs'].some((k) => !Number.isInteger(s.stock[k]) || s.stock[k] < 0 || !Number.isInteger(s.cap[k]) || s.cap[k] < 1 || s.stock[k] > s.cap[k]) || ![0, 1, 2].includes(s.fac.hut.stage) || BUILDABLE.filter(k=>k!=='hut').some((k) => ![0, 1].includes(s.fac[k]?.stage)) || !['empty', 'growing', 'ripe'].includes(s.plot.state) || !Number.isFinite(s.plot.growth) || !['empty', 'growing', 'ripe'].includes(s.herbPlot?.state) || !Number.isFinite(s.herbPlot.growth) || (s.fac.herbGarden.stage === 0 && s.herbPlot.state !== 'empty')) return { ok: false, error: '存檔資源不合法' };
     if (['berries', 'wood', 'herbs'].some((k) => !Number.isFinite(s.wild[k]) || s.wild[k] < 0 || s.wild[k] > (k === 'herbs' ? 3 : 4) || s.fac[k]?.stage !== 0)) return { ok: false, error: '野外資源不合法' };
@@ -437,6 +453,7 @@ export function loadHomestead(json) {
     if (['berries', 'wood', 'veg', 'herbs'].some((k) => s.stock[k] + inbound(s, k) > s.cap[k])) return { ok: false, error: '在途物資超過容量' };
     for (const id of BUILDABLE) {
       const v = s.fac[id].site; if (!v) continue;
+      v.paused ??= false;if(typeof v.paused!=='boolean')return {ok:false,error:'工程暫停狀態不合法'};
       const recipe = FACILITIES[id].stages[s.fac[id].stage + 1];
       if (!recipe || v.need?.wood !== recipe.cost.wood || v.workNeed !== recipe.work || !Number.isFinite(v.work) || v.work < 0 || !Number.isFinite(v.workNeed) || v.workNeed <= 0 || ['need', 'delivered', 'reserved'].some((field) => !v[field] || !Number.isInteger(v[field].wood) || v[field].wood < 0) || v.delivered.wood + v.reserved.wood > v.need.wood) return { ok: false, error: '工地資料不合法' };
       const inTransit = t?.act === 'build' && t.phase === 'deliver' && t.place === id && c?.origin === 'site' && c.kind === 'wood' ? c.amount : 0;
@@ -447,7 +464,7 @@ export function loadHomestead(json) {
       if (!Number.isFinite(t.timer) || t.timer < 0 || !['go', 'do', 'fetch', 'deliver'].includes(t.phase)) return { ok: false, error: '任務資料不合法' };
       if (t.act === 'return') { if (t.phase !== 'go' || t.place !== 'home' || !c) return { ok: false, error: '返回任務不合法' }; }
       else if (t.act === 'build') {
-        if (!BUILDABLE.includes(t.place) || !s.fac[t.place].site || !['go', 'do', 'fetch', 'deliver'].includes(t.phase) || (['fetch', 'deliver'].includes(t.phase) && t.mat !== 'wood') || (t.phase === 'fetch' && c) || (t.phase === 'deliver' && !(c?.origin === 'site' && c.kind === 'wood'))) return { ok: false, error: '建造任務不合法' };
+        if (!BUILDABLE.includes(t.place) || !s.fac[t.place].site || s.fac[t.place].site.paused || !['go', 'do', 'fetch', 'deliver'].includes(t.phase) || (['fetch', 'deliver'].includes(t.phase) && t.mat !== 'wood') || (t.phase === 'fetch' && c) || (t.phase === 'deliver' && !(c?.origin === 'site' && c.kind === 'wood'))) return { ok: false, error: '建造任務不合法' };
       } else {
         if (!ACTIONS[t.act] || (t.act === 'leisure' ? !(t.place === 'home' || t.place === 'bench' && s.fac.bench.stage === 1) : t.place !== ACTIONS[t.act].place) || !['go', 'do'].includes(t.phase) || (t.act === 'farm' && !offers(s, 'garden', 'farm')) || (t.act === 'herbFarm' && !offers(s, 'herbGarden', 'herbFarm')) || (t.act === 'cook' && !offers(s, 'kitchen', 'cook'))) return { ok: false, error: '活動任務不合法' };
       }
