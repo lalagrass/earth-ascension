@@ -85,6 +85,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.comprehend) s.wu7 = true;
   if (heroSpec?.mentor) s.mentor = true;
   if (heroSpec?.qshare) s.qshare = true;
+  if (heroSpec?.mfit) s.mfit = true; // loop41 高人因材施教
   if (heroSpec?.jhrefuse) s.jhrefuse = true; // loop40 挑戰帖量力而為 // loop39 人多分攤日課
   if (heroSpec?.jhui) s.jhui = true; // loop34 介面可讀性（純顯示）
   if (heroSpec?.steward) s.steward = true; // loop30 執事自主（選用）
