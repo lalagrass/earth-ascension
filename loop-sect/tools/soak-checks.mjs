@@ -6,6 +6,7 @@ import { isNight } from '../src/needs.mjs';
 import { stageOf, aff } from '../src/social.mjs';
 import { TEMPLATES, TICKS_PER_DAY, BLUEPRINTS, FIRST_BLUEPRINTS, WORK_KINDS, ENEMIES, RAID } from '../src/data.mjs';
 import { courage } from '../src/martial.mjs';
+import { runTrial } from '../src/trial.mjs';
 
 const STUCK_TICKS = 720; // 半日
 
@@ -208,6 +209,15 @@ export const invariants = [
 const kindOf = (p) => (p.act === 'do' || p.act === 'walk') && p.task ? p.task.kind : p.act;
 
 export const samplers = [
+  // M15-A5：開局三人在第 1 日結束、第 6 日開始各跑一次 runTrial（純函式，不改世界）。
+  (s, ctx) => {
+    const d = s.tick === TICKS_PER_DAY ? 'd1' : s.tick === 5 * TICKS_PER_DAY ? 'd6' : null;
+    if (!d) return;
+    for (const p of s.people.filter((x) => ['p0', 'p1', 'p2'].includes(x.id))) {
+      const r = runTrial(p);
+      bump(ctx, `trial:${d}:n`); bump(ctx, `trial:${d}:w`, r.waves); bump(ctx, `trial:${d}:t`, r.ticks[0] ?? 0);
+    }
+  },
   // M4-A4：p1 每一趟伐木（選定砍樹 → 木頭離手）花多少 tick、帶回幾根。
   (s, ctx) => {
     const p = s.people[1];
@@ -330,6 +340,14 @@ export function judge(S, scenario = 'base') {
   lines.push(`（診斷）時間分布前十：${share.map(([k, v]) => `${k.slice(4)} ${(100 * v / all).toFixed(1)}%`).join('、')}`);
   lines.push(`（參考）處於自理門檻下的時間：飢餓 ${(100 * (S.lowFood || 0) / all).toFixed(1)}%，累垮 ${(100 * (S.lowEnergy || 0) / all).toFixed(1)}%（飢餓${worstSeed(S, 'lowFood')}，累垮${worstSeed(S, 'lowEnergy')}）`);
   if ((S.lowFood || 0) / all > 0.02) failures.push('M7-A7 飢餓時間超過 2%');
+  // M15-A5：同樣三人，練了四日之後第一波快 ≥ 25%、撐的波數變多。
+  if (S['trial:d6:n']) {
+    const t1 = r('trial:d1:t', 'trial:d1:n'), t6 = r('trial:d6:t', 'trial:d6:n');
+    const w1 = r('trial:d1:w', 'trial:d1:n'), w6 = r('trial:d6:w', 'trial:d6:n');
+    lines.push(`M15-A5 演武（開局三人，各 ${S['trial:d6:n']} 筆）：第一波平均 第 1 日末 ${t1.toFixed(1)} 刻 → 第 6 日初 ${t6.toFixed(1)} 刻（短 ${(100 * (1 - t6 / t1)).toFixed(0)}%）；撐過 ${w1.toFixed(2)} → ${w6.toFixed(2)} 波`);
+    if (!(t6 <= 0.75 * t1)) failures.push('M15-A5 練了四日，第一波沒有快 25%');
+    if (!(w6 > w1)) failures.push('M15-A5 撐的波數沒有增加');
+  }
   return { lines, failures };
 }
 

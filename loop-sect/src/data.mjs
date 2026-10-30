@@ -410,3 +410,7 @@ export const DUTY = {
   SLACK: 0.4,
   HOUR: 5,
 };
+// M15 演武：第 k 波 k 個木人，各 HP 血；出手間隔沿用 M13 period；每個站著的木人每 tick 扣 DRAIN 精力；
+// 精力 MIN_ENERGY 以上才能開；SPOT 是外功場下排中間（中排是木人練功位）；木人在同一排左右站開（MEN 是相對人的格數，第 k 波用前 k 個）。
+export const TRIAL = { WAVES: 5, HP: 12, HIT: 4, DRAIN: 0.1, MIN_ENERGY: 60, SPOT: [43, 23], MEN: [[1.5, 0], [-1.5, 0], [3, 0], [-3, 0], [4.5, 0]] };
+Object.assign(ACTS, { trial: { label: '演武', dur: 9999, per: {} } });

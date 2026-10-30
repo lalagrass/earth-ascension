@@ -1,5 +1,5 @@
 // 真瀏覽器正常流程檢查：起本機靜態服務、用 Playwright Chromium 照玩家操作走一遍。
-// 用法：node loop-sect/tools/headless.mjs
+// 用法：node loop-sect/tools/headless.mjs [--only m15-trial]
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -27,7 +27,9 @@ const url = `http://127.0.0.1:${server.address().port}/`;
 const browser = await chromium.launch();
 const results = [];
 let failed = 0;
-for (const flow of flows) {
+// --only 名稱：只跑一個流程（調畫面時用；驗收照跑全部）。
+const only = process.argv.includes('--only') ? process.argv[process.argv.indexOf('--only') + 1] : null;
+for (const flow of flows.filter((f) => !only || f.name === only)) {
   const page = await browser.newPage({ viewport: flow.viewport ?? { width: 1600, height: 900 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));

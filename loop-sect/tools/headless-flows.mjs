@@ -412,6 +412,63 @@ export const flows = [
     },
   },
   {
+    // M15 演武：沒有外功場時按鈕停用並寫原因；蓋好後按下，人走到外功場、看得到木人、紀事出現成績。
+    name: 'm15-trial',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.fill('#seed', '4');
+      await page.click('#begin');
+      await page.click('[data-person="p0"]');
+      await page.click('[data-tab="martial"]');
+      expect('A7 沒有外功場時停用', await page.locator('[data-trial]').isDisabled());
+      expect('A7 寫出原因', /還沒有外功場/.test(await page.textContent('[data-trial-why]')));
+      await page.click('[data-blueprint="yard"]');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().built.includes('yard'), null, { timeout: 240000 });
+      await page.waitForFunction(() => { const b = document.querySelector('[data-trial]'); return b && !b.disabled; }, null, { timeout: 240000 });
+      await page.click('[data-speed="0"]');
+      await page.click('[data-trial]');
+      const s0 = await snap(page);
+      expect('A7 按下後去外功場', s0.people[0].task?.kind === 'trial', s0.people[0].actLabel);
+      await page.click('[data-speed="4"]');
+      await page.waitForFunction(() => { const p = window.__sect.snapshot().people[0]; return p.task?.kind === 'trial' && p.act === 'do' && p.task.trial.wave >= 2; }, null, { timeout: 120000 });
+      await page.click('[data-speed="0"]');
+      const s = await snap(page);
+      const p = s.people[0];
+      expect('A7 在外功場中間開打', Math.round(p.x) === 43 && Math.round(p.y) === 23, `${p.x},${p.y}`);
+      expect('A7 頭上寫第幾波', /演武第 \d 波/.test(p.actLabel), p.actLabel);
+      // 木人畫在人左右：那幾格的像素應該有木人的顏色。
+      const wood = await page.evaluate(() => {
+        const c = document.querySelector('#view'), g = c.getContext('2d');
+        const p = window.__sect.snapshot().people[0];
+        let n = 0;
+        for (const m of p.task.trial.men) {
+          if (m.hp <= 0) continue;
+          const cx = Math.round((p.x + m.dx) * 20 + 10), cy = Math.round((p.y + m.dy) * 20 + 10);
+          const d = g.getImageData(cx - 2, cy - 6, 4, 12).data;
+          for (let k = 0; k < d.length; k += 4) if (Math.abs(d[k] - 0x8a) < 12 && Math.abs(d[k + 1] - 0x6a) < 12 && Math.abs(d[k + 2] - 0x44) < 12) { n++; break; }
+        }
+        return { n, up: p.task.trial.men.filter((m) => m.hp > 0).length };
+      });
+      expect('A7 看得到木人', wood.up > 0 && wood.n === wood.up, `${wood.n}/${wood.up}`);
+      const boxes = await page.evaluate(() => window.__sect.labels());
+      let overlap = 0;
+      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i], b = boxes[j];
+        if (a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h) overlap++;
+      }
+      expect('A7 畫面不疊字', overlap === 0, `${overlap} 對`);
+      await shot('trial');
+      await page.click('[data-speed="4"]');
+      await page.waitForFunction(() => window.__sect.snapshot().events.some((e) => e.kind === 'trial'), null, { timeout: 120000 });
+      await page.click('[data-speed="0"]');
+      expect('A7 紀事出現成績', /演武：.+撐過 \d 波（第一波 \d+ 刻）/.test(await page.textContent('#events')));
+      await page.click('[data-tab="martial"]');
+      expect('A7 人物卡記最好成績', /最好：撐過 \d 波/.test(await page.textContent('[data-trial-best]')));
+      await shot('trial-done');
+    },
+  },
+  {
     // M18 值日（暫停中、預設關）：紀事簿可以打開，名冊與人物卡看得到值日，可以指定。
     name: 'm18-duty',
     async run(page, expect, { shot }) {

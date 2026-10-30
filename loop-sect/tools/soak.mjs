@@ -10,6 +10,7 @@ const arg = (k, d) => {
   return i > 0 ? Number(process.argv[i + 1]) : d;
 };
 const SEEDS = arg('seeds', 12);
+const FROM = arg('from', 1); // v6：第二組種子（--from 13）
 const DAYS = arg('days', 5);
 const TICKS = DAYS * TICKS_PER_DAY;
 
@@ -18,7 +19,7 @@ const failures = [];
 const SCENARIOS = ['base', 'exp', 'grow', 'farm', 'yard', 'post'];
 for (const scenario of SCENARIOS) {
   const pooled = {};
-  for (let seed = 1; seed <= SEEDS; seed++) {
+  for (let seed = FROM; seed < FROM + SEEDS; seed++) {
     const s = createWorld({ seed, people: rosterFor(seed) });
     const ctx = { seed, failures: [], samples: pooled, prev: new Map(), lastMove: new Map() };
     for (let t = 0; t < TICKS && ctx.failures.length < 5; t++) {

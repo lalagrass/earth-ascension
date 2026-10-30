@@ -7,7 +7,8 @@ import { raidSchedule, startRaids, stepEnemies, activeEnemies, spawnGuard } from
 import { newNests, nestOf, canLaunch, retreatReason } from './expedition.mjs';
 import { tally } from './chronicle.mjs';
 import { stepDuty } from './duty.mjs';
-import { stepStrike } from './forms.mjs';
+import { stepStrike, formOf, sizeOf } from './forms.mjs';
+import { canTrial, newTrial, trialTick, trialRecord, better, trialText } from './trial.mjs';
 import { visitSchedule, visitChance, appeal, reasonText, shouldApprentice, foundingPlan, freeName } from './recruit.mjs';
 import { seedHolder, nextRand, randInt, hashString } from './rng.mjs';
 import { buildMap, walkable, nearestWalkable } from './map.mjs';
@@ -16,7 +17,7 @@ import { fromTemplate, makePerson, speedOf } from './person.mjs';
 import { decayNeeds, applyPer, isNight } from './needs.mjs';
 import { candidates, interruptible, sparInterruptible, willingToChat, willingToSpar, REFUSE_COOLDOWN } from './ai.mjs';
 import { newSkills, grow, SKILL_OF_TASK, workTimeMul, buildRate, extraMeal, extraTake, skillLabel } from './skills.mjs';
-import { POST } from './data.mjs';
+import { POST, TRIAL } from './data.mjs';
 import { FOOT_STEP, SOCIAL, MARTIAL, DEFENSE, RECRUIT, SECT, EXPEDITION, NESTS, FIRE, FARM } from './data.mjs';
 import { addAff, compat, teachTopic, withStage, atLeast } from './social.mjs';
 import { newMoves, practice, moveLabel, learn, drillMove, prowess } from './martial.mjs';
@@ -154,6 +155,7 @@ function initPerson(p, i) {
     p.load = { wood: 0, stone: 0 };    // 身上的木石
     p.hold = { meal: 0, raw: 0, wood: 0, stone: 0 };
     p.focus = null;
+    p.trialBest = null;                // M15：演武最好成績 { waves, ticks }
     p.dutyPin = null;                  // M18：玩家指定的值日（null = 自動，'none' = 不排）
     p.skills = newSkills();
     p.moves = newMoves();
@@ -292,6 +294,7 @@ function startDoing(state, p, dur = null) {
   if (t.kind === 'hide') dur = DEFENSE.HIDE_DUR;
   t.left = dur ?? a.dur;
   p.actLabel = t.kind === 'drill' ? `練${moveLabel(t.move)}` : a.label;
+  if (t.kind === 'trial') { t.trial = newTrial(p, p.needs.energy); p.actLabel = '演武第 1 波'; }
   state.counts[t.kind] = (state.counts[t.kind] || 0) + 1;
 }
 
@@ -653,6 +656,7 @@ function stepPerson(state, p) {
     }
     if (p.task.kind === 'fight') { fightTick(state, p); return; }
     if (p.task.kind === 'watch') { watchTick(state, p); return; }
+    if (p.task.kind === 'trial') { trialStep(state, p); return; }
     if (p.task.kind === 'raze') { razeTick(state, p); return; }
     if (p.task.kind === 'repair' && p.task.left <= 1 && !cellClear(state, { x: p.task.cx, y: p.task.cy }, p)) { p.actLabel = '等人讓開'; return; }
     if (p.task.kind === 'build') {
@@ -846,6 +850,22 @@ function watchTick(state, p) {
   state.counts.watchHits = (state.counts.watchHits || 0) + 1;
 }
 
+// M15 演武：精力只照木人扣（tr.energy 寫回人身上），跟 runTrial 同一步。
+function trialStep(state, p) {
+  const tr = p.task.trial;
+  const m = trialTick(tr);
+  p.needs.energy = tr.energy;
+  p.actLabel = `演武第 ${tr.wave} 波`;
+  if (m) p.strike = { move: tr.move, form: formOf(tr.move), kind: 'trial', at: state.tick, ang: m.ang, size: sizeOf(p.moves[tr.move] ?? 0), n: (p.strike?.n ?? 0) + 1 };
+  if (!tr.done) return;
+  const r = trialRecord(tr);
+  if (better(r, p.trialBest)) p.trialBest = r;
+  p.bubble = { text: `撐過 ${r.waves} 波`, until: state.tick + 60 };
+  state.events.push({ tick: state.tick, kind: 'trial', text: trialText(p.name, r), who: [p.id] });
+  state.counts.trialDone = (state.counts.trialDone || 0) + 1;
+  finish(state, p);
+}
+
 function tryChatIfClose(state, p) {
   const o = byId(state.people, p.task.partner);
   if (dist(p, o) > 1.5) return false;
@@ -923,6 +943,19 @@ export function cancelSite(state, id) {
   return removeSite(state, id);
 }
 
+// M15：玩家叫某人去外功場演武。回傳 { ok, why }。
+export function startTrial(state, personId) {
+  const p = byId(state.people, personId);
+  const c = p ? canTrial(state, p) : { ok: false, why: '沒有這個人' };
+  if (!c.ok) return c;
+  const path = pathTo(state, p, { x: TRIAL.SPOT[0], y: TRIAL.SPOT[1] });
+  if (!path) return { ok: false, why: '走不到外功場' };
+  release(state, p);
+  p.task = { kind: 'trial' }; p.path = path; p.wait = 0;
+  if (path.length) { p.act = 'walk'; p.actLabel = '去外功場演武'; } else startDoing(state, p);
+  return { ok: true, why: '' };
+}
+
 export function setFocus(state, personId, focus) {
   const p = byId(state.people, personId);
   if (p) p.focus = focus;
@@ -948,3 +981,4 @@ export function stateHash(state) {
 
 export { REFUSE_COOLDOWN };
 export { setDuty } from './duty.mjs';
+export { canTrial, runTrial } from './trial.mjs';

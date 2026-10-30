@@ -1,4 +1,4 @@
-import { FIRE, STRIKE } from './data.mjs';
+import { FIRE, STRIKE, TRIAL } from './data.mjs';
 import { shapeOf } from './forms.mjs';
 // 畫面只讀 state，不改規則狀態。
 export const TILE = 20;
@@ -196,6 +196,7 @@ export function drawObjects(ctx, state) {
       }
     }
   }
+  drawTrial(ctx, state);
   const h = state.objects.find((o) => o.kind === 'hearth');
   const [hx, hy] = h.slots[0];
   ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'left';
@@ -295,6 +296,23 @@ export function drawForm(ctx, cx, cy, ang, sh, color, alpha, px = TILE) {
     ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(sx + Math.cos(ang) * R * 0.8, sy + Math.sin(ang) * R * 0.8); ctx.stroke();
   }
   ctx.restore();
+}
+
+// M15 演武：還站著的木人在人左右，頭上一條血。
+function drawTrial(ctx, state) {
+  for (const p of state.people) {
+    const tr = p.act === 'do' && p.task?.kind === 'trial' ? p.task.trial : null;
+    if (!tr) continue;
+    for (const m of tr.men) {
+      if (m.hp <= 0) continue;
+      const cx = (p.x + m.dx) * TILE + TILE / 2, cy = (p.y + m.dy) * TILE + TILE / 2;
+      ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.beginPath(); ctx.ellipse(cx, cy + 8, 6, 2.2, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#8a6a44'; ctx.fillRect(cx - 2, cy - 8, 4, 16); ctx.fillRect(cx - 7, cy - 3, 14, 3);
+      ctx.fillStyle = '#a7835a'; ctx.beginPath(); ctx.arc(cx, cy - 10, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#3a2a1a'; ctx.fillRect(cx - 7, cy - 18, 14, 2);
+      ctx.fillStyle = '#c23b2a'; ctx.fillRect(cx - 7, cy - 18, 14 * Math.max(0, m.hp) / TRIAL.HP, 2);
+    }
+  }
 }
 
 export function drawStrikes(ctx, state) {

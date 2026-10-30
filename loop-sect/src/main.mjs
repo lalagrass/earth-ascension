@@ -1,6 +1,6 @@
 import { QUESTIONS, ATTRS, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, TEMPLATES, AXES, TRAIT_RULES, TICKS_PER_SECOND, NEEDS, BLUEPRINTS, PILE, FOCUS } from './data.mjs';
 import { axesFromAnswers, typeOf, validateAttrs, traitsOf } from './person.mjs';
-import { createWorld, step, clock, companionsFor, placeBlueprint, cancelSite, setFocus, startExpedition } from './sim.mjs';
+import { createWorld, step, clock, companionsFor, placeBlueprint, cancelSite, setFocus, startExpedition, startTrial, canTrial } from './sim.mjs';
 import { canLaunch } from './expedition.mjs';
 import { LIFE_CATS, lifeShares, habitText, personEvents, EVENT_GROUPS, eventsIn, sectStats } from './chronicle.mjs';
 import { blueprint } from './build.mjs';
@@ -166,6 +166,18 @@ const formPreview = (id, v) => formCanvas(formOf(id), v, { 'data-form-preview': 
 const formLegend = () => el('div', { class: 'forms', 'data-form-legend': '' }, ...Object.entries(FORMS).map(([id, f]) =>
   el('figure', {}, formCanvas(id, 30, { 'data-form': id }), el('figcaption', {}, f.label))));
 
+// M15 演武：按鈕（不能開時停用並寫原因）與最好成績。
+function trialRow(p) {
+  const c = canTrial(state, p);
+  const doing = p.task?.kind === 'trial';
+  const best = p.trialBest ? `最好：撐過 ${p.trialBest.waves} 波${p.trialBest.waves ? `，第一波 ${p.trialBest.ticks[0]} 刻` : ''}` : '還沒演武過';
+  return el('div', { class: 'trial', 'data-trial-row': '' },
+    el('h2', {}, '演武'),
+    el('button', { 'data-trial': '', ...(c.ok ? {} : { disabled: '' }), on: { click: () => { startTrial(state, p.id); renderPanel(); } } }, doing ? '演武中' : '外功場演武'),
+    el('small', { 'data-trial-why': '' }, doing ? p.actLabel : c.ok ? '木人一波比一波多，看撐得過幾波' : c.why),
+    el('p', { class: 'hint', 'data-trial-best': '' }, best));
+}
+
 // M10 紀事簿：分類篩選、最近 12 筆、門派統計。
 let evGroup = 'all';
 function renderChronicle() {
@@ -286,6 +298,7 @@ function renderPanel() {
         el('span', { class: 'bar' }, el('i', { style: `width:${p.moves[m.id]}%` })), el('b', {}, p.moves[m.id].toFixed(0)),
         el('small', { title: `威力 ${m.power}` }, `${FORMS[formOf(m.id)].label}・${period(p.moves[m.id])} 刻一招`), formPreview(m.id, p.moves[m.id]))),
       el('h2', {}, '四門出招'), formLegend(),
+      trialRow(p),
       el('p', { class: 'hint', 'data-comp': '' }, next.length
         ? `快開竅了：練功時每次約 ${Math.round(compChance(p) * 100)}% 領悟${next.map((m) => m.label).join('或')}`
         : `下一招：${MOVES.filter((m) => m.req && !(m.id in p.moves) && Object.keys(m.req).every((k) => k in p.moves)).map((m) => `${m.label}（${Object.entries(m.req).map(([k, v]) => `${moveLabel(k)} ${v}`).join('、')}）`).join('；') || '都會了'}`)),
