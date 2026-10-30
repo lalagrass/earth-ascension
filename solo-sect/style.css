@@ -34,3 +34,6 @@ label.btn { border:1px solid #888; padding:2px 8px; border-radius:4px; cursor:po
 #minimap{position:absolute;left:8px;bottom:8px;width:240px;height:180px;border:2px solid #5a3a1a;border-radius:4px;box-shadow:0 2px 8px #0006;cursor:crosshair;z-index:5;background:#c9b48a}
 /* v1.55d 三段縮放＋雲海切換 */
 #camui .zoom{display:inline-flex;gap:2px;margin:0 4px}#camui .zoom button{min-width:30px}
+
+/* loop37 右欄可收合 */
+#panel > h2.fold{cursor:pointer;user-select:none}#panel > h2.fold::before{content:'▾ ';color:#8a7a5a}#panel > h2.fold.shut::before{content:'▸ '}.folded{display:none!important}

@@ -23,6 +23,7 @@ import { nearestType, typeLabel } from './mbti.mjs';
 import { archLabel } from './archetype.mjs';
 import { jhuiHtml, archLine } from './jhui.mjs';
 import { pickModal, pending } from './modalq.mjs';
+import { isFolded, foldKey, setAll } from './fold.mjs';
 import { compProgress } from './comprehend.mjs';
 import { ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS } from './data.mjs';
 import { EXP_STYLES } from './data.mjs';
@@ -165,6 +166,11 @@ const KEEP_KEY = 'solo-sect-keep';
 function keepState() { try { return (window.__keep ??= JSON.parse(localStorage.getItem(KEEP_KEY) || '{}')); } catch { return (window.__keep ??= {}); } }
 function restoreKeep() { const K = keepState(); for (const el of document.querySelectorAll('details[data-keep]')) { const k = el.dataset.keep; if (k in K) el.open = !K[k]; } }
 document.addEventListener('toggle', (e) => { const el = e.target; if (!el.matches?.('details[data-keep]') || el.dataset.restoring) return; const K = keepState(); K[el.dataset.keep] = !el.open; try { localStorage.setItem(KEEP_KEY, JSON.stringify(K)); } catch {} }, true);
+const foldIds = () => [...document.querySelectorAll('#panel > h2')].map((h) => h.nextElementSibling?.id).filter(Boolean);
+function applyFold() { const K = keepState(); for (const h of document.querySelectorAll('#panel > h2')) { const id = h.nextElementSibling?.id; if (!id) continue; const f = isFolded(K, id); h.classList.add('fold'); h.classList.toggle('shut', f); h.dataset.sec = id; h.nextElementSibling.classList.toggle('folded', f); } }
+function saveKeep() { try { localStorage.setItem(KEEP_KEY, JSON.stringify(keepState())); } catch {} }
+document.addEventListener('click', (e) => { const h = e.target.closest('#panel > h2.fold'); if (h) { const K = keepState(); K[foldKey(h.dataset.sec)] = !isFolded(K, h.dataset.sec); saveKeep(); applyFold(); return; }
+  const b = e.target.closest('[data-foldall]'); if (b) { setAll(keepState(), foldIds(), b.dataset.foldall === '1'); saveKeep(); applyFold(); } });
 function panel() {
   const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×`;
   $('res').innerHTML = `木 ${S.res.wood}/${S.cap.wood}　石 ${S.res.stone}/${S.cap.stone}　香火錢 ${S.res.coin}　菜 ${S.res.veg}　飯 ${S.res.food}　藥 ${S.res.herb}　水 ${S.res.water}/${S.cap.water}　療傷丹 ${S.res.pill}　鐵木 ${S.res.tiemu || 0}　靈石 ${S.res.lingshi || 0}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
@@ -244,7 +250,7 @@ function panel() {
   $('rel').innerHTML = Object.entries(S.rel).map(([k, v]) => { const [a, b] = k.split('|').map((id) => S.ds.find((d) => d.id === id).name); const [A, B] = k.split('|').map((id) => S.ds.find((d) => d.id === id)); return `<div>${a}—${b}：${relStage(v)} ${v.toFixed(0)}${S.families.includes(k) ? ' 🏠' : ''} <span class="k">（${a}→${aff(S, A, B).toFixed(0)}／${b}→${aff(S, B, A).toFixed(0)}・合拍 ${compat(A, B).toFixed(1)}/${compat(B, A).toFixed(1)}）</span>${memsOf(S, A, B).slice(-2).map((m) => `<div class="k mem">📜 第${m.day}日・${m.where}：${m.text}</div>`).join('')}</div>`; }).join('') + bondsHtml(S);
   $('hero').innerHTML = heroCard(S);
   if ($('jhui')) { $('jhui').innerHTML = jhuiHtml(S, keepState()); $('jhui-wrap').hidden = !S.jhui; }
-  restoreKeep();
+  restoreKeep(); applyFold();
   $('log').innerHTML = S.log.slice(0, 30).map((l) => `<li>[${l.t}s] ${l.msg}</li>`).join('');
 }
 document.addEventListener('click', (e) => { const b = e.target.closest('[data-build],[data-speed],[data-pause],[data-invite],[data-promote],[data-pupil]'); if (!b) return; if (b.dataset.pupil) { const [m, d] = b.dataset.pupil.split('|').map((id) => S.ds.find((x) => x.id === id)); takePupil(S, m, d); } if (b.dataset.promote) startTrial(S, b.dataset.promote); if (b.dataset.pause) togglePause(S, b.dataset.pause); if (b.dataset.invite) invite(S, b.dataset.invite); if (b.dataset.build) startBuild(S, b.dataset.build); if (b.dataset.speed) speed = +b.dataset.speed; panel(); });
