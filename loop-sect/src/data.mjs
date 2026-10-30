@@ -190,6 +190,12 @@ export const BLUEPRINTS = [
     dummies: [[41, 22], [43, 22], [45, 22]],
     cost: { wood: 8, stone: 4 }, work: 100,
   },
+  {
+    // M14：南柵欄內側兩座木台，門口兩邊各一。
+    id: 'posts', label: '哨位', desc: '南柵欄內側兩座木台，敵人進了範圍才出手（試做中：目前會把衝出去迎敵的人拉上台，防守反而變弱）', kind: 'posts', requires: 'fence-s',
+    posts: [[26, 29], [33, 29]],
+    cost: { wood: 6 }, work: 60,
+  },
 ];
 // base soak 自 M3 起放的三張藍圖；之後加的藍圖不放進 base，免得改到舊 milestone 的量測。
 export const FIRST_BLUEPRINTS = ['fence-s', 'hut-e', 'hearth2'];
@@ -336,9 +342,12 @@ export const DEFENSE = {
   HIDE_BASE: 0.8, HIDE_DUR: 60,
   REPAIR_DUR: 15, REPAIR_WORK: 1.8,
 };
-FOCUS.push({ id: 'guard', label: '守衛', kinds: ['fight', 'repair'] });
+FOCUS.push({ id: 'guard', label: '守衛', kinds: ['fight', 'repair', 'watch'] });
+// M14 守點（loop 16 暫停，見 specs/M14.md）：PREF 讓守哨略勝追擊；RANGE 格內才出手；站在台上每 tick 扣 DRAIN 精力（不被反擊）。
+export const POST = { PREF: 1.2, RANGE: 4.5, DRAIN: 0.01 };
 Object.assign(ACTS, {
   fight: { label: '迎敵', dur: 9999, per: {} },
+  watch: { label: '守哨位', dur: 9999, per: {} },
   hide: { label: '躲著', dur: 60, per: { fun: -0.02 } },
   repair: { label: '修柵欄', dur: 15, per: { energy: -0.015 } },
 });

@@ -1,5 +1,5 @@
 // 效用 AI：列出所有可做的事、打分、留下理由。只讀 state，不改。
-import { FIRE, FARM, ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, DUTY, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
+import { FIRE, FARM, ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, DUTY, POST, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
 import { activeEnemies } from './raid.mjs';
 import { walkable } from './map.mjs';
 import { nearestResources, remaining, stocked, workSpot, siteWorkersFree } from './build.mjs';
@@ -192,6 +192,16 @@ export function candidates(state, p, scorePois) {
     add({ kind: 'hide', spot: { x: hall.x, y: hall.y }, label: '躲進道館' },
       { persona: Math.max(0, DEFENSE.HIDE_BASE - brave) + 0.3 * Math.max(0, F) });
   }
+  // M14 守哨：有活著的敵人、有空哨位時，站上去等敵人進範圍。
+  if (p.needs.energy > DEFENSE.FIGHT_MIN_ENERGY && activeEnemies(state).length) {
+    const willing = Math.max(0, Math.min(1.5, DEFENSE.WILLING_BASE + 1.5 * courage(p)));
+    for (const o of state.objects) {
+      if (o.kind !== 'post') continue;
+      const i = freeSlot(o);
+      if (i < 0) continue;
+      add({ kind: 'watch', obj: o.id, slot: i, spot: spotOf(o, i), label: '上哨位守著' }, { work: DEFENSE.FIGHT_WORK * willing * POST.PREF });
+    }
+  }
   if (empty && state.stock.wood > 0) {
     for (const k of brokenFence(state)) {
       if (state.repairUser[k]) continue;
@@ -217,7 +227,7 @@ export function candidates(state, p, scorePois) {
   if (near.length) for (const c of out) if (LEISURE.has(c.kind)) { c.score *= DEFENSE.ALARM_LEISURE; c.f.sched *= DEFENSE.ALARM_LEISURE; }
 
   // M8 訪客不接活計、不迎敵；門規的影響。
-  if (p.guest) for (let i = out.length - 1; i >= 0; i--) if (WORK_KINDS.has(out[i].kind) || out[i].kind === 'fight') out.splice(i, 1);
+  if (p.guest) for (let i = out.length - 1; i >= 0; i--) if (WORK_KINDS.has(out[i].kind) || out[i].kind === 'fight' || out[i].kind === 'watch') out.splice(i, 1);
   const rule = state.sect && !p.guest ? state.sect.rule : null;
   if (rule === 'drill') for (const c of out) if (c.kind === 'drill') { c.f.persona += SECT.RULE_DRILL; c.score += SECT.RULE_DRILL * c.f.sched * c.f.dist; }
   if (rule === 'free') for (const c of out) if (c.kind === 'sit' || c.kind === 'wander') { c.f.persona += SECT.RULE_FREE; c.score += SECT.RULE_FREE * c.f.sched * c.f.dist; }

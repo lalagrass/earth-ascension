@@ -33,7 +33,8 @@ const expect = (id, ok, text) => {
 const lives = [];
 const membersBy = {}, dailyBy = {};
 const m12 = {};
-for (const scenario of ['base', 'exp', 'grow', 'farm']) {
+const raid = {};   // M14-A5：各情境十日的撞破格數與被偷份數
+for (const scenario of ['base', 'exp', 'grow', 'farm', 'post']) {
   const dayH = Array(DAYS).fill(0), dayN = Array(DAYS).fill(0);
   const seedRows = [];
   let friends = 0, masters = 0;
@@ -73,6 +74,9 @@ for (const scenario of ['base', 'exp', 'grow', 'farm']) {
       M.n++; M.cut += s.ledger.woodCut - snap.d5.cut; M.veg += s.ledger.veg - snap.d5.veg; M.picked += s.ledger.picked - snap.d5.picked;
       M.chopGain += Math.max(...s.people.map((p) => p.skills.chop)) - snap.d5.chop;
     }
+    const R = (raid[scenario] ??= { breaches: 0, stolen: 0, steals: 0 });
+    R.breaches += s.counts.breaches || 0; R.steals += s.counts.stealHits || 0;
+    R.stolen += s.ledger.rawStolen + s.ledger.mealsStolen + s.ledger.woodStolen + s.ledger.stoneStolen;
     seedRows.push({ seed, hunger: h / n, eatsPerDay: eats / (n / TICKS_PER_DAY), members: m.length });
     if (scenario === 'base') for (const p of s.people) if (start.has(p.id)) lives.push({ seed, p, share: lifeShares(p) });
   }
@@ -87,7 +91,7 @@ for (const scenario of ['base', 'exp', 'grow', 'farm']) {
   dailyBy[scenario] = daily;
   // M11-A7：grow 情境人多一半，門檻放在 3%／6%（規格寫在量之前）。
   // M18-A4：燒柴時用同一組門檻。
-  const [dayMax, seedMax, id] = FIRE_ON ? (scenario === 'grow' ? [0.03, 0.06, 'M18-A4'] : [0.02, 0.04, 'M18-A4']) : scenario === 'grow' ? [0.03, 0.06, 'M11-A7'] : scenario === 'farm' ? [0.02, 0.04, 'M12-A6'] : [0.02, 0.04, 'M10-A5'];
+  const [dayMax, seedMax, id] = FIRE_ON ? (scenario === 'grow' ? [0.03, 0.06, 'M18-A4'] : [0.02, 0.04, 'M18-A4']) : scenario === 'post' ? [0.02, 0.04, 'M14-A7'] : scenario === 'grow' ? [0.03, 0.06, 'M11-A7'] : scenario === 'farm' ? [0.02, 0.04, 'M12-A6'] : [0.02, 0.04, 'M10-A5'];
   expect(`${id}[${scenario}]`, Math.max(...daily) <= dayMax && worst.hunger <= seedMax && eatLo >= 1.5 && eatHi <= 4,
     `最差日 ${pct(Math.max(...daily))}（≤ ${pct(dayMax)}）、最差種子 s${worst.seed} ${pct(worst.hunger)}（≤ ${pct(seedMax)}）、進食 ${eatLo.toFixed(2)}–${eatHi.toFixed(2)}（1.5–4）`);
   expect(`M10-A7[${scenario}]`, friends >= 6 && masters >= 1, `有朋友的種子 ${friends}/${SEEDS}（≥ 6）、拜師 ${masters} 次（≥ 1）`);
@@ -106,6 +110,15 @@ if (DUTY.ON) {
   }
   const small = nJ < 20 || nP < 20 ? '（小樣本）' : '';
   expect('M18-A6', w > 0 && diff / w >= 0.1, `值日迫切時做本職，同一職裡條理比隨性多 ${(100 * diff / Math.max(1, w)).toFixed(1)} 個百分點（≥ 10；條理 ${nJ}、隨性 ${nP} 人次）${small}`);
+}
+
+// M14-A5：有哨位比沒有，撞破與被偷都少 ≥ 30%。
+{
+  const b = raid.base, p = raid.post;
+  const small = b.breaches < 20 || b.steals < 20 ? '（小樣本）' : '';
+  console.log('--- 守點 ---');
+  expect('M14-A5', p.breaches <= 0.7 * b.breaches && p.stolen <= 0.7 * b.stolen,
+    `撞破 base ${b.breaches} 格、post ${p.breaches} 格（≤ ${(0.7 * b.breaches).toFixed(1)}）；被偷 base ${b.stolen} 份（${b.steals} 次）、post ${p.stolen} 份（${p.steals} 次）（≤ ${(0.7 * b.stolen).toFixed(1)}）${small}`);
 }
 
 // M12-A5／A6：山上一直有活幹；菜園供得上糧。

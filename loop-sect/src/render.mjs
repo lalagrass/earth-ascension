@@ -184,6 +184,12 @@ export function drawObjects(ctx, state) {
         ctx.fillStyle = '#6e5133'; ctx.fillRect(qx + 7, py - 4, 6, 22);
         ctx.fillRect(qx + 2, py + 2, 16, 3); ctx.fillRect(qx + 4, py + 9, 12, 3);
         ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.beginPath(); ctx.ellipse(qx + 10, py + 18, 7, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+      } else if (o.kind === 'post') {
+        // 哨位：四腳木台＋欄杆，人站在台上。
+        ctx.fillStyle = '#6e5133';
+        ctx.fillRect(px + 1, py + 14, 3, 6); ctx.fillRect(px + 16, py + 14, 3, 6);
+        ctx.fillStyle = '#9a7448'; ctx.fillRect(px - 2, py + 9, TILE + 4, 6);
+        ctx.fillStyle = '#6e5133'; ctx.fillRect(px - 2, py + 2, 2, 8); ctx.fillRect(px + TILE, py + 2, 2, 8); ctx.fillRect(px - 2, py + 2, TILE + 4, 2);
       } else if (o.kind === 'bench') {
         ctx.fillStyle = '#8f9188'; ctx.fillRect(px + 1, py + 8, 18, 6);
         ctx.fillRect(px + 3, py + 14, 3, 4); ctx.fillRect(px + 14, py + 14, 3, 4);

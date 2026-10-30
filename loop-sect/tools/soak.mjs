@@ -14,8 +14,8 @@ const DAYS = arg('days', 5);
 const TICKS = DAYS * TICKS_PER_DAY;
 
 const failures = [];
-// 情境：base（M2–M8 的自然遊玩）、exp（M9：第 3 日起討伐野豬窩）、grow（M11：第 2 日起蓋宿舍）、farm（M12：第 2 日放菜園）、yard（M13：第 2 日放外功場）。
-const SCENARIOS = ['base', 'exp', 'grow', 'farm', 'yard'];
+// 情境：base（M2–M8 的自然遊玩）、exp（M9：第 3 日起討伐野豬窩）、grow（M11：第 2 日起蓋宿舍）、farm（M12：第 2 日放菜園）、yard（M13：第 2 日放外功場）、post（M14：南柵欄蓋好就放哨位）。
+const SCENARIOS = ['base', 'exp', 'grow', 'farm', 'yard', 'post'];
 for (const scenario of SCENARIOS) {
   const pooled = {};
   for (let seed = 1; seed <= SEEDS; seed++) {

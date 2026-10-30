@@ -158,7 +158,10 @@ export function stepEnemies(state) {
     }
     if (e.mode !== 'flee' && e.hp <= 0) {
       e.mode = 'beaten';
-      state.events.push({ tick: state.tick, kind: 'repel', text: `${e.hitBy.map((id) => state.people.find((p) => p.id === id)?.name ?? '路人').join('、')}打退了${e.label}`, who: [...e.hitBy] });
+      // M14：打退時有人站在哨位上，紀事寫出來。
+      const onPost = state.people.some((p) => e.hitBy.includes(p.id) && p.task?.kind === 'watch');
+      if (onPost) state.counts.repelledPost = (state.counts.repelledPost || 0) + 1;
+      state.events.push({ tick: state.tick, kind: 'repel', text: `${e.hitBy.map((id) => state.people.find((p) => p.id === id)?.name ?? '路人').join('、')}${onPost ? '在哨位上' : ''}打退了${e.label}`, who: [...e.hitBy] });
       state.counts.repelled = (state.counts.repelled || 0) + 1;
       flee(state, e);
     }

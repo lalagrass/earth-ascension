@@ -20,12 +20,14 @@ export function bestMove(p) {
   return best;
 }
 
-const STRIKES = new Set(['drill', 'spar', 'fight']);
+const STRIKES = new Set(['drill', 'spar', 'fight', 'watch']);
 
 // 每 tick 呼叫：在練功、切磋、迎敵（已交手）時，到了間隔就出一招；方向朝木樁、對手或敵人。
 export function stepStrike(state, p, target) {
   if (p.act !== 'do' || !STRIKES.has(p.task?.kind)) { p.strikeNext = null; return; }
-  const move = p.task.kind === 'fight' ? bestMove(p) : p.task.move;
+  // M14：哨位上只在範圍內有敵人時出手。
+  if (p.task.kind === 'watch' && !target) { p.strikeNext = null; return; }
+  const move = p.task.kind === 'fight' || p.task.kind === 'watch' ? bestMove(p) : p.task.move;
   const v = p.moves[move] ?? 0;
   if (p.strikeNext == null) p.strikeNext = state.tick;
   if (state.tick < p.strikeNext) return;

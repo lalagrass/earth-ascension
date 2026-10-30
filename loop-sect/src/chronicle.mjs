@@ -8,7 +8,7 @@ export const LIFE_CATS = [
   { id: 'leisure', label: '閒坐閒逛', kinds: ['sit', 'wander', 'idle', 'leave'] },
   { id: 'sleep', label: '睡覺', kinds: ['sleep', 'sleepGround'] },
   { id: 'eat', label: '吃飯', kinds: ['eat', 'eatRaw', 'eatCarried', 'ration'] },
-  { id: 'guard', label: '迎敵躲避', kinds: ['fight', 'hide'] },
+  { id: 'guard', label: '迎敵躲避', kinds: ['fight', 'hide', 'watch'] },
   { id: 'away', label: '遠征', kinds: ['expedition', 'raze'] },
 ];
 const CAT_OF = Object.fromEntries(LIFE_CATS.flatMap((c) => c.kinds.map((k) => [k, c.id])));

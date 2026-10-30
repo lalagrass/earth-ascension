@@ -16,6 +16,7 @@ import { fromTemplate, makePerson, speedOf } from './person.mjs';
 import { decayNeeds, applyPer, isNight } from './needs.mjs';
 import { candidates, interruptible, sparInterruptible, willingToChat, willingToSpar, REFUSE_COOLDOWN } from './ai.mjs';
 import { newSkills, grow, SKILL_OF_TASK, workTimeMul, buildRate, extraMeal, extraTake, skillLabel } from './skills.mjs';
+import { POST } from './data.mjs';
 import { FOOT_STEP, SOCIAL, MARTIAL, DEFENSE, RECRUIT, SECT, EXPEDITION, NESTS, FIRE, FARM } from './data.mjs';
 import { addAff, compat, teachTopic, withStage, atLeast } from './social.mjs';
 import { newMoves, practice, moveLabel, learn, drillMove, prowess } from './martial.mjs';
@@ -651,6 +652,7 @@ function stepPerson(state, p) {
       if (company) applyPer(p, { social: 0.4 * company });
     }
     if (p.task.kind === 'fight') { fightTick(state, p); return; }
+    if (p.task.kind === 'watch') { watchTick(state, p); return; }
     if (p.task.kind === 'raze') { razeTick(state, p); return; }
     if (p.task.kind === 'repair' && p.task.left <= 1 && !cellClear(state, { x: p.task.cx, y: p.task.cy }, p)) { p.actLabel = '等人讓開'; return; }
     if (p.task.kind === 'build') {
@@ -826,6 +828,24 @@ function fightTick(state, p) {
   if (!e.hitBy.includes(p.id)) e.hitBy.push(p.id);
 }
 
+// M14 守哨：範圍內最近的活敵人每 tick 扣血；敵人不反擊台上的人。敵人都走了、或撐不住就下來。
+function watchTick(state, p) {
+  const t = p.task;
+  const live = activeEnemies(state);
+  if (!live.length) { finish(state, p); return; }
+  if (p.needs.energy < DEFENSE.FIGHT_QUIT) { p.bubble = { text: '撐不住了', until: state.tick + 40 }; finish(state, p); return; }
+  let e = null, best = POST.RANGE;
+  for (const x of live) { const d = Math.hypot(x.x - p.x, x.y - p.y); if (d <= best) { best = d; e = x; } }
+  t.target = e?.id ?? null;
+  if (!e) { p.actLabel = '守哨位'; return; }
+  p.actLabel = `在哨位上打${e.label}`;
+  p.needs.energy = Math.max(0, p.needs.energy - POST.DRAIN);
+  const dmg = DEFENSE.FIGHT_DMG * (1 + prowess(p)) * (0.7 + 0.06 * p.attrs.li);
+  e.hp -= dmg; t.dealt = (t.dealt ?? 0) + dmg;
+  if (!e.hitBy.includes(p.id)) e.hitBy.push(p.id);
+  state.counts.watchHits = (state.counts.watchHits || 0) + 1;
+}
+
 function tryChatIfClose(state, p) {
   const o = byId(state.people, p.task.partner);
   if (dist(p, o) > 1.5) return false;
@@ -887,6 +907,7 @@ function strikeTarget(state, p) {
   if (t.kind === 'drill') { const o = byId(state.objects, t.obj); return o ? { x: o.slots[0][0] + 1, y: o.slots[0][1] } : null; }
   if (t.kind === 'spar') return byId(state.people, t.partner) ?? null;
   if (t.kind === 'fight') return state.enemies.find((e) => e.id === t.enemy) ?? null;
+  if (t.kind === 'watch') return t.target ? state.enemies.find((e) => e.id === t.target) ?? null : null;
   return null;
 }
 
