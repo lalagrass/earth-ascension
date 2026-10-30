@@ -17,7 +17,7 @@ function ledger(s){const base=structuredClone(s),x={wood:0,berries:0,herbs:0,her
   if(!b.person.carry&&a.person.carry?.bonus)x.seeds+=a.person.carry.bonus.seeds;
   if(t?.act==='return'&&b.person.carry?.bonus&&!a.person.carry)x.seedDiscard+=b.person.carry.bonus.seeds-(a.stock.seeds-b.stock.seeds);
   if(t?.act==='cook'){const r=RECIPES[t.recipe||'basic'];if(a.stock[r.output]>b.stock[r.output]){x.foodMade[r.output]+=r.servings;x.cookXP+=r.xp;x.fuel+=r.ingredients.wood||0;x.cookVeg+=r.ingredients.veg||0;x.cookBerries+=r.ingredients.berries||0;}}
-  for(const k of kinds){if(['eat','shareMeal'].includes(t?.act)&&a.stock[k]<b.stock[k])x.foodUsed[k]+=b.stock[k]-a.stock[k];}
+  for(const k of kinds){if(['eat','shareMeal','dine'].includes(t?.act)&&a.stock[k]<b.stock[k])x.foodUsed[k]+=b.stock[k]-a.stock[k];}
   if(a.frontier.trip.eaten>b.frontier.trip.eaten)x.foodUsed[RECIPES[b.frontier.trip.ration].output]++;
   if(t?.act==='eat'&&a.stock.berries<b.stock.berries)x.berryEaten++;
   assert.equal(base.stock.wood+carry(base,'wood')+woodAssets(base)+base.frontier.repairWood+x.wood,a.stock.wood+carry(a,'wood')+woodAssets(a)+a.frontier.repairWood+x.fuel,'wood ledger');

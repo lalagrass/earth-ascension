@@ -106,7 +106,8 @@ export function drawHomestead(g,s,preview,blueprint,inspected,showRoute=true,mod
   if(['practice','fight','trailFight','spar','teach'].includes(t?.act)&&t.phase==='do')line([[x+8,y-26],[x+31,y-30]],'#e3bd92',4);
   if(t?.act==='settle'&&t.phase==='do'){rect(x+10,y-28,7,7,'#405e49');rect(x+18,y-28,7,7,'#a34e37');rect(x+26,y-28,7,7,'#855c47');}
   if(t?.act==='build'&&t.phase==='do'){line([[x+9,y-29],[x+27,y-45]],'#715232',4);line([[x+21,y-48],[x+32,y-41]],'#aaa797',6);}
-  tag(p.name,x,y-(rest?58:76),true);
+  const dining=s.person.task?.act==='dine'&&s.person.task.phase==='do'&&[s.person,s.frontier?.companion].includes(p)&&Math.hypot(x-s.person.pos[0],y-s.person.pos[1])<=45;if(dining){ellipse(x+13,y-23,9,4,'#ead8aa');line([[x+6,y-27],[x+16,y-23]],'#e3bd92',3);}
+  tag(p.name,x,y-(dining&&p===s.frontier.companion?100:rest?58:76),true);
   if(t?.act==='leisure'&&t.phase==='do'&&['flowers','garden'].includes(t.leisureKind)){line([[x+8,y-25],[x+22,y-20]],'#e3bd92',4);tag(t.leisureKind==='flowers'?'賞花':'看菜畦',x,y-105,true);}
   if(p===s.person&&currentFeelings(s).value>0){circle(x+23,y-45,8,'#e8cc73');g.fillStyle='#715c35';g.font='12px sans-serif';g.fillText('♪',x+20,y-41);}
  }

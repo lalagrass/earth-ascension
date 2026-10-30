@@ -1,0 +1,2101 @@
+{
+  "normalUI": true,
+  "noWorldInjection": true,
+  "before": {
+    "kind": "homestead",
+    "version": 5,
+    "mode": "solo",
+    "mealStyle": "auto",
+    "focusProject": null,
+    "look": {
+      "style": "moss",
+      "name": "苔蔭小居"
+    },
+    "t": 1060.75,
+    "subtick": 0,
+    "day": 5,
+    "speed": 1,
+    "person": {
+      "name": "無名",
+      "personality": "quiet",
+      "pos": [
+        613.4133199587254,
+        353.22586430458193
+      ],
+      "hunger": 46.49500000001447,
+      "energy": 45.4000000000004,
+      "herbalSkill": 2,
+      "careDay": 0,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 5,
+        "cook": 3
+      },
+      "feelings": {
+        "warmMeal": 826.75,
+        "rested": 886,
+        "seated": 1013.75
+      },
+      "cookRequest": null,
+      "foodRequest": null,
+      "task": {
+        "act": "leisure",
+        "phase": "go",
+        "place": "bench",
+        "timer": 0,
+        "leisureKind": "bench"
+      },
+      "order": null,
+      "carry": null,
+      "work": 63.714285714285424,
+      "leisure": 4,
+      "orderScope": "once",
+      "onceProject": null,
+      "onceDelivery": false,
+      "leisureRequest": null
+    },
+    "stock": {
+      "berries": 1,
+      "wood": 0,
+      "seeds": 3,
+      "veg": 1,
+      "meal": 1,
+      "salad": 2,
+      "stew": 0,
+      "herbs": 0
+    },
+    "cap": {
+      "berries": 8,
+      "wood": 8,
+      "seeds": 5,
+      "veg": 8,
+      "meal": 8,
+      "herbs": 6
+    },
+    "wild": {
+      "berries": 4,
+      "wood": 3.964285714285913,
+      "herbs": 3
+    },
+    "fac": {
+      "fence": {
+        "stage": 0,
+        "site": null
+      },
+      "hut": {
+        "stage": 2,
+        "site": null
+      },
+      "garden": {
+        "stage": 1,
+        "site": null
+      },
+      "herbGarden": {
+        "stage": 1,
+        "site": null
+      },
+      "workbench": {
+        "stage": 1,
+        "site": null
+      },
+      "bed": {
+        "stage": 2,
+        "site": null
+      },
+      "bench": {
+        "stage": 1,
+        "site": null
+      },
+      "flowers": {
+        "stage": 1,
+        "site": null
+      },
+      "kitchen": {
+        "stage": 1,
+        "site": null
+      },
+      "store": {
+        "stage": 0,
+        "site": null
+      },
+      "berries": {
+        "stage": 0
+      },
+      "wood": {
+        "stage": 0
+      },
+      "herbs": {
+        "stage": 0
+      }
+    },
+    "plot": {
+      "state": "ripe",
+      "growth": 34
+    },
+    "herbPlot": {
+      "state": "growing",
+      "growth": 26.5
+    },
+    "visitor": {
+      "name": "阿蓮",
+      "role": "visitor",
+      "trust": 0,
+      "lastChat": 0,
+      "lastGift": 0,
+      "cared": false,
+      "willing": false,
+      "inviteDay": 0,
+      "inviteTime": 0,
+      "apprenticeDay": 0,
+      "injury": false,
+      "hunger": 68,
+      "energy": 72,
+      "herbalSkill": 0,
+      "careDay": 0
+    },
+    "helper": null,
+    "leases": {
+      "wood": null,
+      "garden": null,
+      "herbGarden": null
+    },
+    "autonomy": {
+      "version": 1,
+      "goal": null,
+      "since": 1034.5,
+      "waiting": {
+        "goal": "herbs",
+        "since": 1034.5
+      },
+      "replanAt": 1049.5,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "comfort",
+        "porch",
+        "personalize"
+      ],
+      "warmMeals": 2,
+      "comfortRests": 1,
+      "herbHarvests": 0,
+      "careUses": 0,
+      "lookOwnership": "resident",
+      "recess": true,
+      "breaks": 4,
+      "direction": "auto",
+      "deferred": [],
+      "limit": 2,
+      "interestLimit": 2,
+      "journal": [
+        {
+          "goal": "shelter",
+          "at": 100.5
+        },
+        {
+          "goal": "hotFood",
+          "at": 421.25
+        },
+        {
+          "goal": "comfort",
+          "at": 826.25
+        },
+        {
+          "goal": "porch",
+          "at": 944.5
+        },
+        {
+          "goal": "personalize",
+          "at": 1044.75
+        }
+      ],
+      "tastes": {
+        "basic": 2,
+        "salad": 0,
+        "stew": 0
+      },
+      "useResults": {
+        "meals": {
+          "basic": {
+            "n": 2,
+            "hunger": 52,
+            "energy": 0
+          },
+          "salad": {
+            "n": 0,
+            "hunger": 0,
+            "energy": 0
+          },
+          "stew": {
+            "n": 0,
+            "hunger": 0,
+            "energy": 0
+          }
+        },
+        "leisure": {
+          "clouds": {
+            "n": 3,
+            "energy": 3.333333333333333,
+            "comfort": 0
+          },
+          "bench": {
+            "n": 1,
+            "energy": 5,
+            "comfort": 2
+          },
+          "flowers": {
+            "n": 0,
+            "energy": 0,
+            "comfort": 0
+          },
+          "garden": {
+            "n": 0,
+            "energy": 0,
+            "comfort": 0
+          }
+        },
+        "lastMeal": {
+          "id": "basic",
+          "at": 766.75,
+          "hungerBefore": 35.65500000001046,
+          "hungerAfter": 87.65500000001046,
+          "energyBefore": 21.450000000000415,
+          "energyAfter": 21.450000000000415
+        }
+      },
+      "leisure": {
+        "counts": {
+          "clouds": 3,
+          "bench": 1,
+          "flowers": 0,
+          "garden": 0
+        },
+        "last": "bench",
+        "at": 953.75
+      },
+      "experience": {
+        "hunger": 0,
+        "fatigue": 0,
+        "effort": 2.9631944444444622,
+        "lastWork": 63.714285714285424
+      }
+    },
+    "unlocked": [
+      "木作台",
+      "改良灶具",
+      "食譜：蔬果拌食",
+      "舒適床鋪"
+    ],
+    "log": [
+      {
+        "day": 5,
+        "msg": "彼此談了日常，林舟多了一點信任；強弱不等於喜歡。"
+      },
+      {
+        "day": 5,
+        "msg": "替自己的小家選了家名與配色；沒有消耗材料或增加能力。"
+      },
+      {
+        "day": 5,
+        "msg": "林舟看見你學會的手藝，想聽你談談；敬意不代表已信任。"
+      },
+      {
+        "day": 5,
+        "msg": "林舟沿村路走來，是否交流由你決定。"
+      },
+      {
+        "day": 5,
+        "msg": "用一份草藥在藥田插穗。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "採到一份虛構草藥，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "完工：小藥田。"
+      },
+      {
+        "day": 5,
+        "msg": "木料搬到藥田工地。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "木料搬到藥田工地。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "第 5 日。"
+      },
+      {
+        "day": 4,
+        "msg": "立下「小藥田」藍圖。"
+      },
+      {
+        "day": 4,
+        "msg": "完工：庭院花叢。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到庭院植栽工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到庭院植栽工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到庭院植栽工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "立下「庭院花叢」藍圖。"
+      },
+      {
+        "day": 4,
+        "msg": "完工：屋前長凳。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋前座位工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋前座位工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "立下「屋前長凳」藍圖。"
+      },
+      {
+        "day": 4,
+        "msg": "完工：舒適床鋪。"
+      },
+      {
+        "day": 4,
+        "msg": "在木作台做好舒適床部件，接著搬回屋內安裝。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "小菜園的菜熟了。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "做成蔬果拌食2份。"
+      },
+      {
+        "day": 4,
+        "msg": "山豬離開了；家園仍可繼續生活。"
+      },
+      {
+        "day": 4,
+        "msg": "吃了一份熱飯。"
+      },
+      {
+        "day": 4,
+        "msg": "山豬驚擾讓人疲憊，先照顧吃睡，牠稍後會離去。"
+      },
+      {
+        "day": 4,
+        "msg": "在小菜園播下種子。"
+      },
+      {
+        "day": 4,
+        "msg": "一隻山豬進入林緣。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "林緣傳來山豬足跡；30秒後可能靠近。可守家，或繼續生活避開。"
+      },
+      {
+        "day": 4,
+        "msg": "第 4 日。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "收下青菜與種子，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "立下「舒適床鋪」藍圖。"
+      },
+      {
+        "day": 3,
+        "msg": "學會新做法：舒適床鋪。"
+      },
+      {
+        "day": 3,
+        "msg": "完工：木作台。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到木作處工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到木作處工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到木作處工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "立下「木作台」藍圖。"
+      },
+      {
+        "day": 3,
+        "msg": "完工：木床鋪。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      }
+    ],
+    "frontier": {
+      "version": 1,
+      "autoCooperate": false,
+      "approach": "learn",
+      "gateOpen": true,
+      "gateManual": false,
+      "repairWood": 0,
+      "fenceHp": 0,
+      "threat": {
+        "phase": "quiet",
+        "next": 1256,
+        "warnAt": 720,
+        "until": 0,
+        "beast": null,
+        "incursions": 1,
+        "damage": 0,
+        "scares": 1
+      },
+      "martial": {
+        "xp": 6,
+        "practices": 4,
+        "hits": 0,
+        "partnerRounds": 0,
+        "insights": 0,
+        "stance": "brace",
+        "tactics": "fixed",
+        "practiceGoal": "direction",
+        "avoid": false
+      },
+      "talents": {
+        "body": 1,
+        "mind": 1
+      },
+      "companion": {
+        "id": "linzhou",
+        "name": "林舟",
+        "allowed": true,
+        "present": true,
+        "leaving": false,
+        "pos": [
+          650,
+          345
+        ],
+        "hunger": 67.06000000000029,
+        "energy": 85,
+        "food": 0,
+        "carry": null,
+        "task": {
+          "act": "leisure",
+          "phase": "do",
+          "timer": 0.5
+        },
+        "trust": 1,
+        "affinity": 1,
+        "respect": 3,
+        "practiceXP": 1,
+        "sparDay": 0,
+        "taught": false,
+        "chatDay": 5,
+        "giftDay": 0,
+        "coopDay": 0,
+        "noticeDay": 5,
+        "helpPending": false,
+        "helpJobs": 0,
+        "woodGathered": 0,
+        "fruitGathered": 0,
+        "fruitEaten": 0
+      },
+      "source": {
+        "hp": 24,
+        "cleared": false,
+        "clearAt": null,
+        "lastStrike": 0
+      },
+      "trip": {
+        "phase": "home",
+        "ration": null,
+        "rationPreference": "auto",
+        "joinRequested": false,
+        "joined": false,
+        "deferred": false,
+        "journeys": 0,
+        "returns": 0,
+        "packed": 0,
+        "eaten": 0,
+        "returned": 0,
+        "energySpent": 0,
+        "lastAid": 0,
+        "aidHits": 0
+      }
+    }
+  },
+  "dining": {
+    "kind": "homestead",
+    "version": 5,
+    "mode": "solo",
+    "mealStyle": "auto",
+    "focusProject": null,
+    "look": {
+      "style": "moss",
+      "name": "苔蔭小居"
+    },
+    "t": 1061.5,
+    "subtick": 0,
+    "day": 5,
+    "speed": 1,
+    "person": {
+      "name": "無名",
+      "personality": "quiet",
+      "pos": [
+        620,
+        345
+      ],
+      "hunger": 46.39000000001448,
+      "energy": 45.4000000000004,
+      "herbalSkill": 2,
+      "careDay": 0,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 5,
+        "cook": 3
+      },
+      "feelings": {
+        "warmMeal": 826.75,
+        "rested": 886,
+        "seated": 1013.75
+      },
+      "cookRequest": null,
+      "foodRequest": null,
+      "task": {
+        "act": "dine",
+        "phase": "do",
+        "place": "pair",
+        "timer": 0.75
+      },
+      "order": "dine",
+      "carry": null,
+      "work": 63.714285714285424,
+      "leisure": 4,
+      "orderScope": "once",
+      "onceProject": null,
+      "onceDelivery": false,
+      "leisureRequest": null
+    },
+    "stock": {
+      "berries": 1,
+      "wood": 0,
+      "seeds": 3,
+      "veg": 1,
+      "meal": 1,
+      "salad": 2,
+      "stew": 0,
+      "herbs": 0
+    },
+    "cap": {
+      "berries": 8,
+      "wood": 8,
+      "seeds": 5,
+      "veg": 8,
+      "meal": 8,
+      "herbs": 6
+    },
+    "wild": {
+      "berries": 4,
+      "wood": 3.9910714285716278,
+      "herbs": 3
+    },
+    "fac": {
+      "fence": {
+        "stage": 0,
+        "site": null
+      },
+      "hut": {
+        "stage": 2,
+        "site": null
+      },
+      "garden": {
+        "stage": 1,
+        "site": null
+      },
+      "herbGarden": {
+        "stage": 1,
+        "site": null
+      },
+      "workbench": {
+        "stage": 1,
+        "site": null
+      },
+      "bed": {
+        "stage": 2,
+        "site": null
+      },
+      "bench": {
+        "stage": 1,
+        "site": null
+      },
+      "flowers": {
+        "stage": 1,
+        "site": null
+      },
+      "kitchen": {
+        "stage": 1,
+        "site": null
+      },
+      "store": {
+        "stage": 0,
+        "site": null
+      },
+      "berries": {
+        "stage": 0
+      },
+      "wood": {
+        "stage": 0
+      },
+      "herbs": {
+        "stage": 0
+      }
+    },
+    "plot": {
+      "state": "ripe",
+      "growth": 34
+    },
+    "herbPlot": {
+      "state": "growing",
+      "growth": 27.25
+    },
+    "visitor": {
+      "name": "阿蓮",
+      "role": "visitor",
+      "trust": 0,
+      "lastChat": 0,
+      "lastGift": 0,
+      "cared": false,
+      "willing": false,
+      "inviteDay": 0,
+      "inviteTime": 0,
+      "apprenticeDay": 0,
+      "injury": false,
+      "hunger": 68,
+      "energy": 72,
+      "herbalSkill": 0,
+      "careDay": 0
+    },
+    "helper": null,
+    "leases": {
+      "wood": null,
+      "garden": null,
+      "herbGarden": null
+    },
+    "autonomy": {
+      "version": 1,
+      "goal": null,
+      "since": 1034.5,
+      "waiting": {
+        "goal": "herbs",
+        "since": 1034.5
+      },
+      "replanAt": 1049.5,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "comfort",
+        "porch",
+        "personalize"
+      ],
+      "warmMeals": 2,
+      "comfortRests": 1,
+      "herbHarvests": 0,
+      "careUses": 0,
+      "lookOwnership": "resident",
+      "recess": true,
+      "breaks": 4,
+      "direction": "auto",
+      "deferred": [],
+      "limit": 2,
+      "interestLimit": 2,
+      "journal": [
+        {
+          "goal": "shelter",
+          "at": 100.5
+        },
+        {
+          "goal": "hotFood",
+          "at": 421.25
+        },
+        {
+          "goal": "comfort",
+          "at": 826.25
+        },
+        {
+          "goal": "porch",
+          "at": 944.5
+        },
+        {
+          "goal": "personalize",
+          "at": 1044.75
+        }
+      ],
+      "tastes": {
+        "basic": 2,
+        "salad": 0,
+        "stew": 0
+      },
+      "useResults": {
+        "meals": {
+          "basic": {
+            "n": 2,
+            "hunger": 52,
+            "energy": 0
+          },
+          "salad": {
+            "n": 0,
+            "hunger": 0,
+            "energy": 0
+          },
+          "stew": {
+            "n": 0,
+            "hunger": 0,
+            "energy": 0
+          }
+        },
+        "leisure": {
+          "clouds": {
+            "n": 3,
+            "energy": 3.333333333333333,
+            "comfort": 0
+          },
+          "bench": {
+            "n": 1,
+            "energy": 5,
+            "comfort": 2
+          },
+          "flowers": {
+            "n": 0,
+            "energy": 0,
+            "comfort": 0
+          },
+          "garden": {
+            "n": 0,
+            "energy": 0,
+            "comfort": 0
+          }
+        },
+        "lastMeal": {
+          "id": "basic",
+          "at": 766.75,
+          "hungerBefore": 35.65500000001046,
+          "hungerAfter": 87.65500000001046,
+          "energyBefore": 21.450000000000415,
+          "energyAfter": 21.450000000000415
+        }
+      },
+      "leisure": {
+        "counts": {
+          "clouds": 3,
+          "bench": 1,
+          "flowers": 0,
+          "garden": 0
+        },
+        "last": "bench",
+        "at": 953.75
+      },
+      "experience": {
+        "hunger": 0,
+        "fatigue": 0,
+        "effort": 2.962152777777796,
+        "lastWork": 63.714285714285424
+      }
+    },
+    "unlocked": [
+      "木作台",
+      "改良灶具",
+      "食譜：蔬果拌食",
+      "舒適床鋪"
+    ],
+    "log": [
+      {
+        "day": 5,
+        "msg": "彼此談了日常，林舟多了一點信任；強弱不等於喜歡。"
+      },
+      {
+        "day": 5,
+        "msg": "替自己的小家選了家名與配色；沒有消耗材料或增加能力。"
+      },
+      {
+        "day": 5,
+        "msg": "林舟看見你學會的手藝，想聽你談談；敬意不代表已信任。"
+      },
+      {
+        "day": 5,
+        "msg": "林舟沿村路走來，是否交流由你決定。"
+      },
+      {
+        "day": 5,
+        "msg": "用一份草藥在藥田插穗。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "採到一份虛構草藥，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "完工：小藥田。"
+      },
+      {
+        "day": 5,
+        "msg": "木料搬到藥田工地。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "木料搬到藥田工地。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "第 5 日。"
+      },
+      {
+        "day": 4,
+        "msg": "立下「小藥田」藍圖。"
+      },
+      {
+        "day": 4,
+        "msg": "完工：庭院花叢。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到庭院植栽工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到庭院植栽工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到庭院植栽工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "立下「庭院花叢」藍圖。"
+      },
+      {
+        "day": 4,
+        "msg": "完工：屋前長凳。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋前座位工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋前座位工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "立下「屋前長凳」藍圖。"
+      },
+      {
+        "day": 4,
+        "msg": "完工：舒適床鋪。"
+      },
+      {
+        "day": 4,
+        "msg": "在木作台做好舒適床部件，接著搬回屋內安裝。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "小菜園的菜熟了。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "做成蔬果拌食2份。"
+      },
+      {
+        "day": 4,
+        "msg": "山豬離開了；家園仍可繼續生活。"
+      },
+      {
+        "day": 4,
+        "msg": "吃了一份熱飯。"
+      },
+      {
+        "day": 4,
+        "msg": "山豬驚擾讓人疲憊，先照顧吃睡，牠稍後會離去。"
+      },
+      {
+        "day": 4,
+        "msg": "在小菜園播下種子。"
+      },
+      {
+        "day": 4,
+        "msg": "一隻山豬進入林緣。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "林緣傳來山豬足跡；30秒後可能靠近。可守家，或繼續生活避開。"
+      },
+      {
+        "day": 4,
+        "msg": "第 4 日。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "收下青菜與種子，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "立下「舒適床鋪」藍圖。"
+      },
+      {
+        "day": 3,
+        "msg": "學會新做法：舒適床鋪。"
+      },
+      {
+        "day": 3,
+        "msg": "完工：木作台。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到木作處工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到木作處工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到木作處工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "立下「木作台」藍圖。"
+      },
+      {
+        "day": 3,
+        "msg": "完工：木床鋪。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      }
+    ],
+    "frontier": {
+      "version": 1,
+      "autoCooperate": false,
+      "approach": "learn",
+      "gateOpen": true,
+      "gateManual": false,
+      "repairWood": 0,
+      "fenceHp": 0,
+      "threat": {
+        "phase": "quiet",
+        "next": 1256,
+        "warnAt": 720,
+        "until": 0,
+        "beast": null,
+        "incursions": 1,
+        "damage": 0,
+        "scares": 1
+      },
+      "martial": {
+        "xp": 6,
+        "practices": 4,
+        "hits": 0,
+        "partnerRounds": 0,
+        "insights": 0,
+        "stance": "brace",
+        "tactics": "fixed",
+        "practiceGoal": "direction",
+        "avoid": false
+      },
+      "talents": {
+        "body": 1,
+        "mind": 1
+      },
+      "companion": {
+        "id": "linzhou",
+        "name": "林舟",
+        "allowed": true,
+        "present": true,
+        "leaving": false,
+        "pos": [
+          650,
+          345
+        ],
+        "hunger": 66.9550000000003,
+        "energy": 85,
+        "food": 0,
+        "carry": null,
+        "task": null,
+        "trust": 1,
+        "affinity": 1,
+        "respect": 3,
+        "practiceXP": 1,
+        "sparDay": 0,
+        "taught": false,
+        "chatDay": 5,
+        "giftDay": 0,
+        "coopDay": 0,
+        "noticeDay": 5,
+        "helpPending": false,
+        "helpJobs": 0,
+        "woodGathered": 0,
+        "fruitGathered": 0,
+        "fruitEaten": 0
+      },
+      "source": {
+        "hp": 24,
+        "cleared": false,
+        "clearAt": null,
+        "lastStrike": 0
+      },
+      "trip": {
+        "phase": "home",
+        "ration": null,
+        "rationPreference": "auto",
+        "joinRequested": false,
+        "joined": false,
+        "deferred": false,
+        "journeys": 0,
+        "returns": 0,
+        "packed": 0,
+        "eaten": 0,
+        "returned": 0,
+        "energySpent": 0,
+        "lastAid": 0,
+        "aidHits": 0
+      }
+    }
+  },
+  "after": {
+    "kind": "homestead",
+    "version": 5,
+    "mode": "solo",
+    "mealStyle": "auto",
+    "focusProject": null,
+    "look": {
+      "style": "moss",
+      "name": "苔蔭小居"
+    },
+    "t": 1067.25,
+    "subtick": 0,
+    "day": 5,
+    "speed": 1,
+    "person": {
+      "name": "無名",
+      "personality": "quiet",
+      "pos": [
+        583.61965624455,
+        354.09508593886244
+      ],
+      "hunger": 83.58500000001456,
+      "energy": 45.4000000000004,
+      "herbalSkill": 2,
+      "careDay": 0,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 5,
+        "cook": 3
+      },
+      "feelings": {
+        "warmMeal": 826.75,
+        "rested": 886,
+        "seated": 1013.75,
+        "freshMeal": 1111.75
+      },
+      "cookRequest": null,
+      "foodRequest": null,
+      "task": {
+        "act": "leisure",
+        "phase": "go",
+        "place": "bench",
+        "timer": 0,
+        "leisureKind": "bench"
+      },
+      "order": null,
+      "carry": null,
+      "work": 63.714285714285424,
+      "leisure": 4,
+      "orderScope": "once",
+      "onceProject": null,
+      "onceDelivery": false,
+      "leisureRequest": null
+    },
+    "stock": {
+      "berries": 1,
+      "wood": 0,
+      "seeds": 3,
+      "veg": 1,
+      "meal": 1,
+      "salad": 0,
+      "stew": 0,
+      "herbs": 0
+    },
+    "cap": {
+      "berries": 8,
+      "wood": 8,
+      "seeds": 5,
+      "veg": 8,
+      "meal": 8,
+      "herbs": 6
+    },
+    "wild": {
+      "berries": 4,
+      "wood": 4,
+      "herbs": 3
+    },
+    "fac": {
+      "fence": {
+        "stage": 0,
+        "site": null
+      },
+      "hut": {
+        "stage": 2,
+        "site": null
+      },
+      "garden": {
+        "stage": 1,
+        "site": null
+      },
+      "herbGarden": {
+        "stage": 1,
+        "site": null
+      },
+      "workbench": {
+        "stage": 1,
+        "site": null
+      },
+      "bed": {
+        "stage": 2,
+        "site": null
+      },
+      "bench": {
+        "stage": 1,
+        "site": null
+      },
+      "flowers": {
+        "stage": 1,
+        "site": null
+      },
+      "kitchen": {
+        "stage": 1,
+        "site": null
+      },
+      "store": {
+        "stage": 0,
+        "site": null
+      },
+      "berries": {
+        "stage": 0
+      },
+      "wood": {
+        "stage": 0
+      },
+      "herbs": {
+        "stage": 0
+      }
+    },
+    "plot": {
+      "state": "ripe",
+      "growth": 34
+    },
+    "herbPlot": {
+      "state": "growing",
+      "growth": 33
+    },
+    "visitor": {
+      "name": "阿蓮",
+      "role": "visitor",
+      "trust": 0,
+      "lastChat": 0,
+      "lastGift": 0,
+      "cared": false,
+      "willing": false,
+      "inviteDay": 0,
+      "inviteTime": 0,
+      "apprenticeDay": 0,
+      "injury": false,
+      "hunger": 68,
+      "energy": 72,
+      "herbalSkill": 0,
+      "careDay": 0
+    },
+    "helper": null,
+    "leases": {
+      "wood": null,
+      "garden": null,
+      "herbGarden": null
+    },
+    "autonomy": {
+      "version": 1,
+      "goal": null,
+      "since": 1034.5,
+      "waiting": {
+        "goal": "herbs",
+        "since": 1034.5
+      },
+      "replanAt": 1049.5,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "comfort",
+        "porch",
+        "personalize"
+      ],
+      "warmMeals": 2,
+      "comfortRests": 1,
+      "herbHarvests": 0,
+      "careUses": 0,
+      "lookOwnership": "resident",
+      "recess": true,
+      "breaks": 4,
+      "direction": "auto",
+      "deferred": [],
+      "limit": 2,
+      "interestLimit": 2,
+      "journal": [
+        {
+          "goal": "shelter",
+          "at": 100.5
+        },
+        {
+          "goal": "hotFood",
+          "at": 421.25
+        },
+        {
+          "goal": "comfort",
+          "at": 826.25
+        },
+        {
+          "goal": "porch",
+          "at": 944.5
+        },
+        {
+          "goal": "personalize",
+          "at": 1044.75
+        }
+      ],
+      "tastes": {
+        "basic": 2,
+        "salad": 1,
+        "stew": 0
+      },
+      "useResults": {
+        "meals": {
+          "basic": {
+            "n": 2,
+            "hunger": 52,
+            "energy": 0
+          },
+          "salad": {
+            "n": 1,
+            "hunger": 38,
+            "energy": 0
+          },
+          "stew": {
+            "n": 0,
+            "hunger": 0,
+            "energy": 0
+          }
+        },
+        "leisure": {
+          "clouds": {
+            "n": 3,
+            "energy": 3.333333333333333,
+            "comfort": 0
+          },
+          "bench": {
+            "n": 1,
+            "energy": 5,
+            "comfort": 2
+          },
+          "flowers": {
+            "n": 0,
+            "energy": 0,
+            "comfort": 0
+          },
+          "garden": {
+            "n": 0,
+            "energy": 0,
+            "comfort": 0
+          }
+        },
+        "lastMeal": {
+          "id": "salad",
+          "at": 1066.75,
+          "hungerBefore": 45.65500000001455,
+          "hungerAfter": 83.65500000001455,
+          "energyBefore": 45.4000000000004,
+          "energyAfter": 45.4000000000004
+        }
+      },
+      "leisure": {
+        "counts": {
+          "clouds": 3,
+          "bench": 1,
+          "flowers": 0,
+          "garden": 0
+        },
+        "last": "bench",
+        "at": 953.75
+      },
+      "experience": {
+        "hunger": 0,
+        "fatigue": 0,
+        "effort": 2.954166666666689,
+        "lastWork": 63.714285714285424
+      }
+    },
+    "unlocked": [
+      "木作台",
+      "改良灶具",
+      "食譜：蔬果拌食",
+      "舒適床鋪"
+    ],
+    "log": [
+      {
+        "day": 5,
+        "msg": "共食蔬果拌食各一份，真扣2；主角實得飽腹38.0，林舟33.8，未發XP。"
+      },
+      {
+        "day": 5,
+        "msg": "彼此談了日常，林舟多了一點信任；強弱不等於喜歡。"
+      },
+      {
+        "day": 5,
+        "msg": "替自己的小家選了家名與配色；沒有消耗材料或增加能力。"
+      },
+      {
+        "day": 5,
+        "msg": "林舟看見你學會的手藝，想聽你談談；敬意不代表已信任。"
+      },
+      {
+        "day": 5,
+        "msg": "林舟沿村路走來，是否交流由你決定。"
+      },
+      {
+        "day": 5,
+        "msg": "用一份草藥在藥田插穗。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "採到一份虛構草藥，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "完工：小藥田。"
+      },
+      {
+        "day": 5,
+        "msg": "木料搬到藥田工地。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "木料搬到藥田工地。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "第 5 日。"
+      },
+      {
+        "day": 4,
+        "msg": "立下「小藥田」藍圖。"
+      },
+      {
+        "day": 4,
+        "msg": "完工：庭院花叢。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到庭院植栽工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到庭院植栽工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到庭院植栽工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "立下「庭院花叢」藍圖。"
+      },
+      {
+        "day": 4,
+        "msg": "完工：屋前長凳。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋前座位工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋前座位工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "立下「屋前長凳」藍圖。"
+      },
+      {
+        "day": 4,
+        "msg": "完工：舒適床鋪。"
+      },
+      {
+        "day": 4,
+        "msg": "在木作台做好舒適床部件，接著搬回屋內安裝。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "小菜園的菜熟了。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "做成蔬果拌食2份。"
+      },
+      {
+        "day": 4,
+        "msg": "山豬離開了；家園仍可繼續生活。"
+      },
+      {
+        "day": 4,
+        "msg": "吃了一份熱飯。"
+      },
+      {
+        "day": 4,
+        "msg": "山豬驚擾讓人疲憊，先照顧吃睡，牠稍後會離去。"
+      },
+      {
+        "day": 4,
+        "msg": "在小菜園播下種子。"
+      },
+      {
+        "day": 4,
+        "msg": "一隻山豬進入林緣。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "林緣傳來山豬足跡；30秒後可能靠近。可守家，或繼續生活避開。"
+      },
+      {
+        "day": 4,
+        "msg": "第 4 日。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "收下青菜與種子，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "立下「舒適床鋪」藍圖。"
+      },
+      {
+        "day": 3,
+        "msg": "學會新做法：舒適床鋪。"
+      },
+      {
+        "day": 3,
+        "msg": "完工：木作台。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到木作處工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到木作處工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到木作處工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "立下「木作台」藍圖。"
+      },
+      {
+        "day": 3,
+        "msg": "完工：木床鋪。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 3,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 3,
+        "msg": "把身上的物資放回住處。"
+      }
+    ],
+    "frontier": {
+      "version": 1,
+      "autoCooperate": false,
+      "approach": "learn",
+      "gateOpen": true,
+      "gateManual": false,
+      "repairWood": 0,
+      "fenceHp": 0,
+      "threat": {
+        "phase": "quiet",
+        "next": 1256,
+        "warnAt": 720,
+        "until": 0,
+        "beast": null,
+        "incursions": 1,
+        "damage": 0,
+        "scares": 1
+      },
+      "martial": {
+        "xp": 6,
+        "practices": 4,
+        "hits": 0,
+        "partnerRounds": 0,
+        "insights": 0,
+        "stance": "brace",
+        "tactics": "fixed",
+        "practiceGoal": "direction",
+        "avoid": false
+      },
+      "talents": {
+        "body": 1,
+        "mind": 1
+      },
+      "companion": {
+        "id": "linzhou",
+        "name": "林舟",
+        "allowed": true,
+        "present": true,
+        "leaving": false,
+        "pos": [
+          650,
+          345
+        ],
+        "hunger": 99.93,
+        "energy": 85,
+        "food": 0,
+        "carry": null,
+        "task": {
+          "act": "leisure",
+          "phase": "do",
+          "timer": 0.5
+        },
+        "trust": 2,
+        "affinity": 2,
+        "respect": 3,
+        "practiceXP": 1,
+        "sparDay": 0,
+        "taught": false,
+        "chatDay": 5,
+        "giftDay": 5,
+        "coopDay": 0,
+        "noticeDay": 5,
+        "helpPending": false,
+        "helpJobs": 0,
+        "woodGathered": 0,
+        "fruitGathered": 0,
+        "fruitEaten": 0
+      },
+      "source": {
+        "hp": 24,
+        "cleared": false,
+        "clearAt": null,
+        "lastStrike": 0
+      },
+      "trip": {
+        "phase": "home",
+        "ration": null,
+        "rationPreference": "auto",
+        "joinRequested": false,
+        "joined": false,
+        "deferred": false,
+        "journeys": 0,
+        "returns": 0,
+        "packed": 0,
+        "eaten": 0,
+        "returned": 0,
+        "energySpent": 0,
+        "lastAid": 0,
+        "aidHits": 0
+      }
+    }
+  },
+  "recipe": "salad",
+  "immediateSaveLoad": true,
+  "errors": [],
+  "narrowOverflow": false
+}
