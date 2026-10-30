@@ -22,3 +22,5 @@ export function move(s,p,target,dt,speed=75){
 // Exact slab intersection against rectangle interiors; no sample spacing can miss corners.
 export function segmentBlocked(a,b,[x,y,w,h]){let lo=0,hi=1;for(const[i,min,max]of[[0,x+1e-9,x+w-1e-9],[1,y+1e-9,y+h-1e-9]]){const d=b[i]-a[i];if(Math.abs(d)<1e-12){if(a[i]<min||a[i]>max)return false;continue;}let p=(min-a[i])/d,q=(max-a[i])/d;if(p>q)[p,q]=[q,p];lo=Math.max(lo,p);hi=Math.min(hi,q);if(lo>hi)return false;}return hi>=0&&lo<=1;}
 export function validSpatial(s){return !s.frontier||[s.person,s.helper,s.frontier?.threat?.beast].filter(Boolean).every(p=>route(s,p.pos,p.pos).length>0);}
+
+export function clearBarrierFootprint(s){const blocks=[9,10,11,12,13].filter(y=>y!==11||!s.frontier.gateOpen);return [s.person,s.helper,s.frontier.threat?.beast,s.frontier.companion?.present?s.frontier.companion:null].filter(Boolean).every(p=>!(p.pos[0]>=780&&p.pos[0]<810&&blocks.includes(Math.floor(p.pos[1]/30))));}

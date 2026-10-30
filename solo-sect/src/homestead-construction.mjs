@@ -1,3 +1,4 @@
+import {projectRecipe} from './homestead.mjs';
 // Presentation facts only. No clock, material mutations or planner.
 import{at}from'./homestead-living.mjs';
 import{FACILITIES,PLACES,blueprintReason,buildDestination}from'./homestead.mjs';
@@ -12,7 +13,7 @@ export function blueprintInfo(s,id,expectedStage=s.fac[id]?.stage){
 export function constructionFacts(s,id){
  const f=s.fac[id],v=f?.site;if(!v)return{phase:f?.stage?'done':'empty',name:f?.stage?'已完成':'未建造',progress:0};
  const progress=Math.min(1,v.work/v.workNeed),phase=v.work===0?'materials':progress<1/3?'foundation':progress<2/3?'frame':'roof';
- const recipe=FACILITIES[id].stages[f.stage+1],label=id==='hut'&&!f.stage?{materials:'立樁備料',foundation:'鋪設地基',frame:'豎起骨架',roof:'上樑覆頂'}[phase]:recipe?.craft&&v.crafted<recipe.craft?(v.delivered.wood<v.need.wood?'搬料到木作台':'木作台加工'):recipe?.craft?'搬回與安裝':v.work===0?'備料／待施工':'施工與收尾';
+ const recipe=projectRecipe(s,id),label=id==='hut'&&!f.stage?{materials:'立樁備料',foundation:'鋪設地基',frame:'豎起骨架',roof:'上樑覆頂'}[phase]:recipe?.craft&&v.crafted<recipe.craft?(v.delivered.wood<v.need.wood?'搬料到木作台':'木作台加工'):recipe?.craft?'搬回與安裝':v.work===0?'備料／待施工':'施工與收尾';
  return{phase,name:label,progress,delivered:v.delivered.wood,reserved:v.reserved.wood,need:v.need.wood,paused:v.paused,work:v.work,workNeed:v.workNeed};
 }
 export function inspectionBounds(s,id){const f=s.fac[id],r=FACILITIES[id]?.stages[f?.stage+1];return r?.craft&&f.site?.crafted<r.craft?PLOT_BOUNDS.workbench:PLOT_BOUNDS[id];}
@@ -22,7 +23,7 @@ export function plotAt(s,x,y){
 }
 export function inspectionInfo(s,id){
  if(!Object.hasOwn(PLOT_BOUNDS,id))return null;
- const f=s.fac[id],v=f.site,b=buildingInfo(s,id),t=s.person.task,r=FACILITIES[id].stages[f.stage+1];
+ const f=s.fac[id],v=f.site,b=buildingInfo(s,id),t=s.person.task,r=projectRecipe(s,id);
  const name=v?r.name:FACILITIES[id].stages[f.stage].name;
  if(!v)return{id,name,text:`${name}：${b.current||'尚未建造'}。${f.stage?'可繼續生活。':blueprintReason(s,id)||'可從建造卡預覽並立藍圖。'}`,site:false};
  const facts=constructionFacts(s,id);let status;
@@ -47,7 +48,7 @@ export function siteMaterials(s,id){const v=s.fac[id]?.site;return v?{available:
 export function siteStages(s,id){
  const f=s.fac[id],v=f?.site;if(!f)return null;if(!v&&!f.stage)return{labels:['尚未立藍圖'],index:0};
  if(id==='hut'&&(!f.stage||!v))return{labels:['立樁備料','地基','骨架','屋頂','完工'],index:v?{materials:0,foundation:1,frame:2,roof:3}[constructionFacts(s,id).phase]:f.stage?4:0};
- const r=FACILITIES[id].stages[f.stage+1];
+ const r=projectRecipe(s,id);
  if(v&&r?.craft)return{labels:['搬料到木作台','台前加工','搬回與安裝','完工'],index:v.delivered.wood<v.need.wood?0:v.crafted<r.craft?1:2};
  return{labels:['備料','施工／整理','完工'],index:v?v.work>0?1:0:f.stage?2:0};
 }
