@@ -1,0 +1,47 @@
+[
+  {
+    "personality": "quiet",
+    "seconds": 4800,
+    "minH": 34.09500000000301,
+    "minE": 18.749999999999993,
+    "visitorPresentMinH": 30.455000000018895,
+    "visitorPresentMinE": 80,
+    "trust": 5,
+    "affinity": 5,
+    "respect": 2,
+    "fruitGathered": 9,
+    "fruitEaten": 9,
+    "fence": 2,
+    "repairWood": 21
+  },
+  {
+    "personality": "sociable",
+    "seconds": 4800,
+    "minH": 34.09500000000301,
+    "minE": 18.749999999999993,
+    "visitorPresentMinH": 30.455000000018895,
+    "visitorPresentMinE": 80,
+    "trust": 5,
+    "affinity": 5,
+    "respect": 2,
+    "fruitGathered": 9,
+    "fruitEaten": 9,
+    "fence": 2,
+    "repairWood": 21
+  },
+  {
+    "personality": "diligent",
+    "seconds": 4800,
+    "minH": 34.09500000000301,
+    "minE": 18.749999999999993,
+    "visitorPresentMinH": 30.455000000018895,
+    "visitorPresentMinE": 80,
+    "trust": 5,
+    "affinity": 5,
+    "respect": 2,
+    "fruitGathered": 9,
+    "fruitEaten": 9,
+    "fence": 2,
+    "repairWood": 21
+  }
+]

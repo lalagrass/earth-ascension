@@ -9,7 +9,7 @@ export const materialName = {wood:'木料', berries:'野果', veg:'青菜', herb
 export function activityText(s, p = s.person) {
   const t = p?.task;
   if (!t) return '正在看看接下來做什麼';
-  const target = (t.act==='build'?projectRecipe(s,t.place)?.name:null)||FACILITIES[t.place]?.stages[s.fac[t.place]?.stage + (t.act === 'build' ? 1 : 0)]?.name || ({home:'住處',visitor:'村路'}[t.place]) || t.place;
+  const target = (t.act==='build'?projectRecipe(s,t.place)?.name:null)||FACILITIES[t.place]?.stages[s.fac[t.place]?.stage + (t.act === 'build' ? 1 : 0)]?.name || ({home:'住處',visitor:'村路',meeting:'村路會面處',practice:'屋前練步處',encounter:'山豬附近'}[t.place]) || t.place;
   if (t.phase === 'fetch') return `去儲物處取${materialName[t.mat] || t.mat}，準備建${target}`;
   if (t.phase === 'deliver') return `搬${p.carry?.amount || 1}根木料到「${target}」工地`;
   if (t.act === 'return') return `把${materialName[p.carry?.kind] || '物資'}帶回儲物處`;
