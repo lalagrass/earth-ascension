@@ -17,6 +17,7 @@ export function activityText(s, p = s.person) {
   if(t.act==='build'&&t.step==='pickup')return '去取回上次放下的床部件';
   if(t.act==='build'&&t.step==='install'&&t.phase==='go')return at({pos:s.fac.bed.site.assemblyAt},PLACES.bed)?'走回屋內，接續安裝已就位的床部件':'把已做好的床部件搬回屋內';
   if (t.act === 'build') return t.phase === 'go' ? `走向「${target}」工地` : `正在建造「${target}」`;
+  if(t.act==='shelter')return t.phase==='go'?'走回屋內，避開林緣動靜':'在屋內等一段，沒有額外恢復或技能';
   if (t.act === 'leave') return '沿村路回村';
   if(t.act==='cook')return t.phase==='go'?`走向露天灶，準備${RECIPES[t.recipe||'basic'].name}`:`正在做${RECIPES[t.recipe||'basic'].name}${t.manual?'（這一鍋）':''}`;
   if(t.act==='leisure'&&t.leisureKind&&LEISURE[t.leisureKind])return (t.phase==='go'?'前往休憩地點：':'')+LEISURE[t.leisureKind].name;
@@ -33,6 +34,7 @@ export function activityReason(s, p = s.person, who = 'person') {
   const blocked = p.order && p.task?.act !== p.order ? blockReason(s, p.order, who) : null;
   if (blocked) return `指派暫候：${blocked}；先${activityText(s,p)}。`;
   if (p.order && p.task?.act === p.order && !['cook','eat','rest'].includes(p.order)) return '正在執行你的指派；缺糧或疲累時會先照顧自己。';
+  if(p.task?.act==='shelter')return '真的離開屋前驚擾路線；代價是這段時間不工作。急需吃睡與手上物資仍優先。';
   if(p.task?.act==='eat')return p.task.foodId==='salad'?'這次選清爽小份，省柴的成果在實吃時恢復38飽腹。':p.task.foodId==='stew'?'這次需要較飽足的一餐，實吃燉菜恢復70飽腹與6精力。':'先吃現成食物，不必為新菜耽誤求生。';
   if(p.task?.act==='forage')return '先照顧吃飯與可用食物。';
   if(p.task?.act==='rest')return (s.mode==='solo'&&p.order==='rest'?'這次歇到100後恢復自主。':'')+(!s.fac.hut.stage?'在空地席地休息，每秒恢復3精力；醒來再繼續求生。':`先補回精力。到屋內使用${s.fac.bed?.stage===2?'舒適床鋪':s.fac.bed?.stage?'木床鋪':'現有鋪蓋'}時，每秒恢復${restRate(s,{pos:[440,225]})}精力；休息後再繼續。`);

@@ -138,6 +138,7 @@ export function setOrder(s, act, scope) {
 export function setAvoidCombat(s,avoid){
  if(!s.frontier||typeof avoid!=='boolean')return false;
  s.frontier.martial.avoid=avoid;
+ if(!avoid&&s.person.task?.act==='shelter'&&!s.person.order)cancelTask(s);
  if(avoid){
   if(s.frontier.trip.phase!=='home'){
    s.frontier.trip.phase='return';s.frontier.trip.deferred=true;cancelTask(s);
