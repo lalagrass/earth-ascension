@@ -1,5 +1,5 @@
 // 效用 AI：列出所有可做的事、打分、留下理由。只讀 state，不改。
-import { ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE } from './data.mjs';
+import { ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
 import { activeEnemies } from './raid.mjs';
 import { walkable } from './map.mjs';
 import { nearestResources, remaining, stocked, workSpot, siteWorkersFree } from './build.mjs';
@@ -85,7 +85,7 @@ export function candidates(state, p, scorePois) {
       // 練功：定力高、有條理的人自己會去練；無聊時也想動一動。
       const move = drillMove(p);
       add({ kind: 'drill', obj: o.id, slot: i, spot, move, martial: true, label: `到${o.label}練${moveLabel(move)}` },
-        { need: u.fun * MARTIAL.DRILL_FUN, persona: MARTIAL.DRILL_BASE + 0.08 * (p.attrs.ding - 5) + diligence + DEFENSE.THREAT_DRILL * Math.min(2, state.threat ?? 0) });
+        { need: u.fun * MARTIAL.DRILL_FUN, persona: MARTIAL.DRILL_BASE + 0.08 * (p.attrs.ding - 5) + diligence + insight(p) + DEFENSE.THREAT_DRILL * Math.min(2, state.threat ?? 0) });
     }
     if (o.kind === 'bench') {
       add({ kind: 'sit', obj: o.id, slot: i, spot, label: `去${o.label}坐坐` },
@@ -202,6 +202,12 @@ export function candidates(state, p, scorePois) {
   // 敵人在附近時沒心思玩：休閒類打折（loop 7 診斷：警報後仍有人回去練功、聊天，迎敵在 206 次候選裡只排第一 31 次）。
   if (near.length) for (const c of out) if (LEISURE.has(c.kind)) { c.score *= DEFENSE.ALARM_LEISURE; c.f.sched *= DEFENSE.ALARM_LEISURE; }
 
+  // M8 訪客不接活計、不迎敵；門規的影響。
+  if (p.guest) for (let i = out.length - 1; i >= 0; i--) if (WORK_KINDS.has(out[i].kind) || out[i].kind === 'fight') out.splice(i, 1);
+  const rule = state.sect && !p.guest ? state.sect.rule : null;
+  if (rule === 'drill') for (const c of out) if (c.kind === 'drill') { c.f.persona += SECT.RULE_DRILL; c.score += SECT.RULE_DRILL * c.f.sched * c.f.dist; }
+  if (rule === 'free') for (const c of out) if (c.kind === 'sit' || c.kind === 'wander') { c.f.persona += SECT.RULE_FREE; c.score += SECT.RULE_FREE * c.f.sched * c.f.dist; }
+
   let forced = null;
   let list = out;
   // 兩者都低時先顧比較缺的那個，避免「睡→餓醒→又睏」的死循環。
@@ -235,6 +241,12 @@ export function brokenFence(state) {
     for (let x = row.indexOf('f'); x >= 0; x = row.indexOf('f', x + 1)) out.push(`${x},${y}`);
   }
   return out;
+}
+
+// 琢磨：悟性高、直覺型的人自己會想練（loop 8 為了 openIssue 加：自然遊玩中悟性 ≥ 7 的人平均只學到 0.16 招、≤ 4 的人 1.08 招，
+// 因為練功動機原本只來自定力與條理，高悟性的模板多半隨性）。
+export function insight(p) {
+  return MARTIAL.INSIGHT_WU * (p.attrs.wu - 5) + MARTIAL.INSIGHT_N * Math.max(0, p.axes.N);
 }
 
 export function willingToSpar(o) {

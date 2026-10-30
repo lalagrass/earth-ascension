@@ -135,7 +135,7 @@ export function stepEnemies(state) {
   for (const e of state.enemies) {
     if (e.mode !== 'flee' && e.hp <= 0) {
       e.mode = 'beaten';
-      state.events.push({ tick: state.tick, kind: 'repel', text: `${e.hitBy.map((id) => state.people.find((p) => p.id === id).name).join('、')}打退了${e.label}` });
+      state.events.push({ tick: state.tick, kind: 'repel', text: `${e.hitBy.map((id) => state.people.find((p) => p.id === id)?.name ?? '路人').join('、')}打退了${e.label}` });
       state.counts.repelled = (state.counts.repelled || 0) + 1;
       flee(state, e);
     }

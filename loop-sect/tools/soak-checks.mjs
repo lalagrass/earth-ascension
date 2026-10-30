@@ -36,7 +36,9 @@ export function perSeed(s, ctx) {
   bump(ctx, 'taught', s.counts.taught || 0);
   // M6-A5／A6：練功、領悟、切磋、指點。
   const c = s.counts;
-  if (s.people.every((p) => p.moves.changquan > 0)) bump(ctx, 'allDrilled');
+  // 「三人」指開局的三人（M8 起會有訪客加入，訪客不算）。
+  const founders = s.people.filter((p) => ['p0', 'p1', 'p2'].includes(p.id));
+  if (founders.every((p) => p.moves.changquan > 0)) bump(ctx, 'allDrilled');
   if (c.comprehend) bump(ctx, 'compSeeds');
   if (c.sparDone) bump(ctx, 'sparSeeds');
   bump(ctx, 'drillDone', c.drillDone || 0); bump(ctx, 'sparDone', c.sparDone || 0);
@@ -65,6 +67,14 @@ export function perSeed(s, ctx) {
   const ft = (p) => ctx.fightT?.[p.id] || 0;
   bump(ctx, 'braveSeeds'); if (ft(byC[0]) > ft(byC[byC.length - 1])) bump(ctx, 'braveOk');
   bump(ctx, 'fightBrave', ft(byC[0])); bump(ctx, 'fightTimid', ft(byC[byC.length - 1]));
+  // M8-A7／A8：訪客、留下、去留決定與床。
+  if ((c.visitors || 0) >= 2) bump(ctx, 'visit2');
+  if (c.joined) bump(ctx, 'joinSeeds');
+  bump(ctx, 'visitors', c.visitors || 0); bump(ctx, 'joined', c.joined || 0);
+  for (const d of s.decisions) { const k = d.bed ? 'bed' : 'nobed'; bump(ctx, `dec:${k}`); if (d.join) bump(ctx, `join:${k}`); }
+  if (s.sect) bump(ctx, 'founded');
+  bump(ctx, 'apprentice', c.apprentice || 0);
+  bump(ctx, 'endPeople', s.people.length);
   const hutBeds = s.objects.filter((o) => o.label === '茅屋床');
   ctx.samples.hutSleptSeeds = (ctx.samples.hutSleptSeeds || 0) + (s.counts.hutSleep ? 1 : 0);
   if (hutBeds.length && !s.counts.hutSleep) ctx.samples.hutNoSleep = (ctx.samples.hutNoSleep || 0) + 1;
@@ -78,7 +88,9 @@ export const invariants = [
   (s, ctx) => {
     for (const p of s.people) {
       if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) fail(ctx, s, `${p.name} 座標非數`);
-      const q = ctx.prev.get(p.id);
+      // 新來的訪客：從出現那一刻起算。
+      const q = ctx.prev.get(p.id) ?? { x: p.x, y: p.y };
+      if (!ctx.lastMove.has(p.id)) ctx.lastMove.set(p.id, s.tick);
       const d = Math.hypot(p.x - q.x, p.y - q.y);
       if (d > speedOf(p) + 1e-9) fail(ctx, s, `${p.name} 瞬移 ${d.toFixed(3)}`);
       if (!walkable(s.map, Math.round(p.x), Math.round(p.y))) fail(ctx, s, `${p.name} 站在擋路格`);
@@ -141,6 +153,11 @@ export const invariants = [
       if (s.tick - e.born > RAID.MAX_LIFE + 400) fail(ctx, s, `${e.label}${e.id} 卡住沒離開`);
       ctx.ePrev.set(e.id, { x: e.x, y: e.y });
     }
+    // M8-A4／A7：沒人以不在場的人為對象；留下的人不超過床數。
+    const ids = new Set(s.people.map((p) => p.id));
+    for (const p of s.people) if (p.task?.partner && !ids.has(p.task.partner)) fail(ctx, s, `${p.name} 的對象已經不在`);
+    const beds = s.objects.filter((o) => o.kind === 'bed').length;
+    if (s.people.filter((p) => !p.guest).length > beds) fail(ctx, s, `留下的人比床多`);
     for (const [k, id] of Object.entries(s.repairUser)) {
       const p = s.people.find((x) => x.id === id);
       if (!p.task || p.task.kind !== 'repair' || p.task.cell !== k) fail(ctx, s, `柵欄 ${k} 修補預約殘留`);
@@ -263,6 +280,13 @@ export function judge(S) {
   if ((S.breakEarly || 0) && 1 - (S.openNow || 0) / S.breakEarly < 0.75) failures.push('M7-A7 撞破的柵欄沒修好');
   lines.push(`M7-A8 膽識最高者迎敵時間多於最低者：${S.braveOk || 0}/${S.braveSeeds}；平均迎敵 tick 最高 ${r('fightBrave', 'braveSeeds').toFixed(0)}、最低 ${r('fightTimid', 'braveSeeds').toFixed(0)}`);
   if ((S.braveOk || 0) < Math.ceil(S.braveSeeds * 8 / 12)) failures.push('M7-A8 膽識沒有反映在迎敵上');
+  lines.push(`M8-A7 有 ≥ 2 位訪客 ${S.visit2 || 0}/${S.seeds}、有人留下 ${S.joinSeeds || 0}/${S.seeds}；訪客 ${S.visitors || 0}、留下 ${S.joined || 0}、立派 ${S.founded || 0}、拜師 ${S.apprentice || 0}；結束時平均 ${r('endPeople', 'seeds').toFixed(1)} 人`);
+  if ((S.visit2 || 0) < Math.ceil(S.seeds * 10 / 12)) failures.push('M8-A7 訪客太少');
+  if ((S.joinSeeds || 0) < S.seeds / 2) failures.push('M8-A7 有人留下的種子太少');
+  const jb = r('join:bed', 'dec:bed'), jn = r('join:nobed', 'dec:nobed');
+  lines.push(`M8-A8 留下率：有空床 ${(100 * jb).toFixed(0)}%（${S['dec:bed'] || 0} 次決定）、沒空床 ${(100 * jn).toFixed(0)}%（${S['dec:nobed'] || 0} 次）`);
+  if (jn > 0) failures.push('M8-A8 沒空床也留下了');
+  if ((S['dec:bed'] || 0) && jb < 0.3) failures.push('M8-A8 有空床時留下率太低');
   const all = (S['t:E'] || 0) + (S['t:I'] || 0);
   // 時間分布：調平衡前先看這張表（loop 3 retro 的改進）。
   const share = Object.entries(S).filter(([k]) => k.startsWith('act:')).sort((a, b) => b[1] - a[1]).slice(0, 10);

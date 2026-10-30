@@ -4,6 +4,7 @@ import {
 } from './data.mjs';
 import { placeSite, removeSite, addWork, takeResource, workSpot, blockCell, cellClear } from './build.mjs';
 import { raidSchedule, startRaids, stepEnemies, activeEnemies } from './raid.mjs';
+import { visitSchedule, visitChance, appeal, reasonText, shouldApprentice, foundingPlan, freeName } from './recruit.mjs';
 import { seedHolder, nextRand, randInt, hashString } from './rng.mjs';
 import { buildMap, walkable, nearestWalkable } from './map.mjs';
 import { findPath } from './path.mjs';
@@ -11,7 +12,7 @@ import { fromTemplate, makePerson, speedOf } from './person.mjs';
 import { decayNeeds, applyPer, isNight } from './needs.mjs';
 import { candidates, interruptible, sparInterruptible, willingToChat, willingToSpar, REFUSE_COOLDOWN } from './ai.mjs';
 import { newSkills, grow, SKILL_OF_TASK, workTimeMul, buildRate, extraMeal, extraTake, skillLabel } from './skills.mjs';
-import { FOOT_STEP, SOCIAL, MARTIAL, DEFENSE } from './data.mjs';
+import { FOOT_STEP, SOCIAL, MARTIAL, DEFENSE, RECRUIT, SECT } from './data.mjs';
 import { addAff, compat, teachTopic, withStage, atLeast } from './social.mjs';
 import { newMoves, practice, moveLabel, learn, drillMove, prowess } from './martial.mjs';
 
@@ -110,6 +111,7 @@ export function createWorld({ seed = 1, people }) {
   state.events = [];
   state.reroute = [];
   state.aff = {};          // "p0>p1" → p0 對 p1 的好感
+  state.decisions = [];    // M8 訪客去留紀錄
   state.counts = {};
   state.raids = raidSchedule(seed);   // M7：開局排好
   state.raidAt = 0;
@@ -124,9 +126,20 @@ export function createWorld({ seed = 1, people }) {
     const p = spec.axes ? makePerson({ ...spec, id }) : fromTemplate(spec.template, { id, name: spec.name, protagonist: !!spec.protagonist });
     const s = nearestWalkable(state.map, yard.x - 2 + i * 2, yard.y);
     p.x = s.x; p.y = s.y;
-    p.routine = i;
     // 開局需求錯開一點，免得三人同步。
     p.needs = { food: 70 - i * 8, energy: 80 - i * 5, social: 60 + i * 10, fun: 60 };
+    return initPerson(p, i);
+  });
+  state.personSeq = state.people.length;
+  state.visits = visitSchedule(seed);  // M8：開局排好
+  state.visitAt = 0;
+  state.sect = null;
+  state.log = [];
+  return state;
+}
+
+function initPerson(p, i) {
+    p.routine = i;
     p.carry = 0;                       // 身上的莓果
     p.load = { wood: 0, stone: 0 };    // 身上的木石
     p.hold = { meal: 0, raw: 0, wood: 0, stone: 0 };
@@ -138,10 +151,9 @@ export function createWorld({ seed = 1, people }) {
     p.task = null;
     p.bubble = null;
     p.forced = null;
+    p.guest = null;
+    p.master = null;
     return p;
-  });
-  state.log = [];
-  return state;
 }
 
 const byId = (arr, id) => arr.find((x) => x.id === id);
@@ -283,6 +295,7 @@ function arrive(state, p) {
   }
   if (PAIR.has(t.kind)) return tryChat(state, p);
   if (t.kind === 'fight') return engage(state, p);
+  if (t.kind === 'leave') return removePerson(state, p);
   startDoing(state, p);
 }
 
@@ -357,6 +370,77 @@ function improve(state, p, id, mul = 1) {
   state.events.push({ tick: state.tick, kind: 'skill', text: `${p.name}${text}（${m}）` });
 }
 
+function maybeApprentice(state, p, o) {
+  if (!shouldApprentice(state, p, o)) return;
+  p.master = o.id;
+  p.bubble = { text: '拜師', until: state.tick + 90 };
+  state.events.push({ tick: state.tick, kind: 'master', text: `${p.name}拜${o.name}為師` });
+  state.counts.apprentice = (state.counts.apprentice || 0) + 1;
+}
+
+// ---------- M8 訪客 ----------
+function spawnGuest(state, v) {
+  const id = `p${state.personSeq++}`;
+  const p = makePerson({ id, name: freeName(state, v.nameAt), axes: v.axes, attrs: v.attrs });
+  const s = nearestWalkable(state.map, RECRUIT.ENTRY.x, RECRUIT.ENTRY.y);
+  p.x = s.x; p.y = s.y;
+  p.needs = { food: 60, energy: 70, social: 40, fun: 50 };
+  initPerson(p, state.people.length);
+  p.guest = { arrived: state.tick, until: state.tick + RECRUIT.STAY };
+  state.people.push(p);
+  state.events.push({ tick: state.tick, kind: 'visit', text: `${p.name}從東山徑上山來訪` });
+  state.counts.visitors = (state.counts.visitors || 0) + 1;
+}
+
+function decideGuest(state, p) {
+  const a = appeal(state, p);
+  const why = reasonText(a);
+  state.decisions.push({ tick: state.tick, id: p.id, bed: a.bed, join: a.join, score: a.score });
+  if (a.join) {
+    p.guest = null;
+    p.bubble = { text: '留下了', until: state.tick + 90 };
+    state.events.push({ tick: state.tick, kind: 'join', text: `${p.name}決定留下：${why}` });
+    state.counts.joined = (state.counts.joined || 0) + 1;
+    return;
+  }
+  state.events.push({ tick: state.tick, kind: 'leave', text: `${p.name}下山了：${why}` });
+  release(state, p);
+  const out = nearestWalkable(state.map, RECRUIT.ENTRY.x, RECRUIT.ENTRY.y);
+  const path = pathTo(state, p, out);
+  p.task = { kind: 'leave' }; p.guest.leaving = true;
+  p.actLabel = '下山';
+  if (!path || !path.length) { removePerson(state, p); return; }
+  p.path = path; p.act = 'walk';
+}
+
+// 離開地圖：先釋放自己，再讓以他為對象的人放手。
+function removePerson(state, p) {
+  release(state, p);
+  for (const o of state.people) {
+    if (o !== p && o.task?.partner === p.id) { release(state, o); o.path = []; o.act = 'idle'; o.wait = 0; }
+    if (o.master === p.id) o.master = null;
+  }
+  state.people = state.people.filter((x) => x !== p);
+}
+
+function stepRecruit(state) {
+  while (state.visitAt < state.visits.length && state.visits[state.visitAt].tick <= state.tick) {
+    const v = state.visits[state.visitAt++];
+    if (state.people.length < RECRUIT.CAP && v.roll < visitChance(state)) spawnGuest(state, v);
+  }
+  for (const p of [...state.people]) {
+    if (p.guest && !p.guest.leaving && state.tick >= p.guest.until && p.act !== 'do') decideGuest(state, p);
+  }
+  if (state.tick % 60 === 0) {
+    const plan = foundingPlan(state);
+    if (plan) {
+      state.sect = plan;
+      const leader = byId(state.people, plan.leader);
+      state.events.push({ tick: state.tick, kind: 'found', text: `立派：${plan.name}，${leader.name}為掌門，門規「${SECT.RULES[plan.rule].label}」` });
+    }
+  }
+}
+
 function comprehend(state, p, id) {
   if (!id) return;
   p.bubble = { text: `領悟${moveLabel(id)}`, until: state.tick + 90 };
@@ -372,10 +456,12 @@ function finish(state, p) {
     const o = byId(state.people, t.partner);
     comprehend(state, p, practice(state, p, t.move, MARTIAL.SPAR_MUL));
     withStage(state, p, o, () => addAff(state, p, o, MARTIAL.SPAR_GAIN * compat(p, o)));
-    // 指點：朋友以上，對方會而我不會的招，有機會學到。
-    if (atLeast(state, p, o, MARTIAL.POINT_STAGE)) {
+    maybeApprentice(state, p, o);
+    // 指點：朋友以上（師父不必），對方會而我不會的招，有機會學到；師父教得更多。
+    const isMaster = o.id === p.master;
+    if (isMaster || atLeast(state, p, o, MARTIAL.POINT_STAGE)) {
       const teach = Object.keys(o.moves).filter((id) => !(id in p.moves));
-      if (teach.length && nextRand(state) < MARTIAL.POINT_P) {
+      if (teach.length && nextRand(state) < MARTIAL.POINT_P * (isMaster ? RECRUIT.MASTER_MUL : 1)) {
         const id = teach[randInt(state, teach.length)];
         learn(p, id, MARTIAL.POINT_START);
         p.bubble = { text: `學會${moveLabel(id)}`, until: state.tick + 90 };
@@ -406,8 +492,10 @@ function finish(state, p) {
   if (t.kind === 'chat' && t.left <= 0) {
     // 正常聊完才算；被打斷的不加。雙方各自在自己的 finish 加自己那一側。
     const o = byId(state.people, t.partner);
-    withStage(state, p, o, () => addAff(state, p, o, SOCIAL.CHAT_GAIN * compat(p, o) * (1 + 0.3 * Math.max(0, p.axes.E))));
-    if (t.learn) { improve(state, p, t.learn, SOCIAL.TEACH_MUL); addAff(state, o, p, SOCIAL.TEACH_GAIN); state.counts.taught = (state.counts.taught || 0) + 1; }
+    const rule = state.sect?.rule === 'help' ? SECT.RULE_CHAT : 1;
+    withStage(state, p, o, () => addAff(state, p, o, SOCIAL.CHAT_GAIN * compat(p, o) * (1 + 0.3 * Math.max(0, p.axes.E)) * rule));
+    maybeApprentice(state, p, o);
+    if (t.learn) { improve(state, p, t.learn, SOCIAL.TEACH_MUL * (o.id === p.master ? RECRUIT.MASTER_MUL : 1)); addAff(state, o, p, SOCIAL.TEACH_GAIN); state.counts.taught = (state.counts.taught || 0) + 1; }
   }
   if (t.kind === 'build') {
     const site = t.site && byId(state.sites, t.site);
@@ -618,7 +706,8 @@ export function step(state) {
   state.tick++;
   regrow(state);
   startRaids(state);
-  for (const p of state.people) stepPerson(state, p);
+  stepRecruit(state);
+  for (const p of [...state.people]) if (state.people.includes(p)) stepPerson(state, p);
   stepEnemies(state);
   // 新立起的牆或柵擋住了別人的路：沿原終點重找，找不到就放棄手上的事。
   while (state.reroute.length) {

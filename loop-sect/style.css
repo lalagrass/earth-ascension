@@ -75,3 +75,7 @@ label { display: block; margin: 8px 0; }
 .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin: 6px 0; }
 .tabs button { font-size: 12px; padding: 3px 8px; border-radius: 4px 4px 0 0; border-bottom: none; }
 .tabs button.on { font-weight: bold; }
+/* M8 名冊與身分 */
+.roster .sect { margin-right: 6px; color: #7a3b1c; }
+.roster button.guest { border-style: dashed; }
+.identity { margin: 2px 0 0; font-size: 12px; color: #7a3b1c; }

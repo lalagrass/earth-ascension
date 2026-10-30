@@ -241,6 +241,7 @@ export const MARTIAL = {
   SPAR_MIN_ENERGY: 45,
   SPAR_MIN_AFF: 0,       // loop 6 原本要相識才切磋；診斷時沒有切磋候選的原因 1560/4000 是「陌生」，改成以武會友
   PRESTIGE_PER_POWER: 4, // 名望 = 技能平均 + 武力 × 此值（強者吸引人）
+  INSIGHT_WU: 0.03, INSIGHT_N: 0.12, // 琢磨招式：悟性與直覺帶來的練功動機（loop 8 加，見 ai.mjs insight）
 };
 OBJECTS.push(
   { kind: 'dummy', label: '木樁', slots: [[36, 23]] },
@@ -291,3 +292,26 @@ Object.assign(ACTS, {
   hide: { label: '躲著', dur: 60, per: { fun: -0.02 } },
   repair: { label: '修柵欄', dur: 15, per: { energy: -0.015 } },
 });
+
+// ---------- M8 招人與成派 ----------
+export const RECRUIT = {
+  START_DAY: 1, HOUR_FROM: 8, HOUR_TO: 15, DAYS: 30,
+  BASE: 0.4, PRESTIGE_DIV: 40, MAX: 0.9,    // 來訪機率 = BASE + 最高名望 / PRESTIGE_DIV。loop 8 BASE 0.25→0.4：第 2 日最高名望平均只有 6.3（規格估 10–20），每種子 5 日期望只來 2.2 人
+  CAP: 8,                                  // 人數上限（含訪客）
+  STAY: 480,                               // 訪客待多久再決定
+  PRESTIGE_REF: 30, AFF_REF: 15, JOIN_MIN: 0.45,
+  ENTRY: { x: 63, y: 30 },                 // 東山徑口
+  MASTER_GAP: 15, MASTER_MUL: 2,
+};
+export const SECT = {
+  FOUND_MIN: 4, FOUND_PRESTIGE: 15,
+  NAMES: ['青嵐派', '石泉派', '松風派', '雲棲派', '鐵竹派', '明溪派'],
+  RULES: {
+    drill: { label: '勤練', desc: '同門更常練功' },
+    help: { label: '互助', desc: '同門聊天更投緣' },
+    open: { label: '廣納', desc: '訪客更願意留下' },
+    free: { label: '自在', desc: '同門更常休息玩樂' },
+  },
+  RULE_DRILL: 0.2, RULE_CHAT: 1.25, RULE_JOIN: 0.15, RULE_FREE: 0.1,
+};
+ACTS.leave = { label: '下山', dur: 0, per: {} };

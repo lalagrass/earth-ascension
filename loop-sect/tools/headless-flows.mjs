@@ -213,4 +213,26 @@ export const flows = [
       await shot('fight');
     },
   },
+  {
+    name: 'm8-recruit',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="huangrong"]');
+      await page.fill('#seed', '2');
+      await page.click('#begin');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().people.some((p) => p.guest), null, { timeout: 120000 });
+      await page.click('[data-speed="0"]');
+      await wait(page, 400);
+      const s = await snap(page);
+      const g = s.people.find((p) => p.guest);
+      expect('A10 訪客出現在名冊', (await page.locator(`#roster [data-person="${g.id}"]`).count()) === 1);
+      expect('A10 名冊標出客', /客/.test(await page.textContent(`#roster [data-person="${g.id}"]`)));
+      await page.click(`#roster [data-person="${g.id}"]`);
+      await wait(page, 300);
+      const t = await page.textContent('#panel [data-identity]');
+      expect('A10 人物卡寫來訪與去留考量', /來訪中/.test(t) && /(想留下|還在猶豫)/.test(t), t);
+      expect('A10 紀事寫來訪', /上山來訪/.test(await page.textContent('#events')));
+      await shot('guest');
+    },
+  },
 ];

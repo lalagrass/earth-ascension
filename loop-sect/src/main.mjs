@@ -5,6 +5,7 @@ import { blueprint } from './build.mjs';
 import { effectText } from './skills.mjs';
 import { aff, stageOf, prestige } from './social.mjs';
 import { prowess, moveLabel, comprehendable, compChance } from './martial.mjs';
+import { titleOf, appeal, reasonText } from './recruit.mjs';
 import { SKILLS, MOVES, DEFENSE } from './data.mjs';
 import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes, drawEnemies } from './render.mjs';
 
@@ -99,11 +100,19 @@ function begin() {
   bg = document.createElement('canvas');
   bg.width = 1280; bg.height = 800;
   paintBg();
-  $('#roster').replaceChildren(...state.people.map((p) => el('button', { 'data-person': p.id, on: { click: () => { selected = p.id; renderPanel(); } } }, p.name)));
+  renderRoster();
   renderPanel();
   renderBuild();
   last = performance.now();
   requestAnimationFrame(frame);
+}
+
+// 名冊：人會來會走（M8），所以每次人數或身分變了就重畫；立派後前面加派名。
+let rosterKey = '';
+function renderRoster() {
+  rosterKey = state.people.map((p) => `${p.id}${p.guest ? 'g' : ''}`).join() + (state.sect?.name ?? '');
+  $('#roster').replaceChildren(...(state.sect ? [el('b', { class: 'sect', 'data-sect': '' }, state.sect.name)] : []),
+    ...state.people.map((p) => el('button', { 'data-person': p.id, class: p.guest ? 'guest' : '', on: { click: () => { selected = p.id; renderPanel(); } } }, p.guest ? `${p.name}（客）` : p.name)));
 }
 
 let bgVersion = -1;
@@ -158,7 +167,12 @@ function frame(now) {
   const c = clock(state);
   drawDaylight(ctx, 1280, 800, c.hour, c.minute);
   $('#clock').textContent = `第 ${c.day} 日 ${String(c.hour).padStart(2, '0')}:${String(c.minute).padStart(2, '0')}`;
-  if (now - panelAt > 250) { renderPanel(); panelAt = now; }
+  if (now - panelAt > 250) {
+    const key = state.people.map((p) => `${p.id}${p.guest ? 'g' : ''}`).join() + (state.sect?.name ?? '');
+    if (key !== rosterKey) renderRoster();
+    if (!state.people.some((x) => x.id === selected)) selected = state.people[0].id;
+    renderPanel(); panelAt = now;
+  }
   requestAnimationFrame(frame);
 }
 
@@ -178,6 +192,7 @@ function renderPanel() {
   const next = comprehendable(p);
   $('#panel').replaceChildren(
     el('h3', { 'data-panel-name': p.name }, `${p.name}${p.protagonist ? '（你）' : ''}`),
+    identity(p),
     el('p', { id: 'now' }, p.actLabel + (p.carry ? `（身上 ${p.carry} 顆莓）` : '') + (p.load.wood ? `（扛 ${p.load.wood} 木）` : '') + (p.load.stone ? `（扛 ${p.load.stone} 石）` : '')),
     p.forced ? el('p', { class: 'forced' }, `自理優先：${p.forced}`) : '',
     el('div', { class: 'tabs' }, ...TABS.map(([id, label]) => el('button', {
@@ -208,6 +223,25 @@ function renderPanel() {
     sec('why', el('table', { class: 'why' }, ...why)));
 }
 
+// 身分列：訪客寫來訪與去留考量；同門寫身分與師父。
+function identity(p) {
+  const bits = [];
+  const t = titleOf(state, p);
+  if (p.guest) {
+    const a = appeal(state, p);
+    const hrs = Math.max(0, Math.ceil((p.guest.until - state.tick) / 60));
+    bits.push(p.guest.leaving ? '正在下山' : `來訪中，還會待 ${hrs} 小時`);
+    bits.push(`${a.join ? '想留下' : '還在猶豫'}：${reasonText(a)}`);
+  } else {
+    if (t) bits.push(`${state.sect.name}${t}`);
+    const m = p.master && state.people.find((x) => x.id === p.master);
+    if (m) bits.push(`師父：${m.name}`);
+    const pupils = state.people.filter((x) => x.master === p.id).map((x) => x.name);
+    if (pupils.length) bits.push(`徒弟：${pupils.join('、')}`);
+  }
+  return bits.length ? el('p', { class: 'identity', 'data-identity': '' }, bits.join('　')) : '';
+}
+
 function pickAt(ev) {
   const r = ev.target.getBoundingClientRect();
   const x = ((ev.clientX - r.left) / r.width) * 1280 / TILE - 0.5;
@@ -230,7 +264,7 @@ addEventListener('keydown', (e) => {
 
 // 唯讀遙測：給 headless 檢查用，回傳副本。
 window.__sect = {
-  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map, aff: state.aff, events: state.events, enemies: state.enemies, raids: state.raids, fenceHp: state.fenceHp })) : null),
+  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map, aff: state.aff, events: state.events, sect: state.sect, decisions: state.decisions, enemies: state.enemies, raids: state.raids, fenceHp: state.fenceHp })) : null),
   speed: () => speed,
   selected: () => selected,
   tileToClient: (x, y) => {

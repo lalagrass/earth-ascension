@@ -101,9 +101,14 @@ export function drawPeople(ctx, state, selectedId) {
     ctx.fillStyle = '#2b2118';
     ctx.beginPath(); ctx.arc(cx, cy - 10, 5, Math.PI, 0); ctx.fill();
     if (p.protagonist) { ctx.fillStyle = '#c0392b'; ctx.fillRect(cx - 5, cy - 11, 10, 2); }
+    if (p.guest) {
+      // 訪客：背上的包袱與名字前的「客」。
+      ctx.fillStyle = '#8c6d46'; ctx.beginPath(); ctx.arc(cx - 6, cy - 1, 4, 0, Math.PI * 2); ctx.fill();
+    }
     ctx.font = 'bold 11px sans-serif';
     ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-    ctx.strokeText(p.name, cx, cy - 16); ctx.fillStyle = '#2b2118'; ctx.fillText(p.name, cx, cy - 16);
+    const nm = p.guest ? `客·${p.name}` : p.name;
+    ctx.strokeText(nm, cx, cy - 16); ctx.fillStyle = p.guest ? '#7a4b1c' : '#2b2118'; ctx.fillText(nm, cx, cy - 16);
     // 擠在一起時只畫被選中者（或排在前面那位）的行動字，避免疊字。
     // loop 6：原本只跟「非選中者」比、而且只看 1.5 格內，切磋時兩行字（約 4 格寬）疊在一起。
     const crowded = p.id !== selectedId && state.people.some((o) => o !== p && Math.abs(o.x - p.x) < 4 && Math.abs(o.y - p.y) < 1.2 && (o.id === selectedId || o.id < p.id));
