@@ -1,0 +1,257 @@
+{
+  "engine": "154.0.8037.57",
+  "route": "normal UI zero grants; pause/4x/16x; AI not human",
+  "events": [
+    {
+      "name": "preview",
+      "wall": 0.349,
+      "t": 0,
+      "stage": 0,
+      "site": null,
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "skills": {
+        "gather": 0,
+        "build": 0,
+        "farm": 0,
+        "cook": 0
+      },
+      "hunger": 65,
+      "energy": 68
+    },
+    {
+      "name": "stakes",
+      "wall": 0.507,
+      "t": 0,
+      "stage": 0,
+      "site": {
+        "need": {
+          "wood": 5
+        },
+        "delivered": {
+          "wood": 0
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 0,
+        "workNeed": 15,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "skills": {
+        "gather": 0,
+        "build": 0,
+        "farm": 0,
+        "cook": 0
+      },
+      "hunger": 65,
+      "energy": 68
+    },
+    {
+      "name": "delivery",
+      "wall": 1.746,
+      "t": 17.75,
+      "stage": 0,
+      "site": {
+        "need": {
+          "wood": 5
+        },
+        "delivered": {
+          "wood": 1
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 0,
+        "workNeed": 15,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "skills": {
+        "gather": 1,
+        "build": 0,
+        "farm": 0,
+        "cook": 0
+      },
+      "hunger": 62.51500000000024,
+      "energy": 61
+    },
+    {
+      "name": "foundation",
+      "wall": 18.796,
+      "t": 85.5,
+      "stage": 0,
+      "site": {
+        "need": {
+          "wood": 5
+        },
+        "delivered": {
+          "wood": 5
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 0.25,
+        "workNeed": 15,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "skills": {
+        "gather": 5,
+        "build": 0.25,
+        "farm": 0,
+        "cook": 0
+      },
+      "hunger": 53.030000000001166,
+      "energy": 33.575
+    },
+    {
+      "name": "frame",
+      "wall": 21.578,
+      "t": 90.25,
+      "stage": 0,
+      "site": {
+        "need": {
+          "wood": 5
+        },
+        "delivered": {
+          "wood": 5
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 5,
+        "workNeed": 15,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "skills": {
+        "gather": 5,
+        "build": 5,
+        "farm": 0,
+        "cook": 0
+      },
+      "hunger": 52.36500000000123,
+      "energy": 31.200000000000003
+    },
+    {
+      "name": "roof",
+      "wall": 22.944,
+      "t": 95.25,
+      "stage": 0,
+      "site": {
+        "need": {
+          "wood": 5
+        },
+        "delivered": {
+          "wood": 5
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 10,
+        "workNeed": 15,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "skills": {
+        "gather": 5,
+        "build": 10,
+        "farm": 0,
+        "cook": 0
+      },
+      "hunger": 51.6650000000013,
+      "energy": 28.700000000000003
+    },
+    {
+      "name": "done",
+      "wall": 24.312,
+      "t": 100.25,
+      "stage": 1,
+      "site": null,
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "skills": {
+        "gather": 5,
+        "build": 15,
+        "farm": 0,
+        "cook": 0
+      },
+      "hunger": 50.96500000000137,
+      "energy": 26.349999999999994
+    }
+  ],
+  "errors": []
+}

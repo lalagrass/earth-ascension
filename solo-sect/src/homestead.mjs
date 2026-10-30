@@ -74,12 +74,19 @@ export function createHomestead({ name = '無名', personality = 'quiet', mode =
   note(s, `${s.person.name}來到荒地。先找吃的，再搭一間能安睡的木屋。`); return s;
 }
 
+export function blueprintReason(s,id){
+  if(typeof id!=='string'||!Object.hasOwn(FACILITIES,id)||!Object.hasOwn(s.fac,id))return '沒有這個地塊';
+  const st=s.fac[id],next=FACILITIES[id].stages[st.stage+1];
+  const locked=buildAccess(s,id,st.stage+1);if(locked)return locked;
+  if(id==='bed'&&s.mode!=='solo')return '木床只在獨居模式';
+  if(!next)return '此地塊已無下一級';
+  if(st.site)return '已有工程，請等待完工或繼續施工';
+  if(id!=='hut'&&!s.fac.hut.stage)return '先建好第一間木屋';
+  return null;
+}
 export function startBlueprint(s, id) {
-  if(typeof id!=='string'||!Object.hasOwn(FACILITIES,id)||!Object.hasOwn(s.fac,id))return false;
-  const f = FACILITIES[id], st = s.fac[id], next = f?.stages[st?.stage + 1];
-  if(buildAccess(s,id,st?.stage+1))return false;
-  if (id==='bed' && s.mode!=='solo')return false;
-  if (!next || st.site || (id !== 'hut' && s.fac.hut.stage === 0)) return false;
+  if(blueprintReason(s,id))return false;
+  const st=s.fac[id],next=FACILITIES[id].stages[st.stage+1];
   st.site = { need: { ...next.cost }, delivered: Object.fromEntries(Object.keys(next.cost).map((k) => [k, 0])), reserved: Object.fromEntries(Object.keys(next.cost).map((k) => [k, 0])), work: 0, workNeed: next.work, crafted:0, assemblyAt:null, paused: false };
   note(s, `立下「${next.name}」藍圖。`); return true;
 }

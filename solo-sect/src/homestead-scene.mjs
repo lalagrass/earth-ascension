@@ -1,3 +1,4 @@
+import {PLOT_BOUNDS,blueprintInfo,constructionFacts} from './homestead-construction.mjs';
 import {HOME_STYLES,homeLook} from './homestead-look.mjs';
 // Canvas 表現只讀狀態：時間來自世界，不另設動畫時鐘。
 import{preparedCount}from'./homestead-content.mjs';
@@ -11,7 +12,7 @@ export function sceneFacts(s) {
   night:s.t%DAY/DAY<.2 || s.t%DAY/DAY>.8,
   gardenScale:s.plot.state==='ripe'?1:s.plot.state==='growing'?.25+.65*Math.min(1,s.plot.growth/34):0};
 }
-export function drawHomestead(g,s,preview) {
+export function drawHomestead(g,s,preview,blueprint) {
  const look=homeLook(s,preview),palette=HOME_STYLES[look.style];
  const facts=sceneFacts(s), boxes=[];
  const rect=(x,y,w,h,color)=>{g.fillStyle=color;g.fillRect(x,y,w,h);};
@@ -46,6 +47,12 @@ export function drawHomestead(g,s,preview) {
   rect(431,225,30,56,'#493728');circle(455,252,2,'#d5b17d');
   if(look.style!=='natural'){line([[427,281],[427,222],[465,222],[465,281]],palette.trim,5);line([[353,184],[535,184]],palette.trim,5);}
  }
+ if(!hut.stage&&hut.site){const f=constructionFacts(s,'hut');
+  for(const x of[372,514])line([[x,281],[x,264]],'#92704c',5);
+  if(f.work>0){rect(370,271,148,12,'#a89978');line([[372,275],[516,275]],'#d3c29a',3);}
+  if(f.progress>=1/3){for(const x of[374,430,462,512])line([[x,272],[x,179]],'#926440',6);line([[373,180],[514,180]],'#a88150',7);line([[375,265],[509,185]],'#8b6c49',4);}
+  if(f.progress>=2/3){g.fillStyle=palette.roof[0]+'bb';g.beginPath();g.moveTo(350,183);g.lineTo(444,113);g.lineTo(537,183);g.closePath();g.fill();line([[350,183],[444,113],[537,183]],'#b09363',5);for(let y=198;y<245;y+=18)line([[375,y],[512,y]],'#9c7850',8);}
+ }
  function plot(id,x,y,w,h,p,growth,color){
   const f=s.fac[id];rect(x,y,w,h,f.stage?'#796247':'#94a47555');
   if(f.stage)for(let row=0;row<3;row++){rect(x+7,y+9+row*18,w-14,8,'#9b7e50');if(p.state!=='empty')for(let col=0;col<5;col++){const scale=p.state==='ripe'?1:.25+.65*Math.min(1,p.growth/growth);ellipse(x+14+col*(w-24)/4,y+13+row*18,8*scale,6*scale,color);line([[x+14+col*(w-24)/4,y+17+row*18],[x+14+col*(w-24)/4,y+7+row*18]],'#436a3b',2*scale);}}
@@ -62,10 +69,17 @@ export function drawHomestead(g,s,preview) {
  if(s.fac.store.stage){rect(505,437,99,60,'#8b7653');g.fillStyle='#64523b';g.beginPath();g.moveTo(493,437);g.lineTo(555,410);g.lineTo(617,437);g.fill();rect(512,448,85,4,'#bba577');}
  for(let i=0;i<Math.min(10,s.stock.wood);i++){rect(515+(i%2)*33,489-Math.floor(i/2)*8,30,6,'#765337');circle(542+(i%2)*33,492-Math.floor(i/2)*8,3,'#ba925d');}
  for(let i=0;i<Math.min(4,Math.ceil((s.stock.berries+s.stock.veg+preparedCount(s))/4));i++){rect(575+i%2*17,480-Math.floor(i/2)*17,14,13,'#b5a174');rect(577+i%2*17,482-Math.floor(i/2)*17,10,3,'#69805a');}
- for(const [id,f]of Object.entries(s.fac))if(f.site){const recipe=FACILITIES[id].stages[f.stage+1],point=recipe?.craft&&f.site.crafted<recipe.craft?PLACES.workbench:PLACES[id];const[x,y]=point;g.setLineDash([8,5]);g.strokeStyle=id===s.focusProject?'#ffe16a':'#f6e4ae';g.lineWidth=id===s.focusProject?5:3;g.strokeRect(x-45,y-40,90,70);g.setLineDash([]);line([[x-45,y+30],[x-45,y-45],[x+45,y-45],[x+45,y+30]],'#917450',4);for(let i=0;i<(!recipe.craft||f.site.crafted<recipe.craft?f.site.delivered.wood:0);i++)rect(x-28,y+22-i*6,55,4,'#9d7347');if(f.site.work>0){rect(x-40,y+34,80,5,'#6b654e');rect(x-40,y+34,80*Math.min(1,f.site.work/f.site.workNeed),5,'#edc473');}}
+ for(const [id,f]of Object.entries(s.fac))if(f.site){if(id==='hut'&&!f.stage){g.setLineDash([8,5]);g.strokeStyle=id===s.focusProject?'#ffe16a':'#f6e4ae';g.lineWidth=3;g.strokeRect(350,113,187,172);g.setLineDash([]);for(let i=0;i<f.site.delivered.wood;i++)rect(548,284-i*7,40,5,'#9d7347');if(f.site.work>0){rect(372,291,142,6,'#6b654e');rect(372,291,142*Math.min(1,f.site.work/f.site.workNeed),6,'#edc473');}continue;}const recipe=FACILITIES[id].stages[f.stage+1],point=recipe?.craft&&f.site.crafted<recipe.craft?PLACES.workbench:PLACES[id];const[x,y]=point;g.setLineDash([8,5]);g.strokeStyle=id===s.focusProject?'#ffe16a':'#f6e4ae';g.lineWidth=id===s.focusProject?5:3;g.strokeRect(x-45,y-40,90,70);g.setLineDash([]);line([[x-45,y+30],[x-45,y-45],[x+45,y-45],[x+45,y+30]],'#917450',4);for(let i=0;i<(!recipe.craft||f.site.crafted<recipe.craft?f.site.delivered.wood:0);i++)rect(x-28,y+22-i*6,55,4,'#9d7347');if(f.site.work>0){rect(x-40,y+34,80,5,'#6b654e');rect(x-40,y+34,80*Math.min(1,f.site.work/f.site.workNeed),5,'#edc473');}}
  for(const f of Object.values(s.fac))if(f.site?.assemblyAt){const[x,y]=f.site.assemblyAt;rect(x-18,y-12,36,12,'#8d6d48');line([[x-20,y-14],[x+20,y-14]],'#d1b37d',4);}
  if(s.fac.bench?.stage){rect(318,397,68,10,'#996f44');rect(322,407,6,16,'#655139');rect(376,407,6,16,'#655139');line([[321,390],[383,390]],'#b08a5b',6);}
  if(s.fac.flowers?.stage)for(let i=0;i<7;i++){const x=302+i*12,y=291+(i%2)*10;line([[x,y],[x,y-14]],'#53804d',3);circle(x,y-16,6,i%2?'#cb8e8c':'#e4be67');circle(x,y-16,2,'#f5df98');}
+ if(blueprint&&Object.hasOwn(PLOT_BOUNDS,blueprint.id)&&s.fac[blueprint.id].stage===blueprint.stage){
+  const q=blueprintInfo(s,blueprint.id,blueprint.stage),[x,y,w,h]=q.bounds,color=q.ok?'#315f8c':'#88523d';
+  g.save();g.globalAlpha=.22;rect(x,y,w,h,color);g.restore();g.setLineDash([7,4]);g.strokeStyle=color;g.lineWidth=3;g.strokeRect(x,y,w,h);g.setLineDash([]);
+  if(blueprint.id==='hut')line([[350,183],[444,113],[537,183],[514,183],[514,281],[372,281],[372,183],[350,183]],color,3);
+  const[px,py]=q.point;circle(px,py,7,color);tag('固定地塊預覽 · '+q.name,x+w/2,Math.max(3,y-30));
+  if(blueprint.id==='hut'){line([[444,283],[444,305]],color,3);tag('出入口示意',570,308);}
+ }
  // Feature labels first, then compact character tags choose a non-overlapping nearby slot.
  for(const id of ['hut','garden','herbGarden','kitchen','store',...(s.mode==='solo'?['workbench']:[])]){const pt={hut:[445,77],garden:[270,99],herbGarden:[135,28],kitchen:[605,278],store:[555,507],workbench:[676,501]}[id];tag(`${id==='hut'&&hut.stage&&look.name?look.name+' · ':''}${FACILITIES[id].stages[s.fac[id].stage].name}`,...pt);}
  tag('野果叢',155,380);tag('林緣枯木',745,129);tag('草藥坡',80,201);tag('村路',825,491);
