@@ -9,7 +9,8 @@ import { fenceUp, fenceHit, fenceHtml, FENCE } from './fence.mjs';
 import { peaceDelay } from './peace.mjs';
 import { BAND, newBand, bandWalk, defenderDps, canDefend } from './band.mjs';
 
-export const RAID = { minPop: 8, first: 8, every: 6, jitter: 2, w: { coin: 1, food: 1, pill: 8, herb: 1, stage: 25 }, div: 2, dayK: 30, dayMax: 2, cap: 900,
+export const RAID = { minPop: 8, minPopRules: 4, // loop12：開了「太平與備料」（江湖規則）的新局，山賊門檻降為 4 人＝開局人數，第 8 日起就會來
+  first: 8, every: 6, jitter: 2, w: { coin: 1, food: 1, pill: 8, herb: 1, stage: 25 }, div: 2, dayK: 30, dayMax: 2, cap: 900,
   logAfter: 30, logK: 0.2, hurtCool: 2, // v2.1：第 30 日後天數係數改對數；山門重傷後下次上門再晚 hurtCool 日
   demand: { base: 20, k: 0.6, coinMax: 0.35, min: 10 }, wait: DAY / 2, hurtCost: 80, hurtHp: 15, winHurt: 0.4, steal: { coin: 0.15, food: 0.2 }, rep: 3 };
 export function T(s) { return (s.threat ??= { next: RAID.first, n: 0, paid: 0, fought: 0, won: 0, homeHurt: 0, deaths: 0, pending: null, rng: 0, hist: [] }); }
@@ -19,7 +20,8 @@ export function wealth(s) { const W = RAID.w, r = s.res; return Math.max(0, r.co
 const linMul = (day) => Math.min(RAID.dayMax, 0.5 + day / RAID.dayK);
 // 第 logAfter 日以前與舊線性相同；之後從當天的值接著以對數成長，不再爬到 dayMax。
 export const dayMul = (s) => { const d = s.day || 0; if (d <= RAID.logAfter) return linMul(d); return Math.min(RAID.dayMax, linMul(RAID.logAfter) + Math.log(1 + (d - RAID.logAfter) / RAID.logAfter) * RAID.logK); };
-export function points(s) { if (headcount(s) < RAID.minPop) return 0; return Math.min(RAID.cap, Math.round(wealth(s) / RAID.div * dayMul(s))); }
+export const minPopOf = (s) => (s.m9 ? RAID.minPopRules : RAID.minPop);
+export function points(s) { if (headcount(s) < minPopOf(s)) return 0; return Math.min(RAID.cap, Math.round(wealth(s) / RAID.div * dayMul(s))); }
 export const defense = (s) => power(s);
 export const winP = (s, pts) => { const d = defense(s); return Math.max(0.1, Math.min(0.9, d / (d + pts))); };
 export const demandOf = (s, pts) => Math.max(RAID.demand.min, Math.round(Math.min(Math.max(0, s.res.coin) * RAID.demand.coinMax, RAID.demand.base + pts * RAID.demand.k)));
