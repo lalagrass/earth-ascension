@@ -15,6 +15,7 @@ export const pendingDeparture=s=>!!s.frontier&&s.frontier.trip.phase==='home'&&(
 export function selectedRation(s){const preference=s.frontier?.trip.rationPreference;return Object.hasOwn(RECIPES,preference||'')&&s.stock[RECIPES[preference].output]>0?preference:Object.keys(RECIPES).find(id=>s.stock[RECIPES[id].output]>0)||null;}
 export function setRationPreference(s,id){if(!s.frontier||!['auto',...Object.keys(RECIPES)].includes(id)||s.frontier.trip.phase!=='home'||pendingDeparture(s)||s.frontier.source.cleared)return false;s.frontier.trip.rationPreference=id;return true;}
 export function rationPreview(s){const id=selectedRation(s);if(!id)return '尚無現成料理可打包；不會因路糧偏好另行製作。';const r=RECIPES[id],pref=s.frontier.trip.rationPreference;return `${pref!=='auto'&&pref!==id?'偏好餐無庫存，改用現成餐；':''}預計帶${r.name}1份，真吃最多補飽腹${r.hunger}${r.energy?'／精力'+r.energy:''}；未吃會原樣退回，不替偏好多做飯。`;}
+export function setCompanionInvitation(s,requested){if(!s.frontier||typeof requested!=='boolean'||s.frontier.trip.phase!=='home'||pendingDeparture(s)||s.frontier.source.cleared)return false;s.frontier.trip.joinRequested=requested;return true;}
 export function companionReason(s){
  const c=s.frontier?.companion;if(!c)return '目前不是山林模式';
  if(!c.allowed)return '你已選獨處；若想同行，先允許林舟來訪';
@@ -28,6 +29,7 @@ export function companionReason(s){
  return null;
 }
 export const companionReady=s=>!companionReason(s);
+export function reconsiderReason(s){const f=s.frontier;if(!f)return '目前不是山林模式';if(f.source.cleared)return '來源已安寧，不再開同一探行';if(f.trip.phase!=='home'||pendingDeparture(s))return '先完成返家或取消目前備糧';if(f.martial.avoid)return '仍選擇避戰；先允許應戰，或自在留居';if(!f.trip.deferred)return '自主近山未暫緩，不需重設';return null;}
 export function expeditionReason(s,act){const f=s.frontier;if(!f)return '只在生活與山林試作';const t=f.trip;
  if(act==='depart')return t.phase!=='home'?'已在探行，不能重複打包':f.martial.avoid?'已選避戰，不打包出征；允許應戰後才可近山':f.source.cleared?'獸徑已清理，不重開同一目標':f.threat.phase!=='quiet'?'先處理眼前預警／侵擾':!s.autonomy.warmMeals?'先安家並吃過熱飯':f.martial.xp<3?'先練會基本步勢3':s.person.carry?'先搬回手上的物資':s.person.hunger<55||s.person.energy<60?'先吃飯休息（飽腹55／精力60）':preparedCount(s)<1?'至少一份真料理作路糧':t.joinRequested&&!companionReady(s)?companionReason(s):null;
  if(act==='returnTrip')return t.phase==='home'?'已在家':null;

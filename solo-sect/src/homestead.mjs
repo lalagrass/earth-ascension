@@ -1,4 +1,4 @@
-import {EXPEDITION_ACTIONS,expeditionReason,pendingDeparture,expeditionTarget,expeditionPlan,expeditionComplete,tickExpedition} from './homestead-expedition.mjs';
+import {EXPEDITION_ACTIONS,expeditionReason,reconsiderReason,pendingDeparture,expeditionTarget,expeditionPlan,expeditionComplete,tickExpedition} from './homestead-expedition.mjs';
 import {DAY,HOME,PLACES,LIFE_ACTIONS} from './homestead-life-data.mjs';
 import {SOCIAL_ACTIONS,MEETING,PAIR_POINT,socialReason,socialComplete,socialPlan,tickCompanion,validSocialTask} from './homestead-social.mjs';
 import {MARTIAL_ACTIONS,martialReason,martialPlan,martialTarget,martialComplete,validMartialTask} from './homestead-martial.mjs';
@@ -144,9 +144,15 @@ export function setAvoidCombat(s,avoid){
    if(Object.hasOwn(EXPEDITION_ACTIONS,s.person.order||'')||s.person.order==='fight')clearOnce(s);
   }
   else if(s.person.order==='depart'||s.person.task?.act==='depart')setOrder(s,null);
-  if(s.person.order==='fight'||s.person.task?.act==='fight')setOrder(s,null);
+  if(s.person.task?.act==='fight')cancelTask(s);if(s.person.order==='fight')clearOnce(s);
  }return true;
 }
+export function setCompanionAllowed(s,allowed){
+ if(!s.frontier||typeof allowed!=='boolean')return false;const f=s.frontier;f.companion.allowed=allowed;
+ if(!allowed){if(pendingDeparture(s)&&f.trip.joinRequested)retreatExpedition(s);if(f.trip.joined){f.trip.joined=false;f.companion.leaving=true;}}
+ return true;
+}
+export function reconsiderExpedition(s){if(reconsiderReason(s))return false;s.frontier.trip.deferred=false;return true;}
 export function retreatExpedition(s){if(!s.frontier)return false;if(s.frontier.trip.phase==='home'){if(!pendingDeparture(s))return false;s.frontier.trip.deferred=true;cancelTask(s);if(s.person.order==='depart')clearOnce(s);return true;}s.frontier.trip.phase='return';s.frontier.trip.deferred=true;cancelTask(s);clearOnce(s);return true;}
 export function requestLeisure(s,id){if(!s.autonomy||!Object.hasOwn(LEISURE,id)||!availableLeisure(s,id))return false;if(s.person.order==='leisure'&&s.person.leisureRequest===id)return true;if(s.person.order==='leisure')setOrder(s,null);if(!setOrder(s,'leisure','once'))return false;s.person.leisureRequest=id;return true;}
 export function requestRecipe(s,id){
