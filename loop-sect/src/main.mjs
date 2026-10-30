@@ -2,6 +2,8 @@ import { QUESTIONS, ATTRS, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, TEMPLATES, AXES, TRAI
 import { axesFromAnswers, typeOf, validateAttrs, traitsOf } from './person.mjs';
 import { createWorld, step, clock, companionsFor, placeBlueprint, cancelSite, setFocus } from './sim.mjs';
 import { blueprint } from './build.mjs';
+import { effectText } from './skills.mjs';
+import { SKILLS } from './data.mjs';
 import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild } from './render.mjs';
 
 const $ = (s) => document.querySelector(s);
@@ -171,6 +173,9 @@ function renderPanel() {
     el('h2', {}, '需求'), ...needs,
     el('h2', {}, '現在'), el('p', { id: 'now' }, p.actLabel + (p.carry ? `（身上 ${p.carry} 顆莓）` : '') + (p.load.wood ? `（扛 ${p.load.wood} 木）` : '') + (p.load.stone ? `（扛 ${p.load.stone} 石）` : '')),
     p.forced ? el('p', { class: 'forced' }, `自理優先：${p.forced}`) : '',
+    el('h2', {}, '技能'), ...SKILLS.map((k) => el('div', { class: 'skill', 'data-skill': k.id }, el('span', {}, k.label),
+      el('span', { class: 'bar' }, el('i', { style: `width:${p.skills[k.id]}%` })), el('b', {}, p.skills[k.id].toFixed(0)),
+      el('small', {}, effectText(p, k.id)))),
     el('h2', {}, '專長'), el('div', { class: 'focus' }, ...FOCUS.map((f) => el('button', {
       class: p.focus === f.id ? 'on' : '', 'data-focus': f.id ?? 'none',
       on: { click: () => { setFocus(state, p.id, f.id); renderPanel(); } },

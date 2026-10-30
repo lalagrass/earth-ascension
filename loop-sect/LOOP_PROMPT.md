@@ -28,6 +28,7 @@
 
 【每一輪】照 LOOP.md 的七步，重點：
 1. 選 MILESTONES.md 第一個「待做」。一輪只做一個 milestone，不要順手做下一個。
+   沒有「待做」時，本輪改做「規劃」：依擁有人願景（NORTH_STAR 與 MILESTONES 開頭）、retro 的風險與 openIssues，寫下一批 10 個 milestone 加進 MILESTONES.md，這一輪也算一輪。
 2. 寫 docs/specs/Mxx.md。每條驗收要對到一個自動檢查，並附一行可行性粗估（在什麼情況下它根本不會發生）。數值寫 data.mjs 的常數名。
 3. 實作前先 grep 確認還沒有人做過，不要假設沒做。只改 loop-sect/，不加套件，不做存檔。
 4. 三項檢查都要 exit 0。不准跳過、關掉或放寬測試來求綠。平衡類的失敗，先看 soak 的時間分布再改數字，並在紀錄裡寫明是哪個數字促成這次改動。

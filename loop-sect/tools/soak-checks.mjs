@@ -1,5 +1,5 @@
 // soak 用的不變量與統計。每個 milestone 在這裡加自己的檢查。
-import { companionsFor, placeBlueprint } from '../src/sim.mjs';
+import { companionsFor, placeBlueprint, setFocus } from '../src/sim.mjs';
 import { walkable } from '../src/map.mjs';
 import { speedOf } from '../src/person.mjs';
 import { isNight } from '../src/needs.mjs';
@@ -13,14 +13,20 @@ export function rosterFor(seed) {
 }
 
 // M3-A6：第 1 日 06:00 放下全部藍圖，之後不再下指令。
+// M4-A4／A5：開局把 p1 指定為伐木，量專精與整趟速度。
 export function script(s) {
+  if (s.tick === 0) setFocus(s, 'p1', 'wood');
   if (s.tick === 360) for (const b of BLUEPRINTS) placeBlueprint(s, b.id);
 }
 
 export function perSeed(s, ctx) {
+  const chopper = s.people[1];
+  const top = Math.max(...s.people.map((p) => p.skills.chop));
+  bump(ctx, 'specSeeds'); if (chopper.skills.chop === top) bump(ctx, 'specOk');
+  bump(ctx, 'chopSkillSum', chopper.skills.chop);
   const all = s.built.length === BLUEPRINTS.length;
   bump(ctx, 'seeds'); if (all) bump(ctx, 'allBuilt');
-  for (const e of s.events) bump(ctx, `built:${e.text}`);
+  for (const e of s.events) if (e.kind === 'built') bump(ctx, `built:${e.text}`);
   const hutBeds = s.objects.filter((o) => o.label === '茅屋床');
   ctx.samples.hutSleptSeeds = (ctx.samples.hutSleptSeeds || 0) + (s.counts.hutSleep ? 1 : 0);
   if (hutBeds.length && !s.counts.hutSleep) ctx.samples.hutNoSleep = (ctx.samples.hutNoSleep || 0) + 1;
@@ -100,6 +106,22 @@ export const invariants = [
 const kindOf = (p) => (p.act === 'do' || p.act === 'walk') && p.task ? p.task.kind : p.act;
 
 export const samplers = [
+  // M4-A4：p1 每一趟伐木（選定砍樹 → 木頭離手）花多少 tick、帶回幾根。
+  (s, ctx) => {
+    const p = s.people[1];
+    ctx.trip ??= null;
+    ctx.prevWood ??= 0;
+    // 只算花在這一趟上的 tick（砍、扛回、搬去工地）；中途去吃睡的時間不算。
+    if (!ctx.trip && p.task?.kind === 'chop') ctx.trip = { start: s.tick, ticks: 0 };
+    if (ctx.trip && ['chop', 'store', 'haul'].includes(p.task?.kind)) ctx.trip.ticks++;
+    if (ctx.trip && ctx.prevWood > 0 && p.load.wood === 0) {
+      const day = Math.floor(ctx.trip.start / TICKS_PER_DAY);
+      const k = day === 0 ? 'early' : day >= 3 ? 'late' : null;
+      if (k) { bump(ctx, `trip:${k}:ticks`, ctx.trip.ticks); bump(ctx, `trip:${k}:wood`, ctx.prevWood); }
+      ctx.trip = null;
+    }
+    ctx.prevWood = p.load.wood;
+  },
   // M1-A7：與最近他人的距離。只量自由走動時（閒逛或在去處待著），吃睡等需求會把人聚到同處。
   (s, ctx) => {
     for (const p of s.people) {
@@ -160,6 +182,11 @@ export function judge(S) {
   const wj = r('work:J', 't:J'), wp = r('work:P', 't:P');
   lines.push(`M3-A7 活計時間占比：條理 ${(wj * 100).toFixed(1)}%，隨性 ${(wp * 100).toFixed(1)}%`);
   if (!(wj > wp)) failures.push('M3-A7 條理型沒有比隨性型更勤快');
+  const early = r('trip:early:ticks', 'trip:early:wood'), late = r('trip:late:ticks', 'trip:late:wood');
+  // M4-A4 改由 skills.test.mjs 的控制實驗判定：工地蓋完後需求消失、近處的樹被砍光，自然對照被距離與趟數干擾。
+  lines.push(`（參考）指定伐木者每根木頭花的 tick：第 1 日 ${early.toFixed(1)}，第 4–5 日 ${late.toFixed(1)}`);
+  lines.push(`M4-A5 指定伐木者伐木熟練全隊最高：${S.specOk || 0}/${S.specSeeds} 種子，平均熟練 ${(S.chopSkillSum / S.specSeeds).toFixed(1)}`);
+  if ((S.specOk || 0) < Math.ceil(S.specSeeds * 10 / 12)) failures.push('M4-A5 專精沒有浮現');
   const all = (S['t:E'] || 0) + (S['t:I'] || 0);
   // 時間分布：調平衡前先看這張表（loop 3 retro 的改進）。
   const share = Object.entries(S).filter(([k]) => k.startsWith('act:')).sort((a, b) => b[1] - a[1]).slice(0, 10);

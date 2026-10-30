@@ -21,9 +21,9 @@ test('M3-A1 樹被砍完變通行地', () => {
   const s = world();
   const [r] = nearestResources(s, 'wood', { x: 25, y: 24 }, 1);
   assert.equal(s.map[r.y][r.x], 'T');
-  assert.equal(takeResource(s, r.x, r.y, 'wood', 3), 3);
+  assert.equal(takeResource(s, r.x, r.y, 'wood', 5), 5);
   assert.equal(s.map[r.y][r.x], 'T');
-  assert.equal(takeResource(s, r.x, r.y, 'wood', 3), 1);
+  assert.equal(takeResource(s, r.x, r.y, 'wood', 5), 3);
   assert.ok(walkable(s.map, r.x, r.y));
 });
 

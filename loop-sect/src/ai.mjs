@@ -1,6 +1,7 @@
 // 效用 AI：列出所有可做的事、打分、留下理由。只讀 state，不改。
 import { ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, STOCK_TARGET, PILE, WORK_KINDS } from './data.mjs';
 import { nearestResources, remaining, stocked, workSpot, siteWorkersFree } from './build.mjs';
+import { extraTake } from './skills.mjs';
 import { nextRand } from './rng.mjs';
 import { urgency, isNight } from './needs.mjs';
 
@@ -28,7 +29,7 @@ function score(state, p, c, { need = 0, persona = 0, work = 0 }) {
   const night = isNight(state.tick);
   let sched = 1;
   if (SLEEPS.has(c.kind)) sched = night ? 1.6 + 0.4 * Math.max(0, -p.axes.P) : p.needs.energy > 30 ? 0.5 : 1;
-  else if (night) sched = WORK_KINDS.has(c.kind) && c.kind !== 'deliver' && c.kind !== 'store' ? 0.3 : 0.6;
+  else if (night) sched = WORK_KINDS.has(c.kind) && c.kind !== 'deliver' && c.kind !== 'store' ? 0.15 : 0.6;
   const d = c.spot ? Math.hypot(c.spot.x - p.x, c.spot.y - p.y) : 0;
   const dist = 1 / (1 + d / 40);
   const noise = nextRand(state) * 0.15;
@@ -101,7 +102,7 @@ export function candidates(state, p, scorePois) {
       const demand = Math.min(1.5, want / 8);
       const kind = mat === 'wood' ? 'chop' : 'quarry';
       for (const r of nearestResources(state, mat, p, 3)) {
-        add({ kind, res: `${r.x},${r.y}`, mat, rx: r.x, ry: r.y, spot: r.spot, take: 4 + strong },
+        add({ kind, res: `${r.x},${r.y}`, mat, rx: r.x, ry: r.y, spot: r.spot, take: 4 + strong + extraTake(p, kind) },
           { work: 0.6 + demand * 1.2, persona: diligence + 0.15 * ((p.attrs.li - 5) / 5) });
       }
     }

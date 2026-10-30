@@ -36,7 +36,8 @@ export function traitsOf(axes, attrs) {
 }
 
 export function speedOf(p) {
-  return BASE_SPEED * (0.8 + 0.04 * p.attrs.shen);
+  const foot = 1 + (0.3 * (p.skills?.foot ?? 0)) / 100; // M4 腳力
+  return BASE_SPEED * (0.8 + 0.04 * p.attrs.shen) * foot;
 }
 
 // 建立人物；不合法天賦直接丟錯，讓呼叫端在 UI 先驗證。

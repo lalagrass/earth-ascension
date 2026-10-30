@@ -144,8 +144,8 @@ export const ACTS = {
 
 // ---------- M3 資源採集與建設 ----------
 export const PILE = { label: '倉堆', x: 25, y: 24 };
-export const TREE_WOOD = 4;
-export const ROCK_STONE = 6;
+export const TREE_WOOD = 8;   // M4 由 4 調為 8：否則一棵樹只夠一趟，「多扛」技能被樹量吃掉
+export const ROCK_STONE = 10; // M4 由 6 調為 10，理由同上
 export const STOCK_TARGET = { wood: 10, stone: 6 };
 export const START_MATERIALS = { wood: 0, stone: 0 };
 export const SITE_WORKERS = 2;
@@ -190,3 +190,16 @@ Object.assign(ACTS, {
   haul: { label: '搬料', dur: 3, per: {} },
   build: { label: '施工', dur: 30, per: { energy: -0.015 } },
 });
+
+// ---------- M4 生活技能 ----------
+export const SKILLS = [
+  { id: 'chop', label: '伐木', attr: 'gen' },
+  { id: 'quarry', label: '採石', attr: 'gen' },
+  { id: 'build', label: '營造', attr: 'wu' },
+  { id: 'cook', label: '烹飪', attr: 'wu' },
+  { id: 'forage', label: '採集', attr: 'wu' },
+  { id: 'foot', label: '腳力', attr: 'gen' },
+];
+export const SKILL_GAIN = 2.4;
+export const SKILL_MILESTONES = [25, 50, 75];
+export const FOOT_STEP = 10;   // 負重每走幾格算一次腳力的「完成」

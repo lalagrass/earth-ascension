@@ -1,14 +1,17 @@
 {
   "loopVersion": 2,
-  "loopsDone": 3,
+  "loopsDone": 4,
   "retroEvery": 3,
   "lastRetro": "docs/RETRO-01.md",
   "lastCommit": "f6e7047",
-  "nextMilestone": "M4",
+  "nextMilestone": "M5",
   "inProgress": null,
   "openIssues": [
-    "走路占 48.8% 時間：M4 技能要量整趟速度，不只做事那段",
-    "人數上升前要量一次效用 AI 掃全地圖的效能"
+    "走路仍占約 45% 時間",
+    "人數上升前要量一次效用 AI 掃全地圖的效能",
+    "自然遊玩缺少持續需求（燒柴、損耗），技能第 3 日後幾乎不長"
   ],
-  "stopReason": "授權的 3 輪已完成，等擁有人決定是否繼續"
+  "stopReason": null,
+  "targetLoops": 30,
+  "authorizedBy": "owner 2026-10-30T14:22Z: N=30, K=3"
 }

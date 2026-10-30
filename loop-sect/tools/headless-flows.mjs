@@ -123,4 +123,21 @@ export const flows = [
       await shot('built');
     },
   },
+  {
+    name: 'm4-skills',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="guojing"]');
+      await page.click('#begin');
+      await page.click('[data-person="p0"]');
+      await page.click('[data-focus="wood"]');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().people[0].skills.chop > 0, null, { timeout: 60000 });
+      await page.click('[data-speed="0"]');
+      await wait(page, 300);
+      expect('A7 人物卡六項技能', (await page.locator('#panel [data-skill]').count()) === 6);
+      const t = await page.textContent('#panel [data-skill="chop"]');
+      expect('A7 伐木有熟練與效果文字', /伐木/.test(t) && /一趟多扛/.test(t), t);
+      await shot('skills');
+    },
+  },
 ];

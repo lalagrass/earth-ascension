@@ -9,6 +9,8 @@ import { findPath } from './path.mjs';
 import { fromTemplate, makePerson, speedOf } from './person.mjs';
 import { decayNeeds, applyPer, isNight } from './needs.mjs';
 import { candidates, interruptible, willingToChat, REFUSE_COOLDOWN } from './ai.mjs';
+import { newSkills, grow, SKILL_OF_TASK, workTimeMul, buildRate, extraMeal, extraTake, skillLabel } from './skills.mjs';
+import { FOOT_STEP } from './data.mjs';
 
 // 從院子灌水找出可到達的格，避免 POI 或出生點落在被樹圍住的口袋裡。
 function reachableFrom(map, sx, sy) {
@@ -113,6 +115,8 @@ export function createWorld({ seed = 1, people }) {
     p.load = { wood: 0, stone: 0 };    // 身上的木石
     p.hold = { meal: 0, raw: 0, wood: 0, stone: 0 };
     p.focus = null;
+    p.skills = newSkills();
+    p.loadedDist = 0;
     p.refused = {};
     p.task = null;
     p.bubble = null;
@@ -232,7 +236,8 @@ function startDoing(state, p, dur = null) {
   const t = p.task;
   const a = ACTS[t.kind];
   p.act = 'do';
-  if (t.kind === 'cook') dur = HEARTH_LEVELS[byId(state.objects, t.obj).level].cookDur;
+  if (t.kind === 'cook') dur = Math.round(HEARTH_LEVELS[byId(state.objects, t.obj).level].cookDur * workTimeMul(p, 'cook'));
+  if (t.kind === 'chop' || t.kind === 'quarry') dur = Math.round(a.dur * workTimeMul(p, t.kind));
   t.left = dur ?? a.dur;
   p.actLabel = a.label;
   state.counts[t.kind] = (state.counts[t.kind] || 0) + 1;
@@ -288,9 +293,18 @@ function tryChat(state, p) {
 }
 
 // ---------- 行動結算 ----------
+function improve(state, p, id) {
+  const m = grow(p, id);
+  if (m === null) return;
+  const text = `${skillLabel(id)}精進`;
+  p.bubble = { text, until: state.tick + 60 };
+  state.events.push({ tick: state.tick, kind: 'skill', text: `${p.name}${text}（${m}）` });
+}
+
 function finish(state, p) {
   const t = p.task;
   const L = state.ledger;
+  if (SKILL_OF_TASK[t.kind]) improve(state, p, SKILL_OF_TASK[t.kind]); // 只有做完才成長
   if (t.kind === 'eat') { L.mealsEaten++; p.hold.meal = 0; }
   if (t.kind === 'eatRaw') {
     const b = byId(state.bushes, t.bush);
@@ -299,12 +313,12 @@ function finish(state, p) {
   if (t.kind === 'eatCarried' && p.carry > 0) { p.carry--; L.rawEaten++; }
   if (t.kind === 'forage') {
     const b = byId(state.bushes, t.bush);
-    const n = Math.min(FORAGE_TAKE, b.berries);
+    const n = Math.min(FORAGE_TAKE + extraTake(p, 'forage'), b.berries);
     b.berries -= n; p.carry += n; L.picked += n;
   }
   if (t.kind === 'deliver') { state.stock.raw += p.carry; p.carry = 0; }
   if (t.kind === 'cook') {
-    const meals = HEARTH_LEVELS[byId(state.objects, t.obj).level].meals;
+    const meals = HEARTH_LEVELS[byId(state.objects, t.obj).level].meals + extraMeal(p);
     L.rawCooked += p.hold.raw; p.hold.raw = 0; state.stock.meal += meals; L.mealsMade += meals;
   }
   if (t.kind === 'chop' || t.kind === 'quarry') {
@@ -377,7 +391,12 @@ function stepPerson(state, p) {
         if (np) p.path = np;
       }
     }
-    moveAlong(p);
+    const moved = moveAlong(p);
+    // 負重走路練腳力：每走 FOOT_STEP 格算一次完成。
+    if (p.carry > 0 || p.load.wood > 0 || p.load.stone > 0) {
+      p.loadedDist += moved;
+      while (p.loadedDist >= FOOT_STEP) { p.loadedDist -= FOOT_STEP; improve(state, p, 'foot'); }
+    }
     if (t.kind === 'wander') applyPer(p, { fun: 0.06 * (1 + 0.5 * p.axes.N) });
     if (!p.path.length) {
       if (t.kind === 'chat') {
@@ -394,7 +413,7 @@ function stepPerson(state, p) {
     }
     if (p.task.kind === 'build') {
       const site = byId(state.sites, p.task.site);
-      const r = site ? addWork(state, site, 1) : 'done';
+      const r = site ? addWork(state, site, buildRate(p)) : 'done';
       p.actLabel = r === 'wait' ? '等人讓開' : ACTS.build.label;
       if (r === 'done') { p.task.site = null; finish(state, p); return; }
       if (r === 'cell') { finish(state, p); return; } // 換下一格要換站位
@@ -417,7 +436,8 @@ function tryChatIfClose(state, p) {
 }
 
 function moveAlong(p) {
-  let budget = speedOf(p);
+  const full = speedOf(p);
+  let budget = full;
   while (budget > 0 && p.path.length) {
     const n = p.path[0];
     const d = Math.hypot(n.x - p.x, n.y - p.y);
@@ -430,6 +450,7 @@ function moveAlong(p) {
       budget = 0;
     }
   }
+  return full - budget;
 }
 
 function regrow(state) {
