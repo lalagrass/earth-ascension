@@ -1,4 +1,5 @@
-import{autonomyText}from'./homestead-autonomy.mjs';
+import{deferAutonomyGoal,allowAutonomyGoals}from'./homestead.mjs';
+import{autonomyText,DIRECTIONS,setAutonomyDirection}from'./homestead-autonomy.mjs';
 import{renderMarkup}from'./homestead-dom.mjs';
 import{restComparisonText}from'./homestead-rest-view.mjs';
 import{householdActions,performHouseholdAction,householdActionHelp}from'./homestead-household-actions.mjs';
@@ -103,6 +104,10 @@ $('transfer-detail').onclick = (e) => {
 for(const[id,target]of[['to-food','recipe-card'],['to-build','build-card']])$(id).onclick=()=>{$(target).scrollIntoView({block:'start'});$(target).focus({preventScroll:true});};
 $('meal-style').innerHTML=Object.entries(MEAL_STYLES).map(([id,name])=>`<option value="${id}">${name}</option>`).join('');
 $('meal-style').onchange=()=>{setMealStyle(s,$('meal-style').value);render();};
+$('life-direction').innerHTML=Object.entries(DIRECTIONS).map(([id,name])=>`<option value="${id}">${name}</option>`).join('');
+$('life-direction').onchange=()=>{setAutonomyDirection(s,$('life-direction').value);render();};
+$('defer-goal').onclick=()=>{deferAutonomyGoal(s);render();};
+$('allow-goals').onclick=()=>{allowAutonomyGoals(s);render();};
 $('clear').onclick = () => { setOrder(s, null); render(); };
 $('speed').onclick = (e) => { const b = e.target.closest('[data-speed]'); if (b) { speed = Number(b.dataset.speed); render(); } };
 $('recipes').onclick=(e)=>{const food=e.target.closest('[data-eat]');if(food){if(requestFood(s,food.dataset.eat))show('已選這一份；吃完恢復自主生活，可改令取消。');else show('這份料理已無庫存或目前已吃飽；未改動指派。');render();return;}const b=e.target.closest('[data-recipe]');if(b){if(!requestRecipe(s,b.dataset.recipe))show(recipeReason(s,b.dataset.recipe));else show('已選這一鍋，完成後恢復自主生活；可改令取消。');render();}};
@@ -143,6 +148,9 @@ function render() {
   $('resource-detail').textContent=`施工已交 ${resources.delivered} 木／運往工地 ${resources.reserved} 木（已離庫，不可再花）；待運${resources.needed}木，共用庫存尚缺${resources.shortage}木。回倉／採集在途：${resources.incoming.map(c=>`${{wood:'木',berries:'野果',veg:'菜',herbs:'藥'}[c.kind]}${c.amount}`).join('、')||'無'}。`;
   $('home-summary').textContent = `${FACILITIES.hut.stages[s.fac.hut.stage].name} · ${s.helper ? '兩人同住' : '一人生活'} · 現成食物約 ${foodDays(s)} 日；自主夠用目標：料理${target.meal}份／果${target.berries}／菜${target.veg}／木${target.wood}／藥${target.herbs}（非容量限制，手動可多備）`;
   $('next-step').textContent = autonomyText(s)||nextStep(s);
+  $('autonomy-controls').hidden=!s.autonomy;
+  if(s.autonomy){$('life-direction').value=s.autonomy.direction;$('defer-goal').disabled=!s.autonomy.goal;$('allow-goals').disabled=!s.autonomy.deferred.length;}
+  $('autonomy-mode').textContent=s.autonomy?`自主發展已啟用。${p.order?'目前直接指派優先，完成或清除後再續打算。':'不派工也會安家與改善生活。'}暫停工程需由你恢復。`:'舊局維持原來的自主補庫模式。';
   $('status').innerHTML = `<h2>${esc(p.name)} · ${p.personality === 'quiet' ? '喜靜' : p.personality === 'diligent' ? '勤勞' : s.mode === 'solo' ? '開朗' : '好交往'}</h2><div>飢餓 ${Math.round(p.hunger)} / 100</div><div class="meter"><span style="width:${p.hunger}%"></span></div><div>精力 ${Math.round(p.energy)} / 100</div><div class="meter energy"><span style="width:${p.energy}%"></span></div><p class="activity">${esc(activityText(s))}</p>${s.mode==='solo'?`<div class="feeling">感受 ${feeling.value}/5 · ${feeling.active.map(f=>`${f.name}（${f.left}秒）`).join('、')||'平靜'}<div class="muted">來自實際使用，會消退；不抵銷飢餓或轉為工作增益。</div></div>`:''}<div class="muted">${esc(activityReason(s))}</div><div class="muted">工作 ${Math.floor(p.work)} · 閒暇 ${p.leisure} · 識藥 ${p.herbalSkill}</div>`;
   $('recipe-card').hidden=s.mode!=='solo';
   $('meal-style').value=s.mealStyle||'auto';

@@ -1,4 +1,4 @@
-import {freshAutonomy,validAutonomy,advanceAutonomy,observeAutonomy} from './homestead-autonomy.mjs';
+import {freshAutonomy,validAutonomy,advanceAutonomy,observeAutonomy,goalStep} from './homestead-autonomy.mjs';
 import {defaultHomeLook,validHomeLook} from './homestead-look.mjs';
 import {RECIPES,MEAL_STYLES,hasRecipe,recipeReason,eatReason,recipeAccess,buildAccess,availableUnlocks,preparedCount,edibleEnergy,autoRecipe,chooseFood} from './homestead-content.mjs';
 import {at,feel,FEELINGS,restRate} from './homestead-living.mjs';
@@ -138,6 +138,14 @@ export function setProjectFocus(s,id){
  if(s.mode!=='solo'||id!==null&&(!BUILDABLE.includes(id)||!s.fac[id]?.site||s.fac[id].site.paused))return false;
  s.focusProject=id;return true;
 }
+export function deferAutonomyGoal(s){
+ const a=s.autonomy;if(!a?.goal)return false;const id=goalStep(s);
+ if(s.person.task?.trial)cancelTask(s);
+ if(id&&s.fac[id].site)pauseProject(s,id,true);
+ if(!a.deferred.includes(a.goal))a.deferred.push(a.goal);
+ a.goal=null;return true;
+}
+export function allowAutonomyGoals(s){if(!s.autonomy)return false;s.autonomy.deferred=[];return true;}
 export function setHelperOrder(s, act) {
   if (!s.helper || ![null, 'chop', 'farm', 'herbFarm'].includes(act) || (act === 'herbFarm' && s.visitor.role !== 'apprentice')) return false;
   if (s.helper.order === act) return true;
@@ -480,7 +488,7 @@ export function loadHomestead(json) {
     s.autonomy ??= null;
     if(s.autonomy&&s.autonomy.warmMeals===undefined)s.autonomy.warmMeals=0;
     if(s.autonomy&&s.autonomy.comfortRests===undefined)s.autonomy.comfortRests=0;
-    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;}
+    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;s.autonomy.direction??='auto';s.autonomy.deferred??=[];}
     if(s.autonomy&&s.autonomy.experience===undefined)s.autonomy.experience={hunger:0,fatigue:0,effort:0,lastWork:s.person.work};
     if(!validAutonomy(s.autonomy,s.mode,s.t,s.person.work))return {ok:false,error:'自主生活目標不合法'};
     if(s.person.task?.trial!==undefined&&(s.person.task.trial!==true||s.person.task.act!=='rest'||!s.autonomy||s.fac.bed?.stage!==2))return {ok:false,error:'床鋪試睡任務不合法'};
