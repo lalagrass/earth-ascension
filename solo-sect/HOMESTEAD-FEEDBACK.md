@@ -24,3 +24,7 @@
 來源：[CDDA活動](https://docs.cataclysmdda.org/PLAYER_ACTIVITY.html)區分可中斷、取消狀態恢復；[Stonehearth AI](https://stonehearth.github.io/modding_guide/modding_guide/advanced/ai/index.html)條件與實際執行分離。只借概念，未移植／執行其遊戲，未新增規劃器。
 R11結果：作者正常UI新peace局一開始按避戰、只調16×到1400s，修前1打包/1返還/4探行精力、source24；修後0打包/0探行/0探行精力、source24、pageerrors[]。JSON為真操作，未注入。作者聚焦38/38；全套574/574為初修、575/575為第一次補修前的適用證據，最後指令歸屬修復以聚焦回歸，最終批次另跑全套。非作者發現同一歸屬缺陷：途中改派砍柴或料理後開避戰不應抹掉請求；依指令而非階段保留，真R7紀錄讀回重現並回歸。取消/恢復語義顯示在真目標，不偽裝未發生行程。守家與真清源既有32測一起回歸。正常UI截圖保留前後。下一輪為可移植相容檢查，不加新存檔產品。
 非作者R11最終38/38，真料理請求避戰後讀回40秒完全同態，無剩餘阻擋；未代作者重跑完整瀏覽器。
+
+## R12 短規格（base cfd3232）
+玩家/協作者問題：Mac回饋因工具寫死`/workspace/scratch`無法查真舊讀取器。改用Node標準`os.tmpdir()`及模組相對repo定位，提供明確輸出位置，不依shell工作目錄；缺真基線／git／tar時明確失敗，不用目前fixture冒充相容。範圍僅驗證工具與使用文件，不改遊戲。驗收：從非repo cwd、含空白TMPDIR跑實際556舊reader；結果檔可指定；臨時目錄清理；原遊戲正常入口UI與R11沿用無邏輯變更。來源：[Node os.tmpdir](https://nodejs.org/api/os.html#ostmpdir)；不加依賴，不替玩家下載歷史或新存檔功能。
+R12結果：作者與非作者皆從非repo cwd／含空白TMPDIR實跑真基線成功且臨時資料清理；非作者另外驗ZIP式無歷史非零失敗、不產生假結果。正常UI新局50.5s實搬首屋木料、暫停不動、390px無溢出、errors[]。新UI工具允許指定已裝Playwright／Chromium，不替環境下載。未改模擬，復用R11適用遊戲測試而非重跑全庫。下一輪處理核心資訊可見性。

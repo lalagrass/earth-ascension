@@ -35,4 +35,4 @@ python3 -m http.server 8804 --bind 127.0.0.1 --directory solo-sect
 
 ## 工程重跑
 
-在solo-sect：`node --test test/*.test.mjs`；`node tools/homestead-frontier-acceptance.mjs`；`node tools/homestead-frontier-strategies.mjs`。舊版兼容需保留git歷史，再跑`node tools/homestead-frontier-compat.mjs`。Playwright UI工具用Cloud已裝路徑與`/usr/bin/chromium`，不是玩家安裝要求；其他機器需自行配置允許的測試環境，不繞受阻下載。
+在solo-sect：`node --test test/*.test.mjs`；`node tools/homestead-frontier-acceptance.mjs`；`node tools/homestead-frontier-strategies.mjs`。舊版兼容需保留git歷史，再跑`node tools/homestead-frontier-compat.mjs --output ./FRONTIER-R12-COMPAT.json`（需git、tar及真556e40e歷史；ZIP不含git，不能冒稱已跑此項。臨時目錄使用系統TMPDIR，無Cloud固定路徑）。Playwright UI工具用Cloud已裝路徑與`/usr/bin/chromium`，不是玩家安裝要求；其他機器需自行配置允許的測試環境，不繞受阻下載。

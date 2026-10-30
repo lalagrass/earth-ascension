@@ -1,0 +1,7 @@
+{
+  "readerBase": "556e40ec5f6b18b663b6a383c60d90432b5d318c",
+  "oldA20RejectsFrontier5": true,
+  "oldA20StillReadsOwn4": true,
+  "newReadsOld4WithoutEnablingFrontier": true,
+  "sourceBytesUntouched": true
+}
