@@ -22,7 +22,7 @@ test('loop9 搭子派隊加分有上限', () => {
 });
 test('loop9 柵缺料 → 砍柴／採石意願提高', () => {
   const s = createState(3, sp({ peace: true })); s.res.wood = 50; if (!buildFence(s)) return assert.fail('buildFence');
-  s.res.wood = 0; s.res.stone = 0;
+  s.res.wood = 0; s.res.stone = 0; s.fence.hp = 10;
   const need = fenceNeeds(s); assert.ok(need.includes('wood')); assert.ok(need.includes('stone'));
   const out = [{ act: 'chop', score: 10 }, { act: 'quarry', score: 10 }, { act: 'train', score: 10 }];
   demandBoost(s, s.ds[0], out); assert.ok(out[0].score > 10 && out[1].score > 10); assert.equal(out[2].score, 10);
