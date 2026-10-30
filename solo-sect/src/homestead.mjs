@@ -1,5 +1,5 @@
 import {defaultHomeLook,validHomeLook} from './homestead-look.mjs';
-import {RECIPES,MEAL_STYLES,hasRecipe,recipeReason,recipeAccess,buildAccess,availableUnlocks,preparedCount,edibleEnergy,autoRecipe,chooseFood} from './homestead-content.mjs';
+import {RECIPES,MEAL_STYLES,hasRecipe,recipeReason,eatReason,recipeAccess,buildAccess,availableUnlocks,preparedCount,edibleEnergy,autoRecipe,chooseFood} from './homestead-content.mjs';
 import {at,feel,FEELINGS,restRate} from './homestead-living.mjs';
 import { freshSkills, workCost, gainWork, SKILLS } from './homestead-skills.mjs';
 // 荒居：獨立生活狀態。設施階段宣告可提供的活動，任務只讀此登錄表。
@@ -167,7 +167,7 @@ function canDo(s, act, recipeId='basic') {
   if (leaseOf(act) && s.leases[leaseOf(act)]) return false;
   if (act === 'forage') return s.wild.berries >= 1 && offers(s, 'berries', 'forage') && s.stock.berries + inbound(s, 'berries') < s.cap.berries;
   if (act === 'chop') return s.wild.wood >= 1 && offers(s, 'wood', 'chop') && s.stock.wood + inbound(s, 'wood') < s.cap.wood;
-  if (act === 'eat') return s.stock.berries + preparedCount(s) >= 1 && s.person.hunger < 95;
+  if (act === 'eat') return !eatReason(s);
   if (act === 'build') return !!nextProject(s);
   if (act === 'farm') return offers(s, 'garden', 'farm') && (s.plot.state === 'ripe' && s.stock.veg + inbound(s, 'veg') <= s.cap.veg - 2 || s.plot.state === 'empty' && s.stock.seeds > 0);
   if (act === 'herbFarm') {
@@ -222,10 +222,7 @@ export function blockReason(s, act, who = 'person') {
     if (!sites.length) return '還沒有藍圖';
     if (!canDo(s, 'build')) return sites.some((site) => site.reserved.wood) ? '材料正在搬往工地' : '缺建材，先砍柴';
   }
-  if (act === 'eat') {
-    if (!preparedCount(s) && !s.stock.berries) return '還沒有搬回可吃的食物';
-    if (p.hunger >= 95) return '目前已經吃飽';
-  }
+  if (act === 'eat') return eatReason(s,p);
   if (['chat','gift','care'].includes(act)) {
     if (!visitorHere(s)) return '阿蓮目前不在村路；白天會再來';
     if (act === 'chat' && s.visitor.lastChat === s.day) return '今天已經談過天';
@@ -320,7 +317,7 @@ function complete(s, t) {
       const before={hunger:p.hunger,energy:p.energy},id=t.foodId&&s.stock[RECIPES[t.foodId]?.output]>0?t.foodId:chooseFood(s),r=RECIPES[id];
       if(r){s.stock[r.output]--;p.hunger=clamp(p.hunger+r.hunger);p.energy=clamp(p.energy+r.energy);if(at(p,HOME))feel(s,r.feeling);note(s,id==='basic'?'吃了一份熱飯。':`吃下${r.name}一份，飽腹+${r.hunger}${r.energy?`、精力+${r.energy}`:''}。`);}
       else if(s.stock.berries){s.stock.berries--;p.hunger=clamp(p.hunger+26);note(s,'吃了野果。');}
-      if(t.manualEat){
+      if(t.manualEat||p.order==='eat'){
         const gained=p.hunger-before.hunger;
         if(gained>0)note(s,`這一餐：${r?r.name:'野果'}，飽腹 ${before.hunger.toFixed(1)}→${p.hunger.toFixed(1)}（實得${gained.toFixed(1)}），精力 ${before.energy.toFixed(1)}→${p.energy.toFixed(1)}。`);
         p.order=null;p.foodRequest=null;

@@ -1,0 +1,77 @@
+{
+  "engine": "154.0.8037.57",
+  "route": "normal solo UI no grants, pause/4x/16x; AI not human",
+  "events": [
+    {
+      "name": "no-ready-food",
+      "t": 0,
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 65,
+      "order": null,
+      "task": null,
+      "carry": null,
+      "reason": "還沒有搬回可吃的食物",
+      "receipt": "可在料理卡選一份現成菜；吃完會回到自主生活。"
+    },
+    {
+      "name": "ate-one",
+      "t": 43.75,
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 84.8750000000006,
+      "order": null,
+      "task": {
+        "act": "chop",
+        "phase": "go",
+        "place": "wood",
+        "timer": 0
+      },
+      "carry": null,
+      "reason": "選現成食物，吃這一份後回自主；可到料理卡指定菜。",
+      "receipt": "這一餐：野果，飽腹 58.9→84.9（實得26.0），精力 53.0→53.0。"
+    },
+    {
+      "name": "after-eighty-world-seconds",
+      "t": 124.75,
+      "stock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 73.5350000000017,
+      "order": null,
+      "task": {
+        "act": "rest",
+        "phase": "do",
+        "place": "hut",
+        "timer": 0
+      },
+      "carry": null,
+      "reason": "選現成食物，吃這一份後回自主；可到料理卡指定菜。",
+      "receipt": "這一餐：野果，飽腹 58.9→84.9（實得26.0），精力 53.0→53.0。"
+    }
+  ],
+  "errors": []
+}

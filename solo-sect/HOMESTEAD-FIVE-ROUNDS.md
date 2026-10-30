@@ -40,3 +40,17 @@ H46走查＋非作者核：`setOrder('eat')`不帶foodRequest，完成不走manu
 root基線正常UI t186.5有灶/0菜，全域cook enabled、現場disabled，按全域world不變，仍留舊藍圖訊息。修後正常UI t0無灶→186.75缺菜2（390px三入口均disabled）→311.25真菜柴入庫ready→313.5manual鍋進行→321.25真成3餐/再次缺菜；paused raw/Enter重複/pointer無額外資源/XP，無溢出/pageerror。新FIVE1-UI.json與shots/homestead-primary-*，混4×/16×/暫停不是1×體驗時間。
 
 作者477/477（25.42秒），純UI無core數值/schema變更，不為鏡像接線再造unit。非作者source、獨立390px fixture四態（缺料/可做/共用容量不足/legacy），核可見原因/ARIA/無預扣/無溢出/pageerror並關browser；另核作者正常UI收據與真圖，未見阻擋。477/完整UI不是非作者重跑，不是人類輔具驗證。
+
+### H47結果／第2輪完成
+
+作者新generic-eat4＋原meals8聚焦12/12，聚合481/481（25.38秒）。pinned fdae舊core＋觀察泛用eat完成時clear oracle，五seed各2萬拍，除了新增『這一餐』log外所有world欄位逐拍相同，途中原讀檔/dt也驗；不誤稱log/canonical完整bytes同。正常390px新局採3果真搬回，t43.75按泛用只耗1、餘2，飽腹84.875/order null；t124.75（再81世界秒）仍果2、飽腹73.535，沒有稍餓就重耗。FIVE2-UI.json及homestead-eat圖，無注入、無溢出/pageerror。非作者獨立12/12＋source/作者收據/圖核，保留H25取消指定與legacy持續、auto急餓不清其他工作意圖；481、正常UI和五seed pair未由其重跑，無阻擋。
+
+## 第3輪H48事前規格：操作完成後鍵盤不掉回頁首
+
+非作者與root正常零注入390px鍵盤重現：按新局開始後activeElement BODY，暫停後Enter立首屋藍圖，動態按鈕被移除又落BODY。原focus恢復只為household/inspect給fallback，主建造／recipe／act在消失或disabled時也有同類風險。baseline FOCUS-BASE-UI.json。這是既有controls連貫性，不新建panel、global快捷鍵或改render架構。
+
+範圍：新局/繼續成功後聚焦可見遊戲標題（tabindex=-1）；原建造列/食譜列給穩定programmatic group ID、tabindex=-1，不增加Tab站。按鈕消失/禁用時回同一列；main act禁用回原orders群組；household/inspect原fallback保留。有同名可用原控制仍回原控制，不能因Enter重複落在另一個會下指令的按鈕。只在真正焦點被替換時處理，不每次重繪搶focus。
+
+驗收：開始/立藍圖/完成升級/取消預覽／一鍋完缺料／一次eat/rest禁用，主focus非BODY且上下文可見，Enter在group不產生新命令，Tab接可用控制；1440/390和legacy建造，指標正常，paused世界不變、無trap/溢出/pageerror。原核心/數值/schema不改；適用聚合與非作者審查，語法/來源/hash只核受影響部分。
+
+來源：[W3C Focus Order](https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html)保留意義和操作順序、允許programmatic非互動內容但避免多餘tab站；[Playwright官方Actions](https://playwright.dev/docs/input)區分鍵盤/focus與programmatic click，本輪用真Enter/Tab驗，不把DOM focus等同真人輔具認證。外部作品設計沿AoE相關操作就近的原則，不新增RTS或複製引擎。

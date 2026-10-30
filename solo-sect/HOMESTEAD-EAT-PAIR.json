@@ -1,0 +1,51 @@
+{
+  "base": "fdae3dce1a831f10ac8eefeee6b7110fba8c46ad",
+  "scope": "five20000-tick semantic world pairs excluding only log: new generic meal receipts intentionally added; old oracle clears on observed generic eat completion; no runtime grants",
+  "results": [
+    {
+      "seed": 1,
+      "personality": "sociable",
+      "seconds": 5000,
+      "finished": 54,
+      "minH": 35.70000000000539,
+      "minE": 20.700000000000188,
+      "leisure": 363
+    },
+    {
+      "seed": 2,
+      "personality": "diligent",
+      "seconds": 5000,
+      "finished": 47,
+      "minH": 36.960000000005266,
+      "minE": 20.700000000000188,
+      "leisure": 384
+    },
+    {
+      "seed": 3,
+      "personality": "quiet",
+      "seconds": 5000,
+      "finished": 58,
+      "minH": 34.65000000000549,
+      "minE": 20.700000000000188,
+      "leisure": 344
+    },
+    {
+      "seed": 4,
+      "personality": "sociable",
+      "seconds": 5000,
+      "finished": 54,
+      "minH": 36.89000000000527,
+      "minE": 20.100000000000275,
+      "leisure": 366
+    },
+    {
+      "seed": 5,
+      "personality": "diligent",
+      "seconds": 5000,
+      "finished": 58,
+      "minH": 36.50500000000531,
+      "minE": 20.100000000000275,
+      "leisure": 349
+    }
+  ]
+}
