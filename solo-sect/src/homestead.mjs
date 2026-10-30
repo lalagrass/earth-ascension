@@ -259,7 +259,7 @@ function pick(s) {
   if (p.order === 'selfCare' && canDo(s, 'selfCare')) return 'selfCare';
   if (p.energy < 23) return 'rest';
   if (p.order && canDo(s, p.order,p.order==='cook'?p.cookRequest||'basic':undefined)) return p.order;
-  if(!p.order){const goalAction=advanceAutonomy(s,{start:id=>startBlueprint(s,id)});if(goalAction)return goalAction;}
+  if(!p.order){const goalAction=advanceAutonomy(s,{start:id=>startBlueprint(s,id),can:act=>canDo(s,act)});if(goalAction)return goalAction;}
   if (p.personality === 'sociable' && canDo(s, 'chat') && p.hunger > 50 && p.energy > 45) return 'chat';
   if (p.personality === 'sociable' && canDo(s, 'talkHelper') && p.hunger > 50 && p.energy > 45) return 'talkHelper';
   if (p.personality === 'diligent' && canDo(s, 'care') && p.energy > 40) return 'care';

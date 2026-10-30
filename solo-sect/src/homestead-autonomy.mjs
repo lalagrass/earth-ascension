@@ -1,3 +1,5 @@
+import {skillLevel} from './homestead-skills.mjs';
+import {buildAccess,BUILD_GATES} from './homestead-content.mjs';
 // Plans describe intentions. Only the existing executor changes world resources.
 export const GOALS={
  shelter:{name:'蓋第一間木屋',done:s=>s.fac.hut.stage>=1,step:()=> 'hut'},
@@ -19,15 +21,38 @@ export function advanceAutonomy(s,api){
  if(a.goal&&GOALS[a.goal].done(s)){if(!a.completed.includes(a.goal))a.completed.push(a.goal);a.goal=null;}
  if(!a.goal){a.goal=!s.fac.hut.stage?'shelter':a.warmMeals===0?'hotFood':goalCandidates(s)[0]?.id||null;a.since=s.t;}
  if(!a.goal)return;
- const id=GOALS[a.goal].step(s);
- if(id&&!s.fac[id].site&&!Object.values(s.fac).some(f=>f.site))api.start(id);
+ const id=goalStep(s);
+ if(id&&!s.fac[id].site&&!planBlock(s))api.start(id);
+ if(a.goal==='hotFood'&&s.fac.garden.stage&&s.plot.state==='empty'&&!s.stock.seeds&&api.can('forage'))return 'forage';
  if(a.goal==='comfort'&&!id&&!a.comfortRests)return 'rest';
 }
 const labels={hut:'修屋',garden:'開菜園',kitchen:'搭灶／改善灶具',bed:'製作床鋪',workbench:'搭木作台',store:'搭儲物棚',bench:'做屋前長凳',flowers:'整理庭院花叢'};
+// A missing skill is solved only by other still-useful, real construction.
+export function goalStep(s){
+ const goal=s.autonomy?.goal;if(!goal)return null;
+ const id=GOALS[goal].step(s);if(!id)return null;
+ const gate=BUILD_GATES[`${id}:${s.fac[id].stage+1}`]||BUILD_GATES[id];
+ if(gate&&skillLevel(s,'build')<gate.level){
+  const other=['store','bench','flowers','kitchen'].find(k=>k!==id&&s.fac[k].stage<(k==='kitchen'?2:1)&&!buildAccess(s,k,s.fac[k].stage+1));
+  if(other)return other;
+ }
+ return id;
+}
+export function planBlock(s){
+ const a=s.autonomy;if(!a?.goal)return null;
+ const id=goalStep(s);
+ const paused=Object.entries(s.fac).find(([,f])=>f.site?.paused);
+ if(paused)return `你已暫停${labels[paused[0]]||'工程'}，保留材料與工量，等待你恢復。`;
+ const other=Object.entries(s.fac).find(([k,f])=>f.site&&k!==id);
+ if(other)return `先完成既有${labels[other[0]]||'工程'}，不另開工地搶料。`;
+ if(id){const reason=buildAccess(s,id,s.fac[id].stage+1);if(reason)return reason;}
+ if(a.goal==='hotFood'&&s.fac.garden.stage&&s.plot.state==='empty'&&!s.stock.seeds)return s.stock.berries>=s.cap.berries?'缺菜種且野果倉滿；先按需求吃果騰位，再採果取種。':s.wild.berries<1?'缺菜種，等野果再生後採果取種。':'缺菜種，改採野果取一份種子，再回菜園。';
+ return null;
+}
 export function autonomyText(s){
  const a=s.autonomy;if(!a)return '';
  if(!a.goal)return s.fac.hut.stage?'目前照顧日常；已完成：'+(a.completed.map(id=>GOALS[id].name).join('、')||'住處'):'正在察看空地；下一步打算安家。';
- const g=GOALS[a.goal],id=g.step(s),v=id&&s.fac[id].site;
- const next=s.person.hunger<38?'先填飽肚子，再回原打算。':s.person.energy<23?'先歇息，再續作。':id?v?.paused?'工程由你暫停，等待你恢復。':v?`${labels[id]}：已交木${v.delivered.wood}/${v.need.wood}、搬運中${v.reserved.wood}；施工${v.work.toFixed(1)}/${v.workNeed}。`:`下一步${labels[id]}。`:a.goal==='comfort'?'床已做好，走到床前實際試睡。':s.plot.state==='growing'?'青菜正在生長，期間備柴與照顧自己。':s.stock.meal>0?'熱飯已好，餓時實際用餐。':'播種收菜、備柴，再做熱飯。';
- return `近期打算：${g.name}。${next}`;
+ const g=GOALS[a.goal],id=goalStep(s),v=id&&s.fac[id].site;
+ const next=s.person.hunger<38?'先填飽肚子，再回原打算。':s.person.energy<23?'先歇息，再續作。':planBlock(s)|| (id?v?.paused?'工程由你暫停，等待你恢復。':v?`${labels[id]}：已交木${v.delivered.wood}/${v.need.wood}、搬運中${v.reserved.wood}；施工${v.work.toFixed(1)}/${v.workNeed}。`:`下一步${labels[id]}。`:a.goal==='comfort'?'床已做好，走到床前實際試睡。':s.plot.state==='growing'?'青菜正在生長，期間備柴與照顧自己。':s.stock.meal>0?'熱飯已好，餓時實際用餐。':'播種收菜、備柴，再做熱飯。');
+ return `近期打算：${g.name}。${id&&id!==g.step(s)?"建造經驗不足，先做仍有用途的設施，靠真施工學會。":""}${next}`;
 }
