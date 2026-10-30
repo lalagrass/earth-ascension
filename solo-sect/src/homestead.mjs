@@ -317,7 +317,7 @@ function complete(s, t) {
   if(t.act==='eat'){
     if(s.mode==='solo'){
       const before={hunger:p.hunger,energy:p.energy},id=t.foodId&&s.stock[RECIPES[t.foodId]?.output]>0?t.foodId:chooseFood(s),r=RECIPES[id];
-      if(r){s.stock[r.output]--;p.hunger=clamp(p.hunger+r.hunger);p.energy=clamp(p.energy+r.energy);if(at(p,HOME))feel(s,r.feeling);note(s,id==='basic'?'吃了一份熱飯。':`吃下${r.name}一份，飽腹+${r.hunger}${r.energy?`、精力+${r.energy}`:''}。`);}
+      if(r){if(s.autonomy&&id==='basic')s.autonomy.warmMeals++;s.stock[r.output]--;p.hunger=clamp(p.hunger+r.hunger);p.energy=clamp(p.energy+r.energy);if(at(p,HOME))feel(s,r.feeling);note(s,id==='basic'?'吃了一份熱飯。':`吃下${r.name}一份，飽腹+${r.hunger}${r.energy?`、精力+${r.energy}`:''}。`);}
       else if(s.stock.berries){s.stock.berries--;p.hunger=clamp(p.hunger+26);note(s,'吃了野果。');}
       if(t.manualEat||p.order==='eat'){
         const gained=p.hunger-before.hunger;
@@ -476,6 +476,7 @@ export function loadHomestead(json) {
     const h2 = createHomestead();
     s.mode ??= 'legacy';
     s.autonomy ??= null;
+    if(s.autonomy&&s.autonomy.warmMeals===undefined)s.autonomy.warmMeals=0;
     if(!validAutonomy(s.autonomy,s.mode,s.t))return {ok:false,error:'自主生活目標不合法'};
     s.subtick ??=0;
     if(!Number.isFinite(s.subtick)||s.subtick<0||s.subtick>=.25)return {ok:false,error:'時間餘量不合法'};
