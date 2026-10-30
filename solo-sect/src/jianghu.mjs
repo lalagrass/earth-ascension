@@ -1,3 +1,4 @@
+import { seedMix } from './seedmix.mjs';
 // v1.3 江湖群像（ROADMAP §13.8–13.11）：楊過（黯然銷魂掌、神鵰、斷臂）、小龍女（玉女心經、玉蜂、雙劍合璧）、周伯通（賭贏才教左右互搏／空明拳）、
 // 東方不敗（反派，葵花＝斷情）、韋小寶（賭坊收益有上限）、海大富（1992 電影版：化骨綿掌與喜劇卡）、張無忌／韋小寶／阿星模板主線、
 // 《功夫》：包租公婆（獅子吼＋太極，夫妻連攜）、具名雜工裡的隱藏高手（每圖最多 3 人，揭露即大成、不再進步）、火雲邪神（反派，蛤蟆功）、
@@ -14,7 +15,7 @@ const find = (s, x) => s.ds.find((d) => xidOf(s, d) === x);
 const heroD = (s) => s.ds.find((d) => d.id === 'hero');
 const isHero = (s, id) => s.hero?.kind === 'template' && s.hero.id === id;
 const fu = (s) => s.hero?.stats?.fu ?? 3;
-const R = (s, H) => { if (H?.rand) return H.rand(s); const J = s.jh; J.rng = ((J.rng || ((s.seed || 1) * 977 + 13) % 2147483647) * 16807) % 2147483647; return J.rng / 2147483647; };
+const R = (s, H) => { if (H?.rand) return H.rand(s); const J = s.jh; J.rng = ((J.rng || seedMix(s.seed || 1, 977)) * 16807) % 2147483647; return J.rng / 2147483647; };
 const fighters = (s) => s.ds.filter((d) => d.role !== 'laborer' && !d.away);
 export const teachJ = (s, d, id, xp) => { learnArt(d, id, s.t); const r = d.arts[id]; r.xp = Math.max(r.xp, xp); if (r.xp >= 55) r.bt1 = true; if (r.xp >= 100) r.bt2 = true; learnArt(d, id, s.t); };
 const DA = TIERS[2][0] + 1; // 大成

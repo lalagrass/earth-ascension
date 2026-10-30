@@ -1,3 +1,4 @@
+import { seedMix } from './seedmix.mjs';
 // loop19 遠征剿寨：山賊來過幾次後，執事查出山寨所在；有閒人、糧夠時自主組隊出山剿寨。
 // 剿成→山賊很久不來（下次來犯延後 peaceDays）；剿敗→一人重傷、空手而回。只在 s.m9 生效（golden 不變）。
 import { DAY } from './data.mjs';
@@ -6,7 +7,7 @@ import { T, points, RAID } from './threat.mjs';
 import { log, resAdd } from './util.mjs';
 import { mates } from './clique.mjs';
 export const LAIR = { after: 3, team: 2, supply: 2, dur: DAY / 2, k: 1.0, peaceDays: 10, minHp: 60, winHurt: 0.3, cool: 5 };
-const R = (s) => { const L = s.lair; L.rng = ((L.rng || ((s.seed || 1) * 4219 + 7) % 2147483647) * 16807) % 2147483647; return L.rng / 2147483647; };
+const R = (s) => { const L = s.lair; L.rng = ((L.rng || seedMix(s.seed || 1, 4219)) * 16807) % 2147483647; return L.rng / 2147483647; };
 const okD = (s, d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > LAIR.minHp && !d.order && !s.hunt?.team?.includes(d.id);
 const sumPow = (s, team) => power({ ...s, ds: team });
 // loop29（選用 s.lairpow）：寨子點數＝門派最強 top 人戰力×k，不再隨財富漲；預估 隊伍≈top3 的 2/3 → p≈.6

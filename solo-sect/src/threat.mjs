@@ -1,3 +1,4 @@
+import { seedMix } from './seedmix.mjs';
 // v1.9 I-6 財富襲擊＋山賊勒索（ROADMAP-NEXT I-6；RimWorld 財富點數、Going Medieval 人數寬限、Songs of Syx／Kenshi 勒索可付錢）
 // 威脅點數＝財富（錢＋存糧＋丹藥＋藥＋建築階數）÷div × 天數係數，封頂；全派（含雜工）<8 人時為 0（不來）。
 // 山賊上門先勒索：付錢了事，或迎戰（勝率＝守方戰力／(戰力＋點數)）。只會重傷（氣血壓到 15），不會死人。
@@ -15,7 +16,7 @@ export const RAID = { minPop: 8, minPopRules: 4, // loop12：開了「太平與�
   logAfter: 30, logK: 0.2, hurtCool: 2, // v2.1：第 30 日後天數係數改對數；山門重傷後下次上門再晚 hurtCool 日
   demand: { base: 20, k: 0.6, coinMax: 0.35, min: 10 }, wait: DAY / 2, hurtCost: 80, hurtHp: 15, winHurt: 0.4, steal: { coin: 0.15, food: 0.2 }, rep: 3 };
 export function T(s) { return (s.threat ??= { next: RAID.first, n: 0, paid: 0, fought: 0, won: 0, homeHurt: 0, deaths: 0, pending: null, rng: 0, hist: [] }); }
-const R = (s) => { const X = T(s); X.rng = ((X.rng || ((s.seed || 1) * 7477 + 29) % 2147483647) * 16807) % 2147483647; return X.rng / 2147483647; };
+const R = (s) => { const X = T(s); X.rng = ((X.rng || seedMix(s.seed || 1, 7477)) * 16807) % 2147483647; return X.rng / 2147483647; };
 export const headcount = (s) => s.ds.filter((d) => !d.removed).length;
 export function wealth(s) { const W = RAID.w, r = s.res; return Math.max(0, r.coin || 0) * W.coin + (r.food || 0) * W.food + (r.pill || 0) * W.pill + (r.herb || 0) * W.herb + FACILITIES.reduce((a, f) => a + (s.fac[f.id]?.stage || 0), 0) * W.stage; }
 const linMul = (day) => Math.min(RAID.dayMax, 0.5 + day / RAID.dayK);
@@ -52,7 +53,8 @@ function waveStep(s) { const X = T(s), W = X.wave; if (!W || s.t < W.at || X.pen
   X.pending = { n: W.n, pts: W.pts, demand: 0, p: +p.toFixed(2), at: s.t, until: s.t + RAID.wait / 4, day: W.day, kind: W.kind, noPay: true, wave: 2 }; log(s, `【第二波】${kindOf(W.kind).name}重整殺回（威脅 ${W.pts}），不談價錢！迎戰勝算約 ${Math.round(p * 100)}%。`); }
 export function threatStep(s, H) { waveStep(s); const P = T(s).pending; if (P && s.t >= P.until) raidResolve(s, raidAuto(s), H, true); }
 function hurtOne(s, H) {
-  const c = s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > RAID.hurtHp); // 孩子不上陣 if (!c.length) return null;
+  const c = s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > RAID.hurtHp); // 孩子不上陣
+  if (!c.length) return null; // loop32：守門原本被併進註解，無人可傷時會當掉
   const d = c[Math.floor(R(s) * c.length)]; d.hp = Math.min(d.hp, RAID.hurtHp); d.raidHurt = (d.raidHurt || 0) + 1; const X = T(s); X.homeHurt++; X.next = (X.next || s.day || 0) + RAID.hurtCool; H?.think?.(s, d, 'raidHurt'); return d;
 }
 // i：0 付錢、1 迎戰；付不起就只能迎戰

@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startBuild, canRecruit, recruit, startExpedition } from '../src/sim.mjs';
-import { DAY, FACILITIES } from '../src/data.mjs';
+import { DAY, FACILITIES, ACTIVITIES } from '../src/data.mjs';
 import { canExpedition } from '../src/expedition.mjs';
 
 // 3 seeds × 7 開局 × 40 日 稽核得出的全部管道（artifacts/v178/BALANCE-v178.md 有對照帳本缺口）
@@ -25,6 +25,6 @@ for (const [seed, op] of [[3, null], [7, 'weixiaobao'], [11, 'yuebuqun']]) test(
 test('閉關不見客：冥想中的人不會被拉去聊天／切磋／傳功（v1.78 岳不群修正）', () => {
   const s = createState(11, { kind: 'template', id: 'yuebuqun', askMajor: false }); let pulled = 0, med = 0;
   for (let i = 0; s.t < 12 * DAY; i++) { const before = new Map(s.ds.map((d) => [d.id, d.task])); tick(s);
-    for (const d of s.ds) { const t0 = before.get(d.id); if (t0?.act !== 'meditate') continue; med++; if (d.task !== t0 && d.task?.partner && ['chat', 'spar', 'pass', 'encourage'].includes(d.task.act) && !d.task.lead) pulled++; } }
+    for (const d of s.ds) { const t0 = before.get(d.id); if (t0?.act !== 'meditate') continue; if (t0.timer >= ACTIVITIES.meditate.dur) continue; /* loop32：同 tick 打坐已做完再被邀，不算拉走 */ med++; if (d.task !== t0 && d.task?.partner && ['chat', 'spar', 'pass', 'encourage'].includes(d.task.act) && !d.task.lead) pulled++; } }
   assert.ok(med > 100, `med=${med}`); assert.equal(pulled, 0);
 });

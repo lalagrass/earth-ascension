@@ -1,3 +1,4 @@
+import { seedMix } from './seedmix.mjs';
 // loop23 江湖事件（選用，s.jhev）：過路高人指點、挑戰帖。獨立亂數流，不擾動主亂數；golden 不變。
 import { power } from './jianghu.mjs';
 import { autoFocus, artById, curCap, learnArt, reqMissing, fits } from './arts.mjs';
@@ -5,7 +6,7 @@ import { ARTS, MOVES } from './data.mjs';
 import { resAdd } from './util.mjs';
 import { log } from './util.mjs';
 export const JHEV = { master: { p: 0.12, after: 4, cool: 6, xp: 8, mood: 5, teach: 0.3 }, letter: { p: 0.08, after: 8, cool: 9, base: 75, grow: 30, win: { rep: 6, mood: 6, coin: 10, xp: 5 }, lose: { rep: 2, mood: 8 } } };
-const R = (s) => { const E = s.jhev; E.rng = ((E.rng || ((s.seed || 1) * 7919 + 11) % 2147483647) * 16807) % 2147483647; return E.rng / 2147483647; };
+const R = (s) => { const E = s.jhev; E.rng = ((E.rng || seedMix(s.seed || 1, 7919)) * 16807) % 2147483647; return E.rng / 2147483647; };
 const here = (s) => s.ds.filter((d) => !d.away && d.role !== 'laborer' && d.hp > 30);
 const md = (d, v) => { d.mood = Math.max(0, Math.min(100, d.mood + v)); };
 export const letterP = (s, day) => { const pow = power(s), pts = JHEV.letter.base * (1 + day / JHEV.letter.grow); return Math.max(0.15, Math.min(0.85, pow / (pow + pts))); };
