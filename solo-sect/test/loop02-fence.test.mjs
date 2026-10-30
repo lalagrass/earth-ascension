@@ -28,8 +28,8 @@ test('築柵：木頭不夠被擋；夠就扣 6 木、滿耐久；不能重築',
 test('野豬下山：有柵先撞柵、菜不被拱；沒柵照舊拱菜', () => {
   const mk = (fence) => { const s = createState(2); s.res.wood = 20; if (fence) buildFence(s); s.plots.forEach((p) => { p.st = 'ripe'; }); s.raidT = 1e6; return s; };
   const a = mk(true); let n = 0; while (!a.fence.hits && n++ < 4000) tick(a, 0.25);
-  assert.ok(a.fence.hits >= 1, '野豬應該撞到柵'); assert.equal(a.fence.hp, FENCE.max - FENCE.boarDmg);
-  assert.match(logs(a), /撞上菜園木柵/); assert.doesNotMatch(logs(a), /拱壞/);
+  assert.ok(a.fence.hits >= 1, '野豬應該撞到柵'); assert.equal(a.fence.hp, FENCE.max - FENCE.boarDmg * FENCE.boarRams); // loop4：連撞 3 下
+  assert.doesNotMatch(logs(a), /拱壞/);
   const b = mk(false); n = 0; while (!/拱壞|沒找到吃的/.test(logs(b)) && n++ < 4000) tick(b, 0.25);
   assert.match(logs(b), /拱壞/);
 });

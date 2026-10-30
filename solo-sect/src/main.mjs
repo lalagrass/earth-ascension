@@ -463,10 +463,11 @@ document.addEventListener('click', (e) => { const m = e.target.closest('[data-mk
 // v1.9 I-2 擴地、I-6 山賊勒索、A9 因才派巡
 import { buildWhy, lotsUsed, lotsOf, lotCost, lotWhy, buyLot, resolveRaid } from './sim.mjs';
 import { threatHtml } from './threat.mjs';
-import { buildFence } from './fence.mjs';
+import { buildFence, upgradeFence } from './fence.mjs';
 import { suggestTeam } from './expedition.mjs';
 document.addEventListener('click', (e) => {
   if (!S) return; const l = e.target.closest('[data-lot]'); if (l) { const r = buyLot(S); toast(r.ok ? `擴地花了 ${r.c}` : r.why, !r.ok); panel(); return; }
+  const fu = e.target.closest('[data-fence-up]'); if (fu) { const r = upgradeFence(S); toast(r.ok ? '加砌完成' : r.why, !r.ok); panel(); return; }
   const fb = e.target.closest('[data-fence]'); if (fb) { const r = buildFence(S); toast(r.ok ? '築好木柵' : r.why, !r.ok); panel(); return; }
   const rb = e.target.closest('[data-raid]'); if (rb) { const r = resolveRaid(S, +rb.dataset.raid); toast(!r.ok ? r.why : r.paid ? `付了 ${r.paid}` : r.win ? '打退山賊' : '敗了', !r.ok || r.win === false); panel(); return; }
   if (e.target.id === 'exp-suggest') { const g = suggestTeam(S, 2); window.__exTeam = new Set(g.ids); window.__exWhy = g.why; panel(); }

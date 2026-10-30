@@ -6,7 +6,7 @@ import { DAY, FACILITIES } from './data.mjs';
 import { log, resAdd } from './util.mjs';
 import { power } from './jianghu.mjs';
 import { fenceUp, fenceHit, fenceHtml, FENCE } from './fence.mjs';
-import { BAND, newBand, bandWalk, defenderDps } from './band.mjs';
+import { BAND, newBand, bandWalk, defenderDps, canDefend } from './band.mjs';
 
 export const RAID = { minPop: 8, first: 8, every: 6, jitter: 2, w: { coin: 1, food: 1, pill: 8, herb: 1, stage: 25 }, div: 2, dayK: 30, dayMax: 2, cap: 900,
   logAfter: 30, logK: 0.2, hurtCool: 2, // v2.1：第 30 日後天數係數改對數；山門重傷後下次上門再晚 hurtCool 日
@@ -24,7 +24,10 @@ export const winP = (s, pts) => { const d = defense(s); return Math.max(0.1, Mat
 export const demandOf = (s, pts) => Math.max(RAID.demand.min, Math.round(Math.min(Math.max(0, s.res.coin) * RAID.demand.coinMax, RAID.demand.base + pts * RAID.demand.k)));
 // 自動決定：比較「勒索金」與「迎戰的預期損失」＝(1−勝率)×(被搶的錢＋糧＋一人重傷折 hurtCost)；勒索金較小且付得起才付
 export const fightLoss = (s, p) => (1 - p) * (Math.max(0, s.res.coin) * RAID.steal.coin + (s.res.food || 0) * RAID.steal.food + RAID.hurtCost);
-export const raidAuto = (s) => { const P = T(s).pending; return P && s.res.coin >= P.demand && P.demand < fightLoss(s, P.p) ? 0 : 1; };
+// loop4：有柵時執事先估「守方打光山賊」是否快過「山賊撞破柵」，快就迎戰；否則照舊比較
+export function fenceHolds(s, pts) { if (!fenceUp(s)) return false; const dps = s.ds.filter(canDefend).reduce((a, d) => a + defenderDps(d), 0); if (dps <= 0) return false;
+  const fd = Math.max(BAND.fenceDmg.min, Math.round(pts * BAND.fenceDmg.k)) / BAND.hitEvery; return pts / dps < s.fence.hp / fd; }
+export const raidAuto = (s) => { const P = T(s).pending; if (P && fenceHolds(s, P.pts)) return 1; return P && s.res.coin >= P.demand && P.demand < fightLoss(s, P.p) ? 0 : 1; };
 // 每日一次（sim 換日時呼叫）：到期就看點數，>0 才上門
 export function threatDaily(s) {
   const X = T(s); if (X.pending || (s.day || 0) < X.next) return null;
