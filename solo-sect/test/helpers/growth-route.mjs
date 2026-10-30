@@ -1,4 +1,4 @@
-import{createHomestead,startBlueprint,requestFood,requestRecipe,setOrder,tickHomestead,saveHomestead,loadHomestead,DAY}from'../../src/homestead.mjs';
+import{createHomestead,setMealStyle,setProjectFocus,pauseProject,startBlueprint,requestFood,requestRecipe,setOrder,tickHomestead,saveHomestead,loadHomestead,DAY}from'../../src/homestead.mjs';
 import{recipeReason}from'../../src/homestead-content.mjs';
 // No state/XP grants. Acts only through the same command functions used by UI.
 export function growthRoute(personality='quiet',{reload=true,chooseMeals=false}={}){
@@ -31,4 +31,4 @@ export function growthRoute(personality='quiet',{reload=true,chooseMeals=false}=
  }
  throw Error(`growth route exceeded30days ${personality}/${phase}`);
 }
-export function replayGrowth(route,dt){const s=createHomestead({mode:'solo',personality:route.personality});let index=0;while(s.t+(s.subtick||0)<route.seconds-1e-9){while(index<route.commands.length&&Math.abs(route.commands[index].t-s.t-(s.subtick||0))<1e-8){const c=route.commands[index++];if(c.type==='build')startBlueprint(s,c.id);else if(c.type==='recipe')requestRecipe(s,c.id);else if(c.type==='food')requestFood(s,c.id);else setOrder(s,c.id);}const boundary=Math.min(route.seconds,route.commands[index]?.t??Infinity),left=boundary-s.t-(s.subtick||0);tickHomestead(s,Math.min(dt,left));}return s;}
+export function replayGrowth(route,dt){const s=createHomestead({mode:'solo',personality:route.personality});let index=0;while(s.t+(s.subtick||0)<route.seconds-1e-9){while(index<route.commands.length&&Math.abs(route.commands[index].t-s.t-(s.subtick||0))<1e-8){const c=route.commands[index++];if(c.type==='build')startBlueprint(s,c.id);else if(c.type==='recipe')requestRecipe(s,c.id);else if(c.type==='food')requestFood(s,c.id);else if(c.type==='style')setMealStyle(s,c.id);else if(c.type==='focus')setProjectFocus(s,c.id);else if(c.type==='pause')pauseProject(s,c.id,c.paused);else setOrder(s,c.id);}const boundary=Math.min(route.seconds,route.commands[index]?.t??Infinity),left=boundary-s.t-(s.subtick||0);tickHomestead(s,Math.min(dt,left));}return s;}

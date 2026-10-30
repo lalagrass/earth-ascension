@@ -13,14 +13,26 @@ export function recipeAccess(s,id){if(!hasRecipe(id))return '未知食譜';const
 export function recipeReason(s,id){const r=RECIPES[id],locked=recipeAccess(s,id);if(locked)return locked;for(const[k,n]of Object.entries(r.ingredients))if(s.stock[k]<n)return `缺${RESOURCE_NAMES[k]}${n-s.stock[k]}`;if(preparedCount(s)+r.servings>s.cap.meal)return `料理共用容量不足，需${r.servings}份空位`;return null;}
 export function buildAccess(s,id,next){const g=BUILD_GATES[`${id}:${next}`]||BUILD_GATES[id];if(!g)return null;if(s.mode!=='solo')return '新木作只在獨居模式';if(skillLevel(s,'build')<g.level)return `建造需要Lv${g.level}`;for(const[f,n]of Object.entries(g.fac))if((s.fac[f]?.stage||0)<n)return `需要${{hut:'木屋',bed:'木床鋪',workbench:'木作台'}[f]}`;return null;}
 export function availableUnlocks(s){if(s.mode!=='solo')return [];return [...Object.keys(RECIPES).filter(id=>id!=='basic'&&!recipeAccess(s,id)).map(id=>`食譜：${RECIPES[id].name}`),...Object.entries({workbench:1,kitchen:2,bed:2}).filter(([id,n])=>!buildAccess(s,id,n)).map(([id])=>({workbench:'木作台',kitchen:'改良灶具',bed:'舒適床鋪'}[id]))];}
-export function autoRecipe(s){
+export const MEAL_STYLES={auto:'自主取捨',basic:'平日熱飯',salad:'省柴拌食',stew:'吃好燉菜'};
+const activeProject=s=>Object.values(s.fac).some(f=>f.site&&!f.site.paused);
+function defaultRecipe(s,allowStew=true){
  if(s.mode!=='solo')return recipeReason(s,'basic')?null:'basic';
- const building=Object.values(s.fac).some(f=>f.site&&!f.site.paused);
- if(!building&&s.person.energy<50&&!recipeReason(s,'stew'))return 'stew';
+ if(allowStew&&!activeProject(s)&&s.person.energy<50&&!recipeReason(s,'stew'))return 'stew';
  if(!recipeReason(s,'basic'))return 'basic';
  if(!s.stock.wood&&!recipeReason(s,'salad'))return 'salad';
  return null;
 }
+export function mealDecision(s){
+ const pref=s.mode==='solo'?(s.mealStyle||'auto'):'auto';
+ if(pref==='auto')return {recipe:defaultRecipe(s),reason:'依目前食材、柴與需求取捨。'};
+ let reason=recipeReason(s,pref);
+ if(!reason&&pref==='stew'&&activeProject(s))reason='有工程待建，先讓柴給工程';
+ if(!reason&&pref==='stew'&&s.stock.wood<RECIPES.stew.ingredients.wood+1)reason='先留一份日常柴，這次不慢燉';
+ if(!reason)return {recipe:pref,reason:`偏好${RECIPES[pref].name}，現在條件足夠。`};
+ const fallback=defaultRecipe(s,false);
+ return {recipe:fallback,reason:`偏好${RECIPES[pref].name}暫候：${reason}；${fallback?`可改做${RECIPES[fallback].name}`:'暫不做菜，先補材料或使用現成食物'}。`};
+}
+export const autoRecipe=s=>mealDecision(s).recipe;
 export function chooseFood(s){if(s.stock.stew>0&&(s.person.energy<60||s.person.hunger<30))return 'stew';if(s.stock.salad>0&&s.person.energy>=60&&s.person.hunger>=30)return 'salad';if(s.stock.meal>0)return 'basic';if(s.stock.salad>0)return 'salad';if(s.stock.stew>0)return 'stew';return null;}
 
 export function nextUnlocks(s,skill){const level=skillLevel(s,skill)+1;if(level>2)return '已學會本輪所有等級做法；不必繼續刷工作。';if(skill==='cook')return `下級新做法：${Object.values(RECIPES).filter(r=>r.skill===level).map(r=>`${r.name}（需${r.facility===2?'改良灶具':'露天灶'}）`).join('、')}。`;if(skill==='build')return `下級新做法：${Object.entries(BUILD_GATES).filter(([,g])=>g.level===level).map(([id])=>({workbench:'木作台','kitchen:2':'改良灶具','bed:2':'舒適床鋪（需木床與木作台）'}[id])).join('、')}。`;return '下級讓有效工作更省體力；沒有額外配方樹。';}

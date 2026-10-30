@@ -1,7 +1,7 @@
 import {RECIPES,edibleEnergy,preparedCount} from './homestead-content.mjs';
 import {restRate} from './homestead-living.mjs';
 // 純顯示：只讀現有狀態，不推進世界、不替人物作決定。
-import { ACTIONS, FACILITIES, DAY, blockReason } from './homestead.mjs';
+import { ACTIONS, FACILITIES, DAY, nextProject, blockReason } from './homestead.mjs';
 export const materialName = {wood:'木料', berries:'野果', veg:'青菜', herbs:'草藥'};
 export function activityText(s, p = s.person) {
   const t = p?.task;
@@ -75,7 +75,7 @@ export function nextStep(s) {
   const sites=allSites.filter(id=>!s.fac[id].site.paused);
   if(allSites.length&&!sites.length)return '工程已暫停，已投入材料與施工進度保留；按繼續才會復工。也可以先吃飯休息。';
   const active=s.person.task?.act==='build' ? s.person.task.place : null;
-  const pending=(active && s.fac[active]?.site ? active : null) || sites.find(id=>s.fac[id].site.delivered.wood>=s.fac[id].site.need.wood) || sites[0];
+  const pending=(active && s.fac[active]?.site ? active : null) || nextProject(s) || (sites.includes(s.focusProject)?s.focusProject:null) || sites[0];
   if(pending) {const b=buildingInfo(s,pending), all=projectMaterials(s);return `目前工程：${FACILITIES[pending].stages[s.fac[pending].stage+1].name}。${b.shortage ? `此項還缺${b.shortage}木，可砍柴補足。` : '自主生活會接著搬料施工；也可指派建造。'}${all.count>1 ? ` 共${all.count}項工程共用庫存；待運${all.needed}木，現存${s.stock.wood}木，合計尚缺${all.shortage}木。` : ''}`;}
   if(!s.fac.hut.stage)return '第一個家：在下方立「簡陋木屋」藍圖；需5木，會逐根搬料。';
   if(!s.fac.garden.stage || !s.fac.kitchen.stage)return '有屋可睡了。可選菜園與露天灶，慢慢把野果生活變成熱飯生活。';
@@ -89,3 +89,6 @@ export function resourceSummary(s) {
  const sites=Object.values(s.fac).filter(f=>f.site);
  return {available:{...s.stock},delivered:sites.reduce((n,f)=>n+f.site.delivered.wood,0),reserved:sites.reduce((n,f)=>n+f.site.reserved.wood,0),incoming:[s.person,s.helper].filter(p=>p?.carry?.origin==='wild').map(p=>({...p.carry})),...projectMaterials(s)};
 }
+
+export function homeBenefits(s){return `居住：${s.fac.bed?.stage?FACILITIES.bed.stages[s.fac.bed.stage].name:FACILITIES.hut.stages[s.fac.hut.stage].name}，到休息處每秒恢復${restRate(s,{pos:[440,225]})}精力。料理：${FACILITIES.kitchen.stages[s.fac.kitchen.stage].name}。閒暇：${s.fac.bench.stage?'可在長凳小憩'+(s.fac.flowers.stage?'看花':''):'在屋前閒坐'}。`;}
+export function projectFocusText(s){const id=s.focusProject,f=id&&s.fac[id];if(!f?.site)return '未選優先工地；按原順序做可行工程。可在原建造卡選這項先做，不必暫停其他藍圖。';const b=buildingInfo(s,id),v=f.site,name=FACILITIES[id].stages[f.stage+1].name;return `先改善「${name}」：${b.next}。木料已交${v.delivered.wood}/${v.need.wood}，在途${v.reserved.wood}，待運${b.missing}，庫存尚缺${b.shortage}；施工${Number(v.work.toFixed(1))}/${v.workNeed}。當前工序先完成；下次優先此項，缺料可做其他可行事。`;}
