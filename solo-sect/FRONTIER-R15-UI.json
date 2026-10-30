@@ -1,0 +1,265 @@
+{
+  "normalUI": true,
+  "noWorldInjection": true,
+  "events": [
+    {
+      "kind": "warning",
+      "t": 720
+    },
+    {
+      "kind": "source while disabled",
+      "t": 837.5
+    },
+    {
+      "kind": "clear",
+      "t": 853.5
+    },
+    {
+      "kind": "home",
+      "t": 860.5
+    }
+  ],
+  "final": {
+    "kind": "homestead",
+    "version": 4,
+    "mode": "solo",
+    "mealStyle": "auto",
+    "focusProject": null,
+    "look": {
+      "style": "natural",
+      "name": ""
+    },
+    "t": 0,
+    "subtick": 0,
+    "day": 1,
+    "speed": 1,
+    "person": {
+      "name": "無名",
+      "personality": "quiet",
+      "pos": [
+        445,
+        345
+      ],
+      "hunger": 65,
+      "energy": 68,
+      "herbalSkill": 0,
+      "careDay": 0,
+      "skills": {
+        "gather": 0,
+        "build": 0,
+        "farm": 0,
+        "cook": 0
+      },
+      "feelings": {},
+      "cookRequest": null,
+      "foodRequest": null,
+      "task": null,
+      "order": null,
+      "carry": null,
+      "work": 0,
+      "leisure": 0,
+      "orderScope": "once",
+      "onceProject": null,
+      "onceDelivery": false,
+      "leisureRequest": null
+    },
+    "stock": {
+      "berries": 0,
+      "wood": 0,
+      "seeds": 2,
+      "veg": 0,
+      "meal": 0,
+      "salad": 0,
+      "stew": 0,
+      "herbs": 0
+    },
+    "cap": {
+      "berries": 8,
+      "wood": 8,
+      "seeds": 5,
+      "veg": 8,
+      "meal": 8,
+      "herbs": 6
+    },
+    "wild": {
+      "berries": 4,
+      "wood": 4,
+      "herbs": 3
+    },
+    "fac": {
+      "fence": {
+        "stage": 0,
+        "site": null
+      },
+      "hut": {
+        "stage": 0,
+        "site": null
+      },
+      "garden": {
+        "stage": 0,
+        "site": null
+      },
+      "herbGarden": {
+        "stage": 0,
+        "site": null
+      },
+      "workbench": {
+        "stage": 0,
+        "site": null
+      },
+      "bed": {
+        "stage": 0,
+        "site": null
+      },
+      "bench": {
+        "stage": 0,
+        "site": null
+      },
+      "flowers": {
+        "stage": 0,
+        "site": null
+      },
+      "kitchen": {
+        "stage": 0,
+        "site": null
+      },
+      "store": {
+        "stage": 0,
+        "site": null
+      },
+      "berries": {
+        "stage": 0
+      },
+      "wood": {
+        "stage": 0
+      },
+      "herbs": {
+        "stage": 0
+      }
+    },
+    "plot": {
+      "state": "empty",
+      "growth": 0
+    },
+    "herbPlot": {
+      "state": "empty",
+      "growth": 0
+    },
+    "visitor": {
+      "name": "阿蓮",
+      "role": "visitor",
+      "trust": 0,
+      "lastChat": 0,
+      "lastGift": 0,
+      "cared": false,
+      "willing": false,
+      "inviteDay": 0,
+      "inviteTime": 0,
+      "apprenticeDay": 0,
+      "injury": false,
+      "hunger": 68,
+      "energy": 72,
+      "herbalSkill": 0,
+      "careDay": 0
+    },
+    "helper": null,
+    "leases": {
+      "wood": null,
+      "garden": null,
+      "herbGarden": null
+    },
+    "autonomy": {
+      "version": 1,
+      "goal": null,
+      "since": 0,
+      "waiting": null,
+      "replanAt": 0,
+      "completed": [],
+      "warmMeals": 0,
+      "comfortRests": 0,
+      "herbHarvests": 0,
+      "careUses": 0,
+      "lookOwnership": "unclaimed",
+      "recess": false,
+      "breaks": 0,
+      "direction": "auto",
+      "deferred": [],
+      "limit": 2,
+      "interestLimit": 2,
+      "journal": [],
+      "tastes": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "useResults": {
+        "meals": {
+          "basic": {
+            "n": 0,
+            "hunger": 0,
+            "energy": 0
+          },
+          "salad": {
+            "n": 0,
+            "hunger": 0,
+            "energy": 0
+          },
+          "stew": {
+            "n": 0,
+            "hunger": 0,
+            "energy": 0
+          }
+        },
+        "leisure": {
+          "clouds": {
+            "n": 0,
+            "energy": 0,
+            "comfort": 0
+          },
+          "bench": {
+            "n": 0,
+            "energy": 0,
+            "comfort": 0
+          },
+          "flowers": {
+            "n": 0,
+            "energy": 0,
+            "comfort": 0
+          },
+          "garden": {
+            "n": 0,
+            "energy": 0,
+            "comfort": 0
+          }
+        },
+        "lastMeal": null
+      },
+      "leisure": {
+        "counts": {
+          "clouds": 0,
+          "bench": 0,
+          "flowers": 0,
+          "garden": 0
+        },
+        "last": null,
+        "at": 0
+      },
+      "experience": {
+        "hunger": 0,
+        "fatigue": 0,
+        "effort": 0,
+        "lastWork": 0
+      }
+    },
+    "unlocked": [],
+    "log": [
+      {
+        "day": 1,
+        "msg": "無名來到荒地。先找吃的，再搭一間能安睡的木屋。"
+      }
+    ]
+  },
+  "errors": [],
+  "disabledKeeps16": true,
+  "pausedStable": true
+}
