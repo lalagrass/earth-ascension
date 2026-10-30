@@ -159,8 +159,8 @@ export function workSpot(state, site) {
     targets = [[c.x, c.y - 1], [c.x, c.y + 1], [c.x - 1, c.y - 1], [c.x + 1, c.y - 1]];
   } else if (site.kind === 'farm' || site.kind === 'yard') {
     targets = site.cells.flatMap((c) => [[c.x, c.y + 1], [c.x, c.y - 1]]);
-  } else if (site.kind === 'posts') {
-    targets = blueprint(site.bp).posts.flatMap(([x, y]) => [[x, y - 1], [x - 1, y], [x + 1, y]]);
+  } else if (site.kind === 'posts' || site.kind === 'lodge') {
+    targets = (blueprint(site.bp).posts ?? blueprint(site.bp).spots).flatMap(([x, y]) => [[x, y - 1], [x - 1, y], [x + 1, y]]);
   } else if (site.kind === 'hut' || site.kind === 'beds') {
     const b = blueprint(site.kind === 'beds' ? blueprint(site.bp).of : site.bp);
     targets = [[b.door[0], b.door[1] + 1], [b.door[0] - 1, b.door[1] + 1], [b.door[0] + 1, b.door[1] + 1]];
@@ -231,6 +231,10 @@ function completeSite(state, site) {
   if (bp.kind === 'upgrade') state.objects.find((o) => o.kind === bp.target).level = 1;
   if (bp.kind === 'posts') for (const [x, y] of bp.posts) {
     state.objects.push({ id: `o${state.objects.length}`, kind: 'post', label: '哨位', slots: [[x, y]], users: [null] });
+  }
+  if (bp.kind === 'lodge') {
+    for (const [x, y] of bp.spots) state.objects.push({ id: `o${state.objects.length}`, kind: 'lodge', label: '獵戶小屋', slots: [[x, y]], users: [null] });
+    state.deer = [];
   }
   if (bp.kind === 'yard') for (const [x, y] of bp.dummies) {
     state.objects.push({ id: `o${state.objects.length}`, kind: 'dummy', label: '外功場木人', yard: true, slots: [[x, y]], users: [null] });

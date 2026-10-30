@@ -429,3 +429,16 @@ BLUEPRINTS.push({
 });
 // M17 親密與成家：朋友以上聊天（談心）好感 × DEEP；家人在的桌加 EAT、家人睡的床 BED_R 格內加 BED。
 export const FAMILY = { DEEP: 3, EAT: 0.8, BED: 0.6, BED_R: 3 };
+// ---------- M19a 後山打獵 ----------
+// 獵戶小屋蓋好後，林間有 HERD 頭鹿在吃草（不動）；被獵走或跑掉的，RESPAWN tick 後在林間別處再出現。
+// 打獵 DUR tick，成功率 P0 + P_SHEN × (身法 − 5)；成功扛回 MEAT 份肉，送到灶邊算生食材。
+export const HUNT = { HERD: 4, RESPAWN: 360, DUR: 40, P0: 0.6, P_SHEN: 0.05, MEAT: 4, WORK: 1.6, MIN_ENERGY: 40, X0: 3, X1: 13 };
+Object.assign(ACTS, { hunt: { label: '打獵', dur: 40, per: { energy: -0.03 } } });
+BLUEPRINTS.push({
+  // M19a：西邊林子口一間獵戶小屋。
+  id: 'lodge', label: '獵戶小屋', desc: '西邊林子口一間小屋：蓋好後林間有鹿，弟子會去打獵、扛肉回灶邊（試做中：目前會讓院子裡做飯的人手變少）', kind: 'lodge',
+  spots: [[16, 26]],
+  cost: { wood: 6 }, work: 50,
+});
+WORK_KINDS.add('hunt');
+FOCUS.find((f) => f.id === 'gather').kinds.push('hunt');

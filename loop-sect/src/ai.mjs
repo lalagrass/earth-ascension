@@ -1,6 +1,7 @@
 // 效用 AI：列出所有可做的事、打分、留下理由。只讀 state，不改。
 import { hurt } from './injury.mjs';
-import { HERB, INJURY, FAMILY } from './data.mjs';
+import { HERB, INJURY, FAMILY, HUNT } from './data.mjs';
+import { standSpot } from './build.mjs';
 import { kinOf } from './social.mjs';
 import { FIRE, FARM, ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, DUTY, POST, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
 import { activeEnemies } from './raid.mjs';
@@ -126,6 +127,15 @@ export function candidates(state, p, scorePois) {
     const spot = { x: b.sx, y: b.sy };
     if (p.needs.food < 60) add({ kind: 'eatRaw', bush: b.id, spot }, { need: u.food * 0.45 });
     if (empty) add({ kind: 'forage', bush: b.id, spot }, { need: u.food * 0.2, work: scarcity * 2, persona: 0.4 * J * scarcity + diligence * scarcity });
+  }
+
+  // ---------- M19a 打獵：林間的鹿；缺糧時更想去，膂力身法好的人愛去 ----------
+  if (empty && state.deer && p.needs.energy > HUNT.MIN_ENERGY) for (const d of state.deer) {
+    if (d.user) continue;
+    const spot = standSpot(state, d.x, d.y);
+    if (!spot) continue;
+    add({ kind: 'hunt', deer: d.id, spot, label: '進林子打鹿' },
+      { need: u.food * 0.2, work: HUNT.WORK + scarcity, persona: diligence * 0.5 + 0.1 * ((p.attrs.li + p.attrs.shen - 10) / 5) });
   }
 
   // ---------- M12 菜園 ----------

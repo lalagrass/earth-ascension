@@ -1,10 +1,10 @@
 {
-  "loopVersion": 7,
-  "loopsDone": 20,
+  "loopVersion": 8,
+  "loopsDone": 21,
   "retroEvery": 3,
-  "lastRetro": "docs/RETRO-06.md",
+  "lastRetro": "docs/RETRO-07.md",
   "lastCommit": "7fc92af",
-  "nextMilestone": "M19",
+  "nextMilestone": "M20（觀察與平衡 2，只量不判）",
   "inProgress": {
     "paused": [
       {
@@ -49,6 +49,15 @@
           "放回嘗試 1（HERB.SOW 2.2）與嘗試 2（MED_NEED0 2、MED_NEED_K 0.1、MIN 12、HEAL 0.01）",
           "重量 report 兩組種子的 M16-A5／A6 與 M10-A5；A6 傷重撤退要另外看門檻"
         ]
+      },
+      {
+        "milestone": "M19a",
+        "resumeAfter": "擁有人決定新建築情境的飢餓要跟 base 比，還是跟放一座沒作用建築的對照比；或集體分工先做出來",
+        "steps": [
+          "放回嘗試 1（HUNT.MIN_FOOD 50）",
+          "打獵活計分改成跟缺糧走（另找 rank 過得去的寫法）",
+          "重量 report 兩組種子的 M19a-A5、A7"
+        ]
       }
     ]
   },
@@ -70,7 +79,8 @@
     "base 的撞破有八成是被打退、逃走的敵人在院子裡撞柵欄出去（loop 16 嘗試 3：26→6 格）；改了會讓 M7-A7 掉到 3/12，待擁有人決定",
     "哨位（M14）目前讓防守變弱：把迎敵的人拉上台、台上又擋不住敵人",
     "soak 種子 13–24（loop 17 加 --from）：M6-A6 條理比隨性常練功、M7-A7 柵欄被撞破的種子數、exp 種子 22 主角遠征中餓壞——舊門檻只在種子 1–12 上定過",
-    "M10-A5 的 2% 最差日門檻離雜訊太近：只放一座藥園（不受傷）herb 情境就到 3.0%／3.7%；受傷讓遠征日飢餓 +45%（48 種子），餓的多半是沒受傷的人"
+    "M10-A5 的 2% 最差日門檻離雜訊太近：只放一座藥園（不受傷）herb 情境就到 3.0%／3.7%；受傷讓遠征日飢餓 +45%（48 種子），餓的多半是沒受傷的人",
+    "打獵（M19a）取代採莓但效率不比採莓高；固定的活計分讓人放下採莓與煮飯，被偷與生吃變多"
   ],
   "stopReason": null,
   "targetLoops": 30,

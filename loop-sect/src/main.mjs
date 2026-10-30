@@ -359,7 +359,7 @@ addEventListener('keydown', (e) => {
 
 // 唯讀遙測：給 headless 檢查用，回傳副本。
 window.__sect = {
-  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map, aff: state.aff, events: state.events, sect: state.sect, decisions: state.decisions, enemies: state.enemies, raids: state.raids, fenceHp: state.fenceHp, nests: state.nests, plots: state.plots, expedition: state.expedition })) : null),
+  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map, aff: state.aff, events: state.events, sect: state.sect, decisions: state.decisions, enemies: state.enemies, raids: state.raids, fenceHp: state.fenceHp, nests: state.nests, plots: state.plots, expedition: state.expedition, deer: state.deer ?? null })) : null),
   speed: () => speed,
   labels: () => labelBoxes().map((b) => ({ ...b })),
   selected: () => selected,

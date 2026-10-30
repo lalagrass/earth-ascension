@@ -195,6 +195,11 @@ export function drawObjects(ctx, state) {
         ctx.fillRect(px + 1, py + 14, 3, 6); ctx.fillRect(px + 16, py + 14, 3, 6);
         ctx.fillStyle = '#9a7448'; ctx.fillRect(px - 2, py + 9, TILE + 4, 6);
         ctx.fillStyle = '#6e5133'; ctx.fillRect(px - 2, py + 2, 2, 8); ctx.fillRect(px + TILE, py + 2, 2, 8); ctx.fillRect(px - 2, py + 2, TILE + 4, 2);
+      } else if (o.kind === 'lodge') {
+        // M19a 獵戶小屋：茅草頂小屋，門口掛一張弓。
+        ctx.fillStyle = '#7a5a3a'; ctx.fillRect(px - 6, py - 2, TILE + 12, 16);
+        ctx.fillStyle = '#c9a85c'; ctx.beginPath(); ctx.moveTo(px - 10, py - 1); ctx.lineTo(px + TILE / 2, py - 14); ctx.lineTo(px + TILE + 10, py - 1); ctx.fill();
+        ctx.strokeStyle = '#3a2a1a'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(px + TILE + 2, py + 6, 5, -Math.PI / 2, Math.PI / 2); ctx.stroke();
       } else if (o.kind === 'bench') {
         ctx.fillStyle = '#8f9188'; ctx.fillRect(px + 1, py + 8, 18, 6);
         ctx.fillRect(px + 3, py + 14, 3, 4); ctx.fillRect(px + 14, py + 14, 3, 4);
@@ -202,6 +207,15 @@ export function drawObjects(ctx, state) {
     }
   }
   drawTrial(ctx, state);
+  // M19a 林間的鹿：褐色身子、白尾巴、兩支角。
+  for (const d of state.deer ?? []) {
+    const cx = d.x * TILE + TILE / 2, cy = d.y * TILE + TILE / 2;
+    ctx.fillStyle = '#9a6a3c'; ctx.beginPath(); ctx.ellipse(cx, cy + 2, 8, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillRect(cx + 4, cy - 6, 3, 8); ctx.beginPath(); ctx.arc(cx + 7, cy - 6, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#f2ead8'; ctx.beginPath(); ctx.arc(cx - 8, cy + 1, 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#5a3a1e'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx + 6, cy - 8); ctx.lineTo(cx + 4, cy - 13); ctx.moveTo(cx + 8, cy - 8); ctx.lineTo(cx + 10, cy - 13); ctx.stroke();
+    ctx.fillStyle = '#5a3a1e'; ctx.fillRect(cx - 5, cy + 5, 1.5, 4); ctx.fillRect(cx + 3, cy + 5, 1.5, 4);
+  }
   const h = state.objects.find((o) => o.kind === 'hearth');
   const [hx, hy] = h.slots[0];
   ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'left';

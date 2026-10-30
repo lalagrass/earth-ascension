@@ -36,8 +36,9 @@ const membersBy = {}, dailyBy = {};
 const m12 = {};
 const raid = {};   // M14-A5：各情境十日的撞破格數與被偷份數
 const inj = {};    // M16-A5／A6：受傷人·tick、受傷次數、傷重撤退
+const meat = { meat: 0, picked: 0, ok: 0, miss: 0 }; // M19a-A5
 const fam = { seeds: 0, n: 0, kinT: 0, kinN: 0, otherT: 0, otherN: 0 }; // M17-A5／A6
-for (const scenario of ['base', 'exp', 'grow', 'farm', 'post', 'herb']) {
+for (const scenario of ['base', 'exp', 'grow', 'farm', 'post', 'herb', 'hunt']) {
   const dayH = Array(DAYS).fill(0), dayN = Array(DAYS).fill(0);
   const seedRows = [];
   let friends = 0, masters = 0;
@@ -87,6 +88,7 @@ for (const scenario of ['base', 'exp', 'grow', 'farm', 'post', 'herb']) {
       M.n++; M.cut += s.ledger.woodCut - snap.d5.cut; M.veg += s.ledger.veg - snap.d5.veg; M.picked += s.ledger.picked - snap.d5.picked;
       M.chopGain += Math.max(...s.people.map((p) => p.skills.chop)) - snap.d5.chop;
     }
+    if (scenario === 'hunt') { meat.meat += s.ledger.meat || 0; meat.picked += s.ledger.picked; meat.ok += s.counts.huntOk || 0; meat.miss += s.counts.huntMiss || 0; }
     if (scenario === 'base' && s.events.some((e) => e.kind === 'family')) fam.seeds++;
     if (scenario === 'base') fam.n += s.counts.families || 0;
     inj[scenario].n += s.counts.injured || 0;
@@ -109,7 +111,7 @@ for (const scenario of ['base', 'exp', 'grow', 'farm', 'post', 'herb']) {
   dailyBy[scenario] = daily;
   // M11-A7：grow 情境人多一半，門檻放在 3%／6%（規格寫在量之前）。
   // M18-A4：燒柴時用同一組門檻。
-  const [dayMax, seedMax, id] = FIRE_ON ? (scenario === 'grow' ? [0.03, 0.06, 'M18-A4'] : [0.02, 0.04, 'M18-A4']) : scenario === 'post' ? [0.02, 0.04, 'M14-A7'] : scenario === 'grow' ? [0.03, 0.06, 'M11-A7'] : scenario === 'farm' ? [0.02, 0.04, 'M12-A6'] : scenario === 'herb' ? [0.02, 0.04, 'M16-A7'] : [0.02, 0.04, 'M10-A5'];
+  const [dayMax, seedMax, id] = FIRE_ON ? (scenario === 'grow' ? [0.03, 0.06, 'M18-A4'] : [0.02, 0.04, 'M18-A4']) : scenario === 'post' ? [0.02, 0.04, 'M14-A7'] : scenario === 'grow' ? [0.03, 0.06, 'M11-A7'] : scenario === 'farm' ? [0.02, 0.04, 'M12-A6'] : scenario === 'herb' ? [0.02, 0.04, 'M16-A7'] : scenario === 'hunt' ? [0.02, 0.04, 'M19a-A7'] : [0.02, 0.04, 'M10-A5'];
   expect(`${id}[${scenario}]`, Math.max(...daily) <= dayMax && worst.hunger <= seedMax && eatLo >= 1.5 && eatHi <= 4,
     `最差日 ${pct(Math.max(...daily))}（≤ ${pct(dayMax)}）、最差種子 s${worst.seed} ${pct(worst.hunger)}（≤ ${pct(seedMax)}）、進食 ${eatLo.toFixed(2)}–${eatHi.toFixed(2)}（1.5–4）`);
   expect(`M10-A7[${scenario}]`, friends >= 6 && masters >= 1, `有朋友的種子 ${friends}/${SEEDS}（≥ 6）、拜師 ${masters} 次（≥ 1）`);
@@ -137,6 +139,13 @@ if (DUTY.ON) {
   console.log('--- 守點 ---');
   expect('M14-A5', p.breaches <= 0.7 * b.breaches && p.stolen <= 0.7 * b.stolen,
     `撞破 base ${b.breaches} 格、post ${p.breaches} 格（≤ ${(0.7 * b.breaches).toFixed(1)}）；被偷 base ${b.stolen} 份（${b.steals} 次）、post ${p.stolen} 份（${p.steals} 次）（≤ ${(0.7 * b.stolen).toFixed(1)}）${small}`);
+}
+
+// M19a-A5：十日裡肉占生食材 ≥ 20%。
+{
+  console.log('--- 後山打獵 ---');
+  const share = meat.meat / Math.max(1, meat.picked);
+  expect('M19a-A5', share >= 0.2, `hunt 情境肉 ${meat.meat} 份 ÷ 生食材 ${meat.picked} 份 = ${pct(share)}（≥ 20%）；獵到 ${meat.ok} 次、跑掉 ${meat.miss} 次`);
 }
 
 // M17-A5／A6：成家；家人一起吃。兩組種子合起來判（retro 6），這裡印單組，合起來的判斷寫在規格。

@@ -527,6 +527,35 @@ export const flows = [
     },
   },
   {
+    // M19a 打獵（暫停中）：營造面板有獵戶小屋並寫試做中；蓋好後林間有鹿，有人進林子打鹿。
+    name: 'm19a-hunt',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.fill('#seed', '4');
+      await page.click('#begin');
+      expect('A8 營造面板有獵戶小屋', (await page.locator('[data-blueprint="lodge"]').count()) === 1);
+      expect('A8 寫試做中', /試做中/.test(await page.textContent('#build')));
+      await page.click('[data-blueprint="lodge"]');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().built.includes('lodge'), null, { timeout: 240000 });
+      const d0 = (await snap(page)).deer?.length ?? 0;
+      expect('A8 蓋好後林間有鹿', d0 >= 3, `${d0} 頭`);
+      await page.waitForFunction(() => window.__sect.snapshot().people.some((p) => p.task?.kind === 'hunt' && p.act === 'do'), null, { timeout: 240000 });
+      await page.click('[data-speed="0"]');
+      const s = await snap(page);
+      const h = s.people.find((p) => p.task?.kind === 'hunt' && p.act === 'do');
+      expect('A8 有人在林子裡打鹿', !!h && h.x < 16, h ? `${h.name} ${h.x},${h.y}` : '');
+      const boxes = await page.evaluate(() => window.__sect.labels());
+      let overlap = 0;
+      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i], b = boxes[j];
+        if (a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h) overlap++;
+      }
+      expect('A8 畫面不疊字', overlap === 0, `${overlap} 對`);
+      await shot('hunt');
+    },
+  },
+  {
     // M18 值日（暫停中、預設關）：紀事簿可以打開，名冊與人物卡看得到值日，可以指定。
     name: 'm18-duty',
     async run(page, expect, { shot }) {

@@ -9,6 +9,7 @@ import { tally } from './chronicle.mjs';
 import { stepDuty } from './duty.mjs';
 import { stepStrike, formOf, sizeOf } from './forms.mjs';
 import { heal } from './injury.mjs';
+import { stepDeer, endHunt } from './hunt.mjs';
 import { HERB, INJURY, FAMILY } from './data.mjs';
 import { canTrial, newTrial, trialTick, trialRecord, better, trialText } from './trial.mjs';
 import { visitSchedule, visitChance, appeal, reasonText, shouldApprentice, foundingPlan, freeName } from './recruit.mjs';
@@ -218,6 +219,7 @@ function reserve(state, p, c) {
   if (c.kind === 'eat') { state.stock.meal--; p.hold.meal = 1; }
   if (c.kind === 'cook') { state.stock.raw -= COOK_RAW; p.hold.raw = COOK_RAW; state.stock.wood -= FIRE.WOOD_PER_POT; p.hold.wood = FIRE.WOOD_PER_POT; }
   if (c.plot) byId(state.plots, c.plot).user = p.id;
+  if (c.deer) { const d = state.deer.find((x) => x.id === c.deer); if (d) d.user = p.id; }
   if (c.res) state.resUser[c.res] = p.id;
   if (c.kind === 'haul') {
     state.stock[c.mat] -= c.n; p.hold[c.mat] = c.n;
@@ -240,6 +242,7 @@ export function release(state, p) {
     }
     if (t.res && state.resUser[t.res] === p.id) delete state.resUser[t.res];
     if (t.plot) { const g = byId(state.plots, t.plot); if (g?.user === p.id) g.user = null; }
+    if (t.deer) { const d = state.deer?.find((x) => x.id === t.deer); if (d?.user === p.id) d.user = null; }
     const site = t.site && byId(state.sites, t.site);
     if (t.kind === 'haul' && site) site.incoming[t.mat] -= t.leg === 'drop' ? p.load[t.mat] : p.hold[t.mat];
     if (t.kind === 'build' && site) site.workers = site.workers.filter((w) => w !== p.id);
@@ -270,7 +273,7 @@ function choose(state, p) {
     }
     reserve(state, p, c);
     p.task = { kind: c.kind, obj: c.obj, slot: c.slot, bush: c.bush, partner: c.partner, poi: c.poi, chase: 80,
-      res: c.res, mat: c.mat, rx: c.rx, ry: c.ry, take: c.take, site: c.site, n: c.n, move: c.move, enemy: c.enemy, cell: c.cell, plot: c.plot, cx: c.cx, cy: c.cy, dealt: 0, leg: c.kind === 'haul' ? 'pickup' : undefined };
+      deer: c.deer, res: c.res, mat: c.mat, rx: c.rx, ry: c.ry, take: c.take, site: c.site, n: c.n, move: c.move, enemy: c.enemy, cell: c.cell, plot: c.plot, cx: c.cx, cy: c.cy, dealt: 0, leg: c.kind === 'haul' ? 'pickup' : undefined };
     p.actLabel = c.label;
     if (path.length) {
       p.path = path;
@@ -543,6 +546,13 @@ function finish(state, p) {
     b.berries -= n; p.carry += n; L.picked += n;
   }
   if (t.kind === 'deliver') { state.stock.raw += p.carry; p.carry = 0; }
+  if (t.kind === 'hunt') {
+    // M19a：鹿不管成敗都離開；成功就扛肉（跟莓果一樣算生食材，送到灶邊）。
+    const n = endHunt(state, p, t.deer);
+    if (n) { p.carry += n; L.picked += n; L.meat = (L.meat || 0) + n; state.counts.huntOk = (state.counts.huntOk || 0) + 1; p.bubble = { text: `獵到鹿（${n} 份肉）`, until: state.tick + 60 }; }
+    else { state.counts.huntMiss = (state.counts.huntMiss || 0) + 1; p.bubble = { text: '鹿跑了', until: state.tick + 40 }; }
+    if (n && !state.firstHunt && (state.firstHunt = true)) state.events.push({ tick: state.tick, kind: 'farm', text: `${p.name}頭一回在後山獵到鹿`, who: [p.id] });
+  }
   if (t.kind === 'medicate' && state.stock.herb > 0) {
     state.stock.herb--; p.hurt = Math.max(0, p.hurt - INJURY.MED);
     p.bubble = { text: '喝了藥', until: state.tick + 40 };
@@ -921,6 +931,7 @@ export function step(state) {
   stepRecruit(state);
   stepExpedition(state);
   stepDuty(state);
+  stepDeer(state);
   for (const p of [...state.people]) if (state.people.includes(p)) stepPerson(state, p);
   for (const p of state.people) { tally(p); stepStrike(state, p, strikeTarget(state, p)); }
   stepEnemies(state);
