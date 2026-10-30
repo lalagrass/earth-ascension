@@ -326,6 +326,7 @@ export const RAID = {
   BANDIT_DAY: 2,       // 0 起算：第 3 日起有山賊
   BANDIT_P: 0.5,
   DAYS: 30,            // 預先排好的天數
+  CAP: 6,              // M23：一次最多幾隻（第 12 日以前碰不到，舊排程不變）
   SPAWN_Y: 39, SPAWN_X: [18, 46],
   STEAL_TICKS: 40,     // loop 7 由 20 調高：敵人中位數 122 tick 走到、142 tick 就偷完走人，來不及趕到
   LURK_TICKS: 60,      // 出生後先在林邊徘徊（地圖上看得到），給人反應時間；理由同上
@@ -382,6 +383,10 @@ ACTS.leave = { label: '下山', dur: 0, per: {} };
 
 // ---------- M9 遠征 ----------
 // M19b 暫停中：試做時兩個巢的 x 是 76。
+// M23 報仇：拆了巢，第 DELAY 日 HOUR 時那一窩的頭目帶 ESCORT 隻同類來。
+export const BOSS = { DELAY: 3, HOUR: 10, HP_MUL: 3, ESCORT: 2, PULL: 1.6, // PULL：迎戰頭目的活計分倍數（大家先圍頭目）
+  TITLE: { boar: '野豬王', bandit: '山寨頭目' },
+  NAMES: { boar: ['黑鬃', '斷牙', '鐵背', '獨眼'], bandit: ['鐵爪', '黑虎', '刀疤', '燕三'] } };
 export const NESTS = [
   { id: 'den', label: '野豬窩', kind: 'boar', x: 58, y: 36, hp: 120, guards: ['boar', 'boar'] },
   { id: 'camp', label: '山寨', kind: 'bandit', x: 58, y: 6, hp: 200, guards: ['bandit', 'bandit', 'bandit'] },

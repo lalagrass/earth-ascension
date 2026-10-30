@@ -1,5 +1,5 @@
 // 侵擾：開局排好的排程、敵人出生、找路、撞柵欄、偷東西、逃走。人物的迎敵與修補在 ai／sim。
-import { ENEMIES, RAID, DEFENSE, TICKS_PER_DAY, PILE } from './data.mjs';
+import { ENEMIES, RAID, DEFENSE, TICKS_PER_DAY, PILE, BOSS } from './data.mjs';
 import { seedHolder, nextRand, randInt } from './rng.mjs';
 import { walkable, nearestWalkable } from './map.mjs';
 import { findPath } from './path.mjs';
@@ -15,7 +15,7 @@ export function raidSchedule(seed) {
   const out = [];
   for (let d = RAID.START_DAY; d < RAID.DAYS; d++) {
     const minute = Math.floor((RAID.HOUR_FROM + nextRand(h) * (RAID.HOUR_TO - RAID.HOUR_FROM)) * 60);
-    const n = 1 + Math.floor((d - RAID.START_DAY) / RAID.GROW_EVERY);
+    const n = Math.min(RAID.CAP, 1 + Math.floor((d - RAID.START_DAY) / RAID.GROW_EVERY));
     const kinds = [];
     for (let i = 0; i < n; i++) kinds.push(d >= RAID.BANDIT_DAY && nextRand(h) < RAID.BANDIT_P ? 'bandit' : 'boar');
     const xs = kinds.map(() => RAID.SPAWN_X[0] + randInt(h, RAID.SPAWN_X[1] - RAID.SPAWN_X[0] + 1));
@@ -60,7 +60,33 @@ export function spawnGuard(state, nest, kind, i) {
   return e;
 }
 
+// M23 拆巢時排報仇：頭目的名字照種子挑（不吃主 RNG）。
+export function scheduleRevenge(state, nest) {
+  const day = Math.floor(state.tick / TICKS_PER_DAY) + BOSS.DELAY;
+  const names = BOSS.NAMES[nest.kind];
+  const name = names[Math.floor(nextRand(seedHolder(state.seed * 17 + (nest.kind === 'boar' ? 1 : 2))) * names.length)];
+  (state.revenge ??= []).push({ tick: day * TICKS_PER_DAY + BOSS.HOUR * 60, kind: nest.kind, name, done: false });
+}
+
+function startRevenge(state) {
+  for (const r of state.revenge ?? []) {
+    if (r.done || state.tick < r.tick) continue;
+    r.done = true;
+    const x0 = RAID.SPAWN_X[0] + (RAID.SPAWN_X[1] - RAID.SPAWN_X[0]) / 2;
+    const boss = spawnEnemy(state, r.kind, Math.round(x0));
+    boss.hp = boss.hpMax = ENEMIES[r.kind].hp * BOSS.HP_MUL;
+    boss.label = `${BOSS.TITLE[r.kind]}${r.name}`;
+    boss.boss = true;
+    for (let i = 0; i < BOSS.ESCORT; i++) spawnEnemy(state, r.kind, Math.round(x0) + (i ? 3 : -3));
+    state.events.push({ tick: state.tick, kind: 'raid', text: `${boss.label}帶著${BOSS.ESCORT}頭${ENEMIES[r.kind].label}來報仇` });
+    state.counts.bossRaids = (state.counts.bossRaids || 0) + 1;
+    state.threat += DEFENSE.THREAT_RAID;
+    alarm(state);
+  }
+}
+
 export function startRaids(state) {
+  startRevenge(state);
   while (state.raidAt < state.raids.length && state.raids[state.raidAt].tick <= state.tick) {
     const r = state.raids[state.raidAt++];
     // M9：巢被拆掉的敵人不再來。
@@ -164,6 +190,7 @@ export function stepEnemies(state) {
       if (onPost) state.counts.repelledPost = (state.counts.repelledPost || 0) + 1;
       state.events.push({ tick: state.tick, kind: 'repel', text: `${e.hitBy.map((id) => state.people.find((p) => p.id === id)?.name ?? '路人').join('、')}${onPost ? '在哨位上' : ''}打退了${e.label}`, who: [...e.hitBy] });
       state.counts.repelled = (state.counts.repelled || 0) + 1;
+      if (e.boss) state.counts.bossRepelled = (state.counts.bossRepelled || 0) + 1;
       flee(state, e);
     }
     if (e.mode !== 'flee' && e.mode !== 'beaten' && state.tick - e.born > RAID.MAX_LIFE) flee(state, e);

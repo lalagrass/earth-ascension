@@ -3,7 +3,7 @@ import {
   START_STOCK, COOK_RAW, FORAGE_TAKE, START_MATERIALS, HEARTH_LEVELS,
 } from './data.mjs';
 import { placeSite, removeSite, addWork, takeResource, workSpot, blockCell, cellClear } from './build.mjs';
-import { raidSchedule, startRaids, stepEnemies, activeEnemies, spawnGuard } from './raid.mjs';
+import { raidSchedule, startRaids, stepEnemies, activeEnemies, spawnGuard, scheduleRevenge } from './raid.mjs';
 import { newNests, nestOf, canLaunch, retreatReason } from './expedition.mjs';
 import { tally } from './chronicle.mjs';
 import { stepDuty } from './duty.mjs';
@@ -761,6 +761,7 @@ function stepExpedition(state) {
     nest.cleared = true; x.result = 'cleared';
     state.events.push({ tick: state.tick, kind: 'cleared', text: `${nest.label}被拆了，${ENEMY_LABEL[nest.kind]}不再來了`, who: [...x.members] });
     state.counts.cleared = (state.counts.cleared || 0) + 1;
+    scheduleRevenge(state, nest); // M23
     state.clearedAt ??= {};
     state.clearedAt[nest.id] = state.tick;
     setPhase(state, 'return');

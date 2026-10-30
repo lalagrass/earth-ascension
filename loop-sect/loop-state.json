@@ -1,10 +1,10 @@
 {
   "loopVersion": 9,
-  "loopsDone": 26,
+  "loopsDone": 27,
   "retroEvery": 3,
   "lastRetro": "docs/RETRO-08.md",
-  "lastCommit": "0f3553e",
-  "nextMilestone": "M23 後期侵擾（loop 27），之後 retro 9",
+  "lastCommit": "e87db93",
+  "nextMilestone": "retro 9，然後 M24 家人照應（loop 28）",
   "inProgress": {
     "paused": [
       {
@@ -113,7 +113,8 @@
     "二十日後每個種子都成家，人際沒有下一步（子女、吵架、師徒傳承）",
     "最差日的飢餓發生在飯 0、生 0、野莓叢被吃空的時候（開局第 2–4 日），不是食物堆著沒煮（M21）",
     "十二個種子的飢餓合計與最差種子被一兩個走向整個變了的種子決定；48 個種子的中位數才看得出規則有沒有用（M22：中位 −60%，兩組十二個種子卻各翻一邊）",
-    "巢的守衛搬位置連 base 的走向都會變（M19b）：base 裡有東西在看守衛"
+    "巢的守衛搬位置連 base 的走向都會變（M19b）：base 裡有東西在看守衛",
+    "三十日後半的領悟只有前半的兩成：武學在第 15 日前後學完（M23 的三十日長跑）"
   ],
   "stopReason": null,
   "targetLoops": 30,

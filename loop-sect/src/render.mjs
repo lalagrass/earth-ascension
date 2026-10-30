@@ -148,6 +148,11 @@ export function drawLabels(ctx, state, selectedId) {
     const cx = n.x * TILE + TILE / 2, cy = n.y * TILE + TILE / 2;
     put(n.cleared ? `${n.label}（已拆）` : n.label, cx, cy + 26, '11px sans-serif', n.cleared ? 'rgba(40,30,20,0.6)' : '#3a2a1a', 'nest', 0);
   }
+  // M23 頭目的名字（頭上、血條上面）。
+  for (const e of state.enemies) {
+    if (!e.boss || e.gone) continue;
+    put(e.label, e.x * TILE + TILE / 2, e.y * TILE + TILE / 2 - 24, 'bold 11px sans-serif', '#8a1f15', 'boss', 2);
+  }
   const order = [...state.people].sort((a, b) => (b.id === selectedId) - (a.id === selectedId) || (a.id < b.id ? -1 : 1));
   for (const p of order) {
     const cx = p.x * TILE + TILE / 2, cy = p.y * TILE + TILE / 2;
@@ -373,8 +378,9 @@ export function drawEnemies(ctx, state, FENCE_HP) {
       ctx.fillStyle = '#d9b48f'; ctx.beginPath(); ctx.arc(cx, cy - 8, 5, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#b8322a'; ctx.fillRect(cx - 6, cy - 12, 12, 3);
     }
-    ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(cx - 10, cy - 20, 20, 3);
-    ctx.fillStyle = '#d94a3a'; ctx.fillRect(cx - 10, cy - 20, 20 * Math.max(0, e.hp) / e.hpMax, 3);
+    const bw = e.boss ? 28 : 20, bh = e.boss ? 5 : 3; // M23 頭目：血條長一點粗一點
+    ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(cx - bw / 2, cy - 20, bw, bh);
+    ctx.fillStyle = '#d94a3a'; ctx.fillRect(cx - bw / 2, cy - 20, bw * Math.max(0, e.hp) / e.hpMax, bh);
     if (e.mode === 'lurk' || e.bashing) {
       ctx.font = 'bold 12px sans-serif'; ctx.fillStyle = '#b8322a';
       ctx.fillText(e.bashing ? '撞！' : '!', cx, cy - 23);

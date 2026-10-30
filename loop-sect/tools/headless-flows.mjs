@@ -527,6 +527,44 @@ export const flows = [
     },
   },
   {
+    // M23 報仇：拆了野豬窩，第三日野豬王帶兩頭野豬來；頭上有名字、紀事寫報仇。
+    name: 'm23-boss',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.fill('#seed', '4');
+      await page.click('#begin');
+      await page.click('[data-speed="16"]');
+      // 第 3 日 9 時起，按鈕能按就出發；撤退了再按，直到拆掉野豬窩。
+      for (let i = 0; i < 12; i++) {
+        await page.waitForFunction(() => {
+          const s = window.__sect.snapshot();
+          return s.nests.find((n) => n.id === 'den').cleared || (s.tick >= 2 * 1440 + 540 && !s.expedition && !document.querySelector('[data-nest="den"]')?.disabled);
+        }, null, { timeout: 240000 });
+        if ((await snap(page)).nests.find((n) => n.id === 'den').cleared) break;
+        await page.click('[data-nest="den"]');
+        await page.waitForFunction(() => { const s = window.__sect.snapshot(); return !s.expedition || s.nests.find((n) => n.id === 'den').cleared; }, null, { timeout: 240000 });
+      }
+      const c = await snap(page);
+      expect('A8 拆掉野豬窩', c.nests.find((n) => n.id === 'den').cleared);
+      await page.waitForFunction(() => window.__sect.snapshot().enemies.some((e) => e.boss && e.mode !== 'lurk'), null, { timeout: 300000 });
+      await page.click('[data-speed="0"]');
+      await wait(page, 300);
+      const s = await snap(page);
+      const boss = s.enemies.find((e) => e.boss);
+      expect('A8 頭目是野豬王、血 ×3', /^野豬王/.test(boss.label) && boss.hpMax === 120, `${boss.label} ${boss.hpMax}`);
+      expect('A8 紀事寫報仇', /野豬王.+帶著2頭野豬來報仇/.test(await page.textContent('#events')));
+      const boxes = await page.evaluate(() => window.__sect.labels());
+      expect('A8 頭上有名字', boxes.some((b) => b.kind === 'boss' && b.text === boss.label));
+      let overlap = 0;
+      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i], b = boxes[j];
+        if (a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h) overlap++;
+      }
+      expect('A8 畫面不疊字', overlap === 0, `${overlap} 對`);
+      await shot('boss');
+    },
+  },
+  {
     // M19a 打獵（暫停中）：營造面板有獵戶小屋並寫試做中；蓋好後林間有鹿，有人進林子打鹿。
     name: 'm19a-hunt',
     async run(page, expect, { shot }) {

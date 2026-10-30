@@ -1,6 +1,6 @@
 // 效用 AI：列出所有可做的事、打分、留下理由。只讀 state，不改。
 import { hurt } from './injury.mjs';
-import { HERB, INJURY, FAMILY, HUNT, KITCHEN, SUPPER } from './data.mjs';
+import { HERB, INJURY, FAMILY, HUNT, KITCHEN, SUPPER, BOSS } from './data.mjs';
 import { standSpot } from './build.mjs';
 import { kinOf } from './social.mjs';
 import { FIRE, FARM, ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, DUTY, POST, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
@@ -221,7 +221,7 @@ export function candidates(state, p, scorePois) {
         // 膽識決定願不願意上：膽小的人幾乎不上，膽大的人比做任何活都急。
         const willing = Math.max(0, Math.min(1.5, DEFENSE.WILLING_BASE + 1.5 * brave));
         add({ kind: 'fight', enemy: e.id, spot: { x: Math.round(e.x), y: Math.round(e.y) }, label: `迎戰${e.label}` },
-          { work: DEFENSE.FIGHT_WORK * willing });
+          { work: DEFENSE.FIGHT_WORK * willing * (e.boss ? BOSS.PULL : 1) });
       }
     }
     const hall = state.pois.find((x) => x.id === 'hall');

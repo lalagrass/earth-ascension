@@ -9,6 +9,7 @@ import { rosterFor, script } from './soak-checks.mjs';
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? Number(process.argv[i + 1]) : d; };
 const FROM = arg('from', 1), SEEDS = arg('seeds', 12), DAYS = arg('days', 20);
 const HALF = Math.floor(DAYS / 2) * TICKS_PER_DAY;
+const H = DAYS / 2; // 前半、後半的日數（標籤用）
 const HUNGRY = 15;
 const EATS = ['eat', 'eatRaw', 'eatCarried', 'ration']; // 跟 report 一樣用 counts（吃完才記）
 const pct = (v) => `${(100 * v).toFixed(1)}%`;
@@ -73,21 +74,21 @@ for (const scenario of ['base', 'exp']) {
   const streak = R.reduce((a, r) => (r.streakMax > a.streakMax ? r : a));
   const shrank = R.filter((r) => r.m20 < r.m10);
   expect(`M20-A2[${scenario}]`, worst.hunger <= 0.08 && streak.streakMax < TICKS_PER_DAY && !shrank.length,
-    `最差種子 s${worst.seed} ${pct(worst.hunger)}（≤ 8%）、最長連續飢餓 s${streak.seed} ${streak.streakMax} tick（< ${TICKS_PER_DAY}）、人數變少的種子 ${shrank.length}（第 10 日 ${R.map((r) => r.m10).join('/')}，第 20 日 ${R.map((r) => r.m20).join('/')}）`);
+    `最差種子 s${worst.seed} ${pct(worst.hunger)}（≤ 8%）、最長連續飢餓 s${streak.seed} ${streak.streakMax} tick（< ${TICKS_PER_DAY}）、人數變少的種子 ${shrank.length}（第 ${H} 日 ${R.map((r) => r.m10).join('/')}，第 ${DAYS} 日 ${R.map((r) => r.m20).join('/')}）`);
   const e2 = R.map((r) => r.eat2), e1 = R.map((r) => r.eat1);
   expect(`M20-A3[${scenario}]`, Math.min(...e2) >= 1.5 && Math.max(...e2) <= 4,
-    `後十日每人每日進食 ${Math.min(...e2).toFixed(2)}–${Math.max(...e2).toFixed(2)}（1.5–4）；前十日 ${Math.min(...e1).toFixed(2)}–${Math.max(...e1).toFixed(2)}`);
+    `後 ${H} 日每人每日進食 ${Math.min(...e2).toFixed(2)}–${Math.max(...e2).toFixed(2)}（1.5–4）；前 ${H} 日 ${Math.min(...e1).toFixed(2)}–${Math.max(...e1).toFixed(2)}`);
   const far = R.filter((r) => r.tree20 > 2 * r.tree0 + 5);
   const noWood = Math.max(...R.map((r) => r.noWoodMax));
   expect(`M20-A4[${scenario}]`, !far.length && noWood <= TICKS_PER_DAY / 2,
-    `最近的樹 第 1 日 ${R.map((r) => r.tree0.toFixed(0)).join('/')} → 第 20 日 ${R.map((r) => r.tree20.toFixed(0)).join('/')}（≤ 2 倍＋5，超過的種子 ${far.length}）；後十日缺木最長 ${noWood} tick（≤ ${TICKS_PER_DAY / 2}）`);
+    `最近的樹 第 1 日 ${R.map((r) => r.tree0.toFixed(0)).join('/')} → 第 ${DAYS} 日 ${R.map((r) => r.tree20.toFixed(0)).join('/')}（≤ 2 倍＋5，超過的種子 ${far.length}）；後 ${H} 日缺木最長 ${noWood} tick（≤ ${TICKS_PER_DAY / 2}）`);
   if (scenario === 'base') {
     const fam10 = R.filter((r) => r.family10).length, fam20 = R.filter((r) => r.family20).length, fr = R.filter((r) => r.friends).length;
-    console.log(`M20-A5 有一家的種子 第 10 日 ${fam10}/${SEEDS} → 第 20 日 ${fam20}/${SEEDS}（兩組合起來要 ≥ 14/24）`);
-    expect('M20-A5 朋友', fr >= Math.ceil(SEEDS * 10 / 12), `第 20 日有朋友的種子 ${fr}/${SEEDS}（≥ 10/12）`);
+    console.log(`M20-A5 有一家的種子 第 ${H} 日 ${fam10}/${SEEDS} → 第 ${DAYS} 日 ${fam20}/${SEEDS}（兩組合起來要 ≥ 14/24）`);
+    expect('M20-A5 朋友', fr >= Math.ceil(SEEDS * 10 / 12), `第 ${DAYS} 日有朋友的種子 ${fr}/${SEEDS}（≥ 10/12）`);
     const sum = (k, part) => R.reduce((a, r) => a + r[part][k], 0);
     const r1 = sum('repelled', 'first') / Math.max(1, sum('enemies', 'first')), r2 = sum('repelled', 'second') / Math.max(1, sum('enemies', 'second'));
-    console.log(`M20-A6 打退率 前十日 ${pct(r1)}（${sum('repelled', 'first')}/${sum('enemies', 'first')}）→ 後十日 ${pct(r2)}（${sum('repelled', 'second')}/${sum('enemies', 'second')}）（兩組合起來判：後 ≥ 前 − 15 點）`);
+    console.log(`M20-A6 打退率 前 ${H} 日 ${pct(r1)}（${sum('repelled', 'first')}/${sum('enemies', 'first')}）→ 後 ${H} 日 ${pct(r2)}（${sum('repelled', 'second')}/${sum('enemies', 'second')}）（兩組合起來判：後 ≥ 前 − 15 點）`);
     const d1 = sum('drillDone', 'first'), d2 = sum('drillDone', 'second'), c1 = sum('comprehend', 'first'), c2 = sum('comprehend', 'second');
     expect('M20-A7', d2 >= 0.5 * d1 && c2 >= 0.25 * c1, `練完 ${d1} → ${d2}（≥ 50%）、領悟 ${c1} → ${c2}（≥ 25%）`);
   }
