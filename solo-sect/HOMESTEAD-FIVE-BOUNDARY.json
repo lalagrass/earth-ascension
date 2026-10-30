@@ -1,0 +1,46 @@
+{
+  "base": "fdae3dce1a831f10ac8eefeee6b7110fba8c46ad",
+  "scope": "Only generic solo one-portion completion and shared equivalent valid-state eating eligibility; no new fields/rates/recipes/skills/transfer/main changes. Other round changes UI and verification only.",
+  "files": [
+    {
+      "path": "solo-sect/src/homestead.mjs",
+      "sha256": "7c14edd89b411859b6b4c4522fcde08b1d18e97a370e2e0e5daf54fd033029de",
+      "unchanged": false
+    },
+    {
+      "path": "solo-sect/src/homestead-content.mjs",
+      "sha256": "f63326eb9696241d8dd9ab7b3dc4a9529189569e3465bf37b5d38ddf9dbe51a5",
+      "unchanged": false
+    },
+    {
+      "path": "solo-sect/src/homestead-skills.mjs",
+      "sha256": "5154b22105af65aa9442d3f08ad857cae37fb8bc6272037bbc96c2b5eeefddbd",
+      "unchanged": true
+    },
+    {
+      "path": "solo-sect/src/homestead-living.mjs",
+      "sha256": "c3db7c69232dc01e3134434db1a707cd79b6302f828d29672e8298770c86216a",
+      "unchanged": true
+    },
+    {
+      "path": "solo-sect/src/homestead-transfer.mjs",
+      "sha256": "a8c0eb95f1076a5fa3a70c37cc067a6b659372599939504044279bafe04f03b6",
+      "unchanged": true
+    },
+    {
+      "path": "solo-sect/src/sim.mjs",
+      "sha256": "19c6a9637910ccf80252be3c79c7e21df6628542c83e09b0bbc803d5e1b0bff0",
+      "unchanged": true
+    },
+    {
+      "path": "solo-sect/src/data.mjs",
+      "sha256": "3e65cbe68fb90e44462196a318b978e5ae55daecdf9242cc4ac2ac7975f85e50",
+      "unchanged": true
+    },
+    {
+      "path": "solo-sect/src/core.mjs",
+      "sha256": "2b663c104309ac7880604578e90ee9c95f1e78bfe20bc5af70e01e55719905cc",
+      "unchanged": true
+    }
+  ]
+}

@@ -1,0 +1,1332 @@
+{
+  "engine": "154.0.8037.57",
+  "scope": "normal UI zero grants; Node independent public-API replay compares complete serialized world including log at checkpoints, not every browser tick; no new game feature",
+  "results": [
+    {
+      "index": 1,
+      "personality": "quiet",
+      "variant": "journey",
+      "width": 1440,
+      "seconds": 391,
+      "minH": 37.3150000000027,
+      "minE": 21.849999999999994,
+      "finalStock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "finalOrder": null,
+      "finalHash": "9c2bc30cffbf094a818dd9c808153359174b9aff1f6f12d44004bd2f120a335e",
+      "commands": [
+        {
+          "type": "build",
+          "id": "hut",
+          "t": 0,
+          "keyboard": true
+        },
+        {
+          "type": "build",
+          "id": "garden",
+          "t": 101,
+          "keyboard": false
+        },
+        {
+          "type": "build",
+          "id": "kitchen",
+          "t": 101,
+          "keyboard": false
+        },
+        {
+          "type": "household",
+          "place": "garden",
+          "id": "farm",
+          "t": 242.25,
+          "keyboard": true
+        },
+        {
+          "type": "household",
+          "place": "garden",
+          "id": "clear",
+          "t": 303,
+          "keyboard": true
+        },
+        {
+          "type": "order",
+          "id": "chop",
+          "t": 303,
+          "keyboard": false
+        },
+        {
+          "type": "order",
+          "id": "leisure",
+          "t": 318.25,
+          "keyboard": false
+        },
+        {
+          "type": "recipe",
+          "id": "basic",
+          "t": 318.25,
+          "keyboard": true
+        },
+        {
+          "type": "order",
+          "id": "eat",
+          "t": 328.25,
+          "keyboard": true
+        },
+        {
+          "type": "order",
+          "id": "rest",
+          "t": 332.25,
+          "keyboard": true
+        },
+        {
+          "type": "build",
+          "id": "bench",
+          "t": 338.75,
+          "keyboard": false
+        },
+        {
+          "type": "household",
+          "place": "bench",
+          "id": "leisure",
+          "t": 382.75,
+          "keyboard": true
+        },
+        {
+          "type": "household",
+          "place": "bench",
+          "id": "clear",
+          "t": 391,
+          "keyboard": true
+        }
+      ],
+      "checks": [
+        {
+          "label": "start",
+          "t": 0,
+          "sha256": "34bdfb2ad503a1954fdcd3c76bf428edebbcdccb4cc17f867585354b8608f474"
+        },
+        {
+          "label": "before build/hut",
+          "t": 0,
+          "sha256": "34bdfb2ad503a1954fdcd3c76bf428edebbcdccb4cc17f867585354b8608f474"
+        },
+        {
+          "label": "after build/hut",
+          "t": 0,
+          "sha256": "e205058d808b4b8ce5da566687e87e823cd95226fda630170a9920cc0eb68bd4"
+        },
+        {
+          "label": "advanced",
+          "t": 101,
+          "sha256": "600421612cacd1c0173329445042fe68ee32fd67f252317af89836cef58fdb32"
+        },
+        {
+          "label": "before build/garden",
+          "t": 101,
+          "sha256": "600421612cacd1c0173329445042fe68ee32fd67f252317af89836cef58fdb32"
+        },
+        {
+          "label": "after build/garden",
+          "t": 101,
+          "sha256": "ee63fab155708e0441729c1fb085e132ae90966a2d79918ba91852bf8bdba1aa"
+        },
+        {
+          "label": "before build/kitchen",
+          "t": 101,
+          "sha256": "ee63fab155708e0441729c1fb085e132ae90966a2d79918ba91852bf8bdba1aa"
+        },
+        {
+          "label": "after build/kitchen",
+          "t": 101,
+          "sha256": "89e296c068f6e43f2f50ec77893f93ea55c738e313ba981d5a266248bb3c4eb3"
+        },
+        {
+          "label": "advanced",
+          "t": 242.25,
+          "sha256": "28d3ad6576e206be90a42d0ded48ee5799362d80eaf6cb2d883b10ef5332ba35"
+        },
+        {
+          "label": "before select",
+          "t": 242.25,
+          "sha256": "28d3ad6576e206be90a42d0ded48ee5799362d80eaf6cb2d883b10ef5332ba35"
+        },
+        {
+          "label": "after select",
+          "t": 242.25,
+          "sha256": "28d3ad6576e206be90a42d0ded48ee5799362d80eaf6cb2d883b10ef5332ba35"
+        },
+        {
+          "label": "after household",
+          "t": 242.25,
+          "sha256": "f3cfce982bfee33d717cd2a76eadcaec1d4dee4224137eff051d9703aa27875c"
+        },
+        {
+          "label": "advanced",
+          "t": 303,
+          "sha256": "ffa3c308e9f7f4a18252f9e0e6668a4c7479908c2bfd6d037a788e477bf940a3"
+        },
+        {
+          "label": "before select",
+          "t": 303,
+          "sha256": "ffa3c308e9f7f4a18252f9e0e6668a4c7479908c2bfd6d037a788e477bf940a3"
+        },
+        {
+          "label": "after select",
+          "t": 303,
+          "sha256": "ffa3c308e9f7f4a18252f9e0e6668a4c7479908c2bfd6d037a788e477bf940a3"
+        },
+        {
+          "label": "after household",
+          "t": 303,
+          "sha256": "0b0892d87422ac83fb4bb09f402ef2cebd7b357ec3264675215c2be2f2de701b"
+        },
+        {
+          "label": "before order/chop",
+          "t": 303,
+          "sha256": "0b0892d87422ac83fb4bb09f402ef2cebd7b357ec3264675215c2be2f2de701b"
+        },
+        {
+          "label": "after order/chop",
+          "t": 303,
+          "sha256": "9c3c97e1aa1e1d811fffd5baaaca09e04c5f69c1998e44fad27feb51a91816b9"
+        },
+        {
+          "label": "advanced",
+          "t": 318.25,
+          "sha256": "da9de5084fbd1b1d78eb7f1939249a373e43e64c27c5d9e781864d3baa9b3831"
+        },
+        {
+          "label": "before order/leisure",
+          "t": 318.25,
+          "sha256": "da9de5084fbd1b1d78eb7f1939249a373e43e64c27c5d9e781864d3baa9b3831"
+        },
+        {
+          "label": "after order/leisure",
+          "t": 318.25,
+          "sha256": "4305b3aa737dd15904c1a5b4a3c239dc8eb8b36f8dc24a728c7f1612c321728a"
+        },
+        {
+          "label": "before recipe/basic",
+          "t": 318.25,
+          "sha256": "4305b3aa737dd15904c1a5b4a3c239dc8eb8b36f8dc24a728c7f1612c321728a"
+        },
+        {
+          "label": "after recipe/basic",
+          "t": 318.25,
+          "sha256": "f6b94e23a7172929a4ff6ca1956cc6ae06741992b07122eaee00d78fdf92f1c0"
+        },
+        {
+          "label": "advanced",
+          "t": 328.25,
+          "sha256": "9387c58a9549fd7b6833fe6def073a0cf585efdb815aea083c55494ec42f8c2a"
+        },
+        {
+          "label": "before order/eat",
+          "t": 328.25,
+          "sha256": "9387c58a9549fd7b6833fe6def073a0cf585efdb815aea083c55494ec42f8c2a"
+        },
+        {
+          "label": "after order/eat",
+          "t": 328.25,
+          "sha256": "37fcbb0317dd364bb59b12a84f65d6243a0a414780a1d38fdd0c1f47c9eb5c80"
+        },
+        {
+          "label": "advanced",
+          "t": 332.25,
+          "sha256": "e20ce0076035fc54c32a1ea6d438130d4b255f2aa9a078820a8c5e8eaebcd842"
+        },
+        {
+          "label": "before order/rest",
+          "t": 332.25,
+          "sha256": "e20ce0076035fc54c32a1ea6d438130d4b255f2aa9a078820a8c5e8eaebcd842"
+        },
+        {
+          "label": "after order/rest",
+          "t": 332.25,
+          "sha256": "1cf3bd44748360ba089beec0fb22089161432518723c8d00b894ed79427702d0"
+        },
+        {
+          "label": "advanced",
+          "t": 338.75,
+          "sha256": "e7a62a50a87e7d9864198a02203c368b26510268bdb8455d87b3b98a3035be15"
+        },
+        {
+          "label": "before build/bench",
+          "t": 338.75,
+          "sha256": "e7a62a50a87e7d9864198a02203c368b26510268bdb8455d87b3b98a3035be15"
+        },
+        {
+          "label": "after build/bench",
+          "t": 338.75,
+          "sha256": "669a38125bdc4547539b5e39499f7d487714d1f2cc5462e555c4bbd922cba806"
+        },
+        {
+          "label": "advanced",
+          "t": 382.75,
+          "sha256": "a6b14bc610ea933131d376a0a818fd70205f43326ee542533baff0c159f5e252"
+        },
+        {
+          "label": "before select",
+          "t": 382.75,
+          "sha256": "a6b14bc610ea933131d376a0a818fd70205f43326ee542533baff0c159f5e252"
+        },
+        {
+          "label": "after select",
+          "t": 382.75,
+          "sha256": "a6b14bc610ea933131d376a0a818fd70205f43326ee542533baff0c159f5e252"
+        },
+        {
+          "label": "after household",
+          "t": 382.75,
+          "sha256": "63d692d68cb32cc5b86cc12fdb5608754ec936c899d8d0687c6316baba613e19"
+        },
+        {
+          "label": "advanced",
+          "t": 391,
+          "sha256": "fd3a073f806e4ffbc3fd3a25cb816a68ac6e5d94cb42bcb5ad9de7bbc6ed2bfe"
+        },
+        {
+          "label": "before select",
+          "t": 391,
+          "sha256": "fd3a073f806e4ffbc3fd3a25cb816a68ac6e5d94cb42bcb5ad9de7bbc6ed2bfe"
+        },
+        {
+          "label": "after select",
+          "t": 391,
+          "sha256": "fd3a073f806e4ffbc3fd3a25cb816a68ac6e5d94cb42bcb5ad9de7bbc6ed2bfe"
+        },
+        {
+          "label": "after household",
+          "t": 391,
+          "sha256": "9c2bc30cffbf094a818dd9c808153359174b9aff1f6f12d44004bd2f120a335e"
+        },
+        {
+          "label": "final",
+          "t": 391,
+          "sha256": "9c2bc30cffbf094a818dd9c808153359174b9aff1f6f12d44004bd2f120a335e"
+        }
+      ],
+      "speeds": [
+        0,
+        16,
+        0,
+        16,
+        0,
+        4,
+        0,
+        4,
+        0,
+        4,
+        0,
+        4,
+        0,
+        4,
+        0,
+        16,
+        0,
+        4,
+        0
+      ],
+      "errors": []
+    },
+    {
+      "index": 2,
+      "personality": "sociable",
+      "variant": "journey",
+      "width": 390,
+      "seconds": 391.25,
+      "minH": 37.3150000000027,
+      "minE": 21.849999999999994,
+      "finalStock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "finalOrder": null,
+      "finalHash": "a27a665202cb43713f1930a2dd2df52dae82ae5163937348576022465f827287",
+      "commands": [
+        {
+          "type": "build",
+          "id": "hut",
+          "t": 0,
+          "keyboard": true
+        },
+        {
+          "type": "build",
+          "id": "garden",
+          "t": 100.75,
+          "keyboard": false
+        },
+        {
+          "type": "build",
+          "id": "kitchen",
+          "t": 100.75,
+          "keyboard": false
+        },
+        {
+          "type": "household",
+          "place": "garden",
+          "id": "farm",
+          "t": 243,
+          "keyboard": true
+        },
+        {
+          "type": "household",
+          "place": "garden",
+          "id": "clear",
+          "t": 303.25,
+          "keyboard": true
+        },
+        {
+          "type": "order",
+          "id": "chop",
+          "t": 303.25,
+          "keyboard": false
+        },
+        {
+          "type": "order",
+          "id": "leisure",
+          "t": 318.5,
+          "keyboard": false
+        },
+        {
+          "type": "recipe",
+          "id": "basic",
+          "t": 318.5,
+          "keyboard": true
+        },
+        {
+          "type": "order",
+          "id": "eat",
+          "t": 328.5,
+          "keyboard": true
+        },
+        {
+          "type": "order",
+          "id": "rest",
+          "t": 332.5,
+          "keyboard": true
+        },
+        {
+          "type": "build",
+          "id": "bench",
+          "t": 339,
+          "keyboard": false
+        },
+        {
+          "type": "household",
+          "place": "bench",
+          "id": "leisure",
+          "t": 383,
+          "keyboard": true
+        },
+        {
+          "type": "household",
+          "place": "bench",
+          "id": "clear",
+          "t": 391.25,
+          "keyboard": true
+        }
+      ],
+      "checks": [
+        {
+          "label": "start",
+          "t": 0,
+          "sha256": "fdad89d6f84f773b47e152827d3d659b6753f2820cfcc16ba1a67f4303edd5d9"
+        },
+        {
+          "label": "before build/hut",
+          "t": 0,
+          "sha256": "fdad89d6f84f773b47e152827d3d659b6753f2820cfcc16ba1a67f4303edd5d9"
+        },
+        {
+          "label": "after build/hut",
+          "t": 0,
+          "sha256": "10555f801dbb433408ff1bbe0612a0c2afe17fb142e641d07a190bb6e986af05"
+        },
+        {
+          "label": "advanced",
+          "t": 100.75,
+          "sha256": "80018230b6ea3af70118dc7b2f81afa735a33dc65af29105db37150e4530f46c"
+        },
+        {
+          "label": "before build/garden",
+          "t": 100.75,
+          "sha256": "80018230b6ea3af70118dc7b2f81afa735a33dc65af29105db37150e4530f46c"
+        },
+        {
+          "label": "after build/garden",
+          "t": 100.75,
+          "sha256": "f4a6855d652fbe8c9d70d3b73dc0aea456e91a684dd824e2bf7fec5c5f95203f"
+        },
+        {
+          "label": "before build/kitchen",
+          "t": 100.75,
+          "sha256": "f4a6855d652fbe8c9d70d3b73dc0aea456e91a684dd824e2bf7fec5c5f95203f"
+        },
+        {
+          "label": "after build/kitchen",
+          "t": 100.75,
+          "sha256": "e2d705e6af2488dd7bca040742d90b3807436b7ee224cefc0307fd9d541a8a9f"
+        },
+        {
+          "label": "advanced",
+          "t": 243,
+          "sha256": "65362b760f6774bc07361fd5b84c9498ed9cc62b708f4db621877e75ed3016d0"
+        },
+        {
+          "label": "before select",
+          "t": 243,
+          "sha256": "65362b760f6774bc07361fd5b84c9498ed9cc62b708f4db621877e75ed3016d0"
+        },
+        {
+          "label": "after select",
+          "t": 243,
+          "sha256": "65362b760f6774bc07361fd5b84c9498ed9cc62b708f4db621877e75ed3016d0"
+        },
+        {
+          "label": "after household",
+          "t": 243,
+          "sha256": "e52c1e658b23def34a68c8d6b31e71cc50bcbbd74e5472a41a1d08bfc5678bd1"
+        },
+        {
+          "label": "advanced",
+          "t": 303.25,
+          "sha256": "3ef6cfee372c4316a148413de096bca4a0defa0e85fa1d5de52630d5be380490"
+        },
+        {
+          "label": "before select",
+          "t": 303.25,
+          "sha256": "3ef6cfee372c4316a148413de096bca4a0defa0e85fa1d5de52630d5be380490"
+        },
+        {
+          "label": "after select",
+          "t": 303.25,
+          "sha256": "3ef6cfee372c4316a148413de096bca4a0defa0e85fa1d5de52630d5be380490"
+        },
+        {
+          "label": "after household",
+          "t": 303.25,
+          "sha256": "eb9a8800935cf4d9a7e50300600fd27603afa5d744d73159881d28a0254189c0"
+        },
+        {
+          "label": "before order/chop",
+          "t": 303.25,
+          "sha256": "eb9a8800935cf4d9a7e50300600fd27603afa5d744d73159881d28a0254189c0"
+        },
+        {
+          "label": "after order/chop",
+          "t": 303.25,
+          "sha256": "d05ba9803506f38749b29c2d014676656c7220695e707e2310a4da226a0f0a83"
+        },
+        {
+          "label": "advanced",
+          "t": 318.5,
+          "sha256": "fafe07a5588b48e758ac8a0ee98e51246d31a5fbc2f0444a299ed942bbc1ac39"
+        },
+        {
+          "label": "before order/leisure",
+          "t": 318.5,
+          "sha256": "fafe07a5588b48e758ac8a0ee98e51246d31a5fbc2f0444a299ed942bbc1ac39"
+        },
+        {
+          "label": "after order/leisure",
+          "t": 318.5,
+          "sha256": "76c3e0adf114825ad5743e235f88aef2f5ec15100b1c8aeb4ed65cb844c1a49e"
+        },
+        {
+          "label": "before recipe/basic",
+          "t": 318.5,
+          "sha256": "76c3e0adf114825ad5743e235f88aef2f5ec15100b1c8aeb4ed65cb844c1a49e"
+        },
+        {
+          "label": "after recipe/basic",
+          "t": 318.5,
+          "sha256": "e22426dec64f0a1d6d1a87a297c28a2b3b2695c03d5db6a22379faad16a9db0f"
+        },
+        {
+          "label": "advanced",
+          "t": 328.5,
+          "sha256": "9fbbe2854ab81a475fac06c4fa0a90c6d0c978c119bfedd31c2b5cf03c6166a9"
+        },
+        {
+          "label": "before order/eat",
+          "t": 328.5,
+          "sha256": "9fbbe2854ab81a475fac06c4fa0a90c6d0c978c119bfedd31c2b5cf03c6166a9"
+        },
+        {
+          "label": "after order/eat",
+          "t": 328.5,
+          "sha256": "7fc815530c3e343eb5c0fd796400ee31641e5360d3ccd1d13944dcaa742fcc63"
+        },
+        {
+          "label": "advanced",
+          "t": 332.5,
+          "sha256": "914d72e2b4592329804216db0e3ce55a0187203cab0a30ae354cfd3c3e9ac1bc"
+        },
+        {
+          "label": "before order/rest",
+          "t": 332.5,
+          "sha256": "914d72e2b4592329804216db0e3ce55a0187203cab0a30ae354cfd3c3e9ac1bc"
+        },
+        {
+          "label": "after order/rest",
+          "t": 332.5,
+          "sha256": "072439db262d77e5000c87592b0fd47b5ae8683be725457bbcae908d80f19c69"
+        },
+        {
+          "label": "advanced",
+          "t": 339,
+          "sha256": "971ad64b52ba45927642645869151f740b41eedd0334d4ef91e68e8cec9590a7"
+        },
+        {
+          "label": "before build/bench",
+          "t": 339,
+          "sha256": "971ad64b52ba45927642645869151f740b41eedd0334d4ef91e68e8cec9590a7"
+        },
+        {
+          "label": "after build/bench",
+          "t": 339,
+          "sha256": "b2e76503a79c8dced2c083d6b54951559f9d7d259c7496310cca5477882055d5"
+        },
+        {
+          "label": "advanced",
+          "t": 383,
+          "sha256": "d1158d70451ed3553f18bab57f98113afc4faaee83a4601d5ee0beb0158e0fa3"
+        },
+        {
+          "label": "before select",
+          "t": 383,
+          "sha256": "d1158d70451ed3553f18bab57f98113afc4faaee83a4601d5ee0beb0158e0fa3"
+        },
+        {
+          "label": "after select",
+          "t": 383,
+          "sha256": "d1158d70451ed3553f18bab57f98113afc4faaee83a4601d5ee0beb0158e0fa3"
+        },
+        {
+          "label": "after household",
+          "t": 383,
+          "sha256": "b5343728bed8fa92abb98861e2268280e063f6f2a2def93c2009ae55bd8d399b"
+        },
+        {
+          "label": "advanced",
+          "t": 391.25,
+          "sha256": "3fec0ff626757ff0de787af132e545f1d1e2e5593b02fae46f84838aaff72c13"
+        },
+        {
+          "label": "before select",
+          "t": 391.25,
+          "sha256": "3fec0ff626757ff0de787af132e545f1d1e2e5593b02fae46f84838aaff72c13"
+        },
+        {
+          "label": "after select",
+          "t": 391.25,
+          "sha256": "3fec0ff626757ff0de787af132e545f1d1e2e5593b02fae46f84838aaff72c13"
+        },
+        {
+          "label": "after household",
+          "t": 391.25,
+          "sha256": "a27a665202cb43713f1930a2dd2df52dae82ae5163937348576022465f827287"
+        },
+        {
+          "label": "final",
+          "t": 391.25,
+          "sha256": "a27a665202cb43713f1930a2dd2df52dae82ae5163937348576022465f827287"
+        }
+      ],
+      "speeds": [
+        0,
+        16,
+        0,
+        16,
+        0,
+        4,
+        0,
+        4,
+        0,
+        4,
+        0,
+        4,
+        0,
+        4,
+        0,
+        16,
+        0,
+        4,
+        0
+      ],
+      "errors": []
+    },
+    {
+      "index": 3,
+      "personality": "diligent",
+      "variant": "worksite",
+      "width": 1440,
+      "seconds": 386,
+      "minH": 35.915000000002834,
+      "minE": 22.049999999999994,
+      "finalStock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "finalOrder": null,
+      "finalHash": "5c4385ff406fa5b7641a4249a5483c82342b6ce8e51d449388c4d4227ae549ca",
+      "commands": [
+        {
+          "type": "build",
+          "id": "hut",
+          "t": 0,
+          "keyboard": true
+        },
+        {
+          "type": "pause",
+          "id": "hut",
+          "t": 15.5,
+          "keyboard": true
+        },
+        {
+          "type": "order",
+          "id": "forage",
+          "t": 15.5,
+          "keyboard": false
+        },
+        {
+          "type": "pause",
+          "id": "hut",
+          "t": 29.5,
+          "keyboard": false
+        },
+        {
+          "type": "clear",
+          "t": 29.5,
+          "keyboard": false
+        },
+        {
+          "type": "build",
+          "id": "garden",
+          "t": 115.25,
+          "keyboard": false
+        },
+        {
+          "type": "build",
+          "id": "kitchen",
+          "t": 115.25,
+          "keyboard": false
+        },
+        {
+          "type": "household",
+          "place": "garden",
+          "id": "farm",
+          "t": 237,
+          "keyboard": true
+        },
+        {
+          "type": "household",
+          "place": "garden",
+          "id": "clear",
+          "t": 298,
+          "keyboard": true
+        },
+        {
+          "type": "order",
+          "id": "chop",
+          "t": 298,
+          "keyboard": false
+        },
+        {
+          "type": "order",
+          "id": "leisure",
+          "t": 313.25,
+          "keyboard": false
+        },
+        {
+          "type": "recipe",
+          "id": "basic",
+          "t": 313.25,
+          "keyboard": true
+        },
+        {
+          "type": "order",
+          "id": "eat",
+          "t": 323.25,
+          "keyboard": true
+        },
+        {
+          "type": "order",
+          "id": "rest",
+          "t": 327.25,
+          "keyboard": true
+        },
+        {
+          "type": "build",
+          "id": "bench",
+          "t": 333.75,
+          "keyboard": false
+        },
+        {
+          "type": "household",
+          "place": "bench",
+          "id": "leisure",
+          "t": 377.75,
+          "keyboard": true
+        },
+        {
+          "type": "household",
+          "place": "bench",
+          "id": "clear",
+          "t": 386,
+          "keyboard": true
+        }
+      ],
+      "checks": [
+        {
+          "label": "start",
+          "t": 0,
+          "sha256": "6f41b84495b5944cbd609f45342a07bae49188540e328cc66d2e448778bc70bb"
+        },
+        {
+          "label": "before build/hut",
+          "t": 0,
+          "sha256": "6f41b84495b5944cbd609f45342a07bae49188540e328cc66d2e448778bc70bb"
+        },
+        {
+          "label": "after build/hut",
+          "t": 0,
+          "sha256": "9aad9a30f092395b28b9b6ff415922616dbde9a96b59183d78a6f1be1361c60d"
+        },
+        {
+          "label": "advanced",
+          "t": 15.5,
+          "sha256": "dc5c371bd27d808946edcfbbf230f55b04e56e7145a7e489301dddae5ad117af"
+        },
+        {
+          "label": "before pause/hut",
+          "t": 15.5,
+          "sha256": "dc5c371bd27d808946edcfbbf230f55b04e56e7145a7e489301dddae5ad117af"
+        },
+        {
+          "label": "after pause/hut",
+          "t": 15.5,
+          "sha256": "13de25d55cdb5f973a2e9992e4d7ec9e30acd5ab79b987c480fc149417563cde"
+        },
+        {
+          "label": "before order/forage",
+          "t": 15.5,
+          "sha256": "13de25d55cdb5f973a2e9992e4d7ec9e30acd5ab79b987c480fc149417563cde"
+        },
+        {
+          "label": "after order/forage",
+          "t": 15.5,
+          "sha256": "1f5e437877ed7ce11b5fe145af7a5ec6d8831dd7f8d34a23ad08f9de22da9e60"
+        },
+        {
+          "label": "advanced",
+          "t": 29.5,
+          "sha256": "a4ff4139de93e154b848b08861b0eea0424976c79155968038ccf69f036f54b0"
+        },
+        {
+          "label": "before pause/hut",
+          "t": 29.5,
+          "sha256": "a4ff4139de93e154b848b08861b0eea0424976c79155968038ccf69f036f54b0"
+        },
+        {
+          "label": "after pause/hut",
+          "t": 29.5,
+          "sha256": "3f34e3ef22f1a266e6239b1f1f02f9e267bb28159e9049feceb520b729981e9e"
+        },
+        {
+          "label": "before clear/undefined",
+          "t": 29.5,
+          "sha256": "3f34e3ef22f1a266e6239b1f1f02f9e267bb28159e9049feceb520b729981e9e"
+        },
+        {
+          "label": "after clear/undefined",
+          "t": 29.5,
+          "sha256": "15a22eebc57a246f5f9deb7b86e46332f14dd0c21eccb2f88be4736157a14e10"
+        },
+        {
+          "label": "advanced",
+          "t": 115.25,
+          "sha256": "09bcd1bb3a3d62732393054c4c832a59f9d526a707e23c73302f458485cc7d49"
+        },
+        {
+          "label": "before build/garden",
+          "t": 115.25,
+          "sha256": "09bcd1bb3a3d62732393054c4c832a59f9d526a707e23c73302f458485cc7d49"
+        },
+        {
+          "label": "after build/garden",
+          "t": 115.25,
+          "sha256": "328c7088b959cde25c94b5be19e4e96546055f8b44da3ce0eae7a06b32a9ec31"
+        },
+        {
+          "label": "before build/kitchen",
+          "t": 115.25,
+          "sha256": "328c7088b959cde25c94b5be19e4e96546055f8b44da3ce0eae7a06b32a9ec31"
+        },
+        {
+          "label": "after build/kitchen",
+          "t": 115.25,
+          "sha256": "eb1768b8c4dcc65b023d9ad867f04a2d402061028e427c392df012698ebea521"
+        },
+        {
+          "label": "advanced",
+          "t": 237,
+          "sha256": "a60b63117c99c8954c7176a0300a05b9047d17f6ac4c450782d59667e438dd25"
+        },
+        {
+          "label": "before select",
+          "t": 237,
+          "sha256": "a60b63117c99c8954c7176a0300a05b9047d17f6ac4c450782d59667e438dd25"
+        },
+        {
+          "label": "after select",
+          "t": 237,
+          "sha256": "a60b63117c99c8954c7176a0300a05b9047d17f6ac4c450782d59667e438dd25"
+        },
+        {
+          "label": "after household",
+          "t": 237,
+          "sha256": "22f76a23342cdca304b4f9fdbf7561158aee8276836117ab627cbc5098a2dd91"
+        },
+        {
+          "label": "advanced",
+          "t": 298,
+          "sha256": "b386f5951015195fa916845a92a43b9d1748d507526e7b74d9cacae37d369ab8"
+        },
+        {
+          "label": "before select",
+          "t": 298,
+          "sha256": "b386f5951015195fa916845a92a43b9d1748d507526e7b74d9cacae37d369ab8"
+        },
+        {
+          "label": "after select",
+          "t": 298,
+          "sha256": "b386f5951015195fa916845a92a43b9d1748d507526e7b74d9cacae37d369ab8"
+        },
+        {
+          "label": "after household",
+          "t": 298,
+          "sha256": "4ddd241cad704a13b851ce1432e270f9cf8fb3262879a242f3f3304c20706fd3"
+        },
+        {
+          "label": "before order/chop",
+          "t": 298,
+          "sha256": "4ddd241cad704a13b851ce1432e270f9cf8fb3262879a242f3f3304c20706fd3"
+        },
+        {
+          "label": "after order/chop",
+          "t": 298,
+          "sha256": "d581e1db340bde472601fb51b0592e668b75c385d2807cd7753d258ba531e408"
+        },
+        {
+          "label": "advanced",
+          "t": 313.25,
+          "sha256": "fcfca219815bb03c1964ba4f6f69b4c0cfecca4c6644743941ef400f73ffa92e"
+        },
+        {
+          "label": "before order/leisure",
+          "t": 313.25,
+          "sha256": "fcfca219815bb03c1964ba4f6f69b4c0cfecca4c6644743941ef400f73ffa92e"
+        },
+        {
+          "label": "after order/leisure",
+          "t": 313.25,
+          "sha256": "693ce14b2368b9eedd5e297beab9e7539093c64f4a5beedb026ec201b3851701"
+        },
+        {
+          "label": "before recipe/basic",
+          "t": 313.25,
+          "sha256": "693ce14b2368b9eedd5e297beab9e7539093c64f4a5beedb026ec201b3851701"
+        },
+        {
+          "label": "after recipe/basic",
+          "t": 313.25,
+          "sha256": "536d3e2b05677abd312a607bca1c125c0c1f59b0df923d3d5488bcd7b6eb0277"
+        },
+        {
+          "label": "advanced",
+          "t": 323.25,
+          "sha256": "e6002a12e43a5ec9db2cfa1db79d398ffa140aabbc8066e33f5972c7b9b4981a"
+        },
+        {
+          "label": "before order/eat",
+          "t": 323.25,
+          "sha256": "e6002a12e43a5ec9db2cfa1db79d398ffa140aabbc8066e33f5972c7b9b4981a"
+        },
+        {
+          "label": "after order/eat",
+          "t": 323.25,
+          "sha256": "bb90075418ca28fa5369eeede75545dc3754be323ac268197fabb5962b2a12da"
+        },
+        {
+          "label": "advanced",
+          "t": 327.25,
+          "sha256": "5790d70d23e30fcde73c3cb0877e034e17515bb5d8a1cf3493dbb1c47b21dd3e"
+        },
+        {
+          "label": "before order/rest",
+          "t": 327.25,
+          "sha256": "5790d70d23e30fcde73c3cb0877e034e17515bb5d8a1cf3493dbb1c47b21dd3e"
+        },
+        {
+          "label": "after order/rest",
+          "t": 327.25,
+          "sha256": "13543c7cf2a3364e4c64f3c42facd25e0da3c55bb3c9ae8aefeecfb86a95bf6c"
+        },
+        {
+          "label": "advanced",
+          "t": 333.75,
+          "sha256": "457defdb42b5d68ecabcac3d25e5ca8838da34d2fff4a22452df4b705426c670"
+        },
+        {
+          "label": "before build/bench",
+          "t": 333.75,
+          "sha256": "457defdb42b5d68ecabcac3d25e5ca8838da34d2fff4a22452df4b705426c670"
+        },
+        {
+          "label": "after build/bench",
+          "t": 333.75,
+          "sha256": "9d25a43d788dff021fd3e6f8f4ad1e701340682b1c14b97d7fc56b60230493e4"
+        },
+        {
+          "label": "advanced",
+          "t": 377.75,
+          "sha256": "ee61283ba461fc5a1c82379c95842546546a5392c9a5ac29c811b1e498ab93b3"
+        },
+        {
+          "label": "before select",
+          "t": 377.75,
+          "sha256": "ee61283ba461fc5a1c82379c95842546546a5392c9a5ac29c811b1e498ab93b3"
+        },
+        {
+          "label": "after select",
+          "t": 377.75,
+          "sha256": "ee61283ba461fc5a1c82379c95842546546a5392c9a5ac29c811b1e498ab93b3"
+        },
+        {
+          "label": "after household",
+          "t": 377.75,
+          "sha256": "d53877dda7769b19c7b69f256b80e950c13109bb2545927cf4b98646f7a3c8e3"
+        },
+        {
+          "label": "advanced",
+          "t": 386,
+          "sha256": "a379c383d4d2a15ed5f560a8ff6ee993d7b7889f115ce4a736c8d318b3ed92a6"
+        },
+        {
+          "label": "before select",
+          "t": 386,
+          "sha256": "a379c383d4d2a15ed5f560a8ff6ee993d7b7889f115ce4a736c8d318b3ed92a6"
+        },
+        {
+          "label": "after select",
+          "t": 386,
+          "sha256": "a379c383d4d2a15ed5f560a8ff6ee993d7b7889f115ce4a736c8d318b3ed92a6"
+        },
+        {
+          "label": "after household",
+          "t": 386,
+          "sha256": "5c4385ff406fa5b7641a4249a5483c82342b6ce8e51d449388c4d4227ae549ca"
+        },
+        {
+          "label": "final",
+          "t": 386,
+          "sha256": "5c4385ff406fa5b7641a4249a5483c82342b6ce8e51d449388c4d4227ae549ca"
+        }
+      ],
+      "speeds": [
+        0,
+        4,
+        0,
+        4,
+        0,
+        16,
+        0,
+        16,
+        0,
+        4,
+        0,
+        4,
+        0,
+        4,
+        0,
+        4,
+        0,
+        4,
+        0,
+        16,
+        0,
+        4,
+        0
+      ],
+      "errors": []
+    },
+    {
+      "index": 4,
+      "personality": "quiet",
+      "variant": "interrupted-meal",
+      "width": 390,
+      "seconds": 31.5,
+      "minH": 60.625000000000426,
+      "minE": 58,
+      "finalStock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "finalOrder": null,
+      "finalHash": "476affd94f1b1da4122507dfb7b29e19e422fad393f0dd60aabc2743a030796a",
+      "commands": [
+        {
+          "type": "order",
+          "id": "forage",
+          "t": 0,
+          "keyboard": true
+        },
+        {
+          "type": "order",
+          "id": "rest",
+          "t": 5.75,
+          "keyboard": true
+        },
+        {
+          "type": "order",
+          "id": "forage",
+          "t": 5.75,
+          "keyboard": false
+        },
+        {
+          "type": "order",
+          "id": "eat",
+          "t": 29.5,
+          "keyboard": true
+        },
+        {
+          "type": "save",
+          "t": 29.75,
+          "keyboard": false
+        },
+        {
+          "type": "load",
+          "t": 29.75,
+          "keyboard": false
+        }
+      ],
+      "checks": [
+        {
+          "label": "start",
+          "t": 0,
+          "sha256": "2ffdb87a0d40c7c9beb87a965ca9014b67097372a961b91bc08a38d0ff747afa"
+        },
+        {
+          "label": "before order/forage",
+          "t": 0,
+          "sha256": "2ffdb87a0d40c7c9beb87a965ca9014b67097372a961b91bc08a38d0ff747afa"
+        },
+        {
+          "label": "after order/forage",
+          "t": 0,
+          "sha256": "2bd71d8935c2a8331cb9ddad3a52b36b1562e92bb3827424fadc053f74ed083d"
+        },
+        {
+          "label": "advanced",
+          "t": 5.75,
+          "sha256": "ed0bd91f6978e804bcb2052c2095dda404588fc4a12d4623da2c90d3573e9779"
+        },
+        {
+          "label": "before order/rest",
+          "t": 5.75,
+          "sha256": "ed0bd91f6978e804bcb2052c2095dda404588fc4a12d4623da2c90d3573e9779"
+        },
+        {
+          "label": "after order/rest",
+          "t": 5.75,
+          "sha256": "b12591955d423d0ae963b0c232d38b4acfd8ca7801c1dda1dbb0cf31694fc324"
+        },
+        {
+          "label": "before order/forage",
+          "t": 5.75,
+          "sha256": "b12591955d423d0ae963b0c232d38b4acfd8ca7801c1dda1dbb0cf31694fc324"
+        },
+        {
+          "label": "after order/forage",
+          "t": 5.75,
+          "sha256": "91a2a38d118cb6d2151fa85f099900b7648f39ffd1a3d520d5394f170c1d9eda"
+        },
+        {
+          "label": "advanced",
+          "t": 29.5,
+          "sha256": "9d2015e2b50571dcc7280a671da22b0ddf405f794f048a19606edf0ec404ca5d"
+        },
+        {
+          "label": "before order/eat",
+          "t": 29.5,
+          "sha256": "9d2015e2b50571dcc7280a671da22b0ddf405f794f048a19606edf0ec404ca5d"
+        },
+        {
+          "label": "after order/eat",
+          "t": 29.5,
+          "sha256": "7c92ed6a57c2b67a67cae64e1e63a10cfe0f3f3cf8d87f7e6171ecf8b7ad1c83"
+        },
+        {
+          "label": "advanced",
+          "t": 29.75,
+          "sha256": "7024c4d640aafe63c1b46924303d5a651951bff8fd7f3b512fd27d2d13bba593"
+        },
+        {
+          "label": "before save/undefined",
+          "t": 29.75,
+          "sha256": "7024c4d640aafe63c1b46924303d5a651951bff8fd7f3b512fd27d2d13bba593"
+        },
+        {
+          "label": "after save/undefined",
+          "t": 29.75,
+          "sha256": "7024c4d640aafe63c1b46924303d5a651951bff8fd7f3b512fd27d2d13bba593"
+        },
+        {
+          "label": "before load/undefined",
+          "t": 29.75,
+          "sha256": "7024c4d640aafe63c1b46924303d5a651951bff8fd7f3b512fd27d2d13bba593"
+        },
+        {
+          "label": "after load/undefined",
+          "t": 29.75,
+          "sha256": "7024c4d640aafe63c1b46924303d5a651951bff8fd7f3b512fd27d2d13bba593"
+        },
+        {
+          "label": "advanced",
+          "t": 31.5,
+          "sha256": "476affd94f1b1da4122507dfb7b29e19e422fad393f0dd60aabc2743a030796a"
+        },
+        {
+          "label": "final",
+          "t": 31.5,
+          "sha256": "476affd94f1b1da4122507dfb7b29e19e422fad393f0dd60aabc2743a030796a"
+        }
+      ],
+      "speeds": [
+        0,
+        1,
+        0,
+        4,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "errors": []
+    },
+    {
+      "index": 5,
+      "personality": "sociable",
+      "variant": "preview",
+      "width": 390,
+      "seconds": 0,
+      "minH": 65,
+      "minE": 68,
+      "finalStock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "finalOrder": null,
+      "finalHash": "4842dd3fb79188c354beb15714edb62424eadd95d614f8df2fc643090a35a695",
+      "commands": [
+        {
+          "type": "build",
+          "id": "hut",
+          "t": 0,
+          "keyboard": true
+        }
+      ],
+      "checks": [
+        {
+          "label": "start",
+          "t": 0,
+          "sha256": "88787e3044b72b2ee8083233cdef233e3df2611dc633f66e31d0f30a372c906f"
+        },
+        {
+          "label": "preview only",
+          "t": 0,
+          "sha256": "88787e3044b72b2ee8083233cdef233e3df2611dc633f66e31d0f30a372c906f"
+        },
+        {
+          "label": "cancel preview",
+          "t": 0,
+          "sha256": "88787e3044b72b2ee8083233cdef233e3df2611dc633f66e31d0f30a372c906f"
+        },
+        {
+          "label": "before build/hut",
+          "t": 0,
+          "sha256": "88787e3044b72b2ee8083233cdef233e3df2611dc633f66e31d0f30a372c906f"
+        },
+        {
+          "label": "after build/hut",
+          "t": 0,
+          "sha256": "4842dd3fb79188c354beb15714edb62424eadd95d614f8df2fc643090a35a695"
+        },
+        {
+          "label": "inspect only",
+          "t": 0,
+          "sha256": "4842dd3fb79188c354beb15714edb62424eadd95d614f8df2fc643090a35a695"
+        },
+        {
+          "label": "hide markers only",
+          "t": 0,
+          "sha256": "4842dd3fb79188c354beb15714edb62424eadd95d614f8df2fc643090a35a695"
+        },
+        {
+          "label": "show markers only",
+          "t": 0,
+          "sha256": "4842dd3fb79188c354beb15714edb62424eadd95d614f8df2fc643090a35a695"
+        },
+        {
+          "label": "paused repaint only",
+          "t": 0,
+          "sha256": "4842dd3fb79188c354beb15714edb62424eadd95d614f8df2fc643090a35a695"
+        },
+        {
+          "label": "final",
+          "t": 0,
+          "sha256": "4842dd3fb79188c354beb15714edb62424eadd95d614f8df2fc643090a35a695"
+        }
+      ],
+      "speeds": [
+        0
+      ],
+      "errors": []
+    }
+  ],
+  "evidenceReuse": "First four full-route results unchanged; same preview-only route rechecked after minimum initialization corrected from100 to actual initial65/68. Original full-run log retained; no game code changed."
+}

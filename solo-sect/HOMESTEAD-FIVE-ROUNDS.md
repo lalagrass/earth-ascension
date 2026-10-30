@@ -84,3 +84,15 @@ H46–H49已分別修入口資格、泛用餐收尾、focus與DOM穩定；仍缺
 驗收：每條記實際command/t/world hash、所用倍速、正常UI圖、pageerror/溢出；主餐一次/原工程材料/飢餓精力/暫停與取消/讀檔/三性情皆正常。最後適用481聚合、既有五seed/48路長程/保留矩陣全留；非作者獨立看工具方法/抽查一短路與真收據（能跑才稱實跑）。發現具體差異定位最小修，沒差異也不捏造新功能。五輪到此停止，真人/其他引擎仍另列，不開第6輪。
 
 來源：[Factorio開發者FFF188（2017）](https://factorio.com/blog/post/fff-188)介紹相同輸入/每拍狀態一致及差異報告；只借命令與狀態對照的除錯原則，Factorio是商業遊戲，不稱全開源，不搬多人/網路/工業鏈。[Playwright官方Actions](https://playwright.dev/docs/input)用可操作input/keys驗真正UI，不用programmatic click或force迴避actionability。此前CDDA活動完成/取消概念仍是有限生命週期參照。未執行外部遊戲、無第三方code/素材採用。
+
+### H50結果／第5輪完成
+
+作者正常UI五路全部通過，共161停點/50已接受命令，每停點完整JSON（含log）與獨立實例的相同public API/實際世界拍回放相同後記hash。三性情完整基本家園路：quiet t391、sociable391.25、diligent含真在途暫停/返倉/續工t386；另採集中改令/餐中原存讀t31.5、preview純讀t0。每路實際命令/倍率/拍數/庫存/需要/hash在FIVE5-UI.json；這些不同輸入時間不能當性情速度或1×壁鐘比較。模型與瀏覽器共享規則，是UI接線/命令契約證據，非獨立引擎實作，也非每個瀏覽器拍都有讀取。
+
+工具初將min起始設100，使零tick preview錯報100；改讀真初始65/68，只重跑相同preview短路修正，前4路實測min都更低所以結果保留，main明列evidenceReuse。舊全跑log保留不改，不以改sample/閾值遮失敗。作者preview重驗拷貝在deliverables/author-preview，非作者獨立route5拷貝另留review-preview，不混入作者範圍。
+
+最後聚合481/481（26.50秒；同時UI運行，不作效能比較）。非作者唯讀核工具不向UI注入world/資源/tick，不弱化JSON/含log比較；獨立只抽route5：10檢查/1build/t0，hash4842dd3fb79188c354beb15714edb62424eadd95d614f8df2fc643090a35a695、min65/68，PASS並自動關browser。另看作者route1/3真圖/主收據，無阻擋。五路161與481均作者，不冒稱非作者全跑、人類或跨引擎。
+
+本輪結案再核[Widelands社群#5275](https://github.com/widelands/widelands/issues/5275)：2022–2023對缺料工地占住builder是否該靠更多微管理按鈕有不同觀點，2025-05-31已completed（#6208）。只作歷史失敗模式/少堆新按鈕的反省，不稱當前未修，也不搬多工人排程；本輪用真world/API對照而非假稱架構已相同。
+
+H46–H50恰好五輪完成，停止。真人/其他引擎等未測列review與腳本，下一步只提案不開H51/第6輪；不push/upload/部署。
