@@ -74,6 +74,15 @@ export function createHomestead({ name = '無名', personality = 'quiet', mode =
   note(s, `${s.person.name}來到荒地。先找吃的，再搭一間能安睡的木屋。`); return s;
 }
 
+// Shared read-only target for the executor and its direction overlay.
+export function buildDestination(s,t=s.person.task){
+ if(t?.act!=='build'||!s.fac[t.place]?.site)return null;
+ if(t.phase==='fetch')return HOME;
+ if(t.phase==='deliver')return jobPoint(s,t.place);
+ if(t.phase!=='go')return null;
+ const v=s.fac[t.place].site;
+ return t.step==='craft'?PLACES.workbench:t.step==='pickup'?v.assemblyAt:t.step==='install'?PLACES[t.place]:jobPoint(s,t.place);
+}
 export function blueprintReason(s,id){
   if(typeof id!=='string'||!Object.hasOwn(FACILITIES,id)||!Object.hasOwn(s.fac,id))return '沒有這個地塊';
   const st=s.fac[id],next=FACILITIES[id].stages[st.stage+1];
@@ -412,7 +421,7 @@ function tickQuarter(s,dt) {
   const t = p.task;
   if (!t) return;
   if (t.phase === 'fetch') {
-    if (travel(p, HOME, dt)) {
+    if (travel(p, buildDestination(s,t), dt)) {
       const v = s.fac[t.place].site;
       if (!v || s.stock[t.mat] <= 0 || v.delivered[t.mat] + v.reserved[t.mat] >= v.need[t.mat]) { p.task = null; return; }
       s.stock[t.mat]--; v.reserved[t.mat]++; p.carry = { kind: t.mat, amount: 1, origin: 'site' }; t.phase = 'deliver';
@@ -420,7 +429,7 @@ function tickQuarter(s,dt) {
     return;
   }
   if (t.phase === 'deliver') {
-    if (travel(p, jobPoint(s,t.place), dt)) {
+    if (travel(p, buildDestination(s,t), dt)) {
       const v = s.fac[t.place]?.site, c = p.carry;
       if (v && c) { v.reserved[c.kind]--; v.delivered[c.kind] += c.amount; p.carry = null; note(s, `木料搬到${FACILITIES[t.place].label}工地。`); }
       p.task = null;
@@ -429,7 +438,7 @@ function tickQuarter(s,dt) {
   }
   if(t.phase==='go'){
     const v=t.act==='build'?s.fac[t.place]?.site:null;
-    const destination=t.act==='build'?(t.step==='craft'?PLACES.workbench:t.step==='pickup'?v.assemblyAt:t.step==='install'?PLACES[t.place]:jobPoint(s,t.place)):pos(t.place);
+    const destination=t.act==='build'?buildDestination(s,t):pos(t.place);
     const arrived=travel(p,destination,dt);if(t.step==='install')v.assemblyAt=[...p.pos];if(!arrived)return;
     if(t.step==='pickup'){t.step='install';return;}t.phase='do';t.timer=0;
   }

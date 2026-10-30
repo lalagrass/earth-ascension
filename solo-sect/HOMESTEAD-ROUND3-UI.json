@@ -1,0 +1,553 @@
+{
+  "route": "normal UI zero grants; mixed pause/4x/16x; AI not human",
+  "engine": "154.0.8037.57",
+  "changes": 1082,
+  "events": [
+    {
+      "name": "real first-house wood delivery",
+      "wall": 4.434,
+      "t": 15.5,
+      "day": 1,
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "task": {
+        "act": "build",
+        "phase": "deliver",
+        "place": "hut",
+        "mat": "wood",
+        "timer": 0
+      },
+      "hunger": 62.83000000000021,
+      "energy": 61,
+      "bed": {
+        "stage": 0,
+        "site": null
+      },
+      "carry": {
+        "kind": "wood",
+        "amount": 1,
+        "origin": "site"
+      },
+      "hut": {
+        "stage": 0,
+        "site": {
+          "need": {
+            "wood": 5
+          },
+          "delivered": {
+            "wood": 0
+          },
+          "reserved": {
+            "wood": 1
+          },
+          "work": 0,
+          "workNeed": 15,
+          "crafted": 0,
+          "assemblyAt": null,
+          "paused": false
+        }
+      },
+      "route": {
+        "from": [
+          445,
+          345
+        ],
+        "to": [
+          440,
+          225
+        ],
+        "text": "正運來1木；已離庫，交到後才算已交"
+      },
+      "info": "簡陋木屋：立樁備料。已交0/5木，在途1木，待運4木；施工／安裝0/15。主角正搬木料到這個工地。建好後：休息每秒恢復 6 精力。",
+      "flow": "正運來1木；已離庫，交到後才算已交。線顯示既有任務的直線方向，不是新導航或可走路徑驗證。"
+    },
+    {
+      "name": "paused delivery outside reservation",
+      "wall": 4.7,
+      "t": 15.5,
+      "day": 1,
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "task": null,
+      "hunger": 62.83000000000021,
+      "energy": 61,
+      "bed": {
+        "stage": 0,
+        "site": null
+      },
+      "carry": {
+        "kind": "wood",
+        "amount": 1,
+        "origin": "wild"
+      },
+      "hut": {
+        "stage": 0,
+        "site": {
+          "need": {
+            "wood": 5
+          },
+          "delivered": {
+            "wood": 0
+          },
+          "reserved": {
+            "wood": 0
+          },
+          "work": 0,
+          "workNeed": 15,
+          "crafted": 0,
+          "assemblyAt": null,
+          "paused": true
+        }
+      },
+      "route": null,
+      "info": "簡陋木屋：立樁備料。已交0/5木，在途0木，待運5木；施工／安裝0/15。工程已暫停；材料與已施工進度保留，按繼續才會復工。建好後：休息每秒恢復 6 精力。",
+      "flow": "目前沒有前往這個工地的行走任務；原地工作、吃睡或其他工作不畫假路線。"
+    },
+    {
+      "name": "released wood physically returned",
+      "wall": 4.816,
+      "t": 15.75,
+      "day": 1,
+      "stock": {
+        "berries": 0,
+        "wood": 1,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "task": null,
+      "hunger": 62.795000000000215,
+      "energy": 61,
+      "bed": {
+        "stage": 0,
+        "site": null
+      },
+      "carry": null,
+      "hut": {
+        "stage": 0,
+        "site": {
+          "need": {
+            "wood": 5
+          },
+          "delivered": {
+            "wood": 0
+          },
+          "reserved": {
+            "wood": 0
+          },
+          "work": 0,
+          "workNeed": 15,
+          "crafted": 0,
+          "assemblyAt": null,
+          "paused": true
+        }
+      },
+      "route": null,
+      "info": "簡陋木屋：立樁備料。已交0/5木，在途0木，待運5木；施工／安裝0/15。工程已暫停；材料與已施工進度保留，按繼續才會復工。建好後：休息每秒恢復 6 精力。",
+      "flow": "目前沒有前往這個工地的行走任務；原地工作、吃睡或其他工作不畫假路線。"
+    },
+    {
+      "name": "first house complete",
+      "wall": 10.284,
+      "t": 100.75,
+      "day": 1,
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "task": null,
+      "hunger": 50.895000000001374,
+      "energy": 26.349999999999994,
+      "bed": {
+        "stage": 0,
+        "site": null
+      },
+      "carry": null,
+      "hut": {
+        "stage": 1,
+        "site": null
+      },
+      "route": null,
+      "info": "簡陋木屋：上樑覆頂。已交5/5木，在途0木，待運0木；施工／安裝12.5/15。主角正在此處施工／安裝。建好後：休息每秒恢復 6 精力。",
+      "flow": "目前沒有前往這個工地的行走任務；原地工作、吃睡或其他工作不畫假路線。"
+    },
+    {
+      "name": "garden 1",
+      "wall": 14.905,
+      "t": 174.75,
+      "day": 1,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "task": null,
+      "hunger": 40.535000000002384,
+      "energy": 70.15000000000009,
+      "bed": {
+        "stage": 0,
+        "site": null
+      },
+      "carry": null,
+      "hut": {
+        "stage": 1,
+        "site": null
+      },
+      "route": null,
+      "info": "簡陋木屋：休息每秒恢復 6 精力。可繼續生活。",
+      "flow": "目前沒有前往這個工地的行走任務；原地工作、吃睡或其他工作不畫假路線。"
+    },
+    {
+      "name": "kitchen 1",
+      "wall": 19.55,
+      "t": 249,
+      "day": 2,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "task": null,
+      "hunger": 56.1400000000034,
+      "energy": 42.25000000000021,
+      "bed": {
+        "stage": 0,
+        "site": null
+      },
+      "carry": null,
+      "hut": {
+        "stage": 1,
+        "site": null
+      },
+      "route": null,
+      "info": "簡陋木屋：休息每秒恢復 6 精力。可繼續生活。",
+      "flow": "目前沒有前往這個工地的行走任務；原地工作、吃睡或其他工作不畫假路線。"
+    },
+    {
+      "name": "bed 1",
+      "wall": 25.233,
+      "t": 340,
+      "day": 2,
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "task": null,
+      "hunger": 43.40000000000464,
+      "energy": 81.60000000000036,
+      "bed": {
+        "stage": 1,
+        "site": null
+      },
+      "carry": null,
+      "hut": {
+        "stage": 1,
+        "site": null
+      },
+      "route": null,
+      "info": "簡陋木屋：休息每秒恢復 6 精力。可繼續生活。",
+      "flow": "目前沒有前往這個工地的行走任務；原地工作、吃睡或其他工作不畫假路線。"
+    },
+    {
+      "name": "workbench 1",
+      "wall": 30.121,
+      "t": 418.25,
+      "day": 2,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 1,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "task": null,
+      "hunger": 58.445000000005706,
+      "energy": 55.80000000000032,
+      "bed": {
+        "stage": 1,
+        "site": null
+      },
+      "carry": null,
+      "hut": {
+        "stage": 1,
+        "site": null
+      },
+      "route": null,
+      "info": "簡陋木屋：休息每秒恢復 6 精力。可繼續生活。",
+      "flow": "目前沒有前往這個工地的行走任務；原地工作、吃睡或其他工作不畫假路線。"
+    },
+    {
+      "name": "kitchen 2",
+      "wall": 36.055,
+      "t": 513,
+      "day": 3,
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 1,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "task": null,
+      "hunger": 45.180000000007,
+      "energy": 24.600000000000243,
+      "bed": {
+        "stage": 1,
+        "site": null
+      },
+      "carry": null,
+      "hut": {
+        "stage": 1,
+        "site": null
+      },
+      "route": null,
+      "info": "簡陋木屋：休息每秒恢復 6 精力。可繼續生活。",
+      "flow": "目前沒有前往這個工地的行走任務；原地工作、吃睡或其他工作不畫假路線。"
+    },
+    {
+      "name": "crafted bed parts really moving home",
+      "wall": 71.581,
+      "t": 654.75,
+      "day": 3,
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "task": {
+        "act": "build",
+        "phase": "go",
+        "place": "bed",
+        "timer": 0,
+        "step": "install"
+      },
+      "hunger": 77.33500000000893,
+      "energy": 49.300000000000196,
+      "bed": {
+        "stage": 1,
+        "site": {
+          "need": {
+            "wood": 4
+          },
+          "delivered": {
+            "wood": 4
+          },
+          "reserved": {
+            "wood": 0
+          },
+          "work": 0,
+          "workNeed": 6,
+          "crafted": 12,
+          "assemblyAt": [
+            623.0831112202977,
+            415.8738819105231
+          ],
+          "paused": false
+        }
+      },
+      "carry": null,
+      "hut": {
+        "stage": 1,
+        "site": null
+      },
+      "route": {
+        "from": [
+          623.0831112202977,
+          415.8738819105231
+        ],
+        "to": [
+          440,
+          225
+        ],
+        "text": "正把已完成部件搬回屋內安裝"
+      },
+      "info": "舒適床鋪：搬回與安裝。已交4/4木，在途0木，待運0木；加工12/12，施工／安裝0/6。主角正搬部件到屋內安裝。建好後：木作台加工12秒＋屋內安裝6秒；使用時床休息額外+5/秒（原木床+1）。",
+      "flow": "正把已完成部件搬回屋內安裝。線顯示既有任務的直線方向，不是新導航或可走路徑驗證。"
+    },
+    {
+      "name": "resume goes back to actual dropped parts",
+      "wall": 77.047,
+      "t": 675,
+      "day": 3,
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "task": {
+        "act": "build",
+        "phase": "go",
+        "place": "bed",
+        "timer": 0,
+        "step": "pickup"
+      },
+      "hunger": 74.50000000000921,
+      "energy": 95,
+      "bed": {
+        "stage": 1,
+        "site": {
+          "need": {
+            "wood": 4
+          },
+          "delivered": {
+            "wood": 4
+          },
+          "reserved": {
+            "wood": 0
+          },
+          "work": 0,
+          "workNeed": 6,
+          "crafted": 12,
+          "assemblyAt": [
+            623.0831112202977,
+            415.8738819105231
+          ],
+          "paused": false
+        }
+      },
+      "carry": null,
+      "hut": {
+        "stage": 1,
+        "site": null
+      },
+      "route": {
+        "from": [
+          285.3868461525712,
+          180.71482456585758
+        ],
+        "to": [
+          623.0831112202977,
+          415.8738819105231
+        ],
+        "text": "前往拿已完成部件"
+      },
+      "info": "舒適床鋪：搬回與安裝。已交4/4木，在途0木，待運0木；加工12/12，施工／安裝0/6。主角正去拿已做好的部件。建好後：木作台加工12秒＋屋內安裝6秒；使用時床休息額外+5/秒（原木床+1）。",
+      "flow": "前往拿已完成部件。線顯示既有任務的直線方向，不是新導航或可走路徑驗證。"
+    },
+    {
+      "name": "comfortable bed installed once",
+      "wall": 78.014,
+      "t": 690,
+      "day": 3,
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "task": null,
+      "hunger": 72.40000000000941,
+      "energy": 92.60000000000014,
+      "bed": {
+        "stage": 2,
+        "site": null
+      },
+      "carry": null,
+      "hut": {
+        "stage": 1,
+        "site": null
+      },
+      "route": null,
+      "info": "舒適床鋪：搬回與安裝。已交4/4木，在途0木，待運0木；加工12/12，施工／安裝5.5/6。主角正在此處施工／安裝。建好後：木作台加工12秒＋屋內安裝6秒；使用時床休息額外+5/秒（原木床+1）。",
+      "flow": "目前沒有前往這個工地的行走任務；原地工作、吃睡或其他工作不畫假路線。"
+    },
+    {
+      "name": "self-sufficient home after construction",
+      "wall": 106.746,
+      "t": 1149.5,
+      "day": 5,
+      "stock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 6,
+        "veg": 5,
+        "meal": 1,
+        "salad": 2,
+        "stew": 0,
+        "herbs": 0
+      },
+      "task": {
+        "act": "leisure",
+        "phase": "do",
+        "place": "bench",
+        "timer": 1
+      },
+      "hunger": 60.07000000001568,
+      "energy": 71.0000000000003,
+      "bed": {
+        "stage": 2,
+        "site": null
+      },
+      "carry": null,
+      "hut": {
+        "stage": 2,
+        "site": null
+      },
+      "route": null,
+      "info": "修繕小屋：休息每秒恢復 9 精力。可繼續生活。",
+      "flow": "目前沒有前往這個工地的行走任務；原地工作、吃睡或其他工作不畫假路線。"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,51 @@
+{
+  "base": "0ac7c5487f31ee803e55d1b83695c77a37834803",
+  "comparison": "pre-three-round engine vs current; five fixed command seeds, zero grants, per-tick state and reload parity",
+  "results": [
+    {
+      "seed": 1,
+      "personality": "sociable",
+      "days": 20,
+      "ticks": 19200,
+      "minH": 34.425000000013114,
+      "minE": 20.049999999999994,
+      "byteIdentical": true
+    },
+    {
+      "seed": 2,
+      "personality": "diligent",
+      "days": 20,
+      "ticks": 19200,
+      "minH": 35.9450000000231,
+      "minE": 37.600000000000435,
+      "byteIdentical": true
+    },
+    {
+      "seed": 3,
+      "personality": "quiet",
+      "days": 20,
+      "ticks": 19200,
+      "minH": 35.810000000002844,
+      "minE": 17.600000000000243,
+      "byteIdentical": true
+    },
+    {
+      "seed": 4,
+      "personality": "sociable",
+      "days": 20,
+      "ticks": 19200,
+      "minH": 35.650000000048465,
+      "minE": 19.650000000000162,
+      "byteIdentical": true
+    },
+    {
+      "seed": 5,
+      "personality": "diligent",
+      "days": 20,
+      "ticks": 19200,
+      "minH": 36.02000000002056,
+      "minE": 19.400000000000176,
+      "byteIdentical": true
+    }
+  ]
+}

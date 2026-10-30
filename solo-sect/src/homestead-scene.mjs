@@ -1,4 +1,4 @@
-import {PLOT_BOUNDS,blueprintInfo,constructionFacts,inspectionBounds} from './homestead-construction.mjs';
+import {PLOT_BOUNDS,blueprintInfo,constructionFacts,inspectionBounds,constructionRoute} from './homestead-construction.mjs';
 import {HOME_STYLES,homeLook} from './homestead-look.mjs';
 // Canvas 表現只讀狀態：時間來自世界，不另設動畫時鐘。
 import{preparedCount}from'./homestead-content.mjs';
@@ -12,7 +12,7 @@ export function sceneFacts(s) {
   night:s.t%DAY/DAY<.2 || s.t%DAY/DAY>.8,
   gardenScale:s.plot.state==='ripe'?1:s.plot.state==='growing'?.25+.65*Math.min(1,s.plot.growth/34):0};
 }
-export function drawHomestead(g,s,preview,blueprint,inspected) {
+export function drawHomestead(g,s,preview,blueprint,inspected,showRoute=true) {
  const look=homeLook(s,preview),palette=HOME_STYLES[look.style];
  const facts=sceneFacts(s), boxes=[];
  const rect=(x,y,w,h,color)=>{g.fillStyle=color;g.fillRect(x,y,w,h);};
@@ -81,6 +81,7 @@ export function drawHomestead(g,s,preview,blueprint,inspected) {
   if(blueprint.id==='hut'){line([[444,283],[444,305]],color,3);tag('出入口示意',570,308);}
  }
  if(inspected&&Object.hasOwn(PLOT_BOUNDS,inspected)){const[x,y,w,h]=inspectionBounds(s,inspected);g.strokeStyle='#244f7a';g.lineWidth=4;g.setLineDash([3,4]);g.strokeRect(x-3,y-3,w+6,h+6);g.setLineDash([]);}
+ if(inspected&&showRoute){const r=constructionRoute(s,inspected);if(r){const[a,b]=r.from,[x,y]=r.to,angle=Math.atan2(y-b,x-a);g.setLineDash([7,5]);line([[a,b],[x,y]],'#214d85',3);g.setLineDash([]);if(Math.hypot(x-a,y-b)>3)line([[x-12*Math.cos(angle-.5),y-12*Math.sin(angle-.5)],[x,y],[x-12*Math.cos(angle+.5),y-12*Math.sin(angle+.5)]],'#214d85',3);circle(x,y,5,'#f8efd1');}}
  // Feature labels first, then compact character tags choose a non-overlapping nearby slot.
  for(const id of ['hut','garden','herbGarden','kitchen','store',...(s.mode==='solo'?['workbench']:[])]){const pt={hut:[445,77],garden:[270,99],herbGarden:[135,28],kitchen:[605,278],store:[555,507],workbench:[676,501]}[id];tag(`${id==='hut'&&hut.stage&&look.name?look.name+' · ':''}${FACILITIES[id].stages[s.fac[id].stage].name}`,...pt);}
  tag('野果叢',155,380);tag('林緣枯木',745,129);tag('草藥坡',80,201);tag('村路',825,491);

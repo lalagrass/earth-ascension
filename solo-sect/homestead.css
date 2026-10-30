@@ -11,3 +11,5 @@ header{height:auto;min-height:70px;padding-bottom:10px}.resources{background:#3c
 #look-editor label{display:block;font-size:13px;margin:8px 0 4px}#look-editor select,#look-editor input{font:inherit;max-width:100%;padding:6px;border:1px solid #9d895f;border-radius:4px;background:#fffaf0}#look-status{font-size:12px;min-height:1.5em}#look-editor button{font-size:13px}
 
 .plot-controls{max-width:1050px;margin:12px auto}.plot-controls select{font:inherit;max-width:100%;padding:5px}#site-info,#blueprint-info{font-size:14px;line-height:1.6}#site-inspector h2{margin-top:10px}#site-inspector button{margin:4px 4px 0 0}
+
+.material-grid{padding:9px;background:#ece9d7;border-left:3px solid #766b48;font-size:14px;line-height:1.8}#site-stages{display:flex;list-style:none;padding:0;gap:6px;flex-wrap:wrap;font-size:13px}#site-stages li{padding:5px 7px;border:1px solid #b6ad94;border-radius:4px}#site-stages [aria-current]{background:#dfe8d3;border:2px solid #4b6742;font-weight:bold}

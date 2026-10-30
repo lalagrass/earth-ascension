@@ -1,5 +1,5 @@
 // Presentation facts only. No clock, material mutations or planner.
-import{FACILITIES,PLACES,blueprintReason}from'./homestead.mjs';
+import{FACILITIES,PLACES,blueprintReason,buildDestination}from'./homestead.mjs';
 import{buildingInfo,activityText}from'./homestead-view.mjs';
 export const PLOT_BOUNDS={hut:[350,113,187,172],garden:[210,127,120,72],herbGarden:[80,58,110,66],kitchen:[570,320,70,65],store:[493,410,124,87],bench:[318,387,68,36],flowers:[297,274,87,39],workbench:[637,437,78,51],bed:[418,203,48,26]};
 export function blueprintInfo(s,id,expectedStage=s.fac[id]?.stage){
@@ -32,4 +32,21 @@ export function inspectionInfo(s,id){
  else status='材料已齊；等待主角完成目前活動並接續工程。';
  if(t&&!(t.act==='build'&&t.place===id)&&!['rest','eat'].includes(t.act))status=`目前主角${activityText(s)}；此工程等候。${status}`;
  return{id,name,site:true,paused:v.paused,phase:facts.phase,text:`${name}：${facts.name}。已交${v.delivered.wood}/${v.need.wood}木，在途${v.reserved.wood}木，待運${b.missing}木；${r.craft?`加工${v.crafted}/${r.craft}，`:''}施工／安裝${Number(v.work.toFixed(2))}/${v.workNeed}。${status}建好後：${b.next}。`};
+}
+
+export function constructionRoute(s,id){
+ const t=s.person.task,v=s.fac[id]?.site;
+ if(!v||v.paused||t?.act!=='build'||t.place!==id)return null;
+ const to=buildDestination(s,t);if(!to)return null;
+ if(t.phase==='deliver'&&(!s.person.carry||s.person.carry.origin!=='site'))return null;
+ const text=t.phase==='fetch'?'前往住處取料（尚未拿料）':t.phase==='deliver'?`正運來${s.person.carry.amount}木；已離庫，交到後才算已交`:t.step==='craft'?'前往木作台加工':t.step==='pickup'?'前往拿已完成部件':t.step==='install'?'正把已完成部件搬回屋內安裝':'前往施工點';
+ return{from:[...s.person.pos],to:[...to],text};
+}
+export function siteMaterials(s,id){const v=s.fac[id]?.site;return v?{available:s.stock.wood,delivered:v.delivered.wood,reserved:v.reserved.wood,needed:Math.max(0,v.need.wood-v.delivered.wood-v.reserved.wood)}:null;}
+export function siteStages(s,id){
+ const f=s.fac[id],v=f?.site;if(!f)return null;if(!v&&!f.stage)return{labels:['尚未立藍圖'],index:0};
+ if(id==='hut'&&(!f.stage||!v))return{labels:['立樁備料','地基','骨架','屋頂','完工'],index:v?{materials:0,foundation:1,frame:2,roof:3}[constructionFacts(s,id).phase]:f.stage?4:0};
+ const r=FACILITIES[id].stages[f.stage+1];
+ if(v&&r?.craft)return{labels:['搬料到木作台','台前加工','搬回與安裝','完工'],index:v.delivered.wood<v.need.wood?0:v.crafted<r.craft?1:2};
+ return{labels:['備料','施工／整理','完工'],index:v?v.work>0?1:0:f.stage?2:0};
 }

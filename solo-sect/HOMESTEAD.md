@@ -2,7 +2,9 @@
 
 **H9–H26累積成果已推送至隔離分支。** [已驗遠端版本、來源再評審與僅下一個真人／環境驗證計畫](HOMESTEAD-PUBLICATION.md)。沒有PR或dev/main整合。
 
-**最新本地切片為H29–H30小家樣貌。** [事前規格](HOMESTEAD-H29-H30.md)、[結果／驗收／真圖](HOMESTEAD-H30-REVIEW.md)、[真人腳本](HOMESTEAD-H30-PLAYTEST.md)。可逆屋舍配色與安全中文家名，純外觀、不耗資源；本輪未push。下一輪僅提案：[世紀帝國建設感](HOMESTEAD-CONSTRUCTION-NEXT.md)。
+**最新本地切片為H31–H36三輪建設感。** [事前規格與逐輪回顧](HOMESTEAD-THREE-ROUNDS.md)、[完整驗收／來源／真圖](HOMESTEAD-CONSTRUCTION-REVIEW.md)、[真人腳本](HOMESTEAD-CONSTRUCTION-PLAYTEST.md)。固定地塊預覽、真工量成形、場景檢視／控制與真物流方向；沒有自由選址或新導航。三輪完成即停，本輪未push。
+
+**H29–H30小家樣貌已完成。** [事前規格](HOMESTEAD-H29-H30.md)、[結果／驗收／真圖](HOMESTEAD-H30-REVIEW.md)、[真人腳本](HOMESTEAD-H30-PLAYTEST.md)。可逆屋舍配色與安全中文家名，純外觀、不耗資源；本輪未push。下一輪僅提案：[世紀帝國建設感](HOMESTEAD-CONSTRUCTION-NEXT.md)。
 
 **H27–H28自主生活已完成。** [事前規格與來源](HOMESTEAD-H27-H28.md)、[結果／驗收](HOMESTEAD-H28-REVIEW.md)、[正常短流程／真人腳本](HOMESTEAD-H28-PLAYTEST.md)。可選平日補餐做法及下一個優先工地，保留求生與手動控制；本輪未push，已發布的H26分支仍完整保留。
 

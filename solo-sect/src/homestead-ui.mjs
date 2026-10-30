@@ -1,4 +1,4 @@
-import {blueprintInfo,inspectionInfo,plotAt} from './homestead-construction.mjs';
+import {blueprintInfo,inspectionInfo,plotAt,constructionRoute,siteMaterials,siteStages} from './homestead-construction.mjs';
 import {HOME_STYLES,normalizeHomeName,homeLook,setHomeLook} from './homestead-look.mjs';
 import {RECIPES,MEAL_STYLES,mealDecision,nextUnlocks,preparedCount,recipeAccess,recipeReason,buildAccess,RESOURCE_NAMES} from './homestead-content.mjs';
 import {FEELINGS,currentFeelings,restRate} from './homestead-living.mjs';
@@ -17,7 +17,8 @@ document.addEventListener('pointerdown', () => {pointerHeld=true;});
 for (const event of ['pointerup','pointercancel']) document.addEventListener(event, () => {pointerHeld=false;});
 window.addEventListener('blur', () => {pointerHeld=false;});
 let inspected=null;
-function renderInspection(){const ids=BUILDABLE.filter(id=>id==='hut'||s.fac.hut.stage>0).filter(id=>s.mode==='solo'||!['bed','workbench'].includes(id));const html='<option value="">選一個地塊</option>'+ids.map(id=>`<option value="${id}">${FACILITIES[id].label}</option>`).join('');if($('site-select').innerHTML!==html)$('site-select').innerHTML=html;if(!ids.includes(inspected))inspected=null;$('site-select').value=inspected||'';const q=inspectionInfo(s,inspected);$('site-inspector').hidden=!q;if(!q)return;$('site-title').textContent=q.name;$('site-info').textContent=q.text;$('site-pause').hidden=$('site-focus').hidden=!q.site||s.mode!=='solo';$('site-pause').textContent=q.paused?'繼續工程':'暫停工程';$('site-focus').disabled=!!q.paused;$('site-focus').textContent=s.focusProject===inspected?'取消優先（照常做）':'這項先做';}
+function renderInspection(){const ids=BUILDABLE.filter(id=>id==='hut'||s.fac.hut.stage>0).filter(id=>s.mode==='solo'||!['bed','workbench'].includes(id));const html='<option value="">選一個地塊</option>'+ids.map(id=>`<option value="${id}">${FACILITIES[id].label}</option>`).join('');if($('site-select').innerHTML!==html)$('site-select').innerHTML=html;if(!ids.includes(inspected))inspected=null;$('site-select').value=inspected||'';const q=inspectionInfo(s,inspected);$('site-inspector').hidden=!q;if(!q)return;const route=constructionRoute(s,inspected),m=siteMaterials(s,inspected),stages=siteStages(s,inspected);$('site-materials').hidden=!m;$('site-materials').textContent=m?`庫存可用（共用）${m.available}木 ｜ 工地已交${m.delivered}木 ｜ 在途（已離庫）${m.reserved}木 ｜ 尚待運${m.needed}木`:'';$('site-stages').innerHTML=stages.labels.map((name,i)=>`<li ${i===stages.index?'aria-current="step"':''}>${i<stages.index?'✓ ':i===stages.index?'目前：':''}${name}</li>`).join('');$('site-flow').textContent=route?`${route.text}。線顯示既有任務的直線方向，不是新導航或可走路徑驗證。`:s.person.task?.act==='return'&&s.person.carry?.kind==='wood'?`主角另有${s.person.carry.amount}木正在返倉，未算作此地預約；沒有此地在途方向。`:'目前沒有前往這個工地的行走任務；原地工作、吃睡或其他工作不畫假路線。';$('site-title').textContent=q.name;$('site-info').textContent=q.text;$('site-pause').hidden=$('site-focus').hidden=!q.site||s.mode!=='solo';$('site-pause').textContent=q.paused?'繼續工程':'暫停工程';$('site-focus').disabled=!!q.paused;$('site-focus').textContent=s.focusProject===inspected?'取消優先（照常做）':'這項先做';}
+$('route-lines').onchange=draw;
 $('site-select').onchange=()=>{inspected=$('site-select').value||null;closeBlueprint();render();};
 $('site-close').onclick=()=>{inspected=null;render();$('site-select').focus();};
 document.querySelector('.plot-controls').onkeydown=e=>{if(e.key==='Escape'&&inspected&&!e.defaultPrevented){e.preventDefault();$('site-close').click();}};
@@ -87,7 +88,7 @@ $('build').onclick = (e) => { const preview=e.target.closest('[data-preview]');i
 $('community').onclick = (e) => { const b = e.target.closest('[data-social]'); if (!b) return; const action = { invite: inviteHelper, apprentice: acceptApprentice, leave: askHelperLeave }[b.dataset.social]; if (action?.(s)) show('已記入荒居紀事。'); render(); };
 $('helper-orders').onclick = (e) => { const b = e.target.closest('[data-helper]'); if (b) { setHelperOrder(s, b.dataset.helper === 'auto' ? null : b.dataset.helper); render(); } };
 
-function draw() { if(s) drawHomestead(ctx,s,lookDraft,blueprintDraft,inspected); }
+function draw() { if(s) drawHomestead(ctx,s,lookDraft,blueprintDraft,inspected,$('route-lines').checked); }
 function render() {
   if (!s || pointerHeld) return;
   const focused = document.activeElement; const focusSelector = focused?.id ? '#' + CSS.escape(focused.id) : ['act','recipe','eat','build','preview','focus','project','social','helper'].find(k => focused?.dataset?.[k]) ? Object.entries(focused.dataset).map(([k,v]) => `[data-${k}="${CSS.escape(v)}"]`).join('') : null;
