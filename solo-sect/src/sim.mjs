@@ -12,7 +12,7 @@ import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS } from './d
 import { SCORE, SCORE_POST } from './score-data.mjs';
 import { BAND, canDefend } from './band.mjs';
 import { boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE } from './fence.mjs';
-import { demandBoost } from './peace.mjs';
+import { demandBoost, repairDamp } from './peace.mjs';
 import { coTrain, askStrong, pairBoost } from './mentor.mjs';
 import { comprehend } from './comprehend.mjs';
 import { drawBoost, pickChatMate, admire } from './draw.mjs';
@@ -294,8 +294,8 @@ export function scoreActs(s, d) {
   if (s.band && BAND.defendScore > 0 && canDefend(d)) out.push({ act: 'defend', score: BAND.defendScore, why: s.band.state === 'go' ? '山賊往菜園來了，去柵邊守著' : '山賊在撞柵，去打退他們' }); // loop3
   drawBoost(s, d, out); // loop6
   pairBoost(s, d, out); // loop8
-  if (s.m9) demandBoost(s, d, out); // loop9 缺料需求
   { const rs = repairScore(s, d); if (rs > 0) out.push({ act: 'repair', score: rs, why: s.fence.hp <= 0 ? '柵被撞破了，得趕快補上' : '柵有破損，去補一補' }); } // loop2 修柵廣告
+  if (s.m9) { demandBoost(s, d, out); repairDamp(s, out); } // loop9 缺料需求／loop10 不急修
   const ph = c.ph, sch = SCHEDULE[ph] || {}, n = d.needs;
   const plotWork = s.plots.some((p) => p.st === 'empty' || p.st === 'ripe');
   // v0.95 統一倍率管線：作息是時段閘門（管線外），性格→天賦組、心情→狀態組、職責/首徒/雇工→外部組

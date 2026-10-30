@@ -29,3 +29,10 @@ test('loop9 柵缺料 → 砍柴／採石意願提高', () => {
   s.res.wood = 99; s.res.stone = 99; assert.deepEqual(fenceNeeds(s), []);
 });
 test('loop9 開啟跑 5 天無錯', () => { for (const seed of [1, 2, 3]) { const s = createState(seed, sp({ peace: true })); for (let i = 0; i < 1200; i++) tick(s, 6); } });
+test('loop10 柵還撐得住時修柵意願打折、快破時不打折', async () => {
+  const { repairDamp } = await import('../src/peace.mjs');
+  const s = createState(3, sp({ peace: true })); s.res.wood = 50; buildFence(s);
+  const o1 = [{ act: 'repair', score: 10 }]; s.fence.hp = s.fence.max * 0.9; repairDamp(s, o1); assert.equal(o1[0].score, 10 * PEACE.repairCalm);
+  const o2 = [{ act: 'repair', score: 10 }]; s.fence.hp = 1; repairDamp(s, o2); assert.equal(o2[0].score, 10);
+  const off = createState(3); off.fence = { ...s.fence, hp: 50 }; const o3 = [{ act: 'repair', score: 10 }]; repairDamp(off, o3); assert.equal(o3[0].score, 10);
+});

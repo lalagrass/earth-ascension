@@ -37,10 +37,12 @@ function render(el) {
     h += `<div>→ 主價值 <b>${VALUE_NAMES[r.main]}</b>・副 <b>${VALUE_NAMES[r.sub]}</b>　特質 <b>${(st.mbti ? mbtiPersonality(st.mbti, st.stats.wu) : r.visible).map(tn).join('、')}</b>＋一個暗特質（相處後才看得出）</div></div>` + compCards(null);
   } else h += `<p>沿用 v0.95 的無名主角、林師姐、堂弟開局（不帶價值觀與同門）。</p>`;
   const ok = st.tab !== 'custom' || validStats(st.stats, SUHUI);
+  h += `<fieldset class="rules"><legend>江湖規則（新局選用，舊局不受影響）</legend>`;
   h += `<div><label><input type="checkbox" id="st-draw" ${st.draw ? 'checked' : ''}> 人以群分：外向的人更愛交友、強者吸引人靠近</label></div>`;
   h += `<div><label><input type="checkbox" id="st-comp" ${st.compr !== false ? 'checked' : ''}> 領悟：苦練與觀摩切磋可自悟、偷師他派功夫</label></div>`;
   h += `<div><label><input type="checkbox" id="st-mentor" ${st.mentor !== false ? 'checked' : ''}> 同修請教：一起練功互相砥礪、向強者請教、結成練功搭子</label></div>`;
   h += `<div><label><input type="checkbox" id="st-peace" ${st.peace !== false ? 'checked' : ''}> 太平與備料：巡山掃清後山賊晚來、派隊偏好搭子、柵缺料自動備料</label></div>`;
+  h += `</fieldset>`;
   h += `<div>名俠池畫風 <select id="st-xia">${[['all', '全明星'], ['jin', '純金庸'], ['zhou', '純周星馳']].map(([k, n]) => `<option value="${k}" ${(st.xia || 'all') === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`;
   h += `<div><label><input type="checkbox" id="st-ask" ${st.ask ? 'checked' : ''}> 重大抉擇每次詢問我（取消則依價值觀自動決定）</label></div><button class="go" id="st-go" ${ok ? '' : 'disabled'}>開山立派</button></div>`;
   el.innerHTML = h;

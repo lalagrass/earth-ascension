@@ -7,6 +7,8 @@ export const PEACE = {
   mateK: 2, mateCap: 10, // 派隊：每次同修 +2 分，上限 10（既有默契分同量級）
   demandMul: 1.3,     // 缺料時砍柴／採石意願
   damagedAt: 0.8,    // 柵耐久低於八成才為修補備料
+  repairCalm: 0.7,   // loop10：柵還有四成以上時，修柵意願減半（降低練功代價）
+  repairCalmAt: 0.4,
   demandExtra: 4,     // 料少於「底線＋這麼多」就算缺
 };
 const MAT_ACT = { wood: 'chop', stone: 'quarry' };
@@ -24,4 +26,9 @@ export function fenceNeeds(s) {
 export function demandBoost(s, d, out) {
   const need = fenceNeeds(s); if (!need.length) return;
   for (const m of need) for (const o of out) if (o.act === MAT_ACT[m]) { o.score *= PEACE.demandMul; o.why = `柵要用${m === 'wood' ? '木料' : '石料'}，倉裡不夠了`; }
+}
+// loop10：柵還撐得住時不急著修
+export function repairDamp(s, out) {
+  const F = s.fence; if (!s.m9 || !F || F.hp < F.max * PEACE.repairCalmAt) return;
+  for (const o of out) if (o.act === 'repair') o.score *= PEACE.repairCalm;
 }
