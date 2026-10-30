@@ -67,7 +67,7 @@ export function drawHomestead(g,s,preview) {
  if(s.fac.bench?.stage){rect(318,397,68,10,'#996f44');rect(322,407,6,16,'#655139');rect(376,407,6,16,'#655139');line([[321,390],[383,390]],'#b08a5b',6);}
  if(s.fac.flowers?.stage)for(let i=0;i<7;i++){const x=302+i*12,y=291+(i%2)*10;line([[x,y],[x,y-14]],'#53804d',3);circle(x,y-16,6,i%2?'#cb8e8c':'#e4be67');circle(x,y-16,2,'#f5df98');}
  // Feature labels first, then compact character tags choose a non-overlapping nearby slot.
- for(const id of ['hut','garden','herbGarden','kitchen','store',...(s.mode==='solo'?['workbench']:[])]){const pt={hut:[445,77],garden:[270,99],herbGarden:[135,28],kitchen:[605,278],store:[555,507],workbench:[676,501]}[id];tag(FACILITIES[id].stages[s.fac[id].stage].name,...pt);}
+ for(const id of ['hut','garden','herbGarden','kitchen','store',...(s.mode==='solo'?['workbench']:[])]){const pt={hut:[445,77],garden:[270,99],herbGarden:[135,28],kitchen:[605,278],store:[555,507],workbench:[676,501]}[id];tag(`${id==='hut'&&hut.stage&&look.name?look.name+' · ':''}${FACILITIES[id].stages[s.fac[id].stage].name}`,...pt);}
  tag('野果叢',155,380);tag('林緣枯木',745,129);tag('草藥坡',80,201);tag('村路',825,491);
  function person(p,color){const[x,y]=p.pos,t=p.task,rest=t?.act==='rest'&&t.phase==='do',sit=t?.act==='leisure'&&t.phase==='do';ellipse(x,y+4,15,6,'#423a3555');
   if(rest){rect(x-20,y-20,39,16,s.fac.bed?.stage===2?'#9db8c2':'#bcac8c');circle(x-19,y-14,8,'#e3bd92');g.font='bold 17px sans-serif';g.fillStyle='#eee8d2';g.fillText('z',x+12,y-24);}else{rect(x-9,y-(sit?20:33),18,sit?21:34,color);circle(x,y-(sit?28:42),10,'#e3bd92');if(sit)line([[x-8,y],[x+8,y]],'#493f34',4);}

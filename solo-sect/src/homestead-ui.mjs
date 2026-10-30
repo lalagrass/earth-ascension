@@ -1,4 +1,4 @@
-import {HOME_STYLES,defaultHomeLook,homeLook,setHomeLook} from './homestead-look.mjs';
+import {HOME_STYLES,normalizeHomeName,homeLook,setHomeLook} from './homestead-look.mjs';
 import {RECIPES,MEAL_STYLES,mealDecision,nextUnlocks,preparedCount,recipeAccess,recipeReason,buildAccess,RESOURCE_NAMES} from './homestead-content.mjs';
 import {FEELINGS,currentFeelings,restRate} from './homestead-living.mjs';
 import {SKILLS,skillInfo} from './homestead-skills.mjs';
@@ -17,15 +17,16 @@ for (const event of ['pointerup','pointercancel']) document.addEventListener(eve
 window.addEventListener('blur', () => {pointerHeld=false;});
 let lookDraft = null;
 function cancelLook(){lookDraft=null;$('look-editor').open=false;draw();}
-function previewLook(){lookDraft={style:$('home-style').value};$('look-status').textContent=`預覽${HOME_STYLES[lookDraft.style].name}，尚未套用。`;draw();}
+function previewLook(){const name=normalizeHomeName($('home-name').value),valid=name!==null;lookDraft={style:$('home-style').value,name:valid?name:homeLook(s).name};$('look-apply').disabled=!valid||!s?.fac.hut.stage;$('home-name').setAttribute('aria-invalid',String(!valid));$('look-status').textContent=valid?`預覽${HOME_STYLES[lookDraft.style].name}${name?'・'+name:''}，尚未套用。`:'家名請用最多12個字的文字、數字、空格、間隔號或連字號；尚未套用。';draw();}
 $('home-style').innerHTML=Object.entries(HOME_STYLES).map(([id,v])=>`<option value="${id}">${v.name}</option>`).join('');
-function beginLook(){if(!s)return;$('home-style').value=homeLook(s).style;previewLook();}
+function beginLook(){if(!s)return;$('home-style').value=homeLook(s).style;$('home-name').value=homeLook(s).name;previewLook();}
 $('look-editor').querySelector('summary').onclick=()=>{if(!$('look-editor').open)beginLook();};
 $('look-editor').ontoggle=()=>{if(!$('look-editor').open){lookDraft=null;draw();}else if(!lookDraft)beginLook();};
 $('home-style').onchange=previewLook;
-$('look-form').onsubmit=e=>{e.preventDefault();if(setHomeLook(s,lookDraft)){cancelLook();render();$('look-editor').querySelector('summary').focus();}};
+$('home-name').oninput=previewLook;
+$('look-form').onsubmit=e=>{e.preventDefault();if(normalizeHomeName($('home-name').value)!==null&&setHomeLook(s,lookDraft)){cancelLook();render();$('look-editor').querySelector('summary').focus();}};
 $('look-cancel').onclick=()=>{cancelLook();$('look-editor').querySelector('summary').focus();};
-$('look-reset').onclick=()=>{$('home-style').value='natural';previewLook();};
+$('look-reset').onclick=()=>{$('home-style').value='natural';$('home-name').value='';previewLook();};
 $('look-editor').onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();cancelLook();$('look-editor').querySelector('summary').focus();}};
 let transferDraft = null;
 mountTransferManager(document.getElementById('transfer-manager'));
@@ -81,7 +82,9 @@ function render() {
   $('social-card').hidden=s.mode==='solo';
   $('home-nav').hidden=s.mode!=='solo';
   $('look-editor').hidden=s.mode!=='solo';
-  for(const el of $('look-form').elements)el.disabled=!s.fac.hut.stage;
+  for(const el of $('look-form').elements)el.disabled=!s.fac.hut.stage||(el.id==='look-apply'&&normalizeHomeName($('home-name').value)===null);
+  $('home-title').textContent=homeLook(s).name||'我的小家';
+  $('land').setAttribute('aria-label',`${homeLook(s,lookDraft).name||'荒居'}地圖${lookDraft?'（外觀預覽）':''}`);
   $('home-benefits').hidden=s.mode!=='solo';$('home-benefits').textContent=homeBenefits(s);
   $('project-focus').hidden=s.mode!=='solo';$('project-focus').textContent=projectFocusText(s);
   $('meal-result').hidden=s.mode!=='solo';

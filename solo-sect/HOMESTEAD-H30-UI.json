@@ -1,0 +1,276 @@
+{
+  "route": "normal UI, zero state/XP/material injection; mixed pause/16x; AI not human",
+  "engine": "154.0.8037.57",
+  "events": [
+    {
+      "name": "first house, no grants",
+      "wallSeconds": 6.718,
+      "t": 100.75,
+      "day": 1,
+      "look": {
+        "style": "natural",
+        "name": ""
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 50.895000000001374,
+      "energy": 26.349999999999994,
+      "task": {
+        "act": "forage",
+        "phase": "go",
+        "place": "berries",
+        "timer": 0
+      },
+      "fac": {
+        "hut": 1,
+        "garden": 0,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 0,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "keyboard apply after preview cancel",
+      "wallSeconds": 7.538,
+      "t": 100.75,
+      "day": 1,
+      "look": {
+        "style": "ochre",
+        "name": "青禾小築"
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 50.895000000001374,
+      "energy": 26.349999999999994,
+      "task": {
+        "act": "forage",
+        "phase": "go",
+        "place": "berries",
+        "timer": 0
+      },
+      "fac": {
+        "hut": 1,
+        "garden": 0,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 0,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "draft excluded from existing save/load",
+      "wallSeconds": 8.322,
+      "t": 100.75,
+      "day": 1,
+      "look": {
+        "style": "ochre",
+        "name": "青禾小築"
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 50.895000000001374,
+      "energy": 26.349999999999994,
+      "task": {
+        "act": "forage",
+        "phase": "go",
+        "place": "berries",
+        "timer": 0
+      },
+      "fac": {
+        "hut": 1,
+        "garden": 0,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 0,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "continued construction and autonomous leisure",
+      "wallSeconds": 43.883,
+      "t": 669.25,
+      "day": 3,
+      "look": {
+        "style": "ochre",
+        "name": "青禾小築"
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 3,
+        "veg": 2,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 75.30500000000913,
+      "energy": 65.95000000000078,
+      "task": {
+        "act": "leisure",
+        "phase": "go",
+        "place": "bench",
+        "timer": 0
+      },
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 1,
+        "flowers": 1,
+        "kitchen": 1,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "reset applied, no simulation mutation",
+      "wallSeconds": 45.083,
+      "t": 669.25,
+      "day": 3,
+      "look": {
+        "style": "natural",
+        "name": ""
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 3,
+        "veg": 2,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 75.30500000000913,
+      "energy": 65.95000000000078,
+      "task": {
+        "act": "leisure",
+        "phase": "go",
+        "place": "bench",
+        "timer": 0
+      },
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 1,
+        "flowers": 1,
+        "kitchen": 1,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "name": "page reload through existing save",
+      "wallSeconds": 45.233,
+      "t": 669.25,
+      "day": 3,
+      "look": {
+        "style": "natural",
+        "name": ""
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 3,
+        "veg": 2,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hunger": 75.30500000000913,
+      "energy": 65.95000000000078,
+      "task": {
+        "act": "leisure",
+        "phase": "go",
+        "place": "bench",
+        "timer": 0
+      },
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 1,
+        "flowers": 1,
+        "kitchen": 1,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    }
+  ],
+  "differences": [
+    {
+      "style": "natural",
+      "changed": 0,
+      "outside": 0
+    },
+    {
+      "style": "moss",
+      "changed": 7518,
+      "outside": 0
+    },
+    {
+      "style": "ochre",
+      "changed": 7510,
+      "outside": 0
+    }
+  ],
+  "errors": []
+}

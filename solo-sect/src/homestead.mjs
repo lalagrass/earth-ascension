@@ -463,7 +463,8 @@ export function loadHomestead(json) {
     if (!['solo','legacy'].includes(s.mode) || s.mode === 'solo' && (s.helper || s.visitor?.role && s.visitor.role !== 'visitor' || ['chat','talkHelper','gift','care','helperCare'].includes(s.person.order) || ['chat','talkHelper','gift','care','helperCare'].includes(s.person.task?.act))) return {ok:false,error:'生活模式不合法'};
     for(const k of ['salad','stew'])s.stock[k]??=0;
     if(s.look===undefined)s.look=defaultHomeLook();
-    if(!validHomeLook(s.look)||s.mode!=='solo'&&s.look.style!=='natural')return {ok:false,error:'小家外觀不合法'};
+    else if(s.look&&typeof s.look==='object'&&!Array.isArray(s.look)&&Object.keys(s.look).length===1&&Object.hasOwn(s.look,'style'))s.look.name='';
+    if(!validHomeLook(s.look)||s.mode!=='solo'&&(s.look.style!=='natural'||s.look.name!==''))return {ok:false,error:'小家外觀不合法'};
     s.focusProject??=null;
     s.mealStyle??='auto';
     if(typeof s.mealStyle!=='string'||!Object.hasOwn(MEAL_STYLES,s.mealStyle)||s.mode!=='solo'&&s.mealStyle!=='auto')return {ok:false,error:'平日料理偏好不合法'};
