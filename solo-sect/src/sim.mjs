@@ -12,6 +12,7 @@ import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS } from './d
 import { SCORE, SCORE_POST } from './score-data.mjs';
 import { BAND, canDefend } from './band.mjs';
 import { boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE } from './fence.mjs';
+import { demandBoost } from './peace.mjs';
 import { coTrain, askStrong, pairBoost } from './mentor.mjs';
 import { comprehend } from './comprehend.mjs';
 import { drawBoost, pickChatMate, admire } from './draw.mjs';
@@ -75,7 +76,8 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec) applyHero(s, heroSpec, initPair);
   if (heroSpec?.draw) s.draw = true;
   if (heroSpec?.comprehend) s.wu7 = true;
-  if (heroSpec?.mentor) s.mentor = true; // loop8 同修請教（選用） // loop7 領悟（選用） // loop6 人以群分（選用）
+  if (heroSpec?.mentor) s.mentor = true;
+  if (heroSpec?.peace) s.m9 = true; // loop9 太平與防禦經濟（選用） // loop8 同修請教（選用） // loop7 領悟（選用） // loop6 人以群分（選用）
   sectInit(s); s.gen = genInit(); if (heroSpec?.bonus) s.gen.suhuiStart = heroSpec.bonus;
   return s;
 }
@@ -292,6 +294,7 @@ export function scoreActs(s, d) {
   if (s.band && BAND.defendScore > 0 && canDefend(d)) out.push({ act: 'defend', score: BAND.defendScore, why: s.band.state === 'go' ? '山賊往菜園來了，去柵邊守著' : '山賊在撞柵，去打退他們' }); // loop3
   drawBoost(s, d, out); // loop6
   pairBoost(s, d, out); // loop8
+  if (s.m9) demandBoost(s, d, out); // loop9 缺料需求
   { const rs = repairScore(s, d); if (rs > 0) out.push({ act: 'repair', score: rs, why: s.fence.hp <= 0 ? '柵被撞破了，得趕快補上' : '柵有破損，去補一補' }); } // loop2 修柵廣告
   const ph = c.ph, sch = SCHEDULE[ph] || {}, n = d.needs;
   const plotWork = s.plots.some((p) => p.st === 'empty' || p.st === 'ripe');

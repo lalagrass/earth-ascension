@@ -1,4 +1,5 @@
 import { addMem } from './bonds.mjs';
+import { mateBonus } from './peace.mjs';
 import { secOpen } from './slice.mjs';
 // v0.95 巡山遠征（ROADMAP §15）：背景模擬＋戰報；地圖只畫進度條。固定名單、決定性、不會死。
 import { ENDLESS, CAMPS } from './data.mjs';
@@ -81,8 +82,8 @@ export function suggestTeam(s, n = 2) {
   while (pick.length < Math.min(n, ok.length)) {
     const used = new Set(pick.map((d) => styleOf(d).id)); if (last && pick.length) used.add(last);
     let best = null, bv = -1e9, bw = '';
-    for (const d of ok) { if (pick.includes(d)) continue; const b = base(d), dv = pick.length && !used.has(styleOf(d).id) ? A9.diverse : 0, kp = pick.length && lastTeam.includes(d.id) && lastTeam.includes(pick[0].id) ? A9.keep : 0, bd = pick.length ? Math.max(0, aff(s, pick[0], d)) / 100 * A9.bond : 0, v = b.sp + b.idle + b.m + dv + kp + bd;
-      if (v > bv) { bv = v; best = d; bw = `${d.name}：專長 ${Math.round(b.sp)}・久未巡山 ${Math.round(b.idle)}${b.m >= 1 ? `・想出門 ${Math.round(b.m)}` : ''}${kp ? `・老搭檔 +${kp}` : ''}${bd >= 1 ? `・默契 ${Math.round(bd)}` : ''}${dv ? `・換個走法（${STYLES[styleOf(d).id].name}）+${dv}` : ''}`; } }
+    for (const d of ok) { if (pick.includes(d)) continue; const b = base(d), dv = pick.length && !used.has(styleOf(d).id) ? A9.diverse : 0, kp = pick.length && lastTeam.includes(d.id) && lastTeam.includes(pick[0].id) ? A9.keep : 0, bd = pick.length ? Math.max(0, aff(s, pick[0], d)) / 100 * A9.bond : 0, mt = pick.length ? mateBonus(s, pick[0], d) : 0, v = b.sp + b.idle + b.m + dv + kp + bd + mt;
+      if (v > bv) { bv = v; best = d; bw = `${d.name}：專長 ${Math.round(b.sp)}・久未巡山 ${Math.round(b.idle)}${b.m >= 1 ? `・想出門 ${Math.round(b.m)}` : ''}${kp ? `・老搭檔 +${kp}` : ''}${bd >= 1 ? `・默契 ${Math.round(bd)}` : ''}${mt ? `・練功搭子 +${mt}` : ''}${dv ? `・換個走法（${STYLES[styleOf(d).id].name}）+${dv}` : ''}`; } }
     pick.push(best); why.push(bw);
   }
   return { ids: pick.map((d) => d.id), why };

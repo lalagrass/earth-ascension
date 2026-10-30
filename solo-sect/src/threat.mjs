@@ -6,6 +6,7 @@ import { DAY, FACILITIES } from './data.mjs';
 import { log, resAdd } from './util.mjs';
 import { power } from './jianghu.mjs';
 import { fenceUp, fenceHit, fenceHtml, FENCE } from './fence.mjs';
+import { peaceDelay } from './peace.mjs';
 import { BAND, newBand, bandWalk, defenderDps, canDefend } from './band.mjs';
 
 export const RAID = { minPop: 8, first: 8, every: 6, jitter: 2, w: { coin: 1, food: 1, pill: 8, herb: 1, stage: 25 }, div: 2, dayK: 30, dayMax: 2, cap: 900,
@@ -32,6 +33,7 @@ export const raidAuto = (s) => { const P = T(s).pending; if (P && fenceHolds(s, 
 export function threatDaily(s) {
   const X = T(s); if (X.pending || (s.day || 0) < X.next) return null;
   X.next = s.day + RAID.every + Math.floor(R(s) * (2 * RAID.jitter + 1)) - RAID.jitter;
+  if (s.m9) X.next += peaceDelay(s); // loop9 巡山太平→山賊延後
   const pts = points(s); if (pts <= 0) return null;
   X.n++; const demand = demandOf(s, pts), p = winP(s, pts);
   X.pending = { n: X.n, pts, demand, p: +p.toFixed(2), at: s.t, until: s.t + RAID.wait, day: s.day };
