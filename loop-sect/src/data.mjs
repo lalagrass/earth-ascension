@@ -162,11 +162,25 @@ export const BLUEPRINTS = [
     rect: [39, 15, 43, 19], door: [41, 19], beds: [[40, 16], [42, 16]],
     cost: { wood: 10, stone: 4 }, work: 180,
   },
+  // M11 宿舍：兩個階段。第一階段立牆、四張床；第二階段在同一間裡再擺四張床（要先完成第一階段）。
+  {
+    id: 'dorm-1', label: '西宿舍', desc: '道館西邊一間長屋，四張床', kind: 'hut',
+    rect: [17, 12, 24, 18], door: [20, 18], beds: [[18, 13], [20, 13], [22, 13], [18, 15]],
+    cost: { wood: 14, stone: 6 }, work: 240,
+  },
+  {
+    id: 'dorm-2', label: '宿舍擴建', desc: '西宿舍裡再擺四張床', kind: 'beds', of: 'dorm-1', requires: 'dorm-1',
+    beds: [[20, 15], [22, 15], [18, 17], [22, 17]],
+    cost: { wood: 12, stone: 2 }, work: 160,
+  },
   {
     id: 'hearth2', label: '石灶台', desc: '把露天灶砌成石灶台：煮得快、一鍋多一份', kind: 'upgrade',
     target: 'hearth', cost: { stone: 4 }, work: 90,
   },
 ];
+// base soak 自 M3 起放的三張藍圖；之後加的藍圖不放進 base，免得改到舊 milestone 的量測。
+export const FIRST_BLUEPRINTS = ['fence-s', 'hut-e', 'hearth2'];
+
 export const HEARTH_LEVELS = [
   { cookDur: 40, meals: 3 },
   { cookDur: 25, meals: 4 },
@@ -297,7 +311,7 @@ Object.assign(ACTS, {
 export const RECRUIT = {
   START_DAY: 1, HOUR_FROM: 8, HOUR_TO: 15, DAYS: 30,
   BASE: 0.4, PRESTIGE_DIV: 40, MAX: 0.9,    // 來訪機率 = BASE + 最高名望 / PRESTIGE_DIV。loop 8 BASE 0.25→0.4：第 2 日最高名望平均只有 6.3（規格估 10–20），每種子 5 日期望只來 2.2 人
-  CAP: 8,                                  // 人數上限（含訪客）
+  CAP: 10,                                 // 人數上限（含訪客）。loop 12 由 8 調高：宿舍兩階段後床位 3+2+8=13，上限改由床位決定
   STAY: 480,                               // 訪客待多久再決定
   PRESTIGE_REF: 30, AFF_REF: 15, JOIN_MIN: 0.45,
   ENTRY: { x: 63, y: 30 },                 // 東山徑口

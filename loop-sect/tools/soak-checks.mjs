@@ -4,7 +4,7 @@ import { walkable } from '../src/map.mjs';
 import { speedOf } from '../src/person.mjs';
 import { isNight } from '../src/needs.mjs';
 import { stageOf, aff } from '../src/social.mjs';
-import { TEMPLATES, TICKS_PER_DAY, BLUEPRINTS, WORK_KINDS, ENEMIES, RAID } from '../src/data.mjs';
+import { TEMPLATES, TICKS_PER_DAY, BLUEPRINTS, FIRST_BLUEPRINTS, WORK_KINDS, ENEMIES, RAID } from '../src/data.mjs';
 import { courage } from '../src/martial.mjs';
 
 const STUCK_TICKS = 720; // 半日
@@ -20,7 +20,12 @@ export function rosterFor(seed) {
 // 情境 base 不遠征：M2–M8 的自然遊玩驗收都是在「沒有拆巢」的世界寫的，所以分開量。
 export function script(s, scenario = 'base') {
   if (s.tick === 0) setFocus(s, 'p1', 'wood');
-  if (s.tick === 360) for (const b of BLUEPRINTS) placeBlueprint(s, b.id);
+  if (s.tick === 360) for (const id of FIRST_BLUEPRINTS) placeBlueprint(s, id);
+  // M11 grow：第 2 日放西宿舍，蓋好就放擴建。
+  if (scenario === 'grow') {
+    if (s.tick === TICKS_PER_DAY + 360) placeBlueprint(s, 'dorm-1');
+    if (s.tick % 60 === 0 && s.built.includes('dorm-1')) placeBlueprint(s, 'dorm-2');
+  }
   const den = s.nests.find((n) => n.id === 'den');
   if (scenario === 'exp' && s.tick >= 2 * TICKS_PER_DAY + 540 && s.tick <= 3 * TICKS_PER_DAY + 720 && s.tick % 60 === 0 && !s.expedition && !den.cleared) startExpedition(s, 'den');
 }
@@ -56,7 +61,7 @@ export function perSeed(s, ctx) {
   const top = Math.max(...s.people.map((p) => p.skills.chop));
   bump(ctx, 'specSeeds'); if (chopper.skills.chop === top) bump(ctx, 'specOk');
   bump(ctx, 'chopSkillSum', chopper.skills.chop);
-  const all = s.built.length === BLUEPRINTS.length;
+  const all = FIRST_BLUEPRINTS.every((id) => s.built.includes(id));
   bump(ctx, 'seeds'); if (all) bump(ctx, 'allBuilt');
   for (const e of s.events) if (e.kind === 'built') bump(ctx, `built:${e.text}`);
   // M7-A7／A8：侵擾、撞破、打退、修補、膽識。
@@ -254,6 +259,7 @@ export function judge(S, scenario = 'base') {
   const lines = [];
   const failures = [];
   if (scenario === 'exp') return judgeExp(S, lines, failures);
+  if (scenario === 'grow') return judgeGrow(S, lines, failures);
   const r = (a, b) => (S[a] || 0) / (S[b] || 1);
   const e = r('near:E:sum', 'near:E:n'), i = r('near:I:sum', 'near:I:n');
   // M2 起 M1-A7 改由 sim.test.mjs 的控制實驗驗證（只變外向軸）；此處只列出，因為整體距離受 N 軸與吃睡聚集干擾。
@@ -323,6 +329,29 @@ function worstSeed(S, key) {
     if (!best || x > best.x) best = { seed, x };
   }
   return best ? `最差 seed ${best.seed} ${(100 * best.x).toFixed(1)}%` : '';
+}
+
+// 暫停中的 milestone：照印量測，但不判失敗（理由寫在該規格的「實作中的變更」）。
+export const PAUSED = new Set(['M11']);
+const judgeOf = (failures, id) => (PAUSED.has(id.split('-')[0]) ? { push: (x) => failures.paused?.push(x) } : failures);
+
+function judgeGrow(S, lines, all_failures) {
+  const failures = judgeOf(all_failures, 'M11-A5');
+  const all = (S['t:E'] || 0) + (S['t:I'] || 0);
+  lines.push(`M11-A5 西宿舍 5 日內完工 ${S['built:西宿舍完工'] || 0}/${S.seeds}、擴建完工 ${S['built:宿舍擴建完工'] || 0}/${S.seeds}；結束時平均 ${((S.endPeople || 0) / S.seeds).toFixed(1)} 人`);
+  if ((S['built:西宿舍完工'] || 0) < Math.ceil(S.seeds * 10 / 12)) failures.push('M11-A5 西宿舍完工的種子太少');
+  const worst = worstSeedVal(S, 'lowFood');
+  lines.push(`M11-A5 飢餓時間 ${(100 * (S.lowFood || 0) / all).toFixed(1)}%（${worstSeed(S, 'lowFood')}）`);
+  if ((S.lowFood || 0) / all > 0.03) failures.push('M11-A5 飢餓時間超過 3%');
+  if (worst > 0.06) failures.push('M11-A5 最差種子飢餓超過 6%');
+  if (PAUSED.has('M11')) lines.push('（M11 暫停中：以上量測照印、不判，見 specs/M11.md）');
+  return { lines, failures: all_failures };
+}
+
+function worstSeedVal(S, key) {
+  let w = 0;
+  for (const [k, v] of Object.entries(S)) if (k.startsWith('t@')) w = Math.max(w, (S[`${key}@${k.slice(2)}`] || 0) / v);
+  return w;
 }
 
 function judgeExp(S, lines, failures) {

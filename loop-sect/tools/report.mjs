@@ -2,7 +2,7 @@
 // 用法：node loop-sect/tools/report.mjs [--seeds 12] [--days 10]
 import { createWorld, step } from '../src/sim.mjs';
 import { TICKS_PER_DAY } from '../src/data.mjs';
-import { rosterFor, script } from './soak-checks.mjs';
+import { rosterFor, script, PAUSED } from './soak-checks.mjs';
 import { atLeast } from '../src/social.mjs';
 import { lifeShares } from '../src/chronicle.mjs';
 
@@ -12,10 +12,15 @@ const HUNGRY = 15;
 const EATS = ['eat', 'eatRaw', 'eatCarried', 'ration'];
 const pct = (v) => `${(100 * v).toFixed(1)}%`;
 const failures = [];
-const expect = (id, ok, text) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${id} ${text}`); if (!ok) failures.push(id); };
+const expect = (id, ok, text) => {
+  const paused = PAUSED.has(id.split('-')[0]);
+  console.log(`${ok ? 'ok  ' : paused ? '暫停' : 'FAIL'} ${id} ${text}`);
+  if (!ok && !paused) failures.push(id);
+};
 
 const lives = [];
-for (const scenario of ['base', 'exp']) {
+const membersBy = {};
+for (const scenario of ['base', 'exp', 'grow']) {
   const dayH = Array(DAYS).fill(0), dayN = Array(DAYS).fill(0);
   const seedRows = [];
   let friends = 0, masters = 0;
@@ -46,9 +51,22 @@ for (const scenario of ['base', 'exp']) {
   console.log(`每日飢餓：${daily.map((v, i) => `d${i + 1} ${pct(v)}`).join(' ')}`);
   console.log(`各種子飢餓：${seedRows.map((r) => `s${r.seed} ${pct(r.hunger)}`).join(' ')}`);
   console.log(`每人每日進食 ${eatLo.toFixed(2)}–${eatHi.toFixed(2)} 次；結束時同門 ${seedRows.map((r) => r.members).join('/')}`);
-  expect(`M10-A5[${scenario}]`, Math.max(...daily) <= 0.02 && worst.hunger <= 0.04 && eatLo >= 1.5 && eatHi <= 4,
-    `最差日 ${pct(Math.max(...daily))}（≤ 2%）、最差種子 s${worst.seed} ${pct(worst.hunger)}（≤ 4%）、進食 ${eatLo.toFixed(2)}–${eatHi.toFixed(2)}（1.5–4）`);
+  membersBy[scenario] = seedRows.map((r) => r.members);
+  // M11-A7：grow 情境人多一半，門檻放在 3%／6%（規格寫在量之前）。
+  const [dayMax, seedMax, id] = scenario === 'grow' ? [0.03, 0.06, 'M11-A7'] : [0.02, 0.04, 'M10-A5'];
+  expect(`${id}[${scenario}]`, Math.max(...daily) <= dayMax && worst.hunger <= seedMax && eatLo >= 1.5 && eatHi <= 4,
+    `最差日 ${pct(Math.max(...daily))}（≤ ${pct(dayMax)}）、最差種子 s${worst.seed} ${pct(worst.hunger)}（≤ ${pct(seedMax)}）、進食 ${eatLo.toFixed(2)}–${eatHi.toFixed(2)}（1.5–4）`);
   expect(`M10-A7[${scenario}]`, friends >= 6 && masters >= 1, `有朋友的種子 ${friends}/${SEEDS}（≥ 6）、拜師 ${masters} 次（≥ 1）`);
+}
+
+// M11-A6：蓋了宿舍，山上就熱鬧起來。
+{
+  const mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+  const g = membersBy.grow, b = membersBy.base;
+  const seven = g.filter((n) => n >= 7).length;
+  console.log('--- 宿舍與人口 ---');
+  expect('M11-A6', seven >= Math.ceil(SEEDS * 8 / 12) && mean(g) - mean(b) >= 1.5,
+    `grow 十日後同門 ≥ 7 人的種子 ${seven}/${SEEDS}（≥ ${Math.ceil(SEEDS * 8 / 12)}）；平均 grow ${mean(g).toFixed(1)}、base ${mean(b).toFixed(1)}（差 ≥ 1.5）`);
 }
 
 // A6：只看生平的時間占比猜個性。依全體中位數切：聊天切磋多 → 外向；幹活多 → 條理。

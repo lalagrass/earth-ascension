@@ -14,8 +14,8 @@ const DAYS = arg('days', 5);
 const TICKS = DAYS * TICKS_PER_DAY;
 
 const failures = [];
-// 兩個情境：base（M2–M8 的自然遊玩）與 exp（M9：第 3 日起討伐野豬窩）。
-for (const scenario of ['base', 'exp']) {
+// 三個情境：base（M2–M8 的自然遊玩）、exp（M9：第 3 日起討伐野豬窩）、grow（M11：第 2 日起蓋宿舍）。
+for (const scenario of ['base', 'exp', 'grow']) {
   const pooled = {};
   for (let seed = 1; seed <= SEEDS; seed++) {
     const s = createWorld({ seed, people: rosterFor(seed) });
@@ -43,4 +43,4 @@ if (failures.length) {
   console.error(`\nFAIL ${failures.length}\n` + failures.slice(0, 20).join('\n'));
   process.exit(1);
 }
-console.log(`\nOK ${SEEDS} seeds × ${DAYS} days × 2 scenarios`);
+console.log(`\nOK ${SEEDS} seeds × ${DAYS} days × 3 scenarios`);

@@ -4,7 +4,7 @@ import { createWorld, step, run, placeBlueprint, cancelSite, setFocus, companion
 import { candidates } from '../src/ai.mjs';
 import { nearestResources, takeResource, addWork } from '../src/build.mjs';
 import { walkable } from '../src/map.mjs';
-import { BLUEPRINTS, TICKS_PER_DAY } from '../src/data.mjs';
+import { BLUEPRINTS, FIRST_BLUEPRINTS, TICKS_PER_DAY } from '../src/data.mjs';
 
 const world = (seed = 4) => createWorld({ seed, people: [{ template: 'qiaofeng', name: '甲' }, ...companionsFor(seed, 'qiaofeng')] });
 const full = (p) => { p.needs = { food: 95, energy: 95, social: 95, fun: 95 }; };
@@ -37,7 +37,7 @@ test('M3-A1 自主採集：沒有工地時也會砍樹敲石並扛回倉堆', ()
 test('M3-A2/A4 放三張藍圖、跑到完工：守恆、柵欄擋路、茅屋有牆與床、灶台升級', () => {
   const s = world(2);
   s.tick = 360;
-  for (const b of BLUEPRINTS) assert.equal(placeBlueprint(s, b.id).ok, true);
+  for (const id of FIRST_BLUEPRINTS) assert.equal(placeBlueprint(s, id).ok, true);
   assert.equal(placeBlueprint(s, 'fence-s').ok, false, '同一張藍圖不能放兩次');
   for (let t = 0; t < TICKS_PER_DAY * 5 && s.built.length < 3; t++) { step(s); if (t % 50 === 0) conserved(s); }
   conserved(s);
