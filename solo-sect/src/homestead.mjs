@@ -1,7 +1,7 @@
-import {freshTastes,autonomyRecipe,recordTaste,autonomyFood} from './homestead-autonomy-meals.mjs';
+import {freshTastes,automaticRecipe,recordTaste,autonomyFood} from './homestead-autonomy-meals.mjs';
 import {freshAutonomy,validAutonomy,advanceAutonomy,observeAutonomy,goalStep} from './homestead-autonomy.mjs';
 import {defaultHomeLook,validHomeLook} from './homestead-look.mjs';
-import {RECIPES,MEAL_STYLES,hasRecipe,recipeReason,eatReason,recipeAccess,buildAccess,availableUnlocks,preparedCount,edibleEnergy,autoRecipe,chooseFood} from './homestead-content.mjs';
+import {RECIPES,MEAL_STYLES,hasRecipe,recipeReason,eatReason,recipeAccess,buildAccess,availableUnlocks,preparedCount,edibleEnergy,chooseFood} from './homestead-content.mjs';
 import {at,feel,FEELINGS,restRate} from './homestead-living.mjs';
 import { freshSkills, workCost, gainWork, SKILLS } from './homestead-skills.mjs';
 // 荒居：獨立生活狀態。設施階段宣告可提供的活動，任務只讀此登錄表。
@@ -141,7 +141,8 @@ export function setProjectFocus(s,id){
 }
 export function deferAutonomyGoal(s){
  const a=s.autonomy;if(!a?.goal)return false;const id=goalStep(s);
- if(s.person.task?.trial)cancelTask(s);
+ const t=s.person.task,owned=!s.person.order&&(a.goal==='herbs'&&['herbal','herbFarm'].includes(t?.act)||a.goal==='stew'&&t?.act==='cook'&&t.recipe==='stew'&&!t.manual);
+ if(t?.trial||owned)cancelTask(s);
  if(id&&s.fac[id].site)pauseProject(s,id,true);
  if(!a.deferred.includes(a.goal))a.deferred.push(a.goal);
  a.goal=null;return true;
@@ -273,14 +274,14 @@ function pick(s) {
   if (p.personality === 'sociable' && canDo(s, 'talkHelper') && p.hunger > 50 && p.energy > 45) return 'talkHelper';
   if (p.personality === 'diligent' && canDo(s, 'care') && p.energy > 40) return 'care';
   // 有現成菜時先補夠用熱飯，施工不拿走唯一的下一餐燃料。
-  if (preparedCount(s) < target.meal && (autonomyRecipe(s)||autoRecipe(s))) return 'cook';
+  if (preparedCount(s) < target.meal && automaticRecipe(s)) return 'cook';
   if (s.fac.kitchen.stage && preparedCount(s) < target.meal && s.stock.veg >= 2 && !s.stock.wood && canDo(s, 'chop')) return 'chop';
   if (canDo(s, 'build')) return 'build';
   if (Object.values(s.fac).some((st) => st.site && !st.site.paused && st.site.delivered.wood + st.site.reserved.wood < st.site.need.wood) && canDo(s, 'chop')) return 'chop';
   if (s.stock.berries < target.berries && canDo(s, 'forage')) return 'forage';
   if (s.fac.hut.stage === 0 && s.stock.wood < 5 && canDo(s, 'chop')) return 'chop';
   if (canDo(s, 'farm') && s.stock.veg < target.veg) return 'farm';
-  if (canDo(s, 'herbFarm') && s.stock.herbs < target.herbs) return 'herbFarm';
+  if (canDo(s, 'herbFarm') && s.stock.herbs < target.herbs && !s.autonomy?.deferred.includes('herbs')) return 'herbFarm';
   if (p.energy < 65) return 'rest';
   if (s.stock.wood < target.wood && canDo(s, 'chop')) return 'chop';
   return 'leisure';
@@ -304,7 +305,7 @@ function begin(s, act) {
   }
   p.task = { act, phase: 'go', place, timer: 0 };
   if(act==='rest'&&s.autonomy?.goal==='comfort'&&s.fac.bed.stage===2&&!s.autonomy.comfortRests)p.task.trial=true;
-  if(act==='cook'&&s.mode==='solo'){const manual=!!p.cookRequest&&!recipeReason(s,p.cookRequest);p.task.recipe=manual?p.cookRequest:autonomyRecipe(s)||autoRecipe(s)||'basic';p.task.manual=manual;}
+  if(act==='cook'&&s.mode==='solo'){const manual=!!p.cookRequest&&!recipeReason(s,p.cookRequest);p.task.recipe=manual?p.cookRequest:automaticRecipe(s)||'basic';p.task.manual=manual;}
   if(act==='eat'&&s.mode==='solo'){
     const requested=p.foodRequest;
     p.task.foodId=requested&&s.stock[RECIPES[requested].output]>0?requested:autonomyFood(s)||chooseFood(s);
@@ -343,7 +344,7 @@ function complete(s, t) {
   }
   if (t.act === 'herbFarm') {
     if (s.herbPlot.state === 'empty' && s.stock.herbs > 0) { s.stock.herbs--; s.herbPlot.state = 'growing'; s.herbPlot.growth = 0; p.herbalSkill++; note(s, '用一份草藥在藥田插穗。'); }
-    else if (s.herbPlot.state === 'ripe') { const amount = p.herbalSkill >= 3 ? 3 : 2; if (s.stock.herbs + inbound(s, 'herbs') <= s.cap.herbs - amount) { s.herbPlot.state = 'empty'; p.carry = { kind: 'herbs', amount, origin: 'wild' }; p.herbalSkill++; note(s, `收下 ${amount} 份藥田草藥，正帶回住處。`); } }
+    else if (s.herbPlot.state === 'ripe') { const amount = p.herbalSkill >= 3 ? 3 : 2; if (s.stock.herbs + inbound(s, 'herbs') <= s.cap.herbs - amount) { s.herbPlot.state = 'empty'; p.carry = { kind: 'herbs', amount, origin: 'wild' }; if(s.autonomy)s.autonomy.herbHarvests=Math.min(100,s.autonomy.herbHarvests+1); p.herbalSkill++; note(s, `收下 ${amount} 份藥田草藥，正帶回住處。`); } }
   }
   if(t.act==='cook'){const id=t.recipe||'basic',r=RECIPES[id];if(r&&!recipeReason(s,id)){for(const[k,n]of Object.entries(r.ingredients))s.stock[k]-=n;s.stock[r.output]=(s.stock[r.output]||0)+r.servings;skilledWork=true;note(s,id==='basic'?'用兩份菜與一根柴煮出三份熱飯。':`做成${r.name}${r.servings}份。`);}if(s.mode==='solo'&&t.manual&&p.cookRequest===id){p.cookRequest=null;p.order=null;}}
   if (t.act === 'chat' && canDo(s, 'chat')) { s.visitor.lastChat = s.day; s.visitor.trust++; note(s, `與${s.visitor.name}談了些日常。`); }
@@ -489,7 +490,7 @@ export function loadHomestead(json) {
     s.autonomy ??= null;
     if(s.autonomy&&s.autonomy.warmMeals===undefined)s.autonomy.warmMeals=0;
     if(s.autonomy&&s.autonomy.comfortRests===undefined)s.autonomy.comfortRests=0;
-    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;s.autonomy.direction??='auto';s.autonomy.deferred??=[];s.autonomy.limit??=Math.max(2,s.autonomy.completed.filter(id=>['comfort','porch','pantry'].includes(id)).length);s.autonomy.journal??=s.autonomy.completed.map(goal=>({goal,at:null}));s.autonomy.tastes??=freshTastes();s.autonomy.interestLimit??=2;}
+    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;s.autonomy.direction??='auto';s.autonomy.deferred??=[];s.autonomy.limit??=Math.max(2,s.autonomy.completed.filter(id=>['comfort','porch','pantry'].includes(id)).length);s.autonomy.journal??=s.autonomy.completed.map(goal=>({goal,at:null}));s.autonomy.tastes??=freshTastes();s.autonomy.interestLimit??=2;s.autonomy.herbHarvests??=0;}
     if(s.autonomy&&s.autonomy.experience===undefined)s.autonomy.experience={hunger:0,fatigue:0,effort:0,lastWork:s.person.work};
     if(!validAutonomy(s.autonomy,s.mode,s.t,s.person.work))return {ok:false,error:'自主生活目標不合法'};
     if(s.person.task?.trial!==undefined&&(s.person.task.trial!==true||s.person.task.act!=='rest'||!s.autonomy||s.fac.bed?.stage!==2))return {ok:false,error:'床鋪試睡任務不合法'};
