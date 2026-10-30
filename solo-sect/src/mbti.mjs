@@ -55,3 +55,5 @@ export function nearestType(personality = []) {
 export const typeLabel = (type) => (isType(type) ? `${type}・${TYPES[type].name}（參考：${TYPES[type].ref}）` : '');
 // loop5：創角選 16 型時的特質；悟性 1 照舊先得「憨厚」（笨功夫），總數維持 2 個可見特質
 export function mbtiPersonality(type, wu) { const p = traitsOf(type); if (wu === 1 && !p.includes('honest')) p.unshift('honest'); return p.slice(0, 2); }
+// loop13：問卷 UI 用；未答完回 null
+export function quizResult(picks) { if (!Array.isArray(picks) || picks.length !== MBTI_Q.length || picks.some((x) => x == null || x === '')) return null; return typeFromAnswers(picks.map(Number)); }
