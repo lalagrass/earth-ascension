@@ -4,7 +4,8 @@ import { walkable } from '../src/map.mjs';
 import { speedOf } from '../src/person.mjs';
 import { isNight } from '../src/needs.mjs';
 import { stageOf, aff } from '../src/social.mjs';
-import { TEMPLATES, TICKS_PER_DAY, BLUEPRINTS, WORK_KINDS } from '../src/data.mjs';
+import { TEMPLATES, TICKS_PER_DAY, BLUEPRINTS, WORK_KINDS, ENEMIES, RAID } from '../src/data.mjs';
+import { courage } from '../src/martial.mjs';
 
 const STUCK_TICKS = 720; // 半日
 
@@ -52,6 +53,18 @@ export function perSeed(s, ctx) {
   const all = s.built.length === BLUEPRINTS.length;
   bump(ctx, 'seeds'); if (all) bump(ctx, 'allBuilt');
   for (const e of s.events) if (e.kind === 'built') bump(ctx, `built:${e.text}`);
+  // M7-A7／A8：侵擾、撞破、打退、修補、膽識。
+  if ((c.raids || 0) >= 3) bump(ctx, 'raid3');
+  if (c.breaches) bump(ctx, 'breachSeeds');
+  bump(ctx, 'enemies', c.enemies || 0); bump(ctx, 'repelled', c.repelled || 0); bump(ctx, 'stealHits', c.stealHits || 0);
+  const lateBreak = s.tick - 6 * 60; // 最後 6 小時破的不算
+  const broken = s.events.filter((e) => e.kind === 'breach' && e.tick < lateBreak).length;
+  const openNow = s.map.join('').split('f').length - 1;
+  bump(ctx, 'breakEarly', broken); bump(ctx, 'openNow', openNow);
+  const byC = [...s.people].sort((a, b) => courage(b) - courage(a));
+  const ft = (p) => ctx.fightT?.[p.id] || 0;
+  bump(ctx, 'braveSeeds'); if (ft(byC[0]) > ft(byC[byC.length - 1])) bump(ctx, 'braveOk');
+  bump(ctx, 'fightBrave', ft(byC[0])); bump(ctx, 'fightTimid', ft(byC[byC.length - 1]));
   const hutBeds = s.objects.filter((o) => o.label === '茅屋床');
   ctx.samples.hutSleptSeeds = (ctx.samples.hutSleptSeeds || 0) + (s.counts.hutSleep ? 1 : 0);
   if (hutBeds.length && !s.counts.hutSleep) ctx.samples.hutNoSleep = (ctx.samples.hutNoSleep || 0) + 1;
@@ -99,16 +112,16 @@ export const invariants = [
     const heldRaw = s.people.reduce((a, p) => a + p.hold.raw, 0);
     const heldMeal = s.people.reduce((a, p) => a + p.hold.meal, 0);
     const raw0 = 6, meal0 = 3;
-    if (raw0 + L.picked !== L.rawEaten + L.rawCooked + s.stock.raw + carried + heldRaw) fail(ctx, s, `生莓不守恆 ${JSON.stringify(L)}`);
-    if (meal0 + L.mealsMade !== L.mealsEaten + s.stock.meal + heldMeal) fail(ctx, s, `飯不守恆 ${JSON.stringify(L)}`);
+    if (raw0 + L.picked !== L.rawEaten + L.rawCooked + L.rawStolen + s.stock.raw + carried + heldRaw) fail(ctx, s, `生莓不守恆 ${JSON.stringify(L)}`);
+    if (meal0 + L.mealsMade !== L.mealsEaten + L.mealsStolen + s.stock.meal + heldMeal) fail(ctx, s, `飯不守恆 ${JSON.stringify(L)}`);
   },
   // M3-A2／A3：木石守恆、搬料不超量。
   (s, ctx) => {
     const L = s.ledger;
-    for (const [m, cut, used] of [['wood', 'woodCut', 'woodUsed'], ['stone', 'stoneCut', 'stoneUsed']]) {
+    for (const [m, cut, used, lost] of [['wood', 'woodCut', 'woodUsed', 'woodStolen'], ['stone', 'stoneCut', 'stoneUsed', 'stoneStolen']]) {
       const onPeople = s.people.reduce((a, p) => a + p.load[m] + p.hold[m], 0);
       const atSites = s.sites.reduce((a, x) => a + x.have[m], 0);
-      if (L[cut] !== s.stock[m] + onPeople + atSites + L[used]) fail(ctx, s, `${m} 不守恆 cut=${L[cut]} stock=${s.stock[m]} people=${onPeople} sites=${atSites} used=${L[used]}`);
+      if (L[cut] !== s.stock[m] + onPeople + atSites + L[used] + L[lost]) fail(ctx, s, `${m} 不守恆 cut=${L[cut]} stock=${s.stock[m]} people=${onPeople} sites=${atSites} used=${L[used]} stolen=${L[lost]}`);
       if (s.stock[m] < 0) fail(ctx, s, `${m} 庫存為負`);
       for (const x of s.sites) {
         if (x.have[m] + x.incoming[m] > x.need[m]) fail(ctx, s, `${x.label} ${m} 超量 ${x.have[m]}+${x.incoming[m]}>${x.need[m]}`);
@@ -116,6 +129,22 @@ export const invariants = [
       }
     }
     for (const x of s.sites) if (x.workers.length > 2) fail(ctx, s, `${x.label} 施工超過兩人`);
+  },
+  // M7-A2／A9：敵人不瞬移、不站在擋路格、不卡住；柵欄修補預約一致。
+  (s, ctx) => {
+    ctx.ePrev ??= new Map();
+    for (const e of s.enemies) {
+      const q = ctx.ePrev.get(e.id);
+      const lim = ENEMIES[e.kind].speed * 1.2 + 1e-9;
+      if (q && Math.hypot(e.x - q.x, e.y - q.y) > lim) fail(ctx, s, `${e.label}${e.id} 瞬移`);
+      if (!walkable(s.map, Math.round(e.x), Math.round(e.y)) && s.map[Math.round(e.y)][Math.round(e.x)] !== 'F') fail(ctx, s, `${e.label}${e.id} 站在擋路格`);
+      if (s.tick - e.born > RAID.MAX_LIFE + 400) fail(ctx, s, `${e.label}${e.id} 卡住沒離開`);
+      ctx.ePrev.set(e.id, { x: e.x, y: e.y });
+    }
+    for (const [k, id] of Object.entries(s.repairUser)) {
+      const p = s.people.find((x) => x.id === id);
+      if (!p.task || p.task.kind !== 'repair' || p.task.cell !== k) fail(ctx, s, `柵欄 ${k} 修補預約殘留`);
+    }
   },
   // M2-A5：沒人長期挨餓或累垮。
   (s, ctx) => {
@@ -173,6 +202,7 @@ export const samplers = [
       bump(ctx, `t:${g2}`);
       if (p.task && WORK_KINDS.has(p.task.kind)) bump(ctx, `work:${g2}`);
       if (p.act === 'do' && p.task.kind === 'drill') bump(ctx, `drill:${g2}`);
+      if (p.task?.kind === 'fight') { ctx.fightT ??= {}; ctx.fightT[p.id] = (ctx.fightT[p.id] || 0) + 1; }
       if (p.act === 'do' && p.task.kind === 'sleep' && s.objects.find((o) => o.id === p.task.obj).label === '茅屋床') s.counts.hutSleep = (s.counts.hutSleep || 0) + 1;
       if (p.needs.food < 15) bump(ctx, 'lowFood');
       if (p.needs.energy < 12) bump(ctx, 'lowEnergy');
@@ -226,10 +256,18 @@ export function judge(S) {
   lines.push(`M6-A6 打木樁時間占比：條理 ${(dj * 100).toFixed(1)}%，隨性 ${(dp * 100).toFixed(1)}%`);
   if (!(dj > dp)) failures.push('M6-A6 條理型沒有比隨性型更常練功');
   lines.push(`（參考）每人學到的新招：悟性 ≥ 7 平均 ${r('mv:hi:known', 'mv:hi:n').toFixed(2)}、悟性 ≤ 4 平均 ${r('mv:lo:known', 'mv:lo:n').toFixed(2)}`);
+  lines.push(`M7-A7 侵擾 ≥ 3 次 ${S.raid3 || 0}/${S.seeds}、柵欄被撞破 ${S.breachSeeds || 0}/${S.seeds}；敵人 ${S.enemies || 0}、打退 ${S.repelled || 0}（${(100 * r('repelled', 'enemies')).toFixed(0)}%）、偷到 ${S.stealHits || 0}；第 5 日 18 時前撞破 ${S.breakEarly || 0} 格，結束時還破著 ${S.openNow || 0} 格`);
+  if ((S.raid3 || 0) < S.seeds) failures.push('M7-A7 有種子侵擾少於 3 次');
+  if ((S.breachSeeds || 0) < S.seeds / 2) failures.push('M7-A7 柵欄被撞破的種子太少');
+  if (r('repelled', 'enemies') < 0.5) failures.push('M7-A7 打退的敵人不到一半');
+  if ((S.breakEarly || 0) && 1 - (S.openNow || 0) / S.breakEarly < 0.75) failures.push('M7-A7 撞破的柵欄沒修好');
+  lines.push(`M7-A8 膽識最高者迎敵時間多於最低者：${S.braveOk || 0}/${S.braveSeeds}；平均迎敵 tick 最高 ${r('fightBrave', 'braveSeeds').toFixed(0)}、最低 ${r('fightTimid', 'braveSeeds').toFixed(0)}`);
+  if ((S.braveOk || 0) < Math.ceil(S.braveSeeds * 8 / 12)) failures.push('M7-A8 膽識沒有反映在迎敵上');
   const all = (S['t:E'] || 0) + (S['t:I'] || 0);
   // 時間分布：調平衡前先看這張表（loop 3 retro 的改進）。
   const share = Object.entries(S).filter(([k]) => k.startsWith('act:')).sort((a, b) => b[1] - a[1]).slice(0, 10);
   lines.push(`（診斷）時間分布前十：${share.map(([k, v]) => `${k.slice(4)} ${(100 * v / all).toFixed(1)}%`).join('、')}`);
   lines.push(`（參考）處於自理門檻下的時間：飢餓 ${(100 * (S.lowFood || 0) / all).toFixed(1)}%，累垮 ${(100 * (S.lowEnergy || 0) / all).toFixed(1)}%`);
+  if ((S.lowFood || 0) / all > 0.02) failures.push('M7-A7 飢餓時間超過 2%');
   return { lines, failures };
 }

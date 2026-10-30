@@ -5,8 +5,8 @@ import { blueprint } from './build.mjs';
 import { effectText } from './skills.mjs';
 import { aff, stageOf, prestige } from './social.mjs';
 import { prowess, moveLabel, comprehendable, compChance } from './martial.mjs';
-import { SKILLS, MOVES } from './data.mjs';
-import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes } from './render.mjs';
+import { SKILLS, MOVES, DEFENSE } from './data.mjs';
+import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes, drawEnemies } from './render.mjs';
 
 const $ = (s) => document.querySelector(s);
 const el = (tag, attrs = {}, ...kids) => {
@@ -115,6 +115,7 @@ function paintBg() {
 }
 
 let builtSeen = 0;
+let eventsSeen = 0;
 function renderBuild() {
   const box = $('#build');
   box.replaceChildren(el('h3', {}, '營造'), ...BLUEPRINTS.map((bp) => {
@@ -128,6 +129,7 @@ function renderBuild() {
     return el('div', { class: 'bp' }, el('b', {}, bp.label), el('span', { class: 'cost' }, costText), btn, el('small', {}, bp.desc));
   }), el('div', { id: 'events' }, ...state.events.slice(-4).reverse().map((e) => el('p', {}, `第${Math.floor(e.tick / 1440) + 1}日 ${e.text}`))));
   builtSeen = state.built.length;
+  eventsSeen = state.events.length;
 }
 
 function setSpeed(s) {
@@ -145,10 +147,11 @@ function frame(now) {
   while (acc >= 1) { step(state); acc -= 1; }
   const ctx = $('#view').getContext('2d');
   if (state.mapVersion !== bgVersion) paintBg();
-  if (state.built.length !== builtSeen) renderBuild();
+  if (state.built.length !== builtSeen || state.events.length !== eventsSeen) renderBuild();
   ctx.drawImage(bg, 0, 0);
   drawBuild(ctx, state, PILE, blueprint);
   drawObjects(ctx, state);
+  drawEnemies(ctx, state, DEFENSE.FENCE_HP);
   drawPeople(ctx, state, selected);
   drawStrikes(ctx, state);
   drawBubbles(ctx, state);
@@ -227,7 +230,7 @@ addEventListener('keydown', (e) => {
 
 // 唯讀遙測：給 headless 檢查用，回傳副本。
 window.__sect = {
-  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map, aff: state.aff, events: state.events })) : null),
+  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map, aff: state.aff, events: state.events, enemies: state.enemies, raids: state.raids, fenceHp: state.fenceHp })) : null),
   speed: () => speed,
   selected: () => selected,
   tileToClient: (x, y) => {

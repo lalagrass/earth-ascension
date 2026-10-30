@@ -6,8 +6,10 @@ const DIRS = [
 ];
 
 // 8 方向 A*，不切角。回傳格子序列（不含起點），到不了回 null。
-export function findPath(map, sx, sy, tx, ty) {
-  if (!walkable(map, tx, ty)) return null;
+// through：{ 字元: 額外代價 }，讓敵人能「穿過」柵欄（實際上要先撞破）。
+export function findPath(map, sx, sy, tx, ty, through = null) {
+  const pass = through ? (x, y) => walkable(map, x, y) || (map[y]?.[x] in through) : (x, y) => walkable(map, x, y);
+  if (!pass(tx, ty)) return null;
   if (sx === tx && sy === ty) return [];
   const W = map[0].length;
   const key = (x, y) => y * W + x;
@@ -38,10 +40,10 @@ export function findPath(map, sx, sy, tx, ty) {
     }
     for (const [dx, dy, cost] of DIRS) {
       const nx = x + dx, ny = y + dy;
-      if (!walkable(map, nx, ny)) continue;
-      if (dx && dy && (!walkable(map, x + dx, y) || !walkable(map, x, y + dy))) continue;
+      if (!pass(nx, ny)) continue;
+      if (dx && dy && (!pass(x + dx, y) || !pass(x, y + dy))) continue;
       const nk = key(nx, ny);
-      const ng = g.get(k) + cost;
+      const ng = g.get(k) + cost + (through?.[map[ny][nx]] ?? 0);
       if (ng < (g.get(nk) ?? Infinity)) {
         g.set(nk, ng);
         came.set(nk, k);

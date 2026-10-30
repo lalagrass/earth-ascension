@@ -165,11 +165,11 @@ export function workSpot(state, site) {
 }
 
 // 格子上有人就不能立起擋路的牆或柵。
-function cellClear(state, c) {
-  return !state.people.some((p) => Math.hypot(p.x - c.x, p.y - c.y) < 1);
+export function cellClear(state, c) {
+  return ![...state.people, ...(state.enemies ?? [])].some((p) => Math.hypot(p.x - c.x, p.y - c.y) < 1);
 }
 
-function blockCell(state, c) {
+export function blockCell(state, c) {
   setTile(state, c.x, c.y, c.to);
   // 路線經過這格的人改道。
   for (const p of state.people) {

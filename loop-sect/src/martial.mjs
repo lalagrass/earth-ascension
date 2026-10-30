@@ -35,6 +35,11 @@ export function prowess(p) {
   return Object.entries(p.moves ?? {}).reduce((s, [id, v]) => s + BY_ID[id].power * v / 100, 0);
 }
 
+// M7 膽識：武力、外向、膂力加分，心軟的人比較怕。
+export function courage(p) {
+  return 0.5 * prowess(p) + 0.3 * p.axes.E - 0.2 * Math.max(0, p.axes.F) + 0.1 * (p.attrs.li - 5) / 5;
+}
+
 export function learn(p, id, start = 0) {
   if (id in p.moves) return false;
   p.moves[id] = start;

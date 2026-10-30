@@ -4,7 +4,7 @@ export const TILE = 20;
 const TILE_COLOR = {
   '.': '#9db978', ':': '#c9b48a', '_': '#b89a72', '#': '#6b4f3a',
   'T': '#9db978', 'R': '#a7ad8f', 'W': '#5b9bc4', 'B': '#9db978', '=': '#8a6a45',
-  ',': '#a3b77c', ';': '#b3b39a', 'F': '#9db978',
+  ',': '#a3b77c', ';': '#b3b39a', 'F': '#9db978', 'f': '#9db978',
 };
 
 // 依氣質分組上色：NF 綠、NT 紫、SJ 藍、SP 橙。
@@ -61,6 +61,11 @@ export function drawMap(ctx, map) {
         ctx.fillStyle = '#7a5631';
         ctx.fillRect(px + 2, py + 2, 3, 16); ctx.fillRect(px + 15, py + 2, 3, 16);
         ctx.fillRect(px, py + 6, TILE, 3); ctx.fillRect(px, py + 12, TILE, 3);
+      } else if (t === 'f') {
+        // 斷柵：倒下的木條。
+        ctx.fillStyle = '#7a5631';
+        ctx.fillRect(px + 2, py + 12, 3, 6); ctx.fillRect(px + 15, py + 10, 3, 8);
+        ctx.save(); ctx.translate(px + 10, py + 14); ctx.rotate(0.5); ctx.fillRect(-9, -1.5, 18, 3); ctx.restore();
       } else if (t === '#') {
         ctx.fillStyle = '#58402e';
         ctx.fillRect(px, py + 8, TILE, 2);
@@ -218,17 +223,53 @@ export function drawBuild(ctx, state, PILE, blueprintOf) {
 // 練功、切磋時在人旁邊畫出招的弧線，方向朝向木樁或對手；每 12 tick 換一個起手角度。
 export function drawStrikes(ctx, state) {
   for (const p of state.people) {
-    if (p.act !== 'do' || (p.task.kind !== 'drill' && p.task.kind !== 'spar')) continue;
+    if (p.act !== 'do' || !['drill', 'spar', 'fight'].includes(p.task.kind)) continue;
     let tx = p.x + 1, ty = p.y;
     if (p.task.kind === 'spar') { const o = state.people.find((x) => x.id === p.task.partner); tx = o.x; ty = o.y; }
+    if (p.task.kind === 'fight') { const e = state.enemies.find((x) => x.id === p.task.enemy); if (!e) continue; tx = e.x; ty = e.y; }
     const ang = Math.atan2(ty - p.y, tx - p.x || 0.001);
     const phase = Math.floor((state.tick + p.id.charCodeAt(1) * 5) / 12) % 3;
     const cx = p.x * TILE + TILE / 2, cy = p.y * TILE + TILE / 2 - 2;
     const r = 13 + phase * 2;
-    ctx.strokeStyle = p.task.kind === 'spar' ? 'rgba(190,40,30,0.9)' : 'rgba(255,250,215,1)';
+    ctx.strokeStyle = p.task.kind === 'drill' ? 'rgba(255,250,215,1)' : 'rgba(190,40,30,0.9)';
     ctx.lineWidth = 3.5;
     ctx.beginPath(); ctx.arc(cx, cy, r, ang - 0.9 + phase * 0.3, ang + 0.4 + phase * 0.3); ctx.stroke();
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.arc(cx, cy, r + 4, ang - 0.5 + phase * 0.3, ang + 0.2 + phase * 0.3); ctx.stroke();
+  }
+}
+
+// ---------- M7 敵人 ----------
+// 柵欄格耐久不滿時畫裂痕；敵人畫身形與血條，徘徊時頭上打驚嘆號。
+export function drawEnemies(ctx, state, FENCE_HP) {
+  for (const [k, hp] of Object.entries(state.fenceHp)) {
+    const [x, y] = k.split(',').map(Number);
+    ctx.strokeStyle = 'rgba(60,30,10,0.9)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(x * TILE + 4, y * TILE + 4); ctx.lineTo(x * TILE + 10, y * TILE + 11); ctx.lineTo(x * TILE + 16, y * TILE + 7); ctx.stroke();
+    ctx.fillStyle = '#c0392b'; ctx.fillRect(x * TILE, y * TILE - 3, TILE * hp / FENCE_HP, 2);
+  }
+  ctx.textAlign = 'center';
+  for (const e of state.enemies) {
+    const cx = e.x * TILE + TILE / 2, cy = e.y * TILE + TILE / 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath(); ctx.ellipse(cx, cy + 7, 9, 3, 0, 0, Math.PI * 2); ctx.fill();
+    if (e.kind === 'boar') {
+      ctx.fillStyle = '#5a3d27';
+      ctx.beginPath(); ctx.ellipse(cx, cy + 1, 10, 6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx + 8, cy - 1, 5, 4, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#f3ead8'; ctx.fillRect(cx + 11, cy + 1, 4, 1.5);
+      ctx.fillStyle = '#2b1d12'; ctx.fillRect(cx - 7, cy + 5, 2, 3); ctx.fillRect(cx + 4, cy + 5, 2, 3);
+    } else {
+      ctx.fillStyle = '#2b2b33';
+      ctx.beginPath(); ctx.moveTo(cx - 7, cy + 7); ctx.lineTo(cx + 7, cy + 7); ctx.lineTo(cx + 4, cy - 4); ctx.lineTo(cx - 4, cy - 4); ctx.fill();
+      ctx.fillStyle = '#d9b48f'; ctx.beginPath(); ctx.arc(cx, cy - 8, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#b8322a'; ctx.fillRect(cx - 6, cy - 12, 12, 3);
+    }
+    ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(cx - 10, cy - 20, 20, 3);
+    ctx.fillStyle = '#d94a3a'; ctx.fillRect(cx - 10, cy - 20, 20 * Math.max(0, e.hp) / e.hpMax, 3);
+    if (e.mode === 'lurk' || e.bashing) {
+      ctx.font = 'bold 12px sans-serif'; ctx.fillStyle = '#b8322a';
+      ctx.fillText(e.bashing ? '撞！' : '!', cx, cy - 23);
+    }
   }
 }

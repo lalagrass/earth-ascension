@@ -1,15 +1,19 @@
 // 效用 AI：列出所有可做的事、打分、留下理由。只讀 state，不改。
-import { ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL } from './data.mjs';
+import { ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE } from './data.mjs';
+import { activeEnemies } from './raid.mjs';
+import { walkable } from './map.mjs';
 import { nearestResources, remaining, stocked, workSpot, siteWorkersFree } from './build.mjs';
 import { extraTake } from './skills.mjs';
 import { aff, prestige } from './social.mjs';
-import { drillMove, moveLabel } from './martial.mjs';
+import { drillMove, moveLabel, courage } from './martial.mjs';
+import { reachable } from './build.mjs';
 import { nextRand } from './rng.mjs';
 import { urgency, isNight } from './needs.mjs';
 
 const SLEEPS = new Set(['sleep', 'sleepGround']);
 // loop 6：練功占去空檔後，指定伐木者在練功時需求冒出來，活被別人搶走（全隊砍樹時間中他的占比由 0.63 掉到 0.53）。
 const DEFER = 0.6;
+const LEISURE = new Set(['drill', 'spar', 'chat', 'sit', 'wander', 'idle']);
 const FOCUS_KINDS = Object.fromEntries(FOCUS.filter((f) => f.id).map((f) => [f.id, new Set(f.kinds)]));
 const EATS = new Set(['eat', 'eatRaw', 'eatCarried', 'forage']);
 // 夜裡跟活計一樣壓低：練功、切磋。
@@ -81,7 +85,7 @@ export function candidates(state, p, scorePois) {
       // 練功：定力高、有條理的人自己會去練；無聊時也想動一動。
       const move = drillMove(p);
       add({ kind: 'drill', obj: o.id, slot: i, spot, move, martial: true, label: `到${o.label}練${moveLabel(move)}` },
-        { need: u.fun * MARTIAL.DRILL_FUN, persona: MARTIAL.DRILL_BASE + 0.08 * (p.attrs.ding - 5) + diligence });
+        { need: u.fun * MARTIAL.DRILL_FUN, persona: MARTIAL.DRILL_BASE + 0.08 * (p.attrs.ding - 5) + diligence + DEFENSE.THREAT_DRILL * Math.min(2, state.threat ?? 0) });
     }
     if (o.kind === 'bench') {
       add({ kind: 'sit', obj: o.id, slot: i, spot, label: `去${o.label}坐坐` },
@@ -154,7 +158,33 @@ export function candidates(state, p, scorePois) {
       const like = aff(state, p, o);
       if (like < MARTIAL.SPAR_MIN_AFF) continue;
       add({ kind: 'spar', partner: o.id, move: drillMove(p), martial: true, spot: { x: Math.round(o.x), y: Math.round(o.y) }, label: `找${o.name}切磋` },
-        { need: u.fun * 0.5, persona: 0.2 + 0.15 * E + 0.05 * (p.attrs.li - 5) + like * 0.01 });
+        { need: u.fun * 0.5, persona: 0.2 + 0.15 * E + 0.05 * (p.attrs.li - 5) + like * 0.01 + DEFENSE.THREAT_DRILL * Math.min(2, state.threat ?? 0) });
+    }
+  }
+
+  // ---------- M7 迎敵、躲、修柵欄 ----------
+  const near = activeEnemies(state).filter((e) => Math.hypot(e.x - p.x, e.y - p.y) <= DEFENSE.ALERT_R);
+  if (near.length) {
+    const brave = courage(p);
+    if (p.needs.energy > DEFENSE.FIGHT_MIN_ENERGY) {
+      for (const e of near) {
+        // 膽識決定願不願意上：膽小的人幾乎不上，膽大的人比做任何活都急。
+        const willing = Math.max(0, Math.min(1.5, DEFENSE.WILLING_BASE + 1.5 * brave));
+        add({ kind: 'fight', enemy: e.id, spot: { x: Math.round(e.x), y: Math.round(e.y) }, label: `迎戰${e.label}` },
+          { work: DEFENSE.FIGHT_WORK * willing });
+      }
+    }
+    const hall = state.pois.find((x) => x.id === 'hall');
+    add({ kind: 'hide', spot: { x: hall.x, y: hall.y }, label: '躲進道館' },
+      { persona: Math.max(0, DEFENSE.HIDE_BASE - brave) + 0.3 * Math.max(0, F) });
+  }
+  if (empty && state.stock.wood > 0) {
+    for (const k of brokenFence(state)) {
+      if (state.repairUser[k]) continue;
+      const [x, y] = k.split(',').map(Number);
+      const spot = [[x, y - 1], [x, y + 1]].map(([sx, sy]) => ({ x: sx, y: sy })).find((s) => walkable(state.map, s.x, s.y) && reachable(state, s.x, s.y));
+      if (!spot) continue;
+      add({ kind: 'repair', cell: k, cx: x, cy: y, spot, label: '修補南柵欄' }, { work: DEFENSE.REPAIR_WORK, persona: diligence });
     }
   }
 
@@ -168,6 +198,9 @@ export function candidates(state, p, scorePois) {
   // 床都滿了或撐不住時，可以席地而睡。
   if (!out.some((c) => c.kind === 'sleep') || p.needs.energy < FORCE.energy) add({ kind: 'sleepGround' }, { need: u.energy * 0.7 });
   add({ kind: 'idle' }, { persona: 0.05 });
+
+  // 敵人在附近時沒心思玩：休閒類打折（loop 7 診斷：警報後仍有人回去練功、聊天，迎敵在 206 次候選裡只排第一 31 次）。
+  if (near.length) for (const c of out) if (LEISURE.has(c.kind)) { c.score *= DEFENSE.ALARM_LEISURE; c.f.sched *= DEFENSE.ALARM_LEISURE; }
 
   let forced = null;
   let list = out;
@@ -192,6 +225,16 @@ export function candidates(state, p, scorePois) {
 const SPAR_BREAKS = new Set(['drill', 'sit', 'idle']);
 export function sparInterruptible(o) {
   return interruptible(o) || (o.act === 'do' && SPAR_BREAKS.has(o.task?.kind));
+}
+
+// 斷掉的柵欄格（只有蓋好過的柵欄會斷）。
+export function brokenFence(state) {
+  const out = [];
+  for (let y = 0; y < state.map.length; y++) {
+    const row = state.map[y];
+    for (let x = row.indexOf('f'); x >= 0; x = row.indexOf('f', x + 1)) out.push(`${x},${y}`);
+  }
+  return out;
 }
 
 export function willingToSpar(o) {

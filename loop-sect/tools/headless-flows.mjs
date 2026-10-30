@@ -189,4 +189,28 @@ export const flows = [
       expect('A9 練完熟練上升', s2.people[0].moves.changquan > 3, String(s2.people[0].moves.changquan));
     },
   },
+  {
+    name: 'm7-raid',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.click('#begin');
+      await page.click('[data-blueprint="fence-s"]');
+      await page.click('[data-person="p0"]');
+      expect('A10 專長有守衛', (await page.locator('[data-focus="guard"]').count()) === 1);
+      await page.click('[data-focus="guard"]');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().enemies.length > 0, null, { timeout: 90000 });
+      await page.click('[data-speed="1"]');
+      let s = await snap(page);
+      const e = s.enemies[0];
+      expect('A10 侵擾時地圖上有敵人與血量', e && e.hp > 0 && e.hpMax > 0, JSON.stringify(e && { kind: e.kind, hp: e.hp, mode: e.mode }));
+      expect('A10 紀事寫出敵人來了', /來了/.test(await page.textContent('#events')));
+      await page.waitForFunction(() => window.__sect.snapshot().people.some((p) => p.task?.kind === 'fight' && p.act === 'do'), null, { timeout: 60000 });
+      await page.click('[data-speed="0"]');
+      s = await snap(page);
+      const f = s.people.find((p) => p.task?.kind === 'fight' && p.act === 'do');
+      expect('A10 有人迎戰', /迎戰/.test(f.actLabel), f.actLabel);
+      await shot('fight');
+    },
+  },
 ];

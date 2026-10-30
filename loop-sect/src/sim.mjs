@@ -2,7 +2,8 @@ import {
   POIS, TEMPLATES, NAMES, TICKS_PER_DAY, OBJECTS, ACTS, BUSH_MAX, BUSH_REGROW,
   START_STOCK, COOK_RAW, FORAGE_TAKE, START_MATERIALS, HEARTH_LEVELS,
 } from './data.mjs';
-import { placeSite, removeSite, addWork, takeResource, workSpot } from './build.mjs';
+import { placeSite, removeSite, addWork, takeResource, workSpot, blockCell, cellClear } from './build.mjs';
+import { raidSchedule, startRaids, stepEnemies, activeEnemies } from './raid.mjs';
 import { seedHolder, nextRand, randInt, hashString } from './rng.mjs';
 import { buildMap, walkable, nearestWalkable } from './map.mjs';
 import { findPath } from './path.mjs';
@@ -10,9 +11,9 @@ import { fromTemplate, makePerson, speedOf } from './person.mjs';
 import { decayNeeds, applyPer, isNight } from './needs.mjs';
 import { candidates, interruptible, sparInterruptible, willingToChat, willingToSpar, REFUSE_COOLDOWN } from './ai.mjs';
 import { newSkills, grow, SKILL_OF_TASK, workTimeMul, buildRate, extraMeal, extraTake, skillLabel } from './skills.mjs';
-import { FOOT_STEP, SOCIAL, MARTIAL } from './data.mjs';
+import { FOOT_STEP, SOCIAL, MARTIAL, DEFENSE } from './data.mjs';
 import { addAff, compat, teachTopic, withStage, atLeast } from './social.mjs';
-import { newMoves, practice, moveLabel, learn, drillMove } from './martial.mjs';
+import { newMoves, practice, moveLabel, learn, drillMove, prowess } from './martial.mjs';
 
 // 兩人一起做的事：先走到對方身邊、對方答應才開始。
 const PAIR = new Set(['chat', 'spar']);
@@ -98,7 +99,8 @@ export function createWorld({ seed = 1, people }) {
   state.objects = OBJECTS.map((o, i) => ({ id: `o${i}`, ...o, slots: o.slots.map((s) => [...s]), users: o.slots.map(() => null) }));
   state.objects.find((o) => o.kind === 'hearth').level = 0;
   state.stock = { ...START_STOCK, ...START_MATERIALS };
-  state.ledger = { picked: 0, rawEaten: 0, rawCooked: 0, mealsMade: 0, mealsEaten: 0, woodCut: 0, stoneCut: 0, woodUsed: 0, stoneUsed: 0 };
+  state.ledger = { picked: 0, rawEaten: 0, rawCooked: 0, mealsMade: 0, mealsEaten: 0, woodCut: 0, stoneCut: 0, woodUsed: 0, stoneUsed: 0,
+    rawStolen: 0, mealsStolen: 0, woodStolen: 0, stoneStolen: 0 };
   state.mapVersion = 0;
   state.res = {};          // "x,y" → 剩餘量（未動過的樹石不列）
   state.resUser = {};      // "x,y" → 預約者
@@ -109,6 +111,14 @@ export function createWorld({ seed = 1, people }) {
   state.reroute = [];
   state.aff = {};          // "p0>p1" → p0 對 p1 的好感
   state.counts = {};
+  state.raids = raidSchedule(seed);   // M7：開局排好
+  state.raidAt = 0;
+  state.enemies = [];
+  state.enemySeq = 0;
+  state.fenceHp = {};      // "x,y" → 柵欄格耐久（滿血不列）
+  state.repairUser = {};
+  state.threat = 0;        // 危機感：被偷、被撞破時上升，慢慢消退
+  Object.defineProperty(state, 'releaseFn', { value: release, enumerable: false }); // raid.mjs 的警報要釋放預約
   state.people = people.map((spec, i) => {
     const id = `p${i}`;
     const p = spec.axes ? makePerson({ ...spec, id }) : fromTemplate(spec.template, { id, name: spec.name, protagonist: !!spec.protagonist });
@@ -182,6 +192,7 @@ function reserve(state, p, c) {
     byId(state.sites, c.site).incoming[c.mat] += c.n;
   }
   if (c.kind === 'build') byId(state.sites, c.site).workers.push(p.id);
+  if (c.kind === 'repair') { state.repairUser[c.cell] = p.id; state.stock.wood--; p.hold.wood = 1; }
 }
 
 export function release(state, p) {
@@ -199,6 +210,7 @@ export function release(state, p) {
     const site = t.site && byId(state.sites, t.site);
     if (t.kind === 'haul' && site) site.incoming[t.mat] -= t.leg === 'drop' ? p.load[t.mat] : p.hold[t.mat];
     if (t.kind === 'build' && site) site.workers = site.workers.filter((w) => w !== p.id);
+    if (t.kind === 'repair' && state.repairUser[t.cell] === p.id) delete state.repairUser[t.cell];
   }
   for (const k of ['meal', 'raw', 'wood', 'stone']) { state.stock[k] += p.hold[k]; p.hold[k] = 0; }
   p.task = null;
@@ -225,12 +237,14 @@ function choose(state, p) {
     }
     reserve(state, p, c);
     p.task = { kind: c.kind, obj: c.obj, slot: c.slot, bush: c.bush, partner: c.partner, poi: c.poi, chase: 80,
-      res: c.res, mat: c.mat, rx: c.rx, ry: c.ry, take: c.take, site: c.site, n: c.n, move: c.move, leg: c.kind === 'haul' ? 'pickup' : undefined };
+      res: c.res, mat: c.mat, rx: c.rx, ry: c.ry, take: c.take, site: c.site, n: c.n, move: c.move, enemy: c.enemy, cell: c.cell, cx: c.cx, cy: c.cy, dealt: 0, leg: c.kind === 'haul' ? 'pickup' : undefined };
     p.actLabel = c.label;
     if (path.length) {
       p.path = path;
       p.act = 'walk';
       if (c.kind === 'wander') p.goal = c.poi;
+    } else if (c.kind === 'fight') {
+      engage(state, p);
     } else if (PAIR.has(c.kind)) {
       // 已經站在對方旁邊：直接開口（之前誤走 startDoing，對方沒進入聊天，立刻被 shouldStop 收掉）。
       if (!tryChat(state, p)) { release(state, p); p.act = 'idle'; p.wait = 0; }
@@ -248,6 +262,7 @@ function startDoing(state, p, dur = null) {
   p.act = 'do';
   if (t.kind === 'cook') dur = Math.round(HEARTH_LEVELS[byId(state.objects, t.obj).level].cookDur * workTimeMul(p, 'cook'));
   if (t.kind === 'chop' || t.kind === 'quarry') dur = Math.round(a.dur * workTimeMul(p, t.kind));
+  if (t.kind === 'hide') dur = DEFENSE.HIDE_DUR;
   t.left = dur ?? a.dur;
   p.actLabel = t.kind === 'drill' ? `練${moveLabel(t.move)}` : a.label;
   state.counts[t.kind] = (state.counts[t.kind] || 0) + 1;
@@ -267,6 +282,7 @@ function arrive(state, p) {
     return;
   }
   if (PAIR.has(t.kind)) return tryChat(state, p);
+  if (t.kind === 'fight') return engage(state, p);
   startDoing(state, p);
 }
 
@@ -370,6 +386,17 @@ function finish(state, p) {
     state.counts.sparDone = (state.counts.sparDone || 0) + 1;
   }
   if (t.kind === 'drill') state.counts.drillDone = (state.counts.drillDone || 0) + 1;
+  if (t.kind === 'fight') {
+    // 打退了才算實戰；自己退下的不算。
+    const e = state.enemies.find((x) => x.id === t.enemy);
+    if (t.dealt > 0 && (!e || e.hp <= 0)) comprehend(state, p, practice(state, p, drillMove(p), DEFENSE.FIGHT_MUL));
+  }
+  if (t.kind === 'repair') {
+    blockCell(state, { x: t.cx, y: t.cy, to: 'F' }); // 跟施工一樣：路線經過這格的人改道
+    L.woodUsed += p.hold.wood; p.hold.wood = 0;
+    state.events.push({ tick: state.tick, kind: 'repair', text: `${p.name}修好了南柵欄` });
+    state.counts.repaired = (state.counts.repaired || 0) + 1;
+  }
   if (SKILL_OF_TASK[t.kind]) improve(state, p, SKILL_OF_TASK[t.kind]); // 只有做完才成長
   if (t.kind === 'eat') {
     L.mealsEaten++; p.hold.meal = 0;
@@ -452,6 +479,7 @@ function shouldStop(state, p) {
     const o = byId(state.people, t.partner);
     if (!o.task || o.task.kind !== t.kind || o.task.partner !== p.id) return true;
   }
+  if (t.kind === 'hide') return !activeEnemies(state).some((e) => Math.hypot(e.x - p.x, e.y - p.y) <= DEFENSE.ALERT_R + 5);
   return false;
 }
 
@@ -460,6 +488,16 @@ function stepPerson(state, p) {
   if (p.bubble && p.bubble.until <= state.tick) p.bubble = null;
   if (p.act === 'walk') {
     const t = p.task;
+    if (t.kind === 'fight') {
+      const e = state.enemies.find((x) => x.id === t.enemy);
+      if (!e || e.hp <= 0 || e.mode === 'flee' || --t.chase <= 0) { release(state, p); p.path = []; p.act = 'idle'; p.wait = 0; return; }
+      if (Math.hypot(e.x - p.x, e.y - p.y) <= 1.5) { p.path = []; engage(state, p); return; }
+      if (t.chase % 10 === 0) {
+        const spot = nearestWalkable(state.map, Math.round(e.x), Math.round(e.y));
+        const np = spot && pathTo(state, p, spot);
+        if (np) p.path = np;
+      }
+    }
     if (PAIR.has(t.kind)) {
       // 對方會走動：每 15 tick 重新追，追太久就放棄。
       if (tryChatIfClose(state, p)) return;
@@ -482,6 +520,7 @@ function stepPerson(state, p) {
       if (PAIR.has(t.kind)) {
         if (!tryChat(state, p)) { release(state, p); p.act = 'idle'; p.wait = 0; }
       } else if (t.kind === 'haul' && t.leg === 'drop') arriveDrop(state, p);
+      else if (t.kind === 'fight') { if (p.act === 'walk' && !engage(state, p)) p.path = [{ x: Math.round(p.x), y: Math.round(p.y) }]; }
       else arrive(state, p);
     }
   } else if (p.act === 'do') {
@@ -491,6 +530,8 @@ function stepPerson(state, p) {
       const company = table.users.filter((u) => u && u !== p.id).length;
       if (company) applyPer(p, { social: 0.4 * company });
     }
+    if (p.task.kind === 'fight') { fightTick(state, p); return; }
+    if (p.task.kind === 'repair' && p.task.left <= 1 && !cellClear(state, { x: p.task.cx, y: p.task.cy })) { p.actLabel = '等人讓開'; return; }
     if (p.task.kind === 'build') {
       const site = byId(state.sites, p.task.site);
       const r = site ? addWork(state, site, buildRate(p)) : 'done';
@@ -505,6 +546,40 @@ function stepPerson(state, p) {
   } else {
     choose(state, p);
   }
+}
+
+// 迎敵：站到敵人旁邊才開打；敵人走開就再追。回傳是否已開打。
+function engage(state, p) {
+  const t = p.task;
+  const e = state.enemies.find((x) => x.id === t.enemy);
+  if (!e || e.hp <= 0 || e.mode === 'flee') { release(state, p); p.act = 'idle'; p.wait = 0; return true; }
+  if (Math.hypot(e.x - p.x, e.y - p.y) > 1.5) {
+    const spot = nearestWalkable(state.map, Math.round(e.x), Math.round(e.y));
+    const np = spot && pathTo(state, p, spot);
+    if (!np || !np.length) return false;
+    p.path = np; p.act = 'walk';
+    return true;
+  }
+  startDoing(state, p, ACTS.fight.dur);
+  p.actLabel = `迎戰${e.label}`;
+  p.bubble = { text: moveLabel(drillMove(p)), until: state.tick + 30 };
+  return true;
+}
+
+function fightTick(state, p) {
+  const t = p.task;
+  const e = state.enemies.find((x) => x.id === t.enemy);
+  if (!e || e.hp <= 0 || e.mode === 'flee') { state.counts[e && e.hp <= 0 ? 'fightWon' : 'fightLost'] = (state.counts[e && e.hp <= 0 ? 'fightWon' : 'fightLost'] || 0) + 1; finish(state, p); return; }
+  if (p.needs.energy < DEFENSE.FIGHT_QUIT) { p.bubble = { text: '撐不住了', until: state.tick + 40 }; state.counts.fightQuit = (state.counts.fightQuit || 0) + 1; finish(state, p); return; }
+  if (Math.hypot(e.x - p.x, e.y - p.y) > 1.6) {
+    // 敵人跑開了：回到追的狀態。
+    p.act = 'walk'; p.actLabel = `追${e.label}`;
+    if (!engage(state, p)) p.path = [];
+    return;
+  }
+  const dmg = DEFENSE.FIGHT_DMG * (1 + prowess(p)) * (0.7 + 0.06 * p.attrs.li);
+  e.hp -= dmg; t.dealt += dmg;
+  if (!e.hitBy.includes(p.id)) e.hitBy.push(p.id);
 }
 
 function tryChatIfClose(state, p) {
@@ -542,7 +617,9 @@ function regrow(state) {
 export function step(state) {
   state.tick++;
   regrow(state);
+  startRaids(state);
   for (const p of state.people) stepPerson(state, p);
+  stepEnemies(state);
   // 新立起的牆或柵擋住了別人的路：沿原終點重找，找不到就放棄手上的事。
   while (state.reroute.length) {
     const p = byId(state.people, state.reroute.pop());
@@ -586,7 +663,7 @@ export function stateHash(state) {
   const ppl = state.people.map((p) => [p.id, p.x.toFixed(4), p.y.toFixed(4), p.act, p.task?.kind, p.wait,
     Object.values(p.needs).map((v) => v.toFixed(3)), p.carry, p.load, p.moves]);
   return hashString(JSON.stringify([state.tick, state.rng, ppl, state.stock, state.ledger, state.bushes.map((b) => b.berries),
-    state.map, state.sites.map((x) => [x.id, x.work, x.have, x.incoming])]));
+    state.map, state.sites.map((x) => [x.id, x.work, x.have, x.incoming]), state.enemies.map((e) => [e.id, e.x.toFixed(4), e.y.toFixed(4), e.hp.toFixed(3), e.mode])]));
 }
 
 export { REFUSE_COOLDOWN };

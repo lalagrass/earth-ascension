@@ -181,7 +181,7 @@ export const FOCUS = [
   { id: 'gather', label: '採集', kinds: ['forage'] },
 ];
 export const FOCUS_BONUS = 1.5;
-export const WORK_KINDS = new Set(['chop', 'quarry', 'haul', 'build', 'cook', 'forage', 'deliver', 'store']);
+export const WORK_KINDS = new Set(['chop', 'quarry', 'haul', 'build', 'cook', 'forage', 'deliver', 'store', 'repair']);
 
 Object.assign(ACTS, {
   chop: { label: '砍樹', dur: 60, per: { energy: -0.015 } },
@@ -250,4 +250,44 @@ FOCUS.push({ id: 'martial', label: '練功', kinds: ['drill', 'spar'] });
 Object.assign(ACTS, {
   drill: { label: '練功', dur: 50, per: { energy: -0.03, fun: 0.1 } },
   spar: { label: '切磋', dur: 40, per: { energy: -0.04, fun: 0.15, social: 0.4 } },
+});
+
+// ---------- M7 侵擾與防禦 ----------
+export const ENEMIES = {
+  boar: { label: '野豬', hp: 40, speed: 0.15, bash: 1, hit: 0.25, steal: 4, target: 'hearth' },
+  bandit: { label: '山賊', hp: 70, speed: 0.17, bash: 0.7, hit: 0.35, steal: 4, target: 'pile' },
+};
+export const RAID = {
+  START_DAY: 1,        // 0 起算：第 2 日開始
+  HOUR_FROM: 9, HOUR_TO: 17, // loop 7 由 16–20 時改到白天：傍晚精力最低，313 次決定裡 57 次因沒力不能迎敵、睡覺排第一 62 次
+  GROW_EVERY: 2,       // 每兩日多一頭
+  BANDIT_DAY: 2,       // 0 起算：第 3 日起有山賊
+  BANDIT_P: 0.5,
+  DAYS: 30,            // 預先排好的天數
+  SPAWN_Y: 39, SPAWN_X: [18, 46],
+  STEAL_TICKS: 40,     // loop 7 由 20 調高：敵人中位數 122 tick 走到、142 tick 就偷完走人，來不及趕到
+  LURK_TICKS: 60,      // 出生後先在林邊徘徊（地圖上看得到），給人反應時間；理由同上
+  MAX_LIFE: 720,       // 半日還沒走就自己離開，免得卡住
+};
+export const DEFENSE = {
+  FENCE_HP: 30,
+  FENCE_COST: 3,         // loop 7 由 6 調低：72 頭只有 8 頭撞過柵欄，幾乎都繞門口
+  ALERT_R: 25, FIGHT_MIN_ENERGY: 30, FIGHT_QUIT: 18,
+  FIGHT_WORK: 3.0,       // loop 7 由 1.6 調高：診斷時迎敵候選 234 次只排第一 15 次，72 頭敵人只打退 3 頭
+  FIGHT_DMG: 0.6,        // loop 7 由 0.3 調高：25 場迎敵有 19 場打到精力見底；單人打野豬要 130 tick、耗 32 精力，傍晚只剩約 25 可用
+  FIGHT_MUL: 2,
+  ALARM_LEISURE: 0.3,
+  ALARM_BREAKS: ['drill', 'sit', 'idle', 'spar', 'chat'], // 敵人來時會丟下手邊這些事重新決定
+  WILLING_BASE: 0.7,     // loop 7 由 0.5 調高：膽識 0 附近的人迎敵分數（約 1.9）輸給施工（2.2），344 次迎敵候選只贏 58 次
+  // 危機感：被偷、被撞破之後大家比較想練功；一日約減半。loop 7 加：侵擾占去白天後，練完次數 293→146，M6-A5 失敗
+  THREAT_RAID: 0.5,      // 看到敵人來也會怕；只算被偷時，打退率 60% 的情況下危機感多半是 0，練完次數沒有回升（146→147）
+  THREAT_STEAL: 0.5, THREAT_BREACH: 0.3, THREAT_DECAY: 0.9995, THREAT_DRILL: 0.4,
+  HIDE_BASE: 0.8, HIDE_DUR: 60,
+  REPAIR_DUR: 15, REPAIR_WORK: 1.8,
+};
+FOCUS.push({ id: 'guard', label: '守衛', kinds: ['fight', 'repair'] });
+Object.assign(ACTS, {
+  fight: { label: '迎敵', dur: 9999, per: {} },
+  hide: { label: '躲著', dur: 60, per: { fun: -0.02 } },
+  repair: { label: '修柵欄', dur: 15, per: { energy: -0.015 } },
 });
