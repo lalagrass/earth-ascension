@@ -1,6 +1,6 @@
 import {HOME} from './homestead-life-data.mjs';
 import {RECIPES,preparedCount} from './homestead-content.mjs';
-import {MOVES,moveKnown,strike} from './homestead-martial.mjs';
+import {MOVES,moveKnown,effectiveMove,strike} from './homestead-martial.mjs';
 import {feel} from './homestead-living.mjs';
 import {recordTaste} from './homestead-autonomy-meals.mjs';
 import {recordMealUse} from './homestead-autonomy-learning.mjs';
@@ -35,7 +35,7 @@ export function expeditionReason(s,act){const f=s.frontier;if(!f)return '只在�
  if(act==='returnTrip')return t.phase==='home'?'已在家':null;
  if(act==='journey')return t.phase!=='outbound'?'沒有出行中的路程':null;
  if(act==='trailEat')return !['source','return'].includes(t.phase)||!t.ration?'沒有可用路糧':s.person.hunger>=95&&(!RECIPES[t.ration].energy||s.person.energy>=95)?'暫不需吃這份路糧':null;
- if(act==='trailFight')return t.phase!=='source'||f.source.cleared?'目前不在可應對的獸徑':f.martial.avoid?'已選避戰，先撤回':!moveKnown(s,f.martial.stance)?'尚未學會這招':s.person.energy<MOVES[f.martial.stance].energy?'精力不足，先撤回':null;
+ if(act==='trailFight')return t.phase!=='source'||f.source.cleared?'目前不在可應對的獸徑':f.martial.avoid?'已選避戰，先撤回':!moveKnown(s,effectiveMove(s,f.source))?'尚未學會這招':s.person.energy<MOVES[effectiveMove(s,f.source)].energy?'精力不足，先撤回':null;
  return null;
 }
 export function expeditionTarget(s,act){return ['depart','returnTrip'].includes(act)||act==='trailEat'&&s.frontier.trip.phase==='return'?HOME:SOURCE_USE;}
