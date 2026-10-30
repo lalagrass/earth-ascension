@@ -1,6 +1,6 @@
 // 效用 AI：列出所有可做的事、打分、留下理由。只讀 state，不改。
 import { hurt } from './injury.mjs';
-import { HERB, INJURY, FAMILY, HUNT, KITCHEN } from './data.mjs';
+import { HERB, INJURY, FAMILY, HUNT, KITCHEN, SUPPER } from './data.mjs';
 import { standSpot } from './build.mjs';
 import { kinOf } from './social.mjs';
 import { FIRE, FARM, ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, DUTY, POST, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
@@ -89,7 +89,8 @@ export function candidates(state, p, scorePois) {
     }
     if (o.kind === 'table' && stock.meal > 0) {
       const company = o.users.filter(Boolean).length;
-      add({ kind: 'eat', obj: o.id, slot: i, spot }, { need: u.food * 2, persona: (company ? u.social * 0.3 * (1 + 0.5 * E) : 0) + (kinObj === o ? FAMILY.EAT : 0) });
+      const supper = p.needs.food < SUPPER.FOOD ? SUPPER.K * u.energy : 0; // M22 睡前先吃一口
+      add({ kind: 'eat', obj: o.id, slot: i, spot, ...(supper > 0.5 ? { label: '睡前先吃一口' } : {}) }, { need: u.food * 2 + supper, persona: (company ? u.social * 0.3 * (1 + 0.5 * E) : 0) + (kinObj === o ? FAMILY.EAT : 0) });
     }
     if (o.kind === 'hearth') {
       const pile = KITCHEN.ON ? rawPile(stock) : 0;

@@ -121,6 +121,8 @@ export const OBJECTS = [
 export const BUSH_MAX = 4;
 export const BUSH_REGROW = 240;
 export const START_STOCK = { raw: 6, meal: 3 }; // M16 藥草 stock.herb 收成時才加上（舊情境的雜湊不變）
+// M22 睡前先吃：飽食 < FOOD 時，越累越想先吃一口再睡。
+export const SUPPER = { FOOD: 60, K: 0 }; // 暫停中（loop 25）：K 0 時跟以前一樣；試做值 K 1
 export const MEAL_TARGET = 6;     // 飯少於此數才有人想煮
 export const COOK_RAW = 2;
 // M21 灶邊接力：生食材堆得越多，路過的人越想順手煮；飯沒到 CAP 都可以煮。
