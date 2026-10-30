@@ -237,8 +237,9 @@ export const samplers = [
       if (p.act === 'do' && p.task.kind === 'drill') bump(ctx, `drill:${g2}`);
       if (p.task?.kind === 'fight') { ctx.fightT ??= {}; ctx.fightT[p.id] = (ctx.fightT[p.id] || 0) + 1; }
       if (p.act === 'do' && p.task.kind === 'sleep' && s.objects.find((o) => o.id === p.task.obj).label === '茅屋床') s.counts.hutSleep = (s.counts.hutSleep || 0) + 1;
-      if (p.needs.food < 15) bump(ctx, 'lowFood');
-      if (p.needs.energy < 12) bump(ctx, 'lowEnergy');
+      if (p.needs.food < 15) { bump(ctx, 'lowFood'); bump(ctx, `lowFood@${ctx.seed}`); }
+      if (p.needs.energy < 12) { bump(ctx, 'lowEnergy'); bump(ctx, `lowEnergy@${ctx.seed}`); }
+      bump(ctx, `t@${ctx.seed}`);
     }
   },
 ];
@@ -308,9 +309,20 @@ export function judge(S, scenario = 'base') {
   // 時間分布：調平衡前先看這張表（loop 3 retro 的改進）。
   const share = Object.entries(S).filter(([k]) => k.startsWith('act:')).sort((a, b) => b[1] - a[1]).slice(0, 10);
   lines.push(`（診斷）時間分布前十：${share.map(([k, v]) => `${k.slice(4)} ${(100 * v / all).toFixed(1)}%`).join('、')}`);
-  lines.push(`（參考）處於自理門檻下的時間：飢餓 ${(100 * (S.lowFood || 0) / all).toFixed(1)}%，累垮 ${(100 * (S.lowEnergy || 0) / all).toFixed(1)}%`);
+  lines.push(`（參考）處於自理門檻下的時間：飢餓 ${(100 * (S.lowFood || 0) / all).toFixed(1)}%，累垮 ${(100 * (S.lowEnergy || 0) / all).toFixed(1)}%（飢餓${worstSeed(S, 'lowFood')}，累垮${worstSeed(S, 'lowEnergy')}）`);
   if ((S.lowFood || 0) / all > 0.02) failures.push('M7-A7 飢餓時間超過 2%');
   return { lines, failures };
+}
+
+// v4（retro 3）：比例類指標同時印最差種子，平均才不會藏住單一種子。
+function worstSeed(S, key) {
+  let best = null;
+  for (const [k, v] of Object.entries(S)) {
+    if (!k.startsWith('t@')) continue;
+    const seed = k.slice(2), x = (S[`${key}@${seed}`] || 0) / v;
+    if (!best || x > best.x) best = { seed, x };
+  }
+  return best ? `最差 seed ${best.seed} ${(100 * best.x).toFixed(1)}%` : '';
 }
 
 function judgeExp(S, lines, failures) {
@@ -321,7 +333,7 @@ function judgeExp(S, lines, failures) {
   lines.push(`M9-A7 拆掉之後：排程 ${S['after:sched'] || 0} 頭，實際出生 ${S['after:spawn'] || 0} 頭（${(100 * ratio).toFixed(0)}%）`);
   if ((S['after:sched'] || 0) && ratio > 0.7) failures.push('M9-A7 拆巢後侵擾沒有變少');
   const all = (S['t:E'] || 0) + (S['t:I'] || 0);
-  lines.push(`M9-A6 飢餓時間 ${(100 * (S.lowFood || 0) / all).toFixed(1)}%；M7 打退 ${S.repelled || 0}/${S.enemies || 0}（遠征期間家裡人少）`);
+  lines.push(`M9-A6 飢餓時間 ${(100 * (S.lowFood || 0) / all).toFixed(1)}%（${worstSeed(S, 'lowFood')}）；M7 打退 ${S.repelled || 0}/${S.enemies || 0}（遠征期間家裡人少）`);
   if ((S.lowFood || 0) / all > 0.02) failures.push('M9-A6 飢餓時間超過 2%');
   return { lines, failures };
 }

@@ -5,6 +5,7 @@ import {
 import { placeSite, removeSite, addWork, takeResource, workSpot, blockCell, cellClear } from './build.mjs';
 import { raidSchedule, startRaids, stepEnemies, activeEnemies, spawnGuard } from './raid.mjs';
 import { newNests, nestOf, canLaunch, retreatReason } from './expedition.mjs';
+import { tally } from './chronicle.mjs';
 import { visitSchedule, visitChance, appeal, reasonText, shouldApprentice, foundingPlan, freeName } from './recruit.mjs';
 import { seedHolder, nextRand, randInt, hashString } from './rng.mjs';
 import { buildMap, walkable, nearestWalkable } from './map.mjs';
@@ -374,14 +375,14 @@ function improve(state, p, id, mul = 1) {
   if (m === null) return;
   const text = `${skillLabel(id)}精進`;
   p.bubble = { text, until: state.tick + 60 };
-  state.events.push({ tick: state.tick, kind: 'skill', text: `${p.name}${text}（${m}）` });
+  state.events.push({ tick: state.tick, kind: 'skill', text: `${p.name}${text}（${m}）`, who: [p.id] });
 }
 
 function maybeApprentice(state, p, o) {
   if (!shouldApprentice(state, p, o)) return;
   p.master = o.id;
   p.bubble = { text: '拜師', until: state.tick + 90 };
-  state.events.push({ tick: state.tick, kind: 'master', text: `${p.name}拜${o.name}為師` });
+  state.events.push({ tick: state.tick, kind: 'master', text: `${p.name}拜${o.name}為師`, who: [p.id, o.id] });
   state.counts.apprentice = (state.counts.apprentice || 0) + 1;
 }
 
@@ -395,7 +396,7 @@ function spawnGuest(state, v) {
   initPerson(p, state.people.length);
   p.guest = { arrived: state.tick, until: state.tick + RECRUIT.STAY };
   state.people.push(p);
-  state.events.push({ tick: state.tick, kind: 'visit', text: `${p.name}從東山徑上山來訪` });
+  state.events.push({ tick: state.tick, kind: 'visit', text: `${p.name}從東山徑上山來訪`, who: [p.id] });
   state.counts.visitors = (state.counts.visitors || 0) + 1;
 }
 
@@ -406,11 +407,11 @@ function decideGuest(state, p) {
   if (a.join) {
     p.guest = null;
     p.bubble = { text: '留下了', until: state.tick + 90 };
-    state.events.push({ tick: state.tick, kind: 'join', text: `${p.name}決定留下：${why}` });
+    state.events.push({ tick: state.tick, kind: 'join', text: `${p.name}決定留下：${why}`, who: [p.id] });
     state.counts.joined = (state.counts.joined || 0) + 1;
     return;
   }
-  state.events.push({ tick: state.tick, kind: 'leave', text: `${p.name}下山了：${why}` });
+  state.events.push({ tick: state.tick, kind: 'leave', text: `${p.name}下山了：${why}`, who: [p.id] });
   release(state, p);
   const out = nearestWalkable(state.map, RECRUIT.ENTRY.x, RECRUIT.ENTRY.y);
   const path = pathTo(state, p, out);
@@ -443,7 +444,7 @@ function stepRecruit(state) {
     if (plan) {
       state.sect = plan;
       const leader = byId(state.people, plan.leader);
-      state.events.push({ tick: state.tick, kind: 'found', text: `立派：${plan.name}，${leader.name}為掌門，門規「${SECT.RULES[plan.rule].label}」` });
+      state.events.push({ tick: state.tick, kind: 'found', text: `立派：${plan.name}，${leader.name}為掌門，門規「${SECT.RULES[plan.rule].label}」`, who: [leader.id] });
     }
   }
 }
@@ -451,7 +452,7 @@ function stepRecruit(state) {
 function comprehend(state, p, id) {
   if (!id) return;
   p.bubble = { text: `領悟${moveLabel(id)}`, until: state.tick + 90 };
-  state.events.push({ tick: state.tick, kind: 'move', text: `${p.name}領悟了${moveLabel(id)}` });
+  state.events.push({ tick: state.tick, kind: 'move', text: `${p.name}領悟了${moveLabel(id)}`, who: [p.id] });
   state.counts.comprehend = (state.counts.comprehend || 0) + 1;
 }
 
@@ -472,7 +473,7 @@ function finish(state, p) {
         const id = teach[randInt(state, teach.length)];
         learn(p, id, MARTIAL.POINT_START);
         p.bubble = { text: `學會${moveLabel(id)}`, until: state.tick + 90 };
-        state.events.push({ tick: state.tick, kind: 'move', text: `${o.name}指點${p.name}學會了${moveLabel(id)}` });
+        state.events.push({ tick: state.tick, kind: 'move', text: `${o.name}指點${p.name}學會了${moveLabel(id)}`, who: [p.id, o.id] });
         state.counts.pointed = (state.counts.pointed || 0) + 1;
       }
     }
@@ -488,7 +489,7 @@ function finish(state, p) {
   if (t.kind === 'repair') {
     blockCell(state, { x: t.cx, y: t.cy, to: 'F' }); // 跟施工一樣：路線經過這格的人改道
     L.woodUsed += p.hold.wood; p.hold.wood = 0;
-    state.events.push({ tick: state.tick, kind: 'repair', text: `${p.name}修好了南柵欄` });
+    state.events.push({ tick: state.tick, kind: 'repair', text: `${p.name}修好了南柵欄`, who: [p.id] });
     state.counts.repaired = (state.counts.repaired || 0) + 1;
   }
   if (SKILL_OF_TASK[t.kind]) improve(state, p, SKILL_OF_TASK[t.kind]); // 只有做完才成長
@@ -631,6 +632,7 @@ function stepPerson(state, p) {
     if (p.task.kind === 'repair' && p.task.left <= 1 && !cellClear(state, { x: p.task.cx, y: p.task.cy })) { p.actLabel = '等人讓開'; return; }
     if (p.task.kind === 'build') {
       const site = byId(state.sites, p.task.site);
+      if (site) (site.helpers ??= []).includes(p.id) || site.helpers.push(p.id);
       const r = site ? addWork(state, site, buildRate(p)) : 'done';
       p.actLabel = r === 'wait' ? '等人讓開' : ACTS.build.label;
       if (r === 'done') { p.task.site = null; finish(state, p); return; }
@@ -661,7 +663,7 @@ export function startExpedition(state, nestId) {
     p.bubble = { text: '出發！', until: state.tick + 60 };
   }
   state.expedition = { nest: nestId, members: c.party.map((p) => p.id), phase: 'march', started: state.tick, phaseAt: state.tick };
-  state.events.push({ tick: state.tick, kind: 'exp', text: `${c.party.map((p) => p.name).join('、')}出發討伐${nest.label}（帶 ${packed} 份乾糧）` });
+  state.events.push({ tick: state.tick, kind: 'exp', text: `${c.party.map((p) => p.name).join('、')}出發討伐${nest.label}（帶 ${packed} 份乾糧）`, who: c.party.map((p) => p.id) });
   state.counts.expeditions = (state.counts.expeditions || 0) + 1;
   return { ok: true, party: c.party };
 }
@@ -685,7 +687,7 @@ function stepExpedition(state) {
     const why = retreatReason(state, ppl, clock(state).hour);
     if (why) {
       x.result = 'retreat';
-      state.events.push({ tick: state.tick, kind: 'exp', text: `遠征隊撤退：${why}` });
+      state.events.push({ tick: state.tick, kind: 'exp', text: `遠征隊撤退：${why}`, who: [...x.members] });
       state.counts.retreats = (state.counts.retreats || 0) + 1;
       // 巢與守衛回滿血；倒下的守衛補回來。
       nest.hp = nest.hpMax;
@@ -703,7 +705,7 @@ function stepExpedition(state) {
   else if (x.phase === 'fight' && !guards.length) setPhase(state, 'raze');
   else if (x.phase === 'raze' && nest.hp <= 0) {
     nest.cleared = true; x.result = 'cleared';
-    state.events.push({ tick: state.tick, kind: 'cleared', text: `${nest.label}被拆了，${ENEMY_LABEL[nest.kind]}不再來了` });
+    state.events.push({ tick: state.tick, kind: 'cleared', text: `${nest.label}被拆了，${ENEMY_LABEL[nest.kind]}不再來了`, who: [...x.members] });
     state.counts.cleared = (state.counts.cleared || 0) + 1;
     state.clearedAt ??= {};
     state.clearedAt[nest.id] = state.tick;
@@ -716,7 +718,7 @@ function stepExpedition(state) {
         state.stock.meal += p.pack; p.pack = 0;
         p.exp = false; p.path = []; p.act = 'idle'; p.wait = 0;
       }
-      state.events.push({ tick: state.tick, kind: 'exp', text: x.result === 'cleared' ? '遠征隊凱旋回山' : '遠征隊回到山上' });
+      state.events.push({ tick: state.tick, kind: 'exp', text: x.result === 'cleared' ? '遠征隊凱旋回山' : '遠征隊回到山上', who: [...x.members] });
       state.expedition = null;
     }
   }
@@ -840,6 +842,7 @@ export function step(state) {
   stepRecruit(state);
   stepExpedition(state);
   for (const p of [...state.people]) if (state.people.includes(p)) stepPerson(state, p);
+  for (const p of state.people) tally(p);
   stepEnemies(state);
   // 新立起的牆或柵擋住了別人的路：沿原終點重找，找不到就放棄手上的事。
   while (state.reroute.length) {

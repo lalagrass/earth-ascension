@@ -220,7 +220,7 @@ function completeSite(state, site) {
   if (bp.kind === 'upgrade') state.objects.find((o) => o.kind === bp.target).level = 1;
   state.sites = state.sites.filter((s) => s !== site);
   state.built.push(site.bp);
-  state.events.push({ tick: state.tick, kind: 'built', text: `${site.label}完工` });
+  state.events.push({ tick: state.tick, kind: 'built', text: `${site.label}完工`, who: [...(site.helpers ?? [])] });
 }
 
 // 取消：退回已到材料；搬運者與施工者由呼叫端釋放（sim.cancel 會處理）。

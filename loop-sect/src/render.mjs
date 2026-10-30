@@ -105,17 +105,42 @@ export function drawPeople(ctx, state, selectedId) {
       // 訪客：背上的包袱與名字前的「客」。
       ctx.fillStyle = '#8c6d46'; ctx.beginPath(); ctx.arc(cx - 6, cy - 1, 4, 0, Math.PI * 2); ctx.fill();
     }
-    ctx.font = 'bold 11px sans-serif';
-    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-    const nm = p.guest ? `客·${p.name}` : p.name;
-    ctx.strokeText(nm, cx, cy - 16); ctx.fillStyle = p.guest ? '#7a4b1c' : '#2b2118'; ctx.fillText(nm, cx, cy - 16);
-    // 擠在一起時只畫被選中者（或排在前面那位）的行動字，避免疊字。
-    // loop 6：原本只跟「非選中者」比、而且只看 1.5 格內，切磋時兩行字（約 4 格寬）疊在一起。
-    const crowded = p.id !== selectedId && state.people.some((o) => o !== p && Math.abs(o.x - p.x) < 4 && Math.abs(o.y - p.y) < 1.2 && (o.id === selectedId || o.id < p.id));
-    if (!crowded) {
-      ctx.font = '10px sans-serif';
-      ctx.strokeText(p.actLabel, cx, cy + 19); ctx.fillStyle = '#3d3326'; ctx.fillText(p.actLabel, cx, cy + 19);
+  }
+}
+
+// 頭頂字一起排：巢名、人名、行動字依優先序放，跟已放好的框重疊就往上挪（人名）或不畫（行動字）。
+// loop 10：原本每種字各自判斷擠不擠，三人同行時行動字疊在一起、山寨的名字被守衛蓋住（retro 3）。
+let placed = [];
+export const labelBoxes = () => placed;
+export function drawLabels(ctx, state, selectedId) {
+  placed = [];
+  ctx.textAlign = 'center';
+  ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+  const hit = (b) => placed.some((o) => b.x < o.x + o.w && o.x < b.x + b.w && b.y < o.y + o.h && o.y < b.y + b.h);
+  const put = (text, cx, cy, font, color, kind, nudge, dir = -1) => {
+    ctx.font = font;
+    const w = ctx.measureText(text).width + 4, h = 12;
+    for (let k = 0; k <= nudge; k++) {
+      const b = { x: cx - w / 2, y: cy - 10 + dir * k * 12, w, h, text, kind };
+      if (hit(b)) continue;
+      placed.push(b);
+      ctx.strokeText(text, cx, b.y + 10); ctx.fillStyle = color; ctx.fillText(text, cx, b.y + 10);
+      return true;
     }
+    return false;
+  };
+  for (const n of state.nests ?? []) {
+    const cx = n.x * TILE + TILE / 2, cy = n.y * TILE + TILE / 2;
+    put(n.cleared ? `${n.label}（已拆）` : n.label, cx, cy + 26, '11px sans-serif', n.cleared ? 'rgba(40,30,20,0.6)' : '#3a2a1a', 'nest', 0);
+  }
+  const order = [...state.people].sort((a, b) => (b.id === selectedId) - (a.id === selectedId) || (a.id < b.id ? -1 : 1));
+  for (const p of order) {
+    const cx = p.x * TILE + TILE / 2, cy = p.y * TILE + TILE / 2;
+    put(p.guest ? `客·${p.name}` : p.name, cx, cy - 16, 'bold 11px sans-serif', p.guest ? '#7a4b1c' : '#2b2118', 'name', 2);
+  }
+  for (const p of order) {
+    const cx = p.x * TILE + TILE / 2, cy = p.y * TILE + TILE / 2;
+    put(p.actLabel, cx, cy + 19, '10px sans-serif', '#3d3326', p.id === selectedId ? 'act-selected' : 'act', 1, 1);
   }
 }
 
@@ -305,7 +330,5 @@ export function drawNests(ctx, state) {
       ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(cx - 14, cy + 10, 28, 3);
       ctx.fillStyle = '#d68a2e'; ctx.fillRect(cx - 14, cy + 10, 28 * n.hp / n.hpMax, 3);
     }
-    ctx.font = '11px sans-serif'; ctx.fillStyle = n.cleared ? 'rgba(40,30,20,0.6)' : '#3a2a1a';
-    ctx.fillText(n.cleared ? `${n.label}（已拆）` : n.label, cx, cy + 24);
   }
 }

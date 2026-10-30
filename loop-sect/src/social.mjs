@@ -50,7 +50,7 @@ export function withStage(state, a, b, fn) {
   fn();
   const after = stageOf(state, a, b);
   if (after !== before && SOCIAL.STAGES.indexOf(after) > SOCIAL.STAGES.indexOf(before)) {
-    state.events.push({ tick: state.tick, kind: 'rel', text: `${a.name}與${b.name}成了${after.label}` });
+    state.events.push({ tick: state.tick, kind: 'rel', text: `${a.name}與${b.name}成了${after.label}`, who: [a.id, b.id] });
     a.bubble = b.bubble = { text: after.label, until: state.tick + 60 };
   }
 }

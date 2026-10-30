@@ -272,4 +272,50 @@ export const flows = [
       await shot('narrow');
     },
   },
+  {
+    name: 'm10-chronicle',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.fill('#seed', '4');
+      await page.click('#begin');
+      await page.click('[data-speed="16"]');
+      // 跑到第 2 日傍晚：有完工、侵擾、時間帳超過半天。
+      await page.waitForFunction(() => window.__sect.snapshot().tick >= 1440 + 17 * 60, null, { timeout: 180000 });
+      await page.click('[data-speed="1"]');
+      const sel = await page.evaluate(() => window.__sect.selected());
+      // 三十個畫面取樣：頭頂字框兩兩不重疊，被選中者的行動字有畫。
+      let overlaps = 0, missingSel = 0, frames = 0;
+      for (let i = 0; i < 30; i++) {
+        await wait(page, 120);
+        const L = await page.evaluate(() => window.__sect.labels());
+        frames++;
+        for (let a = 0; a < L.length; a++) for (let b = a + 1; b < L.length; b++) {
+          const p = L[a], q = L[b];
+          if (p.x < q.x + q.w && q.x < p.x + p.w && p.y < q.y + q.h && q.y < p.y + p.h) overlaps++;
+        }
+        if (!L.some((b) => b.kind === 'act-selected')) missingSel++;
+      }
+      expect('A9 頭頂字不重疊', overlaps === 0, `${overlaps} 處／${frames} 張`);
+      expect('A9 被選中者的行動字都有畫', missingSel === 0, `${missingSel}/${frames} 張漏畫`);
+      await page.click('[data-speed="0"]');
+      await page.click(`#roster [data-person="${sel}"]`);
+      await page.click('[data-tab="story"]');
+      await wait(page, 400);
+      const habits = await page.textContent('#panel [data-habits]');
+      expect('A9 生平寫出習性', /同門/.test(habits), habits);
+      expect('A9 生平有八類時間', (await page.locator('#panel [data-life]').count()) === 8);
+      const story = await page.textContent('#panel [data-story]');
+      expect('A9 生平有自己的紀事', /第\d日/.test(story), story.slice(0, 80));
+      await page.click('[data-events-group="war"]');
+      await wait(page, 200);
+      const kinds = await page.$$eval('#events [data-kind]', (ns) => ns.map((n) => n.dataset.kind));
+      expect('A9 紀事分類可切換', kinds.length > 0 && kinds.every((k) => ['raid', 'stolen', 'breach', 'repel', 'calm', 'guard', 'exp', 'cleared', 'repair'].includes(k)), kinds.join(','));
+      const stats = await page.textContent('[data-stats]');
+      expect('A9 統計表有數字', /在山上2 日/.test(stats) && /煮好／吃掉的飯\d+／\d+/.test(stats), stats.slice(0, 80));
+      await shot('story');
+      await page.setViewportSize({ width: 390, height: 844 });
+      await wait(page, 300);
+      await shot('narrow');
+    },
+  },
 ];

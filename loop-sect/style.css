@@ -81,3 +81,10 @@ label { display: block; margin: 8px 0; }
 .identity { margin: 2px 0 0; font-size: 12px; color: #7a3b1c; }
 #expedition { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 6px; }
 #expedition .phase { color: #b8322a; font-weight: bold; }
+#chronicle { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 6px; }
+#chronicle .tabs button { font-size: 12px; padding: 2px 8px; }
+#events p { margin: 2px 0; font-size: 13px; }
+table.stats { width: 100%; font-size: 12px; margin-top: 6px; border-collapse: collapse; }
+table.stats td { padding: 1px 4px; border-bottom: 1px dotted var(--line); }
+table.stats td:last-child { text-align: right; }
+.story p { margin: 2px 0; font-size: 13px; }

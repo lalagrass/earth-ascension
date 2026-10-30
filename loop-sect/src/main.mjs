@@ -2,13 +2,14 @@ import { QUESTIONS, ATTRS, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, TEMPLATES, AXES, TRAI
 import { axesFromAnswers, typeOf, validateAttrs, traitsOf } from './person.mjs';
 import { createWorld, step, clock, companionsFor, placeBlueprint, cancelSite, setFocus, startExpedition } from './sim.mjs';
 import { canLaunch } from './expedition.mjs';
+import { LIFE_CATS, lifeShares, habitText, personEvents, EVENT_GROUPS, eventsIn, sectStats } from './chronicle.mjs';
 import { blueprint } from './build.mjs';
 import { effectText } from './skills.mjs';
 import { aff, stageOf, prestige } from './social.mjs';
 import { prowess, moveLabel, comprehendable, compChance } from './martial.mjs';
 import { titleOf, appeal, reasonText } from './recruit.mjs';
 import { SKILLS, MOVES, DEFENSE } from './data.mjs';
-import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes, drawEnemies, drawNests } from './render.mjs';
+import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes, drawEnemies, drawNests, drawLabels, labelBoxes } from './render.mjs';
 
 const $ = (s) => document.querySelector(s);
 const el = (tag, attrs = {}, ...kids) => {
@@ -137,10 +138,20 @@ function renderBuild() {
       : site ? el('button', { 'data-cancel': bp.id, on: { click: () => { cancelSite(state, site.id); renderBuild(); } } }, '取消')
       : el('button', { 'data-blueprint': bp.id, on: { click: () => { placeBlueprint(state, bp.id); renderBuild(); } } }, '放藍圖');
     return el('div', { class: 'bp' }, el('b', {}, bp.label), el('span', { class: 'cost' }, costText), btn, el('small', {}, bp.desc));
-  }), renderExpedition(), el('div', { id: 'events' }, ...state.events.slice(-4).reverse().map((e) => el('p', {}, `第${Math.floor(e.tick / 1440) + 1}日 ${e.text}`))));
+  }), renderExpedition(), renderChronicle());
   builtSeen = state.built.length;
   eventsSeen = state.events.length;
   expSeen = expKey();
+}
+
+// M10 紀事簿：分類篩選、最近 12 筆、門派統計。
+let evGroup = 'all';
+function renderChronicle() {
+  const list = eventsIn(state, evGroup).slice(-12).reverse();
+  return el('div', { id: 'chronicle' }, el('h3', {}, '紀事'),
+    el('div', { class: 'tabs' }, ...EVENT_GROUPS.map((g) => el('button', { class: evGroup === g.id ? 'on' : '', 'data-events-group': g.id, on: { click: () => { evGroup = g.id; renderBuild(); } } }, g.label))),
+    el('div', { id: 'events' }, ...list.map((e) => el('p', { 'data-kind': e.kind }, `${dayText(e.tick)} ${e.text}`)), ...(list.length ? [] : [el('p', { class: 'hint' }, '還沒有這類紀事。')])),
+    el('table', { class: 'stats', 'data-stats': '' }, ...sectStats(state).map(([k, v]) => el('tr', {}, el('td', {}, k), el('td', {}, v)))));
 }
 
 // M9 遠征面板：兩處巢穴、會去的人或擋住的原因、出發中的隊伍在哪一階段。
@@ -160,7 +171,7 @@ function renderExpedition() {
     const btn = el('button', { 'data-nest': n.id, on: { click: () => { startExpedition(state, n.id); renderBuild(); } } }, '出征');
     if (!c.ok) btn.disabled = true;
     return el('div', { class: 'bp', 'data-nest-row': n.id }, el('b', {}, n.label), el('span', { class: 'cost' }, `守衛 ${state.enemies.filter((e) => e.nest === n.id && e.hp > 0).length}`), btn,
-      el('small', {}, c.ok ? `會去：${party}` : c.reason));
+      el('small', {}, c.ok ? `會去：${party}；家裡剩 ${state.people.filter((p) => !p.guest).length - c.party.length} 人顧家` : c.reason));
   });
   return el('div', { id: 'expedition' }, el('h3', {}, '遠征'), ...rows);
 }
@@ -171,7 +182,7 @@ function setSpeed(s) {
 }
 
 let panelAt = 0;
-const TABS = [['life', '概況'], ['skills', '技能'], ['social', '人際'], ['martial', '武學'], ['why', '念頭']];
+const TABS = [['life', '概況'], ['skills', '技能'], ['social', '人際'], ['martial', '武學'], ['story', '生平'], ['why', '念頭']];
 let tab = 'life';
 function frame(now) {
   const dt = Math.min(0.25, (now - last) / 1000);
@@ -188,6 +199,7 @@ function frame(now) {
   drawEnemies(ctx, state, DEFENSE.FENCE_HP);
   drawPeople(ctx, state, selected);
   drawStrikes(ctx, state);
+  drawLabels(ctx, state, selected);
   drawBubbles(ctx, state);
   const c = clock(state);
   drawDaylight(ctx, 1280, 800, c.hour, c.minute);
@@ -245,8 +257,14 @@ function renderPanel() {
       el('p', { class: 'hint', 'data-comp': '' }, next.length
         ? `快開竅了：練功時每次約 ${Math.round(compChance(p) * 100)}% 領悟${next.map((m) => m.label).join('或')}`
         : `下一招：${MOVES.filter((m) => m.req && !(m.id in p.moves) && Object.keys(m.req).every((k) => k in p.moves)).map((m) => `${m.label}（${Object.entries(m.req).map(([k, v]) => `${moveLabel(k)} ${v}`).join('、')}）`).join('；') || '都會了'}`)),
+    sec('story', el('p', { class: 'hint', 'data-habits': '' }, habitText(state, p)),
+      ...LIFE_CATS.map((c) => { const v = lifeShares(p)[c.id]; return el('div', { class: 'skill', 'data-life': c.id }, el('span', {}, c.label),
+        el('span', { class: 'bar' }, el('i', { style: `width:${Math.round(100 * v)}%` })), el('b', {}, `${Math.round(100 * v)}%`)); }),
+      el('div', { class: 'story', 'data-story': '' }, ...(personEvents(state, p).slice(-8).reverse().map((e) => el('p', {}, `${dayText(e.tick)} ${e.text}`)))
+        .concat(personEvents(state, p).length ? [] : [el('p', { class: 'hint' }, '還沒有寫進紀事的事。')]))),
     sec('why', el('table', { class: 'why' }, ...why)));
 }
+const dayText = (tick) => `第${Math.floor(tick / 1440) + 1}日`;
 
 // 身分列：訪客寫來訪與去留考量；同門寫身分與師父。
 function identity(p) {
@@ -291,6 +309,7 @@ addEventListener('keydown', (e) => {
 window.__sect = {
   snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map, aff: state.aff, events: state.events, sect: state.sect, decisions: state.decisions, enemies: state.enemies, raids: state.raids, fenceHp: state.fenceHp, nests: state.nests, expedition: state.expedition })) : null),
   speed: () => speed,
+  labels: () => labelBoxes().map((b) => ({ ...b })),
   selected: () => selected,
   tileToClient: (x, y) => {
     const r = $('#view').getBoundingClientRect();
