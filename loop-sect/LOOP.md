@@ -7,14 +7,21 @@
 | 步 | 做什麼 | 產出 | 完成條件 |
 |---|---|---|---|
 | 1. 選題 | 從 [MILESTONES.md](MILESTONES.md) 取第一個狀態為「待做」的 milestone | log 開一節 | 只取一個；前一輪未完成不得開新輪 |
-| 2. 規格 | 寫 `docs/specs/Mxx.md`：目標、玩家看到什麼、規則、資料、**驗收條件（編號 A1…）**、不做什麼 | spec 檔 | 每條驗收都能對應到一個自動測試或 headless 檢查 |
+| 2. 規格 | 寫 `docs/specs/Mxx.md`：目標、玩家看到什麼、規則、資料、**驗收條件（編號 A1…）**、不做什麼。數值標 `data.mjs` 常數名 | spec 檔 | 每條驗收都能對應到一個自動測試或 headless 檢查，並附一行可行性粗估（什麼情況下它根本不會發生） |
 | 3. 實作 | 只改 `loop-sect/`；資料放 `src/data.mjs`，規則是純函式，畫面只讀 state | 程式 | 不加套件、不碰其他分支目錄與共用 CI |
-| 4. 自動檢查 | `node --test loop-sect/test/*.test.mjs`（規則）＋ `node loop-sect/tools/soak.mjs`（多種子長跑不變量）＋ `node loop-sect/tools/headless.mjs`（真瀏覽器正常操作） | 三項都 exit 0 | 失敗就回第 3 步，不得跳過或關掉測試 |
-| 5. 自我審查 | 依下方清單逐條看 diff，找到的問題修掉再跑第 4 步 | log 記下發現與修正 | 清單全勾 |
+| 4. 自動檢查 | `node --test loop-sect/test/*.test.mjs`（規則）＋ `node loop-sect/tools/soak.mjs`（多種子長跑不變量）＋ `node loop-sect/tools/headless.mjs`（真瀏覽器正常操作） | 三項都 exit 0 | 失敗就回第 3 步，不得跳過或關掉測試。平衡類失敗先看 soak 的時間分布再改數字 |
+| 5. 自我審查 | 依下方清單逐條看 diff，並看寬、窄兩張截圖，找到的問題修掉再跑第 4 步 | log 記下發現與修正、截圖看到什麼 | 清單全勾 |
 | 6. 提交 | 一個 milestone 一個（或少數幾個）commit，push 到分支 | commit SHA | push 成功 |
 | 7. 記錄 | 在 [docs/LOOP_LOG.md](docs/LOOP_LOG.md) 寫：spec 連結、驗收結果表、檢查輸出摘要、審查發現、已知限制、下一輪候選 | log 節 | MILESTONES 狀態改為「完成」 |
 
 停止條件：達到本次授權的輪數（本次為 3 輪），或某步連續修三次仍失敗（記錄卡點後停下，不硬過）。
+
+每三輪做一次 retro（`docs/RETRO-xx.md`），把改進寫回本頁，並請擁有人試玩或請另一個模型 review 一次。
+
+## 版本
+
+- v1（loop 1–3）
+- v2（[retro 1](docs/RETRO-01.md) 後）：驗收要附可行性粗估、先診斷再調數字、數值標常數名、每輪看截圖、每三輪 retro 與外部審查、診斷腳本放 `tools/diag/` 留存
 
 ## 自我審查清單
 
@@ -25,6 +32,7 @@
 5. **個性有差**：不同人格在同情境下的選擇比例有可量測差異，並把理由顯示給玩家。
 6. **範圍**：只改 `loop-sect/`；沒有存檔；沒有新依賴。
 7. **證據不膨脹**：截圖與長輸出寫到 `loop-sect/.evidence/`（已 gitignore），commit 只留 log 摘要。（吸取 GPT 分支證據 1.69GB 的教訓）
+8. **數值變更有依據**：每個平衡數值的變更都寫出促成它的診斷數字；改到舊 milestone 的數值要在該規格加註。
 
 ## 檢查工具
 

@@ -121,6 +121,7 @@ export const samplers = [
       if (k === 'chat') bump(ctx, `chat:${g}`);
       if (k === 'sit') bump(ctx, `sit:${g}`);
       if (k === 'sleep' || k === 'sleepGround') bump(ctx, `sleep:${night}`);
+      bump(ctx, `act:${p.act}:${p.task?.kind ?? '-'}`);
       const g2 = p.axes.P < 0 ? 'J' : 'P';
       bump(ctx, `t:${g2}`);
       if (p.task && WORK_KINDS.has(p.task.kind)) bump(ctx, `work:${g2}`);
@@ -160,6 +161,9 @@ export function judge(S) {
   lines.push(`M3-A7 活計時間占比：條理 ${(wj * 100).toFixed(1)}%，隨性 ${(wp * 100).toFixed(1)}%`);
   if (!(wj > wp)) failures.push('M3-A7 條理型沒有比隨性型更勤快');
   const all = (S['t:E'] || 0) + (S['t:I'] || 0);
+  // 時間分布：調平衡前先看這張表（loop 3 retro 的改進）。
+  const share = Object.entries(S).filter(([k]) => k.startsWith('act:')).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  lines.push(`（診斷）時間分布前十：${share.map(([k, v]) => `${k.slice(4)} ${(100 * v / all).toFixed(1)}%`).join('、')}`);
   lines.push(`（參考）處於自理門檻下的時間：飢餓 ${(100 * (S.lowFood || 0) / all).toFixed(1)}%，累垮 ${(100 * (S.lowEnergy || 0) / all).toFixed(1)}%`);
   return { lines, failures };
 }
