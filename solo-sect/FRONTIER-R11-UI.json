@@ -1,0 +1,26 @@
+{
+  "trip": {
+    "phase": "home",
+    "ration": null,
+    "joinRequested": false,
+    "joined": false,
+    "deferred": false,
+    "journeys": 0,
+    "returns": 0,
+    "packed": 0,
+    "eaten": 0,
+    "returned": 0,
+    "energySpent": 0,
+    "lastAid": 0,
+    "aidHits": 0
+  },
+  "source": {
+    "hp": 24,
+    "cleared": false,
+    "clearAt": null,
+    "lastStrike": 0
+  },
+  "avoid": true,
+  "t": 1400.5,
+  "errors": []
+}

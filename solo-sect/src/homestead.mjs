@@ -127,12 +127,25 @@ export function setOrder(s, act, scope) {
   if(ACTIONS[act]?.internal||ACTIONS[act]?.frontierOnly&&!s.frontier)return false;
   if (act !== null && (typeof act!=='string'||!Object.hasOwn(ACTIONS,act) || s.mode === 'solo' && ['chat','talkHelper','gift','care','helperCare'].includes(act))) return false;
   const selected=s.autonomy?(scope??'once'):'repeat';if(!['once','repeat'].includes(selected)||ACTIONS[act]?.frontierOnly&&selected!=='once')return false;
-  if (s.person.order === act && !(act==='eat'&&s.person.foodRequest)&&!(act==='leisure'&&s.person.leisureRequest)&&(!s.autonomy||s.person.orderScope===selected)) return true;
+  if (s.person.order === act && !(act===null&&s.person.task?.act==='depart') && !(act==='eat'&&s.person.foodRequest)&&!(act==='leisure'&&s.person.leisureRequest)&&(!s.autonomy||s.person.orderScope===selected)) return true;
   const target=act==='build'&&selected==='once'?(nextProject(s)||buildables(s).find(id=>s.fac[id].site&&!s.fac[id].site.paused)):null;
   if(act==='build'&&selected==='once'&&!target)return false;
   if(act==='returnTrip'&&s.frontier?.trip){s.frontier.trip.phase='return';s.frontier.trip.deferred=true;}
   if(s.frontier?.trip?.phase!=='home'&&s.frontier?.trip&&!Object.hasOwn(EXPEDITION_ACTIONS,act||'')){s.frontier.trip.phase='return';s.frontier.trip.deferred=true;}
+  if(act===null&&s.frontier?.trip.phase==='home'&&(s.person.order==='depart'||s.person.task?.act==='depart'))s.frontier.trip.deferred=true;
   cancelTask(s);prepareOrder(s,selected);s.person.order = act;s.person.foodRequest=null;s.person.cookRequest=s.mode==='solo'&&act==='cook'?'basic':null;if(s.autonomy)s.person.onceProject=target||null;return true;
+}
+export function setAvoidCombat(s,avoid){
+ if(!s.frontier||typeof avoid!=='boolean')return false;
+ s.frontier.martial.avoid=avoid;
+ if(avoid){
+  if(s.frontier.trip.phase!=='home'){
+   s.frontier.trip.phase='return';s.frontier.trip.deferred=true;cancelTask(s);
+   if(Object.hasOwn(EXPEDITION_ACTIONS,s.person.order||'')||s.person.order==='fight')clearOnce(s);
+  }
+  else if(s.person.order==='depart'||s.person.task?.act==='depart')setOrder(s,null);
+  if(s.person.order==='fight'||s.person.task?.act==='fight')setOrder(s,null);
+ }return true;
 }
 export function retreatExpedition(s){if(!s.frontier||s.frontier.trip.phase==='home')return false;s.frontier.trip.phase='return';s.frontier.trip.deferred=true;cancelTask(s);clearOnce(s);return true;}
 export function requestLeisure(s,id){if(!s.autonomy||!Object.hasOwn(LEISURE,id)||!availableLeisure(s,id))return false;if(s.person.order==='leisure'&&s.person.leisureRequest===id)return true;if(s.person.order==='leisure')setOrder(s,null);if(!setOrder(s,'leisure','once'))return false;s.person.leisureRequest=id;return true;}

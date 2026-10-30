@@ -13,7 +13,7 @@ const clamp=n=>Math.max(0,Math.min(100,n));
 const log=(s,msg)=>{s.log.unshift({day:s.day,msg});s.log.length=Math.min(80,s.log.length);};
 export function companionReady(s){const c=s.frontier.companion;return c.allowed&&c.present&&!c.leaving&&!c.carry&&!c.helpPending&&near(c.pos,[650,345])&&c.trust>=3&&c.practiceXP>=2&&c.hunger>=60&&c.energy>=60;}
 export function expeditionReason(s,act){const f=s.frontier;if(!f)return '只在生活與山林試作';const t=f.trip;
- if(act==='depart')return t.phase!=='home'?'已在探行，不能重複打包':f.source.cleared?'獸徑已清理，不重開同一目標':f.threat.phase!=='quiet'?'先處理眼前預警／侵擾':!s.autonomy.warmMeals?'先安家並吃過熱飯':f.martial.xp<3?'先練會基本步勢3':s.person.carry?'先搬回手上的物資':s.person.hunger<55||s.person.energy<60?'先吃飯休息（飽腹55／精力60）':preparedCount(s)<1?'至少一份真料理作路糧':t.joinRequested&&!companionReady(s)?'林舟需要在場空手、願意、信任3／步勢2、需求60才同行':null;
+ if(act==='depart')return t.phase!=='home'?'已在探行，不能重複打包':f.martial.avoid?'已選避戰，不打包出征；允許應戰後才可近山':f.source.cleared?'獸徑已清理，不重開同一目標':f.threat.phase!=='quiet'?'先處理眼前預警／侵擾':!s.autonomy.warmMeals?'先安家並吃過熱飯':f.martial.xp<3?'先練會基本步勢3':s.person.carry?'先搬回手上的物資':s.person.hunger<55||s.person.energy<60?'先吃飯休息（飽腹55／精力60）':preparedCount(s)<1?'至少一份真料理作路糧':t.joinRequested&&!companionReady(s)?'林舟需要在場空手、願意、信任3／步勢2、需求60才同行':null;
  if(act==='returnTrip')return t.phase==='home'?'已在家':null;
  if(act==='journey')return t.phase!=='outbound'?'沒有出行中的路程':null;
  if(act==='trailEat')return !['source','return'].includes(t.phase)||!t.ration?'沒有可用路糧':s.person.hunger>=95&&(!RECIPES[t.ration].energy||s.person.energy>=95)?'暫不需吃這份路糧':null;

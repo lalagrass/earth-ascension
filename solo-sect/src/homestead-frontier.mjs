@@ -11,6 +11,7 @@ export function frontierDetailText(s){return s.frontier?`${defenseText(s)} ${mar
 export function frontierText(s){return s.frontier?`${APPROACHES[s.frontier.approach]} · ${threatText(s)}`:'';}
 export function frontierAim(s){const f=s.frontier;if(!f)return '';const p=s.person,t=f.trip;
  if(t.phase!=='home')return {outbound:'近期打算：沿真路前往獸徑；低需求或改派可先回家。',source:'近期打算：在獸徑應對；包內路糧要真吃才恢復，精力不足會撤回。',return:'近期打算：沿真路回家，未吃路糧退回後繼續生活。'}[t.phase];
+ if(f.martial.avoid)return '你選擇避戰：仍會安家、吃睡與練步，不自主打包近山。途中會先真返家；允許應戰不會暗清已暫緩的探行。';
  if(f.source.cleared)return '此來源已安寧。可以留居吃睡、照料家園或與林舟交流，沒有強迫下一場戰爭。';
  if(!s.autonomy.warmMeals)return '近期先安家並吃過熱飯，山林方向不跳過基本求生。';
  if(p.order)return '先完成你的明確指派與急需吃睡，再考慮山林方向。';
