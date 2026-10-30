@@ -1,3 +1,4 @@
+import {freshLeisure,chooseLeisure,finishLeisure,validLeisureTask} from './homestead-autonomy-leisure.mjs';
 import {recoveryChoice} from './homestead-autonomy-recovery.mjs';
 import {freshTastes,automaticRecipe,recordTaste,autonomyFood} from './homestead-autonomy-meals.mjs';
 import {freshAutonomy,validAutonomy,advanceAutonomy,observeAutonomy,goalStep} from './homestead-autonomy.mjs';
@@ -291,7 +292,8 @@ function pick(s) {
 function begin(s, act) {
   const p = s.person;
   if (act === 'return') { p.task = { act, phase: 'go', place: 'home', timer: 0 }; return; }
-  const place = act === 'leisure' && offers(s, 'bench', 'leisure') ? 'bench' : ACTIONS[act].place;
+  const leisure=act==='leisure'&&s.autonomy&&!p.order?chooseLeisure(s):null;
+  const place = leisure?.place||(act === 'leisure' && offers(s, 'bench', 'leisure') ? 'bench' : ACTIONS[act].place);
   const key = leaseOf(act);
   if (key) { if (s.leases[key]) return; s.leases[key] = 'person'; }
   if (act === 'build') {
@@ -306,6 +308,7 @@ function begin(s, act) {
     return;
   }
   p.task = { act, phase: 'go', place, timer: 0 };
+  if(leisure)p.task.leisureKind=leisure.id;
   if(act==='rest'&&s.autonomy?.goal==='comfort'&&s.fac.bed.stage===2&&!s.autonomy.comfortRests)p.task.trial=true;
   if(act==='cook'&&s.mode==='solo'){const manual=!!p.cookRequest&&!recipeReason(s,p.cookRequest);p.task.recipe=manual?p.cookRequest:automaticRecipe(s)||'basic';p.task.manual=manual;}
   if(act==='eat'&&s.mode==='solo'){
@@ -339,7 +342,7 @@ function complete(s, t) {
       }
     }else if(s.stock.meal>0){s.stock.meal--;p.hunger=clamp(p.hunger+52);note(s,'吃了一份熱飯。');}else if(s.stock.berries>0){s.stock.berries--;p.hunger=clamp(p.hunger+26);note(s,'吃了野果。');}
   }
-  if (t.act === 'leisure') { if(s.autonomy?.recess){s.autonomy.recess=false;s.autonomy.breaks++;} p.leisure++; p.energy = clamp(p.energy + 5); if(t.place==='bench'&&s.fac.bench.stage&&at(p,PLACES.bench)){feel(s,'seated');if(s.fac.flowers.stage)feel(s,'flowers');} }
+  if (t.act === 'leisure') { if(s.autonomy?.recess){s.autonomy.recess=false;s.autonomy.breaks++;} p.leisure++; p.energy = clamp(p.energy + 5); if(s.autonomy)finishLeisure(s,t);else if(t.place==='bench'&&s.fac.bench.stage&&at(p,PLACES.bench)){feel(s,'seated');if(s.fac.flowers.stage)feel(s,'flowers');} }
   if (t.act === 'farm') {
     if (s.plot.state === 'empty' && s.stock.seeds > 0) { s.stock.seeds--; s.plot.state = 'growing'; s.plot.growth = 0; skilledWork=true; note(s, '在小菜園播下種子。'); }
     else if (s.plot.state === 'ripe' && s.stock.veg + inbound(s, 'veg') <= s.cap.veg - 2) { s.plot.state = 'empty'; p.carry = { kind: 'veg', amount: 2, origin: 'wild', bonus: { seeds: 2 } }; skilledWork=true; note(s, '收下青菜與種子，帶回住處。'); }
@@ -492,7 +495,7 @@ export function loadHomestead(json) {
     s.autonomy ??= null;
     if(s.autonomy&&s.autonomy.warmMeals===undefined)s.autonomy.warmMeals=0;
     if(s.autonomy&&s.autonomy.comfortRests===undefined)s.autonomy.comfortRests=0;
-    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;s.autonomy.direction??='auto';s.autonomy.deferred??=[];s.autonomy.limit??=Math.max(2,s.autonomy.completed.filter(id=>['comfort','porch','pantry'].includes(id)).length);s.autonomy.journal??=s.autonomy.completed.map(goal=>({goal,at:null}));s.autonomy.tastes??=freshTastes();s.autonomy.interestLimit??=2;s.autonomy.herbHarvests??=0;s.autonomy.careUses??=0;}
+    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;s.autonomy.direction??='auto';s.autonomy.deferred??=[];s.autonomy.limit??=Math.max(2,s.autonomy.completed.filter(id=>['comfort','porch','pantry'].includes(id)).length);s.autonomy.journal??=s.autonomy.completed.map(goal=>({goal,at:null}));s.autonomy.tastes??=freshTastes();s.autonomy.interestLimit??=2;s.autonomy.herbHarvests??=0;s.autonomy.careUses??=0;s.autonomy.leisure??=freshLeisure();}
     if(s.autonomy&&s.autonomy.experience===undefined)s.autonomy.experience={hunger:0,fatigue:0,effort:0,lastWork:s.person.work};
     if(!validAutonomy(s.autonomy,s.mode,s.t,s.person.work))return {ok:false,error:'自主生活目標不合法'};
     if(s.person.task?.trial!==undefined&&(s.person.task.trial!==true||s.person.task.act!=='rest'||!s.autonomy||s.fac.bed?.stage!==2))return {ok:false,error:'床鋪試睡任務不合法'};
@@ -561,12 +564,13 @@ export function loadHomestead(json) {
     }
     if (c && (!['berries', 'wood', 'veg', 'herbs'].includes(c.kind) || !Number.isInteger(c.amount) || c.amount < 1 || !['wild', 'site'].includes(c.origin) || (c.bonus && (Object.keys(c.bonus).length !== 1 || ![1, 2].includes(c.bonus.seeds) || !['berries', 'veg'].includes(c.kind))))) return { ok: false, error: '背包資料不合法' };
     if (t) {
+      if(t.leisureKind!==undefined&&t.act!=='leisure')return {ok:false,error:'休憩種類不合法'};
       if (!Number.isFinite(t.timer) || t.timer < 0 || !['go', 'do', 'fetch', 'deliver'].includes(t.phase)) return { ok: false, error: '任務資料不合法' };
       if (t.act === 'return') { if (t.phase !== 'go' || t.place !== 'home' || !c) return { ok: false, error: '返回任務不合法' }; }
       else if (t.act === 'build') {
         if (!BUILDABLE.includes(t.place) || !s.fac[t.place].site || s.fac[t.place].site.paused || !['go', 'do', 'fetch', 'deliver'].includes(t.phase) || (['fetch', 'deliver'].includes(t.phase) && t.mat !== 'wood') || (t.phase === 'fetch' && c) || (t.phase === 'deliver' && !(c?.origin === 'site' && c.kind === 'wood'))) return { ok: false, error: '建造任務不合法' };
       } else {
-        if (typeof t.act!=='string'||!Object.hasOwn(ACTIONS,t.act) || (t.act === 'leisure' ? !(t.place === 'home' || t.place === 'bench' && s.fac.bench.stage === 1) : t.place !== ACTIONS[t.act].place) || !['go', 'do'].includes(t.phase) || (t.act === 'farm' && !offers(s, 'garden', 'farm')) || (t.act === 'herbFarm' && !offers(s, 'herbGarden', 'herbFarm')) || (t.act === 'cook' && !offers(s, 'kitchen', 'cook'))) return { ok: false, error: '活動任務不合法' };
+        if (typeof t.act!=='string'||!Object.hasOwn(ACTIONS,t.act) || (t.act === 'leisure' ? !validLeisureTask(s,t) : t.place !== ACTIONS[t.act].place) || !['go', 'do'].includes(t.phase) || (t.act === 'farm' && !offers(s, 'garden', 'farm')) || (t.act === 'herbFarm' && !offers(s, 'herbGarden', 'herbFarm')) || (t.act === 'cook' && !offers(s, 'kitchen', 'cook'))) return { ok: false, error: '活動任務不合法' };
       }
     }
     if(t?.act==='build'&&t.step!==undefined&&(t.place!=='bed'||s.fac.bed.stage!==1||!['craft','pickup','install'].includes(t.step)||!['go','do'].includes(t.phase)||t.step==='craft'&&s.fac.bed.site.crafted>=12||t.step!=='craft'&&!s.fac.bed.site.assemblyAt))return {ok:false,error:'床鋪加工任務不合法'};

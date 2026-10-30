@@ -95,12 +95,13 @@ export function drawHomestead(g,s,preview,blueprint,inspected,showRoute=true,mod
  // Feature labels first, then compact character tags choose a non-overlapping nearby slot.
  for(const id of ['hut','garden','herbGarden','kitchen','store',...(s.mode==='solo'?['workbench']:[])]){const pt={hut:[445,77],garden:[270,99],herbGarden:[135,28],kitchen:[605,278],store:[555,507],workbench:[676,501]}[id];tag(`${id==='hut'&&hut.stage&&look.name?look.name+' · ':''}${FACILITIES[id].stages[s.fac[id].stage].name}`,...pt);}
  tag('野果叢',155,380);tag('林緣枯木',745,129);tag('草藥坡',80,201);tag('村路',825,491);
- function person(p,color){const[x,y]=p.pos,t=p.task,rest=t?.act==='rest'&&t.phase==='do',sit=t?.act==='leisure'&&t.phase==='do';ellipse(x,y+4,15,6,'#423a3555');
+ function person(p,color){const[x,y]=p.pos,t=p.task,rest=t?.act==='rest'&&t.phase==='do',sit=t?.act==='leisure'&&t.phase==='do'&&(!t.leisureKind||['bench','clouds'].includes(t.leisureKind));ellipse(x,y+4,15,6,'#423a3555');
   if(rest){rect(x-20,y-20,39,16,s.fac.bed?.stage===2?'#9db8c2':'#bcac8c');circle(x-19,y-14,8,'#e3bd92');g.font='bold 17px sans-serif';g.fillStyle='#eee8d2';g.fillText('z',x+12,y-24);}else{rect(x-9,y-(sit?20:33),18,sit?21:34,color);circle(x,y-(sit?28:42),10,'#e3bd92');if(sit)line([[x-8,y],[x+8,y]],'#493f34',4);}
   if(p.task?.step==='install'&&p.task.phase==='go')rect(x+10,y-25,25,16,'#b28d61');
   if(p.carry)rect(x+12,y-24,16,12,p.carry.kind==='wood'?'#8f6238':'#bc8b55');
   if(t?.act==='build'&&t.phase==='do'){line([[x+9,y-29],[x+27,y-45]],'#715232',4);line([[x+21,y-48],[x+32,y-41]],'#aaa797',6);}
   tag(p.name,x,y-(rest?58:76),true);
+  if(t?.act==='leisure'&&t.phase==='do'&&['flowers','garden'].includes(t.leisureKind)){line([[x+8,y-25],[x+22,y-20]],'#e3bd92',4);tag(t.leisureKind==='flowers'?'賞花':'看菜畦',x,y-105,true);}
   if(p===s.person&&currentFeelings(s).value>0){circle(x+23,y-45,8,'#e8cc73');g.fillStyle='#715c35';g.font='12px sans-serif';g.fillText('♪',x+20,y-41);}
  }
  person(s.person,'#3e6481');if(s.helper)person(s.helper,'#a46652');else if(visitorHere(s))person({pos:PLACES.visitor,name:s.visitor.name},'#a46652');

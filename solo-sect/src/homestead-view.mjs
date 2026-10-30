@@ -1,3 +1,4 @@
+import{LEISURE,leisureReason}from'./homestead-autonomy-leisure.mjs';
 import {RECIPES,edibleEnergy,preparedCount} from './homestead-content.mjs';
 import {restRate,at} from './homestead-living.mjs';
 // 純顯示：只讀現有狀態，不推進世界、不替人物作決定。
@@ -16,6 +17,7 @@ export function activityText(s, p = s.person) {
   if (t.act === 'build') return t.phase === 'go' ? `走向「${target}」工地` : `正在建造「${target}」`;
   if (t.act === 'leave') return '沿村路回村';
   if(t.act==='cook')return t.phase==='go'?`走向露天灶，準備${RECIPES[t.recipe||'basic'].name}`:`正在做${RECIPES[t.recipe||'basic'].name}${t.manual?'（這一鍋）':''}`;
+  if(t.act==='leisure'&&t.leisureKind&&LEISURE[t.leisureKind])return (t.phase==='go'?'前往休憩地點：':'')+LEISURE[t.leisureKind].name;
   if (t.phase === 'go') return `走向${target}，準備${ACTIONS[t.act]?.name || '休息'}`;
   if(t.act==='eat'&&t.foodId)return `正在吃${RECIPES[t.foodId].name}`;
   if (t.act === 'farm') return s.plot.state === 'ripe' ? '正在收青菜' : '正在菜園播種';
@@ -37,12 +39,13 @@ export function activityReason(s, p = s.person, who = 'person') {
   if(p.task?.act==='farm')return '照料一塊菜園，供日後料理；田間收成要搬回才可用。';
   if (p.task?.act === 'build') return '已有家園藍圖，正逐件備料施工。';
   if (p.task?.act === 'leisure') {
+    if(s.autonomy&&p.task.leisureKind)return leisureReason(s,p.task);
     const reason = Object.values(s.fac).some(f=>f.site) ? blockReason(s,'build',who) : null;
     return reason ? `工程暫候：${reason}；現在先歇一會。` : '目前沒有急需處理的生活工作，可以安心歇一會。';
   }
   return '依食物、精力、工程與性情自主安排；可以隨時改派。';
 }
-export function facilityEffect(id, stage, mode='solo') {
+export function facilityEffect(id, stage, mode='solo',autonomy=false) {
   if (id === 'hut') return `休息每秒恢復 ${stage.rest} 精力`;
   if (id === 'store') return stage.name === '儲物棚' ? '容量：果20／木20／種10／菜16／飯15／藥10' : '容量：果8／木8／種5／菜8／飯8／藥6';
   if (id === 'garden') return stage.offers.includes('farm') ? '可播種；生長34秒後收2菜與2種' : '尚不能種菜';
@@ -55,13 +58,14 @@ export function facilityEffect(id, stage, mode='solo') {
   if(mode==='legacy'&&id==='bench')return stage.offers.includes('leisure')?'閒坐改在長凳；舊版無額外加成':'尚無座位';
   if(mode==='legacy'&&id==='flowers')return stage.name==='庭院花叢'?'舊版純外觀，不增加產量或能力':'尚未植栽';
   if (id === 'bench') return stage.offers.includes('leisure') ? '到長凳閒坐完成後，舒服感受+2持續60秒；不加工作增益' : '尚無座位';
+  if(id==='flowers'&&autonomy)return stage.name==='庭院花叢'?'近前賞花完成後，看花感受+1持續60秒；長凳不再隔空給此感受':'尚未植栽';
   if (id === 'flowers') return stage.name === '庭院花叢' ? '長凳小憩完成可得看花感受+1持續60秒；不增加產量' : '尚未植栽';
   return '';
 }
 export function buildingInfo(s,id) {
   const f=FACILITIES[id], st=s.fac[id], next=f.stages[st.stage+1], site=st.site;
   const missing=site ? Math.max(0,site.need.wood-site.delivered.wood-site.reserved.wood) : (next?.cost.wood||0);
-  return {current:facilityEffect(id,f.stages[st.stage],s.mode), next:next ? facilityEffect(id,next,s.mode):null, missing, shortage:Math.max(0,missing-s.stock.wood)};
+  return {current:facilityEffect(id,f.stages[st.stage],s.mode,!!s.autonomy), next:next ? facilityEffect(id,next,s.mode,!!s.autonomy):null, missing, shortage:Math.max(0,missing-s.stock.wood)};
 }
 export function projectMaterials(s) {
   const sites=Object.values(s.fac).filter(f=>f.site);
@@ -90,5 +94,5 @@ export function resourceSummary(s) {
  return {available:{...s.stock},delivered:sites.reduce((n,f)=>n+f.site.delivered.wood,0),reserved:sites.reduce((n,f)=>n+f.site.reserved.wood,0),incoming:[s.person,s.helper].filter(p=>p?.carry?.origin==='wild').map(p=>({...p.carry})),...projectMaterials(s)};
 }
 
-export function homeBenefits(s){return `居住：${s.fac.bed?.stage?FACILITIES.bed.stages[s.fac.bed.stage].name:FACILITIES.hut.stages[s.fac.hut.stage].name}，到休息處每秒恢復${restRate(s,{pos:[440,225]})}精力。料理：${FACILITIES.kitchen.stages[s.fac.kitchen.stage].name}。閒暇：${s.fac.bench.stage?'可在長凳小憩'+(s.fac.flowers.stage?'看花':''):'在屋前閒坐'}。`;}
+export function homeBenefits(s){const leisure=s.autonomy?['屋前看雲',s.fac.bench.stage?'坐長凳':null,s.fac.flowers.stage?'近前賞花':null,s.fac.garden.stage&&s.plot.state!=='empty'?'看長成的菜畦':null].filter(Boolean).join('／'):s.fac.bench.stage?'可在長凳小憩'+(s.fac.flowers.stage?'看花':''):'在屋前閒坐';return `居住：${s.fac.bed?.stage?FACILITIES.bed.stages[s.fac.bed.stage].name:FACILITIES.hut.stages[s.fac.hut.stage].name}，到休息處每秒恢復${restRate(s,{pos:[440,225]})}精力。料理：${FACILITIES.kitchen.stages[s.fac.kitchen.stage].name}。閒暇：${leisure}。`;}
 export function projectFocusText(s){const id=s.focusProject,f=id&&s.fac[id];if(!f?.site)return '未選優先工地；按原順序做可行工程。可在原建造卡選這項先做，不必暫停其他藍圖。';const b=buildingInfo(s,id),v=f.site,name=FACILITIES[id].stages[f.stage+1].name;return `先改善「${name}」：${b.next}。木料已交${v.delivered.wood}/${v.need.wood}，在途${v.reserved.wood}，待運${b.missing}，庫存尚缺${b.shortage}；施工${Number(v.work.toFixed(1))}/${v.workNeed}。當前工序先完成；下次優先此項，缺料可做其他可行事。`;}
