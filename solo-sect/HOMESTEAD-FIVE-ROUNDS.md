@@ -68,3 +68,19 @@ root基線正常UI t186.5有灶/0菜，全域cook enabled、現場disabled，按
 只在本renderer獨佔的原容器加小WeakMap原markup快取：完全相同字串不重寫，改了照常更新；限orders/build/recipes/project-rows，不作VirtualDOM、renderer/engine改寫、不cache世界或停止模擬。用原字串而非DOM序列化作比較，避免disabled=""等瀏覽器正規化讓每次誤判不同。不能用於可編輯子樹或讓資格變了仍沿舊disabled。原H48合法更新時fallback照常有效。
 
 驗收：真UI新局paused900ms control/group身份與focus仍在、world不變；1×人物行走而控制語義未變仍同一button；真指派/原料理材料/工程/清除變了必更新，無 stale command/disabled或假world增益。1440/390指標/Enter/Tab/原H48流程，適用481聚合與非作者獨立對照；純UI不加新數值/欄位/空泛效能宣稱。來源沿[Playwright官方actionability](https://playwright.dev/docs/actionability)的可見/穩定/可收事件與DOM斷連條件，[W3C Focus Order](https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html)連續上下文；這是互動可靠性驗證，不當真人或全無障礙認證。第5輪根據本輪整合後剩餘驗收缺口定，不加任意新內容。
+
+### H49結果／第4輪完成
+
+作者481/481（24.51秒）。正常390新局paused900ms保留forage/build/recipe節點及focus、world完全不變；1×人物移動但主控制未變仍同node。真採果返倉解鎖eat、一次吃完禁用/fallback→orders；t130.5真建屋後1440原建造列paused900ms保留；legacy390同樣身份保留，無溢出/pageerror。FIVE4-UI.json；不把skip同markup說成已測效能改善。
+
+非作者讀四容器寫入所有權、原字串cache與mode/newgame更新；獨立390正常UIpaused900ms四參照存活，Enter真指派後舊按鈕斷連/new active且focus保留，證真差異仍更新；另核作者真材料/建成/legacy收據與圖，無阻擋。481/作者完整UI未由其重跑，browser已關。H48 fallback仍處理合法替換，無新數值/schema。
+
+## 第5輪H50事前規格：完整輸入與生活規則對照（最後一輪）
+
+H46–H49已分別修入口資格、泛用餐收尾、focus與DOM穩定；仍缺『這幾項一起用時，真正UI按鍵是否只呼叫預期命令、未默默改世界』的跨層證據。第5輪實作可重跑、有限的UI/API對照工具與結案驗收，不再加玩法/面板或為輪數擴內容。這是現有新接線的整合缺口，並非把同一組單測改名新成果。
+
+五條零注入路徑：三性情各一條建屋→園灶→採收→做/吃→休息→長凳/清除，勤勞路含真正材料在途的暫停/續工；另一短路驗採集中改令/一份餐中原存讀，另一短路驗preview/Escape/選地/關標示純讀。全部只用正常UI，進程debug僅讀。另在Node建立同初始/姓名/性情的獨立model，按記錄的已接受原public API命令與UI實際世界拍數回放；每個停點比較完整JSON及hash（包含log），不向瀏覽器注入物資/技能/tick，不把model中間拍當每拍都讀取過瀏覽器。資格拒絕/純檢視停點不能改任何world欄位。
+
+驗收：每條記實際command/t/world hash、所用倍速、正常UI圖、pageerror/溢出；主餐一次/原工程材料/飢餓精力/暫停與取消/讀檔/三性情皆正常。最後適用481聚合、既有五seed/48路長程/保留矩陣全留；非作者獨立看工具方法/抽查一短路與真收據（能跑才稱實跑）。發現具體差異定位最小修，沒差異也不捏造新功能。五輪到此停止，真人/其他引擎仍另列，不開第6輪。
+
+來源：[Factorio開發者FFF188（2017）](https://factorio.com/blog/post/fff-188)介紹相同輸入/每拍狀態一致及差異報告；只借命令與狀態對照的除錯原則，Factorio是商業遊戲，不稱全開源，不搬多人/網路/工業鏈。[Playwright官方Actions](https://playwright.dev/docs/input)用可操作input/keys驗真正UI，不用programmatic click或force迴避actionability。此前CDDA活動完成/取消概念仍是有限生命週期參照。未執行外部遊戲、無第三方code/素材採用。

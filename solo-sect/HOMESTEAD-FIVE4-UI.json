@@ -1,0 +1,37 @@
+{
+  "engine": "154.0.8037.57",
+  "route": "normal UI zero grants; stable identity and genuine state transitions; AI not human",
+  "events": [
+    {
+      "name": "paused unchanged identities",
+      "allConnected": true,
+      "worldUnchanged": true
+    },
+    {
+      "name": "real food and order update",
+      "t": 16.25,
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "focusFallback": "orders"
+    },
+    {
+      "name": "real build then unchanged row",
+      "t": 130.5,
+      "stage": 1,
+      "rowConnected": true
+    },
+    {
+      "name": "legacy paused identity",
+      "connected": true
+    }
+  ],
+  "errors": []
+}
