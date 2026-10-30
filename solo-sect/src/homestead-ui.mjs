@@ -1,3 +1,4 @@
+import {facilityModelView,modelCrop} from './homestead-model.mjs';
 import {blueprintInfo,inspectionInfo,plotAt,constructionRoute,siteMaterials,siteStages} from './homestead-construction.mjs';
 import {HOME_STYLES,normalizeHomeName,homeLook,setHomeLook} from './homestead-look.mjs';
 import {RECIPES,MEAL_STYLES,mealDecision,nextUnlocks,preparedCount,recipeAccess,recipeReason,buildAccess,RESOURCE_NAMES} from './homestead-content.mjs';
@@ -10,6 +11,8 @@ import { mountTransferManager, downloadBytes } from './transfer-manager-ui.mjs';
 import { previewTransfer, commitTransfer, transferSlots, validateTransferSave, exportTransferBackup } from './homestead-transfer.mjs';
 const $ = (id) => document.getElementById(id);
 const ctx = $('land').getContext('2d');
+const modelSurface=document.createElement('canvas');modelSurface.width=900;modelSurface.height=560;const modelCtx=modelSurface.getContext('2d');
+function renderModels(d){const before=facilityModelView(s,d.id,false,d.stage),after=facilityModelView(s,d.id,true,d.stage);$('model-pair').hidden=!before||!after;if(!before||!after)return;for(const[which,view]of[['before',before],['after',after]]){drawHomestead(modelCtx,view,undefined,undefined,undefined,false,true);const[x,y,w,h]=modelCrop(d.id),g=$('model-'+which).getContext('2d'),scale=Math.min(300/w,220/h);g.clearRect(0,0,300,220);g.drawImage(modelSurface,x,y,w,h,(300-w*scale)/2,(220-h*scale)/2,w*scale,h*scale);$('model-'+which+'-title').textContent=`${which==='before'?'目前造型':'完工示意（尚未建成）'}：${FACILITIES[d.id].stages[view.fac[d.id].stage].name}${d.id==='bed'?'・屋內床鋪局部（床墊／枕頭）':''}`;}const info=buildingInfo(s,d.id);$('model-before-effect').textContent='設施本身：'+(info.current||'尚無設施');$('model-after-effect').textContent='設施本身：'+info.next;}
 new ResizeObserver(()=>document.documentElement.style.setProperty('--home-header',`${document.querySelector('header').getBoundingClientRect().height}px`)).observe(document.querySelector('header'));
 let s = null, speed = 1, last = performance.now(), acc = 0, painted = 0;
 let pointerHeld = false;
@@ -27,7 +30,7 @@ $('site-focus').onclick=()=>{if(inspected){setProjectFocus(s,s.focusProject===in
 $('land').onclick=e=>{const r=$('land').getBoundingClientRect(),c=getComputedStyle($('land')),bx=parseFloat(c.borderLeftWidth),by=parseFloat(c.borderTopWidth),x=(e.clientX-r.left-bx)*900/(r.width-2*bx),y=(e.clientY-r.top-by)*560/(r.height-2*by);inspected=plotAt(s,x,y);closeBlueprint();render();if(inspected)$('site-select').focus({preventScroll:true});};
 let blueprintDraft=null;
 function closeBlueprint(){blueprintDraft=null;$('blueprint-preview').hidden=true;draw();}
-function renderBlueprint(){const d=blueprintDraft;$('blueprint-preview').hidden=!d;if(!d)return;const q=blueprintInfo(s,d.id,d.stage);$('blueprint-info').textContent=`${q.name}：木${q.cost}，庫存可用${q.available}，尚缺${q.shortage}。${q.effect}。${q.reason||'可在此立計畫；木料由主角逐根搬到工地，不在確認時扣料。'}${q.craft?'部件在木作台加工後搬回屋內安裝。':''}`;$('blueprint-confirm').disabled=!q.ok;}
+function renderBlueprint(){const d=blueprintDraft;$('blueprint-preview').hidden=!d;if(!d)return;renderModels(d);const q=blueprintInfo(s,d.id,d.stage);$('blueprint-info').textContent=`${q.name}：木${q.cost}，庫存可用${q.available}，尚缺${q.shortage}。${q.effect}。${q.reason?q.reason+'。':'可在此立計畫；木料由主角逐根搬到工地，不在確認時扣料。'}${q.craft?'部件在木作台加工後搬回屋內安裝。':''}`;$('blueprint-confirm').disabled=!q.ok;}
 function returnBlueprintFocus(id){const el=document.querySelector(`[data-preview="${id}"]`)||$('build-card');el.focus({preventScroll:true});}
 $('blueprint-cancel').onclick=()=>{const id=blueprintDraft?.id;closeBlueprint();returnBlueprintFocus(id);};
 $('blueprint-preview').onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();$('blueprint-cancel').click();}};

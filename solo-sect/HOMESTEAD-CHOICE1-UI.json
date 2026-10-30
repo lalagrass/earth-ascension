@@ -1,0 +1,35 @@
+{
+  "engine": "154.0.8037.57",
+  "route": "normal UI zero grants; pause/16x; AI not human",
+  "events": [
+    {
+      "name": "first-preview",
+      "t": 0,
+      "stage": 0,
+      "text": "簡陋木屋：木5，庫存可用0，尚缺5。休息每秒恢復 6 精力。可在此立計畫；木料由主角逐根搬到工地，不在確認時扣料。",
+      "differentChannels": 91405
+    },
+    {
+      "name": "upgrade-preview",
+      "t": 100.75,
+      "stage": 1,
+      "text": "修繕小屋：木7，庫存可用0，尚缺7。休息每秒恢復 9 精力。可在此立計畫；木料由主角逐根搬到工地，不在確認時扣料。",
+      "differentChannels": 74264
+    },
+    {
+      "name": "locked-bed-preview",
+      "t": 504.25,
+      "stage": 2,
+      "text": "舒適床鋪：木4，庫存可用0，尚缺4。木作台加工12秒＋屋內安裝6秒；使用時床休息額外+5/秒（原木床+1）。需要木作台。部件在木作台加工後搬回屋內安裝。",
+      "differentChannels": 64781
+    },
+    {
+      "name": "stove-preview",
+      "t": 504.25,
+      "stage": 2,
+      "text": "改良灶具：木4，庫存可用0，尚缺4。保留基本熱飯與拌食，料理Lv2可做燉菜；不免費省柴。可在此立計畫；木料由主角逐根搬到工地，不在確認時扣料。",
+      "differentChannels": 34649
+    }
+  ],
+  "errors": []
+}
