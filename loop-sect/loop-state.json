@@ -1,10 +1,10 @@
 {
-  "loopVersion": 6,
+  "loopVersion": 7,
   "loopsDone": 18,
   "retroEvery": 3,
-  "lastRetro": "docs/RETRO-05.md",
+  "lastRetro": "docs/RETRO-06.md",
   "lastCommit": "7fc92af",
-  "nextMilestone": "RETRO-06",
+  "nextMilestone": "M20a 舊門檻雜訊帶",
   "inProgress": {
     "paused": [
       {
