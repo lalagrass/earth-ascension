@@ -1,3 +1,4 @@
+import {MARTIAL_ACTIONS,martialReason,martialPlan,martialTarget,martialComplete,validMartialTask} from './homestead-martial.mjs';
 import {defensePlan,REPAIR,fenceMax} from './homestead-defense.mjs';
 import {tickThreat} from './homestead-threat.mjs';
 import {move,validSpatial,clearBarrierFootprint} from './homestead-spatial.mjs';
@@ -19,7 +20,7 @@ export const VERSION = 3;
 export const AUTONOMY_VERSION = 4;
 export const DAY = 240;
 export const HOME = [445, 345];
-export const PLACES = { berries: [155, 340], wood: [730, 250], herbs: [145, 185], herbGarden: [135, 90], fence:[750,345], visitor: [825, 450], hut: [440, 225], garden: [270, 170], kitchen: [605, 365], store: [555, 470], bench: [352, 412], flowers: [340, 300], bed: [440, 225], workbench: [675, 470] };
+export const PLACES = { berries: [155, 340], wood: [730, 250], herbs: [145, 185], herbGarden: [135, 90], practice:[500,350],encounter:[500,350], fence:[750,345], visitor: [825, 450], hut: [440, 225], garden: [270, 170], kitchen: [605, 365], store: [555, 470], bench: [352, 412], flowers: [340, 300], bed: [440, 225], workbench: [675, 470] };
 export const FACILITIES = {
   fence:{label:'林緣柵欄',stages:[{name:'林緣空地',offers:[]},{name:'短柵欄與木門',offers:[],cost:{wood:3},work:12},{name:'加固柵欄',offers:[],cost:{wood:3},work:15}]},
   hut: { label: '住處', stages: [
@@ -50,6 +51,7 @@ export const FACILITIES = {
 export const BUILDABLE = ['hut', 'garden', 'herbGarden', 'kitchen', 'store', 'bench', 'flowers', 'bed','workbench'];
 export const buildables=s=>s.frontier?[...BUILDABLE,'fence']:BUILDABLE;
 export const ACTIONS = {
+  ...MARTIAL_ACTIONS,
   forage: { skill: 'gather', name: '採野果', place: 'berries', duration: 6, energy: 5 },
   chop: { skill: 'gather', name: '砍柴', place: 'wood', duration: 7, energy: 7 },
   eat: { name: '吃東西', place: 'home', duration: 2 },
@@ -80,14 +82,14 @@ const leaseOf = (act) => act === 'chop' ? 'wood' : act === 'farm' ? 'garden' : a
 const freeLease = (s, p, owner) => { const key = leaseOf(p.task?.act); if (key && s.leases[key] === owner) s.leases[key] = null; };
 const inbound = (s, k) => [s.person, s.helper].reduce((n, p) => n + (p?.carry?.origin === 'wild' && p.carry.kind === k ? p.carry.amount : 0), 0);
 
-export function createHomestead({ name = '無名', personality = 'quiet', mode = 'legacy', autonomy = false, frontier = false, approach = 'guard' } = {}) {
+export function createHomestead({ name = '無名', personality = 'quiet', mode = 'legacy', autonomy = false, frontier = false, approach = 'guard', body = 1 } = {}) {
   const s = { kind: 'homestead', version:mode==='solo'&&autonomy?(frontier?FRONTIER_VERSION:AUTONOMY_VERSION):VERSION, mode: mode === 'solo' ? 'solo' : 'legacy', mealStyle:'auto', focusProject:null, look:defaultHomeLook(), t: 0, subtick: 0, day: 1, speed: 1,
     person: { name: String(name).trim().slice(0, 12) || '無名', personality: ['quiet', 'sociable', 'diligent'].includes(personality) ? personality : 'quiet', pos: [...HOME], hunger: 65, energy: 68, herbalSkill: 0, careDay: 0, skills: freshSkills(), feelings: {}, cookRequest: null, foodRequest: null, task: null, order: null, carry: null, work: 0, leisure: 0 },
     stock: { berries: 0, wood: 0, seeds: 2, veg: 0, meal: 0, salad: 0, stew: 0, herbs: 0 }, cap: { berries: 8, wood: 8, seeds: 5, veg: 8, meal: 8, herbs: 6 }, wild: { berries: 4, wood: 4, herbs: 3 },
     fac: { fence:{stage:0,site:null}, hut: { stage: 0, site: null }, garden: { stage: 0, site: null }, herbGarden: { stage: 0, site: null }, workbench:{stage:0,site:null}, bed: { stage: 0, site: null }, bench: { stage: 0, site: null }, flowers: { stage: 0, site: null }, kitchen: { stage: 0, site: null }, store: { stage: 0, site: null }, berries: { stage: 0 }, wood: { stage: 0 }, herbs: { stage: 0 } }, plot: { state: 'empty', growth: 0 }, herbPlot: { state: 'empty', growth: 0 },
     visitor: { name: '阿蓮', role: 'visitor', trust: 0, lastChat: 0, lastGift: 0, cared: false, willing: false, inviteDay: 0, inviteTime: 0, apprenticeDay: 0, injury: false, hunger: 68, energy: 72, herbalSkill: 0, careDay: 0 }, helper: null,
     leases: { wood: null, garden: null, herbGarden: null }, autonomy:mode==='solo'&&autonomy?freshAutonomy():null, unlocked: [], log: [] };
-  if(frontier&&s.autonomy)s.frontier=freshFrontier(approach);
+  if(frontier&&s.autonomy)s.frontier=freshFrontier(approach,body);
   if(s.autonomy)prepareOrder(s);
   note(s, `${s.person.name}來到荒地。先找吃的，再搭一間能安睡的木屋。`); return s;
 }
@@ -140,9 +142,9 @@ export function cancelTask(s, p = s.person, owner = 'person') {
   freeLease(s, p, owner); p.task = null;
 }
 export function setOrder(s, act, scope) {
-  if(ACTIONS[act]?.internal)return false;
+  if(ACTIONS[act]?.internal||ACTIONS[act]?.frontierOnly&&!s.frontier)return false;
   if (act !== null && (typeof act!=='string'||!Object.hasOwn(ACTIONS,act) || s.mode === 'solo' && ['chat','talkHelper','gift','care','helperCare'].includes(act))) return false;
-  const selected=s.autonomy?(scope??'once'):'repeat';if(!['once','repeat'].includes(selected))return false;
+  const selected=s.autonomy?(scope??'once'):'repeat';if(!['once','repeat'].includes(selected)||ACTIONS[act]?.frontierOnly&&selected!=='once')return false;
   if (s.person.order === act && !(act==='eat'&&s.person.foodRequest)&&!(act==='leisure'&&s.person.leisureRequest)&&(!s.autonomy||s.person.orderScope===selected)) return true;
   const target=act==='build'&&selected==='once'?(nextProject(s)||buildables(s).find(id=>s.fac[id].site&&!s.fac[id].site.paused)):null;
   if(act==='build'&&selected==='once'&&!target)return false;
@@ -200,6 +202,7 @@ export function askHelperLeave(s) {
 const readyProjects=s=>Object.keys(s.fac).filter(id=>{if(!buildables(s).includes(id))return false;const v=s.fac[id].site;return v&&!v.paused&&(Object.keys(v.need).some(k=>v.delivered[k]+v.reserved[k]<v.need[k]&&s.stock[k]>0)||Object.keys(v.need).every(k=>v.delivered[k]>=v.need[k]));});
 export function nextProject(s){const ids=readyProjects(s);if(s.autonomy&&s.person.order==='build'&&s.person.orderScope==='once'&&s.person.onceProject)return ids.includes(s.person.onceProject)?s.person.onceProject:null;return ids.includes(s.focusProject)?s.focusProject:ids[0]||null;}
 function canDo(s, act, recipeId='basic') {
+  if(ACTIONS[act]?.frontierOnly)return !martialReason(s,act);
   if (s.mode === 'solo' && ['chat','talkHelper','gift','care','helperCare'].includes(act)) return false;
   if (leaseOf(act) && s.leases[leaseOf(act)]) return false;
   if (act === 'forage') return s.wild.berries >= 1 && offers(s, 'berries', 'forage') && s.stock.berries + inbound(s, 'berries') < s.cap.berries;
@@ -226,6 +229,7 @@ function canDo(s, act, recipeId='basic') {
 export function blockReason(s, act, who = 'person') {
   const p = who === 'helper' ? s.helper : s.person;
   if (!p) return '目前沒有人可指派';
+  if(ACTIONS[act]?.frontierOnly)return martialReason(s,act);
   if (['helperCare', 'talkHelper'].includes(act) && s.helper?.leaving) return '幫手正在回村';
   if (p.carry) return '先把手上物資搬回住處';
   if (p.hunger < 38) return s.stock.berries + preparedCount(s) ? '先吃東西' : '缺糧，先採野果';
@@ -297,6 +301,7 @@ function pick(s) {
   if (p.order === 'selfCare' && canDo(s, 'selfCare')) return 'selfCare';
   if (p.energy < 23) return 'rest';
   if (p.order && canDo(s, p.order,p.order==='cook'?p.cookRequest||'basic':undefined)) return p.order;
+  if(!p.order){const action=martialPlan(s);if(action)return action;}
   if(!p.order){const a=defensePlan(s,{start:id=>startBlueprint(s,id),repair:()=>repairFence(s),can:act=>canDo(s,act)});if(a)return a;}
   if((!p.order||p.orderScope==='once'&&!canDo(s,p.order,p.cookRequest||'basic'))&&recoveryChoice(s)&&canDo(s,'selfCare'))return 'selfCare';
   if(!p.order||p.orderScope==='once'&&!canDo(s,p.order,p.cookRequest||'basic')){const goalAction=advanceAutonomy(s,{start:id=>startBlueprint(s,id),can:act=>canDo(s,act)});if(goalAction)return goalAction;}
@@ -348,6 +353,7 @@ function travel(s,p,target,dt){return move(s,p,target,dt);}
 
 function complete(s, t) {
   const p = s.person;
+  if(ACTIONS[t.act]?.frontierOnly)martialComplete(s,t.act);
   let skilledWork = false;
   if (t.act === 'forage' || t.act === 'chop' || t.act === 'herbal') {
     const k = t.act === 'forage' ? 'berries' : t.act === 'chop' ? 'wood' : 'herbs';
@@ -461,6 +467,7 @@ function tickQuarter(s,dt) {
   const p = s.person; p.hunger = clamp(p.hunger - 0.14 * dt);
   if(s.autonomy&&p.task&&!['eat','forage','return'].includes(p.task.act)&&p.hunger<25&&(canDo(s,'eat')||canDo(s,'forage')))cancelTask(s);
   if(s.autonomy&&p.task&&!['rest','eat','return','forage'].includes(p.task.act)&&p.energy<15)cancelTask(s);
+  if(p.task&&ACTIONS[p.task.act]?.frontierOnly&&martialReason(s,p.task.act)){const act=p.task.act;cancelTask(s);if(p.order===act)clearOnce(s);}
   if (!p.task) begin(s, pick(s));
   const t = p.task;
   if (!t) return;
@@ -482,7 +489,7 @@ function tickQuarter(s,dt) {
   }
   if(t.phase==='go'){
     const v=t.act==='build'?s.fac[t.place]?.site:null;
-    const destination=t.act==='build'?buildDestination(s,t):pos(t.place);
+    const destination=t.act==='build'?buildDestination(s,t):ACTIONS[t.act]?.frontierOnly?martialTarget(s,t.act):pos(t.place);
     const arrived=travel(s,p,destination,dt);if(t.step==='install'&&!at({pos:v.assemblyAt},PLACES.bed))v.assemblyAt=[...p.pos];if(!arrived)return;
     if(t.step==='pickup'){t.step='install';return;}t.phase='do';t.timer=0;
   }
@@ -507,6 +514,7 @@ function tickQuarter(s,dt) {
     if (v.work >= v.workNeed) { if(t.place==='fence'&&!clearBarrierFootprint(s))return; if(v.repair){s.frontier.fenceHp=Math.min(fenceMax(s),s.frontier.fenceHp+12);s.frontier.repairWood++;}else s.fac[t.place].stage++; if(t.place==='fence'&&s.frontier&&!v.repair)s.frontier.fenceHp=fenceMax(s); s.fac[t.place].site = null; if(s.focusProject===t.place)s.focusProject=null; if (t.place === 'store') s.cap = { ...s.cap, berries: 20, wood: 20, seeds: 10, veg: 16, meal: 15, herbs: 10 }; note(s, v.repair?`修補完成：耐久${s.frontier.fenceHp}/${fenceMax(s)}。`:`完工：${stage(s, t.place).name}。`);finishOrderProject(s,t.place);p.task = null; }
     return;
   }
+  if(t.act==='fight'&&s.frontier.threat.beast&&Math.hypot(p.pos[0]-s.frontier.threat.beast.pos[0],p.pos[1]-s.frontier.threat.beast.pos[1])>55){t.phase='go';t.timer=0;return;}
   t.timer += dt;
   if (t.timer >= (t.act==='cook'?RECIPES[t.recipe||'basic'].duration:ACTIONS[t.act].duration)) complete(s, t);
 }
@@ -530,6 +538,8 @@ export function loadHomestead(json) {
     if(s.autonomy){s.person.orderScope??='repeat';s.person.onceProject??=null;s.person.onceDelivery??=false;s.person.leisureRequest??=null;}
     if(!validOrderScope(s))return {ok:false,error:'一次指派資料不合法'};
     if(!validAutonomy(s.autonomy,s.mode,s.t,s.person.work))return {ok:false,error:'自主生活目標不合法'};
+    if(!validMartialTask(s)||ACTIONS[s.person.order]?.frontierOnly&&s.person.orderScope!=='once')return {ok:false,error:'山林活動進度或單次派工不合法'};
+    if((ACTIONS[s.person.order]?.frontierOnly||ACTIONS[s.person.task?.act]?.frontierOnly)&&!s.frontier)return {ok:false,error:'山林活動不能出現在原模式'};
     if(ACTIONS[s.person.order]?.internal)return {ok:false,error:'私有活動不能人工派工'};
     if(s.person.task?.act==='closeGate'&&(!s.frontier||!s.fac.fence?.stage||s.person.task.timer>=1||s.person.task.phase==='do'&&!at(s.person,PLACES.fence)))return {ok:false,error:'關門任務不合法'};
     if(s.person.order==='settle'||s.person.task?.act==='settle'&&(!s.autonomy||!s.fac.hut.stage||s.person.task.timer>=6||s.person.task.phase==='do'&&!at(s.person,PLACES.hut)))return {ok:false,error:'家園安頓任務不合法'};

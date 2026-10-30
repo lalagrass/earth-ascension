@@ -12,7 +12,7 @@ export function tickThreat(s,dt){
  const barrier=s.fac.fence.stage&&f.fenceHp>0&&!f.gateOpen,target=barrier?[825,345]:[445,345];
  move(s,b,target,dt,35);
  if(barrier&&Math.hypot(b.pos[0]-825,b.pos[1]-345)<2&&s.t-b.lastStrike>=3){const hit=Math.min(4,f.fenceHp);f.fenceHp-=hit;t.damage+=hit;b.lastStrike=s.t;log(s,`山豬撞擊柵欄，耐久減少${hit}。`);}
- if(!barrier&&!b.scared&&Math.hypot(b.pos[0]-s.person.pos[0],b.pos[1]-s.person.pos[1])<45){const hit=Math.min(8,s.person.energy);s.person.energy-=hit;b.scared=true;t.scares++;log(s,'山豬驚擾讓人疲憊，先照顧吃睡，牠稍後會離去。');}
+ if(!barrier&&!b.scared&&Math.hypot(b.pos[0]-s.person.pos[0],b.pos[1]-s.person.pos[1])<45){const hit=Math.min(s.person.task?.act==='fight'&&s.frontier.martial?.stance==='brace'?2:8,s.person.energy);s.person.energy-=hit;b.scared=true;t.scares++;log(s,'山豬驚擾讓人疲憊，先照顧吃睡，牠稍後會離去。');}
 }
 export function validThreat(s){const t=s.frontier?.threat;if(!t||!['quiet','warning','active'].includes(t.phase)||['next','warnAt','until','incursions','damage','scares'].some(k=>!Number.isFinite(t[k])||t[k]<0)||['incursions','damage','scares'].some(k=>!Number.isInteger(t[k])))return false;
  if(t.phase==='quiet'&&(t.beast!==null||t.until!==0)||t.phase==='warning'&&(t.beast!==null||t.warnAt>s.t||t.until!==t.warnAt+WARNING||t.until<s.t)||t.phase==='active'&&(!t.beast||t.until<s.t))return false;
