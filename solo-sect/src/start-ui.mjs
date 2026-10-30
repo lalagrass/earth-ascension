@@ -19,6 +19,7 @@ const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index
 // loop35：江湖規則單一來源（勾選 id、st 欄位、spec 鍵、預設、說明）；兩個分頁共用 ruleSpec，避免漏傳／重複
 export const RULES = [
   ['draw', 'draw', 'draw', false, '人以群分：外向的人更愛交友、強者吸引人靠近'],
+  ['mpool', 'mpool', 'mpool', true, '殘譜指點：過路高人無武學可傳時，改留一頁殘譜，講解弟子正在追的前置武學'],
   ['comp', 'compr', 'comprehend', true, '領悟：苦練與觀摩切磋可自悟、偷師他派功夫'],
   ['mentor', 'mentor', 'mentor', true, '同修請教：一起練功互相砥礪、向強者請教、結成練功搭子'],
   ['steward', 'steward', 'steward', true, '執事自主：有人睡地鋪就擴寢舍，野豬常來就蓋護山哨'],
