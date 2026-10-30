@@ -1,0 +1,22 @@
+{
+  "normalUI": true,
+  "rows": [
+    {
+      "query": "?classic&frontier",
+      "version": 3,
+      "mode": "solo"
+    },
+    {
+      "query": "?legacy&frontier",
+      "version": 3,
+      "mode": "legacy"
+    },
+    {
+      "query": "",
+      "version": 4,
+      "mode": "solo"
+    }
+  ],
+  "errors": [],
+  "narrowOverflow": false
+}
