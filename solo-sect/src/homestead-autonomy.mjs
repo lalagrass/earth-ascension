@@ -1,3 +1,4 @@
+import {freshTastes,validTastes} from './homestead-autonomy-meals.mjs';
 // Runtime-only rule lookup, like the existing display adapters; no top-level access.
 import {FACILITIES} from './homestead.mjs';
 import {skillLevel} from './homestead-skills.mjs';
@@ -12,11 +13,11 @@ export const GOALS={
 };
 export const DIRECTIONS={auto:'自行打算',steady:'先穩定吃住',comfort:'住得舒服',frugal:'少耗材料'};
 export const PREFERENCES={quiet:{comfort:6,porch:5,pantry:2},sociable:{comfort:4,porch:6,pantry:2},diligent:{comfort:5,porch:2,pantry:6}};
-export const freshAutonomy = () => ({version:1, goal:null, since:0, completed:[], warmMeals:0, comfortRests:0,recess:false, breaks:0,direction:'auto',deferred:[],limit:2,journal:[],experience:{hunger:0,fatigue:0,effort:0,lastWork:0}});
+export const freshAutonomy = () => ({version:1, goal:null, since:0, completed:[], warmMeals:0, comfortRests:0,recess:false, breaks:0,direction:'auto',deferred:[],limit:2,journal:[],tastes:freshTastes(),experience:{hunger:0,fatigue:0,effort:0,lastWork:0}});
 export function validAutonomy(a,mode,t=Infinity,work=Infinity){
  return a===null || mode==='solo' && a && a.version===1 &&
  (a.goal===null||Object.hasOwn(GOALS,a.goal)) && Number.isFinite(a.since) && a.since>=0 && a.since<=t &&
- Array.isArray(a.completed) && a.completed.length<=Object.keys(GOALS).length && new Set(a.completed).size===a.completed.length && a.completed.every(x=>Object.hasOwn(GOALS,x)) && Number.isSafeInteger(a.warmMeals) && a.warmMeals>=0 && Number.isSafeInteger(a.comfortRests) && a.comfortRests>=0 && [2,3].includes(a.limit)&&Array.isArray(a.journal)&&a.journal.length<=a.completed.length&&new Set(a.journal.map(x=>x?.goal)).size===a.journal.length&&a.journal.every(x=>x&&a.completed.includes(x.goal)&&(x.at===null||Number.isFinite(x.at)&&x.at>=0&&x.at<=t))&&typeof a.direction==='string'&&Object.hasOwn(DIRECTIONS,a.direction)&&Array.isArray(a.deferred)&&a.deferred.length<=5&&new Set(a.deferred).size===a.deferred.length&&a.deferred.every(id=>Object.hasOwn(GOALS,id))&&typeof a.recess==='boolean' && Number.isSafeInteger(a.breaks)&&a.breaks>=0 && a.experience && ['hunger','fatigue','effort'].every(k=>Number.isFinite(a.experience[k])&&a.experience[k]>=0&&a.experience[k]<=3) && Number.isFinite(a.experience.lastWork)&&a.experience.lastWork>=0&&a.experience.lastWork<=work;
+ Array.isArray(a.completed) && a.completed.length<=Object.keys(GOALS).length && new Set(a.completed).size===a.completed.length && a.completed.every(x=>Object.hasOwn(GOALS,x)) && Number.isSafeInteger(a.warmMeals) && a.warmMeals>=0 && Number.isSafeInteger(a.comfortRests) && a.comfortRests>=0 && validTastes(a.tastes)&&[2,3].includes(a.limit)&&Array.isArray(a.journal)&&a.journal.length<=a.completed.length&&new Set(a.journal.map(x=>x?.goal)).size===a.journal.length&&a.journal.every(x=>x&&a.completed.includes(x.goal)&&(x.at===null||Number.isFinite(x.at)&&x.at>=0&&x.at<=t))&&typeof a.direction==='string'&&Object.hasOwn(DIRECTIONS,a.direction)&&Array.isArray(a.deferred)&&a.deferred.length<=5&&new Set(a.deferred).size===a.deferred.length&&a.deferred.every(id=>Object.hasOwn(GOALS,id))&&typeof a.recess==='boolean' && Number.isSafeInteger(a.breaks)&&a.breaks>=0 && a.experience && ['hunger','fatigue','effort'].every(k=>Number.isFinite(a.experience[k])&&a.experience[k]>=0&&a.experience[k]<=3) && Number.isFinite(a.experience.lastWork)&&a.experience.lastWork>=0&&a.experience.lastWork<=work;
 }
 export function observeAutonomy(s,dt){
  const e=s.autonomy?.experience;if(!e)return;

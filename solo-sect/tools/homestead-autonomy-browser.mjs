@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';import assert from 'node:assert/strict';
 const {chromium}=await import('/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs');
-const milestone=process.argv[2]||'A01',until=Number(process.argv[3]||260),personality=process.argv[4]||'quiet';
+const milestone=process.argv[2]||'A01',until=Number(process.argv[3]||260),personality=process.argv[4]||'quiet',requireTaste=process.argv[5]||null;
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
 const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],events=[],images=[];
 page.on('pageerror',e=>errors.push(e.message));
@@ -11,7 +11,8 @@ try{
  await page.click('[data-speed="16"]');
  while(true){await page.waitForTimeout(180);const s=await page.evaluate(()=>structuredClone(window.__homestead));assert.ok(s.autonomy);minH=Math.min(minH,s.person.hunger);minE=Math.min(minE,s.person.energy);if(s.fac.hut.stage&&s.person.task?.act==='rest')restUsed=true;
   const key=JSON.stringify([s.autonomy.goal,Object.values(s.fac).map(f=>f.stage)]);if(key!==last){events.push({t:s.t,goal:s.autonomy.goal,fac:Object.fromEntries(Object.entries(s.fac).map(([k,f])=>[k,f.stage]))});last=key;}
-  if(s.t>=until)break;
+  if(s.t>=until&&(!requireTaste||s.autonomy.tastes?.[requireTaste]>0))break;
+  assert.ok(s.t<until+2400,'expected taste did not occur within bounded extra10 days');
  }
  await page.click('[data-speed="0"]');const state=await page.evaluate(()=>structuredClone(window.__homestead));assert.ok(state.fac.hut.stage>=1);assert.ok(minH>0);assert.equal(errors.length,0);
  const t=state.t;await page.waitForTimeout(700);assert.equal(await page.evaluate(()=>window.__homestead.t),t);

@@ -1,3 +1,4 @@
+import{mealAimText}from'./homestead-autonomy-meals.mjs';
 import{deferAutonomyGoal,allowAutonomyGoals}from'./homestead.mjs';
 import{autonomyText,DIRECTIONS,setAutonomyDirection,lifeStage,autonomyHistory}from'./homestead-autonomy.mjs';
 import{renderMarkup}from'./homestead-dom.mjs';
@@ -147,7 +148,7 @@ function render() {
   $('resource-top').textContent=`木料可用 ${resources.available.wood} · 料理共${preparedCount(s)}份（熱飯${s.stock.meal}／拌食${s.stock.salad||0}／燉菜${s.stock.stew||0}）／野果 ${s.stock.berries} · 種子 ${s.stock.seeds} · 青菜 ${s.stock.veg}`;
   $('resource-detail').textContent=`施工已交 ${resources.delivered} 木／運往工地 ${resources.reserved} 木（已離庫，不可再花）；待運${resources.needed}木，共用庫存尚缺${resources.shortage}木。回倉／採集在途：${resources.incoming.map(c=>`${{wood:'木',berries:'野果',veg:'菜',herbs:'藥'}[c.kind]}${c.amount}`).join('、')||'無'}。`;
   $('home-summary').textContent = `${s.autonomy?lifeStage(s)+' · ':''}${FACILITIES.hut.stages[s.fac.hut.stage].name} · ${s.helper ? '兩人同住' : '一人生活'} · 現成食物約 ${foodDays(s)} 日；自主夠用目標：料理${target.meal}份／果${target.berries}／菜${target.veg}／木${target.wood}／藥${target.herbs}（非容量限制，手動可多備）`;
-  $('next-step').textContent = autonomyText(s)||nextStep(s);
+  $('next-step').textContent = (autonomyText(s)||nextStep(s))+(s.autonomy?' '+mealAimText(s):'');
   $('autonomy-controls').hidden=!s.autonomy;
   if(s.autonomy){$('life-direction').value=s.autonomy.direction;$('defer-goal').disabled=!s.autonomy.goal;$('allow-goals').disabled=!s.autonomy.deferred.length;}
   $('autonomy-mode').textContent=s.autonomy?`自主發展已啟用。${p.order?'目前直接指派優先，完成或清除後再續打算。':'不派工也會安家與改善生活。'}暫停工程需由你恢復。`:'舊局維持原來的自主補庫模式。';
