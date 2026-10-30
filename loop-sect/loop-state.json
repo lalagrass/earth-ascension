@@ -1,9 +1,9 @@
 {
-  "loopVersion": 3,
+  "loopVersion": 4,
   "loopsDone": 9,
   "retroEvery": 3,
-  "lastRetro": "docs/RETRO-02.md",
-  "lastCommit": "6ec9932",
+  "lastRetro": "docs/RETRO-03.md",
+  "lastCommit": "b9a0bf2",
   "nextMilestone": "M10",
   "inProgress": null,
   "openIssues": [
