@@ -12,6 +12,7 @@ import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS } from './d
 import { SCORE, SCORE_POST } from './score-data.mjs';
 import { BAND, canDefend } from './band.mjs';
 import { boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE } from './fence.mjs';
+import { comprehend } from './comprehend.mjs';
 import { drawBoost, pickChatMate, admire } from './draw.mjs';
 import { addMem, chatLine, passPick, passDo, PASS, passScore, passReserve, apprDaily, apprMul } from './bonds.mjs';
 import { aspStep, likeMeal, likesOf } from './v10.mjs';
@@ -71,7 +72,8 @@ export function createState(seed = 1, heroSpec = null) {
   log(s, '師徒三人來到山腳一間破道館。');
   s.hero = null; s.choices = []; s.encExclude = []; s.unlock = []; s.chapter = { done: false }; for (const d of s.ds) d.wu ??= d.root;
   if (heroSpec) applyHero(s, heroSpec, initPair);
-  if (heroSpec?.draw) s.draw = true; // loop6 人以群分（選用）
+  if (heroSpec?.draw) s.draw = true;
+  if (heroSpec?.comprehend) s.wu7 = true; // loop7 領悟（選用） // loop6 人以群分（選用）
   sectInit(s); s.gen = genInit(); if (heroSpec?.bonus) s.gen.suhuiStart = heroSpec.bonus;
   return s;
 }
@@ -396,6 +398,7 @@ function doTask(s, d, dt) {
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; book(s, 'out', 'food', 1); }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? facStage(s, 'yard').trainMul || 1 : 1));
+      if (s.wu7) comprehend(s, d, t.act, t.partner ? byId(s, t.partner) : null, think, log); // loop7 領悟
       if (t.act === 'spar' && t.partner) { const p = byId(s, t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在木樁場切磋`); addMem(s, d, p, 'spar'); } }
       if (A.fun) d.needs.fun = clamp((d.needs.fun ?? 60) + A.fun, 0, 100);
       if (t.act === 'leisure') think(s, d, 'idled');

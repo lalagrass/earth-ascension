@@ -209,6 +209,7 @@ export const THOUGHTS = {
   btWin:     { text: '衝破瓶頸！', v: 18, ttl: 500, tag: 'good' },
   learned:   { text: '學會了新招', v: 15, ttl: 400, tag: 'good' },
   goodChat:  { text: '和人聊得開心', v: 6, ttl: 150, tag: 'social' },
+  epiphany:  { text: '豁然開朗，悟了一門功夫', v: 10, ttl: 300, tag: 'good' }, // loop7
   admire:    { text: '仰慕對方的功夫', v: 4, ttl: 200, tag: 'social' }, // loop6
   bedSleep:  { text: '睡在床上', v: 5, ttl: 300, tag: 'good' },
   floorSleep:{ text: '睡破地鋪', v: -5, ttl: 300, tag: 'bad' },
