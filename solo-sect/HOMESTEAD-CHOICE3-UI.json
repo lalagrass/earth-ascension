@@ -1,0 +1,187 @@
+{
+  "engine": "154.0.8037.57",
+  "route": "normal UI zero grants; pause/4x/16x; AI not human",
+  "events": [
+    {
+      "name": "three-existing-projects",
+      "t": 100.75,
+      "hunger": 50.895000000001374,
+      "energy": 26.349999999999994,
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "rows": [
+        {
+          "id": "store",
+          "number": 5,
+          "name": "儲物棚",
+          "status": "仍需備木",
+          "color": "#8a6b35",
+          "priority": false,
+          "bounds": [
+            493,
+            410,
+            124,
+            87
+          ],
+          "text": "儲物棚 · 仍需備木 · 木已交0/4、在途0；施工0/10"
+        },
+        {
+          "id": "bench",
+          "number": 6,
+          "name": "屋前長凳",
+          "status": "已暫停",
+          "color": "#69757b",
+          "priority": false,
+          "bounds": [
+            318,
+            387,
+            68,
+            36
+          ],
+          "text": "屋前長凳 · 已暫停 · 木已交0/2、在途0；施工0/8"
+        },
+        {
+          "id": "flowers",
+          "number": 7,
+          "name": "庭院花叢",
+          "status": "仍需備木",
+          "color": "#8a6b35",
+          "priority": true,
+          "bounds": [
+            297,
+            274,
+            87,
+            39
+          ],
+          "text": "庭院花叢 · 仍需備木 · 已選優先 · 木已交0/3、在途0；施工0/10"
+        }
+      ],
+      "focus": "flowers"
+    },
+    {
+      "name": "current-paused-waiting",
+      "t": 141.75,
+      "hunger": 45.155000000001934,
+      "energy": 80.05,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "rows": [
+        {
+          "id": "store",
+          "number": 5,
+          "name": "儲物棚",
+          "status": "仍需備木",
+          "color": "#8a6b35",
+          "priority": false,
+          "bounds": [
+            493,
+            410,
+            124,
+            87
+          ],
+          "text": "儲物棚 · 仍需備木 · 木已交0/4、在途0；施工0/10"
+        },
+        {
+          "id": "bench",
+          "number": 6,
+          "name": "屋前長凳",
+          "status": "已暫停",
+          "color": "#69757b",
+          "priority": false,
+          "bounds": [
+            318,
+            387,
+            68,
+            36
+          ],
+          "text": "屋前長凳 · 已暫停 · 木已交0/2、在途0；施工0/8"
+        },
+        {
+          "id": "flowers",
+          "number": 7,
+          "name": "庭院花叢",
+          "status": "目前作業",
+          "color": "#3d6b46",
+          "priority": true,
+          "bounds": [
+            297,
+            274,
+            87,
+            39
+          ],
+          "text": "庭院花叢 · 目前作業 · 已選優先 · 木已交0/3、在途1；施工0/10"
+        }
+      ],
+      "focus": "flowers"
+    },
+    {
+      "name": "paused-last-project",
+      "t": 273,
+      "hunger": 52.780000000003724,
+      "energy": 33.95000000000024,
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "rows": [
+        {
+          "id": "bench",
+          "number": 6,
+          "name": "屋前長凳",
+          "status": "已暫停",
+          "color": "#69757b",
+          "priority": false,
+          "bounds": [
+            318,
+            387,
+            68,
+            36
+          ],
+          "text": "屋前長凳 · 已暫停 · 木已交0/2、在途0；施工0/8"
+        }
+      ],
+      "focus": null
+    },
+    {
+      "name": "all-finished",
+      "t": 347,
+      "hunger": 42.420000000004734,
+      "energy": 82.80000000000035,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "rows": [],
+      "focus": null
+    }
+  ],
+  "errors": []
+}

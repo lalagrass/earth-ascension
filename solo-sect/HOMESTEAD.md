@@ -2,7 +2,9 @@
 
 **H9–H26累積成果已推送至隔離分支。** [已驗遠端版本、來源再評審與僅下一個真人／環境驗證計畫](HOMESTEAD-PUBLICATION.md)。沒有PR或dev/main整合。
 
-**最新本地切片為H31–H36三輪建設感。** [事前規格與逐輪回顧](HOMESTEAD-THREE-ROUNDS.md)、[完整驗收／來源／真圖](HOMESTEAD-CONSTRUCTION-REVIEW.md)、[真人腳本](HOMESTEAD-CONSTRUCTION-PLAYTEST.md)。固定地塊預覽、真工量成形、場景檢視／控制與真物流方向；沒有自由選址或新導航。三輪完成即停，本輪未push。
+**最新本地切片為新的H37–H39三輪。** [逐輪規格與結果](HOMESTEAD-CHOICES-ROUNDS.md)、[完整驗收／來源／真圖](HOMESTEAD-CHOICES-REVIEW.md)、[真人腳本](HOMESTEAD-CHOICES-PLAYTEST.md)。成品前後圖、三種已有木作成形與多工程編號一覽；本輪未push，第三個新回合完成即停。
+
+**H31–H36三輪建設感已完成。** [事前規格與逐輪回顧](HOMESTEAD-THREE-ROUNDS.md)、[完整驗收／來源／真圖](HOMESTEAD-CONSTRUCTION-REVIEW.md)、[真人腳本](HOMESTEAD-CONSTRUCTION-PLAYTEST.md)。固定地塊預覽、真工量成形、場景檢視／控制與真物流方向；沒有自由選址或新導航。三輪完成即停，本輪未push。
 
 **H29–H30小家樣貌已完成。** [事前規格](HOMESTEAD-H29-H30.md)、[結果／驗收／真圖](HOMESTEAD-H30-REVIEW.md)、[真人腳本](HOMESTEAD-H30-PLAYTEST.md)。可逆屋舍配色與安全中文家名，純外觀、不耗資源；本輪未push。下一輪僅提案：[世紀帝國建設感](HOMESTEAD-CONSTRUCTION-NEXT.md)。
 

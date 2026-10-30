@@ -1,3 +1,4 @@
+import {projectRows,projectAt} from './homestead-projects.mjs';
 import {facilityModelView,modelCrop} from './homestead-model.mjs';
 import {blueprintInfo,inspectionInfo,plotAt,constructionRoute,siteMaterials,siteStages} from './homestead-construction.mjs';
 import {HOME_STYLES,normalizeHomeName,homeLook,setHomeLook} from './homestead-look.mjs';
@@ -20,6 +21,9 @@ document.addEventListener('pointerdown', () => {pointerHeld=true;});
 for (const event of ['pointerup','pointercancel']) document.addEventListener(event, () => {pointerHeld=false;});
 window.addEventListener('blur', () => {pointerHeld=false;});
 let inspected=null;
+function renderProjects(){const rows=projectRows(s);$('project-overview').hidden=s.mode!=='solo';$('project-count').textContent=`已立工程 ${rows.length}項${rows.length?`（暫停${rows.filter(r=>r.status==='已暫停').length}項）`:''}`;$('project-rows').innerHTML=rows.length?rows.map(r=>`<button data-inspect="${r.id}" ${inspected===r.id?'aria-current="true"':''}>查看 #${r.number} ${r.text}</button>`).join(''):'<p class="muted">目前沒有工程，安穩生活也可以；想改善時再預覽建造。</p>';}
+$('project-rows').onclick=e=>{const b=e.target.closest('[data-inspect]');if(!b)return;inspected=b.dataset.inspect;closeBlueprint();render();$('site-select').focus({preventScroll:true});};
+$('project-markers').onchange=draw;
 function renderInspection(){const ids=BUILDABLE.filter(id=>id==='hut'||s.fac.hut.stage>0).filter(id=>s.mode==='solo'||!['bed','workbench'].includes(id));const html='<option value="">選一個地塊</option>'+ids.map(id=>`<option value="${id}">${FACILITIES[id].label}</option>`).join('');if($('site-select').innerHTML!==html)$('site-select').innerHTML=html;if(!ids.includes(inspected))inspected=null;$('site-select').value=inspected||'';const q=inspectionInfo(s,inspected);$('site-inspector').hidden=!q;if(!q)return;const route=constructionRoute(s,inspected),m=siteMaterials(s,inspected),stages=siteStages(s,inspected);$('site-materials').hidden=!m;$('site-materials').textContent=m?`庫存可用（共用）${m.available}木 ｜ 工地已交${m.delivered}木 ｜ 在途（已離庫）${m.reserved}木 ｜ 尚待運${m.needed}木`:'';$('site-stages').innerHTML=stages.labels.map((name,i)=>`<li ${i===stages.index?'aria-current="step"':''}>${i<stages.index?'✓ ':i===stages.index?'目前：':''}${name}</li>`).join('');$('site-flow').textContent=route?`${route.text}。線顯示既有任務的直線方向，不是新導航或可走路徑驗證。`:s.person.task?.act==='return'&&s.person.carry?.kind==='wood'?`主角另有${s.person.carry.amount}木正在返倉，未算作此地預約；沒有此地在途方向。`:'目前沒有前往這個工地的行走任務；原地工作、吃睡或其他工作不畫假路線。';$('site-title').textContent=q.name;$('site-info').textContent=q.text;$('site-pause').hidden=$('site-focus').hidden=!q.site||s.mode!=='solo';$('site-pause').textContent=q.paused?'繼續工程':'暫停工程';$('site-focus').disabled=!!q.paused;$('site-focus').textContent=s.focusProject===inspected?'取消優先（照常做）':'這項先做';}
 $('route-lines').onchange=draw;
 $('site-select').onchange=()=>{inspected=$('site-select').value||null;closeBlueprint();render();};
@@ -27,7 +31,7 @@ $('site-close').onclick=()=>{inspected=null;render();$('site-select').focus();};
 document.querySelector('.plot-controls').onkeydown=e=>{if(e.key==='Escape'&&inspected&&!e.defaultPrevented){e.preventDefault();$('site-close').click();}};
 $('site-pause').onclick=()=>{if(inspected&&s.fac[inspected].site){pauseProject(s,inspected,!s.fac[inspected].site.paused);render();}};
 $('site-focus').onclick=()=>{if(inspected){setProjectFocus(s,s.focusProject===inspected?null:inspected);render();}};
-$('land').onclick=e=>{const r=$('land').getBoundingClientRect(),c=getComputedStyle($('land')),bx=parseFloat(c.borderLeftWidth),by=parseFloat(c.borderTopWidth),x=(e.clientX-r.left-bx)*900/(r.width-2*bx),y=(e.clientY-r.top-by)*560/(r.height-2*by);inspected=plotAt(s,x,y);closeBlueprint();render();if(inspected)$('site-select').focus({preventScroll:true});};
+$('land').onclick=e=>{const r=$('land').getBoundingClientRect(),c=getComputedStyle($('land')),bx=parseFloat(c.borderLeftWidth),by=parseFloat(c.borderTopWidth),x=(e.clientX-r.left-bx)*900/(r.width-2*bx),y=(e.clientY-r.top-by)*560/(r.height-2*by);inspected=($('project-markers').checked?projectAt(s,x,y,16/Math.max(.1,$('land').clientWidth/900)):null)||plotAt(s,x,y);closeBlueprint();render();if(inspected)$('site-select').focus({preventScroll:true});};
 let blueprintDraft=null;
 function closeBlueprint(){blueprintDraft=null;$('blueprint-preview').hidden=true;draw();}
 function renderBlueprint(){const d=blueprintDraft;$('blueprint-preview').hidden=!d;if(!d)return;renderModels(d);const q=blueprintInfo(s,d.id,d.stage);$('blueprint-info').textContent=`${q.name}：木${q.cost}，庫存可用${q.available}，尚缺${q.shortage}。${q.effect}。${q.reason?q.reason+'。':'可在此立計畫；木料由主角逐根搬到工地，不在確認時扣料。'}${q.craft?'部件在木作台加工後搬回屋內安裝。':''}`;$('blueprint-confirm').disabled=!q.ok;}
@@ -91,12 +95,12 @@ $('build').onclick = (e) => { const preview=e.target.closest('[data-preview]');i
 $('community').onclick = (e) => { const b = e.target.closest('[data-social]'); if (!b) return; const action = { invite: inviteHelper, apprentice: acceptApprentice, leave: askHelperLeave }[b.dataset.social]; if (action?.(s)) show('已記入荒居紀事。'); render(); };
 $('helper-orders').onclick = (e) => { const b = e.target.closest('[data-helper]'); if (b) { setHelperOrder(s, b.dataset.helper === 'auto' ? null : b.dataset.helper); render(); } };
 
-function draw() { if(s) drawHomestead(ctx,s,lookDraft,blueprintDraft,inspected,$('route-lines').checked); }
+function draw() { if(s) drawHomestead(ctx,s,lookDraft,blueprintDraft,inspected,$('route-lines').checked,false,$('project-markers').checked,16/Math.max(.1,$('land').clientWidth/900)); }
 function render() {
   if (!s || pointerHeld) return;
-  const focused = document.activeElement; const focusSelector = focused?.id ? '#' + CSS.escape(focused.id) : ['act','recipe','eat','build','preview','focus','project','social','helper'].find(k => focused?.dataset?.[k]) ? Object.entries(focused.dataset).map(([k,v]) => `[data-${k}="${CSS.escape(v)}"]`).join('') : null;
+  const focused = document.activeElement; const focusSelector = focused?.id ? '#' + CSS.escape(focused.id) : ['act','recipe','eat','build','preview','inspect','focus','project','social','helper'].find(k => focused?.dataset?.[k]) ? Object.entries(focused.dataset).map(([k,v]) => `[data-${k}="${CSS.escape(v)}"]`).join('') : null;
   const p = s.person, task = p.task;
-  renderInspection();renderBlueprint();
+  renderInspection();renderProjects();renderBlueprint();
   $('time').textContent = `第 ${s.day} 日 · ${Math.floor((s.t % DAY) / DAY * 24).toString().padStart(2, '0')}:00`;
   const feeling=currentFeelings(s);
   const target = supplyTargets(s), resources=resourceSummary(s);
@@ -133,7 +137,7 @@ function render() {
   $('helper-orders').innerHTML = h ? `<div>${esc(h.name)}：飢餓 ${Math.round(h.hunger)} · 精力 ${Math.round(h.energy)} · 雜務 ${Math.floor(h.work)} · 識藥 ${h.herbalSkill} · ${esc(activityText(s,h))}</div>${helperReason ? `<div class="blocked">派工暫停：${esc(helperReason)}</div>` : ''}<div class="row">${[['auto', '自主'], ['chop', '砍柴'], ['farm', '菜園'], ...(v.role === 'apprentice' ? [['herbFarm', '藥田']] : [])].map(([id, label]) => `<button data-helper="${id}" class="${h.order === (id === 'auto' ? null : id) ? 'active' : ''}" ${(id === 'farm' && !offers(s, 'garden', 'farm')) || (id === 'herbFarm' && !offers(s, 'herbGarden', 'herbFarm')) ? 'disabled' : ''}>${label}</button>`).join('')}</div>` : '<div class="muted">目前獨居；可一直維持這樣。</div>';
   $('home-history').textContent = Object.keys(s.fac).filter(id=>s.fac[id].stage>0).map(id=>`✓ ${FACILITIES[id].stages[s.fac[id].stage].name}`).join(' · ') || '第一間屋還在等你落腳。';
   $('log').innerHTML = s.log.slice(0, 9).map((x) => `<li>第${x.day}日 · ${esc(x.msg)}</li>`).join(''); draw();
-  if (focusSelector && !focused.isConnected) document.querySelector(focusSelector)?.focus({preventScroll:true});
+  if(focusSelector&&!focused.isConnected){const target=document.querySelector(focusSelector);if(target)target.focus({preventScroll:true});else if(focused?.dataset?.inspect)$('site-select').focus({preventScroll:true});}
 }
 function loop(now) {
   if (s && speed) { acc += Math.min(0.1, (now - last) / 1000) * speed; let n = 0; while (acc >= .25 && n++ < 16) { tickHomestead(s); acc -= .25; } }
