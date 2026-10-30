@@ -4,7 +4,7 @@
   "events": [
     {
       "name": "first house, no grants",
-      "wallSeconds": 6.718,
+      "wallSeconds": 6.763,
       "t": 100.75,
       "day": 1,
       "look": {
@@ -46,7 +46,7 @@
     },
     {
       "name": "keyboard apply after preview cancel",
-      "wallSeconds": 7.538,
+      "wallSeconds": 7.675,
       "t": 100.75,
       "day": 1,
       "look": {
@@ -88,7 +88,7 @@
     },
     {
       "name": "draft excluded from existing save/load",
-      "wallSeconds": 8.322,
+      "wallSeconds": 8.709,
       "t": 100.75,
       "day": 1,
       "look": {
@@ -130,7 +130,7 @@
     },
     {
       "name": "continued construction and autonomous leisure",
-      "wallSeconds": 43.883,
+      "wallSeconds": 44.298,
       "t": 669.25,
       "day": 3,
       "look": {
@@ -172,7 +172,7 @@
     },
     {
       "name": "reset applied, no simulation mutation",
-      "wallSeconds": 45.083,
+      "wallSeconds": 45.437,
       "t": 669.25,
       "day": 3,
       "look": {
@@ -214,7 +214,7 @@
     },
     {
       "name": "page reload through existing save",
-      "wallSeconds": 45.233,
+      "wallSeconds": 45.583,
       "t": 669.25,
       "day": 3,
       "look": {
@@ -263,12 +263,12 @@
     },
     {
       "style": "moss",
-      "changed": 7518,
+      "changed": 7906,
       "outside": 0
     },
     {
       "style": "ochre",
-      "changed": 7510,
+      "changed": 7898,
       "outside": 0
     }
   ],

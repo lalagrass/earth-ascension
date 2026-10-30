@@ -2,7 +2,9 @@
 
 **H9–H26累積成果已推送至隔離分支。** [已驗遠端版本、來源再評審與僅下一個真人／環境驗證計畫](HOMESTEAD-PUBLICATION.md)。沒有PR或dev/main整合。
 
-**最新本地切片為H27–H28自主生活。** [事前規格與來源](HOMESTEAD-H27-H28.md)、[結果／驗收](HOMESTEAD-H28-REVIEW.md)、[正常短流程／真人腳本](HOMESTEAD-H28-PLAYTEST.md)。可選平日補餐做法及下一個優先工地，保留求生與手動控制；本輪未push，已發布的H26分支仍完整保留。
+**最新本地切片為H29–H30小家樣貌。** [事前規格](HOMESTEAD-H29-H30.md)、[結果／驗收／真圖](HOMESTEAD-H30-REVIEW.md)、[真人腳本](HOMESTEAD-H30-PLAYTEST.md)。可逆屋舍配色與安全中文家名，純外觀、不耗資源；本輪未push。下一輪僅提案：[世紀帝國建設感](HOMESTEAD-CONSTRUCTION-NEXT.md)。
+
+**H27–H28自主生活已完成。** [事前規格與來源](HOMESTEAD-H27-H28.md)、[結果／驗收](HOMESTEAD-H28-REVIEW.md)、[正常短流程／真人腳本](HOMESTEAD-H28-PLAYTEST.md)。可選平日補餐做法及下一個優先工地，保留求生與手動控制；本輪未push，已發布的H26分支仍完整保留。
 
 **最新方向：先獨居求生、把自己過好。** 見 [產品方向與現有差異](HOMESTEAD-DIRECTION.md)。既有阿蓮／學徒內容仍在，尚未刪改；後續不再擴社交，也不以招募作生活改善門檻。該方向更新為歷史節點，現行已批准實作見上方本輪文件。
 

@@ -40,7 +40,7 @@ export function drawHomestead(g,s,preview) {
   g.fillStyle=palette.roof[hut.stage-1];g.beginPath();g.moveTo(350,183);g.lineTo(444,113);g.lineTo(537,183);g.closePath();g.fill();
   if(hut.stage===1){for(let i=0;i<7;i++)line([[370+i*11,176],[442+i*5,128]],'#a18a5666',3);}else{
    for(let y=139;y<182;y+=11)line([[444-(y-113)*1.32,y],[444+(y-113)*1.32,y]],'#573d33',2);
-   rect(367,179,152,7,palette.trim);rect(388,203,23,24,'#e7d6a2');rect(478,203,23,24,'#e7d6a2');line([[399,203],[399,227]],'#866b49',2);line([[489,203],[489,227]],'#866b49',2);rect(415,277,60,8,'#baaa8c');
+   rect(367,179,152,7,palette.trim);rect(388,203,23,24,'#e7d6a2');rect(478,203,23,24,'#e7d6a2');line([[399,203],[399,227]],look.style==='natural'?'#866b49':palette.trim,2);line([[489,203],[489,227]],look.style==='natural'?'#866b49':palette.trim,2);if(look.style!=='natural')for(const x of[388,478])line([[x,227],[x,203],[x+23,203],[x+23,227]],palette.trim,2);rect(415,277,60,8,'#baaa8c');
   }
   if(s.fac.bed?.stage){rect(420,205,44,23,'#6c533c');rect(422,206,40,16,s.fac.bed.stage===2?'#9db8c2':'#e5dbbf');rect(422,207,11,13,'#f2ead4');if(s.fac.bed.stage===2)rect(451,207,10,13,'#f2ead4');}
   rect(431,225,30,56,'#493728');circle(455,252,2,'#d5b17d');

@@ -10,6 +10,6 @@ export function normalizeHomeName(value){
  const name=value.normalize('NFC').trim();
  return Array.from(name).length<=12&&(!name||/^[\p{L}\p{N}][\p{L}\p{M}\p{N} ·・－-]*$/u.test(name))?name:null;
 }
-export function validHomeLook(v){return !!v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===2&&Object.hasOwn(v,'name')&&typeof v.name==='string'&&normalizeHomeName(v.name)===v.name&&typeof v.style==='string'&&Object.hasOwn(HOME_STYLES,v.style);}
+export function validHomeLook(v){return !!v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===2&&Object.hasOwn(v,'style')&&Object.hasOwn(v,'name')&&typeof v.name==='string'&&normalizeHomeName(v.name)===v.name&&typeof v.style==='string'&&Object.hasOwn(HOME_STYLES,v.style);}
 export function homeLook(s,preview){return s.mode==='solo'&&validHomeLook(preview??s.look)?(preview??s.look):defaultHomeLook();}
 export function setHomeLook(s,v){if(s.mode!=='solo'||!s.fac.hut.stage||!validHomeLook(v))return false;s.look={...v};return true;}
