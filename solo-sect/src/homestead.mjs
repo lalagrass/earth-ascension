@@ -151,13 +151,13 @@ export function setProjectFocus(s,id){
  if(s.mode!=='solo'||id!==null&&(!BUILDABLE.includes(id)||!s.fac[id]?.site||s.fac[id].site.paused))return false;
  s.focusProject=id;return true;
 }
-export function deferAutonomyGoal(s){
- const a=s.autonomy;if(!a?.goal)return false;const id=goalStep(s);
- const t=s.person.task,owned=!s.person.order&&(a.goal==='herbs'&&['herbal','herbFarm'].includes(t?.act)||a.goal==='stew'&&t?.act==='cook'&&t.recipe==='stew'&&!t.manual||a.goal==='personalize'&&t?.act==='settle');
- if(t?.trial||owned)cancelTask(s);
+export function deferAutonomyGoal(s,goal=s.autonomy?.goal||s.autonomy?.waiting?.goal){
+ const a=s.autonomy;if(!a||!goal||goal!==a.goal&&goal!==a.waiting?.goal)return false;const id=goalStep(s,goal);
+ const t=s.person.task,owned=!s.person.order&&(goal==='herbs'&&['herbal','herbFarm'].includes(t?.act)||goal==='stew'&&t?.act==='cook'&&t.recipe==='stew'&&!t.manual||goal==='personalize'&&t?.act==='settle');
+ if(t?.trial&&goal==='comfort'||owned)cancelTask(s);
  if(id&&s.fac[id].site)pauseProject(s,id,true);
- if(!a.deferred.includes(a.goal))a.deferred.push(a.goal);
- a.goal=null;return true;
+ if(!a.deferred.includes(goal))a.deferred.push(goal);
+ if(a.goal===goal)a.goal=null;if(a.waiting?.goal===goal)a.waiting=null;return true;
 }
 export function allowAutonomyGoals(s){if(!s.autonomy)return false;s.autonomy.deferred=[];return true;}
 export function setHelperOrder(s, act) {
@@ -507,7 +507,7 @@ export function loadHomestead(json) {
     s.autonomy ??= null;
     if(s.autonomy&&s.autonomy.warmMeals===undefined)s.autonomy.warmMeals=0;
     if(s.autonomy&&s.autonomy.comfortRests===undefined)s.autonomy.comfortRests=0;
-    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;s.autonomy.direction??='auto';s.autonomy.deferred??=[];s.autonomy.limit??=Math.max(2,s.autonomy.completed.filter(id=>['comfort','porch','pantry'].includes(id)).length);s.autonomy.journal??=s.autonomy.completed.map(goal=>({goal,at:null}));s.autonomy.tastes??=freshTastes();s.autonomy.interestLimit??=2;s.autonomy.herbHarvests??=0;s.autonomy.careUses??=0;s.autonomy.leisure??=freshLeisure();s.autonomy.lookOwnership??='preserved';}
+    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;s.autonomy.direction??='auto';s.autonomy.deferred??=[];s.autonomy.limit??=Math.max(2,s.autonomy.completed.filter(id=>['comfort','porch','pantry'].includes(id)).length);s.autonomy.journal??=s.autonomy.completed.map(goal=>({goal,at:null}));s.autonomy.tastes??=freshTastes();s.autonomy.interestLimit??=2;s.autonomy.herbHarvests??=0;s.autonomy.careUses??=0;s.autonomy.leisure??=freshLeisure();s.autonomy.lookOwnership??='preserved';s.autonomy.waiting??=null;if(s.autonomy.replanAt===undefined)s.autonomy.replanAt=0;}
     if(s.autonomy&&s.autonomy.experience===undefined)s.autonomy.experience={hunger:0,fatigue:0,effort:0,lastWork:s.person.work};
     if(s.autonomy){s.person.orderScope??='repeat';s.person.onceProject??=null;s.person.onceDelivery??=false;s.person.leisureRequest??=null;}
     if(!validOrderScope(s))return {ok:false,error:'一次指派資料不合法'};

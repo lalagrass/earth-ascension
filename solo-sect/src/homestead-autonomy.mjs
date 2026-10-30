@@ -4,7 +4,7 @@ import {freshTastes,validTastes} from './homestead-autonomy-meals.mjs';
 // Runtime-only rule lookup, like the existing display adapters; no top-level access.
 import {FACILITIES} from './homestead.mjs';
 import {skillLevel} from './homestead-skills.mjs';
-import {buildAccess,BUILD_GATES} from './homestead-content.mjs';
+import {buildAccess,BUILD_GATES,recipeAccess,preparedCount} from './homestead-content.mjs';
 // Plans describe intentions. Only the existing executor changes world resources.
 export const GOALS={
  shelter:{name:'蓋第一間木屋',done:s=>s.fac.hut.stage>=1,step:()=> 'hut'},
@@ -18,10 +18,10 @@ export const GOALS={
 };
 export const DIRECTIONS={auto:'自行打算',steady:'先穩定吃住',comfort:'住得舒服',frugal:'少耗材料'};
 export const PREFERENCES={quiet:{comfort:6,porch:5,pantry:2},sociable:{comfort:4,porch:6,pantry:2},diligent:{comfort:5,porch:2,pantry:6}};
-export const freshAutonomy = () => ({version:1, goal:null, since:0, completed:[], warmMeals:0, comfortRests:0,herbHarvests:0,careUses:0,lookOwnership:'unclaimed',recess:false, breaks:0,direction:'auto',deferred:[],limit:2,interestLimit:2,journal:[],tastes:freshTastes(),leisure:freshLeisure(),experience:{hunger:0,fatigue:0,effort:0,lastWork:0}});
+export const freshAutonomy = () => ({version:1, goal:null, since:0,waiting:null,replanAt:0, completed:[], warmMeals:0, comfortRests:0,herbHarvests:0,careUses:0,lookOwnership:'unclaimed',recess:false, breaks:0,direction:'auto',deferred:[],limit:2,interestLimit:2,journal:[],tastes:freshTastes(),leisure:freshLeisure(),experience:{hunger:0,fatigue:0,effort:0,lastWork:0}});
 export function validAutonomy(a,mode,t=Infinity,work=Infinity){
  return a===null || mode==='solo' && a && a.version===1 &&
- (a.goal===null||Object.hasOwn(GOALS,a.goal)) && Number.isFinite(a.since) && a.since>=0 && a.since<=t &&
+ (a.goal===null||Object.hasOwn(GOALS,a.goal)) && validWaiting(a,t) && Number.isFinite(a.since) && a.since>=0 && a.since<=t &&
  Array.isArray(a.completed) && a.completed.length<=Object.keys(GOALS).length && new Set(a.completed).size===a.completed.length && a.completed.every(x=>Object.hasOwn(GOALS,x)) && Number.isSafeInteger(a.warmMeals) && a.warmMeals>=0 && Number.isSafeInteger(a.comfortRests) && a.comfortRests>=0 && Number.isInteger(a.herbHarvests)&&a.herbHarvests>=0&&a.herbHarvests<=100 && Number.isInteger(a.careUses)&&a.careUses>=0&&a.careUses<=100 && LOOK_OWNERS.includes(a.lookOwnership) && validLeisure(a.leisure,t)&&[2,3].includes(a.interestLimit)&&validTastes(a.tastes)&&[2,3].includes(a.limit)&&Array.isArray(a.journal)&&a.journal.length<=a.completed.length&&new Set(a.journal.map(x=>x?.goal)).size===a.journal.length&&a.journal.every(x=>x&&a.completed.includes(x.goal)&&(x.at===null||Number.isFinite(x.at)&&x.at>=0&&x.at<=t))&&typeof a.direction==='string'&&Object.hasOwn(DIRECTIONS,a.direction)&&Array.isArray(a.deferred)&&a.deferred.length<=Object.keys(GOALS).length&&new Set(a.deferred).size===a.deferred.length&&a.deferred.every(id=>Object.hasOwn(GOALS,id))&&typeof a.recess==='boolean' && Number.isSafeInteger(a.breaks)&&a.breaks>=0 && a.experience && ['hunger','fatigue','effort'].every(k=>Number.isFinite(a.experience[k])&&a.experience[k]>=0&&a.experience[k]<=3) && Number.isFinite(a.experience.lastWork)&&a.experience.lastWork>=0&&a.experience.lastWork<=work;
 }
 export function observeAutonomy(s,dt){
@@ -43,13 +43,21 @@ export function goalCandidates(s){
 export function advanceAutonomy(s,api){
  const a=s.autonomy;if(!a)return;
  if(a.goal==='stew'&&!['auto','stew'].includes(s.mealStyle))a.goal=null;
+ if(a.waiting?.goal==='stew'&&!['auto','stew'].includes(s.mealStyle))a.waiting=null;
  if(a.goal==='personalize'&&a.lookOwnership==='preserved')a.goal=null;
  if(a.goal==='herbs'&&((s.herbPlot.state==='empty'&&s.stock.herbs>3)||(s.herbPlot.state==='ripe'&&!api.can('herbFarm')&&s.stock.herbs>3)))a.goal=null;
+ if(a.waiting&&(a.deferred.includes(a.waiting.goal)||GOALS[a.waiting.goal].done(s)))a.waiting=null;
  const finished=a.goal&&GOALS[a.goal].done(s);
  for(const [goal,g] of Object.entries(GOALS))if(g.done(s)&&!a.completed.includes(goal)){a.completed.push(goal);a.journal.push({goal,at:s.t});}
  if(finished){a.goal=null;a.recess=true;}
  if(a.recess)return 'leisure';
- if(!a.goal){a.goal=!s.fac.hut.stage?(a.deferred.includes('shelter')?null:'shelter'):!GOALS.hotFood.done(s)&&!a.deferred.includes('hotFood')?'hotFood':improvementCount(s)<a.limit?goalCandidates(s)[0]?.id||null:interestCount(s)<a.interestLimit?interestCandidates(s)[0]?.id||null:null;a.since=s.t;}
+ if(!a.goal&&a.waiting&&!waitingReason(s,a.waiting.goal)){a.goal=a.waiting.goal;a.waiting=null;a.since=s.t;}
+ if(!a.goal){a.goal=chooseDevelopment(s,api,!!a.waiting);a.since=s.t;}
+ if(a.goal&&waitingReason(s,a.goal)&&s.t>=a.replanAt){
+  a.replanAt=s.t+15;
+  if(a.waiting&&!waitingReason(s,a.waiting.goal)){const old=a.goal;a.goal=a.waiting.goal;a.waiting={goal:old,since:s.t};a.since=s.t;}
+  else if(!a.waiting){const next=chooseDevelopment(s,api,true,a.goal);if(next){a.waiting={goal:a.goal,since:s.t};a.goal=next;a.since=s.t;}}
+ }
  if(!a.goal)return;
  const id=goalStep(s);
  if(id&&!s.fac[id].site&&!planBlock(s))api.start(id);
@@ -60,8 +68,8 @@ export function advanceAutonomy(s,api){
 }
 const labels={herbGarden:'開藥圃',hut:'修屋',garden:'開菜園',kitchen:'搭灶／改善灶具',bed:'製作床鋪',workbench:'搭木作台',store:'搭儲物棚',bench:'做屋前長凳',flowers:'整理庭院花叢'};
 // A missing skill is solved only by other still-useful, real construction.
-export function goalStep(s){
- const goal=s.autonomy?.goal;if(!goal)return null;
+export function goalStep(s,goal=s.autonomy?.goal){
+ if(!goal)return null;
  const id=GOALS[goal].step(s);if(!id)return null;
  const gate=BUILD_GATES[`${id}:${s.fac[id].stage+1}`]||BUILD_GATES[id];
  if(gate&&skillLevel(s,'build')<gate.level){
@@ -83,6 +91,7 @@ export function planBlock(s){
 }
 export function autonomyText(s){
  const a=s.autonomy;if(!a)return '';
+ if(!a.goal&&a.waiting)return waitingText(s)+' 先維持吃睡與可用的休憩。';
  if(a.recess)return `剛完成${GOALS[a.completed.at(-1)]?.name||'一段工作'}；${s.fac.bench.stage?'到長凳坐一會':'在屋前看雲片刻'}，這次休憩結束後再繼續改善生活。`;
  if(!a.goal&&a.deferred.length)return `你已暫緩：${a.deferred.map(id=>GOALS[id].name).join('、')}。可維持生活；允許重新考慮也不會偷偷恢復暫停工程。`;
  if(!a.goal&&improvementCount(s)>=a.limit)return '已安居：主要生活打算完成，維持吃睡與喜歡的休憩。還有未做的可選改善，但不必蓋滿；想再經營可改生活方向或自行預覽工程。';
@@ -99,7 +108,7 @@ export function remainingWood(s,id){
  const routes={comfort:{hut:2,bed:2,workbench:1},porch:{bench:1,flowers:1},pantry:{store:1,kitchen:2}};
  let n=0;for(const [key,target] of Object.entries(routes[id]||{})){for(let stage=s.fac[key].stage+1;stage<=target;stage++)n+=FACILITIES[key].stages[stage].cost.wood;const site=s.fac[key].site;if(site)n-=(site.delivered.wood||0)+(site.reserved.wood||0);}return Math.max(0,n);
 }
-export function setAutonomyDirection(s,id){if(!s.autonomy||!Object.hasOwn(DIRECTIONS,id))return false;if(s.autonomy.direction!==id){s.autonomy.direction=id;if(improvementCount(s)>=s.autonomy.limit)s.autonomy.limit=3;if(interestCount(s)>=s.autonomy.interestLimit)s.autonomy.interestLimit=3;s.autonomy.goal=null;}return true;}
+export function setAutonomyDirection(s,id){if(!s.autonomy||!Object.hasOwn(DIRECTIONS,id))return false;if(s.autonomy.direction!==id){s.autonomy.direction=id;if(improvementCount(s)>=s.autonomy.limit)s.autonomy.limit=3;if(interestCount(s)>=s.autonomy.interestLimit)s.autonomy.interestLimit=3;s.autonomy.goal=null;s.autonomy.waiting=null;}return true;}
 
 export const improvementCount=s=>['comfort','porch','pantry'].filter(id=>GOALS[id].done(s)).length;
 export function lifeStage(s){if(!s.autonomy)return '原生活模式';if(!s.fac.hut.stage)return '落腳';if(!s.autonomy.warmMeals)return '溫飽';const n=improvementCount(s);return n>=s.autonomy.limit&&(!s.autonomy.goal||!['shelter','hotFood','comfort','porch','pantry'].includes(s.autonomy.goal))?'安居':n?'自己的小家':'改善';}
@@ -114,3 +123,32 @@ export function interestCandidates(s){
  for(const c of result)if(a.direction==='steady'&&c.id==='stew'||a.direction==='comfort'&&c.id==='herbs'||a.direction==='frugal'&&c.id==='personalize')c.score+=12;
  return result.sort((a,b)=>b.score-a.score);
 }
+
+function validWaiting(a,t){return Number.isFinite(a.replanAt)&&a.replanAt>=0&&a.replanAt<=t+15&&(a.waiting===null||a.waiting&&Object.hasOwn(GOALS,a.waiting.goal)&&a.waiting.goal!==a.goal&&Number.isFinite(a.waiting.since)&&a.waiting.since>=0&&a.waiting.since<=t&&!a.deferred?.includes(a.waiting.goal));}
+export function waitingReason(s,goal){
+ if(!goal||GOALS[goal].done(s))return null;const id=goalStep(s,goal);
+ if(id&&s.fac[id].site?.paused)return '工程由你暫停，須由你恢復';
+ if(id){const gate=buildAccess(s,id,s.fac[id].stage+1);if(gate)return gate;}
+ if(goal==='herbs'&&s.fac.herbGarden.stage&&s.herbPlot.state==='growing')return '藥苗正在生長';
+ if(goal==='stew'&&!id){if(s.stock.stew>0&&s.person.hunger>=38)return '燉菜已備好，等真正需要用餐';if(preparedCount(s)>=2)return recipeAccess(s,'stew')?'已有飯可吃，等日常料理自然熟練，不為XP加做':'已有夠用飯菜，等下次需要補餐再試新做法';}
+ return null;
+}
+function productive(s,goal,api){
+ if(waitingReason(s,goal))return false;const id=goalStep(s,goal);
+ if(id)return !s.fac[id].site?.paused&&!buildAccess(s,id,s.fac[id].stage+1);
+ if(goal==='personalize')return s.autonomy.lookOwnership==='unclaimed';
+ if(goal==='herbs')return api.can('herbFarm')||!s.stock.herbs&&api.can('herbal');
+ if(goal==='comfort')return true;
+ if(goal==='stew'||goal==='hotFood')return preparedCount(s)<2&&(api.can('cook')||api.can('farm')||s.stock.wood<2&&api.can('chop'));
+ return false;
+}
+function chooseDevelopment(s,api,requireProductive=false,reserve=null){
+ const a=s.autonomy,held=reserve||a.waiting?.goal,allowed=id=>id!==held&&!a.deferred.includes(id)&&(!requireProductive||productive(s,id,api));
+ if(!s.fac.hut.stage)return allowed('shelter')?'shelter':null;
+ if(!GOALS.hotFood.done(s)&&allowed('hotFood'))return 'hotFood';
+ const houseReserve=held&&['comfort','porch','pantry'].includes(held)&&!GOALS[held].done(s)?1:0,interestReserve=held&&['stew','herbs','personalize'].includes(held)&&!GOALS[held].done(s)?1:0;
+ if(improvementCount(s)+houseReserve<a.limit){const next=goalCandidates(s).find(c=>allowed(c.id));if(next)return next.id;}
+ if(GOALS.hotFood.done(s)&&interestCount(s)+interestReserve<a.interestLimit){const next=interestCandidates(s).find(c=>allowed(c.id));if(next)return next.id;}
+ return null;
+}
+export function waitingText(s){const w=s.autonomy?.waiting;if(!w)return '';if(GOALS[w.goal].done(s))return `暫候打算：${GOALS[w.goal].name}已達成，下一次決策確認並移除暫候。`;return `暫候打算：${GOALS[w.goal].name}；${waitingReason(s,w.goal)||'條件已恢復，這一件告段落後接回'}。不會自動恢復你暫停的工地。`;}

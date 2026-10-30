@@ -1,7 +1,7 @@
 import{recoveryChoice}from'./homestead-autonomy-recovery.mjs';
 import{mealAimText}from'./homestead-autonomy-meals.mjs';
 import{deferAutonomyGoal,allowAutonomyGoals}from'./homestead.mjs';
-import{autonomyText,DIRECTIONS,setAutonomyDirection,lifeStage,autonomyHistory}from'./homestead-autonomy.mjs';
+import{autonomyText,DIRECTIONS,setAutonomyDirection,lifeStage,autonomyHistory,waitingText}from'./homestead-autonomy.mjs';
 import{renderMarkup}from'./homestead-dom.mjs';
 import{restComparisonText}from'./homestead-rest-view.mjs';
 import{householdActions,performHouseholdAction,householdActionHelp}from'./homestead-household-actions.mjs';
@@ -109,6 +109,7 @@ $('meal-style').onchange=()=>{setMealStyle(s,$('meal-style').value);render();};
 $('life-direction').innerHTML=Object.entries(DIRECTIONS).map(([id,name])=>`<option value="${id}">${name}</option>`).join('');
 $('life-direction').onchange=()=>{setAutonomyDirection(s,$('life-direction').value);render();};
 $('defer-goal').onclick=()=>{deferAutonomyGoal(s);render();};
+$('drop-waiting').onclick=()=>{deferAutonomyGoal(s,s.autonomy?.waiting?.goal);render();};
 $('allow-goals').onclick=()=>{allowAutonomyGoals(s);render();};
 $('clear').onclick = () => { setOrder(s, null); render(); };
 $('speed').onclick = (e) => { const b = e.target.closest('[data-speed]'); if (b) { speed = Number(b.dataset.speed); render(); } };
@@ -149,8 +150,9 @@ function render() {
   $('resource-top').textContent=`木料可用 ${resources.available.wood} · 料理共${preparedCount(s)}份（熱飯${s.stock.meal}／拌食${s.stock.salad||0}／燉菜${s.stock.stew||0}）／野果 ${s.stock.berries} · 種子 ${s.stock.seeds} · 青菜 ${s.stock.veg}`;
   $('resource-detail').textContent=`施工已交 ${resources.delivered} 木／運往工地 ${resources.reserved} 木（已離庫，不可再花）；待運${resources.needed}木，共用庫存尚缺${resources.shortage}木。回倉／採集在途：${resources.incoming.map(c=>`${{wood:'木',berries:'野果',veg:'菜',herbs:'藥'}[c.kind]}${c.amount}`).join('、')||'無'}。`;
   $('home-summary').textContent = `${s.autonomy?lifeStage(s)+' · ':''}${FACILITIES.hut.stages[s.fac.hut.stage].name} · ${s.helper ? '兩人同住' : '一人生活'} · 現成食物約 ${foodDays(s)} 日；自主夠用目標：料理${target.meal}份／果${target.berries}／菜${target.veg}／木${target.wood}／藥${target.herbs}（非容量限制，手動可多備）`;
-  $('next-step').textContent = (autonomyText(s)||nextStep(s))+(s.autonomy?' '+mealAimText(s):'');
+  $('next-step').textContent = (autonomyText(s)||nextStep(s))+(s.autonomy?' '+mealAimText(s)+' '+(s.autonomy.goal?waitingText(s):''):'');
   $('autonomy-controls').hidden=!s.autonomy;
+  $('drop-waiting').hidden=!s.autonomy?.waiting;
   $('order-mode').hidden=!s.autonomy;
   $('order-status').textContent=s.autonomy?`目前${p.order?`${p.orderScope==='once'?'一次':'持續'}指派：${ACTIONS[p.order].name}${p.onceProject?'（完整完成'+FACILITIES[p.onceProject].label+'工程）':''}${p.onceDelivery?'；正把這次成果搬回，放妥才完成':''}`:'沒有直接指派，照自己的打算生活'}。一次採集／收成包含搬回；建造是一項完整工程。一鍋／一份／休息本就一次。`:'';
   if(s.autonomy){$('life-direction').value=s.autonomy.direction;$('defer-goal').disabled=!s.autonomy.goal;$('allow-goals').disabled=!s.autonomy.deferred.length;}
