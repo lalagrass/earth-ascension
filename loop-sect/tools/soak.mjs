@@ -42,7 +42,9 @@ for (const scenario of SCENARIOS) {
   failures.push(...verdict.failures.map((f) => `[${scenario}] ${f}`));
 }
 if (failures.length) {
-  console.error(`\nFAIL ${failures.length}\n` + failures.slice(0, 20).join('\n'));
+  // 指標（不是逐種子的不變量）全部列出，tools/noise.mjs 靠這幾行判斷哪條沒過；逐種子的只列前 20 行。
+  const verdicts = failures.filter((f) => !/\] seed \d+:/.test(f)), perSeed = failures.filter((f) => /\] seed \d+:/.test(f));
+  console.error(`\nFAIL ${failures.length}\n` + [...verdicts, ...perSeed.slice(0, 20)].join('\n'));
   process.exit(1);
 }
 console.log(`\nOK ${SEEDS} seeds × ${DAYS} days × ${SCENARIOS.length} scenarios`);
