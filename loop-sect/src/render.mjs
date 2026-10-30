@@ -45,8 +45,6 @@ export function drawMap(ctx, map) {
       } else if (t === 'B') {
         ctx.fillStyle = '#5f8d4e';
         ctx.beginPath(); ctx.arc(px + 10, py + 11, 8, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#c23b4a';
-        for (let i = 0; i < 4; i++) ctx.fillRect(px + 5 + ((i * 5 + r * 7) % 10), py + 6 + ((i * 3) % 9), 3, 3);
       } else if (t === 'W') {
         ctx.strokeStyle = 'rgba(255,255,255,0.35)';
         ctx.beginPath(); ctx.moveTo(px + 3, py + 8 + r * 6); ctx.lineTo(px + 12, py + 6 + r * 6); ctx.stroke();
@@ -103,4 +101,53 @@ export function drawDaylight(ctx, w, h, hour, minute) {
   if (dark <= 0) return;
   ctx.fillStyle = `rgba(20,25,60,${dark.toFixed(3)})`;
   ctx.fillRect(0, 0, w, h);
+}
+
+// ---------- M2 物件、莓果、存糧、氣泡 ----------
+export function drawObjects(ctx, state) {
+  for (const o of state.objects) {
+    for (const [x, y] of o.slots) {
+      const px = x * TILE, py = y * TILE;
+      if (o.kind === 'bed') {
+        ctx.fillStyle = '#d9c9a3'; ctx.fillRect(px + 2, py + 3, 16, 14);
+        ctx.fillStyle = '#efe5cc'; ctx.fillRect(px + 3, py + 4, 6, 5);
+      } else if (o.kind === 'table') {
+        ctx.fillStyle = '#7a5a3a'; ctx.fillRect(px + 1, py + 1, 18, 18);
+      } else if (o.kind === 'hearth') {
+        ctx.fillStyle = '#5b5148'; ctx.beginPath(); ctx.arc(px + 10, py + 12, 9, 0, Math.PI * 2); ctx.fill();
+        const cooking = o.users.some(Boolean);
+        ctx.fillStyle = cooking ? '#f08a24' : '#3a3029';
+        ctx.beginPath(); ctx.arc(px + 10, py + 12, 5, 0, Math.PI * 2); ctx.fill();
+      } else if (o.kind === 'bench') {
+        ctx.fillStyle = '#8f9188'; ctx.fillRect(px + 1, py + 8, 18, 6);
+        ctx.fillRect(px + 3, py + 14, 3, 4); ctx.fillRect(px + 14, py + 14, 3, 4);
+      }
+    }
+  }
+  const h = state.objects.find((o) => o.kind === 'hearth');
+  const [hx, hy] = h.slots[0];
+  ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'left';
+  const label = `生莓 ${state.stock.raw}　熟飯 ${state.stock.meal}`;
+  ctx.fillStyle = 'rgba(255,250,240,0.85)'; ctx.fillRect(hx * TILE + 22, hy * TILE - 2, ctx.measureText(label).width + 8, 16);
+  ctx.fillStyle = '#5b2a1a'; ctx.fillText(label, hx * TILE + 26, hy * TILE + 10);
+  for (const b of state.bushes) {
+    ctx.fillStyle = '#c23b4a';
+    for (let i = 0; i < b.berries; i++) ctx.fillRect(b.x * TILE + 5 + (i % 2) * 7, b.y * TILE + 5 + Math.floor(i / 2) * 7, 4, 4);
+  }
+}
+
+export function drawBubbles(ctx, state) {
+  ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+  for (const p of state.people) {
+    const cx = p.x * TILE + TILE / 2, cy = p.y * TILE + TILE / 2;
+    if (p.carry > 0) {
+      ctx.fillStyle = '#c23b4a';
+      for (let i = 0; i < p.carry; i++) ctx.fillRect(cx + 6 + i * 3, cy - 2, 3, 3);
+    }
+    if (!p.bubble) continue;
+    const w = ctx.measureText(p.bubble.text).width + 10;
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = '#8a7b66'; ctx.lineWidth = 1;
+    ctx.fillRect(cx - w / 2, cy - 40, w, 16); ctx.strokeRect(cx - w / 2, cy - 40, w, 16);
+    ctx.fillStyle = '#5b2a1a'; ctx.fillText(p.bubble.text, cx, cy - 28);
+  }
 }

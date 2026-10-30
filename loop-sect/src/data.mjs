@@ -94,3 +94,50 @@ export const POIS = [
 ];
 
 export const NAMES = ['阿禾', '小滿', '石頭', '青竹', '墨言', '秋娘', '大牛', '雲生', '杏兒', '老顧'];
+
+// ---------- M2 需求與自主生活 ----------
+export const NEEDS = [
+  { id: 'food', label: '飽食' },
+  { id: 'energy', label: '精力' },
+  { id: 'social', label: '交流' },
+  { id: 'fun', label: '樂趣' },
+];
+export const NEED_DECAY = { food: 0.1, energy: 0.055, social: 0.06, fun: 0.05 };
+export const WALK_ENERGY = 0.02;
+export const FORCE = { food: 15, energy: 12 };   // 低於此值只顧自理
+export const NIGHT_FROM = 22;
+export const NIGHT_TO = 6;
+
+// 物件：可站在物件格上使用；slots 是可同時使用的位置。
+export const OBJECTS = [
+  { kind: 'bed', label: '地鋪', slots: [[28, 15]] },
+  { kind: 'bed', label: '地鋪', slots: [[30, 15]] },
+  { kind: 'bed', label: '地鋪', slots: [[32, 15]] },
+  { kind: 'table', label: '舊桌', slots: [[33, 19], [34, 19], [33, 20], [34, 20]] },
+  { kind: 'hearth', label: '灶', slots: [[34, 26]] },
+  { kind: 'bench', label: '溪邊石凳', slots: [[47, 14]] },
+  { kind: 'bench', label: '院中石凳', slots: [[29, 27]] },
+];
+export const BUSH_MAX = 4;
+export const BUSH_REGROW = 240;
+export const START_STOCK = { raw: 6, meal: 3 };
+export const MEAL_TARGET = 6;     // 飯少於此數才有人想煮
+export const COOK_RAW = 2;
+export const COOK_MEALS = 3;
+export const FORAGE_TAKE = 3;
+
+// 每種行動：持續 tick、每 tick 對需求的影響。
+export const ACTS = {
+  sleep: { label: '睡覺', dur: 480, per: { energy: 0.22 } },
+  sleepGround: { label: '席地而睡', dur: 480, per: { energy: 0.12 } },
+  eat: { label: '吃飯', dur: 20, per: { food: 3 } },
+  eatRaw: { label: '生吃莓果', dur: 10, per: { food: 1.5 } },
+  eatCarried: { label: '吃身上的莓果', dur: 10, per: { food: 1.5 } },
+  forage: { label: '採莓', dur: 25, per: { fun: 0.02 } },
+  deliver: { label: '放下莓果', dur: 3, per: {} },
+  cook: { label: '煮飯', dur: 40, per: { fun: 0.04 } },
+  chat: { label: '聊天', dur: 30, per: { social: 1.2, fun: 0.2 } },
+  sit: { label: '坐著發呆', dur: 40, per: { fun: 0.35, energy: 0.05 } },
+  wander: { label: '閒逛', dur: 0, per: {} },
+  idle: { label: '發呆', dur: 20, per: { fun: 0.02 } },
+};

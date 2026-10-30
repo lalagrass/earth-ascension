@@ -70,4 +70,25 @@ export const flows = [
       await shot('narrow');
     },
   },
+  {
+    name: 'm2-life',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="linghu"]');
+      await page.click('#begin');
+      await page.click('[data-speed="16"]');
+      // 跑到第三日清晨（約兩個遊戲日）。
+      await page.waitForFunction(() => window.__sect.snapshot().tick > 1440 * 2, null, { timeout: 30000 });
+      await page.click('[data-speed="0"]');
+      const s = await snap(page);
+      const c = s.counts;
+      for (const k of ['eat', 'sleep', 'chat', 'cook', 'forage']) expect(`A9 兩日內發生過 ${k}`, (c[k] || 0) > 0, String(c[k] || 0));
+      expect('A9 存糧有數', Number.isInteger(s.stock.raw) && Number.isInteger(s.stock.meal), JSON.stringify(s.stock));
+      await page.click('[data-person="p1"]');
+      await wait(page, 300);
+      expect('A9 人物卡四條需求', (await page.locator('#panel [data-need]').count()) === 4);
+      const why = await page.textContent('#panel .why');
+      expect('A9 理由含需求或活計因子', /需求|活計|個性/.test(why), why.slice(0, 80));
+      await shot('life');
+    },
+  },
 ];

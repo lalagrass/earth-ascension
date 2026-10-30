@@ -50,3 +50,7 @@ label { display: block; margin: 8px 0; }
   #game main { flex-direction: column; }
   #panel { width: 100%; flex: none; }
 }
+.need { display: grid; grid-template-columns: 3em 1fr 2em; gap: 6px; align-items: center; font-size: 12px; margin: 2px 0; }
+.need .bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.need .bar i { display: block; height: 100%; }
+.forced { color: var(--accent); font-weight: bold; margin: 0; }

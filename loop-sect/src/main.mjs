@@ -1,7 +1,7 @@
-import { QUESTIONS, ATTRS, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, TEMPLATES, AXES, TRAIT_RULES, TICKS_PER_SECOND } from './data.mjs';
+import { QUESTIONS, ATTRS, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, TEMPLATES, AXES, TRAIT_RULES, TICKS_PER_SECOND, NEEDS } from './data.mjs';
 import { axesFromAnswers, typeOf, validateAttrs, traitsOf } from './person.mjs';
 import { createWorld, step, clock, companionsFor } from './sim.mjs';
-import { TILE, drawMap, drawPois, drawPeople, drawDaylight } from './render.mjs';
+import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles } from './render.mjs';
 
 const $ = (s) => document.querySelector(s);
 const el = (tag, attrs = {}, ...kids) => {
@@ -15,7 +15,8 @@ const el = (tag, attrs = {}, ...kids) => {
   return e;
 };
 const TRAIT_LABEL = Object.fromEntries(TRAIT_RULES.map((t) => [t.id, t]));
-const FACTOR_LABEL = { base: '基礎', social: '熱鬧', quiet: '清靜', novelty: '新奇', familiar: '熟悉', routine: '輪替', noise: '隨機' };
+const FACTOR_LABEL = { need: '需求', persona: '個性', work: '活計', sched: '作息×', dist: '距離×', noise: '隨機' };
+const MULT = new Set(['sched', 'dist']);
 
 // ---------- 開局 ----------
 const draft = { answers: Array(QUESTIONS.length).fill(null), attrs: { gen: 5, wu: 5, shen: 5, li: 5, ding: 5 }, template: null, axesOverride: null };
@@ -114,7 +115,9 @@ function frame(now) {
   while (acc >= 1) { step(state); acc -= 1; }
   const ctx = $('#view').getContext('2d');
   ctx.drawImage(bg, 0, 0);
+  drawObjects(ctx, state);
   drawPeople(ctx, state, selected);
+  drawBubbles(ctx, state);
   const c = clock(state);
   drawDaylight(ctx, 1280, 800, c.hour, c.minute);
   $('#clock').textContent = `第 ${c.day} 日 ${String(c.hour).padStart(2, '0')}:${String(c.minute).padStart(2, '0')}`;
@@ -127,13 +130,20 @@ function renderPanel() {
   if (!p) return;
   const attrs = ATTRS.map((a) => `${a.label} ${p.attrs[a.id]}`).join('　');
   const why = p.why.map((c) => el('tr', {}, el('td', {}, c.label), el('td', {}, c.score.toFixed(2)),
-    el('td', { class: 'f' }, Object.entries(c.f).filter(([, v]) => Math.abs(v) >= 0.05).map(([k, v]) => `${FACTOR_LABEL[k] ?? k}${v > 0 ? '+' : ''}${v.toFixed(1)}`).join(' '))));
+    el('td', { class: 'f' }, Object.entries(c.f)
+      .filter(([k, v]) => (MULT.has(k) ? Math.abs(v - 1) >= 0.05 : Math.abs(v) >= 0.05))
+      .map(([k, v]) => (MULT.has(k) ? `${FACTOR_LABEL[k]}${v.toFixed(2)}` : `${FACTOR_LABEL[k] ?? k}${v > 0 ? '+' : ''}${v.toFixed(1)}`)).join(' '))));
+  const needs = NEEDS.map((n) => el('div', { class: 'need', 'data-need': n.id }, el('span', {}, n.label),
+    el('span', { class: 'bar' }, el('i', { style: `width:${p.needs[n.id]}%;background:${p.needs[n.id] < 20 ? '#c0392b' : p.needs[n.id] < 45 ? '#d68a2e' : '#5a9a5a'}` })),
+    el('b', {}, p.needs[n.id].toFixed(0))));
   $('#panel').replaceChildren(
     el('h3', { 'data-panel-name': p.name }, `${p.name}${p.protagonist ? '（你）' : ''}`),
     el('div', { class: 'type' }, p.type), ...axisBars(p.axes),
     el('p', {}, attrs),
     el('div', { class: 'chips' }, ...p.traits.map((t) => el('span', { title: TRAIT_LABEL[t].desc }, TRAIT_LABEL[t].label))),
-    el('h2', {}, '現在'), el('p', { id: 'now' }, p.actLabel),
+    el('h2', {}, '需求'), ...needs,
+    el('h2', {}, '現在'), el('p', { id: 'now' }, p.actLabel + (p.carry ? `（身上 ${p.carry} 顆莓）` : '')),
+    p.forced ? el('p', { class: 'forced' }, `自理優先：${p.forced}`) : '',
     el('h2', {}, '為什麼（前三個念頭）'), el('table', { class: 'why' }, ...why));
 }
 
@@ -159,7 +169,7 @@ addEventListener('keydown', (e) => {
 
 // 唯讀遙測：給 headless 檢查用，回傳副本。
 window.__sect = {
-  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois })) : null),
+  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger })) : null),
   speed: () => speed,
   selected: () => selected,
   tileToClient: (x, y) => {
