@@ -39,3 +39,11 @@ H41非作者 `/root/homestead_review` 獨立跑3/3、讀核心與UI diff、核�
 採[Age of Empires官方Site Based Commands](https://www.ageofempires.com/learn-to-play/match-goals-advanced-controls-xbox/)按場景對象給常用命令、縮短選擇路徑原則；不搬其自動派村民、戰爭／軍隊／radial menu。繼續採Widelands前置條件資料與Stardew真狀態回饋原則，無第三方程式素材。既有農作持續命令足夠，拒絕另加one-shot農作欄位／scheduler／存檔工程；也不為第三輪新加生產鏈。
 
 驗收：共用唯讀action descriptions與當下資格，按下時重查真正選中且已建設施；過期／未知／其他地塊／legacy命令不作用；缺料／技能／容量／吃飽不能偷產出。連點原API冪等不重設真tasktimer；取消／改令保材料預約與在途；一次鍋／一次餐保持原完成清意圖語義，持續農作清除後不保留指派。純查操作列不改world，真派工與直接叫既有API逐tick等價（三性格固定指令／重讀／dt），原聚合不縮樣本。正常UI零注入現場種菜搬回→做一鍋與吃一份→清除／自主留居，鍵盤Enter與390px長按重繪／焦點不丟／選地不發錯命令。非作者審查修正後結案，恰好3輪，不開第4輪。
+
+### H42結果（第3／最後輪完成）
+
+作者聚焦4/4，最終聚合466/466（23.61秒），完整log在`/workspace/deliverables/homestead-garden3-tests.log`。五組固定seed各20000拍＝5000世界秒（20.83日），涵三性情，現場adapter與原API每拍序列化相同，中途原存讀也同；另0.1/0.25/1秒dt固定命令回放同。這是既有命令等價性，不是新經濟或真人偏好實驗。
+
+正常Chromium零注入現場t175持續農務→182.75播成→226.75採收在途→230.25入庫，現場清除；灶t306真manual一鍋料理中，重複Enter不重置timer→313.75真入庫3餐→319.25只吃1份剩2、指派清空。390px鍵盤重繪焦點／無溢出；另合成UI事件（不是world注入）驗持有指標尚未重繪即切地，舊按鈕不對新地發指令。原UI初腳本把已開始的自主鍋誤當已選單鍋，按第一次單鍋本來就會依原語義換意圖；修腳本先建立真manual task，再驗後續連點保持timer，沒有改核心來消除差異。
+
+非作者獨立4/4＋390px fixture找出禁用理由只藏button.title不適合鍵盤／觸控；作者改可見文字span並連aria-describedby，非作者用獨立窄viewport核缺木／無料理理由、ARIA連結、焦點與換地，讀作者最後正常UI圖／log後無阻擋。不是真人輔具使用測試，也未獨立重跑作者整條UI或466。八核心檔與base逐bytes相同，無新schema／存檔介面。三輪到此停止。
