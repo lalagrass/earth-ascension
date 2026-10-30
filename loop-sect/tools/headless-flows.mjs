@@ -527,6 +527,34 @@ export const flows = [
     },
   },
   {
+    // M24 家人照應：種子 30 約第 4.2 日有人給家人端一碗飯；紀事寫下來。
+    name: 'm24-serve',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.fill('#seed', '30');
+      await page.click('#begin');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().events.some((e) => /端了一碗飯$/.test(e.text)), null, { timeout: 600000 });
+      await page.click('[data-speed="0"]');
+      await wait(page, 300);
+      const s = await snap(page);
+      const ev = s.events.find((e) => /端了一碗飯$/.test(e.text));
+      const [a, b] = ev.who.map((id) => s.people.find((p) => p.id === id));
+      expect('A6 端給的是家人', a.kin === b.id, ev.text);
+      await page.click('[data-events-group="people"]');
+      await wait(page, 300);
+      expect('A6 紀事人事頁看得到', (await page.textContent('#events')).includes(ev.text), ev.text);
+      const boxes = await page.evaluate(() => window.__sect.labels());
+      let overlap = 0;
+      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+        const x = boxes[i], y = boxes[j];
+        if (x.x < y.x + y.w && y.x < x.x + x.w && x.y < y.y + y.h && y.y < x.y + x.h) overlap++;
+      }
+      expect('A6 畫面不疊字', overlap === 0, `${overlap} 對`);
+      await shot('serve');
+    },
+  },
+  {
     // M23 報仇：拆了野豬窩，第三日野豬王帶兩頭野豬來；頭上有名字、紀事寫報仇。
     name: 'm23-boss',
     async run(page, expect, { shot }) {

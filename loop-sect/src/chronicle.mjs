@@ -3,7 +3,7 @@ import { TICKS_PER_DAY } from './data.mjs';
 
 export const LIFE_CATS = [
   { id: 'work', label: '幹活', kinds: ['chop', 'quarry', 'build', 'haul', 'store', 'deliver', 'cook', 'forage', 'repair', 'sow', 'harvest', 'hunt'] },
-  { id: 'social', label: '聊天切磋', kinds: ['chat', 'spar'] },
+  { id: 'social', label: '聊天切磋', kinds: ['chat', 'spar', 'serve'] },
   { id: 'drill', label: '練功', kinds: ['drill', 'trial'] },
   { id: 'leisure', label: '閒坐閒逛', kinds: ['sit', 'wander', 'idle', 'leave'] },
   { id: 'sleep', label: '睡覺', kinds: ['sleep', 'sleepGround'] },

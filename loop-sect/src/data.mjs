@@ -138,6 +138,7 @@ export const ACTS = {
   eat: { label: '吃飯', dur: 30, per: { food: 3 } },
   eatRaw: { label: '生吃莓果', dur: 10, per: { food: 1.5 } },
   eatCarried: { label: '吃身上的莓果', dur: 10, per: { food: 1.5 } },
+  serve: { label: '端飯', dur: 10, per: {} },
   forage: { label: '採莓', dur: 25, per: { fun: 0.02 } },
   deliver: { label: '放下莓果', dur: 3, per: {} },
   cook: { label: '煮飯', dur: 40, per: { fun: 0.04 } },
@@ -439,7 +440,8 @@ BLUEPRINTS.push({
   cost: { wood: 4 }, work: 40,
 });
 // M17 親密與成家：朋友以上聊天（談心）好感 × DEEP；家人在的桌加 EAT、家人睡的床 BED_R 格內加 BED。
-export const FAMILY = { DEEP: 3, EAT: 0.8, BED: 0.6, BED_R: 3 };
+// M24 家人照應：家人飽食 < SERVE 時，另一半從灶上端一碗過去；SERVE_K 0 就關掉。
+export const FAMILY = { DEEP: 3, EAT: 0.8, BED: 0.6, BED_R: 3, SERVE: 45, SERVE_K: 1.2, REACH: 2.5 };
 // ---------- M19a 後山打獵 ----------
 // 獵戶小屋蓋好後，林間有 HERD 頭鹿在吃草（不動）；被獵走或跑掉的，RESPAWN tick 後在林間別處再出現。
 // 打獵 DUR tick，成功率 P0 + P_SHEN × (身法 − 5)；成功扛回 MEAT 份肉，送到灶邊算生食材。

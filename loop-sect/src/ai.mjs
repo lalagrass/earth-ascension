@@ -5,7 +5,7 @@ import { standSpot } from './build.mjs';
 import { kinOf } from './social.mjs';
 import { FIRE, FARM, ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, DUTY, POST, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
 import { activeEnemies } from './raid.mjs';
-import { walkable } from './map.mjs';
+import { walkable, nearestWalkable } from './map.mjs';
 import { nearestResources, remaining, stocked, workSpot, siteWorkersFree } from './build.mjs';
 import { extraTake } from './skills.mjs';
 import { aff, prestige } from './social.mjs';
@@ -113,6 +113,14 @@ export function candidates(state, p, scorePois) {
       add({ kind: 'sit', obj: o.id, slot: i, spot, label: `去${o.label}坐坐` },
         { need: u.fun * 0.8 * (1 - 0.4 * E) + u.energy * 0.1, persona: 0.2 * Math.max(0, -E) });
     }
+  }
+  // M24 家人照應：家人餓著、沒在吃，另一半從灶上端一碗過去（同一時間只一人端）。
+  if (FAMILY.SERVE_K > 0 && kin && !kin.guest && !kin.exp && !p.exp && empty && stock.meal > 0
+    && kin.needs.food < FAMILY.SERVE && p.needs.food >= FAMILY.SERVE && !['eat', 'ration'].includes(kin.task?.kind)
+    && !state.people.some((x) => x.task?.kind === 'serve' && x.task.to === kin.id)) {
+    const spot = nearestWalkable(state.map, Math.round(kin.x), Math.round(kin.y));
+    if (spot) add({ kind: 'serve', to: kin.id, spot, label: `給${kin.name}端飯` },
+      { persona: FAMILY.SERVE_K * urgency(kin.needs.food) * (1 + 0.3 * Math.max(0, F)) });
   }
   // 送貨只是放下，不必占灶位，所以煮飯的人在用灶時也能送。
   if (p.carry > 0) {

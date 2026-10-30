@@ -216,7 +216,7 @@ export function scorePois(state, p) {
 function reserve(state, p, c) {
   if (c.obj && c.slot >= 0) byId(state.objects, c.obj).users[c.slot] = p.id;
   if (c.bush) byId(state.bushes, c.bush).user = p.id;
-  if (c.kind === 'eat') { state.stock.meal--; p.hold.meal = 1; }
+  if (c.kind === 'eat' || c.kind === 'serve') { state.stock.meal--; p.hold.meal = 1; }
   if (c.kind === 'cook') { state.stock.raw -= COOK_RAW; p.hold.raw = COOK_RAW; state.stock.wood -= FIRE.WOOD_PER_POT; p.hold.wood = FIRE.WOOD_PER_POT; }
   if (c.plot) byId(state.plots, c.plot).user = p.id;
   if (c.deer) { const d = state.deer.find((x) => x.id === c.deer); if (d) d.user = p.id; }
@@ -273,7 +273,7 @@ function choose(state, p) {
     }
     reserve(state, p, c);
     p.task = { kind: c.kind, obj: c.obj, slot: c.slot, bush: c.bush, partner: c.partner, poi: c.poi, chase: 80,
-      deer: c.deer, res: c.res, mat: c.mat, rx: c.rx, ry: c.ry, take: c.take, site: c.site, n: c.n, move: c.move, enemy: c.enemy, cell: c.cell, plot: c.plot, cx: c.cx, cy: c.cy, dealt: 0, leg: c.kind === 'haul' ? 'pickup' : undefined };
+      deer: c.deer, res: c.res, mat: c.mat, rx: c.rx, ry: c.ry, take: c.take, site: c.site, n: c.n, move: c.move, enemy: c.enemy, cell: c.cell, plot: c.plot, cx: c.cx, cy: c.cy, to: c.to, dealt: 0, leg: c.kind === 'haul' ? 'pickup' : undefined };
     p.actLabel = c.label;
     if (path.length) {
       p.path = path;
@@ -508,6 +508,20 @@ function finish(state, p) {
     // 打退了才算實戰；自己退下的不算。
     const e = state.enemies.find((x) => x.id === t.enemy);
     if (t.dealt > 0 && (!e || e.hp <= 0)) comprehend(state, p, practice(state, p, drillMove(p), DEFENSE.FIGHT_MUL));
+  }
+  if (t.kind === 'serve') {
+    // M24：端到家人手上就算吃了一頓；家人走開了就把飯放回灶上。
+    const k = byId(state.people, t.to);
+    if (k && Math.hypot(k.x - p.x, k.y - p.y) <= FAMILY.REACH) {
+      k.needs.food = Math.min(100, k.needs.food + 90);
+      L.mealsEaten++; p.hold.meal = 0;
+      state.counts.served = (state.counts.served || 0) + 1;
+      k.bubble = { text: `${p.name}端飯來了`, until: state.tick + 60 };
+      if (!(state.servedPairs ??= []).includes(p.id + k.id)) {
+        state.servedPairs.push(p.id + k.id);
+        state.events.push({ tick: state.tick, kind: 'family', text: `${p.name}給${k.name}端了一碗飯`, who: [p.id, k.id] });
+      }
+    } else { state.stock.meal += p.hold.meal; p.hold.meal = 0; }
   }
   if (t.kind === 'ration') { p.pack--; L.mealsEaten++; p.needs.food = Math.min(100, p.needs.food + EXPEDITION.RATION_FOOD); }
   if (t.kind === 'repair') {
