@@ -1,4 +1,4 @@
-import {freshAutonomy,validAutonomy,advanceAutonomy} from './homestead-autonomy.mjs';
+import {freshAutonomy,validAutonomy,advanceAutonomy,observeAutonomy} from './homestead-autonomy.mjs';
 import {defaultHomeLook,validHomeLook} from './homestead-look.mjs';
 import {RECIPES,MEAL_STYLES,hasRecipe,recipeReason,eatReason,recipeAccess,buildAccess,availableUnlocks,preparedCount,edibleEnergy,autoRecipe,chooseFood} from './homestead-content.mjs';
 import {at,feel,FEELINGS,restRate} from './homestead-living.mjs';
@@ -403,7 +403,7 @@ export function tickHomestead(s, dt = 0.25) {
   if (!(dt > 0 && dt <= 1)) throw new Error('bad dt');
   const total=(s.subtick||0)+dt, count=Math.floor((total+1e-10)/.25);
   s.subtick=Math.max(0,Number((total-count*.25).toFixed(12)));
-  for(let i=0;i<count;i++){tickQuarter(s,.25);for(const key of availableUnlocks(s)){if(!s.unlocked.includes(key)){s.unlocked.push(key);note(s,`學會新做法：${key}。`);}}}
+  for(let i=0;i<count;i++){tickQuarter(s,.25);observeAutonomy(s,.25);for(const key of availableUnlocks(s)){if(!s.unlocked.includes(key)){s.unlocked.push(key);note(s,`學會新做法：${key}。`);}}}
 }
 function tickQuarter(s,dt) {
   s.t += dt; const oldDay = s.day; s.day = 1 + Math.floor(s.t / DAY);
@@ -480,7 +480,8 @@ export function loadHomestead(json) {
     s.autonomy ??= null;
     if(s.autonomy&&s.autonomy.warmMeals===undefined)s.autonomy.warmMeals=0;
     if(s.autonomy&&s.autonomy.comfortRests===undefined)s.autonomy.comfortRests=0;
-    if(!validAutonomy(s.autonomy,s.mode,s.t))return {ok:false,error:'自主生活目標不合法'};
+    if(s.autonomy&&s.autonomy.experience===undefined)s.autonomy.experience={hunger:0,fatigue:0,effort:0,lastWork:s.person.work};
+    if(!validAutonomy(s.autonomy,s.mode,s.t,s.person.work))return {ok:false,error:'自主生活目標不合法'};
     if(s.person.task?.trial!==undefined&&(s.person.task.trial!==true||s.person.task.act!=='rest'||!s.autonomy||s.fac.bed?.stage!==2))return {ok:false,error:'床鋪試睡任務不合法'};
     s.subtick ??=0;
     if(!Number.isFinite(s.subtick)||s.subtick<0||s.subtick>=.25)return {ok:false,error:'時間餘量不合法'};
