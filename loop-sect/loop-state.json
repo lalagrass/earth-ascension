@@ -1,9 +1,9 @@
 {
-  "loopVersion": 9,
+  "loopVersion": 10,
   "loopsDone": 27,
   "retroEvery": 3,
-  "lastRetro": "docs/RETRO-08.md",
-  "lastCommit": "e87db93",
+  "lastRetro": "docs/RETRO-09.md",
+  "lastCommit": "ef5d966",
   "nextMilestone": "retro 9，然後 M24 家人照應（loop 28）",
   "inProgress": {
     "paused": [
