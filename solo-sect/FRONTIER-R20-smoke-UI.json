@@ -1,0 +1,17 @@
+{
+  "round": "R20-smoke",
+  "normalUI": true,
+  "noWorldInjection": true,
+  "t": 50.5,
+  "hut": 0,
+  "activity": {
+    "act": "build",
+    "phase": "deliver",
+    "place": "hut",
+    "mat": "wood",
+    "timer": 0
+  },
+  "errors": [],
+  "pausedStable": true,
+  "narrowOverflow": false
+}
