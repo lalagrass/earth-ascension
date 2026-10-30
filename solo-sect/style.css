@@ -1,5 +1,7 @@
 body{margin:0;background:#e9e1cf;font:14px/1.45 "Noto Sans TC","PingFang TC",sans-serif;color:#3a2f24}
 #wrap{display:flex;height:100vh}#map{flex:1;min-width:0;max-height:100vh;object-fit:contain;background:#cfc3a5}
+/* loop43：右欄實寬（380＋左右內距 28＋邊框 2）；浮動窗以此對齊，避免壓到右欄 */
+:root{--pw:410px}
 #panel{width:380px;overflow:auto;padding:10px 14px;background:#f6f0e2;border-left:2px solid #b9a77f}
 h1{font-size:20px;margin:4px 0}h1 small{font-size:12px;color:#8a7a5a}h2{font-size:15px;margin:12px 0 4px;border-bottom:1px solid #d6c8a6}
 button{font:inherit;background:#efe3c4;border:1px solid #a99368;border-radius:4px;padding:2px 8px;cursor:pointer}button:disabled{opacity:.45;cursor:default}
@@ -20,10 +22,10 @@ h2.fresh { color:#c33; } h2.fresh::after { content:" 新開放"; font-size:12px;
 label.btn { border:1px solid #888; padding:2px 8px; border-radius:4px; cursor:pointer; margin-left:4px; }
 
 /* v1.45 三級事件、里程軸、狀態三行 */
-#wrap{position:relative}#feed{position:absolute;top:84px;right:396px;width:260px;display:flex;flex-direction:column;gap:4px;pointer-events:none}
+#wrap{position:relative}#feed{position:absolute;top:84px;right:calc(var(--pw) + 16px);width:260px;display:flex;flex-direction:column;gap:4px;pointer-events:none}
 .slip{pointer-events:auto;cursor:pointer;background:#f3e6c4ee;border:1px solid #a98a55;border-left:5px solid #8a6a3a;border-radius:4px;padding:3px 6px;font-size:12px;line-height:1.35}
 .slip.top{border-left-color:#c0392b;background:#fff0e0ee;font-weight:bold}
-#alert{position:absolute;inset:0;right:380px;display:flex;align-items:flex-start;justify-content:center;padding-top:120px;background:#0003;z-index:40}#alert .card{max-width:440px;font-size:15px;box-shadow:0 4px 18px #0005}
+#alert{position:absolute;inset:0;right:var(--pw);display:flex;align-items:flex-start;justify-content:center;padding-top:120px;background:#0003;z-index:40}#alert .card{max-width:440px;font-size:15px;box-shadow:0 4px 18px #0005}
 .ms{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0}.ms .m{font-size:11px;padding:0 5px;border-radius:8px;background:#e5dcc6}.ms .clear{background:#cfe3b8}.ms .open{background:#f5d7a0}.ms .now{background:#9cc0e8;font-weight:bold}.ms .todo{opacity:.5}.ms .hit{outline:2px solid #c0392b}
 .status{border-left:3px solid #6a8cc7;padding-left:6px;margin:3px 0;font-size:12px}.status .tag{background:#6a8cc7;color:#fff;border-radius:6px;padding:0 5px;font-size:11px}
 /* v1.55a 世界鏡頭 */

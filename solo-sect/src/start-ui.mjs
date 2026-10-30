@@ -14,7 +14,7 @@ const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index
 #start .card.on{border-color:#ffd27a;box-shadow:0 0 12px #ffd27a88}#start .card img{width:100%;height:170px;object-fit:cover;object-position:top;border-radius:5px}
 #start .card b{font-size:17px}#start .small{font-size:12px;opacity:.85}#start .comp{display:flex;gap:10px;margin-top:8px}#start .comp .card{width:150px}#start .comp .card img{height:140px}
 #start .stat{display:inline-block;margin:3px 10px 3px 0}#start .q{margin:3px 0}#start select{max-width:260px}#start .go{font-size:18px;padding:6px 26px;margin-top:10px;background:#c9a061;border:0;border-radius:6px}
-#choice{position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:40;background:#2b2118;color:#f3e7cf;border:2px solid #ffd27a;border-radius:10px;padding:14px 20px;max-width:560px;font:15px/1.6 serif;box-shadow:0 6px 30px #000a}
+#choice{position:fixed;left:calc((100vw - var(--pw, 410px)) / 2);top:18%;transform:translateX(-50%);width:max-content;max-width:min(560px, calc(100vw - var(--pw, 410px) - 32px));box-sizing:border-box;z-index:40;background:#2b2118;color:#f3e7cf;border:2px solid #ffd27a;border-radius:10px;padding:14px 20px;font:15px/1.6 serif;box-shadow:0 6px 30px #000a}
 #choice button{display:block;margin:6px 0;width:100%;text-align:left;font-size:15px}`;
 // loop35：江湖規則單一來源（勾選 id、st 欄位、spec 鍵、預設、說明）；兩個分頁共用 ruleSpec，避免漏傳／重複
 export const RULES = [
