@@ -278,3 +278,34 @@ export function drawEnemies(ctx, state, FENCE_HP) {
     }
   }
 }
+
+// M9 巢穴：野豬窩是土丘、山賊寨是木柵；拆掉後剩殘跡。
+export function drawNests(ctx, state) {
+  ctx.textAlign = 'center';
+  for (const n of state.nests ?? []) {
+    const cx = n.x * TILE + TILE / 2, cy = n.y * TILE + TILE / 2;
+    if (n.cleared) {
+      ctx.fillStyle = 'rgba(90,70,50,0.45)';
+      ctx.beginPath(); ctx.ellipse(cx, cy + 4, 16, 6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgba(60,40,20,0.7)'; ctx.lineWidth = 1.5;
+      for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(cx + i * 5, cy + 6); ctx.lineTo(cx + i * 5 + 4, cy - 1); ctx.stroke(); }
+    } else if (n.kind === 'boar') {
+      ctx.fillStyle = '#6b5236';
+      ctx.beginPath(); ctx.ellipse(cx, cy + 2, 18, 11, 0, Math.PI, 0); ctx.fill();
+      ctx.fillStyle = '#2b1d12';
+      ctx.beginPath(); ctx.ellipse(cx, cy + 2, 6, 5, 0, Math.PI, 0); ctx.fill();
+      ctx.fillStyle = '#8a9a4a'; for (const dx of [-14, -6, 9, 15]) ctx.fillRect(cx + dx, cy - 6 + Math.abs(dx) / 3, 2, 4);
+    } else {
+      ctx.fillStyle = '#7a5a36';
+      for (let i = -3; i <= 3; i++) { ctx.fillRect(cx + i * 5 - 1.5, cy - 12, 3, 18); ctx.beginPath(); ctx.moveTo(cx + i * 5 - 2, cy - 12); ctx.lineTo(cx + i * 5, cy - 16); ctx.lineTo(cx + i * 5 + 2, cy - 12); ctx.fill(); }
+      ctx.fillStyle = '#b8322a'; ctx.fillRect(cx + 12, cy - 26, 9, 6);
+      ctx.fillStyle = '#3a2a1a'; ctx.fillRect(cx + 11, cy - 26, 1.5, 16);
+    }
+    if (!n.cleared && n.hp < n.hpMax) {
+      ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(cx - 14, cy + 10, 28, 3);
+      ctx.fillStyle = '#d68a2e'; ctx.fillRect(cx - 14, cy + 10, 28 * n.hp / n.hpMax, 3);
+    }
+    ctx.font = '11px sans-serif'; ctx.fillStyle = n.cleared ? 'rgba(40,30,20,0.6)' : '#3a2a1a';
+    ctx.fillText(n.cleared ? `${n.label}（已拆）` : n.label, cx, cy + 24);
+  }
+}

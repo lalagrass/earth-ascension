@@ -1,5 +1,5 @@
 // soak 用的不變量與統計。每個 milestone 在這裡加自己的檢查。
-import { companionsFor, placeBlueprint, setFocus } from '../src/sim.mjs';
+import { companionsFor, placeBlueprint, setFocus, startExpedition } from '../src/sim.mjs';
 import { walkable } from '../src/map.mjs';
 import { speedOf } from '../src/person.mjs';
 import { isNight } from '../src/needs.mjs';
@@ -16,9 +16,13 @@ export function rosterFor(seed) {
 
 // M3-A6：第 1 日 06:00 放下全部藍圖，之後不再下指令。
 // M4-A4／A5：開局把 p1 指定為伐木，量專精與整趟速度。
-export function script(s) {
+// M9-A6：情境 exp 在第 3 日 9 時起每小時試著討伐野豬窩，到第 4 日 12 時為止。
+// 情境 base 不遠征：M2–M8 的自然遊玩驗收都是在「沒有拆巢」的世界寫的，所以分開量。
+export function script(s, scenario = 'base') {
   if (s.tick === 0) setFocus(s, 'p1', 'wood');
   if (s.tick === 360) for (const b of BLUEPRINTS) placeBlueprint(s, b.id);
+  const den = s.nests.find((n) => n.id === 'den');
+  if (scenario === 'exp' && s.tick >= 2 * TICKS_PER_DAY + 540 && s.tick <= 3 * TICKS_PER_DAY + 720 && s.tick % 60 === 0 && !s.expedition && !den.cleared) startExpedition(s, 'den');
 }
 
 export function perSeed(s, ctx) {
@@ -75,6 +79,14 @@ export function perSeed(s, ctx) {
   if (s.sect) bump(ctx, 'founded');
   bump(ctx, 'apprentice', c.apprentice || 0);
   bump(ctx, 'endPeople', s.people.length);
+  // M9-A6／A7：拆掉野豬窩，之後出生的敵人 ÷ 排程上的頭數。
+  bump(ctx, 'expeditions', c.expeditions || 0); bump(ctx, 'retreats', c.retreats || 0);
+  if (s.nests.find((n) => n.id === 'den').cleared) {
+    bump(ctx, 'denSeeds');
+    const at = s.clearedAt.den;
+    for (const r of s.raids) if (r.tick > at && r.tick <= s.tick) bump(ctx, 'after:sched', r.kinds.length);
+    bump(ctx, 'after:spawn', s.events.filter((e) => e.kind === 'raid' && e.tick > at).reduce((a, e) => a + Number(e.text.match(/（(\d+)）/)[1]), 0));
+  }
   const hutBeds = s.objects.filter((o) => o.label === '茅屋床');
   ctx.samples.hutSleptSeeds = (ctx.samples.hutSleptSeeds || 0) + (s.counts.hutSleep ? 1 : 0);
   if (hutBeds.length && !s.counts.hutSleep) ctx.samples.hutNoSleep = (ctx.samples.hutNoSleep || 0) + 1;
@@ -122,7 +134,7 @@ export const invariants = [
     const L = s.ledger;
     const carried = s.people.reduce((a, p) => a + p.carry, 0);
     const heldRaw = s.people.reduce((a, p) => a + p.hold.raw, 0);
-    const heldMeal = s.people.reduce((a, p) => a + p.hold.meal, 0);
+    const heldMeal = s.people.reduce((a, p) => a + p.hold.meal + p.pack, 0); // M9 乾糧算在身上
     const raw0 = 6, meal0 = 3;
     if (raw0 + L.picked !== L.rawEaten + L.rawCooked + L.rawStolen + s.stock.raw + carried + heldRaw) fail(ctx, s, `生莓不守恆 ${JSON.stringify(L)}`);
     if (meal0 + L.mealsMade !== L.mealsEaten + L.mealsStolen + s.stock.meal + heldMeal) fail(ctx, s, `飯不守恆 ${JSON.stringify(L)}`);
@@ -150,7 +162,7 @@ export const invariants = [
       const lim = ENEMIES[e.kind].speed * 1.2 + 1e-9;
       if (q && Math.hypot(e.x - q.x, e.y - q.y) > lim) fail(ctx, s, `${e.label}${e.id} 瞬移`);
       if (!walkable(s.map, Math.round(e.x), Math.round(e.y)) && s.map[Math.round(e.y)][Math.round(e.x)] !== 'F') fail(ctx, s, `${e.label}${e.id} 站在擋路格`);
-      if (s.tick - e.born > RAID.MAX_LIFE + 400) fail(ctx, s, `${e.label}${e.id} 卡住沒離開`);
+      if (e.mode !== 'guard' && s.tick - e.born > RAID.MAX_LIFE + 400) fail(ctx, s, `${e.label}${e.id} 卡住沒離開`);
       ctx.ePrev.set(e.id, { x: e.x, y: e.y });
     }
     // M8-A4／A7：沒人以不在場的人為對象；留下的人不超過床數。
@@ -162,6 +174,10 @@ export const invariants = [
       const p = s.people.find((x) => x.id === id);
       if (!p.task || p.task.kind !== 'repair' || p.task.cell !== k) fail(ctx, s, `柵欄 ${k} 修補預約殘留`);
     }
+  },
+  // M9-A6：遠征隊員不會餓到飽食 < 5。
+  (s, ctx) => {
+    for (const p of s.people) if (p.exp && p.needs.food < 5) fail(ctx, s, `${p.name} 遠征中餓壞了`);
   },
   // M2-A5：沒人長期挨餓或累垮。
   (s, ctx) => {
@@ -233,9 +249,10 @@ export function summarize(s) {
   return `${ppl} | 完工${s.built.length} 木${s.stock.wood} 石${s.stock.stone} | 吃${c.eat || 0} 生吃${(c.eatRaw || 0) + (c.eatCarried || 0)} 煮${c.cook || 0} 採${c.forage || 0} 聊${c.chat || 0} 婉拒${c.refused || 0} 坐${c.sit || 0} 睡${(c.sleep || 0) + (c.sleepGround || 0)}`;
 }
 
-export function judge(S) {
+export function judge(S, scenario = 'base') {
   const lines = [];
   const failures = [];
+  if (scenario === 'exp') return judgeExp(S, lines, failures);
   const r = (a, b) => (S[a] || 0) / (S[b] || 1);
   const e = r('near:E:sum', 'near:E:n'), i = r('near:I:sum', 'near:I:n');
   // M2 起 M1-A7 改由 sim.test.mjs 的控制實驗驗證（只變外向軸）；此處只列出，因為整體距離受 N 軸與吃睡聚集干擾。
@@ -293,5 +310,18 @@ export function judge(S) {
   lines.push(`（診斷）時間分布前十：${share.map(([k, v]) => `${k.slice(4)} ${(100 * v / all).toFixed(1)}%`).join('、')}`);
   lines.push(`（參考）處於自理門檻下的時間：飢餓 ${(100 * (S.lowFood || 0) / all).toFixed(1)}%，累垮 ${(100 * (S.lowEnergy || 0) / all).toFixed(1)}%`);
   if ((S.lowFood || 0) / all > 0.02) failures.push('M7-A7 飢餓時間超過 2%');
+  return { lines, failures };
+}
+
+function judgeExp(S, lines, failures) {
+  const r = (a, b) => (S[a] || 0) / (S[b] || 1);
+  lines.push(`M9-A6 拆掉野豬窩 ${S.denSeeds || 0}/${S.seeds}；出發 ${S.expeditions || 0} 次、撤退 ${S.retreats || 0} 次`);
+  if ((S.denSeeds || 0) < Math.ceil(S.seeds * 8 / 12)) failures.push('M9-A6 拆掉野豬窩的種子太少');
+  const ratio = r('after:spawn', 'after:sched');
+  lines.push(`M9-A7 拆掉之後：排程 ${S['after:sched'] || 0} 頭，實際出生 ${S['after:spawn'] || 0} 頭（${(100 * ratio).toFixed(0)}%）`);
+  if ((S['after:sched'] || 0) && ratio > 0.7) failures.push('M9-A7 拆巢後侵擾沒有變少');
+  const all = (S['t:E'] || 0) + (S['t:I'] || 0);
+  lines.push(`M9-A6 飢餓時間 ${(100 * (S.lowFood || 0) / all).toFixed(1)}%；M7 打退 ${S.repelled || 0}/${S.enemies || 0}（遠征期間家裡人少）`);
+  if ((S.lowFood || 0) / all > 0.02) failures.push('M9-A6 飢餓時間超過 2%');
   return { lines, failures };
 }

@@ -120,6 +120,6 @@ test('M7 敵人期間沒人時也會離開（不卡住）', () => {
   spawnEnemy(s, 'bandit', 20);
   runAlone(s, RAID.MAX_LIFE + 400);
   assert.equal(activeEnemies(s).length, 0);
-  assert.equal(s.enemies.length, 0);
+  assert.equal(s.enemies.filter((e) => e.mode !== 'guard').length, 0, '守巢的（M9）不算');
   assert.ok(DEFENSE.FENCE_HP > 0);
 });

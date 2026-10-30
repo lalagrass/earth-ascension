@@ -1,13 +1,14 @@
 import { QUESTIONS, ATTRS, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, TEMPLATES, AXES, TRAIT_RULES, TICKS_PER_SECOND, NEEDS, BLUEPRINTS, PILE, FOCUS } from './data.mjs';
 import { axesFromAnswers, typeOf, validateAttrs, traitsOf } from './person.mjs';
-import { createWorld, step, clock, companionsFor, placeBlueprint, cancelSite, setFocus } from './sim.mjs';
+import { createWorld, step, clock, companionsFor, placeBlueprint, cancelSite, setFocus, startExpedition } from './sim.mjs';
+import { canLaunch } from './expedition.mjs';
 import { blueprint } from './build.mjs';
 import { effectText } from './skills.mjs';
 import { aff, stageOf, prestige } from './social.mjs';
 import { prowess, moveLabel, comprehendable, compChance } from './martial.mjs';
 import { titleOf, appeal, reasonText } from './recruit.mjs';
 import { SKILLS, MOVES, DEFENSE } from './data.mjs';
-import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes, drawEnemies } from './render.mjs';
+import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes, drawEnemies, drawNests } from './render.mjs';
 
 const $ = (s) => document.querySelector(s);
 const el = (tag, attrs = {}, ...kids) => {
@@ -136,9 +137,32 @@ function renderBuild() {
       : site ? el('button', { 'data-cancel': bp.id, on: { click: () => { cancelSite(state, site.id); renderBuild(); } } }, '取消')
       : el('button', { 'data-blueprint': bp.id, on: { click: () => { placeBlueprint(state, bp.id); renderBuild(); } } }, '放藍圖');
     return el('div', { class: 'bp' }, el('b', {}, bp.label), el('span', { class: 'cost' }, costText), btn, el('small', {}, bp.desc));
-  }), el('div', { id: 'events' }, ...state.events.slice(-4).reverse().map((e) => el('p', {}, `第${Math.floor(e.tick / 1440) + 1}日 ${e.text}`))));
+  }), renderExpedition(), el('div', { id: 'events' }, ...state.events.slice(-4).reverse().map((e) => el('p', {}, `第${Math.floor(e.tick / 1440) + 1}日 ${e.text}`))));
   builtSeen = state.built.length;
   eventsSeen = state.events.length;
+  expSeen = expKey();
+}
+
+// M9 遠征面板：兩處巢穴、會去的人或擋住的原因、出發中的隊伍在哪一階段。
+const PHASE = { march: '行軍中', fight: '與守衛交手', raze: '拆巢中', return: '回山中' };
+let expSeen = '';
+const expKey = () => (state.expedition ? `${state.expedition.nest}:${state.expedition.phase}` : '-') + state.nests.map((n) => `${+n.cleared}${+canLaunch(state, n.id).ok}`).join('');
+function renderExpedition() {
+  const x = state.expedition;
+  const rows = state.nests.map((n) => {
+    if (n.cleared) return el('div', { class: 'bp', 'data-nest-row': n.id }, el('b', {}, n.label), el('span', { class: 'done' }, '已拆'));
+    if (x && x.nest === n.id) {
+      const who = x.members.map((id) => state.people.find((p) => p.id === id)?.name).filter(Boolean).join('、');
+      return el('div', { class: 'bp', 'data-nest-row': n.id }, el('b', {}, n.label), el('span', { class: 'phase', 'data-exp-phase': x.phase }, PHASE[x.phase]), el('small', {}, `${who}；巢 ${Math.ceil(n.hp)}/${n.hpMax}`));
+    }
+    const c = canLaunch(state, n.id);
+    const party = (c.party ?? []).map((p) => p.name).join('、');
+    const btn = el('button', { 'data-nest': n.id, on: { click: () => { startExpedition(state, n.id); renderBuild(); } } }, '出征');
+    if (!c.ok) btn.disabled = true;
+    return el('div', { class: 'bp', 'data-nest-row': n.id }, el('b', {}, n.label), el('span', { class: 'cost' }, `守衛 ${state.enemies.filter((e) => e.nest === n.id && e.hp > 0).length}`), btn,
+      el('small', {}, c.ok ? `會去：${party}` : c.reason));
+  });
+  return el('div', { id: 'expedition' }, el('h3', {}, '遠征'), ...rows);
 }
 
 function setSpeed(s) {
@@ -156,9 +180,10 @@ function frame(now) {
   while (acc >= 1) { step(state); acc -= 1; }
   const ctx = $('#view').getContext('2d');
   if (state.mapVersion !== bgVersion) paintBg();
-  if (state.built.length !== builtSeen || state.events.length !== eventsSeen) renderBuild();
+  if (state.built.length !== builtSeen || state.events.length !== eventsSeen || expKey() !== expSeen) renderBuild();
   ctx.drawImage(bg, 0, 0);
   drawBuild(ctx, state, PILE, blueprint);
+  drawNests(ctx, state);
   drawObjects(ctx, state);
   drawEnemies(ctx, state, DEFENSE.FENCE_HP);
   drawPeople(ctx, state, selected);
@@ -264,7 +289,7 @@ addEventListener('keydown', (e) => {
 
 // 唯讀遙測：給 headless 檢查用，回傳副本。
 window.__sect = {
-  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map, aff: state.aff, events: state.events, sect: state.sect, decisions: state.decisions, enemies: state.enemies, raids: state.raids, fenceHp: state.fenceHp })) : null),
+  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map, aff: state.aff, events: state.events, sect: state.sect, decisions: state.decisions, enemies: state.enemies, raids: state.raids, fenceHp: state.fenceHp, nests: state.nests, expedition: state.expedition })) : null),
   speed: () => speed,
   selected: () => selected,
   tileToClient: (x, y) => {

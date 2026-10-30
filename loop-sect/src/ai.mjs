@@ -139,7 +139,7 @@ export function candidates(state, p, scorePois) {
 
   if (p.needs.social < 90) {
     for (const o of state.people) {
-      if (o === p || o.act === 'do' || Math.hypot(o.x - p.x, o.y - p.y) > 18) continue;
+      if (o === p || o.exp || o.act === 'do' || Math.hypot(o.x - p.x, o.y - p.y) > 18) continue;
       if ((p.refused[o.id] ?? -Infinity) > state.tick - REFUSE_COOLDOWN) continue;
       const like = aff(state, p, o);
       if (like < -10) continue;
@@ -152,7 +152,7 @@ export function candidates(state, p, scorePois) {
   // M6 切磋：雙方都有力氣；好動外向的人愛找人過招。
   if (p.needs.energy > MARTIAL.SPAR_MIN_ENERGY) {
     for (const o of state.people) {
-      if (o === p || !sparInterruptible(o) || o.needs.energy <= MARTIAL.SPAR_MIN_ENERGY || Math.hypot(o.x - p.x, o.y - p.y) > 18) continue;
+      if (o === p || o.exp || !sparInterruptible(o) || o.needs.energy <= MARTIAL.SPAR_MIN_ENERGY || Math.hypot(o.x - p.x, o.y - p.y) > 18) continue;
       if ((p.refused[o.id] ?? -Infinity) > state.tick - REFUSE_COOLDOWN) continue;
       // 以武會友：陌生人也能過招，但對他有成見（好感 < 0）就不找。
       const like = aff(state, p, o);
@@ -218,7 +218,9 @@ export function candidates(state, p, scorePois) {
     list = out.filter((c) => SLEEPS.has(c.kind));
   } else if (hungry) {
     forced = '太餓了，先找吃的';
-    const eats = out.filter((c) => EATS.has(c.kind) || c.kind === 'deliver');
+    // 鍋裡沒飯但生莓夠時，餓的人也可以先煮（loop 9 診斷：遠征時家裡人少，飢餓時間裡約一半是「沒飯、生莓夠」卻沒人煮）。
+    const cookFirst = state.stock.meal === 0 && state.stock.raw >= COOK_RAW;
+    const eats = out.filter((c) => EATS.has(c.kind) || c.kind === 'deliver' || (cookFirst && c.kind === 'cook'));
     if (eats.length) list = eats;
   }
   list.sort((a, b) => b.score - a.score);

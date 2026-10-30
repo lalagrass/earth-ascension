@@ -4,6 +4,7 @@ import { seedHolder, nextRand, randInt } from './rng.mjs';
 import { walkable, nearestWalkable } from './map.mjs';
 import { findPath } from './path.mjs';
 import { setTile } from './build.mjs';
+import { kindBlocked } from './expedition.mjs';
 
 const THROUGH = { F: DEFENSE.FENCE_COST };
 
@@ -47,12 +48,27 @@ export function spawnEnemy(state, kind, x) {
   return e;
 }
 
+// M9 守巢的敵人：站在巢旁不動，不算進侵擾統計。
+export function spawnGuard(state, nest, kind, i) {
+  const s = nearestWalkable(state.map, nest.x - 1 + i, nest.y + (nest.y > 20 ? -1 : 1));
+  const def = ENEMIES[kind];
+  const e = { id: `e${state.enemySeq++}`, kind, label: `守巢${def.label}`, x: s.x, y: s.y, hp: def.hp, hpMax: def.hp,
+    mode: 'guard', nest: nest.id, path: [], wait: 0, born: state.tick, hitBy: [], stolen: null };
+  state.enemies.push(e);
+  nest.guards.push(e.id);
+  return e;
+}
+
 export function startRaids(state) {
   while (state.raidAt < state.raids.length && state.raids[state.raidAt].tick <= state.tick) {
     const r = state.raids[state.raidAt++];
-    r.kinds.forEach((k, i) => spawnEnemy(state, k, r.xs[i]));
-    const names = [...new Set(r.kinds.map((k) => ENEMIES[k].label))].join('和');
-    state.events.push({ tick: state.tick, kind: 'raid', text: `${names}從南邊山林來了（${r.kinds.length}）` });
+    // M9：巢被拆掉的敵人不再來。
+    const kinds = r.kinds.filter((k) => !kindBlocked(state, k));
+    state.counts.scheduled = (state.counts.scheduled || 0) + r.kinds.length;
+    kinds.forEach((k) => spawnEnemy(state, k, r.xs[r.kinds.indexOf(k)]));
+    if (!kinds.length) { state.events.push({ tick: state.tick, kind: 'calm', text: '今天山林很安靜' }); continue; }
+    const names = [...new Set(kinds.map((k) => ENEMIES[k].label))].join('和');
+    state.events.push({ tick: state.tick, kind: 'raid', text: `${names}從南邊山林來了（${kinds.length}）` });
     state.counts.raids = (state.counts.raids || 0) + 1;
     state.threat += DEFENSE.THREAT_RAID;
     alarm(state);
@@ -63,6 +79,7 @@ export function startRaids(state) {
 // loop 7 診斷：沒有警報時，敵人在場期間大家只做了 269 次決定，多半在練功、閒逛、聊天裡等它做完。
 function alarm(state) {
   for (const p of state.people) {
+    if (p.exp) continue; // 遠征隊在外面，聽不到
     const k = p.task?.kind;
     const wandering = p.act === 'walk' && k === 'wander';
     if (!(wandering || (p.act === 'do' && DEFENSE.ALARM_BREAKS.includes(k)) || (p.act === 'idle' && !p.task))) continue;
@@ -133,6 +150,12 @@ function moveEnemy(state, e, speed) {
 export function stepEnemies(state) {
   state.threat *= DEFENSE.THREAT_DECAY;
   for (const e of state.enemies) {
+    if (e.mode === 'guard') {
+      if (e.hp <= 0) { e.gone = true; state.events.push({ tick: state.tick, kind: 'guard', text: `${e.label}倒下了` }); continue; }
+      const foes = engaged(state, e);
+      for (const p of foes) p.needs.energy = Math.max(0, p.needs.energy - ENEMIES[e.kind].hit / foes.length);
+      continue;
+    }
     if (e.mode !== 'flee' && e.hp <= 0) {
       e.mode = 'beaten';
       state.events.push({ tick: state.tick, kind: 'repel', text: `${e.hitBy.map((id) => state.people.find((p) => p.id === id)?.name ?? '路人').join('、')}打退了${e.label}` });

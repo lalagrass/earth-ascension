@@ -199,10 +199,11 @@ export const flows = [
       expect('A10 專長有守衛', (await page.locator('[data-focus="guard"]').count()) === 1);
       await page.click('[data-focus="guard"]');
       await page.click('[data-speed="16"]');
-      await page.waitForFunction(() => window.__sect.snapshot().enemies.length > 0, null, { timeout: 90000 });
+      // M9 起巢穴守衛一開局就在地圖上，只看來侵擾的敵人。
+      await page.waitForFunction(() => window.__sect.snapshot().enemies.some((e) => !e.nest), null, { timeout: 90000 });
       await page.click('[data-speed="1"]');
       let s = await snap(page);
-      const e = s.enemies[0];
+      const e = s.enemies.find((x) => !x.nest);
       expect('A10 侵擾時地圖上有敵人與血量', e && e.hp > 0 && e.hpMax > 0, JSON.stringify(e && { kind: e.kind, hp: e.hp, mode: e.mode }));
       expect('A10 紀事寫出敵人來了', /來了/.test(await page.textContent('#events')));
       await page.waitForFunction(() => window.__sect.snapshot().people.some((p) => p.task?.kind === 'fight' && p.act === 'do'), null, { timeout: 60000 });
@@ -233,6 +234,42 @@ export const flows = [
       expect('A10 人物卡寫來訪與去留考量', /來訪中/.test(t) && /(想留下|還在猶豫)/.test(t), t);
       expect('A10 紀事寫來訪', /上山來訪/.test(await page.textContent('#events')));
       await shot('guest');
+    },
+  },
+  {
+    name: 'm9-expedition',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.fill('#seed', '4');
+      await page.click('#begin');
+      expect('A9 面板列出兩處巢穴', (await page.locator('#expedition [data-nest-row]').count()) === 2);
+      await page.click('[data-speed="16"]');
+      // 第 3 日 9 時後、按鈕可以按時暫停。
+      await page.waitForFunction(() => window.__sect.snapshot().tick >= 2 * 1440 + 540 && !document.querySelector('[data-nest="den"]')?.disabled, null, { timeout: 180000 });
+      await page.click('[data-speed="0"]');
+      await wait(page, 300);
+      const row = await page.textContent('#expedition [data-nest-row="den"]');
+      expect('A9 面板寫出會去的人', /會去：/.test(row), row);
+      await shot('panel');
+      await page.click('[data-nest="den"]');
+      await wait(page, 300);
+      const a = await snap(page);
+      expect('A9 按下後組隊出發', a.expedition?.nest === 'den' && a.expedition.members.length >= 2, JSON.stringify(a.expedition));
+      expect('A9 紀事寫出發', /出發討伐野豬窩/.test(await page.textContent('#events')));
+      await page.click('[data-speed="4"]');
+      await wait(page, 1500);
+      await page.click('[data-speed="0"]');
+      await wait(page, 300);
+      const b = await snap(page);
+      const ph = await page.getAttribute('#expedition [data-exp-phase]', 'data-exp-phase').catch(() => null);
+      expect('A9 面板顯示階段', ph === (b.expedition?.phase ?? null) && !!ph, `${ph} / ${b.expedition?.phase}`);
+      const m = b.people.find((p) => p.id === a.expedition.members[0]);
+      const m0 = a.people.find((p) => p.id === m.id);
+      expect('A9 隊員往巢走', Math.hypot(m.x - 58, m.y - 36) < Math.hypot(m0.x - 58, m0.y - 36), `${m0.x.toFixed(1)},${m0.y.toFixed(1)}→${m.x.toFixed(1)},${m.y.toFixed(1)}`);
+      await shot('march');
+      await page.setViewportSize({ width: 390, height: 844 });
+      await wait(page, 300);
+      await shot('narrow');
     },
   },
 ];

@@ -14,29 +14,33 @@ const DAYS = arg('days', 5);
 const TICKS = DAYS * TICKS_PER_DAY;
 
 const failures = [];
-const pooled = {};
-for (let seed = 1; seed <= SEEDS; seed++) {
-  const s = createWorld({ seed, people: rosterFor(seed) });
-  const ctx = { seed, failures: [], samples: pooled, prev: new Map(), lastMove: new Map() };
-  for (let t = 0; t < TICKS && ctx.failures.length < 5; t++) {
-    script(s);
-    for (const p of s.people) ctx.prev.set(p.id, { x: p.x, y: p.y });
-    step(s);
-    for (const inv of invariants) inv(s, ctx);
-    for (const fn of samplers) fn(s, ctx);
+// 兩個情境：base（M2–M8 的自然遊玩）與 exp（M9：第 3 日起討伐野豬窩）。
+for (const scenario of ['base', 'exp']) {
+  const pooled = {};
+  for (let seed = 1; seed <= SEEDS; seed++) {
+    const s = createWorld({ seed, people: rosterFor(seed) });
+    const ctx = { seed, failures: [], samples: pooled, prev: new Map(), lastMove: new Map() };
+    for (let t = 0; t < TICKS && ctx.failures.length < 5; t++) {
+      script(s, scenario);
+      for (const p of s.people) ctx.prev.set(p.id, { x: p.x, y: p.y });
+      step(s);
+      for (const inv of invariants) inv(s, ctx);
+      for (const fn of samplers) fn(s, ctx);
+    }
+    perSeed(s, ctx);
+    const again = createWorld({ seed, people: rosterFor(seed) });
+    while (again.tick < s.tick) { script(again, scenario); step(again); }
+    if (stateHash(again) !== stateHash(s)) ctx.failures.push('決定論：同種子兩次雜湊不同');
+    failures.push(...ctx.failures.map((f) => `[${scenario}] seed ${seed}: ${f}`));
+    if (scenario === 'base') console.log(`seed ${String(seed).padStart(2)} hash ${stateHash(s)} ${summarize(s)}`);
   }
-  perSeed(s, ctx);
-  const again = createWorld({ seed, people: rosterFor(seed) });
-  while (again.tick < s.tick) { script(again); step(again); }
-  if (stateHash(again) !== stateHash(s)) ctx.failures.push('決定論：同種子兩次雜湊不同');
-  failures.push(...ctx.failures.map((f) => `seed ${seed}: ${f}`));
-  console.log(`seed ${String(seed).padStart(2)} hash ${stateHash(s)} ${summarize(s)}`);
+  const verdict = judge(pooled, scenario);
+  console.log(`--- 情境 ${scenario} ---`);
+  console.log(verdict.lines.join('\n'));
+  failures.push(...verdict.failures.map((f) => `[${scenario}] ${f}`));
 }
-const verdict = judge(pooled);
-console.log(verdict.lines.join('\n'));
-failures.push(...verdict.failures);
 if (failures.length) {
   console.error(`\nFAIL ${failures.length}\n` + failures.slice(0, 20).join('\n'));
   process.exit(1);
 }
-console.log(`\nOK ${SEEDS} seeds × ${DAYS} days`);
+console.log(`\nOK ${SEEDS} seeds × ${DAYS} days × 2 scenarios`);

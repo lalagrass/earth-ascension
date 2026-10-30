@@ -315,3 +315,22 @@ export const SECT = {
   RULE_DRILL: 0.2, RULE_CHAT: 1.25, RULE_JOIN: 0.15, RULE_FREE: 0.1,
 };
 ACTS.leave = { label: '下山', dur: 0, per: {} };
+
+// ---------- M9 遠征 ----------
+export const NESTS = [
+  { id: 'den', label: '野豬窩', kind: 'boar', x: 58, y: 36, hp: 120, guards: ['boar', 'boar'] },
+  { id: 'camp', label: '山寨', kind: 'bandit', x: 58, y: 6, hp: 200, guards: ['bandit', 'bandit', 'bandit'] },
+];
+export const EXPEDITION = {
+  PARTY_MIN: 2, PARTY_MAX: 3, MIN_ENERGY: 60, MIN_FOOD: 50, PACK: 2,
+  STAGE_R: 4, RAZE: 0.5,
+  EAT_AT: 45,
+  MIN_RATIONS: 1,        // loop 9 加：沒帶糧就出征的那幾趟（種子 6）撤退後全隊餓著過夜，見 M09 實作中的變更
+  RATION_FOOD: 30,
+  RETREAT_ENERGY: 25, RETREAT_FOOD: 20, RETREAT_HOUR: 20, RETURN_MAX: 600,
+};
+Object.assign(ACTS, {
+  expedition: { label: '遠征', dur: 0, per: {} },
+  raze: { label: '拆巢', dur: 9999, per: { energy: -0.02 } },
+  ration: { label: '吃乾糧', dur: 10, per: {} },
+});

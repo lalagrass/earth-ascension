@@ -3,7 +3,8 @@ import {
   START_STOCK, COOK_RAW, FORAGE_TAKE, START_MATERIALS, HEARTH_LEVELS,
 } from './data.mjs';
 import { placeSite, removeSite, addWork, takeResource, workSpot, blockCell, cellClear } from './build.mjs';
-import { raidSchedule, startRaids, stepEnemies, activeEnemies } from './raid.mjs';
+import { raidSchedule, startRaids, stepEnemies, activeEnemies, spawnGuard } from './raid.mjs';
+import { newNests, nestOf, canLaunch, retreatReason } from './expedition.mjs';
 import { visitSchedule, visitChance, appeal, reasonText, shouldApprentice, foundingPlan, freeName } from './recruit.mjs';
 import { seedHolder, nextRand, randInt, hashString } from './rng.mjs';
 import { buildMap, walkable, nearestWalkable } from './map.mjs';
@@ -12,7 +13,7 @@ import { fromTemplate, makePerson, speedOf } from './person.mjs';
 import { decayNeeds, applyPer, isNight } from './needs.mjs';
 import { candidates, interruptible, sparInterruptible, willingToChat, willingToSpar, REFUSE_COOLDOWN } from './ai.mjs';
 import { newSkills, grow, SKILL_OF_TASK, workTimeMul, buildRate, extraMeal, extraTake, skillLabel } from './skills.mjs';
-import { FOOT_STEP, SOCIAL, MARTIAL, DEFENSE, RECRUIT, SECT } from './data.mjs';
+import { FOOT_STEP, SOCIAL, MARTIAL, DEFENSE, RECRUIT, SECT, EXPEDITION, NESTS } from './data.mjs';
 import { addAff, compat, teachTopic, withStage, atLeast } from './social.mjs';
 import { newMoves, practice, moveLabel, learn, drillMove, prowess } from './martial.mjs';
 
@@ -134,6 +135,9 @@ export function createWorld({ seed = 1, people }) {
   state.visits = visitSchedule(seed);  // M8：開局排好
   state.visitAt = 0;
   state.sect = null;
+  state.nests = newNests();   // M9
+  for (const n of state.nests) NESTS.find((x) => x.id === n.id).guards.forEach((k, i) => spawnGuard(state, n, k, i));
+  state.expedition = null;
   state.log = [];
   return state;
 }
@@ -153,6 +157,8 @@ function initPerson(p, i) {
     p.forced = null;
     p.guest = null;
     p.master = null;
+    p.exp = false;
+    p.pack = 0;
     return p;
 }
 
@@ -296,6 +302,7 @@ function arrive(state, p) {
   if (PAIR.has(t.kind)) return tryChat(state, p);
   if (t.kind === 'fight') return engage(state, p);
   if (t.kind === 'leave') return removePerson(state, p);
+  if (t.kind === 'expedition') { p.task = null; p.act = 'idle'; p.wait = 3; return; }
   startDoing(state, p);
 }
 
@@ -477,6 +484,7 @@ function finish(state, p) {
     const e = state.enemies.find((x) => x.id === t.enemy);
     if (t.dealt > 0 && (!e || e.hp <= 0)) comprehend(state, p, practice(state, p, drillMove(p), DEFENSE.FIGHT_MUL));
   }
+  if (t.kind === 'ration') { p.pack--; L.mealsEaten++; p.needs.food = Math.min(100, p.needs.food + EXPEDITION.RATION_FOOD); }
   if (t.kind === 'repair') {
     blockCell(state, { x: t.cx, y: t.cy, to: 'F' }); // 跟施工一樣：路線經過這格的人改道
     L.woodUsed += p.hold.wood; p.hold.wood = 0;
@@ -619,6 +627,7 @@ function stepPerson(state, p) {
       if (company) applyPer(p, { social: 0.4 * company });
     }
     if (p.task.kind === 'fight') { fightTick(state, p); return; }
+    if (p.task.kind === 'raze') { razeTick(state, p); return; }
     if (p.task.kind === 'repair' && p.task.left <= 1 && !cellClear(state, { x: p.task.cx, y: p.task.cy })) { p.actLabel = '等人讓開'; return; }
     if (p.task.kind === 'build') {
       const site = byId(state.sites, p.task.site);
@@ -631,9 +640,131 @@ function stepPerson(state, p) {
   } else if (p.wait > 0) {
     p.wait--;
     if (!p.task) applyPer(p, { fun: 0.03 });
+  } else if (p.exp) {
+    expAssign(state, p);
   } else {
     choose(state, p);
   }
+}
+
+// ---------- M9 遠征 ----------
+export function startExpedition(state, nestId) {
+  const c = canLaunch(state, nestId);
+  if (!c.ok) return c;
+  const nest = nestOf(state, nestId);
+  let packed = 0;
+  for (const p of c.party) {
+    release(state, p);
+    p.path = []; p.act = 'idle'; p.wait = 0; p.exp = true;
+    p.pack = Math.min(EXPEDITION.PACK, state.stock.meal);
+    state.stock.meal -= p.pack; packed += p.pack;
+    p.bubble = { text: '出發！', until: state.tick + 60 };
+  }
+  state.expedition = { nest: nestId, members: c.party.map((p) => p.id), phase: 'march', started: state.tick, phaseAt: state.tick };
+  state.events.push({ tick: state.tick, kind: 'exp', text: `${c.party.map((p) => p.name).join('、')}出發討伐${nest.label}（帶 ${packed} 份乾糧）` });
+  state.counts.expeditions = (state.counts.expeditions || 0) + 1;
+  return { ok: true, party: c.party };
+}
+
+const expMembers = (state) => state.expedition.members.map((id) => byId(state.people, id)).filter(Boolean);
+
+function setPhase(state, phase) {
+  state.expedition.phase = phase;
+  state.expedition.phaseAt = state.tick;
+  // 換階段時，讓隊員放下手上的事重新分派（打到一半的除外：fightTick 自己會收）。
+  for (const p of expMembers(state)) if (p.task?.kind !== 'ration') { release(state, p); p.path = []; p.act = 'idle'; p.wait = 0; }
+}
+
+function stepExpedition(state) {
+  const x = state.expedition;
+  if (!x) return;
+  const nest = nestOf(state, x.nest);
+  const ppl = expMembers(state);
+  const near = (p, spot, r) => Math.hypot(p.x - spot.x, p.y - spot.y) <= r;
+  if (x.phase !== 'return') {
+    const why = retreatReason(state, ppl, clock(state).hour);
+    if (why) {
+      x.result = 'retreat';
+      state.events.push({ tick: state.tick, kind: 'exp', text: `遠征隊撤退：${why}` });
+      state.counts.retreats = (state.counts.retreats || 0) + 1;
+      // 巢與守衛回滿血；倒下的守衛補回來。
+      nest.hp = nest.hpMax;
+      const alive = state.enemies.filter((e) => e.nest === nest.id);
+      for (const e of alive) e.hp = e.hpMax;
+      const def = NESTS.find((n) => n.id === nest.id);
+      nest.guards = alive.map((e) => e.id);
+      for (let i = alive.length; i < def.guards.length; i++) spawnGuard(state, nest, def.guards[i], i);
+      setPhase(state, 'return');
+      return;
+    }
+  }
+  const guards = state.enemies.filter((e) => e.nest === nest.id && e.hp > 0);
+  if (x.phase === 'march' && ppl.every((p) => near(p, nest, EXPEDITION.STAGE_R + 2))) setPhase(state, 'fight');
+  else if (x.phase === 'fight' && !guards.length) setPhase(state, 'raze');
+  else if (x.phase === 'raze' && nest.hp <= 0) {
+    nest.cleared = true; x.result = 'cleared';
+    state.events.push({ tick: state.tick, kind: 'cleared', text: `${nest.label}被拆了，${ENEMY_LABEL[nest.kind]}不再來了` });
+    state.counts.cleared = (state.counts.cleared || 0) + 1;
+    state.clearedAt ??= {};
+    state.clearedAt[nest.id] = state.tick;
+    setPhase(state, 'return');
+  } else if (x.phase === 'return') {
+    const home = state.pois.find((q) => q.id === 'yard');
+    if (ppl.every((p) => near(p, home, 4)) || state.tick - x.phaseAt > EXPEDITION.RETURN_MAX) {
+      for (const p of ppl) {
+        release(state, p);
+        state.stock.meal += p.pack; p.pack = 0;
+        p.exp = false; p.path = []; p.act = 'idle'; p.wait = 0;
+      }
+      state.events.push({ tick: state.tick, kind: 'exp', text: x.result === 'cleared' ? '遠征隊凱旋回山' : '遠征隊回到山上' });
+      state.expedition = null;
+    }
+  }
+}
+
+const ENEMY_LABEL = { boar: '野豬', bandit: '山賊' };
+
+// 隊員閒下來時由遠征分派下一件事。
+function expAssign(state, p) {
+  const x = state.expedition;
+  const nest = nestOf(state, x.nest);
+  const goTo = (spot, label) => {
+    const s = nearestWalkable(state.map, spot.x, spot.y);
+    const path = s && pathTo(state, p, s);
+    p.task = { kind: 'expedition' };
+    p.actLabel = label;
+    if (path && path.length) { p.path = path; p.act = 'walk'; } else { p.task = null; p.act = 'idle'; p.wait = 5; }
+  };
+  if (p.needs.food < EXPEDITION.EAT_AT && p.pack > 0 && x.phase !== 'fight') {
+    p.task = { kind: 'ration' };
+    startDoing(state, p);
+    return;
+  }
+  const i = x.members.indexOf(p.id);
+  const side = nest.y > 20 ? -1 : 1;
+  if (x.phase === 'march') return goTo({ x: nest.x - 2 + i * 2, y: nest.y + side * 3 }, `遠征：行軍到${nest.label}`);
+  if (x.phase === 'return') return goTo(state.pois.find((q) => q.id === 'yard'), '遠征：回山');
+  if (x.phase === 'fight') {
+    const guards = state.enemies.filter((e) => e.nest === nest.id && e.hp > 0);
+    if (!guards.length) { p.wait = 5; return; }
+    const e = guards.reduce((a, b) => (Math.hypot(a.x - p.x, a.y - p.y) <= Math.hypot(b.x - p.x, b.y - p.y) ? a : b));
+    p.task = { kind: 'fight', enemy: e.id, chase: 120, dealt: 0 };
+    p.actLabel = `遠征：迎戰${e.label}`;
+    engage(state, p);
+    return;
+  }
+  // 拆巢：走到巢旁，開拆。
+  if (Math.hypot(p.x - nest.x, p.y - nest.y) > 1.6) return goTo({ x: nest.x + (i - 1), y: nest.y + side }, `遠征：走到${nest.label}旁`);
+  p.task = { kind: 'raze' };
+  startDoing(state, p);
+  p.actLabel = `拆${nest.label}`;
+}
+
+function razeTick(state, p) {
+  const nest = nestOf(state, state.expedition?.nest);
+  if (!nest || nest.hp <= 0 || state.expedition.phase !== 'raze') { finish(state, p); return; }
+  applyPer(p, ACTS.raze.per);
+  nest.hp = Math.max(0, nest.hp - EXPEDITION.RAZE * buildRate(p));
 }
 
 // 迎敵：站到敵人旁邊才開打；敵人走開就再追。回傳是否已開打。
@@ -707,6 +838,7 @@ export function step(state) {
   regrow(state);
   startRaids(state);
   stepRecruit(state);
+  stepExpedition(state);
   for (const p of [...state.people]) if (state.people.includes(p)) stepPerson(state, p);
   stepEnemies(state);
   // 新立起的牆或柵擋住了別人的路：沿原終點重找，找不到就放棄手上的事。

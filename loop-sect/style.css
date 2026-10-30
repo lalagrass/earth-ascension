@@ -79,3 +79,5 @@ label { display: block; margin: 8px 0; }
 .roster .sect { margin-right: 6px; color: #7a3b1c; }
 .roster button.guest { border-style: dashed; }
 .identity { margin: 2px 0 0; font-size: 12px; color: #7a3b1c; }
+#expedition { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 6px; }
+#expedition .phase { color: #b8322a; font-weight: bold; }
