@@ -20,6 +20,7 @@ import { outers, skipsChores, emergency, quotaOf, setDuty, setPrio, canPromote, 
 import { CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES } from './data.mjs';
 import { isLabor, disciples, laborers, laborCap, canHire, hire, canInvite, invite, avgAff, togglePause, MATS, moodLabel, moodParts, seasonOf, aff, compat, defaultAnswers, personalityFrom, capacity, canRecruit, recruit, recruitNeed, mapStage, setPost, phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf, incenseOf } from './sim.mjs';
 import { nearestType, typeLabel } from './mbti.mjs';
+import { archLabel } from './archetype.mjs';
 import { compProgress } from './comprehend.mjs';
 import { ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS } from './data.mjs';
 import { EXP_STYLES } from './data.mjs';
@@ -168,7 +169,7 @@ function panel() {
     $('labor').innerHTML = `<button id="hire-go" ${c.ok ? '' : 'disabled'}>雇工（香火錢 ${ECON.hireCoin}、糧 ${ECON.hireFood}；日薪 ${ECON.wage}）</button> <span class="k">${c.ok ? `應徵：${c.next.name}` : c.why}</span>` +
       laborers(S).map((d) => { const iv = canInvite(S, d.id);
         return `<div class="card labor"><b>${d.name}</b> <span class="k">${d.task ? (d.task.act === 'build' && d.task.phase !== 'do' ? '搬料' : ACTIVITIES[d.task.act]?.name) : '待命'}｜${d.reason}${d.unpaid ? `｜欠薪 ${d.unpaid} 日` : ''}</span>
-        <div class="k">性格：${d.personality.map((p) => d.known.includes(p) ? `<span title="${TRAITS[p].desc}">${TRAITS[p].name}</span>` : '？？').join('、')}｜心情 ${d.mood | 0}｜力氣 ${d.skills.strength.toFixed(0)}</div>
+        ${d.arch ? `<div class="k">原型：${archLabel(d.arch)}</div>` : ''}<div class="k">性格：${d.personality.map((p) => d.known.includes(p) ? `<span title="${TRAITS[p].desc}">${TRAITS[p].name}</span>` : '？？').join('、')}｜心情 ${d.mood | 0}｜力氣 ${d.skills.strength.toFixed(0)}</div>
         <div class="k">根骨：${d.rootKnown ? `${'★'.repeat(d.root)}${'☆'.repeat(5 - d.root)} ${ROOT.names[d.root]}` : `？？（共事 ${Math.floor(d.cowork || 0)}/${ROOT.revealAt}）`}｜同門好感 ${avgAff(S, d).toFixed(0)}</div>
         <button data-invite="${d.id}" ${iv.ok ? '' : 'disabled'}>邀入外門</button> <span class="k">${iv.ok ? '可以邀請了！' : iv.why}</span></div>`; }).join('');
     $('hire-go').onclick = () => { hire(S); panel(); }; }

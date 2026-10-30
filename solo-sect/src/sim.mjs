@@ -39,6 +39,7 @@ import { econDaily, schoolStep, startSchool, E as econOf } from './economy.mjs';
 import { threatDaily, threatStep, raidResolve, bandStep } from './threat.mjs';
 import { lairDaily, lairStep } from './lair.mjs';
 import { cliqueDaily, cliqueTrain } from './clique.mjs';
+import { archRecruit } from './archetype.mjs';
 import { removeDisciple } from './gen.mjs';
 const EH = { rand: (s) => rand(s), cancelTask: (s, d, w) => cancelTask(s, d, w), think: (s, d, id) => think(s, d, id), removeDisciple: (s, d, w) => removeDisciple(s, d, w), gate: NODES.gate };
 import { freeSlot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE, STOCK_RESV, stockKey, stockReserved } from './core.mjs';
@@ -149,7 +150,7 @@ export function recruit(s, answers) {
   const c = canRecruit(s); if (!c.ok) return c;
   const { personality, known } = personalityFrom(c.next, answers);
   if (rand(s) < 0.3) { const x = rand(s) < 0.5 ? 'lazy' : 'stubborn'; if (!personality.includes(x)) personality.push(x); } // v0.97 一般弟子也可能懶散／較真（暗）
-  s.res.food -= RECRUIT.food; book(s, 'out', 'food', RECRUIT.food); const d = mkDisciple(c.next, 1, 'gate', personality, known); d.together = 0; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); s.ds.push(d); if (c.next.school) econOf(s).pool.shift();
+  s.res.food -= RECRUIT.food; book(s, 'out', 'food', RECRUIT.food); const d = mkDisciple(c.next, 1, 'gate', personality, known); d.together = 0; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); if (s.draw) { const A = archRecruit(() => rand(s)); Object.assign(d, { arch: A.id, root: A.root, wu: A.wu }); if (!d.personality.includes(A.trait)) d.personality.push(A.trait); } /* loop21 原型 */ s.ds.push(d); if (c.next.school) econOf(s).pool.shift();
   for (const o of s.ds) if (o !== d) initPair(s, o, d, 5); sectRecruit(s, d);
   log(s, `${d.name}慕名從村路上山，拜入門下。`); return { ok: true, d };
 }
