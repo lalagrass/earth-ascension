@@ -1,4 +1,4 @@
-import {blueprintInfo} from './homestead-construction.mjs';
+import {blueprintInfo,inspectionInfo,plotAt} from './homestead-construction.mjs';
 import {HOME_STYLES,normalizeHomeName,homeLook,setHomeLook} from './homestead-look.mjs';
 import {RECIPES,MEAL_STYLES,mealDecision,nextUnlocks,preparedCount,recipeAccess,recipeReason,buildAccess,RESOURCE_NAMES} from './homestead-content.mjs';
 import {FEELINGS,currentFeelings,restRate} from './homestead-living.mjs';
@@ -16,6 +16,14 @@ let pointerHeld = false;
 document.addEventListener('pointerdown', () => {pointerHeld=true;});
 for (const event of ['pointerup','pointercancel']) document.addEventListener(event, () => {pointerHeld=false;});
 window.addEventListener('blur', () => {pointerHeld=false;});
+let inspected=null;
+function renderInspection(){const ids=BUILDABLE.filter(id=>id==='hut'||s.fac.hut.stage>0).filter(id=>s.mode==='solo'||!['bed','workbench'].includes(id));const html='<option value="">選一個地塊</option>'+ids.map(id=>`<option value="${id}">${FACILITIES[id].label}</option>`).join('');if($('site-select').innerHTML!==html)$('site-select').innerHTML=html;if(!ids.includes(inspected))inspected=null;$('site-select').value=inspected||'';const q=inspectionInfo(s,inspected);$('site-inspector').hidden=!q;if(!q)return;$('site-title').textContent=q.name;$('site-info').textContent=q.text;$('site-pause').hidden=$('site-focus').hidden=!q.site||s.mode!=='solo';$('site-pause').textContent=q.paused?'繼續工程':'暫停工程';$('site-focus').disabled=!!q.paused;$('site-focus').textContent=s.focusProject===inspected?'取消優先（照常做）':'這項先做';}
+$('site-select').onchange=()=>{inspected=$('site-select').value||null;closeBlueprint();render();};
+$('site-close').onclick=()=>{inspected=null;render();$('site-select').focus();};
+document.querySelector('.plot-controls').onkeydown=e=>{if(e.key==='Escape'&&inspected&&!e.defaultPrevented){e.preventDefault();$('site-close').click();}};
+$('site-pause').onclick=()=>{if(inspected&&s.fac[inspected].site){pauseProject(s,inspected,!s.fac[inspected].site.paused);render();}};
+$('site-focus').onclick=()=>{if(inspected){setProjectFocus(s,s.focusProject===inspected?null:inspected);render();}};
+$('land').onclick=e=>{const r=$('land').getBoundingClientRect(),c=getComputedStyle($('land')),bx=parseFloat(c.borderLeftWidth),by=parseFloat(c.borderTopWidth),x=(e.clientX-r.left-bx)*900/(r.width-2*bx),y=(e.clientY-r.top-by)*560/(r.height-2*by);inspected=plotAt(s,x,y);closeBlueprint();render();if(inspected)$('site-select').focus({preventScroll:true});};
 let blueprintDraft=null;
 function closeBlueprint(){blueprintDraft=null;$('blueprint-preview').hidden=true;draw();}
 function renderBlueprint(){const d=blueprintDraft;$('blueprint-preview').hidden=!d;if(!d)return;const q=blueprintInfo(s,d.id,d.stage);$('blueprint-info').textContent=`${q.name}：木${q.cost}，庫存可用${q.available}，尚缺${q.shortage}。${q.effect}。${q.reason||'可在此立計畫；木料由主角逐根搬到工地，不在確認時扣料。'}${q.craft?'部件在木作台加工後搬回屋內安裝。':''}`;$('blueprint-confirm').disabled=!q.ok;}
@@ -49,13 +57,13 @@ $('transfer-dialog').addEventListener('keydown', (e) => { if (e.key !== 'Tab') r
 $('transfer-dialog').addEventListener('cancel', (e) => { e.preventDefault(); clearTransfer(); show('已取消轉接；存檔未改。'); });
 function startScreen(on) { $('start').style.display = on ? 'grid' : 'none'; document.querySelector('main').inert = on; document.querySelector('header').inert = on; if (on) $('name').focus(); }
 $('start').addEventListener('keydown', (e) => { if (e.key === 'Escape' && s) { e.preventDefault(); startScreen(false); $('new').focus(); } if (e.key !== 'Tab') return; const items = [...$('start').querySelectorAll('a[href],button:not(:disabled),input,select')].filter(el => el.getClientRects().length); const first = items[0], last = items.at(-1); if (e.shiftKey && document.activeElement === first) {e.preventDefault();last.focus();} else if (!e.shiftKey && document.activeElement === last) {e.preventDefault();first.focus();} });
-function begin(state) { closeBlueprint(); cancelLook(); clearTransfer(); s = state; speed = 1; acc = 0; startScreen(false); last = performance.now(); render(); }
+function begin(state) { inspected=null; closeBlueprint(); cancelLook(); clearTransfer(); s = state; speed = 1; acc = 0; startScreen(false); last = performance.now(); render(); }
 $('resume').disabled = !stored();
 $('begin').onclick = () => begin(createHomestead({ name: $('name').value, personality: $('personality').value, mode: new URLSearchParams(location.search).has('legacy') ? 'legacy' : 'solo' }));
 $('resume').onclick = () => { const r = loadHomestead(stored()); if (r.ok) begin(r.state); else show(r.error); };
-$('new').onclick = () => { closeBlueprint(); cancelLook(); clearTransfer(); speed = 0; startScreen(true); $('resume').disabled = !stored(); };
+$('new').onclick = () => { inspected=null; closeBlueprint(); cancelLook(); clearTransfer(); speed = 0; startScreen(true); $('resume').disabled = !stored(); };
 $('save').onclick = () => { if (!s) return; try { localStorage.setItem(SAVE_KEY, saveHomestead(s)); clearTransfer(); show('荒居已存檔。'); } catch { show('無法寫入本機存檔。'); } };
-$('load').onclick = () => { const r = loadHomestead(stored()); if (r.ok) { closeBlueprint(); cancelLook(); clearTransfer(); s = r.state; show('荒居讀檔完成。'); render(); } else show(r.error); };
+$('load').onclick = () => { const r = loadHomestead(stored()); if (r.ok) { inspected=null; closeBlueprint(); cancelLook(); clearTransfer(); s = r.state; show('荒居讀檔完成。'); render(); } else show(r.error); };
 $('transfer-preview').onclick = () => {
   speed = 0; const raw = stored(); const r = previewTransfer(raw);
   clearTransfer(); if (!r.ok) { $('transfer-detail').textContent = r.error; const back = document.createElement('button'); back.id = 'transfer-cancel'; back.textContent = '返回'; $('transfer-detail').append(back); openPreview(); return; }
@@ -79,12 +87,12 @@ $('build').onclick = (e) => { const preview=e.target.closest('[data-preview]');i
 $('community').onclick = (e) => { const b = e.target.closest('[data-social]'); if (!b) return; const action = { invite: inviteHelper, apprentice: acceptApprentice, leave: askHelperLeave }[b.dataset.social]; if (action?.(s)) show('已記入荒居紀事。'); render(); };
 $('helper-orders').onclick = (e) => { const b = e.target.closest('[data-helper]'); if (b) { setHelperOrder(s, b.dataset.helper === 'auto' ? null : b.dataset.helper); render(); } };
 
-function draw() { if(s) drawHomestead(ctx,s,lookDraft,blueprintDraft); }
+function draw() { if(s) drawHomestead(ctx,s,lookDraft,blueprintDraft,inspected); }
 function render() {
   if (!s || pointerHeld) return;
   const focused = document.activeElement; const focusSelector = focused?.id ? '#' + CSS.escape(focused.id) : ['act','recipe','eat','build','preview','focus','project','social','helper'].find(k => focused?.dataset?.[k]) ? Object.entries(focused.dataset).map(([k,v]) => `[data-${k}="${CSS.escape(v)}"]`).join('') : null;
   const p = s.person, task = p.task;
-  renderBlueprint();
+  renderInspection();renderBlueprint();
   $('time').textContent = `第 ${s.day} 日 · ${Math.floor((s.t % DAY) / DAY * 24).toString().padStart(2, '0')}:00`;
   const feeling=currentFeelings(s);
   const target = supplyTargets(s), resources=resourceSummary(s);

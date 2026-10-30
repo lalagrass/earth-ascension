@@ -1,0 +1,151 @@
+{
+  "engine": "154.0.8037.57",
+  "route": "normal UI zero grants; pause/4x/16x; author",
+  "events": [
+    {
+      "name": "inspected in-transit wood",
+      "t": 141.75,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "carry": {
+        "kind": "wood",
+        "amount": 1,
+        "origin": "site"
+      },
+      "site": {
+        "need": {
+          "wood": 2
+        },
+        "delivered": {
+          "wood": 0
+        },
+        "reserved": {
+          "wood": 1
+        },
+        "work": 0,
+        "workNeed": 8,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "focus": null,
+      "text": "屋前長凳：備料／待施工。已交0/2木，在途1木，待運1木；施工／安裝0/8。主角正搬木料到這個工地。建好後：到長凳閒坐完成後，舒服感受+2持續60秒；不加工作增益。"
+    },
+    {
+      "name": "pause releases reservation, cargo remains real",
+      "t": 141.75,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "carry": {
+        "kind": "wood",
+        "amount": 1,
+        "origin": "wild"
+      },
+      "site": {
+        "need": {
+          "wood": 2
+        },
+        "delivered": {
+          "wood": 0
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 0,
+        "workNeed": 8,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": true
+      },
+      "focus": null,
+      "text": "屋前長凳：備料／待施工。已交0/2木，在途0木，待運2木；施工／安裝0/8。工程已暫停；材料與已施工進度保留，按繼續才會復工。建好後：到長凳閒坐完成後，舒服感受+2持續60秒；不加工作增益。"
+    },
+    {
+      "name": "keyboard chose next project",
+      "t": 141.75,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "carry": {
+        "kind": "wood",
+        "amount": 1,
+        "origin": "wild"
+      },
+      "site": {
+        "need": {
+          "wood": 2
+        },
+        "delivered": {
+          "wood": 0
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 0,
+        "workNeed": 8,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "focus": "flowers",
+      "text": "庭院花叢：備料／待施工。已交0/3木，在途0木，待運3木；施工／安裝0/10。材料未齊，庫存尚缺3木；主角會按生存／指派／工程意圖安排。建好後：長凳小憩完成可得看花感受+1持續60秒；不增加產量。"
+    },
+    {
+      "name": "completion becomes usable facility",
+      "t": 191.25,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "carry": null,
+      "site": {
+        "need": {
+          "wood": 2
+        },
+        "delivered": {
+          "wood": 0
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 0,
+        "workNeed": 8,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "focus": null,
+      "text": "庭院花叢：長凳小憩完成可得看花感受+1持續60秒；不增加產量。可繼續生活。"
+    }
+  ],
+  "errors": []
+}

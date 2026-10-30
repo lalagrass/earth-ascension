@@ -9,3 +9,5 @@ header{height:auto;min-height:70px;padding-bottom:10px}.resources{background:#3c
 #home-nav{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.card{scroll-margin-top:8px}@media(max-width:850px){.card{scroll-margin-top:calc(var(--home-header,130px) + 8px)}}
 
 #look-editor label{display:block;font-size:13px;margin:8px 0 4px}#look-editor select,#look-editor input{font:inherit;max-width:100%;padding:6px;border:1px solid #9d895f;border-radius:4px;background:#fffaf0}#look-status{font-size:12px;min-height:1.5em}#look-editor button{font-size:13px}
+
+.plot-controls{max-width:1050px;margin:12px auto}.plot-controls select{font:inherit;max-width:100%;padding:5px}#site-info,#blueprint-info{font-size:14px;line-height:1.6}#site-inspector h2{margin-top:10px}#site-inspector button{margin:4px 4px 0 0}
