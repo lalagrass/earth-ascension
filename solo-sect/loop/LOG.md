@@ -500,3 +500,12 @@
 - 以 Playwright 跑 smoke6（每個視窗大小新開 context）：挑戰帖選擇卡正確出現在「大事問我」佇列（顯示勝算約 17%、應戰／婉拒〔名聲 −1〕），點選後佇列清空（pending 0），主控台無錯誤。
 - 弟子卡摘要與折疊記憶在 loop45 已驗證，本輪未見回歸。
 - Mini retro：無程式變更；煙霧腳本留在本機 /tmp，未入庫（避免把環境相依腳本放進 repo）。
+
+## Loop 54 — 收尾驗證
+- 全套測試：遊戲 486 通過、sect-chronicle 383 通過、Python 53 OK；git diff --check 乾淨；golden 未變動；.serena/ 未提交。
+- 第五階段新增規則（cropcare、letterask）皆預設勾選、可在開局關閉，已加入開局接線測試（共 15 條規則）。
+
+### Retro #23（loops 53–54）
+- 好：十輪全部推送、無 force push；三個診斷工具（hunger/need/master）可重複使用。
+- 不好：本階段可做的玩法改動有限，大宗問題都需要擁有人做設計決定。
+- 下一步：見 ROADMAP 第六階段候選。
