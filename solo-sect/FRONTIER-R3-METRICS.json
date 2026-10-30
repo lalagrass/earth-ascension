@@ -1,0 +1,53 @@
+[
+  {
+    "personality": "quiet",
+    "worldSeconds": 4800,
+    "minH": 34.09500000000301,
+    "minE": 18.749999999999993,
+    "incursions": 8,
+    "scares": 8,
+    "wood": 2,
+    "autonomy": [
+      "shelter",
+      "hotFood",
+      "comfort",
+      "porch",
+      "personalize",
+      "herbs"
+    ]
+  },
+  {
+    "personality": "sociable",
+    "worldSeconds": 4800,
+    "minH": 34.09500000000301,
+    "minE": 18.600000000000634,
+    "incursions": 8,
+    "scares": 2,
+    "wood": 2,
+    "autonomy": [
+      "shelter",
+      "hotFood",
+      "porch",
+      "comfort",
+      "personalize",
+      "stew"
+    ]
+  },
+  {
+    "personality": "diligent",
+    "worldSeconds": 4800,
+    "minH": 34.09500000000301,
+    "minE": 18.749999999999993,
+    "incursions": 8,
+    "scares": 8,
+    "wood": 5,
+    "autonomy": [
+      "shelter",
+      "hotFood",
+      "pantry",
+      "comfort",
+      "personalize",
+      "herbs"
+    ]
+  }
+]

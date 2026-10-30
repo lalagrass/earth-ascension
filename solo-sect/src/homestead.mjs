@@ -1,3 +1,4 @@
+import {tickThreat} from './homestead-threat.mjs';
 import {move,validSpatial} from './homestead-spatial.mjs';
 import {FRONTIER_VERSION,freshFrontier,validFrontier,upgradeFrontier} from './homestead-frontier.mjs';
 import{freshUseResults,recordMealUse}from'./homestead-autonomy-learning.mjs';
@@ -447,6 +448,7 @@ function tickQuarter(s,dt) {
   s.wild.herbs = Math.min(3, s.wild.herbs + dt / 40);
   if (s.plot.state === 'growing') { s.plot.growth += dt; if (s.plot.growth >= 34) { s.plot.state = 'ripe'; note(s, '小菜園的菜熟了。'); } }
   if (s.herbPlot.state === 'growing') { s.herbPlot.growth += dt; if (s.herbPlot.growth >= 50) { s.herbPlot.state = 'ripe'; note(s, '藥田的草藥可收了。'); } }
+  tickThreat(s,dt);
   tickHelper(s, dt);
   const p = s.person; p.hunger = clamp(p.hunger - 0.14 * dt);
   if(s.autonomy&&p.task&&!['eat','forage','return'].includes(p.task.act)&&p.hunger<25&&(canDo(s,'eat')||canDo(s,'forage')))cancelTask(s);

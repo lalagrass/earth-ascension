@@ -107,6 +107,7 @@ export function drawHomestead(g,s,preview,blueprint,inspected,showRoute=true,mod
   if(t?.act==='leisure'&&t.phase==='do'&&['flowers','garden'].includes(t.leisureKind)){line([[x+8,y-25],[x+22,y-20]],'#e3bd92',4);tag(t.leisureKind==='flowers'?'賞花':'看菜畦',x,y-105,true);}
   if(p===s.person&&currentFeelings(s).value>0){circle(x+23,y-45,8,'#e8cc73');g.fillStyle='#715c35';g.font='12px sans-serif';g.fillText('♪',x+20,y-41);}
  }
+ if(s.frontier?.threat.beast){const b=s.frontier.threat.beast,[x,y]=b.pos;ellipse(x,y-9,20,12,'#725b48');circle(x-18,y-10,8,'#5c493d');line([[x-23,y-9],[x-26,y-15]],'#e5d5b7',3);tag(`山豬 ${b.hp}/18`,x,y-55,true);}
  person(s.person,'#3e6481');if(s.helper)person(s.helper,'#a46652');else if(visitorHere(s))person({pos:PLACES.visitor,name:s.visitor.name},'#a46652');
  g.textAlign='left';
 }
