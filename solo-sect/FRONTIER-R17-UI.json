@@ -1,0 +1,26 @@
+{
+  "round": "R17",
+  "normalUI": true,
+  "noWorldInjection": true,
+  "preparationCancelledAt": 1140.75,
+  "noPrepackDeduction": true,
+  "chosenRation": "salad",
+  "trueReturn": {
+    "phase": "home",
+    "ration": null,
+    "rationPreference": "salad",
+    "joinRequested": false,
+    "joined": false,
+    "deferred": true,
+    "journeys": 1,
+    "returns": 1,
+    "packed": 1,
+    "eaten": 0,
+    "returned": 1,
+    "energySpent": 4,
+    "lastAid": 0,
+    "aidHits": 0
+  },
+  "errors": [],
+  "narrowOverflow": false
+}
