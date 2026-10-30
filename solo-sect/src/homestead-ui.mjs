@@ -1,3 +1,4 @@
+import{autonomyText}from'./homestead-autonomy.mjs';
 import{renderMarkup}from'./homestead-dom.mjs';
 import{restComparisonText}from'./homestead-rest-view.mjs';
 import{householdActions,performHouseholdAction,householdActionHelp}from'./homestead-household-actions.mjs';
@@ -82,7 +83,7 @@ function startScreen(on) { $('start').style.display = on ? 'grid' : 'none'; docu
 $('start').addEventListener('keydown', (e) => { if (e.key === 'Escape' && s) { e.preventDefault(); startScreen(false); $('new').focus(); } if (e.key !== 'Tab') return; const items = [...$('start').querySelectorAll('a[href],button:not(:disabled),input,select')].filter(el => el.getClientRects().length); const first = items[0], last = items.at(-1); if (e.shiftKey && document.activeElement === first) {e.preventDefault();last.focus();} else if (!e.shiftKey && document.activeElement === last) {e.preventDefault();first.focus();} });
 function begin(state) { inspected=null; $('site-action-result').textContent=''; closeBlueprint(); cancelLook(); clearTransfer(); s = state; speed = 1; acc = 0; startScreen(false); last = performance.now(); render(); $('homestead-title').focus({preventScroll:true}); }
 $('resume').disabled = !stored();
-$('begin').onclick = () => begin(createHomestead({ name: $('name').value, personality: $('personality').value, mode: new URLSearchParams(location.search).has('legacy') ? 'legacy' : 'solo' }));
+$('begin').onclick = () => begin(createHomestead({ name: $('name').value, personality: $('personality').value, mode: new URLSearchParams(location.search).has('legacy') ? 'legacy' : 'solo', autonomy: !new URLSearchParams(location.search).has('classic') }));
 $('resume').onclick = () => { const r = loadHomestead(stored()); if (r.ok) begin(r.state); else show(r.error); };
 $('new').onclick = () => { inspected=null; $('site-action-result').textContent=''; closeBlueprint(); cancelLook(); clearTransfer(); speed = 0; startScreen(true); $('resume').disabled = !stored(); };
 $('save').onclick = () => { if (!s) return; try { localStorage.setItem(SAVE_KEY, saveHomestead(s)); clearTransfer(); show('荒居已存檔。'); } catch { show('無法寫入本機存檔。'); } };
@@ -141,7 +142,7 @@ function render() {
   $('resource-top').textContent=`木料可用 ${resources.available.wood} · 料理共${preparedCount(s)}份（熱飯${s.stock.meal}／拌食${s.stock.salad||0}／燉菜${s.stock.stew||0}）／野果 ${s.stock.berries} · 種子 ${s.stock.seeds} · 青菜 ${s.stock.veg}`;
   $('resource-detail').textContent=`施工已交 ${resources.delivered} 木／運往工地 ${resources.reserved} 木（已離庫，不可再花）；待運${resources.needed}木，共用庫存尚缺${resources.shortage}木。回倉／採集在途：${resources.incoming.map(c=>`${{wood:'木',berries:'野果',veg:'菜',herbs:'藥'}[c.kind]}${c.amount}`).join('、')||'無'}。`;
   $('home-summary').textContent = `${FACILITIES.hut.stages[s.fac.hut.stage].name} · ${s.helper ? '兩人同住' : '一人生活'} · 現成食物約 ${foodDays(s)} 日；自主夠用目標：料理${target.meal}份／果${target.berries}／菜${target.veg}／木${target.wood}／藥${target.herbs}（非容量限制，手動可多備）`;
-  $('next-step').textContent = nextStep(s);
+  $('next-step').textContent = autonomyText(s)||nextStep(s);
   $('status').innerHTML = `<h2>${esc(p.name)} · ${p.personality === 'quiet' ? '喜靜' : p.personality === 'diligent' ? '勤勞' : s.mode === 'solo' ? '開朗' : '好交往'}</h2><div>飢餓 ${Math.round(p.hunger)} / 100</div><div class="meter"><span style="width:${p.hunger}%"></span></div><div>精力 ${Math.round(p.energy)} / 100</div><div class="meter energy"><span style="width:${p.energy}%"></span></div><p class="activity">${esc(activityText(s))}</p>${s.mode==='solo'?`<div class="feeling">感受 ${feeling.value}/5 · ${feeling.active.map(f=>`${f.name}（${f.left}秒）`).join('、')||'平靜'}<div class="muted">來自實際使用，會消退；不抵銷飢餓或轉為工作增益。</div></div>`:''}<div class="muted">${esc(activityReason(s))}</div><div class="muted">工作 ${Math.floor(p.work)} · 閒暇 ${p.leisure} · 識藥 ${p.herbalSkill}</div>`;
   $('recipe-card').hidden=s.mode!=='solo';
   $('meal-style').value=s.mealStyle||'auto';

@@ -1,3 +1,4 @@
+import {freshAutonomy,validAutonomy,advanceAutonomy} from './homestead-autonomy.mjs';
 import {defaultHomeLook,validHomeLook} from './homestead-look.mjs';
 import {RECIPES,MEAL_STYLES,hasRecipe,recipeReason,eatReason,recipeAccess,buildAccess,availableUnlocks,preparedCount,edibleEnergy,autoRecipe,chooseFood} from './homestead-content.mjs';
 import {at,feel,FEELINGS,restRate} from './homestead-living.mjs';
@@ -64,13 +65,13 @@ const leaseOf = (act) => act === 'chop' ? 'wood' : act === 'farm' ? 'garden' : a
 const freeLease = (s, p, owner) => { const key = leaseOf(p.task?.act); if (key && s.leases[key] === owner) s.leases[key] = null; };
 const inbound = (s, k) => [s.person, s.helper].reduce((n, p) => n + (p?.carry?.origin === 'wild' && p.carry.kind === k ? p.carry.amount : 0), 0);
 
-export function createHomestead({ name = '無名', personality = 'quiet', mode = 'legacy' } = {}) {
+export function createHomestead({ name = '無名', personality = 'quiet', mode = 'legacy', autonomy = false } = {}) {
   const s = { kind: 'homestead', version: VERSION, mode: mode === 'solo' ? 'solo' : 'legacy', mealStyle:'auto', focusProject:null, look:defaultHomeLook(), t: 0, subtick: 0, day: 1, speed: 1,
     person: { name: String(name).trim().slice(0, 12) || '無名', personality: ['quiet', 'sociable', 'diligent'].includes(personality) ? personality : 'quiet', pos: [...HOME], hunger: 65, energy: 68, herbalSkill: 0, careDay: 0, skills: freshSkills(), feelings: {}, cookRequest: null, foodRequest: null, task: null, order: null, carry: null, work: 0, leisure: 0 },
     stock: { berries: 0, wood: 0, seeds: 2, veg: 0, meal: 0, salad: 0, stew: 0, herbs: 0 }, cap: { berries: 8, wood: 8, seeds: 5, veg: 8, meal: 8, herbs: 6 }, wild: { berries: 4, wood: 4, herbs: 3 },
     fac: { hut: { stage: 0, site: null }, garden: { stage: 0, site: null }, herbGarden: { stage: 0, site: null }, workbench:{stage:0,site:null}, bed: { stage: 0, site: null }, bench: { stage: 0, site: null }, flowers: { stage: 0, site: null }, kitchen: { stage: 0, site: null }, store: { stage: 0, site: null }, berries: { stage: 0 }, wood: { stage: 0 }, herbs: { stage: 0 } }, plot: { state: 'empty', growth: 0 }, herbPlot: { state: 'empty', growth: 0 },
     visitor: { name: '阿蓮', role: 'visitor', trust: 0, lastChat: 0, lastGift: 0, cared: false, willing: false, inviteDay: 0, inviteTime: 0, apprenticeDay: 0, injury: false, hunger: 68, energy: 72, herbalSkill: 0, careDay: 0 }, helper: null,
-    leases: { wood: null, garden: null, herbGarden: null }, unlocked: [], log: [] };
+    leases: { wood: null, garden: null, herbGarden: null }, autonomy:mode==='solo'&&autonomy?freshAutonomy():null, unlocked: [], log: [] };
   note(s, `${s.person.name}來到荒地。先找吃的，再搭一間能安睡的木屋。`); return s;
 }
 
@@ -258,6 +259,7 @@ function pick(s) {
   if (p.order === 'selfCare' && canDo(s, 'selfCare')) return 'selfCare';
   if (p.energy < 23) return 'rest';
   if (p.order && canDo(s, p.order,p.order==='cook'?p.cookRequest||'basic':undefined)) return p.order;
+  if(!p.order)advanceAutonomy(s,{start:id=>startBlueprint(s,id)});
   if (p.personality === 'sociable' && canDo(s, 'chat') && p.hunger > 50 && p.energy > 45) return 'chat';
   if (p.personality === 'sociable' && canDo(s, 'talkHelper') && p.hunger > 50 && p.energy > 45) return 'talkHelper';
   if (p.personality === 'diligent' && canDo(s, 'care') && p.energy > 40) return 'care';
@@ -414,6 +416,8 @@ function tickQuarter(s,dt) {
   if (s.herbPlot.state === 'growing') { s.herbPlot.growth += dt; if (s.herbPlot.growth >= 50) { s.herbPlot.state = 'ripe'; note(s, '藥田的草藥可收了。'); } }
   tickHelper(s, dt);
   const p = s.person; p.hunger = clamp(p.hunger - 0.14 * dt);
+  if(s.autonomy&&p.task&&!['eat','forage','return'].includes(p.task.act)&&p.hunger<25&&(canDo(s,'eat')||canDo(s,'forage')))cancelTask(s);
+  if(s.autonomy&&p.task&&!['rest','eat','return','forage'].includes(p.task.act)&&p.energy<15)cancelTask(s);
   if (!p.task) begin(s, pick(s));
   const t = p.task;
   if (!t) return;
@@ -471,6 +475,8 @@ export function loadHomestead(json) {
     // H1 檔沒有 H2 的地塊與資源，補上後繼續原本的生活，不碰本篇存檔。
     const h2 = createHomestead();
     s.mode ??= 'legacy';
+    s.autonomy ??= null;
+    if(!validAutonomy(s.autonomy,s.mode,s.t))return {ok:false,error:'自主生活目標不合法'};
     s.subtick ??=0;
     if(!Number.isFinite(s.subtick)||s.subtick<0||s.subtick>=.25)return {ok:false,error:'時間餘量不合法'};
     if (!['solo','legacy'].includes(s.mode) || s.mode === 'solo' && (s.helper || s.visitor?.role && s.visitor.role !== 'visitor' || ['chat','talkHelper','gift','care','helperCare'].includes(s.person.order) || ['chat','talkHelper','gift','care','helperCare'].includes(s.person.task?.act))) return {ok:false,error:'生活模式不合法'};

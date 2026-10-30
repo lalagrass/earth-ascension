@@ -1,0 +1,338 @@
+{
+  "milestone": "A01",
+  "personality": "quiet",
+  "mode": "normal UI; only new-game/start/speed controls; no orders, blueprints, injection",
+  "speed": 16,
+  "worldEnd": 262.75,
+  "observedMinH": 37.49000000000268,
+  "observedMinE": 21.849999999999994,
+  "restUsed": true,
+  "events": [
+    {
+      "t": 2.75,
+      "goal": "shelter",
+      "fac": {
+        "hut": 0,
+        "garden": 0,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 0,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 102.5,
+      "goal": null,
+      "fac": {
+        "hut": 1,
+        "garden": 0,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 0,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    }
+  ],
+  "errors": [],
+  "state": {
+    "kind": "homestead",
+    "version": 3,
+    "mode": "solo",
+    "mealStyle": "auto",
+    "focusProject": null,
+    "look": {
+      "style": "natural",
+      "name": ""
+    },
+    "t": 262.75,
+    "subtick": 0,
+    "day": 2,
+    "speed": 1,
+    "person": {
+      "name": "獨居試居",
+      "personality": "quiet",
+      "pos": [
+        445,
+        345
+      ],
+      "hunger": 54.215000000003585,
+      "energy": 100,
+      "herbalSkill": 0,
+      "careDay": 0,
+      "skills": {
+        "gather": 10,
+        "build": 15,
+        "farm": 0,
+        "cook": 0
+      },
+      "feelings": {},
+      "cookRequest": null,
+      "foodRequest": null,
+      "task": {
+        "act": "leisure",
+        "phase": "do",
+        "place": "home",
+        "timer": 4
+      },
+      "order": null,
+      "carry": null,
+      "work": 12.142857142857135,
+      "leisure": 9
+    },
+    "stock": {
+      "berries": 2,
+      "wood": 2,
+      "seeds": 2,
+      "veg": 0,
+      "meal": 0,
+      "salad": 0,
+      "stew": 0,
+      "herbs": 0
+    },
+    "cap": {
+      "berries": 8,
+      "wood": 8,
+      "seeds": 5,
+      "veg": 8,
+      "meal": 8,
+      "herbs": 6
+    },
+    "wild": {
+      "berries": 4,
+      "wood": 4,
+      "herbs": 3
+    },
+    "fac": {
+      "hut": {
+        "stage": 1,
+        "site": null
+      },
+      "garden": {
+        "stage": 0,
+        "site": null
+      },
+      "herbGarden": {
+        "stage": 0,
+        "site": null
+      },
+      "workbench": {
+        "stage": 0,
+        "site": null
+      },
+      "bed": {
+        "stage": 0,
+        "site": null
+      },
+      "bench": {
+        "stage": 0,
+        "site": null
+      },
+      "flowers": {
+        "stage": 0,
+        "site": null
+      },
+      "kitchen": {
+        "stage": 0,
+        "site": null
+      },
+      "store": {
+        "stage": 0,
+        "site": null
+      },
+      "berries": {
+        "stage": 0
+      },
+      "wood": {
+        "stage": 0
+      },
+      "herbs": {
+        "stage": 0
+      }
+    },
+    "plot": {
+      "state": "empty",
+      "growth": 0
+    },
+    "herbPlot": {
+      "state": "empty",
+      "growth": 0
+    },
+    "visitor": {
+      "name": "阿蓮",
+      "role": "visitor",
+      "trust": 0,
+      "lastChat": 0,
+      "lastGift": 0,
+      "cared": false,
+      "willing": false,
+      "inviteDay": 0,
+      "inviteTime": 0,
+      "apprenticeDay": 0,
+      "injury": false,
+      "hunger": 68,
+      "energy": 72,
+      "herbalSkill": 0,
+      "careDay": 0
+    },
+    "helper": null,
+    "leases": {
+      "wood": null,
+      "garden": null,
+      "herbGarden": null
+    },
+    "autonomy": {
+      "version": 1,
+      "goal": null,
+      "since": 0.25,
+      "completed": [
+        "shelter"
+      ]
+    },
+    "unlocked": [
+      "木作台",
+      "改良灶具"
+    ],
+    "log": [
+      {
+        "day": 2,
+        "msg": "第 2 日。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "採到野果，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "吃了野果。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "採到野果，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "採到野果，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "學會新做法：改良灶具。"
+      },
+      {
+        "day": 1,
+        "msg": "學會新做法：木作台。"
+      },
+      {
+        "day": 1,
+        "msg": "完工：簡陋木屋。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "立下「簡陋木屋」藍圖。"
+      },
+      {
+        "day": 1,
+        "msg": "獨居試居來到荒地。先找吃的，再搭一間能安睡的木屋。"
+      }
+    ]
+  }
+}
