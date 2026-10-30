@@ -41,6 +41,7 @@ import { lairDaily, lairStep } from './lair.mjs';
 import { jhevDaily } from './jhevents.mjs';
 import { btBoost } from './breakthru.mjs';
 import { liftBoost } from './lift.mjs';
+import { stewardDaily, stewBoar } from './steward.mjs';
 import { cliqueDaily, cliqueTrain } from './clique.mjs';
 import { archRecruit } from './archetype.mjs';
 import { removeDisciple } from './gen.mjs';
@@ -83,6 +84,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.draw) s.draw = true;
   if (heroSpec?.comprehend) s.wu7 = true;
   if (heroSpec?.mentor) s.mentor = true;
+  if (heroSpec?.steward) s.steward = true; // loop30 執事自主（選用）
   if (heroSpec?.lairpow) s.lairpow = true; // loop29 寨強看戰力（選用）
   if (heroSpec?.lift) s.lift = true; // loop28 心情自救（選用）
   if (heroSpec?.bt25) s.bt25 = true; // loop25 突破排程（選用）
@@ -530,7 +532,7 @@ function ecoStep(s, dt) {
   if (!s.hunt && s.raidT >= RAID_EVERY * raidMul(s) && s.eco.boar.n > 0 && !s.mons.some((m) => m.raid)) {
     s.raidT = 0; s.eco.boar.n--; removeWild(s, 'boar', 1);
     s.mons.push({ uid: `raid${s.rngN++}`, k: 'boar', hp: MONSTERS.boar.hp, max: MONSTERS.boar.hp, pos: [...NODES.den], path: route('den', 'veg').slice(1), raid: 'go', cool: 0 });
-    log(s, '一頭野豬循山路下來，朝菜園去了。');
+    log(s, '一頭野豬循山路下來，朝菜園去了。'); stewBoar(s);
   }
   for (const m of s.mons) if (m.raid) {
     if (monWalk(m, MONSTERS.boar.speed * dt)) {
@@ -615,7 +617,7 @@ export function payday(s) {
 // ---- tick ----
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
-  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); if (s.draw) cliqueDaily(s); if (s.m9) lairDaily(s, EH); if (s.jhev) jhevDaily(s); } }
+  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); if (s.draw) cliqueDaily(s); if (s.m9) lairDaily(s, EH); if (s.jhev) jhevDaily(s); if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild }); } }
   schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH); if (s.lair) lairStep(s, EH);
   const se = seasonOf(s); for (const p of s.plots) if (p.st === 'grow' && (p.g += dt / se.grow) >= PLOT_GROW) p.st = 'ripe';
   const seIdx = se.i; if (s.seasonI !== seIdx) { if (s.seasonI !== undefined) log(s, `入${se.name}了。${{ spring: '萬物萌發，菜長得快。', summer: '天長日暖。', autumn: '秋高氣爽，心情開闊。', winter: '天寒地凍，菜長得慢，飯量變大。' }[se.id]}`); s.seasonI = seIdx; }
