@@ -77,7 +77,8 @@ export const TRAIT_RULES = [
 ];
 
 // 地圖 64×40，字元見 M01 規格。用程式畫出固定版型，再以種子撒樹石。
-export const MAP_W = 64;
+export const MAP_W = 64;            // M19b 暫停中（loop 26）：試做值 80（往東加 16 欄溪東山林，舊的 64 欄不變）
+export const VIEW_W = 64;           // 畫面一次看 64 欄，左右捲動
 export const MAP_H = 40;
 
 // 去處（POI）：M1 走動 AI 的候選。tags 決定個性加權。
@@ -380,6 +381,7 @@ export const SECT = {
 ACTS.leave = { label: '下山', dur: 0, per: {} };
 
 // ---------- M9 遠征 ----------
+// M19b 暫停中：試做時兩個巢的 x 是 76。
 export const NESTS = [
   { id: 'den', label: '野豬窩', kind: 'boar', x: 58, y: 36, hp: 120, guards: ['boar', 'boar'] },
   { id: 'camp', label: '山寨', kind: 'bandit', x: 58, y: 6, hp: 200, guards: ['bandit', 'bandit', 'bandit'] },

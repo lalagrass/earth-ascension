@@ -39,6 +39,11 @@ export function buildMap(holder) {
   for (let y = 25; y < 31; y++) g[y][60] = ':';
   for (let x = 60; x < MAP_W; x++) g[30][x] = ':';
   for (let y = 29; y < 33; y++) g[y][29] = ':';
+  // M19b 溪東山林：x ≥ 66 用格子座標的固定花紋撒樹（不用亂數，舊的 64 欄跟以前一樣）；路與巢邊空著。
+  for (let y = 0; y < MAP_H; y++) for (let x = 66; x < MAP_W; x++) {
+    if (y === 25 || y === 30 || (x >= 73 && (y <= 9 || y >= 33))) continue;
+    if (((x * 7 + y * 13) ^ (x * y)) % 9 === 0) g[y][x] = 'T';
+  }
   for (let x = 15; x < 27; x++) g[20][x] = ':';
   return g.map((r) => r.join(''));
 }

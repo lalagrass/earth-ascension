@@ -371,7 +371,7 @@ function worstSeed(S, key) {
 }
 
 // 暫停中的 milestone：照印量測，但不判失敗（理由寫在該規格的「實作中的變更」）。
-export const PAUSED = new Set(['M11', 'M12', 'M14', 'M16', 'M18', 'M19a', 'M21', 'M22']);
+export const PAUSED = new Set(['M11', 'M12', 'M14', 'M16', 'M18', 'M19a', 'M21', 'M22', 'M19b']);
 const judgeOf = (failures, id) => (PAUSED.has(id.split('-')[0]) ? { push: (x) => failures.paused?.push(x) } : failures);
 
 function judgeFarm(S, lines, failures) {

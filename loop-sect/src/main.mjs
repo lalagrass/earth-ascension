@@ -13,7 +13,12 @@ import { dutyOf, dutyText, setDuty, assignDuty, ROLE } from './duty.mjs';
 import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes, drawEnemies, drawNests, drawLabels, labelBoxes, drawPlots, drawForm } from './render.mjs';
 import { formOf, shapeOf, sizeOf, period } from './forms.mjs';
 import { hurt, hurtText } from './injury.mjs';
-import { INJURY } from './data.mjs';
+import { INJURY, MAP_W, VIEW_W } from './data.mjs';
+
+// M19b 鏡頭：畫面一次 VIEW_W 欄，camX 是左邊第一欄（格）。
+let camX = 0;
+const CAM_MAX = MAP_W - VIEW_W;
+function setCam(x) { camX = Math.max(0, Math.min(CAM_MAX, Math.round(x))); }
 
 const $ = (s) => document.querySelector(s);
 const el = (tag, attrs = {}, ...kids) => {
@@ -104,7 +109,9 @@ function begin() {
   $('#start').classList.add('hidden');
   $('#game').classList.remove('hidden');
   bg = document.createElement('canvas');
-  bg.width = 1280; bg.height = 800;
+  bg.width = MAP_W * TILE; bg.height = 800;
+  camX = 0;
+  document.querySelectorAll('[data-cam]').forEach((b) => { b.hidden = CAM_MAX === 0; });
   paintBg();
   renderRoster();
   renderPanel();
@@ -118,7 +125,7 @@ let rosterKey = '';
 function renderRoster() {
   rosterKey = rosterSig();
   $('#roster').replaceChildren(...(state.sect ? [el('b', { class: 'sect', 'data-sect': '' }, state.sect.name)] : []),
-    ...state.people.map((p) => el('button', { 'data-person': p.id, class: p.guest ? 'guest' : '', on: { click: () => { selected = p.id; renderPanel(); } } },
+    ...state.people.map((p) => el('button', { 'data-person': p.id, class: p.guest ? 'guest' : '', on: { click: () => { selected = p.id; setCam(p.x - VIEW_W / 2); renderPanel(); } } },
       (p.guest ? `${p.name}（客）` : dutyOf(state, p) ? `${p.name}·${ROLE[dutyOf(state, p)].label}` : p.name) + (hurt(p) ? '（傷）' : '') + (p.kin ? '·家' : ''))));
 }
 // M18：值日變了也重畫名冊。
@@ -232,6 +239,8 @@ function frame(now) {
   const ctx = $('#view').getContext('2d');
   if (state.mapVersion !== bgVersion) paintBg();
   if (state.built.length !== builtSeen || state.events.length !== eventsSeen || expKey() !== expSeen) renderBuild();
+  ctx.save();
+  ctx.translate(-camX * TILE, 0);
   ctx.drawImage(bg, 0, 0);
   drawBuild(ctx, state, PILE, blueprint);
   drawNests(ctx, state);
@@ -242,6 +251,7 @@ function frame(now) {
   drawStrikes(ctx, state);
   drawLabels(ctx, state, selected);
   drawBubbles(ctx, state);
+  ctx.restore();
   const c = clock(state);
   drawDaylight(ctx, 1280, 800, c.hour, c.minute);
   $('#clock').textContent = `第 ${c.day} 日 ${String(c.hour).padStart(2, '0')}:${String(c.minute).padStart(2, '0')}`;
@@ -339,7 +349,7 @@ function identity(p) {
 
 function pickAt(ev) {
   const r = ev.target.getBoundingClientRect();
-  const x = ((ev.clientX - r.left) / r.width) * 1280 / TILE - 0.5;
+  const x = ((ev.clientX - r.left) / r.width) * 1280 / TILE - 0.5 + camX;
   const y = ((ev.clientY - r.top) / r.height) * 800 / TILE - 0.5;
   let best = null, bd = 1.2;
   for (const p of state.people) {
@@ -352,9 +362,11 @@ function pickAt(ev) {
 renderAll();
 $('#begin').addEventListener('click', begin);
 document.querySelectorAll('[data-speed]').forEach((b) => b.addEventListener('click', () => setSpeed(Number(b.dataset.speed))));
+document.querySelectorAll('[data-cam]').forEach((b) => b.addEventListener('click', () => setCam(camX + Number(b.dataset.cam) * 16)));
 $('#view').addEventListener('click', pickAt);
 addEventListener('keydown', (e) => {
   if (e.code === 'Space' && state && e.target.tagName !== 'INPUT') { e.preventDefault(); setSpeed(speed ? 0 : 1); }
+  if ((e.code === 'ArrowLeft' || e.code === 'ArrowRight') && state && e.target.tagName !== 'INPUT') setCam(camX + (e.code === 'ArrowLeft' ? -4 : 4));
 });
 
 // 唯讀遙測：給 headless 檢查用，回傳副本。
@@ -363,8 +375,9 @@ window.__sect = {
   speed: () => speed,
   labels: () => labelBoxes().map((b) => ({ ...b })),
   selected: () => selected,
+  cam: () => camX,
   tileToClient: (x, y) => {
     const r = $('#view').getBoundingClientRect();
-    return { x: r.left + ((x + 0.5) * TILE / 1280) * r.width, y: r.top + ((y + 0.1) * TILE / 800) * r.height };
+    return { x: r.left + ((x - camX + 0.5) * TILE / 1280) * r.width, y: r.top + ((y + 0.1) * TILE / 800) * r.height };
   },
 };

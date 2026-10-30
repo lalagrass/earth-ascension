@@ -1,10 +1,10 @@
 {
   "loopVersion": 9,
-  "loopsDone": 25,
+  "loopsDone": 26,
   "retroEvery": 3,
   "lastRetro": "docs/RETRO-08.md",
-  "lastCommit": "7a3f970",
-  "nextMilestone": "M19b 東側山路（loop 26）",
+  "lastCommit": "0f3553e",
+  "nextMilestone": "M23 後期侵擾（loop 27），之後 retro 9",
   "inProgress": {
     "paused": [
       {
@@ -76,6 +76,15 @@
           "照擁有人選的判法重量（hunger48.mjs 或原 A2、A3）",
           "headless 看「睡前先吃一口」"
         ]
+      },
+      {
+        "milestone": "M19b",
+        "resumeAfter": "查清楚巢的守衛怎麼影響 base；或擁有人的判法決定之後",
+        "steps": [
+          "查守衛與 base 的關係",
+          "MAP_W 80、巢 x 76、EXPEDITION.MIN_ENERGY 70",
+          "重量 A2–A5 兩組種子，headless 加 m19b-east"
+        ]
       }
     ]
   },
@@ -103,7 +112,8 @@
     "敵人每 2 日多 1 隻，第 19 日一次 10 隻；RAID.DAYS 30 之後不再來，三十日以上沒量",
     "二十日後每個種子都成家，人際沒有下一步（子女、吵架、師徒傳承）",
     "最差日的飢餓發生在飯 0、生 0、野莓叢被吃空的時候（開局第 2–4 日），不是食物堆著沒煮（M21）",
-    "十二個種子的飢餓合計與最差種子被一兩個走向整個變了的種子決定；48 個種子的中位數才看得出規則有沒有用（M22：中位 −60%，兩組十二個種子卻各翻一邊）"
+    "十二個種子的飢餓合計與最差種子被一兩個走向整個變了的種子決定；48 個種子的中位數才看得出規則有沒有用（M22：中位 −60%，兩組十二個種子卻各翻一邊）",
+    "巢的守衛搬位置連 base 的走向都會變（M19b）：base 裡有東西在看守衛"
   ],
   "stopReason": null,
   "targetLoops": 30,
