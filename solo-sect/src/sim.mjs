@@ -85,6 +85,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.comprehend) s.wu7 = true;
   if (heroSpec?.mentor) s.mentor = true;
   if (heroSpec?.qshare) s.qshare = true;
+  if (heroSpec?.letterask) s.letterask = true; /* loop49 挑戰帖由我定奪 */
   if (heroSpec?.cropcare) s.cropcare = true; /* loop47 誰種誰心疼 */
   if (heroSpec?.mfit) s.mfit = true; // loop41 高人因材施教
   if (heroSpec?.jhrefuse) s.jhrefuse = true; // loop40 挑戰帖量力而為 // loop39 人多分攤日課

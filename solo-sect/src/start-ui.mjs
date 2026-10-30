@@ -25,6 +25,7 @@ export const RULES = [
   ['lairpow', 'lairpow', 'lairpow', true, '寨強看戰力：山寨強弱跟門派戰力走，不隨家產變強'],
   ['lift', 'lift', 'lift', true, '心情自救：心情低落時自己去閒坐、聊天或歇息'],
   ['bt25', 'bt25', 'bt25', true, '突破優先：卡瓶頸時先打坐衝關（人多升首徒後也不會只顧練功）'],
+  ['letterask', 'letterask', 'letterask', true, '挑戰帖由我定奪：勾了「重大抉擇問我」時，挑戰帖改成抉擇卡（顯示勝算，應戰或婉拒）'],
   ['cropcare', 'cropcare', 'cropcare', true, '誰種誰心疼：菜被野豬拱時，只有照顧菜園的兩人難過，其他人只是聽說'],
   ['mfit', 'mfit', 'mfit', true, '因材施教：過路高人傳功時，優先傳弟子本身路數的武學'],
   ['jhrefuse', 'jhrefuse', 'jhrefuse', true, '量力而為：挑戰帖勝算明顯偏低（<3 成）時婉拒，名聲 −1、不傷心情'],

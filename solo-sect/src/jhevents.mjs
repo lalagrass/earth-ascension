@@ -18,8 +18,15 @@ export function jhevDaily(s) {
         else { const mv = Object.keys(d.arts).map(artById).flatMap((x) => (x.techs || []).filter((m) => MOVES.some((y) => y.id === m) && !d.moves.includes(m)))[0]; if (mv) { d.moves.push(mv); E.mv = (E.mv || 0) + 1; log(s, `【過路高人】臨別前，高人提前點撥${d.name}一招「${MOVES.find((y) => y.id === mv).name}」！`); } } } } } // loop26 傳武學，無可傳則提前點撥一招
   if (day >= L.after && day >= E.lNext && R(s) < L.p) { const c = here(s); if (c.length) { const champ = c.sort((a, b) => (b.skills?.[b.style] || 0) - (a.skills?.[a.style] || 0))[0], p = letterP(s, day), win = R(s) < p; E.lNext = day + L.cool;
     // loop40「量力而為」（s.jhrefuse）：勝算 < refuse.below 時婉拒，名聲 −1、無人心情受損。勝負骰照擲，亂數流與未開時一致。
-    if (s.jhrefuse && p < L.refuse.below) { E.lr = (E.lr || 0) + 1; s.rep = Math.max(0, (s.rep || 0) - L.refuse.rep); log(s, `【挑戰帖】來者武功明顯高出一截，${champ.name}代師門婉拒，名聲 -${L.refuse.rep}。`); return; }
-    E.l++;
-    if (win) { E.lw++; s.rep = (s.rep || 0) + L.win.rep; md(champ, L.win.mood); resAdd(s, 'coin', L.win.coin); const fid = autoFocus(champ); if (fid) { const r = champ.arts[fid]; r.xp = Math.min(curCap(champ, artById(fid)), r.xp + L.win.xp); } log(s, `【挑戰帖】${champ.name}應戰得勝，名聲 +${L.win.rep}、彩頭 ${L.win.coin} 文。`); }
-    else { s.rep = Math.max(0, (s.rep || 0) - L.lose.rep); md(champ, -L.lose.mood); log(s, `【挑戰帖】${champ.name}應戰落敗，名聲 -${L.lose.rep}（點到為止，無人受傷）。`); } } }
+    /* loop49「挑戰帖由我定奪」（s.letterask）：玩家選了「重大抉擇問我」時，改成抉擇卡（應戰／婉拒），勝負骰已擲好、卡上只顯示勝算。 */
+    if (s.letterask && s.hero?.askMajor && s.choices) { s.choices.push({ id: `jhl-${day}-${Math.floor(s.t)}`, letter: true, who: champ.id, p, win, title: '【挑戰帖】有人上山下帖', text: `一位江湖客指名要與${champ.name}切磋（點到為止，不會受傷）。看來勝算約 ${Math.round(p * 100)}%。`, opts: ['應戰', `婉拒（名聲 -${L.refuse.rep}）`], at: s.t }); log(s, `【挑戰帖】有人指名${champ.name}切磋，等掌門定奪。`); return; }
+    if (s.jhrefuse && p < L.refuse.below) return letterOutcome(s, champ, win, true);
+    letterOutcome(s, champ, win, false); } }
 }
+export function letterOutcome(s, champ, win, refuse) { const E = s.jhev, L = JHEV.letter;
+  if (refuse) { E.lr = (E.lr || 0) + 1; s.rep = Math.max(0, (s.rep || 0) - L.refuse.rep); log(s, refuse === 'player' ? `【挑戰帖】掌門決定婉拒，${champ.name}客氣地送走來客，名聲 -${L.refuse.rep}。` : `【挑戰帖】來者武功明顯高出一截，${champ.name}代師門婉拒，名聲 -${L.refuse.rep}。`); return; }
+  E.l++;
+  if (win) { E.lw++; s.rep = (s.rep || 0) + L.win.rep; md(champ, L.win.mood); resAdd(s, 'coin', L.win.coin); const fid = autoFocus(champ); if (fid) { const r = champ.arts[fid]; r.xp = Math.min(curCap(champ, artById(fid)), r.xp + L.win.xp); } log(s, `【挑戰帖】${champ.name}應戰得勝，名聲 +${L.win.rep}、彩頭 ${L.win.coin} 文。`); }
+    else { s.rep = Math.max(0, (s.rep || 0) - L.lose.rep); md(champ, -L.lose.mood); log(s, `【挑戰帖】${champ.name}應戰落敗，名聲 -${L.lose.rep}（點到為止，無人受傷）。`); }
+}
+export function letterResolve(s, ch, i) { s.choices = s.choices.filter((c) => c !== ch); const champ = s.ds.find((d) => d.id === ch.who); if (!champ) { log(s, '【挑戰帖】應戰的人不在山上，帖子作罷。'); return true; } letterOutcome(s, champ, ch.win, i === 1 ? 'player' : false); return true; }
