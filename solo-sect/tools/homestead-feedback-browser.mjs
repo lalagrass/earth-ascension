@@ -8,7 +8,12 @@ try{
  await p.selectOption('#frontier-approach','peace');await p.click('#begin');await p.click('[data-speed="16"]');
  await p.waitForFunction(()=>window.__homestead.t>=50);await p.click('[data-speed="0"]');
  const s=await p.evaluate(()=>structuredClone(window.__homestead));await p.waitForTimeout(300);assert.equal(await p.evaluate(()=>window.__homestead.t),s.t);
+ if(round==='R13'){
+  assert.match(await p.locator('#live-needs').innerText(),new RegExp('飽腹 '+Math.round(s.person.hunger)));assert.equal(await p.locator('#live-speed').innerText(),'已暫停');
+  await p.locator('[data-speed="4"]').focus();await p.keyboard.press('Enter');await p.waitForFunction(t=>window.__homestead.t>t,s.t);await p.locator('[data-speed="0"]').focus();await p.keyboard.press('Enter');
+  assert.equal(await p.locator('[data-speed="0"]').getAttribute('aria-pressed'),'true');
+ }
  assert.equal(s.version,5);assert.equal(s.person.order,null);assert.deepEqual(errors,[]);
- await p.screenshot({path:`shots/frontier-${round}.png`});await p.setViewportSize({width:390,height:844});assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ await p.screenshot({path:`shots/frontier-${round}.png`});await p.setViewportSize({width:390,height:844});if(round==='R13'){for(const id of ['live-needs','live-activity','speed']){const r=await p.locator('#'+id).boundingBox();assert.ok(r.y>=0&&r.y+r.height<844);}await p.screenshot({path:'shots/frontier-R13-narrow.png'});}assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
  await fs.writeFile(`FRONTIER-${round}-UI.json`,JSON.stringify({round,normalUI:true,noWorldInjection:true,t:s.t,hut:s.fac.hut.stage,activity:s.person.task,errors,pausedStable:true,narrowOverflow:false},null,2)+'\n');console.log(round+' UI passed');
 }finally{await browser.close();}
