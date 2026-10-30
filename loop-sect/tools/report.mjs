@@ -1,5 +1,6 @@
 // M10 長跑報表：12 種子 × 10 日 × 兩個情境。印每日飢餓、最差種子、進食次數、社交、猜個性的準確率，並判 M10-A5–A7。
-// 用法：node loop-sect/tools/report.mjs [--seeds 12] [--days 10] [--fire 1] [--duty 0]
+// 用法：node loop-sect/tools/report.mjs [--seeds 12] [--days 10] [--fire 1] [--duty 0] [--from 1]
+// --from 13：改用種子 13–24，量同一指標換一組種子差多少（retro 5：舊指標的雜訊）。
 // --fire 1：煮飯燒柴（M18-A4）；--duty 0：關掉值日，跟有值日比。
 import { createWorld, step } from '../src/sim.mjs';
 import { TICKS_PER_DAY, FIRE, DUTY, COOK_RAW } from '../src/data.mjs';
@@ -10,7 +11,7 @@ import { atLeast } from '../src/social.mjs';
 import { lifeShares } from '../src/chronicle.mjs';
 
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? Number(process.argv[i + 1]) : d; };
-const SEEDS = arg('seeds', 12), DAYS = arg('days', 10);
+const SEEDS = arg('seeds', 12), DAYS = arg('days', 10), FROM = arg('from', 1);
 FIRE.WOOD_PER_POT = arg('fire', FIRE.WOOD_PER_POT);
 DUTY.ON = arg('duty', DUTY.ON ? 1 : 0) === 1;
 const FIRE_ON = FIRE.WOOD_PER_POT > 0;
@@ -36,7 +37,7 @@ for (const scenario of ['base', 'exp', 'grow', 'farm']) {
   const dayH = Array(DAYS).fill(0), dayN = Array(DAYS).fill(0);
   const seedRows = [];
   let friends = 0, masters = 0;
-  for (let seed = 1; seed <= SEEDS; seed++) {
+  for (let seed = FROM; seed < FROM + SEEDS; seed++) {
     const s = createWorld({ seed, people: rosterFor(seed) });
     const start = new Set(s.people.map((p) => p.id));
     let h = 0, n = 0;
