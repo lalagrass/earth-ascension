@@ -37,7 +37,7 @@ export function jhevPanel(s) {
   const est = day >= L.after ? `若今日有人下挑戰帖，勝算約 ${Math.round(letterP(s, day) * 100)}%（看門中前三人的武功）` : `第 ${L.after} 日後才會有人下挑戰帖`;
   const rows = [
     `<div>過路高人：來過 ${E.m || 0} 次${E.t ? `，傳武學 ${E.t} 套` : ''}${E.mv ? `，點撥招式 ${E.mv} 招` : ''}<span class="k">（第 ${M.after} 日起偶爾來訪）</span></div>`,
-    `<div>挑戰帖：應戰 ${E.l || 0} 次，勝 ${E.lw || 0}・敗 ${(E.l || 0) - (E.lw || 0)}<span class="k">（點到為止，不會受傷；勝了得名聲與彩頭，敗了掉一點名聲）</span></div>`,
+    `<div>挑戰帖：應戰 ${E.l || 0} 次，勝 ${E.lw || 0}・敗 ${(E.l || 0) - (E.lw || 0)}${E.lr ? `・婉拒 ${E.lr}` : ''}<span class="k">（點到為止，不會受傷；勝了得名聲與彩頭，敗了掉一點名聲）</span></div>`,
     `<div class="k">${est}</div>`];
   const ev = [...recent(s, '【過路高人】', 3), ...recent(s, '【挑戰帖】', 3)].sort((a, b) => b.t - a.t).slice(0, 4);
   return rows.join('') + (ev.length ? `<ul class="k">${ev.map((l) => `<li>第 ${Math.floor(l.t / DAY) + 1} 日：${esc(l.msg)}</li>`).join('')}</ul>` : '<div class="k">還沒遇過江湖事件。</div>');

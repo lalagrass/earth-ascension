@@ -25,6 +25,7 @@ export const RULES = [
   ['lairpow', 'lairpow', 'lairpow', true, '寨強看戰力：山寨強弱跟門派戰力走，不隨家產變強'],
   ['lift', 'lift', 'lift', true, '心情自救：心情低落時自己去閒坐、聊天或歇息'],
   ['bt25', 'bt25', 'bt25', true, '突破優先：卡瓶頸時先打坐衝關（人多升首徒後也不會只顧練功）'],
+  ['jhrefuse', 'jhrefuse', 'jhrefuse', true, '量力而為：挑戰帖勝算明顯偏低（<3 成）時婉拒，名聲 −1、不傷心情'],
   ['qshare', 'qshare', 'qshare', true, '人多分攤：全派人數達外門兩倍時，外門每人日課少 1 點'],
   ['jhui', 'jhui', 'jhui', true, '介面：原型、同門小派、江湖事件面板（純顯示）'],
   ['jhev', 'jhev', 'jhev', true, '江湖事件：過路高人指點、挑戰帖（點到為止不受傷）'],
