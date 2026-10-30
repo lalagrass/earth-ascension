@@ -1,0 +1,24 @@
+{
+  "base": "fdfa6cc",
+  "scope": "Completed normal scene primitive calls, 3 day/palette fixtures; author automated, not normal UI",
+  "results": [
+    {
+      "t": 0,
+      "style": "natural",
+      "calls": 1003,
+      "identical": true
+    },
+    {
+      "t": 120,
+      "style": "moss",
+      "calls": 1033,
+      "identical": true
+    },
+    {
+      "t": 230,
+      "style": "ochre",
+      "calls": 1033,
+      "identical": true
+    }
+  ]
+}
