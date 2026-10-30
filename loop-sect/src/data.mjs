@@ -203,3 +203,15 @@ export const SKILLS = [
 export const SKILL_GAIN = 2.4;
 export const SKILL_MILESTONES = [25, 50, 75];
 export const FOOT_STEP = 10;   // 負重每走幾格算一次腳力的「完成」
+
+// ---------- M5 人際 ----------
+export const SOCIAL = {
+  CHAT_GAIN: 4, MEAL_GAIN: 0.6, WORK_GAIN: 0.8, REFUSE_LOSS: 2, TEACH_GAIN: 1.5,
+  TEACH_GAP: 15, TEACH_MUL: 0.5,
+  STAGES: [
+    { id: 'stranger', label: '陌生', min: -Infinity },
+    { id: 'known', label: '相識', min: 10 },
+    { id: 'friend', label: '朋友', min: 30 },
+    { id: 'close', label: '知己', min: 60 },
+  ],
+};

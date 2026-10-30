@@ -18,9 +18,9 @@ export function gainFor(p, id) {
 }
 
 // 成長；跨過門檻時回傳門檻值，讓呼叫端寫紀事。
-export function grow(p, id) {
+export function grow(p, id, mul = 1) {
   const before = p.skills[id];
-  const after = Math.min(100, before + gainFor(p, id));
+  const after = Math.min(100, before + gainFor(p, id) * mul);
   p.skills[id] = after;
   return SKILL_MILESTONES.find((m) => before < m && after >= m) ?? null;
 }

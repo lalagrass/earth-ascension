@@ -99,8 +99,12 @@ export function drawPeople(ctx, state, selectedId) {
     ctx.font = 'bold 11px sans-serif';
     ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.8)';
     ctx.strokeText(p.name, cx, cy - 16); ctx.fillStyle = '#2b2118'; ctx.fillText(p.name, cx, cy - 16);
-    ctx.font = '10px sans-serif';
-    ctx.strokeText(p.actLabel, cx, cy + 19); ctx.fillStyle = '#3d3326'; ctx.fillText(p.actLabel, cx, cy + 19);
+    // 擠在一起時只畫被選中者（或排在前面那位）的行動字，避免疊字。
+    const crowded = state.people.some((o) => o !== p && o.id !== selectedId && Math.hypot(o.x - p.x, o.y - p.y) < 1.5 && (p.id !== selectedId) && o.id < p.id);
+    if (!crowded || p.id === selectedId) {
+      ctx.font = '10px sans-serif';
+      ctx.strokeText(p.actLabel, cx, cy + 19); ctx.fillStyle = '#3d3326'; ctx.fillText(p.actLabel, cx, cy + 19);
+    }
   }
 }
 

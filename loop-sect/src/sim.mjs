@@ -10,7 +10,8 @@ import { fromTemplate, makePerson, speedOf } from './person.mjs';
 import { decayNeeds, applyPer, isNight } from './needs.mjs';
 import { candidates, interruptible, willingToChat, REFUSE_COOLDOWN } from './ai.mjs';
 import { newSkills, grow, SKILL_OF_TASK, workTimeMul, buildRate, extraMeal, extraTake, skillLabel } from './skills.mjs';
-import { FOOT_STEP } from './data.mjs';
+import { FOOT_STEP, SOCIAL } from './data.mjs';
+import { addAff, compat, teachTopic, withStage } from './social.mjs';
 
 // 從院子灌水找出可到達的格，避免 POI 或出生點落在被樹圍住的口袋裡。
 function reachableFrom(map, sx, sy) {
@@ -102,6 +103,7 @@ export function createWorld({ seed = 1, people }) {
   state.built = [];
   state.events = [];
   state.reroute = [];
+  state.aff = {};          // "p0>p1" → p0 對 p1 的好感
   state.counts = {};
   state.people = people.map((spec, i) => {
     const id = `p${i}`;
@@ -224,6 +226,9 @@ function choose(state, p) {
       p.path = path;
       p.act = 'walk';
       if (c.kind === 'wander') p.goal = c.poi;
+    } else if (c.kind === 'chat') {
+      // 已經站在對方旁邊：直接開口（之前誤走 startDoing，對方沒進入聊天，立刻被 shouldStop 收掉）。
+      if (!tryChat(state, p)) { release(state, p); p.act = 'idle'; p.wait = 0; }
     } else {
       startDoing(state, p);
     }
@@ -276,6 +281,7 @@ function tryChat(state, p) {
     p.bubble = { text: '被婉拒', until: state.tick + 40 };
     o.bubble = { text: '想靜一靜', until: state.tick + 40 };
     p.needs.fun = Math.max(0, p.needs.fun - 3);
+    addAff(state, p, o, -SOCIAL.REFUSE_LOSS * (1 + 0.5 * Math.max(0, p.axes.F)));
     state.counts.refused = (state.counts.refused || 0) + 1;
     release(state, p);
     p.act = 'idle'; p.wait = 10; p.actLabel = '被婉拒了';
@@ -284,17 +290,23 @@ function tryChat(state, p) {
   release(state, o);
   o.path = []; o.wait = 0;
   const dur = ACTS.chat.dur + randInt(state, 21);
-  o.task = { kind: 'chat', partner: p.id };
+  // 話題：誰比誰強就由弱的那方請教；都差不多就閒聊。
+  const pLearns = teachTopic(p, o), oLearns = teachTopic(o, p);
+  o.task = { kind: 'chat', partner: p.id, learn: oLearns };
   startDoing(state, o, dur);
-  o.actLabel = `和${p.name}聊天`;
+  p.task.learn = pLearns;
   startDoing(state, p, dur);
-  p.actLabel = `和${o.name}聊天`;
+  const topic = (x) => (x ? `請教${skillLabel(x)}` : '閒聊');
+  o.actLabel = `和${p.name}${topic(oLearns)}`;
+  p.actLabel = `和${o.name}${topic(pLearns)}`;
+  p.bubble = { text: topic(pLearns), until: state.tick + 30 };
+  o.bubble = { text: topic(oLearns), until: state.tick + 30 };
   return true;
 }
 
 // ---------- 行動結算 ----------
-function improve(state, p, id) {
-  const m = grow(p, id);
+function improve(state, p, id, mul = 1) {
+  const m = grow(p, id, mul);
   if (m === null) return;
   const text = `${skillLabel(id)}精進`;
   p.bubble = { text, until: state.tick + 60 };
@@ -305,7 +317,21 @@ function finish(state, p) {
   const t = p.task;
   const L = state.ledger;
   if (SKILL_OF_TASK[t.kind]) improve(state, p, SKILL_OF_TASK[t.kind]); // 只有做完才成長
-  if (t.kind === 'eat') { L.mealsEaten++; p.hold.meal = 0; }
+  if (t.kind === 'eat') {
+    L.mealsEaten++; p.hold.meal = 0;
+    const table = byId(state.objects, t.obj);
+    for (const u of table.users) if (u && u !== p.id) { const o = byId(state.people, u); withStage(state, p, o, () => addAff(state, p, o, SOCIAL.MEAL_GAIN)); }
+  }
+  if (t.kind === 'chat' && t.left <= 0) {
+    // 正常聊完才算；被打斷的不加。雙方各自在自己的 finish 加自己那一側。
+    const o = byId(state.people, t.partner);
+    withStage(state, p, o, () => addAff(state, p, o, SOCIAL.CHAT_GAIN * compat(p, o) * (1 + 0.3 * Math.max(0, p.axes.E))));
+    if (t.learn) { improve(state, p, t.learn, SOCIAL.TEACH_MUL); addAff(state, o, p, SOCIAL.TEACH_GAIN); state.counts.taught = (state.counts.taught || 0) + 1; }
+  }
+  if (t.kind === 'build') {
+    const site = t.site && byId(state.sites, t.site);
+    for (const w of site?.workers ?? []) if (w !== p.id) { const o = byId(state.people, w); withStage(state, p, o, () => addAff(state, p, o, SOCIAL.WORK_GAIN)); }
+  }
   if (t.kind === 'eatRaw') {
     const b = byId(state.bushes, t.bush);
     if (b.berries > 0) { b.berries--; L.picked++; L.rawEaten++; }

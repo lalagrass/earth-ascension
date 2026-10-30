@@ -2,6 +2,7 @@
 import { ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, STOCK_TARGET, PILE, WORK_KINDS } from './data.mjs';
 import { nearestResources, remaining, stocked, workSpot, siteWorkersFree } from './build.mjs';
 import { extraTake } from './skills.mjs';
+import { aff, prestige } from './social.mjs';
 import { nextRand } from './rng.mjs';
 import { urgency, isNight } from './needs.mjs';
 
@@ -123,8 +124,11 @@ export function candidates(state, p, scorePois) {
     for (const o of state.people) {
       if (o === p || o.act === 'do' || Math.hypot(o.x - p.x, o.y - p.y) > 18) continue;
       if ((p.refused[o.id] ?? -Infinity) > state.tick - REFUSE_COOLDOWN) continue;
+      const like = aff(state, p, o);
+      if (like < -10) continue;
+      const admire = Math.max(0, prestige(o) - prestige(p)) / 100 * 1.5;
       add({ kind: 'chat', partner: o.id, spot: { x: Math.round(o.x), y: Math.round(o.y) }, label: `找${o.name}聊天` },
-        { need: u.social * (1 + 0.5 * E), persona: 0.3 * E + 0.1 * F });
+        { need: u.social * (1 + 0.5 * E), persona: 0.3 * E + 0.1 * F + like * 0.015 + admire });
     }
   }
 

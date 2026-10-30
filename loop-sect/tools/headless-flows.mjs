@@ -140,4 +140,20 @@ export const flows = [
       await shot('skills');
     },
   },
+  {
+    name: 'm5-social',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="linghu"]');
+      await page.click('#begin');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => Object.values(window.__sect.snapshot().aff).some((v) => v > 0), null, { timeout: 60000 });
+      await page.click('[data-speed="0"]');
+      await page.click('[data-person="p0"]');
+      await wait(page, 300);
+      expect('A8 人際區列出另外兩人', (await page.locator('#panel [data-rel]').count()) === 2);
+      const t = await page.textContent('#panel');
+      expect('A8 顯示階段與雙向好感', /(陌生|相識|朋友|知己)/.test(t) && /我→他/.test(t));
+      await shot('social');
+    },
+  },
 ];

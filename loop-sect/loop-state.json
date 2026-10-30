@@ -1,15 +1,16 @@
 {
   "loopVersion": 2,
-  "loopsDone": 4,
+  "loopsDone": 5,
   "retroEvery": 3,
   "lastRetro": "docs/RETRO-01.md",
-  "lastCommit": "f6e7047",
-  "nextMilestone": "M5",
+  "lastCommit": "9a8a9eb",
+  "nextMilestone": "M6",
   "inProgress": null,
   "openIssues": [
     "走路仍占約 45% 時間",
     "人數上升前要量一次效用 AI 掃全地圖的效能",
-    "自然遊玩缺少持續需求（燒柴、損耗），技能第 3 日後幾乎不長"
+    "自然遊玩缺少持續需求（燒柴、損耗），技能第 3 日後幾乎不長",
+    "人物卡太長，人際區要捲動；需要分頁"
   ],
   "stopReason": null,
   "targetLoops": 30,

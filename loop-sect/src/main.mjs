@@ -3,6 +3,7 @@ import { axesFromAnswers, typeOf, validateAttrs, traitsOf } from './person.mjs';
 import { createWorld, step, clock, companionsFor, placeBlueprint, cancelSite, setFocus } from './sim.mjs';
 import { blueprint } from './build.mjs';
 import { effectText } from './skills.mjs';
+import { aff, stageOf, prestige } from './social.mjs';
 import { SKILLS } from './data.mjs';
 import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild } from './render.mjs';
 
@@ -176,6 +177,9 @@ function renderPanel() {
     el('h2', {}, '技能'), ...SKILLS.map((k) => el('div', { class: 'skill', 'data-skill': k.id }, el('span', {}, k.label),
       el('span', { class: 'bar' }, el('i', { style: `width:${p.skills[k.id]}%` })), el('b', {}, p.skills[k.id].toFixed(0)),
       el('small', {}, effectText(p, k.id)))),
+    el('h2', {}, `人際（名望 ${prestige(p).toFixed(0)}）`), ...state.people.filter((o) => o !== p).map((o) => el('div', { class: 'rel', 'data-rel': o.id },
+      el('span', {}, o.name), el('b', {}, stageOf(state, p, o).label),
+      el('small', {}, `我→他 ${aff(state, p, o).toFixed(0)}　他→我 ${aff(state, o, p).toFixed(0)}`))),
     el('h2', {}, '專長'), el('div', { class: 'focus' }, ...FOCUS.map((f) => el('button', {
       class: p.focus === f.id ? 'on' : '', 'data-focus': f.id ?? 'none',
       on: { click: () => { setFocus(state, p.id, f.id); renderPanel(); } },
@@ -205,7 +209,7 @@ addEventListener('keydown', (e) => {
 
 // 唯讀遙測：給 headless 檢查用，回傳副本。
 window.__sect = {
-  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map })) : null),
+  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map, aff: state.aff, events: state.events })) : null),
   speed: () => speed,
   selected: () => selected,
   tileToClient: (x, y) => {

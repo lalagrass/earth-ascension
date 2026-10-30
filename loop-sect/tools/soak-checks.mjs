@@ -3,6 +3,7 @@ import { companionsFor, placeBlueprint, setFocus } from '../src/sim.mjs';
 import { walkable } from '../src/map.mjs';
 import { speedOf } from '../src/person.mjs';
 import { isNight } from '../src/needs.mjs';
+import { stageOf, aff } from '../src/social.mjs';
 import { TEMPLATES, TICKS_PER_DAY, BLUEPRINTS, WORK_KINDS } from '../src/data.mjs';
 
 const STUCK_TICKS = 720; // 半日
@@ -20,6 +21,18 @@ export function script(s) {
 }
 
 export function perSeed(s, ctx) {
+  // M5-A5：關係階段與外內向的好感總和。
+  let best = 0;
+  for (const a of s.people) for (const b of s.people) {
+    if (a === b) continue;
+    best = Math.max(best, ['stranger', 'known', 'friend', 'close'].indexOf(stageOf(s, a, b).id));
+    const g = a.axes.E > 0 ? 'E' : 'I';
+    bump(ctx, `aff:${g}`, aff(s, a, b) + aff(s, b, a)); bump(ctx, `affN:${g}`);
+  }
+  if (best >= 1) bump(ctx, 'knownSeeds');
+  if (best >= 2) bump(ctx, 'friendSeeds');
+  if (best >= 3) bump(ctx, 'closeSeeds');
+  bump(ctx, 'taught', s.counts.taught || 0);
   const chopper = s.people[1];
   const top = Math.max(...s.people.map((p) => p.skills.chop));
   bump(ctx, 'specSeeds'); if (chopper.skills.chop === top) bump(ctx, 'specOk');
@@ -187,6 +200,11 @@ export function judge(S) {
   lines.push(`（參考）指定伐木者每根木頭花的 tick：第 1 日 ${early.toFixed(1)}，第 4–5 日 ${late.toFixed(1)}`);
   lines.push(`M4-A5 指定伐木者伐木熟練全隊最高：${S.specOk || 0}/${S.specSeeds} 種子，平均熟練 ${(S.chopSkillSum / S.specSeeds).toFixed(1)}`);
   if ((S.specOk || 0) < Math.ceil(S.specSeeds * 10 / 12)) failures.push('M4-A5 專精沒有浮現');
+  lines.push(`M5-A5 5 日內最好的一對：相識以上 ${S.knownSeeds || 0}/${S.seeds}、朋友以上 ${S.friendSeeds || 0}、知己 ${S.closeSeeds || 0}；請教 ${S.taught || 0} 次`);
+  if ((S.knownSeeds || 0) < Math.ceil(S.seeds * 10 / 12)) failures.push('M5-A5 相識的種子太少');
+  const ae = r('aff:E', 'affN:E'), ai = r('aff:I', 'affN:I');
+  lines.push(`M5-A5 每段關係的雙向好感和：外向 ${ae.toFixed(1)}、內向 ${ai.toFixed(1)}`);
+  if (!(ae > ai)) failures.push('M5-A5 外向者的關係沒有比內向者好');
   const all = (S['t:E'] || 0) + (S['t:I'] || 0);
   // 時間分布：調平衡前先看這張表（loop 3 retro 的改進）。
   const share = Object.entries(S).filter(([k]) => k.startsWith('act:')).sort((a, b) => b[1] - a[1]).slice(0, 10);
