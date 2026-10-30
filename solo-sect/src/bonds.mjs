@@ -46,7 +46,7 @@ export function passPick(s, d) {
   return null;
 }
 export const passReserve = (s) => { s.passN = { day: s.day, n: passToday(s) + 1 }; }; // 開始傳功即佔當日名額（多人同時起手不會超量）
-export function passDo(s, d, p, art) { 
+export function passDo(s, d, p, art) {
   const key = `${d.id}>${p.id}:${art}`; (s.passed ??= {}); if (s.passed[key]) return false; s.passed[key] = s.day; d.passDay = s.day;
   const a = learnArt(p, art, s.t), r = p.arts[art], g = PASS.gain + (p.master === d.id ? PASS.apprBonus : 0); r.xp = Math.min(curCap(p, a), r.xp + g); r.last = s.t;
   relAdd(s, d, p, PASS.aff); addMem(s, d, p, 'pass', a.name); log(s, `【傳功】${d.name}帶${p.name}練「${a.name}」，熟練 +${g}`); return true;

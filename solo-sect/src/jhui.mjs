@@ -42,7 +42,10 @@ export function jhevPanel(s) {
   const ev = [...recent(s, '【過路高人】', 3), ...recent(s, '【挑戰帖】', 3)].sort((a, b) => b.t - a.t).slice(0, 4);
   return rows.join('') + (ev.length ? `<ul class="k">${ev.map((l) => `<li>第 ${Math.floor(l.t / DAY) + 1} 日：${esc(l.msg)}</li>`).join('')}</ul>` : '<div class="k">還沒遇過江湖事件。</div>');
 }
-export function jhuiHtml(s) {
+// loop35：折疊狀態由呼叫端保存（closed[key]=true 表示玩家收合過）；預設展開
+export const JHUI_KEYS = ['arch', 'clique', 'jhev'];
+export function jhuiHtml(s, closed = {}) {
   if (!s.jhui) return '';
-  return `<details open><summary>原型</summary>${archPanel(s)}</details><details open><summary>同門小派</summary>${cliquePanel(s)}</details><details open><summary>江湖事件</summary>${jhevPanel(s)}</details>`;
+  const sec = (k, title, body) => `<details data-keep="jhui-${k}"${closed[`jhui-${k}`] ? '' : ' open'}><summary>${title}</summary>${body}</details>`;
+  return sec('arch', '原型', archPanel(s)) + sec('clique', '同門小派', cliquePanel(s)) + sec('jhev', '江湖事件', jhevPanel(s));
 }

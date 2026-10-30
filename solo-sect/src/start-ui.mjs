@@ -16,6 +16,27 @@ const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index
 #start .stat{display:inline-block;margin:3px 10px 3px 0}#start .q{margin:3px 0}#start select{max-width:260px}#start .go{font-size:18px;padding:6px 26px;margin-top:10px;background:#c9a061;border:0;border-radius:6px}
 #choice{position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:40;background:#2b2118;color:#f3e7cf;border:2px solid #ffd27a;border-radius:10px;padding:14px 20px;max-width:560px;font:15px/1.6 serif;box-shadow:0 6px 30px #000a}
 #choice button{display:block;margin:6px 0;width:100%;text-align:left;font-size:15px}`;
+// loop35：江湖規則單一來源（勾選 id、st 欄位、spec 鍵、預設、說明）；兩個分頁共用 ruleSpec，避免漏傳／重複
+export const RULES = [
+  ['draw', 'draw', 'draw', false, '人以群分：外向的人更愛交友、強者吸引人靠近'],
+  ['comp', 'compr', 'comprehend', true, '領悟：苦練與觀摩切磋可自悟、偷師他派功夫'],
+  ['mentor', 'mentor', 'mentor', true, '同修請教：一起練功互相砥礪、向強者請教、結成練功搭子'],
+  ['steward', 'steward', 'steward', true, '執事自主：有人睡地鋪就擴寢舍，野豬常來就蓋護山哨'],
+  ['lairpow', 'lairpow', 'lairpow', true, '寨強看戰力：山寨強弱跟門派戰力走，不隨家產變強'],
+  ['lift', 'lift', 'lift', true, '心情自救：心情低落時自己去閒坐、聊天或歇息'],
+  ['bt25', 'bt25', 'bt25', true, '突破優先：卡瓶頸時先打坐衝關（人多升首徒後也不會只顧練功）'],
+  ['jhui', 'jhui', 'jhui', true, '介面：原型、同門小派、江湖事件面板（純顯示）'],
+  ['jhev', 'jhev', 'jhev', true, '江湖事件：過路高人指點、挑戰帖（點到為止不受傷）'],
+  ['peace', 'peace', 'peace', true, '太平與備料：巡山掃清後山賊晚來、派隊偏好搭子、柵缺料自動備料'],
+];
+export const ruleOn = (st, k, on) => (on ? st[k] !== false : !!st[k]);
+export const ruleSpec = (st) => Object.fromEntries(RULES.filter(([, k, , on]) => ruleOn(st, k, on)).map(([, , sk]) => [sk, true]));
+export function buildSpec(st, bonus = 0) {
+  const R = ruleSpec(st);
+  if (st.tab === 'classic') return { kind: 'template', id: st.hero, companion: st.comp, askMajor: st.ask, xiaStyle: st.xia || 'all', ...R };
+  if (st.tab === 'custom') return { kind: 'custom', name: st.name, stats: st.stats, answers: st.ans, ...(st.mbti ? { mbti: st.mbti } : {}), ...(st.arch ? { arch: st.arch } : {}), ...R, companion: st.comp, askMajor: st.ask, bonus, xiaStyle: st.xia || 'all' };
+  return null;
+}
 const SUHUI = (() => { try { return legacyBest(localStorage); } catch { return 0; } })(); // v1.7 也讀存檔裡的宿慧
 const st = { tab: 'classic', hero: 'guojing', comp: null, name: '無名', stats: defaultStats(), ans: Array(9).fill(0), ask: true, mbti: '', draw: true, mbtiMode: 'none', mq: Array(MBTI_Q.length).fill(null) };
 const tn = (t) => TRAITS[t]?.name || NEW_TRAITS[t]?.name || t;
@@ -40,16 +61,7 @@ function render(el) {
   } else h += `<p>沿用 v0.95 的無名主角、林師姐、堂弟開局（不帶價值觀與同門）。</p>`;
   const ok = st.tab !== 'custom' || validStats(st.stats, SUHUI);
   h += `<fieldset class="rules"><legend>江湖規則（新局選用，舊局不受影響）</legend>`;
-  h += `<div><label><input type="checkbox" id="st-draw" ${st.draw ? 'checked' : ''}> 人以群分：外向的人更愛交友、強者吸引人靠近</label></div>`;
-  h += `<div><label><input type="checkbox" id="st-comp" ${st.compr !== false ? 'checked' : ''}> 領悟：苦練與觀摩切磋可自悟、偷師他派功夫</label></div>`;
-  h += `<div><label><input type="checkbox" id="st-mentor" ${st.mentor !== false ? 'checked' : ''}> 同修請教：一起練功互相砥礪、向強者請教、結成練功搭子</label></div>`;
-  h += `<div><label><input type="checkbox" id="st-steward" ${st.steward !== false ? 'checked' : ''}> 執事自主：有人睡地鋪就擴寢舍，野豬常來就蓋護山哨</label></div>`;
-  h += `<div><label><input type="checkbox" id="st-lairpow" ${st.lairpow !== false ? 'checked' : ''}> 寨強看戰力：山寨強弱跟門派戰力走，不隨家產變強</label></div>`;
-  h += `<div><label><input type="checkbox" id="st-lift" ${st.lift !== false ? 'checked' : ''}> 心情自救：心情低落時自己去閒坐、聊天或歇息</label></div>`;
-  h += `<div><label><input type="checkbox" id="st-bt25" ${st.bt25 !== false ? 'checked' : ''}> 突破優先：卡瓶頸時先打坐衝關（人多升首徒後也不會只顧練功）</label></div>`;
-  h += `<div><label><input type="checkbox" id="st-jhui" ${st.jhui !== false ? 'checked' : ''}> 介面：原型、同門小派、江湖事件面板（純顯示）</label></div>`;
-  h += `<div><label><input type="checkbox" id="st-jhev" ${st.jhev !== false ? 'checked' : ''}> 江湖事件：過路高人指點、挑戰帖（點到為止不受傷）</label></div>`;
-  h += `<div><label><input type="checkbox" id="st-peace" ${st.peace !== false ? 'checked' : ''}> 太平與備料：巡山掃清後山賊晚來、派隊偏好搭子、柵缺料自動備料</label></div>`;
+  h += RULES.map(([id, k, , on, label]) => `<div><label><input type="checkbox" id="st-${id}" ${ruleOn(st, k, on) ? 'checked' : ''}> ${label}</label></div>`).join('');
   h += `</fieldset>`;
   h += `<div>名俠池畫風 <select id="st-xia">${[['all', '全明星'], ['jin', '純金庸'], ['zhou', '純周星馳']].map(([k, n]) => `<option value="${k}" ${(st.xia || 'all') === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`;
   h += `<div><label><input type="checkbox" id="st-ask" ${st.ask ? 'checked' : ''}> 重大抉擇每次詢問我（取消則依價值觀自動決定）</label></div><button class="go" id="st-go" ${ok ? '' : 'disabled'}>開山立派</button></div>`;
@@ -76,9 +88,9 @@ export function openStart(onStart) {
     if (t.dataset.tab) st.tab = t.dataset.tab; if (t.dataset.hero) { st.hero = t.dataset.hero; st.comp = null; } if (t.dataset.comp) st.comp = t.dataset.comp;
     if (t.dataset.st) { const [k, dv] = t.dataset.st.split('|'); const v = st.stats[k] + +dv; if (v >= 1 && v <= 5) { const n = { ...st.stats, [k]: v }; if (spent(n) <= budgetOf(n, SUHUI) || +dv < 0) st.stats = n; } }
     if (t.id === 'st-ask') st.ask = t.checked;
-    if (t.id === 'st-go') { const spec = st.tab === 'classic' ? { kind: 'template', id: st.hero, companion: st.comp, askMajor: st.ask, xiaStyle: st.xia || 'all', ...(st.draw ? { draw: true } : {}), ...(st.compr !== false ? { comprehend: true } : {}), ...(st.mentor !== false ? { mentor: true } : {}), ...(st.peace !== false ? { peace: true } : {}), ...(st.jhev !== false ? { jhev: true } : {}), ...(st.bt25 !== false ? { bt25: true } : {}), ...(st.lift !== false ? { lift: true } : {}), ...(st.lairpow !== false ? { lairpow: true } : {}), ...(st.steward !== false ? { steward: true } : {}), ...(st.compr !== false ? { comprehend: true } : {}), ...(st.mentor !== false ? { mentor: true } : {}), ...(st.peace !== false ? { peace: true } : {}), ...(st.jhev !== false ? { jhev: true } : {}), ...(st.bt25 !== false ? { bt25: true } : {}), ...(st.lift !== false ? { lift: true } : {}), ...(st.lairpow !== false ? { lairpow: true } : {}), ...(st.steward !== false ? { steward: true } : {}), ...(st.jhui !== false ? { jhui: true } : {}) } : st.tab === 'custom' ? { kind: 'custom', name: st.name, stats: st.stats, answers: st.ans, ...(st.mbti ? { mbti: st.mbti } : {}), ...(st.arch ? { arch: st.arch } : {}), ...(st.draw ? { draw: true } : {}), ...(st.jhui !== false ? { jhui: true } : {}), companion: st.comp, askMajor: st.ask, bonus: SUHUI, xiaStyle: st.xia || 'all' } : null; el.remove(); onStart(spec); return; }
+    if (t.id === 'st-go') { const spec = buildSpec(st, SUHUI); el.remove(); onStart(spec); return; }
     render(el); });
-  el.addEventListener('change', (e) => { if (e.target.dataset.q9) { st.ans[+e.target.dataset.q9] = +e.target.value; render(el); } if (e.target.id === 'st-name') st.name = e.target.value || '無名'; if (e.target.id === 'st-arch') { st.arch = e.target.value || ''; if (ARCH[st.arch]) st.stats = { ...ARCH[st.arch].stats }; render(el); } if (e.target.id === 'st-xia') st.xia = e.target.value; if (e.target.id === 'st-peace') st.peace = e.target.checked; if (e.target.id === 'st-jhev') st.jhev = e.target.checked; if (e.target.id === 'st-bt25') st.bt25 = e.target.checked; if (e.target.id === 'st-lift') st.lift = e.target.checked; if (e.target.id === 'st-lairpow') st.lairpow = e.target.checked; if (e.target.id === 'st-steward') st.steward = e.target.checked; if (e.target.id === 'st-jhui') st.jhui = e.target.checked; if (e.target.id === 'st-mentor') st.mentor = e.target.checked; if (e.target.id === 'st-comp') st.compr = e.target.checked; if (e.target.id === 'st-draw') st.draw = e.target.checked; if (e.target.dataset.mm) { st.mbtiMode = e.target.dataset.mm; st.mbti = st.mbtiMode === 'quiz' ? quizResult(st.mq) || '' : st.mbtiMode === 'pick' ? st.mbti : ''; render(el); } if (e.target.dataset.mq) { st.mq[+e.target.dataset.mq] = e.target.value === '' ? null : +e.target.value; st.mbti = quizResult(st.mq) || ''; render(el); } if (e.target.id === 'st-mbti') { st.mbti = e.target.value; render(el); } });
+  el.addEventListener('change', (e) => { { const r = RULES.find(([id]) => e.target.id === `st-${id}`); if (r) st[r[1]] = e.target.checked; } if (e.target.dataset.q9) { st.ans[+e.target.dataset.q9] = +e.target.value; render(el); } if (e.target.id === 'st-name') st.name = e.target.value || '無名'; if (e.target.id === 'st-arch') { st.arch = e.target.value || ''; if (ARCH[st.arch]) st.stats = { ...ARCH[st.arch].stats }; render(el); } if (e.target.id === 'st-xia') st.xia = e.target.value; if (e.target.dataset.mm) { st.mbtiMode = e.target.dataset.mm; st.mbti = st.mbtiMode === 'quiz' ? quizResult(st.mq) || '' : st.mbtiMode === 'pick' ? st.mbti : ''; render(el); } if (e.target.dataset.mq) { st.mq[+e.target.dataset.mq] = e.target.value === '' ? null : +e.target.value; st.mbti = quizResult(st.mq) || ''; render(el); } if (e.target.id === 'st-mbti') { st.mbti = e.target.value; render(el); } });
 }
 export function choiceUI(S) {
   let el = document.getElementById('choice'); const ch = S.hero?.askMajor && S.choices?.[0];
