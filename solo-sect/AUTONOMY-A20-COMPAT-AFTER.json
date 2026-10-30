@@ -1,0 +1,8 @@
+{
+  "pinnedOldReader": "bc5dc0567cb088af7fa94fbbabe7288a8ba8305c",
+  "newAutonomyVersion": 4,
+  "oldReaderRejectsNewMode": true,
+  "oldReaderStillAcceptsClassic3": true,
+  "genuineA19Root3TraceMigratesWithoutWorldChanges": true,
+  "traceAt": 1403
+}

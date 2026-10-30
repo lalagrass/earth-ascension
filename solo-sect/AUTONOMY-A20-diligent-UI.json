@@ -1,0 +1,1010 @@
+{
+  "milestone": "A20-diligent",
+  "personality": "diligent",
+  "mode": "normal UI; only new-game/start/speed controls; no orders, blueprints, injection",
+  "speed": 16,
+  "worldEnd": 1301,
+  "compatUI": {
+    "phase": "AFTER zero-input journey, separate existing-save/preview compatibility only",
+    "actions": [
+      "speed4 to safe leisure",
+      "pause",
+      "existing save",
+      "existing preview",
+      "cancel"
+    ],
+    "previewText": "已儲存荒居 v4 → 本篇新槽；獨自前往。\n\n帶入\n主角 獨居試居，性情 勤勞，識藥 5，飢餓／精力 51／91\n沒有帶入學徒；訪客或短住幫手不等於已收徒\n小屋 stage 2 → 小寢舍 stage 1；大廳為破道館 stage 0\n庫存：木 5、糧 3（野果 2＋熱飯 1）、菜 5、藥 4\n已建菜園；本篇新局預設可作業的荒地菜畦。已建露天灶；本篇新局預設露天灶。已建藥田折作野藥圃；木容量 20\n不帶入或能力改變\n小家名稱與屋舍配色不成為本篇家園屬性；原荒居保留，轉接來源收據仍含原始資料。\n種子、田間生長、未完成工作、荒居遊戲天數、關係與信任、工作與休閒紀錄不帶入。木作台、改良灶具的燉菜能力、木床／舒適床、屋前長凳與庭院花叢也不帶入；只留在原荒居家園；四項新生活技能與短期感受也不帶入，本篇識藥沿既有映射。\n蔬果拌食 1份、家常燉菜 0份不折成基本熱飯或本篇糧；完整保留在原荒居。\n修繕小屋休息率 9 → 本篇小寢舍休息率 8。藥田栽種能力不保留；本篇野藥圃僅可野採。\n武學、根骨與其他技能採本篇新局值；阿蓮個性於荒居未定義，本篇保持未知。\n確認另開本篇新局取消",
+    "worldUnchanged": true,
+    "storageUnchangedOnPreviewCancel": true
+  },
+  "observedMinH": 34.165000000003005,
+  "observedMinE": 18.749999999999993,
+  "restUsed": true,
+  "events": [
+    {
+      "t": 2.75,
+      "goal": "shelter",
+      "fac": {
+        "hut": 0,
+        "garden": 0,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 0,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 102.5,
+      "goal": null,
+      "fac": {
+        "hut": 1,
+        "garden": 0,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 0,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 111.5,
+      "goal": "hotFood",
+      "fac": {
+        "hut": 1,
+        "garden": 0,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 0,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 173.25,
+      "goal": "hotFood",
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 0,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 249.5,
+      "goal": "hotFood",
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 1,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 391.5,
+      "goal": null,
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 1,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 397.25,
+      "goal": "pantry",
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 1,
+        "store": 0,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 450.25,
+      "goal": "pantry",
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 1,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 527,
+      "goal": null,
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 536,
+      "goal": "comfort",
+      "fac": {
+        "hut": 1,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 713,
+      "goal": "comfort",
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 0,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 793,
+      "goal": "comfort",
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 0,
+        "bed": 1,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 869.5,
+      "goal": "comfort",
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 1,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 996.25,
+      "goal": "comfort",
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 1002.25,
+      "goal": null,
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 1011,
+      "goal": "herbs",
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 1067,
+      "goal": "herbs",
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 1,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 1090.75,
+      "goal": "personalize",
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 1,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 1102.5,
+      "goal": null,
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 1,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 1155.5,
+      "goal": "herbs",
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 1,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "t": 1173.25,
+      "goal": null,
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 1,
+        "workbench": 1,
+        "bed": 2,
+        "bench": 0,
+        "flowers": 0,
+        "kitchen": 2,
+        "store": 1,
+        "berries": 0,
+        "wood": 0,
+        "herbs": 0
+      }
+    }
+  ],
+  "errors": [],
+  "state": {
+    "kind": "homestead",
+    "version": 4,
+    "mode": "solo",
+    "mealStyle": "auto",
+    "focusProject": null,
+    "look": {
+      "style": "natural",
+      "name": "勤耕小屋"
+    },
+    "t": 1301,
+    "subtick": 0,
+    "day": 6,
+    "speed": 1,
+    "person": {
+      "name": "獨居試居",
+      "personality": "diligent",
+      "pos": [
+        445,
+        345
+      ],
+      "hunger": 50.86000000001775,
+      "energy": 91.10000000000022,
+      "herbalSkill": 5,
+      "careDay": 0,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 8,
+        "cook": 3
+      },
+      "feelings": {
+        "warmMeal": 820,
+        "rested": 1257.5,
+        "freshMeal": 1183
+      },
+      "cookRequest": null,
+      "foodRequest": null,
+      "task": {
+        "act": "leisure",
+        "phase": "do",
+        "place": "home",
+        "timer": 0.25,
+        "leisureKind": "clouds"
+      },
+      "order": null,
+      "carry": null,
+      "work": 79.28571428571443,
+      "leisure": 11,
+      "orderScope": "once",
+      "onceProject": null,
+      "onceDelivery": false,
+      "leisureRequest": null
+    },
+    "stock": {
+      "berries": 2,
+      "wood": 5,
+      "seeds": 6,
+      "veg": 5,
+      "meal": 1,
+      "salad": 1,
+      "stew": 0,
+      "herbs": 4
+    },
+    "cap": {
+      "berries": 20,
+      "wood": 20,
+      "seeds": 10,
+      "veg": 16,
+      "meal": 15,
+      "herbs": 10
+    },
+    "wild": {
+      "berries": 4,
+      "wood": 4,
+      "herbs": 3
+    },
+    "fac": {
+      "hut": {
+        "stage": 2,
+        "site": null
+      },
+      "garden": {
+        "stage": 1,
+        "site": null
+      },
+      "herbGarden": {
+        "stage": 1,
+        "site": null
+      },
+      "workbench": {
+        "stage": 1,
+        "site": null
+      },
+      "bed": {
+        "stage": 2,
+        "site": null
+      },
+      "bench": {
+        "stage": 0,
+        "site": null
+      },
+      "flowers": {
+        "stage": 0,
+        "site": null
+      },
+      "kitchen": {
+        "stage": 2,
+        "site": null
+      },
+      "store": {
+        "stage": 1,
+        "site": null
+      },
+      "berries": {
+        "stage": 0
+      },
+      "wood": {
+        "stage": 0
+      },
+      "herbs": {
+        "stage": 0
+      }
+    },
+    "plot": {
+      "state": "empty",
+      "growth": 34
+    },
+    "herbPlot": {
+      "state": "empty",
+      "growth": 50
+    },
+    "visitor": {
+      "name": "阿蓮",
+      "role": "visitor",
+      "trust": 0,
+      "lastChat": 0,
+      "lastGift": 0,
+      "cared": false,
+      "willing": false,
+      "inviteDay": 0,
+      "inviteTime": 0,
+      "apprenticeDay": 0,
+      "injury": false,
+      "hunger": 68,
+      "energy": 72,
+      "herbalSkill": 0,
+      "careDay": 0
+    },
+    "helper": null,
+    "leases": {
+      "wood": null,
+      "garden": null,
+      "herbGarden": null
+    },
+    "autonomy": {
+      "version": 1,
+      "goal": null,
+      "since": 1301,
+      "waiting": null,
+      "replanAt": 1105,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "pantry",
+        "comfort",
+        "personalize",
+        "herbs"
+      ],
+      "warmMeals": 2,
+      "comfortRests": 2,
+      "herbHarvests": 2,
+      "careUses": 0,
+      "lookOwnership": "resident",
+      "recess": false,
+      "breaks": 6,
+      "direction": "auto",
+      "deferred": [],
+      "limit": 2,
+      "interestLimit": 2,
+      "journal": [
+        {
+          "goal": "shelter",
+          "at": 100.5
+        },
+        {
+          "goal": "hotFood",
+          "at": 388.75
+        },
+        {
+          "goal": "pantry",
+          "at": 525.5
+        },
+        {
+          "goal": "comfort",
+          "at": 1001.25
+        },
+        {
+          "goal": "personalize",
+          "at": 1100.25
+        },
+        {
+          "goal": "herbs",
+          "at": 1171.25
+        }
+      ],
+      "tastes": {
+        "basic": 2,
+        "salad": 1,
+        "stew": 0
+      },
+      "useResults": {
+        "meals": {
+          "basic": {
+            "n": 2,
+            "hunger": 52,
+            "energy": 0
+          },
+          "salad": {
+            "n": 1,
+            "hunger": 38,
+            "energy": 0
+          },
+          "stew": {
+            "n": 0,
+            "hunger": 0,
+            "energy": 0
+          }
+        },
+        "leisure": {
+          "clouds": {
+            "n": 8,
+            "energy": 4.521484375,
+            "comfort": 0
+          },
+          "bench": {
+            "n": 0,
+            "energy": 0,
+            "comfort": 0
+          },
+          "flowers": {
+            "n": 0,
+            "energy": 0,
+            "comfort": 0
+          },
+          "garden": {
+            "n": 1,
+            "energy": 5,
+            "comfort": 0
+          }
+        },
+        "lastMeal": {
+          "id": "salad",
+          "at": 1138,
+          "hungerBefore": 35.680000000015525,
+          "hungerAfter": 73.68000000001553,
+          "energyBefore": 70.5000000000002,
+          "energyAfter": 70.5000000000002
+        }
+      },
+      "leisure": {
+        "counts": {
+          "clouds": 10,
+          "bench": 0,
+          "flowers": 0,
+          "garden": 1
+        },
+        "last": "clouds",
+        "at": 1300.75
+      },
+      "experience": {
+        "hunger": 0,
+        "fatigue": 0,
+        "effort": 2.936458333333364,
+        "lastWork": 79.28571428571443
+      }
+    },
+    "unlocked": [
+      "木作台",
+      "改良灶具",
+      "食譜：蔬果拌食",
+      "舒適床鋪"
+    ],
+    "log": [
+      {
+        "day": 6,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 6,
+        "msg": "收下 3 份藥田草藥，正帶回住處。"
+      },
+      {
+        "day": 6,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 6,
+        "msg": "藥田的草藥可收了。"
+      },
+      {
+        "day": 6,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 6,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 6,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 6,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 6,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 6,
+        "msg": "第 6 日。"
+      },
+      {
+        "day": 5,
+        "msg": "用一份草藥在藥田插穗。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "收下 2 份藥田草藥，正帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "藥田的草藥可收了。"
+      },
+      {
+        "day": 5,
+        "msg": "吃下蔬果拌食一份，飽腹+38。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "收下青菜與種子，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "替自己的小家選了家名與配色；沒有消耗材料或增加能力。"
+      },
+      {
+        "day": 5,
+        "msg": "用一份草藥在藥田插穗。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "採到一份虛構草藥，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "完工：小藥田。"
+      },
+      {
+        "day": 5,
+        "msg": "木料搬到藥田工地。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "木料搬到藥田工地。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "立下「小藥田」藍圖。"
+      },
+      {
+        "day": 5,
+        "msg": "完工：舒適床鋪。"
+      },
+      {
+        "day": 5,
+        "msg": "小菜園的菜熟了。"
+      },
+      {
+        "day": 5,
+        "msg": "在木作台做好舒適床部件，接著搬回屋內安裝。"
+      },
+      {
+        "day": 5,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 5,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 5,
+        "msg": "第 5 日。"
+      },
+      {
+        "day": 4,
+        "msg": "在小菜園播下種子。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "採到野果，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "立下「舒適床鋪」藍圖。"
+      },
+      {
+        "day": 4,
+        "msg": "學會新做法：舒適床鋪。"
+      },
+      {
+        "day": 4,
+        "msg": "完工：木作台。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到木作處工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到木作處工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到木作處工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "立下「木作台」藍圖。"
+      },
+      {
+        "day": 4,
+        "msg": "完工：木床鋪。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "做成蔬果拌食2份。"
+      },
+      {
+        "day": 4,
+        "msg": "吃了一份熱飯。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "收下青菜與種子，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "木料搬到屋內床鋪工地。"
+      },
+      {
+        "day": 4,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 4,
+        "msg": "第 4 日。"
+      }
+    ]
+  }
+}

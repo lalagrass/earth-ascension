@@ -11,7 +11,7 @@ test('A01 pause, in-transit reload and time slicing preserve world',()=>{
  const loaded=M.loadHomestead(M.saveHomestead(s));assert.ok(loaded.ok,loaded.error);assert.deepEqual(run(loaded.state,300),run(structuredClone(s),300));
  M.pauseProject(s,'hut');const before=structuredClone(s.fac.hut.site);run(s,100);assert.deepEqual(s.fac.hut.site,before);M.pauseProject(s,'hut',false);run(s,300);assert.ok(s.fac.hut.stage>=1);
  assert.deepEqual(run(fresh(),600,1),run(fresh(),600,.1));
- const raw=JSON.parse(M.saveHomestead(fresh()));delete raw.autonomy;assert.equal(M.loadHomestead(JSON.stringify(raw)).state.autonomy,null);raw.autonomy={version:1,goal:'invented',since:0,completed:[]};assert.equal(M.loadHomestead(JSON.stringify(raw)).ok,false);
+ const raw=JSON.parse(M.saveHomestead(fresh()));delete raw.autonomy;raw.version=3;assert.equal(M.loadHomestead(JSON.stringify(raw)).state.autonomy,null);raw.autonomy={version:1,goal:'invented',since:0,completed:[]};assert.equal(M.loadHomestead(JSON.stringify(raw)).ok,false);
 });
 
 test('A01 reject future and duplicate planning facts',()=>{const s=fresh();s.autonomy.since=1;assert.equal(M.loadHomestead(M.saveHomestead(s)).ok,false);s.autonomy.since=0;s.autonomy.completed=['shelter','shelter'];assert.equal(M.loadHomestead(M.saveHomestead(s)).ok,false);});

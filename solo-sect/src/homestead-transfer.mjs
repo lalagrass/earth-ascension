@@ -1,5 +1,5 @@
 // H6：從已儲存的荒居檔，白名單轉出一份新的本篇存檔；不修改任何來源狀態。
-import { loadHomestead } from './homestead.mjs';
+import { loadHomestead,AUTONOMY_VERSION } from './homestead.mjs';
 import { FACILITIES, TRAITS } from './data.mjs';
 import { createState, save, load, tick } from './sim.mjs';
 
@@ -86,9 +86,10 @@ export function writeVerified(store, key, value, expected = null) {
 export function validateTransferSave(raw) {
   try {
     const r = load(raw);
-    if (!r.ok || !r.state.homesteadOrigin || ![1, 2, 3].includes(r.state.homesteadOrigin.version)) return fail('不是荒居轉接備份。');
+    if (!r.ok || !r.state.homesteadOrigin || ![1, 2, 3,AUTONOMY_VERSION].includes(r.state.homesteadOrigin.version)) return fail('不是荒居轉接備份。');
     const s = r.state;
     const o = s.homesteadOrigin;
+    if(o.version===AUTONOMY_VERSION&&typeof o.receipt!=='string')return fail('自主模式來源必須保留來源收據。');
     if (s.ds?.some(d => ['senior', 'cousin'].includes(d.id)) || (s.t === 0 && !!s.ds?.some(d => d.id === 'homestead-apprentice') !== o.apprentice)) return fail('備份人物與荒居起源不符。');
     if (o.receipt !== undefined) {
       const origin = previewTransfer(o.receipt); if (!origin.ok) return fail('備份來源紀錄不合法。');

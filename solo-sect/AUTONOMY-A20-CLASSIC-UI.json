@@ -1,0 +1,22 @@
+{
+  "case": "separate old-entry smoke, not full-life/real-device test",
+  "cases": [
+    {
+      "query": "classic",
+      "t": 0,
+      "version": 3,
+      "mode": "solo",
+      "autonomy": null,
+      "storageUnchanged": true
+    },
+    {
+      "query": "legacy",
+      "t": 0,
+      "version": 3,
+      "mode": "legacy",
+      "autonomy": null,
+      "storageUnchanged": true
+    }
+  ],
+  "errors": []
+}

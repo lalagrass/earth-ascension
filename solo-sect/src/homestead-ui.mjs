@@ -87,6 +87,7 @@ function startScreen(on) { $('start').style.display = on ? 'grid' : 'none'; docu
 $('start').addEventListener('keydown', (e) => { if (e.key === 'Escape' && s) { e.preventDefault(); startScreen(false); $('new').focus(); } if (e.key !== 'Tab') return; const items = [...$('start').querySelectorAll('a[href],button:not(:disabled),input,select')].filter(el => el.getClientRects().length); const first = items[0], last = items.at(-1); if (e.shiftKey && document.activeElement === first) {e.preventDefault();last.focus();} else if (!e.shiftKey && document.activeElement === last) {e.preventDefault();first.focus();} });
 function begin(state) { inspected=null; $('site-action-result').textContent=''; closeBlueprint(); cancelLook(); clearTransfer(); s = state; speed = 1; acc = 0; startScreen(false); last = performance.now(); render(); $('homestead-title').focus({preventScroll:true}); }
 $('resume').disabled = !stored();
+if(new URLSearchParams(location.search).has('classic')||new URLSearchParams(location.search).has('legacy'))$('start-mode-help').textContent='這個入口保留原式生活：需自行立藍圖，不啟用新自主發展；既有吃睡與補庫仍可自主。';
 $('begin').onclick = () => begin(createHomestead({ name: $('name').value, personality: $('personality').value, mode: new URLSearchParams(location.search).has('legacy') ? 'legacy' : 'solo', autonomy: !new URLSearchParams(location.search).has('classic') }));
 $('resume').onclick = () => { const r = loadHomestead(stored()); if (r.ok) begin(r.state); else show(r.error); };
 $('new').onclick = () => { inspected=null; $('site-action-result').textContent=''; closeBlueprint(); cancelLook(); clearTransfer(); speed = 0; startScreen(true); $('resume').disabled = !stored(); };
@@ -150,7 +151,7 @@ function render() {
   const mealResult=lastMealText(s)||s.log.find(x=>x.msg.startsWith('這一餐：'))?.msg||'可在料理卡選一份現成菜；吃完會回到自主生活。';if($('meal-result').textContent!==mealResult)$('meal-result').textContent=mealResult;
   $('resource-top').textContent=`木料可用 ${resources.available.wood} · 料理共${preparedCount(s)}份（熱飯${s.stock.meal}／拌食${s.stock.salad||0}／燉菜${s.stock.stew||0}）／野果 ${s.stock.berries} · 種子 ${s.stock.seeds} · 青菜 ${s.stock.veg}`;
   $('resource-detail').textContent=`施工已交 ${resources.delivered} 木／運往工地 ${resources.reserved} 木（已離庫，不可再花）；待運${resources.needed}木，共用庫存尚缺${resources.shortage}木。回倉／採集在途：${resources.incoming.map(c=>`${{wood:'木',berries:'野果',veg:'菜',herbs:'藥'}[c.kind]}${c.amount}`).join('、')||'無'}。`;
-  $('home-summary').textContent = `${s.autonomy?lifeStage(s)+' · ':''}${FACILITIES.hut.stages[s.fac.hut.stage].name} · ${s.helper ? '兩人同住' : '一人生活'} · 現成食物約 ${foodDays(s)} 日；自主夠用目標：料理${target.meal}份／果${target.berries}／菜${target.veg}／木${target.wood}／藥${target.herbs}（非容量限制，手動可多備）`;
+  $('home-summary').textContent = `${s.autonomy?lifeStage(s)+' · ':'原模式（自立藍圖） · '}${FACILITIES.hut.stages[s.fac.hut.stage].name} · ${s.helper ? '兩人同住' : '一人生活'} · 現成食物約 ${foodDays(s)} 日；自主夠用目標：料理${target.meal}份／果${target.berries}／菜${target.veg}／木${target.wood}／藥${target.herbs}（非容量限制，手動可多備）`;
   $('next-step').textContent = (autonomyText(s)||nextStep(s))+(s.autonomy?' '+mealAimText(s)+' '+(s.autonomy.goal?waitingText(s):''):'');
   $('autonomy-controls').hidden=!s.autonomy;
   $('drop-waiting').hidden=!s.autonomy?.waiting;
