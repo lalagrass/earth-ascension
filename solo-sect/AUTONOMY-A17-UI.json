@@ -1,0 +1,1026 @@
+{
+  "case": "manual cooperation controls; no state/resources/XP injection; not zero-input autonomy",
+  "checks": [
+    {
+      "type": "one chop still active until delivery",
+      "t": 11.75
+    },
+    {
+      "type": "deposited wood may already enter real autonomous house delivery, never assumed idle inventory",
+      "woodAccounted": 1,
+      "t": 17.75
+    },
+    {
+      "type": "first delivery does not complete one whole project; readback exact",
+      "t": 18.25
+    },
+    {
+      "type": "one full construction completed then released",
+      "t": 100.75
+    }
+  ],
+  "errors": [],
+  "carrying": {
+    "kind": "homestead",
+    "version": 3,
+    "mode": "solo",
+    "mealStyle": "auto",
+    "focusProject": null,
+    "look": {
+      "style": "natural",
+      "name": ""
+    },
+    "t": 11.75,
+    "subtick": 0,
+    "day": 1,
+    "speed": 1,
+    "person": {
+      "name": "無名",
+      "personality": "quiet",
+      "pos": [
+        676.6365644846585,
+        267.7878118384471
+      ],
+      "hunger": 63.35500000000016,
+      "energy": 61,
+      "herbalSkill": 0,
+      "careDay": 0,
+      "skills": {
+        "gather": 1,
+        "build": 0,
+        "farm": 0,
+        "cook": 0
+      },
+      "feelings": {},
+      "cookRequest": null,
+      "foodRequest": null,
+      "task": {
+        "act": "return",
+        "phase": "go",
+        "place": "home",
+        "timer": 0
+      },
+      "order": "chop",
+      "carry": {
+        "kind": "wood",
+        "amount": 1,
+        "origin": "wild"
+      },
+      "work": 1,
+      "leisure": 0,
+      "orderScope": "once",
+      "onceProject": null,
+      "onceDelivery": true,
+      "leisureRequest": null
+    },
+    "stock": {
+      "berries": 0,
+      "wood": 0,
+      "seeds": 2,
+      "veg": 0,
+      "meal": 0,
+      "salad": 0,
+      "stew": 0,
+      "herbs": 0
+    },
+    "cap": {
+      "berries": 8,
+      "wood": 8,
+      "seeds": 5,
+      "veg": 8,
+      "meal": 8,
+      "herbs": 6
+    },
+    "wild": {
+      "berries": 4,
+      "wood": 3.026785714285715,
+      "herbs": 3
+    },
+    "fac": {
+      "hut": {
+        "stage": 0,
+        "site": null
+      },
+      "garden": {
+        "stage": 0,
+        "site": null
+      },
+      "herbGarden": {
+        "stage": 0,
+        "site": null
+      },
+      "workbench": {
+        "stage": 0,
+        "site": null
+      },
+      "bed": {
+        "stage": 0,
+        "site": null
+      },
+      "bench": {
+        "stage": 0,
+        "site": null
+      },
+      "flowers": {
+        "stage": 0,
+        "site": null
+      },
+      "kitchen": {
+        "stage": 0,
+        "site": null
+      },
+      "store": {
+        "stage": 0,
+        "site": null
+      },
+      "berries": {
+        "stage": 0
+      },
+      "wood": {
+        "stage": 0
+      },
+      "herbs": {
+        "stage": 0
+      }
+    },
+    "plot": {
+      "state": "empty",
+      "growth": 0
+    },
+    "herbPlot": {
+      "state": "empty",
+      "growth": 0
+    },
+    "visitor": {
+      "name": "阿蓮",
+      "role": "visitor",
+      "trust": 0,
+      "lastChat": 0,
+      "lastGift": 0,
+      "cared": false,
+      "willing": false,
+      "inviteDay": 0,
+      "inviteTime": 0,
+      "apprenticeDay": 0,
+      "injury": false,
+      "hunger": 68,
+      "energy": 72,
+      "herbalSkill": 0,
+      "careDay": 0
+    },
+    "helper": null,
+    "leases": {
+      "wood": null,
+      "garden": null,
+      "herbGarden": null
+    },
+    "autonomy": {
+      "version": 1,
+      "goal": null,
+      "since": 0,
+      "completed": [],
+      "warmMeals": 0,
+      "comfortRests": 0,
+      "herbHarvests": 0,
+      "careUses": 0,
+      "lookOwnership": "unclaimed",
+      "recess": false,
+      "breaks": 0,
+      "direction": "auto",
+      "deferred": [],
+      "limit": 2,
+      "interestLimit": 2,
+      "journal": [],
+      "tastes": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "leisure": {
+        "counts": {
+          "clouds": 0,
+          "bench": 0,
+          "flowers": 0,
+          "garden": 0
+        },
+        "last": null,
+        "at": 0
+      },
+      "experience": {
+        "hunger": 0,
+        "fatigue": 0,
+        "effort": 0.09861111111111112,
+        "lastWork": 1
+      }
+    },
+    "unlocked": [],
+    "log": [
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "無名來到荒地。先找吃的，再搭一間能安睡的木屋。"
+      }
+    ]
+  },
+  "mid": {
+    "kind": "homestead",
+    "version": 3,
+    "mode": "solo",
+    "mealStyle": "auto",
+    "focusProject": null,
+    "look": {
+      "style": "natural",
+      "name": ""
+    },
+    "t": 18.25,
+    "subtick": 0,
+    "day": 1,
+    "speed": 1,
+    "person": {
+      "name": "無名",
+      "personality": "quiet",
+      "pos": [
+        514.7228576731204,
+        231.44162566147588
+      ],
+      "hunger": 62.44500000000025,
+      "energy": 61,
+      "herbalSkill": 0,
+      "careDay": 0,
+      "skills": {
+        "gather": 1,
+        "build": 0,
+        "farm": 0,
+        "cook": 0
+      },
+      "feelings": {},
+      "cookRequest": null,
+      "foodRequest": null,
+      "task": {
+        "act": "chop",
+        "phase": "go",
+        "place": "wood",
+        "timer": 0
+      },
+      "order": "build",
+      "carry": null,
+      "work": 1,
+      "leisure": 0,
+      "orderScope": "once",
+      "onceProject": "hut",
+      "onceDelivery": false,
+      "leisureRequest": null
+    },
+    "stock": {
+      "berries": 0,
+      "wood": 0,
+      "seeds": 2,
+      "veg": 0,
+      "meal": 0,
+      "salad": 0,
+      "stew": 0,
+      "herbs": 0
+    },
+    "cap": {
+      "berries": 8,
+      "wood": 8,
+      "seeds": 5,
+      "veg": 8,
+      "meal": 8,
+      "herbs": 6
+    },
+    "wild": {
+      "berries": 4,
+      "wood": 3.258928571428577,
+      "herbs": 3
+    },
+    "fac": {
+      "hut": {
+        "stage": 0,
+        "site": {
+          "need": {
+            "wood": 5
+          },
+          "delivered": {
+            "wood": 1
+          },
+          "reserved": {
+            "wood": 0
+          },
+          "work": 0,
+          "workNeed": 15,
+          "crafted": 0,
+          "assemblyAt": null,
+          "paused": false
+        }
+      },
+      "garden": {
+        "stage": 0,
+        "site": null
+      },
+      "herbGarden": {
+        "stage": 0,
+        "site": null
+      },
+      "workbench": {
+        "stage": 0,
+        "site": null
+      },
+      "bed": {
+        "stage": 0,
+        "site": null
+      },
+      "bench": {
+        "stage": 0,
+        "site": null
+      },
+      "flowers": {
+        "stage": 0,
+        "site": null
+      },
+      "kitchen": {
+        "stage": 0,
+        "site": null
+      },
+      "store": {
+        "stage": 0,
+        "site": null
+      },
+      "berries": {
+        "stage": 0
+      },
+      "wood": {
+        "stage": 0
+      },
+      "herbs": {
+        "stage": 0
+      }
+    },
+    "plot": {
+      "state": "empty",
+      "growth": 0
+    },
+    "herbPlot": {
+      "state": "empty",
+      "growth": 0
+    },
+    "visitor": {
+      "name": "阿蓮",
+      "role": "visitor",
+      "trust": 0,
+      "lastChat": 0,
+      "lastGift": 0,
+      "cared": false,
+      "willing": false,
+      "inviteDay": 0,
+      "inviteTime": 0,
+      "apprenticeDay": 0,
+      "injury": false,
+      "hunger": 68,
+      "energy": 72,
+      "herbalSkill": 0,
+      "careDay": 0
+    },
+    "helper": null,
+    "leases": {
+      "wood": "person",
+      "garden": null,
+      "herbGarden": null
+    },
+    "autonomy": {
+      "version": 1,
+      "goal": "shelter",
+      "since": 15.5,
+      "completed": [],
+      "warmMeals": 0,
+      "comfortRests": 0,
+      "herbHarvests": 0,
+      "careUses": 0,
+      "lookOwnership": "unclaimed",
+      "recess": false,
+      "breaks": 0,
+      "direction": "auto",
+      "deferred": [],
+      "limit": 2,
+      "interestLimit": 2,
+      "journal": [],
+      "tastes": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "leisure": {
+        "counts": {
+          "clouds": 0,
+          "bench": 0,
+          "flowers": 0,
+          "garden": 0
+        },
+        "last": null,
+        "at": 0
+      },
+      "experience": {
+        "hunger": 0,
+        "fatigue": 0,
+        "effort": 0.08958333333333338,
+        "lastWork": 1
+      }
+    },
+    "unlocked": [],
+    "log": [
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "立下「簡陋木屋」藍圖。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "無名來到荒地。先找吃的，再搭一間能安睡的木屋。"
+      }
+    ]
+  },
+  "home": {
+    "kind": "homestead",
+    "version": 3,
+    "mode": "solo",
+    "mealStyle": "auto",
+    "focusProject": null,
+    "look": {
+      "style": "natural",
+      "name": ""
+    },
+    "t": 100.75,
+    "subtick": 0,
+    "day": 1,
+    "speed": 1,
+    "person": {
+      "name": "無名",
+      "personality": "quiet",
+      "pos": [
+        441.56114542670684,
+        262.4674902409632
+      ],
+      "hunger": 50.895000000001374,
+      "energy": 26.349999999999994,
+      "herbalSkill": 0,
+      "careDay": 0,
+      "skills": {
+        "gather": 5,
+        "build": 15,
+        "farm": 0,
+        "cook": 0
+      },
+      "feelings": {},
+      "cookRequest": null,
+      "foodRequest": null,
+      "task": {
+        "act": "leisure",
+        "phase": "go",
+        "place": "home",
+        "timer": 0,
+        "leisureKind": "clouds"
+      },
+      "order": null,
+      "carry": null,
+      "work": 7.142857142857135,
+      "leisure": 0,
+      "orderScope": "once",
+      "onceProject": null,
+      "onceDelivery": false,
+      "leisureRequest": null
+    },
+    "stock": {
+      "berries": 0,
+      "wood": 0,
+      "seeds": 2,
+      "veg": 0,
+      "meal": 0,
+      "salad": 0,
+      "stew": 0,
+      "herbs": 0
+    },
+    "cap": {
+      "berries": 8,
+      "wood": 8,
+      "seeds": 5,
+      "veg": 8,
+      "meal": 8,
+      "herbs": 6
+    },
+    "wild": {
+      "berries": 4,
+      "wood": 2.2053571428571925,
+      "herbs": 3
+    },
+    "fac": {
+      "hut": {
+        "stage": 1,
+        "site": null
+      },
+      "garden": {
+        "stage": 0,
+        "site": null
+      },
+      "herbGarden": {
+        "stage": 0,
+        "site": null
+      },
+      "workbench": {
+        "stage": 0,
+        "site": null
+      },
+      "bed": {
+        "stage": 0,
+        "site": null
+      },
+      "bench": {
+        "stage": 0,
+        "site": null
+      },
+      "flowers": {
+        "stage": 0,
+        "site": null
+      },
+      "kitchen": {
+        "stage": 0,
+        "site": null
+      },
+      "store": {
+        "stage": 0,
+        "site": null
+      },
+      "berries": {
+        "stage": 0
+      },
+      "wood": {
+        "stage": 0
+      },
+      "herbs": {
+        "stage": 0
+      }
+    },
+    "plot": {
+      "state": "empty",
+      "growth": 0
+    },
+    "herbPlot": {
+      "state": "empty",
+      "growth": 0
+    },
+    "visitor": {
+      "name": "阿蓮",
+      "role": "visitor",
+      "trust": 0,
+      "lastChat": 0,
+      "lastGift": 0,
+      "cared": false,
+      "willing": false,
+      "inviteDay": 0,
+      "inviteTime": 0,
+      "apprenticeDay": 0,
+      "injury": false,
+      "hunger": 68,
+      "energy": 72,
+      "herbalSkill": 0,
+      "careDay": 0
+    },
+    "helper": null,
+    "leases": {
+      "wood": null,
+      "garden": null,
+      "herbGarden": null
+    },
+    "autonomy": {
+      "version": 1,
+      "goal": null,
+      "since": 15.5,
+      "completed": [
+        "shelter"
+      ],
+      "warmMeals": 0,
+      "comfortRests": 0,
+      "herbHarvests": 0,
+      "careUses": 0,
+      "lookOwnership": "unclaimed",
+      "recess": true,
+      "breaks": 0,
+      "direction": "auto",
+      "deferred": [],
+      "limit": 2,
+      "interestLimit": 2,
+      "journal": [
+        {
+          "goal": "shelter",
+          "at": 100.5
+        }
+      ],
+      "tastes": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "leisure": {
+        "counts": {
+          "clouds": 0,
+          "bench": 0,
+          "flowers": 0,
+          "garden": 0
+        },
+        "last": null,
+        "at": 0
+      },
+      "experience": {
+        "hunger": 0,
+        "fatigue": 0,
+        "effort": 0.5892857142857123,
+        "lastWork": 7.142857142857135
+      }
+    },
+    "unlocked": [
+      "木作台",
+      "改良灶具"
+    ],
+    "log": [
+      {
+        "day": 1,
+        "msg": "學會新做法：改良灶具。"
+      },
+      {
+        "day": 1,
+        "msg": "學會新做法：木作台。"
+      },
+      {
+        "day": 1,
+        "msg": "完工：簡陋木屋。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "立下「簡陋木屋」藍圖。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "無名來到荒地。先找吃的，再搭一間能安睡的木屋。"
+      }
+    ]
+  },
+  "final": {
+    "kind": "homestead",
+    "version": 3,
+    "mode": "solo",
+    "mealStyle": "auto",
+    "focusProject": null,
+    "look": {
+      "style": "natural",
+      "name": ""
+    },
+    "t": 126.25,
+    "subtick": 0,
+    "day": 1,
+    "speed": 1,
+    "person": {
+      "name": "無名",
+      "personality": "quiet",
+      "pos": [
+        440,
+        225
+      ],
+      "hunger": 47.32500000000172,
+      "energy": 74.05,
+      "herbalSkill": 0,
+      "careDay": 0,
+      "skills": {
+        "gather": 6,
+        "build": 15,
+        "farm": 0,
+        "cook": 0
+      },
+      "feelings": {},
+      "cookRequest": null,
+      "foodRequest": null,
+      "task": null,
+      "order": null,
+      "carry": null,
+      "work": 8.142857142857135,
+      "leisure": 0,
+      "orderScope": "once",
+      "onceProject": null,
+      "onceDelivery": false,
+      "leisureRequest": null
+    },
+    "stock": {
+      "berries": 0,
+      "wood": 1,
+      "seeds": 2,
+      "veg": 0,
+      "meal": 0,
+      "salad": 0,
+      "stew": 0,
+      "herbs": 0
+    },
+    "cap": {
+      "berries": 8,
+      "wood": 8,
+      "seeds": 5,
+      "veg": 8,
+      "meal": 8,
+      "herbs": 6
+    },
+    "wild": {
+      "berries": 4,
+      "wood": 2.1160714285714874,
+      "herbs": 3
+    },
+    "fac": {
+      "hut": {
+        "stage": 1,
+        "site": null
+      },
+      "garden": {
+        "stage": 0,
+        "site": null
+      },
+      "herbGarden": {
+        "stage": 0,
+        "site": null
+      },
+      "workbench": {
+        "stage": 0,
+        "site": null
+      },
+      "bed": {
+        "stage": 0,
+        "site": null
+      },
+      "bench": {
+        "stage": 0,
+        "site": null
+      },
+      "flowers": {
+        "stage": 0,
+        "site": null
+      },
+      "kitchen": {
+        "stage": 0,
+        "site": null
+      },
+      "store": {
+        "stage": 0,
+        "site": null
+      },
+      "berries": {
+        "stage": 0
+      },
+      "wood": {
+        "stage": 0
+      },
+      "herbs": {
+        "stage": 0
+      }
+    },
+    "plot": {
+      "state": "empty",
+      "growth": 0
+    },
+    "herbPlot": {
+      "state": "empty",
+      "growth": 0
+    },
+    "visitor": {
+      "name": "阿蓮",
+      "role": "visitor",
+      "trust": 0,
+      "lastChat": 0,
+      "lastGift": 0,
+      "cared": false,
+      "willing": false,
+      "inviteDay": 0,
+      "inviteTime": 0,
+      "apprenticeDay": 0,
+      "injury": false,
+      "hunger": 68,
+      "energy": 72,
+      "herbalSkill": 0,
+      "careDay": 0
+    },
+    "helper": null,
+    "leases": {
+      "wood": null,
+      "garden": null,
+      "herbGarden": null
+    },
+    "autonomy": {
+      "version": 1,
+      "goal": null,
+      "since": 15.5,
+      "completed": [
+        "shelter"
+      ],
+      "warmMeals": 0,
+      "comfortRests": 0,
+      "herbHarvests": 0,
+      "careUses": 0,
+      "lookOwnership": "unclaimed",
+      "recess": true,
+      "breaks": 0,
+      "direction": "auto",
+      "deferred": [],
+      "limit": 2,
+      "interestLimit": 2,
+      "journal": [
+        {
+          "goal": "shelter",
+          "at": 100.5
+        }
+      ],
+      "tastes": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "leisure": {
+        "counts": {
+          "clouds": 0,
+          "bench": 0,
+          "flowers": 0,
+          "garden": 0
+        },
+        "last": null,
+        "at": 0
+      },
+      "experience": {
+        "hunger": 0,
+        "fatigue": 0.2041666666666667,
+        "effort": 0.6538690476190401,
+        "lastWork": 8.142857142857135
+      }
+    },
+    "unlocked": [
+      "木作台",
+      "改良灶具"
+    ],
+    "log": [
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "學會新做法：改良灶具。"
+      },
+      {
+        "day": 1,
+        "msg": "學會新做法：木作台。"
+      },
+      {
+        "day": 1,
+        "msg": "完工：簡陋木屋。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "木料搬到住處工地。"
+      },
+      {
+        "day": 1,
+        "msg": "立下「簡陋木屋」藍圖。"
+      },
+      {
+        "day": 1,
+        "msg": "把身上的物資放回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "砍得一根木料，帶回住處。"
+      },
+      {
+        "day": 1,
+        "msg": "無名來到荒地。先找吃的，再搭一間能安睡的木屋。"
+      }
+    ]
+  }
+}

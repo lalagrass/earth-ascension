@@ -1,0 +1,8 @@
+import{LEISURE,availableLeisure}from'./homestead-autonomy-leisure.mjs';
+import{BUILDABLE}from'./homestead.mjs';
+export function prepareOrder(s,scope='once'){if(s.autonomy){s.person.orderScope=scope;s.person.onceProject=null;s.person.onceDelivery=false;s.person.leisureRequest=null;}}
+export function clearOnce(s){if(!s.autonomy)return;s.person.order=null;s.person.cookRequest=null;s.person.foodRequest=null;s.person.onceProject=null;s.person.onceDelivery=false;s.person.leisureRequest=null;}
+export function finishOrderAction(s,t){const p=s.person;if(!s.autonomy||p.orderScope!=='once'||p.order!==t.act||t.act==='build')return;if(p.carry)p.onceDelivery=true;else clearOnce(s);}
+export function finishOrderDelivery(s){if(s.autonomy&&s.person.onceDelivery)clearOnce(s);}
+export function finishOrderProject(s,id){if(s.autonomy&&s.person.orderScope==='once'&&s.person.onceProject===id)clearOnce(s);}
+export function validOrderScope(s){if(!s.autonomy)return true;const p=s.person;if(p.leisureRequest!==null&&(p.orderScope!=='once'||!Object.hasOwn(LEISURE,p.leisureRequest)||p.order!=='leisure'||!availableLeisure(s,p.leisureRequest)||p.task?.act==='leisure'&&p.task.leisureKind!==p.leisureRequest))return false;if(!['once','repeat'].includes(p.orderScope)||typeof p.onceDelivery!=='boolean')return false;if(p.onceProject!==null&&(!BUILDABLE.includes(p.onceProject)||p.order!=='build'||p.orderScope!=='once'||!s.fac[p.onceProject].site||s.fac[p.onceProject].site.paused))return false;if(p.order==='build'&&p.orderScope==='once'&&!p.onceProject)return false;if(p.onceDelivery){const kind={forage:'berries',chop:'wood',farm:'veg',herbal:'herbs',herbFarm:'herbs'}[p.order];if(p.orderScope!=='once'||!kind||p.carry?.kind!==kind||p.carry.origin!=='wild')return false;}return true;}
