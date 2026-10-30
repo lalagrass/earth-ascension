@@ -47,6 +47,7 @@ export function activityReason(s, p = s.person, who = 'person') {
   return '依食物、精力、工程與性情自主安排；可以隨時改派。';
 }
 export function facilityEffect(id, stage, mode='solo',autonomy=false) {
+  if(id==='fence')return stage.name==='林緣空地'?'尚無屏障':'固定林緣短柵欄，耐久24；關門繞行，開門可通過，兩端並未封閉';
   if (id === 'hut') return `休息每秒恢復 ${stage.rest} 精力`;
   if (id === 'store') return stage.name === '儲物棚' ? '容量：果20／木20／種10／菜16／飯15／藥10' : '容量：果8／木8／種5／菜8／飯8／藥6';
   if (id === 'garden') return stage.offers.includes('farm') ? '可播種；生長34秒後收2菜與2種' : '尚不能種菜';

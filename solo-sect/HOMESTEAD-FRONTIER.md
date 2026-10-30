@@ -28,3 +28,7 @@ PathFinding.js https://github.com/qiao/PathFinding.js/ ：先核MIT與固定版�
 新「生活與山林」入口明示試作、可保持原自主生活。沿用三性情並顯示其已存在的偏好差異，建立本組有界state與舊程式拒讀界線；不把重跑舊安家當新功能。可行性工作必須真正運行小型grid搜尋／阻斷與重算，記錄版本、license與是否採用。正常UI新入口從零安家，無派工／注入。相關loader只做必要相容，不新開存檔UI。
 
 R1結果：npm pack初因預設cache不可寫失敗，改用workspace本輪cache正常，非政策繞過。採PathFinding.js0.4.18的Node/Grid/DiagonalMovement/Util/BreadthFirstFinder五檔MIT子集，只轉ES imports/exports與LF，保留README完整MIT、正規化來源hash；未採heap/AStar/全bundle或Yuka，避免不必要PSF依賴及3D引擎。100次fresh-grid／端點阻擋／四向／無路徑實測。作者540/540（窄補修前），補修後相關13/13；非作者獨立找到root4可夾帶frontier與轉接假預覽兩項，均修並新增反例。必要版本5只供新模式，原v4不自動變更；轉接明示尚無契約，不擴功能。正常UI140.75世界秒真建首屋、繼續菜園，無注入／派工；1440/390無溢出、暫停不進時、無pageerror。圖與FRONTIER-R1-UI.json。此輪沒有宣稱既有自主能力是新做，也未稱所有後續玩法已完成。
+
+## R2 短規格（basebcf40be）
+固定林緣短柵欄3木／12秒，只有真完工才阻擋；沿原build/carry/reserved/work。30px四向格網只描述x780–810/y270–420柵欄，門格y330–360；兩端可繞行，不以短牆假稱全屋防護。原房屋／菜園仍為互動點不是實體封閉房間。門關閉當拍重算，不保存私有cache、取消無路徑遺留；開門可直達，皆可走到實際使用座標。固定安全工點在牆西側，不放在blocked格。舊模式不能建、不顯示此項。0AD CheckPlacement參考明確失敗原因、OpenRA footprint參考真通行區，不搬GPL程式／資產。驗收關／開門路徑、所有生活點、搬料取消／重載與dt、實UI真建並鍵盤開關。
+R2結果：作者最終544/544，相關24/24。初全聚合抓到舊固定編號與五seed指令池受新BUILDABLE項影響；保留原匯出陣列，使用buildables(s)只在新模式追加柵欄，不改seed／門檻。UI350.5秒真建柵欄、鍵盤開關，抓到重繪失焦已回焦。非作者找到3px抽樣漏角落、關牆內壞位置可讀而卡死，改精確slab交會和拒讀，逐段移動反例6/6複審。作者無注入UI與原核心直線舊路徑保持；材料取消／實搬／讀回、開關門與全生活點可達。未宣稱房屋全碰撞或真手機。新舊指令池修正另交非作者針對24項複核。

@@ -91,6 +91,8 @@ export function drawHomestead(g,s,preview,blueprint,inspected,showRoute=true,mod
  if(inspected&&Object.hasOwn(PLOT_BOUNDS,inspected)){const[x,y,w,h]=inspectionBounds(s,inspected);g.strokeStyle='#244f7a';g.lineWidth=4;g.setLineDash([3,4]);g.strokeRect(x-3,y-3,w+6,h+6);g.setLineDash([]);}
  if(inspected&&showRoute){const r=constructionRoute(s,inspected);if(r){const[a,b]=r.from,[x,y]=r.to,angle=Math.atan2(y-b,x-a);g.setLineDash([7,5]);line([[a,b],[x,y]],'#214d85',3);g.setLineDash([]);if(Math.hypot(x-a,y-b)>3)line([[x-12*Math.cos(angle-.5),y-12*Math.sin(angle-.5)],[x,y],[x-12*Math.cos(angle+.5),y-12*Math.sin(angle+.5)]],'#214d85',3);circle(x,y,5,'#f8efd1');}}
  if(modelOnly)return;
+ if(s.frontier&&s.fac.fence.stage&&s.frontier.fenceHp>0){for(let y=270;y<420;y+=10){if(y>=330&&y<360&&s.frontier.gateOpen)continue;rect(782,y,26,5,'#73543e');}line([[786,270],[786,330]],'#92734b',4);line([[786,360],[786,420]],'#92734b',4);if(s.frontier.gateOpen)rect(782,330,4,30,'#c6b274');tag(s.frontier.gateOpen?'木門開啟':'木門關閉',795,244);}
+
  if(showProjects)for(const r of projectRows(s)){const{size,radius,x:cx,y:cy}=projectMarker(r,markerFont);circle(cx,cy,radius,r.color);boxes.push({x:cx-radius,y:cy-radius,w:radius*2,h:radius*2});g.font=`bold ${size}px sans-serif`;g.textAlign='center';g.fillStyle='#fff9e9';g.fillText(String(r.number),cx,cy+size*.34);}
  // Feature labels first, then compact character tags choose a non-overlapping nearby slot.
  for(const id of ['hut','garden','herbGarden','kitchen','store',...(s.mode==='solo'?['workbench']:[])]){const pt={hut:[445,77],garden:[270,99],herbGarden:[135,28],kitchen:[605,278],store:[555,507],workbench:[676,501]}[id];tag(`${id==='hut'&&hut.stage&&look.name?look.name+' · ':''}${FACILITIES[id].stages[s.fac[id].stage].name}`,...pt);}
