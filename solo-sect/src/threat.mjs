@@ -59,7 +59,11 @@ export function bandStep(s, dt, H) {
   b.clock += dt; if (b.clock < BAND.hitEvery) return; b.clock -= BAND.hitEvery;
   const fd = Math.max(BAND.fenceDmg.min, Math.round(b.pts * BAND.fenceDmg.k)); b.fenceDealt += fd;
   if (fenceHit(s, fd, '山賊', true).held) return;
-  s.band = null; const hurt = raidLose(s, H, '木柵被撞破，'); X.hist.push({ n: b.n, day: b.day, pts: b.pts, fight: 'lose', hurt: hurt?.id || null, map: true });
+  // loop14（方案 A）：柵破不再直接判敗，改回原勝率公式 winP 擲骰（與無柵同規則）
+  s.band = null; const win = R(s) < winP(s, Math.max(1, b.hp)); let hurt = null; /* 用剩餘山賊戰力（守柵已削弱的部分算數） */
+  if (win) { X.won++; s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt) hurt = hurtOne(s, H); log(s, `木柵被撞破，眾人短兵相接——打退了山賊！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
+  else hurt = raidLose(s, H, '木柵被撞破，');
+  X.hist.push({ n: b.n, day: b.day, pts: b.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null, map: true, broke: true });
 }
 export function raidResolve(s, i, H, auto = false) {
   const X = T(s), P = X.pending; if (!P) return { ok: false, why: '沒有山賊上門' };

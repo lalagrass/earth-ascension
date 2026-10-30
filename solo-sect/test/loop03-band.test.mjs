@@ -22,11 +22,12 @@ test('有柵：迎戰生成山賊，從山門沿既有邊走到菜園，當下�
   for (let i = 1; i < p.length; i++) assert.ok(has(p[i - 1], p[i]), `${p[i - 1]}→${p[i]} 不是既有路`);
 });
 
-test('沒人守：山賊撞破柵，照舊被搶、一人重傷', () => {
+test('沒人守：山賊撞破柵後改擲原勝率（loop14 方案 A），敗則照舊被搶、一人重傷', () => {
   const keep = BAND.defendScore; BAND.defendScore = 0;
   try { const s = setup(); raidResolve(s, 1, H); runUntil(s, () => !s.band);
-    assert.equal(s.band, null); assert.equal(s.fence.hp, 0); assert.ok(s.res.coin < 100);
-    const h = T(s).hist.at(-1); assert.equal(h.fight, 'lose'); assert.equal(h.map, true); assert.ok(h.hurt); }
+    assert.equal(s.band, null); assert.equal(s.fence.hp, 0);
+    const h = T(s).hist.at(-1); assert.equal(h.map, true); assert.equal(h.broke, true); assert.ok(['win', 'lose'].includes(h.fight));
+    if (h.fight === 'lose') { assert.ok(s.res.coin < 100); assert.ok(h.hurt); } }
   finally { BAND.defendScore = keep; }
 });
 
