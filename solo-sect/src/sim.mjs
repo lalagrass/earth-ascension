@@ -10,6 +10,7 @@ import { pipeline, mulText } from './mul.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf } from './expedition.mjs';
 import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS } from './data.mjs';
 import { SCORE, SCORE_POST } from './score-data.mjs';
+import { BAND, canDefend } from './band.mjs';
 import { fenceUp, fenceHit, repairScore, repairDone, FENCE } from './fence.mjs';
 import { addMem, chatLine, passPick, passDo, PASS, passScore, passReserve, apprDaily, apprMul } from './bonds.mjs';
 import { aspStep, likeMeal, likesOf } from './v10.mjs';
@@ -31,7 +32,7 @@ export { think, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, k
 import { SAVE_VERSION, freshV095 } from './save.mjs';
 import { cancelTask, removeActor, whAvail } from './lifecycle.mjs';
 import { econDaily, schoolStep, startSchool, E as econOf } from './economy.mjs';
-import { threatDaily, threatStep, raidResolve } from './threat.mjs';
+import { threatDaily, threatStep, raidResolve, bandStep } from './threat.mjs';
 import { removeDisciple } from './gen.mjs';
 const EH = { rand: (s) => rand(s), cancelTask: (s, d, w) => cancelTask(s, d, w), think: (s, d, id) => think(s, d, id), removeDisciple: (s, d, w) => removeDisciple(s, d, w), gate: NODES.gate };
 import { freeSlot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE, STOCK_RESV, stockKey, stockReserved } from './core.mjs';
@@ -282,6 +283,7 @@ export function scoreActs(s, d) {
   for (const R of SCORE) { if (R.gen) { for (const [act, A] of GEN_ACTS) { if (!offered(s, act).length) continue; const g = genOf(s, act, A); if (!g || !GEN_COND[g.cond]?.(s, d) || !dayOk(s, act, g.perDay)) continue; if (g.base > 0) out.push({ act, score: g.base, why: g.why, ...(g.layer ? { layer: g.layer } : {}) }); } continue; }
     if (R.when && !R.when.every((k) => PRED[k](c))) continue; const T = R.tiers ? R.tiers.find((x) => !x.if || PRED[x.if](c)) : R; if (!T) continue;
     const score = valOf(T.v, c); if (score > 0) out.push({ act: R.act, score, why: fillWhy(T.why, c), ...(T.layer || R.layer ? { layer: T.layer || R.layer } : {}) }); }
+  if (s.band && BAND.defendScore > 0 && canDefend(d)) out.push({ act: 'defend', score: BAND.defendScore, why: s.band.state === 'go' ? '山賊往菜園來了，去柵邊守著' : '山賊在撞柵，去打退他們' }); // loop3
   { const rs = repairScore(s, d); if (rs > 0) out.push({ act: 'repair', score: rs, why: s.fence.hp <= 0 ? '木柵被撞破了，得趕快補上' : '木柵有破損，去補一補' }); } // loop2 修柵廣告
   const ph = c.ph, sch = SCHEDULE[ph] || {}, n = d.needs;
   const plotWork = s.plots.some((p) => p.st === 'empty' || p.st === 'ripe');
@@ -314,6 +316,7 @@ function assign(s, d, act, why) {
     const node = act === 'spar' ? 'yard' : 'court'; d.task = { act, fac: 'yard', node, phase: 'go', partner: p.id, resv: [`actor:${p.id}`] }; p.task = { act, fac: 'yard', node, phase: 'go', partner: d.id, resv: [`actor:${d.id}`] }; reserve(s, d, `actor:${p.id}`); reserve(s, p, `actor:${d.id}`);
     goto(d, node); goto(p, node); d.reason = why; p.reason = act === 'spar' ? `${d.name}邀來切磋` : act === 'encourage' ? `${d.name}來陪我說說話` : `${d.name}找來聊天`; if (act === 'encourage') p.task.act = 'chat', p.task.encouragedBy = d.id; return true;
   }
+  if (act === 'defend') { if (!s.band || !canDefend(d)) return false; d.task = { act, node: FENCE.node, phase: 'go' }; goto(d, FENCE.node); d.reason = why; return true; }
   if (act === 'repair') { if (!(repairScore(s, d) > 0)) return false; d.task = { act, node: FENCE.node, phase: 'go' }; goto(d, FENCE.node); d.reason = why; return true; }
   if (act === 'eat' && s.res.food <= 0) return false;
   if (act === 'cook' && vegFree(s) < STOCK_RESV.cook.amt) return false;
@@ -584,7 +587,7 @@ export function payday(s) {
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
   { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); } }
-  schoolStep(s, EH); threatStep(s, EH);
+  schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH);
   const se = seasonOf(s); for (const p of s.plots) if (p.st === 'grow' && (p.g += dt / se.grow) >= PLOT_GROW) p.st = 'ripe';
   const seIdx = se.i; if (s.seasonI !== seIdx) { if (s.seasonI !== undefined) log(s, `入${se.name}了。${{ spring: '萬物萌發，菜長得快。', summer: '天長日暖。', autumn: '秋高氣爽，心情開闊。', winter: '天寒地凍，菜長得慢，飯量變大。' }[se.id]}`); s.seasonI = seIdx; }
   for (const d of s.ds) {

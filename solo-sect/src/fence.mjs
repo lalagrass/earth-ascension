@@ -23,10 +23,10 @@ export function buildFence(s) {
   log(s, `菜園圍起了木柵（耐久 ${FENCE.max}）。`); return { ok: true };
 }
 // 受擊：回傳 { held }，held＝撞完柵還在（擋住了）
-export function fenceHit(s, dmg, who) {
+export function fenceHit(s, dmg, who, quiet = false) {
   const F = s.fence; if (!F || F.hp <= 0) return { held: false, none: true };
   F.hp = Math.max(0, F.hp - dmg); F.hits++;
-  if (F.hp > 0) { F.blocked++; log(s, `${who}撞上菜園木柵（耐久 ${F.hp}/${F.max}），沒能闖進來。`); return { held: true }; }
+  if (F.hp > 0) { if (!quiet) F.blocked++; if (!quiet) log(s, `${who}撞上菜園木柵（耐久 ${F.hp}/${F.max}），沒能闖進來。`); return { held: true }; }
   F.broken++; log(s, `${who}撞破了菜園木柵！`); return { held: false };
 }
 export const repairing = (s) => s.ds.some((d) => d.task?.act === 'repair');

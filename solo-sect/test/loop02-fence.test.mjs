@@ -34,15 +34,9 @@ test('野豬下山：有柵先撞柵、菜不被拱；沒柵照舊拱菜', () =>
   assert.match(logs(b), /拱壞/);
 });
 
-test('山賊迎戰落敗：柵撐住就不搶不傷；柵被破才照舊損失', () => {
-  const grow = (s) => { s.day = 20; s.res.coin = 100; s.res.food = 50; return s; };
-  const a = grow(createState(1)); a.res.wood = 10; buildFence(a);
-  const r = bandit(a); assert.equal(r.win, false); assert.equal(r.held, true);
-  assert.equal(a.res.coin, 100); assert.equal(a.res.food, 50); assert.equal(r.hurt, null);
-  assert.equal(a.fence.hp, FENCE.max - Math.max(FENCE.bandit.min, Math.round(80 * FENCE.bandit.k)));
-  const b = grow(createState(1)); b.res.wood = 10; buildFence(b); b.fence.hp = 5;
-  const r2 = bandit(b); assert.equal(r2.held, undefined); assert.equal(b.fence.hp, 0); assert.equal(b.fence.broken, 1); assert.ok(b.res.coin < 100);
-  const c = grow(createState(1)); const r3 = bandit(c); assert.equal(r3.held, undefined); assert.ok(c.res.coin < 100);
+test('山賊迎戰（沒築柵）：仍是原本一次結算、照舊損失（有柵的地圖戰見 loop03）', () => {
+  const c = createState(1); c.day = 20; c.res.coin = 100; c.res.food = 50; const r3 = bandit(c);
+  assert.equal(r3.win, false); assert.equal(c.band, undefined); assert.ok(c.res.coin < 100);
 });
 
 test('自主修柵：受損且有木頭，弟子會自己去修；沒木頭就不修', () => {
