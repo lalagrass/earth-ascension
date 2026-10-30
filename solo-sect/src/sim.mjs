@@ -83,6 +83,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.draw) s.draw = true;
   if (heroSpec?.comprehend) s.wu7 = true;
   if (heroSpec?.mentor) s.mentor = true;
+  if (heroSpec?.lairpow) s.lairpow = true; // loop29 寨強看戰力（選用）
   if (heroSpec?.lift) s.lift = true; // loop28 心情自救（選用）
   if (heroSpec?.bt25) s.bt25 = true; // loop25 突破排程（選用）
   if (heroSpec?.jhev) s.jhev = true; // loop23 江湖事件（選用）
