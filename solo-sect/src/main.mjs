@@ -22,6 +22,7 @@ import { isLabor, disciples, laborers, laborCap, canHire, hire, canInvite, invit
 import { nearestType, typeLabel } from './mbti.mjs';
 import { archLabel } from './archetype.mjs';
 import { jhuiHtml, archLine } from './jhui.mjs';
+import { pickModal, pending } from './modalq.mjs';
 import { compProgress } from './comprehend.mjs';
 import { ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS } from './data.mjs';
 import { EXP_STYLES } from './data.mjs';
@@ -47,7 +48,7 @@ function focusOn(id) { const d = S.ds.find((x) => x.id === id); if (!d || d.away
 function feed() { let f = document.getElementById('feed'); if (!f) { f = document.createElement('div'); f.id = 'feed'; document.getElementById('wrap').appendChild(f); }
   const html = sideCards(S, 5).map((e) => `<div class="slip ${e.tier}" data-who="${e.who || ''}" title="點一下推鏡到相關人物">${e.tier === 'top' ? '★ ' : ''}[${e.t}s] ${e.msg}</div>`).join(''); if (f.__h !== html) { f.innerHTML = html; f.__h = html; }
   let a = document.getElementById('alert');
-  if (S.alert && !a) { a = document.createElement('div'); a.id = 'alert'; a.innerHTML = `<div class="card"><b>★ 大事</b><p>${S.alert.msg}</p><button id="alert-ok">知道了，繼續</button></div>`; document.getElementById('wrap').appendChild(a); if (S.alert.who) focusOn(S.alert.who); document.getElementById('alert-ok').onclick = () => { S.alert = null; a.remove(); }; }
+  if (S.alert && !a && modalWant === 'alert') { a = document.createElement('div'); a.id = 'alert'; a.innerHTML = `<div class="card"><b>★ 大事</b><p>${S.alert.msg}</p><button id="alert-ok">知道了，繼續</button></div>`; document.getElementById('wrap').appendChild(a); if (S.alert.who) focusOn(S.alert.who); document.getElementById('alert-ok').onclick = () => { S.alert = null; a.remove(); }; }
   if (!S.alert && a) a.remove(); }
 document.addEventListener('click', (e) => { const sl = e.target.closest('.slip'); if (sl && sl.dataset.who) focusOn(sl.dataset.who); });
 window.__sect.focusOn = (id) => focusOn(id);
@@ -255,7 +256,10 @@ $('load').onclick = () => { const r = load(localStorage.getItem('solo-sect-save'
 $('reset').onclick = () => newGame();
 $('load').addEventListener('click', () => { if (document.getElementById('start')) { document.getElementById('start').remove(); starting = false; } });
 let last = performance.now(), acc = 0;
-function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now; if (starting || choiceUI(S) || S.alert) acc = 0; feed(); while (acc >= 0.25) { tick(S); acc -= 0.25; }
+let modalWant = null;
+function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now;
+  if (S) { const cur = $('alert') ? 'alert' : $('choice') ? 'choice' : $('chap') ? 'chap' : null, P = pending(S); modalWant = starting ? null : pickModal({ cur, ...P }); if (modalWant === 'choice' || !P.choice) choiceUI(S); }
+  if (starting || S.alert || pending(S).choice) acc = 0; feed(); while (acc >= 0.25) { tick(S); acc -= 0.25; }
   audioStep(); expToast(); fightWatch(); draw(); drawMinimap(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
 function rbar(n, v, max, c) { const p = Math.max(0, Math.min(1, (v ?? 0) / (max || 1))); return `${n} <span style="display:inline-block;width:80px;height:8px;background:#ddd;vertical-align:middle"><span style="display:block;height:8px;width:${p * 80}px;background:${c}"></span></span> ${Math.max(0, Math.round(v ?? 0))}`; }
 const JH_FX = { anran: ['#7a8ca8', 'arc'], xuantie: ['#2a2a2a', 'heavy'], yunv: ['#eef', 'arc'], kongming: ['#bcb', 'arc'], kuihua: ['#d04050', 'needle'], huagu: ['#9a8aa8', 'arc'], qiankun: ['#e0a040', 'arc'], taiji: ['#ddd', 'arc'], shihou: ['#f0d070', 'ring'], tantui: ['#a07040', 'arc'], tiexian: ['#889', 'heavy'], bagua: ['#8a6a3a', 'arc'], hama: ['#6a8a3a', 'toad'] };
@@ -438,7 +442,7 @@ function sliceUI() {
   $('locks').innerHTML = locked.length ? `尚未開放：${locked.map((u) => (u.msg || '基本').split('：')[0]).join('、')}` : '';
   $('autos').innerHTML = `<option value="">— 自動存檔 —</option>` + autoList(localStorage).map((a) => `<option value="${a.i}">第${a.day}日 ${a.name || ''}（${new Date(a.at).toLocaleTimeString()}）</option>`).join('');
   $('mute').textContent = isMuted() ? '🔇 靜音' : '🔊 音效';
-  if (S.chapter?.done && !S.chapter.seen && !$('chap')) chapterModal();
+  if (S.chapter?.done && !S.chapter.seen && !$('chap') && modalWant === 'chap') chapterModal();
 }
 function chapterModal() {
   const m = S.chapter.summary, d = document.createElement('div'); d.id = 'chap'; d.className = 'overlay';
