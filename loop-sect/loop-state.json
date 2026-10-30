@@ -1,10 +1,10 @@
 {
   "loopVersion": 8,
-  "loopsDone": 22,
+  "loopsDone": 23,
   "retroEvery": 3,
   "lastRetro": "docs/RETRO-07.md",
-  "lastCommit": "22fbda8",
-  "nextMilestone": "loop 23：規劃 M21 之後（PLAN-03）",
+  "lastCommit": "b4d2eaa",
+  "nextMilestone": "M21 灶邊接力（loop 24），之後 retro 8",
   "inProgress": {
     "paused": [
       {
