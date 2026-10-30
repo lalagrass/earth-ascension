@@ -1,4 +1,4 @@
-// PathFinding.js 0.4.18, MIT; CommonJS imports/exports adapted only. See LICENSE.txt.
+// PathFinding.js 0.4.18, MIT; ES modules and whitespace normalization only. See LICENSE.txt.
 const exports = {};
 /**
  * Backtrace according to the parent records and return the path.
@@ -77,7 +77,7 @@ function interpolate(x0, y0, x1, y1) {
         if (x0 === x1 && y0 === y1) {
             break;
         }
-        
+
         e2 = 2 * err;
         if (e2 > -dy) {
             err = err - dy;

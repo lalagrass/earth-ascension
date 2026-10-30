@@ -1,7 +1,7 @@
-// PathFinding.js 0.4.18, MIT; CommonJS imports/exports adapted only. See LICENSE.txt.
+// PathFinding.js 0.4.18, MIT; ES modules and whitespace normalization only. See LICENSE.txt.
 /**
- * A node in grid. 
- * This class holds some basic information about a node and custom 
+ * A node in grid.
+ * This class holds some basic information about a node and custom
  * attributes may be added, depending on the algorithms' needs.
  * @constructor
  * @param {number} x - The x coordinate of the node on the grid.

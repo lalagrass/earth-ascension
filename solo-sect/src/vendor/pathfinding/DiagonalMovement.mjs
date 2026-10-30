@@ -1,4 +1,4 @@
-// PathFinding.js 0.4.18, MIT; CommonJS imports/exports adapted only. See LICENSE.txt.
+// PathFinding.js 0.4.18, MIT; ES modules and whitespace normalization only. See LICENSE.txt.
 var DiagonalMovement = {
     Always: 1,
     Never: 2,

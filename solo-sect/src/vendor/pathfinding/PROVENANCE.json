@@ -2,7 +2,7 @@
   "package": "pathfinding",
   "version": "0.4.18",
   "source": "https://github.com/qiao/PathFinding.js/tree/0.4.18",
-  "modifications": "LF and ES module imports/exports only; uniform-cost BreadthFirstFinder subset, no heap dependency",
+  "modifications": "ES module imports/exports, LF and trailing whitespace normalization only; uniform-cost BreadthFirstFinder subset, no heap dependency",
   "files": [
     {
       "source": "core/Node.js",

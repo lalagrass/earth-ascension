@@ -66,7 +66,7 @@ R9固定quiet／fresh／4800秒：guard採67木（建40／柴4／修21／存2）
 
 |來源|實際取捨|
 |---|---|
-|[PathFinding.js0.4.18](https://github.com/qiao/PathFinding.js/tree/0.4.18)|採五檔BFS子集，ES imports/exports與LF轉換；[MIT完整聲明](src/vendor/pathfinding/LICENSE.txt)／[來源hash及npm檔hash](src/vendor/pathfinding/PROVENANCE.json)。新grid／端點拒絕／精確外層碰撞實測。未採全AStar與heap（另有PSF授權），不稱舊庫最新活躍。|
+|[PathFinding.js0.4.18](https://github.com/qiao/PathFinding.js/tree/0.4.18)|採五檔BFS子集，ES imports/exports、LF與行尾空白正規化；[MIT完整聲明](src/vendor/pathfinding/LICENSE.txt)／[來源hash及npm檔hash](src/vendor/pathfinding/PROVENANCE.json)。新grid／端點拒絕／精確外層碰撞實測。未採全AStar與heap（另有PSF授權），不稱舊庫最新活躍。|
 |[Yuka](https://github.com/Mugen87/yuka)／[NavMesh原碼](https://github.com/Mugen87/yuka/blob/master/src/navigation/navmesh/NavMesh.js)|讀MIT與3D凸多邊形結構；目前小2D固定圖及既有目標夠用，未採整套，沒有外部runtime效能驗收。|
 |[Stonehearth官方AI](https://stonehearth.github.io/modding_guide/modding_guide/advanced/ai/index.html)|只借活動、預約與執行分層，沿原task/carry；商業本體不因文件公開而自由複製。|
 |[0AD BuildRestrictions](https://docs.wildfiregames.com/javascript/simulation/BuildRestrictions.html)／[Attack](https://docs.wildfiregames.com/javascript/simulation/Attack.html)|採明確無法建造原因、真距離與攻擊間隔；文件有生成版本，不冒稱最新全引擎審計，無GPL程式或素材移植。|
