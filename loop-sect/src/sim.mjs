@@ -14,7 +14,7 @@ import { fromTemplate, makePerson, speedOf } from './person.mjs';
 import { decayNeeds, applyPer, isNight } from './needs.mjs';
 import { candidates, interruptible, sparInterruptible, willingToChat, willingToSpar, REFUSE_COOLDOWN } from './ai.mjs';
 import { newSkills, grow, SKILL_OF_TASK, workTimeMul, buildRate, extraMeal, extraTake, skillLabel } from './skills.mjs';
-import { FOOT_STEP, SOCIAL, MARTIAL, DEFENSE, RECRUIT, SECT, EXPEDITION, NESTS } from './data.mjs';
+import { FOOT_STEP, SOCIAL, MARTIAL, DEFENSE, RECRUIT, SECT, EXPEDITION, NESTS, FIRE, FARM } from './data.mjs';
 import { addAff, compat, teachTopic, withStage, atLeast } from './social.mjs';
 import { newMoves, practice, moveLabel, learn, drillMove, prowess } from './martial.mjs';
 
@@ -102,7 +102,7 @@ export function createWorld({ seed = 1, people }) {
   state.objects = OBJECTS.map((o, i) => ({ id: `o${i}`, ...o, slots: o.slots.map((s) => [...s]), users: o.slots.map(() => null) }));
   state.objects.find((o) => o.kind === 'hearth').level = 0;
   state.stock = { ...START_STOCK, ...START_MATERIALS };
-  state.ledger = { picked: 0, rawEaten: 0, rawCooked: 0, mealsMade: 0, mealsEaten: 0, woodCut: 0, stoneCut: 0, woodUsed: 0, stoneUsed: 0,
+  state.ledger = { picked: 0, rawEaten: 0, rawCooked: 0, mealsMade: 0, mealsEaten: 0, woodCut: 0, stoneCut: 0, woodUsed: 0, stoneUsed: 0, woodBurned: 0, veg: 0,
     rawStolen: 0, mealsStolen: 0, woodStolen: 0, stoneStolen: 0 };
   state.mapVersion = 0;
   state.res = {};          // "x,y" → 剩餘量（未動過的樹石不列）
@@ -137,6 +137,7 @@ export function createWorld({ seed = 1, people }) {
   state.visitAt = 0;
   state.sect = null;
   state.nests = newNests();   // M9
+  state.plots = [];           // M12 菜畦
   for (const n of state.nests) NESTS.find((x) => x.id === n.id).guards.forEach((k, i) => spawnGuard(state, n, k, i));
   state.expedition = null;
   state.log = [];
@@ -204,7 +205,8 @@ function reserve(state, p, c) {
   if (c.obj && c.slot >= 0) byId(state.objects, c.obj).users[c.slot] = p.id;
   if (c.bush) byId(state.bushes, c.bush).user = p.id;
   if (c.kind === 'eat') { state.stock.meal--; p.hold.meal = 1; }
-  if (c.kind === 'cook') { state.stock.raw -= COOK_RAW; p.hold.raw = COOK_RAW; }
+  if (c.kind === 'cook') { state.stock.raw -= COOK_RAW; p.hold.raw = COOK_RAW; state.stock.wood -= FIRE.WOOD_PER_POT; p.hold.wood = FIRE.WOOD_PER_POT; }
+  if (c.plot) byId(state.plots, c.plot).user = p.id;
   if (c.res) state.resUser[c.res] = p.id;
   if (c.kind === 'haul') {
     state.stock[c.mat] -= c.n; p.hold[c.mat] = c.n;
@@ -226,6 +228,7 @@ export function release(state, p) {
       if (b.user === p.id) b.user = null;
     }
     if (t.res && state.resUser[t.res] === p.id) delete state.resUser[t.res];
+    if (t.plot) { const g = byId(state.plots, t.plot); if (g?.user === p.id) g.user = null; }
     const site = t.site && byId(state.sites, t.site);
     if (t.kind === 'haul' && site) site.incoming[t.mat] -= t.leg === 'drop' ? p.load[t.mat] : p.hold[t.mat];
     if (t.kind === 'build' && site) site.workers = site.workers.filter((w) => w !== p.id);
@@ -256,7 +259,7 @@ function choose(state, p) {
     }
     reserve(state, p, c);
     p.task = { kind: c.kind, obj: c.obj, slot: c.slot, bush: c.bush, partner: c.partner, poi: c.poi, chase: 80,
-      res: c.res, mat: c.mat, rx: c.rx, ry: c.ry, take: c.take, site: c.site, n: c.n, move: c.move, enemy: c.enemy, cell: c.cell, cx: c.cx, cy: c.cy, dealt: 0, leg: c.kind === 'haul' ? 'pickup' : undefined };
+      res: c.res, mat: c.mat, rx: c.rx, ry: c.ry, take: c.take, site: c.site, n: c.n, move: c.move, enemy: c.enemy, cell: c.cell, plot: c.plot, cx: c.cx, cy: c.cy, dealt: 0, leg: c.kind === 'haul' ? 'pickup' : undefined };
     p.actLabel = c.label;
     if (path.length) {
       p.path = path;
@@ -521,9 +524,20 @@ function finish(state, p) {
     b.berries -= n; p.carry += n; L.picked += n;
   }
   if (t.kind === 'deliver') { state.stock.raw += p.carry; p.carry = 0; }
+  if (t.kind === 'sow') { const g = byId(state.plots, t.plot); g.stage = 'growing'; g.at = state.tick; }
+  if (t.kind === 'harvest') {
+    const g = byId(state.plots, t.plot);
+    if (g.stage === 'ripe') {
+      const n = FARM.YIELD + extraTake(p, 'forage');
+      p.carry += n; L.picked += n; L.veg += n;
+      g.stage = 'empty'; g.at = state.tick;
+      if (!state.firstHarvest && (state.firstHarvest = true)) state.events.push({ tick: state.tick, kind: 'farm', text: `菜園頭一回收成：${p.name}收了 ${n} 份菜`, who: [p.id] });
+    }
+  }
   if (t.kind === 'cook') {
     const meals = HEARTH_LEVELS[byId(state.objects, t.obj).level].meals + extraMeal(p);
     L.rawCooked += p.hold.raw; p.hold.raw = 0; state.stock.meal += meals; L.mealsMade += meals;
+    L.woodUsed += p.hold.wood; L.woodBurned += p.hold.wood; p.hold.wood = 0;   // M12 柴火
   }
   if (t.kind === 'chop' || t.kind === 'quarry') {
     const got = takeResource(state, t.rx, t.ry, t.mat, t.take);
@@ -833,6 +847,7 @@ function regrow(state) {
   state.bushes.forEach((b, i) => {
     if ((state.tick + i * 37) % BUSH_REGROW === 0 && b.berries < BUSH_MAX) b.berries++;
   });
+  for (const g of state.plots) if (g.stage === 'growing' && state.tick - g.at >= FARM.GROW) g.stage = 'ripe';
 }
 
 export function step(state) {

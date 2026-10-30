@@ -1,5 +1,5 @@
 // 效用 AI：列出所有可做的事、打分、留下理由。只讀 state，不改。
-import { ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
+import { FIRE, FARM, ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
 import { activeEnemies } from './raid.mjs';
 import { walkable } from './map.mjs';
 import { nearestResources, remaining, stocked, workSpot, siteWorkersFree } from './build.mjs';
@@ -73,7 +73,7 @@ export function candidates(state, p, scorePois) {
       add({ kind: 'eat', obj: o.id, slot: i, spot }, { need: u.food * 2, persona: company ? u.social * 0.3 * (1 + 0.5 * E) : 0 });
     }
     if (o.kind === 'hearth') {
-      if (stock.raw >= COOK_RAW && stock.meal < MEAL_TARGET) {
+      if (stock.raw >= COOK_RAW && stock.wood >= FIRE.WOOD_PER_POT && stock.meal < MEAL_TARGET) {
         // 鍋裡沒飯而有人餓著時，煮飯就是急事。
         const demand = 1 - stock.meal / MEAL_TARGET;
         const hungry = state.people.filter((x) => x.needs.food < 40).length;
@@ -105,6 +105,13 @@ export function candidates(state, p, scorePois) {
     const spot = { x: b.sx, y: b.sy };
     if (p.needs.food < 60) add({ kind: 'eatRaw', bush: b.id, spot }, { need: u.food * 0.45 });
     if (empty) add({ kind: 'forage', bush: b.id, spot }, { need: u.food * 0.2, work: scarcity * 2, persona: 0.4 * J * scarcity + diligence * scarcity });
+  }
+
+  // ---------- M12 菜園 ----------
+  if (empty) for (const g of state.plots) {
+    if (g.user) continue;
+    if (g.stage === 'empty') add({ kind: 'sow', plot: g.id, spot: { x: g.x, y: g.y }, label: '播種' }, { work: FARM.SOW_WORK, persona: diligence });
+    if (g.stage === 'ripe') add({ kind: 'harvest', plot: g.id, spot: { x: g.x, y: g.y }, label: '收菜' }, { need: u.food * 0.2, work: FARM.HARVEST_WORK + scarcity, persona: diligence });
   }
 
   // ---------- M3 採集與營造 ----------
@@ -219,7 +226,7 @@ export function candidates(state, p, scorePois) {
   } else if (hungry) {
     forced = '太餓了，先找吃的';
     // 鍋裡沒飯但生莓夠時，餓的人也可以先煮（loop 9 診斷：遠征時家裡人少，飢餓時間裡約一半是「沒飯、生莓夠」卻沒人煮）。
-    const cookFirst = state.stock.meal === 0 && state.stock.raw >= COOK_RAW;
+    const cookFirst = state.stock.meal === 0 && state.stock.raw >= COOK_RAW && state.stock.wood >= FIRE.WOOD_PER_POT;
     const eats = out.filter((c) => EATS.has(c.kind) || c.kind === 'deliver' || (cookFirst && c.kind === 'cook'));
     if (eats.length) list = eats;
   }

@@ -318,4 +318,22 @@ export const flows = [
       await shot('narrow');
     },
   },
+  {
+    name: 'm12-garden',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.fill('#seed', '4');
+      await page.click('#begin');
+      expect('A8 營造面板有菜園', (await page.locator('[data-blueprint="garden"]').count()) === 1);
+      expect('A8 擴建在西宿舍前按不下去', /要先蓋好西宿舍/.test(await page.textContent('#build')));
+      await page.click('[data-blueprint="garden"]');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().plots.some((g) => g.stage === 'growing'), null, { timeout: 180000 });
+      await page.waitForFunction(() => window.__sect.snapshot().plots.some((g) => g.stage === 'ripe'), null, { timeout: 180000 });
+      await page.click('[data-speed="0"]');
+      const s = await snap(page);
+      expect('A8 菜畦有長著與熟了', s.plots.some((g) => g.stage === 'ripe') && s.plots.length === 6, s.plots.map((g) => g.stage).join(','));
+      await shot('plots');
+    },
+  },
 ];

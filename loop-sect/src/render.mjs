@@ -1,10 +1,11 @@
+import { FIRE } from './data.mjs';
 // 畫面只讀 state，不改規則狀態。
 export const TILE = 20;
 
 const TILE_COLOR = {
   '.': '#9db978', ':': '#c9b48a', '_': '#b89a72', '#': '#6b4f3a',
   'T': '#9db978', 'R': '#a7ad8f', 'W': '#5b9bc4', 'B': '#9db978', '=': '#8a6a45',
-  ',': '#a3b77c', ';': '#b3b39a', 'F': '#9db978', 'f': '#9db978',
+  ',': '#a3b77c', ';': '#b3b39a', 'F': '#9db978', 'f': '#9db978', 'g': '#8a6a45',
 };
 
 // 依氣質分組上色：NF 綠、NT 紫、SJ 藍、SP 橙。
@@ -66,6 +67,10 @@ export function drawMap(ctx, map) {
         ctx.fillStyle = '#7a5631';
         ctx.fillRect(px + 2, py + 12, 3, 6); ctx.fillRect(px + 15, py + 10, 3, 8);
         ctx.save(); ctx.translate(px + 10, py + 14); ctx.rotate(0.5); ctx.fillRect(-9, -1.5, 18, 3); ctx.restore();
+      } else if (t === 'g') {
+        // 菜畦：翻過的土壟。
+        ctx.fillStyle = '#6e5236';
+        for (let i = 0; i < 3; i++) ctx.fillRect(px + 2, py + 3 + i * 6, TILE - 4, 2);
       } else if (t === '#') {
         ctx.fillStyle = '#58402e';
         ctx.fillRect(px, py + 8, TILE, 2);
@@ -183,7 +188,7 @@ export function drawObjects(ctx, state) {
   const h = state.objects.find((o) => o.kind === 'hearth');
   const [hx, hy] = h.slots[0];
   ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'left';
-  const label = `生莓 ${state.stock.raw}　熟飯 ${state.stock.meal}`;
+  const label = `生莓 ${state.stock.raw}　熟飯 ${state.stock.meal}${FIRE.WOOD_PER_POT > 0 && state.stock.wood < FIRE.WOOD_PER_POT ? '　沒柴' : ''}`;
   ctx.fillStyle = 'rgba(255,250,240,0.85)'; ctx.fillRect(hx * TILE + 22, hy * TILE - 2, ctx.measureText(label).width + 8, 16);
   ctx.fillStyle = '#5b2a1a'; ctx.fillText(label, hx * TILE + 26, hy * TILE + 10);
   for (const b of state.bushes) {
@@ -329,6 +334,23 @@ export function drawNests(ctx, state) {
     if (!n.cleared && n.hp < n.hpMax) {
       ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(cx - 14, cy + 10, 28, 3);
       ctx.fillStyle = '#d68a2e'; ctx.fillRect(cx - 14, cy + 10, 28 * n.hp / n.hpMax, 3);
+    }
+  }
+}
+
+// M12 菜畦：長著的苗越長越高，熟了有菜。
+export function drawPlots(ctx, state, GROW) {
+  for (const g of state.plots ?? []) {
+    const px = g.x * TILE, py = g.y * TILE;
+    if (g.stage === 'growing') {
+      const k = Math.min(1, (state.tick - g.at) / GROW);
+      ctx.fillStyle = '#5f9a4a';
+      for (let i = 0; i < 3; i++) ctx.fillRect(px + 4 + i * 5, py + 16 - 10 * k, 2, 2 + 10 * k);
+    } else if (g.stage === 'ripe') {
+      for (let i = 0; i < 3; i++) {
+        ctx.fillStyle = '#4f8d3e'; ctx.beginPath(); ctx.arc(px + 5 + i * 5, py + 10, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#d9c25a'; ctx.beginPath(); ctx.arc(px + 5 + i * 5, py + 9, 1.6, 0, Math.PI * 2); ctx.fill();
+      }
     }
   }
 }

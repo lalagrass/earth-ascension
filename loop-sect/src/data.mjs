@@ -164,14 +164,20 @@ export const BLUEPRINTS = [
   },
   // M11 宿舍：兩個階段。第一階段立牆、四張床；第二階段在同一間裡再擺四張床（要先完成第一階段）。
   {
-    id: 'dorm-1', label: '西宿舍', desc: '道館西邊一間長屋，四張床', kind: 'hut',
+    id: 'dorm-1', label: '西宿舍', desc: '道館西邊一間長屋，四張床（試做中）', kind: 'hut',
     rect: [17, 12, 24, 18], door: [20, 18], beds: [[18, 13], [20, 13], [22, 13], [18, 15]],
     cost: { wood: 14, stone: 6 }, work: 240,
   },
   {
-    id: 'dorm-2', label: '宿舍擴建', desc: '西宿舍裡再擺四張床', kind: 'beds', of: 'dorm-1', requires: 'dorm-1',
+    id: 'dorm-2', label: '宿舍擴建', desc: '西宿舍裡再擺四張床（試做中）', kind: 'beds', of: 'dorm-1', requires: 'dorm-1',
     beds: [[20, 15], [22, 15], [18, 17], [22, 17]],
     cost: { wood: 12, stone: 2 }, work: 160,
+  },
+  // M12 菜園：院子東邊、大路南側一排六畦。完工變成可走的菜畦格。
+  {
+    id: 'garden', label: '菜園', desc: '院子東邊六畦地：播種、長成、收成（試做中）', kind: 'farm',
+    cells: Array.from({ length: 6 }, (_, i) => [38 + i, 27]),
+    cost: { wood: 4 }, work: 60,
   },
   {
     id: 'hearth2', label: '石灶台', desc: '把露天灶砌成石灶台：煮得快、一鍋多一份', kind: 'upgrade',
@@ -192,13 +198,25 @@ export const FOCUS = [
   { id: 'stone', label: '採石', kinds: ['quarry'] },
   { id: 'build', label: '營造', kinds: ['haul', 'build'] },
   { id: 'cook', label: '炊事', kinds: ['cook'] },
-  { id: 'gather', label: '採集', kinds: ['forage'] },
+  { id: 'gather', label: '採集', kinds: ['forage', 'sow', 'harvest'] },
 ];
 export const FOCUS_BONUS = 1.5;
-export const WORK_KINDS = new Set(['chop', 'quarry', 'haul', 'build', 'cook', 'forage', 'deliver', 'store', 'repair']);
+export const WORK_KINDS = new Set(['chop', 'quarry', 'haul', 'build', 'cook', 'forage', 'deliver', 'store', 'repair', 'sow', 'harvest']);
+
+// ---------- M12 柴火與菜園 ----------
+// 柴火：煮一鍋要燒幾根木。loop 13 暫停為 0（停用），原因與四次嘗試見 specs/M12.md；恢復時改回 1。
+export const FIRE = { WOOD_PER_POT: 0 };
+export const FARM = {
+  SOW_DUR: 20, HARVEST_DUR: 20,
+  GROW: 1080,          // 播下到熟：18 小時
+  YIELD: 3,            // 一畦收幾份生菜（再加採集熟練 ⌊v/40⌋）
+  SOW_WORK: 1.0, HARVEST_WORK: 1.5,
+};
 
 Object.assign(ACTS, {
   chop: { label: '砍樹', dur: 60, per: { energy: -0.015 } },
+  sow: { label: '播種', dur: 20, per: { energy: -0.01 } },
+  harvest: { label: '收菜', dur: 20, per: { energy: -0.01 } },
   quarry: { label: '敲石', dur: 70, per: { energy: -0.02 } },
   store: { label: '把木石放上倉堆', dur: 3, per: {} },
   haul: { label: '搬料', dur: 3, per: {} },

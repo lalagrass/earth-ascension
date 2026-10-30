@@ -2,7 +2,7 @@
 import { SKILLS, SKILL_GAIN, SKILL_MILESTONES } from './data.mjs';
 
 const BY_ID = Object.fromEntries(SKILLS.map((s) => [s.id, s]));
-export const SKILL_OF_TASK = { chop: 'chop', quarry: 'quarry', build: 'build', cook: 'cook', forage: 'forage' };
+export const SKILL_OF_TASK = { chop: 'chop', quarry: 'quarry', build: 'build', cook: 'cook', forage: 'forage', harvest: 'forage' };
 
 export function newSkills() {
   return Object.fromEntries(SKILLS.map((s) => [s.id, 0]));

@@ -1,19 +1,29 @@
 {
   "loopVersion": 5,
-  "loopsDone": 12,
+  "loopsDone": 13,
   "retroEvery": 3,
   "lastRetro": "docs/RETRO-04.md",
   "lastCommit": "0e0a0ac",
-  "nextMilestone": "M12",
+  "nextMilestone": "M18",
   "inProgress": {
-    "milestone": "M11",
-    "status": "paused",
-    "why": "人口瓶頸是糧食；四次嘗試都讓舊量測退步，見 specs/M11.md",
-    "resumeAfter": "M12",
-    "resumeSteps": [
-      "放回訪客看近一日飢餓的判斷（嘗試 1）",
-      "A5 改量放下後幾日完工並記原值新值",
-      "重跑 report 的 grow 情境"
+    "paused": [
+      {
+        "milestone": "M11",
+        "resumeAfter": "M18 值日",
+        "steps": [
+          "放回訪客看近一日飢餓的判斷",
+          "A5 改量放下後幾日完工",
+          "重跑 grow"
+        ]
+      },
+      {
+        "milestone": "M12",
+        "resumeAfter": "M18 值日",
+        "steps": [
+          "FIRE.WOOD_PER_POT 改回 1",
+          "重跑 report 的 M12-A5/A6 與 farm 第 3 日"
+        ]
+      }
     ]
   },
   "openIssues": [
@@ -28,7 +38,8 @@
     "遠征打退率 74%→59%（家裡人少），面板已提醒顧家人數，但沒有讓留守的人守柵欄的選項",
     "窄螢幕：紀事統計在右欄最下面，要捲很久",
     "走路約 45%：擁有人選定「長通勤、負重、腳力」為觀看樂趣，不當成要壓低的數字；擴建時注意設施位置",
-    "一群隨性的人會一起餓肚子（grow 種子 1 三人都是 P）：特色還是缺陷，待擁有人決定"
+    "一群隨性的人會一起餓肚子（grow 種子 1 三人都是 P）：特色還是缺陷，待擁有人決定",
+    "效用 AI 不會分擔集體的事（存糧、柴火、煮飯）：M11/M12 七次診斷的共同原因，用 M18 值日解"
   ],
   "stopReason": null,
   "targetLoops": 30,

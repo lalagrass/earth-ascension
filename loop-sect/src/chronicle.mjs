@@ -2,7 +2,7 @@
 import { TICKS_PER_DAY } from './data.mjs';
 
 export const LIFE_CATS = [
-  { id: 'work', label: '幹活', kinds: ['chop', 'quarry', 'build', 'haul', 'store', 'deliver', 'cook', 'forage', 'repair', 'gather'] },
+  { id: 'work', label: '幹活', kinds: ['chop', 'quarry', 'build', 'haul', 'store', 'deliver', 'cook', 'forage', 'repair', 'sow', 'harvest'] },
   { id: 'social', label: '聊天切磋', kinds: ['chat', 'spar'] },
   { id: 'drill', label: '練功', kinds: ['drill'] },
   { id: 'leisure', label: '閒坐閒逛', kinds: ['sit', 'wander', 'idle', 'leave'] },
@@ -54,7 +54,7 @@ export const EVENT_GROUPS = [
   { id: 'war', label: '戰事', kinds: ['raid', 'stolen', 'breach', 'repel', 'calm', 'guard', 'exp', 'cleared', 'repair'] },
   { id: 'people', label: '人事', kinds: ['visit', 'join', 'leave', 'found', 'master', 'rel'] },
   { id: 'growth', label: '成長', kinds: ['skill', 'move'] },
-  { id: 'build', label: '營造', kinds: ['built'] },
+  { id: 'build', label: '營造', kinds: ['built', 'farm'] },
 ];
 export function eventsIn(state, groupId) {
   const g = EVENT_GROUPS.find((x) => x.id === groupId) ?? EVENT_GROUPS[0];

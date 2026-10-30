@@ -19,8 +19,9 @@ const expect = (id, ok, text) => {
 };
 
 const lives = [];
-const membersBy = {};
-for (const scenario of ['base', 'exp', 'grow']) {
+const membersBy = {}, dailyBy = {};
+const m12 = {};
+for (const scenario of ['base', 'exp', 'grow', 'farm']) {
   const dayH = Array(DAYS).fill(0), dayN = Array(DAYS).fill(0);
   const seedRows = [];
   let friends = 0, masters = 0;
@@ -28,8 +29,11 @@ for (const scenario of ['base', 'exp', 'grow']) {
     const s = createWorld({ seed, people: rosterFor(seed) });
     const start = new Set(s.people.map((p) => p.id));
     let h = 0, n = 0;
+    const snap = {};
     for (let t = 0; t < DAYS * TICKS_PER_DAY; t++) {
       script(s, scenario); step(s);
+      // M12：第 5 日結束時記一次，好比第 6–10 日。
+      if (s.tick === 5 * TICKS_PER_DAY) snap.d5 = { cut: s.ledger.woodCut, veg: s.ledger.veg, picked: s.ledger.picked, chop: Math.max(...s.people.map((p) => p.skills.chop)) };
       const d = Math.floor(t / TICKS_PER_DAY);
       for (const p of s.people) {
         if (p.guest) continue;
@@ -41,6 +45,11 @@ for (const scenario of ['base', 'exp', 'grow']) {
     const eats = EATS.reduce((a, k) => a + (s.counts[k] || 0), 0);
     if (m.some((a) => m.some((b) => a !== b && atLeast(s, a, b, 'friend')))) friends++;
     masters += s.events.filter((e) => e.kind === 'master').length;
+    if (snap.d5 && DAYS >= 10) {
+      const M = (m12[scenario] ??= { cut: 0, chopGain: 0, veg: 0, picked: 0, n: 0 });
+      M.n++; M.cut += s.ledger.woodCut - snap.d5.cut; M.veg += s.ledger.veg - snap.d5.veg; M.picked += s.ledger.picked - snap.d5.picked;
+      M.chopGain += Math.max(...s.people.map((p) => p.skills.chop)) - snap.d5.chop;
+    }
     seedRows.push({ seed, hunger: h / n, eatsPerDay: eats / (n / TICKS_PER_DAY), members: m.length });
     if (scenario === 'base') for (const p of s.people) if (start.has(p.id)) lives.push({ seed, p, share: lifeShares(p) });
   }
@@ -52,11 +61,24 @@ for (const scenario of ['base', 'exp', 'grow']) {
   console.log(`各種子飢餓：${seedRows.map((r) => `s${r.seed} ${pct(r.hunger)}`).join(' ')}`);
   console.log(`每人每日進食 ${eatLo.toFixed(2)}–${eatHi.toFixed(2)} 次；結束時同門 ${seedRows.map((r) => r.members).join('/')}`);
   membersBy[scenario] = seedRows.map((r) => r.members);
+  dailyBy[scenario] = daily;
   // M11-A7：grow 情境人多一半，門檻放在 3%／6%（規格寫在量之前）。
-  const [dayMax, seedMax, id] = scenario === 'grow' ? [0.03, 0.06, 'M11-A7'] : [0.02, 0.04, 'M10-A5'];
+  const [dayMax, seedMax, id] = scenario === 'grow' ? [0.03, 0.06, 'M11-A7'] : scenario === 'farm' ? [0.02, 0.04, 'M12-A6'] : [0.02, 0.04, 'M10-A5'];
   expect(`${id}[${scenario}]`, Math.max(...daily) <= dayMax && worst.hunger <= seedMax && eatLo >= 1.5 && eatHi <= 4,
     `最差日 ${pct(Math.max(...daily))}（≤ ${pct(dayMax)}）、最差種子 s${worst.seed} ${pct(worst.hunger)}（≤ ${pct(seedMax)}）、進食 ${eatLo.toFixed(2)}–${eatHi.toFixed(2)}（1.5–4）`);
   expect(`M10-A7[${scenario}]`, friends >= 6 && masters >= 1, `有朋友的種子 ${friends}/${SEEDS}（≥ 6）、拜師 ${masters} 次（≥ 1）`);
+}
+
+// M12-A5／A6：山上一直有活幹；菜園供得上糧。
+if (m12.base) {
+  const b = m12.base, f = m12.farm;
+  console.log('--- 柴火與菜園（第 6–10 日）---');
+  expect('M12-A5', b.cut / b.n / 5 >= 2 && b.chopGain / b.n >= 5,
+    `base 每種子每日砍木 ${(b.cut / b.n / 5).toFixed(1)}（≥ 2.0）、最高伐木熟練第 5→10 日 +${(b.chopGain / b.n).toFixed(1)}（≥ 5）`);
+  const share = f.veg / Math.max(1, f.picked);
+  const worse = Math.max(...dailyBy.farm) - Math.max(...dailyBy.base);
+  expect('M12-A6', share >= 0.25 && Math.max(...dailyBy.farm) <= 0.02 && worse <= 0.005,
+    `farm 生菜占食材 ${pct(share)}（≥ 25%）；最差日 farm ${pct(Math.max(...dailyBy.farm))}、base ${pct(Math.max(...dailyBy.base))}（≤ 2%、不比 base 差 0.5 個百分點以上）`);
 }
 
 // M11-A6：蓋了宿舍，山上就熱鬧起來。

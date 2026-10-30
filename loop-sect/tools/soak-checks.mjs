@@ -21,6 +21,8 @@ export function rosterFor(seed) {
 export function script(s, scenario = 'base') {
   if (s.tick === 0) setFocus(s, 'p1', 'wood');
   if (s.tick === 360) for (const id of FIRST_BLUEPRINTS) placeBlueprint(s, id);
+  // M12 farm：第 2 日放菜園。
+  if (scenario === 'farm' && s.tick === TICKS_PER_DAY + 360) placeBlueprint(s, 'garden');
   // M11 grow：第 2 日放西宿舍，蓋好就放擴建。
   if (scenario === 'grow') {
     if (s.tick === TICKS_PER_DAY + 360) placeBlueprint(s, 'dorm-1');
@@ -260,6 +262,7 @@ export function judge(S, scenario = 'base') {
   const failures = [];
   if (scenario === 'exp') return judgeExp(S, lines, failures);
   if (scenario === 'grow') return judgeGrow(S, lines, failures);
+  if (scenario === 'farm') return judgeFarm(S, lines, failures);
   const r = (a, b) => (S[a] || 0) / (S[b] || 1);
   const e = r('near:E:sum', 'near:E:n'), i = r('near:I:sum', 'near:I:n');
   // M2 起 M1-A7 改由 sim.test.mjs 的控制實驗驗證（只變外向軸）；此處只列出，因為整體距離受 N 軸與吃睡聚集干擾。
@@ -332,8 +335,14 @@ function worstSeed(S, key) {
 }
 
 // 暫停中的 milestone：照印量測，但不判失敗（理由寫在該規格的「實作中的變更」）。
-export const PAUSED = new Set(['M11']);
+export const PAUSED = new Set(['M11', 'M12']);
 const judgeOf = (failures, id) => (PAUSED.has(id.split('-')[0]) ? { push: (x) => failures.paused?.push(x) } : failures);
+
+function judgeFarm(S, lines, failures) {
+  const all = (S['t:E'] || 0) + (S['t:I'] || 0);
+  lines.push(`（參考）M12 菜園 5 日內完工 ${S['built:菜園完工'] || 0}/${S.seeds}；飢餓時間 ${(100 * (S.lowFood || 0) / all).toFixed(1)}%（${worstSeed(S, 'lowFood')}）；十日的主張在 report`);
+  return { lines, failures };
+}
 
 function judgeGrow(S, lines, all_failures) {
   const failures = judgeOf(all_failures, 'M11-A5');

@@ -8,8 +8,8 @@ import { effectText } from './skills.mjs';
 import { aff, stageOf, prestige } from './social.mjs';
 import { prowess, moveLabel, comprehendable, compChance } from './martial.mjs';
 import { titleOf, appeal, reasonText } from './recruit.mjs';
-import { SKILLS, MOVES, DEFENSE } from './data.mjs';
-import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes, drawEnemies, drawNests, drawLabels, labelBoxes } from './render.mjs';
+import { SKILLS, MOVES, DEFENSE, FARM } from './data.mjs';
+import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes, drawEnemies, drawNests, drawLabels, labelBoxes, drawPlots } from './render.mjs';
 
 const $ = (s) => document.querySelector(s);
 const el = (tag, attrs = {}, ...kids) => {
@@ -137,7 +137,10 @@ function renderBuild() {
     const btn = done ? el('span', { class: 'done' }, '已完工')
       : site ? el('button', { 'data-cancel': bp.id, on: { click: () => { cancelSite(state, site.id); renderBuild(); } } }, '取消')
       : el('button', { 'data-blueprint': bp.id, on: { click: () => { placeBlueprint(state, bp.id); renderBuild(); } } }, '放藍圖');
-    return el('div', { class: 'bp' }, el('b', {}, bp.label), el('span', { class: 'cost' }, costText), btn, el('small', {}, bp.desc));
+    const locked = !done && !site && bp.requires && !state.built.includes(bp.requires);
+    if (locked) btn.disabled = true;
+    return el('div', { class: 'bp' }, el('b', {}, bp.label), el('span', { class: 'cost' }, costText), btn,
+      el('small', {}, locked ? `${bp.desc}；要先蓋好${blueprint(bp.requires).label}` : bp.desc));
   }), renderExpedition(), renderChronicle());
   builtSeen = state.built.length;
   eventsSeen = state.events.length;
@@ -195,6 +198,7 @@ function frame(now) {
   ctx.drawImage(bg, 0, 0);
   drawBuild(ctx, state, PILE, blueprint);
   drawNests(ctx, state);
+  drawPlots(ctx, state, FARM.GROW);
   drawObjects(ctx, state);
   drawEnemies(ctx, state, DEFENSE.FENCE_HP);
   drawPeople(ctx, state, selected);
@@ -307,7 +311,7 @@ addEventListener('keydown', (e) => {
 
 // 唯讀遙測：給 headless 檢查用，回傳副本。
 window.__sect = {
-  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map, aff: state.aff, events: state.events, sect: state.sect, decisions: state.decisions, enemies: state.enemies, raids: state.raids, fenceHp: state.fenceHp, nests: state.nests, expedition: state.expedition })) : null),
+  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map, aff: state.aff, events: state.events, sect: state.sect, decisions: state.decisions, enemies: state.enemies, raids: state.raids, fenceHp: state.fenceHp, nests: state.nests, plots: state.plots, expedition: state.expedition })) : null),
   speed: () => speed,
   labels: () => labelBoxes().map((b) => ({ ...b })),
   selected: () => selected,
