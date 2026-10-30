@@ -84,6 +84,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.draw) s.draw = true;
   if (heroSpec?.comprehend) s.wu7 = true;
   if (heroSpec?.mentor) s.mentor = true;
+  if (heroSpec?.qshare) s.qshare = true; // loop39 人多分攤日課
   if (heroSpec?.jhui) s.jhui = true; // loop34 介面可讀性（純顯示）
   if (heroSpec?.steward) s.steward = true; // loop30 執事自主（選用）
   if (heroSpec?.lairpow) s.lairpow = true; // loop29 寨強看戰力（選用）
@@ -110,7 +111,9 @@ export const disciples = (s) => s.ds.filter((d) => !isLabor(d));
 export const laborers = (s) => s.ds.filter(isLabor);
 export const outers = (s) => s.ds.filter((d) => d.role === 'outer');
 export const emergency = (s) => s.res.food <= 0 || s.mons.some((m) => m.raid && !m.gone);
-export const quotaOf = (d) => QUOTA.points + (d.choreDebt || 0);
+// loop39：8 人時內門多、外門少（常 4 外門撐 8 人），日課過半做不完；「人多分攤」開時全派人數 ≥ 外門×QUOTA.shareAt，每位外門日課 −1。
+export const shareOn = (s) => !!s?.qshare && s.ds.length >= QUOTA.shareAt * Math.max(1, outers(s).length);
+export const quotaOf = (d, s) => QUOTA.points - (shareOn(s) ? 1 : 0) + (d.choreDebt || 0);
 // 內門／首徒免雜務：外門已有人手（≥2）才免；缺糧或野豬下山時全員暫時回來幫忙
 export const skipsChores = (s, d) => (d.role === 'inner' || d.role === 'head') && outers(s).length >= QUOTA.outerMin && !emergency(s);
 export function setDuty(s, id, act, on) { const d = byId(s, id); if (!d || !CHORE_ACTS.includes(act)) return; d.duties = d.duties.filter((a) => a !== act); if (on) d.duties.push(act); }
@@ -290,7 +293,7 @@ const POST_PRED = { plotWork: (c) => c.plotWork, skip: (c) => c.skip, outer: (c)
 const postTest = (k, c, o) => (k === true ? true : k[0] === '!' ? !POST_PRED[k.slice(1)](c, o) : POST_PRED[k](c, o));
 function postRows(s, d, out, plotWork) {
   const lab = isLabor(d), c = { s, d, plotWork, FS: FOOD_SEC, K: { LABOR_ACTS, LABOR_WORK_MUL, CHORE_ACTS, QUOTA } };
-  if (!lab) { c.skip = skipsChores(s, d); c.em = emergency(s); c.owe = quotaOf(d) - (d.chore || 0); c.prioMul = PRIO[d.prio || 'normal'][0]; }
+  if (!lab) { c.skip = skipsChores(s, d); c.em = emergency(s); c.owe = quotaOf(d, s) - (d.chore || 0); c.prioMul = PRIO[d.prio || 'normal'][0]; }
   const list = (v) => (typeof v === 'string' ? path(c, v) : v);
   for (const R of SCORE_POST) {
     if (R.who === 'labor' ? !lab : R.who === 'notLabor' ? lab : false) continue; if (R.if && !R.if.every((k) => postTest(k, c))) continue;
@@ -605,7 +608,7 @@ export function payday(s) {
     else { d.unpaid = (d.unpaid || 0) + 1; think(s, d, 'unpaid'); log(s, `付不出${d.name}的工錢（欠 ${d.unpaid} 日）`); if (d.unpaid >= ECON.leaveAfter) dismissLabor(s, d, '工錢一直沒著落'); }
   }
   { let need = 0, done = 0; const os = outers(s);
-    for (const d of os) { const q = quotaOf(d), c = d.chore || 0; need += q; done += Math.min(c, q);
+    for (const d of os) { const q = quotaOf(d, s), c = d.chore || 0; need += q; done += Math.min(c, q);
       if (c >= q) { const sur = c - q; d.contrib = (d.contrib || 0) + sur; d.choreDebt = 0; think(s, d, 'quotaMet'); if (sur) log(s, `外門${d.name}日課超額 ${sur}，記貢獻（共 ${d.contrib}）`); }
       else { d.choreDebt = Math.min(QUOTA.debtMax, q - c); think(s, d, 'quotaMiss'); log(s, `外門${d.name}日課差 ${q - c}，順延到今日。`); } }
     for (const d of s.ds) d.chore = 0;

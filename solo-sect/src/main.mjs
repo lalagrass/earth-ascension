@@ -197,7 +197,7 @@ function panel() {
   { const os = outers(S), hero = S.ds.find((d) => d.id === 'hero'), em = emergency(S);
     $('ranks').innerHTML = `<div class="k">首徒：${hero?.role === 'head' ? `主角（練功 ×${QUOTA.headTrain}）` : `未立（需外門 ≥${QUOTA.outerMin} 人且日課完成率 ≥${QUOTA.headRate * 100}%；目前外門 ${os.length}、昨日完成率 ${S.choreRate == null ? '—' : Math.round(S.choreRate * 100) + '%'}）`}</div>
       <div class="k">內門：${S.ds.filter((d) => d.role === 'inner' || d.role === 'head').map((d) => d.name).join('、')}｜${em ? '<b style="color:#b33">危機：內門暫時回來幫忙雜務</b>' : os.length >= QUOTA.outerMin ? '內門免雜務、專心練功' : `外門未滿 ${QUOTA.outerMin} 人，內門仍分擔雜務`}</div>` +
-      (os.length ? os.map((d) => { const pc = canPromote(S, d.id), q = quotaOf(d);
+      (os.length ? os.map((d) => { const pc = canPromote(S, d.id), q = quotaOf(d, S);
         return `<div class="card outer"><b>${d.name}</b>（外門） <span class="k">日課 ${d.chore || 0}/${q}${d.choreDebt ? `（含順延 ${d.choreDebt}）` : ''}・貢獻 ${d.contrib || 0}・根骨 ${d.rootKnown ? '★'.repeat(d.root) + ROOT.names[d.root] : '？？'}</span>${bar(Math.min(100, 100 * (d.chore || 0) / q), '#5a9')}
         <div class="k">職司：${CHORE_ACTS.map((a) => `<label><input type="checkbox" data-duty="${d.id}" value="${a}" ${d.duties.includes(a) ? 'checked' : ''}>${CHORE_NAMES[a]}</label>`).join(' ')}
         ｜優先 <select data-prio="${d.id}">${Object.entries(PRIO).map(([k, [, n]]) => `<option value="${k}" ${d.prio === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>

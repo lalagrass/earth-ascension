@@ -283,7 +283,7 @@ export const LABOR_POOL = [
 // v0.85 內外門與日課
 export const CHORE_ACTS = ['chop', 'quarry', 'farm', 'cook', 'build', 'forage'];
 export const CHORE_NAMES = { chop: '砍柴', quarry: '採石', farm: '種菜', cook: '煮飯', build: '營建', forage: '採藥' };
-export const QUOTA = { points: 4, debtMax: 4, outerMin: 2, headRate: 0.8, headTrain: 1.5, dutyMul: 1.4 };
+export const QUOTA = { points: 4, debtMax: 4, outerMin: 2, headRate: 0.8, headTrain: 1.5, dutyMul: 1.4, shareAt: 2 };
 export const PRIO = { high: [1.5, '優先'], normal: [1, '一般'], low: [0.6, '少做'] };
 export const PROMOTE = { rootMin: 3, contrib: 6, pass: 30, cooldown: 1 };
 export const RANK_NAMES = { head: '首徒', inner: '內門', outer: '外門', laborer: '雇工' };
