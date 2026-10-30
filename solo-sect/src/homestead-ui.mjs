@@ -1,5 +1,5 @@
 import{restComparisonText}from'./homestead-rest-view.mjs';
-import{householdActions,performHouseholdAction}from'./homestead-household-actions.mjs';
+import{householdActions,performHouseholdAction,householdActionHelp}from'./homestead-household-actions.mjs';
 import{householdFacts}from'./homestead-household.mjs';
 import {projectRows,projectAt} from './homestead-projects.mjs';
 import {facilityModelView,modelCrop} from './homestead-model.mjs';
@@ -29,6 +29,7 @@ $('project-rows').onclick=e=>{const b=e.target.closest('[data-inspect]');if(!b)r
 $('project-markers').onchange=draw;
 function renderInspection(){const ids=BUILDABLE.filter(id=>id==='hut'||s.fac.hut.stage>0).filter(id=>s.mode==='solo'||!['bed','workbench'].includes(id));const html='<option value="">選一個地塊</option>'+ids.map(id=>`<option value="${id}">${FACILITIES[id].label}</option>`).join('');if($('site-select').innerHTML!==html)$('site-select').innerHTML=html;if(!ids.includes(inspected))inspected=null;$('site-select').value=inspected||'';const q=inspectionInfo(s,inspected);$('site-inspector').hidden=!q;if(!q)return;const route=constructionRoute(s,inspected),m=siteMaterials(s,inspected),stages=siteStages(s,inspected);$('site-materials').hidden=!m;$('site-materials').textContent=m?`庫存可用（共用）${m.available}木 ｜ 工地已交${m.delivered}木 ｜ 在途（已離庫）${m.reserved}木 ｜ 尚待運${m.needed}木`:'';$('site-stages').innerHTML=stages.labels.map((name,i)=>`<li ${i===stages.index?'aria-current="step"':''}>${i<stages.index?'✓ ':i===stages.index?'目前：':''}${name}</li>`).join('');$('site-flow').textContent=route?`${route.text}。線顯示既有任務的直線方向，不是新導航或可走路徑驗證。`:s.person.task?.act==='return'&&s.person.carry?.kind==='wood'?`主角另有${s.person.carry.amount}木正在返倉，未算作此地預約；沒有此地在途方向。`:'目前沒有前往這個工地的行走任務；原地工作、吃睡或其他工作不畫假路線。';const life=householdFacts(s,inspected);$('site-life').hidden=!life;$('site-life-title').textContent=life?.title||'';$('site-life-facts').replaceChildren(...(life?.lines||[]).map(text=>{const li=document.createElement('li');li.textContent=text;return li;}));renderHouseholdActions();$('site-stages').hidden=$('site-flow').hidden=$('route-lines').parentElement.hidden=!q.site;$('site-title').textContent=q.name;$('site-info').textContent=q.text;$('site-pause').hidden=$('site-focus').hidden=!q.site||s.mode!=='solo';$('site-pause').textContent=q.paused?'繼續工程':'暫停工程';$('site-focus').disabled=!!q.paused;$('site-focus').textContent=s.focusProject===inspected?'取消優先（照常做）':'這項先做';}
 function renderHouseholdActions(){
+ $('site-action-help').textContent=householdActionHelp(inspected);
  const rows=[];let row;
  for(const a of householdActions(s,inspected)){
   if(!a.id.startsWith('eat-')){row=document.createElement('div');row.className='context-choice';rows.push(row);}

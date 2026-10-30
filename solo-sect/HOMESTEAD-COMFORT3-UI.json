@@ -1,0 +1,1367 @@
+{
+  "engine": "154.0.8037.57",
+  "route": "normal UI no grants, pause/4x/16x; reference times are explicitly estimates; AI not human",
+  "events": [
+    {
+      "name": "walking-to-ground-rest",
+      "t": 0.25,
+      "fac": {
+        "hut": {
+          "stage": 0,
+          "site": null
+        },
+        "garden": {
+          "stage": 0,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 0,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 0,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 68,
+      "hunger": 64.965,
+      "skills": {
+        "gather": 0,
+        "build": 0,
+        "farm": 0,
+        "cook": 0
+      },
+      "task": {
+        "act": "rest",
+        "phase": "go",
+        "place": "hut",
+        "timer": 0
+      },
+      "pos": [
+        444.2194272866466,
+        326.2662548795184
+      ],
+      "order": "rest",
+      "feelings": {},
+      "life": "這裡的休息\n目前精力68；到空地席地歇息每秒恢復3精力。屋舍與床使用同一休息位置。\n正在前往休息位置，尚未開始休息。\n手動歇到100後自主生活，自主歇息以85為目標。開始前先顧吃飯與手上搬運，可改令取消。\n目前沒有床鋪安睡感受；必須有床且實際休息完成才會得到。\n歇到精神恢復（一次）\n清除目前指派 · 自主生活\n\n按下才派工；休息一次到100完成回自主。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n這次到100後恢復自主生活；開始前先顧吃飯與搬運，可改令取消。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 3,
+          "afterRate": 6,
+          "before": 23.5,
+          "after": 11.75,
+          "saved": 11.75
+        },
+        "bed": null
+      }
+    },
+    {
+      "name": "ground-rest-completed",
+      "t": 12.25,
+      "fac": {
+        "hut": {
+          "stage": 0,
+          "site": null
+        },
+        "garden": {
+          "stage": 0,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 0,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 0,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 100,
+      "hunger": 63.28500000000017,
+      "skills": {
+        "gather": 0,
+        "build": 0,
+        "farm": 0,
+        "cook": 0
+      },
+      "task": null,
+      "pos": [
+        440,
+        225
+      ],
+      "order": null,
+      "feelings": {},
+      "life": "這裡的休息\n目前精力100；到空地席地歇息每秒恢復3精力。屋舍與床使用同一休息位置。\n現在沒有在此休息；家具放著不會直接恢復精力。\n手動歇到100後自主生活，自主歇息以85為目標。開始前先顧吃飯與手上搬運，可改令取消。\n目前沒有床鋪安睡感受；必須有床且實際休息完成才會得到。\n歇到精神恢復（一次）精神已滿，現在不需要歇息\n清除目前指派 · 自主生活目前已是自主生活\n\n按下才派工；休息一次到100完成回自主。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n這次到100後恢復自主生活；開始前先顧吃飯與搬運，可改令取消。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 3,
+          "afterRate": 6,
+          "before": 23.5,
+          "after": 11.75,
+          "saved": 11.75
+        },
+        "bed": null
+      }
+    },
+    {
+      "name": "first-house-payoff",
+      "t": 12.25,
+      "fac": {
+        "hut": {
+          "stage": 0,
+          "site": null
+        },
+        "garden": {
+          "stage": 0,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 0,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 0,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 100,
+      "hunger": 63.28500000000017,
+      "skills": {
+        "gather": 0,
+        "build": 0,
+        "farm": 0,
+        "cook": 0
+      },
+      "task": null,
+      "pos": [
+        440,
+        225
+      ],
+      "order": null,
+      "feelings": {},
+      "life": "這裡的休息\n目前精力100；到空地席地歇息每秒恢復3精力。屋舍與床使用同一休息位置。\n現在沒有在此休息；家具放著不會直接恢復精力。\n手動歇到100後自主生活，自主歇息以85為目標。開始前先顧吃飯與手上搬運，可改令取消。\n目前沒有床鋪安睡感受；必須有床且實際休息完成才會得到。\n歇到精神恢復（一次）精神已滿，現在不需要歇息\n清除目前指派 · 自主生活目前已是自主生活\n\n按下才派工；休息一次到100完成回自主。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n這次到100後恢復自主生活；開始前先顧吃飯與搬運，可改令取消。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 3,
+          "afterRate": 6,
+          "before": 23.5,
+          "after": 11.75,
+          "saved": 11.75
+        },
+        "bed": null
+      }
+    },
+    {
+      "name": "repair-payoff",
+      "t": 112.75,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 0,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 0,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 0,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 58.35000000000004,
+      "hunger": 49.21500000000154,
+      "skills": {
+        "gather": 5,
+        "build": 15,
+        "farm": 0,
+        "cook": 0
+      },
+      "task": {
+        "act": "forage",
+        "phase": "go",
+        "place": "berries",
+        "timer": 0
+      },
+      "pos": [
+        405.2243587788829,
+        239.03227628220515
+      ],
+      "order": null,
+      "feelings": {},
+      "life": "這裡的休息\n目前精力58.4；到屋內使用現有鋪蓋每秒恢復6精力。屋舍與床使用同一休息位置。\n現在沒有在此休息；家具放著不會直接恢復精力。\n手動歇到100後自主生活，自主歇息以85為目標。開始前先顧吃飯與手上搬運，可改令取消。\n目前沒有床鋪安睡感受；必須有床且實際休息完成才會得到。\n歇到精神恢復（一次）\n清除目前指派 · 自主生活目前已是自主生活\n\n按下才派工；休息一次到100完成回自主。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n這次到100後恢復自主生活；開始前先顧吃飯與搬運，可改令取消。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 6,
+          "afterRate": 9,
+          "before": 11.75,
+          "after": 8,
+          "saved": 3.75
+        },
+        "bed": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 6,
+          "afterRate": 7,
+          "before": 11.75,
+          "after": 10,
+          "saved": 1.75
+        }
+      }
+    },
+    {
+      "name": "wood-bed-payoff",
+      "t": 112.75,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 0,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 0,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 0,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 58.35000000000004,
+      "hunger": 49.21500000000154,
+      "skills": {
+        "gather": 5,
+        "build": 15,
+        "farm": 0,
+        "cook": 0
+      },
+      "task": {
+        "act": "forage",
+        "phase": "go",
+        "place": "berries",
+        "timer": 0
+      },
+      "pos": [
+        405.2243587788829,
+        239.03227628220515
+      ],
+      "order": null,
+      "feelings": {},
+      "life": "這裡的休息\n目前精力58.4；到屋內使用現有鋪蓋每秒恢復6精力。屋舍與床使用同一休息位置。\n現在沒有在此休息；家具放著不會直接恢復精力。\n手動歇到100後自主生活，自主歇息以85為目標。開始前先顧吃飯與手上搬運，可改令取消。\n目前沒有床鋪安睡感受；必須有床且實際休息完成才會得到。\n歇到精神恢復（一次）\n清除目前指派 · 自主生活目前已是自主生活\n\n按下才派工；休息一次到100完成回自主。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n這次到100後恢復自主生活；開始前先顧吃飯與搬運，可改令取消。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 6,
+          "afterRate": 9,
+          "before": 11.75,
+          "after": 8,
+          "saved": 3.75
+        },
+        "bed": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 6,
+          "afterRate": 7,
+          "before": 11.75,
+          "after": 10,
+          "saved": 1.75
+        }
+      }
+    },
+    {
+      "name": "comfortable-bed-locked-narrow",
+      "t": 315.5,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 1,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 1,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 1,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 59.90000000000032,
+      "hunger": 46.830000000004304,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 0,
+        "cook": 0
+      },
+      "task": {
+        "act": "forage",
+        "phase": "go",
+        "place": "berries",
+        "timer": 0
+      },
+      "pos": [
+        567.5577367547971,
+        362.9198742641554
+      ],
+      "order": null,
+      "feelings": {},
+      "life": "這裡的休息\n目前精力59.9；到屋內使用木床鋪每秒恢復7精力。屋舍與床使用同一休息位置。\n現在沒有在此休息；家具放著不會直接恢復精力。\n手動歇到100後自主生活，自主歇息以85為目標。開始前先顧吃飯與手上搬運，可改令取消。\n目前沒有床鋪安睡感受；必須有床且實際休息完成才會得到。\n歇到精神恢復（一次）\n清除目前指派 · 自主生活目前已是自主生活\n\n按下才派工；休息一次到100完成回自主。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n這次到100後恢復自主生活；開始前先顧吃飯與搬運，可改令取消。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 7,
+          "afterRate": 10,
+          "before": 10,
+          "after": 7,
+          "saved": 3
+        },
+        "bed": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 7,
+          "afterRate": 11,
+          "before": 10,
+          "after": 6.5,
+          "saved": 3.5
+        }
+      }
+    },
+    {
+      "name": "garden-sown",
+      "t": 327,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 1,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 1,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 1,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 1,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 54.90000000000032,
+      "hunger": 45.22000000000446,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 1,
+        "cook": 0
+      },
+      "task": null,
+      "pos": [
+        270,
+        170
+      ],
+      "order": "farm",
+      "feelings": {},
+      "life": "這畦菜的現在\n生長中（已生長0秒，尚不能採收）\n庫存菜種1；青菜0/8，另有0份青菜在途（尚未入庫）。\n照料暫候：青菜尚在生長。\n收穫要實際搬回住處才入庫；生長與田間作物不算現成食物。\n持續照料菜園\n清除目前指派 · 自主生活\n\n按下才派工；菜園是持續照料，料理一鍋／吃飯一份完成即回自主。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n已持續指派照料菜園；直到清除指派。仍先顧吃睡與搬運。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 7,
+          "afterRate": 10,
+          "before": 10,
+          "after": 7,
+          "saved": 3
+        },
+        "bed": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 7,
+          "afterRate": 11,
+          "before": 10,
+          "after": 6.5,
+          "saved": 3.5
+        }
+      }
+    },
+    {
+      "name": "real-cooking",
+      "t": 393.5,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 1,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 1,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 1,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 1,
+        "wood": 1,
+        "seeds": 3,
+        "veg": 2,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 74.80000000000032,
+      "hunger": 61.91000000000537,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 2,
+        "cook": 0
+      },
+      "task": {
+        "act": "cook",
+        "phase": "do",
+        "place": "kitchen",
+        "timer": 0.25,
+        "recipe": "basic",
+        "manual": true
+      },
+      "pos": [
+        605,
+        365
+      ],
+      "order": "cook",
+      "feelings": {
+        "rested": 420.25
+      },
+      "life": "這座灶的現在\n可用：露天灶。\n目前：正在做基本熱飯（這一鍋）（已料理0.3/8秒）；完成時才扣食材、入庫與累積本領。\n現成料理共0/8份（共用容量）；基本熱飯0／蔬果拌食0／家常燉菜0。\n基本熱飯：這一鍋配方條件足夠；開始仍先顧吃睡及手上搬運。\n蔬果拌食：料理需要Lv1。\n家常燉菜：料理需要Lv2。\n\n青菜2＋木料1 → 3份；製作8秒，每份飽腹52。\n\n只做這一鍋基本熱飯吃一份基本熱飯沒有這份現成料理\n\n青菜1＋野果1 → 2份；製作5秒，每份飽腹38；不耗柴。\n\n只做這一鍋蔬果拌食料理需要Lv1吃一份蔬果拌食沒有這份現成料理\n\n青菜3＋木料2 → 2份；製作12秒，每份飽腹70、精力+6。\n\n只做這一鍋家常燉菜料理需要Lv2吃一份家常燉菜沒有這份現成料理\n清除目前指派 · 自主生活\n\n按下才派工；菜園是持續照料，料理一鍋／吃飯一份完成即回自主。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n只做這一鍋，完成後自主生活；仍先顧吃睡與手上搬運，可改令取消。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 7,
+          "afterRate": 10,
+          "before": 10,
+          "after": 7,
+          "saved": 3
+        },
+        "bed": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 7,
+          "afterRate": 11,
+          "before": 10,
+          "after": 6.5,
+          "saved": 3.5
+        }
+      }
+    },
+    {
+      "name": "hot-meal-made",
+      "t": 401.25,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 1,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 1,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 1,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 70.80000000000032,
+      "hunger": 60.825000000005474,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 2,
+        "cook": 2
+      },
+      "task": null,
+      "pos": [
+        605,
+        365
+      ],
+      "order": null,
+      "feelings": {
+        "rested": 420.25
+      },
+      "life": "這座灶的現在\n可用：露天灶。\n目前沒有正在料理的一鍋；灶有能力不代表正在煮。\n現成料理共3/8份（共用容量）；基本熱飯3／蔬果拌食0／家常燉菜0。\n基本熱飯：缺青菜2。\n蔬果拌食：缺青菜1。\n家常燉菜：料理需要Lv2。\n\n青菜2＋木料1 → 3份；製作8秒，每份飽腹52。\n\n只做這一鍋基本熱飯缺青菜2吃一份基本熱飯\n\n青菜1＋野果1 → 2份；製作5秒，每份飽腹38；不耗柴。\n\n只做這一鍋蔬果拌食缺青菜1吃一份蔬果拌食沒有這份現成料理\n\n青菜3＋木料2 → 2份；製作12秒，每份飽腹70、精力+6。\n\n只做這一鍋家常燉菜料理需要Lv2吃一份家常燉菜沒有這份現成料理\n清除目前指派 · 自主生活目前已是自主生活\n\n按下才派工；菜園是持續照料，料理一鍋／吃飯一份完成即回自主。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n只做這一鍋，完成後自主生活；仍先顧吃睡與手上搬運，可改令取消。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 7,
+          "afterRate": 10,
+          "before": 10,
+          "after": 7,
+          "saved": 3
+        },
+        "bed": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 7,
+          "afterRate": 11,
+          "before": 10,
+          "after": 6.5,
+          "saved": 3.5
+        }
+      }
+    },
+    {
+      "name": "hot-meal-used",
+      "t": 405.25,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 1,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 1,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 1,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 70.80000000000032,
+      "hunger": 100,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 2,
+        "cook": 2
+      },
+      "task": null,
+      "pos": [
+        445,
+        345
+      ],
+      "order": null,
+      "feelings": {
+        "rested": 420.25,
+        "warmMeal": 465.25
+      },
+      "life": "這座灶的現在\n可用：露天灶。\n目前沒有正在料理的一鍋；灶有能力不代表正在煮。\n現成料理共2/8份（共用容量）；基本熱飯2／蔬果拌食0／家常燉菜0。\n基本熱飯：缺青菜2。\n蔬果拌食：缺青菜1。\n家常燉菜：料理需要Lv2。\n\n青菜2＋木料1 → 3份；製作8秒，每份飽腹52。\n\n只做這一鍋基本熱飯缺青菜2吃一份基本熱飯現在已吃飽\n\n青菜1＋野果1 → 2份；製作5秒，每份飽腹38；不耗柴。\n\n只做這一鍋蔬果拌食缺青菜1吃一份蔬果拌食沒有這份現成料理\n\n青菜3＋木料2 → 2份；製作12秒，每份飽腹70、精力+6。\n\n只做這一鍋家常燉菜料理需要Lv2吃一份家常燉菜沒有這份現成料理\n清除目前指派 · 自主生活目前已是自主生活\n\n按下才派工；菜園是持續照料，料理一鍋／吃飯一份完成即回自主。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n只吃這一份，吃完自主生活；可改令取消。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 7,
+          "afterRate": 10,
+          "before": 10,
+          "after": 7,
+          "saved": 3
+        },
+        "bed": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 7,
+          "afterRate": 11,
+          "before": 10,
+          "after": 6.5,
+          "saved": 3.5
+        }
+      }
+    },
+    {
+      "name": "bed-in-use",
+      "t": 602.5,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 1,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 1,
+          "site": null
+        },
+        "bed": {
+          "stage": 2,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 1,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 85.65000000000033,
+      "hunger": 72.38500000000269,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 2,
+        "cook": 2
+      },
+      "task": {
+        "act": "rest",
+        "phase": "do",
+        "place": "hut",
+        "timer": 0
+      },
+      "pos": [
+        440,
+        225
+      ],
+      "order": "rest",
+      "feelings": {
+        "rested": 646.25,
+        "warmMeal": 465.25
+      },
+      "life": "這裡的休息\n目前精力85.7；到屋內使用舒適床鋪每秒恢復11精力。屋舍與床使用同一休息位置。\n正在屋內實際休息，每秒恢復11精力；這次目標100。\n手動歇到100後自主生活，自主歇息以85為目標。開始前先顧吃飯與手上搬運，可改令取消。\n上次實際安睡留下「床鋪安睡」，尚餘44秒；離床仍按原時效消退。\n歇到精神恢復（一次）\n清除目前指派 · 自主生活\n\n按下才派工；休息一次到100完成回自主。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n這次到100後恢復自主生活；開始前先顧吃飯與搬運，可改令取消。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 11,
+          "afterRate": 14,
+          "before": 6.5,
+          "after": 5,
+          "saved": 1.5
+        },
+        "bed": null
+      }
+    },
+    {
+      "name": "comfortable-bed-used",
+      "t": 604,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 1,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 1,
+          "site": null
+        },
+        "bed": {
+          "stage": 2,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 1,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 100,
+      "hunger": 72.17500000000271,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 2,
+        "cook": 2
+      },
+      "task": null,
+      "pos": [
+        440,
+        225
+      ],
+      "order": null,
+      "feelings": {
+        "rested": 664,
+        "warmMeal": 465.25
+      },
+      "life": "這裡的休息\n目前精力100；到屋內使用舒適床鋪每秒恢復11精力。屋舍與床使用同一休息位置。\n現在沒有在此休息；家具放著不會直接恢復精力。\n手動歇到100後自主生活，自主歇息以85為目標。開始前先顧吃飯與手上搬運，可改令取消。\n上次實際安睡留下「床鋪安睡」，尚餘60秒；離床仍按原時效消退。\n歇到精神恢復（一次）精神已滿，現在不需要歇息\n清除目前指派 · 自主生活目前已是自主生活\n\n按下才派工；休息一次到100完成回自主。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n這次到100後恢復自主生活；開始前先顧吃飯與搬運，可改令取消。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 11,
+          "afterRate": 14,
+          "before": 6.5,
+          "after": 5,
+          "saved": 1.5
+        },
+        "bed": null
+      }
+    },
+    {
+      "name": "bench-in-use-narrow",
+      "t": 715,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 1,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 1,
+          "site": null
+        },
+        "bed": {
+          "stage": 2,
+          "site": null
+        },
+        "bench": {
+          "stage": 1,
+          "site": null
+        },
+        "flowers": {
+          "stage": 1,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 1,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 64.80000000000044,
+      "hunger": 56.635000000004226,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 2,
+        "cook": 2
+      },
+      "task": {
+        "act": "leisure",
+        "phase": "do",
+        "place": "bench",
+        "timer": 0.25
+      },
+      "pos": [
+        352,
+        412
+      ],
+      "order": "leisure",
+      "feelings": {
+        "rested": 664,
+        "warmMeal": 465.25
+      },
+      "life": "屋前的小憩\n正在長凳實際小憩（已0.3/8秒）；未完成不給這次成果。\n到長凳閒坐完成8秒，恢復最多5精力並留下「坐得舒服」+2／60秒；旁邊有花，另有「看花小憩」+1／60秒。不增加產量／工作效率，同類不累加。\n目前沒有小憩留下的感受。\n到長凳看花（持續）\n清除目前指派 · 自主生活\n\n按下才派工；閒坐是持續指派，直到清除；吃睡仍優先，完成小憩才得感受。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n已持續指派長凳閒坐；開始下一活動時仍先顧急需吃睡，清除指派即可回自主。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 11,
+          "afterRate": 14,
+          "before": 6.5,
+          "after": 5,
+          "saved": 1.5
+        },
+        "bed": null
+      }
+    },
+    {
+      "name": "actual-comfort-cleared",
+      "t": 722.75,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 1,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 1,
+          "site": null
+        },
+        "bed": {
+          "stage": 2,
+          "site": null
+        },
+        "bench": {
+          "stage": 1,
+          "site": null
+        },
+        "flowers": {
+          "stage": 1,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 1,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 69.80000000000044,
+      "hunger": 55.55000000000433,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 2,
+        "cook": 2
+      },
+      "task": null,
+      "pos": [
+        352,
+        412
+      ],
+      "order": null,
+      "feelings": {
+        "rested": 664,
+        "warmMeal": 465.25,
+        "seated": 782.75,
+        "flowers": 782.75
+      },
+      "life": "屋前的小憩\n現在沒有坐在長凳；擺設本身不給精力或感受。\n到長凳閒坐完成8秒，恢復最多5精力並留下「坐得舒服」+2／60秒；旁邊有花，另有「看花小憩」+1／60秒。不增加產量／工作效率，同類不累加。\n最近實際小憩留下：坐得舒服尚餘60秒、看花小憩尚餘60秒。\n到長凳看花（持續）\n清除目前指派 · 自主生活目前已是自主生活\n\n按下才派工；閒坐是持續指派，直到清除；吃睡仍優先，完成小憩才得感受。清除會取消目前任何手動指派，手上物資仍要實際搬回。\n\n已清除目前手動指派；手上物資仍要搬回，之後自主生活。",
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 11,
+          "afterRate": 14,
+          "before": 6.5,
+          "after": 5,
+          "saved": 1.5
+        },
+        "bed": null
+      }
+    }
+  ],
+  "errors": []
+}
