@@ -11,7 +11,7 @@ import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRo
 import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS } from './data.mjs';
 import { SCORE, SCORE_POST } from './score-data.mjs';
 import { BAND, canDefend } from './band.mjs';
-import { boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE } from './fence.mjs';
+import { boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE, FENCE_FAC, finishFenceSite } from './fence.mjs';
 import { demandBoost, repairDamp } from './peace.mjs';
 import { coTrain, askStrong, pairBoost } from './mentor.mjs';
 import { comprehend } from './comprehend.mjs';
@@ -59,7 +59,7 @@ export function route(from, to) {
 }
 export const routeLength = (a, b) => { const p = route(a, b); let L = 0; for (let i = 1; i < p.length; i++) L += dist(NODES[p[i - 1]], NODES[p[i]]); return L; };
 
-export const facDef = (id) => FACILITIES.find((f) => f.id === id);
+export const facDef = (id) => (id === 'fence' ? FENCE_FAC : FACILITIES.find((f) => f.id === id)); // loop11 柵牆工地
 export const facStage = (s, id) => { const S = facDef(id).stages; return S[Math.min(s.fac[id]?.stage || 0, S.length - 1)]; };
 
 export function createState(seed = 1, heroSpec = null) {
@@ -199,6 +199,7 @@ export function togglePause(s, id) {
   log(s, `${facDef(id).name}工地${site.paused ? '暫停' : '復工'}`); return true;
 }
 function finishBuild(s, id) {
+  if (id === 'fence') { finishFenceSite(s); return; } // loop11
   const f = facDef(id), st = s.fac[id]; st.stage++; st.site = null; s.rep = (s.rep || 0) + REP.build;
   for (const d of s.ds) think(s, d, 'newLook'); log(s, `完工：${f.name}成了「${f.stages[st.stage].name}」${f.stages[st.stage].offers.length ? '，解鎖：' + f.stages[st.stage].offers.map((a) => ACTIVITIES[a].name).join('、') : ''}`);
 }
