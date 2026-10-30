@@ -259,7 +259,7 @@ function pick(s) {
   if (p.order === 'selfCare' && canDo(s, 'selfCare')) return 'selfCare';
   if (p.energy < 23) return 'rest';
   if (p.order && canDo(s, p.order,p.order==='cook'?p.cookRequest||'basic':undefined)) return p.order;
-  if(!p.order)advanceAutonomy(s,{start:id=>startBlueprint(s,id)});
+  if(!p.order){const goalAction=advanceAutonomy(s,{start:id=>startBlueprint(s,id)});if(goalAction)return goalAction;}
   if (p.personality === 'sociable' && canDo(s, 'chat') && p.hunger > 50 && p.energy > 45) return 'chat';
   if (p.personality === 'sociable' && canDo(s, 'talkHelper') && p.hunger > 50 && p.energy > 45) return 'talkHelper';
   if (p.personality === 'diligent' && canDo(s, 'care') && p.energy > 40) return 'care';
@@ -294,6 +294,7 @@ function begin(s, act) {
     return;
   }
   p.task = { act, phase: 'go', place, timer: 0 };
+  if(act==='rest'&&s.autonomy?.goal==='comfort'&&s.fac.bed.stage===2&&!s.autonomy.comfortRests)p.task.trial=true;
   if(act==='cook'&&s.mode==='solo'){const manual=!!p.cookRequest&&!recipeReason(s,p.cookRequest);p.task.recipe=manual?p.cookRequest:autoRecipe(s)||'basic';p.task.manual=manual;}
   if(act==='eat'&&s.mode==='solo'){
     const requested=p.foodRequest;
@@ -450,9 +451,10 @@ function tickQuarter(s,dt) {
     p.task = null; return;
   }
   if (t.act === 'rest') {
-    const before=p.energy, target=p.order==='rest'?100:85;
+    const before=p.energy, target=p.order==='rest'||t.trial?100:85;
+    if(t.trial)t.timer+=dt;
     p.energy = clamp(p.energy + restRate(s) * dt);
-    if (p.energy >= target){if(before<target&&s.fac.bed.stage&&at(p,PLACES.hut))feel(s,'rested');if(s.mode==='solo'&&p.order==='rest')p.order=null;p.task=null;}
+    if (p.energy >= target&&(!t.trial||t.timer>=3)){if((before<target||t.trial)&&s.fac.bed.stage&&at(p,PLACES.hut)){feel(s,'rested');if(s.autonomy&&s.fac.bed.stage===2)s.autonomy.comfortRests++;}if(s.mode==='solo'&&p.order==='rest')p.order=null;p.task=null;}
     return;
   }
   if (t.act === 'build') {
@@ -477,7 +479,9 @@ export function loadHomestead(json) {
     s.mode ??= 'legacy';
     s.autonomy ??= null;
     if(s.autonomy&&s.autonomy.warmMeals===undefined)s.autonomy.warmMeals=0;
+    if(s.autonomy&&s.autonomy.comfortRests===undefined)s.autonomy.comfortRests=0;
     if(!validAutonomy(s.autonomy,s.mode,s.t))return {ok:false,error:'自主生活目標不合法'};
+    if(s.person.task?.trial!==undefined&&(s.person.task.trial!==true||s.person.task.act!=='rest'||!s.autonomy||s.fac.bed?.stage!==2))return {ok:false,error:'床鋪試睡任務不合法'};
     s.subtick ??=0;
     if(!Number.isFinite(s.subtick)||s.subtick<0||s.subtick>=.25)return {ok:false,error:'時間餘量不合法'};
     if (!['solo','legacy'].includes(s.mode) || s.mode === 'solo' && (s.helper || s.visitor?.role && s.visitor.role !== 'visitor' || ['chat','talkHelper','gift','care','helperCare'].includes(s.person.order) || ['chat','talkHelper','gift','care','helperCare'].includes(s.person.task?.act))) return {ok:false,error:'生活模式不合法'};
