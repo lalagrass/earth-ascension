@@ -1,0 +1,26 @@
+{
+  "base": "fdfa6cc398343669dd6480847b6c19e39e1bc45d",
+  "scope": "Completed normal scene primitive calls, 3 day/palette fixtures; author automated, not normal UI",
+  "results": [
+    {
+      "t": 0,
+      "style": "natural",
+      "calls": 1003,
+      "identical": true
+    },
+    {
+      "t": 120,
+      "style": "moss",
+      "calls": 1033,
+      "identical": true
+    },
+    {
+      "t": 230,
+      "style": "ochre",
+      "calls": 1033,
+      "identical": true
+    }
+  ],
+  "round": "H40",
+  "currentSceneSha256": "667147b3d91f8579d5d95159565d6dcbe94cfc795dd73e252f35dd39d6679c70"
+}

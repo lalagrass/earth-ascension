@@ -1,0 +1,262 @@
+{
+  "engine": "154.0.8037.57",
+  "route": "normal UI zero grants, pause/4x/16x; AI not human",
+  "events": [
+    {
+      "name": "feet-1",
+      "t": 166.5,
+      "id": "garden",
+      "stage": 0,
+      "site": {
+        "need": {
+          "wood": 2
+        },
+        "delivered": {
+          "wood": 2
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 0.25,
+        "workNeed": 8,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "cap": 8,
+      "hunger": 41.69000000000227,
+      "energy": 73.6375
+    },
+    {
+      "name": "frame-1",
+      "t": 169,
+      "id": "garden",
+      "stage": 0,
+      "site": {
+        "need": {
+          "wood": 2
+        },
+        "delivered": {
+          "wood": 2
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 2.75,
+        "workNeed": 8,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "cap": 8,
+      "hunger": 41.340000000002306,
+      "energy": 72.51250000000003
+    },
+    {
+      "name": "finish-1",
+      "t": 171.75,
+      "id": "garden",
+      "stage": 0,
+      "site": {
+        "need": {
+          "wood": 2
+        },
+        "delivered": {
+          "wood": 2
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 5.5,
+        "workNeed": 8,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "cap": 8,
+      "hunger": 40.95500000000234,
+      "energy": 71.27500000000006
+    },
+    {
+      "name": "done-1",
+      "t": 174.25,
+      "id": "garden",
+      "stage": 1,
+      "site": null,
+      "cap": 8,
+      "hunger": 40.60500000000238,
+      "energy": 70.15000000000009
+    },
+    {
+      "name": "feet-1",
+      "t": 232,
+      "id": "kitchen",
+      "stage": 0,
+      "site": {
+        "need": {
+          "wood": 3
+        },
+        "delivered": {
+          "wood": 3
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 0.25,
+        "workNeed": 10,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "cap": 8,
+      "hunger": 58.520000000003165,
+      "energy": 51.1375000000001
+    },
+    {
+      "name": "frame-1",
+      "t": 235.25,
+      "id": "kitchen",
+      "stage": 0,
+      "site": {
+        "need": {
+          "wood": 3
+        },
+        "delivered": {
+          "wood": 3
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 3.5,
+        "workNeed": 10,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "cap": 8,
+      "hunger": 58.06500000000321,
+      "energy": 49.67500000000014
+    },
+    {
+      "name": "finish-1",
+      "t": 238.5,
+      "id": "kitchen",
+      "stage": 0,
+      "site": {
+        "need": {
+          "wood": 3
+        },
+        "delivered": {
+          "wood": 3
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 6.75,
+        "workNeed": 10,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "cap": 8,
+      "hunger": 57.610000000003254,
+      "energy": 48.212500000000176
+    },
+    {
+      "name": "done-1",
+      "t": 241.75,
+      "id": "kitchen",
+      "stage": 1,
+      "site": null,
+      "cap": 8,
+      "hunger": 57.1550000000033,
+      "energy": 46.75000000000021
+    },
+    {
+      "name": "feet-2",
+      "t": 337.75,
+      "id": "kitchen",
+      "stage": 1,
+      "site": {
+        "need": {
+          "wood": 4
+        },
+        "delivered": {
+          "wood": 4
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 0.25,
+        "workNeed": 12,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "cap": 8,
+      "hunger": 43.71500000000461,
+      "energy": 85.53750000000021
+    },
+    {
+      "name": "frame-2",
+      "t": 341.5,
+      "id": "kitchen",
+      "stage": 1,
+      "site": {
+        "need": {
+          "wood": 4
+        },
+        "delivered": {
+          "wood": 4
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 4,
+        "workNeed": 12,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "cap": 8,
+      "hunger": 43.19000000000466,
+      "energy": 83.85000000000025
+    },
+    {
+      "name": "finish-2",
+      "t": 345.5,
+      "id": "kitchen",
+      "stage": 1,
+      "site": {
+        "need": {
+          "wood": 4
+        },
+        "delivered": {
+          "wood": 4
+        },
+        "reserved": {
+          "wood": 0
+        },
+        "work": 8,
+        "workNeed": 12,
+        "crafted": 0,
+        "assemblyAt": null,
+        "paused": false
+      },
+      "cap": 8,
+      "hunger": 42.63000000000471,
+      "energy": 82.1000000000003
+    },
+    {
+      "name": "done-2",
+      "t": 349.5,
+      "id": "kitchen",
+      "stage": 2,
+      "site": null,
+      "cap": 8,
+      "hunger": 42.07000000000477,
+      "energy": 80.5000000000004
+    }
+  ],
+  "errors": []
+}
