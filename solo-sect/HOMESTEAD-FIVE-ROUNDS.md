@@ -24,3 +24,19 @@ source與非作者獨立390px fixture核：全域時間/指派的基本熱飯只
 來源核[AoE官方現場/常用命令](https://www.ageofempires.com/learn-to-play/match-goals-advanced-controls-xbox/)只借讓常用操作能直接執行的原則，不搬RTS或新controls；[W3C Understanding Error Identification](https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html)將拒絕原因用文字指出，作資訊一致性參考，不宣稱整體WCAG認證。Game Accessibility Guidelines指定頁本次讀取失敗，未當已核內容。外部作品未執行、無第三方code/素材依賴。
 
 後續候選（未實作/未算回合）：solo泛用吃飯可能每缺5飽腹就重耗一份、主建造/新局完成動態焦點落BODY；非作者已重現，須各先定小規格。其餘後兩輪按實際結果再定，不能預填任意新內容。
+
+## 第2輪H47事前規格：泛用吃飯真的只吃這一份
+
+H46走查＋非作者核：`setOrder('eat')`不帶foodRequest，完成不走manualEat收尾，飽腹90吃1份到100後order仍eat，約t46.75剛低於95又耗一份。現有指定餐已一次，但主入口沒說持續，與玩家日常自主管理不符。H47明確solo泛用eat與指定餐都一次完成即清此eat意圖，仍按原chooseFood挑現成菜或野果；未吃到不捏造收益/XP，急餓自動吃飯不可清其他工作意圖，H25泛用改令取消指定語義保留。legacy原持續eat保留，不新增request欄位/schema。
+
+單次完成同樣留下原『這一餐』實得收據；UI主按鈕說『吃一份現成食物』，無食物/滿腹以共用eatReason顯文字、ARIA，不加panel。共用eatReason與原canDo食物/飽腹條件等價，不把低需求或空庫存靠新數值掩飾。
+
+驗收：三成品/野果真扣1、截頂真恢復/感受/無XP、80秒內不因僅缺5再吃；auto急餓保原工程/農務意圖；取消/重複/吃途中存讀/改指定餐/legacy不變，無餐不產出。五固定seed各20000拍對pinned fdae舊核心＋觀察泛用一餐完成時顯式clear oracle，除新增收據log外world每拍同；dt/原正式長程矩陣不縮。正常UI新局實採野果搬回→按泛用一次→等飽腹低於95仍不重吃→既有工作/自主；原指定餐仍可用。鍵盤/390px/三入口條件同源及非作者review。
+
+來源：[CDDA官方Activities](https://docs.cataclysmdda.org/PLAYER_ACTIVITY.html)區分一般活動完成清除與multi_activity重複，finish要結束、取消不給成果；只借完成/重複分離原則，不搬C++、backlog、自動消耗區或硬核壓力。TinyLife EatAction頁本次讀失敗，不當已驗其行為。外部遊戲未執行，無第三方code/素材採用。
+
+### H46結果／第1輪完成
+
+root基線正常UI t186.5有灶/0菜，全域cook enabled、現場disabled，按全域world不變，仍留舊藍圖訊息。修後正常UI t0無灶→186.75缺菜2（390px三入口均disabled）→311.25真菜柴入庫ready→313.5manual鍋進行→321.25真成3餐/再次缺菜；paused raw/Enter重複/pointer無額外資源/XP，無溢出/pageerror。新FIVE1-UI.json與shots/homestead-primary-*，混4×/16×/暫停不是1×體驗時間。
+
+作者477/477（25.42秒），純UI無core數值/schema變更，不為鏡像接線再造unit。非作者source、獨立390px fixture四態（缺料/可做/共用容量不足/legacy），核可見原因/ARIA/無預扣/無溢出/pageerror並關browser；另核作者正常UI收據與真圖，未見阻擋。477/完整UI不是非作者重跑，不是人類輔具驗證。

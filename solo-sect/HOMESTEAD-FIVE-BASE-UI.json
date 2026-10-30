@@ -1,0 +1,22 @@
+{
+  "engine": "154.0.8037.57",
+  "route": "author normal UI zero grants, pause/16x; AI not human",
+  "result": {
+    "t": 186.5,
+    "stock": {
+      "berries": 1,
+      "wood": 0,
+      "seeds": 2,
+      "veg": 0,
+      "meal": 0,
+      "salad": 0,
+      "stew": 0,
+      "herbs": 0
+    },
+    "order": null,
+    "globalCookEnabled": true,
+    "onsiteCookEnabled": false,
+    "message": "藍圖已立，主角會搬料施工。"
+  },
+  "errors": []
+}
