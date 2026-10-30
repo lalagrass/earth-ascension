@@ -1,10 +1,10 @@
 {
   "loopVersion": 5,
-  "loopsDone": 14,
+  "loopsDone": 15,
   "retroEvery": 3,
   "lastRetro": "docs/RETRO-04.md",
   "lastCommit": "0e0a0ac",
-  "nextMilestone": "M13",
+  "nextMilestone": "M14",
   "inProgress": {
     "paused": [
       {

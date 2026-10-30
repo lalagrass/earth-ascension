@@ -1,11 +1,12 @@
-import { FIRE } from './data.mjs';
+import { FIRE, STRIKE } from './data.mjs';
+import { shapeOf } from './forms.mjs';
 // 畫面只讀 state，不改規則狀態。
 export const TILE = 20;
 
 const TILE_COLOR = {
   '.': '#9db978', ':': '#c9b48a', '_': '#b89a72', '#': '#6b4f3a',
   'T': '#9db978', 'R': '#a7ad8f', 'W': '#5b9bc4', 'B': '#9db978', '=': '#8a6a45',
-  ',': '#a3b77c', ';': '#b3b39a', 'F': '#9db978', 'f': '#9db978', 'g': '#8a6a45',
+  ',': '#a3b77c', ';': '#b3b39a', 'F': '#9db978', 'f': '#9db978', 'g': '#8a6a45', 'w': '#c4a77a',
 };
 
 // 依氣質分組上色：NF 綠、NT 紫、SJ 藍、SP 橙。
@@ -67,6 +68,10 @@ export function drawMap(ctx, map) {
         ctx.fillStyle = '#7a5631';
         ctx.fillRect(px + 2, py + 12, 3, 6); ctx.fillRect(px + 15, py + 10, 3, 8);
         ctx.save(); ctx.translate(px + 10, py + 14); ctx.rotate(0.5); ctx.fillRect(-9, -1.5, 18, 3); ctx.restore();
+      } else if (t === 'w') {
+        // 外功場：夯土地，邊上幾道踩痕。
+        ctx.fillStyle = '#c4a77a'; ctx.fillRect(px, py, TILE, TILE);
+        ctx.fillStyle = '#b09264'; ctx.fillRect(px + 3, py + 13, 5, 2); ctx.fillRect(px + 12, py + 5, 4, 2);
       } else if (t === 'g') {
         // 菜畦：翻過的土壟。
         ctx.fillStyle = '#6e5236';
@@ -254,23 +259,47 @@ export function drawBuild(ctx, state, PILE, blueprintOf) {
   }
 }
 
-// ---------- M6 同圖出招 ----------
-// 練功、切磋時在人旁邊畫出招的弧線，方向朝向木樁或對手；每 12 tick 換一個起手角度。
+// ---------- M6／M13 同圖出招 ----------
+// M13：每次出手（p.strike）依那一招的形狀畫：拳一道直線、掌一片扇形、手繞身一圈、腿遠處一道窄弧並前踏。熟練越高越大；畫面停留 LIFE tick 淡出。
+export function drawForm(ctx, cx, cy, ang, sh, color, alpha, px = TILE) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = color; ctx.fillStyle = color;
+  const R = sh.reach * px;
+  if (sh.shape === 'line') {
+    const ex = cx + Math.cos(ang) * R, ey = cy + Math.sin(ang) * R;
+    ctx.lineWidth = Math.max(3, sh.width * px); ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(cx + Math.cos(ang) * px * 0.3, cy + Math.sin(ang) * px * 0.3); ctx.lineTo(ex, ey); ctx.stroke();
+    ctx.beginPath(); ctx.arc(ex, ey, Math.max(4, sh.width * px * 1.4), 0, Math.PI * 2); ctx.fill();
+  } else if (sh.shape === 'sector') {
+    ctx.globalAlpha = alpha * 0.45;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, ang - sh.spread / 2, ang + sh.spread / 2); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha = alpha; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(cx, cy, R, ang - sh.spread / 2, ang + sh.spread / 2); ctx.stroke();
+  } else if (sh.shape === 'ring') {
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(cx, cy, R, ang - sh.spread / 2, ang + sh.spread / 2); ctx.stroke();
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(cx, cy, R * 0.65, ang + sh.spread / 2, ang - sh.spread / 2 + Math.PI * 2 * 0.6, false); ctx.stroke();
+  } else if (sh.shape === 'sweep') {
+    const sx = cx + Math.cos(ang) * sh.step * px, sy = cy + Math.sin(ang) * sh.step * px;
+    ctx.lineWidth = 4; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(sx, sy, R, ang - sh.spread / 2, ang + sh.spread / 2); ctx.stroke();
+    ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(sx + Math.cos(ang) * R * 0.8, sy + Math.sin(ang) * R * 0.8); ctx.stroke();
+  }
+  ctx.restore();
+}
+
 export function drawStrikes(ctx, state) {
   for (const p of state.people) {
-    if (p.act !== 'do' || !['drill', 'spar', 'fight'].includes(p.task.kind)) continue;
-    let tx = p.x + 1, ty = p.y;
-    if (p.task.kind === 'spar') { const o = state.people.find((x) => x.id === p.task.partner); tx = o.x; ty = o.y; }
-    if (p.task.kind === 'fight') { const e = state.enemies.find((x) => x.id === p.task.enemy); if (!e) continue; tx = e.x; ty = e.y; }
-    const ang = Math.atan2(ty - p.y, tx - p.x || 0.001);
-    const phase = Math.floor((state.tick + p.id.charCodeAt(1) * 5) / 12) % 3;
+    const st = p.strike;
+    if (!st) continue;
+    const age = state.tick - st.at;
+    if (age >= STRIKE.LIFE) continue;
     const cx = p.x * TILE + TILE / 2, cy = p.y * TILE + TILE / 2 - 2;
-    const r = 13 + phase * 2;
-    ctx.strokeStyle = p.task.kind === 'drill' ? 'rgba(255,250,215,1)' : 'rgba(190,40,30,0.9)';
-    ctx.lineWidth = 3.5;
-    ctx.beginPath(); ctx.arc(cx, cy, r, ang - 0.9 + phase * 0.3, ang + 0.4 + phase * 0.3); ctx.stroke();
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.arc(cx, cy, r + 4, ang - 0.5 + phase * 0.3, ang + 0.2 + phase * 0.3); ctx.stroke();
+    const color = st.kind === 'drill' ? 'rgb(255,248,210)' : 'rgb(190,40,30)';
+    drawForm(ctx, cx, cy, st.ang, shapeOf(st.form, st.size), color, 1 - age / STRIKE.LIFE);
   }
 }
 

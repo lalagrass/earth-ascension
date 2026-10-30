@@ -92,7 +92,7 @@ export function candidates(state, p, scorePois) {
       // 練功：定力高、有條理的人自己會去練；無聊時也想動一動。
       const move = drillMove(p);
       add({ kind: 'drill', obj: o.id, slot: i, spot, move, martial: true, label: `到${o.label}練${moveLabel(move)}` },
-        { need: u.fun * MARTIAL.DRILL_FUN, persona: MARTIAL.DRILL_BASE + 0.08 * (p.attrs.ding - 5) + diligence + insight(p) + DEFENSE.THREAT_DRILL * Math.min(2, state.threat ?? 0) });
+        { need: u.fun * MARTIAL.DRILL_FUN, persona: MARTIAL.DRILL_BASE + 0.08 * (p.attrs.ding - 5) + diligence + insight(p) + DEFENSE.THREAT_DRILL * Math.min(2, state.threat ?? 0) + (o.yard ? MARTIAL.YARD_PULL : 0) });
     }
     if (o.kind === 'bench') {
       add({ kind: 'sit', obj: o.id, slot: i, spot, label: `去${o.label}坐坐` },

@@ -337,6 +337,52 @@ export const flows = [
     },
   },
   {
+    // M13 外功場與招式演出：四門圖例兩兩分得開；地圖上出招的形狀跟招式一致；外功場完工後看得到。
+    name: 'm13-forms',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.fill('#seed', '4');
+      await page.click('#begin');
+      expect('A8 營造面板有外功場', (await page.locator('[data-blueprint="yard"]').count()) === 1);
+      await page.click('[data-person="p0"]');
+      await page.click('[data-tab="martial"]');
+      const px = await page.evaluate(() => [...document.querySelectorAll('[data-form-legend] canvas')].map((c) => [c.dataset.form, [...c.getContext('2d').getImageData(0, 0, c.width, c.height).data]]));
+      expect('A5 圖例有四門', px.length === 4, px.map((x) => x[0]).join());
+      let minDiff = 1;
+      for (let i = 0; i < px.length; i++) for (let j = i + 1; j < px.length; j++) {
+        const a = px[i][1], b = px[j][1];
+        let d = 0;
+        for (let k = 0; k < a.length; k += 4) if (Math.abs(a[k] - b[k]) + Math.abs(a[k + 1] - b[k + 1]) + Math.abs(a[k + 2] - b[k + 2]) > 60) d++;
+        minDiff = Math.min(minDiff, d / (a.length / 4));
+      }
+      expect('A5 四門兩兩像素差 ≥ 10%', minDiff >= 0.1, `最小 ${(100 * minDiff).toFixed(1)}%`);
+      expect('A5 會的招旁邊有小圖', (await page.locator('[data-form-preview="fist"]').count()) >= 1);
+      await shot('legend');
+      await page.click('[data-blueprint="yard"]');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().people.some((p) => p.strike && p.strike.kind === 'drill' && window.__sect.snapshot().tick - p.strike.at < 4), null, { timeout: 120000 });
+      await page.click('[data-speed="0"]');
+      const s = await snap(page);
+      const forms = { changquan: 'fist', kaishan: 'palm', liuyun: 'hand', poyue: 'palm', feiyan: 'kick', taichu: 'fist' };
+      const bad = s.people.filter((p) => p.strike && forms[p.strike.move] !== p.strike.form);
+      expect('A5 地圖上出招形狀跟招式一致', bad.length === 0 && s.people.some((p) => p.strike), s.people.filter((p) => p.strike).map((p) => `${p.name}:${p.strike.move}/${p.strike.form}`).join(' '));
+      await shot('drill');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().built.includes('yard'), null, { timeout: 240000 });
+      await page.click('[data-speed="0"]');
+      const t = await snap(page);
+      expect('A8 外功場完工：夯土格', t.map[22][44] === 'w');
+      const boxes = await page.evaluate(() => window.__sect.labels());
+      let overlap = 0;
+      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i], b = boxes[j];
+        if (a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h) overlap++;
+      }
+      expect('A8 畫面不疊字', overlap === 0, `${overlap} 對`);
+      await shot('yard');
+    },
+  },
+  {
     // M18 值日（暫停中、預設關）：紀事簿可以打開，名冊與人物卡看得到值日，可以指定。
     name: 'm18-duty',
     async run(page, expect, { shot }) {

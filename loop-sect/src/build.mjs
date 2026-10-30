@@ -115,8 +115,8 @@ export function placeSite(state, id) {
   if (state.sites.some((s) => s.bp === id) || state.built.includes(id)) return { ok: false, reason: '已經放過或蓋好了' };
   if (bp.requires && !state.built.includes(bp.requires)) return { ok: false, reason: `要先蓋好${blueprint(bp.requires).label}` };
   let cells = [], need, work;
-  if (bp.kind === 'farm') {
-    cells = bp.cells.map(([x, y]) => ({ x, y, to: 'g' }));
+  if (bp.kind === 'farm' || bp.kind === 'yard') {
+    cells = bp.cells.map(([x, y]) => ({ x, y, to: bp.kind === 'farm' ? 'g' : 'w' }));
     need = { wood: bp.cost.wood || 0, stone: bp.cost.stone || 0 };
     work = bp.work;
   } else if (bp.kind === 'fence') {
@@ -157,7 +157,7 @@ export function workSpot(state, site) {
   if (site.kind === 'fence') {
     const c = site.cells[site.cellsDone];
     targets = [[c.x, c.y - 1], [c.x, c.y + 1], [c.x - 1, c.y - 1], [c.x + 1, c.y - 1]];
-  } else if (site.kind === 'farm') {
+  } else if (site.kind === 'farm' || site.kind === 'yard') {
     targets = site.cells.flatMap((c) => [[c.x, c.y + 1], [c.x, c.y - 1]]);
   } else if (site.kind === 'hut' || site.kind === 'beds') {
     const b = blueprint(site.kind === 'beds' ? blueprint(site.bp).of : site.bp);
@@ -227,6 +227,9 @@ function completeSite(state, site) {
     }
   }
   if (bp.kind === 'upgrade') state.objects.find((o) => o.kind === bp.target).level = 1;
+  if (bp.kind === 'yard') for (const [x, y] of bp.dummies) {
+    state.objects.push({ id: `o${state.objects.length}`, kind: 'dummy', label: '外功場木人', yard: true, slots: [[x, y]], users: [null] });
+  }
   if (bp.kind === 'farm') for (const c of site.cells) state.plots.push({ id: `g${state.plots.length}`, x: c.x, y: c.y, stage: 'empty', at: state.tick, user: null });
   state.sites = state.sites.filter((s) => s !== site);
   state.built.push(site.bp);

@@ -7,6 +7,7 @@ import { raidSchedule, startRaids, stepEnemies, activeEnemies, spawnGuard } from
 import { newNests, nestOf, canLaunch, retreatReason } from './expedition.mjs';
 import { tally } from './chronicle.mjs';
 import { stepDuty } from './duty.mjs';
+import { stepStrike } from './forms.mjs';
 import { visitSchedule, visitChance, appeal, reasonText, shouldApprentice, foundingPlan, freeName } from './recruit.mjs';
 import { seedHolder, nextRand, randInt, hashString } from './rng.mjs';
 import { buildMap, walkable, nearestWalkable } from './map.mjs';
@@ -465,7 +466,7 @@ function comprehend(state, p, id) {
 function finish(state, p) {
   const t = p.task;
   const L = state.ledger;
-  if (t.kind === 'drill') comprehend(state, p, practice(state, p, t.move));
+  if (t.kind === 'drill') comprehend(state, p, practice(state, p, t.move, byId(state.objects, t.obj)?.yard ? MARTIAL.YARD_MUL : 1));
   if (t.kind === 'spar' && t.left <= 0) {
     const o = byId(state.people, t.partner);
     comprehend(state, p, practice(state, p, t.move, MARTIAL.SPAR_MUL));
@@ -486,6 +487,11 @@ function finish(state, p) {
     state.counts.sparDone = (state.counts.sparDone || 0) + 1;
   }
   if (t.kind === 'drill') state.counts.drillDone = (state.counts.drillDone || 0) + 1;
+  // M13-A6：外功場完工後的練完次數、其中在外功場的。
+  if (t.kind === 'drill' && state.built.includes('yard')) {
+    state.counts.drillAfterYard = (state.counts.drillAfterYard || 0) + 1;
+    if (byId(state.objects, t.obj)?.yard) state.counts.drillYard = (state.counts.drillYard || 0) + 1;
+  }
   if (t.kind === 'fight') {
     // 打退了才算實戰；自己退下的不算。
     const e = state.enemies.find((x) => x.id === t.enemy);
@@ -861,7 +867,7 @@ export function step(state) {
   stepExpedition(state);
   stepDuty(state);
   for (const p of [...state.people]) if (state.people.includes(p)) stepPerson(state, p);
-  for (const p of state.people) tally(p);
+  for (const p of state.people) { tally(p); stepStrike(state, p, strikeTarget(state, p)); }
   stepEnemies(state);
   // 新立起的牆或柵擋住了別人的路：沿原終點重找，找不到就放棄手上的事。
   while (state.reroute.length) {
@@ -872,6 +878,16 @@ export function step(state) {
     if (np) p.path = np;
     else { release(state, p); p.path = []; p.act = 'idle'; p.wait = 0; }
   }
+}
+
+// M13：出招朝向——練功朝木樁（站位右邊一格）、切磋朝對手、迎敵朝敵人。
+function strikeTarget(state, p) {
+  const t = p.task;
+  if (!t || p.act !== 'do') return null;
+  if (t.kind === 'drill') { const o = byId(state.objects, t.obj); return o ? { x: o.slots[0][0] + 1, y: o.slots[0][1] } : null; }
+  if (t.kind === 'spar') return byId(state.people, t.partner) ?? null;
+  if (t.kind === 'fight') return state.enemies.find((e) => e.id === t.enemy) ?? null;
+  return null;
 }
 
 // ---------- 玩家操作 ----------

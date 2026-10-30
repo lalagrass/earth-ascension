@@ -21,6 +21,8 @@ export function rosterFor(seed) {
 export function script(s, scenario = 'base') {
   if (s.tick === 0) setFocus(s, 'p1', 'wood');
   if (s.tick === 360) for (const id of FIRST_BLUEPRINTS) placeBlueprint(s, id);
+  // M13 yard：第 2 日放外功場。
+  if (scenario === 'yard' && s.tick === TICKS_PER_DAY + 360) placeBlueprint(s, 'yard');
   // M12 farm：第 2 日放菜園。
   if (scenario === 'farm' && s.tick === TICKS_PER_DAY + 360) placeBlueprint(s, 'garden');
   // M11 grow：第 2 日放西宿舍，蓋好就放擴建。
@@ -54,6 +56,7 @@ export function perSeed(s, ctx) {
   if (c.sparDone) bump(ctx, 'sparSeeds');
   bump(ctx, 'drillDone', c.drillDone || 0); bump(ctx, 'sparDone', c.sparDone || 0);
   bump(ctx, 'comprehend', c.comprehend || 0); bump(ctx, 'pointed', c.pointed || 0);
+  bump(ctx, 'drillAfterYard', c.drillAfterYard || 0); bump(ctx, 'drillYard', c.drillYard || 0);
   for (const p of s.people) {
     const g = p.attrs.wu >= 7 ? 'hi' : p.attrs.wu <= 4 ? 'lo' : null;
     if (!g) continue;
@@ -263,6 +266,7 @@ export function judge(S, scenario = 'base') {
   if (scenario === 'exp') return judgeExp(S, lines, failures);
   if (scenario === 'grow') return judgeGrow(S, lines, failures);
   if (scenario === 'farm') return judgeFarm(S, lines, failures);
+  if (scenario === 'yard') return judgeYard(S, lines, failures);
   const r = (a, b) => (S[a] || 0) / (S[b] || 1);
   const e = r('near:E:sum', 'near:E:n'), i = r('near:I:sum', 'near:I:n');
   // M2 起 M1-A7 改由 sim.test.mjs 的控制實驗驗證（只變外向軸）；此處只列出，因為整體距離受 N 軸與吃睡聚集干擾。
@@ -341,6 +345,17 @@ const judgeOf = (failures, id) => (PAUSED.has(id.split('-')[0]) ? { push: (x) =>
 function judgeFarm(S, lines, failures) {
   const all = (S['t:E'] || 0) + (S['t:I'] || 0);
   lines.push(`（參考）M12 菜園 5 日內完工 ${S['built:菜園完工'] || 0}/${S.seeds}；飢餓時間 ${(100 * (S.lowFood || 0) / all).toFixed(1)}%（${worstSeed(S, 'lowFood')}）；十日的主張在 report`);
+  return { lines, failures };
+}
+
+// M13-A6：外功場 5 日內完工 ≥ 8/12；完工後的練完次數裡在外功場的 ≥ 40%。
+function judgeYard(S, lines, failures) {
+  const done = S['built:外功場完工'] || 0;
+  const share = (S.drillYard || 0) / Math.max(1, S.drillAfterYard || 0);
+  const small = (S.drillAfterYard || 0) < 20 ? '（小樣本）' : '';
+  lines.push(`M13-A6 外功場 5 日內完工 ${done}/${S.seeds}（≥ 8）；完工後練完 ${S.drillAfterYard || 0} 次，在外功場 ${S.drillYard || 0} 次（${(100 * share).toFixed(0)}%，≥ 40%）${small}`);
+  if (done < Math.ceil(S.seeds * 8 / 12)) failures.push('M13-A6 外功場完工的種子太少');
+  if (share < 0.4) failures.push('M13-A6 完工後很少在外功場練');
   return { lines, failures };
 }
 

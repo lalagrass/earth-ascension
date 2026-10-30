@@ -8,9 +8,10 @@ import { effectText } from './skills.mjs';
 import { aff, stageOf, prestige } from './social.mjs';
 import { prowess, moveLabel, comprehendable, compChance } from './martial.mjs';
 import { titleOf, appeal, reasonText } from './recruit.mjs';
-import { SKILLS, MOVES, DEFENSE, FARM, DUTY } from './data.mjs';
+import { SKILLS, MOVES, DEFENSE, FARM, DUTY, FORMS } from './data.mjs';
 import { dutyOf, dutyText, setDuty, assignDuty, ROLE } from './duty.mjs';
-import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes, drawEnemies, drawNests, drawLabels, labelBoxes, drawPlots } from './render.mjs';
+import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes, drawEnemies, drawNests, drawLabels, labelBoxes, drawPlots, drawForm } from './render.mjs';
+import { formOf, shapeOf, sizeOf, period } from './forms.mjs';
 
 const $ = (s) => document.querySelector(s);
 const el = (tag, attrs = {}, ...kids) => {
@@ -151,6 +152,20 @@ function renderBuild() {
   expSeen = expKey();
 }
 
+// M13 招式譜：一招的形狀與現在的大小（人在左邊、朝右出手）。
+function formCanvas(form, v, attrs) {
+  const c = el('canvas', { width: 72, height: 44, class: 'form', ...attrs });
+  const g = c.getContext('2d');
+  g.fillStyle = '#efe4cc'; g.fillRect(0, 0, 72, 44);
+  g.fillStyle = '#3d2b1a'; g.beginPath(); g.arc(14, 22, 4, 0, Math.PI * 2); g.fill();
+  drawForm(g, 14, 22, 0, shapeOf(form, sizeOf(v)), '#a8432f', 1, 20);
+  return c;
+}
+const formPreview = (id, v) => formCanvas(formOf(id), v, { 'data-form-preview': formOf(id) });
+// 四門的圖例（熟練 30 時的樣子），讓人看地圖時認得出是哪一門。
+const formLegend = () => el('div', { class: 'forms', 'data-form-legend': '' }, ...Object.entries(FORMS).map(([id, f]) =>
+  el('figure', {}, formCanvas(id, 30, { 'data-form': id }), el('figcaption', {}, f.label))));
+
 // M10 紀事簿：分類篩選、最近 12 筆、門派統計。
 let evGroup = 'all';
 function renderChronicle() {
@@ -267,9 +282,10 @@ function renderPanel() {
       el('span', {}, o.name), el('b', {}, stageOf(state, p, o).label),
       el('small', {}, `我→他 ${aff(state, p, o).toFixed(0)}　他→我 ${aff(state, o, p).toFixed(0)}`)))),
     sec('martial', el('h2', {}, `武力 ${prowess(p).toFixed(1)}`),
-      ...moves.map((m) => el('div', { class: 'skill', 'data-move': m.id, title: m.desc }, el('span', {}, m.label),
+      ...moves.map((m) => el('div', { class: 'skill move', 'data-move': m.id, title: m.desc }, el('span', {}, m.label),
         el('span', { class: 'bar' }, el('i', { style: `width:${p.moves[m.id]}%` })), el('b', {}, p.moves[m.id].toFixed(0)),
-        el('small', {}, `威力 ${m.power}`))),
+        el('small', { title: `威力 ${m.power}` }, `${FORMS[formOf(m.id)].label}・${period(p.moves[m.id])} 刻一招`), formPreview(m.id, p.moves[m.id]))),
+      el('h2', {}, '四門出招'), formLegend(),
       el('p', { class: 'hint', 'data-comp': '' }, next.length
         ? `快開竅了：練功時每次約 ${Math.round(compChance(p) * 100)}% 領悟${next.map((m) => m.label).join('或')}`
         : `下一招：${MOVES.filter((m) => m.req && !(m.id in p.moves) && Object.keys(m.req).every((k) => k in p.moves)).map((m) => `${m.label}（${Object.entries(m.req).map(([k, v]) => `${moveLabel(k)} ${v}`).join('、')}）`).join('；') || '都會了'}`)),

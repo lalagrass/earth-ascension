@@ -183,6 +183,13 @@ export const BLUEPRINTS = [
     id: 'hearth2', label: '石灶台', desc: '把露天灶砌成石灶台：煮得快、一鍋多一份', kind: 'upgrade',
     target: 'hearth', cost: { stone: 4 }, work: 90,
   },
+  {
+    // M13：道館東邊一塊夯土地、三個木人。木人立在站位右邊一格（跟木樁同畫法）。
+    id: 'yard', label: '外功場', desc: '道館東邊一塊夯土地、三個木人；在這裡練功熟練多長兩成五', kind: 'yard',
+    cells: Array.from({ length: 24 }, (_, i) => [40 + (i % 8), 21 + Math.floor(i / 8)]),
+    dummies: [[41, 22], [43, 22], [45, 22]],
+    cost: { wood: 8, stone: 4 }, work: 100,
+  },
 ];
 // base soak 自 M3 起放的三張藍圖；之後加的藍圖不放進 base，免得改到舊 milestone 的量測。
 export const FIRST_BLUEPRINTS = ['fence-s', 'hut-e', 'hearth2'];
@@ -251,12 +258,12 @@ export const SOCIAL = {
 // ---------- M6 武學 ----------
 // 招式資料化：req 是領悟這招需要的前置熟練；attr 決定練這招的天賦倍率；power 給武力計算（M7 守禦用）。
 export const MOVES = [
-  { id: 'changquan', label: '長拳', attr: 'gen', power: 1, req: null, desc: '人人都會的基本拳路' },
-  { id: 'kaishan', label: '開山掌', attr: 'li', power: 2, req: { changquan: 30 }, desc: '以力催掌，勢大力沉' },
-  { id: 'liuyun', label: '流雲手', attr: 'shen', power: 2, req: { changquan: 30 }, desc: '借力卸力，手如行雲' },
-  { id: 'poyue', label: '破岳勢', attr: 'gen', power: 3.5, req: { kaishan: 50 }, desc: '開山掌練到極處，一勢破岳' },
-  { id: 'feiyan', label: '飛燕腿', attr: 'shen', power: 3, req: { liuyun: 50 }, desc: '流雲手的步法化成腿法' },
-  { id: 'taichu', label: '太初拳', attr: 'ding', power: 5, req: { kaishan: 40, liuyun: 40 }, desc: '剛柔並濟，返璞歸真' },
+  { id: 'changquan', form: 'fist', label: '長拳', attr: 'gen', power: 1, req: null, desc: '人人都會的基本拳路' },
+  { id: 'kaishan', form: 'palm', label: '開山掌', attr: 'li', power: 2, req: { changquan: 30 }, desc: '以力催掌，勢大力沉' },
+  { id: 'liuyun', form: 'hand', label: '流雲手', attr: 'shen', power: 2, req: { changquan: 30 }, desc: '借力卸力，手如行雲' },
+  { id: 'poyue', form: 'palm', label: '破岳勢', attr: 'gen', power: 3.5, req: { kaishan: 50 }, desc: '開山掌練到極處，一勢破岳' },
+  { id: 'feiyan', form: 'kick', label: '飛燕腿', attr: 'shen', power: 3, req: { liuyun: 50 }, desc: '流雲手的步法化成腿法' },
+  { id: 'taichu', form: 'fist', label: '太初拳', attr: 'ding', power: 5, req: { kaishan: 40, liuyun: 40 }, desc: '剛柔並濟，返璞歸真' },
 ];
 export const START_MOVES = ['changquan'];
 export const MARTIAL = {
@@ -274,6 +281,17 @@ export const MARTIAL = {
   SPAR_MIN_AFF: 0,       // loop 6 原本要相識才切磋；診斷時沒有切磋候選的原因 1560/4000 是「陌生」，改成以武會友
   PRESTIGE_PER_POWER: 4, // 名望 = 技能平均 + 武力 × 此值（強者吸引人）
   INSIGHT_WU: 0.03, INSIGHT_N: 0.12, // 琢磨招式：悟性與直覺帶來的練功動機（loop 8 加，見 ai.mjs insight）
+  YARD_MUL: 1.25,        // M13：在外功場木人練完，熟練多長
+  YARD_PULL: 0.2,        // M13：知道外功場練得好，願意多走幾步（loop 15 嘗試 1：沒有這項時只有 28% 在外功場練，開始練功時舊樁平均近 3.5 格）
+};
+// M13 出招演出：間隔 round(BASE × (1 − FAST × 熟練/100)) tick；大小 SIZE0 + SIZE_GAIN × 熟練/100；畫面停留 LIFE tick。
+export const STRIKE = { BASE: 16, FAST: 0.5, SIZE0: 0.8, SIZE_GAIN: 0.6, LIFE: 8 };
+// 四種形狀：reach 伸出幾格（× size）、spread 張角（度）、step 前踏幾格（只畫）。
+export const FORMS = {
+  fist: { label: '拳', shape: 'line', reach: 1.6, spread: 0, width: 0.2 },
+  palm: { label: '掌', shape: 'sector', reach: 1.3, spread: 100 },
+  hand: { label: '手', shape: 'ring', reach: 1.0, spread: 300 },
+  kick: { label: '腿', shape: 'sweep', reach: 2.2, spread: 50, step: 0.3 },
 };
 OBJECTS.push(
   { kind: 'dummy', label: '木樁', slots: [[36, 23]] },
