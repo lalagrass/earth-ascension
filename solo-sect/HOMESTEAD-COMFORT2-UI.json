@@ -1,0 +1,456 @@
+{
+  "engine": "154.0.8037.57",
+  "route": "normal UI no grants, pause/4x/16x; reference times are explicitly estimates; AI not human",
+  "events": [
+    {
+      "name": "first-house-payoff",
+      "t": 0,
+      "fac": {
+        "hut": {
+          "stage": 0,
+          "site": null
+        },
+        "garden": {
+          "stage": 0,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 0,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 0,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 68,
+      "hunger": 65,
+      "skills": {
+        "gather": 0,
+        "build": 0,
+        "farm": 0,
+        "cook": 0
+      },
+      "task": null,
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 3,
+          "afterRate": 6,
+          "before": 23.5,
+          "after": 11.75,
+          "saved": 11.75
+        },
+        "bed": null
+      }
+    },
+    {
+      "name": "repair-payoff",
+      "t": 100.75,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 0,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 0,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 0,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 26.349999999999994,
+      "hunger": 50.895000000001374,
+      "skills": {
+        "gather": 5,
+        "build": 15,
+        "farm": 0,
+        "cook": 0
+      },
+      "task": {
+        "act": "forage",
+        "phase": "go",
+        "place": "berries",
+        "timer": 0
+      },
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 6,
+          "afterRate": 9,
+          "before": 11.75,
+          "after": 8,
+          "saved": 3.75
+        },
+        "bed": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 6,
+          "afterRate": 7,
+          "before": 11.75,
+          "after": 10,
+          "saved": 1.75
+        }
+      }
+    },
+    {
+      "name": "wood-bed-payoff",
+      "t": 100.75,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 0,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 0,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 0,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 26.349999999999994,
+      "hunger": 50.895000000001374,
+      "skills": {
+        "gather": 5,
+        "build": 15,
+        "farm": 0,
+        "cook": 0
+      },
+      "task": {
+        "act": "forage",
+        "phase": "go",
+        "place": "berries",
+        "timer": 0
+      },
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 6,
+          "afterRate": 9,
+          "before": 11.75,
+          "after": 8,
+          "saved": 3.75
+        },
+        "bed": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 6,
+          "afterRate": 7,
+          "before": 11.75,
+          "after": 10,
+          "saved": 1.75
+        }
+      }
+    },
+    {
+      "name": "comfortable-bed-locked-narrow",
+      "t": 301.25,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 1,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 0,
+          "site": null
+        },
+        "bed": {
+          "stage": 1,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 1,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 24.900000000000176,
+      "hunger": 48.82500000000411,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 0,
+        "cook": 0
+      },
+      "task": {
+        "act": "forage",
+        "phase": "go",
+        "place": "berries",
+        "timer": 0
+      },
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 7,
+          "afterRate": 10,
+          "before": 10,
+          "after": 7,
+          "saved": 3
+        },
+        "bed": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 7,
+          "afterRate": 11,
+          "before": 10,
+          "after": 6.5,
+          "saved": 3.5
+        }
+      }
+    },
+    {
+      "name": "comfortable-bed-used",
+      "t": 514.5,
+      "fac": {
+        "hut": {
+          "stage": 1,
+          "site": null
+        },
+        "garden": {
+          "stage": 1,
+          "site": null
+        },
+        "herbGarden": {
+          "stage": 0,
+          "site": null
+        },
+        "workbench": {
+          "stage": 1,
+          "site": null
+        },
+        "bed": {
+          "stage": 2,
+          "site": null
+        },
+        "bench": {
+          "stage": 0,
+          "site": null
+        },
+        "flowers": {
+          "stage": 0,
+          "site": null
+        },
+        "kitchen": {
+          "stage": 1,
+          "site": null
+        },
+        "store": {
+          "stage": 0,
+          "site": null
+        },
+        "berries": {
+          "stage": 0
+        },
+        "wood": {
+          "stage": 0
+        },
+        "herbs": {
+          "stage": 0
+        }
+      },
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "energy": 100,
+      "hunger": 44.97000000000702,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 0,
+        "cook": 0
+      },
+      "task": null,
+      "comparison": {
+        "hut": {
+          "from": 30,
+          "to": 100,
+          "beforeRate": 11,
+          "afterRate": 14,
+          "before": 6.5,
+          "after": 5,
+          "saved": 1.5
+        },
+        "bed": null
+      }
+    }
+  ],
+  "errors": []
+}
