@@ -259,7 +259,7 @@ export const PRED = {
   tired: (c) => c.d.tired, wake: (c) => c.n.energy < CORE.wakeAt, hurt: (c) => c.d.hp < 40, hasFood: (c) => c.s.res.food > 0, foodLow: (c) => foodLow(c.s), starving: (c) => !!c.d.famished || c.n.hunger < 15, /* v1.7 遲滯：餓昏後吃到 50 才解除 */ hungry: (c) => c.n.hunger < 30,
   others: (c) => c.others.length > 0, pp: (c) => !!c.pp, dull: (c) => c.fun < 25, encourageOk: (c) => !!c.low, pending: (c) => !!c.d.pendingArt,
   btOk: (c) => !!c.bt && c.d.mood >= BREAK.moodMin && c.n.energy >= BREAK.energyMin, wexin: (c) => c.d.wexin > 0,
-  sparOk: (c) => facStage(c.s, 'yard').offers.includes('spar') && c.n.energy > 45 && c.others.some((o) => o.needs.energy > 45),
+  sparOk: (c) => (facStage(c.s, 'yard').offers.includes('spar') || !!c.s.wu7) /* loop15：領悟開時空地也能徒手過招 */ && c.n.energy > 45 && c.others.some((o) => o.needs.energy > 45),
   woodRoom: (c) => c.wood < c.s.cap.wood, stoneRoom: (c) => c.stone < c.s.cap.stone, shortWood: (c) => c.shortWood, shortStone: (c) => c.shortStone,
   ripe: (c) => c.s.plots.some((p) => p.st === 'ripe'), siteWork: (c) => !!c.site && (c.haul || siteReady(c.site[1])),
   nightRest: (c) => c.ph === 'night' && c.n.energy < 95, cookable: (c) => vegFree(c.s) >= 2 && c.s.res.food < 10,
@@ -408,7 +408,7 @@ function doTask(s, d, dt) {
       if (s.mentor && t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
       if (s.mentor && (t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) askStrong(s, d, byId(s, t.partner), grow, think, log); // loop8 請教
       if (s.wu7) comprehend(s, d, t.act, t.partner ? byId(s, t.partner) : null, think, log); // loop7 領悟
-      if (t.act === 'spar' && t.partner) { const p = byId(s, t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在木樁場切磋`); addMem(s, d, p, 'spar'); } }
+      if (t.act === 'spar' && t.partner) { const p = byId(s, t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在${facStage(s, 'yard').offers.includes('spar') ? '木樁場' : '空地上徒手'}切磋`); addMem(s, d, p, 'spar'); } }
       if (A.fun) d.needs.fun = clamp((d.needs.fun ?? 60) + A.fun, 0, 100);
       if (t.act === 'leisure') think(s, d, 'idled');
       if (t.act === 'forage') d.needs.fun = clamp((d.needs.fun ?? 60) + (d.personality.includes('playful') ? 20 : 8), 0, 100);

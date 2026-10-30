@@ -4,7 +4,7 @@ import { ARTS } from './data.mjs';
 import { artById, reqMissing, learnArt } from './arts.mjs';
 export const COMP = {
   gain: { train: 4, meditate: 6, spar: 3 }, // 每完成一次活動的領悟值
-  watch: 5,                                   // 切磋時觀摩對手一門功夫
+  watch: 10,                                   // 切磋時觀摩對手一門功夫
   wuMul: [0, 0.4, 0.7, 1, 1.4, 1.8],          // 悟性 1–5
   need: (a) => 60 + 40 * (a.grade || 0),      // 門檻：品階越高越難悟
 };
