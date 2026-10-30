@@ -1,0 +1,169 @@
+import { QUESTIONS, ATTRS, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, TEMPLATES, AXES, TRAIT_RULES, TICKS_PER_SECOND } from './data.mjs';
+import { axesFromAnswers, typeOf, validateAttrs, traitsOf } from './person.mjs';
+import { createWorld, step, clock, companionsFor } from './sim.mjs';
+import { TILE, drawMap, drawPois, drawPeople, drawDaylight } from './render.mjs';
+
+const $ = (s) => document.querySelector(s);
+const el = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'on') for (const [ev, fn] of Object.entries(v)) e.addEventListener(ev, fn);
+    else if (k === 'class') e.className = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids) e.append(k);
+  return e;
+};
+const TRAIT_LABEL = Object.fromEntries(TRAIT_RULES.map((t) => [t.id, t]));
+const FACTOR_LABEL = { base: '基礎', social: '熱鬧', quiet: '清靜', novelty: '新奇', familiar: '熟悉', routine: '輪替', noise: '隨機' };
+
+// ---------- 開局 ----------
+const draft = { answers: Array(QUESTIONS.length).fill(null), attrs: { gen: 5, wu: 5, shen: 5, li: 5, ding: 5 }, template: null, axesOverride: null };
+
+function axesNow() {
+  return draft.axesOverride ?? axesFromAnswers(draft.answers);
+}
+
+function renderQuiz() {
+  const ol = $('#quiz');
+  ol.replaceChildren(...QUESTIONS.map((q, i) => el('li', {}, q.q, el('div', { class: 'opts' },
+    ...q.a.map(([text], j) => el('button', {
+      class: draft.answers[i] === j ? 'on' : '', 'data-q': i, 'data-a': j,
+      on: { click: () => { draft.answers[i] = j; draft.axesOverride = null; draft.template = null; renderAll(); } },
+    }, text))))));
+}
+
+function renderAttrs() {
+  const sum = Object.values(draft.attrs).reduce((s, v) => s + v, 0);
+  $('#attr-total').textContent = `${ATTR_TOTAL}，剩 ${ATTR_TOTAL - sum}`;
+  $('#attrs').replaceChildren(...ATTRS.map((a) => {
+    const v = draft.attrs[a.id];
+    const bump = (d) => () => {
+      const nv = v + d;
+      if (nv < ATTR_MIN || nv > ATTR_MAX || (d > 0 && sum >= ATTR_TOTAL)) return;
+      draft.attrs[a.id] = nv; draft.template = null; renderAll();
+    };
+    return el('div', { class: 'attr-row', title: a.desc },
+      el('span', {}, a.label), el('span', { class: 'bar' }, el('i', { style: `width:${v * 10}%` })),
+      el('b', { 'data-attr': a.id }, String(v)),
+      el('button', { on: { click: bump(-1) }, 'aria-label': `${a.label}減一` }, '−'),
+      el('button', { on: { click: bump(1) }, 'aria-label': `${a.label}加一` }, '+'));
+  }));
+  const v = validateAttrs(draft.attrs);
+  $('#attr-msg').textContent = v.ok ? '' : v.reason;
+}
+
+function renderTemplates() {
+  $('#templates').replaceChildren(...TEMPLATES.map((t) => el('button', {
+    class: draft.template === t.id ? 'on' : '', 'data-template': t.id,
+    on: { click: () => { draft.template = t.id; draft.attrs = { ...t.attrs }; draft.axesOverride = { ...t.axes }; $('#name').value = t.name; renderAll(); } },
+  }, el('b', {}, `${t.label}（靈感：${t.inspired}）`), t.blurb)));
+}
+
+function axisBars(axes) {
+  return AXES.map((a) => el('div', { class: 'axis' }, el('span', {}, a.negLabel),
+    el('span', { class: 'track' }, el('i', { style: `left:${(axes[a.id] + 1) * 50}%` })), el('span', {}, a.posLabel)));
+}
+
+function renderPreview() {
+  const axes = axesNow();
+  const traits = traitsOf(axes, draft.attrs);
+  $('#preview').replaceChildren(el('div', { class: 'type', id: 'type' }, typeOf(axes)), ...axisBars(axes),
+    el('div', { class: 'chips' }, ...traits.map((t) => el('span', { title: TRAIT_LABEL[t].desc }, TRAIT_LABEL[t].label))));
+  $('#begin').disabled = !validateAttrs(draft.attrs).ok;
+}
+
+function renderAll() { renderQuiz(); renderAttrs(); renderTemplates(); renderPreview(); }
+
+// ---------- 遊戲 ----------
+let state = null;
+let speed = 1;
+let selected = null;
+let acc = 0;
+let last = 0;
+let bg = null;
+
+function begin() {
+  const seed = Number($('#seed').value) || 1;
+  const me = { name: $('#name').value.trim() || '無名', axes: axesNow(), attrs: { ...draft.attrs }, template: draft.template, protagonist: true };
+  state = createWorld({ seed, people: [me, ...companionsFor(seed, draft.template)] });
+  selected = state.people[0].id;
+  $('#start').classList.add('hidden');
+  $('#game').classList.remove('hidden');
+  bg = document.createElement('canvas');
+  bg.width = 1280; bg.height = 800;
+  const b = bg.getContext('2d');
+  drawMap(b, state.map);
+  drawPois(b, state.pois);
+  $('#roster').replaceChildren(...state.people.map((p) => el('button', { 'data-person': p.id, on: { click: () => { selected = p.id; renderPanel(); } } }, p.name)));
+  renderPanel();
+  last = performance.now();
+  requestAnimationFrame(frame);
+}
+
+function setSpeed(s) {
+  speed = s;
+  document.querySelectorAll('[data-speed]').forEach((b) => b.classList.toggle('on', Number(b.dataset.speed) === s));
+}
+
+let panelAt = 0;
+function frame(now) {
+  const dt = Math.min(0.25, (now - last) / 1000);
+  last = now;
+  acc += dt * TICKS_PER_SECOND * speed;
+  while (acc >= 1) { step(state); acc -= 1; }
+  const ctx = $('#view').getContext('2d');
+  ctx.drawImage(bg, 0, 0);
+  drawPeople(ctx, state, selected);
+  const c = clock(state);
+  drawDaylight(ctx, 1280, 800, c.hour, c.minute);
+  $('#clock').textContent = `第 ${c.day} 日 ${String(c.hour).padStart(2, '0')}:${String(c.minute).padStart(2, '0')}`;
+  if (now - panelAt > 250) { renderPanel(); panelAt = now; }
+  requestAnimationFrame(frame);
+}
+
+function renderPanel() {
+  const p = state.people.find((x) => x.id === selected);
+  if (!p) return;
+  const attrs = ATTRS.map((a) => `${a.label} ${p.attrs[a.id]}`).join('　');
+  const why = p.why.map((c) => el('tr', {}, el('td', {}, c.label), el('td', {}, c.score.toFixed(2)),
+    el('td', { class: 'f' }, Object.entries(c.f).filter(([, v]) => Math.abs(v) >= 0.05).map(([k, v]) => `${FACTOR_LABEL[k] ?? k}${v > 0 ? '+' : ''}${v.toFixed(1)}`).join(' '))));
+  $('#panel').replaceChildren(
+    el('h3', { 'data-panel-name': p.name }, `${p.name}${p.protagonist ? '（你）' : ''}`),
+    el('div', { class: 'type' }, p.type), ...axisBars(p.axes),
+    el('p', {}, attrs),
+    el('div', { class: 'chips' }, ...p.traits.map((t) => el('span', { title: TRAIT_LABEL[t].desc }, TRAIT_LABEL[t].label))),
+    el('h2', {}, '現在'), el('p', { id: 'now' }, p.actLabel),
+    el('h2', {}, '為什麼（前三個念頭）'), el('table', { class: 'why' }, ...why));
+}
+
+function pickAt(ev) {
+  const r = ev.target.getBoundingClientRect();
+  const x = ((ev.clientX - r.left) / r.width) * 1280 / TILE - 0.5;
+  const y = ((ev.clientY - r.top) / r.height) * 800 / TILE - 0.5;
+  let best = null, bd = 1.2;
+  for (const p of state.people) {
+    const d = Math.hypot(p.x - x, p.y - 0.4 - y);
+    if (d < bd) { bd = d; best = p; }
+  }
+  if (best) { selected = best.id; renderPanel(); }
+}
+
+renderAll();
+$('#begin').addEventListener('click', begin);
+document.querySelectorAll('[data-speed]').forEach((b) => b.addEventListener('click', () => setSpeed(Number(b.dataset.speed))));
+$('#view').addEventListener('click', pickAt);
+addEventListener('keydown', (e) => {
+  if (e.code === 'Space' && state && e.target.tagName !== 'INPUT') { e.preventDefault(); setSpeed(speed ? 0 : 1); }
+});
+
+// 唯讀遙測：給 headless 檢查用，回傳副本。
+window.__sect = {
+  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois })) : null),
+  speed: () => speed,
+  selected: () => selected,
+  tileToClient: (x, y) => {
+    const r = $('#view').getBoundingClientRect();
+    return { x: r.left + ((x + 0.5) * TILE / 1280) * r.width, y: r.top + ((y + 0.1) * TILE / 800) * r.height };
+  },
+};

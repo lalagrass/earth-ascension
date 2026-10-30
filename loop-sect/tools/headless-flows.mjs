@@ -1,0 +1,73 @@
+// headless 流程：每個 milestone 加自己的玩家操作與斷言。只用正常 UI 操作，遙測只讀。
+const snap = (page) => page.evaluate(() => window.__sect.snapshot());
+const wait = (page, ms) => page.waitForTimeout(ms);
+
+async function clickPerson(page, idx) {
+  const s = await snap(page);
+  const p = s.people[idx];
+  const pt = await page.evaluate(([x, y]) => window.__sect.tileToClient(x, y), [p.x, p.y]);
+  await page.mouse.click(pt.x, pt.y);
+  return p;
+}
+
+export const flows = [
+  {
+    name: 'm1-create',
+    async run(page, expect, { shot }) {
+      // 問卷：每題選第一個選項。
+      const n = await page.locator('#quiz li').count();
+      for (let i = 0; i < n; i++) await page.click(`[data-q="${i}"][data-a="0"]`);
+      const type = await page.textContent('#type');
+      expect('A3 問卷得出類型', /^[EI][NS][FT][PJ]$/.test(type), type);
+      // 配點：根骨 +1 會超過總和被擋，先減悟性再加根骨。
+      await page.click('[aria-label="根骨加一"]');
+      expect('A4 超過總和不能加', (await page.textContent('[data-attr="gen"]')) === '5');
+      await page.click('[aria-label="悟性減一"]');
+      await page.click('[aria-label="根骨加一"]');
+      expect('A4 配點可調', (await page.textContent('[data-attr="gen"]')) === '6');
+      await page.fill('#name', '測試者');
+      await shot('start');
+      await page.click('#begin');
+      await page.click('[data-speed="4"]');
+      const a = await snap(page);
+      expect('A8 三人上山', a.people.length === 3, String(a.people.length));
+      await wait(page, 2500);
+      const b = await snap(page);
+      expect('A8 時間有走', b.tick > a.tick + 100, `${a.tick}→${b.tick}`);
+      const moved = b.people.filter((p, i) => Math.hypot(p.x - a.people[i].x, p.y - a.people[i].y) > 0.5).length;
+      expect('A8 人物在動', moved >= 2, `${moved}/3 移動`);
+      await page.click('[data-speed="0"]');
+      const target = await clickPerson(page, 1);
+      await wait(page, 300);
+      const name = await page.getAttribute('[data-panel-name]', 'data-panel-name');
+      expect('A8 點人物出人物卡', name === target.name, `${name} vs ${target.name}`);
+      const rows = await page.locator('#panel .why tr').count();
+      expect('A8 人物卡有理由', rows >= 1, `${rows} 行`);
+      const me = (await snap(page)).people[0];
+      expect('主角用玩家的名字與配點', me.name === '測試者' && me.attrs.gen === 6 && me.attrs.wu === 4);
+      await shot('game');
+    },
+  },
+  {
+    name: 'm1-template',
+    async run(page, expect) {
+      await page.click('[data-template="huangrong"]');
+      expect('模板帶入類型', (await page.textContent('#type')) === 'ENTP');
+      await page.click('#begin');
+      const s = await snap(page);
+      expect('模板主角天賦', s.people[0].attrs.wu === 10 && s.people[0].template === 'huangrong');
+      expect('同住者不重複模板', s.people.slice(1).every((p) => p.template !== 'huangrong'));
+    },
+  },
+  {
+    name: 'm1-narrow',
+    viewport: { width: 390, height: 844 },
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="guojing"]');
+      await page.click('#begin');
+      const w = await page.evaluate(() => document.documentElement.scrollWidth);
+      expect('窄螢幕無橫向捲動', w <= 390, `scrollWidth ${w}`);
+      await shot('narrow');
+    },
+  },
+];

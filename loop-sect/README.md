@@ -1,0 +1,25 @@
+# 荒山門派（loop-sect）
+
+Claude 以 loop engineering 方式獨立開發的門派生活變體，和 GPT／Grok／Gemini／荒居的獨立分支並列，不改它們的目錄，也不改 dev 的共用程式與 CI。
+
+- 開發方式：[LOOP.md](LOOP.md)（每輪七步與自我審查清單）
+- 路線：[MILESTONES.md](MILESTONES.md)（十個 milestone 與狀態）
+- 每輪紀錄：[docs/LOOP_LOG.md](docs/LOOP_LOG.md)；每輪規格在 `docs/specs/`
+- 參考與取捨：[docs/REFERENCES.md](docs/REFERENCES.md)
+
+## 試玩
+
+```sh
+python3 -m http.server 8790 --directory loop-sect
+# 開 http://127.0.0.1:8790/
+```
+
+原生 ES module＋Canvas 2D，不需安裝套件、不需外網。沒有存檔（擁有人指示）。
+
+## 檢查
+
+```sh
+node --test loop-sect/test/*.test.mjs   # 規則
+node loop-sect/tools/soak.mjs           # 12 種子 × 3 日不變量與個性統計
+node loop-sect/tools/headless.mjs       # Playwright Chromium 正常操作流程，截圖寫到 loop-sect/.evidence/（不進 git）
+```
