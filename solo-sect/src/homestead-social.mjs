@@ -1,3 +1,4 @@
+import {ALLY_USE} from './homestead-expedition.mjs';
 import {move} from './homestead-spatial.mjs';
 import {HOME,PLACES,LIFE_ACTIONS as ACTIONS} from './homestead-life-data.mjs';
 import {RECIPES} from './homestead-content.mjs';
@@ -19,6 +20,7 @@ export function socialComplete(s,act){const c=s.frontier?.companion;if(!c||socia
  if(act==='cooperate'){c.coopDay=s.day;c.helpPending=true;clearTask(s,c);log(s,'林舟同意幫忙一件砍柴搬回；尚未發出木料。');return true;}return false;
 }
 export function tickCompanion(s,dt){const c=s.frontier?.companion;if(!c)return;
+ const trip=s.frontier.trip;if(trip?.joined&&trip.phase!=='home'){c.hunger=clamp(c.hunger-.14*dt);if(!c.allowed||c.hunger<38||c.energy<24){trip.joined=false;c.leaving=true;clearTask(s,c);return;}c.present=true;c.leaving=false;clearTask(s,c);move(s,c,trip.phase==='return'?MEETING:ALLY_USE,dt,65);return;}
  const slot=s.day>=5&&s.t%240>=80&&s.t%240<200&&c.allowed&&s.frontier.threat.phase==='quiet';
  if(!c.present){if(!slot)return;c.present=true;c.leaving=false;c.pos=[...EXIT];clearTask(s,c);log(s,'林舟沿村路走來，是否交流由你決定。');}
  c.hunger=clamp(c.hunger-.14*dt);if(!slot)c.leaving=true;

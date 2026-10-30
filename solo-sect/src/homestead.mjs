@@ -1,3 +1,4 @@
+import {EXPEDITION_ACTIONS,expeditionReason,expeditionTarget,expeditionPlan,expeditionComplete,tickExpedition} from './homestead-expedition.mjs';
 import {DAY,HOME,PLACES,LIFE_ACTIONS} from './homestead-life-data.mjs';
 import {SOCIAL_ACTIONS,MEETING,PAIR_POINT,socialReason,socialComplete,socialPlan,tickCompanion,validSocialTask} from './homestead-social.mjs';
 import {MARTIAL_ACTIONS,martialReason,martialPlan,martialTarget,martialComplete,validMartialTask} from './homestead-martial.mjs';
@@ -50,7 +51,7 @@ export const FACILITIES = {
 };
 export const BUILDABLE = ['hut', 'garden', 'herbGarden', 'kitchen', 'store', 'bench', 'flowers', 'bed','workbench'];
 export const buildables=s=>s.frontier?[...BUILDABLE,'fence']:BUILDABLE;
-export const ACTIONS = {...LIFE_ACTIONS,...MARTIAL_ACTIONS,...SOCIAL_ACTIONS};
+export const ACTIONS = {...LIFE_ACTIONS,...MARTIAL_ACTIONS,...SOCIAL_ACTIONS,...EXPEDITION_ACTIONS};
 const clamp = (x) => Math.max(0, Math.min(100, x));
 const pos = (place) => place === 'home' ? HOME : PLACES[place];
 const jobPoint=(s,id)=>{const f=s.fac[id],r=projectRecipe(s,id);return r?.craft&&f.site?.crafted<r.craft?PLACES.workbench:PLACES[id];};
@@ -122,14 +123,18 @@ export function cancelTask(s, p = s.person, owner = 'person') {
   freeLease(s, p, owner); p.task = null;
 }
 export function setOrder(s, act, scope) {
+  if(Object.hasOwn(EXPEDITION_ACTIONS,act||'')&&expeditionReason(s,act))return false;
   if(ACTIONS[act]?.internal||ACTIONS[act]?.frontierOnly&&!s.frontier)return false;
   if (act !== null && (typeof act!=='string'||!Object.hasOwn(ACTIONS,act) || s.mode === 'solo' && ['chat','talkHelper','gift','care','helperCare'].includes(act))) return false;
   const selected=s.autonomy?(scope??'once'):'repeat';if(!['once','repeat'].includes(selected)||ACTIONS[act]?.frontierOnly&&selected!=='once')return false;
   if (s.person.order === act && !(act==='eat'&&s.person.foodRequest)&&!(act==='leisure'&&s.person.leisureRequest)&&(!s.autonomy||s.person.orderScope===selected)) return true;
   const target=act==='build'&&selected==='once'?(nextProject(s)||buildables(s).find(id=>s.fac[id].site&&!s.fac[id].site.paused)):null;
   if(act==='build'&&selected==='once'&&!target)return false;
+  if(act==='returnTrip'&&s.frontier?.trip){s.frontier.trip.phase='return';s.frontier.trip.deferred=true;}
+  if(s.frontier?.trip?.phase!=='home'&&s.frontier?.trip&&!Object.hasOwn(EXPEDITION_ACTIONS,act||'')){s.frontier.trip.phase='return';s.frontier.trip.deferred=true;}
   cancelTask(s);prepareOrder(s,selected);s.person.order = act;s.person.foodRequest=null;s.person.cookRequest=s.mode==='solo'&&act==='cook'?'basic':null;if(s.autonomy)s.person.onceProject=target||null;return true;
 }
+export function retreatExpedition(s){if(!s.frontier||s.frontier.trip.phase==='home')return false;s.frontier.trip.phase='return';s.frontier.trip.deferred=true;cancelTask(s);clearOnce(s);return true;}
 export function requestLeisure(s,id){if(!s.autonomy||!Object.hasOwn(LEISURE,id)||!availableLeisure(s,id))return false;if(s.person.order==='leisure'&&s.person.leisureRequest===id)return true;if(s.person.order==='leisure')setOrder(s,null);if(!setOrder(s,'leisure','once'))return false;s.person.leisureRequest=id;return true;}
 export function requestRecipe(s,id){
   if(s.mode!=='solo'||recipeReason(s,id))return false;
@@ -181,8 +186,8 @@ export function askHelperLeave(s) {
 
 const readyProjects=s=>Object.keys(s.fac).filter(id=>{if(!buildables(s).includes(id))return false;const v=s.fac[id].site;return v&&!v.paused&&(Object.keys(v.need).some(k=>v.delivered[k]+v.reserved[k]<v.need[k]&&s.stock[k]>0)||Object.keys(v.need).every(k=>v.delivered[k]>=v.need[k]));});
 export function nextProject(s){const ids=readyProjects(s);if(s.autonomy&&s.person.order==='build'&&s.person.orderScope==='once'&&s.person.onceProject)return ids.includes(s.person.onceProject)?s.person.onceProject:null;return ids.includes(s.focusProject)?s.focusProject:ids[0]||null;}
-const frontierReason=(s,act)=>Object.hasOwn(SOCIAL_ACTIONS,act)?socialReason(s,act):martialReason(s,act);
-const frontierTarget=(s,act)=>Object.hasOwn(SOCIAL_ACTIONS,act)?(['spar','teach'].includes(act)?PAIR_POINT:MEETING):martialTarget(s,act);
+const frontierReason=(s,act)=>Object.hasOwn(EXPEDITION_ACTIONS,act)?expeditionReason(s,act):Object.hasOwn(SOCIAL_ACTIONS,act)?socialReason(s,act):martialReason(s,act);
+const frontierTarget=(s,act)=>Object.hasOwn(EXPEDITION_ACTIONS,act)?expeditionTarget(s,act):Object.hasOwn(SOCIAL_ACTIONS,act)?(['spar','teach'].includes(act)?PAIR_POINT:MEETING):martialTarget(s,act);
 function canDo(s, act, recipeId='basic') {
   if(ACTIONS[act]?.frontierOnly)return !frontierReason(s,act);
   if (s.mode === 'solo' && ['chat','talkHelper','gift','care','helperCare'].includes(act)) return false;
@@ -276,6 +281,7 @@ export function supplyTargets(s) {
 function pick(s) {
   const p = s.person, target = supplyTargets(s);
   if (p.carry) return 'return';
+  const expedition=expeditionPlan(s);if(expedition)return expedition;
   if(p.foodRequest&&s.stock[RECIPES[p.foodRequest].output]<1){p.foodRequest=null;p.order=null;}
   if (p.hunger < 38 && canDo(s, 'eat')) return 'eat';
   if (p.hunger < 38 && canDo(s, 'forage')) return 'forage';
@@ -336,7 +342,7 @@ function travel(s,p,target,dt){return move(s,p,target,dt);}
 
 function complete(s, t) {
   const p = s.person;
-  if(Object.hasOwn(SOCIAL_ACTIONS,t.act))socialComplete(s,t.act);else if(ACTIONS[t.act]?.frontierOnly)martialComplete(s,t.act);
+  if(Object.hasOwn(EXPEDITION_ACTIONS,t.act)){expeditionComplete(s,t.act);if(s.frontier.trip.phase==='home'&&Object.hasOwn(EXPEDITION_ACTIONS,p.order||''))clearOnce(s);}else if(Object.hasOwn(SOCIAL_ACTIONS,t.act))socialComplete(s,t.act);else if(ACTIONS[t.act]?.frontierOnly)martialComplete(s,t.act);
   let skilledWork = false;
   if (t.act === 'forage' || t.act === 'chop' || t.act === 'herbal') {
     const k = t.act === 'forage' ? 'berries' : t.act === 'chop' ? 'wood' : 'herbs';
@@ -447,10 +453,13 @@ function tickQuarter(s,dt) {
   if (s.herbPlot.state === 'growing') { s.herbPlot.growth += dt; if (s.herbPlot.growth >= 50) { s.herbPlot.state = 'ripe'; note(s, '藥田的草藥可收了。'); } }
   tickThreat(s,dt);
   tickCompanion(s,dt);
+  tickExpedition(s,dt);
   tickHelper(s, dt);
   const p = s.person; p.hunger = clamp(p.hunger - 0.14 * dt);
-  if(s.autonomy&&p.task&&!['eat','forage','return'].includes(p.task.act)&&p.hunger<25&&(canDo(s,'eat')||canDo(s,'forage')))cancelTask(s);
-  if(s.autonomy&&p.task&&!['rest','eat','return','forage'].includes(p.task.act)&&p.energy<15)cancelTask(s);
+  if(s.frontier?.trip&&s.frontier.trip.phase!=='home'&&s.frontier.trip.phase!=='return'&&p.order&&!Object.hasOwn(EXPEDITION_ACTIONS,p.order)){s.frontier.trip.phase='return';s.frontier.trip.deferred=true;cancelTask(s);}
+  if(s.frontier?.trip?.phase!=='home'&&s.frontier?.trip&&s.person.task&&((s.person.hunger<38&&!s.frontier.trip.ration)||s.person.energy<23||s.frontier.martial.avoid)&&!['returnTrip','trailEat'].includes(s.person.task.act)){s.frontier.trip.phase='return';s.frontier.trip.deferred=true;cancelTask(s);}
+  if(s.autonomy&&p.task&&!['eat','forage','return','trailEat','returnTrip'].includes(p.task.act)&&p.hunger<25&&(canDo(s,'eat')||canDo(s,'forage')))cancelTask(s);
+  if(s.autonomy&&p.task&&!['rest','eat','return','forage','returnTrip','trailEat'].includes(p.task.act)&&p.energy<15)cancelTask(s);
   if(p.task&&ACTIONS[p.task.act]?.frontierOnly&&frontierReason(s,p.task.act)){const act=p.task.act;cancelTask(s);if(p.order===act)clearOnce(s);}
   if (!p.task) begin(s, pick(s));
   const t = p.task;
