@@ -488,7 +488,7 @@ export function loadHomestead(json) {
     s.autonomy ??= null;
     if(s.autonomy&&s.autonomy.warmMeals===undefined)s.autonomy.warmMeals=0;
     if(s.autonomy&&s.autonomy.comfortRests===undefined)s.autonomy.comfortRests=0;
-    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;s.autonomy.direction??='auto';s.autonomy.deferred??=[];}
+    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;s.autonomy.direction??='auto';s.autonomy.deferred??=[];s.autonomy.limit??=Math.max(2,s.autonomy.completed.filter(id=>['comfort','porch','pantry'].includes(id)).length);s.autonomy.journal??=s.autonomy.completed.map(goal=>({goal,at:null}));}
     if(s.autonomy&&s.autonomy.experience===undefined)s.autonomy.experience={hunger:0,fatigue:0,effort:0,lastWork:s.person.work};
     if(!validAutonomy(s.autonomy,s.mode,s.t,s.person.work))return {ok:false,error:'自主生活目標不合法'};
     if(s.person.task?.trial!==undefined&&(s.person.task.trial!==true||s.person.task.act!=='rest'||!s.autonomy||s.fac.bed?.stage!==2))return {ok:false,error:'床鋪試睡任務不合法'};

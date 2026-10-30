@@ -1,5 +1,5 @@
 import{deferAutonomyGoal,allowAutonomyGoals}from'./homestead.mjs';
-import{autonomyText,DIRECTIONS,setAutonomyDirection}from'./homestead-autonomy.mjs';
+import{autonomyText,DIRECTIONS,setAutonomyDirection,lifeStage,autonomyHistory}from'./homestead-autonomy.mjs';
 import{renderMarkup}from'./homestead-dom.mjs';
 import{restComparisonText}from'./homestead-rest-view.mjs';
 import{householdActions,performHouseholdAction,householdActionHelp}from'./homestead-household-actions.mjs';
@@ -146,7 +146,7 @@ function render() {
   $('meal-result').textContent=s.log.find(x=>x.msg.startsWith('這一餐：'))?.msg||'可在料理卡選一份現成菜；吃完會回到自主生活。';
   $('resource-top').textContent=`木料可用 ${resources.available.wood} · 料理共${preparedCount(s)}份（熱飯${s.stock.meal}／拌食${s.stock.salad||0}／燉菜${s.stock.stew||0}）／野果 ${s.stock.berries} · 種子 ${s.stock.seeds} · 青菜 ${s.stock.veg}`;
   $('resource-detail').textContent=`施工已交 ${resources.delivered} 木／運往工地 ${resources.reserved} 木（已離庫，不可再花）；待運${resources.needed}木，共用庫存尚缺${resources.shortage}木。回倉／採集在途：${resources.incoming.map(c=>`${{wood:'木',berries:'野果',veg:'菜',herbs:'藥'}[c.kind]}${c.amount}`).join('、')||'無'}。`;
-  $('home-summary').textContent = `${FACILITIES.hut.stages[s.fac.hut.stage].name} · ${s.helper ? '兩人同住' : '一人生活'} · 現成食物約 ${foodDays(s)} 日；自主夠用目標：料理${target.meal}份／果${target.berries}／菜${target.veg}／木${target.wood}／藥${target.herbs}（非容量限制，手動可多備）`;
+  $('home-summary').textContent = `${s.autonomy?lifeStage(s)+' · ':''}${FACILITIES.hut.stages[s.fac.hut.stage].name} · ${s.helper ? '兩人同住' : '一人生活'} · 現成食物約 ${foodDays(s)} 日；自主夠用目標：料理${target.meal}份／果${target.berries}／菜${target.veg}／木${target.wood}／藥${target.herbs}（非容量限制，手動可多備）`;
   $('next-step').textContent = autonomyText(s)||nextStep(s);
   $('autonomy-controls').hidden=!s.autonomy;
   if(s.autonomy){$('life-direction').value=s.autonomy.direction;$('defer-goal').disabled=!s.autonomy.goal;$('allow-goals').disabled=!s.autonomy.deferred.length;}
@@ -170,6 +170,7 @@ function render() {
   const helperReason = h?.order && h.task?.act !== h.order ? blockReason(s, h.order, 'helper') : null;
   $('helper-orders').innerHTML = h ? `<div>${esc(h.name)}：飢餓 ${Math.round(h.hunger)} · 精力 ${Math.round(h.energy)} · 雜務 ${Math.floor(h.work)} · 識藥 ${h.herbalSkill} · ${esc(activityText(s,h))}</div>${helperReason ? `<div class="blocked">派工暫停：${esc(helperReason)}</div>` : ''}<div class="row">${[['auto', '自主'], ['chop', '砍柴'], ['farm', '菜園'], ...(v.role === 'apprentice' ? [['herbFarm', '藥田']] : [])].map(([id, label]) => `<button data-helper="${id}" class="${h.order === (id === 'auto' ? null : id) ? 'active' : ''}" ${(id === 'farm' && !offers(s, 'garden', 'farm')) || (id === 'herbFarm' && !offers(s, 'herbGarden', 'herbFarm')) ? 'disabled' : ''}>${label}</button>`).join('')}</div>` : '<div class="muted">目前獨居；可一直維持這樣。</div>';
   $('home-history').textContent = Object.keys(s.fac).filter(id=>s.fac[id].stage>0).map(id=>`✓ ${FACILITIES[id].stages[s.fac[id].stage].name}`).join(' · ') || '第一間屋還在等你落腳。';
+  if(s.autonomy)$('home-history').textContent+='。生活進展：'+(autonomyHistory(s)||'尚未完成主要打算。');
   $('log').innerHTML = s.log.slice(0, 9).map((x) => `<li>第${x.day}日 · ${esc(x.msg)}</li>`).join(''); draw();
   if(focusSelector&&!focused.isConnected){const target=document.querySelector(focusSelector),fallback=focusFallback(focused),next=target&&!target.disabled?target:fallback;if(next){next.focus({preventScroll:true});if(next===fallback)next.scrollIntoView({block:'nearest'});}}
 }
