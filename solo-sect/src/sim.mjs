@@ -39,6 +39,7 @@ import { econDaily, schoolStep, startSchool, E as econOf } from './economy.mjs';
 import { threatDaily, threatStep, raidResolve, bandStep } from './threat.mjs';
 import { lairDaily, lairStep } from './lair.mjs';
 import { jhevDaily } from './jhevents.mjs';
+import { btBoost } from './breakthru.mjs';
 import { cliqueDaily, cliqueTrain } from './clique.mjs';
 import { archRecruit } from './archetype.mjs';
 import { removeDisciple } from './gen.mjs';
@@ -81,6 +82,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.draw) s.draw = true;
   if (heroSpec?.comprehend) s.wu7 = true;
   if (heroSpec?.mentor) s.mentor = true;
+  if (heroSpec?.bt25) s.bt25 = true; // loop25 突破排程（選用）
   if (heroSpec?.jhev) s.jhev = true; // loop23 江湖事件（選用）
   if (heroSpec?.peace) s.m9 = true; // loop9 太平與防禦經濟（選用） // loop8 同修請教（選用） // loop7 領悟（選用） // loop6 人以群分（選用）
   sectInit(s); s.gen = genInit(); if (heroSpec?.bonus) s.gen.suhuiStart = heroSpec.bonus;
@@ -310,6 +312,7 @@ export function scoreActs(s, d) {
   postRows(s, d, out, plotWork);
   for (const o of out) { const f = o.f, p = pipeline(f.P); f.talent = p.talent; f.state = p.state; f.ext = p.ext; f.total = p.total; f.text = mulText(p); f.bored = boredMul(s, d, o.act); o.score = f.base * f.sched * p.total * f.bored + f.noise; delete f.P;
     o.layer ??= f.duty || f.labor ? 'duty' : f.sched >= 1.3 ? 'sched' : 'trait'; }
+  if (s.bt25) { const bt = c.bt && PRED.btOk(c); for (const o of out) if (o.act === 'meditate' && o.f) o.f.btOk = bt; btBoost(s, out); } // loop25
   return out.sort((a, b) => b.score - a.score);
 }
 
