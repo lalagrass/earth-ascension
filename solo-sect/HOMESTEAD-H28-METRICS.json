@@ -1,0 +1,2047 @@
+{
+  "version": "H27-H28",
+  "note": "Deterministic AI scenarios; not human enjoyment. 48 developed-home starting fixtures test sustainability; actual UI new-game route is separate. Full daily rows retained outside git and reproducible.",
+  "range": {
+    "minH": 35.84500000000284,
+    "minE": 20.199999999999896,
+    "zero": 0
+  },
+  "lowQuiet": [
+    {
+      "style": "auto",
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "cookingWood": 5,
+      "rawEaten": 2,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hungerActuallyRestored": 676,
+      "complete": 294
+    },
+    {
+      "style": "basic",
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "cookingWood": 5,
+      "rawEaten": 2,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hungerActuallyRestored": 676,
+      "complete": 294
+    },
+    {
+      "style": "salad",
+      "made": {
+        "basic": 0,
+        "salad": 9,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 0,
+        "salad": 16,
+        "stew": 0
+      },
+      "cookingWood": 0,
+      "rawEaten": 2,
+      "leisure": 493,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 5,
+        "meal": 0,
+        "salad": 2,
+        "stew": 0,
+        "herbs": 0
+      },
+      "hungerActuallyRestored": 660,
+      "complete": 294
+    },
+    {
+      "style": "stew",
+      "made": {
+        "basic": 1,
+        "salad": 0,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 3,
+        "salad": 0,
+        "stew": 7
+      },
+      "cookingWood": 11,
+      "rawEaten": 2,
+      "leisure": 475,
+      "finalStock": {
+        "berries": 2,
+        "wood": 3,
+        "seeds": 10,
+        "veg": 5,
+        "meal": 0,
+        "salad": 0,
+        "stew": 3,
+        "herbs": 0
+      },
+      "hungerActuallyRestored": 648.8649999999402,
+      "complete": 294
+    }
+  ],
+  "matrix": [
+    {
+      "personality": "quiet",
+      "style": "auto",
+      "condition": "low",
+      "days": 20,
+      "minH": 35.84500000000284,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 294,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 20,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "auto",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.615000000002766,
+      "minE": 48.80000000000001,
+      "zero": 0,
+      "complete": 112.5,
+      "made": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 13,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 0,
+      "fruitHarvested": 0,
+      "rawEaten": 0,
+      "hungerActuallyRestored": 676,
+      "leisure": 576,
+      "finalStock": {
+        "berries": 20,
+        "wood": 6,
+        "seeds": 10,
+        "veg": 16,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 10
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "auto",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 36.56500000006358,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 299.25,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 20,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "auto",
+      "condition": "paused",
+      "days": 20,
+      "minH": 35.98500000000283,
+      "minE": 21.1,
+      "zero": 0,
+      "complete": 297.25,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 20,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "basic",
+      "condition": "low",
+      "days": 20,
+      "minH": 35.84500000000284,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 294,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 20,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "basic",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.615000000002766,
+      "minE": 48.80000000000001,
+      "zero": 0,
+      "complete": 112.5,
+      "made": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 13,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 0,
+      "fruitHarvested": 0,
+      "rawEaten": 0,
+      "hungerActuallyRestored": 676,
+      "leisure": 576,
+      "finalStock": {
+        "berries": 20,
+        "wood": 6,
+        "seeds": 10,
+        "veg": 16,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 10
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "basic",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 36.56500000006358,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 299.25,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 20,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "basic",
+      "condition": "paused",
+      "days": 20,
+      "minH": 35.98500000000283,
+      "minE": 21.1,
+      "zero": 0,
+      "complete": 297.25,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 20,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "salad",
+      "condition": "low",
+      "days": 20,
+      "minH": 35.84500000000284,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 294,
+      "made": {
+        "basic": 0,
+        "salad": 9,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 0,
+        "salad": 16,
+        "stew": 0
+      },
+      "woodHarvested": 15,
+      "fruitHarvested": 12,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 660,
+      "leisure": 493,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 5,
+        "meal": 0,
+        "salad": 2,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "salad",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.615000000002766,
+      "minE": 48.80000000000001,
+      "zero": 0,
+      "complete": 112.5,
+      "made": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 13,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 0,
+      "fruitHarvested": 0,
+      "rawEaten": 0,
+      "hungerActuallyRestored": 676,
+      "leisure": 576,
+      "finalStock": {
+        "berries": 20,
+        "wood": 6,
+        "seeds": 10,
+        "veg": 16,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 10
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "salad",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 36.48500000005228,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 299.25,
+      "made": {
+        "basic": 0,
+        "salad": 9,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 0,
+        "salad": 16,
+        "stew": 0
+      },
+      "woodHarvested": 15,
+      "fruitHarvested": 12,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 660,
+      "leisure": 492,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 5,
+        "meal": 0,
+        "salad": 2,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "salad",
+      "condition": "paused",
+      "days": 20,
+      "minH": 35.98500000000283,
+      "minE": 21.1,
+      "zero": 0,
+      "complete": 297.25,
+      "made": {
+        "basic": 0,
+        "salad": 9,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 0,
+        "salad": 16,
+        "stew": 0
+      },
+      "woodHarvested": 15,
+      "fruitHarvested": 12,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 660,
+      "leisure": 492,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 5,
+        "meal": 0,
+        "salad": 2,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "stew",
+      "condition": "low",
+      "days": 20,
+      "minH": 35.84500000000284,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 294,
+      "made": {
+        "basic": 1,
+        "salad": 0,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 3,
+        "salad": 0,
+        "stew": 7
+      },
+      "woodHarvested": 27,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 648.8649999999402,
+      "leisure": 475,
+      "finalStock": {
+        "berries": 2,
+        "wood": 3,
+        "seeds": 10,
+        "veg": 5,
+        "meal": 0,
+        "salad": 0,
+        "stew": 3,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "stew",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.615000000002766,
+      "minE": 48.80000000000001,
+      "zero": 0,
+      "complete": 112.5,
+      "made": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 13,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 0,
+      "fruitHarvested": 0,
+      "rawEaten": 0,
+      "hungerActuallyRestored": 676,
+      "leisure": 576,
+      "finalStock": {
+        "berries": 20,
+        "wood": 6,
+        "seeds": 10,
+        "veg": 16,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 10
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "stew",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 36.61500000000618,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 299.25,
+      "made": {
+        "basic": 1,
+        "salad": 0,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 3,
+        "salad": 0,
+        "stew": 7
+      },
+      "woodHarvested": 27,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 649.2849999999402,
+      "leisure": 474,
+      "finalStock": {
+        "berries": 2,
+        "wood": 3,
+        "seeds": 10,
+        "veg": 5,
+        "meal": 0,
+        "salad": 0,
+        "stew": 3,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "quiet",
+      "style": "stew",
+      "condition": "paused",
+      "days": 20,
+      "minH": 35.98500000000283,
+      "minE": 21.1,
+      "zero": 0,
+      "complete": 297.25,
+      "made": {
+        "basic": 1,
+        "salad": 0,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 3,
+        "salad": 0,
+        "stew": 7
+      },
+      "woodHarvested": 27,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 649.3549999999402,
+      "leisure": 474,
+      "finalStock": {
+        "berries": 2,
+        "wood": 3,
+        "seeds": 10,
+        "veg": 5,
+        "meal": 0,
+        "salad": 0,
+        "stew": 3,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "auto",
+      "condition": "low",
+      "days": 20,
+      "minH": 35.84500000000284,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 294,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 20,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "auto",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.615000000002766,
+      "minE": 48.80000000000001,
+      "zero": 0,
+      "complete": 112.5,
+      "made": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 13,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 0,
+      "fruitHarvested": 0,
+      "rawEaten": 0,
+      "hungerActuallyRestored": 676,
+      "leisure": 576,
+      "finalStock": {
+        "berries": 20,
+        "wood": 6,
+        "seeds": 10,
+        "veg": 16,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 10
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "auto",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 36.56500000006358,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 299.25,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 20,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "auto",
+      "condition": "paused",
+      "days": 20,
+      "minH": 35.98500000000283,
+      "minE": 21.1,
+      "zero": 0,
+      "complete": 297.25,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 20,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "basic",
+      "condition": "low",
+      "days": 20,
+      "minH": 35.84500000000284,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 294,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 20,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "basic",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.615000000002766,
+      "minE": 48.80000000000001,
+      "zero": 0,
+      "complete": 112.5,
+      "made": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 13,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 0,
+      "fruitHarvested": 0,
+      "rawEaten": 0,
+      "hungerActuallyRestored": 676,
+      "leisure": 576,
+      "finalStock": {
+        "berries": 20,
+        "wood": 6,
+        "seeds": 10,
+        "veg": 16,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 10
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "basic",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 36.56500000006358,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 299.25,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 20,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "basic",
+      "condition": "paused",
+      "days": 20,
+      "minH": 35.98500000000283,
+      "minE": 21.1,
+      "zero": 0,
+      "complete": 297.25,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 20,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 504,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "salad",
+      "condition": "low",
+      "days": 20,
+      "minH": 35.84500000000284,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 294,
+      "made": {
+        "basic": 0,
+        "salad": 9,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 0,
+        "salad": 16,
+        "stew": 0
+      },
+      "woodHarvested": 15,
+      "fruitHarvested": 12,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 660,
+      "leisure": 493,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 5,
+        "meal": 0,
+        "salad": 2,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "salad",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.615000000002766,
+      "minE": 48.80000000000001,
+      "zero": 0,
+      "complete": 112.5,
+      "made": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 13,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 0,
+      "fruitHarvested": 0,
+      "rawEaten": 0,
+      "hungerActuallyRestored": 676,
+      "leisure": 576,
+      "finalStock": {
+        "berries": 20,
+        "wood": 6,
+        "seeds": 10,
+        "veg": 16,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 10
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "salad",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 36.48500000005228,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 299.25,
+      "made": {
+        "basic": 0,
+        "salad": 9,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 0,
+        "salad": 16,
+        "stew": 0
+      },
+      "woodHarvested": 15,
+      "fruitHarvested": 12,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 660,
+      "leisure": 492,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 5,
+        "meal": 0,
+        "salad": 2,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "salad",
+      "condition": "paused",
+      "days": 20,
+      "minH": 35.98500000000283,
+      "minE": 21.1,
+      "zero": 0,
+      "complete": 297.25,
+      "made": {
+        "basic": 0,
+        "salad": 9,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 0,
+        "salad": 16,
+        "stew": 0
+      },
+      "woodHarvested": 15,
+      "fruitHarvested": 12,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 660,
+      "leisure": 492,
+      "finalStock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 9,
+        "veg": 5,
+        "meal": 0,
+        "salad": 2,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "stew",
+      "condition": "low",
+      "days": 20,
+      "minH": 35.84500000000284,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 294,
+      "made": {
+        "basic": 1,
+        "salad": 0,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 3,
+        "salad": 0,
+        "stew": 7
+      },
+      "woodHarvested": 27,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 648.8649999999402,
+      "leisure": 475,
+      "finalStock": {
+        "berries": 2,
+        "wood": 3,
+        "seeds": 10,
+        "veg": 5,
+        "meal": 0,
+        "salad": 0,
+        "stew": 3,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "stew",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.615000000002766,
+      "minE": 48.80000000000001,
+      "zero": 0,
+      "complete": 112.5,
+      "made": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 13,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 0,
+      "fruitHarvested": 0,
+      "rawEaten": 0,
+      "hungerActuallyRestored": 676,
+      "leisure": 576,
+      "finalStock": {
+        "berries": 20,
+        "wood": 6,
+        "seeds": 10,
+        "veg": 16,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 10
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "stew",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 36.61500000000618,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 299.25,
+      "made": {
+        "basic": 1,
+        "salad": 0,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 3,
+        "salad": 0,
+        "stew": 7
+      },
+      "woodHarvested": 27,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 649.2849999999402,
+      "leisure": 474,
+      "finalStock": {
+        "berries": 2,
+        "wood": 3,
+        "seeds": 10,
+        "veg": 5,
+        "meal": 0,
+        "salad": 0,
+        "stew": 3,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "sociable",
+      "style": "stew",
+      "condition": "paused",
+      "days": 20,
+      "minH": 35.98500000000283,
+      "minE": 21.1,
+      "zero": 0,
+      "complete": 297.25,
+      "made": {
+        "basic": 1,
+        "salad": 0,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 3,
+        "salad": 0,
+        "stew": 7
+      },
+      "woodHarvested": 27,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 649.3549999999402,
+      "leisure": 474,
+      "finalStock": {
+        "berries": 2,
+        "wood": 3,
+        "seeds": 10,
+        "veg": 5,
+        "meal": 0,
+        "salad": 0,
+        "stew": 3,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "auto",
+      "condition": "low",
+      "days": 20,
+      "minH": 35.84500000000284,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 294,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 23,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 499,
+      "finalStock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "auto",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.615000000002766,
+      "minE": 48.80000000000001,
+      "zero": 0,
+      "complete": 112.5,
+      "made": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 13,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 0,
+      "fruitHarvested": 0,
+      "rawEaten": 0,
+      "hungerActuallyRestored": 676,
+      "leisure": 576,
+      "finalStock": {
+        "berries": 20,
+        "wood": 6,
+        "seeds": 10,
+        "veg": 16,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 10
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "auto",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 36.59000000003317,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 299.25,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 23,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 498,
+      "finalStock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "auto",
+      "condition": "paused",
+      "days": 20,
+      "minH": 35.98500000000283,
+      "minE": 21.1,
+      "zero": 0,
+      "complete": 297.25,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 23,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 498,
+      "finalStock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "basic",
+      "condition": "low",
+      "days": 20,
+      "minH": 35.84500000000284,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 294,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 23,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 499,
+      "finalStock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "basic",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.615000000002766,
+      "minE": 48.80000000000001,
+      "zero": 0,
+      "complete": 112.5,
+      "made": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 13,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 0,
+      "fruitHarvested": 0,
+      "rawEaten": 0,
+      "hungerActuallyRestored": 676,
+      "leisure": 576,
+      "finalStock": {
+        "berries": 20,
+        "wood": 6,
+        "seeds": 10,
+        "veg": 16,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 10
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "basic",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 36.59000000003317,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 299.25,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 23,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 498,
+      "finalStock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "basic",
+      "condition": "paused",
+      "days": 20,
+      "minH": 35.98500000000283,
+      "minE": 21.1,
+      "zero": 0,
+      "complete": 297.25,
+      "made": {
+        "basic": 5,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 12,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 23,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 676,
+      "leisure": 498,
+      "finalStock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 9,
+        "veg": 4,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "salad",
+      "condition": "low",
+      "days": 20,
+      "minH": 35.84500000000284,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 294,
+      "made": {
+        "basic": 0,
+        "salad": 9,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 0,
+        "salad": 16,
+        "stew": 0
+      },
+      "woodHarvested": 18,
+      "fruitHarvested": 12,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 660,
+      "leisure": 487,
+      "finalStock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 9,
+        "veg": 5,
+        "meal": 0,
+        "salad": 2,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "salad",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.615000000002766,
+      "minE": 48.80000000000001,
+      "zero": 0,
+      "complete": 112.5,
+      "made": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 13,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 0,
+      "fruitHarvested": 0,
+      "rawEaten": 0,
+      "hungerActuallyRestored": 676,
+      "leisure": 576,
+      "finalStock": {
+        "berries": 20,
+        "wood": 6,
+        "seeds": 10,
+        "veg": 16,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 10
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "salad",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 36.48000000001525,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 299.25,
+      "made": {
+        "basic": 0,
+        "salad": 9,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 0,
+        "salad": 16,
+        "stew": 0
+      },
+      "woodHarvested": 18,
+      "fruitHarvested": 12,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 660,
+      "leisure": 487,
+      "finalStock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 9,
+        "veg": 5,
+        "meal": 0,
+        "salad": 2,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "salad",
+      "condition": "paused",
+      "days": 20,
+      "minH": 35.98500000000283,
+      "minE": 21.1,
+      "zero": 0,
+      "complete": 297.25,
+      "made": {
+        "basic": 0,
+        "salad": 9,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 0,
+        "salad": 16,
+        "stew": 0
+      },
+      "woodHarvested": 18,
+      "fruitHarvested": 12,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 660,
+      "leisure": 487,
+      "finalStock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 9,
+        "veg": 5,
+        "meal": 0,
+        "salad": 2,
+        "stew": 0,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "stew",
+      "condition": "low",
+      "days": 20,
+      "minH": 35.84500000000284,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 294,
+      "made": {
+        "basic": 1,
+        "salad": 0,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 3,
+        "salad": 0,
+        "stew": 7
+      },
+      "woodHarvested": 29,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 649.8099999999401,
+      "leisure": 471,
+      "finalStock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 10,
+        "veg": 5,
+        "meal": 0,
+        "salad": 0,
+        "stew": 3,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "stew",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.615000000002766,
+      "minE": 48.80000000000001,
+      "zero": 0,
+      "complete": 112.5,
+      "made": {
+        "basic": 0,
+        "salad": 0,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 13,
+        "salad": 0,
+        "stew": 0
+      },
+      "woodHarvested": 0,
+      "fruitHarvested": 0,
+      "rawEaten": 0,
+      "hungerActuallyRestored": 676,
+      "leisure": 576,
+      "finalStock": {
+        "berries": 20,
+        "wood": 6,
+        "seeds": 10,
+        "veg": 16,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 10
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "stew",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 36.61500000000618,
+      "minE": 20.199999999999896,
+      "zero": 0,
+      "complete": 299.25,
+      "made": {
+        "basic": 1,
+        "salad": 0,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 3,
+        "salad": 0,
+        "stew": 7
+      },
+      "woodHarvested": 29,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 649.3549999999402,
+      "leisure": 470,
+      "finalStock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 10,
+        "veg": 5,
+        "meal": 0,
+        "salad": 0,
+        "stew": 3,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "diligent",
+      "style": "stew",
+      "condition": "paused",
+      "days": 20,
+      "minH": 35.98500000000283,
+      "minE": 21.1,
+      "zero": 0,
+      "complete": 297.25,
+      "made": {
+        "basic": 1,
+        "salad": 0,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 3,
+        "salad": 0,
+        "stew": 7
+      },
+      "woodHarvested": 29,
+      "fruitHarvested": 3,
+      "rawEaten": 2,
+      "hungerActuallyRestored": 649.5999999999401,
+      "leisure": 470,
+      "finalStock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 10,
+        "veg": 5,
+        "meal": 0,
+        "salad": 0,
+        "stew": 3,
+        "herbs": 0
+      }
+    }
+  ],
+  "traffic": [
+    {
+      "seed": 1,
+      "ticks": 20000,
+      "seconds": 5000,
+      "minH": 35.035000000005454,
+      "minE": 19.300000000000008,
+      "loads": 378,
+      "made": {
+        "basic": 3,
+        "salad": 1,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 9,
+        "salad": 2,
+        "stew": 4
+      },
+      "wood": 45,
+      "fruit": 11,
+      "harvest": 15,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 12,
+        "cook": 8
+      },
+      "stock": {
+        "berries": 8,
+        "wood": 8,
+        "seeds": 4,
+        "veg": 8,
+        "meal": 0,
+        "salad": 0,
+        "stew": 6,
+        "herbs": 0
+      },
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "kitchen": 2,
+        "store": 0,
+        "bench": 1,
+        "flowers": 1,
+        "bed": 2,
+        "workbench": 1
+      }
+    },
+    {
+      "seed": 2,
+      "ticks": 20000,
+      "seconds": 5000,
+      "minH": 34.83000000000294,
+      "minE": 17.400000000000304,
+      "loads": 378,
+      "made": {
+        "basic": 4,
+        "salad": 2,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 9,
+        "salad": 4,
+        "stew": 7
+      },
+      "wood": 43,
+      "fruit": 11,
+      "harvest": 16,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 12,
+        "cook": 8
+      },
+      "stock": {
+        "berries": 8,
+        "wood": 5,
+        "seeds": 4,
+        "veg": 7,
+        "meal": 3,
+        "salad": 0,
+        "stew": 3,
+        "herbs": 0
+      },
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "kitchen": 2,
+        "store": 0,
+        "bench": 1,
+        "flowers": 1,
+        "bed": 2,
+        "workbench": 1
+      }
+    },
+    {
+      "seed": 3,
+      "ticks": 20000,
+      "seconds": 5000,
+      "minH": 36.68500000000617,
+      "minE": 22.549999999999983,
+      "loads": 378,
+      "made": {
+        "basic": 3,
+        "salad": 5,
+        "stew": 3
+      },
+      "ate": {
+        "basic": 9,
+        "salad": 8,
+        "stew": 3
+      },
+      "wood": 41,
+      "fruit": 15,
+      "harvest": 14,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 12,
+        "cook": 8
+      },
+      "stock": {
+        "berries": 8,
+        "wood": 8,
+        "seeds": 4,
+        "veg": 8,
+        "meal": 0,
+        "salad": 2,
+        "stew": 3,
+        "herbs": 0
+      },
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "kitchen": 2,
+        "store": 0,
+        "bench": 1,
+        "flowers": 1,
+        "bed": 2,
+        "workbench": 1
+      }
+    },
+    {
+      "seed": 4,
+      "ticks": 20000,
+      "seconds": 5000,
+      "minH": 36.12000000000535,
+      "minE": 19.900000000000063,
+      "loads": 378,
+      "made": {
+        "basic": 3,
+        "salad": 8,
+        "stew": 2
+      },
+      "ate": {
+        "basic": 7,
+        "salad": 11,
+        "stew": 4
+      },
+      "wood": 39,
+      "fruit": 18,
+      "harvest": 14,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 12,
+        "cook": 8
+      },
+      "stock": {
+        "berries": 8,
+        "wood": 8,
+        "seeds": 4,
+        "veg": 8,
+        "meal": 2,
+        "salad": 5,
+        "stew": 0,
+        "herbs": 0
+      },
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "kitchen": 2,
+        "store": 0,
+        "bench": 1,
+        "flowers": 1,
+        "bed": 2,
+        "workbench": 1
+      }
+    },
+    {
+      "seed": 5,
+      "ticks": 20000,
+      "seconds": 5000,
+      "minH": 35.915000000002834,
+      "minE": 43.50000000000019,
+      "loads": 378,
+      "made": {
+        "basic": 5,
+        "salad": 3,
+        "stew": 3
+      },
+      "ate": {
+        "basic": 13,
+        "salad": 6,
+        "stew": 3
+      },
+      "wood": 42,
+      "fruit": 12,
+      "harvest": 14,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 12,
+        "cook": 8
+      },
+      "stock": {
+        "berries": 8,
+        "wood": 7,
+        "seeds": 4,
+        "veg": 6,
+        "meal": 2,
+        "salad": 0,
+        "stew": 3,
+        "herbs": 0
+      },
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "kitchen": 2,
+        "store": 0,
+        "bench": 1,
+        "flowers": 1,
+        "bed": 2,
+        "workbench": 1
+      }
+    }
+  ]
+}
