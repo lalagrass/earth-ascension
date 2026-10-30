@@ -10,6 +10,7 @@ export function activityText(s, p = s.person) {
   const t = p?.task;
   if (!t) return '正在看看接下來做什麼';
   const target = (t.act==='build'?projectRecipe(s,t.place)?.name:null)||FACILITIES[t.place]?.stages[s.fac[t.place]?.stage + (t.act === 'build' ? 1 : 0)]?.name || ({home:'住處',visitor:'村路',source:'近山獸徑',pair:'雙人互演處',meeting:'村路會面處',practice:'屋前練步處',encounter:'山豬附近'}[t.place]) || t.place;
+  if(t.act==='eat'&&t.seated)return t.phase==='go'?'走到長凳，準備慢吃一份':'坐在長凳用餐（4秒，沒有額外飽腹）';
   if (t.phase === 'fetch') return `去儲物處取${materialName[t.mat] || t.mat}，準備建${target}`;
   if (t.phase === 'deliver') return `搬${p.carry?.amount || 1}根木料到「${target}」工地`;
   if (t.act === 'return') return `把${materialName[p.carry?.kind] || '物資'}帶回儲物處`;
@@ -72,7 +73,7 @@ export function facilityEffect(id, stage, mode='solo',autonomy=false) {
 export function buildingInfo(s,id) {
   const f=FACILITIES[id], st=s.fac[id], next=projectRecipe(s,id), site=st.site;
   const missing=site ? Math.max(0,site.need.wood-site.delivered.wood-site.reserved.wood) : (next?.cost.wood||0);
-  return {current:facilityEffect(id,f.stages[st.stage],s.mode,!!s.autonomy), next:next ? facilityEffect(id,next,s.mode,!!s.autonomy):null, missing, shortage:Math.max(0,missing-s.stock.wood)};
+  return {current:facilityEffect(id,f.stages[st.stage],s.mode,!!s.autonomy)+(id==='bench'&&s.frontier&&st.stage?'；可選坐下吃4秒，實吃後座位感受+2/60秒':'') , next:next ? facilityEffect(id,next,s.mode,!!s.autonomy)+(id==='bench'&&s.frontier?'；也可選在此慢吃4秒，不加飽腹/工作增益':''):null, missing, shortage:Math.max(0,missing-s.stock.wood)};
 }
 export function projectMaterials(s) {
   const sites=Object.values(s.fac).filter(f=>f.site);
