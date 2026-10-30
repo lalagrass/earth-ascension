@@ -1,4 +1,4 @@
-import {freshTastes,autonomyRecipe,recordTaste} from './homestead-autonomy-meals.mjs';
+import {freshTastes,autonomyRecipe,recordTaste,autonomyFood} from './homestead-autonomy-meals.mjs';
 import {freshAutonomy,validAutonomy,advanceAutonomy,observeAutonomy,goalStep} from './homestead-autonomy.mjs';
 import {defaultHomeLook,validHomeLook} from './homestead-look.mjs';
 import {RECIPES,MEAL_STYLES,hasRecipe,recipeReason,eatReason,recipeAccess,buildAccess,availableUnlocks,preparedCount,edibleEnergy,autoRecipe,chooseFood} from './homestead-content.mjs';
@@ -307,7 +307,7 @@ function begin(s, act) {
   if(act==='cook'&&s.mode==='solo'){const manual=!!p.cookRequest&&!recipeReason(s,p.cookRequest);p.task.recipe=manual?p.cookRequest:autonomyRecipe(s)||autoRecipe(s)||'basic';p.task.manual=manual;}
   if(act==='eat'&&s.mode==='solo'){
     const requested=p.foodRequest;
-    p.task.foodId=requested&&s.stock[RECIPES[requested].output]>0?requested:chooseFood(s);
+    p.task.foodId=requested&&s.stock[RECIPES[requested].output]>0?requested:autonomyFood(s)||chooseFood(s);
     if(requested)p.task.manualEat=true;
   }
 }
@@ -489,7 +489,7 @@ export function loadHomestead(json) {
     s.autonomy ??= null;
     if(s.autonomy&&s.autonomy.warmMeals===undefined)s.autonomy.warmMeals=0;
     if(s.autonomy&&s.autonomy.comfortRests===undefined)s.autonomy.comfortRests=0;
-    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;s.autonomy.direction??='auto';s.autonomy.deferred??=[];s.autonomy.limit??=Math.max(2,s.autonomy.completed.filter(id=>['comfort','porch','pantry'].includes(id)).length);s.autonomy.journal??=s.autonomy.completed.map(goal=>({goal,at:null}));s.autonomy.tastes??=freshTastes();}
+    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;s.autonomy.direction??='auto';s.autonomy.deferred??=[];s.autonomy.limit??=Math.max(2,s.autonomy.completed.filter(id=>['comfort','porch','pantry'].includes(id)).length);s.autonomy.journal??=s.autonomy.completed.map(goal=>({goal,at:null}));s.autonomy.tastes??=freshTastes();s.autonomy.interestLimit??=2;}
     if(s.autonomy&&s.autonomy.experience===undefined)s.autonomy.experience={hunger:0,fatigue:0,effort:0,lastWork:s.person.work};
     if(!validAutonomy(s.autonomy,s.mode,s.t,s.person.work))return {ok:false,error:'自主生活目標不合法'};
     if(s.person.task?.trial!==undefined&&(s.person.task.trial!==true||s.person.task.act!=='rest'||!s.autonomy||s.fac.bed?.stage!==2))return {ok:false,error:'床鋪試睡任務不合法'};

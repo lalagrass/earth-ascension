@@ -1,0 +1,44 @@
+[
+  {
+    "personality": "quiet",
+    "selected": 918.5,
+    "stove": 1015,
+    "level": 1407,
+    "eaten": 2785.25,
+    "waitingForNeededCookingSkill": 488.5,
+    "leisureDuringSkillWait": 289.75,
+    "finalTastes": {
+      "basic": 6,
+      "salad": 2,
+      "stew": 1
+    }
+  },
+  {
+    "personality": "sociable",
+    "selected": 938.75,
+    "stove": 1017.5,
+    "level": 1407.25,
+    "eaten": 2785.5,
+    "waitingForNeededCookingSkill": 468.5,
+    "leisureDuringSkillWait": 289.75,
+    "finalTastes": {
+      "basic": 6,
+      "salad": 2,
+      "stew": 1
+    }
+  },
+  {
+    "personality": "diligent",
+    "selected": 1010.75,
+    "stove": 525.25,
+    "level": 1410.5,
+    "eaten": 2781.75,
+    "waitingForNeededCookingSkill": 399.75,
+    "leisureDuringSkillWait": 286.75,
+    "finalTastes": {
+      "basic": 7,
+      "salad": 2,
+      "stew": 1
+    }
+  }
+]

@@ -9,15 +9,16 @@ export const GOALS={
  hotFood:{name:'穩定吃熱飯',done:s=>s.autonomy.warmMeals>0&&s.fac.garden.stage>0&&s.fac.kitchen.stage>0,step:s=>!s.fac.garden.stage?'garden':!s.fac.kitchen.stage?'kitchen':null},
  comfort:{name:'睡得更好',done:s=>s.autonomy.comfortRests>0,step:s=>s.fac.hut.stage<2?'hut':s.fac.bed.stage<1?'bed':!s.fac.workbench.stage?'workbench':s.fac.bed.stage<2?'bed':null},
  porch:{name:'屋前自在休憩',done:s=>s.fac.bench.stage>0&&s.fac.flowers.stage>0,step:s=>!s.fac.bench.stage?'bench':!s.fac.flowers.stage?'flowers':null},
+ stew:{name:'學做並嚐到家常燉菜',done:s=>s.autonomy.tastes.stew>0,step:s=>s.fac.kitchen.stage<2?'kitchen':null},
  pantry:{name:'備餐與收納更從容',done:s=>s.fac.store.stage>0&&s.fac.kitchen.stage>=2,step:s=>!s.fac.store.stage?'store':s.fac.kitchen.stage<2?'kitchen':null},
 };
 export const DIRECTIONS={auto:'自行打算',steady:'先穩定吃住',comfort:'住得舒服',frugal:'少耗材料'};
 export const PREFERENCES={quiet:{comfort:6,porch:5,pantry:2},sociable:{comfort:4,porch:6,pantry:2},diligent:{comfort:5,porch:2,pantry:6}};
-export const freshAutonomy = () => ({version:1, goal:null, since:0, completed:[], warmMeals:0, comfortRests:0,recess:false, breaks:0,direction:'auto',deferred:[],limit:2,journal:[],tastes:freshTastes(),experience:{hunger:0,fatigue:0,effort:0,lastWork:0}});
+export const freshAutonomy = () => ({version:1, goal:null, since:0, completed:[], warmMeals:0, comfortRests:0,recess:false, breaks:0,direction:'auto',deferred:[],limit:2,interestLimit:2,journal:[],tastes:freshTastes(),experience:{hunger:0,fatigue:0,effort:0,lastWork:0}});
 export function validAutonomy(a,mode,t=Infinity,work=Infinity){
  return a===null || mode==='solo' && a && a.version===1 &&
  (a.goal===null||Object.hasOwn(GOALS,a.goal)) && Number.isFinite(a.since) && a.since>=0 && a.since<=t &&
- Array.isArray(a.completed) && a.completed.length<=Object.keys(GOALS).length && new Set(a.completed).size===a.completed.length && a.completed.every(x=>Object.hasOwn(GOALS,x)) && Number.isSafeInteger(a.warmMeals) && a.warmMeals>=0 && Number.isSafeInteger(a.comfortRests) && a.comfortRests>=0 && validTastes(a.tastes)&&[2,3].includes(a.limit)&&Array.isArray(a.journal)&&a.journal.length<=a.completed.length&&new Set(a.journal.map(x=>x?.goal)).size===a.journal.length&&a.journal.every(x=>x&&a.completed.includes(x.goal)&&(x.at===null||Number.isFinite(x.at)&&x.at>=0&&x.at<=t))&&typeof a.direction==='string'&&Object.hasOwn(DIRECTIONS,a.direction)&&Array.isArray(a.deferred)&&a.deferred.length<=5&&new Set(a.deferred).size===a.deferred.length&&a.deferred.every(id=>Object.hasOwn(GOALS,id))&&typeof a.recess==='boolean' && Number.isSafeInteger(a.breaks)&&a.breaks>=0 && a.experience && ['hunger','fatigue','effort'].every(k=>Number.isFinite(a.experience[k])&&a.experience[k]>=0&&a.experience[k]<=3) && Number.isFinite(a.experience.lastWork)&&a.experience.lastWork>=0&&a.experience.lastWork<=work;
+ Array.isArray(a.completed) && a.completed.length<=Object.keys(GOALS).length && new Set(a.completed).size===a.completed.length && a.completed.every(x=>Object.hasOwn(GOALS,x)) && Number.isSafeInteger(a.warmMeals) && a.warmMeals>=0 && Number.isSafeInteger(a.comfortRests) && a.comfortRests>=0 && [2,3].includes(a.interestLimit)&&validTastes(a.tastes)&&[2,3].includes(a.limit)&&Array.isArray(a.journal)&&a.journal.length<=a.completed.length&&new Set(a.journal.map(x=>x?.goal)).size===a.journal.length&&a.journal.every(x=>x&&a.completed.includes(x.goal)&&(x.at===null||Number.isFinite(x.at)&&x.at>=0&&x.at<=t))&&typeof a.direction==='string'&&Object.hasOwn(DIRECTIONS,a.direction)&&Array.isArray(a.deferred)&&a.deferred.length<=Object.keys(GOALS).length&&new Set(a.deferred).size===a.deferred.length&&a.deferred.every(id=>Object.hasOwn(GOALS,id))&&typeof a.recess==='boolean' && Number.isSafeInteger(a.breaks)&&a.breaks>=0 && a.experience && ['hunger','fatigue','effort'].every(k=>Number.isFinite(a.experience[k])&&a.experience[k]>=0&&a.experience[k]<=3) && Number.isFinite(a.experience.lastWork)&&a.experience.lastWork>=0&&a.experience.lastWork<=work;
 }
 export function observeAutonomy(s,dt){
  const e=s.autonomy?.experience;if(!e)return;
@@ -37,11 +38,12 @@ export function goalCandidates(s){
 }
 export function advanceAutonomy(s,api){
  const a=s.autonomy;if(!a)return;
+ if(a.goal==='stew'&&!['auto','stew'].includes(s.mealStyle))a.goal=null;
  const finished=a.goal&&GOALS[a.goal].done(s);
  for(const [goal,g] of Object.entries(GOALS))if(g.done(s)&&!a.completed.includes(goal)){a.completed.push(goal);a.journal.push({goal,at:s.t});}
  if(finished){a.goal=null;a.recess=true;}
  if(a.recess)return 'leisure';
- if(!a.goal){a.goal=!s.fac.hut.stage?(a.deferred.includes('shelter')?null:'shelter'):!GOALS.hotFood.done(s)&&!a.deferred.includes('hotFood')?'hotFood':improvementCount(s)>=a.limit?null:goalCandidates(s)[0]?.id||null;a.since=s.t;}
+ if(!a.goal){a.goal=!s.fac.hut.stage?(a.deferred.includes('shelter')?null:'shelter'):!GOALS.hotFood.done(s)&&!a.deferred.includes('hotFood')?'hotFood':improvementCount(s)<a.limit?goalCandidates(s)[0]?.id||null:interestCount(s)<a.interestLimit?interestCandidates(s)[0]?.id||null:null;a.since=s.t;}
  if(!a.goal)return;
  const id=goalStep(s);
  if(id&&!s.fac[id].site&&!planBlock(s))api.start(id);
@@ -79,7 +81,7 @@ export function autonomyText(s){
  if(!a.goal)return s.fac.hut.stage?'目前照顧日常；已完成：'+(a.completed.map(id=>GOALS[id].name).join('、')||'住處'):'正在察看空地；下一步打算安家。';
  const g=GOALS[a.goal];if(g.done(s))return `近期打算：${g.name}已達成，下一次決策會確認成果並再打算；暫停時不推進。`;
  const id=goalStep(s),v=id&&s.fac[id].site;
- const next=s.person.hunger<38?'先填飽肚子，再回原打算。':s.person.energy<23?'先歇息，再續作。':planBlock(s)|| (id?v?.paused?'工程由你暫停，等待你恢復。':v?`${labels[id]}：已交木${v.delivered.wood}/${v.need.wood}、搬運中${v.reserved.wood}；施工${v.work.toFixed(1)}/${v.workNeed}。`:`下一步${labels[id]}。`:a.goal==='comfort'?'床已做好，走到床前實際試睡。':s.plot.state==='growing'?'青菜正在生長，期間備柴與照顧自己。':s.stock.meal>0?'熱飯已好，餓時實際用餐。':'播種收菜、備柴，再做熱飯。');
+ const next=s.person.hunger<38?'先填飽肚子，再回原打算。':s.person.energy<23?'先歇息，再續作。':planBlock(s)|| (id?v?.paused?'工程由你暫停，等待你恢復。':v?`${labels[id]}：已交木${v.delivered.wood}/${v.need.wood}、搬運中${v.reserved.wood}；施工${v.work.toFixed(1)}/${v.workNeed}。`:`下一步${labels[id]}。`:a.goal==='comfort'?'床已做好，走到床前實際試睡。':a.goal==='stew'?'改良灶已好，照常補真正需要的飯；自然學會後實做燉菜，不為熟練浪費食物。':s.plot.state==='growing'?'青菜正在生長，期間備柴與照顧自己。':s.stock.meal>0?'熱飯已好，餓時實際用餐。':'播種收菜、備柴，再做熱飯。');
  const why=goalCandidates(s).find(c=>c.id===a.goal)?.reason;
  return `近期打算：${g.name}。${why?why+"。":""}${a.direction!=='auto'?`方向：${DIRECTIONS[a.direction]}。`:''}${id&&id!==g.step(s)?"建造經驗不足，先做仍有用途的設施，靠真施工學會。":""}${next}`;
 }
@@ -92,5 +94,8 @@ export function remainingWood(s,id){
 export function setAutonomyDirection(s,id){if(!s.autonomy||!Object.hasOwn(DIRECTIONS,id))return false;if(s.autonomy.direction!==id){s.autonomy.direction=id;if(improvementCount(s)>=s.autonomy.limit)s.autonomy.limit=3;s.autonomy.goal=null;}return true;}
 
 export const improvementCount=s=>['comfort','porch','pantry'].filter(id=>GOALS[id].done(s)).length;
-export function lifeStage(s){if(!s.autonomy)return '原生活模式';if(!s.fac.hut.stage)return '落腳';if(!s.autonomy.warmMeals)return '溫飽';const n=improvementCount(s);return n>=s.autonomy.limit&&!s.autonomy.recess&&!s.autonomy.goal?'安居':n?'自己的小家':'改善';}
+export function lifeStage(s){if(!s.autonomy)return '原生活模式';if(!s.fac.hut.stage)return '落腳';if(!s.autonomy.warmMeals)return '溫飽';const n=improvementCount(s);return n>=s.autonomy.limit&&(!s.autonomy.goal||!['shelter','hotFood','comfort','porch','pantry'].includes(s.autonomy.goal))?'安居':n?'自己的小家':'改善';}
 export function autonomyHistory(s){return s.autonomy.journal.map(x=>`${GOALS[x.goal].name}（${x.at===null?'舊進度，未記時':`第${1+Math.floor(x.at/240)}日首次確認・${x.at.toFixed(1)}世界秒`}）`).join(' → ');}
+
+export const interestCount=s=>['stew'].filter(id=>GOALS[id].done(s)).length;
+export function interestCandidates(s){return s.autonomy.deferred.includes('stew')||GOALS.stew.done(s)||!['auto','stew'].includes(s.mealStyle)?[]:[{id:'stew',score:5,reason:'想運用學會的料理，嚐一份更飽足的餐'}];}
