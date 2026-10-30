@@ -217,6 +217,7 @@ export const THOUGHTS = {
   hurt:      { text: '狩獵受傷', v: -12, ttl: 400, tag: 'fight' },
   wonHunt:   { text: '守住了後山', v: 8, ttl: 300, tag: 'good' },
   cropLost:  { text: '菜被野豬拱了', v: -5, ttl: 200, tag: 'bad' },
+  cropLostLite: { text: '聽說菜被野豬拱了', v: -2, ttl: 200, tag: 'bad' }, /* loop47 cropcare：不種菜的人只聽說 */
   encouraged:{ text: '被同門鼓勵', v: 12, ttl: 300, tag: 'social' },
   helped:    { text: '幫人打了氣', v: 4, ttl: 200, tag: 'good' },
   badChat:   { text: '話不投機', v: -4, ttl: 150, tag: 'social' },

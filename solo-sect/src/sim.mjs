@@ -85,6 +85,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.comprehend) s.wu7 = true;
   if (heroSpec?.mentor) s.mentor = true;
   if (heroSpec?.qshare) s.qshare = true;
+  if (heroSpec?.cropcare) s.cropcare = true; /* loop47 誰種誰心疼 */
   if (heroSpec?.mfit) s.mfit = true; // loop41 高人因材施教
   if (heroSpec?.jhrefuse) s.jhrefuse = true; // loop40 挑戰帖量力而為 // loop39 人多分攤日課
   if (heroSpec?.jhui) s.jhui = true; // loop34 介面可讀性（純顯示）
@@ -526,6 +527,12 @@ function monWalk(m, step) {
   return !m.path.length;
 }
 // 生態：繁衍、棲地遊蕩、野豬下山拱菜（有目的、會離開）
+/* loop47「誰種誰心疼」（s.cropcare）：菜被拱時，只有農事最好的兩人（實際照顧菜園）全額心疼，其餘在山上的人只是「聽說」（−2），巡山在外的人不知道。關閉時維持全派 −5。 */
+export function cropMood(s) {
+  if (!s.cropcare) { for (const d of s.ds) think(s, d, 'cropLost'); return; }
+  const here = s.ds.filter((d) => !d.away), top = new Set([...here].sort((a, b) => (b.skills?.farming || 0) - (a.skills?.farming || 0)).slice(0, 2).map((d) => d.id));
+  for (const d of here) think(s, d, top.has(d.id) ? 'cropLost' : 'cropLostLite');
+}
 function removeWild(s, k, n) { for (let i = 0; i < n; i++) { const j = s.wild.findIndex((w) => w.k === k); if (j >= 0) s.wild.splice(j, 1); } }
 const WATCH_WARN = 120; // 秒：有人在哨崗守過，這段時間內下山的野豬會被嚇回
 function ecoStep(s, dt) {
@@ -543,7 +550,7 @@ function ecoStep(s, dt) {
   for (const m of s.mons) if (m.raid) {
     if (monWalk(m, MONSTERS.boar.speed * dt)) {
       if (m.raid === 'go' && fenceUp(s) && boarRam(s)) { m.raid = 'back'; m.path = route('veg', 'den').slice(1); }
-      else if (m.raid === 'go') { const p = s.plots.find((x) => x.st === 'ripe') || s.plots.find((x) => x.st === 'grow'); if (p) { p.st = 'empty'; p.g = 0; log(s, '野豬拱壞了一畦菜，吃飽回山。'); for (const d of s.ds) think(s, d, 'cropLost'); } else log(s, '野豬在菜園沒找到吃的，回山了。'); m.raid = 'back'; m.path = route('veg', 'den').slice(1); }
+      else if (m.raid === 'go') { const p = s.plots.find((x) => x.st === 'ripe') || s.plots.find((x) => x.st === 'grow'); if (p) { p.st = 'empty'; p.g = 0; log(s, '野豬拱壞了一畦菜，吃飽回山。'); cropMood(s); } else log(s, '野豬在菜園沒找到吃的，回山了。'); m.raid = 'back'; m.path = route('veg', 'den').slice(1); }
       else { m.gone = true; s.eco.boar.n = Math.min(ECO.boar.max, s.eco.boar.n + 1); }
     }
   }
