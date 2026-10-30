@@ -1,3 +1,4 @@
+import{socialParticipantsReady}from'./homestead-social.mjs';
 import {projectRecipe} from './homestead.mjs';
 import{leisureUseText}from'./homestead-autonomy-learning.mjs';
 import{LEISURE,leisureReason}from'./homestead-autonomy-leisure.mjs';
@@ -10,6 +11,7 @@ export function activityText(s, p = s.person) {
   const t = p?.task;
   if (!t) return '正在看看接下來做什麼';
   const target = (t.act==='build'?projectRecipe(s,t.place)?.name:null)||FACILITIES[t.place]?.stages[s.fac[t.place]?.stage + (t.act === 'build' ? 1 : 0)]?.name || ({home:'住處',visitor:'村路',source:'近山獸徑',pair:'雙人互演處',meeting:'村路會面處',practice:'屋前練步處',encounter:'山豬附近'}[t.place]) || t.place;
+  if(t.act==='dine')return t.phase==='go'?t.seated?'走到長凳與對方共食':'走到會面處共食':!socialParticipantsReady(s)?'已到用餐位置，等對方真走到座位':t.seated?'雙方坐在長凳各吃一份':'雙方在會面處各吃一份';
   if(t.act==='eat'&&t.seated)return t.phase==='go'?'走到長凳，準備慢吃一份':'坐在長凳用餐（4秒，沒有額外飽腹）';
   if (t.phase === 'fetch') return `去儲物處取${materialName[t.mat] || t.mat}，準備建${target}`;
   if (t.phase === 'deliver') return `搬${p.carry?.amount || 1}根木料到「${target}」工地`;

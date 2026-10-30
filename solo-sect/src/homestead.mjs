@@ -1,7 +1,7 @@
 import{preferSeatedMeal,mealPoint,mealDuration,validEatingTask}from'./homestead-dining.mjs';
 import {EXPEDITION_ACTIONS,expeditionReason,reconsiderReason,pendingDeparture,expeditionTarget,expeditionPlan,expeditionComplete,tickExpedition} from './homestead-expedition.mjs';
 import {DAY,HOME,PLACES,LIFE_ACTIONS} from './homestead-life-data.mjs';
-import {SOCIAL_ACTIONS,MEETING,PAIR_POINT,cooperationNeed,socialReason,socialComplete,socialPlan,tickCompanion,validSocialTask} from './homestead-social.mjs';
+import {SOCIAL_ACTIONS,MEETING,PAIR_POINT,socialPoint,socialParticipantsReady,cooperationNeed,socialReason,socialComplete,socialPlan,tickCompanion,validSocialTask} from './homestead-social.mjs';
 import {MARTIAL_ACTIONS,PRACTICE_GOALS,martialReason,martialPlan,martialTarget,martialComplete,validMartialTask} from './homestead-martial.mjs';
 import {defensePlan,REPAIR,fenceMax} from './homestead-defense.mjs';
 import {tickThreat} from './homestead-threat.mjs';
@@ -154,7 +154,7 @@ export function setAvoidCombat(s,avoid){
 }
 export function setCompanionAllowed(s,allowed){
  if(!s.frontier||typeof allowed!=='boolean')return false;const f=s.frontier;f.companion.allowed=allowed;
- if(!allowed){if(pendingDeparture(s)&&f.trip.joinRequested)retreatExpedition(s);if(f.trip.joined){f.trip.joined=false;f.companion.leaving=true;}}
+ if(!allowed){if(Object.hasOwn(SOCIAL_ACTIONS,s.person.task?.act||''))cancelTask(s);if(Object.hasOwn(SOCIAL_ACTIONS,s.person.order||''))clearOnce(s);if(pendingDeparture(s)&&f.trip.joinRequested)retreatExpedition(s);if(f.trip.joined){f.trip.joined=false;f.companion.leaving=true;}}
  return true;
 }
 export function reconsiderExpedition(s){if(reconsiderReason(s))return false;s.frontier.trip.deferred=false;return true;}
@@ -211,7 +211,7 @@ export function askHelperLeave(s) {
 const readyProjects=s=>Object.keys(s.fac).filter(id=>{if(!buildables(s).includes(id))return false;const v=s.fac[id].site;return v&&!v.paused&&(Object.keys(v.need).some(k=>v.delivered[k]+v.reserved[k]<v.need[k]&&s.stock[k]>0)||Object.keys(v.need).every(k=>v.delivered[k]>=v.need[k]));});
 export function nextProject(s){const ids=readyProjects(s);if(s.autonomy&&s.person.order==='build'&&s.person.orderScope==='once'&&s.person.onceProject)return ids.includes(s.person.onceProject)?s.person.onceProject:null;return ids.includes(s.focusProject)?s.focusProject:ids[0]||null;}
 const frontierReason=(s,act)=>Object.hasOwn(EXPEDITION_ACTIONS,act)?expeditionReason(s,act):Object.hasOwn(SOCIAL_ACTIONS,act)?socialReason(s,act):martialReason(s,act);
-const frontierTarget=(s,act)=>Object.hasOwn(EXPEDITION_ACTIONS,act)?expeditionTarget(s,act):Object.hasOwn(SOCIAL_ACTIONS,act)?(['spar','teach','dine'].includes(act)?PAIR_POINT:MEETING):martialTarget(s,act);
+const frontierTarget=(s,act)=>Object.hasOwn(EXPEDITION_ACTIONS,act)?expeditionTarget(s,act):Object.hasOwn(SOCIAL_ACTIONS,act)?socialPoint(s,act):martialTarget(s,act);
 function canDo(s, act, recipeId='basic') {
   if(ACTIONS[act]?.frontierOnly)return !frontierReason(s,act);
   if (s.mode === 'solo' && ['chat','talkHelper','gift','care','helperCare'].includes(act)) return false;
@@ -356,6 +356,7 @@ function begin(s, act) {
   if(leisure)p.task.leisureKind=leisure.id;
   if(act==='rest'&&s.autonomy?.goal==='comfort'&&s.fac.bed.stage===2&&!s.autonomy.comfortRests)p.task.trial=true;
   if(act==='cook'&&s.mode==='solo'){const manual=!!p.cookRequest&&!recipeReason(s,p.cookRequest);p.task.recipe=manual?p.cookRequest:automaticRecipe(s)||'basic';p.task.manual=manual;}
+  if(act==='dine')p.task.seated=preferSeatedMeal(s);
   if(act==='eat'&&s.frontier){p.task.seated=preferSeatedMeal(s);p.task.place=p.task.seated?'bench':'home';}
   if(act==='eat'&&s.mode==='solo'){
     const requested=p.foodRequest;
@@ -534,6 +535,7 @@ function tickQuarter(s,dt) {
     return;
   }
   if(t.act==='fight'&&s.frontier.threat.beast&&Math.hypot(p.pos[0]-s.frontier.threat.beast.pos[0],p.pos[1]-s.frontier.threat.beast.pos[1])>55){t.phase='go';t.timer=0;return;}
+  if(t.act==='dine'&&!socialParticipantsReady(s))return;
   t.timer += dt;
   if (t.timer >= (t.act==='eat'?mealDuration(t):t.act==='cook'?RECIPES[t.recipe||'basic'].duration:ACTIONS[t.act].duration)) complete(s, t);
 }
