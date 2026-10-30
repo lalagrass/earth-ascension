@@ -336,4 +336,27 @@ export const flows = [
       await shot('plots');
     },
   },
+  {
+    // M18 值日（暫停中、預設關）：紀事簿可以打開，名冊與人物卡看得到值日，可以指定。
+    name: 'm18-duty',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.fill('#seed', '4');
+      await page.click('#begin');
+      expect('A8 預設關、寫試做中', /值日：關（試做中）/.test(await page.textContent('[data-duty-toggle]')));
+      expect('A8 關時人物卡沒有值日列', (await page.locator('[data-duty-row]').count()) === 0);
+      await page.click('[data-duty-toggle]');
+      const text = await page.textContent('[data-duty-text]');
+      expect('A8 打開後寫出三職', /伙房 .+、採集 .+、柴火 .+/.test(text), text);
+      await page.waitForFunction(() => /·(伙房|採集|柴火)/.test(document.querySelector('#roster').textContent), null, { timeout: 5000 });
+      expect('A8 名冊看得到值日', /·伙房/.test(await page.textContent('#roster')));
+      await page.click('[data-person="p0"]');
+      expect('A8 人物卡有值日列', (await page.locator('[data-duty-row]').count()) === 1);
+      await page.click('[data-duty="wood"]');
+      const h = await page.textContent('[data-section="life"]');
+      expect('A8 指定柴火後寫出', /值日：柴火/.test(h));
+      expect('A8 紀事寫出指定的人', new RegExp(`柴火 ${await page.getAttribute('[data-panel-name]', 'data-panel-name')}`).test(await page.textContent('[data-duty-text]')));
+      await shot('duty');
+    },
+  },
 ];

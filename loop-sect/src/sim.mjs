@@ -6,6 +6,7 @@ import { placeSite, removeSite, addWork, takeResource, workSpot, blockCell, cell
 import { raidSchedule, startRaids, stepEnemies, activeEnemies, spawnGuard } from './raid.mjs';
 import { newNests, nestOf, canLaunch, retreatReason } from './expedition.mjs';
 import { tally } from './chronicle.mjs';
+import { stepDuty } from './duty.mjs';
 import { visitSchedule, visitChance, appeal, reasonText, shouldApprentice, foundingPlan, freeName } from './recruit.mjs';
 import { seedHolder, nextRand, randInt, hashString } from './rng.mjs';
 import { buildMap, walkable, nearestWalkable } from './map.mjs';
@@ -138,6 +139,7 @@ export function createWorld({ seed = 1, people }) {
   state.sect = null;
   state.nests = newNests();   // M9
   state.plots = [];           // M12 菜畦
+  state.duty = {};            // M18 值日：id → 職
   for (const n of state.nests) NESTS.find((x) => x.id === n.id).guards.forEach((k, i) => spawnGuard(state, n, k, i));
   state.expedition = null;
   state.log = [];
@@ -150,6 +152,7 @@ function initPerson(p, i) {
     p.load = { wood: 0, stone: 0 };    // 身上的木石
     p.hold = { meal: 0, raw: 0, wood: 0, stone: 0 };
     p.focus = null;
+    p.dutyPin = null;                  // M18：玩家指定的值日（null = 自動，'none' = 不排）
     p.skills = newSkills();
     p.moves = newMoves();
     p.loadedDist = 0;
@@ -643,7 +646,7 @@ function stepPerson(state, p) {
     }
     if (p.task.kind === 'fight') { fightTick(state, p); return; }
     if (p.task.kind === 'raze') { razeTick(state, p); return; }
-    if (p.task.kind === 'repair' && p.task.left <= 1 && !cellClear(state, { x: p.task.cx, y: p.task.cy })) { p.actLabel = '等人讓開'; return; }
+    if (p.task.kind === 'repair' && p.task.left <= 1 && !cellClear(state, { x: p.task.cx, y: p.task.cy }, p)) { p.actLabel = '等人讓開'; return; }
     if (p.task.kind === 'build') {
       const site = byId(state.sites, p.task.site);
       if (site) (site.helpers ??= []).includes(p.id) || site.helpers.push(p.id);
@@ -856,6 +859,7 @@ export function step(state) {
   startRaids(state);
   stepRecruit(state);
   stepExpedition(state);
+  stepDuty(state);
   for (const p of [...state.people]) if (state.people.includes(p)) stepPerson(state, p);
   for (const p of state.people) tally(p);
   stepEnemies(state);
@@ -906,3 +910,4 @@ export function stateHash(state) {
 }
 
 export { REFUSE_COOLDOWN };
+export { setDuty } from './duty.mjs';

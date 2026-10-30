@@ -1,13 +1,24 @@
 // M10 長跑報表：12 種子 × 10 日 × 兩個情境。印每日飢餓、最差種子、進食次數、社交、猜個性的準確率，並判 M10-A5–A7。
-// 用法：node loop-sect/tools/report.mjs [--seeds 12] [--days 10]
+// 用法：node loop-sect/tools/report.mjs [--seeds 12] [--days 10] [--fire 1] [--duty 0]
+// --fire 1：煮飯燒柴（M18-A4）；--duty 0：關掉值日，跟有值日比。
 import { createWorld, step } from '../src/sim.mjs';
-import { TICKS_PER_DAY } from '../src/data.mjs';
+import { TICKS_PER_DAY, FIRE, DUTY, COOK_RAW } from '../src/data.mjs';
+import { dutyOf, pressure, ROLE } from '../src/duty.mjs';
+import { isNight } from '../src/needs.mjs';
 import { rosterFor, script, PAUSED } from './soak-checks.mjs';
 import { atLeast } from '../src/social.mjs';
 import { lifeShares } from '../src/chronicle.mjs';
 
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? Number(process.argv[i + 1]) : d; };
 const SEEDS = arg('seeds', 12), DAYS = arg('days', 10);
+FIRE.WOOD_PER_POT = arg('fire', FIRE.WOOD_PER_POT);
+DUTY.ON = arg('duty', DUTY.ON ? 1 : 0) === 1;
+const FIRE_ON = FIRE.WOOD_PER_POT > 0;
+console.log(`燒柴 ${FIRE_ON ? '開' : '關'}、值日 ${DUTY.ON ? '開' : '關'}`);
+const SLEEPS = new Set(['sleep', 'sleepGround']);
+// M18-A6：依職、條理／隨性累計 tick。loop 14 第一次量是「每人一筆平均」，混了職別（條理的人多排到伙房，伙房本來就做得少），
+// 改成同一職裡比、再依 tick 加權；扛回去（送莓、扛木回倉堆）算本職；伙房只算有得煮的時候。
+const adh = {};
 const HUNGRY = 15;
 const EATS = ['eat', 'eatRaw', 'eatCarried', 'ration'];
 const pct = (v) => `${(100 * v).toFixed(1)}%`;
@@ -35,6 +46,17 @@ for (const scenario of ['base', 'exp', 'grow', 'farm']) {
       // M12：第 5 日結束時記一次，好比第 6–10 日。
       if (s.tick === 5 * TICKS_PER_DAY) snap.d5 = { cut: s.ledger.woodCut, veg: s.ledger.veg, picked: s.ledger.picked, chop: Math.max(...s.people.map((p) => p.skills.chop)) };
       const d = Math.floor(t / TICKS_PER_DAY);
+      // M18-A6：值日迫切的白天、醒著、沒被迫自理時，在做本職嗎。
+      if (scenario === 'base' && !isNight(s.tick)) for (const p of s.people) {
+        const role = dutyOf(s, p);
+        if (!role || p.guest || p.exp || p.forced || SLEEPS.has(p.task?.kind) || pressure(s, role) <= 0.5) continue;
+        if (role === 'cook' && !(s.stock.raw >= COOK_RAW && s.stock.wood >= FIRE.WOOD_PER_POT)) continue;
+        if (p.axes.P === 0) continue;
+        const k = (adh[`${role}:${p.axes.P < 0 ? 'J' : 'P'}`] ??= { on: 0, doing: 0, who: new Set() });
+        k.on++; k.who.add(`${seed}:${p.id}`);
+        const kind = p.task?.kind;
+        if (ROLE[role].kinds.includes(kind) || kind === ROLE[role].carry) k.doing++;
+      }
       for (const p of s.people) {
         if (p.guest) continue;
         n++; dayN[d]++;
@@ -63,14 +85,30 @@ for (const scenario of ['base', 'exp', 'grow', 'farm']) {
   membersBy[scenario] = seedRows.map((r) => r.members);
   dailyBy[scenario] = daily;
   // M11-A7：grow 情境人多一半，門檻放在 3%／6%（規格寫在量之前）。
-  const [dayMax, seedMax, id] = scenario === 'grow' ? [0.03, 0.06, 'M11-A7'] : scenario === 'farm' ? [0.02, 0.04, 'M12-A6'] : [0.02, 0.04, 'M10-A5'];
+  // M18-A4：燒柴時用同一組門檻。
+  const [dayMax, seedMax, id] = FIRE_ON ? (scenario === 'grow' ? [0.03, 0.06, 'M18-A4'] : [0.02, 0.04, 'M18-A4']) : scenario === 'grow' ? [0.03, 0.06, 'M11-A7'] : scenario === 'farm' ? [0.02, 0.04, 'M12-A6'] : [0.02, 0.04, 'M10-A5'];
   expect(`${id}[${scenario}]`, Math.max(...daily) <= dayMax && worst.hunger <= seedMax && eatLo >= 1.5 && eatHi <= 4,
     `最差日 ${pct(Math.max(...daily))}（≤ ${pct(dayMax)}）、最差種子 s${worst.seed} ${pct(worst.hunger)}（≤ ${pct(seedMax)}）、進食 ${eatLo.toFixed(2)}–${eatHi.toFixed(2)}（1.5–4）`);
   expect(`M10-A7[${scenario}]`, friends >= 6 && masters >= 1, `有朋友的種子 ${friends}/${SEEDS}（≥ 6）、拜師 ${masters} 次（≥ 1）`);
 }
 
+// M18-A6：守值日。
+if (DUTY.ON) {
+  console.log('--- 值日 ---');
+  let diff = 0, w = 0, nJ = 0, nP = 0;
+  for (const r of DUTY.ROLES) {
+    const J = adh[`${r.id}:J`], P = adh[`${r.id}:P`];
+    if (!J || !P) continue;
+    const rj = J.doing / J.on, rp = P.doing / P.on, wt = J.on + P.on;
+    console.log(`${r.label}：條理 ${pct(rj)}（${J.who.size} 人次、${J.on} tick）、隨性 ${pct(rp)}（${P.who.size} 人次、${P.on} tick）`);
+    diff += (rj - rp) * wt; w += wt; nJ += J.who.size; nP += P.who.size;
+  }
+  const small = nJ < 20 || nP < 20 ? '（小樣本）' : '';
+  expect('M18-A6', w > 0 && diff / w >= 0.1, `值日迫切時做本職，同一職裡條理比隨性多 ${(100 * diff / Math.max(1, w)).toFixed(1)} 個百分點（≥ 10；條理 ${nJ}、隨性 ${nP} 人次）${small}`);
+}
+
 // M12-A5／A6：山上一直有活幹；菜園供得上糧。
-if (m12.base) {
+if (m12.base && FIRE_ON) {
   const b = m12.base, f = m12.farm;
   console.log('--- 柴火與菜園（第 6–10 日）---');
   expect('M12-A5', b.cut / b.n / 5 >= 2 && b.chopGain / b.n >= 5,

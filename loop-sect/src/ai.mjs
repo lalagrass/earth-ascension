@@ -1,5 +1,5 @@
 // 效用 AI：列出所有可做的事、打分、留下理由。只讀 state，不改。
-import { FIRE, FARM, ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
+import { FIRE, FARM, ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, DUTY, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
 import { activeEnemies } from './raid.mjs';
 import { walkable } from './map.mjs';
 import { nearestResources, remaining, stocked, workSpot, siteWorkersFree } from './build.mjs';
@@ -9,6 +9,7 @@ import { drillMove, moveLabel, courage } from './martial.mjs';
 import { reachable } from './build.mjs';
 import { nextRand } from './rng.mjs';
 import { urgency, isNight } from './needs.mjs';
+import { dutyOf, pressure, reliability, ROLE_OF_KIND } from './duty.mjs';
 
 const SLEEPS = new Set(['sleep', 'sleepGround']);
 // loop 6：練功占去空檔後，指定伐木者在練功時需求冒出來，活被別人搶走（全隊砍樹時間中他的占比由 0.63 掉到 0.53）。
@@ -35,7 +36,7 @@ export function interruptible(o) {
   return o.act === 'walk' && o.task && o.task.kind === 'wander';
 }
 
-function score(state, p, c, { need = 0, persona = 0, work = 0 }) {
+function score(state, p, c, { need = 0, persona = 0, work = 0 }, duty = null) {
   const night = isNight(state.tick);
   let sched = 1;
   if (SLEEPS.has(c.kind)) sched = night ? 1.6 + 0.4 * Math.max(0, -p.axes.P) : p.needs.energy > 30 ? 0.5 : 1;
@@ -44,10 +45,14 @@ function score(state, p, c, { need = 0, persona = 0, work = 0 }) {
   const dist = 1 / (1 + d / 40);
   const noise = nextRand(state) * 0.15;
   const focus = p.focus && FOCUS_KINDS[p.focus].has(c.kind) && (work > 0 || c.martial) ? FOCUS_BONUS : 0;
-  // 有別人專門負責這一行（而且醒著）時，其他人先讓給他做：活計因子打折。
-  if (work > 0 && !(p.focus && FOCUS_KINDS[p.focus].has(c.kind)) && state.people.some((o) => o !== p && o.focus && FOCUS_KINDS[o.focus].has(c.kind) && !(o.act === 'do' && SLEEPS.has(o.task?.kind)))) work *= DEFER;
+  // M18 值日：本職加分（迫切 × 可靠）。
+  const mine = !!duty && work > 0 && ROLE_OF_KIND[c.kind] === duty.role;
+  const dutyAdd = mine ? duty.bonus : 0;
+  // 有別人專門負責這一行（而且醒著）時，其他人先讓給他做：活計因子打折。值日的人做本職不讓。
+  if (work > 0 && !mine && !(p.focus && FOCUS_KINDS[p.focus].has(c.kind)) && state.people.some((o) => o !== p && o.focus && FOCUS_KINDS[o.focus].has(c.kind) && !(o.act === 'do' && SLEEPS.has(o.task?.kind)))) work *= DEFER;
   c.f = { need, persona, work, focus, sched, dist, noise };
-  c.score = (need + persona + work + focus) * sched * dist + noise;
+  if (dutyAdd) c.f.duty = dutyAdd;
+  c.score = (need + persona + work + focus + dutyAdd) * sched * dist + noise;
   c.label ??= ACTS[c.kind].label;
   return c;
 }
@@ -60,7 +65,9 @@ export function candidates(state, p, scorePois) {
   const diligence = 0.3 * J - 0.15 * Math.max(0, P);
   const empty = p.carry === 0 && p.load.wood === 0 && p.load.stone === 0;
   const out = [];
-  const add = (c, parts) => out.push(score(state, p, c, parts));
+  const role = p.guest ? null : dutyOf(state, p);
+  const duty = role ? { role, bonus: DUTY.BONUS * pressure(state, role) * reliability(p) } : null;
+  const add = (c, parts) => out.push(score(state, p, c, parts, duty));
   const stock = state.stock;
 
   for (const o of state.objects) {
@@ -227,7 +234,9 @@ export function candidates(state, p, scorePois) {
     forced = '太餓了，先找吃的';
     // 鍋裡沒飯但生莓夠時，餓的人也可以先煮（loop 9 診斷：遠征時家裡人少，飢餓時間裡約一半是「沒飯、生莓夠」卻沒人煮）。
     const cookFirst = state.stock.meal === 0 && state.stock.raw >= COOK_RAW && state.stock.wood >= FIRE.WOOD_PER_POT;
-    const eats = out.filter((c) => EATS.has(c.kind) || c.kind === 'deliver' || (cookFirst && c.kind === 'cook'));
+    // M18：柴火值日的人在「燒柴、木不夠一鍋、沒飯、生莓夠」時也去砍柴、扛回倉堆。
+    const woodFirst = role === 'wood' && FIRE.WOOD_PER_POT > 0 && state.stock.wood < FIRE.WOOD_PER_POT && state.stock.meal === 0 && state.stock.raw >= COOK_RAW;
+    const eats = out.filter((c) => EATS.has(c.kind) || c.kind === 'deliver' || (cookFirst && c.kind === 'cook') || (woodFirst && (c.kind === 'chop' || c.kind === 'store')));
     if (eats.length) list = eats;
   }
   list.sort((a, b) => b.score - a.score);

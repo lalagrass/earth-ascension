@@ -8,7 +8,8 @@ import { effectText } from './skills.mjs';
 import { aff, stageOf, prestige } from './social.mjs';
 import { prowess, moveLabel, comprehendable, compChance } from './martial.mjs';
 import { titleOf, appeal, reasonText } from './recruit.mjs';
-import { SKILLS, MOVES, DEFENSE, FARM } from './data.mjs';
+import { SKILLS, MOVES, DEFENSE, FARM, DUTY } from './data.mjs';
+import { dutyOf, dutyText, setDuty, assignDuty, ROLE } from './duty.mjs';
 import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes, drawEnemies, drawNests, drawLabels, labelBoxes, drawPlots } from './render.mjs';
 
 const $ = (s) => document.querySelector(s);
@@ -23,7 +24,7 @@ const el = (tag, attrs = {}, ...kids) => {
   return e;
 };
 const TRAIT_LABEL = Object.fromEntries(TRAIT_RULES.map((t) => [t.id, t]));
-const FACTOR_LABEL = { need: '需求', persona: '個性', work: '活計', focus: '專長', sched: '作息×', dist: '距離×', noise: '隨機' };
+const FACTOR_LABEL = { need: '需求', persona: '個性', work: '活計', focus: '專長', duty: '值日', sched: '作息×', dist: '距離×', noise: '隨機' };
 const MULT = new Set(['sched', 'dist']);
 
 // ---------- 開局 ----------
@@ -112,10 +113,13 @@ function begin() {
 // 名冊：人會來會走（M8），所以每次人數或身分變了就重畫；立派後前面加派名。
 let rosterKey = '';
 function renderRoster() {
-  rosterKey = state.people.map((p) => `${p.id}${p.guest ? 'g' : ''}`).join() + (state.sect?.name ?? '');
+  rosterKey = rosterSig();
   $('#roster').replaceChildren(...(state.sect ? [el('b', { class: 'sect', 'data-sect': '' }, state.sect.name)] : []),
-    ...state.people.map((p) => el('button', { 'data-person': p.id, class: p.guest ? 'guest' : '', on: { click: () => { selected = p.id; renderPanel(); } } }, p.guest ? `${p.name}（客）` : p.name)));
+    ...state.people.map((p) => el('button', { 'data-person': p.id, class: p.guest ? 'guest' : '', on: { click: () => { selected = p.id; renderPanel(); } } },
+      p.guest ? `${p.name}（客）` : dutyOf(state, p) ? `${p.name}·${ROLE[dutyOf(state, p)].label}` : p.name)));
 }
+// M18：值日變了也重畫名冊。
+const rosterSig = () => state.people.map((p) => `${p.id}${p.guest ? 'g' : ''}${dutyOf(state, p) ?? ''}`).join() + (state.sect?.name ?? '');
 
 let bgVersion = -1;
 function paintBg() {
@@ -154,6 +158,10 @@ function renderChronicle() {
   return el('div', { id: 'chronicle' }, el('h3', {}, '紀事'),
     el('div', { class: 'tabs' }, ...EVENT_GROUPS.map((g) => el('button', { class: evGroup === g.id ? 'on' : '', 'data-events-group': g.id, on: { click: () => { evGroup = g.id; renderBuild(); } } }, g.label))),
     el('div', { id: 'events' }, ...list.map((e) => el('p', { 'data-kind': e.kind }, `${dayText(e.tick)} ${e.text}`)), ...(list.length ? [] : [el('p', { class: 'hint' }, '還沒有這類紀事。')])),
+    // M18 值日（試做中，預設關）：打開後門派自動排伙房、採集、柴火。
+    el('div', { class: 'duty' }, el('button', { class: DUTY.ON ? 'on' : '', 'data-duty-toggle': '', on: { click: () => { DUTY.ON = !DUTY.ON; if (DUTY.ON) assignDuty(state); else state.duty = {}; renderBuild(); renderRoster(); } } },
+      DUTY.ON ? '值日：開' : '值日：關（試做中）'),
+    el('small', { 'data-duty-text': '' }, DUTY.ON ? dutyText(state) : '打開後，門派每日排伙房、採集、柴火各一人')),
     el('table', { class: 'stats', 'data-stats': '' }, ...sectStats(state).map(([k, v]) => el('tr', {}, el('td', {}, k), el('td', {}, v)))));
 }
 
@@ -209,8 +217,7 @@ function frame(now) {
   drawDaylight(ctx, 1280, 800, c.hour, c.minute);
   $('#clock').textContent = `第 ${c.day} 日 ${String(c.hour).padStart(2, '0')}:${String(c.minute).padStart(2, '0')}`;
   if (now - panelAt > 250) {
-    const key = state.people.map((p) => `${p.id}${p.guest ? 'g' : ''}`).join() + (state.sect?.name ?? '');
-    if (key !== rosterKey) renderRoster();
+    if (rosterSig() !== rosterKey) renderRoster();
     if (!state.people.some((x) => x.id === selected)) selected = state.people[0].id;
     renderPanel(); panelAt = now;
   }
@@ -247,7 +254,12 @@ function renderPanel() {
       el('h2', {}, '專長'), el('div', { class: 'focus' }, ...FOCUS.map((f) => el('button', {
         class: p.focus === f.id ? 'on' : '', 'data-focus': f.id ?? 'none',
         on: { click: () => { setFocus(state, p.id, f.id); renderPanel(); } },
-      }, f.label)))),
+      }, f.label))),
+      ...(DUTY.ON && !p.guest ? [el('h2', {}, `值日：${dutyOf(state, p) ? ROLE[dutyOf(state, p)].label : '沒排'}`),
+        el('div', { class: 'focus', 'data-duty-row': '' }, ...[[null, '自動'], ...DUTY.ROLES.map((r) => [r.id, r.label]), ['none', '不排']].map(([id, label]) => el('button', {
+          class: (p.dutyPin ?? null) === id ? 'on' : '', 'data-duty': id ?? 'auto',
+          on: { click: () => { setDuty(state, p.id, id); renderPanel(); renderRoster(); renderBuild(); } },
+        }, label)))] : [])),
     sec('skills', ...SKILLS.map((k) => el('div', { class: 'skill', 'data-skill': k.id }, el('span', {}, k.label),
       el('span', { class: 'bar' }, el('i', { style: `width:${p.skills[k.id]}%` })), el('b', {}, p.skills[k.id].toFixed(0)),
       el('small', {}, effectText(p, k.id))))),

@@ -172,8 +172,9 @@ export function workSpot(state, site) {
 }
 
 // 格子上有人就不能立起擋路的牆或柵。
-export function cellClear(state, c) {
-  return ![...state.people, ...(state.enemies ?? [])].some((p) => Math.hypot(p.x - c.x, p.y - c.y) < 1);
+// self：修柵欄的人自己不算擋路（loop 14 診斷：修的人停在格邊 0.63 格處，等自己讓開，一等四千 tick）。
+export function cellClear(state, c, self = null) {
+  return ![...state.people, ...(state.enemies ?? [])].some((p) => p !== self && Math.hypot(p.x - c.x, p.y - c.y) < 1);
 }
 
 export function blockCell(state, c) {

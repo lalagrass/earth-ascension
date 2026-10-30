@@ -88,3 +88,7 @@ table.stats { width: 100%; font-size: 12px; margin-top: 6px; border-collapse: co
 table.stats td { padding: 1px 4px; border-bottom: 1px dotted var(--line); }
 table.stats td:last-child { text-align: right; }
 .story p { margin: 2px 0; font-size: 13px; }
+/* M18 值日開關 */
+#chronicle .duty { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0; }
+#chronicle .duty button { font-size: 12px; padding: 2px 8px; }
+#chronicle .duty small { color: var(--muted); }

@@ -366,3 +366,20 @@ Object.assign(ACTS, {
   raze: { label: '拆巢', dur: 9999, per: { energy: -0.02 } },
   ration: { label: '吃乾糧', dur: 10, per: {} },
 });
+
+// ---------- M18 值日 ----------
+// 伙房、採集、柴火各排一人；carry 是把東西扛回去那一步（量守值日時算本職，不加分）。
+// 被排到的人做本職時加分 BONUS × 迫切 × 可靠（可靠 = 1 − SLACK × 隨性程度）。
+// loop 14：暫停（見 specs/M18.md），預設關；遊戲裡可以在紀事簿打開試。
+export const DUTY = {
+  ON: false,
+  ROLES: [
+    { id: 'cook', label: '伙房', kinds: ['cook'], skill: 'cook' },
+    { id: 'gather', label: '採集', kinds: ['forage', 'sow', 'harvest'], carry: 'deliver', skill: 'forage' },
+    { id: 'wood', label: '柴火', kinds: ['chop'], carry: 'store', skill: 'chop' },
+  ],
+  ORDER: ['cook', 'gather', 'wood', 'gather', 'cook', 'wood'],
+  BONUS: 1.5,
+  SLACK: 0.4,
+  HOUR: 5,
+};
