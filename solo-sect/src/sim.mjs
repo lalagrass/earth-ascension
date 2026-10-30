@@ -38,6 +38,7 @@ import { cancelTask, removeActor, whAvail } from './lifecycle.mjs';
 import { econDaily, schoolStep, startSchool, E as econOf } from './economy.mjs';
 import { threatDaily, threatStep, raidResolve, bandStep } from './threat.mjs';
 import { lairDaily, lairStep } from './lair.mjs';
+import { jhevDaily } from './jhevents.mjs';
 import { cliqueDaily, cliqueTrain } from './clique.mjs';
 import { archRecruit } from './archetype.mjs';
 import { removeDisciple } from './gen.mjs';
@@ -80,6 +81,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.draw) s.draw = true;
   if (heroSpec?.comprehend) s.wu7 = true;
   if (heroSpec?.mentor) s.mentor = true;
+  if (heroSpec?.jhev) s.jhev = true; // loop23 江湖事件（選用）
   if (heroSpec?.peace) s.m9 = true; // loop9 太平與防禦經濟（選用） // loop8 同修請教（選用） // loop7 領悟（選用） // loop6 人以群分（選用）
   sectInit(s); s.gen = genInit(); if (heroSpec?.bonus) s.gen.suhuiStart = heroSpec.bonus;
   return s;
@@ -606,7 +608,7 @@ export function payday(s) {
 // ---- tick ----
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
-  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); if (s.draw) cliqueDaily(s); if (s.m9) lairDaily(s, EH); } }
+  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); if (s.draw) cliqueDaily(s); if (s.m9) lairDaily(s, EH); if (s.jhev) jhevDaily(s); } }
   schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH); if (s.lair) lairStep(s, EH);
   const se = seasonOf(s); for (const p of s.plots) if (p.st === 'grow' && (p.g += dt / se.grow) >= PLOT_GROW) p.st = 'ripe';
   const seIdx = se.i; if (s.seasonI !== seIdx) { if (s.seasonI !== undefined) log(s, `入${se.name}了。${{ spring: '萬物萌發，菜長得快。', summer: '天長日暖。', autumn: '秋高氣爽，心情開闊。', winter: '天寒地凍，菜長得慢，飯量變大。' }[se.id]}`); s.seasonI = seIdx; }
