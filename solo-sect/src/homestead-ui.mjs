@@ -1,3 +1,4 @@
+import{recoveryChoice}from'./homestead-autonomy-recovery.mjs';
 import{mealAimText}from'./homestead-autonomy-meals.mjs';
 import{deferAutonomyGoal,allowAutonomyGoals}from'./homestead.mjs';
 import{autonomyText,DIRECTIONS,setAutonomyDirection,lifeStage,autonomyHistory}from'./homestead-autonomy.mjs';
@@ -152,7 +153,7 @@ function render() {
   $('autonomy-controls').hidden=!s.autonomy;
   if(s.autonomy){$('life-direction').value=s.autonomy.direction;$('defer-goal').disabled=!s.autonomy.goal;$('allow-goals').disabled=!s.autonomy.deferred.length;}
   $('autonomy-mode').textContent=s.autonomy?`自主發展已啟用。${p.order?'目前直接指派優先，完成或清除後再續打算。':'不派工也會安家與改善生活。'}暫停工程需由你恢復。`:'舊局維持原來的自主補庫模式。';
-  $('status').innerHTML = `<h2>${esc(p.name)} · ${p.personality === 'quiet' ? '喜靜' : p.personality === 'diligent' ? '勤勞' : s.mode === 'solo' ? '開朗' : '好交往'}</h2><div>飢餓 ${Math.round(p.hunger)} / 100</div><div class="meter"><span style="width:${p.hunger}%"></span></div><div>精力 ${Math.round(p.energy)} / 100</div><div class="meter energy"><span style="width:${p.energy}%"></span></div><p class="activity">${esc(activityText(s))}</p>${s.mode==='solo'?`<div class="feeling">感受 ${feeling.value}/5 · ${feeling.active.map(f=>`${f.name}（${f.left}秒）`).join('、')||'平靜'}<div class="muted">來自實際使用，會消退；不抵銷飢餓或轉為工作增益。</div></div>`:''}<div class="muted">${esc(activityReason(s))}</div><div class="muted">工作 ${Math.floor(p.work)} · 閒暇 ${p.leisure} · 識藥 ${p.herbalSkill}</div>`;
+  $('status').innerHTML = `<h2>${esc(p.name)} · ${p.personality === 'quiet' ? '喜靜' : p.personality === 'diligent' ? '勤勞' : s.mode === 'solo' ? '開朗' : '好交往'}</h2><div>飢餓 ${Math.round(p.hunger)} / 100</div><div class="meter"><span style="width:${p.hunger}%"></span></div><div>精力 ${Math.round(p.energy)} / 100</div><div class="meter energy"><span style="width:${p.energy}%"></span></div><p class="activity">${esc(activityText(s))}</p>${s.mode==='solo'?`<div class="feeling">感受 ${feeling.value}/5 · ${feeling.active.map(f=>`${f.name}（${f.left}秒）`).join('、')||'平靜'}<div class="muted">來自實際使用，會消退；不抵銷飢餓或轉為工作增益。</div></div>`:''}<div class="muted">${esc(task?.act==='selfCare'&&s.autonomy?recoveryChoice(s)?.reason||activityReason(s):activityReason(s))}</div><div class="muted">工作 ${Math.floor(p.work)} · 閒暇 ${p.leisure} · 識藥 ${p.herbalSkill}</div>`;
   $('recipe-card').hidden=s.mode!=='solo';
   $('meal-style').value=s.mealStyle||'auto';
   $('meal-style-reason').textContent=`只影響下次自主補餐，不打斷現在工作或手動一鍋／一份。${s.autonomy?.deferred.includes('stew')?'你已暫緩燉菜，自主補餐先用基本餐／拌食；明確派一鍋仍可。':preparedCount(s)>=target.meal?`現成${preparedCount(s)}份已達夠用${target.meal}份，先不另做。`:mealDecision(s).reason}`;
