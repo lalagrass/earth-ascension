@@ -16,6 +16,7 @@ try{
  await page.click('[data-speed="0"]');const state=await page.evaluate(()=>structuredClone(window.__homestead));assert.ok(state.fac.hut.stage>=1);assert.ok(minH>0);assert.equal(errors.length,0);
  const t=state.t;await page.waitForTimeout(700);assert.equal(await page.evaluate(()=>window.__homestead.t),t);
  await page.locator('#land').scrollIntoViewIfNeeded();await page.screenshot({path:`/workspace/earth-ascension/solo-sect/shots/autonomy-${milestone}-home.png`});
+ await page.locator('#next-step').scrollIntoViewIfNeeded();await page.screenshot({path:`/workspace/earth-ascension/solo-sect/shots/autonomy-${milestone}-plan.png`});
  await page.setViewportSize({width:390,height:844});await page.locator('#next-step').scrollIntoViewIfNeeded();await page.screenshot({path:`/workspace/earth-ascension/solo-sect/shots/autonomy-${milestone}-narrow.png`});
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);assert.equal(overflow,false);
  const result={milestone,personality,mode:'normal UI; only new-game/start/speed controls; no orders, blueprints, injection',speed:16,worldEnd:t,observedMinH:minH,observedMinE:minE,restUsed,events,errors,state};

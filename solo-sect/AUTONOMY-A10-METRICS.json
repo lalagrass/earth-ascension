@@ -1,0 +1,456 @@
+{
+  "long": [
+    {
+      "personality": "quiet",
+      "condition": "fresh",
+      "days": 20,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "comfort",
+        "porch"
+      ],
+      "leisure": 444
+    },
+    {
+      "personality": "quiet",
+      "condition": "low",
+      "days": 20,
+      "minH": 20.27499999999998,
+      "minE": 0,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "comfort",
+        "porch"
+      ],
+      "leisure": 436
+    },
+    {
+      "personality": "quiet",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.500000000007844,
+      "minE": 26.05000000000006,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "comfort",
+        "porch"
+      ],
+      "leisure": 499
+    },
+    {
+      "personality": "quiet",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "comfort",
+        "porch"
+      ],
+      "leisure": 451
+    },
+    {
+      "personality": "quiet",
+      "condition": "paused",
+      "days": 20,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "comfort",
+        "porch"
+      ],
+      "leisure": 445
+    },
+    {
+      "personality": "sociable",
+      "condition": "fresh",
+      "days": 20,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "porch",
+        "comfort"
+      ],
+      "leisure": 443
+    },
+    {
+      "personality": "sociable",
+      "condition": "low",
+      "days": 20,
+      "minH": 20.27499999999998,
+      "minE": 0,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "comfort",
+        "porch"
+      ],
+      "leisure": 436
+    },
+    {
+      "personality": "sociable",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.46000000006359,
+      "minE": 41.45000000000035,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "porch",
+        "comfort"
+      ],
+      "leisure": 497
+    },
+    {
+      "personality": "sociable",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "porch",
+        "comfort"
+      ],
+      "leisure": 449
+    },
+    {
+      "personality": "sociable",
+      "condition": "paused",
+      "days": 20,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "porch",
+        "comfort"
+      ],
+      "leisure": 449
+    },
+    {
+      "personality": "diligent",
+      "condition": "fresh",
+      "days": 20,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "pantry",
+        "comfort"
+      ],
+      "leisure": 437
+    },
+    {
+      "personality": "diligent",
+      "condition": "low",
+      "days": 20,
+      "minH": 20.27499999999998,
+      "minE": 0,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "pantry",
+        "comfort"
+      ],
+      "leisure": 428
+    },
+    {
+      "personality": "diligent",
+      "condition": "full",
+      "days": 20,
+      "minH": 36.46500000000785,
+      "minE": 37.80000000000034,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "pantry",
+        "comfort"
+      ],
+      "leisure": 489
+    },
+    {
+      "personality": "diligent",
+      "condition": "interrupted",
+      "days": 20,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "pantry",
+        "comfort"
+      ],
+      "leisure": 442
+    },
+    {
+      "personality": "diligent",
+      "condition": "paused",
+      "days": 20,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "completed": [
+        "shelter",
+        "hotFood",
+        "pantry",
+        "comfort"
+      ],
+      "leisure": 440
+    }
+  ],
+  "commandSeeds": [
+    {
+      "seed": 1,
+      "ticks": 20000,
+      "seconds": 5000,
+      "minH": 35.035000000005454,
+      "minE": 19.249999999999996,
+      "loads": 378,
+      "made": {
+        "basic": 1,
+        "salad": 4,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 3,
+        "salad": 8,
+        "stew": 4
+      },
+      "wood": 54,
+      "fruit": 17,
+      "harvest": 14,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 12,
+        "cook": 8
+      },
+      "stock": {
+        "berries": 8,
+        "wood": 7,
+        "seeds": 4,
+        "veg": 7,
+        "meal": 0,
+        "salad": 0,
+        "stew": 6,
+        "herbs": 0
+      },
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "kitchen": 2,
+        "store": 0,
+        "bench": 1,
+        "flowers": 1,
+        "bed": 2,
+        "workbench": 1
+      }
+    },
+    {
+      "seed": 2,
+      "ticks": 20000,
+      "seconds": 5000,
+      "minH": 35.890000000015505,
+      "minE": 40,
+      "loads": 378,
+      "made": {
+        "basic": 4,
+        "salad": 0,
+        "stew": 5
+      },
+      "ate": {
+        "basic": 9,
+        "salad": 0,
+        "stew": 7
+      },
+      "wood": 56,
+      "fruit": 13,
+      "harvest": 15,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 12,
+        "cook": 8
+      },
+      "stock": {
+        "berries": 8,
+        "wood": 6,
+        "seeds": 4,
+        "veg": 7,
+        "meal": 3,
+        "salad": 0,
+        "stew": 3,
+        "herbs": 0
+      },
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "kitchen": 2,
+        "store": 0,
+        "bench": 1,
+        "flowers": 1,
+        "bed": 2,
+        "workbench": 1
+      }
+    },
+    {
+      "seed": 3,
+      "ticks": 20000,
+      "seconds": 5000,
+      "minH": 35.2700000000105,
+      "minE": 18.52500000000001,
+      "loads": 378,
+      "made": {
+        "basic": 1,
+        "salad": 5,
+        "stew": 2
+      },
+      "ate": {
+        "basic": 3,
+        "salad": 8,
+        "stew": 0
+      },
+      "wood": 49,
+      "fruit": 25,
+      "harvest": 10,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 12,
+        "cook": 8
+      },
+      "stock": {
+        "berries": 8,
+        "wood": 8,
+        "seeds": 4,
+        "veg": 7,
+        "meal": 0,
+        "salad": 2,
+        "stew": 4,
+        "herbs": 0
+      },
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "kitchen": 2,
+        "store": 0,
+        "bench": 1,
+        "flowers": 1,
+        "bed": 2,
+        "workbench": 1
+      }
+    },
+    {
+      "seed": 4,
+      "ticks": 20000,
+      "seconds": 5000,
+      "minH": 36.245000000012936,
+      "minE": 49,
+      "loads": 378,
+      "made": {
+        "basic": 4,
+        "salad": 3,
+        "stew": 2
+      },
+      "ate": {
+        "basic": 10,
+        "salad": 3,
+        "stew": 2
+      },
+      "wood": 52,
+      "fruit": 19,
+      "harvest": 12,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 12,
+        "cook": 8
+      },
+      "stock": {
+        "berries": 8,
+        "wood": 8,
+        "seeds": 4,
+        "veg": 7,
+        "meal": 2,
+        "salad": 3,
+        "stew": 2,
+        "herbs": 0
+      },
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "kitchen": 2,
+        "store": 0,
+        "bench": 1,
+        "flowers": 1,
+        "bed": 2,
+        "workbench": 1
+      }
+    },
+    {
+      "seed": 5,
+      "ticks": 20000,
+      "seconds": 5000,
+      "minH": 36.16000000003828,
+      "minE": 47,
+      "loads": 378,
+      "made": {
+        "basic": 3,
+        "salad": 1,
+        "stew": 0
+      },
+      "ate": {
+        "basic": 6,
+        "salad": 2,
+        "stew": 0
+      },
+      "wood": 47,
+      "fruit": 25,
+      "harvest": 7,
+      "skills": {
+        "gather": 12,
+        "build": 40,
+        "farm": 12,
+        "cook": 7
+      },
+      "stock": {
+        "berries": 8,
+        "wood": 8,
+        "seeds": 4,
+        "veg": 7,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "fac": {
+        "hut": 2,
+        "garden": 1,
+        "herbGarden": 0,
+        "kitchen": 2,
+        "store": 0,
+        "bench": 1,
+        "flowers": 1,
+        "bed": 2,
+        "workbench": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+[
+  {
+    "personality": "quiet",
+    "days": 20,
+    "made": {
+      "basic": 5,
+      "salad": 1,
+      "stew": 0
+    },
+    "ate": {
+      "basic": 11,
+      "salad": 2,
+      "stew": 0
+    },
+    "herbalActions": 0,
+    "leisure": 444,
+    "fac": {
+      "hut": 2,
+      "garden": 1,
+      "herbGarden": 0,
+      "workbench": 1,
+      "bed": 2,
+      "bench": 1,
+      "flowers": 1,
+      "kitchen": 1,
+      "store": 0,
+      "berries": 0,
+      "wood": 0,
+      "herbs": 0
+    }
+  },
+  {
+    "personality": "sociable",
+    "days": 20,
+    "made": {
+      "basic": 5,
+      "salad": 1,
+      "stew": 0
+    },
+    "ate": {
+      "basic": 11,
+      "salad": 2,
+      "stew": 0
+    },
+    "herbalActions": 0,
+    "leisure": 443,
+    "fac": {
+      "hut": 2,
+      "garden": 1,
+      "herbGarden": 0,
+      "workbench": 1,
+      "bed": 2,
+      "bench": 1,
+      "flowers": 1,
+      "kitchen": 1,
+      "store": 0,
+      "berries": 0,
+      "wood": 0,
+      "herbs": 0
+    }
+  },
+  {
+    "personality": "diligent",
+    "days": 20,
+    "made": {
+      "basic": 5,
+      "salad": 1,
+      "stew": 0
+    },
+    "ate": {
+      "basic": 11,
+      "salad": 2,
+      "stew": 0
+    },
+    "herbalActions": 0,
+    "leisure": 437,
+    "fac": {
+      "hut": 2,
+      "garden": 1,
+      "herbGarden": 0,
+      "workbench": 1,
+      "bed": 2,
+      "bench": 0,
+      "flowers": 0,
+      "kitchen": 2,
+      "store": 1,
+      "berries": 0,
+      "wood": 0,
+      "herbs": 0
+    }
+  }
+]
