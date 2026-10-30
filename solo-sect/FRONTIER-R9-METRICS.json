@@ -1,0 +1,174 @@
+{
+  "scenario": "same quiet personality/fresh modest stocks, no work/build input, deterministic .25 ticks; not a human fun study",
+  "results": [
+    {
+      "approach": "guard",
+      "personality": "quiet",
+      "worldSeconds": 4800,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "incursions": 8,
+      "damage": 256,
+      "scares": 0,
+      "sourceClearAt": null,
+      "quietSinceClear": null,
+      "wood": {
+        "gathered": 67,
+        "accounted": 67,
+        "stock": 2,
+        "sites": 0,
+        "carry": 0,
+        "built": 40,
+        "cookingFuel": 4,
+        "repairs": 21
+      },
+      "martial": {
+        "xp": 0,
+        "practices": 0,
+        "hits": 0,
+        "partnerRounds": 0,
+        "insights": 0,
+        "stance": "brace",
+        "avoid": false
+      },
+      "leisure": 280,
+      "trip": {
+        "phase": "home",
+        "ration": null,
+        "joinRequested": false,
+        "joined": false,
+        "deferred": false,
+        "journeys": 0,
+        "returns": 0,
+        "packed": 0,
+        "eaten": 0,
+        "returned": 0,
+        "energySpent": 0,
+        "lastAid": 0,
+        "aidHits": 0
+      },
+      "events": []
+    },
+    {
+      "approach": "learn",
+      "personality": "quiet",
+      "worldSeconds": 4800,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "incursions": 8,
+      "damage": 0,
+      "scares": 8,
+      "sourceClearAt": null,
+      "quietSinceClear": null,
+      "wood": {
+        "gathered": 41,
+        "accounted": 41,
+        "stock": 2,
+        "sites": 0,
+        "carry": 0,
+        "built": 34,
+        "cookingFuel": 5,
+        "repairs": 0
+      },
+      "martial": {
+        "xp": 12,
+        "practices": 4,
+        "hits": 42,
+        "partnerRounds": 2,
+        "insights": 1,
+        "stance": "brace",
+        "avoid": false
+      },
+      "leisure": 337,
+      "trip": {
+        "phase": "home",
+        "ration": null,
+        "joinRequested": false,
+        "joined": false,
+        "deferred": false,
+        "journeys": 0,
+        "returns": 0,
+        "packed": 0,
+        "eaten": 0,
+        "returned": 0,
+        "energySpent": 0,
+        "lastAid": 0,
+        "aidHits": 0
+      },
+      "events": []
+    },
+    {
+      "approach": "peace",
+      "personality": "quiet",
+      "worldSeconds": 4800,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "incursions": 1,
+      "damage": 0,
+      "scares": 1,
+      "sourceClearAt": 853.5,
+      "quietSinceClear": 3946.5,
+      "wood": {
+        "gathered": 41,
+        "accounted": 41,
+        "stock": 2,
+        "sites": 0,
+        "carry": 0,
+        "built": 34,
+        "cookingFuel": 5,
+        "repairs": 0
+      },
+      "martial": {
+        "xp": 8,
+        "practices": 4,
+        "hits": 8,
+        "partnerRounds": 0,
+        "insights": 0,
+        "stance": "brace",
+        "avoid": false
+      },
+      "leisure": 351,
+      "trip": {
+        "phase": "home",
+        "ration": null,
+        "joinRequested": false,
+        "joined": false,
+        "deferred": false,
+        "journeys": 1,
+        "returns": 1,
+        "packed": 1,
+        "eaten": 0,
+        "returned": 1,
+        "energySpent": 8,
+        "lastAid": 0,
+        "aidHits": 0
+      },
+      "events": [
+        {
+          "t": 830.5,
+          "phase": "outbound",
+          "energy": 100,
+          "hunger": 78.73000000001133
+        },
+        {
+          "t": 837.5,
+          "phase": "source",
+          "energy": 96,
+          "hunger": 77.75000000001143
+        },
+        {
+          "t": 853.5,
+          "phase": "return",
+          "energy": 78,
+          "hunger": 75.51000000001164
+        },
+        {
+          "t": 860.5,
+          "phase": "home",
+          "energy": 74,
+          "hunger": 74.53000000001174
+        }
+      ]
+    }
+  ]
+}

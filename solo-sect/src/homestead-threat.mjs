@@ -5,7 +5,8 @@ const log=(s,msg)=>{s.log.unshift({day:s.day,msg});s.log.length=Math.min(80,s.lo
 export function finishIncident(s,reason){const t=s.frontier.threat;t.beast=null;t.phase='quiet';t.next=s.t+INTERVAL;t.until=0;log(s,reason);}
 export function tickThreat(s,dt){
  const f=s.frontier;if(!f)return;const t=f.threat;
- if(t.phase==='quiet'&&s.t>=t.next){t.phase='warning';t.warnAt=s.t;t.until=s.t+WARNING;log(s,'林緣傳來山豬足跡；30秒後可能靠近。可守家，或繼續生活避開。');}
+ if(f.source?.cleared&&t.phase==='warning'){t.phase='quiet';t.until=0;log(s,'獸徑來源已清理，尚未出現的侵擾取消；沒有生成替代獸。');}
+ if(!f.source?.cleared&&t.phase==='quiet'&&s.t>=t.next){t.phase='warning';t.warnAt=s.t;t.until=s.t+WARNING;log(s,'林緣傳來山豬足跡；30秒後可能靠近。可守家，或繼續生活避開。');}
  if(t.phase==='warning'&&s.t>=t.until){t.phase='active';t.incursions++;t.beast={pos:[875,345],hp:18,born:s.t,lastStrike:s.t,scared:false};t.until=s.t+INCIDENT;log(s,'一隻山豬進入林緣。');}
  const b=t.beast;if(!b)return;
  if(s.t>=t.until){finishIncident(s,'山豬離開了；家園仍可繼續生活。');return;}
@@ -17,4 +18,4 @@ export function tickThreat(s,dt){
 export function validThreat(s){const t=s.frontier?.threat;if(!t||!['quiet','warning','active'].includes(t.phase)||['next','warnAt','until','incursions','damage','scares'].some(k=>!Number.isFinite(t[k])||t[k]<0)||['incursions','damage','scares'].some(k=>!Number.isInteger(t[k])))return false;
  if(t.phase==='quiet'&&(t.beast!==null||t.until!==0)||t.phase==='warning'&&(t.beast!==null||t.warnAt>s.t||t.until!==t.warnAt+WARNING||t.until<s.t)||t.phase==='active'&&(!t.beast||t.until<s.t))return false;
  const b=t.beast;return !b||!!(Array.isArray(b.pos)&&b.pos.length===2&&b.pos.every(Number.isFinite)&&b.pos[0]>=0&&b.pos[0]<=900&&b.pos[1]>=0&&b.pos[1]<=560&&b.hp>0&&b.hp<=18&&Number.isFinite(b.hp)&&Number.isFinite(b.born)&&Number.isFinite(b.lastStrike)&&b.born<=s.t&&b.born>=0&&b.lastStrike>=b.born&&b.lastStrike<=s.t&&t.until===b.born+INCIDENT&&typeof b.scared==='boolean');}
-export function threatText(s){const t=s.frontier.threat;return t.phase==='warning'?`預警：山豬約${Math.max(0,Math.ceil(t.until-s.t))}秒後靠近；先備防或避開。`:t.beast?`山豬正在林緣，還有${Math.max(0,Math.ceil(t.until-s.t))}秒離開；屏障已承受${t.damage}傷害。`:`目前平靜；約${Math.max(0,Math.ceil(t.next-s.t))}秒後再留意林緣。`;}
+export function threatText(s){const t=s.frontier.threat;if(s.frontier.source?.cleared&&t.phase==='quiet')return `此獸徑已清理，來源不再排新侵擾；清理至今${Math.max(0,Math.floor(s.t-s.frontier.source.clearAt))}世界秒。`;return t.phase==='warning'?`預警：山豬約${Math.max(0,Math.ceil(t.until-s.t))}秒後靠近；先備防或避開。`:t.beast?`山豬正在林緣，還有${Math.max(0,Math.ceil(t.until-s.t))}秒離開；屏障已承受${t.damage}傷害。`:`目前平靜；約${Math.max(0,Math.ceil(t.next-s.t))}秒後再留意林緣。`;}
