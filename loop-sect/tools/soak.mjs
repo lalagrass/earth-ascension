@@ -2,7 +2,7 @@
 // 用法：node loop-sect/tools/soak.mjs [--seeds 12] [--days 3]
 import { createWorld, step, stateHash } from '../src/sim.mjs';
 import { TICKS_PER_DAY } from '../src/data.mjs';
-import { rosterFor, invariants, samplers, summarize, judge } from './soak-checks.mjs';
+import { rosterFor, invariants, samplers, summarize, judge, script, perSeed } from './soak-checks.mjs';
 
 const arg = (k, d) => {
   const i = process.argv.indexOf(`--${k}`);
@@ -18,13 +18,15 @@ for (let seed = 1; seed <= SEEDS; seed++) {
   const s = createWorld({ seed, people: rosterFor(seed) });
   const ctx = { seed, failures: [], samples: pooled, prev: new Map(), lastMove: new Map() };
   for (let t = 0; t < TICKS && ctx.failures.length < 5; t++) {
+    script(s);
     for (const p of s.people) ctx.prev.set(p.id, { x: p.x, y: p.y });
     step(s);
     for (const inv of invariants) inv(s, ctx);
     for (const fn of samplers) fn(s, ctx);
   }
+  perSeed(s, ctx);
   const again = createWorld({ seed, people: rosterFor(seed) });
-  for (let t = 0; t < s.tick; t++) step(again);
+  while (again.tick < s.tick) { script(again); step(again); }
   if (stateHash(again) !== stateHash(s)) ctx.failures.push('決定論：同種子兩次雜湊不同');
   failures.push(...ctx.failures.map((f) => `seed ${seed}: ${f}`));
   console.log(`seed ${String(seed).padStart(2)} hash ${stateHash(s)} ${summarize(s)}`);

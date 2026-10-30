@@ -2,7 +2,7 @@
 
 export const TICKS_PER_DAY = 1440;          // 1 tick = 1 遊戲分鐘
 export const TICKS_PER_SECOND = 20;         // 1× 時每真實秒的 tick 數
-export const BASE_SPEED = 0.12;             // 格／tick
+export const BASE_SPEED = 0.2;              // 格／tick（M3 由 0.12 調高，見 LOOP_LOG loop 3）
 
 export const ATTRS = [
   { id: 'gen', label: '根骨', desc: '體魄與耐力，影響精力與外功成長' },
@@ -102,7 +102,7 @@ export const NEEDS = [
   { id: 'social', label: '交流' },
   { id: 'fun', label: '樂趣' },
 ];
-export const NEED_DECAY = { food: 0.1, energy: 0.055, social: 0.06, fun: 0.05 };
+export const NEED_DECAY = { food: 0.1, energy: 0.055, social: 0.045, fun: 0.035 };
 export const WALK_ENERGY = 0.02;
 export const FORCE = { food: 15, energy: 12 };   // 低於此值只顧自理
 export const NIGHT_FROM = 22;
@@ -130,7 +130,7 @@ export const FORAGE_TAKE = 3;
 export const ACTS = {
   sleep: { label: '睡覺', dur: 480, per: { energy: 0.22 } },
   sleepGround: { label: '席地而睡', dur: 480, per: { energy: 0.12 } },
-  eat: { label: '吃飯', dur: 20, per: { food: 3 } },
+  eat: { label: '吃飯', dur: 30, per: { food: 3 } },
   eatRaw: { label: '生吃莓果', dur: 10, per: { food: 1.5 } },
   eatCarried: { label: '吃身上的莓果', dur: 10, per: { food: 1.5 } },
   forage: { label: '採莓', dur: 25, per: { fun: 0.02 } },
@@ -141,3 +141,52 @@ export const ACTS = {
   wander: { label: '閒逛', dur: 0, per: {} },
   idle: { label: '發呆', dur: 20, per: { fun: 0.02 } },
 };
+
+// ---------- M3 資源採集與建設 ----------
+export const PILE = { label: '倉堆', x: 25, y: 24 };
+export const TREE_WOOD = 4;
+export const ROCK_STONE = 6;
+export const STOCK_TARGET = { wood: 10, stone: 6 };
+export const START_MATERIALS = { wood: 0, stone: 0 };
+export const SITE_WORKERS = 2;
+
+// 藍圖：tiles 是完工後的格（null 表示不改地圖），cost 是材料，work 是總工時。
+export const BLUEPRINTS = [
+  {
+    id: 'fence-s', label: '南柵欄', desc: '院子南邊一道木柵，留一個門口', kind: 'fence',
+    cells: Array.from({ length: 16 }, (_, i) => [24 + i, 30]).filter(([x]) => x !== 29),
+    costPerCell: { wood: 1 }, workPerCell: 12,
+  },
+  {
+    id: 'hut-e', label: '東茅屋', desc: '道館東邊一間茅屋，兩張床', kind: 'hut',
+    rect: [39, 15, 43, 19], door: [41, 19], beds: [[40, 16], [42, 16]],
+    cost: { wood: 10, stone: 4 }, work: 180,
+  },
+  {
+    id: 'hearth2', label: '石灶台', desc: '把露天灶砌成石灶台：煮得快、一鍋多一份', kind: 'upgrade',
+    target: 'hearth', cost: { stone: 4 }, work: 90,
+  },
+];
+export const HEARTH_LEVELS = [
+  { cookDur: 40, meals: 3 },
+  { cookDur: 25, meals: 4 },
+];
+
+export const FOCUS = [
+  { id: null, label: '不指定' },
+  { id: 'wood', label: '伐木', kinds: ['chop'] },
+  { id: 'stone', label: '採石', kinds: ['quarry'] },
+  { id: 'build', label: '營造', kinds: ['haul', 'build'] },
+  { id: 'cook', label: '炊事', kinds: ['cook'] },
+  { id: 'gather', label: '採集', kinds: ['forage'] },
+];
+export const FOCUS_BONUS = 1.5;
+export const WORK_KINDS = new Set(['chop', 'quarry', 'haul', 'build', 'cook', 'forage', 'deliver', 'store']);
+
+Object.assign(ACTS, {
+  chop: { label: '砍樹', dur: 60, per: { energy: -0.015 } },
+  quarry: { label: '敲石', dur: 70, per: { energy: -0.02 } },
+  store: { label: '把木石放上倉堆', dur: 3, per: {} },
+  haul: { label: '搬料', dur: 3, per: {} },
+  build: { label: '施工', dur: 30, per: { energy: -0.015 } },
+});

@@ -91,4 +91,36 @@ export const flows = [
       await shot('life');
     },
   },
+  {
+    name: 'm3-build',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.click('#begin');
+      await page.click('[data-blueprint="hut-e"]');
+      await page.click('[data-blueprint="hearth2"]');
+      await page.click('[data-blueprint="fence-s"]');
+      let s = await snap(page);
+      expect('A9 放藍圖後出現工地', s.sites.length === 3, String(s.sites.length));
+      await page.click('[data-cancel="fence-s"]');
+      s = await snap(page);
+      expect('A9 取消工地', s.sites.length === 2 && !s.sites.some((x) => x.bp === 'fence-s'));
+      await page.click('[data-person="p1"]');
+      await page.click('[data-focus="build"]');
+      s = await snap(page);
+      expect('A9 指定專長', s.people[1].focus === 'build');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().built.length >= 1, null, { timeout: 60000 });
+      await page.click('[data-speed="0"]');
+      await shot('progress');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().built.length >= 2, null, { timeout: 90000 });
+      await page.click('[data-speed="0"]');
+      s = await snap(page);
+      expect('A9 兩處都完工', s.built.includes('hut-e') && s.built.includes('hearth2'), s.built.join(','));
+      expect('A9 茅屋牆在地圖上', s.map[15][39] === '#' && s.map[19][41] === '_');
+      expect('A9 營造面板顯示已完工', (await page.locator('#build .done').count()) === 2);
+      expect('A9 木石有在動', s.ledger.woodCut > 0 && s.ledger.stoneCut > 0, JSON.stringify(s.ledger));
+      await shot('built');
+    },
+  },
 ];

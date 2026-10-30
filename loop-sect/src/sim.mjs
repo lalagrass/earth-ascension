@@ -1,7 +1,8 @@
 import {
   POIS, TEMPLATES, NAMES, TICKS_PER_DAY, OBJECTS, ACTS, BUSH_MAX, BUSH_REGROW,
-  START_STOCK, COOK_RAW, COOK_MEALS, FORAGE_TAKE,
+  START_STOCK, COOK_RAW, FORAGE_TAKE, START_MATERIALS, HEARTH_LEVELS,
 } from './data.mjs';
+import { placeSite, removeSite, addWork, takeResource, workSpot } from './build.mjs';
 import { seedHolder, nextRand, randInt, hashString } from './rng.mjs';
 import { buildMap, walkable, nearestWalkable } from './map.mjs';
 import { findPath } from './path.mjs';
@@ -88,8 +89,17 @@ export function createWorld({ seed = 1, people }) {
   state.pois = resolvePois(state.map, reach);
   state.bushes = resolveBushes(state.map, reach);
   state.objects = OBJECTS.map((o, i) => ({ id: `o${i}`, ...o, slots: o.slots.map((s) => [...s]), users: o.slots.map(() => null) }));
-  state.stock = { ...START_STOCK };
-  state.ledger = { picked: 0, rawEaten: 0, rawCooked: 0, mealsMade: 0, mealsEaten: 0 };
+  state.objects.find((o) => o.kind === 'hearth').level = 0;
+  state.stock = { ...START_STOCK, ...START_MATERIALS };
+  state.ledger = { picked: 0, rawEaten: 0, rawCooked: 0, mealsMade: 0, mealsEaten: 0, woodCut: 0, stoneCut: 0, woodUsed: 0, stoneUsed: 0 };
+  state.mapVersion = 0;
+  state.res = {};          // "x,y" → 剩餘量（未動過的樹石不列）
+  state.resUser = {};      // "x,y" → 預約者
+  state.sites = [];
+  state.siteSeq = 0;
+  state.built = [];
+  state.events = [];
+  state.reroute = [];
   state.counts = {};
   state.people = people.map((spec, i) => {
     const id = `p${i}`;
@@ -99,8 +109,10 @@ export function createWorld({ seed = 1, people }) {
     p.routine = i;
     // 開局需求錯開一點，免得三人同步。
     p.needs = { food: 70 - i * 8, energy: 80 - i * 5, social: 60 + i * 10, fun: 60 };
-    p.carry = 0;
-    p.hold = { meal: 0, raw: 0 };
+    p.carry = 0;                       // 身上的莓果
+    p.load = { wood: 0, stone: 0 };    // 身上的木石
+    p.hold = { meal: 0, raw: 0, wood: 0, stone: 0 };
+    p.focus = null;
     p.refused = {};
     p.task = null;
     p.bubble = null;
@@ -153,6 +165,12 @@ function reserve(state, p, c) {
   if (c.bush) byId(state.bushes, c.bush).user = p.id;
   if (c.kind === 'eat') { state.stock.meal--; p.hold.meal = 1; }
   if (c.kind === 'cook') { state.stock.raw -= COOK_RAW; p.hold.raw = COOK_RAW; }
+  if (c.res) state.resUser[c.res] = p.id;
+  if (c.kind === 'haul') {
+    state.stock[c.mat] -= c.n; p.hold[c.mat] = c.n;
+    byId(state.sites, c.site).incoming[c.mat] += c.n;
+  }
+  if (c.kind === 'build') byId(state.sites, c.site).workers.push(p.id);
 }
 
 export function release(state, p) {
@@ -166,10 +184,12 @@ export function release(state, p) {
       const b = byId(state.bushes, t.bush);
       if (b.user === p.id) b.user = null;
     }
+    if (t.res && state.resUser[t.res] === p.id) delete state.resUser[t.res];
+    const site = t.site && byId(state.sites, t.site);
+    if (t.kind === 'haul' && site) site.incoming[t.mat] -= t.leg === 'drop' ? p.load[t.mat] : p.hold[t.mat];
+    if (t.kind === 'build' && site) site.workers = site.workers.filter((w) => w !== p.id);
   }
-  state.stock.meal += p.hold.meal;
-  state.stock.raw += p.hold.raw;
-  p.hold.meal = 0; p.hold.raw = 0;
+  for (const k of ['meal', 'raw', 'wood', 'stone']) { state.stock[k] += p.hold[k]; p.hold[k] = 0; }
   p.task = null;
 }
 
@@ -193,7 +213,8 @@ function choose(state, p) {
       if (!path) continue;
     }
     reserve(state, p, c);
-    p.task = { kind: c.kind, obj: c.obj, slot: c.slot, bush: c.bush, partner: c.partner, poi: c.poi, chase: 120 };
+    p.task = { kind: c.kind, obj: c.obj, slot: c.slot, bush: c.bush, partner: c.partner, poi: c.poi, chase: 80,
+      res: c.res, mat: c.mat, rx: c.rx, ry: c.ry, take: c.take, site: c.site, n: c.n, leg: c.kind === 'haul' ? 'pickup' : undefined };
     p.actLabel = c.label;
     if (path.length) {
       p.path = path;
@@ -211,6 +232,7 @@ function startDoing(state, p, dur = null) {
   const t = p.task;
   const a = ACTS[t.kind];
   p.act = 'do';
+  if (t.kind === 'cook') dur = HEARTH_LEVELS[byId(state.objects, t.obj).level].cookDur;
   t.left = dur ?? a.dur;
   p.actLabel = a.label;
   state.counts[t.kind] = (state.counts[t.kind] || 0) + 1;
@@ -281,10 +303,48 @@ function finish(state, p) {
     b.berries -= n; p.carry += n; L.picked += n;
   }
   if (t.kind === 'deliver') { state.stock.raw += p.carry; p.carry = 0; }
-  if (t.kind === 'cook') { L.rawCooked += p.hold.raw; p.hold.raw = 0; state.stock.meal += COOK_MEALS; L.mealsMade += COOK_MEALS; }
+  if (t.kind === 'cook') {
+    const meals = HEARTH_LEVELS[byId(state.objects, t.obj).level].meals;
+    L.rawCooked += p.hold.raw; p.hold.raw = 0; state.stock.meal += meals; L.mealsMade += meals;
+  }
+  if (t.kind === 'chop' || t.kind === 'quarry') {
+    const got = takeResource(state, t.rx, t.ry, t.mat, t.take);
+    p.load[t.mat] += got;
+    L[t.mat === 'wood' ? 'woodCut' : 'stoneCut'] += got;
+  }
+  if (t.kind === 'store') {
+    for (const m of ['wood', 'stone']) { state.stock[m] += p.load[m]; p.load[m] = 0; }
+  }
+  if (t.kind === 'haul' && t.leg === 'pickup') {
+    // 拿到料：改走去工地。工地若已取消，就留在身上之後送回倉堆。
+    p.load[t.mat] += p.hold[t.mat]; p.hold[t.mat] = 0;
+    const site = byId(state.sites, t.site);
+    const spot = site && workSpot(state, site);
+    const path = spot && pathTo(state, p, spot);
+    if (path) {
+      t.leg = 'drop';
+      p.path = path; p.act = 'walk'; p.actLabel = `扛料去${site.label}`;
+      if (!path.length) arriveDrop(state, p);
+      return;
+    }
+    t.leg = 'drop'; // 走不到工地：在途改由身上的料計算，release 會扣回
+  }
+  if (t.kind === 'haul' && t.leg === 'drop') {
+    const site = byId(state.sites, t.site);
+    if (site) {
+      const n = p.load[t.mat];
+      site.have[t.mat] += n; site.incoming[t.mat] -= n; p.load[t.mat] = 0;
+      t.site = null; // 已交清，release 不再扣在途
+    }
+  }
   release(state, p);
   p.act = 'idle';
   p.wait = 0;
+}
+
+function arriveDrop(state, p) {
+  startDoing(state, p, 3);
+  p.actLabel = '卸料';
 }
 
 function shouldStop(state, p) {
@@ -322,7 +382,8 @@ function stepPerson(state, p) {
     if (!p.path.length) {
       if (t.kind === 'chat') {
         if (!tryChat(state, p)) { release(state, p); p.act = 'idle'; p.wait = 0; }
-      } else arrive(state, p);
+      } else if (t.kind === 'haul' && t.leg === 'drop') arriveDrop(state, p);
+      else arrive(state, p);
     }
   } else if (p.act === 'do') {
     applyPer(p, ACTS[p.task.kind].per);
@@ -330,6 +391,13 @@ function stepPerson(state, p) {
       const table = byId(state.objects, p.task.obj);
       const company = table.users.filter((u) => u && u !== p.id).length;
       if (company) applyPer(p, { social: 0.4 * company });
+    }
+    if (p.task.kind === 'build') {
+      const site = byId(state.sites, p.task.site);
+      const r = site ? addWork(state, site, 1) : 'done';
+      p.actLabel = r === 'wait' ? '等人讓開' : ACTS.build.label;
+      if (r === 'done') { p.task.site = null; finish(state, p); return; }
+      if (r === 'cell') { finish(state, p); return; } // 換下一格要換站位
     }
     if (--p.task.left <= 0 || shouldStop(state, p)) finish(state, p);
   } else if (p.wait > 0) {
@@ -374,6 +442,32 @@ export function step(state) {
   state.tick++;
   regrow(state);
   for (const p of state.people) stepPerson(state, p);
+  // 新立起的牆或柵擋住了別人的路：沿原終點重找，找不到就放棄手上的事。
+  while (state.reroute.length) {
+    const p = byId(state.people, state.reroute.pop());
+    if (!p.path.length) continue;
+    const end = p.path[p.path.length - 1];
+    const np = pathTo(state, p, end);
+    if (np) p.path = np;
+    else { release(state, p); p.path = []; p.act = 'idle'; p.wait = 0; }
+  }
+}
+
+// ---------- 玩家操作 ----------
+export function placeBlueprint(state, id) {
+  return placeSite(state, id);
+}
+
+export function cancelSite(state, id) {
+  for (const p of state.people) {
+    if (p.task && p.task.site === id) { release(state, p); p.path = []; p.act = 'idle'; p.wait = 0; }
+  }
+  return removeSite(state, id);
+}
+
+export function setFocus(state, personId, focus) {
+  const p = byId(state.people, personId);
+  if (p) p.focus = focus;
 }
 
 export function run(state, ticks) {
@@ -389,8 +483,9 @@ export function clock(state) {
 
 export function stateHash(state) {
   const ppl = state.people.map((p) => [p.id, p.x.toFixed(4), p.y.toFixed(4), p.act, p.task?.kind, p.wait,
-    Object.values(p.needs).map((v) => v.toFixed(3)), p.carry]);
-  return hashString(JSON.stringify([state.tick, state.rng, ppl, state.stock, state.ledger, state.bushes.map((b) => b.berries)]));
+    Object.values(p.needs).map((v) => v.toFixed(3)), p.carry, p.load]);
+  return hashString(JSON.stringify([state.tick, state.rng, ppl, state.stock, state.ledger, state.bushes.map((b) => b.berries),
+    state.map, state.sites.map((x) => [x.id, x.work, x.have, x.incoming])]));
 }
 
 export { REFUSE_COOLDOWN };

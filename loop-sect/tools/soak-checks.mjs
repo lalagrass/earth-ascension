@@ -1,15 +1,29 @@
 // soak 用的不變量與統計。每個 milestone 在這裡加自己的檢查。
-import { companionsFor } from '../src/sim.mjs';
+import { companionsFor, placeBlueprint } from '../src/sim.mjs';
 import { walkable } from '../src/map.mjs';
 import { speedOf } from '../src/person.mjs';
 import { isNight } from '../src/needs.mjs';
-import { TEMPLATES, TICKS_PER_DAY } from '../src/data.mjs';
+import { TEMPLATES, TICKS_PER_DAY, BLUEPRINTS, WORK_KINDS } from '../src/data.mjs';
 
 const STUCK_TICKS = 720; // 半日
 
 export function rosterFor(seed) {
   const t = TEMPLATES[seed % TEMPLATES.length].id;
   return [{ template: t, name: '主角', protagonist: true }, ...companionsFor(seed, t)];
+}
+
+// M3-A6：第 1 日 06:00 放下全部藍圖，之後不再下指令。
+export function script(s) {
+  if (s.tick === 360) for (const b of BLUEPRINTS) placeBlueprint(s, b.id);
+}
+
+export function perSeed(s, ctx) {
+  const all = s.built.length === BLUEPRINTS.length;
+  bump(ctx, 'seeds'); if (all) bump(ctx, 'allBuilt');
+  for (const e of s.events) bump(ctx, `built:${e.text}`);
+  const hutBeds = s.objects.filter((o) => o.label === '茅屋床');
+  ctx.samples.hutSleptSeeds = (ctx.samples.hutSleptSeeds || 0) + (s.counts.hutSleep ? 1 : 0);
+  if (hutBeds.length && !s.counts.hutSleep) ctx.samples.hutNoSleep = (ctx.samples.hutNoSleep || 0) + 1;
 }
 
 const fail = (ctx, s, msg) => ctx.failures.push(`tick ${s.tick} ${msg}`);
@@ -57,6 +71,21 @@ export const invariants = [
     if (raw0 + L.picked !== L.rawEaten + L.rawCooked + s.stock.raw + carried + heldRaw) fail(ctx, s, `生莓不守恆 ${JSON.stringify(L)}`);
     if (meal0 + L.mealsMade !== L.mealsEaten + s.stock.meal + heldMeal) fail(ctx, s, `飯不守恆 ${JSON.stringify(L)}`);
   },
+  // M3-A2／A3：木石守恆、搬料不超量。
+  (s, ctx) => {
+    const L = s.ledger;
+    for (const [m, cut, used] of [['wood', 'woodCut', 'woodUsed'], ['stone', 'stoneCut', 'stoneUsed']]) {
+      const onPeople = s.people.reduce((a, p) => a + p.load[m] + p.hold[m], 0);
+      const atSites = s.sites.reduce((a, x) => a + x.have[m], 0);
+      if (L[cut] !== s.stock[m] + onPeople + atSites + L[used]) fail(ctx, s, `${m} 不守恆 cut=${L[cut]} stock=${s.stock[m]} people=${onPeople} sites=${atSites} used=${L[used]}`);
+      if (s.stock[m] < 0) fail(ctx, s, `${m} 庫存為負`);
+      for (const x of s.sites) {
+        if (x.have[m] + x.incoming[m] > x.need[m]) fail(ctx, s, `${x.label} ${m} 超量 ${x.have[m]}+${x.incoming[m]}>${x.need[m]}`);
+        if (x.incoming[m] < 0) fail(ctx, s, `${x.label} ${m} 在途為負`);
+      }
+    }
+    for (const x of s.sites) if (x.workers.length > 2) fail(ctx, s, `${x.label} 施工超過兩人`);
+  },
   // M2-A5：沒人長期挨餓或累垮。
   (s, ctx) => {
     for (const p of s.people) for (const k of ['food', 'energy']) {
@@ -92,6 +121,10 @@ export const samplers = [
       if (k === 'chat') bump(ctx, `chat:${g}`);
       if (k === 'sit') bump(ctx, `sit:${g}`);
       if (k === 'sleep' || k === 'sleepGround') bump(ctx, `sleep:${night}`);
+      const g2 = p.axes.P < 0 ? 'J' : 'P';
+      bump(ctx, `t:${g2}`);
+      if (p.task && WORK_KINDS.has(p.task.kind)) bump(ctx, `work:${g2}`);
+      if (p.act === 'do' && p.task.kind === 'sleep' && s.objects.find((o) => o.id === p.task.obj).label === '茅屋床') s.counts.hutSleep = (s.counts.hutSleep || 0) + 1;
       if (p.needs.food < 15) bump(ctx, 'lowFood');
       if (p.needs.energy < 12) bump(ctx, 'lowEnergy');
     }
@@ -101,7 +134,7 @@ export const samplers = [
 export function summarize(s) {
   const c = s.counts;
   const ppl = s.people.map((p) => `${p.name}(${p.type}) 飽${p.needs.food.toFixed(0)}精${p.needs.energy.toFixed(0)}`).join(' ');
-  return `${ppl} | 吃${c.eat || 0} 生吃${(c.eatRaw || 0) + (c.eatCarried || 0)} 煮${c.cook || 0} 採${c.forage || 0} 聊${c.chat || 0} 婉拒${c.refused || 0} 坐${c.sit || 0} 睡${(c.sleep || 0) + (c.sleepGround || 0)}`;
+  return `${ppl} | 完工${s.built.length} 木${s.stock.wood} 石${s.stock.stone} | 吃${c.eat || 0} 生吃${(c.eatRaw || 0) + (c.eatCarried || 0)} 煮${c.cook || 0} 採${c.forage || 0} 聊${c.chat || 0} 婉拒${c.refused || 0} 坐${c.sit || 0} 睡${(c.sleep || 0) + (c.sleepGround || 0)}`;
 }
 
 export function judge(S) {
@@ -119,6 +152,13 @@ export function judge(S) {
   lines.push(`M2-A7 聊天占比：外向 ${(ce * 100).toFixed(1)}%，內向 ${(ci * 100).toFixed(1)}%；石凳：外向 ${(se * 100).toFixed(1)}%，內向 ${(si * 100).toFixed(1)}%`);
   if (!(ce > ci)) failures.push('M2-A7 外向者聊天沒有多於內向者');
   if (!(si > se)) failures.push('M2-A7 內向者坐石凳沒有多於外向者');
+  lines.push(`M3-A6 三張藍圖 5 日內全部完工：${S.allBuilt || 0}/${S.seeds} 種子；各項完工數 ${Object.entries(S).filter(([k]) => k.startsWith('built:')).map(([k, v]) => `${k.slice(6)} ${v}`).join('、')}`);
+  if ((S.allBuilt || 0) < Math.ceil(S.seeds * 10 / 12)) failures.push('M3-A6 自主建設完工的種子太少');
+  // 只有三人、道館有三張床，茅屋床只在別人占床時才會被用；被用與否由 build.test.mjs 的控制情境驗證。
+  lines.push(`（參考）茅屋蓋好後有人去睡：${S.hutSleptSeeds || 0} 個種子；蓋好但沒人睡：${S.hutNoSleep || 0}`);
+  const wj = r('work:J', 't:J'), wp = r('work:P', 't:P');
+  lines.push(`M3-A7 活計時間占比：條理 ${(wj * 100).toFixed(1)}%，隨性 ${(wp * 100).toFixed(1)}%`);
+  if (!(wj > wp)) failures.push('M3-A7 條理型沒有比隨性型更勤快');
   const all = (S['t:E'] || 0) + (S['t:I'] || 0);
   lines.push(`（參考）處於自理門檻下的時間：飢餓 ${(100 * (S.lowFood || 0) / all).toFixed(1)}%，累垮 ${(100 * (S.lowEnergy || 0) / all).toFixed(1)}%`);
   return { lines, failures };

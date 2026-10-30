@@ -1,7 +1,7 @@
 import { MAP_W, MAP_H } from './data.mjs';
 import { nextRand } from './rng.mjs';
 
-export const BLOCKING = new Set(['T', 'R', 'W', '#', 'B']);
+export const BLOCKING = new Set(['T', 'R', 'W', '#', 'B', 'F']);
 
 function fill(g, x0, y0, x1, y1, ch) {
   for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) g[y][x] = ch;

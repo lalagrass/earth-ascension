@@ -1,7 +1,8 @@
-import { QUESTIONS, ATTRS, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, TEMPLATES, AXES, TRAIT_RULES, TICKS_PER_SECOND, NEEDS } from './data.mjs';
+import { QUESTIONS, ATTRS, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, TEMPLATES, AXES, TRAIT_RULES, TICKS_PER_SECOND, NEEDS, BLUEPRINTS, PILE, FOCUS } from './data.mjs';
 import { axesFromAnswers, typeOf, validateAttrs, traitsOf } from './person.mjs';
-import { createWorld, step, clock, companionsFor } from './sim.mjs';
-import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles } from './render.mjs';
+import { createWorld, step, clock, companionsFor, placeBlueprint, cancelSite, setFocus } from './sim.mjs';
+import { blueprint } from './build.mjs';
+import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild } from './render.mjs';
 
 const $ = (s) => document.querySelector(s);
 const el = (tag, attrs = {}, ...kids) => {
@@ -15,7 +16,7 @@ const el = (tag, attrs = {}, ...kids) => {
   return e;
 };
 const TRAIT_LABEL = Object.fromEntries(TRAIT_RULES.map((t) => [t.id, t]));
-const FACTOR_LABEL = { need: '需求', persona: '個性', work: '活計', sched: '作息×', dist: '距離×', noise: '隨機' };
+const FACTOR_LABEL = { need: '需求', persona: '個性', work: '活計', focus: '專長', sched: '作息×', dist: '距離×', noise: '隨機' };
 const MULT = new Set(['sched', 'dist']);
 
 // ---------- 開局 ----------
@@ -93,13 +94,36 @@ function begin() {
   $('#game').classList.remove('hidden');
   bg = document.createElement('canvas');
   bg.width = 1280; bg.height = 800;
+  paintBg();
+  $('#roster').replaceChildren(...state.people.map((p) => el('button', { 'data-person': p.id, on: { click: () => { selected = p.id; renderPanel(); } } }, p.name)));
+  renderPanel();
+  renderBuild();
+  last = performance.now();
+  requestAnimationFrame(frame);
+}
+
+let bgVersion = -1;
+function paintBg() {
   const b = bg.getContext('2d');
   drawMap(b, state.map);
   drawPois(b, state.pois);
-  $('#roster').replaceChildren(...state.people.map((p) => el('button', { 'data-person': p.id, on: { click: () => { selected = p.id; renderPanel(); } } }, p.name)));
-  renderPanel();
-  last = performance.now();
-  requestAnimationFrame(frame);
+  bgVersion = state.mapVersion;
+}
+
+let builtSeen = 0;
+function renderBuild() {
+  const box = $('#build');
+  box.replaceChildren(el('h3', {}, '營造'), ...BLUEPRINTS.map((bp) => {
+    const site = state.sites.find((s) => s.bp === bp.id);
+    const done = state.built.includes(bp.id);
+    const cost = bp.cost ?? Object.fromEntries(Object.entries(bp.costPerCell).map(([k, v]) => [k, v * bp.cells.length]));
+    const costText = Object.entries(cost).map(([k, v]) => `${k === 'wood' ? '木' : '石'}${v}`).join(' ');
+    const btn = done ? el('span', { class: 'done' }, '已完工')
+      : site ? el('button', { 'data-cancel': bp.id, on: { click: () => { cancelSite(state, site.id); renderBuild(); } } }, '取消')
+      : el('button', { 'data-blueprint': bp.id, on: { click: () => { placeBlueprint(state, bp.id); renderBuild(); } } }, '放藍圖');
+    return el('div', { class: 'bp' }, el('b', {}, bp.label), el('span', { class: 'cost' }, costText), btn, el('small', {}, bp.desc));
+  }), el('div', { id: 'events' }, ...state.events.slice(-4).reverse().map((e) => el('p', {}, `第${Math.floor(e.tick / 1440) + 1}日 ${e.text}`))));
+  builtSeen = state.built.length;
 }
 
 function setSpeed(s) {
@@ -114,7 +138,10 @@ function frame(now) {
   acc += dt * TICKS_PER_SECOND * speed;
   while (acc >= 1) { step(state); acc -= 1; }
   const ctx = $('#view').getContext('2d');
+  if (state.mapVersion !== bgVersion) paintBg();
+  if (state.built.length !== builtSeen) renderBuild();
   ctx.drawImage(bg, 0, 0);
+  drawBuild(ctx, state, PILE, blueprint);
   drawObjects(ctx, state);
   drawPeople(ctx, state, selected);
   drawBubbles(ctx, state);
@@ -142,8 +169,12 @@ function renderPanel() {
     el('p', {}, attrs),
     el('div', { class: 'chips' }, ...p.traits.map((t) => el('span', { title: TRAIT_LABEL[t].desc }, TRAIT_LABEL[t].label))),
     el('h2', {}, '需求'), ...needs,
-    el('h2', {}, '現在'), el('p', { id: 'now' }, p.actLabel + (p.carry ? `（身上 ${p.carry} 顆莓）` : '')),
+    el('h2', {}, '現在'), el('p', { id: 'now' }, p.actLabel + (p.carry ? `（身上 ${p.carry} 顆莓）` : '') + (p.load.wood ? `（扛 ${p.load.wood} 木）` : '') + (p.load.stone ? `（扛 ${p.load.stone} 石）` : '')),
     p.forced ? el('p', { class: 'forced' }, `自理優先：${p.forced}`) : '',
+    el('h2', {}, '專長'), el('div', { class: 'focus' }, ...FOCUS.map((f) => el('button', {
+      class: p.focus === f.id ? 'on' : '', 'data-focus': f.id ?? 'none',
+      on: { click: () => { setFocus(state, p.id, f.id); renderPanel(); } },
+    }, f.label))),
     el('h2', {}, '為什麼（前三個念頭）'), el('table', { class: 'why' }, ...why));
 }
 
@@ -169,7 +200,7 @@ addEventListener('keydown', (e) => {
 
 // 唯讀遙測：給 headless 檢查用，回傳副本。
 window.__sect = {
-  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger })) : null),
+  snapshot: () => (state ? JSON.parse(JSON.stringify({ tick: state.tick, people: state.people, pois: state.pois, stock: state.stock, counts: state.counts, ledger: state.ledger, sites: state.sites, built: state.built, map: state.map })) : null),
   speed: () => speed,
   selected: () => selected,
   tileToClient: (x, y) => {

@@ -46,13 +46,16 @@ test('M2-A3 預約吃飯會扣住一份飯，中斷歸還', () => {
   const s = noon(world());
   const p = s.people[0];
   p.needs = { food: 5, energy: 90, social: 90, fun: 90 };
+  for (const o of s.people.slice(1)) o.needs = { food: 95, energy: 95, social: 95, fun: 95 };
   const before = s.stock.meal;
   p.x = 10; p.y = 30; // 離桌子遠一點，確定還在路上
   step(s);
   assert.equal(p.task.kind, 'eat');
-  assert.equal(s.stock.meal, before - 1);
+  assert.equal(p.hold.meal, 1);
+  const held = s.people.reduce((a, x) => a + x.hold.meal, 0);
+  assert.equal(s.stock.meal, before - held);
   release(s, p);
-  assert.equal(s.stock.meal, before);
+  assert.equal(s.stock.meal, before - held + 1);
 });
 
 test('外向者寂寞時首選找人聊天，內向者首選坐石凳', () => {

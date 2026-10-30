@@ -4,6 +4,7 @@ export const TILE = 20;
 const TILE_COLOR = {
   '.': '#9db978', ':': '#c9b48a', '_': '#b89a72', '#': '#6b4f3a',
   'T': '#9db978', 'R': '#a7ad8f', 'W': '#5b9bc4', 'B': '#9db978', '=': '#8a6a45',
+  ',': '#a3b77c', ';': '#b3b39a', 'F': '#9db978',
 };
 
 // 依氣質分組上色：NF 綠、NT 紫、SJ 藍、SP 橙。
@@ -51,6 +52,15 @@ export function drawMap(ctx, map) {
       } else if (t === '=') {
         ctx.fillStyle = '#6e5133';
         for (let i = 0; i < 4; i++) ctx.fillRect(px + i * 5, py, 2, TILE);
+      } else if (t === ',') {
+        ctx.fillStyle = '#7a5c3c'; ctx.beginPath(); ctx.ellipse(px + 10, py + 13, 4, 3, 0, 0, Math.PI * 2); ctx.fill();
+      } else if (t === ';') {
+        ctx.fillStyle = '#8d8f82';
+        for (let i = 0; i < 3; i++) ctx.fillRect(px + 4 + i * 5, py + 9 + ((i * 3) % 5), 3, 3);
+      } else if (t === 'F') {
+        ctx.fillStyle = '#7a5631';
+        ctx.fillRect(px + 2, py + 2, 3, 16); ctx.fillRect(px + 15, py + 2, 3, 16);
+        ctx.fillRect(px, py + 6, TILE, 3); ctx.fillRect(px, py + 12, TILE, 3);
       } else if (t === '#') {
         ctx.fillStyle = '#58402e';
         ctx.fillRect(px, py + 8, TILE, 2);
@@ -144,10 +154,51 @@ export function drawBubbles(ctx, state) {
       ctx.fillStyle = '#c23b4a';
       for (let i = 0; i < p.carry; i++) ctx.fillRect(cx + 6 + i * 3, cy - 2, 3, 3);
     }
+    if (p.load.wood > 0) { ctx.fillStyle = '#7a5631'; ctx.fillRect(cx - 9, cy - 14, 18, 4); }
+    if (p.load.stone > 0) { ctx.fillStyle = '#8d8f82'; ctx.fillRect(cx - 5, cy - 16, 10, 6); }
     if (!p.bubble) continue;
     const w = ctx.measureText(p.bubble.text).width + 10;
     ctx.fillStyle = '#fff'; ctx.strokeStyle = '#8a7b66'; ctx.lineWidth = 1;
     ctx.fillRect(cx - w / 2, cy - 40, w, 16); ctx.strokeRect(cx - w / 2, cy - 40, w, 16);
     ctx.fillStyle = '#5b2a1a'; ctx.fillText(p.bubble.text, cx, cy - 28);
+  }
+}
+
+// ---------- M3 倉堆、工地 ----------
+export function drawBuild(ctx, state, PILE, blueprintOf) {
+  const px = PILE.x * TILE, py = PILE.y * TILE;
+  ctx.fillStyle = '#8a6a45';
+  for (let i = 0; i < Math.min(6, Math.ceil(state.stock.wood / 3)); i++) ctx.fillRect(px - 8 + (i % 3) * 7, py + 10 - Math.floor(i / 3) * 4, 6, 4);
+  ctx.fillStyle = '#8d8f82';
+  for (let i = 0; i < Math.min(4, Math.ceil(state.stock.stone / 3)); i++) ctx.fillRect(px + 14 + (i % 2) * 6, py + 8 - Math.floor(i / 2) * 5, 5, 5);
+  ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+  const label = `倉堆 木${state.stock.wood} 石${state.stock.stone}`;
+  const w = ctx.measureText(label).width + 8;
+  ctx.fillStyle = 'rgba(255,250,240,0.85)'; ctx.fillRect(px + 10 - w / 2, py + 18, w, 15);
+  ctx.fillStyle = '#3d2b1a'; ctx.fillText(label, px + 10, py + 29);
+  for (const site of state.sites) {
+    const bp = blueprintOf(site.bp);
+    let x0, y0, x1, y1;
+    if (site.cells.length) {
+      ctx.strokeStyle = 'rgba(120,70,30,0.9)'; ctx.setLineDash([4, 3]); ctx.lineWidth = 1.5;
+      site.cells.forEach((c, i) => {
+        if (site.kind === 'fence' && i < site.cellsDone) return;
+        if (c.to === '#' || c.to === 'F') ctx.strokeRect(c.x * TILE + 2, c.y * TILE + 2, TILE - 4, TILE - 4);
+      });
+      ctx.setLineDash([]);
+      x0 = Math.min(...site.cells.map((c) => c.x)); y0 = Math.min(...site.cells.map((c) => c.y));
+      x1 = Math.max(...site.cells.map((c) => c.x));
+    } else {
+      const h = state.objects.find((o) => o.kind === 'hearth');
+      [x0, y0] = h.slots[0]; x1 = x0;
+    }
+    const cx = ((x0 + x1 + 1) / 2) * TILE, cy = y0 * TILE - 6;
+    const mat = ['wood', 'stone'].filter((m) => site.need[m]).map((m) => `${m === 'wood' ? '木' : '石'}${site.have[m]}/${site.need[m]}`).join(' ');
+    const text = `${site.label} ${mat} 工${Math.floor(site.work)}/${site.workTotal}`;
+    const tw = ctx.measureText(text).width + 8;
+    ctx.fillStyle = 'rgba(255,250,240,0.9)'; ctx.fillRect(cx - tw / 2, cy - 13, tw, 18);
+    ctx.fillStyle = '#c9b48a'; ctx.fillRect(cx - tw / 2, cy + 3, tw, 3);
+    ctx.fillStyle = '#a8432f'; ctx.fillRect(cx - tw / 2, cy + 3, tw * (site.work / site.workTotal), 3);
+    ctx.fillStyle = '#3d2b1a'; ctx.fillText(text, cx, cy);
   }
 }

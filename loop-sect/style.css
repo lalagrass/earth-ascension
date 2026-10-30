@@ -40,7 +40,17 @@ label { display: block; margin: 8px 0; }
 .roster button { margin-right: 4px; }
 #game main { display: flex; gap: 8px; padding: 8px; align-items: flex-start; }
 #view { width: min(100%, 1280px); height: auto; flex: 1 1 auto; min-width: 0; border-radius: 6px; cursor: pointer; image-rendering: auto; }
-#panel { width: 300px; flex: 0 0 300px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; max-height: calc(100vh - 70px); overflow: auto; }
+.side { width: 300px; flex: 0 0 300px; display: flex; flex-direction: column; gap: 8px; }
+#panel, #build { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+#panel { max-height: calc(100vh - 260px); overflow: auto; }
+#build h3 { margin: 0 0 4px; }
+.bp { display: grid; grid-template-columns: 1fr auto auto; gap: 2px 8px; align-items: center; border-top: 1px solid var(--line); padding: 4px 0; }
+.bp small { grid-column: 1 / -1; color: var(--muted); }
+.bp .cost { font-size: 12px; color: var(--muted); }
+.bp .done { color: #4f7a3a; font-size: 12px; }
+#events p { margin: 2px 0; font-size: 12px; color: #4f7a3a; }
+.focus { display: flex; flex-wrap: wrap; gap: 4px; }
+.focus button { font-size: 12px; padding: 2px 6px; }
 #panel h3 { margin: 0; }
 .why { width: 100%; border-collapse: collapse; font-size: 12px; }
 .why td { border-top: 1px solid var(--line); padding: 2px 4px; }
@@ -48,7 +58,8 @@ label { display: block; margin: 8px 0; }
 .hint { color: var(--muted); }
 @media (max-width: 900px) {
   #game main { flex-direction: column; }
-  #panel { width: 100%; flex: none; }
+  .side { width: 100%; flex: none; }
+  #panel { max-height: none; }
 }
 .need { display: grid; grid-template-columns: 3em 1fr 2em; gap: 6px; align-items: center; font-size: 12px; margin: 2px 0; }
 .need .bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
