@@ -37,6 +37,7 @@ import { SAVE_VERSION, freshV095 } from './save.mjs';
 import { cancelTask, removeActor, whAvail } from './lifecycle.mjs';
 import { econDaily, schoolStep, startSchool, E as econOf } from './economy.mjs';
 import { threatDaily, threatStep, raidResolve, bandStep } from './threat.mjs';
+import { lairDaily, lairStep } from './lair.mjs';
 import { removeDisciple } from './gen.mjs';
 const EH = { rand: (s) => rand(s), cancelTask: (s, d, w) => cancelTask(s, d, w), think: (s, d, id) => think(s, d, id), removeDisciple: (s, d, w) => removeDisciple(s, d, w), gate: NODES.gate };
 import { freeSlot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE, STOCK_RESV, stockKey, stockReserved } from './core.mjs';
@@ -601,8 +602,8 @@ export function payday(s) {
 // ---- tick ----
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
-  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); } }
-  schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH);
+  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); if (s.m9) lairDaily(s, EH); } }
+  schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH); if (s.lair) lairStep(s, EH);
   const se = seasonOf(s); for (const p of s.plots) if (p.st === 'grow' && (p.g += dt / se.grow) >= PLOT_GROW) p.st = 'ripe';
   const seIdx = se.i; if (s.seasonI !== seIdx) { if (s.seasonI !== undefined) log(s, `入${se.name}了。${{ spring: '萬物萌發，菜長得快。', summer: '天長日暖。', autumn: '秋高氣爽，心情開闊。', winter: '天寒地凍，菜長得慢，飯量變大。' }[se.id]}`); s.seasonI = seIdx; }
   for (const d of s.ds) {
