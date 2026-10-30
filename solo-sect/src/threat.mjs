@@ -5,7 +5,7 @@
 import { DAY, FACILITIES } from './data.mjs';
 import { log, resAdd } from './util.mjs';
 import { power } from './jianghu.mjs';
-import { pickKind, kindOf } from './raidkind.mjs';
+import { pickKind, kindOf, WAVE } from './raidkind.mjs';
 import { fenceUp, fenceHit, fenceHtml, FENCE } from './fence.mjs';
 import { peaceDelay } from './peace.mjs';
 import { BAND, newBand, bandWalk, defenderDps, canDefend } from './band.mjs';
@@ -45,7 +45,12 @@ export function threatDaily(s) {
   log(s, `${K ? `【${K.name}】` : ''}【山賊勒索】一夥山賊盯上本門的家底（威脅 ${pts}）：「留下 ${demand} 兩香火錢，保你們平安。」迎戰勝算約 ${Math.round(p * 100)}%（半日內不決定就由執事代為處置）`);
   return X.pending;
 }
-export function threatStep(s, H) { const P = T(s).pending; if (P && s.t >= P.until) raidResolve(s, raidAuto(s), H, true); }
+// loop18：打贏第一波後排第二波
+function nextWave(s, src, win) { const X = T(s); if (!win || !src.kind || src.wave) return; if (R(s) >= (WAVE.p[src.kind] || 0)) return;
+  X.wave = { at: s.t + WAVE.gap, pts: Math.max(1, Math.round(src.pts * WAVE.k)), kind: src.kind, n: src.n, day: src.day }; log(s, `【${kindOf(src.kind).name}】山賊退到山腳重整，揚言還要再殺上來！`); }
+function waveStep(s) { const X = T(s), W = X.wave; if (!W || s.t < W.at || X.pending || s.band) return; X.wave = null; const p = winP(s, W.pts);
+  X.pending = { n: W.n, pts: W.pts, demand: 0, p: +p.toFixed(2), at: s.t, until: s.t + RAID.wait / 4, day: W.day, kind: W.kind, noPay: true, wave: 2 }; log(s, `【第二波】${kindOf(W.kind).name}重整殺回（威脅 ${W.pts}），不談價錢！迎戰勝算約 ${Math.round(p * 100)}%。`); }
+export function threatStep(s, H) { waveStep(s); const P = T(s).pending; if (P && s.t >= P.until) raidResolve(s, raidAuto(s), H, true); }
 function hurtOne(s, H) {
   const c = s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > RAID.hurtHp); // 孩子不上陣 if (!c.length) return null;
   const d = c[Math.floor(R(s) * c.length)]; d.hp = Math.min(d.hp, RAID.hurtHp); d.raidHurt = (d.raidHurt || 0) + 1; const X = T(s); X.homeHurt++; X.next = (X.next || s.day || 0) + RAID.hurtCool; H?.think?.(s, d, 'raidHurt'); return d;
@@ -58,7 +63,7 @@ export function bandStep(s, dt, H) {
   if (b.state === 'go') { if (bandWalk(b, dt)) { b.state = 'siege'; log(s, '山賊圍住了菜園木柵，開始撞柵！'); } return; }
   const defs = s.ds.filter((d) => d.task?.act === 'defend' && d.task.phase === 'do');
   const dmg = defs.reduce((a, d) => a + defenderDps(d), 0) * dt; b.hp -= dmg; b.defDealt += dmg;
-  if (b.hp <= 0) { s.band = null; X.won++; s.rep = (s.rep || 0) + RAID.rep; log(s, `守柵迎敵——${defs.map((d) => d.name).join('、') || '眾人'}把山賊打退了！名聲 +${RAID.rep}。`); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), n: b.n, day: b.day, pts: b.pts, fight: 'win', hurt: null, map: true, fence: s.fence?.hp ?? 0 }); return; }
+  if (b.hp <= 0) { s.band = null; X.won++; s.rep = (s.rep || 0) + RAID.rep; log(s, `守柵迎敵——${defs.map((d) => d.name).join('、') || '眾人'}把山賊打退了！名聲 +${RAID.rep}。`); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: 'win', hurt: null, map: true, fence: s.fence?.hp ?? 0 }); nextWave(s, b, true); return; }
   b.clock += dt; if (b.clock < BAND.hitEvery) return; b.clock -= BAND.hitEvery;
   const fd = Math.max(BAND.fenceDmg.min, Math.round(b.pts * BAND.fenceDmg.k)); b.fenceDealt += fd;
   if (fenceHit(s, fd, '山賊', true).held) return;
@@ -66,17 +71,17 @@ export function bandStep(s, dt, H) {
   s.band = null; const win = R(s) < winP(s, Math.max(1, b.hp)); let hurt = null; /* 用剩餘山賊戰力（守柵已削弱的部分算數） */
   if (win) { X.won++; s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `木柵被撞破，眾人短兵相接——打退了山賊！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else hurt = raidLose(s, H, '木柵被撞破，');
-  X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), n: b.n, day: b.day, pts: b.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null, map: true, broke: true });
+  X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null, map: true, broke: true }); nextWave(s, b, win);
 }
 export function raidResolve(s, i, H, auto = false) {
   const X = T(s), P = X.pending; if (!P) return { ok: false, why: '沒有山賊上門' };
   X.pending = null; const who = auto ? '執事代為決定：' : ''; if (P.kind || X.cur) X.cur = P.kind;
   if (i === 0 && !P.noPay && s.res.coin >= P.demand) { resAdd(s, 'coin', -P.demand); X.paid++; X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), n: P.n, day: P.day, pts: P.pts, pay: P.demand }); log(s, `${who}付了 ${P.demand} 兩，山賊點完錢下山去了。`); return { ok: true, paid: P.demand }; }
-  if (fenceUp(s)) { X.fought++; s.band = newBand(P, FENCE.node); if (P.kind) s.band.kind = P.kind; log(s, `${who}決定迎戰：${P.n > 0 ? '' : ''}一夥山賊（${P.pts}）從山門朝菜園木柵殺來！`); return { ok: true, band: true }; } // loop3：有柵改上地圖
+  if (fenceUp(s)) { X.fought++; s.band = newBand(P, FENCE.node); if (P.kind) s.band.kind = P.kind; if (P.wave) s.band.wave = P.wave; log(s, `${who}決定迎戰：${P.n > 0 ? '' : ''}一夥山賊（${P.pts}）從山門朝菜園木柵殺來！`); return { ok: true, band: true }; } // loop3：有柵改上地圖
   X.fought++; const win = R(s) < P.p; let hurt = null;
   if (win) { X.won++; s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `${who}迎戰山賊——打退了！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else hurt = raidLose(s, H, who);
-  X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), n: P.n, day: P.day, pts: P.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null}); return { ok: true, win, hurt: hurt?.id || null };
+  X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(P.wave ? { wave: 2 } : {}), n: P.n, day: P.day, pts: P.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null}); nextWave(s, P, win); return { ok: true, win, hurt: hurt?.id || null };
 }
 export function threatHtml(s) {
   const X = T(s), P = X.pending, pts = points(s), n = headcount(s);

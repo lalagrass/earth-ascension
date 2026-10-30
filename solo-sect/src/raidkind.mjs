@@ -7,3 +7,5 @@ export const RAID_KINDS = {
 };
 export function pickKind(r) { let a = 0; for (const [id, k] of Object.entries(RAID_KINDS)) { a += k.w; if (r < a) return id; } return 'liukou'; }
 export const kindOf = (id) => (id && RAID_KINDS[id]) || null;
+// loop18 波次：第一波被打退後，有機率重整再來第二波（不談價、只能迎戰），點數×k；只在有類型（s.m9）時。
+export const WAVE = { p: { liukou: 0.8, hanfei: 1, yexi: 0.5 }, k: 1.8, gap: 60 };
