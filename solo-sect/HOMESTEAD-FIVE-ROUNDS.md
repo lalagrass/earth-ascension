@@ -54,3 +54,17 @@ root基線正常UI t186.5有灶/0菜，全域cook enabled、現場disabled，按
 驗收：開始/立藍圖/完成升級/取消預覽／一鍋完缺料／一次eat/rest禁用，主focus非BODY且上下文可見，Enter在group不產生新命令，Tab接可用控制；1440/390和legacy建造，指標正常，paused世界不變、無trap/溢出/pageerror。原核心/數值/schema不改；適用聚合與非作者審查，語法/來源/hash只核受影響部分。
 
 來源：[W3C Focus Order](https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html)保留意義和操作順序、允許programmatic非互動內容但避免多餘tab站；[Playwright官方Actions](https://playwright.dev/docs/input)區分鍵盤/focus與programmatic click，本輪用真Enter/Tab驗，不把DOM focus等同真人輔具認證。外部作品設計沿AoE相關操作就近的原則，不新增RTS或複製引擎。
+
+### H48結果／第3輪完成
+
+作者481/481（24.05秒）。正常零注入solo390/legacy1440鍵盤開始→標題，Enter立屋→原build-hut群組，群組Enter不再下令、Tab可前行，真完工與預覽Escape留上下文；solo最後一份吃完按鈕禁用→orders。另一完整園灶路線t311.25真材料ready、313.5manual鍋、321.5成3餐/失料，focused recipe控制禁用→recipe-basic群組。收據FIVE3-FOCUS/RECIPE-UI與真圖。非作者獨立390 solo/legacy新局/立藍圖/Tab/group Enter正常UI、明示recipe fixture真結算後群組focus，讀作者圖/收據；其browser已關。未獨立全481或作者兩條完整路線，非真人輔具。
+
+工具初以:focus等BODY未match，改讀document.activeElement；舊程序已結束，無殘留inline node。料理圖額外scrollIntoView定位動態按鈕碰到detach，改捲原靜態容器重跑，沒有force/程式點擊繞資格。它揭示未變DOM仍反覆摧毀，作H49下一輪，不把H48焦點交接冒稱解決所有重繪問題。
+
+## 第4輪H49事前規格：沒有改變的控制保持原位
+
+走查發現即使世界暫停，原orders/build/recipes等每250ms仍整段innerHTML重建。root正常新局暫停保留forage DOM參照，700ms已斷連而world完全相同，DOM-BASE-UI.json。H48補有意義fallback，但不能讓無變控制本身不斷連；這影響連續鍵盤/指標/選字，也使真UI記錄容易遇到detached。
+
+只在本renderer獨佔的原容器加小WeakMap原markup快取：完全相同字串不重寫，改了照常更新；限orders/build/recipes/project-rows，不作VirtualDOM、renderer/engine改寫、不cache世界或停止模擬。用原字串而非DOM序列化作比較，避免disabled=""等瀏覽器正規化讓每次誤判不同。不能用於可編輯子樹或讓資格變了仍沿舊disabled。原H48合法更新時fallback照常有效。
+
+驗收：真UI新局paused900ms control/group身份與focus仍在、world不變；1×人物行走而控制語義未變仍同一button；真指派/原料理材料/工程/清除變了必更新，無 stale command/disabled或假world增益。1440/390指標/Enter/Tab/原H48流程，適用481聚合與非作者獨立對照；純UI不加新數值/欄位/空泛效能宣稱。來源沿[Playwright官方actionability](https://playwright.dev/docs/actionability)的可見/穩定/可收事件與DOM斷連條件，[W3C Focus Order](https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html)連續上下文；這是互動可靠性驗證，不當真人或全無障礙認證。第5輪根據本輪整合後剩餘驗收缺口定，不加任意新內容。

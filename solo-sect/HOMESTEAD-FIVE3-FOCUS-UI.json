@@ -1,0 +1,24 @@
+{
+  "engine": "154.0.8037.57",
+  "route": "normal UI no grants, keyboard/pointer/pause/4x/16x; AI not human",
+  "events": [
+    {
+      "mode": "solo",
+      "width": 390,
+      "focus": "build-hut",
+      "t": 104.5
+    },
+    {
+      "mode": "solo",
+      "event": "last portion disabled",
+      "focus": "orders"
+    },
+    {
+      "mode": "legacy",
+      "width": 1440,
+      "focus": "build-hut",
+      "t": 100.75
+    }
+  ],
+  "errors": []
+}

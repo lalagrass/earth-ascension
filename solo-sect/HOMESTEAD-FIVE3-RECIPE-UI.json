@@ -1,0 +1,119 @@
+{
+  "engine": "154.0.8037.57",
+  "route": "normal UI zero grants, pause/4x/16x; AI not human",
+  "events": [
+    {
+      "name": "no-stove",
+      "t": 0,
+      "stock": {
+        "berries": 0,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "order": null,
+      "task": null,
+      "cookRequest": null,
+      "reason": "需要露天灶",
+      "disabled": true
+    },
+    {
+      "name": "missing-veg-narrow",
+      "t": 186.5,
+      "stock": {
+        "berries": 1,
+        "wood": 0,
+        "seeds": 2,
+        "veg": 0,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "order": null,
+      "task": {
+        "act": "forage",
+        "phase": "go",
+        "place": "berries",
+        "timer": 0
+      },
+      "cookRequest": null,
+      "reason": "缺青菜2",
+      "disabled": true
+    },
+    {
+      "name": "ready",
+      "t": 311.25,
+      "stock": {
+        "berries": 2,
+        "wood": 1,
+        "seeds": 3,
+        "veg": 2,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "order": "leisure",
+      "task": null,
+      "cookRequest": null,
+      "reason": "已具備這一鍋的條件；開始仍先顧吃睡與手上搬運。",
+      "disabled": false
+    },
+    {
+      "name": "one-pot-active",
+      "t": 313.5,
+      "stock": {
+        "berries": 2,
+        "wood": 1,
+        "seeds": 3,
+        "veg": 2,
+        "meal": 0,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "order": "cook",
+      "task": {
+        "act": "cook",
+        "phase": "do",
+        "place": "kitchen",
+        "timer": 0.25,
+        "recipe": "basic",
+        "manual": true
+      },
+      "cookRequest": "basic",
+      "reason": "已具備這一鍋的條件；開始仍先顧吃睡與手上搬運。",
+      "disabled": false
+    },
+    {
+      "name": "one-pot-done",
+      "t": 321.5,
+      "stock": {
+        "berries": 2,
+        "wood": 0,
+        "seeds": 3,
+        "veg": 0,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 0
+      },
+      "order": null,
+      "task": {
+        "act": "farm",
+        "phase": "go",
+        "place": "garden",
+        "timer": 0
+      },
+      "cookRequest": null,
+      "reason": "缺青菜2",
+      "disabled": true
+    }
+  ],
+  "errors": []
+}
