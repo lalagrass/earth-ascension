@@ -1,3 +1,4 @@
+import{freshUseResults,recordMealUse}from'./homestead-autonomy-learning.mjs';
 import {prepareOrder,clearOnce,finishOrderAction,finishOrderDelivery,finishOrderProject,validOrderScope} from './homestead-autonomy-orders.mjs';
 import {applyResidentLook} from './homestead-autonomy-look.mjs';
 import {freshLeisure,chooseLeisure,finishLeisure,validLeisureTask,LEISURE,availableLeisure} from './homestead-autonomy-leisure.mjs';
@@ -344,8 +345,8 @@ function complete(s, t) {
   if(t.act==='eat'){
     if(s.mode==='solo'){
       const before={hunger:p.hunger,energy:p.energy},id=t.foodId&&s.stock[RECIPES[t.foodId]?.output]>0?t.foodId:chooseFood(s),r=RECIPES[id];
-      if(r){recordTaste(s,id);if(s.autonomy&&id==='basic')s.autonomy.warmMeals++;s.stock[r.output]--;p.hunger=clamp(p.hunger+r.hunger);p.energy=clamp(p.energy+r.energy);if(at(p,HOME))feel(s,r.feeling);note(s,id==='basic'?'吃了一份熱飯。':`吃下${r.name}一份，飽腹+${r.hunger}${r.energy?`、精力+${r.energy}`:''}。`);}
-      else if(s.stock.berries){s.stock.berries--;p.hunger=clamp(p.hunger+26);note(s,'吃了野果。');}
+      if(r){if(s.autonomy&&id==='basic')s.autonomy.warmMeals++;s.stock[r.output]--;p.hunger=clamp(p.hunger+r.hunger);p.energy=clamp(p.energy+r.energy);recordTaste(s,id);recordMealUse(s,id,before);if(at(p,HOME))feel(s,r.feeling);note(s,id==='basic'?'吃了一份熱飯。':`吃下${r.name}一份，飽腹+${r.hunger}${r.energy?`、精力+${r.energy}`:''}。`);}
+      else if(s.stock.berries){s.stock.berries--;p.hunger=clamp(p.hunger+26);recordMealUse(s,'berries',before);note(s,'吃了野果。');}
       if(t.manualEat||p.order==='eat'){
         const gained=p.hunger-before.hunger;
         if(gained>0)note(s,`這一餐：${r?r.name:'野果'}，飽腹 ${before.hunger.toFixed(1)}→${p.hunger.toFixed(1)}（實得${gained.toFixed(1)}），精力 ${before.energy.toFixed(1)}→${p.energy.toFixed(1)}。`);
@@ -353,7 +354,7 @@ function complete(s, t) {
       }
     }else if(s.stock.meal>0){s.stock.meal--;p.hunger=clamp(p.hunger+52);note(s,'吃了一份熱飯。');}else if(s.stock.berries>0){s.stock.berries--;p.hunger=clamp(p.hunger+26);note(s,'吃了野果。');}
   }
-  if (t.act === 'leisure') { if(s.autonomy?.recess){s.autonomy.recess=false;s.autonomy.breaks++;} p.leisure++; p.energy = clamp(p.energy + 5); if(s.autonomy)finishLeisure(s,t);else if(t.place==='bench'&&s.fac.bench.stage&&at(p,PLACES.bench)){feel(s,'seated');if(s.fac.flowers.stage)feel(s,'flowers');} }
+  if (t.act === 'leisure') { const energyBefore=p.energy;if(s.autonomy?.recess){s.autonomy.recess=false;s.autonomy.breaks++;} p.leisure++; p.energy = clamp(p.energy + 5); if(s.autonomy)finishLeisure(s,t,energyBefore);else if(t.place==='bench'&&s.fac.bench.stage&&at(p,PLACES.bench)){feel(s,'seated');if(s.fac.flowers.stage)feel(s,'flowers');} }
   if(t.act==='settle'&&at(p,PLACES.hut)&&applyResidentLook(s))note(s,'替自己的小家選了家名與配色；沒有消耗材料或增加能力。');
   if (t.act === 'farm') {
     if (s.plot.state === 'empty' && s.stock.seeds > 0) { s.stock.seeds--; s.plot.state = 'growing'; s.plot.growth = 0; skilledWork=true; note(s, '在小菜園播下種子。'); }
@@ -507,7 +508,7 @@ export function loadHomestead(json) {
     s.autonomy ??= null;
     if(s.autonomy&&s.autonomy.warmMeals===undefined)s.autonomy.warmMeals=0;
     if(s.autonomy&&s.autonomy.comfortRests===undefined)s.autonomy.comfortRests=0;
-    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;s.autonomy.direction??='auto';s.autonomy.deferred??=[];s.autonomy.limit??=Math.max(2,s.autonomy.completed.filter(id=>['comfort','porch','pantry'].includes(id)).length);s.autonomy.journal??=s.autonomy.completed.map(goal=>({goal,at:null}));s.autonomy.tastes??=freshTastes();s.autonomy.interestLimit??=2;s.autonomy.herbHarvests??=0;s.autonomy.careUses??=0;s.autonomy.leisure??=freshLeisure();s.autonomy.lookOwnership??='preserved';s.autonomy.waiting??=null;if(s.autonomy.replanAt===undefined)s.autonomy.replanAt=0;}
+    if(s.autonomy){s.autonomy.recess??=false;s.autonomy.breaks??=0;s.autonomy.direction??='auto';s.autonomy.deferred??=[];s.autonomy.limit??=Math.max(2,s.autonomy.completed.filter(id=>['comfort','porch','pantry'].includes(id)).length);s.autonomy.journal??=s.autonomy.completed.map(goal=>({goal,at:null}));s.autonomy.tastes??=freshTastes();s.autonomy.interestLimit??=2;s.autonomy.herbHarvests??=0;s.autonomy.careUses??=0;s.autonomy.leisure??=freshLeisure();s.autonomy.lookOwnership??='preserved';s.autonomy.waiting??=null;if(s.autonomy.replanAt===undefined)s.autonomy.replanAt=0;s.autonomy.useResults??=freshUseResults();}
     if(s.autonomy&&s.autonomy.experience===undefined)s.autonomy.experience={hunger:0,fatigue:0,effort:0,lastWork:s.person.work};
     if(s.autonomy){s.person.orderScope??='repeat';s.person.onceProject??=null;s.person.onceDelivery??=false;s.person.leisureRequest??=null;}
     if(!validOrderScope(s))return {ok:false,error:'一次指派資料不合法'};

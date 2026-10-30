@@ -1,3 +1,4 @@
+import{learnedRecipe,mealUseReason}from'./homestead-autonomy-learning.mjs';
 import {recipeReason,preparedCount,RECIPES,autoRecipe} from './homestead-content.mjs';
 import {skillLevel} from './homestead-skills.mjs';
 export const freshTastes=()=>({basic:0,salad:0,stew:0});
@@ -10,7 +11,9 @@ export function recordTaste(s,id){if(s.autonomy)s.autonomy.tastes[id]=Math.min(1
 export function autonomyFood(s){return (s.autonomy?.goal==='stew'||s.autonomy?.waiting?.goal==='stew')&&s.stock.stew>0&&s.person.hunger<38?'stew':null;}
 
 export function automaticRecipe(s){
- const recipe=autonomyRecipe(s)||autoRecipe(s);
+ const planned=autonomyRecipe(s),learned=!mealAim(s)?learnedRecipe(s):null,recipe=planned||learned?.id||autoRecipe(s);
  if(recipe==='stew'&&s.autonomy?.deferred.includes('stew'))return ['basic','salad'].find(id=>!recipeReason(s,id))||null;
  return recipe;
 }
+
+export function automaticMealReason(s){if(!s.autonomy||s.mealStyle!=='auto'||s.person.task?.manual)return '';const id=s.person.task?.act==='cook'?s.person.task.recipe:automaticRecipe(s);return id?mealUseReason(s,id):'';}

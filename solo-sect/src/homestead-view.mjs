@@ -1,3 +1,4 @@
+import{leisureUseText}from'./homestead-autonomy-learning.mjs';
 import{LEISURE,leisureReason}from'./homestead-autonomy-leisure.mjs';
 import {RECIPES,edibleEnergy,preparedCount} from './homestead-content.mjs';
 import {restRate,at} from './homestead-living.mjs';
@@ -39,7 +40,7 @@ export function activityReason(s, p = s.person, who = 'person') {
   if(p.task?.act==='farm')return '照料一塊菜園，供日後料理；田間收成要搬回才可用。';
   if (p.task?.act === 'build') return '已有家園藍圖，正逐件備料施工。';
   if (p.task?.act === 'leisure') {
-    if(s.autonomy&&p.task.leisureKind)return leisureReason(s,p.task);
+    if(s.autonomy&&p.task.leisureKind)return leisureReason(s,p.task)+' '+leisureUseText(s,p.task.leisureKind);
     const reason = Object.values(s.fac).some(f=>f.site) ? blockReason(s,'build',who) : null;
     return reason ? `工程暫候：${reason}；現在先歇一會。` : '目前沒有急需處理的生活工作，可以安心歇一會。';
   }

@@ -1,5 +1,6 @@
 import{recoveryChoice}from'./homestead-autonomy-recovery.mjs';
-import{mealAimText}from'./homestead-autonomy-meals.mjs';
+import{lastMealText}from'./homestead-autonomy-learning.mjs';
+import{mealAimText,automaticMealReason}from'./homestead-autonomy-meals.mjs';
 import{deferAutonomyGoal,allowAutonomyGoals}from'./homestead.mjs';
 import{autonomyText,DIRECTIONS,setAutonomyDirection,lifeStage,autonomyHistory,waitingText}from'./homestead-autonomy.mjs';
 import{renderMarkup}from'./homestead-dom.mjs';
@@ -146,7 +147,7 @@ function render() {
   $('home-benefits').hidden=s.mode!=='solo';$('home-benefits').textContent=homeBenefits(s);
   $('project-focus').hidden=s.mode!=='solo';$('project-focus').textContent=projectFocusText(s);
   $('meal-result').hidden=s.mode!=='solo';
-  $('meal-result').textContent=s.log.find(x=>x.msg.startsWith('這一餐：'))?.msg||'可在料理卡選一份現成菜；吃完會回到自主生活。';
+  const mealResult=lastMealText(s)||s.log.find(x=>x.msg.startsWith('這一餐：'))?.msg||'可在料理卡選一份現成菜；吃完會回到自主生活。';if($('meal-result').textContent!==mealResult)$('meal-result').textContent=mealResult;
   $('resource-top').textContent=`木料可用 ${resources.available.wood} · 料理共${preparedCount(s)}份（熱飯${s.stock.meal}／拌食${s.stock.salad||0}／燉菜${s.stock.stew||0}）／野果 ${s.stock.berries} · 種子 ${s.stock.seeds} · 青菜 ${s.stock.veg}`;
   $('resource-detail').textContent=`施工已交 ${resources.delivered} 木／運往工地 ${resources.reserved} 木（已離庫，不可再花）；待運${resources.needed}木，共用庫存尚缺${resources.shortage}木。回倉／採集在途：${resources.incoming.map(c=>`${{wood:'木',berries:'野果',veg:'菜',herbs:'藥'}[c.kind]}${c.amount}`).join('、')||'無'}。`;
   $('home-summary').textContent = `${s.autonomy?lifeStage(s)+' · ':''}${FACILITIES.hut.stages[s.fac.hut.stage].name} · ${s.helper ? '兩人同住' : '一人生活'} · 現成食物約 ${foodDays(s)} 日；自主夠用目標：料理${target.meal}份／果${target.berries}／菜${target.veg}／木${target.wood}／藥${target.herbs}（非容量限制，手動可多備）`;
@@ -160,7 +161,7 @@ function render() {
   $('status').innerHTML = `<h2>${esc(p.name)} · ${p.personality === 'quiet' ? '喜靜' : p.personality === 'diligent' ? '勤勞' : s.mode === 'solo' ? '開朗' : '好交往'}</h2><div>飢餓 ${Math.round(p.hunger)} / 100</div><div class="meter"><span style="width:${p.hunger}%"></span></div><div>精力 ${Math.round(p.energy)} / 100</div><div class="meter energy"><span style="width:${p.energy}%"></span></div><p class="activity">${esc(activityText(s))}</p>${s.mode==='solo'?`<div class="feeling">感受 ${feeling.value}/5 · ${feeling.active.map(f=>`${f.name}（${f.left}秒）`).join('、')||'平靜'}<div class="muted">來自實際使用，會消退；不抵銷飢餓或轉為工作增益。</div></div>`:''}<div class="muted">${esc(task?.act==='selfCare'&&s.autonomy?recoveryChoice(s)?.reason||activityReason(s):activityReason(s))}</div><div class="muted">工作 ${Math.floor(p.work)} · 閒暇 ${p.leisure} · 識藥 ${p.herbalSkill}</div>`;
   $('recipe-card').hidden=s.mode!=='solo';
   $('meal-style').value=s.mealStyle||'auto';
-  $('meal-style-reason').textContent=`只影響下次自主補餐，不打斷現在工作或手動一鍋／一份。${s.autonomy?.deferred.includes('stew')?'你已暫緩燉菜，自主補餐先用基本餐／拌食；明確派一鍋仍可。':preparedCount(s)>=target.meal?`現成${preparedCount(s)}份已達夠用${target.meal}份，先不另做。`:mealDecision(s).reason}`;
+  $('meal-style-reason').textContent=`只影響下次自主補餐，不打斷現在工作或手動一鍋／一份。${s.autonomy?.deferred.includes('stew')?'你已暫緩燉菜，自主補餐先用基本餐／拌食；明確派一鍋仍可。':preparedCount(s)>=target.meal?`現成${preparedCount(s)}份已達夠用${target.meal}份，先不另做。`:automaticMealReason(s)||mealDecision(s).reason}`;
   renderMarkup($('recipes'),Object.entries(RECIPES).map(([id,r])=>`<div class="facility" id="recipe-${id}" tabindex="-1" role="group" aria-label="${r.name}的料理與用餐"><b>${r.name} · 料理Lv${r.skill}</b><div class="muted">${Object.entries(r.ingredients).map(([k,n])=>`${RESOURCE_NAMES[k]}${n}`).join('＋')} → ${r.servings}份；每份飽腹${r.hunger}${r.energy?`、精力+${r.energy}`:''}；製作${r.duration}秒。${r.facility===2?'需改良灶具':'需露天灶'}；實吃感受+${FEELINGS[r.feeling].value}，${FEELINGS[r.feeling].duration}秒。</div><div>${recipeReason(s,id)||'已具備做這一鍋的條件'}</div><div>現成 ${s.stock[r.output]||0}份；現在吃可補飽腹${Math.min(100-p.hunger,r.hunger).toFixed(1)}${r.energy?`、精力${Math.min(100-p.energy,r.energy).toFixed(1)}`:''}。</div><button data-eat="${id}" class="${p.foodRequest===id?'active':''}" ${!s.stock[r.output]||p.hunger>=95?'disabled':''}>吃一份${r.name}</button><button data-recipe="${id}" class="${p.cookRequest===id?'active':''}" ${recipeReason(s,id)?'disabled':''}>只做這一鍋${r.name}</button></div>`).join(''));
   $('unlocks').textContent=`建造路線：Lv1木作台／改良灶具 → Lv2且有木作台與木床可做舒適床。已學會：${s.unlocked?.join('、')||'先做好第一間家與第一鍋熱飯'}。`;
   $('skills-card').hidden=s.mode!=='solo';
