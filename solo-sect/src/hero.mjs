@@ -1,4 +1,5 @@
 // v0.96 主角：建立、價值觀 autopilot、違心、同門、專屬主線第一步
+import { isType, mbtiPersonality } from './mbti.mjs';
 import { STATS, STAT_BUDGET, VALUES, ACT_TAGS, VALUE_K, WEXIN, Q9, HEROES, COMPANIONS, CUSTOM_COMPANIONS, ARCS } from './hero-data.mjs';
 import { NODES, MOOD, CHORE_ACTS, DAY, AWAKEN, BREAK } from './data.mjs';
 import { seedArts, learnArt, unlockTechs, artById } from './arts.mjs';
@@ -53,11 +54,13 @@ export function applyHero(s, spec, initPair) {
     if (T.coinMul) resSet(s, 'coin', s.res.coin * T.coinMul);
   } else {
     const st = spec.stats || defaultStats(); if (!validStats(st, spec.bonus || 0)) throw new Error('點數不合法');
-    const r = readHeart(spec.answers || []); const pers = [...r.visible]; if (st.wu === 1 && !pers.includes('honest')) pers.unshift('honest');
-    H = { kind: 'custom', id: 'custom', name: spec.name || '主角', stats: { ...st }, values: r.values, personality: pers.slice(0, 2).concat(r.hidden && !pers.includes(r.hidden) ? [r.hidden] : []), hidden: r.hidden, lore: [], arc: null, suhui: spec.bonus || 0 };
+    const r = readHeart(spec.answers || []); let pers = [...r.visible]; if (st.wu === 1 && !pers.includes('honest')) pers.unshift('honest');
+    if (spec.mbti != null) { if (!isType(spec.mbti)) throw new Error('未知人格型 ' + spec.mbti); pers = mbtiPersonality(spec.mbti, st.wu); } // loop5：選了 16 型就用型的特質，價值觀與暗特質仍來自九問
+    H = { kind: 'custom', id: 'custom', name: spec.name || '主角', stats: { ...st }, values: r.values, personality: pers.slice(0, 2).concat(r.hidden && !pers.includes(r.hidden) ? [r.hidden] : []), hidden: r.hidden, lore: [], arc: null, suhui: spec.bonus || 0, ...(spec.mbti != null ? { mbti: spec.mbti } : {}) };
   }
   const st = H.stats; [H.main, H.sub] = mainSub(H.values);
   Object.assign(d, { name: H.name, wu: st.wu, root: H.sealed ? 1 : st.gen, ding: st.ding, values: H.values, wexin: 0, personality: H.personality, known: H.personality.slice(0, 2), traits: H.personality.includes('diligent') ? { diligent: 1.2 } : {} });
+  if (H.mbti) d.mbti = H.mbti; // loop5：只有選了 16 型才記
   d.skills.strength = 4 + st.li * 3; d.skills.agility = 4 + st.shen * 3; seedArts(d);
   // 同門
   const cands = companionsFor(H.kind === 'template' ? H.id : null), cid = cands.includes(spec.companion) ? spec.companion : cands[0];

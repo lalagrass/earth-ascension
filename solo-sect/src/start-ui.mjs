@@ -2,6 +2,8 @@
 import { STATS, VALUES, Q9, HEROES, COMPANIONS } from './hero-data.mjs';
 import { budgetOf, spent, validStats, defaultStats, readHeart, companionsFor, VALUE_NAMES, resolveChoice } from './hero.mjs';
 import { TRAITS } from './data.mjs';
+import { NEW_TRAITS } from './hero-data.mjs';
+import { TYPES, typeLabel, mbtiPersonality, nearestType } from './mbti.mjs';
 import { legacyBest } from './slice.mjs';
 import { SECTS, HERO_SECT } from './sect-data.mjs';
 const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index:50;overflow:auto;color:#f3e7cf;font:14px/1.5 serif}
@@ -14,8 +16,8 @@ const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index
 #choice{position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:40;background:#2b2118;color:#f3e7cf;border:2px solid #ffd27a;border-radius:10px;padding:14px 20px;max-width:560px;font:15px/1.6 serif;box-shadow:0 6px 30px #000a}
 #choice button{display:block;margin:6px 0;width:100%;text-align:left;font-size:15px}`;
 const SUHUI = (() => { try { return legacyBest(localStorage); } catch { return 0; } })(); // v1.7 也讀存檔裡的宿慧
-const st = { tab: 'classic', hero: 'guojing', comp: null, name: '無名', stats: defaultStats(), ans: Array(9).fill(0), ask: true };
-const tn = (t) => TRAITS[t]?.name || t;
+const st = { tab: 'classic', hero: 'guojing', comp: null, name: '無名', stats: defaultStats(), ans: Array(9).fill(0), ask: true, mbti: '' };
+const tn = (t) => TRAITS[t]?.name || NEW_TRAITS[t]?.name || t;
 const statLine = (s) => STATS.map(([k, n]) => `${n}${s?.[k] ?? '—'}`).join(' ');
 const valLine = (v) => Object.entries(v || {}).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, x]) => `${VALUE_NAMES[k]}${x > 0 ? '+' : ''}${x}`).join('・');
 function compCards(heroId) {
@@ -31,7 +33,8 @@ function render(el) {
     const b = budgetOf(st.stats, SUHUI), left = b - spent(st.stats), r = readHeart(st.ans);
     h += `<div style="margin-top:8px">名字 <input id="st-name" value="${st.name}" maxlength="6"> 剩餘點數 <b>${left}</b>／${b}${st.stats.wu === 1 ? '（悟性 1：退 1 點，得「笨功夫」憨厚）' : ''}${SUHUI ? `　<b style="color:#9fd3ff">宿慧 +${SUHUI}（宿慧開局）</b>` : ''}<div>${STATS.map(([k, n]) => `<span class="stat">${n} <button data-st="${k}|-1">−</button> <b>${st.stats[k]}</b> <button data-st="${k}|1">＋</button></span>`).join('')}</div>`;
     h += `<h3>九問問心</h3>${Q9.map((q, i) => `<div class="q">${i + 1}. ${q.q}：<select data-q9="${i}">${q.a.map((a, j) => `<option value="${j}" ${st.ans[i] === j ? 'selected' : ''}>${a[0]}</option>`).join('')}</select></div>`).join('')}`;
-    h += `<div>→ 主價值 <b>${VALUE_NAMES[r.main]}</b>・副 <b>${VALUE_NAMES[r.sub]}</b>　特質 <b>${r.visible.map(tn).join('、')}</b>＋一個暗特質（相處後才看得出）</div></div>` + compCards(null);
+    h += `<h3>16 型人格（選用）</h3><div class="q"><select id="st-mbti"><option value="">不選（特質照九問）</option>${Object.keys(TYPES).map((k) => `<option value="${k}" ${st.mbti === k ? 'selected' : ''}>${typeLabel(k)}</option>`).join('')}</select>${st.mbti ? `　→ 特質 <b>${mbtiPersonality(st.mbti, st.stats.wu).map(tn).join('、')}</b>（價值觀與暗特質仍看九問）` : ''}</div>`;
+    h += `<div>→ 主價值 <b>${VALUE_NAMES[r.main]}</b>・副 <b>${VALUE_NAMES[r.sub]}</b>　特質 <b>${(st.mbti ? mbtiPersonality(st.mbti, st.stats.wu) : r.visible).map(tn).join('、')}</b>＋一個暗特質（相處後才看得出）</div></div>` + compCards(null);
   } else h += `<p>沿用 v0.95 的無名主角、林師姐、堂弟開局（不帶價值觀與同門）。</p>`;
   const ok = st.tab !== 'custom' || validStats(st.stats, SUHUI);
   h += `<div>名俠池畫風 <select id="st-xia">${[['all', '全明星'], ['jin', '純金庸'], ['zhou', '純周星馳']].map(([k, n]) => `<option value="${k}" ${(st.xia || 'all') === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`;
@@ -45,9 +48,9 @@ export function openStart(onStart) {
     if (t.dataset.tab) st.tab = t.dataset.tab; if (t.dataset.hero) { st.hero = t.dataset.hero; st.comp = null; } if (t.dataset.comp) st.comp = t.dataset.comp;
     if (t.dataset.st) { const [k, dv] = t.dataset.st.split('|'); const v = st.stats[k] + +dv; if (v >= 1 && v <= 5) { const n = { ...st.stats, [k]: v }; if (spent(n) <= budgetOf(n, SUHUI) || +dv < 0) st.stats = n; } }
     if (t.id === 'st-ask') st.ask = t.checked;
-    if (t.id === 'st-go') { const spec = st.tab === 'classic' ? { kind: 'template', id: st.hero, companion: st.comp, askMajor: st.ask, xiaStyle: st.xia || 'all' } : st.tab === 'custom' ? { kind: 'custom', name: st.name, stats: st.stats, answers: st.ans, companion: st.comp, askMajor: st.ask, bonus: SUHUI, xiaStyle: st.xia || 'all' } : null; el.remove(); onStart(spec); return; }
+    if (t.id === 'st-go') { const spec = st.tab === 'classic' ? { kind: 'template', id: st.hero, companion: st.comp, askMajor: st.ask, xiaStyle: st.xia || 'all' } : st.tab === 'custom' ? { kind: 'custom', name: st.name, stats: st.stats, answers: st.ans, ...(st.mbti ? { mbti: st.mbti } : {}), companion: st.comp, askMajor: st.ask, bonus: SUHUI, xiaStyle: st.xia || 'all' } : null; el.remove(); onStart(spec); return; }
     render(el); });
-  el.addEventListener('change', (e) => { if (e.target.dataset.q9) { st.ans[+e.target.dataset.q9] = +e.target.value; render(el); } if (e.target.id === 'st-name') st.name = e.target.value || '無名'; if (e.target.id === 'st-xia') st.xia = e.target.value; });
+  el.addEventListener('change', (e) => { if (e.target.dataset.q9) { st.ans[+e.target.dataset.q9] = +e.target.value; render(el); } if (e.target.id === 'st-name') st.name = e.target.value || '無名'; if (e.target.id === 'st-xia') st.xia = e.target.value; if (e.target.id === 'st-mbti') { st.mbti = e.target.value; render(el); } });
 }
 export function choiceUI(S) {
   let el = document.getElementById('choice'); const ch = S.hero?.askMajor && S.choices?.[0];

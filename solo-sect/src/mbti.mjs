@@ -51,3 +51,7 @@ export function nearestType(personality = []) {
   for (const [k, v] of Object.entries(TYPES)) { const sc = v.traits.filter((t) => personality.includes(t)).length * 2 + (personality[0] === v.traits[0] ? 1 : 0); if (sc > bs) { bs = sc; best = k; } }
   return bs > 0 ? best : null;
 }
+// loop5：顯示用標籤；參考人物一律只標「參考」
+export const typeLabel = (type) => (isType(type) ? `${type}・${TYPES[type].name}（參考：${TYPES[type].ref}）` : '');
+// loop5：創角選 16 型時的特質；悟性 1 照舊先得「憨厚」（笨功夫），總數維持 2 個可見特質
+export function mbtiPersonality(type, wu) { const p = traitsOf(type); if (wu === 1 && !p.includes('honest')) p.unshift('honest'); return p.slice(0, 2); }
