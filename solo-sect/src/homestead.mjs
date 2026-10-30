@@ -519,6 +519,7 @@ export function loadHomestead(json) {
     if (s?.kind !== 'homestead' || ![1, 2, VERSION,AUTONOMY_VERSION,FRONTIER_VERSION].includes(s.version) || !s.person || !s.stock || !s.cap || !s.fac?.hut || !s.wild || !Array.isArray(s.log)) return { ok: false, error: '不是支援的荒居存檔' };
     // H1 檔沒有 H2 的地塊與資源，補上後繼續原本的生活，不碰本篇存檔。
     const h2 = createHomestead();
+    s.fac.fence??=structuredClone(h2.fac.fence);
     s.mode ??= 'legacy';
     s.autonomy ??= null;
     upgradeFrontier(s);

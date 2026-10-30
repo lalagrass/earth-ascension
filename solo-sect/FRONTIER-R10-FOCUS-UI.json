@@ -1,0 +1,25 @@
+{
+  "method": "separate real UI, passive visitor arrival/leave rerenders while focused, no state injection",
+  "stableControlInitiallyFocused": true,
+  "stableControlPreserved": true,
+  "disabledControlFallback": "details summary",
+  "pausedStable": true,
+  "entries": [
+    {
+      "query": "classic&frontier",
+      "version": 3,
+      "mode": "solo"
+    },
+    {
+      "query": "legacy&frontier",
+      "version": 3,
+      "mode": "legacy"
+    },
+    {
+      "query": "",
+      "version": 4,
+      "mode": "solo"
+    }
+  ],
+  "errors": []
+}

@@ -102,6 +102,7 @@ export function drawHomestead(g,s,preview,blueprint,inspected,showRoute=true,mod
   if(rest){rect(x-20,y-20,39,16,s.fac.bed?.stage===2?'#9db8c2':'#bcac8c');circle(x-19,y-14,8,'#e3bd92');g.font='bold 17px sans-serif';g.fillStyle='#eee8d2';g.fillText('z',x+12,y-24);}else{rect(x-9,y-(sit?20:33),18,sit?21:34,color);circle(x,y-(sit?28:42),10,'#e3bd92');if(sit)line([[x-8,y],[x+8,y]],'#493f34',4);}
   if(p.task?.step==='install'&&p.task.phase==='go')rect(x+10,y-25,25,16,'#b28d61');
   if(p.carry)rect(x+12,y-24,16,12,p.carry.kind==='wood'?'#8f6238':'#bc8b55');
+  if(p===s.frontier?.companion&&['spar','teach'].includes(s.person.task?.act)&&s.person.task.phase==='do'&&Math.hypot(x-s.person.pos[0],y-s.person.pos[1])<=45)line([[x-8,y-26],[x-26,y-30]],'#e3bd92',4);
   if(['practice','fight','trailFight','spar','teach'].includes(t?.act)&&t.phase==='do')line([[x+8,y-26],[x+31,y-30]],'#e3bd92',4);
   if(t?.act==='settle'&&t.phase==='do'){rect(x+10,y-28,7,7,'#405e49');rect(x+18,y-28,7,7,'#a34e37');rect(x+26,y-28,7,7,'#855c47');}
   if(t?.act==='build'&&t.phase==='do'){line([[x+9,y-29],[x+27,y-45]],'#715232',4);line([[x+21,y-48],[x+32,y-41]],'#aaa797',6);}
@@ -109,7 +110,7 @@ export function drawHomestead(g,s,preview,blueprint,inspected,showRoute=true,mod
   if(t?.act==='leisure'&&t.phase==='do'&&['flowers','garden'].includes(t.leisureKind)){line([[x+8,y-25],[x+22,y-20]],'#e3bd92',4);tag(t.leisureKind==='flowers'?'賞花':'看菜畦',x,y-105,true);}
   if(p===s.person&&currentFeelings(s).value>0){circle(x+23,y-45,8,'#e8cc73');g.fillStyle='#715c35';g.font='12px sans-serif';g.fillText('♪',x+20,y-41);}
  }
- if(s.frontier?.source){const q=s.frontier.source;ellipse(855,90,26,14,q.cleared?'#79926a':'#725b48');if(!q.cleared){circle(836,88,8,'#5c493d');line([[831,86],[827,80]],'#e5d5b7',3);}tag(q.cleared?'獸徑已清理':`獸徑山豬 ${q.hp}/24`,813,45);}
+ if(s.frontier?.source){const q=s.frontier.source;ellipse(855,90,25,5,'#423a3533');ellipse(855,65,23,12,q.cleared?'#79926a':'#725b48');if(!q.cleared){line([[844,74],[848,89]],'#5c493d',3);line([[866,74],[861,89]],'#5c493d',3);circle(836,63,8,'#5c493d');line([[831,61],[827,55]],'#e5d5b7',3);}line([[755,33],[836,49]],'#655c45',2);tag(q.cleared?'獸徑已清理':`獸徑山豬 ${q.hp}/24`,690,15);}
  if(s.frontier?.threat.beast){const b=s.frontier.threat.beast,[x,y]=b.pos;ellipse(x,y-9,20,12,'#725b48');circle(x-18,y-10,8,'#5c493d');line([[x-23,y-9],[x-26,y-15]],'#e5d5b7',3);tag(`山豬 ${b.hp}/18`,x,y-55,true);}
  if(s.frontier?.companion.present)person(s.frontier.companion,'#7b6b96');
  person(s.person,'#3e6481');if(s.helper)person(s.helper,'#a46652');else if(visitorHere(s))person({pos:PLACES.visitor,name:s.visitor.name},'#a46652');

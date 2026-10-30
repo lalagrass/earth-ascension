@@ -1,0 +1,37 @@
+import fs from 'node:fs/promises';import assert from 'node:assert/strict';
+const {chromium}=await import('/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs');
+const b=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
+try{
+ const p=await b.newPage({viewport:{width:1440,height:1000}}),errors=[],consoleErrors=[],actions=[],events=[];
+ p.on('pageerror',e=>{errors.push(e.message);console.error(e.stack);});p.on('console',m=>{if(m.type()==='error'&&!m.location().url.endsWith('favicon.ico'))consoleErrors.push(m.text());});
+ const read=()=>p.evaluate(()=>structuredClone(window.__homestead));
+ const activate=async selector=>{await p.waitForFunction(sel=>{const e=document.querySelector(sel);return e&&!e.disabled&&!!e.getClientRects().length;},selector,{timeout:60000});await p.locator(selector).focus();await p.keyboard.press('Enter');actions.push({activate:selector});};
+ const speed=async n=>activate(`[data-speed="${n}"]`);
+ await p.goto('http://127.0.0.1:8804/homestead.html?frontier');
+ await p.locator('#frontier-mode').focus();await p.keyboard.press('Space');await p.keyboard.press('Space');assert.equal(await p.locator('#frontier-mode').isChecked(),true);
+ await p.locator('#name').focus();await p.keyboard.press('ControlOrMeta+A');await p.keyboard.type('近山試居');
+ await p.locator('#frontier-approach').focus();await p.keyboard.press('Home');await p.keyboard.press('ArrowDown');assert.equal(await p.locator('#frontier-approach').inputValue(),'learn');
+ await p.locator('#frontier-body').focus();await p.keyboard.press('Home');await p.keyboard.press('ArrowDown');await p.keyboard.press('ArrowUp');assert.equal(await p.locator('#frontier-body').inputValue(),'1');
+ await p.keyboard.press('Tab');await p.keyboard.press('Shift+Tab');assert.equal(await p.locator('#frontier-body').evaluate(e=>e===document.activeElement),true);
+ await activate('#begin');await speed(16);
+ await p.waitForFunction(()=>window.__homestead?.t>=1050,undefined,{timeout:150000});await speed(0);let s=await read();assert.ok(s.fac.hut.stage&&s.fac.kitchen.stage&&s.fac.garden.stage);assert.ok(s.frontier.martial.xp>=6);events.push({stage:'autonomous life before social commands',t:s.t,world:s});
+ await p.locator('#land').scrollIntoViewIfNeeded();await p.screenshot({path:'shots/frontier-R10-home.png'});
+ await activate('#frontier-details>summary');await activate('[data-frontier="bond"]');await speed(16);await p.waitForFunction(()=>window.__homestead.frontier.companion.chatDay===window.__homestead.day);
+ await activate('[data-frontier="shareMeal"]');await p.waitForFunction(()=>window.__homestead.frontier.companion.giftDay===window.__homestead.day);
+ await activate('[data-act="eat"]');await p.waitForFunction(()=>window.__homestead.person.order===null);
+ await activate('[data-act="rest"]');await p.waitForFunction(()=>window.__homestead.person.order===null&&window.__homestead.person.energy===100);
+ await activate('[data-frontier="spar"]');await p.waitForFunction(()=>window.__homestead.frontier.martial.partnerRounds===1);
+ await activate('[data-frontier="teach"]');await p.waitForFunction(()=>window.__homestead.frontier.martial.insights===1);
+ await speed(0);s=await read();assert.equal(s.frontier.companion.trust,3);assert.equal(s.frontier.companion.practiceXP,4);events.push({stage:'real pair and teaching',t:s.t,world:s});
+ await p.locator('#frontier-stance').focus();await p.keyboard.press('Home');await p.keyboard.press('ArrowDown');assert.equal(await p.locator('#frontier-stance').inputValue(),'drive');
+ await p.locator('#frontier-join').focus();await p.keyboard.press('Space');assert.equal(await p.locator('#frontier-join').isChecked(),true);
+ await speed(16);await p.waitForFunction(()=>{const s=window.__homestead,c=s.frontier.companion;return c.present&&!c.leaving&&!c.carry&&!c.helpPending&&c.hunger>65&&c.energy>65&&s.person.hunger>60&&s.person.energy>65&&!s.person.carry&&s.stock.meal+s.stock.salad+s.stock.stew>=1&&s.frontier.threat.phase==='quiet';},undefined,{timeout:60000});
+ await speed(0);const before=await read();await activate('[data-frontier="depart"]');await activate('[data-frontier="depart"]');s=await read();assert.equal(s.t,before.t);assert.equal(s.frontier.trip.packed,0);assert.deepEqual(s.stock,before.stock);assert.equal(s.person.order,'depart');
+ await speed(16);await p.waitForFunction(()=>window.__homestead.frontier.trip.phase==='source'&&window.__homestead.frontier.trip.aidHits>=1,undefined,{timeout:60000});await speed(0);s=await read();assert.ok(s.frontier.trip.joined);assert.ok(s.frontier.source.hp<24&&s.frontier.source.hp>0);events.push({stage:'physical joined source encounter',t:s.t,world:s});await p.locator('#land').scrollIntoViewIfNeeded();await p.screenshot({path:'shots/frontier-R10-source.png'});
+ await speed(16);await p.waitForFunction(()=>window.__homestead.frontier.trip.returns===1,undefined,{timeout:60000});await p.waitForFunction(()=>window.__homestead.t>=1500,undefined,{timeout:60000});await speed(0);
+ s=await read();assert.ok(s.frontier.source.cleared);assert.equal(s.frontier.trip.journeys,1);assert.equal(s.frontier.trip.packed,s.frontier.trip.eaten+s.frontier.trip.returned);assert.equal(s.frontier.threat.phase,'quiet');assert.equal(s.frontier.threat.incursions,1);
+ await p.locator('#land').scrollIntoViewIfNeeded();await p.screenshot({path:'shots/frontier-R10-peace.png'});
+ await p.setViewportSize({width:390,height:844});await p.locator('#frontier-card').scrollIntoViewIfNeeded();assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await p.locator('#frontier-stance').focus();await p.keyboard.press('Escape');assert.equal(await p.locator('#frontier-details').evaluate(e=>e.open),false);assert.equal(await p.locator('#frontier-details>summary').evaluate(e=>e===document.activeElement),true);await p.screenshot({path:'shots/frontier-R10-narrow.png'});
+ const t=s.t;await p.waitForTimeout(600);assert.equal((await read()).t,t);assert.deepEqual(errors,[]);assert.deepEqual(consoleErrors,[]);
+ await fs.writeFile('FRONTIER-R10-UI.json',JSON.stringify({entry:'fresh frontier learn, default quiet/body1',method:'normal UI keyboard activation with targeted focus; no resource/XP/world injection; not human or full screen-reader test',speed:'16x with explicit pauses; not1x duration',actions,events,state:s,errors,consoleErrors,narrowOverflow:false,pausedStable:true},null,2)+'\n');console.log(JSON.stringify({t:s.t,clearAt:s.frontier.source.clearAt,trip:s.frontier.trip,trust:s.frontier.companion.trust,errors,consoleErrors}));
+}finally{await b.close();}

@@ -1,0 +1,15 @@
+{
+  "method": "pure renderer regression, recorded real normal-UI world; not a fresh gameplay run",
+  "worldUnchanged": true,
+  "sourceT": 1102.25,
+  "sourceHP": 22,
+  "actor": [
+    855,
+    130
+  ],
+  "companion": [
+    825,
+    130
+  ],
+  "errors": []
+}

@@ -24,5 +24,6 @@
       "source": "finders/BreadthFirstFinder.js",
       "sha256": "52bbf278536008caa6fb687ed82b81fdd585bb3aafe85d6b4381a11d4f963ee3"
     }
-  ]
+  ],
+  "npmArchiveSha256": "64f5e928a7e62fa452197ace2c57a581b8c79d6f8238a4c122873f822d3dee4f"
 }
