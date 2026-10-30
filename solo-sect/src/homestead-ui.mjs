@@ -1,3 +1,4 @@
+import {frontierText} from './homestead-frontier.mjs';
 import{recoveryChoice}from'./homestead-autonomy-recovery.mjs';
 import{lastMealText}from'./homestead-autonomy-learning.mjs';
 import{mealAimText,automaticMealReason}from'./homestead-autonomy-meals.mjs';
@@ -88,7 +89,8 @@ $('start').addEventListener('keydown', (e) => { if (e.key === 'Escape' && s) { e
 function begin(state) { inspected=null; $('site-action-result').textContent=''; closeBlueprint(); cancelLook(); clearTransfer(); s = state; speed = 1; acc = 0; startScreen(false); last = performance.now(); render(); $('homestead-title').focus({preventScroll:true}); }
 $('resume').disabled = !stored();
 if(new URLSearchParams(location.search).has('classic')||new URLSearchParams(location.search).has('legacy'))$('start-mode-help').textContent='這個入口保留原式生活：需自行立藍圖，不啟用新自主發展；既有吃睡與補庫仍可自主。';
-$('begin').onclick = () => begin(createHomestead({ name: $('name').value, personality: $('personality').value, mode: new URLSearchParams(location.search).has('legacy') ? 'legacy' : 'solo', autonomy: !new URLSearchParams(location.search).has('classic') }));
+$('frontier-mode').checked=new URLSearchParams(location.search).has('frontier');
+$('begin').onclick = () => begin(createHomestead({ name: $('name').value, personality: $('personality').value, mode: new URLSearchParams(location.search).has('legacy') ? 'legacy' : 'solo', autonomy: !new URLSearchParams(location.search).has('classic'), frontier:$('frontier-mode').checked, approach:$('frontier-approach').value }));
 $('resume').onclick = () => { const r = loadHomestead(stored()); if (r.ok) begin(r.state); else show(r.error); };
 $('new').onclick = () => { inspected=null; $('site-action-result').textContent=''; closeBlueprint(); cancelLook(); clearTransfer(); speed = 0; startScreen(true); $('resume').disabled = !stored(); };
 $('save').onclick = () => { if (!s) return; try { localStorage.setItem(SAVE_KEY, saveHomestead(s)); clearTransfer(); show('荒居已存檔。'); } catch { show('無法寫入本機存檔。'); } };
@@ -132,6 +134,7 @@ function focusFallback(el){
  return null;
 }
 function render() {
+  if(s){$('frontier-card').hidden=!s.frontier;$('frontier-state').textContent=frontierText(s);}
   if (!s || pointerHeld) return;
   const focused = document.activeElement; const focusSelector = focused?.id ? '#' + CSS.escape(focused.id) : ['act','recipe','eat','build','preview','inspect','focus','project','social','helper','household'].find(k => focused?.dataset?.[k]) ? Object.entries(focused.dataset).map(([k,v]) => `[data-${k}="${CSS.escape(v)}"]`).join('') : null;
   const p = s.person, task = p.task;

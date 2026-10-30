@@ -1,0 +1,28 @@
+{
+  "package": "pathfinding",
+  "version": "0.4.18",
+  "source": "https://github.com/qiao/PathFinding.js/tree/0.4.18",
+  "modifications": "LF and ES module imports/exports only; uniform-cost BreadthFirstFinder subset, no heap dependency",
+  "files": [
+    {
+      "source": "core/Node.js",
+      "sha256": "04aca052e76ee3ead35b866d7060d59677cb04f3c330e74a4eff47019d6ed3ee"
+    },
+    {
+      "source": "core/DiagonalMovement.js",
+      "sha256": "34c09679ed6d3778425a7d2ef5efad8d0d59de437a60f0cf1171c348b559a4c0"
+    },
+    {
+      "source": "core/Grid.js",
+      "sha256": "9a26470226bce5b8bf49fe7a40141a9eb28c2d6eb4d3ff99c4ca0c44457dd734"
+    },
+    {
+      "source": "core/Util.js",
+      "sha256": "4ea100d831cd50f7f84dc080f0edcd021ad78f96ae8a364b5b2b175d7ea28300"
+    },
+    {
+      "source": "finders/BreadthFirstFinder.js",
+      "sha256": "52bbf278536008caa6fb687ed82b81fdd585bb3aafe85d6b4381a11d4f963ee3"
+    }
+  ]
+}

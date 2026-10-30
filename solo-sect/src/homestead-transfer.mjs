@@ -12,6 +12,7 @@ const fail = (error) => ({ ok: false, error });
 
 export function previewTransfer(raw) {
   const source = loadHomestead(raw);
+  if(source.ok&&source.state.frontier)return fail('生活與山林試作尚無本篇轉接契約；請留在家園，原資料未改。');
   if (!source.ok) return fail(`荒居存檔無法讀取：${source.error}`);
   const h = source.state;
   if (!h.person.name.trim() || !/^[\p{L}\p{N} _·-]{1,12}$/u.test(h.person.name)) return fail('主角名字不合法；請改用文字、數字或空格。');

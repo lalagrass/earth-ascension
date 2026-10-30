@@ -1,3 +1,4 @@
+import {FRONTIER_VERSION,freshFrontier,validFrontier} from './homestead-frontier.mjs';
 import{freshUseResults,recordMealUse}from'./homestead-autonomy-learning.mjs';
 import {prepareOrder,clearOnce,finishOrderAction,finishOrderDelivery,finishOrderProject,validOrderScope} from './homestead-autonomy-orders.mjs';
 import {applyResidentLook} from './homestead-autonomy-look.mjs';
@@ -73,13 +74,14 @@ const leaseOf = (act) => act === 'chop' ? 'wood' : act === 'farm' ? 'garden' : a
 const freeLease = (s, p, owner) => { const key = leaseOf(p.task?.act); if (key && s.leases[key] === owner) s.leases[key] = null; };
 const inbound = (s, k) => [s.person, s.helper].reduce((n, p) => n + (p?.carry?.origin === 'wild' && p.carry.kind === k ? p.carry.amount : 0), 0);
 
-export function createHomestead({ name = '無名', personality = 'quiet', mode = 'legacy', autonomy = false } = {}) {
-  const s = { kind: 'homestead', version:mode==='solo'&&autonomy?AUTONOMY_VERSION:VERSION, mode: mode === 'solo' ? 'solo' : 'legacy', mealStyle:'auto', focusProject:null, look:defaultHomeLook(), t: 0, subtick: 0, day: 1, speed: 1,
+export function createHomestead({ name = '無名', personality = 'quiet', mode = 'legacy', autonomy = false, frontier = false, approach = 'guard' } = {}) {
+  const s = { kind: 'homestead', version:mode==='solo'&&autonomy?(frontier?FRONTIER_VERSION:AUTONOMY_VERSION):VERSION, mode: mode === 'solo' ? 'solo' : 'legacy', mealStyle:'auto', focusProject:null, look:defaultHomeLook(), t: 0, subtick: 0, day: 1, speed: 1,
     person: { name: String(name).trim().slice(0, 12) || '無名', personality: ['quiet', 'sociable', 'diligent'].includes(personality) ? personality : 'quiet', pos: [...HOME], hunger: 65, energy: 68, herbalSkill: 0, careDay: 0, skills: freshSkills(), feelings: {}, cookRequest: null, foodRequest: null, task: null, order: null, carry: null, work: 0, leisure: 0 },
     stock: { berries: 0, wood: 0, seeds: 2, veg: 0, meal: 0, salad: 0, stew: 0, herbs: 0 }, cap: { berries: 8, wood: 8, seeds: 5, veg: 8, meal: 8, herbs: 6 }, wild: { berries: 4, wood: 4, herbs: 3 },
     fac: { hut: { stage: 0, site: null }, garden: { stage: 0, site: null }, herbGarden: { stage: 0, site: null }, workbench:{stage:0,site:null}, bed: { stage: 0, site: null }, bench: { stage: 0, site: null }, flowers: { stage: 0, site: null }, kitchen: { stage: 0, site: null }, store: { stage: 0, site: null }, berries: { stage: 0 }, wood: { stage: 0 }, herbs: { stage: 0 } }, plot: { state: 'empty', growth: 0 }, herbPlot: { state: 'empty', growth: 0 },
     visitor: { name: '阿蓮', role: 'visitor', trust: 0, lastChat: 0, lastGift: 0, cared: false, willing: false, inviteDay: 0, inviteTime: 0, apprenticeDay: 0, injury: false, hunger: 68, energy: 72, herbalSkill: 0, careDay: 0 }, helper: null,
     leases: { wood: null, garden: null, herbGarden: null }, autonomy:mode==='solo'&&autonomy?freshAutonomy():null, unlocked: [], log: [] };
+  if(frontier&&s.autonomy)s.frontier=freshFrontier(approach);
   if(s.autonomy)prepareOrder(s);
   note(s, `${s.person.name}來到荒地。先找吃的，再搭一間能安睡的木屋。`); return s;
 }
@@ -502,11 +504,12 @@ export function saveHomestead(s) { return JSON.stringify(s); }
 export function loadHomestead(json) {
   try {
     const s = JSON.parse(json);
-    if (s?.kind !== 'homestead' || ![1, 2, VERSION,AUTONOMY_VERSION].includes(s.version) || !s.person || !s.stock || !s.cap || !s.fac?.hut || !s.wild || !Array.isArray(s.log)) return { ok: false, error: '不是支援的荒居存檔' };
+    if (s?.kind !== 'homestead' || ![1, 2, VERSION,AUTONOMY_VERSION,FRONTIER_VERSION].includes(s.version) || !s.person || !s.stock || !s.cap || !s.fac?.hut || !s.wild || !Array.isArray(s.log)) return { ok: false, error: '不是支援的荒居存檔' };
     // H1 檔沒有 H2 的地塊與資源，補上後繼續原本的生活，不碰本篇存檔。
     const h2 = createHomestead();
     s.mode ??= 'legacy';
     s.autonomy ??= null;
+    if((s.version===FRONTIER_VERSION&&!s.frontier)||!validFrontier(s))return {ok:false,error:'山林試作資料不合法'};
     if(s.version===AUTONOMY_VERSION&&(!s.autonomy||s.mode!=='solo'))return {ok:false,error:'自主模式版本缺少有效自主資料'};
     if(s.autonomy&&s.autonomy.warmMeals===undefined)s.autonomy.warmMeals=0;
     if(s.autonomy&&s.autonomy.comfortRests===undefined)s.autonomy.comfortRests=0;
@@ -611,7 +614,7 @@ export function loadHomestead(json) {
     }
     s.unlocked ??= availableUnlocks(s);
     if(!Array.isArray(s.unlocked)||new Set(s.unlocked).size!==s.unlocked.length||s.unlocked.some(x=>!['食譜：蔬果拌食','食譜：家常燉菜','木作台','改良灶具','舒適床鋪'].includes(x)))return {ok:false,error:'解鎖紀錄不合法'};
-    if(s.autonomy)s.version=AUTONOMY_VERSION;
+    if(s.autonomy)s.version=s.frontier?FRONTIER_VERSION:AUTONOMY_VERSION;
     return { ok: true, state: s };
   } catch { return { ok: false, error: 'JSON 格式不合法' }; }
 }
