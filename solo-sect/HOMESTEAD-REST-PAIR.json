@@ -1,0 +1,52 @@
+{
+  "base": "3ebe5060c8d27e6fe61dcd5f38e355966eb8fd30",
+  "oracle": "pinned old source with explicit clear only on observed manual-rest completion; no state/resource grants",
+  "ticks": 20000,
+  "results": [
+    {
+      "seed": 1,
+      "personality": "sociable",
+      "seconds": 5000,
+      "finished": 55,
+      "minH": 35.52000000000794,
+      "minE": 65.65000000000013,
+      "leisure": 422
+    },
+    {
+      "seed": 2,
+      "personality": "diligent",
+      "seconds": 5000,
+      "finished": 49,
+      "minH": 36.425000000010385,
+      "minE": 66.55000000000004,
+      "leisure": 429
+    },
+    {
+      "seed": 3,
+      "personality": "quiet",
+      "seconds": 5000,
+      "finished": 51,
+      "minH": 36.01000000000789,
+      "minE": 21.2500000000003,
+      "leisure": 422
+    },
+    {
+      "seed": 4,
+      "personality": "sociable",
+      "seconds": 5000,
+      "finished": 50,
+      "minH": 35.870000000007906,
+      "minE": 45.25000000000004,
+      "leisure": 430
+    },
+    {
+      "seed": 5,
+      "personality": "diligent",
+      "seconds": 5000,
+      "finished": 55,
+      "minH": 35.69500000000792,
+      "minE": 43.575,
+      "leisure": 426
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import {RECIPES,edibleEnergy,preparedCount} from './homestead-content.mjs';
-import {restRate} from './homestead-living.mjs';
+import {restRate,at} from './homestead-living.mjs';
 // 純顯示：只讀現有狀態，不推進世界、不替人物作決定。
-import { ACTIONS, FACILITIES, DAY, nextProject, blockReason } from './homestead.mjs';
+import { ACTIONS, FACILITIES, PLACES, DAY, nextProject, blockReason } from './homestead.mjs';
 export const materialName = {wood:'木料', berries:'野果', veg:'青菜', herbs:'草藥'};
 export function activityText(s, p = s.person) {
   const t = p?.task;
@@ -12,7 +12,7 @@ export function activityText(s, p = s.person) {
   if (t.act === 'return') return `把${materialName[p.carry?.kind] || '物資'}帶回儲物處`;
   if(t.act==='build'&&t.step==='craft')return t.phase==='go'?'走向木作台，準備加工床部件':'在木作台製作舒適床部件';
   if(t.act==='build'&&t.step==='pickup')return '去取回上次放下的床部件';
-  if(t.act==='build'&&t.step==='install'&&t.phase==='go')return '把已做好的床部件搬回屋內';
+  if(t.act==='build'&&t.step==='install'&&t.phase==='go')return at({pos:s.fac.bed.site.assemblyAt},PLACES.bed)?'走回屋內，接續安裝已就位的床部件':'把已做好的床部件搬回屋內';
   if (t.act === 'build') return t.phase === 'go' ? `走向「${target}」工地` : `正在建造「${target}」`;
   if (t.act === 'leave') return '沿村路回村';
   if(t.act==='cook')return t.phase==='go'?`走向露天灶，準備${RECIPES[t.recipe||'basic'].name}`:`正在做${RECIPES[t.recipe||'basic'].name}${t.manual?'（這一鍋）':''}`;
@@ -31,7 +31,7 @@ export function activityReason(s, p = s.person, who = 'person') {
   if (p.order && p.task?.act === p.order && !['cook','eat','rest'].includes(p.order)) return '正在執行你的指派；缺糧或疲累時會先照顧自己。';
   if(p.task?.act==='eat')return p.task.foodId==='salad'?'這次選清爽小份，省柴的成果在實吃時恢復38飽腹。':p.task.foodId==='stew'?'這次需要較飽足的一餐，實吃燉菜恢復70飽腹與6精力。':'先吃現成食物，不必為新菜耽誤求生。';
   if(p.task?.act==='forage')return '先照顧吃飯與可用食物。';
-  if(p.task?.act==='rest')return !s.fac.hut.stage?'在空地席地休息，每秒恢復3精力；醒來再繼續求生。':`先補回精力。到屋內使用${s.fac.bed?.stage===2?'舒適床鋪':s.fac.bed?.stage?'木床鋪':'現有鋪蓋'}時，每秒恢復${restRate(s,{pos:[440,225]})}精力；休息後再繼續。`;
+  if(p.task?.act==='rest')return (s.mode==='solo'&&p.order==='rest'?'這次歇到100後恢復自主。':'')+(!s.fac.hut.stage?'在空地席地休息，每秒恢復3精力；醒來再繼續求生。':`先補回精力。到屋內使用${s.fac.bed?.stage===2?'舒適床鋪':s.fac.bed?.stage?'木床鋪':'現有鋪蓋'}時，每秒恢復${restRate(s,{pos:[440,225]})}精力；休息後再繼續。`);
   if(p.task?.act==='chop')return Object.values(s.fac).some(f=>f.site&&!f.site.paused) ? '已有工程需要木料，先準備可用建材／燃料。' : '補足日常柴火；達到夠用存量就歇一會。';
   if(p.task?.act==='cook')return p.task.recipe==='salad'?'用菜與野果拌食，這一鍋不耗柴。':p.task.recipe==='stew'?'用較多菜與柴慢燉，換較飽足的一餐與有限恢復。':'用菜與柴煮成基本熱飯，補足日常食物。';
   if(p.task?.act==='farm')return '照料一塊菜園，供日後料理；田間收成要搬回才可用。';

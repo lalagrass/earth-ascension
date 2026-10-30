@@ -439,7 +439,7 @@ function tickQuarter(s,dt) {
   if(t.phase==='go'){
     const v=t.act==='build'?s.fac[t.place]?.site:null;
     const destination=t.act==='build'?buildDestination(s,t):pos(t.place);
-    const arrived=travel(p,destination,dt);if(t.step==='install')v.assemblyAt=[...p.pos];if(!arrived)return;
+    const arrived=travel(p,destination,dt);if(t.step==='install'&&!at({pos:v.assemblyAt},PLACES.bed))v.assemblyAt=[...p.pos];if(!arrived)return;
     if(t.step==='pickup'){t.step='install';return;}t.phase='do';t.timer=0;
   }
   if (['chat', 'gift', 'care'].includes(t.act) && !visitorHere(s)) { p.task = null; return; }
@@ -451,7 +451,7 @@ function tickQuarter(s,dt) {
   if (t.act === 'rest') {
     const before=p.energy, target=p.order==='rest'?100:85;
     p.energy = clamp(p.energy + restRate(s) * dt);
-    if (p.energy >= target){if(before<target&&s.fac.bed.stage&&at(p,PLACES.hut))feel(s,'rested');p.task=null;}
+    if (p.energy >= target){if(before<target&&s.fac.bed.stage&&at(p,PLACES.hut))feel(s,'rested');if(s.mode==='solo'&&p.order==='rest')p.order=null;p.task=null;}
     return;
   }
   if (t.act === 'build') {
@@ -551,7 +551,7 @@ export function loadHomestead(json) {
     if(t?.act==='build'&&t.place==='bed'&&s.fac.bed.stage===1){
       const v=s.fac.bed.site;
       if(v.crafted>0&&v.delivered.wood!==v.need.wood||v.work>0&&(v.crafted!==12||!at({pos:v.assemblyAt||[]},PLACES.bed)))return {ok:false,error:'床部件與安裝進度不符'};
-      if(['go','do'].includes(t.phase)&&(!t.step||v.delivered.wood!==v.need.wood||t.step==='pickup'&&t.phase==='do'||t.step==='craft'&&t.phase==='do'&&!at(p,PLACES.workbench)||t.step==='install'&&(!at({pos:v.assemblyAt},p.pos)||t.phase==='do'&&!at(p,PLACES.bed))))return {ok:false,error:'床鋪加工位置不合法'};
+      if(['go','do'].includes(t.phase)&&(!t.step||v.delivered.wood!==v.need.wood||t.step==='pickup'&&t.phase==='do'||t.step==='craft'&&t.phase==='do'&&!at(p,PLACES.workbench)||t.step==='install'&&(!at({pos:v.assemblyAt},p.pos)&&!at({pos:v.assemblyAt},PLACES.bed)||t.phase==='do'&&!at(p,PLACES.bed))))return {ok:false,error:'床鋪加工位置不合法'};
     }
     if(t?.act==='cook'&&((t.recipe!==undefined&&recipeAccess(s,t.recipe))||(t.manual!==undefined&&typeof t.manual!=='boolean')||t.manual&&s.person.cookRequest!==t.recipe))return {ok:false,error:'料理任務不合法'};
     if(p.foodRequest&&t?.act==='eat'&&(t.manualEat!==true||t.foodId!==p.foodRequest))return {ok:false,error:'指定用餐關聯不符'};

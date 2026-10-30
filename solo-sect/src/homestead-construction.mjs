@@ -1,4 +1,5 @@
 // Presentation facts only. No clock, material mutations or planner.
+import{at}from'./homestead-living.mjs';
 import{FACILITIES,PLACES,blueprintReason,buildDestination}from'./homestead.mjs';
 import{buildingInfo,activityText}from'./homestead-view.mjs';
 export const PLOT_BOUNDS={hut:[350,113,187,172],garden:[210,127,120,72],herbGarden:[80,58,110,66],kitchen:[570,320,70,65],store:[493,410,124,87],bench:[318,387,68,36],flowers:[297,274,87,39],workbench:[637,437,78,51],bed:[418,203,48,26]};
@@ -26,7 +27,7 @@ export function inspectionInfo(s,id){
  if(!v)return{id,name,text:`${name}：${b.current||'尚未建造'}。${f.stage?'可繼續生活。':blueprintReason(s,id)||'可從建造卡預覽並立藍圖。'}`,site:false};
  const facts=constructionFacts(s,id);let status;
  if(v.paused)status='工程已暫停；材料與已施工進度保留，按繼續才會復工。';
- else if(t?.act==='build'&&t.place===id)status={fetch:'主角正前往住處取料。',deliver:'主角正搬木料到這個工地。',go:t.step==='craft'?'主角正前往木作台加工。':t.step==='pickup'?'主角正去拿已做好的部件。':t.step==='install'?'主角正搬部件到屋內安裝。':'主角正前往這個工作點。',do:t.step==='craft'?'主角正在木作台加工部件。':'主角正在此處施工／安裝。'}[t.phase];
+ else if(t?.act==='build'&&t.place===id)status={fetch:'主角正前往住處取料。',deliver:'主角正搬木料到這個工地。',go:t.step==='craft'?'主角正前往木作台加工。':t.step==='pickup'?'主角正去拿已做好的部件。':t.step==='install'?(at({pos:s.fac.bed.site.assemblyAt},PLACES.bed)?'主角正回屋接續安裝；部件已在床位。':'主角正搬部件到屋內安裝。'):'主角正前往這個工作點。',do:t.step==='craft'?'主角正在木作台加工部件。':'主角正在此處施工／安裝。'}[t.phase];
  else if(t?.act==='rest'||t?.act==='eat')status=`主角正在${t.act==='rest'?'休息':'吃飯'}；工程等候，不會自行推進。`;
  else if(b.missing)status=b.shortage?`材料未齊，庫存尚缺${b.shortage}木；主角會按生存／指派／工程意圖安排。`:'材料未齊，可從共用庫存接續搬料；目前尚未全數保留。';
  else status='材料已齊；等待主角完成目前活動並接續工程。';
@@ -39,7 +40,7 @@ export function constructionRoute(s,id){
  if(!v||v.paused||t?.act!=='build'||t.place!==id)return null;
  const to=buildDestination(s,t);if(!to)return null;
  if(t.phase==='deliver'&&(!s.person.carry||s.person.carry.origin!=='site'))return null;
- const text=t.phase==='fetch'?'前往住處取料（尚未拿料）':t.phase==='deliver'?`正運來${s.person.carry.amount}木；已離庫，交到後才算已交`:t.step==='craft'?'前往木作台加工':t.step==='pickup'?'前往拿已完成部件':t.step==='install'?'正把已完成部件搬回屋內安裝':'前往施工點';
+ const text=t.phase==='fetch'?'前往住處取料（尚未拿料）':t.phase==='deliver'?`正運來${s.person.carry.amount}木；已離庫，交到後才算已交`:t.step==='craft'?'前往木作台加工':t.step==='pickup'?'前往拿已完成部件':t.step==='install'?(at({pos:v.assemblyAt},PLACES.bed)?'前往屋內接續安裝（部件已在床位）':'正把已完成部件搬回屋內安裝'):'前往施工點';
  return{from:[...s.person.pos],to:[...to],text};
 }
 export function siteMaterials(s,id){const v=s.fac[id]?.site;return v?{available:s.stock.wood,delivered:v.delivered.wood,reserved:v.reserved.wood,needed:Math.max(0,v.need.wood-v.delivered.wood-v.reserved.wood)}:null;}
