@@ -1,6 +1,6 @@
 import {EXPEDITION_ACTIONS,expeditionReason,reconsiderReason,pendingDeparture,expeditionTarget,expeditionPlan,expeditionComplete,tickExpedition} from './homestead-expedition.mjs';
 import {DAY,HOME,PLACES,LIFE_ACTIONS} from './homestead-life-data.mjs';
-import {SOCIAL_ACTIONS,MEETING,PAIR_POINT,socialReason,socialComplete,socialPlan,tickCompanion,validSocialTask} from './homestead-social.mjs';
+import {SOCIAL_ACTIONS,MEETING,PAIR_POINT,cooperationNeed,socialReason,socialComplete,socialPlan,tickCompanion,validSocialTask} from './homestead-social.mjs';
 import {MARTIAL_ACTIONS,PRACTICE_GOALS,martialReason,martialPlan,martialTarget,martialComplete,validMartialTask} from './homestead-martial.mjs';
 import {defensePlan,REPAIR,fenceMax} from './homestead-defense.mjs';
 import {tickThreat} from './homestead-threat.mjs';
@@ -110,6 +110,7 @@ export function pauseProject(s,id,paused=true){
   site.paused=paused;if(paused&&s.focusProject===id)s.focusProject=null;
   if(paused&&s.person.task?.act==='build'&&s.person.task.place===id){cancelTask(s);if(s.person.order==='build')s.person.order=null;}
   if(paused&&s.autonomy&&s.person.onceProject===id)clearOnce(s);
+  if(paused&&s.frontier&&s.person.task?.act==='cooperate'&&!s.person.order&&!cooperationNeed(s))cancelTask(s);
   note(s,`${paused?'暫停':'繼續'}「${projectRecipe(s,id).name}」工程，材料與已施工進度保留。`);return true;
 }
 
@@ -135,6 +136,7 @@ export function setOrder(s, act, scope) {
   if(act===null&&s.frontier?.trip.phase==='home'&&(s.person.order==='depart'||s.person.task?.act==='depart'))s.frontier.trip.deferred=true;
   cancelTask(s);prepareOrder(s,selected);s.person.order = act;s.person.foodRequest=null;s.person.cookRequest=s.mode==='solo'&&act==='cook'?'basic':null;if(s.autonomy)s.person.onceProject=target||null;return true;
 }
+export function setAutoCooperation(s,on){if(!s.frontier||typeof on!=='boolean')return false;s.frontier.autoCooperate=on;if(!on&&s.person.task?.act==='cooperate'&&!s.person.order)cancelTask(s);return true;}
 export function setPracticeGoal(s,goal){if(!s.frontier||typeof goal!=='string'||!Object.hasOwn(PRACTICE_GOALS,goal))return false;s.frontier.martial.practiceGoal=goal;if(s.person.task?.act==='practice'&&!s.person.order)cancelTask(s);return true;}
 export function setAvoidCombat(s,avoid){
  if(!s.frontier||typeof avoid!=='boolean')return false;
