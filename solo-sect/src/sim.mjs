@@ -14,7 +14,7 @@ import { BAND, canDefend } from './band.mjs';
 import { boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE, FENCE_FAC, finishFenceSite } from './fence.mjs';
 import { demandBoost, repairDamp } from './peace.mjs';
 import { coTrain, askStrong, pairBoost } from './mentor.mjs';
-import { comprehend } from './comprehend.mjs';
+import { comprehend, comprehendVariant } from './comprehend.mjs';
 import { drawBoost, pickChatMate, admire } from './draw.mjs';
 import { addMem, chatLine, passPick, passDo, PASS, passScore, passReserve, apprDaily, apprMul } from './bonds.mjs';
 import { aspStep, likeMeal, likesOf } from './v10.mjs';
@@ -407,7 +407,7 @@ function doTask(s, d, dt) {
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? facStage(s, 'yard').trainMul || 1 : 1));
       if (s.mentor && t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
       if (s.mentor && (t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) askStrong(s, d, byId(s, t.partner), grow, think, log); // loop8 請教
-      if (s.wu7) comprehend(s, d, t.act, t.partner ? byId(s, t.partner) : null, think, log); // loop7 領悟
+      if (s.wu7) { comprehend(s, d, t.act, t.partner ? byId(s, t.partner) : null, think, log); comprehendVariant(s, d, t.act, t.partner ? byId(s, t.partner) : null, think, log); } // loop7 領悟＋loop16 變式
       if (t.act === 'spar' && t.partner) { const p = byId(s, t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在${facStage(s, 'yard').offers.includes('spar') ? '木樁場' : '空地上徒手'}切磋`); addMem(s, d, p, 'spar'); } }
       if (A.fun) d.needs.fun = clamp((d.needs.fun ?? 60) + A.fun, 0, 100);
       if (t.act === 'leisure') think(s, d, 'idled');
