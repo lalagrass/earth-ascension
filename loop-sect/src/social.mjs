@@ -1,5 +1,6 @@
 // 人際：雙向好感、相合度、關係階段、名望、請教話題。
-import { SOCIAL, SKILLS } from './data.mjs';
+import { SOCIAL, SKILLS, MARTIAL } from './data.mjs';
+import { prowess } from './martial.mjs';
 
 const clamp = (v) => Math.max(-100, Math.min(100, v));
 const key = (a, b) => `${a.id}>${b.id}`;
@@ -23,8 +24,14 @@ export function stageOf(state, a, b) {
   return s;
 }
 
+// M6：武力也算名望，強的人會吸引人來找。
 export function prestige(p) {
-  return SKILLS.reduce((a, s) => a + p.skills[s.id], 0) / SKILLS.length;
+  return SKILLS.reduce((a, s) => a + p.skills[s.id], 0) / SKILLS.length + prowess(p) * MARTIAL.PRESTIGE_PER_POWER;
+}
+
+export function atLeast(state, a, b, stageId) {
+  const st = SOCIAL.STAGES;
+  return st.indexOf(stageOf(state, a, b)) >= st.findIndex((x) => x.id === stageId);
 }
 
 // 對方比我高最多、且差距 ≥ TEACH_GAP 的技能；沒有就是閒聊。

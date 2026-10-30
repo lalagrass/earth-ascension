@@ -22,6 +22,6 @@ python3 -m http.server 8790 --directory loop-sect
 
 ```sh
 node --test loop-sect/test/*.test.mjs   # 規則
-node loop-sect/tools/soak.mjs           # 12 種子 × 3 日不變量與個性統計
+node loop-sect/tools/soak.mjs           # 12 種子 × 5 日不變量與個性統計
 node loop-sect/tools/headless.mjs       # Playwright Chromium 正常操作流程，截圖寫到 loop-sect/.evidence/（不進 git）
 ```

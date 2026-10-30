@@ -1,16 +1,17 @@
 {
   "loopVersion": 2,
-  "loopsDone": 5,
+  "loopsDone": 6,
   "retroEvery": 3,
   "lastRetro": "docs/RETRO-01.md",
-  "lastCommit": "9a8a9eb",
-  "nextMilestone": "M6",
+  "lastCommit": "c59e31f",
+  "nextMilestone": "M7",
   "inProgress": null,
   "openIssues": [
     "走路仍占約 45% 時間",
     "人數上升前要量一次效用 AI 掃全地圖的效能",
-    "自然遊玩缺少持續需求（燒柴、損耗），技能第 3 日後幾乎不長",
-    "人物卡太長，人際區要捲動；需要分頁"
+    "自然遊玩缺少持續需求（燒柴、損耗），生活技能第 3 日後幾乎不長；練功補上一部分空檔",
+    "自然遊玩中悟性高的人學到的新招反而少（高悟性模板多半隨性、不愛打木樁）",
+    "人物之間沒有碰撞，會站在同一格（切磋時看得到疊在一起）"
   ],
   "stopReason": null,
   "targetLoops": 30,

@@ -100,8 +100,9 @@ export function drawPeople(ctx, state, selectedId) {
     ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.8)';
     ctx.strokeText(p.name, cx, cy - 16); ctx.fillStyle = '#2b2118'; ctx.fillText(p.name, cx, cy - 16);
     // 擠在一起時只畫被選中者（或排在前面那位）的行動字，避免疊字。
-    const crowded = state.people.some((o) => o !== p && o.id !== selectedId && Math.hypot(o.x - p.x, o.y - p.y) < 1.5 && (p.id !== selectedId) && o.id < p.id);
-    if (!crowded || p.id === selectedId) {
+    // loop 6：原本只跟「非選中者」比、而且只看 1.5 格內，切磋時兩行字（約 4 格寬）疊在一起。
+    const crowded = p.id !== selectedId && state.people.some((o) => o !== p && Math.abs(o.x - p.x) < 4 && Math.abs(o.y - p.y) < 1.2 && (o.id === selectedId || o.id < p.id));
+    if (!crowded) {
       ctx.font = '10px sans-serif';
       ctx.strokeText(p.actLabel, cx, cy + 19); ctx.fillStyle = '#3d3326'; ctx.fillText(p.actLabel, cx, cy + 19);
     }
@@ -132,6 +133,12 @@ export function drawObjects(ctx, state) {
         const cooking = o.users.some(Boolean);
         ctx.fillStyle = cooking ? '#f08a24' : '#3a3029';
         ctx.beginPath(); ctx.arc(px + 10, py + 12, 5, 0, Math.PI * 2); ctx.fill();
+      } else if (o.kind === 'dummy') {
+        // 樁立在站位右邊一格；人站在站位上對著樁出招。
+        const qx = px + TILE;
+        ctx.fillStyle = '#6e5133'; ctx.fillRect(qx + 7, py - 4, 6, 22);
+        ctx.fillRect(qx + 2, py + 2, 16, 3); ctx.fillRect(qx + 4, py + 9, 12, 3);
+        ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.beginPath(); ctx.ellipse(qx + 10, py + 18, 7, 2.5, 0, 0, Math.PI * 2); ctx.fill();
       } else if (o.kind === 'bench') {
         ctx.fillStyle = '#8f9188'; ctx.fillRect(px + 1, py + 8, 18, 6);
         ctx.fillRect(px + 3, py + 14, 3, 4); ctx.fillRect(px + 14, py + 14, 3, 4);
@@ -204,5 +211,24 @@ export function drawBuild(ctx, state, PILE, blueprintOf) {
     ctx.fillStyle = '#c9b48a'; ctx.fillRect(cx - tw / 2, cy + 3, tw, 3);
     ctx.fillStyle = '#a8432f'; ctx.fillRect(cx - tw / 2, cy + 3, tw * (site.work / site.workTotal), 3);
     ctx.fillStyle = '#3d2b1a'; ctx.fillText(text, cx, cy);
+  }
+}
+
+// ---------- M6 同圖出招 ----------
+// 練功、切磋時在人旁邊畫出招的弧線，方向朝向木樁或對手；每 12 tick 換一個起手角度。
+export function drawStrikes(ctx, state) {
+  for (const p of state.people) {
+    if (p.act !== 'do' || (p.task.kind !== 'drill' && p.task.kind !== 'spar')) continue;
+    let tx = p.x + 1, ty = p.y;
+    if (p.task.kind === 'spar') { const o = state.people.find((x) => x.id === p.task.partner); tx = o.x; ty = o.y; }
+    const ang = Math.atan2(ty - p.y, tx - p.x || 0.001);
+    const phase = Math.floor((state.tick + p.id.charCodeAt(1) * 5) / 12) % 3;
+    const cx = p.x * TILE + TILE / 2, cy = p.y * TILE + TILE / 2 - 2;
+    const r = 13 + phase * 2;
+    ctx.strokeStyle = p.task.kind === 'spar' ? 'rgba(190,40,30,0.9)' : 'rgba(255,250,215,1)';
+    ctx.lineWidth = 3.5;
+    ctx.beginPath(); ctx.arc(cx, cy, r, ang - 0.9 + phase * 0.3, ang + 0.4 + phase * 0.3); ctx.stroke();
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(cx, cy, r + 4, ang - 0.5 + phase * 0.3, ang + 0.2 + phase * 0.3); ctx.stroke();
   }
 }

@@ -8,10 +8,14 @@ import { buildMap, walkable, nearestWalkable } from './map.mjs';
 import { findPath } from './path.mjs';
 import { fromTemplate, makePerson, speedOf } from './person.mjs';
 import { decayNeeds, applyPer, isNight } from './needs.mjs';
-import { candidates, interruptible, willingToChat, REFUSE_COOLDOWN } from './ai.mjs';
+import { candidates, interruptible, sparInterruptible, willingToChat, willingToSpar, REFUSE_COOLDOWN } from './ai.mjs';
 import { newSkills, grow, SKILL_OF_TASK, workTimeMul, buildRate, extraMeal, extraTake, skillLabel } from './skills.mjs';
-import { FOOT_STEP, SOCIAL } from './data.mjs';
-import { addAff, compat, teachTopic, withStage } from './social.mjs';
+import { FOOT_STEP, SOCIAL, MARTIAL } from './data.mjs';
+import { addAff, compat, teachTopic, withStage, atLeast } from './social.mjs';
+import { newMoves, practice, moveLabel, learn, drillMove } from './martial.mjs';
+
+// 兩人一起做的事：先走到對方身邊、對方答應才開始。
+const PAIR = new Set(['chat', 'spar']);
 
 // 從院子灌水找出可到達的格，避免 POI 或出生點落在被樹圍住的口袋裡。
 function reachableFrom(map, sx, sy) {
@@ -118,6 +122,7 @@ export function createWorld({ seed = 1, people }) {
     p.hold = { meal: 0, raw: 0, wood: 0, stone: 0 };
     p.focus = null;
     p.skills = newSkills();
+    p.moves = newMoves();
     p.loadedDist = 0;
     p.refused = {};
     p.task = null;
@@ -214,19 +219,19 @@ function choose(state, p) {
     let path = [];
     if (c.spot) {
       let spot = c.spot;
-      if (c.kind === 'chat') spot = nearestWalkable(state.map, spot.x, spot.y);
+      if (PAIR.has(c.kind)) spot = nearestWalkable(state.map, spot.x, spot.y);
       path = spot && pathTo(state, p, spot);
       if (!path) continue;
     }
     reserve(state, p, c);
     p.task = { kind: c.kind, obj: c.obj, slot: c.slot, bush: c.bush, partner: c.partner, poi: c.poi, chase: 80,
-      res: c.res, mat: c.mat, rx: c.rx, ry: c.ry, take: c.take, site: c.site, n: c.n, leg: c.kind === 'haul' ? 'pickup' : undefined };
+      res: c.res, mat: c.mat, rx: c.rx, ry: c.ry, take: c.take, site: c.site, n: c.n, move: c.move, leg: c.kind === 'haul' ? 'pickup' : undefined };
     p.actLabel = c.label;
     if (path.length) {
       p.path = path;
       p.act = 'walk';
       if (c.kind === 'wander') p.goal = c.poi;
-    } else if (c.kind === 'chat') {
+    } else if (PAIR.has(c.kind)) {
       // 已經站在對方旁邊：直接開口（之前誤走 startDoing，對方沒進入聊天，立刻被 shouldStop 收掉）。
       if (!tryChat(state, p)) { release(state, p); p.act = 'idle'; p.wait = 0; }
     } else {
@@ -244,7 +249,7 @@ function startDoing(state, p, dur = null) {
   if (t.kind === 'cook') dur = Math.round(HEARTH_LEVELS[byId(state.objects, t.obj).level].cookDur * workTimeMul(p, 'cook'));
   if (t.kind === 'chop' || t.kind === 'quarry') dur = Math.round(a.dur * workTimeMul(p, t.kind));
   t.left = dur ?? a.dur;
-  p.actLabel = a.label;
+  p.actLabel = t.kind === 'drill' ? `練${moveLabel(t.move)}` : a.label;
   state.counts[t.kind] = (state.counts[t.kind] || 0) + 1;
 }
 
@@ -261,21 +266,23 @@ function arrive(state, p) {
     p.wait = Math.round(60 + 60 * -p.axes.P + nextRand(state) * 40);
     return;
   }
-  if (t.kind === 'chat') return tryChat(state, p);
+  if (PAIR.has(t.kind)) return tryChat(state, p);
   startDoing(state, p);
 }
 
 function tryChat(state, p) {
   const o = byId(state.people, p.task.partner);
   if (dist(p, o) > 2.5) return false;
-  const mutual = o.task && o.task.kind === 'chat' && o.task.partner === p.id;
-  if (!mutual && !interruptible(o)) {
+  const kind = p.task.kind;
+  const mutual = o.task && o.task.kind === kind && o.task.partner === p.id;
+  if (!mutual && !(kind === 'spar' ? sparInterruptible(o) : interruptible(o))) {
     // 對方在忙：不算婉拒，等一小時再說。
     p.refused[o.id] = state.tick - REFUSE_COOLDOWN + 60;
     release(state, p);
     p.act = 'idle'; p.wait = 10; p.actLabel = `${o.name}在忙`;
     return true;
   }
+  if (kind === 'spar') return trySpar(state, p, o, mutual);
   if (!mutual && !willingToChat(o)) {
     p.refused[o.id] = state.tick;
     p.bubble = { text: '被婉拒', until: state.tick + 40 };
@@ -304,6 +311,27 @@ function tryChat(state, p) {
   return true;
 }
 
+// 切磋：對方沒力氣就算了，不扣好感（不是不喜歡你）。
+function trySpar(state, p, o, mutual) {
+  if (!mutual && !willingToSpar(o)) {
+    p.refused[o.id] = state.tick - REFUSE_COOLDOWN + 60;
+    release(state, p);
+    p.act = 'idle'; p.wait = 10; p.actLabel = `${o.name}沒力氣過招`;
+    return true;
+  }
+  release(state, o);
+  o.path = []; o.wait = 0;
+  const dur = ACTS.spar.dur + randInt(state, 11);
+  o.task = { kind: 'spar', partner: p.id, move: drillMove(o) };
+  startDoing(state, o, dur);
+  startDoing(state, p, dur);
+  o.actLabel = `和${p.name}切磋${moveLabel(o.task.move)}`;
+  p.actLabel = `和${o.name}切磋${moveLabel(p.task.move)}`;
+  p.bubble = { text: moveLabel(p.task.move), until: state.tick + 30 };
+  o.bubble = { text: moveLabel(o.task.move), until: state.tick + 30 };
+  return true;
+}
+
 // ---------- 行動結算 ----------
 function improve(state, p, id, mul = 1) {
   const m = grow(p, id, mul);
@@ -313,9 +341,35 @@ function improve(state, p, id, mul = 1) {
   state.events.push({ tick: state.tick, kind: 'skill', text: `${p.name}${text}（${m}）` });
 }
 
+function comprehend(state, p, id) {
+  if (!id) return;
+  p.bubble = { text: `領悟${moveLabel(id)}`, until: state.tick + 90 };
+  state.events.push({ tick: state.tick, kind: 'move', text: `${p.name}領悟了${moveLabel(id)}` });
+  state.counts.comprehend = (state.counts.comprehend || 0) + 1;
+}
+
 function finish(state, p) {
   const t = p.task;
   const L = state.ledger;
+  if (t.kind === 'drill') comprehend(state, p, practice(state, p, t.move));
+  if (t.kind === 'spar' && t.left <= 0) {
+    const o = byId(state.people, t.partner);
+    comprehend(state, p, practice(state, p, t.move, MARTIAL.SPAR_MUL));
+    withStage(state, p, o, () => addAff(state, p, o, MARTIAL.SPAR_GAIN * compat(p, o)));
+    // 指點：朋友以上，對方會而我不會的招，有機會學到。
+    if (atLeast(state, p, o, MARTIAL.POINT_STAGE)) {
+      const teach = Object.keys(o.moves).filter((id) => !(id in p.moves));
+      if (teach.length && nextRand(state) < MARTIAL.POINT_P) {
+        const id = teach[randInt(state, teach.length)];
+        learn(p, id, MARTIAL.POINT_START);
+        p.bubble = { text: `學會${moveLabel(id)}`, until: state.tick + 90 };
+        state.events.push({ tick: state.tick, kind: 'move', text: `${o.name}指點${p.name}學會了${moveLabel(id)}` });
+        state.counts.pointed = (state.counts.pointed || 0) + 1;
+      }
+    }
+    state.counts.sparDone = (state.counts.sparDone || 0) + 1;
+  }
+  if (t.kind === 'drill') state.counts.drillDone = (state.counts.drillDone || 0) + 1;
   if (SKILL_OF_TASK[t.kind]) improve(state, p, SKILL_OF_TASK[t.kind]); // 只有做完才成長
   if (t.kind === 'eat') {
     L.mealsEaten++; p.hold.meal = 0;
@@ -394,9 +448,9 @@ function shouldStop(state, p) {
     if (p.needs.food < 12 && p.needs.energy >= 40) return true;
     if (!isNight(state.tick) && p.needs.energy > 85 && p.axes.P > 0.3) return true;
   }
-  if (t.kind === 'chat') {
+  if (PAIR.has(t.kind)) {
     const o = byId(state.people, t.partner);
-    if (!o.task || o.task.kind !== 'chat' || o.task.partner !== p.id) return true;
+    if (!o.task || o.task.kind !== t.kind || o.task.partner !== p.id) return true;
   }
   return false;
 }
@@ -406,7 +460,7 @@ function stepPerson(state, p) {
   if (p.bubble && p.bubble.until <= state.tick) p.bubble = null;
   if (p.act === 'walk') {
     const t = p.task;
-    if (t.kind === 'chat') {
+    if (PAIR.has(t.kind)) {
       // 對方會走動：每 15 tick 重新追，追太久就放棄。
       if (tryChatIfClose(state, p)) return;
       if (--t.chase <= 0) { release(state, p); p.act = 'idle'; p.wait = 0; return; }
@@ -425,7 +479,7 @@ function stepPerson(state, p) {
     }
     if (t.kind === 'wander') applyPer(p, { fun: 0.06 * (1 + 0.5 * p.axes.N) });
     if (!p.path.length) {
-      if (t.kind === 'chat') {
+      if (PAIR.has(t.kind)) {
         if (!tryChat(state, p)) { release(state, p); p.act = 'idle'; p.wait = 0; }
       } else if (t.kind === 'haul' && t.leg === 'drop') arriveDrop(state, p);
       else arrive(state, p);
@@ -530,7 +584,7 @@ export function clock(state) {
 
 export function stateHash(state) {
   const ppl = state.people.map((p) => [p.id, p.x.toFixed(4), p.y.toFixed(4), p.act, p.task?.kind, p.wait,
-    Object.values(p.needs).map((v) => v.toFixed(3)), p.carry, p.load]);
+    Object.values(p.needs).map((v) => v.toFixed(3)), p.carry, p.load, p.moves]);
   return hashString(JSON.stringify([state.tick, state.rng, ppl, state.stock, state.ledger, state.bushes.map((b) => b.berries),
     state.map, state.sites.map((x) => [x.id, x.work, x.have, x.incoming])]));
 }

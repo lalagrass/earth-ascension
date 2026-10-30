@@ -1,14 +1,19 @@
 // 效用 AI：列出所有可做的事、打分、留下理由。只讀 state，不改。
-import { ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, STOCK_TARGET, PILE, WORK_KINDS } from './data.mjs';
+import { ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL } from './data.mjs';
 import { nearestResources, remaining, stocked, workSpot, siteWorkersFree } from './build.mjs';
 import { extraTake } from './skills.mjs';
 import { aff, prestige } from './social.mjs';
+import { drillMove, moveLabel } from './martial.mjs';
 import { nextRand } from './rng.mjs';
 import { urgency, isNight } from './needs.mjs';
 
 const SLEEPS = new Set(['sleep', 'sleepGround']);
+// loop 6：練功占去空檔後，指定伐木者在練功時需求冒出來，活被別人搶走（全隊砍樹時間中他的占比由 0.63 掉到 0.53）。
+const DEFER = 0.6;
 const FOCUS_KINDS = Object.fromEntries(FOCUS.filter((f) => f.id).map((f) => [f.id, new Set(f.kinds)]));
 const EATS = new Set(['eat', 'eatRaw', 'eatCarried', 'forage']);
+// 夜裡跟活計一樣壓低：練功、切磋。
+const NIGHT_LOW = new Set([...WORK_KINDS, 'drill', 'spar'].filter((k) => k !== 'deliver' && k !== 'store'));
 export const REFUSE_COOLDOWN = 240;
 
 export function freeSlot(obj) {
@@ -30,11 +35,13 @@ function score(state, p, c, { need = 0, persona = 0, work = 0 }) {
   const night = isNight(state.tick);
   let sched = 1;
   if (SLEEPS.has(c.kind)) sched = night ? 1.6 + 0.4 * Math.max(0, -p.axes.P) : p.needs.energy > 30 ? 0.5 : 1;
-  else if (night) sched = WORK_KINDS.has(c.kind) && c.kind !== 'deliver' && c.kind !== 'store' ? 0.15 : 0.6;
+  else if (night) sched = NIGHT_LOW.has(c.kind) ? 0.15 : 0.6;
   const d = c.spot ? Math.hypot(c.spot.x - p.x, c.spot.y - p.y) : 0;
   const dist = 1 / (1 + d / 40);
   const noise = nextRand(state) * 0.15;
-  const focus = p.focus && FOCUS_KINDS[p.focus].has(c.kind) && work > 0 ? FOCUS_BONUS : 0;
+  const focus = p.focus && FOCUS_KINDS[p.focus].has(c.kind) && (work > 0 || c.martial) ? FOCUS_BONUS : 0;
+  // 有別人專門負責這一行（而且醒著）時，其他人先讓給他做：活計因子打折。
+  if (work > 0 && !(p.focus && FOCUS_KINDS[p.focus].has(c.kind)) && state.people.some((o) => o !== p && o.focus && FOCUS_KINDS[o.focus].has(c.kind) && !(o.act === 'do' && SLEEPS.has(o.task?.kind)))) work *= DEFER;
   c.f = { need, persona, work, focus, sched, dist, noise };
   c.score = (need + persona + work + focus) * sched * dist + noise;
   c.label ??= ACTS[c.kind].label;
@@ -69,6 +76,12 @@ export function candidates(state, p, scorePois) {
         const urgent = stock.meal === 0 ? 1 + 0.4 * hungry : 0;
         add({ kind: 'cook', obj: o.id, slot: i, spot }, { work: demand * 1.4 + urgent, persona: 0.3 * Math.max(0, F) * demand + diligence });
       }
+    }
+    if (o.kind === 'dummy' && p.needs.energy > MARTIAL.DRILL_MIN_ENERGY) {
+      // 練功：定力高、有條理的人自己會去練；無聊時也想動一動。
+      const move = drillMove(p);
+      add({ kind: 'drill', obj: o.id, slot: i, spot, move, martial: true, label: `到${o.label}練${moveLabel(move)}` },
+        { need: u.fun * MARTIAL.DRILL_FUN, persona: MARTIAL.DRILL_BASE + 0.08 * (p.attrs.ding - 5) + diligence });
     }
     if (o.kind === 'bench') {
       add({ kind: 'sit', obj: o.id, slot: i, spot, label: `去${o.label}坐坐` },
@@ -132,6 +145,19 @@ export function candidates(state, p, scorePois) {
     }
   }
 
+  // M6 切磋：雙方都有力氣；好動外向的人愛找人過招。
+  if (p.needs.energy > MARTIAL.SPAR_MIN_ENERGY) {
+    for (const o of state.people) {
+      if (o === p || !sparInterruptible(o) || o.needs.energy <= MARTIAL.SPAR_MIN_ENERGY || Math.hypot(o.x - p.x, o.y - p.y) > 18) continue;
+      if ((p.refused[o.id] ?? -Infinity) > state.tick - REFUSE_COOLDOWN) continue;
+      // 以武會友：陌生人也能過招，但對他有成見（好感 < 0）就不找。
+      const like = aff(state, p, o);
+      if (like < MARTIAL.SPAR_MIN_AFF) continue;
+      add({ kind: 'spar', partner: o.id, move: drillMove(p), martial: true, spot: { x: Math.round(o.x), y: Math.round(o.y) }, label: `找${o.name}切磋` },
+        { need: u.fun * 0.5, persona: 0.2 + 0.15 * E + 0.05 * (p.attrs.li - 5) + like * 0.01 });
+    }
+  }
+
   const poi = scorePois(state, p)[0];
   if (poi) {
     const target = state.pois.find((x) => x.id === poi.target);
@@ -161,6 +187,17 @@ export function candidates(state, p, scorePois) {
 }
 
 // 被找聊天的人是否願意：交流越缺越願意，外向的人幾乎都願意。
+// 切磋可以打斷的事：閒著、閒逛，以及打木樁、坐著發呆（換成跟人過招）。
+// loop 6 診斷：只准打斷閒著的人時，12 個種子選了切磋 85 次，只開打 25 場，多半是走到時對方已在忙別的。
+const SPAR_BREAKS = new Set(['drill', 'sit', 'idle']);
+export function sparInterruptible(o) {
+  return interruptible(o) || (o.act === 'do' && SPAR_BREAKS.has(o.task?.kind));
+}
+
+export function willingToSpar(o) {
+  return o.needs.energy > MARTIAL.SPAR_MIN_ENERGY;
+}
+
 export function willingToChat(o) {
   return urgency(o.needs.social) * (1 + 0.5 * o.axes.E) + 0.4 + 0.3 * o.axes.E >= 0.5;
 }

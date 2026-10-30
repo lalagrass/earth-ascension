@@ -41,6 +41,7 @@ export const flows = [
       await wait(page, 300);
       const name = await page.getAttribute('[data-panel-name]', 'data-panel-name');
       expect('A8 點人物出人物卡', name === target.name, `${name} vs ${target.name}`);
+      await page.click('[data-tab="why"]');
       const rows = await page.locator('#panel .why tr').count();
       expect('A8 人物卡有理由', rows >= 1, `${rows} 行`);
       const me = (await snap(page)).people[0];
@@ -86,6 +87,7 @@ export const flows = [
       await page.click('[data-person="p1"]');
       await wait(page, 300);
       expect('A9 人物卡四條需求', (await page.locator('#panel [data-need]').count()) === 4);
+      await page.click('[data-tab="why"]');
       const why = await page.textContent('#panel .why');
       expect('A9 理由含需求或活計因子', /需求|活計|個性/.test(why), why.slice(0, 80));
       await shot('life');
@@ -133,6 +135,7 @@ export const flows = [
       await page.click('[data-speed="16"]');
       await page.waitForFunction(() => window.__sect.snapshot().people[0].skills.chop > 0, null, { timeout: 60000 });
       await page.click('[data-speed="0"]');
+      await page.click('[data-tab="skills"]');
       await wait(page, 300);
       expect('A7 人物卡六項技能', (await page.locator('#panel [data-skill]').count()) === 6);
       const t = await page.textContent('#panel [data-skill="chop"]');
@@ -149,11 +152,41 @@ export const flows = [
       await page.waitForFunction(() => Object.values(window.__sect.snapshot().aff).some((v) => v > 0), null, { timeout: 60000 });
       await page.click('[data-speed="0"]');
       await page.click('[data-person="p0"]');
+      await page.click('[data-tab="social"]');
       await wait(page, 300);
       expect('A8 人際區列出另外兩人', (await page.locator('#panel [data-rel]').count()) === 2);
       const t = await page.textContent('#panel');
       expect('A8 顯示階段與雙向好感', /(陌生|相識|朋友|知己)/.test(t) && /我→他/.test(t));
       await shot('social');
+    },
+  },
+  {
+    name: 'm6-martial',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="longnv"]');
+      await page.click('#begin');
+      await page.click('[data-person="p0"]');
+      await page.click('[data-focus="martial"]');
+      await page.click('[data-speed="4"]');
+      await page.waitForFunction(() => window.__sect.snapshot().people.some((p) => p.act === 'do' && p.task.kind === 'drill'), null, { timeout: 60000 });
+      await page.click('[data-speed="0"]');
+      const s = await snap(page);
+      const d = s.people.find((p) => p.act === 'do' && p.task.kind === 'drill');
+      expect('A9 有人站在木樁旁練功', [[36, 23], [32, 28]].some(([x, y]) => Math.round(d.x) === x && Math.round(d.y) === y), `${d.name} @${d.x},${d.y}`);
+      expect('A9 頭上顯示練哪一招', /長拳|開山掌|流雲手|破岳勢|飛燕腿|太初拳/.test(d.actLabel), d.actLabel);
+      await page.click(`[data-person="${d.id}"]`);
+      await page.click('[data-tab="martial"]');
+      await wait(page, 300);
+      expect('A8 武學分頁列出會的招與熟練', (await page.locator('#panel [data-move]').count()) >= 1);
+      const t = await page.textContent('#panel [data-section="martial"]');
+      expect('A8 武學分頁有武力與下一招', /武力/.test(t) && /(下一招|快開竅)/.test(t), t.slice(0, 80));
+      expect('A8 其他分頁收起來', await page.locator('#panel [data-section="skills"]').isHidden());
+      await shot('drill');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().people[0].moves.changquan > 3, null, { timeout: 60000 });
+      await page.click('[data-speed="0"]');
+      const s2 = await snap(page);
+      expect('A9 練完熟練上升', s2.people[0].moves.changquan > 3, String(s2.people[0].moves.changquan));
     },
   },
 ];

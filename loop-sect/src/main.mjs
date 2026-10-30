@@ -4,8 +4,9 @@ import { createWorld, step, clock, companionsFor, placeBlueprint, cancelSite, se
 import { blueprint } from './build.mjs';
 import { effectText } from './skills.mjs';
 import { aff, stageOf, prestige } from './social.mjs';
-import { SKILLS } from './data.mjs';
-import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild } from './render.mjs';
+import { prowess, moveLabel, comprehendable, compChance } from './martial.mjs';
+import { SKILLS, MOVES } from './data.mjs';
+import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes } from './render.mjs';
 
 const $ = (s) => document.querySelector(s);
 const el = (tag, attrs = {}, ...kids) => {
@@ -135,6 +136,8 @@ function setSpeed(s) {
 }
 
 let panelAt = 0;
+const TABS = [['life', '概況'], ['skills', '技能'], ['social', '人際'], ['martial', '武學'], ['why', '念頭']];
+let tab = 'life';
 function frame(now) {
   const dt = Math.min(0.25, (now - last) / 1000);
   last = now;
@@ -147,6 +150,7 @@ function frame(now) {
   drawBuild(ctx, state, PILE, blueprint);
   drawObjects(ctx, state);
   drawPeople(ctx, state, selected);
+  drawStrikes(ctx, state);
   drawBubbles(ctx, state);
   const c = clock(state);
   drawDaylight(ctx, 1280, 800, c.hour, c.minute);
@@ -166,25 +170,39 @@ function renderPanel() {
   const needs = NEEDS.map((n) => el('div', { class: 'need', 'data-need': n.id }, el('span', {}, n.label),
     el('span', { class: 'bar' }, el('i', { style: `width:${p.needs[n.id]}%;background:${p.needs[n.id] < 20 ? '#c0392b' : p.needs[n.id] < 45 ? '#d68a2e' : '#5a9a5a'}` })),
     el('b', {}, p.needs[n.id].toFixed(0))));
+  const sec = (id, ...kids) => el('div', { 'data-section': id, class: tab === id ? '' : 'hidden' }, ...kids);
+  const moves = MOVES.filter((m) => m.id in p.moves);
+  const next = comprehendable(p);
   $('#panel').replaceChildren(
     el('h3', { 'data-panel-name': p.name }, `${p.name}${p.protagonist ? '（你）' : ''}`),
-    el('div', { class: 'type' }, p.type), ...axisBars(p.axes),
-    el('p', {}, attrs),
-    el('div', { class: 'chips' }, ...p.traits.map((t) => el('span', { title: TRAIT_LABEL[t].desc }, TRAIT_LABEL[t].label))),
-    el('h2', {}, '需求'), ...needs,
-    el('h2', {}, '現在'), el('p', { id: 'now' }, p.actLabel + (p.carry ? `（身上 ${p.carry} 顆莓）` : '') + (p.load.wood ? `（扛 ${p.load.wood} 木）` : '') + (p.load.stone ? `（扛 ${p.load.stone} 石）` : '')),
+    el('p', { id: 'now' }, p.actLabel + (p.carry ? `（身上 ${p.carry} 顆莓）` : '') + (p.load.wood ? `（扛 ${p.load.wood} 木）` : '') + (p.load.stone ? `（扛 ${p.load.stone} 石）` : '')),
     p.forced ? el('p', { class: 'forced' }, `自理優先：${p.forced}`) : '',
-    el('h2', {}, '技能'), ...SKILLS.map((k) => el('div', { class: 'skill', 'data-skill': k.id }, el('span', {}, k.label),
+    el('div', { class: 'tabs' }, ...TABS.map(([id, label]) => el('button', {
+      class: tab === id ? 'on' : '', 'data-tab': id, on: { click: () => { tab = id; renderPanel(); } },
+    }, label))),
+    sec('life',
+      el('div', { class: 'type' }, p.type), ...axisBars(p.axes),
+      el('p', {}, attrs),
+      el('div', { class: 'chips' }, ...p.traits.map((t) => el('span', { title: TRAIT_LABEL[t].desc }, TRAIT_LABEL[t].label))),
+      el('h2', {}, '需求'), ...needs,
+      el('h2', {}, '專長'), el('div', { class: 'focus' }, ...FOCUS.map((f) => el('button', {
+        class: p.focus === f.id ? 'on' : '', 'data-focus': f.id ?? 'none',
+        on: { click: () => { setFocus(state, p.id, f.id); renderPanel(); } },
+      }, f.label)))),
+    sec('skills', ...SKILLS.map((k) => el('div', { class: 'skill', 'data-skill': k.id }, el('span', {}, k.label),
       el('span', { class: 'bar' }, el('i', { style: `width:${p.skills[k.id]}%` })), el('b', {}, p.skills[k.id].toFixed(0)),
-      el('small', {}, effectText(p, k.id)))),
-    el('h2', {}, `人際（名望 ${prestige(p).toFixed(0)}）`), ...state.people.filter((o) => o !== p).map((o) => el('div', { class: 'rel', 'data-rel': o.id },
+      el('small', {}, effectText(p, k.id))))),
+    sec('social', el('h2', {}, `名望 ${prestige(p).toFixed(0)}`), ...state.people.filter((o) => o !== p).map((o) => el('div', { class: 'rel', 'data-rel': o.id },
       el('span', {}, o.name), el('b', {}, stageOf(state, p, o).label),
-      el('small', {}, `我→他 ${aff(state, p, o).toFixed(0)}　他→我 ${aff(state, o, p).toFixed(0)}`))),
-    el('h2', {}, '專長'), el('div', { class: 'focus' }, ...FOCUS.map((f) => el('button', {
-      class: p.focus === f.id ? 'on' : '', 'data-focus': f.id ?? 'none',
-      on: { click: () => { setFocus(state, p.id, f.id); renderPanel(); } },
-    }, f.label))),
-    el('h2', {}, '為什麼（前三個念頭）'), el('table', { class: 'why' }, ...why));
+      el('small', {}, `我→他 ${aff(state, p, o).toFixed(0)}　他→我 ${aff(state, o, p).toFixed(0)}`)))),
+    sec('martial', el('h2', {}, `武力 ${prowess(p).toFixed(1)}`),
+      ...moves.map((m) => el('div', { class: 'skill', 'data-move': m.id, title: m.desc }, el('span', {}, m.label),
+        el('span', { class: 'bar' }, el('i', { style: `width:${p.moves[m.id]}%` })), el('b', {}, p.moves[m.id].toFixed(0)),
+        el('small', {}, `威力 ${m.power}`))),
+      el('p', { class: 'hint', 'data-comp': '' }, next.length
+        ? `快開竅了：練功時每次約 ${Math.round(compChance(p) * 100)}% 領悟${next.map((m) => m.label).join('或')}`
+        : `下一招：${MOVES.filter((m) => m.req && !(m.id in p.moves) && Object.keys(m.req).every((k) => k in p.moves)).map((m) => `${m.label}（${Object.entries(m.req).map(([k, v]) => `${moveLabel(k)} ${v}`).join('、')}）`).join('；') || '都會了'}`)),
+    sec('why', el('table', { class: 'why' }, ...why)));
 }
 
 function pickAt(ev) {

@@ -215,3 +215,39 @@ export const SOCIAL = {
     { id: 'close', label: '知己', min: 60 },
   ],
 };
+
+// ---------- M6 武學 ----------
+// 招式資料化：req 是領悟這招需要的前置熟練；attr 決定練這招的天賦倍率；power 給武力計算（M7 守禦用）。
+export const MOVES = [
+  { id: 'changquan', label: '長拳', attr: 'gen', power: 1, req: null, desc: '人人都會的基本拳路' },
+  { id: 'kaishan', label: '開山掌', attr: 'li', power: 2, req: { changquan: 30 }, desc: '以力催掌，勢大力沉' },
+  { id: 'liuyun', label: '流雲手', attr: 'shen', power: 2, req: { changquan: 30 }, desc: '借力卸力，手如行雲' },
+  { id: 'poyue', label: '破岳勢', attr: 'gen', power: 3.5, req: { kaishan: 50 }, desc: '開山掌練到極處，一勢破岳' },
+  { id: 'feiyan', label: '飛燕腿', attr: 'shen', power: 3, req: { liuyun: 50 }, desc: '流雲手的步法化成腿法' },
+  { id: 'taichu', label: '太初拳', attr: 'ding', power: 5, req: { kaishan: 40, liuyun: 40 }, desc: '剛柔並濟，返璞歸真' },
+];
+export const START_MOVES = ['changquan'];
+export const MARTIAL = {
+  MOVE_GAIN: 3,          // 一次練完的基本熟練
+  COMP_BASE: 0.1,        // 每次練完、每招可領悟招式的基本機率；loop 6 由 0.06 調高：soak 中多數人第 3–4 日才到門檻，之後只剩約 4 次練功，0.06 時只有 5/12 種子有人領悟
+  SPAR_MUL: 1.5,         // 切磋比打木樁長得快
+  SPAR_GAIN: 3,          // 切磋完的好感
+  POINT_P: 0.35,         // 朋友以上切磋時，對方會而我不會的招被指點學會的機率
+  POINT_STAGE: 'friend',
+  POINT_START: 5,        // 被指點學會時的起始熟練
+  DRILL_MIN_ENERGY: 35,
+  DRILL_BASE: 0.5,       // loop 6 由 0.35 調高：診斷時練功候選平均 0.83、第一名平均 1.98，白天只贏 3%
+  DRILL_FUN: 0.5,        // 同上，由 0.3 調高，讓練功能跟坐石凳、閒逛搶休閒時間
+  SPAR_MIN_ENERGY: 45,
+  SPAR_MIN_AFF: 0,       // loop 6 原本要相識才切磋；診斷時沒有切磋候選的原因 1560/4000 是「陌生」，改成以武會友
+  PRESTIGE_PER_POWER: 4, // 名望 = 技能平均 + 武力 × 此值（強者吸引人）
+};
+OBJECTS.push(
+  { kind: 'dummy', label: '木樁', slots: [[36, 23]] },
+  { kind: 'dummy', label: '木樁', slots: [[32, 28]] }, // 不放灶旁：灶的存糧標籤會蓋住樁
+);
+FOCUS.push({ id: 'martial', label: '練功', kinds: ['drill', 'spar'] });
+Object.assign(ACTS, {
+  drill: { label: '練功', dur: 50, per: { energy: -0.03, fun: 0.1 } },
+  spar: { label: '切磋', dur: 40, per: { energy: -0.04, fun: 0.15, social: 0.4 } },
+});

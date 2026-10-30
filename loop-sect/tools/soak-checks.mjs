@@ -33,6 +33,18 @@ export function perSeed(s, ctx) {
   if (best >= 2) bump(ctx, 'friendSeeds');
   if (best >= 3) bump(ctx, 'closeSeeds');
   bump(ctx, 'taught', s.counts.taught || 0);
+  // M6-A5／A6：練功、領悟、切磋、指點。
+  const c = s.counts;
+  if (s.people.every((p) => p.moves.changquan > 0)) bump(ctx, 'allDrilled');
+  if (c.comprehend) bump(ctx, 'compSeeds');
+  if (c.sparDone) bump(ctx, 'sparSeeds');
+  bump(ctx, 'drillDone', c.drillDone || 0); bump(ctx, 'sparDone', c.sparDone || 0);
+  bump(ctx, 'comprehend', c.comprehend || 0); bump(ctx, 'pointed', c.pointed || 0);
+  for (const p of s.people) {
+    const g = p.attrs.wu >= 7 ? 'hi' : p.attrs.wu <= 4 ? 'lo' : null;
+    if (!g) continue;
+    bump(ctx, `mv:${g}:n`); bump(ctx, `mv:${g}:known`, Object.keys(p.moves).length - 1);
+  }
   const chopper = s.people[1];
   const top = Math.max(...s.people.map((p) => p.skills.chop));
   bump(ctx, 'specSeeds'); if (chopper.skills.chop === top) bump(ctx, 'specOk');
@@ -160,6 +172,7 @@ export const samplers = [
       const g2 = p.axes.P < 0 ? 'J' : 'P';
       bump(ctx, `t:${g2}`);
       if (p.task && WORK_KINDS.has(p.task.kind)) bump(ctx, `work:${g2}`);
+      if (p.act === 'do' && p.task.kind === 'drill') bump(ctx, `drill:${g2}`);
       if (p.act === 'do' && p.task.kind === 'sleep' && s.objects.find((o) => o.id === p.task.obj).label === '茅屋床') s.counts.hutSleep = (s.counts.hutSleep || 0) + 1;
       if (p.needs.food < 15) bump(ctx, 'lowFood');
       if (p.needs.energy < 12) bump(ctx, 'lowEnergy');
@@ -205,6 +218,14 @@ export function judge(S) {
   const ae = r('aff:E', 'affN:E'), ai = r('aff:I', 'affN:I');
   lines.push(`M5-A5 每段關係的雙向好感和：外向 ${ae.toFixed(1)}、內向 ${ai.toFixed(1)}`);
   if (!(ae > ai)) failures.push('M5-A5 外向者的關係沒有比內向者好');
+  lines.push(`M6-A5 三人都練過功 ${S.allDrilled || 0}/${S.seeds}、有人領悟 ${S.compSeeds || 0}/${S.seeds}、有切磋 ${S.sparSeeds || 0}/${S.seeds}；練完 ${S.drillDone || 0} 次、切磋 ${S.sparDone || 0} 次、領悟 ${S.comprehend || 0}、指點 ${S.pointed || 0}`);
+  if ((S.allDrilled || 0) < Math.ceil(S.seeds * 9 / 12)) failures.push('M6-A5 三人都練過功的種子太少');
+  if ((S.compSeeds || 0) < S.seeds / 2) failures.push('M6-A5 有人領悟的種子太少');
+  if ((S.sparSeeds || 0) < S.seeds / 2) failures.push('M6-A5 有切磋的種子太少');
+  const dj = r('drill:J', 't:J'), dp = r('drill:P', 't:P');
+  lines.push(`M6-A6 打木樁時間占比：條理 ${(dj * 100).toFixed(1)}%，隨性 ${(dp * 100).toFixed(1)}%`);
+  if (!(dj > dp)) failures.push('M6-A6 條理型沒有比隨性型更常練功');
+  lines.push(`（參考）每人學到的新招：悟性 ≥ 7 平均 ${r('mv:hi:known', 'mv:hi:n').toFixed(2)}、悟性 ≤ 4 平均 ${r('mv:lo:known', 'mv:lo:n').toFixed(2)}`);
   const all = (S['t:E'] || 0) + (S['t:I'] || 0);
   // 時間分布：調平衡前先看這張表（loop 3 retro 的改進）。
   const share = Object.entries(S).filter(([k]) => k.startsWith('act:')).sort((a, b) => b[1] - a[1]).slice(0, 10);

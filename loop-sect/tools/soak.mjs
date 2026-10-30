@@ -1,5 +1,6 @@
 // 無畫面長跑：多個種子各跑數日，檢查不變量並輸出個性差異統計。
-// 用法：node loop-sect/tools/soak.mjs [--seeds 12] [--days 3]
+// 用法：node loop-sect/tools/soak.mjs [--seeds 12] [--days 5]
+// 預設 5 日：M3-A6、M4-A5、M5-A5、M6-A5 的驗收都寫「5 日內」（loop 6 前預設是 3 日，與規格不一致）。
 import { createWorld, step, stateHash } from '../src/sim.mjs';
 import { TICKS_PER_DAY } from '../src/data.mjs';
 import { rosterFor, invariants, samplers, summarize, judge, script, perSeed } from './soak-checks.mjs';
@@ -9,7 +10,7 @@ const arg = (k, d) => {
   return i > 0 ? Number(process.argv[i + 1]) : d;
 };
 const SEEDS = arg('seeds', 12);
-const DAYS = arg('days', 3);
+const DAYS = arg('days', 5);
 const TICKS = DAYS * TICKS_PER_DAY;
 
 const failures = [];
