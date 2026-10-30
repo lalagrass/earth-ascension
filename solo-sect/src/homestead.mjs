@@ -137,7 +137,7 @@ export function setOrder(s, act, scope) {
   cancelTask(s);prepareOrder(s,selected);s.person.order = act;s.person.foodRequest=null;s.person.cookRequest=s.mode==='solo'&&act==='cook'?'basic':null;if(s.autonomy)s.person.onceProject=target||null;return true;
 }
 export function setAutoCooperation(s,on){if(!s.frontier||typeof on!=='boolean')return false;s.frontier.autoCooperate=on;if(!on&&s.person.task?.act==='cooperate'&&!s.person.order)cancelTask(s);return true;}
-export function setPracticeGoal(s,goal){if(!s.frontier||typeof goal!=='string'||!Object.hasOwn(PRACTICE_GOALS,goal))return false;s.frontier.martial.practiceGoal=goal;if(s.person.task?.act==='practice'&&!s.person.order)cancelTask(s);return true;}
+export function setPracticeGoal(s,goal){if(!s.frontier||typeof goal!=='string'||!Object.hasOwn(PRACTICE_GOALS,goal))return false;s.frontier.martial.practiceGoal=goal;if(!s.person.order&&(s.person.task?.act==='practice'||goal==='pause'&&s.person.task?.act==='reflect'))cancelTask(s);return true;}
 export function setAvoidCombat(s,avoid){
  if(!s.frontier||typeof avoid!=='boolean')return false;
  s.frontier.martial.avoid=avoid;
