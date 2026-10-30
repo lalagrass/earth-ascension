@@ -1,6 +1,7 @@
 // 效用 AI：列出所有可做的事、打分、留下理由。只讀 state，不改。
 import { hurt } from './injury.mjs';
-import { HERB, INJURY } from './data.mjs';
+import { HERB, INJURY, FAMILY } from './data.mjs';
+import { kinOf } from './social.mjs';
 import { FIRE, FARM, ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, DUTY, POST, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
 import { activeEnemies } from './raid.mjs';
 import { walkable } from './map.mjs';
@@ -72,14 +73,20 @@ export function candidates(state, p, scorePois) {
   const add = (c, parts) => out.push(score(state, p, c, parts, duty));
   const stock = state.stock;
 
+  // M17：家人正在用（或正走去）的桌與床。
+  const kin = kinOf(state, p);
+  const kinObj = kin && (kin.task?.kind === 'eat' || kin.task?.kind === 'sleep') ? state.objects.find((x) => x.id === kin.task.obj) : null;
   for (const o of state.objects) {
     const i = freeSlot(o);
     if (i < 0) continue;
     const spot = spotOf(o, i);
-    if (o.kind === 'bed') add({ kind: 'sleep', obj: o.id, slot: i, spot, label: `去${o.label}睡` }, { need: u.energy });
+    if (o.kind === 'bed') {
+      const nearKin = kinObj?.kind === 'bed' && Math.hypot(kinObj.slots[0][0] - spot.x, kinObj.slots[0][1] - spot.y) <= FAMILY.BED_R;
+      add({ kind: 'sleep', obj: o.id, slot: i, spot, label: `去${o.label}睡` }, { need: u.energy, persona: nearKin ? FAMILY.BED : 0 });
+    }
     if (o.kind === 'table' && stock.meal > 0) {
       const company = o.users.filter(Boolean).length;
-      add({ kind: 'eat', obj: o.id, slot: i, spot }, { need: u.food * 2, persona: company ? u.social * 0.3 * (1 + 0.5 * E) : 0 });
+      add({ kind: 'eat', obj: o.id, slot: i, spot }, { need: u.food * 2, persona: (company ? u.social * 0.3 * (1 + 0.5 * E) : 0) + (kinObj === o ? FAMILY.EAT : 0) });
     }
     if (o.kind === 'hearth') {
       if (stock.raw >= COOK_RAW && stock.wood >= FIRE.WOOD_PER_POT && stock.meal < MEAL_TARGET) {

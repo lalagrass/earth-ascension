@@ -9,7 +9,7 @@ import { tally } from './chronicle.mjs';
 import { stepDuty } from './duty.mjs';
 import { stepStrike, formOf, sizeOf } from './forms.mjs';
 import { heal } from './injury.mjs';
-import { HERB, INJURY } from './data.mjs';
+import { HERB, INJURY, FAMILY } from './data.mjs';
 import { canTrial, newTrial, trialTick, trialRecord, better, trialText } from './trial.mjs';
 import { visitSchedule, visitChance, appeal, reasonText, shouldApprentice, foundingPlan, freeName } from './recruit.mjs';
 import { seedHolder, nextRand, randInt, hashString } from './rng.mjs';
@@ -157,6 +157,7 @@ function initPerson(p, i) {
     p.load = { wood: 0, stone: 0 };    // 身上的木石
     p.hold = { meal: 0, raw: 0, wood: 0, stone: 0 };
     p.focus = null;
+    p.kin = null;                      // M17 家人
     p.hurt = 0;                        // M16 傷勢
     p.trialBest = null;                // M15：演武最好成績 { waves, ticks }
     p.dutyPin = null;                  // M18：玩家指定的值日（null = 自動，'none' = 不排）
@@ -354,7 +355,8 @@ function tryChat(state, p) {
   startDoing(state, o, dur);
   p.task.learn = pLearns;
   startDoing(state, p, dur);
-  const topic = (x) => (x ? `請教${skillLabel(x)}` : '閒聊');
+  const close = atLeast(state, p, o, 'friend');
+  const topic = (x) => (x ? `請教${skillLabel(x)}` : close ? '談心' : '閒聊');
   o.actLabel = `和${p.name}${topic(oLearns)}`;
   p.actLabel = `和${o.name}${topic(pLearns)}`;
   p.bubble = { text: topic(pLearns), until: state.tick + 30 };
@@ -521,7 +523,8 @@ function finish(state, p) {
     // 正常聊完才算；被打斷的不加。雙方各自在自己的 finish 加自己那一側。
     const o = byId(state.people, t.partner);
     const rule = state.sect?.rule === 'help' ? SECT.RULE_CHAT : 1;
-    withStage(state, p, o, () => addAff(state, p, o, SOCIAL.CHAT_GAIN * compat(p, o) * (1 + 0.3 * Math.max(0, p.axes.E)) * rule));
+    const deep = atLeast(state, p, o, 'friend') ? FAMILY.DEEP : 1; // M17 談心
+    withStage(state, p, o, () => addAff(state, p, o, SOCIAL.CHAT_GAIN * compat(p, o) * (1 + 0.3 * Math.max(0, p.axes.E)) * rule * deep));
     maybeApprentice(state, p, o);
     if (t.learn) { improve(state, p, t.learn, SOCIAL.TEACH_MUL * (o.id === p.master ? RECRUIT.MASTER_MUL : 1)); addAff(state, o, p, SOCIAL.TEACH_GAIN); state.counts.taught = (state.counts.taught || 0) + 1; }
   }

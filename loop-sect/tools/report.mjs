@@ -36,6 +36,7 @@ const membersBy = {}, dailyBy = {};
 const m12 = {};
 const raid = {};   // M14-A5：各情境十日的撞破格數與被偷份數
 const inj = {};    // M16-A5／A6：受傷人·tick、受傷次數、傷重撤退
+const fam = { seeds: 0, n: 0, kinT: 0, kinN: 0, otherT: 0, otherN: 0 }; // M17-A5／A6
 for (const scenario of ['base', 'exp', 'grow', 'farm', 'post', 'herb']) {
   const dayH = Array(DAYS).fill(0), dayN = Array(DAYS).fill(0);
   const seedRows = [];
@@ -61,6 +62,14 @@ for (const scenario of ['base', 'exp', 'grow', 'farm', 'post', 'herb']) {
         const kind = p.task?.kind;
         if (ROLE[role].kinds.includes(kind) || kind === ROLE[role].carry) k.doing++;
       }
+      // M17-A6：有家人的人在吃飯時，家人同桌嗎；同一個人跟其他每位同門同桌的比例（同一人裡比）。
+      if (scenario === 'base') for (const p of s.people) {
+        if (!p.kin || p.act !== 'do' || p.task?.kind !== 'eat') continue;
+        const at = (o) => o.act === 'do' && o.task?.kind === 'eat' && o.task.obj === p.task.obj;
+        const others = s.people.filter((o) => o !== p && !o.guest && o.id !== p.kin);
+        fam.kinN++; if (at(s.people.find((o) => o.id === p.kin))) fam.kinT++;
+        for (const o of others) { fam.otherN++; if (at(o)) fam.otherT++; }
+      }
       const I = (inj[scenario] ??= { ticks: 0, n: 0, heavyRetreat: 0, seedsHeavy: new Set() });
       for (const p of s.people) if (hurt(p)) I.ticks++;
       for (const p of s.people) {
@@ -78,6 +87,8 @@ for (const scenario of ['base', 'exp', 'grow', 'farm', 'post', 'herb']) {
       M.n++; M.cut += s.ledger.woodCut - snap.d5.cut; M.veg += s.ledger.veg - snap.d5.veg; M.picked += s.ledger.picked - snap.d5.picked;
       M.chopGain += Math.max(...s.people.map((p) => p.skills.chop)) - snap.d5.chop;
     }
+    if (scenario === 'base' && s.events.some((e) => e.kind === 'family')) fam.seeds++;
+    if (scenario === 'base') fam.n += s.counts.families || 0;
     inj[scenario].n += s.counts.injured || 0;
     const hr = s.events.filter((e) => e.kind === 'exp' && /撤退：傷重/.test(e.text)).length;
     inj[scenario].heavyRetreat += hr; if (hr) inj[scenario].seedsHeavy.add(seed);
@@ -126,6 +137,14 @@ if (DUTY.ON) {
   console.log('--- 守點 ---');
   expect('M14-A5', p.breaches <= 0.7 * b.breaches && p.stolen <= 0.7 * b.stolen,
     `撞破 base ${b.breaches} 格、post ${p.breaches} 格（≤ ${(0.7 * b.breaches).toFixed(1)}）；被偷 base ${b.stolen} 份（${b.steals} 次）、post ${p.stolen} 份（${p.steals} 次）（≤ ${(0.7 * b.stolen).toFixed(1)}）${small}`);
+}
+
+// M17-A5／A6：成家；家人一起吃。兩組種子合起來判（retro 6），這裡印單組，合起來的判斷寫在規格。
+{
+  console.log('--- 成家 ---');
+  const kr = fam.kinT / Math.max(1, fam.kinN), or = fam.otherT / Math.max(1, fam.otherN);
+  console.log(`M17-A5 有一家的種子 ${fam.seeds}/${SEEDS}（兩組合起來要 ≥ 8/24）；成家 ${fam.n} 對`);
+  console.log(`M17-A6 家人吃飯時家人同桌 ${pct(kr)}（${fam.kinN} 人·tick）、跟其他同門同桌 ${pct(or)}（${fam.otherN} 人·對·tick）`);
 }
 
 // M16-A5／A6：有藥園，每次受傷養得比較短；遠征有傷重撤退。

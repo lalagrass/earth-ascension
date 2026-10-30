@@ -5,7 +5,7 @@ import { canLaunch } from './expedition.mjs';
 import { LIFE_CATS, lifeShares, habitText, personEvents, EVENT_GROUPS, eventsIn, sectStats } from './chronicle.mjs';
 import { blueprint } from './build.mjs';
 import { effectText } from './skills.mjs';
-import { aff, stageOf, prestige } from './social.mjs';
+import { aff, stageOf, prestige, kinOf, bondLabel } from './social.mjs';
 import { prowess, moveLabel, comprehendable, compChance } from './martial.mjs';
 import { titleOf, appeal, reasonText } from './recruit.mjs';
 import { SKILLS, MOVES, DEFENSE, FARM, DUTY, FORMS } from './data.mjs';
@@ -119,10 +119,10 @@ function renderRoster() {
   rosterKey = rosterSig();
   $('#roster').replaceChildren(...(state.sect ? [el('b', { class: 'sect', 'data-sect': '' }, state.sect.name)] : []),
     ...state.people.map((p) => el('button', { 'data-person': p.id, class: p.guest ? 'guest' : '', on: { click: () => { selected = p.id; renderPanel(); } } },
-      (p.guest ? `${p.name}（客）` : dutyOf(state, p) ? `${p.name}·${ROLE[dutyOf(state, p)].label}` : p.name) + (hurt(p) ? '（傷）' : ''))));
+      (p.guest ? `${p.name}（客）` : dutyOf(state, p) ? `${p.name}·${ROLE[dutyOf(state, p)].label}` : p.name) + (hurt(p) ? '（傷）' : '') + (p.kin ? '·家' : ''))));
 }
 // M18：值日變了也重畫名冊。
-const rosterSig = () => state.people.map((p) => `${p.id}${p.guest ? 'g' : ''}${dutyOf(state, p) ?? ''}${hurt(p) ? 'h' : ''}`).join() + (state.sect?.name ?? '');
+const rosterSig = () => state.people.map((p) => `${p.id}${p.guest ? 'g' : ''}${dutyOf(state, p) ?? ''}${hurt(p) ? 'h' : ''}${p.kin ?? ''}`).join() + (state.sect?.name ?? '');
 
 let bgVersion = -1;
 function paintBg() {
@@ -296,7 +296,8 @@ function renderPanel() {
     sec('skills', ...SKILLS.map((k) => el('div', { class: 'skill', 'data-skill': k.id }, el('span', {}, k.label),
       el('span', { class: 'bar' }, el('i', { style: `width:${p.skills[k.id]}%` })), el('b', {}, p.skills[k.id].toFixed(0)),
       el('small', {}, effectText(p, k.id))))),
-    sec('social', el('h2', {}, `名望 ${prestige(p).toFixed(0)}`), ...state.people.filter((o) => o !== p).map((o) => el('div', { class: 'rel', 'data-rel': o.id },
+    sec('social', el('h2', {}, `名望 ${prestige(p).toFixed(0)}`),
+      kinOf(state, p) ? el('p', { class: 'identity', 'data-kin': p.kin }, `${bondLabel(p, kinOf(state, p))}：${kinOf(state, p).name}`) : '', ...state.people.filter((o) => o !== p).map((o) => el('div', { class: 'rel', 'data-rel': o.id },
       el('span', {}, o.name), el('b', {}, stageOf(state, p, o).label),
       el('small', {}, `我→他 ${aff(state, p, o).toFixed(0)}　他→我 ${aff(state, o, p).toFixed(0)}`)))),
     sec('martial', el('h2', {}, `武力 ${prowess(p).toFixed(1)}`),

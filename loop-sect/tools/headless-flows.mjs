@@ -497,6 +497,36 @@ export const flows = [
     },
   },
   {
+    // M17 成家：種子 10 約第 4.4 日有一對結為家人；名冊加「·家」、人際分頁第一行寫道侶或金蘭。
+    name: 'm17-family',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.fill('#seed', '10');
+      await page.click('#begin');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().events.some((e) => e.kind === 'family'), null, { timeout: 480000 });
+      await page.click('[data-speed="0"]');
+      const s = await snap(page);
+      const ev = s.events.find((e) => e.kind === 'family');
+      expect('A2 紀事寫成家', /(結為道侶|結義為金蘭)$/.test(ev.text), ev.text);
+      const [a, b] = ev.who;
+      await page.waitForFunction((id) => /·家/.test(document.querySelector(`[data-person="${id}"]`)?.textContent ?? ''), a, { timeout: 5000 });
+      expect('A8 名冊看得到家人', /·家/.test(await page.textContent(`[data-person="${a}"]`)) && /·家/.test(await page.textContent(`[data-person="${b}"]`)));
+      await page.click(`[data-person="${a}"]`);
+      await page.click('[data-tab="social"]');
+      const kinText = await page.textContent(`[data-kin="${b}"]`);
+      expect('A8 人際分頁寫家人', /^(道侶|金蘭)：/.test(kinText), kinText);
+      const boxes = await page.evaluate(() => window.__sect.labels());
+      let overlap = 0;
+      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+        const x = boxes[i], y = boxes[j];
+        if (x.x < y.x + y.w && y.x < x.x + x.w && x.y < y.y + y.h && y.y < x.y + x.h) overlap++;
+      }
+      expect('A8 畫面不疊字', overlap === 0, `${overlap} 對`);
+      await shot('family');
+    },
+  },
+  {
     // M18 值日（暫停中、預設關）：紀事簿可以打開，名冊與人物卡看得到值日，可以指定。
     name: 'm18-duty',
     async run(page, expect, { shot }) {

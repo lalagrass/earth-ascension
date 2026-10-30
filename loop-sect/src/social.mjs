@@ -1,5 +1,20 @@
 // 人際：雙向好感、相合度、關係階段、名望、請教話題。
 import { SOCIAL, SKILLS, MARTIAL } from './data.mjs';
+
+export const kinOf = (state, p) => (p.kin ? state.people.find((x) => x.id === p.kin) ?? null : null);
+// 道侶或金蘭：兩人都偏心軟（F > 0）是道侶。
+export const bondLabel = (a, b) => (a.axes.F > 0 && b.axes.F > 0 ? '道侶' : '金蘭');
+
+// M17 成家：升到知己、兩人都是同門、都還沒有家人。
+function maybeFamily(state, a, b) {
+  if (a.guest || b.guest || a.kin || b.kin) return;
+  a.kin = b.id; b.kin = a.id;
+  const label = bondLabel(a, b);
+  const verb = label === '道侶' ? '結為道侶' : '結義為金蘭';
+  state.events.push({ tick: state.tick, kind: 'family', text: `${a.name}與${b.name}${verb}`, who: [a.id, b.id] });
+  a.bubble = b.bubble = { text: verb, until: state.tick + 90 };
+  state.counts.families = (state.counts.families || 0) + 1;
+}
 import { prowess } from './martial.mjs';
 
 const clamp = (v) => Math.max(-100, Math.min(100, v));
@@ -52,5 +67,6 @@ export function withStage(state, a, b, fn) {
   if (after !== before && SOCIAL.STAGES.indexOf(after) > SOCIAL.STAGES.indexOf(before)) {
     state.events.push({ tick: state.tick, kind: 'rel', text: `${a.name}與${b.name}成了${after.label}`, who: [a.id, b.id] });
     a.bubble = b.bubble = { text: after.label, until: state.tick + 60 };
+    if (after.id === 'close') maybeFamily(state, a, b);
   }
 }

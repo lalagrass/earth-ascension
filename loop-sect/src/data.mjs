@@ -427,3 +427,5 @@ BLUEPRINTS.push({
   cells: [[44, 27], [45, 27]],
   cost: { wood: 4 }, work: 40,
 });
+// M17 親密與成家：朋友以上聊天（談心）好感 × DEEP；家人在的桌加 EAT、家人睡的床 BED_R 格內加 BED。
+export const FAMILY = { DEEP: 3, EAT: 0.8, BED: 0.6, BED_R: 3 };

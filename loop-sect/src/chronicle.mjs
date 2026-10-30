@@ -52,7 +52,7 @@ export const personEvents = (state, p) => state.events.filter((e) => e.who?.incl
 export const EVENT_GROUPS = [
   { id: 'all', label: '全部', kinds: null },
   { id: 'war', label: '戰事', kinds: ['raid', 'stolen', 'breach', 'repel', 'calm', 'guard', 'exp', 'cleared', 'repair', 'hurt'] },
-  { id: 'people', label: '人事', kinds: ['visit', 'join', 'leave', 'found', 'master', 'rel'] },
+  { id: 'people', label: '人事', kinds: ['visit', 'join', 'leave', 'found', 'master', 'rel', 'family'] },
   { id: 'growth', label: '成長', kinds: ['skill', 'move', 'trial'] },
   { id: 'build', label: '營造', kinds: ['built', 'farm'] },
 ];
