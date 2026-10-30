@@ -5,6 +5,7 @@
 import { DAY, FACILITIES } from './data.mjs';
 import { log, resAdd } from './util.mjs';
 import { power } from './jianghu.mjs';
+import { fenceUp, fenceHit, fenceHtml, FENCE } from './fence.mjs';
 
 export const RAID = { minPop: 8, first: 8, every: 6, jitter: 2, w: { coin: 1, food: 1, pill: 8, herb: 1, stage: 25 }, div: 2, dayK: 30, dayMax: 2, cap: 900,
   logAfter: 30, logK: 0.2, hurtCool: 2, // v2.1：第 30 日後天數係數改對數；山門重傷後下次上門再晚 hurtCool 日
@@ -43,14 +44,15 @@ export function raidResolve(s, i, H, auto = false) {
   const X = T(s), P = X.pending; if (!P) return { ok: false, why: '沒有山賊上門' };
   X.pending = null; const who = auto ? '執事代為決定：' : '';
   if (i === 0 && s.res.coin >= P.demand) { resAdd(s, 'coin', -P.demand); X.paid++; X.hist.push({ n: P.n, day: P.day, pts: P.pts, pay: P.demand }); log(s, `${who}付了 ${P.demand} 兩，山賊點完錢下山去了。`); return { ok: true, paid: P.demand }; }
-  X.fought++; const win = R(s) < P.p; let hurt = null;
+  X.fought++; const win = R(s) < P.p; let hurt = null, held = false;
   if (win) { X.won++; s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt) hurt = hurtOne(s, H); log(s, `${who}迎戰山賊——打退了！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
+  else if (fenceUp(s) && (held = fenceHit(s, Math.max(FENCE.bandit.min, Math.round(P.pts * FENCE.bandit.k)), '山賊').held)) { log(s, `${who}迎戰山賊——敗了，但木柵撐住，山賊沒搶進院就走了。`); }
   else { const c = Math.floor(Math.max(0, s.res.coin) * RAID.steal.coin), f = Math.floor((s.res.food || 0) * RAID.steal.food); if (c) resAdd(s, 'coin', -c); if (f) resAdd(s, 'food', -f); hurt = hurtOne(s, H); log(s, `${who}迎戰山賊——敗了：被搶走 ${c} 錢、${f} 飯${hurt ? `，${hurt.name}重傷` : ''}（不會死人）。`); }
-  X.hist.push({ n: P.n, day: P.day, pts: P.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null }); return { ok: true, win, hurt: hurt?.id || null };
+  X.hist.push({ n: P.n, day: P.day, pts: P.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null, ...(held ? { held } : {}) }); return { ok: true, win, hurt: hurt?.id || null, ...(held ? { held } : {}) };
 }
 export function threatHtml(s) {
   const X = T(s), P = X.pending, pts = points(s), n = headcount(s);
   const head = `<div class="threat" data-threat><b>山賊</b>：${n < RAID.minPop ? `門裡才 ${n} 人，山賊還看不上（${RAID.minPop} 人起）` : `家底 ${Math.round(wealth(s))}，威脅 ${pts}（戰力 ${Math.round(defense(s))}）；下次約第 ${X.next} 日`}・來過 ${X.n} 次（付錢 ${X.paid}／迎戰 ${X.fought}，勝 ${X.won}）・山門重傷 ${X.homeHurt}`;
-  if (!P) return head + '</div>';
-  return `${head}<div class="raid-ask" data-raid-ask>山賊要 ${P.demand} 兩：<button data-raid="0" ${s.res.coin < P.demand ? 'disabled' : ''}>付錢了事</button> <button data-raid="1">迎戰（勝算 ${Math.round(P.p * 100)}%）</button></div></div>`;
+  if (!P) return head + '</div>' + fenceHtml(s);
+  return `${head}<div class="raid-ask" data-raid-ask>山賊要 ${P.demand} 兩：<button data-raid="0" ${s.res.coin < P.demand ? 'disabled' : ''}>付錢了事</button> <button data-raid="1">迎戰（勝算 ${Math.round(P.p * 100)}%）</button></div></div>${fenceHtml(s)}`;
 }

@@ -103,6 +103,7 @@ export const ACTIVITIES = {
   encourage: { name: '鼓勵同門', dur: 6, social: 20 },
   leisure: { name: '閒坐看雲', dur: 8, fun: 45, energy: 3 },
   deliver: { name: '送回院倉', dur: 0 },
+  repair: { name: '修柵', dur: 8, energy: -6, skill: { strength: 2 } }, // loop2：只有築了木柵且受損時才會出現
 };
 
 // 武學：熟練門檻解鎖；範圍/冷卻/傷害由 palm 技能放大
