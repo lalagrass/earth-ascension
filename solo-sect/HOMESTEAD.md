@@ -2,7 +2,9 @@
 
 **H9–H26累積成果已推送至隔離分支。** [已驗遠端版本、來源再評審與僅下一個真人／環境驗證計畫](HOMESTEAD-PUBLICATION.md)。沒有PR或dev/main整合。
 
-**最新本地切片為新的H43–H45三輪。** [逐輪規格](HOMESTEAD-COMFORT-ROUNDS.md)、[驗收／來源／真圖](HOMESTEAD-COMFORT-REVIEW.md)、[試玩腳本](HOMESTEAD-COMFORT-PLAYTEST.md)。單次休息正常收尾、床部件返場不被拖走、同條件屋床休息時間比較與實際床凳使用；不增配方／家具／需求或存檔系統。恰好三輪本地完成，不push。
+**最新本地切片為H46–H50五輪。** [規格／功能盤點](HOMESTEAD-FIVE-ROUNDS.md)、[驗收／來源／真圖](HOMESTEAD-FIVE-REVIEW.md)、[試玩腳本](HOMESTEAD-FIVE-PLAYTEST.md)。主入口同源資格、泛用一份餐自然收尾、鍵盤上下文、未變DOM穩定及五路UI/API完整狀態對照。五輪完成即停，未push。
+
+**H43–H45三輪已完成。** [逐輪規格](HOMESTEAD-COMFORT-ROUNDS.md)、[驗收／來源／真圖](HOMESTEAD-COMFORT-REVIEW.md)、[試玩腳本](HOMESTEAD-COMFORT-PLAYTEST.md)。單次休息正常收尾、床部件返場不被拖走、同條件屋床休息時間比較與實際床凳使用；不增配方／家具／需求或存檔系統。恰好三輪本地完成，不push。
 
 **H40–H42三輪已完成。** [逐輪規格](HOMESTEAD-GARDEN-ROUNDS.md)、[驗收／來源／真圖](HOMESTEAD-GARDEN-REVIEW.md)、[試玩腳本](HOMESTEAD-GARDEN-PLAYTEST.md)。菜園與灶依真工量成形、完成後的真生活狀態及現場既有指派；不改模擬核心／經濟／存檔格式。本輪未push，恰好三輪後停止。
 
