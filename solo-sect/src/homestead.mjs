@@ -1,5 +1,5 @@
 import {DAY,HOME,PLACES,LIFE_ACTIONS} from './homestead-life-data.mjs';
-import {SOCIAL_ACTIONS,MEETING,socialReason,socialComplete,socialPlan,tickCompanion,validSocialTask} from './homestead-social.mjs';
+import {SOCIAL_ACTIONS,MEETING,PAIR_POINT,socialReason,socialComplete,socialPlan,tickCompanion,validSocialTask} from './homestead-social.mjs';
 import {MARTIAL_ACTIONS,martialReason,martialPlan,martialTarget,martialComplete,validMartialTask} from './homestead-martial.mjs';
 import {defensePlan,REPAIR,fenceMax} from './homestead-defense.mjs';
 import {tickThreat} from './homestead-threat.mjs';
@@ -182,7 +182,7 @@ export function askHelperLeave(s) {
 const readyProjects=s=>Object.keys(s.fac).filter(id=>{if(!buildables(s).includes(id))return false;const v=s.fac[id].site;return v&&!v.paused&&(Object.keys(v.need).some(k=>v.delivered[k]+v.reserved[k]<v.need[k]&&s.stock[k]>0)||Object.keys(v.need).every(k=>v.delivered[k]>=v.need[k]));});
 export function nextProject(s){const ids=readyProjects(s);if(s.autonomy&&s.person.order==='build'&&s.person.orderScope==='once'&&s.person.onceProject)return ids.includes(s.person.onceProject)?s.person.onceProject:null;return ids.includes(s.focusProject)?s.focusProject:ids[0]||null;}
 const frontierReason=(s,act)=>Object.hasOwn(SOCIAL_ACTIONS,act)?socialReason(s,act):martialReason(s,act);
-const frontierTarget=(s,act)=>Object.hasOwn(SOCIAL_ACTIONS,act)?MEETING:martialTarget(s,act);
+const frontierTarget=(s,act)=>Object.hasOwn(SOCIAL_ACTIONS,act)?(['spar','teach'].includes(act)?PAIR_POINT:MEETING):martialTarget(s,act);
 function canDo(s, act, recipeId='basic') {
   if(ACTIONS[act]?.frontierOnly)return !frontierReason(s,act);
   if (s.mode === 'solo' && ['chat','talkHelper','gift','care','helperCare'].includes(act)) return false;

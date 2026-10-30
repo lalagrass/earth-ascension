@@ -1,7 +1,7 @@
 // Shared immutable action/position definitions, no simulation imports.
 export const DAY = 240;
 export const HOME = [445, 345];
-export const PLACES = { berries: [155, 340], wood: [730, 250], herbs: [145, 185], herbGarden: [135, 90], meeting:[650,345],practice:[500,350],encounter:[500,350], fence:[750,345], visitor: [825, 450], hut: [440, 225], garden: [270, 170], kitchen: [605, 365], store: [555, 470], bench: [352, 412], flowers: [340, 300], bed: [440, 225], workbench: [675, 470] };
+export const PLACES = { berries: [155, 340], wood: [730, 250], herbs: [145, 185], herbGarden: [135, 90], pair:[620,345],meeting:[650,345],practice:[500,350],encounter:[500,350], fence:[750,345], visitor: [825, 450], hut: [440, 225], garden: [270, 170], kitchen: [605, 365], store: [555, 470], bench: [352, 412], flowers: [340, 300], bed: [440, 225], workbench: [675, 470] };
 export const LIFE_ACTIONS = {
   forage: { skill: 'gather', name: '採野果', place: 'berries', duration: 6, energy: 5 },
   chop: { skill: 'gather', name: '砍柴', place: 'wood', duration: 7, energy: 7 },
