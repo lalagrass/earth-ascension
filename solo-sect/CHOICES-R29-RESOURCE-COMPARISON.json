@@ -1,0 +1,215 @@
+{
+  "method": "six deterministic normal simulator paths, only archetype and high-level pace selection; no resource grants. Same starting world, decisions intentionally diverge; task seconds are observed post-quarter samples, not1x human playtime or performance cost. Not a balance survey.",
+  "rows": [
+    {
+      "personality": "quiet",
+      "pace": "auto",
+      "seconds": 3000,
+      "made": {
+        "meal": 9,
+        "salad": 2,
+        "stew": 0
+      },
+      "used": {
+        "meal": 7,
+        "salad": 2,
+        "stew": 0
+      },
+      "totalPortionsUsed": 9,
+      "cookingWood": 3,
+      "seatedMeals": 4,
+      "sharedMeals": 0,
+      "firstSeat": 1549.5,
+      "firstDine": null,
+      "observedMealTaskSeconds": 41.75,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "trust": 4,
+      "stock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 5,
+        "veg": 5,
+        "meal": 2,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 3
+      }
+    },
+    {
+      "personality": "quiet",
+      "pace": "quick",
+      "seconds": 3000,
+      "made": {
+        "meal": 9,
+        "salad": 2,
+        "stew": 0
+      },
+      "used": {
+        "meal": 6,
+        "salad": 2,
+        "stew": 0
+      },
+      "totalPortionsUsed": 8,
+      "cookingWood": 3,
+      "seatedMeals": 0,
+      "sharedMeals": 0,
+      "firstSeat": null,
+      "firstDine": null,
+      "observedMealTaskSeconds": 30.25,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "trust": 5,
+      "stock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 5,
+        "veg": 5,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 3
+      }
+    },
+    {
+      "personality": "sociable",
+      "pace": "auto",
+      "seconds": 3000,
+      "made": {
+        "meal": 9,
+        "salad": 2,
+        "stew": 4
+      },
+      "used": {
+        "meal": 8,
+        "salad": 2,
+        "stew": 3
+      },
+      "totalPortionsUsed": 13,
+      "cookingWood": 7,
+      "seatedMeals": 1,
+      "sharedMeals": 4,
+      "firstSeat": 1931.5,
+      "firstDine": 1330.75,
+      "observedMealTaskSeconds": 56,
+      "minH": 34.09500000000301,
+      "minE": 17.800000000000665,
+      "trust": 5,
+      "stock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 5,
+        "veg": 5,
+        "meal": 1,
+        "salad": 0,
+        "stew": 1,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "sociable",
+      "pace": "quick",
+      "seconds": 3000,
+      "made": {
+        "meal": 6,
+        "salad": 2,
+        "stew": 2
+      },
+      "used": {
+        "meal": 5,
+        "salad": 2,
+        "stew": 1
+      },
+      "totalPortionsUsed": 8,
+      "cookingWood": 4,
+      "seatedMeals": 0,
+      "sharedMeals": 0,
+      "firstSeat": null,
+      "firstDine": null,
+      "observedMealTaskSeconds": 24.75,
+      "minH": 34.09500000000301,
+      "minE": 17.800000000000665,
+      "trust": 5,
+      "stock": {
+        "berries": 2,
+        "wood": 2,
+        "seeds": 5,
+        "veg": 4,
+        "meal": 1,
+        "salad": 0,
+        "stew": 1,
+        "herbs": 0
+      }
+    },
+    {
+      "personality": "diligent",
+      "pace": "auto",
+      "seconds": 3000,
+      "made": {
+        "meal": 9,
+        "salad": 2,
+        "stew": 0
+      },
+      "used": {
+        "meal": 6,
+        "salad": 2,
+        "stew": 0
+      },
+      "totalPortionsUsed": 8,
+      "cookingWood": 3,
+      "seatedMeals": 0,
+      "sharedMeals": 0,
+      "firstSeat": null,
+      "firstDine": null,
+      "observedMealTaskSeconds": 21,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "trust": 5,
+      "stock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 8,
+        "veg": 5,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 4
+      }
+    },
+    {
+      "personality": "diligent",
+      "pace": "quick",
+      "seconds": 3000,
+      "made": {
+        "meal": 9,
+        "salad": 2,
+        "stew": 0
+      },
+      "used": {
+        "meal": 6,
+        "salad": 2,
+        "stew": 0
+      },
+      "totalPortionsUsed": 8,
+      "cookingWood": 3,
+      "seatedMeals": 0,
+      "sharedMeals": 0,
+      "firstSeat": null,
+      "firstDine": null,
+      "observedMealTaskSeconds": 21,
+      "minH": 34.09500000000301,
+      "minE": 18.749999999999993,
+      "trust": 5,
+      "stock": {
+        "berries": 2,
+        "wood": 5,
+        "seeds": 8,
+        "veg": 5,
+        "meal": 3,
+        "salad": 0,
+        "stew": 0,
+        "herbs": 4
+      }
+    }
+  ]
+}

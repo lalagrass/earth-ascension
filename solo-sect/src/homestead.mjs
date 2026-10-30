@@ -1,4 +1,4 @@
-import{preferSeatedMeal,mealPoint,mealDuration,validEatingTask}from'./homestead-dining.mjs';
+import{preferSeatedMeal,companyMealWanted,autonomousDining,mealPoint,mealDuration,validEatingTask}from'./homestead-dining.mjs';
 import {EXPEDITION_ACTIONS,expeditionReason,reconsiderReason,pendingDeparture,expeditionTarget,expeditionPlan,expeditionComplete,tickExpedition} from './homestead-expedition.mjs';
 import {DAY,HOME,PLACES,LIFE_ACTIONS} from './homestead-life-data.mjs';
 import {SOCIAL_ACTIONS,MEETING,PAIR_POINT,socialPoint,socialParticipantsReady,cooperationNeed,socialReason,socialComplete,socialPlan,tickCompanion,validSocialTask} from './homestead-social.mjs';
@@ -300,7 +300,7 @@ export function blockReason(s, act, who = 'person') {
 }
 // 自主夠用目標（試玩值）；不是容量上限，手動指派仍可補到實際容量。
 export function supplyTargets(s) {
-  return { meal: (s.helper ? 2 : 1) * 2, berries: 2, veg: 4, herbs: 3, wood: Math.max(s.person.personality === 'diligent' ? 5 : s.helper ? 3 : 2,s.mode==='solo'&&s.mealStyle==='stew'&&!recipeAccess(s,'stew')?RECIPES.stew.ingredients.wood+1:0) };
+  return { meal: Math.max((s.helper ? 2 : 1) * 2,companyMealWanted(s)?3:0), berries: 2, veg: 4, herbs: 3, wood: Math.max(s.person.personality === 'diligent' ? 5 : s.helper ? 3 : 2,s.mode==='solo'&&s.mealStyle==='stew'&&!recipeAccess(s,'stew')?RECIPES.stew.ingredients.wood+1:0) };
 }
 function pick(s) {
   const p = s.person, target = supplyTargets(s);
@@ -332,6 +332,7 @@ function pick(s) {
   if (canDo(s, 'herbFarm') && s.stock.herbs < target.herbs && !s.autonomy?.deferred.includes('herbs')) return 'herbFarm';
   if (p.energy < 65) return 'rest';
   if (s.stock.wood < target.wood && canDo(s, 'chop')) return 'chop';
+  if(!p.order){const meal=autonomousDining(s);if(meal)return meal;}
   return 'leisure';
 }
 function begin(s, act) {

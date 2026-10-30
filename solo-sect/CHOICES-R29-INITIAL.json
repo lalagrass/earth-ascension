@@ -1,0 +1,65 @@
+[
+  {
+    "personality": "quiet",
+    "t": 3000,
+    "seats": 4,
+    "dines": 0,
+    "firstSeat": 1544.25,
+    "firstDine": null,
+    "minH": 34.09500000000301,
+    "minE": 18.749999999999993,
+    "stock": {
+      "berries": 2,
+      "wood": 2,
+      "seeds": 5,
+      "veg": 5,
+      "meal": 2,
+      "salad": 0,
+      "stew": 0,
+      "herbs": 3
+    },
+    "trust": 4
+  },
+  {
+    "personality": "sociable",
+    "t": 3000,
+    "seats": 0,
+    "dines": 0,
+    "firstSeat": null,
+    "firstDine": null,
+    "minH": 34.09500000000301,
+    "minE": 17.800000000000665,
+    "stock": {
+      "berries": 2,
+      "wood": 2,
+      "seeds": 5,
+      "veg": 4,
+      "meal": 1,
+      "salad": 0,
+      "stew": 1,
+      "herbs": 0
+    },
+    "trust": 5
+  },
+  {
+    "personality": "diligent",
+    "t": 3000,
+    "seats": 0,
+    "dines": 0,
+    "firstSeat": null,
+    "firstDine": null,
+    "minH": 34.09500000000301,
+    "minE": 18.749999999999993,
+    "stock": {
+      "berries": 2,
+      "wood": 5,
+      "seeds": 8,
+      "veg": 5,
+      "meal": 3,
+      "salad": 0,
+      "stew": 0,
+      "herbs": 4
+    },
+    "trust": 5
+  }
+]

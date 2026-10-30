@@ -1,3 +1,4 @@
+import{companyMealWanted}from'./homestead-dining.mjs';
 import{socialParticipantsReady}from'./homestead-social.mjs';
 import {projectRecipe} from './homestead.mjs';
 import{leisureUseText}from'./homestead-autonomy-learning.mjs';
@@ -42,6 +43,7 @@ export function activityReason(s, p = s.person, who = 'person') {
   if(p.task?.act==='forage')return '先照顧吃飯與可用食物。';
   if(p.task?.act==='rest')return (s.mode==='solo'&&p.order==='rest'?'這次歇到100後恢復自主。':'')+(!s.fac.hut.stage?'在空地席地休息，每秒恢復3精力；醒來再繼續求生。':`先補回精力。到屋內使用${s.fac.bed?.stage===2?'舒適床鋪':s.fac.bed?.stage?'木床鋪':'現有鋪蓋'}時，每秒恢復${restRate(s,{pos:[440,225]})}精力；休息後再繼續。`);
   if(p.task?.act==='chop')return Object.values(s.fac).some(f=>f.site&&!f.site.paused) ? '已有工程需要木料，先準備可用建材／燃料。' : '補足日常柴火；達到夠用存量就歇一會。';
+  if(p.task?.act==='cook'&&companyMealWanted(s))return '正在真備一場共食：暫以3份為目標，兩人各一份仍留1份；食材與柴照扣，不為XP空轉。';
   if(p.task?.act==='cook')return p.task.recipe==='salad'?'用菜與野果拌食，這一鍋不耗柴。':p.task.recipe==='stew'?'用較多菜與柴慢燉，換較飽足的一餐與有限恢復。':'用菜與柴煮成基本熱飯，補足日常食物。';
   if(p.task?.act==='farm')return '照料一塊菜園，供日後料理；田間收成要搬回才可用。';
   if (p.task?.act === 'build') return '已有家園藍圖，正逐件備料施工。';
