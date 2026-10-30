@@ -1,6 +1,6 @@
 // 效用 AI：列出所有可做的事、打分、留下理由。只讀 state，不改。
 import { hurt } from './injury.mjs';
-import { HERB, INJURY, FAMILY, HUNT } from './data.mjs';
+import { HERB, INJURY, FAMILY, HUNT, KITCHEN } from './data.mjs';
 import { standSpot } from './build.mjs';
 import { kinOf } from './social.mjs';
 import { FIRE, FARM, ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, DUTY, POST, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
@@ -14,6 +14,8 @@ import { reachable } from './build.mjs';
 import { nextRand } from './rng.mjs';
 import { urgency, isNight } from './needs.mjs';
 import { dutyOf, pressure, reliability, ROLE_OF_KIND } from './duty.mjs';
+// M21：灶邊生食材的堆量 0–1。
+export const rawPile = (stock) => Math.min(1, Math.max(0, (stock.raw - KITCHEN.RAW0) / KITCHEN.RAW_K));
 
 const SLEEPS = new Set(['sleep', 'sleepGround']);
 // loop 6：練功占去空檔後，指定伐木者在練功時需求冒出來，活被別人搶走（全隊砍樹時間中他的占比由 0.63 掉到 0.53）。
@@ -90,12 +92,14 @@ export function candidates(state, p, scorePois) {
       add({ kind: 'eat', obj: o.id, slot: i, spot }, { need: u.food * 2, persona: (company ? u.social * 0.3 * (1 + 0.5 * E) : 0) + (kinObj === o ? FAMILY.EAT : 0) });
     }
     if (o.kind === 'hearth') {
-      if (stock.raw >= COOK_RAW && stock.wood >= FIRE.WOOD_PER_POT && stock.meal < MEAL_TARGET) {
-        // 鍋裡沒飯而有人餓著時，煮飯就是急事。
-        const demand = 1 - stock.meal / MEAL_TARGET;
+      const pile = KITCHEN.ON ? rawPile(stock) : 0;
+      if (stock.raw >= COOK_RAW && stock.wood >= FIRE.WOOD_PER_POT && (stock.meal < MEAL_TARGET || (pile > 0 && stock.meal < KITCHEN.CAP))) {
+        // 鍋裡沒飯而有人餓著時，煮飯就是急事。M21：灶邊生食材堆著，也想順手煮。
+        const demand = Math.max(0, 1 - stock.meal / MEAL_TARGET);
         const hungry = state.people.filter((x) => x.needs.food < 40).length;
         const urgent = stock.meal === 0 ? 1 + 0.4 * hungry : 0;
-        add({ kind: 'cook', obj: o.id, slot: i, spot }, { work: demand * 1.4 + urgent, persona: 0.3 * Math.max(0, F) * demand + diligence });
+        add({ kind: 'cook', obj: o.id, slot: i, spot, ...(pile > 0 ? { label: '灶邊堆著，順手煮一鍋' } : {}) },
+          { work: demand * 1.4 + urgent + KITCHEN.PULL * pile, persona: 0.3 * Math.max(0, F) * demand + diligence + KITCHEN.J * J * pile });
       }
     }
     if (o.kind === 'dummy' && p.needs.energy > MARTIAL.DRILL_MIN_ENERGY && !hurt(p)) {

@@ -1,10 +1,10 @@
 {
   "loopVersion": 8,
-  "loopsDone": 23,
+  "loopsDone": 24,
   "retroEvery": 3,
   "lastRetro": "docs/RETRO-07.md",
-  "lastCommit": "b4d2eaa",
-  "nextMilestone": "M21 灶邊接力（loop 24），之後 retro 8",
+  "lastCommit": "2868b45",
+  "nextMilestone": "retro 8，然後 M22（PLAN-03：M21 沒過 → 改做同層對照）",
   "inProgress": {
     "paused": [
       {
@@ -58,6 +58,15 @@
           "打獵活計分改成跟缺糧走（另找 rank 過得去的寫法）",
           "重量 report 兩組種子的 M19a-A5、A7"
         ]
+      },
+      {
+        "milestone": "M21",
+        "resumeAfter": "擁有人決定要不要單獨打開（base 明顯少餓，但解不了打獵與菜園）",
+        "steps": [
+          "KITCHEN.ON = true（RAW0 6）",
+          "重量 report 兩組種子的 M10-A5[base]、M10-A6",
+          "headless 看「灶邊堆著，順手煮一鍋」"
+        ]
       }
     ]
   },
@@ -83,7 +92,8 @@
     "打獵（M19a）取代採莓但效率不比採莓高；固定的活計分讓人放下採莓與煮飯，被偷與生吃變多",
     "飢餓幾乎全在第 2–4 日（開局蓋房子）；新建築情境都在第 2 日放藍圖，正好疊在這段（M20）",
     "敵人每 2 日多 1 隻，第 19 日一次 10 隻；RAID.DAYS 30 之後不再來，三十日以上沒量",
-    "二十日後每個種子都成家，人際沒有下一步（子女、吵架、師徒傳承）"
+    "二十日後每個種子都成家，人際沒有下一步（子女、吵架、師徒傳承）",
+    "最差日的飢餓發生在飯 0、生 0、野莓叢被吃空的時候（開局第 2–4 日），不是食物堆著沒煮（M21）"
   ],
   "stopReason": null,
   "targetLoops": 30,

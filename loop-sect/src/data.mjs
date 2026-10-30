@@ -123,6 +123,8 @@ export const BUSH_REGROW = 240;
 export const START_STOCK = { raw: 6, meal: 3 }; // M16 藥草 stock.herb 收成時才加上（舊情境的雜湊不變）
 export const MEAL_TARGET = 6;     // 飯少於此數才有人想煮
 export const COOK_RAW = 2;
+// M21 灶邊接力：生食材堆得越多，路過的人越想順手煮；飯沒到 CAP 都可以煮。
+export const KITCHEN = { ON: false, RAW0: 6, RAW_K: 8, PULL: 1.2, CAP: 12, J: 0.3 }; // 暫停中（loop 24）：ON false 時跟以前一樣
 export const COOK_MEALS = 3;
 export const FORAGE_TAKE = 3;
 
