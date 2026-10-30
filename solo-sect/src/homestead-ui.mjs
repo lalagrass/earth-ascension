@@ -1,3 +1,4 @@
+import {HOME_STYLES,defaultHomeLook,homeLook,setHomeLook} from './homestead-look.mjs';
 import {RECIPES,MEAL_STYLES,mealDecision,nextUnlocks,preparedCount,recipeAccess,recipeReason,buildAccess,RESOURCE_NAMES} from './homestead-content.mjs';
 import {FEELINGS,currentFeelings,restRate} from './homestead-living.mjs';
 import {SKILLS,skillInfo} from './homestead-skills.mjs';
@@ -14,6 +15,18 @@ let pointerHeld = false;
 document.addEventListener('pointerdown', () => {pointerHeld=true;});
 for (const event of ['pointerup','pointercancel']) document.addEventListener(event, () => {pointerHeld=false;});
 window.addEventListener('blur', () => {pointerHeld=false;});
+let lookDraft = null;
+function cancelLook(){lookDraft=null;$('look-editor').open=false;draw();}
+function previewLook(){lookDraft={style:$('home-style').value};$('look-status').textContent=`預覽${HOME_STYLES[lookDraft.style].name}，尚未套用。`;draw();}
+$('home-style').innerHTML=Object.entries(HOME_STYLES).map(([id,v])=>`<option value="${id}">${v.name}</option>`).join('');
+function beginLook(){if(!s)return;$('home-style').value=homeLook(s).style;previewLook();}
+$('look-editor').querySelector('summary').onclick=()=>{if(!$('look-editor').open)beginLook();};
+$('look-editor').ontoggle=()=>{if(!$('look-editor').open){lookDraft=null;draw();}else if(!lookDraft)beginLook();};
+$('home-style').onchange=previewLook;
+$('look-form').onsubmit=e=>{e.preventDefault();if(setHomeLook(s,lookDraft)){cancelLook();render();$('look-editor').querySelector('summary').focus();}};
+$('look-cancel').onclick=()=>{cancelLook();$('look-editor').querySelector('summary').focus();};
+$('look-reset').onclick=()=>{$('home-style').value='natural';previewLook();};
+$('look-editor').onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();cancelLook();$('look-editor').querySelector('summary').focus();}};
 let transferDraft = null;
 mountTransferManager(document.getElementById('transfer-manager'));
 mountTransferManager(document.getElementById('start-transfer-manager'));
@@ -27,13 +40,13 @@ $('transfer-dialog').addEventListener('keydown', (e) => { if (e.key !== 'Tab') r
 $('transfer-dialog').addEventListener('cancel', (e) => { e.preventDefault(); clearTransfer(); show('已取消轉接；存檔未改。'); });
 function startScreen(on) { $('start').style.display = on ? 'grid' : 'none'; document.querySelector('main').inert = on; document.querySelector('header').inert = on; if (on) $('name').focus(); }
 $('start').addEventListener('keydown', (e) => { if (e.key === 'Escape' && s) { e.preventDefault(); startScreen(false); $('new').focus(); } if (e.key !== 'Tab') return; const items = [...$('start').querySelectorAll('a[href],button:not(:disabled),input,select')].filter(el => el.getClientRects().length); const first = items[0], last = items.at(-1); if (e.shiftKey && document.activeElement === first) {e.preventDefault();last.focus();} else if (!e.shiftKey && document.activeElement === last) {e.preventDefault();first.focus();} });
-function begin(state) { clearTransfer(); s = state; speed = 1; acc = 0; startScreen(false); last = performance.now(); render(); }
+function begin(state) { cancelLook(); clearTransfer(); s = state; speed = 1; acc = 0; startScreen(false); last = performance.now(); render(); }
 $('resume').disabled = !stored();
 $('begin').onclick = () => begin(createHomestead({ name: $('name').value, personality: $('personality').value, mode: new URLSearchParams(location.search).has('legacy') ? 'legacy' : 'solo' }));
 $('resume').onclick = () => { const r = loadHomestead(stored()); if (r.ok) begin(r.state); else show(r.error); };
-$('new').onclick = () => { clearTransfer(); speed = 0; startScreen(true); $('resume').disabled = !stored(); };
+$('new').onclick = () => { cancelLook(); clearTransfer(); speed = 0; startScreen(true); $('resume').disabled = !stored(); };
 $('save').onclick = () => { if (!s) return; try { localStorage.setItem(SAVE_KEY, saveHomestead(s)); clearTransfer(); show('荒居已存檔。'); } catch { show('無法寫入本機存檔。'); } };
-$('load').onclick = () => { const r = loadHomestead(stored()); if (r.ok) { clearTransfer(); s = r.state; show('荒居讀檔完成。'); render(); } else show(r.error); };
+$('load').onclick = () => { const r = loadHomestead(stored()); if (r.ok) { cancelLook(); clearTransfer(); s = r.state; show('荒居讀檔完成。'); render(); } else show(r.error); };
 $('transfer-preview').onclick = () => {
   speed = 0; const raw = stored(); const r = previewTransfer(raw);
   clearTransfer(); if (!r.ok) { $('transfer-detail').textContent = r.error; const back = document.createElement('button'); back.id = 'transfer-cancel'; back.textContent = '返回'; $('transfer-detail').append(back); openPreview(); return; }
@@ -57,7 +70,7 @@ $('build').onclick = (e) => { const focus=e.target.closest('[data-focus]');if(fo
 $('community').onclick = (e) => { const b = e.target.closest('[data-social]'); if (!b) return; const action = { invite: inviteHelper, apprentice: acceptApprentice, leave: askHelperLeave }[b.dataset.social]; if (action?.(s)) show('已記入荒居紀事。'); render(); };
 $('helper-orders').onclick = (e) => { const b = e.target.closest('[data-helper]'); if (b) { setHelperOrder(s, b.dataset.helper === 'auto' ? null : b.dataset.helper); render(); } };
 
-function draw() { if(s) drawHomestead(ctx,s); }
+function draw() { if(s) drawHomestead(ctx,s,lookDraft); }
 function render() {
   if (!s || pointerHeld) return;
   const focused = document.activeElement; const focusSelector = focused?.id ? '#' + CSS.escape(focused.id) : ['act','recipe','eat','build','focus','project','social','helper'].find(k => focused?.dataset?.[k]) ? Object.entries(focused.dataset).map(([k,v]) => `[data-${k}="${CSS.escape(v)}"]`).join('') : null;
@@ -67,6 +80,8 @@ function render() {
   const target = supplyTargets(s), resources=resourceSummary(s);
   $('social-card').hidden=s.mode==='solo';
   $('home-nav').hidden=s.mode!=='solo';
+  $('look-editor').hidden=s.mode!=='solo';
+  for(const el of $('look-form').elements)el.disabled=!s.fac.hut.stage;
   $('home-benefits').hidden=s.mode!=='solo';$('home-benefits').textContent=homeBenefits(s);
   $('project-focus').hidden=s.mode!=='solo';$('project-focus').textContent=projectFocusText(s);
   $('meal-result').hidden=s.mode!=='solo';

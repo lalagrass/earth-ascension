@@ -7,3 +7,5 @@
 [hidden]{display:none!important}header{flex-wrap:wrap;position:sticky;top:0;z-index:2}.resources{flex-basis:100%;font-size:14px;border-top:1px solid #c6cbaa;padding-top:7px}.resources details{font-size:12px;margin-top:4px}.resources summary{cursor:pointer}aside{max-height:calc(100vh - 125px)}
 header{height:auto;min-height:70px;padding-bottom:10px}.resources{background:#3c4936;color:#faf1d9;padding:8px 0 0}main{min-height:calc(100vh - var(--home-header,130px))}aside{max-height:calc(100vh - var(--home-header,130px))}@media(max-width:850px){aside{max-height:none}.resources{font-size:13px}#resource-top{line-height:1.8}}
 #home-nav{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.card{scroll-margin-top:8px}@media(max-width:850px){.card{scroll-margin-top:calc(var(--home-header,130px) + 8px)}}
+
+#look-editor label{display:block;font-size:13px;margin:8px 0 4px}#look-editor select,#look-editor input{font:inherit;max-width:100%;padding:6px;border:1px solid #9d895f;border-radius:4px;background:#fffaf0}#look-status{font-size:12px;min-height:1.5em}#look-editor button{font-size:13px}

@@ -1,3 +1,4 @@
+import {HOME_STYLES,homeLook} from './homestead-look.mjs';
 // Canvas 表現只讀狀態：時間來自世界，不另設動畫時鐘。
 import{preparedCount}from'./homestead-content.mjs';
 import {currentFeelings} from './homestead-living.mjs';
@@ -10,7 +11,8 @@ export function sceneFacts(s) {
   night:s.t%DAY/DAY<.2 || s.t%DAY/DAY>.8,
   gardenScale:s.plot.state==='ripe'?1:s.plot.state==='growing'?.25+.65*Math.min(1,s.plot.growth/34):0};
 }
-export function drawHomestead(g,s) {
+export function drawHomestead(g,s,preview) {
+ const look=homeLook(s,preview),palette=HOME_STYLES[look.style];
  const facts=sceneFacts(s), boxes=[];
  const rect=(x,y,w,h,color)=>{g.fillStyle=color;g.fillRect(x,y,w,h);};
  const circle=(x,y,r,color)=>{g.fillStyle=color;g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();};
@@ -35,13 +37,14 @@ export function drawHomestead(g,s) {
  if(hut.stage){
   ellipse(448,285,100,16,'#4c473b33');rect(372,177,142,104,hut.stage===2?'#b69b70':'#96714d');
   for(let y=185;y<275;y+=14)line([[374,y],[512,y]],hut.stage===2?'#9b7b58':'#725239',2);
-  g.fillStyle=hut.stage===2?'#855c47':'#68553a';g.beginPath();g.moveTo(350,183);g.lineTo(444,113);g.lineTo(537,183);g.closePath();g.fill();
+  g.fillStyle=palette.roof[hut.stage-1];g.beginPath();g.moveTo(350,183);g.lineTo(444,113);g.lineTo(537,183);g.closePath();g.fill();
   if(hut.stage===1){for(let i=0;i<7;i++)line([[370+i*11,176],[442+i*5,128]],'#a18a5666',3);}else{
    for(let y=139;y<182;y+=11)line([[444-(y-113)*1.32,y],[444+(y-113)*1.32,y]],'#573d33',2);
-   rect(367,179,152,7,'#d0b685');rect(388,203,23,24,'#e7d6a2');rect(478,203,23,24,'#e7d6a2');line([[399,203],[399,227]],'#866b49',2);line([[489,203],[489,227]],'#866b49',2);rect(415,277,60,8,'#baaa8c');
+   rect(367,179,152,7,palette.trim);rect(388,203,23,24,'#e7d6a2');rect(478,203,23,24,'#e7d6a2');line([[399,203],[399,227]],'#866b49',2);line([[489,203],[489,227]],'#866b49',2);rect(415,277,60,8,'#baaa8c');
   }
   if(s.fac.bed?.stage){rect(420,205,44,23,'#6c533c');rect(422,206,40,16,s.fac.bed.stage===2?'#9db8c2':'#e5dbbf');rect(422,207,11,13,'#f2ead4');if(s.fac.bed.stage===2)rect(451,207,10,13,'#f2ead4');}
   rect(431,225,30,56,'#493728');circle(455,252,2,'#d5b17d');
+  if(look.style!=='natural'){line([[427,281],[427,222],[465,222],[465,281]],palette.trim,5);line([[353,184],[535,184]],palette.trim,5);}
  }
  function plot(id,x,y,w,h,p,growth,color){
   const f=s.fac[id];rect(x,y,w,h,f.stage?'#796247':'#94a47555');
