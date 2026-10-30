@@ -1,10 +1,10 @@
 {
-  "loopVersion": 8,
+  "loopVersion": 9,
   "loopsDone": 24,
   "retroEvery": 3,
-  "lastRetro": "docs/RETRO-07.md",
-  "lastCommit": "2868b45",
-  "nextMilestone": "retro 8，然後 M22（PLAN-03：M21 沒過 → 改做同層對照）",
+  "lastRetro": "docs/RETRO-08.md",
+  "lastCommit": "0f13606",
+  "nextMilestone": "M22 開局的糧（loop 25）",
   "inProgress": {
     "paused": [
       {
