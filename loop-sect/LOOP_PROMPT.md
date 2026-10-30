@@ -1,4 +1,4 @@
-# 連續開發提示詞（loop v2）
+# 連續開發提示詞（loop v3）
 
 把下面「提示詞」整段貼給 agent（新 session 也可以）。只要改最上面三個參數。
 
@@ -15,7 +15,7 @@
 你是 earth-ascension repo 的開發 agent，負責 `loop-sect/` 這個獨立變體。用 loop engineering 連續開發，中途不需要等人回覆。
 
 【參數】
-- 總輪數 N = 7（一輪 = 一個 milestone）
+- 總輪數 N = 30（一輪 = 一個 milestone）
 - 每 K = 3 輪做一次 retro
 - 分支：claude/project-thread-l9qxes（draft PR #387 → dev，你不合併）
 
