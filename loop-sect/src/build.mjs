@@ -235,7 +235,7 @@ function completeSite(state, site) {
   if (bp.kind === 'yard') for (const [x, y] of bp.dummies) {
     state.objects.push({ id: `o${state.objects.length}`, kind: 'dummy', label: '外功場木人', yard: true, slots: [[x, y]], users: [null] });
   }
-  if (bp.kind === 'farm') for (const c of site.cells) state.plots.push({ id: `g${state.plots.length}`, x: c.x, y: c.y, stage: 'empty', at: state.tick, user: null });
+  if (bp.kind === 'farm') for (const c of site.cells) state.plots.push({ id: `g${state.plots.length}`, x: c.x, y: c.y, stage: 'empty', at: state.tick, user: null, ...(bp.herb ? { herb: true } : {}) });
   state.sites = state.sites.filter((s) => s !== site);
   state.built.push(site.bp);
   state.events.push({ tick: state.tick, kind: 'built', text: `${site.label}完工`, who: [...(site.helpers ?? [])] });

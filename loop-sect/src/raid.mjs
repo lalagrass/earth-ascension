@@ -3,6 +3,7 @@ import { ENEMIES, RAID, DEFENSE, TICKS_PER_DAY, PILE } from './data.mjs';
 import { seedHolder, nextRand, randInt } from './rng.mjs';
 import { walkable, nearestWalkable } from './map.mjs';
 import { findPath } from './path.mjs';
+import { wound } from './injury.mjs';
 import { setTile } from './build.mjs';
 import { kindBlocked } from './expedition.mjs';
 
@@ -153,7 +154,7 @@ export function stepEnemies(state) {
     if (e.mode === 'guard') {
       if (e.hp <= 0) { e.gone = true; state.events.push({ tick: state.tick, kind: 'guard', text: `${e.label}倒下了` }); continue; }
       const foes = engaged(state, e);
-      for (const p of foes) p.needs.energy = Math.max(0, p.needs.energy - ENEMIES[e.kind].hit / foes.length);
+      for (const p of foes) { p.needs.energy = Math.max(0, p.needs.energy - ENEMIES[e.kind].hit / foes.length); wound(state, p, ENEMIES[e.kind].hit / foes.length, e.label); }
       continue;
     }
     if (e.mode !== 'flee' && e.hp <= 0) {
@@ -171,7 +172,7 @@ export function stepEnemies(state) {
       const foes = engaged(state, e);
       if (foes.length) {
         // 被纏住：原地反擊，扣迎戰者精力。
-        for (const p of foes) p.needs.energy = Math.max(0, p.needs.energy - def.hit / foes.length);
+        for (const p of foes) { p.needs.energy = Math.max(0, p.needs.energy - def.hit / foes.length); wound(state, p, def.hit / foes.length, e.label); }
         continue;
       }
     }

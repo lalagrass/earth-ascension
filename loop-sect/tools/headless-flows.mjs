@@ -437,7 +437,8 @@ export const flows = [
       const p = s.people[0];
       expect('A7 在外功場中間開打', Math.round(p.x) === 43 && Math.round(p.y) === 23, `${p.x},${p.y}`);
       expect('A7 頭上寫第幾波', /演武第 \d 波/.test(p.actLabel), p.actLabel);
-      // 木人畫在人左右：那幾格的像素應該有木人的顏色。
+      // 木人畫在人左右：那幾格的像素應該有木人的顏色。等兩個畫面，免得取到暫停前的那一幀（loop 18：機器忙時偶爾 0/2）。
+      await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
       const wood = await page.evaluate(() => {
         const c = document.querySelector('#view'), g = c.getContext('2d');
         const p = window.__sect.snapshot().people[0];
@@ -466,6 +467,33 @@ export const flows = [
       await page.click('[data-tab="martial"]');
       expect('A7 人物卡記最好成績', /最好：撐過 \d 波/.test(await page.textContent('[data-trial-best]')));
       await shot('trial-done');
+    },
+  },
+  {
+    // M16 藥園（暫停中：受傷關著，藥園可蓋）：營造面板有藥園、寫試做中；完工後灶邊記藥草、畫出藥畦。
+    name: 'm16-herbs',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.fill('#seed', '4');
+      await page.click('#begin');
+      expect('A8 營造面板有藥園', (await page.locator('[data-blueprint="herbs"]').count()) === 1);
+      expect('A8 寫試做中', /藥園[\s\S]*試做中/.test(await page.textContent('#build')));
+      await page.click('[data-person="p0"]');
+      expect('A8 人物卡有傷勢', (await page.locator('[data-hurt]').count()) === 1 && /無傷/.test(await page.textContent('[data-hurt]')));
+      await page.click('[data-blueprint="herbs"]');
+      await page.click('[data-speed="16"]');
+      await page.waitForFunction(() => window.__sect.snapshot().built.includes('herbs'), null, { timeout: 240000 });
+      await page.click('[data-speed="0"]');
+      const s = await snap(page);
+      expect('A8 兩畦藥畦', s.plots.filter((g) => g.herb).length === 2 && s.map[27][44] === 'g' && s.map[27][45] === 'g');
+      const boxes = await page.evaluate(() => window.__sect.labels());
+      let overlap = 0;
+      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i], b = boxes[j];
+        if (a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h) overlap++;
+      }
+      expect('A8 畫面不疊字', overlap === 0, `${overlap} 對`);
+      await shot('herbs');
     },
   },
   {

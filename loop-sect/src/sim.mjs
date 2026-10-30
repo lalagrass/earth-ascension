@@ -8,6 +8,8 @@ import { newNests, nestOf, canLaunch, retreatReason } from './expedition.mjs';
 import { tally } from './chronicle.mjs';
 import { stepDuty } from './duty.mjs';
 import { stepStrike, formOf, sizeOf } from './forms.mjs';
+import { heal } from './injury.mjs';
+import { HERB, INJURY } from './data.mjs';
 import { canTrial, newTrial, trialTick, trialRecord, better, trialText } from './trial.mjs';
 import { visitSchedule, visitChance, appeal, reasonText, shouldApprentice, foundingPlan, freeName } from './recruit.mjs';
 import { seedHolder, nextRand, randInt, hashString } from './rng.mjs';
@@ -155,6 +157,7 @@ function initPerson(p, i) {
     p.load = { wood: 0, stone: 0 };    // 身上的木石
     p.hold = { meal: 0, raw: 0, wood: 0, stone: 0 };
     p.focus = null;
+    p.hurt = 0;                        // M16 傷勢
     p.trialBest = null;                // M15：演武最好成績 { waves, ticks }
     p.dutyPin = null;                  // M18：玩家指定的值日（null = 自動，'none' = 不排）
     p.skills = newSkills();
@@ -537,10 +540,18 @@ function finish(state, p) {
     b.berries -= n; p.carry += n; L.picked += n;
   }
   if (t.kind === 'deliver') { state.stock.raw += p.carry; p.carry = 0; }
+  if (t.kind === 'medicate' && state.stock.herb > 0) {
+    state.stock.herb--; p.hurt = Math.max(0, p.hurt - INJURY.MED);
+    p.bubble = { text: '喝了藥', until: state.tick + 40 };
+    state.counts.medicated = (state.counts.medicated || 0) + 1;
+  }
   if (t.kind === 'sow') { const g = byId(state.plots, t.plot); g.stage = 'growing'; g.at = state.tick; }
   if (t.kind === 'harvest') {
     const g = byId(state.plots, t.plot);
-    if (g.stage === 'ripe') {
+    if (g.stage === 'ripe' && g.herb) {
+      state.stock.herb = (state.stock.herb ?? 0) + HERB.YIELD; L.herbs = (L.herbs || 0) + HERB.YIELD;
+      g.stage = 'empty'; g.at = state.tick;
+    } else if (g.stage === 'ripe') {
       const n = FARM.YIELD + extraTake(p, 'forage');
       p.carry += n; L.picked += n; L.veg += n;
       g.stage = 'empty'; g.at = state.tick;
@@ -609,6 +620,7 @@ function shouldStop(state, p) {
 
 function stepPerson(state, p) {
   decayNeeds(p, p.act === 'walk', p.act === 'do' && (p.task.kind === 'sleep' || p.task.kind === 'sleepGround'));
+  heal(p, p.act === 'do' && (p.task.kind === 'sleep' || p.task.kind === 'sleepGround'));
   if (p.bubble && p.bubble.until <= state.tick) p.bubble = null;
   if (p.act === 'walk') {
     const t = p.task;

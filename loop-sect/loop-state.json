@@ -1,10 +1,10 @@
 {
   "loopVersion": 6,
-  "loopsDone": 17,
+  "loopsDone": 18,
   "retroEvery": 3,
   "lastRetro": "docs/RETRO-05.md",
   "lastCommit": "bf3fab7",
-  "nextMilestone": "M16",
+  "nextMilestone": "RETRO-06",
   "inProgress": {
     "paused": [
       {
@@ -40,6 +40,15 @@
           "放回嘗試 1（被哨位打著的敵人停下）與嘗試 2（膽大的照衝、膽小的上台）",
           "重量 report 兩組種子（--from 13）的 M14-A5"
         ]
+      },
+      {
+        "milestone": "M16",
+        "resumeAfter": "擁有人決定受傷能不能讓遠征日多餓一點，或舊飢餓門檻用兩組種子重定之後",
+        "steps": [
+          "INJURY.RATE 改回 1",
+          "放回嘗試 1（HERB.SOW 2.2）與嘗試 2（MED_NEED0 2、MED_NEED_K 0.1、MIN 12、HEAL 0.01）",
+          "重量 report 兩組種子的 M16-A5／A6 與 M10-A5；A6 傷重撤退要另外看門檻"
+        ]
       }
     ]
   },
@@ -60,7 +69,8 @@
     "舊指標門檻只在種子 1–12 上定過；種子 13–24 值日關時 exp 最差日 3.3%、farm 最差種子 8.1% 也不過",
     "base 的撞破有八成是被打退、逃走的敵人在院子裡撞柵欄出去（loop 16 嘗試 3：26→6 格）；改了會讓 M7-A7 掉到 3/12，待擁有人決定",
     "哨位（M14）目前讓防守變弱：把迎敵的人拉上台、台上又擋不住敵人",
-    "soak 種子 13–24（loop 17 加 --from）：M6-A6 條理比隨性常練功、M7-A7 柵欄被撞破的種子數、exp 種子 22 主角遠征中餓壞——舊門檻只在種子 1–12 上定過"
+    "soak 種子 13–24（loop 17 加 --from）：M6-A6 條理比隨性常練功、M7-A7 柵欄被撞破的種子數、exp 種子 22 主角遠征中餓壞——舊門檻只在種子 1–12 上定過",
+    "M10-A5 的 2% 最差日門檻離雜訊太近：只放一座藥園（不受傷）herb 情境就到 3.0%／3.7%；受傷讓遠征日飢餓 +45%（48 種子），餓的多半是沒受傷的人"
   ],
   "stopReason": null,
   "targetLoops": 30,

@@ -1,4 +1,4 @@
-import { AXES, ATTRS, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, QUESTIONS, TEMPLATES, TRAIT_RULES, BASE_SPEED } from './data.mjs';
+import { AXES, ATTRS, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, QUESTIONS, TEMPLATES, TRAIT_RULES, BASE_SPEED, INJURY } from './data.mjs';
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
@@ -37,7 +37,8 @@ export function traitsOf(axes, attrs) {
 
 export function speedOf(p) {
   const foot = 1 + (0.3 * (p.skills?.foot ?? 0)) / 100; // M4 腳力
-  return BASE_SPEED * (0.8 + 0.04 * p.attrs.shen) * foot;
+  const slow = (p.hurt ?? 0) >= INJURY.MIN ? INJURY.SLOW : 1; // M16 受傷
+  return BASE_SPEED * (0.8 + 0.04 * p.attrs.shen) * foot * slow;
 }
 
 // 建立人物；不合法天賦直接丟錯，讓呼叫端在 UI 先驗證。

@@ -3,6 +3,7 @@ import { TRIAL, DEFENSE } from './data.mjs';
 import { period, bestMove } from './forms.mjs';
 import { prowess } from './martial.mjs';
 import { activeEnemies } from './raid.mjs';
+import { hurt } from './injury.mjs';
 
 export const trialDmg = (p) => TRIAL.HIT * (1 + prowess(p)) * (0.7 + 0.06 * p.attrs.li);
 
@@ -57,6 +58,7 @@ export function canTrial(state, p) {
   if (!state.built.includes('yard')) return { ok: false, why: '還沒有外功場' };
   if (p.guest) return { ok: false, why: '訪客不演武' };
   if (p.exp) return { ok: false, why: '正在遠征' };
+  if (hurt(p)) return { ok: false, why: '受了傷，先養傷' };
   if (activeEnemies(state).length) return { ok: false, why: '有敵人在場' };
   if (state.people.some((o) => o.task?.kind === 'trial')) return { ok: false, why: '已經有人在演武' };
   if (p.needs.energy < TRIAL.MIN_ENERGY) return { ok: false, why: `太累了（精力 ${Math.floor(p.needs.energy)}，要 ${TRIAL.MIN_ENERGY}）` };

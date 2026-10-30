@@ -120,7 +120,7 @@ export const OBJECTS = [
 ];
 export const BUSH_MAX = 4;
 export const BUSH_REGROW = 240;
-export const START_STOCK = { raw: 6, meal: 3 };
+export const START_STOCK = { raw: 6, meal: 3 }; // M16 藥草 stock.herb 收成時才加上（舊情境的雜湊不變）
 export const MEAL_TARGET = 6;     // 飯少於此數才有人想煮
 export const COOK_RAW = 2;
 export const COOK_MEALS = 3;
@@ -414,3 +414,16 @@ export const DUTY = {
 // 精力 MIN_ENERGY 以上才能開；SPOT 是外功場下排中間（中排是木人練功位）；木人在同一排左右站開（MEN 是相對人的格數，第 k 波用前 k 個）。
 export const TRIAL = { WAVES: 5, HP: 12, HIT: 4, DRAIN: 0.1, MIN_ENERGY: 60, SPOT: [43, 23], MEN: [[1.5, 0], [-1.5, 0], [3, 0], [-3, 0], [4.5, 0]] };
 Object.assign(ACTS, { trial: { label: '演武', dur: 9999, per: {} } });
+// M16 受傷：敵人扣 1 精力加 RATE 傷勢；≥ MIN 受傷（走得慢、不練功不迎敵）、≥ HEAVY 傷重（遠征撤退）；
+// 每 tick 退 HEAL、睡覺退 HEAL_SLEEP；煎藥喝一次退 MED，想喝的程度 MED_NEED0 + 傷勢 × MED_NEED_K。
+// loop 18 暫停：RATE 0（不會受傷），開了會讓遠征那兩日的飢餓升高，見 specs/M16.md；恢復時改回 1 並放回嘗試 1、2。
+export const INJURY = { RATE: 0, MIN: 8, HEAVY: 20, HEAL: 0.006, HEAL_SLEEP: 0.02, SLOW: 0.75, MED: 12, MED_NEED0: 0.5, MED_NEED_K: 0.05 };
+// 藥園：收成一畦得 YIELD 份藥草；藥草少於 TARGET 才種才收。
+export const HERB = { YIELD: 2, TARGET: 4, WORK: 1.5, SOW: 1.0 };
+Object.assign(ACTS, { medicate: { label: '煎藥喝', dur: 30, per: {} } });
+BLUEPRINTS.push({
+  // M16：菜園再過去兩畦藥畦。
+  id: 'herbs', label: '藥園', desc: '院子東邊兩畦藥草：受傷的人在灶邊煎藥喝，好得快（試做中：受傷目前關著）', kind: 'farm', herb: true,
+  cells: [[44, 27], [45, 27]],
+  cost: { wood: 4 }, work: 40,
+});

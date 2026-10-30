@@ -26,6 +26,8 @@ export function script(s, scenario = 'base') {
   if (scenario === 'post' && s.tick % 60 === 0 && s.built.includes('fence-s')) placeBlueprint(s, 'posts');
   // M13 yard：第 2 日放外功場。
   if (scenario === 'yard' && s.tick === TICKS_PER_DAY + 360) placeBlueprint(s, 'yard');
+  // M16 herb：第 2 日放藥園。
+  if (scenario === 'herb' && s.tick === TICKS_PER_DAY + 360) placeBlueprint(s, 'herbs');
   // M12 farm：第 2 日放菜園。
   if (scenario === 'farm' && s.tick === TICKS_PER_DAY + 360) placeBlueprint(s, 'garden');
   // M11 grow：第 2 日放西宿舍，蓋好就放擴建。
@@ -50,6 +52,7 @@ export function perSeed(s, ctx) {
   if (best >= 2) bump(ctx, 'friendSeeds');
   if (best >= 3) bump(ctx, 'closeSeeds');
   bump(ctx, 'taught', s.counts.taught || 0);
+  bump(ctx, 'injured', s.counts.injured || 0); bump(ctx, 'medicated', s.counts.medicated || 0);
   // M6-A5／A6：練功、領悟、切磋、指點。
   const c = s.counts;
   // 「三人」指開局的三人（M8 起會有訪客加入，訪客不算）。
@@ -283,6 +286,7 @@ export function judge(S, scenario = 'base') {
   if (scenario === 'farm') return judgeFarm(S, lines, failures);
   if (scenario === 'yard') return judgeYard(S, lines, failures);
   if (scenario === 'post') return judgePost(S, lines, failures);
+  if (scenario === 'herb') return judgeHerb(S, lines, failures);
   const r = (a, b) => (S[a] || 0) / (S[b] || 1);
   const e = r('near:E:sum', 'near:E:n'), i = r('near:I:sum', 'near:I:n');
   // M2 起 M1-A7 改由 sim.test.mjs 的控制實驗驗證（只變外向軸）；此處只列出，因為整體距離受 N 軸與吃睡聚集干擾。
@@ -363,7 +367,7 @@ function worstSeed(S, key) {
 }
 
 // 暫停中的 milestone：照印量測，但不判失敗（理由寫在該規格的「實作中的變更」）。
-export const PAUSED = new Set(['M11', 'M12', 'M14', 'M18']);
+export const PAUSED = new Set(['M11', 'M12', 'M14', 'M16', 'M18']);
 const judgeOf = (failures, id) => (PAUSED.has(id.split('-')[0]) ? { push: (x) => failures.paused?.push(x) } : failures);
 
 function judgeFarm(S, lines, failures) {
@@ -373,6 +377,12 @@ function judgeFarm(S, lines, failures) {
 }
 
 // M13-A6：外功場 5 日內完工 ≥ 8/12；完工後的練完次數裡在外功場的 ≥ 40%。
+// M16：herb 情境只看不變量，並印藥園與受傷的帳；主張在 report（十日）判。
+function judgeHerb(S, lines, failures) {
+  lines.push(`（參考）藥園完工 ${S['built:藥園完工'] || 0}/${S.seeds}；受傷 ${S.injured || 0} 次、煎藥 ${S.medicated || 0} 次`);
+  return { lines, failures };
+}
+
 function judgeYard(S, lines, failures) {
   const done = S['built:外功場完工'] || 0;
   const share = (S.drillYard || 0) / Math.max(1, S.drillAfterYard || 0);

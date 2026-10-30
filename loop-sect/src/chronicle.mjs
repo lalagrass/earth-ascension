@@ -7,7 +7,7 @@ export const LIFE_CATS = [
   { id: 'drill', label: '練功', kinds: ['drill', 'trial'] },
   { id: 'leisure', label: '閒坐閒逛', kinds: ['sit', 'wander', 'idle', 'leave'] },
   { id: 'sleep', label: '睡覺', kinds: ['sleep', 'sleepGround'] },
-  { id: 'eat', label: '吃飯', kinds: ['eat', 'eatRaw', 'eatCarried', 'ration'] },
+  { id: 'eat', label: '吃飯', kinds: ['eat', 'eatRaw', 'eatCarried', 'ration', 'medicate'] },
   { id: 'guard', label: '迎敵躲避', kinds: ['fight', 'hide', 'watch'] },
   { id: 'away', label: '遠征', kinds: ['expedition', 'raze'] },
 ];
@@ -51,7 +51,7 @@ export const personEvents = (state, p) => state.events.filter((e) => e.who?.incl
 
 export const EVENT_GROUPS = [
   { id: 'all', label: '全部', kinds: null },
-  { id: 'war', label: '戰事', kinds: ['raid', 'stolen', 'breach', 'repel', 'calm', 'guard', 'exp', 'cleared', 'repair'] },
+  { id: 'war', label: '戰事', kinds: ['raid', 'stolen', 'breach', 'repel', 'calm', 'guard', 'exp', 'cleared', 'repair', 'hurt'] },
   { id: 'people', label: '人事', kinds: ['visit', 'join', 'leave', 'found', 'master', 'rel'] },
   { id: 'growth', label: '成長', kinds: ['skill', 'move', 'trial'] },
   { id: 'build', label: '營造', kinds: ['built', 'farm'] },

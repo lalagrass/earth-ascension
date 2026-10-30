@@ -1,4 +1,4 @@
-import { FIRE, STRIKE, TRIAL } from './data.mjs';
+import { FIRE, STRIKE, TRIAL, INJURY } from './data.mjs';
 import { shapeOf } from './forms.mjs';
 // 畫面只讀 state，不改規則狀態。
 export const TILE = 20;
@@ -111,6 +111,11 @@ export function drawPeople(ctx, state, selectedId) {
     ctx.fillStyle = '#2b2118';
     ctx.beginPath(); ctx.arc(cx, cy - 10, 5, Math.PI, 0); ctx.fill();
     if (p.protagonist) { ctx.fillStyle = '#c0392b'; ctx.fillRect(cx - 5, cy - 11, 10, 2); }
+    if ((p.hurt ?? 0) >= INJURY.MIN) {
+      // M16 受傷：頭上纏一條白布、衣襟一點紅。
+      ctx.fillStyle = '#f4f1e8'; ctx.fillRect(cx - 6, cy - 9, 12, 3);
+      ctx.fillStyle = '#b8322a'; ctx.fillRect(cx + 2, cy - 9, 3, 3); ctx.fillRect(cx - 3, cy + 1, 3, 3);
+    }
     if (p.guest) {
       // 訪客：背上的包袱與名字前的「客」。
       ctx.fillStyle = '#8c6d46'; ctx.beginPath(); ctx.arc(cx - 6, cy - 1, 4, 0, Math.PI * 2); ctx.fill();
@@ -200,7 +205,8 @@ export function drawObjects(ctx, state) {
   const h = state.objects.find((o) => o.kind === 'hearth');
   const [hx, hy] = h.slots[0];
   ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'left';
-  const label = `生莓 ${state.stock.raw}　熟飯 ${state.stock.meal}${FIRE.WOOD_PER_POT > 0 && state.stock.wood < FIRE.WOOD_PER_POT ? '　沒柴' : ''}`;
+  const herbs = state.built.includes('herbs') || (state.stock.herb ?? 0) > 0 ? `　藥草 ${state.stock.herb ?? 0}` : '';
+  const label = `生莓 ${state.stock.raw}　熟飯 ${state.stock.meal}${herbs}${FIRE.WOOD_PER_POT > 0 && state.stock.wood < FIRE.WOOD_PER_POT ? '　沒柴' : ''}`;
   ctx.fillStyle = 'rgba(255,250,240,0.85)'; ctx.fillRect(hx * TILE + 22, hy * TILE - 2, ctx.measureText(label).width + 8, 16);
   ctx.fillStyle = '#5b2a1a'; ctx.fillText(label, hx * TILE + 26, hy * TILE + 10);
   for (const b of state.bushes) {
@@ -399,6 +405,12 @@ export function drawPlots(ctx, state, GROW) {
       const k = Math.min(1, (state.tick - g.at) / GROW);
       ctx.fillStyle = '#5f9a4a';
       for (let i = 0; i < 3; i++) ctx.fillRect(px + 4 + i * 5, py + 16 - 10 * k, 2, 2 + 10 * k);
+    } else if (g.stage === 'ripe' && g.herb) {
+      // M16 藥草：細長的葉、白色小花。
+      for (let i = 0; i < 3; i++) {
+        ctx.fillStyle = '#3f7a5a'; ctx.fillRect(px + 4 + i * 5, py + 6, 2, 10);
+        ctx.fillStyle = '#f2efe2'; ctx.beginPath(); ctx.arc(px + 5 + i * 5, py + 6, 2, 0, Math.PI * 2); ctx.fill();
+      }
     } else if (g.stage === 'ripe') {
       for (let i = 0; i < 3; i++) {
         ctx.fillStyle = '#4f8d3e'; ctx.beginPath(); ctx.arc(px + 5 + i * 5, py + 10, 4, 0, Math.PI * 2); ctx.fill();

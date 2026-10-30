@@ -1,4 +1,6 @@
 // 效用 AI：列出所有可做的事、打分、留下理由。只讀 state，不改。
+import { hurt } from './injury.mjs';
+import { HERB, INJURY } from './data.mjs';
 import { FIRE, FARM, ACTS, FORCE, MEAL_TARGET, COOK_RAW, FOCUS, FOCUS_BONUS, DUTY, POST, STOCK_TARGET, PILE, WORK_KINDS, MARTIAL, DEFENSE, SECT } from './data.mjs';
 import { activeEnemies } from './raid.mjs';
 import { walkable } from './map.mjs';
@@ -88,7 +90,7 @@ export function candidates(state, p, scorePois) {
         add({ kind: 'cook', obj: o.id, slot: i, spot }, { work: demand * 1.4 + urgent, persona: 0.3 * Math.max(0, F) * demand + diligence });
       }
     }
-    if (o.kind === 'dummy' && p.needs.energy > MARTIAL.DRILL_MIN_ENERGY) {
+    if (o.kind === 'dummy' && p.needs.energy > MARTIAL.DRILL_MIN_ENERGY && !hurt(p)) {
       // 練功：定力高、有條理的人自己會去練；無聊時也想動一動。
       const move = drillMove(p);
       add({ kind: 'drill', obj: o.id, slot: i, spot, move, martial: true, label: `到${o.label}練${moveLabel(move)}` },
@@ -105,6 +107,11 @@ export function candidates(state, p, scorePois) {
     add({ kind: 'deliver', obj: h.id, slot: -1, spot: spotOf(h, 0), label: '把莓果送到灶邊' }, { work: 2.5 });
   }
   if (p.carry > 0) add({ kind: 'eatCarried' }, { need: u.food * 0.5 });
+  // M16 煎藥喝：受傷又有藥草時，自己到灶邊煎（不占灶）。
+  if (hurt(p) && (stock.herb ?? 0) > 0) {
+    const h = state.objects.find((o) => o.kind === 'hearth');
+    add({ kind: 'medicate', obj: h.id, slot: -1, spot: spotOf(h, 0), label: '到灶邊煎藥喝' }, { need: INJURY.MED_NEED0 + INJURY.MED_NEED_K * p.hurt });
+  }
 
   const scarcity = Math.max(0, 1 - (stock.raw + stock.meal * 1.5) / 18);
   for (const b of state.bushes) {
@@ -117,6 +124,13 @@ export function candidates(state, p, scorePois) {
   // ---------- M12 菜園 ----------
   if (empty) for (const g of state.plots) {
     if (g.user) continue;
+    if (g.herb) {
+      // M16 藥畦：藥草不夠才種、才收；收成直接進灶邊的藥草。
+      if ((stock.herb ?? 0) >= HERB.TARGET) continue;
+      if (g.stage === 'empty') add({ kind: 'sow', plot: g.id, spot: { x: g.x, y: g.y }, label: '種藥草' }, { work: HERB.SOW, persona: diligence });
+      if (g.stage === 'ripe') add({ kind: 'harvest', plot: g.id, spot: { x: g.x, y: g.y }, label: '採藥草' }, { work: HERB.WORK, persona: diligence });
+      continue;
+    }
     if (g.stage === 'empty') add({ kind: 'sow', plot: g.id, spot: { x: g.x, y: g.y }, label: '播種' }, { work: FARM.SOW_WORK, persona: diligence });
     if (g.stage === 'ripe') add({ kind: 'harvest', plot: g.id, spot: { x: g.x, y: g.y }, label: '收菜' }, { need: u.food * 0.2, work: FARM.HARVEST_WORK + scarcity, persona: diligence });
   }
@@ -164,9 +178,9 @@ export function candidates(state, p, scorePois) {
   }
 
   // M6 切磋：雙方都有力氣；好動外向的人愛找人過招。
-  if (p.needs.energy > MARTIAL.SPAR_MIN_ENERGY) {
+  if (p.needs.energy > MARTIAL.SPAR_MIN_ENERGY && !hurt(p)) {
     for (const o of state.people) {
-      if (o === p || o.exp || !sparInterruptible(o) || o.needs.energy <= MARTIAL.SPAR_MIN_ENERGY || Math.hypot(o.x - p.x, o.y - p.y) > 18) continue;
+      if (o === p || o.exp || hurt(o) || !sparInterruptible(o) || o.needs.energy <= MARTIAL.SPAR_MIN_ENERGY || Math.hypot(o.x - p.x, o.y - p.y) > 18) continue;
       if ((p.refused[o.id] ?? -Infinity) > state.tick - REFUSE_COOLDOWN) continue;
       // 以武會友：陌生人也能過招，但對他有成見（好感 < 0）就不找。
       const like = aff(state, p, o);
@@ -180,7 +194,7 @@ export function candidates(state, p, scorePois) {
   const near = activeEnemies(state).filter((e) => Math.hypot(e.x - p.x, e.y - p.y) <= DEFENSE.ALERT_R);
   if (near.length) {
     const brave = courage(p);
-    if (p.needs.energy > DEFENSE.FIGHT_MIN_ENERGY) {
+    if (p.needs.energy > DEFENSE.FIGHT_MIN_ENERGY && !hurt(p)) {
       for (const e of near) {
         // 膽識決定願不願意上：膽小的人幾乎不上，膽大的人比做任何活都急。
         const willing = Math.max(0, Math.min(1.5, DEFENSE.WILLING_BASE + 1.5 * brave));
@@ -193,7 +207,7 @@ export function candidates(state, p, scorePois) {
       { persona: Math.max(0, DEFENSE.HIDE_BASE - brave) + 0.3 * Math.max(0, F) });
   }
   // M14 守哨：有活著的敵人、有空哨位時，站上去等敵人進範圍。
-  if (p.needs.energy > DEFENSE.FIGHT_MIN_ENERGY && activeEnemies(state).length) {
+  if (p.needs.energy > DEFENSE.FIGHT_MIN_ENERGY && !hurt(p) && activeEnemies(state).length) {
     const willing = Math.max(0, Math.min(1.5, DEFENSE.WILLING_BASE + 1.5 * courage(p)));
     for (const o of state.objects) {
       if (o.kind !== 'post') continue;

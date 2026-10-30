@@ -12,6 +12,8 @@ import { SKILLS, MOVES, DEFENSE, FARM, DUTY, FORMS } from './data.mjs';
 import { dutyOf, dutyText, setDuty, assignDuty, ROLE } from './duty.mjs';
 import { TILE, drawMap, drawPois, drawPeople, drawDaylight, drawObjects, drawBubbles, drawBuild, drawStrikes, drawEnemies, drawNests, drawLabels, labelBoxes, drawPlots, drawForm } from './render.mjs';
 import { formOf, shapeOf, sizeOf, period } from './forms.mjs';
+import { hurt, hurtText } from './injury.mjs';
+import { INJURY } from './data.mjs';
 
 const $ = (s) => document.querySelector(s);
 const el = (tag, attrs = {}, ...kids) => {
@@ -117,10 +119,10 @@ function renderRoster() {
   rosterKey = rosterSig();
   $('#roster').replaceChildren(...(state.sect ? [el('b', { class: 'sect', 'data-sect': '' }, state.sect.name)] : []),
     ...state.people.map((p) => el('button', { 'data-person': p.id, class: p.guest ? 'guest' : '', on: { click: () => { selected = p.id; renderPanel(); } } },
-      p.guest ? `${p.name}（客）` : dutyOf(state, p) ? `${p.name}·${ROLE[dutyOf(state, p)].label}` : p.name)));
+      (p.guest ? `${p.name}（客）` : dutyOf(state, p) ? `${p.name}·${ROLE[dutyOf(state, p)].label}` : p.name) + (hurt(p) ? '（傷）' : ''))));
 }
 // M18：值日變了也重畫名冊。
-const rosterSig = () => state.people.map((p) => `${p.id}${p.guest ? 'g' : ''}${dutyOf(state, p) ?? ''}`).join() + (state.sect?.name ?? '');
+const rosterSig = () => state.people.map((p) => `${p.id}${p.guest ? 'g' : ''}${dutyOf(state, p) ?? ''}${hurt(p) ? 'h' : ''}`).join() + (state.sect?.name ?? '');
 
 let bgVersion = -1;
 function paintBg() {
@@ -278,6 +280,10 @@ function renderPanel() {
       el('p', {}, attrs),
       el('div', { class: 'chips' }, ...p.traits.map((t) => el('span', { title: TRAIT_LABEL[t].desc }, TRAIT_LABEL[t].label))),
       el('h2', {}, '需求'), ...needs,
+      // M16 傷勢：受傷門檻以上才算受傷，條越長傷越重（滿格 = 傷重的兩倍）。
+      el('div', { class: 'need', 'data-hurt': hurtText(p) }, el('span', {}, '傷勢'),
+        el('span', { class: 'bar' }, el('i', { style: `width:${Math.min(100, 100 * (p.hurt ?? 0) / (2 * INJURY.HEAVY))}%;background:${hurt(p) ? '#b8322a' : '#c9a27a'}` })),
+        el('b', {}, hurtText(p))),
       el('h2', {}, '專長'), el('div', { class: 'focus' }, ...FOCUS.map((f) => el('button', {
         class: p.focus === f.id ? 'on' : '', 'data-focus': f.id ?? 'none',
         on: { click: () => { setFocus(state, p.id, f.id); renderPanel(); } },

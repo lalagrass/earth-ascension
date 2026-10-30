@@ -1,5 +1,6 @@
 // 遠征的純規則：巢穴狀態、組隊、撤退判斷。行軍與打鬥的控制在 sim。
 import { NESTS, EXPEDITION, POIS } from './data.mjs';
+import { hurt, heavy } from './injury.mjs';
 import { courage } from './martial.mjs';
 import { members } from './recruit.mjs';
 
@@ -12,7 +13,7 @@ export const kindBlocked = (state, kind) => state.nests.some((n) => n.cleared &&
 
 // 誰能去：同門、精神與肚子都夠、膽識高的優先。
 export function eligible(p) {
-  return !p.guest && !p.exp && p.needs.energy >= EXPEDITION.MIN_ENERGY && p.needs.food >= EXPEDITION.MIN_FOOD;
+  return !p.guest && !p.exp && !hurt(p) && p.needs.energy >= EXPEDITION.MIN_ENERGY && p.needs.food >= EXPEDITION.MIN_FOOD;
 }
 
 export function partyFor(state) {
@@ -33,6 +34,7 @@ export function canLaunch(state, nestId) {
 
 // 撤退的理由（沒有就回 null）。
 export function retreatReason(state, ppl, hour) {
+  if (ppl.some(heavy)) return '傷重';
   if (ppl.some((p) => p.needs.energy < EXPEDITION.RETREAT_ENERGY)) return '精力不支';
   if (ppl.some((p) => p.needs.food < EXPEDITION.RETREAT_FOOD && !p.pack)) return '乾糧吃完了';
   if (hour >= EXPEDITION.RETREAT_HOUR) return '天黑了';

@@ -9,6 +9,7 @@ import { isNight } from '../src/needs.mjs';
 import { rosterFor, script, PAUSED } from './soak-checks.mjs';
 import { atLeast } from '../src/social.mjs';
 import { lifeShares } from '../src/chronicle.mjs';
+import { hurt } from '../src/injury.mjs';
 
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? Number(process.argv[i + 1]) : d; };
 const SEEDS = arg('seeds', 12), DAYS = arg('days', 10), FROM = arg('from', 1);
@@ -34,7 +35,8 @@ const lives = [];
 const membersBy = {}, dailyBy = {};
 const m12 = {};
 const raid = {};   // M14-A5：各情境十日的撞破格數與被偷份數
-for (const scenario of ['base', 'exp', 'grow', 'farm', 'post']) {
+const inj = {};    // M16-A5／A6：受傷人·tick、受傷次數、傷重撤退
+for (const scenario of ['base', 'exp', 'grow', 'farm', 'post', 'herb']) {
   const dayH = Array(DAYS).fill(0), dayN = Array(DAYS).fill(0);
   const seedRows = [];
   let friends = 0, masters = 0;
@@ -59,6 +61,8 @@ for (const scenario of ['base', 'exp', 'grow', 'farm', 'post']) {
         const kind = p.task?.kind;
         if (ROLE[role].kinds.includes(kind) || kind === ROLE[role].carry) k.doing++;
       }
+      const I = (inj[scenario] ??= { ticks: 0, n: 0, heavyRetreat: 0, seedsHeavy: new Set() });
+      for (const p of s.people) if (hurt(p)) I.ticks++;
       for (const p of s.people) {
         if (p.guest) continue;
         n++; dayN[d]++;
@@ -74,6 +78,9 @@ for (const scenario of ['base', 'exp', 'grow', 'farm', 'post']) {
       M.n++; M.cut += s.ledger.woodCut - snap.d5.cut; M.veg += s.ledger.veg - snap.d5.veg; M.picked += s.ledger.picked - snap.d5.picked;
       M.chopGain += Math.max(...s.people.map((p) => p.skills.chop)) - snap.d5.chop;
     }
+    inj[scenario].n += s.counts.injured || 0;
+    const hr = s.events.filter((e) => e.kind === 'exp' && /撤退：傷重/.test(e.text)).length;
+    inj[scenario].heavyRetreat += hr; if (hr) inj[scenario].seedsHeavy.add(seed);
     const R = (raid[scenario] ??= { breaches: 0, stolen: 0, steals: 0 });
     R.breaches += s.counts.breaches || 0; R.steals += s.counts.stealHits || 0;
     R.stolen += s.ledger.rawStolen + s.ledger.mealsStolen + s.ledger.woodStolen + s.ledger.stoneStolen;
@@ -91,7 +98,7 @@ for (const scenario of ['base', 'exp', 'grow', 'farm', 'post']) {
   dailyBy[scenario] = daily;
   // M11-A7：grow 情境人多一半，門檻放在 3%／6%（規格寫在量之前）。
   // M18-A4：燒柴時用同一組門檻。
-  const [dayMax, seedMax, id] = FIRE_ON ? (scenario === 'grow' ? [0.03, 0.06, 'M18-A4'] : [0.02, 0.04, 'M18-A4']) : scenario === 'post' ? [0.02, 0.04, 'M14-A7'] : scenario === 'grow' ? [0.03, 0.06, 'M11-A7'] : scenario === 'farm' ? [0.02, 0.04, 'M12-A6'] : [0.02, 0.04, 'M10-A5'];
+  const [dayMax, seedMax, id] = FIRE_ON ? (scenario === 'grow' ? [0.03, 0.06, 'M18-A4'] : [0.02, 0.04, 'M18-A4']) : scenario === 'post' ? [0.02, 0.04, 'M14-A7'] : scenario === 'grow' ? [0.03, 0.06, 'M11-A7'] : scenario === 'farm' ? [0.02, 0.04, 'M12-A6'] : scenario === 'herb' ? [0.02, 0.04, 'M16-A7'] : [0.02, 0.04, 'M10-A5'];
   expect(`${id}[${scenario}]`, Math.max(...daily) <= dayMax && worst.hunger <= seedMax && eatLo >= 1.5 && eatHi <= 4,
     `最差日 ${pct(Math.max(...daily))}（≤ ${pct(dayMax)}）、最差種子 s${worst.seed} ${pct(worst.hunger)}（≤ ${pct(seedMax)}）、進食 ${eatLo.toFixed(2)}–${eatHi.toFixed(2)}（1.5–4）`);
   expect(`M10-A7[${scenario}]`, friends >= 6 && masters >= 1, `有朋友的種子 ${friends}/${SEEDS}（≥ 6）、拜師 ${masters} 次（≥ 1）`);
@@ -119,6 +126,16 @@ if (DUTY.ON) {
   console.log('--- 守點 ---');
   expect('M14-A5', p.breaches <= 0.7 * b.breaches && p.stolen <= 0.7 * b.stolen,
     `撞破 base ${b.breaches} 格、post ${p.breaches} 格（≤ ${(0.7 * b.breaches).toFixed(1)}）；被偷 base ${b.stolen} 份（${b.steals} 次）、post ${p.stolen} 份（${p.steals} 次）（≤ ${(0.7 * b.stolen).toFixed(1)}）${small}`);
+}
+
+// M16-A5／A6：有藥園，每次受傷養得比較短；遠征有傷重撤退。
+{
+  const per = (k) => inj[k].ticks / Math.max(1, inj[k].n);
+  const b = inj.base, h = inj.herb, x = inj.exp;
+  console.log('--- 受傷與藥園 ---');
+  console.log(`受傷次數 base ${b.n}、herb ${h.n}、exp ${x.n}；受傷人·tick base ${b.ticks}、herb ${h.ticks}`);
+  expect('M16-A5', b.n > 0 && per('herb') <= 0.7 * per('base'), `平均每次受傷 base ${per('base').toFixed(0)} tick、herb ${per('herb').toFixed(0)} tick（≤ ${(0.7 * per('base')).toFixed(0)}，短 ${(100 * (1 - per('herb') / per('base'))).toFixed(0)}%）${b.n < 20 ? '（小樣本）' : ''}`);
+  expect('M16-A6', x.heavyRetreat >= 1, `exp 情境「傷重」撤退 ${x.heavyRetreat} 次（${x.seedsHeavy.size} 個種子；≥ 1）`);
 }
 
 // M12-A5／A6：山上一直有活幹；菜園供得上糧。
