@@ -1,10 +1,10 @@
 // loop33 診斷（harness-only，不改遊戲）：
 // (1) 錢的逐項收支：以 Proxy 攔截 s.res.coin 寫入，依呼叫鏈歸類（執事／玩家 bot／遊戲本身），比較 steward 開 vs 關。
 // (2) 剿寨第 1 場：重建該場的勝負亂數 u，檢查 u 的分布與 u<p 的比率。
-// 用法：node test/harness/diag-coin-first.mjs [種子數=40] [起始種子=1] [日數=60]
+// 用法：node test/harness/diag-coin-first.mjs [種子數=40] [起始種子=1001] [日數=60]
 import { run } from './bot.mjs';
 import { seedMix } from '../../src/seedmix.mjs';
-const N = +(process.argv[2] || 40), S0 = +(process.argv[3] || 1), DAYS = +(process.argv[4] || 60), M = 2147483647;
+const N = +(process.argv[2] || 40), S0 = +(process.argv[3] || 1001), DAYS = +(process.argv[4] || 60), M = 2147483647;
 function who() { const fr = new Error().stack.split('\n').slice(3); const tag = fr.some((l) => /steward\.mjs/.test(l)) ? '執事:' : fr.some((l) => /harness\/bot\.mjs/.test(l)) ? 'bot:' : '';
   for (const l of fr) { const m = l.match(/at (?:async )?([\w$.]+) \(.*\/src\/(\w+)\.mjs/); if (m && m[2] !== 'util' && !/^(Object|Proxy|Array)\./.test(m[1])) return tag + `${m[2]}:${m[1]}`; } return tag + '?'; }
 const out = {}, first = [];
