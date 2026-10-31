@@ -86,6 +86,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.mentor) s.mentor = true;
   if (heroSpec?.qshare) s.qshare = true;
   if (heroSpec?.mpool) s.mpool = true; /* loop55 高人殘譜 */
+  if (heroSpec?.cotrain) s.cotrain = true; /* loop56 同修作伴 */
   if (heroSpec?.letterask) s.letterask = true; /* loop49 挑戰帖由我定奪 */
   if (heroSpec?.cropcare) s.cropcare = true; /* loop47 誰種誰心疼 */
   if (heroSpec?.mfit) s.mfit = true; // loop41 高人因材施教
@@ -529,6 +530,9 @@ function monWalk(m, step) {
   return !m.path.length;
 }
 // 生態：繁衍、棲地遊蕩、野豬下山拱菜（有目的、會離開）
+/* loop56「同修作伴」（s.cotrain）：練功、打坐或閒著（沒事做）時，80px 內有別人（不論在做什麼），寂寞增加速度減半（不加念頭、不加關係） */
+const CO_ACTS = ['train', 'meditate', undefined];
+export function cotrainNear(s, d) { if (!CO_ACTS.includes(d.task?.act) || !d.pos) return false; return s.ds.some((o) => o !== d && !o.away && o.pos && Math.hypot(o.pos[0] - d.pos[0], o.pos[1] - d.pos[1]) < 80); }
 /* loop47「誰種誰心疼」（s.cropcare）：菜被拱時，只有農事最好的兩人（實際照顧菜園）全額心疼，其餘在山上的人只是「聽說」（−2），巡山在外的人不知道。關閉時維持全派 −5。 */
 export function cropMood(s) {
   if (!s.cropcare) { for (const d of s.ds) think(s, d, 'cropLost'); return; }
@@ -640,7 +644,7 @@ export function tick(s, dt = 0.25) {
     if (d.away) { moodStep(s, d, dt); continue; } // 巡山中：背景模擬，不在地圖上
     d.needs.hunger = clamp(d.needs.hunger - 0.35 * se.hunger * dt, 0, 100);
     d.needs.fun = clamp((d.needs.fun ?? 60) - 0.22 * dt, 0, 100);
-    d.needs.social = clamp(d.needs.social - 0.4 * dt, 0, 100);
+    d.needs.social = clamp(d.needs.social - 0.4 * dt * (s.cotrain && cotrainNear(s, d) ? 0.5 : 1), 0, 100);
     moodStep(s, d, dt); revealStep(s, d, dt); if (isLabor(d)) coworkStep(s, d, dt); else if (d.role === 'outer' && !d.rootKnown && Math.max(d.cowork || 0, d.together || 0) >= ROOT.revealAt) { d.rootKnown = true; log(s, `相處久了，看出外門${d.name}根骨「${ROOT.names[d.root]}」。`); }
     if (!d.task) decide(s, d);
     if (d.task) { moveStep(d, dt); doTask(s, d, dt); }
