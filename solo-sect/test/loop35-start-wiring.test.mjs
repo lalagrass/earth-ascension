@@ -5,16 +5,16 @@ import { RULES, ruleSpec, buildSpec } from '../src/start-ui.mjs';
 import { createState } from '../src/sim.mjs';
 import { defaultStats } from '../src/hero.mjs';
 
-const FLAG = { draw: 'draw', comprehend: 'wu7', mentor: 'mentor', peace: 'm9', jhev: 'jhev', bt25: 'bt25', lift: 'lift', lairpow: 'lairpow', steward: 'steward', jhui: 'jhui', qshare: 'qshare', jhrefuse: 'jhrefuse', mfit: 'mfit', cropcare: 'cropcare', letterask: 'letterask', mpool: 'mpool', cotrain: 'cotrain', masterask: 'masterask', stewkit: 'stewkit' };
+const FLAG = { draw: 'draw', comprehend: 'wu7', mentor: 'mentor', peace: 'm9', jhev: 'jhev', bt25: 'bt25', lift: 'lift', lairpow: 'lairpow', steward: 'steward', jhui: 'jhui', qshare: 'qshare', jhrefuse: 'jhrefuse', mfit: 'mfit', cropcare: 'cropcare', letterask: 'letterask', mpool: 'mpool', cotrain: 'cotrain', masterask: 'masterask', stewkit: 'stewkit', cofun: 'cofun' };
 const base = (tab) => ({ tab, hero: 'guojing', comp: null, name: '測', stats: defaultStats(), ans: Array(9).fill(0), ask: false, draw: true });
 const on = (s, sk) => !!s[FLAG[sk]];
 
-test('RULES 單一來源：19 項、id／spec 鍵不重複、每項都有對應旗標', () => {
-  assert.equal(RULES.length, 19); assert.equal(new Set(RULES.map((r) => r[0])).size, 19); assert.equal(new Set(RULES.map((r) => r[2])).size, 19);
+test('RULES 單一來源：20 項、id／spec 鍵不重複、每項都有對應旗標', () => {
+  assert.equal(RULES.length, 20); assert.equal(new Set(RULES.map((r) => r[0])).size, 20); assert.equal(new Set(RULES.map((r) => r[2])).size, 20);
   for (const [, , sk] of RULES) assert.ok(FLAG[sk], sk);
 });
 for (const tab of ['classic', 'custom']) {
-  test(`${tab}：全部預設勾選 → 19 個旗標都開`, () => { const s = createState(7, buildSpec(base(tab))); for (const [, , sk] of RULES) assert.ok(on(s, sk), `${tab} ${sk}`); });
+  test(`${tab}：全部預設勾選 → 20 個旗標都開`, () => { const s = createState(7, buildSpec(base(tab))); for (const [, , sk] of RULES) assert.ok(on(s, sk), `${tab} ${sk}`); });
   for (const [id, k, sk] of RULES) test(`${tab}：只取消「${id}」→ 只有 ${sk} 關、其餘照開`, () => {
     const st = { ...base(tab), [k]: false }; const s = createState(7, buildSpec(st));
     for (const [, , o] of RULES) assert.equal(on(s, o), o !== sk, `${tab} 取消 ${id} 時 ${o}`);

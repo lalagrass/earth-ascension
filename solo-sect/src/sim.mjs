@@ -87,6 +87,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.qshare) s.qshare = true;
   if (heroSpec?.mpool) s.mpool = true; /* loop55 高人殘譜 */
   if (heroSpec?.cotrain) s.cotrain = true; /* loop56 同修作伴 */
+  if (heroSpec?.cofun) s.cofun = true; /* loop62 有伴解悶 */
   if (heroSpec?.masterask) s.masterask = true; /* loop59 高人指點由我定 */
   if (heroSpec?.stewkit) s.stewkit = true; /* loop60 執事顧灶 */
   if (heroSpec?.letterask) s.letterask = true; /* loop49 挑戰帖由我定奪 */
@@ -645,7 +646,7 @@ export function tick(s, dt = 0.25) {
   for (const d of s.ds) {
     if (d.away) { moodStep(s, d, dt); continue; } // 巡山中：背景模擬，不在地圖上
     d.needs.hunger = clamp(d.needs.hunger - 0.35 * se.hunger * dt, 0, 100);
-    d.needs.fun = clamp((d.needs.fun ?? 60) - 0.22 * dt, 0, 100);
+    d.needs.fun = clamp((d.needs.fun ?? 60) - 0.22 * dt * (s.cofun && cotrainNear(s, d) ? 0.5 : 1), 0, 100); /* loop62「有伴解悶」（s.cofun）：與 cotrain 同條件，樂趣下降速度減半 */
     d.needs.social = clamp(d.needs.social - 0.4 * dt * (s.cotrain && cotrainNear(s, d) ? 0.5 : 1), 0, 100);
     moodStep(s, d, dt); revealStep(s, d, dt); if (isLabor(d)) coworkStep(s, d, dt); else if (d.role === 'outer' && !d.rootKnown && Math.max(d.cowork || 0, d.together || 0) >= ROOT.revealAt) { d.rootKnown = true; log(s, `相處久了，看出外門${d.name}根骨「${ROOT.names[d.root]}」。`); }
     if (!d.task) decide(s, d);
