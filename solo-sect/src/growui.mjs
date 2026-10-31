@@ -1,7 +1,7 @@
 /* loop81 成長分層介面（純顯示，不寫世界狀態）：A 人物實力圖、B 門類造詣、C 個別武學。
    能力圖：固定 5 軸、固定順序、固定顯示基準（不是能力上限，也不按角色或全派最大值縮放）；不算面積。 */
 import { profOf, profMul, profLabel, nextLvXp, PROF } from './prof.mjs';
-import { ARTS, TIERS, ART_GAIN, ROOT, JH } from './data.mjs';
+import { ARTS, TIERS, ART_GAIN, ROOT, JH, BREAK } from './data.mjs';
 import { effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf } from './arts.mjs';
 import { CATS, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW } from './growth.mjs';
 export const AXES = [
@@ -80,4 +80,9 @@ export function rulesHtml() { const G = GROW, A = G.acc;
     + `加速：只看「其他」同類武學的造詣，只加在入門與普通武學、熟練 ${A.fade} 以前，最多 ×${A.max}；瓶頸照樣要打坐。<br>`
     + `不給造詣：求學、高人指點、劇情直接給的熟練；瓶頸冷卻中、已練滿再練。<br>`
     + `其他本版規則：悟性不足的武學止於小成；左右互搏大成後威力 ×${JH.twin}（算在江湖倍率，不算進圖）。造詣不加傷害。</div></details>`; }
-export const growthHtml = (d, memo, day, now, grow) => powerHtml(d, memo, day, now) + catHtml(d) + artsGrowHtml(d, now, grow) + rulesHtml();
+/* loop97 熟練度十重規則說明：數字由 TIERS／PROF／BREAK 推得 */
+export function profRulesHtml() { const rows = TIERS.slice(0, -1).map(([lo, n], k) => { const hi = TIERS[k + 1][0]; return `<li>${n}：xp ${lo}～${hi}，每 ${((hi - lo) / PROF.lvs).toFixed(1)} xp 一重</li>`; }).join('');
+  return `<details data-keep="prof-rules"><summary>熟練度十重怎麼算</summary><div class="k">每門武學的${TIERS.slice(0, -1).map((t) => t[1]).join('／')}各分十重，${TIERS[TIERS.length - 1][1]}不分重。</div><ul>${rows}</ul>`
+    + `<div class="k">每升一重：該武學招式威力 +${(PROF.perLv * 100).toFixed(1)}%（十重共 +${(PROF.perLv * 900).toFixed(1)}%）；升到下一階時從一重重算，但升階本身的威力 +${(ART_GAIN.tierDmg * 100).toFixed(0)}% 比十重多，所以不會變弱。</div>`
+    + `<div class="k">只影響招式實際出手（狩獵、遠行），不影響門派戰力、練功速度與造詣。卡瓶頸（xp ${BREAK.caps.join('、')}）時停在十重，要突破才升階。</div></details>`; }
+export const growthHtml = (d, memo, day, now, grow) => powerHtml(d, memo, day, now) + catHtml(d) + artsGrowHtml(d, now, grow) + rulesHtml() + (d.pf ? profRulesHtml() : '');
