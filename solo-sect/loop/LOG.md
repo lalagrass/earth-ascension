@@ -1281,3 +1281,9 @@
 
 ## Loop 135 — 文件回填
 - DECISIONS.md §5 補上決定 110–117，§6 列 5 項待決定；DAXIA-EVAL.md §5 回填實測；ROADMAP 新增 §24。
+
+## Loop 136 — 收尾、總驗證、交回
+- 本批（125–136）：DECISIONS.md（1–68 重建、69–100 摘錄、101–117 新決定）；山賊欄門檻顯示修正；DAXIA-EVAL.md 查證；新開關 `laborgrow`、`valor`；通用 A/B 工具 `diag-ab`；反例、舊檔、截圖。
+- 實測：遊戲 699、sect-chronicle 383、Python 53 全過；git diff --check 乾淨；loops 125–136 沒有動到 golden、fixtures 與 .serena/。
+- Retro（135–136）：好：每圈都有提交，沒有留下未提交的工作。不好：勇名和力氣的效果在 bot 長跑裡都很小，這批的價值主要在系統骨架與查證；要不要調大，見 DECISIONS §6。
+- 交回，不開新玩法。
