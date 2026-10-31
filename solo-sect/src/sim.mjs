@@ -1,5 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { NG, addQi, spendQi, qiMax } from './neigong.mjs';
+import { NG, addQi, spendQi, qiMax, shieldHit } from './neigong.mjs';
 import { breakChance } from './arts.mjs';
 import { growInit, growEnsure, settleGrowth } from './growth.mjs';
 import { seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove } from './arts.mjs';
@@ -509,7 +509,7 @@ function huntStep(s, dt) {
     const M = MONSTERS[m.k];
     const foe = team.filter((d) => d.hp > 25).sort((a, b) => dist(a.pos, m.pos) - dist(b.pos, m.pos))[0];
     m.cool -= dt;
-    if (foe && dist(foe.pos, m.pos) < 26) { if (m.cool <= 0) { foe.hp -= M.dmg; m.cool = 1.2; s.fx.push({ kind: 'bite', pos: [...foe.pos], ttl: 0.4 }); } continue; }
+    if (foe && dist(foe.pos, m.pos) < 26) { if (m.cool <= 0) { foe.hp -= shieldHit(foe, M.dmg, s.t); /* loop116 護體真氣 */ m.cool = 1.2; s.fx.push({ kind: 'bite', pos: [...foe.pos], ttl: 0.4 }); } continue; }
     if (monWalk(m, M.speed * dt)) { m.gone = true; h.escaped++; s.eco[m.k].n++; log(s, `${M.name}衝過守點逃回山裡`); }
   }
   for (const d of team) {
