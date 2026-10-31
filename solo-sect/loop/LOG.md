@@ -1414,3 +1414,8 @@
 - 做得好：全域表 `CATS` 用 `supOf` 閘門，舊 golden 不動；冒煙先跑過才提交。
 - 不好：專長只有招牌持有人長得動（其他弟子沒有門類武學），效果集中在 2–3 人身上。目前照規格，不另造通用門類經驗。
 - 下一步：Batch 2 內功（三段速度、御氣耗氣、靜坐、真氣倍率、劍冷卻、內功被動）。
+
+## Loop 153 — v2.3 Batch 2：內功（決定 152–155）
+- `arts.mjs`：`NG23`、`INNER_SPECS`、`yuqiOn`／`yuqiMul`、`qiStrikeMul`、`qiAoeAdd`、`swordCdMul`／`swordDmgMul`、`medQi`／`restQi`。
+- `sim.mjs`：`speedOf` 三段、`moveStep` 御氣耗氣（留三成）、歇息／打坐回氣、內力 <45% 打坐評分 ×1.3、`huntStep` 出手倍率／半徑／劍冷卻／玉女／蛤蟆、九陽自回。
+- 測試：v23 +2 項；golden-30d-v22 重產（見下輪記錄）；舊 golden 不動。

@@ -36,3 +36,18 @@ test('loop152 角色卡門類造詣：v23 顯示專長效果說明，舊局仍�
   const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'yaowang', s.t); d.arts.yaowang.gm = { e: 20, ms: 0 };
   assert.match(f(d), /醫術：療傷回復/); const o = OLD(); tick(o, 0.1); assert.match(f(hero(o)), /尚未支援/);
 });
+import { speedOf } from '../src/sim.mjs';
+import { NG23, NG, yuqiOn, yuqiMul, qiStrikeMul, swordCdMul, medQi, qiMax, innerSpecs } from '../src/arts.mjs';
+test('loop153 三段腳程：v23 輕功每階 6%；御氣疾行要內功小成以上且內力 >30%，耗氣停在三成', () => {
+  const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'breath', s.t); d.arts.breath.xp = 60; d.qi = qiMax(d);
+  assert.ok(qiMax(d) > 0); assert.ok(yuqiOn(d)); assert.ok(yuqiMul(d) >= 1.15);
+  d.path = [{ xy: [d.pos[0] + 5000, d.pos[1]], n: 'x' }]; const v1 = speedOf(d); d.v23 = false; const v0 = speedOf(d); d.v23 = true; assert.ok(v1 > v0);
+  for (let i = 0; i < 2000; i++) tick(s, 0.25); assert.ok(d.qi >= qiMax(d) * NG23.yuqi.keep - 1e-9 || d.path.length === 0);
+  assert.ok(!(d.spentUntil > s.t) || !d.path.length);
+});
+test('loop153 打坐 +16（紫霞 +4）、舊局仍 12；真氣出手與劍招只在 v23', () => {
+  const s = V(); tick(s, 0.1); const d = hero(s); assert.equal(medQi(d), 16); assert.equal(NG.med, 12);
+  d.zixia = 2; assert.equal(qiStrikeMul(s, d), 1.35); assert.equal(swordCdMul(d, { skill: 'sword' }), 0.82);
+  const o = OLD(); tick(o, 0.1); const h = hero(o); h.zixia = 2; assert.equal(qiStrikeMul(o, h), 1); assert.equal(swordCdMul(h, { skill: 'sword' }), 1); assert.equal(medQi(h), 12);
+  learnArt(d, 'jiuyang', s.t); assert.ok(innerSpecs(d).includes('jiuyang')); assert.deepEqual(innerSpecs(h), []);
+});

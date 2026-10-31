@@ -346,3 +346,23 @@ export function specGrow(d, act) {
     r.gm ??= { e: 0, ms: 0 }; const cap = GROW.cap[a.grade] || 20, b = r.gm.e; r.gm.e = Math.min(cap, b + SPEC.k * w); g += r.gm.e - b; r.xp = (r.xp || 0) + 0.2 * w; }
   return g;
 }
+
+// ---- loop153 v2.3 內功（只在 d.v23）：三段腳程、御氣疾行耗氣、真氣出手、劍招、內功被動 ----
+export const NG23 = { med: 16, speedPerTier: 0.06, yuqi: { base: 1.15, perTier: 0.03, drain: 0.3, keep: 0.3, minTier: 1 }, medLow: 0.45, medBoost: 1.3,
+  qiSchool: 1.35, qiSchoolZx: 2, qiAoe: 15, qiAoeAt: 50, swordCd: 0.82, swordEarly: 1.1, swordEarlyTier: 1 };
+export const INNER_SPECS = {
+  breath: { name: '吐納', desc: '歇息回氣 ×1.5' }, zixia: { name: '紫霞神功', desc: '打坐多回 4 氣' },
+  jiuyang: { name: '九陽神功', desc: '不動時每秒自回 0.25 氣' }, yunv: { name: '玉女心經', desc: '巡獵時隊中另有玉女心經傳人，出手 +15%' },
+  hama: { name: '蛤蟆功', desc: '巡獵時氣血 <50 且內力 ≥50%：蓄勢一擊 ×1.5（耗 10 氣）' }, qiankun: { name: '乾坤大挪移', desc: '同蛤蟆功：氣血 <50 且內力 ≥50% 時蓄勢一擊 ×1.5（耗 10 氣）' } };
+export const innerSpecs = (d) => (d?.v23 ? Object.keys(INNER_SPECS).filter((id) => d.arts?.[id]) : []);
+export const hasSpec = (d, id) => !!(d?.v23 && d.arts?.[id]);
+export const ngTier = (d) => innerArts(d).reduce((m, id) => Math.max(m, artTier(d, id)), -1);
+export const yuqiOn = (d) => !!(d?.v23 && d.ng && ngTier(d) >= NG23.yuqi.minTier && qiOf(d) > qiMax(d) * NG23.yuqi.keep);
+export const yuqiMul = (d) => (yuqiOn(d) ? NG23.yuqi.base + NG23.yuqi.perTier * ngTier(d) : 1);
+export const qiSchool = (s, d) => !!(d?.v23 && (s?.sect?.id === 'qizong' || (d.zixia || 0) >= NG23.qiSchoolZx));
+export const qiStrikeMul = (s, d) => (qiSchool(s, d) ? NG23.qiSchool : 1);
+export const qiAoeAdd = (d, mv) => (d?.v23 && mv.aoe && qiOf(d) >= NG23.qiAoeAt ? NG23.qiAoe : 0);
+export const swordCdMul = (d, mv) => (d?.v23 && mv.skill === 'sword' ? NG23.swordCd : 1);
+export const swordDmgMul = (d, mv) => { if (!d?.v23 || mv.skill !== 'sword') return 1; const a = artOfMove(mv.id); return a && artTier(d, a.id) <= NG23.swordEarlyTier ? NG23.swordEarly : 1; };
+export const medQi = (d) => (d?.v23 ? NG23.med + (hasSpec(d, 'zixia') ? 4 : 0) : NG.med);
+export const restQi = (d) => NG.rest * (hasSpec(d, 'breath') ? 1.5 : 1);
