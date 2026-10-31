@@ -1,5 +1,6 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { NG, addQi, spendQi, qiMax } from './neigong.mjs';
+import { breakChance } from './arts.mjs';
 import { growInit, growEnsure, settleGrowth } from './growth.mjs';
 import { seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove } from './arts.mjs';
 import { ART_GAIN, BREAK, EXP } from './data.mjs';
@@ -454,7 +455,7 @@ function doTask(s, d, dt) {
       if (t.act === 'forage') d.needs.fun = clamp((d.needs.fun ?? 60) + (d.personality.includes('playful') ? 20 : 8), 0, 100);
       if (t.act === 'eat' && s.res.food >= 8) think(s, d, 'wellFed');
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
-      if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) for (let i = 0; i < (facStage(s, t.fac).medEase || 1); i++) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s)); if (r?.ok && s.grow && r.stage <= 2) { growEnsure(d); settleGrowth(d, r.art, d.arts[r.art.id], { src: 'break', stage: r.stage }); } /* loop79 突破里程碑 */ if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
+      if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) for (let i = 0; i < (facStage(s, t.fac).medEase || 1); i++) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s) - (spendQi(d, NG.btCost) ? Math.max(0, Math.min(NG.btBonus, 0.9 - breakChance(d))) : 0)); /* loop105 內力衝關：成功率 +btBonus，仍封頂 0.9 */ if (r?.ok && s.grow && r.stage <= 2) { growEnsure(d); settleGrowth(d, r.art, d.arts[r.art.id], { src: 'break', stage: r.stage }); } /* loop79 突破里程碑 */ if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
       if (t.act === 'meditate' && d.ng) addQi(d, NG.med); // loop103 打坐一次回內力（衝關扣用在前）
       if (t.act === 'learn' && d.pendingArt) { const m = learnArt(d, d.pendingArt, s.t); s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
       if (s.draw && (t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) { const c = (s.cnt ??= { chat: 0, spar: 0 }); c[t.act]++; } // loop22 完成場次計數（opt-in）
