@@ -1272,3 +1272,9 @@
 
 ## Loop 133 — 舊版存檔相容
 - `test/loop133-daxia-oldsaves.test.mjs`：`test/fixtures/v0.5`～`v0.92` 共 7 個舊版存檔都讀得進來，跑 2 日後 `laborgrow` 關、沒有 `s.valor`、沒有 `d.lg`；弟子卡不出現勞作字樣，山賊欄不出現勇名。
+
+## Loop 134 — 截圖（窄 900／寬 1700）
+- 截圖存在 `artifacts/daxia/shots/loop134-{900,1700}-{start,game}.png`，比照 loop123 不提交。工具是 venv-pw 的 Playwright 加 google-chrome，本機 8831 埠（沒有碰 8800）。
+- 開局頁：「勞作練體」「門派勇名」兩項都出現，而且預設勾選。進遊戲把詳情展開後，弟子卡寫「力氣 16.0（勞作今日 0.0/3・招式 ×1.04）」，山賊欄寫「勇名 0（尚無名號）」。
+- console 唯一的錯誤是 `/favicon.ico` 404（簡易伺服器沒有這個檔），頁面錯誤 0。
+- Retro（133–134）：好：舊檔相容一次掃過全部 7 個 fixtures。不好：截圖腳本要先把重大抉擇詢問取消、把 details 展開，第一次截到的是被抉擇卡擋住的畫面。
