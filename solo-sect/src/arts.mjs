@@ -174,11 +174,11 @@ export function chooseVariant(d, id, v, now = 0) {
   if (r.variant && r.variant !== v) r.until = now + BREAK.rechoose; r.variant = v; return true;
 }
 export const variantOf = (d, id, now = 0) => { const r = d.arts?.[id], a = artById(id); if (!r?.variant || (r.until || 0) > now) return null; return VARIANTS[a.school].find((x) => x.id === r.variant); };
-export const cdMul = (d, mvId, now = 0) => { const a = artOfMove(mvId); if (!a || !d.arts?.[a.id]) return swordCdMul(d, mvId); const t = artTier(d, a.id); return (t >= 1 ? PERKS.small.cd : 1) * (variantOf(d, a.id, now)?.cd || 1) * swordCdMul(d, mvId); };
+export const cdMul = (d, mvId, now = 0) => { const a = artOfMove(mvId); if (!a || !d.arts?.[a.id]) return swordCdMul(d, mvId); const t = artTier(d, a.id); return (t >= 1 ? PERKS.small.cd : 1) * (variantOf(d, a.id, now)?.cd || 1) * swordCdMul(d, mvId) * affixMul(d, mvId, 'cd'); };
 export const visTier = (d, mvId) => { const a = artOfMove(mvId); return a && d.arts?.[a.id] ? artTier(d, a.id) : 0; };
 export const topTier = (d) => ARTS.reduce((m, a) => (artTier(d, a.id) > m.t ? { t: artTier(d, a.id), a } : m), { t: -1, a: null });
 export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; const a = artById(id); unlockTechs(d, a); if (d.pendingArt === id) d.pendingArt = null; return a; }
-export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now) * harmonyMul(d); /* loop161 v2.4 陰陽共鳴（只 d.v24） */ // loop127 勞作練體
+export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now) * harmonyMul(d) * affixMul(d, mvId, 'dmg'); /* loop161 v2.4 陰陽共鳴（只 d.v24） */ // loop127 勞作練體
 const moveMul0 = (d, mvId, now = 0) => { const a = artOfMove(mvId); if (!a || !d.arts?.[a.id]) return (d.powMul || 1) * (d.jhMul || 1) * (d.v23 ? qiStrikeMul(d) * swordDmgMul(d, mvId) : 1); const t = artTier(d, a.id), r = d.arts[a.id]; return (d.early?.art === a.id ? d.early.mul : 1) * (d.powMul || 1) * (d.jhMul || 1) * (1 + ART_GAIN.tierDmg * t) * (t >= 3 ? PERKS.full.dmg : 1) * (variantOf(d, a.id, now)?.dmg || 1) * (1 + GUIZHEN.star * (r.stars || 0)) * (d.pf ? profMul(r.xp) : 1) * (d.v23 ? qiStrikeMul(d) * swordDmgMul(d, mvId) : 1) /* loop157 以氣御招／劍招 */ /* loop91 熟練度十重（d.pf 由 s.prof 設） */; };
 export const effectTier = (d, eff) => ARTS.filter((a) => a.effect === eff).reduce((m, a) => Math.max(m, artTier(d, a.id)), -1);
 export const effectMul = (d, eff, now = 0) => ARTS.filter((a) => a.effect === eff && d.arts?.[a.id]).reduce((m, a) => m * (variantOf(d, a.id, now)?.eff || 1) * (artTier(d, a.id) >= 3 ? PERKS.full.dmg : 1), 1);
@@ -395,3 +395,13 @@ export function harmonyOf(d) { if (!d?.v24) return null; const at = new Set();
 export const harmonyMul = (d) => { if (!d?.v24) return 1; const h = harmonyOf(d); return h ? HARMONY24[h] : 1; };
 /* 封穴：隊中有懂奇門（造詣 > 0）的人，敵人出手間隔 ×(1 + fengCd × 奇門強度) */
 export const fengxueK = (s, team) => (s?.v24 ? specK(bestSpec(s, 'qimen', team)) : 0);
+
+// ---- loop162 v2.4 Batch 3：頓悟詞綴（只在 d.v24）：武學練到大成（tier ≥ AFFIX24.tier）時頓悟一個詞綴，依種子＋人＋武學雜湊決定（不吃 RNG 流） ----
+export const AFFIX24 = { tier: 2, list: [{ id: 'xun', name: '迅', cd: 0.94 }, { id: 'jin', name: '勁', dmg: 1.06 }, { id: 'mian', name: '綿', dmg: 1.03, cd: 0.97 }] };
+const h24 = (str) => { let h = 2166136261; for (const c of str) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
+export const affixOf = (d, id) => (d?.v24 && d.arts?.[id]?.affix ? AFFIX24.list.find((x) => x.id === d.arts[id].affix) : null);
+export const affixMul = (d, mvId, k) => { if (!d?.v24) return 1; const a = artOfMove(mvId); return (a && affixOf(d, a.id)?.[k]) || 1; };
+export function affix24(s, d) { if (!s?.v24 || !d?.v24) return null; let got = null;
+  for (const [id, r] of Object.entries(d.arts || {})) { if (r.affix || artTier(d, id) < AFFIX24.tier || !artBy(id)?.techs?.length) continue;
+    const x = AFFIX24.list[h24(`${s.seed}:${d.id}:${id}`) % AFFIX24.list.length]; r.affix = x.id; (s.v24n ??= {}).affix = (s.v24n.affix || 0) + 1; got = { art: artBy(id), x }; }
+  return got; }

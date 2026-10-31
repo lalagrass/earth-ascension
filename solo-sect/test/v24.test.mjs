@@ -70,3 +70,13 @@ test('loop161 Batch2：奇門封穴——隊中有奇門造詣才 > 0；舊局�
   assert.ok(A.fengxueK(s, [d]) > 0);
   const o = OLD(); assert.equal(A.fengxueK(o, [hero(o)]), 0);
 });
+
+// ---- loop162 Batch 3 ----
+test('loop162 Batch3：頓悟詞綴——大成時依雜湊得字訣，只得一次、可重現；舊局沒有', () => {
+  const mk = () => { const s = V(), d = hero(s); d.v23 = d.v24 = true; d.arts = { basicSword: { xp: 60 } }; return [s, d]; };
+  const [s, d] = mk(), g = A.affix24(s, d); assert.ok(g); assert.ok(d.arts.basicSword.affix); assert.equal(A.affix24(s, d), null); assert.equal(s.v24n.affix, 1);
+  const [, d2] = mk(); A.affix24(V(), d2); assert.equal(d2.arts.basicSword.affix, d.arts.basicSword.affix);
+  const x = A.affixOf(d, 'basicSword'); assert.ok((x.dmg || 1) * (1 / (x.cd || 1)) > 1);
+  assert.notEqual(A.affixMul(d, 'bs1', x.dmg ? 'dmg' : 'cd'), 1);
+  const o = OLD(), h = hero(o); h.arts = { basicFist: { xp: 60 } }; assert.equal(A.affix24(o, h), null);
+});

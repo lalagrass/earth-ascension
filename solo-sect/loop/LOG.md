@@ -1486,3 +1486,12 @@
 ## Loop 161 — v2.4 Batch 2：陰陽共鳴、奇門封穴（決定 177–178）
 - `arts.mjs`：`attrOf`、`harmonyOf`／`harmonyMul`（`HARMONY24`）接進 `moveMul`；`fengxueK`。`world.mjs` `fight()`：v24 封穴拉長敵人出手間隔、記陣法觸發。`main.mjs` 弟子卡顯示共鳴。
 - 測試：v24 +2 項（11 項）；golden-30d-v22 不變 `ac9d475b00d2688c`。遊戲 725、sect-chronicle 383、Python 53。
+
+## Loop 162 — v2.4 Batch 3：頓悟詞綴（決定 179）
+- `arts.mjs`：`AFFIX24`、`affix24`（雜湊決定）、`affixOf`／`affixMul` 進 `moveMul`／`cdMul`；`sim.mjs` 每 tick 標 d.v24 時檢查並記【頓悟】；`main.mjs` 武學列顯示字訣。
+- 測試：v24 +1 項（12 項）；golden-30d-v22 → `d672c6f90b1b3e17`；舊 golden 不動。遊戲 726、sect-chronicle 383、Python 53。
+
+### Retro 161–162
+- 做得好：共鳴與詞綴都接在既有 `moveMul`／`cdMul` 單一入口，巡獵、巡山、試煉自動一致；詞綴用雜湊不動 RNG 流。
+- 不好：封穴只能做成「敵人變慢」的批次近似；詞綴每 tick 掃一次武學（目前成本可忽略）。
+- 下一步：Batch 4 新門派。
