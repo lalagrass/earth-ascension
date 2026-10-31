@@ -3,7 +3,7 @@ import { DAY, ACTIVITIES, EXP_STYLES, EXP, ARTS, TIERS, ART_GAIN, ROOT, JH, BREA
 import { LABOR, strMul, laborToday } from './economy.mjs';
 import { segAt } from './world.mjs';
 import { nextStep } from './core.mjs';
-import { NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW } from './arts.mjs';
+import { NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW } from './arts.mjs';
 import { CLQ } from './bonds.mjs';
 import { JHEV, letterP } from './jianghu.mjs';
 // ==== （原 dcard.mjs）====
@@ -137,14 +137,17 @@ export function profRulesHtml() { const rows = TIERS.slice(0, -1).map(([lo, n], 
 export function qiStatus(d, now = 0) {
   const m = qiMax(d), tired = (d.spentUntil ?? -1) > now;
   if (!m) return `<span title="還沒學內功：沒有護體真氣">氣 0/0（未學內功）</span>`;
-  return `<span title="護體真氣：受擊先減傷 ${Math.round(mitOf(d) * 100)}%，再由內力吸收；內力打空會力竭 ${NG2.spentT} 秒（受傷 ×${NG2.spentMul}）">氣 ${qiOf(d) | 0}/${m} ${bar(qiOf(d), m, '#5a7ab0')}${tired ? '（力竭）' : ''}${tenthOf(d) ? '・真氣綿長' : ''}</span>`;
+  return `<span title="護體真氣：受擊先減傷 ${Math.round(mitOf(d) * 100)}%，再由內力吸收；內力打空會力竭 ${NG2.spentT} 秒（受傷 ×${NG2.spentMul}）">氣 ${qiOf(d) | 0}/${m} ${bar(qiOf(d), m, '#5a7ab0')}${tired ? '（力竭）' : ''}${tenthOf(d) ? '・真氣綿長' : ''}${yuqiOn(d) ? '・御氣疾行' : ''}</span>${innerSpecHtml(d)}`;
 }
-export function neigongRules2Html() {
+/* loop154 v2.3 內功被動與御氣說明（只列本人已學的） */
+export const innerSpecHtml = (d) => { const l = innerSpecs(d); return l.length ? `<span class="k" data-inner-spec="1" title="${l.map((id) => `${INNER_SPECS[id].name}：${INNER_SPECS[id].desc}`).join('；')}">　內功被動：${l.map((id) => `${INNER_SPECS[id].name}（${INNER_SPECS[id].desc}）`).join('、')}</span>` : ''; };
+export function neigongRules2Html(d) {
   return `<details data-keep="ng-rules"><summary>護體真氣怎麼算</summary><div class="k">開局沒有內力。每門已學內功依階給上限（${TIERS.map((t, i) => `${t[1]} ${NG2.cap[i]}`).join('、')}），最多 ${NG2.total}；減傷依階 ${NG2.mit.map((v) => Math.round(v * 100) + '%').join('／')}，最多 ${Math.round(NG2.mitCap * 100)}%。</div>`
     + `<div class="k">受擊（狩獵、遠行）：先減傷，再由內力吸收，不夠才扣生命；內力打空力竭 ${NG2.spentT} 秒，受傷 ×${NG2.spentMul}；任一內功練到圓滿十重或化境則「真氣綿長」，打空也不力竭（只此一項，不另加內力或減傷）。寨匪、剿寨重傷時，內力 ≥${NG2.guard} 就扣 ${NG2.guard}，生命留 ${NG2.guardHp}。門派戰力每人 +${NG2.powK}×上限。</div>`
-    + `<div class="k">回復：打坐一次 +${NG.med}；歇息每秒 +${NG.rest}。衝關仍可扣 ${NG.btCost} 加成功率 +${Math.round(NG.btBonus * 100)}%。沒有運勁、運功療傷。</div></details>`; }
+    + (d?.v23 ? `<div class="k">v2.3：腳力→輕功（每階 +${Math.round(NG23.speedPerTier * 100)}%）→御氣疾行（內功小成以上、內力 >${NG23.yuqi.keep * 100}%：行走 ×${NG23.yuqi.base}＋${NG23.yuqi.perTier}×階，每秒耗 ${NG23.yuqi.drain} 氣，留三成不力竭）。內力 <${NG23.medLow * 100}% 時較想打坐。氣宗／紫霞二層以上出手 ×${NG23.qiSchool}；內力 ≥${NG23.qiAoeAt} 範圍招半徑 +${NG23.qiAoe}；劍招冷卻 ×${NG23.swordCd}、小成以下 +10%。</div>` : '')
+    + `<div class="k">回復：打坐一次 +${d?.v23 ? medQi(d) : NG.med}；歇息每秒 +${d?.v23 ? restQi(d) : NG.rest}。衝關仍可扣 ${NG.btCost} 加成功率 +${Math.round(NG.btBonus * 100)}%。沒有運勁、運功療傷。</div></details>`; }
 export const neigongRulesHtml = neigongRules2Html; // loop142 一版說明淘汰
-export const growthHtml = (d, memo, day, now, grow) => powerHtml(d, memo, day, now) + catHtml(d) + artsGrowHtml(d, now, grow) + rulesHtml() + (d.pf ? profRulesHtml() : '') + (d.ng ? neigongRules2Html() : '');
+export const growthHtml = (d, memo, day, now, grow) => powerHtml(d, memo, day, now) + catHtml(d) + artsGrowHtml(d, now, grow) + rulesHtml() + (d.pf ? profRulesHtml() : '') + (d.ng ? neigongRules2Html(d) : '');
 
 // ==== （原 jhui.mjs）====
 // loop34 介面可讀性（選用，s.jhui）：原型、同門小派、江湖事件三塊面板。純顯示：只讀狀態、不寫狀態、不抽亂數；golden 不變。

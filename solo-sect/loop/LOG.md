@@ -1419,3 +1419,12 @@
 - `arts.mjs`：`NG23`、`INNER_SPECS`、`yuqiOn`／`yuqiMul`、`qiStrikeMul`、`qiAoeAdd`、`swordCdMul`／`swordDmgMul`、`medQi`／`restQi`。
 - `sim.mjs`：`speedOf` 三段、`moveStep` 御氣耗氣（留三成）、歇息／打坐回氣、內力 <45% 打坐評分 ×1.3、`huntStep` 出手倍率／半徑／劍冷卻／玉女／蛤蟆、九陽自回。
 - 測試：v23 +2 項；golden-30d-v22 重產（見下輪記錄）；舊 golden 不動。
+- loop153 golden-30d-v22：`5b6541ce6f829afa → 7bd6beb717f1a8fd`。
+
+## Loop 154 — Batch 2 介面
+- `qiStatus` 加「・御氣疾行」與已學內功被動一行（含 title 說明）；`neigongRules2Html(d)` 在 v23 多一段三段腳程／御氣／打坐／氣宗／劍招規則，回氣數字改讀本人實值。舊局文字不變。v23 測試 +1。
+
+### Retro 153–154
+- 做得好：所有數值走 `NG23` 一張表，介面直接讀表，不會和規則脫節。
+- 不好：玉女、蛤蟆、氣宗加成只接巡獵；守柵與巡山不吃，玩家可能覺得「沒用」。已在規則說明寫清楚。
+- 下一步：Batch 3 村中幫工。

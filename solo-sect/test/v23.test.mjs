@@ -51,3 +51,9 @@ test('loop153 打坐 +16（紫霞 +4）、舊局仍 12；真氣出手與劍招�
   const o = OLD(); tick(o, 0.1); const h = hero(o); h.zixia = 2; assert.equal(qiStrikeMul(o, h), 1); assert.equal(swordCdMul(h, { skill: 'sword' }), 1); assert.equal(medQi(h), 12);
   learnArt(d, 'jiuyang', s.t); assert.ok(innerSpecs(d).includes('jiuyang')); assert.deepEqual(innerSpecs(h), []);
 });
+import { qiStatus, neigongRules2Html } from '../src/panel-ui.mjs';
+test('loop154 介面：內功被動與 v2.3 內功規則只在 v23 顯示', () => {
+  const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'breath', s.t); d.arts.breath.xp = 60; d.ng = 1; d.ng2 = 1; d.qi = qiMax(d);
+  assert.match(qiStatus(d, s.t), /內功被動：吐納/); assert.match(qiStatus(d, s.t), /御氣疾行/); assert.match(neigongRules2Html(d), /打坐一次 \+16/);
+  const o = OLD(); tick(o, 0.1); const h = hero(o); learnArt(h, 'breath', o.t); assert.doesNotMatch(qiStatus(h, o.t), /內功被動/); assert.match(neigongRules2Html(h), /打坐一次 \+12/);
+});
