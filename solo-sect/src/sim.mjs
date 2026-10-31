@@ -89,6 +89,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.cotrain) s.cotrain = true; /* loop56 同修作伴 */
   if (heroSpec?.cofun) s.cofun = true; /* loop62 有伴解悶 */
   if (heroSpec?.longwatch) s.longwatch = true; /* loop67 哨崗久守 */
+  if (heroSpec?.paypill) s.paypill = true; /* loop71 欠俸先賣丹 */
   if (heroSpec?.masterask) s.masterask = true; /* loop59 高人指點由我定 */
   if (heroSpec?.stewkit) s.stewkit = true; /* loop60 執事顧灶 */
   if (heroSpec?.letterask) s.letterask = true; /* loop49 挑戰帖由我定奪 */

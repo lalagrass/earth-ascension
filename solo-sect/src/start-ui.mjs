@@ -23,6 +23,7 @@ export const RULES = [
   ['stewkit', 'stewkit', 'stewkit', true, '執事顧灶：人數到 8 人以上、存飯不夠一人一頓、還是露天灶時，執事立膳房的藍圖（需執事自主）'],
   ['masterask', 'masterask', 'masterask', true, '高人指點誰由我定：勾了「重大抉擇問我」時，過路高人改成抉擇卡，由你挑一位弟子受指點'],
   ['longwatch', 'longwatch', 'longwatch', true, '哨崗久守：有人上護山哨守過之後，嚇退下山野豬的時間加倍（120→240 秒）'],
+  ['paypill', 'paypill', 'paypill', true, '欠俸先賣丹：月俸結算錢不夠時，先把庫存療傷丹照市價賣給山下藥舖（受每期上限）'],
   ['cofun', 'cofun', 'cofun', true, '有伴解悶：附近有人一起練功、打坐或閒著時，不那麼悶（樂趣下降速度減半）'],
   ['cotrain', 'cotrain', 'cotrain', true, '同修作伴：附近有人一起練功或打坐時，不那麼寂寞（寂寞增加速度減半）'],
   ['mpool', 'mpool', 'mpool', true, '殘譜指點：過路高人無武學可傳時，改留一頁殘譜，講解弟子正在追的前置武學'],

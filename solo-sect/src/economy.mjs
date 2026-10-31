@@ -14,7 +14,9 @@ export const econInit = () => ({ warn: 0, left: 0, misses: 0, paid: 0, disrepair
 export const E = (s) => (s.econ ??= econInit());
 export const billDue = (s, day = s.day) => day >= Math.max(UPKEEP.graceDay, E(s).graceUntil || 0) && day % UPKEEP.every === 0;
 export function settle(s, H) {
-  const X = E(s), w = wageBill(s), f = facBill(s); X.lastBill = { day: s.day, wage: w, fac: f, paidW: false, paidF: false };
+  const X = E(s), w = wageBill(s), f = facBill(s);
+  if (s.paypill) while (w && s.res.coin < w && !marketWhy(s, 'pill')) marketDo(s, 'pill'); /* loop71 欠俸先賣丹：月俸不夠時先把療傷丹賣給藥舖（照市價、受每期上限），不用亂數 */
+  X.lastBill = { day: s.day, wage: w, fac: f, paidW: false, paidF: false };
   if (w && s.res.coin >= w) { resAdd(s, 'coin', -w); X.lastBill.paidW = true; X.warn = 0; X.paid++; log(s, `【月俸】發給 ${salaried(s).length} 人共 ${w} 香火錢。`); }
   else if (w) { X.warn++; X.misses++; for (const d of salaried(s)) H.think(s, d, 'unpaid');
     if (X.warn <= UPKEEP.warnMax) log(s, `【欠俸 ${X.warn}/${UPKEEP.warnMax}】月俸 ${w} 發不出來（只有 ${s.res.coin}）。${X.warn === UPKEEP.warnMax ? '再欠一次就會有人下山。' : '下次結算前想辦法：賣丹、少蓋、去市集變現。'}`, 'warn');
