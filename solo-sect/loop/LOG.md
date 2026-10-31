@@ -931,3 +931,9 @@
 - 好：每圈都有預估與實測對照；開關、golden、存檔都沒被打破。
 - 不好：兩次把瓶頸位元意義記錯；長跑太晚加。
 - 下一步：等擁有人看 GROWTH-LAYERS §9 的 5 項待決定。
+
+## Loop 89 — 暴走英雄壇評估（docs/BAOZOU-EVAL.md）
+- 計畫：查熟練度實際稱號與效果（附出處）、查證宣稱的 repo／檔案／授權、逐項判斷合不合、定 12 圈計畫。
+- 實測：fyuan/gmud、wuzhen/HeroLegend 404；age.c 等五檔在真實的 mogita/gmud（MIT，組合語言）裡不存在；gmud-web／HeroLegend-Web 無對應；break_eternity.js 真（MIT，不需要）；CDDA character.cpp 真（CC-BY-SA 3.0）但查不到 scarring。原作稱號本身無額外效果，效果是等級線性加傷害、招式依級解鎖、99 級突破。
+- 結論：優先做「每階十重」＋每重小幅威力（階內補間，不和造詣重複）；打樁不做離線補算，我們已有木樁場，只讓執事自主立樁。排除容貌／性別門檻與偷竊；婚育只能走二代系統。
+- Mini retro：宣稱來源裡捏造的比真的多，查證要放在設計之前。
