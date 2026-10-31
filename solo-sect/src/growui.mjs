@@ -1,6 +1,6 @@
 /* loop81 成長分層介面（純顯示，不寫世界狀態）：A 人物實力圖、B 門類造詣、C 個別武學。
    能力圖：固定 5 軸、固定順序、固定顯示基準（不是能力上限，也不按角色或全派最大值縮放）；不算面積。 */
-import { NG, qiMax, qiOf, INNER } from './neigong.mjs';
+import { NG, NG2, qiMax, qiOf, mitOf, INNER } from './neigong.mjs';
 import { profOf, profMul, profLabel, nextLvXp, PROF } from './prof.mjs';
 import { ARTS, TIERS, ART_GAIN, ROOT, JH, BREAK } from './data.mjs';
 import { effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf } from './arts.mjs';
@@ -14,7 +14,8 @@ export const AXES = [
 ];
 /* loop106 開啟內功時才加第 6 軸「內力」（上限；基準固定＝基礎～吐納化境），關閉時維持五軸 */
 export const QI_AXIS = { k: 'qi', name: '內力', lo: NG.base, hi: NG.base + NG.perTier * TIERS.length, get: (d) => qiMax(d), note: '內力上限（已學內功的階）', fmt: (v) => v.toFixed(0) };
-export const axesOf = (d) => (d?.ng ? [...AXES, QI_AXIS] : AXES);
+export const QI_AXIS2 = { ...QI_AXIS, lo: 0, hi: NG2.cap[NG2.cap.length - 1], note: '內力上限（護體真氣；吐納練到化境＝100）' }; // loop120
+export const axesOf = (d) => (d?.ng ? [...AXES, d.ng2 ? QI_AXIS2 : QI_AXIS] : AXES);
 export const axisVals = (d, now = 0) => axesOf(d).map((x) => x.get(d, now));
 const fmtV = (x, v) => (x.fmt ? x.fmt(v) : v.toFixed(1));
 /* 圖：r＝(v−lo)/(hi−lo)，超出畫在邊上並標「超出顯示範圍」 */
@@ -42,7 +43,7 @@ export function powerHtml(d, memo, day, now = 0) {
     + `<div class="k">${AXES.map((x) => `${x.name} ${fmtV(x, x.get(d, now))}（基準 ${x.fmt ? x.fmt(x.lo) + '–' + x.fmt(x.hi) : x.lo + '–' + x.hi}；${x.note}）`).join('<br>')}</div>`
     + (over.length ? `<div class="k warn">超出顯示範圍：${over.map((x) => x.name).join('、')}（數字照實，圖上畫在外框）</div>` : '')
     + (m.msg ? `<div class="k grow-msg">${m.msg}</div>` : '')
-    + `<div class="k">狀態：生命 ${d.hp | 0}/100 ${bar(d.hp, 100, '#c55')}　精力 ${d.needs.energy | 0} ${bar(d.needs.energy, 100, '#d9a441')}　${d.ng ? `內力 ${qiOf(d) | 0}/${qiMax(d)} ${bar(qiOf(d), qiMax(d), '#5a7ab0')}` : '內力：本版沒有內力系統'}</div>`
+    + `<div class="k">狀態：生命 ${d.hp | 0}/100 ${bar(d.hp, 100, '#c55')}　精力 ${d.needs.energy | 0} ${bar(d.needs.energy, 100, '#d9a441')}　${d.ng2 ? qiStatus(d, now) : d.ng ? `內力 ${qiOf(d) | 0}/${qiMax(d)} ${bar(qiOf(d), qiMax(d), '#5a7ab0')}` : '內力：本版沒有內力系統'}</div>`
     + `<div class="k">資質：根骨 ${d.rootKnown ? `${d.root}（${ROOT.names[d.root]}）` : '未明'}・悟性 ${d.rootKnown ? d.wu ?? d.root : '未明'}${temp.length ? `｜臨時／裝備：${temp.join('、')}（不算進圖）` : ''}</div></div>`;
 }
 export function catHtml(d) {
@@ -89,8 +90,18 @@ export function profRulesHtml() { const rows = TIERS.slice(0, -1).map(([lo, n], 
   return `<details data-keep="prof-rules"><summary>熟練度十重怎麼算</summary><div class="k">每門武學的${TIERS.slice(0, -1).map((t) => t[1]).join('／')}各分十重，${TIERS[TIERS.length - 1][1]}不分重。</div><ul>${rows}</ul>`
     + `<div class="k">每升一重：該武學招式威力 +${(PROF.perLv * 100).toFixed(1)}%（十重共 +${(PROF.perLv * 900).toFixed(1)}%）；升到下一階時從一重重算，但升階本身的威力 +${(ART_GAIN.tierDmg * 100).toFixed(0)}% 比十重多，所以不會變弱。</div>`
     + `<div class="k">只影響招式實際出手（狩獵、遠行），不影響門派戰力、練功速度與造詣。卡瓶頸（xp ${BREAK.caps.join('、')}）時停在十重，要突破才升階。</div></details>`; }
+// loop120 窄欄：氣 x/y＋條＋滑鼠提示（減傷、力竭）
+export function qiStatus(d, now = 0) {
+  const m = qiMax(d), tired = (d.spentUntil ?? -1) > now;
+  if (!m) return `<span title="還沒學內功：沒有護體真氣">氣 0/0（未學內功）</span>`;
+  return `<span title="護體真氣：受擊先減傷 ${Math.round(mitOf(d) * 100)}%，再由內力吸收；內力打空會力竭 ${NG2.spentT} 秒（受傷 ×${NG2.spentMul}）">氣 ${qiOf(d) | 0}/${m} ${bar(qiOf(d), m, '#5a7ab0')}${tired ? '（力竭）' : ''}</span>`;
+}
+export function neigongRules2Html() {
+  return `<details data-keep="ng-rules"><summary>護體真氣怎麼算</summary><div class="k">開局沒有內力。每門已學內功依階給上限（${TIERS.map((t, i) => `${t[1]} ${NG2.cap[i]}`).join('、')}），最多 ${NG2.total}；減傷依階 ${NG2.mit.map((v) => Math.round(v * 100) + '%').join('／')}，最多 ${Math.round(NG2.mitCap * 100)}%。</div>`
+    + `<div class="k">受擊（狩獵、遠行）：先減傷，再由內力吸收，不夠才扣生命；內力打空力竭 ${NG2.spentT} 秒，受傷 ×${NG2.spentMul}。寨匪、剿寨重傷時，內力 ≥${NG2.guard} 就扣 ${NG2.guard}，生命留 ${NG2.guardHp}。門派戰力每人 +${NG2.powK}×上限。</div>`
+    + `<div class="k">回復：打坐一次 +${NG.med}；歇息每秒 +${NG.rest}。衝關仍可扣 ${NG.btCost} 加成功率 +${Math.round(NG.btBonus * 100)}%。沒有運勁、運功療傷。</div></details>`; }
 export function neigongRulesHtml() {
   return `<details data-keep="ng-rules"><summary>內力怎麼算</summary><div class="k">上限＝${NG.base}＋每門已學內功 ${NG.perTier}×（階數＋1，入門算 1、${TIERS[TIERS.length - 1][1]}算 ${TIERS.length}），最多 ${NG.cap}。內功：${INNER.map((id) => ARTS.find((a) => a.id === id).name).join('、')}。只看階，不看十重、不看造詣。</div>`
     + `<div class="k">回復：打坐一次 +${NG.med}；歇息每秒 +${NG.rest}。</div>`
     + `<div class="k">用途：狩獵出手扣 ${NG.strikeCost}，該擊威力 ×${NG.strikeMul}；守點時生命 ≤${NG.healAt} 扣 ${NG.healCost} 回 ${NG.heal} 生命；卡瓶頸打坐扣 ${NG.btCost}，衝關成功率 +${Math.round(NG.btBonus * 100)}%（仍最多 90%）。內力不夠就不用。不影響門派戰力與遠行。</div></details>`; }
-export const growthHtml = (d, memo, day, now, grow) => powerHtml(d, memo, day, now) + catHtml(d) + artsGrowHtml(d, now, grow) + rulesHtml() + (d.pf ? profRulesHtml() : '') + (d.ng ? neigongRulesHtml() : '');
+export const growthHtml = (d, memo, day, now, grow) => powerHtml(d, memo, day, now) + catHtml(d) + artsGrowHtml(d, now, grow) + rulesHtml() + (d.pf ? profRulesHtml() : '') + (d.ng2 ? neigongRules2Html() : d.ng ? neigongRulesHtml() : '');
