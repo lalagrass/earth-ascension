@@ -32,9 +32,9 @@ const FX = {
   arm: [(s) => armLoss(s), (s) => { const y = find(s, 'yangguo'); mood(y, -10); }],
   tomb: [(s) => { s.jh.bees = true; }, () => {}],
   zbt: [(s, H) => zbtBet(s, H, 0), (s, H) => zbtBet(s, H, 1), () => {}],
-  dfbb: [(s, H) => villain(s, H, 'dfbb'), (s) => { s.rep = Math.max(0, (s.rep || 0) - 3); }],
+  dfbb: [(s, H) => villain(s, H, 'dfbb'), (s) => { s.rep = Math.max(0, (s.rep || 0) - 3); vNo(s, 'dfbb'); }],
   kuihua: [(s) => { const d = heroD(s); teachJ(s, d, 'kuihua', DA); d.duanqing ??= s.t; d.moodCap = 80; log(s, `【葵花寶典】${d.name}斷情練成，出手快得只見紅影。`); }, () => {}],
-  hy: [(s, H) => villain(s, H, 'hy'), (s) => { resSet(s, 'coin', Math.max(0, s.res.coin - 20)); }],
+  hy: [(s, H) => villain(s, H, 'hy'), (s) => { resSet(s, 'coin', Math.max(0, s.res.coin - 20)); vNo(s, 'hy'); }],
   axe: [(s) => revealHidden(s), (s) => { resSet(s, 'coin', Math.max(0, s.res.coin - 10)); }],
   hai: [(s) => { s.jh.hai = s.t; const w = find(s, 'weixiaobao'); if (w) teachJ(s, w, 'huagu', 2); log(s, '海大富住進了柴房，每天咳嗽、偷看韋小寶。'); }, () => {}],
   paicuo: [(s) => { const l = s.ds.find((d) => d.role === 'laborer'); if (l) { l.role = 'outer'; delete l.unpaid; log(s, `${l.name}糊里糊塗成了外門弟子。`); } else s.rep = (s.rep || 0) + 1; }, () => {}],
@@ -78,6 +78,11 @@ function zbtBet(s, H, kind) {
     if (Z.taught.length >= 2) { s.jh.zbt = null; s.xia.left.zhoubotong = true; log(s, '周伯通：「好玩的都教完啦！」一溜煙跑了。'); }
   } else { Z.losses++; for (const x of fighters(s)) mood(x, 2); log(s, '輸了。全派陪周伯通抓了一下午蟋蟀（心情 +2，沒有損失）。'); }
 }
+/* loop148 v2.25（決定 141）：v22 反派登門冷卻——上次登門後至少 VILLAIN.cool 日；婉拒／閉門不出後最多再來 VILLAIN.more 次。
+   根因：舊條件 `J.dfbb === 0 || 隔 5 日` 在婉拒時 J.dfbb 仍為 0，冷卻被跳過，於是每天登門。 */
+export const VILLAIN = { cool: 8, more: 2 };
+function vNo(s, k) { if (s.v22) s.jh[k + 'No'] = (s.jh[k + 'No'] || 0) + 1; }
+export function villainOk(s, k) { const J = s.jh, last = J[k + 'Day']; if ((J[k + 'No'] || 0) > VILLAIN.more) return false; return last == null || s.day - last >= VILLAIN.cool; }
 function villain(s, H, k) {
   const need = k === 'dfbb' ? JH.dfbbPow : JH.hyPow, pw = power(s), win = pw >= need || R(s, H) < 0.1;
   if (win) { s.jh[k] = 2; s.rep = (s.rep || 0) + 8; const art = k === 'dfbb' ? 'kuihua' : 'hama', d = fighters(s).sort((a, b) => (b.skills.palm || 0) - (a.skills.palm || 0))[0];
@@ -140,8 +145,8 @@ export function jhStep(s, dt, H) {
   if (xl && !J.bees && card(s, 'tomb')) return;
   if (J.zbt && s.day !== J.zbtDay) { J.zbtDay = s.day; card(s, 'zbt', true); return; }
   // 反派：東方不敗（第 8 天或名聲 30）、火雲邪神（揭露過隱藏高手或包租婆在，第 6 天後）
-  if ((J.dfbb || 0) < 2 && ((s.day >= 8) || (s.rep || 0) >= 30) && s.day !== J.dfbbDay && (J.dfbb === 0 || s.day - (J.dfbbDay || 0) >= 5)) { J.dfbbDay = s.day; card(s, 'dfbb', true); return; }
-  if ((J.hy || 0) < 2 && s.day >= 6 && (s.ds.some((d) => d.hidden?.shown) || present(s, 'baozupo')) && (J.hy === 0 || s.day - (J.hyDay || 0) >= 5) && s.day !== J.hyDay) { J.hyDay = s.day; card(s, 'hy', true); return; }
+  if ((J.dfbb || 0) < 2 && ((s.day >= 8) || (s.rep || 0) >= 30) && s.day !== J.dfbbDay && (s.v22 ? villainOk(s, 'dfbb') : (J.dfbb === 0 || s.day - (J.dfbbDay || 0) >= 5))) { J.dfbbDay = s.day; card(s, 'dfbb', true); return; }
+  if ((J.hy || 0) < 2 && s.day >= 6 && (s.ds.some((d) => d.hidden?.shown) || present(s, 'baozupo')) && (s.v22 ? villainOk(s, 'hy') : (J.hy === 0 || s.day - (J.hyDay || 0) >= 5)) && s.day !== J.hyDay) { J.hyDay = s.day; card(s, 'hy', true); return; }
   if (s.ds.some((d) => d.hidden && !d.hidden.shown) && s.day >= 3 && s.day !== J.axeDay && s.day % 3 === 0) { J.axeDay = s.day; card(s, 'axe', true); return; }
   if (present(s, 'weixiaobao') && !J.hai && s.day >= 5 && card(s, 'hai')) { if (isHero(s, 'weixiaobao')) arc(s, 'weixiaobao', 3, '海大富'); return; }
   // 模板主線

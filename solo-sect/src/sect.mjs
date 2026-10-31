@@ -21,11 +21,12 @@ export function removeDisciple(s, d, why) {
 // ---- 成親：道侶＋雙向相容 ≥1 ----
 // v1.8（ROADMAP I-3，擁有人預設）：門派最多 cap 對、每 everyDays 日最多 1 對（第一場不早於第 everyDays 日）、好感 ≥rel、心上人互相鎖定、喜事花 cost 香火錢
 export const MARRY = { cap: 5, everyDays: 5, rel: 90, cost: 100 };
-export function marriable(s, a, b) { return a.adult && b.adult && !a.spouse && !b.spouse && a.sweet === b.id && b.sweet === a.id && (s.rel[relKey(a.id, b.id)] || 0) >= MARRY.rel && compat(a, b) * compat(b, a) >= 1; }
+/* loop148 v2.25（決定 144）：v22 下成過親的人（d.wed）不再拜堂——根因：配偶欠俸離山或名俠退隱時 removeActor 把 spouse 清空，留下的人就能再娶再嫁，玩家看起來像重婚。 */
+export function marriable(s, a, b) { return a.adult && b.adult && !a.spouse && !b.spouse && !(s.v22 && (a.wed || b.wed)) && a.sweet === b.id && b.sweet === a.id && (s.rel[relKey(a.id, b.id)] || 0) >= MARRY.rel && compat(a, b) * compat(b, a) >= 1; }
 export const weddingWhy = (s) => { const G = s.gen; if (G.couples.length >= MARRY.cap) return `門派已有 ${MARRY.cap} 對夫妻`; if (s.t - (G.lastWed ?? 0) < MARRY.everyDays * DAY) return `喜事每 ${MARRY.everyDays} 日最多一場`; if ((s.res.coin || 0) < MARRY.cost) return `辦喜事要 ${MARRY.cost} 香火錢`; return null; };
 function checkCouples(s) {
   const G = s.gen;
-  for (const k of s.families || []) { if (G.couples.some((c) => c.join('|') === k)) continue; const [a, b] = k.split('|').map((id) => s.ds.find((d) => d.id === id)); if (a && b && marriable(s, a, b) && !weddingWhy(s)) { resAdd(s, 'coin', -MARRY.cost); G.lastWed = s.t; G.couples.push([a.id, b.id].sort()); a.spouse = b.id; b.spouse = a.id; log(s, `【成親】${a.name}與${b.name}在大廳拜堂（喜事花了 ${MARRY.cost} 香火錢），${s.sect?.name || '門派'}上下喝了一夜喜酒。`); } }
+  for (const k of s.families || []) { if (G.couples.some((c) => c.join('|') === k)) continue; const [a, b] = k.split('|').map((id) => s.ds.find((d) => d.id === id)); if (a && b && marriable(s, a, b) && !weddingWhy(s)) { resAdd(s, 'coin', -MARRY.cost); G.lastWed = s.t; G.couples.push([a.id, b.id].sort()); a.spouse = b.id; b.spouse = a.id; if (s.v22) { a.wed = b.id; b.wed = a.id; } log(s, `【成親】${a.name}與${b.name}在大廳拜堂（喜事花了 ${MARRY.cost} 香火錢），${s.sect?.name || '門派'}上下喝了一夜喜酒。`); } }
 }
 // ---- 收養：承襲養父母傾向（性格各取一、價值觀平均之半、悟性根骨部分承襲） ----
 export function adopt(s, pa, pb, rnd = Math.random) {
@@ -34,7 +35,7 @@ export function adopt(s, pa, pb, rnd = Math.random) {
   const pers = [...new Set(ps.map((p) => p.personality[Math.floor(rnd() * p.personality.length)]).filter(Boolean))].slice(0, 2);
   const avg = (f) => ps.reduce((a, p) => a + (f(p) ?? 3), 0) / ps.length, part = (v) => Math.max(1, Math.min(5, Math.round((v + 3) / 2 + (rnd() < 0.3 ? 1 : 0))));
   let values = null; if (ps.some((p) => p.values)) { values = {}; for (const k of ['xia', 'sect', 'qing', 'free', 'wu', 'fame']) values[k] = Math.round(ps.reduce((a, p) => a + (p.values?.[k] || 0), 0) / ps.length / 2); }
-  const d = { ...JSON.parse(JSON.stringify(tpl)), id, name, adult: false, child: { since: s.t, parents: ps.map((p) => p.id) }, age: GEN.adoptAge, sprite: 'cousin', role: 'inner', personality: pers, known: pers.slice(0, 1), values, wexin: 0, classic: false, xia: null, portrait: null, spouse: null, acts: undefined, deeds: undefined, deedN: undefined, /* M1 傳記不沿用範本 */
+  const d = { ...JSON.parse(JSON.stringify(tpl)), id, name, adult: false, child: { since: s.t, parents: ps.map((p) => p.id) }, age: GEN.adoptAge, sprite: 'cousin', role: 'inner', personality: pers, known: pers.slice(0, 1), values, wexin: 0, classic: false, xia: null, portrait: null, spouse: null, ...(s.v22 ? { sweet: null, wed: undefined } : {}), /* loop148 孩子不沿用範本的心上人 */ acts: undefined, deeds: undefined, deedN: undefined, /* M1 傳記不沿用範本 */
     root: part(avg((p) => p.root)), wu: part(avg((p) => p.wu ?? p.root)), rootKnown: true, arts: {}, moves: ['fist'], pendingArt: null, focus: null, skills: { leg: 2, palm: 2, strength: 2, farming: 2, herbal: 2, agility: 6, cooking: 1 },
     needs: { energy: 80, hunger: 70, social: 50, fun: 70 }, hp: 100, mood: 60, thoughts: [], why: [], task: null, path: [], order: null, carry: null, away: false, at: 'hall', pos: [NODES.hall[0] + 20 * G.kids.length, NODES.hall[1] + 40], reason: '剛被收養', together: 0, master: null, oneArm: false, hidden: null, takeMul: null, reflect: null, awakened: false, duanqing: null, moodCap: null };
   seedArts(d); s.ds.push(d); G.kids.push(id); G.lastAdopt = s.t;

@@ -217,7 +217,7 @@ function waveStep(s) { const X = T(s), W = X.wave; if (!W || s.t < W.at || X.pen
   X.pending = { n: W.n, pts: W.pts, demand: 0, p: +p.toFixed(2), at: s.t, until: s.t + RAID.wait / 4, day: W.day, kind: W.kind, noPay: true, wave: 2 }; log(s, `【第二波】${kindOf(W.kind).name}重整殺回（威脅 ${W.pts}），不談價錢！迎戰勝算約 ${Math.round(p * 100)}%。`); }
 export function threatStep(s, H) { waveStep(s); const P = T(s).pending; if (P && s.t >= P.until) raidResolve(s, raidAuto(s), H, true); }
 function hurtOne(s, H) {
-  const c = s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > RAID.hurtHp && !(d.shelter > s.t)); // 孩子不上陣；loop149 躲進屋的不算
+  const c = s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > RAID.hurtHp && !(d.shelter > s.t)); // 孩子不上陣；loop148 躲進屋的不算
   if (!c.length) return null; // loop32：守門原本被併進註解，無人可傷時會當掉
   const d = c[Math.floor(R(s) * c.length)]; const hh = guardHurt(d, RAID.hurtHp); d.hp = Math.min(d.hp, hh); if (hh > RAID.hurtHp) log(s, `${d.name}護體真氣擋下重擊，傷勢輕了些`); /* loop117 */ d.raidHurt = (d.raidHurt || 0) + 1; const X = T(s); X.homeHurt++; X.next = (X.next || s.day || 0) + RAID.hurtCool; H?.think?.(s, d, 'raidHurt'); return d;
 }
@@ -241,7 +241,7 @@ export function bandStep(s, dt, H) {
   bossEnd(s, b, win, s.ds.filter((d) => d.task?.act === 'defend'));
   X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null, map: true, broke: true }); nextWave(s, b, win);
 }
-// M3（loop149）柵破避難：膽小（多慮／溫和且不膽大）或真氣＋氣血都低的弟子躲進大廳／院倉，不被選為重傷者
+// M3（loop148）柵破避難：膽小（多慮／溫和且不膽大）或真氣＋氣血都低的弟子躲進大廳／院倉，不被選為重傷者
 export const SHELTER = { hpLow: 50, qiLow: 25, dur: 4 };
 export const timid = (d) => (d.personality || []).includes('worrier') || ((d.personality || []).includes('gentle') && !(d.personality || []).includes('brave'));
 export function shelterOnBreak(s, H) {
@@ -261,11 +261,18 @@ export function raidResolve(s, i, H, auto = false) {
   bossEnd(s, P, win, []);
   X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(P.wave ? { wave: 2 } : {}), n: P.n, day: P.day, pts: P.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null}); nextWave(s, P, win); return { ok: true, win, hurt: hurt?.id || null };
 }
+/* loop148 v2.25（決定 142）：探明山寨後在山賊欄多一行狀態。只用玩家已在日誌看過的事：是否出征中、破寨／失手次數、是否已太平。 */
+export function lairLine(s) {
+  const L = s.v22 && s.lair; if (!L) return ''; const X = T(s), lost = Math.max(0, (L.n || 0) - (L.won || 0));
+  const st = L.trip ? '正在攻寨中' : X.taiping ? `已破 ${L.won} 次，山道永享太平` : [L.won ? `已破 ${L.won} 次` : '', lost ? `失手 ${lost} 次` : '', '待精銳與存糧齊備時出擊'].filter(Boolean).join('，');
+  return `<div class="k" data-lair>・後山山寨：已探明（${st}）</div>`;
+}
 export function threatHtml(s) {
   const X = T(s), P = X.pending, pts = points(s), n = headcount(s);
   const head = `<div class="threat" data-threat><b>山賊</b>：${s.band ? `【${s.band.state === 'go' ? '正沿山路逼近' : '正在撞柵'}，山賊 ${Math.max(0, Math.round(s.band.hp))}/${s.band.max}】` : ''}${n < minPopOf(s) ? `門裡才 ${n} 人，山賊還看不上（${minPopOf(s)} 人起）` /* loop125：顯示用實際門檻 */ : `家底 ${Math.round(wealth(s))}，威脅 ${pts}（戰力 ${Math.round(defense(s))}）${s.rumor ? (rumorDays(s) ? `；傳聞約 ${rumorDays(s)} 日內來犯` : '；暫無風聲') : `；下次約第 ${X.next} 日`}`}・來過 ${X.n} 次（付錢 ${X.paid}／迎戰 ${X.fought}，勝 ${X.won}）・山門重傷 ${X.homeHurt}${valorHtml(s)}`;
-  if (!P) return head + '</div>' + fenceHtml(s);
-  return `${head}<div class="raid-ask" data-raid-ask>${kindOf(P.kind) ? `【${kindOf(P.kind).name}】${kindOf(P.kind).desc}；` : ''}${P.noPay ? '不談價錢：' : `山賊要 ${P.demand} 兩：<button data-raid="0" ${s.res.coin < P.demand ? 'disabled' : ''}>付錢了事</button>`} <button data-raid="1">迎戰（勝算 ${Math.round(P.p * 100)}%）</button></div></div>${fenceHtml(s)}`;
+  const lr = lairLine(s);
+  if (!P) return head + lr + '</div>' + fenceHtml(s);
+  return `${head}${lr}<div class="raid-ask" data-raid-ask>${kindOf(P.kind) ? `【${kindOf(P.kind).name}】${kindOf(P.kind).desc}；` : ''}${P.noPay ? '不談價錢：' : `山賊要 ${P.demand} 兩：<button data-raid="0" ${s.res.coin < P.demand ? 'disabled' : ''}>付錢了事</button>`} <button data-raid="1">迎戰（勝算 ${Math.round(P.p * 100)}%）</button></div></div>${fenceHtml(s)}`;
 }
 
 // ==== （原 lair.mjs）====

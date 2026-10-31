@@ -920,3 +920,6 @@ ART = { id, name, school: 'palm'|'leg'|'inner'|'step', grade: 1..5（凡良精�
 - R2／R3：`src/` 63 → 19 個 .mjs；`dailyPipeline`、`recordDeed`；loop 測試封存到 `test/archive/`，`bash test/run.sh`。
 - M1–M3：傳記與大事紀、山賊餘黨反撲、結伴與避難。
 - 待決：見 `docs/DECISIONS.md` §9（護盾打不空、早期傳記同質、反撲敗後補償）。
+
+## v2.25（loops 148–150，擁有人 t186 盲測回饋）— 已完成
+- 市集鐵木／靈石（限量）、執事補位藏經閣／工寮、化境暫停只留三種、反派登門冷卻＋婚姻排他、山寨狀態行＋維護寬限。全進 v22 基準線，不加開關；舊 golden 與舊存檔不動。決定 138–144。

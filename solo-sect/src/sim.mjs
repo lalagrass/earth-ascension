@@ -189,7 +189,7 @@ export function buildWhy(s, id) {
   const f = facDef(id), st = s.fac[id], next = f.stages[st.stage + 1];
   if (!next) return '已到頂'; if (st.site) return '施工中'; if (f.sig || next.noBlueprint) return '鎮派建築走門派面板';
   if (next.rep && (s.rep || 0) < next.rep) return `名聲不足（${Math.floor(s.rep || 0)}/${next.rep}）`;
-  for (const [k, v] of Object.entries(next.rare || {})) if ((s.res[k] || 0) < v) return `${RARE[k]}不足（${s.res[k] || 0}/${v}，巡山遠段才撿得到）`;
+  for (const [k, v] of Object.entries(next.rare || {})) if ((s.res[k] || 0) < v) return `${RARE[k]}不足（${s.res[k] || 0}/${v}，巡山遠段才撿得到${s.v22 ? '，山下市集也有限量賣' : ''}）`;
   if (f.v16 && st.stage === 0 && lotsUsed(s) >= lotsOf(s).n) return `沒有空地（${lotsUsed(s)}/${lotsOf(s).n}），先擴地`;
   if (s.res.coin < (next.cost.coin || 0)) return `錢不夠（${next.cost.coin}）`;
   return null;
@@ -394,6 +394,11 @@ function shelterGo(s, d) {
 }
 const STAGE_NAME = ['', '踏入大成', '臻至化境', '返璞歸真'];
 /* M1：衝關事蹟；大事紀只記「本門第一位達到此境」與「某人第一門返璞歸真」，免得洗版 */
+/* loop148 v2.25（決定 140）：v22 只有本門第一位化境、第一位返璞歸真、掌門本人化境才暫停（top）；其餘化境走竹簡（mid）。舊局回 null＝照舊依字樣分級 */
+export function breakTier(s, d, r) {
+  if (!s.v22 || r.stage < 2) return null; const A = (s.alertFirst ??= {}), k = `b${r.stage}`, top = !A[k] || (r.stage === 2 && d.id === 'hero');
+  A[k] = true; return top ? 'top' : 'mid';
+}
 function breakDeed(s, d, r) {
   const firstSect = !(s.chronFirst ||= {})[`break${r.stage}`], firstSelf = r.stage === 3 && !(d.deedN?.break3);
   recordDeed(s, d, 'break'); recordDeed(s, d, `break${r.stage}`);
@@ -480,7 +485,7 @@ function doTask(s, d, dt) {
       if (t.act === 'eat' && s.res.food >= 8) think(s, d, 'wellFed');
       if (t.act === 'eat' && s.v22 && (t.mate || d.pendingMate)) { const p = byId(s, t.mate || d.pendingMate); d.pendingMate = undefined; if (p && (p.task?.act === 'eat' || p.lastAte === s.t) && (p.task?.mate === d.id || p.pendingMate === d.id || t.mate === p.id)) { d.needs.social = clamp(d.needs.social + PAIR.mealSocial, 0, 100); think(s, d, 'mealPair'); if (d.id < p.id) { relAdd(s, d, p, PAIR.mealRel); log(s, `${d.name}和${p.name}湊在一桌吃飯`, 'low'); } } }
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
-      if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) for (let i = 0; i < (facStage(s, t.fac).medEase || 1); i++) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s) - ngBreak(d)); /* loop105 內力衝關：成功率 +btBonus，仍封頂 0.9；loop108 已達 0.9 不扣 */ if (r?.ok && s.grow && r.stage <= 2) { growEnsure(d); settleGrowth(d, r.art, d.arts[r.art.id], { src: 'break', stage: r.stage }); } /* loop79 突破里程碑 */ if (r?.ok && s.v22) breakDeed(s, d, r); if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
+      if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) for (let i = 0; i < (facStage(s, t.fac).medEase || 1); i++) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s) - ngBreak(d)); /* loop105 內力衝關：成功率 +btBonus，仍封頂 0.9；loop108 已達 0.9 不扣 */ if (r?.ok && s.grow && r.stage <= 2) { growEnsure(d); settleGrowth(d, r.art, d.arts[r.art.id], { src: 'break', stage: r.stage }); } /* loop79 突破里程碑 */ const bTier = r?.ok && breakTier(s, d, r); if (r?.ok && s.v22) breakDeed(s, d, r); if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`, bTier || undefined); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
       if (t.act === 'meditate' && d.ng) addQi(d, NG.med); // loop103 打坐一次回內力（衝關扣用在前）
       if (t.act === 'learn' && d.pendingArt) { const m = learnArt(d, d.pendingArt, s.t); s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
       if (s.draw && (t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) { const c = (s.cnt ??= { chat: 0, spar: 0 }); c[t.act]++; } // loop22 完成場次計數（opt-in）

@@ -1,4 +1,4 @@
-import { DAY, EXP, SEASONS, SEASON_DAYS, BREAK } from './data.mjs';
+import { DAY, EXP, SEASONS, SEASON_DAYS, BREAK, FACILITIES } from './data.mjs';
 import { log, resAdd, pillNote } from './util.mjs';
 import { FENCE, lvOf } from './threat.mjs';
 // ==== （原 economy.mjs）====
@@ -23,19 +23,33 @@ export function settle(s, H) {
   else if (w) { X.warn++; X.misses++; for (const d of salaried(s)) H.think(s, d, 'unpaid');
     if (X.warn <= UPKEEP.warnMax) log(s, `【欠俸 ${X.warn}/${UPKEEP.warnMax}】月俸 ${w} 發不出來（只有 ${s.res.coin}）。${X.warn === UPKEEP.warnMax ? '再欠一次就會有人下山。' : '下次結算前想辦法：賣丹、少蓋、去市集變現。'}`, 'warn');
     else { const d = X.left < UPKEEP.leaveMax && leaver(s); X.warn = 0; if (d) { X.left++; log(s, `【離山】${d.name}三次領不到月俸，收拾包袱下山了。`, 'warn'); H.removeDisciple(s, d, '欠俸離山'); } } }
+  if (s.v22 && upkeepGrace(s, X, f)) return;
   if (f && s.res.coin >= f) { resAdd(s, 'coin', -f); X.lastBill.paidF = true; if (X.disrepair) log(s, '【維護】欠的修繕補上了，建築恢復。'); X.disrepair = false; }
   else if (f) { if (!X.disrepair) log(s, `【失修】付不出建築維護 ${f}，各處失修（全派心情受影響），付清就恢復。`, 'warn'); X.disrepair = true; }
 }
-const leaver = (s) => salaried(s).filter((d) => !d.xia && !d.classic && d.role !== 'head').sort((a, b) => (a.mood ?? 50) - (b.mood ?? 50))[0] || null;
+/* loop148 v2.25（決定 143）：維護寬限。v22 下，上期欠的維護併入本期；付不足時若只差一點（≤ max(abs, 維護×frac)）且上期沒欠，
+   就把手上的錢全付掉、記下欠款、發一次【維護欠款】警告，不判失修；下期還付不清（或差太多）才照舊失修。回傳 true＝已處理。 */
+export const UPKEEP_GRACE = { abs: 5, frac: 0.25 };
+function upkeepGrace(s, X, f) {
+  const owed = X.owed || 0, due = f + owed; if (!due) return true; const c = s.res.coin || 0; X.lastBill.fac = due;
+  if (c >= due) { resAdd(s, 'coin', -due); X.lastBill.paidF = true; X.owed = 0; if (owed) log(s, `【維護】上期欠的 ${owed} 補上了。`); if (X.disrepair) log(s, '【維護】欠的修繕補上了，建築恢復。'); X.disrepair = false; return true; }
+  const gap = due - c;
+  if (!owed && !X.disrepair && gap <= Math.max(UPKEEP_GRACE.abs, Math.ceil(f * UPKEEP_GRACE.frac))) { if (c) resAdd(s, 'coin', -c); X.owed = gap; X.owedN = (X.owedN || 0) + 1; log(s, `【維護欠款】維護 ${f} 只付得出 ${c}，先欠 ${gap}，併入下次結算；下次再付不清就會失修。`, 'warn'); return true; }
+  X.owed = 0; if (!X.disrepair) log(s, `【失修】付不出建築維護 ${due}，各處失修（全派心情受影響），付清就恢復。`, 'warn'); X.disrepair = true; return true;
+}
+const leaver = (s) => salaried(s).filter((d) => !d.xia && !d.classic && d.role !== 'head').sort((a, b) => (s.v22 ? (a.spouse ? 1 : 0) - (b.spouse ? 1 : 0) : 0) || (a.mood ?? 50) - (b.mood ?? 50))[0] || null; /* loop148 v22：欠俸離山先挑沒成家的 */
 
 // 山下市集：每 5 日補貨，限量，同一期每買一次價格 ×rise；療傷丹可賣，每賣一顆價 ×fall
-export const MARKET = { every: 5, stock: { herb: 12, weapon: 2 }, price: { herb: 5, weapon: 80 }, rise: 1.25, pill: { price: 14, fall: 0.85, max: 6 }, weaponMul: 1.08 };
+export const MARKET = { every: 5, stock: { herb: 12, weapon: 2 }, price: { herb: 5, weapon: 80 }, rise: 1.25, pill: { price: 14, fall: 0.85, max: 6 }, weaponMul: 1.08,
+  rare: { tiemu: { price: 35, max: 2 }, lingshi: { price: 40, max: 1 } } }; /* loop148 v2.25（決定 138）：只在 v22 新局；稀有料定價不漲、每集限量，種田流也能升二三階 */
+export const rareOn = (s, k) => !!(s?.v22 && MARKET.rare[k]);
 export const cycleOf = (s) => Math.floor(((s.day || 1) - 1) / MARKET.every);
 export function market(s) { const X = E(s), M = X.market, c = cycleOf(s); if (M.cycle !== c) { M.cycle = c; M.sold = {}; } return M; }
-export const priceOf = (s, k) => (k === 'pill' ? Math.floor(MARKET.pill.price * MARKET.pill.fall ** (market(s).sold.pill || 0)) : Math.ceil(MARKET.price[k] * MARKET.rise ** (market(s).sold[k] || 0)));
-export const left = (s, k) => (k === 'pill' ? MARKET.pill.max : MARKET.stock[k]) - (market(s).sold[k] || 0);
+export const priceOf = (s, k) => (MARKET.rare[k] ? MARKET.rare[k].price : k === 'pill' ? Math.floor(MARKET.pill.price * MARKET.pill.fall ** (market(s).sold.pill || 0)) : Math.ceil(MARKET.price[k] * MARKET.rise ** (market(s).sold[k] || 0)));
+export const left = (s, k) => (MARKET.rare[k] ? (rareOn(s, k) ? MARKET.rare[k].max : 0) : k === 'pill' ? MARKET.pill.max : MARKET.stock[k]) - (market(s).sold[k] || 0);
 const armable = (s) => s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.weapon).sort((a, b) => (b.best || 0) - (a.best || 0) || (a.id === 'hero' ? -1 : 1))[0];
 export function marketWhy(s, k) {
+  if (MARKET.rare[k] && !rareOn(s, k)) return '市集沒有這項貨';
   if (left(s, k) <= 0) return '這期賣完了，等下次補貨';
   if (k === 'pill') return (s.res.pill || 0) > 0 ? null : '沒有療傷丹可賣';
   if (k === 'weapon' && !armable(s)) return '人人都有兵器了';
@@ -45,7 +59,8 @@ export function marketDo(s, k) {
   const why = marketWhy(s, k); if (why) return { ok: false, why }; const p = priceOf(s, k), M = market(s);
   if (k === 'pill') { resAdd(s, 'pill', -1); pillNote(s, 'sold', 1); resAdd(s, 'coin', p); M.sold.pill = (M.sold.pill || 0) + 1; log(s, `山下藥舖收了一顆療傷丹，得 ${p} 香火錢。`); return { ok: true, p }; }
   resAdd(s, 'coin', -p); M.sold[k] = (M.sold[k] || 0) + 1;
-  if (k === 'herb') { resAdd(s, 'herb', 3); log(s, `在山下市集買了 3 份靈草，花 ${p}。`); }
+  if (MARKET.rare[k]) { resAdd(s, k, 1); log(s, `在山下市集買了 1 份${k === 'tiemu' ? '鐵木' : '靈石'}，花 ${p}。`); }
+  else if (k === 'herb') { resAdd(s, 'herb', 3); log(s, `在山下市集買了 3 份靈草，花 ${p}。`); }
   else { const d = armable(s); d.weapon = true; d.powMul = (d.powMul || 1) * MARKET.weaponMul; log(s, `在山下市集替${d.name}買了一把兵器（招式威力 ×${MARKET.weaponMul}），花 ${p}。`); }
   return { ok: true, p };
 }
@@ -88,8 +103,9 @@ export function econHtml(s) {
   return `<div class="econ" data-econ><div class="k">月俸與維護：第 ${nd} 日結算 月俸 ${w}（${salaried(s).length} 人）＋維護 ${f}${s.day < UPKEEP.graceDay ? `（開山寬限到第 ${UPKEEP.graceDay} 日）` : ''}</div>`
     + (X.warn ? `<div class="k warn" data-warn="${X.warn}" style="color:#b33">⚠ 欠俸 ${X.warn}/${UPKEEP.warnMax}：再發不出就有人下山（最多走 ${UPKEEP.leaveMax} 人）</div>` : '')
     + (s.jhui ? payHint(s, w, f) : '') /* loop70：月俸缺口提示（隨江湖面板開關，純顯示） */
+    + (X.owed ? `<div class="k warn" data-owed style="color:#b33">⚠ 維護欠款 ${X.owed}：併入下次結算，再付不清就失修</div>` : '')
     + (X.disrepair ? `<div class="k warn" style="color:#b33">⚠ 建築失修：付清維護就恢復</div>` : '')
-    + `<div class="row">山下市集：${btn('herb', '買靈草×3')}${btn('weapon', '買兵器')}${btn('pill', '賣療傷丹')}</div>`
+    + `<div class="row">山下市集：${btn('herb', '買靈草×3')}${btn('weapon', '買兵器')}${btn('pill', '賣療傷丹')}${s.v22 ? btn('tiemu', '買鐵木×1') + btn('lingshi', '買靈石×1') : ''}</div>`
     + `<div class="row"><button data-school ${sw ? 'disabled' : ''} title="${sw || ''}">下山義學（${schoolCost(s)} 香火錢，1 日）</button> <span class="k">${sw || `帶回的人：${X.pool.map((c) => c.name).join('、') || '—'}`}</span></div></div>`;
 }
 
@@ -115,6 +131,16 @@ export function stewardDaily(s, H) {
   if (!s.steward || H.siteOf(s)) return null;
   const pick = s.ds.length > H.capacity(s) ? 'dorm' : (s.stew?.boar || 0) >= STEW.boarSeen && (s.fac.watch?.stage || 0) === 0 ? 'watch' : s.stewkit && s.ds.length >= 8 && (s.fac.kitchen?.stage || 0) === 0 && (s.res.food || 0) < s.ds.length ? 'kitchen' : s.stewyard && s.ds.length >= STEW.yardAt && (s.fac.yard?.stage || 0) === 0 ? 'yard' : null; /* loop95「執事立樁」（s.stewyard）：外功場還是空地、人數夠 → 立木樁場（打樁不做離線補算，弟子照常自主去練） */ /* loop60「執事顧灶」（s.stewkit）：人多存飯不夠一人一頓、還是露天灶 → 蓋膳房 */
   if (pick && H.startBuild(s, pick) !== false) { (s.stew ??= {}).built = [...(s.stew.built || []), pick]; log(s, `【執事】${pick === 'dorm' ? '有人睡地鋪，執事立了擴建寢舍的藍圖' : pick === 'kitchen' ? '人多灶小，常常開飯不夠，執事立了膳房的藍圖' : pick === 'yard' ? '外功場還是一片空地，執事立了木樁場的藍圖，好讓大家打樁切磋' : '野豬屢屢下山，執事立了護山哨的藍圖'}。`); return pick; }
+  const fb = !pick && stewFallback(s); /* loop148 v2.25（決定 139）：基礎齊了，先藏經閣、再工寮 */
+  if (fb && H.startBuild(s, fb) !== false) { (s.stew ??= {}).built = [...(s.stew.built || []), fb]; log(s, `【執事】${fb === 'library' ? '木樁場、膳房都齊了，執事立了藏經閣的藍圖，好讓大家翻殘頁讀書' : '執事立了工寮的藍圖，讓雇工有地方歇'}。`); return fb; }
+  return null;
+}
+// v22 執事補位：木樁場、膳房已建、人數 ≥ fbN；木料夠、石料最多差 stoneShort（立藍圖後弟子自會採石搬料）。名聲、錢、空地仍由 buildWhy 把關。
+export const STEW_FB = { fbN: 6, stoneShort: 3, order: ['library', 'shed'] };
+export function stewFallback(s) {
+  if (!s.v22 || (s.fac.yard?.stage || 0) < 1 || (s.fac.kitchen?.stage || 0) < 1 || s.ds.length < STEW_FB.fbN) return null;
+  for (const id of STEW_FB.order) { const f = s.fac[id]; if (!f || f.stage !== 0 || f.site) continue; const c = FACILITIES.find((x) => x.id === id)?.stages[1]?.cost || {};
+    if ((s.res.wood || 0) >= (c.wood || 0) && (s.res.stone || 0) >= (c.stone || 0) - STEW_FB.stoneShort) return id; }
   return null;
 }
 export const stewBoar = (s) => { if (s.steward) (s.stew ??= {}).boar = (s.stew.boar || 0) + 1; };
