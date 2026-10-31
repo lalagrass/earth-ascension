@@ -1124,3 +1124,12 @@
 
 ## Loop 111 — 文件回填
 - NEIGONG-EVAL.md 加入 §6 實測、§7 決定 76–83、§8 待決定；loop/ROADMAP.md 加入 §22。
+
+## Loop 112 — 總驗證與交回
+- 實測：遊戲 629、sect-chronicle 383、Python 53 全過；git diff --check 乾淨；loops 101–112 沒有動到 golden 檔與 .serena/。
+- 結論：12 圈完成，交回 review，不自行開始下一輪玩法。待決定見 NEIGONG-EVAL §8。
+
+### Retro #51（loops 111–112）
+- 好：決定與待決定集中在同一份文件，實測數字和 LOG 一致。
+- 不好：loop111 的文件回填在上一次執行中斷時沒提交，留到這次才補；sect-chronicle 測試要指定 test/*.test.js，裸跑 `node --test` 會掃到別的檔、數字變 569。
+- 下一步：等擁有人看 NEIGONG-EVAL §8。
