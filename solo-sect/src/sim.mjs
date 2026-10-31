@@ -86,7 +86,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.bt25) s.bt25 = true; // loop25 突破排程（選用）
   if (heroSpec?.jhev) s.jhev = true; // loop23 江湖事件（選用）
   if (heroSpec?.peace) s.m9 = true; // loop9 太平與防禦經濟（選用） // loop8 同修請教（選用） // loop7 領悟（選用） // loop6 人以群分（選用）
-  if (heroSpec?.v22 && !heroSpec.legacyGolden) { s.v22 = true; s.v23 = true; } /* loop143；loop151 v2.3 新局（舊 v2.2 存檔沒有 s.v23，行為不變） */
+  if (heroSpec?.v22 && !heroSpec.legacyGolden) { s.v22 = true; s.v23 = true; s.v24 = true; } /* loop143；loop151 v2.3 新局（舊 v2.2 存檔沒有 s.v23，行為不變） */
   sectInit(s); s.gen = genInit(); if (heroSpec?.bonus) s.gen.suhuiStart = heroSpec.bonus;
   if (s.grow) growInit(s);
   if (s.prof) for (const d of s.ds) d.pf = 1; /* loop91 */
@@ -711,7 +711,7 @@ export { recordDeed, DEED_CAP, CHRON_CAP, tallyAct, bioLine, bioLean } from './u
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
   if (s.prof) for (const d of s.ds) if (!d.pf) d.pf = 1; /* loop91 新入門者也吃熟練度十重 */
-  if (s.v23) { for (const d of s.ds) { d.v23 = true; d.sectId = s.sect?.id || null; if (d.ng && hasSpec(d, 'jiuyang') && !d.path?.length) addQi(d, 0.25 * dt); } if (s.jh?.poison && bestSpec(s, 'yishu') > 0) { s.jh.poison = null; log(s, '醫者出手，化骨綿掌的餘毒被解了。'); } } /* loop151 */
+  if (s.v23) { for (const d of s.ds) { d.v23 = true; if (s.v24) d.v24 = true; d.sectId = s.sect?.id || null; if (d.ng && hasSpec(d, 'jiuyang') && !d.path?.length) addQi(d, 0.25 * dt); } if (s.jh?.poison && bestSpec(s, 'yishu') > 0) { s.jh.poison = null; log(s, '醫者出手，化骨綿掌的餘毒被解了。'); } } /* loop151 */
   if (s.neigong) { s.ngshield = true; for (const d of s.ds) { if (!d.ng) { d.ng = 1; d.qi ??= 0; } if (!d.ng2) { d.ng2 = 1; d.qi = Math.min(d.qi ?? 0, qiMax(d)); } } } /* loop142 一版舊檔改護體真氣 */ /* loop103 */
   if (s.laborgrow) for (const d of s.ds) d.lg = 1; /* loop127 新入門者 */
   if (s.grow) for (const d of s.ds) { if (!d.gInit) growEnsure(d); if (s.growdr) d.gdr = 1; } /* loop84 新入門者立即折算，介面不必寫狀態 */

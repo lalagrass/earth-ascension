@@ -364,7 +364,9 @@ export const qiSchool = (d) => !!(d?.v23 && (d.sectId === 'qizong' || (d.zixia |
 export const qiStrikeMul = (d) => (d?.v23 ? (innerArts(d).length ? 1 + NG23.qiStrikeK * qiOf(d) / 100 : 1) * (qiSchool(d) ? NG23.qiSchool : 1) : 1);
 export const qiAoeAdd = (d, mv) => (d?.v23 && mv.aoe && qiOf(d) >= NG23.qiAoeAt ? NG23.qiAoe : 0);
 // loop157 修正：招式沒有 skill:'sword'，改看所屬武學是否劍法；獨孤九劍各式不在 techs，以 fx 'dugu' 認
-const swordArtOf = (mv) => { const id = mv?.id || mv; if (MOVES.find((m) => m.id === id)?.fx === 'dugu') return 'dugu'; const a = artOfMove(id); return a && ART_CAT[a.id]?.jianfa ? a.id : null; };
+/* loop159 v2.4 Batch 0.2：isSwordArt 依規格（ART_CAT 劍法、weapon:'sword'、id 含 sword、三門經典劍法）；swordArtOf 改經 isSwordArt，與 loop157 修正同一入口，不重複乘 */
+export function isSwordArt(id) { return ART_CAT[id]?.jianfa > 0 || ARTS.find((x) => x.id === id)?.weapon === 'sword' || String(id).toLowerCase().includes('sword') || ['dugu', 'bixie', 'xuantie'].includes(id); }
+const swordArtOf = (mv) => { const id = mv?.id || mv; if (MOVES.find((m) => m.id === id)?.fx === 'dugu') return 'dugu'; const a = artOfMove(id); return a && isSwordArt(a.id) ? a.id : null; };
 export const isSwordMove = (mv) => !!swordArtOf(mv);
 export const swordCdMul = (d, mv) => (d?.v23 && isSwordMove(mv) ? NG23.swordCd : 1);
 export const swordDmgMul = (d, mv) => { if (!d?.v23) return 1; const id = swordArtOf(mv); return id && artTier(d, id) <= NG23.swordEarlyTier ? NG23.swordEarly : 1; };

@@ -6,8 +6,8 @@ import { MARKET, marketDo, marketWhy, left, econHtml } from '../src/economy.mjs'
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
 const OLD = () => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false });
 
-test('loop148 市集：鐵木 35×2、靈石 30×2（loop157 P6），每集限量；買完補貨後可再買', () => {
-  const s = V(); s.res.coin = 500; s.res.tiemu = 0; s.res.lingshi = 0;
+test('loop148 市集：鐵木 35×2、靈石 30×2（loop157 P6；v2.3 存檔，loop159 起新局改走商隊規則），每集限量；買完補貨後可再買', () => {
+  const s = V(); delete s.v24; s.res.coin = 500; s.res.tiemu = 0; s.res.lingshi = 0;
   assert.equal(MARKET.rare.tiemu.price, 35); assert.equal(left(s, 'tiemu'), 2); assert.equal(left(s, 'lingshi'), 2);
   assert.ok(marketDo(s, 'tiemu').ok); assert.ok(marketDo(s, 'tiemu').ok); assert.equal(marketDo(s, 'tiemu').ok, false);
   assert.ok(marketDo(s, 'lingshi').ok); assert.ok(marketDo(s, 'lingshi').ok); assert.match(marketWhy(s, 'lingshi'), /賣完/);
