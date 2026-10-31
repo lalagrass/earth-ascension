@@ -1428,3 +1428,9 @@
 - 做得好：所有數值走 `NG23` 一張表，介面直接讀表，不會和規則脫節。
 - 不好：玉女、蛤蟆、氣宗加成只接巡獵；守柵與巡山不吃，玩家可能覺得「沒用」。已在規則說明寫清楚。
 - 下一步：Batch 3 村中幫工。
+
+## Loop 155 — v2.3 Batch 3：村中幫工（決定 156–161）
+- `data.mjs`：`LABOR_ACTS23`、`LABOR23`（專長表、清修參數）、`LABOR_POOL23` 四人、工寮第三階「村舍大院」（v23 記號）。
+- `sim.mjs`：K 表換 `LABOR_ACTS23`、雇工池延伸、`lspec`、拿手活 ×1.35、`laborSpeed`（專長／清修工時）、`isEliteHermit`、`buildWhy` 擋舊局第三階、高人邀請免根骨好感。`threat.mjs` `canDefend` 放行已揭露高人；`jianghu.mjs` 高人揭露後在 v23 仍當幫工；`economy.mjs` `stewLabor`。`main.mjs` 建造面板擋舊局第三階、清修徽記。
+- 冒煙：seed 1003 30 日工寮升到村舍大院、雇滿 8 名幫工（含揭露的高人）；其他三局沒蓋工寮（人數 16+，執事先做別的）。
+- 測試：v23 +4 項（12 項）；golden-30d-v22 `7bd6beb717f1a8fd → 96954ee64f33c308`；舊 golden 不動。

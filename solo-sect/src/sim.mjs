@@ -1,7 +1,7 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
-import { ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
+import { LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
 import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, fogStep, unlockStep, chapterStep } from './world.mjs';
@@ -187,7 +187,7 @@ export function lotWhy(s) { const L = lotsOf(s); if (L.n >= LOTS.max) return '�
 export function buyLot(s) { const w = lotWhy(s); if (w) return { ok: false, why: w }; const c = lotCost(s), L = lotsOf(s); resAdd(s, 'coin', -c); L.n++; L.bought++; log(s, `擴地：花 ${c} 錢整出一塊新地（地塊 ${lotsUsed(s)}/${L.n}）`); return { ok: true, c }; }
 export function buildWhy(s, id) {
   const f = facDef(id), st = s.fac[id], next = f.stages[st.stage + 1];
-  if (!next) return '已到頂'; if (st.site) return '施工中'; if (f.sig || next.noBlueprint) return '鎮派建築走門派面板';
+  if (!next || (next.v23 && !s.v23)) return '已到頂'; if (st.site) return '施工中'; if (f.sig || next.noBlueprint) return '鎮派建築走門派面板';
   if (next.rep && (s.rep || 0) < next.rep) return `名聲不足（${Math.floor(s.rep || 0)}/${next.rep}）`;
   for (const [k, v] of Object.entries(next.rare || {})) if ((s.res[k] || 0) < v) return `${RARE[k]}不足（${s.res[k] || 0}/${v}，巡山遠段才撿得到${s.v22 ? '，山下市集也有限量賣' : ''}）`;
   if (f.v16 && st.stage === 0 && lotsUsed(s) >= lotsOf(s).n) return `沒有空地（${lotsUsed(s)}/${lotsOf(s).n}），先擴地`;
@@ -291,7 +291,7 @@ const fillWhy = (w, c) => (w || '').replace(/\{([\w.]+)\}/g, (_, p) => path(c, p
 const POST_PRED = { plotWork: (c) => c.plotWork, skip: (c) => c.skip, outer: (c) => c.d.role === 'outer', em: (c) => c.em, myDuty: (c, o) => (c.d.duties || CHORE_ACTS).includes(o.act), owe: (c) => c.owe > 0, foodLow: (c) => foodLow(c.s), head: (c) => c.d.role === 'head' };
 const postTest = (k, c, o) => (k === true ? true : k[0] === '!' ? !POST_PRED[k.slice(1)](c, o) : POST_PRED[k](c, o));
 function postRows(s, d, out, plotWork) {
-  const lab = isLabor(d), c = { s, d, plotWork, FS: FOOD_SEC, K: { LABOR_ACTS, LABOR_WORK_MUL, CHORE_ACTS, QUOTA } };
+  const lab = isLabor(d), c = { s, d, plotWork, FS: FOOD_SEC, K: { LABOR_ACTS: s.v23 ? LABOR_ACTS23 : LABOR_ACTS, LABOR_WORK_MUL, CHORE_ACTS, QUOTA } };
   if (!lab) { c.skip = skipsChores(s, d); c.em = emergency(s); c.owe = quotaOf(d, s) - (d.chore || 0); c.prioMul = PRIO[d.prio || 'normal'][0]; }
   const list = (v) => (typeof v === 'string' ? path(c, v) : v);
   for (const R of SCORE_POST) {
@@ -309,6 +309,7 @@ export function scoreActs(s, d) {
     const score = valOf(T.v, c); if (score > 0) out.push({ act: R.act, score, why: fillWhy(T.why, c), ...(T.layer || R.layer ? { layer: T.layer || R.layer } : {}) }); }
   if (s.band && BAND.defendScore > 0 && canDefend(d)) out.push({ act: 'defend', score: BAND.defendScore, why: s.band.state === 'go' ? '山賊往菜園來了，去柵邊守著' : '山賊在撞柵，去打退他們' }); // loop3
   if (d.v23 && d.ng && qiMax(d) > 0 && qiOf(d) < qiMax(d) * NG23.medLow) for (const o of out) if (o.act === 'meditate') { o.score *= NG23.medBoost; o.why += '（內力不足，先打坐回氣）'; } /* loop153 */
+  if (d.v23 && d.lspec && isLabor(d)) for (const o of out) if (o.act === d.lspec) { o.score *= LABOR23.specMul; o.why += '（拿手活）'; } /* loop155 */
   drawBoost(s, d, out); // loop6
   pairBoost(s, d, out); // loop8
   { const rs = repairScore(s, d); if (rs > 0) out.push({ act: 'repair', score: rs, why: s.fence.hp <= 0 ? '柵被撞破了，得趕快補上' : '柵有破損，去補一補' }); } // loop2 修柵廣告
@@ -464,7 +465,7 @@ function doTask(s, d, dt) {
     t.timer += dt;
     if (t.partner && !byId(s, t.partner)) { cancelTask(s, d, '對手不在了'); return; }
     if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = byId(s, t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
-    const effDur = durOf(s, t);
+    const effDur = durOf(s, t) / (s.v23 ? laborSpeed(s, d, t.act) : 1); /* loop155 幫工專長／清修 */
     if (A.energy && effDur > 0) d.needs.energy = clamp(d.needs.energy + A.energy * dt / effDur, 0, 100);
     if (t.act === 'rest' && d.ng) addQi(d, (d.v23 ? restQi(d) : NG.rest) * dt); // loop103 歇息回內力
     if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (t.floor ? 0.6 : 1) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', s.t); if (t.timer < dt * 1.5) think(s, d, t.floor || (t.fac === 'hall' && s.fac.hall.stage === 0) ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= CORE.wakeAt && t.timer > 4))) finish(s, d); return; }
@@ -622,9 +623,12 @@ function ecoStep(s, dt) {
 }
 
 // ---- v0.8 雇工：有名有姓、有性格、有隱藏根骨 ----
+// loop155 v2.3 清修山莊：弟子 ≤3 且幫工 ≥2；練功／打坐／讀書快 20%
+export const isEliteHermit = (s) => !!(s.v23 && disciples(s).length <= LABOR23.hermitMaxD && laborers(s).length >= LABOR23.hermitMinL);
+export const laborSpeed = (s, d, act) => (isLabor(d) && d.lspec === act ? LABOR23.specSpeed : 1) * (!isLabor(d) && LABOR23.hermitActs.includes(act) && isEliteHermit(s) ? LABOR23.hermitBuff : 1);
 export function laborCap(s) { return FACILITIES.reduce((a, f) => a + (facStage(s, f.id).laborBeds || 0), 0); }
 export function canHire(s) {
-  const next = LABOR_POOL.find((p) => !s.ds.some((d) => d.id === p.id) && !s.laborGone.includes(p.id));
+  const next = (s.v23 ? [...LABOR_POOL, ...LABOR_POOL23] : LABOR_POOL).find((p) => !s.ds.some((d) => d.id === p.id) && !s.laborGone.includes(p.id));
   if (!next) return { ok: false, why: '村裡暫時沒人想上山做工' };
   if (laborers(s).length >= laborCap(s)) return { ok: false, why: laborCap(s) ? `工寮已滿（${laborers(s).length}/${laborCap(s)}）` : '先蓋工寮讓雇工有地方睡' };
   if (s.res.coin < ECON.hireCoin) return { ok: false, why: `香火錢不足（${s.res.coin}/${ECON.hireCoin}）` };
@@ -635,7 +639,7 @@ export function hire(s) {
   const c = canHire(s); if (!c.ok) return c;
   s.res.coin -= ECON.hireCoin; s.res.food -= ECON.hireFood; book(s, 'out', 'coin', ECON.hireCoin); book(s, 'out', 'food', ECON.hireFood);
   const d = mkDisciple(c.next, 1, 'gate', c.next.personality, c.next.personality.slice(0, 1));
-  Object.assign(d, { role: 'laborer', root: c.next.root, rootKnown: false, cowork: 0, unpaid: 0, reason: '應雇上山' });
+  Object.assign(d, { role: 'laborer', root: c.next.root, rootKnown: false, cowork: 0, unpaid: 0, reason: '應雇上山' }); if (s.v23 && LABOR23.spec[d.id]) d.lspec = LABOR23.spec[d.id]; /* loop155 幫工專長 */
   s.ds.push(d); for (const o of s.ds) if (o !== d) initPair(s, o, d, 0);
   log(s, `雇了山下的${d.name}來做工（香火錢 ${ECON.hireCoin}、糧 ${ECON.hireFood}；每日工錢 ${ECON.wage}）。`); return { ok: true, d };
 }
@@ -650,6 +654,7 @@ function checkRoot(s, d) { if (!d.rootKnown && (d.cowork || 0) >= ROOT.revealAt)
 export const avgAff = (s, d) => { const ds = disciples(s); return ds.length ? ds.reduce((a, o) => a + aff(s, o, d), 0) / ds.length : 0; };
 export function canInvite(s, id) {
   const d = byId(s, id); if (!d || !isLabor(d)) return { ok: false, why: '不是雇工' };
+  if (s.v23 && d.hidden?.shown) { if (disciples(s).length >= capacity(s)) return { ok: false, why: `弟子床位已滿（${disciples(s).length}/${capacity(s)}）` }; return { ok: true, d }; } /* loop155 隱世高人身分已明：不必再看根骨與好感 */
   if (!d.rootKnown) return { ok: false, why: `還看不出根骨（共事 ${Math.floor(d.cowork || 0)}/${ROOT.revealAt}）` };
   if (d.root < ROOT.inviteMin) return { ok: false, why: `根骨${ROOT.names[d.root]}，不宜習武` };
   if (avgAff(s, d) < ROOT.inviteAff) return { ok: false, why: `同門對他還不熟（好感 ${avgAff(s, d).toFixed(0)}/${ROOT.inviteAff}）` };
@@ -698,7 +703,7 @@ export function dailyPipeline(s) {
   if (s.draw) cliqueDaily(s);
   if (s.m9) lairDaily(s, EH);
   if (s.jhev) jhevDaily(s);
-  if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild });
+  if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild, ...(s.v23 ? { hire, canHire, laborCap, laborers, stewHireCoin: LABOR23.stewHireCoin } : {}) });
 }
 export { recordDeed, DEED_CAP, CHRON_CAP, tallyAct, bioLine, bioLean } from './util.mjs';
 export function tick(s, dt = 0.25) {

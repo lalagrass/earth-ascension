@@ -57,3 +57,29 @@ test('loop154 介面：內功被動與 v2.3 內功規則只在 v23 顯示', () =
   assert.match(qiStatus(d, s.t), /內功被動：吐納/); assert.match(qiStatus(d, s.t), /御氣疾行/); assert.match(neigongRules2Html(d), /打坐一次 \+16/);
   const o = OLD(); tick(o, 0.1); const h = hero(o); learnArt(h, 'breath', o.t); assert.doesNotMatch(qiStatus(h, o.t), /內功被動/); assert.match(neigongRules2Html(h), /打坐一次 \+12/);
 });
+import { canHire, hire, laborCap, buildWhy, isEliteHermit, laborSpeed, scoreActs, canInvite } from '../src/sim.mjs';
+import { LABOR_POOL, LABOR23 } from '../src/data.mjs';
+import { canDefend } from '../src/threat.mjs';
+const rich = (s) => { s.res.coin = 999; s.res.food = 999; s.res.wood = 99; s.res.stone = 99; s.rep = 99; };
+test('loop155 村舍大院只在 v23 可蓋；床位 8', () => {
+  const s = V(), o = OLD(); for (const x of [s, o]) { rich(x); x.fac.shed.stage = 2; }
+  assert.equal(buildWhy(o, 'shed'), '已到頂'); assert.equal(buildWhy(s, 'shed'), null); s.fac.shed.stage = 3; assert.equal(laborCap(s) >= 8, true);
+});
+test('loop155 v23 第 7 位起雇到新幫工，帶專長；舊局只有原六人', () => {
+  const s = V(), o = OLD(); for (const x of [s, o]) { rich(x); x.fac.shed.stage = 2; }
+  s.fac.shed.stage = 3; for (let i = 0; i < 8; i++) assert.ok(hire(s).ok, `hire ${i}`); const L = s.ds.filter((d) => d.role === 'laborer');
+  assert.ok(L.some((d) => d.id === 'shibo')); assert.ok(L.every((d) => d.lspec === LABOR23.spec[d.id]));
+  for (let i = 0; i < 4; i++) hire(o); assert.ok(o.ds.filter((d) => d.role === 'laborer').every((d) => !d.lspec && LABOR_POOL.some((p) => p.id === d.id)));
+});
+test('loop155 幫工專長：評分 ×1.35、快 20%；v23 幫工可種菜煮飯挑水修柵採藥', () => {
+  const s = V(); rich(s); s.fac.shed.stage = 1; hire(s); tick(s, 0.1); const d = s.ds.find((x) => x.role === 'laborer');
+  assert.equal(laborSpeed(s, d, d.lspec), 1.2); assert.equal(laborSpeed(s, d, 'build'), 1);
+  const acts = new Set(scoreActs(s, d).map((o) => o.act)); for (const a of acts) assert.ok(['rest', 'eat', 'chat', 'leisure', 'chop', 'quarry', 'build', 'farm', 'cook', 'water', 'repair', 'forage', 'defend'].includes(a), a);
+});
+test('loop155 清修山莊：弟子 ≤3 且幫工 ≥2；隱世高人身分已明可守柵、可直接邀入門', () => {
+  const s = V(); rich(s); s.fac.shed.stage = 2; hire(s); hire(s); tick(s, 0.1);
+  while (s.ds.filter((d) => d.role !== 'laborer').length > 3) s.ds.splice(s.ds.findIndex((d) => d.role !== 'laborer' && d.id !== 'hero'), 1);
+  assert.ok(isEliteHermit(s)); assert.equal(laborSpeed(s, hero(s), 'train'), 1.2); assert.equal(isEliteHermit(OLD()), false);
+  const L = s.ds.find((d) => d.role === 'laborer'); L.hp = 100; L.needs.energy = 100; assert.equal(canDefend(L), false);
+  L.hidden = { art: 'tantui', shown: true }; assert.equal(canDefend(L), true); s.ds.splice(s.ds.findIndex((d) => d.role !== 'laborer' && d.id !== 'hero'), 1); const ci = canInvite(s, L.id); assert.ok(ci.ok, ci.why);
+});

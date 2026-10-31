@@ -92,8 +92,8 @@ function villain(s, H, k) {
   } else { s.jh[k] = 1; for (const d of fighters(s)) { d.hp = Math.max(10, d.hp - 40); mood(d, -10); } log(s, `打不過（門派戰力 ${Math.round(pw)} / ${need}）：眾人重傷，${k === 'dfbb' ? '東方不敗' : '火雲邪神'}揚長而去。（不會死人；之後還會再來）`); }
 }
 function revealHidden(s) {
-  const l = s.ds.find((d) => d.hidden && !d.hidden.shown); if (!l) return; l.hidden.shown = true; teachJ(s, l, l.hidden.art, DA); l.noGrow = l.hidden.art; l.hidden.xp = l.arts[l.hidden.art].xp; l.role = 'outer'; delete l.unpaid;
-  log(s, `【深藏不露】${l.name}一出手就是大成的${({ tantui: '十二路譚腿', tiexian: '洪家鐵線拳', bagua: '五郎八卦棍' })[l.hidden.art]}，斧頭幫抱頭鼠竄！（轉為外門弟子；老了，不再進步）`); s.rep = (s.rep || 0) + 3;
+  const l = s.ds.find((d) => d.hidden && !d.hidden.shown); if (!l) return; l.hidden.shown = true; teachJ(s, l, l.hidden.art, DA); l.noGrow = l.hidden.art; l.hidden.xp = l.arts[l.hidden.art].xp; if (!s.v23) { l.role = 'outer'; delete l.unpaid; } /* loop155 v2.3：高人仍當幫工，可守柵；要收入門走邀請 */
+  log(s, `【深藏不露】${l.name}一出手就是大成的${({ tantui: '十二路譚腿', tiexian: '洪家鐵線拳', bagua: '五郎八卦棍' })[l.hidden.art]}，斧頭幫抱頭鼠竄！（${s.v23 ? '仍在村裡幫工，山賊來時會守柵；可邀入門' : '轉為外門弟子'}；老了，不再進步）`); s.rep = (s.rep || 0) + 3;
   if (isHero(s, 'axing')) arc(s, 'axing', 3, '豬籠城寨臥虎藏龍');
 }
 function fourGirls(s, who, dv) { const d = heroD(s); s.hero.flags = { ...(s.hero.flags || {}), girl: who }; if (d?.values) for (const [k, x] of Object.entries(dv)) d.values[k] = Math.max(-50, Math.min(50, (d.values[k] || 0) + x)); arc(s, 'zhangwuji', 5, `四女之中，選了${({ zhaomin: '趙敏', zhouzhiruo: '周芷若', xiaozhao: '小昭', yinli: '殷離' })[who]}`); }

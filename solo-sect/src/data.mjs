@@ -161,6 +161,7 @@ export const FACILITIES = [
     { name: '空地', sprite: null, offers: [], laborBeds: 0 },
     { name: '工寮', sprite: 'dorm_s0', offers: ['rest'], restRate: 6, laborBeds: 2, laborOnly: true, cost: { wood: 6 }, work: 16 },
     { name: '大工寮', sprite: 'dorm_s1', offers: ['rest'], restRate: 7, laborBeds: 4, laborOnly: true, cost: { wood: 8, stone: 6, coin: 4 }, work: 22, rep: 10 },
+    { name: '村舍大院', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, laborBeds: 8, laborOnly: true, cost: { wood: 12, stone: 8, coin: 12 }, work: 28, rep: 15, v23: true }, /* loop155 v2.3：只在 s.v23 可蓋 */
   ] },
   { id: 'store', name: '院倉', node: 'court', stages: [{ name: '柴堆', sprite: 'woodpile', offers: ['chat', 'leisure'] }] },
 ];
@@ -353,6 +354,10 @@ export const RES_NAMES = { wood: '木', stone: '石', coin: '香火錢', veg: '�
 // 雇工能做的事（不練武、不聽講、不下廚種菜）；幹活時分數加成
 export const LABOR_ACTS = ['rest', 'eat', 'chat', 'leisure', 'chop', 'quarry', 'build'];
 export const LABOR_WORK_MUL = 1.4;
+// loop155 v2.3 村中幫工：多做種菜、煮飯、挑水、修柵、採藥（隱世高人另可守柵）；專長活 ×1.35 評分、快 20%
+export const LABOR_ACTS23 = [...LABOR_ACTS, 'farm', 'cook', 'water', 'repair', 'forage', 'defend'];
+export const LABOR23 = { specMul: 1.35, specSpeed: 1.2, hermitMaxD: 3, hermitMinL: 2, hermitBuff: 1.2, hermitActs: ['train', 'meditate', 'study'], stewHireCoin: 60,
+  spec: { dazhu: 'chop', erya: 'farm', laohuang: 'water', xiaoliu: 'forage', achun: 'cook', tiezi: 'quarry', shibo: 'repair', axiu: 'cook', shuisheng: 'water', caogen: 'farm' } };
 // 根骨（隱藏潛力 1–5）：與弟子一起幹活／聊天累積「共事」秒數後揭露；≥ inviteMin 且弟子平均好感 ≥ inviteAff 可邀入門
 export const ROOT = { revealAt: 240, inviteMin: 3, inviteAff: 18, names: ['', '平平', '尚可', '中上', '良材', '奇才'] };
 export const LABOR_POOL = [
@@ -362,6 +367,12 @@ export const LABOR_POOL = [
   { id: 'xiaoliu', name: '小六', adult: true, sprite: 'cousin', style: 'leg', root: 5, skills: { leg: 6, palm: 2, strength: 6, farming: 3, herbal: 4, agility: 14, cooking: 1 }, traits: { playful: 1.2 }, personality: ['free', 'brave'] },
   { id: 'achun', name: '阿春', adult: true, sprite: 'senior', style: 'palm', root: 3, skills: { leg: 2, palm: 4, strength: 8, farming: 7, herbal: 9, agility: 9, cooking: 9 }, traits: {}, personality: ['gentle', 'diligent'] },
   { id: 'tiezi', name: '鐵子', adult: true, sprite: 'hero', style: 'leg', root: 2, skills: { leg: 5, palm: 3, strength: 13, farming: 2, herbal: 1, agility: 8, cooking: 2 }, traits: {}, personality: ['brave', 'worrier'] },
+];
+export const LABOR_POOL23 = [ /* loop155 v2.3：只在 s.v23 接在原六人之後 */
+  { id: 'shibo', name: '石伯', adult: true, sprite: 'hero', style: 'palm', root: 1, skills: { leg: 1, palm: 2, strength: 12, farming: 3, herbal: 1, agility: 4, cooking: 3 }, traits: {}, personality: ['honest', 'diligent'] },
+  { id: 'axiu', name: '阿秀', adult: true, sprite: 'senior', style: 'leg', root: 2, skills: { leg: 2, palm: 1, strength: 5, farming: 6, herbal: 5, agility: 8, cooking: 12 }, traits: {}, personality: ['gentle', 'sociable'] },
+  { id: 'shuisheng', name: '水生', adult: true, sprite: 'cousin', style: 'leg', root: 3, skills: { leg: 4, palm: 2, strength: 10, farming: 5, herbal: 2, agility: 9, cooking: 2 }, traits: {}, personality: ['optimist', 'diligent'] },
+  { id: 'caogen', name: '草根', adult: true, sprite: 'hero', style: 'palm', root: 2, skills: { leg: 2, palm: 2, strength: 8, farming: 12, herbal: 4, agility: 6, cooking: 4 }, traits: {}, personality: ['honest', 'worrier'] },
 ];
 
 // v0.85 內外門與日課

@@ -133,6 +133,7 @@ export function stewardDaily(s, H) {
   if (pick && H.startBuild(s, pick) !== false) { (s.stew ??= {}).built = [...(s.stew.built || []), pick]; log(s, `【執事】${pick === 'dorm' ? '有人睡地鋪，執事立了擴建寢舍的藍圖' : pick === 'kitchen' ? '人多灶小，常常開飯不夠，執事立了膳房的藍圖' : pick === 'yard' ? '外功場還是一片空地，執事立了木樁場的藍圖，好讓大家打樁切磋' : '野豬屢屢下山，執事立了護山哨的藍圖'}。`); return pick; }
   const fb = !pick && stewFallback(s); /* loop148 v2.25（決定 139）：基礎齊了，先藏經閣、再工寮 */
   if (fb && H.startBuild(s, fb) !== false) { (s.stew ??= {}).built = [...(s.stew.built || []), fb]; log(s, `【執事】${fb === 'library' ? '木樁場、膳房都齊了，執事立了藏經閣的藍圖，好讓大家翻殘頁讀書' : '執事立了工寮的藍圖，讓雇工有地方歇'}。`); return fb; }
+  if (s.v23 && H.hire) return stewLabor(s, H); /* loop155 v2.3 */
   return null;
 }
 // v22 執事補位：木樁場、膳房已建、人數 ≥ fbN；木料夠、石料最多差 stoneShort（立藍圖後弟子自會採石搬料）。名聲、錢、空地仍由 buildWhy 把關。
@@ -141,6 +142,13 @@ export function stewFallback(s) {
   if (!s.v22 || (s.fac.yard?.stage || 0) < 1 || (s.fac.kitchen?.stage || 0) < 1 || s.ds.length < STEW_FB.fbN) return null;
   for (const id of STEW_FB.order) { const f = s.fac[id]; if (!f || f.stage !== 0 || f.site) continue; const c = FACILITIES.find((x) => x.id === id)?.stages[1]?.cost || {};
     if ((s.res.wood || 0) >= (c.wood || 0) && (s.res.stone || 0) >= (c.stone || 0) - STEW_FB.stoneShort) return id; }
+  return null;
+}
+// loop155 v2.3 執事管幫工：工寮住滿就升級（大工寮→村舍大院），還有床位且手頭寬裕就雇人
+export function stewLabor(s, H) {
+  const L = H.laborers(s).length, cap = H.laborCap(s), sh = s.fac.shed;
+  if (sh && sh.stage >= 1 && L >= cap && H.startBuild(s, 'shed') !== false) { (s.stew ??= {}).built = [...(s.stew.built || []), 'shed']; log(s, '【執事】工寮住滿了，執事立了擴建工寮的藍圖。'); return 'shed'; }
+  if (L < cap && (s.res.coin || 0) >= H.stewHireCoin && H.canHire(s).ok) { const r = H.hire(s); if (r.ok) { log(s, `【執事】工寮還有空床，執事替山莊雇了${r.d.name}。`); return 'hire'; } }
   return null;
 }
 export const stewBoar = (s) => { if (s.steward) (s.stew ??= {}).boar = (s.stew.boar || 0) + 1; };

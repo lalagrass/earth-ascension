@@ -129,7 +129,7 @@ export function nodePath(a, b) { // BFS，只走既有邊
 }
 export function newBand(P, to) { const path = nodePath(BAND.from, to); return { n: P.n, pts: P.pts, day: P.day, hp: P.pts, max: P.pts, pos: [...NODES[BAND.from]], path: path.slice(1), state: 'go', clock: 0, fenceDealt: 0, defDealt: 0 }; }
 export const defenderDps = (d) => BAND.dps.base + ((d.skills.palm || 0) + (d.skills.leg || 0) + (d.skills.strength || 0)) / BAND.dps.per + dpsBonus(d); // loop117 護體真氣
-export const canDefend = (d) => d.adult !== false && !d.away && d.role !== 'laborer' && d.hp >= BAND.hpMin && d.needs.energy >= BAND.energyMin;
+export const canDefend = (d) => d.adult !== false && !d.away && (d.role !== 'laborer' || !!(d.v23 && d.hidden?.shown)) && /* loop155 隱世高人仍是幫工，但可守柵 */ d.hp >= BAND.hpMin && d.needs.energy >= BAND.energyMin;
 // 走一步：回傳是否到達
 export function bandWalk(b, dt) {
   let left = BAND.speed * dt;
