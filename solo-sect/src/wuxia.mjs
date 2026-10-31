@@ -68,6 +68,12 @@ export function xiaStep(s, H) {
     log(s, `【奇遇】${A.title}：${A.text}`); if (!s.hero?.askMajor) s.autoAt = s.t; return;
   }
 }
+/* loop68：奇遇卡各選項的後果說明（只寫玩家看得到的結果，不透露暗特質或時機）；純顯示，不寫入狀態 */
+export function xiaHints(ch) {
+  const A = XIA[ch?.xia]; if (!A) return null; const no = '三天後或許還會再來';
+  if (A.role === 'teacher') return [ch.xia === 'zhoubotong' ? '他在山門邊住下，找弟子打賭比武' : '名聲 +3；他在膳房邊住下，吃得好就肯教東西', no];
+  return [A.role === 'guest' ? '以客人身分住下：多一張嘴吃飯、佔一個床位；長期心情太差會下山' : '入門成為弟子：多一張嘴吃飯、佔一個床位；長期心情太差會下山', no];
+}
 export function xiaResolve(s, ch, i) {
   const k = ch.xia, A = XIA[k]; s.choices = s.choices.filter((c) => c !== ch); s.xia.pending = null;
   if (i !== 0) { s.xia.declined[k] = s.t; log(s, `婉拒了${A.name}。（三天後或許還會再來）`); return true; }
