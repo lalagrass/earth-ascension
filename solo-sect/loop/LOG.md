@@ -1023,3 +1023,12 @@
 - 計畫：BAOZOU-EVAL.md 補 §7 實測、§8 決定 69–75、§9 待決定；ROADMAP 加 §21。
 - 結論：待決定集中在 BAOZOU-EVAL §9 與 GROWTH-LAYERS §9 兩處。
 - Mini retro：決定編號接續 68，交回時照列。
+
+## Loop 100 — 總驗證與交回
+- 實測：遊戲 606、sect-chronicle 383、Python 53 全過；diff check 乾淨；golden 檔與 .serena/ 皆未變動；瀏覽器截圖頁面錯誤 0。
+- 結論：12 圈完成，交回 review，不自行開始下一輪玩法。
+
+### Retro #45（loops 99–100）
+- 好：查證先行，捏造來源全部標出；兩個開關都有接線、反例、A/B。
+- 不好：熟練度十重的實際影響太小，應在 loop 90 先算門檻；執事立樁的影響則被低估。
+- 下一步：等擁有人看 BAOZOU-EVAL §9。
