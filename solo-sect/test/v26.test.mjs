@@ -50,3 +50,17 @@ test('loop171 雜學：跨兩派血統 → 分心 0.85；大成 ≥4 且造詣 �
   for (const id of ['emeiSword', 'luoyingPalm', 'jindingPalm', 'tianluoPalm', 'chousuiPalm']) give(d, id, 100); d.mast = null;
   const m = Math.max(...Object.keys(A.CATS).map((k) => A.mastery(d, k))); if (m >= 50) { assert.equal(A.polymath24(d), 2); assert.ok(A.styleDmg24(d) >= 1.18 - 1e-9); }
 });
+test('loop172 華山二宗／武當成長鏈：資料照規格、v24 專屬', () => {
+  const chk = (id, k, g, sc) => { const a = A.artById(id); assert.ok(a && a.v24 && a.classic && !a.secret && a.own24 === k && a.grade === g && a.school === sc, id); assert.ok(A.ART_CAT[id], id); if (sc !== 'inner' && sc !== 'step') assert.equal(a.techs.length, 2, id); };
+  chk('huashanXinfa', 'qizong', 1, 'inner'); chk('pishiFist', 'qizong', 1, 'fist'); chk('hunyuanPalm', 'qizong', 2, 'palm'); chk('kuangfengSword', 'jianzong', 3, 'palm'); chk('wudangXinfa', 'wudang', 1, 'inner'); chk('mianPalm', 'wudang', 2, 'palm');
+  assert.deepEqual(A.artById('hunyuanPalm').req, [{ art: 'pishiFist', tier: 1 }, { art: 'huashanXinfa', tier: 1 }]); assert.deepEqual(A.artById('wudangJiuyang').req, [{ art: 'wudangXinfa', tier: 1 }]);
+  assert.deepEqual(SECTS.qizong.tree24, ['huashanXinfa', 'zixia', 'pishiFist', 'hunyuanPalm', 'basicSword', 'huashanSword', 'sanxianSword', 'snowStep']); assert.deepEqual(SECTS.qizong.unlock24, { zixia: [{ art: 'huashanXinfa', tier: 2 }] });
+  assert.deepEqual(SECTS.jianzong.tree24, ['breath', 'basicSword', 'huashanSword', 'sanxianSword', 'kuangfengSword', 'snowStep', 'stepFeather', 'dugu']); assert.ok(SECTS.wudang.tree.includes('mianPalm') && SECTS.wudang.tree.includes('wudangXinfa'));
+  assert.ok(A.isSwordArt('kuangfengSword'));
+});
+test('loop172 氣宗紫霞：掌門華山心法大成可領悟（第一層），一般弟子不行', () => {
+  const s = V({ sect24: 'qizong' }); tick(s, 0.1); const h = hero(s), d = other(s); assert.ok(s.sect.tree.includes('huashanXinfa'));
+  give(h, 'huashanXinfa', 60); assert.deepEqual(A.sectUnlock24(h).map((a) => a.id), ['zixia']); A.learnArt(h, 'zixia', 0); assert.equal(h.zixia, 1);
+  if (d) { give(d, 'huashanXinfa', 60); assert.deepEqual(A.sectUnlock24(d).map((a) => a.id), []); }
+  const o = OLD(); assert.ok(!o.sect?.tree?.includes('huashanXinfa'));
+});

@@ -17,7 +17,7 @@ const NEW = { emei: ['emeiJiuyang', 'linjiZhuang', 'emeiSword', 'huifengSword', 
 test('loop168 五派專屬武學：classic＋v24、非 secret、ART_CAT 照規格、各派樹照規格', () => {
   for (const [k, ids] of Object.entries(NEW)) for (const id of ids) { const a = A.artById(id); assert.ok(a && a.v24 && a.classic && !a.secret && a.own24 === k, id); assert.ok(A.ART_CAT[id], id); assert.ok(SECTS[k].tree.includes(id), id); }
   assert.deepEqual(SECTS.emei.tree, ['emeiJiuyang', 'linjiZhuang', 'emeiSword', 'huifengSword', 'jindingPalm', 'tiangangFinger', 'stepFeather']); assert.deepEqual(SECTS.emei.ban, ['jiuyinClaw']);
-  assert.deepEqual(SECTS.wudang.tree, ['breath', 'wudangJiuyang', 'wudangFist', 'taiji', 'basicSword', 'rouyunSword', 'taijiSword', 'stepEight']);
+  assert.deepEqual(SECTS.wudang.tree, ['breath', 'wudangXinfa', 'wudangJiuyang', 'wudangFist', 'mianPalm', 'taiji', 'basicSword', 'rouyunSword', 'taijiSword', 'stepEight']); /* loop172 t191 補武當心法、綿掌 */
   assert.deepEqual(SECTS.taohua.tree, ['biboXinfa', 'luoyingPalm', 'lanhuaHand', 'basicSword', 'yuxiaoSword', 'stepEight']);
   assert.deepEqual(SECTS.gumu.tree, ['yunv', 'tianluoPalm', 'yunvSword', 'xuantie', 'anran', 'stepFeather']);
   assert.deepEqual(SECTS.xingxiu.tree, ['huagongDafa', 'chousuiPalm', 'sanyinClaw', 'duPu']);

@@ -11,7 +11,7 @@ import * as A0 from '../../src/arts.mjs';
 import { ARTS } from '../../src/data.mjs';
 const A = { ...A0, ARTS_OWN24: ARTS.filter((a) => a.own24).map((a) => a.id) }; /* loop168 各派專屬武學習得人數 */
 import { SECTS } from '../../src/data.mjs';
-export const SECTS24 = ['emei', 'wudang', 'taohua', 'gumu', 'xingxiu', null];
+export const SECTS24 = process.env.SS_SECTS ? process.env.SS_SECTS.split(',').map((x) => (x === 'wuming' ? null : x)) : ['emei', 'wudang', 'taohua', 'gumu', 'xingxiu', null]; /* loop172 SS_SECTS 可覆寫輪替 */
 const ST = process.argv[2] || 'bot', N = +(process.argv[3] || 40), S0 = +(process.argv[4] || 1001), D = +(process.argv[5] || 30);
 const avg = (a, f) => (a.length ? a.reduce((x, d) => x + f(d), 0) / a.length : 0);
 const UP = ['hall', 'yard', 'kitchen'];
@@ -31,7 +31,7 @@ for (let k = 0; k < N; k++) {
   const scan = (s) => { const L = s.log || []; for (const e of L) { if (e === LG.last) break; const m = String(e.msg || ''); let r;
     if ((r = m.match(/^【抉擇】【(名門會武|天下論劍)】(.+?)代表團上門/))) LG.opp[NM[r[2]] || r[2]] = (LG.opp[NM[r[2]] || r[2]] || 0) + 1;
     if ((r = m.match(/^【臨陣偷師】.+?在場邊看出(.+?)招式精要/))) LG.steal[NM[r[1]] || r[1]] = (LG.steal[NM[r[1]] || r[1]] || 0) + 1; } LG.last = L[0] || null; };
-  const seed = S0 + k, sect = SECTS24[((seed - 1001) % 6 + 6) % 6], c = { n: 0, hungry: 0, buyT: 0, buyL: 0, exp: 0, harm: 0 }; let i = 0, day = 0, s = null, crash = 0, err = null;
+  const seed = S0 + k, sect = SECTS24[((seed - 1001) % SECTS24.length + SECTS24.length) % SECTS24.length], c = { n: 0, hungry: 0, buyT: 0, buyL: 0, exp: 0, harm: 0 }; let i = 0, day = 0, s = null, crash = 0, err = null;
   try {
     s = run(seed, { v22: true, ...(sect ? { sect24: sect } : {}) }, D, ST !== 'idle', (s) => {
       if (s.alert) s.alert = null; scan(s);

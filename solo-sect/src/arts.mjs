@@ -29,6 +29,7 @@ export const ART_CAT = {
   emeiJiuyang: { neigong: 1 }, linjiZhuang: { neigong: 0.8, yishu: 0.2 }, emeiSword: { jianfa: 1 }, huifengSword: { jianfa: 1 }, jindingPalm: { quanzhang: 1 }, tiangangFinger: { quanzhang: 0.5, qimen: 0.5 }, jiuyinClaw: { quanzhang: 1 }, /* loop168 v2.55 門派專屬 */
   wudangJiuyang: { neigong: 1 }, wudangFist: { quanzhang: 1 }, rouyunSword: { jianfa: 1 }, taijiSword: { jianfa: 1 }, biboXinfa: { neigong: 0.7, qimen: 0.3 }, luoyingPalm: { quanzhang: 0.7, jianfa: 0.3 }, lanhuaHand: { quanzhang: 0.5, qimen: 0.5 }, yuxiaoSword: { jianfa: 0.7, qimen: 0.3 },
   tianluoPalm: { quanzhang: 0.6, shenfa: 0.4 }, yunvSword: { jianfa: 1 }, huagongDafa: { neigong: 0.6, dushu: 0.4 }, chousuiPalm: { quanzhang: 0.5, dushu: 0.5 }, sanyinClaw: { quanzhang: 0.5, dushu: 0.5 },
+  huashanXinfa: { neigong: 1 }, pishiFist: { quanzhang: 1 }, hunyuanPalm: { quanzhang: 0.7, neigong: 0.3 }, kuangfengSword: { jianfa: 1 }, wudangXinfa: { neigong: 1 }, mianPalm: { quanzhang: 1 }, /* loop172 v2.6 */
   qimenZhen: { zhenfa: 0.8, qimen: 0.2 }, xingxiuDu: { dushu: 1 }, yaowang: { yishu: 1 }, /* loop150 v2.3 專長招牌 */
 };
 export const GROW = {
@@ -201,7 +202,7 @@ export const variantOf = (d, id, now = 0) => { const r = d.arts?.[id], a = artBy
 export const cdMul = (d, mvId, now = 0) => { const a = artOfMove(mvId); if (!a || !d.arts?.[a.id]) return swordCdMul(d, mvId); const t = artTier(d, a.id); return (t >= 1 ? PERKS.small.cd : 1) * (variantOf(d, a.id, now)?.cd || 1) * swordCdMul(d, mvId) * affixMul(d, mvId, 'cd'); };
 export const visTier = (d, mvId) => { const a = artOfMove(mvId); return a && d.arts?.[a.id] ? artTier(d, a.id) : 0; };
 export const topTier = (d) => ARTS.reduce((m, a) => (artTier(d, a.id) > m.t ? { t: artTier(d, a.id), a } : m), { t: -1, a: null });
-export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; const a = artById(id); unlockTechs(d, a); if (d.pendingArt === id) d.pendingArt = null; return a; }
+export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; const a = artById(id); if (id === 'zixia' && d.v24 && !d.zixia) d.zixia = 1; /* loop172 氣宗本門領悟紫霞＝第一層 */ unlockTechs(d, a); if (d.pendingArt === id) d.pendingArt = null; return a; }
 export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now) * harmonyMul(d) * affixMul(d, mvId, 'dmg'); /* loop161 v2.4 陰陽共鳴（只 d.v24） */ // loop127 勞作練體
 const moveMul0 = (d, mvId, now = 0) => { const a = artOfMove(mvId); if (!a || !d.arts?.[a.id]) return (d.powMul || 1) * (d.jhMul || 1) * (d.v23 ? qiStrikeMul(d) * swordDmgMul(d, mvId) : 1) * styleDmg24(d); const t = artTier(d, a.id), r = d.arts[a.id]; return (d.early?.art === a.id ? d.early.mul : 1) * (d.powMul || 1) * (d.jhMul || 1) * (1 + ART_GAIN.tierDmg * t) * (t >= 3 ? PERKS.full.dmg : 1) * (variantOf(d, a.id, now)?.dmg || 1) * (1 + GUIZHEN.star * (r.stars || 0)) * (d.pf ? profMul(r.xp) : 1) * (d.v23 ? qiStrikeMul(d) * swordDmgMul(d, mvId) : 1) * styleDmg24(d) /* loop157 以氣御招／劍招；loop171 同門成套／萬流歸宗 */ /* loop91 熟練度十重（d.pf 由 s.prof 設） */; };
 export const effectTier = (d, eff) => ARTS.filter((a) => a.effect === eff).reduce((m, a) => Math.max(m, artTier(d, a.id)), -1);

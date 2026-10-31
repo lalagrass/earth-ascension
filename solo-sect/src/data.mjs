@@ -433,7 +433,7 @@ ARTS.push(
   { id: 'jindingPalm', name: '金頂綿掌', school: 'palm', grade: 2, tags: ['柔'], attr: 'yin', req: [], techs: ['jd1', 'jd2'], tech: 'jd1', v24: true, classic: true, own24: 'emei', svg: [1, 10] },
   { id: 'tiangangFinger', name: '天罡指穴法', school: 'palm', grade: 2, tags: ['巧'], attr: 'he', req: [{ art: 'jindingPalm', tier: 1 }], techs: ['tg1', 'tg2'], tech: 'tg1', v24: true, classic: true, own24: 'emei', svg: [2, 10] },
   { id: 'jiuyinClaw', name: '九陰白骨爪', school: 'palm', grade: 3, tags: ['快', '陰'], attr: 'yin', req: [], techs: ['jy1', 'jy2'], tech: 'jy1', v24: true, classic: true, own24: 'ban', svg: [0, 10] },
-  { id: 'wudangJiuyang', chiefOnly24: true, name: '純陽無極功', school: 'inner', grade: 3, tags: ['柔', '剛'], attr: 'he', req: [{ art: 'breath', tier: 1 }], tech: null, techs: ['純陽', '無極'], effect: 'rest', v24: true, classic: true, own24: 'wudang', svg: [2, 8] },
+  { id: 'wudangJiuyang', chiefOnly24: true, name: '純陽無極功', school: 'inner', grade: 3, tags: ['柔', '剛'], attr: 'he', req: [{ art: 'wudangXinfa', tier: 1 }], tech: null, techs: ['純陽', '無極'], effect: 'rest', v24: true, classic: true, own24: 'wudang', svg: [2, 8] },
   { id: 'wudangFist', name: '武當長拳', school: 'fist', grade: 1, tags: ['柔', '拙'], attr: 'he', req: [], techs: ['wd1', 'wd2'], tech: 'wd1', v24: true, classic: true, own24: 'wudang', svg: [0, 9] },
   { id: 'rouyunSword', name: '柔雲劍法', school: 'palm', grade: 2, tags: ['柔', '巧'], weapon: 'sword', attr: 'he', req: [{ art: 'basicSword', tier: 1 }], techs: ['ry1', 'ry2'], tech: 'ry1', v24: true, classic: true, own24: 'wudang', svg: [1, 10] },
   { id: 'taijiSword', chiefOnly24: true, name: '太極劍', school: 'palm', grade: 3, tags: ['柔', '巧'], weapon: 'sword', attr: 'he', req: [{ art: 'rouyunSword', tier: 2 }], alt24: [{ art: 'taiji', tier: 2 }], techs: ['tjs1', 'tjs2'], tech: 'tjs1', v24: true, classic: true, own24: 'wudang', svg: [2, 10] },
@@ -446,6 +446,13 @@ ARTS.push(
   { id: 'huagongDafa', chiefOnly24: true, name: '化功大法', school: 'inner', grade: 3, tags: ['陰', '剛'], attr: 'yin', req: [], tech: null, techs: ['化功', '散功'], effect: 'rest', v24: true, classic: true, own24: 'xingxiu', svg: [2, 8] },
   { id: 'chousuiPalm', name: '抽髓掌', school: 'palm', grade: 2, tags: ['陰'], attr: 'yin', req: [], techs: ['cs1', 'cs2'], tech: 'cs1', v24: true, classic: true, own24: 'xingxiu', svg: [1, 9] },
   { id: 'sanyinClaw', name: '三陰蜈蚣爪', school: 'palm', grade: 3, tags: ['快', '陰'], attr: 'yin', req: [{ art: 'chousuiPalm', tier: 2 }], techs: ['sy1', 'sy2'], tech: 'sy1', v24: true, classic: true, own24: 'xingxiu', svg: [2, 9] },
+  /* loop172 v2.6（t191）*/
+  { id: 'huashanXinfa', name: '華山心法', school: 'inner', grade: 1, tags: ['柔'], attr: 'he', req: [], tech: null, techs: ['紫氣', '養元'], effect: 'rest', v24: true, classic: true, own24: 'qizong', svg: [0, 11] },
+  { id: 'pishiFist', name: '劈石破玉拳', school: 'fist', grade: 1, tags: ['剛'], attr: 'yang', req: [], techs: ['ps1', 'ps2'], tech: 'ps1', v24: true, classic: true, own24: 'qizong', svg: [0, 12] },
+  { id: 'hunyuanPalm', name: '混元掌', school: 'palm', grade: 2, tags: ['柔', '剛'], attr: 'he', req: [{ art: 'pishiFist', tier: 1 }, { art: 'huashanXinfa', tier: 1 }], techs: ['hy1', 'hy2'], tech: 'hy1', v24: true, classic: true, own24: 'qizong', svg: [1, 12] },
+  { id: 'kuangfengSword', name: '狂風快劍', school: 'palm', grade: 3, tags: ['快', '巧'], weapon: 'sword', attr: 'yin', req: [{ art: 'huashanSword', tier: 2 }], techs: ['kf1', 'kf2'], tech: 'kf1', v24: true, classic: true, own24: 'jianzong', svg: [2, 12] },
+  { id: 'wudangXinfa', name: '武當心法', school: 'inner', grade: 1, tags: ['柔'], attr: 'he', req: [], tech: null, techs: ['守一', '歸真'], effect: 'rest', v24: true, classic: true, own24: 'wudang', svg: [0, 13] },
+  { id: 'mianPalm', name: '武當綿掌', school: 'palm', grade: 2, tags: ['柔'], attr: 'he', req: [{ art: 'wudangFist', tier: 1 }], techs: ['mp1', 'mp2'], tech: 'mp1', v24: true, classic: true, own24: 'wudang', svg: [1, 13] },
 );
 MOVES.push(
   { id: 'em1', skill: 'palm', name: '金頂佛光', req: 0, range: 46, cd: 1.0, dmg: 7, aoe: 0, color: '#c8a8c8' }, { id: 'em2', skill: 'palm', name: '峨眉刺', req: 0, range: 50, cd: 1.4, dmg: 10, aoe: 0, color: '#b898b8' },
@@ -463,6 +470,10 @@ MOVES.push(
   { id: 'ys1', skill: 'palm', name: '素心', req: 0, range: 56, cd: 1.0, dmg: 13, aoe: 0, color: '#e0e8f8' }, { id: 'ys2', skill: 'palm', name: '玉女投梭', req: 0, range: 60, cd: 1.8, dmg: 19, aoe: 30, color: '#d0d8f0' },
   { id: 'cs1', skill: 'palm', name: '抽髓', req: 0, range: 40, cd: 1.3, dmg: 11, aoe: 0, color: '#6a9a4a' }, { id: 'cs2', skill: 'palm', name: '腐屍毒掌', req: 0, range: 44, cd: 1.9, dmg: 14, aoe: 30, color: '#5a8a3a' },
   { id: 'sy1', skill: 'palm', name: '蜈蚣爪', req: 0, range: 40, cd: 1.0, dmg: 13, aoe: 0, color: '#7a8a3a' }, { id: 'sy2', skill: 'palm', name: '三陰絕戶', req: 0, range: 44, cd: 1.7, dmg: 19, aoe: 0, color: '#6a7a2a' },
+  { id: 'ps1', skill: 'palm', name: '劈石', req: 0, range: 36, cd: 1.0, dmg: 7, aoe: 0, color: '#8a9ab8' }, { id: 'ps2', skill: 'palm', name: '破玉', req: 0, range: 40, cd: 1.4, dmg: 10, aoe: 0, color: '#7a8aa8' },
+  { id: 'hy1', skill: 'palm', name: '混元一氣', req: 0, range: 42, cd: 1.3, dmg: 11, aoe: 0, color: '#9aa8d0' }, { id: 'hy2', skill: 'palm', name: '氣貫長虹', req: 0, range: 46, cd: 1.9, dmg: 14, aoe: 30, color: '#8a98c0' },
+  { id: 'kf1', skill: 'palm', name: '狂風', req: 0, range: 54, cd: 0.7, dmg: 10, aoe: 0, color: '#c8d0d8' }, { id: 'kf2', skill: 'palm', name: '快劍連環', req: 0, range: 58, cd: 1.2, dmg: 15, aoe: 30, color: '#b8c0c8' },
+  { id: 'mp1', skill: 'palm', name: '綿掌', req: 0, range: 40, cd: 1.3, dmg: 11, aoe: 0, color: '#9ab0c8' }, { id: 'mp2', skill: 'palm', name: '綿裡藏針', req: 0, range: 44, cd: 1.9, dmg: 14, aoe: 30, color: '#8aa0b8' },
 );
 /* loop160 Batch 1.2：藏經閣「圖譜」——v2.4 讀書時可能撿到的輔助抄本（secret：不進一般學習池；只在 study 完成時取得） */
 ARTS.push(
@@ -720,10 +731,10 @@ export const SECTS = {
   gaibang: { name: '丐幫', plaque: '丐幫・北丐一脈', color: '#8a5a2b', flag: '丐', bias: { 剛: 0.1, 拙: 0.05 }, tree: ['xianglong', 'dagou', 'pushPalm', 'basicFist'], ban: [], rules: ['hoard', 'rescue'],
     fac: { name: '打狗棒堂', cost: { wood: 10, coin: 10 }, daily: { food: 2 }, desc: '污衣淨衣議事；弟子沿村乞討，每日糧 +2' }, rivals: ['鐵掌幫', '白駝山'], fav: ['hongqigong', 'huangrong'],
     recruit: { root: 1, wu: -1, text: '一個根骨粗壯、腦筋不太靈光的小乞兒捧著破碗上山。' } },
-  qizong: { name: '華山派', plaque: '華山派・氣宗', color: '#3b5f8a', flag: '華', bias: { 柔: 0.15, 快: -0.1 }, tree: ['zixia', 'breath', 'wavePalm'], tree24: ['basicSword', 'huashanSword', 'sanxianSword'], ban: ['kuihua', 'huagu', 'hama'], rules: ['demon', 'qi'],
+  qizong: { name: '華山派', plaque: '華山派・氣宗', color: '#3b5f8a', flag: '華', bias: { 柔: 0.15, 快: -0.1 }, tree: ['zixia', 'breath', 'wavePalm'], tree24: ['huashanXinfa', 'zixia', 'pishiFist', 'hunyuanPalm', 'basicSword', 'huashanSword', 'sanxianSword', 'snowStep'], unlock24: { zixia: [{ art: 'huashanXinfa', tier: 2 }] }, ban: ['kuihua', 'huagu', 'hama'], rules: ['demon', 'qi'],
     fac: { name: '思過崖', cost: { stone: 10, coin: 6 }, ease: 3, desc: '面壁思過：每三天消一層掌門違心' }, rivals: ['嵩山派', '華山劍宗'], fav: ['linghuchong', 'ningzhongze', 'linpingzhi'],
     recruit: { wu: 1, text: '一位世家子弟執禮甚恭，遞上拜帖。' } },
-  jianzong: { name: '華山劍宗', plaque: '思過崖・劍宗', color: '#5b6b7a', flag: '劍', bias: { 巧: 0.15 }, tree: ['dugu', 'wavePalm', 'snowStep'], tree24: ['basicSword', 'huashanSword', 'sanxianSword'], ban: [], rules: ['rescue', 'jiu'],
+  jianzong: { name: '華山劍宗', plaque: '思過崖・劍宗', color: '#5b6b7a', flag: '劍', bias: { 巧: 0.15 }, tree: ['dugu', 'wavePalm', 'snowStep'], tree24: ['breath', 'basicSword', 'huashanSword', 'sanxianSword', 'kuangfengSword', 'snowStep', 'stepFeather', 'dugu'], ban: [], rules: ['rescue', 'jiu'],
     fac: { name: '酒窖', cost: { wood: 8, coin: 8 }, mood: 5, desc: '好酒在窖：掌門每日心情 +5' }, rivals: ['華山氣宗', '嵩山派'], fav: ['renyingying', 'tianboguang', 'yuelingshan'],
     recruit: { mood: 10, text: '一個背著酒葫蘆的浪子聽說這裡管酒，笑嘻嘻來拜師。' } },
   mingjiao: { name: '明教', plaque: '明教・光明頂', color: '#b33a1f', flag: '火', bias: { 柔: 0.08, 巧: 0.07 }, tree: ['jiuyang', 'qiankun', 'taiji', 'breath'], ban: [], rules: ['heal', 'rescue'],
@@ -739,7 +750,7 @@ export const SECTS = {
   emei: { v24: true, name: '峨眉派', plaque: '峨眉派・金頂', color: '#a07aa0', flag: '峨', bias: { 柔: 0.1, 巧: 0.05 }, tree: ['emeiJiuyang', 'linjiZhuang', 'emeiSword', 'huifengSword', 'jindingPalm', 'tiangangFinger', 'stepFeather'], ban: ['jiuyinClaw'], rules: ['heal', 'rescue'],
     fac: { name: '金頂佛堂', cost: { stone: 8, coin: 8 }, mood: 3, daily: { rep: 0.3 }, desc: '金頂禮佛：掌門每日心情 +3、名聲每日 +0.3' }, rivals: ['明教', '崑崙派'], fav: [],
     recruit: { mood: 5, text: '一位帶髮修行的小師太持劍上山，說是師父讓她來歷練。' } },
-  wudang: { v24: true, name: '武當派', plaque: '武當派・紫霄宮', color: '#4a6a8a', flag: '武', bias: { 柔: 0.12 }, tree: ['breath', 'wudangJiuyang', 'wudangFist', 'taiji', 'basicSword', 'rouyunSword', 'taijiSword', 'stepEight'], unlock24: { taiji: [{ art: 'wudangFist', tier: 2 }] }, ban: [], rules: ['qi', 'rescue'],
+  wudang: { v24: true, name: '武當派', plaque: '武當派・紫霄宮', color: '#4a6a8a', flag: '武', bias: { 柔: 0.12 }, tree: ['breath', 'wudangXinfa', 'wudangJiuyang', 'wudangFist', 'mianPalm', 'taiji', 'basicSword', 'rouyunSword', 'taijiSword', 'stepEight'], unlock24: { taiji: [{ art: 'wudangFist', tier: 2 }] }, ban: [], rules: ['qi', 'rescue'],
     fac: { name: '紫霄宮', cost: { wood: 10, stone: 6 }, gain: 1.1, desc: '真武坐鎮：全派練武 +10%' }, rivals: ['少林', '明教'], fav: [],
     recruit: { wu: 1, text: '一個背著松紋古劍的少年道童叩門求道。' } },
   taohua: { v24: true, name: '桃花島', plaque: '桃花島・試劍亭', color: '#c06a7a', flag: '桃', bias: { 巧: 0.15 }, tree: ['biboXinfa', 'luoyingPalm', 'lanhuaHand', 'basicSword', 'yuxiaoSword', 'stepEight'], ban: [], rules: ['heart', 'share'],
