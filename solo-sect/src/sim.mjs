@@ -88,6 +88,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.mpool) s.mpool = true; /* loop55 高人殘譜 */
   if (heroSpec?.cotrain) s.cotrain = true; /* loop56 同修作伴 */
   if (heroSpec?.cofun) s.cofun = true; /* loop62 有伴解悶 */
+  if (heroSpec?.longwatch) s.longwatch = true; /* loop67 哨崗久守 */
   if (heroSpec?.masterask) s.masterask = true; /* loop59 高人指點由我定 */
   if (heroSpec?.stewkit) s.stewkit = true; /* loop60 執事顧灶 */
   if (heroSpec?.letterask) s.letterask = true; /* loop49 挑戰帖由我定奪 */
@@ -544,13 +545,14 @@ export function cropMood(s) {
 }
 function removeWild(s, k, n) { for (let i = 0; i < n; i++) { const j = s.wild.findIndex((w) => w.k === k); if (j >= 0) s.wild.splice(j, 1); } }
 const WATCH_WARN = 120; // 秒：有人在哨崗守過，這段時間內下山的野豬會被嚇回
+/* loop67「哨崗久守」（s.longwatch）：示警窗加倍為 240 秒（守哨一趟管得比較久）；不改守哨次數與亂數 */
 function ecoStep(s, dt) {
   for (const [k, E] of Object.entries(ECO)) { const e = s.eco[k]; if (e.n < E.max) { e.timer += dt; if (e.timer >= E.regen) { e.n++; e.timer = 0; } } }
   const R = HABITAT.r;
   for (const k of Object.keys(ECO)) { let have = s.wild.filter((w) => w.k === k).length; while (have < s.eco[k].n) { s.wild.push({ k, pos: [HABITAT.c[0] + (rand(s) - 0.5) * R, HABITAT.c[1] + (rand(s) - 0.5) * R], tgt: null }); have++; } if (have > s.eco[k].n) removeWild(s, k, have - s.eco[k].n); }
   for (const w of s.wild) { if (!w.tgt || dist(w.pos, w.tgt) < 4) w.tgt = [HABITAT.c[0] + (rand(s) - 0.5) * 2 * R, HABITAT.c[1] + (rand(s) - 0.5) * R]; const L = dist(w.pos, w.tgt), st = MONSTERS[w.k].speed * 0.3 * dt; w.pos[0] += (w.tgt[0] - w.pos[0]) * Math.min(1, st / L); w.pos[1] += (w.tgt[1] - w.pos[1]) * Math.min(1, st / L); w.face = w.tgt[0] >= w.pos[0] ? 1 : -1; }
   s.raidT += dt;
-  if (!s.hunt && s.raidT >= RAID_EVERY * raidMul(s) && s.eco.boar.n > 0 && !s.mons.some((m) => m.raid) && s.watch != null && s.t - s.watch < WATCH_WARN) { s.raidT = 0; s.watched = (s.watched || 0) + 1; log(s, '護山哨示警：野豬剛下山就被鑼聲嚇回去了。'); } // v1.6 哨崗預警
+  if (!s.hunt && s.raidT >= RAID_EVERY * raidMul(s) && s.eco.boar.n > 0 && !s.mons.some((m) => m.raid) && s.watch != null && s.t - s.watch < WATCH_WARN * (s.longwatch ? 2 : 1)) { s.raidT = 0; s.watched = (s.watched || 0) + 1; log(s, '護山哨示警：野豬剛下山就被鑼聲嚇回去了。'); } // v1.6 哨崗預警
   if (!s.hunt && s.raidT >= RAID_EVERY * raidMul(s) && s.eco.boar.n > 0 && !s.mons.some((m) => m.raid)) {
     s.raidT = 0; s.eco.boar.n--; removeWild(s, 'boar', 1);
     s.mons.push({ uid: `raid${s.rngN++}`, k: 'boar', hp: MONSTERS.boar.hp, max: MONSTERS.boar.hp, pos: [...NODES.den], path: route('den', 'veg').slice(1), raid: 'go', cool: 0 });
