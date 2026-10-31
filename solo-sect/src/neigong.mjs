@@ -22,6 +22,7 @@ export function mitOf(d) { let v = 0; for (const id of innerArts(d)) v += NG2.mi
 // 受擊：先減傷、再由內力吸收，餘下回傳要扣的生命。力竭中受傷加重。now = 遊戲秒。
 export function shieldHit(d, dmg, now = 0) {
   if (!d.ng2) return dmg;
+  if (!(dmg > 0)) return 0; /* loop123 反例：負／零傷害不得加內力或觸發力竭 */
   let x = dmg * ((d.spentUntil ?? -1) > now ? NG2.spentMul : 1);
   const q = qiOf(d);
   if (q <= 0) return x;
