@@ -89,6 +89,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.mpool) s.mpool = true; /* loop55 高人殘譜 */
   if (heroSpec?.cotrain) s.cotrain = true; /* loop56 同修作伴 */
   if (heroSpec?.grow) s.grow = true; /* loop79 成長分層 */
+  if (heroSpec?.prof) s.prof = true; /* loop91 熟練度十重 */
   if (heroSpec?.cofun) s.cofun = true; /* loop62 有伴解悶 */
   if (heroSpec?.longwatch) s.longwatch = true; /* loop67 哨崗久守 */
   if (heroSpec?.paypill) s.paypill = true; /* loop71 欠俸先賣丹 */
@@ -107,6 +108,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.peace) s.m9 = true; // loop9 太平與防禦經濟（選用） // loop8 同修請教（選用） // loop7 領悟（選用） // loop6 人以群分（選用）
   sectInit(s); s.gen = genInit(); if (heroSpec?.bonus) s.gen.suhuiStart = heroSpec.bonus;
   if (s.grow) growInit(s);
+  if (s.prof) for (const d of s.ds) d.pf = 1; /* loop91 */
   return s;
 }
 function mkDisciple(d, i, at = 'court', personality = d.personality || [], known = personality.slice(0, 1)) {
@@ -645,6 +647,7 @@ export function payday(s) {
 // ---- tick ----
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
+  if (s.prof) for (const d of s.ds) if (!d.pf) d.pf = 1; /* loop91 新入門者也吃熟練度十重 */
   if (s.grow) for (const d of s.ds) if (!d.gInit) growEnsure(d); /* loop84 新入門者立即折算，介面不必寫狀態 */
   { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); if (s.draw) cliqueDaily(s); if (s.m9) lairDaily(s, EH); if (s.jhev) jhevDaily(s); if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild }); } }
   schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH); if (s.lair) lairStep(s, EH);

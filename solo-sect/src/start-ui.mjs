@@ -21,6 +21,7 @@ const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index
 // loop35：江湖規則單一來源（勾選 id、st 欄位、spec 鍵、預設、說明）；兩個分頁共用 ruleSpec，避免漏傳／重複
 export const RULES = [
   ['grow', 'grow', 'grow', true, '成長分層：練武學會慢慢累積門類造詣（拳掌、腿法、劍法），同類造詣高的人學另一門入門功夫較快；武學圖顯示人物實力圖、造詣與各武學進度'],
+  ['prof', 'prof', 'prof', true, '熟練度十重：每門武學的入門／小成／大成／圓滿各分十重，每升一重該武學招式威力 +0.5%（升到下一階時重新從一重算）；武學圖顯示第幾重'],
   ['draw', 'draw', 'draw', false, '人以群分：外向的人更愛交友、強者吸引人靠近'],
   ['stewkit', 'stewkit', 'stewkit', true, '執事顧灶：人數到 8 人以上、存飯不夠一人一頓、還是露天灶時，執事立膳房的藍圖（需執事自主）'],
   ['masterask', 'masterask', 'masterask', true, '高人指點誰由我定：勾了「重大抉擇問我」時，過路高人改成抉擇卡，由你挑一位弟子受指點'],
