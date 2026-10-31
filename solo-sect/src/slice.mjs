@@ -32,6 +32,8 @@ export function chapterStep(s) {
 }
 // 存檔輪替：autosave 寫入 3 格輪替（store：有 getItem/setItem 的物件）
 export const AUTO = { keys: 3, prefix: 'solo-sect-auto-', every: 60 };
+/* loop65：自動存檔是否到期。換局或讀檔後遊戲時間可能比上次存檔時間早（t < last），視為到期，避免新局要追上舊局時間才恢復自動存檔 */
+export const autoDue = (t, last, every = AUTO.every) => t < last || t - last >= every;
 export function autosave(store, str, meta) {
   const idx = ((+store.getItem(AUTO.prefix + 'i') || 0) + 1) % AUTO.keys;
   store.setItem(AUTO.prefix + idx, str); store.setItem(AUTO.prefix + idx + '-meta', JSON.stringify(meta)); store.setItem(AUTO.prefix + 'i', String(idx)); return idx;
