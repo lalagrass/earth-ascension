@@ -3,7 +3,7 @@ import { DAY, ACTIVITIES, EXP_STYLES, EXP, ARTS, TIERS, ART_GAIN, ROOT, JH, BREA
 import { LABOR, strMul, laborToday } from './economy.mjs';
 import { segAt } from './world.mjs';
 import { nextStep } from './core.mjs';
-import { lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW } from './arts.mjs';
+import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW } from './arts.mjs';
 import { CLQ } from './bonds.mjs';
 import { JHEV, letterP } from './jianghu.mjs';
 // ==== （原 dcard.mjs）====
@@ -97,6 +97,7 @@ export function catHtml(d) {
 /* 個別武學狀態：正在累積／達到瓶頸／冷卻中／缺前置／尚未支援／劇情修煉／已練滿 */
 export function artStatus(d, a, now = 0) {
   const r = d.arts?.[a.id];
+  if (!r && chiefLocked24(d, a)) return { st: 'req', text: CHIEF24_WHY }; /* loop171 */
   if (!r) { const miss = reqMissing(d, a); return miss.length ? { st: 'req', text: `缺前置：${miss.join('、')}` } : { st: 'open', text: fits(d, a) ? '條件已足，等師父傳授' : '非本門路數' }; }
   if (a.layered) return { st: 'story', text: `第 ${d.zixia || 0} 層（華山劇情逐層修煉）` };
   if (a.forms) return { st: 'story', text: `已悟 ${(d.dugu || []).length} 式（對敵觀破後悟式）` };
@@ -108,7 +109,7 @@ export function artStatus(d, a, now = 0) {
   return { st: 'acc', text: '正在累積' };
 }
 export function artsGrowHtml(d, now = 0, grow = true) {
-  const f = focusOf(d), rows = ARTS.filter((a) => d.arts?.[a.id] || (!a.secret && (!a.v24 || d.v24) && !(a.own24 && lockedArt24(d, a)) && fits(d, a) && reqMissing(d, a).length)).map((a) => {
+  const f = focusOf(d), rows = ARTS.filter((a) => d.arts?.[a.id] || (!a.secret && (!a.v24 || d.v24) && !(a.own24 && lockedArt24(d, a) && !chiefLocked24(d, a)) && fits(d, a) && (reqMissing(d, a).length || chiefLocked24(d, a)))).map((a) => {
     const r = d.arts?.[a.id], st = artStatus(d, a, now), t = r ? artTier(d, a.id) : -1, cats = Object.keys(ART_CAT[a.id] || {}).map((c) => CATS[c].name + (supOf(c, d) === 'none' ? '（尚未支援）' : '')).join('＋');
     const nxt = r && !a.layered && !a.forms && t < TIERS.length - 1 ? `・距${TIERS[t + 1][1]} ${(TIERS[t + 1][0] - r.xp).toFixed(1)}` : '';
     const moves = r ? `・招式 ${(a.techs || []).filter((m) => d.moves.includes(m)).length}/${(a.techs || []).length}` : '';

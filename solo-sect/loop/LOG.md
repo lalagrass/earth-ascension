@@ -1558,3 +1558,9 @@
 - 做得好：五項待決一次落地，160 局全部達標、0 崩潰。
 - 不好：迎戰勝率小降 2.6 點、無名派戰力與勝率最低（936／58%）；武當專屬偷師少（11 次）。
 - 下一步：等擁有人審閱。
+
+## loop171 — v2.6 Batch 1：鎮派絕學位階鎖、同門成套、雜學曲線（決定 208–211）
+- arts.mjs：`chiefLocked24`／`rankOk24`／`CHIEF24_WHY` 接進 `lockedArt24`；`sectLine24`、`sectClasses24`、`polymath24`、`styleDmg24`（moveMul0）、medQi 三才 ×1.15；面板與卡片徽章。
+- bonds.mjs 傳功擋受者、殘頁排除；sect.mjs 大比魁首 `chief24`。diag-v24-v25 加會武對手／偷師來源（解析事件流）、成套／雜學人數、chiefOnly 持有者位階。
+- 6 種子 bot 快驗（SS_DT=1）：0 崩潰；chiefOnly 本門持有 12 件全是掌門或魁首（other 0）；三才成套 15 人、2 類 21 人；萬流歸宗 16、分心 0。
+- 測試：新增 test/v26.test.mjs（6 項）；quick 435 全過；golden-30d-v22 05f9e0ef3c623d5e → 4e2efe54aba7edf9。

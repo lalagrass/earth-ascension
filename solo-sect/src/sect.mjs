@@ -230,6 +230,7 @@ export function bisai24(s) {
   const ds = fighters24(s); if (ds.length < BISAI24.minN) return null;
   const rank = ds.map((d) => ({ d, p: dpsOf(s, d) * (0.85 + 0.3 * hh(`${s.seed}:bisai:${s.day}:${d.id}`)) })).sort((a, b) => b.p - a.p || (a.d.id < b.d.id ? -1 : 1)); const c = rank[0].d;
   c.mood = Math.min(100, (c.mood || 0) + BISAI24.champMood);
+  c.chief24 = true; /* loop171 v2.6 大比魁首升任魁首位階，可受鎮派絕學（chiefOnly24） */
   const nxt = ownTree(s).map(artById).find((a) => a && !c.arts?.[a.id] && artOk(c, a) && (!a.secret || a.derived) && !a.signature && !reqMissing(c, a).length);
   let gift; if (nxt) { learnArt(c, nxt.id, s.t); c.arts[nxt.id].xp = Math.max(c.arts[nxt.id].xp, BISAI24.newXp); gift = `掌門親傳《${nxt.name}》`; }
   else { const own = Object.keys(c.arts || {}).filter((id) => ownTree(s).includes(id)); const id = own.sort((a, b) => c.arts[b].xp - c.arts[a].xp)[0] || focusOf(c); if (id) { bump(c, id, BISAI24.champXp); gift = `《${artById(id).name}》熟練 +${BISAI24.champXp}`; } }

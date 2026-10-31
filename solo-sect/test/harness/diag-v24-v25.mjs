@@ -27,10 +27,14 @@ function purity(s, ds) { const tree = s.sect?.tree || [], other = new Set(Object
   let own = 0, all = 0, cross = 0, outside = 0; for (const d of ds) for (const id of Object.keys(d.arts || {})) { if (id === 'basicFist') continue; all++; if (tree.includes(id)) own++; else if (A.artById(id)?.classic && !A.artById(id)?.signature) outside++; else if (other.has(id) && A.artById(id)?.classic) cross++; }
   return { ownPct: +(100 * own / (all || 1)).toFixed(1), pureNonOut: +(100 * (1 - outside / (all || 1))).toFixed(1), cross, lsGot: (s.res.lingshi || 0) }; }
 for (let k = 0; k < N; k++) {
+  const LG = { last: null, opp: {}, steal: {} }, NM = Object.fromEntries(Object.entries(SECTS).map(([k2, S]) => [S.name, k2])); /* loop171 會武對手／偷師來源（解析事件流，舊版程式也能量） */
+  const scan = (s) => { const L = s.log || []; for (const e of L) { if (e === LG.last) break; const m = String(e.msg || ''); let r;
+    if ((r = m.match(/^【抉擇】【(名門會武|天下論劍)】(.+?)代表團上門/))) LG.opp[NM[r[2]] || r[2]] = (LG.opp[NM[r[2]] || r[2]] || 0) + 1;
+    if ((r = m.match(/^【臨陣偷師】.+?在場邊看出(.+?)招式精要/))) LG.steal[NM[r[1]] || r[1]] = (LG.steal[NM[r[1]] || r[1]] || 0) + 1; } LG.last = L[0] || null; };
   const seed = S0 + k, sect = SECTS24[((seed - 1001) % 6 + 6) % 6], c = { n: 0, hungry: 0, buyT: 0, buyL: 0, exp: 0, harm: 0 }; let i = 0, day = 0, s = null, crash = 0, err = null;
   try {
     s = run(seed, { v22: true, ...(sect ? { sect24: sect } : {}) }, D, ST !== 'idle', (s) => {
-      if (s.alert) s.alert = null;
+      if (s.alert) s.alert = null; scan(s);
       if (s.day !== day) { day = s.day; if (ST === 'farm') farm(s, c); if (ST === 'exp') exp(s, c); }
       if (++i % 40) return; for (const d of s.ds) { if (d.role === 'laborer' || d.away) continue; c.n++; if ((d.needs?.hunger ?? 100) < 30) c.hungry++; if (A.harmonyOf?.(d)) c.harm++; } });
   } catch (e) { crash = 1; err = String(e?.stack || e).split('\n').slice(0, 2).join(' | '); }
@@ -43,5 +47,7 @@ for (let k = 0; k < N; k++) {
     lib: s.fac.library?.stage || 0, t3: tiers.filter(([, f]) => f.stage >= 3).length, buyT: c.buyT, buyL: c.buyL, lingshi: s.res.lingshi || 0, lsFirst: Object.keys(s.records?.lsFirst || {}).length,
     produce: V.produce || 0, stewLib: V.stewLib || 0, chart: V.chart || 0, affix: V.affix || 0, fengxue: V.fengxue || 0, formation: V.formation || 0, harmPct: +(100 * c.harm / (c.n || 1)).toFixed(1),
     bisai: V.bisai || 0, huiwu: V.huiwu || 0, huiwuWin: V.huiwuWin || 0, lineup: V.lineup || [0, 0, 0], steal: V.steal || 0, derive: V.derive || 0, trophies: (s.sect?.trophies || []).length,
-    ...purity(s, ds), new24: ds.reduce((a, d) => a + N24.filter((id) => d.arts?.[id]).length, 0), exp: c.exp, expDist: le.dist || 0, expN: s.expN || 0, own24: Object.fromEntries(A.ARTS_OWN24.map((id) => [id, ds.filter((d) => d.arts?.[id]).length]).filter(([, n]) => n)), med24: ds[0]?.medK24 || 1, psn24: s.psnK24 || 1 }));
+    ...purity(s, ds), new24: ds.reduce((a, d) => a + N24.filter((id) => d.arts?.[id]).length, 0), exp: c.exp, expDist: le.dist || 0, expN: s.expN || 0, own24: Object.fromEntries(A.ARTS_OWN24.map((id) => [id, ds.filter((d) => d.arts?.[id]).length]).filter(([, n]) => n)), med24: ds[0]?.medK24 || 1, psn24: s.psnK24 || 1,
+    oppBy: LG.opp, stealBy: LG.steal, syn2: ds.filter((d) => A.sectClasses24?.(d) === 2).length, syn3: ds.filter((d) => A.sectClasses24?.(d) >= 3).length, pmD: ds.filter((d) => A.polymath24?.(d) === 1).length, pmC: ds.filter((d) => A.polymath24?.(d) === 2).length,
+    chief: (() => { const o = { rank: 0, other: 0, n: 0 }; for (const d of ds) for (const id of Object.keys(d.arts || {})) { const a = A.artById(id); if (!a?.chiefOnly24 || !d.stree?.includes(id)) continue; o.n++; if (d.id === 'hero' || d.role === 'head' || d.chief24) o.rank++; else o.other++; } o.champs = ds.filter((d) => d.chief24).length; return o; })() }));
 }

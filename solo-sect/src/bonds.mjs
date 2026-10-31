@@ -1,4 +1,4 @@
-import { growEnsure, settleGrowth, artById, artTier, learnArt, curCap, reqMissing, topTier } from './arts.mjs';
+import { chiefLocked24, growEnsure, settleGrowth, artById, artTier, learnArt, curCap, reqMissing, topTier } from './arts.mjs';
 import { ARTS, TRAITS, DAY } from './data.mjs';
 import { aff, relAdd } from './social.mjs';
 import { log, resAdd } from './util.mjs';
@@ -43,7 +43,7 @@ export function passPick(s, d) {
   if (!able(d) || (d.passDay === s.day) || passToday(s) >= PASS.perDay) return null; /* v1.8：門派每日傳功上限 */ const P = s.passed || {};
   const arts = ARTS.filter((a) => (!a.secret || (a.derived && d.v24 && s.sect?.tree.includes(a.id))) && (!a.classic || (a.own24 && d.v24 && s.sect?.tree.includes(a.id))) && artTier(d, a.id) >= PASS.minTier); /* loop168 本門專屬武學可傳功 */ /* loop165 合參絕學可作本門絕學傳功 */ /* 名俠絕學走各自劇情，不走一般傳功 */ if (d.v24 && d.stree) arts.sort((x, y) => d.stree.includes(y.id) - d.stree.includes(x.id)); /* loop164 本門優先傳 */ if (!arts.length) return null;
   const cands = s.ds.filter((p) => p !== d && able(p) && !p.task?.partner && p.task?.act !== 'meditate').sort((x, y) => (y.master === d.id) - (x.master === d.id) || aff(s, d, y) - aff(s, d, x));
-  for (const p of cands) if (!pairRecent(s, d.id, p.id)) for (const a of arts) if (artTier(p, a.id) < PASS.minTier && !P[`${d.id}>${p.id}:${a.id}`]) return { p, art: a.id };
+  for (const p of cands) if (!pairRecent(s, d.id, p.id)) for (const a of arts) if (artTier(p, a.id) < PASS.minTier && !P[`${d.id}>${p.id}:${a.id}`] && !chiefLocked24(p, a)) return { p, art: a.id }; /* loop171 鎮派絕學只傳掌門／首徒／魁首 */
   return null;
 }
 export const passReserve = (s) => { s.passN = { day: s.day, n: passToday(s) + 1 }; }; // 開始傳功即佔當日名額（多人同時起手不會超量）
@@ -98,7 +98,7 @@ export const MANUALS = { page1: { need: 5, grade: 1, name: '凡階秘笈' }, pag
 export const canAssemble = (s, k) => (s.res[k] || 0) >= MANUALS[k].need;
 export function assemble(s, k) {
   if (!canAssemble(s, k)) return { ok: false, why: `殘頁不足 ${MANUALS[k].need} 張` };
-  const pool = ARTS.filter((a) => !a.secret && (!a.v24 || s.v24) && !(a.own24 && !s.sect?.tree.includes(a.id)) && a.grade === MANUALS[k].grade); /* loop168 他派專屬不入殘頁 */ if (!pool.length) return { ok: false, why: '無可對應武學' };
+  const pool = ARTS.filter((a) => !a.secret && !a.chiefOnly24 && /* loop171 鎮派絕學不入殘頁 */ (!a.v24 || s.v24) && !(a.own24 && !s.sect?.tree.includes(a.id)) && a.grade === MANUALS[k].grade); /* loop168 他派專屬不入殘頁 */ if (!pool.length) return { ok: false, why: '無可對應武學' };
   const known = (a) => s.ds.filter((d) => d.arts?.[a.id]).length, art = pool.reduce((b, a) => (known(a) < known(b) ? a : b));
   resAdd(s, k, -MANUALS[k].need); (s.manuals ??= []).push({ k, art: art.id });
   log(s, `【秘笈】${MANUALS[k].need} 張${k === 'page1' ? '凡階' : '精階'}殘頁湊成《${art.name}》${MANUALS[k].name}，可指定弟子研讀`); return { ok: true, art: art.id };
