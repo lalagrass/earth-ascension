@@ -15,7 +15,7 @@ export function spendQi(d, cost) { if (!d.ng || qiOf(d) < cost) return false; d.
 
 /* loop114 二版「護體真氣」（docs/NEIGONG-REWORK.md §3）。d.ng2 由 sim 依 s.ngshield 設定。
    概念：靈氣護盾（了不起的修仙模擬器）、內力吸收傷害（俠客風雲傳北冥神功）。不抄碼。 */
-export const NG2 = { cap: [10, 25, 45, 70, 100], mit: [0.02, 0.05, 0.08, 0.12, 0.16], mitCap: 0.3, total: 200, spentT: 20, spentMul: 1.15, powK: 0.2, guard: 15, guardHp: 40 };
+export const NG2 = { cap: [10, 25, 45, 70, 100], mit: [0.02, 0.05, 0.08, 0.12, 0.16], mitCap: 0.3, total: 200, spentT: 20, spentMul: 1.15, powK: 0.2, dpsK: 0.01, guard: 15, guardHp: 40 };
 export function qiMax2(d) { let v = 0; for (const id of innerArts(d)) v += NG2.cap[artTier(d, id)] ?? 0; return Math.min(NG2.total, v); }
 export function mitOf(d) { let v = 0; for (const id of innerArts(d)) v += NG2.mit[artTier(d, id)] ?? 0; return Math.min(NG2.mitCap, v); }
 // 受擊：先減傷、再由內力吸收，餘下回傳要扣的生命。力竭中受傷加重。now = 遊戲秒。
@@ -31,3 +31,7 @@ export function shieldHit(d, dmg, now = 0) {
   return x;
 }
 export const shieldOn = (d) => !!d.ng2 && qiOf(d) > 0;
+// loop117 抽象戰鬥：門派戰力加成、守柵出手加成、重傷時護體（夠內力就扣內力、改成輕傷）
+export const powBonus = (d) => (d.ng2 ? NG2.powK * qiMax2(d) : 0);
+export const dpsBonus = (d) => (d.ng2 ? NG2.dpsK * qiMax2(d) : 0);
+export function guardHurt(d, hurtHp) { if (!d.ng2 || qiOf(d) < NG2.guard) return hurtHp; d.qi = qiOf(d) - NG2.guard; return Math.max(hurtHp, NG2.guardHp); }

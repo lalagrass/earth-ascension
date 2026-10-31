@@ -3,6 +3,7 @@ import { seedMix } from './seedmix.mjs';
 // 剿成→山賊很久不來（下次來犯延後 peaceDays）；剿敗→一人重傷、空手而回。只在 s.m9 生效（golden 不變）。
 import { DAY } from './data.mjs';
 import { power } from './jianghu.mjs';
+import { guardHurt } from './neigong.mjs';
 import { T, points, RAID } from './threat.mjs';
 import { log, resAdd } from './util.mjs';
 import { mates } from './clique.mjs';
@@ -30,7 +31,7 @@ export function lairStep(s, H) {
   const L = s.lair, tr = L?.trip; if (!tr || s.t < tr.back) return; L.trip = null;
   const team = tr.ids.map((id) => s.ds.find((d) => d.id === id)).filter(Boolean); for (const d of team) { d.away = false; d.reason = '剿寨歸來'; if (H?.gate) d.pos = [...H.gate]; }
   const p = Math.max(0.1, Math.min(0.9, tr.pow / (tr.pow + tr.pts))), win = R(s) < p; let hurt = null;
-  if (!win || R(s) < LAIR.winHurt) { { hurt = team[Math.floor(R(s) * team.length)]; if (hurt) { hurt.hp = Math.min(hurt.hp, RAID.hurtHp); hurt.raidHurt = (hurt.raidHurt || 0) + 1; T(s).homeHurt++; H?.think?.(s, hurt, 'raidHurt'); } } }
+  if (!win || R(s) < LAIR.winHurt) { { hurt = team[Math.floor(R(s) * team.length)]; if (hurt) { hurt.hp = Math.min(hurt.hp, guardHurt(hurt, RAID.hurtHp)); /* loop117 */ hurt.raidHurt = (hurt.raidHurt || 0) + 1; T(s).homeHurt++; H?.think?.(s, hurt, 'raidHurt'); } } }
   const X = T(s); if (win) { L.won++; X.next = Math.max(X.next || 0, s.day) + LAIR.peaceDays; s.rep = (s.rep || 0) + RAID.rep * 2; L.next = X.next; log(s, `【剿寨】大破山寨！山賊作鳥獸散，至少 ${LAIR.peaceDays} 日不敢來犯。名聲 +${RAID.rep * 2}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else { L.next = s.day + LAIR.cool; log(s, `【剿寨】寨子太硬，攻不下來${hurt ? `，${hurt.name}重傷` : ''}，只好先撤回。`); }
   (L.hist ??= []).push({ day: s.day, pts: tr.pts, p: +p.toFixed(2), win, hurt: hurt?.id || null });

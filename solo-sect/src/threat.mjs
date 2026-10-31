@@ -6,6 +6,7 @@ import { seedMix } from './seedmix.mjs';
 import { DAY, FACILITIES } from './data.mjs';
 import { log, resAdd } from './util.mjs';
 import { power } from './jianghu.mjs';
+import { guardHurt } from './neigong.mjs';
 import { pickKind, kindOf, WAVE } from './raidkind.mjs';
 import { fenceUp, fenceHit, fenceHtml, FENCE } from './fence.mjs';
 import { peaceDelay } from './peace.mjs';
@@ -55,7 +56,7 @@ export function threatStep(s, H) { waveStep(s); const P = T(s).pending; if (P &&
 function hurtOne(s, H) {
   const c = s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > RAID.hurtHp); // 孩子不上陣
   if (!c.length) return null; // loop32：守門原本被併進註解，無人可傷時會當掉
-  const d = c[Math.floor(R(s) * c.length)]; d.hp = Math.min(d.hp, RAID.hurtHp); d.raidHurt = (d.raidHurt || 0) + 1; const X = T(s); X.homeHurt++; X.next = (X.next || s.day || 0) + RAID.hurtCool; H?.think?.(s, d, 'raidHurt'); return d;
+  const d = c[Math.floor(R(s) * c.length)]; const hh = guardHurt(d, RAID.hurtHp); d.hp = Math.min(d.hp, hh); if (hh > RAID.hurtHp) log(s, `${d.name}護體真氣擋下重擊，傷勢輕了些`); /* loop117 */ d.raidHurt = (d.raidHurt || 0) + 1; const X = T(s); X.homeHurt++; X.next = (X.next || s.day || 0) + RAID.hurtCool; H?.think?.(s, d, 'raidHurt'); return d;
 }
 // i：0 付錢、1 迎戰；付不起就只能迎戰
 function raidLose(s, H, who) { const K = kindOf(T(s).cur), m = K?.steal ?? 1; const c = Math.floor(Math.max(0, s.res.coin) * RAID.steal.coin * m), f = Math.floor((s.res.food || 0) * RAID.steal.food * m); if (c) resAdd(s, 'coin', -c); if (f) resAdd(s, 'food', -f); const hurt = K && !K.loseHurt ? null : hurtOne(s, H); log(s, `${who}迎戰山賊——敗了：被搶走 ${c} 錢、${f} 飯${hurt ? `，${hurt.name}重傷` : ''}（不會死人）。`); return hurt; }
