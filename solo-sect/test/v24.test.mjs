@@ -140,3 +140,21 @@ test('loop165 Batch5.1：一般外門弟子不推演（只限掌門、內門、�
   const s = V(); tick(s, 0.1); const d = s.ds.find((x) => x.id !== 'hero' && x.role !== 'laborer'); if (!d) return; d.role = 'outer';
   for (const k of ['basicSword', 'huashanSword', 'sanxianSword', 'stepFeather']) d.arts[k] = { xp: 60, gm: { e: 30 } }; assert.equal(A.checkDeriveArt(s, d), null); d.role = 'inner'; assert.equal(A.checkDeriveArt(s, d)?.id, 'liufengSword');
 });
+
+// ---- loop166 Batch 5.2 山門大比、天下會武 ----
+import * as SE from '../src/sect.mjs';
+test('loop166 Batch5.2：山門大比第 10、20 日各一次；魁首心情 +15 並得親傳或熟練；舊局沒有', () => {
+  assert.deepEqual(SE.BISAI24.days, [10, 20]); const s = V(); tick(s, 0.1); while (s.ds.filter((d) => d.role !== 'laborer').length < 3) s.ds.push({ ...hero(s), id: 'x' + s.ds.length, name: '甲' + s.ds.length, role: 'outer', arts: { ...hero(s).arts }, mood: 50 });
+  const c = SE.bisai24(s); assert.ok(c); assert.equal(s.v24n.bisai, 1); assert.ok(s.log.some((e) => /山門大比/.test(e.msg)));
+  s.day = 10; SE.bisaiDaily24(s); SE.bisaiDaily24(s); assert.equal(s.v24n.bisai, 2);
+  const o = OLD(); for (let i = 0; i < 4; i++) tick(o, 0.25); assert.ok(!o.v24ev);
+});
+test('loop166 Batch5.2：會武第 15、26 日出卡；三種排陣；自動挑期望勝場最高；勝方得名聲、賞銀、靈石、稱號', () => {
+  assert.deepEqual(Object.keys(SE.HUIWU24.days).map(Number), [15, 26]); const s = V(); tick(s, 0.1); s.day = 15; const ch = SE.huiwuCard24(s, 15); assert.ok(ch && ch.opts.length === 3); assert.notEqual(ch.opp, s.sect.id);
+  const team = SE.huiwuTeam(s), ev = [0, 1, 2].map((i) => SE.expWins(s, team, SE.HUIWU24.days[15].opp, i)); assert.equal(ch.auto, ev.indexOf(Math.max(...ev)));
+  for (const x of team) x.d.skills = Object.fromEntries(Object.keys(x.d.skills).map((k) => [k, 999])); const r0 = s.rep || 0, c0 = s.res.coin, l0 = s.res.lingshi || 0;
+  SE.huiwuResolve(s, ch, 0); assert.equal(s.v24n.huiwu, 1);
+  if (s.v24n.huiwuWin) { assert.equal(s.rep, r0 + 15); assert.equal(s.res.coin, c0 + 45); assert.equal(s.res.lingshi, l0 + 1); assert.ok(s.sect.trophies[0].includes('名門會武魁首')); }
+  assert.equal(SE.boutWin(0, 100), 0); assert.ok(SE.boutWin(200, 100) > 0.75);
+  const L = SE.lineup24(s, [{ d: 1, p: 30 }, { d: 2, p: 20 }, { d: 3, p: 10 }], [1, 2, 3], 1); assert.deepEqual(L.map((b) => [b.p, b.o]), [[20, 1], [30, 2], [10, 3]]);
+});

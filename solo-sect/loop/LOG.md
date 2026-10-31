@@ -1513,3 +1513,13 @@
 ## Loop 165 — v2.5 Batch 5.1：宗師合參推演（決定 187–188）
 - `data.mjs`：`DERIVED24` 四門合參絕學＋8 招。`arts.mjs`：`ART_CAT` 對應、`DERIVE24`／`DERIVE_RULES24`／`deriveReady24`／`checkDeriveArt`。`sim.mjs` 研讀／打坐完成時呼叫並記大事紀；`bonds.mjs` 合參絕學可傳功。
 - 測試：v24 +2 項（21 項）。golden-30d-v22 `d672c6f90b1b3e17 → 22f1f48e87d19a04`（郭靖局 30 日內令狐沖推演出《流風迴雪劍》）；舊 golden 不動。
+
+## Loop 166 — v2.5 Batch 5.2：旬日山門大比、天下門派會武、臨陣偷師（決定 189–191）
+- `sect.mjs`：`BISAI24`／`bisai24`、`HUIWU24`／`huiwuCard24`／`huiwuResolve`／`lineup24`／`boutWin`／`expWins`；`sectStep` 每日段呼叫 `bisaiDaily24`。`hero.mjs` `autoPick` 會武取 `ch.auto`。`main.mjs` 門派列顯示 🏆 稱號。
+- 對手戰力定錨：12 種子 bot 局（SS_DT=1）第 15 日本門前三 dps 中位約 280／255／245、第 26 日約 365／300／265。
+- 測試：v24 +2 項（23 項）。golden-30d-v22 `22f1f48e87d19a04 → 172e4d6d36ba6aff`；舊 golden 不動。
+
+### Retro 165–166
+- 做得好：比武與會武都用雜湊擲骰，不碰 RNG 流；戰力直接沿用 `dpsOf`，劍氣二宗、共鳴、詞綴自動反映。
+- 不好：對手是數值代表團、不是實體角色；合參條件偏寬，bot 局一局可推演 4–9 次（多為流風迴雪劍），Batch 6 要看數字決定是否收緊。
+- 下一步：Batch 6 160 局 A/B。

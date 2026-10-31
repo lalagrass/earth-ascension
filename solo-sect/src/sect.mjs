@@ -1,7 +1,8 @@
 import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS } from './data.mjs';
-import { seedArts, learnArt, artTier, artById } from './arts.mjs';
+import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec } from './arts.mjs';
+import { dpsOf } from './world.mjs';
 import { compat } from './social.mjs';
-import { affKey, relKey, log, resAdd, resSet } from './util.mjs';
+import { affKey, relKey, log, resAdd, resSet, recordDeed } from './util.mjs';
 import { removeActor, cancelTask } from './core.mjs';
 import { addWexin } from './hero.mjs';
 import { xidOf } from './wuxia.mjs';
@@ -161,6 +162,7 @@ function checkArts(s) {
   }
 }
 export function sectResolve(s, ch, i) {
+  if (ch.sect === 'huiwu') return huiwuResolve(s, ch, i); /* loop166 */
   s.choices = s.choices.filter((c) => c !== ch); const d = s.ds.find((x) => x.id === ch.who), r = d?.arts?.[ch.art];
   if (i === 1 && r) { r.xp = Math.max(0, r.xp - 10); log(s, `${d.name}收起了${artById(ch.art).name}，回頭練本門功夫。`); } else log(s, `${d?.name || '弟子'}的${artById(ch.art).name}照練不誤——武學無門戶之見。`);
   return true;
@@ -205,6 +207,66 @@ export function sectStep(s) {
   if (!s.sect) return; const S = s.sect;
   for (const d of s.ds) { d.sbias = S.bias; d.stree = S.tree; d.sgain = S.fac ? sgainOf(s) : 1; }
   if (s.day === S.day) return; S.day = s.day; checkRules(s); checkArts(s); facDaily(s);
+  if (s.v24) bisaiDaily24(s); /* loop166 Batch 5.2 */
+}
+
+// ==== loop166 v2.5 Batch 5.2：旬日山門大比（第 10、20 日）＋天下門派會武（第 15 日名門會武、第 26 日天下論劍；三戰兩勝、排陣、臨陣偷師）。只在 s.v24 ====
+/* 戰力＝巡山 dpsOf（已吃 moveMul／cdMul：劍氣二宗、內功、共鳴、詞綴）。勝負用「種子＋日＋場次」雜湊擲骰，不吃 RNG 流。
+   對手三人戰力依 loop166 量測（12 種子 bot 局本門前三 dps 中位：第 15 日約 280／255／245，第 26 日約 365／300／265）定錨。 */
+export const BISAI24 = { days: [10, 20], minN: 2, champMood: 15, champXp: 25, allXp: 10, newXp: 10 };
+export const HUIWU24 = { days: { 15: { name: '名門會武', title: '名門會武魁首', opp: [230, 265, 310] }, 26: { name: '天下論劍', title: '論劍魁首', opp: [255, 305, 375] } },
+  pool: ['emei', 'wudang', 'qizong', 'jianzong', 'gaibang', 'mingjiao', 'taohua', 'gumu', 'xingxiu'], rep: 15, coin: 45, lingshi: 1, steal: 0.4, guiK: 0.25, sharp: 2,
+  opts: ['堂堂正正：主將對主將', '田忌賽馬：以下駟耗其上駟，精銳搶攻先鋒與中堅', '奇門詭道：以陣法／醫毒窺破應戰'] };
+const hh = (str) => { let h = 2166136261; for (const c of str) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return (h >>> 0) / 4294967296; };
+const fighters24 = (s) => s.ds.filter((d) => d.role !== 'laborer' && !d.away && d.adult !== false && d.hp > 30);
+const ownTree = (s) => s.sect?.tree || [];
+function bump(d, id, n) { const r = d.arts?.[id], a = artById(id); if (!r || !a) return; r.xp = Math.min(curCap(d, a), r.xp + n); }
+export function bisaiDaily24(s) {
+  const E = (s.v24ev ??= {}); if (BISAI24.days.includes(s.day) && !E['b' + s.day]) { E['b' + s.day] = 1; bisai24(s); }
+  const H = HUIWU24.days[s.day]; if (H && !E['h' + s.day]) { E['h' + s.day] = 1; huiwuCard24(s, s.day); }
+}
+export function bisai24(s) {
+  const ds = fighters24(s); if (ds.length < BISAI24.minN) return null;
+  const rank = ds.map((d) => ({ d, p: dpsOf(s, d) * (0.85 + 0.3 * hh(`${s.seed}:bisai:${s.day}:${d.id}`)) })).sort((a, b) => b.p - a.p || (a.d.id < b.d.id ? -1 : 1)); const c = rank[0].d;
+  c.mood = Math.min(100, (c.mood || 0) + BISAI24.champMood);
+  const nxt = ownTree(s).map(artById).find((a) => a && !c.arts?.[a.id] && artOk(c, a) && (!a.secret || a.derived) && !a.signature && !reqMissing(c, a).length);
+  let gift; if (nxt) { learnArt(c, nxt.id, s.t); c.arts[nxt.id].xp = Math.max(c.arts[nxt.id].xp, BISAI24.newXp); gift = `掌門親傳《${nxt.name}》`; }
+  else { const own = Object.keys(c.arts || {}).filter((id) => ownTree(s).includes(id)); const id = own.sort((a, b) => c.arts[b].xp - c.arts[a].xp)[0] || focusOf(c); if (id) { bump(c, id, BISAI24.champXp); gift = `《${artById(id).name}》熟練 +${BISAI24.champXp}`; } }
+  for (const { d } of rank) { const id = focusOf(d); if (id) bump(d, id, BISAI24.allXp); }
+  const N = (s.v24n ??= {}); N.bisai = (N.bisai || 0) + 1; (N.champs ??= []).push(c.name);
+  log(s, `【山門大比】第 ${s.day} 日，${rank.length} 名弟子在演武場同門切磋，${c.name}技壓同儕，奪得演武魁首（心情 +${BISAI24.champMood}${gift ? '、' + gift : ''}）；全派比武印證，修練 +${BISAI24.allXp}。`);
+  recordDeed(s, c, 'champ', { chron: `${c.name}奪得第 ${s.day} 日山門大比魁首` }); return c;
+}
+const pickOpp = (s, day) => { const P = HUIWU24.pool.filter((k) => k !== s.sect?.id && SECTS[k]); return P[Math.floor(hh(`${s.seed}:huiwu:${day}`) * P.length)]; };
+export function huiwuTeam(s) { return fighters24(s).map((d) => ({ d, p: dpsOf(s, d) })).sort((a, b) => b.p - a.p || (a.d.id < b.d.id ? -1 : 1)).slice(0, 3); }
+const guiMul = (s, team) => 1 + HUIWU24.guiK * Math.max(...['zhenfa', 'yishu', 'dushu'].map((c) => specK(bestSpec(s, c, team.map((x) => x.d)))), 0);
+/* 排陣：回傳三場 [我方, 對手戰力]；對手依序 先鋒、中堅、主將 */
+export function lineup24(s, team, opp, i) {
+  const T = [...team]; while (T.length < 3) T.push(null); const [A, B, C] = T, [van, mid, chief] = opp, g = i === 2 ? guiMul(s, team) : 1;
+  const pairs = i === 1 ? [[B, van], [A, mid], [C, chief]] : [[C, van], [B, mid], [A, chief]];
+  return pairs.map(([x, o]) => ({ d: x?.d || null, p: (x?.p || 0) * g, o }));
+}
+export const boutWin = (p, o, sharp = HUIWU24.sharp) => (p <= 0 ? 0 : p ** sharp / (p ** sharp + o ** sharp));
+export const expWins = (s, team, opp, i) => lineup24(s, team, opp, i).reduce((a, b) => a + boutWin(b.p, b.o), 0);
+export function huiwuCard24(s, day) {
+  const H = HUIWU24.days[day], team = huiwuTeam(s); if (!team.length) return null; const k = pickOpp(s, day), O = SECTS[k];
+  const ev = [0, 1, 2].map((i) => expWins(s, team, H.opp, i)); const auto = ev.indexOf(Math.max(...ev));
+  const ch = { id: `huiwu-${day}`, sect: 'huiwu', day, opp: k, auto, title: `【${H.name}】${O.name}代表團上門`, text: `${O.name}遣先鋒、中堅、主將三人來會，三戰兩勝。我方出陣：${team.map((x) => x.d.name).join('、')}。如何排陣？`, opts: HUIWU24.opts, portrait: null, at: s.t };
+  s.choices ??= []; s.choices.push(ch); log(s, `【抉擇】${ch.title}：${ch.text}`); if (!s.hero?.askMajor) s.autoAt = s.t; return ch;
+}
+export function huiwuResolve(s, ch, i) {
+  s.choices = s.choices.filter((c) => c !== ch); const H = HUIWU24.days[ch.day], O = SECTS[ch.opp], team = huiwuTeam(s); if (!team.length) { log(s, `【${H.name}】門下無人可出陣，只得作罷。`); return true; }
+  const L = lineup24(s, team, H.opp, i), res = L.map((b, k) => hh(`${s.seed}:bout:${ch.day}:${k}`) < boutWin(b.p, b.o)); const w = res.filter(Boolean).length, win = w >= 2;
+  const N = (s.v24n ??= {}); N.huiwu = (N.huiwu || 0) + 1; N.huiwuWin = (N.huiwuWin || 0) + (win ? 1 : 0); (N.lineup ??= [0, 0, 0])[i]++;
+  const pos = ['先鋒', '中堅', '主將'], txt = L.map((b, k) => `${pos[k]}${b.d ? b.d.name : '（缺陣）'}${res[k] ? '勝' : '負'}`).join('、');
+  if (win) { s.rep = (s.rep || 0) + HUIWU24.rep; resAdd(s, 'coin', HUIWU24.coin); resAdd(s, 'lingshi', HUIWU24.lingshi); (s.sect.trophies ??= []).push(`【${H.title}】`);
+    log(s, `【${H.name}】以「${HUIWU24.opts[i].split('：')[0]}」排陣，${txt}——${w} 勝，力挫${O.name}！名聲 +${HUIWU24.rep}、賞銀 +${HUIWU24.coin}、靈石 +${HUIWU24.lingshi}，得【${H.title}】。`);
+    recordDeed(s, null, 'huiwu', { chron: `${H.name}力挫${O.name}，得【${H.title}】` }); }
+  else log(s, `【${H.name}】以「${HUIWU24.opts[i].split('：')[0]}」排陣，${txt}——不敵${O.name}。`);
+  const fs = L.filter((b) => b.d).map((b) => b.d), thief = (i === 2 ? [...fs].sort((a, b) => Math.max(...['zhenfa', 'yishu', 'dushu'].map((c) => bestSpec(s, c, [b]))) - Math.max(...['zhenfa', 'yishu', 'dushu'].map((c) => bestSpec(s, c, [a]))) || (b.wu ?? 3) - (a.wu ?? 3)) : [...fs].sort((a, b) => (b.wu ?? 3) - (a.wu ?? 3)))[0];
+  if (thief && hh(`${s.seed}:steal:${ch.day}`) < HUIWU24.steal) { const a = O.tree.map(artById).find((a) => a && !thief.arts?.[a.id] && artOk(thief, a) && !a.secret && !a.signature && !a.derived);
+    if (a) { learnArt(thief, a.id, s.t); thief.arts[a.id].xp = Math.max(thief.arts[a.id].xp, BISAI24.newXp); N.steal = (N.steal || 0) + 1; log(s, `【臨陣偷師】${thief.name}在場邊看出${O.name}招式精要，竟學會了《${a.name}》！`); recordDeed(s, thief, 'steal', { chron: `${thief.name}在${H.name}上偷師${O.name}《${a.name}》` }); } }
+  return true;
 }
 
 // ==== （原 valor.mjs）====

@@ -280,6 +280,7 @@ function sectHtml() {
   const T = S.sect; if (!T) return ''; const F = sectFac(S), c = canBuildFac(S), out = [];
   const bias = Object.entries(T.bias).map(([k, v]) => `${k}${v > 0 ? '+' : ''}${Math.round(v * 100)}%`).join('・') || '無';
   out.push(`🏮 <b style="color:${T.color}">${T.plaque}</b>　門派聲望 <b>${T.rep}</b>　流派偏向：${bias}`);
+  if (T.trophies?.length) out.push(`🏆 榮譽：${T.trophies.join('')}`); /* loop166 會武稱號 */
   out.push(`📜 門規：${T.rules.map((k) => { const R = RULE_LIB[k], last = T.viol[k]; return `${R.text}${R.flavor ? '' : last != null && S.t - last < 3 * DAY13 ? '<span style="color:#c0392b">（近日違反）</span>' : '<span style="color:#2e7d32">（遵守中）</span>'}`; }).join('；') || '無'}`);
   if (T.tree.length) out.push(`🥋 本門武學：${T.tree.map((id) => ARTS.find((a) => a.id === id)?.name).join('、')}${T.ban.length ? `　禁學：${T.ban.map((id) => ARTS.find((a) => a.id === id)?.name).join('、')}` : ''}`);
   const ext = []; for (const d of S.ds) for (const id of Object.keys(d.arts || {})) { const k = artKind(S, d, id); if (k === 'outside' || k === 'guest' || k === 'ban') ext.push(`${d.name}・${ARTS.find((a) => a.id === id)?.name}〔${KIND_NAME[k]}〕`); }

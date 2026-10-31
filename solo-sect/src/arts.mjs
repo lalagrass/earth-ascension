@@ -275,7 +275,7 @@ export function selfTarget(d) { if (d.pendingArt) return d.pendingArt; const c =
 export function comprehend(s, d, act, partner, think, log) {
   if (!s.wu7 || !COMP.gain[act]) return null;
   const tgt = selfTarget(d); let got = tgt ? add(s, d, tgt, COMP.gain[act], 'self', think, log) : null;
-  if (act === 'spar' && partner) { const seen = ARTS.find((a) => partner.arts?.[a.id] && open(d, a)); if (seen) got = add(s, d, seen.id, COMP.watch, 'watch', think, log) || got; }
+  if (act === 'spar' && partner) { const seen = ARTS.find((a) => partner.arts?.[a.id] && open(d, a) && !lockedArt24(d, a)); /* loop166 傳承鎖也擋觀摩偷師 */ if (seen) got = add(s, d, seen.id, COMP.watch, 'watch', think, log) || got; }
   return got;
 }
 
