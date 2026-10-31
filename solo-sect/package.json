@@ -1,0 +1,9 @@
+{
+  "name": "solo-sect",
+  "private": true,
+  "scripts": {
+    "test": "bash test/run.sh all",
+    "test:quick": "bash test/run.sh quick",
+    "test:archive": "bash test/run.sh archive"
+  }
+}

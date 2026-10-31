@@ -633,13 +633,29 @@ export function payday(s) {
 }
 
 // ---- tick ----
+// loop145 R3：換日時依序執行的每日結算（順序即亂數消耗順序，不可任意調換）
+export function dailyPipeline(s) {
+  payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s);
+  if (s.draw) cliqueDaily(s);
+  if (s.m9) lairDaily(s, EH);
+  if (s.jhev) jhevDaily(s);
+  if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild });
+}
+// loop145 R3：弟子事蹟／門派大事紀的唯一入口；不用亂數、不寫日誌，只記事實
+export const DEED_CAP = 12, CHRON_CAP = 40;
+export function recordDeed(s, d, kind, info = {}) {
+  const e = { day: s.day ?? 1, kind, ...info };
+  if (d) { (d.deeds ||= []).push(e); if (d.deeds.length > DEED_CAP) d.deeds.shift(); (d.deedN ||= {})[kind] = (d.deedN[kind] || 0) + 1; }
+  if (info.chron) { const c = { day: e.day, kind, who: d?.name ?? null, text: info.chron }; (s.chron ||= []).push(c); if (s.chron.length > CHRON_CAP) s.chron.shift(); }
+  return e;
+}
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
   if (s.prof) for (const d of s.ds) if (!d.pf) d.pf = 1; /* loop91 新入門者也吃熟練度十重 */
   if (s.neigong) { s.ngshield = true; for (const d of s.ds) { if (!d.ng) { d.ng = 1; d.qi ??= 0; } if (!d.ng2) { d.ng2 = 1; d.qi = Math.min(d.qi ?? 0, qiMax(d)); } } } /* loop142 一版舊檔改護體真氣 */ /* loop103 */
   if (s.laborgrow) for (const d of s.ds) d.lg = 1; /* loop127 新入門者 */
   if (s.grow) for (const d of s.ds) { if (!d.gInit) growEnsure(d); if (s.growdr) d.gdr = 1; } /* loop84 新入門者立即折算，介面不必寫狀態 */
-  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); if (s.draw) cliqueDaily(s); if (s.m9) lairDaily(s, EH); if (s.jhev) jhevDaily(s); if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild }); } }
+  { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; dailyPipeline(s); } }
   schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH); if (s.lair) lairStep(s, EH);
   const se = seasonOf(s); for (const p of s.plots) if (p.st === 'grow' && (p.g += dt / se.grow) >= PLOT_GROW) p.st = 'ripe';
   const seIdx = se.i; if (s.seasonI !== seIdx) { if (s.seasonI !== undefined) log(s, `入${se.name}了。${{ spring: '萬物萌發，菜長得快。', summer: '天長日暖。', autumn: '秋高氣爽，心情開闊。', winter: '天寒地凍，菜長得慢，飯量變大。' }[se.id]}`); s.seasonI = seIdx; }

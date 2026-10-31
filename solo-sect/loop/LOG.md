@@ -1339,3 +1339,20 @@
 - 結果：`src/` 63 個 .mjs → **19 個**（另有 destiny-trees.json）；`sim.mjs` 731→700 行、import 46→14 行；`main.mjs` 504→474 行、import 49→15 行。
 - 等價驗證：SS_DT=0.25、種子 1001–1160、bot 30 日、全規則，8 段並行；重構前（worktree `/workspace/ab/pre-r2` @280918b）與重構後的**整份存檔 sha256，160/160 完全相同**（`/workspace/ab/pre-r2.txt` vs `post-r2a.txt`）。
 - 測試：v178 資源管道白名單的檔名前綴改 gen→sect、expedition→world；其餘 663 項不改即過。瀏覽器開局與進局無腳本錯誤（無頭 Chrome，本機 8831 埠）。
+
+## Loop 145 — Batch 2 R3：dailyPipeline／recordDeed／測試封存（決定 131）
+- `sim.mjs`：換日結算抽成 `dailyPipeline(s)`；新增 `recordDeed`、`DEED_CAP=12`、`CHRON_CAP=40`（尚未接線，留給 M1）。
+- `test/v221.test.mjs` 3 項：管道可單獨呼叫、事蹟截斷與計數、大事紀門檻且不耗亂數。
+- 87 個 `test/loop*.test.mjs` 移入 `test/archive/`，相對路徑全部改深一層（含 loop82 的 `new URL('..')` cwd）；新增 `test/run.sh` 與 `package.json` scripts。quick 350 項、all 666 項全過。
+- 等價驗證：160 種子 30 日存檔雜湊與 R2 前完全相同（`/workspace/ab/post-r3.txt`）。
+
+### Retro 144–145
+- 做得好：每一步都用「整份存檔雜湊 160/160」把關，純重構有硬證據；合併工具自動處理拓樸排序，衝突只剩 2 個區域名。
+- 卡住過：循環載入 TDZ 只在執行時才炸，靜態掃不出來；以後合併後先跑一次瀏覽器冒煙測試再跑長模擬。
+- 下一步：Batch 3（M1 傳記／大事紀 → M2 山賊餘黨反撲 → M3 結伴吃飯／破籬避難），新行為全進 BASELINE 路徑、不加開關。
+
+## Batch 2 總結（loop144–145）
+- `src/` .mjs **63 → 19**（≤22 達標）；`sim.mjs` import 行 46→14、`main.mjs` 49→15。
+- 新 API：`dailyPipeline(s)`、`recordDeed(s,d,kind,info)`。
+- 測試：loop 回歸封存到 `test/archive/`，一鍵 `bash test/run.sh all`；quick 只跑 v*＋領域測試。
+- 行為：160 種子 × 30 日存檔雜湊 **100% 相同**（R2、R3 各驗一次）。
