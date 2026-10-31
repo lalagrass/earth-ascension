@@ -60,7 +60,10 @@ export function settleGrowth(d, a, r, ctx) {
   return out;
 }
 /* 開局一次：既有熟練折算造詣（標 init，不是新修練成果；已有 gm 的不動 → 重複呼叫冪等） */
-export function growInit(s) {
-  for (const d of s.ds || []) for (const [id, r] of Object.entries(d.arts || {})) { const a = artBy(id); if (!a || r.gm || !cats(id).length) continue; r.gm = { e: Math.min(GROW.cap[a.grade] || 20, r.xp * GROW.init), ms: r.xp >= 25 ? 1 : 0, init: true }; }
-  s.growInit = true; return s;
+/* 每人一次（開局或入門後第一次結算前）：入門時已有的武學折算；d.gInit 標記後不再折算 */
+export function growEnsure(d) {
+  if (d.gInit) return d; d.gInit = true;
+  for (const [id, r] of Object.entries(d.arts || {})) { const a = artBy(id); if (!a || r.gm || !cats(id).length) continue; r.gm = { e: Math.min(GROW.cap[a.grade] || 20, r.xp * GROW.init), ms: r.xp >= 25 ? 1 : 0, init: true }; }
+  return d;
 }
+export function growInit(s) { for (const d of s.ds || []) growEnsure(d); return s; }
