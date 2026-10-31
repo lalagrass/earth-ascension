@@ -914,3 +914,9 @@ ART = { id, name, school: 'palm'|'leg'|'inner'|'step', grade: 1..5（凡良精�
 
 ## 20. 成長分層（loops 77–88，2026-10-31）
 開局開關「成長分層」（預設勾選，golden 不開）：門類造詣（拳掌／腿法／劍法完整，內功／身法部分）、同類入門武學修練加速（最多 ×1.8）、武學圖的人物實力五軸圖與個別武學狀態。設計、量測與待決定見 `docs/GROWTH-LAYERS.md`、`docs/GROWTH-INVENTORY.md`，量測摘要在 `artifacts/growth/`。
+
+## v2.2（loops 142–147，擁有人 t185）— 已完成
+- R1：一版內功刪除；30 條規則轉正為 `BASELINE_V22`；開局江湖規則剩 3 個選項；新基準 `golden-30d-v22.txt`。
+- R2／R3：`src/` 63 → 19 個 .mjs；`dailyPipeline`、`recordDeed`；loop 測試封存到 `test/archive/`，`bash test/run.sh`。
+- M1–M3：傳記與大事紀、山賊餘黨反撲、結伴與避難。
+- 待決：見 `docs/DECISIONS.md` §9（護盾打不空、早期傳記同質、反撲敗後補償）。
