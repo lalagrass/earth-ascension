@@ -446,6 +446,12 @@ ARTS.push(
   { id: 'huagongDafa', chiefOnly24: true, name: '化功大法', school: 'inner', grade: 3, tags: ['陰', '剛'], attr: 'yin', req: [], tech: null, techs: ['化功', '散功'], effect: 'rest', v24: true, classic: true, own24: 'xingxiu', svg: [2, 8] },
   { id: 'chousuiPalm', name: '抽髓掌', school: 'palm', grade: 2, tags: ['陰'], attr: 'yin', req: [], techs: ['cs1', 'cs2'], tech: 'cs1', v24: true, classic: true, own24: 'xingxiu', svg: [1, 9] },
   { id: 'sanyinClaw', name: '三陰蜈蚣爪', school: 'palm', grade: 3, tags: ['快', '陰'], attr: 'yin', req: [{ art: 'chousuiPalm', tier: 2 }], techs: ['sy1', 'sy2'], tech: 'sy1', v24: true, classic: true, own24: 'xingxiu', svg: [2, 9] },
+  /* loop174 v2.6（t191）*/
+  { id: 'yunlongXinfa', name: '雲龍心法', school: 'inner', grade: 2, tags: ['巧', '剛'], attr: 'he', req: [{ art: 'breath', tier: 1 }], tech: null, techs: ['雲龍', '風虎'], effect: 'rest', v24: true, classic: true, own24: 'tiandihui', svg: [1, 18] },
+  { id: 'shenxingStep', name: '神行百變', school: 'step', grade: 3, tags: ['巧', '快'], attr: 'yin', req: [{ art: 'snowStep', tier: 2 }], tech: null, techs: ['神行', '百變'], effect: 'speed', v24: true, classic: true, own24: 'tiandihui', svg: [2, 18] },
+  { id: 'baihuaFist', name: '百花錯拳', school: 'fist', grade: 2, tags: ['巧', '柔'], attr: 'he', req: [{ art: 'basicFist', tier: 1 }], techs: ['bh1', 'bh2'], tech: 'bh1', v24: true, classic: true, own24: 'tiandihui', svg: [1, 19] },
+  { id: 'yunlongSword', name: '雲龍劍法', school: 'palm', grade: 2, tags: ['巧', '剛'], weapon: 'sword', attr: 'yang', req: [{ art: 'basicSword', tier: 1 }], techs: ['yl1', 'yl2'], tech: 'yl1', v24: true, classic: true, own24: 'tiandihui', svg: [2, 19] },
+  { id: 'zhaixingStep', name: '摘星功', school: 'step', grade: 2, tags: ['快', '陰'], attr: 'yin', req: [], tech: null, techs: ['摘星', '飛星'], effect: 'speed', v24: true, classic: true, own24: 'xingxiu', svg: [1, 20] },
   /* loop173 v2.6（t191）*/
   { id: 'huntianGong', name: '混天氣功', school: 'inner', grade: 2, tags: ['剛'], attr: 'yang', req: [{ art: 'breath', tier: 1 }], tech: null, techs: ['混天', '氣壯'], effect: 'rest', v24: true, classic: true, own24: 'gaibang', svg: [1, 14] },
   { id: 'xiaoyaoStep', name: '逍遙遊', school: 'step', grade: 2, tags: ['巧', '柔'], attr: 'he', req: [{ art: 'snowStep', tier: 1 }], tech: null, techs: ['逍遙', '遊身'], effect: 'speed', v24: true, classic: true, own24: 'gaibang', svg: [1, 15] },
@@ -479,6 +485,8 @@ MOVES.push(
   { id: 'ys1', skill: 'palm', name: '素心', req: 0, range: 56, cd: 1.0, dmg: 13, aoe: 0, color: '#e0e8f8' }, { id: 'ys2', skill: 'palm', name: '玉女投梭', req: 0, range: 60, cd: 1.8, dmg: 19, aoe: 30, color: '#d0d8f0' },
   { id: 'cs1', skill: 'palm', name: '抽髓', req: 0, range: 40, cd: 1.3, dmg: 11, aoe: 0, color: '#6a9a4a' }, { id: 'cs2', skill: 'palm', name: '腐屍毒掌', req: 0, range: 44, cd: 1.9, dmg: 14, aoe: 30, color: '#5a8a3a' },
   { id: 'sy1', skill: 'palm', name: '蜈蚣爪', req: 0, range: 40, cd: 1.0, dmg: 13, aoe: 0, color: '#7a8a3a' }, { id: 'sy2', skill: 'palm', name: '三陰絕戶', req: 0, range: 44, cd: 1.7, dmg: 19, aoe: 0, color: '#6a7a2a' },
+  { id: 'bh1', skill: 'palm', name: '錯拳', req: 0, range: 38, cd: 1.2, dmg: 11, aoe: 0, color: '#5a9a6a' }, { id: 'bh2', skill: 'palm', name: '百花齊放', req: 0, range: 42, cd: 1.9, dmg: 14, aoe: 30, color: '#4a8a5a' },
+  { id: 'yl1', skill: 'palm', name: '雲龍', req: 0, range: 54, cd: 1.3, dmg: 11, aoe: 0, color: '#7aba8a' }, { id: 'yl2', skill: 'palm', name: '龍騰', req: 0, range: 58, cd: 1.9, dmg: 14, aoe: 40, color: '#6aaa7a' },
   { id: 'lp1', skill: 'palm', name: '蓮花', req: 0, range: 42, cd: 1.3, dmg: 11, aoe: 0, color: '#c8a070' }, { id: 'lp2', skill: 'palm', name: '步步生蓮', req: 0, range: 46, cd: 1.9, dmg: 14, aoe: 30, color: '#b89060' },
   { id: 'fm1', skill: 'palm', name: '瘋魔', req: 0, range: 48, cd: 1.2, dmg: 11, aoe: 0, color: '#a08050' }, { id: 'fm2', skill: 'palm', name: '群魔亂舞', req: 0, range: 52, cd: 1.9, dmg: 14, aoe: 40, color: '#907040' },
   { id: 'yz1', skill: 'palm', name: '鷹爪', req: 0, range: 40, cd: 1.2, dmg: 11, aoe: 0, color: '#c86a4a' }, { id: 'yz2', skill: 'palm', name: '擒拿', req: 0, range: 44, cd: 1.8, dmg: 14, aoe: 0, color: '#b85a3a' },
@@ -753,7 +761,7 @@ export const SECTS = {
   mingjiao: { name: '明教', plaque: '明教・光明頂', color: '#b33a1f', flag: '火', bias: { 柔: 0.08, 巧: 0.07 }, tree: ['jiuyang', 'qiankun', 'taiji', 'breath'], tree24: ['shenghuoXinfa', 'snowStep', 'qingfuStep', 'yingzhuaHand', 'qishangFist'], ban: [], rules: ['heal', 'rescue'],
     fac: { name: '聖火壇', cost: { stone: 10, coin: 10 }, gain: 1.1, desc: '聖火不滅：全派練武 +10%' }, rivals: ['少林', '武當', '峨眉', '崑崙', '崆峒', '華山'], fav: ['zhaomin', 'xiaozhao'],
     recruit: { hp: 60, text: '一個帶傷的明教教眾跌跌撞撞上山求醫，傷好後不肯走了。' } },
-  tiandihui: { name: '天地會', plaque: '天地會・青木堂', color: '#2f6a3a', flag: '洪', bias: { 巧: 0.05 }, tree: ['snowStep', 'huagu'], ban: [], rules: ['fanqing', 'share'],
+  tiandihui: { name: '天地會', plaque: '天地會・青木堂', color: '#2f6a3a', flag: '洪', bias: { 巧: 0.05 }, tree: ['snowStep', 'huagu'], tree24: ['breath', 'yunlongXinfa', 'shenxingStep', 'basicFist', 'baihuaFist', 'basicSword', 'yunlongSword'], ban: [], rules: ['fanqing', 'share'],
     fac: { name: '香堂', cost: { wood: 8, coin: 6 }, daily: { coin: 3 }, desc: '拜香堂、收會費：每日香火錢 +3' }, rivals: ['神龍教', '朝廷鷹犬'], fav: ['shuanger', 'ake', 'haidafu'],
     recruit: { trait: 'glib', text: '一個市井混混對了暗號：「地振高岡，一派溪山千古秀。」' } },
   zhulong: { name: '豬籠城寨', plaque: '豬籠城寨', color: '#8a7a3a', flag: '寨', bias: { 剛: 0.15 }, tree: ['rulai', 'tantui', 'tiexian', 'bagua', 'shihou', 'basicFist'], ban: [], rules: ['rent', 'heart'],
@@ -772,7 +780,7 @@ export const SECTS = {
   gumu: { v24: true, name: '古墓派', plaque: '古墓派・活死人墓', color: '#7a8ca8', flag: '墓', bias: { 柔: 0.1, 快: 0.05 }, tree: ['yunv', 'tianluoPalm', 'yunvSword', 'xuantie', 'anran', 'stepFeather'], ban: [], rules: ['heart'],
     fac: { name: '寒玉床', cost: { stone: 12, coin: 8 }, gain: 1.5, gainMaxDs: 5, med24: 1.5, desc: '寒玉床上練功打坐：門人 ≤5 時全派練武、打坐回氣與衝關率 +50%' }, rivals: ['全真教'], fav: [],
     recruit: { text: '一個不太說話的姑娘在墓門外站了一整天。' } },
-  xingxiu: { v24: true, name: '星宿派', plaque: '星宿派・星宿海', color: '#5a7a3a', flag: '星', bias: { 巧: 0.1, 剛: 0.05 }, tree: ['huagongDafa', 'chousuiPalm', 'sanyinClaw', 'duPu'], ban: [], rules: ['hoard'],
+  xingxiu: { v24: true, name: '星宿派', plaque: '星宿派・星宿海', color: '#5a7a3a', flag: '星', bias: { 巧: 0.1, 剛: 0.05 }, tree: ['huagongDafa', 'chousuiPalm', 'sanyinClaw', 'duPu', 'zhaixingStep'], ban: [], rules: ['hoard'],
     fac: { name: '神木王鼎', cost: { stone: 8, coin: 6 }, daily: { herb: 1, coin: 1 }, psn24: 1.35, desc: '神木王鼎煉毒：每日藥材 +1、香火錢 +1、門人毒傷 +35%；新人入門即帶《百毒譜》' }, rivals: ['丐幫', '逍遙派'], fav: ['azi'],
     recruit: { text: '一個臉色發青的小子捧著毒蟲罐子上山。', art24: 'duPu' } },
   wuming: { name: '無名小派', plaque: '無名小派', color: '#6a5a4a', flag: '武', bias: {}, tree: [], ban: [], rules: [],
@@ -780,7 +788,7 @@ export const SECTS = {
     recruit: { text: '一個慕名而來的年輕人上山拜師。' } },
 };
 /* loop169 t190 待決 4：自創主角開局可選的開山道統（custom-sect24 下拉；wuming＝不指定） */
-export const SECT_PICK24 = ['wuming', 'emei', 'wudang', 'taohua', 'gumu', 'xingxiu', 'qizong', 'jianzong', 'gaibang', 'mingjiao'];
+export const SECT_PICK24 = ['wuming', 'emei', 'wudang', 'taohua', 'gumu', 'xingxiu', 'qizong', 'jianzong', 'gaibang', 'mingjiao', 'tiandihui']; /* loop174 加天地會 */
 export const HERO_SECT = { guojing: 'gaibang', yuebuqun: 'qizong', linghuchong: 'jianzong', zhangwuji: 'mingjiao', weixiaobao: 'tiandihui', axing: 'zhulong' };
 // 自創主角：九問主價值 → 流派偏向＋一條門規
 export const CUSTOM_BY_VALUE = { xia: ['剛', 'rescue'], sect: ['拙', 'hoard'], qing: ['柔', 'heart'], free: ['巧', 'heart'], wu: ['拙', 'rescue'], fame: ['剛', 'rent'] };

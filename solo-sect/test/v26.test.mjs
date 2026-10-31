@@ -71,3 +71,11 @@ test('loop173 丐幫／明教成長鏈：資料、tree24、僅 v24 新局併入�
   const s = V({ sect24: 'gaibang' }); tick(s, 0.1); assert.ok(s.sect.tree.includes('huntianGong'));
   const o = createState(7, { kind: 'template', id: 'guojing', askMajor: false }); assert.ok(!o.sect.tree.includes('huntianGong'));
 });
+test('loop174 天地會／星宿派：資料、樹、開局可選天地會', async () => {
+  const G = { tiandihui: ['yunlongXinfa', 'shenxingStep', 'baihuaFist', 'yunlongSword'], xingxiu: ['zhaixingStep'] };
+  for (const [k, ids] of Object.entries(G)) for (const id of ids) { const a = A.artById(id); assert.ok(a && a.v24 && a.classic && !a.secret && a.own24 === k, id); assert.ok(A.ART_CAT[id], id); assert.ok((SECTS[k].tree24 || SECTS[k].tree).includes(id), id); }
+  assert.equal(A.artById('shenxingStep').grade, 3); assert.deepEqual(A.artById('zhaixingStep').req, []); assert.ok(A.isSwordArt('yunlongSword'));
+  const { SECT_PICK24 } = await import('../src/data.mjs'); assert.ok(SECT_PICK24.includes('tiandihui'));
+  const s = V({ sect24: 'tiandihui' }); tick(s, 0.1); assert.equal(s.sect.id, 'tiandihui'); assert.ok(s.sect.tree.includes('yunlongXinfa'));
+  const x = V({ sect24: 'xingxiu' }); tick(x, 0.1); const d = other(x); d.arts = {}; give(d, 'huagongDafa', 30); give(d, 'chousuiPalm', 30); give(d, 'zhaixingStep', 30); assert.equal(A.sectClasses24(d), 3);
+});

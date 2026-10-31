@@ -20,7 +20,7 @@ test('loop168 五派專屬武學：classic＋v24、非 secret、ART_CAT 照規�
   assert.deepEqual(SECTS.wudang.tree, ['breath', 'wudangXinfa', 'wudangJiuyang', 'wudangFist', 'mianPalm', 'taiji', 'basicSword', 'rouyunSword', 'taijiSword', 'stepEight']); /* loop172 t191 補武當心法、綿掌 */
   assert.deepEqual(SECTS.taohua.tree, ['biboXinfa', 'luoyingPalm', 'lanhuaHand', 'basicSword', 'yuxiaoSword', 'stepEight']);
   assert.deepEqual(SECTS.gumu.tree, ['yunv', 'tianluoPalm', 'yunvSword', 'xuantie', 'anran', 'stepFeather']);
-  assert.deepEqual(SECTS.xingxiu.tree, ['huagongDafa', 'chousuiPalm', 'sanyinClaw', 'duPu']);
+  assert.deepEqual(SECTS.xingxiu.tree, ['huagongDafa', 'chousuiPalm', 'sanyinClaw', 'duPu', 'zhaixingStep']); /* loop174 t191 摘星功 */
   assert.deepEqual(A.ART_CAT.tiangangFinger, { quanzhang: 0.5, qimen: 0.5 }); assert.deepEqual(A.ART_CAT.huagongDafa, { neigong: 0.6, dushu: 0.4 });
   assert.ok(A.isSwordArt('yuxiaoSword') && A.isSwordArt('taijiSword') && !A.isSwordArt('jindingPalm'));
   for (const a of ARTS.filter((x) => x.own24)) for (const m of a.techs) if (a.tech) assert.ok(m, a.id);
@@ -63,7 +63,7 @@ test('loop169 執事藏經閣：出征過或有殘頁，木 ≥5 即立（石料
   assert.equal(EC.stewLib24(s), null); s.expN = 1; assert.equal(EC.stewLib24(s), 'library'); s.expN = 0; s.res.page1 = 1; assert.equal(EC.stewLib24(s), 'library'); s.res.wood = 4; assert.equal(EC.stewLib24(s), null);
 });
 test('loop169 開局門派選單：十個選項、自創主角帶 sect24（無名派不帶）、可開華山／丐幫／明教', () => {
-  assert.deepEqual(SECT_PICK24, ['wuming', 'emei', 'wudang', 'taohua', 'gumu', 'xingxiu', 'qizong', 'jianzong', 'gaibang', 'mingjiao']);
+  assert.deepEqual(SECT_PICK24, ['wuming', 'emei', 'wudang', 'taohua', 'gumu', 'xingxiu', 'qizong', 'jianzong', 'gaibang', 'mingjiao', 'tiandihui']); /* loop174 t191 天地會 */
   const base = { tab: 'custom', name: '甲', stats: {}, ans: Array(9).fill(0), ask: false };
   assert.equal(buildSpec({ ...base, sect24: 'gumu' }).sect24, 'gumu'); assert.ok(!('sect24' in buildSpec({ ...base, sect24: 'wuming' })));
   for (const k of SECT_PICK24.slice(1)) { const s = V({ sect24: k }); assert.equal(s.sect.id, k, k); }
