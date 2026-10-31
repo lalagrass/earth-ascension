@@ -911,3 +911,6 @@ ART = { id, name, school: 'palm'|'leg'|'inner'|'step', grade: 1..5（凡良精�
 | v1.75 | 第二輪長時間試玩＋平衡報告：用同一支 `artifacts/review-fix/longrun.mjs`、同 5 種子 × 7 開局，逐項對照 `BALANCE-BASELINE-v146.md` | 新增 |
 
 鐵匠需要裝備系統，暫不排入。
+
+## 20. 成長分層（loops 77–88，2026-10-31）
+開局開關「成長分層」（預設勾選，golden 不開）：門類造詣（拳掌／腿法／劍法完整，內功／身法部分）、同類入門武學修練加速（最多 ×1.8）、武學圖的人物實力五軸圖與個別武學狀態。設計、量測與待決定見 `docs/GROWTH-LAYERS.md`、`docs/GROWTH-INVENTORY.md`，量測摘要在 `artifacts/growth/`。
