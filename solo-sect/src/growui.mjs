@@ -1,6 +1,6 @@
 /* loop81 成長分層介面（純顯示，不寫世界狀態）：A 人物實力圖、B 門類造詣、C 個別武學。
    能力圖：固定 5 軸、固定順序、固定顯示基準（不是能力上限，也不按角色或全派最大值縮放）；不算面積。 */
-import { NG, NG2, qiMax, qiOf, mitOf, INNER } from './neigong.mjs';
+import { NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER } from './neigong.mjs';
 import { profOf, profMul, profLabel, nextLvXp, PROF } from './prof.mjs';
 import { ARTS, TIERS, ART_GAIN, ROOT, JH, BREAK } from './data.mjs';
 import { effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf } from './arts.mjs';
@@ -94,11 +94,11 @@ export function profRulesHtml() { const rows = TIERS.slice(0, -1).map(([lo, n], 
 export function qiStatus(d, now = 0) {
   const m = qiMax(d), tired = (d.spentUntil ?? -1) > now;
   if (!m) return `<span title="還沒學內功：沒有護體真氣">氣 0/0（未學內功）</span>`;
-  return `<span title="護體真氣：受擊先減傷 ${Math.round(mitOf(d) * 100)}%，再由內力吸收；內力打空會力竭 ${NG2.spentT} 秒（受傷 ×${NG2.spentMul}）">氣 ${qiOf(d) | 0}/${m} ${bar(qiOf(d), m, '#5a7ab0')}${tired ? '（力竭）' : ''}</span>`;
+  return `<span title="護體真氣：受擊先減傷 ${Math.round(mitOf(d) * 100)}%，再由內力吸收；內力打空會力竭 ${NG2.spentT} 秒（受傷 ×${NG2.spentMul}）">氣 ${qiOf(d) | 0}/${m} ${bar(qiOf(d), m, '#5a7ab0')}${tired ? '（力竭）' : ''}${tenthOf(d) ? '・真氣綿長' : ''}</span>`;
 }
 export function neigongRules2Html() {
   return `<details data-keep="ng-rules"><summary>護體真氣怎麼算</summary><div class="k">開局沒有內力。每門已學內功依階給上限（${TIERS.map((t, i) => `${t[1]} ${NG2.cap[i]}`).join('、')}），最多 ${NG2.total}；減傷依階 ${NG2.mit.map((v) => Math.round(v * 100) + '%').join('／')}，最多 ${Math.round(NG2.mitCap * 100)}%。</div>`
-    + `<div class="k">受擊（狩獵、遠行）：先減傷，再由內力吸收，不夠才扣生命；內力打空力竭 ${NG2.spentT} 秒，受傷 ×${NG2.spentMul}。寨匪、剿寨重傷時，內力 ≥${NG2.guard} 就扣 ${NG2.guard}，生命留 ${NG2.guardHp}。門派戰力每人 +${NG2.powK}×上限。</div>`
+    + `<div class="k">受擊（狩獵、遠行）：先減傷，再由內力吸收，不夠才扣生命；內力打空力竭 ${NG2.spentT} 秒，受傷 ×${NG2.spentMul}；任一內功練到圓滿十重或化境則「真氣綿長」，打空也不力竭（只此一項，不另加內力或減傷）。寨匪、剿寨重傷時，內力 ≥${NG2.guard} 就扣 ${NG2.guard}，生命留 ${NG2.guardHp}。門派戰力每人 +${NG2.powK}×上限。</div>`
     + `<div class="k">回復：打坐一次 +${NG.med}；歇息每秒 +${NG.rest}。衝關仍可扣 ${NG.btCost} 加成功率 +${Math.round(NG.btBonus * 100)}%。沒有運勁、運功療傷。</div></details>`; }
 export function neigongRulesHtml() {
   return `<details data-keep="ng-rules"><summary>內力怎麼算</summary><div class="k">上限＝${NG.base}＋每門已學內功 ${NG.perTier}×（階數＋1，入門算 1、${TIERS[TIERS.length - 1][1]}算 ${TIERS.length}），最多 ${NG.cap}。內功：${INNER.map((id) => ARTS.find((a) => a.id === id).name).join('、')}。只看階，不看十重、不看造詣。</div>`

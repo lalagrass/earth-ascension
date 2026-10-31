@@ -3,6 +3,7 @@
 import { ARTS } from './data.mjs';
 import { artTier } from './arts.mjs';
 import { ART_CAT } from './growth.mjs';
+import { profOf } from './prof.mjs';
 export const NG = { base: 20, perTier: 15, cap: 200, med: 12, rest: 0.2, strikeCost: 4, strikeMul: 1.25, healAt: 40, healCost: 15, heal: 20, btCost: 20, btBonus: 0.1 };
 export const isInner = (a) => a.school === 'inner' || !!ART_CAT[a.id]?.neigong;
 export const INNER = ARTS.filter(isInner).map((a) => a.id);
@@ -26,8 +27,7 @@ export function shieldHit(d, dmg, now = 0) {
   if (q <= 0) return x;
   x *= 1 - mitOf(d);
   const ab = Math.min(q, x); d.qi = q - ab; x -= ab;
-  if (d.qi <= 0 && !d.guardOnce) { d.spentUntil = now + NG2.spentT; }
-  if (d.qi <= 0 && d.guardOnce) d.guardOnce = false;
+  if (d.qi <= 0 && !tenthOf(d)) d.spentUntil = now + NG2.spentT;
   return x;
 }
 export const shieldOn = (d) => !!d.ng2 && qiOf(d) > 0;
@@ -35,3 +35,5 @@ export const shieldOn = (d) => !!d.ng2 && qiOf(d) > 0;
 export const powBonus = (d) => (d.ng2 ? NG2.powK * qiMax2(d) : 0);
 export const dpsBonus = (d) => (d.ng2 ? NG2.dpsK * qiMax2(d) : 0);
 export function guardHurt(d, hurtHp) { if (!d.ng2 || qiOf(d) < NG2.guard) return hurtHp; d.qi = qiOf(d) - NG2.guard; return Math.max(hurtHp, NG2.guardHp); }
+// loop121 十重質變（只一項、不重複加數值）：任一內功練到圓滿十重（需熟練度十重）或化境 →「真氣綿長」：內力打空也不力竭
+export const tenthOf = (d) => innerArts(d).some((id) => { const t = artTier(d, id); if (t >= 4) return true; const p = profOf(d.arts[id].xp || 0); return !!d.pf && t === 3 && p.lv === 10; });
