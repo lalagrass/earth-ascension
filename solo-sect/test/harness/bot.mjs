@@ -1,6 +1,6 @@
 // loop23 測試框架：玩家 bot（每日試蓋寢舍、能收就收）＋無操作/玩家 bot 對照長跑。
 import { createState, tick, canRecruit, recruit, startBuild } from '../../src/sim.mjs';
-export const ALL_ON = { draw: true, comprehend: true, mentor: true, peace: true, jhev: true, bt25: true, lift: true, lairpow: true, steward: true, jhui: true, qshare: true, jhrefuse: true, mfit: true, cropcare: true, letterask: true, mpool: true, cotrain: true, masterask: true, stewkit: true, cofun: true, longwatch: true, paypill: true, grow: true, prof: true, stewyard: true };
+export const ALL_ON = { neigong: true, draw: true, comprehend: true, mentor: true, peace: true, jhev: true, bt25: true, lift: true, lairpow: true, steward: true, jhui: true, qshare: true, jhrefuse: true, mfit: true, cropcare: true, letterask: true, mpool: true, cotrain: true, masterask: true, stewkit: true, cofun: true, longwatch: true, paypill: true, grow: true, prof: true, stewyard: true };
 export function botDaily(s) { try { startBuild(s, 'dorm'); } catch { /* 無料或已在蓋 */ } const c = canRecruit(s); if (c.ok) { recruit(s); return true; } return false; }
 // run(seed, spec, days, bot, onTick) → state
 const DT = +(globalThis.process?.env?.SS_DT || 6), PER = Math.round(600 / DT); /* loop57：SS_DT 環境變數改步長（遊戲實際 0.25；預設 6 求快） */

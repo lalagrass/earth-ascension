@@ -1,4 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
+import { NG, addQi, spendQi, qiMax } from './neigong.mjs';
 import { growInit, growEnsure, settleGrowth } from './growth.mjs';
 import { seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove } from './arts.mjs';
 import { ART_GAIN, BREAK, EXP } from './data.mjs';
@@ -91,6 +92,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.grow) s.grow = true; /* loop79 成長分層 */
   if (heroSpec?.stewyard) s.stewyard = true; /* loop95 執事立樁 */
   if (heroSpec?.prof) s.prof = true; /* loop91 熟練度十重 */
+  if (heroSpec?.neigong) s.neigong = true; /* loop103 最小內功 */
   if (heroSpec?.cofun) s.cofun = true; /* loop62 有伴解悶 */
   if (heroSpec?.longwatch) s.longwatch = true; /* loop67 哨崗久守 */
   if (heroSpec?.paypill) s.paypill = true; /* loop71 欠俸先賣丹 */
@@ -110,6 +112,7 @@ export function createState(seed = 1, heroSpec = null) {
   sectInit(s); s.gen = genInit(); if (heroSpec?.bonus) s.gen.suhuiStart = heroSpec.bonus;
   if (s.grow) growInit(s);
   if (s.prof) for (const d of s.ds) d.pf = 1; /* loop91 */
+  if (s.neigong) for (const d of s.ds) { d.ng = 1; d.qi = 0; } /* loop103 */
   return s;
 }
 function mkDisciple(d, i, at = 'court', personality = d.personality || [], known = personality.slice(0, 1)) {
@@ -431,6 +434,7 @@ function doTask(s, d, dt) {
     if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = byId(s, t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
     const effDur = durOf(s, t);
     if (A.energy && effDur > 0) d.needs.energy = clamp(d.needs.energy + A.energy * dt / effDur, 0, 100);
+    if (t.act === 'rest' && d.ng) addQi(d, NG.rest * dt); // loop103 歇息回內力
     if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (t.floor ? 0.6 : 1) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', s.t); if (t.timer < dt * 1.5) think(s, d, t.floor || (t.fac === 'hall' && s.fac.hall.stage === 0) ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= CORE.wakeAt && t.timer > 4))) finish(s, d); return; }
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
     const dur = effDur;
@@ -451,6 +455,7 @@ function doTask(s, d, dt) {
       if (t.act === 'eat' && s.res.food >= 8) think(s, d, 'wellFed');
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
       if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) for (let i = 0; i < (facStage(s, t.fac).medEase || 1); i++) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s)); if (r?.ok && s.grow && r.stage <= 2) { growEnsure(d); settleGrowth(d, r.art, d.arts[r.art.id], { src: 'break', stage: r.stage }); } /* loop79 突破里程碑 */ if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
+      if (t.act === 'meditate' && d.ng) addQi(d, NG.med); // loop103 打坐一次回內力（衝關扣用在前）
       if (t.act === 'learn' && d.pendingArt) { const m = learnArt(d, d.pendingArt, s.t); s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
       if (s.draw && (t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) { const c = (s.cnt ??= { chat: 0, spar: 0 }); c[t.act]++; } // loop22 完成場次計數（opt-in）
       if (t.act === 'chat' && t.partner) { const p = byId(s, t.partner); d.together += 20; if (isLabor(d) && !isLabor(p)) d.cowork = (d.cowork || 0) + 30;
@@ -649,6 +654,7 @@ export function payday(s) {
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
   if (s.prof) for (const d of s.ds) if (!d.pf) d.pf = 1; /* loop91 新入門者也吃熟練度十重 */
+  if (s.neigong) for (const d of s.ds) if (!d.ng) { d.ng = 1; d.qi ??= 0; } /* loop103 */
   if (s.grow) for (const d of s.ds) if (!d.gInit) growEnsure(d); /* loop84 新入門者立即折算，介面不必寫狀態 */
   { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); if (s.draw) cliqueDaily(s); if (s.m9) lairDaily(s, EH); if (s.jhev) jhevDaily(s); if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild }); } }
   schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH); if (s.lair) lairStep(s, EH);
