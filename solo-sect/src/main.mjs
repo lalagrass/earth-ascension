@@ -26,6 +26,7 @@ import { pickModal, pending } from './modalq.mjs';
 import { isFolded, foldKey, setAll } from './fold.mjs';
 import { dsum } from './dcard.mjs';
 import { compProgress } from './comprehend.mjs';
+import { seasonHint } from './season.mjs'; /* loop73 */
 import { ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS } from './data.mjs';
 import { EXP_STYLES } from './data.mjs';
 import { styleOf, teamStyle } from './expedition.mjs';
@@ -173,7 +174,7 @@ function saveKeep() { try { localStorage.setItem(KEEP_KEY, JSON.stringify(keepSt
 document.addEventListener('click', (e) => { const h = e.target.closest('#panel > h2.fold'); if (h) { const K = keepState(); K[foldKey(h.dataset.sec)] = !isFolded(K, h.dataset.sec); saveKeep(); applyFold(); return; }
   const b = e.target.closest('[data-foldall]'); if (b) { setAll(keepState(), foldIds(), b.dataset.foldall === '1'); saveKeep(); applyFold(); } });
 function panel() {
-  const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×`;
+  const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×`; $('clock').title = S.jhui ? seasonHint(S) : ''; /* loop73 季節說明（滑鼠移到時鐘） */
   $('res').innerHTML = `木 ${S.res.wood}/${S.cap.wood}　石 ${S.res.stone}/${S.cap.stone}　香火錢 ${S.res.coin}　菜 ${S.res.veg}　飯 ${S.res.food}　藥 ${S.res.herb}　水 ${S.res.water}/${S.cap.water}　療傷丹 ${S.res.pill}　鐵木 ${S.res.tiemu || 0}　靈石 ${S.res.lingshi || 0}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
   $('build').innerHTML = FACILITIES.filter((f) => f.stages.length > 1 && !f.sig).map((f) => { const st = S.fac[f.id], nx = f.stages[st.stage + 1];
     const cost = nx ? Object.entries({ ...nx.cost, ...(nx.rare || {}) }).map(([k, v]) => `${RES_NAMES[k]}${v}`).join('・') : ''; const why = nx ? buildWhy(S, f.id) : null;
