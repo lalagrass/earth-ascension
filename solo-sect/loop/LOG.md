@@ -1356,3 +1356,11 @@
 - 新 API：`dailyPipeline(s)`、`recordDeed(s,d,kind,info)`。
 - 測試：loop 回歸封存到 `test/archive/`，一鍵 `bash test/run.sh all`；quick 只跑 v*＋領域測試。
 - 行為：160 種子 × 30 日存檔雜湊 **100% 相同**（R2、R3 各驗一次）。
+
+## Loop 146 — Batch 3：M1 傳記／大事紀、M2 餘黨反撲、M3 結伴避難（決定 132–134）
+- M1：`util.mjs` 新增 `ACT_CAT`／`tallyAct`／`bioLean`／`bioLine`／`chronHtml`；`recordDeed` 移到 util（threat 也要用，避免循環）。弟子卡多一行傳記，側欄新增「門派大事紀」（只在 v22 顯示）。
+- M1 驗收 `test/accept/bio-classifier.test.mjs`：第一次 86.3%（計時只算「做」的階段、門檻 ±10% 太寬），改為全程計時＋3% 才判動靜皆宜後 88.8%；查出收養孩子複製範本時把記帳一起抄走，修正後 **98.6%（792/803）**。
+- M2：`threat.mjs` `BOSS`、`bossDaily`、`bossEnd`；太平後 `points` ×0.4。
+- M3：`sim.mjs` `pairOf`、`mealInvite`、`feedGo/feedStep`、`shelterGo`；`threat.mjs` `shelterOnBreak`，`hurtOne` 排除避難者。
+- 新測試 `test/v222.test.mjs` 15 項；golden-30d-v22 重產為 `e4b07678ffe67d08`（v22 行為有意改變）。
+- 非 v22 對照：160 種子 30 日存檔雜湊仍與 R2 前 160/160 相同（舊局完全不受影響）。

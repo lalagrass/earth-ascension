@@ -47,3 +47,35 @@ export function pipeline(parts) {
   return out;
 }
 export const mulText = (p) => MUL_GROUPS.map((g) => `${MUL_NAMES[g]}×${p[g].toFixed(2)}${(p.parts[g] || []).length ? `（${p.parts[g].map(([n, v]) => `${n}${v >= 1 ? '+' : ''}${(v - 1).toFixed(2)}`).join(' ')}）` : ''}`).join(' · ');
+
+// ==== loop145／146 弟子事蹟與傳記（M1）====
+// recordDeed：弟子事蹟／門派大事紀唯一寫入點；不耗亂數、不寫日誌，只記事實
+export const DEED_CAP = 12, CHRON_CAP = 40;
+export function recordDeed(s, d, kind, info = {}) {
+  const e = { day: s.day ?? 1, kind, ...info };
+  if (d) { (d.deeds ||= []).push(e); if (d.deeds.length > DEED_CAP) d.deeds.shift(); (d.deedN ||= {})[kind] = (d.deedN[kind] || 0) + 1; }
+  if (info.chron) { const c = { day: e.day, kind, who: d?.name ?? null, text: info.chron }; (s.chron ||= []).push(c); if (s.chron.length > CHRON_CAP) s.chron.shift(); }
+  return e;
+}
+// 看得見的行為分四類；吃睡閒晃不算
+export const ACT_CAT = { chat: 'social', encourage: 'social', pass: 'social', feed: 'social',
+  spar: 'combat', hunt: 'combat', defend: 'combat', lair: 'combat',
+  train: 'cult', meditate: 'cult', study: 'cult', learn: 'cult', // 獨自練功算內斂；切磋才算武鬥
+  cook: 'craft', farm: 'craft', build: 'craft', chop: 'craft', quarry: 'craft', repair: 'craft', forage: 'craft', deliver: 'craft' };
+export function tallyAct(d, act, w = 1) { const c = ACT_CAT[act]; if (!c) return; const a = (d.acts ||= {}); a[c] = Math.round(((a[c] || 0) + w) * 100) / 100; }
+const BIO = {
+  social: '愛找師兄弟閒聊，誰心情不好就去陪著說話',
+  combat: '愛找人切磋過招，打獵守柵都搶在前頭',
+  cult: '常一個人在木樁邊苦練、靜室裡打坐參悟',
+  craft: '多半在田裡、灶邊和工地默默忙活',
+};
+export const BIO_LEAN = { out: '性子外放，愛往人堆裡去', in: '性子沉靜，多半埋頭自己的事', mid: '動靜皆宜' };
+/* 外放＝社交＋武鬥；內斂＝修練＋手藝。樣本太少回 null（不臆測） */
+export function bioLean(d) { const a = d.acts || {}, o = (a.social || 0) + (a.combat || 0), i = (a.cult || 0) + (a.craft || 0); if (o + i < 3) return null; return Math.abs(o - i) < (o + i) * 0.03 ? 'mid' : o > i ? 'out' : 'in'; }
+export function bioLine(d) {
+  const a = d.acts || {}, lean = bioLean(d); if (!lean) return `${d.name}入門未久，還看不出脾性。`;
+  const top = Object.entries(a).filter(([, v]) => v > 0).sort((x, y) => y[1] - x[1] || (x[0] < y[0] ? -1 : 1)).slice(0, 2).map(([k]) => BIO[k]);
+  const n = d.deedN || {}, extra = [n.break ? `衝關成功 ${n.break} 回` : '', n.defend ? `守柵退敵 ${n.defend} 回` : '', n.lair ? `隨隊剿寨 ${n.lair} 回` : '', n.boss ? '曾擊退山賊餘黨反撲' : ''].filter(Boolean);
+  return `${d.name}${BIO_LEAN[lean]}；${top.join('，')}。${extra.length ? extra.join('、') + '。' : ''}`;
+}
+export function chronHtml(s, n = 12) { const c = s.chron || []; if (!c.length) return '<div class="k">尚無大事。</div>'; return `<ol class="chron">${c.slice(-n).reverse().map((e) => `<li><span class="k">第 ${e.day} 日</span> ${e.text}</li>`).join('')}</ol>`; }
