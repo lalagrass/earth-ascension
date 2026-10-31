@@ -7,11 +7,11 @@ test('二版：沒有內功時內力上限 0、沒有減傷', () => {
   assert.equal(qiMax2(d), 0); assert.equal(qiMax(d), 0); assert.equal(mitOf(d), 0);
   assert.equal(shieldHit(d, 10), 10);
 });
-test('二版：上限隨階成長，入門遠小於圓滿；一版不受影響', () => {
+test('二版：上限隨階成長，入門遠小於圓滿；沒有一版（loop142）', () => {
   const lo = mk({ breath: { xp: 0 } }), hi = mk({ breath: { xp: 90 } });
   assert.equal(qiMax(lo), NG2.cap[0]); assert.equal(qiMax(hi), NG2.cap[3]);
   assert.ok(mitOf(hi) > mitOf(lo));
-  assert.equal(qiMax({ arts: { breath: { xp: 0 } }, ng: 1 }), 35);
+  assert.equal(qiMax({ arts: { breath: { xp: 0 } }, ng: 1 }), NG2.cap[0]);
 });
 test('二版：先減傷再由內力吸收，打空進力竭並加重', () => {
   const d = mk({ breath: { xp: 90 } }, { qi: 10 });

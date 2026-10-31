@@ -18,7 +18,7 @@ for (const tab of ['classic', 'custom']) {
   test(`${tab}：全部預設勾選 → 23 個旗標都開`, () => { const s = createState(7, buildSpec(base(tab))); for (const [, , sk] of RULES) assert.ok(on(s, sk), `${tab} ${sk}`); });
   for (const [id, k, sk] of RULES) test(`${tab}：只取消「${id}」→ 只有 ${sk} 關、其餘照開`, () => {
     const st = { ...base(tab), [k]: false }; const s = createState(7, buildSpec(st));
-    for (const [, , o] of RULES) assert.equal(on(s, o), o !== sk && DEP[o] !== sk, `${tab} 取消 ${id} 時 ${o}`);
+    for (const [, , o] of RULES) assert.equal(on(s, o), o === 'ngshield' && sk === 'ngshield' ? true : o !== sk && DEP[o] !== sk, `${tab} 取消 ${id} 時 ${o}`); /* loop142：開內功即護體真氣 */
   });
 }
 test('兩分頁規則部分一致（經典不再重複列）', () => { for (const tab of ['classic', 'custom']) assert.deepEqual(Object.keys(ruleSpec(base(tab))).sort(), RULES.map((r) => r[2]).sort()); });

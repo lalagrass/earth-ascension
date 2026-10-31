@@ -13,15 +13,16 @@ test('開局接線；開局內力上限 0；沒勾內功時不生效', () => {
   assert.ok(on.ngshield && on.ds.every((d) => d.ng2 && d.qi === 0));
   assert.ok(on.ds.filter((d) => !Object.keys(d.arts || {}).some((k) => ['breath','zixia','yunv','jiuyang','qiankun','hama','shihou'].includes(k))).every((d) => qiMax(d) === 0));
   const only = createState(7, spec({ ngshield: true })); assert.ok(!only.ngshield && only.ds.every((d) => !d.ng2));
-  const v1 = runDays(createState(7, spec({ neigong: true })), 1); assert.ok(!v1.ngshield && v1.ds.every((d) => !d.ng2));
+  const v1 = runDays(createState(7, spec({ neigong: true })), 1); assert.ok(v1.ngshield && v1.ds.every((d) => d.ng2)); /* loop142 一版淘汰 */
 });
 test('二版關閉運勁與運功療傷的日誌', () => {
   const s = runDays(createState(9, spec({ neigong: true, ngshield: true })), 3);
   assert.ok(!s.log.some((l) => /運功療傷/.test(typeof l === 'string' ? l : l.msg ?? l.text ?? '')));
   for (const d of s.ds) assert.ok(d.qi <= qiMax(d) + 1e-9);
 });
-test('存讀檔保留；舊檔（沒有 ngshield）維持一版', () => {
+test('存讀檔保留；舊一版檔（有內功沒 ngshield）讀入後改護體真氣（loop142 決定 126）', () => {
   const s = runDays(createState(11, spec({ neigong: true, ngshield: true })), 1); const b = load(save(s)).state; runDays(b, 1);
   assert.ok(b.ngshield && b.ds.every((d) => d.ng2));
-  const o = load(save(createState(11, spec({ neigong: true })))).state; runDays(o, 1); assert.ok(!o.ngshield && o.ds.every((d) => !d.ng2));
+  const x = JSON.parse(save(createState(11, spec({ neigong: true })))); delete x.ngshield; for (const d of x.ds) { delete d.ng2; d.qi = 30; } const o = load(JSON.stringify(x)).state; runDays(o, 1); assert.ok(o.ngshield && o.ds.every((d) => d.ng2 && d.qi <= qiMax(d)));
+  const n = load(save(createState(11, spec()))).state; runDays(n, 1); assert.ok(!n.neigong && !n.ngshield && n.ds.every((d) => !d.ng2)); /* 沒開內功的舊檔不強開 */
 });

@@ -4,11 +4,12 @@ import { ARTS } from './data.mjs';
 import { artTier } from './arts.mjs';
 import { ART_CAT } from './growth.mjs';
 import { profOf } from './prof.mjs';
-export const NG = { base: 20, perTier: 15, cap: 200, med: 12, rest: 0.2, strikeCost: 4, strikeMul: 1.25, healAt: 40, healCost: 15, heal: 20, btCost: 20, btBonus: 0.1 };
+// loop142（v2.2）：一版內功（狩獵運勁、運功療傷、20＋15×階的上限）已淘汰，護體真氣是唯一實作；NG 只留回復與衝關參數
+export const NG = { med: 12, rest: 0.2, btCost: 20, btBonus: 0.1 };
 export const isInner = (a) => a.school === 'inner' || !!ART_CAT[a.id]?.neigong;
 export const INNER = ARTS.filter(isInner).map((a) => a.id);
 export const innerArts = (d) => INNER.filter((id) => d.arts?.[id]);
-export function qiMax(d) { if (d.ng2) return qiMax2(d); let v = NG.base; for (const id of innerArts(d)) v += NG.perTier * (artTier(d, id) + 1); return Math.min(NG.cap, v); }
+export const qiMax = (d) => qiMax2(d);
 export const qiOf = (d) => Math.min(d.qi ?? 0, qiMax(d));
 export function addQi(d, amt) { d.qi = Math.max(0, Math.min(qiMax(d), (d.qi ?? 0) + amt)); return d.qi; }
 // 夠就扣並回 true；不夠不扣

@@ -1,27 +1,14 @@
-/* loop104 內力用途：狩獵運勁、運功療傷（只在內力夠時） */
+/* loop104 → loop142 改寫：一版「狩獵運勁、運功療傷」已淘汰。狩獵不再扣內力加威力、重傷不再自動回血；受擊改由護體真氣吸收 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startHunt } from '../src/sim.mjs';
-import { NG, qiMax } from '../src/neigong.mjs';
+import { qiMax, NG } from '../src/neigong.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...x });
-function hunt(seed, ng, qi) {
-  const s = createState(seed, spec({ neigong: ng })); for (let i = 0; i < 2400; i++) tick(s, 0.25);
-  const team = s.ds.filter((d) => d.hp > 50).slice(0, 3); for (const d of team) if (ng) d.qi = qi(d);
-  startHunt(s, team.map((d) => d.id)); const t0 = s.t; const q0 = team.map((d) => d.qi ?? 0);
-  while (s.hunt && s.t - t0 < 600) tick(s, 0.25); return { s, team, q0, sec: s.t - t0 };
-}
-test('有內力：出手扣內力，內力不為負', () => {
-  const { team, q0 } = hunt(1001, true, (d) => qiMax(d));
-  assert.ok(team.some((d, i) => d.qi < q0[i])); for (const d of team) assert.ok(d.qi >= 0);
-});
-test('內力為 0 與關閉時同種子清場時間相同（沒有白送）', () => {
-  const a = hunt(1002, true, () => 0), b = hunt(1002, false);
-  // 0 內力仍可能在狩獵途中歇息回一點，因此只比較沒有任何人回到 strikeCost 的情形
-  assert.ok(a.team.every((d) => (d.qi ?? 0) < NG.strikeCost), '前提：沒人回到運勁門檻'); assert.equal(a.sec, b.sec);
-});
-test('運功療傷：重傷且內力夠才回血並扣 healCost', () => {
+test('NG 不再有運勁／療傷參數', () => { for (const k of ['strikeCost', 'strikeMul', 'healAt', 'healCost', 'heal', 'base', 'perTier']) assert.equal(NG[k], undefined, k); });
+test('開內功即護體真氣（沒有一版可選）', () => { const s = createState(1001, spec({ neigong: true, ngshield: false })); assert.equal(s.ngshield, true); assert.ok(s.ds.every((d) => d.ng2 === 1)); });
+test('重傷不再運功療傷：內力滿、生命 40 時一拍後生命不回升', () => {
   const s = createState(1003, spec({ neigong: true })); for (let i = 0; i < 2400; i++) tick(s, 0.25);
   const d = s.ds.find((x) => x.hp > 50); startHunt(s, [d.id]); let k = 0; while (s.hunt && !s.hunt.started && k++ < 4000) tick(s, 0.25);
-  assert.ok(s.hunt?.started, '狩獵已開始'); d.qi = qiMax(d); d.hp = NG.healAt; d.cool = 99; tick(s, 0.25);
-  assert.ok(d.hp > NG.healAt); assert.ok(d.qi <= qiMax(d) - NG.healCost + 1e-6);
+  assert.ok(s.hunt?.started, '狩獵已開始'); d.arts.breath ??= { xp: 0 }; d.qi = qiMax(d); d.hp = 40; d.cool = 99; const q = d.qi; tick(s, 0.25);
+  assert.ok(d.hp <= 40); assert.ok(d.qi <= q);
 });

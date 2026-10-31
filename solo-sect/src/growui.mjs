@@ -13,9 +13,9 @@ export const AXES = [
   { k: 'rest', name: '調息', lo: 1, hi: 1.5, get: (d, now) => (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', now), note: '常態睡眠恢復倍率（吐納）', fmt: (v) => `×${v.toFixed(2)}` },
 ];
 /* loop106 開啟內功時才加第 6 軸「內力」（上限；基準固定＝基礎～吐納化境），關閉時維持五軸 */
-export const QI_AXIS = { k: 'qi', name: '內力', lo: NG.base, hi: NG.base + NG.perTier * TIERS.length, get: (d) => qiMax(d), note: '內力上限（已學內功的階）', fmt: (v) => v.toFixed(0) };
-export const QI_AXIS2 = { ...QI_AXIS, lo: 0, hi: NG2.cap[NG2.cap.length - 1], note: '內力上限（護體真氣；吐納練到化境＝100）' }; // loop120
-export const axesOf = (d) => (d?.ng ? [...AXES, d.ng2 ? QI_AXIS2 : QI_AXIS] : AXES);
+export const QI_AXIS2 = { k: 'qi', name: '內力', lo: 0, hi: NG2.cap[NG2.cap.length - 1], get: (d) => qiMax(d), note: '內力上限（護體真氣；吐納練到化境＝100）', fmt: (v) => v.toFixed(0) }; // loop120；loop142 一版軸淘汰
+export const QI_AXIS = QI_AXIS2;
+export const axesOf = (d) => (d?.ng ? [...AXES, QI_AXIS2] : AXES);
 export const axisVals = (d, now = 0) => axesOf(d).map((x) => x.get(d, now));
 const fmtV = (x, v) => (x.fmt ? x.fmt(v) : v.toFixed(1));
 /* 圖：r＝(v−lo)/(hi−lo)，超出畫在邊上並標「超出顯示範圍」 */
@@ -100,8 +100,5 @@ export function neigongRules2Html() {
   return `<details data-keep="ng-rules"><summary>護體真氣怎麼算</summary><div class="k">開局沒有內力。每門已學內功依階給上限（${TIERS.map((t, i) => `${t[1]} ${NG2.cap[i]}`).join('、')}），最多 ${NG2.total}；減傷依階 ${NG2.mit.map((v) => Math.round(v * 100) + '%').join('／')}，最多 ${Math.round(NG2.mitCap * 100)}%。</div>`
     + `<div class="k">受擊（狩獵、遠行）：先減傷，再由內力吸收，不夠才扣生命；內力打空力竭 ${NG2.spentT} 秒，受傷 ×${NG2.spentMul}；任一內功練到圓滿十重或化境則「真氣綿長」，打空也不力竭（只此一項，不另加內力或減傷）。寨匪、剿寨重傷時，內力 ≥${NG2.guard} 就扣 ${NG2.guard}，生命留 ${NG2.guardHp}。門派戰力每人 +${NG2.powK}×上限。</div>`
     + `<div class="k">回復：打坐一次 +${NG.med}；歇息每秒 +${NG.rest}。衝關仍可扣 ${NG.btCost} 加成功率 +${Math.round(NG.btBonus * 100)}%。沒有運勁、運功療傷。</div></details>`; }
-export function neigongRulesHtml() {
-  return `<details data-keep="ng-rules"><summary>內力怎麼算</summary><div class="k">上限＝${NG.base}＋每門已學內功 ${NG.perTier}×（階數＋1，入門算 1、${TIERS[TIERS.length - 1][1]}算 ${TIERS.length}），最多 ${NG.cap}。內功：${INNER.map((id) => ARTS.find((a) => a.id === id).name).join('、')}。只看階，不看十重、不看造詣。</div>`
-    + `<div class="k">回復：打坐一次 +${NG.med}；歇息每秒 +${NG.rest}。</div>`
-    + `<div class="k">用途：狩獵出手扣 ${NG.strikeCost}，該擊威力 ×${NG.strikeMul}；守點時生命 ≤${NG.healAt} 扣 ${NG.healCost} 回 ${NG.heal} 生命；卡瓶頸打坐扣 ${NG.btCost}，衝關成功率 +${Math.round(NG.btBonus * 100)}%（仍最多 90%）。內力不夠就不用。不影響門派戰力與遠行。</div></details>`; }
-export const growthHtml = (d, memo, day, now, grow) => powerHtml(d, memo, day, now) + catHtml(d) + artsGrowHtml(d, now, grow) + rulesHtml() + (d.pf ? profRulesHtml() : '') + (d.ng2 ? neigongRules2Html() : d.ng ? neigongRulesHtml() : '');
+export const neigongRulesHtml = neigongRules2Html; // loop142 一版說明淘汰
+export const growthHtml = (d, memo, day, now, grow) => powerHtml(d, memo, day, now) + catHtml(d) + artsGrowHtml(d, now, grow) + rulesHtml() + (d.pf ? profRulesHtml() : '') + (d.ng ? neigongRules2Html() : '');

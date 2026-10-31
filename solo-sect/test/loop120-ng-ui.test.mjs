@@ -15,6 +15,6 @@ test('二版用 0–100 的內力軸與二版規則說明；一版不變', () =>
   const s = createState(3, spec({ ngshield: true })), d = s.ds[0];
   assert.equal(axesOf(d).at(-1), QI_AXIS2);
   const h = growthHtml(d, {}, 1, s.t, true); assert.match(h, /護體真氣怎麼算/); assert.match(h, /氣 /); assert.doesNotMatch(h, /內力怎麼算|狩獵出手扣/);
-  const v1 = createState(3, spec()).ds[0]; assert.match(growthHtml(v1, {}, 1, 0, true), /內力怎麼算/);
+  const v1 = createState(3, spec()).ds[0]; assert.doesNotMatch(growthHtml(v1, {}, 1, 0, true), /內力怎麼算/); /* loop142 一版說明淘汰 */
 });
 test('角落倒數接線：時鐘列讀 rumorDays', () => { assert.match(readFileSync(new URL('../src/main.mjs', import.meta.url), 'utf8'), /山賊傳聞：約 \$\{rumorDays\(S\)\} 日/); });

@@ -1318,3 +1318,8 @@
 - 決定 125：參數不調。另把決定 124 補進 DECISIONS.md（之前只在 LOG）。
 - 原本放在工作目錄、未追蹤的 `test/loop142-readwu-oldsaves.test.mjs`（7 項，會通過）移到 `/workspace/ab/` 保留，留給 loop142，這一輪不提交。
 - Retro（139–141）：好：長跑輸出改寫到 worktree 外以後，就沒有再被 rebase 打斷。不好：bot 不蓋藏經閣，所以 readwu 只能用情境測試，正常局裡的效果沒有量到。擁有人指示在本次 retro 後停下，142–148 沒有做。
+
+## Loop 142 — Batch 1 R1-①：淘汰一版內功（決定 126）
+- 擁有人 t185：決定 118–123 正式核准（DECISIONS §7 已標）；本批改做 v2.2 三階段重構（R1→R2/R3→M1–M3），停止新增微檔與開局勾選框。
+- `neigong.mjs`：`NG` 只留 `med／rest／btCost／btBonus`；`qiMax` 一律走護體真氣上限。`sim.mjs`：刪掉狩獵運勁與運功療傷分支；開內功即 `ngshield`；一版舊檔讀入後改護體真氣（截上限）。`growui.mjs`：一版內力軸與一版規則說明刪除。
+- 測試：loop102／104／106 改寫成護體真氣規則；loop114／115／120／123／35 中「一版」斷言改為新行為。golden 不動（golden 不開內功）。
