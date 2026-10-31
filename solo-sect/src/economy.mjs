@@ -72,12 +72,18 @@ export function schoolStep(s, H) {
 export function econDaily(s, H) { if (billDue(s)) settle(s, H); if (E(s).disrepair) for (const d of salaried(s)) d.mood = Math.max(0, (d.mood ?? 50) - 3); agePills(s); market(s); }
 
 // 面板：結算預告、欠俸警告、市集、義學（main.mjs 放在「每日收支」下面）
+/* loop70：缺口與「再收一人」後的月俸，只用玩家看得到的錢與人數。 */
+export function payHint(s, w = wageBill(s), f = facBill(s)) {
+  const c = s.res?.coin || 0, gap = w + f - c, n1 = Math.min(UPKEEP.cap, Math.round(UPKEEP.wageC * (wageN(s) + UPKEEP.w.outer) ** UPKEEP.exp));
+  return `<div class="k" data-payhint>${gap > 0 ? `還差 ${gap} 才付得清` : `付得清，結算後約剩 ${c - w - f}`}｜再收一名外門，月俸約 ${n1}</div>`;
+}
 export function econHtml(s) {
   const X = E(s), nd = s.day < UPKEEP.graceDay ? UPKEEP.graceDay : Math.ceil((s.day + 1) / UPKEEP.every) * UPKEEP.every, w = wageBill(s), f = facBill(s);
   const btn = (k, label) => { const why = marketWhy(s, k); return `<button data-mkt="${k}" ${why ? 'disabled' : ''} title="${why || ''}">${label}（${priceOf(s, k)}，剩 ${Math.max(0, left(s, k))}）</button>`; };
   const sw = schoolWhy(s);
   return `<div class="econ" data-econ><div class="k">月俸與維護：第 ${nd} 日結算 月俸 ${w}（${salaried(s).length} 人）＋維護 ${f}${s.day < UPKEEP.graceDay ? `（開山寬限到第 ${UPKEEP.graceDay} 日）` : ''}</div>`
     + (X.warn ? `<div class="k warn" data-warn="${X.warn}" style="color:#b33">⚠ 欠俸 ${X.warn}/${UPKEEP.warnMax}：再發不出就有人下山（最多走 ${UPKEEP.leaveMax} 人）</div>` : '')
+    + (s.jhui ? payHint(s, w, f) : '') /* loop70：月俸缺口提示（隨江湖面板開關，純顯示） */
     + (X.disrepair ? `<div class="k warn" style="color:#b33">⚠ 建築失修：付清維護就恢復</div>` : '')
     + `<div class="row">山下市集：${btn('herb', '買靈草×3')}${btn('weapon', '買兵器')}${btn('pill', '賣療傷丹')}</div>`
     + `<div class="row"><button data-school ${sw ? 'disabled' : ''} title="${sw || ''}">下山義學（${schoolCost(s)} 香火錢，1 日）</button> <span class="k">${sw || `帶回的人：${X.pool.map((c) => c.name).join('、') || '—'}`}</span></div></div>`;
