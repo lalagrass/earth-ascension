@@ -1,0 +1,56 @@
+{
+ "dt": 0.25,
+ "seeds": [
+  1001,
+  1160
+ ],
+ "T": 400,
+ "swap": 60,
+ "summary": {
+  "spec": {
+   "n": 160,
+   "done": 160,
+   "days": 1.52,
+   "train": 400,
+   "mQ": 11.01,
+   "mT": 0,
+   "dPalm": 52.093,
+   "dLeg": 0,
+   "newMoves": 3.663,
+   "maxTier": 1.837,
+   "basicFist": 25.5,
+   "pushPalm": 72.076,
+   "sweepLeg": 0
+  },
+  "same": {
+   "n": 160,
+   "done": 160,
+   "days": 1.497,
+   "train": 400,
+   "mQ": 10.308,
+   "mT": 0,
+   "dPalm": 51.839,
+   "dLeg": 0,
+   "newMoves": 3,
+   "maxTier": 1.006,
+   "basicFist": 47.692,
+   "pushPalm": 41.814,
+   "sweepLeg": 0
+  },
+  "cross": {
+   "n": 160,
+   "done": 160,
+   "days": 1.51,
+   "train": 400,
+   "mQ": 6.191,
+   "mT": 4.95,
+   "dPalm": 52.519,
+   "dLeg": 0,
+   "newMoves": 3.056,
+   "maxTier": 1.069,
+   "basicFist": 25.5,
+   "pushPalm": 50.721,
+   "sweepLeg": 40.741
+  }
+ }
+}
