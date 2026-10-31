@@ -93,7 +93,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.grow) s.grow = true; /* loop79 成長分層 */
   if (heroSpec?.stewyard) s.stewyard = true; /* loop95 執事立樁 */
   if (heroSpec?.prof) s.prof = true; /* loop91 熟練度十重 */
-  if (heroSpec?.neigong) s.neigong = true; /* loop103 最小內功 */
+  if (heroSpec?.neigong) s.neigong = true; if (s.neigong && heroSpec?.ngshield) s.ngshield = true; /* loop115 護體真氣 */ /* loop103 最小內功 */
   if (heroSpec?.cofun) s.cofun = true; /* loop62 有伴解悶 */
   if (heroSpec?.longwatch) s.longwatch = true; /* loop67 哨崗久守 */
   if (heroSpec?.paypill) s.paypill = true; /* loop71 欠俸先賣丹 */
@@ -113,7 +113,7 @@ export function createState(seed = 1, heroSpec = null) {
   sectInit(s); s.gen = genInit(); if (heroSpec?.bonus) s.gen.suhuiStart = heroSpec.bonus;
   if (s.grow) growInit(s);
   if (s.prof) for (const d of s.ds) d.pf = 1; /* loop91 */
-  if (s.neigong) for (const d of s.ds) { d.ng = 1; d.qi = 0; } /* loop103 */
+  if (s.neigong) for (const d of s.ds) { d.ng = 1; d.qi = 0; if (s.ngshield) d.ng2 = 1; } /* loop103 */
   return s;
 }
 function mkDisciple(d, i, at = 'court', personality = d.personality || [], known = personality.slice(0, 1)) {
@@ -515,14 +515,14 @@ function huntStep(s, dt) {
   for (const d of team) {
     if (d.hp <= 25) { if (d.task?.act === 'hunt') { d.order = null; cancelTask(s, d, '傷重退回院中'); assign(s, d, 'rest', '傷重歇息'); log(s, `${d.name}受傷退下`); think(s, d, 'hurt'); } continue; }
     if (d.at !== h.post || d.path.length) continue;
-    if (d.hp <= NG.healAt && spendQi(d, NG.healCost)) { d.hp = Math.min(100, d.hp + NG.heal); log(s, `${d.name}運功療傷`); } // loop104
+    if (!d.ng2 && d.hp <= NG.healAt && spendQi(d, NG.healCost)) { d.hp = Math.min(100, d.hp + NG.heal); log(s, `${d.name}運功療傷`); } // loop104
     d.cool -= dt; if (d.cool > 0) continue;
     const ms = d.moves.map((id) => MOVES.find((m) => m.id === id)).sort((a, b) => b.dmg * (1 + (b.aoe ? 1 : 0)) - a.dmg * (1 + (a.aoe ? 1 : 0)));
     const live = s.mons.filter((m) => !m.gone && m.hp > 0 && !m.raid);
     for (const mv of ms) {
       const lv = d.skills[mv.skill]; const reach = mv.range * (1 + lv / 200);
       const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
-      const power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t) * (spendQi(d, NG.strikeCost) ? NG.strikeMul : 1); // loop104 運勁
+      const power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t) * (!d.ng2 && spendQi(d, NG.strikeCost) ? NG.strikeMul : 1); // loop104 運勁
       const hitList = mv.aoe ? live.filter((m) => dist(m.pos, tgt.pos) <= mv.aoe) : [tgt];
       for (const m of hitList) { m.hp -= power; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', d); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
       h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5, 'fight');
@@ -657,7 +657,7 @@ export function payday(s) {
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
   if (s.prof) for (const d of s.ds) if (!d.pf) d.pf = 1; /* loop91 新入門者也吃熟練度十重 */
-  if (s.neigong) for (const d of s.ds) if (!d.ng) { d.ng = 1; d.qi ??= 0; } /* loop103 */
+  if (s.neigong) for (const d of s.ds) { if (!d.ng) { d.ng = 1; d.qi ??= 0; } if (s.ngshield) d.ng2 = 1; } /* loop103 */
   if (s.grow) for (const d of s.ds) if (!d.gInit) growEnsure(d); /* loop84 新入門者立即折算，介面不必寫狀態 */
   { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); if (s.draw) cliqueDaily(s); if (s.m9) lairDaily(s, EH); if (s.jhev) jhevDaily(s); if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild }); } }
   schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH); if (s.lair) lairStep(s, EH);
