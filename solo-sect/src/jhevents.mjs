@@ -1,3 +1,4 @@
+import { valorAdd, VALOR } from './valor.mjs';
 import { seedMix } from './seedmix.mjs';
 // loop23 江湖事件（選用，s.jhev）：過路高人指點、挑戰帖。獨立亂數流，不擾動主亂數；golden 不變。
 import { power } from './jianghu.mjs';
@@ -32,7 +33,7 @@ export function masterOutcome(s, d, teach) { const E = s.jhev, M = JHEV.master; 
           E.pg = (E.pg || 0) + 1; log(s, `【過路高人】臨別前，高人留下一頁殘譜，講解「${a.name}」的要訣（往「${x.name}」的路）。`); return true; })()) { /* 已處理 */ }
         else { const mv = Object.keys(d.arts).map(artById).flatMap((x) => (x.techs || []).filter((m) => MOVES.some((y) => y.id === m) && !d.moves.includes(m)))[0]; if (mv) { d.moves.push(mv); E.mv = (E.mv || 0) + 1; log(s, `【過路高人】臨別前，高人提前點撥${d.name}一招「${MOVES.find((y) => y.id === mv).name}」！`); } } } } /* loop26 傳武學，無可傳則提前點撥一招 */
 export function masterResolve(s, ch, i) { s.choices = s.choices.filter((c) => c !== ch); const d = s.ds.find((x) => x.id === ch.who[i] && !x.away) || s.ds.find((x) => x.id === ch.who[0] && !x.away); if (!d || !autoFocus(d)) { log(s, '【過路高人】要指點的人不在山上，高人留下一句「後會有期」就走了。'); return true; } masterOutcome(s, d, ch.teach); return true; }
-export function letterOutcome(s, champ, win, refuse) { const E = s.jhev, L = JHEV.letter;
+export function letterOutcome(s, champ, win, refuse) { const E = s.jhev, L = JHEV.letter; valorAdd(s, refuse ? VALOR.refuse : VALOR.accept); /* loop129 勇名 */
   if (refuse) { E.lr = (E.lr || 0) + 1; s.rep = Math.max(0, (s.rep || 0) - L.refuse.rep); log(s, refuse === 'player' ? `【挑戰帖】掌門決定婉拒，${champ.name}客氣地送走來客，名聲 -${L.refuse.rep}。` : `【挑戰帖】來者武功明顯高出一截，${champ.name}代師門婉拒，名聲 -${L.refuse.rep}。`); return; }
   E.l++;
   if (win) { E.lw++; s.rep = (s.rep || 0) + L.win.rep; md(champ, L.win.mood); resAdd(s, 'coin', L.win.coin); const fid = autoFocus(champ); if (fid) { const r = champ.arts[fid]; r.xp = Math.min(curCap(champ, artById(fid)), r.xp + L.win.xp); } log(s, `【挑戰帖】${champ.name}應戰得勝，名聲 +${L.win.rep}、彩頭 ${L.win.coin} 文。`); }
