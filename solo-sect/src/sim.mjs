@@ -1,4 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
+import { workStrCap, isWorkAct } from './labor.mjs';
 import { NG, addQi, spendQi, qiMax, shieldHit } from './neigong.mjs';
 import { breakChance } from './arts.mjs';
 import { growInit, growEnsure, settleGrowth } from './growth.mjs';
@@ -104,7 +105,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.mfit) s.mfit = true; // loop41 高人因材施教
   if (heroSpec?.jhrefuse) s.jhrefuse = true; // loop40 挑戰帖量力而為 // loop39 人多分攤日課
   if (heroSpec?.jhui) s.jhui = true; // loop34 介面可讀性（純顯示）
-  if (heroSpec?.steward) s.steward = true; if (heroSpec?.rumor) s.rumor = true; if (heroSpec?.grow && heroSpec?.growdr) s.growdr = true; /* loop122 造詣遞減 */ /* loop119 傳聞預警 */ // loop30 執事自主（選用）
+  if (heroSpec?.laborgrow) s.laborgrow = true; /* loop127 勞作練體 */ if (heroSpec?.steward) s.steward = true; if (heroSpec?.rumor) s.rumor = true; if (heroSpec?.grow && heroSpec?.growdr) s.growdr = true; /* loop122 造詣遞減 */ /* loop119 傳聞預警 */ // loop30 執事自主（選用）
   if (heroSpec?.lairpow) s.lairpow = true; // loop29 寨強看戰力（選用）
   if (heroSpec?.lift) s.lift = true; // loop28 心情自救（選用）
   if (heroSpec?.bt25) s.bt25 = true; // loop25 突破排程（選用）
@@ -114,6 +115,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (s.grow) growInit(s);
   if (s.prof) for (const d of s.ds) d.pf = 1; /* loop91 */
   if (s.neigong) for (const d of s.ds) { d.ng = 1; d.qi = 0; if (s.ngshield) d.ng2 = 1; } /* loop103 */
+  if (s.laborgrow) for (const d of s.ds) d.lg = 1; /* loop127 */
   return s;
 }
 function mkDisciple(d, i, at = 'court', personality = d.personality || [], known = personality.slice(0, 1)) {
@@ -407,6 +409,7 @@ function grow(s, d, sk, amt, src = 'train') {
   if (sk === 'style') sk = d.style; const raw = amt; /* loop79：造詣只吃原始投入（師父在場倍率前） */
   amt *= apprMul(s, d); // v1.65 師父在場，徒弟練得快
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
+  if (src === 'labor' && sk === 'strength' && d.lg) d.skills[sk] = before + workStrCap(d, Math.floor(s.t / DAY), d.skills[sk] - before); // loop127 做活力氣每日軟上限
   if (sk === d.style) { if (s.grow) growEnsure(d); const o = gainArt(d, amt, focusMul(d), s.t, s.grow ? { raw, src } : null); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === m).name}」`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); }
 }
 
@@ -437,14 +440,14 @@ function doTask(s, d, dt) {
     if (A.energy && effDur > 0) d.needs.energy = clamp(d.needs.energy + A.energy * dt / effDur, 0, 100);
     if (t.act === 'rest' && d.ng) addQi(d, NG.rest * dt); // loop103 歇息回內力
     if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (t.floor ? 0.6 : 1) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', s.t); if (t.timer < dt * 1.5) think(s, d, t.floor || (t.fac === 'hall' && s.fac.hall.stage === 0) ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= CORE.wakeAt && t.timer > 4))) finish(s, d); return; }
-    if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
+    if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt, 'labor'); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
     const dur = effDur;
     if (t.timer >= dur) {
       if (t.act === 'cook') { const st = facStage(s, t.fac); resAdd(s, 'veg', -2); t.phase = 'done'; const wat = s.res.water >= 1 ? 1 : 0; if (wat) { s.res.water -= 1; book(s, 'out', 'water', 1); } const yld = st.cookYield + cookBonus(d) + wat; /* v1.6 有井水多煮一份 */ onCook(s, d); s.res.food += yld; book(s, 'in', 'food', yld); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); grow(s, d, 'cooking', 6); finish(s, d); return; }
       if (t.act === 'farm') { const p = s.plots[t.plot]; t.resv = []; grow(s, d, 'farming', 6); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; book(s, 'out', 'food', 1); }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
-      if (A.skill) for (const [k, v] of Object.entries(A.skill)) grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? facStage(s, 'yard').trainMul || 1 : 1));
+      if (A.skill) for (const [k, v] of Object.entries(A.skill)) grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? facStage(s, 'yard').trainMul || 1 : 1), isWorkAct(t.act) ? 'labor' : 'train');
       if (s.draw && A.skill) cliqueTrain(s, d, t.act, A.skill, grow); // loop20 小派同修
       if (s.mentor && t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
       if (s.mentor && (t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) askStrong(s, d, byId(s, t.partner), grow, think, log); // loop8 請教
@@ -658,6 +661,7 @@ export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
   if (s.prof) for (const d of s.ds) if (!d.pf) d.pf = 1; /* loop91 新入門者也吃熟練度十重 */
   if (s.neigong) for (const d of s.ds) { if (!d.ng) { d.ng = 1; d.qi ??= 0; } if (s.ngshield) d.ng2 = 1; } /* loop103 */
+  if (s.laborgrow) for (const d of s.ds) d.lg = 1; /* loop127 新入門者 */
   if (s.grow) for (const d of s.ds) { if (!d.gInit) growEnsure(d); if (s.growdr) d.gdr = 1; } /* loop84 新入門者立即折算，介面不必寫狀態 */
   { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); if (s.draw) cliqueDaily(s); if (s.m9) lairDaily(s, EH); if (s.jhev) jhevDaily(s); if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild }); } }
   schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH); if (s.lair) lairStep(s, EH);

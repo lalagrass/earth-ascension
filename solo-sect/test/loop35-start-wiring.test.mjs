@@ -5,12 +5,12 @@ import { RULES, ruleSpec, buildSpec } from '../src/start-ui.mjs';
 import { createState } from '../src/sim.mjs';
 import { defaultStats } from '../src/hero.mjs';
 
-const FLAG = { neigong: 'neigong', ngshield: 'ngshield', rumor: 'rumor', growdr: 'growdr', draw: 'draw', comprehend: 'wu7', mentor: 'mentor', peace: 'm9', jhev: 'jhev', bt25: 'bt25', lift: 'lift', lairpow: 'lairpow', steward: 'steward', jhui: 'jhui', qshare: 'qshare', jhrefuse: 'jhrefuse', mfit: 'mfit', cropcare: 'cropcare', letterask: 'letterask', mpool: 'mpool', cotrain: 'cotrain', masterask: 'masterask', stewkit: 'stewkit', cofun: 'cofun', longwatch: 'longwatch', paypill: 'paypill', grow: 'grow', prof: 'prof', stewyard: 'stewyard' };
+const FLAG = { laborgrow: 'laborgrow', neigong: 'neigong', ngshield: 'ngshield', rumor: 'rumor', growdr: 'growdr', draw: 'draw', comprehend: 'wu7', mentor: 'mentor', peace: 'm9', jhev: 'jhev', bt25: 'bt25', lift: 'lift', lairpow: 'lairpow', steward: 'steward', jhui: 'jhui', qshare: 'qshare', jhrefuse: 'jhrefuse', mfit: 'mfit', cropcare: 'cropcare', letterask: 'letterask', mpool: 'mpool', cotrain: 'cotrain', masterask: 'masterask', stewkit: 'stewkit', cofun: 'cofun', longwatch: 'longwatch', paypill: 'paypill', grow: 'grow', prof: 'prof', stewyard: 'stewyard' };
 const base = (tab) => ({ tab, hero: 'guojing', comp: null, name: '測', stats: defaultStats(), ans: Array(9).fill(0), ask: false, draw: true });
 const on = (s, sk) => !!s[FLAG[sk]];
 
 test('RULES 單一來源：23 項、id／spec 鍵不重複、每項都有對應旗標', () => {
-  assert.equal(RULES.length, 29); assert.equal(new Set(RULES.map((r) => r[0])).size, 29); assert.equal(new Set(RULES.map((r) => r[2])).size, 29);
+  assert.equal(RULES.length, 30); assert.equal(new Set(RULES.map((r) => r[0])).size, 30); assert.equal(new Set(RULES.map((r) => r[2])).size, 30);
   for (const [, , sk] of RULES) assert.ok(FLAG[sk], sk);
 });
 const DEP = { ngshield: 'neigong', growdr: 'grow' }; // loop115 護體真氣依附內功

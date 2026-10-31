@@ -6,6 +6,7 @@ import { seedMix } from './seedmix.mjs';
 import { DAY, TIERS, JH } from './data.mjs';
 import { learnArt, artTier } from './arts.mjs';
 import { powBonus } from './neigong.mjs';
+import { laborPow } from './labor.mjs';
 import { log, resAdd, resSet } from './util.mjs';
 import { initPair } from './social.mjs';
 import { xidOf, present, join } from './wuxia.mjs';
@@ -21,7 +22,7 @@ const fighters = (s) => s.ds.filter((d) => d.role !== 'laborer' && !d.away);
 export const teachJ = (s, d, id, xp) => { learnArt(d, id, s.t); const r = d.arts[id]; r.xp = Math.max(r.xp, xp); if (r.xp >= 55) r.bt1 = true; if (r.xp >= 100) r.bt2 = true; learnArt(d, id, s.t); };
 const DA = TIERS[2][0] + 1; // 大成
 // 門派戰力（反派事件用）：最強三人的武學階數×品階＋技藝
-export const power = (s) => fighters(s).map((d) => Object.keys(d.arts || {}).reduce((a, k) => a + (artTier(d, k) + 1) * 3, 0) + (d.skills?.palm || 0) / 4 + (d.powMul || 1) * 5 + powBonus(d)).sort((a, b) => b - a).slice(0, 3).reduce((a, b) => a + b, 0);
+export const power = (s) => fighters(s).map((d) => Object.keys(d.arts || {}).reduce((a, k) => a + (artTier(d, k) + 1) * 3, 0) + (d.skills?.palm || 0) / 4 + (d.powMul || 1) * 5 + powBonus(d) + laborPow(d)).sort((a, b) => b - a).slice(0, 3).reduce((a, b) => a + b, 0);
 // ---- 喜劇卡閘門：每 7 天最多 2 張；設定可關 ----
 export const comedyOk = (s) => { const J = s.jh; if (!J.comedyOn) return false; J.comedy = J.comedy.filter((t) => s.t - t < JH.comedyDays * DAY); return J.comedy.length < JH.comedyWeek; };
 // ---- 抉擇卡 ----
