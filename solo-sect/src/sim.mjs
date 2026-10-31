@@ -104,7 +104,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.mfit) s.mfit = true; // loop41 高人因材施教
   if (heroSpec?.jhrefuse) s.jhrefuse = true; // loop40 挑戰帖量力而為 // loop39 人多分攤日課
   if (heroSpec?.jhui) s.jhui = true; // loop34 介面可讀性（純顯示）
-  if (heroSpec?.steward) s.steward = true; if (heroSpec?.rumor) s.rumor = true; /* loop119 傳聞預警 */ // loop30 執事自主（選用）
+  if (heroSpec?.steward) s.steward = true; if (heroSpec?.rumor) s.rumor = true; if (heroSpec?.grow && heroSpec?.growdr) s.growdr = true; /* loop122 造詣遞減 */ /* loop119 傳聞預警 */ // loop30 執事自主（選用）
   if (heroSpec?.lairpow) s.lairpow = true; // loop29 寨強看戰力（選用）
   if (heroSpec?.lift) s.lift = true; // loop28 心情自救（選用）
   if (heroSpec?.bt25) s.bt25 = true; // loop25 突破排程（選用）
@@ -658,7 +658,7 @@ export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
   if (s.prof) for (const d of s.ds) if (!d.pf) d.pf = 1; /* loop91 新入門者也吃熟練度十重 */
   if (s.neigong) for (const d of s.ds) { if (!d.ng) { d.ng = 1; d.qi ??= 0; } if (s.ngshield) d.ng2 = 1; } /* loop103 */
-  if (s.grow) for (const d of s.ds) if (!d.gInit) growEnsure(d); /* loop84 新入門者立即折算，介面不必寫狀態 */
+  if (s.grow) for (const d of s.ds) { if (!d.gInit) growEnsure(d); if (s.growdr) d.gdr = 1; } /* loop84 新入門者立即折算，介面不必寫狀態 */
   { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s); if (s.draw) cliqueDaily(s); if (s.m9) lairDaily(s, EH); if (s.jhev) jhevDaily(s); if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild }); } }
   schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH); if (s.lair) lairStep(s, EH);
   const se = seasonOf(s); for (const p of s.plots) if (p.st === 'grow' && (p.g += dt / se.grow) >= PLOT_GROW) p.st = 'ripe';

@@ -7,7 +7,7 @@ import { ARTS } from '../../src/data.mjs';
 import { ALL_ON } from './bot.mjs';
 const DT = +(process.env.SS_DT || 0.25), N = +(process.argv[2] || 40), S0 = +(process.argv[3] || 1001), MAXD = 12;
 function setup(seed, flow, grow = true) {
-  const s = createState(seed, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...ALL_ON, grow }), h = s.ds[0];
+  const s = createState(seed, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...ALL_ON, grow, growdr: process.env.GROWDR !== '0' }), h = s.ds[0]; /* loop122 GROWDR=0 → 遞減關 */
   /* 兩組武學狀態完全相同（同熟練、同招式），只差造詣紀錄 gm */
   learnArt(h, 'pushPalm', 0); learnArt(h, 'wavePalm', 0); h.arts.basicFist.xp = 60; h.arts.basicFist.bt1 = true; h.arts.wavePalm.xp = 30; h.arts.pushPalm.xp = 0;
   if (flow.startsWith('C')) { learnArt(h, flow === 'C-sword' ? 'xuantie' : 'sweepLeg', 0); }

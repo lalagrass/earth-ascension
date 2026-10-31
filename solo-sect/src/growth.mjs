@@ -28,6 +28,7 @@ export const GROW = {
   cap: { 1: 20, 2: 35, 3: 55, 4: 75 }, /* 每門武學最多提供的造詣（依品階） */
   acc: { amp: 0.8, ref: 40, fade: 55, grade: { 1: 1, 2: 0.5 }, max: 1.8 },
   init: 0.15, /* 開局既有熟練 → 造詣（一次，標 init） */
+  dr: 0.03, /* loop122 投入型造詣邊際遞減：Δ ÷ (1 + 主門類造詣 × dr)；只在 d.gdr */
 };
 export const LEVELS = [[0, '未窺門徑'], [5, '初窺門徑'], [20, '略有小成'], [40, '融會貫通'], [60, '爐火純青'], [80, '登峰造極']];
 export const levelOf = (v) => LEVELS.reduce((m, [t, n]) => (v >= t ? n : m), LEVELS[0][1]);
@@ -52,7 +53,7 @@ export function settleGrowth(d, a, r, ctx) {
   if (!cats(a.id).length) return {};
   r.gm ??= { e: 0, ms: 0 }; const cap = GROW.cap[a.grade] || 20, before = Object.fromEntries(cats(a.id).map(([c]) => [c, mastery(d, c)]));
   let add = 0;
-  if (ctx.src === 'train' || ctx.src === 'fight') { if ((ctx.xp1 ?? 0) > (ctx.xp0 ?? 0) + 1e-9 && ctx.raw > 0) add += ctx.raw * GROW.k * GROW.src[ctx.src]; if ((ctx.xp0 ?? 0) < 25 && (ctx.xp1 ?? 0) >= 25 && !(r.gm.ms & 1)) { r.gm.ms |= 1; add += GROW.ms[0][1]; } }
+  if (ctx.src === 'train' || ctx.src === 'fight') { if ((ctx.xp1 ?? 0) > (ctx.xp0 ?? 0) + 1e-9 && ctx.raw > 0) add += ctx.raw * GROW.k * GROW.src[ctx.src] / (d.gdr ? 1 + (before[primaryCat(a.id)] ?? 0) * GROW.dr : 1); if ((ctx.xp0 ?? 0) < 25 && (ctx.xp1 ?? 0) >= 25 && !(r.gm.ms & 1)) { r.gm.ms |= 1; add += GROW.ms[0][1]; } }
   else if (ctx.src === 'pass') add += GROW.pass;
   else if (ctx.src === 'break') { const [bit, v] = GROW.ms[ctx.stage] || []; if (bit && !(r.gm.ms & bit)) { r.gm.ms |= bit; add += v; } }
   r.gm.e = Math.min(cap, r.gm.e + add);
