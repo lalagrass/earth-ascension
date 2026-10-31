@@ -9,9 +9,11 @@ import { pipeline } from './util.mjs';
 export const CATS = {
   quanzhang: { name: '拳掌', sup: 'full' }, tuifa: { name: '腿法', sup: 'full' }, jianfa: { name: '劍法', sup: 'full' },
   neigong: { name: '內功', sup: 'part' }, shenfa: { name: '身法', sup: 'part' },
-  gunbang: { name: '棍棒', sup: 'none' }, qimen: { name: '奇門', sup: 'none' }, zaxue: { name: '雜學', sup: 'none' },
-  yishu: { name: '醫術', sup: 'none' }, dushu: { name: '毒術', sup: 'none' }, zhenfa: { name: '陣法', sup: 'none' },
+  gunbang: { name: '棍棒', sup: 'none', sup23: 'part' }, qimen: { name: '奇門', sup: 'none', sup23: 'part' }, zaxue: { name: '雜學', sup: 'none', sup23: 'part' },
+  yishu: { name: '醫術', sup: 'none', sup23: 'part' }, dushu: { name: '毒術', sup: 'none', sup23: 'part' }, zhenfa: { name: '陣法', sup: 'none', sup23: 'part' },
 };
+/* loop150 v2.3：六門專長門類只在 v2.3 新局（d.v23）啟用為 part；CATS 是全域表，直接改 sup 會改動舊局與舊 golden（決定 146） */
+export const supOf = (c, d) => (d?.v23 && CATS[c].sup23) || CATS[c].sup;
 export const CAT_ORDER = ['quanzhang', 'tuifa', 'jianfa', 'neigong', 'shenfa', 'gunbang', 'qimen', 'zaxue', 'yishu', 'dushu', 'zhenfa'];
 /* 每門武學 → 成長門類權重（與戰鬥 school 分開；school=palm 的劍法、內功在此各歸其類） */
 export const ART_CAT = {
@@ -22,6 +24,7 @@ export const ART_CAT = {
   bixie: { jianfa: 1 }, dugu: { jianfa: 1 }, xuantie: { jianfa: 1 },
   zixia: { neigong: 1 }, yunv: { neigong: 1 }, jiuyang: { neigong: 1 }, qiankun: { neigong: 1 }, hama: { neigong: 1 }, shihou: { neigong: 1 },
   dagou: { gunbang: 1 }, bagua: { gunbang: 1 }, kuihua: { qimen: 1 }, zuoyou: { zaxue: 1 },
+  qimenZhen: { zhenfa: 0.8, qimen: 0.2 }, xingxiuDu: { dushu: 1 }, yaowang: { yishu: 1 }, /* loop150 v2.3 專長招牌 */
 };
 export const GROW = {
   k: 0.05, /* 每單位原始修練投入 → 造詣 */
@@ -36,38 +39,38 @@ export const GROW = {
 export const LEVELS = [[0, '未窺門徑'], [5, '初窺門徑'], [20, '略有小成'], [40, '融會貫通'], [60, '爐火純青'], [80, '登峰造極']];
 export const levelOf = (v) => LEVELS.reduce((m, [t, n]) => (v >= t ? n : m), LEVELS[0][1]);
 const artBy = (id) => ARTS.find((a) => a.id === id);
-const cats = (id) => Object.entries(ART_CAT[id] || {}).filter(([c]) => CATS[c].sup !== 'none');
+const cats = (id, d) => Object.entries(ART_CAT[id] || {}).filter(([c]) => supOf(c, d) !== 'none');
 export const primaryCat = (id) => Object.entries(ART_CAT[id] || {}).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
 const contrib = (id, r) => (r?.gm ? Math.min(GROW.cap[artBy(id).grade] || 20, r.gm.e) : 0);
 /* 門類造詣（衍生）；skip＝排除某門武學自己的貢獻 */
 export function mastery(d, cat, skip = null) {
-  let v = 0; for (const [id, r] of Object.entries(d.arts || {})) { if (id === skip) continue; const w = ART_CAT[id]?.[cat]; if (w && CATS[cat].sup !== 'none') v += contrib(id, r) * w; }
+  let v = 0; for (const [id, r] of Object.entries(d.arts || {})) { if (id === skip) continue; const w = ART_CAT[id]?.[cat]; if (w && supOf(cat, d) !== 'none') v += contrib(id, r) * w; }
   return Math.min(100, v);
 }
 /* 同類學習加速：用結算前的「他門」同類造詣；凡／良品、熟練未到 fade 才有 */
 export function accelOf(d, a, xp) {
-  const c = primaryCat(a.id), g = GROW.acc.grade[a.grade] || 0; if (!c || CATS[c].sup !== 'full' || !g) return { mul: 1, cat: c, base: 0 };
+  const c = primaryCat(a.id), g = GROW.acc.grade[a.grade] || 0; if (!c || supOf(c, d) !== 'full' || !g) return { mul: 1, cat: c, base: 0 };
   const base = mastery(d, c, a.id), f = Math.max(0, 1 - xp / GROW.acc.fade);
   return { mul: Math.min(GROW.acc.max, 1 + GROW.acc.amp * Math.min(1, base / GROW.acc.ref) * g * f), cat: c, base };
 }
 /* 單一結算入口：所有造詣變動只經此處。ctx = { src:'train'|'fight'|'pass'|'break', raw, xp0, xp1, stage }
    回傳本次造詣增量 { [cat]: Δ }。練滿／卡瓶頸（xp 沒動）不給投入型造詣；里程碑以 bit 記，只領一次。 */
 export function settleGrowth(d, a, r, ctx) {
-  if (!cats(a.id).length) return {};
-  r.gm ??= { e: 0, ms: 0 }; const cap = GROW.cap[a.grade] || 20, before = Object.fromEntries(cats(a.id).map(([c]) => [c, mastery(d, c)]));
+  if (!cats(a.id, d).length) return {};
+  r.gm ??= { e: 0, ms: 0 }; const cap = GROW.cap[a.grade] || 20, before = Object.fromEntries(cats(a.id, d).map(([c]) => [c, mastery(d, c)]));
   let add = 0;
   if (ctx.src === 'train' || ctx.src === 'fight') { if ((ctx.xp1 ?? 0) > (ctx.xp0 ?? 0) + 1e-9 && ctx.raw > 0) add += ctx.raw * GROW.k * GROW.src[ctx.src] / (d.gdr ? 1 + (before[primaryCat(a.id)] ?? 0) * GROW.dr : 1); if ((ctx.xp0 ?? 0) < 25 && (ctx.xp1 ?? 0) >= 25 && !(r.gm.ms & 1)) { r.gm.ms |= 1; add += GROW.ms[0][1]; } }
   else if (ctx.src === 'pass') add += GROW.pass;
   else if (ctx.src === 'break') { const [bit, v] = GROW.ms[ctx.stage] || []; if (bit && !(r.gm.ms & bit)) { r.gm.ms |= bit; add += v; } }
   r.gm.e = Math.min(cap, r.gm.e + add);
-  const out = {}; for (const [c] of cats(a.id)) { const dv = mastery(d, c) - before[c]; if (dv > 0) out[c] = dv; }
+  const out = {}; for (const [c] of cats(a.id, d)) { const dv = mastery(d, c) - before[c]; if (dv > 0) out[c] = dv; }
   return out;
 }
 /* 開局一次：既有熟練折算造詣（標 init，不是新修練成果；已有 gm 的不動 → 重複呼叫冪等） */
 /* 每人一次（開局或入門後第一次結算前）：入門時已有的武學折算；d.gInit 標記後不再折算 */
 export function growEnsure(d) {
   if (d.gInit) return d; d.gInit = true;
-  for (const [id, r] of Object.entries(d.arts || {})) { const a = artBy(id); if (!a || r.gm || !cats(id).length) continue; r.gm = { e: Math.min(GROW.cap[a.grade] || 20, r.xp * GROW.init), ms: r.xp >= 25 ? 1 : 0, init: true }; }
+  for (const [id, r] of Object.entries(d.arts || {})) { const a = artBy(id); if (!a || r.gm || !cats(id, d).length) continue; r.gm = { e: Math.min(GROW.cap[a.grade] || 20, r.xp * GROW.init), ms: r.xp >= 25 ? 1 : 0, init: true }; }
   return d;
 }
 export function growInit(s) { for (const d of s.ds || []) growEnsure(d); return s; }
@@ -326,3 +329,20 @@ export const dpsBonus = (d) => (d.ng2 ? NG2.dpsK * qiMax2(d) : 0);
 export function guardHurt(d, hurtHp) { if (!d.ng2 || qiOf(d) < NG2.guard) return hurtHp; d.qi = qiOf(d) - NG2.guard; return Math.max(hurtHp, NG2.guardHp); }
 // loop121 十重質變（只一項、不重複加數值）：任一內功練到圓滿十重（需熟練度十重）或化境 →「真氣綿長」：內力打空也不力竭
 export const tenthOf = (d) => innerArts(d).some((id) => { const t = artTier(d, id); if (t >= 4) return true; const p = profOf(d.arts[id].xp || 0); return !!d.pf && t === 3 && p.lv === 10; });
+
+// ---- loop151 v2.3 專長門類（陣法／毒術／醫術）：只在 v2.3 新局生效（d.v23／s.v23）；強度＝造詣／40 封頂 1 ----
+export const SPEC = { k: 0.4, ref: 40, zhenMit: 0.25, zhenSlow: 0.2, zhenScout: 0.15, poisonT: 6, poisonDps: 2, poisonWeak: 0.15, healMax: 0.5, brewEvery: 3, expHeal: 5,
+  grow: { brew: 'yishu', heal: 'yishu', forage: 'dushu', watch: 'zhenfa', study: 'zhenfa', train: 'zhenfa' } };
+export const specM = (d, c) => (d?.v23 ? mastery(d, c) : 0);
+export const specK = (m) => Math.min(1, m / SPEC.ref);
+const present = (s) => (s.ds || []).filter((d) => !d.away && d.hp > 0);
+export const bestSpec = (s, c, list = present(s)) => (s.v23 ? list.reduce((m, d) => Math.max(m, specM(d, c)), 0) : 0);
+export const zhenK = (s, list) => specK(bestSpec(s, 'zhenfa', list));
+export const hasPoison = (s, list) => bestSpec(s, 'dushu', list) > 0;
+// 活動完成時替該門類武學累積造詣（受同一門類邊際遞減，封頂 GROW.cap）
+export function specGrow(d, act) {
+  const cat = d?.v23 && SPEC.grow[act]; if (!cat) return 0; let g = 0;
+  for (const [id, r] of Object.entries(d.arts || {})) { const w = ART_CAT[id]?.[cat]; if (!w) continue; const a = artBy(id); if (!a) continue;
+    r.gm ??= { e: 0, ms: 0 }; const cap = GROW.cap[a.grade] || 20, b = r.gm.e; r.gm.e = Math.min(cap, b + SPEC.k * w); g += r.gm.e - b; r.xp = (r.xp || 0) + 0.2 * w; }
+  return g;
+}

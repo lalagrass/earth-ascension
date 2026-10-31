@@ -1400,3 +1400,9 @@
 ## Loop 150 — v2.3 第 0 步：彙整待擁有人決定（擁有人 t187）
 - 擁有人訊息寫 head `f9cc1b5`／loop148；實際 head `4ab252a`（loop149），本輪起編號 150，擁有人原本的輪號一律 +1。
 - `docs/DECISIONS.md` §11「待擁有人決定」P1–P10，每項附暫定預設；把 `loop/DECISIONS.md` 的決定 145 併入。v2.3 新決定從 146 起。
+
+## Loop 151 — v2.3 Batch 1：專長門類＋程瑛／阿紫／程靈素（決定 146–151）
+- `arts.mjs`：`sup23`＋`supOf`、`SPEC`、`specGrow`、`zhenK`／`hasPoison`／`bestSpec`；三門招牌入 `ART_CAT`。`data.mjs`：三門 secret 武學與 4 個招式。`wuxia.mjs`：`XIA23` 三人，只在 `s.v23` 入池，無立繪。`jianghu.mjs` `onJoin13` 傳招牌並立即折算造詣。
+- 掛鉤：`sim` 完成活動（成長、療傷加成、第 3 爐 +1、毒術採藥 +1）、`huntStep`（陣法減傷減速、毒）、`threat` `bandStep`（陣法護柵、毒）、`world` `fight`（先手、毒、戰後包紮）。
+- 冒煙（seeds 1001–1006，30 日）：程瑛 6/6、程靈素 6/6、阿紫 3/6 入門；陣法 44、醫術 19、毒術 10–21。
+- 測試：新增 `test/v23.test.mjs` 4 項；`v110` 名俠清單測試排除 v23 三人；`golden-30d-v22` `bb5eab79db8771df → 5b6541ce6f829afa`，舊 `golden-30d.txt` 不動。

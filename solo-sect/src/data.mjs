@@ -492,6 +492,14 @@ MOVES.push({ id: 'banzi', skill: 'leg', name: '絆字訣', req: 0, range: 40, cd
 MOVES.push({ id: 'chuozi', skill: 'leg', name: '戳字訣', req: 0, range: 50, cd: 0.9, dmg: 14, aoe: 0, color: '#2f9e6a', fx: 'staff' });
 MOVES.push({ id: 'wugou', skill: 'leg', name: '天下無狗', req: 0, range: 80, cd: 1.6, dmg: 26, aoe: 90, color: '#5fd38a', fx: 'staff' });
 
+// ---- loop150 v2.3 專長招牌（程瑛／阿紫／程靈素；secret：只由本人入門時帶來，不進傳功、領悟、高人傳授） ----
+ARTS.push({ id: 'qimenZhen', name: '奇門五轉', school: 'palm', grade: 3, tags: ['巧'], req: [], techs: ['qm1', 'qm2'], tech: 'qm1', secret: true, hint: '程瑛入門時帶來（桃花島奇門陣法）', classic: true, signature: 'chengying' });
+ARTS.push({ id: 'xingxiuDu', name: '星宿毒經', school: 'palm', grade: 3, tags: ['巧'], req: [], techs: ['xx1', 'xx2'], tech: 'xx1', secret: true, hint: '阿紫入門時帶來（星宿派毒術）', classic: true, signature: 'azi' });
+ARTS.push({ id: 'yaowang', name: '藥王神篇', school: 'palm', grade: 3, tags: ['柔'], req: [], techs: [], tech: null, secret: true, hint: '程靈素入門時帶來（藥王谷醫術）', classic: true, signature: 'chenglingsu', effect: 'med' });
+MOVES.push({ id: 'qm1', skill: 'palm', name: '落英陣步', req: 0, range: 50, cd: 1.0, dmg: 10, aoe: 0, color: '#d98fb0' });
+MOVES.push({ id: 'qm2', skill: 'palm', name: '五轉迷陣', req: 0, range: 70, cd: 1.6, dmg: 14, aoe: 70, color: '#e0a0c0' });
+MOVES.push({ id: 'xx1', skill: 'palm', name: '抽髓掌', req: 0, range: 40, cd: 0.9, dmg: 10, aoe: 0, color: '#5a9a3a' });
+MOVES.push({ id: 'xx2', skill: 'palm', name: '腐屍毒', req: 0, range: 60, cd: 1.5, dmg: 12, aoe: 50, color: '#6aaa2a' });
 // ---- v1.2 華山線：紫霞神功（九層）、辟邪劍法（捷徑）、獨孤九劍（九式，口傳不入秘笈） ----
 ARTS.push({ id: 'zixia', name: '紫霞神功', school: 'palm', grade: 3, tags: ['柔'], req: [], techs: [], secret: true, hint: '岳不群開局：開局即得第一層，之後在華山劇情中逐層修煉', classic: true, layered: true });
 ARTS.push({ id: 'bixie', name: '辟邪劍法', school: 'palm', grade: 4, tags: ['快'], req: [], techs: ['bx1', 'bx2', 'bx3'], tech: 'bx1', secret: true, hint: '岳不群開局：華山劇情中選擇練辟邪劍譜（自宮＋斷情）', classic: true });

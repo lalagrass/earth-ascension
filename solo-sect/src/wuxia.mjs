@@ -33,7 +33,22 @@ export const XIA_T = {
   weixiaobao: T13('韋小寶', { wu: 1, gen: 1, li: 1 }, ['glib', 'lazy', 'optimist'], { leg: 6, palm: 4, strength: 4, farming: 2, herbal: 2, agility: 30, cooking: 10 }),
   baozupo: T13('包租婆', { wu: 3, gen: 4, li: 4 }, ['stubborn', 'brave'], { leg: 26, palm: 40, strength: 36, farming: 4, herbal: 2, agility: 22, cooking: 8 }),
   baozugong: T13('包租公', { wu: 4, gen: 4, li: 2 }, ['lazy', 'gentle'], { leg: 30, palm: 38, strength: 16, farming: 4, herbal: 2, agility: 34, cooking: 2 }),
+  /* loop150 v2.3 專長三人（擁有人規格；stats 的 shen／ding／fu 照錄，join 只用 wu／gen） */
+  chengying: T13('程瑛', { wu: 5, gen: 3, li: 2, shen: 4, ding: 4, fu: 3 }, ['clever', 'gentle', 'quiet'], { leg: 18, palm: 24, strength: 6, farming: 4, herbal: 14, agility: 26, cooking: 12 }),
+  azi: T13('阿紫', { wu: 4, gen: 2, li: 2, shen: 4, ding: 2, fu: 3 }, ['playful', 'rascal', 'brave'], { leg: 14, palm: 22, strength: 4, farming: 2, herbal: 28, agility: 24, cooking: 2 }),
+  chenglingsu: T13('程靈素', { wu: 5, gen: 2, li: 1, shen: 3, ding: 4, fu: 3 }, ['kind', 'diligent', 'clever'], { leg: 10, palm: 14, strength: 4, farming: 16, herbal: 36, agility: 8, cooking: 16 }),
 };
+// loop150 v2.3：只在 s.v23 新局進名俠池（舊局與 v2.2／v2.25 舊檔的池子不變）
+const facLv = (s, id) => s.fac?.[id]?.stage || 0;
+export const XIA23 = {
+  chengying: { name: '程瑛', role: 'disciple', where: '桃花林', title: '桃花島來的青衫少女', text: '山道上的桃花被人擺成了陣，一個青衫少女從陣裡走出來：「這山勢藏風聚氣，我想在這兒擺幾座陣。」',
+    need: (s) => (s.rep || 0) >= 16 || facLv(s, 'library') >= 1 || facLv(s, 'watch') >= 1, why: '名聲 16，或已建藏經閣／護山哨' },
+  azi: { name: '阿紫', role: 'disciple', where: '野藥圃', title: '藥圃裡抓毒蟲的紫衣少女', text: '野藥圃裡蹲著一個紫衣少女，手上纏著一條小青蛇：「你們這兒的毒草長得真好，我不走了。」',
+    need: (s) => (s.res?.herb || 0) >= 6 && (s.day || 0) > 5, why: '第 5 日後且存藥 6' },
+  chenglingsu: { name: '程靈素', role: 'disciple', where: '山門', title: '揹藥簍的瘦弱姑娘', text: '一個揹著藥簍的瘦弱姑娘在山門外看了看傷者：「這傷我能治。讓我留下，替你們看病。」',
+    need: (s) => facLv(s, 'clinic') >= 1 || facLv(s, 'alchemy') >= 1 || ((s.day || 0) > 4 && (s.ds || []).some((d) => !d.away && d.hp < 50)), why: '已建醫館／丹房，或第 4 日後有人受傷' },
+};
+
 const XIA13 = {
   yangguo: { name: '楊過', role: 'guest', where: '後山', title: '後山的獨臂少年與神鵰', text: '後山出現一頭醜陋巨鵰，鵰後跟著一個灰衣少年：「借貴派一塊地方住幾天，我在等一個人。」',
     need: (s) => (s.records?.sect || 0) >= 500 || (s.rep || 0) >= 18, why: '巡山走到山腰（500 步）或名聲 18' },
@@ -48,11 +63,11 @@ const XIA13 = {
   baozugong: { name: '包租公', role: 'guest', where: '豬籠城寨', title: '包租公', text: '', need: () => false, why: '跟包租婆一起來' },
 };
 export const XIA_PAIRS = { 'guojing+huangrong': 0.25, 'hongqigong+huangrong': 0.1, 'xiaolongnv+yangguo': 0.25, 'baozugong+baozupo': 0.25 };
-Object.assign(XIA, XIA13);
+Object.assign(XIA, XIA13, XIA23);
 export const PAIR_CAP = 0.25;
 export const xiaInit = () => ({ done: {}, declined: {}, joinT: {}, cooks: 0, lastT: -1e9, pending: null, teacher: null, left: {} });
 export function xiaPool(s) {
-  const ex = new Set(s.encExclude || []), pool = new Set([...encounterPool(s), 'hongqigong', ...Object.keys(XIA13)]);
+  const ex = new Set(s.encExclude || []), pool = new Set([...encounterPool(s), 'hongqigong', ...Object.keys(XIA13), ...(s.v23 ? Object.keys(XIA23) : [])]);
   return favSort(s, Object.keys(XIA)).filter((k) => pool.has(k) && !ex.has(k) && !present(s, k) && s.xia.teacher?.id !== k && !s.xia.done[k] && !s.xia.left[k] && styleOk(s, k));
 }
 // 每 tick：一天最多一個奇遇；不在場、未拒絕三天內
@@ -63,7 +78,7 @@ export function xiaStep(s, H) {
   for (const k of xiaPool(s)) {
     if ((X.declined[k] || -1e9) > s.t - 3 * DAY || !XIA[k].need(s)) continue;
     const A = XIA[k]; X.pending = k; X.lastT = s.t;
-    s.choices.push({ id: `xia-${k}`, xia: k, portrait: `assets/portraits/${k}.png`, title: `【奇遇・${A.where}】${A.title}`, text: A.text, opts: A.role === 'teacher' ? ['好酒好菜招待他', '門派窮，請他走'] : ['收入門下', '婉拒'], at: s.t });
+    s.choices.push({ id: `xia-${k}`, xia: k, portrait: XIA23[k] ? null : `assets/portraits/${k}.png`, /* loop151 v2.3 三人無立繪 */ title: `【奇遇・${A.where}】${A.title}`, text: A.text, opts: A.role === 'teacher' ? ['好酒好菜招待他', '門派窮，請他走'] : ['收入門下', '婉拒'], at: s.t });
     log(s, `【奇遇】${A.title}：${A.text}`); if (!s.hero?.askMajor) s.autoAt = s.t; return;
   }
 }
@@ -86,7 +101,7 @@ export function xiaResolve(s, ch, i) {
 export function join(s, k) {
   let d;
   const Y = XIA_T[k];
-  if (Y) { d = mkComp('huangrong', s.ds.length); Object.assign(d, { id: k, name: Y.name, root: Y.stats.gen, wu: Y.stats.wu, personality: [...Y.personality], known: Y.personality.slice(0, 2), sprite: 'hero', portrait: `assets/portraits/${k}.png`, skills: { ...Y.skills }, values: null, guest: XIA[k].role === 'guest' }); }
+  if (Y) { d = mkComp('huangrong', s.ds.length); Object.assign(d, { id: k, name: Y.name, root: Y.stats.gen, wu: Y.stats.wu, personality: [...Y.personality], known: Y.personality.slice(0, 2), sprite: 'hero', portrait: XIA23[k] ? null : `assets/portraits/${k}.png`, skills: { ...Y.skills }, values: null, guest: XIA[k].role === 'guest' }); }
   else if (k === 'huangrong') d = mkComp('huangrong', s.ds.length);
   else { const T = heroById(k); d = mkComp('huangrong', s.ds.length); Object.assign(d, { id: k, name: T.name, root: T.stats.gen, wu: T.stats.wu, style: T.style, personality: [...T.personality], known: T.personality.slice(0, 2), sprite: 'hero', portrait: `assets/portraits/${k}.png`,
     skills: k === 'linghuchong' ? { leg: 16, palm: 36, strength: 14, farming: 2, herbal: 2, agility: 30, cooking: 2 } : { leg: 14, palm: 30, strength: 36, farming: 6, herbal: 2, agility: 14, cooking: 2 }, values: null }); }

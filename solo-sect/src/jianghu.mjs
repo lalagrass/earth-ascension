@@ -1,6 +1,6 @@
 import { seedMix, log, resAdd, resSet } from './util.mjs';
 import { DAY, TIERS, JH, TREES, buildCards, destinyStep, ARTS, MOVES } from './data.mjs';
-import { learnArt, artTier, powBonus, autoFocus, artById, curCap, reqMissing, fits } from './arts.mjs';
+import { growEnsure, learnArt, artTier, powBonus, autoFocus, artById, curCap, reqMissing, fits } from './arts.mjs';
 import { laborPow } from './economy.mjs';
 import { valorPowMul, valorAdd, VALOR } from './sect.mjs';
 import { initPair } from './social.mjs';
@@ -104,6 +104,7 @@ export function onJoin13(s, d, k) {
   if (k === 'xiaolongnv') teachJ(s, d, 'yunv', DA);
   if (k === 'baozupo') { teachJ(s, d, 'shihou', DA); if (!find(s, 'baozugong')) join(s, 'baozugong'); }
   if (k === 'baozugong') teachJ(s, d, 'taiji', DA);
+  if (k === 'chengying') teachJ(s, d, 'qimenZhen', DA); if (k === 'azi') teachJ(s, d, 'xingxiuDu', DA); if (k === 'chenglingsu') teachJ(s, d, 'yaowang', DA); if (s.grow && ['chengying', 'azi', 'chenglingsu'].includes(k)) { d.gInit = false; growEnsure(d); } /* loop151 v2.3：入門帶來的招牌立即折算造詣 */
   if (k === 'weixiaobao') { s.jh.casino = true; if (s.hero?.kind === 'template') { /* 招募 +40% */ } }
 }
 // 每 tick

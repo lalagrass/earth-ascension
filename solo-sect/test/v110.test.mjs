@@ -28,7 +28,7 @@ test('名聲觸發郭靖奇遇，一天最多一個；收入門下帶高手底�
   assert.ok(g && g.skills.palm >= 30 && dragonFit(g)); assert.ok(s.xia.done.guojing);
 });
 test('名俠弟子：郭靖、黃蓉、令狐沖（v1.2）；洪七公是師父', () => {
-  assert.deepEqual(Object.keys(XIA).filter((k) => XIA[k].role === 'disciple').sort(), ['guojing', 'huangrong', 'linghuchong']); assert.equal(XIA.hongqigong.role, 'teacher');
+  assert.deepEqual(Object.keys(XIA).filter((k) => XIA[k].role === 'disciple' && !['chengying', 'azi', 'chenglingsu'].includes(k)) /* loop151 v2.3 三人只在 s.v23 新局進池 */.sort(), ['guojing', 'huangrong', 'linghuchong']); assert.equal(XIA.hongqigong.role, 'teacher');
 });
 test('婉拒三天內不再出現', () => {
   const s = st(); s.rep = 20; xiaStep(s); const ch = s.choices.find((c) => c.xia); xiaResolve(s, ch, 1); s.t += DAY * 1.5; xiaStep(s); assert.ok(!s.choices.some((c) => c.xia === ch.xia));
