@@ -1509,3 +1509,7 @@
 - 做得好：門派相關全部經 `sectInit`／`s.v24` 單一入口，舊局與兩份 golden 都沒動。
 - 不好：Batch 4 一開始因規格截斷漏了 4.1⑥／4.2／4.3，這輪才補；傳承鎖受限於 classic 武學很少，效果偏窄。
 - 下一步：Batch 5 合參推演、山門大比、天下會武。
+
+## Loop 165 — v2.5 Batch 5.1：宗師合參推演（決定 187–188）
+- `data.mjs`：`DERIVED24` 四門合參絕學＋8 招。`arts.mjs`：`ART_CAT` 對應、`DERIVE24`／`DERIVE_RULES24`／`deriveReady24`／`checkDeriveArt`。`sim.mjs` 研讀／打坐完成時呼叫並記大事紀；`bonds.mjs` 合參絕學可傳功。
+- 測試：v24 +2 項（21 項）。golden-30d-v22 `d672c6f90b1b3e17 → 22f1f48e87d19a04`（郭靖局 30 日內令狐沖推演出《流風迴雪劍》）；舊 golden 不動。

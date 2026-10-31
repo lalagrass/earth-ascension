@@ -127,3 +127,16 @@ test('loop164 Batch4.3 本門傳承鎖：他派專屬名學預設鎖住，主門
   assert.equal(A.lockedArt24({ ...d, v24: false }, a), false); assert.equal(A.lockedArt24({ ...d, sectId: 'wuming' }, a), false);
   assert.ok(A.ownFirst24(d)({ id: 'zzz' }, { id: d.stree[0] }) > 0);
 });
+
+// ---- loop165 Batch 5.1 合參推演 ----
+test('loop165 Batch5.1：劍法＋身法大成且劍法造詣 ≥45 → 推演《流風迴雪劍》並入本門樹；條件不足不推演；舊局無', () => {
+  const s = V(); tick(s, 0.1); const d = hero(s); assert.equal(A.checkDeriveArt(s, d), null);
+  for (const k of ['basicSword', 'huashanSword', 'sanxianSword', 'stepFeather']) { A.learnArt(d, k, 0); d.arts[k].xp = 60; d.arts[k].gm = { e: 30 }; }
+  const a = A.checkDeriveArt(s, d); assert.equal(a?.id, 'liufengSword'); assert.ok(s.sect.tree.includes('liufengSword')); assert.equal(s.v24n.derive, 1); assert.equal(A.checkDeriveArt(s, d), null);
+  assert.ok(A.isSwordArt('liufengSword')); assert.equal(A.DERIVE_RULES24.length, 4);
+  const o = OLD(); tick(o, 0.1); const h = hero(o); for (const k of ['basicSword', 'stepFeather']) { h.arts[k] = { xp: 60, gm: { e: 30 } }; } assert.equal(A.checkDeriveArt(o, h), null);
+});
+test('loop165 Batch5.1：一般外門弟子不推演（只限掌門、內門、首徒）', () => {
+  const s = V(); tick(s, 0.1); const d = s.ds.find((x) => x.id !== 'hero' && x.role !== 'laborer'); if (!d) return; d.role = 'outer';
+  for (const k of ['basicSword', 'huashanSword', 'sanxianSword', 'stepFeather']) d.arts[k] = { xp: 60, gm: { e: 30 } }; assert.equal(A.checkDeriveArt(s, d), null); d.role = 'inner'; assert.equal(A.checkDeriveArt(s, d)?.id, 'liufengSword');
+});

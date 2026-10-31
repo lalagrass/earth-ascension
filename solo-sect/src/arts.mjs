@@ -25,6 +25,7 @@ export const ART_CAT = {
   zixia: { neigong: 1 }, yunv: { neigong: 1 }, jiuyang: { neigong: 1 }, qiankun: { neigong: 1 }, hama: { neigong: 1 }, shihou: { neigong: 1 },
   dagou: { gunbang: 1 }, bagua: { gunbang: 1 }, kuihua: { qimen: 1 }, zuoyou: { zaxue: 1 },
   basicSword: { jianfa: 1 }, huashanSword: { jianfa: 1 }, sanxianSword: { jianfa: 1 }, wuhuBlade: { quanzhang: 0.5, gunbang: 0.5 }, shaolinStaff: { gunbang: 1 }, tuinaHand: { quanzhang: 0.5, qimen: 0.5 }, stepFeather: { shenfa: 1 }, stepEight: { shenfa: 0.7, zhenfa: 0.3 }, zhenTu: { zhenfa: 1 }, yiJing: { yishu: 1 }, duPu: { dushu: 1 }, /* loop160 v2.4 */
+  hanbingPalm: { quanzhang: 0.7, neigong: 0.3 }, liufengSword: { jianfa: 0.7, shenfa: 0.3 }, fuguFinger: { quanzhang: 0.5, dushu: 0.5 }, qiankunBlade: { gunbang: 0.7, neigong: 0.3 }, /* loop165 合參 */
   qimenZhen: { zhenfa: 0.8, qimen: 0.2 }, xingxiuDu: { dushu: 1 }, yaowang: { yishu: 1 }, /* loop150 v2.3 專長招牌 */
 };
 export const GROW = {
@@ -416,3 +417,20 @@ export function affix24(s, d) { if (!s?.v24 || !d?.v24) return null; let got = n
   for (const [id, r] of Object.entries(d.arts || {})) { if (r.affix || artTier(d, id) < AFFIX24.tier || !artBy(id)?.techs?.length) continue;
     const x = AFFIX24.list[h24(`${s.seed}:${d.id}:${id}`) % AFFIX24.list.length]; r.affix = x.id; (s.v24n ??= {}).affix = (s.v24n.affix || 0) + 1; got = { art: artBy(id), x }; }
   return got; }
+
+// ---- loop165 v2.5 Batch 5.1：宗師合參推演（左冷禪式）。只在 s.v24／d.v24；掌門（hero）或內門／首徒在研讀、打坐完成時檢查 ----
+/* 條件：兩門指定類別武學都練到大成（tier ≥ DERIVE24.tier）＋主門類造詣達標。剛猛內功在現有資料極少，乾坤霸刀的內功條件放寬為任一內功。 */
+export const DERIVE24 = { tier: 2, xp: 10, roles: ['hero', 'inner', 'head'] };
+const t2 = (d, f) => Object.keys(d.arts || {}).some((id) => { const a = artBy(id); return a && !a.derived && artTier(d, id) >= DERIVE24.tier && f(a, ART_CAT[id] || {}); });
+export const DERIVE_RULES24 = [
+  { id: 'hanbingPalm', cat: 'quanzhang', min: 45, a: (a) => (a.school === 'palm' || a.school === 'fist') && a.tags.includes('剛') && !isSwordArt(a.id), b: (a) => a.school === 'inner' || attrOf(a) === 'yin' },
+  { id: 'liufengSword', cat: 'jianfa', min: 45, a: (a) => isSwordArt(a.id), b: (a) => a.school === 'step' },
+  { id: 'fuguFinger', cat: 'quanzhang', min: 40, a: (a, c) => (c.qimen || 0) > 0, b: (a, c) => (c.dushu || 0) > 0 },
+  { id: 'qiankunBlade', cat: 'gunbang', min: 45, a: (a, c) => (c.gunbang || 0) > 0 || a.weapon === 'blade' || a.weapon === 'staff', b: (a) => a.school === 'inner' },
+];
+export function deriveReady24(d) { return DERIVE_RULES24.filter((R) => !d.arts?.[R.id] && mastery(d, R.cat) >= R.min && t2(d, R.a) && t2(d, R.b)); }
+export function checkDeriveArt(s, d) {
+  if (!s?.v24 || !d?.v24 || !(d.id === 'hero' || DERIVE24.roles.includes(d.role))) return null;
+  const R = deriveReady24(d)[0]; if (!R) return null; const a = learnArt(d, R.id, s.t); d.arts[R.id].xp = Math.max(d.arts[R.id].xp, DERIVE24.xp);
+  if (s.sect && !s.sect.tree.includes(R.id)) s.sect.tree.push(R.id); (s.v24n ??= {}).derive = (s.v24n.derive || 0) + 1; return a;
+}

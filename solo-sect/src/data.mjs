@@ -409,6 +409,20 @@ ARTS.push(
   { id: 'stepFeather', name: '飛絮身法', school: 'step', grade: 2, tags: ['巧', '柔'], effect: 'speed', attr: 'yin', req: [{ art: 'snowStep', tier: 1 }], tech: null, techs: ['飄絮', '迴風'], v24: true, svg: [1, 7] },
   { id: 'stepEight', name: '八卦遊龍步', school: 'step', grade: 2, tags: ['巧'], effect: 'speed', attr: 'he', req: [{ art: 'snowStep', tier: 1 }], tech: null, techs: ['走圈', '遊龍'], v24: true, svg: [2, 7] },
 );
+/* loop165 v2.5 Batch 5.1：宗師合參推演新武功（derived：只能由 checkDeriveArt 合參取得；secret：不進一般學習池；v24 新局才有） */
+export const DERIVED24 = ['hanbingPalm', 'liufengSword', 'fuguFinger', 'qiankunBlade'];
+ARTS.push(
+  { id: 'hanbingPalm', name: '寒冰神掌', school: 'palm', grade: 3, tags: ['剛', '柔'], attr: 'yin', req: [], techs: ['hb1', 'hb2'], tech: 'hb1', secret: true, derived: true, v24: true, hint: '剛猛掌法與陰柔內功俱大成、拳掌造詣 ≥45 時合參推演', svg: [2, 1] },
+  { id: 'liufengSword', name: '流風迴雪劍', school: 'palm', grade: 3, tags: ['快', '巧'], weapon: 'sword', attr: 'he', req: [], techs: ['lf1', 'lf2'], tech: 'lf1', secret: true, derived: true, v24: true, hint: '劍法與身法俱大成、劍法造詣 ≥45 時合參推演', svg: [2, 4] },
+  { id: 'fuguFinger', name: '腐骨抽髓指', school: 'palm', grade: 3, tags: ['巧'], attr: 'yin', req: [], techs: ['fg1', 'fg2'], tech: 'fg1', secret: true, derived: true, v24: true, hint: '點穴指法與毒術俱大成、拳掌造詣 ≥40 時合參推演', svg: [1, 4] },
+  { id: 'qiankunBlade', name: '乾坤霸刀', school: 'palm', grade: 3, tags: ['剛'], weapon: 'blade', attr: 'yang', req: [], techs: ['qk1', 'qk2'], tech: 'qk1', secret: true, derived: true, v24: true, hint: '刀棍與內功俱大成、棍棒造詣 ≥45 時合參推演', svg: [0, 4] },
+);
+MOVES.push(
+  { id: 'hb1', skill: 'palm', name: '寒冰掌勁', req: 0, range: 50, cd: 1.6, dmg: 18, aoe: 0, color: '#9fd8f0' }, { id: 'hb2', skill: 'palm', name: '冰封千里', req: 0, range: 50, cd: 2.6, dmg: 22, aoe: 50, color: '#c8f0ff' },
+  { id: 'lf1', skill: 'palm', name: '流風', req: 0, range: 58, cd: 0.9, dmg: 11, aoe: 0, color: '#d8e8f8' }, { id: 'lf2', skill: 'palm', name: '迴雪', req: 0, range: 58, cd: 1.3, dmg: 15, aoe: 30, color: '#f0f8ff' },
+  { id: 'fg1', skill: 'palm', name: '腐骨', req: 0, range: 44, cd: 1.3, dmg: 15, aoe: 0, color: '#6a8a3a' }, { id: 'fg2', skill: 'palm', name: '抽髓', req: 0, range: 44, cd: 2.0, dmg: 20, aoe: 0, color: '#4a6a2a' },
+  { id: 'qk1', skill: 'palm', name: '霸刀斬', req: 0, range: 54, cd: 1.8, dmg: 20, aoe: 30, color: '#c86a3a' }, { id: 'qk2', skill: 'palm', name: '乾坤一擲', req: 0, range: 60, cd: 2.8, dmg: 26, aoe: 60, color: '#e88a4a' },
+);
 /* loop160 Batch 1.2：藏經閣「圖譜」——v2.4 讀書時可能撿到的輔助抄本（secret：不進一般學習池；只在 study 完成時取得） */
 ARTS.push(
   { id: 'zhenTu', name: '陣圖殘篇', school: 'palm', grade: 1, tags: ['巧'], req: [], techs: [], tech: null, secret: true, v24: true, hint: '藏經閣讀書時偶得', svg: [0, 7] },
