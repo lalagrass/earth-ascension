@@ -27,7 +27,7 @@ test('loop159 P5/P6 深谷、斷崖守關首通保底靈石（只列兩段）', 
 test('loop159 P7/P8 執事：有人學會 ≥2 門武學且木石夠 → 藏經閣優先於其他藍圖', () => {
   const s = V(); tick(s, 0.1); s.steward = true; s.rep = 20; s.res.coin = 99; s.res.wood = 30; s.res.stone = 30; const d = hero(s);
   while (Object.keys(d.arts).length < 2) A.learnArt(d, ['breath', 'sweepLeg', 'pushPalm'].find((k) => !d.arts[k]), s.t);
-  assert.equal(EC.stewLib24(s), 'library'); s.res.stone = 0; assert.equal(EC.stewLib24(s), null); s.res.stone = 30;
+  assert.equal(EC.stewLib24(s), 'library'); s.res.stone = 0; assert.equal(EC.stewLib24(s), 'library', 'loop169 石料暫緩'); s.res.wood = 4; assert.equal(EC.stewLib24(s), null); s.res.stone = 30; s.res.wood = 30;
   const w = V(); delete w.v24; tick(w, 0.1); w.res.wood = 30; w.res.stone = 30; assert.equal(EC.stewLib24(w), null);
 });
 test('loop159 isSwordArt：劍法門類、三門經典劍法；掌法不是；swordCdMul 經它作用在真實劍招，dpsOf 吃 cdMul', () => {

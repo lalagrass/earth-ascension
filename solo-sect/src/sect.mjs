@@ -1,4 +1,4 @@
-import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS } from './data.mjs';
+import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS, SECT_PICK24 } from './data.mjs';
 import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec } from './arts.mjs';
 import { dpsOf } from './world.mjs';
 import { compat } from './social.mjs';
@@ -107,7 +107,7 @@ export function genResolve(s, ch, i) {
 // ==== （原 sect.mjs）====
 // v1.35 門派身分（ROADMAP §18）：門規、鎮派設施、招人風格、宿敵守關、名俠加權、外門武學、叛派
 export function sectOf(hero) {
-  const id = SECTS[hero?.sect24]?.v24 ? hero.sect24 : hero?.kind === 'template' ? HERO_SECT[hero.id] || 'wuming' : 'wuming', B = SECTS[id]; /* loop163 v2.4 新門派只由 heroSpec.sect24 指定 */
+  const id = SECTS[hero?.sect24] && (SECTS[hero.sect24].v24 || SECT_PICK24.includes(hero.sect24)) ? hero.sect24 : /* loop169 自創主角也可選華山二宗、丐幫、明教 */ hero?.kind === 'template' ? HERO_SECT[hero.id] || 'wuming' : 'wuming', B = SECTS[id]; /* loop163 v2.4 新門派只由 heroSpec.sect24 指定 */
   const o = { id, name: B.name, plaque: B.plaque, color: B.color, flag: B.flag, bias: { ...B.bias }, tree: [...B.tree], ban: [...B.ban], rules: [...B.rules], rivals: [...B.rivals], rep: 0, fac: false, viol: {}, violN: 0, lastViolT: -1e9, keptDay: 0, day: -1, questioned: {}, defect: {}, expelled: [], beaten: {}, rivalI: 0 };
   if (id === 'wuming' && hero?.kind === 'custom') { const [tag, rule] = CUSTOM_BY_VALUE[hero.main] || ['拙', 'rescue']; o.bias = { [tag]: SECT_K.biasCap }; o.rules = [rule]; o.rivals = [CUSTOM_RIVALS[(hero.name || '').length % CUSTOM_RIVALS.length]]; o.plaque = `${hero.name || '無名'}派`; o.name = o.plaque; }
   return o;
@@ -216,7 +216,7 @@ export function sectStep(s) {
    對手三人戰力依 loop166 量測（12 種子 bot 局本門前三 dps 中位：第 15 日約 280／255／245，第 26 日約 365／300／265）定錨。 */
 export const BISAI24 = { days: [10, 20], minN: 2, champMood: 15, champXp: 25, allXp: 10, newXp: 10 };
 export const HUIWU24 = { days: { 15: { name: '名門會武', title: '名門會武魁首', opp: [230, 265, 310] }, 26: { name: '天下論劍', title: '論劍魁首', opp: [255, 305, 375] } },
-  pool: ['emei', 'wudang', 'qizong', 'jianzong', 'gaibang', 'mingjiao', 'taohua', 'gumu', 'xingxiu'], rep: 15, coin: 45, lingshi: 1, steal: 0.4, guiK: 0.25, sharp: 2,
+  pool: ['emei', 'wudang', 'qizong', 'jianzong', 'gaibang', 'mingjiao', 'taohua', 'gumu', 'xingxiu'], rep: 15, coin: 45, lingshi: 1, steal: 0.55, /* loop169 t190 0.40→0.55 */ guiK: 0.25, sharp: 2,
   opts: ['堂堂正正：主將對主將', '田忌賽馬：以下駟耗其上駟，精銳搶攻先鋒與中堅', '奇門詭道：以陣法／醫毒窺破應戰'] };
 const hh = (str) => { let h = 2166136261; for (const c of str) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return (h >>> 0) / 4294967296; };
 const fighters24 = (s) => s.ds.filter((d) => d.role !== 'laborer' && !d.away && d.adult !== false && d.hp > 30);
@@ -265,7 +265,7 @@ export function huiwuResolve(s, ch, i) {
     recordDeed(s, null, 'huiwu', { chron: `${H.name}力挫${O.name}，得【${H.title}】` }); }
   else log(s, `【${H.name}】以「${HUIWU24.opts[i].split('：')[0]}」排陣，${txt}——不敵${O.name}。`);
   const fs = L.filter((b) => b.d).map((b) => b.d), thief = (i === 2 ? [...fs].sort((a, b) => Math.max(...['zhenfa', 'yishu', 'dushu'].map((c) => bestSpec(s, c, [b]))) - Math.max(...['zhenfa', 'yishu', 'dushu'].map((c) => bestSpec(s, c, [a]))) || (b.wu ?? 3) - (a.wu ?? 3)) : [...fs].sort((a, b) => (b.wu ?? 3) - (a.wu ?? 3)))[0];
-  if (thief && hh(`${s.seed}:steal:${ch.day}`) < HUIWU24.steal) { const a = O.tree.map(artById).find((a) => a && !thief.arts?.[a.id] && artOk(thief, a) && !a.secret && !a.signature && !a.derived);
+  if (thief && hh(`${s.seed}:steal:${ch.day}`) < HUIWU24.steal) { const C = O.tree.map(artById).filter((a) => a && !thief.arts?.[a.id] && artOk(thief, a) && !a.secret && !a.signature && !a.derived), a = C.find((x) => x.own24) || C[0]; /* loop169 他派專屬優先；不受 lockedArt24（偷師即跨派管道） */
     if (a) { learnArt(thief, a.id, s.t); thief.arts[a.id].xp = Math.max(thief.arts[a.id].xp, BISAI24.newXp); N.steal = (N.steal || 0) + 1; log(s, `【臨陣偷師】${thief.name}在場邊看出${O.name}招式精要，竟學會了《${a.name}》！`); recordDeed(s, thief, 'steal', { chron: `${thief.name}在${H.name}上偷師${O.name}《${a.name}》` }); } }
   return true;
 }

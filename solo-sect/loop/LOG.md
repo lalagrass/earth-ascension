@@ -1538,3 +1538,13 @@
 - `data.mjs`：20 門專屬武學＋40 招，五派 tree／ban，`unlock24`、`med24`、`psn24`。`arts.mjs`：`ART_CAT`、`lockedArt24`（own24 全鎖他派、無名派也鎖、不吃觸類旁通）、`reqMissing` `alt24`、`sectUnlock24`、`medQi`／`breakChance` ×`medK24`、武學圖／線索隱藏他派專屬。`sect.mjs` 每 tick 設 `medK24`／`psnK24`；`bonds`（傳功、殘頁）、`jianghu`（高人傳功）、`main`／`panel-ui`（清單）補鎖；三處毒傷 ×`psnK24`。
 - 6 種子 bot 快驗：第一版他派專屬經觸類旁通外流（純度 73–80%），改鎖後 99%＋，五派專屬全部有人習得。
 - 測試：新增 `test/v255.test.mjs` 5 項；v24 武當 T1 根基改為武當長拳。遊戲 742、sect-chronicle 383、Python 53。golden-30d-v22 `172e4d6d36ba6aff → 6366f906d7c46106`；舊 golden 不動。
+
+## loop169 — v2.55：五項待決拍板（決定 202–206）
+- `arts.mjs` 合參收緊（52/48、樹內已有不推演、每局 2 門）；`sect.mjs` 偷師 0.55、他派專屬優先；`start-ui.mjs` 自創主角 `custom-sect24` 下拉（`SECT_PICK24`），`sectInit` 接受；`economy.mjs` `stewLib24` 放寬。
+- 12 種子快驗（bot／exp）：合參 2.0／局、偷師 0.42／局、藏經閣 12/12、純度 99.4%。
+- 測試：v255 +4 項（9 項）；v24 執事藏經閣測試照新規則改。遊戲 746、sect-chronicle 383、Python 53。golden-30d-v22 `6366f906d7c46106 → 05f9e0ef3c623d5e`；舊 golden 不動。
+
+### Retro 168–169
+- 做得好：專屬武學全部走 `own24`＋`lockedArt24` 單一閘門；第一版外流在 6 種子快驗就抓到。
+- 不好：觸類旁通與專屬武學衝突是規格沒寫到的，只能保守關掉；偷師受丐幫／明教「無可偷」拖累。
+- 下一步：160 局驗收，偷師不足時做最小調整。

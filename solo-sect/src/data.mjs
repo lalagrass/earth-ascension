@@ -755,6 +755,8 @@ export const SECTS = {
     fac: { name: '祖師堂', cost: { wood: 8, stone: 4 }, daily: { rep: 0.5 }, desc: '供奉開山祖師：名聲每日 +0.5' }, rivals: [], fav: [],
     recruit: { text: '一個慕名而來的年輕人上山拜師。' } },
 };
+/* loop169 t190 待決 4：自創主角開局可選的開山道統（custom-sect24 下拉；wuming＝不指定） */
+export const SECT_PICK24 = ['wuming', 'emei', 'wudang', 'taohua', 'gumu', 'xingxiu', 'qizong', 'jianzong', 'gaibang', 'mingjiao'];
 export const HERO_SECT = { guojing: 'gaibang', yuebuqun: 'qizong', linghuchong: 'jianzong', zhangwuji: 'mingjiao', weixiaobao: 'tiandihui', axing: 'zhulong' };
 // 自創主角：九問主價值 → 流派偏向＋一條門規
 export const CUSTOM_BY_VALUE = { xia: ['剛', 'rescue'], sect: ['拙', 'hoard'], qing: ['柔', 'heart'], free: ['巧', 'heart'], wu: ['拙', 'rescue'], fame: ['剛', 'rent'] };

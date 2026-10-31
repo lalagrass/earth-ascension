@@ -426,17 +426,18 @@ export function affix24(s, d) { if (!s?.v24 || !d?.v24) return null; let got = n
 
 // ---- loop165 v2.5 Batch 5.1：宗師合參推演（左冷禪式）。只在 s.v24／d.v24；掌門（hero）或內門／首徒在研讀、打坐完成時檢查 ----
 /* 條件：兩門指定類別武學都練到大成（tier ≥ DERIVE24.tier）＋主門類造詣達標。剛猛內功在現有資料極少，乾坤霸刀的內功條件放寬為任一內功。 */
-export const DERIVE24 = { tier: 2, xp: 10, roles: ['hero', 'inner', 'head'] };
+export const DERIVE24 = { tier: 2, xp: 10, roles: ['hero', 'inner', 'head'], max: 2 };
 const t2 = (d, f) => Object.keys(d.arts || {}).some((id) => { const a = artBy(id); return a && !a.derived && artTier(d, id) >= DERIVE24.tier && f(a, ART_CAT[id] || {}); });
 export const DERIVE_RULES24 = [
-  { id: 'hanbingPalm', cat: 'quanzhang', min: 45, a: (a) => (a.school === 'palm' || a.school === 'fist') && a.tags.includes('剛') && !isSwordArt(a.id), b: (a) => a.school === 'inner' || attrOf(a) === 'yin' },
-  { id: 'liufengSword', cat: 'jianfa', min: 45, a: (a) => isSwordArt(a.id), b: (a) => a.school === 'step' },
-  { id: 'fuguFinger', cat: 'quanzhang', min: 40, a: (a, c) => (c.qimen || 0) > 0, b: (a, c) => (c.dushu || 0) > 0 },
-  { id: 'qiankunBlade', cat: 'gunbang', min: 45, a: (a, c) => (c.gunbang || 0) > 0 || a.weapon === 'blade' || a.weapon === 'staff', b: (a) => a.school === 'inner' },
+  { id: 'hanbingPalm', cat: 'quanzhang', min: 52, a: (a) => (a.school === 'palm' || a.school === 'fist') && a.tags.includes('剛') && !isSwordArt(a.id), b: (a) => a.school === 'inner' || attrOf(a) === 'yin' },
+  { id: 'liufengSword', cat: 'jianfa', min: 52, a: (a) => isSwordArt(a.id), b: (a) => a.school === 'step' },
+  { id: 'fuguFinger', cat: 'quanzhang', min: 48, a: (a, c) => (c.qimen || 0) > 0, b: (a, c) => (c.dushu || 0) > 0 },
+  { id: 'qiankunBlade', cat: 'gunbang', min: 52, a: (a, c) => (c.gunbang || 0) > 0 || a.weapon === 'blade' || a.weapon === 'staff', b: (a) => a.school === 'inner' },
 ];
-export function deriveReady24(d) { return DERIVE_RULES24.filter((R) => !d.arts?.[R.id] && mastery(d, R.cat) >= R.min && t2(d, R.a) && t2(d, R.b)); }
+/* loop169 t190 待決 2：(a) 本門樹已有該合參絕學（前輩已開創）就不再推演；(b) 每局每派上限 DERIVE24.max 門；造詣門檻 45/40 → 52/48 */
+export function deriveReady24(d, s) { if (s && (s.v24n?.derive || 0) >= DERIVE24.max) return []; return DERIVE_RULES24.filter((R) => !d.arts?.[R.id] && !s?.sect?.tree?.includes(R.id) && mastery(d, R.cat) >= R.min && t2(d, R.a) && t2(d, R.b)); }
 export function checkDeriveArt(s, d) {
   if (!s?.v24 || !d?.v24 || !(d.id === 'hero' || DERIVE24.roles.includes(d.role))) return null;
-  const R = deriveReady24(d)[0]; if (!R) return null; const a = learnArt(d, R.id, s.t); d.arts[R.id].xp = Math.max(d.arts[R.id].xp, DERIVE24.xp);
+  const R = deriveReady24(d, s)[0]; if (!R) return null; const a = learnArt(d, R.id, s.t); d.arts[R.id].xp = Math.max(d.arts[R.id].xp, DERIVE24.xp);
   if (s.sect && !s.sect.tree.includes(R.id)) s.sect.tree.push(R.id); (s.v24n ??= {}).derive = (s.v24n.derive || 0) + 1; return a;
 }

@@ -4,7 +4,10 @@ import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
 import * as A from '../src/arts.mjs';
 import { ARTS, SECTS } from '../src/data.mjs';
-import { sectStep } from '../src/sect.mjs';
+import { sectStep, HUIWU24 } from '../src/sect.mjs';
+import * as EC from '../src/economy.mjs';
+import { SECT_PICK24 } from '../src/data.mjs';
+import { buildSpec } from '../src/start-ui.mjs';
 import { passPick } from '../src/bonds.mjs';
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
 const OLD = () => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false });
@@ -46,4 +49,23 @@ test('loop168 寒玉床：門人 ≤5 打坐回氣與衝關率 ×1.5；神木王
   const x = V({ sect24: 'xingxiu' }); tick(x, 0.1); assert.deepEqual(SECTS.xingxiu.fac.daily, { herb: 1, coin: 1 }); assert.equal(SECTS.xingxiu.fac.name, '神木王鼎');
   x.sect.fac = true; sectStep(x); assert.equal(x.psnK24, 1.35);
   const e = V({ sect24: 'emei' }); tick(e, 0.1); e.sect.fac = true; sectStep(e); assert.equal(hero(e).medK24, 1); assert.equal(e.psnK24, 1);
+});
+
+test('loop169 合參收緊：門檻 52/48、本門樹已有不再推演、每局上限 2', () => {
+  assert.deepEqual(A.DERIVE_RULES24.map((R) => R.min), [52, 52, 48, 52]); assert.equal(A.DERIVE24.max, 2);
+  const s = V(); tick(s, 0.1); const h = hero(s); const R = A.DERIVE_RULES24[1];
+  const fake = { ...h, arts: {} }; s.sect.tree.push(R.id); assert.ok(!A.deriveReady24(fake, s).some((x) => x.id === R.id));
+  s.v24n = { derive: 2 }; assert.deepEqual(A.deriveReady24(h, s), []);
+});
+test('loop169 臨陣偷師：機率 0.55；他派專屬優先', () => { assert.equal(HUIWU24.steal, 0.55); });
+test('loop169 執事藏經閣：出征過或有殘頁，木 ≥5 即立（石料暫緩）', () => {
+  const s = V(); tick(s, 0.1); for (const d of s.ds) d.arts = { basicFist: d.arts.basicFist || { xp: 1 } }; s.res.wood = 5; s.res.stone = 0;
+  assert.equal(EC.stewLib24(s), null); s.expN = 1; assert.equal(EC.stewLib24(s), 'library'); s.expN = 0; s.res.page1 = 1; assert.equal(EC.stewLib24(s), 'library'); s.res.wood = 4; assert.equal(EC.stewLib24(s), null);
+});
+test('loop169 開局門派選單：十個選項、自創主角帶 sect24（無名派不帶）、可開華山／丐幫／明教', () => {
+  assert.deepEqual(SECT_PICK24, ['wuming', 'emei', 'wudang', 'taohua', 'gumu', 'xingxiu', 'qizong', 'jianzong', 'gaibang', 'mingjiao']);
+  const base = { tab: 'custom', name: '甲', stats: {}, ans: Array(9).fill(0), ask: false };
+  assert.equal(buildSpec({ ...base, sect24: 'gumu' }).sect24, 'gumu'); assert.ok(!('sect24' in buildSpec({ ...base, sect24: 'wuming' })));
+  for (const k of SECT_PICK24.slice(1)) { const s = V({ sect24: k }); assert.equal(s.sect.id, k, k); }
+  const o = createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, sect24: 'gaibang' }); assert.equal(o.sect.id, 'wuming', '舊局忽略');
 });

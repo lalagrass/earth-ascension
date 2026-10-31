@@ -147,10 +147,11 @@ export function stewardDaily(s, H) {
 export const STEW_FB = { fbN: 6, stoneShort: 3, order: ['library', 'shed'] };
 export const STEW_FB23 = { libN: 4, libWood: 5 };
 export const STEW_FB24 = { artsN: 2 };
-export function stewLib24(s) {
-  if (s.v24 && s.fac.library && s.fac.library.stage === 0 && !s.fac.library.site && s.ds.some((d) => d.role !== 'laborer' && Object.keys(d.arts || {}).length >= STEW_FB24.artsN)) { /* loop159 v2.4 P7/P8：有人學會 ≥2 門武學且木石夠一階 → 藏經閣優先 */
-    const c = FACILITIES.find((x) => x.id === 'library')?.stages[1]?.cost || {}; if ((s.res.wood || 0) >= (c.wood || 0) && (s.res.stone || 0) >= (c.stone || 0)) return 'library'; }
-  return null;
+export const STEW_LIB24 = { wood: 5 }; /* loop169 t190 待決 5 */
+export function stewLib24(s) { /* loop159 有人會 ≥2 門；loop169 t190 待決 5：或已出征過、或庫存有殘頁——木 ≥5 即立藏經閣藍圖，石料暫緩（工地照常備料） */
+  if (!s.v24 || !s.fac.library || s.fac.library.stage !== 0 || s.fac.library.site) return null;
+  const why = s.ds.some((d) => d.role !== 'laborer' && Object.keys(d.arts || {}).length >= STEW_FB24.artsN) || (s.expN || 0) >= 1 || (s.res.page1 || 0) + (s.res.page2 || 0) >= 1;
+  return why && (s.res.wood || 0) >= STEW_LIB24.wood ? 'library' : null;
 }
 export function stewFallback(s) {
   if (s.v23 && (s.fac.kitchen?.stage || 0) >= 1 && s.fac.library && s.fac.library.stage === 0 && !s.fac.library.site && (s.res.wood || 0) >= STEW_FB23.libWood) { /* loop157 P7：v23 有膳房、門人 ≥4（或清修山莊）、木 ≥5 就立藏經閣 */

@@ -1,5 +1,5 @@
 // v0.96 新局：主角建立畫面（經典模板／自創）、同門選擇、抉擇卡
-import { STATS, VALUES, Q9, HEROES, COMPANIONS, TRAITS, NEW_TRAITS, SECTS, HERO_SECT } from './data.mjs';
+import { STATS, VALUES, Q9, HEROES, COMPANIONS, TRAITS, NEW_TRAITS, SECTS, HERO_SECT, SECT_PICK24 } from './data.mjs';
 import { budgetOf, spent, validStats, defaultStats, readHeart, companionsFor, VALUE_NAMES, resolveChoice } from './hero.mjs';
 import { ARCH, archLabel, TYPES, typeLabel, mbtiPersonality, nearestType, MBTI_Q, quizResult } from './social.mjs';
 import { legacyBest } from './world.mjs';
@@ -27,7 +27,7 @@ export const ruleSpec = (st) => ({ v22: true, ...Object.fromEntries(STEWARD_KEYS
 export function buildSpec(st, bonus = 0) {
   const R = ruleSpec(st);
   if (st.tab === 'classic') return { kind: 'template', id: st.hero, companion: st.comp, askMajor: st.ask, xiaStyle: st.xia || 'all', ...R };
-  if (st.tab === 'custom') return { kind: 'custom', name: st.name, stats: st.stats, answers: st.ans, ...(st.mbti ? { mbti: st.mbti } : {}), ...(st.arch ? { arch: st.arch } : {}), ...R, companion: st.comp, askMajor: st.ask, bonus, xiaStyle: st.xia || 'all' };
+  if (st.tab === 'custom') return { kind: 'custom', name: st.name, ...(st.sect24 && st.sect24 !== 'wuming' ? { sect24: st.sect24 } : {}), stats: st.stats, answers: st.ans, ...(st.mbti ? { mbti: st.mbti } : {}), ...(st.arch ? { arch: st.arch } : {}), ...R, companion: st.comp, askMajor: st.ask, bonus, xiaStyle: st.xia || 'all' };
   return null;
 }
 const SUHUI = (() => { try { return legacyBest(localStorage); } catch { return 0; } })(); // v1.7 也讀存檔裡的宿慧
@@ -47,6 +47,7 @@ function render(el) {
   } else if (st.tab === 'custom') {
     const b = budgetOf(st.stats, SUHUI), left = b - spent(st.stats), r = readHeart(st.ans);
     h += `<div style="margin-top:8px">名字 <input id="st-name" value="${st.name}" maxlength="6"> 剩餘點數 <b>${left}</b>／${b}${st.stats.wu === 1 ? '（悟性 1：退 1 點，得「笨功夫」憨厚）' : ''}${SUHUI ? `　<b style="color:#9fd3ff">宿慧 +${SUHUI}（宿慧開局）</b>` : ''}<div>${STATS.map(([k, n]) => `<span class="stat">${n} <button data-st="${k}|-1">−</button> <b>${st.stats[k]}</b> <button data-st="${k}|1">＋</button></span>`).join('')}</div>`;
+    h += `<div class="q">開山道統／門派 <select id="custom-sect24">${SECT_PICK24.map((k) => `<option value="${k}" ${(st.sect24 || 'wuming') === k ? 'selected' : ''}>${k === 'wuming' ? '無名自創派' : SECTS[k].name}</option>`).join('')}</select></div>`; /* loop169 t190 待決 4 */
     h += archBlock(st);
     h += `<h3>九問問心</h3>${Q9.map((q, i) => `<div class="q">${i + 1}. ${q.q}：<select data-q9="${i}">${q.a.map((a, j) => `<option value="${j}" ${st.ans[i] === j ? 'selected' : ''}>${a[0]}</option>`).join('')}</select></div>`).join('')}`;
     h += mbtiBlock(st);
@@ -82,7 +83,7 @@ export function openStart(onStart) {
     if (t.id === 'st-ask') st.ask = t.checked;
     if (t.id === 'st-go') { const spec = buildSpec(st, SUHUI); el.remove(); onStart(spec); return; }
     render(el); });
-  el.addEventListener('change', (e) => { { const r = RULES.find(([id]) => e.target.id === `st-${id}`); if (r) st[r[1]] = e.target.checked; } if (e.target.dataset.q9) { st.ans[+e.target.dataset.q9] = +e.target.value; render(el); } if (e.target.id === 'st-name') st.name = e.target.value || '無名'; if (e.target.id === 'st-arch') { st.arch = e.target.value || ''; if (ARCH[st.arch]) st.stats = { ...ARCH[st.arch].stats }; render(el); } if (e.target.id === 'st-xia') st.xia = e.target.value; if (e.target.dataset.mm) { st.mbtiMode = e.target.dataset.mm; st.mbti = st.mbtiMode === 'quiz' ? quizResult(st.mq) || '' : st.mbtiMode === 'pick' ? st.mbti : ''; render(el); } if (e.target.dataset.mq) { st.mq[+e.target.dataset.mq] = e.target.value === '' ? null : +e.target.value; st.mbti = quizResult(st.mq) || ''; render(el); } if (e.target.id === 'st-mbti') { st.mbti = e.target.value; render(el); } });
+  el.addEventListener('change', (e) => { { const r = RULES.find(([id]) => e.target.id === `st-${id}`); if (r) st[r[1]] = e.target.checked; } if (e.target.dataset.q9) { st.ans[+e.target.dataset.q9] = +e.target.value; render(el); } if (e.target.id === 'st-name') st.name = e.target.value || '無名'; if (e.target.id === 'st-arch') { st.arch = e.target.value || ''; if (ARCH[st.arch]) st.stats = { ...ARCH[st.arch].stats }; render(el); } if (e.target.id === 'st-xia') st.xia = e.target.value; if (e.target.id === 'custom-sect24') st.sect24 = e.target.value; if (e.target.dataset.mm) { st.mbtiMode = e.target.dataset.mm; st.mbti = st.mbtiMode === 'quiz' ? quizResult(st.mq) || '' : st.mbtiMode === 'pick' ? st.mbti : ''; render(el); } if (e.target.dataset.mq) { st.mq[+e.target.dataset.mq] = e.target.value === '' ? null : +e.target.value; st.mbti = quizResult(st.mq) || ''; render(el); } if (e.target.id === 'st-mbti') { st.mbti = e.target.value; render(el); } });
 }
 export function choiceUI(S) {
   let el = document.getElementById('choice'); const ch = S.hero?.askMajor && S.choices?.[0];
