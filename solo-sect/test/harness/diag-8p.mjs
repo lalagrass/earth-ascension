@@ -18,3 +18,4 @@ console.log(`${bot ? 'bot' : 'idle'} seeds ${start}..${start + n - 1} days ${day
 for (const k of ['≤4', '5-7', '≥8']) { const b = B[k]; if (!b) continue;
   console.log(`[${k}] 快照 ${b.snaps} 人日 ${b.ds} 心情 ${(b.mood / b.ds).toFixed(1)} 低落 ${(100 * b.low / b.ds).toFixed(1)}% 傷 ${(100 * b.hurt / b.ds).toFixed(1)}% 錢 ${(b.coin / b.snaps).toFixed(0)}`);
   console.log('   扣分(每人日平均)：' + Object.entries(b.neg).sort((a, c) => a[1] - c[1]).slice(0, 8).map(([l, v]) => `${l} ${(v / b.ds).toFixed(2)}`).join(' | ')); }
+if (globalThis.process?.env?.DIAG_JSON) console.log('JSON ' + JSON.stringify({ B, reach })); /* loop61：給 par-8p.mjs 合併用 */
