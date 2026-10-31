@@ -80,3 +80,18 @@ test('loop162 Batch3：頓悟詞綴——大成時依雜湊得字訣，只得一
   assert.notEqual(A.affixMul(d, 'bs1', x.dmg ? 'dmg' : 'cd'), 1);
   const o = OLD(), h = hero(o); h.arts = { basicFist: { xp: 60 } }; assert.equal(A.affix24(o, h), null);
 });
+
+// ---- loop163 Batch 4 ----
+import { SECTS } from '../src/data.mjs';
+import { sgainOf } from '../src/sect.mjs';
+test('loop163 Batch4：五個新門派只在 v2.4 新局可指定；舊局給 sect24 仍走原門派', () => {
+  for (const k of ['emei', 'wudang', 'taohua', 'gumu', 'xingxiu']) { assert.ok(SECTS[k].v24); const s = V({ sect24: k }); assert.equal(s.sect.id, k);
+    for (const a of SECTS[k].tree) assert.ok(ARTS.find((x) => x.id === a), a); }
+  const o = createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, sect24: 'gumu' }); assert.equal(o.sect.id, 'wuming');
+  assert.equal(V().sect.id, 'wuming');
+});
+test('loop163 Batch4：古墓寒玉床——門人 ≤5 才 ×1.5', () => {
+  const s = V({ sect24: 'gumu' }); s.sect.fac = true; const n = s.ds.filter((d) => d.role !== 'laborer').length;
+  assert.equal(sgainOf(s), n <= 5 ? 1.5 : 1);
+  while (s.ds.filter((d) => d.role !== 'laborer').length <= 5) s.ds.push({ ...s.ds[0], id: 'x' + s.ds.length, role: 'disciple' }); assert.equal(sgainOf(s), 1);
+});

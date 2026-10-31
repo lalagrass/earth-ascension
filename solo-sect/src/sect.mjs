@@ -106,7 +106,7 @@ export function genResolve(s, ch, i) {
 // ==== （原 sect.mjs）====
 // v1.35 門派身分（ROADMAP §18）：門規、鎮派設施、招人風格、宿敵守關、名俠加權、外門武學、叛派
 export function sectOf(hero) {
-  const id = hero?.kind === 'template' ? HERO_SECT[hero.id] || 'wuming' : 'wuming', B = SECTS[id];
+  const id = SECTS[hero?.sect24]?.v24 ? hero.sect24 : hero?.kind === 'template' ? HERO_SECT[hero.id] || 'wuming' : 'wuming', B = SECTS[id]; /* loop163 v2.4 新門派只由 heroSpec.sect24 指定 */
   const o = { id, name: B.name, plaque: B.plaque, color: B.color, flag: B.flag, bias: { ...B.bias }, tree: [...B.tree], ban: [...B.ban], rules: [...B.rules], rivals: [...B.rivals], rep: 0, fac: false, viol: {}, violN: 0, lastViolT: -1e9, keptDay: 0, day: -1, questioned: {}, defect: {}, expelled: [], beaten: {}, rivalI: 0 };
   if (id === 'wuming' && hero?.kind === 'custom') { const [tag, rule] = CUSTOM_BY_VALUE[hero.main] || ['拙', 'rescue']; o.bias = { [tag]: SECT_K.biasCap }; o.rules = [rule]; o.rivals = [CUSTOM_RIVALS[(hero.name || '').length % CUSTOM_RIVALS.length]]; o.plaque = `${hero.name || '無名'}派`; o.name = o.plaque; }
   return o;
@@ -114,6 +114,8 @@ export function sectOf(hero) {
 export const sectInit = (s) => (s.sect = sectOf(s.hero));
 const heroD = (s) => s.ds.find((d) => d.id === 'hero');
 export const sectFac = (s) => SECTS[s.sect?.id]?.fac;
+/* loop163 古墓寒玉床：門人（不含幫工）≤ gainMaxDs 才有加成 */
+export const sgainOf = (s) => { const F = sectFac(s); if (!F?.gain) return 1; if (F.gainMaxDs && s.ds.filter((d) => d.role !== 'laborer').length > F.gainMaxDs) return 1; return F.gain; };
 // ---- 門規檢查（每日一次；違反只加違心，同條三天冷卻） ----
 export function ruleBroken(s, k) {
   const R = RULE_LIB[k]; if (!R || R.flavor) return null; const ds = s.ds.filter((d) => !d.away && d.role !== 'laborer');
@@ -177,6 +179,7 @@ export function sectRecruit(s, d) {
   const S = s.sect; if (!S) return; const R = SECTS[S.id].recruit || {};
   if (R.root) d.root = Math.min(5, d.root + R.root); if (R.wu) d.wu = Math.max(1, Math.min(5, (d.wu ?? d.root) + R.wu)); if (R.hp) d.hp = Math.min(d.hp, R.hp); if (R.mood) d.mood = Math.min(100, d.mood + R.mood);
   if (R.trait && !d.personality.includes(R.trait)) d.personality.push(R.trait); if (R.skill) d.skills[R.skill] = Math.min(100, d.skills[R.skill] + 6);
+  if (R.art24 && s.v24) { d.arts ??= {}; d.arts[R.art24] ??= { xp: 0, last: s.t }; } /* loop163 星宿派：新人帶《百毒譜》 */
   d.recruitNote = R.text; log(s, `【${S.name}收徒】${R.text}`);
 }
 // ---- 宿敵守關：第 2、4、6… 道關卡由宿敵門派把守；打贏得門派聲望 ----
@@ -191,7 +194,7 @@ export function favSort(s, keys) { const f = SECTS[s.sect?.id]?.fav || []; retur
 // ---- 每 tick ----
 export function sectStep(s) {
   if (!s.sect) return; const S = s.sect;
-  for (const d of s.ds) { d.sbias = S.bias; d.stree = S.tree; d.sgain = S.fac ? sectFac(s).gain || 1 : 1; }
+  for (const d of s.ds) { d.sbias = S.bias; d.stree = S.tree; d.sgain = S.fac ? sgainOf(s) : 1; }
   if (s.day === S.day) return; S.day = s.day; checkRules(s); checkArts(s); facDaily(s);
 }
 

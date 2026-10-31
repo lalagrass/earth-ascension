@@ -1495,3 +1495,7 @@
 - 做得好：共鳴與詞綴都接在既有 `moveMul`／`cdMul` 單一入口，巡獵、巡山、試煉自動一致；詞綴用雜湊不動 RNG 流。
 - 不好：封穴只能做成「敵人變慢」的批次近似；詞綴每 tick 掃一次武學（目前成本可忽略）。
 - 下一步：Batch 4 新門派。
+
+## Loop 163 — v2.4 Batch 4：五個新門派（決定 180–182）
+- `data.mjs` `SECTS` 加 emei／wudang／taohua／gumu／xingxiu（`v24:true`）；`sect.mjs` `sectOf` 認 `hero.sect24`、`sgainOf`（寒玉床人數門檻）、星宿新人帶《百毒譜》；`hero.mjs` 在 v22 新局把 `spec.sect24` 帶進 `s.hero`。
+- 測試：v24 +2 項（14 項）；golden-30d-v22 不變 `d672c6f90b1b3e17`。遊戲 728、sect-chronicle 383、Python 53。

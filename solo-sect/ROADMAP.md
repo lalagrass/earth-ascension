@@ -933,3 +933,4 @@ ART = { id, name, school: 'palm'|'leg'|'inner'|'step', grade: 1..5（凡良精�
 - Batch 1（loop160）：8 門公共武學（劍、刀、棍、手、兩門身法）、藏經閣圖譜三卷抄本。
 - Batch 2（loop161）：陰陽剛柔共鳴、奇門封穴（敵出手變慢）、陣法觸發計數。
 - Batch 3（loop162）：頓悟詞綴（迅／勁／綿）。
+- Batch 4（loop163）：峨眉、武當、桃花島、古墓、星宿五門派（`heroSpec.sect24` 指定；畫面入口待決）。
