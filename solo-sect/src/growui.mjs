@@ -1,5 +1,6 @@
 /* loop81 成長分層介面（純顯示，不寫世界狀態）：A 人物實力圖、B 門類造詣、C 個別武學。
    能力圖：固定 5 軸、固定順序、固定顯示基準（不是能力上限，也不按角色或全派最大值縮放）；不算面積。 */
+import { profOf, profMul, profLabel, nextLvXp, PROF } from './prof.mjs';
 import { ARTS, TIERS, ART_GAIN, ROOT, JH } from './data.mjs';
 import { effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf } from './arts.mjs';
 import { CATS, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW } from './growth.mjs';
@@ -64,9 +65,10 @@ export function artsGrowHtml(d, now = 0, grow = true) {
     const nxt = r && !a.layered && !a.forms && t < TIERS.length - 1 ? `・距${TIERS[t + 1][1]} ${(TIERS[t + 1][0] - r.xp).toFixed(1)}` : '';
     const moves = r ? `・招式 ${(a.techs || []).filter((m) => d.moves.includes(m)).length}/${(a.techs || []).length}` : '';
     const why = []; if (r && grow && st.st === 'acc') { const ac = accelOf(d, a, r.xp); if (ac.mul > 1) why.push(`${CATS[ac.cat].name}底子：入門修練 ×${ac.mul.toFixed(2)}`); else if (a.grade >= 3 && ac.cat) why.push('精品以上：同類底子不加速'); }
+    if (r && d.pf && !r.guizhen) { const p = profOf(r.xp), nx = nextLvXp(r.xp); why.push(p.lv ? `熟練度：招式威力 +${((profMul(r.xp) - 1) * 100).toFixed(1)}%（每重 +${(PROF.perLv * 100).toFixed(1)}%）${p.stuck ? '，卡瓶頸，突破後才升階' : nx != null && p.lv < PROF.lvs ? `，第${PROF.cn[p.lv + 1]}重 xp ${nx.toFixed(1)}` : `，滿十重，xp ${nx} 升${TIERS[p.t + 1][1]}`}` : '熟練度：化境不分重'); }
     if (r && rustOf(r, now) > 0.01) why.push(`荒疏 ${(rustOf(r, now) * 100).toFixed(0)}%`);
     if (r && Object.keys(ART_CAT[a.id] || {}).every((c) => CATS[c].sup === 'none')) why.push('門類尚未支援：不累積造詣');
-    return `<div class="k artgrow" data-artst="${st.st}">${f === a.id ? '◆主修 ' : ''}${a.name}（${cats}）${r ? `・${TIERS[t][1]} ${r.xp.toFixed(1)}${nxt}${moves}` : ''}・<b>${st.text}</b>${why.length ? `｜${why.join('；')}` : ''}</div>`; });
+    return `<div class="k artgrow" data-artst="${st.st}">${f === a.id ? '◆主修 ' : ''}${a.name}（${cats}）${r ? `・${d.pf && !r.guizhen ? `<span data-prof>${profLabel(r.xp)}</span>` : TIERS[t][1]} ${r.xp.toFixed(1)}${nxt}${moves}` : ''}・<b>${st.text}</b>${why.length ? `｜${why.join('；')}` : ''}</div>`; });
   return `<div class="grow-arts"><b>個別武學</b>${rows.join('')}</div>`;
 }
 /* loop85 規則說明：數字直接讀 GROW，不另寫 */
