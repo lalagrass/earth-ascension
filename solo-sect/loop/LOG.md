@@ -807,3 +807,9 @@
 - 來源：8 個可讀；OpenMW wiki Research:Trading_and_Services 無法讀取（Cloudflare 驗證、raw 502），依初稿摘要引用並標註。
 - 關鍵判斷：`skills.palm` 也驅動劍招傷害，不能當拳掌造詣；造詣改為武學紀錄上的有界貢獻加總（衍生值，不另存門類值）。
 - Mini retro：先把「不能做什麼」寫清楚（內力、攻防、六軸），後面實作範圍才小。
+
+## Loop 78 — 成長門類 metadata、造詣結算入口（純函式，尚未接線）
+- 計畫：新增 `src/growth.mjs`（門類、ART_CAT 映射、`mastery` 衍生值、`settleGrowth` 單一入口、`accelOf`、`growInit`）與 `docs/GROWTH-INVENTORY.md`（能力盤點、造詣結算表）。不接進模擬，golden 不變。
+- 預估：純函式，0 行為變動。
+- 驗證：`test/loop78-growcat.test.mjs` 11 項（映射完整、劍法不歸拳掌、醫毒分列、上限、瓶頸不給、里程碑一次、戰鬥權重、加速只看他門、冪等）。
+- Mini retro：把 skills.palm 的實際用途查清（劍招也用）是這輪最重要的事。
