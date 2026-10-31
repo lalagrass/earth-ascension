@@ -555,6 +555,32 @@ export const flows = [
     },
   },
   {
+    name: 'm25-history',
+    async run(page, expect, { shot }) {
+      await page.click('[data-template="qiaofeng"]');
+      await page.fill('#seed', '3');
+      await page.click('#begin');
+      await page.click('[data-events-group="history"]');
+      await page.click('[data-speed="16"]');
+      // 輪詢畫面上的大事（不拿整份 snapshot，免得拖慢遊戲）。
+      await page.waitForFunction(() => new Set([...document.querySelectorAll('[data-history-highlights] p')].map((p) => p.dataset.kind)).size >= 5, null, { timeout: 600000, polling: 2000 });
+      await page.click('[data-speed="0"]');
+      await wait(page, 300);
+      const s = await snap(page);
+      const kinds = await page.$$eval('[data-history-highlights] p', (ps) => [...new Set(ps.map((p) => p.dataset.kind))]);
+      expect('A5 大事 ≥ 5 種', kinds.length >= 5, kinds.join('、'));
+      const lives = await page.$$eval('[data-history-lives] p', (ps) => ps.length);
+      const members = s.people.filter((p) => !p.guest).length;
+      expect('A5 每位同門一句生平', lives === members, `${lives}/${members}`);
+      const rows = await page.$$eval('[data-history-trend] tr', (rs) => rs.length - 1);
+      expect('A5 走勢每日一列', rows === Math.floor(s.tick / 1440) + 1, `${rows} 列`);
+      const wide = await page.$eval('#history', (d) => d.scrollWidth - d.clientWidth);
+      expect('A5 門派史不橫向溢出', wide <= 0, `${wide}px`);
+      await page.$eval('#history', (d) => d.scrollIntoView());
+      await shot('history');
+    },
+  },
+  {
     // M23 報仇：拆了野豬窩，第三日野豬王帶兩頭野豬來；頭上有名字、紀事寫報仇。
     name: 'm23-boss',
     async run(page, expect, { shot }) {

@@ -2,7 +2,7 @@ import { QUESTIONS, ATTRS, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, TEMPLATES, AXES, TRAI
 import { axesFromAnswers, typeOf, validateAttrs, traitsOf } from './person.mjs';
 import { createWorld, step, clock, companionsFor, placeBlueprint, cancelSite, setFocus, startExpedition, startTrial, canTrial } from './sim.mjs';
 import { canLaunch } from './expedition.mjs';
-import { LIFE_CATS, lifeShares, habitText, personEvents, EVENT_GROUPS, eventsIn, sectStats } from './chronicle.mjs';
+import { LIFE_CATS, lifeShares, habitText, personEvents, EVENT_GROUPS, eventsIn, sectStats, sectHistory, TREND_COLS } from './chronicle.mjs';
 import { blueprint } from './build.mjs';
 import { effectText } from './skills.mjs';
 import { aff, stageOf, prestige, kinOf, bondLabel } from './social.mjs';
@@ -192,13 +192,30 @@ let evGroup = 'all';
 function renderChronicle() {
   const list = eventsIn(state, evGroup).slice(-12).reverse();
   return el('div', { id: 'chronicle' }, el('h3', {}, '紀事'),
-    el('div', { class: 'tabs' }, ...EVENT_GROUPS.map((g) => el('button', { class: evGroup === g.id ? 'on' : '', 'data-events-group': g.id, on: { click: () => { evGroup = g.id; renderBuild(); } } }, g.label))),
-    el('div', { id: 'events' }, ...list.map((e) => el('p', { 'data-kind': e.kind }, `${dayText(e.tick)} ${e.text}`)), ...(list.length ? [] : [el('p', { class: 'hint' }, '還沒有這類紀事。')])),
+    el('div', { class: 'tabs' }, ...[...EVENT_GROUPS, { id: 'history', label: '門派史' }].map((g) => el('button', { class: evGroup === g.id ? 'on' : '', 'data-events-group': g.id, on: { click: () => { evGroup = g.id; renderBuild(); } } }, g.label))),
+    evGroup === 'history' ? renderHistory()
+      : el('div', { id: 'events' }, ...list.map((e) => el('p', { 'data-kind': e.kind }, `${dayText(e.tick)} ${e.text}`)), ...(list.length ? [] : [el('p', { class: 'hint' }, '還沒有這類紀事。')])),
     // M18 值日（試做中，預設關）：打開後門派自動排伙房、採集、柴火。
     el('div', { class: 'duty' }, el('button', { class: DUTY.ON ? 'on' : '', 'data-duty-toggle': '', on: { click: () => { DUTY.ON = !DUTY.ON; if (DUTY.ON) assignDuty(state); else state.duty = {}; renderBuild(); renderRoster(); } } },
       DUTY.ON ? '值日：開' : '值日：關（試做中）'),
     el('small', { 'data-duty-text': '' }, DUTY.ON ? dutyText(state) : '打開後，門派每日排伙房、採集、柴火各一人')),
     el('table', { class: 'stats', 'data-stats': '' }, ...sectStats(state).map(([k, v]) => el('tr', {}, el('td', {}, k), el('td', {}, v)))));
+}
+
+// M25 門派史：大事、每人一句生平、每日走勢（每格的條長是那日的件數）。
+function renderHistory() {
+  const h = sectHistory(state);
+  const top = Math.max(1, ...h.trend.flatMap((r) => TREND_COLS.map((c) => r[c.id])));
+  return el('div', { id: 'history', 'data-history': '' },
+    el('h4', {}, '大事'),
+    el('div', { 'data-history-highlights': '' }, ...h.highlights.map((e) => el('p', { 'data-kind': e.kind }, `${dayText(e.tick)} ${e.text}`))),
+    el('h4', {}, '生平'),
+    el('div', { 'data-history-lives': '' }, ...h.lives.map((l) => el('p', { 'data-life-of': l.id }, l.text))),
+    el('h4', {}, '走勢'),
+    el('table', { class: 'trend', 'data-history-trend': '' },
+      el('tr', {}, el('th', {}, '日'), ...TREND_COLS.map((c) => el('th', {}, c.label))),
+      ...h.trend.map((r) => el('tr', {}, el('td', {}, String(r.day)), ...TREND_COLS.map((c) => el('td', {},
+        el('i', { style: `width:${Math.round(100 * r[c.id] / top)}%` }), el('span', {}, r[c.id] ? String(r[c.id]) : '')))))));
 }
 
 // M9 遠征面板：兩處巢穴、會去的人或擋住的原因、出發中的隊伍在哪一階段。

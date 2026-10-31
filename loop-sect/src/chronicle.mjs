@@ -76,3 +76,58 @@ export function sectStats(state) {
     ['拆掉的巢', `${state.nests.filter((x) => x.cleared).length} 處`],
   ];
 }
+
+// M25 門派史：大事（每種第一次＋每次頭目報仇）、每位同門一句生平、每日走勢。只讀 state。
+export const HIGHLIGHT_KINDS = ['built', 'join', 'found', 'repel', 'move', 'master', 'family', 'breach', 'repair', 'exp', 'cleared', 'farm', 'trial', 'hurt', 'stolen'];
+export const TREND_COLS = [
+  { id: 'built', label: '完工', kinds: ['built'] },
+  { id: 'raid', label: '來犯', kinds: ['raid'] },
+  { id: 'repel', label: '打退', kinds: ['repel'] },
+  { id: 'move', label: '領悟', kinds: ['move'] },
+  { id: 'join', label: '留下', kinds: ['join'] },
+];
+const isBoss = (e) => e.kind === 'raid' && /來報仇/.test(e.text);
+const nameOf = (state, id) => state.people.find((x) => x.id === id)?.name;
+
+export function highlights(state) {
+  const seen = new Set();
+  return state.events.filter((e) => {
+    if (isBoss(e)) return true;
+    if (!HIGHLIGHT_KINDS.includes(e.kind) || seen.has(e.kind)) return false;
+    seen.add(e.kind);
+    return true;
+  });
+}
+
+export function biography(state, p) {
+  const evs = personEvents(state, p);
+  const bits = [];
+  const joined = evs.find((e) => e.kind === 'join');
+  bits.push(joined ? `${Math.floor(joined.tick / TICKS_PER_DAY) + 1}日上山留下` : '開山就在');
+  const m = p.master && nameOf(state, p.master);
+  if (m) bits.push(`拜${m}為師`);
+  const learned = evs.filter((e) => e.kind === 'move' && e.who?.[0] === p.id).map((e) => e.text.replace(/^.*(領悟了|學會了)/, ''));
+  if (learned.length) bits.push(`學會${learned.join('、')}`);
+  const fam = evs.find((e) => e.kind === 'family');
+  if (fam && p.kin) bits.push(fam.text);
+  bits.push(habitText(state, p));
+  return `${p.name}：${bits.join('；')}`;
+}
+
+export function trend(state) {
+  const days = Math.floor(state.tick / TICKS_PER_DAY) + 1;
+  const rows = Array.from({ length: days }, (_, d) => ({ day: d + 1, ...Object.fromEntries(TREND_COLS.map((c) => [c.id, 0])) }));
+  for (const e of state.events) {
+    const c = TREND_COLS.find((x) => x.kinds.includes(e.kind));
+    if (c) rows[Math.min(days - 1, Math.floor(e.tick / TICKS_PER_DAY))][c.id]++;
+  }
+  return rows;
+}
+
+export function sectHistory(state) {
+  return {
+    highlights: highlights(state),
+    lives: state.people.filter((p) => !p.guest).map((p) => ({ id: p.id, text: biography(state, p) })),
+    trend: trend(state),
+  };
+}

@@ -98,3 +98,10 @@ table.stats td:last-child { text-align: right; }
 .forms { display: flex; gap: 6px; flex-wrap: wrap; }
 .forms figure { margin: 0; text-align: center; font-size: 12px; color: var(--muted); }
 .forms canvas { display: block; width: 60px; height: 37px; border-radius: 4px; }
+#history h4 { margin: 6px 0 2px; font-size: 13px; }
+#history p { margin: 2px 0; font-size: 12px; line-height: 1.4; }
+table.trend { width: 100%; font-size: 11px; border-collapse: collapse; }
+table.trend th { font-weight: normal; color: var(--muted); }
+table.trend td { position: relative; padding: 0 2px; height: 14px; border-bottom: 1px dotted var(--line); }
+table.trend td i { position: absolute; left: 0; top: 3px; bottom: 3px; background: #c9a77a; opacity: .6; }
+table.trend td span { position: relative; }
