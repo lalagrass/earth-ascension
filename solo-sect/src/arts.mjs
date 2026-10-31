@@ -30,6 +30,7 @@ export const ART_CAT = {
   wudangJiuyang: { neigong: 1 }, wudangFist: { quanzhang: 1 }, rouyunSword: { jianfa: 1 }, taijiSword: { jianfa: 1 }, biboXinfa: { neigong: 0.7, qimen: 0.3 }, luoyingPalm: { quanzhang: 0.7, jianfa: 0.3 }, lanhuaHand: { quanzhang: 0.5, qimen: 0.5 }, yuxiaoSword: { jianfa: 0.7, qimen: 0.3 },
   tianluoPalm: { quanzhang: 0.6, shenfa: 0.4 }, yunvSword: { jianfa: 1 }, huagongDafa: { neigong: 0.6, dushu: 0.4 }, chousuiPalm: { quanzhang: 0.5, dushu: 0.5 }, sanyinClaw: { quanzhang: 0.5, dushu: 0.5 },
   huashanXinfa: { neigong: 1 }, pishiFist: { quanzhang: 1 }, hunyuanPalm: { quanzhang: 0.7, neigong: 0.3 }, kuangfengSword: { jianfa: 1 }, wudangXinfa: { neigong: 1 }, mianPalm: { quanzhang: 1 }, /* loop172 v2.6 */
+  huntianGong: { neigong: 1 }, xiaoyaoStep: { shenfa: 1 }, lianhuaPalm: { quanzhang: 1 }, fengmoStaff: { gunbang: 1 }, shenghuoXinfa: { neigong: 1 }, qingfuStep: { shenfa: 1 }, yingzhuaHand: { quanzhang: 0.7, qimen: 0.3 }, qishangFist: { quanzhang: 1 }, /* loop173 v2.6 */
   qimenZhen: { zhenfa: 0.8, qimen: 0.2 }, xingxiuDu: { dushu: 1 }, yaowang: { yishu: 1 }, /* loop150 v2.3 專長招牌 */
 };
 export const GROW = {
