@@ -1,10 +1,10 @@
 {
-  "loopVersion": 10,
-  "loopsDone": 29,
+  "loopVersion": 11,
+  "loopsDone": 30,
   "retroEvery": 3,
-  "lastRetro": "docs/RETRO-09.md",
+  "lastRetro": "docs/RETRO-10.md",
   "lastCommit": "d2e9b8c",
-  "nextMilestone": "M20b 三十日長跑與總結（loop 30）",
+  "nextMilestone": null,
   "inProgress": {
     "paused": [
       {
@@ -117,7 +117,7 @@
     "三十日後半的領悟只有前半的兩成：武學在第 15 日前後學完（M23 的三十日長跑）",
     "門派史的生平：二十日後幾乎每人都學會全部五招，生平分不出武學強弱（M25）"
   ],
-  "stopReason": null,
+  "stopReason": "授權的三十輪做完（N=30）；等擁有人看總結 docs/SUMMARY.md 再決定下一步",
   "targetLoops": 30,
   "authorizedBy": "owner 2026-10-30T14:22Z: N=30, K=3"
 }
