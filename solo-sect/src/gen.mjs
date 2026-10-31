@@ -50,6 +50,8 @@ export function adoptCard(s) {
   s.choices.push({ id: `gen-adopt-${Math.floor(s.t)}`, gen: 'adopt', pair: c, title: '【收養】山門口的孤兒', text: `山下鬧了饑荒，一個孩子蹲在山門口。${a.name}和${b.name}對看一眼：「要不……我們養吧？」（糧 −${GEN.adoptFood}）`, opts: ['收養，跟著我們姓', '送去山下善堂'], portrait: null, at: s.t });
   if (!s.hero?.askMajor) s.autoAt = s.t;
 }
+/* loop72：收養卡後果說明（純顯示，只寫玩家看得到的結果） */
+export const genHints = (ch) => (ch?.gen === 'adopt' ? [`糧 −${GEN.adoptFood}；多一個孩子：佔床位、要吃飯，長大才能正式練功`, '孩子送去善堂；過一陣子才會再有收養的機會'] : null);
 // ---- 衣缽 ----
 export const heirArt = (d) => Object.keys(d.arts || {}).find((k) => artTier(d, k) >= 4 || d.arts[k].guizhen);
 export const canSucceed = (s) => { const h = hero(s); if (!h || !heirArt(h)) return { ok: false, why: '掌門還沒有任何一門武學到化境' }; if (!heirs(s).length) return { ok: false, why: '沒有成年的內門弟子可傳' }; return { ok: true }; };

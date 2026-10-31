@@ -8,6 +8,7 @@ import { TYPES, typeLabel, mbtiPersonality, nearestType, MBTI_Q, quizResult } fr
 import { legacyBest } from './slice.mjs';
 import { SECTS, HERO_SECT } from './sect-data.mjs';
 import { xiaHints } from './wuxia.mjs'; /* loop68 */
+import { genHints } from './gen.mjs'; /* loop72 */
 const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index:50;overflow:auto;color:#f3e7cf;font:14px/1.5 serif}
 #start .box{max-width:1640px;margin:8px auto;padding:14px 20px;background:#2b2118;border:2px solid #a07a44;border-radius:10px}
 #start h1{margin:0 0 6px;font-size:24px}#start .tabs button{font-size:15px;margin-right:6px}#start .tabs .on{background:#c9a061;color:#2b2118}
@@ -109,7 +110,7 @@ export function choiceUI(S) {
   let el = document.getElementById('choice'); const ch = S.hero?.askMajor && S.choices?.[0];
   if (!ch) { el?.remove(); return false; }
   if (el?.dataset.id === ch.id) return true;
-  el?.remove(); el = document.createElement('div'); el.id = 'choice'; el.dataset.id = ch.id; const hints = S.jhui ? xiaHints(ch) : null; /* loop68：奇遇卡後果說明（隨江湖面板開關） */
+  el?.remove(); el = document.createElement('div'); el.id = 'choice'; el.dataset.id = ch.id; const hints = S.jhui ? xiaHints(ch) || genHints(ch) : null; /* loop72 收養卡 */ /* loop68：奇遇卡後果說明（隨江湖面板開關） */
   el.innerHTML = `${ch.portrait ? `<img src="${ch.portrait}" style="float:left;width:72px;height:96px;object-fit:cover;border-radius:6px;margin:0 10px 6px 0;border:1px solid #b89" onerror="this.remove()">` : ''}<b>【抉擇】${ch.title}</b><p>${ch.text}</p>${ch.opts.map((o, i) => `<button data-pick="${i}">${o}</button>${hints?.[i] ? `<div class="small" data-hint="${i}">→ ${hints[i]}</div>` : ''}`).join('')}<div class="small">本心：${valLine(S.hero.values)}（違背主價值會添一層違心）</div>`;
   el.onclick = (e) => { const b = e.target.closest('[data-pick]'); if (!b) return; resolveChoice(S, ch.id, +b.dataset.pick); el.remove(); };
   document.body.appendChild(el); return true;
