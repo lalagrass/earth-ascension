@@ -3,9 +3,10 @@ import { createState, tick, canRecruit, recruit, startBuild } from '../../src/si
 export const ALL_ON = { draw: true, comprehend: true, mentor: true, peace: true, jhev: true, bt25: true, lift: true, lairpow: true, steward: true, jhui: true, qshare: true, jhrefuse: true, mfit: true, cropcare: true, letterask: true, mpool: true, cotrain: true };
 export function botDaily(s) { try { startBuild(s, 'dorm'); } catch { /* 無料或已在蓋 */ } const c = canRecruit(s); if (c.ok) { recruit(s); return true; } return false; }
 // run(seed, spec, days, bot, onTick) → state
+const DT = +(globalThis.process?.env?.SS_DT || 6), PER = Math.round(600 / DT); /* loop57：SS_DT 環境變數改步長（遊戲實際 0.25；預設 6 求快） */
 export function run(seed, spec, days = 60, bot = false, onTick) {
   const s = createState(seed, { kind: 'custom', answers: Array(9).fill(0), ...ALL_ON, ...spec }); let day = s.day;
-  for (let i = 0; i < days * 100; i++) { tick(s, 6); onTick?.(s); if (bot && s.day !== day) { day = s.day; botDaily(s); } }
+  for (let i = 0; i < days * PER; i++) { tick(s, DT); onTick?.(s); if (bot && s.day !== day) { day = s.day; botDaily(s); } }
   return s;
 }
 
