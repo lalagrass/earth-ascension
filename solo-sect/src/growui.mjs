@@ -1,6 +1,6 @@
 /* loop81 成長分層介面（純顯示，不寫世界狀態）：A 人物實力圖、B 門類造詣、C 個別武學。
    能力圖：固定 5 軸、固定順序、固定顯示基準（不是能力上限，也不按角色或全派最大值縮放）；不算面積。 */
-import { ARTS, TIERS, ART_GAIN, ROOT } from './data.mjs';
+import { ARTS, TIERS, ART_GAIN, ROOT, JH } from './data.mjs';
 import { effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf } from './arts.mjs';
 import { CATS, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW } from './growth.mjs';
 export const AXES = [
@@ -69,4 +69,13 @@ export function artsGrowHtml(d, now = 0, grow = true) {
     return `<div class="k artgrow" data-artst="${st.st}">${f === a.id ? '◆主修 ' : ''}${a.name}（${cats}）${r ? `・${TIERS[t][1]} ${r.xp.toFixed(1)}${nxt}${moves}` : ''}・<b>${st.text}</b>${why.length ? `｜${why.join('；')}` : ''}</div>`; });
   return `<div class="grow-arts"><b>個別武學</b>${rows.join('')}</div>`;
 }
-export const growthHtml = (d, memo, day, now, grow) => powerHtml(d, memo, day, now) + catHtml(d) + artsGrowHtml(d, now, grow);
+/* loop85 規則說明：數字直接讀 GROW，不另寫 */
+export function rulesHtml() { const G = GROW, A = G.acc;
+  return `<details class="grow-rules" data-keep="grow-rules"><summary>造詣怎麼算（本版規則）</summary><div class="k">`
+    + `修練：熟練真的有長才算，每單位投入 ×${G.k}；對敵命中 ×${G.src.fight}（修練的 ${G.src.fight} 倍）；師父傳功每門一次 +${G.pass}。<br>`
+    + `里程碑：自然練到小成 +${G.ms[0][1]}、打坐破大成 +${G.ms[1][1]}、破化境 +${G.ms[2][1]}。<br>`
+    + `每門上限：入門 ${G.cap[1]}、普通 ${G.cap[2]}、精品 ${G.cap[3]}、絕學 ${G.cap[4]}；門類合計最多 100。開局已有的熟練一次折算 ×${G.init}。<br>`
+    + `加速：只看「其他」同類武學的造詣，只加在入門與普通武學、熟練 ${A.fade} 以前，最多 ×${A.max}；瓶頸照樣要打坐。<br>`
+    + `不給造詣：求學、高人指點、劇情直接給的熟練；瓶頸冷卻中、已練滿再練。<br>`
+    + `其他本版規則：悟性不足的武學止於小成；左右互搏大成後威力 ×${JH.twin}（算在江湖倍率，不算進圖）。造詣不加傷害。</div></details>`; }
+export const growthHtml = (d, memo, day, now, grow) => powerHtml(d, memo, day, now) + catHtml(d) + artsGrowHtml(d, now, grow) + rulesHtml();
