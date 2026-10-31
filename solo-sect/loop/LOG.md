@@ -865,3 +865,11 @@
 - 好：介面全部建立在既有判斷函式上；純度測試用整個狀態 JSON 比對，最直接。
 - 不好：測試裡把迴風掌的 id 寫錯、瓶頸門檻記錯，各浪費一次測試。先查 data 再寫。
 - 下一步：無頭瀏覽器截圖驗證介面。
+
+## Loop 83 — 無頭瀏覽器驗證介面
+- 計畫：本機腳本（`/tmp/growshot/shoot-grow.mjs`，不進 repo）用無頭 Chrome 開經典開局，驗證預設勾選、重繪與切換人物不改世界、換日合併提示、狀態分辨、減少動態、關閉開關，並截 4 張圖。
+- 預估：全部通過，無頁面錯誤。
+- 實測：預設開啟 true；重繪 5 次＋切換人物後 `JSON.stringify(S)` 相同；換日提示「第 2 日成長：掌 +25.2、力氣 +1.7、腳力 +2.2」且有動畫 class；狀態列出 冷卻中／已達瓶頸／正在累積／缺前置；reduced-motion 下 animationName＝none（一般為 polyOut）；關閉開關不顯示；頁面錯誤 0。
+- 截圖（`shots/` 在 .gitignore，只留本機 `/workspace/ss-loop1/solo-sect/shots/`）：`shots/loop83-01-grow-normal.png`、`-02-grow-daily.png`、`-03-grow-states.png`、`-04-grow-off.png`。
+- 修正：右欄只有約 200px，五軸圖左右標籤被裁，改成 viewBox 加邊、寬度 100%。另外截圖腳本第一次把「大成瓶頸」設成 bt1＝true（那是已突破），畫面顯示正在累積是對的，腳本錯。
+- Mini retro：「照舊」開局不帶任何新規則（spec＝null），驗證要用經典或自創開局。

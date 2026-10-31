@@ -19,7 +19,7 @@ export function polySvg(d, now = 0, cls = '') {
   const grid = [0.25, 0.5, 0.75, 1].map((f) => `<polygon points="${AXES.map((_, i) => P(i, f).join(',')).join(' ')}" fill="none" stroke="#ccc" stroke-width="${f === 1 ? 1.2 : 0.6}"/>`).join('');
   const spokes = AXES.map((_, i) => `<line x1="${C}" y1="${C}" x2="${P(i, 1)[0]}" y2="${P(i, 1)[1]}" stroke="#ddd"/>`).join('');
   const labels = AXES.map((x, i) => { const [lx, ly] = P(i, 1.28), over = vals[i] > x.hi; return `<text x="${lx}" y="${ly}" font-size="10" text-anchor="middle" dominant-baseline="middle"${over ? ' fill="#b0482e"' : ''}>${x.name} ${fmtV(x, vals[i])}${over ? '▲' : ''}</text>`; }).join('');
-  return `<svg class="poly ${cls}" viewBox="0 0 180 180" width="180" height="180" role="img" aria-label="人物實力：${AXES.map((x, i) => `${x.name}${fmtV(x, vals[i])}`).join('、')}">${grid}${spokes}<polygon class="poly-shape" points="${fr.map((f, i) => P(i, f).join(',')).join(' ')}" fill="#7a9a5a" fill-opacity="0.18" stroke="#5a7a3a" stroke-width="1.6"/>${labels}</svg>`;
+  return `<svg class="poly ${cls}" viewBox="-34 0 248 180" style="width:100%;max-width:248px;height:auto" role="img" aria-label="人物實力：${AXES.map((x, i) => `${x.name}${fmtV(x, vals[i])}`).join('、')}">${grid}${spokes}<polygon class="poly-shape" points="${fr.map((f, i) => P(i, f).join(',')).join(' ')}" fill="#7a9a5a" fill-opacity="0.18" stroke="#5a7a3a" stroke-width="1.6"/>${labels}</svg>`;
 }
 /* 合併成長提示：UI 記憶（不存檔）。換日時比較前一日起點，只有真的成長才回傳 anim＝true 與提示字串 */
 export function dailyGrowth(memo, d, day, now = 0) {
