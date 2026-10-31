@@ -89,6 +89,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.mpool) s.mpool = true; /* loop55 高人殘譜 */
   if (heroSpec?.cotrain) s.cotrain = true; /* loop56 同修作伴 */
   if (heroSpec?.grow) s.grow = true; /* loop79 成長分層 */
+  if (heroSpec?.stewyard) s.stewyard = true; /* loop95 執事立樁 */
   if (heroSpec?.prof) s.prof = true; /* loop91 熟練度十重 */
   if (heroSpec?.cofun) s.cofun = true; /* loop62 有伴解悶 */
   if (heroSpec?.longwatch) s.longwatch = true; /* loop67 哨崗久守 */
