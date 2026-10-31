@@ -30,3 +30,9 @@ test('loop151 陣法：守柵時柵受傷減少（封頂 25%）', () => {
   assert.equal(SPEC.zhenMit, 0.25); const s = V(); tick(s, 0.1); hero(s).arts.qimenZhen = { xp: 99, gm: { e: 55, ms: 0 } };
   assert.ok(zhenK(s) === 1);
 });
+import * as PU from '../src/panel-ui.mjs';
+test('loop152 角色卡門類造詣：v23 顯示專長效果說明，舊局仍標尚未支援', () => {
+  const f = Object.values(PU).find((x) => typeof x === 'function' && /SPEC_TIP/.test(String(x))); assert.ok(f);
+  const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'yaowang', s.t); d.arts.yaowang.gm = { e: 20, ms: 0 };
+  assert.match(f(d), /醫術：療傷回復/); const o = OLD(); tick(o, 0.1); assert.match(f(hero(o)), /尚未支援/);
+});
