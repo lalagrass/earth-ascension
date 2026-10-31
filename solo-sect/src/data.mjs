@@ -397,6 +397,32 @@ export const ARTS = [
   { id: 'snowStep', name: '踏雪步', school: 'step', grade: 1, tags: ['巧'], req: [{ art: 'sweepLeg', tier: 1 }], tech: null, techs: ['輕身', '踏雪無痕', '凌空步'], effect: 'speed' },
   { id: 'fengLei', name: '風雷掌腿', school: 'palm', grade: 3, tags: ['剛'], req: [{ art: 'wavePalm', tier: 2 }, { art: 'whirlLeg', tier: 2 }], techs: ['storm', 'storm2', 'storm3'], tech: 'storm', wuxingMin: 3 },
 ];
+/* loop160 v2.4 Batch 1：公共基礎武學擴充（v24:true＝只有 v2.4 新局的人看得到、學得到；舊局與舊 golden 不受影響）。
+   attr＝陰陽屬性（Batch 2 共鳴用）；weapon＝兵器（劍判定用）；svg＝武學圖格位 [欄, 列]（避免和舊圖重疊） */
+ARTS.push(
+  { id: 'basicSword', name: '基礎劍法', school: 'palm', grade: 1, tags: ['巧'], weapon: 'sword', attr: 'he', req: [], techs: ['bs1', 'bs2'], tech: 'bs1', v24: true, svg: [0, 5] },
+  { id: 'huashanSword', name: '華山劍法', school: 'palm', grade: 2, tags: ['巧'], weapon: 'sword', attr: 'yang', req: [{ art: 'basicSword', tier: 1 }], techs: ['hs1', 'hs2'], tech: 'hs1', v24: true, svg: [1, 5] },
+  { id: 'sanxianSword', name: '奪命連環三仙劍', school: 'palm', grade: 3, tags: ['快', '巧'], weapon: 'sword', attr: 'yin', req: [{ art: 'huashanSword', tier: 2 }], techs: ['sx1', 'sx2'], tech: 'sx1', v24: true, svg: [2, 5] },
+  { id: 'wuhuBlade', name: '五虎斷門刀', school: 'palm', grade: 2, tags: ['剛'], weapon: 'blade', attr: 'yang', req: [{ art: 'basicFist', tier: 1 }], techs: ['wh1', 'wh2'], tech: 'wh1', v24: true, svg: [1, 6] },
+  { id: 'shaolinStaff', name: '少林棍法', school: 'leg', grade: 2, tags: ['剛', '拙'], weapon: 'staff', attr: 'yang', req: [{ art: 'sweepLeg', tier: 1 }], techs: ['sl1', 'sl2'], tech: 'sl1', v24: true, svg: [2, 6] },
+  { id: 'tuinaHand', name: '分筋錯骨手', school: 'palm', grade: 2, tags: ['巧'], attr: 'yin', req: [{ art: 'basicFist', tier: 1 }], techs: ['tn1', 'tn2'], tech: 'tn1', v24: true, svg: [0, 6] },
+  { id: 'stepFeather', name: '飛絮身法', school: 'step', grade: 2, tags: ['巧', '柔'], effect: 'speed', attr: 'yin', req: [{ art: 'snowStep', tier: 1 }], tech: null, techs: ['飄絮', '迴風'], v24: true, svg: [1, 7] },
+  { id: 'stepEight', name: '八卦遊龍步', school: 'step', grade: 2, tags: ['巧'], effect: 'speed', attr: 'he', req: [{ art: 'snowStep', tier: 1 }], tech: null, techs: ['走圈', '遊龍'], v24: true, svg: [2, 7] },
+);
+/* loop160 Batch 1.2：藏經閣「圖譜」——v2.4 讀書時可能撿到的輔助抄本（secret：不進一般學習池；只在 study 完成時取得） */
+ARTS.push(
+  { id: 'zhenTu', name: '陣圖殘篇', school: 'palm', grade: 1, tags: ['巧'], req: [], techs: [], tech: null, secret: true, v24: true, hint: '藏經閣讀書時偶得', svg: [0, 7] },
+  { id: 'yiJing', name: '醫經抄本', school: 'palm', grade: 1, tags: ['柔'], req: [], techs: [], tech: null, secret: true, v24: true, hint: '藏經閣讀書時偶得', svg: [0, 7] },
+  { id: 'duPu', name: '百毒譜', school: 'palm', grade: 1, tags: ['巧'], req: [], techs: [], tech: null, secret: true, v24: true, hint: '藏經閣讀書時偶得', svg: [0, 7] },
+);
+MOVES.push(
+  { id: 'bs1', skill: 'palm', name: '刺劍式', req: 0, range: 44, cd: 1.0, dmg: 6, aoe: 0, color: '#9fb4c8' }, { id: 'bs2', skill: 'palm', name: '撩劍式', req: 0, range: 48, cd: 1.4, dmg: 9, aoe: 0, color: '#8fa4b8' },
+  { id: 'hs1', skill: 'palm', name: '白虹貫日', req: 0, range: 60, cd: 1.5, dmg: 12, aoe: 0, color: '#c8d8e8' }, { id: 'hs2', skill: 'palm', name: '蒼松迎客', req: 0, range: 56, cd: 2.0, dmg: 14, aoe: 40, color: '#6a8a6a' },
+  { id: 'sx1', skill: 'palm', name: '三仙連環', req: 0, range: 58, cd: 1.0, dmg: 13, aoe: 0, color: '#b0a0d0' }, { id: 'sx2', skill: 'palm', name: '奪命三連', req: 0, range: 64, cd: 1.8, dmg: 20, aoe: 50, color: '#9080c0' },
+  { id: 'wh1', skill: 'palm', name: '猛虎下山', req: 0, range: 50, cd: 1.6, dmg: 12, aoe: 30, color: '#c07030' }, { id: 'wh2', skill: 'palm', name: '斷門一刀', req: 0, range: 56, cd: 2.2, dmg: 17, aoe: 50, color: '#a05020' },
+  { id: 'sl1', skill: 'leg', name: '橫掃千軍', req: 0, range: 60, cd: 1.8, dmg: 11, aoe: 60, color: '#b09040' }, { id: 'sl2', skill: 'leg', name: '韋陀獻杵', req: 0, range: 66, cd: 2.4, dmg: 15, aoe: 70, color: '#907020' },
+  { id: 'tn1', skill: 'palm', name: '錯骨', req: 0, range: 36, cd: 1.1, dmg: 9, aoe: 0, color: '#8a6aa0' }, { id: 'tn2', skill: 'palm', name: '分筋', req: 0, range: 38, cd: 1.6, dmg: 12, aoe: 0, color: '#7a5a90' },
+);
 // 悟性（根骨）× 品階：低悟性練凡階更快（笨功夫），高悟性練高階更快
 export const WUXING_MUL = { 1: [1.4, 0.7], 2: [1.2, 0.85], 3: [1, 1], 4: [0.9, 1.2], 5: [0.85, 1.45] };
 export const ART_GAIN = { base: 0.35, gated: 0.3, gateCap: 54.9, reqBonus: 0.1, tierDmg: 0.1, honest: [1.3, 0.8], tagTrait: { free: ['巧', 1.1], diligent: ['拙', 1.1] }, restPerTier: 0.06, speedPerTier: 0.04 };

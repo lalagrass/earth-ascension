@@ -24,6 +24,7 @@ export const ART_CAT = {
   bixie: { jianfa: 1 }, dugu: { jianfa: 1 }, xuantie: { jianfa: 1 },
   zixia: { neigong: 1 }, yunv: { neigong: 1 }, jiuyang: { neigong: 1 }, qiankun: { neigong: 1 }, hama: { neigong: 1 }, shihou: { neigong: 1 },
   dagou: { gunbang: 1 }, bagua: { gunbang: 1 }, kuihua: { qimen: 1 }, zuoyou: { zaxue: 1 },
+  basicSword: { jianfa: 1 }, huashanSword: { jianfa: 1 }, sanxianSword: { jianfa: 1 }, wuhuBlade: { quanzhang: 0.5, gunbang: 0.5 }, shaolinStaff: { gunbang: 1 }, tuinaHand: { quanzhang: 0.5, qimen: 0.5 }, stepFeather: { shenfa: 1 }, stepEight: { shenfa: 0.7, zhenfa: 0.3 }, zhenTu: { zhenfa: 1 }, yiJing: { yishu: 1 }, duPu: { dushu: 1 }, /* loop160 v2.4 */
   qimenZhen: { zhenfa: 0.8, qimen: 0.2 }, xingxiuDu: { dushu: 1 }, yaowang: { yishu: 1 }, /* loop150 v2.3 專長招牌 */
 };
 export const GROW = {
@@ -94,6 +95,8 @@ export const nextLvXp = (xp) => { const p = profOf(xp); if (!p.lv) return null; 
 // ==== （原 arts.mjs）====
 // v0.9 武學骨架：每門武學各自熟練、五階、前置、悟性門檻、笨功夫倍率
 export const artById = (id) => ARTS.find((a) => a.id === id);
+/* loop160：v2.4 新武學只對 v2.4 新局的人開放（舊局、舊存檔看不到） */
+export const artOk = (d, a) => !a?.v24 || !!d?.v24;
 export const artOfMove = (mv) => ARTS.find((a) => a.tech === mv || a.techs?.includes(mv));
 export const tierOf = (xp) => { let t = 0; for (let i = 0; i < TIERS.length; i++) if (xp >= TIERS[i][0]) t = i; return t; };
 export const artTier = (d, id) => (d.arts?.[id] ? tierOf(d.arts[id].xp) : -1);
@@ -163,7 +166,7 @@ export function gainArt(d, amt, mf = 1, now = 0, g = null) {
     if (r.guizhen) { r.sxp = (r.sxp || 0) + gx * 0.4; while (r.sxp >= starCost(r)) { r.sxp -= starCost(r); r.stars = (r.stars || 0) + 1; out.star = true; } }
     else { r.xp = Math.min(curCap(d, a), r.xp + gx * (1 - r.xp / 130)); out.moves = unlockTechs(d, a); }
     if (g) out.gm = settleGrowth(d, a, r, { src: g.src || 'train', raw: g.raw ?? amt, xp0, xp1: r.xp }); }
-  if (!d.pendingArt) { const next = ARTS.filter((a) => !a.secret && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a)).sort((a, b) => (b.school === d.style) - (a.school === d.style))[0]; if (next) { d.pendingArt = next.id; out.next = next; } }
+  if (!d.pendingArt) { const next = ARTS.filter((a) => artOk(d, a) && !a.secret && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a)).sort((a, b) => (b.school === d.style) - (a.school === d.style))[0]; if (next) { d.pendingArt = next.id; out.next = next; } }
   return out;
 }
 export function chooseVariant(d, id, v, now = 0) {
@@ -197,7 +200,7 @@ const clip = (w, n) => (w.length > n ? w.slice(0, n - 1) + '…' : w);
 // v1.8 A7 領悟線索透明：每門未學武學列出「還差什麼」；秘傳武學以剪影＋取得方式呈現（不再只是看不見）
 export function artHints(d, nameOf = (k) => k) {
   const rows = [];
-  for (const a of ARTS) { if (d.arts?.[a.id]) continue;
+  for (const a of ARTS) { if (d.arts?.[a.id] || !artOk(d, a)) continue;
     if (a.secret) { rows.push({ id: a.id, name: '？？？', secret: true, need: [a.hint || (a.signature ? `名俠${nameOf(a.signature)}的個人絕學：他上山入門（或以他開局）才會出現` : '機緣未明')] }); continue; }
     const need = a.req.filter((r) => artTier(d, r.art) < r.tier).map((r) => `${artById(r.art).name}練到${TIERS[r.tier][1]}（現在${tierName(artTier(d, r.art))}）`);
     if (!fits(d, a)) need.push(`要走${SCH[a.school] || a.school}路數（目前專精${SCH[d.style] || '無'}）`);
@@ -210,9 +213,9 @@ export function artHintsHtml(d, nameOf) { const R = artHints(d, nameOf); if (!R.
 const ROW = { fist: 0, palm: 1, leg: 2, inner: 3, step: 4 };
 export function artsSvg(d) {
   const W = 118, H = 40, X = (a) => 8 + (a.grade - 1) * (W + 34) + (a.id === 'fengLei' ? 0 : 0), Y = (a) => 8 + ROW[a.school] * (H + 10);
-  const pos = (a) => (a.id === 'rulai' ? [X(a), 8 + 4 * (H + 10)] : a.id === 'fengLei' ? [X(a), 8 + 1.5 * (H + 10)] : [X(a), Y(a)]);
+  const pos = (a) => (a.svg ? [8 + a.svg[0] * (W + 34), 8 + a.svg[1] * (H + 10)] : a.id === 'rulai' ? [X(a), 8 + 4 * (H + 10)] : a.id === 'fengLei' ? [X(a), 8 + 1.5 * (H + 10)] : [X(a), Y(a)]);
   let lines = '', boxes = '';
-  for (const a of ARTS) { if (a.secret && !d.arts?.[a.id]) continue;
+  for (const a of ARTS) { if ((a.secret || !artOk(d, a)) && !d.arts?.[a.id]) continue;
     const [x, y] = pos(a), st = artState(d, a);
     for (const r of a.req) { const b = artById(r.art), [bx, by] = pos(b), ok = artTier(d, b.id) >= r.tier; lines += `<line x1="${bx + W}" y1="${by + H / 2}" x2="${x}" y2="${y + H / 2}" stroke="${ok ? '#7a9a5a' : '#bbb'}" stroke-width="2" ${ok ? '' : 'stroke-dasharray="4 3"'}/>`; }
     const fill = { learned: '#e7f0dc', pending: '#f7e6a8', open: '#f2ecd8', locked: '#eee' }[st.st];
@@ -221,7 +224,7 @@ export function artsSvg(d) {
       + `<text x="${x + 6}" y="${y + 16}" font-size="13">${a.name}${st.st === 'learned' && gated(d, a) ? ' ⛔' : ''}</text><text x="${x + 6}" y="${y + 32}" font-size="11" fill="#665">${sub}</text>`
       + (st.st === 'learned' ? `<rect x="${x + 70}" y="${y + 26}" width="${42}" height="6" fill="#ddd"/><rect x="${x + 70}" y="${y + 26}" width="${(42 * xp) / 100}" height="6" fill="#7a9a5a"/>` : '') + '</g>';
   }
-  return `<svg viewBox="0 0 ${8 + 3 * (W + 34)} ${8 + 5 * (H + 10)}" width="100%" style="max-width:470px">${lines}${boxes}</svg>`;
+  const rows = d.v24 ? 8 : 5; return `<svg viewBox="0 0 ${8 + 3 * (W + 34)} ${8 + rows * (H + 10)}" width="100%" style="max-width:470px">${lines}${boxes}</svg>`;
 }
 
 // ==== （原 breakthru.mjs）====
@@ -244,7 +247,7 @@ export const COMP = {
   vneed: 80,                                  // loop16 變式領悟門檻（大成後、未選變式的功夫）
 };
 const wm = (d) => COMP.wuMul[Math.max(1, Math.min(5, d.wu ?? d.root ?? 3))];
-const open = (d, a) => a && !a.secret && !d.arts?.[a.id] && !reqMissing(d, a).length;
+const open = (d, a) => a && artOk(d, a) && !a.secret && !d.arts?.[a.id] && !reqMissing(d, a).length;
 export function compProgress(d) { return Object.entries(d.comp || {}).map(([id, v]) => ({ id, name: artById(id)?.name, v, need: COMP.need(artById(id)) })); }
 function add(s, d, id, amt, how, think, log) {
   const a = artById(id); if (!open(d, a)) return null;
@@ -372,3 +375,11 @@ export const swordCdMul = (d, mv) => (d?.v23 && isSwordMove(mv) ? NG23.swordCd :
 export const swordDmgMul = (d, mv) => { if (!d?.v23) return 1; const id = swordArtOf(mv); return id && artTier(d, id) <= NG23.swordEarlyTier ? NG23.swordEarly : 1; };
 export const medQi = (d) => (d?.v23 ? NG23.med + (hasSpec(d, 'zixia') ? 4 : 0) : NG.med);
 export const restQi = (d) => NG.rest * (hasSpec(d, 'breath') ? 1.5 : 1);
+
+// ---- loop160 v2.4 Batch 1.2：藏經閣圖譜（只在 s.v24）：讀書完成時，若門內該門類無人懂（best < CHART24.need），以 chance 機率取得對應抄本 ----
+export const CHART24 = { chance: 0.25, need: 1, arts: { zhenfa: 'zhenTu', yishu: 'yiJing', dushu: 'duPu' } };
+export function studyChart24(s, d, r) {
+  if (!s?.v24 || !d?.v24) return null; /* study 動作本身已需藏經閣 */
+  const need = Object.entries(CHART24.arts).filter(([c, id]) => !d.arts[id] && bestSpec(s, c, s.ds || []) < CHART24.need); if (!need.length) return null;
+  if (r() >= CHART24.chance) return null; const [c, id] = need[0]; learnArt(d, id, s.t); (s.v24n ??= {}).chart = (s.v24n.chart || 0) + 1; return { cat: c, art: artBy(id) };
+}

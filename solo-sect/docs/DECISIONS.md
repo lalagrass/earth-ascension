@@ -257,3 +257,6 @@ v2.3 新產生的開放問題接在 §12 之後。
 171. **Batch 0 P5/P6 守關保底靈石**：深谷（橋頭黑熊）、斷崖（白猿）首次打贏各 +1 靈石（`LS_FIRST24`，記在 `s.records.lsFirst`）；其他關不給。〔loop159〕
 172. **Batch 0 P7/P8 執事藏經閣**：v24 有人會 ≥2 門武學（`STEW_FB24.artsN`）且木石夠，執事先立藏經閣，再輪其他藍圖（`stewLib24`）。〔loop159〕
 173. **Batch 0.2 isSwordArt**：依規格新增 `isSwordArt(id)`（劍法門類、`weapon:'sword'`、id 含 sword、獨孤／辟邪／玄鐵）；`swordArtOf` 改走它，與 loop157 的修正同一入口，不重複乘；`dpsOf` 在 v23 已吃 `cdMul`。golden-30d-v22 `49a6d79ba043eb43 → 8aab9ff840cc8ce0`。〔loop159〕
+174. **Batch 1.1 公共基礎武學（規格名 → 實作）**：基礎劍法 `basicSword`、華山劍法 `huashanSword`、奪命連環三仙劍 `sanxianSword`、五虎斷門刀 `wuhuBlade`、少林棍法 `shaolinStaff`、分筋錯骨手 `tuinaHand`、飛絮身法 `stepFeather`、八卦遊龍步 `stepEight`。戰鬥 school 沿用 palm／leg／step（劍招吃 palm），門類另記在 `ART_CAT`（劍法、棍棒、奇門、身法、陣法）。前置用現有的 `basicFist`／`sweepLeg`／`snowStep`。全部 `v24:true`：`artOk(d,a)` 擋在學習池、自選目標、外來高人傳功、秘笈合成、武學圖與未解鎖清單，舊局看不到。武學圖新增 8 列版面（`svg:[欄,列]`）。〔loop160〕
+175. **Batch 1.2 藏經閣圖譜（保守版）**：規格要「讀書時補門內沒人懂的專長」。以三卷 secret 抄本實作：《陣圖殘篇》`zhenTu`（陣法）、《醫經抄本》`yiJing`（醫術）、《百毒譜》`duPu`（毒術）；讀書完成時若門內該門類造詣 <1，以 25% 機率（`rand(s)`，只在 v24 消耗 RNG）取得第一個缺的那卷，之後靠原本的專長活計累積造詣。不直接發名俠招牌武學（太強）。〔loop160〕
+176. **舊局平衡測試**：v09「八門武學」、v110／v120「練滿全武學」的平衡測試排除 `v24` 武學（舊局永遠學不到）；新武學另在 v24.test。〔loop160〕

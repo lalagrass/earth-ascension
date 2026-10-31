@@ -1473,3 +1473,12 @@
 - `sim.mjs`：`s.v24`／`d.v24`。`test/v24.test.mjs` 6 項；`v225` 市集測試標明為 v2.3 存檔（刪 `s.v24`）。
 - golden-30d-v22 `49a6d79ba043eb43 → 8aab9ff840cc8ce0`；舊 golden 不動。測試：遊戲 720、sect-chronicle 383、Python 53。
 - 規格 §12／路徑與實檔不同：見 DECISIONS §13 開頭。
+
+## Loop 160 — v2.4 Batch 1：公共武學擴充、藏經閣圖譜（決定 174–176）
+- `data.mjs`：8 門 `v24` 公共武學＋12 招；三卷圖譜抄本（secret）。`arts.mjs`：`artOk`、`ART_CAT` 對應、武學圖 8 列、`studyChart24`（CHART24）。`sim.mjs` 讀書完成時呼叫；`bonds`／`jianghu`／`main`／`panel-ui` 的武學清單都擋 `v24`。
+- 測試：v24 +3 項（9 項）；v09／v110／v120 舊局平衡測試排除 v24 武學。golden-30d-v22 `8aab9ff840cc8ce0 → ac9d475b00d2688c`；舊 golden 不動。遊戲 723、sect-chronicle 383、Python 53。
+
+### Retro 159–160
+- 做得好：新武學一律掛 `v24:true` 加 `artOk` 一個入口，舊局完全看不到，舊 golden 兩輪都沒動。
+- 不好：舊的平衡測試直接列舉全部 ARTS，新武學一加就破，要逐一排除；規格 Batch 2–4 原文在交接時被截斷，只能做保守版。
+- 下一步：Batch 2 陰陽共鳴、奇門封穴。

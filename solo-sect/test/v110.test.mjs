@@ -59,7 +59,7 @@ test('郭靖模板主線推進到第 4 步', () => {
   for (let k = 0; k < 4; k++) { onCook(s, hr); s.t += DAY; xiaStep(s); } s.t += 1; xiaStep(s); assert.equal(s.hero.arcStep, 4);
 });
 function party(classic) { const s = createState(11); tick(s); const ids = s.ds.filter((d) => d.role !== 'laborer').slice(0, 4).map((d) => d.id);
-  for (const d of s.ds) if (ids.includes(d.id)) { for (const k of Object.keys(d.skills)) d.skills[k] = 100; for (const a of ARTS) { if ((a.classic && !classic) || a.id === 'rulai') continue; learnArt(d, a.id, 0); Object.assign(d.arts[a.id], { xp: 1e6, bt1: true, bt2: true, bt3: true, last: 1e9 }); learnArt(d, a.id, 0); } d.mood = 95; }
+  for (const d of s.ds) if (ids.includes(d.id)) { for (const k of Object.keys(d.skills)) d.skills[k] = 100; for (const a of ARTS) { if ((a.classic && !classic) || a.id === 'rulai' || a.v24) continue; /* loop160：舊局平衡測試不含 v2.4 武學 */ learnArt(d, a.id, 0); Object.assign(d.arts[a.id], { xp: 1e6, bt1: true, bt2: true, bt3: true, last: 1e9 }); learnArt(d, a.id, 0); } d.mood = 95; }
   s.res.food = 200; startExpedition(openExp(s), ids, { thr: 0.3, target: 'inf', supplies: 24 }); let i = 0; while (s.exp && i++ < 900000) tick(s); return [s.lastExp, s.ds.find((d) => d.id === ids[0])]; }
 test('平衡：一般武學練滿約止於 1600 內；招牌武學練滿可闖進無盡段', () => {
   const [n] = party(false); assert.ok(n.dist >= 900 && n.dist <= 1600, `normal ${n.dist}`); // v1.5：模擬核心改動 RNG 串流，種子間 950–1331，下限 1000→900

@@ -108,7 +108,7 @@ export function artStatus(d, a, now = 0) {
   return { st: 'acc', text: '正在累積' };
 }
 export function artsGrowHtml(d, now = 0, grow = true) {
-  const f = focusOf(d), rows = ARTS.filter((a) => d.arts?.[a.id] || (!a.secret && fits(d, a) && reqMissing(d, a).length)).map((a) => {
+  const f = focusOf(d), rows = ARTS.filter((a) => d.arts?.[a.id] || (!a.secret && (!a.v24 || d.v24) && fits(d, a) && reqMissing(d, a).length)).map((a) => {
     const r = d.arts?.[a.id], st = artStatus(d, a, now), t = r ? artTier(d, a.id) : -1, cats = Object.keys(ART_CAT[a.id] || {}).map((c) => CATS[c].name + (supOf(c, d) === 'none' ? '（尚未支援）' : '')).join('＋');
     const nxt = r && !a.layered && !a.forms && t < TIERS.length - 1 ? `・距${TIERS[t + 1][1]} ${(TIERS[t + 1][0] - r.xp).toFixed(1)}` : '';
     const moves = r ? `・招式 ${(a.techs || []).filter((m) => d.moves.includes(m)).length}/${(a.techs || []).length}` : '';

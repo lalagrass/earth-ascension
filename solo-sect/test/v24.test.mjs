@@ -36,3 +36,22 @@ test('loop159 isSwordArt：劍法門類、三門經典劍法；掌法不是；sw
   assert.ok(Math.abs(A.swordCdMul(d, 'bx1') - 0.82) < 1e-9); assert.equal(A.swordCdMul(d, 'push'), 1);
   const p1 = dpsOf(s, d); d.v23 = false; const p0 = dpsOf(s, d); d.v23 = true; assert.ok(p1 > p0);
 });
+
+// ---- loop160 Batch 1 ----
+import { ARTS, MOVES } from '../src/data.mjs';
+const NEW24 = ['basicSword', 'huashanSword', 'sanxianSword', 'wuhuBlade', 'shaolinStaff', 'tuinaHand', 'stepFeather', 'stepEight'];
+test('loop160 Batch1：8 門公共武學存在、招式齊全、有門類與屬性', () => {
+  for (const id of NEW24) { const a = ARTS.find((x) => x.id === id); assert.ok(a?.v24, id); assert.ok(A.ART_CAT[id], id); assert.ok(['yin', 'yang', 'he'].includes(a.attr), id);
+    for (const m of a.techs) if (a.school !== 'step') assert.ok(MOVES.find((x) => x.id === m), m); }
+  for (const id of ['basicSword', 'huashanSword', 'sanxianSword']) assert.ok(A.isSwordArt(id));
+});
+test('loop160 Batch1：舊局看不到也學不到新武學；新局可學', () => {
+  const o = hero(OLD()), n = hero(V()); n.v23 = n.v24 = true; /* d.v24 於首個 tick 標記 */
+  for (const id of NEW24) { assert.equal(A.artOk(o, ARTS.find((x) => x.id === id)), false); assert.equal(A.artOk(n, ARTS.find((x) => x.id === id)), true); }
+  o.arts = { basicFist: { xp: 0 } }; o.pendingArt = null; A.gainArt?.length; assert.ok(!NEW24.includes(A.selfTarget(o)));
+});
+test('loop160 Batch1.2：藏經閣圖譜——v24 讀書可得抄本；舊局不會', () => {
+  const s = V(), d = hero(s); d.v23 = d.v24 = true; const g = A.studyChart24(s, d, () => 0); assert.ok(g && d.arts[g.art.id]); assert.equal(s.v24n.chart, 1);
+  const o = OLD(); assert.equal(A.studyChart24(o, hero(o), () => 0), null);
+  const s2 = V(), d2 = hero(s2); d2.v23 = d2.v24 = true; assert.equal(A.studyChart24(s2, d2, () => 0.9), null);
+});

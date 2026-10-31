@@ -98,7 +98,7 @@ export const MANUALS = { page1: { need: 5, grade: 1, name: '凡階秘笈' }, pag
 export const canAssemble = (s, k) => (s.res[k] || 0) >= MANUALS[k].need;
 export function assemble(s, k) {
   if (!canAssemble(s, k)) return { ok: false, why: `殘頁不足 ${MANUALS[k].need} 張` };
-  const pool = ARTS.filter((a) => !a.secret && a.grade === MANUALS[k].grade); if (!pool.length) return { ok: false, why: '無可對應武學' };
+  const pool = ARTS.filter((a) => !a.secret && (!a.v24 || s.v24) && a.grade === MANUALS[k].grade); if (!pool.length) return { ok: false, why: '無可對應武學' };
   const known = (a) => s.ds.filter((d) => d.arts?.[a.id]).length, art = pool.reduce((b, a) => (known(a) < known(b) ? a : b));
   resAdd(s, k, -MANUALS[k].need); (s.manuals ??= []).push({ k, art: art.id });
   log(s, `【秘笈】${MANUALS[k].need} 張${k === 'page1' ? '凡階' : '精階'}殘頁湊成《${art.name}》${MANUALS[k].name}，可指定弟子研讀`); return { ok: true, art: art.id };
