@@ -1434,3 +1434,12 @@
 - `sim.mjs`：K 表換 `LABOR_ACTS23`、雇工池延伸、`lspec`、拿手活 ×1.35、`laborSpeed`（專長／清修工時）、`isEliteHermit`、`buildWhy` 擋舊局第三階、高人邀請免根骨好感。`threat.mjs` `canDefend` 放行已揭露高人；`jianghu.mjs` 高人揭露後在 v23 仍當幫工；`economy.mjs` `stewLabor`。`main.mjs` 建造面板擋舊局第三階、清修徽記。
 - 冒煙：seed 1003 30 日工寮升到村舍大院、雇滿 8 名幫工（含揭露的高人）；其他三局沒蓋工寮（人數 16+，執事先做別的）。
 - 測試：v23 +4 項（12 項）；golden-30d-v22 `7bd6beb717f1a8fd → 96954ee64f33c308`；舊 golden 不動。
+
+## Loop 156 — Batch 3 介面＋v2.3 診斷工具
+- `main.mjs`：雇工卡加〔拿手：…〕與〔隱世高人・可守柵〕；資源列前清修徽記（loop155 已接）。
+- 新增 `test/harness/diag-v23.mjs`（逐局 JSON：三人入門、陣法／毒術／醫術最高造詣、內功被動數、御氣行走比例、力竭比例、幫工拿手活比例、清修時間比例、村舍大院）。
+
+### Retro 155–156
+- 做得好：舊局的三個全域入口（K 表、雇工池、第三階）都用 `s.v23` 擋，舊 golden 沒動。
+- 不好：bot 局 16+ 人，清修山莊在 30 日 bot 局幾乎不會出現，只能靠單元測試與注入截圖驗證；執事雇工會多付工錢。
+- 下一步：wrap-up：diag 15×30、160 種子 A/B、截圖、ROADMAP。
