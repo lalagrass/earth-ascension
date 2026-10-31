@@ -1,4 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
+import { readStudy } from './readwu.mjs'; /* loop140 */
 import { workStrCap, isWorkAct } from './labor.mjs';
 import { NG, addQi, spendQi, qiMax, shieldHit } from './neigong.mjs';
 import { breakChance } from './arts.mjs';
@@ -105,7 +106,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.mfit) s.mfit = true; // loop41 高人因材施教
   if (heroSpec?.jhrefuse) s.jhrefuse = true; // loop40 挑戰帖量力而為 // loop39 人多分攤日課
   if (heroSpec?.jhui) s.jhui = true; // loop34 介面可讀性（純顯示）
-  if (heroSpec?.laborgrow) s.laborgrow = true; if (heroSpec?.valor) s.valor = 0; if (heroSpec?.valor && heroSpec?.valormid) s.valormid = true; /* loop138 */ /* loop129 勇名 */ /* loop127 勞作練體 */ if (heroSpec?.steward) s.steward = true; if (heroSpec?.rumor) s.rumor = true; if (heroSpec?.grow && heroSpec?.growdr) s.growdr = true; /* loop122 造詣遞減 */ /* loop119 傳聞預警 */ // loop30 執事自主（選用）
+  if (heroSpec?.laborgrow) s.laborgrow = true; if (heroSpec?.valor) s.valor = 0; if (heroSpec?.valor && heroSpec?.valormid) s.valormid = true; if (heroSpec?.readwu) s.readwu = true; /* loop140 */ /* loop138 */ /* loop129 勇名 */ /* loop127 勞作練體 */ if (heroSpec?.steward) s.steward = true; if (heroSpec?.rumor) s.rumor = true; if (heroSpec?.grow && heroSpec?.growdr) s.growdr = true; /* loop122 造詣遞減 */ /* loop119 傳聞預警 */ // loop30 執事自主（選用）
   if (heroSpec?.lairpow) s.lairpow = true; // loop29 寨強看戰力（選用）
   if (heroSpec?.lift) s.lift = true; // loop28 心情自救（選用）
   if (heroSpec?.bt25) s.bt25 = true; // loop25 突破排程（選用）
@@ -468,6 +469,7 @@ function doTask(s, d, dt) {
       if (t.act === 'encourage' && t.partner) { const p = byId(s, t.partner); think(s, d, 'helped'); relAdd(s, d, p, 3); log(s, `${d.name}陪心情低落的${p.name}說了好一會兒話`); }
       if (t.act === 'repair') repairDone(s, d);
       if (t.act === 'pass' && t.lead && t.partner) { const p = byId(s, t.partner); if (p) passDo(s, d, p, t.art); }
+      if (t.act === 'study' && s.readwu) { const w = readStudy(s, d); if (w) log(s, `${d.name}在藏經閣讀了許久，忽然開竅——悟性長進了${d.rootKnown ? `（${w}）` : ''}。`); } // loop140 讀書長悟性
       if (A.eff) applyEff(s, d, A.eff, A.name);
       if (A.carry) { d.carry = { ...A.carry }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; }
       finish(s, d);
