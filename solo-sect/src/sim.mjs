@@ -551,7 +551,7 @@ function huntStep(s, dt) {
     const M = MONSTERS[m.k];
     const foe = team.filter((d) => d.hp > 25).sort((a, b) => dist(a.pos, m.pos) - dist(b.pos, m.pos))[0];
     m.cool -= dt;
-    if (m.psn > s.t) { m.hp -= SPEC.poisonDps * dt; if (m.hp <= 0) { m.gone = true; h.kills++; log(s, `${M.name}毒發倒地`); continue; } } /* loop151 毒術 */
+    if (m.psn > s.t) { m.hp -= SPEC.poisonDps * (s.psnK24 || 1) * dt; if (m.hp <= 0) { m.gone = true; h.kills++; log(s, `${M.name}毒發倒地`); continue; } } /* loop151 毒術 */
     if (foe && dist(foe.pos, m.pos) < 26) { if (m.cool <= 0) { foe.hp -= shieldHit(foe, M.dmg * (m.psn > s.t ? 1 - SPEC.poisonWeak : 1) * (1 - SPEC.zhenMit * zk), s.t); /* loop116 護體真氣 */ m.cool = 1.2; s.fx.push({ kind: 'bite', pos: [...foe.pos], ttl: 0.4 }); } continue; }
     if (monWalk(m, M.speed * (1 - SPEC.zhenSlow * zk) * dt)) { m.gone = true; h.escaped++; s.eco[m.k].n++; log(s, `${M.name}衝過守點逃回山裡`); }
   }

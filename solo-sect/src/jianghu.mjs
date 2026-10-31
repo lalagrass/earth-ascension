@@ -1,6 +1,6 @@
 import { seedMix, log, resAdd, resSet } from './util.mjs';
 import { DAY, TIERS, JH, TREES, buildCards, destinyStep, ARTS, MOVES } from './data.mjs';
-import { growEnsure, learnArt, artTier, powBonus, autoFocus, artById, curCap, reqMissing, fits } from './arts.mjs';
+import { lockedArt24, growEnsure, learnArt, artTier, powBonus, autoFocus, artById, curCap, reqMissing, fits } from './arts.mjs';
 import { laborPow } from './economy.mjs';
 import { valorPowMul, valorAdd, VALOR } from './sect.mjs';
 import { initPair } from './social.mjs';
@@ -179,9 +179,9 @@ export function jhevDaily(s) {
     letterOutcome(s, champ, win, false); } }
 }
 export function masterOutcome(s, d, teach) { const E = s.jhev, M = JHEV.master; const id = autoFocus(d), a = artById(id), r = d.arts[id]; r.xp = Math.min(curCap(d, a), r.xp + M.xp); md(d, M.mood); log(s, `【過路高人】一位雲遊高人借宿一晚，指點了${d.name}的「${a.name}」幾招。`);
-      if (teach) { const ok = ARTS.filter((x) => !x.secret && (!x.v24 || d.v24) && !d.arts[x.id] && !reqMissing(d, x).length && fits(d, x)), nx = (s.mfit && ok.find((x) => x.school === d.style)) || ok[0]; /* loop41「因材施教」（s.mfit）：優先傳本門路數 */ if (nx) { learnArt(d, nx.id, s.t); if (d.pendingArt === nx.id) d.pendingArt = null; E.t = (E.t || 0) + 1; if (nx.school === d.style) E.ts = (E.ts || 0) + 1; log(s, `【過路高人】臨別前，高人傳了${d.name}一套「${nx.name}」！`); }
+      if (teach) { const ok = ARTS.filter((x) => !x.secret && (!x.v24 || d.v24) && !lockedArt24(d, x) && !d.arts[x.id] && !reqMissing(d, x).length && fits(d, x)), nx = (s.mfit && ok.find((x) => x.school === d.style)) || ok[0]; /* loop41「因材施教」（s.mfit）：優先傳本門路數 */ if (nx) { learnArt(d, nx.id, s.t); if (d.pendingArt === nx.id) d.pendingArt = null; E.t = (E.t || 0) + 1; if (nx.school === d.style) E.ts = (E.ts || 0) + 1; log(s, `【過路高人】臨別前，高人傳了${d.name}一套「${nx.name}」！`); }
         else if (s.mpool && (() => { /* loop55「殘譜指點」（s.mpool）：無武學可傳時，挑一套合路數、只差前置的武學，替已會的前置武學加 2 倍指點經驗 */
-          const tg = ARTS.filter((x) => !x.secret && (!x.v24 || d.v24) && !d.arts[x.id] && fits(d, x) && reqMissing(d, x).length).flatMap((x) => x.req.filter((q) => d.arts[q.art] && reqMissing(d, { req: [q] }).length).map((q) => [x, artById(q.art)])).sort((a, b) => (b[0].school === d.style) - (a[0].school === d.style))[0];
+          const tg = ARTS.filter((x) => !x.secret && (!x.v24 || d.v24) && !lockedArt24(d, x) && !d.arts[x.id] && fits(d, x) && reqMissing(d, x).length).flatMap((x) => x.req.filter((q) => d.arts[q.art] && reqMissing(d, { req: [q] }).length).map((q) => [x, artById(q.art)])).sort((a, b) => (b[0].school === d.style) - (a[0].school === d.style))[0];
           if (!tg) return false; const [x, a] = tg, r = d.arts[a.id], before = r.xp; r.xp = Math.min(curCap(d, a), r.xp + 2 * M.xp); if (r.xp === before) return false;
           E.pg = (E.pg || 0) + 1; log(s, `【過路高人】臨別前，高人留下一頁殘譜，講解「${a.name}」的要訣（往「${x.name}」的路）。`); return true; })()) { /* 已處理 */ }
         else { const mv = Object.keys(d.arts).map(artById).flatMap((x) => (x.techs || []).filter((m) => MOVES.some((y) => y.id === m) && !d.moves.includes(m)))[0]; if (mv) { d.moves.push(mv); E.mv = (E.mv || 0) + 1; log(s, `【過路高人】臨別前，高人提前點撥${d.name}一招「${MOVES.find((y) => y.id === mv).name}」！`); } } } } /* loop26 傳武學，無可傳則提前點撥一招 */

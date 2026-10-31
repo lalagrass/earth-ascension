@@ -7,7 +7,9 @@ import { power } from '../../src/jianghu.mjs';
 import { startBuild, buildWhy, facDef, startExpedition, canExpedition } from '../../src/sim.mjs';
 import { openExp } from '../../src/world.mjs';
 import * as EC from '../../src/economy.mjs';
-import * as A from '../../src/arts.mjs';
+import * as A0 from '../../src/arts.mjs';
+import { ARTS } from '../../src/data.mjs';
+const A = { ...A0, ARTS_OWN24: ARTS.filter((a) => a.own24).map((a) => a.id) }; /* loop168 各派專屬武學習得人數 */
 import { SECTS } from '../../src/data.mjs';
 export const SECTS24 = ['emei', 'wudang', 'taohua', 'gumu', 'xingxiu', null];
 const ST = process.argv[2] || 'bot', N = +(process.argv[3] || 40), S0 = +(process.argv[4] || 1001), D = +(process.argv[5] || 30);
@@ -41,5 +43,5 @@ for (let k = 0; k < N; k++) {
     lib: s.fac.library?.stage || 0, t3: tiers.filter(([, f]) => f.stage >= 3).length, buyT: c.buyT, buyL: c.buyL, lingshi: s.res.lingshi || 0, lsFirst: Object.keys(s.records?.lsFirst || {}).length,
     produce: V.produce || 0, stewLib: V.stewLib || 0, chart: V.chart || 0, affix: V.affix || 0, fengxue: V.fengxue || 0, formation: V.formation || 0, harmPct: +(100 * c.harm / (c.n || 1)).toFixed(1),
     bisai: V.bisai || 0, huiwu: V.huiwu || 0, huiwuWin: V.huiwuWin || 0, lineup: V.lineup || [0, 0, 0], steal: V.steal || 0, derive: V.derive || 0, trophies: (s.sect?.trophies || []).length,
-    ...purity(s, ds), new24: ds.reduce((a, d) => a + N24.filter((id) => d.arts?.[id]).length, 0), exp: c.exp, expDist: le.dist || 0 }));
+    ...purity(s, ds), new24: ds.reduce((a, d) => a + N24.filter((id) => d.arts?.[id]).length, 0), exp: c.exp, expDist: le.dist || 0, expN: s.expN || 0, own24: Object.fromEntries(A.ARTS_OWN24.map((id) => [id, ds.filter((d) => d.arts?.[id]).length]).filter(([, n]) => n)), med24: ds[0]?.medK24 || 1, psn24: s.psnK24 || 1 }));
 }

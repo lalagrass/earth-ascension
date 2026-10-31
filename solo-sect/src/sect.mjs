@@ -206,6 +206,7 @@ export function favSort(s, keys) { const f = SECTS[s.sect?.id]?.fav || []; retur
 export function sectStep(s) {
   if (!s.sect) return; const S = s.sect;
   for (const d of s.ds) { d.sbias = S.bias; d.stree = S.tree; d.sgain = S.fac ? sgainOf(s) : 1; }
+  if (s.v24) { const F = sectFac(s), on = S.fac && F; const mk = on && F.med24 && sgainOf(s) > 1 ? F.med24 : 1; for (const d of s.ds) d.medK24 = mk; s.psnK24 = on && F.psn24 ? F.psn24 : 1; } /* loop168 寒玉床打坐 ×1.5、神木王鼎毒傷 ×1.35 */
   if (s.day === S.day) return; S.day = s.day; checkRules(s); checkArts(s); facDaily(s);
   if (s.v24) bisaiDaily24(s); /* loop166 Batch 5.2 */
 }

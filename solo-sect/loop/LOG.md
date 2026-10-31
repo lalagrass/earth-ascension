@@ -1533,3 +1533,8 @@
 - 做得好：A/B 全程 0 崩潰，新系統都在數字上有反應。
 - 不好：合參過頻、本門純度定義與規格不符，留待決。
 - 下一步：等擁有人裁決合參收緊與新門派畫面入口。
+
+## loop168 — v2.55：五派專屬武學、寒玉床打坐、神木王鼎（決定 195–201）
+- `data.mjs`：20 門專屬武學＋40 招，五派 tree／ban，`unlock24`、`med24`、`psn24`。`arts.mjs`：`ART_CAT`、`lockedArt24`（own24 全鎖他派、無名派也鎖、不吃觸類旁通）、`reqMissing` `alt24`、`sectUnlock24`、`medQi`／`breakChance` ×`medK24`、武學圖／線索隱藏他派專屬。`sect.mjs` 每 tick 設 `medK24`／`psnK24`；`bonds`（傳功、殘頁）、`jianghu`（高人傳功）、`main`／`panel-ui`（清單）補鎖；三處毒傷 ×`psnK24`。
+- 6 種子 bot 快驗：第一版他派專屬經觸類旁通外流（純度 73–80%），改鎖後 99%＋，五派專屬全部有人習得。
+- 測試：新增 `test/v255.test.mjs` 5 項；v24 武當 T1 根基改為武當長拳。遊戲 742、sect-chronicle 383、Python 53。golden-30d-v22 `172e4d6d36ba6aff → 6366f906d7c46106`；舊 golden 不動。

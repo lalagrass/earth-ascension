@@ -111,7 +111,7 @@ test('loop164 Batch4.1⑥：v24 華山劍宗、氣宗補華山劍法線；舊局
 });
 test('loop164 Batch4.2：自創無名派依主價值帶家傳三件套並入本門樹；名門掌門帶 T1 根基；舊局不帶', () => {
   const s = V(); const h = hero(s), kit = WUMING_KIT24[s.hero.main]; assert.ok(kit); for (const k of kit) { assert.ok(h.arts[k], k); assert.ok(s.sect.tree.includes(k)); }
-  const w = V({ sect24: 'wudang' }); assert.ok(hero(w).arts.breath && hero(w).arts.basicSword);
+  const w = V({ sect24: 'wudang' }); assert.ok(hero(w).arts.breath && hero(w).arts.wudangFist /* loop168 武當長拳先於基礎劍法 */);
   const o = OLD(); assert.ok(!hero(o).arts.wuhuBlade && !hero(o).arts.basicSword);
 });
 test('loop164 Batch4.2 百納海川：無名派 v24 學外門名學不罰 ×0.7；他派照罰', () => {
