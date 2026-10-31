@@ -513,13 +513,14 @@ function huntStep(s, dt) {
   for (const d of team) {
     if (d.hp <= 25) { if (d.task?.act === 'hunt') { d.order = null; cancelTask(s, d, '傷重退回院中'); assign(s, d, 'rest', '傷重歇息'); log(s, `${d.name}受傷退下`); think(s, d, 'hurt'); } continue; }
     if (d.at !== h.post || d.path.length) continue;
+    if (d.hp <= NG.healAt && spendQi(d, NG.healCost)) { d.hp = Math.min(100, d.hp + NG.heal); log(s, `${d.name}運功療傷`); } // loop104
     d.cool -= dt; if (d.cool > 0) continue;
     const ms = d.moves.map((id) => MOVES.find((m) => m.id === id)).sort((a, b) => b.dmg * (1 + (b.aoe ? 1 : 0)) - a.dmg * (1 + (a.aoe ? 1 : 0)));
     const live = s.mons.filter((m) => !m.gone && m.hp > 0 && !m.raid);
     for (const mv of ms) {
       const lv = d.skills[mv.skill]; const reach = mv.range * (1 + lv / 200);
       const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
-      const power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t);
+      const power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t) * (spendQi(d, NG.strikeCost) ? NG.strikeMul : 1); // loop104 運勁
       const hitList = mv.aoe ? live.filter((m) => dist(m.pos, tgt.pos) <= mv.aoe) : [tgt];
       for (const m of hitList) { m.hp -= power; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', d); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
       h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5, 'fight');
