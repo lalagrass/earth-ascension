@@ -8,7 +8,7 @@ import { ALL_ON as A0 } from './harness/bot.mjs';
 const A = { ...A0 }; delete A.paypill;
 const H = { think() {}, removeDisciple() {}, rand: () => 0.5, cancelTask() {} };
 const mk = (on) => ({ day: 10, res: { coin: 0, pill: 6 }, fac: {}, paypill: on, ledger: { in: {}, out: {} }, log: [], ds: [{ id: 'hero', role: 'head' }, { id: 'a', role: 'inner', adult: true }, { id: 'b', role: 'inner', adult: true }] });
-test('規則預設勾選', () => assert.equal(RULES.find((r) => r[0] === 'paypill')?.[3], true));
+test('規則轉正（loop143）：paypill 在 v2.2 底層規則', async () => { const { BASELINE_V22 } = await import('../src/sim.mjs'); assert.equal(BASELINE_V22.paypill, true); });
 test('開局 spec 接線', () => { assert.equal(createState(7, { ...A, paypill: true }).paypill, true); assert.ok(!createState(7, A).paypill); });
 test('開啟時月俸不夠會先賣丹，關閉時不賣', () => {
   const on = mk(true), off = mk(false); settle(on, H); settle(off, H);

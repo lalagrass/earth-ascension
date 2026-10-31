@@ -9,7 +9,7 @@ import { save, load } from '../src/save.mjs';
 const A = (id) => ARTS.find((a) => a.id === id);
 const mk = (dr, e) => ({ gdr: dr ? 1 : 0, arts: { basicFist: { xp: 60, gm: { e, ms: 1 } }, pushPalm: { xp: 10, gm: { e: 0, ms: 0 } } } });
 const train = (d) => settleGrowth(d, A('pushPalm'), d.arts.pushPalm, { src: 'train', raw: 5, xp0: 10, xp1: 11 }).quanzhang ?? 0;
-test('規則預設勾選', () => { const r = RULES.find((x) => x[0] === 'growdr'); assert.equal(r?.[3], true); assert.match(r[4], /需成長分層/); });
+test('規則轉正（loop143）：growdr 在 v2.2 底層規則', async () => { const { BASELINE_V22 } = await import('../src/sim.mjs'); assert.equal(BASELINE_V22.growdr, true); });
 test('造詣 0 時不變；造詣越高增量越少，比例符合公式', () => {
   assert.equal(train(mk(true, 0)), train(mk(false, 0)));
   const off = train(mk(false, 20)), on = train(mk(true, 20)); assert.ok(on < off);

@@ -7,7 +7,7 @@ import { masterOutcome, JHEV } from '../src/jhevents.mjs';
 import { ARTS } from '../src/data.mjs';
 import { reqMissing, fits, learnArt } from '../src/arts.mjs';
 import { RULES } from '../src/start-ui.mjs';
-test('規則在開局清單且預設勾選', () => { const r = RULES.find((x) => x[0] === 'mpool'); assert.ok(r); assert.equal(r[3], true); });
+test('規則轉正（loop143）：mpool 在 v2.2 底層規則', async () => { const { BASELINE_V22 } = await import('../src/sim.mjs'); assert.equal(BASELINE_V22.mpool, true); });
 /* 造一個「沒有可傳武學、但有一套只差前置」的弟子：除了目標與其前置外，所有非秘傳武學都標成已會 */
 function setup(mpool) {
   const s = createState(1, { kind: 'custom', answers: Array(9).fill(0), jhev: true, mpool }); s.jhev = { m: 0, l: 0, lw: 0, mNext: 0, lNext: 0 };

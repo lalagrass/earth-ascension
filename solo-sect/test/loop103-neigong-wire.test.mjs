@@ -7,7 +7,7 @@ import { save, load } from '../src/save.mjs';
 import { qiMax } from '../src/neigong.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...x });
 const runDays = (s, days, dt = 6) => { for (let i = 0; i < days * 600 / dt; i++) tick(s, dt); return s; };
-test('規則預設勾選', () => { const r = RULES.find((x) => x[0] === 'neigong'); assert.equal(r?.[3], true); assert.match(r[4], /內力/); });
+test('規則轉正（loop143）：neigong 在 v2.2 底層規則', async () => { const { BASELINE_V22 } = await import('../src/sim.mjs'); assert.equal(BASELINE_V22.neigong, true); });
 test('開局接線；沒勾時不寫 ng／qi', () => {
   const on = createState(7, spec({ neigong: true })), off = createState(7, spec());
   assert.ok(on.neigong && on.ds.every((d) => d.ng && d.qi === 0));

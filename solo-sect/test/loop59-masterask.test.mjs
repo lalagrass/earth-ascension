@@ -8,7 +8,7 @@ import { RULES } from '../src/start-ui.mjs';
 const mk = (x) => { const s = createState(1, { kind: 'custom', answers: Array(9).fill(0), jhev: true, ...x }); s.day = 30; s.choices ??= []; return s; };
 const force = (s) => { const P = JHEV.master.p, L = JHEV.letter.p; JHEV.master.p = 1; JHEV.letter.p = 0; try { jhevDaily(s); } finally { JHEV.master.p = P; JHEV.letter.p = L; } };
 const xpSum = (d) => Object.values(d.arts || {}).reduce((a, r) => a + r.xp, 0);
-test('規則預設勾選', () => assert.equal(RULES.find((r) => r[0] === 'masterask')?.[3], true));
+test('規則轉正（loop143）：masterask 在 v2.2 底層規則', async () => { const { BASELINE_V22 } = await import('../src/sim.mjs'); assert.equal(BASELINE_V22.masterask, true); });
 test('開＋問我：出抉擇卡（只列名字與正在練的武學），選誰就指點誰；亂數流與自動版相同', () => {
   const s = mk({ masterask: true }); s.hero.askMajor = true; force(s); const ch = s.choices.find((c) => c.mvisit);
   assert.ok(ch); assert.ok(ch.opts.length >= 1 && ch.opts.length <= 3); assert.match(ch.opts[0], /高人看中/); assert.equal(s.jhev.m, 1);

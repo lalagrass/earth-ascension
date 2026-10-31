@@ -7,7 +7,7 @@ import { save, load } from '../src/save.mjs';
 import { mastery } from '../src/growth.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...x });
 const runDays = (s, days, dt = 6) => { for (let i = 0; i < days * 600 / dt; i++) tick(s, dt); return s; };
-test('規則預設勾選', () => assert.equal(RULES.find((r) => r[0] === 'grow')?.[3], true));
+test('規則轉正（loop143）：grow 在 v2.2 底層規則', async () => { const { BASELINE_V22 } = await import('../src/sim.mjs'); assert.equal(BASELINE_V22.grow, true); });
 test('開局 spec 接線；沒勾時不寫 gm', () => { const on = createState(7, spec({ grow: true })), off = createState(7, spec());
   assert.equal(on.grow, true); assert.ok(!off.grow); assert.ok(on.ds.every((d) => d.gInit)); assert.ok(off.ds.every((d) => !d.gInit && Object.values(d.arts).every((r) => !r.gm)));
   runDays(off, 3); assert.ok(off.ds.every((d) => Object.values(d.arts).every((r) => !r.gm)), '未啟用路徑三日後仍無造詣欄位'); });

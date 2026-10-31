@@ -74,7 +74,12 @@ export const routeLength = (a, b) => { const p = route(a, b); let L = 0; for (le
 export const facDef = (id) => (id === 'fence' ? FENCE_FAC : FACILITIES.find((f) => f.id === id)); // loop11 柵牆工地
 export const facStage = (s, id) => { const S = facDef(id).stages; return S[Math.min(s.fac[id]?.stage || 0, S.length - 1)]; };
 
+// loop143（v2.2 baseline）：已驗證、原本預設勾選的規則轉正；開局畫面的新局帶 v22:true 一律開（明寫 false 仍可關，供 A/B）。
+// createState(seed) 不帶 spec、或 { legacyGolden: true } 時不套用，保護舊 golden 與舊測試。
+export const BASELINE_V22 = Object.freeze({ grow: true, growdr: true, neigong: true, ngshield: true, prof: true, laborgrow: true, valor: true, valormid: true, rumor: true, readwu: true, comprehend: true, mentor: true, mpool: true, cotrain: true, cofun: true, paypill: true, longwatch: true, masterask: true, letterask: true, cropcare: true, mfit: true, jhrefuse: true, qshare: true, jhui: true, jhev: true, peace: true, lairpow: true, lift: true, bt25: true, draw: true });
 export function createState(seed = 1, heroSpec = null) {
+  if (heroSpec?.legacyGolden && !heroSpec.kind) heroSpec = null;
+  if (heroSpec?.v22 && !heroSpec.legacyGolden) heroSpec = { ...BASELINE_V22, ...heroSpec };
   const s = {
     v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
@@ -112,6 +117,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.bt25) s.bt25 = true; // loop25 突破排程（選用）
   if (heroSpec?.jhev) s.jhev = true; // loop23 江湖事件（選用）
   if (heroSpec?.peace) s.m9 = true; // loop9 太平與防禦經濟（選用） // loop8 同修請教（選用） // loop7 領悟（選用） // loop6 人以群分（選用）
+  if (heroSpec?.v22 && !heroSpec.legacyGolden) s.v22 = true; /* loop143 */
   sectInit(s); s.gen = genInit(); if (heroSpec?.bonus) s.gen.suhuiStart = heroSpec.bonus;
   if (s.grow) growInit(s);
   if (s.prof) for (const d of s.ds) d.pf = 1; /* loop91 */

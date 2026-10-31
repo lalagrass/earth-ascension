@@ -5,7 +5,7 @@ import { stewardDaily } from '../src/steward.mjs';
 import { RULES } from '../src/start-ui.mjs';
 const H = { siteOf: () => null, capacity: () => 99, startBuild: () => true };
 const S = (o) => ({ steward: true, stewkit: true, ds: Array(8).fill(0), fac: { watch: { stage: 1 }, kitchen: { stage: 0 } }, res: { food: 3 }, log: [], t: 0, ...o });
-test('規則預設勾選', () => assert.equal(RULES.find((r) => r[0] === 'stewkit')?.[3], true));
+test('規則轉正（loop143）：併入「執事自動營建」勾選', async () => { const { buildSpec } = await import('../src/start-ui.mjs'); assert.ok(buildSpec({ tab: 'custom', ans: Array(9).fill(0) }).stewkit); });
 test('8 人、存飯不夠、露天灶 → 蓋膳房', () => assert.equal(stewardDaily(S({}), H), 'kitchen'));
 test('人少、飯夠、已有膳房、規則關或執事關 → 不蓋', () => {
   assert.equal(stewardDaily(S({ ds: Array(7).fill(0) }), H), null); assert.equal(stewardDaily(S({ res: { food: 8 } }), H), null);

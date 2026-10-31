@@ -7,7 +7,7 @@ import { save, load } from '../src/save.mjs';
 import { qiMax } from '../src/neigong.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...x });
 const runDays = (s, days, dt = 6) => { for (let i = 0; i < days * 600 / dt; i++) tick(s, dt); return s; };
-test('規則預設勾選並寫明需內功', () => { const r = RULES.find((x) => x[0] === 'ngshield'); assert.equal(r?.[3], true); assert.match(r[4], /需最小內功/); });
+test('規則轉正（loop143）：ngshield 在 v2.2 底層規則', async () => { const { BASELINE_V22 } = await import('../src/sim.mjs'); assert.equal(BASELINE_V22.ngshield, true); });
 test('開局接線；開局內力上限 0；沒勾內功時不生效', () => {
   const on = createState(7, spec({ neigong: true, ngshield: true }));
   assert.ok(on.ngshield && on.ds.every((d) => d.ng2 && d.qi === 0));

@@ -5,23 +5,14 @@ import { RULES, ruleSpec, buildSpec } from '../src/start-ui.mjs';
 import { createState } from '../src/sim.mjs';
 import { defaultStats } from '../src/hero.mjs';
 
-const FLAG = { readwu: 'readwu', valormid: 'valormid', valor: 'valor', laborgrow: 'laborgrow', neigong: 'neigong', ngshield: 'ngshield', rumor: 'rumor', growdr: 'growdr', draw: 'draw', comprehend: 'wu7', mentor: 'mentor', peace: 'm9', jhev: 'jhev', bt25: 'bt25', lift: 'lift', lairpow: 'lairpow', steward: 'steward', jhui: 'jhui', qshare: 'qshare', jhrefuse: 'jhrefuse', mfit: 'mfit', cropcare: 'cropcare', letterask: 'letterask', mpool: 'mpool', cotrain: 'cotrain', masterask: 'masterask', stewkit: 'stewkit', cofun: 'cofun', longwatch: 'longwatch', paypill: 'paypill', grow: 'grow', prof: 'prof', stewyard: 'stewyard' };
-const base = (tab) => ({ tab, hero: 'guojing', comp: null, name: '測', stats: defaultStats(), ans: Array(9).fill(0), ask: false, draw: true });
-const on = (s, sk) => (sk === 'valor' ? typeof s.valor === 'number' : !!s[FLAG[sk]]);
-
-test('RULES 單一來源：23 項、id／spec 鍵不重複、每項都有對應旗標', () => {
-  assert.equal(RULES.length, 33); assert.equal(new Set(RULES.map((r) => r[0])).size, 33); assert.equal(new Set(RULES.map((r) => r[2])).size, 33);
-  for (const [, , sk] of RULES) assert.ok(FLAG[sk], sk);
+// loop143：33 個勾選框轉正為底層（見 v220.test.mjs）；這裡只驗剩下的 1 個勾選框在兩分頁都接線
+const base = (tab) => ({ tab, hero: 'guojing', comp: null, name: '測', stats: defaultStats(), ans: Array(9).fill(0), ask: false });
+test('RULES 只剩執事自動營建', () => { assert.deepEqual(RULES.map((r) => r[0]), ['steward']); });
+for (const tab of ['classic', 'custom']) test(`${tab}：執事勾選接線（steward／stewkit／stewyard 同進退）`, () => {
+  const on = createState(7, buildSpec(base(tab))), off = createState(7, buildSpec({ ...base(tab), steward: false }));
+  for (const k of ['steward', 'stewkit', 'stewyard']) { assert.ok(on[k], k); assert.ok(!off[k], k); }
 });
-const DEP = { ngshield: 'neigong', growdr: 'grow', valormid: 'valor' }; // loop115 護體真氣依附內功
-for (const tab of ['classic', 'custom']) {
-  test(`${tab}：全部預設勾選 → 23 個旗標都開`, () => { const s = createState(7, buildSpec(base(tab))); for (const [, , sk] of RULES) assert.ok(on(s, sk), `${tab} ${sk}`); });
-  for (const [id, k, sk] of RULES) test(`${tab}：只取消「${id}」→ 只有 ${sk} 關、其餘照開`, () => {
-    const st = { ...base(tab), [k]: false }; const s = createState(7, buildSpec(st));
-    for (const [, , o] of RULES) assert.equal(on(s, o), o === 'ngshield' && sk === 'ngshield' ? true : o !== sk && DEP[o] !== sk, `${tab} 取消 ${id} 時 ${o}`); /* loop142：開內功即護體真氣 */
-  });
-}
-test('兩分頁規則部分一致（經典不再重複列）', () => { for (const tab of ['classic', 'custom']) assert.deepEqual(Object.keys(ruleSpec(base(tab))).sort(), RULES.map((r) => r[2]).sort()); });
+test('兩分頁規則部分一致', () => { assert.deepEqual(ruleSpec(base('classic')), ruleSpec(base('custom'))); });
 test('面板折疊狀態：closed 標記的區塊不帶 open，其餘預設展開（審查 P2）', async () => {
   const { jhuiHtml } = await import('../src/jhui.mjs'); const s = createState(1, { kind: 'custom', answers: Array(9).fill(0), jhui: true });
   const h = jhuiHtml(s, { 'jhui-arch': true });

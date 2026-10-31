@@ -1323,3 +1323,11 @@
 - 擁有人 t185：決定 118–123 正式核准（DECISIONS §7 已標）；本批改做 v2.2 三階段重構（R1→R2/R3→M1–M3），停止新增微檔與開局勾選框。
 - `neigong.mjs`：`NG` 只留 `med／rest／btCost／btBonus`；`qiMax` 一律走護體真氣上限。`sim.mjs`：刪掉狩獵運勁與運功療傷分支；開內功即 `ngshield`；一版舊檔讀入後改護體真氣（截上限）。`growui.mjs`：一版內力軸與一版規則說明刪除。
 - 測試：loop102／104／106 改寫成護體真氣規則；loop114／115／120／123／35 中「一版」斷言改為新行為。golden 不動（golden 不開內功）。
+
+## Loop 143 — Batch 1 R1-②：規則轉正、開局只留 3 個選項、golden-30d-v22（決定 127–129）
+- `sim.mjs`：`BASELINE_V22`（30 條）；`createState` 見 `v22: true` 就套用，`legacyGolden` 或無 spec 不套用；狀態記 `s.v22`。
+- `start-ui.mjs`：`RULES` 從 33 項剩 1 項「執事自動營建」（steward＋stewkit＋stewyard）；「重大抉擇每次詢問我」「名俠池畫風」移進同一個「江湖規則」框。`buildSpec` 一律帶 `v22: true`。
+- 測試：新增 `v220.test.mjs` 16 項（底層名單、兩分頁接線、取消執事、照舊／legacyGolden 不套用、8 個舊 fixture 讀入不強開、golden-30d-v22）；loop35 改為驗唯一勾選；14 個「規則預設勾選」測試改驗 BASELINE_V22。harness `ALL_ON` 加 `v22`。
+- loop142 留下的 readwu 舊檔測試（`/workspace/ab/…keep`）併入 v220 的「舊 fixture 不強開」一項，不另提交。
+- Retro（142–143）：好：轉正只動一張表與 spec，舊測試全部保留當對照組。不好：loop35 原本 66 項逐條接線測試被 3 項取代，測試數從 713 掉到 663，是有意的；底層各條的行為測試仍在各自 loop 測試裡。
+- **Batch 1 小結**：一版內功刪除（決定 126）；30 條規則轉正、開局江湖規則剩 3 個選項；舊檔與舊 golden 不變；新增 golden-30d-v22（`38fd4ddf63c1028b`）。
