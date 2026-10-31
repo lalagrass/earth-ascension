@@ -178,7 +178,7 @@ export const cdMul = (d, mvId, now = 0) => { const a = artOfMove(mvId); if (!a |
 export const visTier = (d, mvId) => { const a = artOfMove(mvId); return a && d.arts?.[a.id] ? artTier(d, a.id) : 0; };
 export const topTier = (d) => ARTS.reduce((m, a) => (artTier(d, a.id) > m.t ? { t: artTier(d, a.id), a } : m), { t: -1, a: null });
 export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; const a = artById(id); unlockTechs(d, a); if (d.pendingArt === id) d.pendingArt = null; return a; }
-export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now); // loop127 勞作練體
+export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now) * harmonyMul(d); /* loop161 v2.4 陰陽共鳴（只 d.v24） */ // loop127 勞作練體
 const moveMul0 = (d, mvId, now = 0) => { const a = artOfMove(mvId); if (!a || !d.arts?.[a.id]) return (d.powMul || 1) * (d.jhMul || 1) * (d.v23 ? qiStrikeMul(d) * swordDmgMul(d, mvId) : 1); const t = artTier(d, a.id), r = d.arts[a.id]; return (d.early?.art === a.id ? d.early.mul : 1) * (d.powMul || 1) * (d.jhMul || 1) * (1 + ART_GAIN.tierDmg * t) * (t >= 3 ? PERKS.full.dmg : 1) * (variantOf(d, a.id, now)?.dmg || 1) * (1 + GUIZHEN.star * (r.stars || 0)) * (d.pf ? profMul(r.xp) : 1) * (d.v23 ? qiStrikeMul(d) * swordDmgMul(d, mvId) : 1) /* loop157 以氣御招／劍招 */ /* loop91 熟練度十重（d.pf 由 s.prof 設） */; };
 export const effectTier = (d, eff) => ARTS.filter((a) => a.effect === eff).reduce((m, a) => Math.max(m, artTier(d, a.id)), -1);
 export const effectMul = (d, eff, now = 0) => ARTS.filter((a) => a.effect === eff && d.arts?.[a.id]).reduce((m, a) => m * (variantOf(d, a.id, now)?.eff || 1) * (artTier(d, a.id) >= 3 ? PERKS.full.dmg : 1), 1);
@@ -383,3 +383,15 @@ export function studyChart24(s, d, r) {
   const need = Object.entries(CHART24.arts).filter(([c, id]) => !d.arts[id] && bestSpec(s, c, s.ds || []) < CHART24.need); if (!need.length) return null;
   if (r() >= CHART24.chance) return null; const [c, id] = need[0]; learnArt(d, id, s.t); (s.v24n ??= {}).chart = (s.v24n.chart || 0) + 1; return { cat: c, art: artBy(id) };
 }
+
+// ---- loop161 v2.4 Batch 2：陰陽剛柔共鳴、奇門點穴／封穴（只在 v24） ----
+/* 共鳴：身上已入門（tier ≥ 1）的武學同時有陰、陽屬性 ×1.08；再兼「和」×1.12。無屬性的舊武學不參與 */
+export const HARMONY24 = { yy: 1.08, all: 1.12, minTier: 1, fengCd: 0.3 };
+/* 屬性：新武學有 attr；舊武學依 tags 推（剛→陽、柔→陰，兩者皆有→和） */
+export const attrOf = (a) => a?.attr || (a?.tags?.includes('剛') && a?.tags?.includes('柔') ? 'he' : a?.tags?.includes('剛') ? 'yang' : a?.tags?.includes('柔') ? 'yin' : null);
+export function harmonyOf(d) { if (!d?.v24) return null; const at = new Set();
+  for (const id of Object.keys(d.arts || {})) { const a = artBy(id); const x = attrOf(a); if (x && artTier(d, id) >= HARMONY24.minTier) at.add(x); }
+  return at.has('yin') && at.has('yang') ? (at.has('he') ? 'all' : 'yy') : null; }
+export const harmonyMul = (d) => { if (!d?.v24) return 1; const h = harmonyOf(d); return h ? HARMONY24[h] : 1; };
+/* 封穴：隊中有懂奇門（造詣 > 0）的人，敵人出手間隔 ×(1 + fengCd × 奇門強度) */
+export const fengxueK = (s, team) => (s?.v24 ? specK(bestSpec(s, 'qimen', team)) : 0);

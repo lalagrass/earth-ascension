@@ -55,3 +55,18 @@ test('loop160 Batch1.2：藏經閣圖譜——v24 讀書可得抄本；舊局不
   const o = OLD(); assert.equal(A.studyChart24(o, hero(o), () => 0), null);
   const s2 = V(), d2 = hero(s2); d2.v23 = d2.v24 = true; assert.equal(A.studyChart24(s2, d2, () => 0.9), null);
 });
+
+// ---- loop161 Batch 2 ----
+test('loop161 Batch2：陰陽共鳴——陰＋陽 ×1.08、陰陽和 ×1.12；舊局恆為 1', () => {
+  const s = V(), d = hero(s); d.v23 = d.v24 = true; const big = 1e6;
+  d.arts = { tuinaHand: { xp: big } }; assert.equal(A.harmonyMul(d), 1);
+  d.arts.wuhuBlade = { xp: big }; assert.equal(A.harmonyOf(d), 'yy'); assert.equal(A.harmonyMul(d), 1.08);
+  d.arts.basicSword = { xp: big }; assert.equal(A.harmonyMul(d), 1.12);
+  const o = hero(OLD()); o.arts = { ...d.arts }; assert.equal(A.harmonyMul(o), 1);
+  assert.equal(A.attrOf({ tags: ['剛'] }), 'yang'); assert.equal(A.attrOf({ tags: ['柔'] }), 'yin');
+});
+test('loop161 Batch2：奇門封穴——隊中有奇門造詣才 > 0；舊局為 0', () => {
+  const s = V(), d = hero(s); d.v23 = d.v24 = true; d.arts = { tuinaHand: { xp: 1e6, gm: { e: 20, ms: 0 } } };
+  assert.ok(A.fengxueK(s, [d]) > 0);
+  const o = OLD(); assert.equal(A.fengxueK(o, [hero(o)]), 0);
+});

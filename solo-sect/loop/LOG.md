@@ -1482,3 +1482,7 @@
 - 做得好：新武學一律掛 `v24:true` 加 `artOk` 一個入口，舊局完全看不到，舊 golden 兩輪都沒動。
 - 不好：舊的平衡測試直接列舉全部 ARTS，新武學一加就破，要逐一排除；規格 Batch 2–4 原文在交接時被截斷，只能做保守版。
 - 下一步：Batch 2 陰陽共鳴、奇門封穴。
+
+## Loop 161 — v2.4 Batch 2：陰陽共鳴、奇門封穴（決定 177–178）
+- `arts.mjs`：`attrOf`、`harmonyOf`／`harmonyMul`（`HARMONY24`）接進 `moveMul`；`fengxueK`。`world.mjs` `fight()`：v24 封穴拉長敵人出手間隔、記陣法觸發。`main.mjs` 弟子卡顯示共鳴。
+- 測試：v24 +2 項（11 項）；golden-30d-v22 不變 `ac9d475b00d2688c`。遊戲 725、sect-chronicle 383、Python 53。

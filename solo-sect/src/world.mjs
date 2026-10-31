@@ -1,7 +1,7 @@
 import { ROUTE, NODES, ENEMIES, RAID_EVERY, DAY, ENDLESS, CAMPS, INSIGHT, EXP, MOVES, EXP_STYLES as STYLES, STYLE_TRAIT, EVADE, TRAITS, ARTS as ARTS_ALL, HS, DAO } from './data.mjs';
 import { log, affKey, resAdd } from './util.mjs';
 import { addMem } from './bonds.mjs';
-import { shieldHit, moveMul, cdMul, effectTier, artTier as effectTierOf, SPEC, zhenK, hasPoison, bestSpec } from './arts.mjs';
+import { shieldHit, moveMul, cdMul, effectTier, artTier as effectTierOf, SPEC, zhenK, hasPoison, bestSpec, fengxueK, HARMONY24 } from './arts.mjs';
 import { mateBonus } from './economy.mjs';
 import { addWexin, awaken } from './hero.mjs';
 import { aff } from './social.mjs';
@@ -310,6 +310,7 @@ function fight(s, e, team, H, gate = false, scale = 1) {
   for (const d of team) seeEnemy(s, e, 'fight', d); seeEnemy(s, e, 'see');
   const bonus = (s.codex[e]?.insight || 0) >= INSIGHT.dmgAt ? 1 + INSIGHT.dmg : 1;
   const zk = s.v23 ? zhenK(s, team) : 0, psn = s.v23 && hasPoison(s, team); if (psn) E.dmg *= 1 - SPEC.poisonWeak; /* loop151 陣法先手、毒術削敵 */
+  if (s.v24) { const fk = fengxueK(s, team), N = (s.v24n ??= {}); if (fk > 0) { E.cd *= 1 + HARMONY24.fengCd * fk; cd = E.cd; N.fengxue = (N.fengxue || 0) + 1; } if (zk > 0 && team.length >= 2) N.formation = (N.formation || 0) + 1; } /* loop161 Batch 2 奇門封穴、多人陣法觸發計數 */
   while (hp > 0 && t < 90) {
     const alive = team.filter((d) => d.hp > 0); if (!alive.length) break;
     t += 0.5; if (psn && t <= SPEC.poisonT) hp -= SPEC.poisonDps * 0.5; const fs = (X.scout && t <= EXP.scoutT ? 1 + EXP.scoutBonus : 1) * (zk && t <= EXP.scoutT ? 1 + SPEC.zhenScout * zk : 1); for (const d of alive) { hp -= dpsOf(s, d) * 0.5 * bonus * fs * counterMul(daoOf(d), DAO.enemy[e]); if (d.dugu?.length) d.hp = Math.min(100, d.hp + HS.duguHeal); } // v1.2 九劍只攻不守：不格擋，但料敵機先回氣血 // v1.0 探路者先手 +20%
