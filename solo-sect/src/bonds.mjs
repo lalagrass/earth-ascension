@@ -41,7 +41,7 @@ const pairRecent = (s, a, b) => Object.entries(s.passed || {}).some(([k, day]) =
 const able = (d) => d && d.role !== 'laborer' && !d.away && d.adult !== false;
 export function passPick(s, d) {
   if (!able(d) || (d.passDay === s.day) || passToday(s) >= PASS.perDay) return null; /* v1.8：門派每日傳功上限 */ const P = s.passed || {};
-  const arts = ARTS.filter((a) => !a.secret && !a.classic && artTier(d, a.id) >= PASS.minTier); /* 名俠絕學走各自劇情，不走一般傳功 */ if (!arts.length) return null;
+  const arts = ARTS.filter((a) => !a.secret && !a.classic && artTier(d, a.id) >= PASS.minTier); /* 名俠絕學走各自劇情，不走一般傳功 */ if (d.v24 && d.stree) arts.sort((x, y) => d.stree.includes(y.id) - d.stree.includes(x.id)); /* loop164 本門優先傳 */ if (!arts.length) return null;
   const cands = s.ds.filter((p) => p !== d && able(p) && !p.task?.partner && p.task?.act !== 'meditate').sort((x, y) => (y.master === d.id) - (x.master === d.id) || aff(s, d, y) - aff(s, d, x));
   for (const p of cands) if (!pairRecent(s, d.id, p.id)) for (const a of arts) if (artTier(p, a.id) < PASS.minTier && !P[`${d.id}>${p.id}:${a.id}`]) return { p, art: a.id };
   return null;

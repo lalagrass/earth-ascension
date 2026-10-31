@@ -1499,3 +1499,13 @@
 ## Loop 163 — v2.4 Batch 4：五個新門派（決定 180–182）
 - `data.mjs` `SECTS` 加 emei／wudang／taohua／gumu／xingxiu（`v24:true`）；`sect.mjs` `sectOf` 認 `hero.sect24`、`sgainOf`（寒玉床人數門檻）、星宿新人帶《百毒譜》；`hero.mjs` 在 v22 新局把 `spec.sect24` 帶進 `s.hero`。
 - 測試：v24 +2 項（14 項）；golden-30d-v22 不變 `d672c6f90b1b3e17`。遊戲 728、sect-chronicle 383、Python 53。
+
+## Loop 164 — v2.4 Batch 4 補完：華山劍法線、掌門 T1 根基、無名派三件套、本門傳承鎖（決定 183–186）
+- `data.mjs`：`tree24`（劍宗／氣宗）、`WUMING_KIT24`、`sectBiasMul` 無名派百納海川。`sect.mjs`：`sectRoots24`（`sectInit` 在 `s.v24` 時呼叫）。`arts.mjs`：`LOCK24`、`lockedArt24`、`ownArt24`／`ownFirst24`，接 `gainArt`／`selfTarget`；`bonds.mjs` `passPick` 本門優先。
+- 測試：v24 +4 項（另含 diag-v24-v25 冒煙 1 項，共 19 項）；v23 吐納測試先移除家傳吐納再量。golden-30d-v22 不變 `d672c6f90b1b3e17`；舊 golden 不動。
+- 新增 `test/harness/diag-v24-v25.mjs`（四策略、六門派輪替，Batch 6 用）。
+
+### Retro 163–164
+- 做得好：門派相關全部經 `sectInit`／`s.v24` 單一入口，舊局與兩份 golden 都沒動。
+- 不好：Batch 4 一開始因規格截斷漏了 4.1⑥／4.2／4.3，這輪才補；傳承鎖受限於 classic 武學很少，效果偏窄。
+- 下一步：Batch 5 合參推演、山門大比、天下會武。

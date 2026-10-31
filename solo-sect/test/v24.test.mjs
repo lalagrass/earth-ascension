@@ -95,3 +95,35 @@ test('loop163 Batch4：古墓寒玉床——門人 ≤5 才 ×1.5', () => {
   assert.equal(sgainOf(s), n <= 5 ? 1.5 : 1);
   while (s.ds.filter((d) => d.role !== 'laborer').length <= 5) s.ds.push({ ...s.ds[0], id: 'x' + s.ds.length, role: 'disciple' }); assert.equal(sgainOf(s), 1);
 });
+
+// ---- loop164 Batch 5 ----
+import { execFileSync } from 'node:child_process';
+test('loop164 Batch5：diag-v24-v25 四種策略各跑 1 局 2 日，不崩潰、欄位齊全', () => {
+  for (const st of ['idle', 'bot', 'farm', 'exp']) { const out = execFileSync(process.execPath, [new URL('./harness/diag-v24-v25.mjs', import.meta.url).pathname, st, '1', '1004', '2'], { env: { ...process.env, SS_DT: '6' } }).toString().trim();
+    const r = JSON.parse(out); assert.equal(r.crash, 0, r.err); assert.equal(r.strat, st); for (const k of ['coin', 'pow', 'produce', 'affix', 'fengxue', 'formation', 'chart', 'lsFirst', 'new24']) assert.ok(k in r, k); }
+});
+
+// ---- loop164 Batch 4.1⑥／4.2／4.3 ----
+import { sectBiasMul, WUMING_KIT24 } from '../src/data.mjs';
+test('loop164 Batch4.1⑥：v24 華山劍宗、氣宗補華山劍法線；舊局樹不變', () => {
+  for (const id of ['linghuchong', 'yuebuqun']) { const s = createState(7, { kind: 'template', id, askMajor: false, v22: true }); for (const k of ['basicSword', 'huashanSword', 'sanxianSword']) assert.ok(s.sect.tree.includes(k), id + k);
+    const o = createState(7, { kind: 'template', id, askMajor: false }); assert.ok(!o.sect.tree.includes('basicSword')); }
+});
+test('loop164 Batch4.2：自創無名派依主價值帶家傳三件套並入本門樹；名門掌門帶 T1 根基；舊局不帶', () => {
+  const s = V(); const h = hero(s), kit = WUMING_KIT24[s.hero.main]; assert.ok(kit); for (const k of kit) { assert.ok(h.arts[k], k); assert.ok(s.sect.tree.includes(k)); }
+  const w = V({ sect24: 'wudang' }); assert.ok(hero(w).arts.breath && hero(w).arts.basicSword);
+  const o = OLD(); assert.ok(!hero(o).arts.wuhuBlade && !hero(o).arts.basicSword);
+});
+test('loop164 Batch4.2 百納海川：無名派 v24 學外門名學不罰 ×0.7；他派照罰', () => {
+  const a = { id: 'dugu', classic: true, tags: [] }; const d = { stree: ['x'], sbias: {}, v24: true, sectId: 'wuming' };
+  assert.equal(sectBiasMul(d, a)[1], 1); assert.ok(sectBiasMul({ ...d, sectId: 'emei' }, a)[1] < 1); assert.ok(sectBiasMul({ ...d, v24: false }, a)[1] < 1);
+});
+test('loop164 Batch4.3 本門傳承鎖：他派專屬名學預設鎖住，主門類造詣 ≥40 且品階 ≤2 解鎖；本門優先排序', () => {
+  const s = V({ sect24: 'emei' }); tick(s, 0.1); const d = hero(s); const a = A.artById('tantui'), z = A.artById('dugu');
+  const c = A.primaryCat(a.id); const lo = { ...d, gm: undefined }; assert.ok(A.mastery(lo, c) < 40); assert.equal(A.lockedArt24(lo, a), true);
+  const hi = { ...d, arts: { ...d.arts } }; for (const k of Object.keys(A.ART_CAT)) if (A.ART_CAT[k][c] && k !== 'tantui') hi.arts[k] = { xp: 100, gm: { e: 99 } };
+  assert.ok(A.mastery(hi, c) >= 40, String(A.mastery(hi, c))); assert.equal(A.lockedArt24(hi, a), false);
+  for (const k of Object.keys(A.ART_CAT)) if (A.ART_CAT[k].jianfa && k !== 'dugu') hi.arts[k] = { xp: 100, gm: { e: 99 } }; assert.ok(A.mastery(hi, 'jianfa') >= 40); assert.equal(A.lockedArt24(hi, z), true, '品階 4 仍鎖');
+  assert.equal(A.lockedArt24({ ...d, v24: false }, a), false); assert.equal(A.lockedArt24({ ...d, sectId: 'wuming' }, a), false);
+  assert.ok(A.ownFirst24(d)({ id: 'zzz' }, { id: d.stree[0] }) > 0);
+});

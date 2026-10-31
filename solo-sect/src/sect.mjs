@@ -1,4 +1,4 @@
-import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS } from './data.mjs';
+import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS } from './data.mjs';
 import { seedArts, learnArt, artTier, artById } from './arts.mjs';
 import { compat } from './social.mjs';
 import { affKey, relKey, log, resAdd, resSet } from './util.mjs';
@@ -111,7 +111,16 @@ export function sectOf(hero) {
   if (id === 'wuming' && hero?.kind === 'custom') { const [tag, rule] = CUSTOM_BY_VALUE[hero.main] || ['拙', 'rescue']; o.bias = { [tag]: SECT_K.biasCap }; o.rules = [rule]; o.rivals = [CUSTOM_RIVALS[(hero.name || '').length % CUSTOM_RIVALS.length]]; o.plaque = `${hero.name || '無名'}派`; o.name = o.plaque; }
   return o;
 }
-export const sectInit = (s) => (s.sect = sectOf(s.hero));
+export const sectInit = (s) => { s.sect = sectOf(s.hero); if (s.v24) sectRoots24(s); return s.sect; };
+/* loop164 v2.4 Batch 4.1⑥／4.2：華山劍宗、氣宗補華山劍法線；掌門開局自帶本門 T1 根基（無前置的入門內功＋外功）；自創無名派依主價值帶家傳三件套並納入本門樹 */
+export const T1_XP24 = 12;
+export function sectRoots24(s) {
+  const S = s.sect, B = SECTS[S.id], h = s.ds.find((d) => d.id === 'hero'); for (const id of B.tree24 || []) if (!S.tree.includes(id)) S.tree.push(id);
+  if (!h) return; const give = (id) => { if (!artById(id)) return; const had = !!h.arts?.[id]; h.arts ??= {}; learnArt(h, id, s.t); if (!had) h.arts[id].xp = Math.max(h.arts[id].xp, T1_XP24); };
+  if (S.id === 'wuming' && s.hero?.kind === 'custom') { const kit = WUMING_KIT24[s.hero.main] || WUMING_KIT24.wu; for (const id of kit) { give(id); if (!S.tree.includes(id)) S.tree.push(id); } S.kit24 = kit; return; }
+  const t1 = S.tree.map(artById).filter((a) => a && !a.secret && !a.signature && !(a.req || []).length);
+  const inner = t1.find((a) => a.school === 'inner'), outer = t1.find((a) => a.school !== 'inner' && a.school !== 'step'); for (const a of [inner, outer]) if (a) give(a.id);
+}
 const heroD = (s) => s.ds.find((d) => d.id === 'hero');
 export const sectFac = (s) => SECTS[s.sect?.id]?.fac;
 /* loop163 古墓寒玉床：門人（不含幫工）≤ gainMaxDs 才有加成 */

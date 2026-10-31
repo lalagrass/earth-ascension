@@ -665,10 +665,10 @@ export const SECTS = {
   gaibang: { name: '丐幫', plaque: '丐幫・北丐一脈', color: '#8a5a2b', flag: '丐', bias: { 剛: 0.1, 拙: 0.05 }, tree: ['xianglong', 'dagou', 'pushPalm', 'basicFist'], ban: [], rules: ['hoard', 'rescue'],
     fac: { name: '打狗棒堂', cost: { wood: 10, coin: 10 }, daily: { food: 2 }, desc: '污衣淨衣議事；弟子沿村乞討，每日糧 +2' }, rivals: ['鐵掌幫', '白駝山'], fav: ['hongqigong', 'huangrong'],
     recruit: { root: 1, wu: -1, text: '一個根骨粗壯、腦筋不太靈光的小乞兒捧著破碗上山。' } },
-  qizong: { name: '華山派', plaque: '華山派・氣宗', color: '#3b5f8a', flag: '華', bias: { 柔: 0.15, 快: -0.1 }, tree: ['zixia', 'breath', 'wavePalm'], ban: ['kuihua', 'huagu', 'hama'], rules: ['demon', 'qi'],
+  qizong: { name: '華山派', plaque: '華山派・氣宗', color: '#3b5f8a', flag: '華', bias: { 柔: 0.15, 快: -0.1 }, tree: ['zixia', 'breath', 'wavePalm'], tree24: ['basicSword', 'huashanSword', 'sanxianSword'], ban: ['kuihua', 'huagu', 'hama'], rules: ['demon', 'qi'],
     fac: { name: '思過崖', cost: { stone: 10, coin: 6 }, ease: 3, desc: '面壁思過：每三天消一層掌門違心' }, rivals: ['嵩山派', '華山劍宗'], fav: ['linghuchong', 'ningzhongze', 'linpingzhi'],
     recruit: { wu: 1, text: '一位世家子弟執禮甚恭，遞上拜帖。' } },
-  jianzong: { name: '華山劍宗', plaque: '思過崖・劍宗', color: '#5b6b7a', flag: '劍', bias: { 巧: 0.15 }, tree: ['dugu', 'wavePalm', 'snowStep'], ban: [], rules: ['rescue', 'jiu'],
+  jianzong: { name: '華山劍宗', plaque: '思過崖・劍宗', color: '#5b6b7a', flag: '劍', bias: { 巧: 0.15 }, tree: ['dugu', 'wavePalm', 'snowStep'], tree24: ['basicSword', 'huashanSword', 'sanxianSword'], ban: [], rules: ['rescue', 'jiu'],
     fac: { name: '酒窖', cost: { wood: 8, coin: 8 }, mood: 5, desc: '好酒在窖：掌門每日心情 +5' }, rivals: ['華山氣宗', '嵩山派'], fav: ['renyingying', 'tianboguang', 'yuelingshan'],
     recruit: { mood: 10, text: '一個背著酒葫蘆的浪子聽說這裡管酒，笑嘻嘻來拜師。' } },
   mingjiao: { name: '明教', plaque: '明教・光明頂', color: '#b33a1f', flag: '火', bias: { 柔: 0.08, 巧: 0.07 }, tree: ['jiuyang', 'qiankun', 'taiji', 'breath'], ban: [], rules: ['heal', 'rescue'],
@@ -703,11 +703,13 @@ export const SECTS = {
 export const HERO_SECT = { guojing: 'gaibang', yuebuqun: 'qizong', linghuchong: 'jianzong', zhangwuji: 'mingjiao', weixiaobao: 'tiandihui', axing: 'zhulong' };
 // 自創主角：九問主價值 → 流派偏向＋一條門規
 export const CUSTOM_BY_VALUE = { xia: ['剛', 'rescue'], sect: ['拙', 'hoard'], qing: ['柔', 'heart'], free: ['巧', 'heart'], wu: ['拙', 'rescue'], fame: ['剛', 'rent'] };
+/* loop164 v2.4 Batch 4.2 自創無名派家傳入門三件套（依主價值） */
+export const WUMING_KIT24 = { free: ['basicSword', 'snowStep', 'breath'], qing: ['basicSword', 'snowStep', 'breath'], xia: ['wuhuBlade', 'pushPalm', 'breath'], fame: ['wuhuBlade', 'pushPalm', 'breath'], wu: ['shaolinStaff', 'sweepLeg', 'breath'], sect: ['shaolinStaff', 'sweepLeg', 'breath'] };
 export const CUSTOM_RIVALS = ['青城派', '鐵掌幫', '星宿派'];
 export function sectBiasMul(d, a) { // [流派偏向, 外門] 兩個乘數；沒門派資料的弟子回 [1,1]
   if (!d.stree) return [1, 1];
   const b = d.sbias || {}, sum = (a.tags || []).reduce((x, t) => x + (b[t] || 0), 0), m = 1 + Math.max(-SECT_K.biasCap, Math.min(SECT_K.biasCap, sum));
-  const out = a.classic && !a.signature && !d.stree.includes(a.id) ? SECT_K.outside : 1; // 名俠招牌＝客傳，不罰
+  const out = a.classic && !a.signature && !d.stree.includes(a.id) && !(d.v24 && d.sectId === 'wuming') ? SECT_K.outside : 1; // 名俠招牌＝客傳，不罰；loop164 無名派【百納海川】不罰
   return [m, out];
 }
 

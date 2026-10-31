@@ -1,4 +1,4 @@
-import { ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST } from './data.mjs';
+import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST } from './data.mjs';
 import { strMul } from './economy.mjs';
 import { pipeline } from './util.mjs';
 // ==== （原 growth.mjs）====
@@ -97,6 +97,17 @@ export const nextLvXp = (xp) => { const p = profOf(xp); if (!p.lv) return null; 
 export const artById = (id) => ARTS.find((a) => a.id === id);
 /* loop160：v2.4 新武學只對 v2.4 新局的人開放（舊局、舊存檔看不到） */
 export const artOk = (d, a) => !a?.v24 || !!d?.v24;
+/* loop164 v2.4 Batch 4.3 本門傳承鎖：他派專屬（名門 classic、非名俠招牌、在某派 tree 而不在本門 d.stree）預設不可自悟／自選；
+   【宗師觸類旁通】該武學主門類造詣 ≥ LOCK24.master 時解鎖他派 grade ≤2 武學。只在 d.v24。 */
+export const LOCK24 = { master: 40, maxGrade: 2 };
+const inSomeTree = (id) => Object.values(SECTS).some((S) => S.tree.includes(id) || S.tree24?.includes(id));
+export const ownArt24 = (d, a) => !!(d?.stree && d.stree.includes(a.id));
+export function lockedArt24(d, a) {
+  if (!d?.v24 || !a || !a.classic || a.signature || ownArt24(d, a) || d.sectId === 'wuming') return false;
+  if (!inSomeTree(a.id)) return false;
+  const c = primaryCat(a.id); return !(c && a.grade <= LOCK24.maxGrade && mastery(d, c) >= LOCK24.master);
+}
+export const ownFirst24 = (d) => (x, y) => (d?.v24 ? ownArt24(d, y) - ownArt24(d, x) : 0);
 export const artOfMove = (mv) => ARTS.find((a) => a.tech === mv || a.techs?.includes(mv));
 export const tierOf = (xp) => { let t = 0; for (let i = 0; i < TIERS.length; i++) if (xp >= TIERS[i][0]) t = i; return t; };
 export const artTier = (d, id) => (d.arts?.[id] ? tierOf(d.arts[id].xp) : -1);
@@ -166,7 +177,7 @@ export function gainArt(d, amt, mf = 1, now = 0, g = null) {
     if (r.guizhen) { r.sxp = (r.sxp || 0) + gx * 0.4; while (r.sxp >= starCost(r)) { r.sxp -= starCost(r); r.stars = (r.stars || 0) + 1; out.star = true; } }
     else { r.xp = Math.min(curCap(d, a), r.xp + gx * (1 - r.xp / 130)); out.moves = unlockTechs(d, a); }
     if (g) out.gm = settleGrowth(d, a, r, { src: g.src || 'train', raw: g.raw ?? amt, xp0, xp1: r.xp }); }
-  if (!d.pendingArt) { const next = ARTS.filter((a) => artOk(d, a) && !a.secret && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a)).sort((a, b) => (b.school === d.style) - (a.school === d.style))[0]; if (next) { d.pendingArt = next.id; out.next = next; } }
+  if (!d.pendingArt) { const next = ARTS.filter((a) => artOk(d, a) && !a.secret && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a) && !lockedArt24(d, a)).sort((a, b) => ownFirst24(d)(a, b) || (b.school === d.style) - (a.school === d.style))[0]; if (next) { d.pendingArt = next.id; out.next = next; } }
   return out;
 }
 export function chooseVariant(d, id, v, now = 0) {
@@ -258,7 +269,7 @@ function add(s, d, id, amt, how, think, log) {
   return a;
 }
 // 自悟目標：等師父教的那門優先；否則本門派可學的下一門，再不然任一門可學的
-export function selfTarget(d) { if (d.pendingArt) return d.pendingArt; const c = ARTS.filter((a) => open(d, a)); return (c.find((a) => a.school === d.style) || c[0])?.id || null; }
+export function selfTarget(d) { if (d.pendingArt) return d.pendingArt; const c = ARTS.filter((a) => open(d, a) && !lockedArt24(d, a)); if (d.v24) c.sort(ownFirst24(d)); /* loop164 本門優先 */ return (d.v24 && c[0] && ownArt24(d, c[0]) ? c[0] : c.find((a) => a.school === d.style) || c[0])?.id || null; }
 // 活動完成時呼叫
 export function comprehend(s, d, act, partner, think, log) {
   if (!s.wu7 || !COMP.gain[act]) return null;

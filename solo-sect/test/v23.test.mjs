@@ -96,7 +96,7 @@ test('loop157 專長效果：毒術削敵、醫術解餘毒、陣法減速／先
   onJoin13(s, d, 'chenglingsu'); tick(s, 0.1); assert.equal(s.jh.poison, null);
 });
 test('loop157 內功被動：吐納歇息回氣 ×1.5、紫霞打坐 +4／二層起氣宗 ×1.35、範圍半徑、劍招小成以下 +10%', () => {
-  const s = V(); tick(s, 0.1); const d = hero(s); const r0 = restQi(d); learnArt(d, 'breath', s.t); assert.equal(restQi(d), r0 * 1.5);
+  const s = V(); tick(s, 0.1); const d = hero(s); delete d.arts.breath; /* loop164 無名派家傳已帶吐納 */ const r0 = restQi(d); learnArt(d, 'breath', s.t); assert.equal(restQi(d), r0 * 1.5);
   learnArt(d, 'zixia', s.t); assert.equal(medQi(d), 20); d.zixia = 1; assert.equal(qiSchool(d), false); d.zixia = 2; assert.equal(qiSchool(d), true);
   d.ng = 1; d.arts.zixia.xp = 100; d.qi = Math.min(60, qiMax(d)); assert.ok(d.qi >= 50, String(qiMax(d))); assert.equal(qiAoeAdd(d, { aoe: 30 }), 15); d.qi = 10; assert.equal(qiAoeAdd(d, { aoe: 30 }), 0); assert.equal(qiAoeAdd(d, {}), 0);
   assert.equal(swordDmgMul(d, { skill: 'palm' }), 1);
