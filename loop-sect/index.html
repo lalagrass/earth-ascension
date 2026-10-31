@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>荒山門派 · loop-sect</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<section id="start" class="screen">
+  <h1>荒山門派</h1>
+  <p class="sub">一間破道館、三個人。先決定你是誰。</p>
+  <div class="start-grid">
+    <div class="card">
+      <h2>一、問心（8 題）</h2>
+      <ol id="quiz"></ol>
+    </div>
+    <div class="card">
+      <h2>二、天賦（共 <span id="attr-total">25</span> 點）</h2>
+      <div id="attrs"></div>
+      <p id="attr-msg" class="msg"></p>
+      <h2>或套用模板</h2>
+      <div id="templates" class="templates"></div>
+    </div>
+    <div class="card">
+      <h2>三、你</h2>
+      <label>名字 <input id="name" value="無名" maxlength="6"></label>
+      <div id="preview"></div>
+      <label>世界種子 <input id="seed" type="number" value="7"></label>
+      <button id="begin" class="primary">上山</button>
+    </div>
+  </div>
+</section>
+
+<section id="game" class="screen hidden">
+  <header>
+    <span id="clock">第 1 日 00:00</span>
+    <span class="speed">
+      <button data-speed="0" title="空白鍵">暫停</button>
+      <button data-speed="1" class="on">1×</button>
+      <button data-speed="2">2×</button>
+      <button data-speed="4">4×</button>
+      <button data-speed="16">16×</button>
+    </span>
+    <span class="cam">
+      <button data-cam="-1" title="左方向鍵">◀ 西</button>
+      <button data-cam="1" title="右方向鍵">東 ▶</button>
+    </span>
+    <span id="roster" class="roster"></span>
+  </header>
+  <main>
+    <canvas id="view" width="1280" height="800"></canvas>
+    <div class="side">
+      <aside id="panel"><p class="hint">點地圖上的人物看他的個性與想法。</p></aside>
+      <aside id="build"></aside>
+    </div>
+  </main>
+</section>
+<script type="module" src="src/main.mjs"></script>
+</body>
+</html>
