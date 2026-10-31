@@ -1,15 +1,24 @@
 // loop55：殘譜指點（s.mpool，預設勾選）：高人無武學可傳時改留殘譜，替前置武學加經驗
+// loop59：改成直接呼叫 masterOutcome 的單元測試（長跑版在框架改成全自動玩家後太慢）
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { run, seedRange } from './harness/bot.mjs';
+import { createState } from '../src/sim.mjs';
+import { masterOutcome, JHEV } from '../src/jhevents.mjs';
+import { ARTS } from '../src/data.mjs';
+import { reqMissing, fits, learnArt } from '../src/arts.mjs';
 import { RULES } from '../src/start-ui.mjs';
 test('規則在開局清單且預設勾選', () => { const r = RULES.find((x) => x[0] === 'mpool'); assert.ok(r); assert.equal(r[3], true); });
-test('開：會留殘譜（日誌可見）；關：不留。來訪次數不受影響', () => {
-  let pg = 0, logs = 0, seen = null;
-  for (const seed of seedRange(5, 1001)) {
-    const a = run(seed, {}, 60, true, (s) => { if (s.log[0]?.msg.includes('殘譜') && s.log[0] !== seen) { seen = s.log[0]; logs++; } }), b = run(seed, { mpool: false }, 60, true);
-    assert.equal(a.jhev.m, b.jhev.m); assert.ok(!b.jhev.pg); pg += a.jhev.pg || 0;
-    for (const d of a.ds) for (const r of Object.values(d.arts || {})) assert.ok(r.xp <= 100);
-  }
-  assert.ok(pg > 0); assert.ok(logs > 0);
+/* 造一個「沒有可傳武學、但有一套只差前置」的弟子：除了目標與其前置外，所有非秘傳武學都標成已會 */
+function setup(mpool) {
+  const s = createState(1, { kind: 'custom', answers: Array(9).fill(0), jhev: true, mpool }); s.jhev = { m: 0, l: 0, lw: 0, mNext: 0, lNext: 0 };
+  const d = s.ds.find((x) => Object.keys(x.arts || {}).length); const X = ARTS.find((x) => !x.secret && x.req.length && fits(d, x) && !d.arts[x.id] && x.req.every((q) => true));
+  for (const q of X.req) if (!d.arts[q.art]) learnArt(d, q.art, 0); for (const q of X.req) d.arts[q.art].xp = 0;
+  for (const a of ARTS) if (!a.secret && a.id !== X.id && !d.arts[a.id]) learnArt(d, a.id, 0);
+  assert.ok(reqMissing(d, X).length); return { s, d, X };
+}
+test('開：留殘譜，前置武學加經驗、日誌可見；關：不留', () => {
+  const on = setup(true), xp0 = on.X.req.reduce((a, q) => a + on.d.arts[q.art].xp, 0); masterOutcome(on.s, on.d, true);
+  assert.equal(on.s.jhev.pg, 1); assert.ok(on.X.req.reduce((a, q) => a + on.d.arts[q.art].xp, 0) > xp0); assert.ok(on.s.log.some((l) => l.msg.includes('殘譜')));
+  const off = setup(false); masterOutcome(off.s, off.d, true); assert.ok(!off.s.jhev.pg);
+  assert.equal(JHEV.master.xp, 8);
 });

@@ -87,6 +87,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.qshare) s.qshare = true;
   if (heroSpec?.mpool) s.mpool = true; /* loop55 高人殘譜 */
   if (heroSpec?.cotrain) s.cotrain = true; /* loop56 同修作伴 */
+  if (heroSpec?.masterask) s.masterask = true; /* loop59 高人指點由我定 */
   if (heroSpec?.letterask) s.letterask = true; /* loop49 挑戰帖由我定奪 */
   if (heroSpec?.cropcare) s.cropcare = true; /* loop47 誰種誰心疼 */
   if (heroSpec?.mfit) s.mfit = true; // loop41 高人因材施教
