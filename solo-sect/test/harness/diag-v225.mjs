@@ -17,7 +17,7 @@ for (let k = 0; k < N; k++) {
     if (s.day !== day) { day = s.day; const X = EC.E(s);
       if (X.lastBill && X.lastBill.day === s.day - 0 && !X.lastBill._seen) { X.lastBill._seen = 1; }
       for (const id of UP) { if (!s.fac[id]) continue; let w = buildWhy(s, id);
-        for (const [rk, item] of [['tiemu', 'tiemu'], ['lingshi', 'lingshi']]) if (w && w.startsWith(rk === 'tiemu' ? '鐵木不足' : '靈石不足') && EC.MARKET.stock[item] && !EC.marketWhy(s, item) && s.res.coin - EC.priceOf(s, item) >= EC.wageBill(s) + EC.facBill(s)) { const r = EC.marketDo(s, item); if (r.ok) c[rk === 'tiemu' ? 'buyT' : 'buyL']++; w = buildWhy(s, id); }
+        for (const [rk, item] of [['tiemu', 'tiemu'], ['lingshi', 'lingshi']]) if (w && w.startsWith(rk === 'tiemu' ? '鐵木不足' : '靈石不足') && EC.MARKET.rare?.[item] && !EC.marketWhy(s, item) && s.res.coin - EC.priceOf(s, item) >= EC.wageBill(s) + EC.facBill(s)) { const r = EC.marketDo(s, item); if (r.ok) c[rk === 'tiemu' ? 'buyT' : 'buyL']++; w = buildWhy(s, id); }
         if (!w && !Object.values(s.fac).some((v) => v.site) && s.res.coin - (facDef(id).stages[s.fac[id].stage + 1]?.cost?.coin || 0) >= EC.wageBill(s) + EC.facBill(s)) startBuild(s, id); } }
     if (++i % 40) return; for (const d of s.ds) { if (d.labor || d.away) continue; c.n++; if ((d.needs?.hunger ?? 100) < 30) c.hungry++; } });
   const ds = s.ds.filter((d) => !d.labor), X = s.threat || {}, G = s.gen || { couples: [] }, per = {};
