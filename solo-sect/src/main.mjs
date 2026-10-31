@@ -27,6 +27,8 @@ import { isFolded, foldKey, setAll } from './fold.mjs';
 import { dsum } from './dcard.mjs';
 import { compProgress } from './comprehend.mjs';
 import { seasonHint } from './season.mjs'; /* loop73 */
+import { growthHtml } from './growui.mjs'; /* loop81 成長分層介面；GMEMO 只存在 UI，不存檔 */
+const GMEMO = {};
 import { ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS } from './data.mjs';
 import { EXP_STYLES } from './data.mjs';
 import { styleOf, teamStyle } from './expedition.mjs';
@@ -191,7 +193,7 @@ function panel() {
   { const ds = disciples(S), cur = ds.find((d) => d.id === window.__artsOf) || ds[0];
     if (cur) $('arts').innerHTML = `<select data-artsof>${ds.map((d) => `<option value="${d.id}" ${d.id === cur.id ? 'selected' : ''}>${d.name}</option>`).join('')}</select>
       <select data-focus="${cur.id}"><option value="">專修：自動（${artById(focusOf(cur) || 'basicFist').name}）</option>${Object.keys(cur.arts).map((id) => `<option value="${id}" ${cur.focus === id ? 'selected' : ''}>專修：${artById(id).name}</option>`).join('')}</select>
-      <div class="k">悟性 ${cur.rootKnown ? `${cur.wu ?? cur.root}（${ROOT.names[cur.wu ?? cur.root]}）` : '未明'}｜${ARTS.filter((a) => cur.arts[a.id]).map((a) => `${a.name}×${artMul(cur, a).toFixed(2)}`).join('・')}</div>${artsSvg(cur)}${artHintsHtml(cur, (k) => XIA[k]?.name || k)}
+      <div class="k">悟性 ${cur.rootKnown ? `${cur.wu ?? cur.root}（${ROOT.names[cur.wu ?? cur.root]}）` : '未明'}｜${ARTS.filter((a) => cur.arts[a.id]).map((a) => `${a.name}×${artMul(cur, a).toFixed(2)}`).join('・')}</div>${S.grow ? growthHtml(cur, GMEMO, S.day, S.t, true) : ''}${artsSvg(cur)}${artHintsHtml(cur, (k) => XIA[k]?.name || k)}
       ${ARTS.filter((a) => cur.arts[a.id]).map((a) => { const r = cur.arts[a.id], st = stuckAt(cur, a, S.t), t = artState(cur, a).tier, va = variantOf(cur, a.id, S.t), rust = rustOf(r, S.t);
         return `<div class="k artrow">${a.name}・${TIERS[t][1]} ${r.xp.toFixed(1)}${r.guizhen ? `・歸真 ${'★'.repeat(Math.min(r.stars || 0, 10))}${(r.stars || 0) > 10 ? '+' + (r.stars - 10) : ''}（${(r.sxp || 0).toFixed(1)}/${starCost(r)}）` : ''}${st ? `・<b style="color:#2a5a9a">瓶頸${st === 3 ? '（可歸真）' : ''}，衝關成功率 ${Math.round(breakChance(cur) * 100)}%${cur.mood < BREAK.moodMin || cur.needs.energy < BREAK.energyMin ? '（心情或精力不足）' : ''}</b>` : (r.btCd || 0) > S.t ? `・衝關冷卻 ${Math.ceil(r.btCd - S.t)}s` : ''}${rust > 0.01 ? `・荒疏 −${Math.round(rust * 100)}%` : ''}
           ${t >= 2 ? `<select data-variant="${cur.id}|${a.id}"><option value="">大成變式：未選</option>${VARIANTS[a.school].map((v) => `<option value="${v.id}" ${r.variant === v.id ? 'selected' : ''}>${v.name}</option>`).join('')}</select>${r.variant && !va ? '（換路重練中）' : ''}` : ''}</div>`; }).join('')}
