@@ -56,7 +56,7 @@ export const repairing = (s) => s.ds.some((d) => d.task?.act === 'repair');
 // 修柵廣告：受損、有木頭、沒人正在修、受理者是成人且體力夠
 export function repairScore(s, d) {
   const F = s.fence, L = lvOf(F); if (!F || F.hp >= F.max || (s.res[L.mat] || 0) < 1 + FENCE.floor || repairing(s) || d.adult === false || d.needs.energy < 25) return 0;
-  const S = FENCE.score; return S.base + (1 - F.hp / F.max) * S.dmgK + (F.hp <= 0 ? S.broken : 0);
+  const S = FENCE.score, X = s.threat, rk = s.rumor && s.steward && X && !X.pending && X.rumorFor != null && X.rumorFor === X.next ? 1.5 : 1; /* loop119 傳聞時執事優先修柵 */ return (S.base + (1 - F.hp / F.max) * S.dmgK + (F.hp <= 0 ? S.broken : 0)) * rk;
 }
 export function repairDone(s, d) {
   const F = s.fence, L = lvOf(F); if (!F || (s.res[L.mat] || 0) < 1) return false;

@@ -35,7 +35,17 @@ export function fenceHolds(s, pts) { if (!fenceUp(s)) return false; const dps = 
   const fd = Math.max(BAND.fenceDmg.min, Math.round(pts * BAND.fenceDmg.k)) / BAND.hitEvery; return pts / dps < s.fence.hp / fd; }
 export const raidAuto = (s) => { const P = T(s).pending; if (P?.noPay) return 1; if (P && fenceHolds(s, P.pts)) return 1; return P && s.res.coin >= P.demand && P.demand < fightLoss(s, P.p) ? 0 : 1; };
 // 每日一次（sim 換日時呼叫）：到期就看點數，>0 才上門
+// loop119 傳聞預警：寨匪來前 RUMOR.lead 日內寫一條茶攤傳聞；不用亂數（不改寨匪結果）。只說「約幾日」，不說點數與種類
+export const RUMOR = { lead: 2, fenceK: 1.5 };
+export const rumorDays = (s) => { const X = T(s); return s.rumor && !X.pending && X.rumorFor != null && X.rumorFor === X.next ? Math.max(1, X.next - (s.day || 0)) : 0; };
+function rumorDaily(s) {
+  const X = T(s); if (!s.rumor || X.pending || X.rumorFor === X.next) return; const left = X.next - (s.day || 0);
+  if (left > RUMOR.lead || left < 1 || points(s) <= 0) return; X.rumorFor = X.next;
+  log(s, `【傳聞】山下茶攤有人說，有夥山賊在打聽本門的家底，怕是${left <= 1 ? '這一兩日' : `約 ${left} 日內`}就會上山。`);
+  if (s.exp && s.exp.phase !== 'back' && s.exp.phase !== 'done') log(s, '【傳聞】遠行的弟子若想回山守門，可以下令召回。');
+}
 export function threatDaily(s) {
+  rumorDaily(s);
   const X = T(s); if (X.pending || (s.day || 0) < X.next) return null;
   X.next = s.day + RAID.every + Math.floor(R(s) * (2 * RAID.jitter + 1)) - RAID.jitter;
   if (s.m9) X.next += peaceDelay(s); // loop9 巡山太平→山賊延後
@@ -88,7 +98,7 @@ export function raidResolve(s, i, H, auto = false) {
 }
 export function threatHtml(s) {
   const X = T(s), P = X.pending, pts = points(s), n = headcount(s);
-  const head = `<div class="threat" data-threat><b>山賊</b>：${s.band ? `【${s.band.state === 'go' ? '正沿山路逼近' : '正在撞柵'}，山賊 ${Math.max(0, Math.round(s.band.hp))}/${s.band.max}】` : ''}${n < RAID.minPop ? `門裡才 ${n} 人，山賊還看不上（${RAID.minPop} 人起）` : `家底 ${Math.round(wealth(s))}，威脅 ${pts}（戰力 ${Math.round(defense(s))}）；下次約第 ${X.next} 日`}・來過 ${X.n} 次（付錢 ${X.paid}／迎戰 ${X.fought}，勝 ${X.won}）・山門重傷 ${X.homeHurt}`;
+  const head = `<div class="threat" data-threat><b>山賊</b>：${s.band ? `【${s.band.state === 'go' ? '正沿山路逼近' : '正在撞柵'}，山賊 ${Math.max(0, Math.round(s.band.hp))}/${s.band.max}】` : ''}${n < RAID.minPop ? `門裡才 ${n} 人，山賊還看不上（${RAID.minPop} 人起）` : `家底 ${Math.round(wealth(s))}，威脅 ${pts}（戰力 ${Math.round(defense(s))}）${s.rumor ? (rumorDays(s) ? `；傳聞約 ${rumorDays(s)} 日內來犯` : '；暫無風聲') : `；下次約第 ${X.next} 日`}`}・來過 ${X.n} 次（付錢 ${X.paid}／迎戰 ${X.fought}，勝 ${X.won}）・山門重傷 ${X.homeHurt}`;
   if (!P) return head + '</div>' + fenceHtml(s);
   return `${head}<div class="raid-ask" data-raid-ask>${kindOf(P.kind) ? `【${kindOf(P.kind).name}】${kindOf(P.kind).desc}；` : ''}${P.noPay ? '不談價錢：' : `山賊要 ${P.demand} 兩：<button data-raid="0" ${s.res.coin < P.demand ? 'disabled' : ''}>付錢了事</button>`} <button data-raid="1">迎戰（勝算 ${Math.round(P.p * 100)}%）</button></div></div>${fenceHtml(s)}`;
 }
