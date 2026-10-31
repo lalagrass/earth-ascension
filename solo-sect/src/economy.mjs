@@ -41,7 +41,7 @@ const leaver = (s) => salaried(s).filter((d) => !d.xia && !d.classic && d.role !
 
 // 山下市集：每 5 日補貨，限量，同一期每買一次價格 ×rise；療傷丹可賣，每賣一顆價 ×fall
 export const MARKET = { every: 5, stock: { herb: 12, weapon: 2 }, price: { herb: 5, weapon: 80 }, rise: 1.25, pill: { price: 14, fall: 0.85, max: 6 }, weaponMul: 1.08,
-  rare: { tiemu: { price: 35, max: 2 }, lingshi: { price: 40, max: 1 } } }; /* loop148 v2.25（決定 138）：只在 v22 新局；稀有料定價不漲、每集限量，種田流也能升二三階 */
+  rare: { tiemu: { price: 35, max: 2 }, lingshi: { price: 30, max: 2 } } }; /* loop148 v2.25（決定 138）：只在 v22 新局；稀有料定價不漲、每集限量，種田流也能升二三階 */
 export const rareOn = (s, k) => !!(s?.v22 && MARKET.rare[k]);
 export const cycleOf = (s) => Math.floor(((s.day || 1) - 1) / MARKET.every);
 export function market(s) { const X = E(s), M = X.market, c = cycleOf(s); if (M.cycle !== c) { M.cycle = c; M.sold = {}; } return M; }
@@ -131,14 +131,17 @@ export function stewardDaily(s, H) {
   if (!s.steward || H.siteOf(s)) return null;
   const pick = s.ds.length > H.capacity(s) ? 'dorm' : (s.stew?.boar || 0) >= STEW.boarSeen && (s.fac.watch?.stage || 0) === 0 ? 'watch' : s.stewkit && s.ds.length >= 8 && (s.fac.kitchen?.stage || 0) === 0 && (s.res.food || 0) < s.ds.length ? 'kitchen' : s.stewyard && s.ds.length >= STEW.yardAt && (s.fac.yard?.stage || 0) === 0 ? 'yard' : null; /* loop95「執事立樁」（s.stewyard）：外功場還是空地、人數夠 → 立木樁場（打樁不做離線補算，弟子照常自主去練） */ /* loop60「執事顧灶」（s.stewkit）：人多存飯不夠一人一頓、還是露天灶 → 蓋膳房 */
   if (pick && H.startBuild(s, pick) !== false) { (s.stew ??= {}).built = [...(s.stew.built || []), pick]; log(s, `【執事】${pick === 'dorm' ? '有人睡地鋪，執事立了擴建寢舍的藍圖' : pick === 'kitchen' ? '人多灶小，常常開飯不夠，執事立了膳房的藍圖' : pick === 'yard' ? '外功場還是一片空地，執事立了木樁場的藍圖，好讓大家打樁切磋' : '野豬屢屢下山，執事立了護山哨的藍圖'}。`); return pick; }
-  const fb = !pick && stewFallback(s); /* loop148 v2.25（決定 139）：基礎齊了，先藏經閣、再工寮 */
+  const fb = (!pick || s.v23) && stewFallback(s); /* loop157 v23：首選藍圖立不成（如寢舍到頂）也輪到補位 */ /* loop148 v2.25（決定 139）：基礎齊了，先藏經閣、再工寮 */
   if (fb && H.startBuild(s, fb) !== false) { (s.stew ??= {}).built = [...(s.stew.built || []), fb]; log(s, `【執事】${fb === 'library' ? '木樁場、膳房都齊了，執事立了藏經閣的藍圖，好讓大家翻殘頁讀書' : '執事立了工寮的藍圖，讓雇工有地方歇'}。`); return fb; }
   if (s.v23 && H.hire) return stewLabor(s, H); /* loop155 v2.3 */
   return null;
 }
 // v22 執事補位：木樁場、膳房已建、人數 ≥ fbN；木料夠、石料最多差 stoneShort（立藍圖後弟子自會採石搬料）。名聲、錢、空地仍由 buildWhy 把關。
 export const STEW_FB = { fbN: 6, stoneShort: 3, order: ['library', 'shed'] };
+export const STEW_FB23 = { libN: 4, libWood: 5 };
 export function stewFallback(s) {
+  if (s.v23 && (s.fac.kitchen?.stage || 0) >= 1 && s.fac.library && s.fac.library.stage === 0 && !s.fac.library.site && (s.res.wood || 0) >= STEW_FB23.libWood) { /* loop157 P7：v23 有膳房、門人 ≥4（或清修山莊）、木 ≥5 就立藏經閣 */
+    const D = s.ds.filter((d) => d.role !== 'laborer').length, L = s.ds.length - D; if (D >= STEW_FB23.libN || (D <= 3 && L >= 2)) return 'library'; }
   if (!s.v22 || (s.fac.yard?.stage || 0) < 1 || (s.fac.kitchen?.stage || 0) < 1 || s.ds.length < STEW_FB.fbN) return null;
   for (const id of STEW_FB.order) { const f = s.fac[id]; if (!f || f.stage !== 0 || f.site) continue; const c = FACILITIES.find((x) => x.id === id)?.stages[1]?.cost || {};
     if ((s.res.wood || 0) >= (c.wood || 0) && (s.res.stone || 0) >= (c.stone || 0) - STEW_FB.stoneShort) return id; }

@@ -1443,3 +1443,10 @@
 - 做得好：舊局的三個全域入口（K 表、雇工池、第三階）都用 `s.v23` 擋，舊 golden 沒動。
 - 不好：bot 局 16+ 人，清修山莊在 30 日 bot 局幾乎不會出現，只能靠單元測試與注入截圖驗證；執事雇工會多付工錢。
 - 下一步：wrap-up：diag 15×30、160 種子 A/B、截圖、ROADMAP。
+
+## Loop 157 — v2.3 收尾一：擁有人 t188（P5–P7 定案、劍招判定、出手倍率統一入口）＋驗收測試補齊（決定 162–168）
+- P6：`MARKET.rare.lingshi` 40×1 → 30×2；diag-v225／diag-v23 加 `buyLing`：已有二階、升三階缺靈石，錢夠付下次帳就買。
+- P7：v23 藏經閣名聲 15→10（`buildWhy`，`LIB23_REP`）；`stewFallback` 在 v23 有膳房＋門人 ≥4（或清修）＋木 ≥5 就立藏經閣；且首選藍圖立不成（寢舍到頂）時也輪到補位（根因：seed 1001 天天選「擴寢舍」失敗，補位從沒輪到）。
+- `isSwordMove`：招式沒有 `skill:'sword'`，改看所屬武學 `ART_CAT.jianfa`；獨孤九劍各式（不在 techs）以 `fx:'dugu'` 認。
+- `qiStrikeMul(d)`＝有內功 ×(1+0.15×內力/100)，氣宗（`d.sectId`）或紫霞 ≥2 再 ×1.35；與 `swordDmgMul` 進 `moveMul0`，`swordCdMul` 進 `cdMul`；`huntStep` 的重複乘法移除；`world.dpsOf` 在 v23 除以 `cdMul`。門派戰力 `power()` 不走 moveMul，維持不動。
+- 測試：v23 由 12 → 22 項（專長效果、內功被動、九陽、玉女／三成、幫工活計、高人揭露仍幫工、清修三項、劍招真實招式、以氣御招＋巡山、P7、P6）；v225 兩項配合 P6／P7 更新。golden-30d-v22 → `49a6d79ba043eb43`；舊 golden 不動。

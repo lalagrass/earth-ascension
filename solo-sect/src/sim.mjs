@@ -185,10 +185,12 @@ export const lotsUsed = (s) => FACILITIES.filter((f) => f.v16 && !f.sig && (s.fa
 export const lotCost = (s) => Math.round(LOTS.cost * LOTS.rise ** lotsOf(s).bought);
 export function lotWhy(s) { const L = lotsOf(s); if (L.n >= LOTS.max) return '山頭已經沒有地可擴'; if (s.res.coin < lotCost(s)) return `錢不夠（擴地 ${lotCost(s)}）`; return null; }
 export function buyLot(s) { const w = lotWhy(s); if (w) return { ok: false, why: w }; const c = lotCost(s), L = lotsOf(s); resAdd(s, 'coin', -c); L.n++; L.bought++; log(s, `擴地：花 ${c} 錢整出一塊新地（地塊 ${lotsUsed(s)}/${L.n}）`); return { ok: true, c }; }
+export const LIB23_REP = 10;
 export function buildWhy(s, id) {
   const f = facDef(id), st = s.fac[id], next = f.stages[st.stage + 1];
   if (!next || (next.v23 && !s.v23)) return '已到頂'; if (st.site) return '施工中'; if (f.sig || next.noBlueprint) return '鎮派建築走門派面板';
-  if (next.rep && (s.rep || 0) < next.rep) return `名聲不足（${Math.floor(s.rep || 0)}/${next.rep}）`;
+  const rq = id === 'library' && s.v23 && st.stage === 0 ? LIB23_REP : next.rep; /* loop157 P7：v23 藏經閣名聲 15→10 */
+  if (rq && (s.rep || 0) < rq) return `名聲不足（${Math.floor(s.rep || 0)}/${rq}）`;
   for (const [k, v] of Object.entries(next.rare || {})) if ((s.res[k] || 0) < v) return `${RARE[k]}不足（${s.res[k] || 0}/${v}，巡山遠段才撿得到${s.v22 ? '，山下市集也有限量賣' : ''}）`;
   if (f.v16 && st.stage === 0 && lotsUsed(s) >= lotsOf(s).n) return `沒有空地（${lotsUsed(s)}/${lotsOf(s).n}），先擴地`;
   if (s.res.coin < (next.cost.coin || 0)) return `錢不夠（${next.cost.coin}）`;
@@ -561,11 +563,11 @@ function huntStep(s, dt) {
       const lv = d.skills[mv.skill]; const reach = mv.range * (1 + lv / 200);
       const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
       let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t);
-      if (d.v23) { power *= qiStrikeMul(s, d) * swordDmgMul(d, mv) * (hasSpec(d, 'yunv') && team.some((o) => o !== d && o.arts?.yunv) ? 1.15 : 1); if ((hasSpec(d, 'hama') || hasSpec(d, 'qiankun')) && d.hp < 50 && qiOf(d) >= qiMax(d) * 0.5 && spendQi(d, 10)) power *= 1.5; } /* loop153 真氣出手、劍招、內功被動 */
+      if (d.v23) { power *= (hasSpec(d, 'yunv') && team.some((o) => o !== d && o.arts?.yunv) ? 1.15 : 1); if ((hasSpec(d, 'hama') || hasSpec(d, 'qiankun')) && d.hp < 50 && qiOf(d) >= qiMax(d) * 0.5 && spendQi(d, 10)) power *= 1.5; } /* loop153 真氣出手、劍招、內功被動 */
       const ar = mv.aoe ? mv.aoe + qiAoeAdd(d, mv) : 0, hitList = mv.aoe ? live.filter((m) => dist(m.pos, tgt.pos) <= ar) : [tgt];
       const psn = s.v23 && specM(d, 'dushu') > 0; for (const m of hitList) { m.hp -= power; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', d); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
       h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5, 'fight');
-      d.cool = mv.cd * cdMul(d, mv.id, s.t) * swordCdMul(d, mv); d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike';
+      d.cool = mv.cd * cdMul(d, mv.id, s.t); d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike';
       { const tier = visTier(d, mv.id), a = artOfMove(mv.id), va = a && variantOf(d, a.id, s.t); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...tgt.pos], r: mv.aoe || 16, ttl: tier >= 3 ? 1.0 : 0.6, tier, vcolor: va?.color || null, sprite: d.sprite, face: d.face }); if (tier >= 3) s.fx.push({ kind: 'shake', ttl: 0.35 }); }
       d.needs.energy = clamp(d.needs.energy - 1, 0, 100);
       break;
@@ -709,7 +711,7 @@ export { recordDeed, DEED_CAP, CHRON_CAP, tallyAct, bioLine, bioLean } from './u
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
   if (s.prof) for (const d of s.ds) if (!d.pf) d.pf = 1; /* loop91 新入門者也吃熟練度十重 */
-  if (s.v23) { for (const d of s.ds) { d.v23 = true; if (d.ng && hasSpec(d, 'jiuyang') && !d.path?.length) addQi(d, 0.25 * dt); } if (s.jh?.poison && bestSpec(s, 'yishu') > 0) { s.jh.poison = null; log(s, '醫者出手，化骨綿掌的餘毒被解了。'); } } /* loop151 */
+  if (s.v23) { for (const d of s.ds) { d.v23 = true; d.sectId = s.sect?.id || null; if (d.ng && hasSpec(d, 'jiuyang') && !d.path?.length) addQi(d, 0.25 * dt); } if (s.jh?.poison && bestSpec(s, 'yishu') > 0) { s.jh.poison = null; log(s, '醫者出手，化骨綿掌的餘毒被解了。'); } } /* loop151 */
   if (s.neigong) { s.ngshield = true; for (const d of s.ds) { if (!d.ng) { d.ng = 1; d.qi ??= 0; } if (!d.ng2) { d.ng2 = 1; d.qi = Math.min(d.qi ?? 0, qiMax(d)); } } } /* loop142 一版舊檔改護體真氣 */ /* loop103 */
   if (s.laborgrow) for (const d of s.ds) d.lg = 1; /* loop127 新入門者 */
   if (s.grow) for (const d of s.ds) { if (!d.gInit) growEnsure(d); if (s.growdr) d.gdr = 1; } /* loop84 新入門者立即折算，介面不必寫狀態 */

@@ -8,6 +8,9 @@ import * as EC from '../../src/economy.mjs';
 const N = +(process.argv[2] || 20), S0 = +(process.argv[3] || 1001), D = +(process.argv[4] || 30);
 const avg = (a, f) => (a.length ? a.reduce((x, d) => x + f(d), 0) / a.length : 0);
 const UP = ['hall', 'yard', 'kitchen'];
+// loop157 P6：已有二階建築、升三階缺靈石 → 錢夠付完下次帳就先買（不必等名聲過關）
+export const buyLing = (s, id) => { const f = s.fac[id], nx = f && f.stage >= 2 && facDef(id).stages[f.stage + 1]; let n = 0;
+  while (nx?.rare?.lingshi > (s.res.lingshi || 0) && !EC.marketWhy(s, 'lingshi') && s.res.coin - EC.priceOf(s, 'lingshi') >= EC.wageBill(s) + EC.facBill(s) && EC.marketDo(s, 'lingshi').ok) n++; return n; };
 for (let k = 0; k < N; k++) {
   const seed = S0 + k, c = { alert: 0, alertHj: 0, n: 0, hungry: 0, buyT: 0, buyL: 0, short: 0, shortSmall: 0, bills: 0 }; let i = 0, day = 0, seenLog = null;
   const msgs = [];
@@ -16,7 +19,7 @@ for (let k = 0; k < N; k++) {
     for (const e of s.log) { if (e === seenLog) break; msgs.push(e.msg); } seenLog = s.log[0];
     if (s.day !== day) { day = s.day; const X = EC.E(s);
       if (X.lastBill && X.lastBill.day === s.day - 0 && !X.lastBill._seen) { X.lastBill._seen = 1; }
-      for (const id of UP) { if (!s.fac[id]) continue; let w = buildWhy(s, id);
+      for (const id of UP) { if (!s.fac[id]) continue; c.buyL += buyLing(s, id); let w = buildWhy(s, id);
         for (const [rk, item] of [['tiemu', 'tiemu'], ['lingshi', 'lingshi']]) if (w && w.startsWith(rk === 'tiemu' ? '鐵木不足' : '靈石不足') && EC.MARKET.rare?.[item] && !EC.marketWhy(s, item) && s.res.coin - EC.priceOf(s, item) >= EC.wageBill(s) + EC.facBill(s)) { const r = EC.marketDo(s, item); if (r.ok) c[rk === 'tiemu' ? 'buyT' : 'buyL']++; w = buildWhy(s, id); }
         if (!w && !Object.values(s.fac).some((v) => v.site) && s.res.coin - (facDef(id).stages[s.fac[id].stage + 1]?.cost?.coin || 0) >= EC.wageBill(s) + EC.facBill(s)) startBuild(s, id); } }
     if (++i % 40) return; for (const d of s.ds) { if (d.labor || d.away) continue; c.n++; if ((d.needs?.hunger ?? 100) < 30) c.hungry++; } });

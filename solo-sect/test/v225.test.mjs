@@ -6,12 +6,12 @@ import { MARKET, marketDo, marketWhy, left, econHtml } from '../src/economy.mjs'
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
 const OLD = () => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false });
 
-test('loop148 市集：鐵木 35×2、靈石 40×1，每集限量；買完補貨後可再買', () => {
+test('loop148 市集：鐵木 35×2、靈石 30×2（loop157 P6），每集限量；買完補貨後可再買', () => {
   const s = V(); s.res.coin = 500; s.res.tiemu = 0; s.res.lingshi = 0;
-  assert.equal(MARKET.rare.tiemu.price, 35); assert.equal(left(s, 'tiemu'), 2); assert.equal(left(s, 'lingshi'), 1);
+  assert.equal(MARKET.rare.tiemu.price, 35); assert.equal(left(s, 'tiemu'), 2); assert.equal(left(s, 'lingshi'), 2);
   assert.ok(marketDo(s, 'tiemu').ok); assert.ok(marketDo(s, 'tiemu').ok); assert.equal(marketDo(s, 'tiemu').ok, false);
-  assert.ok(marketDo(s, 'lingshi').ok); assert.match(marketWhy(s, 'lingshi'), /賣完/);
-  assert.equal(s.res.tiemu, 2); assert.equal(s.res.lingshi, 1); assert.equal(s.res.coin, 500 - 70 - 40);
+  assert.ok(marketDo(s, 'lingshi').ok); assert.ok(marketDo(s, 'lingshi').ok); assert.match(marketWhy(s, 'lingshi'), /賣完/);
+  assert.equal(s.res.tiemu, 2); assert.equal(s.res.lingshi, 2); assert.equal(s.res.coin, 500 - 70 - 60);
   s.day += MARKET.every; assert.equal(left(s, 'tiemu'), 2);
   const h = econHtml(s); assert.match(h, /買鐵木×1/); assert.match(h, /買靈石×1/);
 });
@@ -30,8 +30,8 @@ test('loop148 執事補位：基礎齊、人數 ≥6 → 先藏經閣再工寮�
 });
 test('loop148 執事補位：膳房沒蓋、人不夠、石料差太多、舊局 → 不立', () => {
   let s = V(); ready(s); s.fac.kitchen.stage = 0; assert.equal(stewFallback(s), null);
-  s = V(); ready(s); s.ds.length = 5; assert.equal(stewFallback(s), null);
-  s = V(); ready(s); s.res.stone = 2; assert.equal(stewFallback(s), 'shed');
+  s = V(); ready(s); s.ds.length = 3; assert.equal(stewFallback(s), null); /* loop157 P7：v23 門人 ≥4 即可立藏經閣 */
+  s = V(); ready(s); s.res.stone = 2; assert.equal(stewFallback(s), 'library'); /* loop157 P7：v23 藏經閣只看木 ≥5 */ s.fac.library.stage = 1; assert.equal(stewFallback(s), 'shed');
   s = OLD(); ready(s); assert.equal(stewFallback(s), null);
 });
 
