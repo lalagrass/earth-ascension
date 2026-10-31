@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, scoreActs, applyEff, actDef, GEN_COND, startBuild } from '../src/sim.mjs';
 import { registry, freeSlot, reserve, durOf } from '../src/core.mjs';
-import { invariants } from '../src/lifecycle.mjs';
+import { invariants } from '../src/core.mjs';
 import { buildFac } from '../src/sect.mjs';
 import { save, load } from '../src/save.mjs';
 import { FACILITIES, ACTIVITIES, SIG_ACTS } from '../src/data.mjs';

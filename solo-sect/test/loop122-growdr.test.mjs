@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { RULES } from '../src/start-ui.mjs';
-import { settleGrowth, GROW } from '../src/growth.mjs';
+import { settleGrowth, GROW } from '../src/arts.mjs';
 import { ARTS } from '../src/data.mjs';
 import { createState } from '../src/sim.mjs';
 import { save, load } from '../src/save.mjs';

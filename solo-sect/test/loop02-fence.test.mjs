@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, scoreActs } from '../src/sim.mjs';
 import { DAY } from '../src/data.mjs';
-import { FENCE, buildFence, canBuildFence, repairScore } from '../src/fence.mjs';
+import { FENCE, buildFence, canBuildFence, repairScore } from '../src/threat.mjs';
 import { T, raidResolve } from '../src/threat.mjs';
 
 const H = { think: () => {} };

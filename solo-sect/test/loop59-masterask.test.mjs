@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState } from '../src/sim.mjs';
-import { jhevDaily, JHEV } from '../src/jhevents.mjs';
+import { jhevDaily, JHEV } from '../src/jianghu.mjs';
 import { resolveChoice, autoPick } from '../src/hero.mjs';
 import { RULES } from '../src/start-ui.mjs';
 const mk = (x) => { const s = createState(1, { kind: 'custom', answers: Array(9).fill(0), jhev: true, ...x }); s.day = 30; s.choices ??= []; return s; };

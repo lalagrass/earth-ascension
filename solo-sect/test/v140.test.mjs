@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
 import { RULES_VERSION, DAY } from '../src/data.mjs';
 import { artMulParts, learnArt, artById } from '../src/arts.mjs';
-import { GEN, genStep, adopt, marriable, canSucceed, succeed, heirs, removeDisciple, genResolve } from '../src/gen.mjs';
+import { GEN, genStep, adopt, marriable, canSucceed, succeed, heirs, removeDisciple, genResolve } from '../src/sect.mjs';
 import { sectStep } from '../src/sect.mjs';
 import { budgetOf, validStats, resolveChoice } from '../src/hero.mjs';
 import { migrate } from '../src/save.mjs';

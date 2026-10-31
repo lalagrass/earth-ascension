@@ -2,8 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState } from '../src/sim.mjs';
-import { jhevDaily, JHEV } from '../src/jhevents.mjs';
-import { jhevPanel } from '../src/jhui.mjs';
+import { jhevDaily, JHEV } from '../src/jianghu.mjs';
+import { jhevPanel } from '../src/panel-ui.mjs';
 const mk = (on) => { const s = createState(1, { kind: 'custom', answers: Array(9).fill(0), jhev: true, jhui: true, ...(on ? { jhrefuse: true } : {}) }); s.rep = 10; s.day = 200; return s; };
 const force = (s) => { const P = { ...JHEV.master }, L = JHEV.letter.p; JHEV.master.p = 0; JHEV.letter.p = 1; try { jhevDaily(s); } finally { Object.assign(JHEV.master, P); JHEV.letter.p = L; } };
 test('勝算低時：開→婉拒（名聲 −1、不計應戰、心情不動）；關→照常應戰', () => {

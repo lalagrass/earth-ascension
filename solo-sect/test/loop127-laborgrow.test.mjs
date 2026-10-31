@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
 import { save, load } from '../src/save.mjs';
-import { LABOR, strMul, laborPow, workStrCap, laborToday } from '../src/labor.mjs';
+import { LABOR, strMul, laborPow, workStrCap, laborToday } from '../src/economy.mjs';
 import { moveMul } from '../src/arts.mjs';
 import { power } from '../src/jianghu.mjs';
 import { ALL_ON } from './harness/bot.mjs';

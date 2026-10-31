@@ -14,7 +14,7 @@ for (const tab of ['classic', 'custom']) test(`${tab}：執事勾選接線（ste
 });
 test('兩分頁規則部分一致', () => { assert.deepEqual(ruleSpec(base('classic')), ruleSpec(base('custom'))); });
 test('面板折疊狀態：closed 標記的區塊不帶 open，其餘預設展開（審查 P2）', async () => {
-  const { jhuiHtml } = await import('../src/jhui.mjs'); const s = createState(1, { kind: 'custom', answers: Array(9).fill(0), jhui: true });
+  const { jhuiHtml } = await import('../src/panel-ui.mjs'); const s = createState(1, { kind: 'custom', answers: Array(9).fill(0), jhui: true });
   const h = jhuiHtml(s, { 'jhui-arch': true });
   assert.match(h, /<details data-keep="jhui-arch"><summary>原型/); assert.match(h, /<details data-keep="jhui-clique" open>/); assert.match(h, /<details data-keep="jhui-jhev" open>/);
 });

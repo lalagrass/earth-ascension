@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createState, tick } from '../src/sim.mjs';
 import { ARTS } from '../src/data.mjs';
-import { polySvg, growthHtml, artStatus, dailyGrowth, axisVals, AXES, catHtml } from '../src/growui.mjs';
+import { polySvg, growthHtml, artStatus, dailyGrowth, axisVals, AXES, catHtml } from '../src/panel-ui.mjs';
 const mk = () => { const s = createState(7, { kind: 'custom', answers: Array(9).fill(0), grow: true }); for (let i = 0; i < 800; i++) tick(s, 0.25); return s; };
 const A = (id) => ARTS.find((a) => a.id === id);
 test('畫面不改世界與亂數', () => { const s = mk(), before = JSON.stringify(s), memo = {};

@@ -1,11 +1,11 @@
-import { openExp } from "../src/slice.mjs";
+import { openExp } from "../src/world.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { createState, tick, save, load, MIGRATIONS, scoreActs, startExpedition, canExpedition, codexRows, byId, skipGuide, startBuild } from '../src/sim.mjs';
 import { RULES_VERSION, ROUTE, ENEMIES, DAY, PHASES } from '../src/data.mjs';
-import { pipeline, MUL_CLAMP } from '../src/mul.mjs';
+import { pipeline, MUL_CLAMP } from '../src/util.mjs';
 import { artMulParts, artById, seedArts, gainArt } from '../src/arts.mjs';
 const FIX = new URL('./fixtures/', import.meta.url);
 const runDays = (s, n) => { for (let i = 0; i < n * DAY * 4; i++) tick(s); };

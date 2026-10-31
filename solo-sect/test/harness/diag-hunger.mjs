@@ -2,7 +2,7 @@
 // 每 tick 統計「餓（飽足<20）」的人次，依人數分桶，並拆：當下有無飯（food>0）、有無菜（veg>0）、在做什麼、是否排隊用飯；另記每日煮飯／用飯次數與膳房階段。
 import { run, seedRange } from './bot.mjs';
 import { facStage } from '../../src/sim.mjs';
-import { moodParts } from '../../src/mind.mjs';
+import { moodParts } from '../../src/social.mjs';
 const [n = 160, days = 60, start = 1001] = process.argv.slice(2, 5).map(Number), bot = process.argv[5] !== 'idle';
 const B = {}; const bk = (k) => (k <= 4 ? '≤4' : k <= 7 ? '5-7' : '≥8');
 for (const seed of seedRange(n, start)) {

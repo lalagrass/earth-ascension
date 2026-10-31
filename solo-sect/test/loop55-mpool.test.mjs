@@ -3,7 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState } from '../src/sim.mjs';
-import { masterOutcome, JHEV } from '../src/jhevents.mjs';
+import { masterOutcome, JHEV } from '../src/jianghu.mjs';
 import { ARTS } from '../src/data.mjs';
 import { reqMissing, fits, learnArt } from '../src/arts.mjs';
 import { RULES } from '../src/start-ui.mjs';

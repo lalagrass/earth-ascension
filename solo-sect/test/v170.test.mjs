@@ -2,13 +2,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startBuild, scoreActs, PRED, valOf, vegFree } from '../src/sim.mjs';
-import { SCORE } from '../src/score-data.mjs';
+import { SCORE } from '../src/data.mjs';
 import { ACTIVITIES, DAO } from '../src/data.mjs';
 import { stockReserved, stockKey, STOCK_RESV, HYST, needStep } from '../src/core.mjs';
-import { cancelTask, invariants, whReserved } from '../src/lifecycle.mjs';
+import { cancelTask, invariants, whReserved } from '../src/core.mjs';
 import { save, load } from '../src/save.mjs';
-import { suhuiOf, legacyBest, syncLegacy, autosave } from '../src/slice.mjs';
-import { daoOf, counterMul } from '../src/expedition.mjs';
+import { suhuiOf, legacyBest, syncLegacy, autosave } from '../src/world.mjs';
+import { daoOf, counterMul } from '../src/world.mjs';
 
 const mem = () => { const m = new Map(); return { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), m }; };
 const runTo = (s, pred, n = 4 * 900) => { for (let i = 0; i < n; i++) { tick(s); const d = s.ds.find(pred); if (d) return d; } return null; };

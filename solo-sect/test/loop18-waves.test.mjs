@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState } from '../src/sim.mjs';
 import { T, threatDaily, raidResolve, threatStep } from '../src/threat.mjs';
-import { WAVE } from '../src/raidkind.mjs';
+import { WAVE } from '../src/threat.mjs';
 
 const sp = { kind: 'custom', name: '測', answers: Array(9).fill(0), peace: true };
 const win = (s, kind) => { s.day = 30; s.res.coin = 500; threatDaily(s); Object.assign(T(s).pending, { kind, p: 1, noPay: false }); return raidResolve(s, 1, null); };

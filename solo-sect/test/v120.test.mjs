@@ -1,10 +1,10 @@
-import { openExp } from "../src/slice.mjs";
+import { openExp } from "../src/world.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startExpedition } from '../src/sim.mjs';
 import { ARTS, MOVES, RULES_VERSION, DAY, DUGU } from '../src/data.mjs';
 import { learnArt, artTier } from '../src/arts.mjs';
-import { CARDS, card, hsResolve, hsStep, zxGate, zxUp, fengFit, formReady, learnDugu, bixie } from '../src/huashan.mjs';
+import { CARDS, card, hsResolve, hsStep, zxGate, zxUp, fengFit, formReady, learnDugu, bixie } from '../src/wuxia.mjs';
 import { XIA, xiaPool, join } from '../src/wuxia.mjs';
 import { autoPick, resolveChoice } from '../src/hero.mjs';
 import { migrate } from '../src/save.mjs';

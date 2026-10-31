@@ -2,8 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState } from '../src/sim.mjs';
-import { AXES, axesOf, growthHtml, QI_AXIS } from '../src/growui.mjs';
-import { NG, NG2 } from '../src/neigong.mjs';
+import { AXES, axesOf, growthHtml, QI_AXIS } from '../src/panel-ui.mjs';
+import { NG, NG2 } from '../src/arts.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...x });
 test('關閉維持五軸；開啟多內力軸（0–100）', () => {
   const off = createState(7, spec()).ds[0], on = createState(7, spec({ neigong: true })).ds[0];

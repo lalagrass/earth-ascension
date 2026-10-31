@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { RULES } from '../src/start-ui.mjs';
 import { createState, tick } from '../src/sim.mjs';
-import { STEW } from '../src/steward.mjs';
+import { STEW } from '../src/economy.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, steward: true, ...x });
 const runDays = (s, days, dt = 1) => { for (let i = 0; i < days * 600 / dt; i++) tick(s, dt); return s; };
 test('規則轉正（loop143）：併入「執事自動營建」勾選', async () => { const { buildSpec } = await import('../src/start-ui.mjs'); assert.ok(buildSpec({ tab: 'custom', ans: Array(9).fill(0) }).stewyard); });

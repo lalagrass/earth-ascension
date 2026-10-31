@@ -1,7 +1,7 @@
 /* loop130 勞作練體顯示：開才顯示、數字正確 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { laborNote } from '../src/labor-ui.mjs';
+import { laborNote } from '../src/panel-ui.mjs';
 import { DAY } from '../src/data.mjs';
 test('關閉不顯示；開啟寫今日勞作與招式倍率', () => {
   assert.equal(laborNote({ t: 0 }, { skills: { strength: 40 } }), '');

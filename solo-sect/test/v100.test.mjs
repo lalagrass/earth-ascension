@@ -1,10 +1,10 @@
-import { openExp } from "../src/slice.mjs";
+import { openExp } from "../src/world.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startExpedition, canExpedition, load, save } from '../src/sim.mjs';
 import { ROUTE, ENEMIES, EXP, CAMPS, ENDLESS, RULES_VERSION, DAY } from '../src/data.mjs';
-import { routeSeg, segAt, scoutOf, raidMul, peaceOf, evadeScore } from '../src/expedition.mjs';
-import { assemble, learnManual, MANUALS, likesOf, menuOf, likeMeal, aspOf, aspStep, ASPIRATIONS, statusIcon } from '../src/v10.mjs';
+import { routeSeg, segAt, scoutOf, raidMul, peaceOf, evadeScore } from '../src/world.mjs';
+import { assemble, learnManual, MANUALS, likesOf, menuOf, likeMeal, aspOf, aspStep, ASPIRATIONS, statusIcon } from '../src/bonds.mjs';
 import { affKey } from '../src/util.mjs';
 const buff = (s, ids, lvl) => { for (const d of s.ds) if (ids.includes(d.id)) { d.skills.palm = d.skills.leg = lvl; d.skills.agility = d.skills.strength = lvl / 2; d.hp = 100; d.mood = 80; } };
 const run = (s) => { let i = 0; while (s.exp && i++ < 80000) tick(s); return s.lastExp; };

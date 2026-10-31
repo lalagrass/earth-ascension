@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState } from '../src/sim.mjs';
 import { T, threatDaily, raidResolve, raidAuto, threatHtml } from '../src/threat.mjs';
-import { RAID_KINDS, pickKind } from '../src/raidkind.mjs';
+import { RAID_KINDS, pickKind } from '../src/threat.mjs';
 
 const sp = { kind: 'custom', name: '測', answers: Array(9).fill(0), peace: true };
 test('loop17 類型權重合計 1、期望點數≈原值、抽類型覆蓋三種', () => {

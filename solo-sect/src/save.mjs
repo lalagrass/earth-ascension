@@ -1,11 +1,9 @@
-import { tierOf } from './events.mjs';
-// v0.95 存檔：逐版遷移步驟（每步只做「升到該版」需要的事），加上每次讀檔都跑的修補
+import { tierOf, affKey } from './util.mjs';
 import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY } from './data.mjs';
 import { seedArts } from './arts.mjs';
-import { affKey } from './util.mjs';
-import { sectOf } from './sect.mjs';
-import { genInit } from './gen.mjs';
-import { suhuiOf } from './slice.mjs';
+import { sectOf, genInit } from './sect.mjs';
+import { suhuiOf } from './world.mjs';
+// v0.95 存檔：逐版遷移步驟（每步只做「升到該版」需要的事），加上每次讀檔都跑的修補
 export const SAVE_VERSION = 1;
 const ver = (r) => parseFloat(r);
 const defs = () => Object.fromEntries(DISCIPLES.concat(RECRUIT_POOL).map((d) => [d.id, d]));

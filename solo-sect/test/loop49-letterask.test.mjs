@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState } from '../src/sim.mjs';
-import { jhevDaily, JHEV } from '../src/jhevents.mjs';
+import { jhevDaily, JHEV } from '../src/jianghu.mjs';
 import { resolveChoice, autoPick } from '../src/hero.mjs';
 const mk = (x) => { const s = createState(1, { kind: 'custom', answers: Array(9).fill(0), jhev: true, ...x }); s.rep = 10; s.day = 30; s.choices ??= []; return s; };
 const force = (s) => { const P = JHEV.master.p, L = JHEV.letter.p; JHEV.master.p = 0; JHEV.letter.p = 1; try { jhevDaily(s); } finally { JHEV.master.p = P; JHEV.letter.p = L; } };

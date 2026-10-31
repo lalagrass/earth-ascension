@@ -1,17 +1,147 @@
-import { seedMix } from './seedmix.mjs';
+import { log, seedMix, resAdd } from './util.mjs';
+import { NODES, EDGES, DAY, FACILITIES } from './data.mjs';
+import { dpsBonus, guardHurt } from './arts.mjs';
+import { power } from './jianghu.mjs';
+import { valorAdd, valorThreatMul, valorHtml, VALOR } from './sect.mjs';
+import { peaceDelay } from './economy.mjs';
+import { mates } from './bonds.mjs';
+// ==== （原 raidkind.mjs）====
+// loop17 山賊多樣：只在 s.m9（江湖規則「太平與備料」）時抽類型；舊局／golden 無 kind＝原樣。
+// 期望點數 ≈ 原值（0.5×0.8+0.3×1.25+0.2×1.0=0.975），夜襲不能付錢、敗了只偷不傷人 → 不推高重傷。
+export const RAID_KINDS = {
+  liukou: { name: '流寇', w: 0.5, pts: 0.8, demand: 0.8, steal: 1, winHurt: 0.5, loseHurt: true, desc: '烏合之眾，好打發' },
+  hanfei: { name: '悍匪', w: 0.3, pts: 1.25, demand: 1.3, steal: 1.2, winHurt: 1, loseHurt: true, desc: '亡命之徒，下手狠' },
+  yexi: { name: '夜襲', w: 0.2, pts: 1, demand: 0, steal: 0.6, winHurt: 0.5, loseHurt: false, noPay: true, desc: '趁夜摸進來偷，不談價；只偷不傷人' },
+};
+export function pickKind(r) { let a = 0; for (const [id, k] of Object.entries(RAID_KINDS)) { a += k.w; if (r < a) return id; } return 'liukou'; }
+export const kindOf = (id) => (id && RAID_KINDS[id]) || null;
+// loop18 波次：第一波被打退後，有機率重整再來第二波（不談價、只能迎戰），點數×k；只在有類型（s.m9）時。
+export const WAVE = { p: { liukou: 0.8, hanfei: 1, yexi: 0.5 }, k: 1.8, gap: 60 };
+
+// ==== （原 fence.mjs）====
+// loop2 M2：菜園木柵（輕量塔防第一步）。玩家主動花木頭築柵後才存在；沒築柵時一切照舊（不改既有數值與亂數順序）。
+// 參考：RimWorld 的建築耐久＋修理工作（設計概念）；Sims 的「廣告」：柵欄受損時向弟子廣告「修柵」。
+// 野豬到菜園先撞柵；山賊迎戰落敗時先破柵，柵還撐得住就搶不進院。耐久歸零才照舊損失。
+
+export const FENCE = {
+  node: 'veg', cost: { wood: 6 }, max: 60,
+  boarDmg: 12,                      // 一頭野豬撞一次
+  boarRams: 2,                      // loop4：每次下山最多連撞 2 下（長跑比較 3 下＝等於沒柵），柵破就闖進去拱菜（不再「有柵就全擋」）
+  warnAt: 0.5,                      // loop4：耐久跌破一半才記一次日誌（防洗版）；修回一半以上重置
+  floor: 4,                         // loop4：修柵後倉裡至少留這麼多料，不和建造搶光
+  levels: [null, { name: '木柵', max: 60, mat: 'wood', hp: 15 }, { name: '石牆', max: 150, mat: 'stone', hp: 25, cost: { stone: 12 } }],
+  bandit: { k: 0.15, min: 15 },     // 山賊落敗時對柵傷害＝max(min, 威脅點數×k)
+  repair: { hp: 15, wood: 1 },      // 一次修柵：耗 1 木、回 15 耐久（石牆見 levels：耗 1 石、回 25）
+  score: { base: 30, dmgK: 50, broken: 25 }, // 修柵分數＝base＋受損比例×dmgK（全毀再＋broken）
+};
+export const fenceOf = (s) => s.fence || null;
+export const fenceUp = (s) => !!s.fence && s.fence.hp > 0;
+export function canBuildFence(s) {
+  if (s.fence) return { ok: false, why: '菜園已經有木柵了' };
+  const w = FENCE.cost.wood; if ((s.res.wood || 0) < w) return { ok: false, why: `木頭不足（${s.res.wood || 0}/${w}）` };
+  return { ok: true };
+}
+export function buildFence(s) {
+  const c = canBuildFence(s); if (!c.ok) return c;
+  s.res.wood -= FENCE.cost.wood; placeFence(s); return { ok: true };
+}
+// 受擊：回傳 { held }，held＝撞完柵還在（擋住了）
+export function fenceHit(s, dmg, who, quiet = false) {
+  const F = s.fence; if (!F || F.hp <= 0) return { held: false, none: true };
+  F.hp = Math.max(0, F.hp - dmg); F.hits++;
+  if (F.hp > 0) { if (!quiet) F.blocked++; if (!quiet) log(s, `${who}撞上菜園木柵（耐久 ${F.hp}/${F.max}），沒能闖進來。`); return { held: true }; }
+  F.broken++; log(s, `${who}撞破了菜園木柵！`); return { held: false };
+}
+export const lvOf = (F) => FENCE.levels[F?.lv || 1];
+export const fenceName = (s) => lvOf(s.fence).name;
+export function canUpgradeFence(s) {
+  const F = s.fence; if (!F) return { ok: false, why: '先築木柵' };
+  const nx = FENCE.levels[(F.lv || 1) + 1]; if (!nx) return { ok: false, why: '已是最高等級' };
+  for (const [k, v] of Object.entries(nx.cost)) if ((s.res[k] || 0) < v) return { ok: false, why: `${k === 'stone' ? '石' : '木'}不足（${s.res[k] || 0}/${v}）` };
+  return { ok: true, next: nx };
+}
+export function upgradeFence(s) {
+  const c = canUpgradeFence(s); if (!c.ok) return c; const F = s.fence, nx = c.next;
+  for (const [k, v] of Object.entries(nx.cost)) s.res[k] -= v;
+  raiseFence(s, nx); return { ok: true };
+}
+// 野豬連撞：回傳 true＝擋住；柵破則回 false（讓野豬照舊進菜園）
+export function boarRam(s) {
+  for (let i = 0; i < FENCE.boarRams; i++) if (!fenceHit(s, FENCE.boarDmg, '野豬', true).held) return false;
+  const F = s.fence; F.blocked++;
+  if (!F.warned && F.hp < F.max * FENCE.warnAt) { F.warned = true; log(s, `野豬連日撞柵，${lvOf(F).name}只剩 ${F.hp}/${F.max}，該修了。`); }
+  return true;
+}
+export const repairing = (s) => s.ds.some((d) => d.task?.act === 'repair');
+// 修柵廣告：受損、有木頭、沒人正在修、受理者是成人且體力夠
+export function repairScore(s, d) {
+  const F = s.fence, L = lvOf(F); if (!F || F.hp >= F.max || (s.res[L.mat] || 0) < 1 + FENCE.floor || repairing(s) || d.adult === false || d.needs.energy < 25) return 0;
+  const S = FENCE.score, X = s.threat, rk = s.rumor && s.steward && X && !X.pending && X.rumorFor != null && X.rumorFor === X.next ? 1.5 : 1; /* loop119 傳聞時執事優先修柵 */ return (S.base + (1 - F.hp / F.max) * S.dmgK + (F.hp <= 0 ? S.broken : 0)) * rk;
+}
+export function repairDone(s, d) {
+  const F = s.fence, L = lvOf(F); if (!F || (s.res[L.mat] || 0) < 1) return false;
+  s.res[L.mat] -= 1; F.hp = Math.min(F.max, F.hp + L.hp); F.repaired++; if (F.hp >= F.max * FENCE.warnAt) F.warned = false;
+  if (F.hp >= F.max) log(s, `${d.name}把${L.name}修補完好（${F.hp}/${F.max}）。`); return true; // loop4：只在修滿時記日誌
+}
+export function fenceHtml(s) {
+  const F = s.fence, v = fenceSite(s), prog = v ? `<span class="k">工地：${v.need.wood ? `木 ${v.delivered.wood}/${v.need.wood} ` : ''}${v.need.stone ? `石 ${v.delivered.stone}/${v.need.stone} ` : ''}工時 ${Math.floor(v.work)}/${v.workNeed}</span>` : '';
+  if (!F) return `<div class="fence"><b>菜園木柵</b>：還沒築 ${v ? prog : `<button data-fence>立藍圖：築木柵（${FENCE.cost.wood} 木，弟子搬料施工）</button>`}</div>`;
+  const nx = FENCE.levels[(F.lv || 1) + 1];
+  return `<div class="fence"><b>菜園${lvOf(F).name}</b>${v ? ' ' + prog : nx ? ` <button data-fence-up>立藍圖：加砌${nx.name}（${nx.cost.stone} 石）</button>` : ''}：耐久 ${F.hp}/${F.max}${F.hp <= 0 ? '（已破）' : ''}・擋下 ${F.blocked} 次・被破 ${F.broken} 次・修補 ${F.repaired} 次</div>`;
+}
+
+// ---- loop11：築柵／加砌改走既有工地搬運流程（藍圖→弟子從院倉搬料到菜園→施工）。只限柵牆。 ----
+function placeFence(s) { s.fence = { lv: 1, hp: FENCE.max, max: FENCE.max, hits: 0, broken: 0, repaired: 0, blocked: 0 }; log(s, `菜園圍起了木柵（耐久 ${FENCE.max}）。`); }
+function raiseFence(s, nx) { const F = s.fence; F.lv = (F.lv || 1) + 1; F.hp = Math.min(nx.max, F.hp + (nx.max - F.max)); F.max = nx.max; F.warned = false; log(s, `菜園木柵加砌成${nx.name}（耐久 ${F.hp}/${F.max}）。`); }
+export const FENCE_SITE = { work: { build: 12, up: 20 } };
+export const FENCE_FAC = { id: 'fence', name: '菜園柵', node: FENCE.node, stages: [{ name: '菜園柵', offers: [] }] };
+export const fenceSite = (s) => s.fac?.fence?.site || null;
+export function canStartFenceSite(s) {
+  if (fenceSite(s)) return { ok: false, why: '柵牆工地施工中' };
+  if (!s.fence) return { ok: true, kind: 'build', cost: { wood: FENCE.cost.wood, stone: 0 } };
+  const nx = FENCE.levels[(s.fence.lv || 1) + 1]; if (!nx) return { ok: false, why: '已是最高等級' };
+  return { ok: true, kind: 'up', cost: { wood: nx.cost.wood || 0, stone: nx.cost.stone || 0 }, next: nx };
+}
+export function startFenceSite(s) {
+  const c = canStartFenceSite(s); if (!c.ok) return c;
+  s.fac.fence = { stage: 0, site: { need: { ...c.cost }, delivered: { wood: 0, stone: 0 }, reserved: { wood: 0, stone: 0 }, work: 0, workNeed: FENCE_SITE.work[c.kind], paused: false, kind: c.kind } };
+  log(s, `立藍圖：${c.kind === 'build' ? '菜園木柵' : '加砌' + c.next.name}（收集包：${c.cost.wood ? `木 ${c.cost.wood}` : ''}${c.cost.stone ? `石 ${c.cost.stone}` : ''}；工時 ${FENCE_SITE.work[c.kind]}s）`);
+  return { ok: true };
+}
+export function finishFenceSite(s) {
+  const v = fenceSite(s); if (!v) return false;
+  if (v.kind === 'build' && !s.fence) placeFence(s); else if (v.kind === 'up' && s.fence) { const nx = FENCE.levels[(s.fence.lv || 1) + 1]; if (nx) raiseFence(s, nx); }
+  s.fac.fence.site = null; return true; // 保留空殼：其他施工者回查 s.fac.fence.site 時不出錯
+}
+
+// ==== （原 band.mjs）====
+// loop3 M3：山賊上地圖（輕量塔防）。只有築了木柵時才走這條；沒築柵仍是原本的一次勝率公式。
+// 山賊從山門沿既有山路（NODES/EDGES）走到菜園木柵，圍柵每 hitEvery 秒撞一次；在院成人自主「守柵迎敵」，
+// 在柵邊時依武功對山賊造成傷害。山賊血量＝威脅點數；打光＝打退，柵破＝照舊被搶、一人重傷（不死人）。
+// 參考：塔防波次沿路徑前進、RimWorld 襲擊者攻擊建築（設計概念），不引任何套件。
+
+export const BAND = { from: 'gate', speed: 38, hitEvery: 2, fenceDmg: { k: 0.04, min: 3 }, dps: { base: 1, per: 30 }, defendScore: 500, hpMin: 40, energyMin: 20 };
+export function nodePath(a, b) { // BFS，只走既有邊
+  const adj = {}; for (const [x, y] of EDGES) { (adj[x] ||= []).push(y); (adj[y] ||= []).push(x); }
+  const prev = { [a]: null }, q = [a]; while (q.length) { const n = q.shift(); if (n === b) break; for (const m of adj[n] || []) if (!(m in prev)) { prev[m] = n; q.push(m); } }
+  if (!(b in prev)) return []; const out = []; for (let n = b; n != null; n = prev[n]) out.unshift(n); return out;
+}
+export function newBand(P, to) { const path = nodePath(BAND.from, to); return { n: P.n, pts: P.pts, day: P.day, hp: P.pts, max: P.pts, pos: [...NODES[BAND.from]], path: path.slice(1), state: 'go', clock: 0, fenceDealt: 0, defDealt: 0 }; }
+export const defenderDps = (d) => BAND.dps.base + ((d.skills.palm || 0) + (d.skills.leg || 0) + (d.skills.strength || 0)) / BAND.dps.per + dpsBonus(d); // loop117 護體真氣
+export const canDefend = (d) => d.adult !== false && !d.away && d.role !== 'laborer' && d.hp >= BAND.hpMin && d.needs.energy >= BAND.energyMin;
+// 走一步：回傳是否到達
+export function bandWalk(b, dt) {
+  let left = BAND.speed * dt;
+  while (left > 0 && b.path.length) { const t = NODES[b.path[0]], dx = t[0] - b.pos[0], dy = t[1] - b.pos[1], L = Math.hypot(dx, dy);
+    if (L <= left) { b.pos = [...t]; b.path.shift(); left -= L; } else { b.pos[0] += dx * left / L; b.pos[1] += dy * left / L; left = 0; } }
+  return !b.path.length;
+}
+
+// ==== （原 threat.mjs）====
 // v1.9 I-6 財富襲擊＋山賊勒索（ROADMAP-NEXT I-6；RimWorld 財富點數、Going Medieval 人數寬限、Songs of Syx／Kenshi 勒索可付錢）
 // 威脅點數＝財富（錢＋存糧＋丹藥＋藥＋建築階數）÷div × 天數係數，封頂；全派（含雜工）<8 人時為 0（不來）。
 // 山賊上門先勒索：付錢了事，或迎戰（勝率＝守方戰力／(戰力＋點數)）。只會重傷（氣血壓到 15），不會死人。
 // 玩家在收支區按鈕選；半日內沒選就由執事比較勒索金與迎戰預期損失自動決定（長跑與無人值守都走這條）。
-import { DAY, FACILITIES } from './data.mjs';
-import { log, resAdd } from './util.mjs';
-import { power } from './jianghu.mjs';
-import { valorAdd, valorThreatMul, valorHtml, VALOR } from './valor.mjs';
-import { guardHurt } from './neigong.mjs';
-import { pickKind, kindOf, WAVE } from './raidkind.mjs';
-import { fenceUp, fenceHit, fenceHtml, FENCE } from './fence.mjs';
-import { peaceDelay } from './peace.mjs';
-import { BAND, newBand, bandWalk, defenderDps, canDefend } from './band.mjs';
 
 export const RAID = { minPop: 8, minPopRules: 4, // loop12：開了「太平與備料」（江湖規則）的新局，山賊門檻降為 4 人＝開局人數，第 8 日起就會來
   first: 8, every: 6, jitter: 2, w: { coin: 1, food: 1, pill: 8, herb: 1, stage: 25 }, div: 2, dayK: 30, dayMax: 2, cap: 900,
@@ -102,4 +232,37 @@ export function threatHtml(s) {
   const head = `<div class="threat" data-threat><b>山賊</b>：${s.band ? `【${s.band.state === 'go' ? '正沿山路逼近' : '正在撞柵'}，山賊 ${Math.max(0, Math.round(s.band.hp))}/${s.band.max}】` : ''}${n < minPopOf(s) ? `門裡才 ${n} 人，山賊還看不上（${minPopOf(s)} 人起）` /* loop125：顯示用實際門檻 */ : `家底 ${Math.round(wealth(s))}，威脅 ${pts}（戰力 ${Math.round(defense(s))}）${s.rumor ? (rumorDays(s) ? `；傳聞約 ${rumorDays(s)} 日內來犯` : '；暫無風聲') : `；下次約第 ${X.next} 日`}`}・來過 ${X.n} 次（付錢 ${X.paid}／迎戰 ${X.fought}，勝 ${X.won}）・山門重傷 ${X.homeHurt}${valorHtml(s)}`;
   if (!P) return head + '</div>' + fenceHtml(s);
   return `${head}<div class="raid-ask" data-raid-ask>${kindOf(P.kind) ? `【${kindOf(P.kind).name}】${kindOf(P.kind).desc}；` : ''}${P.noPay ? '不談價錢：' : `山賊要 ${P.demand} 兩：<button data-raid="0" ${s.res.coin < P.demand ? 'disabled' : ''}>付錢了事</button>`} <button data-raid="1">迎戰（勝算 ${Math.round(P.p * 100)}%）</button></div></div>${fenceHtml(s)}`;
+}
+
+// ==== （原 lair.mjs）====
+// loop19 遠征剿寨：山賊來過幾次後，執事查出山寨所在；有閒人、糧夠時自主組隊出山剿寨。
+// 剿成→山賊很久不來（下次來犯延後 peaceDays）；剿敗→一人重傷、空手而回。只在 s.m9 生效（golden 不變）。
+export const LAIR = { after: 3, team: 2, supply: 2, dur: DAY / 2, k: 1.0, peaceDays: 10, minHp: 60, winHurt: 0.3, cool: 5 };
+const RL = (s) => { const L = s.lair; L.rng = ((L.rng || seedMix(s.seed || 1, 4219)) * 16807) % 2147483647; return L.rng / 2147483647; };
+const okD = (s, d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > LAIR.minHp && !d.order && !s.hunt?.team?.includes(d.id);
+const sumPow = (s, team) => power({ ...s, ds: team });
+// loop29（選用 s.lairpow）：寨子點數＝門派最強 top 人戰力×k，不再隨財富漲；預估 隊伍≈top3 的 2/3 → p≈.6
+export const LAIRP = { top: 3, k: 0.45 };
+export const lairOf = (s) => s.lair || null;
+// 每日呼叫：條件齊就出發
+export function lairDaily(s, H) {
+  if (!s.m9) return null; const X = T(s); if ((X.n || 0) < LAIR.after) return null;
+  const L = (s.lair ??= { found: s.day, n: 0, won: 0, next: 0, trip: null }); if (L.found === s.day && L.n === 0 && !L.logged) { L.logged = true; log(s, '【山寨】執事打聽到山賊在後山落草的寨子了，人手夠時就去剿。'); }
+  if (L.trip || s.day < L.next || X.pending || s.band || X.wave || s.exp) return null;
+  const need = LAIR.team * LAIR.supply; if ((s.res.food || 0) < need + 4) return null;
+  const c = s.ds.filter((d) => okD(s, d)).sort((a, b) => sumPow(s, [b]) - sumPow(s, [a])); if (c.length < LAIR.team + 1) return null; // 至少留一人看家
+  let team = c.slice(0, LAIR.team); if (s.draw) { const lead = c[0], m = mates(s, lead).map((id) => c.find((d) => d.id === id)).filter(Boolean); if (m.length) team = [lead, ...m].slice(0, LAIR.team); } /* loop20 同派同行 */ const pts = s.lairpow ? Math.max(1, Math.round(sumPow(s, c.slice(0, LAIRP.top)) * LAIRP.k)) : Math.max(1, Math.round(points(s) * LAIR.k)); /* loop29 寨強看戰力（選用） */ if (pts <= 0) return null; const pow = sumPow(s, team);
+  resAdd(s, 'food', -need); for (const d of team) { H?.cancelTask?.(s, d, '出山剿寨'); d.away = true; d.path = []; d.reason = '出山剿寨'; }
+  L.trip = { ids: team.map((d) => d.id), pts, back: s.t + LAIR.dur, pow }; L.n++;
+  log(s, `【剿寨】${team.map((d) => d.name).join('、')}帶 ${need} 份糧出山剿寨（寨中約 ${pts} 點）。`); return L.trip;
+}
+// 每 tick：到時間就回來結算
+export function lairStep(s, H) {
+  const L = s.lair, tr = L?.trip; if (!tr || s.t < tr.back) return; L.trip = null;
+  const team = tr.ids.map((id) => s.ds.find((d) => d.id === id)).filter(Boolean); for (const d of team) { d.away = false; d.reason = '剿寨歸來'; if (H?.gate) d.pos = [...H.gate]; }
+  const p = Math.max(0.1, Math.min(0.9, tr.pow / (tr.pow + tr.pts))), win = RL(s) < p; let hurt = null;
+  if (!win || RL(s) < LAIR.winHurt) { { hurt = team[Math.floor(RL(s) * team.length)]; if (hurt) { hurt.hp = Math.min(hurt.hp, guardHurt(hurt, RAID.hurtHp)); /* loop117 */ hurt.raidHurt = (hurt.raidHurt || 0) + 1; T(s).homeHurt++; H?.think?.(s, hurt, 'raidHurt'); } } }
+  const X = T(s); if (win) { L.won++; X.next = Math.max(X.next || 0, s.day) + LAIR.peaceDays; s.rep = (s.rep || 0) + RAID.rep * 2; L.next = X.next; log(s, `【剿寨】大破山寨！山賊作鳥獸散，至少 ${LAIR.peaceDays} 日不敢來犯。名聲 +${RAID.rep * 2}${hurt ? `；${hurt.name}重傷` : ''}。`); }
+  else { L.next = s.day + LAIR.cool; log(s, `【剿寨】寨子太硬，攻不下來${hurt ? `，${hurt.name}重傷` : ''}，只好先撤回。`); }
+  (L.hist ??= []).push({ day: s.day, pts: tr.pts, p: +p.toFixed(2), win, hurt: hurt?.id || null });
 }

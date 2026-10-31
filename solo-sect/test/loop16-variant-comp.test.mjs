@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState } from '../src/sim.mjs';
-import { comprehendVariant, vLean, COMP } from '../src/comprehend.mjs';
+import { comprehendVariant, vLean, COMP } from '../src/arts.mjs';
 import { learnArt } from '../src/arts.mjs';
 
 const sp = { kind: 'custom', name: '測', answers: Array(9).fill(0), comprehend: true };

@@ -5,7 +5,7 @@ import { RULES } from '../src/start-ui.mjs';
 import { createState, tick } from '../src/sim.mjs';
 import { save, load } from '../src/save.mjs';
 import { moveMul } from '../src/arts.mjs';
-import { profMul } from '../src/prof.mjs';
+import { profMul } from '../src/arts.mjs';
 import { ARTS } from '../src/data.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...x });
 const runDays = (s, days, dt = 6) => { for (let i = 0; i < days * 600 / dt; i++) tick(s, dt); return s; };

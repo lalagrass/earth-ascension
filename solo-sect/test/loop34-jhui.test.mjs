@@ -2,8 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
-import { jhuiHtml, archLine, archPanel, cliquePanel, jhevPanel, archKnown } from '../src/jhui.mjs';
-import { ARCH } from '../src/archetype.mjs';
+import { jhuiHtml, archLine, archPanel, cliquePanel, jhevPanel, archKnown } from '../src/panel-ui.mjs';
+import { ARCH } from '../src/social.mjs';
 import { run, ALL_ON } from './harness/bot.mjs';
 
 const sp = (o = {}) => ({ kind: 'custom', name: '測', answers: Array(9).fill(0), ...o });

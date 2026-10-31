@@ -1,7 +1,7 @@
 // loop60：執事顧灶（s.stewkit，預設勾選，需執事自主）
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { stewardDaily } from '../src/steward.mjs';
+import { stewardDaily } from '../src/economy.mjs';
 import { RULES } from '../src/start-ui.mjs';
 const H = { siteOf: () => null, capacity: () => 99, startBuild: () => true };
 const S = (o) => ({ steward: true, stewkit: true, ds: Array(8).fill(0), fac: { watch: { stage: 1 }, kitchen: { stage: 0 } }, res: { food: 3 }, log: [], t: 0, ...o });

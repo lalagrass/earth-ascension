@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
-import { TYPES, typeLabel, mbtiPersonality, traitsOf } from '../src/mbti.mjs';
+import { TYPES, typeLabel, mbtiPersonality, traitsOf } from '../src/social.mjs';
 
 const spec = (mbti) => ({ kind: 'custom', name: '測', answers: Array(9).fill(0), ...(mbti ? { mbti } : {}) });
 const hero = (s) => s.ds.find((d) => d.id === 'hero');

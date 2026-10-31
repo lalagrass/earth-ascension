@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { MBTI_Q, quizResult, typeFromAnswers } from '../src/mbti.mjs';
+import { MBTI_Q, quizResult, typeFromAnswers } from '../src/social.mjs';
 import { mbtiBlock } from '../src/start-ui.mjs';
 import { defaultStats } from '../src/hero.mjs';
 

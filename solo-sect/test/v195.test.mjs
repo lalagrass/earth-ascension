@@ -4,9 +4,9 @@ import assert from 'node:assert/strict';
 import { createState, tick, startExpedition } from '../src/sim.mjs';
 import { DAY, ROUTE } from '../src/data.mjs';
 import * as W from '../src/world.mjs';
-import { reportText } from '../src/expedition.mjs';
+import { reportText } from '../src/world.mjs';
 import { migrate } from '../src/save.mjs';
-import { openExp } from '../src/slice.mjs';
+import { openExp } from '../src/world.mjs';
 
 const run = (s, k, sec) => { for (let t = 0; t < sec; t += 1) W.popStep(s, 1); };
 test('搗巢：上限減半 5 日後巢重築；同一巢毀期間不能再搗；不耗亂數', () => {

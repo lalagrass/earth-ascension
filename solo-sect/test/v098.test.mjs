@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
 import { save, load, MIGRATIONS } from '../src/save.mjs';
 import { RULES_VERSION, ROUTE } from '../src/data.mjs';
-import { secOpen, UNLOCKS, CHAPTER1, autosave, autoList, autoGet, AUTO } from '../src/slice.mjs';
+import { secOpen, UNLOCKS, CHAPTER1, autosave, autoList, autoGet, AUTO } from '../src/world.mjs';
 import { cuesFrom } from '../src/audio.mjs';
 const run = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
 const mem = () => { const m = new Map(); return { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), m }; };

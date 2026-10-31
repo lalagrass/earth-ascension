@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
 import { save, load } from '../src/save.mjs';
-import { READWU, readStudy, readwuNote } from '../src/readwu.mjs';
+import { READWU, readStudy, readwuNote } from '../src/arts.mjs';
 import { ALL_ON } from './harness/bot.mjs';
 const spec = (o = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...ALL_ON, ...o });
 test('30 次才 +1；只一次；5 不再升', () => {

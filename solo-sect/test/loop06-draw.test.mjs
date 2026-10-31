@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, scoreActs } from '../src/sim.mjs';
-import { DRAW, isExtro, powOf, drawOf } from '../src/draw.mjs';
+import { DRAW, isExtro, powOf, drawOf } from '../src/social.mjs';
 
 const run = (st, days) => { for (let i = 0; i < 240 * days; i++) tick(st, 6); return st; };
 const sp = (o = {}) => ({ kind: 'custom', name: '測', answers: Array(9).fill(0), ...o });

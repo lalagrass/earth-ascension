@@ -1,7 +1,7 @@
 /* loop69 診斷：月俸發不出（工錢沒著落）。用法：SS_DT=0.25 node test/harness/diag-wage.mjs [count] [days] [start] [bot|idle] [spec-json] */
 /* 每次結算（econ.lastBill 換日）記：人數、月俸、維護費、是否付出、結算後的錢；欠俸離山次數；冬天天數比例。輸出 JSON 一行。 */
 import { run, seedRange } from './bot.mjs';
-import { seasonOf } from '../../src/season.mjs';
+import { seasonOf } from '../../src/economy.mjs';
 const [n = 5, days = 60, start = 1001] = process.argv.slice(2, 5).map(Number), bot = process.argv[5] !== 'idle', SPEC = JSON.parse(process.argv[6] || '{}');
 const A = { bills: 0, paid: 0, wage: 0, fac: 0, coinAfter: 0, ppl: 0, left: 0, disrepairBills: 0, smp: 0, winter: 0, byN: {} };
 for (const seed of seedRange(n, start)) { let last = null, tk = 0;

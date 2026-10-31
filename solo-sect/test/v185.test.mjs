@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { createState, tick, canRecruit, recruit, startSchoolTrip } from '../src/sim.mjs';
 import { DAY, FACILITIES } from '../src/data.mjs';
 import { UPKEEP, wageBill, wageN, facBill, billDue, settle, E, MARKET, priceOf, marketDo, marketWhy, agePills, PILL_AGE, SCHOOL, schoolWhy, salaried, econHtml } from '../src/economy.mjs';
-import { HEROES } from '../src/hero-data.mjs';
+import { HEROES } from '../src/data.mjs';
 import { GUOJING_EARLY } from '../src/hero.mjs';
 import { moveMul } from '../src/arts.mjs';
 import { migrate } from '../src/save.mjs';

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
-import { COMP, comprehend, compProgress } from '../src/comprehend.mjs';
+import { COMP, comprehend, compProgress } from '../src/arts.mjs';
 import { ARTS } from '../src/data.mjs';
 
 const sp = (o = {}) => ({ kind: 'custom', name: '測', answers: Array(9).fill(0), ...o });

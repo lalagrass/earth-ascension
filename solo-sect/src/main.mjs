@@ -1,46 +1,23 @@
-import { readwuNote } from './readwu.mjs'; /* loop142 */
-import { HOME, HOME_VIEW, CHUNK, CHUNK_CAP, lruGet, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, styledPos, fogged, inVision, leftovers, FOG_W, FOG_H, WORLD, cellColor, STYLE_PATH, cloudAt, cloudPos, cloudSpots, partyCloud, CLOUD_MAP, ZOOMS, lodOf, TRAIL_END, raidDescent, RINGS, TRAIL, POP, capOf, denDown } from './world.mjs';
-import { laborNote } from './labor-ui.mjs'; // loop130
-import { raidMul } from './expedition.mjs';
-import { sideCards, bubbles } from './events.mjs';
-import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES } from './bonds.mjs';
-import { statusHtml } from './status.mjs';
-import { milestones } from './expedition.mjs';
+import { readwuNote, artsSvg, artHintsHtml, setFocus, focusOf, artById, artMul, artState, topTier, chooseVariant, variantOf, stuckAt, breakChance, rustOf, starCost, guizhenOk, compProgress } from './arts.mjs';
+import { HOME, HOME_VIEW, CHUNK, CHUNK_CAP, lruGet, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, styledPos, fogged, inVision, leftovers, FOG_W, FOG_H, WORLD, cellColor, STYLE_PATH, cloudAt, cloudPos, cloudSpots, partyCloud, CLOUD_MAP, ZOOMS, lodOf, TRAIL_END, raidDescent, RINGS, TRAIL, POP, capOf, denDown, raidMul, milestones, styleOf, teamStyle, UNLOCKS, ALL_SECS, secOpen, CHAPTER1, AUTO, autoDue, autosave, autoList, autoGet, suhuiOf, syncLegacy, routeSeg, segIndex, campsOpen, scoutOf, peaceOf, suggestTeam } from './world.mjs';
+import { laborNote, statusHtml, jhuiHtml, archLine, pickModal, pending, isFolded, foldKey, setAll, dsum, growthHtml } from './panel-ui.mjs';
+import { sideCards, bubbles } from './util.mjs';
+import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES, MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS, statusIcon } from './bonds.mjs';
 import { ARC13 } from './jianghu.mjs';
-import { GEN, canSucceed, succeed, heirs, heirArt } from './gen.mjs';
-import { SECTS, SECT_K, RULE_LIB } from './sect-data.mjs';
-import { canBuildFac, buildFac, artKind, KIND_NAME, sectFac, rivalGate } from './sect.mjs';
-import { JH, DAY as DAY13 } from './data.mjs';
-import { zxGate } from './huashan.mjs';
-import { HS, DUGU } from './data.mjs';
-import { XIA, xiaPool, pickStudent } from './wuxia.mjs';
-import { artsSvg, artHintsHtml, setFocus, focusOf, artById, artMul, artState, topTier, chooseVariant, variantOf, stuckAt, breakChance, rustOf, starCost, guizhenOk } from './arts.mjs';
-import { ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2 } from './data.mjs';
-import { startExpedition, recallExpedition, canExpedition, codexRows, reportText, segAt, ROUTE_END, skipGuide } from './sim.mjs';
-import { ROUTE, EXP, ENEMIES } from './data.mjs';
-import { outers, skipsChores, emergency, quotaOf, setDuty, setPrio, canPromote, startTrial } from './sim.mjs';
-import { CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES } from './data.mjs';
-import { isLabor, disciples, laborers, laborCap, canHire, hire, canInvite, invite, avgAff, togglePause, MATS, moodLabel, moodParts, seasonOf, aff, compat, defaultAnswers, personalityFrom, capacity, canRecruit, recruit, recruitNeed, mapStage, setPost, phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf, incenseOf } from './sim.mjs';
-import { nearestType, typeLabel } from './mbti.mjs';
-import { archLabel } from './archetype.mjs';
-import { jhuiHtml, archLine } from './jhui.mjs';
-import { pickModal, pending } from './modalq.mjs';
-import { isFolded, foldKey, setAll } from './fold.mjs';
-import { dsum } from './dcard.mjs';
-import { compProgress } from './comprehend.mjs';
-import { seasonHint } from './season.mjs'; /* loop73 */
-import { growthHtml } from './growui.mjs'; /* loop81 成長分層介面；GMEMO 只存在 UI，不存檔 */
-const GMEMO = {};
-import { ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS } from './data.mjs';
-import { EXP_STYLES } from './data.mjs';
-import { styleOf, teamStyle } from './expedition.mjs';
+import { GEN, canSucceed, succeed, heirs, heirArt, canBuildFac, buildFac, artKind, KIND_NAME, sectFac, rivalGate } from './sect.mjs';
+import { SECTS, SECT_K, RULE_LIB, JH, DAY as DAY13, HS, DUGU, ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2, ROUTE, EXP, ENEMIES, CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES, ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, EXP_STYLES, CAMPS, ENDLESS, bindPortraitSet } from './data.mjs';
+import { zxGate, XIA, xiaPool, pickStudent } from './wuxia.mjs';
+import { startExpedition, recallExpedition, canExpedition, codexRows, reportText, segAt, ROUTE_END, skipGuide, outers, skipsChores, emergency, quotaOf, setDuty, setPrio, canPromote, startTrial, isLabor, disciples, laborers, laborCap, canHire, hire, canInvite, invite, avgAff, togglePause, MATS, moodLabel, moodParts, seasonOf, aff, compat, defaultAnswers, personalityFrom, capacity, canRecruit, recruit, recruitNeed, mapStage, setPost, phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf, incenseOf, startSchoolTrip, buildWhy, lotsUsed, lotsOf, lotCost, lotWhy, buyLot, resolveRaid } from './sim.mjs';
+import { nearestType, typeLabel, archLabel, think as think10 } from './social.mjs';
+import { seasonHint, econHtml, marketDo } from './economy.mjs';
 import { openStart, choiceUI, heroCard } from './start-ui.mjs';
-import { UNLOCKS, ALL_SECS, secOpen, CHAPTER1, AUTO, autoDue, autosave, autoList, autoGet, suhuiOf, syncLegacy } from './slice.mjs';
-import { MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS, statusIcon } from './v10.mjs';
-import { routeSeg, segIndex, campsOpen, scoutOf, peaceOf } from './expedition.mjs';
-import { CAMPS, ENDLESS } from './data.mjs';
-import { think as think10 } from './mind.mjs';
 import { SFX, ambient, setMute, isMuted, cuesFrom } from './audio.mjs';
+import { threatHtml, rumorDays, buildFence, upgradeFence, startFenceSite } from './threat.mjs';
+/* loop142 */
+// loop130
+/* loop73 */
+/* loop81 成長分層介面；GMEMO 只存在 UI，不存檔 */
+const GMEMO = {};
 const cv = document.getElementById('map'), g = cv.getContext('2d');
 const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile', 'kitchen_s1', 'map_s0', 'map_s1', 'map_s2'];
 await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i.onload = r; i.onerror = r; i.src = `assets/${n}.${n === 'ground' || n.startsWith('map_') ? 'jpg' : 'png'}`; IMG[n] = i; })));
@@ -482,19 +459,12 @@ function bondsHtml(S) { const out = ['<h3 style="margin:6px 0 2px">師徒</h3>']
   out.push(`<div class="k" id="xia-style">名俠池畫風：${(XIA_STYLES[S.xiaStyle || 'all'] || XIA_STYLES.all).name}</div>`);
   return out.length > 2 || P.length ? out.join('') : out.join('') + '<div class="k">尚無師徒（內門與外門互有好感 30 才能收徒）</div>'; }
 // v1.8 畫像新舊開關（PB-15/16/18）
-import { bindPortraitSet } from './portrait-set.mjs';
 try { bindPortraitSet(document, localStorage, document.getElementById('pset')); } catch (e) { console.warn('portrait set', e); }
 
 // v1.85 市集／義學按鈕
-import { econHtml, marketDo } from './economy.mjs';
-import { startSchoolTrip } from './sim.mjs';
 document.addEventListener('click', (e) => { const m = e.target.closest('[data-mkt]'); if (m && S) { const r = marketDo(S, m.dataset.mkt); toast(r.ok ? `成交 ${r.p}` : r.why, !r.ok); return; } if (e.target.closest('[data-school]') && S) { const r = startSchoolTrip(S); toast(r.ok ? `${r.d.name}下山義學去了` : r.why, !r.ok); } });
 
 // v1.9 I-2 擴地、I-6 山賊勒索、A9 因才派巡
-import { buildWhy, lotsUsed, lotsOf, lotCost, lotWhy, buyLot, resolveRaid } from './sim.mjs';
-import { threatHtml, rumorDays } from './threat.mjs';
-import { buildFence, upgradeFence, startFenceSite } from './fence.mjs';
-import { suggestTeam } from './expedition.mjs';
 document.addEventListener('click', (e) => {
   if (!S) return; const l = e.target.closest('[data-lot]'); if (l) { const r = buyLot(S); toast(r.ok ? `擴地花了 ${r.c}` : r.why, !r.ok); panel(); return; }
   const fu = e.target.closest('[data-fence-up]'); if (fu) { const r = startFenceSite(S); toast(r.ok ? '立了加砌藍圖，弟子會搬石施工' : r.why, !r.ok); panel(); return; }

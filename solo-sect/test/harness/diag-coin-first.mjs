@@ -3,7 +3,7 @@
 // (2) 剿寨第 1 場：重建該場的勝負亂數 u，檢查 u 的分布與 u<p 的比率。
 // 用法：node test/harness/diag-coin-first.mjs [種子數=40] [起始種子=1001] [日數=60]
 import { run } from './bot.mjs';
-import { seedMix } from '../../src/seedmix.mjs';
+import { seedMix } from '../../src/util.mjs';
 const N = +(process.argv[2] || 40), S0 = +(process.argv[3] || 1001), DAYS = +(process.argv[4] || 60), M = 2147483647;
 function who() { const fr = new Error().stack.split('\n').slice(3); const tag = fr.some((l) => /steward\.mjs/.test(l)) ? '執事:' : fr.some((l) => /harness\/bot\.mjs/.test(l)) ? 'bot:' : '';
   for (const l of fr) { const m = l.match(/at (?:async )?([\w$.]+) \(.*\/src\/(\w+)\.mjs/); if (m && m[2] !== 'util' && !/^(Object|Proxy|Array)\./.test(m[1])) return tag + `${m[2]}:${m[1]}`; } return tag + '?'; }

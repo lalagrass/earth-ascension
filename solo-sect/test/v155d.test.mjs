@@ -1,7 +1,7 @@
 // v1.55d 雲海循環圖（無盡段）＋三段縮放 LOD
 import test from 'node:test'; import assert from 'node:assert/strict'; import fs from 'node:fs'; import crypto from 'node:crypto';
-import { createState, tick, startExpedition } from '../src/sim.mjs'; import { save } from '../src/save.mjs'; import { openExp } from '../src/slice.mjs';
-import { ENDLESS, DAY } from '../src/data.mjs'; import { segAt } from '../src/expedition.mjs'; import * as W from '../src/world.mjs';
+import { createState, tick, startExpedition } from '../src/sim.mjs'; import { save } from '../src/save.mjs'; import { openExp } from '../src/world.mjs';
+import { ENDLESS, DAY } from '../src/data.mjs'; import { segAt } from '../src/world.mjs'; import * as W from '../src/world.mjs';
 const buff = (s, ids, lvl) => { for (const d of s.ds) if (ids.includes(d.id)) { d.skills.palm = d.skills.leg = lvl; d.skills.agility = d.skills.strength = lvl / 2; d.hp = 100; d.mood = 80; } };
 test('雲海：絕頂之前不算，之後每 200 步一重，重數＝模擬的段', () => {
   assert.equal(W.cloudAt(W.TRAIL_END - 0.1), null); assert.equal(W.cloudAt(null), null);

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { createState, tick, startBuild, buildWhy, buyLot, lotCost, lotsUsed, lotsOf } from '../src/sim.mjs';
 import { DAY, FACILITIES, ROUTE, LOTS } from '../src/data.mjs';
 import { RAID, T, points, wealth, threatDaily, threatStep, raidResolve, raidAuto, headcount, threatHtml } from '../src/threat.mjs';
-import { suggestTeam } from '../src/expedition.mjs';
+import { suggestTeam } from '../src/world.mjs';
 import { migrate } from '../src/save.mjs';
 
 const H = { think: () => {} };

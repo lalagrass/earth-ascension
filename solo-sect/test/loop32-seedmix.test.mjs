@@ -1,7 +1,7 @@
 // loop32：Lehmer 亂數流種子雜湊——種子 1–10 的第 1 抽要散開（舊版＝線性，全擠在 0 附近）
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { seedMix, M } from '../src/seedmix.mjs';
+import { seedMix, M } from '../src/util.mjs';
 
 const first = (seed, salt) => (seedMix(seed, salt) * 16807) % M / M;
 const SALTS = { lair: 4219, jhev: 7919, threat: 7477, jianghu: 977 };

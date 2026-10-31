@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
-import { MENTOR, coTrain, askStrong, pairBoost } from '../src/mentor.mjs';
+import { MENTOR, coTrain, askStrong, pairBoost } from '../src/social.mjs';
 
 const sp = (o = {}) => ({ kind: 'custom', name: '測', answers: Array(9).fill(0), ...o });
 const nop = () => {};

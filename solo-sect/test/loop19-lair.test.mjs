@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
 import { T } from '../src/threat.mjs';
-import { LAIR, lairDaily, lairStep } from '../src/lair.mjs';
+import { LAIR, lairDaily, lairStep } from '../src/threat.mjs';
 
 const sp = { kind: 'custom', name: '測', answers: Array(9).fill(0), peace: true };
 const ready = (o) => { const s = createState(1, o); s.day = 20; s.res.food = 50; s.res.coin = 300; T(s).n = LAIR.after; for (const d of s.ds) d.hp = 100; return s; };

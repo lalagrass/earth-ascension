@@ -1,7 +1,7 @@
 // loop31 診斷：剿寨預測勝率 vs 實際結果（校準分箱），並檢查山寨亂數流的前幾抽。
 // 用法：node test/harness/diag-lair-calib.mjs [種子數=10] [日數=60] [起始種子=1001]（loop32：首抽改用 seedMix）
 import { run } from './bot.mjs';
-import { seedMix } from '../../src/seedmix.mjs';
+import { seedMix } from '../../src/util.mjs';
 const N = +(process.argv[2] || 10), DAYS = +(process.argv[3] || 60), S0 = +(process.argv[4] || 1001), rows = [];
 for (const bot of [false, true]) for (let seed = S0; seed < S0 + N; seed++) { const s = run(seed, {}, DAYS, bot); (s.lair?.hist || []).forEach((h, i) => rows.push({ bot, seed, i, p: h.p, win: h.win ? 1 : 0 })); }
 const bins = [[0, .4], [.4, .5], [.5, .6], [.6, .7], [.7, .8], [.8, 1.01]];

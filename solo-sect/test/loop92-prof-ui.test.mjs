@@ -2,8 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState } from '../src/sim.mjs';
-import { artsGrowHtml } from '../src/growui.mjs';
-import { profLabel, profMul } from '../src/prof.mjs';
+import { artsGrowHtml } from '../src/panel-ui.mjs';
+import { profLabel, profMul } from '../src/arts.mjs';
 import { ARTS } from '../src/data.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, grow: true, ...x });
 const pick = (d) => ARTS.find((a) => d.arts[a.id]);

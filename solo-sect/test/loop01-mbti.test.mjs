@@ -1,7 +1,7 @@
 // loop1 M1：16 型 → 既有特質映射
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { AXES, TYPES, MBTI_Q, traitExists, traitsOf, typeFromAnswers, nearestType, isType } from '../src/mbti.mjs';
+import { AXES, TYPES, MBTI_Q, traitExists, traitsOf, typeFromAnswers, nearestType, isType } from '../src/social.mjs';
 
 const all16 = () => { const out = ['']; for (const ax of AXES) { const n = []; for (const p of out) n.push(p + ax[0], p + ax[1]); out.splice(0, out.length, ...n); } return out; };
 

@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startHunt } from '../src/sim.mjs';
-import { qiMax, mitOf } from '../src/neigong.mjs';
+import { qiMax, mitOf } from '../src/arts.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, neigong: true, ngshield: true, ...x });
 function hunt(seed, full) {
   const s = createState(seed, spec()); for (let i = 0; i < 7200; i++) tick(s, 0.25);

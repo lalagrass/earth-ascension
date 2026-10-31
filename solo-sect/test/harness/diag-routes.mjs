@@ -2,7 +2,7 @@
    用法：SS_DT=0.25 node test/harness/diag-routes.mjs [n=40] [start=1001] [T=400] > out.json */
 import { createState, tick } from '../../src/sim.mjs';
 import { learnArt, artTier } from '../../src/arts.mjs';
-import { mastery } from '../../src/growth.mjs';
+import { mastery } from '../../src/arts.mjs';
 import { ALL_ON } from './bot.mjs';
 const DT = +(process.env.SS_DT || 0.25), N = +(process.argv[2] || 40), S0 = +(process.argv[3] || 1001), T = +(process.argv[4] || 400), MAXD = 20, SWAP = 60;
 const ROUTES = { spec: ['pushPalm'], same: ['basicFist', 'pushPalm'], cross: ['pushPalm', 'sweepLeg'] };

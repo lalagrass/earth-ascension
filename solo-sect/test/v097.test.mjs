@@ -1,7 +1,7 @@
-import { openExp } from "../src/slice.mjs";
+import { openExp } from "../src/world.mjs";
 import test from 'node:test'; import assert from 'node:assert/strict';
 import { createState, tick, startExpedition, payday, load, save, moodParts } from '../src/sim.mjs';
-import { styleOf, teamStyle, evadeScore } from '../src/expedition.mjs';
+import { styleOf, teamStyle, evadeScore } from '../src/world.mjs';
 import { ROUTE, RULES_VERSION, ENEMIES } from '../src/data.mjs';
 const H = (id, comp) => createState(21, { kind: 'template', id, companion: comp });
 const go = (s, ids, lvl) => { tick(s); for (const d of s.ds) if (ids.includes(d.id) && lvl != null) { d.skills.palm = d.skills.leg = Math.max(d.skills.palm, lvl); d.skills.strength = lvl / 2; }

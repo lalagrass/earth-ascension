@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ARTS } from '../src/data.mjs';
-import { ART_CAT, CATS, mastery, settleGrowth, growInit, accelOf, GROW, levelOf } from '../src/growth.mjs';
+import { ART_CAT, CATS, mastery, settleGrowth, growInit, accelOf, GROW, levelOf } from '../src/arts.mjs';
 const A = (id) => ARTS.find((a) => a.id === id);
 test('每門武學都有明確的成長門類映射，且門類存在', () => { for (const a of ARTS) { assert.ok(ART_CAT[a.id], a.id); for (const c of Object.keys(ART_CAT[a.id])) assert.ok(CATS[c], c); } });
 test('school=palm 的劍法、內功不歸拳掌', () => { for (const id of ['bixie', 'dugu', 'xuantie']) assert.deepEqual(Object.keys(ART_CAT[id]), ['jianfa']); for (const id of ['zixia', 'jiuyang']) assert.equal(ART_CAT[id].quanzhang, undefined); });

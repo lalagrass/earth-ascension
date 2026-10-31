@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startHunt } from '../src/sim.mjs';
-import { qiMax, NG } from '../src/neigong.mjs';
+import { qiMax, NG } from '../src/arts.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...x });
 test('NG 不再有運勁／療傷參數', () => { for (const k of ['strikeCost', 'strikeMul', 'healAt', 'healCost', 'heal', 'base', 'perTier']) assert.equal(NG[k], undefined, k); });
 test('開內功即護體真氣（沒有一版可選）', () => { const s = createState(1001, spec({ neigong: true, ngshield: false })); assert.equal(s.ngshield, true); assert.ok(s.ds.every((d) => d.ng2 === 1)); });

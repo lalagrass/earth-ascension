@@ -1,5 +1,5 @@
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { stewardDaily } from '../src/steward.mjs';
+import { stewardDaily } from '../src/economy.mjs';
 const H = (cap, site = null) => { const calls = []; return { calls, siteOf: () => site, capacity: () => cap, startBuild: (s, id) => { calls.push(id); return true; } }; };
 const S = (o) => ({ steward: true, ds: [1, 2, 3, 4], fac: { watch: { stage: 0 } }, log: [], t: 0, ...o });
 test('有人睡地鋪 → 先擴寢舍', () => { const h = H(3); assert.equal(stewardDaily(S({}), h), 'dorm'); });

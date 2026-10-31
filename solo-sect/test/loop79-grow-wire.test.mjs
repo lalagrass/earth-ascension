@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { RULES } from '../src/start-ui.mjs';
 import { createState, tick } from '../src/sim.mjs';
 import { save, load } from '../src/save.mjs';
-import { mastery } from '../src/growth.mjs';
+import { mastery } from '../src/arts.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...x });
 const runDays = (s, days, dt = 6) => { for (let i = 0; i < days * 600 / dt; i++) tick(s, dt); return s; };
 test('規則轉正（loop143）：grow 在 v2.2 底層規則', async () => { const { BASELINE_V22 } = await import('../src/sim.mjs'); assert.equal(BASELINE_V22.grow, true); });

@@ -7,7 +7,7 @@ import { jhStep, jhResolve, card } from '../src/jianghu.mjs';
 import { artTier } from '../src/arts.mjs';
 import { RAID, T, dayMul, threatDaily, raidResolve } from '../src/threat.mjs';
 import { agePills, marketDo } from '../src/economy.mjs';
-import { TREES } from '../src/destiny.mjs';
+import { TREES } from '../src/data.mjs';
 
 const hero = (s) => s.ds.find((d) => d.id === 'hero');
 const H = { think: () => {} };

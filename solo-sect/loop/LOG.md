@@ -1331,3 +1331,11 @@
 - loop142 留下的 readwu 舊檔測試（`/workspace/ab/…keep`）併入 v220 的「舊 fixture 不強開」一項，不另提交。
 - Retro（142–143）：好：轉正只動一張表與 spec，舊測試全部保留當對照組。不好：loop35 原本 66 項逐條接線測試被 3 項取代，測試數從 713 掉到 663，是有意的；底層各條的行為測試仍在各自 loop 測試裡。
 - **Batch 1 小結**：一版內功刪除（決定 126）；30 條規則轉正、開局江湖規則剩 3 個選項；舊檔與舊 golden 不變；新增 golden-30d-v22（`38fd4ddf63c1028b`）。
+
+## Loop 144 — Batch 2 R2：微檔整併（決定 130）
+- 工具：`/workspace/ab/tools/merge.py`（依組內 import 拓樸排序、偵測同名頂層宣告、改寫所有 import 路徑）＋`dedupe.py`（同一模組的 import 併成一行）。工具不進 repo。
+- 衝突只有兩處：`lair` 與 `jhevents` 各自的區域亂數 `R` 與 `threat`／`jianghu` 同名，改成 `RL`／`RJ`（只改名）。
+- 一次失敗：destiny 先放 jianghu，jianghu↔wuxia 循環載入時 `buildCards` 尚未初始化；改放 data 後解決。
+- 結果：`src/` 63 個 .mjs → **19 個**（另有 destiny-trees.json）；`sim.mjs` 731→700 行、import 46→14 行；`main.mjs` 504→474 行、import 49→15 行。
+- 等價驗證：SS_DT=0.25、種子 1001–1160、bot 30 日、全規則，8 段並行；重構前（worktree `/workspace/ab/pre-r2` @280918b）與重構後的**整份存檔 sha256，160/160 完全相同**（`/workspace/ab/pre-r2.txt` vs `post-r2a.txt`）。
+- 測試：v178 資源管道白名單的檔名前綴改 gen→sect、expedition→world；其餘 663 項不改即過。瀏覽器開局與進局無腳本錯誤（無頭 Chrome，本機 8831 埠）。

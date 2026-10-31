@@ -1,4 +1,84 @@
-import { NEW_TRAITS } from './hero-data.mjs';
+import TREES from './destiny-trees.json' with { type: 'json' };
+// ==== （原 hero-data.mjs）====
+// v0.96 主角建立：六屬性、六價值觀、九問問心、六位經典模板、開局同門候選
+export const STATS = [['wu', '悟性'], ['gen', '根骨'], ['li', '臂力'], ['shen', '身法'], ['ding', '定力'], ['fu', '福緣']];
+export const STAT_BUDGET = 12; // 六項起始各 1，共 12 點（含起始的 6）→ 可再分配 6；悟性停在 1 退 1 點（笨功夫）
+export const VALUES = [['xia', '俠義'], ['sect', '門派'], ['qing', '情義'], ['free', '自在'], ['wu', '武道'], ['fame', '名望']];
+// 行動標籤 → 價值觀（autopilot：價值 × 標籤 進入天賦組）
+export const ACT_TAGS = {
+  train: ['wu'], spar: ['wu', 'fame'], meditate: ['wu'], learn: ['wu'],
+  chat: ['qing'], encourage: ['qing', 'xia'],
+  leisure: ['free'], forage: ['free'],
+  build: ['sect'], chop: ['sect'], quarry: ['sect'], farm: ['sect'], cook: ['sect', 'qing'],
+  hunt: ['xia', 'fame'],
+};
+export const VALUE_K = 0.006;      // 價值 40 → 動作分數 +24%
+export const WEXIN = { max: 3, mood: -6, classicMul: 1.5, at: -25 };
+// 九問問心：每個答案 = [文字, {價值增減}, 特質票]
+export const Q9 = [
+  { q: '出身', a: [['農家子弟', { sect: 2, wu: 1 }, 'diligent'], ['市井混混', { free: 2, fame: 1 }, 'glib'], ['書香門第', { fame: 2, xia: 1 }, 'worrier']] },
+  { q: '最珍貴的是', a: [['朋友', { qing: 3 }, 'sociable'], ['自由', { free: 3 }, 'free'], ['名聲', { fame: 3 }, 'brave']] },
+  { q: '最可惡的是', a: [['欺凌弱小', { xia: 3 }, 'brave'], ['背叛師門', { sect: 3 }, 'honest'], ['被人管束', { free: 2, sect: -1 }, 'playful']] },
+  { q: '兩難：師門令你殺一個無辜者', a: [['抗命', { xia: 3, sect: -2 }, 'brave'], ['遵命', { sect: 3, xia: -2 }, 'honest'], ['裝病推掉', { free: 2 }, 'glib']] },
+  { q: '兩難：一本絕世祕笈，代價是同伴的信任', a: [['拿', { wu: 3, qing: -2 }, 'diligent'], ['不拿', { qing: 3 }, 'gentle'], ['偷看一眼再還', { wu: 1, free: 1 }, 'playful']] },
+  { q: '練功時你', a: [['一招練一萬遍', { wu: 2 }, 'honest'], ['一點就通就好', { free: 1, wu: 1 }, 'free'], ['練累了就去吃', { free: 1 }, 'glutton']] },
+  { q: '心性：輸了比武', a: [['回去苦練', { wu: 2 }, 'diligent'], ['笑一笑', { free: 1 }, 'optimist'], ['整夜睡不著', { fame: 2 }, 'worrier']] },
+  { q: '心性：同門被欺負', a: [['挺身而出', { xia: 2, sect: 1 }, 'brave'], ['先安慰他', { qing: 2 }, 'gentle'], ['找師父告狀', { sect: 2 }, 'honest']] },
+  { q: '心性：意外得了一筆錢', a: [['捐給門派', { sect: 2 }, 'gentle'], ['請大家吃一頓', { qing: 2 }, 'glutton'], ['存起來', { fame: 1, free: 1 }, 'worrier']] },
+];
+// 經典模板（屬性可超過 12；人格固定；違心 ×1.5）
+export const HEROES = [
+  { id: 'guojing', name: '郭靖', diff: 3, hard: true, tag: '【困難開局】憨厚苦練：悟性 1、根骨 5，衝關難；前 20 日降龍掌衝關較易', stats: { wu: 1, gen: 5, li: 4, shen: 2, ding: 4, fu: 2 }, personality: ['honest', 'diligent', 'stubborn'], values: { xia: 40, sect: 25, qing: 20, free: -10, wu: 10, fame: 0 }, style: 'palm', lore: ['江南七怪雜學', '全真內功入門'], companions: ['huangrong', 'munianci'], arc: 'guojing' },
+  { id: 'weixiaobao', name: '韋小寶', diff: 3, tag: '不靠武功：經濟、說謊、收人才；巡山專門溜走', stats: { wu: 3, gen: 1, li: 1, shen: 4, ding: 1, fu: 5 }, personality: ['glib', 'lazy', 'optimist'], values: { free: 40, fame: 25, qing: 20, wu: -30, xia: 0, sect: 0 }, style: 'leg', lore: ['神行百變（逃命部分）'], coinMul: 3, companions: ['shuanger', 'ake'], arc: 'weixiaobao' },
+  { id: 'linghuchong', name: '令狐沖', diff: 2, tag: '悟性派：灑脫嗜酒，以巧破招；被逐出華山自立門戶', stats: { wu: 5, gen: 3, li: 2, shen: 4, ding: 1, fu: 2 }, personality: ['free', 'drinker', 'sociable'], values: { free: 40, qing: 35, xia: 20, sect: -10, fame: -20, wu: 10 }, style: 'palm', lore: ['華山劍法（精階）', '氣宗內功（低）'], companions: ['yuelingshan', 'renyingying', 'tianboguang'], arc: 'linghuchong' },
+  { id: 'yuebuqun', name: '岳不群', diff: 3, tag: '偽君子：紫霞九層、辟邪誘惑、違心越積越多', stats: { wu: 4, gen: 3, li: 2, shen: 3, ding: 4, fu: 2 }, personality: ['rigid', 'worrier', 'hypocrite', 'diligent'], values: { fame: 40, sect: 35, xia: 10, qing: -10, free: -10, wu: 15 }, style: 'palm', lore: ['華山劍法（小成）', '紫霞神功（第一層）'], companions: ['ningzhongze', 'linghuchong'], arc: 'yuebuqun' },
+  { id: 'zhangwuji', name: '張無忌', diff: 2, tag: '柔：九陽內功天才，但優柔寡斷，抉擇常拖延', stats: { wu: 4, gen: 5, li: 2, shen: 3, ding: 2, fu: 3 }, personality: ['gentle', 'indecisive', 'kind'], values: { qing: 40, xia: 35, sect: 10, fame: -20, wu: -10, free: 0 }, style: 'palm', lore: ['九陽神功（第一層）', '醫術'], companions: ['zhaomin', 'xiaozhao'], arc: 'zhangwuji' },
+  { id: 'axing', name: '阿星', diff: 4, tag: '大器晚成：根骨被封，瀕死後覺醒如來神掌', stats: { wu: 1, gen: 1, li: 3, shen: 3, ding: 2, fu: 2 }, sealed: true, personality: ['rascal', 'lazy', 'brave'], values: { fame: 40, free: 20, xia: -20, qing: 0, sect: 0, wu: 0 }, style: 'palm', lore: ['街頭打架', '《如來神掌》小冊子（被騙買的）'], companions: ['afang', 'feizaicong'], arc: 'axing' },
+];
+// 開局同門候選（也是名俠池的一部分；被選中就移出名俠池）
+export const COMPANIONS = {
+  huangrong: { name: '黃蓉', sprite: 'senior', style: 'palm', root: 2, wu: 5, personality: ['clever', 'nimble', 'picky'], skills: { leg: 6, palm: 10, strength: 4, farming: 6, herbal: 12, agility: 18, cooking: 30 }, tag: '巧：悟性高、根骨低；廚藝引洪七公、精打細算', lore: ['落英神劍掌（之後）', '打狗棒法（之後）'], econ: 1, pair: { guojing: 0.25 } },
+  munianci: { name: '穆念慈', sprite: 'senior', style: 'leg', root: 3, wu: 3, personality: ['honest', 'gentle'], skills: { leg: 10, palm: 6, strength: 8, farming: 8, herbal: 6, agility: 10, cooking: 10 }, tag: '踏實：楊家槍，忠厚可靠' },
+  shuanger: { name: '雙兒', sprite: 'senior', style: 'leg', root: 4, wu: 3, personality: ['gentle', 'diligent'], skills: { leg: 14, palm: 8, strength: 8, farming: 8, herbal: 6, agility: 14, cooking: 12 }, tag: '忠心：武功好、任勞任怨，替主角打架' },
+  ake: { name: '阿珂', sprite: 'senior', style: 'palm', root: 3, wu: 4, personality: ['brave', 'picky'], skills: { leg: 6, palm: 12, strength: 6, farming: 2, herbal: 4, agility: 12, cooking: 2 }, tag: '高傲：劍法不錯，但對主角好感很低' },
+  yuelingshan: { name: '岳靈珊', sprite: 'senior', style: 'palm', root: 3, wu: 3, personality: ['playful', 'sociable'], skills: { leg: 6, palm: 10, strength: 5, farming: 4, herbal: 4, agility: 12, cooking: 6 }, tag: '小師妹：玉女劍法，情義牽絆' },
+  renyingying: { name: '任盈盈', sprite: 'senior', style: 'palm', root: 4, wu: 4, personality: ['clever', 'worrier'], skills: { leg: 6, palm: 12, strength: 5, farming: 2, herbal: 10, agility: 12, cooking: 6 }, tag: '聖姑：琴音療傷、黑木崖人脈' },
+  tianboguang: { name: '田伯光', sprite: 'hero', style: 'leg', root: 4, wu: 3, personality: ['brave', 'drinker'], skills: { leg: 14, palm: 8, strength: 12, farming: 2, herbal: 2, agility: 20, cooking: 2 }, tag: '浪子：輕功快刀，巡山疾行；名聲差' },
+  ningzhongze: { name: '寧中則', sprite: 'senior', style: 'palm', root: 4, wu: 4, personality: ['gentle', 'brave'], skills: { leg: 8, palm: 14, strength: 8, farming: 8, herbal: 8, agility: 10, cooking: 10 }, tag: '寧氏一劍：正直，看穿偽君子會失望' },
+  linghuchong: { name: '令狐沖', sprite: 'hero', style: 'palm', root: 3, wu: 5, personality: ['free', 'drinker', 'sociable'], skills: { leg: 6, palm: 12, strength: 6, farming: 2, herbal: 2, agility: 12, cooking: 2 }, tag: '首徒：灑脫，九劍伏筆；會不會被逐出看你' },
+  linpingzhi: { name: '林平之', sprite: 'hero', style: 'palm', root: 3, wu: 3, personality: ['stubborn', 'worrier'], skills: { leg: 6, palm: 10, strength: 6, farming: 2, herbal: 2, agility: 10, cooking: 2 }, tag: '福威鏢局少鏢頭：滅門之恨，家傳劍譜' },
+  zhaomin: { name: '趙敏', sprite: 'senior', style: 'palm', root: 3, wu: 5, personality: ['clever', 'brave'], skills: { leg: 6, palm: 10, strength: 4, farming: 2, herbal: 6, agility: 12, cooking: 4 }, tag: '郡主：謀略與資源，正派名俠好感 −' },
+  xiaozhao: { name: '小昭', sprite: 'senior', style: 'leg', root: 3, wu: 4, personality: ['gentle', 'diligent'], skills: { leg: 8, palm: 6, strength: 4, farming: 8, herbal: 8, agility: 10, cooking: 14 }, tag: '溫柔：照顧人、心情加成，身世之謎' },
+  afang: { name: '阿芳', sprite: 'senior', style: 'leg', root: 2, wu: 3, personality: ['gentle', 'optimist'], skills: { leg: 4, palm: 2, strength: 2, farming: 8, herbal: 6, agility: 8, cooking: 8 }, tag: '啞女：善良，喚起阿星的良心（俠義 +）' },
+  feizaicong: { name: '肥仔聰', sprite: 'hero', style: 'palm', root: 2, wu: 2, personality: ['glutton', 'lazy'], skills: { leg: 2, palm: 6, strength: 10, farming: 4, herbal: 2, agility: 4, cooking: 6 }, tag: '跟班：一起詐騙賺錢，打架只會壯聲勢' },
+};
+export const CUSTOM_COMPANIONS = ['huangrong', 'shuanger', 'xiaozhao', 'yuelingshan'];
+// 新特質（加入 TRAITS）
+export const NEW_TRAITS = {
+  clever: { name: '聰慧', desc: '一點就通，巧勁武學學得快；也精打細算', mods: { train: 0.95, cook: 1.2 } },
+  nimble: { name: '靈動', desc: '腳下輕快，愛到處跑', mods: { forage: 1.3 } },
+  picky: { name: '挑嘴', desc: '吃得講究，飯菜差會不高興，自己下廚卻特別用心', mods: { cook: 1.4, eat: 0.9 }, thoughtMul: { food: 1.5 } },
+  lazy: { name: '懶散', desc: '能躺就不坐，練功提不起勁', mods: { train: 0.7, leisure: 1.4, rest: 1.15 } },
+  glib: { name: '油嘴', desc: '說話好聽，招人、買賣都佔便宜', mods: { chat: 1.3 } },
+  drinker: { name: '嗜酒', desc: '有酒心情就好，醉了悟性高、定力差', mods: { leisure: 1.2 }, moodBase: 3 },
+  rigid: { name: '拘謹', desc: '規矩方正，練正統功夫一板一眼；學不來無招之劍', mods: {} },
+  bold: { name: '豪爽', desc: '大口喝酒大塊吃肉，出手不拘章法', mods: { chat: 1.1 } },
+  hypocrite: { name: '偽君子', desc: '人前君子，人後算計；名望受損時心情大跌', mods: {} },
+  indecisive: { name: '優柔', desc: '重大抉擇總要拖上幾天', mods: {} },
+  kind: { name: '仁厚', desc: '見不得人受苦，愛照顧傷者', mods: { encourage: 1.4 } },
+  rascal: { name: '混混', desc: '街頭出身，偷懶耍詐，心底未泯', mods: { train: 0.8, forage: 1.2 } },
+};
+// 專屬主線第一步（v0.96 只做第一步；完整事件鏈依 ROADMAP 原版本）
+export const ARCS = {
+  guojing: { day: 2, title: '洪七公聞香而來', text: '一個背酒葫蘆的老叫化在門口嗅了嗅：「好香！誰燒的菜？」', opts: [['請他吃一頓，好好招待', { xia: 5, qing: 5 }, 'hong'], ['門派窮，請他離開', { sect: 5, xia: -5 }, null]] },
+  weixiaobao: { day: 2, title: '天地會來人', text: '一個自稱天地會的漢子塞給你一塊令牌：「香主，總舵主有請。」', opts: [['收下令牌，兩頭都賺', { free: 5, fame: 5 }, 'tdh'], ['裝傻推掉', { free: 3 }, null]] },
+  linghuchong: { day: 2, title: '思過崖的老人', text: '後山崖洞裡似乎有人。洞壁刻著五嶽劍法和破法。', opts: [['進洞看個究竟', { wu: 5, free: 5 }, 'feng'], ['不去，喝酒', { free: 5 }, null]] },
+  yuebuqun: { day: 2, title: '林平之上山投靠', text: '福威鏢局的少鏢頭林平之跪在門口，身上帶著家傳劍譜的傳聞。', opts: [['收他入門（君子之風）', { fame: 5, xia: 5 }, 'lin'], ['不收，免惹麻煩', { sect: 5, xia: -5 }, null]] },
+  zhangwuji: { day: 2, title: '明教殘部求救', text: '幾個明教弟子帶著傷來求醫：「六大派正在圍剿光明頂……」', opts: [['收留醫治', { qing: 5, xia: 5 }, 'mj'], ['正派會不滿，婉拒', { sect: 5, qing: -5 }, null]] },
+  axing: { day: 2, title: '豬籠城寨的包租婆', text: '你想冒充斧頭幫去收保護費，迎面撞上叼著菸的包租婆。', opts: [['硬著頭皮詐她', { fame: 5, xia: -5 }, 'zhulong'], ['腳底抹油', { free: 5 }, null]] },
+};
+
+// ==== （原 data.mjs）====
 // 資料驅動定義：地圖節點、設施階段、活動、武學、角色。改數值只動這裡。
 // v0.5：座標＝SCENE04 母版 MU（1280×720）×1.25，路網沿母版 routes（挑水/遠採藥/巡山/村路）與院南口 portal
 export const WORLD = { w: 1600, h: 900 };
@@ -515,3 +595,136 @@ export const DAO = { tagOf: { 巧: '破綻', 剛: '蓄力', 柔: '卸力', 拙: 
     wolfking: '破綻', post: '蓄力', python: '卸力', pythonking: '卸力', swordtomb: '歸真', peakguard: '歸真' } };
 // ---- v1.76 糧食安全閘（BALANCE-REPORT-v175 P0）：存糧＋菜 < 每人 perHead 份 → 種菜升為需求層、其餘非必要活動 ×gateMul ----
 export const FOOD_SEC = { perHead: 1.5, farm: 75, gateMul: 0.35, keep: ['eat', 'rest', 'farm', 'cook', 'heal', 'watch', 'trial', 'build', 'deliver'] };
+
+// ==== （原 sect-data.mjs）====
+// v1.35 門派身分（ROADMAP §18）：主角＝門派。純資料，無 import（arts.mjs 也會用）
+// bias：剛柔巧拙偏向（學該標籤武學速度，合計夾在 ±15%）；tree：本派武學；ban：門規明文禁止（學了＝叛派）
+// rules：門規（違反只加違心）；fac：鎮派設施；rivals：宿敵（守巡山關卡）；fav：名俠加權；recruit：招人風格
+export const SECT_K = { biasCap: 0.15, outside: 0.7, ruleCd: 3, rivalRep: 3, rivalScale: 1.15, keepWeek: 1, defectRep: 3, expelAt: 3, facRep: 5 };
+export const RULE_LIB = {
+  demon: { text: '不得與魔教往來', who: ['renyingying', 'tianboguang', 'zhaomin', 'dongfangbubai'] },
+  hoard: { text: '不囤積、不吃獨食', food: 40 },
+  rescue: { text: '同門有難，不得見死不救', hp: 25 },
+  heal: { text: '行善去惡、救死扶傷', hp: 25, herb: 2 },
+  rent: { text: '準時交租，不欠一文', coin: 5 },
+  share: { text: '兄弟有福同享', coin: 200, mood: 30 },
+  heart: { text: '不許冷落同門', mood: 20 },
+  fanqing: { text: '反清復明（兩頭都賺不算違心——韋小寶的特權）', flavor: true },
+  jiu: { text: '劍不離手、酒不離口', flavor: true },
+  qi: { text: '以氣御劍，氣宗為正', flavor: true },
+};
+export const SECTS = {
+  gaibang: { name: '丐幫', plaque: '丐幫・北丐一脈', color: '#8a5a2b', flag: '丐', bias: { 剛: 0.1, 拙: 0.05 }, tree: ['xianglong', 'dagou', 'pushPalm', 'basicFist'], ban: [], rules: ['hoard', 'rescue'],
+    fac: { name: '打狗棒堂', cost: { wood: 10, coin: 10 }, daily: { food: 2 }, desc: '污衣淨衣議事；弟子沿村乞討，每日糧 +2' }, rivals: ['鐵掌幫', '白駝山'], fav: ['hongqigong', 'huangrong'],
+    recruit: { root: 1, wu: -1, text: '一個根骨粗壯、腦筋不太靈光的小乞兒捧著破碗上山。' } },
+  qizong: { name: '華山派', plaque: '華山派・氣宗', color: '#3b5f8a', flag: '華', bias: { 柔: 0.15, 快: -0.1 }, tree: ['zixia', 'breath', 'wavePalm'], ban: ['kuihua', 'huagu', 'hama'], rules: ['demon', 'qi'],
+    fac: { name: '思過崖', cost: { stone: 10, coin: 6 }, ease: 3, desc: '面壁思過：每三天消一層掌門違心' }, rivals: ['嵩山派', '華山劍宗'], fav: ['linghuchong', 'ningzhongze', 'linpingzhi'],
+    recruit: { wu: 1, text: '一位世家子弟執禮甚恭，遞上拜帖。' } },
+  jianzong: { name: '華山劍宗', plaque: '思過崖・劍宗', color: '#5b6b7a', flag: '劍', bias: { 巧: 0.15 }, tree: ['dugu', 'wavePalm', 'snowStep'], ban: [], rules: ['rescue', 'jiu'],
+    fac: { name: '酒窖', cost: { wood: 8, coin: 8 }, mood: 5, desc: '好酒在窖：掌門每日心情 +5' }, rivals: ['華山氣宗', '嵩山派'], fav: ['renyingying', 'tianboguang', 'yuelingshan'],
+    recruit: { mood: 10, text: '一個背著酒葫蘆的浪子聽說這裡管酒，笑嘻嘻來拜師。' } },
+  mingjiao: { name: '明教', plaque: '明教・光明頂', color: '#b33a1f', flag: '火', bias: { 柔: 0.08, 巧: 0.07 }, tree: ['jiuyang', 'qiankun', 'taiji', 'breath'], ban: [], rules: ['heal', 'rescue'],
+    fac: { name: '聖火壇', cost: { stone: 10, coin: 10 }, gain: 1.1, desc: '聖火不滅：全派練武 +10%' }, rivals: ['少林', '武當', '峨眉', '崑崙', '崆峒', '華山'], fav: ['zhaomin', 'xiaozhao'],
+    recruit: { hp: 60, text: '一個帶傷的明教教眾跌跌撞撞上山求醫，傷好後不肯走了。' } },
+  tiandihui: { name: '天地會', plaque: '天地會・青木堂', color: '#2f6a3a', flag: '洪', bias: { 巧: 0.05 }, tree: ['snowStep', 'huagu'], ban: [], rules: ['fanqing', 'share'],
+    fac: { name: '香堂', cost: { wood: 8, coin: 6 }, daily: { coin: 3 }, desc: '拜香堂、收會費：每日香火錢 +3' }, rivals: ['神龍教', '朝廷鷹犬'], fav: ['shuanger', 'ake', 'haidafu'],
+    recruit: { trait: 'glib', text: '一個市井混混對了暗號：「地振高岡，一派溪山千古秀。」' } },
+  zhulong: { name: '豬籠城寨', plaque: '豬籠城寨', color: '#8a7a3a', flag: '寨', bias: { 剛: 0.15 }, tree: ['rulai', 'tantui', 'tiexian', 'bagua', 'shihou', 'basicFist'], ban: [], rules: ['rent', 'heart'],
+    fac: { name: '大雜院', cost: { wood: 10, stone: 4 }, daily: { food: 1, coin: 1 }, desc: '包租婆收租：每日糧 +1、香火錢 +1' }, rivals: ['斧頭幫', '火雲邪神'], fav: ['baozupo', 'baozugong', 'afang'],
+    recruit: { skill: 'strength', text: '一個扛米的苦力放下麻袋：「聽說這裡包吃包住？」' } },
+  wuming: { name: '無名小派', plaque: '無名小派', color: '#6a5a4a', flag: '武', bias: {}, tree: [], ban: [], rules: [],
+    fac: { name: '祖師堂', cost: { wood: 8, stone: 4 }, daily: { rep: 0.5 }, desc: '供奉開山祖師：名聲每日 +0.5' }, rivals: [], fav: [],
+    recruit: { text: '一個慕名而來的年輕人上山拜師。' } },
+};
+export const HERO_SECT = { guojing: 'gaibang', yuebuqun: 'qizong', linghuchong: 'jianzong', zhangwuji: 'mingjiao', weixiaobao: 'tiandihui', axing: 'zhulong' };
+// 自創主角：九問主價值 → 流派偏向＋一條門規
+export const CUSTOM_BY_VALUE = { xia: ['剛', 'rescue'], sect: ['拙', 'hoard'], qing: ['柔', 'heart'], free: ['巧', 'heart'], wu: ['拙', 'rescue'], fame: ['剛', 'rent'] };
+export const CUSTOM_RIVALS = ['青城派', '鐵掌幫', '星宿派'];
+export function sectBiasMul(d, a) { // [流派偏向, 外門] 兩個乘數；沒門派資料的弟子回 [1,1]
+  if (!d.stree) return [1, 1];
+  const b = d.sbias || {}, sum = (a.tags || []).reduce((x, t) => x + (b[t] || 0), 0), m = 1 + Math.max(-SECT_K.biasCap, Math.min(SECT_K.biasCap, sum));
+  const out = a.classic && !a.signature && !d.stree.includes(a.id) ? SECT_K.outside : 1; // 名俠招牌＝客傳，不罰
+  return [m, out];
+}
+
+// ==== （原 score-data.mjs）====
+// v1.7 活動打分＝純資料：每列一個候選活動。sim.mjs 的 scoreRows() 是唯一解讀器。
+// when：前提（PRED 名，全部要成立）；tiers：依序第一個 if 成立者生效；v：數值規格；why：理由模板（{路徑}）；layer：仲裁層
+// 數值規格：數字，或 { pick:[路徑,真,假] | lin:[路徑, 基準] → (基準−值), mul:[數字|路徑|pick…], plus:數字 }；tr.* 路徑缺省為 1
+export const SCORE = [
+  { act: 'rest', tiers: [{ if: 'tired', v: 130, why: '精力見底，睡到飽再起', layer: 'need' }, { if: 'wake', v: { lin: ['n.energy', 100], mul: [0.6] }, why: '有點累' }] },
+  { act: 'rest', when: ['hurt'], v: 90, why: '傷還沒好，躺著養傷', layer: 'need' },
+  { act: 'eat', when: ['hasFood'], tiers: [{ if: 'starving', v: 160, why: '餓得發昏，先吃', layer: 'need' }, { if: 'hungry', v: 95, why: '餓了', layer: 'need' }, { v: { lin: ['n.hunger', 100], mul: [0.6] }, why: '順便吃點' }] },
+  { act: 'chat', when: ['others'], v: { lin: ['n.social', 100], mul: [0.6, 'tr.social', 'tr.playful', 0.8] }, why: '想找人說話' },
+  { act: 'pass', when: ['pp'], v: 'passScore', why: '{passWhy}' },
+  { act: 'leisure', tiers: [{ if: 'dull', v: { lin: ['fun', 100], mul: [0.55] }, why: '悶得慌，想偷閒' }, { v: { lin: ['fun', 100], mul: [0.55] }, why: '想坐坐看雲' }] },
+  { act: 'encourage', when: ['encourageOk'], v: { lin: ['low.mood', 35], mul: [1.5], plus: 40 }, why: '{low.name}心情低落，去打打氣' },
+  { act: 'learn', when: ['pending'], v: 80, why: '師父能傳「{pendingName}」' },
+  { act: 'meditate', tiers: [{ if: 'btOk', v: 75, why: '「{btName}」卡在瓶頸，打坐衝關' }, { if: 'wexin', v: { lin: ['negWexin', 0], mul: [20], plus: 30 }, why: '心中違心，閉關靜坐' }] },
+  { act: 'train', v: { pick: ['d.adult', 40, 18], mul: ['tr.diligent'] }, why: '練功變強' },
+  { act: 'spar', when: ['sparOk'], v: { pick: [true, 34, 34], mul: ['tr.diligent'] }, why: '找人切磋' },
+  { act: 'chop', when: ['woodRoom'], tiers: [{ if: 'shortWood', v: 50, why: '工地缺木' }, { v: 28, why: '備柴' }] },
+  { act: 'quarry', when: ['stoneRoom'], tiers: [{ if: 'shortStone', v: 50, why: '工地缺石' }, { v: 14, why: '備石' }] },
+  { act: 'farm', tiers: [{ if: 'foodLow', v: 'FS.farm', why: '存糧見底，先顧菜畦', layer: 'need' }, { if: 'ripe', v: 50, why: '菜熟了' }, { v: 30, why: '菜畦空著該播種' }] },
+  { act: 'forage', v: { pick: [true, 18, 18], mul: ['tr.playful'] }, why: '採藥' },
+  { gen: true }, // v1.6 建築活動（ACTIVITIES[].gen）在這個位置展開
+  { act: 'build', when: ['siteWork'], v: { pick: [true, 55, 55], mul: [{ pick: ['d.adult', 1, 0.6] }] }, why: '{buildWhy}' },
+  { act: 'rest', when: ['nightRest'], v: 60, why: '入夜歇息' },
+  { act: 'cook', when: ['cookable'], v: { lin: ['food', 10], mul: [4], plus: 30 }, why: '灶上該煮飯了' },
+];
+// v1.8 打分後處理＝純資料（原 scoreActs 內的 if）：依序套用；sim.mjs 的 postRows() 是唯一解讀器。
+// who：labor／notLabor；if：前提（POST_PRED 名，「!」開頭取反）；acts／except：作用範圍（陣列或 K.* 常數名）；
+// drop：true 或述詞名 → 移除；muls：[{ name, v, if?, hide1? }] → 推入外部組倍率並把乘積寫到 f[key]
+export const SCORE_POST = [
+  { acts: ['farm'], drop: '!plotWork' },
+  { who: 'labor', except: 'K.LABOR_ACTS', drop: true },
+  { who: 'labor', acts: ['chop', 'quarry', 'build'], muls: [{ name: '雇工', v: 'K.LABOR_WORK_MUL' }], key: 'labor' },
+  { who: 'notLabor', acts: 'K.CHORE_ACTS', if: ['skip'], drop: true },
+  { who: 'notLabor', acts: 'K.CHORE_ACTS', if: ['outer', '!em'], drop: '!myDuty', muls: [{ name: '優先度', v: 'prioMul', hide1: true }, { name: '日課未滿', v: 'K.QUOTA.dutyMul', if: 'owe' }], key: 'duty' },
+  { who: 'notLabor', if: ['foodLow'], except: 'FS.keep', muls: [{ name: '糧荒', v: 'FS.gateMul' }], key: 'food' }, // v1.76 糧荒
+  { who: 'notLabor', if: ['head'], acts: ['train'], muls: [{ name: '首徒', v: 'K.QUOTA.headTrain' }], key: 'head' },
+];
+
+// ==== （原 portrait-set.mjs）====
+// v1.8 PB-15/16/18：新舊畫像並存開關。v2＝批次後製版（去背壓淡＋描邊；小尺寸用臉部頭像），舊檔不刪。
+export const POST_IDS = new Set('afang ake axing baozugong baozupo caifeng dongfangbubai feizaicong fengqingyang guojing haidafu hongqigong huangrong huoyunxieshen kulijiang linghuchong linpingzhi munianci ningzhongze renyingying shuanger tianboguang weixiaobao xiaolongnv xiaozhao yangguo youzhagui yuebuqun yuelingshan zhangwuji zhaomin zhoubotong '.trim().split(' '));
+export const PSET_KEY = 'solo-sect-portraits';
+export const SMALL_PX = 72; // 顯示寬 ≤72px 改用頭像
+export function portraitSrc(src, set, small = false) {
+  const m = /^(.*?)assets\/portraits\/(?:v2\/post\/)?([\w]+?)(?:-head)?\.png$/.exec(src || ''); if (!m || !POST_IDS.has(m[2])) return src;
+  return set === 'v2' ? `${m[1]}assets/portraits/v2/post/${m[2]}${small ? '-head' : ''}.png` : `${m[1]}assets/portraits/${m[2]}.png`;
+}
+export function applyPortraitSet(root, set) {
+  for (const img of root.querySelectorAll('img[src*="assets/portraits/"]')) { const cur = img.getAttribute('src'); const w = img.clientWidth || img.width || 999; const nx = portraitSrc(cur, set, w > 0 && w <= SMALL_PX); if (nx !== cur) img.setAttribute('src', nx); }
+}
+export function bindPortraitSet(doc, store, btn) {
+  let set = store.getItem(PSET_KEY) === 'v2' ? 'v2' : 'v1'; const label = () => { if (btn) btn.textContent = set === 'v2' ? '畫像：新（v2）' : '畫像：舊'; };
+  let busy = false; const run = () => { if (busy) return; busy = true; try { applyPortraitSet(doc, set); } finally { busy = false; } };
+  new doc.defaultView.MutationObserver(run).observe(doc.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] });
+  if (btn) btn.onclick = () => { set = set === 'v2' ? 'v1' : 'v2'; store.setItem(PSET_KEY, set); label(); run(); };
+  label(); run(); return () => set;
+}
+
+// ==== （原 destiny.mjs）====
+// v2.0 A8 宿命樹檢核器：各角色主線步驟、抉擇卡文字、主線觸發條件皆在 destiny-trees.json；
+// 引擎只負責（1）把卡資料與效果函式組成 CARDS（2）依序評估宣告式檢核。純重構：檢核順序、條件、亂數呼叫與原本 if 鏈完全一致。
+export { TREES };
+export const buildCards = (data, fx) => Object.fromEntries(Object.entries(data).map(([id, c]) => {
+  const f = fx[id]; if (!f || f.length !== c.opts.length) throw new Error(`destiny: card ${id} 效果數與選項數不符`);
+  return [id, { ...c, opts: c.opts.map((o, i) => ('values' in o ? [o.label, o.values, f[i]] : [o.label, f[i]])) }];
+}));
+// 檢核欄位：arc [lo,hi) 主線步數區間；day 最低日；art [武學, 最低階]；unless s.jh 旗標須為假；flag s.hero 旗標須為真；
+// card 觸發卡（force 強制）；then 成功後推進的主線步 [[n,文字]]。回傳 true＝本 tick 已處理（呼叫端 return）。
+export function destinyStep(s, id, ctx) {
+  const list = TREES.checks[id]; if (!list) return false; const n = s.hero?.arcStep || 0;
+  for (const c of list) {
+    if (n < c.arc[0] || n >= c.arc[1]) continue;
+    if (c.flag && !s.hero[c.flag]) continue;
+    if (c.art && ctx.artTier(ctx.d0, c.art[0]) < c.art[1]) continue;
+    if (c.day != null && s.day < c.day) continue;
+    if (c.unless && s.jh[c.unless]) continue;
+    if (c.card) { if (!ctx.card(s, c.card, c.force)) continue; for (const [k, t] of c.then || []) ctx.arc(s, id, k, t); return true; }
+    for (const [k, t] of c.then || []) ctx.arc(s, id, k, t); return false;
+  }
+  return false;
+}

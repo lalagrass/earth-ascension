@@ -1,7 +1,7 @@
 /* loop90 熟練度十重：純函式 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { profOf, profMul, profLabel, nextLvXp, PROF } from '../src/prof.mjs';
+import { profOf, profMul, profLabel, nextLvXp, PROF } from '../src/arts.mjs';
 import { TIERS, ART_GAIN } from '../src/data.mjs';
 test('每階十重、化境不分重', () => { assert.equal(profLabel(0), '入門一重'); assert.equal(profLabel(24.99), '入門十重'); assert.equal(profLabel(25), '小成一重'); assert.equal(profLabel(100), '化境'); assert.equal(profOf(100).lv, 0); });
 test('瓶頸標示只在 54.9／99.9', () => { assert.match(profLabel(54.9), /小成十重（瓶頸）/); assert.match(profLabel(99.9), /圓滿十重（瓶頸）/); assert.ok(!profOf(24.95).stuck); assert.ok(!profOf(84.95).stuck); });

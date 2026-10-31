@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { NG2, qiMax, qiMax2, mitOf, shieldHit, qiOf } from '../src/neigong.mjs';
+import { NG2, qiMax, qiMax2, mitOf, shieldHit, qiOf } from '../src/arts.mjs';
 const mk = (arts, extra = {}) => ({ arts, ng: 1, ng2: 1, qi: 0, ...extra });
 test('二版：沒有內功時內力上限 0、沒有減傷', () => {
   const d = mk({ fist: { xp: 50 } });

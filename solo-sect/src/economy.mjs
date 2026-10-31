@@ -1,7 +1,9 @@
+import { DAY, EXP, SEASONS, SEASON_DAYS, BREAK } from './data.mjs';
+import { log, resAdd, pillNote } from './util.mjs';
+import { FENCE, lvOf } from './threat.mjs';
+// ==== （原 economy.mjs）====
 // v1.85 錢有出口（ROADMAP I-1／I-8／A10，擁有人預設）：月俸＋建築維護、山下市集、丹藥販售與陳化、下山義學。
 // 規則全在下面幾張表；sim.mjs 在換日時呼叫 econDaily(s, H)，H＝{ rand, cancelTask, think, removeDisciple }。
-import { DAY } from './data.mjs';
-import { log, resAdd, pillNote } from './util.mjs';
 
 // 月俸：內門／首徒每 5 日領俸，外門半份；總額 c·N^exp（比人數長得快）但封頂。寬限：第 graceDay 日起才開始結算。
 export const UPKEEP = { every: 5, graceDay: 10, wageC: 9, exp: 1.5, cap: 400, w: { head: 1.5, inner: 1, outer: 0.25 },
@@ -89,4 +91,84 @@ export function econHtml(s) {
     + (X.disrepair ? `<div class="k warn" style="color:#b33">⚠ 建築失修：付清維護就恢復</div>` : '')
     + `<div class="row">山下市集：${btn('herb', '買靈草×3')}${btn('weapon', '買兵器')}${btn('pill', '賣療傷丹')}</div>`
     + `<div class="row"><button data-school ${sw ? 'disabled' : ''} title="${sw || ''}">下山義學（${schoolCost(s)} 香火錢，1 日）</button> <span class="k">${sw || `帶回的人：${X.pool.map((c) => c.name).join('、') || '—'}`}</span></div></div>`;
+}
+
+// ==== （原 labor.mjs）====
+/* loop127 勞作練體 `laborgrow`（docs/DAXIA-EVAL.md §3）。d.lg 由 sim 依 s.laborgrow 設定；沒有 d.lg 時全部回傳中性值。
+   借鏡：大俠立志傳臂力靠採集、敏捷每日有上限；RimWorld 技能每日軟上限後只拿 20%。 */
+export const LABOR = { per: 400, powDiv: 10, cap: 3, over: 0.2, acts: ['chop', 'quarry', 'water', 'build', 'repair'] };
+export const strMul = (d) => (d?.lg ? 1 + Math.max(0, d.skills?.strength || 0) / LABOR.per : 1); // 招式傷害倍率
+export const laborPow = (d) => (d?.lg ? Math.max(0, d.skills?.strength || 0) / LABOR.powDiv : 0); // 門派戰力加項
+export const isWorkAct = (act) => LABOR.acts.includes(act);
+// 做活長的力氣：當日累計超過 cap 後只拿 over。回傳實際可加的量（delta ≥ 0）。
+export function workStrCap(d, day, delta) {
+  if (!d?.lg || !(delta > 0)) return delta; if (d.lgDay !== day) { d.lgDay = day; d.lgGot = 0; }
+  const room = Math.max(0, LABOR.cap - d.lgGot), eff = Math.min(delta, room) + Math.max(0, delta - room) * LABOR.over; d.lgGot += eff; return eff;
+}
+export const laborToday = (d, day) => (d?.lg && d.lgDay === day ? d.lgGot || 0 : 0);
+
+// ==== （原 steward.mjs）====
+// loop30 執事自主（選用，s.steward）：每日一次，沒有工地時依序立藍圖——
+// ① 有人睡地鋪 → 擴寢舍；② 野豬來過且尚無哨崗 → 蓋護山哨（有人上哨，野豬下山會被嚇回）。
+export const STEW = { boarSeen: 1, yardAt: 4 };
+export function stewardDaily(s, H) {
+  if (!s.steward || H.siteOf(s)) return null;
+  const pick = s.ds.length > H.capacity(s) ? 'dorm' : (s.stew?.boar || 0) >= STEW.boarSeen && (s.fac.watch?.stage || 0) === 0 ? 'watch' : s.stewkit && s.ds.length >= 8 && (s.fac.kitchen?.stage || 0) === 0 && (s.res.food || 0) < s.ds.length ? 'kitchen' : s.stewyard && s.ds.length >= STEW.yardAt && (s.fac.yard?.stage || 0) === 0 ? 'yard' : null; /* loop95「執事立樁」（s.stewyard）：外功場還是空地、人數夠 → 立木樁場（打樁不做離線補算，弟子照常自主去練） */ /* loop60「執事顧灶」（s.stewkit）：人多存飯不夠一人一頓、還是露天灶 → 蓋膳房 */
+  if (pick && H.startBuild(s, pick) !== false) { (s.stew ??= {}).built = [...(s.stew.built || []), pick]; log(s, `【執事】${pick === 'dorm' ? '有人睡地鋪，執事立了擴建寢舍的藍圖' : pick === 'kitchen' ? '人多灶小，常常開飯不夠，執事立了膳房的藍圖' : pick === 'yard' ? '外功場還是一片空地，執事立了木樁場的藍圖，好讓大家打樁切磋' : '野豬屢屢下山，執事立了護山哨的藍圖'}。`); return pick; }
+  return null;
+}
+export const stewBoar = (s) => { if (s.steward) (s.stew ??= {}).boar = (s.stew.boar || 0) + 1; };
+
+// ==== （原 peace.mjs）====
+// loop9 M9 遠征帶來太平＋防禦經濟收尾。只在 s.m9 開啟時生效（golden 不變）。
+// ① 巡山掃清山腳或林邊（既有 peaceOf 條件）→ 山賊下次來犯延後；② 派隊偏好練功搭子；③ 柵缺料時弟子主動砍柴／採石。
+export const PEACE = {
+  banditDelay: 2,     // 太平時山賊來犯再延後幾天
+  mateK: 2, mateCap: 10, // 派隊：每次同修 +2 分，上限 10（既有默契分同量級）
+  demandMul: 1.3,     // 缺料時砍柴／採石意願
+  damagedAt: 0.8,    // 柵耐久低於八成才為修補備料
+  repairCalm: 0.7,   // loop10：柵還有四成以上時，修柵意願減半（降低練功代價）
+  repairCalmAt: 0.4,
+  demandExtra: 4,     // 料少於「底線＋這麼多」就算缺
+};
+const MAT_ACT = { wood: 'chop', stone: 'quarry' };
+export const peaceful = (s) => ['foot', 'wood'].some((id) => (s.records?.qing?.[id] || 0) >= EXP.peaceQing);
+export const peaceDelay = (s) => (s.m9 && peaceful(s) ? PEACE.banditDelay : 0);
+export function mateBonus(s, a, b) { if (!s.m9 || !a || !b) return 0; return Math.min(PEACE.mateCap, ((a.mates?.[b.id] || 0) + (b.mates?.[a.id] || 0)) * PEACE.mateK); }
+// 柵需要什麼料：修補用料；木柵且石不夠升級 → 也要石
+export function fenceNeeds(s) {
+  const F = s.fence; if (!s.m9 || !F) return [];
+  const need = [], L = lvOf(F), lim = FENCE.floor + PEACE.demandExtra;
+  if ((s.res[L.mat] || 0) < lim && F.hp < F.max * PEACE.damagedAt) need.push(L.mat);
+  const up = FENCE.levels[(F.lv || 1) + 1]; if (up?.cost) for (const [m, c] of Object.entries(up.cost)) if ((s.res[m] || 0) < c && !need.includes(m)) need.push(m);
+  return need;
+}
+export function demandBoost(s, d, out) {
+  const need = fenceNeeds(s); if (!need.length) return;
+  for (const m of need) for (const o of out) if (o.act === MAT_ACT[m]) { o.score *= PEACE.demandMul; o.why = `柵要用${m === 'wood' ? '木料' : '石料'}，倉裡不夠了`; }
+}
+// loop10：柵還撐得住時不急著修
+export function repairDamp(s, out) {
+  const F = s.fence; if (!s.m9 || !F || F.hp < F.max * PEACE.repairCalmAt) return;
+  for (const o of out) if (o.act === 'repair') o.score *= PEACE.repairCalm;
+}
+
+// ==== （原 season.mjs）====
+// 季節（v0.7）：一日 600 秒不變，每季 SEASON_DAYS 日
+export function seasonOf(s) { const day = Math.floor(s.t / DAY); const i = Math.floor(day / SEASON_DAYS) % SEASONS.length; return { ...SEASONS[i], i, year: Math.floor(day / (SEASON_DAYS * SEASONS.length)) + 1, dayOf: (day % SEASON_DAYS) + 1 }; }
+/* loop73：季節說明（純顯示）：本季剩幾日、心情與飯量的季節修正、下一季是什麼 */
+export function seasonHint(s) {
+  const se = seasonOf(s), left = SEASON_DAYS - se.dayOf + 1, nx = SEASONS[(se.i + 1) % SEASONS.length], fx = [];
+  if (se.mood) fx.push(`心情 ${se.mood > 0 ? '+' : ''}${se.mood}`); if (se.hunger !== 1) fx.push(`飯量 ×${se.hunger}`); if (se.grow !== 1) fx.push(`作物生長時間 ×${se.grow}`);
+  return `${se.name}季還有 ${left} 日${fx.length ? `（${fx.join('、')}）` : ''}，之後是${nx.name}`;
+}
+
+// ==== （原 lift.mjs）====
+// loop28 心情自救（選用，s.lift）：心情低於衝關門檻（沿用 BREAK.moodMin，不改門檻）時，
+// 依最缺的需求抬高對應活動：悶→閒坐看雲、寂寞→聊天、累→歇息。
+export const LIFT = { k: 1.6, need: 50, map: { fun: 'leisure', social: 'chat', energy: 'rest' } };
+export function liftBoost(s, d, out) {
+  if (!s.lift || d.mood >= BREAK.moodMin) return; const n = d.needs;
+  const low = Object.keys(LIFT.map).filter((k) => (n[k] ?? 100) < LIFT.need).sort((a, b) => (n[a] ?? 100) - (n[b] ?? 100));
+  for (const k of low) { const o = out.find((x) => x.act === LIFT.map[k]); if (o) { o.score *= LIFT.k; o.why = `心情低落，${o.why}`; o.lift = true; return; } }
 }

@@ -3,10 +3,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startBuild, setOrder, save, load } from '../src/sim.mjs';
 import { RULES_VERSION } from '../src/data.mjs';
-import { removeDisciple, succeed, heirs } from '../src/gen.mjs';
-import { invariants, whAvail } from '../src/lifecycle.mjs';
+import { removeDisciple, succeed, heirs } from '../src/sect.mjs';
+import { invariants, whAvail } from '../src/core.mjs';
 import { heroCard } from '../src/start-ui.mjs';
-import { likesOf, FOODS, DRINKS } from '../src/v10.mjs';
+import { likesOf, FOODS, DRINKS } from '../src/bonds.mjs';
 const mk = (seed = 7) => { const s = createState(seed); tick(s); return s; };
 const total = (s, k) => s.res[k] + s.ds.reduce((a, d) => a + (d.carry?.[k] || 0), 0) + Object.values(s.fac).reduce((a, f) => a + (f.site?.delivered[k] || 0), 0);
 

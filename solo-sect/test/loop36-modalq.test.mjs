@@ -1,7 +1,7 @@
 // loop36：阻斷視窗排隊（審查 P2）
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { pickModal, pending } from '../src/modalq.mjs';
+import { pickModal, pending } from '../src/panel-ui.mjs';
 
 test('同時有大事與抉擇：先大事，看完才輪到抉擇', () => {
   assert.equal(pickModal({ alert: true, choice: true }), 'alert');

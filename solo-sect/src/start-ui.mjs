@@ -1,14 +1,12 @@
 // v0.96 新局：主角建立畫面（經典模板／自創）、同門選擇、抉擇卡
-import { STATS, VALUES, Q9, HEROES, COMPANIONS } from './hero-data.mjs';
+import { STATS, VALUES, Q9, HEROES, COMPANIONS, TRAITS, NEW_TRAITS, SECTS, HERO_SECT } from './data.mjs';
 import { budgetOf, spent, validStats, defaultStats, readHeart, companionsFor, VALUE_NAMES, resolveChoice } from './hero.mjs';
-import { TRAITS } from './data.mjs';
-import { NEW_TRAITS } from './hero-data.mjs';
-import { ARCH, archLabel } from './archetype.mjs';
-import { TYPES, typeLabel, mbtiPersonality, nearestType, MBTI_Q, quizResult } from './mbti.mjs';
-import { legacyBest } from './slice.mjs';
-import { SECTS, HERO_SECT } from './sect-data.mjs';
-import { xiaHints } from './wuxia.mjs'; /* loop68 */
-import { genHints } from './gen.mjs'; /* loop72 */
+import { ARCH, archLabel, TYPES, typeLabel, mbtiPersonality, nearestType, MBTI_Q, quizResult } from './social.mjs';
+import { legacyBest } from './world.mjs';
+import { xiaHints } from './wuxia.mjs';
+import { genHints } from './sect.mjs';
+/* loop68 */
+/* loop72 */
 const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index:50;overflow:auto;color:#f3e7cf;font:14px/1.5 serif}
 #start .box{max-width:1640px;margin:8px auto;padding:14px 20px;background:#2b2118;border:2px solid #a07a44;border-radius:10px}
 #start h1{margin:0 0 6px;font-size:24px}#start .tabs button{font-size:15px;margin-right:6px}#start .tabs .on{background:#c9a061;color:#2b2118}

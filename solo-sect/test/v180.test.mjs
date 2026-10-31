@@ -3,10 +3,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, scoreActs } from '../src/sim.mjs';
 import { DAY } from '../src/data.mjs';
-import { MARRY, marriable, weddingWhy } from '../src/gen.mjs';
+import { MARRY, marriable, weddingWhy } from '../src/sect.mjs';
 import { PASS, passScore } from '../src/bonds.mjs';
 import { artHints, artHintsHtml } from '../src/arts.mjs';
-import { SCORE_POST } from '../src/score-data.mjs';
+import { SCORE_POST } from '../src/data.mjs';
 import { migrate } from '../src/save.mjs';
 import { relKey } from '../src/util.mjs';
 
@@ -43,7 +43,7 @@ test('SCORE_POST 是資料：加一條規則就改變評分', () => {
   SCORE_POST.push({ acts: [victim], drop: true }); try { assert.ok(!acts().includes(victim)); } finally { SCORE_POST.pop(); }
   assert.deepEqual(acts().sort(), before.slice().sort());
 });
-import { portraitSrc, POST_IDS } from '../src/portrait-set.mjs';
+import { portraitSrc, POST_IDS } from '../src/data.mjs';
 import { existsSync } from 'node:fs';
 test('PB-15/16/18 畫像開關：v2 指向後製檔、小圖用頭像、v1 還原；未知檔不動（反例）', () => {
   assert.equal(POST_IDS.size, 32); for (const k of POST_IDS) { assert.ok(existsSync(`assets/portraits/v2/post/${k}.png`)); assert.ok(existsSync(`assets/portraits/v2/post/${k}-head.png`)); assert.ok(existsSync(`assets/portraits/${k}.png`), '舊圖保留'); }

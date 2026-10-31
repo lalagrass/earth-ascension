@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState } from '../src/sim.mjs';
 import { initPair } from '../src/social.mjs';
-import { CLQ, cliqueDaily, cliqueOf, mates, cliqueTrain } from '../src/clique.mjs';
+import { CLQ, cliqueDaily, cliqueOf, mates, cliqueTrain } from '../src/bonds.mjs';
 
 const sp = { kind: 'custom', name: '測', answers: Array(9).fill(0), draw: true };
 const setAff = (s, a, b, v) => initPair(s, a, b, v);

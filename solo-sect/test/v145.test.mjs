@@ -1,11 +1,11 @@
-import { openExp } from "../src/slice.mjs";
+import { openExp } from "../src/world.mjs";
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startExpedition, save, load } from '../src/sim.mjs';
 import { RULES_VERSION, EXP, ROUTE } from '../src/data.mjs';
-import { returnPlan, returnStep, unclearedSegs, milestones, reportText } from '../src/expedition.mjs';
-import { tierOf, sideCards, bubbles, whoOf } from '../src/events.mjs';
-import { statusOf } from '../src/status.mjs';
+import { returnPlan, returnStep, unclearedSegs, milestones, reportText } from '../src/world.mjs';
+import { tierOf, sideCards, bubbles, whoOf } from '../src/util.mjs';
+import { statusOf } from '../src/panel-ui.mjs';
 import { migrate } from '../src/save.mjs';
 import { log } from '../src/util.mjs';
 const mk = () => { const s = createState(7); tick(s); return s; };

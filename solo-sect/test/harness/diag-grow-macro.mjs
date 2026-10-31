@@ -1,7 +1,7 @@
 /* loop86 成長分層全局對照：同種子、bot 玩家、開／關成長分層，看全派武學與經濟有沒有被意外影響。
    用法：SS_DT=0.25 node test/harness/diag-grow-macro.mjs [n=160] [start=1001] [days=20] */
 import { run } from './bot.mjs';
-import { mastery } from '../../src/growth.mjs';
+import { mastery } from '../../src/arts.mjs';
 import { artTier } from '../../src/arts.mjs';
 const N = +(process.argv[2] || 160), S0 = +(process.argv[3] || 1001), D = +(process.argv[4] || 20);
 const one = (seed, grow) => { const s = run(seed, { grow }, D, true), ds = s.ds.filter((d) => !d.labor);

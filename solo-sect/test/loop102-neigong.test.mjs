@@ -1,7 +1,7 @@
 /* loop102 → loop142 改寫：一版內功淘汰，上限只走護體真氣（NG2.cap 依階） */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { NG2, INNER, qiMax, qiOf, addQi, spendQi } from '../src/neigong.mjs';
+import { NG2, INNER, qiMax, qiOf, addQi, spendQi } from '../src/arts.mjs';
 import { TIERS } from '../src/data.mjs';
 const D = (arts = {}) => ({ ng: 1, ng2: 1, qi: 0, arts });
 test('內功武學：吐納與內功門類，招式武學不算', () => {

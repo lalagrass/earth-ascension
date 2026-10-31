@@ -3,8 +3,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
 import { EDGES } from '../src/data.mjs';
-import { FENCE, buildFence } from '../src/fence.mjs';
-import { BAND, nodePath } from '../src/band.mjs';
+import { FENCE, buildFence } from '../src/threat.mjs';
+import { BAND, nodePath } from '../src/threat.mjs';
 import { T, raidResolve } from '../src/threat.mjs';
 
 const H = { think: () => {} };

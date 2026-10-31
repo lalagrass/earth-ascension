@@ -1,10 +1,51 @@
+import { moodLabel, ARCH } from './social.mjs';
+import { DAY, ACTIVITIES, EXP_STYLES, EXP, ARTS, TIERS, ART_GAIN, ROOT, JH, BREAK } from './data.mjs';
+import { LABOR, strMul, laborToday } from './economy.mjs';
+import { segAt } from './world.mjs';
+import { nextStep } from './core.mjs';
+import { NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW } from './arts.mjs';
+import { CLQ } from './bonds.mjs';
+import { JHEV, letterP } from './jianghu.mjs';
+// ==== （原 dcard.mjs）====
+// loop45：弟子卡摘要（右欄最大宗）。卡片只露一行重點，細節收進 <details>（記住展開）。只用面板原本就顯示的資訊。
+export const NEED_WARN = { hunger: [30, '餓'], energy: [30, '累'], social: [30, '寂寞'], fun: [30, '悶'] };
+export function dsum(d, artName = (id) => id) {
+  const n = d.needs || {}, warn = Object.entries(NEED_WARN).filter(([k, [t]]) => (n[k] ?? 100) < t).map(([, [, w]]) => w);
+  return `心情 ${d.mood | 0}（${moodLabel(d.mood)}）・飽足 ${(n.hunger ?? 0) | 0}・精力 ${(n.energy ?? 0) | 0}` + (warn.length ? `・<b style="color:#b33">${warn.join('、')}</b>` : '') + (d.pendingArt ? `・<span class="mv new">可學：${artName(d.pendingArt)}</span>` : '');
+}
+
+// ==== （原 fold.mjs）====
+// loop37：右欄太長（外部審查）。各區標題可點擊收合，狀態記在介面偏好（keep）；預設收合較少用的區塊。純介面。
+export const FOLD_DEFAULT = { arts: true, codex: true, hunt: true, labor: true, ledger: true, rel: true };
+export const foldKey = (id) => `sec-${id}`;
+export const isFolded = (K, id) => (foldKey(id) in (K || {}) ? !!K[foldKey(id)] : !!FOLD_DEFAULT[id]);
+export const setAll = (K, ids, folded) => { for (const id of ids) K[foldKey(id)] = folded; return K; };
+
+// ==== （原 labor-ui.mjs）====
+/* loop130 勞作練體的顯示（純字串，可在 Node 測試）。只寫玩家看得到的：今日做活長了多少、傷害倍率。 */
+export const laborNote = (s, d) => (d?.lg ? `（勞作今日 ${Math.min(laborToday(d, Math.floor(s.t / DAY)), 99).toFixed(1)}/${LABOR.cap}・招式 ×${strMul(d).toFixed(2)}）` : '');
+
+// ==== （原 status.mjs）====
+// v1.45 弟子面板「現在／原因／下一步」（ADOPTION-PLAN A5）：標出是哪一層決定的（指令／巡山／生理／作息／性格）
+const actName = (a) => (a === 'hunt' ? '狩獵' : a === 'trial' ? '試煉' : a === 'deliver' ? '送東西回院倉' : ACTIVITIES[a]?.name || a);
+export const LAYER = { order: '指令', need: '生理', sched: '作息', duty: '職司', trait: '性格', carry: '工序' };
+export function statusOf(s, d) {
+  if (d.away && s.exp?.team.includes(d.id)) { const X = s.exp;
+    return { layer: '巡山', now: `巡山${X.phase === 'out' ? '前進' : '回程'}：${segAt(X.dist).name} ${Math.round(X.phase === 'out' ? X.dist : X.backPos ?? X.dist)} 步`, why: X.recalled && X.phase === 'out' ? '掌門傳令召回，下一拍回頭' : X.phase === 'out' ? `掌門派出（${EXP_STYLES[X.style]?.name || ''}）` : `回頭：${X.reason}`, next: X.phase === 'out' ? `到 ${X.target >= 1e9 ? '走不動為止' : X.target + ' 步'} 或觸發撤退線就回頭` : `回山門後歇 ${EXP.cool} 秒左右${X.ret?.left?.length ? `；還要經過 ${X.ret.left.length} 段未清段` : ''}` }; }
+  // v1.5：層級讀 d.decision（決策當下寫入的結構），不再用 reason 文字猜；下一步＝目前任務工序裡排著的下一步
+  const now = d.task ? actName(d.task.act) : '待命';
+  const why = d.reason || '—';
+  const dec = d.task ? d.decision : null;
+  const layer = d.order ? '指令' : !d.task ? '待命' : LAYER[dec?.layer] || '性格';
+  const step = d.task ? nextStep(d.task) : null;
+  const next = step ? `${step}（${actName(d.task.act)}的下一道工序）` : d.order ? `繼續「${actName(d.order)}」（指派中）` : d.task ? `做完「${actName(d.task.act)}」再重新評估` : '馬上重新評估要做什麼';
+  return { layer, now, why, next };
+}
+export const statusHtml = (s, d) => { const x = statusOf(s, d); return `<div class="status"><div><b>現在</b>：${x.now} <span class="tag">${x.layer}</span></div><div><b>原因</b>：${x.why}</div><div><b>下一步</b>：${x.next}</div></div>`; };
+
+// ==== （原 growui.mjs）====
 /* loop81 成長分層介面（純顯示，不寫世界狀態）：A 人物實力圖、B 門類造詣、C 個別武學。
    能力圖：固定 5 軸、固定順序、固定顯示基準（不是能力上限，也不按角色或全派最大值縮放）；不算面積。 */
-import { NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER } from './neigong.mjs';
-import { profOf, profMul, profLabel, nextLvXp, PROF } from './prof.mjs';
-import { ARTS, TIERS, ART_GAIN, ROOT, JH, BREAK } from './data.mjs';
-import { effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf } from './arts.mjs';
-import { CATS, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW } from './growth.mjs';
 export const AXES = [
   { k: 'palm', name: '掌', lo: 0, hi: 100, get: (d) => d.skills.palm, note: '掌系招式傷害、出手距離（劍招也用）' },
   { k: 'leg', name: '腿', lo: 0, hi: 100, get: (d) => d.skills.leg, note: '腿系招式傷害、出手距離' },
@@ -102,3 +143,63 @@ export function neigongRules2Html() {
     + `<div class="k">回復：打坐一次 +${NG.med}；歇息每秒 +${NG.rest}。衝關仍可扣 ${NG.btCost} 加成功率 +${Math.round(NG.btBonus * 100)}%。沒有運勁、運功療傷。</div></details>`; }
 export const neigongRulesHtml = neigongRules2Html; // loop142 一版說明淘汰
 export const growthHtml = (d, memo, day, now, grow) => powerHtml(d, memo, day, now) + catHtml(d) + artsGrowHtml(d, now, grow) + rulesHtml() + (d.pf ? profRulesHtml() : '') + (d.ng ? neigongRules2Html() : '');
+
+// ==== （原 jhui.mjs）====
+// loop34 介面可讀性（選用，s.jhui）：原型、同門小派、江湖事件三塊面板。純顯示：只讀狀態、不寫狀態、不抽亂數；golden 不變。
+// 只顯示玩家已知的資訊：未看清根骨（rootKnown=false）的新弟子，原型也不揭露（原型會洩漏根骨／悟性區間）。
+const esc = (x) => String(x).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const live = (s) => (s.ds || []).filter((d) => !d.removed);
+const ACT = { train: '練功', meditate: '打坐', spar: '切磋' };
+export const archKnown = (s, d) => !!d.arch && !!ARCH[d.arch] && (d.id === 'hero' || d.rootKnown !== false);
+// 弟子卡上的原型行：已知→名稱（參考）＋一句傾向；未知→提示共事後才看得出
+export function archLine(s, d) {
+  if (!d.arch || !ARCH[d.arch]) return '';
+  if (!archKnown(s, d)) return `<div class="k">原型：？？（共事久了才看得出）</div>`;
+  const A = ARCH[d.arch]; return `<div class="k" title="${esc(A.desc)}">原型：${esc(A.name)}（參考：${esc(A.ref)}）— ${esc(A.desc)}</div>`;
+}
+export function archPanel(s) {
+  const ds = live(s).filter((d) => d.arch && ARCH[d.arch]); if (!ds.length) return '<div class="k">門中尚無帶原型的弟子（自創主角可選原型；開「人以群分」後新弟子會帶原型）。</div>';
+  const known = ds.filter((d) => archKnown(s, d)), hidden = ds.length - known.length, by = {};
+  for (const d of known) (by[d.arch] ??= []).push(d.name);
+  const rows = Object.entries(by).map(([id, ns]) => `<tr><td>${esc(ARCH[id].name)}</td><td class="k">參考：${esc(ARCH[id].ref)}</td><td>${ns.map(esc).join('、')}</td><td class="k">${esc(ARCH[id].desc)}</td></tr>`).join('');
+  return `<table class="codex"><tr><th>原型</th><th>參考</th><th>弟子</th><th>傾向</th></tr>${rows}</table>${hidden ? `<div class="k">另有 ${hidden} 人原型未明（共事久了才看得出）。</div>` : ''}`;
+}
+export function cliquePanel(s) {
+  if (!s.draw) return '<div class="k">未開「人以群分」，不會結小派。</div>';
+  const cs = s.cliques || [], name = (id) => live(s).find((d) => d.id === id);
+  const head = `<div class="k">好感彼此都很高的一群人會結成小派；同派的人一起${CLQ.acts.map((a) => ACT[a]).join('／')}時進步略快，剿寨也優先同行。感情淡了就會散。</div>`;
+  if (!cs.length) return head + `<div class="k">目前沒有小派。${s.cliqueN ? `（曾結成 ${s.cliqueN} 派，都已散了）` : ''}</div>`;
+  return head + cs.map((c) => { const ms = c.ids.map(name).filter(Boolean);
+    const now = ms.filter((d) => CLQ.acts.includes(d.task?.act)), same = Object.entries(now.reduce((a, d) => ((a[d.task.act] = (a[d.task.act] || 0) + 1), a), {})).filter(([, n]) => n >= 2);
+    return `<div class="card"><b>${esc(c.name)}</b> <span class="k">第 ${c.day} 日結成・${ms.length} 人</span><div>${ms.map((d) => esc(d.name)).join('、')}</div>${same.length ? `<div class="k">正一起${same.map(([a, n]) => `${ACT[a]}（${n} 人）`).join('、')}，進步略快</div>` : ''}</div>`; }).join('');
+}
+const recent = (s, tag, n) => (s.log || []).filter((l) => l.msg?.startsWith(tag)).slice(0, n);
+export function jhevPanel(s) {
+  if (!s.jhev) return '<div class="k">未開「江湖事件」。</div>';
+  const E = typeof s.jhev === 'object' ? s.jhev : { m: 0, l: 0, lw: 0 }, day = s.day || 1, M = JHEV.master, L = JHEV.letter;
+  const est = day >= L.after ? `若今日有人下挑戰帖，勝算約 ${Math.round(letterP(s, day) * 100)}%（看門中前三人的武功）` : `第 ${L.after} 日後才會有人下挑戰帖`;
+  const rows = [
+    `<div>過路高人：來過 ${E.m || 0} 次${E.t ? `，傳武學 ${E.t} 套` : ''}${E.mv ? `，點撥招式 ${E.mv} 招` : ''}${E.pg ? `，留殘譜 ${E.pg} 頁` : ''}<span class="k">（第 ${M.after} 日起偶爾來訪）</span></div>`,
+    `<div>挑戰帖：應戰 ${E.l || 0} 次，勝 ${E.lw || 0}・敗 ${(E.l || 0) - (E.lw || 0)}${E.lr ? `・婉拒 ${E.lr}` : ''}<span class="k">（點到為止，不會受傷；勝了得名聲與彩頭，敗了掉一點名聲）</span></div>`,
+    `<div class="k">${est}</div>`];
+  const ev = [...recent(s, '【過路高人】', 3), ...recent(s, '【挑戰帖】', 3)].sort((a, b) => b.t - a.t).slice(0, 4);
+  return rows.join('') + (ev.length ? `<ul class="k">${ev.map((l) => `<li>第 ${Math.floor(l.t / DAY) + 1} 日：${esc(l.msg)}</li>`).join('')}</ul>` : '<div class="k">還沒遇過江湖事件。</div>');
+}
+// loop35：折疊狀態由呼叫端保存（closed[key]=true 表示玩家收合過）；預設展開
+export const JHUI_KEYS = ['arch', 'clique', 'jhev'];
+export function jhuiHtml(s, closed = {}) {
+  if (!s.jhui) return '';
+  const sec = (k, title, body) => `<details data-keep="jhui-${k}"${closed[`jhui-${k}`] ? '' : ' open'}><summary>${title}</summary>${body}</details>`;
+  return sec('arch', '原型', archPanel(s)) + sec('clique', '同門小派', cliquePanel(s)) + sec('jhev', '江湖事件', jhevPanel(s));
+}
+
+// ==== （原 modalq.mjs）====
+// loop36：阻斷視窗排隊（外部審查 P2：首次巡山戰報與東方不敗抉擇同時彈出、互相遮住）。
+// 一次只顯示一個；已開著的那個先看完。待顯示的依序：大事（剛發生的事，含戰報）→ 抉擇 → 章節總結。純介面，不碰模擬。
+export const MODAL_ORDER = ['alert', 'choice', 'chap'];
+export function pickModal({ cur = null, alert = false, choice = false, chap = false } = {}) {
+  const want = { alert, choice, chap };
+  if (cur && want[cur]) return cur;
+  return MODAL_ORDER.find((k) => want[k]) || null;
+}
+export const pending = (S) => ({ alert: !!S?.alert, choice: !!(S?.hero?.askMajor && S?.choices?.[0]), chap: !!(S?.chapter?.done && !S.chapter.seen) });

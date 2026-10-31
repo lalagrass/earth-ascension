@@ -1,7 +1,7 @@
 import test from 'node:test'; import assert from 'node:assert/strict';
 import { createState, tick, scoreActs, save, load, migrate } from '../src/sim.mjs';
 import { DAY, RULES_VERSION } from '../src/data.mjs';
-import { HEROES, COMPANIONS, Q9 } from '../src/hero-data.mjs';
+import { HEROES, COMPANIONS, Q9 } from '../src/data.mjs';
 import { validStats, budgetOf, readHeart, valueMul, encounterPool, companionsFor, resolveChoice, addWexin } from '../src/hero.mjs';
 import { artMulParts, artById } from '../src/arts.mjs';
 import { existsSync } from 'node:fs';

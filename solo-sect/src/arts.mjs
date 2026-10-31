@@ -1,10 +1,95 @@
-import { strMul } from './labor.mjs';
+import { ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST } from './data.mjs';
+import { strMul } from './economy.mjs';
+import { pipeline } from './util.mjs';
+// ==== （原 growth.mjs）====
+/* loop78 成長分層（開關 s.grow）：成長門類 metadata、造詣單一結算入口、同類學習加速。
+   造詣不另存門類值：造詣＝Σ 各武學紀錄 r.gm 的有界貢獻 × 門類權重（衍生值，不會與 skills.palm 漂移）。
+   skills.palm／leg 是戰鬥能力值（劍招也吃 skills.palm），與造詣用途不同，不互相轉換。 */
+/* 成長門類：sup = 'full' 已驗證造詣＋加速；'part' 只累積與顯示；'none' 尚未支援（不累積） */
+export const CATS = {
+  quanzhang: { name: '拳掌', sup: 'full' }, tuifa: { name: '腿法', sup: 'full' }, jianfa: { name: '劍法', sup: 'full' },
+  neigong: { name: '內功', sup: 'part' }, shenfa: { name: '身法', sup: 'part' },
+  gunbang: { name: '棍棒', sup: 'none' }, qimen: { name: '奇門', sup: 'none' }, zaxue: { name: '雜學', sup: 'none' },
+  yishu: { name: '醫術', sup: 'none' }, dushu: { name: '毒術', sup: 'none' }, zhenfa: { name: '陣法', sup: 'none' },
+};
+export const CAT_ORDER = ['quanzhang', 'tuifa', 'jianfa', 'neigong', 'shenfa', 'gunbang', 'qimen', 'zaxue', 'yishu', 'dushu', 'zhenfa'];
+/* 每門武學 → 成長門類權重（與戰鬥 school 分開；school=palm 的劍法、內功在此各歸其類） */
+export const ART_CAT = {
+  basicFist: { quanzhang: 1 }, pushPalm: { quanzhang: 1 }, wavePalm: { quanzhang: 1 }, fengLei: { quanzhang: 0.5, tuifa: 0.5 },
+  sweepLeg: { tuifa: 1 }, whirlLeg: { tuifa: 1 }, tantui: { tuifa: 1 },
+  breath: { neigong: 1 }, snowStep: { shenfa: 1 },
+  rulai: { quanzhang: 1 }, xianglong: { quanzhang: 1 }, anran: { quanzhang: 1 }, kongming: { quanzhang: 1 }, taiji: { quanzhang: 1 }, tiexian: { quanzhang: 1 }, huagu: { quanzhang: 1 },
+  bixie: { jianfa: 1 }, dugu: { jianfa: 1 }, xuantie: { jianfa: 1 },
+  zixia: { neigong: 1 }, yunv: { neigong: 1 }, jiuyang: { neigong: 1 }, qiankun: { neigong: 1 }, hama: { neigong: 1 }, shihou: { neigong: 1 },
+  dagou: { gunbang: 1 }, bagua: { gunbang: 1 }, kuihua: { qimen: 1 }, zuoyou: { zaxue: 1 },
+};
+export const GROW = {
+  k: 0.05, /* 每單位原始修練投入 → 造詣 */
+  src: { train: 1, fight: 0.3 }, /* 投入型來源權重 */
+  pass: 0.6, /* 傳功（每對每門一次的鍵）固定造詣 */
+  ms: [[1, 1], [2, 2], [4, 3]], /* 里程碑 [bit, 造詣]：自然練到小成、打坐破大成、打坐破化境 */
+  cap: { 1: 20, 2: 35, 3: 55, 4: 75 }, /* 每門武學最多提供的造詣（依品階） */
+  acc: { amp: 0.8, ref: 40, fade: 55, grade: { 1: 1, 2: 0.5 }, max: 1.8 },
+  init: 0.15, /* 開局既有熟練 → 造詣（一次，標 init） */
+  dr: 0.03, /* loop122 投入型造詣邊際遞減：Δ ÷ (1 + 主門類造詣 × dr)；只在 d.gdr */
+};
+export const LEVELS = [[0, '未窺門徑'], [5, '初窺門徑'], [20, '略有小成'], [40, '融會貫通'], [60, '爐火純青'], [80, '登峰造極']];
+export const levelOf = (v) => LEVELS.reduce((m, [t, n]) => (v >= t ? n : m), LEVELS[0][1]);
+const artBy = (id) => ARTS.find((a) => a.id === id);
+const cats = (id) => Object.entries(ART_CAT[id] || {}).filter(([c]) => CATS[c].sup !== 'none');
+export const primaryCat = (id) => Object.entries(ART_CAT[id] || {}).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+const contrib = (id, r) => (r?.gm ? Math.min(GROW.cap[artBy(id).grade] || 20, r.gm.e) : 0);
+/* 門類造詣（衍生）；skip＝排除某門武學自己的貢獻 */
+export function mastery(d, cat, skip = null) {
+  let v = 0; for (const [id, r] of Object.entries(d.arts || {})) { if (id === skip) continue; const w = ART_CAT[id]?.[cat]; if (w && CATS[cat].sup !== 'none') v += contrib(id, r) * w; }
+  return Math.min(100, v);
+}
+/* 同類學習加速：用結算前的「他門」同類造詣；凡／良品、熟練未到 fade 才有 */
+export function accelOf(d, a, xp) {
+  const c = primaryCat(a.id), g = GROW.acc.grade[a.grade] || 0; if (!c || CATS[c].sup !== 'full' || !g) return { mul: 1, cat: c, base: 0 };
+  const base = mastery(d, c, a.id), f = Math.max(0, 1 - xp / GROW.acc.fade);
+  return { mul: Math.min(GROW.acc.max, 1 + GROW.acc.amp * Math.min(1, base / GROW.acc.ref) * g * f), cat: c, base };
+}
+/* 單一結算入口：所有造詣變動只經此處。ctx = { src:'train'|'fight'|'pass'|'break', raw, xp0, xp1, stage }
+   回傳本次造詣增量 { [cat]: Δ }。練滿／卡瓶頸（xp 沒動）不給投入型造詣；里程碑以 bit 記，只領一次。 */
+export function settleGrowth(d, a, r, ctx) {
+  if (!cats(a.id).length) return {};
+  r.gm ??= { e: 0, ms: 0 }; const cap = GROW.cap[a.grade] || 20, before = Object.fromEntries(cats(a.id).map(([c]) => [c, mastery(d, c)]));
+  let add = 0;
+  if (ctx.src === 'train' || ctx.src === 'fight') { if ((ctx.xp1 ?? 0) > (ctx.xp0 ?? 0) + 1e-9 && ctx.raw > 0) add += ctx.raw * GROW.k * GROW.src[ctx.src] / (d.gdr ? 1 + (before[primaryCat(a.id)] ?? 0) * GROW.dr : 1); if ((ctx.xp0 ?? 0) < 25 && (ctx.xp1 ?? 0) >= 25 && !(r.gm.ms & 1)) { r.gm.ms |= 1; add += GROW.ms[0][1]; } }
+  else if (ctx.src === 'pass') add += GROW.pass;
+  else if (ctx.src === 'break') { const [bit, v] = GROW.ms[ctx.stage] || []; if (bit && !(r.gm.ms & bit)) { r.gm.ms |= bit; add += v; } }
+  r.gm.e = Math.min(cap, r.gm.e + add);
+  const out = {}; for (const [c] of cats(a.id)) { const dv = mastery(d, c) - before[c]; if (dv > 0) out[c] = dv; }
+  return out;
+}
+/* 開局一次：既有熟練折算造詣（標 init，不是新修練成果；已有 gm 的不動 → 重複呼叫冪等） */
+/* 每人一次（開局或入門後第一次結算前）：入門時已有的武學折算；d.gInit 標記後不再折算 */
+export function growEnsure(d) {
+  if (d.gInit) return d; d.gInit = true;
+  for (const [id, r] of Object.entries(d.arts || {})) { const a = artBy(id); if (!a || r.gm || !cats(id).length) continue; r.gm = { e: Math.min(GROW.cap[a.grade] || 20, r.xp * GROW.init), ms: r.xp >= 25 ? 1 : 0, init: true }; }
+  return d;
+}
+export function growInit(s) { for (const d of s.ds || []) growEnsure(d); return s; }
+
+// ==== （原 prof.mjs）====
+/* loop90 熟練度十重（概念取自暴走英雄壇「每級線性加傷害」，不抄碼）：每個武學階段（入門／小成／大成／圓滿）切成十重，化境不分重。
+   效果只有一項：該武學招式威力每重 +PROF.perLv（階內補間；到下一階重歸一重，淨增仍為正）。和造詣（原始投入→同類加速）輸入輸出都不同，不重複計算。 */
+export const PROF = { lvs: 10, perLv: ART_GAIN.tierDmg / 20, cn: ['', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'] };
+// xp → { t 階, name, lv 1–10（化境 0）, lo, hi, stuck 卡瓶頸 }
+export function profOf(xp) {
+  let t = 0; for (let k = 0; k < TIERS.length; k++) if (xp >= TIERS[k][0]) t = k;
+  const name = TIERS[t][1]; if (t === TIERS.length - 1) return { t, name, lv: 0, lo: TIERS[t][0], hi: TIERS[t][0], stuck: false };
+  const lo = TIERS[t][0], hi = TIERS[t + 1][0], lv = Math.min(PROF.lvs, Math.floor(((xp - lo) / (hi - lo)) * PROF.lvs) + 1);
+  return { t, name, lv, lo, hi, stuck: hi - xp <= 0.1 + 1e-9 && (hi === 55 || hi === 100) };
+}
+export const profMul = (xp) => { const p = profOf(xp); return 1 + PROF.perLv * Math.max(0, p.lv - 1); };
+export const profLabel = (xp) => { const p = profOf(xp); return p.lv ? `${p.name}${PROF.cn[p.lv]}重${p.stuck ? '（瓶頸）' : ''}` : p.name; };
+// 下一重門檻 xp（化境回 null）
+export const nextLvXp = (xp) => { const p = profOf(xp); if (!p.lv) return null; return p.lv < PROF.lvs ? p.lo + ((p.hi - p.lo) * p.lv) / PROF.lvs : p.hi; };
+
+// ==== （原 arts.mjs）====
 // v0.9 武學骨架：每門武學各自熟練、五階、前置、悟性門檻、笨功夫倍率
-import { sectBiasMul } from './sect-data.mjs';
-import { pipeline } from './mul.mjs';
-import { accelOf, settleGrowth } from './growth.mjs';
-import { profMul } from './prof.mjs';
-import { ARTS, TIERS, WUXING_MUL, ART_GAIN, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST } from './data.mjs';
 export const artById = (id) => ARTS.find((a) => a.id === id);
 export const artOfMove = (mv) => ARTS.find((a) => a.tech === mv || a.techs?.includes(mv));
 export const tierOf = (xp) => { let t = 0; for (let i = 0; i < TIERS.length; i++) if (xp >= TIERS[i][0]) t = i; return t; };
@@ -135,3 +220,109 @@ export function artsSvg(d) {
   }
   return `<svg viewBox="0 0 ${8 + 3 * (W + 34)} ${8 + 5 * (H + 10)}" width="100%" style="max-width:470px">${lines}${boxes}</svg>`;
 }
+
+// ==== （原 breakthru.mjs）====
+// loop25 突破排程（選用，s.bt25）：卡在瓶頸且可衝關時，打坐分數不低於最高練功分數×BT25.k。
+// 診斷：人多後主角升首徒（練功×1.5），練功 ~130 壓過打坐 75，武學卡 55；並非座位不足（座位滿 0%）。
+export const BT25 = { k: 1.1 };
+export function btBoost(s, out) {
+  if (!s.bt25) return; const m = out.find((o) => o.act === 'meditate' && o.f?.btOk); if (!m) return;
+  const tr = Math.max(0, ...out.filter((o) => o.act === 'train').map((o) => o.score)); if (m.score < tr * BT25.k) m.score = tr * BT25.k;
+}
+
+// ==== （原 comprehend.mjs）====
+// loop7 M7 領悟（天下霸圖味）：自練有機會自悟下一門功夫；切磋時觀摩對手會的功夫、跨門派也能偷師。
+// 只在 s.wu7 開啟時生效（golden 不變）。不用亂數，悟性決定速度。
+export const COMP = {
+  gain: { train: 4, meditate: 6, spar: 3 }, // 每完成一次活動的領悟值
+  watch: 10,                                   // 切磋時觀摩對手一門功夫
+  wuMul: [0, 0.4, 0.7, 1, 1.4, 1.8],          // 悟性 1–5
+  need: (a) => 60 + 40 * (a.grade || 0),      // 門檻：品階越高越難悟
+  vneed: 80,                                  // loop16 變式領悟門檻（大成後、未選變式的功夫）
+};
+const wm = (d) => COMP.wuMul[Math.max(1, Math.min(5, d.wu ?? d.root ?? 3))];
+const open = (d, a) => a && !a.secret && !d.arts?.[a.id] && !reqMissing(d, a).length;
+export function compProgress(d) { return Object.entries(d.comp || {}).map(([id, v]) => ({ id, name: artById(id)?.name, v, need: COMP.need(artById(id)) })); }
+function add(s, d, id, amt, how, think, log) {
+  const a = artById(id); if (!open(d, a)) return null;
+  (d.comp ??= {}); d.comp[id] = (d.comp[id] || 0) + amt * wm(d);
+  if (d.comp[id] < COMP.need(a)) return null;
+  delete d.comp[id]; learnArt(d, id, s.t); (s.compN ??= { self: 0, watch: 0 })[how === 'watch' ? 'watch' : 'self']++; think(s, d, 'epiphany', `（${a.name}）`);
+  log(s, how === 'watch' ? `${d.name}看多了別人使「${a.name}」，竟自己悟了出來！` : `${d.name}苦練之間豁然開朗，自悟「${a.name}」！`);
+  return a;
+}
+// 自悟目標：等師父教的那門優先；否則本門派可學的下一門，再不然任一門可學的
+export function selfTarget(d) { if (d.pendingArt) return d.pendingArt; const c = ARTS.filter((a) => open(d, a)); return (c.find((a) => a.school === d.style) || c[0])?.id || null; }
+// 活動完成時呼叫
+export function comprehend(s, d, act, partner, think, log) {
+  if (!s.wu7 || !COMP.gain[act]) return null;
+  const tgt = selfTarget(d); let got = tgt ? add(s, d, tgt, COMP.gain[act], 'self', think, log) : null;
+  if (act === 'spar' && partner) { const seen = ARTS.find((a) => partner.arts?.[a.id] && open(d, a)); if (seen) got = add(s, d, seen.id, COMP.watch, 'watch', think, log) || got; }
+  return got;
+}
+
+// loop16 變式領悟：大成（tier≥2）且玩家尚未選變式的功夫，練著練著自己悟出變式；切磋時對手已有變式則觀摩學他那路。
+// 不覆蓋玩家選擇；無亂數：自悟走「根骨≥悟性→剛（gang）否則→靈（ling）」。
+const vOpen = (d, id) => d.arts?.[id] && !d.arts[id].variant && artTier(d, id) >= 2;
+export const vLean = (d) => ((d.root ?? 3) >= (d.wu ?? 3) ? 'gang' : 'ling');
+function vAdd(s, d, id, v, amt, how, think, log) {
+  const r = d.arts[id]; (r.vc ??= {}); r.vc[v] = (r.vc[v] || 0) + amt * wm(d); if (r.vc[v] < COMP.vneed) return null;
+  delete r.vc; if (!chooseVariant(d, id, v, s.t)) return null; const a = artById(id), vn = VARIANTS[a.school].find((x) => x.id === v).name;
+  (s.compN ??= { self: 0, watch: 0 }); s.compN.variant = (s.compN.variant || 0) + 1; if (how === 'watch') s.compN.vwatch = (s.compN.vwatch || 0) + 1;
+  think(s, d, 'epiphany', `（${a.name}・${vn}）`); log(s, how === 'watch' ? `${d.name}看${'對手'}使「${a.name}」的${vn}路數，心有所得，也練成了這一路！` : `${d.name}把「${a.name}」練到極熟，自己悟出了${vn}的變化！`);
+  return { id, v };
+}
+export function comprehendVariant(s, d, act, partner, think, log) {
+  if (!s.wu7 || !COMP.gain[act]) return null; let got = null;
+  if (act === 'spar' && partner) { const id = Object.keys(d.arts || {}).find((k) => vOpen(d, k) && partner.arts?.[k]?.variant && !(partner.arts[k].until > s.t)); if (id) got = vAdd(s, d, id, partner.arts[id].variant, COMP.watch, 'watch', think, log); }
+  if (!got) { const id = Object.keys(d.arts || {}).filter((k) => vOpen(d, k)).sort((a, b) => d.arts[b].xp - d.arts[a].xp)[0]; if (id) got = vAdd(s, d, id, vLean(d), COMP.gain[act], 'self', think, log); }
+  return got;
+}
+
+// ==== （原 readwu.mjs）====
+/* loop140 讀書長悟性 `readwu`（決定 120；借鏡大俠立志傳「悟性靠讀書」，只做最小版）。
+   s.readwu 開時，每完成一次「藏經閣研讀」記一次；累積 READWU.need 次悟性 +1（每人一生一次、不超過 5）。 */
+export const READWU = { need: 30, max: 5 };
+export function readStudy(s, d) { if (!s?.readwu || d.rwDone) return null;
+  d.rw = (d.rw || 0) + 1; if (d.rw < READWU.need) return null;
+  d.rwDone = true; const w0 = d.wu ?? d.root ?? 3; if (w0 >= READWU.max) return null; d.wu = w0 + 1; return d.wu; }
+export const readwuNote = (s, d) => (!s?.readwu ? '' : d.rwDone ? '（讀書已開竅）' : `（研讀 ${d.rw || 0}/${READWU.need}）`);
+
+// ==== （原 neigong.mjs）====
+/* loop102 最小內功（概念取自《下一站江湖》心法養內力、《逸劍風雲決》心法支撐修為，不抄碼）。
+   只存目前內力 d.qi；上限由已學內功武學的階衍生、不存。不吃造詣、不吃十重：紫霞層數已決定其 xp，只看階，不另加。 */
+// loop142（v2.2）：一版內功（狩獵運勁、運功療傷、20＋15×階的上限）已淘汰，護體真氣是唯一實作；NG 只留回復與衝關參數
+export const NG = { med: 12, rest: 0.2, btCost: 20, btBonus: 0.1 };
+export const isInner = (a) => a.school === 'inner' || !!ART_CAT[a.id]?.neigong;
+export const INNER = ARTS.filter(isInner).map((a) => a.id);
+export const innerArts = (d) => INNER.filter((id) => d.arts?.[id]);
+export const qiMax = (d) => qiMax2(d);
+export const qiOf = (d) => Math.min(d.qi ?? 0, qiMax(d));
+export function addQi(d, amt) { d.qi = Math.max(0, Math.min(qiMax(d), (d.qi ?? 0) + amt)); return d.qi; }
+// 夠就扣並回 true；不夠不扣
+export function spendQi(d, cost) { if (!d.ng || qiOf(d) < cost) return false; d.qi = qiOf(d) - cost; return true; }
+
+/* loop114 二版「護體真氣」（docs/NEIGONG-REWORK.md §3）。d.ng2 由 sim 依 s.ngshield 設定。
+   概念：靈氣護盾（了不起的修仙模擬器）、內力吸收傷害（俠客風雲傳北冥神功）。不抄碼。 */
+export const NG2 = { cap: [10, 25, 45, 70, 100], mit: [0.02, 0.05, 0.08, 0.12, 0.16], mitCap: 0.3, total: 200, spentT: 20, spentMul: 1.15, powK: 0.2, dpsK: 0.01, guard: 15, guardHp: 40 };
+export function qiMax2(d) { let v = 0; for (const id of innerArts(d)) v += NG2.cap[artTier(d, id)] ?? 0; return Math.min(NG2.total, v); }
+export function mitOf(d) { let v = 0; for (const id of innerArts(d)) v += NG2.mit[artTier(d, id)] ?? 0; return Math.min(NG2.mitCap, v); }
+// 受擊：先減傷、再由內力吸收，餘下回傳要扣的生命。力竭中受傷加重。now = 遊戲秒。
+export function shieldHit(d, dmg, now = 0) {
+  if (!d.ng2) return dmg;
+  if (!(dmg > 0)) return 0; /* loop123 反例：負／零傷害不得加內力或觸發力竭 */
+  let x = dmg * ((d.spentUntil ?? -1) > now ? NG2.spentMul : 1);
+  const q = qiOf(d);
+  if (q <= 0) return x;
+  x *= 1 - mitOf(d);
+  const ab = Math.min(q, x); d.qi = q - ab; x -= ab;
+  if (d.qi <= 0 && !tenthOf(d)) d.spentUntil = now + NG2.spentT;
+  return x;
+}
+export const shieldOn = (d) => !!d.ng2 && qiOf(d) > 0;
+// loop117 抽象戰鬥：門派戰力加成、守柵出手加成、重傷時護體（夠內力就扣內力、改成輕傷）
+export const powBonus = (d) => (d.ng2 ? NG2.powK * qiMax2(d) : 0);
+export const dpsBonus = (d) => (d.ng2 ? NG2.dpsK * qiMax2(d) : 0);
+export function guardHurt(d, hurtHp) { if (!d.ng2 || qiOf(d) < NG2.guard) return hurtHp; d.qi = qiOf(d) - NG2.guard; return Math.max(hurtHp, NG2.guardHp); }
+// loop121 十重質變（只一項、不重複加數值）：任一內功練到圓滿十重（需熟練度十重）或化境 →「真氣綿長」：內力打空也不力竭
+export const tenthOf = (d) => innerArts(d).some((id) => { const t = artTier(d, id); if (t >= 4) return true; const p = profOf(d.arts[id].xp || 0); return !!d.pf && t === 3 && p.lv === 10; });

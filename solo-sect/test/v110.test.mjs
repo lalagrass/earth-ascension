@@ -1,4 +1,4 @@
-import { openExp } from "../src/slice.mjs";
+import { openExp } from "../src/world.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startExpedition } from '../src/sim.mjs';
@@ -8,7 +8,7 @@ import { XIA, xiaPool, xiaStep, xiaResolve, join, pickStudent, onCook, dragonFit
 import { pairBonus, applyHero, autoPick } from '../src/hero.mjs';
 import { aff } from '../src/social.mjs';
 import { migrate } from '../src/save.mjs';
-import { guardOf } from '../src/expedition.mjs';
+import { guardOf } from '../src/world.mjs';
 
 const st = (seed = 3) => { const s = createState(seed); tick(s); return s; };
 test('v1.1 版本與招牌武學各三招、帶地圖特效、不入秘笈池', () => {

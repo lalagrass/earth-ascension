@@ -1,13 +1,11 @@
-import { letterResolve, masterResolve } from './jhevents.mjs';
-// v0.96 主角：建立、價值觀 autopilot、違心、同門、專屬主線第一步
-import { isType, mbtiPersonality } from './mbti.mjs';
-import { ARCH, isArch } from './archetype.mjs';
-import { STATS, STAT_BUDGET, VALUES, ACT_TAGS, VALUE_K, WEXIN, Q9, HEROES, COMPANIONS, CUSTOM_COMPANIONS, ARCS } from './hero-data.mjs';
-import { NODES, MOOD, CHORE_ACTS, DAY, AWAKEN, BREAK } from './data.mjs';
+import { letterResolve, masterResolve, jhResolve, jhAutoPick } from './jianghu.mjs';
+import { isType, mbtiPersonality, ARCH, isArch } from './social.mjs';
+import { STATS, STAT_BUDGET, VALUES, ACT_TAGS, VALUE_K, WEXIN, Q9, HEROES, COMPANIONS, CUSTOM_COMPANIONS, ARCS, NODES, MOOD, CHORE_ACTS, DAY, AWAKEN, BREAK } from './data.mjs';
 import { seedArts, learnArt, unlockTechs, artById } from './arts.mjs';
 import { log, resSet } from './util.mjs';
-import { sectResolve } from './sect.mjs';
-import { genResolve } from './gen.mjs';
+import { sectResolve, genResolve } from './sect.mjs';
+import { xiaResolve, pairBest, hsResolve, hsAutoPick } from './wuxia.mjs';
+// v0.96 主角：建立、價值觀 autopilot、違心、同門、專屬主線第一步
 export const heroById = (id) => HEROES.find((h) => h.id === id);
 export const VALUE_NAMES = Object.fromEntries(VALUES);
 export const STAT_NAMES = Object.fromEntries(STATS);
@@ -79,9 +77,6 @@ export function applyHero(s, spec, initPair) {
 // 名俠池：所有模板＋同門候選，扣掉已在門中者
 export function encounterPool(s) { const ex = new Set(s.encExclude || []); return [...HEROES.map((h) => h.id), ...Object.keys(COMPANIONS)].filter((id, i, a) => a.indexOf(id) === i && !ex.has(id)); }
 // 同門默契：郭靖＋黃蓉 練功最多 +25%（隨好感線性），其他組合 +10%
-import { xiaResolve, pairBest } from './wuxia.mjs';
-import { hsResolve, hsAutoPick } from './huashan.mjs';
-import { jhResolve, jhAutoPick } from './jianghu.mjs';
 export function pairBonus(s, d, aff) {
   if (!s.hero) return 0; return pairBest(s, d, aff, (a, b) => { const c = s.hero.companion; return (a.id === 'hero' && b.id === c) || (b.id === 'hero' && a.id === c) ? COMPANIONS[c]?.pair?.[s.hero.id] ?? 0.1 : 0; });
 }

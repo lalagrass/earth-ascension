@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import { tick } from '../src/sim.mjs';
 import { load } from '../src/save.mjs';
 import { threatHtml } from '../src/threat.mjs';
-import { laborNote } from '../src/labor-ui.mjs';
+import { laborNote } from '../src/panel-ui.mjs';
 const FIX = new URL('./fixtures/', import.meta.url);
 const files = fs.readdirSync(FIX).filter((f) => /^v[\d.]+\.json$/.test(f));
 test('至少有 6 個舊版存檔', () => assert.ok(files.length >= 6, files.join(',')));

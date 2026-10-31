@@ -1,6 +1,6 @@
 // v1.55b 山徑 dist 對應、山腳／林地素材、固定怪點、召回沿原路走回
 import test from 'node:test'; import assert from 'node:assert/strict'; import fs from 'node:fs'; import crypto from 'node:crypto';
-import { createState, tick, startExpedition } from '../src/sim.mjs'; import { save } from '../src/save.mjs'; import { openExp } from '../src/slice.mjs';
+import { createState, tick, startExpedition } from '../src/sim.mjs'; import { save } from '../src/save.mjs'; import { openExp } from '../src/world.mjs';
 import { ROUTE, DAY } from '../src/data.mjs'; import * as W from '../src/world.mjs';
 const hash = (s) => crypto.createHash('sha256').update(save(s)).digest('hex').slice(0, 16);
 test('山徑：半徑＝dist×PX，所以每一步所在的環＝模擬的段', () => {
@@ -20,7 +20,7 @@ test('實跑巡山：遭遇真的發生在怪點的 dist 上（同一串 nextAt�
 });
 test('召回：回程沿同一條山徑往 den 走，位置單調變近、最後回到 den', async () => {
   const s = openExp(createState(12)); tick(s); s.res.food = 20; startExpedition(s, s.ds.slice(0, 2).map((d) => d.id));
-  while (s.exp && s.exp.dist < 60) tick(s); assert.ok(s.exp); const E = await import('../src/expedition.mjs'); E.recallExpedition(s); for (let i = 0; i < 200 && s.exp.phase !== 'back'; i++) tick(s); assert.equal(s.exp.phase, 'back');
+  while (s.exp && s.exp.dist < 60) tick(s); assert.ok(s.exp); const E = await import('../src/world.mjs'); E.recallExpedition(s); for (let i = 0; i < 200 && s.exp.phase !== 'back'; i++) tick(s); assert.equal(s.exp.phase, 'back');
   let prev = Infinity, last; while (s.exp) { const p = W.partyPos(s), r = Math.hypot(p[0] - W.DEN[0], p[1] - W.DEN[1]); assert.ok(r <= prev + 1e-6); prev = r; last = p; const d = W.partyDist(s); assert.ok(Math.hypot(p[0] - W.trailAt(d)[0], p[1] - W.trailAt(d)[1]) < 1e-6); tick(s); }
   assert.ok(Math.hypot(last[0] - W.DEN[0], last[1] - W.DEN[1]) < 40);
 });

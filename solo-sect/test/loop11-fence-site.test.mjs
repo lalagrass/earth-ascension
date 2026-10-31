@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
-import { startFenceSite, canStartFenceSite, fenceSite, FENCE } from '../src/fence.mjs';
-import { invariants as checkInvariants } from '../src/lifecycle.mjs';
+import { startFenceSite, canStartFenceSite, fenceSite, FENCE } from '../src/threat.mjs';
+import { invariants as checkInvariants } from '../src/core.mjs';
 
 const run = (s, n) => { for (let i = 0; i < n && fenceSite(s); i++) tick(s, 6); return s; };
 test('loop11 立藍圖不立刻扣料、不立刻有柵', () => {

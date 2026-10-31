@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
 import { save, load } from '../src/save.mjs';
-import { VALOR, valorPowMul, valorLabel } from '../src/valor.mjs';
+import { VALOR, valorPowMul, valorLabel } from '../src/sect.mjs';
 import { power } from '../src/jianghu.mjs';
 import { threatHtml } from '../src/threat.mjs';
 import { ALL_ON } from './harness/bot.mjs';

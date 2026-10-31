@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { qiStatus, axesOf, QI_AXIS2, growthHtml } from '../src/growui.mjs';
+import { qiStatus, axesOf, QI_AXIS2, growthHtml } from '../src/panel-ui.mjs';
 import { createState } from '../src/sim.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, neigong: true, ...x });
 test('未學內功：氣 0/0；學了：氣 x/y＋減傷提示；力竭標記', () => {

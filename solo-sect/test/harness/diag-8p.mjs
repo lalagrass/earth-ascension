@@ -1,7 +1,7 @@
 // loop38 診斷：8 人規模平衡。用法：node test/harness/diag-8p.mjs [count=160] [days=60] [start=1001] [idle|bot]
 // 每 10 tick 快照（loop46 起；之前為每日換日快照）依人數分桶（≤4、5–7、≥8）：平均心情、低落比例、心情扣分表（各負向項平均值×出現率）、錢、受傷。
 import { run, seedRange } from './bot.mjs';
-import { moodParts } from '../../src/mind.mjs';
+import { moodParts } from '../../src/social.mjs';
 const [n = 160, days = 60, start = 1001] = process.argv.slice(2, 5).map(Number), bot = process.argv[5] !== 'idle', SPEC = JSON.parse(process.argv[6] || '{}'); /* loop47：第 6 參數可覆寫規則，如 '{"cropcare":false}' */
 const B = {}, reach = []; const bk = (k) => (k <= 4 ? '≤4' : k <= 7 ? '5-7' : '≥8');
 for (const seed of seedRange(n, start)) {

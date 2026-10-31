@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
-import { FENCE, buildFence, upgradeFence, canUpgradeFence, repairScore, boarRam, repairDone } from '../src/fence.mjs';
+import { FENCE, buildFence, upgradeFence, canUpgradeFence, repairScore, boarRam, repairDone } from '../src/threat.mjs';
 import { T, raidAuto, fenceHolds } from '../src/threat.mjs';
 
 const logs = (s) => (s.log || []).map((x) => (typeof x === 'string' ? x : x.msg || x.text || JSON.stringify(x))).join('\n');

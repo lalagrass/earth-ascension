@@ -1,7 +1,7 @@
 // loop37：右欄收合（審查：右欄資訊過長）
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isFolded, setAll, FOLD_DEFAULT, foldKey } from '../src/fold.mjs';
+import { isFolded, setAll, FOLD_DEFAULT, foldKey } from '../src/panel-ui.mjs';
 test('預設：較少用的區塊收合、主要區塊展開', () => {
   for (const id of ['arts', 'codex', 'hunt', 'labor', 'ledger', 'rel']) assert.equal(isFolded({}, id), true);
   for (const id of ['build', 'exp', 'ds', 'recruit', 'log']) assert.equal(isFolded({}, id), false);

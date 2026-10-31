@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
-import { NG, qiMax } from '../src/neigong.mjs';
+import { NG, qiMax } from '../src/arts.mjs';
 import { breakChance } from '../src/arts.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...x });
 function trial(seed, qi) {

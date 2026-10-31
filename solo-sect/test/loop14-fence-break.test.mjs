@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
-import { buildFence } from '../src/fence.mjs';
+import { buildFence } from '../src/threat.mjs';
 
 const sp = { kind: 'custom', name: '測', answers: Array(9).fill(0), draw: true, comprehend: true, mentor: true, peace: true };
 const run = (seed) => { const s = createState(seed, sp); s.res.wood = (s.res.wood || 0) + 6; buildFence(s); for (let i = 0; i < 4800; i++) tick(s, 6); return s.threat.hist; };

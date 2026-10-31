@@ -1,7 +1,7 @@
 // loop63 診斷：扣分降了心情為何不升。用法：SS_DT=0.25 node test/harness/diag-moodcap.mjs [count] [days] [start] [spec-json]
 // 每 10 tick 取樣 ≥8 人階段：原始目標和（未夾 0–100）、被上限夾住比例、心情與目標差。輸出 JSON 一行給合併。
 import { run, seedRange } from './bot.mjs';
-import { moodParts } from '../../src/mind.mjs';
+import { moodParts } from '../../src/social.mjs';
 const [n = 5, days = 60, start = 1001] = process.argv.slice(2, 5).map(Number), SPEC = JSON.parse(process.argv[5] || '{}');
 const A = { k: 0, raw: 0, cap: 0, mood: 0, gap: 0 };
 for (const seed of seedRange(n, start)) { let tk = 0;

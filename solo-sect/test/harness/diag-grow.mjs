@@ -2,7 +2,7 @@
    用法：SS_DT=0.25 node test/harness/diag-grow.mjs [n=40] [start=1001] > /tmp/grow-flows.json */
 import { createState, tick } from '../../src/sim.mjs';
 import { learnArt } from '../../src/arts.mjs';
-import { mastery, accelOf } from '../../src/growth.mjs';
+import { mastery, accelOf } from '../../src/arts.mjs';
 import { ARTS } from '../../src/data.mjs';
 import { ALL_ON } from './bot.mjs';
 const DT = +(process.env.SS_DT || 0.25), N = +(process.argv[2] || 40), S0 = +(process.argv[3] || 1001), MAXD = 12;

@@ -1,5 +1,5 @@
 // loop27 診斷：受傷來源（山賊/剿寨）、剿寨次數、錢來源。用法：node test/harness/diag-hurt.mjs off|on|null idle|bot（null＝事件照發但獎勵歸零）
-const {run}=await import("./bot.mjs");const J=await import("../../src/jhevents.mjs");
+const {run}=await import("./bot.mjs");const J=await import("../../src/jianghu.mjs");
 const mode=process.argv[2],bot=process.argv[3]==='bot';
 if(mode==='null'){Object.assign(J.JHEV.master,{xp:0,mood:0,teach:0});Object.assign(J.JHEV.letter.win,{rep:0,mood:0,coin:0,xp:0});Object.assign(J.JHEV.letter.lose,{rep:0,mood:0});}
 const A={hurt:{raid:0,lair:0},raids:0,raidPts:0,lairN:0,coinSrc:{},lairFound:0,lairFirst:[],rep:0,coin:0};

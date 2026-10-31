@@ -2,10 +2,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { CARDS as HC, ARC_YUE, ARC_LHC } from '../src/huashan.mjs';
+import { CARDS as HC, ARC_YUE, ARC_LHC } from '../src/wuxia.mjs';
 import { CARDS as JC, ARC13 } from '../src/jianghu.mjs';
 import { GUOJING_ARC } from '../src/wuxia.mjs';
-import { TREES, destinyStep } from '../src/destiny.mjs';
+import { TREES, destinyStep } from '../src/data.mjs';
 const snap = JSON.parse(fs.readFileSync(new URL('./fixtures/v200-cards-before.json', import.meta.url)));
 const strip = (C) => Object.fromEntries(Object.entries(C).map(([k, c]) => [k, { ...c, opts: c.opts.map((o) => o.map((x) => (typeof x === 'function' ? 'fn' : x))) }]));
 test('A8：華山／江湖卡文字、選項、價值觀與重構前完全相同，每個選項仍有效果函式', () => {

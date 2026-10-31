@@ -1,57 +1,26 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { readStudy } from './readwu.mjs'; /* loop140 */
-import { workStrCap, isWorkAct } from './labor.mjs';
-import { NG, addQi, spendQi, qiMax, shieldHit } from './neigong.mjs';
-import { breakChance } from './arts.mjs';
-import { growInit, growEnsure, settleGrowth } from './growth.mjs';
-import { seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove } from './arts.mjs';
-import { ART_GAIN, BREAK, EXP } from './data.mjs';
-import { RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE } from './data.mjs';
-import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote } from './util.mjs';
-import { think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits } from './mind.mjs';
-import { relStage, relAdd, compat, aff, initPair } from './social.mjs';
-import { seasonOf } from './season.mjs';
-import { pipeline, mulText } from './mul.mjs';
-import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf } from './expedition.mjs';
-import { PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS } from './data.mjs';
-import { SCORE, SCORE_POST } from './score-data.mjs';
-import { BAND, canDefend } from './band.mjs';
-import { boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE, FENCE_FAC, finishFenceSite } from './fence.mjs';
-import { demandBoost, repairDamp } from './peace.mjs';
-import { coTrain, askStrong, pairBoost } from './mentor.mjs';
-import { comprehend, comprehendVariant } from './comprehend.mjs';
-import { drawBoost, pickChatMate, admire } from './draw.mjs';
-import { addMem, chatLine, passPick, passDo, PASS, passScore, passReserve, apprDaily, apprMul } from './bonds.mjs';
-import { aspStep, likeMeal, likesOf } from './v10.mjs';
-import { raidMul } from './expedition.mjs';
-import { popStep, fogStep } from './world.mjs';
-import { xiaStep, onCook, xiaInit } from './wuxia.mjs';
-import { hsStep, hsInit } from './huashan.mjs';
-import { jhStep, jhInit } from './jianghu.mjs';
-import { sectStep, sectInit, sectRecruit } from './sect.mjs';
-import { genStep, genInit } from './gen.mjs';
-import { unlockStep, chapterStep } from './slice.mjs';
+import { readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost } from './arts.mjs';
+import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
+import { ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
+import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText } from './util.mjs';
+import { think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
+import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, fogStep, unlockStep, chapterStep } from './world.mjs';
+import { BAND, canDefend, boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE, FENCE_FAC, finishFenceSite, threatDaily, threatStep, raidResolve, bandStep, lairDaily, lairStep } from './threat.mjs';
+import { addMem, chatLine, passPick, passDo, PASS, passScore, passReserve, apprDaily, apprMul, aspStep, likeMeal, likesOf, cliqueDaily, cliqueTrain } from './bonds.mjs';
+import { xiaStep, onCook, xiaInit, hsStep, hsInit } from './wuxia.mjs';
+import { jhStep, jhInit, jhevDaily } from './jianghu.mjs';
+import { sectStep, sectInit, sectRecruit, genStep, genInit, removeDisciple } from './sect.mjs';
 import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus, awaken, econCoin, cookBonus } from './hero.mjs';
+import { SAVE_VERSION, freshV095 } from './save.mjs';
+import { cancelTask, removeActor, whAvail, freeSlot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE, STOCK_RESV, stockKey, stockReserved } from './core.mjs';
+/* loop140 */
 export { canExpedition, codexRows, reportText, segAt, ROUTE_END, dpsOf };
 const H = { rand: (s) => rand(s), cancelTask: (s, d, w) => cancelTask(s, d, w), grow: (s, d, k, a, src) => grow(s, d, k, a, src), think: (s, d, id) => think(s, d, id), gate: NODES.gate };
-export { recallExpedition } from './expedition.mjs';
+export { recallExpedition } from './world.mjs';
 export const startExpedition = (s, ids, opt = {}) => startExp0(s, ids, opt, H);
 export { think, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, knownTraits, relStage, relAdd, compat, aff, seasonOf, relKey, log };
 
-import { SAVE_VERSION, freshV095 } from './save.mjs';
-import { cancelTask, removeActor, whAvail } from './lifecycle.mjs';
-import { econDaily, schoolStep, startSchool, E as econOf } from './economy.mjs';
-import { threatDaily, threatStep, raidResolve, bandStep } from './threat.mjs';
-import { lairDaily, lairStep } from './lair.mjs';
-import { jhevDaily } from './jhevents.mjs';
-import { btBoost } from './breakthru.mjs';
-import { liftBoost } from './lift.mjs';
-import { stewardDaily, stewBoar } from './steward.mjs';
-import { cliqueDaily, cliqueTrain } from './clique.mjs';
-import { archRecruit } from './archetype.mjs';
-import { removeDisciple } from './gen.mjs';
 const EH = { rand: (s) => rand(s), cancelTask: (s, d, w) => cancelTask(s, d, w), think: (s, d, id) => think(s, d, id), removeDisciple: (s, d, w) => removeDisciple(s, d, w), gate: NODES.gate };
-import { freeSlot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE, STOCK_RESV, stockKey, stockReserved } from './core.mjs';
 export { SAVE_VERSION };
 
 function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }

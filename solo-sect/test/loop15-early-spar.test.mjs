@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, PRED } from '../src/sim.mjs';
-import { COMP } from '../src/comprehend.mjs';
+import { COMP } from '../src/arts.mjs';
 
 const sp = (o = {}) => ({ kind: 'custom', name: '測', answers: Array(9).fill(0), ...o });
 const ctx = (s) => ({ s, n: { energy: 80 }, others: [{ needs: { energy: 80 } }] });
