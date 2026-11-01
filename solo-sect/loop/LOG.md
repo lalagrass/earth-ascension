@@ -1678,3 +1678,12 @@
 - 新增 `test/v29.test.mjs` 4 項；v26/v28 依新數值改寫。
 - 快驗（SS_DT=1 bot 6 局）：0 崩潰；內傷觸發 24／化解 12、syn3 16、root [82,4,34,1,13]、根基先練 38。
 - quick 467、sect-chronicle 383、Python 53。golden-30d-v22 d3b5d689c74d2c64 → 69942a90887c52f1。
+
+## Loop 187 — v2.9 Batch 2：特質 mods24 與四種練武習性（決定 242–243）
+- data.mjs：rigid/hypocrite/indecisive/chi/quiet 加 `mods24`；social/sim 的 traitMul、tparts 在 v24 讀 mods24。arts.mjs：`TEMPER29`、`temper29`，autoFocus 與 artMulParts 接上習性；sect.mjs 偷師 +6；sim.mjs `temperDaily29` 計數。diag 加 `v29` 欄。
+- v29 +5（9 項）。快驗（SS_DT=1 bot 6 局）：0 崩潰；守正先練根基 honest 14／diligent 18／stubborn 6／rigid 0；靈動 44；至情 7；梟雄 0；內傷 23（無名 20）。
+- quick 472、sect-chronicle 383、Python 53。golden-30d-v22 69942a90887c52f1 → 4242fb4bdafac352。
+
+### Retro 186–187
+- 好：四項決定都收在 arts.mjs 既有入口，內傷終於在實戰出現；根基已不只武當。
+- 隱憂：內傷集中在無名派；拘謹與梟雄在現有招收池幾乎沒有人，下一批加招收特質池後再看。

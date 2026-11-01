@@ -109,7 +109,7 @@ export function moodStep(s, d, dt) {
   for (const th of d.thoughts) th.left -= dt; d.thoughts = d.thoughts.filter((x) => x.left > 0);
   const diff = moodTarget(d, s) - d.mood; d.mood = clamp(d.mood + clamp(diff, -MOOD.down * dt, MOOD.up * dt), 0, 100);
 }
-export function traitMul(d, act) { let m = 1; for (const p of d.personality || []) m *= TRAITS[p]?.mods?.[act] || 1; return m; }
+export function traitMul(d, act) { let m = 1; for (const p of d.personality || []) m *= (d.v24 && TRAITS[p]?.mods24?.[act]) || TRAITS[p]?.mods?.[act] || 1; return m; } /* loop187 v2.9：v24 新局改用 mods24（有則覆寫） */
 export function moodMul(d, act) {
   if (d.mood < MOOD.low) return WORK_ACTS.includes(act) ? 0.6 : LEISURE_ACTS.includes(act) ? 1.35 : 1;
   if (d.mood > MOOD.high) return WORK_ACTS.includes(act) ? 1.15 : 1;

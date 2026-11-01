@@ -1,5 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { CATS, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost } from './arts.mjs';
+import { CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
 import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
@@ -319,7 +319,7 @@ export function scoreActs(s, d) {
   const ph = c.ph, sch = SCHEDULE[ph] || {}, n = d.needs;
   const plotWork = s.plots.some((p) => p.st === 'empty' || p.st === 'ripe');
   // v0.95 統一倍率管線：作息是時段閘門（管線外），性格→天賦組、心情→狀態組、職責/首徒/雇工→外部組
-  const tparts = (act) => { const r = (d.personality || []).map((p) => [TRAITS[p]?.name || p, TRAITS[p]?.mods?.[act] || 1]).filter(([, v]) => v !== 1); const vm = valueMul(d, act); if (vm !== 1) r.push(['價值觀', vm]); return r; };
+  const tparts = (act) => { const r = (d.personality || []).map((p) => [TRAITS[p]?.name || p, (d.v24 && TRAITS[p]?.mods24?.[act]) || TRAITS[p]?.mods?.[act] || 1]).filter(([, v]) => v !== 1); const vm = valueMul(d, act); if (vm !== 1) r.push(['價值觀', vm]); return r; };
   for (const o of out) { const f = { base: o.score, sched: sch[o.act] || 1, trait: traitMul(d, o.act), mood: moodMul(d, o.act), noise: rand(s) * 8, P: { talent: tparts(o.act), state: o.act && moodMul(d, o.act) !== 1 ? [['心情', moodMul(d, o.act)]] : [], ext: [] } }; o.f = f; }
   postRows(s, d, out, plotWork);
   for (const o of out) { const f = o.f, p = pipeline(f.P); f.talent = p.talent; f.state = p.state; f.ext = p.ext; f.total = p.total; f.text = mulText(p); f.bored = boredMul(s, d, o.act); o.score = f.base * f.sched * p.total * f.bored + f.noise; delete f.P;
@@ -709,13 +709,17 @@ export function payday(s) {
 // ---- tick ----
 // loop145 R3：換日時依序執行的每日結算（順序即亂數消耗順序，不可任意調換）
 /* loop181 v2.8：內傷 ≥50 每日扣氣血 8、心情 4；主修外功已不逆催（改修同屬／調和內功）則每日自癒 6 */
+/* loop187 v2.9：小門派旗標（清冷清修）＋守正先練根基按特質計數（每人一次） */
+function temperDaily29(s) { const W = (s.v29n ??= {}), B = (W.baseByTrait ??= { honest: 0, diligent: 0, stubborn: 0, rigid: 0, sect: 0 }); const small = s.ds.length <= TEMPER29.small;
+  for (const d of s.ds) { if (!d.v24) continue; d.small29 = small; if (d.base28 && !d.base29c) { d.base29c = true; const t = TEMPER29.zheng.find((x) => (d.personality || []).includes(x)) || 'sect'; B[t]++; }
+    if (d.xiao29 && !d.xiao29c) { d.xiao29c = true; W.xiao = (W.xiao || 0) + 1; } if (d.ling29 && !d.ling29c) { d.ling29c = true; W.ling = (W.ling || 0) + 1; } if (temper29(d).qing && !d.qing29c) { d.qing29c = true; W.qing = (W.qing || 0) + 1; } } }
 function injuryDaily28(s) { for (const d of s.ds) { if (!d.v24 || !d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuter28(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
 export function dailyPipeline(s) {
   payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s);
   if (s.draw) cliqueDaily(s);
   if (s.m9) lairDaily(s, EH);
   if (s.jhev) jhevDaily(s);
-  if (s.v24) { injuryDaily28(s); siegeDaily27(s); crusadeDaily27(s, EH); } /* loop181 經脈內傷每日 */ /* loop179 傾巢討伐（執事自動）；loop178 v2.7 魔教圍山（雜湊擲骰，不吃亂數流） */
+  if (s.v24) { temperDaily29(s); injuryDaily28(s); siegeDaily27(s); crusadeDaily27(s, EH); } /* loop181 經脈內傷每日 */ /* loop179 傾巢討伐（執事自動）；loop178 v2.7 魔教圍山（雜湊擲骰，不吃亂數流） */
   if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild, canBuildFac, buildFac, ...(s.v23 ? { hire, canHire, laborCap, laborers, stewHireCoin: LABOR23.stewHireCoin } : {}) });
 }
 export { recordDeed, DEED_CAP, CHRON_CAP, tallyAct, bioLine, bioLean } from './util.mjs';

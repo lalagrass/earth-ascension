@@ -36,3 +36,30 @@ test('loop186 決定 4：七傷拳前置只要鷹爪小成；聖火心法或九�
   give(d, 'shenghuoXinfa', 60); assert.notEqual(drive(d, 'qishangFist').tier, 4);
   const [, e] = fresh('mingjiao'); give(e, 'qishangFist', 10); give(e, 'jiuyang', 60); assert.notEqual(drive(e, 'qishangFist').tier, 4);
 });
+
+const pick = (d, traits, values) => { d.personality = traits; d.values = values || {}; d.style = 'palm'; return A.autoFocus(d); };
+test('loop187 守正厚積：根基未大成先練根基；有三品時先把本門一二品練到大成', () => {
+  const [, d] = fresh('wudang'); give(d, 'wudangXinfa', 30); give(d, 'taijiSword', 5); assert.equal(pick(d, ['rigid']), 'wudangXinfa'); assert.ok(d.base28);
+  const [, e] = fresh('wudang'); give(e, 'wudangXinfa', 30); give(e, 'taijiSword', 5); assert.equal(pick(e, [], { sect: 80 }), 'wudangXinfa');
+  const [, f] = fresh('wudang'); give(f, 'wudangXinfa', 30); give(f, 'taijiSword', 5); assert.notEqual(pick(f, ['playful']), 'wudangXinfa');
+});
+test('loop187 靈動跳階：直取最高品；巧/快或二品以上 ×1.12；偷師 +6', () => {
+  const [, d] = fresh('emei'); give(d, 'basicFist', 5); give(d, 'linjiZhuang', 5); assert.equal(pick(d, ['clever']), 'linjiZhuang');
+  assert.ok(A.artMulParts(d, A.artById('linjiZhuang')).parts.ext.some((x) => x[0] === '靈動跳階' && x[1] === 1.12));
+  assert.equal(A.TEMPER29.steal, 6); assert.ok(A.temper29(d).ling);
+});
+test('loop187 梟雄強練：豪爽／偽君子／重名望者先練他派高品外功（憨厚、拘謹除外）', () => {
+  const [, d] = fresh('gaibang'); give(d, 'huntianGong', 60); give(d, 'lianhuaPalm', 10); give(d, 'chousuiPalm', 10); assert.equal(pick(d, ['bold']), 'chousuiPalm');
+  assert.equal(pick(d, [], { fame: 70 }), 'chousuiPalm'); assert.notEqual(pick(d, ['bold', 'honest']), 'chousuiPalm');
+  const [, m] = fresh('mingjiao'); give(m, 'yingzhuaHand', 30); give(m, 'qishangFist', 5); assert.equal(pick(m, ['hypocrite']), 'qishangFist');
+});
+test('loop187 至情清修：癡＋有默契伴侶、清冷＋小門派 ×1.18；舊局不吃 mods24', () => {
+  const [, d] = fresh('emei'); give(d, 'emeiSword', 5); d.personality = ['chi']; d.pairMul = 0; assert.ok(!A.temper29(d).qing); d.pairMul = 0.1; assert.ok(A.temper29(d).qing);
+  assert.ok(A.artMulParts(d, A.artById('emeiSword')).parts.ext.some((x) => x[0] === '至情清修' && x[1] === 1.18));
+  d.personality = ['quiet']; d.pairMul = 0; d.small29 = true; assert.ok(A.temper29(d).qing);
+});
+test('loop187 沉睡特質 mods24：只 v24 新局', async () => {
+  const { traitMul } = await import('../src/social.mjs');
+  const d = { v24: true, personality: ['rigid'] }; assert.equal(traitMul(d, 'train'), 1.15); assert.equal(traitMul(d, 'chat'), 0.85);
+  assert.equal(traitMul({ personality: ['rigid'] }, 'train'), 1); assert.equal(traitMul({ v24: true, personality: ['quiet'] }, 'meditate'), 1.35);
+});

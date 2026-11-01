@@ -61,10 +61,10 @@ export const NEW_TRAITS = {
   lazy: { name: '懶散', desc: '能躺就不坐，練功提不起勁', mods: { train: 0.7, leisure: 1.4, rest: 1.15 } },
   glib: { name: '油嘴', desc: '說話好聽，招人、買賣都佔便宜', mods: { chat: 1.3 } },
   drinker: { name: '嗜酒', desc: '有酒心情就好，醉了悟性高、定力差', mods: { leisure: 1.2 }, moodBase: 3 },
-  rigid: { name: '拘謹', desc: '規矩方正，練正統功夫一板一眼；學不來無招之劍', mods: {} },
+  rigid: { name: '拘謹', desc: '規矩方正，練正統功夫一板一眼；學不來無招之劍', mods: {}, mods24: { train: 1.15, study: 1.15, chat: 0.85, rest: 0.9 } },
   bold: { name: '豪爽', desc: '大口喝酒大塊吃肉，出手不拘章法', mods: { chat: 1.1 } },
-  hypocrite: { name: '偽君子', desc: '人前君子，人後算計；名望受損時心情大跌', mods: {} },
-  indecisive: { name: '優柔', desc: '重大抉擇總要拖上幾天', mods: {} },
+  hypocrite: { name: '偽君子', desc: '人前君子，人後算計；名望受損時心情大跌', mods: {}, mods24: { chat: 1.25, study: 1.15 } },
+  indecisive: { name: '優柔', desc: '重大抉擇總要拖上幾天', mods: {}, mods24: { chat: 1.15, rest: 1.15, defend: 0.85 } },
   kind: { name: '仁厚', desc: '見不得人受苦，愛照顧傷者', mods: { encourage: 1.4 } },
   rascal: { name: '混混', desc: '街頭出身，偷懶耍詐，心底未泯', mods: { train: 0.8, forage: 1.2 } },
 };
@@ -670,7 +670,8 @@ export const JH = {
   gambleBase: 2, gambleCap: 6, recruitBonus: 0.4, baoyi: 0.5, reflect: 0.3, jiuyangSta: 30,
   hiddenMax: 3, hiddenP: 0.35, residueXp: 20, dfbbPow: 40, hyPow: 50, diaoFeeds: 3, honeyHeal: 15,
 };
-Object.assign(TRAITS, { quiet: { name: '清冷', desc: '心情起伏減半，不喜熱鬧', mods: { train: 1.05, leisure: 0.9 } }, chi: { name: '癡', desc: '心情隨意中人起伏', mods: {} } });
+Object.assign(TRAITS, { quiet: { name: '清冷', desc: '心情起伏減半，不喜熱鬧', mods: { train: 1.05, leisure: 0.9 } }, chi: { name: '癡', desc: '心情隨意中人起伏', mods: {}, mods24: { train: 1.25, study: 1.2, chat: 0.8 } } }); /* loop187 v2.9 mods24：只 d.v24 新局生效（舊局 mods 不動） */
+TRAITS.quiet.mods24 = { meditate: 1.35, study: 1.2, chat: 0.75 };
 
 // ---- v1.55a 合併敵人表：家裡用的地圖走速與立繪掛在 ENEMIES[k].home；ring＝牠在巡山第幾環（族群歸屬）----
 Object.assign(ENEMIES.rat, { home: { speed: 40, sprite: 'rat' } }); Object.assign(ENEMIES.boar, { home: { speed: 28, sprite: 'boar' } });
