@@ -116,7 +116,7 @@ export function econHtml(s) {
 }
 
 // ==== （原 labor.mjs）====
-/* loop127 勞作練體 `laborgrow`（docs/DAXIA-EVAL.md §3）。d.lg 由 sim 依 s.laborgrow 設定；沒有 d.lg 時全部回傳中性值。
+/* loop127 勞作練體 `laborgrow`（docs/systems/evaluations/daxia.md §3）。d.lg 由 sim 依 s.laborgrow 設定；沒有 d.lg 時全部回傳中性值。
    借鏡：大俠立志傳臂力靠採集、敏捷每日有上限；RimWorld 技能每日軟上限後只拿 20%。 */
 export const LABOR = { per: 400, powDiv: 10, cap: 3, over: 0.2, acts: ['chop', 'quarry', 'water', 'build', 'repair'] };
 export const strMul = (d) => (d?.lg ? 1 + Math.max(0, d.skills?.strength || 0) / LABOR.per : 1); // 招式傷害倍率

@@ -365,7 +365,7 @@ export function addQi(d, amt) { d.qi = Math.max(0, Math.min(qiMax(d), (d.qi ?? 0
 // 夠就扣並回 true；不夠不扣
 export function spendQi(d, cost) { if (!d.ng || qiOf(d) < cost) return false; d.qi = qiOf(d) - cost; return true; }
 
-/* loop114 二版「護體真氣」（docs/NEIGONG-REWORK.md §3）。d.ng2 由 sim 依 s.ngshield 設定。
+/* loop114 二版「護體真氣」（docs/systems/neigong-rework.md §3）。d.ng2 由 sim 依 s.ngshield 設定。
    概念：靈氣護盾（了不起的修仙模擬器）、內力吸收傷害（俠客風雲傳北冥神功）。不抄碼。 */
 export const NG2 = { cap: [10, 25, 45, 70, 100], mit: [0.02, 0.05, 0.08, 0.12, 0.16], mitCap: 0.3, total: 200, total24: 260, mitCap24: 0.36, spentT: 20, spentMul: 1.15, powK: 0.2, dpsK: 0.01, guard: 15, guardHp: 40 };
 /* loop197：品階拉開內力，階內一重到十重連續補間。只 d.v24。化境 lv=0，用滿階不再往下補。 */
