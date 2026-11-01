@@ -1,7 +1,7 @@
 import { ROUTE, NODES, ENEMIES, RAID_EVERY, DAY, ENDLESS, CAMPS, INSIGHT, EXP, MOVES, EXP_STYLES as STYLES, STYLE_TRAIT, EVADE, TRAITS, ARTS as ARTS_ALL, HS, DAO } from './data.mjs';
 import { log, affKey, resAdd } from './util.mjs';
 import { addMem } from './bonds.mjs';
-import { shieldHit, moveMul, cdMul, effectTier, artTier as effectTierOf, SPEC, zhenK, hasPoison, bestSpec, fengxueK, HARMONY24 } from './arts.mjs';
+import { shieldHit, moveMul, cdMul, effectTier, artTier as effectTierOf, SPEC, zhenK, hasPoison, bestSpec, fengxueK, HARMONY24, stepDrive28 } from './arts.mjs';
 import { mateBonus } from './economy.mjs';
 import { addWexin, awaken } from './hero.mjs';
 import { aff } from './social.mjs';
@@ -281,7 +281,7 @@ export function suggestTeam(s, n = 2) {
   }
   return { ids: pick.map((d) => d.id), why };
 }
-export const evadeScore = (d) => d.skills.agility + Math.max(0, effectTier(d, 'speed') + 1) * EVADE.tierPts + ((d.personality || []).includes('lazy') ? EVADE.lazyBonus : 0);
+export const evadeScore = (d) => d.skills.agility + Math.max(0, effectTier(d, 'speed') + 1) * EVADE.tierPts * (d.v24 ? stepDrive28(d) : 1) + ((d.personality || []).includes('lazy') ? EVADE.lazyBonus : 0); /* loop196：閃避的輕功段乘本門內功催動 */
 const pclamp = (x) => Math.max(0.05, Math.min(0.95, x));
 // H：sim 內部工具 { rand, cancelTask, grow, think }
 export function startExpedition(s, ids, opt = {}, H) {

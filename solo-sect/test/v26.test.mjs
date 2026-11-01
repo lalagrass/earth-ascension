@@ -31,9 +31,9 @@ test('loop171 大比魁首得 chief24', () => {
 test('loop171→181 同門成套：只算本門專屬；公共身法不計；成套傷害改由 innerDrive28；舊局不變', () => {
   const s = V({ sect24: 'emei' }); tick(s, 0.1); const d = other(s); for (const id of Object.keys(d.arts)) if (d.stree.includes(id)) delete d.arts[id];
   assert.equal(A.sectClasses24(d), 0);
-  give(d, 'emeiJiuyang', 30); give(d, 'emeiSword', 30); assert.equal(A.sectClasses24(d), 2); assert.equal(A.styleDmg24(d) / (A.polymath24(d) === 2 ? A.SYN24.conv : 1) / A.injuryMul28(d), 1);
-  give(d, 'stepFeather', 30); assert.equal(A.sectClasses24(d), 2); /* loop192：三類齊仍要一門本門大成 */
-  give(d, 'emeiJiuyang', 60); assert.equal(A.sectClasses24(d), d.stree.includes('stepFeather') ? 3 : 2);
+  give(d, 'emeiJiuyang', 30); give(d, 'emeiSword', 30); assert.equal(A.sectClasses24(d), 0); assert.equal(A.styleDmg24(d) / (A.polymath24(d) === 2 ? A.SYN24.conv : 1) / A.injuryMul28(d), 1); /* loop196：內功未大成不算正宗 */
+  give(d, 'stepFeather', 30); assert.equal(A.sectClasses24(d), 0);
+  give(d, 'emeiJiuyang', 60); assert.equal(A.sectClasses24(d), 3); /* 本門內功大成＋本門劍法小成 */
   const o = OLD(); tick(o, 0.1); const od = hero(o); assert.equal(A.styleDmg24(od), 1); assert.equal(A.sectClasses24(od), 0);
 });
 test('loop171 同門根基 1.18／一脈相承 1.28', () => {
@@ -78,8 +78,8 @@ test('loop174 天地會／星宿派：資料、樹、開局可選天地會', asy
   assert.equal(A.artById('shenxingStep').grade, 3); assert.deepEqual(A.artById('zhaixingStep').req, []); assert.ok(A.isSwordArt('yunlongSword'));
   const { SECT_PICK24 } = await import('../src/data.mjs'); assert.ok(SECT_PICK24.includes('tiandihui'));
   const s = V({ sect24: 'tiandihui' }); tick(s, 0.1); assert.equal(s.sect.id, 'tiandihui'); assert.ok(s.sect.tree.includes('yunlongXinfa'));
-  const x = V({ sect24: 'xingxiu' }); tick(x, 0.1); const d = other(x); d.arts = {}; give(d, 'huagongDafa', 30); give(d, 'chousuiPalm', 30); give(d, 'zhaixingStep', 30); assert.equal(A.sectClasses24(d), 2);
-  give(d, 'chousuiPalm', 60); assert.equal(A.sectClasses24(d), 3); /* loop192 */
+  const x = V({ sect24: 'xingxiu' }); tick(x, 0.1); const d = other(x); d.arts = {}; give(d, 'huagongDafa', 30); give(d, 'chousuiPalm', 30); give(d, 'zhaixingStep', 30); assert.equal(A.sectClasses24(d), 0); /* loop196：外功大成不算，要本門內功大成 */
+  give(d, 'huagongDafa', 60); assert.equal(A.sectClasses24(d), 3);
 });
 test('loop175 拜師承襲不越位階鎖：師父的鎮派絕學不直接傳給一般徒弟', () => {
   const s = V({ sect24: 'gumu' }); tick(s, 0.1); const h = hero(s), d = other(s); give(h, 'yunvSword', 100); give(h, 'tianluoPalm', 60); delete d.arts.yunvSword;

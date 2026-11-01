@@ -16,12 +16,14 @@ test('loop186 決定 1：副修第四階外功也累積內傷 +5；主修第四�
   d.focus = 'chousuiPalm'; A.qiInjuryAdd28(s, d); assert.equal(d.qiInjury, 5 + A.DRIVE28.inj); assert.equal(A.DRIVE28.inj, 8);
   const [s2, e] = fresh('gaibang'); give(e, 'huntianGong', 60); give(e, 'basicFist', 50); assert.equal(A.clashOuter28(e), null); A.qiInjuryAdd28(s2, e); assert.equal(e.qiInjury, 0);
 });
-test('loop186 決定 2：本門 2 類＋本門樹公共身法 → 三才 3；只有公共不算', () => {
+test('loop196 本門正宗：本門內功大成，再加本門外功或本門輕功小成；公共三類不算', () => {
   const [, d] = fresh('gaibang'); give(d, 'breath', 60); give(d, 'snowStep', 60); give(d, 'basicFist', 60); assert.equal(A.sectClasses24(d), 0);
-  give(d, 'huntianGong', 30); give(d, 'lianhuaPalm', 30); assert.equal(A.sectClasses24(d), 2); /* loop192：三類齊、本門兩類，但都未大成 */
+  give(d, 'huntianGong', 30); give(d, 'lianhuaPalm', 30); assert.equal(A.sectClasses24(d), 0); /* 內功未大成 */
   assert.ok(!A.styleBadges24(d).includes('【本門正宗】'));
   give(d, 'huntianGong', 60); assert.equal(A.sectClasses24(d), 3); assert.ok(A.styleBadges24(d).includes('【本門正宗】'));
-  delete d.arts.snowStep; assert.equal(A.sectClasses24(d), 2);
+  delete d.arts.snowStep; assert.equal(A.sectClasses24(d), 3); /* 不再要求湊齊輕功 */
+  delete d.arts.lianhuaPalm; assert.equal(A.sectClasses24(d), 0);
+  give(d, 'xiaoyaoStep', 30); assert.equal(A.sectClasses24(d), 3); /* 本門輕功小成也算 */
 });
 test('loop186 決定 3：無本門一品內功的門派以吐納或本門二品內功為根基', () => {
   const [, d] = fresh('gaibang'); give(d, 'breath', 60); assert.equal(A.baseInner28(d).id, 'breath'); assert.equal(A.rootFoundation28(d), 2);
@@ -98,7 +100,7 @@ test('loop194 面板露出主運內功、催動階與習性徽章', async () => 
   const html = artsGrowHtml(d, 0, false);
   assert.ok(html.includes('★主運內功'), html);
   assert.ok(html.includes('◆根基'), html);
-  assert.ok(html.includes('正宗催動 ×1.20'), html);
+  assert.ok(html.includes('正宗催動 ×1.25'), html);
   assert.ok(html.includes('內力虛浮 ×0.78'), html);
   assert.ok(A.styleBadges24(d).includes('【大比首徒】') && A.styleBadges24(d).includes('【守正厚積】'));
   d.xiao29 = true; assert.ok(A.styleBadges24(d).includes('【梟雄強練】'));

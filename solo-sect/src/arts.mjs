@@ -28,7 +28,7 @@ export const ART_CAT = {
   hanbingPalm: { quanzhang: 0.7, neigong: 0.3 }, liufengSword: { jianfa: 0.7, shenfa: 0.3 }, fuguFinger: { quanzhang: 0.5, dushu: 0.5 }, qiankunBlade: { gunbang: 0.7, neigong: 0.3 }, /* loop165 合參 */
   emeiJiuyang: { neigong: 1 }, linjiZhuang: { neigong: 0.8, yishu: 0.2 }, emeiSword: { jianfa: 1 }, huifengSword: { jianfa: 1 }, jindingPalm: { quanzhang: 1 }, tiangangFinger: { quanzhang: 0.5, qimen: 0.5 }, jiuyinClaw: { quanzhang: 1 }, /* loop168 v2.55 門派專屬 */
   wudangJiuyang: { neigong: 1 }, wudangFist: { quanzhang: 1 }, rouyunSword: { jianfa: 1 }, taijiSword: { jianfa: 1 }, biboXinfa: { neigong: 0.7, qimen: 0.3 }, luoyingPalm: { quanzhang: 0.7, jianfa: 0.3 }, lanhuaHand: { quanzhang: 0.5, qimen: 0.5 }, yuxiaoSword: { jianfa: 0.7, qimen: 0.3 },
-  tianluoPalm: { quanzhang: 0.6, shenfa: 0.4 }, yunvSword: { jianfa: 1 }, huagongDafa: { neigong: 0.6, dushu: 0.4 }, chousuiPalm: { quanzhang: 0.5, dushu: 0.5 }, sanyinClaw: { quanzhang: 0.5, dushu: 0.5 },
+  tianluoPalm: { quanzhang: 0.6, shenfa: 0.4 }, yunvSword: { jianfa: 1 }, shenmuGong: { neigong: 0.7, dushu: 0.3 }, huagongDafa: { neigong: 0.6, dushu: 0.4 }, chousuiPalm: { quanzhang: 0.5, dushu: 0.5 }, sanyinClaw: { quanzhang: 0.5, dushu: 0.5 },
   huashanXinfa: { neigong: 1 }, pishiFist: { quanzhang: 1 }, hunyuanPalm: { quanzhang: 0.7, neigong: 0.3 }, kuangfengSword: { jianfa: 1 }, jianzongXinfa: { neigong: 1 }, wudangXinfa: { neigong: 1 }, mianPalm: { quanzhang: 1 }, /* loop172 v2.6；loop191 劍宗心法 */
   huntianGong: { neigong: 1 }, xiaoyaoStep: { shenfa: 1 }, lianhuaPalm: { quanzhang: 1 }, fengmoStaff: { gunbang: 1 }, shenghuoXinfa: { neigong: 1 }, qingfuStep: { shenfa: 1 }, yingzhuaHand: { quanzhang: 0.7, qimen: 0.3 }, qishangFist: { quanzhang: 1 }, /* loop173 v2.6 */
   yunlongXinfa: { neigong: 1 }, shenxingStep: { shenfa: 1 }, baihuaFist: { quanzhang: 1 }, yunlongSword: { jianfa: 1 }, zhaixingStep: { shenfa: 1 }, /* loop174 v2.6 */
@@ -153,8 +153,10 @@ export function artMulParts(d, a, state = [], more = []) {
 }
 export const artMul = (d, a) => artMulParts(d, a).total;
 export const artCap = (d, a) => (gated(d, a) ? ART_GAIN.gateCap : 100);
+const hasMove24 = (a) => !!(a?.tech && MOVES.some((m) => m.id === a.tech));
+/* loop196：百毒譜等無招式圖譜不進主修，避免 autoFocus 空轉 */
 export function autoFocus(d) {
-  const own = Object.keys(d.arts || {}).map(artById).filter((a) => a && d.arts[a.id].xp < artCap(d, a));
+  const own = Object.keys(d.arts || {}).map(artById).filter((a) => a && d.arts[a.id].xp < artCap(d, a) && (isInner(a) || a.school === 'step' || hasMove24(a)));
   const pref = own.filter((a) => a.school === d.style || a.school === 'fist');
   const pool = pref.length ? pref : own; if (!pool.length) return null;
   const sectish = (a) => (own28(d, a) || !!d.stree?.includes(a.id)) ? 1 : 0; /* loop193：本門／本門樹優先於外門 */
@@ -417,7 +419,7 @@ const swordArtOf = (mv) => { const id = mv?.id || mv; if (MOVES.find((m) => m.id
 export const isSwordMove = (mv) => !!swordArtOf(mv);
 export const swordCdMul = (d, mv) => (d?.v23 && isSwordMove(mv) ? NG23.swordCd : 1);
 export const swordDmgMul = (d, mv) => { if (!d?.v23) return 1; const id = swordArtOf(mv); return id && artTier(d, id) <= NG23.swordEarlyTier ? NG23.swordEarly : 1; };
-export const medQi = (d) => (d?.v23 ? (NG23.med + (hasSpec(d, 'zixia') ? 4 : 0)) * (d.v24 ? (d.medK24 || 1) * (sectClasses24(d) >= 3 ? SYN24.med3 : 1) : 1) : NG.med); /* loop171 三才成套打坐 ×1.15 */ /* loop168 古墓寒玉床打坐 ×1.5 */
+export const medQi = (d) => (d?.v23 ? (NG23.med + (hasSpec(d, 'zixia') ? 4 : 0)) * (d.v24 ? (d.medK24 || 1) * (sectClasses24(d) >= 3 ? SYN24.med3 : 1) : 1) : NG.med); /* loop196 本門正宗打坐 ×1.15 */ /* loop168 古墓寒玉床打坐 ×1.5 */
 export const restQi = (d) => NG.rest * (hasSpec(d, 'breath') ? 1.5 : 1);
 
 // ---- loop160 v2.4 Batch 1.2：藏經閣圖譜（只在 s.v24）：讀書完成時，若門內該門類無人懂（best < CHART24.need），以 chance 機率取得對應抄本 ----
@@ -476,20 +478,13 @@ const OUTER24 = ['fist', 'palm', 'leg'];
 /* loop191：內功類看 isInner（含玉女心經等 hybrid），不再只看 school === 'inner' */
 const cls24 = (a) => (!a || typeof a !== 'object' ? null : isInner(a) ? 'inner' : a.school === 'step' ? 'step' : OUTER24.includes(a.school) ? 'outer' : null);
 /* 本門樹（d.stree）內、已達小成的武學涵蓋幾類（內功／身法／外功） */
-/* loop181 v2.8：本門專屬三才只算本門專屬武學（own28：own24＝本門，或無 own24 的本門樹名門 classic），公共 breath／snowStep 等不再計入 */
-/* loop186 v2.9 決定 1-2：本門樹三類齊（可含公共身法）且其中 ≥2 類有本門專屬 → 3；否則回本門專屬類數 */
-/* loop192：三才成套要三類都小成、其中至少兩類是本門，且至少一門本門到大成；否則最多算兩類 */
-export function sectClasses24(d) {
-  if (!d?.v24 || !d.stree) return 0;
-  const c = new Set(), t = new Set(); let big = false;
-  for (const id of Object.keys(d.arts || {})) {
-    const a = artById(id); if (!a || artTier(d, id) < 1) continue;
-    const k = cls24(a); if (!k) continue;
-    if (d.stree.includes(id) || own28(d, a)) t.add(k);
-    if (own28(d, a)) { c.add(k); if (artTier(d, id) >= 2) big = true; }
-  }
-  return t.size >= 3 && c.size >= 2 && big ? 3 : Math.min(2, c.size);
+/* loop196：廢三才計數。本門正宗＝本門內功大成，且至少一門本門外功或本門輕功小成。回 3／0，舊測試仍讀 sectClasses24。 */
+const ownCombat28 = (a) => !!(a && !isInner(a) && (a.school === 'step' || a.school === 'fist' || a.school === 'palm' || a.school === 'leg'));
+export function orthodox28(d) {
+  if (!d?.v24 || ownMaxTier28(d) < 2) return false;
+  return Object.keys(d.arts || {}).some((id) => { const a = artById(id); return ownCombat28(a) && own28(d, a) && artTier(d, id) >= 1; });
 }
+export function sectClasses24(d) { return orthodox28(d) ? 3 : 0; }
 /* 同門前階帶後階：修本門樹武學，已會本門前置（達 req 階）或本門內功小成 → 同門根基；本門內功與本門外功皆大成 → 一脈相承 */
 export function sectLine24(d, a) {
   if (!d?.v24 || !d.stree?.includes(a.id)) return null; let inT = -1, outT = -1;
@@ -518,7 +513,7 @@ export function temper29(d) { if (!d?.v24) return {}; const p = d.personality ||
   return { zheng, ling: has(TRAITS29.ling), xiao, qing }; }
 /* ---- loop181 v2.8 四階內功催動（innerDrive28）與經脈內傷（qiInjury）。只 d.v24 ---- */
 export const CHAMP28 = { train: 1.25, aoe: 0.25 }; /* loop183 當屆大比首徒＝首徒 headTrain 1.5 的一半加成 */
-export const DRIVE28 = { t1: 1.20, t1s: 1.28, t2: 1, t3: 0.78, t4: 0.65, med3: 1.15, inj: 8, injSub: 5, injWarn: 20, injHeavy: 50, injMin: 0.10, injMax: 0.25, hp: 8, mood: 4, med: 8, heal: 25, rest: 6 };
+export const DRIVE28 = { t1: 1.25, t1s: 1.25, t2: 1, t3: 0.78, t4: 0.65, med3: 1.15, inj: 8, injSub: 5, injWarn: 20, injHeavy: 50, injMin: 0.10, injMax: 0.25, hp: 8, mood: 4, med: 8, heal: 25, rest: 6 }; /* loop196：t1＝本門正宗；t1s 退役（不再另乘三才） */
 export const PUBLIC28 = ['basicFist', 'pushPalm', 'sweepLeg', 'breath', 'snowStep', 'basicSword', 'wuhuBlade', 'shaolinStaff', 'tuinaHand', 'stepFeather', 'stepEight'];
 /* loop191：載入時補齊武學描述，不改既有欄位。legacy 存檔與 v22:false 路徑不讀這些欄。 */
 export function normalizeArts(list = ARTS) {
@@ -526,7 +521,8 @@ export function normalizeArts(list = ARTS) {
     a.isInner = a.school === 'inner' || !!ART_CAT[a.id]?.neigong;
     a.kind = a.isInner ? 'inner' : a.school === 'step' ? 'step' : 'outer';
     a.isPublic = PUBLIC28.includes(a.id);
-    a.cats = a.cats || ART_CAT[a.id] || null;
+    if (a.cats) ART_CAT[a.id] = a.cats; /* loop196：資料表上的 cats 與 ART_CAT 共用同一物件 */
+    else a.cats = ART_CAT[a.id] || null;
   }
   return list;
 }
@@ -560,24 +556,35 @@ export function rootTrain28(d, a) { const b = baseInner28(d); if (!b || b.id ===
 const rootMove28 = (d) => { const b = baseInner28(d); if (!b) return 0; const t = artTier(d, b.id); if (t < 2) return 0; const hi = ownInners28(d).some((a) => a.id !== b.id && (a.grade || 1) >= Math.max(2, (b.id === 'breath' ? 2 : (b.grade || 1) + 1)) && artTier(d, a.id) >= 1);
   if (b.id === 'breath') return hi ? ROOT28.breathMove[Math.min(4, t)] : 0; return hi || ((b.grade || 1) >= 2 && Object.keys(d.arts).some((id) => { const x = artById(id); return x && !isInner(x) && own28(d, x) && (x.grade || 1) > (b.grade || 1) && artTier(d, id) >= 1; })) ? ROOT28.move[Math.min(4, t)] : 0; };
 const clash28 = (x, y) => (x === 'yang' && y === 'yin') || (x === 'yin' && y === 'yang');
-/* 回 { tier: 1–4（0＝不適用：內功或非 v24）, mul } */
+/* 回 { tier: 1–4（0＝不適用：純內功或非 v24）, mul }。外功與輕功身法同一套。 */
+const ownInnerHolds28 = (d, g) => ownInners28(d).some((x) => (x.grade || 1) >= g - 1 && artTier(d, x.id) >= Math.max(1, g - 1));
 export function innerDrive28(d, a) {
-  if (!d?.v24 || !a || a.school === 'inner') return { tier: 0, mul: 1 }; /* 只跳過純內功（school inner、無外功招式）。玉女心經 school 是 palm，仍算催動 */
-  const M = mainInner28(d), mt = M ? artTier(d, M.id) : -1, g = a.grade || 1, conv = polymath24(d) === 2;
-  const held = !!M && mt >= g - 1 && (M.grade || 1) >= g - 1; /* 內功火候與品階都撐得住（吐納一品最多撐二品外功） */
-  const omt = ownMaxTier28(d), rb = 1 + rootMove28(d); /* 輔運根基【根基渾厚】 */
-  if (a.id === 'qishangFist' && !conv && artTier(d, 'shenghuoXinfa') < 2 && artTier(d, 'jiuyang') < 2) return { tier: 4, mul: DRIVE28.t4 }; /* loop186 一練七傷：聖火心法／九陽未大成前強練皆逆催（本門亦然） */
-  if (a.id === 'jiuyinClaw' && !conv && (!M || (M.grade || 1) < 2 || artTier(d, M.id) < 2)) return { tier: 4, mul: DRIVE28.t4 }; /* loop192 強練禁術：沒有二品以上內功大成 */
-  if (own28(d, a) && omt >= Math.max(1, g - 1)) return { tier: 1, mul: (sectClasses24(d) >= 3 ? DRIVE28.t1s : DRIVE28.t1) * rb, ...(rb > 1 ? { root: true } : {}) };
+  if (!d?.v24 || !a || (isInner(a) && a.school === 'inner')) return { tier: 0, mul: 1 }; /* 純內功不催動。玉女心經 school 是 palm，仍算催動 */
+  const M = mainInner28(d), g = a.grade || 1, conv = polymath24(d) === 2;
+  const held = !!(M && (M.grade || 1) >= g - 1 && artTier(d, M.id) >= g - 1); /* 主運內功品階與火候都撐得住 */
+  const rb = 1 + rootMove28(d);
+  const root = rb > 1 ? { root: true } : {};
+  if (a.id === 'qishangFist' && !conv && artTier(d, 'shenghuoXinfa') < 2 && artTier(d, 'jiuyang') < 2) return { tier: 4, mul: DRIVE28.t4 }; /* loop186 一練七傷 */
+  if (a.id === 'jiuyinClaw' && !conv && (!M || (M.grade || 1) < 2 || artTier(d, M.id) < 2)) return { tier: 4, mul: DRIVE28.t4 }; /* loop192 強練禁術 */
+  if (own28(d, a) && ownInnerHolds28(d, g)) return { tier: 1, mul: DRIVE28.t1 * rb, ...root }; /* 本門正宗 ×1.25，再乘根基 */
   const foreign = (a.own24 && a.own24 !== d.sectId) || (BAN28.includes(a.id) && !own28(d, a));
   if (foreign && !conv) {
     /* loop192：第四階只在真陰陽相沖，或名門沒有二品內功卻硬催三品陰／陽外功。吐納（he）不沖；無名派只吃相沖與禁術。 */
     const clash = !!(M && clash28(attrOf(M), attrOf(a)));
     const bare = d.sectId !== 'wuming' && g >= 3 && (attrOf(a) === 'yin' || attrOf(a) === 'yang') && (!M || (M.grade || 1) < 2);
     if (clash || bare) return { tier: 4, mul: DRIVE28.t4 };
-    return held && (M.grade || 1) >= 2 && (attrOf(M) === 'he' || attrOf(M) === attrOf(a)) ? { tier: 2, mul: 1 } : { tier: 3, mul: DRIVE28.t3 };
+    if (held && (M.grade || 1) >= 2 && (attrOf(M) === 'he' || attrOf(M) === attrOf(a))) return { tier: 2, mul: DRIVE28.t2 }; /* 偷師原威力，不吃 1.25、不吃根基 */
+    return { tier: 3, mul: DRIVE28.t3 };
   }
-  return g >= 2 && !held ? { tier: 3, mul: DRIVE28.t3 * rb, ...(rb > 1 ? { root: true } : {}) } : { tier: 2, mul: rb, ...(rb > 1 ? { root: true } : {}) };
+  if (a.isPublic && held) return { tier: 2, mul: DRIVE28.t2 * rb, ...root }; /* 同源相合：公共武學，主運撐得住才吃根基 */
+  if (g >= 2 && !held) return { tier: 3, mul: DRIVE28.t3 }; /* 內力虛浮：品階或火候不足 */
+  return { tier: 2, mul: DRIVE28.t2 * rb, ...root };
+}
+/* loop196：腳程與閃避用熟練最高的輕功身法催動係數 */
+export function stepDrive28(d) {
+  if (!d?.v24) return 1; let b = null;
+  for (const id of Object.keys(d.arts || {})) { const a = artById(id); if (a?.school !== 'step') continue; if (!b || (d.arts[id].xp || 0) > (d.arts[b.id].xp || 0)) b = a; }
+  return b ? innerDrive28(d, b).mul : 1;
 }
 /* 主修外功：指定的非內功 focus，否則熟練最高的非內功 */
 export function mainOuter28(d) {
