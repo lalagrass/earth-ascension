@@ -151,7 +151,7 @@ export function artMulParts(d, a, state = [], more = []) {
   const ext = a.req.length ? [['前置', 1 + ART_GAIN.reqBonus * a.req.length]] : [];
   if (d.pairMul > 0) ext.push(['同門默契', 1 + d.pairMul]);
   if (d?.v24 && isInner(a) && dao31(d)) ext.push(['以技入道', 1.35]); /* loop202：外功造詣 ≥50 才加快修內功 */
-  const [bm, om] = sectBiasMul(d, a); if (bm !== 1) talent.push(['門派偏向', bm]); if ((d.sgain || 1) !== 1) ext.push(['鎮派設施', d.sgain]); if (d.lineArts?.includes(a.id)) ext.push(['師承', 1.2]); if (d.v24) { const gt = GRADE_TRAIN24[a.grade || 1]; if (gt !== 1) ext.push(['品階難度', gt]); { const rt = rootTrain28(d, a); if (rt > 1) ext.push([baseInner28(d)?.id === 'breath' ? '築基渾厚' : '根基', rt]); } if (d.champ28) ext.push(['大比首徒', CHAMP28.train]); { const T = temper29(d); if (T.ling && (a.tags.includes('巧') || a.tags.includes('快') || (a.grade || 1) >= 2)) ext.push(['靈動跳階', TEMPER29.lingK]); if (T.qing) ext.push(['至情清修', TEMPER29.qingK]); } const L = sectLine24(d, a); if (L) ext.push(L); const pm = polymath24(d); if (pm === 1) ext.push(['雜學分心', SYN24.distract]); else if (pm === 2) ext.push(['博覽群書', SYN24.wide]); } /* loop171 v2.6 */ ext.push(...more); // v1.4 // v1.35 // v0.96 郭靖＋黃蓉最多 +25%
+  const [bm, om] = sectBiasMul(d, a); if (bm !== 1) talent.push(['門派偏向', bm]); if ((d.sgain || 1) !== 1) ext.push(['鎮派設施', d.sgain]); if (d.lineArts?.includes(a.id)) ext.push(['師承', 1.2]); if (d.v24) { const gt = GRADE_TRAIN24[a.grade || 1]; if (gt !== 1) ext.push(['品階難度', gt]); { const rt = rootTrain28(d, a); if (rt > 1) ext.push([baseInner28(d)?.id === 'breath' ? '築基渾厚' : '根基', rt]); } if (d.champ28) ext.push(['大比首徒', CHAMP28.train]); { const T = temper29(d), taste = tasteLabel31(d, a); if (T.ling && taste?.[0] !== '投其所好' && (a.tags.includes('巧') || a.tags.includes('快') || (a.grade || 1) >= 2)) ext.push(['靈動跳階', TEMPER29.lingK]); if (T.qing) ext.push(['至情清修', TEMPER29.qingK]); if (taste) ext.push(taste); } const L = sectLine24(d, a); if (L) ext.push(L); const pm = polymath24(d); if (pm === 1) ext.push(['雜學分心', SYN24.distract]); else if (pm === 2) ext.push(['博覽群書', SYN24.wide]); } /* loop171 v2.6；loop203 偏好只留一個標籤，且不與靈動跳階疊「投其所好」 */ ext.push(...more); // v1.4 // v1.35 // v0.96 郭靖＋黃蓉最多 +25%
   const r = pipeline({ talent, state, ext }); r.gate = gated(d, a) ? ART_GAIN.gated : 1; r.total *= r.gate; r.outside = om; r.total *= om; return r; // v1.35 外門 ×0.7 是真乘數
 }
 export const artMul = (d, a) => artMulParts(d, a).total;
@@ -166,11 +166,15 @@ export function autoFocus(d) {
   const byDefault = (a, b) => sectish(b) - sectish(a) || (b.grade || 1) - (a.grade || 1) || d.arts[a.id].xp - d.arts[b.id].xp;
   const dflt = () => [...pool].sort(byDefault)[0].id;
   if (d.v24) { const T = temper29(d); /* loop187 v2.9 四種練武習性 */
-    if (T.zheng) { /* loop193：先有一門外功小成能守山門，再專練根基到大成；不再把一二品全部磨到 55 */
+    if (T.zheng) { /* loop193：先有一門外功小成能守山門。loop203：坐不住不得插在這一步前面 */
       const combat = (a) => !isInner(a) && a.school !== 'step';
       const armed = Object.keys(d.arts).some((id) => { const a = artById(id); return a && combat(a) && artTier(d, id) >= 1; });
-      if (!armed) { const c = own.filter((a) => combat(a) && artTier(d, a.id) < 1); if (c.length) return [...c].sort((a, b) => sectish(b) - sectish(a) || (a.grade || 1) - (b.grade || 1) || d.arts[b.id].xp - d.arts[a.id].xp)[0].id; }
-      const b = baseInner28(d); if (b && d.arts[b.id] && d.arts[b.id].xp < ROOT28.baseXp && d.arts[b.id].xp < artCap(d, b)) { d.base28 = true; return b.id; } }
+      if (!armed) { const c = own.filter((a) => combat(a) && artTier(d, a.id) < 1); if (c.length) return [...c].sort((a, b) => sectish(b) - sectish(a) || (a.grade || 1) - (b.grade || 1) || d.arts[b.id].xp - d.arts[a.id].xp)[0].id; } }
+    const Ap = appetite31(d); /* 舊檔沒有 bore31 視作 0。門檻 6−|A| */
+    if (Ap && (d.bore31 || 0) >= 6 - Math.abs(Ap)) {
+      const pick = Ap > 0 ? own.filter((a) => a.mode === 'da') : own.filter((a) => a.mode === 'base' || a.mode === 'lian' || (a.school === 'inner' && own28(d, a)));
+      if (pick.length) return [...pick].sort(byDefault)[0].id; }
+    if (T.zheng) { const b = baseInner28(d); if (b && d.arts[b.id] && d.arts[b.id].xp < ROOT28.baseXp && d.arts[b.id].xp < artCap(d, b)) { d.base28 = true; return b.id; } }
     if (T.xiao) { const f = own.filter((a) => !isInner(a) && (a.grade || 1) >= 2 && !PUBLIC28.includes(a.id) && (BAN28.includes(a.id) || (!own28(d, a) && (a.own24 || a.classic)))).sort((a, b) => (b.grade || 1) - (a.grade || 1) || d.arts[b.id].xp - d.arts[a.id].xp)[0]; if (f) { d.xiao29 = true; return f.id; } }
     if (T.ling) { const f = [...own].sort((a, b) => (b.grade || 1) - (a.grade || 1) || d.arts[b.id].xp - d.arts[a.id].xp)[0]; if (f) { if (f.id !== dflt()) d.ling29 = true; return f.id; } } }
   return [...pool].sort(byDefault)[0].id;
@@ -206,7 +210,7 @@ export function rustOf(r, now) { const idle = now - (r.last ?? now); return Math
 export function gainArt(d, amt, mf = 1, now = 0, g = null) {
   const out = { next: null, moves: [], star: false };
   const id = focusOf(d);
-  if (id) { const a = artById(id), r = d.arts[id]; r.rust = rustOf(r, now); r.last = now; const xp0 = r.xp;
+  if (id) { out.trained = id; const a = artById(id), r = d.arts[id]; r.rust = rustOf(r, now); r.last = now; const xp0 = r.xp;
     const acc = g && !r.guizhen ? accelOf(d, a, r.xp) : null; out.acc = acc;
     const P = artMulParts(d, a, [['心情', mf], ['荒疏', 1 - r.rust]], acc && acc.mul > 1 ? [['同類底子', acc.mul]] : []); d.growMul = { art: id, total: P.total, talent: P.talent, state: P.state, ext: P.ext, gate: P.gate };
     const gx = amt * ART_GAIN.base * P.total;
@@ -578,11 +582,59 @@ export function polymath24(d) {
 /* ---- loop187 v2.9 練武習性（沿用既有 25 特質與 6 價值觀，不另立欄位） ---- */
 export const TEMPER29 = { zheng: ['honest', 'diligent', 'stubborn', 'rigid'], sectV: 25, fameV: 25, xiaV: 25, lingK: 1.12, steal: 6, qingK: 1.18, small: 6 }; /* loop193：價值觀是 -30..40，不是 0..100 */
 const TRAITS29 = { zheng: ['honest', 'diligent', 'stubborn', 'rigid'], ling: ['clever', 'free', 'nimble'], xiao: ['hypocrite', 'bold', 'rascal', 'glib'] };
+/* loop203：衍生、不存檔。負＝好練法，正＝好打法，夾在 −3..3。 */
+export function appetite31(d) {
+  if (!d?.v24) return 0;
+  const p = d.personality || [], v = d.values || {};
+  let a = 0;
+  for (const t of ['honest', 'diligent', 'rigid', 'quiet']) if (p.includes(t)) a -= 2;
+  for (const t of ['stubborn', 'gentle', 'kind', 'worrier']) if (p.includes(t)) a -= 1;
+  if ((v.sect ?? 0) >= 25) a -= 1;
+  for (const t of ['bold', 'nimble', 'playful']) if (p.includes(t)) a += 2;
+  for (const t of ['brave', 'clever', 'free', 'glib', 'rascal', 'hypocrite', 'drinker', 'lazy']) if (p.includes(t)) a += 1;
+  if ((v.fame ?? 0) >= 25 || (v.free ?? 0) >= 25) a += 1;
+  return Math.max(-3, Math.min(3, a));
+}
+/* 純內功沒有 mode，練功類別視同練法。 */
+export const trainKind31 = (a) => (!a ? null : a.school === 'inner' ? 'lian' : (a.mode || null));
+/* 正好一個標籤，或沒有。懲罰幅度：勤奮或 values.wu≥25 時把「從 1 扣掉的量」減半，再套下限。 */
+export function tasteLabel31(d, a) {
+  if (!d?.v24) return null;
+  const A = appetite31(d), k = trainKind31(a);
+  if (!A || (k !== 'da' && k !== 'lian' && k !== 'base')) return null;
+  const abs = Math.abs(A), half = (d.personality || []).includes('diligent') || (d.values?.wu ?? 0) >= 25;
+  if ((A > 0 && k === 'da') || (A < 0 && (k === 'lian' || k === 'base'))) return ['投其所好', 1 + 0.04 * abs];
+  if (A > 0) return ['枯燥難耐', Math.max(0.85, 1 - 0.05 * abs * (half ? 0.5 : 1))];
+  return ['嫌其花俏', Math.max(0.93, 1 - 0.025 * abs * (half ? 0.5 : 1))];
+}
+/* 完成一次練功才呼叫。A>0：非打法 +1、打法 −2。A<0 用對稱計數（規格只寫了 A>0 的加減），否則坐不住門檻到不了。樂趣只改 A>0。 */
+export function noteTrain31(d, a) {
+  if (!d?.v24 || !a) return null;
+  const A = appetite31(d);
+  if (!A) return null;
+  const k = trainKind31(a), da = k === 'da';
+  let delta = 0;
+  if (A > 0) delta = da ? -2 : 1;
+  else if (da) delta = 1;
+  else if (k === 'base' || k === 'lian') delta = -2;
+  if (delta) d.bore31 = Math.max(0, (d.bore31 || 0) + delta);
+  if (A > 0) { const fun0 = d.needs?.fun ?? 60; (d.needs ??= {}).fun = Math.max(0, Math.min(100, fun0 + (da ? 2 : -Math.abs(A) * 0.7))); }
+  return { bore: d.bore31 || 0, fun: d.needs?.fun };
+}
+const ACT_OUT31 = ['hunt', 'spar', 'defend'], ACT_IN31 = ['train', 'meditate', 'study'];
+/* 取代 fieldLeanMul29。遠征不在評分動作裡，這裡不加。不抽 rand。 */
+export function appetiteActMul31(d, act) {
+  const A = appetite31(d);
+  if (A > 0 && ACT_OUT31.includes(act)) return 1 + 0.03 * A;
+  if (A < 0 && ACT_IN31.includes(act)) return 1 + 0.03 * Math.abs(A);
+  return 1;
+}
 /* 回 { zheng 守正厚積, ling 靈動跳階, xiao 梟雄強練, qing 至情清修（本刻是否生效） } */
 export function temper29(d) { if (!d?.v24) return {}; const p = d.personality || [], v = d.values || {}, has = (L) => L.some((t) => p.includes(t));
-  const zheng = has(TRAITS29.zheng) || (v.sect ?? 0) >= TEMPER29.sectV, xiao = !p.includes('honest') && !p.includes('rigid') && (has(TRAITS29.xiao) || (v.fame ?? 0) >= TEMPER29.fameV || (v.wu ?? 0) >= TEMPER29.fameV);
+  const A = appetite31(d), xiao = !p.includes('honest') && !p.includes('rigid') && (has(TRAITS29.xiao) || (v.fame ?? 0) >= TEMPER29.fameV || (v.wu ?? 0) >= TEMPER29.fameV);
+  const zheng = has(TRAITS29.zheng) || (v.sect ?? 0) >= TEMPER29.sectV || A <= -2;
   const qing = (p.includes('chi') && d.pairMul > 0) || (p.includes('quiet') && !!d.small29);
-  return { zheng, ling: has(TRAITS29.ling), xiao, qing }; }
+  return { zheng, ling: has(TRAITS29.ling) || (A >= 2 && !xiao), xiao, qing }; }
 /* ---- loop181 v2.8 四階內功催動（innerDrive28）與經脈內傷（qiInjury）。只 d.v24 ---- */
 export const CHAMP28 = { train: 1.25, aoe: 0.25 }; /* loop183 當屆大比首徒＝首徒 headTrain 1.5 的一半加成 */
 export const DRIVE28 = { t1: 1.25, t1s: 1.25, t2: 1, t3: 0.78, t4: 0.65, med3: 1.15, inj: 8, injSub: 5, injWarn: 20, injHeavy: 50, injMin: 0.10, injMax: 0.25, hp: 8, mood: 4, med: 8, heal: 25, rest: 6 }; /* loop196：t1＝本門正宗；t1s 退役（不再另乘三才） */

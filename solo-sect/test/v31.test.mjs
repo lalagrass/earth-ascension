@@ -1,7 +1,7 @@
 /* v3.1（loop196–）：內功催動外功與輕功、神木毒功。只在 v24 新局。 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, speedOf, fieldLeanMul29 } from '../src/sim.mjs';
+import { createState, tick, speedOf } from '../src/sim.mjs';
 import { artsGrowHtml } from '../src/panel-ui.mjs';
 import * as A from '../src/arts.mjs';
 import { evadeScore } from '../src/world.mjs';
@@ -156,11 +156,14 @@ test('loop199 劍宗前期快、氣宗後期以氣御劍', () => {
   const oldS = { ng2: 1, qi: 5, sectId: 'qizong', arts: { huashanXinfa: { xp: 60 } } };
   A.shieldHit(oldS, 100, 0); assert.equal(oldS.spentUntil, A.NG2.spentT);
 });
-test('loop199 守正成材後才加重外放', () => {
-  const [, d] = fresh('wudang'); d.personality = ['honest']; d.values = {};
-  give(d, 'wudangXinfa', 60); give(d, 'wudangFist', 30);
-  assert.equal(fieldLeanMul29(d, 'hunt'), 1.1); assert.equal(fieldLeanMul29(d, 'chat'), 1.1); assert.equal(fieldLeanMul29(d, 'train'), 0.94); assert.equal(fieldLeanMul29(d, 'meditate'), 1); assert.equal(fieldLeanMul29(d, 'farm'), 1);
-  d.arts.wudangXinfa.xp = 20; assert.equal(fieldLeanMul29(d, 'hunt'), 1);
-  d.arts.wudangXinfa.xp = 60; d.personality = ['clever']; assert.equal(fieldLeanMul29(d, 'spar'), 1);
-  assert.equal(fieldLeanMul29({ arts: d.arts, personality: ['honest'], sectId: 'wudang' }, 'hunt'), 1);
+test('loop203 日程改由偏好帶動，不再看守正成材', () => {
+  const [, d] = fresh('wudang'); d.personality = ['bold', 'nimble', 'playful']; d.values = {};
+  assert.equal(A.appetite31(d), 3);
+  assert.equal(A.appetiteActMul31(d, 'hunt'), 1.09); assert.equal(A.appetiteActMul31(d, 'spar'), 1.09); assert.equal(A.appetiteActMul31(d, 'defend'), 1.09);
+  assert.equal(A.appetiteActMul31(d, 'chat'), 1); assert.equal(A.appetiteActMul31(d, 'train'), 1);
+  d.personality = ['honest'];
+  assert.equal(A.appetite31(d), -2);
+  assert.equal(A.appetiteActMul31(d, 'train'), 1.06); assert.equal(A.appetiteActMul31(d, 'meditate'), 1.06); assert.equal(A.appetiteActMul31(d, 'study'), 1.06);
+  assert.equal(A.appetiteActMul31(d, 'hunt'), 1); assert.equal(A.appetiteActMul31(d, 'farm'), 1);
+  assert.equal(A.appetiteActMul31({ personality: ['honest'], values: {} }, 'train'), 1);
 });

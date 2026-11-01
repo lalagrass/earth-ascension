@@ -127,6 +127,67 @@ test('loop202 以技入道：外功造詣 50 才加成，內勁有效值吃兩�
   assert.equal(A.dao31(old), false);
 });
 
+const tasteOf = (d, id) => {
+  const names = ['投其所好', '枯燥難耐', '嫌其花俏'];
+  return A.artMulParts(d, A.artById(id)).parts.ext.filter((x) => names.includes(x[0]));
+};
+
+test('loop203 好打法連練練法後改練打法；手動主修與舊檔缺 bore31 都安全', () => {
+  const d = body({ personality: ['nimble', 'playful', 'brave'], needs: { fun: 50 } });
+  d.arts = { mianPalm: { xp: 12, last: 0 }, chousuiPalm: { xp: 10, last: 0 } };
+  assert.equal(A.appetite31(d), 3);
+  assert.equal(d.bore31, undefined);
+  assert.equal(A.autoFocus(d), 'mianPalm');
+  assert.equal(d.bore31, undefined);
+  for (let i = 0; i < 3; i++) A.noteTrain31(d, A.artById('mianPalm'));
+  assert.equal(d.bore31, 3);
+  assert.ok(Math.abs(d.needs.fun - (50 - 2.1 * 3)) < 1e-9);
+  assert.equal(A.autoFocus(d), 'chousuiPalm');
+  d.focus = 'mianPalm';
+  assert.equal(A.focusOf(d), 'mianPalm');
+  d.focus = null;
+  A.noteTrain31(d, A.artById('chousuiPalm'));
+  assert.equal(d.bore31, 1);
+  assert.ok(Math.abs(d.needs.fun - (50 - 6.3 + 2)) < 1e-9);
+  assert.equal(A.autoFocus(d), 'mianPalm');
+  const low = body({ personality: ['honest', 'quiet', 'rigid'] });
+  assert.equal(A.appetite31(low), -3);
+  low.arts = { wudangFist: { xp: 30, last: 0 }, wudangXinfa: { xp: 10, last: 0 }, mianPalm: { xp: 8, last: 0 }, chousuiPalm: { xp: 10, last: 0 } };
+  assert.equal(A.autoFocus(low), 'wudangXinfa');
+  for (let i = 0; i < 3; i++) A.noteTrain31(low, A.artById('chousuiPalm'));
+  assert.equal(low.bore31, 3);
+  assert.equal(low.needs, undefined);
+  assert.equal(A.autoFocus(low), 'mianPalm');
+});
+
+test('loop203 練功倍率只留一個偏好標籤，靈動不與投其所好疊加', () => {
+  const like = body({ personality: ['nimble', 'playful', 'brave'] });
+  const da = tasteOf(like, 'bixie'), lian = tasteOf(like, 'mianPalm');
+  assert.deepEqual(da.map((x) => x[0]), ['投其所好']);
+  assert.ok(Math.abs(da[0][1] - 1.12) < 1e-9);
+  assert.ok(!A.artMulParts(like, A.artById('bixie')).parts.ext.some((x) => x[0] === '靈動跳階'));
+  assert.deepEqual(lian.map((x) => x[0]), ['枯燥難耐']);
+  assert.ok(Math.abs(lian[0][1] - 0.85) < 1e-9);
+  assert.ok(A.artMulParts(like, A.artById('mianPalm')).parts.ext.some((x) => x[0] === '靈動跳階'));
+  const dull = body({ personality: ['diligent', 'nimble', 'playful', 'brave'] });
+  assert.equal(A.appetite31(dull), 3);
+  assert.ok(Math.abs(tasteOf(dull, 'mianPalm')[0][1] - 0.925) < 1e-9);
+  const flash = body({ personality: ['honest', 'quiet', 'rigid'] });
+  assert.deepEqual(tasteOf(flash, 'chousuiPalm').map((x) => x[0]), ['嫌其花俏']);
+  assert.ok(Math.abs(tasteOf(flash, 'chousuiPalm')[0][1] - 0.93) < 1e-9);
+  assert.deepEqual(tasteOf(flash, 'mianPalm').map((x) => x[0]), ['投其所好']);
+  const plain = body();
+  assert.equal(tasteOf(plain, 'mianPalm').length, 0);
+  const legacy = { personality: ['nimble', 'playful', 'brave'], wu: 3, pairMul: 0, arts: {} };
+  assert.equal(A.appetite31(legacy), 0);
+  assert.equal(tasteOf(legacy, 'chousuiPalm').length, 0);
+  assert.equal(A.temper29(body({ personality: ['clever'] })).ling, true);
+  assert.equal(A.temper29(body({ personality: ['playful'] })).ling, true);
+  assert.equal(A.temper29(body({ personality: ['quiet'] })).zheng, true);
+  assert.equal(A.temper29(body({ personality: ['bold'] })).xiao, true);
+  assert.equal(A.temper29(body({ personality: ['bold'] })).ling, false);
+});
+
 test('loop201 神木毒功退出學習池，已學會的舊檔仍讀得到', () => {
   const a = A.artById('shenmuGong');
   assert.equal(a.deprecated, true); assert.equal(a.secret, true); assert.equal(a.grade, 2);
