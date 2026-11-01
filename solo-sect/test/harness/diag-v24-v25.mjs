@@ -37,7 +37,7 @@ for (let k = 0; k < N; k++) {
   try {
     s = run(seed, { v22: true, ...(sect ? { sect24: sect } : {}) }, D, ST !== 'idle', (s) => {
       if (s.alert) s.alert = null; scan(s);
-      if (s.day !== day) { day = s.day; if (ST === 'farm') farm(s, c); if (ST === 'exp') exp(s, c); }
+      if (s.day !== day) { day = s.day; if (c.pow10 == null && day >= 10) c.pow10 = +power(s).toFixed(1); if (ST === 'farm') farm(s, c); if (ST === 'exp') exp(s, c); } /* loop200：第 10 日記前期戰力 */
       if (++i % 40) return; for (const d of s.ds) { if (d.role === 'laborer' || d.away) continue; c.n++; if ((d.needs?.hunger ?? 100) < 30) c.hungry++; if (A.harmonyOf?.(d)) c.harm++; } });
   } catch (e) { crash = 1; err = String(e?.stack || e).split('\n').slice(0, 2).join(' | '); }
   if (crash) { console.log(JSON.stringify({ strat: ST, seed, sect: sect || 'wuming', crash, err })); continue; }
@@ -45,7 +45,7 @@ for (let k = 0; k < N; k++) {
   const bestM = (d) => Math.max(0, ...Object.keys(A.CATS).map((q) => A.mastery(d, q))), N24 = ['basicSword', 'huashanSword', 'sanxianSword', 'wuhuBlade', 'shaolinStaff', 'tuinaHand', 'stepFeather', 'stepEight'];
   const le = s.lastExp || {};
   console.log(JSON.stringify({ strat: ST, seed, sect: s.sect?.id, crash: 0, n: ds.length, coin: s.res.coin, mood: +avg(ds, (d) => d.mood).toFixed(1), hungryPct: +(100 * c.hungry / (c.n || 1)).toFixed(2),
-    fought: X.fought || 0, won: X.won || 0, pow: +power(s).toFixed(1), mast: +Math.max(0, ...ds.map(bestM)).toFixed(1),
+    fought: X.fought || 0, won: X.won || 0, pow: +power(s).toFixed(1), pow10: c.pow10 ?? null, qiAvg: +avg(ds, (d) => A.qiMax(d)).toFixed(1), qiPeak: +Math.max(0, ...ds.map((d) => A.qiMax(d))).toFixed(1), mast: +Math.max(0, ...ds.map(bestM)).toFixed(1), /* loop200 內力與前期戰力 */
     lib: s.fac.library?.stage || 0, t3: tiers.filter(([, f]) => f.stage >= 3).length, buyT: c.buyT, buyL: c.buyL, lingshi: s.res.lingshi || 0, lsFirst: Object.keys(s.records?.lsFirst || {}).length,
     produce: V.produce || 0, stewLib: V.stewLib || 0, chart: V.chart || 0, affix: V.affix || 0, fengxue: V.fengxue || 0, formation: V.formation || 0, harmPct: +(100 * c.harm / (c.n || 1)).toFixed(1),
     bisai: V.bisai || 0, huiwu: V.huiwu || 0, huiwuWin: V.huiwuWin || 0, lineup: V.lineup || [0, 0, 0], steal: V.steal || 0, derive: V.derive || 0, trophies: (s.sect?.trophies || []).length,
