@@ -19,14 +19,16 @@ const avg = (a, f) => (a.length ? a.reduce((x, d) => x + f(d), 0) / a.length : 0
 /* loop206：只讀。出手、減傷、內力上限分開記，不寫回狀態。 */
 const ledOf = (s) => { const L = strikeLedger33(s); return { dps: +L.dps.toFixed(2), mit: +L.mit.toFixed(3), qi: +L.qi.toFixed(1) }; };
 /* loop205：只量測。鉤子不寫存檔。每局開始把計數清掉。 */
-const box = { trainHi: { n: 0, da: 0 }, trainLo: { n: 0, calm: 0 }, feedLian: 0, feedBase: 0, daoTrain: 0, daoWho: new Set() };
-const resetBox = () => { box.trainHi.n = box.trainHi.da = box.trainLo.n = box.trainLo.calm = box.feedLian = box.feedBase = box.daoTrain = 0; box.daoWho = new Set(); };
+const box = { trainHi: { n: 0, da: 0 }, trainLo: { n: 0, calm: 0 }, feedLian: 0, feedBase: 0, daoTrain: 0, daoWho: new Set(), by: {} };
+const resetBox = () => { box.trainHi.n = box.trainHi.da = box.trainLo.n = box.trainLo.calm = box.feedLian = box.feedBase = box.daoTrain = 0; box.daoWho = new Set(); box.by = {}; };
+const bump = (sect, key) => { const b = (box.by[sect] ??= { hiN: 0, hiDa: 0, hiPostN: 0, hiPostDa: 0, loN: 0, loCalm: 0 }); b[key]++; };
 A0.meter32.note = (ev) => {
   if (ev.kind === 'feed') { if (ev.mode === 'lian') box.feedLian += ev.xp; else if (ev.mode === 'base') box.feedBase += ev.xp; return; }
   if (ev.kind !== 'train') return;
   if (ev.dao) { box.daoTrain++; box.daoWho.add(ev.id); }
-  if (ev.A >= 2) { box.trainHi.n++; if (ev.k === 'da') box.trainHi.da++; }
-  else if (ev.A <= -2) { box.trainLo.n++; if (ev.k === 'base' || ev.k === 'lian') box.trainLo.calm++; }
+  const sect = ev.sect || 'wuming';
+  if (ev.A >= 2) { box.trainHi.n++; bump(sect, 'hiN'); if (ev.k === 'da') { box.trainHi.da++; bump(sect, 'hiDa'); } if (ev.post) { bump(sect, 'hiPostN'); if (ev.k === 'da') bump(sect, 'hiPostDa'); } }
+  else if (ev.A <= -2) { box.trainLo.n++; bump(sect, 'loN'); if (ev.k === 'base' || ev.k === 'lian') { box.trainLo.calm++; bump(sect, 'loCalm'); } }
 };
 const UP = ['hall', 'yard', 'kitchen'];
 const spare = (s, cost) => s.res.coin - cost >= EC.wageBill(s) + EC.facBill(s);
@@ -69,7 +71,7 @@ for (let k = 0; k < N; k++) {
       const mv = [...Object.values(s.v27n?.siege || {}).map((v) => v.mvp), ...(s.v27n?.crusade || []).map((c) => c.mvp)].filter(Boolean);
       return { drive: A.innerDrive28 ? dr.slice(1) : null, driveAll: A.innerDrive28 ? da.slice(1) : null, inj: W.inj || 0, root: A.rootFoundation28 ? [0, 1, 2, 3, 4].map((t) => ds.filter((d) => A.rootFoundation28(d) === t).length) : null, base: ds.filter((d) => d.base28).length, cure: W.cure || 0, injNow: ds.filter((d) => (d.qiInjury || 0) >= 20).length, stealTry: W.stealTry ?? null, stealZero: W.stealZero ?? null, fac: s.sect?.fac ? 1 : 0, facAuto: W.facAuto || 0, mvpN: mv.length, mvpFam: mv.filter((n) => XIAN.has(n)).length }; })(),
     v29: s.v29n || null, rootBy: A.rootFoundation28 ? ds.filter((d) => A.rootFoundation28(d) >= 2).length : 0, /* loop187 v2.9 */
-    v32: (() => { const q = { base: [], lian: [], da: [] }; let daoNow = 0; for (const d of ds) { if (A.dao31?.(d)) daoNow++; for (const id of Object.keys(d.arts || {})) { const a = A.artById(id); if (a?.mode && q[a.mode]) q[a.mode].push(A.qiStrikeMul(d, a)); } } const mean = (xs) => (xs.length ? +(xs.reduce((x, y) => x + y, 0) / xs.length).toFixed(3) : null); return { feedLian: +box.feedLian.toFixed(1), feedBase: +box.feedBase.toFixed(1), daoTrain: box.daoTrain, daoWho: box.daoWho.size, daoNow, trainHi: { ...box.trainHi }, trainLo: { ...box.trainLo }, qiMul: { base: mean(q.base), lian: mean(q.lian), da: mean(q.da) }, qiN: { base: q.base.length, lian: q.lian.length, da: q.da.length } }; })(), /* loop205 只量測 */
+    v32: (() => { const q = { base: [], lian: [], da: [] }; let daoNow = 0; for (const d of ds) { if (A.dao31?.(d)) daoNow++; for (const id of Object.keys(d.arts || {})) { const a = A.artById(id); if (a?.mode && q[a.mode]) q[a.mode].push(A.qiStrikeMul(d, a)); } } const mean = (xs) => (xs.length ? +(xs.reduce((x, y) => x + y, 0) / xs.length).toFixed(3) : null); return { feedLian: +box.feedLian.toFixed(1), feedBase: +box.feedBase.toFixed(1), daoTrain: box.daoTrain, daoWho: box.daoWho.size, daoNow, trainHi: { ...box.trainHi }, trainLo: { ...box.trainLo }, trainBy: box.by, qiMul: { base: mean(q.base), lian: mean(q.lian), da: mean(q.da) }, qiN: { base: q.base.length, lian: q.lian.length, da: q.da.length } }; })(), /* loop205 只量測；loop208 分派與坐不住之後另計，不是門檻 */
     v33: { ...ledOf(s), d10: c.led10 ?? null, d28: c.led28 ?? null, d29: c.led29 ?? null, d30: c.led30 ?? null }, /* loop206：出手與減傷、內力上限並陳，pow 欄仍是 power() */
     chief: (() => { const o = { rank: 0, other: 0, n: 0 }; for (const d of ds) for (const id of Object.keys(d.arts || {})) { const a = A.artById(id); if (!a?.chiefOnly24 || !d.stree?.includes(id)) continue; o.n++; if (d.id === 'hero' || d.role === 'head' || d.chief24) o.rank++; else o.other++; } o.champs = ds.filter((d) => d.chief24).length; return o; })() }));
 }

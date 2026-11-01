@@ -219,7 +219,7 @@ export function gainArt(d, amt, mf = 1, now = 0, g = null) {
     else { r.xp = Math.min(curCap(d, a), r.xp + gx * (1 - r.xp / 130)); out.moves = unlockTechs(d, a); }
     if (g) out.gm = settleGrowth(d, a, r, { src: g.src || 'train', raw: g.raw ?? amt, xp0, xp1: r.xp });
     const feed = !r.guizhen && feedInner31(d, a, gx, g); if (feed) { out.feed = feed; d.growMul.feed = feed.label; } }
-  if (!d.pendingArt) { const next = [...sectUnlock24(d), ...ARTS.filter((a) => artOk(d, a) && !a.deprecated && (!a.secret || yunvOpen24(d, a)) && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a) && !lockedArt24(d, a)).sort((a, b) => ownFirst24(d)(a, b) || (b.school === d.style) - (a.school === d.style))][0]; if (next) { d.pendingArt = next.id; out.next = next; } }
+  if (!d.pendingArt) { const next = [...sectUnlock24(d), ...ARTS.filter((a) => artOk(d, a) && !a.deprecated && (!a.secret || yunvOpen24(d, a)) && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a) && !lockedArt24(d, a)).sort((a, b) => ownFirst24(d)(a, b) || ((b.school === d.style) - (a.school === d.style)) || appetiteOrder31(d, a, b))][0]; if (next) { d.pendingArt = next.id; out.next = next; } } /* loop208：本門特許與本門、路數都先於偏好 */
   return out;
 }
 export function chooseVariant(d, id, v, now = 0) {
@@ -315,12 +315,12 @@ function add(s, d, id, amt, how, think, log) {
   return a;
 }
 // 自悟目標：等師父教的那門優先；否則本門派可學的下一門，再不然任一門可學的
-export function selfTarget(d) { if (d.pendingArt) return d.pendingArt; const u = sectUnlock24(d); if (u.length) return u[0].id; const c = ARTS.filter((a) => open(d, a) && !lockedArt24(d, a)); if (d.v24) c.sort(ownFirst24(d)); /* loop164 本門優先 */ return (d.v24 && c[0] && ownArt24(d, c[0]) ? c[0] : c.find((a) => a.school === d.style) || c[0])?.id || null; }
+export function selfTarget(d) { if (d.pendingArt) return d.pendingArt; const u = sectUnlock24(d); if (u.length) return u[0].id; const c = ARTS.filter((a) => open(d, a) && !lockedArt24(d, a)); if (!d.v24) return (c.find((a) => a.school === d.style) || c[0])?.id || null; c.sort((a, b) => ownFirst24(d)(a, b) || appetiteOrder31(d, a, b)); /* loop208：本門特許與本門優先，偏好只排同一層 */ if (c[0] && ownArt24(d, c[0])) return c[0].id; const styled = c.filter((a) => a.school === d.style); return (styled[0] || c[0])?.id || null; }
 // 活動完成時呼叫
 export function comprehend(s, d, act, partner, think, log) {
   if (!s.wu7 || !COMP.gain[act]) return null;
   const tgt = selfTarget(d); let got = tgt ? add(s, d, tgt, COMP.gain[act], 'self', think, log) : null;
-  if (act === 'spar' && partner) { const seen = ARTS.find((a) => partner.arts?.[a.id] && open(d, a) && !lockedArt24(d, a)); /* loop166 傳承鎖也擋觀摩偷師 */ if (seen) got = add(s, d, seen.id, COMP.watch, 'watch', think, log) || got; }
+  if (act === 'spar' && partner) { const seen = ARTS.filter((a) => partner.arts?.[a.id] && open(d, a) && !lockedArt24(d, a)); if (d.v24) seen.sort((a, b) => appetiteOrder31(d, a, b)); /* loop208：觀摩只在能看的功夫裡排偏好。傳功與會武偷師不走這裡 */ if (seen[0]) got = add(s, d, seen[0].id, COMP.watch, 'watch', think, log) || got; }
   return got;
 }
 
@@ -609,6 +609,15 @@ export function appetite31(d) {
 }
 /* 純內功沒有 mode，練功類別視同練法。 */
 export const trainKind31 = (a) => (!a ? null : a.school === 'inner' ? 'lian' : (a.mode || null));
+/* loop208：只在同一優先層裡改次序。A>0 打法靠前。A<0 打法靠後，築基、練法、內功維持原順序。 */
+export function appetiteOrder31(d, a, b) {
+  if (!d?.v24) return 0;
+  const A = appetite31(d);
+  if (!A || !a || !b) return 0;
+  const da = (x) => trainKind31(x) === 'da';
+  if (A > 0) return da(b) - da(a);
+  return da(a) - da(b);
+}
 /* 正好一個標籤，或沒有。懲罰幅度：勤奮或 values.wu≥25 時把「從 1 扣掉的量」減半，再套下限。 */
 export function tasteLabel31(d, a) {
   if (!d?.v24) return null;
@@ -625,7 +634,7 @@ export const meter32 = { note: null };
 export function noteTrain31(d, a) {
   if (!d?.v24 || !a) return null;
   const A = appetite31(d);
-  if (meter32.note) meter32.note({ kind: 'train', id: d.id, A, k: trainKind31(a), dao: a.school === 'inner' && dao31(d) });
+  if (meter32.note) meter32.note({ kind: 'train', id: d.id, sect: d.sectId || null, A, k: trainKind31(a), post: !!(A && (d.bore31 || 0) >= 6 - Math.abs(A)), dao: a.school === 'inner' && dao31(d) }); /* loop208：坐不住是加點前的門檻，分派只給診斷 */
   if (!A) return null;
   const k = trainKind31(a), da = k === 'da';
   let delta = 0;
