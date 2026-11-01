@@ -91,6 +91,22 @@ test('loop188 第 27 日圍山再降約 5%', async () => {
 test('loop188 招收：新局約 35% 第二特質換成經典特質', async () => {
   const { RECRUIT29 } = await import('../src/data.mjs'); assert.equal(RECRUIT29.p, 0.35); assert.equal(RECRUIT29.pool.length, 10); assert.ok(RECRUIT29.pool.includes('hypocrite'));
 });
+test('loop194 面板露出主運內功、催動階與習性徽章', async () => {
+  const { artsGrowHtml } = await import('../src/panel-ui.mjs');
+  const [, d] = fresh('wudang'); give(d, 'wudangXinfa', 60); give(d, 'wudangFist', 30); give(d, 'chousuiPalm', 20);
+  d.champ28 = true; d.base28 = true;
+  const html = artsGrowHtml(d, 0, false);
+  assert.ok(html.includes('★主運內功'), html);
+  assert.ok(html.includes('◆根基'), html);
+  assert.ok(html.includes('正宗催動 ×1.20'), html);
+  assert.ok(html.includes('內力虛浮 ×0.78'), html);
+  assert.ok(A.styleBadges24(d).includes('【大比首徒】') && A.styleBadges24(d).includes('【守正厚積】'));
+  d.xiao29 = true; assert.ok(A.styleBadges24(d).includes('【梟雄強練】'));
+  d.xiao29 = false; d.base28 = false; d.personality = ['chi']; d.pairMul = 0.2; assert.ok(A.styleBadges24(d).includes('【至情清修】'));
+  d.personality = ['clever']; d.pairMul = 0; assert.ok(A.styleBadges24(d).includes('【靈動跳階】'));
+  const [, g] = fresh('gaibang'); give(g, 'huntianGong', 60); give(g, 'chousuiPalm', 30);
+  assert.ok(artsGrowHtml(g, 0, false).includes('⚠️異屬逆催 ×0.65'));
+});
 test('loop193 拘謹計數優先於勤奮', async () => {
   const { temperDaily29 } = await import('../src/sim.mjs');
   const [, d] = fresh('emei'); d.personality = ['diligent', 'rigid']; d.base28 = true;

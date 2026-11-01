@@ -3,7 +3,7 @@ import { DAY, ACTIVITIES, EXP_STYLES, EXP, ARTS, TIERS, ART_GAIN, ROOT, JH, BREA
 import { LABOR, strMul, laborToday } from './economy.mjs';
 import { segAt } from './world.mjs';
 import { nextStep } from './core.mjs';
-import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW } from './arts.mjs';
+import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW, mainInner28, baseInner28, innerDrive28, isInner } from './arts.mjs';
 import { CLQ } from './bonds.mjs';
 import { JHEV, letterP } from './jianghu.mjs';
 // ==== （原 dcard.mjs）====
@@ -109,7 +109,7 @@ export function artStatus(d, a, now = 0) {
   return { st: 'acc', text: '正在累積' };
 }
 export function artsGrowHtml(d, now = 0, grow = true) {
-  const f = focusOf(d), rows = ARTS.filter((a) => d.arts?.[a.id] || (!a.secret && (!a.v24 || d.v24) && !(a.own24 && lockedArt24(d, a) && !chiefLocked24(d, a)) && fits(d, a) && (reqMissing(d, a).length || chiefLocked24(d, a)))).map((a) => {
+  const f = focusOf(d), mi = d?.v24 ? mainInner28(d) : null, bi = d?.v24 ? baseInner28(d) : null, rows = ARTS.filter((a) => d.arts?.[a.id] || (!a.secret && (!a.v24 || d.v24) && !(a.own24 && lockedArt24(d, a) && !chiefLocked24(d, a)) && fits(d, a) && (reqMissing(d, a).length || chiefLocked24(d, a)))).map((a) => {
     const r = d.arts?.[a.id], st = artStatus(d, a, now), t = r ? artTier(d, a.id) : -1, cats = Object.keys(ART_CAT[a.id] || {}).map((c) => CATS[c].name + (supOf(c, d) === 'none' ? '（尚未支援）' : '')).join('＋');
     const nxt = r && !a.layered && !a.forms && t < TIERS.length - 1 ? `・距${TIERS[t + 1][1]} ${(TIERS[t + 1][0] - r.xp).toFixed(1)}` : '';
     const moves = r ? `・招式 ${(a.techs || []).filter((m) => d.moves.includes(m)).length}/${(a.techs || []).length}` : '';
@@ -117,7 +117,9 @@ export function artsGrowHtml(d, now = 0, grow = true) {
     if (r && d.pf && !r.guizhen) { const p = profOf(r.xp), nx = nextLvXp(r.xp); why.push(p.lv ? `熟練度：招式威力 +${((profMul(r.xp) - 1) * 100).toFixed(1)}%（每重 +${(PROF.perLv * 100).toFixed(1)}%）${p.stuck ? '，卡瓶頸，突破後才升階' : nx != null && p.lv < PROF.lvs ? `，第${PROF.cn[p.lv + 1]}重 xp ${nx.toFixed(1)}` : `，滿十重，xp ${nx} 升${TIERS[p.t + 1][1]}`}` : '熟練度：化境不分重'); }
     if (r && rustOf(r, now) > 0.01) why.push(`荒疏 ${(rustOf(r, now) * 100).toFixed(0)}%`);
     if (r && Object.keys(ART_CAT[a.id] || {}).every((c) => supOf(c, d) === 'none')) why.push('門類尚未支援：不累積造詣');
-    return `<div class="k artgrow" data-artst="${st.st}">${f === a.id ? '◆主修 ' : ''}${a.name}（${cats}）${r ? `・${d.pf && !r.guizhen ? `<span data-prof>${profLabel(r.xp)}</span>` : TIERS[t][1]} ${r.xp.toFixed(1)}${nxt}${moves}` : ''}・<b>${st.text}</b>${why.length ? `｜${why.join('；')}` : ''}</div>`; });
+    if (d?.v24 && r && !isInner(a)) { const drv = innerDrive28(d, a); if (drv.tier === 1) why.push(`正宗催動 ×${drv.mul.toFixed(2)}`); else if (drv.tier === 3) why.push(`內力虛浮 ×${drv.mul.toFixed(2)}`); else if (drv.tier === 4) why.push(`⚠️異屬逆催 ×${drv.mul.toFixed(2)}`); } /* loop194 */
+    const lead = (d?.v24 && r && mi?.id === a.id ? `★主運內功 ${bi?.id === a.id && t >= 2 ? '◆根基 ' : ''}` : '') + (f === a.id ? '◆主修 ' : '');
+    return `<div class="k artgrow" data-artst="${st.st}">${lead}${a.name}（${cats}）${r ? `・${d.pf && !r.guizhen ? `<span data-prof>${profLabel(r.xp)}</span>` : TIERS[t][1]} ${r.xp.toFixed(1)}${nxt}${moves}` : ''}・<b>${st.text}</b>${why.length ? `｜${why.join('；')}` : ''}</div>`; });
   return `<div class="grow-arts"><b>個別武學</b>${rows.join('')}</div>`;
 }
 /* loop85 規則說明：數字直接讀 GROW，不另寫 */
