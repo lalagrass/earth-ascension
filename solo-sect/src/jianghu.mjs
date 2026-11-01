@@ -1,6 +1,7 @@
 import { seedMix, log, resAdd, resSet } from './util.mjs';
 import { DAY, TIERS, JH, TREES, buildCards, destinyStep, ARTS, MOVES } from './data.mjs';
-import { lockedArt24, growEnsure, learnArt, artTier, powBonus, autoFocus, artById, curCap, reqMissing, fits } from './arts.mjs';
+import { lockedArt24, growEnsure, learnArt, artTier, powBonus, autoFocus, artById, curCap, reqMissing, fits, qiMax, mitOf } from './arts.mjs';
+import { dpsOf } from './world.mjs';
 import { laborPow } from './economy.mjs';
 import { valorPowMul, valorAdd, VALOR } from './sect.mjs';
 import { initPair } from './social.mjs';
@@ -22,6 +23,13 @@ export const teachJ = (s, d, id, xp) => { learnArt(d, id, s.t); const r = d.arts
 const DA = TIERS[2][0] + 1; // 大成
 // 門派戰力（反派事件用）：最強三人的武學階數×品階＋技藝
 export const power = (s) => fighters(s).map((d) => Object.keys(d.arts || {}).reduce((a, k) => a + (artTier(d, k) + 1) * 3, 0) + (d.skills?.palm || 0) / 4 + (d.powMul || 1) * 5 + powBonus(d) + laborPow(d)).sort((a, b) => b - a).slice(0, 3).reduce((a, b) => a + b, 0) * valorPowMul(s); // loop129 勇名
+/* loop206：跟 power() 同一批人。出手是 dpsOf 最高的三個加總。減傷、內力上限是這三個人的平均，不乘進出手，也不改 power()。 */
+export function strikeLedger33(s) {
+  const rows = fighters(s).map((d) => ({ d, dps: dpsOf(s, d) })).sort((a, b) => b.dps - a.dps || (a.d.id < b.d.id ? -1 : 1)).slice(0, 3);
+  const n = rows.length;
+  const mean = (f) => (n ? rows.reduce((a, r) => a + f(r.d), 0) / n : 0);
+  return { power: power(s), dps: rows.reduce((a, r) => a + r.dps, 0), mit: mean(mitOf), qi: mean(qiMax), n };
+}
 // ---- 喜劇卡閘門：每 7 天最多 2 張；設定可關 ----
 export const comedyOk = (s) => { const J = s.jh; if (!J.comedyOn) return false; J.comedy = J.comedy.filter((t) => s.t - t < JH.comedyDays * DAY); return J.comedy.length < JH.comedyWeek; };
 // ---- 抉擇卡 ----

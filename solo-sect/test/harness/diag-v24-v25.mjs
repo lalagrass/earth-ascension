@@ -3,7 +3,7 @@
    strat：idle（不操作）／bot（每日試蓋寢舍、能收就收）／farm（bot＋升正殿／演武場／膳房、缺鐵木靈石時有閒錢就買）／exp（bot＋每日派前 4 人巡山，撤退線 50%）
    門派依種子輪替：峨眉、武當、桃花、古墓、星宿、無名（自創，不指定 sect24）。崩潰記 crash:1 不中斷。 */
 import { run } from './bot.mjs';
-import { power } from '../../src/jianghu.mjs';
+import { power, strikeLedger33 } from '../../src/jianghu.mjs';
 import { startBuild, buildWhy, facDef, startExpedition, canExpedition } from '../../src/sim.mjs';
 import { openExp } from '../../src/world.mjs';
 import * as EC from '../../src/economy.mjs';
@@ -16,6 +16,8 @@ const XIAN = new Set(Object.values(XIA).map((x) => x.name)); /* loop181 名俠�
 export const SECTS24 = process.env.SS_SECTS ? process.env.SS_SECTS.split(',').map((x) => (x === 'wuming' ? null : x)) : ['emei', 'wudang', 'taohua', 'gumu', 'xingxiu', null]; /* loop172 SS_SECTS 可覆寫輪替 */
 const ST = process.argv[2] || 'bot', N = +(process.argv[3] || 40), S0 = +(process.argv[4] || 1001), D = +(process.argv[5] || 30);
 const avg = (a, f) => (a.length ? a.reduce((x, d) => x + f(d), 0) / a.length : 0);
+/* loop206：只讀。出手、減傷、內力上限分開記，不寫回狀態。 */
+const ledOf = (s) => { const L = strikeLedger33(s); return { dps: +L.dps.toFixed(2), mit: +L.mit.toFixed(3), qi: +L.qi.toFixed(1) }; };
 /* loop205：只量測。鉤子不寫存檔。每局開始把計數清掉。 */
 const box = { trainHi: { n: 0, da: 0 }, trainLo: { n: 0, calm: 0 }, feedLian: 0, feedBase: 0, daoTrain: 0, daoWho: new Set() };
 const resetBox = () => { box.trainHi.n = box.trainHi.da = box.trainLo.n = box.trainLo.calm = box.feedLian = box.feedBase = box.daoTrain = 0; box.daoWho = new Set(); };
@@ -48,7 +50,7 @@ for (let k = 0; k < N; k++) {
   try {
     s = run(seed, { v22: true, ...(sect ? { sect24: sect } : {}) }, D, ST !== 'idle', (s) => {
       if (s.alert) s.alert = null; scan(s);
-      if (s.day !== day) { day = s.day; if (c.pow10 == null && day >= 10) c.pow10 = +power(s).toFixed(1); if (day === 28) c.pow28 = +power(s).toFixed(1); if (day === 29) c.pow29 = +power(s).toFixed(1); if (day === 30) c.pow30 = +power(s).toFixed(1); if (ST === 'farm') farm(s, c); if (ST === 'exp') exp(s, c); } /* loop200：第 10 日記前期戰力；loop205 再記 28–30 日 */
+      if (s.day !== day) { day = s.day; if (c.pow10 == null && day >= 10) { c.pow10 = +power(s).toFixed(1); c.led10 = ledOf(s); } if (day === 28) { c.pow28 = +power(s).toFixed(1); c.led28 = ledOf(s); } if (day === 29) { c.pow29 = +power(s).toFixed(1); c.led29 = ledOf(s); } if (day === 30) { c.pow30 = +power(s).toFixed(1); c.led30 = ledOf(s); } if (ST === 'farm') farm(s, c); if (ST === 'exp') exp(s, c); } /* loop200：第 10 日記前期戰力；loop205 再記 28–30 日；loop206 同日記出手 */
       if (++i % 40) return; for (const d of s.ds) { if (d.role === 'laborer' || d.away) continue; c.n++; if ((d.needs?.hunger ?? 100) < 30) c.hungry++; if (A.harmonyOf?.(d)) c.harm++; } });
   } catch (e) { crash = 1; err = String(e?.stack || e).split('\n').slice(0, 2).join(' | '); }
   if (crash) { console.log(JSON.stringify({ strat: ST, seed, sect: sect || 'wuming', crash, err })); continue; }
@@ -68,5 +70,6 @@ for (let k = 0; k < N; k++) {
       return { drive: A.innerDrive28 ? dr.slice(1) : null, driveAll: A.innerDrive28 ? da.slice(1) : null, inj: W.inj || 0, root: A.rootFoundation28 ? [0, 1, 2, 3, 4].map((t) => ds.filter((d) => A.rootFoundation28(d) === t).length) : null, base: ds.filter((d) => d.base28).length, cure: W.cure || 0, injNow: ds.filter((d) => (d.qiInjury || 0) >= 20).length, stealTry: W.stealTry ?? null, stealZero: W.stealZero ?? null, fac: s.sect?.fac ? 1 : 0, facAuto: W.facAuto || 0, mvpN: mv.length, mvpFam: mv.filter((n) => XIAN.has(n)).length }; })(),
     v29: s.v29n || null, rootBy: A.rootFoundation28 ? ds.filter((d) => A.rootFoundation28(d) >= 2).length : 0, /* loop187 v2.9 */
     v32: (() => { const q = { base: [], lian: [], da: [] }; let daoNow = 0; for (const d of ds) { if (A.dao31?.(d)) daoNow++; for (const id of Object.keys(d.arts || {})) { const a = A.artById(id); if (a?.mode && q[a.mode]) q[a.mode].push(A.qiStrikeMul(d, a)); } } const mean = (xs) => (xs.length ? +(xs.reduce((x, y) => x + y, 0) / xs.length).toFixed(3) : null); return { feedLian: +box.feedLian.toFixed(1), feedBase: +box.feedBase.toFixed(1), daoTrain: box.daoTrain, daoWho: box.daoWho.size, daoNow, trainHi: { ...box.trainHi }, trainLo: { ...box.trainLo }, qiMul: { base: mean(q.base), lian: mean(q.lian), da: mean(q.da) }, qiN: { base: q.base.length, lian: q.lian.length, da: q.da.length } }; })(), /* loop205 只量測 */
+    v33: { ...ledOf(s), d10: c.led10 ?? null, d28: c.led28 ?? null, d29: c.led29 ?? null, d30: c.led30 ?? null }, /* loop206：出手與減傷、內力上限並陳，pow 欄仍是 power() */
     chief: (() => { const o = { rank: 0, other: 0, n: 0 }; for (const d of ds) for (const id of Object.keys(d.arts || {})) { const a = A.artById(id); if (!a?.chiefOnly24 || !d.stree?.includes(id)) continue; o.n++; if (d.id === 'hero' || d.role === 'head' || d.chief24) o.rank++; else o.other++; } o.champs = ds.filter((d) => d.chief24).length; return o; })() }));
 }
