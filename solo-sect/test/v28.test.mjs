@@ -54,7 +54,7 @@ test('loop183 v2.8：狂風快劍/七傷拳列魁首限定、會武池含天地�
   const { SIEGE27, WAVE27 } = await import('../src/threat.mjs');
   assert.ok(artById('kuangfengSword').chiefOnly24 && artById('qishangFist').chiefOnly24);
   assert.ok(HUIWU24.pool.includes('tiandihui') && HUIWU24.pool.includes('zhulong'));
-  assert.deepEqual(SIEGE27.days[27].E, [1050, 1400, 1850, 2250]);
+  assert.deepEqual(SIEGE27.days[27].E, [1000, 1330, 1750, 2140]);
   assert.equal(WAVE27.eliteMax, 8);
 });
 

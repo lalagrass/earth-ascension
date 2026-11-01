@@ -356,7 +356,7 @@ export function waveBattle27(s, team, spec) {
 }
 // ==== loop178 v2.7 Batch 2：魔教大軍圍山（第 18 日前鋒三波、第 27 日十長老四波）。只 s.v24；前一日茶攤預警；全派 canDefend（含已揭露隱世幫工）不限人數迎戰 ====
 /* E＝各波敵勢，以 loop177 量測（bot 局第 18 日單人戰力合計 ≈2300、第 27 日 ≈3400，合圍 ×1.5）定錨，目標整場勝率約六成 */
-export const SIEGE27 = { days: { 18: { title: '魔教前鋒叩關', E: [900, 1300, 1700] }, 27: { title: '魔教十長老圍山', E: [1050, 1400, 1850, 2250] } /* loop183 v2.8 約 −12% */ },
+export const SIEGE27 = { days: { 18: { title: '魔教前鋒叩關', E: [900, 1300, 1700] }, 27: { title: '魔教十長老圍山', E: [1000, 1330, 1750, 2140] } /* loop183 v2.8 約 −12%；loop188 v2.9 再 −5% */ },
   win: { coin: 50, lingshi: 1, valor: 12, rep: 12, mood: 10 }, loseRep: 3, fenceK: 0.3 };
 const NUM27 = ['一', '二', '三', '四'];
 export const s27 = (s) => (s.v27n ??= { siege: {}, crusade: [] });

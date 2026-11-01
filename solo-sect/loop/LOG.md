@@ -1687,3 +1687,8 @@
 ### Retro 186–187
 - 好：四項決定都收在 arts.mjs 既有入口，內傷終於在實戰出現；根基已不只武當。
 - 隱憂：內傷集中在無名派；拘謹與梟雄在現有招收池幾乎沒有人，下一批加招收特質池後再看。
+
+## Loop 188 — v2.9 Batch 3：相性矩陣、招收經典特質、俠魅、圍山微調（決定 244–246）
+- data.mjs：`OPPOSE24`、`LIKES24`、`RECRUIT29`。social.mjs：compat 加 v24 項、`charm29`／`CHARM29`、drawOf 加俠魅、pickChatMate 計數並排除避難者、relAdd 計相性。sim.mjs：招收雜湊換第二特質。threat.mjs：day27 E 再降 5%。
+- v29 +4（13 項）；v28 圍山數值更新。快驗（SS_DT=1 bot 6 局）：0 崩潰；day27 5/6 勝；招收換特質 7 次。
+- quick 476、sect-chronicle 383、Python 53。golden-30d-v22 4242fb4bdafac352 → c4586f3c67b77a46。

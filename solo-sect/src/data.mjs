@@ -335,6 +335,10 @@ export const SEASONS = [
 ];
 // 相容度：對立特質扣、欣賞特質加（a 看 b，有方向）
 export const OPPOSE = [['diligent', 'playful'], ['optimist', 'worrier'], ['gentle', 'brave']];
+/* loop188 v2.9：經典特質相剋／相惜，只 v24 新局（compat 中 a.v24 時才加） */
+export const OPPOSE24 = [['rigid', 'free'], ['rigid', 'drinker'], ['hypocrite', 'honest'], ['hypocrite', 'bold'], ['quiet', 'glib'], ['stubborn', 'rascal'], ['picky', 'glutton']];
+export const LIKES24 = [['bold', 'drinker'], ['bold', 'brave'], ['honest', 'kind'], ['honest', 'diligent'], ['quiet', 'chi'], ['clever', 'free'], ['stubborn', 'rigid']];
+export const RECRUIT29 = { p: 0.35, pool: ['clever', 'nimble', 'bold', 'drinker', 'rigid', 'kind', 'stubborn', 'quiet', 'chi'] };
 export const LIKES = { glutton: ['gentle'], worrier: ['optimist', 'gentle'], sociable: ['sociable', 'optimist'], diligent: ['diligent'], playful: ['playful', 'sociable'], brave: ['brave'], gentle: ['worrier'], optimist: [] };
 // 特質揭露：第 i 個特質在「相處」累積 REVEAL_AT[i] 秒後才看得出來（聊天加速）
 export const REVEAL_AT = [0, 300, 900];
