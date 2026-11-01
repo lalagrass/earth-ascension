@@ -28,11 +28,11 @@ test('loop171 大比魁首得 chief24', () => {
   const s = V({ sect24: 'gumu' }); tick(s, 0.1); for (let i = 0; i < 4; i++) { const d = s.ds.find((x) => x.id !== 'hero'); if (!d) break; }
   const c = bisai24(s); if (c) assert.ok(c.chief24);
 });
-test('loop171 同門成套：2 類 ×1.08、3 類 ×1.16＋打坐 ×1.15；舊局不變', () => {
+test('loop171→181 同門成套：只算本門專屬；公共身法不計；成套傷害改由 innerDrive28；舊局不變', () => {
   const s = V({ sect24: 'emei' }); tick(s, 0.1); const d = other(s); for (const id of Object.keys(d.arts)) if (d.stree.includes(id)) delete d.arts[id];
-  assert.equal(A.sectClasses24(d), 0); const m0 = A.medQi(d);
-  give(d, 'emeiJiuyang', 30); give(d, 'emeiSword', 30); assert.equal(A.sectClasses24(d), 2); assert.equal(A.styleDmg24(d) / (A.polymath24(d) === 2 ? A.SYN24.conv : 1), 1.08);
-  give(d, 'stepFeather', 30); assert.equal(A.sectClasses24(d), 3); assert.ok(A.styleBadges24(d).includes('【本門正宗】')); assert.ok(Math.abs(A.medQi(d) / m0 - 1.15) < 1e-9);
+  assert.equal(A.sectClasses24(d), 0);
+  give(d, 'emeiJiuyang', 30); give(d, 'emeiSword', 30); assert.equal(A.sectClasses24(d), 2); assert.equal(A.styleDmg24(d) / (A.polymath24(d) === 2 ? A.SYN24.conv : 1) / A.injuryMul28(d), 1);
+  give(d, 'stepFeather', 30); assert.equal(A.sectClasses24(d), 2); assert.ok(!A.styleBadges24(d).includes('【本門正宗】'));
   const o = OLD(); tick(o, 0.1); const od = hero(o); assert.equal(A.styleDmg24(od), 1); assert.equal(A.sectClasses24(od), 0);
 });
 test('loop171 同門根基 1.18／一脈相承 1.28', () => {

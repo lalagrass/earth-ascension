@@ -11,6 +11,8 @@ import * as A0 from '../../src/arts.mjs';
 import { ARTS } from '../../src/data.mjs';
 const A = { ...A0, ARTS_OWN24: ARTS.filter((a) => a.own24).map((a) => a.id) }; /* loop168 各派專屬武學習得人數 */
 import { SECTS } from '../../src/data.mjs';
+import { XIA } from '../../src/wuxia.mjs';
+const XIAN = new Set(Object.values(XIA).map((x) => x.name)); /* loop181 名俠名單（割草 MVP 是否名俠） */
 export const SECTS24 = process.env.SS_SECTS ? process.env.SS_SECTS.split(',').map((x) => (x === 'wuming' ? null : x)) : ['emei', 'wudang', 'taohua', 'gumu', 'xingxiu', null]; /* loop172 SS_SECTS 可覆寫輪替 */
 const ST = process.argv[2] || 'bot', N = +(process.argv[3] || 40), S0 = +(process.argv[4] || 1001), D = +(process.argv[5] || 30);
 const avg = (a, f) => (a.length ? a.reduce((x, d) => x + f(d), 0) / a.length : 0);
@@ -50,5 +52,8 @@ for (let k = 0; k < N; k++) {
     ...purity(s, ds), new24: ds.reduce((a, d) => a + N24.filter((id) => d.arts?.[id]).length, 0), exp: c.exp, expDist: le.dist || 0, expN: s.expN || 0, own24: Object.fromEntries(A.ARTS_OWN24.map((id) => [id, ds.filter((d) => d.arts?.[id]).length]).filter(([, n]) => n)), med24: ds[0]?.medK24 || 1, psn24: s.psnK24 || 1,
     oppBy: LG.opp, stealBy: LG.steal, syn2: ds.filter((d) => A.sectClasses24?.(d) === 2).length, syn3: ds.filter((d) => A.sectClasses24?.(d) >= 3).length, pmD: ds.filter((d) => A.polymath24?.(d) === 1).length, pmC: ds.filter((d) => A.polymath24?.(d) === 2).length,
     v27: s.v27n ? { siege: Object.fromEntries(Object.entries(s.v27n.siege || {}).map(([k, v]) => [k, { n: v.n, win: v.win, won: v.won, total: v.total, mvp: v.mvp, mk: v.mvpKills }])), crusade: s.v27n.crusade || [] } : null, /* loop178 v2.7 */
+    v28: (() => { const W = s.v28n || {}, dr = [0, 0, 0, 0, 0]; const da = [0, 0, 0, 0, 0]; if (A.innerDrive28) for (const d of ds) { const a = A.mainOuter28(d); if (a) dr[A.innerDrive28(d, a).tier]++; for (const id of Object.keys(d.arts || {})) { const b = A.artById(id); if (b && b.school !== 'inner' && A.artTier(d, id) >= 1) da[A.innerDrive28(d, b).tier]++; } } /* loop181 v2.8 */
+      const mv = [...Object.values(s.v27n?.siege || {}).map((v) => v.mvp), ...(s.v27n?.crusade || []).map((c) => c.mvp)].filter(Boolean);
+      return { drive: A.innerDrive28 ? dr.slice(1) : null, driveAll: A.innerDrive28 ? da.slice(1) : null, inj: W.inj || 0, cure: W.cure || 0, injNow: ds.filter((d) => (d.qiInjury || 0) >= 20).length, stealTry: W.stealTry ?? null, stealZero: W.stealZero ?? null, fac: s.sect?.fac ? 1 : 0, facAuto: W.facAuto || 0, mvpN: mv.length, mvpFam: mv.filter((n) => XIAN.has(n)).length }; })(),
     chief: (() => { const o = { rank: 0, other: 0, n: 0 }; for (const d of ds) for (const id of Object.keys(d.arts || {})) { const a = A.artById(id); if (!a?.chiefOnly24 || !d.stree?.includes(id)) continue; o.n++; if (d.id === 'hero' || d.role === 'head' || d.chief24) o.rank++; else o.other++; } o.champs = ds.filter((d) => d.chief24).length; return o; })() }));
 }

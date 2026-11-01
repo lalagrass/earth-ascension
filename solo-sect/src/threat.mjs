@@ -1,6 +1,6 @@
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
 import { NODES, EDGES, DAY, FACILITIES, MOVES } from './data.mjs';
-import { dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
+import { qiInjuryAdd28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
 import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of } from './sect.mjs';
 import { peaceDelay } from './economy.mjs';
@@ -339,7 +339,7 @@ export function wavePower27(s, team, w = 0) {
 /* 連戰：spec＝{ key, waves:[{name,n,E}], home }。逐波 p＝P²/(P²+E²)（夾 0.1–0.95），P 乘疲勞；勝波人數依戰力×割草倍率分給 kills；敗波只算 p×一半 */
 export function waveBattle27(s, team, spec) {
   const kills = new Map(team.map((d) => [d.id, 0])); let tire = 1, won = 0, healed = 0; const heal = team.some((d) => (s.v23 && bestSpec(s, 'yishu', [d]) >= WAVE27.healSpec) || WAVE27.healArts.some((id) => d.arts?.[id]));
-  const out = { waves: [], n: team.length };
+  const out = { waves: [], n: team.length }; if (s.v24) for (const d of team) { const w = qiInjuryAdd28(s, d); if (w) log(s, `【經脈暗傷】${d.name}強以異種內息催動他派武學《${w.name}》，真氣逆行，經脈隱隱作痛！`); } /* loop181 參戰亦累積逆催內傷 */
   for (let w = 0; w < spec.waves.length; w++) {
     const W = spec.waves[w], P0 = wavePower27(s, team, w), P = P0.pow * tire; let E = W.E;
     if (spec.home) { if (fenceUp(s)) E *= 1 - WAVE27.fence - WAVE27.fenceLv * ((s.fence.lv || 1) - 1); if (s.v23) E *= 1 - SPEC.zhenMit * zhenK(s, team); }

@@ -1,5 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { CATS, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost } from './arts.mjs';
+import { CATS, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
 import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
@@ -421,7 +421,9 @@ function decide(s, d) {
   return false;
 }
 
-export function speedOf(d) { return BASE_SPEED * (1 + d.skills.agility / 100) * (d.carry ? 0.7 : 1) * (d.needs.energy < 30 ? 0.8 : 1) * (1 + (d.v23 ? NG23.speedPerTier : ART_GAIN.speedPerTier) * Math.max(0, effectTier(d, 'speed') + 1)) * (d.path?.length ? yuqiMul(d) : 1); } /* loop153 v2.3：腳力→輕功（每階 6%）→御氣疾行 */
+/* loop181 輕功也吃內功催動：取最高階身法的催動倍率 */
+const stepDrive28 = (d) => { let b = null; for (const id of Object.keys(d.arts || {})) { const a = artById(id); if (a?.effect === 'speed' && (!b || d.arts[id].xp > d.arts[b.id].xp)) b = a; } return b ? innerDrive28(d, b).mul : 1; };
+export function speedOf(d) { return BASE_SPEED * (1 + d.skills.agility / 100) * (d.carry ? 0.7 : 1) * (d.needs.energy < 30 ? 0.8 : 1) * (1 + (d.v23 ? NG23.speedPerTier : ART_GAIN.speedPerTier) * Math.max(0, effectTier(d, 'speed') + 1) * (d.v24 ? stepDrive28(d) : 1)) * (d.path?.length ? yuqiMul(d) : 1); } /* loop153 v2.3：腳力→輕功（每階 6%）→御氣疾行 */
 
 function moveStep(d, dt) {
   if (d.path.length && yuqiOn(d)) d.qi = Math.max(qiMax(d) * NG23.yuqi.keep, qiOf(d) - NG23.yuqi.drain * dt); /* loop153 御氣耗氣，留三成底、不會力竭 */
@@ -503,6 +505,10 @@ function doTask(s, d, dt) {
       if (t.act === 'study' && s.readwu) { const w = readStudy(s, d); if (w) log(s, `${d.name}在藏經閣讀了許久，忽然開竅——悟性長進了${d.rootKnown ? `（${w}）` : ''}。`); } // loop140 讀書長悟性
       if ((t.act === 'study' || t.act === 'meditate') && s.v24) { const dv = checkDeriveArt(s, d); if (dv) { log(s, `【開宗立派】${d.name}融會貫通，將兩門絕藝合參推演出「《${dv.name}》」，納入本門傳承！`); recordDeed(s, d, 'derive', { chron: `${d.name}合參推演出《${dv.name}》，納入本門傳承` }); } } // loop165 Batch 5.1
       if (t.act === 'study' && s.v24) { const g = studyChart24(s, d, () => rand(s)); if (g) log(s, `【藏經閣】${d.name}在書堆裡翻出一卷《${g.art.name}》，從此略通${CATS[g.cat].name}。`); } // loop160 Batch 1.2
+      if (s.v24 && d.v24) { /* loop181 v2.8 經脈內傷：練功／切磋逆催累積，打坐／醫館化解 */
+        if (t.act === 'train' || t.act === 'spar') { const w = qiInjuryAdd28(s, d); if (w) log(s, `【經脈暗傷】${d.name}強以異種內息催動他派武學《${w.name}》，真氣逆行，經脈隱隱作痛！`); }
+        if (t.act === 'meditate') qiInjuryCure28(s, d, DRIVE28.med);
+        if (t.act === 'heal' && d.qiInjury) qiInjuryCure28(s, d, specK(bestSpec(s, 'yishu')) > 0 || s.ds.some((o) => o.arts?.linjiZhuang) ? 100 : DRIVE28.heal); }
       const hp0 = d.hp, pill0 = s.res.pill || 0; if (A.eff) applyEff(s, d, A.eff, A.name);
       if (s.v23) { specGrow(d, t.act); /* loop151 v2.3 專長 */
         if (t.act === 'heal' && d.hp > hp0) { const k = specK(bestSpec(s, 'yishu')); if (k > 0) d.hp = Math.min(100, d.hp + (d.hp - hp0) * SPEC.healMax * k); }
@@ -702,12 +708,14 @@ export function payday(s) {
 
 // ---- tick ----
 // loop145 R3：換日時依序執行的每日結算（順序即亂數消耗順序，不可任意調換）
+/* loop181 v2.8：內傷 ≥50 每日扣氣血 8、心情 4；主修外功已不逆催（改修同屬／調和內功）則每日自癒 6 */
+function injuryDaily28(s) { for (const d of s.ds) { if (!d.v24 || !d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuter28(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
 export function dailyPipeline(s) {
   payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s);
   if (s.draw) cliqueDaily(s);
   if (s.m9) lairDaily(s, EH);
   if (s.jhev) jhevDaily(s);
-  if (s.v24) { siegeDaily27(s); crusadeDaily27(s, EH); } /* loop179 傾巢討伐（執事自動）；loop178 v2.7 魔教圍山（雜湊擲骰，不吃亂數流） */
+  if (s.v24) { injuryDaily28(s); siegeDaily27(s); crusadeDaily27(s, EH); } /* loop181 經脈內傷每日 */ /* loop179 傾巢討伐（執事自動）；loop178 v2.7 魔教圍山（雜湊擲骰，不吃亂數流） */
   if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild, ...(s.v23 ? { hire, canHire, laborCap, laborers, stewHireCoin: LABOR23.stewHireCoin } : {}) });
 }
 export { recordDeed, DEED_CAP, CHRON_CAP, tallyAct, bioLine, bioLean } from './util.mjs';

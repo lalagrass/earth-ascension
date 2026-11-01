@@ -1636,3 +1636,9 @@
 ## Loop 180 — v2.7 驗收
 - 全測 766/766，40 局矩陣前後對照、圍山/討伐統計寫入 DECISIONS 225–226。程式碼無變更，golden 不變。
 - Retro（179–180）：波次引擎與圍山/討伐穩定；武當加成未在數據中顯現，無名回升明顯。下輪先處理武當設施建成率與 D27 平衡。
+
+## loop181 — v2.8 Batch 1：四階內功催動、經脈內傷（決定 227–228）
+- arts.mjs：`own28`、`mainInner28`、`innerDrive28`、`mainOuter28`、`injuryMul28`、`qiInjuryAdd28`、`qiInjuryCure28`；`sectClasses24` 只算本門專屬；`moveMul0` 乘催動、`qiMax` 乘內傷。sim.mjs：練功／切磋累積、打坐／醫館化解、`injuryDaily28`、輕功乘催動。threat.mjs：`waveBattle27` 參戰累積。
+- 新增 `test/v28.test.mjs` 4 項；v26 同門成套測試照新定義改寫。diag 加 `v28` 欄。
+- 快驗（SS_DT=1 bot 6 局）：0 崩潰；主修外功催動分布多在第三階（內功普遍沒練起來，峨眉九陽多在入門），第四階 0（他派 own24 只能偷師取得，少）。
+- quick 453、sect-chronicle 383、Python 53。golden-30d-v22 eab542d31c77cf4e → 86d1c772f45eef7d。
