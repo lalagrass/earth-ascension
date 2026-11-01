@@ -1615,3 +1615,8 @@
 - 做得好：補強都掛在既有單一入口（`lockedArt24`、`sgainOf`、`defense`），引擎與觸發分輪，前一輪不動 golden。
 - 不好：bot 局門人 14–20，菁英 ≤6 幾乎不會成立，軌跡 A 主要靠割草倍率而非孤峰死戰。
 - 下一步：第 18／27 日圍山塔防。
+
+## loop178 — v2.7 Batch 2：魔教圍山塔防（決定 222）
+- threat.mjs：`SIEGE27`、`mojiaoSiege27`、`siegeDaily27`；sim.mjs `dailyPipeline` 接上（只 s.v24）；diag 輸出 `v27`。
+- 快驗（SS_DT=1 bot 6 局）：0 崩潰；第 18 日 6/6 勝（每場 190–198 人）、第 27 日 4/6 勝；MVP 楊過／小龍女 斬 18–24。
+- v27 +1（7 項）；quick 447、sect-chronicle 383、Python 53。golden-30d-v22 f23ec497aca6f957 → f72d216cbf105957。

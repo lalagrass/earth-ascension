@@ -44,3 +44,13 @@ test('loop177 連戰結算：不吃山賊亂數、kills 加總、MVP、勝則全
   assert.equal(TH.T(s).rng, rng); assert.ok(r.win); assert.equal(r.total, 50); assert.equal(Object.values(r.kills).reduce((a, b) => a + b, 0), 50); assert.ok(r.mvp && r.kills[r.mvp.id] === Math.max(...Object.values(r.kills)));
   const L = TH.waveBattle27(s, team, { key: 'u', waves: [{ name: 'a', n: 30, E: 1e9 }] }); assert.equal(L.win, false); assert.equal(L.won, 0);
 });
+test('loop178 魔教圍山：前一日預警、第 18 日 3 波／第 27 日 4 波、不吃山賊亂數、勝利獎勵、敗不死人', () => {
+  const s = V(); tick(s, 0.1); s.day = 17; TH.siegeDaily27(s); assert.ok(s.log.some((e) => String(e.msg).includes('明日就要殺上山來')));
+  const E0 = TH.SIEGE27.days[18].E.slice(); TH.SIEGE27.days[18].E = [1, 1, 1]; const rng = TH.T(s).rng, c0 = s.res.coin, ls = s.res.lingshi || 0, rep = s.rep || 0;
+  s.day = 18; const r = TH.siegeDaily27(s); TH.SIEGE27.days[18].E = E0; assert.equal(TH.T(s).rng, rng); assert.ok(r.win); assert.equal(r.won, 3); assert.equal(r.total, 190);
+  assert.equal(s.res.coin, c0 + 50); assert.equal(s.res.lingshi, ls + 1); assert.equal(s.rep, rep + 12); assert.ok(s.log.some((e) => /【魔教前鋒叩關】全派 \d+ 人迎戰，.+連斬 \d+ 名教眾，連破黑木崖魔教三波人海！/.test(String(e.msg))));
+  assert.equal(TH.siegeDaily27(s), null, '同日不重複');
+  const E1 = TH.SIEGE27.days[27].E.slice(); TH.SIEGE27.days[27].E = [1, 1e9, 1e9, 1e9]; const n = s.ds.length; s.day = 27; const L = TH.siegeDaily27(s); TH.SIEGE27.days[27].E = E1;
+  assert.equal(L.win, false); assert.equal(L.won, 1); assert.equal(s.ds.length, n); assert.ok(s.ds.every((d) => d.hp > 0));
+  const o = createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false }); o.day = 18; assert.equal(TH.siegeDaily27(o), null, '舊局不觸發');
+});

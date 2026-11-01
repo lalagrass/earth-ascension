@@ -5,7 +5,7 @@ import { LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSIO
 import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, fogStep, unlockStep, chapterStep } from './world.mjs';
-import { BAND, canDefend, boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE, FENCE_FAC, finishFenceSite, threatDaily, threatStep, raidResolve, bandStep, lairDaily, lairStep } from './threat.mjs';
+import { BAND, canDefend, boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE, FENCE_FAC, finishFenceSite, threatDaily, threatStep, raidResolve, bandStep, lairDaily, lairStep, siegeDaily27 } from './threat.mjs';
 import { addMem, chatLine, passPick, passDo, PASS, passScore, passReserve, apprDaily, apprMul, aspStep, likeMeal, likesOf, cliqueDaily, cliqueTrain } from './bonds.mjs';
 import { xiaStep, onCook, xiaInit, hsStep, hsInit } from './wuxia.mjs';
 import { jhStep, jhInit, jhevDaily } from './jianghu.mjs';
@@ -707,6 +707,7 @@ export function dailyPipeline(s) {
   if (s.draw) cliqueDaily(s);
   if (s.m9) lairDaily(s, EH);
   if (s.jhev) jhevDaily(s);
+  if (s.v24) siegeDaily27(s); /* loop178 v2.7 魔教圍山（雜湊擲骰，不吃亂數流） */
   if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild, ...(s.v23 ? { hire, canHire, laborCap, laborers, stewHireCoin: LABOR23.stewHireCoin } : {}) });
 }
 export { recordDeed, DEED_CAP, CHRON_CAP, tallyAct, bioLine, bioLean } from './util.mjs';

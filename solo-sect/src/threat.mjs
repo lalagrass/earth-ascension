@@ -354,3 +354,30 @@ export function waveBattle27(s, team, spec) {
   const mvp = team.reduce((m, d) => (!m || kills.get(d.id) > kills.get(m.id) ? d : m), null); out.mvp = mvp && kills.get(mvp.id) > 0 ? mvp : null;
   return out;
 }
+// ==== loop178 v2.7 Batch 2：魔教大軍圍山（第 18 日前鋒三波、第 27 日十長老四波）。只 s.v24；前一日茶攤預警；全派 canDefend（含已揭露隱世幫工）不限人數迎戰 ====
+/* E＝各波敵勢，以 loop177 量測（bot 局第 18 日單人戰力合計 ≈2300、第 27 日 ≈3400，合圍 ×1.5）定錨，目標整場勝率約六成 */
+export const SIEGE27 = { days: { 18: { title: '魔教前鋒叩關', E: [900, 1300, 1700] }, 27: { title: '魔教十長老圍山', E: [1200, 1600, 2100, 2600] } },
+  win: { coin: 50, lingshi: 1, valor: 12, rep: 12, mood: 10 }, loseRep: 3, fenceK: 0.3 };
+const NUM27 = ['一', '二', '三', '四'];
+export const s27 = (s) => (s.v27n ??= { siege: {}, crusade: [] });
+export function siegeTeam27(s) { return s.ds.filter((d) => !d.removed && canDefend(d)); }
+export function mojiaoSiege27(s, day) {
+  const C = SIEGE27.days[day], F = foe27(s), team = siegeTeam27(s), N = s27(s); if (!C || N.siege[day]) return null;
+  if (!team.length) { N.siege[day] = { n: 0, win: false, won: 0, total: 0 }; log(s, `【${C.title}】${F.name}殺到山門，門內竟無人能戰，只得緊閉山門任其叫罵一番退去。`); return N.siege[day]; }
+  const waves = C.E.map((E, i) => ({ ...F.waves[i], E })), r = waveBattle27(s, team, { key: `siege27:${day}`, waves, home: true }), mvp = r.mvp, mk = mvp ? r.kills[mvp.id] : 0;
+  N.siege[day] = { n: team.length, win: r.win, won: r.won, total: r.total, mvp: mvp?.name || null, mvpKills: mk, healed: r.healed };
+  if (r.win) { const W = SIEGE27.win; resAdd(s, 'coin', W.coin); resAdd(s, 'lingshi', W.lingshi); valorAdd(s, W.valor); s.rep = (s.rep || 0) + W.rep; for (const d of s.ds) d.mood = Math.min(100, (d.mood || 0) + W.mood);
+    const txt = `【${C.title}】全派 ${team.length} 人迎戰，${mvp ? `${mvp.name}${aoeCleaveMul(mvp, 0) > 1 ? '劍氣縱橫' : '奮勇當先'}連斬 ${mk} 名${F.unit}，` : ''}連破${F.name}${NUM27[waves.length - 1]}波人海！`;
+    log(s, `${txt}賞銀 +${W.coin}、靈石 +${W.lingshi}、名聲 +${W.rep}、武名 +${W.valor}，全派心情 +${W.mood}。`);
+    if (mvp) recordDeed(s, mvp, 'siege', { kills: mk, chron: `${C.title}：全派 ${team.length} 人擊退${F.name}，${mvp.name}斬敵 ${mk}` }); else recordDeed(s, null, 'siege', { chron: `${C.title}：全派擊退${F.name}` });
+    return N.siege[day]; }
+  const rep = SIEGE27.loseRep * r.won; s.rep = (s.rep || 0) + rep; if (fenceUp(s)) fenceHit(s, Math.max(1, Math.round(s.fence.max * SIEGE27.fenceK)), F.name, true);
+  const hurt = team[Math.floor(hh27(`${s.seed}:siege27hurt:${day}`) * team.length)]; if (hurt) { hurt.hp = Math.min(hurt.hp, WAVE27.hurtHp); hurt.raidHurt = (hurt.raidHurt || 0) + 1; }
+  log(s, `【${C.title}】全派 ${team.length} 人迎戰，${r.won ? `擋下前 ${r.won} 波，` : ''}第${NUM27[r.won]}波「${waves[r.won].name}」沒能撐住，只得退守內院。${rep ? `名聲 +${rep}；` : ''}${fenceUp(s) || s.fence ? '柵欄受損；' : ''}${hurt ? `${hurt.name}輕傷` : ''}（無人身亡）。`);
+  recordDeed(s, null, 'siegeLost', { chron: `${C.title}：${F.name}攻破第 ${r.won + 1} 波防線` }); return N.siege[day];
+}
+export function siegeDaily27(s) {
+  if (!s.v24) return null; const day = s.day || 0, N = s27(s);
+  const nx = SIEGE27.days[day + 1]; if (nx && !N['r' + (day + 1)]) { N['r' + (day + 1)] = 1; log(s, `【傳聞】山下茶攤有人說，${foe27(s).name}的人馬已在山腳集結，怕是明日就要殺上山來（${nx.title}）！`); }
+  return SIEGE27.days[day] ? mojiaoSiege27(s, day) : null;
+}
