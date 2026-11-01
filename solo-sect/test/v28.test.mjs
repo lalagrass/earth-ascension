@@ -13,7 +13,8 @@ const drive = (d, id) => A.innerDrive28(d, A.artById(id));
 test('loop181 第一階：本門專屬內功催動本門外功 ×1.20；真三才 ×1.28', () => {
   const [, d] = fresh('xingxiu'); give(d, 'huagongDafa', 30); give(d, 'chousuiPalm', 30);
   assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 1, mul: 1.2 });
-  give(d, 'zhaixingStep', 30); assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 1, mul: 1.28 });
+  give(d, 'zhaixingStep', 30); assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 1, mul: 1.2 }); /* loop192：三類齊但未大成，仍 ×1.20 */
+  give(d, 'huagongDafa', 60); assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 1, mul: 1.28 });
 });
 test('loop181 第三階：只靠吐納催動三品外功 ×0.78；第二階：公共武學內功撐得住 ×1', () => {
   const [, d] = fresh('emei'); give(d, 'breath', 60); give(d, 'huifengSword', 10); give(d, 'basicFist', 10);

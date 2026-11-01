@@ -473,7 +473,18 @@ const cls24 = (a) => (!a || typeof a !== 'object' ? null : isInner(a) ? 'inner' 
 /* 本門樹（d.stree）內、已達小成的武學涵蓋幾類（內功／身法／外功） */
 /* loop181 v2.8：本門專屬三才只算本門專屬武學（own28：own24＝本門，或無 own24 的本門樹名門 classic），公共 breath／snowStep 等不再計入 */
 /* loop186 v2.9 決定 1-2：本門樹三類齊（可含公共身法）且其中 ≥2 類有本門專屬 → 3；否則回本門專屬類數 */
-export function sectClasses24(d) { if (!d?.v24 || !d.stree) return 0; const c = new Set(), t = new Set(); for (const id of Object.keys(d.arts || {})) { const a = artById(id); if (!a || artTier(d, id) < 1) continue; const k = cls24(a); if (!k) continue; if (d.stree.includes(id) || own28(d, a)) t.add(k); if (own28(d, a)) c.add(k); } return t.size >= 3 && c.size >= 2 ? 3 : c.size; }
+/* loop192：三才成套要三類都小成、其中至少兩類是本門，且至少一門本門到大成；否則最多算兩類 */
+export function sectClasses24(d) {
+  if (!d?.v24 || !d.stree) return 0;
+  const c = new Set(), t = new Set(); let big = false;
+  for (const id of Object.keys(d.arts || {})) {
+    const a = artById(id); if (!a || artTier(d, id) < 1) continue;
+    const k = cls24(a); if (!k) continue;
+    if (d.stree.includes(id) || own28(d, a)) t.add(k);
+    if (own28(d, a)) { c.add(k); if (artTier(d, id) >= 2) big = true; }
+  }
+  return t.size >= 3 && c.size >= 2 && big ? 3 : Math.min(2, c.size);
+}
 /* 同門前階帶後階：修本門樹武學，已會本門前置（達 req 階）或本門內功小成 → 同門根基；本門內功與本門外功皆大成 → 一脈相承 */
 export function sectLine24(d, a) {
   if (!d?.v24 || !d.stree?.includes(a.id)) return null; let inT = -1, outT = -1;
@@ -551,10 +562,16 @@ export function innerDrive28(d, a) {
   const held = !!M && mt >= g - 1 && (M.grade || 1) >= g - 1; /* 內功火候與品階都撐得住（吐納一品最多撐二品外功） */
   const omt = ownMaxTier28(d), rb = 1 + rootMove28(d); /* 輔運根基【根基渾厚】 */
   if (a.id === 'qishangFist' && !conv && artTier(d, 'shenghuoXinfa') < 2 && artTier(d, 'jiuyang') < 2) return { tier: 4, mul: DRIVE28.t4 }; /* loop186 一練七傷：聖火心法／九陽未大成前強練皆逆催（本門亦然） */
+  if (a.id === 'jiuyinClaw' && !conv && (!M || (M.grade || 1) < 2 || artTier(d, M.id) < 2)) return { tier: 4, mul: DRIVE28.t4 }; /* loop192 強練禁術：沒有二品以上內功大成 */
   if (own28(d, a) && omt >= Math.max(1, g - 1)) return { tier: 1, mul: (sectClasses24(d) >= 3 ? DRIVE28.t1s : DRIVE28.t1) * rb, ...(rb > 1 ? { root: true } : {}) };
   const foreign = (a.own24 && a.own24 !== d.sectId) || (BAN28.includes(a.id) && !own28(d, a));
-  if (foreign && !conv && (!M || (M.grade || 1) < 2 || clash28(attrOf(M), attrOf(a)))) return { tier: 4, mul: DRIVE28.t4 };
-  if (foreign && !conv) { const tune = (attrOf(M) === 'he' && (M.grade || 1) >= 2) || attrOf(M) === attrOf(a); return tune && held ? { tier: 2, mul: 1 } : { tier: 3, mul: DRIVE28.t3 }; }
+  if (foreign && !conv) {
+    /* loop192：第四階只在真陰陽相沖，或名門沒有二品內功卻硬催三品陰／陽外功。吐納（he）不沖；無名派只吃相沖與禁術。 */
+    const clash = !!(M && clash28(attrOf(M), attrOf(a)));
+    const bare = d.sectId !== 'wuming' && g >= 3 && (attrOf(a) === 'yin' || attrOf(a) === 'yang') && (!M || (M.grade || 1) < 2);
+    if (clash || bare) return { tier: 4, mul: DRIVE28.t4 };
+    return held && (M.grade || 1) >= 2 && (attrOf(M) === 'he' || attrOf(M) === attrOf(a)) ? { tier: 2, mul: 1 } : { tier: 3, mul: DRIVE28.t3 };
+  }
   return g >= 2 && !held ? { tier: 3, mul: DRIVE28.t3 * rb, ...(rb > 1 ? { root: true } : {}) } : { tier: 2, mul: rb, ...(rb > 1 ? { root: true } : {}) };
 }
 /* 主修外功：指定的非內功 focus，否則熟練最高的非內功 */

@@ -18,7 +18,9 @@ test('loop186 決定 1：副修第四階外功也累積內傷 +5；主修第四�
 });
 test('loop186 決定 2：本門 2 類＋本門樹公共身法 → 三才 3；只有公共不算', () => {
   const [, d] = fresh('gaibang'); give(d, 'breath', 60); give(d, 'snowStep', 60); give(d, 'basicFist', 60); assert.equal(A.sectClasses24(d), 0);
-  give(d, 'huntianGong', 30); give(d, 'lianhuaPalm', 30); assert.equal(A.sectClasses24(d), 3); assert.ok(A.styleBadges24(d).includes('【本門正宗】'));
+  give(d, 'huntianGong', 30); give(d, 'lianhuaPalm', 30); assert.equal(A.sectClasses24(d), 2); /* loop192：三類齊、本門兩類，但都未大成 */
+  assert.ok(!A.styleBadges24(d).includes('【本門正宗】'));
+  give(d, 'huntianGong', 60); assert.equal(A.sectClasses24(d), 3); assert.ok(A.styleBadges24(d).includes('【本門正宗】'));
   delete d.arts.snowStep; assert.equal(A.sectClasses24(d), 2);
 });
 test('loop186 決定 3：無本門一品內功的門派以吐納或本門二品內功為根基', () => {
@@ -82,4 +84,16 @@ test('loop188 第 27 日圍山再降約 5%', async () => {
 });
 test('loop188 招收：新局約 35% 第二特質換成經典特質', async () => {
   const { RECRUIT29 } = await import('../src/data.mjs'); assert.equal(RECRUIT29.p, 0.35); assert.equal(RECRUIT29.pool.length, 9);
+});
+
+test('loop192 異屬逆催：吐納不沖、無名派不吃虛級、禁術與真陰陽才第四階', () => {
+  const [, e] = fresh('emei'); give(e, 'breath', 60); give(e, 'chousuiPalm', 30);
+  assert.equal(drive(e, 'chousuiPalm').tier, 3, '二品外門、中性吐納：內力虛浮，不內傷');
+  give(e, 'sanyinClaw', 10); assert.equal(drive(e, 'sanyinClaw').tier, 4, '沒有二品內功硬催三品陰掌');
+  give(e, 'emeiJiuyang', 60); assert.equal(drive(e, 'sanyinClaw').tier, 2, '二品調和內功撐住');
+  const [, g] = fresh('gaibang'); give(g, 'huntianGong', 60); give(g, 'sanyinClaw', 10); assert.equal(drive(g, 'sanyinClaw').tier, 4, '陽內功對陰掌仍相沖');
+  const [, w] = fresh('wuming'); give(w, 'breath', 60); give(w, 'sanyinClaw', 10); assert.equal(drive(w, 'sanyinClaw').tier, 3, '無名派百納，吐納不誤傷');
+  give(w, 'jiuyinClaw', 10); assert.equal(drive(w, 'jiuyinClaw').tier, 4, '九陰白骨爪沒有二品內功大成');
+  const [, y] = fresh('wuming'); give(y, 'huntianGong', 60); give(y, 'jiuyinClaw', 10); assert.equal(drive(y, 'jiuyinClaw').tier, 4, '陽內功仍與九陰相沖');
+  const [, m] = fresh('emei'); give(m, 'emeiJiuyang', 60); give(m, 'jiuyinClaw', 10); assert.equal(drive(m, 'jiuyinClaw').tier, 2);
 });
