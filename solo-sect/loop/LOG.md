@@ -1620,3 +1620,15 @@
 - threat.mjs：`SIEGE27`、`mojiaoSiege27`、`siegeDaily27`；sim.mjs `dailyPipeline` 接上（只 s.v24）；diag 輸出 `v27`。
 - 快驗（SS_DT=1 bot 6 局）：0 崩潰；第 18 日 6/6 勝（每場 190–198 人）、第 27 日 4/6 勝；MVP 楊過／小龍女 斬 18–24。
 - v27 +1（7 項）；quick 447、sect-chronicle 383、Python 53。golden-30d-v22 f23ec497aca6f957 → f72d216cbf105957。
+
+## loop179 — v2.7 Batch 3：全派傾巢討伐魔教分舵（決定 223–224）
+- threat.mjs：`CRU27`、`crusadeTeam27`、`canCrusade27`、`crusadeOdds27`、`startCrusade27`、`crusadeStep27`、`crusadeDaily27`、`crusadeHtml27`（山賊欄按鈕）；sim.mjs 接每日自動與每 tick 回山、匯出 `crusade27`；main.mjs `data-crusade27` 點擊。
+- 首版 E（600–1500）＋存糧 ≥14：6 局 0 次出兵 → 調 E 與存糧門檻（決定 224）。
+- 快驗（SS_DT=1 bot 6 局）：0 崩潰；討伐 9 次（全自動）勝 7，每次 11–16 人、勝場 173 人；圍山 18 日 6/6、27 日 4/6。
+- v27 +2（9 項）；quick 449、sect-chronicle 383、Python 53。golden-30d-v22 f72d216cbf105957 → eab542d31c77cf4e。
+- 未做瀏覽器截圖（不碰 8800、無 art），按鈕以單元測試驗 HTML。
+
+### Retro 178–179
+- 做得好：圍山與討伐共用 `waveBattle27`，擲骰全走雜湊，測試直接驗山賊亂數未動。
+- 不好：規格的存糧 14 在 bot 局不現實，需偏離；討伐每次耗 8 糧，要在矩陣看飢餓／心情。
+- 下一步：loop180 全測＋40 局矩陣（加跑明教／星宿鏡像）。

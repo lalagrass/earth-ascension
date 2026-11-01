@@ -271,7 +271,7 @@ export function lairLine(s) {
 export function threatHtml(s) {
   const X = T(s), P = X.pending, pts = points(s), n = headcount(s);
   const head = `<div class="threat" data-threat><b>山賊</b>：${s.band ? `【${s.band.state === 'go' ? '正沿山路逼近' : '正在撞柵'}，山賊 ${Math.max(0, Math.round(s.band.hp))}/${s.band.max}】` : ''}${n < minPopOf(s) ? `門裡才 ${n} 人，山賊還看不上（${minPopOf(s)} 人起）` /* loop125：顯示用實際門檻 */ : `家底 ${Math.round(wealth(s))}，威脅 ${pts}（戰力 ${Math.round(defense(s))}）${s.rumor ? (rumorDays(s) ? `；傳聞約 ${rumorDays(s)} 日內來犯` : '；暫無風聲') : `；下次約第 ${X.next} 日`}`}・來過 ${X.n} 次（付錢 ${X.paid}／迎戰 ${X.fought}，勝 ${X.won}）・山門重傷 ${X.homeHurt}${valorHtml(s)}`;
-  const lr = lairLine(s);
+  const lr = lairLine(s) + crusadeHtml27(s); /* loop179 */
   if (!P) return head + lr + '</div>' + fenceHtml(s);
   return `${head}${lr}<div class="raid-ask" data-raid-ask>${kindOf(P.kind) ? `【${kindOf(P.kind).name}】${kindOf(P.kind).desc}；` : ''}${P.noPay ? '不談價錢：' : `山賊要 ${P.demand} 兩：<button data-raid="0" ${s.res.coin < P.demand ? 'disabled' : ''}>付錢了事</button>`} <button data-raid="1">迎戰（勝算 ${Math.round(P.p * 100)}%）</button></div></div>${fenceHtml(s)}`;
 }
@@ -380,4 +380,51 @@ export function siegeDaily27(s) {
   if (!s.v24) return null; const day = s.day || 0, N = s27(s);
   const nx = SIEGE27.days[day + 1]; if (nx && !N['r' + (day + 1)]) { N['r' + (day + 1)] = 1; log(s, `【傳聞】山下茶攤有人說，${foe27(s).name}的人馬已在山腳集結，怕是明日就要殺上山來（${nx.title}）！`); }
   return SIEGE27.days[day] ? mojiaoSiege27(s, day) : null;
+}
+// ==== loop179 v2.7 Batch 3：全派傾巢討伐魔教分舵（不限人數，只留 1 人看門）。只 s.v24；第 12 日起、名聲 ≥15、冷卻 8 日 ====
+/* E 以出發日縮放：E×(1+(日−12)/CRU27.dayK)。auto：執事在 13–14、22–23 日、存糧 ≥14、預估全勝率 ≥ autoP 時自動出兵 */
+export const CRU27 = { day: 12, rep: 15, cool: 8, foodMax: 8, dur: DAY / 2, minHp: 60, minTeam: 2, E: [400, 600, 780, 1000], dayK: 20, autoDays: [13, 14, 22, 23], autoFood: 14, autoSpare: 2, autoP: 0.5,
+  waves: ['分舵外哨嘍囉群', '百人堂口', '護法刀陣', '分舵主'], n: [60, 100, 12, 1], win: { coin: 55, lingshi: 1, page2: 1, rep: 15 }, loseRep: 2 };
+const cruOk = (s, d) => d.role !== 'laborer' && d.adult !== false && !d.away && !d.removed && d.hp > CRU27.minHp && !d.order && !s.hunt?.team?.includes(d.id);
+export function crusadeTeam27(s) { const c = s.ds.filter((d) => cruOk(s, d)).sort((a, b) => pow27(s, b) - pow27(s, a)); return c.slice(0, Math.max(0, c.length - 1)); /* 最弱的一人留守山門 */ }
+export function canCrusade27(s) {
+  if (!s.v24) return { ok: false, why: '' }; const N = s27(s), day = s.day || 0;
+  if (day < CRU27.day) return { ok: false, why: `第 ${CRU27.day} 日起才打聽得到分舵所在` };
+  if ((s.rep || 0) < CRU27.rep) return { ok: false, why: `名聲不足（${Math.floor(s.rep || 0)}/${CRU27.rep}）` };
+  if (N.cru) return { ok: false, why: '弟子正在討伐途中' }; if (day < (N.cNext || 0)) return { ok: false, why: `剛討伐過，第 ${N.cNext} 日後再議` };
+  if (s.exp || s.lair?.trip || T(s).pending || s.band) return { ok: false, why: '門內另有要事（出征／剿寨／山賊）' };
+  const team = crusadeTeam27(s); if (team.length < CRU27.minTeam) return { ok: false, why: '可出動的健康弟子不足' };
+  const food = Math.min(CRU27.foodMax, team.length); if ((s.res.food || 0) < food) return { ok: false, why: `存糧不足（${Math.floor(s.res.food || 0)}/${food}）` };
+  return { ok: true, team, food };
+}
+const cruWaves27 = (s, day) => CRU27.E.map((E, i) => ({ name: CRU27.waves[i], n: CRU27.n[i], E: Math.round(E * (1 + Math.max(0, day - CRU27.day) / CRU27.dayK)) }));
+/* 執事用的預估全勝率（不擲骰）：各波 p 連乘，含疲勞 */
+export function crusadeOdds27(s, team = crusadeTeam27(s)) { let pr = 1, tire = 1; cruWaves27(s, s.day || 0).forEach((W, w) => { const P = wavePower27(s, team, w).pow * tire; pr *= Math.max(WAVE27.pMin, Math.min(WAVE27.pMax, P * P / (P * P + W.E * W.E))); tire *= WAVE27.tire; }); return pr; }
+export function startCrusade27(s, H, auto = false) {
+  const c = canCrusade27(s); if (!c.ok) return c; const N = s27(s); resAdd(s, 'food', -c.food);
+  for (const d of c.team) { H?.cancelTask?.(s, d, '傾巢討伐'); d.away = true; d.path = []; d.reason = '討伐魔教分舵'; }
+  N.cru = { ids: c.team.map((d) => d.id), back: s.t + CRU27.dur, day: s.day, auto: !!auto }; N.cNext = (s.day || 0) + CRU27.cool;
+  log(s, `【傾巢討伐】${auto ? '執事調度：' : ''}全派 ${c.team.length} 人帶 ${c.food} 份糧下山，討伐${foe27(s).name}分舵（${c.team.map((d) => d.name).join('、')}），留人看守山門。`);
+  return { ok: true, n: c.team.length };
+}
+export function crusadeStep27(s, H) {
+  const N = s.v27n, C = N?.cru; if (!C || s.t < C.back) return null; N.cru = null;
+  const team = C.ids.map((id) => s.ds.find((d) => d.id === id)).filter(Boolean); for (const d of team) { d.away = false; d.reason = '討伐歸來'; if (H?.gate) d.pos = [...H.gate]; }
+  const F = foe27(s), r = waveBattle27(s, team, { key: `crusade27:${C.day}`, waves: cruWaves27(s, C.day) }), mvp = r.mvp, mk = mvp ? r.kills[mvp.id] : 0;
+  const rec = { day: C.day, n: team.length, win: r.win, won: r.won, total: r.total, auto: C.auto, mvp: mvp?.name || null, mk }; N.crusade.push(rec);
+  if (r.win) { const W = CRU27.win; resAdd(s, 'coin', W.coin); resAdd(s, 'lingshi', W.lingshi); resAdd(s, 'page2', W.page2); s.rep = (s.rep || 0) + W.rep;
+    for (const d of team) { tallyAct(d, 'lair', CRU27.dur / 4); recordDeed(s, d, 'crusade', { kills: r.kills[d.id] || 0 }); }
+    if (mvp) recordDeed(s, mvp, 'crusadeMvp', { kills: mk });
+    recordDeed(s, null, 'crusade', { chron: `全派 ${team.length} 人傾巢討伐${F.name}分舵，連破四波${mvp ? `，${mvp.name}斬敵 ${mk}` : ''}` });
+    log(s, `【傾巢討伐】全派 ${team.length} 人連闖分舵四波，${mvp ? `${mvp.name}${aoeCleaveMul(mvp, 0) > 1 ? '橫掃千軍' : '身先士卒'}斬敵 ${mk}，` : ''}大破${F.name}分舵！奪回銀兩 +${W.coin}、靈石 +${W.lingshi}、精階殘頁 +${W.page2}，名聲 +${W.rep}。`); return rec; }
+  const rep = CRU27.loseRep * r.won; s.rep = (s.rep || 0) + rep; const hurt = team[Math.floor(hh27(`${s.seed}:crusade27hurt:${C.day}`) * team.length)]; if (hurt) { hurt.hp = Math.min(hurt.hp, WAVE27.hurtHp); hurt.raidHurt = (hurt.raidHurt || 0) + 1; }
+  log(s, `【傾巢討伐】闖過 ${r.won} 波後在「${CRU27.waves[r.won]}」受阻，只得收兵回山${rep ? `（名聲 +${rep}）` : ''}${hurt ? `；${hurt.name}輕傷` : ''}，無人身亡。`); return rec;
+}
+export function crusadeDaily27(s, H) {
+  if (!s.v24 || !CRU27.autoDays.includes(s.day || 0)) return null;
+  const c = canCrusade27(s); if (!c.ok || (s.res.food || 0) < Math.min(CRU27.autoFood, c.food + CRU27.autoSpare) /* 決定 224：規格 14 在 bot 局幾乎達不到 */ || crusadeOdds27(s, c.team) < CRU27.autoP) return null; return startCrusade27(s, H, true);
+}
+export function crusadeHtml27(s) {
+  if (!s.v24 || (s.day || 0) < CRU27.day) return ''; const C = s.v27n?.cru, c = C ? null : canCrusade27(s);
+  return `<div class="k" data-crusade27-row>・魔教分舵：${C ? `全派 ${C.ids.length} 人討伐途中` : c.ok ? `<button data-crusade27>全派傾巢：討伐魔教分舵（出動 ${c.team.length} 人）</button>` : c.why}</div>`;
 }

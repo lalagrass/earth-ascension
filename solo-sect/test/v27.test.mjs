@@ -54,3 +54,19 @@ test('loop178 魔教圍山：前一日預警、第 18 日 3 波／第 27 日 4 �
   assert.equal(L.win, false); assert.equal(L.won, 1); assert.equal(s.ds.length, n); assert.ok(s.ds.every((d) => d.hp > 0));
   const o = createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false }); o.day = 18; assert.equal(TH.siegeDaily27(o), null, '舊局不觸發');
 });
+import { crusade27 } from '../src/sim.mjs';
+test('loop179 傾巢討伐：解鎖條件、不限人數留 1 人、耗糧、回山結算、獎勵、不吃山賊亂數、按鈕', () => {
+  const s = V(); tick(s, 0.1); for (let i = 0; i < 6; i++) { const d = { ...other(s), id: 'x' + i, name: '弟子' + i }; s.ds.push(d); }
+  s.day = 11; s.rep = 99; s.res.food = 40; assert.ok(!TH.canCrusade27(s).ok); s.day = 12; s.rep = 10; assert.match(TH.canCrusade27(s).why, /名聲/); s.rep = 99;
+  for (const d of s.ds) { d.hp = 100; d.adult = true; if (d.role === 'laborer') d.role = 'inner'; }
+  const c = TH.canCrusade27(s); assert.ok(c.ok); const all = s.ds.filter((d) => !d.removed).length; assert.equal(c.team.length, all - 1); assert.ok(TH.crusadeHtml27(s).includes(`data-crusade27>全派傾巢：討伐魔教分舵（出動 ${all - 1} 人）`));
+  const E0 = TH.CRU27.E.slice(); TH.CRU27.E = [1, 1, 1, 1]; const rng = TH.T(s).rng, coin = s.res.coin, p2 = s.res.page2 || 0, food = s.res.food;
+  const r = crusade27(s); assert.ok(r.ok); assert.equal(s.res.food, food - Math.min(8, all - 1)); assert.equal(s.ds.filter((d) => d.away).length, all - 1); assert.match(TH.canCrusade27(s).why, /途中/);
+  s.t = s.v27n.cru.back; const R = TH.crusadeStep27(s); TH.CRU27.E = E0; assert.ok(R.win); assert.equal(R.total, 173); assert.equal(R.auto, false); assert.equal(TH.T(s).rng, rng);
+  assert.equal(s.res.coin, coin + 55); assert.equal(s.res.page2, p2 + 1); assert.ok(s.ds.every((d) => !d.away)); assert.match(TH.canCrusade27(s).why, /剛討伐過/);
+  assert.ok(s.chron.some((e) => e.kind === 'crusade'));
+});
+test('loop179 執事自動：只在 13–14、22–23 日；舊局無按鈕', () => {
+  const s = V(); tick(s, 0.1); s.rep = 99; s.res.food = 40; s.day = 15; assert.equal(TH.crusadeDaily27(s), null);
+  const o = createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false }); o.day = 20; assert.equal(TH.crusadeHtml27(o), ''); assert.equal(TH.canCrusade27(o).ok, false);
+});

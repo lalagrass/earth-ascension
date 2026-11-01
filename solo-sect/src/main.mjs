@@ -7,7 +7,7 @@ import { ARC13 } from './jianghu.mjs';
 import { GEN, canSucceed, succeed, heirs, heirArt, canBuildFac, buildFac, artKind, KIND_NAME, sectFac, rivalGate } from './sect.mjs';
 import { SECTS, SECT_K, RULE_LIB, JH, DAY as DAY13, HS, DUGU, ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2, ROUTE, EXP, ENEMIES, CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES, ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, EXP_STYLES, CAMPS, ENDLESS, bindPortraitSet } from './data.mjs';
 import { zxGate, XIA, xiaPool, pickStudent } from './wuxia.mjs';
-import { isEliteHermit, startExpedition, recallExpedition, canExpedition, codexRows, reportText, segAt, ROUTE_END, skipGuide, outers, skipsChores, emergency, quotaOf, setDuty, setPrio, canPromote, startTrial, isLabor, disciples, laborers, laborCap, canHire, hire, canInvite, invite, avgAff, togglePause, MATS, moodLabel, moodParts, seasonOf, aff, compat, defaultAnswers, personalityFrom, capacity, canRecruit, recruit, recruitNeed, mapStage, setPost, phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf, incenseOf, startSchoolTrip, buildWhy, lotsUsed, lotsOf, lotCost, lotWhy, buyLot, resolveRaid } from './sim.mjs';
+import { crusade27, isEliteHermit, startExpedition, recallExpedition, canExpedition, codexRows, reportText, segAt, ROUTE_END, skipGuide, outers, skipsChores, emergency, quotaOf, setDuty, setPrio, canPromote, startTrial, isLabor, disciples, laborers, laborCap, canHire, hire, canInvite, invite, avgAff, togglePause, MATS, moodLabel, moodParts, seasonOf, aff, compat, defaultAnswers, personalityFrom, capacity, canRecruit, recruit, recruitNeed, mapStage, setPost, phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf, incenseOf, startSchoolTrip, buildWhy, lotsUsed, lotsOf, lotCost, lotWhy, buyLot, resolveRaid } from './sim.mjs';
 import { nearestType, typeLabel, archLabel, think as think10 } from './social.mjs';
 import { seasonHint, econHtml, marketDo } from './economy.mjs';
 import { openStart, choiceUI, heroCard } from './start-ui.mjs';
@@ -473,6 +473,7 @@ document.addEventListener('click', (e) => {
   if (!S) return; const l = e.target.closest('[data-lot]'); if (l) { const r = buyLot(S); toast(r.ok ? `擴地花了 ${r.c}` : r.why, !r.ok); panel(); return; }
   const fu = e.target.closest('[data-fence-up]'); if (fu) { const r = startFenceSite(S); toast(r.ok ? '立了加砌藍圖，弟子會搬石施工' : r.why, !r.ok); panel(); return; }
   const fb = e.target.closest('[data-fence]'); if (fb) { const r = startFenceSite(S); toast(r.ok ? '立了築柵藍圖，弟子會搬木施工' : r.why, !r.ok); panel(); return; }
+  if (e.target.closest('[data-crusade27]')) { const r = crusade27(S); toast(r.ok ? `全派 ${r.n} 人出發討伐` : r.why, !r.ok); panel(); return; } /* loop179 */
   const rb = e.target.closest('[data-raid]'); if (rb) { const r = resolveRaid(S, +rb.dataset.raid); toast(!r.ok ? r.why : r.paid ? `付了 ${r.paid}` : r.win ? '打退山賊' : '敗了', !r.ok || r.win === false); panel(); return; }
   if (e.target.id === 'exp-suggest') { const g = suggestTeam(S, 2); window.__exTeam = new Set(g.ids); window.__exWhy = g.why; panel(); }
 });
