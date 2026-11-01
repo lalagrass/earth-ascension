@@ -457,7 +457,7 @@ export function checkDeriveArt(s, d) {
 }
 
 /* ---- loop171 v2.6 正統同門成套加成（sectSynergy）與雜學曲線（polymath）。只 d.v24 ---- */
-export const SYN24 = { base: 1.18, line: 1.28, dmg2: 1.08, dmg3: 1.16, med3: 1.15, distract: 0.85, wide: 1.15, conv: 1.18, t2: 4, mast: 50, lineages: 2, cats: 4 };
+export const SYN24 = { base: 1.18, line: 1.28, med3: 1.15, distract: 0.82, wide: 1.15, conv: 1.20, lineages: 2, convLin: 3, convMast: 58, distMast: 55 }; /* loop182 v2.8：分心 0.82、萬流歸宗 ×1.20 */
 const OUTER24 = ['fist', 'palm', 'leg'];
 const cls24 = (sc) => (sc === 'inner' || sc === 'step' ? sc : OUTER24.includes(sc) ? 'outer' : null);
 /* 本門樹（d.stree）內、已達小成的武學涵蓋幾類（內功／身法／外功） */
@@ -470,12 +470,15 @@ export function sectLine24(d, a) {
   if (inT >= 2 && outT >= 2) return ['一脈相承', SYN24.line];
   if (inT >= 1 || a.req.some((r) => d.stree.includes(r.art) && artTier(d, r.art) >= r.tier)) return ['同門根基', SYN24.base]; return null;
 }
-/* 雜學：身上門派專屬血統（own24）≥2 種，或非公共武學（classic／own24）跨 ≥4 個主門類。回 0＝不適用、1＝雜學分心（大成 <4 門且最高造詣 <50）、2＝萬流歸宗（大成 ≥4 門且任一造詣 ≥50） */
-const PM24 = new WeakMap();
+/* loop182 v2.8 雜學收緊：只算非公共（PUBLIC28 以外）、具 own24（禁學 'ban' 不算）或非招牌名門 classic 的武學，依門派血統分組（classic 無 own24 者取第一個收錄它的門派樹）。
+   回 0＝不適用；1＝雜學分心（跨 ≥2 派，且大成血統 <3 或最高造詣 <55）；2＝萬流歸宗（≥3 派血統各有大成武學，且最高造詣 ≥58） */
+const PM24 = new WeakMap(), LIN28 = new Map();
+const lineage28 = (a) => { if (!a || PUBLIC28.includes(a.id) || a.own24 === 'ban') return null; if (a.own24) return a.own24; if (!a.classic || a.signature) return null;
+  if (!LIN28.has(a.id)) LIN28.set(a.id, Object.entries(SECTS).find(([, S]) => S.tree.includes(a.id) || S.tree24?.includes(a.id))?.[0] || a.id); return LIN28.get(a.id); };
 export function polymath24(d) {
   if (!d?.v24 || !d.arts) return 0; const ids = Object.keys(d.arts), sig = ids.reduce((x, id) => x + d.arts[id].xp, ids.length * 1e6), c = PM24.get(d); if (c && c.sig === sig) return c.v;
-  const lin = new Set(), cats = new Set(); for (const id of ids) { const a = artById(id); if (!a) continue; if (a.own24 && a.own24 !== 'ban') lin.add(a.own24); if (a.classic || a.own24) { const k = primaryCat(id); if (k) cats.add(k); } }
-  let v = 0; if (lin.size >= SYN24.lineages || cats.size >= SYN24.cats) { const t2 = ids.filter((id) => artTier(d, id) >= 2).length, m = Math.max(0, ...Object.keys(CATS).map((k) => mastery(d, k))); v = t2 >= SYN24.t2 && m >= SYN24.mast ? 2 : t2 < SYN24.t2 && m < SYN24.mast ? 1 : 0; }
+  const lin = new Set(), big = new Set(); for (const id of ids) { const k = lineage28(artById(id)); if (!k) continue; lin.add(k); if (artTier(d, id) >= 2) big.add(k); }
+  let v = 0; if (lin.size >= SYN24.lineages) { const m = Math.max(0, ...Object.keys(CATS).map((k) => mastery(d, k))); v = big.size >= SYN24.convLin && m >= SYN24.convMast ? 2 : big.size < SYN24.convLin || m < SYN24.distMast ? 1 : 0; }
   PM24.set(d, { sig, v }); return v;
 }
 /* ---- loop181 v2.8 四階內功催動（innerDrive28）與經脈內傷（qiInjury）。只 d.v24 ---- */

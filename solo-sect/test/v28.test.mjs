@@ -30,3 +30,20 @@ test('loop181 第四階：陽內功逆催他派陰掌 ×0.65，練功累積內�
 test('loop181 舊局不吃催動與內傷', () => {
   const o = OLD(); tick(o, 0.1); const d = other(o); assert.deepEqual(A.innerDrive28(d, A.artById('basicFist')), { tier: 0, mul: 1 }); d.qiInjury = 80; assert.equal(A.injuryMul28(d), 1);
 });
+test('loop182 雜學收緊：公共武學不算跨派；兩派血統即分心 ×0.82；三派大成＋造詣 ≥58 才萬流歸宗', () => {
+  const [, d] = fresh('emei'); for (const id of ['basicFist', 'pushPalm', 'breath', 'snowStep', 'basicSword', 'stepEight']) give(d, id, 100);
+  assert.equal(A.polymath24(d), 0); give(d, 'emeiSword', 100); give(d, 'luoyingPalm', 30); assert.equal(A.polymath24(d), 1);
+  assert.ok(JSON.stringify(A.artMulParts(d, A.artById('emeiSword'))).includes('0.82'));
+  give(d, 'luoyingPalm', 100); assert.equal(A.polymath24(d), 1); /* 只有兩派大成 */
+  give(d, 'chousuiPalm', 100); const m = Math.max(...Object.keys(A.CATS).map((k) => A.mastery(d, k)));
+  assert.equal(A.polymath24(d), m >= 58 ? 2 : m >= 55 ? 0 : 1);
+});
+test('loop182 造詣門道偷師：造詣不足機率 0，達標或悟性 5 高機率', async () => {
+  const { stealCheck28, STEAL28 } = await import('../src/sect.mjs'); const { SECTS } = await import('../src/data.mjs');
+  const [, d] = fresh('emei'); d.wu = 3; const O = { tree: ['chousuiPalm'] };
+  const r0 = stealCheck28(null, [d], O); assert.equal(r0.a.id, 'chousuiPalm'); assert.equal(r0.need, 24); assert.equal(r0.p, 0);
+  d.wu = 5; const sc = A.mastery(d, A.primaryCat('chousuiPalm')) + STEAL28.wu5; const r1 = stealCheck28(null, [d], O);
+  assert.equal(r1.p, sc >= 24 ? Math.min(0.85, 0.45 + (sc - 24) * 0.015) : 0);
+  d.wu = 3; for (const id of ['jindingPalm', 'tiangangFinger', 'luoyingPalm', 'yingzhuaHand']) { give(d, id, 100); d.arts[id].gm = { e: 20, ms: 0 }; } const r2 = stealCheck28(null, [d], O);
+  assert.ok(r2.score >= 24 && r2.p >= 0.45 && r2.p <= 0.85); assert.ok(stealCheck28(null, [d], SECTS.gaibang));
+});

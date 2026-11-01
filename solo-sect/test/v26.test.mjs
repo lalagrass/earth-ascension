@@ -43,12 +43,12 @@ test('loop171 同門根基 1.18／一脈相承 1.28', () => {
   give(d, 'emeiJiuyang', 60); give(d, 'jindingPalm', 60); assert.deepEqual(A.sectLine24(d, A.artById('huifengSword')), ['一脈相承', 1.28]);
   assert.equal(A.sectLine24(d, A.artById('basicFist')), null); assert.ok(String(parts('huifengSword')).includes('一脈相承'));
 });
-test('loop171 雜學：跨兩派血統 → 分心 0.85；大成 ≥4 且造詣 ≥50 → 萬流歸宗', () => {
+test('loop171→182 雜學：跨兩派血統 → 分心；三派大成且造詣 ≥58 → 萬流歸宗', () => {
   const s = V({ sect24: 'emei' }); tick(s, 0.1); const d = other(s); d.arts = {}; give(d, 'emeiSword', 10); give(d, 'luoyingPalm', 10);
   assert.equal(A.polymath24(d), 1); assert.ok(A.styleBadges24(d).includes('【雜學分心】'));
   const r = A.artMulParts(d, A.artById('emeiSword')); assert.ok(JSON.stringify(r).includes('雜學分心'));
   for (const id of ['emeiSword', 'luoyingPalm', 'jindingPalm', 'tianluoPalm', 'chousuiPalm']) give(d, id, 100); d.mast = null;
-  const m = Math.max(...Object.keys(A.CATS).map((k) => A.mastery(d, k))); if (m >= 50) { assert.equal(A.polymath24(d), 2); assert.ok(A.styleDmg24(d) >= 1.18 - 1e-9); }
+  const m = Math.max(...Object.keys(A.CATS).map((k) => A.mastery(d, k))); if (m >= 58) { assert.equal(A.polymath24(d), 2); assert.ok(A.styleDmg24(d) >= 1.20 - 1e-9); }
 });
 test('loop172 華山二宗／武當成長鏈：資料照規格、v24 專屬', () => {
   const chk = (id, k, g, sc) => { const a = A.artById(id); assert.ok(a && a.v24 && a.classic && !a.secret && a.own24 === k && a.grade === g && a.school === sc, id); assert.ok(A.ART_CAT[id], id); if (sc !== 'inner' && sc !== 'step') assert.equal(a.techs.length, 2, id); };

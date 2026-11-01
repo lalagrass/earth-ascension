@@ -1,5 +1,5 @@
 import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS, SECT_PICK24 } from './data.mjs';
-import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24 } from './arts.mjs';
+import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS } from './arts.mjs';
 import { dpsOf } from './world.mjs';
 import { compat } from './social.mjs';
 import { affKey, relKey, log, resAdd, resSet, recordDeed } from './util.mjs';
@@ -241,6 +241,17 @@ export function bisai24(s) {
   log(s, `【山門大比】第 ${s.day} 日，${rank.length} 名弟子在演武場同門切磋，${c.name}技壓同儕，奪得演武魁首（心情 +${BISAI24.champMood}${gift ? '、' + gift : ''}）；全派比武印證，修練 +${BISAI24.allXp}。`);
   recordDeed(s, c, 'champ', { chron: `${c.name}奪得第 ${s.day} 日山門大比魁首` }); return c;
 }
+/* loop182 v2.8「外行看熱鬧、內行看門道」：對手樹（O.tree＋tree24）可偷武學 × 我方出陣者，score＝主門類造詣＋悟性（5：+18、4：+6），門檻 need＝12×品；
+   取 score−need 最大的一組（同分取 own24 在前）；未達門檻 p＝0，達標 p＝min(0.85, 0.45＋0.015×(score−need))。回 null＝無可偷 */
+export const STEAL28 = { per: 12, wu5: 18, wu4: 6, base: 0.45, k: 0.015, max: 0.85 };
+export function stealCheck28(s, team, O) {
+  const C = [...new Set([...(O.tree || []), ...(O.tree24 || [])])].map(artById).filter((a) => a && !a.secret && !a.signature && !a.derived && !PUB28.has(a.id)).sort((x, y) => !!y.own24 - !!x.own24);
+  let best = null; for (const a of C) { const cat = primaryCat(a.id), g = a.grade || 2, need = STEAL28.per * g;
+    for (const d of team) { if (d.arts?.[a.id] || !artOk(d, a)) continue; const wu = d.wu ?? 3, sc = (cat ? mastery(d, cat) : 0) + (wu >= 5 ? STEAL28.wu5 : wu >= 4 ? STEAL28.wu4 : 0);
+      if (!best || sc - need > best.score - best.need) best = { a, d, cat, need, score: sc }; } }
+  if (!best) return null; best.p = best.score < best.need ? 0 : Math.min(STEAL28.max, STEAL28.base + (best.score - best.need) * STEAL28.k); return best;
+}
+const PUB28 = new Set(['basicFist', 'pushPalm', 'sweepLeg', 'breath', 'snowStep', 'basicSword', 'wuhuBlade', 'shaolinStaff', 'tuinaHand', 'stepFeather', 'stepEight']);
 const pickOpp = (s, day) => { const P = HUIWU24.pool.filter((k) => k !== s.sect?.id && SECTS[k]); return P[Math.floor(hh(`${s.seed}:huiwu:${day}`) * P.length)]; };
 export function huiwuTeam(s) { return fighters24(s).map((d) => ({ d, p: dpsOf(s, d) })).sort((a, b) => b.p - a.p || (a.d.id < b.d.id ? -1 : 1)).slice(0, 3); }
 const guiMul = (s, team) => 1 + HUIWU24.guiK * Math.max(...['zhenfa', 'yishu', 'dushu'].map((c) => specK(bestSpec(s, c, team.map((x) => x.d)))), 0);
@@ -268,7 +279,11 @@ export function huiwuResolve(s, ch, i) {
     recordDeed(s, null, 'huiwu', { chron: `${H.name}力挫${O.name}，得【${H.title}】` }); }
   else log(s, `【${H.name}】以「${HUIWU24.opts[i].split('：')[0]}」排陣，${txt}——不敵${O.name}。`);
   const fs = L.filter((b) => b.d).map((b) => b.d), thief = (i === 2 ? [...fs].sort((a, b) => Math.max(...['zhenfa', 'yishu', 'dushu'].map((c) => bestSpec(s, c, [b]))) - Math.max(...['zhenfa', 'yishu', 'dushu'].map((c) => bestSpec(s, c, [a]))) || (b.wu ?? 3) - (a.wu ?? 3)) : [...fs].sort((a, b) => (b.wu ?? 3) - (a.wu ?? 3)))[0];
-  if (thief && hh(`${s.seed}:steal:${ch.day}`) < HUIWU24.steal) { const C = O.tree.map(artById).filter((a) => a && !thief.arts?.[a.id] && artOk(thief, a) && !a.secret && !a.signature && !a.derived), a = C.find((x) => x.own24) || C[0]; /* loop169 他派專屬優先；不受 lockedArt24（偷師即跨派管道） */
+  if (s.v24 && fs.length) { const r = stealCheck28(s, fs, O), u = hh(`${s.seed}:steal:${ch.day}`), W = (s.v28n ??= {}); /* loop182 v2.8 造詣門道偷師 */
+    if (r) { W.stealTry = (W.stealTry || 0) + 1; const { a, d: who, need, cat } = r;
+      if (!r.p) { W.stealZero = (W.stealZero || 0) + 1; if (u < 0.5) log(s, `【臨陣觀摩】${who.name}見${O.name}使出《${a.name}》精妙非凡，奈何自身${CATS[cat]?.name || '武學'}造詣未至（需 ${need}），未能窺破門道。`); }
+      else if (u < r.p) { learnArt(who, a.id, s.t); who.arts[a.id].xp = Math.max(who.arts[a.id].xp, BISAI24.newXp); N.steal = (N.steal || 0) + 1; log(s, `【臨陣偷師】${who.name}在場邊看出${O.name}招式精要，竟學會了《${a.name}》！`); recordDeed(s, who, 'steal', { chron: `${who.name}在${H.name}上偷師${O.name}《${a.name}》` }); } } }
+  else if (thief && hh(`${s.seed}:steal:${ch.day}`) < HUIWU24.steal) { const C = O.tree.map(artById).filter((a) => a && !thief.arts?.[a.id] && artOk(thief, a) && !a.secret && !a.signature && !a.derived), a = C.find((x) => x.own24) || C[0];
     if (a) { learnArt(thief, a.id, s.t); thief.arts[a.id].xp = Math.max(thief.arts[a.id].xp, BISAI24.newXp); N.steal = (N.steal || 0) + 1; log(s, `【臨陣偷師】${thief.name}在場邊看出${O.name}招式精要，竟學會了《${a.name}》！`); recordDeed(s, thief, 'steal', { chron: `${thief.name}在${H.name}上偷師${O.name}《${a.name}》` }); } }
   return true;
 }
