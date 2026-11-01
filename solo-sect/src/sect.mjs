@@ -1,5 +1,5 @@
 import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS, SECT_PICK24 } from './data.mjs';
-import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS } from './arts.mjs';
+import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS, qiInjuryFight28 } from './arts.mjs';
 import { dpsOf } from './world.mjs';
 import { compat } from './social.mjs';
 import { affKey, relKey, log, resAdd, resSet, recordDeed } from './util.mjs';
@@ -274,6 +274,7 @@ export function huiwuResolve(s, ch, i) {
   s.choices = s.choices.filter((c) => c !== ch); const H = HUIWU24.days[ch.day], O = SECTS[ch.opp], team = huiwuTeam(s); if (!team.length) { log(s, `【${H.name}】門下無人可出陣，只得作罷。`); return true; }
   const L = lineup24(s, team, H.opp, i), res = L.map((b, k) => hh(`${s.seed}:bout:${ch.day}:${k}`) < boutWin(b.p, b.o)); const w = res.filter(Boolean).length, win = w >= 2;
   const N = (s.v24n ??= {}); N.huiwu = (N.huiwu || 0) + 1; N.huiwuWin = (N.huiwuWin || 0) + (win ? 1 : 0); (N.lineup ??= [0, 0, 0])[i]++;
+  qiInjuryFight28(s, L.filter((b) => b.d).map((b) => b.d), log); /* loop186 會武實戰累積逆催內傷 */
   const pos = ['先鋒', '中堅', '主將'], txt = L.map((b, k) => `${pos[k]}${b.d ? b.d.name : '（缺陣）'}${res[k] ? '勝' : '負'}`).join('、');
   if (win) { s.rep = (s.rep || 0) + HUIWU24.rep; resAdd(s, 'coin', HUIWU24.coin); resAdd(s, 'lingshi', HUIWU24.lingshi); (s.sect.trophies ??= []).push(`【${H.title}】`);
     log(s, `【${H.name}】以「${HUIWU24.opts[i].split('：')[0]}」排陣，${txt}——${w} 勝，力挫${O.name}！名聲 +${HUIWU24.rep}、賞銀 +${HUIWU24.coin}、靈石 +${HUIWU24.lingshi}，得【${H.title}】。`);

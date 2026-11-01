@@ -23,9 +23,9 @@ test('loop181 第三階：只靠吐納催動三品外功 ×0.78；第二階：�
 test('loop181 第四階：陽內功逆催他派陰掌 ×0.65，練功累積內傷，打坐與醫館化解', () => {
   const [s, d] = fresh('gaibang'); give(d, 'huntianGong', 60); give(d, 'chousuiPalm', 30); d.focus = 'chousuiPalm';
   assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 4, mul: 0.65 });
-  for (let i = 0; i < 4; i++) A.qiInjuryAdd28(s, d); assert.equal(d.qiInjury, 24); assert.equal(s.v28n.inj, 1);
+  for (let i = 0; i < 4; i++) A.qiInjuryAdd28(s, d); assert.equal(d.qiInjury, 32); assert.equal(s.v28n.inj, 1); /* loop186 +8 */
   assert.ok(A.injuryMul28(d) < 0.91 && A.injuryMul28(d) >= 0.75); assert.ok(A.styleBadges24(d).includes('⚠️【經脈內傷】'));
-  A.qiInjuryCure28(s, d, A.DRIVE28.med); assert.equal(d.qiInjury, 16); A.qiInjuryCure28(s, d, A.DRIVE28.heal); assert.equal(d.qiInjury, 0); assert.equal(s.v28n.cure, 1);
+  A.qiInjuryCure28(s, d, A.DRIVE28.med); assert.equal(d.qiInjury, 24); A.qiInjuryCure28(s, d, A.DRIVE28.heal); assert.equal(d.qiInjury, 0); assert.equal(s.v28n.cure, 1);
 });
 test('loop181 舊局不吃催動與內傷', () => {
   const o = OLD(); tick(o, 0.1); const d = other(o); assert.deepEqual(A.innerDrive28(d, A.artById('basicFist')), { tier: 0, mul: 1 }); d.qiInjury = 80; assert.equal(A.injuryMul28(d), 1);
@@ -68,14 +68,14 @@ test('loop184 四階齊備：同一弟子依內外搭配落在第一至第四階
 });
 test('loop184 內傷：第四階練功 +6、≥50 每日扣血扣心情、醫館有藥師清零、離開第四階每日 −6', () => {
   const [s, d] = fresh('gaibang'); give(d, 'huntianGong', 60); give(d, 'chousuiPalm', 30); d.focus = 'chousuiPalm';
-  for (let i = 0; i < 9; i++) A.qiInjuryAdd28(s, d); assert.equal(d.qiInjury, 54); assert.ok(A.injuryMul28(d) < 0.9 && A.injuryMul28(d) >= 0.75); d.qiInjury = 100; assert.equal(A.injuryMul28(d), 0.75);
+  for (let i = 0; i < 9; i++) A.qiInjuryAdd28(s, d); assert.equal(d.qiInjury, 72); assert.ok(A.injuryMul28(d) < 0.9 && A.injuryMul28(d) >= 0.75); d.qiInjury = 100; assert.equal(A.injuryMul28(d), 0.75);
   A.qiInjuryCure28(s, d, 999); assert.equal(d.qiInjury, 0);
   d.qiInjury = 30; d.focus = null; delete d.arts.chousuiPalm; give(d, 'basicFist', 10);
   assert.ok(typeof A.injuryDaily28 !== 'function' || (A.injuryDaily28(s, d), d.qiInjury <= 24));
 });
 test('loop184 一練七傷：無聖火心法小成練七傷拳落第四階', () => {
   const [, d] = fresh('mingjiao'); give(d, 'qishangFist', 10); assert.equal(drive(d, 'qishangFist').tier, 4);
-  give(d, 'shenghuoXinfa', 30); assert.notEqual(drive(d, 'qishangFist').tier, 4);
+  give(d, 'shenghuoXinfa', 30); assert.equal(drive(d, 'qishangFist').tier, 4); give(d, 'shenghuoXinfa', 60); assert.notEqual(drive(d, 'qishangFist').tier, 4); /* loop186 大成才解 */
 });
 test('loop184 執事替武當自動興建紫霄宮', () => {
   const s = V({ sect24: 'wudang', steward: true }); tick(s, 0.1); assert.ok(s.steward); s.sect.fac = false; s.rep = 50; for (const k of ['wood', 'stone', 'coin']) { s.res[k] = 999; if (s.cap?.[k] != null) s.cap[k] = 9999; }

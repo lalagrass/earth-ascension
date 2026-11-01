@@ -1672,3 +1672,9 @@
 ### 回顧（Loop 185）
 - 達成：鎮派建築 34/40、非名俠 MVP 19.2%、圍山勝率小升、武當/無名皆升。
 - 未達：內傷未在對局中出現；本門三才 ×1.28 幾乎無人觸發；根基只見武當。
+
+## Loop 186 — v2.9 Batch 1：四項開放決定（決定 238–241）
+- arts.mjs：`clashOuter28`、`qiInjuryFight28`、`rootTrain28`；`sectClasses24` 放寬、`baseInner28` 全派根基、七傷拳第四階條件。data.mjs：七傷拳前置。threat.mjs／sect.mjs：守柵、迎戰、會武累積內傷。
+- 新增 `test/v29.test.mjs` 4 項；v26/v28 依新數值改寫。
+- 快驗（SS_DT=1 bot 6 局）：0 崩潰；內傷觸發 24／化解 12、syn3 16、root [82,4,34,1,13]、根基先練 38。
+- quick 467、sect-chronicle 383、Python 53。golden-30d-v22 d3b5d689c74d2c64 → 69942a90887c52f1。

@@ -32,7 +32,7 @@ test('loop171→181 同門成套：只算本門專屬；公共身法不計；成
   const s = V({ sect24: 'emei' }); tick(s, 0.1); const d = other(s); for (const id of Object.keys(d.arts)) if (d.stree.includes(id)) delete d.arts[id];
   assert.equal(A.sectClasses24(d), 0);
   give(d, 'emeiJiuyang', 30); give(d, 'emeiSword', 30); assert.equal(A.sectClasses24(d), 2); assert.equal(A.styleDmg24(d) / (A.polymath24(d) === 2 ? A.SYN24.conv : 1) / A.injuryMul28(d), 1);
-  give(d, 'stepFeather', 30); assert.equal(A.sectClasses24(d), 2); assert.ok(!A.styleBadges24(d).includes('【本門正宗】'));
+  give(d, 'stepFeather', 30); assert.equal(A.sectClasses24(d), d.stree.includes('stepFeather') ? 3 : 2); /* loop186 決定 2：本門 2 類＋本門樹公共身法即三才 */
   const o = OLD(); tick(o, 0.1); const od = hero(o); assert.equal(A.styleDmg24(od), 1); assert.equal(A.sectClasses24(od), 0);
 });
 test('loop171 同門根基 1.18／一脈相承 1.28', () => {
@@ -67,7 +67,7 @@ test('loop172 氣宗紫霞：掌門華山心法大成可領悟（第一層），
 test('loop173 丐幫／明教成長鏈：資料、tree24、僅 v24 新局併入；會武可偷', () => {
   const G = { gaibang: ['huntianGong', 'xiaoyaoStep', 'lianhuaPalm', 'fengmoStaff'], mingjiao: ['shenghuoXinfa', 'qingfuStep', 'yingzhuaHand', 'qishangFist'] };
   for (const [k, ids] of Object.entries(G)) for (const id of ids) { const a = A.artById(id); assert.ok(a && a.v24 && a.classic && !a.secret && !a.signature && a.own24 === k, id); assert.ok(A.ART_CAT[id], id); assert.ok(SECTS[k].tree24.includes(id), id); assert.ok(!SECTS[k].tree.includes(id), id); }
-  assert.deepEqual(A.artById('qishangFist').req, [{ art: 'yingzhuaHand', tier: 2 }, { art: 'shenghuoXinfa', tier: 1 }]); assert.equal(A.artById('fengmoStaff').weapon, 'staff'); assert.deepEqual(A.ART_CAT.yingzhuaHand, { quanzhang: 0.7, qimen: 0.3 });
+  assert.deepEqual(A.artById('qishangFist').req, [{ art: 'yingzhuaHand', tier: 1 }]); /* loop186 */ assert.equal(A.artById('fengmoStaff').weapon, 'staff'); assert.deepEqual(A.ART_CAT.yingzhuaHand, { quanzhang: 0.7, qimen: 0.3 });
   const s = V({ sect24: 'gaibang' }); tick(s, 0.1); assert.ok(s.sect.tree.includes('huntianGong'));
   const o = createState(7, { kind: 'template', id: 'guojing', askMajor: false }); assert.ok(!o.sect.tree.includes('huntianGong'));
 });

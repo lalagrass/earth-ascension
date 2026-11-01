@@ -1,6 +1,6 @@
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
 import { NODES, EDGES, DAY, FACILITIES, MOVES } from './data.mjs';
-import { qiInjuryAdd28, innerDrive28, mainOuter28, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
+import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuter28, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
 import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of } from './sect.mjs';
 import { peaceDelay } from './economy.mjs';
@@ -230,13 +230,13 @@ export function bandStep(s, dt, H) {
   const defs = s.ds.filter((d) => d.task?.act === 'defend' && d.task.phase === 'do');
   if (s.v23 && hasPoison(s, defs)) b.psn = s.t + SPEC.poisonT; /* loop151 毒術：守柵者中有毒術者，山賊中毒 */
   const dmg = defs.reduce((a, d) => a + defenderDps(d), 0) * def24Of(s) * dt /* loop183 紫霄宮守柵 */ + (b.psn > s.t ? SPEC.poisonDps * (s.psnK24 || 1) * dt : 0); b.hp -= dmg; b.defDealt += dmg;
-  if (b.hp <= 0) { s.band = null; X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; log(s, `守柵迎敵——${defs.map((d) => d.name).join('、') || '眾人'}把山賊打退了！名聲 +${RAID.rep}。`); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: 'win', hurt: null, map: true, fence: s.fence?.hp ?? 0 }); if (s.v22) { for (const d of defs) recordDeed(s, d, 'defend'); recordDeed(s, null, 'raid', b.boss ? {} : { chron: `守柵打退山賊（${defs.map((d) => d.name).join('、') || '眾人'}）` }); } bossEnd(s, b, true, defs); nextWave(s, b, true); return; }
+  if (b.hp <= 0) { qiInjuryFight28(s, defs, log); /* loop186 守柵實戰 */ s.band = null; X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; log(s, `守柵迎敵——${defs.map((d) => d.name).join('、') || '眾人'}把山賊打退了！名聲 +${RAID.rep}。`); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: 'win', hurt: null, map: true, fence: s.fence?.hp ?? 0 }); if (s.v22) { for (const d of defs) recordDeed(s, d, 'defend'); recordDeed(s, null, 'raid', b.boss ? {} : { chron: `守柵打退山賊（${defs.map((d) => d.name).join('、') || '眾人'}）` }); } bossEnd(s, b, true, defs); nextWave(s, b, true); return; }
   b.clock += dt; if (b.clock < BAND.hitEvery) return; b.clock -= BAND.hitEvery;
   const fd0 = Math.max(BAND.fenceDmg.min, Math.round(b.pts * BAND.fenceDmg.k)), fd = s.v23 ? Math.max(1, Math.round(fd0 * (1 - SPEC.zhenMit * zhenK(s)) * (b.psn > s.t ? 1 - SPEC.poisonWeak : 1))) : fd0; b.fenceDealt += fd; /* loop151 陣法護柵 */
   if (fenceHit(s, fd, '山賊', true).held) return;
   if (s.v22) shelterOnBreak(s, H);
   // loop14（方案 A）：柵破不再直接判敗，改回原勝率公式 winP 擲骰（與無柵同規則）
-  s.band = null; const win = R(s) < winP(s, Math.max(1, b.hp)); let hurt = null; /* 用剩餘山賊戰力（守柵已削弱的部分算數） */
+  s.band = null; const win = R(s) < winP(s, Math.max(1, b.hp)); let hurt = null; qiInjuryFight28(s, s.ds.filter((d) => d.task?.act === 'defend'), log); /* loop186 */ /* 用剩餘山賊戰力（守柵已削弱的部分算數） */
   if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `木柵被撞破，眾人短兵相接——打退了山賊！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else hurt = raidLose(s, H, '木柵被撞破，');
   bossEnd(s, b, win, s.ds.filter((d) => d.task?.act === 'defend'));
@@ -256,7 +256,7 @@ export function raidResolve(s, i, H, auto = false) {
   X.pending = null; const who = auto ? '執事代為決定：' : ''; if (P.kind || X.cur) X.cur = P.kind;
   if (i === 0 && !P.noPay && s.res.coin >= P.demand) { resAdd(s, 'coin', -P.demand); X.paid++; valorAdd(s, VALOR.pay); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), n: P.n, day: P.day, pts: P.pts, pay: P.demand }); log(s, `${who}付了 ${P.demand} 兩，山賊點完錢下山去了。`); return { ok: true, paid: P.demand }; }
   if (fenceUp(s)) { X.fought++; valorAdd(s, VALOR.fight); s.band = newBand(P, FENCE.node); if (P.kind) s.band.kind = P.kind; if (P.wave) s.band.wave = P.wave; if (P.boss) s.band.boss = true; log(s, `${who}決定迎戰：${P.n > 0 ? '' : ''}一夥山賊（${P.pts}）從山門朝菜園木柵殺來！`); return { ok: true, band: true }; } // loop3：有柵改上地圖
-  X.fought++; valorAdd(s, VALOR.fight); const win = R(s) < P.p; let hurt = null;
+  X.fought++; valorAdd(s, VALOR.fight); const win = R(s) < P.p; let hurt = null; qiInjuryFight28(s, s.ds.filter(canDefend), log); /* loop186 迎戰實戰 */
   if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `${who}迎戰山賊——打退了！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else hurt = raidLose(s, H, who);
   bossEnd(s, P, win, []);
