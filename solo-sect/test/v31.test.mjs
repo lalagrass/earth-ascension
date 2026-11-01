@@ -55,6 +55,32 @@ test('loop196 輕功身法的腳程與閃避乘同一催動係數', () => {
   assert.equal(evadeScore(bare), bare.skills.agility + tierPts + lazy);
 });
 
+test('loop197 內功品階與十重：同階大成，高品內力更高，階內重數連續成長', () => {
+  const one = (id, xp) => ({ v24: true, arts: { [id]: { xp } } });
+  const old = { arts: { breath: { xp: 55 } }, ng2: 1 };
+  assert.equal(A.qiMax2(old), A.NG2.cap[2]); assert.equal(A.mitOf(old), A.NG2.mit[2]);
+  assert.ok(Math.abs(A.qiMax2(one('breath', 55)) - 45 * A.GRADE_NG24[1]) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('emeiJiuyang', 55)) - 45 * A.GRADE_NG24[2]) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('zixia', 55)) - 45 * A.GRADE_NG24[3]) < 1e-9);
+  assert.ok(Math.abs(A.ngTierCont24(one('bixie', 55), 'bixie') - 45 * A.GRADE_NG24[4]) < 1e-9);
+  const lv1 = A.qiMax2(one('breath', 55)), lv9 = A.qiMax2(one('breath', 80));
+  assert.ok(lv9 > lv1); assert.ok(Math.abs(lv9 - (45 + (70 - 45) * 0.8) * A.GRADE_NG24[1]) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('zixia', 100)) - 100 * A.GRADE_NG24[3]) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('zixia', 99)) - (70 + (100 - 70) * 0.9) * A.GRADE_NG24[3]) < 1e-9);
+  assert.ok(Math.abs(A.mitOf(one('zixia', 55)) - 0.08 * A.GRADE_NG24[3]) < 1e-9);
+  const piled = { v24: true, arts: { breath: { xp: 100 }, zixia: { xp: 100 }, jiuyang: { xp: 100 }, emeiJiuyang: { xp: 100 } } };
+  assert.equal(A.qiMax2(piled), A.NG2.total24); assert.ok(A.mitOf(piled) <= A.NG2.mitCap24);
+});
+test('loop197 品階難度：一品略快、二品不加、三四品變慢', () => {
+  const d = { v24: true, arts: {}, personality: [], wu: 3, pairMul: 0 };
+  const name = (id) => A.artMulParts(d, A.artById(id)).parts.ext.find((x) => x[0] === '品階難度');
+  assert.deepEqual(name('breath'), ['品階難度', 1.12]);
+  assert.equal(name('emeiJiuyang'), undefined);
+  assert.deepEqual(name('zixia'), ['品階難度', 0.78]);
+  assert.deepEqual(name('bixie'), ['品階難度', 0.65]);
+  const old = { arts: {}, personality: [], wu: 3, pairMul: 0 };
+  assert.equal(A.artMulParts(old, A.artById('zixia')).parts.ext.find((x) => x[0] === '品階難度'), undefined);
+});
 test('loop196 本門正宗打坐 ×1.15，未大成不乘', () => {
   const [, d] = fresh('gaibang'); give(d, 'huntianGong', 60);
   const q0 = A.medQi(d); assert.equal(A.sectClasses24(d), 0);
