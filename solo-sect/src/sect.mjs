@@ -1,5 +1,5 @@
 import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS, SECT_PICK24 } from './data.mjs';
-import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS, qiInjuryFight28, temper29, TEMPER29 } from './arts.mjs';
+import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS, qiInjuryFight28, temper29, TEMPER29, yunvOpen24 } from './arts.mjs';
 import { dpsOf } from './world.mjs';
 import { compat } from './social.mjs';
 import { affKey, relKey, log, resAdd, resSet, recordDeed } from './util.mjs';
@@ -120,7 +120,10 @@ export function sectRoots24(s) {
   if (!h) return; const give = (id) => { if (!artById(id)) return; const had = !!h.arts?.[id]; h.arts ??= {}; learnArt(h, id, s.t); if (!had) h.arts[id].xp = Math.max(h.arts[id].xp, T1_XP24); };
   if (S.id === 'wuming' && s.hero?.kind === 'custom') { const kit = WUMING_KIT24[s.hero.main] || WUMING_KIT24.wu; for (const id of kit) { give(id); if (!S.tree.includes(id)) S.tree.push(id); } S.kit24 = kit; return; }
   const t1 = S.tree.map(artById).filter((a) => a && !a.secret && !a.signature && !(a.req || []).length);
-  const inner = t1.find((a) => a.school === 'inner'), outer = t1.find((a) => a.school !== 'inner' && a.school !== 'step'); for (const a of [inner, outer]) if (a) give(a.id);
+  /* loop191：吐納補在峨眉、桃花、星宿樹首時，掌門仍帶原本那門無前置的本門內功。武當、氣宗等本來就以吐納為 T1，不改。 */
+  const inners = t1.filter((a) => a.school === 'inner');
+  const ownInner = inners.find((a) => !a.isPublic && a.own24 === S.id);
+  const inner = (['emei', 'taohua', 'xingxiu'].includes(S.id) && ownInner) ? ownInner : inners[0], outer = t1.find((a) => a.school !== 'inner' && a.school !== 'step'); for (const a of [inner, outer]) if (a) give(a.id);
 }
 const heroD = (s) => s.ds.find((d) => d.id === 'hero');
 export const sectFac = (s) => SECTS[s.sect?.id]?.fac;
@@ -234,7 +237,7 @@ export function bisai24(s) {
   c.mood = Math.min(100, (c.mood || 0) + BISAI24.champMood);
   for (const d of s.ds) if (d.champ28) d.champ28 = false; c.champ28 = true; /* loop183 v2.8 當屆大比首徒：練功 +25%、割草 +0.25，至下屆大比 */
   c.chief24 = true; /* loop171 v2.6 大比魁首升任魁首位階，可受鎮派絕學（chiefOnly24） */
-  const nxt = ownTree(s).map(artById).find((a) => a && !c.arts?.[a.id] && artOk(c, a) && (!a.secret || a.derived) && !a.signature && !reqMissing(c, a).length);
+  const nxt = ownTree(s).map(artById).find((a) => a && !c.arts?.[a.id] && artOk(c, a) && (!a.secret || a.derived || yunvOpen24(c, a)) && (!a.signature || yunvOpen24(c, a)) && !reqMissing(c, a).length);
   let gift; if (nxt) { learnArt(c, nxt.id, s.t); c.arts[nxt.id].xp = Math.max(c.arts[nxt.id].xp, BISAI24.newXp); gift = `掌門親傳《${nxt.name}》`; }
   else { const own = Object.keys(c.arts || {}).filter((id) => ownTree(s).includes(id)); const id = own.sort((a, b) => c.arts[b].xp - c.arts[a].xp)[0] || focusOf(c); if (id) { bump(c, id, BISAI24.champXp); gift = `《${artById(id).name}》熟練 +${BISAI24.champXp}`; } }
   for (const { d } of rank) { const id = focusOf(d); if (id) bump(d, id, BISAI24.allXp); }
@@ -246,13 +249,12 @@ export function bisai24(s) {
    取 score−need 最大的一組（同分取 own24 在前）；未達門檻 p＝0，達標 p＝min(0.85, 0.45＋0.015×(score−need))。回 null＝無可偷 */
 export const STEAL28 = { per: 12, wu5: 18, wu4: 6, base: 0.45, k: 0.015, max: 0.85 };
 export function stealCheck28(s, team, O) {
-  const C = [...new Set([...(O.tree || []), ...(O.tree24 || [])])].map(artById).filter((a) => a && !a.secret && !a.signature && !a.derived && !PUB28.has(a.id)).sort((x, y) => !!y.own24 - !!x.own24);
+  const C = [...new Set([...(O.tree || []), ...(O.tree24 || [])])].map(artById).filter((a) => a && !a.secret && !a.signature && !a.derived && !a.isPublic).sort((x, y) => !!y.own24 - !!x.own24);
   let best = null; for (const a of C) { const cat = primaryCat(a.id), g = a.grade || 2, need = STEAL28.per * g;
     for (const d of team) { if (d.arts?.[a.id] || !artOk(d, a)) continue; const wu = d.wu ?? 3, sc = (cat ? mastery(d, cat) : 0) + (wu >= 5 ? STEAL28.wu5 : wu >= 4 ? STEAL28.wu4 : 0) + (temper29(d).ling ? TEMPER29.steal : 0); /* loop187 靈心慧眼 */
       if (!best || sc - need > best.score - best.need) best = { a, d, cat, need, score: sc }; } }
   if (!best) return null; best.p = best.score < best.need ? 0 : Math.min(STEAL28.max, STEAL28.base + (best.score - best.need) * STEAL28.k); return best;
 }
-const PUB28 = new Set(['basicFist', 'pushPalm', 'sweepLeg', 'breath', 'snowStep', 'basicSword', 'wuhuBlade', 'shaolinStaff', 'tuinaHand', 'stepFeather', 'stepEight']);
 const pickOpp = (s, day) => { const P = HUIWU24.pool.filter((k) => k !== s.sect?.id && SECTS[k]); return P[Math.floor(hh(`${s.seed}:huiwu:${day}`) * P.length)]; };
 export function huiwuTeam(s) { return fighters24(s).map((d) => ({ d, p: dpsOf(s, d) })).sort((a, b) => b.p - a.p || (a.d.id < b.d.id ? -1 : 1)).slice(0, 3); }
 const guiMul = (s, team) => 1 + HUIWU24.guiK * Math.max(...['zhenfa', 'yishu', 'dushu'].map((c) => specK(bestSpec(s, c, team.map((x) => x.d)))), 0);

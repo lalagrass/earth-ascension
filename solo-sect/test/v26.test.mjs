@@ -55,7 +55,7 @@ test('loop172 華山二宗／武當成長鏈：資料照規格、v24 專屬', ()
   chk('huashanXinfa', 'qizong', 1, 'inner'); chk('pishiFist', 'qizong', 1, 'fist'); chk('hunyuanPalm', 'qizong', 2, 'palm'); chk('kuangfengSword', 'jianzong', 3, 'palm'); chk('wudangXinfa', 'wudang', 1, 'inner'); chk('mianPalm', 'wudang', 2, 'palm');
   assert.deepEqual(A.artById('hunyuanPalm').req, [{ art: 'pishiFist', tier: 1 }, { art: 'huashanXinfa', tier: 1 }]); assert.deepEqual(A.artById('wudangJiuyang').req, [{ art: 'wudangXinfa', tier: 1 }]);
   assert.deepEqual(SECTS.qizong.tree24, ['huashanXinfa', 'zixia', 'pishiFist', 'hunyuanPalm', 'basicSword', 'huashanSword', 'sanxianSword', 'snowStep']); assert.deepEqual(SECTS.qizong.unlock24, { zixia: [{ art: 'huashanXinfa', tier: 2 }] });
-  assert.deepEqual(SECTS.jianzong.tree24, ['breath', 'basicSword', 'huashanSword', 'sanxianSword', 'kuangfengSword', 'snowStep', 'stepFeather', 'dugu']); assert.ok(SECTS.wudang.tree.includes('mianPalm') && SECTS.wudang.tree.includes('wudangXinfa'));
+  assert.deepEqual(SECTS.jianzong.tree24, ['breath', 'jianzongXinfa', 'basicSword', 'huashanSword', 'sanxianSword', 'kuangfengSword', 'snowStep', 'stepFeather', 'dugu']); assert.ok(SECTS.wudang.tree.includes('mianPalm') && SECTS.wudang.tree.includes('wudangXinfa'));
   assert.ok(A.isSwordArt('kuangfengSword'));
 });
 test('loop172 氣宗紫霞：掌門華山心法大成可領悟（第一層），一般弟子不行', () => {
