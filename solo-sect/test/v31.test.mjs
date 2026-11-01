@@ -139,7 +139,7 @@ test('loop199 劍宗前期快、氣宗後期以氣御劍', () => {
   assert.ok(!A.styleBadges24(qe).includes('【以氣御劍】'));
   const qeJ = { ...qe, sectId: 'jianzong' }, qeW = { ...qe, sectId: 'wuming' };
   assert.equal(A.qiStrikeMul(qeJ), A.qiStrikeMul(qe)); assert.equal(A.qiStrikeMul(qeW), A.qiStrikeMul(qe));
-  const late = { v24: true, v23: true, sectId: 'qizong', qi: 160, ng: 1, moves: [], arts: { zixia: { xp: 90 }, huashanXinfa: { xp: 60 } } };
+  const late = { v24: true, v23: true, sectId: 'qizong', qi: 160, ng: 1, moves: [], arts: { zixia: { xp: 90 }, huashanXinfa: { xp: 60 }, huashanSword: { xp: 40 } } }; /* loop204：以氣御劍看主修練法，不看氣宗 */
   const lateMul = Math.min(1.62, 1.06 + 0.12 + 0.12 + 0.08 + 0.08 * 1.6);
   assert.ok(lateMul >= 1.45 && lateMul <= 1.62); assert.ok(Math.abs(A.qiSwordMul24(late) - lateMul) < 1e-9);
   assert.ok(A.styleBadges24(late).includes('【以氣御劍】')); assert.match(artsGrowHtml(late, 0, false), /主運《紫霞神功》3品/); assert.match(artsGrowHtml(late, 0, false), /【以氣御劍】/);

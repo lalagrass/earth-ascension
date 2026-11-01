@@ -277,7 +277,7 @@ export function artsSvg(d) {
     for (const r of a.req) { const b = artById(r.art), [bx, by] = pos(b), ok = artTier(d, b.id) >= r.tier; lines += `<line x1="${bx + W}" y1="${by + H / 2}" x2="${x}" y2="${y + H / 2}" stroke="${ok ? '#7a9a5a' : '#bbb'}" stroke-width="2" ${ok ? '' : 'stroke-dasharray="4 3"'}/>`; }
     const fill = { learned: '#e7f0dc', pending: '#f7e6a8', open: '#f2ecd8', locked: '#eee' }[st.st];
     const xp = d.arts?.[a.id]?.xp; const sub = st.st === 'learned' ? `${TIERS[st.tier][1]} ${xp.toFixed(1)}` : st.st === 'pending' ? '可求學' : st.st === 'open' ? (fits(d, a) ? '條件已足' : '非本門路數') : clip(st.why, 9); // v1.8 A7：鎖住也直接寫出缺什麼
-    boxes += `<g data-art="${a.id}" class="art ${st.st}"><title>${a.name}（${'凡良精絕神'[a.grade - 1]}・${a.tags.join('')}${a.wuxingMin ? `・悟性≥${a.wuxingMin}` : ''}）${st.why ? '：' + st.why : ''}</title><rect x="${x}" y="${y}" width="${W}" height="${H}" rx="5" fill="${fill}" stroke="${focusOf(d) === a.id ? '#b0482e' : '#998'}" stroke-width="${focusOf(d) === a.id ? 2.5 : 1}"/>`
+    const mt = modeTitle31(d, a); boxes += `<g data-art="${a.id}" class="art ${st.st}"><title>${a.name}（${'凡良精絕神'[a.grade - 1]}・${a.tags.join('')}${mt ? `・${mt}` : ''}${a.wuxingMin ? `・悟性≥${a.wuxingMin}` : ''}）${st.why ? '：' + st.why : ''}</title><rect x="${x}" y="${y}" width="${W}" height="${H}" rx="5" fill="${fill}" stroke="${focusOf(d) === a.id ? '#b0482e' : '#998'}" stroke-width="${focusOf(d) === a.id ? 2.5 : 1}"/>`
       + `<text x="${x + 6}" y="${y + 16}" font-size="13">${a.name}${st.st === 'learned' && gated(d, a) ? ' ⛔' : ''}</text><text x="${x + 6}" y="${y + 32}" font-size="11" fill="#665">${sub}</text>`
       + (st.st === 'learned' ? `<rect x="${x + 70}" y="${y + 26}" width="${42}" height="6" fill="#ddd"/><rect x="${x + 70}" y="${y + 26}" width="${(42 * xp) / 100}" height="6" fill="#7a9a5a"/>` : '') + '</g>';
   }
@@ -462,7 +462,7 @@ export function floatMul31(a) {
   const q = Number.isFinite(a?.qiScale) ? a.qiScale : MODE31.base.qiScale;
   return 1 - (1 - DRIVE28.t3) * Math.min(1, q / 0.40);
 }
-/* 徽章仍讀這兩個，直到 loop204 改成不看門派。氣宗判斷已拿掉，不再進傷害。 */
+/* 舊公式留著給既有單測。徽章不再讀它，也不再看門派。 */
 export function qiSwordOn24(d) { return !!(d?.v24 && innerArts(d).length && ((d.zixia || 0) >= 2 || artTier(d, 'zixia') >= 2)); }
 export function qiSwordMul24(d) {
   const M = mainInner28(d), g = M?.grade || 1, t = M ? artTier(d, M.id) : 0;
@@ -484,6 +484,13 @@ export function qiStrikeMul(d, a) {
   const scale = Number.isFinite(a?.qiScale) ? a.qiScale : MODE31.base.qiScale;
   return 1 + scale * Math.min(1.6, qiOf(d) / 100) * (1 + 0.004 * neigongEff31(d));
 }
+export const MODE_NAME31 = { base: '築基', lian: '練法', da: '打法' };
+/* 武學圖與練功列共用。純內功沒有 mode，回空字串。 */
+export function modeTitle31(d, a) {
+  if (!a?.mode || !MODE_NAME31[a.mode]) return '';
+  const q = Number.isFinite(a.qiScale) ? a.qiScale : MODE31[a.mode].qiScale;
+  return `${MODE_NAME31[a.mode]}・內勁係數 ${q}・內勁 ×${qiStrikeMul(d, a).toFixed(2)}`;
+}
 export const qiAoeAdd = (d, mv) => (d?.v23 && mv.aoe && qiOf(d) >= NG23.qiAoeAt ? NG23.qiAoe : 0);
 // loop157 修正：招式沒有 skill:'sword'，改看所屬武學是否劍法；獨孤九劍各式不在 techs，以 fx 'dugu' 認
 /* loop159 v2.4 Batch 0.2：isSwordArt 依規格（ART_CAT 劍法、weapon:'sword'、id 含 sword、三門經典劍法）；swordArtOf 改經 isSwordArt，與 loop157 修正同一入口，不重複乘 */
@@ -493,7 +500,10 @@ export const isSwordMove = (mv) => !!swordArtOf(mv);
 /* loop201：v24 不再一律給劍法冷卻或傷害。非 v24 仍是冷卻 0.82、小成及以下 ×1.1。 */
 export const swordCdMul = (d, mv) => { if (!d?.v23 || !isSwordMove(mv) || d.v24) return 1; return NG23.swordCd; };
 export const swordDmgMul = (d, mv) => { if (!d?.v23 || d.v24) return 1; const id = swordArtOf(mv); if (!id) return 1; return artTier(d, id) <= NG23.swordEarlyTier ? NG23.swordEarly : 1; };
-export const swordFast24 = (d) => !!(d?.v24 && d.sectId === 'jianzong' && Object.keys(d.arts || {}).some((id) => isSwordArt(id) && artTier(d, id) >= 1));
+/* loop204：主修外功是打法且已大成。不看門派、不看是不是劍。 */
+export const swordFast24 = (d) => { const o = d?.v24 ? mainOuter28(d) : null; return !!(o?.mode === 'da' && artTier(d, o.id) >= 2); };
+/* loop204：主修外功是練法，且這門的內勁倍率 ≥ 1.25。 */
+export const qiArtBadge24 = (d) => { const o = d?.v24 ? mainOuter28(d) : null; return !!(o?.mode === 'lian' && qiStrikeMul(d, o) >= 1.25); };
 const ngMast24 = (d) => (d?.v24 ? 1 + 0.004 * mastery(d, 'neigong') : 1); /* loop198：內功造詣每 10 點，打坐與歇息 +4% */
 export const medQi = (d) => (d?.v23 ? (NG23.med + (hasSpec(d, 'zixia') ? 4 : 0)) * (d.v24 ? (d.medK24 || 1) * (sectClasses24(d) >= 3 ? SYN24.med3 : 1) : 1) * ngMast24(d) : NG.med); /* loop196 本門正宗打坐 ×1.15 */ /* loop168 古墓寒玉床打坐 ×1.5 */
 export const restQi = (d) => NG.rest * (hasSpec(d, 'breath') ? 1.5 : 1) * ngMast24(d);
@@ -751,4 +761,4 @@ export function clashOuter28(d) { if (!d?.v24 || !d.arts) return null; const m =
 export function qiInjuryFight28(s, team, logf) { if (!s?.v24) return; for (const d of team) { const w = qiInjuryAdd28(s, d); if (w && logf) logf(s, `【經脈暗傷】${d.name}強以異種內息催動他派武學《${w.name}》，真氣逆行，經脈隱隱作痛！`); } }
 export function qiInjuryCure28(s, d, amt) { const q0 = d?.qiInjury || 0; if (!q0) return false; d.qiInjury = Math.max(0, q0 - amt); if (!d.qiInjury) { (s.v28n ??= {}).cure = (s.v28n.cure || 0) + 1; return true; } return false; }
 export const styleDmg24 = (d) => { if (!d?.v24) return 1; return (polymath24(d) === 2 ? SYN24.conv : 1) * injuryMul28(d); }; /* loop181：同門成套傷害改由 innerDrive28 逐招給 */
-export const styleBadges24 = (d) => [d?.champ28 ? '【大比首徒】' : '', sectClasses24(d) >= 3 ? '【本門正宗】' : '', polymath24(d) === 2 ? '【萬流歸宗】' : polymath24(d) === 1 ? '【雜學分心】' : '', (d?.qiInjury || 0) >= DRIVE28.injWarn ? '⚠️【經脈內傷】' : '', d?.v24 && rootMove28(d) > 0 ? '【根基渾厚】' : '', d?.v24 && qiSwordOn24(d) && qiSwordMul24(d) >= 1.25 ? '【以氣御劍】' : '', swordFast24(d) ? '【唯快不破】' : '', d?.xiao29 ? '【梟雄強練】' : d?.base28 ? '【守正厚積】' : temper29(d).qing ? '【至情清修】' : temper29(d).ling ? '【靈動跳階】' : ''].filter(Boolean); /* loop199 以氣御劍／唯快不破 */
+export const styleBadges24 = (d) => [d?.champ28 ? '【大比首徒】' : '', polymath24(d) === 2 ? '【萬流歸宗】' : polymath24(d) === 1 ? '【雜學分心】' : '', (d?.qiInjury || 0) >= DRIVE28.injWarn ? '⚠️【經脈內傷】' : '', d?.v24 && rootMove28(d) > 0 ? '【根基渾厚】' : '', qiArtBadge24(d) ? '【以氣御劍】' : '', swordFast24(d) ? '【唯快不破】' : '', d?.xiao29 ? '【梟雄強練】' : d?.base28 ? '【守正厚積】' : temper29(d).qing ? '【至情清修】' : temper29(d).ling ? '【靈動跳階】' : ''].filter(Boolean); /* loop204：本門正宗改逐招顯示；以氣御劍／唯快不破看武學類別 */

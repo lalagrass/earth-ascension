@@ -20,7 +20,8 @@ test('loop196 本門正宗：本門內功大成，再加本門外功或本門輕
   const [, d] = fresh('gaibang'); give(d, 'breath', 60); give(d, 'snowStep', 60); give(d, 'basicFist', 60); assert.equal(A.sectClasses24(d), 0);
   give(d, 'huntianGong', 30); give(d, 'lianhuaPalm', 30); assert.equal(A.sectClasses24(d), 0); /* 內功未大成 */
   assert.ok(!A.styleBadges24(d).includes('【本門正宗】'));
-  give(d, 'huntianGong', 60); assert.equal(A.sectClasses24(d), 3); assert.ok(A.styleBadges24(d).includes('【本門正宗】'));
+  give(d, 'huntianGong', 60); assert.equal(A.sectClasses24(d), 3); assert.ok(!A.styleBadges24(d).includes('【本門正宗】')); /* loop204：人物徽章拿掉，催動仍在這一招 */
+  assert.equal(A.innerDrive28(d, A.artById('lianhuaPalm')).tier, 1);
   delete d.arts.snowStep; assert.equal(A.sectClasses24(d), 3); /* 不再要求湊齊輕功 */
   delete d.arts.lianhuaPalm; assert.equal(A.sectClasses24(d), 0);
   give(d, 'xiaoyaoStep', 30); assert.equal(A.sectClasses24(d), 3); /* 本門輕功小成也算 */

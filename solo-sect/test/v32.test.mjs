@@ -188,6 +188,35 @@ test('loop203 練功倍率只留一個偏好標籤，靈動不與投其所好疊
   assert.equal(A.temper29(body({ personality: ['bold'] })).ling, false);
 });
 
+test('loop204 面板寫出類別與內勁，徽章只看主修武學', () => {
+  const d = body({ v23: true, qi: 160, ng: 1, personality: ['nimble', 'playful', 'brave'], needs: { fun: 40 }, bore31: 3 });
+  d.arts = { wudangXinfa: { xp: 60, last: 0 }, wudangJiuyang: { xp: 100, last: 0 }, mianPalm: { xp: 40, last: 0 }, chousuiPalm: { xp: 55, last: 0 } };
+  d.focus = 'mianPalm'; d.growMul = { feed: '練招養氣' };
+  const html = artsGrowHtml(d, 0, false);
+  assert.match(html, /好打法/); assert.match(html, /坐不住/); assert.match(html, /枯燥難耐/); assert.match(html, /練招養氣/);
+  assert.match(html, /練法・內勁係數 0.4・內勁 ×/);
+  assert.ok(A.qiOf(d) >= 62.5, String(A.qiOf(d)));
+  assert.ok(A.qiStrikeMul(d, A.artById('mianPalm')) >= 1.25);
+  assert.ok(A.styleBadges24(d).includes('【以氣御劍】'));
+  assert.ok(!A.styleBadges24(d).includes('【本門正宗】'));
+  assert.match(A.artsSvg(d), /武當綿掌（[^）]*練法・內勁係數 0.4/);
+  d.focus = 'chousuiPalm';
+  assert.ok(A.swordFast24(d)); assert.ok(A.styleBadges24(d).includes('【唯快不破】'));
+  assert.ok(!A.styleBadges24(d).includes('【以氣御劍】'));
+  assert.match(artsGrowHtml(d, 0, false), /投其所好/);
+  const same = (sectId) => A.swordFast24({ ...d, sectId }) && A.qiArtBadge24({ ...d, sectId, focus: 'mianPalm' });
+  assert.equal(same('jianzong'), true); assert.equal(same('qizong'), true); assert.equal(same('wuming'), true);
+  const g = body({ sectId: 'gaibang', v23: true, qi: 40, stree: ['breath', 'huntianGong', 'lianhuaPalm'] });
+  g.arts = { huntianGong: { xp: 60, last: 0 }, lianhuaPalm: { xp: 30, last: 0 } };
+  assert.equal(A.innerDrive28(g, A.artById('lianhuaPalm')).tier, 1);
+  assert.match(artsGrowHtml(g, 0, false), /正宗催動 ×1.25/);
+  assert.ok(!A.styleBadges24(g).includes('【本門正宗】'));
+  const dao = body({ v23: true, qi: 20 });
+  dao.arts = { bixie: { xp: 20, gm: { e: 75 } }, breath: { xp: 10, last: 0 } };
+  dao.focus = 'breath';
+  assert.match(artsGrowHtml(dao, 0, false), /以技入道/);
+});
+
 test('loop201 神木毒功退出學習池，已學會的舊檔仍讀得到', () => {
   const a = A.artById('shenmuGong');
   assert.equal(a.deprecated, true); assert.equal(a.secret, true); assert.equal(a.grade, 2);

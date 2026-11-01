@@ -3,7 +3,7 @@ import { DAY, ACTIVITIES, EXP_STYLES, EXP, ARTS, TIERS, ART_GAIN, ROOT, JH, BREA
 import { LABOR, strMul, laborToday } from './economy.mjs';
 import { segAt } from './world.mjs';
 import { nextStep } from './core.mjs';
-import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW, mainInner28, baseInner28, innerDrive28, isInner, qiSwordOn24, qiSwordMul24, qiGreat24, swordFast24 } from './arts.mjs';
+import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW, mainInner28, baseInner28, innerDrive28, isInner, qiGreat24, artById, artMulParts, appetite31, modeTitle31, qiArtBadge24, swordFast24 } from './arts.mjs';
 import { CLQ } from './bonds.mjs';
 import { JHEV, letterP } from './jianghu.mjs';
 // ==== （原 dcard.mjs）====
@@ -117,11 +117,17 @@ export function artsGrowHtml(d, now = 0, grow = true) {
     if (r && d.pf && !r.guizhen) { const p = profOf(r.xp), nx = nextLvXp(r.xp); why.push(p.lv ? `熟練度：招式威力 +${((profMul(r.xp) - 1) * 100).toFixed(1)}%（每重 +${(PROF.perLv * 100).toFixed(1)}%）${p.stuck ? '，卡瓶頸，突破後才升階' : nx != null && p.lv < PROF.lvs ? `，第${PROF.cn[p.lv + 1]}重 xp ${nx.toFixed(1)}` : `，滿十重，xp ${nx} 升${TIERS[p.t + 1][1]}`}` : '熟練度：化境不分重'); }
     if (r && rustOf(r, now) > 0.01) why.push(`荒疏 ${(rustOf(r, now) * 100).toFixed(0)}%`);
     if (r && Object.keys(ART_CAT[a.id] || {}).every((c) => supOf(c, d) === 'none')) why.push('門類尚未支援：不累積造詣');
-    if (d?.v24 && r && !isInner(a)) { const drv = innerDrive28(d, a); if (drv.tier === 1) why.push(`正宗催動 ×${drv.mul.toFixed(2)}`); else if (drv.tier === 3) why.push(`內力虛浮 ×${drv.mul.toFixed(2)}`); else if (drv.tier === 4) why.push(`⚠️異屬逆催 ×${drv.mul.toFixed(2)}`); } /* loop194 */
+    if (d?.v24 && r && !isInner(a)) { const drv = innerDrive28(d, a); if (drv.tier === 1) why.push(`正宗催動 ×${drv.mul.toFixed(2)}`); else if (drv.tier === 3) why.push(`內力虛浮 ×${drv.mul.toFixed(2)}`); else if (drv.tier === 4) why.push(`⚠️異屬逆催 ×${drv.mul.toFixed(2)}`); } /* loop194；本門正宗只留在這一招 */
+    if (d?.v24 && a.mode) why.push(modeTitle31(d, a));
     const lead = (d?.v24 && r && mi?.id === a.id ? `★主運內功 ${a.grade || 1}品 ${bi?.id === a.id && t >= 2 ? '◆根基 ' : ''}` : '') + (f === a.id ? '◆主修 ' : '');
     return `<div class="k artgrow" data-artst="${st.st}">${lead}${a.name}（${cats}）${r ? `・${d.pf && !r.guizhen ? `<span data-prof>${profLabel(r.xp)}</span>` : TIERS[t][1]} ${r.xp.toFixed(1)}${nxt}${moves}` : ''}・<b>${st.text}</b>${why.length ? `｜${why.join('；')}` : ''}</div>`; });
   const ng = d?.v24 && mi && d.arts?.[mi.id] ? mastery(d, 'neigong') : 0;
-  const head = d?.v24 && mi && d.arts?.[mi.id] ? `<div class="k" data-drive24="1">主運《${mi.name}》${mi.grade || 1}品・${profLabel(d.arts[mi.id].xp)}・內功造詣 ${ng | 0}（內力上限 +${(ng * 0.4).toFixed(1)}%）${qiSwordOn24(d) && qiSwordMul24(d) >= 1.25 ? `・【以氣御劍】×${qiSwordMul24(d).toFixed(2)}` : ''}${swordFast24(d) ? '・【唯快不破】' : ''}</div>` : '';
+  const Ap = d?.v24 ? appetite31(d) : 0, pref = Ap > 0 ? '好打法' : Ap < 0 ? '好練法' : '中庸', bore = d?.bore31 || 0, sit = Ap && bore >= 6 - Math.abs(Ap) ? '坐不住' : '坐得住';
+  const fa = f ? artById(f) : null, bits = fa ? artMulParts(d, fa).parts.ext.map((x) => x[0]).filter((n) => n === '投其所好' || n === '枯燥難耐' || n === '嫌其花俏' || n === '以技入道') : [];
+  if (d?.growMul?.feed) bits.push(d.growMul.feed);
+  const who = d?.v24 ? `・${pref}・${sit}${bits.length ? `・${bits.join('、')}` : ''}` : '';
+  const mark = `${qiArtBadge24(d) ? '・【以氣御劍】' : ''}${swordFast24(d) ? '・【唯快不破】' : ''}`;
+  const head = d?.v24 && mi && d.arts?.[mi.id] ? `<div class="k" data-drive24="1">主運《${mi.name}》${mi.grade || 1}品・${profLabel(d.arts[mi.id].xp)}・內功造詣 ${ng | 0}（內力上限 +${(ng * 0.4).toFixed(1)}%）${who}${mark}</div>` : (d?.v24 ? `<div class="k" data-drive24="1">${pref}・${sit}${bits.length ? `・${bits.join('、')}` : ''}${mark}</div>` : '');
   return `<div class="grow-arts"><b>個別武學</b>${head}${rows.join('')}</div>`;
 }
 /* loop85 規則說明：數字直接讀 GROW，不另寫 */
