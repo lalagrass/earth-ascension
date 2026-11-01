@@ -1,6 +1,6 @@
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
 import { NODES, EDGES, DAY, FACILITIES, MOVES } from './data.mjs';
-import { qiInjuryAdd28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
+import { qiInjuryAdd28, innerDrive28, mainOuter28, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
 import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of } from './sect.mjs';
 import { peaceDelay } from './economy.mjs';
@@ -163,7 +163,7 @@ export const demandOf = (s, pts) => Math.max(RAID.demand.min, Math.round(Math.mi
 // 自動決定：比較「勒索金」與「迎戰的預期損失」＝(1−勝率)×(被搶的錢＋糧＋一人重傷折 hurtCost)；勒索金較小且付得起才付
 export const fightLoss = (s, p) => (1 - p) * (Math.max(0, s.res.coin) * RAID.steal.coin + (s.res.food || 0) * RAID.steal.food + RAID.hurtCost);
 // loop4：有柵時執事先估「守方打光山賊」是否快過「山賊撞破柵」，快就迎戰；否則照舊比較
-export function fenceHolds(s, pts) { if (!fenceUp(s)) return false; const dps = s.ds.filter(canDefend).reduce((a, d) => a + defenderDps(d), 0); if (dps <= 0) return false;
+export function fenceHolds(s, pts) { if (!fenceUp(s)) return false; const dps = s.ds.filter(canDefend).reduce((a, d) => a + defenderDps(d), 0) * def24Of(s); /* loop183 */ if (dps <= 0) return false;
   const fd = Math.max(BAND.fenceDmg.min, Math.round(pts * BAND.fenceDmg.k)) / BAND.hitEvery; return pts / dps < s.fence.hp / fd; }
 export const raidAuto = (s) => { const P = T(s).pending; if (P?.noPay) return 1; if (P && fenceHolds(s, P.pts)) return 1; return P && s.res.coin >= P.demand && P.demand < fightLoss(s, P.p) ? 0 : 1; };
 // 每日一次（sim 換日時呼叫）：到期就看點數，>0 才上門
@@ -229,7 +229,7 @@ export function bandStep(s, dt, H) {
   if (b.state === 'go') { if (bandWalk(b, dt)) { b.state = 'siege'; log(s, '山賊圍住了菜園木柵，開始撞柵！'); } return; }
   const defs = s.ds.filter((d) => d.task?.act === 'defend' && d.task.phase === 'do');
   if (s.v23 && hasPoison(s, defs)) b.psn = s.t + SPEC.poisonT; /* loop151 毒術：守柵者中有毒術者，山賊中毒 */
-  const dmg = defs.reduce((a, d) => a + defenderDps(d), 0) * dt + (b.psn > s.t ? SPEC.poisonDps * (s.psnK24 || 1) * dt : 0); b.hp -= dmg; b.defDealt += dmg;
+  const dmg = defs.reduce((a, d) => a + defenderDps(d), 0) * def24Of(s) * dt /* loop183 紫霄宮守柵 */ + (b.psn > s.t ? SPEC.poisonDps * (s.psnK24 || 1) * dt : 0); b.hp -= dmg; b.defDealt += dmg;
   if (b.hp <= 0) { s.band = null; X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; log(s, `守柵迎敵——${defs.map((d) => d.name).join('、') || '眾人'}把山賊打退了！名聲 +${RAID.rep}。`); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: 'win', hurt: null, map: true, fence: s.fence?.hp ?? 0 }); if (s.v22) { for (const d of defs) recordDeed(s, d, 'defend'); recordDeed(s, null, 'raid', b.boss ? {} : { chron: `守柵打退山賊（${defs.map((d) => d.name).join('、') || '眾人'}）` }); } bossEnd(s, b, true, defs); nextWave(s, b, true); return; }
   b.clock += dt; if (b.clock < BAND.hitEvery) return; b.clock -= BAND.hitEvery;
   const fd0 = Math.max(BAND.fenceDmg.min, Math.round(b.pts * BAND.fenceDmg.k)), fd = s.v23 ? Math.max(1, Math.round(fd0 * (1 - SPEC.zhenMit * zhenK(s)) * (b.psn > s.t ? 1 - SPEC.poisonWeak : 1))) : fd0; b.fenceDealt += fd; /* loop151 陣法護柵 */
@@ -318,15 +318,15 @@ export const MOJIAO27 = {
   mirror: ['mingjiao', 'xingxiu'] };
 export const foe27 = (s) => MOJIAO27[MOJIAO27.mirror.includes(s.sect?.id) ? 'zhengpai' : 'mojiao'];
 /* 調參：aoe 1.45 起、每多一項條件 +0.2、上限 1.85；第 3 波起（長老／護法非人海）只取一半增幅。菁英 ≤6 人 ×1.2；合圍 ≥7 人每人 +5%、上限 +50% */
-export const WAVE27 = { aoeMove: 50, aoeBase: 1.45, aoeStep: 0.2, aoeMax: 1.85, lateK: 0.5, eliteMax: 6, elite: 1.2, swarmFrom: 7, swarmStep: 0.05, swarmMax: 0.5,
+export const WAVE27 = { aoeMove: 50, aoeBase: 1.45, aoeStep: 0.2, aoeMax: 1.85, lateK: 0.5, eliteMax: 8, /* loop183 v2.8 孤峰死戰 ≤6→≤8 */ elite: 1.2, swarmFrom: 7, swarmStep: 0.05, swarmMax: 0.5,
   tire: 0.88, heal: 0.08, healSpec: 30, healArts: ['linjiZhuang', 'jiuyang', 'emeiJiuyang', 'zixia', 'wudangJiuyang'], fence: 0.08, fenceLv: 0.04, pMin: 0.1, pMax: 0.95, hurtWin: 0.3, hurtHp: 45,
   eliteArts: ['zixia', 'dugu', 'taijiSword', 'huifengSword', 'xianglong', 'jiuyang'] };
 const hasAoe27 = (d) => (d.moves || []).some((id) => (MOVES.find((m) => m.id === id)?.aoe || 0) >= WAVE27.aoeMove);
 const eliteArt27 = (d) => Object.keys(d.arts || {}).some((id) => WAVE27.eliteArts.includes(id) || artById(id)?.chiefOnly24);
 const bigSword27 = (d) => Object.keys(d.arts || {}).some((id) => isSwordArt(id) && (artById(id)?.grade || 0) >= 3 && artTier(d, id) >= 0);
 export function aoeCleaveMul(d, w = 0) {
-  const q = (hasAoe27(d) ? 1 : 0) + (eliteArt27(d) ? 1 : 0) + (bigSword27(d) ? 1 : 0); if (!q) return 1;
-  const m = Math.min(WAVE27.aoeMax, WAVE27.aoeBase + WAVE27.aoeStep * (q - 1)); return w >= 2 ? 1 + (m - 1) * WAVE27.lateK : m;
+  const q = (hasAoe27(d) ? 1 : 0) + (eliteArt27(d) ? 1 : 0) + (bigSword27(d) ? 1 : 0), o = mainOuter28(d), add = d.v24 && (d.champ28 || (o && innerDrive28(d, o).tier === 1)) ? CHAMP28.aoe : 0; /* loop183 本門正宗催動或當屆大比首徒 +0.25 */
+  if (!q) return 1 + add; const m = Math.min(WAVE27.aoeMax, WAVE27.aoeBase + WAVE27.aoeStep * (q - 1)); return (w >= 2 ? 1 + (m - 1) * WAVE27.lateK : m) + add;
 }
 export const crowdSwarmMul = (team) => { const n = team.length; return n < WAVE27.swarmFrom ? 1 : 1 + Math.min(WAVE27.swarmMax, WAVE27.swarmStep * (n - WAVE27.swarmFrom + 1)); };
 export const eliteMul27 = (s) => (s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.removed).length <= WAVE27.eliteMax ? WAVE27.elite : 1);
@@ -341,7 +341,7 @@ export function waveBattle27(s, team, spec) {
   const kills = new Map(team.map((d) => [d.id, 0])); let tire = 1, won = 0, healed = 0; const heal = team.some((d) => (s.v23 && bestSpec(s, 'yishu', [d]) >= WAVE27.healSpec) || WAVE27.healArts.some((id) => d.arts?.[id]));
   const out = { waves: [], n: team.length }; if (s.v24) for (const d of team) { const w = qiInjuryAdd28(s, d); if (w) log(s, `【經脈暗傷】${d.name}強以異種內息催動他派武學《${w.name}》，真氣逆行，經脈隱隱作痛！`); } /* loop181 參戰亦累積逆催內傷 */
   for (let w = 0; w < spec.waves.length; w++) {
-    const W = spec.waves[w], P0 = wavePower27(s, team, w), P = P0.pow * tire; let E = W.E;
+    const W = spec.waves[w], P0 = wavePower27(s, team, w), P = P0.pow * tire * (spec.home ? def24Of(s) : 1); /* loop183 紫霄宮守禦也護圍山 */ let E = W.E;
     if (spec.home) { if (fenceUp(s)) E *= 1 - WAVE27.fence - WAVE27.fenceLv * ((s.fence.lv || 1) - 1); if (s.v23) E *= 1 - SPEC.zhenMit * zhenK(s, team); }
     const p = Math.max(WAVE27.pMin, Math.min(WAVE27.pMax, P * P / (P * P + E * E))), win = hh27(`${s.seed}:${spec.key}:${w}`) < p;
     const tot = win ? W.n : Math.floor(W.n * p * 0.5), sum = P0.parts.reduce((a, [, x]) => a + x, 0) || 1;
@@ -356,7 +356,7 @@ export function waveBattle27(s, team, spec) {
 }
 // ==== loop178 v2.7 Batch 2：魔教大軍圍山（第 18 日前鋒三波、第 27 日十長老四波）。只 s.v24；前一日茶攤預警；全派 canDefend（含已揭露隱世幫工）不限人數迎戰 ====
 /* E＝各波敵勢，以 loop177 量測（bot 局第 18 日單人戰力合計 ≈2300、第 27 日 ≈3400，合圍 ×1.5）定錨，目標整場勝率約六成 */
-export const SIEGE27 = { days: { 18: { title: '魔教前鋒叩關', E: [900, 1300, 1700] }, 27: { title: '魔教十長老圍山', E: [1200, 1600, 2100, 2600] } },
+export const SIEGE27 = { days: { 18: { title: '魔教前鋒叩關', E: [900, 1300, 1700] }, 27: { title: '魔教十長老圍山', E: [1050, 1400, 1850, 2250] } /* loop183 v2.8 約 −12% */ },
   win: { coin: 50, lingshi: 1, valor: 12, rep: 12, mood: 10 }, loseRep: 3, fenceK: 0.3 };
 const NUM27 = ['一', '二', '三', '四'];
 export const s27 = (s) => (s.v27n ??= { siege: {}, crusade: [] });

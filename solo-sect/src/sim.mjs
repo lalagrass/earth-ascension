@@ -9,7 +9,7 @@ import { BAND, canDefend, boarRam, fenceUp, fenceHit, repairScore, repairDone, F
 import { addMem, chatLine, passPick, passDo, PASS, passScore, passReserve, apprDaily, apprMul, aspStep, likeMeal, likesOf, cliqueDaily, cliqueTrain } from './bonds.mjs';
 import { xiaStep, onCook, xiaInit, hsStep, hsInit } from './wuxia.mjs';
 import { jhStep, jhInit, jhevDaily } from './jianghu.mjs';
-import { sectStep, sectInit, sectRecruit, genStep, genInit, removeDisciple } from './sect.mjs';
+import { sectStep, sectInit, sectRecruit, genStep, genInit, removeDisciple, canBuildFac, buildFac } from './sect.mjs';
 import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus, awaken, econCoin, cookBonus } from './hero.mjs';
 import { SAVE_VERSION, freshV095 } from './save.mjs';
 import { cancelTask, removeActor, whAvail, freeSlot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE, STOCK_RESV, stockKey, stockReserved } from './core.mjs';
@@ -716,7 +716,7 @@ export function dailyPipeline(s) {
   if (s.m9) lairDaily(s, EH);
   if (s.jhev) jhevDaily(s);
   if (s.v24) { injuryDaily28(s); siegeDaily27(s); crusadeDaily27(s, EH); } /* loop181 經脈內傷每日 */ /* loop179 傾巢討伐（執事自動）；loop178 v2.7 魔教圍山（雜湊擲骰，不吃亂數流） */
-  if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild, ...(s.v23 ? { hire, canHire, laborCap, laborers, stewHireCoin: LABOR23.stewHireCoin } : {}) });
+  if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild, canBuildFac, buildFac, ...(s.v23 ? { hire, canHire, laborCap, laborers, stewHireCoin: LABOR23.stewHireCoin } : {}) });
 }
 export { recordDeed, DEED_CAP, CHRON_CAP, tallyAct, bioLine, bioLean } from './util.mjs';
 export function tick(s, dt = 0.25) {

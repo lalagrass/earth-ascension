@@ -134,6 +134,7 @@ export const laborToday = (d, day) => (d?.lg && d.lgDay === day ? d.lgGot || 0 :
 // ① 有人睡地鋪 → 擴寢舍；② 野豬來過且尚無哨崗 → 蓋護山哨（有人上哨，野豬下山會被嚇回）。
 export const STEW = { boarSeen: 1, yardAt: 4 };
 export function stewardDaily(s, H) {
+  if (s.steward && s.v24 && H.canBuildFac && !s.sect?.fac && H.canBuildFac(s).ok) { H.buildFac(s); (s.v28n ??= {}).facAuto = (s.v28n.facAuto || 0) + 1; log(s, '【執事】名聲與物料都夠了，執事做主興建本門鎮派建築。'); } /* loop183 v2.8 執事自動營建鎮派建築（瞬間落成，不佔工地） */
   if (!s.steward || H.siteOf(s)) return null;
   if (stewLib24(s) && H.startBuild(s, 'library') !== false) { (s.stew ??= {}).built = [...(s.stew.built || []), 'library']; (s.v24n ??= {}).stewLib = (s.v24n.stewLib || 0) + 1; log(s, '【執事】門下已有人身兼數門武學，執事優先立了藏經閣的藍圖。'); return 'library'; }
   const pick = s.ds.length > H.capacity(s) ? 'dorm' : (s.stew?.boar || 0) >= STEW.boarSeen && (s.fac.watch?.stage || 0) === 0 ? 'watch' : s.stewkit && s.ds.length >= 8 && (s.fac.kitchen?.stage || 0) === 0 && (s.res.food || 0) < s.ds.length ? 'kitchen' : s.stewyard && s.ds.length >= STEW.yardAt && (s.fac.yard?.stage || 0) === 0 ? 'yard' : null; /* loop95「執事立樁」（s.stewyard）：外功場還是空地、人數夠 → 立木樁場（打樁不做離線補算，弟子照常自主去練） */ /* loop60「執事顧灶」（s.stewkit）：人多存飯不夠一人一頓、還是露天灶 → 蓋膳房 */

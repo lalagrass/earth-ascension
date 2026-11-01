@@ -47,3 +47,13 @@ test('loop182 造詣門道偷師：造詣不足機率 0，達標或悟性 5 高�
   d.wu = 3; for (const id of ['jindingPalm', 'tiangangFinger', 'luoyingPalm', 'yingzhuaHand']) { give(d, id, 100); d.arts[id].gm = { e: 20, ms: 0 }; } const r2 = stealCheck28(null, [d], O);
   assert.ok(r2.score >= 24 && r2.p >= 0.45 && r2.p <= 0.85); assert.ok(stealCheck28(null, [d], SECTS.gaibang));
 });
+
+test('loop183 v2.8：狂風快劍/七傷拳列魁首限定、會武池含天地會豬籠城寨、圍山 E 下修', async () => {
+  const { artById } = await import('../src/arts.mjs');
+  const { HUIWU24 } = await import('../src/sect.mjs');
+  const { SIEGE27, WAVE27 } = await import('../src/threat.mjs');
+  assert.ok(artById('kuangfengSword').chiefOnly24 && artById('qishangFist').chiefOnly24);
+  assert.ok(HUIWU24.pool.includes('tiandihui') && HUIWU24.pool.includes('zhulong'));
+  assert.deepEqual(SIEGE27.days[27].E, [1050, 1400, 1850, 2250]);
+  assert.equal(WAVE27.eliteMax, 8);
+});

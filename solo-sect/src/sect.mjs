@@ -172,7 +172,7 @@ export function sectResolve(s, ch, i) {
 // ---- 鎮派設施 ----
 export function canBuildFac(s) {
   const F = sectFac(s), S = s.sect; if (!F) return { ok: false, why: '無' }; if (S.fac) return { ok: false, why: '已建成' };
-  if (S.rep < SECT_K.facRep) return { ok: false, why: `門派聲望不足（${S.rep}/${SECT_K.facRep}）` };
+  if (S.rep < SECT_K.facRep && !(s.v24 && (s.rep || 0) >= SECT_K.facRep)) return /* loop183 v2.8：v24 門派名聲（s.rep）達標亦可 */ { ok: false, why: `門派聲望不足（${S.rep}/${SECT_K.facRep}）` };
   for (const [k, v] of Object.entries(F.cost)) if ((s.res[k] || 0) < v) return { ok: false, why: `${k} 不足 ${v}` };
   return { ok: true };
 }
@@ -218,7 +218,7 @@ export function sectStep(s) {
    對手三人戰力依 loop166 量測（12 種子 bot 局本門前三 dps 中位：第 15 日約 280／255／245，第 26 日約 365／300／265）定錨。 */
 export const BISAI24 = { days: [10, 20], minN: 2, champMood: 15, champXp: 25, allXp: 10, newXp: 10 };
 export const HUIWU24 = { days: { 15: { name: '名門會武', title: '名門會武魁首', opp: [230, 265, 310] }, 26: { name: '天下論劍', title: '論劍魁首', opp: [255, 305, 375] } },
-  pool: ['emei', 'wudang', 'qizong', 'jianzong', 'gaibang', 'mingjiao', 'taohua', 'gumu', 'xingxiu'], rep: 15, coin: 45, lingshi: 1, steal: 0.55, /* loop169 t190 0.40→0.55 */ guiK: 0.25, sharp: 2,
+  pool: ['emei', 'wudang', 'qizong', 'jianzong', 'gaibang', 'mingjiao', 'taohua', 'gumu', 'xingxiu', 'tiandihui', 'zhulong'], /* loop183 v2.8 天地會、豬籠城寨入池 */ rep: 15, coin: 45, lingshi: 1, steal: 0.55, /* loop169 t190 0.40→0.55 */ guiK: 0.25, sharp: 2,
   opts: ['堂堂正正：主將對主將', '田忌賽馬：以下駟耗其上駟，精銳搶攻先鋒與中堅', '奇門詭道：以陣法／醫毒窺破應戰'] };
 const hh = (str) => { let h = 2166136261; for (const c of str) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return (h >>> 0) / 4294967296; };
 const fighters24 = (s) => s.ds.filter((d) => d.role !== 'laborer' && !d.away && d.adult !== false && d.hp > 30);
@@ -232,6 +232,7 @@ export function bisai24(s) {
   const ds = fighters24(s); if (ds.length < BISAI24.minN) return null;
   const rank = ds.map((d) => ({ d, p: dpsOf(s, d) * (0.85 + 0.3 * hh(`${s.seed}:bisai:${s.day}:${d.id}`)) })).sort((a, b) => b.p - a.p || (a.d.id < b.d.id ? -1 : 1)); const c = rank[0].d;
   c.mood = Math.min(100, (c.mood || 0) + BISAI24.champMood);
+  for (const d of s.ds) if (d.champ28) d.champ28 = false; c.champ28 = true; /* loop183 v2.8 當屆大比首徒：練功 +25%、割草 +0.25，至下屆大比 */
   c.chief24 = true; /* loop171 v2.6 大比魁首升任魁首位階，可受鎮派絕學（chiefOnly24） */
   const nxt = ownTree(s).map(artById).find((a) => a && !c.arts?.[a.id] && artOk(c, a) && (!a.secret || a.derived) && !a.signature && !reqMissing(c, a).length);
   let gift; if (nxt) { learnArt(c, nxt.id, s.t); c.arts[nxt.id].xp = Math.max(c.arts[nxt.id].xp, BISAI24.newXp); gift = `掌門親傳《${nxt.name}》`; }

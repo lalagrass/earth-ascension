@@ -460,12 +460,12 @@ ARTS.push(
   { id: 'shenghuoXinfa', name: '聖火心法', school: 'inner', grade: 2, tags: ['剛', '柔'], attr: 'yang', req: [{ art: 'breath', tier: 1 }], tech: null, techs: ['聖火', '不滅'], effect: 'rest', v24: true, classic: true, own24: 'mingjiao', svg: [1, 16] },
   { id: 'qingfuStep', name: '青蝠身法', school: 'step', grade: 2, tags: ['快', '巧'], attr: 'yin', req: [{ art: 'snowStep', tier: 1 }], tech: null, techs: ['青蝠', '掠影'], effect: 'speed', v24: true, classic: true, own24: 'mingjiao', svg: [1, 17] },
   { id: 'yingzhuaHand', name: '鷹爪擒拿手', school: 'palm', grade: 2, tags: ['剛', '巧'], attr: 'yang', req: [{ art: 'basicFist', tier: 1 }], techs: ['yz1', 'yz2'], tech: 'yz1', v24: true, classic: true, own24: 'mingjiao', svg: [2, 16] },
-  { id: 'qishangFist', name: '七傷拳', school: 'fist', grade: 3, tags: ['剛'], attr: 'yang', req: [{ art: 'yingzhuaHand', tier: 2 }, { art: 'shenghuoXinfa', tier: 1 }], techs: ['qs1', 'qs2'], tech: 'qs1', v24: true, classic: true, own24: 'mingjiao', svg: [3, 16] },
+  { id: 'qishangFist', chiefOnly24: true, name: '七傷拳', school: 'fist', grade: 3, tags: ['剛'], attr: 'yang', req: [{ art: 'yingzhuaHand', tier: 2 }, { art: 'shenghuoXinfa', tier: 1 }], techs: ['qs1', 'qs2'], tech: 'qs1', v24: true, classic: true, own24: 'mingjiao', svg: [3, 16] },
   /* loop172 v2.6（t191）*/
   { id: 'huashanXinfa', name: '華山心法', school: 'inner', grade: 1, tags: ['柔'], attr: 'he', req: [], tech: null, techs: ['紫氣', '養元'], effect: 'rest', v24: true, classic: true, own24: 'qizong', svg: [0, 11] },
   { id: 'pishiFist', name: '劈石破玉拳', school: 'fist', grade: 1, tags: ['剛'], attr: 'yang', req: [], techs: ['ps1', 'ps2'], tech: 'ps1', v24: true, classic: true, own24: 'qizong', svg: [0, 12] },
   { id: 'hunyuanPalm', name: '混元掌', school: 'palm', grade: 2, tags: ['柔', '剛'], attr: 'he', req: [{ art: 'pishiFist', tier: 1 }, { art: 'huashanXinfa', tier: 1 }], techs: ['hy1', 'hy2'], tech: 'hy1', v24: true, classic: true, own24: 'qizong', svg: [1, 12] },
-  { id: 'kuangfengSword', name: '狂風快劍', school: 'palm', grade: 3, tags: ['快', '巧'], weapon: 'sword', attr: 'yin', req: [{ art: 'huashanSword', tier: 2 }], techs: ['kf1', 'kf2'], tech: 'kf1', v24: true, classic: true, own24: 'jianzong', svg: [2, 12] },
+  { id: 'kuangfengSword', chiefOnly24: true, name: '狂風快劍', school: 'palm', grade: 3, tags: ['快', '巧'], weapon: 'sword', attr: 'yin', req: [{ art: 'huashanSword', tier: 2 }], techs: ['kf1', 'kf2'], tech: 'kf1', v24: true, classic: true, own24: 'jianzong', svg: [2, 12] },
   { id: 'wudangXinfa', name: '武當心法', school: 'inner', grade: 1, tags: ['柔'], attr: 'he', req: [], tech: null, techs: ['守一', '歸真'], effect: 'rest', v24: true, classic: true, own24: 'wudang', svg: [0, 13] },
   { id: 'mianPalm', name: '武當綿掌', school: 'palm', grade: 2, tags: ['柔'], attr: 'he', req: [{ art: 'wudangFist', tier: 1 }], techs: ['mp1', 'mp2'], tech: 'mp1', v24: true, classic: true, own24: 'wudang', svg: [1, 13] },
 );
