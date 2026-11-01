@@ -1692,3 +1692,6 @@
 - data.mjs：`OPPOSE24`、`LIKES24`、`RECRUIT29`。social.mjs：compat 加 v24 項、`charm29`／`CHARM29`、drawOf 加俠魅、pickChatMate 計數並排除避難者、relAdd 計相性。sim.mjs：招收雜湊換第二特質。threat.mjs：day27 E 再降 5%。
 - v29 +4（13 項）；v28 圍山數值更新。快驗（SS_DT=1 bot 6 局）：0 崩潰；day27 5/6 勝；招收換特質 7 次。
 - quick 476、sect-chronicle 383、Python 53。golden-30d-v22 4242fb4bdafac352 → c4586f3c67b77a46。
+
+## Loop 189 — v2.9 驗收（決定 247）
+- run.sh all 793/793；40 局前後對照＋多派 12 局（丐幫、明教、氣宗、劍宗、天地會、無名）。src 未改，golden 不變。
