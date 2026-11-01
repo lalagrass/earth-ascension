@@ -1,6 +1,6 @@
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
-import { NODES, EDGES, DAY, FACILITIES } from './data.mjs';
-import { dpsBonus, guardHurt, SPEC, zhenK, hasPoison } from './arts.mjs';
+import { NODES, EDGES, DAY, FACILITIES, MOVES } from './data.mjs';
+import { dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
 import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of } from './sect.mjs';
 import { peaceDelay } from './economy.mjs';
@@ -307,4 +307,50 @@ export function lairStep(s, H) {
   const X = T(s); if (win) { L.won++; X.next = Math.max(X.next || 0, s.day) + LAIR.peaceDays; s.rep = (s.rep || 0) + RAID.rep * 2; L.next = X.next; if (s.v22) { for (const d of team) { tallyAct(d, 'lair', LAIR.dur / 4); recordDeed(s, d, 'lair'); } recordDeed(s, null, 'lair', { chron: `${team.map((d) => d.name).join('、')}大破後山山寨` }); if (!X.taiping && X.boss?.state !== 'wait' && X.boss?.state !== 'on') X.boss = { day: s.day + BOSS.after, state: 'wait' }; } log(s, `【剿寨】大破山寨！山賊作鳥獸散，至少 ${LAIR.peaceDays} 日不敢來犯。名聲 +${RAID.rep * 2}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else { L.next = s.day + LAIR.cool; log(s, `【剿寨】寨子太硬，攻不下來${hurt ? `，${hurt.name}重傷` : ''}，只好先撤回。`); }
   (L.hist ??= []).push({ day: s.day, pts: tr.pts, p: +p.toFixed(2), win, hurt: hurt?.id || null });
+}
+
+// ==== loop177 v2.7 Batch 1：正邪波次人海引擎（只 s.v24）。亂數一律用 FNV 雜湊（hh27），不碰山賊 R(s)／山寨 RL(s) 亂數流 ====
+export const hh27 = (str) => { let h = 2166136261; for (const c of str) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return (h >>> 0) / 4294967296; };
+/* 正邪鏡像：本門為明教／星宿 → 六大派聯軍；其餘 → 黑木崖魔教。n＝每波人數（割草數上限） */
+export const MOJIAO27 = {
+  mojiao: { name: '黑木崖魔教', unit: '教眾', waves: [{ name: '魔教外圍教眾', n: 80 }, { name: '風雷堂百人刀陣', n: 100 }, { name: '魔教十長老', n: 10 }, { name: '光明右使與黑木崖護法', n: 3 }] },
+  zhengpai: { name: '六大派圍剿聯軍', unit: '敵眾', waves: [{ name: '五嶽外門弟子潮', n: 80 }, { name: '少林羅漢刀棍陣', n: 108 }, { name: '崑崙崆峒長老', n: 10 }, { name: '嵩山十三太保', n: 13 }] },
+  mirror: ['mingjiao', 'xingxiu'] };
+export const foe27 = (s) => MOJIAO27[MOJIAO27.mirror.includes(s.sect?.id) ? 'zhengpai' : 'mojiao'];
+/* 調參：aoe 1.45 起、每多一項條件 +0.2、上限 1.85；第 3 波起（長老／護法非人海）只取一半增幅。菁英 ≤6 人 ×1.2；合圍 ≥7 人每人 +5%、上限 +50% */
+export const WAVE27 = { aoeMove: 50, aoeBase: 1.45, aoeStep: 0.2, aoeMax: 1.85, lateK: 0.5, eliteMax: 6, elite: 1.2, swarmFrom: 7, swarmStep: 0.05, swarmMax: 0.5,
+  tire: 0.88, heal: 0.08, healSpec: 30, healArts: ['linjiZhuang', 'jiuyang', 'emeiJiuyang', 'zixia', 'wudangJiuyang'], fence: 0.08, fenceLv: 0.04, pMin: 0.1, pMax: 0.95, hurtWin: 0.3, hurtHp: 45,
+  eliteArts: ['zixia', 'dugu', 'taijiSword', 'huifengSword', 'xianglong', 'jiuyang'] };
+const hasAoe27 = (d) => (d.moves || []).some((id) => (MOVES.find((m) => m.id === id)?.aoe || 0) >= WAVE27.aoeMove);
+const eliteArt27 = (d) => Object.keys(d.arts || {}).some((id) => WAVE27.eliteArts.includes(id) || artById(id)?.chiefOnly24);
+const bigSword27 = (d) => Object.keys(d.arts || {}).some((id) => isSwordArt(id) && (artById(id)?.grade || 0) >= 3 && artTier(d, id) >= 0);
+export function aoeCleaveMul(d, w = 0) {
+  const q = (hasAoe27(d) ? 1 : 0) + (eliteArt27(d) ? 1 : 0) + (bigSword27(d) ? 1 : 0); if (!q) return 1;
+  const m = Math.min(WAVE27.aoeMax, WAVE27.aoeBase + WAVE27.aoeStep * (q - 1)); return w >= 2 ? 1 + (m - 1) * WAVE27.lateK : m;
+}
+export const crowdSwarmMul = (team) => { const n = team.length; return n < WAVE27.swarmFrom ? 1 : 1 + Math.min(WAVE27.swarmMax, WAVE27.swarmStep * (n - WAVE27.swarmFrom + 1)); };
+export const eliteMul27 = (s) => (s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.removed).length <= WAVE27.eliteMax ? WAVE27.elite : 1);
+/* 單人戰力：同 jianghu.power 的單人算法（隱世幫工、出征中的人也算） */
+export const pow27 = (s, d) => power({ ...s, ds: [{ ...d, role: d.role === 'laborer' ? 'inner' : d.role, away: false }] });
+export function wavePower27(s, team, w = 0) {
+  const parts = team.map((d) => [d, pow27(s, d) * aoeCleaveMul(d, w)]), k = crowdSwarmMul(team) * eliteMul27(s);
+  return { pow: parts.reduce((a, [, p]) => a + p, 0) * k, parts, k };
+}
+/* 連戰：spec＝{ key, waves:[{name,n,E}], home }。逐波 p＝P²/(P²+E²)（夾 0.1–0.95），P 乘疲勞；勝波人數依戰力×割草倍率分給 kills；敗波只算 p×一半 */
+export function waveBattle27(s, team, spec) {
+  const kills = new Map(team.map((d) => [d.id, 0])); let tire = 1, won = 0, healed = 0; const heal = team.some((d) => (s.v23 && bestSpec(s, 'yishu', [d]) >= WAVE27.healSpec) || WAVE27.healArts.some((id) => d.arts?.[id]));
+  const out = { waves: [], n: team.length };
+  for (let w = 0; w < spec.waves.length; w++) {
+    const W = spec.waves[w], P0 = wavePower27(s, team, w), P = P0.pow * tire; let E = W.E;
+    if (spec.home) { if (fenceUp(s)) E *= 1 - WAVE27.fence - WAVE27.fenceLv * ((s.fence.lv || 1) - 1); if (s.v23) E *= 1 - SPEC.zhenMit * zhenK(s, team); }
+    const p = Math.max(WAVE27.pMin, Math.min(WAVE27.pMax, P * P / (P * P + E * E))), win = hh27(`${s.seed}:${spec.key}:${w}`) < p;
+    const tot = win ? W.n : Math.floor(W.n * p * 0.5), sum = P0.parts.reduce((a, [, x]) => a + x, 0) || 1;
+    const share = P0.parts.map(([d, x]) => [d, (tot * x) / sum]); let given = 0; for (const [d, x] of share) { const k2 = Math.floor(x); kills.set(d.id, kills.get(d.id) + k2); given += k2; }
+    for (const [d] of [...share].sort((a, b) => (b[1] % 1) - (a[1] % 1)).slice(0, tot - given)) kills.set(d.id, kills.get(d.id) + 1);
+    out.waves.push({ name: W.name, E: Math.round(E), P: Math.round(P), p: +p.toFixed(2), win, kills: tot });
+    if (!win) break; won++; tire *= WAVE27.tire; if (heal && w < spec.waves.length - 1) { tire = Math.min(1, tire + WAVE27.heal); healed++; }
+  }
+  out.won = won; out.win = won === spec.waves.length; out.healed = healed; out.kills = Object.fromEntries(kills); out.total = [...kills.values()].reduce((a, b) => a + b, 0);
+  const mvp = team.reduce((m, d) => (!m || kills.get(d.id) > kills.get(m.id) ? d : m), null); out.mvp = mvp && kills.get(mvp.id) > 0 ? mvp : null;
+  return out;
 }

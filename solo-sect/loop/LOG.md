@@ -1605,3 +1605,13 @@
 - 新增 `test/v27.test.mjs` 3 項；v255 合參上限斷言改 1。
 - 快驗（SS_DT=1，bot，峨眉／武當／明教／星宿／丐幫／無名各 1）：0 崩潰；合參 名門 1、無名 2。
 - quick 443、sect-chronicle 383、Python 53。golden-30d-v22 347b85f371bea667 → f23ec497aca6f957。
+
+## loop177 — v2.7 Batch 1：正邪波次人海引擎（決定 221）
+- threat.mjs：`MOJIAO27`、`foe27`、`aoeCleaveMul`、`crowdSwarmMul`、`eliteMul27`、`pow27`、`wavePower27`、`waveBattle27`（FNV `hh27` 擲骰）。
+- 量測（SS_DT=1 bot 6 局）：第 18 日可守人數 14–18、單人戰力合計 2150–2500；第 27 日 14–20 人、3200–3860，作為下一輪波次強度定錨。
+- v27 +3（6 項）；quick 446、sect-chronicle 383、Python 53；快驗 6 局 0 崩潰。golden 不變（f23ec497aca6f957）。
+
+### Retro 176–177
+- 做得好：補強都掛在既有單一入口（`lockedArt24`、`sgainOf`、`defense`），引擎與觸發分輪，前一輪不動 golden。
+- 不好：bot 局門人 14–20，菁英 ≤6 幾乎不會成立，軌跡 A 主要靠割草倍率而非孤峰死戰。
+- 下一步：第 18／27 日圍山塔防。

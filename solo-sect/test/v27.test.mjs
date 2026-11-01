@@ -28,3 +28,19 @@ test('loop176 祖師堂 gain24 1.12（只 v24）、紫霄宮 def24 1.18', () => 
 test('loop176 合參上限分流：名門 1、無名 2', () => {
   const s = V(); tick(s, 0.1); assert.equal(A.deriveMax24(s), 2); const e = V({ sect24: 'emei' }); tick(e, 0.1); assert.equal(A.deriveMax24(e), 1);
 });
+import * as TH from '../src/threat.mjs';
+test('loop177 正邪鏡像：明教／星宿對六大派聯軍，其餘對黑木崖魔教', () => {
+  for (const [k, want] of [['mingjiao', '六大派圍剿聯軍'], ['xingxiu', '六大派圍剿聯軍'], ['emei', '黑木崖魔教'], [null, '黑木崖魔教']]) { const s = V(k ? { sect24: k } : {}); assert.equal(TH.foe27(s).name, want, String(k)); }
+});
+test('loop177 割草倍率與合圍：1.45–1.85、後段減半；≥7 人每人 +5% 上限 +50%', () => {
+  const s = V(); tick(s, 0.1); const d = other(s); d.moves = ['fist']; d.arts = { basicFist: { xp: 1 } }; assert.equal(TH.aoeCleaveMul(d, 0), 1);
+  d.moves = ['wave']; assert.equal(TH.aoeCleaveMul(d, 0), 1.45); give(d, 'zixia', 1); assert.ok(Math.abs(TH.aoeCleaveMul(d, 1) - 1.65) < 1e-9); give(d, 'huifengSword', 1); assert.equal(TH.aoeCleaveMul(d, 0), 1.85);
+  assert.ok(Math.abs(TH.aoeCleaveMul(d, 2) - 1.425) < 1e-9);
+  const arr = (n) => Array(n).fill(d); assert.equal(TH.crowdSwarmMul(arr(6)), 1); assert.ok(Math.abs(TH.crowdSwarmMul(arr(7)) - 1.05) < 1e-9); assert.equal(TH.crowdSwarmMul(arr(30)), 1.5);
+});
+test('loop177 連戰結算：不吃山賊亂數、kills 加總、MVP、勝則全波人數', () => {
+  const s = V(); tick(s, 0.1); const team = s.ds.filter((x) => x.role !== 'laborer'), rng = TH.T(s).rng;
+  const r = TH.waveBattle27(s, team, { key: 't', waves: [{ name: 'a', n: 30, E: 1 }, { name: 'b', n: 20, E: 1 }] });
+  assert.equal(TH.T(s).rng, rng); assert.ok(r.win); assert.equal(r.total, 50); assert.equal(Object.values(r.kills).reduce((a, b) => a + b, 0), 50); assert.ok(r.mvp && r.kills[r.mvp.id] === Math.max(...Object.values(r.kills)));
+  const L = TH.waveBattle27(s, team, { key: 'u', waves: [{ name: 'a', n: 30, E: 1e9 }] }); assert.equal(L.win, false); assert.equal(L.won, 0);
+});
