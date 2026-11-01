@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ARTS, MOVES, SECTS, TRAITS, OPPOSE, OPPOSE24, LIKES, LIKES24, RECRUIT29, WUMING_KIT24 } from '../src/data.mjs';
 import { ART_CAT, PUBLIC28, TEMPER29, attrOf, artById, artTier, isInner, normalizeArts, sectClasses24, gainArt, lockedArt24, yunvOpen24 } from '../src/arts.mjs';
+import { CHARM29 } from '../src/social.mjs';
 
 
 const moveIds = new Set(MOVES.map((m) => m.id));
@@ -61,13 +62,15 @@ test('loop191 每門武學都有 ART_CAT、合法屬性，招式不是懸空 id'
   }
 });
 
-test('loop191 特質引用都在 TRAITS', () => {
+test('loop191 特質引用都在 TRAITS；價值門檻落在 [-30, 40]', () => {
   const ids = new Set();
   for (const [p, q] of [...OPPOSE, ...OPPOSE24, ...LIKES24]) { ids.add(p); ids.add(q); }
   for (const [k, vs] of Object.entries(LIKES)) { ids.add(k); for (const v of vs) ids.add(v); }
   for (const t of RECRUIT29.pool) ids.add(t);
   for (const t of TEMPER29.zheng) ids.add(t);
   for (const t of ids) assert.ok(TRAITS[t], t);
+  for (const [k, v] of Object.entries(TEMPER29)) if (k.endsWith('V')) assert.ok(v >= -30 && v <= 40, `TEMPER29.${k}=${v}`);
+  for (const [k, v] of Object.entries(CHARM29)) if (k.endsWith('V')) assert.ok(v >= -30 && v <= 40, `CHARM29.${k}=${v}`);
 });
 
 test('loop191 古墓弟子可排上玉女心經，不必是小龍女', () => {

@@ -40,11 +40,11 @@ export const isExtro = (d) => (d.mbti ? d.mbti[0] === 'E' : (d.personality || []
 const MARTIAL = ['palm', 'leg', 'sword', 'fist', 'staff', 'blade'];
 export function powOf(d) { const k = d.skills || {}; return (k.strength || 0) + (k.agility || 0) + Math.max(0, ...MARTIAL.map((m) => k[m] || 0)); }
 /* loop188 v2.9 俠魅三維：只 d.v24。回 { v, tags } */
-export const CHARM29 = { ren: 5, renHi: 8, feng: 5, fengHi: 8, wei: 4, xiaV: 70, fameV: 70, followV: 50, moodLow: 55, hpLow: 70 };
+export const CHARM29 = { ren: 5, renHi: 8, feng: 5, fengHi: 8, wei: 4, xiaV: 25, fameV: 25, followV: 15, moodLow: 55, hpLow: 70 }; /* loop193：對齊 -30..40 */
 export function charm29(d, o) { const T = [], p = o.personality || [], v = o.values || {}, dv = d.values || {}; let x = 0; if (!d?.v24) return { v: 0, tags: T };
   if (p.includes('kind') || p.includes('gentle') || (v.xia ?? 0) >= CHARM29.xiaV) { x += (d.mood ?? 50) < CHARM29.moodLow || (d.hp ?? 100) < CHARM29.hpLow ? CHARM29.renHi : CHARM29.ren; T.push('仁厚可親'); }
   if (['quiet', 'clever', 'free', 'bold'].some((t) => p.includes(t))) { x += compat(d, o) > 1 ? CHARM29.fengHi : CHARM29.feng; T.push('風采出塵'); }
-  if ((o.id === 'hero' || o.role === 'head' || o.champ28 || (v.fame ?? 0) >= CHARM29.fameV) && ((dv.sect ?? 0) >= CHARM29.followV || (dv.fame ?? 0) >= CHARM29.followV)) { x += CHARM29.wei; T.push('威儀服眾'); }
+  if ((o.id === 'hero' || o.role === 'head' || o.champ28 || (v.fame ?? 0) >= CHARM29.fameV || p.includes('hypocrite')) && ((dv.sect ?? 0) >= CHARM29.followV || (dv.fame ?? 0) >= CHARM29.followV || ['diligent', 'honest', 'rigid', 'worrier', 'stubborn'].some((t) => (d.personality || []).includes(t)))) { x += CHARM29.wei; T.push('威儀服眾'); }
   return { v: x, tags: T }; }
 export function drawOf(d, o) { return (isExtro(o) ? DRAW.extroPull : 0) + Math.min(DRAW.powCap, Math.max(0, powOf(o) - powOf(d)) * DRAW.powPull) + (d.v24 ? charm29(d, o).v : 0); }
 export function drawBoost(s, d, out) { if (!s.draw || !isExtro(d)) return; for (const o of out) if (o.act === 'chat') o.score *= DRAW.chatMul; }

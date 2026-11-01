@@ -712,8 +712,8 @@ export function payday(s) {
 // loop145 R3：換日時依序執行的每日結算（順序即亂數消耗順序，不可任意調換）
 /* loop181 v2.8：內傷 ≥50 每日扣氣血 8、心情 4；主修外功已不逆催（改修同屬／調和內功）則每日自癒 6 */
 /* loop187 v2.9：小門派旗標（清冷清修）＋守正先練根基按特質計數（每人一次） */
-function temperDaily29(s) { const W = (s.v29n ??= {}), B = (W.baseByTrait ??= { honest: 0, diligent: 0, stubborn: 0, rigid: 0, sect: 0 }); const small = s.ds.length <= TEMPER29.small;
-  for (const d of s.ds) { if (!d.v24) continue; d.small29 = small; if (d.base28 && !d.base29c) { d.base29c = true; const t = TEMPER29.zheng.find((x) => (d.personality || []).includes(x)) || 'sect'; B[t]++; }
+export function temperDaily29(s) { const W = (s.v29n ??= {}), B = (W.baseByTrait ??= { honest: 0, diligent: 0, stubborn: 0, rigid: 0, sect: 0 }); const small = s.ds.length <= TEMPER29.small;
+  for (const d of s.ds) { if (!d.v24) continue; d.small29 = small; if (d.base28 && !d.base29c) { d.base29c = true; const t = ['rigid', 'stubborn', 'honest', 'diligent'].find((x) => (d.personality || []).includes(x)) || 'sect'; B[t]++; } /* loop193 拘謹優先，不讓勤奮／憨厚蓋過 */
     if (d.xiao29 && !d.xiao29c) { d.xiao29c = true; W.xiao = (W.xiao || 0) + 1; } if (d.ling29 && !d.ling29c) { d.ling29c = true; W.ling = (W.ling || 0) + 1; } if (temper29(d).qing && !d.qing29c) { d.qing29c = true; W.qing = (W.qing || 0) + 1; } } }
 function injuryDaily28(s) { for (const d of s.ds) { if (!d.v24 || !d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuter28(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
 export function dailyPipeline(s) {

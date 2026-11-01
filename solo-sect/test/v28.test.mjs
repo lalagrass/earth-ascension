@@ -101,7 +101,8 @@ test('loop184 addendum：根基渾厚 — 一品本門內功二三四階加速�
 });
 test('loop184 addendum：憨厚/勤奮/較真先練根基到二階，聰明人跳階', () => {
   const [, d] = fresh('wudang'); give(d, 'wudangXinfa', 20); give(d, 'taiji', 10); give(d, 'wudangFist', 5);
-  d.personality = ['honest']; assert.equal(A.autoFocus(d), 'wudangXinfa'); assert.ok(d.base28);
+  d.personality = ['honest']; assert.equal(A.autoFocus(d), 'wudangFist'); assert.ok(!d.base28); /* loop193：外功未小成，先練長拳守山門 */
+  give(d, 'wudangFist', 30); assert.equal(A.autoFocus(d), 'wudangXinfa'); assert.ok(d.base28);
   d.personality = ['clever']; d.base28 = false; assert.notEqual(A.autoFocus(d), 'wudangXinfa');
   d.personality = ['stubborn']; give(d, 'wudangXinfa', 56); assert.notEqual(A.autoFocus(d), 'wudangXinfa');
 });

@@ -157,13 +157,18 @@ export function autoFocus(d) {
   const own = Object.keys(d.arts || {}).map(artById).filter((a) => a && d.arts[a.id].xp < artCap(d, a));
   const pref = own.filter((a) => a.school === d.style || a.school === 'fist');
   const pool = pref.length ? pref : own; if (!pool.length) return null;
-  const dflt = () => [...pool].sort((a, b) => b.grade - a.grade || d.arts[a.id].xp - d.arts[b.id].xp)[0].id;
+  const sectish = (a) => (own28(d, a) || !!d.stree?.includes(a.id)) ? 1 : 0; /* loop193：本門／本門樹優先於外門 */
+  const byDefault = (a, b) => sectish(b) - sectish(a) || (b.grade || 1) - (a.grade || 1) || d.arts[a.id].xp - d.arts[b.id].xp;
+  const dflt = () => [...pool].sort(byDefault)[0].id;
   if (d.v24) { const T = temper29(d); /* loop187 v2.9 四種練武習性 */
-    if (T.zheng) { const b = baseInner28(d); if (b && d.arts[b.id].xp < ROOT28.baseXp && d.arts[b.id].xp < artCap(d, b)) { d.base28 = true; return b.id; } /* loop183 笨功夫：先把根基練到二階 */
-      const f = own.filter((a) => (a.grade || 1) <= 2 && own28(d, a) && d.arts[a.id].xp < ROOT28.baseXp).sort((a, b) => b.grade - a.grade || d.arts[a.id].xp - d.arts[b.id].xp)[0]; if (f && own.some((a) => (a.grade || 1) >= 3)) { d.base28 = true; return f.id; } }
-    if (T.xiao) { const f = own.filter((a) => a.school !== 'inner' && (a.grade || 1) >= 2 && !PUBLIC28.includes(a.id) && (BAN28.includes(a.id) || (!own28(d, a) && (a.own24 || a.classic)))).sort((a, b) => b.grade - a.grade || d.arts[b.id].xp - d.arts[a.id].xp)[0]; if (f) { if (f.id !== dflt()) d.xiao29 = true; return f.id; } }
-    if (T.ling) { const f = [...own].sort((a, b) => b.grade - a.grade || d.arts[b.id].xp - d.arts[a.id].xp)[0]; if (f) { if (f.id !== dflt()) d.ling29 = true; return f.id; } } }
-  return pool.sort((a, b) => b.grade - a.grade || d.arts[a.id].xp - d.arts[b.id].xp)[0].id;
+    if (T.zheng) { /* loop193：先有一門外功小成能守山門，再專練根基到大成；不再把一二品全部磨到 55 */
+      const combat = (a) => !isInner(a) && a.school !== 'step';
+      const armed = Object.keys(d.arts).some((id) => { const a = artById(id); return a && combat(a) && artTier(d, id) >= 1; });
+      if (!armed) { const c = own.filter((a) => combat(a) && artTier(d, a.id) < 1); if (c.length) return [...c].sort((a, b) => sectish(b) - sectish(a) || (a.grade || 1) - (b.grade || 1) || d.arts[b.id].xp - d.arts[a.id].xp)[0].id; }
+      const b = baseInner28(d); if (b && d.arts[b.id] && d.arts[b.id].xp < ROOT28.baseXp && d.arts[b.id].xp < artCap(d, b)) { d.base28 = true; return b.id; } }
+    if (T.xiao) { const f = own.filter((a) => !isInner(a) && (a.grade || 1) >= 2 && !PUBLIC28.includes(a.id) && (BAN28.includes(a.id) || (!own28(d, a) && (a.own24 || a.classic)))).sort((a, b) => (b.grade || 1) - (a.grade || 1) || d.arts[b.id].xp - d.arts[a.id].xp)[0]; if (f) { d.xiao29 = true; return f.id; } }
+    if (T.ling) { const f = [...own].sort((a, b) => (b.grade || 1) - (a.grade || 1) || d.arts[b.id].xp - d.arts[a.id].xp)[0]; if (f) { if (f.id !== dflt()) d.ling29 = true; return f.id; } } }
+  return [...pool].sort(byDefault)[0].id;
 }
 export const focusOf = (d) => (d.focus && d.arts?.[d.focus] ? d.focus : autoFocus(d));
 // 只自動求學：主修系、拳、內功、身法，或前置含主修系的合擊武學
@@ -504,8 +509,8 @@ export function polymath24(d) {
   PM24.set(d, { sig, v }); return v;
 }
 /* ---- loop187 v2.9 練武習性（沿用既有 25 特質與 6 價值觀，不另立欄位） ---- */
-export const TEMPER29 = { zheng: ['honest', 'diligent', 'stubborn', 'rigid'], sectV: 70, fameV: 65, lingK: 1.12, steal: 6, qingK: 1.18, small: 6 };
-const TRAITS29 = { zheng: ['honest', 'diligent', 'stubborn', 'rigid'], ling: ['clever', 'free', 'nimble'], xiao: ['hypocrite', 'bold'] };
+export const TEMPER29 = { zheng: ['honest', 'diligent', 'stubborn', 'rigid'], sectV: 25, fameV: 25, xiaV: 25, lingK: 1.12, steal: 6, qingK: 1.18, small: 6 }; /* loop193：價值觀是 -30..40，不是 0..100 */
+const TRAITS29 = { zheng: ['honest', 'diligent', 'stubborn', 'rigid'], ling: ['clever', 'free', 'nimble'], xiao: ['hypocrite', 'bold', 'rascal', 'glib'] };
 /* 回 { zheng 守正厚積, ling 靈動跳階, xiao 梟雄強練, qing 至情清修（本刻是否生效） } */
 export function temper29(d) { if (!d?.v24) return {}; const p = d.personality || [], v = d.values || {}, has = (L) => L.some((t) => p.includes(t));
   const zheng = has(TRAITS29.zheng) || (v.sect ?? 0) >= TEMPER29.sectV, xiao = !p.includes('honest') && !p.includes('rigid') && (has(TRAITS29.xiao) || (v.fame ?? 0) >= TEMPER29.fameV || (v.wu ?? 0) >= TEMPER29.fameV);

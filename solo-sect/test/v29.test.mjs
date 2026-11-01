@@ -40,10 +40,12 @@ test('loop186 決定 4：七傷拳前置只要鷹爪小成；聖火心法或九�
 });
 
 const pick = (d, traits, values) => { d.personality = traits; d.values = values || {}; d.style = 'palm'; return A.autoFocus(d); };
-test('loop187 守正厚積：根基未大成先練根基；有三品時先把本門一二品練到大成', () => {
-  const [, d] = fresh('wudang'); give(d, 'wudangXinfa', 30); give(d, 'taijiSword', 5); assert.equal(pick(d, ['rigid']), 'wudangXinfa'); assert.ok(d.base28);
-  const [, e] = fresh('wudang'); give(e, 'wudangXinfa', 30); give(e, 'taijiSword', 5); assert.equal(pick(e, [], { sect: 80 }), 'wudangXinfa');
+test('loop193 守正厚積：先有一門外功小成，再把根基練到大成', () => {
+  const [, d] = fresh('wudang'); give(d, 'wudangXinfa', 30); give(d, 'taijiSword', 5); assert.equal(pick(d, ['rigid']), 'taijiSword'); assert.ok(!d.base28);
+  give(d, 'taijiSword', 30); assert.equal(pick(d, ['rigid']), 'wudangXinfa'); assert.ok(d.base28);
+  const [, e] = fresh('wudang'); give(e, 'wudangXinfa', 60); give(e, 'wudangFist', 30); give(e, 'taijiSword', 5); assert.equal(pick(e, [], { sect: 40 }), 'taijiSword');
   const [, f] = fresh('wudang'); give(f, 'wudangXinfa', 30); give(f, 'taijiSword', 5); assert.notEqual(pick(f, ['playful']), 'wudangXinfa');
+  assert.equal(A.TEMPER29.sectV, 25); assert.equal(A.TEMPER29.fameV, 25); assert.equal(A.TEMPER29.xiaV, 25);
 });
 test('loop187 靈動跳階：直取最高品；巧/快或二品以上 ×1.12；偷師 +6', () => {
   const [, d] = fresh('emei'); give(d, 'basicFist', 5); give(d, 'linjiZhuang', 5); assert.equal(pick(d, ['clever']), 'linjiZhuang');
@@ -51,9 +53,11 @@ test('loop187 靈動跳階：直取最高品；巧/快或二品以上 ×1.12；�
   assert.equal(A.TEMPER29.steal, 6); assert.ok(A.temper29(d).ling);
 });
 test('loop187 梟雄強練：豪爽／偽君子／重名望者先練他派高品外功（憨厚、拘謹除外）', () => {
-  const [, d] = fresh('gaibang'); give(d, 'huntianGong', 60); give(d, 'lianhuaPalm', 10); give(d, 'chousuiPalm', 10); assert.equal(pick(d, ['bold']), 'chousuiPalm');
-  assert.equal(pick(d, [], { fame: 70 }), 'chousuiPalm'); assert.notEqual(pick(d, ['bold', 'honest']), 'chousuiPalm');
-  const [, m] = fresh('mingjiao'); give(m, 'yingzhuaHand', 30); give(m, 'qishangFist', 5); assert.equal(pick(m, ['hypocrite']), 'qishangFist');
+  const [, d] = fresh('gaibang'); give(d, 'huntianGong', 60); give(d, 'lianhuaPalm', 10); give(d, 'chousuiPalm', 10); assert.equal(pick(d, ['bold']), 'chousuiPalm'); assert.ok(d.xiao29);
+  assert.equal(pick(d, ['rascal']), 'chousuiPalm'); assert.equal(pick(d, ['glib']), 'chousuiPalm');
+  assert.equal(pick(d, [], { fame: 40 }), 'chousuiPalm'); assert.notEqual(pick(d, ['bold', 'honest']), 'chousuiPalm');
+  const [, m] = fresh('mingjiao'); give(m, 'yingzhuaHand', 30); give(m, 'qishangFist', 5); assert.equal(pick(m, ['hypocrite']), 'qishangFist'); assert.ok(m.xiao29);
+  const [, g] = fresh('gaibang'); give(g, 'lianhuaPalm', 10); give(g, 'chousuiPalm', 10); g.personality = ['playful']; g.values = {}; g.style = 'palm'; assert.equal(A.autoFocus(g), 'lianhuaPalm');
 });
 test('loop187 至情清修：癡＋有默契伴侶、清冷＋小門派 ×1.18；舊局不吃 mods24', () => {
   const [, d] = fresh('emei'); give(d, 'emeiSword', 5); d.personality = ['chi']; d.pairMul = 0; assert.ok(!A.temper29(d).qing); d.pairMul = 0.1; assert.ok(A.temper29(d).qing);
@@ -77,13 +81,20 @@ test('loop188 俠魅：仁厚可親、風采出塵、威儀服眾', async () => 
   const k = charm29(d, { personality: ['kind'] }); assert.deepEqual(k, { v: 8, tags: ['仁厚可親'] }); d.mood = 80; assert.equal(charm29(d, { personality: ['kind'] }).v, 5);
   assert.deepEqual(charm29({ ...d, personality: ['clever'] }, { personality: ['free'] }), { v: 8, tags: ['風采出塵'] }); assert.equal(charm29(d, { personality: ['quiet'] }).v, 5);
   assert.deepEqual(charm29(d, { id: 'hero', personality: [] }).tags, ['威儀服眾']); assert.deepEqual(charm29({ ...d, values: {} }, { id: 'hero', personality: [] }).tags, []);
+  assert.ok(charm29({ v24: true, personality: ['rigid'], values: {}, mood: 80, hp: 100 }, { personality: ['hypocrite'], values: {} }).tags.includes('威儀服眾'));
+  assert.equal(charm29({ v24: true, personality: [], values: { sect: 10 }, mood: 80, hp: 100 }, { personality: ['hypocrite'], values: { fame: 40 } }).tags.includes('威儀服眾'), false);
   assert.equal(drawOf({ personality: [] }, { personality: ['kind'] }), 0);
 });
 test('loop188 第 27 日圍山再降約 5%', async () => {
   const { SIEGE27 } = await import('../src/threat.mjs'); assert.deepEqual(SIEGE27.days[27].E, [1000, 1330, 1750, 2140]);
 });
 test('loop188 招收：新局約 35% 第二特質換成經典特質', async () => {
-  const { RECRUIT29 } = await import('../src/data.mjs'); assert.equal(RECRUIT29.p, 0.35); assert.equal(RECRUIT29.pool.length, 9);
+  const { RECRUIT29 } = await import('../src/data.mjs'); assert.equal(RECRUIT29.p, 0.35); assert.equal(RECRUIT29.pool.length, 10); assert.ok(RECRUIT29.pool.includes('hypocrite'));
+});
+test('loop193 拘謹計數優先於勤奮', async () => {
+  const { temperDaily29 } = await import('../src/sim.mjs');
+  const [, d] = fresh('emei'); d.personality = ['diligent', 'rigid']; d.base28 = true;
+  const s = { v24: true, ds: [d] }; temperDaily29(s); assert.equal(s.v29n.baseByTrait.rigid, 1); assert.equal(s.v29n.baseByTrait.diligent, 0);
 });
 
 test('loop192 異屬逆催：吐納不沖、無名派不吃虛級、禁術與真陰陽才第四階', () => {
