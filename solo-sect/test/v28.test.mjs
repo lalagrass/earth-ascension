@@ -57,3 +57,50 @@ test('loop183 v2.8：狂風快劍/七傷拳列魁首限定、會武池含天地�
   assert.deepEqual(SIEGE27.days[27].E, [1050, 1400, 1850, 2250]);
   assert.equal(WAVE27.eliteMax, 8);
 });
+
+/* loop184 v2.8 驗收測試 */
+test('loop184 四階齊備：同一弟子依內外搭配落在第一至第四階', () => {
+  const [, d] = fresh('wudang'); give(d, 'wudangXinfa', 60); give(d, 'taijiSword', 10);
+  assert.equal(drive(d, 'taijiSword').tier, 1); /* 本門內功大成撐三品本門外功 */
+  give(d, 'basicFist', 10); assert.equal(drive(d, 'basicFist').tier, 2);
+  const [, e] = fresh('emei'); give(e, 'breath', 60); give(e, 'huifengSword', 10); assert.equal(drive(e, 'huifengSword').tier, 3);
+  const [, g] = fresh('gaibang'); give(g, 'huntianGong', 60); give(g, 'chousuiPalm', 10); assert.equal(drive(g, 'chousuiPalm').tier, 4);
+});
+test('loop184 內傷：第四階練功 +6、≥50 每日扣血扣心情、醫館有藥師清零、離開第四階每日 −6', () => {
+  const [s, d] = fresh('gaibang'); give(d, 'huntianGong', 60); give(d, 'chousuiPalm', 30); d.focus = 'chousuiPalm';
+  for (let i = 0; i < 9; i++) A.qiInjuryAdd28(s, d); assert.equal(d.qiInjury, 54); assert.ok(A.injuryMul28(d) < 0.9 && A.injuryMul28(d) >= 0.75); d.qiInjury = 100; assert.equal(A.injuryMul28(d), 0.75);
+  A.qiInjuryCure28(s, d, 999); assert.equal(d.qiInjury, 0);
+  d.qiInjury = 30; d.focus = null; delete d.arts.chousuiPalm; give(d, 'basicFist', 10);
+  assert.ok(typeof A.injuryDaily28 !== 'function' || (A.injuryDaily28(s, d), d.qiInjury <= 24));
+});
+test('loop184 一練七傷：無聖火心法小成練七傷拳落第四階', () => {
+  const [, d] = fresh('mingjiao'); give(d, 'qishangFist', 10); assert.equal(drive(d, 'qishangFist').tier, 4);
+  give(d, 'shenghuoXinfa', 30); assert.notEqual(drive(d, 'qishangFist').tier, 4);
+});
+test('loop184 執事替武當自動興建紫霄宮', () => {
+  const s = V({ sect24: 'wudang', steward: true }); tick(s, 0.1); assert.ok(s.steward); s.sect.fac = false; s.rep = 50; for (const k of ['wood', 'stone', 'coin']) { s.res[k] = 999; if (s.cap?.[k] != null) s.cap[k] = 9999; }
+  for (let i = 0; i < 2 * 600 * 4 && !s.sect.fac; i++) tick(s);
+  assert.ok(s.sect.fac, '紫霄宮應落成'); assert.ok((s.v28n?.facAuto || 0) >= 1);
+});
+test('loop184 addendum：主修內功取有效分、學新高階內功不掉第一階', () => {
+  const [, d] = fresh('wudang'); give(d, 'wudangXinfa', 90); give(d, 'taijiSword', 10); const t0 = drive(d, 'taijiSword');
+  give(d, 'wudangJiuyang', 1); assert.equal(drive(d, 'taijiSword').tier, t0.tier);
+  assert.equal(A.mainInner28(d).id, 'wudangXinfa'); /* 3*30+15+18+20=143 > 0+45+0.2+20 */
+  assert.equal(A.innerScore28(d, A.artById('wudangXinfa')), 3 * 30 + 15 + 90 * 0.2 + 20);
+});
+test('loop184 addendum：根基渾厚 — 一品本門內功二三四階加速進階內功並加催動', () => {
+  const [, d] = fresh('wudang'); give(d, 'wudangJiuyang', 30); give(d, 'taijiSword', 10);
+  const parts = (x) => JSON.stringify(A.artMulParts(d, A.artById('wudangJiuyang')));
+  for (const [xp, tr, mv] of [[55, '1.15', 1.06], [85, '1.28', 1.12], [100, '1.4', 1.18]]) {
+    give(d, 'wudangXinfa', xp); assert.equal(A.rootFoundation28(d), [55, 85, 100].indexOf(xp) + 2); assert.ok(parts().includes(tr), parts());
+    const r = drive(d, 'taijiSword'); assert.ok(r.root); assert.ok(Math.abs(r.mul / (A.sectClasses24(d) >= 3 ? A.DRIVE28.t1s : A.DRIVE28.t1) - mv) < 1e-9);
+  }
+  assert.ok(A.styleBadges24(d).includes('【根基渾厚】'));
+  give(d, 'wudangXinfa', 30); assert.ok(!drive(d, 'taijiSword').root);
+});
+test('loop184 addendum：憨厚/勤奮/較真先練根基到二階，聰明人跳階', () => {
+  const [, d] = fresh('wudang'); give(d, 'wudangXinfa', 20); give(d, 'taiji', 10); give(d, 'wudangFist', 5);
+  d.personality = ['honest']; assert.equal(A.autoFocus(d), 'wudangXinfa'); assert.ok(d.base28);
+  d.personality = ['clever']; d.base28 = false; assert.notEqual(A.autoFocus(d), 'wudangXinfa');
+  d.personality = ['stubborn']; give(d, 'wudangXinfa', 56); assert.notEqual(A.autoFocus(d), 'wudangXinfa');
+});
