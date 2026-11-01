@@ -5,7 +5,7 @@ import { createState, tick } from '../src/sim.mjs';
 import * as A from '../src/arts.mjs';
 import { ARTS, SECTS } from '../src/data.mjs';
 import { passPick } from '../src/bonds.mjs';
-import { bisai24 } from '../src/sect.mjs';
+import { bisai24, setMaster } from '../src/sect.mjs';
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
 const OLD = () => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false });
 const hero = (s) => s.ds.find((d) => d.id === 'hero');
@@ -78,4 +78,8 @@ test('loop174 天地會／星宿派：資料、樹、開局可選天地會', asy
   const { SECT_PICK24 } = await import('../src/data.mjs'); assert.ok(SECT_PICK24.includes('tiandihui'));
   const s = V({ sect24: 'tiandihui' }); tick(s, 0.1); assert.equal(s.sect.id, 'tiandihui'); assert.ok(s.sect.tree.includes('yunlongXinfa'));
   const x = V({ sect24: 'xingxiu' }); tick(x, 0.1); const d = other(x); d.arts = {}; give(d, 'huagongDafa', 30); give(d, 'chousuiPalm', 30); give(d, 'zhaixingStep', 30); assert.equal(A.sectClasses24(d), 3);
+});
+test('loop175 拜師承襲不越位階鎖：師父的鎮派絕學不直接傳給一般徒弟', () => {
+  const s = V({ sect24: 'gumu' }); tick(s, 0.1); const h = hero(s), d = other(s); give(h, 'yunvSword', 100); give(h, 'tianluoPalm', 60); delete d.arts.yunvSword;
+  setMaster(s, d, h); assert.ok(!d.arts.yunvSword); assert.ok(d.arts.tianluoPalm);
 });

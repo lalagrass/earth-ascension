@@ -1,5 +1,5 @@
 import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS, SECT_PICK24 } from './data.mjs';
-import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec } from './arts.mjs';
+import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24 } from './arts.mjs';
 import { dpsOf } from './world.mjs';
 import { compat } from './social.mjs';
 import { affKey, relKey, log, resAdd, resSet, recordDeed } from './util.mjs';
@@ -46,7 +46,7 @@ export function adopt(s, pa, pb, rnd = Math.random) {
 }
 const bestTier = (d) => Math.max(-1, ...Object.keys(d.arts || {}).map((k) => artTier(d, k)));
 // ---- 師承：徒弟學師父大成以上的武學 ×1.2（arts.mjs 讀 d.lineArts） ----
-export function setMaster(s, d, m) { if (!m || m === d) return; d.master = m.id; refreshLine(s, d); const top = d.lineArts[0]; if (top) { learnArt(d, top, s.t); d.arts[top].xp = Math.max(d.arts[top].xp, 10); } log(s, `${d.name}拜${m.name}為師。`); }
+export function setMaster(s, d, m) { if (!m || m === d) return; d.master = m.id; refreshLine(s, d); const top = d.lineArts.find((k) => !chiefLocked24(d, artById(k))); /* loop175 收徒承師不越位階鎖 */ if (top) { learnArt(d, top, s.t); d.arts[top].xp = Math.max(d.arts[top].xp, 10); } log(s, `${d.name}拜${m.name}為師。`); }
 function refreshLine(s, d) { const m = s.ds.find((x) => x.id === d.master); d.lineArts = m ? Object.keys(m.arts || {}).filter((k) => artTier(m, k) >= GEN.lineTier).sort((a, b) => artTier(m, b) - artTier(m, a)) : []; }
 export function adoptCard(s) {
   const G = s.gen; if (G.kids.length >= GEN.maxKids || s.t - G.lastAdopt < GEN.adoptEvery * DAY || !s.choices || s.choices.some((c) => c.gen)) return;
