@@ -30,7 +30,7 @@ test('loop196 四階催動：本門正宗、同源、虛浮、逆催；純內功
   give(x, 'shenmuGong', 30); give(x, 'chousuiPalm', 30);
   assert.deepEqual(drive(x, 'shenmuGong'), { tier: 0, mul: 1 });
   assert.equal(drive(x, 'chousuiPalm').tier, 1); assert.equal(drive(x, 'chousuiPalm').mul, A.DRIVE28.t1);
-  give(x, 'sanyinClaw', 10); assert.equal(drive(x, 'sanyinClaw').tier, 3); assert.equal(drive(x, 'sanyinClaw').mul, A.DRIVE28.t3);
+  give(x, 'sanyinClaw', 10); assert.equal(drive(x, 'sanyinClaw').tier, 3); assert.ok(Math.abs(drive(x, 'sanyinClaw').mul - A.floatMul31(A.artById('sanyinClaw'))) < 1e-9); /* loop201：打法虛浮依 qiScale，不再固定 0.78 */
   give(x, 'shenmuGong', 60); assert.equal(drive(x, 'sanyinClaw').tier, 1); assert.equal(drive(x, 'sanyinClaw').mul, A.DRIVE28.t1);
   give(x, 'sanyinClaw', 30); assert.ok(Math.abs(drive(x, 'sanyinClaw').mul - A.DRIVE28.t1 * 1.06) < 1e-9); /* 二品內功大成催三品外功，吃根基 */
   const [, e] = fresh('emei'); give(e, 'breath', 60); give(e, 'chousuiPalm', 30);
@@ -100,7 +100,7 @@ test('loop198 造詣實戰：內力、回氣、內勁、腳程、冷卻、外功
   assert.ok(Math.abs(A.qiMax2(hi) / A.qiMax2(lo) - 1.08) < 1e-9);
   assert.ok(Math.abs(A.medQi(hi) / A.medQi(lo) - 1.08) < 1e-9);
   assert.ok(Math.abs(A.restQi(hi) / A.restQi(lo) - 1.08) < 1e-9);
-  assert.ok(Math.abs(A.qiStrikeMul(hi) - A.qiStrikeMul(lo) - 0.04) < 1e-9);
+  assert.ok(Math.abs(A.qiStrikeMul(hi) - A.qiStrikeMul(lo) - 0.15 * 0.1 * 0.004 * 20) < 1e-9); /* loop201：築基 qiScale × 內力比 × 造詣項，不再是平坦 +0.002×造詣 */
   const step = { ...body, arts: { breath: { xp: 55 }, wudangFist: { xp: 30 }, snowStep: { xp: 30, gm: { e: 20 } } } };
   const still = { ...body, arts: { breath: { xp: 55 }, wudangFist: { xp: 30 }, snowStep: { xp: 30 } } };
   const sh = A.mastery(step, 'shenfa'); assert.equal(sh, 20);
@@ -119,13 +119,13 @@ test('loop196 本門正宗打坐 ×1.15，未大成不乘', () => {
 });
 test('loop199 劍宗前期快、氣宗後期以氣御劍', () => {
   const earlyJ = { v24: true, v23: true, sectId: 'jianzong', qi: 20, ng: 1, moves: [], arts: { jianzongXinfa: { xp: 0 }, bixie: { xp: 55 } } };
-  assert.equal(A.swordCdMul(earlyJ, 'bx1'), 0.76); assert.equal(A.swordDmgMul(earlyJ, 'bx1'), 1.18);
+  assert.equal(A.swordCdMul(earlyJ, 'bx1'), 1); assert.equal(A.swordDmgMul(earlyJ, 'bx1'), 1); /* loop201：劍宗不再另乘冷卻與傷害 */
   assert.ok(A.swordFast24(earlyJ)); assert.ok(A.styleBadges24(earlyJ).includes('【唯快不破】'));
   assert.match(artsGrowHtml(earlyJ, 0, false), /【唯快不破】/);
   earlyJ.arts.bixie.xp = 85; assert.equal(A.swordDmgMul(earlyJ, 'bx1'), 1);
   earlyJ.arts.bixie.xp = 10; assert.ok(!A.styleBadges24(earlyJ).includes('【唯快不破】'));
   const other = { v24: true, v23: true, sectId: 'wudang', qi: 20, ng: 1, arts: { breath: { xp: 10 }, bixie: { xp: 25 } } };
-  assert.equal(A.swordCdMul(other, 'bx1'), 0.86); assert.equal(A.swordDmgMul(other, 'bx1'), 1.08);
+  assert.equal(A.swordCdMul(other, 'bx1'), 1); assert.equal(A.swordDmgMul(other, 'bx1'), 1); /* loop201 */
   other.arts.bixie.xp = 55; assert.equal(A.swordDmgMul(other, 'bx1'), 1);
   const legacy = { v23: true, sectId: 'qizong', qi: 0, arts: { breath: { xp: 30 } }, zixia: 2 };
   assert.equal(A.swordCdMul(legacy, 'bx1'), 0.82); assert.equal(A.swordDmgMul(legacy, 'bx1'), 1.1);
@@ -134,9 +134,10 @@ test('loop199 劍宗前期快、氣宗後期以氣御劍', () => {
   const q = A.qiOf(qe); assert.equal(q, 20);
   const qeMul = 1.06 + 0.04 + 0.08 * 0.2;
   assert.ok(Math.abs(A.qiSwordMul24(qe) - qeMul) < 1e-9); assert.ok(qeMul > 1.1 && qeMul < 1.2);
-  assert.ok(Math.abs(A.qiStrikeMul(qe) - (1 + 0.15 * 0.2) * qeMul) < 1e-9);
+  assert.ok(Math.abs(A.qiStrikeMul(qe) - (1 + 0.15 * 0.2)) < 1e-9); /* loop201：內勁不再乘 qiSwordMul24 */
   assert.ok(!A.styleBadges24(qe).includes('【以氣御劍】'));
-  assert.ok(1.18 / 0.76 > A.qiStrikeMul(qe) * 1.08 / 0.86);
+  const qeJ = { ...qe, sectId: 'jianzong' }, qeW = { ...qe, sectId: 'wuming' };
+  assert.equal(A.qiStrikeMul(qeJ), A.qiStrikeMul(qe)); assert.equal(A.qiStrikeMul(qeW), A.qiStrikeMul(qe));
   const late = { v24: true, v23: true, sectId: 'qizong', qi: 160, ng: 1, moves: [], arts: { zixia: { xp: 90 }, huashanXinfa: { xp: 60 } } };
   const lateMul = Math.min(1.62, 1.06 + 0.12 + 0.12 + 0.08 + 0.08 * 1.6);
   assert.ok(lateMul >= 1.45 && lateMul <= 1.62); assert.ok(Math.abs(A.qiSwordMul24(late) - lateMul) < 1e-9);
@@ -145,9 +146,10 @@ test('loop199 劍宗前期快、氣宗後期以氣御劍', () => {
   assert.equal(A.qiSwordMul24(cap), 1.62);
   const lateJ = { v24: true, v23: true, sectId: 'jianzong', qi: 40, ng: 1, arts: { jianzongXinfa: { xp: 55 }, bixie: { xp: 90 } } };
   assert.equal(A.swordDmgMul(lateJ, 'bx1'), 1);
-  assert.ok(A.qiStrikeMul(late) / 0.86 > A.qiStrikeMul(lateJ) * A.swordDmgMul(lateJ, 'bx1') / 0.76);
   const spent = { v24: true, v23: true, sectId: 'qizong', ng2: 1, qi: 5, arts: { huashanXinfa: { xp: 60 } } };
-  A.shieldHit(spent, 100, 0); assert.equal(spent.spentUntil, A.NG2.spentT * 0.5);
+  A.shieldHit(spent, 100, 0); assert.equal(spent.spentUntil, A.NG2.spentT); /* loop201：一品心法大成不再減半 */
+  const great = { v24: true, v23: true, sectId: 'wudang', ng2: 1, qi: 5, arts: { zixia: { xp: 60 } } };
+  A.shieldHit(great, 100, 0); assert.equal(great.spentUntil, A.NG2.spentT * 0.5); /* 三品且大成，任何門派都減半 */
   const young = { v24: true, v23: true, sectId: 'qizong', ng2: 1, qi: 5, arts: { huashanXinfa: { xp: 10 } } };
   A.shieldHit(young, 100, 0); assert.equal(young.spentUntil, A.NG2.spentT);
   const oldS = { ng2: 1, qi: 5, sectId: 'qizong', arts: { huashanXinfa: { xp: 60 } } };

@@ -13,14 +13,15 @@ const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0)
 const OLD = () => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false });
 const hero = (s) => s.ds.find((d) => d.id === 'hero');
 
-const NEW = { emei: ['emeiJiuyang', 'linjiZhuang', 'emeiSword', 'huifengSword', 'jindingPalm', 'tiangangFinger'], wudang: ['wudangJiuyang', 'wudangFist', 'rouyunSword', 'taijiSword'], taohua: ['biboXinfa', 'luoyingPalm', 'lanhuaHand', 'yuxiaoSword'], gumu: ['tianluoPalm', 'yunvSword'], xingxiu: ['shenmuGong', 'huagongDafa', 'chousuiPalm', 'sanyinClaw'] };
+const NEW = { emei: ['emeiJiuyang', 'linjiZhuang', 'emeiSword', 'huifengSword', 'jindingPalm', 'tiangangFinger'], wudang: ['wudangJiuyang', 'wudangFist', 'rouyunSword', 'taijiSword'], taohua: ['biboXinfa', 'luoyingPalm', 'lanhuaHand', 'yuxiaoSword'], gumu: ['tianluoPalm', 'yunvSword'], xingxiu: ['huagongDafa', 'chousuiPalm', 'sanyinClaw'] }; /* loop201：神木毒功退出星宿樹 */
 test('loop168 五派專屬武學：classic＋v24、非 secret、ART_CAT 照規格、各派樹照規格', () => {
   for (const [k, ids] of Object.entries(NEW)) for (const id of ids) { const a = A.artById(id); assert.ok(a && a.v24 && a.classic && !a.secret && a.own24 === k, id); assert.ok(A.ART_CAT[id], id); assert.ok(SECTS[k].tree.includes(id), id); }
   assert.deepEqual(SECTS.emei.tree, ['breath', 'emeiJiuyang', 'linjiZhuang', 'emeiSword', 'huifengSword', 'jindingPalm', 'tiangangFinger', 'stepFeather']); assert.deepEqual(SECTS.emei.ban, ['jiuyinClaw']);
   assert.deepEqual(SECTS.wudang.tree, ['breath', 'wudangXinfa', 'wudangJiuyang', 'wudangFist', 'mianPalm', 'taiji', 'basicSword', 'rouyunSword', 'taijiSword', 'stepEight']); /* loop172 t191 補武當心法、綿掌 */
   assert.deepEqual(SECTS.taohua.tree, ['breath', 'biboXinfa', 'luoyingPalm', 'lanhuaHand', 'basicSword', 'yuxiaoSword', 'stepEight']);
   assert.deepEqual(SECTS.gumu.tree, ['breath', 'yunv', 'tianluoPalm', 'yunvSword', 'xuantie', 'anran', 'stepFeather']);
-  assert.deepEqual(SECTS.xingxiu.tree, ['breath', 'shenmuGong', 'huagongDafa', 'chousuiPalm', 'sanyinClaw', 'duPu', 'zhaixingStep']); /* loop196 神木毒功插在吐納與化功之間 */
+  assert.deepEqual(SECTS.xingxiu.tree, ['breath', 'huagongDafa', 'chousuiPalm', 'sanyinClaw', 'duPu', 'zhaixingStep']); /* loop201：神木毒功退出，化功大法仍 chiefOnly */
+  const shenmu = A.artById('shenmuGong'); assert.equal(shenmu.deprecated, true); assert.equal(shenmu.secret, true); assert.ok(!SECTS.xingxiu.tree.includes('shenmuGong'));
   assert.deepEqual(A.ART_CAT.tiangangFinger, { quanzhang: 0.5, qimen: 0.5 }); assert.deepEqual(A.ART_CAT.huagongDafa, { neigong: 0.6, dushu: 0.4 });
   assert.ok(A.isSwordArt('yuxiaoSword') && A.isSwordArt('taijiSword') && !A.isSwordArt('jindingPalm'));
   for (const a of ARTS.filter((x) => x.own24)) for (const m of a.techs) if (a.tech) assert.ok(m, a.id);

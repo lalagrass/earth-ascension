@@ -249,7 +249,7 @@ export function bisai24(s) {
    取 score−need 最大的一組（同分取 own24 在前）；未達門檻 p＝0，達標 p＝min(0.85, 0.45＋0.015×(score−need))。回 null＝無可偷 */
 export const STEAL28 = { per: 12, wu5: 18, wu4: 6, base: 0.45, k: 0.015, max: 0.85 };
 export function stealCheck28(s, team, O) {
-  const C = [...new Set([...(O.tree || []), ...(O.tree24 || [])])].map(artById).filter((a) => a && !a.secret && !a.signature && !a.derived && !a.isPublic).sort((x, y) => !!y.own24 - !!x.own24);
+  const C = [...new Set([...(O.tree || []), ...(O.tree24 || [])])].map(artById).filter((a) => a && !a.deprecated && !a.secret && !a.signature && !a.derived && !a.isPublic).sort((x, y) => !!y.own24 - !!x.own24);
   let best = null; for (const a of C) { const cat = primaryCat(a.id), g = a.grade || 2, need = STEAL28.per * g;
     for (const d of team) { if (d.arts?.[a.id] || !artOk(d, a)) continue; const wu = d.wu ?? 3, sc = (cat ? mastery(d, cat) : 0) + (wu >= 5 ? STEAL28.wu5 : wu >= 4 ? STEAL28.wu4 : 0) + (temper29(d).ling ? TEMPER29.steal : 0); /* loop187 靈心慧眼 */
       if (!best || sc - need > best.score - best.need) best = { a, d, cat, need, score: sc }; } }

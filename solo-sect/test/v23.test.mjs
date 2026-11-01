@@ -49,7 +49,7 @@ test('loop153 三段腳程：v23 輕功每階 6%；御氣疾行要內功小成�
 });
 test('loop153 打坐 +16（紫霞 +4）、舊局仍 12；真氣出手與劍招只在 v23', () => {
   const s = V(); tick(s, 0.1); const d = hero(s); assert.ok(Math.abs(medQi(d) - 16 * (1 + 0.004 * mastery(d, 'neigong'))) < 1e-9); assert.equal(NG.med, 12); /* loop198：內功造詣加成打坐 */
-  d.zixia = 2; assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * qiOf2(d) / 100 + 0.002 * mastery(d, 'neigong')) * qiSwordMul24(d)) < 1e-9); assert.equal(swordCdMul(d, { id: 'bx1' }), d.sectId === 'jianzong' ? 0.76 : 0.86); /* loop199 */
+  d.zixia = 2; const q153 = qiOf2(d); assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * Math.min(1.6, q153 / 100) * (1 + 0.004 * mastery(d, 'neigong')))) < 1e-9); assert.equal(swordCdMul(d, { id: 'bx1' }), 1); /* loop201：沒指定武學用築基 qiScale；v24 不再給劍法冷卻 */
   const o = OLD(); tick(o, 0.1); const h = hero(o); h.zixia = 2; assert.equal(qiStrikeMul(h), 1); assert.equal(swordCdMul(h, { id: 'bx1' }), 1); assert.equal(medQi(h), 12);
   learnArt(d, 'jiuyang', s.t); assert.ok(innerSpecs(d).includes('jiuyang')); assert.deepEqual(innerSpecs(h), []);
 });
@@ -131,7 +131,7 @@ test('loop157 清修 +20%：練功／打坐／讀書三項都加，幫工與非�
   s.ds.filter((d) => d.role === 'laborer').slice(1).forEach((d) => s.ds.splice(s.ds.indexOf(d), 1)); assert.equal(isEliteHermit(s), false); assert.equal(laborSpeed(s, hero(s), 'train'), 1);
 });
 // ---- loop157 擁有人 t188：劍招判定修正、出手倍率統一入口、藏經閣補位 ----
-import { cdMul, moveMul, isSwordMove, qiOf as qiOf2 } from '../src/arts.mjs';
+import { cdMul, moveMul, isSwordMove, artOfMove, qiOf as qiOf2 } from '../src/arts.mjs';
 import { readFileSync } from 'node:fs';
 import { dpsOf } from '../src/world.mjs';
 import { stewFallback } from '../src/economy.mjs';
@@ -139,14 +139,14 @@ test('loop157 劍招：辟邪／獨孤九劍真實招式吃 cdMul ×0.82 與 mov
   const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'bixie', s.t); d.qi = 0;
   assert.ok(isSwordMove('bx1') && isSwordMove('dg1') && isSwordMove('xt1')); assert.equal(isSwordMove('qm1'), false);
   for (const mv of ['bx1', 'dg1']) { const c1 = cdMul(d, mv, s.t), m1 = moveMul(d, mv, s.t); d.v23 = false; const c0 = cdMul(d, mv, s.t), m0 = moveMul(d, mv, s.t); d.v23 = true;
-    assert.ok(Math.abs(c1 / c0 - (d.sectId === 'jianzong' ? 0.76 : 0.86)) < 1e-9, mv); assert.ok(Math.abs(m1 / m0 - qiStrikeMul(d) * swordDmgMul(d, mv)) < 1e-9, `${mv} ${m1 / m0}`); } /* loop199：v24 一般劍冷卻 0.86、小成前 ×1.08；劍宗另計 */
+    assert.ok(Math.abs(c1 / c0 - 1) < 1e-9, mv); assert.ok(Math.abs(m1 / m0 - qiStrikeMul(d) * swordDmgMul(d, mv)) < 1e-9, `${mv} ${m1 / m0}`); } /* loop201：v24 關掉門派劍招係數，內力 0 時開關 v23 比值為 1 */
   learnArt(d, 'qimenZhen', s.t); const c1 = cdMul(d, 'qm1', s.t); d.v23 = false; assert.equal(cdMul(d, 'qm1', s.t), c1); d.v23 = true;
 });
 test('loop157 以氣御招走 moveMul0：內力越多越重、氣宗再 ×1.35；巡山 dpsOf 同步反映，且巡獵不再重複乘', () => {
   const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'breath', s.t); d.arts.breath.xp = 100; d.ng = 1; d.ng2 = 1;
-  d.qi = 0; const m0 = moveMul(d, d.moves[0], s.t), p0 = dpsOf(s, d); d.qi = Math.min(100, qiMax(d)); const q = qiOf2(d), add = 0.002 * mastery(d, 'neigong');
-  assert.ok(Math.abs(moveMul(d, d.moves[0], s.t) / m0 - (1 + 0.15 * q / 100 + add) / (1 + add)) < 1e-9); assert.ok(dpsOf(s, d) > p0);
-  d.zixia = 2; assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * q / 100 + add) * qiSwordMul24(d)) < 1e-9); d.zixia = 0; d.sectId = 'qizong'; assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * q / 100 + add) * qiSwordMul24(d)) < 1e-9); /* loop199：氣宗改乘以氣御劍，不再固定 ×1.35 */
+  d.qi = 0; const m0 = moveMul(d, d.moves[0], s.t), p0 = dpsOf(s, d); d.qi = Math.min(100, qiMax(d)); const raw0 = artOfMove(d.moves[0]), held0 = raw0 && d.arts?.[raw0.id] ? raw0 : null;
+  assert.ok(Math.abs(moveMul(d, d.moves[0], s.t) / m0 - qiStrikeMul(d, held0)) < 1e-9); assert.ok(dpsOf(s, d) > p0);
+  const strike0 = qiStrikeMul(d, held0); d.zixia = 2; assert.ok(Math.abs(qiStrikeMul(d, held0) - strike0) < 1e-9); d.zixia = 0; d.sectId = 'qizong'; assert.ok(Math.abs(qiStrikeMul(d, held0) - strike0) < 1e-9); d.sectId = 'jianzong'; assert.ok(Math.abs(qiStrikeMul(d, held0) - strike0) < 1e-9); /* loop201：內勁只看武學 qiScale，氣宗／劍宗／紫霞層數不再乘 */
   learnArt(d, 'bixie', s.t); d.moves.push('bx1'); const pb = dpsOf(s, d); d.v23 = false; const pb0 = dpsOf(s, d); d.v23 = true; assert.ok(pb > pb0);
   const src = readFileSync(new URL('../src/sim.mjs', import.meta.url), 'utf8'); assert.doesNotMatch(src, /qiStrikeMul\(|swordDmgMul\(|swordCdMul\(/);
 });

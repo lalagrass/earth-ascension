@@ -101,7 +101,7 @@ test('loop194 面板露出主運內功、催動階與習性徽章', async () => 
   assert.ok(html.includes('★主運內功'), html);
   assert.ok(html.includes('◆根基'), html);
   assert.ok(html.includes('正宗催動 ×1.25'), html);
-  assert.ok(html.includes('內力虛浮 ×0.78'), html);
+  assert.ok(html.includes('內力虛浮 ×0.96'), html); /* loop201：抽髓是打法 qiScale 0.08，虛浮約 ×0.956 */
   assert.ok(A.styleBadges24(d).includes('【大比首徒】') && A.styleBadges24(d).includes('【守正厚積】'));
   d.xiao29 = true; assert.ok(A.styleBadges24(d).includes('【梟雄強練】'));
   d.xiao29 = false; d.base28 = false; d.personality = ['chi']; d.pairMul = 0.2; assert.ok(A.styleBadges24(d).includes('【至情清修】'));

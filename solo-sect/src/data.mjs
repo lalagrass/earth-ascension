@@ -447,7 +447,7 @@ ARTS.push(
   { id: 'yuxiaoSword', name: '玉簫劍法', school: 'palm', grade: 3, tags: ['巧'], weapon: 'sword', attr: 'he', req: [{ art: 'basicSword', tier: 1 }], techs: ['yx1', 'yx2'], tech: 'yx1', v24: true, classic: true, own24: 'taohua', svg: [2, 10] },
   { id: 'tianluoPalm', name: '天羅地網勢', school: 'palm', grade: 2, tags: ['快', '巧'], attr: 'yin', req: [], techs: ['tl1', 'tl2'], tech: 'tl1', v24: true, classic: true, own24: 'gumu', svg: [1, 8] },
   { id: 'yunvSword', chiefOnly24: true, name: '玉女素心劍', school: 'palm', grade: 3, tags: ['巧', '柔'], weapon: 'sword', attr: 'yin', req: [{ art: 'tianluoPalm', tier: 2 }], techs: ['ys1', 'ys2'], tech: 'ys1', v24: true, classic: true, own24: 'gumu', svg: [2, 8] },
-  { id: 'shenmuGong', name: '神木毒功', school: 'inner', grade: 2, tags: ['陰', '巧'], attr: 'yin', req: [{ art: 'breath', tier: 1 }], tech: null, techs: ['神木', '化毒'], effect: 'rest', v24: true, classic: true, own24: 'xingxiu', cats: { neigong: 0.7, dushu: 0.3 }, svg: [1, 8] }, /* loop196：普通弟子的二品本門內功，撐住抽髓掌與三陰蜈蚣爪 */
+  { id: 'shenmuGong', name: '神木毒功', school: 'inner', grade: 2, tags: ['陰', '巧'], attr: 'yin', req: [{ art: 'breath', tier: 1 }], tech: null, techs: ['神木', '化毒'], effect: 'rest', v24: true, classic: true, own24: 'xingxiu', deprecated: true, secret: true, cats: { neigong: 0.7, dushu: 0.3 }, svg: [1, 8] }, /* loop201：退出學習池。舊開發存檔仍讀得到這門內功 */
   { id: 'huagongDafa', chiefOnly24: true, name: '化功大法', school: 'inner', grade: 3, tags: ['陰', '剛'], attr: 'yin', req: [], tech: null, techs: ['化功', '散功'], effect: 'rest', v24: true, classic: true, own24: 'xingxiu', svg: [2, 8] },
   { id: 'chousuiPalm', name: '抽髓掌', school: 'palm', grade: 2, tags: ['陰'], attr: 'yin', req: [], techs: ['cs1', 'cs2'], tech: 'cs1', v24: true, classic: true, own24: 'xingxiu', svg: [1, 9] },
   { id: 'sanyinClaw', name: '三陰蜈蚣爪', school: 'palm', grade: 3, tags: ['快', '陰'], attr: 'yin', req: [{ art: 'chousuiPalm', tier: 2 }], techs: ['sy1', 'sy2'], tech: 'sy1', v24: true, classic: true, own24: 'xingxiu', svg: [2, 9] },
@@ -787,7 +787,7 @@ export const SECTS = {
   gumu: { v24: true, name: '古墓派', plaque: '古墓派・活死人墓', color: '#7a8ca8', flag: '墓', bias: { 柔: 0.1, 快: 0.05 }, tree: ['breath', 'yunv', 'tianluoPalm', 'yunvSword', 'xuantie', 'anran', 'stepFeather'], ban: [], rules: ['heart'],
     fac: { name: '寒玉床', cost: { stone: 12, coin: 8 }, gain: 1.5, gainMaxDs: 5, med24: 1.5, desc: '寒玉床上練功打坐：門人 ≤5 時全派練武、打坐回氣與衝關率 +50%' }, rivals: ['全真教'], fav: [],
     recruit: { text: '一個不太說話的姑娘在墓門外站了一整天。' } },
-  xingxiu: { v24: true, name: '星宿派', plaque: '星宿派・星宿海', color: '#5a7a3a', flag: '星', bias: { 巧: 0.1, 剛: 0.05 }, tree: ['breath', 'shenmuGong', 'huagongDafa', 'chousuiPalm', 'sanyinClaw', 'duPu', 'zhaixingStep'], ban: [], rules: ['hoard'],
+  xingxiu: { v24: true, name: '星宿派', plaque: '星宿派・星宿海', color: '#5a7a3a', flag: '星', bias: { 巧: 0.1, 剛: 0.05 }, tree: ['breath', 'huagongDafa', 'chousuiPalm', 'sanyinClaw', 'duPu', 'zhaixingStep'], ban: [], rules: ['hoard'],
     fac: { name: '神木王鼎', cost: { stone: 8, coin: 6 }, daily: { herb: 1, coin: 1 }, psn24: 1.35, desc: '神木王鼎煉毒：每日藥材 +1、香火錢 +1、門人毒傷 +35%；新人入門即帶《百毒譜》' }, rivals: ['丐幫', '逍遙派'], fav: ['azi'],
     recruit: { text: '一個臉色發青的小子捧著毒蟲罐子上山。', art24: 'duPu' } },
   wuming: { name: '無名小派', plaque: '無名小派', color: '#6a5a4a', flag: '武', bias: {}, tree: [], ban: [], rules: [],

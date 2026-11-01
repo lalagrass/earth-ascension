@@ -33,8 +33,11 @@ test('loop159 P7/P8 執事：有人學會 ≥2 門武學且木石夠 → 藏經�
 test('loop159 isSwordArt：劍法門類、三門經典劍法；掌法不是；swordCdMul 經它作用在真實劍招，dpsOf 吃 cdMul', () => {
   for (const id of ['dugu', 'bixie', 'xuantie']) assert.ok(A.isSwordArt(id), id); assert.equal(A.isSwordArt('pushPalm'), false); assert.equal(A.isSwordArt('qimenZhen'), false);
   const s = V(); tick(s, 0.1); const d = hero(s); A.learnArt(d, 'bixie', s.t); d.moves.push('bx1'); d.qi = 0;
-  assert.ok(Math.abs(A.swordCdMul(d, 'bx1') - (d.sectId === 'jianzong' ? 0.76 : 0.86)) < 1e-9); assert.equal(A.swordCdMul(d, 'push'), 1); /* loop199 */
-  const p1 = dpsOf(s, d); d.v23 = false; const p0 = dpsOf(s, d); d.v23 = true; assert.ok(p1 > p0);
+  assert.equal(A.swordCdMul(d, 'bx1'), 1); assert.equal(A.swordCdMul(d, 'push'), 1); /* loop201：v24 不再一律縮劍招冷卻 */
+  const cd = A.cdMul(d, 'bx1', s.t);
+  assert.ok(Math.abs(cd - A.MODE31.da.cd * (A.artTier(d, 'bixie') >= 1 ? 0.9 : 1) * (1 - 0.0015 * A.mastery(d, 'shenfa'))) < 1e-9);
+  const p1 = dpsOf(s, d); d.v23 = false; const p0 = dpsOf(s, d); d.v23 = true; assert.ok(Math.abs(p1 / p0 - 1 / cd) < 1e-9, '內力 0 時秒傷差只剩打法冷卻');
+  d.qi = Math.min(80, A.qiMax(d)); const hi = dpsOf(s, d); d.v23 = false; const lo = dpsOf(s, d); d.v23 = true; assert.ok(hi / lo > p1 / p0, '有內力時打法劍招再靠 qiScale 變重');
 });
 
 // ---- loop160 Batch 1 ----

@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ARTS, MOVES, SECTS, TRAITS, OPPOSE, OPPOSE24, LIKES, LIKES24, RECRUIT29, WUMING_KIT24 } from '../src/data.mjs';
-import { ART_CAT, CAT_ORDER, PUBLIC28, TEMPER29, attrOf, artById, artTier, isInner, normalizeArts, sectClasses24, gainArt, lockedArt24, yunvOpen24 } from '../src/arts.mjs';
+import { ART_CAT, CAT_ORDER, MODE31, PUBLIC28, TEMPER29, attrOf, artById, artTier, isInner, modeDefault31, normalizeArts, sectClasses24, gainArt, lockedArt24, yunvOpen24 } from '../src/arts.mjs';
 import { CHARM29 } from '../src/social.mjs';
 
 
@@ -49,6 +49,28 @@ test('loop191 非魁首武學的前置不可是魁首限定或秘密，且前置
     const p = artById(r.art);
     if (!a.chiefOnly24) assert.ok(!p.chiefOnly24 && !p.secret, `${a.id} 前置了 ${r.art}`);
   }
+});
+
+test('loop201 外功與身法的 mode、qiScale 合法；純內功不設 mode', () => {
+  for (const a of ARTS) {
+    if (a.school === 'inner') { assert.equal(a.mode, undefined, a.id); assert.equal(a.qiScale, undefined, a.id); continue; }
+    if (a.kind === 'inner') continue;
+    assert.ok(a.mode === 'base' || a.mode === 'lian' || a.mode === 'da', `${a.id} mode ${a.mode}`);
+    assert.ok(a.qiScale >= 0 && a.qiScale <= 0.6, `${a.id} qiScale ${a.qiScale}`);
+    const over = { xuantie: 0.5, dugu: 0.2, xianglong: 0.45, qishangFist: 0.4 };
+    assert.equal(a.qiScale, over[a.id] ?? MODE31[a.mode].qiScale, a.id);
+  }
+  assert.equal(artById('basicFist').mode, 'base'); assert.equal(artById('hunyuanPalm').mode, 'lian');
+  assert.equal(artById('chousuiPalm').mode, 'da'); assert.equal(artById('chousuiPalm').qiScale, MODE31.da.qiScale);
+  assert.equal(artById('xuantie').qiScale, 0.5); assert.equal(artById('dugu').qiScale, 0.2);
+  assert.equal(artById('xianglong').qiScale, 0.45); assert.equal(artById('qishangFist').qiScale, 0.4);
+  assert.equal(artById('breath').mode, undefined);
+  assert.equal(modeDefault31({ id: 'zz', school: 'palm', grade: 1, tags: [] }), 'base');
+  assert.equal(modeDefault31({ id: 'zz', school: 'palm', grade: 2, tags: ['快'] }), 'da');
+  assert.equal(modeDefault31({ id: 'zz', school: 'palm', grade: 2, tags: ['柔'] }), 'lian');
+  assert.equal(modeDefault31({ id: 'zz', school: 'palm', grade: 2, tags: ['拙'] }), 'lian');
+  assert.equal(modeDefault31({ id: 'zz', school: 'palm', grade: 2, tags: ['剛'] }), 'da');
+  assert.equal(modeDefault31({ id: 'zz', school: 'inner', grade: 3, tags: ['柔'] }), null);
 });
 
 test('loop198 每門武學的 cats 與 ART_CAT 同一份，權重落在已知門類', () => {
