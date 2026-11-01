@@ -21,14 +21,14 @@ const ledOf = (s) => { const L = strikeLedger33(s); return { dps: +L.dps.toFixed
 /* loop205：只量測。鉤子不寫存檔。每局開始把計數清掉。 */
 const box = { trainHi: { n: 0, da: 0 }, trainLo: { n: 0, calm: 0 }, feedLian: 0, feedBase: 0, daoTrain: 0, daoWho: new Set(), by: {} };
 const resetBox = () => { box.trainHi.n = box.trainHi.da = box.trainLo.n = box.trainLo.calm = box.feedLian = box.feedBase = box.daoTrain = 0; box.daoWho = new Set(); box.by = {}; };
-const bump = (sect, key) => { const b = (box.by[sect] ??= { hiN: 0, hiDa: 0, hiPostN: 0, hiPostDa: 0, loN: 0, loCalm: 0 }); b[key]++; };
+const bump = (sect, key) => { const b = (box.by[sect] ??= { hiN: 0, hiDa: 0, hiPostN: 0, hiPostDa: 0, loN: 0, loCalm: 0, loPostN: 0, loPostCalm: 0 }); b[key]++; }; /* loop210：A≤−2 坐不住之後另計，不進模擬 */
 A0.meter32.note = (ev) => {
   if (ev.kind === 'feed') { if (ev.mode === 'lian') box.feedLian += ev.xp; else if (ev.mode === 'base') box.feedBase += ev.xp; return; }
   if (ev.kind !== 'train') return;
   if (ev.dao) { box.daoTrain++; box.daoWho.add(ev.id); }
   const sect = ev.sect || 'wuming';
   if (ev.A >= 2) { box.trainHi.n++; bump(sect, 'hiN'); if (ev.k === 'da') { box.trainHi.da++; bump(sect, 'hiDa'); } if (ev.post) { bump(sect, 'hiPostN'); if (ev.k === 'da') bump(sect, 'hiPostDa'); } }
-  else if (ev.A <= -2) { box.trainLo.n++; bump(sect, 'loN'); if (ev.k === 'base' || ev.k === 'lian') { box.trainLo.calm++; bump(sect, 'loCalm'); } }
+  else if (ev.A <= -2) { box.trainLo.n++; bump(sect, 'loN'); if (ev.k === 'base' || ev.k === 'lian') { box.trainLo.calm++; bump(sect, 'loCalm'); } if (ev.post) { bump(sect, 'loPostN'); if (ev.k === 'base' || ev.k === 'lian') bump(sect, 'loPostCalm'); } } /* 內功在 trainKind31 視同練法，loPostCalm 含內功 */
 };
 const UP = ['hall', 'yard', 'kitchen'];
 const spare = (s, cost) => s.res.coin - cost >= EC.wageBill(s) + EC.facBill(s);
