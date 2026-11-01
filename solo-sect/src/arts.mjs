@@ -482,8 +482,10 @@ export function qiStrikeMul(d, a) {
     return base * (qiSchool(d) ? NG23.qiSchool : 1); /* 舊 v23 仍是氣宗 ×1.35 */
   }
   const scale = Number.isFinite(a?.qiScale) ? a.qiScale : MODE31.base.qiScale;
-  return 1 + scale * Math.min(1.6, qiOf(d) / 100) * (1 + 0.004 * neigongEff31(d));
+  return 1 + scale * Math.min(QI_SAT31, qiOf(d) / 100) * (1 + 0.004 * neigongEff31(d));
 }
+/* loop207：只給 v24。維持 1.6。拉到 2.2 不會造出前期劍、後期氣，40 局之前不改。 */
+export const QI_SAT31 = 1.6;
 export const MODE_NAME31 = { base: '築基', lian: '練法', da: '打法' };
 /* 武學圖與練功列共用。純內功沒有 mode，回空字串。 */
 export function modeTitle31(d, a) {

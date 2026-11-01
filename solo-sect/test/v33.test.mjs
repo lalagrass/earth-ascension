@@ -4,7 +4,8 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { strikeLedger33, power } from '../src/jianghu.mjs';
 import { dpsOf } from '../src/world.mjs';
-import { mitOf, qiMax, harmonyMul, HARMONY24 } from '../src/arts.mjs';
+import { mitOf, qiMax, harmonyMul, HARMONY24, QI_SAT31, qiStrikeMul, qiOf, artById, neigongEff31 } from '../src/arts.mjs';
+import { neigongRules2Html } from '../src/panel-ui.mjs';
 
 const disc = (id, extra = {}) => ({
   id, role: 'outer', away: false, v24: true, v23: true, ng2: 1, qi: 40, qiInjury: 0,
@@ -52,6 +53,25 @@ test('loop206 多一門入門武學會抬門派戰力；共鳴與造詣凍住時
   const open = sect([disc('a', { moves: ['jd1'], arts: { breath: { xp: 55 }, jindingPalm: { xp: 55 }, pishiFist: { xp: 25 } } })]);
   assert.equal(harmonyMul(open.ds[0]), HARMONY24.all); /* 吐納已小成，陰陽再加「和」是三屬 */
   assert.ok(strikeLedger33(open).dps > strikeLedger33(base).dps);
+});
+
+test('loop207 內勁飽和維持 1.6，高內力不再往 2.2 長，面板讀同一個常數', () => {
+  assert.equal(QI_SAT31, 1.6);
+  const d = {
+    v24: true, v23: true, qi: 220, qiInjury: 0, skills: { palm: 0 }, personality: [], values: {},
+    arts: { breath: { xp: 100 }, zixia: { xp: 100 }, jindingPalm: { xp: 55 } },
+  };
+  assert.ok(qiOf(d) / 100 > QI_SAT31);
+  const a = artById('jindingPalm');
+  const capped = 1 + a.qiScale * QI_SAT31 * (1 + 0.004 * neigongEff31(d));
+  const wider = 1 + a.qiScale * 2.2 * (1 + 0.004 * neigongEff31(d));
+  assert.ok(Math.abs(qiStrikeMul(d, a) - capped) < 1e-9);
+  assert.ok(qiStrikeMul(d, a) < wider);
+  assert.match(neigongRules2Html(d), new RegExp(`min\\(${QI_SAT31}, 內力/100\\)`));
+  const old = { v23: true, qi: 400, qiInjury: 0, arts: { breath: { xp: 100 }, zixia: { xp: 100 }, yunv: { xp: 100 }, jiuyang: { xp: 100 } }, skills: { palm: 0 } };
+  const q = qiOf(old);
+  assert.ok(q / 100 > QI_SAT31, String(q));
+  assert.ok(Math.abs(qiStrikeMul(old) - (1 + 0.15 * q / 100)) < 1e-9);
 });
 
 test('loop206 診斷把出手記在 v33，pow 仍是 power()', () => {

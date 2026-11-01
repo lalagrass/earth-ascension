@@ -39,7 +39,7 @@ test('loop152 角色卡門類造詣：v23 顯示專長效果說明，舊局仍�
   assert.match(f(d), /醫術：療傷回復/); const o = OLD(); tick(o, 0.1); assert.match(f(hero(o)), /尚未支援/);
 });
 import { speedOf } from '../src/sim.mjs';
-import { NG23, NG, yuqiOn, yuqiMul, qiStrikeMul, qiSwordMul24, swordCdMul, medQi, qiMax, innerSpecs } from '../src/arts.mjs';
+import { NG23, NG, yuqiOn, yuqiMul, qiStrikeMul, qiSwordMul24, swordCdMul, medQi, qiMax, innerSpecs, QI_SAT31 } from '../src/arts.mjs';
 test('loop153 三段腳程：v23 輕功每階 6%；御氣疾行要內功小成以上且內力 >30%，耗氣停在三成', () => {
   const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'breath', s.t); d.arts.breath.xp = 60; d.qi = qiMax(d);
   assert.ok(qiMax(d) > 0); assert.ok(yuqiOn(d)); assert.ok(yuqiMul(d) >= 1.15);
@@ -49,7 +49,7 @@ test('loop153 三段腳程：v23 輕功每階 6%；御氣疾行要內功小成�
 });
 test('loop153 打坐 +16（紫霞 +4）、舊局仍 12；真氣出手與劍招只在 v23', () => {
   const s = V(); tick(s, 0.1); const d = hero(s); assert.ok(Math.abs(medQi(d) - 16 * (1 + 0.004 * mastery(d, 'neigong'))) < 1e-9); assert.equal(NG.med, 12); /* loop198：內功造詣加成打坐 */
-  d.zixia = 2; const q153 = qiOf2(d); assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * Math.min(1.6, q153 / 100) * (1 + 0.004 * mastery(d, 'neigong')))) < 1e-9); assert.equal(swordCdMul(d, { id: 'bx1' }), 1); /* loop201：沒指定武學用築基 qiScale；v24 不再給劍法冷卻 */
+  d.zixia = 2; const q153 = qiOf2(d); assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * Math.min(QI_SAT31, q153 / 100) * (1 + 0.004 * mastery(d, 'neigong')))) < 1e-9); assert.equal(swordCdMul(d, { id: 'bx1' }), 1); /* loop201：沒指定武學用築基 qiScale；v24 不再給劍法冷卻 */
   const o = OLD(); tick(o, 0.1); const h = hero(o); h.zixia = 2; assert.equal(qiStrikeMul(h), 1); assert.equal(swordCdMul(h, { id: 'bx1' }), 1); assert.equal(medQi(h), 12);
   learnArt(d, 'jiuyang', s.t); assert.ok(innerSpecs(d).includes('jiuyang')); assert.deepEqual(innerSpecs(h), []);
 });

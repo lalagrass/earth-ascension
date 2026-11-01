@@ -3,7 +3,7 @@ import { DAY, ACTIVITIES, EXP_STYLES, EXP, ARTS, TIERS, ART_GAIN, ROOT, JH, BREA
 import { LABOR, strMul, laborToday } from './economy.mjs';
 import { segAt } from './world.mjs';
 import { nextStep } from './core.mjs';
-import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW, mainInner28, baseInner28, innerDrive28, isInner, qiGreat24, artById, artMulParts, appetite31, modeTitle31, qiArtBadge24, swordFast24, GRADE_NG24, MODE31 } from './arts.mjs';
+import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW, mainInner28, baseInner28, innerDrive28, isInner, qiGreat24, artById, artMulParts, appetite31, modeTitle31, qiArtBadge24, swordFast24, GRADE_NG24, MODE31, QI_SAT31 } from './arts.mjs';
 import { CLQ } from './bonds.mjs';
 import { JHEV, letterP } from './jianghu.mjs';
 // ==== （原 dcard.mjs）====
@@ -164,7 +164,7 @@ export function neigongRules2Html(d) {
   const spent = d?.v24 ? `${NG2.spentT} 秒（主運內功三品且大成則減半）` : `${NG2.spentT} 秒`;
   const walk = `腳力→輕功（每階 +${Math.round(NG23.speedPerTier * 100)}%）→御氣疾行（內功小成以上、內力 >${NG23.yuqi.keep * 100}%：行走 ×${NG23.yuqi.base}＋${NG23.yuqi.perTier}×階，每秒耗 ${NG23.yuqi.drain} 氣，留三成不力竭）。內力 <${NG23.medLow * 100}% 時較想打坐。`;
   const combat = d?.v24
-    ? `<div class="k">${walk}內力 ≥${NG23.qiAoeAt} 範圍招半徑 +${NG23.qiAoe}。出手看該門武學：築基內勁係數 ${MODE31.base.qiScale}、練法 ${MODE31.lian.qiScale}、打法 ${MODE31.da.qiScale}。內勁＝1＋係數×min(1.6, 內力/100)×(1＋0.004×有效內功造詣)；有效內功造詣＝內功造詣＋0.2×最高外功造詣，封頂 100。不再按門派加成出手，也不再縮短劍招冷卻。</div>`
+    ? `<div class="k">${walk}內力 ≥${NG23.qiAoeAt} 範圍招半徑 +${NG23.qiAoe}。出手看該門武學：築基內勁係數 ${MODE31.base.qiScale}、練法 ${MODE31.lian.qiScale}、打法 ${MODE31.da.qiScale}。內勁＝1＋係數×min(${QI_SAT31}, 內力/100)×(1＋0.004×有效內功造詣)；有效內功造詣＝內功造詣＋0.2×最高外功造詣，封頂 100。不再按門派加成出手，也不再縮短劍招冷卻。</div>`
     : (d?.v23 ? `<div class="k">v2.3：${walk}氣宗／紫霞二層以上出手 ×${NG23.qiSchool}；內力 ≥${NG23.qiAoeAt} 範圍招半徑 +${NG23.qiAoe}；劍招冷卻 ×${NG23.swordCd}、小成以下 +10%。</div>` : '');
   return `<details data-keep="ng-rules"><summary>護體真氣怎麼算</summary><div class="k">${cap}</div>`
     + `<div class="k">受擊（狩獵、遠行）：先減傷，再由內力吸收，不夠才扣生命；內力打空力竭 ${spent}，受傷 ×${NG2.spentMul}；任一內功練到圓滿十重或化境則「真氣綿長」，打空也不力竭（只此一項，不另加內力或減傷）。寨匪、剿寨重傷時，內力 ≥${NG2.guard} 就扣 ${NG2.guard}，生命留 ${NG2.guardHp}。門派戰力每人 +${NG2.powK}×上限。</div>`
