@@ -217,6 +217,21 @@ test('loop204 面板寫出類別與內勁，徽章只看主修武學', () => {
   assert.match(artsGrowHtml(dao, 0, false), /以技入道/);
 });
 
+test('loop205 診斷鉤子預設不聽；掛上才記練功與反哺', () => {
+  const ev = [];
+  assert.equal(A.meter32.note, null);
+  A.meter32.note = (e) => ev.push(e);
+  try {
+    const d = body({ personality: ['nimble', 'playful', 'brave'] });
+    d.arts = { wudangXinfa: { xp: 10, last: 0 }, mianPalm: { xp: 10, last: 0 } };
+    A.noteTrain31(d, A.artById('mianPalm'));
+    const fed = A.feedInner31(d, A.artById('mianPalm'), 10, { raw: 4 });
+    assert.equal(fed.label, '練招養氣');
+    assert.ok(ev.some((e) => e.kind === 'train' && e.k === 'lian' && e.A === 3));
+    assert.ok(ev.some((e) => e.kind === 'feed' && e.mode === 'lian' && e.xp > 0));
+  } finally { A.meter32.note = null; }
+});
+
 test('loop201 神木毒功退出學習池，已學會的舊檔仍讀得到', () => {
   const a = A.artById('shenmuGong');
   assert.equal(a.deprecated, true); assert.equal(a.secret, true); assert.equal(a.grade, 2);

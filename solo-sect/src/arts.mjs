@@ -617,10 +617,13 @@ export function tasteLabel31(d, a) {
   if (A > 0) return ['枯燥難耐', Math.max(0.85, 1 - 0.05 * abs * (half ? 0.5 : 1))];
   return ['嫌其花俏', Math.max(0.93, 1 - 0.025 * abs * (half ? 0.5 : 1))];
 }
+/* loop205：診斷鉤子。預設不掛，不寫進存檔、不抽 rand。沒人聽的時候多一次屬性讀取。 */
+export const meter32 = { note: null };
 /* 完成一次練功才呼叫。A>0：非打法 +1、打法 −2。A<0 用對稱計數（規格只寫了 A>0 的加減），否則坐不住門檻到不了。樂趣只改 A>0。 */
 export function noteTrain31(d, a) {
   if (!d?.v24 || !a) return null;
   const A = appetite31(d);
+  if (meter32.note) meter32.note({ kind: 'train', id: d.id, A, k: trainKind31(a), dao: a.school === 'inner' && dao31(d) });
   if (!A) return null;
   const k = trainKind31(a), da = k === 'da';
   let delta = 0;
@@ -686,7 +689,9 @@ export function feedInner31(d, a, gx, g) {
   ir.xp = Math.min(curCap(d, target), xp0 + share * gx);
   const gm = settleGrowth(d, target, ir, { src: 'train', raw: g.raw * share, xp0, xp1: ir.xp });
   if (!(ir.xp > xp0 + 1e-9)) return null;
-  return { id: target.id, name: target.name, label: a.mode === 'lian' ? FEED31.lianLabel : FEED31.baseLabel, xp: ir.xp - xp0, gm };
+  const xp = ir.xp - xp0;
+  if (meter32.note) meter32.note({ kind: 'feed', mode: a.mode, xp });
+  return { id: target.id, name: target.name, label: a.mode === 'lian' ? FEED31.lianLabel : FEED31.baseLabel, xp, gm };
 }
 export function mainInner28(d) {
   if (!d?.arts) return null; let best = null, bs = -Infinity;
