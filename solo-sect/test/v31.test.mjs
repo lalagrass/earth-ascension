@@ -109,7 +109,8 @@ test('loop198 造詣實戰：內力、回氣、內勁、腳程、冷卻、外功
   const armed = { ...body, arts: { breath: { xp: 55 }, wudangFist: { xp: 30, gm: { e: 40 } } } };
   const plain = { ...body, arts: { breath: { xp: 55 }, wudangFist: { xp: 30 } } };
   const fist = A.mastery(armed, 'quanzhang'); assert.equal(fist, 20); /* 一品造詣上限 20 */
-  assert.ok(Math.abs(A.moveMul(armed, 'wd1', 0) / A.moveMul(plain, 'wd1', 0) - (1 + 0.0015 * fist)) < 1e-9);
+  const qRatio = A.qiStrikeMul(armed, A.artById('wudangFist')) / A.qiStrikeMul(plain, A.artById('wudangFist'));
+  assert.ok(Math.abs(A.moveMul(armed, 'wd1', 0) / A.moveMul(plain, 'wd1', 0) - qRatio * (1 + 0.0015 * fist)) < 1e-9); /* loop202：外功造詣也抬高內勁有效值 */
 });
 test('loop196 本門正宗打坐 ×1.15，未大成不乘', () => {
   const [, d] = fresh('gaibang'); give(d, 'huntianGong', 60);

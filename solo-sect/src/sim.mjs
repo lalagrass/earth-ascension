@@ -452,7 +452,7 @@ function grow(s, d, sk, amt, src = 'train') {
   amt *= apprMul(s, d); // v1.65 師父在場，徒弟練得快
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
   if (src === 'labor' && sk === 'strength' && d.lg) d.skills[sk] = before + workStrCap(d, Math.floor(s.t / DAY), d.skills[sk] - before); // loop127 做活力氣每日軟上限
-  if (sk === d.style) { if (s.grow) growEnsure(d); const o = gainArt(d, amt, focusMul(d), s.t, s.grow ? { raw, src } : null); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === m).name}」`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); }
+  if (sk === d.style) { if (s.grow) growEnsure(d); const o = gainArt(d, amt, focusMul(d), s.t, s.grow ? { raw, src } : null); if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === m).name}」`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); }
 }
 
 function doTask(s, d, dt) {

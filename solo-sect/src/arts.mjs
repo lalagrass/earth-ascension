@@ -150,6 +150,7 @@ export function artMulParts(d, a, state = [], more = []) {
   for (const [t, [tag, k]] of Object.entries(ART_GAIN.tagTrait)) if (p.includes(t) && a.tags.includes(tag)) talent.push([t === 'free' ? '灑脫' : '勤奮', k]);
   const ext = a.req.length ? [['前置', 1 + ART_GAIN.reqBonus * a.req.length]] : [];
   if (d.pairMul > 0) ext.push(['同門默契', 1 + d.pairMul]);
+  if (d?.v24 && isInner(a) && dao31(d)) ext.push(['以技入道', 1.35]); /* loop202：外功造詣 ≥50 才加快修內功 */
   const [bm, om] = sectBiasMul(d, a); if (bm !== 1) talent.push(['門派偏向', bm]); if ((d.sgain || 1) !== 1) ext.push(['鎮派設施', d.sgain]); if (d.lineArts?.includes(a.id)) ext.push(['師承', 1.2]); if (d.v24) { const gt = GRADE_TRAIN24[a.grade || 1]; if (gt !== 1) ext.push(['品階難度', gt]); { const rt = rootTrain28(d, a); if (rt > 1) ext.push([baseInner28(d)?.id === 'breath' ? '築基渾厚' : '根基', rt]); } if (d.champ28) ext.push(['大比首徒', CHAMP28.train]); { const T = temper29(d); if (T.ling && (a.tags.includes('巧') || a.tags.includes('快') || (a.grade || 1) >= 2)) ext.push(['靈動跳階', TEMPER29.lingK]); if (T.qing) ext.push(['至情清修', TEMPER29.qingK]); } const L = sectLine24(d, a); if (L) ext.push(L); const pm = polymath24(d); if (pm === 1) ext.push(['雜學分心', SYN24.distract]); else if (pm === 2) ext.push(['博覽群書', SYN24.wide]); } /* loop171 v2.6 */ ext.push(...more); // v1.4 // v1.35 // v0.96 郭靖＋黃蓉最多 +25%
   const r = pipeline({ talent, state, ext }); r.gate = gated(d, a) ? ART_GAIN.gated : 1; r.total *= r.gate; r.outside = om; r.total *= om; return r; // v1.35 外門 ×0.7 是真乘數
 }
@@ -212,7 +213,8 @@ export function gainArt(d, amt, mf = 1, now = 0, g = null) {
     r.rust = Math.max(0, r.rust - RUST.shake);
     if (r.guizhen) { r.sxp = (r.sxp || 0) + gx * 0.4; while (r.sxp >= starCost(r)) { r.sxp -= starCost(r); r.stars = (r.stars || 0) + 1; out.star = true; } }
     else { r.xp = Math.min(curCap(d, a), r.xp + gx * (1 - r.xp / 130)); out.moves = unlockTechs(d, a); }
-    if (g) out.gm = settleGrowth(d, a, r, { src: g.src || 'train', raw: g.raw ?? amt, xp0, xp1: r.xp }); }
+    if (g) out.gm = settleGrowth(d, a, r, { src: g.src || 'train', raw: g.raw ?? amt, xp0, xp1: r.xp });
+    const feed = !r.guizhen && feedInner31(d, a, gx, g); if (feed) { out.feed = feed; d.growMul.feed = feed.label; } }
   if (!d.pendingArt) { const next = [...sectUnlock24(d), ...ARTS.filter((a) => artOk(d, a) && !a.deprecated && (!a.secret || yunvOpen24(d, a)) && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a) && !lockedArt24(d, a)).sort((a, b) => ownFirst24(d)(a, b) || (b.school === d.style) - (a.school === d.style))][0]; if (next) { d.pendingArt = next.id; out.next = next; } }
   return out;
 }
@@ -446,8 +448,12 @@ export function modeDefault31(a) {
   return 'da';
 }
 export const modeMul31 = (d, a, k) => (d?.v24 && a?.mode && MODE31[a.mode] ? MODE31[a.mode][k] : 1);
-/* loop201 先等於內功造詣；loop202 再加以技入道 */
-export function neigongEff31(d) { return mastery(d, 'neigong'); }
+const OUTER31 = ['quanzhang', 'tuifa', 'jianfa', 'gunbang'];
+/* loop202：四門外功造詣的最高值。以技入道與內勁有效造詣都讀它 */
+export const outerMast31 = (d) => Math.max(0, ...OUTER31.map((c) => mastery(d, c)));
+export const dao31 = (d) => !!(d?.v24 && OUTER31.some((c) => mastery(d, c) >= 50));
+/* loop202：內功造詣 + 0.2×最高外功造詣，封頂 100 */
+export function neigongEff31(d) { return Math.min(100, mastery(d, 'neigong') + 0.2 * outerMast31(d)); }
 export function floatMul31(a) {
   const q = Number.isFinite(a?.qiScale) ? a.qiScale : MODE31.base.qiScale;
   return 1 - (1 - DRIVE28.t3) * Math.min(1, q / 0.40);
@@ -601,6 +607,25 @@ export const BAN28 = ['jiuyinClaw', 'qishangFist'];
 export const own28 = (d, a) => !!(a && d && !PUBLIC28.includes(a.id) && (a.own24 ? a.own24 === d.sectId : !!(a.classic && d.stree?.includes(a.id))));
 /* loop183（t194 addendum）主修內功＝有效分最高 */
 export const innerScore28 = (d, m) => artTier(d, m.id) * 30 + (m.grade || 1) * 15 + (d.arts?.[m.id]?.xp || 0) * 0.2 + (m.own24 === d.sectId ? 20 : 0);
+/* loop202：練法把本次 gx 的 30% 回饋內功，築基回饋 15%。打法不回饋。只在有修練結算時 */
+const FEED31 = { lian: 0.3, base: 0.15, lianLabel: '練招養氣', baseLabel: '築基培元' };
+function feedTarget31(d, mode) {
+  if (mode === 'base') return baseInner28(d);
+  const M = mainInner28(d);
+  if (M && own28(d, M)) return M;
+  return ownInners28(d).sort((x, y) => innerScore28(d, y) - innerScore28(d, x))[0] || null;
+}
+export function feedInner31(d, a, gx, g) {
+  if (!d?.v24 || !g || !((g.raw ?? 0) > 0) || !(gx > 0) || !a || isInner(a)) return null;
+  const share = FEED31[a.mode]; if (!share) return null;
+  const target = feedTarget31(d, a.mode);
+  if (!target || target.id === a.id || !d.arts?.[target.id]) return null;
+  const ir = d.arts[target.id], xp0 = ir.xp || 0;
+  ir.xp = Math.min(curCap(d, target), xp0 + share * gx);
+  const gm = settleGrowth(d, target, ir, { src: 'train', raw: g.raw * share, xp0, xp1: ir.xp });
+  if (!(ir.xp > xp0 + 1e-9)) return null;
+  return { id: target.id, name: target.name, label: a.mode === 'lian' ? FEED31.lianLabel : FEED31.baseLabel, xp: ir.xp - xp0, gm };
+}
 export function mainInner28(d) {
   if (!d?.arts) return null; let best = null, bs = -Infinity;
   for (const id of Object.keys(d.arts)) { const a = artById(id); if (!a || !isInner(a)) continue; const v = innerScore28(d, a); if (v > bs) { best = a; bs = v; } }

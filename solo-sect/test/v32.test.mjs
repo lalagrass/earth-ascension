@@ -70,6 +70,63 @@ test('loop201 內力先乘造詣再封頂 260', () => {
   assert.equal(A.qiMax2(topped), A.NG2.total24);
 });
 
+const body = (extra = {}) => ({ v24: true, sectId: 'wudang', style: 'palm', personality: [], values: {}, wu: 3, pairMul: 0, qiInjury: 0, moves: [], arts: {}, ...extra });
+
+test('loop202 練法回饋主運內功且不破瓶頸，打法不回饋', () => {
+  const d = body();
+  d.arts = { wudangXinfa: { xp: 10, last: 0 }, mianPalm: { xp: 10, last: 0 }, chousuiPalm: { xp: 10, last: 0 } };
+  d.focus = 'mianPalm';
+  const o = A.gainArt(d, 8, 1, 0, { raw: 8, src: 'train' });
+  assert.equal(o.feed?.id, 'wudangXinfa'); assert.equal(o.feed.label, '練招養氣');
+  assert.ok(d.arts.wudangXinfa.xp > 10); assert.ok(d.arts.wudangXinfa.xp <= A.curCap(d, A.artById('wudangXinfa')));
+  assert.ok(!d.arts.wudangXinfa.bt1);
+  assert.equal(d.growMul.feed, '練招養氣');
+  assert.ok(d.arts.wudangXinfa.gm.e > 0);
+  const capped = body();
+  capped.arts = { wudangXinfa: { xp: 54.85, last: 0 }, mianPalm: { xp: 10, last: 0 } };
+  capped.focus = 'mianPalm';
+  A.gainArt(capped, 40, 1, 0, { raw: 40, src: 'train' });
+  assert.equal(capped.arts.wudangXinfa.xp, A.curCap(capped, A.artById('wudangXinfa')));
+  assert.ok(!capped.arts.wudangXinfa.bt1);
+  const da = body();
+  da.arts = { wudangXinfa: { xp: 10, last: 0 }, chousuiPalm: { xp: 10, last: 0 } };
+  da.focus = 'chousuiPalm';
+  A.gainArt(da, 8, 1, 0, { raw: 8, src: 'train' });
+  assert.equal(da.arts.wudangXinfa.xp, 10); assert.equal(da.arts.wudangXinfa.gm, undefined);
+  const foreign = body();
+  foreign.arts = { zixia: { xp: 100, last: 0 }, wudangXinfa: { xp: 12, last: 0 }, mianPalm: { xp: 10, last: 0 } };
+  foreign.focus = 'mianPalm';
+  const f = A.gainArt(foreign, 8, 1, 0, { raw: 8, src: 'train' });
+  assert.equal(A.mainInner28(foreign).id, 'zixia');
+  assert.equal(f.feed?.id, 'wudangXinfa'); assert.equal(foreign.arts.zixia.xp, 100);
+  const base = body({ sectId: 'wuming', stree: ['breath', 'basicFist'], style: 'fist' });
+  base.arts = { breath: { xp: 8, last: 0 }, basicFist: { xp: 6, last: 0 } };
+  base.focus = 'basicFist';
+  const b = A.gainArt(base, 8, 1, 0, { raw: 8, src: 'train' });
+  assert.equal(b.feed?.label, '築基培元'); assert.equal(b.feed.id, 'breath'); assert.ok(base.arts.breath.xp > 8);
+  const idle = body();
+  idle.arts = { wudangXinfa: { xp: 10, last: 0 }, mianPalm: { xp: 10, last: 0 } };
+  idle.focus = 'mianPalm';
+  A.gainArt(idle, 0, 1, 0, { raw: 0, src: 'train' });
+  assert.equal(idle.arts.wudangXinfa.xp, 10);
+});
+
+test('loop202 以技入道：外功造詣 50 才加成，內勁有效值吃兩成外功', () => {
+  const lo = body();
+  lo.arts = { basicSword: { xp: 10, gm: { e: 20 } }, breath: { xp: 4, last: 0 } };
+  assert.equal(A.dao31(lo), false);
+  assert.ok(!A.artMulParts(lo, A.artById('breath')).parts.ext.some((x) => x[0] === '以技入道'));
+  const hi = body();
+  hi.arts = { bixie: { xp: 20, gm: { e: 75 } }, breath: { xp: 4, gm: { e: 10 }, last: 0 } };
+  assert.equal(A.mastery(hi, 'jianfa'), 75); assert.equal(A.dao31(hi), true);
+  const ext = A.artMulParts(hi, A.artById('breath')).parts.ext.find((x) => x[0] === '以技入道');
+  assert.deepEqual(ext, ['以技入道', 1.35]);
+  assert.ok(!A.artMulParts(hi, A.artById('bixie')).parts.ext.some((x) => x[0] === '以技入道'));
+  assert.equal(A.neigongEff31(hi), Math.min(100, 10 + 0.2 * 75));
+  const old = { arts: hi.arts, personality: [], wu: 3, pairMul: 0 };
+  assert.equal(A.dao31(old), false);
+});
+
 test('loop201 神木毒功退出學習池，已學會的舊檔仍讀得到', () => {
   const a = A.artById('shenmuGong');
   assert.equal(a.deprecated, true); assert.equal(a.secret, true); assert.equal(a.grade, 2);
