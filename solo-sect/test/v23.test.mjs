@@ -11,7 +11,9 @@ const hero = (s) => s.ds.find((d) => d.id === 'hero');
 
 test('loop151 六門專長門類只在 v23 啟用（舊局仍「尚未支援」）', () => {
   const s = V(), o = OLD(); tick(s, 0.1); tick(o, 0.1);
-  for (const c of ['zhenfa', 'dushu', 'yishu', 'gunbang', 'qimen', 'zaxue']) { assert.equal(supOf(c, hero(s)), 'part'); assert.equal(supOf(c, hero(o)), 'none'); assert.equal(CATS[c].sup, 'none'); }
+  for (const c of ['zhenfa', 'dushu', 'yishu', 'qimen', 'zaxue']) { assert.equal(supOf(c, hero(s)), 'part'); assert.equal(supOf(c, hero(o)), 'none'); assert.equal(CATS[c].sup, 'none'); }
+  assert.equal(supOf('gunbang', hero(s)), 'full'); assert.equal(supOf('gunbang', hero(o)), 'none'); assert.equal(CATS.gunbang.sup, 'none'); /* loop198：v24 棍棒 full，舊表仍是 none */
+  assert.equal(supOf('neigong', hero(s)), 'full'); assert.equal(supOf('shenfa', hero(s)), 'full'); assert.equal(CATS.neigong.sup, 'part'); assert.equal(CATS.shenfa.sup, 'part');
   assert.ok(s.v23 && hero(s).v23); assert.ok(!o.v23 && !hero(o).v23);
 });
 test('loop151 活動長專長：煉丹／療傷→醫術、採藥→毒術、守望／讀書／練功→陣法', () => {
@@ -46,8 +48,8 @@ test('loop153 三段腳程：v23 輕功每階 6%；御氣疾行要內功小成�
   assert.ok(!(d.spentUntil > s.t) || !d.path.length);
 });
 test('loop153 打坐 +16（紫霞 +4）、舊局仍 12；真氣出手與劍招只在 v23', () => {
-  const s = V(); tick(s, 0.1); const d = hero(s); assert.equal(medQi(d), 16); assert.equal(NG.med, 12);
-  d.zixia = 2; assert.equal(qiStrikeMul(d), 1.35); assert.equal(swordCdMul(d, { id: 'bx1' }), 0.82);
+  const s = V(); tick(s, 0.1); const d = hero(s); assert.ok(Math.abs(medQi(d) - 16 * (1 + 0.004 * mastery(d, 'neigong'))) < 1e-9); assert.equal(NG.med, 12); /* loop198：內功造詣加成打坐 */
+  d.zixia = 2; assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * qiOf2(d) / 100 + 0.002 * mastery(d, 'neigong')) * 1.35) < 1e-9); assert.equal(swordCdMul(d, { id: 'bx1' }), 0.82);
   const o = OLD(); tick(o, 0.1); const h = hero(o); h.zixia = 2; assert.equal(qiStrikeMul(h), 1); assert.equal(swordCdMul(h, { id: 'bx1' }), 1); assert.equal(medQi(h), 12);
   learnArt(d, 'jiuyang', s.t); assert.ok(innerSpecs(d).includes('jiuyang')); assert.deepEqual(innerSpecs(h), []);
 });
@@ -97,7 +99,7 @@ test('loop157 專長效果：毒術削敵、醫術解餘毒、陣法減速／先
 });
 test('loop157 內功被動：吐納歇息回氣 ×1.5、紫霞打坐 +4／二層起氣宗 ×1.35、範圍半徑、劍招小成以下 +10%', () => {
   const s = V(); tick(s, 0.1); const d = hero(s); delete d.arts.breath; /* loop164 無名派家傳已帶吐納 */ const r0 = restQi(d); learnArt(d, 'breath', s.t); assert.equal(restQi(d), r0 * 1.5);
-  learnArt(d, 'zixia', s.t); assert.equal(medQi(d), 20); d.zixia = 1; assert.equal(qiSchool(d), false); d.zixia = 2; assert.equal(qiSchool(d), true);
+  learnArt(d, 'zixia', s.t); assert.ok(Math.abs(medQi(d) - 20 * (1 + 0.004 * mastery(d, 'neigong'))) < 1e-9); d.zixia = 1; assert.equal(qiSchool(d), false); d.zixia = 2; assert.equal(qiSchool(d), true); /* loop198 */
   d.ng = 1; d.arts.zixia.xp = 100; d.qi = Math.min(60, qiMax(d)); assert.ok(d.qi >= 50, String(qiMax(d))); assert.equal(qiAoeAdd(d, { aoe: 30 }), 15); d.qi = 10; assert.equal(qiAoeAdd(d, { aoe: 30 }), 0); assert.equal(qiAoeAdd(d, {}), 0);
   assert.equal(swordDmgMul(d, { skill: 'palm' }), 1);
 });
@@ -137,14 +139,14 @@ test('loop157 劍招：辟邪／獨孤九劍真實招式吃 cdMul ×0.82 與 mov
   const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'bixie', s.t); d.qi = 0;
   assert.ok(isSwordMove('bx1') && isSwordMove('dg1') && isSwordMove('xt1')); assert.equal(isSwordMove('qm1'), false);
   for (const mv of ['bx1', 'dg1']) { const c1 = cdMul(d, mv, s.t), m1 = moveMul(d, mv, s.t); d.v23 = false; const c0 = cdMul(d, mv, s.t), m0 = moveMul(d, mv, s.t); d.v23 = true;
-    assert.ok(Math.abs(c1 / c0 - 0.82) < 1e-9, mv); assert.ok(Math.abs(m1 / m0 - 1.1) < 1e-9, mv); }
+    assert.ok(Math.abs(c1 / c0 - 0.82) < 1e-9, mv); assert.ok(Math.abs(m1 / m0 - qiStrikeMul(d) * 1.1) < 1e-9, `${mv} ${m1 / m0}`); } /* loop198：v24 內功造詣加在以氣御招，關 v23 時這項一起關掉 */
   learnArt(d, 'qimenZhen', s.t); const c1 = cdMul(d, 'qm1', s.t); d.v23 = false; assert.equal(cdMul(d, 'qm1', s.t), c1); d.v23 = true;
 });
 test('loop157 以氣御招走 moveMul0：內力越多越重、氣宗再 ×1.35；巡山 dpsOf 同步反映，且巡獵不再重複乘', () => {
   const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'breath', s.t); d.arts.breath.xp = 100; d.ng = 1; d.ng2 = 1;
-  d.qi = 0; const m0 = moveMul(d, d.moves[0], s.t), p0 = dpsOf(s, d); d.qi = Math.min(100, qiMax(d)); const q = qiOf2(d);
-  assert.ok(Math.abs(moveMul(d, d.moves[0], s.t) / m0 - (1 + 0.15 * q / 100)) < 1e-9); assert.ok(dpsOf(s, d) > p0);
-  d.zixia = 2; assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * q / 100) * 1.35) < 1e-9); d.zixia = 0; d.sectId = 'qizong'; assert.ok(qiStrikeMul(d) > 1.35);
+  d.qi = 0; const m0 = moveMul(d, d.moves[0], s.t), p0 = dpsOf(s, d); d.qi = Math.min(100, qiMax(d)); const q = qiOf2(d), add = 0.002 * mastery(d, 'neigong');
+  assert.ok(Math.abs(moveMul(d, d.moves[0], s.t) / m0 - (1 + 0.15 * q / 100 + add) / (1 + add)) < 1e-9); assert.ok(dpsOf(s, d) > p0);
+  d.zixia = 2; assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * q / 100 + add) * 1.35) < 1e-9); d.zixia = 0; d.sectId = 'qizong'; assert.ok(qiStrikeMul(d) > 1.35); /* loop198 */
   learnArt(d, 'bixie', s.t); d.moves.push('bx1'); const pb = dpsOf(s, d); d.v23 = false; const pb0 = dpsOf(s, d); d.v23 = true; assert.ok(pb > pb0);
   const src = readFileSync(new URL('../src/sim.mjs', import.meta.url), 'utf8'); assert.doesNotMatch(src, /qiStrikeMul\(|swordDmgMul\(|swordCdMul\(/);
 });

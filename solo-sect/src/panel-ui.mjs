@@ -92,7 +92,7 @@ const SPEC_TIP = { zhenfa: '陣法：柵與巡獵減傷至多 25%、野獸慢 20
 export function catHtml(d) {
   const rows = CAT_ORDER.filter((c) => supOf(c, d) !== 'none').map((c) => { const v = mastery(d, c), src = Object.entries(d.arts || {}).filter(([id, r]) => ART_CAT[id]?.[c] && r.gm).map(([id, r]) => { const a = ARTS.find((x) => x.id === id); return `${a.name} ${Math.min(r.gm.e, GROW.cap[a.grade]).toFixed(1)}/${GROW.cap[a.grade]}${r.gm.init ? '（含開局折算）' : ''}`; });
     return `<div class="k" data-cat="${c}">${CATS[c].name} <b>${v.toFixed(1)}</b>・${levelOf(v)}${d?.v23 && SPEC_TIP[c] && v > 0 ? `<span class="k" title="${SPEC_TIP[c]}">〔${SPEC_TIP[c]}〕</span>` : supOf(c, d) === 'part' ? '（只累積與顯示，加速未驗證）' : ''}${bar(v, 100, '#6a8ac7')}${src.length ? `<span class="k">來源：${src.join('、')}</span>` : ''}</div>`; });
-  return `<div class="grow-cat"><b>門類造詣</b>（0–100；同類入門武學修練加速用，不加傷害）${rows.join('')}${CAT_ORDER.some((c) => supOf(c, d) === 'none') ? `<div class="k">尚未支援：${CAT_ORDER.filter((c) => supOf(c, d) === 'none').map((c) => CATS[c].name).join('、')}</div>` : ''}</div>`;
+  return `<div class="grow-cat"><b>門類造詣</b>（0–100；同類入門武學修練加速用${d?.v24 ? '。內功、身法與拳掌、腿法、劍法、棍棒的造詣也進實戰' : '，不加傷害'}）${rows.join('')}${CAT_ORDER.some((c) => supOf(c, d) === 'none') ? `<div class="k">尚未支援：${CAT_ORDER.filter((c) => supOf(c, d) === 'none').map((c) => CATS[c].name).join('、')}</div>` : ''}</div>`;
 }
 /* 個別武學狀態：正在累積／達到瓶頸／冷卻中／缺前置／尚未支援／劇情修煉／已練滿 */
 export function artStatus(d, a, now = 0) {

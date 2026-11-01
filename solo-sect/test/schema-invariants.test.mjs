@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ARTS, MOVES, SECTS, TRAITS, OPPOSE, OPPOSE24, LIKES, LIKES24, RECRUIT29, WUMING_KIT24 } from '../src/data.mjs';
-import { ART_CAT, PUBLIC28, TEMPER29, attrOf, artById, artTier, isInner, normalizeArts, sectClasses24, gainArt, lockedArt24, yunvOpen24 } from '../src/arts.mjs';
+import { ART_CAT, CAT_ORDER, PUBLIC28, TEMPER29, attrOf, artById, artTier, isInner, normalizeArts, sectClasses24, gainArt, lockedArt24, yunvOpen24 } from '../src/arts.mjs';
 import { CHARM29 } from '../src/social.mjs';
 
 
@@ -48,6 +48,18 @@ test('loop191 非魁首武學的前置不可是魁首限定或秘密，且前置
     assert.ok(artIds.has(r.art), `${a.id} 前置 ${r.art} 不在 ARTS`);
     const p = artById(r.art);
     if (!a.chiefOnly24) assert.ok(!p.chiefOnly24 && !p.secret, `${a.id} 前置了 ${r.art}`);
+  }
+});
+
+test('loop198 每門武學的 cats 與 ART_CAT 同一份，權重落在已知門類', () => {
+  for (const a of ARTS) {
+    assert.ok(a.cats && a.cats === ART_CAT[a.id], a.id);
+    const keys = Object.entries(a.cats);
+    assert.ok(keys.length, a.id);
+    let sum = 0;
+    for (const [k, w] of keys) { assert.ok(CAT_ORDER.includes(k), `${a.id} ${k}`); assert.ok(w > 0 && w <= 1, `${a.id} ${w}`); sum += w; }
+    assert.ok(Math.abs(sum - 1) < 1e-9, `${a.id} cats 合計 ${sum}`);
+    if (a.attr != null) assert.ok(a.attr === 'yin' || a.attr === 'yang' || a.attr === 'he', a.id);
   }
 });
 

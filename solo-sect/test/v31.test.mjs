@@ -81,6 +81,35 @@ test('loop197 品階難度：一品略快、二品不加、三四品變慢', () 
   const old = { arts: {}, personality: [], wu: 3, pairMul: 0 };
   assert.equal(A.artMulParts(old, A.artById('zixia')).parts.ext.find((x) => x[0] === '品階難度'), undefined);
 });
+test('loop198 造詣：內功身法棍棒可加速，三品神功吃三成五底子', () => {
+  const d = { v24: true, arts: { breath: { xp: 40, gm: { e: 20 } }, zixia: { xp: 0 } } };
+  assert.equal(A.supOf('neigong', d), 'full'); assert.equal(A.supOf('shenfa', d), 'full'); assert.equal(A.supOf('gunbang', d), 'full');
+  assert.equal(A.CATS.neigong.sup, 'part'); assert.equal(A.supOf('neigong', { arts: {} }), 'part');
+  const ac = A.accelOf(d, A.artById('zixia'), 0);
+  assert.equal(ac.cat, 'neigong'); assert.ok(ac.mul > 1 && ac.mul <= 1 + 0.8 * 0.35 + 1e-9);
+  const old = { arts: d.arts }; assert.equal(A.accelOf(old, A.artById('zixia'), 0).mul, 1);
+  const g4 = { v24: true, arts: { basicSword: { xp: 10, gm: { e: 40 } }, bixie: { xp: 0 } } };
+  assert.equal(A.accelOf(g4, A.artById('bixie'), 0).mul, 1);
+});
+test('loop198 造詣實戰：內力、回氣、內勁、腳程、冷卻、外功傷害', () => {
+  const body = { v24: true, v23: true, ng: 1, ng2: 1, qi: 10, sectId: 'wudang', skills: { agility: 0 }, personality: [], needs: { energy: 100 }, carry: 0, path: [] };
+  const hi = { ...body, arts: { breath: { xp: 55, gm: { e: 20 } } } };
+  const lo = { ...body, arts: { breath: { xp: 55 } } };
+  assert.equal(A.mastery(hi, 'neigong'), 20);
+  assert.ok(Math.abs(A.qiMax2(hi) / A.qiMax2(lo) - 1.08) < 1e-9);
+  assert.ok(Math.abs(A.medQi(hi) / A.medQi(lo) - 1.08) < 1e-9);
+  assert.ok(Math.abs(A.restQi(hi) / A.restQi(lo) - 1.08) < 1e-9);
+  assert.ok(Math.abs(A.qiStrikeMul(hi) - A.qiStrikeMul(lo) - 0.04) < 1e-9);
+  const step = { ...body, arts: { breath: { xp: 55 }, wudangFist: { xp: 30 }, snowStep: { xp: 30, gm: { e: 20 } } } };
+  const still = { ...body, arts: { breath: { xp: 55 }, wudangFist: { xp: 30 }, snowStep: { xp: 30 } } };
+  const sh = A.mastery(step, 'shenfa'); assert.equal(sh, 20);
+  assert.ok(Math.abs(A.cdMul(step, 'wd1', 0) / A.cdMul(still, 'wd1', 0) - (1 - 0.0015 * sh)) < 1e-9);
+  assert.ok(Math.abs(speedOf(step) / speedOf(still) - (1 + 0.002 * sh)) < 1e-9);
+  const armed = { ...body, arts: { breath: { xp: 55 }, wudangFist: { xp: 30, gm: { e: 40 } } } };
+  const plain = { ...body, arts: { breath: { xp: 55 }, wudangFist: { xp: 30 } } };
+  const fist = A.mastery(armed, 'quanzhang'); assert.equal(fist, 20); /* 一品造詣上限 20 */
+  assert.ok(Math.abs(A.moveMul(armed, 'wd1', 0) / A.moveMul(plain, 'wd1', 0) - (1 + 0.0015 * fist)) < 1e-9);
+});
 test('loop196 本門正宗打坐 ×1.15，未大成不乘', () => {
   const [, d] = fresh('gaibang'); give(d, 'huntianGong', 60);
   const q0 = A.medQi(d); assert.equal(A.sectClasses24(d), 0);
