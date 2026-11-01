@@ -1,7 +1,8 @@
 /* v3.1（loop196–）：內功催動外功與輕功、神木毒功。只在 v24 新局。 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, speedOf } from '../src/sim.mjs';
+import { createState, tick, speedOf, fieldLeanMul29 } from '../src/sim.mjs';
+import { artsGrowHtml } from '../src/panel-ui.mjs';
 import * as A from '../src/arts.mjs';
 import { evadeScore } from '../src/world.mjs';
 import { EVADE } from '../src/data.mjs';
@@ -115,4 +116,48 @@ test('loop196 本門正宗打坐 ×1.15，未大成不乘', () => {
   const q0 = A.medQi(d); assert.equal(A.sectClasses24(d), 0);
   give(d, 'lianhuaPalm', 30); assert.equal(A.sectClasses24(d), 3);
   assert.ok(Math.abs(A.medQi(d) - q0 * A.SYN24.med3) < 1e-9);
+});
+test('loop199 劍宗前期快、氣宗後期以氣御劍', () => {
+  const earlyJ = { v24: true, v23: true, sectId: 'jianzong', qi: 20, ng: 1, moves: [], arts: { jianzongXinfa: { xp: 0 }, bixie: { xp: 55 } } };
+  assert.equal(A.swordCdMul(earlyJ, 'bx1'), 0.76); assert.equal(A.swordDmgMul(earlyJ, 'bx1'), 1.18);
+  assert.ok(A.swordFast24(earlyJ)); assert.ok(A.styleBadges24(earlyJ).includes('【唯快不破】'));
+  assert.match(artsGrowHtml(earlyJ, 0, false), /【唯快不破】/);
+  earlyJ.arts.bixie.xp = 85; assert.equal(A.swordDmgMul(earlyJ, 'bx1'), 1);
+  earlyJ.arts.bixie.xp = 10; assert.ok(!A.styleBadges24(earlyJ).includes('【唯快不破】'));
+  const other = { v24: true, v23: true, sectId: 'wudang', qi: 20, ng: 1, arts: { breath: { xp: 10 }, bixie: { xp: 25 } } };
+  assert.equal(A.swordCdMul(other, 'bx1'), 0.86); assert.equal(A.swordDmgMul(other, 'bx1'), 1.08);
+  other.arts.bixie.xp = 55; assert.equal(A.swordDmgMul(other, 'bx1'), 1);
+  const legacy = { v23: true, sectId: 'qizong', qi: 0, arts: { breath: { xp: 30 } }, zixia: 2 };
+  assert.equal(A.swordCdMul(legacy, 'bx1'), 0.82); assert.equal(A.swordDmgMul(legacy, 'bx1'), 1.1);
+  assert.ok(Math.abs(A.qiStrikeMul(legacy) - 1.35) < 1e-9);
+  const qe = { v24: true, v23: true, sectId: 'qizong', qi: 20, ng: 1, arts: { huashanXinfa: { xp: 24 }, breath: { xp: 0 } } };
+  const q = A.qiOf(qe); assert.equal(q, 20);
+  const qeMul = 1.06 + 0.04 + 0.08 * 0.2;
+  assert.ok(Math.abs(A.qiSwordMul24(qe) - qeMul) < 1e-9); assert.ok(qeMul > 1.1 && qeMul < 1.2);
+  assert.ok(Math.abs(A.qiStrikeMul(qe) - (1 + 0.15 * 0.2) * qeMul) < 1e-9);
+  assert.ok(!A.styleBadges24(qe).includes('【以氣御劍】'));
+  assert.ok(1.18 / 0.76 > A.qiStrikeMul(qe) * 1.08 / 0.86);
+  const late = { v24: true, v23: true, sectId: 'qizong', qi: 160, ng: 1, moves: [], arts: { zixia: { xp: 90 }, huashanXinfa: { xp: 60 } } };
+  const lateMul = Math.min(1.62, 1.06 + 0.12 + 0.12 + 0.08 + 0.08 * 1.6);
+  assert.ok(lateMul >= 1.45 && lateMul <= 1.62); assert.ok(Math.abs(A.qiSwordMul24(late) - lateMul) < 1e-9);
+  assert.ok(A.styleBadges24(late).includes('【以氣御劍】')); assert.match(artsGrowHtml(late, 0, false), /主運《紫霞神功》3品/); assert.match(artsGrowHtml(late, 0, false), /【以氣御劍】/);
+  const cap = { v24: true, v23: true, sectId: 'qizong', qi: 400, ng: 1, zixia: 9, arts: { zixia: { xp: 100 }, jiuyang: { xp: 100 } } };
+  assert.equal(A.qiSwordMul24(cap), 1.62);
+  const lateJ = { v24: true, v23: true, sectId: 'jianzong', qi: 40, ng: 1, arts: { jianzongXinfa: { xp: 55 }, bixie: { xp: 90 } } };
+  assert.equal(A.swordDmgMul(lateJ, 'bx1'), 1);
+  assert.ok(A.qiStrikeMul(late) / 0.86 > A.qiStrikeMul(lateJ) * A.swordDmgMul(lateJ, 'bx1') / 0.76);
+  const spent = { v24: true, v23: true, sectId: 'qizong', ng2: 1, qi: 5, arts: { huashanXinfa: { xp: 60 } } };
+  A.shieldHit(spent, 100, 0); assert.equal(spent.spentUntil, A.NG2.spentT * 0.5);
+  const young = { v24: true, v23: true, sectId: 'qizong', ng2: 1, qi: 5, arts: { huashanXinfa: { xp: 10 } } };
+  A.shieldHit(young, 100, 0); assert.equal(young.spentUntil, A.NG2.spentT);
+  const oldS = { ng2: 1, qi: 5, sectId: 'qizong', arts: { huashanXinfa: { xp: 60 } } };
+  A.shieldHit(oldS, 100, 0); assert.equal(oldS.spentUntil, A.NG2.spentT);
+});
+test('loop199 守正成材後才加重外放', () => {
+  const [, d] = fresh('wudang'); d.personality = ['honest']; d.values = {};
+  give(d, 'wudangXinfa', 60); give(d, 'wudangFist', 30);
+  assert.equal(fieldLeanMul29(d, 'hunt'), 1.1); assert.equal(fieldLeanMul29(d, 'chat'), 1.1); assert.equal(fieldLeanMul29(d, 'train'), 0.94); assert.equal(fieldLeanMul29(d, 'meditate'), 1); assert.equal(fieldLeanMul29(d, 'farm'), 1);
+  d.arts.wudangXinfa.xp = 20; assert.equal(fieldLeanMul29(d, 'hunt'), 1);
+  d.arts.wudangXinfa.xp = 60; d.personality = ['clever']; assert.equal(fieldLeanMul29(d, 'spar'), 1);
+  assert.equal(fieldLeanMul29({ arts: d.arts, personality: ['honest'], sectId: 'wudang' }, 'hunt'), 1);
 });

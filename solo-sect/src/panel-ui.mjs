@@ -3,7 +3,7 @@ import { DAY, ACTIVITIES, EXP_STYLES, EXP, ARTS, TIERS, ART_GAIN, ROOT, JH, BREA
 import { LABOR, strMul, laborToday } from './economy.mjs';
 import { segAt } from './world.mjs';
 import { nextStep } from './core.mjs';
-import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW, mainInner28, baseInner28, innerDrive28, isInner } from './arts.mjs';
+import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW, mainInner28, baseInner28, innerDrive28, isInner, qiSwordOn24, qiSwordMul24, qiGreat24, swordFast24 } from './arts.mjs';
 import { CLQ } from './bonds.mjs';
 import { JHEV, letterP } from './jianghu.mjs';
 // ==== （原 dcard.mjs）====
@@ -118,9 +118,11 @@ export function artsGrowHtml(d, now = 0, grow = true) {
     if (r && rustOf(r, now) > 0.01) why.push(`荒疏 ${(rustOf(r, now) * 100).toFixed(0)}%`);
     if (r && Object.keys(ART_CAT[a.id] || {}).every((c) => supOf(c, d) === 'none')) why.push('門類尚未支援：不累積造詣');
     if (d?.v24 && r && !isInner(a)) { const drv = innerDrive28(d, a); if (drv.tier === 1) why.push(`正宗催動 ×${drv.mul.toFixed(2)}`); else if (drv.tier === 3) why.push(`內力虛浮 ×${drv.mul.toFixed(2)}`); else if (drv.tier === 4) why.push(`⚠️異屬逆催 ×${drv.mul.toFixed(2)}`); } /* loop194 */
-    const lead = (d?.v24 && r && mi?.id === a.id ? `★主運內功 ${bi?.id === a.id && t >= 2 ? '◆根基 ' : ''}` : '') + (f === a.id ? '◆主修 ' : '');
+    const lead = (d?.v24 && r && mi?.id === a.id ? `★主運內功 ${a.grade || 1}品 ${bi?.id === a.id && t >= 2 ? '◆根基 ' : ''}` : '') + (f === a.id ? '◆主修 ' : '');
     return `<div class="k artgrow" data-artst="${st.st}">${lead}${a.name}（${cats}）${r ? `・${d.pf && !r.guizhen ? `<span data-prof>${profLabel(r.xp)}</span>` : TIERS[t][1]} ${r.xp.toFixed(1)}${nxt}${moves}` : ''}・<b>${st.text}</b>${why.length ? `｜${why.join('；')}` : ''}</div>`; });
-  return `<div class="grow-arts"><b>個別武學</b>${rows.join('')}</div>`;
+  const ng = d?.v24 && mi && d.arts?.[mi.id] ? mastery(d, 'neigong') : 0;
+  const head = d?.v24 && mi && d.arts?.[mi.id] ? `<div class="k" data-drive24="1">主運《${mi.name}》${mi.grade || 1}品・${profLabel(d.arts[mi.id].xp)}・內功造詣 ${ng | 0}（內力上限 +${(ng * 0.4).toFixed(1)}%）${qiSwordOn24(d) && qiSwordMul24(d) >= 1.25 ? `・【以氣御劍】×${qiSwordMul24(d).toFixed(2)}` : ''}${swordFast24(d) ? '・【唯快不破】' : ''}</div>` : '';
+  return `<div class="grow-arts"><b>個別武學</b>${head}${rows.join('')}</div>`;
 }
 /* loop85 規則說明：數字直接讀 GROW，不另寫 */
 export function rulesHtml() { const G = GROW, A = G.acc;
@@ -140,7 +142,7 @@ export function profRulesHtml() { const rows = TIERS.slice(0, -1).map(([lo, n], 
 export function qiStatus(d, now = 0) {
   const m = qiMax(d), tired = (d.spentUntil ?? -1) > now;
   if (!m) return `<span title="還沒學內功：沒有護體真氣">氣 0/0（未學內功）</span>`;
-  return `<span title="護體真氣：受擊先減傷 ${Math.round(mitOf(d) * 100)}%，再由內力吸收；內力打空會力竭 ${NG2.spentT} 秒（受傷 ×${NG2.spentMul}）">氣 ${qiOf(d) | 0}/${m} ${bar(qiOf(d), m, '#5a7ab0')}${tired ? '（力竭）' : ''}${tenthOf(d) ? '・真氣綿長' : ''}${yuqiOn(d) ? '・御氣疾行' : ''}</span>${innerSpecHtml(d)}`;
+  return `<span title="護體真氣：受擊先減傷 ${Math.round(mitOf(d) * 100)}%，再由內力吸收；內力打空會力竭 ${NG2.spentT * (qiGreat24(d) ? 0.5 : 1)} 秒（受傷 ×${NG2.spentMul}）">氣 ${qiOf(d) | 0}/${m} ${bar(qiOf(d), m, '#5a7ab0')}${tired ? '（力竭）' : ''}${tenthOf(d) ? '・真氣綿長' : ''}${yuqiOn(d) ? '・御氣疾行' : ''}</span>${innerSpecHtml(d)}`;
 }
 /* loop154 v2.3 內功被動與御氣說明（只列本人已學的） */
 export const innerSpecHtml = (d) => { const l = innerSpecs(d); return l.length ? `<span class="k" data-inner-spec="1" title="${l.map((id) => `${INNER_SPECS[id].name}：${INNER_SPECS[id].desc}`).join('；')}">　內功被動：${l.map((id) => `${INNER_SPECS[id].name}（${INNER_SPECS[id].desc}）`).join('、')}</span>` : ''; };

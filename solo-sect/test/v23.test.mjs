@@ -39,7 +39,7 @@ test('loop152 角色卡門類造詣：v23 顯示專長效果說明，舊局仍�
   assert.match(f(d), /醫術：療傷回復/); const o = OLD(); tick(o, 0.1); assert.match(f(hero(o)), /尚未支援/);
 });
 import { speedOf } from '../src/sim.mjs';
-import { NG23, NG, yuqiOn, yuqiMul, qiStrikeMul, swordCdMul, medQi, qiMax, innerSpecs } from '../src/arts.mjs';
+import { NG23, NG, yuqiOn, yuqiMul, qiStrikeMul, qiSwordMul24, swordCdMul, medQi, qiMax, innerSpecs } from '../src/arts.mjs';
 test('loop153 三段腳程：v23 輕功每階 6%；御氣疾行要內功小成以上且內力 >30%，耗氣停在三成', () => {
   const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'breath', s.t); d.arts.breath.xp = 60; d.qi = qiMax(d);
   assert.ok(qiMax(d) > 0); assert.ok(yuqiOn(d)); assert.ok(yuqiMul(d) >= 1.15);
@@ -49,7 +49,7 @@ test('loop153 三段腳程：v23 輕功每階 6%；御氣疾行要內功小成�
 });
 test('loop153 打坐 +16（紫霞 +4）、舊局仍 12；真氣出手與劍招只在 v23', () => {
   const s = V(); tick(s, 0.1); const d = hero(s); assert.ok(Math.abs(medQi(d) - 16 * (1 + 0.004 * mastery(d, 'neigong'))) < 1e-9); assert.equal(NG.med, 12); /* loop198：內功造詣加成打坐 */
-  d.zixia = 2; assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * qiOf2(d) / 100 + 0.002 * mastery(d, 'neigong')) * 1.35) < 1e-9); assert.equal(swordCdMul(d, { id: 'bx1' }), 0.82);
+  d.zixia = 2; assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * qiOf2(d) / 100 + 0.002 * mastery(d, 'neigong')) * qiSwordMul24(d)) < 1e-9); assert.equal(swordCdMul(d, { id: 'bx1' }), d.sectId === 'jianzong' ? 0.76 : 0.86); /* loop199 */
   const o = OLD(); tick(o, 0.1); const h = hero(o); h.zixia = 2; assert.equal(qiStrikeMul(h), 1); assert.equal(swordCdMul(h, { id: 'bx1' }), 1); assert.equal(medQi(h), 12);
   learnArt(d, 'jiuyang', s.t); assert.ok(innerSpecs(d).includes('jiuyang')); assert.deepEqual(innerSpecs(h), []);
 });
@@ -139,14 +139,14 @@ test('loop157 劍招：辟邪／獨孤九劍真實招式吃 cdMul ×0.82 與 mov
   const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'bixie', s.t); d.qi = 0;
   assert.ok(isSwordMove('bx1') && isSwordMove('dg1') && isSwordMove('xt1')); assert.equal(isSwordMove('qm1'), false);
   for (const mv of ['bx1', 'dg1']) { const c1 = cdMul(d, mv, s.t), m1 = moveMul(d, mv, s.t); d.v23 = false; const c0 = cdMul(d, mv, s.t), m0 = moveMul(d, mv, s.t); d.v23 = true;
-    assert.ok(Math.abs(c1 / c0 - 0.82) < 1e-9, mv); assert.ok(Math.abs(m1 / m0 - qiStrikeMul(d) * 1.1) < 1e-9, `${mv} ${m1 / m0}`); } /* loop198：v24 內功造詣加在以氣御招，關 v23 時這項一起關掉 */
+    assert.ok(Math.abs(c1 / c0 - (d.sectId === 'jianzong' ? 0.76 : 0.86)) < 1e-9, mv); assert.ok(Math.abs(m1 / m0 - qiStrikeMul(d) * swordDmgMul(d, mv)) < 1e-9, `${mv} ${m1 / m0}`); } /* loop199：v24 一般劍冷卻 0.86、小成前 ×1.08；劍宗另計 */
   learnArt(d, 'qimenZhen', s.t); const c1 = cdMul(d, 'qm1', s.t); d.v23 = false; assert.equal(cdMul(d, 'qm1', s.t), c1); d.v23 = true;
 });
 test('loop157 以氣御招走 moveMul0：內力越多越重、氣宗再 ×1.35；巡山 dpsOf 同步反映，且巡獵不再重複乘', () => {
   const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'breath', s.t); d.arts.breath.xp = 100; d.ng = 1; d.ng2 = 1;
   d.qi = 0; const m0 = moveMul(d, d.moves[0], s.t), p0 = dpsOf(s, d); d.qi = Math.min(100, qiMax(d)); const q = qiOf2(d), add = 0.002 * mastery(d, 'neigong');
   assert.ok(Math.abs(moveMul(d, d.moves[0], s.t) / m0 - (1 + 0.15 * q / 100 + add) / (1 + add)) < 1e-9); assert.ok(dpsOf(s, d) > p0);
-  d.zixia = 2; assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * q / 100 + add) * 1.35) < 1e-9); d.zixia = 0; d.sectId = 'qizong'; assert.ok(qiStrikeMul(d) > 1.35); /* loop198 */
+  d.zixia = 2; assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * q / 100 + add) * qiSwordMul24(d)) < 1e-9); d.zixia = 0; d.sectId = 'qizong'; assert.ok(Math.abs(qiStrikeMul(d) - (1 + 0.15 * q / 100 + add) * qiSwordMul24(d)) < 1e-9); /* loop199：氣宗改乘以氣御劍，不再固定 ×1.35 */
   learnArt(d, 'bixie', s.t); d.moves.push('bx1'); const pb = dpsOf(s, d); d.v23 = false; const pb0 = dpsOf(s, d); d.v23 = true; assert.ok(pb > pb0);
   const src = readFileSync(new URL('../src/sim.mjs', import.meta.url), 'utf8'); assert.doesNotMatch(src, /qiStrikeMul\(|swordDmgMul\(|swordCdMul\(/);
 });

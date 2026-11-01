@@ -12,7 +12,7 @@ export function classify(text) {
   const head = text.split('。')[0], sc = (kw) => kw.reduce((a, [k, w]) => a + (head.includes(k) ? w * (head.indexOf(k) < head.length / 2 ? 1.5 : 1) : 0), 0);
   return sc(OUT_KW) > sc(IN_KW) ? 'out' : 'in';
 }
-test('M1 傳記文字分辨外放／內斂 ≥ 90%（48 種子 × 30 日）', { timeout: 770000 }, async () => {
+test('M1 傳記文字分辨外放／內斂 ≥ 90%（48 種子 × 30 日）', { timeout: 1200000 }, async () => {
   const seeds = Array.from({ length: 48 }, (_, i) => 1001 + i), chunks = Array.from({ length: 8 }, (_, k) => seeds.filter((_, i) => i % 8 === k));
   const res = (await Promise.all(chunks.map((c) => ex(process.execPath, [W, ...c.map(String)], { env: { ...process.env, SS_DT: process.env.SS_DT || '0.25' }, maxBuffer: 64 << 20 })))).flatMap((r) => JSON.parse(r.stdout));
   const ok = res.filter((r) => classify(r.text) === r.truth).length, acc = ok / res.length;

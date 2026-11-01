@@ -33,7 +33,7 @@ test('loop159 P7/P8 執事：有人學會 ≥2 門武學且木石夠 → 藏經�
 test('loop159 isSwordArt：劍法門類、三門經典劍法；掌法不是；swordCdMul 經它作用在真實劍招，dpsOf 吃 cdMul', () => {
   for (const id of ['dugu', 'bixie', 'xuantie']) assert.ok(A.isSwordArt(id), id); assert.equal(A.isSwordArt('pushPalm'), false); assert.equal(A.isSwordArt('qimenZhen'), false);
   const s = V(); tick(s, 0.1); const d = hero(s); A.learnArt(d, 'bixie', s.t); d.moves.push('bx1'); d.qi = 0;
-  assert.ok(Math.abs(A.swordCdMul(d, 'bx1') - 0.82) < 1e-9); assert.equal(A.swordCdMul(d, 'push'), 1);
+  assert.ok(Math.abs(A.swordCdMul(d, 'bx1') - (d.sectId === 'jianzong' ? 0.76 : 0.86)) < 1e-9); assert.equal(A.swordCdMul(d, 'push'), 1); /* loop199 */
   const p1 = dpsOf(s, d); d.v23 = false; const p0 = dpsOf(s, d); d.v23 = true; assert.ok(p1 > p0);
 });
 
