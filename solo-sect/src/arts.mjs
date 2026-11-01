@@ -17,25 +17,8 @@ export const CATS = {
 const FULL24 = ['neigong', 'shenfa', 'gunbang'];
 export const supOf = (c, d) => (d?.v24 && FULL24.includes(c) ? 'full' : ((d?.v23 && CATS[c].sup23) || CATS[c].sup));
 export const CAT_ORDER = ['quanzhang', 'tuifa', 'jianfa', 'neigong', 'shenfa', 'gunbang', 'qimen', 'zaxue', 'yishu', 'dushu', 'zhenfa'];
-/* 每門武學 → 成長門類權重（與戰鬥 school 分開；school=palm 的劍法、內功在此各歸其類） */
-export const ART_CAT = {
-  basicFist: { quanzhang: 1 }, pushPalm: { quanzhang: 1 }, wavePalm: { quanzhang: 1 }, fengLei: { quanzhang: 0.5, tuifa: 0.5 },
-  sweepLeg: { tuifa: 1 }, whirlLeg: { tuifa: 1 }, tantui: { tuifa: 1 },
-  breath: { neigong: 1 }, snowStep: { shenfa: 1 },
-  rulai: { quanzhang: 1 }, xianglong: { quanzhang: 1 }, anran: { quanzhang: 1 }, kongming: { quanzhang: 1 }, taiji: { quanzhang: 1 }, tiexian: { quanzhang: 1 }, huagu: { quanzhang: 1 },
-  bixie: { jianfa: 1 }, dugu: { jianfa: 1 }, xuantie: { jianfa: 1 },
-  zixia: { neigong: 1 }, yunv: { neigong: 1 }, jiuyang: { neigong: 1 }, qiankun: { neigong: 1 }, hama: { neigong: 1 }, shihou: { neigong: 1 },
-  dagou: { gunbang: 1 }, bagua: { gunbang: 1 }, kuihua: { qimen: 1 }, zuoyou: { zaxue: 1 },
-  basicSword: { jianfa: 1 }, huashanSword: { jianfa: 1 }, sanxianSword: { jianfa: 1 }, wuhuBlade: { quanzhang: 0.5, gunbang: 0.5 }, shaolinStaff: { gunbang: 1 }, tuinaHand: { quanzhang: 0.5, qimen: 0.5 }, stepFeather: { shenfa: 1 }, stepEight: { shenfa: 0.7, zhenfa: 0.3 }, zhenTu: { zhenfa: 1 }, yiJing: { yishu: 1 }, duPu: { dushu: 1 }, /* loop160 v2.4 */
-  hanbingPalm: { quanzhang: 0.7, neigong: 0.3 }, liufengSword: { jianfa: 0.7, shenfa: 0.3 }, fuguFinger: { quanzhang: 0.5, dushu: 0.5 }, qiankunBlade: { gunbang: 0.7, neigong: 0.3 }, /* loop165 合參 */
-  emeiJiuyang: { neigong: 1 }, linjiZhuang: { neigong: 0.8, yishu: 0.2 }, emeiSword: { jianfa: 1 }, huifengSword: { jianfa: 1 }, jindingPalm: { quanzhang: 1 }, tiangangFinger: { quanzhang: 0.5, qimen: 0.5 }, jiuyinClaw: { quanzhang: 1 }, /* loop168 v2.55 門派專屬 */
-  wudangJiuyang: { neigong: 1 }, wudangFist: { quanzhang: 1 }, rouyunSword: { jianfa: 1 }, taijiSword: { jianfa: 1 }, biboXinfa: { neigong: 0.7, qimen: 0.3 }, luoyingPalm: { quanzhang: 0.7, jianfa: 0.3 }, lanhuaHand: { quanzhang: 0.5, qimen: 0.5 }, yuxiaoSword: { jianfa: 0.7, qimen: 0.3 },
-  tianluoPalm: { quanzhang: 0.6, shenfa: 0.4 }, yunvSword: { jianfa: 1 }, shenmuGong: { neigong: 0.7, dushu: 0.3 }, huagongDafa: { neigong: 0.6, dushu: 0.4 }, chousuiPalm: { quanzhang: 0.5, dushu: 0.5 }, sanyinClaw: { quanzhang: 0.5, dushu: 0.5 },
-  huashanXinfa: { neigong: 1 }, pishiFist: { quanzhang: 1 }, hunyuanPalm: { quanzhang: 0.7, neigong: 0.3 }, kuangfengSword: { jianfa: 1 }, jianzongXinfa: { neigong: 1 }, wudangXinfa: { neigong: 1 }, mianPalm: { quanzhang: 1 }, /* loop172 v2.6；loop191 劍宗心法 */
-  huntianGong: { neigong: 1 }, xiaoyaoStep: { shenfa: 1 }, lianhuaPalm: { quanzhang: 1 }, fengmoStaff: { gunbang: 1 }, shenghuoXinfa: { neigong: 1 }, qingfuStep: { shenfa: 1 }, yingzhuaHand: { quanzhang: 0.7, qimen: 0.3 }, qishangFist: { quanzhang: 1 }, /* loop173 v2.6 */
-  yunlongXinfa: { neigong: 1 }, shenxingStep: { shenfa: 1 }, baihuaFist: { quanzhang: 1 }, yunlongSword: { jianfa: 1 }, zhaixingStep: { shenfa: 1 }, /* loop174 v2.6 */
-  qimenZhen: { zhenfa: 0.8, qimen: 0.2 }, xingxiuDu: { dushu: 1 }, yaowang: { yishu: 1 }, /* loop150 v2.3 專長招牌 */
-};
+/* loop209：門類權重寫在各武學的 cats。這裡只留同一份物件，normalizeArts 填進來。 */
+export const ART_CAT = {};
 export const GROW = {
   k: 0.05, /* 每單位原始修練投入 → 造詣 */
   src: { train: 1, fight: 0.3 }, /* 投入型來源權重 */
@@ -356,7 +339,7 @@ export const readwuNote = (s, d) => (!s?.readwu ? '' : d.rwDone ? '（讀書已�
    只存目前內力 d.qi；上限由已學內功武學的階衍生、不存。不吃造詣、不吃十重：紫霞層數已決定其 xp，只看階，不另加。 */
 // loop142（v2.2）：一版內功（狩獵運勁、運功療傷、20＋15×階的上限）已淘汰，護體真氣是唯一實作；NG 只留回復與衝關參數
 export const NG = { med: 12, rest: 0.2, btCost: 20, btBonus: 0.1 };
-export const isInner = (a) => a.school === 'inner' || !!ART_CAT[a.id]?.neigong;
+export const isInner = (a) => a.school === 'inner' || !!(a?.cats?.neigong || ART_CAT[a.id]?.neigong); /* loop209：INNER 在 normalizeArts 之前就凍結，字面量上的 cats 得先算得進去 */
 export const INNER = ARTS.filter(isInner).map((a) => a.id);
 export const innerArts = (d) => INNER.filter((id) => d.arts?.[id]);
 export const qiMax = (d) => qiMax2(d) * injuryMul28(d); /* loop181 經脈內傷壓內力上限 */
@@ -436,15 +419,9 @@ export const MODE31 = {
   lian: { qiScale: 0.40, dmg: 0.90, cd: 1 },
   da: { qiScale: 0.08, dmg: 1.12, cd: 0.92 },
 };
-const MODE_OF = {
-  basicFist: 'base', pushPalm: 'base', sweepLeg: 'base', basicSword: 'base', snowStep: 'base', wudangFist: 'base', pishiFist: 'base', emeiSword: 'base',
-  hunyuanPalm: 'lian', huashanSword: 'lian', mianPalm: 'lian', rouyunSword: 'lian', taiji: 'lian', taijiSword: 'lian', jindingPalm: 'lian', huifengSword: 'lian', lianhuaPalm: 'lian', tiangangFinger: 'lian', stepEight: 'lian', xiaoyaoStep: 'lian', stepFeather: 'lian', xuantie: 'lian',
-  sanxianSword: 'da', kuangfengSword: 'da', bixie: 'da', dugu: 'da', kuihua: 'da', chousuiPalm: 'da', sanyinClaw: 'da', tianluoPalm: 'da', yunvSword: 'da', jiuyinClaw: 'da', luoyingPalm: 'da', lanhuaHand: 'da', yuxiaoSword: 'da', tuinaHand: 'da', wuhuBlade: 'da', fengmoStaff: 'da', yingzhuaHand: 'da', baihuaFist: 'da', yunlongSword: 'da', whirlLeg: 'da', wavePalm: 'da', zhaixingStep: 'da', shenxingStep: 'da', qingfuStep: 'da', xianglong: 'da', qishangFist: 'da',
-};
-const QISCALE_OF = { xuantie: 0.50, dugu: 0.20, xianglong: 0.45, qishangFist: 0.40 };
+/* 還沒寫進字面量的武學才用這條。純內功不設。一品築基；快為打法；柔或拙為練法；其餘打法。 */
 export function modeDefault31(a) {
   if (!a || a.school === 'inner') return null;
-  if (MODE_OF[a.id]) return MODE_OF[a.id];
   const tags = a.tags || [];
   if ((a.grade || 1) === 1) return 'base';
   if (tags.includes('快')) return 'da';
@@ -461,13 +438,6 @@ export function neigongEff31(d) { return Math.min(100, mastery(d, 'neigong') + 0
 export function floatMul31(a) {
   const q = Number.isFinite(a?.qiScale) ? a.qiScale : MODE31.base.qiScale;
   return 1 - (1 - DRIVE28.t3) * Math.min(1, q / 0.40);
-}
-/* 舊公式留著給既有單測。徽章不再讀它，也不再看門派。 */
-export function qiSwordOn24(d) { return !!(d?.v24 && innerArts(d).length && ((d.zixia || 0) >= 2 || artTier(d, 'zixia') >= 2)); }
-export function qiSwordMul24(d) {
-  const M = mainInner28(d), g = M?.grade || 1, t = M ? artTier(d, M.id) : 0;
-  const zx = Math.min(9, d.zixia || (d.arts?.zixia ? t + 1 : 0));
-  return Math.min(1.62, 1.06 + 0.04 * g + 0.04 * Math.max(0, t) + 0.02 * zx + 0.08 * Math.min(2, qiOf(d) / 100));
 }
 /* loop201：任何門派，主運內功 ≥ 3 品且大成，力竭時間減半 */
 export function qiGreat24(d) {
@@ -662,18 +632,27 @@ export function temper29(d) { if (!d?.v24) return {}; const p = d.personality ||
 /* ---- loop181 v2.8 四階內功催動（innerDrive28）與經脈內傷（qiInjury）。只 d.v24 ---- */
 export const CHAMP28 = { train: 1.25, aoe: 0.25 }; /* loop183 當屆大比首徒＝首徒 headTrain 1.5 的一半加成 */
 export const DRIVE28 = { t1: 1.25, t1s: 1.25, t2: 1, t3: 0.78, t4: 0.65, med3: 1.15, inj: 8, injSub: 5, injWarn: 20, injHeavy: 50, injMin: 0.10, injMax: 0.25, hp: 8, mood: 4, med: 8, heal: 25, rest: 6 }; /* loop196：t1＝本門正宗；t1s 退役（不再另乘三才） */
-export const PUBLIC28 = ['basicFist', 'pushPalm', 'sweepLeg', 'breath', 'snowStep', 'basicSword', 'wuhuBlade', 'shaolinStaff', 'tuinaHand', 'stepFeather', 'stepEight'];
-/* loop191：載入時補齊武學描述，不改既有欄位。legacy 存檔與 v22:false 路徑不讀這些欄。 */
+/* loop209：公共武學看各武學的 isPublic。順序跟武學表，呼叫端只用 includes。 */
+export const PUBLIC28 = [];
+/* loop209：mode、qiScale、cats、isPublic 已在字面量。這裡只補 isInner／kind，並讓 ART_CAT、PUBLIC28 指向同一份。缺了就丟。 */
 export function normalizeArts(list = ARTS) {
   for (const a of list) {
-    a.isInner = a.school === 'inner' || !!ART_CAT[a.id]?.neigong;
+    if (!a?.id || !a.cats || typeof a.cats !== 'object') throw new Error(`${a?.id || '?'} 缺 cats`);
+    if (typeof a.isPublic !== 'boolean') throw new Error(`${a.id} 缺 isPublic`);
+    if (a.school === 'inner') {
+      if (a.mode != null || a.qiScale != null) throw new Error(`${a.id} 純內功不設 mode`);
+    } else if (a.mode !== 'base' && a.mode !== 'lian' && a.mode !== 'da') throw new Error(`${a.id} 缺 mode`);
+    else if (!(typeof a.qiScale === 'number' && a.qiScale >= 0 && a.qiScale <= 0.6)) throw new Error(`${a.id} 缺 qiScale`);
+  }
+  for (const a of list) {
+    a.isInner = a.school === 'inner' || !!a.cats.neigong;
     a.kind = a.isInner ? 'inner' : a.school === 'step' ? 'step' : 'outer';
-    a.isPublic = PUBLIC28.includes(a.id);
-    if (a.cats) ART_CAT[a.id] = a.cats; /* loop196：資料表上的 cats 與 ART_CAT 共用同一物件 */
-    else a.cats = ART_CAT[a.id] || null;
-    const mode = modeDefault31(a); /* loop201：純內功不設 mode；其餘補築基／練法／打法與 qiScale */
-    if (!mode) { a.mode = undefined; a.qiScale = undefined; }
-    else { a.mode = mode; a.qiScale = QISCALE_OF[a.id] ?? MODE31[mode].qiScale; }
+    ART_CAT[a.id] = a.cats;
+  }
+  if (list === ARTS) {
+    const next = list.filter((a) => a.isPublic).map((a) => a.id);
+    PUBLIC28.length = 0;
+    for (const id of next) PUBLIC28.push(id);
   }
   return list;
 }

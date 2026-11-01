@@ -73,6 +73,16 @@ test('loop201 外功與身法的 mode、qiScale 合法；純內功不設 mode', 
   assert.equal(modeDefault31({ id: 'zz', school: 'inner', grade: 3, tags: ['柔'] }), null);
 });
 
+test('loop209 缺 cats、外功缺 mode、純內功帶 mode 時丟出，不改既有表', () => {
+  const n = PUBLIC28.length, ids = Object.keys(ART_CAT).length;
+  assert.throws(() => normalizeArts([{ id: 'zz209', school: 'palm', grade: 1, tags: [], isPublic: false }]), /zz209/);
+  assert.throws(() => normalizeArts([{ id: 'zz209b', school: 'palm', grade: 2, tags: ['剛'], isPublic: false, cats: { quanzhang: 1 } }]), /zz209b/);
+  assert.throws(() => normalizeArts([{ id: 'zz209c', school: 'inner', grade: 1, tags: [], isPublic: false, cats: { neigong: 1 }, mode: 'lian', qiScale: 0.4 }]), /zz209c/);
+  assert.equal(PUBLIC28.length, n);
+  assert.equal(Object.keys(ART_CAT).length, ids);
+  assert.equal(ART_CAT.zz209, undefined);
+});
+
 test('loop198 每門武學的 cats 與 ART_CAT 同一份，權重落在已知門類', () => {
   for (const a of ARTS) {
     assert.ok(a.cats && a.cats === ART_CAT[a.id], a.id);

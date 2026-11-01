@@ -1710,3 +1710,8 @@ Loop 191–209 的經過寫在 `docs/decisions/DECISIONS.md` 決定 249–273，
 - 測量樹 `8b6c1f6`，模擬與 loop208 相同。40 局加 12 局，SS_DT=0.5。`test/harness/diag-v24-v25.mjs` 多記 A≤−2 坐不住之後的次數。`src` 未改。
 - 0 崩潰。勝率 65.7%（140/213）。第 27 日圍山 29／40。A≥2 打法 40.8%，A≤−2 築基／練法／內功 60.1%。星宿 8／17，圍山 0／4。門派戰力沒有劍氣交叉；出手從第 10 日到第 30 日都是氣宗較高，各 3 局。
 - 全文：`docs/reports/balance/BALANCE-v330.md`。未達標的不改係數。下一步是把武學欄位烘進字面量，兩條 golden 保持不動。
+
+## Loop 209 — 武學欄位烘進字面量（決定 276）
+- 排在 loop210 測量之後。`data.mjs`：88 門寫上當時載入印好的 `mode`、`qiScale`、`cats`、`isPublic`。純內功不設 mode。
+- `arts.mjs`：刪 `MODE_OF`、`QISCALE_OF`、`qiSwordOn24`、`qiSwordMul24`。`normalizeArts` 缺欄位就丟，並讓 `ART_CAT`、`PUBLIC28` 指向字面量。
+- 不改戰鬥公式，不刪武學 id。golden-30d 仍是 `292a061236fd0949`。golden-30d-v22 仍是 `943cdf55f7efd9bb`。

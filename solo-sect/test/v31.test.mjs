@@ -133,18 +133,12 @@ test('loop199 劍宗前期快、氣宗後期以氣御劍', () => {
   assert.ok(Math.abs(A.qiStrikeMul(legacy) - 1.35) < 1e-9);
   const qe = { v24: true, v23: true, sectId: 'qizong', qi: 20, ng: 1, arts: { huashanXinfa: { xp: 24 }, breath: { xp: 0 } } };
   const q = A.qiOf(qe); assert.equal(q, 20);
-  const qeMul = 1.06 + 0.04 + 0.08 * 0.2;
-  assert.ok(Math.abs(A.qiSwordMul24(qe) - qeMul) < 1e-9); assert.ok(qeMul > 1.1 && qeMul < 1.2);
-  assert.ok(Math.abs(A.qiStrikeMul(qe) - (1 + 0.15 * 0.2)) < 1e-9); /* loop201：內勁不再乘 qiSwordMul24 */
+  assert.ok(Math.abs(A.qiStrikeMul(qe) - (1 + 0.15 * 0.2)) < 1e-9); /* loop209：舊的 qiSwordMul24 已刪，內勁不走那條 */
   assert.ok(!A.styleBadges24(qe).includes('【以氣御劍】'));
   const qeJ = { ...qe, sectId: 'jianzong' }, qeW = { ...qe, sectId: 'wuming' };
   assert.equal(A.qiStrikeMul(qeJ), A.qiStrikeMul(qe)); assert.equal(A.qiStrikeMul(qeW), A.qiStrikeMul(qe));
   const late = { v24: true, v23: true, sectId: 'qizong', qi: 160, ng: 1, moves: [], arts: { zixia: { xp: 90 }, huashanXinfa: { xp: 60 }, huashanSword: { xp: 40 } } }; /* loop204：以氣御劍看主修練法，不看氣宗 */
-  const lateMul = Math.min(1.62, 1.06 + 0.12 + 0.12 + 0.08 + 0.08 * 1.6);
-  assert.ok(lateMul >= 1.45 && lateMul <= 1.62); assert.ok(Math.abs(A.qiSwordMul24(late) - lateMul) < 1e-9);
   assert.ok(A.styleBadges24(late).includes('【以氣御劍】')); assert.match(artsGrowHtml(late, 0, false), /主運《紫霞神功》3品/); assert.match(artsGrowHtml(late, 0, false), /【以氣御劍】/);
-  const cap = { v24: true, v23: true, sectId: 'qizong', qi: 400, ng: 1, zixia: 9, arts: { zixia: { xp: 100 }, jiuyang: { xp: 100 } } };
-  assert.equal(A.qiSwordMul24(cap), 1.62);
   const lateJ = { v24: true, v23: true, sectId: 'jianzong', qi: 40, ng: 1, arts: { jianzongXinfa: { xp: 55 }, bixie: { xp: 90 } } };
   assert.equal(A.swordDmgMul(lateJ, 'bx1'), 1);
   const spent = { v24: true, v23: true, sectId: 'qizong', ng2: 1, qi: 5, arts: { huashanXinfa: { xp: 60 } } };

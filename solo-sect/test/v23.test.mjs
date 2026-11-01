@@ -39,7 +39,7 @@ test('loop152 角色卡門類造詣：v23 顯示專長效果說明，舊局仍�
   assert.match(f(d), /醫術：療傷回復/); const o = OLD(); tick(o, 0.1); assert.match(f(hero(o)), /尚未支援/);
 });
 import { speedOf } from '../src/sim.mjs';
-import { NG23, NG, yuqiOn, yuqiMul, qiStrikeMul, qiSwordMul24, swordCdMul, medQi, qiMax, innerSpecs, QI_SAT31 } from '../src/arts.mjs';
+import { NG23, NG, yuqiOn, yuqiMul, qiStrikeMul, swordCdMul, medQi, qiMax, innerSpecs, QI_SAT31 } from '../src/arts.mjs';
 test('loop153 三段腳程：v23 輕功每階 6%；御氣疾行要內功小成以上且內力 >30%，耗氣停在三成', () => {
   const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'breath', s.t); d.arts.breath.xp = 60; d.qi = qiMax(d);
   assert.ok(qiMax(d) > 0); assert.ok(yuqiOn(d)); assert.ok(yuqiMul(d) >= 1.15);
