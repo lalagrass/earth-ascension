@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
-import { artsGrowHtml } from '../src/panel-ui.mjs';
+import { artsGrowHtml, rulesHtml, neigongRules2Html, growthHtml } from '../src/panel-ui.mjs';
 import { MOVES, SECTS } from '../src/data.mjs';
 import * as A from '../src/arts.mjs';
 
@@ -244,4 +244,21 @@ test('loop201 神木毒功退出學習池，已學會的舊檔仍讀得到', () 
   assert.equal(A.artById('shenmuGong').name, '神木毒功');
   assert.match(artsGrowHtml(d, 0, false), /神木毒功/);
   assert.ok(!A.artsSvg(d).includes('data-art="shenmuGong"'));
+});
+
+test('loop201 面板規則跟上封頂與造詣，舊局仍寫 200 與造詣不加傷害', () => {
+  const s = V(); tick(s, 0.1); const d = s.ds[0];
+  const h = growthHtml(d, {}, 1, s.t, true);
+  assert.match(h, new RegExp(`再封頂 ${A.NG2.total24}`));
+  assert.match(h, new RegExp(`最多 ${Math.round(A.NG2.mitCap24 * 100)}%`));
+  assert.match(h, new RegExp(`築基內勁係數 ${A.MODE31.base.qiScale}`));
+  assert.doesNotMatch(h, /造詣不加傷害/);
+  assert.doesNotMatch(h, /氣宗／紫霞/);
+  assert.doesNotMatch(rulesHtml(), /造詣進實戰/);
+  assert.match(rulesHtml(), /造詣不加傷害/);
+  const old = neigongRules2Html({ v23: true, ng: 1 });
+  assert.match(old, new RegExp(`最多 ${A.NG2.total}`));
+  assert.match(old, new RegExp(`出手 ×${A.NG23.qiSchool}`));
+  assert.match(old, /劍招冷卻/);
+  assert.doesNotMatch(neigongRules2Html({ v23: true, v24: true, ng: 1 }), /出手 ×/);
 });
