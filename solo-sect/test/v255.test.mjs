@@ -52,10 +52,10 @@ test('loop168 寒玉床：門人 ≤5 打坐回氣與衝關率 ×1.5；神木王
 });
 
 test('loop169 合參收緊：門檻 52/48、本門樹已有不再推演、每局上限 2', () => {
-  assert.deepEqual(A.DERIVE_RULES24.map((R) => R.min), [52, 52, 48, 52]); assert.equal(A.DERIVE24.max, 2);
+  assert.deepEqual(A.DERIVE_RULES24.map((R) => R.min), [52, 52, 48, 52]); assert.equal(A.DERIVE24.max, 1); /* loop176 名門 1、無名 2 */
   const s = V(); tick(s, 0.1); const h = hero(s); const R = A.DERIVE_RULES24[1];
   const fake = { ...h, arts: {} }; s.sect.tree.push(R.id); assert.ok(!A.deriveReady24(fake, s).some((x) => x.id === R.id));
-  s.v24n = { derive: 2 }; assert.deepEqual(A.deriveReady24(h, s), []);
+  s.v24n = { derive: A.deriveMax24(s) }; assert.deepEqual(A.deriveReady24(h, s), []);
 });
 test('loop169 臨陣偷師：機率 0.55；他派專屬優先', () => { assert.equal(HUIWU24.steal, 0.55); });
 test('loop169 執事藏經閣：出征過或有殘頁，木 ≥5 即立（石料暫緩）', () => {

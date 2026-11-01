@@ -107,6 +107,7 @@ export const artOk = (d, a) => !a?.v24 || !!d?.v24;
 /* loop164 v2.4 Batch 4.3 本門傳承鎖：他派專屬（名門 classic、非名俠招牌、在某派 tree 而不在本門 d.stree）預設不可自悟／自選；
    【宗師觸類旁通】該武學主門類造詣 ≥ LOCK24.master 時解鎖他派 grade ≤2 武學。只在 d.v24。 */
 export const LOCK24 = { master: 40, maxGrade: 2 };
+export const WUMING24 = { master: 38, maxGrade: 2 }; /* loop176 */
 const inSomeTree = (id) => Object.values(SECTS).some((S) => S.tree.includes(id) || S.tree24?.includes(id));
 export const ownArt24 = (d, a) => !!(d?.stree && d.stree.includes(a.id));
 /* loop171 v2.6 鎮派絕學位階鎖（chiefOnly24）：本門 chiefOnly24 絕學只有掌門（hero）、首徒（role head）或山門大比魁首（chief24）可自悟／求學／受傳；已會者不收回 */
@@ -116,6 +117,7 @@ export const chiefLocked24 = (d, a) => !!(d?.v24 && a?.chiefOnly24 && ownArt24(d
 export function lockedArt24(d, a) {
   if (chiefLocked24(d, a)) return true;
   if (!d?.v24 || !a || !a.classic || a.signature || ownArt24(d, a) || (d.sectId === 'wuming' && !a.own24)) return false; /* loop168 門派專屬（own24）無名派也鎖 */
+  if (a.own24 && d.sectId === 'wuming' && a.own24 !== 'ban' && a.grade <= WUMING24.maxGrade && mastery(d, primaryCat(a.id)) >= WUMING24.master) return false; /* loop176 t192 待決 1A：無名派宗師觸類旁通 */
   if (a.own24) return true; /* loop168 門派專屬不吃觸類旁通（量測：拳掌造詣 ≥40 太常見，他派專屬會滿門外流），只能偷師取得 */
   if (!inSomeTree(a.id)) return false;
   const c = primaryCat(a.id); return !(c && a.grade <= LOCK24.maxGrade && mastery(d, c) >= LOCK24.master);
@@ -436,7 +438,9 @@ export function affix24(s, d) { if (!s?.v24 || !d?.v24) return null; let got = n
 
 // ---- loop165 v2.5 Batch 5.1：宗師合參推演（左冷禪式）。只在 s.v24／d.v24；掌門（hero）或內門／首徒在研讀、打坐完成時檢查 ----
 /* 條件：兩門指定類別武學都練到大成（tier ≥ DERIVE24.tier）＋主門類造詣達標。剛猛內功在現有資料極少，乾坤霸刀的內功條件放寬為任一內功。 */
-export const DERIVE24 = { tier: 2, xp: 10, roles: ['hero', 'inner', 'head'], max: 2 };
+export const DERIVE24 = { tier: 2, xp: 10, roles: ['hero', 'inner', 'head'], max: 1, maxWuming: 2 };
+/* loop176 t192 待決 3：名門每局 1 門、無名派 2 門 */
+export const deriveMax24 = (s) => (s?.sect?.id === 'wuming' ? DERIVE24.maxWuming : DERIVE24.max);
 const t2 = (d, f) => Object.keys(d.arts || {}).some((id) => { const a = artBy(id); return a && !a.derived && artTier(d, id) >= DERIVE24.tier && f(a, ART_CAT[id] || {}); });
 export const DERIVE_RULES24 = [
   { id: 'hanbingPalm', cat: 'quanzhang', min: 52, a: (a) => (a.school === 'palm' || a.school === 'fist') && a.tags.includes('剛') && !isSwordArt(a.id), b: (a) => a.school === 'inner' || attrOf(a) === 'yin' },
@@ -445,7 +449,7 @@ export const DERIVE_RULES24 = [
   { id: 'qiankunBlade', cat: 'gunbang', min: 52, a: (a, c) => (c.gunbang || 0) > 0 || a.weapon === 'blade' || a.weapon === 'staff', b: (a) => a.school === 'inner' },
 ];
 /* loop169 t190 待決 2：(a) 本門樹已有該合參絕學（前輩已開創）就不再推演；(b) 每局每派上限 DERIVE24.max 門；造詣門檻 45/40 → 52/48 */
-export function deriveReady24(d, s) { if (s && (s.v24n?.derive || 0) >= DERIVE24.max) return []; return DERIVE_RULES24.filter((R) => !d.arts?.[R.id] && !s?.sect?.tree?.includes(R.id) && mastery(d, R.cat) >= R.min && t2(d, R.a) && t2(d, R.b)); }
+export function deriveReady24(d, s) { if (s && (s.v24n?.derive || 0) >= deriveMax24(s)) return []; return DERIVE_RULES24.filter((R) => !d.arts?.[R.id] && !s?.sect?.tree?.includes(R.id) && mastery(d, R.cat) >= R.min && t2(d, R.a) && t2(d, R.b)); }
 export function checkDeriveArt(s, d) {
   if (!s?.v24 || !d?.v24 || !(d.id === 'hero' || DERIVE24.roles.includes(d.role))) return null;
   const R = deriveReady24(d, s)[0]; if (!R) return null; const a = learnArt(d, R.id, s.t); d.arts[R.id].xp = Math.max(d.arts[R.id].xp, DERIVE24.xp);

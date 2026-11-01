@@ -772,7 +772,7 @@ export const SECTS = {
     fac: { name: '金頂佛堂', cost: { stone: 8, coin: 8 }, mood: 3, daily: { rep: 0.3 }, desc: '金頂禮佛：掌門每日心情 +3、名聲每日 +0.3' }, rivals: ['明教', '崑崙派'], fav: [],
     recruit: { mood: 5, text: '一位帶髮修行的小師太持劍上山，說是師父讓她來歷練。' } },
   wudang: { v24: true, name: '武當派', plaque: '武當派・紫霄宮', color: '#4a6a8a', flag: '武', bias: { 柔: 0.12 }, tree: ['breath', 'wudangXinfa', 'wudangJiuyang', 'wudangFist', 'mianPalm', 'taiji', 'basicSword', 'rouyunSword', 'taijiSword', 'stepEight'], unlock24: { taiji: [{ art: 'wudangFist', tier: 2 }] }, ban: [], rules: ['qi', 'rescue'],
-    fac: { name: '紫霄宮', cost: { wood: 10, stone: 6 }, gain: 1.1, desc: '真武坐鎮：全派練武 +10%' }, rivals: ['少林', '明教'], fav: [],
+    fac: { name: '紫霄宮', cost: { wood: 10, stone: 6 }, gain: 1.1, def24: 1.18, desc: '真武坐鎮：全派練武 +10%；太極守禦：山門防禦戰力 +18%' }, rivals: ['少林', '明教'], fav: [],
     recruit: { wu: 1, text: '一個背著松紋古劍的少年道童叩門求道。' } },
   taohua: { v24: true, name: '桃花島', plaque: '桃花島・試劍亭', color: '#c06a7a', flag: '桃', bias: { 巧: 0.15 }, tree: ['biboXinfa', 'luoyingPalm', 'lanhuaHand', 'basicSword', 'yuxiaoSword', 'stepEight'], ban: [], rules: ['heart', 'share'],
     fac: { name: '奇門桃林', cost: { wood: 12, coin: 6 }, daily: { coin: 2 }, desc: '桃林布陣、島上租佃：每日香火錢 +2' }, rivals: ['全真教', '江南七怪'], fav: ['chengying'],
@@ -784,7 +784,7 @@ export const SECTS = {
     fac: { name: '神木王鼎', cost: { stone: 8, coin: 6 }, daily: { herb: 1, coin: 1 }, psn24: 1.35, desc: '神木王鼎煉毒：每日藥材 +1、香火錢 +1、門人毒傷 +35%；新人入門即帶《百毒譜》' }, rivals: ['丐幫', '逍遙派'], fav: ['azi'],
     recruit: { text: '一個臉色發青的小子捧著毒蟲罐子上山。', art24: 'duPu' } },
   wuming: { name: '無名小派', plaque: '無名小派', color: '#6a5a4a', flag: '武', bias: {}, tree: [], ban: [], rules: [],
-    fac: { name: '祖師堂', cost: { wood: 8, stone: 4 }, daily: { rep: 0.5 }, desc: '供奉開山祖師：名聲每日 +0.5' }, rivals: [], fav: [],
+    fac: { name: '祖師堂', cost: { wood: 8, stone: 4 }, daily: { rep: 0.5 }, gain24: 1.12, desc: '供奉開山祖師：名聲每日 +0.5（新局另全派練武 +12%）' }, rivals: [], fav: [],
     recruit: { text: '一個慕名而來的年輕人上山拜師。' } },
 };
 /* loop169 t190 待決 4：自創主角開局可選的開山道統（custom-sect24 下拉；wuming＝不指定） */

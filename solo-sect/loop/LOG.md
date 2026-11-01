@@ -1599,3 +1599,9 @@
 - 做得好：矩陣抓到一條繞過位階鎖的路徑並修掉。
 - 不好：偷師「明顯提升」未達；成套是全面增益。
 - 下一步：v2.7（t192u）——規格全文不在手上，待補。
+
+## loop176 — v2.7 Batch 0：無名派／武當補強、合參分流（決定 218–220）
+- arts.mjs：`WUMING24`、無名派觸類旁通、`deriveMax24`；sect.mjs：`gain24`、`def24Of`；threat.mjs：`defense` 乘 `def24Of`；data.mjs：紫霄宮 `def24`、祖師堂 `gain24`。
+- 新增 `test/v27.test.mjs` 3 項；v255 合參上限斷言改 1。
+- 快驗（SS_DT=1，bot，峨眉／武當／明教／星宿／丐幫／無名各 1）：0 崩潰；合參 名門 1、無名 2。
+- quick 443、sect-chronicle 383、Python 53。golden-30d-v22 347b85f371bea667 → f23ec497aca6f957。

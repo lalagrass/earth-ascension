@@ -125,7 +125,9 @@ export function sectRoots24(s) {
 const heroD = (s) => s.ds.find((d) => d.id === 'hero');
 export const sectFac = (s) => SECTS[s.sect?.id]?.fac;
 /* loop163 古墓寒玉床：門人（不含幫工）≤ gainMaxDs 才有加成 */
-export const sgainOf = (s) => { const F = sectFac(s); if (!F?.gain) return 1; if (F.gainMaxDs && s.ds.filter((d) => d.role !== 'laborer').length > F.gainMaxDs) return 1; return F.gain; };
+export const sgainOf = (s) => { const F = sectFac(s), g = F?.gain || (s.v24 && F?.gain24); /* loop176 祖師堂 gain24 只 v24 */ if (!g) return 1; if (F.gainMaxDs && s.ds.filter((d) => d.role !== 'laborer').length > F.gainMaxDs) return 1; return g; };
+/* loop176 t192 待決 1B：武當紫霄宮太極守禦，v24 建成後守方戰力 ×def24 */
+export const def24Of = (s) => { const F = sectFac(s); return s.v24 && s.sect?.fac && F?.def24 ? F.def24 : 1; };
 // ---- 門規檢查（每日一次；違反只加違心，同條三天冷卻） ----
 export function ruleBroken(s, k) {
   const R = RULE_LIB[k]; if (!R || R.flavor) return null; const ds = s.ds.filter((d) => !d.away && d.role !== 'laborer');

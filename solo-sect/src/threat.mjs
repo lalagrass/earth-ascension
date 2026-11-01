@@ -2,7 +2,7 @@ import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
 import { NODES, EDGES, DAY, FACILITIES } from './data.mjs';
 import { dpsBonus, guardHurt, SPEC, zhenK, hasPoison } from './arts.mjs';
 import { power } from './jianghu.mjs';
-import { valorAdd, valorThreatMul, valorHtml, VALOR } from './sect.mjs';
+import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of } from './sect.mjs';
 import { peaceDelay } from './economy.mjs';
 import { mates } from './bonds.mjs';
 import { cancelTask } from './core.mjs';
@@ -157,7 +157,7 @@ const linMul = (day) => Math.min(RAID.dayMax, 0.5 + day / RAID.dayK);
 export const dayMul = (s) => { const d = s.day || 0; if (d <= RAID.logAfter) return linMul(d); return Math.min(RAID.dayMax, linMul(RAID.logAfter) + Math.log(1 + (d - RAID.logAfter) / RAID.logAfter) * RAID.logK); };
 export const minPopOf = (s) => (s.m9 ? RAID.minPopRules : RAID.minPop);
 export function points(s) { if (headcount(s) < minPopOf(s)) return 0; return Math.min(RAID.cap, Math.round(wealth(s) / RAID.div * dayMul(s) * valorThreatMul(s) * (T(s).taiping ? BOSS.peaceMul : 1))); }
-export const defense = (s) => power(s);
+export const defense = (s) => power(s) * def24Of(s); /* loop176 武當紫霄宮 */
 export const winP = (s, pts) => { const d = defense(s); return Math.max(0.1, Math.min(0.9, d / (d + pts))); };
 export const demandOf = (s, pts) => Math.max(RAID.demand.min, Math.round(Math.min(Math.max(0, s.res.coin) * RAID.demand.coinMax, RAID.demand.base + pts * RAID.demand.k)));
 // 自動決定：比較「勒索金」與「迎戰的預期損失」＝(1−勝率)×(被搶的錢＋糧＋一人重傷折 hurtCost)；勒索金較小且付得起才付
