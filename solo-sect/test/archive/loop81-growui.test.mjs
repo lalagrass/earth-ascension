@@ -28,5 +28,5 @@ test('個別武學狀態分辨', () => { const s = mk(), d = s.ds[0], a = A('bas
 test('來源理由取自真實結算', () => { const s = mk(), d = s.ds[0]; d.arts.basicFist.gm = { e: 20 }; d.arts.wavePalm ??= { xp: 0 }; d.arts.wavePalm.xp = 5; const h = growthHtml(d, {}, 1, s.t, true); assert.match(h, /拳掌底子：入門修練 ×1\.\d\d/); });
 // #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
 test('主畫面閘門與減少動態', () => { const m = readFileSync(new URL('../../src/main.mjs', import.meta.url), 'utf8'), c = readFileSync(new URL('../../style.css', import.meta.url), 'utf8');
-  assert.match(m, /S\.grow \? growthHtml\(cur, GMEMO/); assert.match(c, /prefers-reduced-motion: reduce\)\{\.poly-grow \.poly-shape\{animation:none/); });
+  assert.match(m, /growthHtml\(cur, GMEMO/); /* #390：成長分層不再看 S.grow */ assert.match(c, /prefers-reduced-motion: reduce\)\{\.poly-grow \.poly-shape\{animation:none/); });
 void axisVals;

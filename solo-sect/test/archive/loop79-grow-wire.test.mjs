@@ -7,7 +7,7 @@ import { save, load } from '../../src/save.mjs';
 import { mastery } from '../../src/arts.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...x });
 const runDays = (s, days, dt = 6) => { for (let i = 0; i < days * 600 / dt; i++) tick(s, dt); return s; };
-test('規則轉正（loop143）：grow 在 v2.2 底層規則', async () => { const { BASELINE_V22 } = await import('../../src/sim.mjs'); assert.equal(BASELINE_V22.grow, true); });
+// #390 退役：規則開關已刪（擁有人 2026-11-02），所有局都是現行規則
 // #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
 test('開啟後練功累積造詣，倍率說明含同類底子或不含（依真實結算）', () => { const s = runDays(createState(11, spec({ grow: true })), 3); const h = s.ds[0];
   assert.ok(mastery(h, 'quanzhang') > 0 || mastery(h, 'tuifa') > 0); assert.ok(Object.values(h.arts).some((r) => r.gm && r.gm.e > 0)); });

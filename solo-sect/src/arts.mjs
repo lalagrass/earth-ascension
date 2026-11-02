@@ -272,7 +272,7 @@ export function artsSvg(d) {
 // 診斷：人多後主角升首徒（練功×1.5），練功 ~130 壓過打坐 75，武學卡 55；並非座位不足（座位滿 0%）。
 export const BT25 = { k: 1.1 };
 export function btBoost(s, out) {
-  if (!s.bt25) return; const m = out.find((o) => o.act === 'meditate' && o.f?.btOk); if (!m) return;
+   const m = out.find((o) => o.act === 'meditate' && o.f?.btOk); if (!m) return;
   const tr = Math.max(0, ...out.filter((o) => o.act === 'train').map((o) => o.score)); if (m.score < tr * BT25.k) m.score = tr * BT25.k;
 }
 
@@ -301,7 +301,7 @@ function add(s, d, id, amt, how, think, log) {
 export function selfTarget(d) { if (d.pendingArt) return d.pendingArt; const u = sectUnlock24(d); if (u.length) return u[0].id; const c = ARTS.filter((a) => open(d, a) && !lockedArt24(d, a));  c.sort((a, b) => ownFirst24(d)(a, b) || appetiteOrder31(d, a, b)); /* loop208：本門特許與本門優先，偏好只排同一層 */ if (c[0] && ownArt24(d, c[0])) return c[0].id; const styled = c.filter((a) => a.school === d.style); return (styled[0] || c[0])?.id || null; }
 // 活動完成時呼叫
 export function comprehend(s, d, act, partner, think, log) {
-  if (!s.wu7 || !COMP.gain[act]) return null;
+  if (!COMP.gain[act]) return null;
   const tgt = selfTarget(d); let got = tgt ? add(s, d, tgt, COMP.gain[act], 'self', think, log) : null;
   if (act === 'spar' && partner) { const seen = ARTS.filter((a) => partner.arts?.[a.id] && open(d, a) && !lockedArt24(d, a)); seen.sort((a, b) => appetiteOrder31(d, a, b)); /* loop208：觀摩只在能看的功夫裡排偏好。傳功與會武偷師不走這裡 */ if (seen[0]) got = add(s, d, seen[0].id, COMP.watch, 'watch', think, log) || got; }
   return got;
@@ -319,7 +319,7 @@ function vAdd(s, d, id, v, amt, how, think, log) {
   return { id, v };
 }
 export function comprehendVariant(s, d, act, partner, think, log) {
-  if (!s.wu7 || !COMP.gain[act]) return null; let got = null;
+  if (!COMP.gain[act]) return null; let got = null;
   if (act === 'spar' && partner) { const id = Object.keys(d.arts || {}).find((k) => vOpen(d, k) && partner.arts?.[k]?.variant && !(partner.arts[k].until > s.t)); if (id) got = vAdd(s, d, id, partner.arts[id].variant, COMP.watch, 'watch', think, log); }
   if (!got) { const id = Object.keys(d.arts || {}).filter((k) => vOpen(d, k)).sort((a, b) => d.arts[b].xp - d.arts[a].xp)[0]; if (id) got = vAdd(s, d, id, vLean(d), COMP.gain[act], 'self', think, log); }
   return got;
@@ -329,10 +329,10 @@ export function comprehendVariant(s, d, act, partner, think, log) {
 /* loop140 讀書長悟性 `readwu`（決定 120；借鏡大俠立志傳「悟性靠讀書」，只做最小版）。
    s.readwu 開時，每完成一次「藏經閣研讀」記一次；累積 READWU.need 次悟性 +1（每人一生一次、不超過 5）。 */
 export const READWU = { need: 30, max: 5 };
-export function readStudy(s, d) { if (!s?.readwu || d.rwDone) return null;
+export function readStudy(s, d) { if (!s || d.rwDone) return null;
   d.rw = (d.rw || 0) + 1; if (d.rw < READWU.need) return null;
   d.rwDone = true; const w0 = d.wu ?? d.root ?? 3; if (w0 >= READWU.max) return null; d.wu = w0 + 1; return d.wu; }
-export const readwuNote = (s, d) => (!s?.readwu ? '' : d.rwDone ? '（讀書已開竅）' : `（研讀 ${d.rw || 0}/${READWU.need}）`);
+export const readwuNote = (s, d) => (!s ? '' : d.rwDone ? '（讀書已開竅）' : `（研讀 ${d.rw || 0}/${READWU.need}）`);
 
 // ==== （原 neigong.mjs）====
 /* loop102 最小內功（概念取自《下一站江湖》心法養內力、《逸劍風雲決》心法支撐修為，不抄碼）。

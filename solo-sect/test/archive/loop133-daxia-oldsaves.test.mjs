@@ -12,6 +12,6 @@ test('至少有 6 個舊版存檔', () => assert.ok(files.length >= 6, files.joi
 for (const f of files) test(`${f}：讀入後兩條借鏡規則已開（#390）`, () => {
   const r = load(fs.readFileSync(new URL(f, FIX), 'utf8')); assert.ok(r.ok, f); const s = r.state;
   for (let i = 0; i < 2 * 4 * 60 * 2; i++) tick(s, 0.25);
-  assert.ok(s.laborgrow); assert.equal(typeof s.valor, 'number'); assert.ok(s.ds.every((d) => typeof laborNote(s, d) === 'string'));
+  assert.equal(typeof s.valor, 'number'); assert.ok(s.ds.every((d) => typeof laborNote(s, d) === 'string'));
   assert.match(threatHtml(s), /勇名/);
 });

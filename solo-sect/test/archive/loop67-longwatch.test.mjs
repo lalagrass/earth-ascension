@@ -5,6 +5,6 @@ import { RULES } from '../../src/start-ui.mjs';
 import { createState } from '../../src/sim.mjs';
 import { readFileSync } from 'node:fs';
 const A = { kind: 'custom', answers: Array(9).fill(0) };
-test('規則轉正（loop143）：longwatch 在 v2.2 底層規則', async () => { const { BASELINE_V22 } = await import('../../src/sim.mjs'); assert.equal(BASELINE_V22.longwatch, true); });
+// #390 退役：規則開關已刪（擁有人 2026-11-02），所有局都是現行規則
 // #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
-test('示警窗只在開啟時加倍', () => assert.match(readFileSync(new URL('../../src/sim.mjs', import.meta.url), 'utf8'), /WATCH_WARN \* \(s\.longwatch \? 2 : 1\)/));
+// #390 退役：規則開關已刪（擁有人 2026-11-02），所有局都是現行規則
