@@ -1,5 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31 } from './arts.mjs';
+import { CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
 import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
@@ -523,6 +523,17 @@ function spawnWave(s) {
   log(s, list.length ? `第 ${i + 1} 波：山鼠 ${nr}${nb ? '、野豬 ' + nb : ''}` : `第 ${i + 1} 波：山裡沒有獸出來`);
 }
 function ngBreak(d) { const add = Math.max(0, Math.min(NG.btBonus, 0.9 - breakChance(d))); return add > 0 && spendQi(d, NG.btCost) ? add : 0; }
+function knockPos(from, pos, dist) {
+  if (!from || !pos || !(dist > 0)) return;
+  const dx = pos[0] - from[0], dy = pos[1] - from[1], L = Math.hypot(dx, dy) || 1;
+  pos[0] += dx / L * dist; pos[1] += dy / L * dist;
+}
+function landOn(s, d, tgt, mv, power, foeName) {
+  const on = applyArtOn(s, 'hit', d, tgt, { power, move: mv.id, foeName });
+  if (on.knock) knockPos(d.pos, tgt.pos, on.knock);
+  if (on.trip) { tgt.tripUntil = s.t + 2.5; tgt.cool = Math.max(tgt.cool || 0, on.trip); }
+  return on.power ?? power;
+}
 function huntStep(s, dt) {
   const h = s.hunt; if (!h) return;
   const team = s.ds.filter((d) => h.team.includes(d.id));
@@ -535,8 +546,18 @@ function huntStep(s, dt) {
     const foe = team.filter((d) => d.hp > 25).sort((a, b) => dist(a.pos, m.pos) - dist(b.pos, m.pos))[0];
     m.cool -= dt;
     if (m.psn > s.t) { m.hp -= SPEC.poisonDps * (s.psnK24 || 1) * dt; if (m.hp <= 0) { m.gone = true; h.kills++; log(s, `${M.name}毒發倒地`); continue; } } /* loop151 毒術 */
-    if (foe && dist(foe.pos, m.pos) < 26) { if (m.cool <= 0) { foe.hp -= shieldHit(foe, M.dmg * (m.psn > s.t ? 1 - SPEC.poisonWeak : 1) * (1 - SPEC.zhenMit * zk), s.t); /* loop116 護體真氣 */ m.cool = 1.2; s.fx.push({ kind: 'bite', pos: [...foe.pos], ttl: 0.4 }); } continue; }
-    if (monWalk(m, M.speed * (1 - SPEC.zhenSlow * zk) * dt)) { m.gone = true; h.escaped++; s.eco[m.k].n++; log(s, `${M.name}衝過守點逃回山裡`); }
+    if (foe && dist(foe.pos, m.pos) < 26) {
+      if (m.cool <= 0) {
+        const incoming = M.dmg * (m.psn > s.t ? 1 - SPEC.poisonWeak : 1) * (1 - SPEC.zhenMit * zk);
+        const got = applyArtOn(s, 'gethit', foe, m, { dmg: incoming, foeName: M.name }); /* #404 挨打：太極劍借力 */
+        if (got.reflect) m.hp -= incoming * got.reflect;
+        if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); continue; }
+        foe.hp -= shieldHit(foe, got.dmg ?? incoming, s.t); /* loop116 護體真氣 */
+        m.cool = 1.2; s.fx.push({ kind: 'bite', pos: [...foe.pos], ttl: 0.4 });
+      }
+      continue;
+    }
+    if (monWalk(m, M.speed * (m.tripUntil > s.t ? 0.45 : 1) * (1 - SPEC.zhenSlow * zk) * dt)) { m.gone = true; h.escaped++; s.eco[m.k].n++; log(s, `${M.name}衝過守點逃回山裡`); }
   }
   for (const d of team) {
     if (d.hp <= 25) { if (d.task?.act === 'hunt') { d.order = null; cancelTask(s, d, '傷重退回院中'); assign(s, d, 'rest', '傷重歇息'); log(s, `${d.name}受傷退下`); think(s, d, 'hurt'); } continue; }
@@ -550,7 +571,8 @@ function huntStep(s, dt) {
       let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t);
       power *= (hasSpec(d, 'yunv') && team.some((o) => o !== d && o.arts?.yunv) ? 1.15 : 1); if ((hasSpec(d, 'hama') || hasSpec(d, 'qiankun')) && d.hp < 50 && qiOf(d) >= qiMax(d) * 0.5 && spendQi(d, 10)) power *= 1.5; /* loop153 真氣出手、劍招、內功被動 */
       const ar = mv.aoe ? mv.aoe + qiAoeAdd(d, mv) : 0, hitList = mv.aoe ? live.filter((m) => dist(m.pos, tgt.pos) <= ar) : [tgt];
-      const psn = specM(d, 'dushu') > 0; for (const m of hitList) { m.hp -= power; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', d); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
+      power = landOn(s, d, tgt, mv, power, MONSTERS[tgt.k].name); /* #404 打中：降龍、辟邪、七傷、打狗、獨孤。範圍先圈定，再震退 */
+      const psn = specM(d, 'dushu') > 0; for (const m of hitList) { m.hp -= power; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', d); applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: MONSTERS[m.k].name }); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
       h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5, 'fight');
       d.cool = mv.cd * cdMul(d, mv.id, s.t); d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike';
       { const tier = visTier(d, mv.id), a = artOfMove(mv.id), va = a && variantOf(d, a.id, s.t); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...tgt.pos], r: mv.aoe || 16, ttl: tier >= 3 ? 1.0 : 0.6, tier, vcolor: va?.color || null, sprite: d.sprite, face: d.face }); if (tier >= 3) s.fx.push({ kind: 'shake', ttl: 0.35 }); }
@@ -751,9 +773,9 @@ function trialStep(s, d, dt) {
   if (!m) { d.task = null; d.anim = null; return; }
   if (d.path.length) return;
   t.phase = 'do'; t.timer += dt; d.face = m.pos[0] >= d.pos[0] ? 1 : -1;
-  if (t.timer >= TRIAL_BOAR.hit) { t.timer = 0; const mv = MOVES.find((x) => x.id === d.moves[d.moves.length - 1]); const p = mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t); m.hp -= p; d.anim = 'strike'; d.cool = 1;
+  if (t.timer >= TRIAL_BOAR.hit) { t.timer = 0; const mv = MOVES.find((x) => x.id === d.moves[d.moves.length - 1]); const p = landOn(s, d, m, mv, mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t), '野豬'); m.hp -= p; d.anim = 'strike'; d.cool = 1;
     s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...m.pos], r: 16, ttl: 0.6, tier: visTier(d, mv.id), sprite: d.sprite, face: d.face }); d.hp = Math.max(30, d.hp - 3);
-    if (m.hp <= 0) { s.mons = s.mons.filter((x) => x !== m); seeEnemy(s, 'boar', 'kill', d); resAdd(s, 'food', 2);
+    if (m.hp <= 0) { applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: '野豬' }); s.mons = s.mons.filter((x) => x !== m); seeEnemy(s, 'boar', 'kill', d); resAdd(s, 'food', 2);
       const r = d.arts.basicFist; if (r && r.xp < 25) { r.xp = 25.5; } const o = gainArt(d, 0, 1, s.t); for (const id of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === id).name}」`);
       log(s, `${d.name}一拳撂倒野豬！師父點撥：「這一下有了火候。」基礎拳入小成。`); think(s, d, 'learned'); s.pace.trial = 'done'; milestone(s, 'trial'); d.task = null; d.anim = null; } }
 }

@@ -23,6 +23,20 @@ const SPECIALS = {
   dagou: [{ tier: 2, move: 'banzi' }, { tier: 3, move: 'chuozi' }, { tier: 4, move: 'wugou' }],
   dugu: [{ tier: 2, move: 'dg0' }, { tier: 3, move: 'dg1' }, { tier: 4, move: 'dg8' }],
 };
+/* #404 六門絕活。代價是耗內力、傷己、先手只有一下，或看破之後自己不擋。
+   need 是火候階。數字是本遊戲自己定的，不是從別的程式抄來的。
+   事件名：hit、block、dodge、crit、gethit、kill。沒寫到的事件就是不觸發。 */
+const ON = {
+  xianglong: { hit: { need: 2, qi: 16, dmg: 1.4, knock: 22, log: '使出降龍，掌力震得對手退了一步，真氣瀉出一大截' } },
+  dugu: {
+    hit: { need: 0, seen: true, dmg: 1.2, log: '獨孤劍意看破破綻，劍勢直取，自己不收勢格擋' },
+    dodge: { need: 0, seen: true, see: true, noParry: true, log: '獨孤劍意料中來勢，側身讓過，這一招自己不擋' },
+  },
+  bixie: { hit: { need: 2, qi: 6, first: true, flurry: 2, log: '快劍先至，連刺數劍' } },
+  taijiSword: { gethit: { need: 2, reflect: 0.45, log: '太極劍走圓轉，把來力反震了回去' } },
+  qishangFist: { hit: { need: 2, selfHp: 6, dmg: 1.2, log: '七傷拳打實，自己的內腑也震了一下' } },
+  dagou: { hit: { need: 2, qi: 4, trip: 1.2, log: '打狗棒一纏一絆，對手腳下亂了' } },
+};
 
 const HUA = {
   kuihua: 100, bixie: 100, xianglong: 98, dugu: 96, jiuyang: 96, taiji: 94, qiankun: 92, dagou: 92,
@@ -49,5 +63,6 @@ export function stampCard(a) {
   a.learn = learn;
   a.growCap = GROW_CAP[a.grade] || 20;
   if (SPECIALS[a.id]) a.specials = SPECIALS[a.id].map((sp) => ({ tier: sp.tier, move: sp.move }));
+  a.on = ON[a.id] ? JSON.parse(JSON.stringify(ON[a.id])) : null;
   return a;
 }

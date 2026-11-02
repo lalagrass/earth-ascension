@@ -1,7 +1,7 @@
 import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST } from './data.mjs';
 import { stampCard, curveMulOf } from './artcard.mjs';
 import { strMul } from './economy.mjs';
-import { pipeline } from './util.mjs';
+import { pipeline, log } from './util.mjs';
 // ==== （原 growth.mjs）====
 /* loop78 成長分層（開關 s.grow）：成長門類 metadata、造詣單一結算入口、同類學習加速。
    造詣不另存門類值：造詣＝Σ 各武學紀錄 r.gm 的有界貢獻 × 門類權重（衍生值，不會與 skills.palm 漂移）。
@@ -204,6 +204,64 @@ export function openSpecials(d, a) {
   if (!art?.specials || artTier(d, art.id) < 0) return [];
   const t = artTier(d, art.id);
   return art.specials.filter((sp) => t >= sp.tier);
+}
+/* #404 出手事件。六門絕活寫在武學的 on 上，不靠武學 id 分支。
+   事件：hit 打中、block 格開、dodge 讓過、crit 打重、gethit 挨打、kill 擊倒。
+   看破式（forms）的「不擋」要已經看破至少一式，跟舊的獨孤不格擋同一條件。 */
+export const ART_ON_EVENTS = ['hit', 'block', 'dodge', 'crit', 'gethit', 'kill'];
+const artIdOfMove = (mv) => {
+  const id = mv?.id || mv;
+  if (!id) return null;
+  if (MOVES.find((m) => m.id === id)?.fx === 'dugu') return 'dugu';
+  return artOfMove(id)?.id || null;
+};
+const onFx = (a, key) => Object.values(a?.on || {}).find((fx) => fx && fx[key]);
+export function artNoParry(d) {
+  if (!d) return false;
+  for (const a of ARTS) {
+    const fx = onFx(a, 'noParry');
+    if (!fx) continue;
+    if (fx.seen || a.forms) { if (!(d.dugu?.length)) continue; }
+    else if (!d.arts?.[a.id]) continue;
+    const tier = d.arts?.[a.id] ? artTier(d, a.id) : 0;
+    if (tier < (fx.need ?? 0)) continue;
+    return true;
+  }
+  return false;
+}
+export function applyArtOn(s, event, who, other, ctx = {}) {
+  const out = { power: ctx.power, dmg: ctx.dmg, knock: 0, trip: 0, reflect: 0, see: false, noParry: false, selfHp: 0, fired: null, line: '' };
+  if (!who || !ART_ON_EVENTS.includes(event)) return out;
+  const only = ctx.move ? artIdOfMove(ctx.move) : null;
+  if (ctx.move && !only) return out;
+  const ids = only ? [only] : Object.keys(who.arts || {});
+  if (!only && who.dugu?.length && !ids.includes('dugu')) ids.push('dugu');
+  for (const id of ids) {
+    const a = artById(id);
+    const fx = a?.on?.[event];
+    if (!fx) continue;
+    if (!who.arts?.[id] && !(a.forms && who.dugu?.length)) continue;
+    const tier = who.arts?.[id] ? artTier(who, id) : 0;
+    if (tier < (fx.need ?? 0)) continue;
+    if (fx.seen && !(who.dugu?.length)) continue;
+    if (fx.first && other?.onOpened) continue;
+    if (fx.qi && !spendQi(who, fx.qi)) continue;
+    if (fx.first && other) other.onOpened = true;
+    if (fx.dmg && out.power != null) out.power *= fx.dmg;
+    if (fx.flurry && out.power != null) out.power *= fx.flurry;
+    if (fx.knock) out.knock = fx.knock;
+    if (fx.trip) out.trip = fx.trip;
+    if (fx.reflect) out.reflect = fx.reflect;
+    if (fx.see) out.see = true;
+    if (fx.noParry) out.noParry = true;
+    if (fx.selfHp) { who.hp = Math.max(0, (who.hp ?? 0) - fx.selfHp); out.selfHp = fx.selfHp; }
+    const line = `${who.name}${fx.log}`;
+    out.fired = { art: id, event, log: line };
+    out.line = line;
+    if (s) log(s, line, 'mid');
+    break;
+  }
+  return out;
 }
 /* 前置比例。沒有天花板回 null。有的話取那些武學裡最高的熟練，沒學會當 0。 */
 export function ceilingXp(d, a) {
