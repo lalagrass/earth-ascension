@@ -194,7 +194,7 @@ export function archPanel(s) {
   return `<table class="codex"><tr><th>原型</th><th>參考</th><th>弟子</th><th>傾向</th></tr>${rows}</table>${hidden ? `<div class="k">另有 ${hidden} 人原型未明（共事久了才看得出）。</div>` : ''}`;
 }
 export function cliquePanel(s) {
-  
+
   const cs = s.cliques || [], name = (id) => live(s).find((d) => d.id === id);
   const head = `<div class="k">好感彼此都很高的一群人會結成小派；同派的人一起${CLQ.acts.map((a) => ACT[a]).join('／')}時進步略快，剿寨也優先同行。感情淡了就會散。</div>`;
   if (!cs.length) return head + `<div class="k">目前沒有小派。${s.cliqueN ? `（曾結成 ${s.cliqueN} 派，都已散了）` : ''}</div>`;
@@ -216,7 +216,7 @@ export function jhevPanel(s) {
 // loop35：折疊狀態由呼叫端保存（closed[key]=true 表示玩家收合過）；預設展開
 export const JHUI_KEYS = ['arch', 'clique', 'jhev'];
 export function jhuiHtml(s, closed = {}) {
-  
+
   const sec = (k, title, body) => `<details data-keep="jhui-${k}"${closed[`jhui-${k}`] ? '' : ' open'}><summary>${title}</summary>${body}</details>`;
   return sec('arch', '原型', archPanel(s)) + sec('clique', '同門小派', cliquePanel(s)) + sec('jhev', '江湖事件', jhevPanel(s));
 }

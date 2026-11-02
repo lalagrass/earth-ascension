@@ -51,7 +51,7 @@ export function drawBoost(s, d, out) { if (!isExtro(d)) return; for (const o of 
 export function pickChatMate(s, d, mates, aff) { mates = mates.filter((o) => !(o.shelter > s.t)); /* loop188：避難中的人不被拉去聊天 */ if (!mates.length) return undefined; const best = Math.max(...mates.map((o) => aff(s, d, o))); const m = mates.filter((o) => aff(s, d, o) >= best - DRAW.affBand).sort((a, b) => (aff(s, d, b) + drawOf(d, b)) - (aff(s, d, a) + drawOf(d, a)))[0]; if (m) { const t = charm29(d, m).tags; if (t.length) { const W = ((s.v29n ??= {}).charm ??= {}); for (const k of t) W[k] = (W[k] || 0) + 1; } } return m; } /* loop188 俠魅計數 */
 // 聊完：弱的一方若對方明顯更強 → 仰慕（多一點關係＋一則想法）
 export function admire(s, d, p, relAdd, think, log) {
-  
+
   for (const [a, b] of [[d, p], [p, d]]) if (powOf(b) - powOf(a) >= DRAW.admireGap) {
     relAdd(s, a, b, DRAW.admireRel); think(s, a, 'admire', `（${b.name}）`);
     const K = `adm|${a.id}|${b.id}`; (s.memTalk ??= {}); if (s.memTalk[K] !== s.day) { s.memTalk[K] = s.day; log(s, `${a.name}對${b.name}的功夫心生仰慕`, 'low'); }

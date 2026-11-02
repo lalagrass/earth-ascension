@@ -580,7 +580,7 @@ const CO_ACTS = ['train', 'meditate', undefined];
 export function cotrainNear(s, d) { if (!CO_ACTS.includes(d.task?.act) || !d.pos) return false; return s.ds.some((o) => o !== d && !o.away && o.pos && Math.hypot(o.pos[0] - d.pos[0], o.pos[1] - d.pos[1]) < 80); }
 /* loop47「誰種誰心疼」（s.cropcare）：菜被拱時，只有農事最好的兩人（實際照顧菜園）全額心疼，其餘在山上的人只是「聽說」（−2），巡山在外的人不知道。關閉時維持全派 −5。 */
 export function cropMood(s) {
-  
+
   const here = s.ds.filter((d) => !d.away), top = new Set([...here].sort((a, b) => (b.skills?.farming || 0) - (a.skills?.farming || 0)).slice(0, 2).map((d) => d.id));
   for (const d of here) think(s, d, top.has(d.id) ? 'cropLost' : 'cropLostLite');
 }
