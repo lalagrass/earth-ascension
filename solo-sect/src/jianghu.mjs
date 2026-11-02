@@ -89,7 +89,7 @@ function zbtBet(s, H, kind) {
 /* loop148 v2.25（決定 141）：v22 反派登門冷卻——上次登門後至少 VILLAIN.cool 日；婉拒／閉門不出後最多再來 VILLAIN.more 次。
    根因：舊條件 `J.dfbb === 0 || 隔 5 日` 在婉拒時 J.dfbb 仍為 0，冷卻被跳過，於是每天登門。 */
 export const VILLAIN = { cool: 8, more: 2 };
-function vNo(s, k) { if (s.v22) s.jh[k + 'No'] = (s.jh[k + 'No'] || 0) + 1; }
+function vNo(s, k) { s.jh[k + 'No'] = (s.jh[k + 'No'] || 0) + 1; }
 export function villainOk(s, k) { const J = s.jh, last = J[k + 'Day']; if ((J[k + 'No'] || 0) > VILLAIN.more) return false; return last == null || s.day - last >= VILLAIN.cool; }
 function villain(s, H, k) {
   const need = k === 'dfbb' ? JH.dfbbPow : JH.hyPow, pw = power(s), win = pw >= need || R(s, H) < 0.1;
@@ -100,8 +100,8 @@ function villain(s, H, k) {
   } else { s.jh[k] = 1; for (const d of fighters(s)) { d.hp = Math.max(10, d.hp - 40); mood(d, -10); } log(s, `打不過（門派戰力 ${Math.round(pw)} / ${need}）：眾人重傷，${k === 'dfbb' ? '東方不敗' : '火雲邪神'}揚長而去。（不會死人；之後還會再來）`); }
 }
 function revealHidden(s) {
-  const l = s.ds.find((d) => d.hidden && !d.hidden.shown); if (!l) return; l.hidden.shown = true; teachJ(s, l, l.hidden.art, DA); l.noGrow = l.hidden.art; l.hidden.xp = l.arts[l.hidden.art].xp; if (!s.v23) { l.role = 'outer'; delete l.unpaid; } /* loop155 v2.3：高人仍當幫工，可守柵；要收入門走邀請 */
-  log(s, `【深藏不露】${l.name}一出手就是大成的${({ tantui: '十二路譚腿', tiexian: '洪家鐵線拳', bagua: '五郎八卦棍' })[l.hidden.art]}，斧頭幫抱頭鼠竄！（${s.v23 ? '仍在村裡幫工，山賊來時會守柵；可邀入門' : '轉為外門弟子'}；老了，不再進步）`); s.rep = (s.rep || 0) + 3;
+  const l = s.ds.find((d) => d.hidden && !d.hidden.shown); if (!l) return; l.hidden.shown = true; teachJ(s, l, l.hidden.art, DA); l.noGrow = l.hidden.art; l.hidden.xp = l.arts[l.hidden.art].xp;  /* loop155 v2.3：高人仍當幫工，可守柵；要收入門走邀請 */
+  log(s, `【深藏不露】${l.name}一出手就是大成的${({ tantui: '十二路譚腿', tiexian: '洪家鐵線拳', bagua: '五郎八卦棍' })[l.hidden.art]}，斧頭幫抱頭鼠竄！（${'仍在村裡幫工，山賊來時會守柵；可邀入門'}；老了，不再進步）`); s.rep = (s.rep || 0) + 3;
   if (isHero(s, 'axing')) arc(s, 'axing', 3, '豬籠城寨臥虎藏龍');
 }
 function fourGirls(s, who, dv) { const d = heroD(s); s.hero.flags = { ...(s.hero.flags || {}), girl: who }; if (d?.values) for (const [k, x] of Object.entries(dv)) d.values[k] = Math.max(-50, Math.min(50, (d.values[k] || 0) + x)); arc(s, 'zhangwuji', 5, `四女之中，選了${({ zhaomin: '趙敏', zhouzhiruo: '周芷若', xiaozhao: '小昭', yinli: '殷離' })[who]}`); }
@@ -154,8 +154,8 @@ export function jhStep(s, dt, H) {
   if (xl && !J.bees && card(s, 'tomb')) return;
   if (J.zbt && s.day !== J.zbtDay) { J.zbtDay = s.day; card(s, 'zbt', true); return; }
   // 反派：東方不敗（第 8 天或名聲 30）、火雲邪神（揭露過隱藏高手或包租婆在，第 6 天後）
-  if ((J.dfbb || 0) < 2 && ((s.day >= 8) || (s.rep || 0) >= 30) && s.day !== J.dfbbDay && (s.v22 ? villainOk(s, 'dfbb') : (J.dfbb === 0 || s.day - (J.dfbbDay || 0) >= 5))) { J.dfbbDay = s.day; card(s, 'dfbb', true); return; }
-  if ((J.hy || 0) < 2 && s.day >= 6 && (s.ds.some((d) => d.hidden?.shown) || present(s, 'baozupo')) && (s.v22 ? villainOk(s, 'hy') : (J.hy === 0 || s.day - (J.hyDay || 0) >= 5)) && s.day !== J.hyDay) { J.hyDay = s.day; card(s, 'hy', true); return; }
+  if ((J.dfbb || 0) < 2 && ((s.day >= 8) || (s.rep || 0) >= 30) && s.day !== J.dfbbDay && (villainOk(s, 'dfbb'))) { J.dfbbDay = s.day; card(s, 'dfbb', true); return; }
+  if ((J.hy || 0) < 2 && s.day >= 6 && (s.ds.some((d) => d.hidden?.shown) || present(s, 'baozupo')) && (villainOk(s, 'hy')) && s.day !== J.hyDay) { J.hyDay = s.day; card(s, 'hy', true); return; }
   if (s.ds.some((d) => d.hidden && !d.hidden.shown) && s.day >= 3 && s.day !== J.axeDay && s.day % 3 === 0) { J.axeDay = s.day; card(s, 'axe', true); return; }
   if (present(s, 'weixiaobao') && !J.hai && s.day >= 5 && card(s, 'hai')) { if (isHero(s, 'weixiaobao')) arc(s, 'weixiaobao', 3, '海大富'); return; }
   // 模板主線
@@ -187,9 +187,9 @@ export function jhevDaily(s) {
     letterOutcome(s, champ, win, false); } }
 }
 export function masterOutcome(s, d, teach) { const E = s.jhev, M = JHEV.master; const id = autoFocus(d), a = artById(id), r = d.arts[id]; r.xp = Math.min(curCap(d, a), r.xp + M.xp); md(d, M.mood); log(s, `【過路高人】一位雲遊高人借宿一晚，指點了${d.name}的「${a.name}」幾招。`);
-      if (teach) { const ok = ARTS.filter((x) => !x.secret && (!x.v24 || d.v24) && !lockedArt24(d, x) && !d.arts[x.id] && !reqMissing(d, x).length && fits(d, x)), nx = (s.mfit && ok.find((x) => x.school === d.style)) || ok[0]; /* loop41「因材施教」（s.mfit）：優先傳本門路數 */ if (nx) { learnArt(d, nx.id, s.t); if (d.pendingArt === nx.id) d.pendingArt = null; E.t = (E.t || 0) + 1; if (nx.school === d.style) E.ts = (E.ts || 0) + 1; log(s, `【過路高人】臨別前，高人傳了${d.name}一套「${nx.name}」！`); }
+      if (teach) { const ok = ARTS.filter((x) => !x.secret && !lockedArt24(d, x) && !d.arts[x.id] && !reqMissing(d, x).length && fits(d, x)), nx = (s.mfit && ok.find((x) => x.school === d.style)) || ok[0]; /* loop41「因材施教」（s.mfit）：優先傳本門路數 */ if (nx) { learnArt(d, nx.id, s.t); if (d.pendingArt === nx.id) d.pendingArt = null; E.t = (E.t || 0) + 1; if (nx.school === d.style) E.ts = (E.ts || 0) + 1; log(s, `【過路高人】臨別前，高人傳了${d.name}一套「${nx.name}」！`); }
         else if (s.mpool && (() => { /* loop55「殘譜指點」（s.mpool）：無武學可傳時，挑一套合路數、只差前置的武學，替已會的前置武學加 2 倍指點經驗 */
-          const tg = ARTS.filter((x) => !x.secret && (!x.v24 || d.v24) && !lockedArt24(d, x) && !d.arts[x.id] && fits(d, x) && reqMissing(d, x).length).flatMap((x) => x.req.filter((q) => d.arts[q.art] && reqMissing(d, { req: [q] }).length).map((q) => [x, artById(q.art)])).sort((a, b) => (b[0].school === d.style) - (a[0].school === d.style))[0];
+          const tg = ARTS.filter((x) => !x.secret && !lockedArt24(d, x) && !d.arts[x.id] && fits(d, x) && reqMissing(d, x).length).flatMap((x) => x.req.filter((q) => d.arts[q.art] && reqMissing(d, { req: [q] }).length).map((q) => [x, artById(q.art)])).sort((a, b) => (b[0].school === d.style) - (a[0].school === d.style))[0];
           if (!tg) return false; const [x, a] = tg, r = d.arts[a.id], before = r.xp; r.xp = Math.min(curCap(d, a), r.xp + 2 * M.xp); if (r.xp === before) return false;
           E.pg = (E.pg || 0) + 1; log(s, `【過路高人】臨別前，高人留下一頁殘譜，講解「${a.name}」的要訣（往「${x.name}」的路）。`); return true; })()) { /* 已處理 */ }
         else { const mv = Object.keys(d.arts).map(artById).flatMap((x) => (x.techs || []).filter((m) => MOVES.some((y) => y.id === m) && !d.moves.includes(m)))[0]; if (mv) { d.moves.push(mv); E.mv = (E.mv || 0) + 1; log(s, `【過路高人】臨別前，高人提前點撥${d.name}一招「${MOVES.find((y) => y.id === mv).name}」！`); } } } } /* loop26 傳武學，無可傳則提前點撥一招 */

@@ -1,5 +1,6 @@
 import test from 'node:test'; import assert from 'node:assert/strict';
 import { createState, tick, startBuild, startHunt, setOrder, save, load, routeLength, relKey } from '../src/sim.mjs';
+import { appetiteActMul31 } from '../src/arts.mjs';
 const run = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
 
 test('長山路比院內路遠（保留通勤距離）', () => { assert.ok(routeLength('court', 'guard') > 2 * routeLength('court', 'kitchen')); });
@@ -114,9 +115,9 @@ test('舊（v0.5）存檔缺心情欄位也能讀入並補預設', () => {
 import { relAdd, compat, aff, seasonOf, defaultAnswers, personalityFrom, recruit as recruit7, canRecruit as canRec7, migrate, moodParts } from '../src/sim.mjs';
 import { RULES_VERSION, RECRUIT_POOL, DAY, SEASON_DAYS } from '../src/data.mjs';
 const run7 = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
-test('決策可解釋：最高分＝基礎×作息×性格×心情＋雜訊', () => {
-  const s = createState(71); tick(s); const w = s.ds[0].why[0]; assert.ok(w && w.f);
-  assert.ok(Math.abs(w.f.base * w.f.sched * w.f.trait * w.f.mood + w.f.noise - w.score) < 1);
+test('決策可解釋：最高分＝（基礎×作息×乘數總和×厭倦＋雜訊）×偏好', () => { /* #390：現行規則多了天賦／狀態／外部分組（f.total）與 loop203 偏好乘數 */
+  const s = createState(71); tick(s); const d = s.ds[0], w = d.why[0]; assert.ok(w && w.f);
+  assert.ok(Math.abs((w.f.base * w.f.sched * w.f.total * w.f.bored + w.f.noise) * appetiteActMul31(d, w.act) - w.score) < 1);
 });
 test('雙向好感：對立性格的人好感長得慢，且兩方向可以不同', () => {
   const s = createState(72); const [hero, senior, cousin] = s.ds; // 勤奮×貪玩對立、多慮欣賞溫和

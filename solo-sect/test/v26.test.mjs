@@ -7,7 +7,7 @@ import { ARTS, SECTS } from '../src/data.mjs';
 import { passPick } from '../src/bonds.mjs';
 import { bisai24, setMaster } from '../src/sect.mjs';
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
-const OLD = () => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false });
+// #390：舊規則開局已不存在，原本的舊局對照組（OLD）與各測試裡的舊局斷言一併刪除
 const hero = (s) => s.ds.find((d) => d.id === 'hero');
 const other = (s) => s.ds.find((d) => d.id !== 'hero' && d.role !== 'laborer');
 const give = (d, id, xp) => { d.arts[id] ??= { xp: 0, last: 0 }; d.arts[id].xp = xp; };
@@ -34,7 +34,6 @@ test('loop171→181 同門成套：只算本門專屬；公共身法不計；成
   give(d, 'emeiJiuyang', 30); give(d, 'emeiSword', 30); assert.equal(A.sectClasses24(d), 0); assert.equal(A.styleDmg24(d) / (A.polymath24(d) === 2 ? A.SYN24.conv : 1) / A.injuryMul28(d), 1); /* loop196：內功未大成不算正宗 */
   give(d, 'stepFeather', 30); assert.equal(A.sectClasses24(d), 0);
   give(d, 'emeiJiuyang', 60); assert.equal(A.sectClasses24(d), 3); /* 本門內功大成＋本門劍法小成 */
-  const o = OLD(); tick(o, 0.1); const od = hero(o); assert.equal(A.styleDmg24(od), 1); assert.equal(A.sectClasses24(od), 0);
 });
 test('loop171 同門根基 1.18／一脈相承 1.28', () => {
   const s = V({ sect24: 'emei' }); tick(s, 0.1); const d = other(s); for (const id of Object.keys(d.arts)) if (d.stree.includes(id)) delete d.arts[id];
@@ -63,14 +62,12 @@ test('loop172 氣宗紫霞：掌門華山心法大成可領悟（第一層），
   const s = V({ sect24: 'qizong' }); tick(s, 0.1); const h = hero(s), d = other(s); assert.ok(s.sect.tree.includes('huashanXinfa'));
   give(h, 'huashanXinfa', 60); assert.deepEqual(A.sectUnlock24(h).map((a) => a.id), ['zixia']); A.learnArt(h, 'zixia', 0); assert.equal(h.zixia, 1);
   if (d) { give(d, 'huashanXinfa', 60); assert.deepEqual(A.sectUnlock24(d).map((a) => a.id), []); }
-  const o = OLD(); assert.ok(!o.sect?.tree?.includes('huashanXinfa'));
 });
 test('loop173 丐幫／明教成長鏈：資料、tree24、僅 v24 新局併入；會武可偷', () => {
   const G = { gaibang: ['huntianGong', 'xiaoyaoStep', 'lianhuaPalm', 'fengmoStaff'], mingjiao: ['shenghuoXinfa', 'qingfuStep', 'yingzhuaHand', 'qishangFist'] };
   for (const [k, ids] of Object.entries(G)) for (const id of ids) { const a = A.artById(id); assert.ok(a && a.v24 && a.classic && !a.secret && !a.signature && a.own24 === k, id); assert.ok(A.ART_CAT[id], id); assert.ok(SECTS[k].tree24.includes(id), id); assert.ok(!SECTS[k].tree.includes(id), id); }
   assert.deepEqual(A.artById('qishangFist').req, [{ art: 'yingzhuaHand', tier: 1 }]); /* loop186 */ assert.equal(A.artById('fengmoStaff').weapon, 'staff'); assert.deepEqual(A.ART_CAT.yingzhuaHand, { quanzhang: 0.7, qimen: 0.3 });
   const s = V({ sect24: 'gaibang' }); tick(s, 0.1); assert.ok(s.sect.tree.includes('huntianGong'));
-  const o = createState(7, { kind: 'template', id: 'guojing', askMajor: false }); assert.ok(!o.sect.tree.includes('huntianGong'));
 });
 test('loop174 天地會／星宿派：資料、樹、開局可選天地會', async () => {
   const G = { tiandihui: ['yunlongXinfa', 'shenxingStep', 'baihuaFist', 'yunlongSword'], xingxiu: ['zhaixingStep'] };

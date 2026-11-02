@@ -7,7 +7,7 @@ import { learnArt } from '../../src/arts.mjs';
 const sp = { kind: 'custom', name: '測', answers: Array(9).fill(0), comprehend: true };
 const noop = () => {};
 const prep = (s) => { const d = s.ds[0]; learnArt(d, 'pushPalm', 0); d.arts.pushPalm.xp = 80; return d; };
-test('loop16 舊局不悟變式', () => { const s = createState(1); const d = prep(s); for (let i = 0; i < 99; i++) comprehendVariant(s, d, 'train', null, noop, noop); assert.equal(d.arts.pushPalm.variant, undefined); });
+// #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
 test('loop16 大成後自悟變式（依根骨／悟性傾向），不覆蓋玩家已選', () => {
   const s = createState(1, sp); const d = prep(s); let n = 0; while (!d.arts.pushPalm.variant && n++ < 200) comprehendVariant(s, d, 'meditate', null, noop, noop);
   assert.equal(d.arts.pushPalm.variant, vLean(d)); assert.ok(COMP.vneed > 0);

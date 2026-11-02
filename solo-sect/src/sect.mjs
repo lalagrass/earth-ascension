@@ -23,11 +23,11 @@ export function removeDisciple(s, d, why) {
 // v1.8（ROADMAP I-3，擁有人預設）：門派最多 cap 對、每 everyDays 日最多 1 對（第一場不早於第 everyDays 日）、好感 ≥rel、心上人互相鎖定、喜事花 cost 香火錢
 export const MARRY = { cap: 5, everyDays: 5, rel: 90, cost: 100 };
 /* loop148 v2.25（決定 144）：v22 下成過親的人（d.wed）不再拜堂——根因：配偶欠俸離山或名俠退隱時 removeActor 把 spouse 清空，留下的人就能再娶再嫁，玩家看起來像重婚。 */
-export function marriable(s, a, b) { return a.adult && b.adult && !a.spouse && !b.spouse && !(s.v22 && (a.wed || b.wed)) && a.sweet === b.id && b.sweet === a.id && (s.rel[relKey(a.id, b.id)] || 0) >= MARRY.rel && compat(a, b) * compat(b, a) >= 1; }
+export function marriable(s, a, b) { return a.adult && b.adult && !a.spouse && !b.spouse && !((a.wed || b.wed)) && a.sweet === b.id && b.sweet === a.id && (s.rel[relKey(a.id, b.id)] || 0) >= MARRY.rel && compat(a, b) * compat(b, a) >= 1; }
 export const weddingWhy = (s) => { const G = s.gen; if (G.couples.length >= MARRY.cap) return `門派已有 ${MARRY.cap} 對夫妻`; if (s.t - (G.lastWed ?? 0) < MARRY.everyDays * DAY) return `喜事每 ${MARRY.everyDays} 日最多一場`; if ((s.res.coin || 0) < MARRY.cost) return `辦喜事要 ${MARRY.cost} 香火錢`; return null; };
 function checkCouples(s) {
   const G = s.gen;
-  for (const k of s.families || []) { if (G.couples.some((c) => c.join('|') === k)) continue; const [a, b] = k.split('|').map((id) => s.ds.find((d) => d.id === id)); if (a && b && marriable(s, a, b) && !weddingWhy(s)) { resAdd(s, 'coin', -MARRY.cost); G.lastWed = s.t; G.couples.push([a.id, b.id].sort()); a.spouse = b.id; b.spouse = a.id; if (s.v22) { a.wed = b.id; b.wed = a.id; } log(s, `【成親】${a.name}與${b.name}在大廳拜堂（喜事花了 ${MARRY.cost} 香火錢），${s.sect?.name || '門派'}上下喝了一夜喜酒。`); } }
+  for (const k of s.families || []) { if (G.couples.some((c) => c.join('|') === k)) continue; const [a, b] = k.split('|').map((id) => s.ds.find((d) => d.id === id)); if (a && b && marriable(s, a, b) && !weddingWhy(s)) { resAdd(s, 'coin', -MARRY.cost); G.lastWed = s.t; G.couples.push([a.id, b.id].sort()); a.spouse = b.id; b.spouse = a.id; a.wed = b.id; b.wed = a.id; log(s, `【成親】${a.name}與${b.name}在大廳拜堂（喜事花了 ${MARRY.cost} 香火錢），${s.sect?.name || '門派'}上下喝了一夜喜酒。`); } }
 }
 // ---- 收養：承襲養父母傾向（性格各取一、價值觀平均之半、悟性根骨部分承襲） ----
 export function adopt(s, pa, pb, rnd = Math.random) {
@@ -36,7 +36,7 @@ export function adopt(s, pa, pb, rnd = Math.random) {
   const pers = [...new Set(ps.map((p) => p.personality[Math.floor(rnd() * p.personality.length)]).filter(Boolean))].slice(0, 2);
   const avg = (f) => ps.reduce((a, p) => a + (f(p) ?? 3), 0) / ps.length, part = (v) => Math.max(1, Math.min(5, Math.round((v + 3) / 2 + (rnd() < 0.3 ? 1 : 0))));
   let values = null; if (ps.some((p) => p.values)) { values = {}; for (const k of ['xia', 'sect', 'qing', 'free', 'wu', 'fame']) values[k] = Math.round(ps.reduce((a, p) => a + (p.values?.[k] || 0), 0) / ps.length / 2); }
-  const d = { ...JSON.parse(JSON.stringify(tpl)), id, name, adult: false, child: { since: s.t, parents: ps.map((p) => p.id) }, age: GEN.adoptAge, sprite: 'cousin', role: 'inner', personality: pers, known: pers.slice(0, 1), values, wexin: 0, classic: false, xia: null, portrait: null, spouse: null, ...(s.v22 ? { sweet: null, wed: undefined } : {}), /* loop148 孩子不沿用範本的心上人 */ acts: undefined, deeds: undefined, deedN: undefined, /* M1 傳記不沿用範本 */
+  const d = { ...JSON.parse(JSON.stringify(tpl)), id, name, adult: false, child: { since: s.t, parents: ps.map((p) => p.id) }, age: GEN.adoptAge, sprite: 'cousin', role: 'inner', personality: pers, known: pers.slice(0, 1), values, wexin: 0, classic: false, xia: null, portrait: null, spouse: null, ...({ sweet: null, wed: undefined }), /* loop148 孩子不沿用範本的心上人 */ acts: undefined, deeds: undefined, deedN: undefined, /* M1 傳記不沿用範本 */
     root: part(avg((p) => p.root)), wu: part(avg((p) => p.wu ?? p.root)), rootKnown: true, arts: {}, moves: ['fist'], pendingArt: null, focus: null, skills: { leg: 2, palm: 2, strength: 2, farming: 2, herbal: 2, agility: 6, cooking: 1 },
     needs: { energy: 80, hunger: 70, social: 50, fun: 70 }, hp: 100, mood: 60, thoughts: [], why: [], task: null, path: [], order: null, carry: null, away: false, at: 'hall', pos: [NODES.hall[0] + 20 * G.kids.length, NODES.hall[1] + 40], reason: '剛被收養', together: 0, master: null, oneArm: false, hidden: null, takeMul: null, reflect: null, awakened: false, duanqing: null, moodCap: null };
   seedArts(d); s.ds.push(d); G.kids.push(id); G.lastAdopt = s.t;
@@ -112,7 +112,7 @@ export function sectOf(hero) {
   if (id === 'wuming' && hero?.kind === 'custom') { const [tag, rule] = CUSTOM_BY_VALUE[hero.main] || ['拙', 'rescue']; o.bias = { [tag]: SECT_K.biasCap }; o.rules = [rule]; o.rivals = [CUSTOM_RIVALS[(hero.name || '').length % CUSTOM_RIVALS.length]]; o.plaque = `${hero.name || '無名'}派`; o.name = o.plaque; }
   return o;
 }
-export const sectInit = (s) => { s.sect = sectOf(s.hero); if (s.v24) sectRoots24(s); return s.sect; };
+export const sectInit = (s) => { s.sect = sectOf(s.hero); sectRoots24(s); return s.sect; };
 /* loop164 v2.4 Batch 4.1⑥／4.2：華山劍宗、氣宗補華山劍法線；掌門開局自帶本門 T1 根基（無前置的入門內功＋外功）；自創無名派依主價值帶家傳三件套並納入本門樹 */
 export const T1_XP24 = 12;
 export function sectRoots24(s) {
@@ -128,9 +128,9 @@ export function sectRoots24(s) {
 const heroD = (s) => s.ds.find((d) => d.id === 'hero');
 export const sectFac = (s) => SECTS[s.sect?.id]?.fac;
 /* loop163 古墓寒玉床：門人（不含幫工）≤ gainMaxDs 才有加成 */
-export const sgainOf = (s) => { const F = sectFac(s), g = F?.gain || (s.v24 && F?.gain24); /* loop176 祖師堂 gain24 只 v24 */ if (!g) return 1; if (F.gainMaxDs && s.ds.filter((d) => d.role !== 'laborer').length > F.gainMaxDs) return 1; return g; };
+export const sgainOf = (s) => { const F = sectFac(s), g = F?.gain || (F?.gain24); /* loop176 祖師堂 gain24 只 v24 */ if (!g) return 1; if (F.gainMaxDs && s.ds.filter((d) => d.role !== 'laborer').length > F.gainMaxDs) return 1; return g; };
 /* loop176 t192 待決 1B：武當紫霄宮太極守禦，v24 建成後守方戰力 ×def24 */
-export const def24Of = (s) => { const F = sectFac(s); return s.v24 && s.sect?.fac && F?.def24 ? F.def24 : 1; };
+export const def24Of = (s) => { const F = sectFac(s); return s.sect?.fac && F?.def24 ? F.def24 : 1; };
 // ---- 門規檢查（每日一次；違反只加違心，同條三天冷卻） ----
 export function ruleBroken(s, k) {
   const R = RULE_LIB[k]; if (!R || R.flavor) return null; const ds = s.ds.filter((d) => !d.away && d.role !== 'laborer');
@@ -175,7 +175,7 @@ export function sectResolve(s, ch, i) {
 // ---- 鎮派設施 ----
 export function canBuildFac(s) {
   const F = sectFac(s), S = s.sect; if (!F) return { ok: false, why: '無' }; if (S.fac) return { ok: false, why: '已建成' };
-  if (S.rep < SECT_K.facRep && !(s.v24 && (s.rep || 0) >= SECT_K.facRep)) return /* loop183 v2.8：v24 門派名聲（s.rep）達標亦可 */ { ok: false, why: `門派聲望不足（${S.rep}/${SECT_K.facRep}）` };
+  if (S.rep < SECT_K.facRep && !((s.rep || 0) >= SECT_K.facRep)) return /* loop183 v2.8：v24 門派名聲（s.rep）達標亦可 */ { ok: false, why: `門派聲望不足（${S.rep}/${SECT_K.facRep}）` };
   for (const [k, v] of Object.entries(F.cost)) if ((s.res[k] || 0) < v) return { ok: false, why: `${k} 不足 ${v}` };
   return { ok: true };
 }
@@ -195,7 +195,7 @@ export function sectRecruit(s, d) {
   const S = s.sect; if (!S) return; const R = SECTS[S.id].recruit || {};
   if (R.root) d.root = Math.min(5, d.root + R.root); if (R.wu) d.wu = Math.max(1, Math.min(5, (d.wu ?? d.root) + R.wu)); if (R.hp) d.hp = Math.min(d.hp, R.hp); if (R.mood) d.mood = Math.min(100, d.mood + R.mood);
   if (R.trait && !d.personality.includes(R.trait)) d.personality.push(R.trait); if (R.skill) d.skills[R.skill] = Math.min(100, d.skills[R.skill] + 6);
-  if (R.art24 && s.v24) { d.arts ??= {}; d.arts[R.art24] ??= { xp: 0, last: s.t }; } /* loop163 星宿派：新人帶《百毒譜》 */
+  if (R.art24) { d.arts ??= {}; d.arts[R.art24] ??= { xp: 0, last: s.t }; } /* loop163 星宿派：新人帶《百毒譜》 */
   d.recruitNote = R.text; log(s, `【${S.name}收徒】${R.text}`);
 }
 // ---- 宿敵守關：第 2、4、6… 道關卡由宿敵門派把守；打贏得門派聲望 ----
@@ -211,9 +211,9 @@ export function favSort(s, keys) { const f = SECTS[s.sect?.id]?.fav || []; retur
 export function sectStep(s) {
   if (!s.sect) return; const S = s.sect;
   for (const d of s.ds) { d.sbias = S.bias; d.stree = S.tree; d.sgain = S.fac ? sgainOf(s) : 1; }
-  if (s.v24) { const F = sectFac(s), on = S.fac && F; const mk = on && F.med24 && sgainOf(s) > 1 ? F.med24 : 1; for (const d of s.ds) d.medK24 = mk; s.psnK24 = on && F.psn24 ? F.psn24 : 1; } /* loop168 寒玉床打坐 ×1.5、神木王鼎毒傷 ×1.35 */
+  { const F = sectFac(s), on = S.fac && F; const mk = on && F.med24 && sgainOf(s) > 1 ? F.med24 : 1; for (const d of s.ds) d.medK24 = mk; s.psnK24 = on && F.psn24 ? F.psn24 : 1; } /* loop168 寒玉床打坐 ×1.5、神木王鼎毒傷 ×1.35 */
   if (s.day === S.day) return; S.day = s.day; checkRules(s); checkArts(s); facDaily(s);
-  if (s.v24) bisaiDaily24(s); /* loop166 Batch 5.2 */
+  bisaiDaily24(s); /* loop166 Batch 5.2 */
 }
 
 // ==== loop166 v2.5 Batch 5.2：旬日山門大比（第 10、20 日）＋天下門派會武（第 15 日名門會武、第 26 日天下論劍；三戰兩勝、排陣、臨陣偷師）。只在 s.v24 ====
@@ -283,7 +283,7 @@ export function huiwuResolve(s, ch, i) {
     recordDeed(s, null, 'huiwu', { chron: `${H.name}力挫${O.name}，得【${H.title}】` }); }
   else log(s, `【${H.name}】以「${HUIWU24.opts[i].split('：')[0]}」排陣，${txt}——不敵${O.name}。`);
   const fs = L.filter((b) => b.d).map((b) => b.d), thief = (i === 2 ? [...fs].sort((a, b) => Math.max(...['zhenfa', 'yishu', 'dushu'].map((c) => bestSpec(s, c, [b]))) - Math.max(...['zhenfa', 'yishu', 'dushu'].map((c) => bestSpec(s, c, [a]))) || (b.wu ?? 3) - (a.wu ?? 3)) : [...fs].sort((a, b) => (b.wu ?? 3) - (a.wu ?? 3)))[0];
-  if (s.v24 && fs.length) { const r = stealCheck28(s, fs, O), u = hh(`${s.seed}:steal:${ch.day}`), W = (s.v28n ??= {}); /* loop182 v2.8 造詣門道偷師 */
+  if (fs.length) { const r = stealCheck28(s, fs, O), u = hh(`${s.seed}:steal:${ch.day}`), W = (s.v28n ??= {}); /* loop182 v2.8 造詣門道偷師 */
     if (r) { W.stealTry = (W.stealTry || 0) + 1; const { a, d: who, need, cat } = r;
       if (!r.p) { W.stealZero = (W.stealZero || 0) + 1; if (u < 0.5) log(s, `【臨陣觀摩】${who.name}見${O.name}使出《${a.name}》精妙非凡，奈何自身${CATS[cat]?.name || '武學'}造詣未至（需 ${need}），未能窺破門道。`); }
       else if (u < r.p) { learnArt(who, a.id, s.t); who.arts[a.id].xp = Math.max(who.arts[a.id].xp, BISAI24.newXp); N.steal = (N.steal || 0) + 1; log(s, `【臨陣偷師】${who.name}在場邊看出${O.name}招式精要，竟學會了《${a.name}》！`); recordDeed(s, who, 'steal', { chron: `${who.name}在${H.name}上偷師${O.name}《${a.name}》` }); } } }

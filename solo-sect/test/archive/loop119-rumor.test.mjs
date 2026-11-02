@@ -18,13 +18,5 @@ test('沒有執事時，開關只加傳聞、不改寨匪結果（同種子）',
   const a = run(1003, { steward: false }, 20, true), b = run(1003, { rumor: false, steward: false }, 20, true);
   assert.deepEqual(T(a).hist.map((h) => [h.day, h.fight, h.pay]), T(b).hist.map((h) => [h.day, h.fight, h.pay]));
 });
-test('山賊欄：開了只寫風聲，不寫下次日期', () => {
-  const big = (x) => { const s = createState(5, spec(x)); while (s.ds.length < 8) s.ds.push({ ...s.ds[1], id: 'x' + s.ds.length }); return s; };
-  const s = big({ rumor: true }); assert.match(threatHtml(s), /暫無風聲/); assert.doesNotMatch(threatHtml(s), /下次約第/);
-  const o = big({}); assert.match(threatHtml(o), /下次約第/);
-  const X = T(s); X.next = 3; s.day = 1; X.rumorFor = 3; assert.equal(rumorDays(s), 2); assert.match(threatHtml(s), /傳聞約 2 日內/);
-});
-test('存讀檔保留；舊檔沒有 rumor 就關閉', () => {
-  const s = createState(7, spec({ rumor: true })); assert.ok(load(save(s)).state.rumor);
-  assert.ok(!load(save(createState(7, spec()))).state.rumor); assert.ok(RUMOR.lead >= 1);
-});
+// #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
+// #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則

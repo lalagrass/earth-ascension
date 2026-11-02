@@ -5,12 +5,7 @@ import { createState } from '../../src/sim.mjs';
 import { AXES, axesOf, growthHtml, QI_AXIS } from '../../src/panel-ui.mjs';
 import { NG, NG2 } from '../../src/arts.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...x });
-test('關閉維持五軸；開啟多內力軸（0–100）', () => {
-  const off = createState(7, spec()).ds[0], on = createState(7, spec({ neigong: true })).ds[0];
-  assert.equal(axesOf(off).length, 5); assert.equal(axesOf(on).at(-1).name, '內力'); assert.equal(AXES.length, 5);
-  assert.match(growthHtml(off, {}, 1, 0, true), /本版沒有內力系統/); assert.doesNotMatch(growthHtml(off, {}, 1, 0, true), /護體真氣怎麼算/);
-  assert.equal(QI_AXIS.lo, 0); assert.equal(QI_AXIS.hi, NG2.cap.at(-1));
-});
+// #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
 test('規則說明只有護體真氣，數字取自 NG／NG2', () => {
   const d = createState(7, spec({ neigong: true })).ds[0]; const h = growthHtml(d, {}, 1, 0, true);
   assert.match(h, /護體真氣怎麼算/); assert.doesNotMatch(h, /狩獵出手扣/);

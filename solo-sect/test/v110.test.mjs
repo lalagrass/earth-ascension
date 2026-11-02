@@ -63,7 +63,7 @@ function party(classic) { const s = createState(11); tick(s); const ids = s.ds.f
   s.res.food = 200; startExpedition(openExp(s), ids, { thr: 0.3, target: 'inf', supplies: 24 }); let i = 0; while (s.exp && i++ < 900000) tick(s); return [s.lastExp, s.ds.find((d) => d.id === ids[0])]; }
 test('平衡：一般武學練滿約止於 1600 內；招牌武學練滿可闖進無盡段', () => {
   const [n] = party(false); assert.ok(n.dist >= 900 && n.dist <= 1600, `normal ${n.dist}`); // v1.5：模擬核心改動 RNG 串流，種子間 950–1331，下限 1000→900
-  const [c, d] = party(true); assert.ok(c.dist > 1600, `classic ${c.dist}`); assert.equal(guardOf(d), 0.6);
+  const [c, d] = party(true); assert.ok(c.dist > 1600, `classic ${c.dist}`); assert.ok(guardOf(d) <= 0.6 + 1e-9, String(guardOf(d))); /* #390：現行規則下滿武學也練到紫霞，護體再乘 (1 − 0.03×層) */
 });
 test('1.0 存檔遷移到 1.1 補上名俠狀態', () => {
   const s = st(); delete s.xia; s.rules = '1.0'; const r = migrate(JSON.parse(JSON.stringify(s))); const o = r.state || r; assert.ok(o.xia && o.xia.done);

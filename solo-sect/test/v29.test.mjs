@@ -67,26 +67,24 @@ test('loop187 至情清修：癡＋有默契伴侶、清冷＋小門派 ×1.18�
   assert.ok(A.artMulParts(d, A.artById('emeiSword')).parts.ext.some((x) => x[0] === '至情清修' && x[1] === 1.18));
   d.personality = ['quiet']; d.pairMul = 0; d.small29 = true; assert.ok(A.temper29(d).qing);
 });
-test('loop187 沉睡特質 mods24：只 v24 新局', async () => {
+test('loop187 沉睡特質 mods24', async () => {
   const { traitMul } = await import('../src/social.mjs');
   const d = { v24: true, personality: ['rigid'] }; assert.equal(traitMul(d, 'train'), 1.15); assert.equal(traitMul(d, 'chat'), 0.85);
-  assert.equal(traitMul({ personality: ['rigid'] }, 'train'), 1); assert.equal(traitMul({ v24: true, personality: ['quiet'] }, 'meditate'), 1.35);
+  assert.equal(traitMul({ v24: true, personality: ['quiet'] }, 'meditate'), 1.35);
 });
 
-test('loop188 相性：拘謹剋灑脫、清冷惜癡、豪爽惜嗜酒；舊局不加', async () => {
+test('loop188 相性：拘謹剋灑脫、清冷惜癡、豪爽惜嗜酒', async () => {
   const { compat } = await import('../src/social.mjs');
   const p = (t) => ({ v24: true, personality: t }); assert.ok(compat(p(['rigid']), p(['free'])) < 1); assert.ok(compat(p(['quiet']), p(['chi'])) > 1); assert.ok(compat(p(['bold']), p(['drinker'])) > 1);
-  assert.equal(compat({ personality: ['rigid'] }, { personality: ['free'] }), 1);
 });
 test('loop188 俠魅：仁厚可親、風采出塵、威儀服眾', async () => {
-  const { charm29, drawOf } = await import('../src/social.mjs');
+  const { charm29 } = await import('../src/social.mjs');
   const d = { v24: true, personality: [], values: { sect: 60 }, mood: 40, hp: 100 };
   const k = charm29(d, { personality: ['kind'] }); assert.deepEqual(k, { v: 8, tags: ['仁厚可親'] }); d.mood = 80; assert.equal(charm29(d, { personality: ['kind'] }).v, 5);
   assert.deepEqual(charm29({ ...d, personality: ['clever'] }, { personality: ['free'] }), { v: 8, tags: ['風采出塵'] }); assert.equal(charm29(d, { personality: ['quiet'] }).v, 5);
   assert.deepEqual(charm29(d, { id: 'hero', personality: [] }).tags, ['威儀服眾']); assert.deepEqual(charm29({ ...d, values: {} }, { id: 'hero', personality: [] }).tags, []);
   assert.ok(charm29({ v24: true, personality: ['rigid'], values: {}, mood: 80, hp: 100 }, { personality: ['hypocrite'], values: {} }).tags.includes('威儀服眾'));
   assert.equal(charm29({ v24: true, personality: [], values: { sect: 10 }, mood: 80, hp: 100 }, { personality: ['hypocrite'], values: { fame: 40 } }).tags.includes('威儀服眾'), false);
-  assert.equal(drawOf({ personality: [] }, { personality: ['kind'] }), 0);
 });
 test('loop188 第 27 日圍山再降約 5%', async () => {
   const { SIEGE27 } = await import('../src/threat.mjs'); assert.deepEqual(SIEGE27.days[27].E, [1000, 1330, 1750, 2140]);

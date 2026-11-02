@@ -1,6 +1,6 @@
 import { tierOf, affKey } from './util.mjs';
-import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY } from './data.mjs';
-import { seedArts } from './arts.mjs';
+import { BASELINE_V22, RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY } from './data.mjs';
+import { seedArts, growInit } from './arts.mjs';
 import { sectOf, genInit } from './sect.mjs';
 import { suhuiOf } from './world.mjs';
 // v0.95 存檔：逐版遷移步驟（每步只做「升到該版」需要的事），加上每次讀檔都跑的修補
@@ -42,6 +42,7 @@ export const MIGRATIONS = [
   { to: '1.85', note: '錢有出口：月俸／維護從讀檔後下一個結算日起算（給 5 日寬限），市集、義學狀態', up(o) { o.econ ??= { warn: 0, left: 0, misses: 0, paid: 0, disrepair: false, lastBill: null, market: { cycle: -1, sold: {} }, school: null, schoolN: 0, pool: [] }; o.econ.graceUntil ??= (o.day || 0) + 5; } },
   { to: '1.9', note: '三四階建築要名聲＋稀有料（鐵木、靈石）；v1.6 建築佔地（舊檔已蓋的照算，地塊至少 4）；山賊勒索從讀檔後第 8 日起', up(o) { o.res ??= {}; o.res.tiemu ??= 0; o.res.lingshi ??= 0; const used = Object.entries(o.fac || {}).filter(([k, v]) => ['library', 'quiet', 'shrine', 'alchemy', 'clinic', 'guest', 'well', 'bell', 'watch'].includes(k) && (v.stage > 0 || v.site)).length; o.lots ??= { n: Math.max(4, used), bought: 0 }; o.threat ??= { next: (o.day || 0) + 8, n: 0, paid: 0, fought: 0, won: 0, homeHurt: 0, deaths: 0, pending: null, rng: 0, hist: [] }; } },
   { to: '1.95', note: '生態：各環族群上限隨巢穴與擊殺壓力變動、會回升；回補進度歸零重算', up(o) { for (const e of Object.values(o.pop || {})) { e.t = 0; e.kp ??= 0; e.den ??= 0; } } },
+  { to: '2.4', note: '規則世代收斂（#390）：舊局升到現行規則，刪 v22／v23／v24 旗標', up(o) { toCurrentRules(o); } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {
@@ -61,6 +62,24 @@ export function migrate(o) {
   for (const m of steps) m.up(o, D);
   repair(o, D);
   o.migratedFrom = from === RULES_VERSION ? o.migratedFrom : from; o.rules = RULES_VERSION; o.migSteps = steps.map((m) => m.to);
+  return o;
+}
+// #390（擁有人 2026-11-02 選 A）：規則世代收斂。2.4 以前的存檔讀入時升到現行規則，與開局畫面的新局同一套（BASELINE_V22），
+// 之後刪掉 v22／v23／v24 世代旗標（程式已不再讀它們）。各人的 pf／ng／lg 由 tick 的「新入門者」補位自動補上，成長分層在這裡補。
+// 玩家選項（執事、抉擇詢問）不動。rulesUpgradedFrom 記下原本是哪一代（已是 v2.4 的存檔不記）。
+const RULE_STATE = { comprehend: 'wu7', peace: 'm9' }; // spec 鍵 → 狀態鍵（同 createState）
+export function toCurrentRules(o) {
+  if (!o.v24) {
+    const hadGrow = !!o.grow;
+    o.rulesUpgradedFrom = o.v23 ? 'v2.3' : o.v22 ? 'v2.2' : 'legacy';
+    for (const k of Object.keys(BASELINE_V22)) {
+      if (k === 'valor') { if (typeof o.valor !== 'number') o.valor = 0; continue; }
+      const key = RULE_STATE[k] || k; if (!o[key]) o[key] = true; // 有些旗標開了之後會變成狀態物件（如 jhev），不覆寫
+    }
+    if (!hadGrow) growInit(o);
+  }
+  delete o.v22; delete o.v23; delete o.v24;
+  for (const d of o.ds || []) { delete d.v23; delete d.v24; }
   return o;
 }
 export const knownRules = (r) => typeof r === 'string' && (['0.5', '0.6', RULES_VERSION].includes(r) || MIGRATIONS.some((m) => m.to === r)) && ver(r) <= ver(RULES_VERSION);

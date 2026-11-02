@@ -25,11 +25,11 @@ test('職司勾選：外門只做勾選的雜務；優先度與未完成日課�
   o.chore = quotaOf(o); const c2 = scoreActs(s, o).find((x) => x.act === 'chop'); assert.equal(c2.f.duty, 1.5);
 });
 test('日課結算：超額記貢獻、不足扣心情並順延（不罰其他）', () => {
-  const s = createState(3); const a = mkOuter(s, 'a'), b = mkOuter(s, 'b'); a.chore = QUOTA.points + 3; b.chore = 1; const coin = s.res.coin;
+  const s = createState(3); const a = mkOuter(s, 'a'), b = mkOuter(s, 'b'); const P = quotaOf({}, s); /* #390：現行規則人多時日課分攤（qshare，4→3） */ a.chore = P + 3; b.chore = 1; const coin = s.res.coin;
   payday(s);
   assert.equal(a.contrib, 3); assert.equal(a.choreDebt, 0); assert.ok(a.thoughts.some((t) => t.id === 'quotaMet'));
-  assert.equal(b.choreDebt, QUOTA.points - 1); assert.equal(quotaOf(b), 2 * QUOTA.points - 1); assert.ok(b.thoughts.some((t) => t.id === 'quotaMiss'));
-  assert.ok(s.res.coin >= coin); assert.equal(a.chore, 0); assert.equal(s.choreRate, (QUOTA.points + 1) / (2 * QUOTA.points));
+  assert.equal(b.choreDebt, P - 1); assert.equal(quotaOf(b, s), 2 * P - 1); assert.ok(b.thoughts.some((t) => t.id === 'quotaMiss'));
+  assert.ok(s.res.coin >= coin); assert.equal(a.chore, 0); assert.equal(s.choreRate, (P + 1) / (2 * P));
 });
 test('完成雜務會累計日課點數', () => {
   const s = createState(5); s.res.food = 30; const o = mkOuter(s, 'o1'); let got = 0;

@@ -4,10 +4,7 @@ import { createState, tick } from '../../src/sim.mjs';
 import { RAID, minPopOf, points } from '../../src/threat.mjs';
 
 const sp = (o = {}) => ({ kind: 'custom', name: '測', answers: Array(9).fill(0), ...o });
-test('loop12 預設門檻不變（8），江湖規則開時 4', () => {
-  assert.equal(RAID.minPop, 8); assert.equal(minPopOf(createState(1)), 8); assert.equal(minPopOf(createState(1, sp({ peace: true }))), RAID.minPopRules);
-  assert.ok(RAID.minPopRules <= createState(1, sp()).ds.length, '門檻須 ≤ 開局人數，否則前期看不到山賊');
-});
+// #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
 test('loop12 開局 4 人：舊規則 0 點、新規則有點數', () => {
   const a = createState(1), b = createState(1, sp({ peace: true })); a.day = b.day = 8; assert.equal(points(a), 0); assert.ok(points(b) > 0);
 });

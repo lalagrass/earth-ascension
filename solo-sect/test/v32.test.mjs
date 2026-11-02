@@ -123,8 +123,6 @@ test('loop202 以技入道：外功造詣 50 才加成，內勁有效值吃兩�
   assert.deepEqual(ext, ['以技入道', 1.35]);
   assert.ok(!A.artMulParts(hi, A.artById('bixie')).parts.ext.some((x) => x[0] === '以技入道'));
   assert.equal(A.neigongEff31(hi), Math.min(100, 10 + 0.2 * 75));
-  const old = { arts: hi.arts, personality: [], wu: 3, pairMul: 0 };
-  assert.equal(A.dao31(old), false);
 });
 
 const tasteOf = (d, id) => {
@@ -178,9 +176,6 @@ test('loop203 練功倍率只留一個偏好標籤，靈動不與投其所好疊
   assert.deepEqual(tasteOf(flash, 'mianPalm').map((x) => x[0]), ['投其所好']);
   const plain = body();
   assert.equal(tasteOf(plain, 'mianPalm').length, 0);
-  const legacy = { personality: ['nimble', 'playful', 'brave'], wu: 3, pairMul: 0, arts: {} };
-  assert.equal(A.appetite31(legacy), 0);
-  assert.equal(tasteOf(legacy, 'chousuiPalm').length, 0);
   assert.equal(A.temper29(body({ personality: ['clever'] })).ling, true);
   assert.equal(A.temper29(body({ personality: ['playful'] })).ling, true);
   assert.equal(A.temper29(body({ personality: ['quiet'] })).zheng, true);
@@ -246,7 +241,7 @@ test('loop201 神木毒功退出學習池，已學會的舊檔仍讀得到', () 
   assert.ok(!A.artsSvg(d).includes('data-art="shenmuGong"'));
 });
 
-test('loop201 面板規則跟上封頂與造詣，舊局仍寫 200 與造詣不加傷害', () => {
+test('loop201 面板規則跟上封頂與造詣', () => {
   const s = V(); tick(s, 0.1); const d = s.ds[0];
   const h = growthHtml(d, {}, 1, s.t, true);
   assert.match(h, new RegExp(`再封頂 ${A.NG2.total24}`));
@@ -256,9 +251,5 @@ test('loop201 面板規則跟上封頂與造詣，舊局仍寫 200 與造詣不�
   assert.doesNotMatch(h, /氣宗／紫霞/);
   assert.doesNotMatch(rulesHtml(), /造詣進實戰/);
   assert.match(rulesHtml(), /造詣不加傷害/);
-  const old = neigongRules2Html({ v23: true, ng: 1 });
-  assert.match(old, new RegExp(`最多 ${A.NG2.total}`));
-  assert.match(old, new RegExp(`出手 ×${A.NG23.qiSchool}`));
-  assert.match(old, /劍招冷卻/);
-  assert.doesNotMatch(neigongRules2Html({ v23: true, v24: true, ng: 1 }), /出手 ×/);
+  assert.doesNotMatch(neigongRules2Html({ ng: 1 }), /出手 ×/);
 });

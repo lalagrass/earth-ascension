@@ -129,7 +129,7 @@ export function nodePath(a, b) { // BFS，只走既有邊
 }
 export function newBand(P, to) { const path = nodePath(BAND.from, to); return { n: P.n, pts: P.pts, day: P.day, hp: P.pts, max: P.pts, pos: [...NODES[BAND.from]], path: path.slice(1), state: 'go', clock: 0, fenceDealt: 0, defDealt: 0 }; }
 export const defenderDps = (d) => BAND.dps.base + ((d.skills.palm || 0) + (d.skills.leg || 0) + (d.skills.strength || 0)) / BAND.dps.per + dpsBonus(d); // loop117 護體真氣
-export const canDefend = (d) => d.adult !== false && !d.away && (d.role !== 'laborer' || !!(d.v23 && d.hidden?.shown)) && /* loop155 隱世高人仍是幫工，但可守柵 */ d.hp >= BAND.hpMin && d.needs.energy >= BAND.energyMin;
+export const canDefend = (d) => d.adult !== false && !d.away && (d.role !== 'laborer' || !!(d.hidden?.shown)) && /* loop155 隱世高人仍是幫工，但可守柵 */ d.hp >= BAND.hpMin && d.needs.energy >= BAND.energyMin;
 // 走一步：回傳是否到達
 export function bandWalk(b, dt) {
   let left = BAND.speed * dt;
@@ -197,7 +197,7 @@ export function bossEnd(s, src, win, defs = []) {
   else { recordDeed(s, null, 'bossLost', { chron: '山寨餘黨反撲得手，山門受挫' }); log(s, '【餘黨反撲】這回沒擋住；若再剿寨，餘黨恐怕還會再來。'); }
 }
 export function threatDaily(s) {
-  if (s.v22) bossDaily(s);
+  bossDaily(s);
   rumorDaily(s);
   const X = T(s); if (X.pending || (s.day || 0) < X.next) return null;
   X.next = s.day + RAID.every + Math.floor(R(s) * (2 * RAID.jitter + 1)) - RAID.jitter;
@@ -228,13 +228,13 @@ export function bandStep(s, dt, H) {
   const b = s.band; if (!b) return; const X = T(s); if (b.kind || X.cur) X.cur = b.kind;
   if (b.state === 'go') { if (bandWalk(b, dt)) { b.state = 'siege'; log(s, '山賊圍住了菜園木柵，開始撞柵！'); } return; }
   const defs = s.ds.filter((d) => d.task?.act === 'defend' && d.task.phase === 'do');
-  if (s.v23 && hasPoison(s, defs)) b.psn = s.t + SPEC.poisonT; /* loop151 毒術：守柵者中有毒術者，山賊中毒 */
+  if (hasPoison(s, defs)) b.psn = s.t + SPEC.poisonT; /* loop151 毒術：守柵者中有毒術者，山賊中毒 */
   const dmg = defs.reduce((a, d) => a + defenderDps(d), 0) * def24Of(s) * dt /* loop183 紫霄宮守柵 */ + (b.psn > s.t ? SPEC.poisonDps * (s.psnK24 || 1) * dt : 0); b.hp -= dmg; b.defDealt += dmg;
-  if (b.hp <= 0) { qiInjuryFight28(s, defs, log); /* loop186 守柵實戰 */ s.band = null; X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; log(s, `守柵迎敵——${defs.map((d) => d.name).join('、') || '眾人'}把山賊打退了！名聲 +${RAID.rep}。`); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: 'win', hurt: null, map: true, fence: s.fence?.hp ?? 0 }); if (s.v22) { for (const d of defs) recordDeed(s, d, 'defend'); recordDeed(s, null, 'raid', b.boss ? {} : { chron: `守柵打退山賊（${defs.map((d) => d.name).join('、') || '眾人'}）` }); } bossEnd(s, b, true, defs); nextWave(s, b, true); return; }
+  if (b.hp <= 0) { qiInjuryFight28(s, defs, log); /* loop186 守柵實戰 */ s.band = null; X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; log(s, `守柵迎敵——${defs.map((d) => d.name).join('、') || '眾人'}把山賊打退了！名聲 +${RAID.rep}。`); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: 'win', hurt: null, map: true, fence: s.fence?.hp ?? 0 }); for (const d of defs) recordDeed(s, d, 'defend'); recordDeed(s, null, 'raid', b.boss ? {} : { chron: `守柵打退山賊（${defs.map((d) => d.name).join('、') || '眾人'}）` }); bossEnd(s, b, true, defs); nextWave(s, b, true); return; }
   b.clock += dt; if (b.clock < BAND.hitEvery) return; b.clock -= BAND.hitEvery;
-  const fd0 = Math.max(BAND.fenceDmg.min, Math.round(b.pts * BAND.fenceDmg.k)), fd = s.v23 ? Math.max(1, Math.round(fd0 * (1 - SPEC.zhenMit * zhenK(s)) * (b.psn > s.t ? 1 - SPEC.poisonWeak : 1))) : fd0; b.fenceDealt += fd; /* loop151 陣法護柵 */
+  const fd0 = Math.max(BAND.fenceDmg.min, Math.round(b.pts * BAND.fenceDmg.k)), fd = Math.max(1, Math.round(fd0 * (1 - SPEC.zhenMit * zhenK(s)) * (b.psn > s.t ? 1 - SPEC.poisonWeak : 1))); b.fenceDealt += fd; /* loop151 陣法護柵 */
   if (fenceHit(s, fd, '山賊', true).held) return;
-  if (s.v22) shelterOnBreak(s, H);
+  shelterOnBreak(s, H);
   // loop14（方案 A）：柵破不再直接判敗，改回原勝率公式 winP 擲骰（與無柵同規則）
   s.band = null; const win = R(s) < winP(s, Math.max(1, b.hp)); let hurt = null; qiInjuryFight28(s, s.ds.filter((d) => d.task?.act === 'defend'), log); /* loop186 */ /* 用剩餘山賊戰力（守柵已削弱的部分算數） */
   if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `木柵被撞破，眾人短兵相接——打退了山賊！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
@@ -264,7 +264,7 @@ export function raidResolve(s, i, H, auto = false) {
 }
 /* loop148 v2.25（決定 142）：探明山寨後在山賊欄多一行狀態。只用玩家已在日誌看過的事：是否出征中、破寨／失手次數、是否已太平。 */
 export function lairLine(s) {
-  const L = s.v22 && s.lair; if (!L) return ''; const X = T(s), lost = Math.max(0, (L.n || 0) - (L.won || 0));
+  const L = s.lair; if (!L) return ''; const X = T(s), lost = Math.max(0, (L.n || 0) - (L.won || 0));
   const st = L.trip ? '正在攻寨中' : X.taiping ? `已破 ${L.won} 次，山道永享太平` : [L.won ? `已破 ${L.won} 次` : '', lost ? `失手 ${lost} 次` : '', '待精銳與存糧齊備時出擊'].filter(Boolean).join('，');
   return `<div class="k" data-lair>・後山山寨：已探明（${st}）</div>`;
 }
@@ -304,12 +304,12 @@ export function lairStep(s, H) {
   const team = tr.ids.map((id) => s.ds.find((d) => d.id === id)).filter(Boolean); for (const d of team) { d.away = false; d.reason = '剿寨歸來'; if (H?.gate) d.pos = [...H.gate]; }
   const p = Math.max(0.1, Math.min(0.9, tr.pow / (tr.pow + tr.pts))), win = RL(s) < p; let hurt = null;
   if (!win || RL(s) < LAIR.winHurt) { { hurt = team[Math.floor(RL(s) * team.length)]; if (hurt) { hurt.hp = Math.min(hurt.hp, guardHurt(hurt, RAID.hurtHp)); /* loop117 */ hurt.raidHurt = (hurt.raidHurt || 0) + 1; T(s).homeHurt++; H?.think?.(s, hurt, 'raidHurt'); } } }
-  const X = T(s); if (win) { L.won++; X.next = Math.max(X.next || 0, s.day) + LAIR.peaceDays; s.rep = (s.rep || 0) + RAID.rep * 2; L.next = X.next; if (s.v22) { for (const d of team) { tallyAct(d, 'lair', LAIR.dur / 4); recordDeed(s, d, 'lair'); } recordDeed(s, null, 'lair', { chron: `${team.map((d) => d.name).join('、')}大破後山山寨` }); if (!X.taiping && X.boss?.state !== 'wait' && X.boss?.state !== 'on') X.boss = { day: s.day + BOSS.after, state: 'wait' }; } log(s, `【剿寨】大破山寨！山賊作鳥獸散，至少 ${LAIR.peaceDays} 日不敢來犯。名聲 +${RAID.rep * 2}${hurt ? `；${hurt.name}重傷` : ''}。`); }
+  const X = T(s); if (win) { L.won++; X.next = Math.max(X.next || 0, s.day) + LAIR.peaceDays; s.rep = (s.rep || 0) + RAID.rep * 2; L.next = X.next; for (const d of team) { tallyAct(d, 'lair', LAIR.dur / 4); recordDeed(s, d, 'lair'); } recordDeed(s, null, 'lair', { chron: `${team.map((d) => d.name).join('、')}大破後山山寨` }); if (!X.taiping && X.boss?.state !== 'wait' && X.boss?.state !== 'on') X.boss = { day: s.day + BOSS.after, state: 'wait' }; log(s, `【剿寨】大破山寨！山賊作鳥獸散，至少 ${LAIR.peaceDays} 日不敢來犯。名聲 +${RAID.rep * 2}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else { L.next = s.day + LAIR.cool; log(s, `【剿寨】寨子太硬，攻不下來${hurt ? `，${hurt.name}重傷` : ''}，只好先撤回。`); }
   (L.hist ??= []).push({ day: s.day, pts: tr.pts, p: +p.toFixed(2), win, hurt: hurt?.id || null });
 }
 
-// ==== loop177 v2.7 Batch 1：正邪波次人海引擎（只 s.v24）。亂數一律用 FNV 雜湊（hh27），不碰山賊 R(s)／山寨 RL(s) 亂數流 ====
+// ==== loop177 v2.7 Batch 1：正邪波次人海引擎。亂數一律用 FNV 雜湊（hh27），不碰山賊 R(s)／山寨 RL(s) 亂數流 ====
 export const hh27 = (str) => { let h = 2166136261; for (const c of str) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return (h >>> 0) / 4294967296; };
 /* 正邪鏡像：本門為明教／星宿 → 六大派聯軍；其餘 → 黑木崖魔教。n＝每波人數（割草數上限） */
 export const MOJIAO27 = {
@@ -325,7 +325,7 @@ const hasAoe27 = (d) => (d.moves || []).some((id) => (MOVES.find((m) => m.id ===
 const eliteArt27 = (d) => Object.keys(d.arts || {}).some((id) => WAVE27.eliteArts.includes(id) || artById(id)?.chiefOnly24);
 const bigSword27 = (d) => Object.keys(d.arts || {}).some((id) => isSwordArt(id) && (artById(id)?.grade || 0) >= 3 && artTier(d, id) >= 0);
 export function aoeCleaveMul(d, w = 0) {
-  const q = (hasAoe27(d) ? 1 : 0) + (eliteArt27(d) ? 1 : 0) + (bigSword27(d) ? 1 : 0), o = mainOuter28(d), add = d.v24 && (d.champ28 || (o && innerDrive28(d, o).tier === 1)) ? CHAMP28.aoe : 0; /* loop183 本門正宗催動或當屆大比首徒 +0.25 */
+  const q = (hasAoe27(d) ? 1 : 0) + (eliteArt27(d) ? 1 : 0) + (bigSword27(d) ? 1 : 0), o = mainOuter28(d), add = (d.champ28 || (o && innerDrive28(d, o).tier === 1)) ? CHAMP28.aoe : 0; /* loop183 本門正宗催動或當屆大比首徒 +0.25 */
   if (!q) return 1 + add; const m = Math.min(WAVE27.aoeMax, WAVE27.aoeBase + WAVE27.aoeStep * (q - 1)); return (w >= 2 ? 1 + (m - 1) * WAVE27.lateK : m) + add;
 }
 export const crowdSwarmMul = (team) => { const n = team.length; return n < WAVE27.swarmFrom ? 1 : 1 + Math.min(WAVE27.swarmMax, WAVE27.swarmStep * (n - WAVE27.swarmFrom + 1)); };
@@ -338,11 +338,11 @@ export function wavePower27(s, team, w = 0) {
 }
 /* 連戰：spec＝{ key, waves:[{name,n,E}], home }。逐波 p＝P²/(P²+E²)（夾 0.1–0.95），P 乘疲勞；勝波人數依戰力×割草倍率分給 kills；敗波只算 p×一半 */
 export function waveBattle27(s, team, spec) {
-  const kills = new Map(team.map((d) => [d.id, 0])); let tire = 1, won = 0, healed = 0; const heal = team.some((d) => (s.v23 && bestSpec(s, 'yishu', [d]) >= WAVE27.healSpec) || WAVE27.healArts.some((id) => d.arts?.[id]));
-  const out = { waves: [], n: team.length }; if (s.v24) for (const d of team) { const w = qiInjuryAdd28(s, d); if (w) log(s, `【經脈暗傷】${d.name}強以異種內息催動他派武學《${w.name}》，真氣逆行，經脈隱隱作痛！`); } /* loop181 參戰亦累積逆催內傷 */
+  const kills = new Map(team.map((d) => [d.id, 0])); let tire = 1, won = 0, healed = 0; const heal = team.some((d) => (bestSpec(s, 'yishu', [d]) >= WAVE27.healSpec) || WAVE27.healArts.some((id) => d.arts?.[id]));
+  const out = { waves: [], n: team.length }; for (const d of team) { const w = qiInjuryAdd28(s, d); if (w) log(s, `【經脈暗傷】${d.name}強以異種內息催動他派武學《${w.name}》，真氣逆行，經脈隱隱作痛！`); } /* loop181 參戰亦累積逆催內傷 */
   for (let w = 0; w < spec.waves.length; w++) {
     const W = spec.waves[w], P0 = wavePower27(s, team, w), P = P0.pow * tire * (spec.home ? def24Of(s) : 1); /* loop183 紫霄宮守禦也護圍山 */ let E = W.E;
-    if (spec.home) { if (fenceUp(s)) E *= 1 - WAVE27.fence - WAVE27.fenceLv * ((s.fence.lv || 1) - 1); if (s.v23) E *= 1 - SPEC.zhenMit * zhenK(s, team); }
+    if (spec.home) { if (fenceUp(s)) E *= 1 - WAVE27.fence - WAVE27.fenceLv * ((s.fence.lv || 1) - 1); E *= 1 - SPEC.zhenMit * zhenK(s, team); }
     const p = Math.max(WAVE27.pMin, Math.min(WAVE27.pMax, P * P / (P * P + E * E))), win = hh27(`${s.seed}:${spec.key}:${w}`) < p;
     const tot = win ? W.n : Math.floor(W.n * p * 0.5), sum = P0.parts.reduce((a, [, x]) => a + x, 0) || 1;
     const share = P0.parts.map(([d, x]) => [d, (tot * x) / sum]); let given = 0; for (const [d, x] of share) { const k2 = Math.floor(x); kills.set(d.id, kills.get(d.id) + k2); given += k2; }
@@ -354,7 +354,7 @@ export function waveBattle27(s, team, spec) {
   const mvp = team.reduce((m, d) => (!m || kills.get(d.id) > kills.get(m.id) ? d : m), null); out.mvp = mvp && kills.get(mvp.id) > 0 ? mvp : null;
   return out;
 }
-// ==== loop178 v2.7 Batch 2：魔教大軍圍山（第 18 日前鋒三波、第 27 日十長老四波）。只 s.v24；前一日茶攤預警；全派 canDefend（含已揭露隱世幫工）不限人數迎戰 ====
+// ==== loop178 v2.7 Batch 2：魔教大軍圍山（第 18 日前鋒三波、第 27 日十長老四波）；前一日茶攤預警；全派 canDefend（含已揭露隱世幫工）不限人數迎戰 ====
 /* E＝各波敵勢，以 loop177 量測（bot 局第 18 日單人戰力合計 ≈2300、第 27 日 ≈3400，合圍 ×1.5）定錨，目標整場勝率約六成 */
 export const SIEGE27 = { days: { 18: { title: '魔教前鋒叩關', E: [900, 1300, 1700] }, 27: { title: '魔教十長老圍山', E: [1000, 1330, 1750, 2140] } /* loop183 v2.8 約 −12%；loop188 v2.9 再 −5% */ },
   win: { coin: 50, lingshi: 1, valor: 12, rep: 12, mood: 10 }, loseRep: 3, fenceK: 0.3 };
@@ -377,18 +377,18 @@ export function mojiaoSiege27(s, day) {
   recordDeed(s, null, 'siegeLost', { chron: `${C.title}：${F.name}攻破第 ${r.won + 1} 波防線` }); return N.siege[day];
 }
 export function siegeDaily27(s) {
-  if (!s.v24) return null; const day = s.day || 0, N = s27(s);
+   const day = s.day || 0, N = s27(s);
   const nx = SIEGE27.days[day + 1]; if (nx && !N['r' + (day + 1)]) { N['r' + (day + 1)] = 1; log(s, `【傳聞】山下茶攤有人說，${foe27(s).name}的人馬已在山腳集結，怕是明日就要殺上山來（${nx.title}）！`); }
   return SIEGE27.days[day] ? mojiaoSiege27(s, day) : null;
 }
-// ==== loop179 v2.7 Batch 3：全派傾巢討伐魔教分舵（不限人數，只留 1 人看門）。只 s.v24；第 12 日起、名聲 ≥15、冷卻 8 日 ====
+// ==== loop179 v2.7 Batch 3：全派傾巢討伐魔教分舵（不限人數，只留 1 人看門）；第 12 日起、名聲 ≥15、冷卻 8 日 ====
 /* E 以出發日縮放：E×(1+(日−12)/CRU27.dayK)。auto：執事在 13–14、22–23 日、存糧 ≥14、預估全勝率 ≥ autoP 時自動出兵 */
 export const CRU27 = { day: 12, rep: 15, cool: 8, foodMax: 8, dur: DAY / 2, minHp: 60, minTeam: 2, E: [400, 600, 780, 1000], dayK: 20, autoDays: [13, 14, 22, 23], autoFood: 14, autoSpare: 2, autoP: 0.5,
   waves: ['分舵外哨嘍囉群', '百人堂口', '護法刀陣', '分舵主'], n: [60, 100, 12, 1], win: { coin: 55, lingshi: 1, page2: 1, rep: 15 }, loseRep: 2 };
 const cruOk = (s, d) => d.role !== 'laborer' && d.adult !== false && !d.away && !d.removed && d.hp > CRU27.minHp && !d.order && !s.hunt?.team?.includes(d.id);
 export function crusadeTeam27(s) { const c = s.ds.filter((d) => cruOk(s, d)).sort((a, b) => pow27(s, b) - pow27(s, a)); return c.slice(0, Math.max(0, c.length - 1)); /* 最弱的一人留守山門 */ }
 export function canCrusade27(s) {
-  if (!s.v24) return { ok: false, why: '' }; const N = s27(s), day = s.day || 0;
+   const N = s27(s), day = s.day || 0;
   if (day < CRU27.day) return { ok: false, why: `第 ${CRU27.day} 日起才打聽得到分舵所在` };
   if ((s.rep || 0) < CRU27.rep) return { ok: false, why: `名聲不足（${Math.floor(s.rep || 0)}/${CRU27.rep}）` };
   if (N.cru) return { ok: false, why: '弟子正在討伐途中' }; if (day < (N.cNext || 0)) return { ok: false, why: `剛討伐過，第 ${N.cNext} 日後再議` };
@@ -421,10 +421,10 @@ export function crusadeStep27(s, H) {
   log(s, `【傾巢討伐】闖過 ${r.won} 波後在「${CRU27.waves[r.won]}」受阻，只得收兵回山${rep ? `（名聲 +${rep}）` : ''}${hurt ? `；${hurt.name}輕傷` : ''}，無人身亡。`); return rec;
 }
 export function crusadeDaily27(s, H) {
-  if (!s.v24 || !CRU27.autoDays.includes(s.day || 0)) return null;
+  if (!CRU27.autoDays.includes(s.day || 0)) return null;
   const c = canCrusade27(s); if (!c.ok || (s.res.food || 0) < Math.min(CRU27.autoFood, c.food + CRU27.autoSpare) /* 決定 224：規格 14 在 bot 局幾乎達不到 */ || crusadeOdds27(s, c.team) < CRU27.autoP) return null; return startCrusade27(s, H, true);
 }
 export function crusadeHtml27(s) {
-  if (!s.v24 || (s.day || 0) < CRU27.day) return ''; const C = s.v27n?.cru, c = C ? null : canCrusade27(s);
+  if ((s.day || 0) < CRU27.day) return ''; const C = s.v27n?.cru, c = C ? null : canCrusade27(s);
   return `<div class="k" data-crusade27-row>・魔教分舵：${C ? `全派 ${C.ids.length} 人討伐途中` : c.ok ? `<button data-crusade27>全派傾巢：討伐魔教分舵（出動 ${c.team.length} 人）</button>` : c.why}</div>`;
 }

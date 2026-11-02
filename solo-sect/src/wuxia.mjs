@@ -67,7 +67,7 @@ Object.assign(XIA, XIA13, XIA23);
 export const PAIR_CAP = 0.25;
 export const xiaInit = () => ({ done: {}, declined: {}, joinT: {}, cooks: 0, lastT: -1e9, pending: null, teacher: null, left: {} });
 export function xiaPool(s) {
-  const ex = new Set(s.encExclude || []), pool = new Set([...encounterPool(s), 'hongqigong', ...Object.keys(XIA13), ...(s.v23 ? Object.keys(XIA23) : [])]);
+  const ex = new Set(s.encExclude || []), pool = new Set([...encounterPool(s), 'hongqigong', ...Object.keys(XIA13), ...(Object.keys(XIA23))]);
   return favSort(s, Object.keys(XIA)).filter((k) => pool.has(k) && !ex.has(k) && !present(s, k) && s.xia.teacher?.id !== k && !s.xia.done[k] && !s.xia.left[k] && styleOk(s, k));
 }
 // 每 tick：一天最多一個奇遇；不在場、未拒絕三天內

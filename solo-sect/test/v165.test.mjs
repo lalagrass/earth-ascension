@@ -12,6 +12,8 @@ import { invariants } from '../src/core.mjs';
 import { addMem, memsOf, chatLine, MEM, styleOk, srcOf, passPick, passDo, PASS, takePupil, apprCands, apprDaily, apprMul, APPR, pupilsOf } from '../src/bonds.mjs';
 const st = (seed = 3) => { const s = createState(seed); tick(s); return s; };
 const runDays = (s, n) => { for (let i = 0; i < n * DAY * 4; i++) tick(s); };
+// #390：現行規則開局第 1 刻同門常在聊天（有對象就不能被傳功），先等到有人有空
+const waitFree = (s, a) => { for (let i = 0; i < DAY * 4 && !passPick(s, a); i++) tick(s); };
 const master = (s, d, art = 'basicFist') => { learnArt(d, art, s.t); d.arts[art].xp = 90; d.arts[art].bt1 = d.arts[art].bt2 = true; };
 
 test('共同記憶：有時地事、每對最多 6 筆、全門最多 80 筆、聊天取最近一筆', () => {
@@ -39,13 +41,13 @@ test('名俠池畫風濾鏡：純金庸排包租公婆、純周星馳只剩周�
 });
 test('傳功：圓滿以上才傳；對方 +15；每門每對一次；好感上升；寫記憶', () => {
   const s = st(), [a, b] = s.ds.filter((d) => d.role !== 'laborer'); assert.equal(passPick(s, a), null, '未圓滿不傳');
-  master(s, a); const pp = passPick(s, a); assert.ok(pp && pp.art === 'basicFist'); const x0 = b.arts.basicFist?.xp || 0, f0 = aff(s, a, b);
+  master(s, a); waitFree(s, a); const pp = passPick(s, a); assert.ok(pp && pp.art === 'basicFist'); const x0 = b.arts.basicFist?.xp || 0, f0 = aff(s, a, b);
   assert.ok(passDo(s, a, pp.p, pp.art)); assert.ok(pp.p.arts.basicFist.xp >= Math.min(x0 + PASS.gain, 40) - 1e-9); assert.ok(aff(s, a, pp.p) > f0 || pp.p !== b);
   assert.equal(passDo(s, a, pp.p, pp.art), false, '同門同對只能一次'); assert.ok(memsOf(s, a, pp.p).some((m) => m.k === 'pass'));
   assert.equal(passPick(s, a), null, '同一天只傳一次');
 });
 test('傳功是自走活動：條件達成後會進評分並實際完成', () => {
-  const s = st(7); const a = s.ds.find((d) => d.role !== 'laborer'); master(s, a); assert.ok(scoreActs(s, a).some((x) => x.act === 'pass'));
+  const s = st(7); const a = s.ds.find((d) => d.role !== 'laborer'); master(s, a); waitFree(s, a); assert.ok(scoreActs(s, a).some((x) => x.act === 'pass'));
   for (let i = 0; i < DAY * 4 * 2 && !Object.keys(s.passed || {}).length; i++) { tick(s); if (i % 50 === 0) assert.deepEqual(invariants(s), []); }
   assert.ok(Object.keys(s.passed || {}).length >= 1); assert.ok(s.log.some((l) => l.msg.includes('【傳功】')));
 });

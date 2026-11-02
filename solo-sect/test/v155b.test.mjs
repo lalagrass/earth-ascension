@@ -32,4 +32,4 @@ test('山腳／林地區塊用素材：有給圖就貼地面＋草叢／松竹�
   const b = rec(); W.paintChunk(b.g, cx, cy, art); assert.deepEqual(a.out, b.out);
   const c = rec(); W.paintChunk(c.g, cx, cy); assert.ok(!c.out.some((x) => x[0] === 'ground'));
 });
-test('golden 不變：v1.55b 全是畫面層', () => { const s = createState(42); for (let i = 0; i < 30 * DAY * 4; i++) tick(s); assert.equal(hash(s), fs.readFileSync(new URL('./fixtures/golden-30d.txt', import.meta.url), 'utf8').trim()); });
+// #390：舊規則 golden-30d.txt 退休；固定種子雜湊改由 test/golden/（#388）鎖

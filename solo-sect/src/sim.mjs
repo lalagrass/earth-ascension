@@ -1,7 +1,7 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31 } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
-import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
+import { BASELINE_V22, RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
 import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, fogStep, unlockStep, chapterStep } from './world.mjs';
@@ -43,12 +43,11 @@ export const routeLength = (a, b) => { const p = route(a, b); let L = 0; for (le
 export const facDef = (id) => (id === 'fence' ? FENCE_FAC : FACILITIES.find((f) => f.id === id)); // loop11 柵牆工地
 export const facStage = (s, id) => { const S = facDef(id).stages; return S[Math.min(s.fac[id]?.stage || 0, S.length - 1)]; };
 
-// loop143（v2.2 baseline）：已驗證、原本預設勾選的規則轉正；開局畫面的新局帶 v22:true 一律開（明寫 false 仍可關，供 A/B）。
-// createState(seed) 不帶 spec、或 { legacyGolden: true } 時不套用，保護舊 golden 與舊測試。
-export const BASELINE_V22 = Object.freeze({ grow: true, growdr: true, neigong: true, ngshield: true, prof: true, laborgrow: true, valor: true, valormid: true, rumor: true, readwu: true, comprehend: true, mentor: true, mpool: true, cotrain: true, cofun: true, paypill: true, longwatch: true, masterask: true, letterask: true, cropcare: true, mfit: true, jhrefuse: true, qshare: true, jhui: true, jhev: true, peace: true, lairpow: true, lift: true, bt25: true, draw: true });
+// loop143（v2.2 baseline）：已驗證的規則轉正（表在 data.mjs）。#390 起所有新局都套用，不再有舊規則開局。
+export { BASELINE_V22 }; // #390：表移到 data.mjs（save.mjs 讀檔升級也要用）
 export function createState(seed = 1, heroSpec = null) {
-  if (heroSpec?.legacyGolden && !heroSpec.kind) heroSpec = null;
-  if (heroSpec?.v22 && !heroSpec.legacyGolden) heroSpec = { ...BASELINE_V22, ...heroSpec };
+  // #390：每個新局都用現行規則（含「照舊」開局 spec＝null，擁有人 2026-11-02 決定）。spec 只決定主角與玩家選項。
+  const withHero = !!heroSpec; heroSpec = { ...BASELINE_V22, ...(heroSpec || {}) };
   const s = {
     v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
@@ -59,7 +58,7 @@ export function createState(seed = 1, heroSpec = null) {
   freshV095(s);
   log(s, '師徒三人來到山腳一間破道館。');
   s.hero = null; s.choices = []; s.encExclude = []; s.unlock = []; s.chapter = { done: false }; for (const d of s.ds) d.wu ??= d.root;
-  if (heroSpec) applyHero(s, heroSpec, initPair);
+  if (withHero) applyHero(s, heroSpec, initPair);
   if (heroSpec?.draw) s.draw = true;
   if (heroSpec?.comprehend) s.wu7 = true;
   if (heroSpec?.mentor) s.mentor = true;
@@ -86,7 +85,6 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.bt25) s.bt25 = true; // loop25 突破排程（選用）
   if (heroSpec?.jhev) s.jhev = true; // loop23 江湖事件（選用）
   if (heroSpec?.peace) s.m9 = true; // loop9 太平與防禦經濟（選用） // loop8 同修請教（選用） // loop7 領悟（選用） // loop6 人以群分（選用）
-  if (heroSpec?.v22 && !heroSpec.legacyGolden) { s.v22 = true; s.v23 = true; s.v24 = true; } /* loop143；loop151 v2.3 新局（舊 v2.2 存檔沒有 s.v23，行為不變） */
   sectInit(s); s.gen = genInit(); if (heroSpec?.bonus) s.gen.suhuiStart = heroSpec.bonus;
   if (s.grow) growInit(s);
   if (s.prof) for (const d of s.ds) d.pf = 1; /* loop91 */
@@ -163,10 +161,10 @@ export function recruit(s, answers) {
   const c = canRecruit(s); if (!c.ok) return c;
   const { personality, known } = personalityFrom(c.next, answers);
   if (rand(s) < 0.3) { const x = rand(s) < 0.5 ? 'lazy' : 'stubborn'; if (!personality.includes(x)) personality.push(x); } // v0.97 一般弟子也可能懶散／較真（暗）
-  s.res.food -= RECRUIT.food; book(s, 'out', 'food', RECRUIT.food); if (s.v24) { const h = fnv29(`${s.seed}:trait29:${c.next.id}:${s.ds.length}`); if (h < RECRUIT29.p) { const x = RECRUIT29.pool[Math.floor(fnv29(`${s.seed}:trait29b:${c.next.id}:${s.ds.length}`) * RECRUIT29.pool.length)]; if (!personality.includes(x)) { const old = personality[1]; personality[1] = x; const k = known.indexOf(old); if (k >= 0) known[k] = x; (s.v29n ??= {}).recruitTrait = (s.v29n.recruitTrait || 0) + 1; } } } /* loop188 v2.9 經典特質（雜湊，不吃亂數流） */
+  s.res.food -= RECRUIT.food; book(s, 'out', 'food', RECRUIT.food); { const h = fnv29(`${s.seed}:trait29:${c.next.id}:${s.ds.length}`); if (h < RECRUIT29.p) { const x = RECRUIT29.pool[Math.floor(fnv29(`${s.seed}:trait29b:${c.next.id}:${s.ds.length}`) * RECRUIT29.pool.length)]; if (!personality.includes(x)) { const old = personality[1]; personality[1] = x; const k = known.indexOf(old); if (k >= 0) known[k] = x; (s.v29n ??= {}).recruitTrait = (s.v29n.recruitTrait || 0) + 1; } } } /* loop188 v2.9 經典特質（雜湊，不吃亂數流） */
   const d = mkDisciple(c.next, 1, 'gate', personality, known); d.together = 0; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); if (s.draw) { const A = archRecruit(() => rand(s)); Object.assign(d, { arch: A.id, root: A.root, wu: A.wu }); if (!d.personality.includes(A.trait)) d.personality.push(A.trait); } /* loop21 原型 */ s.ds.push(d); if (c.next.school) econOf(s).pool.shift();
   for (const o of s.ds) if (o !== d) initPair(s, o, d, 5); sectRecruit(s, d);
-  log(s, `${d.name}慕名從村路上山，拜入門下。`); if (s.v22) recordDeed(s, d, 'join', { chron: `${d.name}慕名上山，拜入門下` }); return { ok: true, d };
+  log(s, `${d.name}慕名從村路上山，拜入門下。`); recordDeed(s, d, 'join', { chron: `${d.name}慕名上山，拜入門下` }); return { ok: true, d };
 }
 export function mapStage(s) {
   if (s.fac.hall.stage >= 1 && s.fac.yard.stage >= 1) return 'S2';
@@ -190,10 +188,10 @@ export function buyLot(s) { const w = lotWhy(s); if (w) return { ok: false, why:
 export const LIB23_REP = 10;
 export function buildWhy(s, id) {
   const f = facDef(id), st = s.fac[id], next = f.stages[st.stage + 1];
-  if (!next || (next.v23 && !s.v23)) return '已到頂'; if (st.site) return '施工中'; if (f.sig || next.noBlueprint) return '鎮派建築走門派面板';
-  const rq = id === 'library' && s.v23 && st.stage === 0 ? LIB23_REP : next.rep; /* loop157 P7：v23 藏經閣名聲 15→10 */
+  if (!next || (false)) return '已到頂'; if (st.site) return '施工中'; if (f.sig || next.noBlueprint) return '鎮派建築走門派面板';
+  const rq = id === 'library' && st.stage === 0 ? LIB23_REP : next.rep; /* loop157 P7：v23 藏經閣名聲 15→10 */
   if (rq && (s.rep || 0) < rq) return `名聲不足（${Math.floor(s.rep || 0)}/${rq}）`;
-  for (const [k, v] of Object.entries(next.rare || {})) if ((s.res[k] || 0) < v) return `${RARE[k]}不足（${s.res[k] || 0}/${v}，巡山遠段才撿得到${s.v22 ? '，山下市集也有限量賣' : ''}）`;
+  for (const [k, v] of Object.entries(next.rare || {})) if ((s.res[k] || 0) < v) return `${RARE[k]}不足（${s.res[k] || 0}/${v}，巡山遠段才撿得到${'，山下市集也有限量賣'}）`;
   if (f.v16 && st.stage === 0 && lotsUsed(s) >= lotsOf(s).n) return `沒有空地（${lotsUsed(s)}/${lotsOf(s).n}），先擴地`;
   if (s.res.coin < (next.cost.coin || 0)) return `錢不夠（${next.cost.coin}）`;
   return null;
@@ -220,7 +218,7 @@ export function togglePause(s, id) {
 function finishBuild(s, id) {
   if (id === 'fence') { finishFenceSite(s); return; } // loop11
   const f = facDef(id), st = s.fac[id]; st.stage++; st.site = null; s.rep = (s.rep || 0) + REP.build;
-  if (s.v22) recordDeed(s, null, 'build', { chron: `${f.name}落成「${f.stages[st.stage].name}」` }); for (const d of s.ds) think(s, d, 'newLook'); log(s, `完工：${f.name}成了「${f.stages[st.stage].name}」${f.stages[st.stage].offers.length ? '，解鎖：' + f.stages[st.stage].offers.map((a) => ACTIVITIES[a].name).join('、') : ''}`);
+  recordDeed(s, null, 'build', { chron: `${f.name}落成「${f.stages[st.stage].name}」` }); for (const d of s.ds) think(s, d, 'newLook'); log(s, `完工：${f.name}成了「${f.stages[st.stage].name}」${f.stages[st.stage].offers.length ? '，解鎖：' + f.stages[st.stage].offers.map((a) => ACTIVITIES[a].name).join('、') : ''}`);
 }
 const siteOf = (s) => { const e = Object.entries(s.fac).find(([, v]) => v.site && !v.site.paused); return e ? [e[0], e[1].site] : null; };
 
@@ -295,7 +293,7 @@ const fillWhy = (w, c) => (w || '').replace(/\{([\w.]+)\}/g, (_, p) => path(c, p
 const POST_PRED = { plotWork: (c) => c.plotWork, skip: (c) => c.skip, outer: (c) => c.d.role === 'outer', em: (c) => c.em, myDuty: (c, o) => (c.d.duties || CHORE_ACTS).includes(o.act), owe: (c) => c.owe > 0, foodLow: (c) => foodLow(c.s), head: (c) => c.d.role === 'head' };
 const postTest = (k, c, o) => (k === true ? true : k[0] === '!' ? !POST_PRED[k.slice(1)](c, o) : POST_PRED[k](c, o));
 function postRows(s, d, out, plotWork) {
-  const lab = isLabor(d), c = { s, d, plotWork, FS: FOOD_SEC, K: { LABOR_ACTS: s.v23 ? LABOR_ACTS23 : LABOR_ACTS, LABOR_WORK_MUL, CHORE_ACTS, QUOTA } };
+  const lab = isLabor(d), c = { s, d, plotWork, FS: FOOD_SEC, K: { LABOR_ACTS: LABOR_ACTS23, LABOR_WORK_MUL, CHORE_ACTS, QUOTA } };
   if (!lab) { c.skip = skipsChores(s, d); c.em = emergency(s); c.owe = quotaOf(d, s) - (d.chore || 0); c.prioMul = PRIO[d.prio || 'normal'][0]; }
   const list = (v) => (typeof v === 'string' ? path(c, v) : v);
   for (const R of SCORE_POST) {
@@ -312,8 +310,8 @@ export function scoreActs(s, d) {
     if (R.when && !R.when.every((k) => PRED[k](c))) continue; const T = R.tiers ? R.tiers.find((x) => !x.if || PRED[x.if](c)) : R; if (!T) continue;
     const score = valOf(T.v, c); if (score > 0) out.push({ act: R.act, score, why: fillWhy(T.why, c), ...(T.layer || R.layer ? { layer: T.layer || R.layer } : {}) }); }
   if (s.band && BAND.defendScore > 0 && canDefend(d)) out.push({ act: 'defend', score: BAND.defendScore, why: s.band.state === 'go' ? '山賊往菜園來了，去柵邊守著' : '山賊在撞柵，去打退他們' }); // loop3
-  if (d.v23 && d.ng && qiMax(d) > 0 && qiOf(d) < qiMax(d) * NG23.medLow) for (const o of out) if (o.act === 'meditate') { o.score *= NG23.medBoost; o.why += '（內力不足，先打坐回氣）'; } /* loop153 */
-  if (d.v23 && d.lspec && isLabor(d)) for (const o of out) if (o.act === d.lspec) { o.score *= LABOR23.specMul; o.why += '（拿手活）'; } /* loop155 */
+  if (d.ng && qiMax(d) > 0 && qiOf(d) < qiMax(d) * NG23.medLow) for (const o of out) if (o.act === 'meditate') { o.score *= NG23.medBoost; o.why += '（內力不足，先打坐回氣）'; } /* loop153 */
+  if (d.lspec && isLabor(d)) for (const o of out) if (o.act === d.lspec) { o.score *= LABOR23.specMul; o.why += '（拿手活）'; } /* loop155 */
   drawBoost(s, d, out); // loop6
   pairBoost(s, d, out); // loop8
   { const rs = repairScore(s, d); if (rs > 0) out.push({ act: 'repair', score: rs, why: s.fence.hp <= 0 ? '柵被撞破了，得趕快補上' : '柵有破損，去補一補' }); } // loop2 修柵廣告
@@ -321,7 +319,7 @@ export function scoreActs(s, d) {
   const ph = c.ph, sch = SCHEDULE[ph] || {}, n = d.needs;
   const plotWork = s.plots.some((p) => p.st === 'empty' || p.st === 'ripe');
   // v0.95 統一倍率管線：作息是時段閘門（管線外），性格→天賦組、心情→狀態組、職責/首徒/雇工→外部組
-  const tparts = (act) => { const r = (d.personality || []).map((p) => [TRAITS[p]?.name || p, (d.v24 && TRAITS[p]?.mods24?.[act]) || TRAITS[p]?.mods?.[act] || 1]).filter(([, v]) => v !== 1); const vm = valueMul(d, act); if (vm !== 1) r.push(['價值觀', vm]); return r; };
+  const tparts = (act) => { const r = (d.personality || []).map((p) => [TRAITS[p]?.name || p, (TRAITS[p]?.mods24?.[act]) || TRAITS[p]?.mods?.[act] || 1]).filter(([, v]) => v !== 1); const vm = valueMul(d, act); if (vm !== 1) r.push(['價值觀', vm]); return r; };
   for (const o of out) { const f = { base: o.score, sched: sch[o.act] || 1, trait: traitMul(d, o.act), mood: moodMul(d, o.act), noise: rand(s) * 8, P: { talent: tparts(o.act), state: o.act && moodMul(d, o.act) !== 1 ? [['心情', moodMul(d, o.act)]] : [], ext: [] } }; o.f = f; }
   postRows(s, d, out, plotWork);
   for (const o of out) { const f = o.f, p = pipeline(f.P); f.talent = p.talent; f.state = p.state; f.ext = p.ext; f.total = p.total; f.text = mulText(p); f.bored = boredMul(s, d, o.act); o.score = f.base * f.sched * p.total * f.bored + f.noise; delete f.P;
@@ -355,7 +353,7 @@ function assign(s, d, act, why) {
   if (act === 'defend') { if (!s.band || !canDefend(d)) return false; d.task = { act, node: FENCE.node, phase: 'go' }; goto(d, FENCE.node); d.reason = why; return true; }
   if (act === 'repair') { if (!(repairScore(s, d) > 0)) return false; d.task = { act, node: FENCE.node, phase: 'go' }; goto(d, FENCE.node); d.reason = why; return true; }
   if (act === 'eat' && s.res.food <= 0) return false;
-  if (act === 'eat' && s.v22 && !d.noPairMeal) mealInvite(s, d);
+  if (act === 'eat' && !d.noPairMeal) mealInvite(s, d);
   if (act === 'cook' && vegFree(s) < STOCK_RESV.cook.amt) return false;
   let plot; if (act === 'farm') { plot = s.plots.findIndex((p, i) => (p.st === 'ripe' || p.st === 'empty') && !holder(s, `plot:${i}`)); if (plot < 0) return false; }
   const b = bestFac(s, d, act); if (!b) return false; const f = b.f;
@@ -403,7 +401,7 @@ const STAGE_NAME = ['', '踏入大成', '臻至化境', '返璞歸真'];
 /* M1：衝關事蹟；大事紀只記「本門第一位達到此境」與「某人第一門返璞歸真」，免得洗版 */
 /* loop148 v2.25（決定 140）：v22 只有本門第一位化境、第一位返璞歸真、掌門本人化境才暫停（top）；其餘化境走竹簡（mid）。舊局回 null＝照舊依字樣分級 */
 export function breakTier(s, d, r) {
-  if (!s.v22 || r.stage < 2) return null; const A = (s.alertFirst ??= {}), k = `b${r.stage}`, top = !A[k] || (r.stage === 2 && d.id === 'hero');
+  if (r.stage < 2) return null; const A = (s.alertFirst ??= {}), k = `b${r.stage}`, top = !A[k] || (r.stage === 2 && d.id === 'hero');
   A[k] = true; return top ? 'top' : 'mid';
 }
 function breakDeed(s, d, r) {
@@ -418,13 +416,13 @@ function decide(s, d) {
     if (assign(s, d, o, '玩家指派')) { onAssign(s, d, o, true); d.decision = { layer: 'order', act: o, why: '玩家指派' }; return true; }
     d.reason = `指派「${o === 'hunt' ? '狩獵' : ACTIVITIES[o].name}」暫不可行`; return false;
   }
-  if (s.v22 && (shelterGo(s, d) || feedGo(s, d))) return true; // M3
+  if ((shelterGo(s, d) || feedGo(s, d))) return true; // M3
   const sc = scoreActs(s, d); d.why = sc.slice(0, 3).map((c) => ({ act: c.act, score: Math.round(c.score), f: c.f, why: c.why }));
   for (const c of sc) if (assign(s, d, c.act, c.why)) { d.picked = c.act; d.decision = { layer: c.layer, act: c.act, why: c.why }; return true; }
   return false;
 }
 
-export function speedOf(d) { return BASE_SPEED * (1 + d.skills.agility / 100) * (d.carry ? 0.7 : 1) * (d.needs.energy < 30 ? 0.8 : 1) * (1 + (d.v23 ? NG23.speedPerTier : ART_GAIN.speedPerTier) * Math.max(0, effectTier(d, 'speed') + 1) * (d.v24 ? stepDrive28(d) : 1)) * (d.v24 ? 1 + 0.002 * mastery(d, 'shenfa') : 1) * (d.path?.length ? yuqiMul(d) : 1); } /* loop198：身法造詣每 10 點腳程 +2%；loop196 輕功催動 */
+export function speedOf(d) { return BASE_SPEED * (1 + d.skills.agility / 100) * (d.carry ? 0.7 : 1) * (d.needs.energy < 30 ? 0.8 : 1) * (1 + (NG23.speedPerTier) * Math.max(0, effectTier(d, 'speed') + 1) * (stepDrive28(d))) * (1 + 0.002 * mastery(d, 'shenfa')) * (d.path?.length ? yuqiMul(d) : 1); } /* loop198：身法造詣每 10 點腳程 +2%；loop196 輕功催動 */
 
 function moveStep(d, dt) {
   if (d.path.length && yuqiOn(d)) d.qi = Math.max(qiMax(d) * NG23.yuqi.keep, qiOf(d) - NG23.yuqi.drain * dt); /* loop153 御氣耗氣，留三成底、不會力竭 */
@@ -470,9 +468,9 @@ function doTask(s, d, dt) {
     t.timer += dt;
     if (t.partner && !byId(s, t.partner)) { cancelTask(s, d, '對手不在了'); return; }
     if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = byId(s, t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
-    const effDur = durOf(s, t) / (s.v23 ? laborSpeed(s, d, t.act) : 1); /* loop155 幫工專長／清修 */
+    const effDur = durOf(s, t) / (laborSpeed(s, d, t.act)); /* loop155 幫工專長／清修 */
     if (A.energy && effDur > 0) d.needs.energy = clamp(d.needs.energy + A.energy * dt / effDur, 0, 100);
-    if (t.act === 'rest' && d.ng) addQi(d, (d.v23 ? restQi(d) : NG.rest) * dt); // loop103 歇息回內力
+    if (t.act === 'rest' && d.ng) addQi(d, (restQi(d)) * dt); // loop103 歇息回內力
     if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (t.floor ? 0.6 : 1) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', s.t); if (t.timer < dt * 1.5) think(s, d, t.floor || (t.fac === 'hall' && s.fac.hall.stage === 0) ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= CORE.wakeAt && t.timer > 4))) finish(s, d); return; }
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt, 'labor'); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
     const dur = effDur;
@@ -493,10 +491,10 @@ function doTask(s, d, dt) {
       if (t.act === 'leisure') think(s, d, 'idled');
       if (t.act === 'forage') d.needs.fun = clamp((d.needs.fun ?? 60) + (d.personality.includes('playful') ? 20 : 8), 0, 100);
       if (t.act === 'eat' && s.res.food >= 8) think(s, d, 'wellFed');
-      if (t.act === 'eat' && s.v22 && (t.mate || d.pendingMate)) { const p = byId(s, t.mate || d.pendingMate); d.pendingMate = undefined; if (p && (p.task?.act === 'eat' || p.lastAte === s.t) && (p.task?.mate === d.id || p.pendingMate === d.id || t.mate === p.id)) { d.needs.social = clamp(d.needs.social + PAIR.mealSocial, 0, 100); think(s, d, 'mealPair'); if (d.id < p.id) { relAdd(s, d, p, PAIR.mealRel); log(s, `${d.name}和${p.name}湊在一桌吃飯`, 'low'); } } }
+      if (t.act === 'eat' && (t.mate || d.pendingMate)) { const p = byId(s, t.mate || d.pendingMate); d.pendingMate = undefined; if (p && (p.task?.act === 'eat' || p.lastAte === s.t) && (p.task?.mate === d.id || p.pendingMate === d.id || t.mate === p.id)) { d.needs.social = clamp(d.needs.social + PAIR.mealSocial, 0, 100); think(s, d, 'mealPair'); if (d.id < p.id) { relAdd(s, d, p, PAIR.mealRel); log(s, `${d.name}和${p.name}湊在一桌吃飯`, 'low'); } } }
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
-      if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) for (let i = 0; i < (facStage(s, t.fac).medEase || 1); i++) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s) - ngBreak(d)); /* loop105 內力衝關：成功率 +btBonus，仍封頂 0.9；loop108 已達 0.9 不扣 */ if (r?.ok && s.grow && r.stage <= 2) { growEnsure(d); settleGrowth(d, r.art, d.arts[r.art.id], { src: 'break', stage: r.stage }); } /* loop79 突破里程碑 */ const bTier = r?.ok && breakTier(s, d, r); if (r?.ok && s.v22) breakDeed(s, d, r); if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`, bTier || undefined); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
-      if (t.act === 'meditate' && d.ng) addQi(d, d.v23 ? medQi(d) : NG.med); // loop103 打坐一次回內力（衝關扣用在前）
+      if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) for (let i = 0; i < (facStage(s, t.fac).medEase || 1); i++) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s) - ngBreak(d)); /* loop105 內力衝關：成功率 +btBonus，仍封頂 0.9；loop108 已達 0.9 不扣 */ if (r?.ok && s.grow && r.stage <= 2) { growEnsure(d); settleGrowth(d, r.art, d.arts[r.art.id], { src: 'break', stage: r.stage }); } /* loop79 突破里程碑 */ const bTier = r?.ok && breakTier(s, d, r); if (r?.ok) breakDeed(s, d, r); if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`, bTier || undefined); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
+      if (t.act === 'meditate' && d.ng) addQi(d, medQi(d)); // loop103 打坐一次回內力（衝關扣用在前）
       if (t.act === 'learn' && d.pendingArt) { const m = learnArt(d, d.pendingArt, s.t); s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
       if (s.draw && (t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) { const c = (s.cnt ??= { chat: 0, spar: 0 }); c[t.act]++; } // loop22 完成場次計數（opt-in）
       if (t.act === 'chat' && t.partner) { const p = byId(s, t.partner); d.together += 20; if (isLabor(d) && !isLabor(p)) d.cowork = (d.cowork || 0) + 30;
@@ -506,17 +504,17 @@ function doTask(s, d, dt) {
       if (t.act === 'repair') repairDone(s, d);
       if (t.act === 'pass' && t.lead && t.partner) { const p = byId(s, t.partner); if (p) passDo(s, d, p, t.art); }
       if (t.act === 'study' && s.readwu) { const w = readStudy(s, d); if (w) log(s, `${d.name}在藏經閣讀了許久，忽然開竅——悟性長進了${d.rootKnown ? `（${w}）` : ''}。`); } // loop140 讀書長悟性
-      if ((t.act === 'study' || t.act === 'meditate') && s.v24) { const dv = checkDeriveArt(s, d); if (dv) { log(s, `【開宗立派】${d.name}融會貫通，將兩門絕藝合參推演出「《${dv.name}》」，納入本門傳承！`); recordDeed(s, d, 'derive', { chron: `${d.name}合參推演出《${dv.name}》，納入本門傳承` }); } } // loop165 Batch 5.1
-      if (t.act === 'study' && s.v24) { const g = studyChart24(s, d, () => rand(s)); if (g) log(s, `【藏經閣】${d.name}在書堆裡翻出一卷《${g.art.name}》，從此略通${CATS[g.cat].name}。`); } // loop160 Batch 1.2
-      if (s.v24 && d.v24) { /* loop181 v2.8 經脈內傷：練功／切磋逆催累積，打坐／醫館化解 */
+      if ((t.act === 'study' || t.act === 'meditate')) { const dv = checkDeriveArt(s, d); if (dv) { log(s, `【開宗立派】${d.name}融會貫通，將兩門絕藝合參推演出「《${dv.name}》」，納入本門傳承！`); recordDeed(s, d, 'derive', { chron: `${d.name}合參推演出《${dv.name}》，納入本門傳承` }); } } // loop165 Batch 5.1
+      if (t.act === 'study') { const g = studyChart24(s, d, () => rand(s)); if (g) log(s, `【藏經閣】${d.name}在書堆裡翻出一卷《${g.art.name}》，從此略通${CATS[g.cat].name}。`); } // loop160 Batch 1.2
+      /* loop181 v2.8 經脈內傷：練功／切磋逆催累積，打坐／醫館化解 */
         if (t.act === 'train' || t.act === 'spar') { const w = qiInjuryAdd28(s, d); if (w) log(s, `【經脈暗傷】${d.name}強以異種內息催動他派武學《${w.name}》，真氣逆行，經脈隱隱作痛！`); }
         if (t.act === 'meditate') qiInjuryCure28(s, d, DRIVE28.med);
-        if (t.act === 'heal' && d.qiInjury) qiInjuryCure28(s, d, specK(bestSpec(s, 'yishu')) > 0 || s.ds.some((o) => o.arts?.linjiZhuang) ? 100 : DRIVE28.heal); }
+        if (t.act === 'heal' && d.qiInjury) qiInjuryCure28(s, d, specK(bestSpec(s, 'yishu')) > 0 || s.ds.some((o) => o.arts?.linjiZhuang) ? 100 : DRIVE28.heal);
       const hp0 = d.hp, pill0 = s.res.pill || 0; if (A.eff) applyEff(s, d, A.eff, A.name);
-      if (s.v23) { specGrow(d, t.act); /* loop151 v2.3 專長 */
+      specGrow(d, t.act); /* loop151 v2.3 專長 */
         if (t.act === 'heal' && d.hp > hp0) { const k = specK(bestSpec(s, 'yishu')); if (k > 0) d.hp = Math.min(100, d.hp + (d.hp - hp0) * SPEC.healMax * k); }
-        if (t.act === 'brew' && (s.res.pill || 0) > pill0 && specM(d, 'yishu') > 0) { d.brewN = (d.brewN || 0) + 1; if (d.brewN % SPEC.brewEvery === 0) { resAdd(s, 'pill', 1); log(s, `${d.name}依醫書配伍，多煉出一顆丹藥。`); } } }
-      if (A.carry && s.v23 && t.act === 'forage' && specM(d, 'dushu') > 0) { d.carry = { ...A.carry, herb: (A.carry.herb || 0) + 1 }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; }
+        if (t.act === 'brew' && (s.res.pill || 0) > pill0 && specM(d, 'yishu') > 0) { d.brewN = (d.brewN || 0) + 1; if (d.brewN % SPEC.brewEvery === 0) { resAdd(s, 'pill', 1); log(s, `${d.name}依醫書配伍，多煉出一顆丹藥。`); } }
+      if (A.carry && t.act === 'forage' && specM(d, 'dushu') > 0) { d.carry = { ...A.carry, herb: (A.carry.herb || 0) + 1 }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; }
       if (A.carry) { d.carry = { ...A.carry }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; }
       finish(s, d);
     }
@@ -553,7 +551,7 @@ function huntStep(s, dt) {
   const h = s.hunt; if (!h) return;
   const team = s.ds.filter((d) => h.team.includes(d.id));
   if (!h.started) { if (!team.every((d) => d.at === h.post || d.hp <= 25)) return; h.started = true; spawnWave(s); }
-  h.t += dt; h.wt += dt; const zk = s.v23 ? zhenK(s) : 0; /* loop151 陣法：減傷、減速 */
+  h.t += dt; h.wt += dt; const zk = zhenK(s); /* loop151 陣法：減傷、減速 */
   while (h.queue.length && h.queue[0].t <= h.wt) { const q = h.queue.shift(), M = MONSTERS[q.k]; s.mons.push({ uid: `${q.k}${s.rngN++}`, k: q.k, hp: M.hp, max: M.hp, pos: [...NODES.den], path: MON_PATH.slice(1), cool: 0 }); }
   for (const m of s.mons) {
     if (m.raid) continue;
@@ -574,9 +572,9 @@ function huntStep(s, dt) {
       const lv = d.skills[mv.skill]; const reach = mv.range * (1 + lv / 200);
       const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
       let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t);
-      if (d.v23) { power *= (hasSpec(d, 'yunv') && team.some((o) => o !== d && o.arts?.yunv) ? 1.15 : 1); if ((hasSpec(d, 'hama') || hasSpec(d, 'qiankun')) && d.hp < 50 && qiOf(d) >= qiMax(d) * 0.5 && spendQi(d, 10)) power *= 1.5; } /* loop153 真氣出手、劍招、內功被動 */
+      power *= (hasSpec(d, 'yunv') && team.some((o) => o !== d && o.arts?.yunv) ? 1.15 : 1); if ((hasSpec(d, 'hama') || hasSpec(d, 'qiankun')) && d.hp < 50 && qiOf(d) >= qiMax(d) * 0.5 && spendQi(d, 10)) power *= 1.5; /* loop153 真氣出手、劍招、內功被動 */
       const ar = mv.aoe ? mv.aoe + qiAoeAdd(d, mv) : 0, hitList = mv.aoe ? live.filter((m) => dist(m.pos, tgt.pos) <= ar) : [tgt];
-      const psn = s.v23 && specM(d, 'dushu') > 0; for (const m of hitList) { m.hp -= power; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', d); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
+      const psn = specM(d, 'dushu') > 0; for (const m of hitList) { m.hp -= power; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', d); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
       h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5, 'fight');
       d.cool = mv.cd * cdMul(d, mv.id, s.t); d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike';
       { const tier = visTier(d, mv.id), a = artOfMove(mv.id), va = a && variantOf(d, a.id, s.t); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...tgt.pos], r: mv.aoe || 16, ttl: tier >= 3 ? 1.0 : 0.6, tier, vcolor: va?.color || null, sprite: d.sprite, face: d.face }); if (tier >= 3) s.fx.push({ kind: 'shake', ttl: 0.35 }); }
@@ -637,11 +635,11 @@ function ecoStep(s, dt) {
 
 // ---- v0.8 雇工：有名有姓、有性格、有隱藏根骨 ----
 // loop155 v2.3 清修山莊：弟子 ≤3 且幫工 ≥2；練功／打坐／讀書快 20%
-export const isEliteHermit = (s) => !!(s.v23 && disciples(s).length <= LABOR23.hermitMaxD && laborers(s).length >= LABOR23.hermitMinL);
+export const isEliteHermit = (s) => !!(disciples(s).length <= LABOR23.hermitMaxD && laborers(s).length >= LABOR23.hermitMinL);
 export const laborSpeed = (s, d, act) => (isLabor(d) && d.lspec === act ? LABOR23.specSpeed : 1) * (!isLabor(d) && LABOR23.hermitActs.includes(act) && isEliteHermit(s) ? LABOR23.hermitBuff : 1);
 export function laborCap(s) { return FACILITIES.reduce((a, f) => a + (facStage(s, f.id).laborBeds || 0), 0); }
 export function canHire(s) {
-  const next = (s.v23 ? [...LABOR_POOL, ...LABOR_POOL23] : LABOR_POOL).find((p) => !s.ds.some((d) => d.id === p.id) && !s.laborGone.includes(p.id));
+  const next = ([...LABOR_POOL, ...LABOR_POOL23]).find((p) => !s.ds.some((d) => d.id === p.id) && !s.laborGone.includes(p.id));
   if (!next) return { ok: false, why: '村裡暫時沒人想上山做工' };
   if (laborers(s).length >= laborCap(s)) return { ok: false, why: laborCap(s) ? `工寮已滿（${laborers(s).length}/${laborCap(s)}）` : '先蓋工寮讓雇工有地方睡' };
   if (s.res.coin < ECON.hireCoin) return { ok: false, why: `香火錢不足（${s.res.coin}/${ECON.hireCoin}）` };
@@ -652,7 +650,7 @@ export function hire(s) {
   const c = canHire(s); if (!c.ok) return c;
   s.res.coin -= ECON.hireCoin; s.res.food -= ECON.hireFood; book(s, 'out', 'coin', ECON.hireCoin); book(s, 'out', 'food', ECON.hireFood);
   const d = mkDisciple(c.next, 1, 'gate', c.next.personality, c.next.personality.slice(0, 1));
-  Object.assign(d, { role: 'laborer', root: c.next.root, rootKnown: false, cowork: 0, unpaid: 0, reason: '應雇上山' }); if (s.v23 && LABOR23.spec[d.id]) d.lspec = LABOR23.spec[d.id]; /* loop155 幫工專長 */
+  Object.assign(d, { role: 'laborer', root: c.next.root, rootKnown: false, cowork: 0, unpaid: 0, reason: '應雇上山' }); if (LABOR23.spec[d.id]) d.lspec = LABOR23.spec[d.id]; /* loop155 幫工專長 */
   s.ds.push(d); for (const o of s.ds) if (o !== d) initPair(s, o, d, 0);
   log(s, `雇了山下的${d.name}來做工（香火錢 ${ECON.hireCoin}、糧 ${ECON.hireFood}；每日工錢 ${ECON.wage}）。`); return { ok: true, d };
 }
@@ -667,7 +665,7 @@ function checkRoot(s, d) { if (!d.rootKnown && (d.cowork || 0) >= ROOT.revealAt)
 export const avgAff = (s, d) => { const ds = disciples(s); return ds.length ? ds.reduce((a, o) => a + aff(s, o, d), 0) / ds.length : 0; };
 export function canInvite(s, id) {
   const d = byId(s, id); if (!d || !isLabor(d)) return { ok: false, why: '不是雇工' };
-  if (s.v23 && d.hidden?.shown) { if (disciples(s).length >= capacity(s)) return { ok: false, why: `弟子床位已滿（${disciples(s).length}/${capacity(s)}）` }; return { ok: true, d }; } /* loop155 隱世高人身分已明：不必再看根骨與好感 */
+  if (d.hidden?.shown) { if (disciples(s).length >= capacity(s)) return { ok: false, why: `弟子床位已滿（${disciples(s).length}/${capacity(s)}）` }; return { ok: true, d }; } /* loop155 隱世高人身分已明：不必再看根骨與好感 */
   if (!d.rootKnown) return { ok: false, why: `還看不出根骨（共事 ${Math.floor(d.cowork || 0)}/${ROOT.revealAt}）` };
   if (d.root < ROOT.inviteMin) return { ok: false, why: `根骨${ROOT.names[d.root]}，不宜習武` };
   if (avgAff(s, d) < ROOT.inviteAff) return { ok: false, why: `同門對他還不熟（好感 ${avgAff(s, d).toFixed(0)}/${ROOT.inviteAff}）` };
@@ -677,7 +675,7 @@ export function canInvite(s, id) {
 export function invite(s, id) {
   const c = canInvite(s, id); if (!c.ok) return c; const d = c.d;
   cancelTask(s, d, '拜入外門'); d.role = 'outer'; delete d.unpaid; d.duties = [...CHORE_ACTS]; d.prio = 'normal'; d.chore = 0; d.choreDebt = 0; d.contrib = 0; think(s, d, 'invited'); s.rep = (s.rep || 0) + 1;
-  log(s, `${d.name}放下扁擔，拜入外門（根骨${ROOT.names[d.root]}）。`); if (s.v22) recordDeed(s, d, 'join', { chron: `雇工${d.name}拜入外門` }); return { ok: true, d };
+  log(s, `${d.name}放下扁擔，拜入外門（根骨${ROOT.names[d.root]}）。`); recordDeed(s, d, 'join', { chron: `雇工${d.name}拜入外門` }); return { ok: true, d };
 }
 function dismissLabor(s, d, why) {
   removeActor(s, d, why, { quiet: true }); BYID.delete(s); s.laborGone.push(d.id);
@@ -714,22 +712,22 @@ export function payday(s) {
 /* loop181 v2.8：內傷 ≥50 每日扣氣血 8、心情 4；主修外功已不逆催（改修同屬／調和內功）則每日自癒 6 */
 /* loop187 v2.9：小門派旗標（清冷清修）＋守正先練根基按特質計數（每人一次） */
 export function temperDaily29(s) { const W = (s.v29n ??= {}), B = (W.baseByTrait ??= { honest: 0, diligent: 0, stubborn: 0, rigid: 0, sect: 0 }); const small = s.ds.length <= TEMPER29.small;
-  for (const d of s.ds) { if (!d.v24) continue; d.small29 = small; if (d.base28 && !d.base29c) { d.base29c = true; const t = ['rigid', 'stubborn', 'honest', 'diligent'].find((x) => (d.personality || []).includes(x)) || 'sect'; B[t]++; } /* loop193 拘謹優先，不讓勤奮／憨厚蓋過 */
+  for (const d of s.ds) { d.small29 = small; if (d.base28 && !d.base29c) { d.base29c = true; const t = ['rigid', 'stubborn', 'honest', 'diligent'].find((x) => (d.personality || []).includes(x)) || 'sect'; B[t]++; } /* loop193 拘謹優先，不讓勤奮／憨厚蓋過 */
     if (d.xiao29 && !d.xiao29c) { d.xiao29c = true; W.xiao = (W.xiao || 0) + 1; } if (d.ling29 && !d.ling29c) { d.ling29c = true; W.ling = (W.ling || 0) + 1; } if (temper29(d).qing && !d.qing29c) { d.qing29c = true; W.qing = (W.qing || 0) + 1; } } }
-function injuryDaily28(s) { for (const d of s.ds) { if (!d.v24 || !d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuter28(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
+function injuryDaily28(s) { for (const d of s.ds) { if (!d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuter28(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
 export function dailyPipeline(s) {
   payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s);
   if (s.draw) cliqueDaily(s);
   if (s.m9) lairDaily(s, EH);
   if (s.jhev) jhevDaily(s);
-  if (s.v24) { temperDaily29(s); injuryDaily28(s); siegeDaily27(s); crusadeDaily27(s, EH); } /* loop181 經脈內傷每日 */ /* loop179 傾巢討伐（執事自動）；loop178 v2.7 魔教圍山（雜湊擲骰，不吃亂數流） */
-  if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild, canBuildFac, buildFac, ...(s.v23 ? { hire, canHire, laborCap, laborers, stewHireCoin: LABOR23.stewHireCoin } : {}) });
+  temperDaily29(s); injuryDaily28(s); siegeDaily27(s); crusadeDaily27(s, EH); /* loop181 經脈內傷每日 */ /* loop179 傾巢討伐（執事自動）；loop178 v2.7 魔教圍山（雜湊擲骰，不吃亂數流） */
+  if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild, canBuildFac, buildFac, ...({ hire, canHire, laborCap, laborers, stewHireCoin: LABOR23.stewHireCoin }) });
 }
 export { recordDeed, DEED_CAP, CHRON_CAP, tallyAct, bioLine, bioLean } from './util.mjs';
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
   if (s.prof) for (const d of s.ds) if (!d.pf) d.pf = 1; /* loop91 新入門者也吃熟練度十重 */
-  if (s.v23) { for (const d of s.ds) { d.v23 = true; if (s.v24) { d.v24 = true; const af = affix24(s, d); if (af) log(s, `【頓悟】${d.name}把「${af.art.name}」練到大成，忽有所悟——得「${af.x.name}」字訣。`); } /* loop162 Batch 3 */ d.sectId = s.sect?.id || null; if (d.ng && hasSpec(d, 'jiuyang') && !d.path?.length) addQi(d, 0.25 * dt); } if (s.jh?.poison && bestSpec(s, 'yishu') > 0) { s.jh.poison = null; log(s, '醫者出手，化骨綿掌的餘毒被解了。'); } } /* loop151 */
+  for (const d of s.ds) { const af = affix24(s, d); if (af) log(s, `【頓悟】${d.name}把「${af.art.name}」練到大成，忽有所悟——得「${af.x.name}」字訣。`); /* loop162 Batch 3 */ d.sectId = s.sect?.id || null; if (d.ng && hasSpec(d, 'jiuyang') && !d.path?.length) addQi(d, 0.25 * dt); } if (s.jh?.poison && bestSpec(s, 'yishu') > 0) { s.jh.poison = null; log(s, '醫者出手，化骨綿掌的餘毒被解了。'); } /* loop151 */
   if (s.neigong) { s.ngshield = true; for (const d of s.ds) { if (!d.ng) { d.ng = 1; d.qi ??= 0; } if (!d.ng2) { d.ng2 = 1; d.qi = Math.min(d.qi ?? 0, qiMax(d)); } } } /* loop142 一版舊檔改護體真氣 */ /* loop103 */
   if (s.laborgrow) for (const d of s.ds) d.lg = 1; /* loop127 新入門者 */
   if (s.grow) for (const d of s.ds) { if (!d.gInit) growEnsure(d); if (s.growdr) d.gdr = 1; } /* loop84 新入門者立即折算，介面不必寫狀態 */
@@ -744,7 +742,7 @@ export function tick(s, dt = 0.25) {
     d.needs.social = clamp(d.needs.social - 0.4 * dt * (s.cotrain && cotrainNear(s, d) ? 0.5 : 1), 0, 100);
     moodStep(s, d, dt); revealStep(s, d, dt); if (isLabor(d)) coworkStep(s, d, dt); else if (d.role === 'outer' && !d.rootKnown && Math.max(d.cowork || 0, d.together || 0) >= ROOT.revealAt) { d.rootKnown = true; log(s, `相處久了，看出外門${d.name}根骨「${ROOT.names[d.root]}」。`); }
     if (!d.task) decide(s, d);
-    if (d.task) { moveStep(d, dt); if (s.v22) tallyAct(d, d.task.act, dt); doTask(s, d, dt); } // M1 傳記：看得見的行為時間
+    if (d.task) { moveStep(d, dt); tallyAct(d, d.task.act, dt); doTask(s, d, dt); } // M1 傳記：看得見的行為時間
     if (d.anim === 'strike' && d.cool < 0.6) d.anim = null;
   }
   { const em = emergency(s); if (em !== !!s.emergency) { s.emergency = em; if (outers(s).length >= QUOTA.outerMin) log(s, em ? (s.res.food <= 0 ? '斷糧了！內門弟子暫時放下功課回來幫忙。' : '野豬下山！內門弟子暫時回來顧家。') : '危機解除，內門弟子回去練功。'); } }

@@ -44,11 +44,9 @@ test('熟練與決策都走管線，d.why 顯示三組', () => {
 });
 
 // 3 決定性＋查表
-test('同種子 30 日狀態雜湊一致（golden）', () => {
-  const a = createState(42), b = createState(42); runDays(a, 30); runDays(b, 30);
-  assert.equal(hash(a), hash(b)); assert.equal(a.t, 30 * DAY);
-  const g = new URL('./fixtures/golden-30d.txt', import.meta.url); const want = fs.existsSync(g) ? fs.readFileSync(g, 'utf8').trim() : null;
-  if (process.env.UPDATE_GOLDEN || !want) fs.writeFileSync(g, hash(a) + '\n'); else assert.equal(hash(a), want, '規則有意改變時以 UPDATE_GOLDEN=1 重產');
+test('同種子 5 日狀態雜湊一致', () => { /* #390：舊規則 golden-30d.txt 退休；固定種子雜湊改由 test/golden/（#388）鎖 */
+  const a = createState(42), b = createState(42); runDays(a, 5); runDays(b, 5);
+  assert.equal(hash(a), hash(b)); assert.equal(a.t, 5 * DAY);
 });
 test('byId 查表：與線性搜尋一致、不進存檔', () => {
   const s = createState(3); tick(s); for (const d of s.ds) assert.equal(byId(s, d.id), d); assert.equal(byId(s, 'nobody'), undefined); assert.ok(!save(s).includes('BYID'));

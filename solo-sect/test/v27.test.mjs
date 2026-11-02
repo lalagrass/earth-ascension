@@ -52,7 +52,6 @@ test('loop178 魔教圍山：前一日預警、第 18 日 3 波／第 27 日 4 �
   assert.equal(TH.siegeDaily27(s), null, '同日不重複');
   const E1 = TH.SIEGE27.days[27].E.slice(); TH.SIEGE27.days[27].E = [1, 1e9, 1e9, 1e9]; const n = s.ds.length; s.day = 27; const L = TH.siegeDaily27(s); TH.SIEGE27.days[27].E = E1;
   assert.equal(L.win, false); assert.equal(L.won, 1); assert.equal(s.ds.length, n); assert.ok(s.ds.every((d) => d.hp > 0));
-  const o = createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false }); o.day = 18; assert.equal(TH.siegeDaily27(o), null, '舊局不觸發');
 });
 import { crusade27 } from '../src/sim.mjs';
 test('loop179 傾巢討伐：解鎖條件、不限人數留 1 人、耗糧、回山結算、獎勵、不吃山賊亂數、按鈕', () => {
@@ -68,5 +67,4 @@ test('loop179 傾巢討伐：解鎖條件、不限人數留 1 人、耗糧、回
 });
 test('loop179 執事自動：只在 13–14、22–23 日；舊局無按鈕', () => {
   const s = V(); tick(s, 0.1); s.rep = 99; s.res.food = 40; s.day = 15; assert.equal(TH.crusadeDaily27(s), null);
-  const o = createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false }); o.day = 20; assert.equal(TH.crusadeHtml27(o), ''); assert.equal(TH.canCrusade27(o).ok, false);
 });

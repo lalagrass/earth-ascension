@@ -26,7 +26,7 @@ test('個別武學狀態分辨', () => { const s = mk(), d = s.ds[0], a = A('bas
   r.btCd = 0; r.xp = 54.9; r.bt1 = false; assert.equal(artStatus(d, a, s.t).st, 'stuck'); assert.match(artStatus(d, a, s.t).text, /需打坐突破/);
   delete d.arts.wavePalm; assert.equal(artStatus(d, A('wavePalm'), s.t).st, 'req'); });
 test('來源理由取自真實結算', () => { const s = mk(), d = s.ds[0]; d.arts.basicFist.gm = { e: 20 }; d.arts.wavePalm ??= { xp: 0 }; d.arts.wavePalm.xp = 5; const h = growthHtml(d, {}, 1, s.t, true); assert.match(h, /拳掌底子：入門修練 ×1\.\d\d/); });
-test('未支援門類只標示', () => { assert.match(catHtml(mk().ds[0]), /尚未支援：棍棒/); });
+// #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
 test('主畫面閘門與減少動態', () => { const m = readFileSync(new URL('../../src/main.mjs', import.meta.url), 'utf8'), c = readFileSync(new URL('../../style.css', import.meta.url), 'utf8');
   assert.match(m, /S\.grow \? growthHtml\(cur, GMEMO/); assert.match(c, /prefers-reduced-motion: reduce\)\{\.poly-grow \.poly-shape\{animation:none/); });
 void axisVals;

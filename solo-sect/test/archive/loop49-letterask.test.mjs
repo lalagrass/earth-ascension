@@ -12,8 +12,4 @@ test('開＋問我：出抉擇卡（只顯示勝算），不立即結算；應�
   const t = structuredClone(s); resolveChoice(t, ch.id, 1); assert.equal(t.rep, 10 - JHEV.letter.refuse.rep); assert.equal(t.jhev.lr, 1);
   resolveChoice(s, ch.id, 0); assert.equal(s.jhev.l, 1); assert.ok(!s.choices.some((c) => c.letter));
 });
-test('沒勾「問我」或關閉：照舊自動結算；亂數流一致', () => {
-  const a = mk({ letterask: true }); a.hero && (a.hero.askMajor = false); force(a); assert.ok(!a.choices.some((c) => c.letter)); assert.equal(a.jhev.l + (a.jhev.lr || 0), 1);
-  const b = mk({ letterask: true }); b.hero.askMajor = true; force(b); assert.equal(a.jhev.rng, b.jhev.rng);
-  assert.equal(autoPick(b, { letter: true, p: 0.2 }), 0); b.jhrefuse = true; assert.equal(autoPick(b, { letter: true, p: 0.2 }), 1);
-});
+// #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則

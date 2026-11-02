@@ -161,7 +161,7 @@ export const FACILITIES = [
     { name: '空地', sprite: null, offers: [], laborBeds: 0 },
     { name: '工寮', sprite: 'dorm_s0', offers: ['rest'], restRate: 6, laborBeds: 2, laborOnly: true, cost: { wood: 6 }, work: 16 },
     { name: '大工寮', sprite: 'dorm_s1', offers: ['rest'], restRate: 7, laborBeds: 4, laborOnly: true, cost: { wood: 8, stone: 6, coin: 4 }, work: 22, rep: 10 },
-    { name: '村舍大院', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, laborBeds: 8, laborOnly: true, cost: { wood: 12, stone: 8, coin: 12 }, work: 28, rep: 15, v23: true }, /* loop155 v2.3：只在 s.v23 可蓋 */
+    { name: '村舍大院', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, laborBeds: 8, laborOnly: true, cost: { wood: 12, stone: 8, coin: 12 }, work: 28, rep: 15 }, /* loop155 v2.3 起可蓋 */
   ] },
   { id: 'store', name: '院倉', node: 'court', stages: [{ name: '柴堆', sprite: 'woodpile', offers: ['chat', 'leisure'] }] },
 ];
@@ -324,7 +324,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '1.95';
+export const RULES_VERSION = '2.4'; /* #390：v22／v23／v24 世代旗標收進規則版本 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -805,7 +805,7 @@ export const CUSTOM_RIVALS = ['青城派', '鐵掌幫', '星宿派'];
 export function sectBiasMul(d, a) { // [流派偏向, 外門] 兩個乘數；沒門派資料的弟子回 [1,1]
   if (!d.stree) return [1, 1];
   const b = d.sbias || {}, sum = (a.tags || []).reduce((x, t) => x + (b[t] || 0), 0), m = 1 + Math.max(-SECT_K.biasCap, Math.min(SECT_K.biasCap, sum));
-  const out = a.classic && !a.signature && !d.stree.includes(a.id) && !(d.v24 && d.sectId === 'wuming') ? SECT_K.outside : 1; // 名俠招牌＝客傳，不罰；loop164 無名派【百納海川】不罰
+  const out = a.classic && !a.signature && !d.stree.includes(a.id) && !(d.sectId === 'wuming') ? SECT_K.outside : 1; // 名俠招牌＝客傳，不罰；loop164 無名派【百納海川】不罰
   return [m, out];
 }
 
@@ -890,3 +890,6 @@ export function destinyStep(s, id, ctx) {
   }
   return false;
 }
+
+// loop143（v2.2 baseline）：已驗證、原本預設勾選的規則轉正；開局畫面的新局帶 v22:true 一律開。#390 起舊存檔讀入也套這張表（save.mjs toCurrentRules）。
+export const BASELINE_V22 = Object.freeze({ grow: true, growdr: true, neigong: true, ngshield: true, prof: true, laborgrow: true, valor: true, valormid: true, rumor: true, readwu: true, comprehend: true, mentor: true, mpool: true, cotrain: true, cofun: true, paypill: true, longwatch: true, masterask: true, letterask: true, cropcare: true, mfit: true, jhrefuse: true, qshare: true, jhui: true, jhev: true, peace: true, lairpow: true, lift: true, bt25: true, draw: true });

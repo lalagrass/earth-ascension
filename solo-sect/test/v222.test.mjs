@@ -28,10 +28,7 @@ test('M1 v22 下跑 3 日：弟子有行為記帳、大事紀有落成或入門'
   const s = mk(); runDays(s, 3); assert.ok(s.ds.some((d) => d.acts && Object.keys(d.acts).length));
   assert.ok((s.chron || []).length >= 1); assert.ok(s.chron.every((c) => typeof c.text === 'string' && c.day >= 1));
 });
-test('M1 非 v22（舊局）不記帳、不寫大事紀', () => {
-  const s = createState(11, { kind: 'template', id: 'guojing', askMajor: false }); runDays(s, 2);
-  assert.ok(s.ds.every((d) => !d.acts)); assert.equal(s.chron, undefined);
-});
+// #390：舊局已不存在，刪「M1 非 v22（舊局）不記帳、不寫大事紀」
 
 // ---- M2 ----
 test('M2 剿寨後：前一日傳聞、當日餘黨反撲（不談價錢）', () => {
@@ -53,9 +50,7 @@ test('M2 沒擋住：記入大事紀、不給太平', () => {
   const s = mk(); const X = T(s); X.boss = { day: 5, state: 'on' }; bossEnd(s, { boss: true }, false, []);
   assert.equal(X.taiping, undefined); assert.equal(X.boss.state, 'lost'); assert.ok(s.chron.some((c) => /反撲得手/.test(c.text)));
 });
-test('M2 非 v22 不排餘黨', () => {
-  const s = createState(11, { kind: 'template', id: 'guojing', askMajor: false }); const X = T(s); X.boss = { day: 5, state: 'wait' }; X.next = 99; s.day = 5; threatDaily(s); assert.equal(X.boss.state, 'wait');
-});
+// #390：舊局已不存在，刪「M2 非 v22 不排餘黨」
 
 // ---- M3 ----
 const pairUp = (s) => { const [a, b] = s.ds.filter((d) => d.id !== 'hero' && d.adult !== false); a.spouse = b.id; b.spouse = a.id; return [a, b]; };
