@@ -28,7 +28,7 @@ if (flag('--worker')) { // 子行程：收一格、回雜湊
 }
 
 function readJson(name) { const u = new URL(name, DIR); return fs.existsSync(u) ? JSON.parse(fs.readFileSync(u, 'utf8')) : null; }
-const sortKeys = (o) => Object.fromEntries(Object.keys(o).sort().map((k) => [k, o[k]]));
+function sortKeys(o) { return Object.fromEntries(Object.keys(o).sort().map((k) => [k, o[k]])); }
 function writeJson(name, obj) { if (obj.runs) obj.runs = sortKeys(obj.runs); fs.writeFileSync(new URL(name, DIR), JSON.stringify(obj, null, 1) + '\n'); }
 
 function compare(label, want, got) {
