@@ -4,7 +4,6 @@ import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
 import * as A from '../src/arts.mjs';
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
-const OLD = () => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false });
 const other = (s) => s.ds.find((d) => d.id !== 'hero' && d.role !== 'laborer');
 const give = (d, id, xp) => { d.arts[id] ??= { xp: 0, last: 0 }; d.arts[id].xp = xp; };
 const fresh = (sect) => { const s = V({ sect24: sect }); tick(s, 0.1); const d = other(s); d.arts = {}; d.focus = null; d.qiInjury = 0; return [s, d]; };
@@ -28,9 +27,7 @@ test('loop181 第四階：陽內功逆催他派陰掌 ×0.65，練功累積內�
   assert.ok(A.injuryMul28(d) < 0.91 && A.injuryMul28(d) >= 0.75); assert.ok(A.styleBadges24(d).includes('⚠️【經脈內傷】'));
   A.qiInjuryCure28(s, d, A.DRIVE28.med); assert.equal(d.qiInjury, 24); A.qiInjuryCure28(s, d, A.DRIVE28.heal); assert.equal(d.qiInjury, 0); assert.equal(s.v28n.cure, 1);
 });
-test('loop181 舊局不吃催動與內傷', () => {
-  const o = OLD(); tick(o, 0.1); const d = other(o); assert.deepEqual(A.innerDrive28(d, A.artById('basicFist')), { tier: 0, mul: 1 }); d.qiInjury = 80; assert.equal(A.injuryMul28(d), 1);
-});
+// #390：舊局已不存在，刪「loop181 舊局不吃催動與內傷」
 test('loop182 雜學收緊：公共武學不算跨派；兩派血統即分心 ×0.82；三派大成＋造詣 ≥58 才萬流歸宗', () => {
   const [, d] = fresh('emei'); for (const id of ['basicFist', 'pushPalm', 'breath', 'snowStep', 'basicSword', 'stepEight']) give(d, id, 100);
   assert.equal(A.polymath24(d), 0); give(d, 'emeiSword', 100); give(d, 'luoyingPalm', 30); assert.equal(A.polymath24(d), 1);

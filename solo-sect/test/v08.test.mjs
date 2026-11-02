@@ -33,8 +33,8 @@ test('雇工：沒工寮不能雇；雇了扣香火錢與糧、有名字有性�
   assert.ok(r.d.name && r.d.personality.length === 2 && r.d.root >= 1 && !r.d.rootKnown); assert.equal(disciples(s).length, 3);
   hire(s); assert.equal(laborers(s).length, 2); assert.equal(canHire(s).ok, false); // 工寮 2 床
 });
-test('雇工只幹活不練武', () => {
-  const s = withShed(106); const d = hire(s).d; for (let i = 0; i < 200; i++) { tick(s); for (const o of scoreActs(s, d)) assert.ok(!['train', 'learn', 'spar', 'cook', 'farm', 'forage', 'encourage'].includes(o.act), o.act); }
+test('雇工只幹活不練武', () => { /* #390：現行規則（loop157 v2.3）幫工也種菜、煮飯、採集，但仍不練武、不鼓勵 */
+  const s = withShed(106); const d = hire(s).d; for (let i = 0; i < 200; i++) { tick(s); for (const o of scoreActs(s, d)) assert.ok(!['train', 'learn', 'spar', 'encourage'].includes(o.act), o.act); }
 });
 test('每日入帳與工錢；付不出兩日雇工離開且關係表清乾淨', () => {
   const s = withShed(107); s.res.coin = 4; hire(s); const id = laborers(s)[0].id; s.res.coin = 0; s.rep = 0;

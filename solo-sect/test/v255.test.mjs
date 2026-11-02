@@ -10,7 +10,7 @@ import { SECT_PICK24 } from '../src/data.mjs';
 import { buildSpec } from '../src/start-ui.mjs';
 import { passPick } from '../src/bonds.mjs';
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
-const OLD = () => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false });
+// #390：舊規則開局已不存在，原本的舊局對照組（OLD）與各測試裡的舊局斷言一併刪除
 const hero = (s) => s.ds.find((d) => d.id === 'hero');
 
 const NEW = { emei: ['emeiJiuyang', 'linjiZhuang', 'emeiSword', 'huifengSword', 'jindingPalm', 'tiangangFinger'], wudang: ['wudangJiuyang', 'wudangFist', 'rouyunSword', 'taijiSword'], taohua: ['biboXinfa', 'luoyingPalm', 'lanhuaHand', 'yuxiaoSword'], gumu: ['tianluoPalm', 'yunvSword'], xingxiu: ['huagongDafa', 'chousuiPalm', 'sanyinClaw'] }; /* loop201：神木毒功退出星宿樹 */
@@ -32,7 +32,6 @@ test('loop168 傳承鎖：他派（含無名派）鎖住、本門可學；九陰
   const w = V(); tick(w, 0.1); assert.equal(hero(w).sectId, 'wuming'); assert.ok(A.lockedArt24(hero(w), A.artById('emeiSword')));
   assert.ok(h.arts.emeiJiuyang && h.arts.emeiSword, '峨眉掌門 T1 根基＝峨眉九陽功＋峨眉劍法');
   assert.ok(!A.artHints(h, () => '').some((r) => r.id === 'luoyingPalm')); assert.ok(!A.artsSvg(h).includes('data-art="luoyingPalm"'));
-  const o = OLD(); tick(o, 0.1); assert.ok(!Object.keys(hero(o).arts).some((id) => A.artById(id)?.own24));
 });
 test('loop168 武當：武當長拳大成可領悟太極拳；太極拳大成可免柔雲劍法學太極劍（以拳通劍）', () => {
   const s = V({ sect24: 'wudang' }); tick(s, 0.1); const h = hero(s); delete h.arts.taiji; h.pendingArt = null;
@@ -68,5 +67,4 @@ test('loop169 開局門派選單：十個選項、自創主角帶 sect24（無�
   const base = { tab: 'custom', name: '甲', stats: {}, ans: Array(9).fill(0), ask: false };
   assert.equal(buildSpec({ ...base, sect24: 'gumu' }).sect24, 'gumu'); assert.ok(!('sect24' in buildSpec({ ...base, sect24: 'wuming' })));
   for (const k of SECT_PICK24.slice(1)) { const s = V({ sect24: k }); assert.equal(s.sect.id, k, k); }
-  const o = createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, sect24: 'gaibang' }); assert.equal(o.sect.id, 'wuming', '舊局忽略');
 });

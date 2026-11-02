@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { createState } from '../src/sim.mjs';
 import { MARKET, marketDo, marketWhy, left, econHtml } from '../src/economy.mjs';
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
-const OLD = () => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false });
+// #390：舊規則開局已不存在，原本這裡的舊局對照組與各測試裡的舊局斷言一併刪除
 
 test('loop148 市集：鐵木 35×2、靈石 30×2（loop157 P6；v2.3 存檔，loop159 起新局改走商隊規則），每集限量；買完補貨後可再買', () => {
   const s = V(); delete s.v24; s.res.coin = 500; s.res.tiemu = 0; s.res.lingshi = 0;
@@ -17,7 +17,6 @@ test('loop148 市集：鐵木 35×2、靈石 30×2（loop157 P6；v2.3 存檔，
 });
 test('loop148 市集：錢不夠不能買；舊局沒有稀有料', () => {
   const s = V(); s.res.coin = 30; assert.match(marketWhy(s, 'tiemu'), /錢不夠/);
-  const o = OLD(); o.res.coin = 500; assert.ok(marketWhy(o, 'tiemu')); assert.equal(left(o, 'tiemu'), 0); assert.doesNotMatch(econHtml(o), /鐵木/);
 });
 
 import { stewardDaily, stewFallback } from '../src/economy.mjs';
@@ -32,7 +31,6 @@ test('loop148 執事補位：膳房沒蓋、人不夠、石料差太多、舊局
   let s = V(); ready(s); s.fac.kitchen.stage = 0; assert.equal(stewFallback(s), null);
   s = V(); ready(s); s.ds.length = 3; assert.equal(stewFallback(s), null); /* loop157 P7：v23 門人 ≥4 即可立藏經閣 */
   s = V(); ready(s); s.res.stone = 2; assert.equal(stewFallback(s), 'library'); /* loop157 P7：v23 藏經閣只看木 ≥5 */ s.fac.library.stage = 1; assert.equal(stewFallback(s), 'shed');
-  s = OLD(); ready(s); assert.equal(stewFallback(s), null);
 });
 
 import { breakTier } from '../src/sim.mjs';
@@ -43,7 +41,6 @@ test('loop148 化境暫停：只有本門第一位化境、第一位返璞歸真
   assert.equal(breakTier(s, a, { stage: 2 }), 'top'); assert.equal(breakTier(s, b, { stage: 2 }), 'mid'); assert.equal(breakTier(s, hero, { stage: 2 }), 'top');
   assert.equal(breakTier(s, b, { stage: 3 }), 'top'); assert.equal(breakTier(s, a, { stage: 3 }), 'mid'); assert.equal(breakTier(s, hero, { stage: 3 }), 'mid');
   s.alert = null; log(s, '乙打坐衝關成功：「某拳」臻至化境！', 'mid'); assert.equal(s.alert, null); assert.equal(s.log[0].tier, 'mid');
-  assert.equal(breakTier(OLD(), a, { stage: 2 }), null);
 });
 
 import { CARDS, villainOk, VILLAIN, jhInit } from '../src/jianghu.mjs';
@@ -63,14 +60,12 @@ test('loop148 維護寬限：差一點先欠款警告、不失修；下期付清
   billed(s, f + 2); assert.equal(X.owed, 0); assert.equal(X.disrepair, false); assert.equal(s.res.coin, 0);
   billed(s, f - 2); billed(s, f - 2); assert.equal(X.disrepair, true);
   s = V(); billed(s, 0); assert.equal(E(s).disrepair, true, '差太多照舊失修');
-  const o = OLD(); billed(o, f - 2); assert.equal(E(o).disrepair, true, '舊局照舊');
 });
 test('loop148 山寨狀態行：探明後才顯示，只寫出征中／破寨次數／太平', () => {
   const s = V(); assert.equal(lairLine(s), ''); s.lair = { found: 5, n: 0, won: 0, next: 0, trip: null };
   assert.match(threatHtml(s), /・後山山寨：已探明（待精銳與存糧齊備時出擊）/);
   s.lair.n = 3; s.lair.won = 2; assert.match(lairLine(s), /已破 2 次，失手 1 次/);
   s.lair.trip = { back: 1 }; assert.match(lairLine(s), /正在攻寨中/); s.lair.trip = null; s.threat.taiping = true; assert.match(lairLine(s), /山道永享太平/);
-  const o = OLD(); o.lair = { n: 0, won: 0 }; assert.equal(lairLine(o), '');
 });
 
 import { marriable } from '../src/sect.mjs';

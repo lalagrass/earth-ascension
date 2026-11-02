@@ -21,5 +21,4 @@ test('強隊可在雲海連續跑完 3 重（模擬沒有斷點、沒有轉場�
   assert.deepEqual(ks.slice(0, 3), [1, 2, 3]);
 });
 test('三段縮放：近／中／遠門檻', () => { assert.equal(W.lodOf(W.ZOOMS.near), 'near'); assert.equal(W.lodOf(W.ZOOMS.mid), 'mid'); assert.equal(W.lodOf(W.ZOOMS.far), 'far'); assert.ok(W.ZOOMS.far * W.WORLD.w <= 1600 * 1.25, '最遠幾乎看得到整個世界'); });
-test('golden 不變：v1.55d 全是畫面層', () => { const s = createState(42); for (let i = 0; i < 30 * DAY * 4; i++) tick(s);
-  assert.equal(crypto.createHash('sha256').update(save(s)).digest('hex').slice(0, 16), fs.readFileSync(new URL('./fixtures/golden-30d.txt', import.meta.url), 'utf8').trim()); });
+// #390：舊規則 golden-30d.txt 退休；固定種子雜湊改由 test/golden/（#388）鎖

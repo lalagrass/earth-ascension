@@ -43,12 +43,11 @@ export const routeLength = (a, b) => { const p = route(a, b); let L = 0; for (le
 export const facDef = (id) => (id === 'fence' ? FENCE_FAC : FACILITIES.find((f) => f.id === id)); // loop11 柵牆工地
 export const facStage = (s, id) => { const S = facDef(id).stages; return S[Math.min(s.fac[id]?.stage || 0, S.length - 1)]; };
 
-// loop143（v2.2 baseline）：已驗證、原本預設勾選的規則轉正；開局畫面的新局帶 v22:true 一律開（明寫 false 仍可關，供 A/B）。
-// createState(seed) 不帶 spec、或 { legacyGolden: true } 時不套用，保護舊 golden 與舊測試。
+// loop143（v2.2 baseline）：已驗證的規則轉正（表在 data.mjs）。#390 起所有新局都套用，不再有舊規則開局。
 export { BASELINE_V22 }; // #390：表移到 data.mjs（save.mjs 讀檔升級也要用）
 export function createState(seed = 1, heroSpec = null) {
-  if (heroSpec?.legacyGolden && !heroSpec.kind) heroSpec = null;
-  if (heroSpec?.v22 && !heroSpec.legacyGolden) heroSpec = { ...BASELINE_V22, ...heroSpec };
+  // #390：每個新局都用現行規則（含「照舊」開局 spec＝null，擁有人 2026-11-02 決定）。spec 只決定主角與玩家選項。
+  const withHero = !!heroSpec; heroSpec = { ...BASELINE_V22, ...(heroSpec || {}), v22: true };
   const s = {
     v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
@@ -59,7 +58,7 @@ export function createState(seed = 1, heroSpec = null) {
   freshV095(s);
   log(s, '師徒三人來到山腳一間破道館。');
   s.hero = null; s.choices = []; s.encExclude = []; s.unlock = []; s.chapter = { done: false }; for (const d of s.ds) d.wu ??= d.root;
-  if (heroSpec) applyHero(s, heroSpec, initPair);
+  if (withHero) applyHero(s, heroSpec, initPair);
   if (heroSpec?.draw) s.draw = true;
   if (heroSpec?.comprehend) s.wu7 = true;
   if (heroSpec?.mentor) s.mentor = true;
@@ -86,7 +85,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.bt25) s.bt25 = true; // loop25 突破排程（選用）
   if (heroSpec?.jhev) s.jhev = true; // loop23 江湖事件（選用）
   if (heroSpec?.peace) s.m9 = true; // loop9 太平與防禦經濟（選用） // loop8 同修請教（選用） // loop7 領悟（選用） // loop6 人以群分（選用）
-  if (heroSpec?.v22 && !heroSpec.legacyGolden) { s.v22 = true; s.v23 = true; s.v24 = true; } /* loop143；loop151 v2.3 新局（舊 v2.2 存檔沒有 s.v23，行為不變） */
+  s.v22 = true; s.v23 = true; s.v24 = true; /* loop143；loop151 v2.3 新局（舊 v2.2 存檔沒有 s.v23，行為不變） */
   sectInit(s); s.gen = genInit(); if (heroSpec?.bonus) s.gen.suhuiStart = heroSpec.bonus;
   if (s.grow) growInit(s);
   if (s.prof) for (const d of s.ds) d.pf = 1; /* loop91 */

@@ -20,9 +20,4 @@ test('里程碑（衝關）不遞減', () => {
   const f = (d) => settleGrowth(d, A('pushPalm'), d.arts.pushPalm, { src: 'break', stage: 1 }).quanzhang;
   assert.equal(f(a), f(b));
 });
-test('接線：開局設 d.gdr；只勾它（沒成長分層）不生效；舊檔關閉', () => {
-  const sp = (x) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...x });
-  const s = createState(3, sp({ grow: true, growdr: true }));
-  assert.ok(s.growdr); assert.ok(!createState(3, sp({ growdr: true })).growdr);
-  assert.ok(load(save(s)).state.growdr); assert.ok(!load(save(createState(3, sp({ grow: true })))).state.growdr);
-});
+// #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則

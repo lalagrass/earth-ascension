@@ -1,4 +1,4 @@
-/* v2.2（loop143）：規則轉正為底層、開局三選項、舊檔不強開、新基準 golden-30d-v22 */
+/* v2.2（loop143）：規則轉正為底層、開局三選項、新基準 golden-30d-v22。#390 起照舊開局與舊檔也一律現行規則 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -36,15 +36,15 @@ for (const tab of ['classic', 'custom']) {
     for (const k of Object.keys(BASELINE_V22)) assert.ok(flagOn(s, k), k);
   });
 }
-test('照舊分頁、不帶 spec、legacyGolden 都不套用底層', () => {
+test('照舊分頁、不帶 spec 也套用現行規則（#390，擁有人 2026-11-02）', () => {
   assert.equal(buildSpec({ ...base('plain') }), null);
-  for (const s of [createState(7), createState(7, { legacyGolden: true }), createState(7, { ...V22_GOLDEN_SPEC, legacyGolden: true })]) { assert.ok(!s.v22); for (const k of Object.keys(BASELINE_V22)) assert.ok(!flagOn(s, k), k); }
+  for (const s of [createState(7), createState(7, null)]) { assert.ok(s.v22 && s.v23 && s.v24); assert.equal(s.hero, null); for (const k of Object.keys(BASELINE_V22)) assert.ok(flagOn(s, k), k); }
 });
 test('A/B 用：v22 下明寫 false 仍可關單條', () => { const s = createState(7, { ...V22_GOLDEN_SPEC, rumor: false }); assert.ok(!s.rumor && s.grow); });
 const files = fs.readdirSync(FIX).filter((f) => /^v[\d.]+\.json$/.test(f));
-for (const f of files) test(`${f}：舊檔讀入不強開底層規則`, () => {
+for (const f of files) test(`${f}：舊檔讀入升到現行規則（#390）`, () => {
   const r = load(fs.readFileSync(new URL(f, FIX), 'utf8')); assert.ok(r.ok, f); const s = r.state; for (let i = 0; i < 600 * 4; i++) tick(s, 0.25);
-  assert.ok(!s.v22); for (const k of Object.keys(BASELINE_V22)) assert.ok(!flagOn(s, k), `${f} ${k}`);
+  assert.ok(s.v22 && s.v23 && s.v24); for (const k of Object.keys(BASELINE_V22)) assert.ok(flagOn(s, k), `${f} ${k}`);
 });
 test('新基準 golden-30d-v22（全開規則、郭靖模板、自動抉擇）', () => {
   const a = createState(42, V22_GOLDEN_SPEC); for (let i = 0; i < 30 * DAY * 4; i++) tick(a);

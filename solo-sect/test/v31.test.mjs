@@ -8,7 +8,6 @@ import { evadeScore } from '../src/world.mjs';
 import { EVADE } from '../src/data.mjs';
 
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
-const OLD = () => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false });
 const other = (s) => s.ds.find((d) => d.id !== 'hero' && d.role !== 'laborer');
 const give = (d, id, xp) => { d.arts[id] ??= { xp: 0, last: 0 }; d.arts[id].xp = xp; };
 const fresh = (sect) => { const s = V({ sect24: sect }); tick(s, 0.1); const d = other(s); d.arts = {}; d.focus = null; d.qiInjury = 0; return [s, d]; };
@@ -41,7 +40,6 @@ test('loop196 四階催動：本門正宗、同源、虛浮、逆催；純內功
   const [, w] = fresh('wudang'); give(w, 'wudangXinfa', 60); give(w, 'wudangJiuyang', 30); give(w, 'basicFist', 30);
   const pub = drive(w, 'basicFist'); assert.equal(pub.tier, 2); assert.ok(pub.root); assert.ok(Math.abs(pub.mul - 1.06) < 1e-9);
   give(w, 'taijiSword', 30); delete w.arts.wudangJiuyang; assert.equal(drive(w, 'taijiSword').tier, 3, '一品內功催不動三品本門劍');
-  const o = OLD(); tick(o, 0.1); assert.deepEqual(drive(o.ds[0], 'basicFist'), { tier: 0, mul: 1 });
 });
 
 test('loop196 輕功身法的腳程與閃避乘同一催動係數', () => {

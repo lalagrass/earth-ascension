@@ -7,7 +7,7 @@ import { CLQ, cliqueDaily, cliqueOf, mates, cliqueTrain } from '../../src/bonds.
 const sp = { kind: 'custom', name: '測', answers: Array(9).fill(0), draw: true };
 const setAff = (s, a, b, v) => initPair(s, a, b, v);
 const mk = (o) => { const s = createState(1, o); for (const a of s.ds) for (const b of s.ds) if (a !== b) initPair(s, a, b, 10); return s; };
-test('loop20 舊局不成派', () => { const s = mk(); const [a, b] = s.ds; setAff(s, a, b, 95); cliqueDaily(s); assert.equal(s.cliques, undefined); });
+// #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
 test('loop20 好感 ≥ 門檻的一對結成小派；跌破 leave 就散', () => {
   const s = mk(sp); const [a, b, c] = s.ds; setAff(s, a, b, 95); cliqueDaily(s);
   assert.equal(s.cliques.length, 1); assert.deepEqual(mates(s, a), [b.id]); assert.equal(cliqueOf(s, c), null);

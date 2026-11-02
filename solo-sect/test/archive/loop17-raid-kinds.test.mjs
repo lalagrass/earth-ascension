@@ -10,11 +10,7 @@ test('loop17 類型權重合計 1、期望點數≈原值、抽類型覆蓋三�
   const ev = ks.reduce((a, k) => a + k.w * k.pts, 0); assert.ok(ev > 0.9 && ev <= 1);
   assert.deepEqual(new Set([0.1, 0.6, 0.9].map(pickKind)), new Set(['liukou', 'hanfei', 'yexi']));
 });
-test('loop17 舊局無類型；江湖規則局有類型', () => {
-  const a = createState(1); a.day = 30; a.res.coin = 500; a.ds.push(...a.ds.slice(0, 4).map((d, i) => ({ ...d, id: 'x' + i })));
-  const P = threatDaily(a); if (P) assert.equal(P.kind, undefined);
-  const b = createState(1, sp); b.day = 30; b.res.coin = 500; const Q = threatDaily(b); assert.ok(Q && RAID_KINDS[Q.kind]);
-});
+// #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
 test('loop17 夜襲不能付錢、敗了不傷人', () => {
   const s = createState(1, sp); s.day = 30; s.res.coin = 500; threatDaily(s); const X = T(s);
   Object.assign(X.pending, { kind: 'yexi', noPay: true, p: 0 }); assert.equal(raidAuto(s), 1);

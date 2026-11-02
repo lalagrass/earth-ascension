@@ -5,13 +5,8 @@ import { MENTOR, coTrain, askStrong, pairBoost } from '../../src/social.mjs';
 
 const sp = (o = {}) => ({ kind: 'custom', name: '測', answers: Array(9).fill(0), ...o });
 const nop = () => {};
-test('loop8 預設關閉', () => { assert.equal(createState(2).mentor, undefined); assert.equal(createState(2, sp({ mentor: true })).mentor, true); });
-test('loop8 關閉時三個函式都不動', () => {
-  const s = createState(2); const [a, b] = s.ds; let g = 0; const grow = () => g++;
-  b.task = { act: 'train' }; b.path = [];
-  assert.equal(coTrain(s, a, 5, grow, nop, nop), 0); assert.equal(askStrong(s, a, b, grow, nop, nop), null);
-  const out = [{ act: 'train', score: 10 }]; a.mates = { [b.id]: 9 }; pairBoost(s, a, out); assert.equal(out[0].score, 10); assert.equal(g, 0);
-});
+// #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
+// #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
 test('loop8 同修：有人同時在練才加、記搭子次數', () => {
   const s = createState(2, sp({ mentor: true })); const [a, b] = s.ds; let g = 0; const grow = (_s, _d, k, v) => { g += v; };
   for (const o of s.ds) o.task = null;

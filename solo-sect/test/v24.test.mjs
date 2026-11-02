@@ -6,11 +6,11 @@ import * as EC from '../src/economy.mjs';
 import * as A from '../src/arts.mjs';
 import { dpsOf, LS_FIRST24 } from '../src/world.mjs';
 export const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
-export const OLD = () => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false });
+// #390：舊規則開局已不存在，原本的舊局對照組（OLD）與各測試裡的舊局斷言一併刪除
 export const hero = (s) => s.ds.find((d) => d.id === 'hero');
 
 test('loop159 v24 只在新局：s.v24／d.v24；舊局沒有', () => {
-  const s = V(), o = OLD(); tick(s, 0.1); tick(o, 0.1); assert.ok(s.v24 && hero(s).v24); assert.ok(!o.v24 && !hero(o).v24);
+  const s = V(); tick(s, 0.1); assert.ok(s.v24 && hero(s).v24);
 });
 test('loop159 P5/P6 商隊（市集補貨）：第 12 日前不賣靈石，之後每集 1–2 顆、每顆 28；舊 v23 存檔維持 30×2', () => {
   const s = V(); tick(s, 0.1); s.res.coin = 999;
@@ -49,13 +49,11 @@ test('loop160 Batch1：8 門公共武學存在、招式齊全、有門類與屬�
   for (const id of ['basicSword', 'huashanSword', 'sanxianSword']) assert.ok(A.isSwordArt(id));
 });
 test('loop160 Batch1：舊局看不到也學不到新武學；新局可學', () => {
-  const o = hero(OLD()), n = hero(V()); n.v23 = n.v24 = true; /* d.v24 於首個 tick 標記 */
-  for (const id of NEW24) { assert.equal(A.artOk(o, ARTS.find((x) => x.id === id)), false); assert.equal(A.artOk(n, ARTS.find((x) => x.id === id)), true); }
-  o.arts = { basicFist: { xp: 0 } }; o.pendingArt = null; A.gainArt?.length; assert.ok(!NEW24.includes(A.selfTarget(o)));
+  const n = hero(V()); n.v23 = n.v24 = true; /* d.v24 於首個 tick 標記 */
+  for (const id of NEW24) assert.equal(A.artOk(n, ARTS.find((x) => x.id === id)), true);
 });
 test('loop160 Batch1.2：藏經閣圖譜——v24 讀書可得抄本；舊局不會', () => {
   const s = V(), d = hero(s); d.v23 = d.v24 = true; const g = A.studyChart24(s, d, () => 0); assert.ok(g && d.arts[g.art.id]); assert.equal(s.v24n.chart, 1);
-  const o = OLD(); assert.equal(A.studyChart24(o, hero(o), () => 0), null);
   const s2 = V(), d2 = hero(s2); d2.v23 = d2.v24 = true; assert.equal(A.studyChart24(s2, d2, () => 0.9), null);
 });
 
@@ -65,13 +63,11 @@ test('loop161 Batch2：陰陽共鳴——陰＋陽 ×1.08、陰陽和 ×1.12；�
   d.arts = { tuinaHand: { xp: big } }; assert.equal(A.harmonyMul(d), 1);
   d.arts.wuhuBlade = { xp: big }; assert.equal(A.harmonyOf(d), 'yy'); assert.equal(A.harmonyMul(d), 1.08);
   d.arts.basicSword = { xp: big }; assert.equal(A.harmonyMul(d), 1.12);
-  const o = hero(OLD()); o.arts = { ...d.arts }; assert.equal(A.harmonyMul(o), 1);
   assert.equal(A.attrOf({ tags: ['剛'] }), 'yang'); assert.equal(A.attrOf({ tags: ['柔'] }), 'yin');
 });
 test('loop161 Batch2：奇門封穴——隊中有奇門造詣才 > 0；舊局為 0', () => {
   const s = V(), d = hero(s); d.v23 = d.v24 = true; d.arts = { tuinaHand: { xp: 1e6, gm: { e: 20, ms: 0 } } };
   assert.ok(A.fengxueK(s, [d]) > 0);
-  const o = OLD(); assert.equal(A.fengxueK(o, [hero(o)]), 0);
 });
 
 // ---- loop162 Batch 3 ----
@@ -81,7 +77,6 @@ test('loop162 Batch3：頓悟詞綴——大成時依雜湊得字訣，只得一
   const [, d2] = mk(); A.affix24(V(), d2); assert.equal(d2.arts.basicSword.affix, d.arts.basicSword.affix);
   const x = A.affixOf(d, 'basicSword'); assert.ok((x.dmg || 1) * (1 / (x.cd || 1)) > 1);
   assert.notEqual(A.affixMul(d, 'bs1', x.dmg ? 'dmg' : 'cd'), 1);
-  const o = OLD(), h = hero(o); h.arts = { basicFist: { xp: 60 } }; assert.equal(A.affix24(o, h), null);
 });
 
 // ---- loop163 Batch 4 ----
@@ -90,7 +85,6 @@ import { sgainOf } from '../src/sect.mjs';
 test('loop163 Batch4：五個新門派只在 v2.4 新局可指定；舊局給 sect24 仍走原門派', () => {
   for (const k of ['emei', 'wudang', 'taohua', 'gumu', 'xingxiu']) { assert.ok(SECTS[k].v24); const s = V({ sect24: k }); assert.equal(s.sect.id, k);
     for (const a of SECTS[k].tree) assert.ok(ARTS.find((x) => x.id === a), a); }
-  const o = createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, sect24: 'gumu' }); assert.equal(o.sect.id, 'wuming');
   assert.equal(V().sect.id, 'wuming');
 });
 test('loop163 Batch4：古墓寒玉床——門人 ≤5 才 ×1.5', () => {
@@ -109,13 +103,11 @@ test('loop164 Batch5：diag-v24-v25 四種策略各跑 1 局 2 日，不崩潰�
 // ---- loop164 Batch 4.1⑥／4.2／4.3 ----
 import { sectBiasMul, WUMING_KIT24 } from '../src/data.mjs';
 test('loop164 Batch4.1⑥：v24 華山劍宗、氣宗補華山劍法線；舊局樹不變', () => {
-  for (const id of ['linghuchong', 'yuebuqun']) { const s = createState(7, { kind: 'template', id, askMajor: false, v22: true }); for (const k of ['basicSword', 'huashanSword', 'sanxianSword']) assert.ok(s.sect.tree.includes(k), id + k);
-    const o = createState(7, { kind: 'template', id, askMajor: false }); assert.ok(!o.sect.tree.includes('basicSword')); }
+  for (const id of ['linghuchong', 'yuebuqun']) { const s = createState(7, { kind: 'template', id, askMajor: false, v22: true }); for (const k of ['basicSword', 'huashanSword', 'sanxianSword']) assert.ok(s.sect.tree.includes(k), id + k); }
 });
 test('loop164 Batch4.2：自創無名派依主價值帶家傳三件套並入本門樹；名門掌門帶 T1 根基；舊局不帶', () => {
   const s = V(); const h = hero(s), kit = WUMING_KIT24[s.hero.main]; assert.ok(kit); for (const k of kit) { assert.ok(h.arts[k], k); assert.ok(s.sect.tree.includes(k)); }
   const w = V({ sect24: 'wudang' }); assert.ok(hero(w).arts.breath && hero(w).arts.wudangFist /* loop168 武當長拳先於基礎劍法 */);
-  const o = OLD(); assert.ok(!hero(o).arts.wuhuBlade && !hero(o).arts.basicSword);
 });
 test('loop164 Batch4.2 百納海川：無名派 v24 學外門名學不罰 ×0.7；他派照罰', () => {
   const a = { id: 'dugu', classic: true, tags: [] }; const d = { stree: ['x'], sbias: {}, v24: true, sectId: 'wuming' };
@@ -137,7 +129,6 @@ test('loop165 Batch5.1：劍法＋身法大成且劍法造詣 ≥45 → 推演�
   for (const k of ['basicSword', 'huashanSword', 'sanxianSword', 'stepFeather']) { A.learnArt(d, k, 0); d.arts[k].xp = 60; d.arts[k].gm = { e: 30 }; }
   const a = A.checkDeriveArt(s, d); assert.equal(a?.id, 'liufengSword'); assert.ok(s.sect.tree.includes('liufengSword')); assert.equal(s.v24n.derive, 1); assert.equal(A.checkDeriveArt(s, d), null);
   assert.ok(A.isSwordArt('liufengSword')); assert.equal(A.DERIVE_RULES24.length, 4);
-  const o = OLD(); tick(o, 0.1); const h = hero(o); for (const k of ['basicSword', 'stepFeather']) { h.arts[k] = { xp: 60, gm: { e: 30 } }; } assert.equal(A.checkDeriveArt(o, h), null);
 });
 test('loop165 Batch5.1：一般外門弟子不推演（只限掌門、內門、首徒）', () => {
   const s = V(); tick(s, 0.1); const d = s.ds.find((x) => x.id !== 'hero' && x.role !== 'laborer'); if (!d) return; d.role = 'outer';
@@ -150,7 +141,6 @@ test('loop166 Batch5.2：山門大比第 10、20 日各一次；魁首心情 +15
   assert.deepEqual(SE.BISAI24.days, [10, 20]); const s = V(); tick(s, 0.1); while (s.ds.filter((d) => d.role !== 'laborer').length < 3) s.ds.push({ ...hero(s), id: 'x' + s.ds.length, name: '甲' + s.ds.length, role: 'outer', arts: { ...hero(s).arts }, mood: 50 });
   const c = SE.bisai24(s); assert.ok(c); assert.equal(s.v24n.bisai, 1); assert.ok(s.log.some((e) => /山門大比/.test(e.msg)));
   s.day = 10; SE.bisaiDaily24(s); SE.bisaiDaily24(s); assert.equal(s.v24n.bisai, 2);
-  const o = OLD(); for (let i = 0; i < 4; i++) tick(o, 0.25); assert.ok(!o.v24ev);
 });
 test('loop166 Batch5.2：會武第 15、26 日出卡；三種排陣；自動挑期望勝場最高；勝方得名聲、賞銀、靈石、稱號', () => {
   assert.deepEqual(Object.keys(SE.HUIWU24.days).map(Number), [15, 26]); const s = V(); tick(s, 0.1); s.day = 15; const ch = SE.huiwuCard24(s, 15); assert.ok(ch && ch.opts.length === 3); assert.notEqual(ch.opp, s.sect.id);
