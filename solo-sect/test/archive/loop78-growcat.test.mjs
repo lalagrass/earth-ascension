@@ -12,10 +12,6 @@ test('同一門武學貢獻有上限（凡品 20）', () => { const d = { arts: 
 test('熟練沒動（練滿／瓶頸）不給投入型造詣', () => { const d = { arts: { basicFist: { xp: 54.9 } } }, r = d.arts.basicFist; settleGrowth(d, A('basicFist'), r, { src: 'train', raw: 5, xp0: 54.9, xp1: 54.9 }); assert.equal(r.gm.e, 0); });
 test('里程碑只領一次', () => { const d = { arts: { pushPalm: { xp: 24 } } }, r = d.arts.pushPalm; settleGrowth(d, A('pushPalm'), r, { src: 'train', raw: 0.0001, xp0: 24, xp1: 25 }); const e1 = r.gm.e; settleGrowth(d, A('pushPalm'), r, { src: 'train', raw: 0, xp0: 24, xp1: 26 }); assert.equal(r.gm.e, e1); settleGrowth(d, A('pushPalm'), r, { src: 'break', stage: 1 }); settleGrowth(d, A('pushPalm'), r, { src: 'break', stage: 1 }); assert.ok(Math.abs(r.gm.e - e1 - 2) < 1e-9); });
 test('戰鬥來源權重低於修練', () => { const d1 = { arts: { pushPalm: { xp: 5 } } }, d2 = { arts: { pushPalm: { xp: 5 } } }; settleGrowth(d1, A('pushPalm'), d1.arts.pushPalm, { src: 'train', raw: 10, xp0: 5, xp1: 6 }); settleGrowth(d2, A('pushPalm'), d2.arts.pushPalm, { src: 'fight', raw: 10, xp0: 5, xp1: 6 }); assert.ok(d2.arts.pushPalm.gm.e < d1.arts.pushPalm.gm.e * 0.5); });
-test('加速只看他門同類造詣、隨熟練衰減、精品以上無', () => { const d = { arts: { basicFist: { xp: 60, gm: { e: 20 } }, wavePalm: { xp: 0, gm: { e: 20 } }, pushPalm: { xp: 0 } } };
-  const a0 = accelOf(d, A('pushPalm'), 0), a1 = accelOf(d, A('pushPalm'), 40), a2 = accelOf(d, A('pushPalm'), 55);
-  assert.ok(a0.mul > a1.mul && a1.mul > 1 && a2.mul === 1); assert.ok(a0.mul <= GROW.acc.max); assert.equal(accelOf(d, A('fengLei'), 0).mul, 1);
-  assert.equal(accelOf({ arts: { pushPalm: { xp: 0, gm: { e: 20 } } } }, A('pushPalm'), 0).mul, 1, '自己的造詣不加速自己');
-  assert.equal(accelOf(d, A('sweepLeg'), 0).mul, 1, '拳掌造詣不加速腿法'); });
+// #390 退役：釘住 v2.4 以前的內力／減傷／造詣公式；現行公式見 test/v31.test.mjs（loop197／198）
 test('開局折算冪等', () => { const s = { ds: [{ arts: { basicFist: { xp: 40 } } }] }; growInit(s); const e = s.ds[0].arts.basicFist.gm.e; growInit(s); assert.equal(s.ds[0].arts.basicFist.gm.e, e); assert.ok(s.ds[0].arts.basicFist.gm.init); });
 test('造詣層級文字', () => { assert.equal(levelOf(0), '未窺門徑'); assert.equal(levelOf(45), '融會貫通'); assert.equal(levelOf(100), '登峰造極'); });

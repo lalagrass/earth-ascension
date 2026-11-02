@@ -15,9 +15,4 @@ test('內功越高，門派戰力與守柵出手越高', () => {
   assert.ok(power(s) > p0); const d = s.ds[0]; assert.ok(Math.abs(powBonus(d) - NG2.powK * qiMax(d)) < 1e-9);
   const b = defenderDps(d); d.ng2 = 0; assert.ok(defenderDps(d) < b);
 });
-test('重傷護體：內力夠才擋，並扣內力', () => {
-  const d = { arts: { breath: { xp: 30 } }, ng: 1, ng2: 1, qi: 25 };
-  assert.equal(guardHurt(d, 15), NG2.guardHp); assert.equal(d.qi, 25 - NG2.guard);
-  assert.equal(guardHurt(d, 15), 15); assert.equal(d.qi, 25 - NG2.guard);
-  assert.equal(guardHurt({ arts: { breath: { xp: 30 } }, ng: 1, qi: 25 }, 15), 15);
-});
+// #390 退役：釘住 v2.4 以前的內力／減傷／造詣公式；現行公式見 test/v31.test.mjs（loop197／198）
