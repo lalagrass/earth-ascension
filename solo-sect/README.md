@@ -1,7 +1,7 @@
 # 山門紀（Solo Sect）
 
 > **破道館開局的武俠門派生活模擬與無縫塔防**
-> 純原生 ES Module + Canvas 2D + 單一權威確定性狀態機｜零外部套件相依｜516 項測試全數通過
+> 純原生 ES Module + Canvas 2D + 單一權威確定性狀態機｜零外部套件相依｜500+ 項 Node 測試
 
 ---
 
@@ -42,7 +42,7 @@ open http://localhost:8000/solo-sect/index.html
 cd solo-sect
 node --test test/*.test.mjs
 ```
-*(目前測試套件包含 516 項測試，執行耗時約 35 秒，涵蓋數值邊界、存檔跨版遷移、長跑確定性驗收)*
+*(量測於 `27aebd6`：快速套件 517 項全過，4 核約 85 秒；`bash test/run.sh all` 另含 archive 與長跑驗收。涵蓋數值邊界、存檔跨版遷移、長跑確定性)*
 
 ---
 
@@ -52,11 +52,12 @@ node --test test/*.test.mjs
 
 | 層級 | 核心模組 | 職責與架構承諾 |
 |---|---|---|
-| **資料層** | `src/data.mjs`, `src/hero-data.mjs` | 路網節點、設施階段、活動清單、武學資料庫。改動平衡僅需調整此層。 |
-| **模擬層** | `src/sim.mjs`, `src/arts.mjs`, `src/economy.mjs` | 單一權威 `tick(state, dt)` 推進；全狀態為可序列化 JSON，固定 Seed 具備 100% 重放保證。 |
-| **繪製層** | `src/main.mjs`, `src/canvas.mjs` | 純唯讀 state，Canvas 2D 依 y 軸排序渲染水彩手繪風精靈。 |
-| **介面層** | `index.html`, `style.css`, `src/ui.mjs` | 原生 HTML DOM 面板：即時資源、建造清單、弟子狀態卡、人際關係與紀事日誌。 |
-| **測試層** | `test/*.test.mjs` | Node 原生測試執行器，提供零依賴的嚴格回歸防護。 |
+| **資料層** | `src/data.mjs` | 路網節點、設施階段、活動、88 門武學、主角模板與門派、平衡常數。 |
+| **模擬層** | `src/sim.mjs`（`tick` 編排）＋規則模組 `arts`、`economy`、`threat`、`world`、`social`、`bonds`、`sect`、`hero`、`jianghu`、`wuxia`、`core`、`util`；存檔 `save.mjs` | 單一權威 `tick(state, dt)` 推進；狀態是可序列化 JSON，固定種子可重放。不碰 DOM，可在 Node 測。 |
+| **繪製與介面層** | `src/main.mjs`（Canvas、鏡頭、面板接線）、`src/panel-ui.mjs`、`src/start-ui.mjs`、`src/audio.mjs`；`index.html`、`style.css` | 讀 state 畫圖與產生面板 HTML。 |
+| **測試層** | `test/*.test.mjs`、`test/archive/`、`test/accept/`、`test/harness/` | Node 原生測試執行器，零依賴。 |
+
+各模組職責、目前的依賴問題與 loop144 前舊檔名對照，見 [模組地圖 (MODULES.md)](docs/architecture/MODULES.md)。
 
 ---
 
@@ -65,7 +66,8 @@ node --test test/*.test.mjs
 專案文件採「常青規格」、「架構決策 (ADR)」與「時點快照」三層管理：
 
 ### 1. 核心規格與常青設計 (Living Architecture)
-* [架構總覽與五層設計 (DESIGN.md)](docs/architecture/DESIGN.md)
+* [架構總覽與歷版設計紀錄 (DESIGN.md)](docs/architecture/DESIGN.md)
+* [模組地圖與舊檔名對照 (MODULES.md)](docs/architecture/MODULES.md)
 * [創角、經典主角與同門搭檔 (PROTAGONIST.md)](docs/architecture/PROTAGONIST.md)
 * [巡山路線、波次與無縫防禦 (PATROL-MAP.md)](docs/architecture/PATROL-MAP.md)
 * [水彩精靈圖規格與立繪清單 (ASSETS.md)](docs/architecture/ASSETS.md)
@@ -78,11 +80,11 @@ node --test test/*.test.mjs
 ### 3. 決策庫與驗收 (ADR & Verification)
 * [架構與數值決策全紀錄 (DECISIONS.md)](docs/decisions/DECISIONS.md)：**累計 250+ 條決策紀錄**（唯一事實來源）。
 * [功能驗收矩陣 (FEATURES.md)](FEATURES.md)：50+ 項功能驗收標準、短流程與自動化測試證據。
-* [長期演進藍圖 (ROADMAP.md)](ROADMAP.md)：門派擴建與里程碑路徑。
+* [路線圖 (ROADMAP.md)](ROADMAP.md)：目前版本、進行中的里程碑與待擁有人決定；舊路線圖在 `docs/reports/milestones/`。
 * [歷史報告庫 (docs/reports/)](docs/reports/)：收納過往版本的大規模 Seed 跑測報告、審查走查筆記。
 
 ### 4. AI Autonomous Loop 開發規範
-* [執行日誌 (loop/LOG.md)](loop/LOG.md)：Loop 1～208+ 的每日改動細節與 Retro。
+* [執行日誌 (loop/LOG.md)](loop/LOG.md)：Loop 1～210 的改動細節與 Retro。
 * [AI Agent 落檔規範 (loop/AGENTS-DOC-GUIDE.md)](loop/AGENTS-DOC-GUIDE.md)：規範 AI 代理人產出報告與追加決策的路徑。
 
 ---

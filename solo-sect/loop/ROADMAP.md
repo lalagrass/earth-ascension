@@ -1,3 +1,5 @@
+> **已結束**：本檔是 2026-10-30 起 loop engineering 的輪次計畫與各階段紀錄，保留作歷史。現行路線圖見 [`../ROADMAP.md`](../ROADMAP.md)。
+
 # Loop Engineering 路線圖（solo-sect，codex/solo-sect-grok）
 
 > 起於 2026-10-30，基底 `b7647bf`（v2.1）。每輪：定一個 milestone（範圍／驗收／不做）→ 小步實作＋測試 → 驗收（最多修 2 次）→ LOG.md 迷你回顧。每 2 輪一次 retro。
