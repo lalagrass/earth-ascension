@@ -44,6 +44,17 @@ node --test test/*.test.mjs
 ```
 *(量測於 #390 完成時：快速套件 545 項全過，4 核約 90 秒；`bash test/run.sh all` 另含 archive 與長跑驗收。涵蓋數值邊界、存檔跨版遷移、長跑確定性)*
 
+### 玩法 PR 最小驗證
+
+改玩法時，本地先跑這一道，約 30 秒。完整矩陣交給 CI。
+
+```bash
+cd solo-sect
+bash test/run.sh smoke
+```
+
+它做三件事：`test/golden/saves/` 每個存檔讀入後跑 3 日；種子 1001、1002 的新局各跑 10 日，不得有 NaN 或例外；`test/schema-invariants.test.mjs`。步長用 6 秒（與測試框架預設相同，遊戲內一日仍是 600 秒），才能卡在時限裡。該步新寫的測試另跑，不取代這道。
+
 ### 行為鎖定（golden，#388）
 重構前後遊戲行為必須一字不差。快速層已含在上面的 `node --test`；完整矩陣（新局 idle／bot／farm／exp × 8 種子 × 30 日，加 6 份 v1.0–v2.4 舊存檔回放）：
 ```bash
