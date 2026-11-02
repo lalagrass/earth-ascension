@@ -1,5 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase } from './arts.mjs';
+import { CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
 import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
@@ -528,11 +528,19 @@ function knockPos(from, pos, dist) {
   const dx = pos[0] - from[0], dy = pos[1] - from[1], L = Math.hypot(dx, dy) || 1;
   pos[0] += dx / L * dist; pos[1] += dy / L * dist;
 }
+function noteWhy(s, on, inn) {
+  const h = s.hunt; if (!h) return;
+  const bag = (h.why ??= []); if (bag.length > 24) return;
+  if (on?.fired?.art) bag.push(on.fired.art);
+  else if (on?.dry) bag.push('dry');
+  if (inn?.line) bag.push('inner');
+}
 function landOn(s, d, tgt, mv, power, foeName) {
   const on = applyArtOn(s, 'hit', d, tgt, { power, move: mv.id, foeName });
   const inn = innerOnHit(s, d, tgt, { power: on.power ?? power, move: mv.id, fired: on.fired });
   if (on.knock) knockPos(d.pos, tgt.pos, on.knock);
   if (on.trip) { tgt.tripUntil = s.t + 2.5; tgt.cool = Math.max(tgt.cool || 0, on.trip); }
+  noteWhy(s, on, inn); /* #406 只記主因，不改這一擊的傷害 */
   return inn.power ?? on.power ?? power;
 }
 function huntStep(s, dt) {
@@ -554,7 +562,8 @@ function huntStep(s, dt) {
         if (got.reflect) m.hp -= incoming * got.reflect;
         if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); continue; }
         foe.hp -= shieldHit(foe, got.dmg ?? incoming, s.t); /* loop116 護體真氣 */
-        innerOnGetHit(s, foe); /* #405 純陽無極功：挨打化進氣血 */
+        const innBack = innerOnGetHit(s, foe); /* #405 純陽無極功：挨打化進氣血 */
+        noteWhy(s, got, innBack);
         m.cool = 1.2; s.fx.push({ kind: 'bite', pos: [...foe.pos], ttl: 0.4 });
       }
       continue;
@@ -562,7 +571,7 @@ function huntStep(s, dt) {
     if (monWalk(m, M.speed * (m.tripUntil > s.t ? 0.45 : 1) * (1 - SPEC.zhenSlow * zk) * dt)) { m.gone = true; h.escaped++; s.eco[m.k].n++; log(s, `${M.name}衝過守點逃回山裡`); }
   }
   for (const d of team) {
-    if (d.hp <= 25) { if (d.task?.act === 'hunt') { d.order = null; cancelTask(s, d, '傷重退回院中'); assign(s, d, 'rest', '傷重歇息'); log(s, `${d.name}受傷退下`); think(s, d, 'hurt'); } continue; }
+    if (d.hp <= 25) { if (d.task?.act === 'hunt') { d.order = null; cancelTask(s, d, '傷重退回院中'); assign(s, d, 'rest', '傷重歇息'); log(s, `${d.name}受傷退下`); think(s, d, 'hurt'); } const bag = (h.why ??= []), tag = qiOf(d) <= 0 ? 'dry' : 'hurt'; if (bag.length < 24 && !bag.includes(tag)) bag.push(tag); continue; }
     if (d.at !== h.post || d.path.length) continue;
     d.cool -= dt; if (d.cool > 0) continue;
     const ms = d.moves.map((id) => MOVES.find((m) => m.id === id)).sort((a, b) => b.dmg * (1 + (b.aoe ? 1 : 0)) - a.dmg * (1 + (a.aoe ? 1 : 0)));
@@ -587,7 +596,7 @@ function huntStep(s, dt) {
   const anyFit = team.some((d) => d.hp > 25);
   if (waveClear) { h.gap += dt; if (h.gap >= WAVE_GAP && h.wave + 1 < h.waves && anyFit && (s.eco.rat.n + s.eco.boar.n) > 0) { h.wave++; h.gap = 0; spawnWave(s); } }
   if ((waveClear && (h.wave + 1 >= h.waves || !anyFit || s.eco.rat.n + s.eco.boar.n === 0) && h.gap >= 1) || (!anyFit && waveClear)) {
-    const rep = `狩獵戰報（${POSTS[h.post]}，${h.wave + 1} 波）：擊退 ${h.kills}、溜走 ${h.escaped}；` + team.map((d) => `${d.name}出手 ${h.hits[d.id] || 0} 次`).join('，') + `｜山中尚餘 鼠${s.eco.rat.n} 豬${s.eco.boar.n}`;
+    const rep = `狩獵戰報（${POSTS[h.post]}，${h.wave + 1} 波）：擊退 ${h.kills}、溜走 ${h.escaped}；` + team.map((d) => `${d.name}出手 ${h.hits[d.id] || 0} 次`).join('，') + `｜山中尚餘 鼠${s.eco.rat.n} 豬${s.eco.boar.n}。${boutWhy(h.why)}`;
     log(s, rep); s.lastReport = rep; if (h.kills > h.escaped) for (const d of team) if (d.hp > 25) think(s, d, 'wonHunt'); s.rep = (s.rep || 0) + h.kills;
     for (const d of team) { if (d.order === 'hunt') d.order = null; if (d.task?.act === 'hunt') { d.task = null; d.anim = null; } d.reason = '狩獵結束回院'; }
     s.hunt = null;

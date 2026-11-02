@@ -266,7 +266,7 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     if (tier < (fx.need ?? 0)) continue;
     if (fx.seen && !(who.dugu?.length)) continue;
     if (fx.first && other?.onOpened) continue;
-    if (fx.qi && !spendQi(who, fx.qi)) continue;
+    if (fx.qi && !spendQi(who, fx.qi)) { out.dry = true; continue; } /* #406 內力不夠：只記原因，傷害維持原樣 */
     if (fx.first && other) other.onOpened = true;
     if (fx.dmg && out.power != null) out.power *= fx.dmg;
     if (fx.flurry && out.power != null) out.power *= fx.flurry;
@@ -283,6 +283,67 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     break;
   }
   return out;
+}
+/* #406 一句話，不列係數，也不改傷害。招名裡會讓戰報暫停的字不寫進這句。 */
+const BLOW = {
+  xianglong: ['三頓飯換來的降龍', '打中會震退，很耗內力'],
+  dugu: ['崖上請教換來的劍意', '看破來勢，自己不擋'],
+  bixie: ['自宮換來的快劍', '先手連刺，很耗內力'],
+  taijiSword: ['本門劍一路練上去', '挨打時把來力反震回去'],
+  qishangFist: ['明教一路練上去的拳', '打實了自己也傷'],
+  dagou: ['丐幫傳下來的棒法', '纏住對手的腳'],
+};
+const BOUT = {
+  xianglong: '這一陣打得開，是因為降龍震退。',
+  dugu: '這一陣占了上風，是因為看破來勢，自己不擋。',
+  bixie: '這一陣占了上風，是因為快劍連刺。',
+  taijiSword: '挨打時把來力反震了回去。',
+  qishangFist: '拳打實了，自己也受傷。',
+  dagou: '棒法纏住了對手的腳。',
+};
+const BLOW_ORDER = ['xianglong', 'dugu', 'bixie', 'taijiSword', 'qishangFist', 'dagou'];
+function readyBlows(d) {
+  const out = [];
+  for (const id of BLOW_ORDER) {
+    const a = artById(id);
+    const fx = a?.on && Object.values(a.on).find((x) => x);
+    if (!fx) continue;
+    if (fx.seen || a.forms) { if (!d.dugu?.length) continue; }
+    else if (!d.arts?.[id]) continue;
+    const tier = d.arts?.[id] ? artTier(d, id) : 0;
+    if (tier < (fx.need ?? 0)) continue;
+    const qi = Object.values(a.on).reduce((m, x) => Math.max(m, x?.qi || 0), 0);
+    out.push({ id, qi });
+  }
+  return out;
+}
+export function blowWhy(d) {
+  if (!d) return '這一招沒有絕活，勝負看火候。';
+  const ready = readyBlows(d);
+  const free = ready.filter((x) => !x.qi || qiOf(d) >= x.qi);
+  if (!free.length && ready.length) return '內力見底，絕活放不出來。';
+  const pick = free.find((x) => x.id === d.focus) || free[0];
+  if (pick) { const [cost, how] = BLOW[pick.id]; return `${cost}，${how}。`; }
+  if ((d.qiInjury || 0) >= DRIVE28.injWarn) return '經脈受了內傷，硬催別派武學會痛。';
+  return '這一招沒有絕活，勝負看火候。';
+}
+export function boutWhy(tags = []) {
+  const hit = BLOW_ORDER.find((id) => tags.includes(id));
+  if (hit) return BOUT[hit];
+  if (tags.includes('dry')) return '這一陣沒打出絕活，是因為內力見底。';
+  if (tags.includes('hurt')) return '有人傷重退下，所以收隊。';
+  if (tags.includes('inner')) return '內功在這一陣裡幫上了忙。';
+  return '這一陣沒有絕活，勝負看誰先倒。';
+}
+export function expCause(team, reason = '') {
+  const why = reason || '';
+  if (why.includes('重傷') || why.includes('氣血')) return (team || []).some((d) => qiOf(d) <= 0) ? '回頭是因為有人內力見底，氣血也撐不住。' : '回頭是因為氣血見底。';
+  if (why.includes('心情')) return '回頭是因為心情低落。';
+  if (why.includes('體力')) return '回頭是因為體力耗盡。';
+  if (why.includes('耐性')) return '回頭是因為耐性磨光。';
+  if (why.includes('擋')) return '打不過守關，所以退了回來。';
+  if ((team || []).some((d) => artNoParry(d))) return '這一趟有人看破來勢，自己不擋。';
+  return '這一趟沒有打出絕活，勝負看火候。';
 }
 /* 前置比例。沒有天花板回 null。有的話取那些武學裡最高的熟練，沒學會當 0。 */
 export function ceilingXp(d, a) {

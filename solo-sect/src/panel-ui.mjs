@@ -3,7 +3,7 @@ import { DAY, ACTIVITIES, EXP_STYLES, EXP, ARTS, TIERS, ART_GAIN, ROOT, JH, BREA
 import { LABOR, strMul, laborToday } from './economy.mjs';
 import { segAt } from './world.mjs';
 import { nextStep } from './core.mjs';
-import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW, growCapOf, mainInner28, baseInner28, innerDrive28, isInner, qiGreat24, artById, artMulParts, appetite31, modeTitle31, qiArtBadge24, swordFast24, MODE31, QI_SAT31 } from './arts.mjs';
+import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW, growCapOf, mainInner28, baseInner28, innerDrive28, isInner, qiGreat24, artById, artMulParts, appetite31, modeTitle31, qiArtBadge24, swordFast24, MODE31, QI_SAT31, blowWhy } from './arts.mjs';
 import { CLQ } from './bonds.mjs';
 import { JHEV, letterP } from './jianghu.mjs';
 // ==== （原 dcard.mjs）====
@@ -81,6 +81,7 @@ export function powerHtml(d, memo, day, now = 0) {
   const AXES = axesOf(d), m = dailyGrowth(memo, d, day, now), over = AXES.filter((x) => x.get(d, now) > x.hi);
   const temp = [d.powMul && d.powMul !== 1 ? `兵器 ×${d.powMul.toFixed(2)}` : '', d.jhMul && d.jhMul !== 1 ? `江湖 ×${d.jhMul.toFixed(2)}` : ''].filter(Boolean);
   return `<div class="grow-power"><b>人物實力</b>（常態能力；顯示基準固定，非能力上限）${polySvg(d, now, m.anim ? 'poly-grow' : '')}`
+    + `<div class="k" data-blow-why="1">${blowWhy(d)}</div>`
     + `<div class="k">${AXES.map((x) => `${x.name} ${fmtV(x, x.get(d, now))}（基準 ${x.fmt ? x.fmt(x.lo) + '–' + x.fmt(x.hi) : x.lo + '–' + x.hi}；${x.note}）`).join('<br>')}</div>`
     + (over.length ? `<div class="k warn">超出顯示範圍：${over.map((x) => x.name).join('、')}（數字照實，圖上畫在外框）</div>` : '')
     + (m.msg ? `<div class="k grow-msg">${m.msg}</div>` : '')

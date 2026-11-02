@@ -1,7 +1,7 @@
 import { ROUTE, NODES, ENEMIES, RAID_EVERY, DAY, ENDLESS, CAMPS, INSIGHT, EXP, MOVES, EXP_STYLES as STYLES, STYLE_TRAIT, EVADE, TRAITS, ARTS as ARTS_ALL, HS, DAO } from './data.mjs';
 import { log, affKey, resAdd } from './util.mjs';
 import { addMem } from './bonds.mjs';
-import { shieldHit, moveMul, cdMul, effectTier, artTier as effectTierOf, SPEC, zhenK, hasPoison, bestSpec, fengxueK, HARMONY24, stepDrive28, artNoParry, applyArtOn } from './arts.mjs';
+import { shieldHit, moveMul, cdMul, effectTier, artTier as effectTierOf, SPEC, zhenK, hasPoison, bestSpec, fengxueK, HARMONY24, stepDrive28, artNoParry, applyArtOn, expCause } from './arts.mjs';
 import { mateBonus } from './economy.mjs';
 import { addWexin, awaken } from './hero.mjs';
 import { aff } from './social.mjs';
@@ -418,7 +418,8 @@ function finishExpedition(s, team, H) {
   const cool = EXP.cool * (fast ? EXP.coolFast : 1); for (const d of team) d.restUntil = s.t + cool;
   const st = team.filter((d) => (d.personality || []).includes('stubborn')), lz = team.filter((d) => (d.personality || []).includes('lazy')), qu = [];
   for (const a of st) for (const b of lz) if (a !== b) { for (const [p, q] of [[a, b], [b, a]]) s.aff[affKey(p.id, q.id)] = (s.aff[affKey(p.id, q.id)] || 0) - EXP.quarrel; H.think(s, a, 'quarrel'); H.think(s, b, 'quarrel'); qu.push(`${a.name}嫌${b.name}偷懶，吵了一架`); }
-  const rep0 = { ret: X.ret ? { hits: X.ret.hits, staLost: X.ret.staLost, lost: X.ret.lost } : null, style: X.style, styleWhy: X.styleWhy, evaded: X.evaded, chase: X.chase, clear, qing, gates: X.gates, blocked: X.blocked || null, time: Math.round(s.t - X.startT), order: X.order, sta: Math.max(0, Math.round(X.sta ?? 0)), pat: Math.max(0, Math.round(X.pat ?? 0)), patMax: X.patMax, scout: X.scout, camps: X.camps || [], from: X.camp, quarrel: qu, cool: Math.round(cool), fast };
+  const cause = expCause(team, X.reason); /* #406 戰報補一句主因，不改這一趟的勝負 */
+  const rep0 = { ret: X.ret ? { hits: X.ret.hits, staLost: X.ret.staLost, lost: X.ret.lost } : null, style: X.style, styleWhy: X.styleWhy, evaded: X.evaded, chase: X.chase, clear, qing, gates: X.gates, blocked: X.blocked || null, time: Math.round(s.t - X.startT), order: X.order, sta: Math.max(0, Math.round(X.sta ?? 0)), pat: Math.max(0, Math.round(X.pat ?? 0)), patMax: X.patMax, scout: X.scout, camps: X.camps || [], from: X.camp, quarrel: qu, cool: Math.round(cool), fast, cause };
   rep0.story = storyOf(team, rep0, X);
   const rep = { ...rep0, n: X.n, team: team.map((d) => d.name), ids: team.map((d) => d.id), dist, seg: segAt(Math.max(0, dist - 0.01)).name, kills: X.kills, escaped: X.escaped, hurt, out: outcomeOf(X), razed: X.razed || [], loot: X.loot, reason: X.reason, fights: X.fights, sectRec, personal: rec, day: Math.floor(s.t / DAY) + 1 };
   for (let i = 0; i < team.length; i++) for (let j = i + 1; j < team.length; j++) addMem(s, team[i], team[j], 'patrol', rep.seg); // v1.65 並肩巡山
@@ -446,5 +447,5 @@ export function reportText(r) {
   const nm = (o) => Object.entries(o).map(([k, v]) => `${ENEMIES[k].name}×${v}`).join('、') || '無';
   const RN = { food: '飯', hide: '獸皮', herb: '藥', wood: '木', coin: '香火錢', page1: '凡階殘頁', page2: '精階殘頁', gall: '熊膽' };
   const O = r.out, oc = O ? `｜戰果（互斥）：遭遇 ${O.enc}＝擊倒 ${O.knock}・驅離 ${O.driven}・繞避 ${O.evaded}・其他 ${O.other}${r.razed?.length ? `；搗巢：${r.razed.join('、')}` : ''}` : '';
-  return (oc ? oc.slice(1) + '｜' : '') + `擊倒 ${nm(r.kills)}；逃走 ${nm(r.escaped)}；傷 ${r.hurt.map(([n, l]) => `${n}${l}`).join('、') || '無'}；帶回 ${Object.entries(r.loot).map(([k, v]) => `${RN[k] || k}${v}`).join(' ') || '無'}；回頭原因：${r.reason}${r.sectRec ? '｜★ 本門新紀錄' : ''}${r.ret?.hits?.length ? `｜返程驚獸 ${r.ret.hits.length} 段（耐力 −${r.ret.staLost}${r.ret.lost ? `，丟下 ${Object.entries(r.ret.lost).map(([k, v]) => `${RN[k] || k}${v}`).join(' ')}` : ''}）` : ''}${r.patMax != null ? `｜體力 ${r.sta}・耐性 ${r.pat}/${r.patMax}${r.order ? '（巡山令）' : ''}・歇 ${r.cool} 秒${r.fast ? '（快腳）' : ''}` : ''}${r.style ? `｜${STYLES[r.style].name}・閃 ${sum(r.evaded)}・追 ${r.chase.got}/${r.chase.n}・清場 ${Object.entries(r.clear).map(([k, v]) => `${ROUTE.find((g) => g.id === k)?.name || k}${Math.round(v * 100)}%`).join(' ')}` : ''}`;
+  return (oc ? oc.slice(1) + '｜' : '') + `擊倒 ${nm(r.kills)}；逃走 ${nm(r.escaped)}；傷 ${r.hurt.map(([n, l]) => `${n}${l}`).join('、') || '無'}；帶回 ${Object.entries(r.loot).map(([k, v]) => `${RN[k] || k}${v}`).join(' ') || '無'}；回頭原因：${r.reason}${r.cause ? `｜主因：${r.cause}` : ''}${r.sectRec ? '｜★ 本門新紀錄' : ''}${r.ret?.hits?.length ? `｜返程驚獸 ${r.ret.hits.length} 段（耐力 −${r.ret.staLost}${r.ret.lost ? `，丟下 ${Object.entries(r.ret.lost).map(([k, v]) => `${RN[k] || k}${v}`).join(' ')}` : ''}）` : ''}${r.patMax != null ? `｜體力 ${r.sta}・耐性 ${r.pat}/${r.patMax}${r.order ? '（巡山令）' : ''}・歇 ${r.cool} 秒${r.fast ? '（快腳）' : ''}` : ''}${r.style ? `｜${STYLES[r.style].name}・閃 ${sum(r.evaded)}・追 ${r.chase.got}/${r.chase.n}・清場 ${Object.entries(r.clear).map(([k, v]) => `${ROUTE.find((g) => g.id === k)?.name || k}${Math.round(v * 100)}%`).join(' ')}` : ''}`;
 }

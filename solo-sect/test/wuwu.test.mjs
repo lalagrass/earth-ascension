@@ -4,7 +4,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { ARTS, RULES_VERSION } from '../src/data.mjs';
-import { artById, moveMul, gainArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29 } from '../src/arts.mjs';
+import { artById, moveMul, gainArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29, blowWhy, boutWhy, expCause } from '../src/arts.mjs';
+import { powerHtml } from '../src/panel-ui.mjs';
 import { curveMulOf } from '../src/artcard.mjs';
 import { createState, load } from '../src/sim.mjs';
 
@@ -94,6 +95,7 @@ test('六門絕活各自觸發；內力不夠就不發動；沒看破的獨孤�
   const dry = applyArtOn(s, 'hit', d, foe(), { power: 10, move: 'jianlong' });
   assert.equal(dry.fired, null);
   assert.equal(dry.power, 10);
+  assert.equal(dry.dry, true);
 
   d.qi = 80;
   d.dugu = ['dg0'];
@@ -211,6 +213,42 @@ test('六門內功被動各自生效；性格挑不同的內功', () => {
   mind.personality = ['bold']; assert.equal(preferInner29(mind), 'huagongDafa');
   mind.personality = ['clever']; assert.equal(preferInner29(mind), 'jiuyang');
   mind.personality = ['quiet']; mind.small29 = true; assert.equal(preferInner29(mind), 'zixia');
+});
+
+test('戰報與人物面板用一句話說主因，不列係數', () => {
+  const d = hero();
+  d.ng = 1;
+  d.arts.breath = { xp: 85, last: 0, bt1: true };
+  d.qi = 80;
+  d.arts.xianglong = { xp: 55, last: 0, bt1: true };
+  const palm = blowWhy(d);
+  assert.match(palm, /降龍/);
+  assert.match(palm, /震退/);
+  assert.doesNotMatch(palm, /×|\d/);
+  d.qi = 0;
+  assert.match(blowWhy(d), /內力見底/);
+  const mul = moveMul(d, 'jianlong');
+  d.wu = 1;
+  assert.equal(moveMul(d, 'jianlong'), mul);
+  d.qi = 80;
+  delete d.arts.xianglong;
+  d.dugu = ['dg0'];
+  d.arts.dugu = { xp: 12, last: 0 };
+  const seen = blowWhy(d);
+  assert.match(seen, /看破/);
+  assert.match(seen, /不擋/);
+  assert.doesNotMatch(seen, /×|\d|辟邪|破招/);
+  const html = powerHtml(d, {}, 1, 0);
+  const line = html.match(/data-blow-why="1">([^<]*)</)[1];
+  assert.equal(line, seen);
+  assert.match(boutWhy(['xianglong']), /降龍震退/);
+  assert.match(boutWhy(['bixie']), /快劍/);
+  assert.doesNotMatch(boutWhy(['bixie', 'dry']), /辟邪|破招|×|\d/);
+  assert.match(boutWhy(['dry']), /內力見底/);
+  assert.match(boutWhy([]), /沒有絕活/);
+  assert.match(expCause([{ hp: 20, qi: 0, ng: 1, arts: {} }], '某人氣血低於 40%'), /內力見底/);
+  assert.match(expCause([], '走完山門'), /沒有打出絕活/);
+  assert.doesNotMatch(expCause([], '被守關擋在山腳'), /×|\d/);
 });
 
 test('舊存檔讀入後是 2.6', () => {
