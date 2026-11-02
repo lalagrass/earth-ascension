@@ -42,14 +42,14 @@ open http://localhost:8000/solo-sect/index.html
 cd solo-sect
 node --test test/*.test.mjs
 ```
-*(量測於 `27aebd6`：快速套件 517 項全過，4 核約 85 秒；`bash test/run.sh all` 另含 archive 與長跑驗收。涵蓋數值邊界、存檔跨版遷移、長跑確定性)*
+*(量測於 #390 完成時：快速套件 545 項全過，4 核約 90 秒；`bash test/run.sh all` 另含 archive 與長跑驗收。涵蓋數值邊界、存檔跨版遷移、長跑確定性)*
 
 ### 行為鎖定（golden，#388）
 重構前後遊戲行為必須一字不差。快速層已含在上面的 `node --test`；完整矩陣（新局 idle／bot／farm／exp × 8 種子 × 30 日，加 6 份 v1.0–v2.4 舊存檔回放）：
 ```bash
 node tools/golden.mjs --check   # 或 bash test/run.sh golden；4 核約 5 分鐘
 ```
-只有明列「改規則」的 PR 才可 `--write` 重產，PR 須寫明哪些鍵改了、為什麼。雜湊在 `test/golden/*.json`。
+規則版本 2.5 起所有局（新局、照舊、舊存檔）都是同一套現行規則，沒有規則開關（#390）。只有明列「改規則」的 PR 才可 `--write` 重產，PR 須寫明哪些鍵改了、為什麼。雜湊在 `test/golden/*.json`。
 
 ---
 

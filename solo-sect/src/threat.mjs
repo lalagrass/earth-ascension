@@ -77,7 +77,7 @@ export const repairing = (s) => s.ds.some((d) => d.task?.act === 'repair');
 // 修柵廣告：受損、有木頭、沒人正在修、受理者是成人且體力夠
 export function repairScore(s, d) {
   const F = s.fence, L = lvOf(F); if (!F || F.hp >= F.max || (s.res[L.mat] || 0) < 1 + FENCE.floor || repairing(s) || d.adult === false || d.needs.energy < 25) return 0;
-  const S = FENCE.score, X = s.threat, rk = s.rumor && s.steward && X && !X.pending && X.rumorFor != null && X.rumorFor === X.next ? 1.5 : 1; /* loop119 傳聞時執事優先修柵 */ return (S.base + (1 - F.hp / F.max) * S.dmgK + (F.hp <= 0 ? S.broken : 0)) * rk;
+  const S = FENCE.score, X = s.threat, rk = s.steward && X && !X.pending && X.rumorFor != null && X.rumorFor === X.next ? 1.5 : 1; /* loop119 傳聞時執事優先修柵 */ return (S.base + (1 - F.hp / F.max) * S.dmgK + (F.hp <= 0 ? S.broken : 0)) * rk;
 }
 export function repairDone(s, d) {
   const F = s.fence, L = lvOf(F); if (!F || (s.res[L.mat] || 0) < 1) return false;
@@ -155,7 +155,7 @@ export function wealth(s) { const W = RAID.w, r = s.res; return Math.max(0, r.co
 const linMul = (day) => Math.min(RAID.dayMax, 0.5 + day / RAID.dayK);
 // 第 logAfter 日以前與舊線性相同；之後從當天的值接著以對數成長，不再爬到 dayMax。
 export const dayMul = (s) => { const d = s.day || 0; if (d <= RAID.logAfter) return linMul(d); return Math.min(RAID.dayMax, linMul(RAID.logAfter) + Math.log(1 + (d - RAID.logAfter) / RAID.logAfter) * RAID.logK); };
-export const minPopOf = (s) => (s.m9 ? RAID.minPopRules : RAID.minPop);
+export const minPopOf = (s) => (RAID.minPopRules);
 export function points(s) { if (headcount(s) < minPopOf(s)) return 0; return Math.min(RAID.cap, Math.round(wealth(s) / RAID.div * dayMul(s) * valorThreatMul(s) * (T(s).taiping ? BOSS.peaceMul : 1))); }
 export const defense = (s) => power(s) * def24Of(s); /* loop176 武當紫霄宮 */
 export const winP = (s, pts) => { const d = defense(s); return Math.max(0.1, Math.min(0.9, d / (d + pts))); };
@@ -169,9 +169,9 @@ export const raidAuto = (s) => { const P = T(s).pending; if (P?.noPay) return 1;
 // 每日一次（sim 換日時呼叫）：到期就看點數，>0 才上門
 // loop119 傳聞預警：寨匪來前 RUMOR.lead 日內寫一條茶攤傳聞；不用亂數（不改寨匪結果）。只說「約幾日」，不說點數與種類
 export const RUMOR = { lead: 2, fenceK: 1.5 };
-export const rumorDays = (s) => { const X = T(s); return s.rumor && !X.pending && X.rumorFor != null && X.rumorFor === X.next ? Math.max(1, X.next - (s.day || 0)) : 0; };
+export const rumorDays = (s) => { const X = T(s); return !X.pending && X.rumorFor != null && X.rumorFor === X.next ? Math.max(1, X.next - (s.day || 0)) : 0; };
 function rumorDaily(s) {
-  const X = T(s); if (!s.rumor || X.pending || X.rumorFor === X.next) return; const left = X.next - (s.day || 0);
+  const X = T(s); if (X.pending || X.rumorFor === X.next) return; const left = X.next - (s.day || 0);
   if (left > RUMOR.lead || left < 1 || points(s) <= 0) return; X.rumorFor = X.next;
   log(s, `【傳聞】山下茶攤有人說，有夥山賊在打聽本門的家底，怕是${left <= 1 ? '這一兩日' : `約 ${left} 日內`}就會上山。`);
   if (s.exp && s.exp.phase !== 'back' && s.exp.phase !== 'done') log(s, '【傳聞】遠行的弟子若想回山守門，可以下令召回。');
@@ -201,9 +201,9 @@ export function threatDaily(s) {
   rumorDaily(s);
   const X = T(s); if (X.pending || (s.day || 0) < X.next) return null;
   X.next = s.day + RAID.every + Math.floor(R(s) * (2 * RAID.jitter + 1)) - RAID.jitter;
-  if (X.taiping) X.next += BOSS.peaceGap; if (s.m9) X.next += peaceDelay(s); // loop9 巡山太平→山賊延後
+  if (X.taiping) X.next += BOSS.peaceGap; X.next += peaceDelay(s); // loop9 巡山太平→山賊延後
   let pts = points(s); if (pts <= 0) return null;
-  const kind = s.m9 ? pickKind(R(s)) : null, K = kindOf(kind); if (K) pts = Math.max(1, Math.round(pts * K.pts)); // loop17 類型
+  const kind = pickKind(R(s)), K = kindOf(kind); if (K) pts = Math.max(1, Math.round(pts * K.pts)); // loop17 類型
   X.n++; const demand = K ? Math.round(demandOf(s, pts) * K.demand) : demandOf(s, pts), p = winP(s, pts);
   X.pending = { n: X.n, pts, demand, p: +p.toFixed(2), at: s.t, until: s.t + RAID.wait, day: s.day, ...(kind ? { kind } : {}), ...(K?.noPay ? { noPay: true } : {}) };
   if (K?.noPay) { log(s, `【${K.name}】一夥山賊（威脅 ${pts}）趁夜摸上山來，不談價錢！迎戰勝算約 ${Math.round(p * 100)}%。`); return X.pending; }
@@ -270,7 +270,7 @@ export function lairLine(s) {
 }
 export function threatHtml(s) {
   const X = T(s), P = X.pending, pts = points(s), n = headcount(s);
-  const head = `<div class="threat" data-threat><b>山賊</b>：${s.band ? `【${s.band.state === 'go' ? '正沿山路逼近' : '正在撞柵'}，山賊 ${Math.max(0, Math.round(s.band.hp))}/${s.band.max}】` : ''}${n < minPopOf(s) ? `門裡才 ${n} 人，山賊還看不上（${minPopOf(s)} 人起）` /* loop125：顯示用實際門檻 */ : `家底 ${Math.round(wealth(s))}，威脅 ${pts}（戰力 ${Math.round(defense(s))}）${s.rumor ? (rumorDays(s) ? `；傳聞約 ${rumorDays(s)} 日內來犯` : '；暫無風聲') : `；下次約第 ${X.next} 日`}`}・來過 ${X.n} 次（付錢 ${X.paid}／迎戰 ${X.fought}，勝 ${X.won}）・山門重傷 ${X.homeHurt}${valorHtml(s)}`;
+  const head = `<div class="threat" data-threat><b>山賊</b>：${s.band ? `【${s.band.state === 'go' ? '正沿山路逼近' : '正在撞柵'}，山賊 ${Math.max(0, Math.round(s.band.hp))}/${s.band.max}】` : ''}${n < minPopOf(s) ? `門裡才 ${n} 人，山賊還看不上（${minPopOf(s)} 人起）` /* loop125：顯示用實際門檻 */ : `家底 ${Math.round(wealth(s))}，威脅 ${pts}（戰力 ${Math.round(defense(s))}）${(rumorDays(s) ? `；傳聞約 ${rumorDays(s)} 日內來犯` : '；暫無風聲')}`}・來過 ${X.n} 次（付錢 ${X.paid}／迎戰 ${X.fought}，勝 ${X.won}）・山門重傷 ${X.homeHurt}${valorHtml(s)}`;
   const lr = lairLine(s) + crusadeHtml27(s); /* loop179 */
   if (!P) return head + lr + '</div>' + fenceHtml(s);
   return `${head}${lr}<div class="raid-ask" data-raid-ask>${kindOf(P.kind) ? `【${kindOf(P.kind).name}】${kindOf(P.kind).desc}；` : ''}${P.noPay ? '不談價錢：' : `山賊要 ${P.demand} 兩：<button data-raid="0" ${s.res.coin < P.demand ? 'disabled' : ''}>付錢了事</button>`} <button data-raid="1">迎戰（勝算 ${Math.round(P.p * 100)}%）</button></div></div>${fenceHtml(s)}`;
@@ -288,12 +288,12 @@ export const LAIRP = { top: 3, k: 0.45 };
 export const lairOf = (s) => s.lair || null;
 // 每日呼叫：條件齊就出發
 export function lairDaily(s, H) {
-  if (!s.m9) return null; const X = T(s); if ((X.n || 0) < LAIR.after) return null;
+   const X = T(s); if ((X.n || 0) < LAIR.after) return null;
   const L = (s.lair ??= { found: s.day, n: 0, won: 0, next: 0, trip: null }); if (L.found === s.day && L.n === 0 && !L.logged) { L.logged = true; log(s, '【山寨】執事打聽到山賊在後山落草的寨子了，人手夠時就去剿。'); }
   if (L.trip || s.day < L.next || X.pending || s.band || X.wave || s.exp) return null;
   const need = LAIR.team * LAIR.supply; if ((s.res.food || 0) < need + 4) return null;
   const c = s.ds.filter((d) => okD(s, d)).sort((a, b) => sumPow(s, [b]) - sumPow(s, [a])); if (c.length < LAIR.team + 1) return null; // 至少留一人看家
-  let team = c.slice(0, LAIR.team); if (s.draw) { const lead = c[0], m = mates(s, lead).map((id) => c.find((d) => d.id === id)).filter(Boolean); if (m.length) team = [lead, ...m].slice(0, LAIR.team); } /* loop20 同派同行 */ const pts = s.lairpow ? Math.max(1, Math.round(sumPow(s, c.slice(0, LAIRP.top)) * LAIRP.k)) : Math.max(1, Math.round(points(s) * LAIR.k)); /* loop29 寨強看戰力（選用） */ if (pts <= 0) return null; const pow = sumPow(s, team);
+  let team = c.slice(0, LAIR.team); { const lead = c[0], m = mates(s, lead).map((id) => c.find((d) => d.id === id)).filter(Boolean); if (m.length) team = [lead, ...m].slice(0, LAIR.team); } /* loop20 同派同行 */ const pts = Math.max(1, Math.round(sumPow(s, c.slice(0, LAIRP.top)) * LAIRP.k)); /* loop29 寨強看戰力（選用） */ if (pts <= 0) return null; const pow = sumPow(s, team);
   resAdd(s, 'food', -need); for (const d of team) { H?.cancelTask?.(s, d, '出山剿寨'); d.away = true; d.path = []; d.reason = '出山剿寨'; }
   L.trip = { ids: team.map((d) => d.id), pts, back: s.t + LAIR.dur, pow }; L.n++;
   log(s, `【剿寨】${team.map((d) => d.name).join('、')}帶 ${need} 份糧出山剿寨（寨中約 ${pts} 點）。`); return L.trip;

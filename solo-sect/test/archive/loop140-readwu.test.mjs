@@ -12,9 +12,9 @@ test('30 次才 +1；只一次；5 不再升', () => {
   const e = { wu: 5 }; for (let i = 0; i < 40; i++) readStudy(s, e); assert.equal(e.wu, 5);
   const f = { root: 2 }; for (let i = 0; i < 30; i++) readStudy(s, f); assert.equal(f.wu, 3);
 });
-test('關閉時什麼都不記', () => { const d = { wu: 3 }; for (let i = 0; i < 50; i++) readStudy({}, d); assert.deepEqual(d, { wu: 3 }); assert.equal(readwuNote({}, d), ''); });
+// #390 退役：規則開關已刪（擁有人 2026-11-02），所有局都是現行規則
 test('顯示：研讀 x/30 → 讀書已開竅', () => { const s = { readwu: true }, d = { wu: 2 }; assert.equal(readwuNote(s, d), '（研讀 0/30）'); for (let i = 0; i < 30; i++) readStudy(s, d); assert.equal(readwuNote(s, d), '（讀書已開竅）'); });
-test('接線：開 → s.readwu；關 → 沒有', () => { assert.equal(createState(71, spec()).readwu, true); assert.equal(createState(71, spec({ readwu: false })).readwu, undefined); });
+// #390 退役：規則開關已刪（擁有人 2026-11-02），所有局都是現行規則
 test('實跑：有藏經閣時會有人研讀累積', () => {
   const s = createState(72, spec()); s.fac.library.stage = 1; for (let i = 0; i < 4 * 600 * 6; i++) tick(s, 0.25); assert.ok(s.ds.some((d) => (d.rw || 0) > 0));
 });

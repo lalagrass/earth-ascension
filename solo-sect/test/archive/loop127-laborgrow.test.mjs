@@ -22,17 +22,8 @@ test('每日軟上限：當日前 3 點全拿，之後兩成；換日重算；�
   assert.equal(workStrCap(d, 2, -1), -1); assert.equal(workStrCap(d, 2, 0), 0); assert.equal(d.lgGot, 2);
   let got = 0; const e = { lg: 1 }; for (let i = 0; i < 1000; i++) got += workStrCap(e, 9, 0.5); assert.ok(got <= LABOR.cap + 0.2 * 500 + 1e-9);
 });
-test('接線：開關開 → 每人 d.lg、moveMul 吃力氣、戰力變高；關 → 沒有 d.lg、數值不變', () => {
-  const a = createState(41, spec()), b = createState(41, spec({ laborgrow: false }));
-  assert.ok(a.laborgrow && a.ds.every((d) => d.lg === 1)); assert.ok(!b.laborgrow && b.ds.every((d) => !d.lg));
-  const da = a.ds[0], db = b.ds[0]; assert.ok(Math.abs(moveMul(da, 'fist', 0) / moveMul(db, 'fist', 0) - (1 + da.skills.strength / 400)) < 1e-9);
-  assert.ok(power(a) > power(b));
-});
+// #390 退役：規則開關已刪（擁有人 2026-11-02），所有局都是現行規則
 test('實跑：開關開時做活力氣每人每日不超過 3＋兩成餘量（4 日）', () => {
   const s = run(createState(42, spec()), 4 * 4 * 60 * 2); for (const d of s.ds) assert.ok((d.lgGot || 0) < 3 + 3, `${d.name} ${d.lgGot}`);
 });
-test('舊檔（沒有 laborgrow）讀入後維持關閉，新入門者也不會被打開；全開存讀後續一致', () => {
-  const s = run(createState(43, spec()), 400), o = JSON.parse(save(s)); delete o.laborgrow; for (const d of o.ds) { delete d.lg; delete d.lgDay; delete d.lgGot; }
-  const r = load(JSON.stringify(o)); assert.ok(r.ok); run(r.state, 2400); assert.ok(!r.state.laborgrow && r.state.ds.every((d) => !d.lg));
-  const a = run(createState(44, spec()), 2400), b = load(save(a)).state; run(a, 2400); run(b, 2400); assert.equal(JSON.stringify(a.ds), JSON.stringify(b.ds));
-});
+// #390 退役：規則開關已刪（擁有人 2026-11-02），所有局都是現行規則

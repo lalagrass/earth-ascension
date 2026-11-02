@@ -17,7 +17,7 @@ export const E = (s) => (s.econ ??= econInit());
 export const billDue = (s, day = s.day) => day >= Math.max(UPKEEP.graceDay, E(s).graceUntil || 0) && day % UPKEEP.every === 0;
 export function settle(s, H) {
   const X = E(s), w = wageBill(s), f = facBill(s);
-  if (s.paypill) while (w && s.res.coin < w && !marketWhy(s, 'pill')) marketDo(s, 'pill'); /* loop71 欠俸先賣丹：月俸不夠時先把療傷丹賣給藥舖（照市價、受每期上限），不用亂數 */
+  while (w && s.res.coin < w && !marketWhy(s, 'pill')) marketDo(s, 'pill'); /* loop71 欠俸先賣丹：月俸不夠時先把療傷丹賣給藥舖（照市價、受每期上限），不用亂數 */
   X.lastBill = { day: s.day, wage: w, fac: f, paidW: false, paidF: false };
   if (w && s.res.coin >= w) { resAdd(s, 'coin', -w); X.lastBill.paidW = true; X.warn = 0; X.paid++; log(s, `【月俸】發給 ${salaried(s).length} 人共 ${w} 香火錢。`); }
   else if (w) { X.warn++; X.misses++; for (const d of salaried(s)) H.think(s, d, 'unpaid');
@@ -108,7 +108,7 @@ export function econHtml(s) {
   const sw = schoolWhy(s);
   return `<div class="econ" data-econ><div class="k">月俸與維護：第 ${nd} 日結算 月俸 ${w}（${salaried(s).length} 人）＋維護 ${f}${s.day < UPKEEP.graceDay ? `（開山寬限到第 ${UPKEEP.graceDay} 日）` : ''}</div>`
     + (X.warn ? `<div class="k warn" data-warn="${X.warn}" style="color:#b33">⚠ 欠俸 ${X.warn}/${UPKEEP.warnMax}：再發不出就有人下山（最多走 ${UPKEEP.leaveMax} 人）</div>` : '')
-    + (s.jhui ? payHint(s, w, f) : '') /* loop70：月俸缺口提示（隨江湖面板開關，純顯示） */
+    + (payHint(s, w, f)) /* loop70：月俸缺口提示（隨江湖面板開關，純顯示） */
     + (X.owed ? `<div class="k warn" data-owed style="color:#b33">⚠ 維護欠款 ${X.owed}：併入下次結算，再付不清就失修</div>` : '')
     + (X.disrepair ? `<div class="k warn" style="color:#b33">⚠ 建築失修：付清維護就恢復</div>` : '')
     + `<div class="row">山下市集：${btn('herb', '買靈草×3')}${btn('weapon', '買兵器')}${btn('pill', '賣療傷丹')}${btn('tiemu', '買鐵木×1') + btn('lingshi', '買靈石×1')}</div>`
@@ -185,11 +185,11 @@ export const PEACE = {
 };
 const MAT_ACT = { wood: 'chop', stone: 'quarry' };
 export const peaceful = (s) => ['foot', 'wood'].some((id) => (s.records?.qing?.[id] || 0) >= EXP.peaceQing);
-export const peaceDelay = (s) => (s.m9 && peaceful(s) ? PEACE.banditDelay : 0);
-export function mateBonus(s, a, b) { if (!s.m9 || !a || !b) return 0; return Math.min(PEACE.mateCap, ((a.mates?.[b.id] || 0) + (b.mates?.[a.id] || 0)) * PEACE.mateK); }
+export const peaceDelay = (s) => (peaceful(s) ? PEACE.banditDelay : 0);
+export function mateBonus(s, a, b) { if (!a || !b) return 0; return Math.min(PEACE.mateCap, ((a.mates?.[b.id] || 0) + (b.mates?.[a.id] || 0)) * PEACE.mateK); }
 // 柵需要什麼料：修補用料；木柵且石不夠升級 → 也要石
 export function fenceNeeds(s) {
-  const F = s.fence; if (!s.m9 || !F) return [];
+  const F = s.fence; if (!F) return [];
   const need = [], L = lvOf(F), lim = FENCE.floor + PEACE.demandExtra;
   if ((s.res[L.mat] || 0) < lim && F.hp < F.max * PEACE.damagedAt) need.push(L.mat);
   const up = FENCE.levels[(F.lv || 1) + 1]; if (up?.cost) for (const [m, c] of Object.entries(up.cost)) if ((s.res[m] || 0) < c && !need.includes(m)) need.push(m);
@@ -201,7 +201,7 @@ export function demandBoost(s, d, out) {
 }
 // loop10：柵還撐得住時不急著修
 export function repairDamp(s, out) {
-  const F = s.fence; if (!s.m9 || !F || F.hp < F.max * PEACE.repairCalmAt) return;
+  const F = s.fence; if (!F || F.hp < F.max * PEACE.repairCalmAt) return;
   for (const o of out) if (o.act === 'repair') o.score *= PEACE.repairCalm;
 }
 
@@ -220,7 +220,7 @@ export function seasonHint(s) {
 // 依最缺的需求抬高對應活動：悶→閒坐看雲、寂寞→聊天、累→歇息。
 export const LIFT = { k: 1.6, need: 50, map: { fun: 'leisure', social: 'chat', energy: 'rest' } };
 export function liftBoost(s, d, out) {
-  if (!s.lift || d.mood >= BREAK.moodMin) return; const n = d.needs;
+  if (d.mood >= BREAK.moodMin) return; const n = d.needs;
   const low = Object.keys(LIFT.map).filter((k) => (n[k] ?? 100) < LIFT.need).sort((a, b) => (n[a] ?? 100) - (n[b] ?? 100));
   for (const k of low) { const o = out.find((x) => x.act === LIFT.map[k]); if (o) { o.score *= LIFT.k; o.why = `心情低落，${o.why}`; o.lift = true; return; } }
 }

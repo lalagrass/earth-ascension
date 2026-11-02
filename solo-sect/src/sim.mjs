@@ -1,7 +1,7 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31 } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
-import { BASELINE_V22, RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
+import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
 import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, fogStep, unlockStep, chapterStep } from './world.mjs';
@@ -44,10 +44,9 @@ export const facDef = (id) => (id === 'fence' ? FENCE_FAC : FACILITIES.find((f) 
 export const facStage = (s, id) => { const S = facDef(id).stages; return S[Math.min(s.fac[id]?.stage || 0, S.length - 1)]; };
 
 // loop143（v2.2 baseline）：已驗證的規則轉正（表在 data.mjs）。#390 起所有新局都套用，不再有舊規則開局。
-export { BASELINE_V22 }; // #390：表移到 data.mjs（save.mjs 讀檔升級也要用）
 export function createState(seed = 1, heroSpec = null) {
   // #390：每個新局都用現行規則（含「照舊」開局 spec＝null，擁有人 2026-11-02 決定）。spec 只決定主角與玩家選項。
-  const withHero = !!heroSpec; heroSpec = { ...BASELINE_V22, ...(heroSpec || {}) };
+  const withHero = !!heroSpec;
   const s = {
     v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
@@ -59,37 +58,14 @@ export function createState(seed = 1, heroSpec = null) {
   log(s, '師徒三人來到山腳一間破道館。');
   s.hero = null; s.choices = []; s.encExclude = []; s.unlock = []; s.chapter = { done: false }; for (const d of s.ds) d.wu ??= d.root;
   if (withHero) applyHero(s, heroSpec, initPair);
-  if (heroSpec?.draw) s.draw = true;
-  if (heroSpec?.comprehend) s.wu7 = true;
-  if (heroSpec?.mentor) s.mentor = true;
-  if (heroSpec?.qshare) s.qshare = true;
-  if (heroSpec?.mpool) s.mpool = true; /* loop55 高人殘譜 */
-  if (heroSpec?.cotrain) s.cotrain = true; /* loop56 同修作伴 */
-  if (heroSpec?.grow) s.grow = true; /* loop79 成長分層 */
-  if (heroSpec?.stewyard) s.stewyard = true; /* loop95 執事立樁 */
-  if (heroSpec?.prof) s.prof = true; /* loop91 熟練度十重 */
-  if (heroSpec?.neigong) { s.neigong = true; s.ngshield = true; } /* loop142 一版淘汰：開內功即護體真氣 */ /* loop115 護體真氣 */ /* loop103 最小內功 */
-  if (heroSpec?.cofun) s.cofun = true; /* loop62 有伴解悶 */
-  if (heroSpec?.longwatch) s.longwatch = true; /* loop67 哨崗久守 */
-  if (heroSpec?.paypill) s.paypill = true; /* loop71 欠俸先賣丹 */
-  if (heroSpec?.masterask) s.masterask = true; /* loop59 高人指點由我定 */
-  if (heroSpec?.stewkit) s.stewkit = true; /* loop60 執事顧灶 */
-  if (heroSpec?.letterask) s.letterask = true; /* loop49 挑戰帖由我定奪 */
-  if (heroSpec?.cropcare) s.cropcare = true; /* loop47 誰種誰心疼 */
-  if (heroSpec?.mfit) s.mfit = true; // loop41 高人因材施教
-  if (heroSpec?.jhrefuse) s.jhrefuse = true; // loop40 挑戰帖量力而為 // loop39 人多分攤日課
-  if (heroSpec?.jhui) s.jhui = true; // loop34 介面可讀性（純顯示）
-  if (heroSpec?.laborgrow) s.laborgrow = true; if (heroSpec?.valor) s.valor = 0; if (heroSpec?.valor && heroSpec?.valormid) s.valormid = true; if (heroSpec?.readwu) s.readwu = true; /* loop140 */ /* loop138 */ /* loop129 勇名 */ /* loop127 勞作練體 */ if (heroSpec?.steward) s.steward = true; if (heroSpec?.rumor) s.rumor = true; if (heroSpec?.grow && heroSpec?.growdr) s.growdr = true; /* loop122 造詣遞減 */ /* loop119 傳聞預警 */ // loop30 執事自主（選用）
-  if (heroSpec?.lairpow) s.lairpow = true; // loop29 寨強看戰力（選用）
-  if (heroSpec?.lift) s.lift = true; // loop28 心情自救（選用）
-  if (heroSpec?.bt25) s.bt25 = true; // loop25 突破排程（選用）
-  if (heroSpec?.jhev) s.jhev = true; // loop23 江湖事件（選用）
-  if (heroSpec?.peace) s.m9 = true; // loop9 太平與防禦經濟（選用） // loop8 同修請教（選用） // loop7 領悟（選用） // loop6 人以群分（選用）
+  // #390 part 2（擁有人 2026-11-02）：30 個規則開關已刪，所有局都是現行規則；spec 只剩主角與玩家選項（執事三項）。
+  if (heroSpec?.steward) s.steward = true; /* loop30 執事自主 */ if (heroSpec?.stewyard) s.stewyard = true; /* loop95 執事立樁 */ if (heroSpec?.stewkit) s.stewkit = true; /* loop60 執事顧灶 */
+  s.valor = 0; /* loop129 勇名 */
   sectInit(s); s.gen = genInit(); if (heroSpec?.bonus) s.gen.suhuiStart = heroSpec.bonus;
-  if (s.grow) growInit(s);
-  if (s.prof) for (const d of s.ds) d.pf = 1; /* loop91 */
-  if (s.neigong) for (const d of s.ds) { d.ng = 1; d.qi = 0; d.ng2 = 1; } /* loop103 */
-  if (s.laborgrow) for (const d of s.ds) d.lg = 1; /* loop127 */
+  growInit(s);
+  for (const d of s.ds) d.pf = 1; /* loop91 */
+  for (const d of s.ds) { d.ng = 1; d.qi = 0; d.ng2 = 1; } /* loop103 */
+  for (const d of s.ds) d.lg = 1; /* loop127 */
   return s;
 }
 function mkDisciple(d, i, at = 'court', personality = d.personality || [], known = personality.slice(0, 1)) {
@@ -109,7 +85,7 @@ export const laborers = (s) => s.ds.filter(isLabor);
 export const outers = (s) => s.ds.filter((d) => d.role === 'outer');
 export const emergency = (s) => s.res.food <= 0 || s.mons.some((m) => m.raid && !m.gone);
 // loop39：8 人時內門多、外門少（常 4 外門撐 8 人），日課過半做不完；「人多分攤」開時全派人數 ≥ 外門×QUOTA.shareAt，每位外門日課 −1。
-export const shareOn = (s) => !!s?.qshare && s.ds.length >= QUOTA.shareAt * Math.max(1, outers(s).length);
+export const shareOn = (s) => !!s && s.ds.length >= QUOTA.shareAt * Math.max(1, outers(s).length);
 export const quotaOf = (d, s) => QUOTA.points - (shareOn(s) ? 1 : 0) + (d.choreDebt || 0);
 // 內門／首徒免雜務：外門已有人手（≥2）才免；缺糧或野豬下山時全員暫時回來幫忙
 export const skipsChores = (s, d) => (d.role === 'inner' || d.role === 'head') && outers(s).length >= QUOTA.outerMin && !emergency(s);
@@ -162,7 +138,7 @@ export function recruit(s, answers) {
   const { personality, known } = personalityFrom(c.next, answers);
   if (rand(s) < 0.3) { const x = rand(s) < 0.5 ? 'lazy' : 'stubborn'; if (!personality.includes(x)) personality.push(x); } // v0.97 一般弟子也可能懶散／較真（暗）
   s.res.food -= RECRUIT.food; book(s, 'out', 'food', RECRUIT.food); { const h = fnv29(`${s.seed}:trait29:${c.next.id}:${s.ds.length}`); if (h < RECRUIT29.p) { const x = RECRUIT29.pool[Math.floor(fnv29(`${s.seed}:trait29b:${c.next.id}:${s.ds.length}`) * RECRUIT29.pool.length)]; if (!personality.includes(x)) { const old = personality[1]; personality[1] = x; const k = known.indexOf(old); if (k >= 0) known[k] = x; (s.v29n ??= {}).recruitTrait = (s.v29n.recruitTrait || 0) + 1; } } } /* loop188 v2.9 經典特質（雜湊，不吃亂數流） */
-  const d = mkDisciple(c.next, 1, 'gate', personality, known); d.together = 0; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); if (s.draw) { const A = archRecruit(() => rand(s)); Object.assign(d, { arch: A.id, root: A.root, wu: A.wu }); if (!d.personality.includes(A.trait)) d.personality.push(A.trait); } /* loop21 原型 */ s.ds.push(d); if (c.next.school) econOf(s).pool.shift();
+  const d = mkDisciple(c.next, 1, 'gate', personality, known); d.together = 0; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); { const A = archRecruit(() => rand(s)); Object.assign(d, { arch: A.id, root: A.root, wu: A.wu }); if (!d.personality.includes(A.trait)) d.personality.push(A.trait); } /* loop21 原型 */ s.ds.push(d); if (c.next.school) econOf(s).pool.shift();
   for (const o of s.ds) if (o !== d) initPair(s, o, d, 5); sectRecruit(s, d);
   log(s, `${d.name}慕名從村路上山，拜入門下。`); recordDeed(s, d, 'join', { chron: `${d.name}慕名上山，拜入門下` }); return { ok: true, d };
 }
@@ -276,7 +252,7 @@ export const PRED = {
   tired: (c) => c.d.tired, wake: (c) => c.n.energy < CORE.wakeAt, hurt: (c) => c.d.hp < 40, hasFood: (c) => c.s.res.food > 0, foodLow: (c) => foodLow(c.s), starving: (c) => !!c.d.famished || c.n.hunger < 15, /* v1.7 遲滯：餓昏後吃到 50 才解除 */ hungry: (c) => c.n.hunger < 30,
   others: (c) => c.others.length > 0, pp: (c) => !!c.pp, dull: (c) => c.fun < 25, encourageOk: (c) => !!c.low, pending: (c) => !!c.d.pendingArt,
   btOk: (c) => !!c.bt && c.d.mood >= BREAK.moodMin && c.n.energy >= BREAK.energyMin, wexin: (c) => c.d.wexin > 0,
-  sparOk: (c) => (facStage(c.s, 'yard').offers.includes('spar') || !!c.s.wu7) /* loop15：領悟開時空地也能徒手過招 */ && c.n.energy > 45 && c.others.some((o) => o.needs.energy > 45),
+  sparOk: (c) => /* loop15：空地也能徒手過招 */ c.n.energy > 45 && c.others.some((o) => o.needs.energy > 45),
   woodRoom: (c) => c.wood < c.s.cap.wood, stoneRoom: (c) => c.stone < c.s.cap.stone, shortWood: (c) => c.shortWood, shortStone: (c) => c.shortStone,
   ripe: (c) => c.s.plots.some((p) => p.st === 'ripe'), siteWork: (c) => !!c.site && (c.haul || siteReady(c.site[1])),
   nightRest: (c) => c.ph === 'night' && c.n.energy < 95, cookable: (c) => vegFree(c.s) >= 2 && c.s.res.food < 10,
@@ -315,7 +291,7 @@ export function scoreActs(s, d) {
   drawBoost(s, d, out); // loop6
   pairBoost(s, d, out); // loop8
   { const rs = repairScore(s, d); if (rs > 0) out.push({ act: 'repair', score: rs, why: s.fence.hp <= 0 ? '柵被撞破了，得趕快補上' : '柵有破損，去補一補' }); } // loop2 修柵廣告
-  if (s.m9) { demandBoost(s, d, out); repairDamp(s, out); } // loop9 缺料需求／loop10 不急修
+  demandBoost(s, d, out); repairDamp(s, out); // loop9 缺料需求／loop10 不急修
   const ph = c.ph, sch = SCHEDULE[ph] || {}, n = d.needs;
   const plotWork = s.plots.some((p) => p.st === 'empty' || p.st === 'ripe');
   // v0.95 統一倍率管線：作息是時段閘門（管線外），性格→天賦組、心情→狀態組、職責/首徒/雇工→外部組
@@ -324,8 +300,8 @@ export function scoreActs(s, d) {
   postRows(s, d, out, plotWork);
   for (const o of out) { const f = o.f, p = pipeline(f.P); f.talent = p.talent; f.state = p.state; f.ext = p.ext; f.total = p.total; f.text = mulText(p); f.bored = boredMul(s, d, o.act); o.score = f.base * f.sched * p.total * f.bored + f.noise; delete f.P;
     o.layer ??= f.duty || f.labor ? 'duty' : f.sched >= 1.3 ? 'sched' : 'trait'; }
-  if (s.bt25) { const bt = c.bt && PRED.btOk(c); for (const o of out) if (o.act === 'meditate' && o.f) o.f.btOk = bt; btBoost(s, out); } // loop25
-  if (s.lift) liftBoost(s, d, out); // loop28
+  { const bt = c.bt && PRED.btOk(c); for (const o of out) if (o.act === 'meditate' && o.f) o.f.btOk = bt; btBoost(s, out); } // loop25
+  liftBoost(s, d, out); // loop28
   for (const o of out) { const m = appetiteActMul31(d, o.act); if (m !== 1) o.score *= m; } /* loop203：偏好帶日程，不另抽 rand。遠征不在評分動作裡 */
   return out.sort((a, b) => b.score - a.score);
 }
@@ -344,7 +320,7 @@ function assign(s, d, act, why) {
     d.task = { act, fac: 'hall', node: 'hall', phase: 'go', partner: p.id, art: pp.art, lead: true, resv: [`actor:${p.id}`] }; p.task = { act, fac: 'hall', node: 'hall', phase: 'go', partner: d.id, art: pp.art, resv: [`actor:${d.id}`] };
     reserve(s, d, `actor:${p.id}`); reserve(s, p, `actor:${d.id}`); goto(d, 'hall'); goto(p, 'hall'); d.reason = why; p.reason = `${d.name}要傳功`; return true; }
   if (act === 'chat' || act === 'spar' || act === 'encourage') {
-    const p = act === 'encourage' ? chatMates(s, d).filter((o) => o.mood < 35).sort((a, b) => a.mood - b.mood)[0] : (s.draw && act === 'chat' ? pickChatMate(s, d, chatMates(s, d), aff) : chatMates(s, d).sort((a, b) => aff(s, d, b) - aff(s, d, a))[0]);
+    const p = act === 'encourage' ? chatMates(s, d).filter((o) => o.mood < 35).sort((a, b) => a.mood - b.mood)[0] : (act === 'chat' ? pickChatMate(s, d, chatMates(s, d), aff) : chatMates(s, d).sort((a, b) => aff(s, d, b) - aff(s, d, a))[0]);
     if (!p) return false;
     if (p.task) cancelTask(s, p, `被${d.name}拉去${act === 'spar' ? '切磋' : '聊天'}`);
     const node = act === 'spar' ? 'yard' : 'court'; d.task = { act, fac: 'yard', node, phase: 'go', partner: p.id, resv: [`actor:${p.id}`] }; p.task = { act, fac: 'yard', node, phase: 'go', partner: d.id, resv: [`actor:${d.id}`] }; reserve(s, d, `actor:${p.id}`); reserve(s, p, `actor:${d.id}`);
@@ -440,7 +416,7 @@ function grow(s, d, sk, amt, src = 'train') {
   amt *= apprMul(s, d); // v1.65 師父在場，徒弟練得快
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
   if (src === 'labor' && sk === 'strength' && d.lg) d.skills[sk] = before + workStrCap(d, Math.floor(s.t / DAY), d.skills[sk] - before); // loop127 做活力氣每日軟上限
-  if (sk === d.style) { if (s.grow) growEnsure(d); const o = gainArt(d, amt, focusMul(d), s.t, s.grow ? { raw, src } : null); if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === m).name}」`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); return o; }
+  if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt, focusMul(d), s.t, { raw, src }); if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === m).name}」`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); return o; }
 }
 
 function doTask(s, d, dt) {
@@ -481,11 +457,11 @@ function doTask(s, d, dt) {
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
       let trained31 = null;
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) { const o = grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? facStage(s, 'yard').trainMul || 1 : 1), isWorkAct(t.act) ? 'labor' : 'train'); if (t.act === 'train' && o?.trained) trained31 = o.trained; }
-      if (s.draw && A.skill) cliqueTrain(s, d, t.act, A.skill, grow); // loop20 小派同修
-      if (s.mentor && t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
+      if (A.skill) cliqueTrain(s, d, t.act, A.skill, grow); // loop20 小派同修
+      if (t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
       if (trained31) noteTrain31(d, artById(trained31)); /* 一次練功只記一次，同修再長的熟練不另計 */
-      if (s.mentor && (t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) askStrong(s, d, byId(s, t.partner), grow, think, log); // loop8 請教
-      if (s.wu7) { comprehend(s, d, t.act, t.partner ? byId(s, t.partner) : null, think, log); comprehendVariant(s, d, t.act, t.partner ? byId(s, t.partner) : null, think, log); } // loop7 領悟＋loop16 變式
+      if ((t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) askStrong(s, d, byId(s, t.partner), grow, think, log); // loop8 請教
+      comprehend(s, d, t.act, t.partner ? byId(s, t.partner) : null, think, log); comprehendVariant(s, d, t.act, t.partner ? byId(s, t.partner) : null, think, log); // loop7 領悟＋loop16 變式
       if (t.act === 'spar' && t.partner) { const p = byId(s, t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在${facStage(s, 'yard').offers.includes('spar') ? '木樁場' : '空地上徒手'}切磋`); addMem(s, d, p, 'spar'); } }
       if (A.fun) d.needs.fun = clamp((d.needs.fun ?? 60) + A.fun, 0, 100);
       if (t.act === 'leisure') think(s, d, 'idled');
@@ -493,17 +469,17 @@ function doTask(s, d, dt) {
       if (t.act === 'eat' && s.res.food >= 8) think(s, d, 'wellFed');
       if (t.act === 'eat' && (t.mate || d.pendingMate)) { const p = byId(s, t.mate || d.pendingMate); d.pendingMate = undefined; if (p && (p.task?.act === 'eat' || p.lastAte === s.t) && (p.task?.mate === d.id || p.pendingMate === d.id || t.mate === p.id)) { d.needs.social = clamp(d.needs.social + PAIR.mealSocial, 0, 100); think(s, d, 'mealPair'); if (d.id < p.id) { relAdd(s, d, p, PAIR.mealRel); log(s, `${d.name}和${p.name}湊在一桌吃飯`, 'low'); } } }
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
-      if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) for (let i = 0; i < (facStage(s, t.fac).medEase || 1); i++) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s) - ngBreak(d)); /* loop105 內力衝關：成功率 +btBonus，仍封頂 0.9；loop108 已達 0.9 不扣 */ if (r?.ok && s.grow && r.stage <= 2) { growEnsure(d); settleGrowth(d, r.art, d.arts[r.art.id], { src: 'break', stage: r.stage }); } /* loop79 突破里程碑 */ const bTier = r?.ok && breakTier(s, d, r); if (r?.ok) breakDeed(s, d, r); if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`, bTier || undefined); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
+      if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) for (let i = 0; i < (facStage(s, t.fac).medEase || 1); i++) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s) - ngBreak(d)); /* loop105 內力衝關：成功率 +btBonus，仍封頂 0.9；loop108 已達 0.9 不扣 */ if (r?.ok && r.stage <= 2) { growEnsure(d); settleGrowth(d, r.art, d.arts[r.art.id], { src: 'break', stage: r.stage }); } /* loop79 突破里程碑 */ const bTier = r?.ok && breakTier(s, d, r); if (r?.ok) breakDeed(s, d, r); if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`, bTier || undefined); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
       if (t.act === 'meditate' && d.ng) addQi(d, medQi(d)); // loop103 打坐一次回內力（衝關扣用在前）
       if (t.act === 'learn' && d.pendingArt) { const m = learnArt(d, d.pendingArt, s.t); s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
-      if (s.draw && (t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) { const c = (s.cnt ??= { chat: 0, spar: 0 }); c[t.act]++; } // loop22 完成場次計數（opt-in）
+      if ((t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) { const c = (s.cnt ??= { chat: 0, spar: 0 }); c[t.act]++; } // loop22 完成場次計數（opt-in）
       if (t.act === 'chat' && t.partner) { const p = byId(s, t.partner); d.together += 20; if (isLabor(d) && !isLabor(p)) d.cowork = (d.cowork || 0) + 30;
         if (t.encouragedBy) { think(s, d, 'encouraged', `（${p.name}）`); }
         else if (d.id < p.id) { const cm = Math.min(compat(d, p), compat(p, d)); if (cm < 1 && rand(s) < (1 - cm) * 0.8) { relAdd(s, d, p, 1); for (const x of [d, p]) think(s, x, 'badChat', `（${x === d ? p.name : d.name}）`); log(s, `${d.name}與${p.name}聊不到一塊`); } else { relAdd(s, d, p, 4 * Math.max(d.traits.social || 1, p.traits.social || 1)); think(s, d, 'goodChat', `（${p.name}）`); think(s, p, 'goodChat', `（${d.name}）`); const ln = chatLine(s, d, p), K = `${d.id}|${p.id}`; (s.memTalk ??= {}); if (ln && s.memTalk[K] !== s.day) { s.memTalk[K] = s.day; log(s, ln, 'low'); } addMem(s, d, p, 'chat'); admire(s, d, p, relAdd, think, log); } } }
       if (t.act === 'encourage' && t.partner) { const p = byId(s, t.partner); think(s, d, 'helped'); relAdd(s, d, p, 3); log(s, `${d.name}陪心情低落的${p.name}說了好一會兒話`); }
       if (t.act === 'repair') repairDone(s, d);
       if (t.act === 'pass' && t.lead && t.partner) { const p = byId(s, t.partner); if (p) passDo(s, d, p, t.art); }
-      if (t.act === 'study' && s.readwu) { const w = readStudy(s, d); if (w) log(s, `${d.name}在藏經閣讀了許久，忽然開竅——悟性長進了${d.rootKnown ? `（${w}）` : ''}。`); } // loop140 讀書長悟性
+      if (t.act === 'study') { const w = readStudy(s, d); if (w) log(s, `${d.name}在藏經閣讀了許久，忽然開竅——悟性長進了${d.rootKnown ? `（${w}）` : ''}。`); } // loop140 讀書長悟性
       if ((t.act === 'study' || t.act === 'meditate')) { const dv = checkDeriveArt(s, d); if (dv) { log(s, `【開宗立派】${d.name}融會貫通，將兩門絕藝合參推演出「《${dv.name}》」，納入本門傳承！`); recordDeed(s, d, 'derive', { chron: `${d.name}合參推演出《${dv.name}》，納入本門傳承` }); } } // loop165 Batch 5.1
       if (t.act === 'study') { const g = studyChart24(s, d, () => rand(s)); if (g) log(s, `【藏經閣】${d.name}在書堆裡翻出一卷《${g.art.name}》，從此略通${CATS[g.cat].name}。`); } // loop160 Batch 1.2
       /* loop181 v2.8 經脈內傷：練功／切磋逆催累積，打坐／醫館化解 */
@@ -604,7 +580,7 @@ const CO_ACTS = ['train', 'meditate', undefined];
 export function cotrainNear(s, d) { if (!CO_ACTS.includes(d.task?.act) || !d.pos) return false; return s.ds.some((o) => o !== d && !o.away && o.pos && Math.hypot(o.pos[0] - d.pos[0], o.pos[1] - d.pos[1]) < 80); }
 /* loop47「誰種誰心疼」（s.cropcare）：菜被拱時，只有農事最好的兩人（實際照顧菜園）全額心疼，其餘在山上的人只是「聽說」（−2），巡山在外的人不知道。關閉時維持全派 −5。 */
 export function cropMood(s) {
-  if (!s.cropcare) { for (const d of s.ds) think(s, d, 'cropLost'); return; }
+  
   const here = s.ds.filter((d) => !d.away), top = new Set([...here].sort((a, b) => (b.skills?.farming || 0) - (a.skills?.farming || 0)).slice(0, 2).map((d) => d.id));
   for (const d of here) think(s, d, top.has(d.id) ? 'cropLost' : 'cropLostLite');
 }
@@ -617,7 +593,7 @@ function ecoStep(s, dt) {
   for (const k of Object.keys(ECO)) { let have = s.wild.filter((w) => w.k === k).length; while (have < s.eco[k].n) { s.wild.push({ k, pos: [HABITAT.c[0] + (rand(s) - 0.5) * R, HABITAT.c[1] + (rand(s) - 0.5) * R], tgt: null }); have++; } if (have > s.eco[k].n) removeWild(s, k, have - s.eco[k].n); }
   for (const w of s.wild) { if (!w.tgt || dist(w.pos, w.tgt) < 4) w.tgt = [HABITAT.c[0] + (rand(s) - 0.5) * 2 * R, HABITAT.c[1] + (rand(s) - 0.5) * R]; const L = dist(w.pos, w.tgt), st = MONSTERS[w.k].speed * 0.3 * dt; w.pos[0] += (w.tgt[0] - w.pos[0]) * Math.min(1, st / L); w.pos[1] += (w.tgt[1] - w.pos[1]) * Math.min(1, st / L); w.face = w.tgt[0] >= w.pos[0] ? 1 : -1; }
   s.raidT += dt;
-  if (!s.hunt && s.raidT >= RAID_EVERY * raidMul(s) && s.eco.boar.n > 0 && !s.mons.some((m) => m.raid) && s.watch != null && s.t - s.watch < WATCH_WARN * (s.longwatch ? 2 : 1)) { s.raidT = 0; s.watched = (s.watched || 0) + 1; log(s, '護山哨示警：野豬剛下山就被鑼聲嚇回去了。'); } // v1.6 哨崗預警
+  if (!s.hunt && s.raidT >= RAID_EVERY * raidMul(s) && s.eco.boar.n > 0 && !s.mons.some((m) => m.raid) && s.watch != null && s.t - s.watch < WATCH_WARN * (2)) { s.raidT = 0; s.watched = (s.watched || 0) + 1; log(s, '護山哨示警：野豬剛下山就被鑼聲嚇回去了。'); } // v1.6 哨崗預警
   if (!s.hunt && s.raidT >= RAID_EVERY * raidMul(s) && s.eco.boar.n > 0 && !s.mons.some((m) => m.raid)) {
     s.raidT = 0; s.eco.boar.n--; removeWild(s, 'boar', 1);
     s.mons.push({ uid: `raid${s.rngN++}`, k: 'boar', hp: MONSTERS.boar.hp, max: MONSTERS.boar.hp, pos: [...NODES.den], path: route('den', 'veg').slice(1), raid: 'go', cool: 0 });
@@ -717,20 +693,20 @@ export function temperDaily29(s) { const W = (s.v29n ??= {}), B = (W.baseByTrait
 function injuryDaily28(s) { for (const d of s.ds) { if (!d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuter28(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
 export function dailyPipeline(s) {
   payday(s); econDaily(s, EH); apprDaily(s); threatDaily(s);
-  if (s.draw) cliqueDaily(s);
-  if (s.m9) lairDaily(s, EH);
-  if (s.jhev) jhevDaily(s);
+  cliqueDaily(s);
+  lairDaily(s, EH);
+  jhevDaily(s);
   temperDaily29(s); injuryDaily28(s); siegeDaily27(s); crusadeDaily27(s, EH); /* loop181 經脈內傷每日 */ /* loop179 傾巢討伐（執事自動）；loop178 v2.7 魔教圍山（雜湊擲骰，不吃亂數流） */
   if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild, canBuildFac, buildFac, ...({ hire, canHire, laborCap, laborers, stewHireCoin: LABOR23.stewHireCoin }) });
 }
 export { recordDeed, DEED_CAP, CHRON_CAP, tallyAct, bioLine, bioLean } from './util.mjs';
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
-  if (s.prof) for (const d of s.ds) if (!d.pf) d.pf = 1; /* loop91 新入門者也吃熟練度十重 */
+  for (const d of s.ds) if (!d.pf) d.pf = 1; /* loop91 新入門者也吃熟練度十重 */
   for (const d of s.ds) { const af = affix24(s, d); if (af) log(s, `【頓悟】${d.name}把「${af.art.name}」練到大成，忽有所悟——得「${af.x.name}」字訣。`); /* loop162 Batch 3 */ d.sectId = s.sect?.id || null; if (d.ng && hasSpec(d, 'jiuyang') && !d.path?.length) addQi(d, 0.25 * dt); } if (s.jh?.poison && bestSpec(s, 'yishu') > 0) { s.jh.poison = null; log(s, '醫者出手，化骨綿掌的餘毒被解了。'); } /* loop151 */
-  if (s.neigong) { s.ngshield = true; for (const d of s.ds) { if (!d.ng) { d.ng = 1; d.qi ??= 0; } if (!d.ng2) { d.ng2 = 1; d.qi = Math.min(d.qi ?? 0, qiMax(d)); } } } /* loop142 一版舊檔改護體真氣 */ /* loop103 */
-  if (s.laborgrow) for (const d of s.ds) d.lg = 1; /* loop127 新入門者 */
-  if (s.grow) for (const d of s.ds) { if (!d.gInit) growEnsure(d); if (s.growdr) d.gdr = 1; } /* loop84 新入門者立即折算，介面不必寫狀態 */
+  for (const d of s.ds) { if (!d.ng) { d.ng = 1; d.qi ??= 0; } if (!d.ng2) { d.ng2 = 1; d.qi = Math.min(d.qi ?? 0, qiMax(d)); } } /* loop142 一版舊檔改護體真氣 */ /* loop103 */
+  for (const d of s.ds) d.lg = 1; /* loop127 新入門者 */
+  for (const d of s.ds) { if (!d.gInit) growEnsure(d); d.gdr = 1; } /* loop84 新入門者立即折算，介面不必寫狀態 */
   { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; dailyPipeline(s); } }
   schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH); if (s.lair) lairStep(s, EH); if (s.v27n?.cru) crusadeStep27(s, EH);
   const se = seasonOf(s); for (const p of s.plots) if (p.st === 'grow' && (p.g += dt / se.grow) >= PLOT_GROW) p.st = 'ripe';
@@ -738,8 +714,8 @@ export function tick(s, dt = 0.25) {
   for (const d of s.ds) {
     if (d.away) { moodStep(s, d, dt); continue; } // 巡山中：背景模擬，不在地圖上
     d.needs.hunger = clamp(d.needs.hunger - 0.35 * se.hunger * dt, 0, 100);
-    d.needs.fun = clamp((d.needs.fun ?? 60) - 0.22 * dt * (s.cofun && cotrainNear(s, d) ? 0.5 : 1), 0, 100); /* loop62「有伴解悶」（s.cofun）：與 cotrain 同條件，樂趣下降速度減半 */
-    d.needs.social = clamp(d.needs.social - 0.4 * dt * (s.cotrain && cotrainNear(s, d) ? 0.5 : 1), 0, 100);
+    d.needs.fun = clamp((d.needs.fun ?? 60) - 0.22 * dt * (cotrainNear(s, d) ? 0.5 : 1), 0, 100); /* loop62「有伴解悶」（s.cofun）：與 cotrain 同條件，樂趣下降速度減半 */
+    d.needs.social = clamp(d.needs.social - 0.4 * dt * (cotrainNear(s, d) ? 0.5 : 1), 0, 100);
     moodStep(s, d, dt); revealStep(s, d, dt); if (isLabor(d)) coworkStep(s, d, dt); else if (d.role === 'outer' && !d.rootKnown && Math.max(d.cowork || 0, d.together || 0) >= ROOT.revealAt) { d.rootKnown = true; log(s, `相處久了，看出外門${d.name}根骨「${ROOT.names[d.root]}」。`); }
     if (!d.task) decide(s, d);
     if (d.task) { moveStep(d, dt); tallyAct(d, d.task.act, dt); doTask(s, d, dt); } // M1 傳記：看得見的行為時間

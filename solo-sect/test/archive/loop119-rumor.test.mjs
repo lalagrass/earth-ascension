@@ -8,7 +8,7 @@ import { T, RUMOR, rumorDays, threatHtml } from '../../src/threat.mjs';
 import { run, ALL_ON } from '../harness/bot.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, peace: true, ...x });
 const msgs = (s) => s.log.map((l) => l.msg);
-test('規則轉正（loop143）：rumor 在 v2.2 底層規則', async () => { const { BASELINE_V22 } = await import('../../src/sim.mjs'); assert.equal(BASELINE_V22.rumor, true); });
+// #390 退役：規則開關已刪（擁有人 2026-11-02），所有局都是現行規則
 test('寨匪來前一兩日出現傳聞，且早於寨匪；只說約幾日', () => {
   const seen = new Set(), m = []; run(1001, {}, 9, true, (s) => { for (const l of s.log.slice(0, 40).reverse()) if (!seen.has(l)) { seen.add(l); m.push(l.msg); } });
   const i = m.findIndex((x) => /【傳聞】山下茶攤/.test(x)), j = m.findIndex((x) => /山賊/.test(x) && /威脅/.test(x));

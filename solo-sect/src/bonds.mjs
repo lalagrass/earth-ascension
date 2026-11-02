@@ -49,7 +49,7 @@ export function passPick(s, d) {
 export const passReserve = (s) => { s.passN = { day: s.day, n: passToday(s) + 1 }; }; // 開始傳功即佔當日名額（多人同時起手不會超量）
 export function passDo(s, d, p, art) {
   const key = `${d.id}>${p.id}:${art}`; (s.passed ??= {}); if (s.passed[key]) return false; s.passed[key] = s.day; d.passDay = s.day;
-  const a = learnArt(p, art, s.t), r = p.arts[art], g = PASS.gain + (p.master === d.id ? PASS.apprBonus : 0); r.xp = Math.min(curCap(p, a), r.xp + g); r.last = s.t; if (s.grow) { growEnsure(p); settleGrowth(p, a, r, { src: 'pass' }); } /* loop79 傳功造詣（鍵一次） */
+  const a = learnArt(p, art, s.t), r = p.arts[art], g = PASS.gain + (p.master === d.id ? PASS.apprBonus : 0); r.xp = Math.min(curCap(p, a), r.xp + g); r.last = s.t; growEnsure(p); settleGrowth(p, a, r, { src: 'pass' }); /* loop79 傳功造詣（鍵一次） */
   relAdd(s, d, p, PASS.aff); addMem(s, d, p, 'pass', a.name); log(s, `【傳功】${d.name}帶${p.name}練「${a.name}」，熟練 +${g}`); return true;
 }
 
@@ -71,7 +71,7 @@ const pool = (s) => s.ds.filter((d) => !d.removed && d.role !== 'laborer' && d.a
 const ok = (s, g, th) => g.every((a, i) => g.every((b, j) => j <= i || aff(s, a, b) >= th));
 // 每日：先檢查舊派（低於 leave 就散），再用貪婪法從好感最高的一對長出新派
 export function cliqueDaily(s) {
-  if (!s.draw) return; const ds = pool(s), byId = (id) => ds.find((d) => d.id === id); const old = s.cliques || [];
+   const ds = pool(s), byId = (id) => ds.find((d) => d.id === id); const old = s.cliques || [];
   const keep = []; for (const c of old) { const g = c.ids.map(byId).filter(Boolean); if (g.length >= 2 && ok(s, g, CLQ.leave)) keep.push({ ...c, ids: g.map((d) => d.id) }); else log(s, `【小派】${c.name}漸漸疏遠，散了。`); }
   const used = new Set(keep.flatMap((c) => c.ids)); const pairs = [];
   for (const a of ds) for (const b of ds) if (a.id < b.id && !used.has(a.id) && !used.has(b.id) && aff(s, a, b) >= CLQ.aff) pairs.push([aff(s, a, b), a, b]);
@@ -86,7 +86,7 @@ export const cliqueOf = (s, d) => (s.cliques || []).find((c) => c.ids.includes(d
 export const mates = (s, d) => { const c = cliqueOf(s, d); return c ? c.ids.filter((id) => id !== d.id) : []; };
 // 活動完成時：同派有人正在做同一件事（或切磋對手即同派）→ 技藝另加 bonus
 export function cliqueTrain(s, d, act, skill, grow) {
-  if (!s.draw || !skill || !CLQ.acts.includes(act)) return false; const m = mates(s, d); if (!m.length) return false;
+  if (!skill || !CLQ.acts.includes(act)) return false; const m = mates(s, d); if (!m.length) return false;
   const with_ = s.ds.some((o) => m.includes(o.id) && (o.task?.act === act || d.task?.partner === o.id)); if (!with_) return false;
   for (const [k, v] of Object.entries(skill)) grow(s, d, k, v * CLQ.bonus); s.cliqueBoost = (s.cliqueBoost || 0) + 1; return true;
 }

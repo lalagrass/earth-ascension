@@ -5,7 +5,7 @@ import { createState, tick, startHunt } from '../../src/sim.mjs';
 import { qiMax, NG } from '../../src/arts.mjs';
 const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...x });
 test('NG 不再有運勁／療傷參數', () => { for (const k of ['strikeCost', 'strikeMul', 'healAt', 'healCost', 'heal', 'base', 'perTier']) assert.equal(NG[k], undefined, k); });
-test('開內功即護體真氣（沒有一版可選）', () => { const s = createState(1001, spec({ neigong: true, ngshield: false })); assert.equal(s.ngshield, true); assert.ok(s.ds.every((d) => d.ng2 === 1)); });
+// #390 退役：規則開關已刪（擁有人 2026-11-02），所有局都是現行規則
 test('重傷不再運功療傷：內力滿、生命 40 時一拍後生命不回升', () => {
   const s = createState(1003, spec({ neigong: true })); for (let i = 0; i < 2400; i++) tick(s, 0.25);
   const d = s.ds.find((x) => x.hp > 50); startHunt(s, [d.id]); let k = 0; while (s.hunt && !s.hunt.started && k++ < 4000) tick(s, 0.25);

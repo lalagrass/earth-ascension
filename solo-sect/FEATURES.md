@@ -13,7 +13,7 @@
 Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/README.md)
 - 全套測試：[`test-full.log`](artifacts/features/77e1b2d/test-full.log)，**193 項全部通過，0 失敗**（約 12 秒）。
 - UI 玩家流程：腳本 [`flow-ui-expedition-save.mjs`](artifacts/features/77e1b2d/flow-ui-expedition-save.mjs)，輸出 [`flow-ui.log`](artifacts/features/77e1b2d/flow-ui.log)／[`flow-ui-result.json`](artifacts/features/77e1b2d/flow-ui-result.json)，**7/7 PASS**，截圖 [`flow-report.png`](artifacts/features/77e1b2d/flow-report.png)。
-- 舊檔 fixture：`test/fixtures/v0.5…v0.92.json`。golden：`test/fixtures/golden-30d.txt`。
+- 舊檔 fixture：`test/fixtures/v0.5…v0.92.json`。golden：`test/golden/`（#388；舊的 `golden-30d.txt` 已在 #390 刪除）。
 
 **狀態判定說明（請先讀）**
 - `shots/` 的截圖幾乎都是 `shoot.mjs` 直接改狀態（給資源、跳時間、塞事件）後拍的，**只能算展示證據，不算玩家流程**。

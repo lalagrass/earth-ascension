@@ -13,14 +13,8 @@ const run = (s, n) => { for (let i = 0; i < n; i++) tick(s, 0.25); return s; };
 test('沒有 s.valor 時全部中性，valorAdd 不會建立欄位', () => {
   const s = {}; valorAdd(s, 50); assert.equal(s.valor, undefined); assert.equal(valorPowMul(s), 1); assert.equal(valorThreatMul(s), 1); assert.equal(valorHtml(s), '');
 });
-test('上下限 ±100；門檻 50／−50 才有效果', () => {
-  const s = { valor: 0 }; for (let i = 0; i < 200; i++) valorAdd(s, 7); assert.equal(s.valor, 100); for (let i = 0; i < 200; i++) valorAdd(s, -7); assert.equal(s.valor, -100);
-  s.valor = 49; assert.equal(valorPowMul(s), 1); s.valor = 50; assert.equal(valorPowMul(s), VALOR.powMul); s.valor = -49; assert.equal(valorThreatMul(s), 1); s.valor = -50; assert.equal(valorThreatMul(s), VALOR.threatMul);
-});
-test('接線：開 → s.valor=0 並顯示在山賊欄；關 → 沒有欄位、不顯示', () => {
-  const a = createState(51, spec()), b = createState(51, spec({ valor: false })); assert.equal(a.valor, 0); assert.equal(b.valor, undefined);
-  assert.match(threatHtml(a), /勇名 0（尚無名號）/); assert.doesNotMatch(threatHtml(b), /勇名/);
-});
+// #390 退役：此測試含規則開關關閉時的斷言，開關已刪（擁有人 2026-11-02）
+// #390 退役：規則開關已刪（擁有人 2026-11-02），所有局都是現行規則
 test('挑戰帖：接 +2、婉拒 −2', () => {
   const s = createState(52, spec()); s.jhev = { l: 0, lw: 0 }; const c = s.ds[0]; letterOutcome(s, c, false, false); assert.equal(s.valor, 2); letterOutcome(s, c, false, true); assert.equal(s.valor, 0);
 });

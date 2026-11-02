@@ -47,11 +47,11 @@ export function charm29(d, o) { const T = [], p = o.personality || [], v = o.val
   if ((o.id === 'hero' || o.role === 'head' || o.champ28 || (v.fame ?? 0) >= CHARM29.fameV || p.includes('hypocrite')) && ((dv.sect ?? 0) >= CHARM29.followV || (dv.fame ?? 0) >= CHARM29.followV || ['diligent', 'honest', 'rigid', 'worrier', 'stubborn'].some((t) => (d.personality || []).includes(t)))) { x += CHARM29.wei; T.push('威儀服眾'); }
   return { v: x, tags: T }; }
 export function drawOf(d, o) { return (isExtro(o) ? DRAW.extroPull : 0) + Math.min(DRAW.powCap, Math.max(0, powOf(o) - powOf(d)) * DRAW.powPull) + (charm29(d, o).v); }
-export function drawBoost(s, d, out) { if (!s.draw || !isExtro(d)) return; for (const o of out) if (o.act === 'chat') o.score *= DRAW.chatMul; }
+export function drawBoost(s, d, out) { if (!isExtro(d)) return; for (const o of out) if (o.act === 'chat') o.score *= DRAW.chatMul; }
 export function pickChatMate(s, d, mates, aff) { mates = mates.filter((o) => !(o.shelter > s.t)); /* loop188：避難中的人不被拉去聊天 */ if (!mates.length) return undefined; const best = Math.max(...mates.map((o) => aff(s, d, o))); const m = mates.filter((o) => aff(s, d, o) >= best - DRAW.affBand).sort((a, b) => (aff(s, d, b) + drawOf(d, b)) - (aff(s, d, a) + drawOf(d, a)))[0]; if (m) { const t = charm29(d, m).tags; if (t.length) { const W = ((s.v29n ??= {}).charm ??= {}); for (const k of t) W[k] = (W[k] || 0) + 1; } } return m; } /* loop188 俠魅計數 */
 // 聊完：弱的一方若對方明顯更強 → 仰慕（多一點關係＋一則想法）
 export function admire(s, d, p, relAdd, think, log) {
-  if (!s.draw) return;
+  
   for (const [a, b] of [[d, p], [p, d]]) if (powOf(b) - powOf(a) >= DRAW.admireGap) {
     relAdd(s, a, b, DRAW.admireRel); think(s, a, 'admire', `（${b.name}）`);
     const K = `adm|${a.id}|${b.id}`; (s.memTalk ??= {}); if (s.memTalk[K] !== s.day) { s.memTalk[K] = s.day; log(s, `${a.name}對${b.name}的功夫心生仰慕`, 'low'); }
@@ -72,7 +72,7 @@ export const MENTOR = {
 const training = (s, d) => s.ds.filter((o) => o !== d && !o.away && o.task?.act === 'train' && !o.path?.length);
 // 練功完成時
 export function coTrain(s, d, amt, grow, relAdd, log) {
-  if (!s.mentor) return 0; const mates = training(s, d); if (!mates.length) return 0;
+   const mates = training(s, d); if (!mates.length) return 0;
   grow(s, d, 'style', amt * MENTOR.coMul);
   for (const m of mates) { (d.mates ??= {}); d.mates[m.id] = (d.mates[m.id] || 0) + 1; if (d.id < m.id) relAdd(s, d, m, MENTOR.coRel);
     if (d.mates[m.id] === MENTOR.pairAt) log(s, `${d.name}和${m.name}常一起練功，成了練功搭子`, 'low'); }
@@ -80,7 +80,7 @@ export function coTrain(s, d, amt, grow, relAdd, log) {
 }
 // 聊天／切磋完成時：弱的一方向強的一方請教
 export function askStrong(s, d, p, grow, think, log) {
-  if (!s.mentor || !p) return null;
+  if (!p) return null;
   for (const [a, b] of [[d, p], [p, d]]) if (powOf(b) - powOf(a) >= MENTOR.askGap) {
     grow(s, a, 'style', MENTOR.askAmt); (s.mentorN ??= { co: 0, ask: 0 }).ask++;
     const K = `ask|${a.id}|${b.id}`; (s.memTalk ??= {}); if (s.memTalk[K] !== s.day) { s.memTalk[K] = s.day; log(s, `${a.name}向${b.name}請教功夫，頗有心得`, 'low'); }
@@ -90,7 +90,7 @@ export function askStrong(s, d, p, grow, think, log) {
 }
 // 評分：搭子正在練 → 想去一起練
 export function pairBoost(s, d, out) {
-  if (!s.mentor || !d.mates) return; const pals = training(s, d).filter((o) => (d.mates[o.id] || 0) >= MENTOR.pairAt);
+  if (!d.mates) return; const pals = training(s, d).filter((o) => (d.mates[o.id] || 0) >= MENTOR.pairAt);
   if (pals.length) for (const o of out) if (o.act === 'train') { o.score *= MENTOR.pairMul; o.why = `${pals[0].name}在練功，一起去`; }
 }
 
