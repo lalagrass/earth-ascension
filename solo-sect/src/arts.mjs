@@ -447,7 +447,7 @@ export function qiGreat24(d) {
 }
 export function qiStrikeMul(d, a) {
   if (!d) return 1;
-  
+
   const scale = Number.isFinite(a?.qiScale) ? a.qiScale : MODE31.base.qiScale;
   return 1 + scale * Math.min(QI_SAT31, qiOf(d) / 100) * (1 + 0.004 * neigongEff31(d));
 }

@@ -890,4 +890,3 @@ export function destinyStep(s, id, ctx) {
   }
   return false;
 }
-
