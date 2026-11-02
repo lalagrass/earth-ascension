@@ -32,10 +32,15 @@
 * 若本次 Loop 有修改核心公式或規則（如造詣計算、內勁飽和、作息門檻）：
   * 除了修改代碼外，同步更新 `docs/systems/` 或 `docs/architecture/` 對應文件中的文字說明，保持文件與代碼同步（Living Docs）。
 
+### 5. 模組與路線圖（#389）
+* 新增、改名、合併 `src/` 模組時，同步更新 `docs/architecture/MODULES.md`（§1 職責表；合併時在 §3 對照表加一列）。
+* 里程碑狀態改變或新玩法版本完成時，更新根目錄 `ROADMAP.md` 的表格與「現況」。歷史細節寫進 `loop/LOG.md`，不寫進 ROADMAP。
+* 文件裡寫數字（測試數、耗時、版本）時，註明量測的 commit，例如「量測於 `27aebd6`：517 項」。
+
 ---
 
 ## 快速查核清單（Commit 前檢查）
 - [ ] `git status` 中，`solo-sect/` 根目錄沒有新增任何 `.md` 檔。
 - [ ] 平衡與測試報告已放至 `docs/reports/`。
 - [ ] 決策已追加至 `docs/decisions/DECISIONS.md`。
-- [ ] 執行 `node --test test/*.test.mjs` 全數 PASS。
+- [ ] 執行 `node --test test/*.test.mjs` 全數 PASS（含 `test/docs-links.test.mjs`：常青文件的連結與 `.mjs` 引用都存在）。
