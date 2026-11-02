@@ -38,8 +38,7 @@ test('loop201 吐納催三陰蜈蚣爪幾乎不掉威力', () => {
   const d = { v24: true, v23: true, sectId: 'xingxiu', qi: 10, arts: { breath: { xp: 60 }, sanyinClaw: { xp: 30 } } };
   const drv = A.innerDrive28(d, A.artById('sanyinClaw'));
   assert.equal(drv.tier, 3);
-  assert.ok(drv.mul >= 0.95, String(drv.mul));
-  assert.ok(Math.abs(drv.mul - A.floatMul31(A.artById('sanyinClaw'))) < 1e-9);
+  assert.equal(drv.mul, 1); /* #405 退役：虛浮不再縮威力 */
 });
 
 test('loop201 同武學同數值，氣宗、劍宗、無名派倍率相同', () => {
@@ -205,7 +204,8 @@ test('loop204 面板寫出類別與內勁，徽章只看主修武學', () => {
   const g = body({ sectId: 'gaibang', v23: true, qi: 40, stree: ['breath', 'huntianGong', 'lianhuaPalm'] });
   g.arts = { huntianGong: { xp: 60, last: 0 }, lianhuaPalm: { xp: 30, last: 0 } };
   assert.equal(A.innerDrive28(g, A.artById('lianhuaPalm')).tier, 1);
-  assert.match(artsGrowHtml(g, 0, false), /正宗催動 ×1.25/);
+  assert.equal(A.innerDrive28(g, A.artById('lianhuaPalm')).mul, 1); /* #405 退役：面板不再寫正宗 ×1.25 */
+  assert.ok(!artsGrowHtml(g, 0, false).includes('×1.25'));
   assert.ok(!A.styleBadges24(g).includes('【本門正宗】'));
   const dao = body({ v23: true, qi: 20 });
   dao.arts = { bixie: { xp: 20, gm: { e: 75 } }, breath: { xp: 10, last: 0 } };

@@ -99,14 +99,16 @@ test('loop194 面板露出主運內功、催動階與習性徽章', async () => 
   const html = artsGrowHtml(d, 0, false);
   assert.ok(html.includes('★主運內功'), html);
   assert.ok(html.includes('◆根基'), html);
-  assert.ok(html.includes('正宗催動 ×1.25'), html);
-  assert.ok(html.includes('內力虛浮 ×0.96'), html); /* loop201：抽髓是打法 qiScale 0.08，虛浮約 ×0.956 */
+  assert.ok(!html.includes('×1.25'), html); /* #405 退役：正宗不再乘 1.25 */
+  assert.ok(html.includes('內力虛浮'), html);
+  assert.ok(!html.includes('×0.96'), html);
   assert.ok(A.styleBadges24(d).includes('【大比首徒】') && A.styleBadges24(d).includes('【守正厚積】'));
   d.xiao29 = true; assert.ok(A.styleBadges24(d).includes('【梟雄強練】'));
   d.xiao29 = false; d.base28 = false; d.personality = ['chi']; d.pairMul = 0.2; assert.ok(A.styleBadges24(d).includes('【至情清修】'));
   d.personality = ['clever']; d.pairMul = 0; assert.ok(A.styleBadges24(d).includes('【靈動跳階】'));
   const [, g] = fresh('gaibang'); give(g, 'huntianGong', 60); give(g, 'chousuiPalm', 30);
-  assert.ok(artsGrowHtml(g, 0, false).includes('⚠️異屬逆催 ×0.65'));
+  assert.ok(artsGrowHtml(g, 0, false).includes('⚠️異屬逆催'));
+  assert.ok(!artsGrowHtml(g, 0, false).includes('×0.65')); /* #405 退役 */
 });
 test('loop193 拘謹計數優先於勤奮', async () => {
   const { temperDaily29 } = await import('../src/sim.mjs');

@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { ARTS, RULES_VERSION } from '../src/data.mjs';
-import { artById, moveMul, gainArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, ART_ON_EVENTS } from '../src/arts.mjs';
+import { artById, moveMul, gainArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29 } from '../src/arts.mjs';
 import { curveMulOf } from '../src/artcard.mjs';
 import { createState, load } from '../src/sim.mjs';
 
@@ -147,6 +147,70 @@ test('六門絕活各自觸發；內力不夠就不發動；沒看破的獨孤�
   assert.equal(applyArtOn(s, 'block', d, foe(), { dmg: 4 }).fired, null);
   assert.equal(applyArtOn(s, 'kill', d, foe(), { move: 'fist' }).fired, null);
   assert.equal(applyArtOn(s, 'hit', d, foe(), { power: 10, move: 'fist' }).fired, null);
+});
+
+test('六門內功被動各自生效；性格挑不同的內功', () => {
+  const plain = { ng: 1, arts: {}, personality: [], wu: 3 };
+  const breath = { ng: 1, arts: { breath: { xp: 1, last: 0 } }, personality: [], wu: 3 };
+  assert.ok(Math.abs(restQi(breath) / restQi(plain) - 1.5) < 1e-9);
+
+  const s = createState(3);
+  const d = s.ds.find((x) => x.id === 'hero');
+  d.qiInjury = 10;
+  d.arts.jiuyang = { xp: 30, last: 0 };
+  assert.equal(jiuyangEase(d, 10), 0);
+  d.arts.jiuyang.xp = 55; d.arts.jiuyang.bt1 = true;
+  assert.ok(Math.abs(jiuyangEase(d, 10) - 0.2) < 1e-9);
+
+  d.hp = 40; d.qi = 10;
+  d.arts.wudangJiuyang = { xp: 55, last: 0, bt1: true };
+  assert.equal(innerOnGetHit(s, d).hp, 0);
+  d.arts.wudangJiuyang.xp = 85;
+  const back = innerOnGetHit(s, d);
+  assert.equal(back.hp, 1);
+  assert.equal(d.hp, 41);
+  assert.ok(qiOf(d) >= 12);
+
+  d.hp = 50; d.qi = 40;
+  d.arts.zixia = { xp: 55, last: 0, bt1: true };
+  const zx = innerOnHit(s, d, { qi: 0 }, { power: 10, move: 'tjs1' });
+  assert.ok(Math.abs(zx.power - 10.5) < 1e-6);
+  assert.equal(zx.heal, 2);
+  assert.equal(d.hp, 52);
+  assert.match(zx.line, /補了一口氣/);
+
+  d.arts.huagongDafa = { xp: 25, last: 0 };
+  const foe = { qi: 10 };
+  const hg = innerOnHit(s, d, foe, { power: 10, move: 'tjs1' });
+  assert.equal(hg.steal, 3);
+  assert.equal(foe.qi, 7);
+  assert.equal(hg.power, 10);
+  assert.equal(hg.heal, 0);
+  assert.match(hg.line, /吸走一點內力/);
+
+  delete d.arts.huagongDafa;
+  d.qi = 80;
+  d.arts.xianglong = { xp: 55, last: 0, bt1: true };
+  d.arts.huntianGong = { xp: 25, last: 0 };
+  const palm = applyArtOn(s, 'hit', d, { hp: 20 }, { power: 10, move: 'jianlong' });
+  const ht = innerOnHit(s, d, { qi: 0 }, { power: palm.power, move: 'jianlong', fired: palm.fired });
+  assert.equal(ht.huntian, true);
+  assert.match(ht.line, /仍震得開/);
+  delete d.arts.huntianGong;
+  const bare = innerOnHit(s, d, { qi: 0 }, { power: palm.power, move: 'jianlong', fired: palm.fired });
+  assert.equal(bare.huntian, false);
+
+  const mind = {
+    v24: true, wu: 3, sectId: 'wudang', stree: ['breath'], values: {}, pairMul: 0, small29: false,
+    arts: {
+      breath: { xp: 10, last: 0 }, zixia: { xp: 10, last: 0 },
+      jiuyang: { xp: 40, last: 0 }, huagongDafa: { xp: 10, last: 0 },
+    },
+  };
+  mind.personality = ['honest']; assert.equal(preferInner29(mind), 'breath');
+  mind.personality = ['bold']; assert.equal(preferInner29(mind), 'huagongDafa');
+  mind.personality = ['clever']; assert.equal(preferInner29(mind), 'jiuyang');
+  mind.personality = ['quiet']; mind.small29 = true; assert.equal(preferInner29(mind), 'zixia');
 });
 
 test('舊存檔讀入後是 2.6', () => {

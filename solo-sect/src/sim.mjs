@@ -1,5 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn } from './arts.mjs';
+import { CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
 import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
@@ -530,9 +530,10 @@ function knockPos(from, pos, dist) {
 }
 function landOn(s, d, tgt, mv, power, foeName) {
   const on = applyArtOn(s, 'hit', d, tgt, { power, move: mv.id, foeName });
+  const inn = innerOnHit(s, d, tgt, { power: on.power ?? power, move: mv.id, fired: on.fired });
   if (on.knock) knockPos(d.pos, tgt.pos, on.knock);
   if (on.trip) { tgt.tripUntil = s.t + 2.5; tgt.cool = Math.max(tgt.cool || 0, on.trip); }
-  return on.power ?? power;
+  return inn.power ?? on.power ?? power;
 }
 function huntStep(s, dt) {
   const h = s.hunt; if (!h) return;
@@ -553,6 +554,7 @@ function huntStep(s, dt) {
         if (got.reflect) m.hp -= incoming * got.reflect;
         if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); continue; }
         foe.hp -= shieldHit(foe, got.dmg ?? incoming, s.t); /* loop116 護體真氣 */
+        innerOnGetHit(s, foe); /* #405 純陽無極功：挨打化進氣血 */
         m.cool = 1.2; s.fx.push({ kind: 'bite', pos: [...foe.pos], ttl: 0.4 });
       }
       continue;
@@ -725,7 +727,7 @@ export { recordDeed, DEED_CAP, CHRON_CAP, tallyAct, bioLine, bioLean } from './u
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
   for (const d of s.ds) if (!d.pf) d.pf = 1; /* loop91 新入門者也吃熟練度十重 */
-  for (const d of s.ds) { const af = affix24(s, d); if (af) log(s, `【頓悟】${d.name}把「${af.art.name}」練到大成，忽有所悟——得「${af.x.name}」字訣。`); /* loop162 Batch 3 */ d.sectId = s.sect?.id || null; if (d.ng && hasSpec(d, 'jiuyang') && !d.path?.length) addQi(d, 0.25 * dt); } if (s.jh?.poison && bestSpec(s, 'yishu') > 0) { s.jh.poison = null; log(s, '醫者出手，化骨綿掌的餘毒被解了。'); } /* loop151 */
+  for (const d of s.ds) { const af = affix24(s, d); if (af) log(s, `【頓悟】${d.name}把「${af.art.name}」練到大成，忽有所悟——得「${af.x.name}」字訣。`); /* loop162 Batch 3 */ d.sectId = s.sect?.id || null; if (d.ng && hasSpec(d, 'jiuyang') && !d.path?.length) { addQi(d, 0.25 * dt); jiuyangEase(d, dt); } /* #405 大成起，不動時內傷緩緩褪 */ } if (s.jh?.poison && bestSpec(s, 'yishu') > 0) { s.jh.poison = null; log(s, '醫者出手，化骨綿掌的餘毒被解了。'); } /* loop151 */
   for (const d of s.ds) { if (!d.ng) { d.ng = 1; d.qi ??= 0; } if (!d.ng2) { d.ng2 = 1; d.qi = Math.min(d.qi ?? 0, qiMax(d)); } } /* loop142 一版舊檔改護體真氣 */ /* loop103 */
   for (const d of s.ds) d.lg = 1; /* loop127 新入門者 */
   for (const d of s.ds) { if (!d.gInit) growEnsure(d); d.gdr = 1; } /* loop84 新入門者立即折算，介面不必寫狀態 */

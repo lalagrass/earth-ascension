@@ -163,7 +163,28 @@ export function autoFocus(d) {
     if (T.zheng) { const b = baseInner28(d); if (b && d.arts[b.id] && d.arts[b.id].xp < ROOT28.baseXp && d.arts[b.id].xp < artCap(d, b)) { d.base28 = true; return b.id; } }
     if (T.xiao) { const f = own.filter((a) => !isInner(a) && (a.grade || 1) >= 2 && !PUBLIC28.includes(a.id) && (BAN28.includes(a.id) || (!own28(d, a) && (a.own24 || a.classic)))).sort((a, b) => (b.grade || 1) - (a.grade || 1) || d.arts[b.id].xp - d.arts[a.id].xp)[0]; if (f) { d.xiao29 = true; return f.id; } }
     if (T.ling) { const f = [...own].sort((a, b) => (b.grade || 1) - (a.grade || 1) || d.arts[b.id].xp - d.arts[a.id].xp)[0]; if (f) { if (f.id !== dflt()) d.ling29 = true; return f.id; } } }
-  return [...pool].sort(byDefault)[0].id;
+  const pick = [...pool].sort(byDefault)[0];
+  if (pick && isInner(pick)) { const fav = preferInner29(d); if (fav && pool.some((a) => a.id === fav)) return fav; }
+  return pick.id;
+}
+/* #405 性格挑內功。只在已經會的內功裡排，不另開一套人格，也不繞過掌門鎖。 */
+export function preferInner29(d) {
+  if (!d?.arts) return null;
+  const T = temper29(d);
+  const pool = Object.keys(d.arts).map(artById).filter((a) => a && isInner(a) && (d.arts[a.id].xp || 0) < artCap(d, a));
+  if (!pool.length) return null;
+  const byXp = (a, b) => (d.arts[b.id].xp || 0) - (d.arts[a.id].xp || 0);
+  if (T.xiao) {
+    const bad = pool.filter((a) => a.id === 'huagongDafa' || BAN28.includes(a.id) || (a.grade || 1) >= 3);
+    if (bad.length) return [...bad].sort((a, b) => (a.id === 'huagongDafa' ? -1 : 0) - (b.id === 'huagongDafa' ? -1 : 0) || (b.grade || 1) - (a.grade || 1) || byXp(a, b))[0].id;
+  }
+  if (T.qing) {
+    const soft = pool.filter((a) => a.id === 'zixia' || a.id === 'breath' || attrOf(a) === 'he');
+    if (soft.length) return [...soft].sort((a, b) => (a.id === 'zixia' ? -1 : 0) - (b.id === 'zixia' ? -1 : 0) || (a.grade || 1) - (b.grade || 1))[0].id;
+  }
+  if (T.zheng) { const b = baseInner28(d); if (b && pool.some((a) => a.id === b.id)) return b.id; }
+  if (T.ling) return [...pool].sort((a, b) => (b.grade || 1) - (a.grade || 1) || byXp(a, b))[0].id;
+  return [...pool].sort((a, b) => (a.grade || 1) - (b.grade || 1) || byXp(a, b))[0].id;
 }
 export const focusOf = (d) => (d.focus && d.arts?.[d.focus] ? d.focus : autoFocus(d));
 // 只自動求學：主修系、拳、內功、身法，或前置含主修系的合擊武學
@@ -489,9 +510,15 @@ export function specGrow(d, act) {
 export const NG23 = { med: 16, speedPerTier: 0.06, yuqi: { base: 1.15, perTier: 0.03, drain: 0.3, keep: 0.3, minTier: 1 }, medLow: 0.45, medBoost: 1.3,
   qiSchool: 1.35, qiSchoolZx: 2, qiAoe: 15, qiAoeAt: 50, swordCd: 0.82, swordEarly: 1.1, swordEarlyTier: 1, qiStrikeK: 0.15 };
 export const INNER_SPECS = {
-  breath: { name: '吐納', desc: '歇息回氣 ×1.5' }, zixia: { name: '紫霞神功', desc: '打坐多回 4 氣' },
-  jiuyang: { name: '九陽神功', desc: '不動時每秒自回 0.25 氣' }, yunv: { name: '玉女心經', desc: '巡獵時隊中另有玉女心經傳人，出手 +15%' },
-  hama: { name: '蛤蟆功', desc: '巡獵時氣血 <50 且內力 ≥50%：蓄勢一擊 ×1.5（耗 10 氣）' }, qiankun: { name: '乾坤大挪移', desc: '同蛤蟆功：氣血 <50 且內力 ≥50% 時蓄勢一擊 ×1.5（耗 10 氣）' } };
+  breath: { name: '吐納', desc: '入門起，歇息回氣 ×1.5' },
+  zixia: { name: '紫霞神功', desc: '打坐多回 4 氣；小成起劍招略增，大成起劍招耗 1 氣並回 2 血' },
+  jiuyang: { name: '九陽神功', desc: '不動時每秒自回 0.25 氣；大成起內傷每秒褪一點' },
+  wudangJiuyang: { name: '純陽無極功', desc: '圓滿起，挨打化成少量內力與氣血' },
+  huagongDafa: { name: '化功大法', desc: '小成起，打中吸走對方一點內力，這一擊不再疊別的內功被動' },
+  huntianGong: { name: '混天氣功', desc: '小成起，降龍耗了內力仍震得開' },
+  yunv: { name: '玉女心經', desc: '巡獵時隊中另有玉女心經傳人，出手 +15%' },
+  hama: { name: '蛤蟆功', desc: '巡獵時氣血 <50 且內力 ≥50%：蓄勢一擊 ×1.5（耗 10 氣）' },
+  qiankun: { name: '乾坤大挪移', desc: '同蛤蟆功：氣血 <50 且內力 ≥50% 時蓄勢一擊 ×1.5（耗 10 氣）' } };
 export const innerSpecs = (d) => (!!d ? Object.keys(INNER_SPECS).filter((id) => d.arts?.[id]) : []);
 export const hasSpec = (d, id) => !!(!!d && d.arts?.[id]);
 export const ngTier = (d) => innerArts(d).reduce((m, id) => Math.max(m, artTier(d, id)), -1);
@@ -537,7 +564,7 @@ export function qiStrikeMul(d, a) {
   const scale = Number.isFinite(a?.qiScale) ? a.qiScale : MODE31.base.qiScale;
   return 1 + scale * Math.min(QI_SAT31, qiOf(d) / 100) * (1 + 0.004 * neigongEff31(d));
 }
-/* loop207：只給 v24。維持 1.6。拉到 2.2 不會造出前期劍、後期氣，40 局之前不改。 */
+/* #405：內力飽和上限。不看品階，也不再拿來當催動倍率。 */
 export const QI_SAT31 = 1.6;
 export const MODE_NAME31 = { base: '築基', lian: '練法', da: '打法' };
 /* 武學圖與練功列共用。純內功沒有 mode，回空字串。 */
@@ -791,7 +818,7 @@ export function rootTrain28(d, a) { const b = baseInner28(d); if (!b || b.id ===
 const rootMove28 = (d) => { const b = baseInner28(d); if (!b) return 0; const t = artTier(d, b.id); if (t < 2) return 0; const hi = ownInners28(d).some((a) => a.id !== b.id && (a.grade || 1) >= Math.max(2, (b.id === 'breath' ? 2 : (b.grade || 1) + 1)) && artTier(d, a.id) >= 1);
   if (b.id === 'breath') return hi ? ROOT28.breathMove[Math.min(4, t)] : 0; return hi || ((b.grade || 1) >= 2 && Object.keys(d.arts).some((id) => { const x = artById(id); return x && !isInner(x) && own28(d, x) && (x.grade || 1) > (b.grade || 1) && artTier(d, id) >= 1; })) ? ROOT28.move[Math.min(4, t)] : 0; };
 const clash28 = (x, y) => (x === 'yang' && y === 'yin') || (x === 'yin' && y === 'yang');
-/* 回 { tier: 1–4（0＝不適用：純內功或非 v24）, mul }。外功與輕功身法同一套。 */
+/* #405 回 { tier, mul }。階仍用來記逆催內傷。出手倍率不再乘品階：1.25／0.65／虛浮都拿掉，只留根基那一截。 */
 const ownInnerHolds28 = (d, g) => ownInners28(d).some((x) => (x.grade || 1) >= g - 1 && artTier(d, x.id) >= Math.max(1, g - 1));
 export function innerDrive28(d, a) {
   if (!d || !a || (isInner(a) && a.school === 'inner')) return { tier: 0, mul: 1 }; /* 純內功不催動。玉女心經 school 是 palm，仍算催動 */
@@ -799,21 +826,62 @@ export function innerDrive28(d, a) {
   const held = !!(M && (M.grade || 1) >= g - 1 && artTier(d, M.id) >= g - 1); /* 主運內功品階與火候都撐得住 */
   const rb = 1 + rootMove28(d);
   const root = rb > 1 ? { root: true } : {};
-  if (a.id === 'qishangFist' && !conv && artTier(d, 'shenghuoXinfa') < 2 && artTier(d, 'jiuyang') < 2) return { tier: 4, mul: DRIVE28.t4 }; /* loop186 一練七傷 */
-  if (a.id === 'jiuyinClaw' && !conv && (!M || (M.grade || 1) < 2 || artTier(d, M.id) < 2)) return { tier: 4, mul: DRIVE28.t4 }; /* loop192 強練禁術 */
-  if (own28(d, a) && ownInnerHolds28(d, g)) return { tier: 1, mul: DRIVE28.t1 * rb, ...root }; /* 本門正宗 ×1.25，再乘根基 */
+  if (a.id === 'qishangFist' && !conv && artTier(d, 'shenghuoXinfa') < 2 && artTier(d, 'jiuyang') < 2) return { tier: 4, mul: 1 }; /* 一練七傷仍記第四階，不再扣威力 */
+  if (a.id === 'jiuyinClaw' && !conv && (!M || (M.grade || 1) < 2 || artTier(d, M.id) < 2)) return { tier: 4, mul: 1 }; /* 強練禁術仍記第四階 */
+  if (own28(d, a) && ownInnerHolds28(d, g)) return { tier: 1, mul: rb, ...root };
   const foreign = (a.own24 && a.own24 !== d.sectId) || (BAN28.includes(a.id) && !own28(d, a));
   if (foreign && !conv) {
-    /* loop192：第四階只在真陰陽相沖，或名門沒有二品內功卻硬催三品陰／陽外功。吐納（he）不沖；無名派只吃相沖與禁術。 */
+    /* 第四階只在真陰陽相沖，或名門沒有二品內功卻硬催三品陰／陽外功。相沖只記內傷，不乘傷害。 */
     const clash = !!(M && clash28(attrOf(M), attrOf(a)));
     const bare = d.sectId !== 'wuming' && g >= 3 && (attrOf(a) === 'yin' || attrOf(a) === 'yang') && (!M || (M.grade || 1) < 2);
-    if (clash || bare) return { tier: 4, mul: DRIVE28.t4 };
-    if (held && (M.grade || 1) >= 2 && (attrOf(M) === 'he' || attrOf(M) === attrOf(a))) return { tier: 2, mul: DRIVE28.t2 }; /* 偷師原威力，不吃 1.25、不吃根基 */
-    return { tier: 3, mul: floatMul31(a) }; /* loop201：虛浮依 qiScale 縮，打法幾乎不掉 */
+    if (clash || bare) return { tier: 4, mul: 1 };
+    if (held && (M.grade || 1) >= 2 && (attrOf(M) === 'he' || attrOf(M) === attrOf(a))) return { tier: 2, mul: 1 };
+    return { tier: 3, mul: 1 };
   }
-  if (a.isPublic && held) return { tier: 2, mul: DRIVE28.t2 * rb, ...root }; /* 同源相合：公共武學，主運撐得住才吃根基 */
-  if (g >= 2 && !held) return { tier: 3, mul: floatMul31(a) }; /* 內力虛浮：品階或火候不足，依 qiScale 縮放 */
-  return { tier: 2, mul: DRIVE28.t2 * rb, ...root };
+  if (a.isPublic && held) return { tier: 2, mul: rb, ...root };
+  if (g >= 2 && !held) return { tier: 3, mul: 1 };
+  return { tier: 2, mul: rb, ...root };
+}
+/* #405 六門內功被動。吐納的回氣仍走 restQi，這裡不另乘。化功發動時，這一擊不再疊別的被動。 */
+export const NG_EASE = 0.02;
+export function jiuyangEase(d, dt) {
+  if (!d || artTier(d, 'jiuyang') < 2 || !(d.qiInjury > 0)) return 0;
+  const q0 = d.qiInjury;
+  d.qiInjury = Math.max(0, q0 - NG_EASE * dt);
+  return q0 - d.qiInjury;
+}
+export function innerOnHit(s, who, other, ctx = {}) {
+  const out = { power: ctx.power, heal: 0, steal: 0, huntian: false, line: '' };
+  if (!who) return out;
+  if (artTier(who, 'huagongDafa') >= 1) {
+    const take = Math.min(3, Math.max(0, other?.qi || 0));
+    if (other && take > 0) { other.qi -= take; out.steal = take; out.line = `${who.name}化功大法吸走一點內力`; if (s) log(s, out.line, 'mid'); }
+    return out;
+  }
+  if (ctx.fired?.art === 'xianglong' && artTier(who, 'huntianGong') >= 1) {
+    out.huntian = true;
+    out.line = `${who.name}混天氣功托住降龍的內力，這一掌仍震得開`;
+    if (s) log(s, out.line, 'mid');
+  }
+  if (ctx.move && isSwordMove(ctx.move) && artTier(who, 'zixia') >= 1) {
+    if (out.power != null) out.power *= 1.05;
+    if (artTier(who, 'zixia') >= 2 && spendQi(who, 1)) {
+      who.hp = Math.min(100, (who.hp ?? 0) + 2);
+      out.heal = 2;
+      const line = `${who.name}紫霞神功在劍招裡補了一口氣`;
+      out.line = out.line ? `${out.line}；${line}` : line;
+      if (s) log(s, line, 'mid');
+    }
+  }
+  return out;
+}
+export function innerOnGetHit(s, who) {
+  if (!who || artTier(who, 'wudangJiuyang') < 3) return { qi: 0, hp: 0, line: '' };
+  addQi(who, 2);
+  who.hp = Math.min(100, (who.hp ?? 0) + 1);
+  const line = `${who.name}純陽無極功把來力化進氣血`;
+  if (s) log(s, line, 'mid');
+  return { qi: 2, hp: 1, line };
 }
 /* loop196：腳程與閃避用熟練最高的輕功身法催動係數 */
 export function stepDrive28(d) {

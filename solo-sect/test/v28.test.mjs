@@ -11,18 +11,18 @@ const drive = (d, id) => A.innerDrive28(d, A.artById(id));
 
 test('loop181→196 第一階：本門內功催動本門外功 ×1.25，不再另乘三才', () => {
   const [, d] = fresh('xingxiu'); give(d, 'huagongDafa', 30); give(d, 'chousuiPalm', 30);
-  assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 1, mul: 1.25 });
-  give(d, 'zhaixingStep', 30); assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 1, mul: 1.25 });
-  give(d, 'huagongDafa', 60); assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 1, mul: 1.25 });
+  assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 1, mul: 1 }); /* #405 退役：正宗不再 ×1.25 */
+  give(d, 'zhaixingStep', 30); assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 1, mul: 1 });
+  give(d, 'huagongDafa', 60); assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 1, mul: 1 });
 });
 test('loop181 第三階：只靠吐納催動三品外功 ×0.78；第二階：公共武學內功撐得住 ×1', () => {
   const [, d] = fresh('emei'); give(d, 'breath', 60); give(d, 'huifengSword', 10); give(d, 'basicFist', 10);
-  assert.equal(drive(d, 'huifengSword').tier, 3); assert.equal(drive(d, 'huifengSword').mul, 0.78);
+  assert.equal(drive(d, 'huifengSword').tier, 3); assert.equal(drive(d, 'huifengSword').mul, 1); /* #405 退役：虛浮不再 ×0.78 */
   assert.deepEqual(drive(d, 'basicFist'), { tier: 2, mul: 1 });
 });
 test('loop181 第四階：陽內功逆催他派陰掌 ×0.65，練功累積內傷，打坐與醫館化解', () => {
   const [s, d] = fresh('gaibang'); give(d, 'huntianGong', 60); give(d, 'chousuiPalm', 30); d.focus = 'chousuiPalm';
-  assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 4, mul: 0.65 });
+  assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 4, mul: 1 }); /* #405 退役：逆催仍記第四階，不再 ×0.65 */
   for (let i = 0; i < 4; i++) A.qiInjuryAdd28(s, d); assert.equal(d.qiInjury, 32); assert.equal(s.v28n.inj, 1); /* loop186 +8 */
   assert.ok(A.injuryMul28(d) < 0.91 && A.injuryMul28(d) >= 0.75); assert.ok(A.styleBadges24(d).includes('⚠️【經脈內傷】'));
   A.qiInjuryCure28(s, d, A.DRIVE28.med); assert.equal(d.qiInjury, 24); A.qiInjuryCure28(s, d, A.DRIVE28.heal); assert.equal(d.qiInjury, 0); assert.equal(s.v28n.cure, 1);
@@ -92,7 +92,7 @@ test('loop184 addendum：根基渾厚 — 一品本門內功二三四階加速�
   const parts = () => JSON.stringify(A.artMulParts(d, A.artById('wudangJiuyang')));
   for (const [xp, tr, mv] of [[55, '1.15', 1.06], [85, '1.28', 1.12], [100, '1.4', 1.18]]) {
     give(d, 'wudangXinfa', xp); assert.equal(A.rootFoundation28(d), [55, 85, 100].indexOf(xp) + 2); assert.ok(parts().includes(tr), parts());
-    const r = drive(d, 'wudangFist'); assert.ok(r.root); assert.ok(Math.abs(r.mul / A.DRIVE28.t1 - mv) < 1e-9); /* loop196：正宗 ×1.25 再乘根基，不再分 t1s */
+    const r = drive(d, 'wudangFist'); assert.ok(r.root); assert.ok(Math.abs(r.mul - mv) < 1e-9); /* #405 退役：根基就是倍率，不再先乘 1.25 */
   }
   assert.ok(A.styleBadges24(d).includes('【根基渾厚】'));
   give(d, 'wudangXinfa', 30); assert.ok(!drive(d, 'wudangFist').root);

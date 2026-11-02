@@ -117,7 +117,7 @@ export function artsGrowHtml(d, now = 0, grow = true) {
     if (r && d.pf && !r.guizhen) { const p = profOf(r.xp), nx = nextLvXp(r.xp); why.push(p.lv ? `熟練度：招式威力 +${((profMul(r.xp) - 1) * 100).toFixed(1)}%（每重 +${(PROF.perLv * 100).toFixed(1)}%）${p.stuck ? '，卡瓶頸，突破後才升階' : nx != null && p.lv < PROF.lvs ? `，第${PROF.cn[p.lv + 1]}重 xp ${nx.toFixed(1)}` : `，滿十重，xp ${nx} 升${TIERS[p.t + 1][1]}`}` : '熟練度：化境不分重'); }
     if (r && rustOf(r, now) > 0.01) why.push(`荒疏 ${(rustOf(r, now) * 100).toFixed(0)}%`);
     if (r && Object.keys(ART_CAT[a.id] || {}).every((c) => supOf(c, d) === 'none')) why.push('門類尚未支援：不累積造詣');
-    if (!!d && r && !isInner(a)) { const drv = innerDrive28(d, a); if (drv.tier === 1) why.push(`正宗催動 ×${drv.mul.toFixed(2)}`); else if (drv.tier === 3) why.push(`內力虛浮 ×${drv.mul.toFixed(2)}`); else if (drv.tier === 4) why.push(`⚠️異屬逆催 ×${drv.mul.toFixed(2)}`); } /* loop194；本門正宗只留在這一招 */
+    if (!!d && r && !isInner(a)) { const drv = innerDrive28(d, a); if (drv.tier === 1 && drv.root) why.push('根基加持'); else if (drv.tier === 3) why.push('內力虛浮'); else if (drv.tier === 4) why.push('⚠️異屬逆催'); } /* #405 催動不再乘品階，面板不列係數 */
     if (!!d && a.mode) why.push(modeTitle31(d, a));
     const lead = (!!d && r && mi?.id === a.id ? `★主運內功 ${a.grade || 1}品 ${bi?.id === a.id && t >= 2 ? '◆根基 ' : ''}` : '') + (f === a.id ? '◆主修 ' : '');
     return `<div class="k artgrow" data-artst="${st.st}">${lead}${a.name}（${cats}）${r ? `・${d.pf && !r.guizhen ? `<span data-prof>${profLabel(r.xp)}</span>` : TIERS[t][1]} ${r.xp.toFixed(1)}${nxt}${moves}` : ''}・<b>${st.text}</b>${why.length ? `｜${why.join('；')}` : ''}</div>`; });
@@ -164,7 +164,7 @@ export function neigongRules2Html(d) {
   const spent = !!d ? `${NG2.spentT} 秒（主運內功三品且大成則減半）` : `${NG2.spentT} 秒`;
   const walk = `腳力→輕功（每階 +${Math.round(NG23.speedPerTier * 100)}%）→御氣疾行（內功小成以上、內力 >${NG23.yuqi.keep * 100}%：行走 ×${NG23.yuqi.base}＋${NG23.yuqi.perTier}×階，每秒耗 ${NG23.yuqi.drain} 氣，留三成不力竭）。內力 <${NG23.medLow * 100}% 時較想打坐。`;
   const combat = !!d
-    ? `<div class="k">${walk}內力 ≥${NG23.qiAoeAt} 範圍招半徑 +${NG23.qiAoe}。出手看該門武學：築基內勁係數 ${MODE31.base.qiScale}、練法 ${MODE31.lian.qiScale}、打法 ${MODE31.da.qiScale}。內勁＝1＋係數×min(${QI_SAT31}, 內力/100)×(1＋0.004×有效內功造詣)；有效內功造詣＝內功造詣＋0.2×最高外功造詣，封頂 100。不再按門派加成出手，也不再縮短劍招冷卻。</div>`
+    ? `<div class="k">${walk}內力 ≥${NG23.qiAoeAt} 範圍招半徑 +${NG23.qiAoe}。出手看該門武學：築基內勁係數 ${MODE31.base.qiScale}、練法 ${MODE31.lian.qiScale}、打法 ${MODE31.da.qiScale}。內勁＝1＋係數×min(${QI_SAT31}, 內力/100)×(1＋0.004×有效內功造詣)；${QI_SAT31} 是內力飽和上限，不看品階。有效內功造詣＝內功造詣＋0.2×最高外功造詣，封頂 100。內功催動不再乘品階。不再按門派加成出手，也不再縮短劍招冷卻。</div>`
     : '';
   return `<details data-keep="ng-rules"><summary>護體真氣怎麼算</summary><div class="k">${cap}</div>`
     + `<div class="k">受擊（狩獵、遠行）：先減傷，再由內力吸收，不夠才扣生命；內力打空力竭 ${spent}，受傷 ×${NG2.spentMul}；任一內功練到圓滿十重或化境則「真氣綿長」，打空也不力竭（只此一項，不另加內力或減傷）。寨匪、剿寨重傷時，內力 ≥${NG2.guard} 就扣 ${NG2.guard}，生命留 ${NG2.guardHp}。門派戰力每人 +${NG2.powK}×上限。</div>`
