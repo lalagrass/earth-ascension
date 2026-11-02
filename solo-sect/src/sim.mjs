@@ -1,7 +1,7 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31 } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
-import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
+import { BASELINE_V22, RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
 import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, fogStep, unlockStep, chapterStep } from './world.mjs';
@@ -45,7 +45,7 @@ export const facStage = (s, id) => { const S = facDef(id).stages; return S[Math.
 
 // loop143（v2.2 baseline）：已驗證、原本預設勾選的規則轉正；開局畫面的新局帶 v22:true 一律開（明寫 false 仍可關，供 A/B）。
 // createState(seed) 不帶 spec、或 { legacyGolden: true } 時不套用，保護舊 golden 與舊測試。
-export const BASELINE_V22 = Object.freeze({ grow: true, growdr: true, neigong: true, ngshield: true, prof: true, laborgrow: true, valor: true, valormid: true, rumor: true, readwu: true, comprehend: true, mentor: true, mpool: true, cotrain: true, cofun: true, paypill: true, longwatch: true, masterask: true, letterask: true, cropcare: true, mfit: true, jhrefuse: true, qshare: true, jhui: true, jhev: true, peace: true, lairpow: true, lift: true, bt25: true, draw: true });
+export { BASELINE_V22 }; // #390：表移到 data.mjs（save.mjs 讀檔升級也要用）
 export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.legacyGolden && !heroSpec.kind) heroSpec = null;
   if (heroSpec?.v22 && !heroSpec.legacyGolden) heroSpec = { ...BASELINE_V22, ...heroSpec };

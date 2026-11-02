@@ -1,6 +1,6 @@
 import { tierOf, affKey } from './util.mjs';
-import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY } from './data.mjs';
-import { seedArts } from './arts.mjs';
+import { BASELINE_V22, RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY } from './data.mjs';
+import { seedArts, growInit } from './arts.mjs';
 import { sectOf, genInit } from './sect.mjs';
 import { suhuiOf } from './world.mjs';
 // v0.95 存檔：逐版遷移步驟（每步只做「升到該版」需要的事），加上每次讀檔都跑的修補
@@ -60,7 +60,24 @@ export function migrate(o) {
   const steps = MIGRATIONS.filter((m) => ver(m.to) > ver(from));
   for (const m of steps) m.up(o, D);
   repair(o, D);
+  toCurrentRules(o);
   o.migratedFrom = from === RULES_VERSION ? o.migratedFrom : from; o.rules = RULES_VERSION; o.migSteps = steps.map((m) => m.to);
+  return o;
+}
+// #390（擁有人 2026-11-02 選 A）：沒有 v24 的舊存檔讀入時升到現行規則，與開局畫面的新局同一套（BASELINE_V22＋v22／v23／v24）。
+// 只補規則旗標；各人的 pf／ng／lg 由 tick 的「新入門者」補位自動補上，成長分層在這裡補。玩家選項（執事、抉擇詢問）不動。
+// 不改 RULES_VERSION，所以新局存檔與 golden 不受影響。
+const RULE_STATE = { comprehend: 'wu7', peace: 'm9' }; // spec 鍵 → 狀態鍵（同 createState）
+export function toCurrentRules(o) {
+  if (o.v24) return o;
+  const from = o.v23 ? 'v2.3' : o.v22 ? 'v2.2' : 'legacy', hadGrow = !!o.grow;
+  for (const k of Object.keys(BASELINE_V22)) {
+    if (k === 'valor') { if (typeof o.valor !== 'number') o.valor = 0; continue; }
+    const key = RULE_STATE[k] || k; if (!o[key]) o[key] = true; // 有些旗標開了之後會變成狀態物件（如 jhev），不覆寫
+  }
+  o.v22 = true; o.v23 = true; o.v24 = true;
+  if (!hadGrow) growInit(o);
+  o.rulesUpgradedFrom = from;
   return o;
 }
 export const knownRules = (r) => typeof r === 'string' && (['0.5', '0.6', RULES_VERSION].includes(r) || MIGRATIONS.some((m) => m.to === r)) && ver(r) <= ver(RULES_VERSION);

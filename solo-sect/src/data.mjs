@@ -890,3 +890,6 @@ export function destinyStep(s, id, ctx) {
   }
   return false;
 }
+
+// loop143（v2.2 baseline）：已驗證、原本預設勾選的規則轉正；開局畫面的新局帶 v22:true 一律開。#390 起舊存檔讀入也套這張表（save.mjs toCurrentRules）。
+export const BASELINE_V22 = Object.freeze({ grow: true, growdr: true, neigong: true, ngshield: true, prof: true, laborgrow: true, valor: true, valormid: true, rumor: true, readwu: true, comprehend: true, mentor: true, mpool: true, cotrain: true, cofun: true, paypill: true, longwatch: true, masterask: true, letterask: true, cropcare: true, mfit: true, jhrefuse: true, qshare: true, jhui: true, jhev: true, peace: true, lairpow: true, lift: true, bt25: true, draw: true });
