@@ -48,16 +48,10 @@ test('loop196 輕功身法的腳程與閃避乘同一催動係數', () => {
   const tierPts = Math.max(0, A.effectTier(d, 'speed') + 1) * EVADE.tierPts;
   const lazy = (d.personality || []).includes('lazy') ? EVADE.lazyBonus : 0;
   assert.equal(evadeScore(d), d.skills.agility + tierPts * mul + lazy);
-  const v1 = speedOf(d); d.v24 = false; const v0 = speedOf(d); d.v24 = true;
-  assert.ok(v1 > v0);
-  const bare = { ...d, v24: false, arts: { ...d.arts } };
-  assert.equal(evadeScore(bare), bare.skills.agility + tierPts + lazy);
 });
 
 test('loop197 內功品階與十重：同階大成，高品內力更高，階內重數連續成長', () => {
   const one = (id, xp) => ({ v24: true, arts: { [id]: { xp } } });
-  const old = { arts: { breath: { xp: 55 } }, ng2: 1 };
-  assert.equal(A.qiMax2(old), A.NG2.cap[2]); assert.equal(A.mitOf(old), A.NG2.mit[2]);
   assert.ok(Math.abs(A.qiMax2(one('breath', 55)) - 45 * A.GRADE_NG24[1]) < 1e-9);
   assert.ok(Math.abs(A.qiMax2(one('emeiJiuyang', 55)) - 45 * A.GRADE_NG24[2]) < 1e-9);
   assert.ok(Math.abs(A.qiMax2(one('zixia', 55)) - 45 * A.GRADE_NG24[3]) < 1e-9);
@@ -77,16 +71,13 @@ test('loop197 品階難度：一品略快、二品不加、三四品變慢', () 
   assert.equal(name('emeiJiuyang'), undefined);
   assert.deepEqual(name('zixia'), ['品階難度', 0.78]);
   assert.deepEqual(name('bixie'), ['品階難度', 0.65]);
-  const old = { arts: {}, personality: [], wu: 3, pairMul: 0 };
-  assert.equal(A.artMulParts(old, A.artById('zixia')).parts.ext.find((x) => x[0] === '品階難度'), undefined);
 });
 test('loop198 造詣：內功身法棍棒可加速，三品神功吃三成五底子', () => {
   const d = { v24: true, arts: { breath: { xp: 40, gm: { e: 20 } }, zixia: { xp: 0 } } };
   assert.equal(A.supOf('neigong', d), 'full'); assert.equal(A.supOf('shenfa', d), 'full'); assert.equal(A.supOf('gunbang', d), 'full');
-  assert.equal(A.CATS.neigong.sup, 'part'); assert.equal(A.supOf('neigong', { arts: {} }), 'part');
+  assert.equal(A.CATS.neigong.sup, 'part');
   const ac = A.accelOf(d, A.artById('zixia'), 0);
   assert.equal(ac.cat, 'neigong'); assert.ok(ac.mul > 1 && ac.mul <= 1 + 0.8 * 0.35 + 1e-9);
-  const old = { arts: d.arts }; assert.equal(A.accelOf(old, A.artById('zixia'), 0).mul, 1);
   const g4 = { v24: true, arts: { basicSword: { xp: 10, gm: { e: 40 } }, bixie: { xp: 0 } } };
   assert.equal(A.accelOf(g4, A.artById('bixie'), 0).mul, 1);
 });
@@ -126,9 +117,6 @@ test('loop199 劍宗前期快、氣宗後期以氣御劍', () => {
   const other = { v24: true, v23: true, sectId: 'wudang', qi: 20, ng: 1, arts: { breath: { xp: 10 }, bixie: { xp: 25 } } };
   assert.equal(A.swordCdMul(other, 'bx1'), 1); assert.equal(A.swordDmgMul(other, 'bx1'), 1); /* loop201 */
   other.arts.bixie.xp = 55; assert.equal(A.swordDmgMul(other, 'bx1'), 1);
-  const legacy = { v23: true, sectId: 'qizong', qi: 0, arts: { breath: { xp: 30 } }, zixia: 2 };
-  assert.equal(A.swordCdMul(legacy, 'bx1'), 0.82); assert.equal(A.swordDmgMul(legacy, 'bx1'), 1.1);
-  assert.ok(Math.abs(A.qiStrikeMul(legacy) - 1.35) < 1e-9);
   const qe = { v24: true, v23: true, sectId: 'qizong', qi: 20, ng: 1, arts: { huashanXinfa: { xp: 24 }, breath: { xp: 0 } } };
   const q = A.qiOf(qe); assert.equal(q, 20);
   assert.ok(Math.abs(A.qiStrikeMul(qe) - (1 + 0.15 * 0.2)) < 1e-9); /* loop209：舊的 qiSwordMul24 已刪，內勁不走那條 */
@@ -157,5 +145,4 @@ test('loop203 日程改由偏好帶動，不再看守正成材', () => {
   assert.equal(A.appetite31(d), -2);
   assert.equal(A.appetiteActMul31(d, 'train'), 1.06); assert.equal(A.appetiteActMul31(d, 'meditate'), 1.06); assert.equal(A.appetiteActMul31(d, 'study'), 1.06);
   assert.equal(A.appetiteActMul31(d, 'hunt'), 1); assert.equal(A.appetiteActMul31(d, 'farm'), 1);
-  assert.equal(A.appetiteActMul31({ personality: ['honest'], values: {} }, 'train'), 1);
 });

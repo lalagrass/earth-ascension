@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, save, load, setOrder } from '../src/sim.mjs';
 import { ARTS, TIERS, RULES_VERSION } from '../src/data.mjs';
-import { tierOf, artMul, artById, gainArt, learnArt, artState, artTier, seedArts, moveMul, setFocus, artsSvg } from '../src/arts.mjs';
+import { tierOf, artMul, artMulParts, artById, gainArt, learnArt, artState, artTier, seedArts, moveMul, setFocus, artsSvg } from '../src/arts.mjs';
 const run = (s, sec) => { for (let i = 0; i < sec * 10; i++) tick(s, 0.1); };
 const mk = (root, personality = []) => seedArts({ root, personality, style: 'palm', skills: { palm: 0, leg: 0 }, moves: ['fist'] });
 
@@ -17,12 +17,12 @@ test('笨功夫：悟性低練凡階快、練高階慢；悟性高相反', () =>
   const lo = mk(1), hi = mk(5), fist = artById('basicFist'), wave = artById('wavePalm');
   assert.ok(artMul(lo, fist) > artMul(hi, fist)); assert.ok(artMul(hi, wave) > artMul(lo, wave));
 });
-test('憨厚：凡階 ×1.3、高階 ×0.8；灑脫：巧系 +10%；勤奮：拙系 +10%', () => {
-  const f = artById('basicFist'), w = artById('whirlLeg');
-  assert.ok(Math.abs(artMul(mk(3, ['honest']), f) / artMul(mk(3), f) - 1.3) < 1e-9);
-  assert.ok(Math.abs(artMul(mk(3, ['honest']), w) / artMul(mk(3), w) - 0.8) < 1e-9);
-  assert.ok(Math.abs(artMul(mk(3, ['free']), w) / artMul(mk(3), w) - 1.1) < 1e-9);
-  assert.ok(Math.abs(artMul(mk(3, ['diligent']), f) / artMul(mk(3), f) - 1.1) < 1e-9);
+test('憨厚：凡階 ×1.3、高階 ×0.8；灑脫：巧系 +10%；勤奮：拙系 +10%', () => { // #390：現行規則另有性格武學習性（loop186）乘在 ext，這裡只驗天分段
+  const f = artById('basicFist'), w = artById('whirlLeg'), T = (d, a) => artMulParts(d, a).talent;
+  assert.ok(Math.abs(T(mk(3, ['honest']), f) / T(mk(3), f) - 1.3) < 1e-9);
+  assert.ok(Math.abs(T(mk(3, ['honest']), w) / T(mk(3), w) - 0.8) < 1e-9);
+  assert.ok(Math.abs(T(mk(3, ['free']), w) / T(mk(3), w) - 1.1) < 1e-9);
+  assert.ok(Math.abs(T(mk(3, ['diligent']), f) / T(mk(3), f) - 1.1) < 1e-9);
 });
 test('悟性門檻：風雷掌腿需悟性3，悟性2只能練到小成', () => {
   const d = mk(2); d.arts.wavePalm = { xp: 60 }; d.arts.whirlLeg = { xp: 60 }; learnArt(d, 'fengLei'); d.focus = 'fengLei';

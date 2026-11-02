@@ -9,14 +9,14 @@ export const relStage = (v) => { let n = REL_STAGES[0][1]; for (const [t, name] 
 export function compat(a, b) {
   let sc = 0; const A = a.personality || [], B = b.personality || [];
   for (const x of A) for (const y of B) { if (OPPOSE.some(([p, q]) => (p === x && q === y) || (p === y && q === x))) sc -= 1; if ((LIKES[x] || []).includes(y)) sc += 1;
-    if (a.v24) { if (OPPOSE24.some(([p, q]) => (p === x && q === y) || (p === y && q === x))) sc -= 1; if (LIKES24.some(([p, q]) => p === x && q === y)) sc += 1; } } /* loop188 */
+    if (OPPOSE24.some(([p, q]) => (p === x && q === y) || (p === y && q === x))) sc -= 1; if (LIKES24.some(([p, q]) => p === x && q === y)) sc += 1; } /* loop188 */
   return clamp(1 + 0.3 * sc, 0.4, 1.6);
 }
 export const aff = (s, a, b) => s.aff[affKey(a.id ?? a, b.id ?? b)] ?? 0;
 export function initPair(s, a, b, v) { s.aff[affKey(a.id, b.id)] = v; s.aff[affKey(b.id, a.id)] = v; s.rel[relKey(a.id, b.id)] = v; }
 export function relAdd(s, a, b, amt) {
   const k = relKey(a.id, b.id), before = s.rel[k] || 0, cap = a.adult && b.adult ? 100 : 89; // 未成年不進道侶
-  for (const [x, y] of [[a, b], [b, a]]) { const kk = affKey(x.id, y.id), c = compat(x, y); if (x.v24 && c !== 1) { const W = ((s.v29n ??= {}).compat ??= { pos: 0, neg: 0 }); W[c > 1 ? 'pos' : 'neg']++; } s.aff[kk] = clamp((s.aff[kk] ?? before) + amt * c, 0, cap); } /* loop188 相性計數 */
+  for (const [x, y] of [[a, b], [b, a]]) { const kk = affKey(x.id, y.id), c = compat(x, y); if (c !== 1) { const W = ((s.v29n ??= {}).compat ??= { pos: 0, neg: 0 }); W[c > 1 ? 'pos' : 'neg']++; } s.aff[kk] = clamp((s.aff[kk] ?? before) + amt * c, 0, cap); } /* loop188 相性計數 */
   s.rel[k] = (aff(s, a, b) + aff(s, b, a)) / 2;
   if (relStage(before) !== relStage(s.rel[k])) {
     log(s, `${a.name}與${b.name}成了「${relStage(s.rel[k])}」`);
@@ -41,14 +41,14 @@ const MARTIAL = ['palm', 'leg', 'sword', 'fist', 'staff', 'blade'];
 export function powOf(d) { const k = d.skills || {}; return (k.strength || 0) + (k.agility || 0) + Math.max(0, ...MARTIAL.map((m) => k[m] || 0)); }
 /* loop188 v2.9 俠魅三維：只 d.v24。回 { v, tags } */
 export const CHARM29 = { ren: 5, renHi: 8, feng: 5, fengHi: 8, wei: 4, xiaV: 25, fameV: 25, followV: 15, moodLow: 55, hpLow: 70 }; /* loop193：對齊 -30..40 */
-export function charm29(d, o) { const T = [], p = o.personality || [], v = o.values || {}, dv = d.values || {}; let x = 0; if (!d?.v24) return { v: 0, tags: T };
+export function charm29(d, o) { const T = [], p = o.personality || [], v = o.values || {}, dv = d.values || {}; let x = 0; if (!d) return { v: 0, tags: T };
   if (p.includes('kind') || p.includes('gentle') || (v.xia ?? 0) >= CHARM29.xiaV) { x += (d.mood ?? 50) < CHARM29.moodLow || (d.hp ?? 100) < CHARM29.hpLow ? CHARM29.renHi : CHARM29.ren; T.push('仁厚可親'); }
   if (['quiet', 'clever', 'free', 'bold'].some((t) => p.includes(t))) { x += compat(d, o) > 1 ? CHARM29.fengHi : CHARM29.feng; T.push('風采出塵'); }
   if ((o.id === 'hero' || o.role === 'head' || o.champ28 || (v.fame ?? 0) >= CHARM29.fameV || p.includes('hypocrite')) && ((dv.sect ?? 0) >= CHARM29.followV || (dv.fame ?? 0) >= CHARM29.followV || ['diligent', 'honest', 'rigid', 'worrier', 'stubborn'].some((t) => (d.personality || []).includes(t)))) { x += CHARM29.wei; T.push('威儀服眾'); }
   return { v: x, tags: T }; }
-export function drawOf(d, o) { return (isExtro(o) ? DRAW.extroPull : 0) + Math.min(DRAW.powCap, Math.max(0, powOf(o) - powOf(d)) * DRAW.powPull) + (d.v24 ? charm29(d, o).v : 0); }
+export function drawOf(d, o) { return (isExtro(o) ? DRAW.extroPull : 0) + Math.min(DRAW.powCap, Math.max(0, powOf(o) - powOf(d)) * DRAW.powPull) + (charm29(d, o).v); }
 export function drawBoost(s, d, out) { if (!s.draw || !isExtro(d)) return; for (const o of out) if (o.act === 'chat') o.score *= DRAW.chatMul; }
-export function pickChatMate(s, d, mates, aff) { if (d.v24) mates = mates.filter((o) => !(o.shelter > s.t)); /* loop188：避難中的人不被拉去聊天 */ if (!mates.length) return undefined; const best = Math.max(...mates.map((o) => aff(s, d, o))); const m = mates.filter((o) => aff(s, d, o) >= best - DRAW.affBand).sort((a, b) => (aff(s, d, b) + drawOf(d, b)) - (aff(s, d, a) + drawOf(d, a)))[0]; if (d.v24 && m) { const t = charm29(d, m).tags; if (t.length) { const W = ((s.v29n ??= {}).charm ??= {}); for (const k of t) W[k] = (W[k] || 0) + 1; } } return m; } /* loop188 俠魅計數 */
+export function pickChatMate(s, d, mates, aff) { mates = mates.filter((o) => !(o.shelter > s.t)); /* loop188：避難中的人不被拉去聊天 */ if (!mates.length) return undefined; const best = Math.max(...mates.map((o) => aff(s, d, o))); const m = mates.filter((o) => aff(s, d, o) >= best - DRAW.affBand).sort((a, b) => (aff(s, d, b) + drawOf(d, b)) - (aff(s, d, a) + drawOf(d, a)))[0]; if (m) { const t = charm29(d, m).tags; if (t.length) { const W = ((s.v29n ??= {}).charm ??= {}); for (const k of t) W[k] = (W[k] || 0) + 1; } } return m; } /* loop188 俠魅計數 */
 // 聊完：弱的一方若對方明顯更強 → 仰慕（多一點關係＋一則想法）
 export function admire(s, d, p, relAdd, think, log) {
   if (!s.draw) return;
@@ -117,7 +117,7 @@ export function moodStep(s, d, dt) {
   for (const th of d.thoughts) th.left -= dt; d.thoughts = d.thoughts.filter((x) => x.left > 0);
   const diff = moodTarget(d, s) - d.mood; d.mood = clamp(d.mood + clamp(diff, -MOOD.down * dt, MOOD.up * dt), 0, 100);
 }
-export function traitMul(d, act) { let m = 1; for (const p of d.personality || []) m *= (d.v24 && TRAITS[p]?.mods24?.[act]) || TRAITS[p]?.mods?.[act] || 1; return m; } /* loop187 v2.9：v24 新局改用 mods24（有則覆寫） */
+export function traitMul(d, act) { let m = 1; for (const p of d.personality || []) m *= (TRAITS[p]?.mods24?.[act]) || TRAITS[p]?.mods?.[act] || 1; return m; } /* loop187 v2.9：v24 新局改用 mods24（有則覆寫） */
 export function moodMul(d, act) {
   if (d.mood < MOOD.low) return WORK_ACTS.includes(act) ? 0.6 : LEISURE_ACTS.includes(act) ? 1.35 : 1;
   if (d.mood > MOOD.high) return WORK_ACTS.includes(act) ? 1.15 : 1;

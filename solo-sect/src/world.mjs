@@ -235,7 +235,7 @@ export function codexRows(s) {
 // 出手力：最強招式每秒傷害（同狩獵的公式）
 export const LS_FIRST24 = ['gorge', 'cliff'];
 export function dpsOf(s, d) {
-  let best = 0; for (const id of d.moves) { const mv = MOVES.find((m) => m.id === id); if (!mv) continue; const p = mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t) * (mv.aoe ? 1.3 : 1) / (mv.cd * (d.v23 ? cdMul(d, mv.id, s.t) : 1)); /* loop157 v23 巡山也吃冷卻（含劍招） */ if (p > best) best = p; }
+  let best = 0; for (const id of d.moves) { const mv = MOVES.find((m) => m.id === id); if (!mv) continue; const p = mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t) * (mv.aoe ? 1.3 : 1) / (mv.cd * (cdMul(d, mv.id, s.t))); /* loop157 v23 巡山也吃冷卻（含劍招） */ if (p > best) best = p; }
   return best;
 }
 // v1.5 召回（A2）：隊伍從目前距離往回走，戰利品照拿；返程仍走 returnPlan（含驚獸）
@@ -281,7 +281,7 @@ export function suggestTeam(s, n = 2) {
   }
   return { ids: pick.map((d) => d.id), why };
 }
-export const evadeScore = (d) => d.skills.agility + Math.max(0, effectTier(d, 'speed') + 1) * EVADE.tierPts * (d.v24 ? stepDrive28(d) : 1) + ((d.personality || []).includes('lazy') ? EVADE.lazyBonus : 0); /* loop196：閃避的輕功段乘本門內功催動 */
+export const evadeScore = (d) => d.skills.agility + Math.max(0, effectTier(d, 'speed') + 1) * EVADE.tierPts * (stepDrive28(d)) + ((d.personality || []).includes('lazy') ? EVADE.lazyBonus : 0); /* loop196：閃避的輕功段乘本門內功催動 */
 const pclamp = (x) => Math.max(0.05, Math.min(0.95, x));
 // H：sim 內部工具 { rand, cancelTask, grow, think }
 export function startExpedition(s, ids, opt = {}, H) {
@@ -309,8 +309,8 @@ function fight(s, e, team, H, gate = false, scale = 1) {
   const E0 = ENEMIES[e], P = ROUTE[ROUTE.length - 1].scale || 1, ds = scale > P ? P * (scale / P) ** ENDLESS.dmgExp : scale, E = { ...E0, hp: E0.hp * scale, dmg: E0.dmg * ds }; let hp = E.hp, t = 0, cd = E.cd, fled = false; const X = s.exp;
   for (const d of team) seeEnemy(s, e, 'fight', d); seeEnemy(s, e, 'see');
   const bonus = (s.codex[e]?.insight || 0) >= INSIGHT.dmgAt ? 1 + INSIGHT.dmg : 1;
-  const zk = s.v23 ? zhenK(s, team) : 0, psn = s.v23 && hasPoison(s, team); if (psn) E.dmg *= 1 - SPEC.poisonWeak; /* loop151 陣法先手、毒術削敵 */
-  if (s.v24) { const fk = fengxueK(s, team), N = (s.v24n ??= {}); if (fk > 0) { E.cd *= 1 + HARMONY24.fengCd * fk; cd = E.cd; N.fengxue = (N.fengxue || 0) + 1; } if (zk > 0 && team.length >= 2) N.formation = (N.formation || 0) + 1; } /* loop161 Batch 2 奇門封穴、多人陣法觸發計數 */
+  const zk = zhenK(s, team), psn = hasPoison(s, team); if (psn) E.dmg *= 1 - SPEC.poisonWeak; /* loop151 陣法先手、毒術削敵 */
+  { const fk = fengxueK(s, team), N = (s.v24n ??= {}); if (fk > 0) { E.cd *= 1 + HARMONY24.fengCd * fk; cd = E.cd; N.fengxue = (N.fengxue || 0) + 1; } if (zk > 0 && team.length >= 2) N.formation = (N.formation || 0) + 1; } /* loop161 Batch 2 奇門封穴、多人陣法觸發計數 */
   while (hp > 0 && t < 90) {
     const alive = team.filter((d) => d.hp > 0); if (!alive.length) break;
     t += 0.5; if (psn && t <= SPEC.poisonT) hp -= SPEC.poisonDps * (s.psnK24 || 1) * 0.5; const fs = (X.scout && t <= EXP.scoutT ? 1 + EXP.scoutBonus : 1) * (zk && t <= EXP.scoutT ? 1 + SPEC.zhenScout * zk : 1); for (const d of alive) { hp -= dpsOf(s, d) * 0.5 * bonus * fs * counterMul(daoOf(d), DAO.enemy[e]); if (d.dugu?.length) d.hp = Math.min(100, d.hp + HS.duguHeal); } // v1.2 九劍只攻不守：不格擋，但料敵機先回氣血 // v1.0 探路者先手 +20%
@@ -318,7 +318,7 @@ function fight(s, e, team, H, gate = false, scale = 1) {
     if (!gate && hp > 0 && hp < E.hp * 0.35 && !fled) { fled = true; if (H.rand(s) < E.flee) { add(X.escaped, e, 1); seeEnemy(s, e, 'fled'); return { t, won: false, fled: true }; } }
     cd -= 0.5; if (cd <= 0 && hp > 0) { cd = E.cd; const d = alive[Math.floor(H.rand(s) * alive.length)]; if (d.dugu?.length && H.rand(s) < Math.min(0.6, 0.2 + (s.codex[e]?.insight || 0) / 200)) { d.hp = Math.min(100, d.hp + 2); continue; } const def = d.dugu?.length ? 1 : (1 - Math.min(0.4, (d.skills.agility + d.skills.strength) / 400)) * guardOf(d); d.hp = Math.max(0, d.hp - shieldHit(d, E.dmg * def * (d.takeMul || 1) * counterMul(DAO.enemy[e], daoOf(d)), s.t + t)); /* loop116 護體真氣 */ if (d.reflect) hp -= E.dmg * def * d.reflect; }
   }
-  if (hp <= 0) { const alive = team.filter((d) => d.hp > 0); const k = alive[Math.floor(H.rand(s) * alive.length)]; add(X.kills, e, 1); seeEnemy(s, e, 'kill', k); lootRoll(s, X.loot, E.loot, H); for (const d of alive) H.grow(s, d, 'style', 3, 'fight'); if (s.v23) { const m = bestSpec(s, 'yishu', alive); if (m > 0) for (const d of alive) d.hp = Math.min(100, d.hp + SPEC.expHeal + Math.floor(m / 10)); } /* loop151 醫術戰後包紮 */ }
+  if (hp <= 0) { const alive = team.filter((d) => d.hp > 0); const k = alive[Math.floor(H.rand(s) * alive.length)]; add(X.kills, e, 1); seeEnemy(s, e, 'kill', k); lootRoll(s, X.loot, E.loot, H); for (const d of alive) H.grow(s, d, 'style', 3, 'fight'); { const m = bestSpec(s, 'yishu', alive); if (m > 0) for (const d of alive) d.hp = Math.min(100, d.hp + SPEC.expHeal + Math.floor(m / 10)); } /* loop151 醫術戰後包紮 */ }
   return { t, won: hp <= 0, fled: false };
 }
 // v1.1 招牌武學練到圓滿：護體（受傷 ×0.6）
@@ -365,7 +365,7 @@ export function expStep(s, dt, H) {
     if (X.gorgeT == null && !(X.from > 0) && X.dist >= ROUTE[3].from) X.gorgeT = s.t - X.startT;
     const G = rivalGate(s, routeSeg(X.gateI), X.gateI);
     if (G && X.dist >= G.to) { X.dist = G.to; X.gateI++; const r = fight(s, G.gate, team, H, true, G.scale || 1); X.encN = (X.encN || 0) + 1; X.busy = r.t / 2; X.fights++; const sg = (X.seg[G.id] ??= { enc: 0, kill: 0 }); sg.enc++;
-      if (r.won) { sg.kill++; X.gates.push(G.gateName); rivalWon(s, G); if (s.v24 && LS_FIRST24.includes(G.id) && !((s.records ??= {}).lsFirst ??= {})[G.id]) { s.records.lsFirst[G.id] = 1; X.loot.lingshi = (X.loot.lingshi || 0) + 1; X.events.push(`首次闖過${G.gateName}，在關後石縫撿到 1 顆靈石`); } /* loop159 v2.4 P5/P6：深谷、斷崖守關首通保底靈石 */ const cp = CAMPS.find((c) => c.seg === X.gateI - 1); if (cp) campAt(s, X, cp, team); else if (G.endless || G.id === 'peak') { const w = secondWind(team); if (w > 0) { X.sta = Math.min(EXP.sta, X.sta + EXP.sta * HS.secondWind * w); X.pat = Math.min(X.patMax, X.pat + 10 * w); for (const d of team) if (d.hp > 0 && (guardOf(d) < 0.95 || d.dugu?.length)) d.hp = Math.min(100, d.hp + 100 * HS.windHp); X.events.push(`過了${G.gateName}，眾人回了一口真氣（體力 +${Math.round(HS.secondWind * w * 100)}%）`); } } } else if (r.bail) { X.reason = `被${G.gateName}擋在${G.name}（見勢不妙及早撤退）`; X.blocked = G.gateName; } else if (team.some((d) => d.hp <= 0 && awaken(s, d))) { for (const d of team) d.hp = Math.max(d.hp, 60); X.gateI--; X.events.push(`${team.find((d) => d.awakened)?.name || ''}瀕死覺醒`); } else { for (const d of team) if (d.hp <= 0) d.hp = 10; X.reason = `被${G.gateName}擋在${G.name}`; X.blocked = G.gateName; } }
+      if (r.won) { sg.kill++; X.gates.push(G.gateName); rivalWon(s, G); if (LS_FIRST24.includes(G.id) && !((s.records ??= {}).lsFirst ??= {})[G.id]) { s.records.lsFirst[G.id] = 1; X.loot.lingshi = (X.loot.lingshi || 0) + 1; X.events.push(`首次闖過${G.gateName}，在關後石縫撿到 1 顆靈石`); } /* loop159 v2.4 P5/P6：深谷、斷崖守關首通保底靈石 */ const cp = CAMPS.find((c) => c.seg === X.gateI - 1); if (cp) campAt(s, X, cp, team); else if (G.endless || G.id === 'peak') { const w = secondWind(team); if (w > 0) { X.sta = Math.min(EXP.sta, X.sta + EXP.sta * HS.secondWind * w); X.pat = Math.min(X.patMax, X.pat + 10 * w); for (const d of team) if (d.hp > 0 && (guardOf(d) < 0.95 || d.dugu?.length)) d.hp = Math.min(100, d.hp + 100 * HS.windHp); X.events.push(`過了${G.gateName}，眾人回了一口真氣（體力 +${Math.round(HS.secondWind * w * 100)}%）`); } } } else if (r.bail) { X.reason = `被${G.gateName}擋在${G.name}（見勢不妙及早撤退）`; X.blocked = G.gateName; } else if (team.some((d) => d.hp <= 0 && awaken(s, d))) { for (const d of team) d.hp = Math.max(d.hp, 60); X.gateI--; X.events.push(`${team.find((d) => d.awakened)?.name || ''}瀕死覺醒`); } else { for (const d of team) if (d.hp <= 0) d.hp = 10; X.reason = `被${G.gateName}擋在${G.name}`; X.blocked = G.gateName; } }
     else if (X.dist >= X.nextAt) { const seg = segAt(X.nextAt - 0.01); X.nextAt += seg.every; X.busy = encounter(s, pickEnemy(s, seg, H), seg, team, H) / 2; lootRoll(s, X.loot, seg.find, H); }
     if (X.fights > f0) { const lazy = team.filter((d) => (d.personality || []).includes('lazy')).length; X.sta -= (X.fights - f0) * EXP.staFight; X.pat -= (X.fights - f0) * (EXP.patFight + lazy * EXP.patLazy); }
     const why = X.reason || checkRetreat(s, team); if (why) { X.reason = why; X.phase = 'back'; X.backLeft = X.dist / EXP.back; X.backPos = X.dist; X.ret = returnPlan(s, X); log(s, `巡山隊在${segAt(X.dist).name}（${X.dist.toFixed(0)} 步）回頭：${why}`); }

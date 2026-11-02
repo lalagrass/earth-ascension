@@ -1,4 +1,4 @@
-/* v2.4–v2.5（loop159–，擁有人 t189）：全部只在 v22 新局（s.v24）生效，舊存檔與舊 golden 不變 */
+/* v2.4–v2.5（loop159–，擁有人 t189）。#390 起所有局都適用，舊存檔讀入即升級 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
@@ -9,26 +9,21 @@ export const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).
 // #390：舊規則開局已不存在，原本的舊局對照組（OLD）與各測試裡的舊局斷言一併刪除
 export const hero = (s) => s.ds.find((d) => d.id === 'hero');
 
-test('loop159 v24 只在新局：s.v24／d.v24；舊局沒有', () => {
-  const s = V(); tick(s, 0.1); assert.ok(s.v24 && hero(s).v24);
-});
-test('loop159 P5/P6 商隊（市集補貨）：第 12 日前不賣靈石，之後每集 1–2 顆、每顆 28；舊 v23 存檔維持 30×2', () => {
+// #390 退役：「loop159 v24 只在新局」— 世代旗標已收進規則版本，見 rules-upgrade.test
+test('loop159 P5/P6 商隊（市集補貨）：第 12 日前不賣靈石，之後每集 1–2 顆、每顆 28', () => {
   const s = V(); tick(s, 0.1); s.res.coin = 999;
   s.day = 6; assert.equal(EC.left(s, 'lingshi'), 0); assert.ok(EC.marketWhy(s, 'lingshi'));
   for (const day of [12, 16, 21, 26, 31]) { s.day = day; const n = EC.left(s, 'lingshi'); assert.ok(n >= 1 && n <= 2, `day ${day}: ${n}`); assert.equal(EC.priceOf(s, 'lingshi'), 28); }
-  const w = V(); delete w.v24; w.res.coin = 999; w.day = 3; assert.equal(EC.left(w, 'lingshi'), 2); assert.equal(EC.priceOf(w, 'lingshi'), 30);
 });
 test('loop159 P2 山產交割：每次補貨，有菜園／藥園／丹房才 +15；沒有就不給', () => {
   const s = V(); tick(s, 0.1); EC.market(s); const c0 = s.res.coin; s.day = 6; EC.market(s); assert.equal(s.res.coin, c0);
   s.fac.veg.stage = Math.max(1, s.fac.veg.stage || 0); s.day = 11; EC.market(s); assert.equal(s.res.coin, c0 + 15); assert.ok(s.log.some((e) => /山產交割/.test(e.msg)));
-  const w = V(); delete w.v24; tick(w, 0.1); EC.market(w); w.fac.veg.stage = 1; const k0 = w.res.coin; w.day = 6; EC.market(w); assert.equal(w.res.coin, k0);
 });
 test('loop159 P5/P6 深谷、斷崖守關首通保底靈石（只列兩段）', () => { assert.deepEqual(LS_FIRST24, ['gorge', 'cliff']); });
 test('loop159 P7/P8 執事：有人學會 ≥2 門武學且木石夠 → 藏經閣優先於其他藍圖', () => {
   const s = V(); tick(s, 0.1); s.steward = true; s.rep = 20; s.res.coin = 99; s.res.wood = 30; s.res.stone = 30; const d = hero(s);
   while (Object.keys(d.arts).length < 2) A.learnArt(d, ['breath', 'sweepLeg', 'pushPalm'].find((k) => !d.arts[k]), s.t);
   assert.equal(EC.stewLib24(s), 'library'); s.res.stone = 0; assert.equal(EC.stewLib24(s), 'library', 'loop169 石料暫緩'); s.res.wood = 4; assert.equal(EC.stewLib24(s), null); s.res.stone = 30; s.res.wood = 30;
-  const w = V(); delete w.v24; tick(w, 0.1); w.res.wood = 30; w.res.stone = 30; assert.equal(EC.stewLib24(w), null);
 });
 test('loop159 isSwordArt：劍法門類、三門經典劍法；掌法不是；swordCdMul 經它作用在真實劍招，dpsOf 吃 cdMul', () => {
   for (const id of ['dugu', 'bixie', 'xuantie']) assert.ok(A.isSwordArt(id), id); assert.equal(A.isSwordArt('pushPalm'), false); assert.equal(A.isSwordArt('qimenZhen'), false);
@@ -36,8 +31,7 @@ test('loop159 isSwordArt：劍法門類、三門經典劍法；掌法不是；sw
   assert.equal(A.swordCdMul(d, 'bx1'), 1); assert.equal(A.swordCdMul(d, 'push'), 1); /* loop201：v24 不再一律縮劍招冷卻 */
   const cd = A.cdMul(d, 'bx1', s.t);
   assert.ok(Math.abs(cd - A.MODE31.da.cd * (A.artTier(d, 'bixie') >= 1 ? 0.9 : 1) * (1 - 0.0015 * A.mastery(d, 'shenfa'))) < 1e-9);
-  const p1 = dpsOf(s, d); d.v23 = false; const p0 = dpsOf(s, d); d.v23 = true; assert.ok(Math.abs(p1 / p0 - 1 / cd) < 1e-9, '內力 0 時秒傷差只剩打法冷卻');
-  d.qi = Math.min(80, A.qiMax(d)); const hi = dpsOf(s, d); d.v23 = false; const lo = dpsOf(s, d); d.v23 = true; assert.ok(hi / lo > p1 / p0, '有內力時打法劍招再靠 qiScale 變重');
+  const p1 = dpsOf(s, d); d.qi = Math.min(80, A.qiMax(d)); assert.ok(dpsOf(s, d) > p1, '有內力時打法劍招再靠 qiScale 變重'); /* #390：舊局對照已刪，改比內力有無 */
 });
 
 // ---- loop160 Batch 1 ----
@@ -111,7 +105,7 @@ test('loop164 Batch4.2：自創無名派依主價值帶家傳三件套並入本�
 });
 test('loop164 Batch4.2 百納海川：無名派 v24 學外門名學不罰 ×0.7；他派照罰', () => {
   const a = { id: 'dugu', classic: true, tags: [] }; const d = { stree: ['x'], sbias: {}, v24: true, sectId: 'wuming' };
-  assert.equal(sectBiasMul(d, a)[1], 1); assert.ok(sectBiasMul({ ...d, sectId: 'emei' }, a)[1] < 1); assert.ok(sectBiasMul({ ...d, v24: false }, a)[1] < 1);
+  assert.equal(sectBiasMul(d, a)[1], 1); assert.ok(sectBiasMul({ ...d, sectId: 'emei' }, a)[1] < 1);
 });
 test('loop164 Batch4.3 本門傳承鎖：他派專屬名學預設鎖住，主門類造詣 ≥40 且品階 ≤2 解鎖；本門優先排序', () => {
   const s = V({ sect24: 'emei' }); tick(s, 0.1); const d = hero(s); const a = A.artById('tantui'), z = A.artById('dugu');
@@ -119,7 +113,7 @@ test('loop164 Batch4.3 本門傳承鎖：他派專屬名學預設鎖住，主門
   const hi = { ...d, arts: { ...d.arts } }; for (const k of Object.keys(A.ART_CAT)) if (A.ART_CAT[k][c] && k !== 'tantui') hi.arts[k] = { xp: 100, gm: { e: 99 } };
   assert.ok(A.mastery(hi, c) >= 40, String(A.mastery(hi, c))); assert.equal(A.lockedArt24(hi, a), false);
   for (const k of Object.keys(A.ART_CAT)) if (A.ART_CAT[k].jianfa && k !== 'dugu') hi.arts[k] = { xp: 100, gm: { e: 99 } }; assert.ok(A.mastery(hi, 'jianfa') >= 40); assert.equal(A.lockedArt24(hi, z), true, '品階 4 仍鎖');
-  assert.equal(A.lockedArt24({ ...d, v24: false }, a), false); assert.equal(A.lockedArt24({ ...d, sectId: 'wuming' }, a), false);
+  assert.equal(A.lockedArt24({ ...d, sectId: 'wuming' }, a), false);
   assert.ok(A.ownFirst24(d)({ id: 'zzz' }, { id: d.stree[0] }) > 0);
 });
 

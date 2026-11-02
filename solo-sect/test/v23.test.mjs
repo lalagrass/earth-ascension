@@ -1,4 +1,4 @@
-/* v2.3（loop151–）：專長門類、內功、村中幫工；全部只在 v22 新局（s.v23）生效 */
+/* v2.3（loop151–）：專長門類、內功、村中幫工（#390 起所有局都適用） */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
@@ -9,12 +9,11 @@ export const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).
 // #390：舊規則開局已不存在，原本的舊局對照組（OLD）與各測試裡的舊局斷言一併刪除
 const hero = (s) => s.ds.find((d) => d.id === 'hero');
 
-test('loop151 六門專長門類只在 v23 啟用（舊局仍「尚未支援」）', () => {
+test('loop151 六門專長門類啟用為 part（CATS 全域表仍「尚未支援」）', () => {
   const s = V(); tick(s, 0.1);
   for (const c of ['zhenfa', 'dushu', 'yishu', 'qimen', 'zaxue']) { assert.equal(supOf(c, hero(s)), 'part'); assert.equal(CATS[c].sup, 'none'); }
   assert.equal(supOf('gunbang', hero(s)), 'full'); assert.equal(CATS.gunbang.sup, 'none'); /* loop198：v24 棍棒 full，舊表仍是 none */
   assert.equal(supOf('neigong', hero(s)), 'full'); assert.equal(supOf('shenfa', hero(s)), 'full'); assert.equal(CATS.neigong.sup, 'part'); assert.equal(CATS.shenfa.sup, 'part');
-  assert.ok(s.v23 && hero(s).v23);
 });
 test('loop151 活動長專長：煉丹／療傷→醫術、採藥→毒術、守望／讀書／練功→陣法', () => {
   const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'yaowang', s.t); learnArt(d, 'xingxiuDu', s.t); learnArt(d, 'qimenZhen', s.t);
@@ -42,7 +41,7 @@ import { NG23, NG, yuqiOn, yuqiMul, qiStrikeMul, swordCdMul, medQi, qiMax, inner
 test('loop153 三段腳程：v23 輕功每階 6%；御氣疾行要內功小成以上且內力 >30%，耗氣停在三成', () => {
   const s = V(); tick(s, 0.1); const d = hero(s); learnArt(d, 'breath', s.t); d.arts.breath.xp = 60; d.qi = qiMax(d);
   assert.ok(qiMax(d) > 0); assert.ok(yuqiOn(d)); assert.ok(yuqiMul(d) >= 1.15);
-  d.path = [{ xy: [d.pos[0] + 5000, d.pos[1]], n: 'x' }]; const v1 = speedOf(d); d.v23 = false; const v0 = speedOf(d); d.v23 = true; assert.ok(v1 > v0);
+  d.path = [{ xy: [d.pos[0] + 5000, d.pos[1]], n: 'x' }]; const v1 = speedOf(d); d.qi = 0; const v0 = speedOf(d); d.qi = qiMax(d); assert.ok(v1 > v0); /* #390：舊局對照改成御氣開／關 */
   for (let i = 0; i < 2000; i++) tick(s, 0.25); assert.ok(d.qi >= qiMax(d) * NG23.yuqi.keep - 1e-9 || d.path.length === 0);
   assert.ok(!(d.spentUntil > s.t) || !d.path.length);
 });
@@ -142,15 +141,14 @@ test('loop157 以氣御招走 moveMul0：內力越多越重、氣宗再 ×1.35�
   d.qi = 0; const m0 = moveMul(d, d.moves[0], s.t), p0 = dpsOf(s, d); d.qi = Math.min(100, qiMax(d)); const raw0 = artOfMove(d.moves[0]), held0 = raw0 && d.arts?.[raw0.id] ? raw0 : null;
   assert.ok(Math.abs(moveMul(d, d.moves[0], s.t) / m0 - qiStrikeMul(d, held0)) < 1e-9); assert.ok(dpsOf(s, d) > p0);
   const strike0 = qiStrikeMul(d, held0); d.zixia = 2; assert.ok(Math.abs(qiStrikeMul(d, held0) - strike0) < 1e-9); d.zixia = 0; d.sectId = 'qizong'; assert.ok(Math.abs(qiStrikeMul(d, held0) - strike0) < 1e-9); d.sectId = 'jianzong'; assert.ok(Math.abs(qiStrikeMul(d, held0) - strike0) < 1e-9); /* loop201：內勁只看武學 qiScale，氣宗／劍宗／紫霞層數不再乘 */
-  learnArt(d, 'bixie', s.t); d.moves.push('bx1'); const pb = dpsOf(s, d); d.v23 = false; const pb0 = dpsOf(s, d); d.v23 = true; assert.ok(pb > pb0);
+  learnArt(d, 'bixie', s.t); d.moves.push('bx1'); assert.ok(dpsOf(s, d) > 0); /* #390：舊局對照已刪 */
   const src = readFileSync(new URL('../src/sim.mjs', import.meta.url), 'utf8'); assert.doesNotMatch(src, /qiStrikeMul\(|swordDmgMul\(|swordCdMul\(/);
 });
-test('loop157 P7：v23 藏經閣名聲門檻 10；執事有膳房、門人 ≥4、木 ≥5 就立藏經閣（舊 v22 照舊要木樁場＋6 人）', () => {
+test('loop157 P7：v23 藏經閣名聲門檻 10；執事有膳房、門人 ≥4、木 ≥5 就立藏經閣', () => {
   const s = V(); tick(s, 0.1); s.rep = 10; s.res.coin = 99; s.res.wood = 5; s.fac.kitchen.stage = 1; s.fac.yard.stage = 0;
   assert.equal(buildWhy(s, 'library'), null);
   while (s.ds.filter((d) => d.role !== 'laborer').length < 4) s.ds.push({ ...hero(s), id: 'x' + s.ds.length });
   assert.equal(stewFallback(s), 'library'); s.res.wood = 4; assert.notEqual(stewFallback(s), 'library');
-  const w = V({ v23off: true }); delete w.v23; tick(w, 0.1); w.res.wood = 50; w.res.stone = 50; w.fac.kitchen.stage = 1; assert.equal(stewFallback(w), null);
 });
 test('loop157 P6：靈石 30 錢、每集限 2', async () => {
   const EC = await import('../src/economy.mjs'); assert.deepEqual(EC.MARKET.rare.lingshi, { price: 30, max: 2 }); assert.deepEqual(EC.MARKET.rare.tiemu, { price: 35, max: 2 });

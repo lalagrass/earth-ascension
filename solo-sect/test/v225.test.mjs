@@ -6,15 +6,7 @@ import { MARKET, marketDo, marketWhy, left, econHtml } from '../src/economy.mjs'
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
 // #390：舊規則開局已不存在，原本這裡的舊局對照組與各測試裡的舊局斷言一併刪除
 
-test('loop148 市集：鐵木 35×2、靈石 30×2（loop157 P6；v2.3 存檔，loop159 起新局改走商隊規則），每集限量；買完補貨後可再買', () => {
-  const s = V(); delete s.v24; s.res.coin = 500; s.res.tiemu = 0; s.res.lingshi = 0;
-  assert.equal(MARKET.rare.tiemu.price, 35); assert.equal(left(s, 'tiemu'), 2); assert.equal(left(s, 'lingshi'), 2);
-  assert.ok(marketDo(s, 'tiemu').ok); assert.ok(marketDo(s, 'tiemu').ok); assert.equal(marketDo(s, 'tiemu').ok, false);
-  assert.ok(marketDo(s, 'lingshi').ok); assert.ok(marketDo(s, 'lingshi').ok); assert.match(marketWhy(s, 'lingshi'), /賣完/);
-  assert.equal(s.res.tiemu, 2); assert.equal(s.res.lingshi, 2); assert.equal(s.res.coin, 500 - 70 - 60);
-  s.day += MARKET.every; assert.equal(left(s, 'tiemu'), 2);
-  const h = econHtml(s); assert.match(h, /買鐵木×1/); assert.match(h, /買靈石×1/);
-});
+// #390 退役：v2.3 存檔的市集規則已刪，舊檔讀入改走商隊（見 v24.test）
 test('loop148 市集：錢不夠不能買；舊局沒有稀有料', () => {
   const s = V(); s.res.coin = 30; assert.match(marketWhy(s, 'tiemu'), /錢不夠/);
 });

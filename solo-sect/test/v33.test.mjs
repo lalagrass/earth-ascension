@@ -69,10 +69,6 @@ test('loop207 內勁飽和維持 1.6，高內力不再往 2.2 長，面板讀同
   assert.ok(Math.abs(qiStrikeMul(d, a) - capped) < 1e-9);
   assert.ok(qiStrikeMul(d, a) < wider);
   assert.match(neigongRules2Html(d), new RegExp(`min\\(${QI_SAT31}, 內力/100\\)`));
-  const old = { v23: true, qi: 400, qiInjury: 0, arts: { breath: { xp: 100 }, zixia: { xp: 100 }, yunv: { xp: 100 }, jiuyang: { xp: 100 } }, skills: { palm: 0 } };
-  const q = qiOf(old);
-  assert.ok(q / 100 > QI_SAT31, String(q));
-  assert.ok(Math.abs(qiStrikeMul(old) - (1 + 0.15 * q / 100)) < 1e-9);
 });
 
 const learner = (personality, arts) => ({
@@ -92,8 +88,6 @@ test('loop208 求學與自悟只在同一層按偏好排，本門特許仍照樹
   assert.equal(selfTarget(learner(['bold'])), 'wuhuBlade');
   assert.equal(selfTarget(learner(['quiet'], { pushPalm: { xp: 55, last: 0 } })), 'basicSword');
   assert.equal(selfTarget(learner([])), 'pushPalm');
-  const old = learner(['bold']); old.v24 = false;
-  assert.equal(selfTarget(old), 'pushPalm');
   const wd = learner(['bold', 'nimble', 'playful'], { wudangFist: { xp: 55, last: 0 } });
   wd.sectId = 'wudang'; wd.stree = SECTS.wudang.tree;
   assert.equal(sectUnlock24(wd)[0].id, 'taiji');

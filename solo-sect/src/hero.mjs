@@ -69,7 +69,7 @@ export function applyHero(s, spec, initPair) {
   const cands = companionsFor(H.kind === 'template' ? H.id : null), cid = cands.includes(spec.companion) ? spec.companion : cands[0];
   const c = mkComp(cid, s.ds.length); s.ds.push(c); for (const o of s.ds) if (o !== c) initPair(s, c, o, o === d ? 30 : 10);
   s.xiaStyle = ['all', 'jin', 'zhou'].includes(spec.xiaStyle) ? spec.xiaStyle : 'all'; // v1.65 畫風濾鏡
-  s.hero = { ...H, companion: cid, fu: st.fu, askMajor: spec.askMajor ?? true, arcStep: 0, ...(spec.v22 && spec.sect24 ? { sect24: spec.sect24 } : {}) }; /* loop163 v2.4 新門派 */
+  s.hero = { ...H, companion: cid, fu: st.fu, askMajor: spec.askMajor ?? true, arcStep: 0, ...(spec.sect24 ? { sect24: spec.sect24 } : {}) }; /* loop163 v2.4 新門派 */
   s.encExclude = [H.id, cid].filter((x) => x && x !== 'custom'); s.choices = [];
   log(s, `${H.name}帶著${c.name}來到破道館。${H.kind === 'template' ? heroById(H.id).tag : `志在${VALUE_NAMES[H.main]}、${VALUE_NAMES[H.sub]}`}`);
   return s;
