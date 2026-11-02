@@ -44,6 +44,7 @@ export const MIGRATIONS = [
   { to: '1.95', note: '生態：各環族群上限隨巢穴與擊殺壓力變動、會回升；回補進度歸零重算', up(o) { for (const e of Object.values(o.pop || {})) { e.t = 0; e.kp ??= 0; e.den ??= 0; } } },
   { to: '2.4', note: '規則世代收斂（#390）：舊局升到現行規則，刪 v22／v23／v24 旗標', up(o) { toCurrentRules(o); } },
   { to: '2.5', note: '規則開關收斂（#390）：刪 30 個規則開關（程式已不讀），勇名一律從 0 起算', up(o) { dropSwitches(o); } },
+  { to: '2.6', note: '武無第二（#403）：威力改看每門曲線，品階不再乘內功。舊檔讀入即用新規則，不改存檔裡的熟練', up() {} },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

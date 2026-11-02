@@ -60,13 +60,14 @@ test('loop201 同武學同數值，氣宗、劍宗、無名派倍率相同', () 
 
 test('loop201 內力先乘造詣再封頂 260', () => {
   const bare = { v24: true, arts: { breath: { xp: 100 }, zixia: { xp: 100 } } };
-  const raw = 100 * A.GRADE_NG24[1] + 100 * A.GRADE_NG24[3];
+  /* #403 退役：兩門化境各貢獻 100，不再乘品階。 */
+  const raw = 100 + 100;
   assert.ok(Math.abs(A.qiMax2(bare) - raw) < 1e-6);
   assert.ok(raw < A.NG2.total24);
   const topped = { v24: true, arts: { breath: { xp: 100, gm: { e: 20 } }, zixia: { xp: 100, gm: { e: 55 } } } };
   assert.equal(A.mastery(topped, 'neigong'), 75);
   const product = raw * (1 + 0.004 * 75);
-  assert.ok(product > A.NG2.total24, String(product));
+  assert.ok(product >= A.NG2.total24, String(product));
   assert.equal(A.qiMax2(topped), A.NG2.total24);
 });
 

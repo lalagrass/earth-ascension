@@ -49,10 +49,10 @@ test('A10 下山義學：花錢派人下山一日，帶回的人不看名聲、�
   s.rep = 0; const c = canRecruit(s); if (c.ok) { assert.ok(c.next.school); const n = s.ds.length; recruit(s); assert.equal(s.ds.length, n + 1); assert.equal(E(s).pool.length, 0); }
   else assert.match(c.why, /床位|存糧/, '反例：不看名聲，只會卡床位或糧');
 });
-test('郭靖：標為困難；前 20 日降龍掌傷害加成，之後消失', () => {
+test('郭靖：標為困難；前 20 日有降龍衝關標記，出手不吃這段加成', () => {
   const G = HEROES.find((h) => h.id === 'guojing'); assert.equal(G.hard, true); assert.match(G.tag, /困難/);
   const s = createState(3, { kind: 'template', id: 'guojing', askMajor: false }); const h = s.ds.find((d) => d.id === 'hero'); h.arts.xianglong = { xp: 10, last: 0 };
-  tick(s); assert.equal(h.early?.art, 'xianglong'); const e = h.early; s.t = GUOJING_EARLY.days * DAY + 1; tick(s); assert.equal(h.early, null); const b = moveMul(h, 'jianlong'); h.early = e; const a = moveMul(h, 'jianlong'); h.early = null; assert.ok(Math.abs(a / b - GUOJING_EARLY.mul) < 1e-9); /* #390：現行規則下其他乘數（江湖、內勁）會隨日變動，所以在同一狀態比有無加成 */
+  tick(s); assert.equal(h.early?.art, 'xianglong'); const e = h.early; s.t = GUOJING_EARLY.days * DAY + 1; tick(s); assert.equal(h.early, null); const b = moveMul(h, 'jianlong'); h.early = e; const a = moveMul(h, 'jianlong'); h.early = null; assert.equal(a, b); /* #403 退役：初學加成不再乘出手。衝關標記仍在前 20 日 */
   const p = createState(3); tick(p); assert.ok(!p.ds.find((d) => d.id === 'hero')?.early, '反例：非郭靖開局沒有加成');
 });
 test('存檔遷移 1.85：補 econ、讀檔後給 5 日寬限', () => {

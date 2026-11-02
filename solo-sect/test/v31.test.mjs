@@ -50,17 +50,18 @@ test('loop196 輕功身法的腳程與閃避乘同一催動係數', () => {
   assert.equal(evadeScore(d), d.skills.agility + tierPts * mul + lazy);
 });
 
-test('loop197 內功品階與十重：同階大成，高品內力更高，階內重數連續成長', () => {
+test('loop197 內功十重：同火候不再乘品階，階內重數連續成長', () => {
+  /* #403 退役：品階不再乘內力上限與減傷。同 xp 的吐納、峨眉九陽功、紫霞、辟邪貢獻相同。 */
   const one = (id, xp) => ({ v24: true, arts: { [id]: { xp } } });
-  assert.ok(Math.abs(A.qiMax2(one('breath', 55)) - 45 * A.GRADE_NG24[1]) < 1e-9);
-  assert.ok(Math.abs(A.qiMax2(one('emeiJiuyang', 55)) - 45 * A.GRADE_NG24[2]) < 1e-9);
-  assert.ok(Math.abs(A.qiMax2(one('zixia', 55)) - 45 * A.GRADE_NG24[3]) < 1e-9);
-  assert.ok(Math.abs(A.ngTierCont24(one('bixie', 55), 'bixie') - 45 * A.GRADE_NG24[4]) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('breath', 55)) - 45) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('emeiJiuyang', 55)) - 45) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('zixia', 55)) - 45) < 1e-9);
+  assert.ok(Math.abs(A.ngTierCont24(one('bixie', 55), 'bixie') - 45) < 1e-9);
   const lv1 = A.qiMax2(one('breath', 55)), lv9 = A.qiMax2(one('breath', 80));
-  assert.ok(lv9 > lv1); assert.ok(Math.abs(lv9 - (45 + (70 - 45) * 0.8) * A.GRADE_NG24[1]) < 1e-9);
-  assert.ok(Math.abs(A.qiMax2(one('zixia', 100)) - 100 * A.GRADE_NG24[3]) < 1e-9);
-  assert.ok(Math.abs(A.qiMax2(one('zixia', 99)) - (70 + (100 - 70) * 0.9) * A.GRADE_NG24[3]) < 1e-9);
-  assert.ok(Math.abs(A.mitOf(one('zixia', 55)) - 0.08 * A.GRADE_NG24[3]) < 1e-9);
+  assert.ok(lv9 > lv1); assert.ok(Math.abs(lv9 - (45 + (70 - 45) * 0.8)) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('zixia', 100)) - 100) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('zixia', 99)) - (70 + (100 - 70) * 0.9)) < 1e-9);
+  assert.ok(Math.abs(A.mitOf(one('zixia', 55)) - 0.08) < 1e-9);
   const piled = { v24: true, arts: { breath: { xp: 100 }, zixia: { xp: 100 }, jiuyang: { xp: 100 }, emeiJiuyang: { xp: 100 } } };
   assert.equal(A.qiMax2(piled), A.NG2.total24); assert.ok(A.mitOf(piled) <= A.NG2.mitCap24);
 });

@@ -324,7 +324,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '2.5'; /* #390：2.4 收 v22／v23／v24 世代旗標；2.5 刪 30 個規則開關 */
+export const RULES_VERSION = '2.6'; /* #403：武無第二。出手看每門曲線，品階不再乘內功。2.5 刪過規則開關 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -444,7 +444,7 @@ ARTS.push(
   { id: 'biboXinfa', name: '碧波心法', school: 'inner', grade: 2, tags: ['巧', '柔'], attr: 'yin', req: [], tech: null, techs: ['碧海', '潮生'], effect: 'rest', v24: true, classic: true, own24: 'taohua', svg: [1, 8], isPublic: false, cats: { neigong: 0.7, qimen: 0.3 }},
   { id: 'luoyingPalm', name: '落英神劍掌', school: 'palm', grade: 2, tags: ['巧'], attr: 'yin', req: [], techs: ['ly1', 'ly2'], tech: 'ly1', v24: true, classic: true, own24: 'taohua', svg: [1, 9], mode: 'da', qiScale: 0.08, isPublic: false, cats: { quanzhang: 0.7, jianfa: 0.3 }},
   { id: 'lanhuaHand', chiefOnly24: true, name: '蘭花拂穴手', school: 'palm', grade: 3, tags: ['巧'], attr: 'yin', req: [{ art: 'luoyingPalm', tier: 2 }], techs: ['lh1', 'lh2'], tech: 'lh1', v24: true, classic: true, own24: 'taohua', svg: [2, 9], mode: 'da', qiScale: 0.08, isPublic: false, cats: { quanzhang: 0.5, qimen: 0.5 }},
-  { id: 'yuxiaoSword', name: '玉簫劍法', school: 'palm', grade: 3, tags: ['巧'], weapon: 'sword', attr: 'he', req: [{ art: 'basicSword', tier: 1 }], techs: ['yx1', 'yx2'], tech: 'yx1', v24: true, classic: true, own24: 'taohua', svg: [2, 10], mode: 'da', qiScale: 0.08, isPublic: false, cats: { jianfa: 0.7, qimen: 0.3 }},
+  { id: 'yuxiaoSword', name: '玉簫劍法', school: 'palm', grade: 3, tags: ['巧'], weapon: 'sword', attr: 'he', req: [{ art: 'biboXinfa', tier: 1 }, { art: 'basicSword', tier: 1 }], techs: ['yx1', 'yx2'], tech: 'yx1', v24: true, classic: true, own24: 'taohua', svg: [2, 10], mode: 'da', qiScale: 0.08, isPublic: false, cats: { jianfa: 0.7, qimen: 0.3 }},
   { id: 'tianluoPalm', name: '天羅地網勢', school: 'palm', grade: 2, tags: ['快', '巧'], attr: 'yin', req: [], techs: ['tl1', 'tl2'], tech: 'tl1', v24: true, classic: true, own24: 'gumu', svg: [1, 8], mode: 'da', qiScale: 0.08, isPublic: false, cats: { quanzhang: 0.6, shenfa: 0.4 }},
   { id: 'yunvSword', chiefOnly24: true, name: '玉女素心劍', school: 'palm', grade: 3, tags: ['巧', '柔'], weapon: 'sword', attr: 'yin', req: [{ art: 'tianluoPalm', tier: 2 }], techs: ['ys1', 'ys2'], tech: 'ys1', v24: true, classic: true, own24: 'gumu', svg: [2, 8], mode: 'da', qiScale: 0.08, isPublic: false, cats: { jianfa: 1 }},
   { id: 'shenmuGong', name: '神木毒功', school: 'inner', grade: 2, tags: ['陰', '巧'], attr: 'yin', req: [{ art: 'breath', tier: 1 }], tech: null, techs: ['神木', '化毒'], effect: 'rest', v24: true, classic: true, own24: 'xingxiu', deprecated: true, secret: true, cats: { neigong: 0.7, dushu: 0.3 }, svg: [1, 8], isPublic: false}, /* loop201：退出學習池。舊開發存檔仍讀得到這門內功 */
@@ -614,7 +614,7 @@ export const AWAKEN = { gen: 5, li: 2, ding: 1, shen: 1 }; // 阿星覺醒：封
 
 // ---- v1.1 名俠奇遇：招牌武學（各三招；只能由本人或親傳取得） ----
 ARTS.push({ id: 'xianglong', name: '降龍十八掌', school: 'palm', grade: 3, tags: ['剛', '拙'], req: [], techs: ['jianlong', 'feilong', 'kanglong'], tech: 'jianlong', secret: true, hint: '洪七公上山後，每煮一頓合他胃口的飯傳一段（共三段），挑資質憨直的人當傳人', classic: true, signature: 'hongqigong', mode: 'da', qiScale: 0.45, isPublic: false, cats: { quanzhang: 1 }});
-ARTS.push({ id: 'dagou', name: '打狗棒法', school: 'palm', grade: 3, tags: ['巧'], req: [], techs: ['banzi', 'chuozi', 'wugou'], tech: 'banzi', secret: true, hint: '洪七公傳到降龍第二段起，會把打狗棒法傳給主角', classic: true, signature: 'hongqigong', mode: 'da', qiScale: 0.08, isPublic: false, cats: { gunbang: 1 }});
+ARTS.push({ id: 'dagou', name: '打狗棒法', school: 'palm', grade: 3, tags: ['巧'], req: [], techs: ['banzi', 'chuozi', 'wugou'], tech: 'banzi', secret: true, hint: '洪七公傳到降龍第二段起，把打狗棒法傳給黃蓉（黃蓉在場才傳）', classic: true, signature: 'hongqigong', mode: 'da', qiScale: 0.08, isPublic: false, cats: { gunbang: 1 }});
 MOVES.push({ id: 'jianlong', skill: 'palm', name: '見龍在田', req: 0, range: 50, cd: 1.0, dmg: 14, aoe: 0, color: '#e8b33a', fx: 'dragon' });
 MOVES.push({ id: 'feilong', skill: 'palm', name: '飛龍在天', req: 0, range: 70, cd: 1.4, dmg: 20, aoe: 80, color: '#f0c040', fx: 'dragon' });
 MOVES.push({ id: 'kanglong', skill: 'palm', name: '亢龍有悔', req: 0, range: 90, cd: 1.6, dmg: 30, aoe: 100, color: '#ffd24a', fx: 'dragon' });
