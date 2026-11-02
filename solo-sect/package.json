@@ -4,6 +4,7 @@
   "scripts": {
     "test": "bash test/run.sh all",
     "test:quick": "bash test/run.sh quick",
-    "test:archive": "bash test/run.sh archive"
+    "test:archive": "bash test/run.sh archive",
+    "test:golden": "bash test/run.sh golden"
   }
 }

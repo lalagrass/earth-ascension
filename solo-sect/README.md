@@ -44,6 +44,13 @@ node --test test/*.test.mjs
 ```
 *(目前測試套件包含 516 項測試，執行耗時約 35 秒，涵蓋數值邊界、存檔跨版遷移、長跑確定性驗收)*
 
+### 行為鎖定（golden，#388）
+重構前後遊戲行為必須一字不差。快速層已含在上面的 `node --test`；完整矩陣（新局 idle／bot／farm／exp × 8 種子 × 30 日，加 6 份 v1.0–v2.4 舊存檔回放）：
+```bash
+node tools/golden.mjs --check   # 或 bash test/run.sh golden；4 核約 5 分鐘
+```
+只有明列「改規則」的 PR 才可 `--write` 重產，PR 須寫明哪些鍵改了、為什麼。雜湊在 `test/golden/*.json`。
+
 ---
 
 ## 技術與架構理念

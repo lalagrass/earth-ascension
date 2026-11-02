@@ -1,0 +1,30 @@
+{
+ "tier": "quick",
+ "days": 10,
+ "dt": 6,
+ "checkpoints": [
+  5,
+  10
+ ],
+ "seeds": [
+  1001
+ ],
+ "runs": {
+  "bot-1001-emei": {
+   "5": "e963d05af3eb1f7b",
+   "10": "1200463a4190b68c"
+  },
+  "exp-1001-emei": {
+   "5": "6bfa76fe38d8b6eb",
+   "10": "fe05ac018b6144c5"
+  },
+  "farm-1001-emei": {
+   "5": "e963d05af3eb1f7b",
+   "10": "1200463a4190b68c"
+  },
+  "idle-1001-emei": {
+   "5": "a4cb0ddc3c1e33f9",
+   "10": "9ccf7cf7ef7e9b3e"
+  }
+ }
+}
