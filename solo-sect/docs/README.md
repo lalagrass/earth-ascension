@@ -23,6 +23,7 @@
 * [`../FEATURES.md`](../FEATURES.md)：全功能驗收矩陣，記載玩家短流程與自動化測試紀錄。
 * [`../ROADMAP.md`](../ROADMAP.md)：目前版本、進行中里程碑與待擁有人決定。舊路線圖見 [`reports/milestones/`](reports/milestones/)。
 * [`plans/NEXT-MILESTONES.md`](plans/NEXT-MILESTONES.md)：下一階段提案（武無第二、少跑測試），含開源資料查證與交接提示詞（#401）。
+* [`plans/ARTS-REFERENCES.md`](plans/ARTS-REFERENCES.md)：名功榜三方交叉與各派武學樹參考（金群名次、北大俠客行、社群、金X）。
 
 ---
 
