@@ -127,7 +127,35 @@ export const tierOf = (xp) => { let t = 0; for (let i = 0; i < TIERS.length; i++
 export const artTier = (d, id) => (d.arts?.[id] ? tierOf(d.arts[id].xp) : -1);
 export const tierName = (t) => (t < 0 ? '未學' : TIERS[t][1]);
 export const gated = (d, a) => (d.wu ?? d.root ?? 3) < (a.wuxingMin || 0);
-export function reqMissing(d, a) { if (a.alt24 && !!d && a.alt24.every((r) => artTier(d, r.art) >= r.tier)) return []; /* loop168 太極劍：太極拳大成亦可（以拳通劍） */ return a.req.filter((r) => artTier(d, r.art) < r.tier).map((r) => `${artById(r.art).name}${TIERS[r.tier][1]}`); }
+/* #409 拜師關卡：進高階前，這一門列出的基本功都要到指定火候。沒寫到的門派不擋。 */
+export function elderMiss(d, a) {
+  const rows = a?.elder?.[d?.sectId];
+  if (!rows?.length) return [];
+  return rows.filter((r) => artTier(d, r.art) < r.tier).map((r) => `${artById(r.art).name}${TIERS[r.tier][1]}`);
+}
+export function reqMissing(d, a) {
+  if (!a) return [];
+  const alt = a.alt24 && !!d && a.alt24.every((r) => artTier(d, r.art) >= r.tier); /* 太極劍：太極拳大成亦可（以拳通劍）。關卡仍要過。 */
+  const base = alt ? [] : (a.req || []).filter((r) => artTier(d, r.art) < r.tier).map((r) => `${artById(r.art).name}${TIERS[r.tier][1]}`);
+  return [...base, ...elderMiss(d, a)];
+}
+/* #409 臨濟十二莊：五個火候開 1、2、3、5、6 莊。效果在後一步，這裡只開名稱。 */
+export function zhuangOpen(d, a = artById('linjiZhuang')) {
+  if (!a?.zhuang || artTier(d, a.id) < 0) return [];
+  const n = a.zhuangAt?.[artTier(d, a.id)] ?? 0;
+  return a.zhuang.slice(0, n);
+}
+/* #409 落英神劍掌：解謎之後自己練，不進師父傳授。 */
+export function ponderLuoying(d) {
+  if (!d || d.sectId !== 'taohua' || d.luoyingClue || artTier(d, 'biboXinfa') < 1) return false;
+  d.luoyingClue = true;
+  return true;
+}
+export function practiceLuoying(d, now = 0) {
+  if (!d?.luoyingClue || d.arts?.luoyingPalm) return false;
+  learnArt(d, 'luoyingPalm', now);
+  return true;
+}
 export function artState(d, a) {
   if (d.arts?.[a.id]) return { st: 'learned', tier: artTier(d, a.id), why: gated(d, a) ? `悟性不足（需 ${a.wuxingMin}），止於小成` : '' };
   if (d.pendingArt === a.id) return { st: 'pending', why: '可向師父求學' };
@@ -420,10 +448,11 @@ export function artHints(d, nameOf = (k) => k) {
   for (const a of ARTS) { if (a.deprecated || d.arts?.[a.id] || !artOk(d, a) || (a.own24 && lockedArt24(d, a) && !chiefLocked24(d, a))) continue; /* loop201 退場武學不進領悟；loop168 他派專屬不露 */
     if (a.secret) { rows.push({ id: a.id, name: '？？？', secret: true, need: [a.hint || (a.signature ? `名俠${nameOf(a.signature)}的個人絕學：他上山入門（或以他開局）才會出現` : '機緣未明')] }); continue; }
     const need = a.req.filter((r) => artTier(d, r.art) < r.tier).map((r) => `${artById(r.art).name}練到${TIERS[r.tier][1]}（現在${tierName(artTier(d, r.art))}）`);
+    need.push(...elderMiss(d, a));
     if (chiefLocked24(d, a)) need.unshift(CHIEF24_WHY); /* loop171 */
     if (!fits(d, a)) need.push(`要走${SCH[a.school] || a.school}路數（目前專精${SCH[d.style] || '無'}）`);
     if (a.wuxingMin && (d.wu ?? d.root ?? 3) < a.wuxingMin) need.push(`悟性 ≥${a.wuxingMin}，否則止於小成`);
-    rows.push({ id: a.id, name: a.name, secret: false, ready: !a.req.some((r) => artTier(d, r.art) < r.tier) && fits(d, a) && !chiefLocked24(d, a), need: need.length ? need : ['條件已足，等師父有空傳授'] }); }
+    rows.push({ id: a.id, name: a.name, secret: false, ready: !reqMissing(d, a).length && fits(d, a) && !chiefLocked24(d, a), need: need.length ? need : ['條件已足，等師父有空傳授'] }); }
   return rows;
 }
 export function artHintsHtml(d, nameOf) { const R = artHints(d, nameOf); if (!R.length) return ''; return `<div class="art-hints"><b>領悟線索</b>${R.map((r) => `<div class="k art-hint${r.secret ? ' secret' : ''}" data-hint="${r.id}">${r.secret ? '🔒 ' : r.ready ? '✅ ' : '⬜ '}${r.name}：${r.need.join('；')}</div>`).join('')}</div>`; }

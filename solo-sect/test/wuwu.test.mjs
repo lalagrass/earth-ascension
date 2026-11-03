@@ -5,7 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { ARTS, MOVES, RULES_VERSION } from '../src/data.mjs';
-import { artById, artTier, moveMul, gainArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29, blowWhy, boutWhy, expCause, expectOf, EXPECT_SWINGS } from '../src/arts.mjs';
+import { artById, artTier, moveMul, gainArt, learnArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29, blowWhy, boutWhy, expCause, expectOf, EXPECT_SWINGS, reqMissing, zhuangOpen, ponderLuoying, practiceLuoying } from '../src/arts.mjs';
 import { powerHtml } from '../src/panel-ui.mjs';
 import { curveMulOf } from '../src/artcard.mjs';
 import { createState, load } from '../src/sim.mjs';
@@ -300,6 +300,114 @@ test('絕活期望進每秒傷害：降龍有內力才加重，辟邪先手攤�
   const qs = expectOf(d, MOVES.find((m) => m.id === 'qs1'), 0);
   assert.ok(Math.abs(qs.mul - 1.2) < 1e-9, qs.mul);
   assert.ok(qs.selfPerSec > 0);
+});
+
+test('拜師關卡擋得住；劍掌五連環要兩門都到大成', () => {
+  const d = hero();
+  const miss = (id) => reqMissing(d, artById(id));
+  d.sectId = 'qizong';
+  d.arts.huashanXinfa = { xp: 25, last: 0 };
+  d.arts.pishiFist = { xp: 25, last: 0 };
+  d.arts.basicSword = { xp: 25, last: 0 };
+  d.arts.huashanSword = { xp: 55, last: 0, bt1: true };
+  assert.ok(miss('sanxianSword').some((s) => s.includes('混元掌')));
+  assert.ok(miss('yangwu').some((s) => s.includes('混元掌')));
+  assert.ok(miss('taiyue').some((s) => s.includes('混元掌')));
+  assert.ok(miss('wulian').length);
+  d.arts.hunyuanPalm = { xp: 25, last: 0 };
+  assert.equal(miss('sanxianSword').length, 0);
+  assert.equal(miss('yangwu').length, 0);
+  assert.equal(miss('taiyue').length, 0);
+  assert.ok(miss('wulian').some((s) => s.includes('混元掌')));
+  d.arts.hunyuanPalm.xp = 55;
+  assert.equal(miss('wulian').length, 0);
+  d.arts.huashanSword.xp = 25;
+  assert.ok(miss('wulian').some((s) => s.includes('華山劍法')));
+
+  d.sectId = 'jianzong';
+  d.arts.huashanSword.xp = 55;
+  assert.ok(miss('kuangfengSword').some((s) => s.includes('劍宗心法')));
+  d.arts.jianzongXinfa = { xp: 25, last: 0 };
+  assert.equal(miss('kuangfengSword').length, 0);
+  d.arts.hunyuanPalm.xp = 20;
+  assert.ok(miss('wulian').some((s) => s.includes('混元掌')));
+
+  d.sectId = 'mingjiao';
+  d.arts.yingzhuaHand = { xp: 25, last: 0 };
+  assert.equal(miss('lieyanBlade').length, 0);
+  assert.equal(miss('hanbingMian').length, 0);
+  assert.equal(miss('feihua').length, 0);
+  assert.ok(miss('guangmingGong').some((s) => s.includes('聖火心法')));
+  assert.ok(miss('shenghuoLing').length);
+  assert.ok(miss('datengnuo').length);
+  d.arts.shenghuoXinfa = { xp: 25, last: 0 };
+  d.arts.qingfuStep = { xp: 25, last: 0 };
+  assert.equal(miss('guangmingGong').length, 0);
+  assert.equal(miss('shenghuoLing').length, 0);
+  assert.equal(miss('datengnuo').length, 0);
+});
+
+test('太極爪與玄虛刀不得高過太極拳；臨濟按火候開莊；落英要先看出掌路；百花第三招在大成開', () => {
+  const d = hero();
+  d.arts.taiji = { xp: 40, last: 0 };
+  d.arts.taijiClaw = { xp: 10, last: 0 };
+  d.focus = 'taijiClaw';
+  for (let i = 0; i < 40; i++) gainArt(d, 40, 1, 0, { raw: 40, src: 'train' });
+  assert.ok(d.arts.taijiClaw.xp > 10);
+  assert.ok(d.arts.taijiClaw.xp <= 40);
+  delete d.arts.taiji;
+  const claw = d.arts.taijiClaw.xp;
+  gainArt(d, 40, 1, 0, { raw: 40, src: 'train' });
+  assert.equal(d.arts.taijiClaw.xp, claw);
+  d.arts.taiji = { xp: 30, last: 0 };
+  d.arts.xuanxuBlade = { xp: 10, last: 0 };
+  d.focus = 'xuanxuBlade';
+  for (let i = 0; i < 40; i++) gainArt(d, 40, 1, 0, { raw: 40, src: 'train' });
+  assert.ok(d.arts.xuanxuBlade.xp > 10);
+  assert.ok(d.arts.xuanxuBlade.xp <= 30);
+
+  assert.deepEqual(zhuangOpen(d), []);
+  learnArt(d, 'linjiZhuang', 0);
+  const counts = [1, 2, 3, 5, 6];
+  [0, 25, 55, 85, 100].forEach((xp, i) => { d.arts.linjiZhuang.xp = xp; assert.equal(zhuangOpen(d).length, counts[i], xp); });
+  assert.equal(zhuangOpen(d)[0], '天字莊');
+  assert.equal(zhuangOpen(d)[5], '宙字莊');
+
+  const peach = hero();
+  assert.equal(ponderLuoying(peach), false);
+  peach.sectId = 'taohua';
+  peach.arts.biboXinfa = { xp: 24, last: 0 };
+  assert.equal(ponderLuoying(peach), false);
+  assert.equal(practiceLuoying(peach, 1), false);
+  assert.equal(peach.arts.luoyingPalm, undefined);
+  peach.arts.biboXinfa.xp = 25;
+  assert.equal(ponderLuoying(peach), true);
+  assert.equal(ponderLuoying(peach), false);
+  assert.equal(practiceLuoying(peach, 2), true);
+  assert.ok(peach.arts.luoyingPalm);
+  assert.equal(practiceLuoying(peach, 3), false);
+
+  const hui = hero();
+  hui.moves = hui.moves.filter((m) => m !== 'bh3' && m !== 'yl3');
+  learnArt(hui, 'baihuaFist', 0);
+  hui.arts.baihuaFist.xp = 30;
+  unlockTechs(hui, artById('baihuaFist'));
+  assert.ok(!hui.moves.includes('bh3'));
+  hui.arts.baihuaFist.xp = 55;
+  unlockTechs(hui, artById('baihuaFist'));
+  assert.ok(hui.moves.includes('bh3'));
+  learnArt(hui, 'yunlongSword', 0);
+  hui.arts.yunlongSword.xp = 30;
+  unlockTechs(hui, artById('yunlongSword'));
+  assert.ok(!hui.moves.includes('yl3'));
+  hui.arts.yunlongSword.xp = 55;
+  unlockTechs(hui, artById('yunlongSword'));
+  assert.ok(hui.moves.includes('yl3'));
+
+  assert.equal(artById('wulian').fanR, 1);
+  assert.deepEqual(artById('wulian').curve, artById('fengLei').curve);
+  assert.equal(artById('tanzhi').fanTier, '常見');
+  assert.equal(artById('guangmingGong').fanR, 1);
 });
 
 test('舊存檔讀入後是 2.7', () => {

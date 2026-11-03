@@ -13,6 +13,8 @@ const GROW_CAP = { 1: 20, 2: 35, 3: 55, 4: 75 };
 /* 前置比例：練功不得超過這些武學裡最高的熟練。劇情直接給的熟練不在這裡砍。 */
 const CEILING = {
   taijiSword: ['taiji'],
+  taijiClaw: ['taiji'],
+  xuanxuBlade: ['taiji'],
   qiankun: ['shenghuoXinfa', 'jiuyang'],
 };
 /* 大成、圓滿、化境各一招。太極劍、七傷拳資料裡只有兩招。獨孤九劍標了 forms，招式仍走觀破，這裡只記火候。 */

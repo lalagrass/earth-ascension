@@ -1,5 +1,5 @@
 import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS, SECT_PICK24 } from './data.mjs';
-import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS, qiInjuryFight28, temper29, TEMPER29, yunvOpen24 } from './arts.mjs';
+import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS, qiInjuryFight28, temper29, TEMPER29, yunvOpen24, ponderLuoying, practiceLuoying } from './arts.mjs';
 import { dpsOf } from './world.mjs';
 import { compat } from './social.mjs';
 import { affKey, relKey, log, resAdd, resSet, recordDeed } from './util.mjs';
@@ -155,7 +155,7 @@ function checkRules(s) {
 // ---- 外門武學與叛派 ----
 export function artKind(s, d, id) {
   const S = s.sect, a = artById(id); if (!S || !a) return 'common';
-  if (S.ban.includes(id)) return 'ban'; if (S.tree.includes(id)) return 'own'; if (a.signature) return 'guest'; if (a.classic) return 'outside'; return 'common';
+  if (S.ban.includes(id)) return 'ban'; if (S.tree.includes(id)) return 'own'; if (a.self24 && d?.sectId === a.own24) return 'own'; if (a.signature) return 'guest'; if (a.classic) return 'outside'; return 'common';
 }
 export const KIND_NAME = { own: '本門', guest: '客傳', outside: '外門', ban: '禁學', common: '通用' };
 function checkArts(s) {
@@ -183,6 +183,15 @@ export function buildFac(s, force) {
   const c = canBuildFac(s); if (!c.ok && !force) return c; const F = sectFac(s);
   if (!force) for (const [k, v] of Object.entries(F.cost)) resAdd(s, k, -v);
   s.sect.fac = true; if (s.fac.sig) s.fac.sig.stage = 1; log(s, `【鎮派】${F.name}落成：${F.desc}`); return { ok: true };
+}
+/* #409 桃花：碧波心法到小成後，在島上自己看出落英，次日才上手。不經師父。 */
+function luoyingDaily(s) {
+  if (s.sect?.id !== 'taohua') return;
+  for (const d of s.ds) {
+    if (d.role === 'laborer' || d.away) continue;
+    if (!d.luoyingClue) { if (ponderLuoying(d)) log(s, `${d.name}在島上對著落花比劃，掌路自己浮出來。`); }
+    else if (practiceLuoying(d, s.t)) log(s, `${d.name}照著落花自己練會了落英神劍掌，沒有師父傳。`);
+  }
 }
 function facDaily(s) {
   const F = sectFac(s); if (!s.sect.fac || !F) return;
@@ -212,7 +221,7 @@ export function sectStep(s) {
   if (!s.sect) return; const S = s.sect;
   for (const d of s.ds) { d.sbias = S.bias; d.stree = S.tree; d.sgain = S.fac ? sgainOf(s) : 1; }
   { const F = sectFac(s), on = S.fac && F; const mk = on && F.med24 && sgainOf(s) > 1 ? F.med24 : 1; for (const d of s.ds) d.medK24 = mk; s.psnK24 = on && F.psn24 ? F.psn24 : 1; } /* loop168 寒玉床打坐 ×1.5、神木王鼎毒傷 ×1.35 */
-  if (s.day === S.day) return; S.day = s.day; checkRules(s); checkArts(s); facDaily(s);
+  if (s.day === S.day) return; S.day = s.day; checkRules(s); checkArts(s); facDaily(s); luoyingDaily(s);
   bisaiDaily24(s); /* loop166 Batch 5.2 */
 }
 
