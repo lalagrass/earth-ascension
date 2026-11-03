@@ -138,7 +138,7 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 | A10-SCHOOL | v1.85 | 下山義學：花 20 錢（每趟 ×1.2）派一名弟子下山 1 日，帶回想入門的人（不看名聲、仍要床位與糧），候選最多 2 | **已接線**（v1.85 初標已驗證，2026-10-26 降級） | flow-v185：實點派人、按鈕變灰（反例：不能同時兩趟）、一日後候選出現在面板；派人前錢被改成 400（狀態修改），只算畫面證據 |
 | PLAIN-DORM | v1.85 | 宿舍第 3 階「大通鋪」床 10；白板開局人口可到 12（v1.8 卡 7–8） | **已接線** | 30／60 日長跑白板 5/5 都到 12 人 |
 | GUOJING-HARD | v1.85 | 郭靖標【困難開局】（開局卡紅字）；前 20 日降龍掌傷害 ×1.35，降龍 xp 卡 54.9 時送一次一階衝關 | 標籤：**已驗證**（複查 2026-10-26：此步在開局畫面、任何狀態修改之前，屬完整自然操作，維持）；加成：**已接線** | flow-v185 開局卡（反例：韋小寶無標）；長跑 30 日 3/5 到 1600、60 日 5/5 |
-| SS-WUWU | #401–#406 | 武無第二：每門武學自己的威力曲線；六門絕活走出手事件；六門內功各一條被動；戰報和人物面板一句話說主因。品階留在顯示和取得難度。規則版本 2.6 | **已接線** | `bash test/run.sh smoke` 加上 `node --test test/wuwu.test.mjs`。面板句子對過 HTML。瀏覽器截圖貼在 PR | src/artcard.mjs src/arts.mjs src/sim.mjs src/world.mjs src/panel-ui.mjs src/main.mjs | test/wuwu.test.mjs | 戰報與人物面板見該 PR | 豬籠城寨四門曲線維持錨點 45。巡山仍是整場結算，六門絕活主要出現在狩獵 |
+| SS-WUWU | #401–#411 | 武無第二：招式只當形狀，威力改走扇形曲線（入門相近、名功拉開）；各派武學樹與拜師關卡補完；第二批名功絕活與內功被動；豬籠城寨四門扇形曲線與絕活；異屬逆催恢復 0.65 威力代價。品階留在顯示和修練速度。規則版本 2.7 | **已接線** | `bash test/run.sh smoke` 加上 `node --test test/wuwu.test.mjs`。面板句子對過 HTML。瀏覽器截圖貼在 PR | src/artcard.mjs src/arts.mjs src/sim.mjs src/world.mjs src/panel-ui.mjs src/main.mjs src/data.mjs src/save.mjs | test/wuwu.test.mjs | 戰報與人物面板見該 PR | 巡山逐拍接上 hit/gethit，六門與第二批絕活及內功被動各自觸發 |
 
 修正：巡山在模擬層也守解鎖（第一章不再在第 1 日記成）；「本門新紀錄」「重傷倒地」由頂級改為中級事件。
 
