@@ -48,14 +48,19 @@ const ON = {
   qiankun: { gethit: { need: 0, reflect: 0.3, shift: 0.25, log: '乾坤一挪，來力從身旁過去，餘勢反震回去' } },
   jiuyinClaw: { hit: { need: 2, breakGuard: true, dmg: 1.2, xia: -2, log: '爪勁透進護體，這一爪傷了自己的俠義' } },
   yuxiaoSword: { hit: { need: 2, disturb: 1.2, log: '簫聲一繞，對手的節奏亂了' } },
+  /* #411 豬籠城寨系列。依電影勝負：如來壓軸絕頂、譚腿先發踢亂、鐵線破招架、八卦逼退。 */
+  rulai: { hit: { need: 2, qi: 20, dmg: 1.6, knock: 30, log: '萬佛朝宗自天而降，掌力雄渾震退對手' } },
+  tantui: { hit: { need: 2, first: true, trip: 1.3, log: '十二路譚腿先發制人，腿風掃亂對手下盤' } },
+  tiexian: { hit: { need: 2, breakParry: true, dmg: 1.25, log: '鐵線拳雙臂硬開硬進，破開招架' } },
+  bagua: { hit: { need: 2, qi: 4, knock: 16, log: '八卦棍長兵點刺，將對手逼退一段' } },
 };
 /* 名次段內的順序就是名功榜。排前面的略高，排後面的略低，上下各一成。沒點名的走常見正中，不做這層微調。
    打狗棒法放一流段末，乾坤大挪移放名門段末：名聲在，傷害不是它們的本分。 */
 const FAN_BANDS = [
-  ['絕頂', ['kuihua', 'bixie', 'xianglong', 'dugu', 'jiuyang', 'taiji']],
+  ['絕頂', ['kuihua', 'bixie', 'rulai', 'xianglong', 'dugu', 'jiuyang', 'taiji']],
   ['一流', ['hama', 'xuantie', 'taijiSword', 'anran', 'yuxiaoSword', 'kongming', 'yunv', 'hanbingPalm', 'dagou']],
-  ['名門', ['zixia', 'linjiZhuang', 'yunvSword', 'wudangJiuyang', 'qishangFist', 'huifengSword', 'jiuyinClaw', 'lanhuaHand', 'kuangfengSword', 'huagongDafa', 'sanxianSword', 'luoyingPalm', 'sanyinClaw', 'shenxingStep', 'qiankun']],
-  ['常見', ['hunyuanPalm', 'shenghuoXinfa', 'biboXinfa', 'huntianGong', 'emeiJiuyang', 'huashanSword', 'jindingPalm', 'tiangangFinger', 'rouyunSword', 'mianPalm', 'tianluoPalm', 'chousuiPalm', 'yingzhuaHand', 'lianhuaPalm', 'fengmoStaff', 'emeiSword', 'qingfuStep', 'yunlongXinfa', 'baihuaFist', 'yunlongSword', 'xiaoyaoStep', 'zhaixingStep', 'stepEight', 'wudangFist', 'wavePalm', 'whirlLeg', 'wuhuBlade', 'shaolinStaff', 'tuinaHand', 'stepFeather', 'snowStep']],
+  ['名門', ['zixia', 'linjiZhuang', 'yunvSword', 'wudangJiuyang', 'qishangFist', 'huifengSword', 'jiuyinClaw', 'lanhuaHand', 'kuangfengSword', 'bagua', 'tiexian', 'huagongDafa', 'sanxianSword', 'luoyingPalm', 'sanyinClaw', 'shenxingStep', 'qiankun']],
+  ['常見', ['tantui', 'hunyuanPalm', 'shenghuoXinfa', 'biboXinfa', 'huntianGong', 'emeiJiuyang', 'huashanSword', 'jindingPalm', 'tiangangFinger', 'rouyunSword', 'mianPalm', 'tianluoPalm', 'chousuiPalm', 'yingzhuaHand', 'lianhuaPalm', 'fengmoStaff', 'emeiSword', 'qingfuStep', 'yunlongXinfa', 'baihuaFist', 'yunlongSword', 'xiaoyaoStep', 'zhaixingStep', 'stepEight', 'wudangFist', 'wavePalm', 'whirlLeg', 'wuhuBlade', 'shaolinStaff', 'tuinaHand', 'stepFeather', 'snowStep']],
   ['入門', ['pishiFist', 'pushPalm', 'huashanXinfa', 'jianzongXinfa', 'wudangXinfa', 'basicFist', 'basicSword', 'sweepLeg', 'breath']],
 ];
 

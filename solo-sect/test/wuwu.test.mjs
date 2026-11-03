@@ -20,7 +20,11 @@ test('每門都有五檔曲線；沒點名的武學與風雷掌腿同一條', ()
     assert.equal(typeof a.growCap, 'number', a.id);
     assert.ok(Array.isArray(a.learn?.req), a.id);
   }
-  assert.deepEqual(artById('rulai').curve, artById('fengLei').curve);
+  assert.equal(artById('rulai').fanTier, '絕頂');
+  assert.equal(artById('bagua').fanTier, '名門');
+  assert.equal(artById('tiexian').fanTier, '名門');
+  assert.equal(artById('tantui').fanTier, '常見');
+  assert.ok(curveMulOf(artById('rulai').curve, 4) > curveMulOf(artById('xianglong').curve, 4));
   assert.equal(artById('dagou').fanTier, '一流');
   assert.equal(artById('qiankun').fanTier, '名門');
   assert.ok(curveMulOf(artById('xianglong').curve, 2) > curveMulOf(artById('fengLei').curve, 2));
@@ -111,7 +115,8 @@ test('六門絕活各自觸發；內力不夠就不發動；沒看破的獨孤�
   const qi0 = qiOf(d);
   assert.ok(qi0 >= 16, qi0);
   assert.equal(artById('xianglong').on.hit.qi, 16);
-  assert.equal(artById('rulai').on, null);
+  assert.ok(artById('rulai').on?.hit);
+  assert.equal(artById('rulai').on.hit.qi, 20);
   assert.deepEqual(ART_ON_EVENTS, ['hit', 'block', 'dodge', 'crit', 'gethit', 'kill']);
 
   const near = (a, b) => Math.abs(a - b) < 1e-6;
@@ -566,6 +571,35 @@ test('第二批絕活與內功被動各自觸發；乾坤只開第一層；觀�
   assert.deepEqual(unlockTechs(d, artById('dugu')), []);
   assert.deepEqual(d.moves, moves);
   assert.ok(!d.moves.includes('dg9'));
+});
+
+test('豬籠城寨四門絕活各自生效：如來神掌震退、譚腿踢亂下盤、鐵線拳破架、八卦棍逼退', () => {
+  const s = createState(3);
+  const d = s.ds.find((x) => x.id === 'hero');
+  d.arts.breath = { xp: 85, last: 0, bt1: true };
+  d.qi = 80;
+  const foe = () => ({ hp: 40, pos: [10, 0], cool: 0 });
+
+  d.arts.rulai = { xp: 55, last: 0, bt1: true };
+  const ru = applyArtOn(s, 'hit', d, foe(), { power: 10, move: 'rulai' });
+  assert.equal(ru.fired.art, 'rulai');
+  assert.equal(ru.knock, 30);
+  assert.ok(ru.power > 10);
+
+  d.arts.tantui = { xp: 55, last: 0, bt1: true };
+  const tt = applyArtOn(s, 'hit', d, foe(), { power: 10, move: 'tt1' });
+  assert.equal(tt.fired.art, 'tantui');
+  assert.equal(tt.trip, 1.3);
+
+  d.arts.tiexian = { xp: 55, last: 0, bt1: true };
+  const tx = applyArtOn(s, 'hit', d, foe(), { power: 10, move: 'tx1' });
+  assert.equal(tx.fired.art, 'tiexian');
+  assert.equal(tx.breakParry, true);
+
+  d.arts.bagua = { xp: 55, last: 0, bt1: true };
+  const bg = applyArtOn(s, 'hit', d, foe(), { power: 10, move: 'bg1' });
+  assert.equal(bg.fired.art, 'bagua');
+  assert.equal(bg.knock, 16);
 });
 
 test('舊存檔讀入後是 2.7', () => {

@@ -345,6 +345,10 @@ const BLOW = {
   qiankun: ['秘道裡學來的挪移', '挨打時把來力挪開並反震'],
   jiuyinClaw: ['陰損的爪功', '抓破護體，自己的俠義也傷'],
   yuxiaoSword: ['島上的簫', '簫聲擾了對手的節奏'],
+  rulai: ['破道館覺醒的神掌', '萬佛朝宗自天而降，震退對手'],
+  tantui: ['市井苦力隱藏的腿法', '先手起腿，踢亂下盤'],
+  tiexian: ['裁縫鋪深藏的硬氣功', '雙臂鐵環沉雄，破開招架'],
+  bagua: ['大雜院傳下的楊家棍法', '長兵壓陣，逼退對手'],
 };
 const BOUT = {
   xianglong: '這一陣打得開，是因為降龍震退。',
@@ -359,8 +363,12 @@ const BOUT = {
   qiankun: '來力被挪開，餘勢反震了回去。',
   jiuyinClaw: '爪勁透進護體，自己的俠義也傷了。',
   yuxiaoSword: '簫聲擾了對手的節奏。',
+  rulai: '如來神掌自天而降，掌力震退了對手。',
+  tantui: '十二路譚腿先發制人，踢亂了對手下盤。',
+  tiexian: '鐵線拳雙臂硬進，破開了對手的招架。',
+  bagua: '五郎八卦棍長兵壓陣，逼退了對手。',
 };
-const BLOW_ORDER = ['xianglong', 'dugu', 'bixie', 'taijiSword', 'qishangFist', 'dagou', 'xuantie', 'anran', 'hama', 'qiankun', 'jiuyinClaw', 'yuxiaoSword'];
+const BLOW_ORDER = ['xianglong', 'dugu', 'bixie', 'taijiSword', 'qishangFist', 'dagou', 'xuantie', 'anran', 'hama', 'qiankun', 'jiuyinClaw', 'yuxiaoSword', 'rulai', 'tantui', 'tiexian', 'bagua'];
 function readyBlows(d) {
   const out = [];
   for (const id of BLOW_ORDER) {
