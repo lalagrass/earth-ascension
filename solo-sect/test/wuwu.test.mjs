@@ -24,10 +24,18 @@ test('每門都有五檔曲線；沒點名的武學與風雷掌腿同一條', ()
   assert.equal(artById('bagua').fanTier, '名門');
   assert.equal(artById('tiexian').fanTier, '名門');
   assert.equal(artById('tantui').fanTier, '常見');
-  assert.ok(curveMulOf(artById('rulai').curve, 4) > curveMulOf(artById('xianglong').curve, 4));
+  assert.ok(curveMulOf(artById('xianglong').curve, 4) > curveMulOf(artById('rulai').curve, 4));
   assert.equal(artById('dagou').fanTier, '一流');
   assert.equal(artById('qiankun').fanTier, '名門');
   assert.ok(curveMulOf(artById('xianglong').curve, 2) > curveMulOf(artById('fengLei').curve, 2));
+});
+
+test('常見段化境倍率落在 1.4–1.8', () => {
+  const common = ARTS.filter((a) => a.fanTier === '常見' && a.bestDps > 0);
+  const mid = common.find((a) => Math.abs(a.bestDps - 9.0) < 0.01);
+  assert.ok(mid, '需有中位數武學');
+  const mul = curveMulOf(mid.curve, 4) / mid.bestDps;
+  assert.ok(mul >= 1.4 && mul <= 1.8, `化境倍率 ${mul} 應落在 1.4–1.8`);
 });
 
 test('同段入門、小成倍率相同；化境絕頂對入門在四到五倍', () => {

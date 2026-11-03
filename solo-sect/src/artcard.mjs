@@ -1,10 +1,8 @@
 /* #403 武學卡。#408 起，招式傷害只留形狀，強度走扇形曲線。
    曲線數字是本遊戲自己的。本檔不讀外部資料、不進口訣。 */
+import { ARTS, MOVES } from './data.mjs';
 
 export const CURVE_SHAPE = [0.40, 0.58, 0.74, 0.88, 1];
-/* 基準：常見段正中、化境時最強一招的每秒傷害。沿用原來的常見錨點，正規化之後它就是強度本身。 */
-export const CURVE_ANCHOR = 45;
-export const FAN_BASE = CURVE_ANCHOR;
 /* 入門、小成先不按名次拉開。大成起名次才進威力。 */
 export const FAN_F = [0, 0, 0.35, 0.7, 1];
 export const TIER_R = { 入門: 0.8, 常見: 1, 名門: 1.6, 一流: 2.4, 絕頂: 3.5 };
@@ -55,16 +53,17 @@ const ON = {
   bagua: { hit: { need: 2, qi: 4, knock: 16, log: '八卦棍長兵點刺，將對手逼退一段' } },
 };
 /* 名次段內的順序就是名功榜。排前面的略高，排後面的略低，上下各一成。沒點名的走常見正中，不做這層微調。
-   打狗棒法放一流段末，乾坤大挪移放名門段末：名聲在，傷害不是它們的本分。 */
-const FAN_BANDS = [
-  ['絕頂', ['kuihua', 'bixie', 'rulai', 'xianglong', 'dugu', 'jiuyang', 'taiji']],
+   打狗棒法放一流段末，乾坤大挪移放名門段末：名聲在，傷害不是它們的本分。
+   如來神掌排在絕頂段末，在降龍等三方一致名功之後。 */
+export const FAN_BANDS = [
+  ['絕頂', ['kuihua', 'bixie', 'xianglong', 'dugu', 'jiuyang', 'taiji', 'rulai']],
   ['一流', ['hama', 'xuantie', 'taijiSword', 'anran', 'yuxiaoSword', 'kongming', 'yunv', 'hanbingPalm', 'dagou']],
   ['名門', ['zixia', 'linjiZhuang', 'yunvSword', 'wudangJiuyang', 'qishangFist', 'huifengSword', 'jiuyinClaw', 'lanhuaHand', 'kuangfengSword', 'bagua', 'tiexian', 'huagongDafa', 'sanxianSword', 'luoyingPalm', 'sanyinClaw', 'shenxingStep', 'qiankun']],
   ['常見', ['tantui', 'hunyuanPalm', 'shenghuoXinfa', 'biboXinfa', 'huntianGong', 'emeiJiuyang', 'huashanSword', 'jindingPalm', 'tiangangFinger', 'rouyunSword', 'mianPalm', 'tianluoPalm', 'chousuiPalm', 'yingzhuaHand', 'lianhuaPalm', 'fengmoStaff', 'emeiSword', 'qingfuStep', 'yunlongXinfa', 'baihuaFist', 'yunlongSword', 'xiaoyaoStep', 'zhaixingStep', 'stepEight', 'wudangFist', 'wavePalm', 'whirlLeg', 'wuhuBlade', 'shaolinStaff', 'tuinaHand', 'stepFeather', 'snowStep']],
   ['入門', ['pishiFist', 'pushPalm', 'huashanXinfa', 'jianzongXinfa', 'wudangXinfa', 'basicFist', 'basicSword', 'sweepLeg', 'breath']],
 ];
 
-function fanRank(id) {
+export function fanRank(id) {
   for (const [tier, ids] of FAN_BANDS) {
     const i = ids.indexOf(id);
     if (i < 0) continue;
@@ -74,6 +73,34 @@ function fanRank(id) {
   }
   return { fanTier: '常見', fanR: 1 };
 }
+/* 基準：取 ARTS 裡常見段各門最強一招每秒傷害的中位數（約 9.0），乘上舊規則常見武學化境實際倍率（1.61），結果約 14.5。
+   由程式在載入時動態計算，不寫死常數。 */
+export function computeFanBase() {
+  const bests = [];
+  for (const a of ARTS) {
+    if (fanRank(a.id).fanTier !== '常見') continue;
+    const ids = new Set(a.techs || []);
+    if (a.tech) ids.add(a.tech);
+    if (a.moves) for (const m of a.moves) ids.add(m);
+    if (SPECIALS[a.id]) for (const sp of SPECIALS[a.id]) ids.add(sp.move);
+    for (const m of MOVES) if (m.fx === a.id) ids.add(m.id);
+    let best = 0;
+    for (const id of ids) {
+      const mv = MOVES.find((m) => m.id === id);
+      if (!mv || !(mv.cd > 0) || !(mv.dmg > 0)) continue;
+      const dps = mv.dmg / mv.cd;
+      if (dps > best) best = dps;
+    }
+    if (best > 0) bests.push(best);
+  }
+  bests.sort((a, b) => a - b);
+  const mid = Math.floor(bests.length / 2);
+  const median = bests.length % 2 === 0 ? (bests[mid - 1] + bests[mid]) / 2 : bests[mid];
+  const OLD_HUA_MUL = 1.61;
+  return (median || 9.0) * OLD_HUA_MUL;
+}
+export const FAN_BASE = computeFanBase();
+export const CURVE_ANCHOR = FAN_BASE;
 /* mul(t) = 基準 × 共同形狀(t) × (1 + (R − 1) × f(t))。R 已含同段微調。 */
 export function fanMul(R, t) {
   const i = Math.max(0, Math.min(4, t | 0));
