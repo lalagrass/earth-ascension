@@ -324,7 +324,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '2.7'; /* #408：招式只留形狀，威力走扇形曲線；異屬逆催恢復 0.65。2.6 起品階不再乘內功 */
+export const RULES_VERSION = '2.8'; /* #412：威脅跟隨門派戰力與適應係數；#408 招式只留形狀，威力走扇形曲線；異屬逆催恢復 0.65 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [

@@ -9,6 +9,7 @@ import { artById, artTier, moveMul, gainArt, learnArt, openSpecials, unlockTechs
 import { powerHtml } from '../src/panel-ui.mjs';
 import { curveMulOf } from '../src/artcard.mjs';
 import { createState, load } from '../src/sim.mjs';
+import { points, T, raidResolve, threatDaily, threatBreakdown } from '../src/threat.mjs';
 import { teach, TEACH, formReady } from '../src/wuxia.mjs';
 import { CARDS, jhStep } from '../src/jianghu.mjs';
 
@@ -610,11 +611,47 @@ test('豬籠城寨四門絕活各自生效：如來神掌震退、譚腿踢亂�
   assert.equal(bg.knock, 16);
 });
 
-test('舊存檔讀入後是 2.7', () => {
+test('舊存檔讀入後是 2.8', () => {
   const raw = readFileSync(new URL('./golden/saves/v2.4.json', import.meta.url), 'utf8');
   const r = load(raw);
   assert.equal(r.ok, true, r.err);
-  assert.equal(r.state.rules, '2.7');
+  assert.equal(r.state.rules, '2.8');
   assert.equal(r.state.rules, RULES_VERSION);
-  assert.ok(r.state.migSteps.includes('2.7'));
+  assert.ok(r.state.migSteps.includes('2.8'));
+  assert.equal(r.state.threat?.adapt, 1);
+});
+
+test('N9：戰力加倍，威脅上升，但不到兩倍', () => {
+  const s = createState(7);
+  const b = s.ds.find((d) => d.id !== 'hero');
+  while (s.ds.length < 5) s.ds.push({ ...structuredClone(b), id: `p${s.ds.length}`, adult: true, role: 'inner' });
+  s.day = 10;
+  s.res.coin = 100;
+  const p1 = points(s);
+  assert.ok(p1 > 0);
+  for (const d of s.ds) {
+    if (d.skills) {
+      d.skills.palm = (d.skills.palm || 0) + 50;
+      d.skills.leg = (d.skills.leg || 0) + 50;
+    }
+  }
+  const p2 = points(s);
+  assert.ok(p2 > p1, `威脅需上升: p1=${p1}, p2=${p2}`);
+  assert.ok(p2 < p1 * 2, `威脅上升不到兩倍: p1=${p1}, p2=${p2}`);
+});
+
+test('N9：落敗後適應係數下降，數日後回到 1', () => {
+  const s = createState(7);
+  s.day = 10;
+  const X = T(s);
+  assert.equal(X.adapt, 1);
+  X.pending = { n: 1, pts: 50, demand: 200, p: 0, at: s.t, until: s.t + 100, day: s.day, noPay: true };
+  raidResolve(s, 1, null);
+  assert.ok(X.adapt < 1, `落敗後適應係數應下降: adapt=${X.adapt}`);
+  assert.ok(X.adapt >= 0.6, `不低於下限 0.6: adapt=${X.adapt}`);
+  for (let i = 0; i < 10; i++) {
+    s.day++;
+    threatDaily(s);
+  }
+  assert.equal(X.adapt, 1, `數日後回到 1: adapt=${X.adapt}`);
 });
