@@ -1,5 +1,5 @@
 import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST } from './data.mjs';
-import { stampCard, curveMulOf } from './artcard.mjs';
+import { stampCard, curveMulOf, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
 import { pipeline, log } from './util.mjs';
 // ==== （原 growth.mjs）====
@@ -236,12 +236,41 @@ export function stuckAt(d, a, now = 0) {
 }
 export const btReady = (d, now = 0) => ARTS.find((a) => stuckAt(d, a, now))?.id || null;
 export function breakChance(d) { return Math.max(0.1, Math.min(0.9, (d.medK24 || 1) * (BREAK.base + ((d.mood ?? 50) - 50) / 100 + ((d.wu ?? d.root ?? 3) - 3) * 0.08 + ((d.needs?.energy ?? 50) - BREAK.energyMin) / 200))); }
+/* #414 N11：大成突破自動依性格挑選分路 */
+export function autoBranch(d, artId) {
+  const br = BRANCHES[artId];
+  if (!br) return null;
+  const p = d.personality || [];
+  if (p.includes('bold') || p.includes('brave') || p.includes('diligent')) return 'A';
+  if (p.includes('gentle') || p.includes('clever') || p.includes('nimble')) return 'B';
+  return 'A';
+}
+
+/* #414 N11：事後花時間重選分路 */
+export function rechooseBranch(d, artId, newBranch) {
+  const r = d.arts?.[artId];
+  if (!r || !r.bt1) return { ok: false, why: '尚未大成，無法選取高階分路' };
+  r.branch = newBranch || null;
+  return { ok: true, branch: r.branch };
+}
+
 // 衝關結算：回傳 {ok, stage, art}
 export function resolveBreak(d, id, now, roll) {
   const a = artById(id), r = d.arts[id], st = stuckAt(d, a, now); if (!st) return null;
   const ok = roll < breakChance(d); const res = { ok, stage: st, art: a };
   if (!ok) { r.btCd = now + BREAK.cooldown; return res; }
-  if (st === 1) { r.bt1 = true; r.xp = 55; } else if (st === 2) { r.bt2 = true; r.xp = 100; } else { r.guizhen = true; r.stars = 0; r.sxp = 0; }
+  if (st === 1) {
+    r.bt1 = true;
+    r.xp = 55;
+    if (BRANCHES[id] && !r.branch) r.branch = autoBranch(d, id);
+  } else if (st === 2) {
+    r.bt2 = true;
+    r.xp = 100;
+  } else {
+    r.guizhen = true;
+    r.stars = 0;
+    r.sxp = 0;
+  }
   res.newMoves = unlockTechs(d, a); return res;
 }
 /* #403：有絕招表、且不是觀破式的武學，大成／圓滿／化境各開一招。獨孤仍走觀破，不在這裡發招。
@@ -297,13 +326,18 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
   if (!only && who.dugu?.length && !ids.includes('dugu')) ids.push('dugu');
   for (const id of ids) {
     const a = artById(id);
-    const fx = a?.on?.[event];
+    let fx = a?.on?.[event];
     if (!fx) continue;
     if (!who.arts?.[id] && !(a.forms && who.dugu?.length)) continue;
     const tier = who.arts?.[id] ? artTier(who, id) : 0;
     if (tier < (fx.need ?? 0)) continue;
     if (fx.seen && !(who.dugu?.length)) continue;
     if (fx.first && other?.onOpened) continue;
+    /* #414 N11：高階分路覆寫/合併 */
+    const brKey = who.arts?.[id]?.branch;
+    if (brKey && BRANCHES[id]?.[brKey]?.[event]) {
+      fx = { ...fx, ...BRANCHES[id][brKey][event] };
+    }
     if (fx.charge) { /* #410 蓄勢：氣血沒見底就不耗內力 */
       if ((who.hp ?? 100) >= (fx.hpBelow ?? 50)) continue;
       const max = qiMax(who);

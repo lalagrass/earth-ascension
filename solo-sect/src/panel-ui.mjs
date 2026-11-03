@@ -3,6 +3,7 @@ import { DAY, ACTIVITIES, EXP_STYLES, EXP, ARTS, TIERS, ART_GAIN, ROOT, JH, BREA
 import { LABOR, strMul, laborToday } from './economy.mjs';
 import { segAt } from './world.mjs';
 import { nextStep } from './core.mjs';
+import { BRANCHES } from './artcard.mjs';
 import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW, growCapOf, mainInner28, baseInner28, innerDrive28, isInner, qiGreat24, artById, artMulParts, appetite31, modeTitle31, qiArtBadge24, swordFast24, MODE31, QI_SAT31, blowWhy } from './arts.mjs';
 import { CLQ } from './bonds.mjs';
 import { JHEV, letterP } from './jianghu.mjs';
@@ -109,15 +110,18 @@ export function artStatus(d, a, now = 0) {
   if (r.bt2 && r.xp >= 100 - 1e-6) return { st: 'full', text: '已練滿：再練只防荒疏，不加造詣' };
   return { st: 'acc', text: '正在累積' };
 }
-/* #413 N10：絕活徽章與 hover 說明 */
-export function artSpecialBadge(a) {
+/* #413 N10 / #414 N11：絕活徽章與分路 hover 說明 */
+export function artSpecialBadge(a, d) {
   if (!a?.on) return '';
   const entries = Object.entries(a.on);
   if (!entries.length) return '';
   const [evt, sp] = entries[0];
-  const word = sp.fx?.word || '絕';
-  const desc = sp.log || '特有絕活招式';
-  return `<span class="badge art-special-badge" title="${desc}" style="font-size:11px;padding:1px 4px;border-radius:3px;background:rgba(180,120,40,0.15);color:#b35900;border:1px solid rgba(180,120,40,0.3);margin-left:4px;cursor:help;">【絕活・${word}】</span>`;
+  const brKey = d?.arts?.[a.id]?.branch;
+  const br = brKey ? BRANCHES[a.id]?.[brKey] : null;
+  const word = br?.[evt]?.fx?.word || sp.fx?.word || '絕';
+  const desc = br?.[evt]?.log || sp.log || '特有絕活招式';
+  const brLabel = br?.name ? `・${br.name}` : '';
+  return `<span class="badge art-special-badge" title="${desc}" style="font-size:11px;padding:1px 4px;border-radius:3px;background:rgba(180,120,40,0.15);color:#b35900;border:1px solid rgba(180,120,40,0.3);margin-left:4px;cursor:help;">【絕活・${word}${brLabel}】</span>`;
 }
 
 export function artsGrowHtml(d, now = 0, grow = true) {
@@ -132,7 +136,7 @@ export function artsGrowHtml(d, now = 0, grow = true) {
     if (!!d && r && !isInner(a)) { const drv = innerDrive28(d, a); if (drv.tier === 1 && drv.root) why.push('根基加持'); else if (drv.tier === 3) why.push('內力虛浮'); else if (drv.tier === 4) why.push('⚠️異屬逆催'); } /* #405 催動不再乘品階，面板不列係數 */
     if (!!d && a.mode) why.push(modeTitle31(d, a));
     const lead = (!!d && r && mi?.id === a.id ? `★主運內功 ${a.grade || 1}品 ${bi?.id === a.id && t >= 2 ? '◆根基 ' : ''}` : '') + (f === a.id ? '◆主修 ' : '');
-    const spBadge = artSpecialBadge(a);
+    const spBadge = artSpecialBadge(a, d);
     return `<div class="k artgrow" data-artst="${st.st}">${lead}${a.name}${spBadge}（${cats}）${r ? `・${d.pf && !r.guizhen ? `<span data-prof>${profLabel(r.xp)}</span>` : TIERS[t][1]} ${r.xp.toFixed(1)}${nxt}${moves}` : ''}・<b>${st.text}</b>${why.length ? `｜${why.join('；')}` : ''}</div>`; });
   const ng = !!d && mi && d.arts?.[mi.id] ? mastery(d, 'neigong') : 0;
   const Ap = !!d ? appetite31(d) : 0, pref = Ap > 0 ? '好打法' : Ap < 0 ? '好練法' : '中庸', bore = d?.bore31 || 0, sit = Ap && bore >= 6 - Math.abs(Ap) ? '坐不住' : '坐得住';

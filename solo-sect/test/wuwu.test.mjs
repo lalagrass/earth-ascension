@@ -5,9 +5,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { ARTS, MOVES, RULES_VERSION, DUGU } from '../src/data.mjs';
-import { artById, artTier, moveMul, gainArt, learnArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, qiMax, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29, blowWhy, boutWhy, expCause, expectOf, EXPECT_SWINGS, reqMissing, zhuangOpen, ponderLuoying, practiceLuoying, YUNV_PAIR } from '../src/arts.mjs';
+import { artById, artTier, moveMul, gainArt, learnArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, qiMax, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29, blowWhy, boutWhy, expCause, expectOf, EXPECT_SWINGS, reqMissing, zhuangOpen, ponderLuoying, practiceLuoying, YUNV_PAIR, rechooseBranch, autoBranch } from '../src/arts.mjs';
 import { powerHtml } from '../src/panel-ui.mjs';
-import { curveMulOf } from '../src/artcard.mjs';
+import { curveMulOf, BRANCHES } from '../src/artcard.mjs';
 import { createState, load } from '../src/sim.mjs';
 import { points, T, raidResolve, threatDaily, threatBreakdown } from '../src/threat.mjs';
 import { teach, TEACH, formReady } from '../src/wuxia.mjs';
@@ -689,4 +689,50 @@ test('N10：觸發時 s.fx 多一筆；冷卻內不重複觸發；巡山抽象�
   d.away = false;
   applyArtOn(s, 'hit', d, { name: '抽象野狼' }, { power: 10, move: 'jianlong' });
   assert.equal(s.fx.length, 2, '對手不在地圖上不推 s.fx');
+});
+
+test('N11：同一門武學選不同分路，觸發條件或效果不同', () => {
+  const s = createState(7);
+  const d = s.ds.find((x) => x.id === 'hero');
+  d.pos = [100, 200];
+  d.away = false;
+  d.arts.huntianGong = { xp: 85, last: 0, bt1: true, bt2: true };
+  d.arts.xianglong = { xp: 55, last: 0, bt1: true };
+  d.qi = 100;
+  const foe = { name: '野豬', pos: [110, 200] };
+
+  // 原樣 (無分路)
+  d.arts.xianglong.branch = null;
+  const r0 = applyArtOn(s, 'hit', d, foe, { power: 10, move: 'jianlong' });
+  assert.equal(r0.knock, 22);
+
+  // 分路 A (剛猛): knock 35, dmg 1.6
+  d.qi = 100;
+  rechooseBranch(d, 'xianglong', 'A');
+  assert.equal(d.arts.xianglong.branch, 'A');
+  const rA = applyArtOn(s, 'hit', d, foe, { power: 10, move: 'jianlong' });
+  assert.equal(rA.knock, 35);
+  assert.equal(rA.power, 16);
+
+  // 分路 B (留力): knock 0, dmg 1.25, qi 8
+  const q0 = d.qi;
+  rechooseBranch(d, 'xianglong', 'B');
+  assert.equal(d.arts.xianglong.branch, 'B');
+  const rB = applyArtOn(s, 'hit', d, foe, { power: 10, move: 'jianlong' });
+  assert.equal(rB.knock, 0);
+  assert.equal(rB.power, 12.5);
+  assert.equal(d.qi, q0 - 8);
+});
+
+test('N11：扇形曲線 curveMulOf 不因分路改變', () => {
+  const a = artById('xianglong');
+  const mulBefore = curveMulOf(a.curve, 2);
+  const s = createState(7);
+  const d = s.ds.find((x) => x.id === 'hero');
+  d.arts.xianglong = { xp: 55, last: 0, bt1: true, branch: 'A' };
+  const mulAfterA = curveMulOf(a.curve, 2);
+  d.arts.xianglong.branch = 'B';
+  const mulAfterB = curveMulOf(a.curve, 2);
+  assert.equal(mulBefore, mulAfterA);
+  assert.equal(mulBefore, mulAfterB);
 });
