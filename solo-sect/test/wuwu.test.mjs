@@ -1,25 +1,44 @@
-/* #403 武學卡：同火候名功更強、悟性不改出手、前置比例、舊檔讀入 2.6、絕招按火候開。
-   #404 六門絕活：打中、讓過、挨打各走武學上的 on，不靠武學 id。 */
+/* #403 武學卡：同火候名功更強、悟性不改出手、前置比例、舊檔讀入現行規則、絕招按火候開。
+   #404 六門絕活：打中、讓過、挨打各走武學上的 on，不靠武學 id。
+   #408 扇形曲線：入門與小成先收斂，化境才拉開。 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { ARTS, RULES_VERSION } from '../src/data.mjs';
-import { artById, moveMul, gainArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29, blowWhy, boutWhy, expCause } from '../src/arts.mjs';
+import { ARTS, MOVES, RULES_VERSION } from '../src/data.mjs';
+import { artById, artTier, moveMul, gainArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29, blowWhy, boutWhy, expCause, expectOf, EXPECT_SWINGS } from '../src/arts.mjs';
 import { powerHtml } from '../src/panel-ui.mjs';
 import { curveMulOf } from '../src/artcard.mjs';
 import { createState, load } from '../src/sim.mjs';
+import { teach, TEACH } from '../src/wuxia.mjs';
 
 const hero = () => createState(3).ds.find((d) => d.id === 'hero');
 
-test('每門都有五檔曲線；沒點名的武學與風雷掌腿同一條錨', () => {
+test('每門都有五檔曲線；沒點名的武學與風雷掌腿同一條', () => {
   for (const a of ARTS) {
     assert.equal(a.curve?.length, 5, a.id);
     assert.equal(typeof a.growCap, 'number', a.id);
     assert.ok(Array.isArray(a.learn?.req), a.id);
   }
   assert.deepEqual(artById('rulai').curve, artById('fengLei').curve);
-  assert.equal(artById('xianglong').curve[4], 98);
+  assert.equal(artById('dagou').fanTier, '一流');
+  assert.equal(artById('qiankun').fanTier, '名門');
   assert.ok(curveMulOf(artById('xianglong').curve, 2) > curveMulOf(artById('fengLei').curve, 2));
+});
+
+test('同段入門、小成倍率相同；化境絕頂對入門在四到五倍', () => {
+  const live = ARTS.filter((a) => !a.deprecated);
+  const c0 = live[0].curve[0], c1 = live[0].curve[1];
+  for (const a of live) {
+    assert.ok(Math.abs(a.curve[0] - c0) < 1e-6, a.id);
+    assert.ok(Math.abs(a.curve[1] - c1) < 1e-6, a.id);
+  }
+  const top = artById('bixie'), ru = artById('basicFist');
+  assert.ok(Math.abs(top.curve[0] - ru.curve[0]) < 1e-6);
+  assert.ok(Math.abs(top.curve[1] - ru.curve[1]) < 1e-6);
+  const base = 3.5 / 0.8;
+  assert.ok(base >= 4 && base <= 5, base);
+  const mid = artById('xianglong').curve[4] / ru.curve[4];
+  assert.ok(mid >= 4 && mid <= 5, mid);
 });
 
 test('同火候，降龍十八掌比同品的風雷掌腿更痛；改悟性或初學標記不改出手', () => {
@@ -28,7 +47,8 @@ test('同火候，降龍十八掌比同品的風雷掌腿更痛；改悟性或�
   d.arts.xianglong = { xp: 55, last: 0, bt1: true };
   d.arts.fengLei = { xp: 55, last: 0, bt1: true };
   assert.equal(artById('xianglong').grade, artById('fengLei').grade);
-  assert.ok(moveMul(d, 'jianlong') > moveMul(d, 'storm'));
+  const bite = (id) => { const mv = MOVES.find((m) => m.id === id); return (mv.dmg / mv.cd) * moveMul(d, id); };
+  assert.ok(bite('jianlong') > bite('storm'));
   d.wu = 1;
   const low = moveMul(d, 'jianlong');
   d.wu = 5;
@@ -68,6 +88,17 @@ test('大成開第一招，化境招還沒開', () => {
   const got = unlockTechs(d, artById('xianglong'));
   assert.deepEqual(got, ['jianlong']);
   assert.ok(!d.moves.includes('kanglong'));
+});
+
+test('洪七公三段傳功給三招，已傳的招不受火候限制', () => {
+  const s = createState(3);
+  const d = s.ds.find((x) => x.id === 'hero');
+  d.moves = d.moves.filter((m) => !['jianlong', 'feilong', 'kanglong'].includes(m));
+  teach(s, d, 'xianglong', TEACH.xp[2], artById('xianglong').techs.slice(0, 3));
+  assert.ok(artTier(d, 'xianglong') < 4);
+  assert.ok(d.moves.includes('jianlong'));
+  assert.ok(d.moves.includes('feilong'));
+  assert.ok(d.moves.includes('kanglong'));
 });
 
 test('六門絕活各自觸發；內力不夠就不發動；沒看破的獨孤仍然格擋', () => {
@@ -251,11 +282,31 @@ test('戰報與人物面板用一句話說主因，不列係數', () => {
   assert.doesNotMatch(expCause([], '被守關擋在山腳'), /×|\d/);
 });
 
-test('舊存檔讀入後是 2.6', () => {
+test('絕活期望進每秒傷害：降龍有內力才加重，辟邪先手攤進數下，七傷扣自己的氣血', () => {
+  const d = hero();
+  d.ng = 1;
+  d.arts.breath = { xp: 85, last: 0, bt1: true };
+  d.qi = 80;
+  d.arts.xianglong = { xp: 55, last: 0, bt1: true };
+  const wet = expectOf(d, MOVES.find((m) => m.id === 'jianlong'), 0);
+  assert.ok(Math.abs(wet.mul - 1.4) < 1e-9, wet.mul);
+  d.qi = 0;
+  assert.equal(expectOf(d, MOVES.find((m) => m.id === 'jianlong'), 0).mul, 1);
+  d.qi = 80;
+  d.arts.bixie = { xp: 55, last: 0, bt1: true };
+  const bx = expectOf(d, MOVES.find((m) => m.id === 'bx1'), 0);
+  assert.ok(Math.abs(bx.mul - (1 + (2 - 1) / EXPECT_SWINGS)) < 1e-9, bx.mul);
+  d.arts.qishangFist = { xp: 55, last: 0, bt1: true };
+  const qs = expectOf(d, MOVES.find((m) => m.id === 'qs1'), 0);
+  assert.ok(Math.abs(qs.mul - 1.2) < 1e-9, qs.mul);
+  assert.ok(qs.selfPerSec > 0);
+});
+
+test('舊存檔讀入後是 2.7', () => {
   const raw = readFileSync(new URL('./golden/saves/v2.4.json', import.meta.url), 'utf8');
   const r = load(raw);
   assert.equal(r.ok, true, r.err);
-  assert.equal(r.state.rules, '2.6');
+  assert.equal(r.state.rules, '2.7');
   assert.equal(r.state.rules, RULES_VERSION);
-  assert.ok(r.state.migSteps.includes('2.6'));
+  assert.ok(r.state.migSteps.includes('2.7'));
 });

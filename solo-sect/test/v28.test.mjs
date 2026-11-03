@@ -22,7 +22,7 @@ test('loop181 第三階：只靠吐納催動三品外功 ×0.78；第二階：�
 });
 test('loop181 第四階：陽內功逆催他派陰掌 ×0.65，練功累積內傷，打坐與醫館化解', () => {
   const [s, d] = fresh('gaibang'); give(d, 'huntianGong', 60); give(d, 'chousuiPalm', 30); d.focus = 'chousuiPalm';
-  assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 4, mul: 1 }); /* #405 退役：逆催仍記第四階，不再 ×0.65 */
+  assert.deepEqual(drive(d, 'chousuiPalm'), { tier: 4, mul: 0.65 }); /* #408：異屬逆催恢復 0.65，正宗的 1.25 仍不回來 */
   for (let i = 0; i < 4; i++) A.qiInjuryAdd28(s, d); assert.equal(d.qiInjury, 32); assert.equal(s.v28n.inj, 1); /* loop186 +8 */
   assert.ok(A.injuryMul28(d) < 0.91 && A.injuryMul28(d) >= 0.75); assert.ok(A.styleBadges24(d).includes('⚠️【經脈內傷】'));
   A.qiInjuryCure28(s, d, A.DRIVE28.med); assert.equal(d.qiInjury, 24); A.qiInjuryCure28(s, d, A.DRIVE28.heal); assert.equal(d.qiInjury, 0); assert.equal(s.v28n.cure, 1);

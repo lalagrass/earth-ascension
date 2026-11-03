@@ -124,15 +124,21 @@ function teachStep(s, H) {
   if (T.meals < T.stage + 1 || s.t - T.lastStageT < TEACH.gap) return;
   const st = pickStudent(s); if (!st) { if (!T.warned) { T.warned = true; log(s, '洪七公搖頭：「降龍十八掌講的是剛猛笨拙，你們這兒沒一個傻小子。」'); } return; }
   if (st.away) return;
-  T.stage++; T.lastStageT = s.t; T.student = st.id; teach(s, st, 'xianglong', TEACH.xp[T.stage - 1]); think(s, st, 'xiaTaught');
-  const mv = artById('xianglong').techs[T.stage - 1];
+  T.stage++; T.lastStageT = s.t; T.student = st.id;
+  const techs = artById('xianglong').techs;
+  teach(s, st, 'xianglong', TEACH.xp[T.stage - 1], techs.slice(0, T.stage)); think(s, st, 'xiaTaught');
+  const mv = techs[T.stage - 1];
   log(s, `【傳功 ${T.stage}/3】洪七公吃飽了，把降龍十八掌第 ${T.stage} 段傳給${st.name}——「${({ jianlong: '見龍在田', feilong: '飛龍在天', kanglong: '亢龍有悔' })[mv]}」！`);
   s.fx?.push({ kind: 'dragon', pos: [...(st.pos || [800, 450])], ttl: 2.2 });
   const hr = s.ds.find((d) => xidOf(s, d) === 'huangrong');
   if (hr && T.stage >= 2) { teach(s, hr, 'dagou', TEACH.xp[T.stage - 1]); log(s, `洪七公把打狗棒法${T.stage === 2 ? '起手' : '要訣'}傳給${hr.name}。`); }
   if (T.stage === 3) arcAdvance(s, 3, '降龍傳人');
 }
-export function teach(s, d, id, xp) { learnArt(d, id, s.t); const r = d.arts[id]; r.xp = Math.max(r.xp, xp); learnArt(d, id, s.t); }
+export function teach(s, d, id, xp, taught) {
+  learnArt(d, id, s.t); const r = d.arts[id]; r.xp = Math.max(r.xp, xp);
+  if (taught?.length) r.taught = [...new Set([...(r.taught || []), ...taught])];
+  learnArt(d, id, s.t);
+}
 function leaveTeacher(s) {
   const T = s.xia.teacher; s.xia.teacher = null; s.xia.done[T.id] = true; s.xia.left[T.id] = true;
   log(s, T.stage >= TEACH.stages ? '洪七公抹抹嘴：「吃人嘴軟，該教的都教了。」背起酒葫蘆，飄然下山。' : '洪七公等不到合意的傳人，留下一句「後會有期」便下山去了。');

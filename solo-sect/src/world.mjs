@@ -1,7 +1,7 @@
 import { ROUTE, NODES, ENEMIES, RAID_EVERY, DAY, ENDLESS, CAMPS, INSIGHT, EXP, MOVES, EXP_STYLES as STYLES, STYLE_TRAIT, EVADE, TRAITS, ARTS as ARTS_ALL, HS, DAO } from './data.mjs';
 import { log, affKey, resAdd } from './util.mjs';
 import { addMem } from './bonds.mjs';
-import { shieldHit, moveMul, cdMul, effectTier, artTier as effectTierOf, SPEC, zhenK, hasPoison, bestSpec, fengxueK, HARMONY24, stepDrive28, artNoParry, applyArtOn, expCause } from './arts.mjs';
+import { shieldHit, moveMul, cdMul, effectTier, artTier as effectTierOf, SPEC, zhenK, hasPoison, bestSpec, fengxueK, HARMONY24, stepDrive28, artNoParry, applyArtOn, expCause, expectOf, innerOnHit, innerOnGetHit } from './arts.mjs';
 import { mateBonus } from './economy.mjs';
 import { addWexin, awaken } from './hero.mjs';
 import { aff } from './social.mjs';
@@ -232,10 +232,31 @@ export const insightTier = (v) => { let t = null; for (const x of INSIGHT.tiers)
 export function codexRows(s) {
   return Object.entries(ENEMIES).map(([k, e]) => { const c = s.codex[k]; return c ? { k, name: e.name, kind: e.kind, weapon: insightTier(c.insight) ? e.weapon : '？', hp: c.insight >= 30 ? e.hp : '？', seen: c.seen, kills: c.kills, fled: c.fled, insight: c.insight, tier: insightTier(c.insight) || '初見' } : { k, name: '？？？', unknown: true }; });
 }
-// 出手力：最強招式每秒傷害（同狩獵的公式）
+// 出手力：最強招式每秒傷害（同狩獵的公式）。#408 會武與江湖挑戰再算進絕活期望，並扣掉傷己。
 export const LS_FIRST24 = ['gorge', 'cliff'];
+function moveDps(s, d, mv) {
+  return mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t) * (mv.aoe ? 1.3 : 1) / (mv.cd * (cdMul(d, mv.id, s.t)));
+}
+function bestSwing(s, d) {
+  let best = 0, mv = null;
+  for (const id of d.moves || []) {
+    const m = MOVES.find((x) => x.id === id);
+    if (!m || !(m.cd > 0)) continue;
+    const p = moveDps(s, d, m);
+    if (p > best) { best = p; mv = m; }
+  }
+  return { mv, dps: best };
+}
 export function dpsOf(s, d) {
-  let best = 0; for (const id of d.moves) { const mv = MOVES.find((m) => m.id === id); if (!mv) continue; const p = mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t) * (mv.aoe ? 1.3 : 1) / (mv.cd * (cdMul(d, mv.id, s.t))); /* loop157 v23 巡山也吃冷卻（含劍招） */ if (p > best) best = p; }
+  let best = 0;
+  for (const id of d.moves || []) {
+    const mv = MOVES.find((m) => m.id === id);
+    if (!mv || !(mv.cd > 0)) continue;
+    const base = moveDps(s, d, mv);
+    const ex = expectOf(d, mv, s.t);
+    const p = Math.max(0, base * ex.mul * (1 + ex.reflect * 0.5) - ex.selfPerSec);
+    if (p > best) best = p;
+  }
   return best;
 }
 // v1.5 召回（A2）：隊伍從目前距離往回走，戰利品照拿；返程仍走 returnPlan（含驚獸）
@@ -311,12 +332,48 @@ function fight(s, e, team, H, gate = false, scale = 1) {
   const bonus = (s.codex[e]?.insight || 0) >= INSIGHT.dmgAt ? 1 + INSIGHT.dmg : 1;
   const zk = zhenK(s, team), psn = hasPoison(s, team); if (psn) E.dmg *= 1 - SPEC.poisonWeak; /* loop151 陣法先手、毒術削敵 */
   { const fk = fengxueK(s, team), N = (s.v24n ??= {}); if (fk > 0) { E.cd *= 1 + HARMONY24.fengCd * fk; cd = E.cd; N.fengxue = (N.fengxue || 0) + 1; } if (zk > 0 && team.length >= 2) N.formation = (N.formation || 0) + 1; } /* loop161 Batch 2 奇門封穴、多人陣法觸發計數 */
+  const foe = { onOpened: false };
+  const swingAt = new Map();
+  const said = new Set();
+  const noteOnce = (key, line) => { if (!line || said.has(key)) return; said.add(key); (X.events ??= []).push(line); };
   while (hp > 0 && t < 90) {
     const alive = team.filter((d) => d.hp > 0); if (!alive.length) break;
-    t += 0.5; if (psn && t <= SPEC.poisonT) hp -= SPEC.poisonDps * (s.psnK24 || 1) * 0.5; const fs = (X.scout && t <= EXP.scoutT ? 1 + EXP.scoutBonus : 1) * (zk && t <= EXP.scoutT ? 1 + SPEC.zhenScout * zk : 1); for (const d of alive) { hp -= dpsOf(s, d) * 0.5 * bonus * fs * counterMul(daoOf(d), DAO.enemy[e]); if (d.dugu?.length) d.hp = Math.min(100, d.hp + HS.duguHeal); } // v1.2 九劍只攻不守：不格擋，但料敵機先回氣血 // v1.0 探路者先手 +20%
+    t += 0.5; if (psn && t <= SPEC.poisonT) hp -= SPEC.poisonDps * (s.psnK24 || 1) * 0.5; const fs = (X.scout && t <= EXP.scoutT ? 1 + EXP.scoutBonus : 1) * (zk && t <= EXP.scoutT ? 1 + SPEC.zhenScout * zk : 1);
+    for (const d of alive) {
+      const pick = bestSwing(s, d);
+      const ex = pick.mv ? expectOf(d, pick.mv, s.t) : null;
+      hp -= pick.dps * (ex?.mul || 1) * 0.5 * bonus * fs * counterMul(daoOf(d), DAO.enemy[e]); /* #408 連續傷害含絕活期望，不再整場只結一次 */
+      if (d.dugu?.length) d.hp = Math.min(100, d.hp + HS.duguHeal); // v1.2 九劍只攻不守：不格擋，但料敵機先回氣血
+      if (!pick.mv) continue;
+      const due = (swingAt.get(d.id) ?? 0) - 0.5;
+      if (due > 0) { swingAt.set(d.id, due); continue; }
+      const quiet = said.has(`${d.id}:hit`);
+      const on = applyArtOn(s, 'hit', d, foe, { power: 1, move: pick.mv.id, foeName: E.name, silent: quiet });
+      const inn = innerOnHit(s, d, foe, { power: on.power, move: pick.mv.id, fired: on.fired, silent: quiet });
+      noteOnce(`${d.id}:hit`, on.line || inn.line);
+      if (on.knock) cd += 0.35;
+      if (on.trip) cd += on.trip;
+      swingAt.set(d.id, pick.mv.cd * cdMul(d, pick.mv.id, s.t));
+    }
     if (gate && hp > E.hp * 0.4 && alive.some((d) => d.hp < 100 * EXP.gateBail)) { X.events.push(`見勢不妙，在${E.name}前及早撤退`); return { t, won: false, fled: false, bail: true }; } // v0.98 守關敵打不過：及早撤退
     if (!gate && hp > 0 && hp < E.hp * 0.35 && !fled) { fled = true; if (H.rand(s) < E.flee) { add(X.escaped, e, 1); seeEnemy(s, e, 'fled'); return { t, won: false, fled: true }; } }
-    cd -= 0.5; if (cd <= 0 && hp > 0) { cd = E.cd; const d = alive[Math.floor(H.rand(s) * alive.length)]; if (d.dugu?.length && H.rand(s) < Math.min(0.6, 0.2 + (s.codex[e]?.insight || 0) / 200)) { d.hp = Math.min(100, d.hp + 2); applyArtOn(s, 'dodge', d, null, { foeName: E.name }); continue; } const def = artNoParry(d) ? 1 : (1 - Math.min(0.4, (d.skills.agility + d.skills.strength) / 400)) * guardOf(d); d.hp = Math.max(0, d.hp - shieldHit(d, E.dmg * def * (d.takeMul || 1) * counterMul(DAO.enemy[e], daoOf(d)), s.t + t)); /* loop116 護體真氣；#404 不擋改讀武學資料 */ if (d.reflect) hp -= E.dmg * def * d.reflect; }
+    cd -= 0.5; if (cd <= 0 && hp > 0) {
+      cd = E.cd; const d = alive[Math.floor(H.rand(s) * alive.length)];
+      if (d.dugu?.length && H.rand(s) < Math.min(0.6, 0.2 + (s.codex[e]?.insight || 0) / 200)) {
+        d.hp = Math.min(100, d.hp + 2);
+        const dodge = applyArtOn(s, 'dodge', d, foe, { foeName: E.name, silent: said.has(`${d.id}:dodge`) });
+        noteOnce(`${d.id}:dodge`, dodge.line);
+        continue;
+      }
+      const def = artNoParry(d) ? 1 : (1 - Math.min(0.4, (d.skills.agility + d.skills.strength) / 400)) * guardOf(d);
+      const incoming = E.dmg * def * (d.takeMul || 1) * counterMul(DAO.enemy[e], daoOf(d));
+      const got = applyArtOn(s, 'gethit', d, foe, { dmg: incoming, foeName: E.name, silent: said.has(`${d.id}:get`) });
+      const innBack = innerOnGetHit(s, d, { silent: said.has(`${d.id}:get`) });
+      noteOnce(`${d.id}:get`, got.line || innBack.line);
+      d.hp = Math.max(0, d.hp - shieldHit(d, incoming, s.t + t)); /* loop116 護體真氣；#404 不擋改讀武學資料 */
+      if (got.reflect) hp -= incoming * got.reflect;
+      if (d.reflect) hp -= E.dmg * def * d.reflect;
+    }
   }
   if (hp <= 0) { const alive = team.filter((d) => d.hp > 0); const k = alive[Math.floor(H.rand(s) * alive.length)]; add(X.kills, e, 1); seeEnemy(s, e, 'kill', k); lootRoll(s, X.loot, E.loot, H); for (const d of alive) H.grow(s, d, 'style', 3, 'fight'); { const m = bestSpec(s, 'yishu', alive); if (m > 0) for (const d of alive) d.hp = Math.min(100, d.hp + SPEC.expHeal + Math.floor(m / 10)); } /* loop151 醫術戰後包紮 */ }
   return { t, won: hp <= 0, fled: false };

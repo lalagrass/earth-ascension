@@ -1,12 +1,13 @@
-/* #403 武學卡。化境數字來自 docs/systems/arts-ranking.md，是本遊戲自己的錨點。
-   五檔＝化境 × 0.40、0.58、0.74、0.88、1，四捨五入。沒點名的武學錨在 45，火候係數與舊的每階加成對齊。
-   本檔不讀外部資料、不進口訣。 */
+/* #403 武學卡。#408 起，招式傷害只留形狀，強度走扇形曲線。
+   曲線數字是本遊戲自己的。本檔不讀外部資料、不進口訣。 */
 
 export const CURVE_SHAPE = [0.40, 0.58, 0.74, 0.88, 1];
+/* 基準：常見段正中、化境時最強一招的每秒傷害。沿用原來的常見錨點，正規化之後它就是強度本身。 */
 export const CURVE_ANCHOR = 45;
-/* 舊出手： (1 + 0.1×階) ，圓滿與化境再 ×1.15。錨點曲線除掉這段，名功只多曲線比。 */
-const OLD = [1, 1.1, 1.2, 1.495, 1.61];
-const REF = CURVE_SHAPE.map((s) => Math.round(CURVE_ANCHOR * s));
+export const FAN_BASE = CURVE_ANCHOR;
+/* 入門、小成先不按名次拉開。大成起名次才進威力。 */
+export const FAN_F = [0, 0, 0.35, 0.7, 1];
+export const TIER_R = { 入門: 0.8, 常見: 1, 名門: 1.6, 一流: 2.4, 絕頂: 3.5 };
 /* 造詣上限沿用品階表。出手不讀這張表，所以它不是第二條威力梯子。 */
 const GROW_CAP = { 1: 20, 2: 35, 3: 55, 4: 75 };
 /* 前置比例：練功不得超過這些武學裡最高的熟練。劇情直接給的熟練不在這裡砍。 */
@@ -37,25 +38,42 @@ const ON = {
   qishangFist: { hit: { need: 2, selfHp: 6, dmg: 1.2, log: '七傷拳打實，自己的內腑也震了一下' } },
   dagou: { hit: { need: 2, qi: 4, trip: 1.2, log: '打狗棒一纏一絆，對手腳下亂了' } },
 };
+/* 名次段內的順序就是名功榜。排前面的略高，排後面的略低，上下各一成。沒點名的走常見正中，不做這層微調。
+   打狗棒法放一流段末，乾坤大挪移放名門段末：名聲在，傷害不是它們的本分。 */
+const FAN_BANDS = [
+  ['絕頂', ['kuihua', 'bixie', 'xianglong', 'dugu', 'jiuyang', 'taiji']],
+  ['一流', ['hama', 'xuantie', 'taijiSword', 'anran', 'yuxiaoSword', 'kongming', 'yunv', 'hanbingPalm', 'dagou']],
+  ['名門', ['zixia', 'linjiZhuang', 'yunvSword', 'wudangJiuyang', 'qishangFist', 'huifengSword', 'jiuyinClaw', 'lanhuaHand', 'kuangfengSword', 'huagongDafa', 'sanxianSword', 'luoyingPalm', 'sanyinClaw', 'shenxingStep', 'qiankun']],
+  ['常見', ['hunyuanPalm', 'shenghuoXinfa', 'biboXinfa', 'huntianGong', 'emeiJiuyang', 'huashanSword', 'jindingPalm', 'tiangangFinger', 'rouyunSword', 'mianPalm', 'tianluoPalm', 'chousuiPalm', 'yingzhuaHand', 'lianhuaPalm', 'fengmoStaff', 'emeiSword', 'qingfuStep', 'yunlongXinfa', 'baihuaFist', 'yunlongSword', 'xiaoyaoStep', 'zhaixingStep', 'stepEight', 'wudangFist', 'wavePalm', 'whirlLeg', 'wuhuBlade', 'shaolinStaff', 'tuinaHand', 'stepFeather', 'snowStep']],
+  ['入門', ['pishiFist', 'pushPalm', 'huashanXinfa', 'jianzongXinfa', 'wudangXinfa', 'basicFist', 'basicSword', 'sweepLeg', 'breath']],
+];
 
-const HUA = {
-  kuihua: 100, bixie: 100, xianglong: 98, dugu: 96, jiuyang: 96, taiji: 94, qiankun: 92, dagou: 92,
-  hama: 86, xuantie: 84, taijiSword: 84, anran: 82, yuxiaoSword: 82, kongming: 80, yunv: 80, hanbingPalm: 78,
-  zixia: 68, linjiZhuang: 66, yunvSword: 66, wudangJiuyang: 66, qishangFist: 64, huifengSword: 64, jiuyinClaw: 64, lanhuaHand: 62, kuangfengSword: 62, huagongDafa: 60, sanxianSword: 60, luoyingPalm: 58, sanyinClaw: 58, shenxingStep: 58,
-  hunyuanPalm: 48, shenghuoXinfa: 48, biboXinfa: 48, huntianGong: 48, emeiJiuyang: 48, huashanSword: 46, jindingPalm: 46, tiangangFinger: 46, rouyunSword: 46, mianPalm: 46, tianluoPalm: 46, chousuiPalm: 46, yingzhuaHand: 46, lianhuaPalm: 46, fengmoStaff: 46, emeiSword: 44, qingfuStep: 44, yunlongXinfa: 44, baihuaFist: 44, yunlongSword: 44, xiaoyaoStep: 44, zhaixingStep: 44, stepEight: 44, wudangFist: 42, wavePalm: 42, whirlLeg: 42, wuhuBlade: 42, shaolinStaff: 42, tuinaHand: 42, stepFeather: 42, snowStep: 40,
-  pishiFist: 28, pushPalm: 26, huashanXinfa: 26, jianzongXinfa: 26, wudangXinfa: 26, basicFist: 24, basicSword: 24, sweepLeg: 24, breath: 22,
-};
-
-export function curveOfPeak(peak) { return CURVE_SHAPE.map((s) => Math.round(peak * s)); }
+function fanRank(id) {
+  for (const [tier, ids] of FAN_BANDS) {
+    const i = ids.indexOf(id);
+    if (i < 0) continue;
+    const n = ids.length;
+    const u = n <= 1 ? 0 : 1 - (2 * i) / (n - 1);
+    return { fanTier: tier, fanR: TIER_R[tier] * (1 + 0.1 * u) };
+  }
+  return { fanTier: '常見', fanR: 1 };
+}
+/* mul(t) = 基準 × 共同形狀(t) × (1 + (R − 1) × f(t))。R 已含同段微調。 */
+export function fanMul(R, t) {
+  const i = Math.max(0, Math.min(4, t | 0));
+  return FAN_BASE * CURVE_SHAPE[i] * (1 + (R - 1) * FAN_F[i]);
+}
 export function curveMulOf(curve, t) {
   const i = Math.max(0, Math.min(4, t | 0));
-  const ref = REF[i] || 1;
-  return OLD[i] * ((curve?.[i] ?? ref) / ref);
+  const v = curve?.[i];
+  return Number.isFinite(v) ? v : fanMul(1, i);
 }
 export function stampCard(a) {
   if (!a?.id) return a;
-  const peak = Object.prototype.hasOwnProperty.call(HUA, a.id) ? HUA[a.id] : CURVE_ANCHOR;
-  a.curve = curveOfPeak(peak);
+  const rank = fanRank(a.id);
+  a.fanTier = rank.fanTier;
+  a.fanR = rank.fanR;
+  a.curve = [0, 1, 2, 3, 4].map((t) => fanMul(rank.fanR, t));
   const learn = { req: a.req || [], secret: !!a.secret };
   if (a.wuxingMin != null) learn.wuxingMin = a.wuxingMin;
   if (a.alt24) learn.alt24 = a.alt24;
