@@ -353,6 +353,7 @@ function fight(s, e, team, H, gate = false, scale = 1) {
       noteOnce(`${d.id}:hit`, on.line || inn.line);
       if (on.knock) cd += 0.35;
       if (on.trip) cd += on.trip;
+      if (on.disturb) cd += on.disturb;
       swingAt.set(d.id, pick.mv.cd * cdMul(d, pick.mv.id, s.t));
     }
     if (gate && hp > E.hp * 0.4 && alive.some((d) => d.hp < 100 * EXP.gateBail)) { X.events.push(`見勢不妙，在${E.name}前及早撤退`); return { t, won: false, fled: false, bail: true }; } // v0.98 守關敵打不過：及早撤退
@@ -370,9 +371,10 @@ function fight(s, e, team, H, gate = false, scale = 1) {
       const got = applyArtOn(s, 'gethit', d, foe, { dmg: incoming, foeName: E.name, silent: said.has(`${d.id}:get`) });
       const innBack = innerOnGetHit(s, d, { silent: said.has(`${d.id}:get`) });
       noteOnce(`${d.id}:get`, got.line || innBack.line);
-      d.hp = Math.max(0, d.hp - shieldHit(d, incoming, s.t + t)); /* loop116 護體真氣；#404 不擋改讀武學資料 */
+      const hit = got.dmg != null ? got.dmg : incoming; /* #410 乾坤挪移先減掉要吃的那一截 */
+      d.hp = Math.max(0, d.hp - shieldHit(d, hit, s.t + t)); /* loop116 護體真氣；#404 不擋改讀武學資料 */
       if (got.reflect) hp -= incoming * got.reflect;
-      if (d.reflect) hp -= E.dmg * def * d.reflect;
+      else if (d.reflect) hp -= E.dmg * def * d.reflect; /* 舊檔還留著的反震。新的乾坤已寫在 on，不要兩條一起算 */
     }
   }
   if (hp <= 0) { const alive = team.filter((d) => d.hp > 0); const k = alive[Math.floor(H.rand(s) * alive.length)]; add(X.kills, e, 1); seeEnemy(s, e, 'kill', k); lootRoll(s, X.loot, E.loot, H); for (const d of alive) H.grow(s, d, 'style', 3, 'fight'); { const m = bestSpec(s, 'yishu', alive); if (m > 0) for (const d of alive) d.hp = Math.min(100, d.hp + SPEC.expHeal + Math.floor(m / 10)); } /* loop151 醫術戰後包紮 */ }

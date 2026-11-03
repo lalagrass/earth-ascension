@@ -17,14 +17,16 @@ const CEILING = {
   xuanxuBlade: ['taiji'],
   qiankun: ['shenghuoXinfa', 'jiuyang'],
 };
-/* 大成、圓滿、化境各一招。太極劍、七傷拳資料裡只有兩招。獨孤九劍標了 forms，招式仍走觀破，這裡只記火候。 */
+/* 大成、圓滿、化境各一招。太極劍、七傷拳資料裡只有兩招。
+   獨孤九劍標了 forms，這張表只記觀破該落在哪一檔，unlockTechs 不發招。
+   總訣仍由第四晚傳授，不在表上。破劍等式約大成，破氣約圓滿，狂風卷地約化境。 */
 const SPECIALS = {
   xianglong: [{ tier: 2, move: 'jianlong' }, { tier: 3, move: 'feilong' }, { tier: 4, move: 'kanglong' }],
   bixie: [{ tier: 2, move: 'bx1' }, { tier: 3, move: 'bx2' }, { tier: 4, move: 'bx3' }],
   taijiSword: [{ tier: 2, move: 'tjs1' }, { tier: 3, move: 'tjs2' }],
   qishangFist: [{ tier: 2, move: 'qs1' }, { tier: 3, move: 'qs2' }],
   dagou: [{ tier: 2, move: 'banzi' }, { tier: 3, move: 'chuozi' }, { tier: 4, move: 'wugou' }],
-  dugu: [{ tier: 2, move: 'dg0' }, { tier: 3, move: 'dg1' }, { tier: 4, move: 'dg8' }],
+  dugu: [{ tier: 2, move: 'dg1' }, { tier: 3, move: 'dg8' }, { tier: 4, move: 'dg9' }],
 };
 /* #404 六門絕活。代價是耗內力、傷己、先手只有一下，或看破之後自己不擋。
    need 是火候階。數字是本遊戲自己定的，不是從別的程式抄來的。
@@ -39,6 +41,13 @@ const ON = {
   taijiSword: { gethit: { need: 2, reflect: 0.45, log: '太極劍走圓轉，把來力反震了回去' } },
   qishangFist: { hit: { need: 2, selfHp: 6, dmg: 1.2, log: '七傷拳打實，自己的內腑也震了一下' } },
   dagou: { hit: { need: 2, qi: 4, trip: 1.2, log: '打狗棒一纏一絆，對手腳下亂了' } },
+  /* #410 第二批。心情不在這裡乘：黯然的輕重已經在 jhMul。乾坤的反震取代舊的 d.reflect，不要兩條一起算。 */
+  xuantie: { hit: { need: 2, breakParry: true, dmg: 1.25, log: '重劍壓下，對手的招架被破開' } },
+  anran: { hit: { need: 2, mood: true, log: '心緒越沉，這一掌越重' } },
+  hama: { hit: { need: 2, charge: true, hpBelow: 50, qiKeep: 0.5, qi: 10, dmg: 1.5, log: '氣血見底，蓄起的掌力反擊出去' } },
+  qiankun: { gethit: { need: 0, reflect: 0.3, shift: 0.25, log: '乾坤一挪，來力從身旁過去，餘勢反震回去' } },
+  jiuyinClaw: { hit: { need: 2, breakGuard: true, dmg: 1.2, xia: -2, log: '爪勁透進護體，這一爪傷了自己的俠義' } },
+  yuxiaoSword: { hit: { need: 2, disturb: 1.2, log: '簫聲一繞，對手的節奏亂了' } },
 };
 /* 名次段內的順序就是名功榜。排前面的略高，排後面的略低，上下各一成。沒點名的走常見正中，不做這層微調。
    打狗棒法放一流段末，乾坤大挪移放名門段末：名聲在，傷害不是它們的本分。 */

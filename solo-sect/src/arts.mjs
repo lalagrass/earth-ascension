@@ -287,7 +287,7 @@ export function artNoParry(d) {
   return false;
 }
 export function applyArtOn(s, event, who, other, ctx = {}) {
-  const out = { power: ctx.power, dmg: ctx.dmg, knock: 0, trip: 0, reflect: 0, see: false, noParry: false, selfHp: 0, fired: null, line: '' };
+  const out = { power: ctx.power, dmg: ctx.dmg, knock: 0, trip: 0, reflect: 0, see: false, noParry: false, selfHp: 0, fired: null, line: '', breakParry: false, disturb: 0, breakGuard: false, shift: 0 };
   if (!who || !ART_ON_EVENTS.includes(event)) return out;
   const only = ctx.move ? artIdOfMove(ctx.move) : null;
   if (ctx.move && !only) return out;
@@ -302,16 +302,27 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     if (tier < (fx.need ?? 0)) continue;
     if (fx.seen && !(who.dugu?.length)) continue;
     if (fx.first && other?.onOpened) continue;
+    if (fx.charge) { /* #410 蓄勢：氣血沒見底就不耗內力 */
+      if ((who.hp ?? 100) >= (fx.hpBelow ?? 50)) continue;
+      const max = qiMax(who);
+      if (max > 0 && qiOf(who) < max * (fx.qiKeep ?? 0.5)) { out.dry = true; continue; }
+    }
     if (fx.qi && !spendQi(who, fx.qi)) { out.dry = true; continue; } /* #406 內力不夠：只記原因，傷害維持原樣 */
     if (fx.first && other) other.onOpened = true;
-    if (fx.dmg && out.power != null) out.power *= fx.dmg;
+    /* 心情只記身份。黯然的輕重在 jhMul，這裡再乘會算兩次。 */
+    if (fx.dmg && out.power != null && !fx.mood) out.power *= fx.dmg;
     if (fx.flurry && out.power != null) out.power *= fx.flurry;
     if (fx.knock) out.knock = fx.knock;
     if (fx.trip) out.trip = fx.trip;
     if (fx.reflect) out.reflect = fx.reflect;
     if (fx.see) out.see = true;
     if (fx.noParry) out.noParry = true;
+    if (fx.breakParry) out.breakParry = true;
+    if (fx.disturb) out.disturb = fx.disturb;
+    if (fx.breakGuard) out.breakGuard = true;
+    if (fx.shift && out.dmg != null) { out.shift = fx.shift; out.dmg *= 1 - fx.shift; }
     if (fx.selfHp) { who.hp = Math.max(0, (who.hp ?? 0) - fx.selfHp); out.selfHp = fx.selfHp; }
+    if (fx.xia && who.values) who.values.xia = Math.max(-50, Math.min(50, (who.values.xia || 0) + fx.xia));
     const line = `${who.name}${fx.log}`;
     out.fired = { art: id, event, log: line };
     out.line = line;
@@ -328,6 +339,12 @@ const BLOW = {
   taijiSword: ['本門劍一路練上去', '挨打時把來力反震回去'],
   qishangFist: ['明教一路練上去的拳', '打實了自己也傷'],
   dagou: ['丐幫傳下來的棒法', '纏住對手的腳'],
+  xuantie: ['斷臂換來的重劍', '壓開對手的招架'],
+  anran: ['心情換來的掌', '心緒越沉，掌力越重'],
+  hama: ['蓄起的掌力', '氣血見底才反擊'],
+  qiankun: ['秘道裡學來的挪移', '挨打時把來力挪開並反震'],
+  jiuyinClaw: ['陰損的爪功', '抓破護體，自己的俠義也傷'],
+  yuxiaoSword: ['島上的簫', '簫聲擾了對手的節奏'],
 };
 const BOUT = {
   xianglong: '這一陣打得開，是因為降龍震退。',
@@ -336,8 +353,14 @@ const BOUT = {
   taijiSword: '挨打時把來力反震了回去。',
   qishangFist: '拳打實了，自己也受傷。',
   dagou: '棒法纏住了對手的腳。',
+  xuantie: '重劍壓開了對手的招架。',
+  anran: '心緒越沉，掌力越重。',
+  hama: '氣血見底，蓄起的掌力反擊出去。',
+  qiankun: '來力被挪開，餘勢反震了回去。',
+  jiuyinClaw: '爪勁透進護體，自己的俠義也傷了。',
+  yuxiaoSword: '簫聲擾了對手的節奏。',
 };
-const BLOW_ORDER = ['xianglong', 'dugu', 'bixie', 'taijiSword', 'qishangFist', 'dagou'];
+const BLOW_ORDER = ['xianglong', 'dugu', 'bixie', 'taijiSword', 'qishangFist', 'dagou', 'xuantie', 'anran', 'hama', 'qiankun', 'jiuyinClaw', 'yuxiaoSword'];
 function readyBlows(d) {
   const out = [];
   for (const id of BLOW_ORDER) {
@@ -614,9 +637,12 @@ export const INNER_SPECS = {
   wudangJiuyang: { name: '純陽無極功', desc: '圓滿起，挨打化成少量內力與氣血' },
   huagongDafa: { name: '化功大法', desc: '小成起，打中吸走對方一點內力，這一擊不再疊別的內功被動' },
   huntianGong: { name: '混天氣功', desc: '小成起，降龍耗了內力仍震得開' },
-  yunv: { name: '玉女心經', desc: '巡獵時隊中另有玉女心經傳人，出手 +15%' },
-  hama: { name: '蛤蟆功', desc: '巡獵時氣血 <50 且內力 ≥50%：蓄勢一擊 ×1.5（耗 10 氣）' },
-  qiankun: { name: '乾坤大挪移', desc: '同蛤蟆功：氣血 <50 且內力 ≥50% 時蓄勢一擊 ×1.5（耗 10 氣）' } };
+  yunv: { name: '玉女心經', desc: '隊裡還有另一位玉女心經傳人時，出手更沉' },
+  hama: { name: '蛤蟆功', desc: '大成起，氣血見底且內力還夠時，蓄勢反擊' },
+  qiankun: { name: '乾坤大挪移', desc: '挨打時挪開一部分來力，餘勢反震回去。第一層是入門，練功不得高過聖火或九陽' },
+  biboXinfa: { name: '碧波心法', desc: '小成起，打中時收回一點瀉出的真氣' },
+  linjiZhuang: { name: '臨濟十二莊', desc: '挨打時按已開的莊托住氣血。莊數看火候，不按品階乘' },
+  emeiJiuyang: { name: '峨眉九陽功', desc: '小成起，打中時把這一招化進一點內力。不是九陽神功' } };
 export const innerSpecs = (d) => (!!d ? Object.keys(INNER_SPECS).filter((id) => d.arts?.[id]) : []);
 export const hasSpec = (d, id) => !!(!!d && d.arts?.[id]);
 export const ngTier = (d) => innerArts(d).reduce((m, id) => Math.max(m, artTier(d, id)), -1);
@@ -681,6 +707,14 @@ export const isSwordMove = (mv) => !!swordArtOf(mv);
    巡山的實際扣血用同一段 mul，氣血自損與反震留在出手當下，避免算兩次。
    辟邪的先手連刺攤進 EXPECT_SWINGS 下，不把第一下的全額再乘進每秒傷害。 */
 export const EXPECT_SWINGS = 8;
+/* 隊裡還有另一位玉女心經傳人。會武讀 expectOf，所以這份倍率要在這裡，不能只寫在巡獵。 */
+export const YUNV_PAIR = 1.15;
+const chargeReady = (d, fx) => {
+  if (!fx?.charge) return true;
+  if ((d.hp ?? 100) >= (fx.hpBelow ?? 50)) return false;
+  const max = qiMax(d);
+  return !(max > 0 && qiOf(d) < max * (fx.qiKeep ?? 0.5));
+};
 export function expectOf(d, mv, now = 0) {
   const out = { mul: 1, selfPerSec: 0, reflect: 0 };
   if (!d || !mv) return out;
@@ -691,7 +725,8 @@ export function expectOf(d, mv, now = 0) {
     const tier = d.arts?.[a.id] ? artTier(d, a.id) : 0;
     const fx = a.on?.hit;
     const ready = (spec) => spec && tier >= (spec.need ?? 0) && !(spec.seen && !(d.dugu?.length));
-    if (ready(fx) && !(fx.qi && qiOf(d) < fx.qi)) {
+    /* mood 不進期望。黯然已經在出手的 jhMul 裡。 */
+    if (ready(fx) && !fx.mood && chargeReady(d, fx) && !(fx.qi && qiOf(d) < fx.qi)) {
       if (fx.dmg) out.mul *= fx.dmg;
       if (fx.flurry) out.mul *= 1 + (fx.flurry - 1) / EXPECT_SWINGS;
       if (fx.selfHp && move?.cd) out.selfPerSec += fx.selfHp / (move.cd * cdMul(d, id, now));
@@ -700,6 +735,7 @@ export function expectOf(d, mv, now = 0) {
     if (ready(back) && back.reflect) out.reflect = back.reflect;
   }
   if (isSwordMove(id) && artTier(d, 'zixia') >= 1) out.mul *= 1.05;
+  if (d.yunvLink) out.mul *= YUNV_PAIR;
   return out;
 }
 /* loop201：v24 不再一律給劍法冷卻或傷害。非 v24 仍是冷卻 0.82、小成及以下 ×1.1。 */
@@ -1013,15 +1049,44 @@ export function innerOnHit(s, who, other, ctx = {}) {
       if (s && !ctx.silent) log(s, line, 'mid');
     }
   }
+  if (yunvLinked(s, who) && out.power != null) out.power *= YUNV_PAIR;
+  if (artTier(who, 'biboXinfa') >= 1 && noteQi(who, 1)) {
+    const line = `${who.name}碧波心法把瀉出的真氣收回來一點`;
+    out.bibo = true;
+    out.line = out.line ? `${out.line}；${line}` : line;
+    if (s && !ctx.silent) log(s, line, 'mid');
+  }
+  if (artTier(who, 'emeiJiuyang') >= 1 && noteQi(who, 1)) {
+    const line = `${who.name}峨眉九陽功把這一招化進內力`;
+    out.emei = true;
+    out.line = out.line ? `${out.line}；${line}` : line;
+    if (s && !ctx.silent) log(s, line, 'mid');
+  }
   return out;
 }
+const yunvLinked = (s, who) => !!(who?.arts?.yunv && s?.ds?.some((o) => o !== who && o.arts?.yunv && !o.away && (o.hp ?? 1) > 0));
+const noteQi = (who, n) => { const before = qiOf(who); addQi(who, n); return qiOf(who) > before; };
 export function innerOnGetHit(s, who, ctx = {}) {
-  if (!who || artTier(who, 'wudangJiuyang') < 3) return { qi: 0, hp: 0, line: '' };
-  addQi(who, 2);
-  who.hp = Math.min(100, (who.hp ?? 0) + 1);
-  const line = `${who.name}純陽無極功把來力化進氣血`;
-  if (s && !ctx.silent) log(s, line, 'mid');
-  return { qi: 2, hp: 1, line };
+  const out = { qi: 0, hp: 0, line: '' };
+  if (!who) return out;
+  if (artTier(who, 'wudangJiuyang') >= 3) {
+    addQi(who, 2);
+    who.hp = Math.min(100, (who.hp ?? 0) + 1);
+    out.qi = 2;
+    out.hp = 1;
+    out.line = `${who.name}純陽無極功把來力化進氣血`;
+    if (s && !ctx.silent) log(s, out.line, 'mid');
+  }
+  const n = zhuangOpen(who).length;
+  if (n > 0) {
+    who.hp = Math.min(100, (who.hp ?? 0) + n);
+    out.hp += n;
+    out.zhuang = n;
+    const line = `${who.name}臨濟十二莊托住這一擊`;
+    out.line = out.line ? `${out.line}；${line}` : line;
+    if (s && !ctx.silent) log(s, line, 'mid');
+  }
+  return out;
 }
 /* loop196：腳程與閃避用熟練最高的輕功身法催動係數 */
 export function stepDrive28(d) {

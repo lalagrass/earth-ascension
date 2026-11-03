@@ -4,12 +4,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { ARTS, MOVES, RULES_VERSION } from '../src/data.mjs';
-import { artById, artTier, moveMul, gainArt, learnArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29, blowWhy, boutWhy, expCause, expectOf, EXPECT_SWINGS, reqMissing, zhuangOpen, ponderLuoying, practiceLuoying } from '../src/arts.mjs';
+import { ARTS, MOVES, RULES_VERSION, DUGU } from '../src/data.mjs';
+import { artById, artTier, moveMul, gainArt, learnArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, qiMax, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29, blowWhy, boutWhy, expCause, expectOf, EXPECT_SWINGS, reqMissing, zhuangOpen, ponderLuoying, practiceLuoying, YUNV_PAIR } from '../src/arts.mjs';
 import { powerHtml } from '../src/panel-ui.mjs';
 import { curveMulOf } from '../src/artcard.mjs';
 import { createState, load } from '../src/sim.mjs';
-import { teach, TEACH } from '../src/wuxia.mjs';
+import { teach, TEACH, formReady } from '../src/wuxia.mjs';
+import { CARDS, jhStep } from '../src/jianghu.mjs';
 
 const hero = () => createState(3).ds.find((d) => d.id === 'hero');
 
@@ -408,6 +409,163 @@ test('太極爪與玄虛刀不得高過太極拳；臨濟按火候開莊；落�
   assert.deepEqual(artById('wulian').curve, artById('fengLei').curve);
   assert.equal(artById('tanzhi').fanTier, '常見');
   assert.equal(artById('guangmingGong').fanR, 1);
+});
+
+test('第二批絕活與內功被動各自觸發；乾坤只開第一層；觀破不靠火候發招', () => {
+  const s = createState(3);
+  const d = s.ds.find((x) => x.id === 'hero');
+  d.ng = 1;
+  d.arts.breath = { xp: 85, last: 0, bt1: true };
+  d.qi = qiMax(d);
+  d.hp = 80;
+  d.values = { ...(d.values || {}), xia: 20 };
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const foe = () => ({ hp: 40, pos: [10, 0], cool: 0 });
+  const mv = (id) => MOVES.find((m) => m.id === id);
+
+  d.arts.xuantie = { xp: 20, last: 0 };
+  assert.equal(applyArtOn(s, 'hit', d, foe(), { power: 10, move: 'xt1' }).fired, null);
+  d.arts.xuantie.xp = 55;
+  d.arts.xuantie.bt1 = true;
+  const xt = applyArtOn(s, 'hit', d, foe(), { power: 10, move: 'xt1' });
+  assert.equal(xt.fired.art, 'xuantie');
+  assert.equal(xt.breakParry, true);
+  assert.ok(near(xt.power, 10 * artById('xuantie').on.hit.dmg));
+  assert.ok(near(expectOf(d, mv('xt1')).mul, artById('xuantie').on.hit.dmg));
+  assert.match(blowWhy({ ...d, focus: 'xuantie', qi: d.qi, ng: 1, arts: { xuantie: d.arts.xuantie, breath: d.arts.breath } }), /招架/);
+
+  d.arts.anran = { xp: 55, last: 0, bt1: true };
+  d.mood = 10;
+  const ar = applyArtOn(s, 'hit', d, foe(), { power: 10, move: 'ar1' });
+  assert.equal(ar.fired.art, 'anran');
+  assert.equal(ar.power, 10);
+  assert.equal(expectOf(d, mv('ar1')).mul, 1);
+  jhStep(s, 0.25);
+  const low = d.jhMul;
+  d.mood = 90;
+  jhStep(s, 0.25);
+  assert.ok(low > d.jhMul);
+  assert.equal(expectOf(d, mv('ar1')).mul, 1);
+
+  d.hp = 80;
+  d.qi = qiMax(d);
+  d.arts.hama = { xp: 55, last: 0, bt1: true };
+  assert.equal(applyArtOn(s, 'hit', d, foe(), { power: 10, move: 'hm1' }).fired, null);
+  d.hp = 40;
+  const hm = applyArtOn(s, 'hit', d, foe(), { power: 10, move: 'hm1' });
+  assert.equal(hm.fired.art, 'hama');
+  assert.ok(near(hm.power, 15));
+  assert.ok(qiOf(d) < qiMax(d));
+  d.qi = qiMax(d);
+  assert.ok(near(expectOf(d, mv('hm1')).mul, 1.5));
+  d.hp = 80;
+  assert.equal(expectOf(d, mv('hm1')).mul, 1);
+
+  d.arts.qiankun = { xp: 1, last: 0 };
+  const qk = applyArtOn(s, 'gethit', d, foe(), { dmg: 20 });
+  const qfx = artById('qiankun').on.gethit;
+  assert.equal(qk.fired.art, 'qiankun');
+  assert.equal(qk.reflect, qfx.reflect);
+  assert.ok(near(qk.dmg, 20 * (1 - qfx.shift)));
+  assert.equal(d.reflect, undefined);
+  assert.equal(expectOf(d, mv('qk1')).reflect, qfx.reflect);
+
+  const x0 = d.values.xia;
+  d.arts.jiuyinClaw = { xp: 55, last: 0, bt1: true };
+  const jy = applyArtOn(s, 'hit', d, foe(), { power: 10, move: 'jy1' });
+  assert.equal(jy.fired.art, 'jiuyinClaw');
+  assert.equal(jy.breakGuard, true);
+  assert.ok(d.values.xia < x0);
+  assert.match(jy.line, /俠義/);
+  assert.doesNotMatch(jy.line, /×|\d/);
+  assert.ok(near(expectOf(d, mv('jy1')).mul, artById('jiuyinClaw').on.hit.dmg));
+
+  d.arts.yuxiaoSword = { xp: 55, last: 0, bt1: true };
+  const yx = applyArtOn(s, 'hit', d, foe(), { power: 10, move: 'yx1' });
+  assert.equal(yx.fired.art, 'yuxiaoSword');
+  assert.equal(yx.disturb, artById('yuxiaoSword').on.hit.disturb);
+  assert.equal(yx.trip, 0);
+  assert.match(yx.line, /簫/);
+  d.focus = 'yuxiaoSword';
+  assert.match(blowWhy(d), /簫/);
+  assert.doesNotMatch(blowWhy(d), /×|\d/);
+
+  const ally = s.ds.find((x) => x.id !== 'hero');
+  ally.arts ??= {};
+  ally.arts.yunv = { xp: 25, last: 0 };
+  ally.away = false;
+  ally.hp = 80;
+  d.arts.yunv = { xp: 55, last: 0, bt1: true };
+  const yv = innerOnHit(s, d, { qi: 0 }, { power: 10, move: 'yn1' });
+  assert.ok(near(yv.power, 10 * YUNV_PAIR));
+  d.yunvLink = true;
+  assert.ok(near(expectOf(d, mv('yn1')).mul, YUNV_PAIR));
+  delete ally.arts.yunv;
+  assert.equal(innerOnHit(s, d, { qi: 0 }, { power: 10, move: 'yn1' }).power, 10);
+
+  d.qi = 10;
+  d.arts.biboXinfa = { xp: 25, last: 0 };
+  const bb = innerOnHit(s, d, { qi: 0 }, { power: 10, move: 'fist' });
+  assert.equal(bb.bibo, true);
+  assert.ok(qiOf(d) > 10);
+  delete d.arts.biboXinfa;
+
+  d.qi = 10;
+  d.arts.emeiJiuyang = { xp: 12, last: 0 };
+  assert.equal(innerOnHit(s, d, { qi: 0 }, { power: 10, move: 'fist' }).emei, undefined);
+  d.arts.emeiJiuyang.xp = 25;
+  const em = innerOnHit(s, d, { qi: 0 }, { power: 10, move: 'fist' });
+  assert.equal(em.emei, true);
+  assert.match(em.line, /峨眉九陽/);
+
+  d.hp = 40;
+  d.arts.linjiZhuang = { xp: 55, last: 0, bt1: true };
+  const lj = innerOnGetHit(s, d);
+  assert.equal(lj.zhuang, zhuangOpen(d).length);
+  assert.equal(lj.zhuang, 3);
+  assert.equal(d.hp, 43);
+  assert.match(lj.line, /臨濟/);
+  assert.doesNotMatch(lj.line, /×|\d/);
+
+  const zw = createState(4, { kind: 'template', id: 'zhangwuji', askMajor: false });
+  const z = zw.ds.find((x) => x.id === 'hero');
+  CARDS.zwj3.opts[0][1](zw);
+  assert.equal(artTier(z, 'qiankun'), 0);
+  assert.ok(z.arts.qiankun.xp < 25);
+  assert.equal(z.reflect, undefined);
+  z.arts.jiuyang = { xp: 40, last: 0 };
+  z.focus = 'qiankun';
+  for (let i = 0; i < 30; i++) gainArt(z, 40, 1, 0, { raw: 40, src: 'train' });
+  assert.ok(z.arts.qiankun.xp > 1);
+  assert.ok(z.arts.qiankun.xp <= 40);
+  const held = z.arts.qiankun.xp;
+  z.arts.qiankun.xp = 56;
+  z.arts.qiankun.bt1 = true;
+  gainArt(z, 40, 1, 0, { raw: 40, src: 'train' });
+  assert.equal(z.arts.qiankun.xp, 56);
+  delete z.arts.jiuyang;
+  delete z.arts.shenghuoXinfa;
+  z.arts.qiankun.xp = held;
+  gainArt(z, 40, 1, 0, { raw: 40, src: 'train' });
+  assert.equal(z.arts.qiankun.xp, held);
+
+  const form = (id) => DUGU.find((f) => f.id === id);
+  assert.equal(form('dg0').need, 0);
+  assert.equal(form('dg1').need, 30);
+  assert.equal(form('dg7').need, 30);
+  assert.equal(form('dg6').need, 45);
+  assert.equal(form('dg8').need, 60);
+  assert.equal(form('dg9').need, 100);
+  d.dugu = ['dg0'];
+  d.arts.dugu = { xp: 100, last: 0, bt1: true, bt2: true };
+  s.codex.peakguard = { insight: 80 };
+  assert.equal(formReady(s, d, form('dg9')), false);
+  s.codex.peakguard.insight = 100;
+  assert.equal(formReady(s, d, form('dg9')), true);
+  const moves = d.moves.slice();
+  assert.deepEqual(unlockTechs(d, artById('dugu')), []);
+  assert.deepEqual(d.moves, moves);
+  assert.ok(!d.moves.includes('dg9'));
 });
 
 test('舊存檔讀入後是 2.7', () => {

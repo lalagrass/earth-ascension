@@ -426,13 +426,13 @@ ARTS.push(
   { id: 'hanbingPalm', name: '寒冰神掌', school: 'palm', grade: 3, tags: ['剛', '柔'], attr: 'yin', req: [], techs: ['hb1', 'hb2'], tech: 'hb1', secret: true, derived: true, v24: true, hint: '剛猛掌法與陰柔內功俱大成、拳掌造詣 ≥45 時合參推演', svg: [2, 1], mode: 'lian', qiScale: 0.40, isPublic: false, cats: { quanzhang: 0.7, neigong: 0.3 }},
   { id: 'liufengSword', name: '流風迴雪劍', school: 'palm', grade: 3, tags: ['快', '巧'], weapon: 'sword', attr: 'he', req: [], techs: ['lf1', 'lf2'], tech: 'lf1', secret: true, derived: true, v24: true, hint: '劍法與身法俱大成、劍法造詣 ≥45 時合參推演', svg: [2, 4], mode: 'da', qiScale: 0.08, isPublic: false, cats: { jianfa: 0.7, shenfa: 0.3 }},
   { id: 'fuguFinger', name: '腐骨抽髓指', school: 'palm', grade: 3, tags: ['巧'], attr: 'yin', req: [], techs: ['fg1', 'fg2'], tech: 'fg1', secret: true, derived: true, v24: true, hint: '點穴指法與毒術俱大成、拳掌造詣 ≥40 時合參推演', svg: [1, 4], mode: 'da', qiScale: 0.08, isPublic: false, cats: { quanzhang: 0.5, dushu: 0.5 }},
-  { id: 'qiankunBlade', name: '乾坤霸刀', school: 'palm', grade: 3, tags: ['剛'], weapon: 'blade', attr: 'yang', req: [], techs: ['qk1', 'qk2'], tech: 'qk1', secret: true, derived: true, v24: true, hint: '刀棍與內功俱大成、棍棒造詣 ≥45 時合參推演', svg: [0, 4], mode: 'da', qiScale: 0.08, isPublic: false, cats: { gunbang: 0.7, neigong: 0.3 }},
+  { id: 'qiankunBlade', name: '乾坤霸刀', school: 'palm', grade: 3, tags: ['剛'], weapon: 'blade', attr: 'yang', req: [], techs: ['qkb1', 'qkb2'], tech: 'qkb1', secret: true, derived: true, v24: true, hint: '刀棍與內功俱大成、棍棒造詣 ≥45 時合參推演', svg: [0, 4], mode: 'da', qiScale: 0.08, isPublic: false, cats: { gunbang: 0.7, neigong: 0.3 }},
 );
 MOVES.push(
   { id: 'hb1', skill: 'palm', name: '寒冰掌勁', req: 0, range: 50, cd: 1.6, dmg: 18, aoe: 0, color: '#9fd8f0' }, { id: 'hb2', skill: 'palm', name: '冰封千里', req: 0, range: 50, cd: 2.6, dmg: 22, aoe: 50, color: '#c8f0ff' },
   { id: 'lf1', skill: 'palm', name: '流風', req: 0, range: 58, cd: 0.9, dmg: 11, aoe: 0, color: '#d8e8f8' }, { id: 'lf2', skill: 'palm', name: '迴雪', req: 0, range: 58, cd: 1.3, dmg: 15, aoe: 30, color: '#f0f8ff' },
   { id: 'fg1', skill: 'palm', name: '腐骨', req: 0, range: 44, cd: 1.3, dmg: 15, aoe: 0, color: '#6a8a3a' }, { id: 'fg2', skill: 'palm', name: '抽髓', req: 0, range: 44, cd: 2.0, dmg: 20, aoe: 0, color: '#4a6a2a' },
-  { id: 'qk1', skill: 'palm', name: '霸刀斬', req: 0, range: 54, cd: 1.8, dmg: 20, aoe: 30, color: '#c86a3a' }, { id: 'qk2', skill: 'palm', name: '乾坤一擲', req: 0, range: 60, cd: 2.8, dmg: 26, aoe: 60, color: '#e88a4a' },
+  { id: 'qkb1', skill: 'palm', name: '霸刀斬', req: 0, range: 54, cd: 1.8, dmg: 20, aoe: 30, color: '#c86a3a' }, { id: 'qkb2', skill: 'palm', name: '乾坤一擲', req: 0, range: 60, cd: 2.8, dmg: 26, aoe: 60, color: '#e88a4a' },
 );
 /* loop168 v2.55：五大新門派專屬武學（t190 補齊 t189 截斷項）。classic＋v24、非 secret：本門弟子順 req 自悟／傳功；own24＝所屬門派，他派（含無名派）受 lockedArt24 保護，偷師為跨派管道。
    svg 第 8–10 列：各派只看得到本門（他派鎖住不畫），所以各派共用同一組格位 */
@@ -696,11 +696,13 @@ MOVES.push({ id: 'xx2', skill: 'palm', name: '腐屍毒', req: 0, range: 60, cd:
 // ---- v1.2 華山線：紫霞神功（九層）、辟邪劍法（捷徑）、獨孤九劍（九式，口傳不入秘笈） ----
 ARTS.push({ id: 'zixia', chiefOnly24: true, name: '紫霞神功', school: 'palm', grade: 3, tags: ['柔'], req: [], techs: [], secret: true, hint: '岳不群開局：開局即得第一層，之後在華山劇情中逐層修煉', classic: true, layered: true, mode: 'lian', qiScale: 0.40, isPublic: false, cats: { neigong: 1 }});
 ARTS.push({ id: 'bixie', name: '辟邪劍法', school: 'palm', grade: 4, tags: ['快'], req: [], techs: ['bx1', 'bx2', 'bx3'], tech: 'bx1', secret: true, hint: '岳不群開局：華山劇情中選擇練辟邪劍譜（自宮＋斷情）', classic: true, mode: 'da', qiScale: 0.08, isPublic: false, cats: { jianfa: 1 }});
-ARTS.push({ id: 'dugu', name: '獨孤九劍', school: 'palm', grade: 4, tags: ['巧'], req: [], techs: [], secret: true, hint: '華山劇情「思過崖的老人」：請教風清揚三晚，第四晚過招後得總訣；其餘各式要對該敵人有足夠觀破', classic: true, forms: true, mode: 'da', qiScale: 0.20, isPublic: false, cats: { jianfa: 1 }});
+ARTS.push({ id: 'dugu', name: '獨孤九劍', school: 'palm', grade: 4, tags: ['巧'], req: [], techs: [], secret: true, hint: '華山劇情「思過崖的老人」：請教風清揚三晚，第四晚過招後得總訣；其餘各式要對該敵人有足夠觀破。破劍一類約在熟其招式，破掌再深，破氣要到看破，狂風卷地還要過了看破', classic: true, forms: true, mode: 'da', qiScale: 0.20, isPublic: false, cats: { jianfa: 1 }});
 MOVES.push({ id: 'bx1', skill: 'palm', name: '流星飛墮', req: 0, range: 60, cd: 0.45, dmg: 9, aoe: 0, color: '#c03060', fx: 'bixie' });
 MOVES.push({ id: 'bx2', skill: 'palm', name: '群邪辟易', req: 0, range: 60, cd: 0.6, dmg: 13, aoe: 60, color: '#d04070', fx: 'bixie' });
 MOVES.push({ id: 'bx3', skill: 'palm', name: '鍾馗抉目', req: 0, range: 70, cd: 0.7, dmg: 18, aoe: 0, color: '#e05080', fx: 'bixie' });
-// 獨孤九劍九式：總訣式是根本；其餘八式要「見過」對應敵人（觀破值）才悟得出
+/* #410 觀破對齊五檔的形狀。數字是本遊戲的觀破值：30 熟其招式、60 看破。
+   破劍等式約大成，破掌在大成與圓滿之間，總訣仍是第四晚的根本，破氣約圓滿，狂風卷地約化境。
+   不把別處的等級抄進來。specials 不繞過 formReady。 */
 export const DUGU = [
   { id: 'dg0', name: '總訣式', foes: [], need: 0, dmg: 16 },
   { id: 'dg1', name: '破劍式', foes: ['hermit', 'swordtomb'], need: 30, dmg: 24 },
@@ -708,11 +710,12 @@ export const DUGU = [
   { id: 'dg3', name: '破槍式', foes: ['post'], need: 30, dmg: 22 },
   { id: 'dg4', name: '破鞭式', foes: ['chief'], need: 30, dmg: 22 },
   { id: 'dg5', name: '破索式', foes: ['python', 'pythonking'], need: 30, dmg: 26 },
-  { id: 'dg6', name: '破掌式', foes: ['ape', 'whiteape', 'bear'], need: 50, dmg: 28 },
-  { id: 'dg7', name: '破箭式', foes: ['archer'], need: 40, dmg: 24 },
+  { id: 'dg6', name: '破掌式', foes: ['ape', 'whiteape', 'bear'], need: 45, dmg: 28 },
+  { id: 'dg7', name: '破箭式', foes: ['archer'], need: 30, dmg: 24 },
   { id: 'dg8', name: '破氣式', foes: ['peakguard'], need: 60, dmg: 36, inner: true },
+  { id: 'dg9', name: '狂風卷地', foes: ['peakguard'], need: 100, dmg: 40, cd: 1.1, wide: true },
 ];
-for (const f of DUGU) MOVES.push({ id: f.id, skill: 'palm', name: f.name, req: 0, range: 80, cd: 1.0, dmg: f.dmg, aoe: f.id === 'dg0' || f.inner ? 70 : 0, color: '#9fb8d8', fx: 'dugu' });
+for (const f of DUGU) MOVES.push({ id: f.id, skill: 'palm', name: f.name, req: 0, range: 80, cd: f.cd || 1.0, dmg: f.dmg, aoe: f.id === 'dg0' || f.inner || f.wide ? 70 : 0, color: '#9fb8d8', fx: 'dugu' });
 export const HS = { zxNeed: 240, carvPer: 1, carvInsight: 6, cleanDays: 7, zxMoodMin: 60, zxDingMin: 4, zxPow: 0.03, zxGuard: 0.03, bixieDayPow: 0.04, bixieCap: 0.6, songEvery: 4, fengNights: 3, softP: 0.05, duguHeal: 1, secondWind: 0.5, windHp: 0.5 };
 
 // ---- v1.3 江湖群像（ROADMAP §13.8–13.11）：神鵰、倚天、鹿鼎、功夫 ----

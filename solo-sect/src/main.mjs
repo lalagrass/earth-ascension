@@ -314,7 +314,7 @@ function hsHtml() {
   if (X.bixie === 3) out.push('🩸 辟邪劍法（斷情）'); else if (X.bixie > 0) out.push(`📜 辟邪劍譜線 ${X.bixie}/3`);
   if (X.songN) out.push(`⚔ 嵩山派施壓 ${X.songN} 次`);
   if (X.feng) out.push(`🗻 思過崖：風清揚指點第 ${X.feng.night}/${HS.fengNights} 晚（傳人 ${S.ds.find((d) => d.id === X.feng.student)?.name || '—'}）`); else if (X.fengLeft) out.push('🗻 風清揚已入崖不出');
-  for (const d of S.ds) if (d.dugu?.length) out.push(`🗡 ${d.name}獨孤九劍 ${d.dugu.length}/9：${DUGU.map((f) => (d.dugu.includes(f.id) ? f.name : `<span style="opacity:.4">${f.name}</span>`)).join(' ')}`);
+  for (const d of S.ds) if (d.dugu?.length) out.push(`🗡 ${d.name}獨孤九劍 ${d.dugu.length}/${DUGU.length}：${DUGU.map((f) => (d.dugu.includes(f.id) ? f.name : `<span style="opacity:.4">${f.name}</span>`)).join(' ')}`);
   if (X.lhc !== 'stay') out.push(`令狐沖：${X.lhc === 'expelled' ? '已逐出師門' : '容下了'}`);
   return out.length ? `<div class="k"><b>華山線</b><br>${out.join('<br>')}</div>` : '';
 }

@@ -243,7 +243,7 @@ export function formReady(s, d, f) { if (f.id === 'dg0') return true; if (!(d.du
   return !f.inner || Object.keys(d.arts || {}).some((id) => artTier(d, id) >= 4) || zxLayer(d) >= 9; }
 export function learnDugu(s, d, id) {
   d.dugu ??= []; if (d.dugu.includes(id)) return false; d.dugu.push(id); learnArt(d, 'dugu', s.t); d.arts.dugu.xp = Math.min(100, d.dugu.length * 11 + 1); if (!d.moves.includes(id)) d.moves.push(id);
-  const f = DUGU.find((x) => x.id === id); if (id === 'dg0') think(s, d, 'duguGot'); log(s, `【獨孤九劍・${f.name}】${d.name}${id === 'dg0' ? '悟通總訣' : `見識過${f.foes.map((k) => k).length ? '對應的敵人' : ''}，悟出${f.name}`}（${d.dugu.length}/9）`);
+  const f = DUGU.find((x) => x.id === id); if (id === 'dg0') think(s, d, 'duguGot'); log(s, `【獨孤九劍・${f.name}】${d.name}${id === 'dg0' ? '悟通總訣' : `見識過${f.foes.map((k) => k).length ? '對應的敵人' : ''}，悟出${f.name}`}（${d.dugu.length}/${DUGU.length}）`);
   s.fx?.push({ kind: 'dugu', pos: [...(d.pos || [800, 450])], ttl: 1.6 });
   if (d.dugu.length >= 3) arc(s, 4, '九劍湊齊三式'); return true;
 }

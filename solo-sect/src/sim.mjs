@@ -540,6 +540,7 @@ function landOn(s, d, tgt, mv, power, foeName) {
   const inn = innerOnHit(s, d, tgt, { power: on.power ?? power, move: mv.id, fired: on.fired });
   if (on.knock) knockPos(d.pos, tgt.pos, on.knock);
   if (on.trip) { tgt.tripUntil = s.t + 2.5; tgt.cool = Math.max(tgt.cool || 0, on.trip); }
+  if (on.disturb) { tgt.tripUntil = s.t + 2.5; tgt.cool = Math.max(tgt.cool || 0, on.disturb); }
   noteWhy(s, on, inn); /* #406 只記主因，不改這一擊的傷害 */
   return inn.power ?? on.power ?? power;
 }
@@ -579,8 +580,7 @@ function huntStep(s, dt) {
     for (const mv of ms) {
       const lv = d.skills[mv.skill]; const reach = mv.range * (1 + lv / 200);
       const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
-      let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t);
-      power *= (hasSpec(d, 'yunv') && team.some((o) => o !== d && o.arts?.yunv) ? 1.15 : 1); if ((hasSpec(d, 'hama') || hasSpec(d, 'qiankun')) && d.hp < 50 && qiOf(d) >= qiMax(d) * 0.5 && spendQi(d, 10)) power *= 1.5; /* loop153 真氣出手、劍招、內功被動 */
+      let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t); /* #410 玉女合擊、蛤蟆蓄勢改走內功被動與 on，避免和出手再乘一次 */
       const ar = mv.aoe ? mv.aoe + qiAoeAdd(d, mv) : 0, hitList = mv.aoe ? live.filter((m) => dist(m.pos, tgt.pos) <= ar) : [tgt];
       power = landOn(s, d, tgt, mv, power, MONSTERS[tgt.k].name); /* #404 打中：降龍、辟邪、七傷、打狗、獨孤。範圍先圈定，再震退 */
       const psn = specM(d, 'dushu') > 0; for (const m of hitList) { m.hp -= power; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', d); applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: MONSTERS[m.k].name }); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
