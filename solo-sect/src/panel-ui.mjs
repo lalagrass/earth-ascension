@@ -109,6 +109,17 @@ export function artStatus(d, a, now = 0) {
   if (r.bt2 && r.xp >= 100 - 1e-6) return { st: 'full', text: '已練滿：再練只防荒疏，不加造詣' };
   return { st: 'acc', text: '正在累積' };
 }
+/* #413 N10：絕活徽章與 hover 說明 */
+export function artSpecialBadge(a) {
+  if (!a?.on) return '';
+  const entries = Object.entries(a.on);
+  if (!entries.length) return '';
+  const [evt, sp] = entries[0];
+  const word = sp.fx?.word || '絕';
+  const desc = sp.log || '特有絕活招式';
+  return `<span class="badge art-special-badge" title="${desc}" style="font-size:11px;padding:1px 4px;border-radius:3px;background:rgba(180,120,40,0.15);color:#b35900;border:1px solid rgba(180,120,40,0.3);margin-left:4px;cursor:help;">【絕活・${word}】</span>`;
+}
+
 export function artsGrowHtml(d, now = 0, grow = true) {
   const f = focusOf(d), mi = !!d ? mainInner28(d) : null, bi = !!d ? baseInner28(d) : null, rows = ARTS.filter((a) => d.arts?.[a.id] || (!a.secret && !(a.own24 && lockedArt24(d, a) && !chiefLocked24(d, a)) && fits(d, a) && (reqMissing(d, a).length || chiefLocked24(d, a)))).map((a) => {
     const r = d.arts?.[a.id], st = artStatus(d, a, now), t = r ? artTier(d, a.id) : -1, cats = Object.keys(ART_CAT[a.id] || {}).map((c) => CATS[c].name + (supOf(c, d) === 'none' ? '（尚未支援）' : '')).join('＋');
@@ -121,7 +132,8 @@ export function artsGrowHtml(d, now = 0, grow = true) {
     if (!!d && r && !isInner(a)) { const drv = innerDrive28(d, a); if (drv.tier === 1 && drv.root) why.push('根基加持'); else if (drv.tier === 3) why.push('內力虛浮'); else if (drv.tier === 4) why.push('⚠️異屬逆催'); } /* #405 催動不再乘品階，面板不列係數 */
     if (!!d && a.mode) why.push(modeTitle31(d, a));
     const lead = (!!d && r && mi?.id === a.id ? `★主運內功 ${a.grade || 1}品 ${bi?.id === a.id && t >= 2 ? '◆根基 ' : ''}` : '') + (f === a.id ? '◆主修 ' : '');
-    return `<div class="k artgrow" data-artst="${st.st}">${lead}${a.name}（${cats}）${r ? `・${d.pf && !r.guizhen ? `<span data-prof>${profLabel(r.xp)}</span>` : TIERS[t][1]} ${r.xp.toFixed(1)}${nxt}${moves}` : ''}・<b>${st.text}</b>${why.length ? `｜${why.join('；')}` : ''}</div>`; });
+    const spBadge = artSpecialBadge(a);
+    return `<div class="k artgrow" data-artst="${st.st}">${lead}${a.name}${spBadge}（${cats}）${r ? `・${d.pf && !r.guizhen ? `<span data-prof>${profLabel(r.xp)}</span>` : TIERS[t][1]} ${r.xp.toFixed(1)}${nxt}${moves}` : ''}・<b>${st.text}</b>${why.length ? `｜${why.join('；')}` : ''}</div>`; });
   const ng = !!d && mi && d.arts?.[mi.id] ? mastery(d, 'neigong') : 0;
   const Ap = !!d ? appetite31(d) : 0, pref = Ap > 0 ? '好打法' : Ap < 0 ? '好練法' : '中庸', bore = d?.bore31 || 0, sit = Ap && bore >= 6 - Math.abs(Ap) ? '坐不住' : '坐得住';
   const fa = f ? artById(f) : null, bits = fa ? artMulParts(d, fa).parts.ext.map((x) => x[0]).filter((n) => n === '投其所好' || n === '枯燥難耐' || n === '嫌其花俏' || n === '以技入道') : [];

@@ -286,6 +286,8 @@ export function artNoParry(d) {
   }
   return false;
 }
+export const LAST_SPECIAL_FX = new WeakMap();
+
 export function applyArtOn(s, event, who, other, ctx = {}) {
   const out = { power: ctx.power, dmg: ctx.dmg, knock: 0, trip: 0, reflect: 0, see: false, noParry: false, selfHp: 0, fired: null, line: '', breakParry: false, disturb: 0, breakGuard: false, shift: 0 };
   if (!who || !ART_ON_EVENTS.includes(event)) return out;
@@ -327,6 +329,25 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     out.fired = { art: id, event, log: line };
     out.line = line;
     if (s && !ctx.silent) log(s, line, 'mid');
+
+    /* #413 N10：地圖浮字與特效（限地圖戰鬥，巡山抽象戰鬥不推） */
+    if (s && Array.isArray(s.fx) && fx.fx && Array.isArray(who?.pos) && Array.isArray(other?.pos) && !who.away) {
+      const now = s.t || 0;
+      const last = LAST_SPECIAL_FX.get(who) ?? -999;
+      if (now - last >= 1.5) {
+        LAST_SPECIAL_FX.set(who, now);
+        s.fx.push({
+          kind: 'special',
+          word: fx.fx.word,
+          color: fx.fx.color,
+          special: fx.fx.kind,
+          pos: [...who.pos],
+          to: [...other.pos],
+          ttl: 1.0,
+          maxTtl: 1.0,
+        });
+      }
+    }
     break;
   }
   return out;

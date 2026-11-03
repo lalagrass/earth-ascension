@@ -30,27 +30,27 @@ const SPECIALS = {
    need 是火候階。數字是本遊戲自己定的，不是從別的程式抄來的。
    事件名：hit、block、dodge、crit、gethit、kill。沒寫到的事件就是不觸發。 */
 const ON = {
-  xianglong: { hit: { need: 2, qi: 16, dmg: 1.4, knock: 22, log: '使出降龍，掌力震得對手退了一步，真氣瀉出一大截' } },
+  xianglong: { hit: { need: 2, qi: 16, dmg: 1.4, knock: 22, log: '使出降龍，掌力震得對手退了一步，真氣瀉出一大截', fx: { word: '震', color: '#ffdc60', kind: 'dragon' } } },
   dugu: {
-    hit: { need: 0, seen: true, dmg: 1.2, log: '獨孤劍意看破破綻，劍勢直取，自己不收勢格擋' },
-    dodge: { need: 0, seen: true, see: true, noParry: true, log: '獨孤劍意料中來勢，側身讓過，這一招自己不擋' },
+    hit: { need: 0, seen: true, dmg: 1.2, log: '獨孤劍意看破破綻，劍勢直取，自己不收勢格擋', fx: { word: '破', color: '#cfe0f5', kind: 'dugu' } },
+    dodge: { need: 0, seen: true, see: true, noParry: true, log: '獨孤劍意料中來勢，側身讓過，這一招自己不擋', fx: { word: '破', color: '#cfe0f5', kind: 'dugu' } },
   },
-  bixie: { hit: { need: 2, qi: 6, first: true, flurry: 2, log: '快劍先至，連刺數劍' } },
-  taijiSword: { gethit: { need: 2, reflect: 0.45, log: '太極劍走圓轉，把來力反震了回去' } },
-  qishangFist: { hit: { need: 2, selfHp: 6, dmg: 1.2, log: '七傷拳打實，自己的內腑也震了一下' } },
-  dagou: { hit: { need: 2, qi: 4, trip: 1.2, log: '打狗棒一纏一絆，對手腳下亂了' } },
+  bixie: { hit: { need: 2, qi: 6, first: true, flurry: 2, log: '快劍先至，連刺數劍', fx: { word: '刺', color: '#d04070', kind: 'bixie' } } },
+  taijiSword: { gethit: { need: 2, reflect: 0.45, log: '太極劍走圓轉，把來力反震了回去', fx: { word: '借', color: '#a0c0e0', kind: 'ring' } } },
+  qishangFist: { hit: { need: 2, selfHp: 6, dmg: 1.2, log: '七傷拳打實，自己的內腑也震了一下', fx: { word: '傷', color: '#e05030', kind: 'heavy' } } },
+  dagou: { hit: { need: 2, qi: 4, trip: 1.2, log: '打狗棒一纏一絆，對手腳下亂了', fx: { word: '絆', color: '#4fc47a', kind: 'staff' } } },
   /* #410 第二批。心情不在這裡乘：黯然的輕重已經在 jhMul。乾坤的反震取代舊的 d.reflect，不要兩條一起算。 */
-  xuantie: { hit: { need: 2, breakParry: true, dmg: 1.25, log: '重劍壓下，對手的招架被破開' } },
-  anran: { hit: { need: 2, mood: true, log: '心緒越沉，這一掌越重' } },
-  hama: { hit: { need: 2, charge: true, hpBelow: 50, qiKeep: 0.5, qi: 10, dmg: 1.5, log: '氣血見底，蓄起的掌力反擊出去' } },
-  qiankun: { gethit: { need: 0, reflect: 0.3, shift: 0.25, log: '乾坤一挪，來力從身旁過去，餘勢反震回去' } },
-  jiuyinClaw: { hit: { need: 2, breakGuard: true, dmg: 1.2, xia: -2, log: '爪勁透進護體，這一爪傷了自己的俠義' } },
-  yuxiaoSword: { hit: { need: 2, disturb: 1.2, log: '簫聲一繞，對手的節奏亂了' } },
+  xuantie: { hit: { need: 2, breakParry: true, dmg: 1.25, log: '重劍壓下，對手的招架被破開', fx: { word: '壓', color: '#555555', kind: 'heavy' } } },
+  anran: { hit: { need: 2, mood: true, log: '心緒越沉，這一掌越重', fx: { word: '意', color: '#6888a8', kind: 'tear' } } },
+  hama: { hit: { need: 2, charge: true, hpBelow: 50, qiKeep: 0.5, qi: 10, dmg: 1.5, log: '氣血見底，蓄起的掌力反擊出去', fx: { word: '蓄', color: '#55aa44', kind: 'toad' } } },
+  qiankun: { gethit: { need: 0, reflect: 0.3, shift: 0.25, log: '乾坤一挪，來力從身旁過去，餘勢反震回去', fx: { word: '移', color: '#d4af37', kind: 'ring' } } },
+  jiuyinClaw: { hit: { need: 2, breakGuard: true, dmg: 1.2, xia: -2, log: '爪勁透進護體，這一爪傷了自己的俠義', fx: { word: '爪', color: '#882244', kind: 'needle' } } },
+  yuxiaoSword: { hit: { need: 2, disturb: 1.2, log: '簫聲一繞，對手的節奏亂了', fx: { word: '律', color: '#44aa99', kind: 'ring' } } },
   /* #411 豬籠城寨系列。依電影勝負：如來壓軸絕頂、譚腿先發踢亂、鐵線破招架、八卦逼退。 */
-  rulai: { hit: { need: 2, qi: 20, dmg: 1.6, knock: 30, log: '萬佛朝宗自天而降，掌力雄渾震退對手' } },
-  tantui: { hit: { need: 2, first: true, trip: 1.3, log: '十二路譚腿先發制人，腿風掃亂對手下盤' } },
-  tiexian: { hit: { need: 2, breakParry: true, dmg: 1.25, log: '鐵線拳雙臂硬開硬進，破開招架' } },
-  bagua: { hit: { need: 2, qi: 4, knock: 16, log: '八卦棍長兵點刺，將對手逼退一段' } },
+  rulai: { hit: { need: 2, qi: 20, dmg: 1.6, knock: 30, log: '萬佛朝宗自天而降，掌力雄渾震退對手', fx: { word: '神', color: '#ffd700', kind: 'dragon' } } },
+  tantui: { hit: { need: 2, first: true, trip: 1.3, log: '十二路譚腿先發制人，腿風掃亂對手下盤', fx: { word: '踢', color: '#c08040', kind: 'strike' } } },
+  tiexian: { hit: { need: 2, breakParry: true, dmg: 1.25, log: '鐵線拳雙臂硬開硬進，破開招架', fx: { word: '硬', color: '#a0a0a0', kind: 'heavy' } } },
+  bagua: { hit: { need: 2, qi: 4, knock: 16, log: '八卦棍長兵點刺，將對手逼退一段', fx: { word: '刺', color: '#b07040', kind: 'staff' } } },
 };
 /* 名次段內的順序就是名功榜。排前面的略高，排後面的略低，上下各一成。沒點名的走常見正中，不做這層微調。
    打狗棒法放一流段末，乾坤大挪移放名門段末：名聲在，傷害不是它們的本分。

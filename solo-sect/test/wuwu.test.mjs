@@ -655,3 +655,38 @@ test('N9：落敗後適應係數下降，數日後回到 1', () => {
   }
   assert.equal(X.adapt, 1, `數日後回到 1: adapt=${X.adapt}`);
 });
+
+test('N10：觸發時 s.fx 多一筆；冷卻內不重複觸發；巡山抽象戰鬥不推', () => {
+  const s = createState(7);
+  s.fx = [];
+  const d = s.ds.find((x) => x.id === 'hero');
+  d.pos = [100, 200];
+  d.away = false;
+  d.arts.xianglong = { xp: 55, last: 0, bt1: true };
+  d.arts.huntianGong = { xp: 85, last: 0, bt1: true, bt2: true };
+  d.qi = 100;
+  const foe = { name: '野豬', pos: [110, 200] };
+
+  s.t = 10;
+  const r1 = applyArtOn(s, 'hit', d, foe, { power: 10, move: 'jianlong' });
+  assert.ok(r1.fired);
+  assert.equal(s.fx.length, 1);
+  assert.equal(s.fx[0].kind, 'special');
+  assert.equal(s.fx[0].word, '震');
+
+  s.t = 10.5;
+  applyArtOn(s, 'hit', d, foe, { power: 10, move: 'jianlong' });
+  assert.equal(s.fx.length, 1, '冷卻內不重複觸發 s.fx');
+
+  s.t = 12.0;
+  applyArtOn(s, 'hit', d, foe, { power: 10, move: 'jianlong' });
+  assert.equal(s.fx.length, 2, '冷卻後再次觸發');
+
+  s.t = 14.0;
+  d.away = true;
+  applyArtOn(s, 'hit', d, foe, { power: 10, move: 'jianlong' });
+  assert.equal(s.fx.length, 2, '遠行/抽象戰鬥不推 s.fx');
+  d.away = false;
+  applyArtOn(s, 'hit', d, { name: '抽象野狼' }, { power: 10, move: 'jianlong' });
+  assert.equal(s.fx.length, 2, '對手不在地圖上不推 s.fx');
+});

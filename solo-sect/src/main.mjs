@@ -98,6 +98,29 @@ function draw() {
   if (S.xia?.teacher) { const [x, y] = [NODES.kitchen[0] + 60, NODES.kitchen[1] + 30], im = IMG.hero; g.save(); if (im?.width) { g.filter = 'sepia(0.8) brightness(0.8)'; g.drawImage(im, x - 22, y - 56, 44, 56); g.filter = 'none'; } g.fillStyle = '#b5651d'; g.beginPath(); g.ellipse(x + 16, y - 30, 7, 10, 0, 0, 7); g.fill(); g.font = 'bold 15px sans-serif'; g.textAlign = 'center'; g.lineWidth = 4; g.strokeStyle = '#fff'; g.strokeText(`洪七公 🍶 傳功${S.xia.teacher.stage}/3`, x, y - 62); g.fillStyle = '#6a3b10'; g.fillText(`洪七公 🍶 傳功${S.xia.teacher.stage}/3`, x, y - 62); g.restore(); }
   for (const f of S.fx) {
     if (f.kind === 'shake') continue;
+    // #413 N10：絕活地圖浮字與光環閃爍
+    if (f.kind === 'special') {
+      const c = f.pos, L = f.maxTtl || 1.0, k = 1 - f.ttl / L;
+      g.save();
+      // 光環閃爍
+      g.beginPath();
+      g.arc(c[0], c[1] - 25, 18 + k * 16, 0, 7);
+      g.fillStyle = f.color || '#f2c23a';
+      g.globalAlpha = Math.max(0, f.ttl * 0.35);
+      g.fill();
+      // 頭上浮字（RimWorld mote）
+      g.globalAlpha = Math.max(0, Math.min(1, f.ttl * 1.8));
+      g.font = 'bold 26px serif';
+      g.textAlign = 'center';
+      g.lineWidth = 4;
+      g.strokeStyle = '#ffffff';
+      const yRise = c[1] - 50 - k * 35;
+      g.strokeText(f.word, c[0], yRise);
+      g.fillStyle = f.color || '#a0281e';
+      g.fillText(f.word, c[0], yRise);
+      g.restore();
+      continue;
+    }
     // v1.1 招牌武學地圖特效：金龍盤旋／青竹棒影
     if (f.kind === 'dragon' || (f.kind === 'move' && f.mfx === 'dragon')) { const c = f.to || f.pos, L = f.kind === 'dragon' ? 2.2 : 1.0, k = 1 - f.ttl / L; g.save(); g.globalAlpha = Math.min(1, f.ttl * 1.5); g.strokeStyle = '#f2c23a'; g.lineWidth = 9; g.lineCap = 'round'; g.shadowColor = '#ffdc60'; g.shadowBlur = 18; g.beginPath(); for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI * 3 + k * 6, r = 20 + i * 1.6; const x = c[0] + Math.cos(a) * r, y = c[1] - 30 + Math.sin(a) * r * 0.45 - i * 0.8; i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); g.fillStyle = '#ffe680'; g.font = 'bold 30px serif'; g.textAlign = 'center'; g.fillText('龍', c[0], c[1] - 80); g.restore(); if (f.kind === 'dragon') continue; }
     // v1.2 華山線特效：紫霞氣旋、九劍淡色劍痕（無招不浮字）、辟邪鬼魅殘影、紫氣劍刃
