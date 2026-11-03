@@ -1,4 +1,5 @@
-import { chiefLocked24, growEnsure, settleGrowth, artById, artTier, learnArt, curCap, reqMissing, topTier } from './arts.mjs';
+import { chiefLocked24, growEnsure, settleGrowth, artById, artTier, learnArt, curCap, reqMissing, topTier, gated, autoBranch } from './arts.mjs';
+import { fanRank, CEILING, SPECIALS, BRANCHES } from './artcard.mjs';
 import { ARTS, TRAITS, DAY } from './data.mjs';
 import { aff, relAdd } from './social.mjs';
 import { log, resAdd } from './util.mjs';
@@ -61,6 +62,152 @@ export function apprCands(s, m) { if (!isSenior(m) || m.away || pupilsOf(s, m).l
 export function takePupil(s, m, d) { if (!d || d.master || !isSenior(m) || pupilsOf(s, m).length >= APPR.max || d.role !== 'outer') return false; d.master = m.id; relAdd(s, m, d, 4); addMem(s, m, d, 'apprentice'); log(s, `【收徒】${m.name}收${d.name}為徒`); return true; }
 export function apprDaily(s) { for (const m of s.ds) { const c = apprCands(s, m).sort((x, y) => aff(s, m, y) - aff(s, m, x))[0]; if (c) takePupil(s, m, c); } }
 export const apprMul = (s, d) => { const m = d.master && s.ds.find((o) => o.id === d.master); return m && !m.away ? APPR.trainMul : 1; };
+
+// ---- 名功門內師徒傳授（#415 N12）----
+// 傳者達圓滿以上；受者為徒或好感 ≥60、滿足前置與屬性門檻、層級未滿傳者−1；
+// 每日結算花半日傳授一段，傳者一次一人。
+export function isFamousArt(a) {
+  if (!a) return false;
+  const art = typeof a === 'string' ? artById(a) : a;
+  if (!art) return false;
+  if (art.secret) return true;
+  const tier = fanRank(art.id).fanTier;
+  if (['絕頂', '一流', '名門'].includes(tier)) return true;
+  return Boolean(art.on || SPECIALS[art.id]);
+}
+
+export function canTeachArt(s, m, d, artId) {
+  if (!m || !d || m === d || m.removed || d.removed) return false;
+  if (m.away || d.away) return false;
+  if ((m.hp ?? 100) <= 25 || (d.hp ?? 100) <= 25) return false;
+  if (m.role === 'laborer' || d.role === 'laborer') return false;
+  const a = typeof artId === 'string' ? artById(artId) : artId;
+  if (!a || !isFamousArt(a)) return false;
+
+  // 傳者：名功達到圓滿以上 (artTier >= 3)
+  const mTier = artTier(m, a.id);
+  if (mTier < 3) return false;
+
+  // 受者：與傳者為師徒關係，或好感 60 以上
+  const isAppr = d.master === m.id;
+  const highAff = (aff(s, m, d) >= 60 || aff(s, d, m) >= 60);
+  if (!isAppr && !highAff) return false;
+
+  // 滿足該武學的基本屬性門檻（悟性等）
+  if (gated(d, a)) return false;
+
+  // 滿足前置武學門檻
+  if (reqMissing(d, a).length > 0) return false;
+
+  // 滿足上限依賴（CEILING，如乾坤大挪移需聖火/九陽）
+  const ceilingArts = a.learn?.ceiling?.arts || CEILING[a.id];
+  if (ceilingArts?.length) {
+    const maxC = Math.max(-1, ...ceilingArts.map((cId) => artTier(d, cId)));
+    if (maxC < 0) return false;
+    const curDTier = d.arts?.[a.id] ? artTier(d, a.id) : -1;
+    if (curDTier + 1 > maxC) return false;
+  }
+
+  // 上限：受者能學到的最高層級是傳者層級 − 1
+  const maxTier = mTier - 1;
+  const dTier = d.arts?.[a.id] ? artTier(d, a.id) : -1;
+  if (dTier >= maxTier) return false;
+
+  // 傳者一次只能傳一人
+  if (m.teaching && m.teaching.pupil !== d.id) return false;
+  // 受者同時只能接受一人傳授
+  if (s?.ds?.some((o) => o !== m && o.teaching?.pupil === d.id)) return false;
+
+  return true;
+}
+
+export function startTeachArt(s, m, d, artId) {
+  if (!canTeachArt(s, m, d, artId)) return false;
+  m.teaching = { pupil: d.id, art: typeof artId === 'string' ? artId : artId.id };
+  return true;
+}
+
+export function stopTeachArt(s, m) {
+  if (!m || !m.teaching) return false;
+  m.teaching = null;
+  return true;
+}
+
+export function teachCandidates(s, m) {
+  if (!m || m.away || m.removed || (m.hp ?? 100) <= 25 || m.role === 'laborer') return [];
+  const arts = ARTS.filter((a) => isFamousArt(a) && artTier(m, a.id) >= 3);
+  if (!arts.length) return [];
+  const cands = [];
+  for (const d of s.ds) {
+    if (d === m || d.away || d.removed || (d.hp ?? 100) <= 25 || d.role === 'laborer') continue;
+    for (const a of arts) {
+      if (canTeachArt(s, m, d, a.id)) {
+        cands.push({ d, art: a.id });
+      }
+    }
+  }
+  cands.sort((x, y) => (y.d.master === m.id) - (x.d.master === m.id) || aff(s, m, y.d) - aff(s, m, x.d));
+  return cands;
+}
+
+export function teachStage(s, m, d, artId) {
+  if (!canTeachArt(s, m, d, artId)) return false;
+  const a = typeof artId === 'string' ? artById(artId) : artId;
+  const curTier = d.arts?.[a.id] ? artTier(d, a.id) : -1;
+  const targetTier = curTier + 1;
+  const stage = targetTier + 1;
+
+  learnArt(d, a.id, s.t);
+  const r = d.arts[a.id];
+  const TARGET_XP = [1, 26, 56, 86];
+  r.xp = Math.max(r.xp || 0, TARGET_XP[targetTier]);
+  if (targetTier >= 2) {
+    r.bt1 = true;
+    if (BRANCHES[a.id] && !r.branch) r.branch = autoBranch(d, a.id);
+  }
+  if (targetTier >= 3) {
+    r.bt2 = true;
+  }
+  growEnsure(d);
+  settleGrowth(d, a, r, { src: 'pass' });
+
+  // 師父花半日傳授
+  m.reason = `傳授${d.name}武藝`;
+  m.teachCool = DAY / 2;
+
+  // 日誌
+  log(s, `【傳功】${m.name}傳${d.name}《${a.name}》第 ${stage} 段`);
+  relAdd(s, m, d, 2);
+  addMem(s, m, d, 'pass', a.name);
+
+  const mTier = artTier(m, a.id);
+  if (targetTier >= mTier - 1) {
+    m.teaching = null;
+  } else {
+    m.teaching = { pupil: d.id, art: a.id };
+  }
+  return true;
+}
+
+export function teachDaily(s) {
+  for (const m of s.ds) {
+    if (!m.teaching) {
+      const cand = teachCandidates(s, m)[0];
+      if (cand) {
+        m.teaching = { pupil: cand.d.id, art: cand.art };
+      }
+    }
+    if (m.teaching) {
+      const { pupil, art } = m.teaching;
+      const d = s.ds.find((x) => x.id === pupil);
+      if (d && canTeachArt(s, m, d, art)) {
+        teachStage(s, m, d, art);
+      } else {
+        m.teaching = null;
+      }
+    }
+  }
+}
 
 // ==== （原 clique.mjs）====
 // loop20 好友圈成派：彼此好感都 ≥ CLQ.aff 的一群（≥2 人、每人至多一派）結成「同門小派」。

@@ -9,7 +9,7 @@ export const TIER_R = { 入門: 0.8, 常見: 1, 名門: 1.6, 一流: 2.4, 絕頂
 /* 造詣上限沿用品階表。出手不讀這張表，所以它不是第二條威力梯子。 */
 const GROW_CAP = { 1: 20, 2: 35, 3: 55, 4: 75 };
 /* 前置比例：練功不得超過這些武學裡最高的熟練。劇情直接給的熟練不在這裡砍。 */
-const CEILING = {
+export const CEILING = {
   taijiSword: ['taiji'],
   taijiClaw: ['taiji'],
   xuanxuBlade: ['taiji'],
@@ -18,7 +18,7 @@ const CEILING = {
 /* 大成、圓滿、化境各一招。太極劍、七傷拳資料裡只有兩招。
    獨孤九劍標了 forms，這張表只記觀破該落在哪一檔，unlockTechs 不發招。
    總訣仍由第四晚傳授，不在表上。破劍等式約大成，破氣約圓滿，狂風卷地約化境。 */
-const SPECIALS = {
+export const SPECIALS = {
   xianglong: [{ tier: 2, move: 'jianlong' }, { tier: 3, move: 'feilong' }, { tier: 4, move: 'kanglong' }],
   bixie: [{ tier: 2, move: 'bx1' }, { tier: 3, move: 'bx2' }, { tier: 4, move: 'bx3' }],
   taijiSword: [{ tier: 2, move: 'tjs1' }, { tier: 3, move: 'tjs2' }],

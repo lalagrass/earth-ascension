@@ -42,7 +42,16 @@ export function statusOf(s, d) {
   const next = step ? `${step}（${actName(d.task.act)}的下一道工序）` : d.order ? `繼續「${actName(d.order)}」（指派中）` : d.task ? `做完「${actName(d.task.act)}」再重新評估` : '馬上重新評估要做什麼';
   return { layer, now, why, next };
 }
-export const statusHtml = (s, d) => { const x = statusOf(s, d); return `<div class="status"><div><b>現在</b>：${x.now} <span class="tag">${x.layer}</span></div><div><b>原因</b>：${x.why}</div><div><b>下一步</b>：${x.next}</div></div>`; };
+/* #415 N12：師徒傳授標籤 */
+export function teachingBadge(s, d) {
+  if (!d?.teaching) return '';
+  const p = s?.ds?.find((x) => x.id === d.teaching.pupil);
+  const a = artById(d.teaching.art);
+  if (!p || !a) return '';
+  return `<span class="tag teach-tag">🧑‍🏫 傳授中：${p.name}《${a.name}》</span>`;
+}
+
+export const statusHtml = (s, d) => { const x = statusOf(s, d), tb = teachingBadge(s, d); return `<div class="status"><div><b>現在</b>：${x.now} <span class="tag">${x.layer}</span>${tb ? ` ${tb}` : ''}</div><div><b>原因</b>：${x.why}</div><div><b>下一步</b>：${x.next}</div></div>`; };
 
 // ==== （原 growui.mjs）====
 /* loop81 成長分層介面（純顯示，不寫世界狀態）：A 人物實力圖、B 門類造詣、C 個別武學。

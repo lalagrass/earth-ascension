@@ -6,9 +6,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { ARTS, MOVES, RULES_VERSION, DUGU } from '../src/data.mjs';
 import { artById, artTier, moveMul, gainArt, learnArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, qiMax, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29, blowWhy, boutWhy, expCause, expectOf, EXPECT_SWINGS, reqMissing, zhuangOpen, ponderLuoying, practiceLuoying, YUNV_PAIR, rechooseBranch, autoBranch } from '../src/arts.mjs';
-import { powerHtml } from '../src/panel-ui.mjs';
+import { powerHtml, teachingBadge } from '../src/panel-ui.mjs';
 import { curveMulOf, BRANCHES } from '../src/artcard.mjs';
 import { createState, load } from '../src/sim.mjs';
+import { canTeachArt, startTeachArt, stopTeachArt, teachCandidates, teachStage, teachDaily, isFamousArt } from '../src/bonds.mjs';
 import { points, T, raidResolve, threatDaily, threatBreakdown } from '../src/threat.mjs';
 import { teach, TEACH, formReady } from '../src/wuxia.mjs';
 import { CARDS, jhStep } from '../src/jianghu.mjs';
@@ -735,4 +736,143 @@ test('N11：扇形曲線 curveMulOf 不因分路改變', () => {
   const mulAfterB = curveMulOf(a.curve, 2);
   assert.equal(mulBefore, mulAfterA);
   assert.equal(mulBefore, mulAfterB);
+});
+
+test('N12：傳者未達圓滿不能傳', () => {
+  const s = createState(7);
+  const m = s.ds[0];
+  const d = s.ds[1];
+  d.master = m.id;
+  d.wu = 4;
+
+  // Master has xianglong at 大成 (xp 55, bt1: true) -> tier 2 < 3
+  m.arts.xianglong = { xp: 55, last: 0, bt1: true };
+  assert.equal(artTier(m, 'xianglong'), 2);
+  assert.equal(canTeachArt(s, m, d, 'xianglong'), false, '未達圓滿不能傳');
+
+  // Master reaches 圓滿 (xp 85, bt2: true) -> tier 3 >= 3
+  m.arts.xianglong.xp = 85;
+  assert.equal(artTier(m, 'xianglong'), 3);
+  assert.equal(canTeachArt(s, m, d, 'xianglong'), true, '達圓滿可傳');
+});
+
+test('N12：受者層級上限是傳者 − 1', () => {
+  const s = createState(7);
+  const m = s.ds[0];
+  const d = s.ds[1];
+  d.master = m.id;
+  d.wu = 4;
+
+  // Master is 圓滿 (tier 3). Disciple max tier is 3 - 1 = 2 (大成).
+  m.arts.xianglong = { xp: 85, last: 0, bt1: true };
+
+  assert.equal(artTier(d, 'xianglong'), -1);
+  assert.equal(canTeachArt(s, m, d, 'xianglong'), true);
+
+  // Teach stage 1 -> tier 0 (入門)
+  teachStage(s, m, d, 'xianglong');
+  assert.equal(artTier(d, 'xianglong'), 0);
+  assert.equal(canTeachArt(s, m, d, 'xianglong'), true);
+
+  // Teach stage 2 -> tier 1 (小成)
+  teachStage(s, m, d, 'xianglong');
+  assert.equal(artTier(d, 'xianglong'), 1);
+  assert.equal(canTeachArt(s, m, d, 'xianglong'), true);
+
+  // Teach stage 3 -> tier 2 (大成)
+  teachStage(s, m, d, 'xianglong');
+  assert.equal(artTier(d, 'xianglong'), 2);
+
+  // Now disciple has reached tier 2 (大成) = mTier(3) - 1. Cap reached!
+  assert.equal(canTeachArt(s, m, d, 'xianglong'), false, '已達傳者層級 - 1，不能再傳');
+
+  // Now master breaks through to 化境 (tier 4)
+  m.arts.xianglong.xp = 100;
+  m.arts.xianglong.bt2 = true;
+  assert.equal(artTier(m, 'xianglong'), 4);
+
+  // Now max tier is 4 - 1 = 3 (圓滿). Disciple can learn to tier 3!
+  assert.equal(canTeachArt(s, m, d, 'xianglong'), true);
+  teachStage(s, m, d, 'xianglong');
+  assert.equal(artTier(d, 'xianglong'), 3);
+
+  // Now disciple reached 圓滿 (tier 3) = 4 - 1. Cap reached! Cannot reach 化境.
+  assert.equal(canTeachArt(s, m, d, 'xianglong'), false, '不能傳至化境');
+});
+
+test('N12：未滿足前置條件被擋下', () => {
+  const s = createState(7);
+  const m = s.ds[0];
+  const d = s.ds[1];
+  m.arts.qiankun = { xp: 85, last: 0, bt1: true }; // 乾坤大挪移
+
+  // 1. Neither apprentice nor high affinity
+  d.master = null;
+  s.rel[`${m.id}|${d.id}`] = 20;
+  s.rel[`${d.id}|${m.id}`] = 20;
+  assert.equal(canTeachArt(s, m, d, 'qiankun'), false, '非師徒且好感不足');
+
+  // Establish master-disciple relationship
+  d.master = m.id;
+
+  // 2. CEILING check: 乾坤大挪移 requires shenghuoXinfa or jiuyang
+  // d has neither -> blocked!
+  delete d.arts?.shenghuoXinfa;
+  delete d.arts?.jiuyang;
+  assert.equal(canTeachArt(s, m, d, 'qiankun'), false, '未滿足前置 ceiling 武學被擋下');
+
+  // Give d shenghuoXinfa at tier 1
+  d.arts = d.arts || {};
+  d.arts.shenghuoXinfa = { xp: 26, last: 0, bt1: true };
+  assert.equal(canTeachArt(s, m, d, 'qiankun'), true, '滿足 ceiling 前置後可學');
+
+  // 3. Attribute requirement check (wuxingMin / gated)
+  const highWuArt = ARTS.find((a) => (a.wuxingMin || 0) >= 4 && isFamousArt(a)) || ARTS.find((a) => (a.wuxingMin || 0) >= 3);
+  if (highWuArt) {
+    m.arts[highWuArt.id] = { xp: 85, last: 0, bt1: true };
+    d.wu = (highWuArt.wuxingMin || 0) - 1;
+    assert.equal(canTeachArt(s, m, d, highWuArt.id), false, '悟性不足被擋下');
+    d.wu = highWuArt.wuxingMin || 0;
+    if (reqMissing(d, highWuArt).length === 0) {
+      assert.equal(canTeachArt(s, m, d, highWuArt.id), true);
+    }
+  }
+});
+
+test('N12：傳授日誌正常產出，且每日結算推進火候', () => {
+  const s = createState(7);
+  const m = s.ds[0];
+  const d = s.ds[1];
+  d.master = m.id;
+  d.wu = 4;
+  m.arts.xianglong = { xp: 85, last: 0, bt1: true };
+
+  // Set teaching
+  const ok = startTeachArt(s, m, d, 'xianglong');
+  assert.ok(ok);
+  assert.equal(m.teaching?.pupil, d.id);
+  assert.equal(m.teaching?.art, 'xianglong');
+
+  // Badge check
+  const badge = teachingBadge(s, m);
+  assert.match(badge, new RegExp(`🧑‍🏫 傳授中：${d.name}《降龍十八掌》`));
+
+  // Run teachDaily
+  teachDaily(s);
+  assert.equal(artTier(d, 'xianglong'), 0);
+  assert.ok(s.log.some((l) => (l.msg || l).includes(`【傳功】${m.name}傳${d.name}《降龍十八掌》第 1 段`)));
+
+  // Run next day teachDaily
+  teachDaily(s);
+  assert.equal(artTier(d, 'xianglong'), 1);
+  assert.ok(s.log.some((l) => (l.msg || l).includes(`【傳功】${m.name}傳${d.name}《降龍十八掌》第 2 段`)));
+
+  // Run 3rd day teachDaily
+  teachDaily(s);
+  assert.equal(artTier(d, 'xianglong'), 2);
+  assert.ok(s.log.some((l) => (l.msg || l).includes(`【傳功】${m.name}傳${d.name}《降龍十八掌》第 3 段`)));
+
+  // After reaching tier 2 (cap), teaching completes and clears
+  assert.equal(m.teaching, null);
+  assert.equal(teachingBadge(s, m), '');
 });
