@@ -127,7 +127,27 @@ export function nodePath(a, b) { // BFS，只走既有邊
   const prev = { [a]: null }, q = [a]; while (q.length) { const n = q.shift(); if (n === b) break; for (const m of adj[n] || []) if (!(m in prev)) { prev[m] = n; q.push(m); } }
   if (!(b in prev)) return []; const out = []; for (let n = b; n != null; n = prev[n]) out.unshift(n); return out;
 }
-export function newBand(P, to) { const path = nodePath(BAND.from, to); return { n: P.n, pts: P.pts, day: P.day, hp: P.pts, max: P.pts, pos: [...NODES[BAND.from]], path: path.slice(1), state: 'go', clock: 0, fenceDealt: 0, defDealt: 0 }; }
+export function newBand(P, to) { const path = nodePath(BAND.from, to); return { n: P.n, pts: P.pts, day: P.day, hp: P.pts, max: P.pts, pos: [...NODES[BAND.from]], path: path.slice(1), state: 'go', clock: 0, fenceDealt: 0, defDealt: 0, members: bandMembers(P.pts) }; }
+/* #419 N15 山賊拆成個人：人數照威脅點數（每 BAND_MEMBER.pts 一人，2–8 人），每人血量＝點數／人數，加總恰等於點數（威脅公式不變）。
+   守柵的總傷害照舊算在整夥上，再從最前面的人扣起，所以打退時間與勝負不變。 */
+export const BAND_MEMBER = { pts: 40, min: 2, max: 8, ring: 4, gap: 16, outer: 64 };
+export function bandMembers(pts) {
+  const n = Math.max(BAND_MEMBER.min, Math.min(BAND_MEMBER.max, Math.round(pts / BAND_MEMBER.pts))), each = pts / n, out = [];
+  for (let i = 0; i < n; i++) out.push({ i, hp: each, max: each, pos: null });
+  return out;
+}
+export function syncMembers(b) {
+  if (!b.members) b.members = bandMembers(b.max);
+  let rest = Math.max(0, b.hp); for (let i = b.members.length - 1; i >= 0; i--) { const m = b.members[i]; m.hp = Math.min(m.max, rest); rest -= m.hp; }
+  return b.members;
+}
+/* 站位（只影響畫面）：行軍時排成一列；圍柵時每個守柵者身邊最多 ring 人，其餘在外圈繞。 */
+function placeMembers(s, b, defs) {
+  const live = syncMembers(b).filter((m) => m.hp > 0), c = b.pos;
+  if (b.state === 'go' || !defs.length) { live.forEach((m, k) => { m.pos = [c[0] + ((k % 3) - 1) * BAND_MEMBER.gap, c[1] + Math.floor(k / 3) * 8 + (k % 3 === 1 ? 6 : 0)]; m.ring = 0; }); return; }
+  live.forEach((m, k) => { if (k < BAND_MEMBER.ring * defs.length) { const d = defs[k % defs.length], a = Math.PI * (0.25 + 0.5 * Math.floor(k / defs.length)); m.pos = [d.pos[0] + Math.cos(a) * 22, d.pos[1] - Math.sin(a) * 12]; m.ring = 1; }
+    else { const a = s.t * 0.6 + k; m.pos = [c[0] + Math.cos(a) * BAND_MEMBER.outer, c[1] + Math.sin(a) * BAND_MEMBER.outer * 0.5]; m.ring = 2; } });
+}
 export const defenderDps = (d) => BAND.dps.base + ((d.skills.palm || 0) + (d.skills.leg || 0) + (d.skills.strength || 0)) / BAND.dps.per + dpsBonus(d); // loop117 護體真氣
 export const canDefend = (d) => d.adult !== false && !d.away && (d.role !== 'laborer' || !!(d.hidden?.shown)) && /* loop155 隱世高人仍是幫工，但可守柵 */ d.hp >= BAND.hpMin && d.needs.energy >= BAND.energyMin;
 // 走一步：回傳是否到達
@@ -262,10 +282,10 @@ function raidLose(s, H, who) {
 // loop3：地圖上的山賊；每 tick 呼叫。守柵者＝task.act 'defend' 且已在柵邊動手
 export function bandStep(s, dt, H) {
   const b = s.band; if (!b) return; const X = T(s); if (b.kind || X.cur) X.cur = b.kind;
-  if (b.state === 'go') { if (bandWalk(b, dt)) { b.state = 'siege'; log(s, '山賊圍住了菜園木柵，開始撞柵！'); } return; }
+  if (b.state === 'go') { if (bandWalk(b, dt)) { b.state = 'siege'; log(s, '山賊圍住了菜園木柵，開始撞柵！'); } placeMembers(s, b, []); return; }
   const defs = s.ds.filter((d) => d.task?.act === 'defend' && d.task.phase === 'do');
   if (hasPoison(s, defs)) b.psn = s.t + SPEC.poisonT; /* loop151 毒術：守柵者中有毒術者，山賊中毒 */
-  const dmg = defs.reduce((a, d) => a + defenderDps(d), 0) * def24Of(s) * dt /* loop183 紫霄宮守柵 */ + (b.psn > s.t ? SPEC.poisonDps * (s.psnK24 || 1) * dt : 0); b.hp -= dmg; b.defDealt += dmg;
+  const dmg = defs.reduce((a, d) => a + defenderDps(d), 0) * def24Of(s) * dt /* loop183 紫霄宮守柵 */ + (b.psn > s.t ? SPEC.poisonDps * (s.psnK24 || 1) * dt : 0); b.hp -= dmg; b.defDealt += dmg; placeMembers(s, b, defs);
   if (b.hp <= 0) { qiInjuryFight28(s, defs, log); /* loop186 守柵實戰 */ s.band = null; X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; log(s, `守柵迎敵——${defs.map((d) => d.name).join('、') || '眾人'}把山賊打退了！名聲 +${RAID.rep}。`); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: 'win', hurt: null, map: true, fence: s.fence?.hp ?? 0 }); for (const d of defs) recordDeed(s, d, 'defend'); recordDeed(s, null, 'raid', b.boss ? {} : { chron: `守柵打退山賊（${defs.map((d) => d.name).join('、') || '眾人'}）` }); bossEnd(s, b, true, defs); nextWave(s, b, true); return; }
   b.clock += dt; if (b.clock < BAND.hitEvery) return; b.clock -= BAND.hitEvery;
   const fd0 = Math.max(BAND.fenceDmg.min, Math.round(b.pts * BAND.fenceDmg.k)), fd = Math.max(1, Math.round(fd0 * (1 - SPEC.zhenMit * zhenK(s)) * (b.psn > s.t ? 1 - SPEC.poisonWeak : 1))); b.fenceDealt += fd; /* loop151 陣法護柵 */

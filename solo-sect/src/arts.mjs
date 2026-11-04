@@ -1238,3 +1238,17 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   }
   return { kind: 'hit', heavy: false };
 }
+
+// ==== #419 N15 交戰圈與應接 ====
+/* slots：一人身邊最多 4 個近戰位，第 5 隻起在外圈繞；cap：同一個 win 秒內接得住幾招（火候 入門→化境 1/2/3/4/5），超出的直接中招。
+   step／leash／stepCd／stepQi：應接不暇時輕功滑步，離守點不超過 leash。 */
+export const RING = { engage: 44 /* 佔了近戰位的獸，對手滑步走開也會追上去，不趁機溜下山 */, slots: 4, outer: 50, cap: [1, 2, 3, 4, 5], win: 1.2, step: 24, leash: 40, stepCd: 3, stepQi: 4, stepAgi: 10 };
+export function topTierOf(d) { let t = 0; for (const id of Object.keys(d?.arts || {})) t = Math.max(t, artTier(d, id) | 0); return Math.min(4, t); }
+export const handleCap = (d) => RING.cap[topTierOf(d)];
+/* 這一招還接不接得住：win 秒內已經判過 cap 次接法就回 false（之後直接中招）。會記一筆。 */
+export function handleTake(s, d) {
+  const now = s?.t ?? 0, L = (d.handled ||= []).filter((x) => now - x < RING.win); d.handled = L;
+  const cap = handleCap(d), ok = L.length < cap; L.push(now);
+  d.ring = { cap, used: Math.min(cap, L.length), over: Math.max(0, L.length - cap), t: now };
+  return ok;
+}

@@ -241,6 +241,16 @@ export const STYLES = { palm: '掌法', leg: '腿法' };
 // v0.4 後山生態：族群有上限與繁衍；狩獵是真的取走個體
 export const ECO = { rat: { start: 6, max: 8, regen: 50 }, boar: { start: 2, max: 3, regen: 150 } };
 export const HABITAT = { c: [1450, 60], r: 70 };
+/* #419 N15 合法出生點：敵人只從這張表出來——離地圖邊緣 ≤ edge、離大殿 ≥ hall。獸從獸穴、棲地、東嶺；山賊從山門。
+   via：出生點到守點山路的座標（都在山那一側，不從門派背後冒出來）；接上 guard 之後沿原山路走。 */
+export const SOURCES = {
+  den: { pos: [1475, 22], for: 'beast', via: [] },
+  habitat: { pos: [1440, 40], for: 'beast', via: [[1392, 96]] },
+  ridge: { pos: [1585, 120], for: 'beast', via: [[1470, 150]] },
+  gate: { pos: [1475, 875], for: 'bandit', via: [] },
+};
+export const SRC_RULE = { edge: 80, hall: 400 };
+export const srcOk = (p) => Math.min(p[0], p[1], WORLD.w - p[0], WORLD.h - p[1]) <= SRC_RULE.edge && Math.hypot(p[0] - NODES.hall[0], p[1] - NODES.hall[1]) >= SRC_RULE.hall;
 export const POSTS = { guard: '山頂守點', trail2: '山腰岔口', trail1: '山腳路口' };
 export const RAID_EVERY = 160; // 秒；野豬下山拱菜
 export const HUNT_WAVES = 3, WAVE_GAP = 6;

@@ -1,6 +1,7 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
+import { RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
+import { SOURCES } from './data.mjs';
 import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
 import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
@@ -530,11 +531,12 @@ export function startHunt(s, ids, waves = HUNT_WAVES) {
   log(s, `${team.map((d) => d.name).join('、')}上山，守在「${POSTS[s.post]}」，預計 ${waves} 波。`);
   return true;
 }
-const MON_PATH = route('den', 'yard');
+const MON_PATH = route('den', 'yard'), GUARD_PATH = route('guard', 'yard');
 function spawnWave(s) {
   const h = s.hunt, i = h.wave, list = [];
   const nr = Math.min(s.eco.rat.n, 2 + i), nb = i === h.waves - 1 ? Math.min(1, s.eco.boar.n) : 0;
-  for (let k = 0; k < nr; k++) list.push({ k: 'rat', t: k * 1.5 }); for (let k = 0; k < nb; k++) list.push({ k: 'boar', t: nr * 1.5 + 1 });
+  const ns = nr + nb >= 5 ? 3 : nr + nb >= 2 ? 2 : 1, STREAMS = ['den', 'habitat', 'ridge']; /* #419 一波分 2–3 路，都從山那一側 */
+  for (let k = 0; k < nr; k++) list.push({ k: 'rat', t: k * 1.5, src: STREAMS[k % ns] }); for (let k = 0; k < nb; k++) list.push({ k: 'boar', t: nr * 1.5 + 1, src: 'den' });
   s.eco.rat.n -= nr; s.eco.boar.n -= nb; h.queue = list; h.wt = 0; h.perWave.push({ rat: nr, boar: nb });
   removeWild(s, 'rat', nr); removeWild(s, 'boar', nb);
   log(s, list.length ? `第 ${i + 1} 波：山鼠 ${nr}${nb ? '、野豬 ' + nb : ''}` : `第 ${i + 1} 波：山裡沒有獸出來`);
@@ -568,7 +570,21 @@ function warnFx(s, atk, tgt, r, wind) { if (!(wind > 0)) return; s.fx.push({ kin
 /* 接法浮字：破（看破）、閃、震（反震）、現（架勢空了挨重擊）。 */
 const CLASH_WORD = { read: ['破', '#f2d06b'], dodge: ['閃', '#cfe0f5'], jolt: ['震', '#e9a33a'], heavy: ['現', '#ff5a3c'] };
 function clashFx(s, who, key) { const w = CLASH_WORD[key]; if (!w || !who?.pos) return; s.fx.push({ kind: 'clash', word: w[0], color: w[1], pos: [...who.pos], ttl: 0.8 }); (s.clashN ??= {})[key] = (s.clashN[key] || 0) + 1; }
+function orbitStep(m, foe, step) { const R = RING.outer, a = Math.atan2(m.pos[1] - foe.pos[1], m.pos[0] - foe.pos[0]) + step / R; m.pos = [foe.pos[0] + Math.cos(a) * R, foe.pos[1] + Math.sin(a) * R]; }
+function stepToward(m, p, step, stop) { const L = dist(m.pos, p); if (L <= stop) return; const k = Math.min(step, L - stop) / L; m.pos[0] += (p[0] - m.pos[0]) * k; m.pos[1] += (p[1] - m.pos[1]) * k; }
+/* #419 應接不暇時輕功滑步：橫移 RING.step，離守點不超過 leash；花真氣，有冷卻 */
+function lightStep(s, d, from, post) {
+  if ((d.skills?.agility || 0) < RING.stepAgi || (d.stepT || 0) > s.t || qiOf(d) < RING.stepQi) return false;
+  const dx = d.pos[0] - from[0], dy = d.pos[1] - from[1], L = Math.hypot(dx, dy) || 1, sg = (s.rngN + (d.id.length)) % 2 ? 1 : -1;
+  let nx = d.pos[0] - dy / L * RING.step * sg, ny = d.pos[1] + dx / L * RING.step * sg; const P = NODES[post] || d.pos, PL = Math.hypot(nx - P[0], ny - P[1]);
+  if (PL > RING.leash) { nx = P[0] + (nx - P[0]) * RING.leash / PL; ny = P[1] + (ny - P[1]) * RING.leash / PL; }
+  spendQi(d, RING.stepQi); d.stepT = s.t + RING.stepCd; d.pos = [nx, ny]; return true;
+}
 function monStrike(s, h, m, foe, M, zk, w) {
+  if (!handleTake(s, foe)) { /* #419 超出應接：先試輕功脫身，不然直接中招 */
+    if (lightStep(s, foe, m.pos, h.post)) { const on = applyArtOn(s, 'dodge', foe, m, { foeName: M.name }); clashFx(s, foe, 'dodge'); noteWhy(s, on); h.slips = (h.slips || 0) + 1; return { kind: 'dodge', why: 'step' }; }
+    w = { ...w, force: 'over' }; h.over = (h.over || 0) + 1;
+  }
   const incoming0 = M.dmg * (m.psn > s.t ? 1 - SPEC.poisonWeak : 1) * (1 - SPEC.zhenMit * zk);
   const r = resolveSwing(s, m, foe, () => rand(s), { depth: depthOf(m), wind: w.wind, force: w.force });
   if (r.kind === 'read') { clashFx(s, foe, 'read'); return r; }
@@ -605,7 +621,7 @@ function huntStep(s, dt) {
   const team = s.ds.filter((d) => h.team.includes(d.id));
   if (!h.started) { if (!team.every((d) => d.at === h.post || d.hp <= 25)) return; h.started = true; spawnWave(s); }
   h.t += dt; h.wt += dt; const zk = zhenK(s); /* loop151 陣法：減傷、減速 */
-  while (h.queue.length && h.queue[0].t <= h.wt) { const q = h.queue.shift(), M = MONSTERS[q.k]; s.mons.push({ uid: `${q.k}${s.rngN++}`, k: q.k, hp: M.hp, max: M.hp, pos: [...NODES.den], path: MON_PATH.slice(1), cool: 0 }); }
+  while (h.queue.length && h.queue[0].t <= h.wt) { const q = h.queue.shift(), M = MONSTERS[q.k]; const S0 = SOURCES[q.src] || SOURCES.den; s.mons.push({ uid: `${q.k}${s.rngN++}`, k: q.k, hp: M.hp, max: M.hp, pos: [...S0.pos], src: q.src || 'den', path: S0.via.length ? [...S0.via.map((p) => [...p]), ...GUARD_PATH] : MON_PATH.slice(1), cool: 0 }); }
   for (const m of s.mons) {
     if (m.raid) continue;
     const M = MONSTERS[m.k];
@@ -619,10 +635,16 @@ function huntStep(s, dt) {
       if (tgt && tgt.hp > 25 && dist(tgt.pos, m.pos) < MON_REACH * 1.3) monStrike(s, h, m, tgt, M, zk, w);
       if (m.gone) continue;
     }
-    if (foe && dist(foe.pos, m.pos) < MON_REACH) {
+    const near = foe ? dist(foe.pos, m.pos) : 1e9;
+    if (foe && near < (m.orbit === foe.id ? RING.outer + 10 : m.slot === foe.id ? RING.engage : MON_REACH)) { /* #419 交戰圈：4 個近戰位，第 5 隻起在外圈繞 */
+      if (m.slot !== foe.id) { const held = s.mons.filter((o) => o !== m && !o.gone && o.slot === foe.id).length;
+        if (held >= RING.slots) { m.orbit = foe.id; m.slot = null; orbitStep(m, foe, M.speed * dt); continue; }
+        m.slot = foe.id; m.orbit = null; }
+      if (near > MON_REACH * 0.95) { stepToward(m, foe.pos, M.speed * dt, MON_REACH * 0.8); continue; }
       if (m.cool <= 0) { const wind = MON_CD * CLASH.monWind; m.swing = { tgt: foe.id, at: s.t + wind, wind }; m.cool = MON_CD; warnFx(s, m, foe, MON_REACH, wind); }
       continue;
     }
+    m.slot = null; m.orbit = null;
     if (monWalk(m, M.speed * (m.tripUntil > s.t ? 0.45 : 1) * (1 - SPEC.zhenSlow * zk) * dt)) { m.gone = true; h.escaped++; s.eco[m.k].n++; log(s, `${M.name}衝過守點逃回山裡`); }
   }
   for (const d of team) {
@@ -655,7 +677,7 @@ function huntStep(s, dt) {
   }
 }
 function monWalk(m, step) {
-  while (step > 0 && m.path.length) { const tgt = NODES[m.path[0]], L = dist(m.pos, tgt);
+  while (step > 0 && m.path.length) { const tgt = typeof m.path[0] === 'string' ? NODES[m.path[0]] : m.path[0], L = dist(m.pos, tgt);
     if (L <= step) { m.pos = [...tgt]; m.path.shift(); step -= L; } else { m.pos[0] += (tgt[0] - m.pos[0]) * step / L; m.pos[1] += (tgt[1] - m.pos[1]) * step / L; step = 0; } }
   return !m.path.length;
 }
@@ -681,7 +703,7 @@ function ecoStep(s, dt) {
   if (!s.hunt && s.raidT >= RAID_EVERY * raidMul(s) && s.eco.boar.n > 0 && !s.mons.some((m) => m.raid) && s.watch != null && s.t - s.watch < WATCH_WARN * (2)) { s.raidT = 0; s.watched = (s.watched || 0) + 1; log(s, '護山哨示警：野豬剛下山就被鑼聲嚇回去了。'); } // v1.6 哨崗預警
   if (!s.hunt && s.raidT >= RAID_EVERY * raidMul(s) && s.eco.boar.n > 0 && !s.mons.some((m) => m.raid)) {
     s.raidT = 0; s.eco.boar.n--; removeWild(s, 'boar', 1);
-    s.mons.push({ uid: `raid${s.rngN++}`, k: 'boar', hp: MONSTERS.boar.hp, max: MONSTERS.boar.hp, pos: [...NODES.den], path: route('den', 'veg').slice(1), raid: 'go', cool: 0 });
+    s.mons.push({ uid: `raid${s.rngN++}`, k: 'boar', hp: MONSTERS.boar.hp, max: MONSTERS.boar.hp, pos: [...SOURCES.den.pos], src: 'den', path: route('den', 'veg').slice(1), raid: 'go', cool: 0 });
     log(s, '一頭野豬循山路下來，朝菜園去了。'); stewBoar(s);
   }
   for (const m of s.mons) if (m.raid) {
@@ -828,13 +850,15 @@ function paceStep(s) {
   for (const m of PACE) if (ph.day >= m.day && !G.seen.includes(m.id) && !P.done.includes(m.id)) { G.seen.push(m.id); guideSay(s, m.guide); }
   if (ph.day === 1 && ph.frac >= PHASES[2][0] && !P.trial) { const h = byId(s, 'hero'); if (h && !h.away && !s.hunt) {
     P.trial = 'on'; cancelTask(s, h, '師父命主角試打野豬'); h.order = null; h.task = { act: 'trial', phase: 'go', node: 'yard', timer: 0 }; goto(h, 'yard'); h.reason = '黃昏試煉：木樁場的野豬';
-    const [x, y] = NODES.yard; s.mons.push({ uid: 'trialBoar', k: 'boar', trial: true, hp: TRIAL_BOAR.hp, max: TRIAL_BOAR.hp, pos: [x + 40, y + 6], path: [], cool: 0 }); log(s, '黃昏，一頭餓瘋的小野豬闖進木樁場。師父：「主角，你來。」'); } }
+    s.mons.push({ uid: 'trialBoar', k: 'boar', trial: true, hp: TRIAL_BOAR.hp, max: TRIAL_BOAR.hp, pos: [...SOURCES.den.pos], src: 'den', path: MON_PATH.slice(1), cool: 0 }); log(s, '黃昏，一頭餓瘋的小野豬從獸穴沿山路衝下來，直奔木樁場。師父：「主角，你來。」'); } } /* #419 從 den 下山，不再憑空出現在木樁場 */
   if (!P.done.includes('firstExp') && s.lastExp) milestone(s, 'firstExp');
   if (!P.done.includes('firstBuild') && Object.values(s.fac).some((f) => f.site || f.stage > 0)) milestone(s, 'firstBuild');
 }
 function trialStep(s, d, dt) {
   const t = d.task, m = s.mons.find((x) => x.trial);
   if (!m) { d.task = null; d.anim = null; return; }
+  if (dist(m.pos, d.pos) > MON_REACH && m.path.length) { monWalk(m, MONSTERS.boar.speed * dt); m.face = (m.path[0] && (typeof m.path[0] === 'string' ? NODES[m.path[0]] : m.path[0])[0] >= m.pos[0]) ? 1 : -1; return; } /* 野豬還在山路上：主角在木樁場等牠衝下來 */
+  if (!m.path.length && dist(m.pos, d.pos) > MON_REACH) { const L = dist(m.pos, d.pos), st = Math.min(L - MON_REACH * 0.8, MONSTERS.boar.speed * dt); m.pos[0] += (d.pos[0] - m.pos[0]) * st / L; m.pos[1] += (d.pos[1] - m.pos[1]) * st / L; return; }
   if (d.path.length) return;
   t.phase = 'do'; t.timer += dt; d.face = m.pos[0] >= d.pos[0] ? 1 : -1;
   postureRegen(s, d, dt); postureRegen(s, m, dt);

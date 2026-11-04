@@ -31,7 +31,7 @@ function huntRun(s0, solo, OUT) {
   const hp0 = team.map((d) => d.hp); const t0 = s.t; let h = s.hunt; while (s.hunt && s.t - t0 < 900) { h = s.hunt; tick(s, 0.25); if (s.alert) s.alert = null; }
   OUT.kills.push(h.kills); OUT.escaped.push(h.escaped); OUT.hurt.push(team.filter((d) => (s.ds.find((x) => x.id === d.id)?.hp ?? 100) <= 25).length); (OUT.hpLost ??= []).push(team.reduce((a, d, i) => a + Math.max(0, hp0[i] - (s.ds.find((x) => x.id === d.id)?.hp ?? 0)), 0));
 }
-/* 山賊上地圖（#419）：bot 局多半沒立柵，所以第 20／30 日各複製一份，立滿耐久的木柵、送一夥照當下威脅點數的山賊來，
+/* 山賊上地圖（#419）：bot 局多半沒立柵，所以第 9 日起每 3 日各複製一份，立滿耐久的木柵、送一夥照當下威脅點數的山賊來，
    選迎戰，用遊戲步長 0.25 打到分出勝負（上限 600 秒）。勝算＝柵未破就打退記 1，柵破則記 winP(剩餘山賊戰力)；另記重傷人次。 */
 const BANDP = { odds: [], won: 0, n: 0, hurt: 0, fenceHeld: 0 };
 function bandProbe(s0) {
@@ -51,8 +51,8 @@ for (let seed = 1001; seed <= 1012; seed++) {
   const sect = sectOfSeed(seed);
   const s = createState(seed, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...ALL_ON, v22: true, ...(sect ? { sect24: sect } : {}) });
   let dayB = s.day; const P = [];
-  for (let i = 1; i <= 30 * DAY / 6; i++) { tick(s, 6); if (s.alert) s.alert = null; if (s.day !== dayB) { dayB = s.day; botDaily(s); P.push(T.points(s)); if (s.day === 4 || s.day === 11 || s.day === 21) huntProbe(s); if (s.day === 21) bandProbe(s); } }
-  huntProbe(s); bandProbe(s);
+  for (let i = 1; i <= 30 * DAY / 6; i++) { tick(s, 6); if (s.alert) s.alert = null; if (s.day !== dayB) { dayB = s.day; botDaily(s); P.push(T.points(s)); if (s.day === 4 || s.day === 11 || s.day === 21) huntProbe(s); if (s.day >= 9 && s.day % 3 === 0) bandProbe(s); } }
+  huntProbe(s);
   for (const r of T.T(s).hist || []) { RAIDS.n++; if (r.fight) { RAIDS.fights++; if (r.fight === 'win') RAIDS.won++; if (r.map) RAIDS.map++; } if (r.hurt) RAIDS.hurt++; }
   const p = med(P.slice(-10)); const bd = T.threatBreakdown ? T.threatBreakdown(s) : null; (out0.cShare ??= []).push(bd ? bd.cPct : 0);
   pts.push(p); wp.push(T.winP(s, T.points(s)));
