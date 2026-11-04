@@ -1,5 +1,5 @@
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
-import { NODES, EDGES, DAY, FACILITIES, MOVES } from './data.mjs';
+import { NODES, EDGES, DAY, FACILITIES, MOVES, ARTS } from './data.mjs';
 import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuter28, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
 import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of } from './sect.mjs';
@@ -146,9 +146,11 @@ export function bandWalk(b, dt) {
 
 export const RAID = { minPop: 8, minPopRules: 4, // loop12：開了「太平與備料」（江湖規則）的新局，山賊門檻降為 4 人＝開局人數，第 8 日起就會來
   first: 8, every: 6, jitter: 2, w: { coin: 1, food: 1, pill: 8, herb: 1, stage: 25 }, div: 2, dayK: 30, dayMax: 2, cap: 900,
+  wealthRatio: 1, combatK: 0.5, /* #408 第三輪：家底項回到 base（×1）；戰力項只算身懷名功（大成以上）的守方，由 tools/calib-fan.mjs 同一支 bot12 校準 */
+  adaptMin: 0.6, adaptMax: 1.2, adaptDropLoss: 0.15, adaptDropHurt: 0.10, adaptRecover: 0.05,
   logAfter: 30, logK: 0.2, hurtCool: 2, // v2.1：第 30 日後天數係數改對數；山門重傷後下次上門再晚 hurtCool 日
   demand: { base: 20, k: 0.6, coinMax: 0.35, min: 10 }, wait: DAY / 2, hurtCost: 80, hurtHp: 15, winHurt: 0.4, steal: { coin: 0.15, food: 0.2 }, rep: 3 };
-export function T(s) { return (s.threat ??= { next: RAID.first, n: 0, paid: 0, fought: 0, won: 0, homeHurt: 0, deaths: 0, pending: null, rng: 0, hist: [] }); }
+export function T(s) { return (s.threat ??= { next: RAID.first, n: 0, paid: 0, fought: 0, won: 0, homeHurt: 0, deaths: 0, pending: null, rng: 0, hist: [], adapt: 1 }); }
 const R = (s) => { const X = T(s); X.rng = ((X.rng || seedMix(s.seed || 1, 7477)) * 16807) % 2147483647; return X.rng / 2147483647; };
 export const headcount = (s) => s.ds.filter((d) => !d.removed).length;
 export function wealth(s) { const W = RAID.w, r = s.res; return Math.max(0, r.coin || 0) * W.coin + (r.food || 0) * W.food + (r.pill || 0) * W.pill + (r.herb || 0) * W.herb + FACILITIES.reduce((a, f) => a + (s.fac[f.id]?.stage || 0), 0) * W.stage; }
@@ -156,7 +158,31 @@ const linMul = (day) => Math.min(RAID.dayMax, 0.5 + day / RAID.dayK);
 // 第 logAfter 日以前與舊線性相同；之後從當天的值接著以對數成長，不再爬到 dayMax。
 export const dayMul = (s) => { const d = s.day || 0; if (d <= RAID.logAfter) return linMul(d); return Math.min(RAID.dayMax, linMul(RAID.logAfter) + Math.log(1 + (d - RAID.logAfter) / RAID.logAfter) * RAID.logK); };
 export const minPopOf = (s) => (RAID.minPopRules);
-export function points(s) { if (headcount(s) < minPopOf(s)) return 0; return Math.min(RAID.cap, Math.round(wealth(s) / RAID.div * dayMul(s) * valorThreatMul(s) * (T(s).taiping ? BOSS.peaceMul : 1))); }
+
+/* 名功（secret＋classic，非合參）最高火候；沒有名功回 -1。沒有名功的門派威脅＝base 的家底項。 */
+const FAMOUS_IDS = ARTS.filter((a) => a.secret && a.classic && !a.derived).map((a) => a.id);
+export function famousTop(d) { let m = -1; for (const id of FAMOUS_IDS) if (d.arts?.[id]) m = Math.max(m, artTier(d, id)); return m; }
+/* #412 N9：威脅來源解析（家底項與戰力項佔比） */
+export function threatBreakdown(s) {
+  const wTerm = (wealth(s) / RAID.div) * (RAID.wealthRatio ?? 0.6);
+  const defs = s.ds.filter(canDefend);
+  const cTerm = defs.reduce((a, d) => a + (famousTop(d) >= 2 ? defenderDps(d) * (famousTop(d) - 1) : 0), 0) * (RAID.combatK ?? 0.85);
+  const tot = wTerm + cTerm;
+  if (tot <= 0) return { wPct: 50, cPct: 50, wTerm: 0, cTerm: 0, text: '家底 50％、高手 50％' };
+  const wPct = Math.round((wTerm / tot) * 100);
+  const cPct = 100 - wPct;
+  return { wPct, cPct, wTerm, cTerm, text: `家底 ${wPct}％、高手 ${cPct}％` };
+}
+
+export function points(s) {
+  if (headcount(s) < minPopOf(s)) return 0;
+  const X = T(s);
+  const adapt = Math.max(RAID.adaptMin, Math.min(RAID.adaptMax, X.adapt ?? 1));
+  const bd = threatBreakdown(s);
+  const baseTerm = bd.wTerm + bd.cTerm;
+  const daysAndValor = dayMul(s) * valorThreatMul(s) * (X.taiping ? BOSS.peaceMul : 1);
+  return Math.min(RAID.cap, Math.round(baseTerm * daysAndValor * adapt));
+}
 export const defense = (s) => power(s) * def24Of(s); /* loop176 武當紫霄宮 */
 export const winP = (s, pts) => { const d = defense(s); return Math.max(0.1, Math.min(0.9, d / (d + pts))); };
 export const demandOf = (s, pts) => Math.max(RAID.demand.min, Math.round(Math.min(Math.max(0, s.res.coin) * RAID.demand.coinMax, RAID.demand.base + pts * RAID.demand.k)));
@@ -199,7 +225,11 @@ export function bossEnd(s, src, win, defs = []) {
 export function threatDaily(s) {
   bossDaily(s);
   rumorDaily(s);
-  const X = T(s); if (X.pending || (s.day || 0) < X.next) return null;
+  const X = T(s);
+  if (X.adapt == null) X.adapt = 1;
+  else if (X.adapt < 1) X.adapt = Math.min(1, +(X.adapt + (RAID.adaptRecover ?? 0.05)).toFixed(2));
+  else if (X.adapt > 1) X.adapt = Math.max(1, +(X.adapt - (RAID.adaptRecover ?? 0.05)).toFixed(2));
+  if (X.pending || (s.day || 0) < X.next) return null;
   X.next = s.day + RAID.every + Math.floor(R(s) * (2 * RAID.jitter + 1)) - RAID.jitter;
   if (X.taiping) X.next += BOSS.peaceGap; X.next += peaceDelay(s); // loop9 巡山太平→山賊延後
   let pts = points(s); if (pts <= 0) return null;
@@ -219,10 +249,16 @@ export function threatStep(s, H) { waveStep(s); const P = T(s).pending; if (P &&
 function hurtOne(s, H) {
   const c = s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > RAID.hurtHp && !(d.shelter > s.t)); // 孩子不上陣；loop148 躲進屋的不算
   if (!c.length) return null; // loop32：守門原本被併進註解，無人可傷時會當掉
-  const d = c[Math.floor(R(s) * c.length)]; const hh = guardHurt(d, RAID.hurtHp); d.hp = Math.min(d.hp, hh); if (hh > RAID.hurtHp) log(s, `${d.name}護體真氣擋下重擊，傷勢輕了些`); /* loop117 */ d.raidHurt = (d.raidHurt || 0) + 1; const X = T(s); X.homeHurt++; X.next = (X.next || s.day || 0) + RAID.hurtCool; H?.think?.(s, d, 'raidHurt'); return d;
+  const d = c[Math.floor(R(s) * c.length)]; const hh = guardHurt(d, RAID.hurtHp); d.hp = Math.min(d.hp, hh); if (hh > RAID.hurtHp) log(s, `${d.name}護體真氣擋下重擊，傷勢輕了些`); /* loop117 */ d.raidHurt = (d.raidHurt || 0) + 1; const X = T(s); X.homeHurt++; X.next = (X.next || s.day || 0) + RAID.hurtCool;
+  X.adapt = Math.max(RAID.adaptMin, +((X.adapt ?? 1) - (RAID.adaptDropHurt ?? 0.10)).toFixed(2));
+  H?.think?.(s, d, 'raidHurt'); return d;
 }
 // i：0 付錢、1 迎戰；付不起就只能迎戰
-function raidLose(s, H, who) { const K = kindOf(T(s).cur), m = K?.steal ?? 1; const c = Math.floor(Math.max(0, s.res.coin) * RAID.steal.coin * m), f = Math.floor((s.res.food || 0) * RAID.steal.food * m); if (c) resAdd(s, 'coin', -c); if (f) resAdd(s, 'food', -f); const hurt = K && !K.loseHurt ? null : hurtOne(s, H); log(s, `${who}迎戰山賊——敗了：被搶走 ${c} 錢、${f} 飯${hurt ? `，${hurt.name}重傷` : ''}（不會死人）。`); return hurt; }
+function raidLose(s, H, who) {
+  const X = T(s);
+  X.adapt = Math.max(RAID.adaptMin, +((X.adapt ?? 1) - (RAID.adaptDropLoss ?? 0.15)).toFixed(2));
+  const K = kindOf(X.cur), m = K?.steal ?? 1; const c = Math.floor(Math.max(0, s.res.coin) * RAID.steal.coin * m), f = Math.floor((s.res.food || 0) * RAID.steal.food * m); if (c) resAdd(s, 'coin', -c); if (f) resAdd(s, 'food', -f); const hurt = K && !K.loseHurt ? null : hurtOne(s, H); log(s, `${who}迎戰山賊——敗了：被搶走 ${c} 錢、${f} 飯${hurt ? `，${hurt.name}重傷` : ''}（不會死人）。`); return hurt;
+}
 // loop3：地圖上的山賊；每 tick 呼叫。守柵者＝task.act 'defend' 且已在柵邊動手
 export function bandStep(s, dt, H) {
   const b = s.band; if (!b) return; const X = T(s); if (b.kind || X.cur) X.cur = b.kind;
@@ -270,7 +306,8 @@ export function lairLine(s) {
 }
 export function threatHtml(s) {
   const X = T(s), P = X.pending, pts = points(s), n = headcount(s);
-  const head = `<div class="threat" data-threat><b>山賊</b>：${s.band ? `【${s.band.state === 'go' ? '正沿山路逼近' : '正在撞柵'}，山賊 ${Math.max(0, Math.round(s.band.hp))}/${s.band.max}】` : ''}${n < minPopOf(s) ? `門裡才 ${n} 人，山賊還看不上（${minPopOf(s)} 人起）` /* loop125：顯示用實際門檻 */ : `家底 ${Math.round(wealth(s))}，威脅 ${pts}（戰力 ${Math.round(defense(s))}）${(rumorDays(s) ? `；傳聞約 ${rumorDays(s)} 日內來犯` : '；暫無風聲')}`}・來過 ${X.n} 次（付錢 ${X.paid}／迎戰 ${X.fought}，勝 ${X.won}）・山門重傷 ${X.homeHurt}${valorHtml(s)}`;
+  const bd = threatBreakdown(s);
+  const head = `<div class="threat" data-threat><b>山賊</b>：${s.band ? `【${s.band.state === 'go' ? '正沿山路逼近' : '正在撞柵'}，山賊 ${Math.max(0, Math.round(s.band.hp))}/${s.band.max}】` : ''}${n < minPopOf(s) ? `門裡才 ${n} 人，山賊還看不上（${minPopOf(s)} 人起）` /* loop125：顯示用實際門檻 */ : `家底 ${Math.round(wealth(s))}，威脅 ${pts}（${bd.text}・戰力 ${Math.round(defense(s))}）${(rumorDays(s) ? `；傳聞約 ${rumorDays(s)} 日內來犯` : '；暫無風聲')}`}・來過 ${X.n} 次（付錢 ${X.paid}／迎戰 ${X.fought}，勝 ${X.won}）・山門重傷 ${X.homeHurt}${valorHtml(s)}`;
   const lr = lairLine(s) + crusadeHtml27(s); /* loop179 */
   if (!P) return head + lr + '</div>' + fenceHtml(s);
   return `${head}${lr}<div class="raid-ask" data-raid-ask>${kindOf(P.kind) ? `【${kindOf(P.kind).name}】${kindOf(P.kind).desc}；` : ''}${P.noPay ? '不談價錢：' : `山賊要 ${P.demand} 兩：<button data-raid="0" ${s.res.coin < P.demand ? 'disabled' : ''}>付錢了事</button>`} <button data-raid="1">迎戰（勝算 ${Math.round(P.p * 100)}%）</button></div></div>${fenceHtml(s)}`;

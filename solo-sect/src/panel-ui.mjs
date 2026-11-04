@@ -3,7 +3,8 @@ import { DAY, ACTIVITIES, EXP_STYLES, EXP, ARTS, TIERS, ART_GAIN, ROOT, JH, BREA
 import { LABOR, strMul, laborToday } from './economy.mjs';
 import { segAt } from './world.mjs';
 import { nextStep } from './core.mjs';
-import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW, mainInner28, baseInner28, innerDrive28, isInner, qiGreat24, artById, artMulParts, appetite31, modeTitle31, qiArtBadge24, swordFast24, GRADE_NG24, MODE31, QI_SAT31 } from './arts.mjs';
+import { BRANCHES } from './artcard.mjs';
+import { CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW, growCapOf, mainInner28, baseInner28, innerDrive28, isInner, qiGreat24, artById, artMulParts, appetite31, modeTitle31, qiArtBadge24, swordFast24, MODE31, QI_SAT31, blowWhy } from './arts.mjs';
 import { CLQ } from './bonds.mjs';
 import { JHEV, letterP } from './jianghu.mjs';
 // ==== （原 dcard.mjs）====
@@ -41,7 +42,16 @@ export function statusOf(s, d) {
   const next = step ? `${step}（${actName(d.task.act)}的下一道工序）` : d.order ? `繼續「${actName(d.order)}」（指派中）` : d.task ? `做完「${actName(d.task.act)}」再重新評估` : '馬上重新評估要做什麼';
   return { layer, now, why, next };
 }
-export const statusHtml = (s, d) => { const x = statusOf(s, d); return `<div class="status"><div><b>現在</b>：${x.now} <span class="tag">${x.layer}</span></div><div><b>原因</b>：${x.why}</div><div><b>下一步</b>：${x.next}</div></div>`; };
+/* #415 N12：師徒傳授標籤 */
+export function teachingBadge(s, d) {
+  if (!d?.teaching) return '';
+  const p = s?.ds?.find((x) => x.id === d.teaching.pupil);
+  const a = artById(d.teaching.art);
+  if (!p || !a) return '';
+  return `<span class="tag teach-tag">🧑‍🏫 傳授中：${p.name}《${a.name}》</span>`;
+}
+
+export const statusHtml = (s, d) => { const x = statusOf(s, d), tb = teachingBadge(s, d); return `<div class="status"><div><b>現在</b>：${x.now} <span class="tag">${x.layer}</span>${tb ? ` ${tb}` : ''}</div><div><b>原因</b>：${x.why}</div><div><b>下一步</b>：${x.next}</div></div>`; };
 
 // ==== （原 growui.mjs）====
 /* loop81 成長分層介面（純顯示，不寫世界狀態）：A 人物實力圖、B 門類造詣、C 個別武學。
@@ -79,8 +89,9 @@ export function dailyGrowth(memo, d, day, now = 0) {
 const bar = (v, max, col) => `<span class="gbar"><span style="width:${Math.max(0, Math.min(100, (100 * v) / max))}%;background:${col}"></span></span>`;
 export function powerHtml(d, memo, day, now = 0) {
   const AXES = axesOf(d), m = dailyGrowth(memo, d, day, now), over = AXES.filter((x) => x.get(d, now) > x.hi);
-  const temp = [d.powMul && d.powMul !== 1 ? `兵器 ×${d.powMul.toFixed(2)}` : '', d.jhMul && d.jhMul !== 1 ? `江湖 ×${d.jhMul.toFixed(2)}` : '', d.early ? `初學加成 ×${d.early.mul}` : ''].filter(Boolean);
+  const temp = [d.powMul && d.powMul !== 1 ? `兵器 ×${d.powMul.toFixed(2)}` : '', d.jhMul && d.jhMul !== 1 ? `江湖 ×${d.jhMul.toFixed(2)}` : ''].filter(Boolean);
   return `<div class="grow-power"><b>人物實力</b>（常態能力；顯示基準固定，非能力上限）${polySvg(d, now, m.anim ? 'poly-grow' : '')}`
+    + `<div class="k" data-blow-why="1">${blowWhy(d)}</div>`
     + `<div class="k">${AXES.map((x) => `${x.name} ${fmtV(x, x.get(d, now))}（基準 ${x.fmt ? x.fmt(x.lo) + '–' + x.fmt(x.hi) : x.lo + '–' + x.hi}；${x.note}）`).join('<br>')}</div>`
     + (over.length ? `<div class="k warn">超出顯示範圍：${over.map((x) => x.name).join('、')}（數字照實，圖上畫在外框）</div>` : '')
     + (m.msg ? `<div class="k grow-msg">${m.msg}</div>` : '')
@@ -90,7 +101,7 @@ export function powerHtml(d, memo, day, now = 0) {
 /* loop152 v2.3 專長效果說明（強度＝造詣／40，封頂） */
 const SPEC_TIP = { zhenfa: '陣法：柵與巡獵減傷至多 25%、野獸慢 20%、巡山先手 +15%；守望／讀書／練功時增長', dushu: '毒術：出手令敵中毒 6 秒（每秒 2、攻擊 −15%），採藥 +1；採藥時增長', yishu: '醫術：療傷回復至多 +50%、解化骨綿掌、每 3 爐多 1 丹、巡山戰後包紮；煉丹／療傷時增長' };
 export function catHtml(d) {
-  const rows = CAT_ORDER.filter((c) => supOf(c, d) !== 'none').map((c) => { const v = mastery(d, c), src = Object.entries(d.arts || {}).filter(([id, r]) => ART_CAT[id]?.[c] && r.gm).map(([id, r]) => { const a = ARTS.find((x) => x.id === id); return `${a.name} ${Math.min(r.gm.e, GROW.cap[a.grade]).toFixed(1)}/${GROW.cap[a.grade]}${r.gm.init ? '（含開局折算）' : ''}`; });
+  const rows = CAT_ORDER.filter((c) => supOf(c, d) !== 'none').map((c) => { const v = mastery(d, c), src = Object.entries(d.arts || {}).filter(([id, r]) => ART_CAT[id]?.[c] && r.gm).map(([id, r]) => { const a = ARTS.find((x) => x.id === id); const cap = growCapOf(a); return `${a.name} ${Math.min(r.gm.e, cap).toFixed(1)}/${cap}${r.gm.init ? '（含開局折算）' : ''}`; });
     return `<div class="k" data-cat="${c}">${CATS[c].name} <b>${v.toFixed(1)}</b>・${levelOf(v)}${!!d && SPEC_TIP[c] && v > 0 ? `<span class="k" title="${SPEC_TIP[c]}">〔${SPEC_TIP[c]}〕</span>` : supOf(c, d) === 'part' ? '（只累積與顯示，加速未驗證）' : ''}${bar(v, 100, '#6a8ac7')}${src.length ? `<span class="k">來源：${src.join('、')}</span>` : ''}</div>`; });
   return `<div class="grow-cat"><b>門類造詣</b>（0–100；同類入門武學修練加速用${!!d ? '。內功、身法與拳掌、腿法、劍法、棍棒的造詣也進實戰' : '，不加傷害'}）${rows.join('')}${CAT_ORDER.some((c) => supOf(c, d) === 'none') ? `<div class="k">尚未支援：${CAT_ORDER.filter((c) => supOf(c, d) === 'none').map((c) => CATS[c].name).join('、')}</div>` : ''}</div>`;
 }
@@ -108,6 +119,20 @@ export function artStatus(d, a, now = 0) {
   if (r.bt2 && r.xp >= 100 - 1e-6) return { st: 'full', text: '已練滿：再練只防荒疏，不加造詣' };
   return { st: 'acc', text: '正在累積' };
 }
+/* #413 N10 / #414 N11：絕活徽章與分路 hover 說明 */
+export function artSpecialBadge(a, d) {
+  if (!a?.on) return '';
+  const entries = Object.entries(a.on);
+  if (!entries.length) return '';
+  const [evt, sp] = entries[0];
+  const brKey = d?.arts?.[a.id]?.branch;
+  const br = brKey ? BRANCHES[a.id]?.[brKey] : null;
+  const word = br?.[evt]?.fx?.word || sp.fx?.word || '絕';
+  const desc = br?.[evt]?.log || sp.log || '特有絕活招式';
+  const brLabel = br?.name ? `・${br.name}` : '';
+  return `<span class="badge art-special-badge" title="${desc}" style="font-size:11px;padding:1px 4px;border-radius:3px;background:rgba(180,120,40,0.15);color:#b35900;border:1px solid rgba(180,120,40,0.3);margin-left:4px;cursor:help;">【絕活・${word}${brLabel}】</span>`;
+}
+
 export function artsGrowHtml(d, now = 0, grow = true) {
   const f = focusOf(d), mi = !!d ? mainInner28(d) : null, bi = !!d ? baseInner28(d) : null, rows = ARTS.filter((a) => d.arts?.[a.id] || (!a.secret && !(a.own24 && lockedArt24(d, a) && !chiefLocked24(d, a)) && fits(d, a) && (reqMissing(d, a).length || chiefLocked24(d, a)))).map((a) => {
     const r = d.arts?.[a.id], st = artStatus(d, a, now), t = r ? artTier(d, a.id) : -1, cats = Object.keys(ART_CAT[a.id] || {}).map((c) => CATS[c].name + (supOf(c, d) === 'none' ? '（尚未支援）' : '')).join('＋');
@@ -117,10 +142,11 @@ export function artsGrowHtml(d, now = 0, grow = true) {
     if (r && d.pf && !r.guizhen) { const p = profOf(r.xp), nx = nextLvXp(r.xp); why.push(p.lv ? `熟練度：招式威力 +${((profMul(r.xp) - 1) * 100).toFixed(1)}%（每重 +${(PROF.perLv * 100).toFixed(1)}%）${p.stuck ? '，卡瓶頸，突破後才升階' : nx != null && p.lv < PROF.lvs ? `，第${PROF.cn[p.lv + 1]}重 xp ${nx.toFixed(1)}` : `，滿十重，xp ${nx} 升${TIERS[p.t + 1][1]}`}` : '熟練度：化境不分重'); }
     if (r && rustOf(r, now) > 0.01) why.push(`荒疏 ${(rustOf(r, now) * 100).toFixed(0)}%`);
     if (r && Object.keys(ART_CAT[a.id] || {}).every((c) => supOf(c, d) === 'none')) why.push('門類尚未支援：不累積造詣');
-    if (!!d && r && !isInner(a)) { const drv = innerDrive28(d, a); if (drv.tier === 1) why.push(`正宗催動 ×${drv.mul.toFixed(2)}`); else if (drv.tier === 3) why.push(`內力虛浮 ×${drv.mul.toFixed(2)}`); else if (drv.tier === 4) why.push(`⚠️異屬逆催 ×${drv.mul.toFixed(2)}`); } /* loop194；本門正宗只留在這一招 */
+    if (!!d && r && !isInner(a)) { const drv = innerDrive28(d, a); if (drv.tier === 1 && drv.root) why.push('根基加持'); else if (drv.tier === 3) why.push('內力虛浮'); else if (drv.tier === 4) why.push('⚠️異屬逆催'); } /* #405 催動不再乘品階，面板不列係數 */
     if (!!d && a.mode) why.push(modeTitle31(d, a));
     const lead = (!!d && r && mi?.id === a.id ? `★主運內功 ${a.grade || 1}品 ${bi?.id === a.id && t >= 2 ? '◆根基 ' : ''}` : '') + (f === a.id ? '◆主修 ' : '');
-    return `<div class="k artgrow" data-artst="${st.st}">${lead}${a.name}（${cats}）${r ? `・${d.pf && !r.guizhen ? `<span data-prof>${profLabel(r.xp)}</span>` : TIERS[t][1]} ${r.xp.toFixed(1)}${nxt}${moves}` : ''}・<b>${st.text}</b>${why.length ? `｜${why.join('；')}` : ''}</div>`; });
+    const spBadge = artSpecialBadge(a, d);
+    return `<div class="k artgrow" data-artst="${st.st}">${lead}${a.name}${spBadge}（${cats}）${r ? `・${d.pf && !r.guizhen ? `<span data-prof>${profLabel(r.xp)}</span>` : TIERS[t][1]} ${r.xp.toFixed(1)}${nxt}${moves}` : ''}・<b>${st.text}</b>${why.length ? `｜${why.join('；')}` : ''}</div>`; });
   const ng = !!d && mi && d.arts?.[mi.id] ? mastery(d, 'neigong') : 0;
   const Ap = !!d ? appetite31(d) : 0, pref = Ap > 0 ? '好打法' : Ap < 0 ? '好練法' : '中庸', bore = d?.bore31 || 0, sit = Ap && bore >= 6 - Math.abs(Ap) ? '坐不住' : '坐得住';
   const fa = f ? artById(f) : null, bits = fa ? artMulParts(d, fa).parts.ext.map((x) => x[0]).filter((n) => n === '投其所好' || n === '枯燥難耐' || n === '嫌其花俏' || n === '以技入道') : [];
@@ -138,14 +164,14 @@ export function rulesHtml(d) { const G = GROW, A = G.acc;
   return `<details class="grow-rules" data-keep="grow-rules"><summary>造詣怎麼算（本版規則）</summary><div class="k">`
     + `修練：熟練真的有長才算，每單位投入 ×${G.k}；對敵命中 ×${G.src.fight}（修練的 ${G.src.fight} 倍）；師父傳功每門一次 +${G.pass}。<br>`
     + `里程碑：自然練到小成 +${G.ms[0][1]}、打坐破大成 +${G.ms[1][1]}、破化境 +${G.ms[2][1]}。<br>`
-    + `每門上限：入門 ${G.cap[1]}、普通 ${G.cap[2]}、精品 ${G.cap[3]}、絕學 ${G.cap[4]}；門類合計最多 100。開局已有的熟練一次折算 ×${G.init}。<br>`
+    + `每門造詣上限：入門 ${G.cap[1]}、普通 ${G.cap[2]}、精品 ${G.cap[3]}、絕學 ${G.cap[4]}；門類合計最多 100。出手威力不看這張表，看每門自己的曲線。開局已有的熟練一次折算 ×${G.init}。<br>`
     + `加速：只看「其他」同類武學的造詣，只加在入門與普通武學、熟練 ${A.fade} 以前，最多 ×${A.max}；瓶頸照樣要打坐。<br>`
     + `不給造詣：求學、高人指點、劇情直接給的熟練；瓶頸冷卻中、已練滿再練。<br>`
     + `其他本版規則：悟性不足的武學止於小成；左右互搏大成後威力 ×${JH.twin}（算在江湖倍率，不算進圖）。${tail}</div></details>`; }
 /* loop97 熟練度十重規則說明：數字由 TIERS／PROF／BREAK 推得 */
 export function profRulesHtml() { const rows = TIERS.slice(0, -1).map(([lo, n], k) => { const hi = TIERS[k + 1][0]; return `<li>${n}：xp ${lo}～${hi}，每 ${((hi - lo) / PROF.lvs).toFixed(1)} xp 一重</li>`; }).join('');
   return `<details data-keep="prof-rules"><summary>熟練度十重怎麼算</summary><div class="k">每門武學的${TIERS.slice(0, -1).map((t) => t[1]).join('／')}各分十重，${TIERS[TIERS.length - 1][1]}不分重。</div><ul>${rows}</ul>`
-    + `<div class="k">每升一重：該武學招式威力 +${(PROF.perLv * 100).toFixed(1)}%（十重共 +${(PROF.perLv * 900).toFixed(1)}%）；升到下一階時從一重重算，但升階本身的威力 +${(ART_GAIN.tierDmg * 100).toFixed(0)}% 比十重多，所以不會變弱。</div>`
+    + `<div class="k">每升一重：該武學招式威力 +${(PROF.perLv * 100).toFixed(1)}%（十重共 +${(PROF.perLv * 900).toFixed(1)}%）；升到下一階時從一重重算。升階威力看該門武學的曲線，不再是每一階同一個百分比。</div>`
     + `<div class="k">只影響招式實際出手（狩獵、遠行），不影響門派戰力、練功速度與造詣。卡瓶頸（xp ${BREAK.caps.join('、')}）時停在十重，要突破才升階。</div></details>`; }
 // loop120 窄欄：氣 x/y＋條＋滑鼠提示（減傷、力竭）
 export function qiStatus(d, now = 0) {
@@ -159,12 +185,12 @@ export function neigongRules2Html(d) {
   const tiers = TIERS.map((t, i) => `${t[1]} ${NG2.cap[i]}`).join('、');
   const mits = NG2.mit.map((v) => Math.round(v * 100) + '%').join('／');
   const cap = !!d
-    ? `開局沒有內力。每門已學內功按十重在相鄰兩階（${tiers}）之間補間，再乘品階係數（1品 ${GRADE_NG24[1]}、2品 ${GRADE_NG24[2]}、3品 ${GRADE_NG24[3]}、4品 ${GRADE_NG24[4]}）。加總後先乘內功造詣（每點 ×1.004），再封頂 ${NG2.total24}；減傷同樣補間（${mits}），最多 ${Math.round(NG2.mitCap24 * 100)}%。`
+    ? `開局沒有內力。每門已學內功按十重在相鄰兩階（${tiers}）之間補間，不乘品階。加總後先乘內功造詣（每點 ×1.004），再封頂 ${NG2.total24}；減傷同樣補間（${mits}），最多 ${Math.round(NG2.mitCap24 * 100)}%。`
     : `開局沒有內力。每門已學內功依階給上限（${tiers}），最多 ${NG2.total}；減傷依階 ${mits}，最多 ${Math.round(NG2.mitCap * 100)}%。`;
   const spent = !!d ? `${NG2.spentT} 秒（主運內功三品且大成則減半）` : `${NG2.spentT} 秒`;
   const walk = `腳力→輕功（每階 +${Math.round(NG23.speedPerTier * 100)}%）→御氣疾行（內功小成以上、內力 >${NG23.yuqi.keep * 100}%：行走 ×${NG23.yuqi.base}＋${NG23.yuqi.perTier}×階，每秒耗 ${NG23.yuqi.drain} 氣，留三成不力竭）。內力 <${NG23.medLow * 100}% 時較想打坐。`;
   const combat = !!d
-    ? `<div class="k">${walk}內力 ≥${NG23.qiAoeAt} 範圍招半徑 +${NG23.qiAoe}。出手看該門武學：築基內勁係數 ${MODE31.base.qiScale}、練法 ${MODE31.lian.qiScale}、打法 ${MODE31.da.qiScale}。內勁＝1＋係數×min(${QI_SAT31}, 內力/100)×(1＋0.004×有效內功造詣)；有效內功造詣＝內功造詣＋0.2×最高外功造詣，封頂 100。不再按門派加成出手，也不再縮短劍招冷卻。</div>`
+    ? `<div class="k">${walk}內力 ≥${NG23.qiAoeAt} 範圍招半徑 +${NG23.qiAoe}。出手看該門武學：築基內勁係數 ${MODE31.base.qiScale}、練法 ${MODE31.lian.qiScale}、打法 ${MODE31.da.qiScale}。內勁＝1＋係數×min(${QI_SAT31}, 內力/100)×(1＋0.004×有效內功造詣)；${QI_SAT31} 是內力飽和上限，不看品階。有效內功造詣＝內功造詣＋0.2×最高外功造詣，封頂 100。內功催動不再乘品階。不再按門派加成出手，也不再縮短劍招冷卻。</div>`
     : '';
   return `<details data-keep="ng-rules"><summary>護體真氣怎麼算</summary><div class="k">${cap}</div>`
     + `<div class="k">受擊（狩獵、遠行）：先減傷，再由內力吸收，不夠才扣生命；內力打空力竭 ${spent}，受傷 ×${NG2.spentMul}；任一內功練到圓滿十重或化境則「真氣綿長」，打空也不力竭（只此一項，不另加內力或減傷）。寨匪、剿寨重傷時，內力 ≥${NG2.guard} 就扣 ${NG2.guard}，生命留 ${NG2.guardHp}。門派戰力每人 +${NG2.powK}×上限。</div>`

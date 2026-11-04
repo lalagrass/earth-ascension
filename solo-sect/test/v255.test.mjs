@@ -13,14 +13,14 @@ const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0)
 // #390：舊規則開局已不存在，原本的舊局對照組（OLD）與各測試裡的舊局斷言一併刪除
 const hero = (s) => s.ds.find((d) => d.id === 'hero');
 
-const NEW = { emei: ['emeiJiuyang', 'linjiZhuang', 'emeiSword', 'huifengSword', 'jindingPalm', 'tiangangFinger'], wudang: ['wudangJiuyang', 'wudangFist', 'rouyunSword', 'taijiSword'], taohua: ['biboXinfa', 'luoyingPalm', 'lanhuaHand', 'yuxiaoSword'], gumu: ['tianluoPalm', 'yunvSword'], xingxiu: ['huagongDafa', 'chousuiPalm', 'sanyinClaw'] }; /* loop201：神木毒功退出星宿樹 */
+const NEW = { emei: ['emeiJiuyang', 'linjiZhuang', 'emeiSword', 'huifengSword', 'jindingPalm', 'tiangangFinger', 'yanhang', 'jieshou'], wudang: ['wudangJiuyang', 'wudangFist', 'rouyunSword', 'taijiSword', 'taijiClaw', 'xuanxuBlade'], taohua: ['biboXinfa', 'tanzhi', 'lanhuaHand', 'yuxiaoSword'], gumu: ['tianluoPalm', 'yunvSword', 'meinvFist', 'yunvJian', 'changhen', 'qianmie', 'qufeng', 'jiuyinGong', 'xianyunStep'], xingxiu: ['huagongDafa', 'chousuiPalm', 'sanyinClaw', 'tianshanStaff', 'zhaixingHand', 'mingtian', 'xiaowuxiang'] }; /* loop201：神木毒功退出星宿樹。#409 落英改自練，不在這張可傳清單 */
 test('loop168 五派專屬武學：classic＋v24、非 secret、ART_CAT 照規格、各派樹照規格', () => {
   for (const [k, ids] of Object.entries(NEW)) for (const id of ids) { const a = A.artById(id); assert.ok(a && a.v24 && a.classic && !a.secret && a.own24 === k, id); assert.ok(A.ART_CAT[id], id); assert.ok(SECTS[k].tree.includes(id), id); }
-  assert.deepEqual(SECTS.emei.tree, ['breath', 'emeiJiuyang', 'linjiZhuang', 'emeiSword', 'huifengSword', 'jindingPalm', 'tiangangFinger', 'stepFeather']); assert.deepEqual(SECTS.emei.ban, ['jiuyinClaw']);
-  assert.deepEqual(SECTS.wudang.tree, ['breath', 'wudangXinfa', 'wudangJiuyang', 'wudangFist', 'mianPalm', 'taiji', 'basicSword', 'rouyunSword', 'taijiSword', 'stepEight']); /* loop172 t191 補武當心法、綿掌 */
-  assert.deepEqual(SECTS.taohua.tree, ['breath', 'biboXinfa', 'luoyingPalm', 'lanhuaHand', 'basicSword', 'yuxiaoSword', 'stepEight']);
-  assert.deepEqual(SECTS.gumu.tree, ['breath', 'yunv', 'tianluoPalm', 'yunvSword', 'xuantie', 'anran', 'stepFeather']);
-  assert.deepEqual(SECTS.xingxiu.tree, ['breath', 'huagongDafa', 'chousuiPalm', 'sanyinClaw', 'duPu', 'zhaixingStep']); /* loop201：神木毒功退出，化功大法仍 chiefOnly */
+  assert.deepEqual(SECTS.emei.tree, ['breath', 'emeiJiuyang', 'linjiZhuang', 'emeiSword', 'huifengSword', 'yanhang', 'jindingPalm', 'tiangangFinger', 'jieshou', 'stepFeather']); assert.deepEqual(SECTS.emei.ban, ['jiuyinClaw']);
+  assert.deepEqual(SECTS.wudang.tree, ['breath', 'wudangXinfa', 'wudangJiuyang', 'wudangFist', 'mianPalm', 'taiji', 'taijiClaw', 'basicSword', 'rouyunSword', 'taijiSword', 'xuanxuBlade', 'stepEight']); /* loop172 t191 補武當心法、綿掌。#409 補太極爪、玄虛刀 */
+  assert.deepEqual(SECTS.taohua.tree, ['breath', 'biboXinfa', 'tanzhi', 'lanhuaHand', 'basicSword', 'yuxiaoSword', 'stepEight']);
+  assert.deepEqual(SECTS.gumu.tree, ['breath', 'yunv', 'tianluoPalm', 'meinvFist', 'yunvJian', 'yunvSword', 'changhen', 'qianmie', 'qufeng', 'jiuyinGong', 'xianyunStep', 'xuantie', 'anran', 'stepFeather']);
+  assert.deepEqual(SECTS.xingxiu.tree, ['breath', 'huagongDafa', 'chousuiPalm', 'sanyinClaw', 'tianshanStaff', 'zhaixingHand', 'mingtian', 'xiaowuxiang', 'duPu', 'zhaixingStep']); /* loop201：神木毒功退出，化功大法仍 chiefOnly */
   const shenmu = A.artById('shenmuGong'); assert.equal(shenmu.deprecated, true); assert.equal(shenmu.secret, true); assert.ok(!SECTS.xingxiu.tree.includes('shenmuGong'));
   assert.deepEqual(A.ART_CAT.tiangangFinger, { quanzhang: 0.5, qimen: 0.5 }); assert.deepEqual(A.ART_CAT.huagongDafa, { neigong: 0.6, dushu: 0.4 });
   assert.ok(A.isSwordArt('yuxiaoSword') && A.isSwordArt('taijiSword') && !A.isSwordArt('jindingPalm'));
@@ -40,7 +40,9 @@ test('loop168 武當：武當長拳大成可領悟太極拳；太極拳大成可
 });
 test('loop168 本門專屬可傳功', () => {
   const s = V({ sect24: 'taohua' }); tick(s, 0.1); const h = hero(s); h.arts.luoyingPalm = { xp: 100 };
-  const p = passPick(s, h); assert.equal(p?.art, 'luoyingPalm');
+  assert.notEqual(passPick(s, h)?.art, 'luoyingPalm');
+  h.arts.tanzhi = { xp: 100 };
+  const p = passPick(s, h); assert.equal(p?.art, 'tanzhi');
   const o = V({ sect24: 'emei' }); tick(o, 0.1); const k = hero(o); for (const id of Object.keys(k.arts)) k.arts[id].xp = 0; k.arts.luoyingPalm = { xp: 100 }; assert.equal(passPick(o, k), null, '他派專屬不傳');
 });
 test('loop168 寒玉床：門人 ≤5 打坐回氣與衝關率 ×1.5；神木王鼎：藥材 +1、香火 +1、毒傷 ×1.35', () => {

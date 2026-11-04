@@ -28,15 +28,15 @@ test('loop196 四階催動：本門正宗、同源、虛浮、逆催；純內功
   const [, x] = fresh('xingxiu');
   give(x, 'shenmuGong', 30); give(x, 'chousuiPalm', 30);
   assert.deepEqual(drive(x, 'shenmuGong'), { tier: 0, mul: 1 });
-  assert.equal(drive(x, 'chousuiPalm').tier, 1); assert.equal(drive(x, 'chousuiPalm').mul, A.DRIVE28.t1);
-  give(x, 'sanyinClaw', 10); assert.equal(drive(x, 'sanyinClaw').tier, 3); assert.ok(Math.abs(drive(x, 'sanyinClaw').mul - A.floatMul31(A.artById('sanyinClaw'))) < 1e-9); /* loop201：打法虛浮依 qiScale，不再固定 0.78 */
-  give(x, 'shenmuGong', 60); assert.equal(drive(x, 'sanyinClaw').tier, 1); assert.equal(drive(x, 'sanyinClaw').mul, A.DRIVE28.t1);
-  give(x, 'sanyinClaw', 30); assert.ok(Math.abs(drive(x, 'sanyinClaw').mul - A.DRIVE28.t1 * 1.06) < 1e-9); /* 二品內功大成催三品外功，吃根基 */
+  assert.equal(drive(x, 'chousuiPalm').tier, 1); assert.equal(drive(x, 'chousuiPalm').mul, 1); /* #405 退役：正宗不再 ×1.25 */
+  give(x, 'sanyinClaw', 10); assert.equal(drive(x, 'sanyinClaw').tier, 3); assert.equal(drive(x, 'sanyinClaw').mul, 1); /* #405 退役：虛浮不再縮威力 */
+  give(x, 'shenmuGong', 60); assert.equal(drive(x, 'sanyinClaw').tier, 1); assert.equal(drive(x, 'sanyinClaw').mul, 1);
+  give(x, 'sanyinClaw', 30); assert.ok(Math.abs(drive(x, 'sanyinClaw').mul - 1.06) < 1e-9); /* 根基仍在，不再先乘 1.25 */
   const [, e] = fresh('emei'); give(e, 'breath', 60); give(e, 'chousuiPalm', 30);
   assert.equal(drive(e, 'chousuiPalm').tier, 3);
   give(e, 'emeiJiuyang', 60); assert.equal(drive(e, 'chousuiPalm').tier, 2); assert.equal(drive(e, 'chousuiPalm').mul, 1);
   const [, g] = fresh('gaibang'); give(g, 'huntianGong', 60); give(g, 'sanyinClaw', 10);
-  assert.equal(drive(g, 'sanyinClaw').tier, 4); assert.equal(drive(g, 'sanyinClaw').mul, A.DRIVE28.t4);
+  assert.equal(drive(g, 'sanyinClaw').tier, 4); assert.equal(drive(g, 'sanyinClaw').mul, 1); /* #405 退役：逆催不再 ×0.65 */
   const [, w] = fresh('wudang'); give(w, 'wudangXinfa', 60); give(w, 'wudangJiuyang', 30); give(w, 'basicFist', 30);
   const pub = drive(w, 'basicFist'); assert.equal(pub.tier, 2); assert.ok(pub.root); assert.ok(Math.abs(pub.mul - 1.06) < 1e-9);
   give(w, 'taijiSword', 30); delete w.arts.wudangJiuyang; assert.equal(drive(w, 'taijiSword').tier, 3, '一品內功催不動三品本門劍');
@@ -50,17 +50,18 @@ test('loop196 輕功身法的腳程與閃避乘同一催動係數', () => {
   assert.equal(evadeScore(d), d.skills.agility + tierPts * mul + lazy);
 });
 
-test('loop197 內功品階與十重：同階大成，高品內力更高，階內重數連續成長', () => {
+test('loop197 內功十重：同火候不再乘品階，階內重數連續成長', () => {
+  /* #403 退役：品階不再乘內力上限與減傷。同 xp 的吐納、峨眉九陽功、紫霞、辟邪貢獻相同。 */
   const one = (id, xp) => ({ v24: true, arts: { [id]: { xp } } });
-  assert.ok(Math.abs(A.qiMax2(one('breath', 55)) - 45 * A.GRADE_NG24[1]) < 1e-9);
-  assert.ok(Math.abs(A.qiMax2(one('emeiJiuyang', 55)) - 45 * A.GRADE_NG24[2]) < 1e-9);
-  assert.ok(Math.abs(A.qiMax2(one('zixia', 55)) - 45 * A.GRADE_NG24[3]) < 1e-9);
-  assert.ok(Math.abs(A.ngTierCont24(one('bixie', 55), 'bixie') - 45 * A.GRADE_NG24[4]) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('breath', 55)) - 45) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('emeiJiuyang', 55)) - 45) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('zixia', 55)) - 45) < 1e-9);
+  assert.ok(Math.abs(A.ngTierCont24(one('bixie', 55), 'bixie') - 45) < 1e-9);
   const lv1 = A.qiMax2(one('breath', 55)), lv9 = A.qiMax2(one('breath', 80));
-  assert.ok(lv9 > lv1); assert.ok(Math.abs(lv9 - (45 + (70 - 45) * 0.8) * A.GRADE_NG24[1]) < 1e-9);
-  assert.ok(Math.abs(A.qiMax2(one('zixia', 100)) - 100 * A.GRADE_NG24[3]) < 1e-9);
-  assert.ok(Math.abs(A.qiMax2(one('zixia', 99)) - (70 + (100 - 70) * 0.9) * A.GRADE_NG24[3]) < 1e-9);
-  assert.ok(Math.abs(A.mitOf(one('zixia', 55)) - 0.08 * A.GRADE_NG24[3]) < 1e-9);
+  assert.ok(lv9 > lv1); assert.ok(Math.abs(lv9 - (45 + (70 - 45) * 0.8)) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('zixia', 100)) - 100) < 1e-9);
+  assert.ok(Math.abs(A.qiMax2(one('zixia', 99)) - (70 + (100 - 70) * 0.9)) < 1e-9);
+  assert.ok(Math.abs(A.mitOf(one('zixia', 55)) - 0.08) < 1e-9);
   const piled = { v24: true, arts: { breath: { xp: 100 }, zixia: { xp: 100 }, jiuyang: { xp: 100 }, emeiJiuyang: { xp: 100 } } };
   assert.equal(A.qiMax2(piled), A.NG2.total24); assert.ok(A.mitOf(piled) <= A.NG2.mitCap24);
 });

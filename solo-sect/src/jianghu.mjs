@@ -51,7 +51,7 @@ const FX = {
   beggar: [(s, H) => { resSet(s, 'coin', Math.max(0, s.res.coin - 10)); if (isHero(s, 'axing')) { s.hero.flags = { ...(s.hero.flags || {}), book: true }; arc(s, 'axing', 2, '如來神掌（十文錢的）'); } else if (R(s, H) < 0.01) { s.jh.realBook = true; log(s, '……竟然是真的！可惜要潛能覺醒才看得懂。'); } else { const d = heroD(s); mood(d, 3); log(s, '翻開一看：九成是插圖。'); } }, () => {}],
   bao: [(s) => { for (const d of fighters(s)) mood(d, 5); }, (s) => { const g = find(s, 'baozugong'); mood(g, 5); }],
   zwj2: [(s) => { teachJ(s, heroD(s), 'jiuyang', DA); arc(s, 'zhangwuji', 2, '九陽神功'); }],
-  zwj3: [(s) => { const d = heroD(s); teachJ(s, d, 'qiankun', DA); d.reflect = JH.reflect; arc(s, 'zhangwuji', 3, '乾坤大挪移'); }, () => {}],
+  zwj3: [(s) => { const d = heroD(s); teachJ(s, d, 'qiankun', 1); arc(s, 'zhangwuji', 3, '乾坤大挪移'); }, () => {}], /* #410 只開第一層（入門）。反震在武學的 on，不再寫 d.reflect。再往上練不得高過聖火心法或九陽神功 */
   zwj4: [(s) => { const d = heroD(s); if ((d.wu ?? 3) >= 4) { teachJ(s, d, 'taiji', DA); arc(s, 'zhangwuji', 4, '太極拳：忘光了，才算學會'); } else log(s, '忘是忘了，可是也沒學會。（悟性不足 4）'); }],
   zwj5: [(s) => fourGirls(s, 'zhaomin', { free: 10, qing: 5 }), (s) => fourGirls(s, 'zhouzhiruo', { sect: 10 }), (s) => fourGirls(s, 'xiaozhao', { qing: 10 }), (s) => fourGirls(s, 'yinli', { xia: 10 })],
   wxb2: [(s) => { s.jh.casino = true; arc(s, 'weixiaobao', 2, '賭坊開張'); }, () => {}],
@@ -121,6 +121,7 @@ export function jhStep(s, dt, H) {
   // 黯然銷魂掌：心情 ≤30 威力 ×1.5，越低越強；癡：楊過心情隨小龍女；左右互搏、空明拳
   const yg = find(s, 'yangguo'), xl = find(s, 'xiaolongnv');
   for (const d of s.ds) { let m = 1;
+    d.yunvLink = !!(d.arts?.yunv && s.ds.some((o) => o !== d && o.arts?.yunv && !o.away && (o.hp ?? 1) > 0));
     if (d.arts?.anran) m *= d.mood <= JH.anranMood ? JH.anranMax : 1 + (JH.anranMax - 1) * Math.max(0, (60 - d.mood) / 30) * 0.5;
     if (d.arts?.zuoyou && artTier(d, 'zuoyou') >= 2) m *= JH.twin; if (d.arts?.kongming) m *= JH.kongming;
     if (s.jh.residue && d.noGrow && d.hidden && d.arts?.[d.noGrow]) d.arts[d.noGrow].xp = d.hidden.xp; // 隱藏高手不再進步

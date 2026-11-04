@@ -1,4 +1,5 @@
-import { chiefLocked24, growEnsure, settleGrowth, artById, artTier, learnArt, curCap, reqMissing, topTier } from './arts.mjs';
+import { chiefLocked24, growEnsure, settleGrowth, artById, artTier, learnArt, curCap, reqMissing, topTier, gated, autoBranch } from './arts.mjs';
+import { fanRank, CEILING, SPECIALS, BRANCHES } from './artcard.mjs';
 import { ARTS, TRAITS, DAY } from './data.mjs';
 import { aff, relAdd } from './social.mjs';
 import { log, resAdd } from './util.mjs';
@@ -61,6 +62,111 @@ export function apprCands(s, m) { if (!isSenior(m) || m.away || pupilsOf(s, m).l
 export function takePupil(s, m, d) { if (!d || d.master || !isSenior(m) || pupilsOf(s, m).length >= APPR.max || d.role !== 'outer') return false; d.master = m.id; relAdd(s, m, d, 4); addMem(s, m, d, 'apprentice'); log(s, `【收徒】${m.name}收${d.name}為徒`); return true; }
 export function apprDaily(s) { for (const m of s.ds) { const c = apprCands(s, m).sort((x, y) => aff(s, m, y) - aff(s, m, x))[0]; if (c) takePupil(s, m, c); } }
 export const apprMul = (s, d) => { const m = d.master && s.ds.find((o) => o.id === d.master); return m && !m.away ? APPR.trainMul : 1; };
+
+// ---- 名功門內師徒傳授（#415 N12）----
+// MUD learn 模型：師父真的花時間教（每日預約半日 teachCool，這段時間不接別的活），
+// 徒弟這門名功在師父教的時段裡修練加速（TEACH_ART.mul），火候仍靠自己練，不直接給檔。
+// 受者須是師父的徒弟「且」好感達 TEACH_ART.aff；最高只到傳者層級 − 1。
+// 每位師父每門名功一生只收一位傳人（風清揚只傳令狐沖）。
+// 名功只算 secret＋classic 的原著名功；辟邪須受者已付自宮代價，獨孤九劍限華山一脈。
+export const TEACH_ART = { aff: 60, mul: 2, minTier: 3, session: DAY / 2 };
+export function isFamousArt(a) {
+  if (!a) return false;
+  const art = typeof a === 'string' ? artById(a) : a;
+  return !!(art && art.secret && art.classic && !art.derived);
+}
+function costOk(s, d, a) {
+  if (a.id === 'bixie') return d.duanqing != null;
+  if (a.id === 'dugu') return (s?.sect?.id || s?.sect24) === 'huashan' || !!s?.hs;
+  return true;
+}
+
+export function canTeachArt(s, m, d, artId) {
+  if (!m || !d || m === d || m.removed || d.removed) return false;
+  if (m.away || d.away) return false;
+  if ((m.hp ?? 100) <= 25 || (d.hp ?? 100) <= 25) return false;
+  if (m.role === 'laborer' || d.role === 'laborer') return false;
+  const a = typeof artId === 'string' ? artById(artId) : artId;
+  if (!a || !isFamousArt(a)) return false;
+  const mTier = artTier(m, a.id);
+  if (mTier < TEACH_ART.minTier) return false;
+  const heir = m.taught28?.[a.id];
+  if (heir && heir !== d.id) return false; /* 一門名功一生只傳一人 */
+  if (d.master !== m.id) return false;
+  if (aff(s, m, d) < TEACH_ART.aff || aff(s, d, m) < TEACH_ART.aff) return false; /* 師徒「且」好感 */
+  if (!costOk(s, d, a)) return false;
+  if (gated(d, a)) return false;
+  if (reqMissing(d, a).length > 0) return false;
+  const ceilingArts = a.learn?.ceiling?.arts || CEILING[a.id];
+  if (ceilingArts?.length) {
+    const maxC = Math.max(-1, ...ceilingArts.map((cId) => artTier(d, cId)));
+    if (maxC < 0) return false;
+  }
+  const dTier = d.arts?.[a.id] ? artTier(d, a.id) : -1;
+  if (dTier >= mTier - 1) return false;
+  if (m.teaching && m.teaching.pupil !== d.id) return false;
+  if (s?.ds?.some((o) => o !== m && o.teaching?.pupil === d.id)) return false;
+  return true;
+}
+
+export function startTeachArt(s, m, d, artId) {
+  if (!canTeachArt(s, m, d, artId)) return false;
+  const id = typeof artId === 'string' ? artId : artId.id;
+  m.teaching = { pupil: d.id, art: id };
+  (m.taught28 ||= {})[id] = d.id;
+  if (!d.arts?.[id]) { learnArt(d, id, s.t); growEnsure(d); log(s, `【傳功】${m.name}收${d.name}為《${artById(id).name}》傳人，開始傳授`); addMem(s, m, d, 'pass', artById(id).name); }
+  return true;
+}
+
+export function stopTeachArt(s, m) {
+  if (!m || !m.teaching) return false;
+  m.teaching = null;
+  return true;
+}
+
+export function teachCandidates(s, m) {
+  if (!m || m.away || m.removed || (m.hp ?? 100) <= 25 || m.role === 'laborer') return [];
+  const arts = ARTS.filter((a) => isFamousArt(a) && artTier(m, a.id) >= TEACH_ART.minTier);
+  if (!arts.length) return [];
+  const cands = [];
+  for (const d of s.ds) {
+    if (d === m || d.away || d.removed || (d.hp ?? 100) <= 25 || d.role === 'laborer') continue;
+    for (const a of arts) if (canTeachArt(s, m, d, a.id)) cands.push({ d, art: a.id });
+  }
+  cands.sort((x, y) => (y.d.master === m.id) - (x.d.master === m.id) || aff(s, m, y.d) - aff(s, m, x.d));
+  return cands;
+}
+
+/* 一個傳授時段：師父預約半日（teachCool），不直接給檔。 */
+export function teachStage(s, m, d, artId) {
+  if (!canTeachArt(s, m, d, artId)) return false;
+  const a = typeof artId === 'string' ? artById(artId) : artId;
+  if (!m.teaching) startTeachArt(s, m, d, a.id);
+  m.teachCool = TEACH_ART.session;
+  m.reason = `傳授${d.name}《${a.name}》`;
+  relAdd(s, m, d, 1);
+  return true;
+}
+/* 徒弟正在被教的那門名功，練功時乘 TEACH_ART.mul。只在師父當日的傳授時段內。 */
+export function teachMul(s, d, artId) {
+  const m = s?.ds?.find((o) => o.teaching?.pupil === d.id);
+  return m && !m.away && m.teachCool > 0 && (!artId || m.teaching.art === artId) ? TEACH_ART.mul : 1;
+}
+
+export function teachDaily(s) {
+  for (const m of s.ds) {
+    if (!m.teaching) {
+      const cand = teachCandidates(s, m)[0];
+      if (cand) startTeachArt(s, m, cand.d, cand.art);
+    }
+    if (m.teaching) {
+      const { pupil, art } = m.teaching;
+      const d = s.ds.find((x) => x.id === pupil);
+      if (d && canTeachArt(s, m, d, art)) teachStage(s, m, d, art);
+      else { if (d && artById(art)) log(s, `【傳功】${m.name}傳${d.name}《${artById(art).name}》告一段落`); m.teaching = null; }
+    }
+  }
+}
 
 // ==== （原 clique.mjs）====
 // loop20 好友圈成派：彼此好感都 ≥ CLQ.aff 的一群（≥2 人、每人至多一派）結成「同門小派」。

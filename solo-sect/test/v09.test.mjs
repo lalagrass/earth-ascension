@@ -37,7 +37,12 @@ test('前置未達：鎖住並說明；達成後成為可求學，學會開出�
   d.pendingArt = null; d.arts.basicFist.xp = 30; let n = 0; while (!d.arts.pushPalm && n++ < 5) { const x = gainArt(d, 0); if (x) learnArt(d, x.id); }
   assert.ok(d.arts.pushPalm && d.moves.includes('push'));
 });
-test('階數加傷害：圓滿 ×1.3，再乘圓滿效果 ×1.15', () => { const d = mk(3); d.arts.basicFist.xp = 90; assert.ok(Math.abs(moveMul(d, 'fist') - 1.3 * 1.15) < 1e-9); });
+test('火候威力走該門曲線，不再是圓滿 ×1.3×1.15', () => {
+  const d = mk(3); d.qi = 0; const a = artById('basicFist');
+  d.arts.basicFist.xp = 0; const a0 = moveMul(d, 'fist');
+  d.arts.basicFist.xp = 100; const a4 = moveMul(d, 'fist');
+  assert.ok(Math.abs(a0 / a4 - a.curve[0] / a.curve[4]) < 1e-6, a0 / a4);
+});
 test('模擬中練功：主角掌法學到推山掌，熟練累積；專修可指定', () => {
   const s = createState(9); s.res.food = 99; setOrder(s, 'hero', 'train'); run(s, 600); setOrder(s, 'hero', null); run(s, 400);
   const h = s.ds[0]; assert.ok(h.arts.basicFist.xp > 25); assert.ok(h.arts.pushPalm, Object.keys(h.arts).join()); assert.ok(h.moves.includes('push'));
