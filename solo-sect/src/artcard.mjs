@@ -168,11 +168,17 @@ export function computeFanBase() {
 }
 /* #408 第三輪：改用實測校準。tools/calib-fan.mjs 跑 bot 12 種子（1001–1012，第 30 日），
    讓「常見段」使用者 dps 中位數落在 base（codex/solo-sect-grok 08a0306f）的 ±20%。結果記在 docs/arts.md。
-   computeFanBase()（全表中位數 × 1.61）只留作參考，不再採用。SS_FAN_BASE 環境變數只給校準腳本掃描用。 */
+   computeFanBase()（全表中位數 × 1.61）只留作參考，不再採用。#417 N13：遊戲程式不讀環境變數；校準腳本 import 後呼叫 setFanBase 覆寫。 */
 export const FAN_BASE_CALIB = 13;
-const envFan = typeof process !== 'undefined' && process.env?.SS_FAN_BASE ? +process.env.SS_FAN_BASE : NaN;
-export const FAN_BASE = Number.isFinite(envFan) && envFan > 0 ? envFan : FAN_BASE_CALIB;
-export const CURVE_ANCHOR = FAN_BASE;
+export let FAN_BASE = FAN_BASE_CALIB;
+export let CURVE_ANCHOR = FAN_BASE;
+/* 只給 tools/calib-fan.mjs、tools/bot12.mjs --fan 掃描用：改基準並重蓋 list 裡每張卡的曲線。 */
+export function setFanBase(v, list = []) {
+  if (!(v > 0)) return FAN_BASE;
+  FAN_BASE = v; CURVE_ANCHOR = v;
+  for (const a of list) if (a?.fanR != null) a.curve = [0, 1, 2, 3, 4].map((t) => fanMul(a.fanR, t));
+  return FAN_BASE;
+}
 /* mul(t) = 基準 × 共同形狀(t) × (1 + (R − 1) × f(t))。R 已含同段微調。 */
 export function fanMul(R, t) {
   const i = Math.max(0, Math.min(4, t | 0));

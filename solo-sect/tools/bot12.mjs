@@ -1,18 +1,20 @@
 // 量測：bot 情境 12 種子（1001–1012），第 30 日。
 // node tools/bot12.mjs [solo-sect 目錄] [--json]
 // 分段一律用「本目錄（head）」的 fanRank，讓 base 與 head 以同一把尺分組。
-// 可用環境變數 SS_FAN_BASE 覆寫扇形基準（只供 tools/calib-fan.mjs 掃描）。
+// --fan=N 覆寫扇形基準（只供 tools/calib-fan.mjs 掃描；遊戲程式本身不讀環境變數）。
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import path from 'node:path';
 const here = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = pathToFileURL(path.resolve(process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : here)).href;
 const json = process.argv.includes('--json');
+const fanArg = +(process.argv.find((x) => x.startsWith('--fan=')) || '').slice(6);
 const { createState, tick, dpsOf } = await import(root + '/src/sim.mjs');
 const { DAY } = await import(root + '/src/data.mjs');
 const { ALL_ON, botDaily } = await import(root + '/test/harness/bot.mjs');
 const { sectOfSeed } = await import(root + '/test/golden/scenarios.mjs');
 const A = await import(root + '/src/arts.mjs');
 const T = await import(root + '/src/threat.mjs');
+if (fanArg > 0) { const AC = await import(root + '/src/artcard.mjs'); const D = await import(root + '/src/data.mjs'); if (!AC.setFanBase) throw new Error('此目錄的 artcard 沒有 setFanBase'); AC.setFanBase(fanArg, D.ARTS); }
 const { fanRank } = await import(pathToFileURL(here).href + '/src/artcard.mjs');
 const med = (v) => { v = [...v].sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : NaN; };
 const out0 = {}; const pts = [], wp = [], by = {}, famousBy = { yes: [], no: [] }, held = [];

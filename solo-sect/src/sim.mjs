@@ -503,6 +503,23 @@ function doTask(s, d, dt) {
 }
 function finish(s, d) { if (d.task) markDone(s, d, d.task.act); if (d.task && CHORE_ACTS.includes(d.task.act) && !isLabor(d)) d.chore = (d.chore || 0) + 1; if (d.task?.trial) resolveTrial(s, d); d.task = null; d.anim = null; }
 
+// ---- #417 N13 傳功共同任務：師父走到外功場等徒弟；徒弟到齊才倒數，徒弟在場練那門才 ×2 ----
+export const TEACH_JOIN = { node: 'yard', wait: DAY / 8 };
+function teachStep(s, m, dt) {
+  const p = m.teaching && byId(s, m.teaching.pupil);
+  if (!p || p.away || !(m.teachCool > 0)) { if (m.task?.act === 'teach') m.task = null; m.teachCool = 0; return false; }
+  if (!m.task) { m.task = { act: 'teach', node: TEACH_JOIN.node, phase: 'go', partner: p.id, wait: 0 }; goto(m, TEACH_JOIN.node); m.reason = `到外功場傳授${p.name}`; }
+  const t = m.task;
+  if (m.path.length) { moveStep(m, dt); return true; }
+  t.phase = 'do';
+  if (!p.task && !p.order) { p.task = { act: 'train', fac: 'yard', node: TEACH_JOIN.node, phase: 'go', teach: m.id }; goto(p, TEACH_JOIN.node); p.reason = `${m.name}要傳功`; }
+  const near = p.task?.teach === m.id && !p.path.length && dist(p.pos, m.pos) <= 60;
+  if (!near) { t.wait += dt; if (t.wait >= TEACH_JOIN.wait) { m.teachCool = 0; m.task = null; m.reason = `${p.name}沒來，今日傳功作罷`; } return true; }
+  m.teachCool = Math.max(0, m.teachCool - dt); m.reason = `傳授${p.name}`;
+  if (m.teachCool <= 0) { m.task = null; if (p.task?.teach === m.id) p.task.teach = null; }
+  return true;
+}
+
 // ---- 狩獵（同圖塔防波次，v0.4 接生態） ----
 export function setPost(s, node) { if (POSTS[node] && !s.hunt) { s.post = node; return true; } return false; }
 export function startHunt(s, ids, waves = HUNT_WAVES) {
@@ -750,7 +767,7 @@ export function tick(s, dt = 0.25) {
     d.needs.fun = clamp((d.needs.fun ?? 60) - 0.22 * dt * (cotrainNear(s, d) ? 0.5 : 1), 0, 100); /* loop62「有伴解悶」（s.cofun）：與 cotrain 同條件，樂趣下降速度減半 */
     d.needs.social = clamp(d.needs.social - 0.4 * dt * (cotrainNear(s, d) ? 0.5 : 1), 0, 100);
     moodStep(s, d, dt); revealStep(s, d, dt); if (isLabor(d)) coworkStep(s, d, dt); else if (d.role === 'outer' && !d.rootKnown && Math.max(d.cowork || 0, d.together || 0) >= ROOT.revealAt) { d.rootKnown = true; log(s, `相處久了，看出外門${d.name}根骨「${ROOT.names[d.root]}」。`); }
-    if (d.teachCool > 0) { d.teachCool = Math.max(0, d.teachCool - dt); if (!d.task) { d.reason = d.reason?.startsWith('傳授') ? d.reason : '傳授武藝'; continue; } } /* #415 N12 師父預約的傳授時段 */
+    if (d.task?.act === 'teach' || (d.teachCool > 0 && !d.task && !d.order)) { if (teachStep(s, d, dt)) continue; } /* #417 N13 傳功＝師徒共同任務 */
     if (!d.task) decide(s, d);
     if (d.task) { moveStep(d, dt); tallyAct(d, d.task.act, dt); doTask(s, d, dt); } // M1 傳記：看得見的行為時間
     if (d.anim === 'strike' && d.cool < 0.6) d.anim = null;
