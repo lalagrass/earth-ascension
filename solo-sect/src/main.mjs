@@ -124,6 +124,9 @@ function draw() {
       continue;
     }
     // #425 N19 林克時間：閃避者身邊一圈淡藍光；輕功交錯：火花一閃
+    if (f.kind === 'stamp') { g.save(); g.globalAlpha = Math.min(1, f.ttl); g.font = 'bold 26px serif'; g.textAlign = 'center'; g.strokeStyle = '#7a1010'; g.lineWidth = 2; g.strokeRect(f.pos[0] - 17, f.pos[1] - 58, 34, 34); g.fillStyle = '#b01818'; g.fillText(f.char, f.pos[0], f.pos[1] - 32); g.restore(); continue; } /* #426 絕學第一次使出：蓋字 */
+    if (f.kind === 'cut') { g.save(); g.globalAlpha = Math.min(1, f.ttl * 2); g.strokeStyle = '#cfe0f5'; g.lineWidth = 3; g.beginPath(); g.moveTo(f.from[0], f.from[1] - 10); g.lineTo(f.to[0], f.to[1] - 10); g.stroke(); g.fillStyle = '#cfe0f5'; g.font = 'bold 16px serif'; g.fillText('截', f.to[0] - 8, f.to[1] - 22); g.restore(); continue; }
+    if (f.kind === 'fall') { const el = (f.delay + 0.6) - f.ttl, down = el >= f.delay; g.save(); g.globalAlpha = down ? Math.max(0, f.ttl / 0.6) : 0.8; g.translate(f.pos[0], f.pos[1]); if (down) g.rotate(Math.PI / 2 * Math.min(1, (el - f.delay) / 0.25)); g.fillStyle = '#6a4a3a'; g.fillRect(-8, -14, 16, 14); g.restore(); continue; }
     if (f.kind === 'witch') { g.save(); g.translate(f.pos[0], f.pos[1]); g.scale(1, 0.55); g.globalAlpha = Math.min(1, f.ttl * 2); g.beginPath(); g.arc(0, 0, f.r || 80, 0, Math.PI * 2); g.fillStyle = 'rgba(120,180,255,.18)'; g.fill(); g.strokeStyle = 'rgba(140,200,255,.85)'; g.lineWidth = 3; g.stroke(); g.restore(); continue; }
     if (f.kind === 'cross') { const k = 1 - f.ttl / 0.6; g.save(); g.globalAlpha = Math.max(0, f.ttl / 0.6); g.strokeStyle = '#ffe27a'; g.lineWidth = 3; for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, r0 = 4 + k * 6, r1 = 12 + k * 22; g.beginPath(); g.moveTo(f.pos[0] + Math.cos(a) * r0, f.pos[1] - 24 + Math.sin(a) * r0); g.lineTo(f.pos[0] + Math.cos(a) * r1, f.pos[1] - 24 + Math.sin(a) * r1); g.stroke(); } g.restore(); continue; }
     // #418 N14 前搖預警：地上紅色扇形，越滿越接近出手（只影響顯示）

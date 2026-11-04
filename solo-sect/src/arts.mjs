@@ -333,6 +333,7 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     const a = artById(id);
     let fx = a?.on?.[event];
     if (!fx) continue;
+    if (ctx.map && ZJ_SKIP[id]?.includes(event)) continue; /* #426 地圖戰改走絕學規則 */
     if (!who.arts?.[id] && !(a.forms && who.dugu?.length)) continue;
     const tier = who.arts?.[id] ? artTier(who, id) : 0;
     if (tier < (fx.need ?? 0)) continue;
@@ -1230,9 +1231,13 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   if (def.posture <= 0) { def.posture = postureMax(def) * 0.5; def.postT = s?.t ?? 0; return { kind: 'hit', heavy: true, why: 'open' }; }
   if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return { kind: 'hit', heavy: false, why: ctx.force || 'sure' }; }
   const o = clashOdds(s, atk, def, ctx);
-  if (o.read > 0 && rnd() < o.read) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return { kind: 'read' }; }
+  const zjAtk = ctx.map && !isMon(atk) ? zjOfMove(ctx.move) : null; /* #426 */
+  const duguPassive = ctx.map && isMon(atk) && zjHas(def, 'dugu') && (s?.codex?.[atk.k]?.insight || 0) >= ZJ.dugu.insight; /* 獨孤：讀招改成被動截，不再擲讀招 */
+  if (!duguPassive && o.read > 0 && rnd() < o.read) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return { kind: 'read' }; }
   if (o.dodge > 0 && rnd() < o.dodge) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi); return { kind: 'dodge' }; }
   if (o.parry > 0 && rnd() < o.parry) {
+    if (zjAtk === 'xuantie' && zjHas(atk, 'xuantie')) { zjMark(s, atk, 'xuantie'); return { kind: 'hit', heavy: false, why: 'xuantie' }; } /* 玄鐵：招架等於沒招架 */
+    if (zjAtk === 'xianglong' && zjHas(atk, 'xianglong')) { zjMark(s, atk, 'xianglong'); postureHit(s, def, ZJ.xianglong.drop); } /* 降龍：格住了也掉一大截架勢 */
     const jolt = qiPow(def) >= CLASH.parry.jolt * qiPow(atk);
     postureHit(s, def, CLASH.parry.drop); postureHit(s, atk, CLASH.parry.drop + (jolt ? CLASH.parry.joltDrop : 0));
     return { kind: 'parry', jolt };
@@ -1275,6 +1280,53 @@ export function witchK(s, pos) {
 }
 /* 輕功交錯：雙方身法都 ≥ crossAgi、兩招出手時間差 < crossGap 秒，擲一次 crossP。成立時由呼叫端讓兩招落空、各掉架勢、畫火花。 */
 export const lightCross = (agiA, agiB, atA, atB, rnd) => agiA >= WITCH.crossAgi && agiB >= WITCH.crossAgi && Math.abs(atA - atB) < WITCH.crossGap && rnd() < WITCH.crossP;
+
+// ==== #426 N20 絕學改規則 ====
+/* 每門絕學只改一條規則，只走 N14 的接法鉤子（resolveSwing／前搖／挨打），不乘曲線倍數；只在地圖戰（打獵、守柵、試煉）生效，巡山與會武仍走 dpsOf 期望值。
+   和舊 on 絕活重複的那一條，地圖戰改走這裡（ZJ_SKIP），不兩條一起算。 */
+export const ZJ = {
+  dugu: { char: '破', rule: '觀破即截', reach: 70, drop: 40, cool: 2, insight: 30 },
+  taiji: { char: '圓', rule: '圓轉卸力', r: 60, wind: 1.5, cool: 3 },
+  taijiSword: { char: '圓', rule: '圓轉卸力', r: 60, wind: 1.5, cool: 3 },
+  kuihua: { char: '針', rule: '無前搖', fall: 0.4 },
+  jiuyang: { char: '陽', rule: '挨打自震', need: 3, shock: 30, regen: 3, cap: 0.7 },
+  xianglong: { char: '龍', rule: '不可格', drop: 30 },
+  xuantie: { char: '重', rule: '破招架' },
+};
+export const ZJ_NEED = 2;
+/* 地圖戰裡被絕學規則取代的舊 on 絕活：event 列表 */
+export const ZJ_SKIP = { dugu: ['hit', 'dodge'], taijiSword: ['gethit'], xuantie: ['hit'] };
+export function zjHas(d, id) {
+  if (!d || isMon(d) || !ZJ[id]) return false;
+  if (id === 'dugu') return !!d.dugu?.length;
+  return !!d.arts?.[id] && artTier(d, id) >= (ZJ[id].need ?? ZJ_NEED);
+}
+const zjOfMove = (mvId) => { const a = artOfMove(mvId); return a && ZJ[a.id] ? a.id : null; };
+/* 第一次在實戰中用到：蓋上這門武學的字、記大事記 */
+export function zjMark(s, d, id) {
+  const z = ZJ[id]; if (!s || !d || !z) return;
+  const used = (d.zjUsed ||= []); if (used.includes(id)) return; used.push(id);
+  (s.fx ||= []).push({ kind: 'stamp', char: z.char, pos: [...(d.pos || [0, 0])], ttl: 1.4 });
+  if (d.name) chronOf(s, d, 'zj_' + id, { chron: `${d.name}第一次在實戰中以${artById(id)?.name || id}「${z.rule}」` });
+  s.zjN = s.zjN || {}; s.zjN[id] = (s.zjN[id] || 0) + 1;
+}
+const zjCount = (s, id) => { s.zjN = s.zjN || {}; s.zjN[id] = (s.zjN[id] || 0) + 1; };
+/* 太極圈：pos 在某個太極弟子 r 內 → 前搖乘 wind */
+export function zjWindK(s, pos, team) {
+  for (const d of team || []) if (d.hp > 25 && (zjHas(d, 'taiji') || zjHas(d, 'taijiSword')) && Math.hypot(pos[0] - d.pos[0], pos[1] - d.pos[1]) <= ZJ.taiji.r) { zjMark(s, d, zjHas(d, 'taiji') ? 'taiji' : 'taijiSword'); return ZJ.taiji.wind; }
+  return 1;
+}
+/* 獨孤：已觀破（圖鑑觀破 ≥ insight）的獸一進前搖，身邊 reach 內有獨孤弟子就自動截下 */
+export function zjIntercept(s, m, team) {
+  if (!isMon(m) || (s?.codex?.[m.k]?.insight || 0) < ZJ.dugu.insight) return null;
+  const d = (team || []).find((x) => x.hp > 25 && zjHas(x, 'dugu') && (x.zjT ?? -1e9) <= s.t && Math.hypot(m.pos[0] - x.pos[0], m.pos[1] - x.pos[1]) <= ZJ.dugu.reach);
+  if (!d) return null;
+  d.zjT = s.t + ZJ.dugu.cool; postureHit(s, m, ZJ.dugu.drop); d.sure = m.uid || m.id;
+  (s.fx ||= []).push({ kind: 'cut', from: [...d.pos], to: [...m.pos], ttl: 0.5 }); zjMark(s, d, 'dugu'); zjCount(s, 'duguCut');
+  return d;
+}
+/* 九陽：圓滿起內力快回，回到上限 cap 為止 */
+export function zjRegen(d, dt) { if (!zjHas(d, 'jiuyang')) return; const cap = qiMax(d) * ZJ.jiuyang.cap; if ((d.qi ?? 0) < cap) d.qi = Math.min(cap, (d.qi ?? 0) + ZJ.jiuyang.regen * dt); }
 
 // ==== #420 N16 招式的樣子 ====
 /* name：招名浮字每人每 gap 秒最多一次；dash：大成起、射程 ≥ minRange 的招可滑步上前 add px（離守點 ≤ RING.leash）；hua：化境的範圍招逐個目標判接法、看破率再打 readK 折。 */
