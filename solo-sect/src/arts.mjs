@@ -1190,12 +1190,12 @@ export const styleBadges24 = (d) => [d?.champ28 ? '【大比首徒】' : '', pol
 export const CLASH = {
   windIn: 0.5, windHua: 0.2,                 /* 前搖佔冷卻：入門 0.5、化境 0.2，中間照火候線性 */
   monWind: 0.45,                             /* 鼠、野豬的前搖佔牠的冷卻 */
-  post: { d: 100, rat: 30, boar: 70, def: 50 }, regenDelay: 2.5, regen: 12,
+  post: { d: 100, rat: 30, boar: 70, bandit: 60, def: 50 }, regenDelay: 2.5, regen: 12,
   heavy: 2,
   read: { wu: 0.035, insight: 0.004, depth: 0.06, max: 0.3, drop: 45 },
-  dodge: { agi: 0.0035, fast: 0.05, max: 0.3, qi: 3, mon: { rat: 0.2, boar: 0.12 } /* 調到單人探針溜走、失血落在基準 ±25% */ },
+  dodge: { agi: 0.0035, fast: 0.05, max: 0.3, qi: 3, mon: { rat: 0.2, boar: 0.12, bandit: 0 /* #424 山賊不閃：守柵總輸出維持舊值，柵擋得住的比例不變 */ } /* 調到單人探針溜走、失血落在基準 ±25% */ },
   parry: { base: 0.08, k: 0.0025, max: 0.35, drop: 14, jolt: 1.6, joltDrop: 20 },
-  depth: { rat: 1, boar: 2 }, monQi: { rat: 4, boar: 12 },
+  depth: { rat: 1, boar: 2, bandit: 2 }, monQi: { rat: 4, boar: 12, bandit: 10 },
 };
 const clamp01 = (x, hi = 1) => Math.max(0, Math.min(hi, x));
 export const windFrac = (tier) => CLASH.windIn + (CLASH.windHua - CLASH.windIn) * Math.max(0, Math.min(4, tier | 0)) / 4;
