@@ -92,6 +92,7 @@ export function powerHtml(d, memo, day, now = 0) {
   const temp = [d.powMul && d.powMul !== 1 ? `兵器 ×${d.powMul.toFixed(2)}` : '', d.jhMul && d.jhMul !== 1 ? `江湖 ×${d.jhMul.toFixed(2)}` : ''].filter(Boolean);
   return `<div class="grow-power"><b>人物實力</b>（常態能力；顯示基準固定，非能力上限）${polySvg(d, now, m.anim ? 'poly-grow' : '')}`
     + `<div class="k" data-blow-why="1">${blowWhy(d)}</div>`
+    + `<div class="k" data-clash-best="1">實戰紀錄：一次應接最多 ${d.maxHandled || 0} 路｜單波最多擊退 ${d.waveBest || 0} 隻</div>` /* #420 N16 */
     + `<div class="k">${AXES.map((x) => `${x.name} ${fmtV(x, x.get(d, now))}（基準 ${x.fmt ? x.fmt(x.lo) + '–' + x.fmt(x.hi) : x.lo + '–' + x.hi}；${x.note}）`).join('<br>')}</div>`
     + (over.length ? `<div class="k warn">超出顯示範圍：${over.map((x) => x.name).join('、')}（數字照實，圖上畫在外框）</div>` : '')
     + (m.msg ? `<div class="k grow-msg">${m.msg}</div>` : '')

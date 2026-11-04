@@ -131,6 +131,9 @@ function draw() {
       g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R * k, a0 - half, a0 + half); g.closePath(); g.fillStyle = `rgba(220,40,30,${0.25 + 0.35 * k})`; g.fill();
       g.restore(); continue;
     }
+    // #420 N16 招名浮字、大成滑步殘影
+    if (f.kind === 'mvname') { const k = 1 - f.ttl / 1.2; g.save(); g.globalAlpha = Math.max(0, Math.min(1, f.ttl * 1.5)); g.font = 'bold 15px serif'; g.textAlign = 'center'; g.lineWidth = 3; g.strokeStyle = 'rgba(255,255,255,.9)'; const y = f.pos[1] - 80 - k * 14; g.strokeText(`「${f.name}」`, f.pos[0], y); g.fillStyle = f.color || '#3a2f24'; g.fillText(`「${f.name}」`, f.pos[0], y); g.restore(); continue; }
+    if (f.kind === 'dash') { g.save(); g.globalAlpha = Math.max(0, f.ttl / 0.35) * 0.7; g.strokeStyle = f.color; g.lineWidth = 5; g.lineCap = 'round'; g.beginPath(); g.moveTo(f.from[0], f.from[1] - 18); g.lineTo(f.to[0], f.to[1] - 18); g.stroke(); g.restore(); continue; }
     // #418 N14 接法浮字：破、閃、震、現
     if (f.kind === 'clash') { const k = 1 - f.ttl / 0.8; g.save(); g.globalAlpha = Math.max(0, Math.min(1, f.ttl * 2)); g.font = 'bold 24px serif'; g.textAlign = 'center'; g.lineWidth = 4; g.strokeStyle = '#fff'; const y = f.pos[1] - 58 - k * 24; g.strokeText(f.word, f.pos[0] + 16, y); g.fillStyle = f.color; g.fillText(f.word, f.pos[0] + 16, y); g.restore(); continue; }
     // v1.1 招牌武學地圖特效：金龍盤旋／青竹棒影

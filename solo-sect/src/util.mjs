@@ -57,6 +57,8 @@ export function recordDeed(s, d, kind, info = {}) {
   if (info.chron) { const c = { day: e.day, kind, who: d?.name ?? null, text: info.chron }; (s.chron ||= []).push(c); if (s.chron.length > CHRON_CAP) s.chron.shift(); }
   return e;
 }
+/* #420 只進門派大事記、不佔個人事蹟欄（招式首用、破紀錄這類小事不擠掉衝關、守柵） */
+export function chronOf(s, d, kind, info = {}) { const e = recordDeed(s, null, kind, info); const c = s.chron?.at(-1); if (c && info.chron) c.who = d?.name ?? null; return e; }
 // 看得見的行為分四類；吃睡閒晃不算
 export const ACT_CAT = { chat: 'social', encourage: 'social', pass: 'social', feed: 'social',
   spar: 'combat', hunt: 'combat', defend: 'combat', lair: 'combat',

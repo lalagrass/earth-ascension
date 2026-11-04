@@ -1,9 +1,9 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
+import { FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { SOURCES } from './data.mjs';
 import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
-import { clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
+import { chronOf, clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, fogStep, unlockStep, chapterStep } from './world.mjs';
 import { BAND, canDefend, boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE, FENCE_FAC, finishFenceSite, threatDaily, threatStep, raidResolve, bandStep, lairDaily, lairStep, siegeDaily27, crusadeDaily27, crusadeStep27, startCrusade27 } from './threat.mjs';
@@ -533,7 +533,7 @@ export function startHunt(s, ids, waves = HUNT_WAVES) {
 }
 const MON_PATH = route('den', 'yard'), GUARD_PATH = route('guard', 'yard');
 function spawnWave(s) {
-  const h = s.hunt, i = h.wave, list = [];
+  const h = s.hunt, i = h.wave, list = []; waveCommit(s, h);
   const nr = Math.min(s.eco.rat.n, 2 + i), nb = i === h.waves - 1 ? Math.min(1, s.eco.boar.n) : 0;
   const ns = nr + nb >= 5 ? 3 : nr + nb >= 2 ? 2 : 1, STREAMS = ['den', 'habitat', 'ridge']; /* #419 一波分 2–3 路，都從山那一側 */
   for (let k = 0; k < nr; k++) list.push({ k: 'rat', t: k * 1.5, src: STREAMS[k % ns] }); for (let k = 0; k < nb; k++) list.push({ k: 'boar', t: nr * 1.5 + 1, src: 'den' });
@@ -600,20 +600,40 @@ function monStrike(s, h, m, foe, M, zk, w) {
   s.fx.push({ kind: 'bite', pos: [...foe.pos], ttl: 0.4 });
   return r;
 }
+/* #420 招名浮字（每人每 FLAIR.nameGap 秒最多一次）與第一次實戰使出的大事記 */
+function flairName(s, d, mv) {
+  if (s.t - (d.nameT ?? -1e9) >= FLAIR.nameGap - 1e-9) { d.nameT = s.t; s.fx.push({ kind: 'mvname', who: d.id, name: mv.name, color: mv.color, pos: [...d.pos], ttl: FLAIR.nameTtl }); }
+  const fm = (d.firstMoves ||= []); if (!fm.includes(mv.id)) { fm.push(mv.id); chronOf(s, d, 'move1', { chron: `${d.name}第一次在實戰中使出「${mv.name}」` }); }
+}
+/* #420 單波最多擊退：一波結束（換波或收隊）時結算，破紀錄記大事記 */
+function waveCommit(s, h) { for (const [id, n] of Object.entries(h.wk || {})) { const d = byId(s, id); if (d && n > (d.waveBest || 0)) { d.waveBest = n; if (n >= 2) chronOf(s, d, 'waveBest', { chron: `${d.name}一波擊退 ${n} 隻，破了自己的紀錄` }); } } h.wk = {}; }
+/* #420 大成滑步：目標在原射程外、加長射程內，先滑過去（離守點 ≤ RING.leash） */
+function dashTo(s, d, tgt, reach, post) {
+  const L = dist(d.pos, tgt.pos); if (L <= reach) return true;
+  const P = NODES[post] || d.pos, want = L - reach * 0.85; let nx = d.pos[0] + (tgt.pos[0] - d.pos[0]) * want / L, ny = d.pos[1] + (tgt.pos[1] - d.pos[1]) * want / L;
+  const PL = Math.hypot(nx - P[0], ny - P[1]); if (PL > RING.leash) { nx = P[0] + (nx - P[0]) * RING.leash / PL; ny = P[1] + (ny - P[1]) * RING.leash / PL; }
+  s.fx.push({ kind: 'dash', from: [...d.pos], to: [nx, ny], ttl: 0.35, color: '#cfe0f5' }); d.pos = [nx, ny];
+  return dist(d.pos, tgt.pos) <= reach * 1.25;
+}
 function dStrike(s, h, d, live, w) {
   const mv = MOVES.find((x) => x.id === w.mv), tgt = live.find((m) => m.uid === w.tgt);
   if (!mv || !tgt || dist(tgt.pos, d.pos) > w.reach * 1.25) { d.anim = null; return null; } /* 目標走遠或已倒：招落空 */
   const lv = d.skills[mv.skill];
   let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t); /* #410 玉女合擊、蛤蟆蓄勢改走內功被動與 on，避免和出手再乘一次 */
   const ar = mv.aoe ? mv.aoe + qiAoeAdd(d, mv) : 0, hitList = mv.aoe ? live.filter((m) => dist(m.pos, tgt.pos) <= ar) : [tgt];
+  const huaAoe = mv.aoe && visTier(d, mv.id) >= FLAIR.hua; /* #420 化境：範圍招逐個目標判接法 */
   const r = resolveSwing(s, d, tgt, () => rand(s), { depth: depthOf(d, mv.id), wind: w.wind, move: mv.id, force: w.force });
+  flairName(s, d, mv);
   h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5, 'fight');
   d.anim = 'strike'; d.needs.energy = clamp(d.needs.energy - 1, 0, 100);
   { const tier = visTier(d, mv.id), a = artOfMove(mv.id), va = a && variantOf(d, a.id, s.t); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...tgt.pos], r: mv.aoe || 16, ttl: tier >= 3 ? 1.0 : 0.6, tier, vcolor: va?.color || null, sprite: d.sprite, face: d.face }); if (tier >= 3) s.fx.push({ kind: 'shake', ttl: 0.35 }); }
-  if (r.kind === 'dodge') { clashFx(s, tgt, 'dodge'); return r; }
-  if (r.heavy) clashFx(s, tgt, 'heavy');
-  power = landOn(s, d, tgt, mv, power, MONSTERS[tgt.k].name) * (r.heavy ? CLASH.heavy : 1); /* #404 打中：降龍、辟邪、七傷、打狗、獨孤。範圍先圈定，再震退 */
-  const psn = specM(d, 'dushu') > 0; for (const m of hitList) { m.hp -= power; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', d); applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: MONSTERS[m.k].name }); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
+  const each = huaAoe ? new Map(hitList.map((m) => [m.uid, m === tgt ? r : resolveSwing(s, d, m, () => rand(s), { depth: depthOf(d, mv.id), wind: w.wind, move: mv.id })])) : null;
+  if (each) h.aoeEach = (h.aoeEach || 0) + hitList.length;
+  const lt = each ? hitList.find((m) => each.get(m.uid).kind !== 'dodge') : r.kind === 'dodge' ? null : tgt;
+  if (!lt) { clashFx(s, tgt, 'dodge'); return r; }
+  if (r.heavy && lt === tgt) clashFx(s, tgt, 'heavy');
+  const base = landOn(s, d, lt, mv, power, MONSTERS[lt.k].name); power = base * (r.heavy ? CLASH.heavy : 1); /* #404 打中：降龍、辟邪、七傷、打狗、獨孤。範圍先圈定，再震退 */
+  const psn = specM(d, 'dushu') > 0; for (const m of hitList) { let pw = power; if (each) { const rr = each.get(m.uid); if (rr.kind === 'dodge') { clashFx(s, m, 'dodge'); continue; } pw = base * (rr.heavy ? CLASH.heavy : 1); if (rr.heavy && m !== tgt) clashFx(s, m, 'heavy'); } m.hp -= pw; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; (h.wk ??= {})[d.id] = (h.wk[d.id] || 0) + 1; seeEnemy(s, m.k, 'kill', d); applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: MONSTERS[m.k].name }); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
   return r;
 }
 function huntStep(s, dt) {
@@ -657,8 +677,9 @@ function huntStep(s, dt) {
     if (d.cool > 0) continue;
     const ms = d.moves.map((id) => MOVES.find((m) => m.id === id)).sort((a, b) => b.dmg * (1 + (b.aoe ? 1 : 0)) - a.dmg * (1 + (a.aoe ? 1 : 0)));
     for (const mv of ms) {
-      const lv = d.skills[mv.skill]; const reach = mv.range * (1 + lv / 200);
-      const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
+      const lv = d.skills[mv.skill]; const reach = mv.range * (1 + lv / 200), canDash = mv.range >= FLAIR.dash.minRange && visTier(d, mv.id) >= FLAIR.dash.tier;
+      const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach + (canDash ? FLAIR.dash.add : 0)).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
+      if (canDash && !dashTo(s, d, tgt, reach, h.post)) continue; /* #420 大成：滑步上前 */
       const cd = mv.cd * cdMul(d, mv.id, s.t), wind = windOf(d, mv.id, cd);
       d.swing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, reach }; d.cool = cd; d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'wind';
       warnFx(s, d, tgt, reach, wind);
@@ -671,7 +692,7 @@ function huntStep(s, dt) {
   if (waveClear) { h.gap += dt; if (h.gap >= WAVE_GAP && h.wave + 1 < h.waves && anyFit && (s.eco.rat.n + s.eco.boar.n) > 0) { h.wave++; h.gap = 0; spawnWave(s); } }
   if ((waveClear && (h.wave + 1 >= h.waves || !anyFit || s.eco.rat.n + s.eco.boar.n === 0) && h.gap >= 1) || (!anyFit && waveClear)) {
     const rep = `狩獵戰報（${POSTS[h.post]}，${h.wave + 1} 波）：擊退 ${h.kills}、溜走 ${h.escaped}；` + team.map((d) => `${d.name}出手 ${h.hits[d.id] || 0} 次`).join('，') + `｜山中尚餘 鼠${s.eco.rat.n} 豬${s.eco.boar.n}。${boutWhy(h.why)}`;
-    log(s, rep); s.lastReport = rep; if (h.kills > h.escaped) for (const d of team) if (d.hp > 25) think(s, d, 'wonHunt'); s.rep = (s.rep || 0) + h.kills;
+    waveCommit(s, h); log(s, rep); s.lastReport = rep; if (h.kills > h.escaped) for (const d of team) if (d.hp > 25) think(s, d, 'wonHunt'); s.rep = (s.rep || 0) + h.kills;
     for (const d of team) { if (d.order === 'hunt') d.order = null; if (d.task?.act === 'hunt') { d.task = null; d.anim = null; } d.reason = '狩獵結束回院'; }
     s.hunt = null;
   }

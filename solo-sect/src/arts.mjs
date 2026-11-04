@@ -1,7 +1,7 @@
 import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST } from './data.mjs';
 import { stampCard, curveMulOf, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
-import { pipeline, log } from './util.mjs';
+import { pipeline, log, chronOf } from './util.mjs';
 // ==== （原 growth.mjs）====
 /* loop78 成長分層（開關 s.grow）：成長門類 metadata、造詣單一結算入口、同類學習加速。
    造詣不另存門類值：造詣＝Σ 各武學紀錄 r.gm 的有界貢獻 × 門類權重（衍生值，不會與 skills.palm 漂移）。
@@ -1217,6 +1217,7 @@ export function clashOdds(s, atk, def, ctx = {}) {
   else {
     const insight = isMon(atk) ? s?.codex?.[atk.k]?.insight || 0 : 0;
     read = clamp01(CLASH.read.wu * ((def.wu ?? def.root ?? 3) - 1) + CLASH.read.insight * insight - CLASH.read.depth * (depth - 1), CLASH.read.max);
+    if (depth - 1 >= FLAIR.hua) read *= FLAIR.readK; /* #420 化境：前搖短到很難看破 */
     dodge = qiOf(def) >= CLASH.dodge.qi ? clamp01(CLASH.dodge.agi * (def.skills?.agility || 0) - CLASH.dodge.fast * (1 / wind - 1), CLASH.dodge.max) : 0;
     parry = clamp01(CLASH.parry.base + CLASH.parry.k * qiPow(def), CLASH.parry.max);
   }
@@ -1250,5 +1251,9 @@ export function handleTake(s, d) {
   const now = s?.t ?? 0, L = (d.handled ||= []).filter((x) => now - x < RING.win); d.handled = L;
   const cap = handleCap(d), ok = L.length < cap; L.push(now);
   d.ring = { cap, used: Math.min(cap, L.length), over: Math.max(0, L.length - cap), t: now };
+  if (d.ring.used > (d.maxHandled || 0)) { d.maxHandled = d.ring.used; if (d.maxHandled >= 2 && s && d.name) chronOf(s, d, 'handled', { chron: `${d.name}一口氣接下 ${d.maxHandled} 路來招，破了自己的紀錄` }); } /* #420 N16 */
   return ok;
 }
+// ==== #420 N16 招式的樣子 ====
+/* name：招名浮字每人每 gap 秒最多一次；dash：大成起、射程 ≥ minRange 的招可滑步上前 add px（離守點 ≤ RING.leash）；hua：化境的範圍招逐個目標判接法、看破率再打 readK 折。 */
+export const FLAIR = { nameGap: 2, nameTtl: 1.2, dash: { tier: 3, minRange: 50, add: 30 }, hua: 4, readK: 0.5 };
