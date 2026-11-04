@@ -241,6 +241,16 @@ export const STYLES = { palm: '掌法', leg: '腿法' };
 // v0.4 後山生態：族群有上限與繁衍；狩獵是真的取走個體
 export const ECO = { rat: { start: 6, max: 8, regen: 50 }, boar: { start: 2, max: 3, regen: 150 } };
 export const HABITAT = { c: [1450, 60], r: 70 };
+/* #419 N15 合法出生點：敵人只從這張表出來——離地圖邊緣 ≤ edge、離大殿 ≥ hall。獸從獸穴、棲地、東嶺；山賊從山門。
+   via：出生點到守點山路的座標（都在山那一側，不從門派背後冒出來）；接上 guard 之後沿原山路走。 */
+export const SOURCES = {
+  den: { pos: [1475, 22], for: 'beast', via: [] },
+  habitat: { pos: [1440, 40], for: 'beast', via: [[1392, 96]] },
+  ridge: { pos: [1585, 120], for: 'beast', via: [[1470, 150]] },
+  gate: { pos: [1475, 875], for: 'bandit', via: [] },
+};
+export const SRC_RULE = { edge: 80, hall: 400 };
+export const srcOk = (p) => Math.min(p[0], p[1], WORLD.w - p[0], WORLD.h - p[1]) <= SRC_RULE.edge && Math.hypot(p[0] - NODES.hall[0], p[1] - NODES.hall[1]) >= SRC_RULE.hall;
 export const POSTS = { guard: '山頂守點', trail2: '山腰岔口', trail1: '山腳路口' };
 export const RAID_EVERY = 160; // 秒；野豬下山拱菜
 export const HUNT_WAVES = 3, WAVE_GAP = 6;
@@ -324,7 +334,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '2.8'; /* #412：威脅跟隨門派戰力與適應係數；#408 招式只留形狀，威力走扇形曲線；異屬逆催恢復 0.65 */
+export const RULES_VERSION = '3.0'; /* 第五輪 #423–#427：山賊一個一個上、林克時間、絕學改規則、部位傷； */ /* #418 見招拆招：地圖狩獵與試煉三段出招、四種接法、架勢條；#419 山賊拆成個人、交戰圈與應接； #412：威脅跟隨門派戰力與適應係數；#408 招式只留形狀，威力走扇形曲線；異屬逆催恢復 0.65 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [

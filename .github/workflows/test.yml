@@ -91,3 +91,36 @@ jobs:
           else
             echo "Game profile: dev (unit/golden/focused checks passed; full RT matrix NOT RUN)." >> "$GITHUB_STEP_SUMMARY"
           fi
+
+  solo-sect:
+    name: 山門紀 solo-sect (quick + golden)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Paths filter (solo-sect/**)
+        id: paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == pull_request ]]; then
+            base="origin/${{ github.base_ref }}"
+          else
+            base="$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)"
+          fi
+          if [[ "${{ github.event_name }}" == workflow_dispatch ]] || git diff --name-only "$base"...HEAD | grep -q '^solo-sect/\|^\.github/workflows/test\.yml$'; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "No solo-sect/** change; solo-sect job skipped." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Quick tests
+        if: steps.paths.outputs.run == 'true'
+        run: bash solo-sect/test/run.sh quick
+      - name: Golden check
+        if: steps.paths.outputs.run == 'true'
+        run: node solo-sect/tools/golden.mjs --check

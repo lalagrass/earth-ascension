@@ -48,7 +48,7 @@ test('傳功：圓滿以上才傳；對方 +15；每門每對一次；好感上�
 });
 test('傳功是自走活動：條件達成後會進評分並實際完成', () => {
   const s = st(7); const a = s.ds.find((d) => d.role !== 'laborer'); master(s, a); waitFree(s, a); assert.ok(scoreActs(s, a).some((x) => x.act === 'pass'));
-  for (let i = 0; i < DAY * 4 * 2 && !Object.keys(s.passed || {}).length; i++) { tick(s); if (i % 50 === 0) assert.deepEqual(invariants(s), []); }
+  /* #423 查過：傳功沒有壞，也不是和 teachDaily 搶人；15 日 6 種子 base 21 次、head 20 次。seed 7 是 train 與 pass 分數只差數分，戰鬥 RNG 改變後首傳從第 3 日移到第 5 日，窗口放寬到 6 日 */ for (let i = 0; i < DAY * 4 * 6 && !Object.keys(s.passed || {}).length; i++) { tick(s); if (i % 50 === 0) assert.deepEqual(invariants(s), []); }
   assert.ok(Object.keys(s.passed || {}).length >= 1); assert.ok(s.log.some((l) => l.msg.includes('【傳功】')));
 });
 test('收徒：內門收好感 ≥30 的外門，一人一徒；徒弟有傳功加成、師父在場練功 ×1.15', () => {

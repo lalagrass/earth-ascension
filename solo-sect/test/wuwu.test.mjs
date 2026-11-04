@@ -617,7 +617,7 @@ test('舊存檔讀入後是 2.8', () => {
   const raw = readFileSync(new URL('./golden/saves/v2.4.json', import.meta.url), 'utf8');
   const r = load(raw);
   assert.equal(r.ok, true, r.err);
-  assert.equal(r.state.rules, '2.8');
+  assert.equal(r.state.rules, RULES_VERSION);
   assert.equal(r.state.rules, RULES_VERSION);
   assert.ok(r.state.migSteps.includes('2.8'));
   assert.equal(r.state.threat?.adapt, 1);
@@ -787,7 +787,9 @@ test('N12：傳功不直接給檔，師父佔半日，徒弟在傳授時段練�
   assert.ok((d.arts.xianglong.xp || 0) < 15, '火候不會直接跳檔');
   assert.equal(artTier(d, 'xianglong'), 0);
   assert.equal(m.teachCool, TEACH_ART.session, '師父預約半日');
-  assert.equal(teachMul(s, d, 'xianglong'), TEACH_ART.mul);
+  assert.equal(teachMul(s, d, 'xianglong'), 1, '#417 師徒還沒在外功場碰頭，不加速');
+  m.task = { act: 'teach', phase: 'do', node: 'yard', partner: d.id }; d.task = { act: 'train', node: 'yard', teach: m.id }; d.pos = [...m.pos];
+  assert.equal(teachMul(s, d, 'xianglong'), TEACH_ART.mul, '共同任務進行中才 ×2');
   assert.equal(teachMul(s, d, 'tantui'), 1, '只加速被教的那門');
   m.teachCool = 0;
   assert.equal(teachMul(s, d, 'xianglong'), 1, '傳授時段外不加速');
@@ -796,13 +798,36 @@ test('N12：傳功不直接給檔，師父佔半日，徒弟在傳授時段練�
   assert.match(teachingBadge(s, m), new RegExp(`🧑‍🏫 傳授中：${d.name}《降龍十八掌》`));
 });
 
-test('N12：師父佔用時段不接別的活', () => {
+test('N12／#417：傳授時段師父不接別的活，改去外功場開共同任務', () => {
   const { s, m } = teachPair();
   teachDaily(s);
-  m.task = null;
+  m.task = null; m.order = null;
   tick(s, 0.25);
-  assert.equal(m.task, null, '傳授時段內不派工');
-  assert.ok(m.teachCool < TEACH_ART.session);
+  assert.equal(m.task?.act, 'teach', '傳授時段內不派別的工');
+});
+
+test('#417 N13：師父手上有活時，徒弟不加速', () => {
+  const { s, m, d } = teachPair();
+  teachDaily(s);
+  m.task = { act: 'farm', phase: 'do', node: 'veg' }; d.task = { act: 'train', node: 'yard', teach: m.id }; d.pos = [...m.pos];
+  assert.equal(teachMul(s, d, 'xianglong'), 1, '師父在做活');
+  m.task = { act: 'teach', phase: 'do', node: 'yard', partner: d.id }; d.pos = [m.pos[0] + 300, m.pos[1]];
+  assert.equal(teachMul(s, d, 'xianglong'), 1, '徒弟不在師父身旁');
+});
+
+test('#417 N13：獨孤九劍限華山一脈——非華山徒弟學不到，華山師徒或劇情走過才行', () => {
+  const { s, m, d } = teachPair();
+  m.arts.dugu = { xp: 85, last: 0, bt1: true, bt2: true };
+  m.sectId = 'emei'; d.sectId = 'emei'; s.hs.siguo = false; s.hs.feng = null; s.hs.fengLeft = false;
+  assert.ok(s.hs, '每局都有 s.hs');
+  assert.equal(canTeachArt(s, m, d, 'dugu'), false, '非華山的徒弟學不到');
+  m.sectId = 'huashan';
+  assert.equal(canTeachArt(s, m, d, 'dugu'), false, '只有師父是華山也不行');
+  d.sectId = 'huashan';
+  const both = canTeachArt(s, m, d, 'dugu');
+  assert.equal(both, true, '師徒都屬華山可傳');
+  m.sectId = 'emei'; d.sectId = 'emei'; s.hs.siguo = true;
+  assert.equal(canTeachArt(s, m, d, 'dugu'), both, '華山劇情走過＝與華山師徒同條件');
 });
 
 test('N12：每位師父每門名功只傳一人；受者上限傳者 − 1', () => {

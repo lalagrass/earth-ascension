@@ -36,7 +36,7 @@ test('loop196 四階催動：本門正宗、同源、虛浮、逆催；純內功
   assert.equal(drive(e, 'chousuiPalm').tier, 3);
   give(e, 'emeiJiuyang', 60); assert.equal(drive(e, 'chousuiPalm').tier, 2); assert.equal(drive(e, 'chousuiPalm').mul, 1);
   const [, g] = fresh('gaibang'); give(g, 'huntianGong', 60); give(g, 'sanyinClaw', 10);
-  assert.equal(drive(g, 'sanyinClaw').tier, 4); assert.equal(drive(g, 'sanyinClaw').mul, 1); /* #405 退役：逆催不再 ×0.65 */
+  assert.equal(drive(g, 'sanyinClaw').tier, 4); assert.equal(drive(g, 'sanyinClaw').mul, 0.65); /* #423 退役 #405 這一斷言：決定 281 刻意把逆催 DRIVE28.t4 恢復成 0.65 */
   const [, w] = fresh('wudang'); give(w, 'wudangXinfa', 60); give(w, 'wudangJiuyang', 30); give(w, 'basicFist', 30);
   const pub = drive(w, 'basicFist'); assert.equal(pub.tier, 2); assert.ok(pub.root); assert.ok(Math.abs(pub.mul - 1.06) < 1e-9);
   give(w, 'taijiSword', 30); delete w.arts.wudangJiuyang; assert.equal(drive(w, 'taijiSword').tier, 3, '一品內功催不動三品本門劍');

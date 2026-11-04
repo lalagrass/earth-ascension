@@ -75,9 +75,11 @@ export function isFamousArt(a) {
   const art = typeof a === 'string' ? artById(a) : a;
   return !!(art && art.secret && art.classic && !art.derived);
 }
-function costOk(s, d, a) {
+/* #417 N13：每局都有 s.hs，不能拿來當條件。華山劇情確實走過＝令狐沖上過思過崖或風清揚現身過。 */
+export const hsWalked = (s) => !!(s?.hs && (s.hs.siguo || s.hs.feng || s.hs.fengLeft));
+function costOk(s, d, a, m) {
   if (a.id === 'bixie') return d.duanqing != null;
-  if (a.id === 'dugu') return (s?.sect?.id || s?.sect24) === 'huashan' || !!s?.hs;
+  if (a.id === 'dugu') return hsWalked(s) || (m?.sectId === 'huashan' && d?.sectId === 'huashan');
   return true;
 }
 
@@ -94,7 +96,7 @@ export function canTeachArt(s, m, d, artId) {
   if (heir && heir !== d.id) return false; /* 一門名功一生只傳一人 */
   if (d.master !== m.id) return false;
   if (aff(s, m, d) < TEACH_ART.aff || aff(s, d, m) < TEACH_ART.aff) return false; /* 師徒「且」好感 */
-  if (!costOk(s, d, a)) return false;
+  if (!costOk(s, d, a, m)) return false;
   if (gated(d, a)) return false;
   if (reqMissing(d, a).length > 0) return false;
   const ceilingArts = a.learn?.ceiling?.arts || CEILING[a.id];
@@ -147,10 +149,15 @@ export function teachStage(s, m, d, artId) {
   relAdd(s, m, d, 1);
   return true;
 }
-/* 徒弟正在被教的那門名功，練功時乘 TEACH_ART.mul。只在師父當日的傳授時段內。 */
+/* #417 N13：傳功是師徒兩人的共同任務（sim.mjs teachStep）。師父在外功場（task.act === 'teach'、phase 'do'），
+   徒弟也在他身旁練這門（task.teach === 師父 id）時，徒弟才拿 ×TEACH_ART.mul；師父手上有別的活一律不加速。 */
+export const TEACH_NEAR = 60;
 export function teachMul(s, d, artId) {
   const m = s?.ds?.find((o) => o.teaching?.pupil === d.id);
-  return m && !m.away && m.teachCool > 0 && (!artId || m.teaching.art === artId) ? TEACH_ART.mul : 1;
+  if (!m || m.away || !(m.teachCool > 0) || (artId && m.teaching.art !== artId)) return 1;
+  if (m.task?.act !== 'teach' || m.task.phase !== 'do' || d.task?.teach !== m.id) return 1;
+  if (!m.pos || !d.pos || Math.hypot(m.pos[0] - d.pos[0], m.pos[1] - d.pos[1]) > TEACH_NEAR) return 1;
+  return TEACH_ART.mul;
 }
 
 export function teachDaily(s) {

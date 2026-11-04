@@ -106,7 +106,7 @@
 
 ## FAN_BASE 實測校準（#408 第三輪）
 
-不再用「全表中位數 × 1.61」推。`node tools/calib-fan.mjs <base 的 solo-sect> 12 13 14` 先量 base（`codex/solo-sect-grok` `08a0306f`），再以 `SS_FAN_BASE` 掃候選值跑 head；量法是 `tools/bot12.mjs`：bot 情境 12 種子（1001–1012）、dt=6、第 30 日，依主修外功的名次段分組取 dps 中位數。原始輸出存於 `tools/calib-fan.out.txt`。
+不再用「全表中位數 × 1.61」推。`node tools/calib-fan.mjs <base 的 solo-sect> 12 13 14` 先量 base（`codex/solo-sect-grok` `08a0306f`），再以 `bot12 --fan=N`（import 後呼叫 `setFanBase` 覆寫）掃候選值跑 head；量法是 `tools/bot12.mjs`：bot 情境 12 種子（1001–1012）、dt=6、第 30 日，依主修外功的名次段分組取 dps 中位數。原始輸出存於 `tools/calib-fan.out.txt`。
 
 | FAN_BASE | 常見 dps（head） | base 常見 | 比值 |
 |---|---|---|---|

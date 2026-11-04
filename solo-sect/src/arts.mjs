@@ -1,7 +1,7 @@
 import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST } from './data.mjs';
 import { stampCard, curveMulOf, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
-import { pipeline, log } from './util.mjs';
+import { pipeline, log, chronOf } from './util.mjs';
 // ==== （原 growth.mjs）====
 /* loop78 成長分層（開關 s.grow）：成長門類 metadata、造詣單一結算入口、同類學習加速。
    造詣不另存門類值：造詣＝Σ 各武學紀錄 r.gm 的有界貢獻 × 門類權重（衍生值，不會與 skills.palm 漂移）。
@@ -333,6 +333,7 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     const a = artById(id);
     let fx = a?.on?.[event];
     if (!fx) continue;
+    if (ctx.map && ZJ_SKIP[id]?.includes(event)) continue; /* #426 地圖戰改走絕學規則 */
     if (!who.arts?.[id] && !(a.forms && who.dugu?.length)) continue;
     const tier = who.arts?.[id] ? artTier(who, id) : 0;
     if (tier < (fx.need ?? 0)) continue;
@@ -643,7 +644,7 @@ export const INNER = ARTS.filter(isInner).map((a) => a.id);
 export const innerArts = (d) => INNER.filter((id) => d.arts?.[id]);
 export const qiMax = (d) => qiMax2(d) * injuryMul28(d); /* loop181 經脈內傷壓內力上限 */
 export const qiOf = (d) => Math.min(d.qi ?? 0, qiMax(d));
-export function addQi(d, amt) { d.qi = Math.max(0, Math.min(qiMax(d), (d.qi ?? 0) + amt)); return d.qi; }
+export function addQi(d, amt) { if (amt > 0 && d?.part?.where === 'body') return d.qi ?? 0; /* #427 身傷：內力不回 */ d.qi = Math.max(0, Math.min(qiMax(d), (d.qi ?? 0) + amt)); return d.qi; }
 // 夠就扣並回 true；不夠不扣
 export function spendQi(d, cost) { if (!d.ng || qiOf(d) < cost) return false; d.qi = qiOf(d) - cost; return true; }
 
@@ -1183,3 +1184,173 @@ export function qiInjuryFight28(s, team, logf) { if (!s) return; for (const d of
 export function qiInjuryCure28(s, d, amt) { const q0 = d?.qiInjury || 0; if (!q0) return false; d.qiInjury = Math.max(0, q0 - amt); if (!d.qiInjury) { (s.v28n ??= {}).cure = (s.v28n.cure || 0) + 1; return true; } return false; }
 export const styleDmg24 = (d) => { if (!d) return 1; return (polymath24(d) === 2 ? SYN24.conv : 1) * injuryMul28(d); }; /* loop181：同門成套傷害改由 innerDrive28 逐招給 */
 export const styleBadges24 = (d) => [d?.champ28 ? '【大比首徒】' : '', polymath24(d) === 2 ? '【萬流歸宗】' : polymath24(d) === 1 ? '【雜學分心】' : '', (d?.qiInjury || 0) >= DRIVE28.injWarn ? '⚠️【經脈內傷】' : '', !!d && rootMove28(d) > 0 ? '【根基渾厚】' : '', qiArtBadge24(d) ? '【以氣御劍】' : '', swordFast24(d) ? '【唯快不破】' : '', d?.xiao29 ? '【梟雄強練】' : d?.base28 ? '【守正厚積】' : temper29(d).qing ? '【至情清修】' : temper29(d).ling ? '【靈動跳階】' : ''].filter(Boolean); /* loop204：本門正宗改逐招顯示；以氣御劍／唯快不破看武學類別 */
+
+// ==== #418 N14 見招拆招：三段出招、四種接法、架勢條（只接地圖上的狩獵與試煉野豬；巡山 fight()、會武、江湖挑戰不走這裡） ====
+// 判定順序（前搖結束那一刻，第一個成立的生效）：看破 → 閃 → 招架 → 中招。
+// 架勢空了：對方下一招不判接法，直接重擊 ×CLASH.heavy，蓋「現」。看破成立：攻方架勢大掉，守方下一招必中。
+export const CLASH = {
+  windIn: 0.5, windHua: 0.2,                 /* 前搖佔冷卻：入門 0.5、化境 0.2，中間照火候線性 */
+  monWind: 0.45,                             /* 鼠、野豬的前搖佔牠的冷卻 */
+  post: { d: 100, rat: 30, boar: 70, bandit: 60, def: 50 }, regenDelay: 2.5, regen: 12,
+  heavy: 2,
+  read: { wu: 0.035, insight: 0.004, depth: 0.06, max: 0.3, drop: 45 },
+  dodge: { agi: 0.0035, fast: 0.05, max: 0.3, qi: 3, mon: { rat: 0.2, boar: 0.12, bandit: 0 /* #424 山賊不閃：守柵總輸出維持舊值，柵擋得住的比例不變 */ } /* 調到單人探針溜走、失血落在基準 ±25% */ },
+  parry: { base: 0.08, k: 0.0025, max: 0.35, drop: 14, jolt: 1.6, joltDrop: 20 },
+  depth: { rat: 1, boar: 2, bandit: 2 }, monQi: { rat: 4, boar: 12, bandit: 10 },
+};
+const clamp01 = (x, hi = 1) => Math.max(0, Math.min(hi, x));
+export const windFrac = (tier) => CLASH.windIn + (CLASH.windHua - CLASH.windIn) * Math.max(0, Math.min(4, tier | 0)) / 4;
+/* 一招的前搖秒數：cd × 前搖比例（看這招所屬武學的火候） */
+export function windOf(d, mvId, cd) { const a = artOfMove(mvId); const t = a && d?.arts?.[a.id] ? artTier(d, a.id) : 0; return cd * windFrac(t) * (d?.part?.where === 'hand' ? PART.hand : 1); } /* #427 手傷：出手慢 */
+export const isMon = (w) => !!w && w.k != null && !w.arts;
+export const postureMax = (w) => (isMon(w) ? CLASH.post[w.k] ?? CLASH.post.def : CLASH.post.d);
+export function postureOf(w) { if (w.posture == null) w.posture = postureMax(w); return w.posture; }
+export function postureHit(s, w, amt) { postureOf(w); w.posture = Math.max(0, w.posture - amt); w.postT = s?.t ?? 0; return w.posture; }
+export function postureRegen(s, w, dt) { postureOf(w); if ((s?.t ?? 0) - (w.postT ?? -1e9) >= CLASH.regenDelay) w.posture = Math.min(postureMax(w), w.posture + CLASH.regen * dt); }
+/* 招式深淺：弟子＝這招所屬武學火候 + 1；獸看種類 */
+export function depthOf(atk, mvId) { if (isMon(atk)) return CLASH.depth[atk.k] ?? 1; const a = artOfMove(mvId); return (a && atk.arts?.[a.id] ? artTier(atk, a.id) : 0) + 1; }
+const qiPow = (w) => (isMon(w) ? CLASH.monQi[w.k] ?? 6 : (qiOf(w) || 0) + (w.skills?.strength || 0));
+/* 三種接法各自的成功率（不擲骰），給測試與面板讀。 */
+export function clashOdds(s, atk, def, ctx = {}) {
+  const depth = ctx.depth ?? depthOf(atk, ctx.move), wind = Math.max(0.05, ctx.wind ?? 0.5);
+  let read = 0, dodge = 0, parry = 0;
+  if (isMon(def)) dodge = clamp01((CLASH.dodge.mon[def.k] ?? 0.05) - CLASH.dodge.fast * (1 / wind - 1), CLASH.dodge.max);
+  else {
+    const insight = isMon(atk) ? s?.codex?.[atk.k]?.insight || 0 : 0;
+    read = clamp01(CLASH.read.wu * ((def.wu ?? def.root ?? 3) - 1) + CLASH.read.insight * insight - CLASH.read.depth * (depth - 1), CLASH.read.max);
+    if (depth - 1 >= FLAIR.hua) read *= FLAIR.readK;
+    if (def.part?.where === 'eye') read = 0; /* #427 目傷：看不清來招 */ /* #420 化境：前搖短到很難看破 */
+    dodge = qiOf(def) >= CLASH.dodge.qi ? clamp01(CLASH.dodge.agi * (def.skills?.agility || 0) - CLASH.dodge.fast * (1 / wind - 1), CLASH.dodge.max) : 0;
+    parry = clamp01(CLASH.parry.base + CLASH.parry.k * qiPow(def), CLASH.parry.max);
+  }
+  return { read, dodge, parry };
+}
+/* 前搖結束那一刻的判定。rnd 是固定種子亂數（sim 的 rand(s)）。回傳 { kind: 'read'|'dodge'|'parry'|'hit', heavy, jolt, why }。
+   ctx.force：'hit' 直接中招（應接不來、看破後的必中）。 */
+export function resolveSwing(s, atk, def, rnd, ctx = {}) {
+  postureOf(atk); postureOf(def);
+  if (def.posture <= 0) { def.posture = postureMax(def) * 0.5; def.postT = s?.t ?? 0; return { kind: 'hit', heavy: true, why: 'open' }; }
+  if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return { kind: 'hit', heavy: false, why: ctx.force || 'sure' }; }
+  const o = clashOdds(s, atk, def, ctx);
+  const zjAtk = ctx.map && !isMon(atk) ? zjOfMove(ctx.move) : null; /* #426 */
+  const duguPassive = ctx.map && isMon(atk) && zjHas(def, 'dugu') && (s?.codex?.[atk.k]?.insight || 0) >= ZJ.dugu.insight; /* 獨孤：讀招改成被動截，不再擲讀招 */
+  if (!duguPassive && o.read > 0 && rnd() < o.read) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return { kind: 'read' }; }
+  if (o.dodge > 0 && rnd() < o.dodge) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi); return { kind: 'dodge' }; }
+  if (o.parry > 0 && rnd() < o.parry) {
+    if (zjAtk === 'xuantie' && zjHas(atk, 'xuantie')) { zjMark(s, atk, 'xuantie'); return { kind: 'hit', heavy: false, why: 'xuantie' }; } /* 玄鐵：招架等於沒招架 */
+    if (zjAtk === 'xianglong' && zjHas(atk, 'xianglong')) { zjMark(s, atk, 'xianglong'); postureHit(s, def, ZJ.xianglong.drop); } /* 降龍：格住了也掉一大截架勢 */
+    const jolt = qiPow(def) >= CLASH.parry.jolt * qiPow(atk);
+    postureHit(s, def, CLASH.parry.drop); postureHit(s, atk, CLASH.parry.drop + (jolt ? CLASH.parry.joltDrop : 0));
+    return { kind: 'parry', jolt };
+  }
+  return { kind: 'hit', heavy: false };
+}
+
+// ==== #419 N15 交戰圈與應接 ====
+/* slots：一人身邊最多 4 個近戰位，第 5 隻起在外圈繞；cap：同一個 win 秒內接得住幾招（火候 入門→化境 1/2/3/4/5），超出的直接中招。
+   step／leash／stepCd／stepQi：應接不暇時輕功滑步，離守點不超過 leash。 */
+export const RING = { engage: 44 /* 佔了近戰位的獸，對手滑步走開也會追上去，不趁機溜下山 */, slots: 4, outer: 50, cap: [1, 2, 3, 4, 5], win: 1.2, step: 24, leash: 40, stepCd: 3, stepQi: 4, stepAgi: 10 };
+export function topTierOf(d) { let t = 0; for (const id of Object.keys(d?.arts || {})) t = Math.max(t, artTier(d, id) | 0); return Math.min(4, t); }
+export const handleCap = (d) => RING.cap[topTierOf(d)];
+/* 這一招還接不接得住：win 秒內已經判過 cap 次接法就回 false（之後直接中招）。會記一筆。 */
+export function handleTake(s, d) {
+  const now = s?.t ?? 0, L = (d.handled ||= []).filter((x) => now - x < RING.win); d.handled = L;
+  const cap = handleCap(d), ok = L.length < cap; L.push(now);
+  d.ring = { cap, used: Math.min(cap, L.length), over: Math.max(0, L.length - cap), t: now };
+  if (d.ring.used > (d.maxHandled || 0)) { d.maxHandled = d.ring.used; if (d.maxHandled >= 2 && s && d.name) chronOf(s, d, 'handled', { chron: `${d.name}一口氣接下 ${d.maxHandled} 路來招，破了自己的紀錄` }); } /* #420 N16 */
+  return ok;
+}
+// ==== #425 N19 林克時間與輕功交錯 ====
+/* 完美閃避：真的「閃」成立，而且閃開的那一刻落在前搖最後 win（15%）；身法 ≥ agi、悟性 ≥ wu 才有機會。
+   林克時間：以閃避者為圓心 r px 內的敵人，前搖與移動乘 k，持續 dur 秒；閃避者自己照常。只在模擬步長裡把圈內敵人的計時乘上倍數，不改全域 dt。
+   輕功交錯：雙方身法都 ≥ crossAgi、出手時間差 < crossGap 秒，機率 crossP 互相穿過，雙方各掉 crossDrop 架勢、兩招都落空。 */
+export const WITCH = { win: 0.15, agi: 30, wu: 4, r: 80, k: 0.3, dur: 1, cool: 4, crossAgi: 40, crossGap: 0.3, crossP: 0.3, crossDrop: 25 };
+/* 閃開的時機：身法越高越能壓到最後一刻；回傳 [0,1) 的「閃開時在前搖的哪一段」。 */
+export function perfectDodge(s, def, rnd) {
+  if (!def || def.arts == null || (def.skills?.agility || 0) < WITCH.agi || (def.wu ?? def.root ?? 3) < WITCH.wu || (def.witchT ?? -1e9) > (s?.t ?? 0)) return false;
+  const at = rnd(); /* 閃開落在前搖的哪個位置（均勻） */ if (at < 1 - WITCH.win) return false;
+  def.witchT = (s?.t ?? 0) + WITCH.cool; (s.witch ||= []).push({ who: def.id, pos: [...def.pos], until: s.t + WITCH.dur });
+  (s.fx ||= []).push({ kind: 'witch', pos: [...def.pos], r: WITCH.r, ttl: WITCH.dur });
+  s.witchN = (s.witchN || 0) + 1; if (def.name) log(s, `【林克時間】${def.name}在最後一刻閃開，身邊一圈的敵人慢了下來`);
+  return true;
+}
+/* 敵人所在位置的時間倍數：在任何一個林克時間圈內就是 k，否則 1。過期的圈順手清掉。 */
+export function witchK(s, pos) {
+  const W = s?.witch; if (!W?.length || !pos) return 1; const now = s.t; s.witch = W.filter((w) => w.until > now); if (!s.witch.length) { s.witch = undefined; return 1; }
+  return s.witch.some((w) => Math.hypot(pos[0] - w.pos[0], pos[1] - w.pos[1]) <= WITCH.r) ? WITCH.k : 1;
+}
+/* 輕功交錯：雙方身法都 ≥ crossAgi、兩招出手時間差 < crossGap 秒，擲一次 crossP。成立時由呼叫端讓兩招落空、各掉架勢、畫火花。 */
+export const lightCross = (agiA, agiB, atA, atB, rnd) => agiA >= WITCH.crossAgi && agiB >= WITCH.crossAgi && Math.abs(atA - atB) < WITCH.crossGap && rnd() < WITCH.crossP;
+
+// ==== #426 N20 絕學改規則 ====
+/* 每門絕學只改一條規則，只走 N14 的接法鉤子（resolveSwing／前搖／挨打），不乘曲線倍數；只在地圖戰（打獵、守柵、試煉）生效，巡山與會武仍走 dpsOf 期望值。
+   和舊 on 絕活重複的那一條，地圖戰改走這裡（ZJ_SKIP），不兩條一起算。 */
+export const ZJ = {
+  dugu: { char: '破', rule: '觀破即截', reach: 70, drop: 40, cool: 2, insight: 30 },
+  taiji: { char: '圓', rule: '圓轉卸力', r: 60, wind: 1.5, cool: 3 },
+  taijiSword: { char: '圓', rule: '圓轉卸力', r: 60, wind: 1.5, cool: 3 },
+  kuihua: { char: '針', rule: '無前搖', fall: 0.4 },
+  jiuyang: { char: '陽', rule: '挨打自震', need: 3, shock: 30, regen: 3, cap: 0.7 },
+  xianglong: { char: '龍', rule: '不可格', drop: 30 },
+  xuantie: { char: '重', rule: '破招架' },
+};
+export const ZJ_NEED = 2;
+/* 地圖戰裡被絕學規則取代的舊 on 絕活：event 列表 */
+export const ZJ_SKIP = { dugu: ['hit', 'dodge'], taijiSword: ['gethit'], xuantie: ['hit'] };
+export function zjHas(d, id) {
+  if (!d || isMon(d) || !ZJ[id]) return false;
+  if (id === 'dugu') return !!d.dugu?.length;
+  return !!d.arts?.[id] && artTier(d, id) >= (ZJ[id].need ?? ZJ_NEED);
+}
+const zjOfMove = (mvId) => { const a = artOfMove(mvId); return a && ZJ[a.id] ? a.id : null; };
+/* 第一次在實戰中用到：蓋上這門武學的字、記大事記 */
+export function zjMark(s, d, id) {
+  const z = ZJ[id]; if (!s || !d || !z) return;
+  const used = (d.zjUsed ||= []); if (used.includes(id)) return; used.push(id);
+  (s.fx ||= []).push({ kind: 'stamp', char: z.char, pos: [...(d.pos || [0, 0])], ttl: 1.4 });
+  if (d.name) chronOf(s, d, 'zj_' + id, { chron: `${d.name}第一次在實戰中以${artById(id)?.name || id}「${z.rule}」` });
+  s.zjN = s.zjN || {}; s.zjN[id] = (s.zjN[id] || 0) + 1;
+}
+const zjCount = (s, id) => { s.zjN = s.zjN || {}; s.zjN[id] = (s.zjN[id] || 0) + 1; };
+/* 太極圈：pos 在某個太極弟子 r 內 → 前搖乘 wind */
+export function zjWindK(s, pos, team) {
+  for (const d of team || []) if (d.hp > 25 && (zjHas(d, 'taiji') || zjHas(d, 'taijiSword')) && Math.hypot(pos[0] - d.pos[0], pos[1] - d.pos[1]) <= ZJ.taiji.r) { zjMark(s, d, zjHas(d, 'taiji') ? 'taiji' : 'taijiSword'); return ZJ.taiji.wind; }
+  return 1;
+}
+/* 獨孤：已觀破（圖鑑觀破 ≥ insight）的獸一進前搖，身邊 reach 內有獨孤弟子就自動截下 */
+export function zjIntercept(s, m, team) {
+  if (!isMon(m) || (s?.codex?.[m.k]?.insight || 0) < ZJ.dugu.insight) return null;
+  const d = (team || []).find((x) => x.hp > 25 && zjHas(x, 'dugu') && (x.zjT ?? -1e9) <= s.t && Math.hypot(m.pos[0] - x.pos[0], m.pos[1] - x.pos[1]) <= ZJ.dugu.reach);
+  if (!d) return null;
+  d.zjT = s.t + ZJ.dugu.cool; postureHit(s, m, ZJ.dugu.drop); d.sure = m.uid || m.id;
+  (s.fx ||= []).push({ kind: 'cut', from: [...d.pos], to: [...m.pos], ttl: 0.5 }); zjMark(s, d, 'dugu'); zjCount(s, 'duguCut');
+  return d;
+}
+/* 九陽：圓滿起內力快回，回到上限 cap 為止 */
+export function zjRegen(d, dt) { if (!zjHas(d, 'jiuyang') || d.part?.where === 'body') return; const cap = qiMax(d) * ZJ.jiuyang.cap; if ((d.qi ?? 0) < cap) d.qi = Math.min(cap, (d.qi ?? 0) + ZJ.jiuyang.regen * dt); }
+
+// ==== #427 N21 部位傷 ====
+/* 只在「架勢已空的重擊」或「精準武學（劍、指）的重擊」時發生。三處：目（看不清來招，讀招失效）、手（出手變慢）、身（內力不回）。
+   帶回日常：最多 days 天自己好；去療傷每次少 1 天，有醫術專長的人照料直接好。不斷肢、不留殘疾。 */
+export const PART = { days: 3, hand: 1.3, where: ['eye', 'hand', 'body'], name: { eye: '目', hand: '手', body: '身' }, what: { eye: '看不清來招', hand: '出手慢了半拍', body: '內息回不上來' } };
+const preciseArt = (mvId) => { const a = artOfMove(mvId); return !!a && (a.weapon === 'sword' || /指/.test(a.name || '')); };
+export const partOf = (d, w) => (d?.part && d.part.where === w ? d.part : null);
+export function partHit(s, def, r, ctx = {}) {
+  if (!def || isMon(def) || !r?.heavy || def.part) return null;
+  if (!(r.why === 'open' || preciseArt(ctx.move))) return null;
+  const rnd = ctx.rnd || Math.random, where = PART.where[Math.min(2, Math.floor(rnd() * 3))], side = rnd() < 0.5 ? '左' : '右';
+  def.part = { where, side: where === 'body' ? '' : side, days: PART.days };
+  s.partN = (s.partN || 0) + 1;
+  if (def.name) log(s, `【負傷】${def.name}${partText(def)}`);
+  return def.part;
+}
+export function partText(d) { const p = d?.part; if (!p) return ''; const n = ['', '一', '兩', '三'][Math.min(3, p.days)] || p.days; return `${p.side}${PART.name[p.where]}受傷，${n}日內${PART.what[p.where]}`; }
+/* 每日：少一天；療傷（heal）再少一天；doctor＝直接好 */
+export function partHeal(s, d, how) {
+  if (!d?.part) return; if (how === 'doctor') d.part.days = 0; else d.part.days -= 1;
+  if (d.part.days <= 0) { d.part = null; if (d.name) log(s, `${d.name}的傷好了`); }
+}
+
+// ==== #420 N16 招式的樣子 ====
+/* name：招名浮字每人每 gap 秒最多一次；dash：大成起、射程 ≥ minRange 的招可滑步上前 add px（離守點 ≤ RING.leash）；hua：化境的範圍招逐個目標判接法、看破率再打 readK 折。 */
+export const FLAIR = { nameGap: 2, nameTtl: 1.2, dash: { tier: 3, minRange: 50, add: 30 }, hua: 4, readK: 0.5 };
