@@ -314,7 +314,7 @@ function genHtml() { // v1.4 傳承
   out.push(`🏛 ${S.sect?.name || '本門'}第 <b>${G.n}</b> 代掌門：${S.ds.find((d) => d.id === 'hero')?.name}　宿慧 ${'◆'.repeat(G.suhui)}${'◇'.repeat(GEN.suhuiMax - G.suhui)}（每傳一代，新開局自創 +1 點）`);
   if (G.couples.length) out.push(`💞 夫妻：${G.couples.map((c) => c.map(nm).join('＆')).join('、')}`);
   const kids = S.ds.filter((d) => d.child); if (kids.length) out.push(`🧒 第二代：${kids.map((d) => `${d.name}（${d.age}歲${d.adult ? '・已成年' : ''}；養父母 ${d.child.parents.map(nm).join('、')}；悟${d.wu}根${d.root}）`).join('、')}`);
-  const ms = S.ds.filter((d) => d.master); if (ms.length) out.push(`📿 師承（師父大成武學 ×${1.2}）：${ms.map((d) => `${nm(d.master)}→${d.name}${d.lineArts?.length ? `〔${d.lineArts.map((a) => ARTS.find((x) => x.id === a)?.name).join('、')}〕` : ''}`).join('、')}`);
+  const ms = S.ds.filter((d) => d.master); if (ms.length) out.push(`📿 師承（外功場同練才加速）：${ms.map((d) => `${nm(d.master)}→${d.name}${d.mentorArts31?.length ? `〔${d.mentorArts31.map((a) => ARTS.find((x) => x.id === a)?.name).join('、')}〕` : ''}`).join('、')}`);
   if (G.lineage.length) out.push(`📜 衣缽譜：${G.lineage.map((x) => `第${x.gen}代 ${x.name} ─${x.art}→ ${x.heir}`).join('；')}`);
   const c = canSucceed(S); out.push(c.ok ? `🎎 傳衣缽：<select id="heir">${heirs(S).map((d) => `<option value="${d.id}">${d.name}</option>`).join('')}</select> 傳 ${ARTS.find((a) => a.id === heirArt(S.ds.find((d) => d.id === 'hero')))?.name} <button data-succeed="1">傳位退隱</button>` : `🎎 衣缽：${c.why}`);
   return `<div class="k"><b>傳承・第二代</b><br>${out.join('<br>')}</div>`;

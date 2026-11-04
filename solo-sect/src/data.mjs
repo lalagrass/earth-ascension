@@ -804,7 +804,6 @@ export const SIG_ACTS = {
 RES_NAMES.water = '水'; RES_NAMES.pill = '療傷丹';
 
 // v1.65 傳功（夥伴活動，由 bonds.mjs 判斷誰傳誰）
-ACTIVITIES.pass = { name: '傳功', dur: 20, energy: -4 };
 // ---- v1.7 四大武道相剋環（ADOPTION A17）：破綻→蓄力→卸力→歸真→破綻（前者剋後者）----
 // 弟子的武道＝最熟那門武學的 tag；敵人的武道直接查表。v1.46 試玩：巡山／來犯威脅偏低、開局弱，故只取 ±10%，不讓相剋左右勝負
 export const DAO = { tagOf: { 巧: '破綻', 剛: '蓄力', 柔: '卸力', 拙: '歸真' }, ring: ['破綻', '蓄力', '卸力', '歸真'], up: 1.1, down: 0.9,
@@ -894,7 +893,6 @@ export const SCORE = [
   { act: 'rest', when: ['hurt'], v: 90, why: '傷還沒好，躺著養傷', layer: 'need' },
   { act: 'eat', when: ['hasFood'], tiers: [{ if: 'starving', v: 160, why: '餓得發昏，先吃', layer: 'need' }, { if: 'hungry', v: 95, why: '餓了', layer: 'need' }, { v: { lin: ['n.hunger', 100], mul: [0.6] }, why: '順便吃點' }] },
   { act: 'chat', when: ['others'], v: { lin: ['n.social', 100], mul: [0.6, 'tr.social', 'tr.playful', 0.8] }, why: '想找人說話' },
-  { act: 'pass', when: ['pp'], v: 'passScore', why: '{passWhy}' },
   { act: 'leisure', tiers: [{ if: 'dull', v: { lin: ['fun', 100], mul: [0.55] }, why: '悶得慌，想偷閒' }, { v: { lin: ['fun', 100], mul: [0.55] }, why: '想坐坐看雲' }] },
   { act: 'encourage', when: ['encourageOk'], v: { lin: ['low.mood', 35], mul: [1.5], plus: 40 }, why: '{low.name}心情低落，去打打氣' },
   { act: 'learn', when: ['pending'], v: 80, why: '師父能傳「{pendingName}」' },

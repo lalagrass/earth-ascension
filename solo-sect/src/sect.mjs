@@ -45,9 +45,9 @@ export function adopt(s, pa, pb, rnd = Math.random) {
   log(s, `【收養】${ps.map((p) => p.name).join('與')}收養了孤兒${name}（${GEN.adoptAge} 歲；承襲${pers.join('、') || '—'}、悟性${d.wu}・根骨${d.root}）。`); return d;
 }
 const bestTier = (d) => Math.max(-1, ...Object.keys(d.arts || {}).map((k) => artTier(d, k)));
-// ---- 師承：徒弟學師父大成以上的武學 ×1.2（arts.mjs 讀 d.lineArts） ----
-export function setMaster(s, d, m) { if (!m || m === d) return; d.master = m.id; refreshLine(s, d); const top = d.lineArts.find((k) => !chiefLocked24(d, artById(k))); /* loop175 收徒承師不越位階鎖 */ if (top) { learnArt(d, top, s.t); d.arts[top].xp = Math.max(d.arts[top].xp, 10); } log(s, `${d.name}拜${m.name}為師。`); }
-function refreshLine(s, d) { const m = s.ds.find((x) => x.id === d.master); d.lineArts = m ? Object.keys(m.arts || {}).filter((k) => artTier(m, k) >= GEN.lineTier).sort((a, b) => artTier(m, b) - artTier(m, a)) : []; }
+// ---- 師承：名冊只留可傳的武學；加速由外功場共同傳授結算 ----
+export function setMaster(s, d, m) { if (!m || m === d) return; d.master = m.id; refreshLine(s, d); log(s, `${d.name}拜${m.name}為師。`); }
+function refreshLine(s, d) { const m = s.ds.find((x) => x.id === d.master); d.mentorArts31 = m ? Object.keys(m.arts || {}).filter((k) => artTier(m, k) >= GEN.lineTier).sort((a, b) => artTier(m, b) - artTier(m, a)) : []; }
 export function adoptCard(s) {
   const G = s.gen; if (G.kids.length >= GEN.maxKids || s.t - G.lastAdopt < GEN.adoptEvery * DAY || !s.choices || s.choices.some((c) => c.gen)) return;
   const c = G.couples.find((p) => !G.kids.some((k) => s.ds.find((d) => d.id === k)?.child?.parents?.includes(p[0]))); if (!c) return;

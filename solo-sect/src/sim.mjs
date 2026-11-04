@@ -414,7 +414,6 @@ function moveStep(d, dt) {
 
 function grow(s, d, sk, amt, src = 'train') {
   if (sk === 'style') sk = d.style; const raw = amt; /* loop79：造詣只吃原始投入（師父在場倍率前） */
-  amt *= apprMul(s, d); // v1.65 師父在場，徒弟練得快
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
   if (src === 'labor' && sk === 'strength' && d.lg) d.skills[sk] = before + workStrCap(d, Math.floor(s.t / DAY), d.skills[sk] - before); // loop127 做活力氣每日軟上限
   if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt * (d.arts ? teachMul(s, d, focusOf(d)) : 1), focusMul(d), s.t, { raw, src }); /* #415 N12 師父傳授時段：這門名功練得快 */ if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === m).name}」`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); return o; }
@@ -509,16 +508,17 @@ function finish(s, d) { if (d.task) markDone(s, d, d.task.act); if (d.task && CH
 export const TEACH_JOIN = { node: 'yard', wait: DAY / 8 };
 function teachStep(s, m, dt) {
   const p = m.teaching && byId(s, m.teaching.pupil);
-  if (!p || p.away || !(m.teachCool > 0)) { if (m.task?.act === 'teach') m.task = null; m.teachCool = 0; return false; }
+  if (!p || p.away || !(m.teachCool > 0)) { if (p) p.teachArt = null; if (m.task?.act === 'teach') m.task = null; m.teachCool = 0; return false; }
   if (!m.task) { m.task = { act: 'teach', node: TEACH_JOIN.node, phase: 'go', partner: p.id, wait: 0 }; goto(m, TEACH_JOIN.node); m.reason = `到外功場傳授${p.name}`; }
   const t = m.task;
   if (m.path.length) { moveStep(m, dt); return true; }
   t.phase = 'do';
-  if (!p.task && !p.order) { p.task = { act: 'train', fac: 'yard', node: TEACH_JOIN.node, phase: 'go', teach: m.id }; goto(p, TEACH_JOIN.node); p.reason = `${m.name}要傳功`; }
+  if (!p.task && !p.order) { p.task = { act: 'train', fac: 'yard', node: TEACH_JOIN.node, phase: 'go', teach: m.id }; goto(p, TEACH_JOIN.node); p.reason = `${m.name}要傳授武學`; }
   const near = p.task?.teach === m.id && !p.path.length && dist(p.pos, m.pos) <= 60;
-  if (!near) { t.wait += dt; if (t.wait >= TEACH_JOIN.wait) { m.teachCool = 0; m.task = null; m.reason = `${p.name}沒來，今日傳功作罷`; } return true; }
+  if (!near) { p.teachArt = null; t.wait += dt; if (t.wait >= TEACH_JOIN.wait) { m.teachCool = 0; m.task = null; m.reason = `${p.name}沒來，今日傳授作罷`; } return true; }
+  p.teachArt = m.teaching.art;
   m.teachCool = Math.max(0, m.teachCool - dt); m.reason = `傳授${p.name}`;
-  if (m.teachCool <= 0) { m.task = null; if (p.task?.teach === m.id) p.task.teach = null; }
+  if (m.teachCool <= 0) { m.task = null; p.teachArt = null; if (p.task?.teach === m.id) p.task.teach = null; }
   return true;
 }
 
