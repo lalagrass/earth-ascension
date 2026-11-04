@@ -1218,13 +1218,15 @@ export function moveStats(w, moveId, wind = 0.5) {
     const blade = (w.i ?? 0) % 2 === 0;
     return { force: blade ? 25 : 14, speed: blade ? 22 : 28, armor: blade ? 16 : 8, type: blade ? 'blade' : 'fist' };
   }
-  const a = artOfMove(moveId), t = a && w?.arts?.[a.id] ? artTier(w, a.id) : 0, tags = a?.tags || [];
+  const a = artOfMove(moveId) || artById(moveId), t = a && w?.arts?.[a.id] ? artTier(w, a.id) : 0, tags = a?.tags || [];
   const force = 14 + t * 6 + (w?.skills?.strength || 0) * 0.2 + (tags.includes('剛') ? 12 : 0) + (tags.includes('拙') ? 10 : 0);
   const speed = 20 + t * 5 + (tags.includes('快') ? 18 : 0) + Math.min(18, 5 / Math.max(0.1, wind));
   const armor = 5 + t * 4 + (tags.includes('剛') || tags.includes('拙') ? 10 : 0) + (w?.arts?.jiuyang && artTier(w, 'jiuyang') >= 3 ? 25 : 0);
   const extremes = { xuantie: { force: 100, armor: 55 }, xianglong: { force: 95, armor: 45 }, dugu: { force: 12, speed: 80 }, taiji: { force: 8 }, taijiSword: { force: 8 }, kuihua: { speed: 95 } };
   return { force, speed, armor, type: a?.weapon === 'sword' || a?.id === 'dugu' ? 'sword' : /指/.test(a?.name || '') ? 'finger' : 'fist', ...(extremes[a?.id] || {}) };
 }
+/* 太極借來勁：來招越重，可卸回去的比例越高；人、獸、賊共用。 */
+export const taijiReturn = (atk, moveId, wind) => Math.min(0.8, 0.25 + moveStats(atk, moveId, wind).force / 100);
 export function breakWindup(s, atk, def, moveId, wind) {
   if (!def?.swing && !def?.bswing) return false;
   const strike = moveStats(atk, moveId, wind), guard = moveStats(def, def.swing?.mv || def.bswing?.mv, def.swing?.wind || def.bswing?.wind);
@@ -1245,12 +1247,12 @@ export function clashOdds(s, atk, def, ctx = {}) {
   else {
     const insight = isMon(atk) ? s?.codex?.[atk.k]?.insight || 0 : 0;
     const clever = ARTS.some((a) => a.tags?.includes('巧') && def.arts?.[a.id] && artTier(def, a.id) >= 1) ? 6 : 0;
-    read = opposed((def.wu ?? def.root ?? 3) * 4 + insight * 0.3 + (def.arts ? topTierOf(def) * 5 : 0) + clever, depth * 12 + (move.speed - 20) * 0.3, 9) * 0.6;
+    read = opposed((def.wu ?? def.root ?? 3) * 4 + insight * 0.3 + (def.arts ? topTierOf(def) * 5 : 0) + clever, depth * 12 + (move.speed - 20) * 0.3 + 10, 9);
     if (def.part?.where === 'eye') read = 0; /* #427 目傷：看不清來招 */ /* #420 化境：前搖短到很難看破 */
     dodge = qiOf(def) >= CLASH.dodge.qi ? opposed(def.skills?.agility || 0, move.speed, 10) : 0;
-    parry = opposed(qiPow(def), move.force, 12) * 0.55;
+    parry = opposed(qiPow(def), move.force + 12, 12);
   }
-  if (move.force >= qiPow(def) * 2) parry = 0;
+  if (move.force >= (isMon(def) ? moveStats(def).force : qiPow(def)) * 2) parry = 0;
   return { read, dodge, parry };
 }
 /* 前搖結束那一刻的判定。rnd 是固定種子亂數（sim 的 rand(s)）。回傳 { kind: 'read'|'dodge'|'parry'|'hit', heavy, jolt, why }。
@@ -1265,7 +1267,7 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   if (!duguPassive && o.read > 0 && rnd() < o.read) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return { kind: 'read' }; }
   if (o.dodge > 0 && rnd() < o.dodge) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi); return { kind: 'dodge' }; }
   if (o.parry > 0 && rnd() < o.parry) {
-    const force = moveStats(atk, ctx.move, ctx.wind).force, guard = qiPow(def);
+    const force = moveStats(atk, ctx.move, ctx.wind).force, guard = isMon(def) ? moveStats(def).force : qiPow(def);
     const jolt = guard > force * 1.4;
     postureHit(s, def, CLASH.parry.drop * Math.max(0.5, force / Math.max(1, guard))); postureHit(s, atk, CLASH.parry.drop * Math.max(0.5, guard / force) + (jolt ? CLASH.parry.joltDrop : 0));
     return { kind: 'parry', jolt };
@@ -1277,8 +1279,8 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
 /* slots：一人身邊最多 4 個近戰位，第 5 隻起在外圈繞；cap：同一個 win 秒內接得住幾招（火候 入門→化境 1/2/3/4/5），超出的直接中招。
    step／leash／stepCd／stepQi：應接不暇時輕功滑步，離守點不超過 leash。 */
 export const RING = { engage: 44 /* 佔了近戰位的獸，對手滑步走開也會追上去，不趁機溜下山 */, slots: 4, outer: 50, cap: [1, 2, 3, 4, 5], win: 1.2, step: 24, leash: 40, stepCd: 3, stepQi: 4, stepAgi: 10 };
-export function topTierOf(d) { let t = 0; for (const id of Object.keys(d?.arts || {})) t = Math.max(t, artTier(d, id) | 0); return Math.min(4, t); }
-export const handleCap = (d) => RING.cap[topTierOf(d)];
+export function topTierOf(d) { let t = 0; for (const id of Object.keys(d?.arts || {})) { const c = ART_CAT[id] || {}; if (['quanzhang', 'tuifa', 'jianfa', 'gunbang', 'qimen'].some((k) => (c[k] || 0) > 0)) t = Math.max(t, artTier(d, id) | 0); } return Math.min(4, t); }
+export const handleCap = (d) => RING.cap[topTierOf(d)] + (Object.keys(d?.arts || {}).some((id) => (ART_CAT[id]?.shenfa || 0) > 0 && artTier(d, id) >= 1) ? 1 : 0);
 /* 這一招還接不接得住：win 秒內已經判過 cap 次接法就回 false（之後直接中招）。會記一筆。 */
 export function handleTake(s, d) {
   const now = s?.t ?? 0, L = (d.handled ||= []).filter((x) => now - x < RING.win); d.handled = L;
@@ -1369,7 +1371,9 @@ export const partOf = (d, w) => (d?.part && d.part.where === w ? d.part : null);
 export function partHit(s, def, r, ctx = {}) {
   if (!def || isMon(def) || !r?.heavy || def.part) return null;
   if (!(r.why === 'open' || preciseArt(ctx.move))) return null;
-  const rnd = ctx.rnd || Math.random, where = PART.where[Math.min(2, Math.floor(rnd() * 3))], side = rnd() < 0.5 ? '左' : '右';
+  const rnd = ctx.rnd || Math.random, type = moveStats(ctx.attack, ctx.move).type;
+  const where = type === 'sword' || type === 'finger' || type === 'blade' ? (rnd() < 0.5 ? 'eye' : 'hand') : type === 'bite' ? 'hand' : 'body';
+  const side = rnd() < 0.5 ? '左' : '右';
   def.part = { where, side: where === 'body' ? '' : side, days: PART.days };
   s.partN = (s.partN || 0) + 1;
   if (def.name) log(s, `【負傷】${def.name}${partText(def)}`);

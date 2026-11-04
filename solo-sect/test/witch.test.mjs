@@ -11,7 +11,7 @@ test('完美閃避觸發林克時間：只放慢圈內的敵人，1 秒後結束
   d.pos = [...NODES[s.hunt.post]]; d.at = s.hunt.post; d.path = []; d.hp = 100; s.hunt.started = true; s.hunt.queue = [];
   d.skills.agility = 60; d.wu = 6;
   assert.equal(perfectDodge(s, d, () => 0.5), false, '前搖中段閃開不算完美');
-  assert.equal(perfectDodge(s, d, () => 1 - WITCH.win / 2), true, '最後 15% 閃開');
+  assert.equal(perfectDodge(s, d, () => 0.95, { depth: 2 }), true, '身法 60 時最後 12.5% 閃開危險招');
   const near = [d.pos[0] + 30, d.pos[1]], far = [d.pos[0] + WITCH.r + 40, d.pos[1]];
   assert.equal(witchK(s, near), WITCH.k); assert.equal(witchK(s, far), 1);
   const mk = (pos, uid) => ({ uid, k: 'boar', hp: 999, max: 999, pos, src: 'den', path: [], cool: 2, posture: 70 });

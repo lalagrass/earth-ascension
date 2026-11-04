@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { clashOdds, moveStats } from '../src/arts.mjs';
+import { clashOdds, moveStats, taijiReturn } from '../src/arts.mjs';
 import { createState } from '../src/sim.mjs';
 
 test('N22：高手能閃老鼠，同級對手沒有絕對優勢', () => {
@@ -11,4 +11,5 @@ test('N22：高手能閃老鼠，同級對手沒有絕對優勢', () => {
   fighter.skills.agility = 30;
   assert.ok(clashOdds(s, rat, fighter).dodge < 0.6);
   assert.ok(moveStats({ k: 'boar' }).armor > moveStats(rat).armor);
+  assert.ok(taijiReturn({ k: 'boar' }) > taijiReturn(rat));
 });

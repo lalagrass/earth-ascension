@@ -37,11 +37,11 @@ const BANDP = { odds: [], winP: [], won: 0, n: 0, hurt: 0, fenceHeld: 0, witch: 
 function bandProbe(s0) {
   const s = clone(s0); s.alert = null; const X = T.T(s); if (X.pending || s.band) { X.pending = null; s.band = null; }
   s.fence = { lv: 1, hp: 60, max: 60, hits: 0, broken: 0, repaired: 0, blocked: 0 };
-  const pts = Math.max(1, Math.round(T.points(s))); X.pending = { n: X.n + 1, pts, demand: 0, p: T.winP(s, pts), at: s.t, until: s.t + 9999, day: s.day, noPay: true };
+  const pts = Math.max(1, Math.round(T.points(s))), predicted = T.winP(s, pts); X.pending = { n: X.n + 1, pts, demand: 0, p: predicted, at: s.t, until: s.t + 9999, day: s.day, noPay: true };
   const h0 = X.homeHurt, n0 = (X.hist || []).length; resolveRaid(s, 1); let odds = null; const t0 = s.t;
   while (s.band && s.t - t0 < 600) { const b = s.band; tick(s, 0.25); if (s.alert) s.alert = null; if (!s.band) odds = b.hp <= 0 ? 1 : T.winP(s, Math.max(1, b.hp)); }
   const r = (X.hist || [])[n0]; if (!r) return;
-  BANDP.n++; if (r.fight === 'win') BANDP.won++; if (!r.broke) BANDP.fenceHeld++; BANDP.hurt += X.homeHurt - h0; BANDP.odds.push(odds ?? (r.fight === 'win' ? 1 : 0)); BANDP.winP.push(T.winP(s0, pts)); BANDP.witch.push((s.witchN || 0) - (s0.witchN || 0)); BANDP.breaks.push((s.breakN || 0) - (s0.breakN || 0));
+  BANDP.n++; if (r.fight === 'win') BANDP.won++; if (!r.broke) BANDP.fenceHeld++; BANDP.hurt += X.homeHurt - h0; BANDP.odds.push(odds ?? (r.fight === 'win' ? 1 : 0)); BANDP.winP.push(predicted); BANDP.witch.push((s.witchN || 0) - (s0.witchN || 0)); BANDP.breaks.push((s.breakN || 0) - (s0.breakN || 0));
 }
 const RAIDS = { n: 0, fights: 0, won: 0, hurt: 0, map: 0 };
 const out0 = {}; const pts = [], wp = [], by = {}, famousBy = { yes: [], no: [] }, held = [];
@@ -51,7 +51,7 @@ for (let seed = 1001; seed <= 1012; seed++) {
   const sect = sectOfSeed(seed);
   const s = createState(seed, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...ALL_ON, v22: true, ...(sect ? { sect24: sect } : {}) });
   let dayB = s.day; const P = [];
-  for (let i = 1; i <= 30 * DAY / 6; i++) { tick(s, 6); if (s.alert) s.alert = null; if (s.day !== dayB) { dayB = s.day; botDaily(s); P.push(T.points(s)); if (s.day === 4 || s.day === 11 || s.day === 21) huntProbe(s); if (s.day >= 9 && s.day % 3 === 0) bandProbe(s); } }
+  for (let i = 1; i <= 30 * DAY / 6; i++) { if (s.band) for (let j = 0; j < 24; j++) tick(s, 0.25); else tick(s, 6); if (s.alert) s.alert = null; if (s.day !== dayB) { dayB = s.day; botDaily(s); P.push(T.points(s)); if (s.day === 4 || s.day === 11 || s.day === 21) huntProbe(s); if (s.day >= 9 && s.day % 3 === 0) bandProbe(s); } }
   huntProbe(s);
   for (const r of T.T(s).hist || []) { RAIDS.n++; if (r.fight) { RAIDS.fights++; if (r.fight === 'win') RAIDS.won++; if (r.map) RAIDS.map++; } if (r.hurt) RAIDS.hurt++; }
   const p = med(P.slice(-10)); const bd = T.threatBreakdown ? T.threatBreakdown(s) : null; (out0.cShare ??= []).push(bd ? bd.cPct : 0);
