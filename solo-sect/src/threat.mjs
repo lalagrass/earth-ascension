@@ -1,6 +1,6 @@
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
 import { NODES, EDGES, DAY, FACILITIES, MOVES, ARTS } from './data.mjs';
-import { resolveSwing, postureOf, postureRegen, handleTake, topTierOf, windFrac, CLASH } from './arts.mjs';
+import { resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
 import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuter28, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
 import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of } from './sect.mjs';
@@ -134,7 +134,7 @@ export function newBand(P, to) { const path = nodePath(BAND.from, to); return { 
 export const BAND_MEMBER = { pts: 40, min: 2, max: 8, ring: 4, gap: 16, outer: 64 };
 export function bandMembers(pts) {
   const n = Math.max(BAND_MEMBER.min, Math.min(BAND_MEMBER.max, Math.round(pts / BAND_MEMBER.pts))), each = pts / n, out = [];
-  for (let i = 0; i < n; i++) out.push({ i, uid: `bd${i}`, k: 'bandit', hp: each, max: each, pos: null, cool: BAND_CLASH.cd * (0.3 + 0.15 * i) });
+  for (let i = 0; i < n; i++) out.push({ i, uid: `bd${i}`, k: 'bandit', hp: each, max: each, pos: null, cool: BAND_CLASH.cd * (0.3 + 0.15 * i), agi: BAND_CLASH.agi[i % BAND_CLASH.agi.length] });
   return out;
 }
 /* #424 N18：成員各自有血量；整夥 b.hp 永遠是活著的人血量加總。舊存檔（只有 b.hp）照比例分回每人。 */
@@ -148,7 +148,7 @@ export function syncMembers(b) {
 const bandSum = (b) => b.members.reduce((a, m) => a + Math.max(0, m.hp), 0);
 /* #424 N18 山賊逐一交手：守柵者對自己圈內的人出招（前搖、接法照 N14）；柵在時山賊只撞柵，柵破了才進院和守柵者交手（應接照 N15）。
    cd：一招間隔（守柵者照 defenderDps×cd 出傷害，總輸出與舊版相同，只是會被閃、被招架）；dmg：山賊一招打守柵者的氣血；yardMax：院內纏鬥最久幾秒，過了照舊擲勝率。 */
-export const BAND_CLASH = { cd: 1.5, monCd: 2.5, dmg: { base: 4, per: 0.05 }, yardMax: 40, fleeSpeed: 60, sub: 0.5 };
+export const BAND_CLASH = { agi: [20, 30, 45, 55] /* 山賊的身法（輪流），#425 輕功交錯用 */, cd: 1.5, monCd: 2.5, dmg: { base: 4, per: 0.05 }, yardMax: 40, fleeSpeed: 60, sub: 0.5 };
 function bandHit(s, b, m, dmg, who) {
   const spill = Math.max(0, dmg - m.hp); m.hp = Math.max(0, m.hp - dmg); if (m.hp > 0) return;
   if (spill > 0) { const nx = b.members.filter((x) => x.hp > 0).sort((x, y) => (y.foe === m.foe) - (x.foe === m.foe) || x.hp - y.hp)[0]; if (nx) bandHit(s, b, nx, spill, who); } /* 一招打倒還有餘力，順勢打到旁邊的人（總輸出與舊版相同） */
@@ -170,9 +170,13 @@ function bandClash(s, b, defs, dt) {
   }
   if (b.state !== 'yard') return;
   for (const m of live()) { postureRegen(s, m, dt); const d = fight.find((x) => x.id === m.foe) || fight[0]; if (!d) break;
-    m.cool = (m.cool ?? 0) - dt;
+    const wk = witchK(s, m.pos), mdt = dt * wk; if (m.swing && wk < 1) m.swing.at += dt - mdt; /* #425 林克時間圈內的山賊放慢 */ m.cool = (m.cool ?? 0) - mdt;
+    if (m.swing && d.bswing && !m.swing.x && d.bswing.tgt === m.uid && lightCross(d.skills?.agility || 0, m.agi || 0, m.swing.at, d.bswing.at, () => R(s))) { /* #425 輕功交錯：兩人同時突進、互相穿過 */
+      m.swing = null; d.bswing = null; postureHit(s, m, WITCH.crossDrop); postureHit(s, d, WITCH.crossDrop); b.cross = (b.cross || 0) + 1; s.crossN = (s.crossN || 0) + 1;
+      (s.fx ||= []).push({ kind: 'cross', pos: [(m.pos[0] + d.pos[0]) / 2, (m.pos[1] + d.pos[1]) / 2], ttl: 0.6 }); if (b.cross === 1) log(s, `【輕功交錯】${d.name}和一名山賊同時突進，擦身而過，火花一閃，兩人都退了半步`); continue; }
     if (m.swing) { if (s.t + 1e-9 < m.swing.at) continue; const w = m.swing; m.swing = null; const over = !handleTake(s, d);
       const r = resolveSwing(s, m, d, () => R(s), { depth: 2, wind: w.wind, force: over ? 'over' : undefined }); (b.cl ??= {})['m' + r.kind] = (b.cl['m' + r.kind] || 0) + 1;
+      if (r.kind === 'dodge' && perfectDodge(s, d, () => R(s))) b.witch = (b.witch || 0) + 1;
       if (r.kind === 'hit') { d.hp = Math.max(1, d.hp - (BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per) * (r.heavy ? CLASH.heavy : 1)); (s.fx ||= []).push({ kind: 'bite', pos: [...d.pos], ttl: 0.4 }); }
       continue; }
     if (m.cool > 0 || m.ring !== 1) continue;

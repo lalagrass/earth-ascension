@@ -1254,6 +1254,28 @@ export function handleTake(s, d) {
   if (d.ring.used > (d.maxHandled || 0)) { d.maxHandled = d.ring.used; if (d.maxHandled >= 2 && s && d.name) chronOf(s, d, 'handled', { chron: `${d.name}一口氣接下 ${d.maxHandled} 路來招，破了自己的紀錄` }); } /* #420 N16 */
   return ok;
 }
+// ==== #425 N19 林克時間與輕功交錯 ====
+/* 完美閃避：真的「閃」成立，而且閃開的那一刻落在前搖最後 win（15%）；身法 ≥ agi、悟性 ≥ wu 才有機會。
+   林克時間：以閃避者為圓心 r px 內的敵人，前搖與移動乘 k，持續 dur 秒；閃避者自己照常。只在模擬步長裡把圈內敵人的計時乘上倍數，不改全域 dt。
+   輕功交錯：雙方身法都 ≥ crossAgi、出手時間差 < crossGap 秒，機率 crossP 互相穿過，雙方各掉 crossDrop 架勢、兩招都落空。 */
+export const WITCH = { win: 0.15, agi: 30, wu: 4, r: 80, k: 0.3, dur: 1, cool: 4, crossAgi: 40, crossGap: 0.3, crossP: 0.3, crossDrop: 25 };
+/* 閃開的時機：身法越高越能壓到最後一刻；回傳 [0,1) 的「閃開時在前搖的哪一段」。 */
+export function perfectDodge(s, def, rnd) {
+  if (!def || def.arts == null || (def.skills?.agility || 0) < WITCH.agi || (def.wu ?? def.root ?? 3) < WITCH.wu || (def.witchT ?? -1e9) > (s?.t ?? 0)) return false;
+  const at = rnd(); /* 閃開落在前搖的哪個位置（均勻） */ if (at < 1 - WITCH.win) return false;
+  def.witchT = (s?.t ?? 0) + WITCH.cool; (s.witch ||= []).push({ who: def.id, pos: [...def.pos], until: s.t + WITCH.dur });
+  (s.fx ||= []).push({ kind: 'witch', pos: [...def.pos], r: WITCH.r, ttl: WITCH.dur });
+  s.witchN = (s.witchN || 0) + 1; if (def.name) log(s, `【林克時間】${def.name}在最後一刻閃開，身邊一圈的敵人慢了下來`);
+  return true;
+}
+/* 敵人所在位置的時間倍數：在任何一個林克時間圈內就是 k，否則 1。過期的圈順手清掉。 */
+export function witchK(s, pos) {
+  const W = s?.witch; if (!W?.length || !pos) return 1; const now = s.t; s.witch = W.filter((w) => w.until > now); if (!s.witch.length) { s.witch = undefined; return 1; }
+  return s.witch.some((w) => Math.hypot(pos[0] - w.pos[0], pos[1] - w.pos[1]) <= WITCH.r) ? WITCH.k : 1;
+}
+/* 輕功交錯：雙方身法都 ≥ crossAgi、兩招出手時間差 < crossGap 秒，擲一次 crossP。成立時由呼叫端讓兩招落空、各掉架勢、畫火花。 */
+export const lightCross = (agiA, agiB, atA, atB, rnd) => agiA >= WITCH.crossAgi && agiB >= WITCH.crossAgi && Math.abs(atA - atB) < WITCH.crossGap && rnd() < WITCH.crossP;
+
 // ==== #420 N16 招式的樣子 ====
 /* name：招名浮字每人每 gap 秒最多一次；dash：大成起、射程 ≥ minRange 的招可滑步上前 add px（離守點 ≤ RING.leash）；hua：化境的範圍招逐個目標判接法、看破率再打 readK 折。 */
 export const FLAIR = { nameGap: 2, nameTtl: 1.2, dash: { tier: 3, minRange: 50, add: 30 }, hua: 4, readK: 0.5 };

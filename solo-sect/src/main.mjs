@@ -123,6 +123,9 @@ function draw() {
       g.restore();
       continue;
     }
+    // #425 N19 林克時間：閃避者身邊一圈淡藍光；輕功交錯：火花一閃
+    if (f.kind === 'witch') { g.save(); g.translate(f.pos[0], f.pos[1]); g.scale(1, 0.55); g.globalAlpha = Math.min(1, f.ttl * 2); g.beginPath(); g.arc(0, 0, f.r || 80, 0, Math.PI * 2); g.fillStyle = 'rgba(120,180,255,.18)'; g.fill(); g.strokeStyle = 'rgba(140,200,255,.85)'; g.lineWidth = 3; g.stroke(); g.restore(); continue; }
+    if (f.kind === 'cross') { const k = 1 - f.ttl / 0.6; g.save(); g.globalAlpha = Math.max(0, f.ttl / 0.6); g.strokeStyle = '#ffe27a'; g.lineWidth = 3; for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, r0 = 4 + k * 6, r1 = 12 + k * 22; g.beginPath(); g.moveTo(f.pos[0] + Math.cos(a) * r0, f.pos[1] - 24 + Math.sin(a) * r0); g.lineTo(f.pos[0] + Math.cos(a) * r1, f.pos[1] - 24 + Math.sin(a) * r1); g.stroke(); } g.restore(); continue; }
     // #418 N14 前搖預警：地上紅色扇形，越滿越接近出手（只影響顯示）
     if (f.kind === 'warn') {
       const k = Math.max(0, Math.min(1, 1 - f.ttl / (f.dur || 0.5))), a0 = Math.atan2(f.to[1] - f.from[1], f.to[0] - f.from[0]), half = 0.55, R = f.r || 30;

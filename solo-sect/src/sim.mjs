@@ -1,5 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
+import { perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { SOURCES } from './data.mjs';
 import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
@@ -588,7 +588,7 @@ function monStrike(s, h, m, foe, M, zk, w) {
   const incoming0 = M.dmg * (m.psn > s.t ? 1 - SPEC.poisonWeak : 1) * (1 - SPEC.zhenMit * zk);
   const r = resolveSwing(s, m, foe, () => rand(s), { depth: depthOf(m), wind: w.wind, force: w.force });
   if (r.kind === 'read') { clashFx(s, foe, 'read'); return r; }
-  if (r.kind === 'dodge') { const on = applyArtOn(s, 'dodge', foe, m, { foeName: M.name }); clashFx(s, foe, 'dodge'); noteWhy(s, on); return r; } /* 真正的「閃」才觸發 dodge（獨孤不擋） */
+  if (r.kind === 'dodge') { const on = applyArtOn(s, 'dodge', foe, m, { foeName: M.name }); clashFx(s, foe, 'dodge'); noteWhy(s, on); if (perfectDodge(s, foe, () => rand(s))) h.witch = (h.witch || 0) + 1; return r; } /* #425 完美閃避 → 林克時間 */ /* 真正的「閃」才觸發 dodge（獨孤不擋） */
   if (r.kind === 'parry') { const on = applyArtOn(s, 'block', foe, m, { foeName: M.name }); if (r.jolt) clashFx(s, foe, 'jolt'); noteWhy(s, on); return r; }
   const incoming = incoming0 * (r.heavy ? CLASH.heavy : 1); if (r.heavy) clashFx(s, foe, 'heavy');
   const got = applyArtOn(s, 'gethit', foe, m, { dmg: incoming, foeName: M.name }); /* #404 挨打：太極劍借力、乾坤挪移 */
@@ -646,7 +646,8 @@ function huntStep(s, dt) {
     if (m.raid) continue;
     const M = MONSTERS[m.k];
     const foe = team.filter((d) => d.hp > 25).sort((a, b) => dist(a.pos, m.pos) - dist(b.pos, m.pos))[0];
-    m.cool -= dt;
+    const wk = witchK(s, m.pos), mdt = dt * wk; /* #425 林克時間：圈內的獸前搖、冷卻、移動都慢下來（不改全域 dt） */
+    m.cool -= mdt; if (m.swing && wk < 1) m.swing.at += dt - mdt;
     if (m.psn > s.t) { m.hp -= SPEC.poisonDps * (s.psnK24 || 1) * dt; if (m.hp <= 0) { m.gone = true; h.kills++; log(s, `${M.name}毒發倒地`); continue; } } /* loop151 毒術 */
     postureRegen(s, m, dt);
     if (m.swing) { /* #418 N14 前搖中站定；前搖結束才判接法 */
@@ -658,14 +659,14 @@ function huntStep(s, dt) {
     const near = foe ? dist(foe.pos, m.pos) : 1e9;
     if (foe && near < (m.orbit === foe.id ? RING.outer + 10 : m.slot === foe.id ? RING.engage : MON_REACH)) { /* #419 交戰圈：4 個近戰位，第 5 隻起在外圈繞 */
       if (m.slot !== foe.id) { const held = s.mons.filter((o) => o !== m && !o.gone && o.slot === foe.id).length;
-        if (held >= RING.slots) { m.orbit = foe.id; m.slot = null; orbitStep(m, foe, M.speed * dt); continue; }
+        if (held >= RING.slots) { m.orbit = foe.id; m.slot = null; orbitStep(m, foe, M.speed * mdt); continue; }
         m.slot = foe.id; m.orbit = null; }
-      if (near > MON_REACH * 0.95) { stepToward(m, foe.pos, M.speed * dt, MON_REACH * 0.8); continue; }
+      if (near > MON_REACH * 0.95) { stepToward(m, foe.pos, M.speed * mdt, MON_REACH * 0.8); continue; }
       if (m.cool <= 0) { const wind = MON_CD * CLASH.monWind; m.swing = { tgt: foe.id, at: s.t + wind, wind }; m.cool = MON_CD; warnFx(s, m, foe, MON_REACH, wind); }
       continue;
     }
     m.slot = null; m.orbit = null;
-    if (monWalk(m, M.speed * (m.tripUntil > s.t ? 0.45 : 1) * (1 - SPEC.zhenSlow * zk) * dt)) { m.gone = true; h.escaped++; s.eco[m.k].n++; log(s, `${M.name}衝過守點逃回山裡`); }
+    if (monWalk(m, M.speed * (m.tripUntil > s.t ? 0.45 : 1) * (1 - SPEC.zhenSlow * zk) * mdt)) { m.gone = true; h.escaped++; s.eco[m.k].n++; log(s, `${M.name}衝過守點逃回山裡`); }
   }
   for (const d of team) {
     if (d.hp <= 25) { if (d.task?.act === 'hunt') { d.order = null; cancelTask(s, d, '傷重退回院中'); assign(s, d, 'rest', '傷重歇息'); log(s, `${d.name}受傷退下`); think(s, d, 'hurt'); } const bag = (h.why ??= []), tag = qiOf(d) <= 0 ? 'dry' : 'hurt'; if (bag.length < 24 && !bag.includes(tag)) bag.push(tag); continue; }
