@@ -1,6 +1,6 @@
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
 import { NODES, EDGES, DAY, FACILITIES, MOVES, ARTS } from './data.mjs';
-import { partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
+import { breakWindup, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
 import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuter28, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
 import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of } from './sect.mjs';
@@ -160,7 +160,7 @@ function bandClash(s, b, defs, dt) {
   for (const d of fight) { postureRegen(s, d, dt); d.bcool = (d.bcool ?? 0) - dt; /* 冷卻含前搖（收招＝冷卻剩下的時間） */
     if (d.bswing) { if (s.t + 1e-9 < d.bswing.at) continue; const w = d.bswing; d.bswing = null; const m = b.members.find((x) => x.uid === w.tgt && x.hp > 0); if (!m) continue;
       const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, wind: w.wind }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
-      if (r.kind === 'hit') bandHit(s, b, m, w.dmg * (r.heavy ? CLASH.heavy : 1), d); else (s.fx ||= []).push({ kind: 'clash', word: r.kind === 'dodge' ? '閃' : r.kind === 'parry' ? '架' : '破', color: '#ddd', pos: [...(m.pos || b.pos)], ttl: 0.6 });
+      if (r.kind === 'hit') { breakWindup(s, d, m, w.mv, w.wind); bandHit(s, b, m, w.dmg * (r.heavy ? CLASH.heavy : 1), d); } else (s.fx ||= []).push({ kind: 'clash', word: r.kind === 'dodge' ? '閃' : r.kind === 'parry' ? '架' : '破', color: '#ddd', pos: [...(m.pos || b.pos)], ttl: 0.6 });
       continue; }
     if (d.bcool > 0) continue;
     const mine = live().filter((m) => m.ring === 1 && m.foe === d.id), tgt = (mine.length ? mine : live()).sort((x, y) => x.hp - y.hp)[0]; if (!tgt) break;
@@ -177,7 +177,7 @@ function bandClash(s, b, defs, dt) {
     if (m.swing) { if (s.t + 1e-9 < m.swing.at) continue; const w = m.swing; m.swing = null; const over = !handleTake(s, d);
       const r = resolveSwing(s, m, d, () => R(s), { depth: 2, wind: w.wind, force: over ? 'over' : undefined }); (b.cl ??= {})['m' + r.kind] = (b.cl['m' + r.kind] || 0) + 1;
       if (r.kind === 'dodge' && perfectDodge(s, d, () => R(s))) b.witch = (b.witch || 0) + 1;
-      if (r.kind === 'hit') { d.hp = Math.max(1, d.hp - (BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per) * (r.heavy ? CLASH.heavy : 1)); (s.fx ||= []).push({ kind: 'bite', pos: [...d.pos], ttl: 0.4 }); partHit(s, d, r, { rnd: () => R(s) }); } /* #427 */
+      if (r.kind === 'hit') { breakWindup(s, m, d, null, w.wind); d.hp = Math.max(1, d.hp - (BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per) * (r.heavy ? CLASH.heavy : 1)); (s.fx ||= []).push({ kind: 'bite', pos: [...d.pos], ttl: 0.4 }); partHit(s, d, r, { rnd: () => R(s) }); } /* #427 */
       continue; }
     if (m.cool > 0 || m.ring !== 1) continue;
     const wind = BAND_CLASH.monCd * CLASH.monWind; m.cool = BAND_CLASH.monCd; m.swing = { at: s.t + wind, wind };

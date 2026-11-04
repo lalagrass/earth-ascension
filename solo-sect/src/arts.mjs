@@ -333,7 +333,6 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     const a = artById(id);
     let fx = a?.on?.[event];
     if (!fx) continue;
-    if (ctx.map && ZJ_SKIP[id]?.includes(event)) continue; /* #426 地圖戰改走絕學規則 */
     if (!who.arts?.[id] && !(a.forms && who.dugu?.length)) continue;
     const tier = who.arts?.[id] ? artTier(who, id) : 0;
     if (tier < (fx.need ?? 0)) continue;
@@ -360,7 +359,7 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     if (fx.reflect) out.reflect = fx.reflect;
     if (fx.see) out.see = true;
     if (fx.noParry) out.noParry = true;
-    if (fx.breakParry) out.breakParry = true;
+    if (fx.breakParry && !(ctx.map && ZJ_SKIP[id]?.includes('breakParry'))) out.breakParry = true;
     if (fx.disturb) out.disturb = fx.disturb;
     if (fx.breakGuard) out.breakGuard = true;
     if (fx.shift && out.dmg != null) { out.shift = fx.shift; out.dmg *= 1 - fx.shift; }
@@ -1193,15 +1192,16 @@ export const CLASH = {
   monWind: 0.45,                             /* 鼠、野豬的前搖佔牠的冷卻 */
   post: { d: 100, rat: 30, boar: 70, bandit: 60, def: 50 }, regenDelay: 2.5, regen: 12,
   heavy: 2,
-  read: { wu: 0.035, insight: 0.004, depth: 0.06, max: 0.3, drop: 45 },
-  dodge: { agi: 0.0035, fast: 0.05, max: 0.3, qi: 3, mon: { rat: 0.2, boar: 0.12, bandit: 0 /* #424 山賊不閃：守柵總輸出維持舊值，柵擋得住的比例不變 */ } /* 調到單人探針溜走、失血落在基準 ±25% */ },
-  parry: { base: 0.08, k: 0.0025, max: 0.35, drop: 14, jolt: 1.6, joltDrop: 20 },
+  read: { drop: 45 },
+  dodge: { qi: 3 },
+  parry: { drop: 14, joltDrop: 20 },
   depth: { rat: 1, boar: 2, bandit: 2 }, monQi: { rat: 4, boar: 12, bandit: 10 },
 };
 const clamp01 = (x, hi = 1) => Math.max(0, Math.min(hi, x));
+const opposed = (mine, theirs, scale = 10) => 0.02 + 0.96 / (1 + Math.exp(-(mine - theirs) / scale));
 export const windFrac = (tier) => CLASH.windIn + (CLASH.windHua - CLASH.windIn) * Math.max(0, Math.min(4, tier | 0)) / 4;
 /* 一招的前搖秒數：cd × 前搖比例（看這招所屬武學的火候） */
-export function windOf(d, mvId, cd) { const a = artOfMove(mvId); const t = a && d?.arts?.[a.id] ? artTier(d, a.id) : 0; return cd * windFrac(t) * (d?.part?.where === 'hand' ? PART.hand : 1); } /* #427 手傷：出手慢 */
+export function windOf(d, mvId, cd) { const a = artOfMove(mvId); const t = a && d?.arts?.[a.id] ? artTier(d, a.id) : 0; return cd * windFrac(t) * (a?.tags?.includes('快') ? 0.75 : 1) * (a?.id === 'kuihua' && zjHas(d, 'kuihua') ? 0.1 : 1) * (d?.part?.where === 'hand' ? PART.hand : 1); }
 export const isMon = (w) => !!w && w.k != null && !w.arts;
 export const postureMax = (w) => (isMon(w) ? CLASH.post[w.k] ?? CLASH.post.def : CLASH.post.d);
 export function postureOf(w) { if (w.posture == null) w.posture = postureMax(w); return w.posture; }
@@ -1210,19 +1210,47 @@ export function postureRegen(s, w, dt) { postureOf(w); if ((s?.t ?? 0) - (w.post
 /* 招式深淺：弟子＝這招所屬武學火候 + 1；獸看種類 */
 export function depthOf(atk, mvId) { if (isMon(atk)) return CLASH.depth[atk.k] ?? 1; const a = artOfMove(mvId); return (a && atk.arts?.[a.id] ? artTier(atk, a.id) : 0) + 1; }
 const qiPow = (w) => (isMon(w) ? CLASH.monQi[w.k] ?? 6 : (qiOf(w) || 0) + (w.skills?.strength || 0));
+/* 每招同一套屬性：勁、速（數字越高越快）、霸體。山賊的刀與空手輪流分配。 */
+export function moveStats(w, moveId, wind = 0.5) {
+  if (isMon(w)) {
+    if (w.k === 'boar') return { force: 40, speed: 18, armor: 32, type: 'charge' };
+    if (w.k === 'rat') return { force: 6, speed: 30, armor: 0, type: 'bite' };
+    const blade = (w.i ?? 0) % 2 === 0;
+    return { force: blade ? 25 : 14, speed: blade ? 22 : 28, armor: blade ? 16 : 8, type: blade ? 'blade' : 'fist' };
+  }
+  const a = artOfMove(moveId), t = a && w?.arts?.[a.id] ? artTier(w, a.id) : 0, tags = a?.tags || [];
+  const force = 14 + t * 6 + (w?.skills?.strength || 0) * 0.2 + (tags.includes('剛') ? 12 : 0) + (tags.includes('拙') ? 10 : 0);
+  const speed = 20 + t * 5 + (tags.includes('快') ? 18 : 0) + Math.min(18, 5 / Math.max(0.1, wind));
+  const armor = 5 + t * 4 + (tags.includes('剛') || tags.includes('拙') ? 10 : 0) + (w?.arts?.jiuyang && artTier(w, 'jiuyang') >= 3 ? 25 : 0);
+  const extremes = { xuantie: { force: 100, armor: 55 }, xianglong: { force: 95, armor: 45 }, dugu: { force: 12, speed: 80 }, taiji: { force: 8 }, taijiSword: { force: 8 }, kuihua: { speed: 95 } };
+  return { force, speed, armor, type: a?.weapon === 'sword' || a?.id === 'dugu' ? 'sword' : /指/.test(a?.name || '') ? 'finger' : 'fist', ...(extremes[a?.id] || {}) };
+}
+export function breakWindup(s, atk, def, moveId, wind) {
+  if (!def?.swing && !def?.bswing) return false;
+  const strike = moveStats(atk, moveId, wind), guard = moveStats(def, def.swing?.mv || def.bswing?.mv, def.swing?.wind || def.bswing?.wind);
+  const observed = artOfMove(moveId)?.id === 'dugu' && isMon(def) && (s?.codex?.[def.k]?.insight || 0) >= ZJ.dugu.insight;
+  if (!observed && strike.force <= guard.armor) return false;
+  def.swing = null; def.bswing = null; postureHit(s, def, 25 + strike.force * 0.25);
+  if (s) { (s.fx ||= []).push({ kind: 'clash', word: '斷', color: '#ffb05a', pos: [...(def.pos || [0, 0])], ttl: 0.8 }); s.breakN = (s.breakN || 0) + 1; }
+  return true;
+}
 /* 三種接法各自的成功率（不擲骰），給測試與面板讀。 */
 export function clashOdds(s, atk, def, ctx = {}) {
-  const depth = ctx.depth ?? depthOf(atk, ctx.move), wind = Math.max(0.05, ctx.wind ?? 0.5);
+  const depth = ctx.depth ?? depthOf(atk, ctx.move), wind = Math.max(0.05, ctx.wind ?? 0.5), move = moveStats(atk, ctx.move, wind);
   let read = 0, dodge = 0, parry = 0;
-  if (isMon(def)) dodge = clamp01((CLASH.dodge.mon[def.k] ?? 0.05) - CLASH.dodge.fast * (1 / wind - 1), CLASH.dodge.max);
+  if (isMon(def)) {
+    dodge = opposed(def.agi ?? (def.k === 'rat' ? 30 : 18), move.speed, 10);
+    parry = def.k === 'boar' ? 0.2 : def.k === 'bandit' && (def.i ?? 0) % 2 === 0 ? 0.25 : 0;
+  }
   else {
     const insight = isMon(atk) ? s?.codex?.[atk.k]?.insight || 0 : 0;
-    read = clamp01(CLASH.read.wu * ((def.wu ?? def.root ?? 3) - 1) + CLASH.read.insight * insight - CLASH.read.depth * (depth - 1), CLASH.read.max);
-    if (depth - 1 >= FLAIR.hua) read *= FLAIR.readK;
+    const clever = ARTS.some((a) => a.tags?.includes('巧') && def.arts?.[a.id] && artTier(def, a.id) >= 1) ? 6 : 0;
+    read = opposed((def.wu ?? def.root ?? 3) * 4 + insight * 0.3 + (def.arts ? topTierOf(def) * 5 : 0) + clever, depth * 12 + (move.speed - 20) * 0.3, 9) * 0.6;
     if (def.part?.where === 'eye') read = 0; /* #427 目傷：看不清來招 */ /* #420 化境：前搖短到很難看破 */
-    dodge = qiOf(def) >= CLASH.dodge.qi ? clamp01(CLASH.dodge.agi * (def.skills?.agility || 0) - CLASH.dodge.fast * (1 / wind - 1), CLASH.dodge.max) : 0;
-    parry = clamp01(CLASH.parry.base + CLASH.parry.k * qiPow(def), CLASH.parry.max);
+    dodge = qiOf(def) >= CLASH.dodge.qi ? opposed(def.skills?.agility || 0, move.speed, 10) : 0;
+    parry = opposed(qiPow(def), move.force, 12) * 0.55;
   }
+  if (move.force >= qiPow(def) * 2) parry = 0;
   return { read, dodge, parry };
 }
 /* 前搖結束那一刻的判定。rnd 是固定種子亂數（sim 的 rand(s)）。回傳 { kind: 'read'|'dodge'|'parry'|'hit', heavy, jolt, why }。
@@ -1237,10 +1265,9 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   if (!duguPassive && o.read > 0 && rnd() < o.read) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return { kind: 'read' }; }
   if (o.dodge > 0 && rnd() < o.dodge) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi); return { kind: 'dodge' }; }
   if (o.parry > 0 && rnd() < o.parry) {
-    if (zjAtk === 'xuantie' && zjHas(atk, 'xuantie')) { zjMark(s, atk, 'xuantie'); return { kind: 'hit', heavy: false, why: 'xuantie' }; } /* 玄鐵：招架等於沒招架 */
-    if (zjAtk === 'xianglong' && zjHas(atk, 'xianglong')) { zjMark(s, atk, 'xianglong'); postureHit(s, def, ZJ.xianglong.drop); } /* 降龍：格住了也掉一大截架勢 */
-    const jolt = qiPow(def) >= CLASH.parry.jolt * qiPow(atk);
-    postureHit(s, def, CLASH.parry.drop); postureHit(s, atk, CLASH.parry.drop + (jolt ? CLASH.parry.joltDrop : 0));
+    const force = moveStats(atk, ctx.move, ctx.wind).force, guard = qiPow(def);
+    const jolt = guard > force * 1.4;
+    postureHit(s, def, CLASH.parry.drop * Math.max(0.5, force / Math.max(1, guard))); postureHit(s, atk, CLASH.parry.drop * Math.max(0.5, guard / force) + (jolt ? CLASH.parry.joltDrop : 0));
     return { kind: 'parry', jolt };
   }
   return { kind: 'hit', heavy: false };
@@ -1296,7 +1323,7 @@ export const ZJ = {
 };
 export const ZJ_NEED = 2;
 /* 地圖戰裡被絕學規則取代的舊 on 絕活：event 列表 */
-export const ZJ_SKIP = { dugu: ['hit', 'dodge'], taijiSword: ['gethit'], xuantie: ['hit'] };
+export const ZJ_SKIP = { xuantie: ['breakParry'] };
 export function zjHas(d, id) {
   if (!d || isMon(d) || !ZJ[id]) return false;
   if (id === 'dugu') return !!d.dugu?.length;
