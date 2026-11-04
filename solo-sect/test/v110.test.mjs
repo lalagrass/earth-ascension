@@ -62,8 +62,8 @@ function party(classic) { const s = createState(11); tick(s); const ids = s.ds.f
   for (const d of s.ds) if (ids.includes(d.id)) { for (const k of Object.keys(d.skills)) d.skills[k] = 100; for (const a of ARTS) { if ((a.classic && !classic) || a.id === 'rulai' || a.v24) continue; /* loop160：舊局平衡測試不含 v2.4 武學 */ learnArt(d, a.id, 0); Object.assign(d.arts[a.id], { xp: 1e6, bt1: true, bt2: true, bt3: true, last: 1e9 }); learnArt(d, a.id, 0); } d.mood = 95; }
   s.res.food = 200; startExpedition(openExp(s), ids, { thr: 0.3, target: 'inf', supplies: 24 }); let i = 0; while (s.exp && i++ < 900000) tick(s); return [s.lastExp, s.ds.find((d) => d.id === ids[0])]; }
 test('平衡：一般武學練滿約止於 1600 內；招牌武學練滿可闖進無盡段', () => {
-  const [n] = party(false); assert.ok(n.dist >= 900 && n.dist <= 1600, `normal ${n.dist}`); // v1.5：模擬核心改動 RNG 串流，種子間 950–1331，下限 1000→900
-  const [c, d] = party(true); assert.ok(c.dist > 1600, `classic ${c.dist}`); assert.ok(guardOf(d) <= 0.6 + 1e-9, String(guardOf(d))); /* #390：現行規則下滿武學也練到紫霞，護體再乘 (1 − 0.03×層) */
+  const [n] = party(false); assert.ok(n.dist >= 900 && n.dist <= 2000, `normal ${n.dist}`); /* #423：#403 退役 1600 上限——扇形曲線（#408）刻意調強，一般武學練滿現約 1800；仍遠低於招牌武學 */ // v1.5：模擬核心改動 RNG 串流，種子間 950–1331，下限 1000→900
+  const [c, d] = party(true); assert.ok(c.dist > n.dist, `classic ${c.dist}`); assert.ok(guardOf(d) <= 0.6 + 1e-9, String(guardOf(d))); /* #390：現行規則下滿武學也練到紫霞，護體再乘 (1 − 0.03×層) */
 });
 test('1.0 存檔遷移到 1.1 補上名俠狀態', () => {
   const s = st(); delete s.xia; s.rules = '1.0'; const r = migrate(JSON.parse(JSON.stringify(s))); const o = r.state || r; assert.ok(o.xia && o.xia.done);

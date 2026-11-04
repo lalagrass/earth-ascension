@@ -15,7 +15,7 @@ const hero = (s) => s.ds.find((d) => d.id === 'hero');
 const run = (s, sec) => { for (let i = 0; i < sec / 0.25; i++) tick(s); };
 test('v1.2 版本；九劍九式照原著、辟邪三招；都不入秘笈', () => {
   assert.ok(parseFloat(RULES_VERSION) >= 1.2);
-  assert.deepEqual(DUGU.map((f) => f.name), ['總訣式', '破劍式', '破刀式', '破槍式', '破鞭式', '破索式', '破掌式', '破箭式', '破氣式']);
+  assert.deepEqual(DUGU.map((f) => f.name), ['總訣式', '破劍式', '破刀式', '破槍式', '破鞭式', '破索式', '破掌式', '破箭式', '破氣式', '狂風卷地']); /* #423：#410 刻意對齊 MUD 結構，九式之後另有絕招「狂風卷地」 */
   for (const id of ['zixia', 'bixie', 'dugu']) assert.ok(ARTS.find((a) => a.id === id).secret);
 });
 test('岳不群開局紫霞第一層；1→3 靠閉關、4→6 要祕洞壁刻、7→9 要連續 7 天沒有違心', () => {
@@ -73,6 +73,6 @@ function party(mode) { const s = createState(11); tick(s); const ids = s.ds.filt
   for (const d of s.ds) if (ids.includes(d.id)) { for (const k of Object.keys(d.skills)) d.skills[k] = 100; for (const a of ARTS) { if ((a.classic && mode === 'normal') || a.id === 'rulai' || a.layered || a.forms || a.id === 'bixie' || a.v24) continue; /* loop160：舊局平衡測試不含 v2.4 武學 */ learnArt(d, a.id, 0); Object.assign(d.arts[a.id], { xp: 1e6, bt1: true, bt2: true, bt3: true, last: 1e9 }); learnArt(d, a.id, 0); } d.mood = 95; }
   s.res.food = 200; startExpedition(openExp(s), ids, { thr: 0.3, target: 'inf', supplies: 24 }); let i = 0; while (s.exp && i++ < 2000000) tick(s); return s.lastExp; }
 test('無盡段體力牆修正：招牌武學練滿的隊伍過一重回一口真氣，能推到第 4 重以後；一般武學仍止於 1600 內', () => {
-  const n = party('normal'), c = party('classic'); assert.ok(n.dist <= 1600); assert.ok(c.dist >= 2400, `classic ${c.dist}`); assert.ok(c.events?.some?.((e) => /真氣/.test(e)) ?? true);
+  const n = party('normal'), c = party('classic'); assert.ok(n.dist <= 2000); /* #423：#403 退役 1600——扇形曲線刻意改變，一般武學練滿現約 1800 */ assert.ok(c.dist >= 2400, `classic ${c.dist}`); assert.ok(c.events?.some?.((e) => /真氣/.test(e)) ?? true);
 });
 test('1.1 存檔遷移到 1.2 補上華山線狀態', () => { const s = createState(3); tick(s); delete s.hs; s.rules = '1.1'; const o = migrate(JSON.parse(JSON.stringify(s))); assert.ok(o.hs && o.hs.cards); });
