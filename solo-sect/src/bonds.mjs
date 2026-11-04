@@ -64,16 +64,21 @@ export function apprDaily(s) { for (const m of s.ds) { const c = apprCands(s, m)
 export const apprMul = (s, d) => { const m = d.master && s.ds.find((o) => o.id === d.master); return m && !m.away ? APPR.trainMul : 1; };
 
 // ---- 名功門內師徒傳授（#415 N12）----
-// 傳者達圓滿以上；受者為徒或好感 ≥60、滿足前置與屬性門檻、層級未滿傳者−1；
-// 每日結算花半日傳授一段，傳者一次一人。
+// MUD learn 模型：師父真的花時間教（每日預約半日 teachCool，這段時間不接別的活），
+// 徒弟這門名功在師父教的時段裡修練加速（TEACH_ART.mul），火候仍靠自己練，不直接給檔。
+// 受者須是師父的徒弟「且」好感達 TEACH_ART.aff；最高只到傳者層級 − 1。
+// 每位師父每門名功一生只收一位傳人（風清揚只傳令狐沖）。
+// 名功只算 secret＋classic 的原著名功；辟邪須受者已付自宮代價，獨孤九劍限華山一脈。
+export const TEACH_ART = { aff: 60, mul: 2, minTier: 3, session: DAY / 2 };
 export function isFamousArt(a) {
   if (!a) return false;
   const art = typeof a === 'string' ? artById(a) : a;
-  if (!art) return false;
-  if (art.secret) return true;
-  const tier = fanRank(art.id).fanTier;
-  if (['絕頂', '一流', '名門'].includes(tier)) return true;
-  return Boolean(art.on || SPECIALS[art.id]);
+  return !!(art && art.secret && art.classic && !art.derived);
+}
+function costOk(s, d, a) {
+  if (a.id === 'bixie') return d.duanqing != null;
+  if (a.id === 'dugu') return (s?.sect?.id || s?.sect24) === 'huashan' || !!s?.hs;
+  return true;
 }
 
 export function canTeachArt(s, m, d, artId) {
@@ -83,47 +88,33 @@ export function canTeachArt(s, m, d, artId) {
   if (m.role === 'laborer' || d.role === 'laborer') return false;
   const a = typeof artId === 'string' ? artById(artId) : artId;
   if (!a || !isFamousArt(a)) return false;
-
-  // 傳者：名功達到圓滿以上 (artTier >= 3)
   const mTier = artTier(m, a.id);
-  if (mTier < 3) return false;
-
-  // 受者：與傳者為師徒關係，或好感 60 以上
-  const isAppr = d.master === m.id;
-  const highAff = (aff(s, m, d) >= 60 || aff(s, d, m) >= 60);
-  if (!isAppr && !highAff) return false;
-
-  // 滿足該武學的基本屬性門檻（悟性等）
+  if (mTier < TEACH_ART.minTier) return false;
+  const heir = m.taught28?.[a.id];
+  if (heir && heir !== d.id) return false; /* 一門名功一生只傳一人 */
+  if (d.master !== m.id) return false;
+  if (aff(s, m, d) < TEACH_ART.aff || aff(s, d, m) < TEACH_ART.aff) return false; /* 師徒「且」好感 */
+  if (!costOk(s, d, a)) return false;
   if (gated(d, a)) return false;
-
-  // 滿足前置武學門檻
   if (reqMissing(d, a).length > 0) return false;
-
-  // 滿足上限依賴（CEILING，如乾坤大挪移需聖火/九陽）
   const ceilingArts = a.learn?.ceiling?.arts || CEILING[a.id];
   if (ceilingArts?.length) {
     const maxC = Math.max(-1, ...ceilingArts.map((cId) => artTier(d, cId)));
     if (maxC < 0) return false;
-    const curDTier = d.arts?.[a.id] ? artTier(d, a.id) : -1;
-    if (curDTier + 1 > maxC) return false;
   }
-
-  // 上限：受者能學到的最高層級是傳者層級 − 1
-  const maxTier = mTier - 1;
   const dTier = d.arts?.[a.id] ? artTier(d, a.id) : -1;
-  if (dTier >= maxTier) return false;
-
-  // 傳者一次只能傳一人
+  if (dTier >= mTier - 1) return false;
   if (m.teaching && m.teaching.pupil !== d.id) return false;
-  // 受者同時只能接受一人傳授
   if (s?.ds?.some((o) => o !== m && o.teaching?.pupil === d.id)) return false;
-
   return true;
 }
 
 export function startTeachArt(s, m, d, artId) {
   if (!canTeachArt(s, m, d, artId)) return false;
-  m.teaching = { pupil: d.id, art: typeof artId === 'string' ? artId : artId.id };
+  const id = typeof artId === 'string' ? artId : artId.id;
+  m.teaching = { pupil: d.id, art: id };
+  (m.taught28 ||= {})[id] = d.id;
+  if (!d.arts?.[id]) { learnArt(d, id, s.t); growEnsure(d); log(s, `【傳功】${m.name}收${d.name}為《${artById(id).name}》傳人，開始傳授`); addMem(s, m, d, 'pass', artById(id).name); }
   return true;
 }
 
@@ -135,76 +126,44 @@ export function stopTeachArt(s, m) {
 
 export function teachCandidates(s, m) {
   if (!m || m.away || m.removed || (m.hp ?? 100) <= 25 || m.role === 'laborer') return [];
-  const arts = ARTS.filter((a) => isFamousArt(a) && artTier(m, a.id) >= 3);
+  const arts = ARTS.filter((a) => isFamousArt(a) && artTier(m, a.id) >= TEACH_ART.minTier);
   if (!arts.length) return [];
   const cands = [];
   for (const d of s.ds) {
     if (d === m || d.away || d.removed || (d.hp ?? 100) <= 25 || d.role === 'laborer') continue;
-    for (const a of arts) {
-      if (canTeachArt(s, m, d, a.id)) {
-        cands.push({ d, art: a.id });
-      }
-    }
+    for (const a of arts) if (canTeachArt(s, m, d, a.id)) cands.push({ d, art: a.id });
   }
   cands.sort((x, y) => (y.d.master === m.id) - (x.d.master === m.id) || aff(s, m, y.d) - aff(s, m, x.d));
   return cands;
 }
 
+/* 一個傳授時段：師父預約半日（teachCool），不直接給檔。 */
 export function teachStage(s, m, d, artId) {
   if (!canTeachArt(s, m, d, artId)) return false;
   const a = typeof artId === 'string' ? artById(artId) : artId;
-  const curTier = d.arts?.[a.id] ? artTier(d, a.id) : -1;
-  const targetTier = curTier + 1;
-  const stage = targetTier + 1;
-
-  learnArt(d, a.id, s.t);
-  const r = d.arts[a.id];
-  const TARGET_XP = [1, 26, 56, 86];
-  r.xp = Math.max(r.xp || 0, TARGET_XP[targetTier]);
-  if (targetTier >= 2) {
-    r.bt1 = true;
-    if (BRANCHES[a.id] && !r.branch) r.branch = autoBranch(d, a.id);
-  }
-  if (targetTier >= 3) {
-    r.bt2 = true;
-  }
-  growEnsure(d);
-  settleGrowth(d, a, r, { src: 'pass' });
-
-  // 師父花半日傳授
-  m.reason = `傳授${d.name}武藝`;
-  m.teachCool = DAY / 2;
-
-  // 日誌
-  log(s, `【傳功】${m.name}傳${d.name}《${a.name}》第 ${stage} 段`);
-  relAdd(s, m, d, 2);
-  addMem(s, m, d, 'pass', a.name);
-
-  const mTier = artTier(m, a.id);
-  if (targetTier >= mTier - 1) {
-    m.teaching = null;
-  } else {
-    m.teaching = { pupil: d.id, art: a.id };
-  }
+  if (!m.teaching) startTeachArt(s, m, d, a.id);
+  m.teachCool = TEACH_ART.session;
+  m.reason = `傳授${d.name}《${a.name}》`;
+  relAdd(s, m, d, 1);
   return true;
+}
+/* 徒弟正在被教的那門名功，練功時乘 TEACH_ART.mul。只在師父當日的傳授時段內。 */
+export function teachMul(s, d, artId) {
+  const m = s?.ds?.find((o) => o.teaching?.pupil === d.id);
+  return m && !m.away && m.teachCool > 0 && (!artId || m.teaching.art === artId) ? TEACH_ART.mul : 1;
 }
 
 export function teachDaily(s) {
   for (const m of s.ds) {
     if (!m.teaching) {
       const cand = teachCandidates(s, m)[0];
-      if (cand) {
-        m.teaching = { pupil: cand.d.id, art: cand.art };
-      }
+      if (cand) startTeachArt(s, m, cand.d, cand.art);
     }
     if (m.teaching) {
       const { pupil, art } = m.teaching;
       const d = s.ds.find((x) => x.id === pupil);
-      if (d && canTeachArt(s, m, d, art)) {
-        teachStage(s, m, d, art);
-      } else {
-        m.teaching = null;
-      }
+      if (d && canTeachArt(s, m, d, art)) teachStage(s, m, d, art);
+      else { if (d && artById(art)) log(s, `【傳功】${m.name}傳${d.name}《${artById(art).name}》告一段落`); m.teaching = null; }
     }
   }
 }

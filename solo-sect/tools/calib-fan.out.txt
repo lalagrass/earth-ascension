@@ -1,0 +1,9 @@
+RAW base {"cShareMed":0,"threat":339,"winP":0.697,"famousHeld":26,"threatNoFamous":null,"threatFamous":339,"nNoFamous":0,"tiers":{"絕頂":{"n":36,"dps":285.6},"常見":{"n":109,"dps":99.1},"入門":{"n":16,"dps":34.2},"一流":{"n":40,"dps":211.5},"名門":{"n":40,"dps":164.8}}}
+RAW head FAN_BASE=12 {"cShareMed":29,"threat":380,"winP":0.638,"famousHeld":24,"threatNoFamous":null,"threatFamous":380,"nNoFamous":0,"tiers":{"絕頂":{"n":27,"dps":379.5},"常見":{"n":135,"dps":93.9},"入門":{"n":16,"dps":28.1},"一流":{"n":30,"dps":285.4},"名門":{"n":22,"dps":126.2}}}
+RAW head FAN_BASE=13 {"cShareMed":29,"threat":380,"winP":0.638,"famousHeld":24,"threatNoFamous":null,"threatFamous":380,"nNoFamous":0,"tiers":{"絕頂":{"n":28,"dps":411.1},"常見":{"n":133,"dps":101.7},"入門":{"n":18,"dps":30.4},"一流":{"n":31,"dps":284.6},"名門":{"n":22,"dps":136.7}}}
+RAW head FAN_BASE=14 {"cShareMed":29,"threat":379,"winP":0.612,"famousHeld":24,"threatNoFamous":null,"threatFamous":379,"nNoFamous":0,"tiers":{"絕頂":{"n":30,"dps":412.1},"常見":{"n":138,"dps":114.8},"入門":{"n":17,"dps":32.8},"一流":{"n":32,"dps":320.1},"名門":{"n":20,"dps":151.2}}}
+
+| FAN_BASE | 常見 dps (head/base) | 比值 |
+|---|---|---|
+| 13 | 101.7 / 99.1 | 1.03 |
+在 ±20% 內

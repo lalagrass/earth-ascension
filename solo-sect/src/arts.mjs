@@ -246,12 +246,17 @@ export function autoBranch(d, artId) {
   return 'A';
 }
 
-/* #414 N11：事後花時間重選分路 */
-export function rechooseBranch(d, artId, newBranch) {
+/* #414 N11：玩家選分路。大成突破當下先依性格自動選（branchAuto），玩家可隨時改；
+   改選已生效的分路要重練 BREAK.rechoose（半日），期間分路不生效。 */
+export function rechooseBranch(d, artId, newBranch, now = 0) {
   const r = d.arts?.[artId];
   if (!r || !r.bt1) return { ok: false, why: '尚未大成，無法選取高階分路' };
-  r.branch = newBranch || null;
-  return { ok: true, branch: r.branch };
+  if (!BRANCHES[artId]?.[newBranch]) return { ok: false, why: '沒有這條分路' };
+  if (r.branch === newBranch) { r.branchAuto = false; return { ok: true, branch: r.branch }; }
+  const firstPick = !r.branch || r.branchAuto && !(r.branchSince != null && now - r.branchSince > BREAK.rechoose);
+  r.branch = newBranch; r.branchAuto = false;
+  if (!firstPick) r.branchUntil = now + BREAK.rechoose;
+  return { ok: true, branch: r.branch, wait: firstPick ? 0 : BREAK.rechoose };
 }
 
 // 衝關結算：回傳 {ok, stage, art}
@@ -262,7 +267,7 @@ export function resolveBreak(d, id, now, roll) {
   if (st === 1) {
     r.bt1 = true;
     r.xp = 55;
-    if (BRANCHES[id] && !r.branch) r.branch = autoBranch(d, id);
+    if (BRANCHES[id] && !r.branch) { r.branch = autoBranch(d, id); r.branchAuto = true; r.branchSince = now; }
   } else if (st === 2) {
     r.bt2 = true;
     r.xp = 100;
@@ -334,8 +339,8 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     if (fx.seen && !(who.dugu?.length)) continue;
     if (fx.first && other?.onOpened) continue;
     /* #414 N11：高階分路覆寫/合併 */
-    const brKey = who.arts?.[id]?.branch;
-    if (brKey && BRANCHES[id]?.[brKey]?.[event]) {
+    const brKey = who.arts?.[id]?.branch, brWait = (who.arts?.[id]?.branchUntil || 0) > (s?.t ?? 0);
+    if (brKey && !brWait && BRANCHES[id]?.[brKey]?.[event]) {
       fx = { ...fx, ...BRANCHES[id][brKey][event] };
     }
     if (fx.charge) { /* #410 蓄勢：氣血沒見底就不耗內力 */
@@ -346,7 +351,8 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     if (fx.qi && !spendQi(who, fx.qi)) { out.dry = true; continue; } /* #406 內力不夠：只記原因，傷害維持原樣 */
     if (fx.first && other) other.onOpened = true;
     /* 心情只記身份。黯然的輕重在 jhMul，這裡再乘會算兩次。 */
-    if (fx.dmg && out.power != null && !fx.mood) out.power *= fx.dmg;
+    /* 分路的 dmg 是分路自己的取捨（黯然：心死只在低落時、懷念任何心情），與 jhMul 的心情輕重分開算。 */
+    if (fx.dmg && out.power != null && (fx.moodBelow == null || (who.mood ?? 50) < fx.moodBelow)) out.power *= fx.dmg;
     if (fx.flurry && out.power != null) out.power *= fx.flurry;
     if (fx.knock) out.knock = fx.knock;
     if (fx.trip) out.trip = fx.trip;

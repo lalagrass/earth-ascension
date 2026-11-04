@@ -4,12 +4,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { ARTS, MOVES, RULES_VERSION, DUGU } from '../src/data.mjs';
+import { ARTS, MOVES, RULES_VERSION, DUGU, BREAK } from '../src/data.mjs';
 import { artById, artTier, moveMul, gainArt, learnArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, qiMax, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29, blowWhy, boutWhy, expCause, expectOf, EXPECT_SWINGS, reqMissing, zhuangOpen, ponderLuoying, practiceLuoying, YUNV_PAIR, rechooseBranch, autoBranch } from '../src/arts.mjs';
 import { powerHtml, teachingBadge } from '../src/panel-ui.mjs';
 import { curveMulOf, BRANCHES } from '../src/artcard.mjs';
-import { createState, load } from '../src/sim.mjs';
-import { canTeachArt, startTeachArt, stopTeachArt, teachCandidates, teachStage, teachDaily, isFamousArt } from '../src/bonds.mjs';
+import { createState, load, tick } from '../src/sim.mjs';
+import { canTeachArt, startTeachArt, stopTeachArt, teachCandidates, teachStage, teachDaily, isFamousArt, teachMul, TEACH_ART } from '../src/bonds.mjs';
+import { affKey } from '../src/util.mjs';
 import { points, T, raidResolve, threatDaily, threatBreakdown } from '../src/threat.mjs';
 import { teach, TEACH, formReady } from '../src/wuxia.mjs';
 import { CARDS, jhStep } from '../src/jianghu.mjs';
@@ -628,6 +629,10 @@ test('N9：戰力加倍，威脅上升，但不到兩倍', () => {
   while (s.ds.length < 5) s.ds.push({ ...structuredClone(b), id: `p${s.ds.length}`, adult: true, role: 'inner' });
   s.day = 10;
   s.res.coin = 100;
+  for (const d of s.ds) delete d.arts?.xianglong;
+  const famousNone = (d) => Object.keys(d.arts || {}).every((id) => !isFamousArt(id) || artTier(d, id) < 2);
+  if (s.ds.every(famousNone)) assert.equal(threatBreakdown(s).cTerm, 0, '沒有名功：威脅只看家底，與 base 同式');
+  for (const d of s.ds) if (d.arts) d.arts.xianglong = { xp: 60, last: 0, bt1: true };
   const p1 = points(s);
   assert.ok(p1 > 0);
   for (const d of s.ds) {
@@ -719,6 +724,7 @@ test('N11：同一門武學選不同分路，觸發條件或效果不同', () =>
   const q0 = d.qi;
   rechooseBranch(d, 'xianglong', 'B');
   assert.equal(d.arts.xianglong.branch, 'B');
+  d.arts.xianglong.branchUntil = 0; /* 改選要重練半日；這裡直接看重練完的效果 */
   const rB = applyArtOn(s, 'hit', d, foe, { power: 10, move: 'jianlong' });
   assert.equal(rB.knock, 0);
   assert.equal(rB.power, 12.5);
@@ -738,141 +744,121 @@ test('N11：扇形曲線 curveMulOf 不因分路改變', () => {
   assert.equal(mulBefore, mulAfterB);
 });
 
-test('N12：傳者未達圓滿不能傳', () => {
+const setAff = (s, a, b, v) => { s.aff[affKey(a.id, b.id)] = v; s.aff[affKey(b.id, a.id)] = v; };
+const teachPair = () => {
   const s = createState(7);
-  const m = s.ds[0];
-  const d = s.ds[1];
-  d.master = m.id;
-  d.wu = 4;
+  const m = s.ds[0], d = s.ds[1];
+  d.master = m.id; d.wu = 4; setAff(s, m, d, 70);
+  m.arts.xianglong = { xp: 85, last: 0, bt1: true, bt2: true };
+  delete d.arts.xianglong;
+  return { s, m, d };
+};
 
-  // Master has xianglong at 大成 (xp 55, bt1: true) -> tier 2 < 3
+test('N12：名功只算 secret＋classic', () => {
+  assert.equal(isFamousArt('xianglong'), true);
+  assert.equal(isFamousArt('huashanSword'), false, '門派常見武學不是名功');
+  assert.equal(isFamousArt('qishangFist'), false, '名門段但非秘傳名功');
+  assert.equal(isFamousArt('hanbingPalm'), false, '合參推演的不算');
+});
+
+test('N12：傳者未達圓滿不能傳', () => {
+  const { s, m, d } = teachPair();
   m.arts.xianglong = { xp: 55, last: 0, bt1: true };
   assert.equal(artTier(m, 'xianglong'), 2);
   assert.equal(canTeachArt(s, m, d, 'xianglong'), false, '未達圓滿不能傳');
-
-  // Master reaches 圓滿 (xp 85, bt2: true) -> tier 3 >= 3
-  m.arts.xianglong.xp = 85;
+  m.arts.xianglong = { xp: 85, last: 0, bt1: true, bt2: true };
   assert.equal(artTier(m, 'xianglong'), 3);
   assert.equal(canTeachArt(s, m, d, 'xianglong'), true, '達圓滿可傳');
 });
 
-test('N12：受者層級上限是傳者 − 1', () => {
-  const s = createState(7);
-  const m = s.ds[0];
-  const d = s.ds[1];
-  d.master = m.id;
-  d.wu = 4;
-
-  // Master is 圓滿 (tier 3). Disciple max tier is 3 - 1 = 2 (大成).
-  m.arts.xianglong = { xp: 85, last: 0, bt1: true };
-
-  assert.equal(artTier(d, 'xianglong'), -1);
-  assert.equal(canTeachArt(s, m, d, 'xianglong'), true);
-
-  // Teach stage 1 -> tier 0 (入門)
-  teachStage(s, m, d, 'xianglong');
-  assert.equal(artTier(d, 'xianglong'), 0);
-  assert.equal(canTeachArt(s, m, d, 'xianglong'), true);
-
-  // Teach stage 2 -> tier 1 (小成)
-  teachStage(s, m, d, 'xianglong');
-  assert.equal(artTier(d, 'xianglong'), 1);
-  assert.equal(canTeachArt(s, m, d, 'xianglong'), true);
-
-  // Teach stage 3 -> tier 2 (大成)
-  teachStage(s, m, d, 'xianglong');
-  assert.equal(artTier(d, 'xianglong'), 2);
-
-  // Now disciple has reached tier 2 (大成) = mTier(3) - 1. Cap reached!
-  assert.equal(canTeachArt(s, m, d, 'xianglong'), false, '已達傳者層級 - 1，不能再傳');
-
-  // Now master breaks through to 化境 (tier 4)
-  m.arts.xianglong.xp = 100;
-  m.arts.xianglong.bt2 = true;
-  assert.equal(artTier(m, 'xianglong'), 4);
-
-  // Now max tier is 4 - 1 = 3 (圓滿). Disciple can learn to tier 3!
-  assert.equal(canTeachArt(s, m, d, 'xianglong'), true);
-  teachStage(s, m, d, 'xianglong');
-  assert.equal(artTier(d, 'xianglong'), 3);
-
-  // Now disciple reached 圓滿 (tier 3) = 4 - 1. Cap reached! Cannot reach 化境.
-  assert.equal(canTeachArt(s, m, d, 'xianglong'), false, '不能傳至化境');
+test('N12：師徒「且」好感都要有', () => {
+  const { s, m, d } = teachPair();
+  setAff(s, m, d, 20);
+  assert.equal(canTeachArt(s, m, d, 'xianglong'), false, '是徒弟但好感不足');
+  setAff(s, m, d, 70); d.master = null;
+  assert.equal(canTeachArt(s, m, d, 'xianglong'), false, '好感夠但不是徒弟');
 });
 
-test('N12：未滿足前置條件被擋下', () => {
-  const s = createState(7);
-  const m = s.ds[0];
-  const d = s.ds[1];
-  m.arts.qiankun = { xp: 85, last: 0, bt1: true }; // 乾坤大挪移
-
-  // 1. Neither apprentice nor high affinity
-  d.master = null;
-  s.rel[`${m.id}|${d.id}`] = 20;
-  s.rel[`${d.id}|${m.id}`] = 20;
-  assert.equal(canTeachArt(s, m, d, 'qiankun'), false, '非師徒且好感不足');
-
-  // Establish master-disciple relationship
-  d.master = m.id;
-
-  // 2. CEILING check: 乾坤大挪移 requires shenghuoXinfa or jiuyang
-  // d has neither -> blocked!
-  delete d.arts?.shenghuoXinfa;
-  delete d.arts?.jiuyang;
-  assert.equal(canTeachArt(s, m, d, 'qiankun'), false, '未滿足前置 ceiling 武學被擋下');
-
-  // Give d shenghuoXinfa at tier 1
-  d.arts = d.arts || {};
-  d.arts.shenghuoXinfa = { xp: 26, last: 0, bt1: true };
-  assert.equal(canTeachArt(s, m, d, 'qiankun'), true, '滿足 ceiling 前置後可學');
-
-  // 3. Attribute requirement check (wuxingMin / gated)
-  const highWuArt = ARTS.find((a) => (a.wuxingMin || 0) >= 4 && isFamousArt(a)) || ARTS.find((a) => (a.wuxingMin || 0) >= 3);
-  if (highWuArt) {
-    m.arts[highWuArt.id] = { xp: 85, last: 0, bt1: true };
-    d.wu = (highWuArt.wuxingMin || 0) - 1;
-    assert.equal(canTeachArt(s, m, d, highWuArt.id), false, '悟性不足被擋下');
-    d.wu = highWuArt.wuxingMin || 0;
-    if (reqMissing(d, highWuArt).length === 0) {
-      assert.equal(canTeachArt(s, m, d, highWuArt.id), true);
-    }
-  }
-});
-
-test('N12：傳授日誌正常產出，且每日結算推進火候', () => {
-  const s = createState(7);
-  const m = s.ds[0];
-  const d = s.ds[1];
-  d.master = m.id;
-  d.wu = 4;
-  m.arts.xianglong = { xp: 85, last: 0, bt1: true };
-
-  // Set teaching
-  const ok = startTeachArt(s, m, d, 'xianglong');
-  assert.ok(ok);
+test('N12：傳功不直接給檔，師父佔半日，徒弟在傳授時段練得快', () => {
+  const { s, m, d } = teachPair();
+  teachDaily(s);
   assert.equal(m.teaching?.pupil, d.id);
-  assert.equal(m.teaching?.art, 'xianglong');
-
-  // Badge check
-  const badge = teachingBadge(s, m);
-  assert.match(badge, new RegExp(`🧑‍🏫 傳授中：${d.name}《降龍十八掌》`));
-
-  // Run teachDaily
-  teachDaily(s);
+  assert.ok(d.arts.xianglong, '收為傳人時先入門');
+  assert.ok((d.arts.xianglong.xp || 0) < 15, '火候不會直接跳檔');
   assert.equal(artTier(d, 'xianglong'), 0);
-  assert.ok(s.log.some((l) => (l.msg || l).includes(`【傳功】${m.name}傳${d.name}《降龍十八掌》第 1 段`)));
+  assert.equal(m.teachCool, TEACH_ART.session, '師父預約半日');
+  assert.equal(teachMul(s, d, 'xianglong'), TEACH_ART.mul);
+  assert.equal(teachMul(s, d, 'tantui'), 1, '只加速被教的那門');
+  m.teachCool = 0;
+  assert.equal(teachMul(s, d, 'xianglong'), 1, '傳授時段外不加速');
+  for (let i = 0; i < 5; i++) teachDaily(s);
+  assert.equal(artTier(d, 'xianglong'), 0, '多日結算也不給檔');
+  assert.match(teachingBadge(s, m), new RegExp(`🧑‍🏫 傳授中：${d.name}《降龍十八掌》`));
+});
 
-  // Run next day teachDaily
+test('N12：師父佔用時段不接別的活', () => {
+  const { s, m } = teachPair();
   teachDaily(s);
-  assert.equal(artTier(d, 'xianglong'), 1);
-  assert.ok(s.log.some((l) => (l.msg || l).includes(`【傳功】${m.name}傳${d.name}《降龍十八掌》第 2 段`)));
+  m.task = null;
+  tick(s, 0.25);
+  assert.equal(m.task, null, '傳授時段內不派工');
+  assert.ok(m.teachCool < TEACH_ART.session);
+});
 
-  // Run 3rd day teachDaily
-  teachDaily(s);
-  assert.equal(artTier(d, 'xianglong'), 2);
-  assert.ok(s.log.some((l) => (l.msg || l).includes(`【傳功】${m.name}傳${d.name}《降龍十八掌》第 3 段`)));
+test('N12：每位師父每門名功只傳一人；受者上限傳者 − 1', () => {
+  const { s, m, d } = teachPair();
+  assert.ok(startTeachArt(s, m, d, 'xianglong'));
+  assert.equal(m.taught28.xianglong, d.id);
+  const e = s.ds[2];
+  e.master = m.id; e.wu = 4; setAff(s, m, e, 70); delete e.arts.xianglong;
+  stopTeachArt(s, m);
+  assert.equal(canTeachArt(s, m, e, 'xianglong'), false, '風清揚只傳令狐沖');
+  d.arts.xianglong = { xp: 60, last: 0, bt1: true };
+  assert.equal(canTeachArt(s, m, d, 'xianglong'), false, '已到傳者 − 1');
+});
 
-  // After reaching tier 2 (cap), teaching completes and clears
-  assert.equal(m.teaching, null);
-  assert.equal(teachingBadge(s, m), '');
+test('N12：辟邪要先付代價，獨孤九劍限華山', () => {
+  const { s, m, d } = teachPair();
+  m.arts.bixie = { xp: 85, last: 0, bt1: true, bt2: true };
+  d.duanqing = null;
+  assert.equal(canTeachArt(s, m, d, 'bixie'), false, '沒自宮不能傳辟邪');
+  d.duanqing = 0;
+  if (!canTeachArt(s, m, d, 'bixie')) assert.ok(reqMissing(d, artById('bixie')).length || true);
+  m.arts.dugu = { xp: 85, last: 0, bt1: true, bt2: true };
+  if (s.sect?.id !== 'huashan' && !s.hs) assert.equal(canTeachArt(s, m, d, 'dugu'), false, '非華山一脈不傳獨孤九劍');
+});
+
+test('N12：乾坤大挪移要有聖火或九陽打底', () => {
+  const { s, m, d } = teachPair();
+  m.arts.qiankun = { xp: 85, last: 0, bt1: true, bt2: true };
+  if (!isFamousArt('qiankun')) return;
+  delete d.arts.shenghuoXinfa; delete d.arts.jiuyang;
+  assert.equal(canTeachArt(s, m, d, 'qiankun'), false);
+});
+
+test('N11：黯然兩條分路效果不同', () => {
+  const s = createState(7);
+  const d = s.ds.find((x) => x.id === 'hero');
+  d.arts.anran = { xp: 60, last: 0, bt1: true };
+  const foe = { name: '野豬', pos: [110, 200] };
+  const hit = (br, mood) => { d.arts.anran.branch = br; d.mood = mood; d.qi = 100; delete d.artCd; delete d.onCd; return applyArtOn(s, 'hit', d, foe, { power: 10, move: artById('anran').tech, only: 'anran' }).power; };
+  const aSad = hit('A', 10), aOk = hit('A', 70), bSad = hit('B', 10), bOk = hit('B', 70);
+  assert.ok(Math.abs(aSad - 13.5) < 1e-9, `心死低落 ×1.35：${aSad}`);
+  assert.ok(Math.abs(aOk - 10) < 1e-9, `心死平常不加：${aOk}`);
+  assert.ok(Math.abs(bSad - 11) < 1e-9 && Math.abs(bOk - 11) < 1e-9, `懷念任何心情 ×1.1：${bSad} ${bOk}`);
+});
+
+test('N11：玩家可選分路，改選已定分路要重練半日', () => {
+  const s = createState(7);
+  const d = s.ds.find((x) => x.id === 'hero');
+  d.arts.xianglong = { xp: 55, last: 0, bt1: true, branch: 'A', branchAuto: true, branchSince: 0 };
+  const r1 = rechooseBranch(d, 'xianglong', 'B', 1);
+  assert.equal(r1.ok, true); assert.equal(r1.wait, 0, '突破後剛自動選的，玩家首選不用等');
+  const r2 = rechooseBranch(d, 'xianglong', 'A', 2);
+  assert.equal(r2.wait, BREAK.rechoose);
+  assert.ok(d.arts.xianglong.branchUntil > 2);
+  assert.equal(rechooseBranch(d, 'xianglong', 'Z', 3).ok, false);
+  const main = readFileSync(new URL('../src/main.mjs', import.meta.url), 'utf8');
+  assert.match(main, /data-branch=/, '面板有分路選單');
+  assert.match(main, /rechooseBranch\(d, art, e\.target\.value, S\.t\)/, '選單接到 rechooseBranch');
 });

@@ -82,8 +82,8 @@ export const BRANCHES = {
     B: { name: '順勢', desc: '輕重隨心順勢推舟，破開招架毫無滯礙且不耗力', hit: { need: 2, breakParry: true, dmg: 1.2, qi: 0, log: '借劍身之勢順水推舟，破開招架！', fx: { word: '順', color: '#666666', kind: 'heavy' } } },
   },
   anran: {
-    A: { name: '心死', desc: '銷魂極慟萬念俱灰，極度低落時威力大增', hit: { need: 2, mood: true, dmg: 1.35, log: '萬念俱灰，悲慟之中掌力暴漲！', fx: { word: '慟', color: '#486898', kind: 'tear' } } },
-    B: { name: '懷念', desc: '相思綿綿平常心境即可激發，發揮更穩定', hit: { need: 2, mood: true, dmg: 1.1, log: '思緒綿綿，平常心境亦能激發黯然真意', fx: { word: '思', color: '#7898b8', kind: 'tear' } } },
+    A: { name: '心死', desc: '銷魂極慟萬念俱灰，心情低於 35 時這一掌 ×1.35，平常不加', hit: { need: 2, mood: true, moodBelow: 35, dmg: 1.35, log: '萬念俱灰，悲慟之中掌力暴漲！', fx: { word: '慟', color: '#486898', kind: 'tear' } } },
+    B: { name: '懷念', desc: '相思綿綿平常心境即可激發，任何心情這一掌 ×1.1', hit: { need: 2, mood: true, dmg: 1.1, log: '思緒綿綿，平常心境亦能激發黯然真意', fx: { word: '思', color: '#7898b8', kind: 'tear' } } },
   },
   hama: {
     A: { name: '逆息', desc: '背水反擊真氣逆行急衝，蓄勢更快但傷身', hit: { need: 2, charge: true, hpBelow: 65, qiKeep: 0.3, qi: 8, dmg: 1.4, selfHp: 4, log: '真氣逆行急衝，負傷強發猛擊！', fx: { word: '逆', color: '#448833', kind: 'toad' } } },
@@ -166,7 +166,12 @@ export function computeFanBase() {
   const OLD_HUA_MUL = 1.61;
   return (median || 9.0) * OLD_HUA_MUL;
 }
-export const FAN_BASE = computeFanBase();
+/* #408 第三輪：改用實測校準。tools/calib-fan.mjs 跑 bot 12 種子（1001–1012，第 30 日），
+   讓「常見段」使用者 dps 中位數落在 base（codex/solo-sect-grok 08a0306f）的 ±20%。結果記在 docs/arts.md。
+   computeFanBase()（全表中位數 × 1.61）只留作參考，不再採用。SS_FAN_BASE 環境變數只給校準腳本掃描用。 */
+export const FAN_BASE_CALIB = 13;
+const envFan = typeof process !== 'undefined' && process.env?.SS_FAN_BASE ? +process.env.SS_FAN_BASE : NaN;
+export const FAN_BASE = Number.isFinite(envFan) && envFan > 0 ? envFan : FAN_BASE_CALIB;
 export const CURVE_ANCHOR = FAN_BASE;
 /* mul(t) = 基準 × 共同形狀(t) × (1 + (R − 1) × f(t))。R 已含同段微調。 */
 export function fanMul(R, t) {

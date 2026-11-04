@@ -1,5 +1,5 @@
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
-import { NODES, EDGES, DAY, FACILITIES, MOVES } from './data.mjs';
+import { NODES, EDGES, DAY, FACILITIES, MOVES, ARTS } from './data.mjs';
 import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuter28, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
 import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of } from './sect.mjs';
@@ -146,7 +146,7 @@ export function bandWalk(b, dt) {
 
 export const RAID = { minPop: 8, minPopRules: 4, // loop12：開了「太平與備料」（江湖規則）的新局，山賊門檻降為 4 人＝開局人數，第 8 日起就會來
   first: 8, every: 6, jitter: 2, w: { coin: 1, food: 1, pill: 8, herb: 1, stage: 25 }, div: 2, dayK: 30, dayMax: 2, cap: 900,
-  wealthRatio: 0.6, combatK: 0.85,
+  wealthRatio: 1, combatK: 0.5, /* #408 第三輪：家底項回到 base（×1）；戰力項只算身懷名功（大成以上）的守方，由 tools/calib-fan.mjs 同一支 bot12 校準 */
   adaptMin: 0.6, adaptMax: 1.2, adaptDropLoss: 0.15, adaptDropHurt: 0.10, adaptRecover: 0.05,
   logAfter: 30, logK: 0.2, hurtCool: 2, // v2.1：第 30 日後天數係數改對數；山門重傷後下次上門再晚 hurtCool 日
   demand: { base: 20, k: 0.6, coinMax: 0.35, min: 10 }, wait: DAY / 2, hurtCost: 80, hurtHp: 15, winHurt: 0.4, steal: { coin: 0.15, food: 0.2 }, rep: 3 };
@@ -159,11 +159,14 @@ const linMul = (day) => Math.min(RAID.dayMax, 0.5 + day / RAID.dayK);
 export const dayMul = (s) => { const d = s.day || 0; if (d <= RAID.logAfter) return linMul(d); return Math.min(RAID.dayMax, linMul(RAID.logAfter) + Math.log(1 + (d - RAID.logAfter) / RAID.logAfter) * RAID.logK); };
 export const minPopOf = (s) => (RAID.minPopRules);
 
+/* 名功（secret＋classic，非合參）最高火候；沒有名功回 -1。沒有名功的門派威脅＝base 的家底項。 */
+const FAMOUS_IDS = ARTS.filter((a) => a.secret && a.classic && !a.derived).map((a) => a.id);
+export function famousTop(d) { let m = -1; for (const id of FAMOUS_IDS) if (d.arts?.[id]) m = Math.max(m, artTier(d, id)); return m; }
 /* #412 N9：威脅來源解析（家底項與戰力項佔比） */
 export function threatBreakdown(s) {
   const wTerm = (wealth(s) / RAID.div) * (RAID.wealthRatio ?? 0.6);
   const defs = s.ds.filter(canDefend);
-  const cTerm = defs.reduce((a, d) => a + defenderDps(d), 0) * (RAID.combatK ?? 0.85);
+  const cTerm = defs.reduce((a, d) => a + (famousTop(d) >= 2 ? defenderDps(d) * (famousTop(d) - 1) : 0), 0) * (RAID.combatK ?? 0.85);
   const tot = wTerm + cTerm;
   if (tot <= 0) return { wPct: 50, cPct: 50, wTerm: 0, cTerm: 0, text: '家底 50％、高手 50％' };
   const wPct = Math.round((wTerm / tot) * 100);
