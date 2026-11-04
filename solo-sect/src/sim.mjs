@@ -589,7 +589,7 @@ function monStrike(s, h, m, foe, M, zk, w) {
   const incoming0 = M.dmg * (m.psn > s.t ? 1 - SPEC.poisonWeak : 1) * (1 - SPEC.zhenMit * zk);
   const r = resolveSwing(s, m, foe, () => rand(s), { depth: depthOf(m), wind: w.wind, force: w.force, map: true });
   if (r.kind === 'read') { clashFx(s, foe, 'read'); return r; }
-  if (r.kind === 'dodge') { const on = applyArtOn(s, 'dodge', foe, m, { foeName: M.name, map: true }); clashFx(s, foe, 'dodge'); noteWhy(s, on); if (perfectDodge(s, foe, () => rand(s))) h.witch = (h.witch || 0) + 1; return r; } /* #425 完美閃避 → 林克時間 */ /* 真正的「閃」才觸發 dodge（獨孤不擋） */
+  if (r.kind === 'dodge') { const on = applyArtOn(s, 'dodge', foe, m, { foeName: M.name, map: true }); clashFx(s, foe, 'dodge'); noteWhy(s, on); if (perfectDodge(s, foe, () => rand(s), { depth: depthOf(m), damage: incoming0 })) h.witch = (h.witch || 0) + 1; return r; } /* #425 完美閃避 → 林克時間 */ /* 真正的「閃」才觸發 dodge（獨孤不擋） */
   if (r.kind === 'parry') { const on = applyArtOn(s, 'block', foe, m, { foeName: M.name, map: true }); if (r.jolt) clashFx(s, foe, 'jolt'); noteWhy(s, on); return r; }
   const incoming = incoming0 * (r.heavy ? CLASH.heavy : 1); if (r.heavy) clashFx(s, foe, 'heavy');
   const got = applyArtOn(s, 'gethit', foe, m, { dmg: incoming, foeName: M.name, map: true }); /* #404 挨打：太極劍借力、乾坤挪移 */

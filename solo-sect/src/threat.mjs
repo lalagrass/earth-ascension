@@ -176,7 +176,7 @@ function bandClash(s, b, defs, dt) {
       (s.fx ||= []).push({ kind: 'cross', pos: [(m.pos[0] + d.pos[0]) / 2, (m.pos[1] + d.pos[1]) / 2], ttl: 0.6 }); if (b.cross === 1) log(s, `【輕功交錯】${d.name}和一名山賊同時突進，擦身而過，火花一閃，兩人都退了半步`); continue; }
     if (m.swing) { if (s.t + 1e-9 < m.swing.at) continue; const w = m.swing; m.swing = null; const over = !handleTake(s, d);
       const r = resolveSwing(s, m, d, () => R(s), { depth: 2, wind: w.wind, force: over ? 'over' : undefined }); (b.cl ??= {})['m' + r.kind] = (b.cl['m' + r.kind] || 0) + 1;
-      if (r.kind === 'dodge' && perfectDodge(s, d, () => R(s))) b.witch = (b.witch || 0) + 1;
+      if (r.kind === 'dodge' && perfectDodge(s, d, () => R(s), { depth: 2, damage: BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per })) b.witch = (b.witch || 0) + 1;
       if (r.kind === 'hit') { breakWindup(s, m, d, null, w.wind); d.hp = Math.max(1, d.hp - (BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per) * (r.heavy ? CLASH.heavy : 1)); (s.fx ||= []).push({ kind: 'bite', pos: [...d.pos], ttl: 0.4 }); partHit(s, d, r, { rnd: () => R(s) }); } /* #427 */
       continue; }
     if (m.cool > 0 || m.ring !== 1) continue;
