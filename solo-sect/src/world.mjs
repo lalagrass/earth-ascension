@@ -1,7 +1,7 @@
 import { ROUTE, NODES, ENEMIES, RAID_EVERY, DAY, ENDLESS, CAMPS, INSIGHT, EXP, MOVES, EXP_STYLES as STYLES, STYLE_TRAIT, EVADE, TRAITS, ARTS as ARTS_ALL, HS, DAO } from './data.mjs';
 import { log, affKey, resAdd } from './util.mjs';
 import { addMem } from './bonds.mjs';
-import { shieldHit, moveMul, cdMul, effectTier, artTier as effectTierOf, SPEC, zhenK, hasPoison, bestSpec, fengxueK, HARMONY24, stepDrive28, artNoParry, applyArtOn, expCause, expectOf, innerOnHit, innerOnGetHit } from './arts.mjs';
+import { CLASH, clashOdds, moveStats, windOf, spendQi, shieldHit, moveMul, cdMul, effectTier, artTier as effectTierOf, SPEC, zhenK, hasPoison, bestSpec, fengxueK, HARMONY24, stepDrive28, artNoParry, applyArtOn, expCause, expectOf, innerOnHit, innerOnGetHit } from './arts.mjs';
 import { mateBonus } from './economy.mjs';
 import { addWexin, awaken } from './hero.mjs';
 import { aff } from './social.mjs';
@@ -237,24 +237,30 @@ export const LS_FIRST24 = ['gorge', 'cliff'];
 function moveDps(s, d, mv) {
   return mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t) * (mv.aoe ? 1.3 : 1) / (mv.cd * (cdMul(d, mv.id, s.t)));
 }
-function bestSwing(s, d) {
+const abstractFoe = (e = 'bandit') => ({ k: ['rat', 'hare', 'bat'].includes(e) ? 'rat' : ['bandit', 'archer', 'chief', 'hermit'].includes(e) ? 'bandit' : 'boar', i: 0 });
+export function expectedDps(s, d, mv, e = 'bandit') {
+  const base = moveDps(s, d, mv), ex = expectOf(d, mv, s.t), foe = abstractFoe(e);
+  const cd = mv.cd * cdMul(d, mv.id, s.t), wind = windOf(d, mv.id, cd);
+  const o = clashOdds(s, d, foe, { move: mv.id, wind });
+  const landed = (1 - o.dodge) * (1 - o.parry), cut = moveStats(d, mv.id, wind).force > moveStats(foe).armor ? 0.08 : 0;
+  return Math.max(0, base * ex.mul * landed * (1 + cut) * (1 + ex.reflect * 0.5) - ex.selfPerSec);
+}
+function bestSwing(s, d, e = 'bandit') {
   let best = 0, mv = null;
   for (const id of d.moves || []) {
     const m = MOVES.find((x) => x.id === id);
     if (!m || !(m.cd > 0)) continue;
-    const p = moveDps(s, d, m);
+    const p = expectedDps(s, d, m, e);
     if (p > best) { best = p; mv = m; }
   }
   return { mv, dps: best };
 }
-export function dpsOf(s, d) {
+export function dpsOf(s, d, e = 'bandit') {
   let best = 0;
   for (const id of d.moves || []) {
     const mv = MOVES.find((m) => m.id === id);
     if (!mv || !(mv.cd > 0)) continue;
-    const base = moveDps(s, d, mv);
-    const ex = expectOf(d, mv, s.t);
-    const p = Math.max(0, base * ex.mul * (1 + ex.reflect * 0.5) - ex.selfPerSec);
+    const p = expectedDps(s, d, mv, e);
     if (p > best) best = p;
   }
   return best;
@@ -340,9 +346,8 @@ function fight(s, e, team, H, gate = false, scale = 1) {
     const alive = team.filter((d) => d.hp > 0); if (!alive.length) break;
     t += 0.5; if (psn && t <= SPEC.poisonT) hp -= SPEC.poisonDps * (s.psnK24 || 1) * 0.5; const fs = (X.scout && t <= EXP.scoutT ? 1 + EXP.scoutBonus : 1) * (zk && t <= EXP.scoutT ? 1 + SPEC.zhenScout * zk : 1);
     for (const d of alive) {
-      const pick = bestSwing(s, d);
-      const ex = pick.mv ? expectOf(d, pick.mv, s.t) : null;
-      hp -= pick.dps * (ex?.mul || 1) * 0.5 * bonus * fs * counterMul(daoOf(d), DAO.enemy[e]); /* #408 連續傷害含絕活期望，不再整場只結一次 */
+      const pick = bestSwing(s, d, e);
+      hp -= pick.dps * 0.5 * bonus * fs * counterMul(daoOf(d), DAO.enemy[e]);
       if (d.dugu?.length) d.hp = Math.min(100, d.hp + HS.duguHeal); // v1.2 九劍只攻不守：不格擋，但料敵機先回氣血
       if (!pick.mv) continue;
       const due = (swingAt.get(d.id) ?? 0) - 0.5;
@@ -366,8 +371,11 @@ function fight(s, e, team, H, gate = false, scale = 1) {
         noteOnce(`${d.id}:dodge`, dodge.line);
         continue;
       }
-      const def = artNoParry(d) ? 1 : (1 - Math.min(0.4, (d.skills.agility + d.skills.strength) / 400)) * guardOf(d);
-      const incoming = E.dmg * def * (d.takeMul || 1) * counterMul(DAO.enemy[e], daoOf(d));
+      const o = clashOdds(s, abstractFoe(e), d, { wind: E.cd * CLASH.monWind });
+      const avoid = (1 - o.read) * (1 - o.dodge) * (1 - o.parry);
+      if (o.dodge) spendQi(d, Math.min(CLASH.dodge.qi, CLASH.dodge.qi * o.dodge));
+      const def = guardOf(d);
+      const incoming = E.dmg * avoid * def * (d.takeMul || 1) * counterMul(DAO.enemy[e], daoOf(d));
       const got = applyArtOn(s, 'gethit', d, foe, { dmg: incoming, foeName: E.name, silent: said.has(`${d.id}:get`) });
       const innBack = innerOnGetHit(s, d, { silent: said.has(`${d.id}:get`) });
       noteOnce(`${d.id}:get`, got.line || innBack.line);

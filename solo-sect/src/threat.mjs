@@ -7,6 +7,7 @@ import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of } from './sect.mjs'
 import { peaceDelay } from './economy.mjs';
 import { mates } from './bonds.mjs';
 import { cancelTask } from './core.mjs';
+import { dpsOf } from './world.mjs';
 // ==== （原 raidkind.mjs）====
 // loop17 山賊多樣：只在 s.m9（江湖規則「太平與備料」）時抽類型；舊局／golden 無 kind＝原樣。
 // 期望點數 ≈ 原值（0.5×0.8+0.3×1.25+0.2×1.0=0.975），夜襲不能付錢、敗了只偷不傷人 → 不推高重傷。
@@ -165,7 +166,7 @@ function bandClash(s, b, defs, dt) {
     if (d.bcool > 0) continue;
     const mine = live().filter((m) => m.ring === 1 && m.foe === d.id), tgt = (mine.length ? mine : live()).sort((x, y) => x.hp - y.hp)[0]; if (!tgt) break;
     const wind = BAND_CLASH.cd * windFrac(topTierOf(d)); d.bcool = BAND_CLASH.cd;
-    d.bswing = { tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d) * def24Of(s) * BAND_CLASH.cd };
+    d.bswing = { tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * def24Of(s) * BAND_CLASH.cd };
     (s.fx ||= []).push({ kind: 'warn', from: [...d.pos], to: [...(tgt.pos || b.pos)], r: 30, dur: wind, ttl: wind, t0: s.t });
   }
   if (b.state !== 'yard') return;
@@ -193,7 +194,7 @@ function placeMembers(s, b, defs) {
   live.forEach((m, k) => { if (k < BAND_MEMBER.ring * defs.length) { const d = defs[k % defs.length], a = Math.PI * (0.25 + 0.5 * Math.floor(k / defs.length)), r = b.state === 'yard' ? 22 : 34; m.pos = [d.pos[0] + Math.cos(a) * r, d.pos[1] - Math.sin(a) * r * 0.55]; m.ring = 1; m.foe = d.id; }
     else { const a = s.t * 0.6 + k; m.pos = [c[0] + Math.cos(a) * BAND_MEMBER.outer, c[1] + Math.sin(a) * BAND_MEMBER.outer * 0.5]; m.ring = 2; m.foe = null; } });
 }
-export const defenderDps = (d) => BAND.dps.base + ((d.skills.palm || 0) + (d.skills.leg || 0) + (d.skills.strength || 0)) / BAND.dps.per + dpsBonus(d); // loop117 護體真氣
+export const defenderDps = (d, s = { t: 0 }) => dpsOf(s, d, 'bandit');
 export const canDefend = (d) => d.adult !== false && !d.away && (d.role !== 'laborer' || !!(d.hidden?.shown)) && /* loop155 隱世高人仍是幫工，但可守柵 */ d.hp >= BAND.hpMin && d.needs.energy >= BAND.energyMin;
 // 走一步：回傳是否到達
 export function bandWalk(b, dt) {
@@ -231,7 +232,7 @@ export function famousTop(d) { let m = -1; for (const id of FAMOUS_IDS) if (d.ar
 export function threatBreakdown(s) {
   const wTerm = (wealth(s) / RAID.div) * (RAID.wealthRatio ?? 0.6);
   const defs = s.ds.filter(canDefend);
-  const cTerm = defs.reduce((a, d) => a + (famousTop(d) >= 2 ? defenderDps(d) * (famousTop(d) - 1) : 0), 0) * (RAID.combatK ?? 0.85);
+  const cTerm = defs.reduce((a, d) => a + (famousTop(d) >= 2 ? defenderDps(d, s) * (famousTop(d) - 1) : 0), 0) * (RAID.combatK ?? 0.85);
   const tot = wTerm + cTerm;
   if (tot <= 0) return { wPct: 50, cPct: 50, wTerm: 0, cTerm: 0, text: '家底 50％、高手 50％' };
   const wPct = Math.round((wTerm / tot) * 100);
@@ -249,12 +250,12 @@ export function points(s) {
   return Math.min(RAID.cap, Math.round(baseTerm * daysAndValor * adapt));
 }
 export const defense = (s) => power(s) * def24Of(s); /* loop176 武當紫霄宮 */
-export const winP = (s, pts) => { const d = defense(s); return Math.max(0.1, Math.min(0.9, d / (d + pts))); };
+export const winP = (s, pts) => { const d = defense(s); const open = Math.max(0.1, Math.min(0.9, d / (d + pts))); return fenceHolds(s, pts) ? Math.max(open, 0.9) : open; };
 export const demandOf = (s, pts) => Math.max(RAID.demand.min, Math.round(Math.min(Math.max(0, s.res.coin) * RAID.demand.coinMax, RAID.demand.base + pts * RAID.demand.k)));
 // 自動決定：比較「勒索金」與「迎戰的預期損失」＝(1−勝率)×(被搶的錢＋糧＋一人重傷折 hurtCost)；勒索金較小且付得起才付
 export const fightLoss = (s, p) => (1 - p) * (Math.max(0, s.res.coin) * RAID.steal.coin + (s.res.food || 0) * RAID.steal.food + RAID.hurtCost);
 // loop4：有柵時執事先估「守方打光山賊」是否快過「山賊撞破柵」，快就迎戰；否則照舊比較
-export function fenceHolds(s, pts) { if (!fenceUp(s)) return false; const dps = s.ds.filter(canDefend).reduce((a, d) => a + defenderDps(d), 0) * def24Of(s); /* loop183 */ if (dps <= 0) return false;
+export function fenceHolds(s, pts) { if (!fenceUp(s)) return false; const dps = s.ds.filter(canDefend).reduce((a, d) => a + defenderDps(d, s), 0) * def24Of(s); /* loop183 */ if (dps <= 0) return false;
   const fd = Math.max(BAND.fenceDmg.min, Math.round(pts * BAND.fenceDmg.k)) / BAND.hitEvery; return pts / dps < s.fence.hp / fd; }
 export const raidAuto = (s) => { const P = T(s).pending; if (P?.noPay) return 1; if (P && fenceHolds(s, P.pts)) return 1; return P && s.res.coin >= P.demand && P.demand < fightLoss(s, P.p) ? 0 : 1; };
 // 每日一次（sim 換日時呼叫）：到期就看點數，>0 才上門
@@ -327,7 +328,7 @@ function raidLose(s, H, who) {
 // loop3：地圖上的山賊；每 tick 呼叫。守柵者＝task.act 'defend' 且已在柵邊動手
 export function bandStep(s, dt, H) {
   const b = s.band; if (!b) return; const X = T(s); if (b.kind || X.cur) X.cur = b.kind;
-  if (b.state === 'go') { if (bandWalk(b, dt)) { b.state = 'siege'; log(s, '山賊圍住了菜園木柵，開始撞柵！'); } placeMembers(s, b, []); return; }
+  if (b.state === 'go') { if (bandWalk(b, dt)) { b.state = fenceUp(s) ? 'siege' : 'yard'; b.yardT = 0; log(s, b.state === 'siege' ? '山賊圍住了菜園木柵，開始撞柵！' : '山賊從山門闖進院裡，和守門弟子交手！'); } placeMembers(s, b, []); return; }
   const defs = s.ds.filter((d) => d.task?.act === 'defend' && d.task.phase === 'do');
   if (hasPoison(s, defs)) b.psn = s.t + SPEC.poisonT; /* loop151 毒術：守柵者中有毒術者，山賊中毒 */
   syncMembers(b); const hp0 = bandSum(b);
@@ -335,11 +336,11 @@ export function bandStep(s, dt, H) {
   if (b.psn > s.t) { const f = b.members.find((m) => m.hp > 0); if (f) bandHit(s, b, f, SPEC.poisonDps * (s.psnK24 || 1) * dt, null); }
   b.hp = bandSum(b); b.defDealt += hp0 - b.hp;
   if (b.state === 'yard') { b.yardT = (b.yardT || 0) + dt; const fit = defs.some((d) => d.hp >= BAND.hpMin);
-    if (b.hp > 0 && fit && b.yardT < BAND_CLASH.yardMax) return;
-    s.band = null; const win = b.hp <= 0 || (fit && R(s) < winP(s, Math.max(1, b.hp))); let hurt = null; qiInjuryFight28(s, defs, log);
-    if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `木柵被撞破，眾人在院裡和山賊一個個交手——打退了山賊！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
-    else hurt = raidLose(s, H, '木柵被撞破，');
-    bossEnd(s, b, win, defs); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null, map: true, broke: true }); nextWave(s, b, win); return; }
+    if (b.hp > 0 && b.yardT < BAND_CLASH.yardMax && (fit || s.ds.some(canDefend))) return;
+    s.band = null; const win = b.hp <= 0 || (!fit && R(s) < winP(s, Math.max(1, b.hp))); let hurt = null; qiInjuryFight28(s, defs, log);
+    if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `眾人在院裡和山賊一個個交手——打退了山賊！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
+    else hurt = raidLose(s, H, '院內交手，');
+    bossEnd(s, b, win, defs); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null, map: true, broke: !!s.fence }); nextWave(s, b, win); return; }
   if (b.hp <= 0) { qiInjuryFight28(s, defs, log); /* loop186 守柵實戰 */ s.band = null; X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; log(s, `守柵迎敵——${defs.map((d) => d.name).join('、') || '眾人'}把山賊打退了！名聲 +${RAID.rep}。`); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: 'win', hurt: null, map: true, fence: s.fence?.hp ?? 0 }); for (const d of defs) recordDeed(s, d, 'defend'); recordDeed(s, null, 'raid', b.boss ? {} : { chron: `守柵打退山賊（${defs.map((d) => d.name).join('、') || '眾人'}）` }); bossEnd(s, b, true, defs); nextWave(s, b, true); return; }
   b.clock += dt; if (b.clock < BAND.hitEvery) return; b.clock -= BAND.hitEvery;
   const fd0 = Math.max(BAND.fenceDmg.min, Math.round(b.pts * BAND.fenceDmg.k)), fd = Math.max(1, Math.round(fd0 * (1 - SPEC.zhenMit * zhenK(s)) * (b.psn > s.t ? 1 - SPEC.poisonWeak : 1))); b.fenceDealt += fd; /* loop151 陣法護柵 */
@@ -367,7 +368,7 @@ export function raidResolve(s, i, H, auto = false) {
   const X = T(s), P = X.pending; if (!P) return { ok: false, why: '沒有山賊上門' };
   X.pending = null; const who = auto ? '執事代為決定：' : ''; if (P.kind || X.cur) X.cur = P.kind;
   if (i === 0 && !P.noPay && s.res.coin >= P.demand) { resAdd(s, 'coin', -P.demand); X.paid++; valorAdd(s, VALOR.pay); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), n: P.n, day: P.day, pts: P.pts, pay: P.demand }); log(s, `${who}付了 ${P.demand} 兩，山賊點完錢下山去了。`); return { ok: true, paid: P.demand }; }
-  if (fenceUp(s)) { X.fought++; valorAdd(s, VALOR.fight); s.band = newBand(P, FENCE.node); if (P.kind) s.band.kind = P.kind; if (P.wave) s.band.wave = P.wave; if (P.boss) s.band.boss = true; log(s, `${who}決定迎戰：${P.n > 0 ? '' : ''}一夥山賊（${P.pts}）從山門朝菜園木柵殺來！`); return { ok: true, band: true }; } // loop3：有柵改上地圖
+  if (s.ds.some(canDefend)) { X.fought++; valorAdd(s, VALOR.fight); s.band = newBand(P, FENCE.node); if (P.kind) s.band.kind = P.kind; if (P.wave) s.band.wave = P.wave; if (P.boss) s.band.boss = true; log(s, `${who}決定迎戰：一夥山賊（${P.pts}）從山門朝${fenceUp(s) ? '菜園木柵' : '院裡'}殺來！`); return { ok: true, band: true }; }
   X.fought++; valorAdd(s, VALOR.fight); const win = R(s) < P.p; let hurt = null; qiInjuryFight28(s, s.ds.filter(canDefend), log); /* loop186 迎戰實戰 */
   if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `${who}迎戰山賊——打退了！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else hurt = raidLose(s, H, who);
