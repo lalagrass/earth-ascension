@@ -644,7 +644,7 @@ export const INNER = ARTS.filter(isInner).map((a) => a.id);
 export const innerArts = (d) => INNER.filter((id) => d.arts?.[id]);
 export const qiMax = (d) => qiMax2(d) * injuryMul28(d); /* loop181 經脈內傷壓內力上限 */
 export const qiOf = (d) => Math.min(d.qi ?? 0, qiMax(d));
-export function addQi(d, amt) { d.qi = Math.max(0, Math.min(qiMax(d), (d.qi ?? 0) + amt)); return d.qi; }
+export function addQi(d, amt) { if (amt > 0 && d?.part?.where === 'body') return d.qi ?? 0; /* #427 身傷：內力不回 */ d.qi = Math.max(0, Math.min(qiMax(d), (d.qi ?? 0) + amt)); return d.qi; }
 // 夠就扣並回 true；不夠不扣
 export function spendQi(d, cost) { if (!d.ng || qiOf(d) < cost) return false; d.qi = qiOf(d) - cost; return true; }
 
@@ -1201,7 +1201,7 @@ export const CLASH = {
 const clamp01 = (x, hi = 1) => Math.max(0, Math.min(hi, x));
 export const windFrac = (tier) => CLASH.windIn + (CLASH.windHua - CLASH.windIn) * Math.max(0, Math.min(4, tier | 0)) / 4;
 /* 一招的前搖秒數：cd × 前搖比例（看這招所屬武學的火候） */
-export function windOf(d, mvId, cd) { const a = artOfMove(mvId); const t = a && d?.arts?.[a.id] ? artTier(d, a.id) : 0; return cd * windFrac(t); }
+export function windOf(d, mvId, cd) { const a = artOfMove(mvId); const t = a && d?.arts?.[a.id] ? artTier(d, a.id) : 0; return cd * windFrac(t) * (d?.part?.where === 'hand' ? PART.hand : 1); } /* #427 手傷：出手慢 */
 export const isMon = (w) => !!w && w.k != null && !w.arts;
 export const postureMax = (w) => (isMon(w) ? CLASH.post[w.k] ?? CLASH.post.def : CLASH.post.d);
 export function postureOf(w) { if (w.posture == null) w.posture = postureMax(w); return w.posture; }
@@ -1218,7 +1218,8 @@ export function clashOdds(s, atk, def, ctx = {}) {
   else {
     const insight = isMon(atk) ? s?.codex?.[atk.k]?.insight || 0 : 0;
     read = clamp01(CLASH.read.wu * ((def.wu ?? def.root ?? 3) - 1) + CLASH.read.insight * insight - CLASH.read.depth * (depth - 1), CLASH.read.max);
-    if (depth - 1 >= FLAIR.hua) read *= FLAIR.readK; /* #420 化境：前搖短到很難看破 */
+    if (depth - 1 >= FLAIR.hua) read *= FLAIR.readK;
+    if (def.part?.where === 'eye') read = 0; /* #427 目傷：看不清來招 */ /* #420 化境：前搖短到很難看破 */
     dodge = qiOf(def) >= CLASH.dodge.qi ? clamp01(CLASH.dodge.agi * (def.skills?.agility || 0) - CLASH.dodge.fast * (1 / wind - 1), CLASH.dodge.max) : 0;
     parry = clamp01(CLASH.parry.base + CLASH.parry.k * qiPow(def), CLASH.parry.max);
   }
@@ -1326,7 +1327,29 @@ export function zjIntercept(s, m, team) {
   return d;
 }
 /* 九陽：圓滿起內力快回，回到上限 cap 為止 */
-export function zjRegen(d, dt) { if (!zjHas(d, 'jiuyang')) return; const cap = qiMax(d) * ZJ.jiuyang.cap; if ((d.qi ?? 0) < cap) d.qi = Math.min(cap, (d.qi ?? 0) + ZJ.jiuyang.regen * dt); }
+export function zjRegen(d, dt) { if (!zjHas(d, 'jiuyang') || d.part?.where === 'body') return; const cap = qiMax(d) * ZJ.jiuyang.cap; if ((d.qi ?? 0) < cap) d.qi = Math.min(cap, (d.qi ?? 0) + ZJ.jiuyang.regen * dt); }
+
+// ==== #427 N21 部位傷 ====
+/* 只在「架勢已空的重擊」或「精準武學（劍、指）的重擊」時發生。三處：目（看不清來招，讀招失效）、手（出手變慢）、身（內力不回）。
+   帶回日常：最多 days 天自己好；去療傷每次少 1 天，有醫術專長的人照料直接好。不斷肢、不留殘疾。 */
+export const PART = { days: 3, hand: 1.3, where: ['eye', 'hand', 'body'], name: { eye: '目', hand: '手', body: '身' }, what: { eye: '看不清來招', hand: '出手慢了半拍', body: '內息回不上來' } };
+const preciseArt = (mvId) => { const a = artOfMove(mvId); return !!a && (a.weapon === 'sword' || /指/.test(a.name || '')); };
+export const partOf = (d, w) => (d?.part && d.part.where === w ? d.part : null);
+export function partHit(s, def, r, ctx = {}) {
+  if (!def || isMon(def) || !r?.heavy || def.part) return null;
+  if (!(r.why === 'open' || preciseArt(ctx.move))) return null;
+  const rnd = ctx.rnd || Math.random, where = PART.where[Math.min(2, Math.floor(rnd() * 3))], side = rnd() < 0.5 ? '左' : '右';
+  def.part = { where, side: where === 'body' ? '' : side, days: PART.days };
+  s.partN = (s.partN || 0) + 1;
+  if (def.name) log(s, `【負傷】${def.name}${partText(def)}`);
+  return def.part;
+}
+export function partText(d) { const p = d?.part; if (!p) return ''; const n = ['', '一', '兩', '三'][Math.min(3, p.days)] || p.days; return `${p.side}${PART.name[p.where]}受傷，${n}日內${PART.what[p.where]}`; }
+/* 每日：少一天；療傷（heal）再少一天；doctor＝直接好 */
+export function partHeal(s, d, how) {
+  if (!d?.part) return; if (how === 'doctor') d.part.days = 0; else d.part.days -= 1;
+  if (d.part.days <= 0) { d.part = null; if (d.name) log(s, `${d.name}的傷好了`); }
+}
 
 // ==== #420 N16 招式的樣子 ====
 /* name：招名浮字每人每 gap 秒最多一次；dash：大成起、射程 ≥ minRange 的招可滑步上前 add px（離守點 ≤ RING.leash）；hua：化境的範圍招逐個目標判接法、看破率再打 readK 折。 */

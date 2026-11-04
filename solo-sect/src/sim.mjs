@@ -1,5 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
+import { partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { SOURCES } from './data.mjs';
 import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
@@ -223,7 +223,7 @@ function bestFac(s, d, act) {
 }
 // ---- v1.6 資料驅動的建築活動：條件、每日上限、效果解讀 ----
 const GEN_ACTS = Object.entries(ACTIVITIES).filter(([, A]) => A.gen);
-export const GEN_COND = { always: () => true, injured: (s, d) => d.hp < 60, herb2: (s) => s.res.herb >= 2 && s.res.pill < s.cap.pill, water: (s) => s.res.water < s.cap.water, bell: (s) => phaseOf(s).id === 'dawn' };
+export const GEN_COND = { always: () => true, injured: (s, d) => d.hp < 60 || !!d.part, herb2: (s) => s.res.herb >= 2 && s.res.pill < s.cap.pill, water: (s) => s.res.water < s.cap.water, bell: (s) => phaseOf(s).id === 'dawn' };
 export const actDef = (s, act) => (act === 'sig' ? (SIG_ACTS[s.sect?.id] ? { ...ACTIVITIES.sig, ...SIG_ACTS[s.sect.id] } : null) : ACTIVITIES[act]);
 const genOf = (s, act, A) => { if (act !== 'sig') return A.gen; const S = SIG_ACTS[s.sect?.id]; return S && { ...A.gen, why: S.why, perDay: S.perDay }; };
 const dayOk = (s, act, n) => { if (!n) return true; const c = s.daily?.[act]; return !c || c.day !== s.day || c.n < n; };
@@ -486,6 +486,7 @@ function doTask(s, d, dt) {
       /* loop181 v2.8 經脈內傷：練功／切磋逆催累積，打坐／醫館化解 */
         if (t.act === 'train' || t.act === 'spar') { const w = qiInjuryAdd28(s, d); if (w) log(s, `【經脈暗傷】${d.name}強以異種內息催動他派武學《${w.name}》，真氣逆行，經脈隱隱作痛！`); }
         if (t.act === 'meditate') qiInjuryCure28(s, d, DRIVE28.med);
+        if (t.act === 'heal' && d.part) partHeal(s, d, specK(bestSpec(s, 'yishu')) > 0 ? 'doctor' : 'heal'); /* #427 療傷 */
         if (t.act === 'heal' && d.qiInjury) qiInjuryCure28(s, d, specK(bestSpec(s, 'yishu')) > 0 || s.ds.some((o) => o.arts?.linjiZhuang) ? 100 : DRIVE28.heal);
       const hp0 = d.hp, pill0 = s.res.pill || 0; if (A.eff) applyEff(s, d, A.eff, A.name);
       specGrow(d, t.act); /* loop151 v2.3 專長 */
@@ -601,6 +602,7 @@ function monStrike(s, h, m, foe, M, zk, w) {
   }
   if (zjHas(foe, 'jiuyang')) { postureHit(s, m, ZJ.jiuyang.shock); zjMark(s, foe, 'jiuyang'); } /* #426 九陽圓滿：挨打自動反震架勢 */
   if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); return r; }
+  partHit(s, foe, r, { rnd: () => rand(s) }); /* #427 部位傷 */
   foe.hp -= shieldHit(foe, taken, s.t); /* loop116 護體真氣 */
   const innBack = innerOnGetHit(s, foe); /* #405 純陽無極功：挨打化進氣血 */
   noteWhy(s, got, innBack);
@@ -830,7 +832,7 @@ export function payday(s) {
 export function temperDaily29(s) { const W = (s.v29n ??= {}), B = (W.baseByTrait ??= { honest: 0, diligent: 0, stubborn: 0, rigid: 0, sect: 0 }); const small = s.ds.length <= TEMPER29.small;
   for (const d of s.ds) { d.small29 = small; if (d.base28 && !d.base29c) { d.base29c = true; const t = ['rigid', 'stubborn', 'honest', 'diligent'].find((x) => (d.personality || []).includes(x)) || 'sect'; B[t]++; } /* loop193 拘謹優先，不讓勤奮／憨厚蓋過 */
     if (d.xiao29 && !d.xiao29c) { d.xiao29c = true; W.xiao = (W.xiao || 0) + 1; } if (d.ling29 && !d.ling29c) { d.ling29c = true; W.ling = (W.ling || 0) + 1; } if (temper29(d).qing && !d.qing29c) { d.qing29c = true; W.qing = (W.qing || 0) + 1; } } }
-function injuryDaily28(s) { for (const d of s.ds) { if (!d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuter28(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
+function injuryDaily28(s) { for (const d of s.ds) if (d.part) partHeal(s, d, 'day'); /* #427 部位傷最多三天 */ for (const d of s.ds) { if (!d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuter28(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
 export function dailyPipeline(s) {
   payday(s); econDaily(s, EH); apprDaily(s); teachDaily(s); threatDaily(s);
   cliqueDaily(s);
