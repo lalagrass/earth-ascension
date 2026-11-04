@@ -343,6 +343,8 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     if (brKey && !brWait && BRANCHES[id]?.[brKey]?.[event]) {
       fx = { ...fx, ...BRANCHES[id][brKey][event] };
     }
+    const skip = ctx.map ? ZJ_SKIP[id] : null;
+    if (skip && Object.keys(fx).filter((k) => !['need', 'seen', 'first', 'log', 'fx'].includes(k)).every((k) => skip.includes(k))) continue;
     if (fx.charge) { /* #410 蓄勢：氣血沒見底就不耗內力 */
       if ((who.hp ?? 100) >= (fx.hpBelow ?? 50)) continue;
       const max = qiMax(who);
@@ -356,10 +358,10 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     if (fx.flurry && out.power != null) out.power *= fx.flurry;
     if (fx.knock) out.knock = fx.knock;
     if (fx.trip) out.trip = fx.trip;
-    if (fx.reflect) out.reflect = fx.reflect;
-    if (fx.see) out.see = true;
-    if (fx.noParry) out.noParry = true;
-    if (fx.breakParry && !(ctx.map && ZJ_SKIP[id]?.includes('breakParry'))) out.breakParry = true;
+    if (fx.reflect && !skip?.includes('reflect')) out.reflect = fx.reflect;
+    if (fx.see && !skip?.includes('see')) out.see = true;
+    if (fx.noParry && !skip?.includes('noParry')) out.noParry = true;
+    if (fx.breakParry && !skip?.includes('breakParry')) out.breakParry = true;
     if (fx.disturb) out.disturb = fx.disturb;
     if (fx.breakGuard) out.breakGuard = true;
     if (fx.shift && out.dmg != null) { out.shift = fx.shift; out.dmg *= 1 - fx.shift; }
@@ -1329,7 +1331,7 @@ export const ZJ = {
 };
 export const ZJ_NEED = 2;
 /* 地圖戰裡被絕學規則取代的舊 on 絕活：event 列表 */
-export const ZJ_SKIP = { xuantie: ['breakParry'] };
+export const ZJ_SKIP = { xuantie: ['breakParry'], dugu: ['see', 'noParry'], taijiSword: ['reflect'] };
 export function zjHas(d, id) {
   if (!d || isMon(d) || !ZJ[id]) return false;
   if (id === 'dugu') return !!d.dugu?.length;

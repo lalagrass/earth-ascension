@@ -43,7 +43,7 @@ test('N14：招架雙方都掉架勢；氣血只在中招時掉', () => {
   const rat = { uid: 'r1', k: 'rat', hp: 10, pos: [0, 0] }; d.wu = 1; s.codex = {};
   const o = clashOdds(s, rat, d, { wind: 0.5 }); assert.ok(o.parry > 0);
   const hp = d.hp, pd = postureOf(d), pr = postureOf(rat);
-  const r = resolveSwing(s, rat, d, o.dodge > 0 ? seq(0.99, 0) : seq(0));
+  const r = resolveSwing(s, rat, d, seq(0.99, 0));
   assert.equal(r.kind, 'parry');
   assert.ok(d.posture < pd && rat.posture < pr);
   assert.equal(d.hp, hp);

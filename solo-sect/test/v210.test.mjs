@@ -54,7 +54,7 @@ test('威脅：第 30 日係數與舊線性相同，之後對數更低；重傷�
   assert.ok(dayMul({ day: 60 }) < old(60));
   assert.ok(dayMul({ day: 60 }) > dayMul({ day: 30 }), '對數仍在成長');
   const s = grow(createState(1), 9); s.day = 40; s.res.coin = 5;
-  for (const d of s.ds) d.hp = 100;
+  for (const d of s.ds) { d.hp = 100; d.needs.energy = 0; } /* #431：無可應戰者走即時勝算結算 */
   T(s).pending = { n: 1, pts: 80, demand: 999, p: 0, at: s.t, until: s.t, day: s.day };
   T(s).next = 46;
   raidResolve(s, 1, H);

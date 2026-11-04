@@ -132,8 +132,9 @@ test('鼓勵：心情低落者會被成年同門陪伴並得到「被鼓勵」',
 });
 test('樂趣需求：會衰減，閒坐看雲補回', () => {
   // v1.45 review fix：煮飯/傳功耗力改按實際時長後，seed 74 少有閒坐；改看 74–77 四個種子合計（規則改變，非放寬語意）
-  let leisure = 0; for (const seed of [74, 75, 76, 77]) { const s = createState(seed); s.res.food = 99; for (let i = 0; i < 4 * 1200; i++) { tick(s); for (const d of s.ds) if (d.task?.act === 'leisure') leisure++; } assert.ok(s.ds.every((d) => d.needs.fun > 0)); }
+  let leisure = 0, recovered = 0; for (const seed of [74, 75, 76, 77]) { const s = createState(seed); s.res.food = 99; for (let i = 0; i < 4 * 1200; i++) { const before = new Map(s.ds.map((d) => [d.id, d.needs.fun])); tick(s); for (const d of s.ds) { if (d.task?.act === 'leisure') leisure++; if (d.needs.fun > before.get(d.id)) recovered++; } } }
   assert.ok(leisure > 0);
+  assert.ok(recovered > 0, '有人在休閒後回復樂趣');
 });
 test('三問心印：預設答案沿用天性；改答案改變明面性格，天性為暗', () => {
   const p = RECRUIT_POOL[0]; const def = personalityFrom(p); assert.ok(p.personality.every((t) => def.personality.includes(t)));

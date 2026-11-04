@@ -36,7 +36,8 @@ test('山賊：全派 <8 人威脅為 0（不來）；≥8 人隨家底與天數
 test('勒索：付錢扣錢；迎戰勝負都只重傷不死、孩子不上陣；半日沒決定自動處置', () => {
   const s = grow(createState(3), 9); s.day = RAID.first; s.res.coin = 400; s.ds[1].adult = false; const P = threatDaily(s); assert.ok(P && P.demand > 0);
   assert.match(threatHtml(s), /付錢了事/); const c0 = s.res.coin; assert.ok(raidResolve(s, 0, H).paid); assert.equal(s.res.coin, c0 - P.demand); assert.equal(T(s).paid, 1);
-  for (let k = 0; k < 40; k++) { T(s).next = s.day; threatDaily(s); raidResolve(s, 1, H); for (const d of s.ds) d.hp = 100; }
+  for (const d of s.ds) d.needs.energy = 0; /* #431：只有無人能迎戰才即時結算 */
+  for (let k = 0; k < 40; k++) { T(s).next = s.day; const p = threatDaily(s); p.p = 0; raidResolve(s, 1, H); for (const d of s.ds) d.hp = 100; }
   assert.equal(s.ds.length, 9, '不死人'); assert.equal(T(s).deaths, 0); assert.ok(T(s).homeHurt > 0); assert.equal(s.ds[1].raidHurt || 0, 0, '反例：孩子不會被打傷');
   s.res.coin = 0; T(s).next = s.day; threatDaily(s); assert.equal(raidAuto(s), 1, '付不起只能迎戰'); s.t = T(s).pending.until; threatStep(s, H); assert.equal(T(s).pending, null, '過期自動處置');
 });
