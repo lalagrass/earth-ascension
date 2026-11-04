@@ -617,7 +617,7 @@ test('舊存檔讀入後是 2.8', () => {
   const raw = readFileSync(new URL('./golden/saves/v2.4.json', import.meta.url), 'utf8');
   const r = load(raw);
   assert.equal(r.ok, true, r.err);
-  assert.equal(r.state.rules, '2.8');
+  assert.equal(r.state.rules, RULES_VERSION);
   assert.equal(r.state.rules, RULES_VERSION);
   assert.ok(r.state.migSteps.includes('2.8'));
   assert.equal(r.state.threat?.adapt, 1);

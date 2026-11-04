@@ -1183,3 +1183,58 @@ export function qiInjuryFight28(s, team, logf) { if (!s) return; for (const d of
 export function qiInjuryCure28(s, d, amt) { const q0 = d?.qiInjury || 0; if (!q0) return false; d.qiInjury = Math.max(0, q0 - amt); if (!d.qiInjury) { (s.v28n ??= {}).cure = (s.v28n.cure || 0) + 1; return true; } return false; }
 export const styleDmg24 = (d) => { if (!d) return 1; return (polymath24(d) === 2 ? SYN24.conv : 1) * injuryMul28(d); }; /* loop181：同門成套傷害改由 innerDrive28 逐招給 */
 export const styleBadges24 = (d) => [d?.champ28 ? '【大比首徒】' : '', polymath24(d) === 2 ? '【萬流歸宗】' : polymath24(d) === 1 ? '【雜學分心】' : '', (d?.qiInjury || 0) >= DRIVE28.injWarn ? '⚠️【經脈內傷】' : '', !!d && rootMove28(d) > 0 ? '【根基渾厚】' : '', qiArtBadge24(d) ? '【以氣御劍】' : '', swordFast24(d) ? '【唯快不破】' : '', d?.xiao29 ? '【梟雄強練】' : d?.base28 ? '【守正厚積】' : temper29(d).qing ? '【至情清修】' : temper29(d).ling ? '【靈動跳階】' : ''].filter(Boolean); /* loop204：本門正宗改逐招顯示；以氣御劍／唯快不破看武學類別 */
+
+// ==== #418 N14 見招拆招：三段出招、四種接法、架勢條（只接地圖上的狩獵與試煉野豬；巡山 fight()、會武、江湖挑戰不走這裡） ====
+// 判定順序（前搖結束那一刻，第一個成立的生效）：看破 → 閃 → 招架 → 中招。
+// 架勢空了：對方下一招不判接法，直接重擊 ×CLASH.heavy，蓋「現」。看破成立：攻方架勢大掉，守方下一招必中。
+export const CLASH = {
+  windIn: 0.5, windHua: 0.2,                 /* 前搖佔冷卻：入門 0.5、化境 0.2，中間照火候線性 */
+  monWind: 0.45,                             /* 鼠、野豬的前搖佔牠的冷卻 */
+  post: { d: 100, rat: 30, boar: 70, def: 50 }, regenDelay: 2.5, regen: 12,
+  heavy: 2,
+  read: { wu: 0.035, insight: 0.004, depth: 0.06, max: 0.3, drop: 45 },
+  dodge: { agi: 0.0035, fast: 0.05, max: 0.3, qi: 3, mon: { rat: 0.2, boar: 0.12 } /* 調到單人探針溜走、失血落在基準 ±25% */ },
+  parry: { base: 0.08, k: 0.0025, max: 0.35, drop: 14, jolt: 1.6, joltDrop: 20 },
+  depth: { rat: 1, boar: 2 }, monQi: { rat: 4, boar: 12 },
+};
+const clamp01 = (x, hi = 1) => Math.max(0, Math.min(hi, x));
+export const windFrac = (tier) => CLASH.windIn + (CLASH.windHua - CLASH.windIn) * Math.max(0, Math.min(4, tier | 0)) / 4;
+/* 一招的前搖秒數：cd × 前搖比例（看這招所屬武學的火候） */
+export function windOf(d, mvId, cd) { const a = artOfMove(mvId); const t = a && d?.arts?.[a.id] ? artTier(d, a.id) : 0; return cd * windFrac(t); }
+export const isMon = (w) => !!w && w.k != null && !w.arts;
+export const postureMax = (w) => (isMon(w) ? CLASH.post[w.k] ?? CLASH.post.def : CLASH.post.d);
+export function postureOf(w) { if (w.posture == null) w.posture = postureMax(w); return w.posture; }
+export function postureHit(s, w, amt) { postureOf(w); w.posture = Math.max(0, w.posture - amt); w.postT = s?.t ?? 0; return w.posture; }
+export function postureRegen(s, w, dt) { postureOf(w); if ((s?.t ?? 0) - (w.postT ?? -1e9) >= CLASH.regenDelay) w.posture = Math.min(postureMax(w), w.posture + CLASH.regen * dt); }
+/* 招式深淺：弟子＝這招所屬武學火候 + 1；獸看種類 */
+export function depthOf(atk, mvId) { if (isMon(atk)) return CLASH.depth[atk.k] ?? 1; const a = artOfMove(mvId); return (a && atk.arts?.[a.id] ? artTier(atk, a.id) : 0) + 1; }
+const qiPow = (w) => (isMon(w) ? CLASH.monQi[w.k] ?? 6 : (qiOf(w) || 0) + (w.skills?.strength || 0));
+/* 三種接法各自的成功率（不擲骰），給測試與面板讀。 */
+export function clashOdds(s, atk, def, ctx = {}) {
+  const depth = ctx.depth ?? depthOf(atk, ctx.move), wind = Math.max(0.05, ctx.wind ?? 0.5);
+  let read = 0, dodge = 0, parry = 0;
+  if (isMon(def)) dodge = clamp01((CLASH.dodge.mon[def.k] ?? 0.05) - CLASH.dodge.fast * (1 / wind - 1), CLASH.dodge.max);
+  else {
+    const insight = isMon(atk) ? s?.codex?.[atk.k]?.insight || 0 : 0;
+    read = clamp01(CLASH.read.wu * ((def.wu ?? def.root ?? 3) - 1) + CLASH.read.insight * insight - CLASH.read.depth * (depth - 1), CLASH.read.max);
+    dodge = qiOf(def) >= CLASH.dodge.qi ? clamp01(CLASH.dodge.agi * (def.skills?.agility || 0) - CLASH.dodge.fast * (1 / wind - 1), CLASH.dodge.max) : 0;
+    parry = clamp01(CLASH.parry.base + CLASH.parry.k * qiPow(def), CLASH.parry.max);
+  }
+  return { read, dodge, parry };
+}
+/* 前搖結束那一刻的判定。rnd 是固定種子亂數（sim 的 rand(s)）。回傳 { kind: 'read'|'dodge'|'parry'|'hit', heavy, jolt, why }。
+   ctx.force：'hit' 直接中招（應接不來、看破後的必中）。 */
+export function resolveSwing(s, atk, def, rnd, ctx = {}) {
+  postureOf(atk); postureOf(def);
+  if (def.posture <= 0) { def.posture = postureMax(def) * 0.5; def.postT = s?.t ?? 0; return { kind: 'hit', heavy: true, why: 'open' }; }
+  if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return { kind: 'hit', heavy: false, why: ctx.force || 'sure' }; }
+  const o = clashOdds(s, atk, def, ctx);
+  if (o.read > 0 && rnd() < o.read) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return { kind: 'read' }; }
+  if (o.dodge > 0 && rnd() < o.dodge) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi); return { kind: 'dodge' }; }
+  if (o.parry > 0 && rnd() < o.parry) {
+    const jolt = qiPow(def) >= CLASH.parry.jolt * qiPow(atk);
+    postureHit(s, def, CLASH.parry.drop); postureHit(s, atk, CLASH.parry.drop + (jolt ? CLASH.parry.joltDrop : 0));
+    return { kind: 'parry', jolt };
+  }
+  return { kind: 'hit', heavy: false };
+}

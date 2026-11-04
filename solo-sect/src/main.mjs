@@ -122,6 +122,16 @@ function draw() {
       g.restore();
       continue;
     }
+    // #418 N14 前搖預警：地上紅色扇形，越滿越接近出手（只影響顯示）
+    if (f.kind === 'warn') {
+      const k = Math.max(0, Math.min(1, 1 - f.ttl / (f.dur || 0.5))), a0 = Math.atan2(f.to[1] - f.from[1], f.to[0] - f.from[0]), half = 0.55, R = f.r || 30;
+      g.save(); g.translate(f.from[0], f.from[1]); g.scale(1, 0.55);
+      g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R, a0 - half, a0 + half); g.closePath(); g.strokeStyle = 'rgba(200,30,30,.75)'; g.lineWidth = 2; g.stroke();
+      g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R * k, a0 - half, a0 + half); g.closePath(); g.fillStyle = `rgba(220,40,30,${0.25 + 0.35 * k})`; g.fill();
+      g.restore(); continue;
+    }
+    // #418 N14 接法浮字：破、閃、震、現
+    if (f.kind === 'clash') { const k = 1 - f.ttl / 0.8; g.save(); g.globalAlpha = Math.max(0, Math.min(1, f.ttl * 2)); g.font = 'bold 24px serif'; g.textAlign = 'center'; g.lineWidth = 4; g.strokeStyle = '#fff'; const y = f.pos[1] - 58 - k * 24; g.strokeText(f.word, f.pos[0] + 16, y); g.fillStyle = f.color; g.fillText(f.word, f.pos[0] + 16, y); g.restore(); continue; }
     // v1.1 招牌武學地圖特效：金龍盤旋／青竹棒影
     if (f.kind === 'dragon' || (f.kind === 'move' && f.mfx === 'dragon')) { const c = f.to || f.pos, L = f.kind === 'dragon' ? 2.2 : 1.0, k = 1 - f.ttl / L; g.save(); g.globalAlpha = Math.min(1, f.ttl * 1.5); g.strokeStyle = '#f2c23a'; g.lineWidth = 9; g.lineCap = 'round'; g.shadowColor = '#ffdc60'; g.shadowBlur = 18; g.beginPath(); for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI * 3 + k * 6, r = 20 + i * 1.6; const x = c[0] + Math.cos(a) * r, y = c[1] - 30 + Math.sin(a) * r * 0.45 - i * 0.8; i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); g.fillStyle = '#ffe680'; g.font = 'bold 30px serif'; g.textAlign = 'center'; g.fillText('龍', c[0], c[1] - 80); g.restore(); if (f.kind === 'dragon') continue; }
     // v1.2 華山線特效：紫霞氣旋、九劍淡色劍痕（無招不浮字）、辟邪鬼魅殘影、紫氣劍刃
