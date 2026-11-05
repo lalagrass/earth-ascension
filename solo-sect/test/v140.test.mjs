@@ -30,9 +30,9 @@ test('收養的孩子承襲養父母性格、價值觀減半、悟性根骨部�
 test('孩子每 3 天長 1 歲，14 歲成年', () => {
   const s = mk(); const k = adopt(s, H(s), null, () => 0); for (let i = 0; i < 40; i++) day(s); assert.ok(k.adult); assert.equal(k.child.grown, 24); assert.ok(k.age >= GEN.adultAge);
 });
-test('師承：師父大成以上的武學，徒弟練 ×1.2', () => {
+test('師承：單有師徒關係不再常駐加速', () => {
   const s = mk(); const h = H(s), b = other(s); learnArt(h, 'pushPalm', s.t); h.arts.pushPalm.xp = 60; h.arts.pushPalm.bt1 = true; learnArt(b, 'pushPalm', s.t);
-  const t0 = artMulParts(b, artById('pushPalm')).total; b.master = 'hero'; day(s); const t1 = artMulParts(b, artById('pushPalm')).total; assert.ok(t1 > t0);
+  const t0 = artMulParts(b, artById('pushPalm')).total; b.master = 'hero'; day(s); const t1 = artMulParts(b, artById('pushPalm')).total; assert.equal(t1, t0); /* #432：只在共同傳授任務加速 */
 });
 test('衣缽：化境才可傳；傳人得 50% 熟練＋1 星，接掌 hero；老掌門退隱；門派延續；宿慧 +1', () => {
   const s = mk(); assert.equal(canSucceed(s).ok, false); const h = H(s); learnArt(h, 'pushPalm', s.t); Object.assign(h.arts.pushPalm, { xp: 100, bt1: true, bt2: true });

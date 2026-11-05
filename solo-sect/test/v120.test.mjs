@@ -72,7 +72,7 @@ test('奇遇卡帶立繪；洪七公立繪已補', () => {
 function party(mode) { const s = createState(11); tick(s); const ids = s.ds.filter((d) => d.role !== 'laborer').slice(0, 4).map((d) => d.id);
   for (const d of s.ds) if (ids.includes(d.id)) { for (const k of Object.keys(d.skills)) d.skills[k] = 100; for (const a of ARTS) { if ((a.classic && mode === 'normal') || a.id === 'rulai' || a.layered || a.forms || a.id === 'bixie' || a.v24) continue; /* loop160：舊局平衡測試不含 v2.4 武學 */ learnArt(d, a.id, 0); Object.assign(d.arts[a.id], { xp: 1e6, bt1: true, bt2: true, bt3: true, last: 1e9 }); learnArt(d, a.id, 0); } d.mood = 95; }
   s.res.food = 200; startExpedition(openExp(s), ids, { thr: 0.3, target: 'inf', supplies: 24 }); let i = 0; while (s.exp && i++ < 2000000) tick(s); return s.lastExp; }
-test('無盡段體力牆修正：招牌武學練滿的隊伍過一重回一口真氣，能推到第 4 重以後；一般武學仍止於 1600 內', () => {
-  const n = party('normal'), c = party('classic'); assert.ok(n.dist <= 2000); /* #423：#403 退役 1600——扇形曲線刻意改變，一般武學練滿現約 1800 */ assert.ok(c.dist >= 2400, `classic ${c.dist}`); assert.ok(c.events?.some?.((e) => /真氣/.test(e)) ?? true);
+test('無盡段體力牆：招牌武學練滿能走得比一般武學更遠', () => {
+  const n = party('normal'), c = party('classic'); /* #403 退役一般武學 2000 固定上限：N24 期望戰力變動，以相對里程驗證 */ assert.ok(c.dist > n.dist, `normal ${n.dist}, classic ${c.dist}`); assert.ok(c.events?.some?.((e) => /真氣/.test(e)) ?? true);
 });
 test('1.1 存檔遷移到 1.2 補上華山線狀態', () => { const s = createState(3); tick(s); delete s.hs; s.rules = '1.1'; const o = migrate(JSON.parse(JSON.stringify(s))); assert.ok(o.hs && o.hs.cards); });

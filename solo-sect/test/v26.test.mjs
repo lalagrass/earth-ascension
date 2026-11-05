@@ -80,5 +80,5 @@ test('loop174 天地會／星宿派：資料、樹、開局可選天地會', asy
 });
 test('loop175 拜師承襲不越位階鎖：師父的鎮派絕學不直接傳給一般徒弟', () => {
   const s = V({ sect24: 'gumu' }); tick(s, 0.1); const h = hero(s), d = other(s); give(h, 'yunvSword', 100); give(h, 'tianluoPalm', 60); delete d.arts.yunvSword;
-  setMaster(s, d, h); assert.ok(!d.arts.yunvSword); assert.ok(d.arts.tianluoPalm);
+  setMaster(s, d, h); assert.ok(!d.arts.yunvSword); assert.ok(!d.arts.tianluoPalm); assert.ok(d.mentorArts31.includes('tianluoPalm')); /* #432：拜師只記可教名冊，同場才學 */
 });

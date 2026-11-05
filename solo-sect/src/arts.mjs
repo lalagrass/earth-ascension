@@ -171,7 +171,7 @@ export function artMulParts(d, a, state = [], more = []) {
   const ext = a.req.length ? [['前置', 1 + ART_GAIN.reqBonus * a.req.length]] : [];
   if (d.pairMul > 0) ext.push(['同門默契', 1 + d.pairMul]);
   if (!!d && isInner(a) && dao31(d)) ext.push(['以技入道', 1.35]); /* loop202：外功造詣 ≥50 才加快修內功 */
-  const [bm, om] = sectBiasMul(d, a); if (bm !== 1) talent.push(['門派偏向', bm]); if ((d.sgain || 1) !== 1) ext.push(['鎮派設施', d.sgain]); if (d.lineArts?.includes(a.id)) ext.push(['師承', 1.2]); { const gt = GRADE_TRAIN24[a.grade || 1]; if (gt !== 1) ext.push(['品階難度', gt]); { const rt = rootTrain28(d, a); if (rt > 1) ext.push([baseInner28(d)?.id === 'breath' ? '築基渾厚' : '根基', rt]); } if (d.champ28) ext.push(['大比首徒', CHAMP28.train]); { const T = temper29(d), taste = tasteLabel31(d, a); if (T.ling && taste?.[0] !== '投其所好' && (a.tags.includes('巧') || a.tags.includes('快') || (a.grade || 1) >= 2)) ext.push(['靈動跳階', TEMPER29.lingK]); if (T.qing) ext.push(['至情清修', TEMPER29.qingK]); if (taste) ext.push(taste); } const L = sectLine24(d, a); if (L) ext.push(L); const pm = polymath24(d); if (pm === 1) ext.push(['雜學分心', SYN24.distract]); else if (pm === 2) ext.push(['博覽群書', SYN24.wide]); } /* loop171 v2.6；loop203 偏好只留一個標籤，且不與靈動跳階疊「投其所好」 */ ext.push(...more); // v1.4 // v1.35 // v0.96 郭靖＋黃蓉最多 +25%
+  const [bm, om] = sectBiasMul(d, a); if (bm !== 1) talent.push(['門派偏向', bm]); if ((d.sgain || 1) !== 1) ext.push(['鎮派設施', d.sgain]); { const gt = GRADE_TRAIN24[a.grade || 1]; if (gt !== 1) ext.push(['品階難度', gt]); { const rt = rootTrain28(d, a); if (rt > 1) ext.push([baseInner28(d)?.id === 'breath' ? '築基渾厚' : '根基', rt]); } if (d.champ28) ext.push(['大比首徒', CHAMP28.train]); { const T = temper29(d), taste = tasteLabel31(d, a); if (T.ling && taste?.[0] !== '投其所好' && (a.tags.includes('巧') || a.tags.includes('快') || (a.grade || 1) >= 2)) ext.push(['靈動跳階', TEMPER29.lingK]); if (T.qing) ext.push(['至情清修', TEMPER29.qingK]); if (taste) ext.push(taste); } const L = sectLine24(d, a); if (L) ext.push(L); const pm = polymath24(d); if (pm === 1) ext.push(['雜學分心', SYN24.distract]); else if (pm === 2) ext.push(['博覽群書', SYN24.wide]); } /* loop171 v2.6；loop203 偏好只留一個標籤，且不與靈動跳階疊「投其所好」 */ ext.push(...more); // v1.4 // v1.35 // v0.96 郭靖＋黃蓉最多 +25%
   const r = pipeline({ talent, state, ext }); r.gate = gated(d, a) ? ART_GAIN.gated : 1; r.total *= r.gate; r.outside = om; r.total *= om; return r; // v1.35 外門 ×0.7 是真乘數
 }
 export const artMul = (d, a) => artMulParts(d, a).total;
@@ -220,7 +220,7 @@ export function preferInner29(d) {
   if (T.ling) return [...pool].sort((a, b) => (b.grade || 1) - (a.grade || 1) || byXp(a, b))[0].id;
   return [...pool].sort((a, b) => (a.grade || 1) - (b.grade || 1) || byXp(a, b))[0].id;
 }
-export const focusOf = (d) => (d.focus && d.arts?.[d.focus] ? d.focus : autoFocus(d));
+export const focusOf = (d) => (d.task?.teach && d.teachArt && d.arts?.[d.teachArt] ? d.teachArt : d.focus && d.arts?.[d.focus] ? d.focus : autoFocus(d));
 // 只自動求學：主修系、拳、內功、身法，或前置含主修系的合擊武學
 export const fits = (d, a) => ['fist', 'inner', 'step', d.style].includes(a.school) || a.req.some((r) => artById(r.art).school === d.style) || yunvOpen24(d, a);
 // 回傳新可求學的武學 id（若有）
@@ -333,7 +333,6 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     const a = artById(id);
     let fx = a?.on?.[event];
     if (!fx) continue;
-    if (ctx.map && ZJ_SKIP[id]?.includes(event)) continue; /* #426 地圖戰改走絕學規則 */
     if (!who.arts?.[id] && !(a.forms && who.dugu?.length)) continue;
     const tier = who.arts?.[id] ? artTier(who, id) : 0;
     if (tier < (fx.need ?? 0)) continue;
@@ -344,6 +343,8 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     if (brKey && !brWait && BRANCHES[id]?.[brKey]?.[event]) {
       fx = { ...fx, ...BRANCHES[id][brKey][event] };
     }
+    const skip = ctx.map ? ZJ_SKIP[id] : null;
+    if (skip && Object.keys(fx).filter((k) => !['need', 'seen', 'first', 'log', 'fx'].includes(k)).every((k) => skip.includes(k))) continue;
     if (fx.charge) { /* #410 蓄勢：氣血沒見底就不耗內力 */
       if ((who.hp ?? 100) >= (fx.hpBelow ?? 50)) continue;
       const max = qiMax(who);
@@ -357,10 +358,10 @@ export function applyArtOn(s, event, who, other, ctx = {}) {
     if (fx.flurry && out.power != null) out.power *= fx.flurry;
     if (fx.knock) out.knock = fx.knock;
     if (fx.trip) out.trip = fx.trip;
-    if (fx.reflect) out.reflect = fx.reflect;
-    if (fx.see) out.see = true;
-    if (fx.noParry) out.noParry = true;
-    if (fx.breakParry) out.breakParry = true;
+    if (fx.reflect && !skip?.includes('reflect')) out.reflect = fx.reflect;
+    if (fx.see && !skip?.includes('see')) out.see = true;
+    if (fx.noParry && !skip?.includes('noParry')) out.noParry = true;
+    if (fx.breakParry && !skip?.includes('breakParry')) out.breakParry = true;
     if (fx.disturb) out.disturb = fx.disturb;
     if (fx.breakGuard) out.breakGuard = true;
     if (fx.shift && out.dmg != null) { out.shift = fx.shift; out.dmg *= 1 - fx.shift; }
@@ -1193,15 +1194,16 @@ export const CLASH = {
   monWind: 0.45,                             /* 鼠、野豬的前搖佔牠的冷卻 */
   post: { d: 100, rat: 30, boar: 70, bandit: 60, def: 50 }, regenDelay: 2.5, regen: 12,
   heavy: 2,
-  read: { wu: 0.035, insight: 0.004, depth: 0.06, max: 0.3, drop: 45 },
-  dodge: { agi: 0.0035, fast: 0.05, max: 0.3, qi: 3, mon: { rat: 0.2, boar: 0.12, bandit: 0 /* #424 山賊不閃：守柵總輸出維持舊值，柵擋得住的比例不變 */ } /* 調到單人探針溜走、失血落在基準 ±25% */ },
-  parry: { base: 0.08, k: 0.0025, max: 0.35, drop: 14, jolt: 1.6, joltDrop: 20 },
+  read: { drop: 45 },
+  dodge: { qi: 3 },
+  parry: { drop: 14, joltDrop: 20 },
   depth: { rat: 1, boar: 2, bandit: 2 }, monQi: { rat: 4, boar: 12, bandit: 10 },
 };
 const clamp01 = (x, hi = 1) => Math.max(0, Math.min(hi, x));
+const opposed = (mine, theirs, scale = 10) => 0.02 + 0.96 / (1 + Math.exp(-(mine - theirs) / scale));
 export const windFrac = (tier) => CLASH.windIn + (CLASH.windHua - CLASH.windIn) * Math.max(0, Math.min(4, tier | 0)) / 4;
 /* 一招的前搖秒數：cd × 前搖比例（看這招所屬武學的火候） */
-export function windOf(d, mvId, cd) { const a = artOfMove(mvId); const t = a && d?.arts?.[a.id] ? artTier(d, a.id) : 0; return cd * windFrac(t) * (d?.part?.where === 'hand' ? PART.hand : 1); } /* #427 手傷：出手慢 */
+export function windOf(d, mvId, cd) { const a = artOfMove(mvId); const t = a && d?.arts?.[a.id] ? artTier(d, a.id) : 0; return cd * windFrac(t) * (a?.tags?.includes('快') ? 0.75 : 1) * (a?.id === 'kuihua' && zjHas(d, 'kuihua') ? 0.1 : 1) * (d?.part?.where === 'hand' ? PART.hand : 1); }
 export const isMon = (w) => !!w && w.k != null && !w.arts;
 export const postureMax = (w) => (isMon(w) ? CLASH.post[w.k] ?? CLASH.post.def : CLASH.post.d);
 export function postureOf(w) { if (w.posture == null) w.posture = postureMax(w); return w.posture; }
@@ -1210,19 +1212,49 @@ export function postureRegen(s, w, dt) { postureOf(w); if ((s?.t ?? 0) - (w.post
 /* 招式深淺：弟子＝這招所屬武學火候 + 1；獸看種類 */
 export function depthOf(atk, mvId) { if (isMon(atk)) return CLASH.depth[atk.k] ?? 1; const a = artOfMove(mvId); return (a && atk.arts?.[a.id] ? artTier(atk, a.id) : 0) + 1; }
 const qiPow = (w) => (isMon(w) ? CLASH.monQi[w.k] ?? 6 : (qiOf(w) || 0) + (w.skills?.strength || 0));
+/* 每招同一套屬性：勁、速（數字越高越快）、霸體。山賊的刀與空手輪流分配。 */
+export function moveStats(w, moveId, wind = 0.5) {
+  if (isMon(w)) {
+    if (w.k === 'boar') return { force: 40, speed: 18, armor: 32, type: 'charge' };
+    if (w.k === 'rat') return { force: 6, speed: 30, armor: 0, type: 'bite' };
+    const blade = (w.i ?? 0) % 2 === 0;
+    return { force: blade ? 25 : 14, speed: blade ? 22 : 28, armor: blade ? 16 : 8, type: blade ? 'blade' : 'fist' };
+  }
+  const a = artOfMove(moveId) || artById(moveId), t = a && w?.arts?.[a.id] ? artTier(w, a.id) : 0, tags = a?.tags || [];
+  const force = 14 + t * 6 + (w?.skills?.strength || 0) * 0.2 + (tags.includes('剛') ? 12 : 0) + (tags.includes('拙') ? 10 : 0);
+  const speed = 20 + t * 5 + (tags.includes('快') ? 18 : 0) + Math.min(18, 5 / Math.max(0.1, wind));
+  const armor = 5 + t * 4 + (tags.includes('剛') || tags.includes('拙') ? 10 : 0) + (w?.arts?.jiuyang && artTier(w, 'jiuyang') >= 3 ? 25 : 0);
+  const extremes = { xuantie: { force: 100, armor: 55 }, xianglong: { force: 95, armor: 45 }, dugu: { force: 12, speed: 80 }, taiji: { force: 8 }, taijiSword: { force: 8 }, kuihua: { speed: 95 } };
+  return { force, speed, armor, type: a?.weapon === 'sword' || a?.id === 'dugu' ? 'sword' : /指/.test(a?.name || '') ? 'finger' : 'fist', ...(extremes[a?.id] || {}) };
+}
+/* 太極借來勁：來招越重，可卸回去的比例越高；人、獸、賊共用。 */
+export const taijiReturn = (atk, moveId, wind) => Math.min(0.8, 0.25 + moveStats(atk, moveId, wind).force / 100);
+export function breakWindup(s, atk, def, moveId, wind) {
+  if (!def?.swing && !def?.bswing) return false;
+  const strike = moveStats(atk, moveId, wind), guard = moveStats(def, def.swing?.mv || def.bswing?.mv, def.swing?.wind || def.bswing?.wind);
+  const observed = artOfMove(moveId)?.id === 'dugu' && isMon(def) && (s?.codex?.[def.k]?.insight || 0) >= ZJ.dugu.insight;
+  if (!observed && strike.force <= guard.armor) return false;
+  def.swing = null; def.bswing = null; postureHit(s, def, 25 + strike.force * 0.25);
+  if (s) { (s.fx ||= []).push({ kind: 'clash', word: '斷', color: '#ffb05a', pos: [...(def.pos || [0, 0])], ttl: 0.8 }); s.breakN = (s.breakN || 0) + 1; }
+  return true;
+}
 /* 三種接法各自的成功率（不擲骰），給測試與面板讀。 */
 export function clashOdds(s, atk, def, ctx = {}) {
-  const depth = ctx.depth ?? depthOf(atk, ctx.move), wind = Math.max(0.05, ctx.wind ?? 0.5);
+  const depth = ctx.depth ?? depthOf(atk, ctx.move), wind = Math.max(0.05, ctx.wind ?? 0.5), move = moveStats(atk, ctx.move, wind);
   let read = 0, dodge = 0, parry = 0;
-  if (isMon(def)) dodge = clamp01((CLASH.dodge.mon[def.k] ?? 0.05) - CLASH.dodge.fast * (1 / wind - 1), CLASH.dodge.max);
+  if (isMon(def)) {
+    dodge = opposed(def.agi ?? (def.k === 'rat' ? 30 : 18), move.speed, 10);
+    parry = def.k === 'boar' ? 0.2 : def.k === 'bandit' && (def.i ?? 0) % 2 === 0 ? 0.25 : 0;
+  }
   else {
     const insight = isMon(atk) ? s?.codex?.[atk.k]?.insight || 0 : 0;
-    read = clamp01(CLASH.read.wu * ((def.wu ?? def.root ?? 3) - 1) + CLASH.read.insight * insight - CLASH.read.depth * (depth - 1), CLASH.read.max);
-    if (depth - 1 >= FLAIR.hua) read *= FLAIR.readK;
+    const clever = ARTS.some((a) => a.tags?.includes('巧') && def.arts?.[a.id] && artTier(def, a.id) >= 1) ? 6 : 0;
+    read = opposed((def.wu ?? def.root ?? 3) * 4 + insight * 0.3 + (def.arts ? topTierOf(def) * 5 : 0) + clever, depth * 12 + (move.speed - 20) * 0.3 + 10, 9);
     if (def.part?.where === 'eye') read = 0; /* #427 目傷：看不清來招 */ /* #420 化境：前搖短到很難看破 */
-    dodge = qiOf(def) >= CLASH.dodge.qi ? clamp01(CLASH.dodge.agi * (def.skills?.agility || 0) - CLASH.dodge.fast * (1 / wind - 1), CLASH.dodge.max) : 0;
-    parry = clamp01(CLASH.parry.base + CLASH.parry.k * qiPow(def), CLASH.parry.max);
+    dodge = qiOf(def) >= CLASH.dodge.qi ? opposed(def.skills?.agility || 0, move.speed, 10) : 0;
+    parry = opposed(qiPow(def), move.force + 12, 12);
   }
+  if (move.force >= (isMon(def) ? moveStats(def).force : qiPow(def)) * 2) parry = 0;
   return { read, dodge, parry };
 }
 /* 前搖結束那一刻的判定。rnd 是固定種子亂數（sim 的 rand(s)）。回傳 { kind: 'read'|'dodge'|'parry'|'hit', heavy, jolt, why }。
@@ -1237,10 +1269,9 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   if (!duguPassive && o.read > 0 && rnd() < o.read) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return { kind: 'read' }; }
   if (o.dodge > 0 && rnd() < o.dodge) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi); return { kind: 'dodge' }; }
   if (o.parry > 0 && rnd() < o.parry) {
-    if (zjAtk === 'xuantie' && zjHas(atk, 'xuantie')) { zjMark(s, atk, 'xuantie'); return { kind: 'hit', heavy: false, why: 'xuantie' }; } /* 玄鐵：招架等於沒招架 */
-    if (zjAtk === 'xianglong' && zjHas(atk, 'xianglong')) { zjMark(s, atk, 'xianglong'); postureHit(s, def, ZJ.xianglong.drop); } /* 降龍：格住了也掉一大截架勢 */
-    const jolt = qiPow(def) >= CLASH.parry.jolt * qiPow(atk);
-    postureHit(s, def, CLASH.parry.drop); postureHit(s, atk, CLASH.parry.drop + (jolt ? CLASH.parry.joltDrop : 0));
+    const force = moveStats(atk, ctx.move, ctx.wind).force, guard = isMon(def) ? moveStats(def).force : qiPow(def);
+    const jolt = guard > force * 1.4;
+    postureHit(s, def, CLASH.parry.drop * Math.max(0.5, force / Math.max(1, guard))); postureHit(s, atk, CLASH.parry.drop * Math.max(0.5, guard / force) + (jolt ? CLASH.parry.joltDrop : 0));
     return { kind: 'parry', jolt };
   }
   return { kind: 'hit', heavy: false };
@@ -1250,8 +1281,8 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
 /* slots：一人身邊最多 4 個近戰位，第 5 隻起在外圈繞；cap：同一個 win 秒內接得住幾招（火候 入門→化境 1/2/3/4/5），超出的直接中招。
    step／leash／stepCd／stepQi：應接不暇時輕功滑步，離守點不超過 leash。 */
 export const RING = { engage: 44 /* 佔了近戰位的獸，對手滑步走開也會追上去，不趁機溜下山 */, slots: 4, outer: 50, cap: [1, 2, 3, 4, 5], win: 1.2, step: 24, leash: 40, stepCd: 3, stepQi: 4, stepAgi: 10 };
-export function topTierOf(d) { let t = 0; for (const id of Object.keys(d?.arts || {})) t = Math.max(t, artTier(d, id) | 0); return Math.min(4, t); }
-export const handleCap = (d) => RING.cap[topTierOf(d)];
+export function topTierOf(d) { let t = 0; for (const id of Object.keys(d?.arts || {})) { const c = ART_CAT[id] || {}; if (['quanzhang', 'tuifa', 'jianfa', 'gunbang', 'qimen'].some((k) => (c[k] || 0) > 0)) t = Math.max(t, artTier(d, id) | 0); } return Math.min(4, t); }
+export const handleCap = (d) => RING.cap[topTierOf(d)] + (Object.keys(d?.arts || {}).some((id) => (ART_CAT[id]?.shenfa || 0) > 0 && artTier(d, id) >= 1) ? 1 : 0);
 /* 這一招還接不接得住：win 秒內已經判過 cap 次接法就回 false（之後直接中招）。會記一筆。 */
 export function handleTake(s, d) {
   const now = s?.t ?? 0, L = (d.handled ||= []).filter((x) => now - x < RING.win); d.handled = L;
@@ -1264,14 +1295,18 @@ export function handleTake(s, d) {
 /* 完美閃避：真的「閃」成立，而且閃開的那一刻落在前搖最後 win（15%）；身法 ≥ agi、悟性 ≥ wu 才有機會。
    林克時間：以閃避者為圓心 r px 內的敵人，前搖與移動乘 k，持續 dur 秒；閃避者自己照常。只在模擬步長裡把圈內敵人的計時乘上倍數，不改全域 dt。
    輕功交錯：雙方身法都 ≥ crossAgi、出手時間差 < crossGap 秒，機率 crossP 互相穿過，雙方各掉 crossDrop 架勢、兩招都落空。 */
-export const WITCH = { win: 0.15, agi: 30, wu: 4, r: 80, k: 0.3, dur: 1, cool: 4, crossAgi: 40, crossGap: 0.3, crossP: 0.3, crossDrop: 25 };
+export const WITCH = { win: 0.15, wu: 3, r: 80, k: 0.3, dur: 1, cool: 4, crossAgi: 40, crossGap: 0.3, crossP: 0.3, crossDrop: 25 };
 /* 閃開的時機：身法越高越能壓到最後一刻；回傳 [0,1) 的「閃開時在前搖的哪一段」。 */
-export function perfectDodge(s, def, rnd) {
-  if (!def || def.arts == null || (def.skills?.agility || 0) < WITCH.agi || (def.wu ?? def.root ?? 3) < WITCH.wu || (def.witchT ?? -1e9) > (s?.t ?? 0)) return false;
-  const at = rnd(); /* 閃開落在前搖的哪個位置（均勻） */ if (at < 1 - WITCH.win) return false;
-  def.witchT = (s?.t ?? 0) + WITCH.cool; (s.witch ||= []).push({ who: def.id, pos: [...def.pos], until: s.t + WITCH.dur });
+export function perfectDodge(s, def, rnd, ctx = {}) {
+  if (!def || def.arts == null || (def.wu ?? def.root ?? 3) < WITCH.wu || (def.witchT ?? -1e9) > (s?.t ?? 0)) return false;
+  const dangerous = ctx.depth == null || ctx.depth >= topTierOf(def) - 1 || (ctx.damage != null && (def.hp ?? 100) - ctx.damage <= 25);
+  if (!dangerous) return false;
+  if (s.witch?.some((w) => w.until > s.t)) return false; /* 同時只留一圈 */
+  const win = 0.05 + 0.10 * Math.min(80, Math.max(0, def.skills?.agility || 0)) / 80;
+  const at = rnd(); if (at < 1 - win) return false;
+  def.witchT = (s?.t ?? 0) + WITCH.cool; s.witch = [{ who: def.id, pos: [...def.pos], until: s.t + WITCH.dur }];
   (s.fx ||= []).push({ kind: 'witch', pos: [...def.pos], r: WITCH.r, ttl: WITCH.dur });
-  s.witchN = (s.witchN || 0) + 1; if (def.name) log(s, `【林克時間】${def.name}在最後一刻閃開，身邊一圈的敵人慢了下來`);
+  s.witchN = (s.witchN || 0) + 1; const key = `${s.day}:${def.id}`; (s.witchLog ||= {}); if (def.name && !s.witchLog[key]) { s.witchLog[key] = true; log(s, `【林克時間】${def.name}在最後一刻閃開，身邊一圈的敵人慢了下來`); }
   return true;
 }
 /* 敵人所在位置的時間倍數：在任何一個林克時間圈內就是 k，否則 1。過期的圈順手清掉。 */
@@ -1296,7 +1331,7 @@ export const ZJ = {
 };
 export const ZJ_NEED = 2;
 /* 地圖戰裡被絕學規則取代的舊 on 絕活：event 列表 */
-export const ZJ_SKIP = { dugu: ['hit', 'dodge'], taijiSword: ['gethit'], xuantie: ['hit'] };
+export const ZJ_SKIP = { xuantie: ['breakParry'], dugu: ['see', 'noParry'], taijiSword: ['reflect'] };
 export function zjHas(d, id) {
   if (!d || isMon(d) || !ZJ[id]) return false;
   if (id === 'dugu') return !!d.dugu?.length;
@@ -1338,7 +1373,9 @@ export const partOf = (d, w) => (d?.part && d.part.where === w ? d.part : null);
 export function partHit(s, def, r, ctx = {}) {
   if (!def || isMon(def) || !r?.heavy || def.part) return null;
   if (!(r.why === 'open' || preciseArt(ctx.move))) return null;
-  const rnd = ctx.rnd || Math.random, where = PART.where[Math.min(2, Math.floor(rnd() * 3))], side = rnd() < 0.5 ? '左' : '右';
+  const rnd = ctx.rnd || Math.random, type = moveStats(ctx.attack, ctx.move).type;
+  const where = type === 'sword' || type === 'finger' || type === 'blade' ? (rnd() < 0.5 ? 'eye' : 'hand') : type === 'bite' ? 'hand' : 'body';
+  const side = rnd() < 0.5 ? '左' : '右';
   def.part = { where, side: where === 'body' ? '' : side, days: PART.days };
   s.partN = (s.partN || 0) + 1;
   if (def.name) log(s, `【負傷】${def.name}${partText(def)}`);

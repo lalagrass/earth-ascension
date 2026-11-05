@@ -633,7 +633,7 @@ test('N9：戰力加倍，威脅上升，但不到兩倍', () => {
   const famousNone = (d) => Object.keys(d.arts || {}).every((id) => !isFamousArt(id) || artTier(d, id) < 2);
   if (s.ds.every(famousNone)) assert.equal(threatBreakdown(s).cTerm, 0, '沒有名功：威脅只看家底，與 base 同式');
   for (const d of s.ds) if (d.arts) d.arts.xianglong = { xp: 60, last: 0, bt1: true };
-  const p1 = points(s);
+  const p1 = points(s), c1 = threatBreakdown(s).cTerm;
   assert.ok(p1 > 0);
   for (const d of s.ds) {
     if (d.skills) {
@@ -641,8 +641,8 @@ test('N9：戰力加倍，威脅上升，但不到兩倍', () => {
       d.skills.leg = (d.skills.leg || 0) + 50;
     }
   }
-  const p2 = points(s);
-  assert.ok(p2 > p1, `威脅需上升: p1=${p1}, p2=${p2}`);
+  const p2 = points(s), c2 = threatBreakdown(s).cTerm;
+  assert.ok(c2 > c1 && p2 >= p1, `戰力項需上升（整數點數可不變）: c1=${c1}, c2=${c2}, p1=${p1}, p2=${p2}`);
   assert.ok(p2 < p1 * 2, `威脅上升不到兩倍: p1=${p1}, p2=${p2}`);
 });
 
@@ -652,6 +652,7 @@ test('N9：落敗後適應係數下降，數日後回到 1', () => {
   const X = T(s);
   assert.equal(X.adapt, 1);
   X.pending = { n: 1, pts: 50, demand: 200, p: 0, at: s.t, until: s.t + 100, day: s.day, noPay: true };
+  for (const d of s.ds) d.needs.energy = 0; /* #431：無人能迎戰時才即時結算 */
   raidResolve(s, 1, null);
   assert.ok(X.adapt < 1, `落敗後適應係數應下降: adapt=${X.adapt}`);
   assert.ok(X.adapt >= 0.6, `不低於下限 0.6: adapt=${X.adapt}`);

@@ -2,25 +2,26 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { TIERS } from '../src/data.mjs';
-import { ZJ, zjHas, zjIntercept, resolveSwing, applyArtOn, postureOf } from '../src/arts.mjs';
+import { ZJ, zjHas, zjIntercept, resolveSwing, applyArtOn } from '../src/arts.mjs';
 
 const xpOf = (t) => TIERS[t][0] + 1;
 const man = (id, arts) => ({ id, name: id, pos: [0, 0], hp: 100, wu: 3, qi: 100, ng: 'x', skills: { agility: 0, strength: 0 }, arts: Object.fromEntries(arts.map(([a, t]) => [a, { xp: xpOf(t) }])) });
 
-test('玄鐵破招架、降龍格住也掉架勢；獨孤截觀破過的獸；地圖戰不再觸發舊 on', () => {
+test('名功的極端勁力與獨孤截招；地圖戰只跳過重複的舊 on 效果', () => {
   const s = { t: 10, fx: [], log: [], chron: [], codex: { boar: { insight: ZJ.dugu.insight } } };
-  const parry = () => 0; /* 讀招、閃避擲不過（odds 為 0），招架必中 */
   const a = man('a', [['xuantie', 2]]), d = man('d', []);
-  d.wu = 1; assert.equal(resolveSwing(s, a, d, parry, { move: 'xt1', wind: 1, map: true }).kind, 'hit', '玄鐵：招架等於沒招架');
-  d.posture = undefined; assert.equal(resolveSwing(s, a, d, parry, { move: 'xt1', wind: 1 }).kind, 'parry', '非地圖戰照舊');
-  const x = man('x', [['xianglong', 2]]), e = man('e', []); e.wu = 1; postureOf(e); const p0 = e.posture;
-  assert.equal(resolveSwing(s, x, e, parry, { move: 'jianlong', wind: 1, map: true }).kind, 'parry');
-  const lost = p0 - e.posture; e.posture = p0; resolveSwing(s, x, e, parry, { move: 'jianlong', wind: 1 });
-  assert.equal(lost - (p0 - e.posture), ZJ.xianglong.drop, '降龍多掉 drop 架勢');
+  d.wu = 1; d.qi = 0; assert.equal(resolveSwing(s, a, d, () => 0.99, { move: 'xt1', wind: 1, map: true }).kind, 'hit', '玄鐵勁大，對方招架不住');
+  const x = man('x', [['xianglong', 2]]), e = man('e', []); e.wu = 1; e.qi = 0;
+  assert.equal(resolveSwing(s, x, e, () => 0.99, { move: 'jianlong', wind: 1, map: true }).kind, 'hit', '降龍也依勁力破招架');
+  assert.equal(applyArtOn(s, 'hit', a, e, { move: 'xt1', map: true, power: 10 }).power, 12.5, '玄鐵傷害倍率仍保留');
   const g = man('g', []); g.dugu = ['f1']; assert.ok(zjHas(g, 'dugu'));
   const m = { uid: 'b1', k: 'boar', pos: [30, 0], hp: 50 };
   assert.equal(zjIntercept(s, m, [g]), g); assert.equal(g.sure, 'b1'); assert.ok(s.fx.some((f) => f.kind === 'stamp' && f.char === ZJ.dugu.char));
   assert.equal(zjIntercept(s, m, [g]), null, '冷卻中');
+  assert.equal(applyArtOn(s, 'hit', g, m, { map: true, power: 10 }).power, 12, '獨孤地圖傷害倍率仍保留');
   assert.equal(applyArtOn(s, 'dodge', g, m, { map: true }).see, false, '獨孤舊 dodge 在地圖戰不算');
   assert.equal(applyArtOn(s, 'dodge', g, m, {}).see, true, '抽象戰照舊');
+  const tj = man('tj', [['taijiSword', 2]]);
+  assert.equal(applyArtOn(s, 'gethit', tj, m, { map: true, dmg: 10 }).reflect, 0, '地圖只算共用借力');
+  assert.equal(applyArtOn(s, 'gethit', tj, m, { dmg: 10 }).reflect, 0.45, '抽象戰保留舊期望');
 });

@@ -1,5 +1,5 @@
 import { tierOf, affKey } from './util.mjs';
-import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY } from './data.mjs';
+import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY, ARTS } from './data.mjs';
 import { seedArts, growInit } from './arts.mjs';
 import { sectOf, genInit } from './sect.mjs';
 import { suhuiOf } from './world.mjs';
@@ -49,6 +49,7 @@ export const MIGRATIONS = [
   { to: '2.8', note: '威脅跟隨戰力（#412）：山賊威脅納入弟子戰力與適應係數。舊檔讀入即用新公式，適應係數從 1 開始', up(o) { if (o.threat) o.threat.adapt ??= 1; } },
   { to: '2.9', note: '見招拆招（#418–#420）：弟子與地圖上的獸、山賊多了架勢；舊檔讀入補滿架勢、清掉半途的出手', up(o) { for (const d of o.ds || []) { d.posture ??= 100; d.swing = null; d.maxHandled ??= 0; d.waveBest ??= 0; d.firstMoves ??= []; } for (const m of o.mons || []) m.swing = null; } },
   { to: '3.0', note: '第五輪（#423–#427）：林克時間、絕學改規則、部位傷；舊檔讀入補空欄位、清掉半途的林克時間', up(o) { for (const d of o.ds || []) { d.part ??= null; d.zjUsed ??= []; d.witchT = undefined; } o.witch = undefined; } },
+  { to: '3.1', note: '第六輪（#428–#433）：舊傳功與師承名冊換算到共同傳授，清理舊活動與半途出招', up(o) { teachLegacy31(o); for (const d of o.ds || []) { d.bswing = null; d.swing = null; d.teachArt = null; } for (const m of o.mons || []) m.swing = null; if (o.band) for (const m of o.band.members || []) m.swing = null; o.witch = undefined; } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {
@@ -59,9 +60,29 @@ export function v150Up(o) {
     if (t.act === 'rest' || t.act === 'cook') { const st = FACILITIES.find((f) => f.id === t.fac)?.stages[o.fac?.[t.fac]?.stage || 0]; const cap = t.act === 'cook' ? 1 : st?.beds ?? 1; let ok = false; for (let i = 0; i < cap && !ok; i++) ok = take(d, `${t.fac}:${t.act}:${i}`); if (!ok && t.act === 'rest') { t.floor = true; take(d, `hall:floor:${d.id}`); } else if (!ok) d.task = null; } }
 }
 // 每次讀檔都跑：補最基本的不變式（手改或殘缺存檔也能讀）
+export function teachLegacy31(o) {
+  const famous = new Set(ARTS.filter((a) => a.secret && a.classic && !a.derived).map((a) => a.id));
+  if (o.passed) {
+    o.teachHistory31 ??= [];
+    for (const [key, day] of Object.entries(o.passed).sort((a, b) => a[1] - b[1] || a[0].localeCompare(b[0]))) {
+      const m = /^([^>]+)>([^:]+):(.+)$/.exec(key); if (!m) continue;
+      const [, master, pupil, art] = m;
+      if (!o.teachHistory31.some((x) => x.master === master && x.pupil === pupil && x.art === art)) o.teachHistory31.push({ master, pupil, art, day });
+      const teacher = o.ds.find((d) => d.id === master);
+      if (teacher && famous.has(art)) { teacher.taught28 ??= {}; teacher.taught28[art] ??= pupil; }
+    }
+    delete o.passed; delete o.passN;
+  }
+  for (const d of o.ds || []) {
+    if (d.lineArts) { d.mentorArts31 ??= [...d.lineArts]; delete d.lineArts; }
+    delete d.passDay;
+    if (d.task?.act === 'pass') { d.task = null; d.path = []; d.anim = null; }
+  }
+  for (const k of Object.keys(o.resv || {})) if (k.startsWith('actor:') && !o.ds.some((d) => d.task?.resv?.includes(k))) delete o.resv[k];
+}
 function repair(o, D) { // v1.7 菜庫／倉庫預留改由預約表 stock:* 推得
   delete o.vegRes; o.resv ??= {}; for (const d of o.ds || []) { const t = d.task; const k = t?.act === 'cook' && t.phase !== 'done' ? 'veg' : t?.act === 'build' && t.phase === 'fetch' && t.mat ? t.mat : null; if (!k) continue; const key = `stock:${k}:${d.id}`; t.resv ??= []; if (!t.resv.includes(key)) t.resv.push(key); o.resv[key] ??= d.id; }
- o.cap ??= { wood: 12, stone: 12 }; o.fac ??= {}; for (const f of FACILITIES) o.fac[f.id] ??= { stage: 0, site: null }; o.cap.water ??= 12; o.cap.pill ??= 10; o.res.water ??= 0; o.res.pill ??= 0; if (o.sect?.fac && o.fac?.sig) o.fac.sig.stage = 1; for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= []; d.needs.fun ??= 60; if (!d.personality?.length) d.personality = [...(D[d.id]?.personality || [])]; d.known ??= d.personality.slice(0, 1); } freshV095(o); }
+ o.cap ??= { wood: 12, stone: 12 }; o.fac ??= {}; for (const f of FACILITIES) o.fac[f.id] ??= { stage: 0, site: null }; o.cap.water ??= 12; o.cap.pill ??= 10; o.res.water ??= 0; o.res.pill ??= 0; if (o.sect?.fac && o.fac?.sig) o.fac.sig.stage = 1; for (const d of o.ds) { d.mood ??= MOOD.base; d.thoughts ??= []; d.why ??= []; d.needs.fun ??= 60; if (!d.personality?.length) d.personality = [...(D[d.id]?.personality || [])]; d.known ??= d.personality.slice(0, 1); } freshV095(o); teachLegacy31(o); }
 export function migrate(o) {
   const from = o.rules || (o.ds.some((d) => 'mood' in d) ? '0.6' : '0.5'), D = defs();
   const steps = MIGRATIONS.filter((m) => ver(m.to) > ver(from));

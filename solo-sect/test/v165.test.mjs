@@ -8,7 +8,6 @@ import { xiaPool } from '../src/wuxia.mjs';
 import { applyHero } from '../src/hero.mjs';
 import { aff, initPair } from '../src/social.mjs';
 import { save, load } from '../src/save.mjs';
-import { invariants } from '../src/core.mjs';
 import { addMem, memsOf, chatLine, MEM, styleOk, srcOf, passPick, passDo, PASS, takePupil, apprCands, apprDaily, apprMul, APPR, pupilsOf } from '../src/bonds.mjs';
 const st = (seed = 3) => { const s = createState(seed); tick(s); return s; };
 const runDays = (s, n) => { for (let i = 0; i < n * DAY * 4; i++) tick(s); };
@@ -46,10 +45,9 @@ test('傳功：圓滿以上才傳；對方 +15；每門每對一次；好感上�
   assert.equal(passDo(s, a, pp.p, pp.art), false, '同門同對只能一次'); assert.ok(memsOf(s, a, pp.p).some((m) => m.k === 'pass'));
   assert.equal(passPick(s, a), null, '同一天只傳一次');
 });
-test('傳功是自走活動：條件達成後會進評分並實際完成', () => {
-  const s = st(7); const a = s.ds.find((d) => d.role !== 'laborer'); master(s, a); waitFree(s, a); assert.ok(scoreActs(s, a).some((x) => x.act === 'pass'));
-  /* #423 查過：傳功沒有壞，也不是和 teachDaily 搶人；15 日 6 種子 base 21 次、head 20 次。seed 7 是 train 與 pass 分數只差數分，戰鬥 RNG 改變後首傳從第 3 日移到第 5 日，窗口放寬到 6 日 */ for (let i = 0; i < DAY * 4 * 6 && !Object.keys(s.passed || {}).length; i++) { tick(s); if (i % 50 === 0) assert.deepEqual(invariants(s), []); }
-  assert.ok(Object.keys(s.passed || {}).length >= 1); assert.ok(s.log.some((l) => l.msg.includes('【傳功】')));
+test('舊傳功活動不再參與自走評分', () => {
+  const s = st(7); const a = s.ds.find((d) => d.role !== 'laborer'); master(s, a); waitFree(s, a);
+  assert.ok(!scoreActs(s, a).some((x) => x.act === 'pass')); /* #432：改由師徒同場傳授 */
 });
 test('收徒：內門收好感 ≥30 的外門，一人一徒；徒弟有傳功加成、師父在場練功 ×1.15', () => {
   const s = st(), [m, o] = s.ds.filter((d) => d.role !== 'laborer'); m.role = 'inner'; o.role = 'outer'; o.master = null;
@@ -60,8 +58,8 @@ test('收徒：內門收好感 ≥30 的外門，一人一徒；徒弟有傳功�
   assert.ok(memsOf(s, m, o).some((x) => x.k === 'apprentice'));
 });
 test('存檔來回：記憶、師徒、傳功紀錄、畫風保留；同種子決定性', () => {
-  const s = st(9); const [a, b] = s.ds; addMem(s, a, b, 'spar'); b.master = a.id; s.passed = { k: 1 }; s.xiaStyle = 'zhou';
-  const r = load(save(s)); assert.ok(r.ok); assert.equal(r.state.mem.length, 1); assert.equal(r.state.ds[1].master, a.id); assert.equal(r.state.xiaStyle, 'zhou'); assert.deepEqual(r.state.passed, { k: 1 });
+  const s = st(9); const [a, b] = s.ds; addMem(s, a, b, 'spar'); b.master = a.id; s.passed = { [`${a.id}>${b.id}:basicFist`]: 1 }; s.xiaStyle = 'zhou';
+  const r = load(save(s)); assert.ok(r.ok); assert.equal(r.state.mem.length, 1); assert.equal(r.state.ds[1].master, a.id); assert.equal(r.state.xiaStyle, 'zhou'); assert.equal(r.state.passed, undefined); assert.ok(r.state.teachHistory31.some((x) => x.master === a.id && x.pupil === b.id && x.art === 'basicFist'));
   const h = () => { const x = createState(42); runDays(x, 8); return save(x); }; assert.equal(h(), h());
 });
 test('名俠絕學（secret／classic）不走一般傳功', () => {

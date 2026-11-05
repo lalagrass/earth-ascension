@@ -334,7 +334,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '3.0'; /* 第五輪 #423–#427：山賊一個一個上、林克時間、絕學改規則、部位傷； */ /* #418 見招拆招：地圖狩獵與試煉三段出招、四種接法、架勢條；#419 山賊拆成個人、交戰圈與應接； #412：威脅跟隨門派戰力與適應係數；#408 招式只留形狀，威力走扇形曲線；異屬逆催恢復 0.65 */
+export const RULES_VERSION = '3.1'; /* 第六輪 #428–#433：通用勁速霸體、險招慢動作、同源戰鬥、共同傳授、應接與部位傷 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -804,7 +804,6 @@ export const SIG_ACTS = {
 RES_NAMES.water = '水'; RES_NAMES.pill = '療傷丹';
 
 // v1.65 傳功（夥伴活動，由 bonds.mjs 判斷誰傳誰）
-ACTIVITIES.pass = { name: '傳功', dur: 20, energy: -4 };
 // ---- v1.7 四大武道相剋環（ADOPTION A17）：破綻→蓄力→卸力→歸真→破綻（前者剋後者）----
 // 弟子的武道＝最熟那門武學的 tag；敵人的武道直接查表。v1.46 試玩：巡山／來犯威脅偏低、開局弱，故只取 ±10%，不讓相剋左右勝負
 export const DAO = { tagOf: { 巧: '破綻', 剛: '蓄力', 柔: '卸力', 拙: '歸真' }, ring: ['破綻', '蓄力', '卸力', '歸真'], up: 1.1, down: 0.9,
@@ -894,7 +893,6 @@ export const SCORE = [
   { act: 'rest', when: ['hurt'], v: 90, why: '傷還沒好，躺著養傷', layer: 'need' },
   { act: 'eat', when: ['hasFood'], tiers: [{ if: 'starving', v: 160, why: '餓得發昏，先吃', layer: 'need' }, { if: 'hungry', v: 95, why: '餓了', layer: 'need' }, { v: { lin: ['n.hunger', 100], mul: [0.6] }, why: '順便吃點' }] },
   { act: 'chat', when: ['others'], v: { lin: ['n.social', 100], mul: [0.6, 'tr.social', 'tr.playful', 0.8] }, why: '想找人說話' },
-  { act: 'pass', when: ['pp'], v: 'passScore', why: '{passWhy}' },
   { act: 'leisure', tiers: [{ if: 'dull', v: { lin: ['fun', 100], mul: [0.55] }, why: '悶得慌，想偷閒' }, { v: { lin: ['fun', 100], mul: [0.55] }, why: '想坐坐看雲' }] },
   { act: 'encourage', when: ['encourageOk'], v: { lin: ['low.mood', 35], mul: [1.5], plus: 40 }, why: '{low.name}心情低落，去打打氣' },
   { act: 'learn', when: ['pending'], v: 80, why: '師父能傳「{pendingName}」' },

@@ -1,5 +1,5 @@
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
+import { breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temper29, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuter28, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { SOURCES } from './data.mjs';
 import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
@@ -414,7 +414,6 @@ function moveStep(d, dt) {
 
 function grow(s, d, sk, amt, src = 'train') {
   if (sk === 'style') sk = d.style; const raw = amt; /* loop79：造詣只吃原始投入（師父在場倍率前） */
-  amt *= apprMul(s, d); // v1.65 師父在場，徒弟練得快
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
   if (src === 'labor' && sk === 'strength' && d.lg) d.skills[sk] = before + workStrCap(d, Math.floor(s.t / DAY), d.skills[sk] - before); // loop127 做活力氣每日軟上限
   if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt * (d.arts ? teachMul(s, d, focusOf(d)) : 1), focusMul(d), s.t, { raw, src }); /* #415 N12 師父傳授時段：這門名功練得快 */ if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === m).name}」`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); return o; }
@@ -509,16 +508,17 @@ function finish(s, d) { if (d.task) markDone(s, d, d.task.act); if (d.task && CH
 export const TEACH_JOIN = { node: 'yard', wait: DAY / 8 };
 function teachStep(s, m, dt) {
   const p = m.teaching && byId(s, m.teaching.pupil);
-  if (!p || p.away || !(m.teachCool > 0)) { if (m.task?.act === 'teach') m.task = null; m.teachCool = 0; return false; }
+  if (!p || p.away || !(m.teachCool > 0)) { if (p) p.teachArt = null; if (m.task?.act === 'teach') m.task = null; m.teachCool = 0; return false; }
   if (!m.task) { m.task = { act: 'teach', node: TEACH_JOIN.node, phase: 'go', partner: p.id, wait: 0 }; goto(m, TEACH_JOIN.node); m.reason = `到外功場傳授${p.name}`; }
   const t = m.task;
   if (m.path.length) { moveStep(m, dt); return true; }
   t.phase = 'do';
-  if (!p.task && !p.order) { p.task = { act: 'train', fac: 'yard', node: TEACH_JOIN.node, phase: 'go', teach: m.id }; goto(p, TEACH_JOIN.node); p.reason = `${m.name}要傳功`; }
+  if (!p.task && !p.order) { p.task = { act: 'train', fac: 'yard', node: TEACH_JOIN.node, phase: 'go', teach: m.id }; goto(p, TEACH_JOIN.node); p.reason = `${m.name}要傳授武學`; }
   const near = p.task?.teach === m.id && !p.path.length && dist(p.pos, m.pos) <= 60;
-  if (!near) { t.wait += dt; if (t.wait >= TEACH_JOIN.wait) { m.teachCool = 0; m.task = null; m.reason = `${p.name}沒來，今日傳功作罷`; } return true; }
+  if (!near) { p.teachArt = null; t.wait += dt; if (t.wait >= TEACH_JOIN.wait) { m.teachCool = 0; m.task = null; m.reason = `${p.name}沒來，今日傳授作罷`; } return true; }
+  p.teachArt = m.teaching.art;
   m.teachCool = Math.max(0, m.teachCool - dt); m.reason = `傳授${p.name}`;
-  if (m.teachCool <= 0) { m.task = null; if (p.task?.teach === m.id) p.task.teach = null; }
+  if (m.teachCool <= 0) { m.task = null; p.teachArt = null; if (p.task?.teach === m.id) p.task.teach = null; }
   return true;
 }
 
@@ -589,20 +589,21 @@ function monStrike(s, h, m, foe, M, zk, w) {
   const incoming0 = M.dmg * (m.psn > s.t ? 1 - SPEC.poisonWeak : 1) * (1 - SPEC.zhenMit * zk);
   const r = resolveSwing(s, m, foe, () => rand(s), { depth: depthOf(m), wind: w.wind, force: w.force, map: true });
   if (r.kind === 'read') { clashFx(s, foe, 'read'); return r; }
-  if (r.kind === 'dodge') { const on = applyArtOn(s, 'dodge', foe, m, { foeName: M.name, map: true }); clashFx(s, foe, 'dodge'); noteWhy(s, on); if (perfectDodge(s, foe, () => rand(s))) h.witch = (h.witch || 0) + 1; return r; } /* #425 完美閃避 → 林克時間 */ /* 真正的「閃」才觸發 dodge（獨孤不擋） */
+  if (r.kind === 'dodge') { const on = applyArtOn(s, 'dodge', foe, m, { foeName: M.name, map: true }); clashFx(s, foe, 'dodge'); noteWhy(s, on); if (perfectDodge(s, foe, () => rand(s), { depth: depthOf(m), damage: incoming0 })) h.witch = (h.witch || 0) + 1; return r; } /* #425 完美閃避 → 林克時間 */ /* 真正的「閃」才觸發 dodge（獨孤不擋） */
   if (r.kind === 'parry') { const on = applyArtOn(s, 'block', foe, m, { foeName: M.name, map: true }); if (r.jolt) clashFx(s, foe, 'jolt'); noteWhy(s, on); return r; }
   const incoming = incoming0 * (r.heavy ? CLASH.heavy : 1); if (r.heavy) clashFx(s, foe, 'heavy');
   const got = applyArtOn(s, 'gethit', foe, m, { dmg: incoming, foeName: M.name, map: true }); /* #404 挨打：太極劍借力、乾坤挪移 */
   if (got.reflect) m.hp -= incoming * got.reflect;
   let taken = got.dmg ?? incoming;
   if (zjHas(foe, 'taiji') || zjHas(foe, 'taijiSword')) { /* #426 太極：來力卸一半，轉給身後的同伴或打回來者 */
-    const back = s.mons.find((o) => o !== m && !o.gone && o.hp > 0 && dist(o.pos, m.pos) <= 40) || m; back.hp -= taken * 0.5; taken *= 0.5;
+    const back = s.mons.find((o) => o !== m && !o.gone && o.hp > 0 && dist(o.pos, m.pos) <= 40) || m, share = taijiReturn(m, null, w.wind); back.hp -= taken * share; taken *= 1 - share;
     zjMark(s, foe, zjHas(foe, 'taiji') ? 'taiji' : 'taijiSword'); s.zjN.shift = (s.zjN.shift || 0) + 1; s.fx.push({ kind: 'dash', from: [...foe.pos], to: [...back.pos], ttl: 0.4, color: '#d8d8d8' });
     if (back !== m && back.hp <= 0) { back.gone = true; h.kills++; seeEnemy(s, back.k, 'kill', foe); }
   }
   if (zjHas(foe, 'jiuyang')) { postureHit(s, m, ZJ.jiuyang.shock); zjMark(s, foe, 'jiuyang'); } /* #426 九陽圓滿：挨打自動反震架勢 */
   if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); return r; }
-  partHit(s, foe, r, { rnd: () => rand(s) }); /* #427 部位傷 */
+  partHit(s, foe, r, { attack: m, rnd: () => rand(s) });
+  breakWindup(s, m, foe, null, w.wind);
   foe.hp -= shieldHit(foe, taken, s.t); /* loop116 護體真氣 */
   const innBack = innerOnGetHit(s, foe); /* #405 純陽無極功：挨打化進氣血 */
   noteWhy(s, got, innBack);
@@ -638,11 +639,11 @@ function dStrike(s, h, d, live, w) {
   { const tier = visTier(d, mv.id), a = artOfMove(mv.id), va = a && variantOf(d, a.id, s.t); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...tgt.pos], r: mv.aoe || 16, ttl: tier >= 3 ? 1.0 : 0.6, tier, vcolor: va?.color || null, sprite: d.sprite, face: d.face }); if (tier >= 3) s.fx.push({ kind: 'shake', ttl: 0.35 }); }
   const each = huaAoe ? new Map(hitList.map((m) => [m.uid, m === tgt ? r : resolveSwing(s, d, m, () => rand(s), { depth: depthOf(d, mv.id), wind: w.wind, move: mv.id, map: true })])) : null;
   if (each) h.aoeEach = (h.aoeEach || 0) + hitList.length;
-  const lt = each ? hitList.find((m) => each.get(m.uid).kind !== 'dodge') : r.kind === 'dodge' ? null : tgt;
-  if (!lt) { clashFx(s, tgt, 'dodge'); return r; }
+  const lt = each ? hitList.find((m) => each.get(m.uid).kind === 'hit') : r.kind === 'hit' ? tgt : null;
+  if (!lt) { if (r.kind === 'dodge') clashFx(s, tgt, 'dodge'); return r; }
   if (r.heavy && lt === tgt) clashFx(s, tgt, 'heavy');
   const base = landOn(s, d, lt, mv, power, MONSTERS[lt.k].name); power = base * (r.heavy ? CLASH.heavy : 1); /* #404 打中：降龍、辟邪、七傷、打狗、獨孤。範圍先圈定，再震退 */
-  const psn = specM(d, 'dushu') > 0; for (const m of hitList) { let pw = power; if (each) { const rr = each.get(m.uid); if (rr.kind === 'dodge') { clashFx(s, m, 'dodge'); continue; } pw = base * (rr.heavy ? CLASH.heavy : 1); if (rr.heavy && m !== tgt) clashFx(s, m, 'heavy'); } m.hp -= pw; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; if (artOfMove(mv.id)?.id === 'kuihua' && zjHas(d, 'kuihua')) s.fx.push({ kind: 'fall', pos: [...m.pos], k: m.k, delay: ZJ.kuihua.fall, ttl: ZJ.kuihua.fall + 0.6 }); /* #426 葵花：中針的一起晚一拍倒下 */ (h.wk ??= {})[d.id] = (h.wk[d.id] || 0) + 1; seeEnemy(s, m.k, 'kill', d); applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: MONSTERS[m.k].name }); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
+  const psn = specM(d, 'dushu') > 0; for (const m of hitList) { let pw = power; if (each) { const rr = each.get(m.uid); if (rr.kind !== 'hit') { if (rr.kind === 'dodge') clashFx(s, m, 'dodge'); continue; } pw = base * (rr.heavy ? CLASH.heavy : 1); if (rr.heavy && m !== tgt) clashFx(s, m, 'heavy'); } breakWindup(s, d, m, mv.id, w.wind); m.hp -= pw; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; if (artOfMove(mv.id)?.id === 'kuihua' && zjHas(d, 'kuihua')) s.fx.push({ kind: 'fall', pos: [...m.pos], k: m.k, delay: ZJ.kuihua.fall, ttl: ZJ.kuihua.fall + 0.6 }); /* #426 葵花：中針的一起晚一拍倒下 */ (h.wk ??= {})[d.id] = (h.wk[d.id] || 0) + 1; seeEnemy(s, m.k, 'kill', d); applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: MONSTERS[m.k].name }); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
   return r;
 }
 function huntStep(s, dt) {

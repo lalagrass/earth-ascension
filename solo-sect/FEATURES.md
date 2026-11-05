@@ -141,6 +141,7 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 | SS-WUWU | #401–#415 | 武無第二：招式只當形狀，威力改走扇形曲線（常見段中位數動態基準，入門相近、名功拉開）；各派武學樹與拜師關卡補完；第二批名功絕活與內功被動；豬籠城寨系列；威脅跟隨戰力與適應係數；絕活地圖浮字；名功大成高階分路；名功門內師徒傳授。規則版本 2.8 | **已接線** | `bash test/run.sh smoke` 加上 `node --test test/wuwu.test.mjs`。面板句子對過 HTML。瀏覽器截圖貼在 PR | src/artcard.mjs src/arts.mjs src/sim.mjs src/world.mjs src/panel-ui.mjs src/main.mjs src/data.mjs src/save.mjs src/bonds.mjs src/threat.mjs | test/wuwu.test.mjs | 戰報與人物面板見該 PR | 巡山逐拍接上 hit/gethit，絕活地圖呈現、高階分路、師徒傳承與戰力威脅全部接線 |
 | SS-CLASH | #416–#420 | 地圖交手：三段出招與紅色前搖扇形；看破／閃／招架／中招四種接法與架勢條（打空挨重擊 ×2）；敵人只從 SOURCES 出生、分 2–3 路；4 個近戰位、應接 1–5 招與頭上金紅圈、輕功滑步；山賊拆成個人；招名浮字、首用大事記、大成滑步、化境範圍逐個判；人物面板實戰紀錄。見 docs/systems/combat.md |
 | SS-CLASH2 | #423–#427 | 第五輪（規則 3.0）：山賊破柵後逐個入院交手、倒地退走；完美閃避觸發林克時間（80px 圈內敵人 ×0.3 一秒）與輕功交錯；六門絕學各改一條接法規則（只地圖戰，重複的舊 on 地圖戰略過，首用蓋字與大事記）；輕度部位傷目／手／身最多三日 | 已接上 |
+| SS-CLASH3 | #428–#433 | 第六輪（規則 3.1）：人獸賊共用勁、速、霸體與相對接法；危險來招才有林克時間；抽象戰採同源期望；無柵山賊上地圖；師徒同場傳授；應接看外功、傷位看來招 | draft PR，待 CI 與 review |
 
 修正：巡山在模擬層也守解鎖（第一章不再在第 1 日記成）；「本門新紀錄」「重傷倒地」由頂級改為中級事件。
 

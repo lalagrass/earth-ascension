@@ -35,7 +35,7 @@ export const styleOk = (s, k) => (XIA_STYLES[s.xiaStyle || 'all'] || XIA_STYLES.
 
 // ---- 傳功（ROADMAP §G）：圓滿以上帶人練同一門，對方熟練 +15，每門每對一次，好感 +6 ----
 // v1.8 降頻（ROADMAP I-4）：基礎分 80→60；同一對 pairDays 日內不再傳；門派當日每傳一次，下一次分數 ×sat（飽和衰減）
-export const PASS = { minTier: 3, gain: 15, apprBonus: 5, aff: 6, dur: 20, base: 60, pairDays: 2, sat: 0.3, perDay: 2, why: '傳功' };
+export const PASS = { minTier: 3, gain: 0, apprBonus: 0, aff: 6, dur: 20, base: 60, pairDays: 2, sat: 0.3, perDay: 2, why: '傳功' }; /* 舊活動只供舊任務讀取，不再直接給熟練 */
 export const passToday = (s) => (s.passN?.day === s.day ? s.passN.n : 0);
 export const passScore = (s) => (passToday(s) >= PASS.perDay ? 0 : PASS.base * PASS.sat ** passToday(s));
 const pairRecent = (s, a, b) => Object.entries(s.passed || {}).some(([k, day]) => k.startsWith(`${a}>${b}:`) && s.day - day < PASS.pairDays);
@@ -50,18 +50,17 @@ export function passPick(s, d) {
 export const passReserve = (s) => { s.passN = { day: s.day, n: passToday(s) + 1 }; }; // 開始傳功即佔當日名額（多人同時起手不會超量）
 export function passDo(s, d, p, art) {
   const key = `${d.id}>${p.id}:${art}`; (s.passed ??= {}); if (s.passed[key]) return false; s.passed[key] = s.day; d.passDay = s.day;
-  const a = learnArt(p, art, s.t), r = p.arts[art], g = PASS.gain + (p.master === d.id ? PASS.apprBonus : 0); r.xp = Math.min(curCap(p, a), r.xp + g); r.last = s.t; growEnsure(p); settleGrowth(p, a, r, { src: 'pass' }); /* loop79 傳功造詣（鍵一次） */
-  relAdd(s, d, p, PASS.aff); addMem(s, d, p, 'pass', a.name); log(s, `【傳功】${d.name}帶${p.name}練「${a.name}」，熟練 +${g}`); return true;
+  const a = learnArt(p, art, s.t); relAdd(s, d, p, PASS.aff); addMem(s, d, p, 'pass', a.name); log(s, `【傳授】${d.name}帶${p.name}練「${a.name}」`); return true;
 }
 
 // ---- 收徒：內門／首徒對好感夠的外門收一名徒弟；徒弟在師父在場時練功 ×1.15 ----
-export const APPR = { aff: 30, max: 1, trainMul: 1.15 };
+export const APPR = { aff: 30, max: 1, trainMul: 1 };
 const isSenior = (d) => d.role === 'inner' || d.role === 'head';
 export const pupilsOf = (s, m) => s.ds.filter((d) => d.master === m.id);
 export function apprCands(s, m) { if (!isSenior(m) || m.away || pupilsOf(s, m).length >= APPR.max) return []; return s.ds.filter((d) => d !== m && d.role === 'outer' && !d.master && aff(s, m, d) >= APPR.aff && aff(s, d, m) >= APPR.aff); }
 export function takePupil(s, m, d) { if (!d || d.master || !isSenior(m) || pupilsOf(s, m).length >= APPR.max || d.role !== 'outer') return false; d.master = m.id; relAdd(s, m, d, 4); addMem(s, m, d, 'apprentice'); log(s, `【收徒】${m.name}收${d.name}為徒`); return true; }
 export function apprDaily(s) { for (const m of s.ds) { const c = apprCands(s, m).sort((x, y) => aff(s, m, y) - aff(s, m, x))[0]; if (c) takePupil(s, m, c); } }
-export const apprMul = (s, d) => { const m = d.master && s.ds.find((o) => o.id === d.master); return m && !m.away ? APPR.trainMul : 1; };
+export const apprMul = () => 1;
 
 // ---- 名功門內師徒傳授（#415 N12）----
 // MUD learn 模型：師父真的花時間教（每日預約半日 teachCool，這段時間不接別的活），
@@ -69,7 +68,7 @@ export const apprMul = (s, d) => { const m = d.master && s.ds.find((o) => o.id =
 // 受者須是師父的徒弟「且」好感達 TEACH_ART.aff；最高只到傳者層級 − 1。
 // 每位師父每門名功一生只收一位傳人（風清揚只傳令狐沖）。
 // 名功只算 secret＋classic 的原著名功；辟邪須受者已付自宮代價，獨孤九劍限華山一脈。
-export const TEACH_ART = { aff: 60, mul: 2, minTier: 3, session: DAY / 2 };
+export const TEACH_ART = { aff: 60, mul: 1.4, minTier: 3, normalTier: 2, session: DAY / 2 };
 export function isFamousArt(a) {
   if (!a) return false;
   const art = typeof a === 'string' ? artById(a) : a;
@@ -89,11 +88,11 @@ export function canTeachArt(s, m, d, artId) {
   if ((m.hp ?? 100) <= 25 || (d.hp ?? 100) <= 25) return false;
   if (m.role === 'laborer' || d.role === 'laborer') return false;
   const a = typeof artId === 'string' ? artById(artId) : artId;
-  if (!a || !isFamousArt(a)) return false;
+  if (!a || a.deprecated || (a.secret && !isFamousArt(a))) return false;
   const mTier = artTier(m, a.id);
-  if (mTier < TEACH_ART.minTier) return false;
+  if (mTier < (isFamousArt(a) ? TEACH_ART.minTier : TEACH_ART.normalTier)) return false;
   const heir = m.taught28?.[a.id];
-  if (heir && heir !== d.id) return false; /* 一門名功一生只傳一人 */
+  if (isFamousArt(a) && heir && heir !== d.id) return false; /* 一門名功一生只傳一人 */
   if (d.master !== m.id) return false;
   if (aff(s, m, d) < TEACH_ART.aff || aff(s, d, m) < TEACH_ART.aff) return false; /* 師徒「且」好感 */
   if (!costOk(s, d, a, m)) return false;
@@ -115,8 +114,8 @@ export function startTeachArt(s, m, d, artId) {
   if (!canTeachArt(s, m, d, artId)) return false;
   const id = typeof artId === 'string' ? artId : artId.id;
   m.teaching = { pupil: d.id, art: id };
-  (m.taught28 ||= {})[id] = d.id;
-  if (!d.arts?.[id]) { learnArt(d, id, s.t); growEnsure(d); log(s, `【傳功】${m.name}收${d.name}為《${artById(id).name}》傳人，開始傳授`); addMem(s, m, d, 'pass', artById(id).name); }
+  if (isFamousArt(id)) (m.taught28 ||= {})[id] = d.id;
+  if (!d.arts?.[id]) { learnArt(d, id, s.t); growEnsure(d); log(s, `【傳授】${m.name}開始教${d.name}《${artById(id).name}》`); addMem(s, m, d, 'pass', artById(id).name); }
   return true;
 }
 
@@ -128,7 +127,7 @@ export function stopTeachArt(s, m) {
 
 export function teachCandidates(s, m) {
   if (!m || m.away || m.removed || (m.hp ?? 100) <= 25 || m.role === 'laborer') return [];
-  const arts = ARTS.filter((a) => isFamousArt(a) && artTier(m, a.id) >= TEACH_ART.minTier);
+  const arts = ARTS.filter((a) => !a.deprecated && (!a.secret || isFamousArt(a)) && artTier(m, a.id) >= (isFamousArt(a) ? TEACH_ART.minTier : TEACH_ART.normalTier)).sort((a, b) => Number(isFamousArt(b)) - Number(isFamousArt(a)));
   if (!arts.length) return [];
   const cands = [];
   for (const d of s.ds) {
@@ -155,6 +154,7 @@ export const TEACH_NEAR = 60;
 export function teachMul(s, d, artId) {
   const m = s?.ds?.find((o) => o.teaching?.pupil === d.id);
   if (!m || m.away || !(m.teachCool > 0) || (artId && m.teaching.art !== artId)) return 1;
+  if (artTier(d, m.teaching.art) >= artTier(m, m.teaching.art) - 1) return 1;
   if (m.task?.act !== 'teach' || m.task.phase !== 'do' || d.task?.teach !== m.id) return 1;
   if (!m.pos || !d.pos || Math.hypot(m.pos[0] - d.pos[0], m.pos[1] - d.pos[1]) > TEACH_NEAR) return 1;
   return TEACH_ART.mul;
