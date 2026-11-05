@@ -75,7 +75,7 @@ test('戰報：距離、各類擊倒、逃走、傷、帶回、回頭原因；�
   assert.ok(s.ds.every((d) => d.hp > 0 && !d.away)); assert.ok(s.log.some((l) => /巡山戰報/.test(l.msg)));
 });
 test('固定難度：綜合能力越強走得越遠（同種子）', () => {
-  const d = [0, 60, 90].map((l) => expRun(11, l, 2).rep.dist); assert.ok(d[0] <= d[1] && d[1] <= d[2] && d[0] < d[2], d.join()); // v0.97 守關敵：同一關擋下的兩隊距離相同
+  const d = [0, 60, 90].map((l) => expRun(11, l, 1).rep.dist); assert.ok(d[0] <= d[1] && d[1] <= d[2] && d[0] < d[2], d.join()); // 單人隊伍尚未抵達路線終點，可比較實際距離
   assert.ok(expRun(11, 90, 4).rep.dist >= ROUTE[3].from, '強隊至少進深谷');
 });
 test('撤退線：70% 比 30% 早回頭；決定性', () => {
@@ -95,7 +95,7 @@ test('第一天黃昏野豬試煉：主角當天入小成、多一招，記為�
 });
 test('前三天每天一個里程碑（試煉、第一次巡山、第一次動工）', () => {
   const s = createState(12); runDays(s, 1.05); assert.deepEqual(s.pace.done, ['trial']);
-  startExpedition(openExp(s), ['senior']); runDays(s, 1); assert.ok(s.pace.done.includes('firstExp'));
+  startExpedition(openExp(s), ['senior']); let ticks = 0; while (s.exp && ticks++ < DAY * 4 * 2) tick(s); assert.equal(s.exp, null, '第三日前應完成巡山'); assert.ok(s.pace.done.includes('firstExp'));
   startBuild(s, 'kitchen'); tick(s); assert.ok(s.pace.done.includes('firstBuild')); assert.ok(s.rep >= 9);
 });
 test('導引旁白可略過；關掉後不再出現', () => {

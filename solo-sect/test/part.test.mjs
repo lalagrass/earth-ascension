@@ -11,7 +11,7 @@ test('部位傷：觸發條件、三種效果、三日內好', () => {
   assert.match(partText(eye), /^左目受傷，三日內看不清來招$/);
   const ok = d(); ok.arts.basicFist = { xp: 150, bt1: true, bt2: true, bt3: true, bt4: true }; eye.arts.basicFist = { ...ok.arts.basicFist };
   assert.ok(clashOdds(s, m, ok, { wind: 0.54 }).read > 0); assert.equal(clashOdds(s, m, eye, { wind: 0.54 }).read, 0, '目傷：截擊失效');
-  const hand = d(); hand.part = { where: 'hand', side: '右', days: 3 }; assert.ok(Math.abs(windOf(hand, 'fist', 1) / windOf(ok, 'fist', 1) - PART.hand) < 1e-9);
+  const hand = d(); hand.arts.basicFist = { ...ok.arts.basicFist }; hand.part = { where: 'hand', side: '右', days: 3 }; assert.ok(Math.abs(windOf(hand, 'fist', 1) / windOf(ok, 'fist', 1) - PART.hand) < 1e-9);
   const body = d(); body.part = { where: 'body', side: '', days: 3 }; addQi(body, 10); assert.equal(body.qi, 0, '身傷：內力不回');
   partHeal(s, eye, 'day'); partHeal(s, eye, 'heal'); assert.equal(eye.part.days, 1); partHeal(s, eye, 'day'); assert.equal(eye.part, null, '最多三日');
   partHeal(s, hand, 'doctor'); assert.equal(hand.part, null, '醫術直接好');

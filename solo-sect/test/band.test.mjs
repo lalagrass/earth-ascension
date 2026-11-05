@@ -8,6 +8,7 @@ import { createState, tick } from '../src/sim.mjs';
 test('山賊逐一交手：判接法、整夥血量＝每人加總、倒地者退走、柵破才進院', () => {
   const s = createState(11); for (let i = 0; i < 40; i++) tick(s, 0.25);
   const d = s.ds.find((x) => x.role !== 'laborer'); d.task = { act: 'defend', node: FENCE.node, phase: 'do' }; d.pos = [...NODES[FENCE.node]]; d.path = []; d.hp = 100;
+  d.arts.basicFist = { xp: 150, bt1: true, bt2: true, bt3: true, bt4: true }; // 有足夠手熟才能在時間比較下擊倒山賊
   s.fence = { lv: 1, hp: 9999, max: 9999, hits: 0, broken: 0, repaired: 0, blocked: 0 };
   const b = newBand({ n: 1, pts: 160, day: 1 }, FENCE.node); b.state = 'siege'; b.pos = [...NODES[FENCE.node]]; b.path = []; s.band = b;
   const H = { rand: () => 0.5, cancelTask() {}, think() {} };

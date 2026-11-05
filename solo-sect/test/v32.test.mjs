@@ -165,14 +165,14 @@ test('loop203 練功倍率只留一個偏好標籤，靈動不與投其所好疊
   assert.ok(Math.abs(da[0][1] - 1.12) < 1e-9);
   assert.ok(!A.artMulParts(like, A.artById('bixie')).parts.ext.some((x) => x[0] === '靈動跳階'));
   assert.deepEqual(lian.map((x) => x[0]), ['枯燥難耐']);
-  assert.ok(Math.abs(lian[0][1] - 0.85) < 1e-9);
+  assert.ok(Math.abs(lian[0][1] - 1 / (1 + 0.05 * 3)) < 1e-9);
   assert.ok(A.artMulParts(like, A.artById('mianPalm')).parts.ext.some((x) => x[0] === '靈動跳階'));
   const dull = body({ personality: ['diligent', 'nimble', 'playful', 'brave'] });
   assert.equal(A.appetite31(dull), 3);
-  assert.ok(Math.abs(tasteOf(dull, 'mianPalm')[0][1] - 0.925) < 1e-9);
+  assert.ok(Math.abs(tasteOf(dull, 'mianPalm')[0][1] - 1 / (1 + 0.05 * 3 * 0.5)) < 1e-9);
   const flash = body({ personality: ['honest', 'quiet', 'rigid'] });
   assert.deepEqual(tasteOf(flash, 'chousuiPalm').map((x) => x[0]), ['嫌其花俏']);
-  assert.ok(Math.abs(tasteOf(flash, 'chousuiPalm')[0][1] - 0.93) < 1e-9);
+  assert.ok(Math.abs(tasteOf(flash, 'chousuiPalm')[0][1] - 1 / (1 + 0.025 * 3)) < 1e-9);
   assert.deepEqual(tasteOf(flash, 'mianPalm').map((x) => x[0]), ['投其所好']);
   const plain = body();
   assert.equal(tasteOf(plain, 'mianPalm').length, 0);

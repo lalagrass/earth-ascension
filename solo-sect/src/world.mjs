@@ -427,8 +427,7 @@ export function expStep(s, dt, H) {
   if (X.busy > 0) { X.busy -= dt; return; }
   if (X.phase === 'out') {
     const d0 = X.dist, f0 = X.fights, pm = peaceOf(s, segAt(X.dist).id) ? EXP.peaceSpeed : 1;
-    X.dist = Math.min(X.target, X.dist + EXP.walk * dt * pm);
-    X.dist = Math.min(X.target, X.dist + EXP.walk * dt * pm * (STYLES[X.style].speed - 1));
+    X.dist = Math.min(X.target, d0 + EXP.walk * dt * pm * STYLES[X.style].speed);
     X.sta = (X.sta ?? EXP.sta + Math.max(0, ...team.map((d) => d.staBonus || 0))) - (X.dist - d0) * EXP.staStep;
     if (X.gorgeT == null && !(X.from > 0) && X.dist >= ROUTE[3].from) X.gorgeT = s.t - X.startT;
     const G = rivalGate(s, routeSeg(X.gateI), X.gateI);
