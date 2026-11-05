@@ -1196,7 +1196,7 @@ export const CLASH = {
   heavy: 2,
   read: { drop: 45 },
   dodge: { qi: 3 },
-  time: { reaction: 0.36, insight: 30, tier: 0.6, agility: 50, strike: 0.55, strikeTier: 0.4, step: 0.26, guard: 0.1, jitter: 0.25, fret: 0.6, counterForce: 0.5 },
+  time: { reaction: 0.36, insight: 30, tier: 0.6, agility: 50, strike: 0.55, strikeTier: 0.4, step: 0.26, guard: 0.1, jitter: 0.25, fret: 0.6, counterForce: 0.5, parryRecover: 0.2, hitRecover: 0.35 },
   parry: { drop: 14, joltDrop: 20 },
   depth: { rat: 1, boar: 2, bandit: 2 }, monQi: { rat: 4, boar: 12, bandit: 10 },
 };
@@ -1273,37 +1273,53 @@ export function clashOdds(s, atk, def, ctx = {}) {
 }
 /* 前搖結束那一刻的判定。rnd 是固定種子亂數（sim 的 rand(s)）。回傳 { kind: 'read'|'dodge'|'parry'|'hit', heavy, jolt, why }。
    ctx.force：'hit' 直接中招（應接不來、看破後的必中）。 */
+function settleDefense(s, def, T, result) {
+  const now = s?.t ?? 0;
+  const recovery = result.kind === 'parry' ? CLASH.time.parryRecover : result.kind === 'hit' ? CLASH.time.hitRecover : 0;
+  const used = result.used ?? (result.kind === 'hit' ? 0 : T.guard);
+  def.busyUntil = Math.max(def.busyUntil || 0, now + T.busy + used + recovery);
+  def.ring = { intercept: result.kind === 'read', t: now, busy: def.busyUntil - now };
+  return result;
+}
+function advanceAfterDodge(s, atk, def) {
+  if (!atk.pos || !def.pos) return;
+  const dx = atk.pos[0] - def.pos[0], dy = atk.pos[1] - def.pos[1], dist = Math.hypot(dx, dy);
+  if (dist <= RING.step) return;
+  const from = [...def.pos], step = Math.min(RING.step, dist - RING.step);
+  def.pos = [def.pos[0] + dx / dist * step, def.pos[1] + dy / dist * step];
+  if (s) (s.fx ||= []).push({ kind: 'dash', from, to: [...def.pos], ttl: 0.35, color: '#cfe0f5' });
+}
 export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   postureOf(atk); postureOf(def);
-  if (def.posture <= 0) { def.posture = postureMax(def) * 0.5; def.postT = s?.t ?? 0; return { kind: 'hit', heavy: true, why: 'open' }; }
-  if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return { kind: 'hit', heavy: false, why: ctx.force || 'sure' }; }
-  const T = ctx.opening?.T || clashTimes(s, atk, def, ctx), reaction = ctx.opening?.reaction ?? T.reaction * (1 - T.jitter + 2 * T.jitter * rnd());
+  const T = ctx.opening?.T || clashTimes(s, atk, def, ctx);
+  if (def.posture <= 0) { def.posture = postureMax(def) * 0.5; def.postT = s?.t ?? 0; return settleDefense(s, def, T, { kind: 'hit', heavy: true, why: 'open' }); }
+  if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return settleDefense(s, def, T, { kind: 'hit', heavy: false, why: ctx.force || 'sure' }); }
+  const reaction = ctx.opening?.reaction ?? T.reaction * (1 - T.jitter + 2 * T.jitter * rnd());
   const zjAtk = ctx.map && !isMon(atk) ? zjOfMove(ctx.move) : null; /* #426 */
   const duguPassive = ctx.map && isMon(atk) && zjHas(def, 'dugu') && (s?.codex?.[atk.k]?.insight || 0) >= ZJ.dugu.insight; /* 獨孤：讀招改成被動截，不再擲讀招 */
-  if (!duguPassive && def.part?.where !== 'eye' && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return { kind: 'read', used: reaction + T.strike, counter: moveStats(def, mainOuter28(def)?.id).force * CLASH.time.counterForce }; }
-  if (!(def.rageUntil > (s?.t ?? 0)) && reaction + T.step < T.wind) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi * (reaction + T.step) / Math.max(T.wind, 1e-9)); return { kind: 'dodge', used: reaction + T.step, strain: (reaction + T.step) / Math.max(T.wind, 1e-9) }; }
+  if (!duguPassive && def.part?.where !== 'eye' && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return settleDefense(s, def, T, { kind: 'read', used: reaction + T.strike, counter: moveStats(def, mainOuter28(def)?.id).force * CLASH.time.counterForce }); }
+  if (!(def.rageUntil > (s?.t ?? 0)) && reaction + T.step < T.wind) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi * (reaction + T.step) / Math.max(T.wind, 1e-9)); advanceAfterDodge(s, atk, def); return settleDefense(s, def, T, { kind: 'dodge', used: reaction + T.step, strain: (reaction + T.step) / Math.max(T.wind, 1e-9) }); }
   if (reaction + T.guard < T.wind) {
     const force = moveStats(atk, ctx.move, ctx.wind).force, guard = isMon(def) ? moveStats(def).force : qiPow(def);
     const jolt = guard > force * 1.4;
     postureHit(s, def, CLASH.parry.drop * Math.max(0.5, force / Math.max(1, guard))); postureHit(s, atk, CLASH.parry.drop * Math.max(0.5, guard / force) + (jolt ? CLASH.parry.joltDrop : 0));
-    return { kind: 'parry', jolt, used: reaction + T.guard };
+    return settleDefense(s, def, T, { kind: 'parry', jolt, used: reaction + T.guard });
   }
-  return { kind: 'hit', heavy: false };
+  return settleDefense(s, def, T, { kind: 'hit', heavy: false });
 }
 
 // ==== #419 N15 交戰圈與應接 ====
 /* slots：一人身邊最多 4 個近戰位，第 5 隻起在外圈繞；cap：同一個 win 秒內接得住幾招（火候 入門→化境 1/2/3/4/5），超出的直接中招。
    step／leash／stepCd／stepQi：應接不暇時輕功滑步，離守點不超過 leash。 */
-export const RING = { engage: 44 /* 佔了近戰位的獸，對手滑步走開也會追上去，不趁機溜下山 */, slots: 4, outer: 50, cap: [1, 2, 3, 4, 5], win: 1.2, step: 24, leash: 40, stepCd: 3, stepQi: 4, stepAgi: 10 };
+export const RING = { engage: 44 /* 佔了近戰位的獸，對手滑步走開也會追上去，不趁機溜下山 */, slots: 4, outer: 50, win: 1.2, step: 24, leash: 40, stepCd: 3, stepQi: 4, stepAgi: 10 };
 export function topTierOf(d) { let t = 0; for (const id of Object.keys(d?.arts || {})) { const c = ART_CAT[id] || {}; if (['quanzhang', 'tuifa', 'jianfa', 'gunbang', 'qimen'].some((k) => (c[k] || 0) > 0)) t = Math.max(t, artTier(d, id) | 0); } return Math.min(4, t); }
-export const handleCap = (d) => RING.cap[topTierOf(d)] + (Object.keys(d?.arts || {}).some((id) => (ART_CAT[id]?.shenfa || 0) > 0 && artTier(d, id) >= 1) ? 1 : 0);
-/* 這一招還接不接得住：win 秒內已經判過 cap 次接法就回 false（之後直接中招）。會記一筆。 */
+export const handleCap = (d) => 1 / (CLASH.time.strike / (1 + topTierOf(d) * CLASH.time.strikeTier));
+/* 統計一段時間的應接紀錄；能否接下由未完成動作與剩餘前搖決定，不設次數硬上限。 */
 export function handleTake(s, d) {
   const now = s?.t ?? 0, L = (d.handled ||= []).filter((x) => now - x < RING.win); d.handled = L;
-  const cap = handleCap(d), ok = L.length < cap; L.push(now);
-  d.ring = { cap, used: Math.min(cap, L.length), over: Math.max(0, L.length - cap), t: now };
-  if (d.ring.used > (d.maxHandled || 0)) { d.maxHandled = d.ring.used; if (d.maxHandled >= 2 && s && d.name) chronOf(s, d, 'handled', { chron: `${d.name}一口氣接下 ${d.maxHandled} 路來招，破了自己的紀錄` }); } /* #420 N16 */
-  return ok;
+  L.push(now);
+  if (L.length > (d.maxHandled || 0)) { d.maxHandled = L.length; if (d.maxHandled >= 2 && s && d.name) chronOf(s, d, 'handled', { chron: `${d.name}一口氣接下 ${d.maxHandled} 路來招，破了自己的紀錄` }); }
+  return true;
 }
 // ==== #425 N19 林克時間與輕功交錯 ====
 /* 完美閃避：真的「閃」成立，而且閃開的那一刻落在前搖最後 win（15%）；身法 ≥ agi、悟性 ≥ wu 才有機會。

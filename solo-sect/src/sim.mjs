@@ -582,10 +582,7 @@ function lightStep(s, d, from, post) {
   spendQi(d, RING.stepQi); d.stepT = s.t + RING.stepCd; d.pos = [nx, ny]; return true;
 }
 function monStrike(s, h, m, foe, M, zk, w) {
-  if (!handleTake(s, foe)) { /* #419 超出應接：先試輕功脫身，不然直接中招 */
-    if (lightStep(s, foe, m.pos, h.post)) { const on = applyArtOn(s, 'dodge', foe, m, { foeName: M.name, map: true }); clashFx(s, foe, 'dodge'); noteWhy(s, on); h.slips = (h.slips || 0) + 1; return { kind: 'dodge', why: 'step' }; }
-    w = { ...w, force: 'over' }; h.over = (h.over || 0) + 1;
-  }
+  handleTake(s, foe);
   const incoming0 = M.dmg * (m.psn > s.t ? 1 - SPEC.poisonWeak : 1) * (1 - SPEC.zhenMit * zk);
   const r = resolveSwing(s, m, foe, () => rand(s), { depth: depthOf(m), wind: w.wind, force: w.force, opening: w.opening, map: true });
   if (r.kind === 'read') { m.hp -= r.counter; if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); } clashFx(s, foe, 'read'); return r; }
