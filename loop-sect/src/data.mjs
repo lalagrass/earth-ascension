@@ -4,13 +4,16 @@ export const TICKS_PER_DAY = 1440;          // 1 tick = 1 遊戲分鐘
 export const TICKS_PER_SECOND = 20;         // 1× 時每真實秒的 tick 數
 export const BASE_SPEED = 0.2;              // 格／tick（M3 由 0.12 調高，見 LOOP_LOG loop 3）
 
+// 天賦＝先天資質：決定哪些事學得快、做得好。後天的手藝與招式靠練，天賦只改練的快慢。
+// desc 寫的是本作裡實際接到的規則（改規則時一併改這裡），開局畫面直接顯示。
 export const ATTRS = [
-  { id: 'gen', label: '根骨', desc: '體魄與耐力，影響精力與外功成長' },
-  { id: 'wu', label: '悟性', desc: '理解與領悟，影響學習與開竅' },
-  { id: 'shen', label: '身法', desc: '輕靈敏捷，影響走路與閃避' },
-  { id: 'li', label: '膂力', desc: '力氣，影響搬運與勞動' },
-  { id: 'ding', label: '定力', desc: '專注與心性，影響修練與抗壓' },
+  { id: 'gen', label: '根骨', desc: '筋骨體魄。伐木、採石、腳力練得快；長拳、破岳勢學得快。8 以上「筋骨奇佳」不易累，2 以下「體弱」容易累' },
+  { id: 'wu', label: '悟性', desc: '理解領悟。營造、烹飪、採集練得快；練功時較會自己琢磨出新招。8 以上「天資聰穎」，2 以下「開竅晚」' },
+  { id: 'shen', label: '身法', desc: '輕靈敏捷。走路快、打獵容易得手；流雲手、飛燕腿學得快。8 以上「身輕如燕」' },
+  { id: 'li', label: '膂力', desc: '力氣。出手打得重，也更願意搬運、勞動；開山掌學得快。8 以上「力大」扛得多' },
+  { id: 'ding', label: '定力', desc: '專注與心性。越高越肯自己去練功；太初拳學得快。8 以上「心如止水」' },
 ];
+export const ATTR_NOTE = '天賦是先天資質，決定哪些事學得快；手藝和招式還是要靠練。';
 export const ATTR_TOTAL = 25;
 export const ATTR_MIN = 1;
 export const ATTR_MAX = 10;
@@ -22,6 +25,15 @@ export const AXES = [
   { id: 'F', pos: 'F', neg: 'T', posLabel: '情感', negLabel: '思考' },
   { id: 'P', pos: 'P', neg: 'J', posLabel: '隨性', negLabel: '條理' },
 ];
+
+// 十六型的中文名（與山門紀同一套），字母只是四軸的縮寫：
+// E 外向／I 內向、N 直覺／S 實感、F 情感／T 思考、P 隨性／J 條理。
+export const TYPE_NAMES = {
+  ISTJ: '守成', ISFJ: '篤實', INFJ: '仁心', INTJ: '謀略',
+  ISTP: '孤劍', ISFP: '清逸', INFP: '痴情', INTP: '博覽',
+  ESTP: '機變', ESFP: '豪食', ENFP: '頑童', ENTP: '巧辯',
+  ESTJ: '豪俠', ESFJ: '溫厚', ENFJ: '俠義', ENTJ: '霸主',
+};
 
 // 每題兩個選項，各推一軸 ±0.5。
 export const QUESTIONS = [

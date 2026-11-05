@@ -33,6 +33,9 @@ label { display: block; margin: 8px 0; }
 .axis .track { position: relative; height: 6px; background: var(--line); border-radius: 3px; }
 .axis .track i { position: absolute; top: -3px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--accent); }
 .type { font-size: 26px; font-weight: bold; letter-spacing: 3px; margin: 6px 0; }
+.type-line { display: flex; align-items: baseline; gap: 10px; }
+.type-name { font-size: 22px; font-weight: bold; }
+.type-axes, .attr-desc, .hint { display: block; color: var(--muted, #888); font-size: 12px; line-height: 1.5; margin: 2px 0 6px; }
 .chips span { display: inline-block; border: 1px solid var(--line); border-radius: 10px; padding: 0 8px; margin: 2px; font-size: 12px; background: #fff; }
 
 #game header { display: flex; gap: 12px; align-items: center; padding: 6px 12px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }

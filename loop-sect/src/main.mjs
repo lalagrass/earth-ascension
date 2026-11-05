@@ -1,4 +1,4 @@
-import { QUESTIONS, ATTRS, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, TEMPLATES, AXES, TRAIT_RULES, TICKS_PER_SECOND, NEEDS, BLUEPRINTS, PILE, FOCUS } from './data.mjs';
+import { QUESTIONS, ATTRS, ATTR_NOTE, TYPE_NAMES, ATTR_TOTAL, ATTR_MIN, ATTR_MAX, TEMPLATES, AXES, TRAIT_RULES, TICKS_PER_SECOND, NEEDS, BLUEPRINTS, PILE, FOCUS } from './data.mjs';
 import { axesFromAnswers, typeOf, validateAttrs, traitsOf } from './person.mjs';
 import { createWorld, step, clock, companionsFor, placeBlueprint, cancelSite, setFocus, startExpedition, startTrial, canTrial } from './sim.mjs';
 import { canLaunch } from './expedition.mjs';
@@ -61,12 +61,14 @@ function renderAttrs() {
       if (nv < ATTR_MIN || nv > ATTR_MAX || (d > 0 && sum >= ATTR_TOTAL)) return;
       draft.attrs[a.id] = nv; draft.template = null; renderAll();
     };
-    return el('div', { class: 'attr-row', title: a.desc },
+    return el('div', { class: 'attr-item' }, el('div', { class: 'attr-row', title: a.desc },
       el('span', {}, a.label), el('span', { class: 'bar' }, el('i', { style: `width:${v * 10}%` })),
       el('b', { 'data-attr': a.id }, String(v)),
       el('button', { on: { click: bump(-1) }, 'aria-label': `${a.label}減一` }, '−'),
-      el('button', { on: { click: bump(1) }, 'aria-label': `${a.label}加一` }, '+'));
+      el('button', { on: { click: bump(1) }, 'aria-label': `${a.label}加一` }, '+')),
+      el('small', { class: 'attr-desc' }, a.desc));
   }));
+  $('#attr-note').textContent = ATTR_NOTE;
   const v = validateAttrs(draft.attrs);
   $('#attr-msg').textContent = v.ok ? '' : v.reason;
 }
@@ -86,7 +88,10 @@ function axisBars(axes) {
 function renderPreview() {
   const axes = axesNow();
   const traits = traitsOf(axes, draft.attrs);
-  $('#preview').replaceChildren(el('div', { class: 'type', id: 'type' }, typeOf(axes)), ...axisBars(axes),
+  const code = typeOf(axes), side = AXES.map((a) => (axes[a.id] > 0 ? a.posLabel : a.negLabel)).join('・');
+  $('#preview').replaceChildren(el('div', { class: 'type-line' }, el('span', { class: 'type', id: 'type' }, code),
+    el('span', { class: 'type-name', id: 'type-name' }, TYPE_NAMES[code])),
+  el('small', { class: 'type-axes' }, `個性：${side}（四個字母依序是這四軸的縮寫）`), ...axisBars(axes),
     el('div', { class: 'chips' }, ...traits.map((t) => el('span', { title: TRAIT_LABEL[t].desc }, TRAIT_LABEL[t].label))));
   $('#begin').disabled = !validateAttrs(draft.attrs).ok;
 }
