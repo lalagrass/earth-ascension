@@ -73,7 +73,7 @@ function mkDisciple(d, i, at = 'court', personality = d.personality || [], known
   return seedArts({
       id: d.id, name: d.name, root: d.root ?? 3, rootKnown: true, style: d.style, personality: [...personality], known: [...known], together: 0, mood: MOOD.base, thoughts: [], why: [], adult: d.adult, sprite: d.sprite, traits: d.traits,
       skills: { ...d.skills }, moves: ['fist'], pendingMove: null,
-      needs: { energy: 80, hunger: 70 - i * 10, social: 50, fun: 60 }, hp: 100,
+      needs: { energy: 80, hunger: 70 - i * 10, social: 50, fun: 60 }, hp: 100, fret: 0, raging: false, rageUntil: 0, busyUntil: 0,
       at, pos: [...NODES[at]].map((v, k) => v + (k ? 0 : (i - 1) * 16)), path: [],
       role: 'inner', duties: [...CHORE_ACTS], prio: 'normal', chore: 0, choreDebt: 0, contrib: 0, task: null, order: null, reason: at === 'gate' ? '慕名上山' : '剛到道館', carry: null, cool: 0, walked: 0, face: 1, anim: null,
     });
@@ -586,7 +586,7 @@ function monStrike(s, h, m, foe, M, zk, w) {
   const incoming0 = M.dmg * (m.psn > s.t ? 1 - SPEC.poisonWeak : 1) * (1 - SPEC.zhenMit * zk);
   const r = resolveSwing(s, m, foe, () => rand(s), { depth: depthOf(m), wind: w.wind, force: w.force, opening: w.opening, map: true });
   if (r.kind === 'read') { m.hp -= r.counter; if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); } clashFx(s, foe, 'read'); return r; }
-  if (r.kind === 'dodge') { const on = applyArtOn(s, 'dodge', foe, m, { foeName: M.name, map: true }); clashFx(s, foe, 'dodge'); noteWhy(s, on); if (perfectDodge(s, foe, () => rand(s), { depth: depthOf(m), damage: incoming0 })) h.witch = (h.witch || 0) + 1; return r; } /* #425 完美閃避 → 林克時間 */ /* 真正的「閃」才觸發 dodge（獨孤不擋） */
+  if (r.kind === 'dodge') { const on = applyArtOn(s, 'dodge', foe, m, { foeName: M.name, map: true }); clashFx(s, foe, 'dodge'); noteWhy(s, on); if (perfectDodge(s, foe, () => rand(s), { strain: r.strain })) h.witch = (h.witch || 0) + 1; return r; } /* 進身閃吃力才會觸發林克時間 */
   if (r.kind === 'parry') { const on = applyArtOn(s, 'block', foe, m, { foeName: M.name, map: true }); if (r.jolt) clashFx(s, foe, 'jolt'); noteWhy(s, on); return r; }
   const incoming = incoming0 * (r.heavy ? CLASH.heavy : 1); if (r.heavy) clashFx(s, foe, 'heavy');
   const got = applyArtOn(s, 'gethit', foe, m, { dmg: incoming, foeName: M.name, map: true }); /* #404 挨打：太極劍借力、乾坤挪移 */

@@ -1347,14 +1347,14 @@ export function handleTake(s, d) {
 /* 完美閃避：真的「閃」成立，而且閃開的那一刻落在前搖最後 win（15%）；身法 ≥ agi、悟性 ≥ wu 才有機會。
    林克時間：以閃避者為圓心 r px 內的敵人，前搖與移動乘 k，持續 dur 秒；閃避者自己照常。只在模擬步長裡把圈內敵人的計時乘上倍數，不改全域 dt。
    輕功交錯：雙方身法都 ≥ crossAgi、出手時間差 < crossGap 秒，機率 crossP 互相穿過，雙方各掉 crossDrop 架勢、兩招都落空。 */
-export const WITCH = { win: 0.15, wu: 3, r: 80, k: 0.3, dur: 1, cool: 4, crossAgi: 40, crossGap: 0.3, crossP: 0.3, crossDrop: 25 };
+export const WITCH = { windowBase: 0.05, windowGain: 0.2, agilityHalf: 80, strain: 0.7, wu: 3, r: 80, k: 0.3, dur: 1, cool: 4, crossAgi: 40, crossGap: 0.3, crossP: 0.3, crossDrop: 25 };
 /* 閃開的時機：身法越高越能壓到最後一刻；回傳 [0,1) 的「閃開時在前搖的哪一段」。 */
 export function perfectDodge(s, def, rnd, ctx = {}) {
   if (!def || def.arts == null || (def.wu ?? def.root ?? 3) < WITCH.wu || (def.witchT ?? -1e9) > (s?.t ?? 0)) return false;
-  const dangerous = ctx.depth == null || ctx.depth >= topTierOf(def) - 1 || (ctx.damage != null && (def.hp ?? 100) - ctx.damage <= 25);
+  const dangerous = (ctx.strain ?? 0) >= WITCH.strain;
   if (!dangerous) return false;
   if (s.witch?.some((w) => w.until > s.t)) return false; /* 同時只留一圈 */
-  const win = 0.05 + 0.10 * Math.min(80, Math.max(0, def.skills?.agility || 0)) / 80;
+  const agi = Math.max(0, def.skills?.agility || 0), win = WITCH.windowBase + WITCH.windowGain * agi / (agi + WITCH.agilityHalf);
   const at = rnd(); if (at < 1 - win) return false;
   def.witchT = (s?.t ?? 0) + WITCH.cool; s.witch = [{ who: def.id, pos: [...def.pos], until: s.t + WITCH.dur }];
   (s.fx ||= []).push({ kind: 'witch', pos: [...def.pos], r: WITCH.r, ttl: WITCH.dur });

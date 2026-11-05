@@ -242,7 +242,7 @@ export function expectedDps(s, d, mv, e = 'bandit') {
   const base = moveDps(s, d, mv), ex = expectOf(d, mv, s.t), foe = abstractFoe(e);
   const cd = mv.cd * cdMul(d, mv.id, s.t), wind = windOf(d, mv.id, cd);
   const o = clashOdds(s, d, foe, { move: mv.id, wind });
-  const landed = (1 - o.dodge) * (1 - o.parry), cut = moveStats(d, mv.id, wind).force > moveStats(foe).armor ? 0.08 : 0;
+  const landed = o.hit, cut = moveStats(d, mv.id, wind).force > moveStats(foe).armor ? 0.08 : 0;
   return Math.max(0, base * ex.mul * landed * (1 + cut) * (1 + ex.reflect * 0.5) - ex.selfPerSec);
 }
 function bestSwing(s, d, e = 'bandit') {
@@ -309,7 +309,8 @@ export function suggestTeam(s, n = 2) {
   return { ids: pick.map((d) => d.id), why };
 }
 export const evadeScore = (d) => d.skills.agility + Math.max(0, effectTier(d, 'speed') + 1) * EVADE.tierPts * (stepDrive28(d)) + ((d.personality || []).includes('lazy') ? EVADE.lazyBonus : 0); /* loop196：閃避的輕功段乘本門內功催動 */
-const pclamp = (x) => Math.max(0.05, Math.min(0.95, x));
+export const EXP_ODDS = { scoreScale: 17, duguBase: 20, duguOpposition: 80 };
+const expOdds = (mine, theirs) => 1 / (1 + Math.exp(-(mine - theirs) / EXP_ODDS.scoreScale));
 // H：sim 內部工具 { rand, cancelTask, grow, think }
 export function startExpedition(s, ids, opt = {}, H) {
   const c = canExpedition(s, ids); if (!c.ok) return c;
@@ -365,14 +366,14 @@ function fight(s, e, team, H, gate = false, scale = 1) {
     if (!gate && hp > 0 && hp < E.hp * 0.35 && !fled) { fled = true; if (H.rand(s) < E.flee) { add(X.escaped, e, 1); seeEnemy(s, e, 'fled'); return { t, won: false, fled: true }; } }
     cd -= 0.5; if (cd <= 0 && hp > 0) {
       cd = E.cd; const d = alive[Math.floor(H.rand(s) * alive.length)];
-      if (d.dugu?.length && H.rand(s) < Math.min(0.6, 0.2 + (s.codex[e]?.insight || 0) / 200)) {
+      if (d.dugu?.length && H.rand(s) < ((s.codex[e]?.insight || 0) + EXP_ODDS.duguBase) / ((s.codex[e]?.insight || 0) + EXP_ODDS.duguBase + EXP_ODDS.duguOpposition)) {
         d.hp = Math.min(100, d.hp + 2);
         const dodge = applyArtOn(s, 'dodge', d, foe, { foeName: E.name, silent: said.has(`${d.id}:dodge`) });
         noteOnce(`${d.id}:dodge`, dodge.line);
         continue;
       }
       const o = clashOdds(s, abstractFoe(e), d, { wind: E.cd * CLASH.monWind });
-      const avoid = (1 - o.read) * (1 - o.dodge) * (1 - o.parry);
+      const avoid = o.hit;
       if (o.dodge) spendQi(d, Math.min(CLASH.dodge.qi, CLASH.dodge.qi * o.dodge));
       const def = guardOf(d);
       const incoming = E.dmg * avoid * def * (d.takeMul || 1) * counterMul(DAO.enemy[e], daoOf(d));
@@ -399,14 +400,14 @@ function encounter(s, e, seg, team, H) {
   const dps = team.reduce((a, d) => a + dpsOf(s, d), 0), weak = dps * 20 < E.hp;
   if (S.evade === 'always' || (S.evade === 'weak' && weak)) {
     const ev = Math.min(...team.map(evadeScore)); seeEnemy(s, e, 'see');
-    if (H.rand(s) < pclamp(0.5 + (ev - E.detect) / 100)) { add(X.evaded, e, 1); return 1; }
+    if (H.rand(s) < expOdds(ev, E.detect)) { add(X.evaded, e, 1); return 1; }
     X.events.push(`閃${E.name}失手`);
   }
   X.fights++; const r = fight(s, e, team, H, false, sca); let t = r.t; if (r.won) { sg.kill++; popKill(s, seg.id); }
   if (r.fled) { const stub = team.some((d) => (d.personality || []).includes('stubborn'));
     if (S.chase >= 1 || (S.chase > 0 && stub && H.rand(s) < S.chase)) {
       const ag = Math.max(...team.map((d) => d.skills.agility)); for (let k = 0; k < (S.chase >= 1 ? 2 : 1); k++) { X.chase.n++; t += EVADE.chaseTime;
-        if (H.rand(s) < pclamp(0.5 + (ag - E.speed) / 100)) { X.chase.got++; X.escaped[e]--; if (!X.escaped[e]) delete X.escaped[e]; add(X.kills, e, 1); sg.kill++; popKill(s, seg.id); seeEnemy(s, e, 'kill', team[0]); lootRoll(s, X.loot, E.loot, H); break; } } } }
+        if (H.rand(s) < expOdds(ag, E.speed)) { X.chase.got++; X.escaped[e]--; if (!X.escaped[e]) delete X.escaped[e]; add(X.kills, e, 1); sg.kill++; popKill(s, seg.id); seeEnemy(s, e, 'kill', team[0]); lootRoll(s, X.loot, E.loot, H); break; } } } }
   if (sg.kill >= ECO2.denAt && denRaze(s, seg.id)) { (X.razed ??= []).push(seg.name); X.events.push(`搗毀${seg.name}獸巢`); log(s, `巡山隊搗毀了${seg.name}的獸巢：該區族群上限減半五日`); }
   return t;
 }

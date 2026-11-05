@@ -178,7 +178,7 @@ function bandClash(s, b, defs, dt) {
       (s.fx ||= []).push({ kind: 'cross', pos: [(m.pos[0] + d.pos[0]) / 2, (m.pos[1] + d.pos[1]) / 2], ttl: 0.6 }); if (b.cross === 1) log(s, `【輕功交錯】${d.name}和一名山賊同時突進，擦身而過，火花一閃，兩人都退了半步`); continue; }
     if (m.swing) { if (s.t + 1e-9 < m.swing.at) continue; const w = m.swing; m.swing = null; handleTake(s, d);
       const r = resolveSwing(s, m, d, () => R(s), { depth: 2, wind: w.wind, opening: w.opening }); (b.cl ??= {})['m' + r.kind] = (b.cl['m' + r.kind] || 0) + 1;
-      if (r.kind === 'dodge' && perfectDodge(s, d, () => R(s), { depth: 2, damage: BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per })) b.witch = (b.witch || 0) + 1;
+      if (r.kind === 'dodge' && perfectDodge(s, d, () => R(s), { strain: r.strain })) b.witch = (b.witch || 0) + 1;
       if (r.kind === 'read') bandHit(s, b, m, r.counter, d);
       if (r.kind === 'hit') { breakWindup(s, m, d, null, w.wind); let incoming = (BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per) * (r.heavy ? CLASH.heavy : 1);
         if (zjHas(d, 'taiji') || zjHas(d, 'taijiSword')) { const share = taijiReturn(m, null, w.wind); bandHit(s, b, m, incoming * share, d); incoming *= 1 - share; zjMark(s, d, zjHas(d, 'taiji') ? 'taiji' : 'taijiSword'); }
@@ -258,7 +258,15 @@ export function points(s) {
   return Math.min(RAID.cap, Math.round(baseTerm * daysAndValor * adapt));
 }
 export const defense = (s) => power(s) * def24Of(s); /* loop176 武當紫霄宮 */
-export const winP = (s, pts) => { const d = defense(s), open = Math.max(0.1, Math.min(0.9, d / (d + pts))); const ready = s.ds.some(canDefend); const fence = fenceUp(s) && ready ? 0.1 + 0.8 * Math.min(1, s.fence.hp / Math.max(1, s.fence.max || 60)) : 0; return Math.max(open, fence); };
+export const winP = (s, pts) => {
+  const d = defense(s), open = d + pts > 0 ? d / (d + pts) : 0;
+  if (!fenceUp(s) || !s.ds.some(canDefend)) return open;
+  const dps = s.ds.filter(canDefend).reduce((sum, x) => sum + defenderDps(x, s), 0) * def24Of(s);
+  const raiderDps = Math.max(BAND.fenceDmg.min, Math.round(pts * BAND.fenceDmg.k)) / BAND.hitEvery;
+  const tempo = dps * s.fence.hp / Math.max(1, pts * raiderDps);
+  const fence = tempo / (1 + tempo);
+  return 1 - (1 - open) * (1 - fence);
+};
 export const demandOf = (s, pts) => Math.max(RAID.demand.min, Math.round(Math.min(Math.max(0, s.res.coin) * RAID.demand.coinMax, RAID.demand.base + pts * RAID.demand.k)));
 // 自動決定：比較「勒索金」與「迎戰的預期損失」＝(1−勝率)×(被搶的錢＋糧＋一人重傷折 hurtCost)；勒索金較小且付得起才付
 export const fightLoss = (s, p) => (1 - p) * (Math.max(0, s.res.coin) * RAID.steal.coin + (s.res.food || 0) * RAID.steal.food + RAID.hurtCost);

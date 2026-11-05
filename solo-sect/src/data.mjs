@@ -335,7 +335,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '3.1'; /* 第六輪 #428–#433：通用勁速霸體、險招慢動作、同源戰鬥、共同傳授、應接與部位傷 */
+export const RULES_VERSION = '3.2'; /* 第七輪 #435–#440：時間截擊、群戰占用、焦躁與比例勝算 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
