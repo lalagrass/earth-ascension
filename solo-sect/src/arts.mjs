@@ -517,7 +517,7 @@ export const topTier = (d) => ARTS.reduce((m, a) => (artTier(d, a.id) > m.t ? { 
 export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; const a = artById(id); if (id === 'zixia' && !d.zixia) d.zixia = 1; /* loop172 氣宗本門領悟紫霞＝第一層 */ unlockTechs(d, a); if (d.pendingArt === id) d.pendingArt = null; return a; }
 const CATDMG24 = ['quanzhang', 'tuifa', 'jianfa', 'gunbang'];
 const catDmg24 = (d, a) => { if (!d || !a) return 1; const c = primaryCat(a.id); return CATDMG24.includes(c) ? 1 + 0.0015 * mastery(d, c) : 1; }; /* loop198：外功造詣每 20 點 +3% 招式傷害 */
-export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now) * harmonyMul(d) * affixMul(d, mvId, 'dmg'); /* loop161 v2.4 陰陽共鳴 */ // loop127 勞作練體
+export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now) * harmonyMul(d) * affixMul(d, mvId, 'dmg') * (d.raging ? CLASH.fret.force : 1); /* loop161 v2.4 陰陽共鳴 */ // loop127 勞作練體
 const moveMul0 = (d, mvId, now = 0) => { const raw = artOfMove(mvId), a = raw && d.arts?.[raw.id] ? raw : null, q = qiStrikeMul(d, a) * swordDmgMul(d, mvId), md = modeMul31(d, a, 'dmg'); if (!a) return (d.powMul || 1) * (d.jhMul || 1) * q * styleDmg24(d) * md; const t = artTier(d, a.id), r = d.arts[a.id]; return (curveMulOf(a.curve, t) / (a.bestDps || 1)) * (d.powMul || 1) * (d.jhMul || 1) * (variantOf(d, a.id, now)?.dmg || 1) * (1 + GUIZHEN.star * (r.stars || 0)) * (d.pf ? profMul(r.xp) : 1) * q * md * styleDmg24(d) * innerDrive28(d, a).mul * catDmg24(d, a) /* #408 曲線是最強一招的每秒傷害，招式原傷害先除掉；悟性、性格、門派偏向與初學加成不進出手 */ /* loop201 武學 mode；loop198 外功造詣；loop181 四階內功催動 */ /* loop91 熟練度十重（d.pf 由 s.prof 設） */; };
 export const effectTier = (d, eff) => ARTS.filter((a) => a.effect === eff).reduce((m, a) => Math.max(m, artTier(d, a.id)), -1);
 export const effectMul = (d, eff, now = 0) => ARTS.filter((a) => a.effect === eff && d.arts?.[a.id]).reduce((m, a) => m * (variantOf(d, a.id, now)?.eff || 1) * (artTier(d, a.id) >= 3 ? PERKS.full.dmg : 1), 1);
@@ -1197,6 +1197,7 @@ export const CLASH = {
   read: { drop: 45 },
   dodge: { qi: 3 },
   time: { reaction: 0.36, insight: 30, tier: 0.6, agility: 50, strike: 0.55, strikeTier: 0.4, step: 0.26, guard: 0.1, jitter: 0.25, fret: 0.6, counterForce: 0.5, parryRecover: 0.2, hitRecover: 0.35 },
+  fret: { dodge: 0.18, parry: 0.12, hit: 0.32, strike: 0.22, steady: 1.5, hot: 0.7, normal: 1, rageTime: 3, force: 1.3, qi: 1.5, attackQi: 2 },
   parry: { drop: 14, joltDrop: 20 },
   depth: { rat: 1, boar: 2, bandit: 2 }, monQi: { rat: 4, boar: 12, bandit: 10 },
 };
@@ -1226,7 +1227,7 @@ export function moveStats(w, moveId, wind = 0.5) {
   const speed = 20 + t * 5 + (tags.includes('快') ? 18 : 0) + Math.min(18, 5 / Math.max(0.1, wind));
   const armor = 5 + t * 4 + (tags.includes('剛') || tags.includes('拙') ? 10 : 0) + (w?.arts?.jiuyang && artTier(w, 'jiuyang') >= 3 ? 25 : 0);
   const extremes = { xuantie: { force: 100, armor: 55 }, xianglong: { force: 95, armor: 45 }, dugu: { force: 12, speed: 80 }, taiji: { force: 8 }, taijiSword: { force: 8 }, kuihua: { speed: 95 } };
-  return { force, speed, armor, type: a?.weapon === 'sword' || a?.id === 'dugu' ? 'sword' : /指/.test(a?.name || '') ? 'finger' : 'fist', ...(extremes[a?.id] || {}) };
+  return { force: (extremes[a?.id]?.force ?? force) * (w?.raging ? CLASH.fret.force : 1), speed: extremes[a?.id]?.speed ?? speed, armor: extremes[a?.id]?.armor ?? armor, type: a?.weapon === 'sword' || a?.id === 'dugu' ? 'sword' : /指/.test(a?.name || '') ? 'finger' : 'fist' };
 }
 /* 太極借來勁：來招越重，可卸回去的比例越高；人、獸、賊共用。 */
 export const taijiReturn = (atk, moveId, wind) => Math.min(0.8, 0.25 + moveStats(atk, moveId, wind).force / 100);
@@ -1279,7 +1280,28 @@ function settleDefense(s, def, T, result) {
   const used = result.used ?? (result.kind === 'hit' ? 0 : T.guard);
   def.busyUntil = Math.max(def.busyUntil || 0, now + T.busy + used + recovery);
   def.ring = { intercept: result.kind === 'read', t: now, busy: def.busyUntil - now };
+  noteFret(s, def, result.kind);
   return result;
+}
+export function composure(d) {
+  const p = d?.personality || [];
+  if (p.some((x) => ['rigid', 'quiet', 'gentle', 'honest'].includes(x))) return CLASH.fret.steady;
+  if (p.some((x) => ['brave', 'playful'].includes(x)) || temper29(d).xiao) return CLASH.fret.hot;
+  return CLASH.fret.normal;
+}
+export function noteFret(s, d, event) {
+  if (!d || isMon(d)) return;
+  if (d.raging) return;
+  const F = CLASH.fret, delta = event === 'dodge' ? F.dodge : event === 'parry' ? F.parry : event === 'hit' ? F.hit : event === 'strike' || event === 'read' ? -F.strike : 0;
+  d.fret = Math.max(0, (d.fret || 0) + delta);
+  if (d.fret >= composure(d)) {
+    d.raging = true; d.rageUntil = (s?.t ?? 0) + F.rageTime; d.fret = composure(d);
+    if (s) { s.rageN = (s.rageN || 0) + 1; (s.fx ||= []).push({ kind: 'clash', word: '怒', color: '#d0302a', pos: [...(d.pos || [0, 0])], ttl: F.rageTime }); log(s, `【惱羞】${d.name}被纏得忍不住，改為硬攻`); }
+  }
+}
+export function fretStep(s, d) {
+  if (!d?.raging || (d.rageUntil || 0) > (s?.t ?? 0)) return false;
+  d.raging = false; d.rageUntil = 0; d.fret = 0; return true;
 }
 function advanceAfterDodge(s, atk, def) {
   if (!atk.pos || !def.pos) return;
