@@ -31,7 +31,7 @@ test('loop171 大比魁首得 chief24', () => {
 test('loop171→181 同門成套：只算本門專屬；公共身法不計；成套傷害改由 innerDrive28；舊局不變', () => {
   const s = V({ sect24: 'emei' }); tick(s, 0.1); const d = other(s); for (const id of Object.keys(d.arts)) if (d.stree.includes(id)) delete d.arts[id];
   assert.equal(A.sectClasses24(d), 0);
-  give(d, 'emeiJiuyang', 30); give(d, 'emeiSword', 30); assert.equal(A.sectClasses24(d), 0); assert.equal(A.styleDmg24(d) / (A.polymath24(d) === 2 ? A.SYN24.conv : 1) / A.injuryMul28(d), 1); /* loop196：內功未大成不算正宗 */
+  give(d, 'emeiJiuyang', 30); give(d, 'emeiSword', 30); assert.equal(A.sectClasses24(d), 0); assert.equal(A.styleDamage(d) / (A.polymath24(d) === 2 ? A.SYN24.conv : 1) / A.injuryMul28(d), 1); /* loop196：內功未大成不算正宗 */
   give(d, 'stepFeather', 30); assert.equal(A.sectClasses24(d), 0);
   give(d, 'emeiJiuyang', 60); assert.equal(A.sectClasses24(d), 3); /* 本門內功大成＋本門劍法小成 */
 });
@@ -48,7 +48,7 @@ test('loop171→182 雜學：跨兩派血統 → 分心；三派大成且造詣 
   assert.equal(A.polymath24(d), 1); assert.ok(A.styleBadges24(d).includes('【雜學分心】'));
   const r = A.artMulParts(d, A.artById('emeiSword')); assert.ok(JSON.stringify(r).includes('雜學分心'));
   for (const id of ['emeiSword', 'luoyingPalm', 'jindingPalm', 'tianluoPalm', 'chousuiPalm']) give(d, id, 100); d.mast = null;
-  const m = Math.max(...Object.keys(A.CATS).map((k) => A.mastery(d, k))); if (m >= 58) { assert.equal(A.polymath24(d), 2); assert.ok(A.styleDmg24(d) >= 1.20 - 1e-9); }
+  const m = Math.max(...Object.keys(A.CATS).map((k) => A.mastery(d, k))); if (m >= 58) { assert.equal(A.polymath24(d), 2); assert.ok(A.styleDamage(d) >= 1.20 - 1e-9); }
 });
 test('loop172 華山二宗／武當成長鏈：資料照規格、v24 專屬', () => {
   const chk = (id, k, g, sc) => { const a = A.artById(id); assert.ok(a && a.v24 && a.classic && !a.secret && a.own24 === k && a.grade === g && a.school === sc, id); assert.ok(A.ART_CAT[id], id); if (sc !== 'inner' && sc !== 'step') assert.equal(a.techs.length, 2, id); };

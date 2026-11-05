@@ -176,11 +176,11 @@ test('loop203 練功倍率只留一個偏好標籤，靈動不與投其所好疊
   assert.deepEqual(tasteOf(flash, 'mianPalm').map((x) => x[0]), ['投其所好']);
   const plain = body();
   assert.equal(tasteOf(plain, 'mianPalm').length, 0);
-  assert.equal(A.temper29(body({ personality: ['clever'] })).ling, true);
-  assert.equal(A.temper29(body({ personality: ['playful'] })).ling, true);
-  assert.equal(A.temper29(body({ personality: ['quiet'] })).zheng, true);
-  assert.equal(A.temper29(body({ personality: ['bold'] })).xiao, true);
-  assert.equal(A.temper29(body({ personality: ['bold'] })).ling, false);
+  assert.equal(A.temperOf(body({ personality: ['clever'] })).ling, true);
+  assert.equal(A.temperOf(body({ personality: ['playful'] })).ling, true);
+  assert.equal(A.temperOf(body({ personality: ['quiet'] })).zheng, true);
+  assert.equal(A.temperOf(body({ personality: ['bold'] })).xiao, true);
+  assert.equal(A.temperOf(body({ personality: ['bold'] })).ling, false);
 });
 
 test('loop204 面板寫出類別與內勁，徽章只看主修武學', () => {

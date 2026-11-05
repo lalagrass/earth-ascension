@@ -3,13 +3,13 @@ import assert from 'node:assert/strict';
 import { clashOdds, moveStats, taijiReturn } from '../src/arts.mjs';
 import { createState } from '../src/sim.mjs';
 
-test('N22：高手能閃老鼠，同級對手沒有絕對優勢', () => {
+test('N22/N27：高手截鼠招，新手沒有截擊優勢', () => {
   const rat = { k: 'rat' };
   const s = createState(3), fighter = s.ds[0]; fighter.arts.breath = { xp: 0 }; fighter.qi = 100;
-  fighter.skills.agility = 80;
-  assert.ok(clashOdds(s, rat, fighter).dodge > 0.9);
-  fighter.skills.agility = 30;
-  assert.ok(clashOdds(s, rat, fighter).dodge < 0.6);
+  fighter.arts.basicFist = { xp: 150, bt1: true, bt2: true, bt3: true, bt4: true };
+  assert.ok(clashOdds(s, rat, fighter, { wind: 0.54 }).read > 0.9);
+  fighter.arts.basicFist = { xp: 0 };
+  assert.ok(clashOdds(s, rat, fighter, { wind: 0.54 }).read < 0.5);
   assert.ok(moveStats({ k: 'boar' }).armor > moveStats(rat).armor);
   assert.ok(taijiReturn({ k: 'boar' }) > taijiReturn(rat));
 });

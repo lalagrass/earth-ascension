@@ -172,7 +172,7 @@ export const JHEV = { master: { p: 0.12, after: 4, cool: 6, xp: 8, mood: 5, teac
 const RJ = (s) => { const E = s.jhev; E.rng = ((E.rng || seedMix(s.seed || 1, 7919)) * 16807) % 2147483647; return E.rng / 2147483647; };
 const here = (s) => s.ds.filter((d) => !d.away && d.role !== 'laborer' && d.hp > 30);
 const md = (d, v) => { d.mood = Math.max(0, Math.min(100, d.mood + v)); };
-export const letterP = (s, day) => { const pow = power(s), pts = JHEV.letter.base * (1 + day / JHEV.letter.grow); return Math.max(0.15, Math.min(0.85, pow / (pow + pts))); };
+export const letterP = (s, day) => { const pow = power(s), pts = JHEV.letter.base * (1 + day / JHEV.letter.grow); return pow / (pow + pts); };
 export function jhevDaily(s) {
   const E = (s.jhev = typeof s.jhev === 'object' ? s.jhev : { m: 0, l: 0, lw: 0, mNext: 0, lNext: 0 }), day = s.day, M = JHEV.master, L = JHEV.letter;
   if (day >= M.after && day >= E.mNext && RJ(s) < M.p) { const c = here(s).filter((d) => autoFocus(d)); const d = c[Math.floor(RJ(s) * c.length)];

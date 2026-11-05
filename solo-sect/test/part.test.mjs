@@ -9,7 +9,8 @@ test('部位傷：觸發條件、三種效果、三日內好', () => {
   assert.equal(partHit(s, a, { kind: 'hit', heavy: true }), null, '架勢沒空、也不是精準武學');
   const eye = d(); partHit(s, eye, { kind: 'hit', heavy: true, why: 'open' }, { attack: { arts: {} }, move: 'dugu', rnd: () => 0.1 }); assert.equal(eye.part.where, 'eye');
   assert.match(partText(eye), /^左目受傷，三日內看不清來招$/);
-  const ok = d(); assert.ok(clashOdds(s, m, ok).read > 0); assert.equal(clashOdds(s, m, eye).read, 0, '目傷：讀招失效');
+  const ok = d(); ok.arts.basicFist = { xp: 150, bt1: true, bt2: true, bt3: true, bt4: true }; eye.arts.basicFist = { ...ok.arts.basicFist };
+  assert.ok(clashOdds(s, m, ok, { wind: 0.54 }).read > 0); assert.equal(clashOdds(s, m, eye, { wind: 0.54 }).read, 0, '目傷：截擊失效');
   const hand = d(); hand.part = { where: 'hand', side: '右', days: 3 }; assert.ok(Math.abs(windOf(hand, 'fist', 1) / windOf(ok, 'fist', 1) - PART.hand) < 1e-9);
   const body = d(); body.part = { where: 'body', side: '', days: 3 }; addQi(body, 10); assert.equal(body.qi, 0, '身傷：內力不回');
   partHeal(s, eye, 'day'); partHeal(s, eye, 'heal'); assert.equal(eye.part.days, 1); partHeal(s, eye, 'day'); assert.equal(eye.part, null, '最多三日');

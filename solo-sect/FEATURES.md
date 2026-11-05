@@ -1,5 +1,7 @@
 # FEATURES.md：codex/solo-sect-grok（山門紀 solo-sect）
 
+> 第七輪候審（#435，分支 `codex/solo-sect-n27-n31`）：N27 的時間截擊與進身閃、N28 的動作占用群戰、N29 的焦躁與惱羞、N30 的山賊／名功／林克時間校準、N31 的機率與常數整理。存檔規則 3.2；請以本輪 PR 的 CI、bot12、截圖判定，勿將下列舊版功能表當成新規則驗收。
+
 | 項目 | 內容 |
 |---|---|
 | 實際主筆／工具 | Grok Bot（executor 子代理），在 box 上用 Shell、git、node、headless Chrome＋playwright-core 撰寫；commit 作者顯示為 lalagrass。設計決定由擁有人 Yuying Chen 拍板（見 ROADMAP §5／§9.5／§11.6 等）。 |

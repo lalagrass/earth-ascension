@@ -1,7 +1,7 @@
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
 import { NODES, EDGES, DAY, FACILITIES, MOVES, ARTS } from './data.mjs';
 import { noteFret, interceptOpening, breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
-import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuter28, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
+import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuterArt, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
 import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of } from './sect.mjs';
 import { peaceDelay } from './economy.mjs';
@@ -164,10 +164,10 @@ function bandClash(s, b, defs, dt) {
       const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, move: w.mv, wind: w.wind, map: true }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
       if (r.kind === 'hit') { breakWindup(s, d, m, w.mv, w.wind); bandHit(s, b, m, w.dmg * (r.heavy ? CLASH.heavy : 1), d); } else (s.fx ||= []).push({ kind: 'clash', word: r.kind === 'dodge' ? '閃' : r.kind === 'parry' ? '架' : '破', color: '#ddd', pos: [...(m.pos || b.pos)], ttl: 0.6 });
       continue; }
-    if (d.bcool > 0) continue;
+    if (d.bcool > 0 || (d.busyUntil || 0) > s.t) continue;
     const mine = live().filter((m) => m.ring === 1 && m.foe === d.id), tgt = (mine.length ? mine : live()).sort((x, y) => x.hp - y.hp)[0]; if (!tgt) break;
     const wind = BAND_CLASH.cd * windFrac(topTierOf(d)); d.bcool = BAND_CLASH.cd;
-    d.bswing = { mv: mainOuter28(d)?.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * def24Of(s) * BAND_CLASH.cd };
+    d.bswing = { mv: mainOuterArt(d)?.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * def24Of(s) * BAND_CLASH.cd };
     (s.fx ||= []).push({ kind: 'warn', from: [...d.pos], to: [...(tgt.pos || b.pos)], r: 30, dur: wind, ttl: wind, t0: s.t });
   }
   if (b.state !== 'yard') return;
@@ -260,12 +260,17 @@ export function points(s) {
 export const defense = (s) => power(s) * def24Of(s); /* loop176 武當紫霄宮 */
 export const winP = (s, pts) => {
   const d = defense(s), open = d + pts > 0 ? d / (d + pts) : 0;
-  if (!fenceUp(s) || !s.ds.some(canDefend)) return open;
-  const dps = s.ds.filter(canDefend).reduce((sum, x) => sum + defenderDps(x, s), 0) * def24Of(s);
-  const raiderDps = Math.max(BAND.fenceDmg.min, Math.round(pts * BAND.fenceDmg.k)) / BAND.hitEvery;
-  const tempo = dps * s.fence.hp / Math.max(1, pts * raiderDps);
+  const team = s.ds.filter(canDefend);
+  if (!team.length) return open;
+  const dps = team.reduce((sum, x) => sum + defenderDps(x, s), 0) * def24Of(s);
+  const hp = team.reduce((sum, x) => sum + Math.max(0, x.hp), 0);
+  const raiderDps = bandMembers(pts).reduce((sum, m) => sum + (BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per) / BAND_CLASH.monCd, 0);
+  const yardTempo = dps * hp / (dps * hp + pts * raiderDps);
+  if (!fenceUp(s)) return yardTempo;
+  const fenceDps = Math.max(BAND.fenceDmg.min, Math.round(pts * BAND.fenceDmg.k)) / BAND.hitEvery;
+  const tempo = dps * s.fence.hp / (pts * fenceDps);
   const fence = tempo / (1 + tempo);
-  return 1 - (1 - open) * (1 - fence);
+  return 1 - (1 - yardTempo) * (1 - fence);
 };
 export const demandOf = (s, pts) => Math.max(RAID.demand.min, Math.round(Math.min(Math.max(0, s.res.coin) * RAID.demand.coinMax, RAID.demand.base + pts * RAID.demand.k)));
 // 自動決定：比較「勒索金」與「迎戰的預期損失」＝(1−勝率)×(被搶的錢＋糧＋一人重傷折 hurtCost)；勒索金較小且付得起才付
@@ -432,7 +437,7 @@ export function lairDaily(s, H) {
 export function lairStep(s, H) {
   const L = s.lair, tr = L?.trip; if (!tr || s.t < tr.back) return; L.trip = null;
   const team = tr.ids.map((id) => s.ds.find((d) => d.id === id)).filter(Boolean); for (const d of team) { d.away = false; d.reason = '剿寨歸來'; if (H?.gate) d.pos = [...H.gate]; }
-  const p = Math.max(0.1, Math.min(0.9, tr.pow / (tr.pow + tr.pts))), win = RL(s) < p; let hurt = null;
+  const p = tr.pow / (tr.pow + tr.pts), win = RL(s) < p; let hurt = null;
   if (!win || RL(s) < LAIR.winHurt) { { hurt = team[Math.floor(RL(s) * team.length)]; if (hurt) { hurt.hp = Math.min(hurt.hp, guardHurt(hurt, RAID.hurtHp)); /* loop117 */ hurt.raidHurt = (hurt.raidHurt || 0) + 1; T(s).homeHurt++; H?.think?.(s, hurt, 'raidHurt'); } } }
   const X = T(s); if (win) { L.won++; X.next = Math.max(X.next || 0, s.day) + LAIR.peaceDays; s.rep = (s.rep || 0) + RAID.rep * 2; L.next = X.next; for (const d of team) { tallyAct(d, 'lair', LAIR.dur / 4); recordDeed(s, d, 'lair'); } recordDeed(s, null, 'lair', { chron: `${team.map((d) => d.name).join('、')}大破後山山寨` }); if (!X.taiping && X.boss?.state !== 'wait' && X.boss?.state !== 'on') X.boss = { day: s.day + BOSS.after, state: 'wait' }; log(s, `【剿寨】大破山寨！山賊作鳥獸散，至少 ${LAIR.peaceDays} 日不敢來犯。名聲 +${RAID.rep * 2}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else { L.next = s.day + LAIR.cool; log(s, `【剿寨】寨子太硬，攻不下來${hurt ? `，${hurt.name}重傷` : ''}，只好先撤回。`); }
@@ -455,7 +460,7 @@ const hasAoe27 = (d) => (d.moves || []).some((id) => (MOVES.find((m) => m.id ===
 const eliteArt27 = (d) => Object.keys(d.arts || {}).some((id) => WAVE27.eliteArts.includes(id) || artById(id)?.chiefOnly24);
 const bigSword27 = (d) => Object.keys(d.arts || {}).some((id) => isSwordArt(id) && (artById(id)?.grade || 0) >= 3 && artTier(d, id) >= 0);
 export function aoeCleaveMul(d, w = 0) {
-  const q = (hasAoe27(d) ? 1 : 0) + (eliteArt27(d) ? 1 : 0) + (bigSword27(d) ? 1 : 0), o = mainOuter28(d), add = (d.champ28 || (o && innerDrive28(d, o).tier === 1)) ? CHAMP28.aoe : 0; /* loop183 本門正宗催動或當屆大比首徒 +0.25 */
+  const q = (hasAoe27(d) ? 1 : 0) + (eliteArt27(d) ? 1 : 0) + (bigSword27(d) ? 1 : 0), o = mainOuterArt(d), add = (d.champ28 || (o && innerDrive28(d, o).tier === 1)) ? CHAMP28.aoe : 0; /* loop183 本門正宗催動或當屆大比首徒 +0.25 */
   if (!q) return 1 + add; const m = Math.min(WAVE27.aoeMax, WAVE27.aoeBase + WAVE27.aoeStep * (q - 1)); return (w >= 2 ? 1 + (m - 1) * WAVE27.lateK : m) + add;
 }
 export const crowdSwarmMul = (team) => { const n = team.length; return n < WAVE27.swarmFrom ? 1 : 1 + Math.min(WAVE27.swarmMax, WAVE27.swarmStep * (n - WAVE27.swarmFrom + 1)); };
