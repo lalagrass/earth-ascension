@@ -1196,11 +1196,12 @@ export const CLASH = {
   heavy: 2,
   read: { drop: 45 },
   dodge: { qi: 3 },
+  time: { reaction: 0.36, insight: 30, tier: 0.6, agility: 50, strike: 0.55, strikeTier: 0.4, step: 0.26, guard: 0.1, jitter: 0.25, fret: 0.6, counterForce: 0.5 },
   parry: { drop: 14, joltDrop: 20 },
   depth: { rat: 1, boar: 2, bandit: 2 }, monQi: { rat: 4, boar: 12, bandit: 10 },
 };
 const clamp01 = (x, hi = 1) => Math.max(0, Math.min(hi, x));
-const opposed = (mine, theirs, scale = 10) => 0.02 + 0.96 / (1 + Math.exp(-(mine - theirs) / scale));
+const opposed = (mine, theirs, scale = 10) => { const a = Math.exp(mine / scale), b = Math.exp(theirs / scale); return a / (a + b); };
 export const windFrac = (tier) => CLASH.windIn + (CLASH.windHua - CLASH.windIn) * Math.max(0, Math.min(4, tier | 0)) / 4;
 /* 一招的前搖秒數：cd × 前搖比例（看這招所屬武學的火候） */
 export function windOf(d, mvId, cd) { const a = artOfMove(mvId); const t = a && d?.arts?.[a.id] ? artTier(d, a.id) : 0; return cd * windFrac(t) * (a?.tags?.includes('快') ? 0.75 : 1) * (a?.id === 'kuihua' && zjHas(d, 'kuihua') ? 0.1 : 1) * (d?.part?.where === 'hand' ? PART.hand : 1); }
@@ -1238,24 +1239,37 @@ export function breakWindup(s, atk, def, moveId, wind) {
   if (s) { (s.fx ||= []).push({ kind: 'clash', word: '斷', color: '#ffb05a', pos: [...(def.pos || [0, 0])], ttl: 0.8 }); s.breakN = (s.breakN || 0) + 1; }
   return true;
 }
-/* 三種接法各自的成功率（不擲骰），給測試與面板讀。 */
+/* 同一組反應時間區間決定截擊、進身閃、招架。面板讀的是各結果的無條件機率。 */
+export function clashTimes(s, atk, def, ctx = {}) {
+  const T = CLASH.time, depth = ctx.depth ?? depthOf(atk, ctx.move);
+  const wind = Math.max(0, ctx.available ?? ctx.wind ?? 0.5);
+  const tier = topTierOf(def), agi = isMon(def) ? (def.agi ?? moveStats(def).speed) : (def.skills?.agility || 0);
+  const insight = isMon(atk) ? (s?.codex?.[atk.k]?.insight || 0) : 0;
+  const wu = isMon(def) ? 1 : (def.wu ?? def.root ?? 3);
+  const reaction = T.reaction * (1 + depth / (depth + 10)) / (1 + wu / 10 + insight / T.insight + tier * T.tier);
+  const jitter = T.jitter * (1 + (def.fret || 0) * T.fret);
+  const strike = T.strike / (1 + tier * T.strikeTier);
+  const step = T.step / (1 + agi / T.agility);
+  const guard = T.guard;
+  const busy = Math.max(0, (def.busyUntil || 0) - (s?.t ?? 0), (def.swing?.at || 0) - (s?.t ?? 0), (def.bswing?.at || 0) - (s?.t ?? 0));
+  return { wind: Math.max(0, wind - busy), reaction, jitter, strike, step, guard, busy };
+}
+const reactionOdds = (T, action) => clamp01((T.wind - action - T.reaction * (1 - T.jitter)) / (2 * T.reaction * T.jitter));
+/* 起手時先抽反應；截擊立即發生，其餘接法帶同一次抽樣等來招落下。 */
+export function interceptOpening(s, atk, def, rnd, ctx = {}) {
+  const T = clashTimes(s, atk, def, ctx), reaction = T.reaction * (1 - T.jitter + 2 * T.jitter * rnd());
+  const opening = { T, reaction };
+  if (postureOf(def) > 0 && !(atk.sure && atk.sure === (def.uid || def.id)) && def.part?.where !== 'eye' && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) {
+    return { opening, read: resolveSwing(s, atk, def, rnd, { ...ctx, opening }) };
+  }
+  return { opening, read: null };
+}
 export function clashOdds(s, atk, def, ctx = {}) {
-  const depth = ctx.depth ?? depthOf(atk, ctx.move), wind = Math.max(0.05, ctx.wind ?? 0.5), move = moveStats(atk, ctx.move, wind);
-  let read = 0, dodge = 0, parry = 0;
-  if (isMon(def)) {
-    dodge = opposed(def.agi ?? (def.k === 'rat' ? 30 : 18), move.speed, 10);
-    parry = def.k === 'boar' ? 0.2 : def.k === 'bandit' && (def.i ?? 0) % 2 === 0 ? 0.25 : 0;
-  }
-  else {
-    const insight = isMon(atk) ? s?.codex?.[atk.k]?.insight || 0 : 0;
-    const clever = ARTS.some((a) => a.tags?.includes('巧') && def.arts?.[a.id] && artTier(def, a.id) >= 1) ? 6 : 0;
-    read = opposed((def.wu ?? def.root ?? 3) * 4 + insight * 0.3 + (def.arts ? topTierOf(def) * 5 : 0) + clever, depth * 12 + (move.speed - 20) * 0.3 + 10, 9);
-    if (def.part?.where === 'eye') read = 0; /* #427 目傷：看不清來招 */ /* #420 化境：前搖短到很難看破 */
-    dodge = qiOf(def) >= CLASH.dodge.qi ? opposed(def.skills?.agility || 0, move.speed, 10) : 0;
-    parry = opposed(qiPow(def), move.force + 12, 12);
-  }
-  if (move.force >= (isMon(def) ? moveStats(def).force : qiPow(def)) * 2) parry = 0;
-  return { read, dodge, parry };
+  const T = clashTimes(s, atk, def, ctx);
+  const read = def.part?.where === 'eye' || def.rageUntil > (s?.t ?? 0) ? 0 : reactionOdds(T, T.strike);
+  const dodgeTotal = def.rageUntil > (s?.t ?? 0) ? 0 : reactionOdds(T, T.step);
+  const parryTotal = reactionOdds(T, T.guard);
+  return { read, dodge: Math.max(0, dodgeTotal - read), parry: Math.max(0, parryTotal - dodgeTotal), hit: 1 - Math.max(read, dodgeTotal, parryTotal) };
 }
 /* 前搖結束那一刻的判定。rnd 是固定種子亂數（sim 的 rand(s)）。回傳 { kind: 'read'|'dodge'|'parry'|'hit', heavy, jolt, why }。
    ctx.force：'hit' 直接中招（應接不來、看破後的必中）。 */
@@ -1263,16 +1277,16 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   postureOf(atk); postureOf(def);
   if (def.posture <= 0) { def.posture = postureMax(def) * 0.5; def.postT = s?.t ?? 0; return { kind: 'hit', heavy: true, why: 'open' }; }
   if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return { kind: 'hit', heavy: false, why: ctx.force || 'sure' }; }
-  const o = clashOdds(s, atk, def, ctx);
+  const T = ctx.opening?.T || clashTimes(s, atk, def, ctx), reaction = ctx.opening?.reaction ?? T.reaction * (1 - T.jitter + 2 * T.jitter * rnd());
   const zjAtk = ctx.map && !isMon(atk) ? zjOfMove(ctx.move) : null; /* #426 */
   const duguPassive = ctx.map && isMon(atk) && zjHas(def, 'dugu') && (s?.codex?.[atk.k]?.insight || 0) >= ZJ.dugu.insight; /* 獨孤：讀招改成被動截，不再擲讀招 */
-  if (!duguPassive && o.read > 0 && rnd() < o.read) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return { kind: 'read' }; }
-  if (o.dodge > 0 && rnd() < o.dodge) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi); return { kind: 'dodge' }; }
-  if (o.parry > 0 && rnd() < o.parry) {
+  if (!duguPassive && def.part?.where !== 'eye' && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return { kind: 'read', used: reaction + T.strike, counter: moveStats(def, mainOuter28(def)?.id).force * CLASH.time.counterForce }; }
+  if (!(def.rageUntil > (s?.t ?? 0)) && reaction + T.step < T.wind) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi * (reaction + T.step) / Math.max(T.wind, 1e-9)); return { kind: 'dodge', used: reaction + T.step, strain: (reaction + T.step) / Math.max(T.wind, 1e-9) }; }
+  if (reaction + T.guard < T.wind) {
     const force = moveStats(atk, ctx.move, ctx.wind).force, guard = isMon(def) ? moveStats(def).force : qiPow(def);
     const jolt = guard > force * 1.4;
     postureHit(s, def, CLASH.parry.drop * Math.max(0.5, force / Math.max(1, guard))); postureHit(s, atk, CLASH.parry.drop * Math.max(0.5, guard / force) + (jolt ? CLASH.parry.joltDrop : 0));
-    return { kind: 'parry', jolt };
+    return { kind: 'parry', jolt, used: reaction + T.guard };
   }
   return { kind: 'hit', heavy: false };
 }
