@@ -1,4 +1,4 @@
-import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST } from './data.mjs';
+import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST, TRAITS } from './data.mjs';
 import { stampCard, curveMulOf, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
 import { pipeline, log, chronOf } from './util.mjs';
@@ -1233,7 +1233,7 @@ export function moveStats(w, moveId, wind = 0.5) {
   const speed = MOVE.speed + t * MOVE.tierSpeed + (tags.includes('快') ? MOVE.quickSpeed : 0) + Math.min(MOVE.windSpeedMax, MOVE.windSpeed / Math.max(MOVE.minWind, wind));
   const armor = MOVE.armor + t * MOVE.tierArmor + (tags.includes('剛') || tags.includes('拙') ? MOVE.hardArmor : 0) + (w?.arts?.jiuyang && artTier(w, 'jiuyang') >= 3 ? MOVE.jiuyangArmor : 0);
   const extreme = MOVE.extremes[a?.id] || {};
-  return { force: (extreme.force ?? force) * (w?.raging ? CLASH.fret.force : 1), speed: extreme.speed ?? speed, armor: extreme.armor ?? armor, type: a?.weapon === 'sword' || a?.id === 'dugu' ? 'sword' : /指/.test(a?.name || '') ? 'finger' : 'fist' };
+  return { force: (extreme.force ?? force) * (w?.raging ? CLASH.fret.force : 1), speed: extreme.speed ?? speed, armor: extreme.armor ?? armor, type: a?.type || 'fist' };
 }
 /* 太極借來勁：來招越重，可卸回去的比例越高；人、獸、賊共用。 */
 export const taijiReturn = (atk, moveId, wind) => { const force = moveStats(atk, moveId, wind).force; return force / (force + MOVE.taijiHalfForce); };
@@ -1291,8 +1291,8 @@ function settleDefense(s, def, T, result) {
 }
 export function composure(d) {
   const p = d?.personality || [];
-  if (p.some((x) => ['rigid', 'quiet', 'gentle', 'honest'].includes(x))) return CLASH.fret.steady;
-  if (p.some((x) => ['brave', 'playful'].includes(x)) || temperOf(d).xiao) return CLASH.fret.hot;
+  if (p.some((x) => TRAITS[x]?.composure === 'steady')) return CLASH.fret.steady;
+  if (p.some((x) => TRAITS[x]?.composure === 'hot') || temperOf(d).xiao) return CLASH.fret.hot;
   return CLASH.fret.normal;
 }
 export function noteFret(s, d, event) {
@@ -1429,7 +1429,7 @@ export function zjRegen(d, dt) { if (!zjHas(d, 'jiuyang') || d.part?.where === '
 /* 只在「架勢已空的重擊」或「精準武學（劍、指）的重擊」時發生。三處：目（看不清來招，讀招失效）、手（出手變慢）、身（內力不回）。
    帶回日常：最多 days 天自己好；去療傷每次少 1 天，有醫術專長的人照料直接好。不斷肢、不留殘疾。 */
 export const PART = { days: 3, hand: 1.3, where: ['eye', 'hand', 'body'], name: { eye: '目', hand: '手', body: '身' }, what: { eye: '看不清來招', hand: '出手慢了半拍', body: '內息回不上來' } };
-const preciseArt = (mvId) => { const a = artOfMove(mvId); return !!a && (a.weapon === 'sword' || /指/.test(a.name || '')); };
+const preciseArt = (mvId) => { const a = artOfMove(mvId); return !!a && (a.weapon === 'sword' || a.type === 'finger'); };
 export const partOf = (d, w) => (d?.part && d.part.where === w ? d.part : null);
 export function partHit(s, def, r, ctx = {}) {
   if (!def || isMon(def) || !r?.heavy || def.part) return null;

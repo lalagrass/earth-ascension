@@ -1,0 +1,384 @@
+{
+  "seed": 21,
+  "day": 20,
+  "samples": 100,
+  "hero": {
+    "name": "郭靖",
+    "wu": 1,
+    "agility": 20.185892032093115
+  },
+  "opponents": {
+    "bandit": {
+      "name": "持刀嘍囉",
+      "wind": 1.125,
+      "depth": 2
+    },
+    "peer": {
+      "name": "同級好手",
+      "move": "kanglong",
+      "wind": 0.32000000000000006
+    }
+  },
+  "rows": [
+    {
+      "foe": "bandit",
+      "mode": "simultaneous",
+      "n": 1,
+      "total": 100,
+      "counts": {
+        "read": 100,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 1,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      }
+    },
+    {
+      "foe": "bandit",
+      "mode": "simultaneous",
+      "n": 2,
+      "total": 200,
+      "counts": {
+        "read": 200,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 1,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      }
+    },
+    {
+      "foe": "bandit",
+      "mode": "simultaneous",
+      "n": 3,
+      "total": 300,
+      "counts": {
+        "read": 300,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 1,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      }
+    },
+    {
+      "foe": "bandit",
+      "mode": "simultaneous",
+      "n": 4,
+      "total": 400,
+      "counts": {
+        "read": 300,
+        "dodge": 0,
+        "parry": 13,
+        "hit": 87
+      },
+      "ratio": {
+        "read": 0.75,
+        "dodge": 0,
+        "parry": 0.033,
+        "hit": 0.217
+      }
+    },
+    {
+      "foe": "bandit",
+      "mode": "simultaneous",
+      "n": 6,
+      "total": 600,
+      "counts": {
+        "read": 300,
+        "dodge": 0,
+        "parry": 13,
+        "hit": 287
+      },
+      "ratio": {
+        "read": 0.5,
+        "dodge": 0,
+        "parry": 0.022,
+        "hit": 0.478
+      }
+    },
+    {
+      "foe": "bandit",
+      "mode": "staggered",
+      "n": 1,
+      "total": 100,
+      "counts": {
+        "read": 100,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 1,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      }
+    },
+    {
+      "foe": "bandit",
+      "mode": "staggered",
+      "n": 2,
+      "total": 200,
+      "counts": {
+        "read": 200,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 1,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      }
+    },
+    {
+      "foe": "bandit",
+      "mode": "staggered",
+      "n": 3,
+      "total": 300,
+      "counts": {
+        "read": 300,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 1,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      }
+    },
+    {
+      "foe": "bandit",
+      "mode": "staggered",
+      "n": 4,
+      "total": 400,
+      "counts": {
+        "read": 400,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 1,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      }
+    },
+    {
+      "foe": "bandit",
+      "mode": "staggered",
+      "n": 6,
+      "total": 600,
+      "counts": {
+        "read": 600,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 1,
+        "dodge": 0,
+        "parry": 0,
+        "hit": 0
+      }
+    },
+    {
+      "foe": "peer",
+      "mode": "simultaneous",
+      "n": 1,
+      "total": 100,
+      "counts": {
+        "read": 8,
+        "dodge": 39,
+        "parry": 53,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 0.08,
+        "dodge": 0.39,
+        "parry": 0.53,
+        "hit": 0
+      }
+    },
+    {
+      "foe": "peer",
+      "mode": "simultaneous",
+      "n": 2,
+      "total": 200,
+      "counts": {
+        "read": 8,
+        "dodge": 39,
+        "parry": 53,
+        "hit": 100
+      },
+      "ratio": {
+        "read": 0.04,
+        "dodge": 0.195,
+        "parry": 0.265,
+        "hit": 0.5
+      }
+    },
+    {
+      "foe": "peer",
+      "mode": "simultaneous",
+      "n": 3,
+      "total": 300,
+      "counts": {
+        "read": 8,
+        "dodge": 39,
+        "parry": 53,
+        "hit": 200
+      },
+      "ratio": {
+        "read": 0.027,
+        "dodge": 0.13,
+        "parry": 0.177,
+        "hit": 0.667
+      }
+    },
+    {
+      "foe": "peer",
+      "mode": "simultaneous",
+      "n": 4,
+      "total": 400,
+      "counts": {
+        "read": 8,
+        "dodge": 39,
+        "parry": 53,
+        "hit": 300
+      },
+      "ratio": {
+        "read": 0.02,
+        "dodge": 0.098,
+        "parry": 0.133,
+        "hit": 0.75
+      }
+    },
+    {
+      "foe": "peer",
+      "mode": "simultaneous",
+      "n": 6,
+      "total": 600,
+      "counts": {
+        "read": 8,
+        "dodge": 39,
+        "parry": 53,
+        "hit": 500
+      },
+      "ratio": {
+        "read": 0.013,
+        "dodge": 0.065,
+        "parry": 0.088,
+        "hit": 0.833
+      }
+    },
+    {
+      "foe": "peer",
+      "mode": "staggered",
+      "n": 1,
+      "total": 100,
+      "counts": {
+        "read": 8,
+        "dodge": 39,
+        "parry": 53,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 0.08,
+        "dodge": 0.39,
+        "parry": 0.53,
+        "hit": 0
+      }
+    },
+    {
+      "foe": "peer",
+      "mode": "staggered",
+      "n": 2,
+      "total": 200,
+      "counts": {
+        "read": 16,
+        "dodge": 78,
+        "parry": 106,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 0.08,
+        "dodge": 0.39,
+        "parry": 0.53,
+        "hit": 0
+      }
+    },
+    {
+      "foe": "peer",
+      "mode": "staggered",
+      "n": 3,
+      "total": 300,
+      "counts": {
+        "read": 24,
+        "dodge": 117,
+        "parry": 159,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 0.08,
+        "dodge": 0.39,
+        "parry": 0.53,
+        "hit": 0
+      }
+    },
+    {
+      "foe": "peer",
+      "mode": "staggered",
+      "n": 4,
+      "total": 400,
+      "counts": {
+        "read": 32,
+        "dodge": 156,
+        "parry": 212,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 0.08,
+        "dodge": 0.39,
+        "parry": 0.53,
+        "hit": 0
+      }
+    },
+    {
+      "foe": "peer",
+      "mode": "staggered",
+      "n": 6,
+      "total": 600,
+      "counts": {
+        "read": 48,
+        "dodge": 234,
+        "parry": 318,
+        "hit": 0
+      },
+      "ratio": {
+        "read": 0.08,
+        "dodge": 0.39,
+        "parry": 0.53,
+        "hit": 0
+      }
+    }
+  ]
+}
