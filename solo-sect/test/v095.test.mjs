@@ -74,13 +74,13 @@ test('戰報：距離、各類擊倒、逃走、傷、帶回、回頭原因；�
   const { s, rep } = expRun(3, 0, 2); assert.ok(rep.dist > 0); for (const k of ['kills', 'escaped', 'hurt', 'loot', 'reason', 'seg']) assert.ok(k in rep, k);
   assert.ok(s.ds.every((d) => d.hp > 0 && !d.away)); assert.ok(s.log.some((l) => /巡山戰報/.test(l.msg)));
 });
-test('固定難度：綜合能力越強走得越遠（同種子）', () => {
+test('固定難度：戰力隨能力增加，強者均較零基礎走更遠', () => {
   const d = [0, 60, 90].map((l) => expRun(11, l, 1).rep.dist); assert.ok(d[0] < d[1] && d[0] < d[2], d.join()); // N33 交手學習會分岔後續遭遇，單種子中段與高段距離非嚴格單調
   const power = [0, 60, 90].map((l) => { const s = createState(11), hero = s.ds[0]; hero.skills.palm = hero.skills.leg = Math.max(hero.skills.palm,l); hero.skills.agility = hero.skills.strength = l / 2; return dpsOf(s,hero); });
   assert.ok(power[0] < power[1] && power[1] < power[2], power.join());
   assert.ok(expRun(11, 90, 4).rep.dist >= ROUTE[3].from, '強隊至少進深谷');
 });
-test('撤退線：70% 比 30% 早回頭；決定性', () => {
+test('撤退線：相同局面 70% 比 30% 先回頭；整趟決定性', () => {
   const s = createState(8), hero = s.ds[0]; hero.hp = 50; s.exp = { thr: .7, supplies: 0, sta: 100, pat: 100, dist: 0, target: 1000 };
   assert.match(checkRetreat(s,[hero]), /70%/); s.exp.thr = .3; assert.equal(checkRetreat(s,[hero]), null, '相同局面且無乾糧時低撤退線繼續');
   const a = expRun(8, 30, 2, 0.7).rep, b = expRun(8, 30, 2, 0.3).rep;
