@@ -1,0 +1,137 @@
+{
+  "days": 60,
+  "wu": 3,
+  "seeds": [
+    1001,
+    1002,
+    1003,
+    1004,
+    1005,
+    1006,
+    1007,
+    1008,
+    1009,
+    1010,
+    1011,
+    1012
+  ],
+  "rows": [
+    {
+      "seed": 1001,
+      "day": 61,
+      "wu": 3,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "disarm": 0.0076533893590456726
+      }
+    },
+    {
+      "seed": 1002,
+      "day": 61,
+      "wu": 3,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "disarm": 0.00029595573663391373
+      }
+    },
+    {
+      "seed": 1003,
+      "day": 61,
+      "wu": 3,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "disarm": 0
+      }
+    },
+    {
+      "seed": 1004,
+      "day": 61,
+      "wu": 3,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "disarm": 0
+      }
+    },
+    {
+      "seed": 1005,
+      "day": 61,
+      "wu": 3,
+      "firstDay": null,
+      "known": [],
+      "progress": {}
+    },
+    {
+      "seed": 1006,
+      "day": 61,
+      "wu": 3,
+      "firstDay": null,
+      "known": [],
+      "progress": {}
+    },
+    {
+      "seed": 1007,
+      "day": 61,
+      "wu": 3,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "disarm": 0.0032612924653560122
+      }
+    },
+    {
+      "seed": 1008,
+      "day": 61,
+      "wu": 3,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "disarm": 0.09405501445735635
+      }
+    },
+    {
+      "seed": 1009,
+      "day": 61,
+      "wu": 3,
+      "firstDay": null,
+      "known": [],
+      "progress": {}
+    },
+    {
+      "seed": 1010,
+      "day": 61,
+      "wu": 3,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "disarm": 0.12732438530630147
+      }
+    },
+    {
+      "seed": 1011,
+      "day": 61,
+      "wu": 3,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "disarm": 0.0005622627842698712
+      }
+    },
+    {
+      "seed": 1012,
+      "day": 61,
+      "wu": 3,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "bodyThrow": 0.6187112289982936,
+        "disarm": 0.0006856165351116231
+      }
+    }
+  ],
+  "firstDays": [],
+  "medianFirstDay": null
+}

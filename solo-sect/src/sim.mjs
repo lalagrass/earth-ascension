@@ -731,9 +731,11 @@ function huntStep(s, dt) {
       break;
     }
   }
+  // 全員已因傷退回院中時，守點已無人可接下一拍；在途野獸留作倖存者。
+  const anyFit = team.some((d) => d.hp > 25 && d.task?.act === 'hunt');
+  if(!anyFit){for(const m of s.mons.filter(m=>!m.raid&&!m.gone)){rememberEscape(s,m);m.gone=true;h.escaped++;s.eco[m.k].n++;}for(const q of h.queue){h.escaped++;s.eco[q.k].n++;}h.queue=[];}
   s.mons = s.mons.filter((m) => !m.gone);
   const waveClear = !h.queue.length && !s.mons.some((m) => !m.raid);
-  const anyFit = team.some((d) => d.hp > 25);
   if (waveClear) { h.gap += dt; if (h.gap >= WAVE_GAP && h.wave + 1 < h.waves && anyFit && (s.eco.dog.n + s.eco.boar.n) > 0) { h.wave++; h.gap = 0; spawnWave(s); } }
   if ((waveClear && (h.wave + 1 >= h.waves || !anyFit || s.eco.dog.n + s.eco.boar.n === 0) && h.gap >= 1) || (!anyFit && waveClear)) {
     const rep = `狩獵戰報（${POSTS[h.post]}，${h.wave + 1} 波）：擊退 ${h.kills}、溜走 ${h.escaped}；` + team.map((d) => `${d.name}出手 ${h.hits[d.id] || 0} 次`).join('，') + `｜山中尚餘 狗${s.eco.dog.n} 豬${s.eco.boar.n}。${boutWhy(h.why)}`;

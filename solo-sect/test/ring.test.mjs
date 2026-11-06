@@ -43,7 +43,8 @@ test('N15：第 5 隻不佔近戰位，在外圈繞', () => {
   const live = s.mons.filter((m) => !m.trial && !m.raid);
   assert.equal(live.filter((m) => m.slot === d.id).length, RING.slots);
   const out = live.filter((m) => m.orbit === d.id); assert.equal(out.length, 1);
-  tick(s, 0.25); assert.ok(dist(out[0].pos, d.pos) > 26, '外圈的不貼身');
+  // N36 真走位逐拍繞出近身圈；保留「第 5 隻只在外圈」的判定。
+  for(let i=0;i<2;i++)tick(s,0.25); assert.ok(dist(out[0].pos, d.pos) > 26, '外圈的不貼身');
 });
 
 test('N28：應接次數只作紀錄，四敵仍佔四個貼身位', () => {

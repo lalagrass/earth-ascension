@@ -16,7 +16,7 @@ export const combatants=s=>[...(s.ds||[]),...(s.mons||[]),...(s.band?.members||[
 export function opponents(s,a,extra=null){const list=combatants(s).filter(t=>t!==a&&!t.gone&&!t.away&&(t.hp??1)>0&&faction(t)!==faction(a));if(extra&&!list.includes(extra))list.push(extra);return list;}
 export function allies(s,a){return combatants(s).filter(t=>t!==a&&!t.gone&&!t.away&&(t.hp??1)>0&&faction(t)===faction(a));}
 export function movementSpeed(a){return a.k?(MONSTERS[a.k]?.speed||BASE_SPEED*(1+(a.agi||0)/100)):BASE_SPEED*(1+(a.skills?.agility||0)/100);}
-export function coverFor(a){return COVERS.filter(c=>distance(a.pos,c.stand)<=RING.step).sort((a,b)=>a.slots-b.slots)[0]||null;}
+export function coverFor(a){return COVERS.filter(c=>distance(a.pos,c.stand)<=RING.engage/2).sort((a,b)=>a.slots-b.slots)[0]||null;}
 export const ringCapacity=a=>coverFor(a)?.slots||RING.slots;
 export function loadFromForecast(a,rows){
  const cover=coverFor(a),active=rows.filter(r=>r.active),waiting=rows.filter(r=>!r.active).sort((x,y)=>x.window+x.travel-y.window-y.travel);
@@ -24,7 +24,7 @@ export function loadFromForecast(a,rows){
  const parts=relevant.map(r=>({...r,share:r.need/(r.window+r.travel)}));return {L:parts.reduce((n,r)=>n+r.share,0),rows:parts,slots:cover?.slots||RING.slots};
 }
 export function moraleOf(a,{L,enemies,allies:friends,fallen=0,initialFriends=friends+1,threat=0,tolerance=1}){
- const health=Math.max(0,1-(a.hp??100)/(a.max||100)),fatigue=1-(a.needs?.energy??a.energy??100)/100;
+ const health=Math.max(0,1-(a.hp??a.max??MONSTERS[a.k]?.hp??100)/(a.max||MONSTERS[a.k]?.hp||100)),fatigue=1-(a.needs?.energy??a.energy??100)/100;
  const profile=FOE_ACTIONS[a.k]||{},reserve=tolerance+(profile.injuryAnger?health:0)+friends/(enemies+1);
  // 寡不敵眾用多出的人數佔交戰總人數的比例；兩人對一人仍有壓力，四人包圍更大。
  const surplus=Math.max(0,enemies-(friends+1))/(enemies+friends+1);

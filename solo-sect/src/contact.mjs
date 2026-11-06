@@ -3,9 +3,11 @@ import {BODY_TIMING,FOE_ACTIONS,limbAvailable} from './starter-combat.mjs';
 import {emitPractice} from './practice-events.mjs';
 export const CONTACT_MEDIA={impact:{momentum:true,tissue:true},irritant:{momentum:false,tissue:false}};
 export const BODY_MECHANICS={mass:70,balance:100,balanceRecovery:12,recoveryDelay:2.5,openSeconds:BODY_TIMING.reaction+BODY_TIMING.recovery+BODY_TIMING.step,painLimit:100,painRecovery:1};
+// 山鼠是環境動物，沒有進攻招表；仍保留原本較弱的架勢資料。
+export const PASSIVE_BODIES={rat:{balance:30}};
 export const TISSUES={blunt:[{id:'bruise',name:'瘀青',threshold:10,pain:1},{id:'skin',name:'皮破',threshold:24,pain:4},{id:'tendon',name:'傷筋',threshold:40,pain:9},{id:'bone',name:'斷骨',threshold:72,pain:16}],edge:[{id:'bruise',name:'瘀青',threshold:4,pain:1},{id:'skin',name:'皮破',threshold:8,pain:4},{id:'tendon',name:'傷筋',threshold:24,pain:9},{id:'bone',name:'斷骨',threshold:72,pain:16}]};
 export const BODY_PARTS={body:{name:'身',resistance:1},hand:{name:'手',resistance:.65},eye:{name:'目',resistance:.25}};
-export const bodyOf=a=>({...BODY_MECHANICS,...FOE_ACTIONS[a?.k]?.body,mass:FOE_ACTIONS[a?.k]?.mass||BODY_MECHANICS.mass,balanceRecovery:(FOE_ACTIONS[a?.k]?.body?.balanceRecovery||BODY_MECHANICS.balanceRecovery)*(1+(a?.skills?.agility||a?.agi||0)/100)});
+export const bodyOf=a=>({...BODY_MECHANICS,...PASSIVE_BODIES[a?.k],...FOE_ACTIONS[a?.k]?.body,mass:FOE_ACTIONS[a?.k]?.mass||BODY_MECHANICS.mass,balanceRecovery:(FOE_ACTIONS[a?.k]?.body?.balanceRecovery||BODY_MECHANICS.balanceRecovery)*(1+(a?.skills?.agility||a?.agi||0)/100)});
 export function completeContactMove(m){m.medium??='impact';if(!CONTACT_MEDIA[m.medium])throw Error('未知接觸媒介：'+m.medium);m.balanceImpulse??=m.impulse||BODY_MECHANICS.mass;m.contactSites??=m.poses?.at(-1)?.startsWith('double')?2:1;m.limbs??=m.bite?['mouth']:m.travel?['body']:m.type==='kick'||m.type==='leg'?['rightLeg']:m.type==='staff'?['leftHand','rightHand']:m.poses?.at(-1)?.startsWith('double')?['leftHand','rightHand']:m.poses?.at(-1)?.startsWith('left')?['leftHand']:['rightHand'];m.contactPart??=m.effectWords?.includes('blind')?'eye':m.bite?'hand':['sword','blade','finger'].includes(m.type)||m.cut?'hand':'body';return m;}
 for(const p of Object.values(FOE_ACTIONS))for(const m of p.moves)completeContactMove(m);
 export function partWound(a,where,side=null){return (a.wounds||[]).filter(w=>w.where===where&&(!side||w.side===side)&&w.days>0).sort((a,b)=>b.depth-a.depth)[0];}

@@ -91,7 +91,7 @@ probe是「充分休息、沒有惱羞/在途攻擊」的20次獨立新狗**單�
 CI Node 22 與本地 Node 24 初次出現四個 golden hash 差異：`exp-1001-emei`、舊檔 v2.2／v2.3／v2.4 的回放；其他 619 項在 Node 22 通過。直接比較 5 日與 10 日 `exp-1001-emei` 的完整存檔，各自唯一差異都是 `practice.families.cut` 的 1 ULP（5 日 `5.242397237275723`／`5.242397237275724`）；v2.2 舊檔回放的完整存檔也只在 `bswing.wind` 差 1 ULP（`0.006841791166913072`／`0.006841791166913073`）。兩者均在 N33 浮點時間／手熟計算路徑，未見不同的事件或決策。依 CI runtime Node 22 重產 canonical golden，不改 `w=4p(1−p)`、不改時間機制或原始高手截鼠斷言。
 
 ### N34 選招／輸後心願（#444；N37後樣本通過，非任意seed已證明）
-N33「高手認得短招」沿用原門檻 .9；N34 將同拍移步反擊從截擊欄拆成獨立 `dodgeCounter`，故測試合計兩種成功接法，沒有降低辨招成功門檻。round6-n22／round7-n27 的原始高手截鼠測試不改.
+N33「高手認得短招」沿用原門檻 .9；第九輪首輪 CI 揭出移步接招誤搶先於更快的截擊，已恢復 N27「截擊先於進身閃」的秒數順序。`dodgeCounter` 保留作不同動作時間窗的獨立紀錄，不從截擊成功率扣除。round6-n22／round7-n27 的原始高手截鼠測試不改。
 | 指令 | 門檻 | 預期輸出 |
 |---|---|---|
 | `bash solo-sect/test/run.sh smoke` | fail0；N34僅1個小測試 | 14/14；穩定同情境決策0，三種性格均等觀測下偏好至少2種，真交手產生心願 |
@@ -149,17 +149,33 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 | 指令 | 原門檻 | 本輪結果／原始輸出 |
 |---|---|---|
 | `bash solo-sect/test/run.sh smoke` | fail0 | 17/17；N34–N37 每步至多一個新增小測試。 |
-| `node solo-sect/tools/duel.mjs --a day1 --b day1 --seeds 1-20` | 中位交手≥30；無皮破以上接觸≥70% | 中位428；無皮破以上90.588%；喘氣10；[原始輸出](artifacts/round9b/duel-day1-final.json)。瘀青計為中招、不計受傷；上方75.793%是舊工具把瘀青也計入受傷的較嚴歷史值。 |
-| `node solo-sect/tools/duel.mjs --a day60 --b day1 --seeds 1-20` | 最小進身閃≥day1三倍且>0；同拍反擊≥5 | 0.596491對0.081075（7.36倍），反擊34；[原始輸出](artifacts/round9b/duel-day60-final.json)。此為訓練seed1，未證明任意seed。 |
+| `node solo-sect/tools/duel.mjs --a day1 --b day1 --seeds 1-20` | 中位交手≥30；無皮破以上接觸≥70% | 中位390；無皮破以上91.660%；喘氣10；[原始輸出](artifacts/round9b/duel-day1-final.json)。瘀青計為中招、不計受傷；上方數字是舊 checkpoint。 |
+| `node solo-sect/tools/duel.mjs --a day60 --b day1 --seeds 1-20` | 最小進身閃≥day1三倍且>0；同拍反擊≥5 | 最小進身閃0.538462對0（原始比值無定義，絕對門檻達到），反擊28；[原始輸出](artifacts/round9b/duel-day60-final.json)。此為訓練seed1，未證明任意seed。 |
 | `node solo-sect/tools/duel.mjs --seed <任選整數> --log out/duel.json` | 任取3筆成功接法驗 `r+m≤T` | 每拍輸出T/r/m/margin，forced行不冒充真抽樣；reviewer仍須任意seed複核。 |
-| `node solo-sect/tools/waves.mjs --seed 17 --trait normal --log out/waves.json` | `L≥1` 拍反擊0；1、2路各有反擊 | 依正常tick山賊先起手、同一`interceptOpening`起手截擊的修正後，1路1次、2路2次、超載反擊0；[原始摘要](artifacts/round9b/waves-normal-17-summary.json)、[完整逐拍JSON](artifacts/round9b/waves-normal-17.json)。seed23為1路2次、2路5次、超載反擊0；[摘要](artifacts/round9b/waves-normal-23-summary.json)、[逐拍](artifacts/round9b/waves-normal-23.json)。 |
-| `node solo-sect/tools/waves.mjs --seed 17 --trait calm,rash --log out/waves.json` | 兩者1/2路各有反擊；急躁搶攻與受傷均較多 | seed17冷靜1/2路1/13次、急躁2/4次，超載反擊皆0；急躁失血84.57>14.10，但搶攻5<11，**未達人格搶攻門檻**。[原始摘要](artifacts/round9b/r9b-waves17-traits2-summary.json)、[逐拍](artifacts/round9b/r9b-waves17-traits2.json)。seed23亦搶攻7<8且失血相等，未達兩項；[摘要](artifacts/round9b/r9b-waves23-traits2-summary.json)。 |
+| `node solo-sect/tools/waves.mjs --seed 17 --trait normal --log out/waves.json` | `L≥1` 拍反擊0；1、2路各有反擊 | 依正常 tick 山賊先起手、同一 `interceptOpening` 起手截擊的修正後，seed17 的1路3次、2路5次，seed23 為4次、5次，超載反擊皆0；[seed17摘要](artifacts/round9b/waves-normal-17-summary.json)／[逐拍](artifacts/round9b/waves-normal-17.json)、[seed23摘要](artifacts/round9b/waves-normal-23-final-summary.json)／[逐拍](artifacts/round9b/waves-normal-23-final.json)。 |
+| `node solo-sect/tools/waves.mjs --seed 17/23 --trait calm,rash --log out/waves.json` | 兩者1/2路各有反擊；急躁搶攻與受傷均較多 | seed17 冷靜/急躁搶攻11/3、失血3.52/84.57；seed23 搶攻10/5、失血31.71/77.52。兩種子各人格在1、2路均有反擊，超載反擊皆0；**人格搶攻方向兩種子均未達**。[seed17摘要](artifacts/round9b/waves-after-ci-17-summary.json)／[逐拍](artifacts/round9b/waves-after-ci-17.json)、[seed23摘要](artifacts/round9b/waves-final-23-summary.json)／[逐拍](artifacts/round9b/waves-final-23.json)。 |
 | `node solo-sect/tools/contact.mjs --seed 29` | 破架長破綻、狗/豬不同傷與退距、hitstop開關state hash相同 | 3次真招架、1.45秒破綻；狗傷筋退82.5px、豬無傷退16.5px；兩hash相同，pass=true；[原始輸出](artifacts/round9b/r9b-contact29.json)。 |
-| `node solo-sect/tools/glimmer-metrics.mjs --days=60` | 普通悟性首招約第7–10日；只打p≥.9者12種子60日不悟 | 沿 bot12 真日程，12種子主角悟性均2，全部60日未悟（首次日 null、最大進度0.623）。[原始輸出](artifacts/round9b/glimmer-bot12-60.json)。這個自然日程不是普通悟性3或弱敵限定，因此**不能宣稱兩條驗收通過**；固定種子的母招/失手/效果小測試及 `w(1−p)` 14倍差通過。 |
+| `node solo-sect/tools/glimmer-metrics.mjs --wu=3 --days=60` | 普通悟性首招約第7–10日 | 沿 bot12 真日程，12種子主角悟性均3，60日首悟仍全為 null、最大進度0.619，**未達首悟日數**；[原始輸出](artifacts/round9b/glimmer-ordinary-60.json)。 |
+| 弱敵限定 p≥0.9、12種子60日 | 每個種子均不悟 | 目前未建立只打弱敵的真實日程，**尚未驗證**。固定種子的小測試僅證明每次失手的期望增量 `w(1−p)` 在 p=.9 比 p=.5 慢13.89倍；自然日程[原始輸出](artifacts/round9b/glimmer-bot12-60.json)並非弱敵限定，不能代替。 |
 | `docker run --rm -v "$PWD":/repo -w /repo node:22-bookworm-slim node solo-sect/tools/golden.mjs --write --tier all` | 重產 quick/full/舊檔，回報相符 | quick4、full32、saves已重產且相符；[輸出](artifacts/round9b/golden-write-node22.log)。 |
+
+`node solo-sect/tools/bot12.mjs solo-sect --json` 的 9a base / 9b head 原始輸出是 [base](artifacts/round9b/bot12-base.json)／[head](artifacts/round9b/bot12-head.json)：單人狩獵擊退 275→342、溜走 155→151、失血 1637→25；**有柵探針** 96 場均勝，但柵守住 92→34，重傷 1→24；**自然日常山賊** 72/72→78/78，重傷 24→27。兩個分母與情境分開。探針巫時 0→4，當前 head 自然日程另記 1 次（base 版本未量自然值），所以不能把探針4次說成日常自然發生4次。惱羞 102→105、破勢 120→134，常見武學 DPS 中位 112.7→107.9，winP 中位 0.998→0.996。N37 的 `contactImpact` 令未過皮破門檻的命中 `damageFactor=0`，可能拉長守柵者擊退山賊的時間；這是柵守率下滑的機制推論，仍需 reviewer 檢查守柵手感，不能因 96/96 勝利掩蓋退化。
 
 `waves.mjs`原本將主角排在 bandit 前面，並漏掉起手截擊，與遊戲 `tick` 的 bandStep→弟子及 `interceptOpening` 不同；修正這兩個探針錯誤後再按 N36 原門檻量。負荷式另外把未出手者的剩餘冷卻與靠近時間並行計算；士氣人數劣勢改為佔交戰總人數比例，避免健康的冷靜者在兩敵入場當拍就憑空恐慌退場。兩次修正後仍有上述人格門檻未達；按新版附件停止額外調數字，交給 reviewer 看逐拍資料。
 
 N35 的 firstDay 目標在自然 bot12 日程沒有達到：主要是該日程沒有足夠「特定母招＋情境＋失手」的事件，而非門檻只差一點。保留門檻72/96/48及失手才加原w的世界規則，不為表格直接降低難度或讓成功刷悟招。弱敵限定60日需另作真實交戰日程；不以這份自然bot12冒充。
 
 畫面：`PW=/path/to/playwright-core/index.mjs node solo-sect/tools/round9b-shots.mjs` 在正常遊戲頁面開局，使用真Canvas renderer與 `contactImpact` 取得[靠樹](artifacts/round9b/cover.png)及[受力傷筋](artifacts/round9b/contact.png)截圖；其受控佈局／傷層見[輸出](artifacts/round9b/shots.json)。圖片是受控局面，不是自然玩法或真人盲測影片。N55 的真人盲測仍由 #484 reviewer 核對。
+
+### 首輪 CI 回歸與原規則對照
+
+[run 42310766790](https://github.com/lalagrass/earth-ascension/actions/runs/42310766790) 的 quick 為 609 過、18 敗，golden 因 quick 失敗跳過。下列是修正原因，重跑結果須以新 head CI 為準；未把舊斷言改成較容易過的門檻。
+
+| 原驗收 | 實際原因與處理 |
+|---|---|
+| N14 看破、招架、重擊；N22/N27 高手截鼠；N31b 人海截擊 | N34 的進身閃搶先於更快截擊，N37 反擊接觸重複扣架勢、重擊後沒有沿 N14 回半條。恢復秒數先後、雙方招架架勢與物種重心資料；**round6-n22／round7-n27 原始測試零修改**。 |
+| N15 第五隻外圈；N28 四敵記錄 | N36 掩體範圍過寬讓原守點也只留一席；收窄到既有近身半徑。第五隻現在逐拍真走到外圈，既有測試多等一拍驗證距離，不准瞬移。 |
+| 狩獵 200 秒戰報／族群；野豬回山；腿法學招 | N37 的真痛暈使全隊退場後仍因 HP>25 被當作在場，結算卡住；全員離開守點即讓在途個體逃回族群、完成戰報。N32 野豬衝撞已由招式前搖／位移決定，恢復野豬在地圖上原步速 28。 |
+| 3.5 遷移、資源帳、新規則 golden | 舊版本測試的完整 migSteps 需含 3.5；首犬戰利品 `finishTrial` 用 `resAdd` 記帳，新增白名單來源；有意變更的 v2.2 三十日 hash 與 Node 22 golden 重產。 |
+
+`bash solo-sect/test/run.sh smoke` 最新 17/17；Node 22 針對 N14/N15/N22/N27/狩獵的 44 項診斷測試、N31b 探針皆過。這些局部結果不是完整 CI 的替代品。

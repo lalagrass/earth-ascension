@@ -784,7 +784,7 @@ Object.assign(TRAITS, { quiet: { name: '清冷', desc: '心情起伏減半，不
 TRAITS.quiet.mods24 = { meditate: 1.35, study: 1.2, chat: 0.75 };
 
 // ---- v1.55a 合併敵人表：家裡用的地圖走速與立繪掛在 ENEMIES[k].home；ring＝牠在巡山第幾環（族群歸屬）----
-Object.assign(ENEMIES.rat, { home: { speed: 40, sprite: 'rat' } }); Object.assign(ENEMIES.boar, { home: { speed: 80, sprite: 'boar' } });
+Object.assign(ENEMIES.rat, { home: { speed: 40, sprite: 'rat' } }); Object.assign(ENEMIES.boar, { home: { speed: 28, sprite: 'boar' } });
 for (const [k, e] of Object.entries(ENEMIES)) { const i = ROUTE.findIndex((g) => g.roster.some(([x]) => x === k)); e.ring = i >= 0 ? ROUTE[i].id : null; }
 ENEMIES.rat.ring = 'foot'; // 山鼠不在巡山名單，棲在山腳
 for (const [k, e] of Object.entries(ENEMIES)) if (e.home) MONSTERS[k] = { name: e.name, hp: e.hp, speed: e.home.speed, dmg: e.dmg, sprite: e.home.sprite, ring: e.ring };
