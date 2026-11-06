@@ -169,6 +169,10 @@ test('N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反�
  for(let i=0;i<20;i++){d.busyUntil=0;d.posture=100;d.raging=false;d.rageUntil=0;d.fret=0;resolveSwing(s,dogs[0],d,()=>.5,{move:'dogBite',wind:.4});}
  d.busyUntil=0;d.raging=false;d.rageUntil=0;d.fret=0;s.mons=dogs;
  assert.ok(assessLoad(s,d).L>=1);
+ const au=createState(41,{kind:'bare',askMajor:false}),v0=au.ds[0];au.ds=[v0];v0.pos=[800,400];const a0={...dogs[0],pos:[820,400]};au.mons=[a0];
+ const good=resolveSwing(au,a0,v0,()=>.01,{move:'dogBite',wind:3});assert.equal(good.timing.counterOpportunity.legal,true);assert.ok(good.counter);
+ v0.busyUntil=0;v0.rageUntil=10;const angry=resolveSwing(au,a0,v0,()=>.01,{move:'dogBite',wind:3});assert.equal(angry.timing.counterOpportunity.timeFits,true);assert.equal(angry.timing.counterOpportunity.legal,false);assert.ok(angry.timing.counterOpportunity.blocked.includes('composure'));assert.ok(!angry.counter);
+
  const base=assessLoad(s,d);d.busyUntil=s.t+.2;const occupied=assessLoad(s,d);assert.equal(base.L,occupied.L,'busy不是額外週期性敵人需求');assert.equal(occupied.busy,.2);const T=clashTimes(s,dogs[0],d,{move:'dogBite',wind:.4});assert.equal(T.windowStart,s.t+.2);assert.equal(T.wind,.2,'忙碌仍真扣實際可用窗一次');d.busyUntil=0;
 
  assert.equal(assessLoad(s,dogs[0]).L,0,'待命人物沒有宣告攻擊，不虛構連續來招造成死鎖');

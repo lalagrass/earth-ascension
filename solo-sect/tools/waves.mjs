@@ -28,15 +28,18 @@ function run(count,trait){
  hero.pos=count<3?[...COVERS.find(c=>c.id==='gate').stand]:[800,400];
  for(let i=0;i<count;i++)s.mons.push({k:'bandit',uid:`foe${i}`,hp:40,max:40,pos:[hero.pos[0]+20+i,hero.pos[1]],agi:20,weapon:'blade',energy:100,next:0,intentTarget:hero.id});
  const initialActorFingerprint=createHash('sha256').update(JSON.stringify({...hero,personality:undefined})).digest('hex');
- const rows=[],stats={count,trait,initialActorFingerprint,location:count<3?'gate(two slots)':'open',attacks:0,rushAttacks:0,incomingResolved:0,timedIncoming:0,timeLoadFits:0,hits:0,hpLost:0,counters:0,overloadBeats:0,overloadCounters:0};
+ const rows=[],stats={count,trait,initialActorFingerprint,location:count<3?'gate(two slots)':'open',attacks:0,rushAttacks:0,incomingResolved:0,timedIncoming:0,timeLoadFits:0,legalCounterOpportunities:0,missedLegalCounters:0,counterBlocked:{},noTiming:{},hits:0,hpLost:0,counters:0,overloadBeats:0,overloadCounters:0};
  const actors=[hero,...s.mons];
  const capture=(t,a,w)=>({attack:{...w},actors:actors.map(u=>({who:u.uid||u.id,busyUntil:u.busyUntil||0,next:u.next||0,cool:u.cool||u.bcool||0,swing:u.swing?{...u.swing}:null,intentTarget:u.intentTarget||null})),busyUntil:t.busyUntil||0,swing:t.swing?{...t.swing}:null,downUntil:t.downUntil||0,posture:t.posture,fret:t.fret,rageUntil:t.rageUntil||0,part:t.part,eyes:{...t.practice?.eyes},forecast:assessLoad(s,t,a,{move:w.id,wind:w.wind})});
  const finish=(a,t,w,r,before,phase)=>{
-   if(t===hero){stats.incomingResolved++;if(r.timing){stats.timedIncoming++;if(r.timing.L<1&&r.timing.r+r.timing.strike<r.timing.T)stats.timeLoadFits++;}}
+   if(t===hero){stats.incomingResolved++;if(r.timing){stats.timedIncoming++;if(r.timing.L<1&&r.timing.r+r.timing.strike<r.timing.T)stats.timeLoadFits++;
+    const o=r.timing.counterOpportunity;if(o?.legal){stats.legalCounterOpportunities++;if(!r.counter)stats.missedLegalCounters++;}
+    for(const k of [...(o?.blocked||[]),...(o&&!o.timeFits?['time']:[])])stats.counterBlocked[k]=(stats.counterBlocked[k]||0)+1;
+   }else{const k=r.why||'noTiming';stats.noTiming[k]=(stats.noTiming[k]||0)+1;}}
    if(r.kind==='hit'){const dmg=a===hero?w.dmg*(1+(a.skills?.[w.skill]||0)/50):6;t.hp-=dmg*r.contact.damageFactor;if(t===hero){stats.hits++;stats.hpLost+=dmg*r.contact.damageFactor;}}
    if(r.counter){a.hp-=r.counterDamage;if(t===hero)stats.counters++;}
    const load=r.timing?.L??before.forecast.L;
-   rows.push({t:s.t,who:t.uid||t.id,L:load,reaction:r.kind,counter:!!r.counter,type:'defense',phase,T:r.timing?.T??null,r:r.timing?.r??null,timing:r.timing??null,before,after:{busyUntil:t.busyUntil||0,posture:t.posture,fret:t.fret},attacker:a.uid||a.id,move:w.id});
+   rows.push({t:s.t,who:t.uid||t.id,L:load,reaction:r.kind,why:r.why||null,counter:!!r.counter,type:'defense',phase,T:r.timing?.T??null,r:r.timing?.r??null,timing:r.timing??null,before,after:{busyUntil:t.busyUntil||0,posture:t.posture,fret:t.fret},attacker:a.uid||a.id,move:w.id});
    if(load>=1&&r.counter)stats.overloadCounters++;
  };
  for(;s.t<40&&hero.hp>25&&!hero.gone&&s.mons.some(m=>m.hp>0&&!m.gone);s.t+=.25){beginCombatFrame(s);
