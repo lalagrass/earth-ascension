@@ -1,3 +1,5 @@
+import { FOE_ACTIONS, foeAction } from './starter-combat.mjs';
+import { recordExchange, practiceWindow } from './practice.mjs';
 import { ROUTE, NODES, ENEMIES, RAID_EVERY, DAY, ENDLESS, CAMPS, INSIGHT, EXP, MOVES, EXP_STYLES as STYLES, STYLE_TRAIT, EVADE, TRAITS, ARTS as ARTS_ALL, HS, DAO } from './data.mjs';
 import { log, affKey, resAdd } from './util.mjs';
 import { addMem } from './bonds.mjs';
@@ -237,7 +239,7 @@ export const LS_FIRST24 = ['gorge', 'cliff'];
 function moveDps(s, d, mv) {
   return mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t) * (mv.aoe ? 1.3 : 1) / (mv.cd * (cdMul(d, mv.id, s.t)));
 }
-const abstractFoe = (e = 'bandit') => ({ k: ['rat', 'hare', 'bat'].includes(e) ? 'rat' : ['bandit', 'archer', 'chief', 'hermit'].includes(e) ? 'bandit' : 'boar', i: 0 });
+const abstractFoe = (e = 'bandit') => ({ k: FOE_ACTIONS[e] ? e : ['rat', 'hare', 'bat'].includes(e) ? 'rat' : ['bandit', 'archer', 'chief', 'hermit'].includes(e) ? 'bandit' : 'boar', i: 0 });
 export function expectedDps(s, d, mv, e = 'bandit') {
   const base = moveDps(s, d, mv), ex = expectOf(d, mv, s.t), foe = abstractFoe(e);
   const cd = mv.cd * cdMul(d, mv.id, s.t), wind = windOf(d, mv.id, cd);
@@ -339,7 +341,7 @@ function fight(s, e, team, H, gate = false, scale = 1) {
   const bonus = (s.codex[e]?.insight || 0) >= INSIGHT.dmgAt ? 1 + INSIGHT.dmg : 1;
   const zk = zhenK(s, team), psn = hasPoison(s, team); if (psn) E.dmg *= 1 - SPEC.poisonWeak; /* loop151 陣法先手、毒術削敵 */
   { const fk = fengxueK(s, team), N = (s.v24n ??= {}); if (fk > 0) { E.cd *= 1 + HARMONY24.fengCd * fk; cd = E.cd; N.fengxue = (N.fengxue || 0) + 1; } if (zk > 0 && team.length >= 2) N.formation = (N.formation || 0) + 1; } /* loop161 Batch 2 奇門封穴、多人陣法觸發計數 */
-  const foe = { onOpened: false };
+  const foe = { onOpened: false }, learningFoe = abstractFoe(e);
   const swingAt = new Map();
   const said = new Set();
   const noteOnce = (key, line) => { if (!line || said.has(key)) return; said.add(key); (X.events ??= []).push(line); };
@@ -353,6 +355,8 @@ function fight(s, e, team, H, gate = false, scale = 1) {
       if (!pick.mv) continue;
       const due = (swingAt.get(d.id) ?? 0) - 0.5;
       if (due > 0) { swingAt.set(d.id, due); continue; }
+      const wind = windOf(d,pick.mv.id,pick.mv.cd * cdMul(d,pick.mv.id,s.t)), odds = clashOdds(s,d,learningFoe,{move:pick.mv.id,wind});
+      recordExchange(s,d,learningFoe,pick.mv.id,odds.hit,{kind:'expected'});
       const quiet = said.has(`${d.id}:hit`);
       const on = applyArtOn(s, 'hit', d, foe, { power: 1, move: pick.mv.id, foeName: E.name, silent: quiet });
       const inn = innerOnHit(s, d, foe, { power: on.power, move: pick.mv.id, fired: on.fired, silent: quiet });
@@ -372,7 +376,9 @@ function fight(s, e, team, H, gate = false, scale = 1) {
         noteOnce(`${d.id}:dodge`, dodge.line);
         continue;
       }
-      const o = clashOdds(s, abstractFoe(e), d, { wind: E.cd * CLASH.monWind });
+      const action = foeAction(learningFoe), move = action?.id || e, wind = practiceWindow(learningFoe,move,action?.wind || E.cd * CLASH.monWind).wind;
+      const o = clashOdds(s, learningFoe, d, { move, wind });
+      recordExchange(s,learningFoe,d,move,o.hit,{kind:'expected'});
       const avoid = o.hit;
       if (o.dodge) spendQi(d, Math.min(CLASH.dodge.qi, CLASH.dodge.qi * o.dodge));
       const def = guardOf(d);
