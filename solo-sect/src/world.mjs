@@ -239,7 +239,7 @@ export const LS_FIRST24 = ['gorge', 'cliff'];
 function moveDps(s, d, mv) {
   return mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t) * (mv.aoe ? 1.3 : 1) / (mv.cd * (cdMul(d, mv.id, s.t)));
 }
-const abstractFoe = (e = 'bandit') => ({ k: FOE_ACTIONS[e] ? e : ['rat', 'hare', 'bat'].includes(e) ? 'rat' : ['bandit', 'archer', 'chief', 'hermit'].includes(e) ? 'bandit' : 'boar', i: 0 });
+const abstractFoe = (e = 'bandit') => ({ k: FOE_ACTIONS[e] ? e : ['rat', 'hare', 'bat'].includes(e) ? 'rat' : ['bandit', 'archer', 'chief', 'hermit'].includes(e) ? 'bandit' : 'boar', practiceTier: ENEMIES[e]?.practiceTier ?? -1, i: 0 });
 export function expectedDps(s, d, mv, e = 'bandit') {
   const base = moveDps(s, d, mv), ex = expectOf(d, mv, s.t), foe = abstractFoe(e);
   const cd = mv.cd * cdMul(d, mv.id, s.t), wind = windOf(d, mv.id, cd);

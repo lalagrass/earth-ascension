@@ -16,7 +16,7 @@ function artForMove(move) {
 export const moveTier = (d, move) => { const art = artForMove(move); return art && d?.arts?.[art.id] ? tierOfXp(d.arts[art.id].xp) : -1; };
 let combatArts;
 export function veteranTier(d) {
-  if (d?.k) return ENEMIES[d.k]?.practiceTier ?? -1;
+  if (d?.k) return d.practiceTier ?? ENEMIES[d.k]?.practiceTier ?? -1;
   combatArts ??= new Set(ARTS.filter((a) => a.school !== 'inner' && a.school !== 'step').map((a) => a.id));
   let tier = -1;
   for (const [id, progress] of Object.entries(d?.arts || {})) if (combatArts.has(id)) tier = Math.max(tier, tierOfXp(progress.xp));
