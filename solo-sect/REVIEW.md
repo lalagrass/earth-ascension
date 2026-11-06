@@ -89,3 +89,14 @@ probe是「充分休息、沒有惱羞/在途攻擊」的20次獨立新狗**單�
 `round6-n22.test.mjs` 與 `round7-n27.test.mjs` 的高手截鼠原始測試未改；兩者由 quick 原斷言通過。
 
 CI Node 22 與本地 Node 24 初次出現四個 golden hash 差異：`exp-1001-emei`、舊檔 v2.2／v2.3／v2.4 的回放；其他 619 項在 Node 22 通過。直接比較 5 日與 10 日 `exp-1001-emei` 的完整存檔，各自唯一差異都是 `practice.families.cut` 的 1 ULP（5 日 `5.242397237275723`／`5.242397237275724`）；v2.2 舊檔回放的完整存檔也只在 `bswing.wind` 差 1 ULP（`0.006841791166913072`／`0.006841791166913073`）。兩者均在 N33 浮點時間／手熟計算路徑，未見不同的事件或決策。依 CI runtime Node 22 重產 canonical golden，不改 `w=4p(1−p)`、不改時間機制或原始高手截鼠斷言。
+
+### N34 選招／輸後心願（#444；無傷交手門檻待N37重驗）
+N33「高手認得短招」沿用原門檻 .9；N34 將同拍移步反擊從截擊欄拆成獨立 `dodgeCounter`，故測試合計兩種成功接法，沒有降低辨招成功門檻。round6-n22／round7-n27 的原始高手截鼠測試不改。
+| 指令 | 門檻 | 預期輸出 |
+|---|---|---|
+| `bash solo-sect/test/run.sh smoke` | fail0；N34僅1個小測試 | 14/14；穩定同情境決策0，三種性格均等觀測下偏好至少2種，真交手產生心願 |
+| `node solo-sect/tools/duel.mjs --a day1 --b day1 --seeds 1-20` | 交手中位≥30、沒人受傷≥70% | 每場次數、兩人受傷、喘氣；目前38/33.3782%，**後者FAIL，待N37真力門檻接入後重驗** |
+| `node solo-sect/tools/duel.mjs --a day60 --b day1 --seeds 1-20` | 最小移步≥baseline3倍且>0；同拍反擊≥5 | 目前.322581對0、31反擊，pass；訓練seed1，非任意seed已證明 |
+| `node solo-sect/tools/duel.mjs --seed <任選> --log out/duel.json` | reviewer任取3筆成功接法驗r+m≤T | 每拍T/r/m/margin；forced行沒有假抽樣時間，不拿它手算 |
+
+工具不連網、無額外套件。day60會真跑60日；詳combat受控訓練/交手seed的區分。無傷關卡不過先補N37共用受力規則，不調機率湊門檻。完整自然玩法的三個性拿手招另由N38/bot12量，不以均等觀測單元測試冒充。
