@@ -123,6 +123,8 @@ test('N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反�
  assert.equal(assessLoad(s,dogs[0]).L,0,'待命人物沒有宣告攻擊，不虛構連續來招造成死鎖');
  d.swing={mv:'bodyPunch',tgt:'dog0',wind:.45,at:s.t+.45};assert.ok(assessLoad(s,dogs[0]).L>0);d.swing=null;
  for(let i=0;i<20;i++){d.busyUntil=0;const r=resolveSwing(s,dogs[i%4],d,()=>.00001,{move:'dogBite',wind:.4});assert.ok(!r.counter);}
+ // N37：連擋造成真長破綻；等身體資料的回正完成，才比較新一輪空地/牆邊負荷。
+ s.t=Math.max(s.t,d.balanceOpenUntil||0);(await import('../src/arts.mjs')).postureRegen(s,d,0);
  d.busyUntil=0;d.raging=false;d.rageUntil=0;d.fret=0;
  d.pos=[...COVERS.find(c=>c.id==='guardTree').stand];dogs.forEach((m,i)=>m.pos=[d.pos[0]+20+i,d.pos[1]]);
  assert.ok(assessLoad(s,d).L<1);
@@ -132,4 +134,31 @@ test('N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反�
  d.personality=['brave'];const rash=chooseTactic(s,d,{L:1.2},{temper:composure(d),enemies:dogs.slice(0,2),friends:[]});
  assert.ok(rash.morale.reserve>calm.morale.reserve,'急躁不是膽怯，風險承受沿同一N29表');assert.equal(calm.action,'flee');assert.equal(rash.action,'cover');
  assert.equal(stepTactic(s,d,{L:1.6},.25,{temper:composure(d),enemies:dogs.slice(0,2),friends:[]}),true,'背到掩體仍超載要留時間應接，不另起手');
+});
+
+test('N37 共用受力/分層/手側/長破綻，局部hitstop不改模擬',async()=>{
+  const {contactImpact,bodyOf,partWound}=await import('../src/contact.mjs');
+  const {postureRegen,combatMoves}=await import('../src/arts.mjs');
+  const {impactVisual,hitstopSeconds}=await import('../src/contact-view.mjs');
+  const s=createState(17,{kind:'bare',askMajor:false}),a=s.ds[0];s.t=20;a.uid=a.id;a.pos=[0,0];
+  const dog={k:'dog',uid:'dog',hp:14,pos:[20,0]},boar={k:'boar',uid:'boar',hp:48,pos:[20,0]},punch=BODY_MOVES[0];
+  const small=contactImpact(s,a,dog,{move:punch,force:22,armor:2}),large=contactImpact(s,a,boar,{move:punch,force:22,armor:32});
+  assert.notEqual(small.layer,large.layer);assert.ok(small.knock>large.knock);assert.equal(large.injured,false);assert.equal(large.damageFactor,0);
+  const distributed=contactImpact(s,a,structuredClone(a),{move:BODY_MOVES.find(m=>m.id==='bodyPush'),force:16,armor:5});assert.equal(distributed.contactSites,2);assert.equal(distributed.pressure,3);assert.equal(distributed.injured,false);
+  // 同一重手真招架直到重心歸零，期間沒有另加傷口，也不能下一擊就瞬回半條。
+  const target=structuredClone(a);target.id='target';target.uid='target';target.pos=[20,0];target.posture=bodyOf(target).balance;target.wounds=[];
+  const heavy={...punch,balanceImpulse:90};let count=0;
+  while(target.posture>0&&count++<20)contactImpact(s,a,target,{move:heavy,force:40,blocked:true});
+  assert.ok(count<20);assert.equal(target.posture,0);assert.ok(Math.abs(target.balanceOpenUntil-s.t-bodyOf(target).openSeconds)<1e-12);assert.equal(target.wounds.length,0);
+  s.t+=bodyOf(target).openSeconds-.01;postureRegen(s,target,.25);assert.equal(target.posture,0);
+  s.t+=.02;postureRegen(s,target,.25);assert.ok(target.posture>0);
+  const legacy={...structuredClone(target),posture:0,balanceOpenUntil:undefined};postureRegen(s,legacy,.25);assert.equal(legacy.balanceOpenUntil,s.t+bodyOf(legacy).openSeconds);
+  target.wounds=[];const blade={...punch,type:'blade',contactPart:'hand',limbs:['rightHand']};
+  contactImpact(s,a,target,{move:blade,force:35});assert.equal(partWound(target,'hand','右').layer,'tendon');assert.ok(windOf(target,'bodyPunch',1)>.45);
+  const left={...punch,limbs:['leftHand']};assert.equal((await import('../src/contact.mjs')).woundWind(target,left),1);
+  contactImpact(s,a,target,{move:blade,force:100});assert.equal(partWound(target,'hand','右').layer,'bone');assert.ok(!combatMoves(target).some(m=>m.id==='bodyPunch'));assert.ok(combatMoves(target).some(m=>m.id==='bodyKick'));
+  assert.ok(Math.abs(hitstopSeconds(12)-.1)<1e-12);assert.equal(hitstopSeconds(72),.5);assert.ok(hitstopSeconds(72,4)<.5);
+  const victim=s.fx.at(-1),before=JSON.stringify(s),time=victim.at+.02;
+  const va=impactVisual(s,a,time),vt=impactVisual(s,target,time),stranger=impactVisual(s,{uid:'uninvolved',pos:[80,80]},time);
+  assert.ok(va.paused&&vt.paused);assert.ok(Math.abs(vt.shake)>Math.abs(va.shake));assert.equal(stranger.paused,false);assert.equal(impactVisual(s,target,time,false).paused,false);assert.equal(JSON.stringify(s),before);
 });

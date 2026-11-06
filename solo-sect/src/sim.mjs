@@ -1,3 +1,4 @@
+import {transferredDamage,moveStats} from './arts.mjs';
 import {ringCapacity,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
 import {finishTrainingWish,TRAINING_CAUSES} from './decision.mjs';
@@ -438,7 +439,7 @@ function grow(s, d, sk, amt, src = 'train') {
 }
 
 function doTask(s,d,dt){
-  if(d.downUntil>s.t){d.anim='down';return;}
+  if(d.downUntil>s.t){d.anim='down';if(d.task?.act==='trial')trialStep(s,d,dt);return;}
   if(pickupDrop(s,d))return;
   const t = d.task, A = actDef(s, t.act) || {};
   if (t.act === 'hunt') return;
@@ -510,7 +511,7 @@ function doTask(s,d,dt){
         finishTrainingWish(d,t.act);
       if (t.act === 'train' || t.act === 'spar') { const w = qiInjuryAdd28(s, d); if (w) log(s, `【經脈暗傷】${d.name}強以異種內息催動他派武學《${w.name}》，真氣逆行，經脈隱隱作痛！`); }
         if (t.act === 'meditate') qiInjuryCure28(s, d, DRIVE28.med);
-        if (t.act === 'heal' && d.part) partHeal(s, d, specK(bestSpec(s, 'yishu')) > 0 ? 'doctor' : 'heal'); /* #427 療傷 */
+        if (t.act === 'heal' && (d.part||d.wounds?.length)) partHeal(s, d, specK(bestSpec(s, 'yishu')) > 0 ? 'doctor' : 'heal'); /* #427 療傷 */
         if (t.act === 'heal' && d.qiInjury) qiInjuryCure28(s, d, specK(bestSpec(s, 'yishu')) > 0 || s.ds.some((o) => o.arts?.linjiZhuang) ? 100 : DRIVE28.heal);
       const hp0 = d.hp, pill0 = s.res.pill || 0; if (A.eff) applyEff(s, d, A.eff, A.name);
       specGrow(d, t.act); /* loop151 v2.3 專長 */
@@ -582,11 +583,6 @@ function noteWhy(s, on, inn) {
   if (inn?.line) bag.push('inner');
 }
 function landOn(s, d, tgt, mv, power, foeName) {
-  if (mv.body) {
-    const profile = FOE_ACTIONS[tgt.k], mass = profile?.mass || BODY_TIMING.bodyMass, force = mv.force + (d.skills.strength || 0) * BODY_TIMING.forceSkill;
-    if (mv.impulse) knockPos(d.pos, tgt.pos, mv.impulse * force / mass);
-    if (mv.unbalance && force / mass > (profile?.force || 0) / BODY_TIMING.bodyMass) postureHit(s, tgt, force);
-  }
   const on = applyArtOn(s, 'hit', d, tgt, { power, move: mv.id, foeName, map: true });
   const inn = innerOnHit(s, d, tgt, { power: on.power ?? power, move: mv.id, fired: on.fired });
   if (on.knock) knockPos(d.pos, tgt.pos, on.knock);
@@ -608,23 +604,23 @@ function monStrike(s, h, m, foe, M, zk, w) {
   handleTake(s, foe);
   const incoming0 = M.dmg * (m.psn > s.t ? 1 - SPEC.poisonWeak : 1) * (1 - SPEC.zhenMit * zk);
   const r = resolveSwing(s, m, foe, () => rand(s), { depth: depthOf(m), move: w.mv, wind: w.wind, force: w.force, opening: w.opening, map: true });
-  if (r.kind === 'read') { m.hp -= r.counter; if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); } clashFx(s, foe, 'read'); return r; }
-  if(r.kind==='dodge'&&r.counter){m.hp-=r.counter;if(m.hp<=0){m.gone=true;h.kills++;seeEnemy(s,m.k,'kill',foe);}}
+  if (r.kind === 'read') { m.hp -= r.counterDamage; if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); } clashFx(s, foe, 'read'); return r; }
+  if(r.kind==='dodge'&&r.counter){m.hp-=r.counterDamage;if(m.hp<=0){m.gone=true;h.kills++;seeEnemy(s,m.k,'kill',foe);}}
   if (r.kind === 'dodge') { const on = applyArtOn(s, 'dodge', foe, m, { foeName: M.name, map: true }); clashFx(s, foe, 'dodge'); noteWhy(s, on); if (perfectDodge(s, foe, () => rand(s), { strain: r.strain })) h.witch = (h.witch || 0) + 1; return r; } /* 進身閃吃力才會觸發林克時間 */
   if (r.kind === 'parry') { const on = applyArtOn(s, 'block', foe, m, { foeName: M.name, map: true }); if (r.jolt) clashFx(s, foe, 'jolt'); noteWhy(s, on); return r; }
-  const incoming = incoming0 * (r.heavy ? CLASH.heavy : 1); if (r.heavy) clashFx(s, foe, 'heavy');
+  const incoming = incoming0 * (r.heavy ? CLASH.heavy : 1) * r.contact.damageFactor; if (r.heavy) clashFx(s, foe, 'heavy');
   const got = applyArtOn(s, 'gethit', foe, m, { dmg: incoming, foeName: M.name, map: true }); /* #404 挨打：太極劍借力、乾坤挪移 */
-  if (got.reflect) m.hp -= incoming * got.reflect;
+  if (got.reflect) m.hp -= transferredDamage(s,foe,m,incoming*got.reflect,r.contact.force*got.reflect);
   let taken = got.dmg ?? incoming;
   if (zjHas(foe, 'taiji') || zjHas(foe, 'taijiSword')) { /* #426 太極：來力卸一半，轉給身後的同伴或打回來者 */
-    const back = s.mons.find((o) => o !== m && !o.gone && o.hp > 0 && dist(o.pos, m.pos) <= 40) || m, share = taijiReturn(m, null, w.wind); back.hp -= taken * share; taken *= 1 - share;
+    const back = s.mons.find((o) => o !== m && !o.gone && o.hp > 0 && dist(o.pos, m.pos) <= 40) || m, share = taijiReturn(m, null, w.wind); back.hp -= transferredDamage(s,foe,back,taken*share,r.contact.force*share); taken *= 1 - share;
     zjMark(s, foe, zjHas(foe, 'taiji') ? 'taiji' : 'taijiSword'); s.zjN.shift = (s.zjN.shift || 0) + 1; s.fx.push({ kind: 'dash', from: [...foe.pos], to: [...back.pos], ttl: 0.4, color: '#d8d8d8' });
     if (back !== m && back.hp <= 0) { back.gone = true; h.kills++; seeEnemy(s, back.k, 'kill', foe); }
   }
   if (zjHas(foe, 'jiuyang')) { postureHit(s, m, ZJ.jiuyang.shock); zjMark(s, foe, 'jiuyang'); } /* #426 九陽圓滿：挨打自動反震架勢 */
   if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); return r; }
   partHit(s, foe, r, { attack: m, rnd: () => rand(s) });
-  breakWindup(s, m, foe, null, w.wind);
+  breakWindup(s, m, foe, w.mv, w.wind, r.contact);
   foe.hp -= shieldHit(foe, taken, s.t); /* loop116 護體真氣 */
   const innBack = innerOnGetHit(s, foe); /* #405 純陽無極功：挨打化進氣血 */
   noteWhy(s, got, innBack);
@@ -652,21 +648,20 @@ function dStrike(s, h, d, live, w) {
   const lv = d.skills[mv.skill];
   let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t); /* #410 玉女合擊、蛤蟆蓄勢改走內功被動與 on，避免和出手再乘一次 */
   const ar = mv.aoe ? mv.aoe + qiAoeAdd(d, mv) : 0, hitList = mv.aoe ? live.filter(m=>dist(m.pos,mv.aoeCenter==='actor'?d.pos:tgt.pos)<=ar) : [tgt];
-  const huaAoe = mv.aoe && visTier(d, mv.id) >= FLAIR.hua; /* #420 化境：範圍招逐個目標判接法 */
   const r = resolveSwing(s, d, tgt, () => rand(s), { depth: depthOf(d, mv.id), wind: w.wind, move: mv.id, force: w.force, map: true });
-  if(r.counter){d.hp=Math.max(0,d.hp-r.counter);clashFx(s,tgt,'read');}
+  if(r.counter){d.hp=Math.max(0,d.hp-r.counterDamage);clashFx(s,tgt,'read');}
   flairName(s, d, mv);
   h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5, 'fight');
   d.anim = 'strike'; d.needs.energy = clamp(d.needs.energy - 1, 0, 100);
   { const tier = visTier(d, mv.id), a = artOfMove(mv.id), va = a && variantOf(d, a.id, s.t); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...tgt.pos], r: mv.aoe || 16, ttl: tier >= 3 ? 1.0 : 0.6, tier, vcolor: va?.color || null, sprite: d.sprite, face: d.face }); if (tier >= 3) s.fx.push({ kind: 'shake', ttl: 0.35 }); }
-  const each = huaAoe ? new Map(hitList.map((m) => [m.uid, m === tgt ? r : resolveSwing(s, d, m, () => rand(s), { depth: depthOf(d, mv.id), wind: w.wind, move: mv.id, map: true })])) : null;
+  const each = mv.aoe ? new Map(hitList.map((m) => [m.uid, m === tgt ? r : resolveSwing(s, d, m, () => rand(s), { depth: depthOf(d, mv.id), wind: w.wind, move: mv.id, map: true })])) : null;
   if (each) h.aoeEach = (h.aoeEach || 0) + hitList.length;
   const lt = each ? hitList.find((m) => each.get(m.uid).kind === 'hit') : r.kind === 'hit' ? tgt : null;
   if (!lt) { if (r.kind === 'dodge') clashFx(s, tgt, 'dodge'); return r; }
   noteFret(s, d, 'strike'); if (d.raging) spendQi(d, Math.min(qiOf(d), CLASH.fret.attackQi * CLASH.fret.qi));
   if (r.heavy && lt === tgt) clashFx(s, tgt, 'heavy');
   const base = landOn(s, d, lt, mv, power, MONSTERS[lt.k].name); power = base * (r.heavy ? CLASH.heavy : 1); /* #404 打中：降龍、辟邪、七傷、打狗、獨孤。範圍先圈定，再震退 */
-  const psn = specM(d, 'dushu') > 0; for (const m of hitList) { let pw = power; if (each) { const rr = each.get(m.uid); if (rr.kind !== 'hit') { if (rr.kind === 'dodge') clashFx(s, m, 'dodge'); continue; } pw = base * (rr.heavy ? CLASH.heavy : 1); if (rr.heavy && m !== tgt) clashFx(s, m, 'heavy'); } breakWindup(s, d, m, mv.id, w.wind); m.hp -= pw; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; if (artOfMove(mv.id)?.id === 'kuihua' && zjHas(d, 'kuihua')) s.fx.push({ kind: 'fall', pos: [...m.pos], k: m.k, delay: ZJ.kuihua.fall, ttl: ZJ.kuihua.fall + 0.6 }); /* #426 葵花：中針的一起晚一拍倒下 */ (h.wk ??= {})[d.id] = (h.wk[d.id] || 0) + 1; seeEnemy(s, m.k, 'kill', d); applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: MONSTERS[m.k].name }); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
+  const psn = specM(d, 'dushu') > 0; for (const m of hitList) { let pw = power; if (each) { const rr = each.get(m.uid); if (rr.kind !== 'hit') { if (rr.kind === 'dodge') clashFx(s, m, 'dodge'); continue; } pw = base * (rr.heavy ? CLASH.heavy : 1); if (rr.heavy && m !== tgt) clashFx(s, m, 'heavy'); } const contact=each?each.get(m.uid).contact:r.contact;pw*=contact.damageFactor;breakWindup(s, d, m, mv.id, w.wind, contact); m.hp -= pw; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; if (artOfMove(mv.id)?.id === 'kuihua' && zjHas(d, 'kuihua')) s.fx.push({ kind: 'fall', pos: [...m.pos], k: m.k, delay: ZJ.kuihua.fall, ttl: ZJ.kuihua.fall + 0.6 }); /* #426 葵花：中針的一起晚一拍倒下 */ (h.wk ??= {})[d.id] = (h.wk[d.id] || 0) + 1; seeEnemy(s, m.k, 'kill', d); applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: MONSTERS[m.k].name }); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
   return r;
 }
 function huntStep(s, dt) {
@@ -700,10 +695,10 @@ function huntStep(s, dt) {
       if (near > MON_REACH * 0.95 && !foeAction(m, near)?.minDistance) { stepToward(m, foe.pos, M.speed * mdt, MON_REACH * 0.8); continue; }
       if(m.cool<=0&&!(m.downUntil>s.t)){ /* #426 獨孤：觀破過的獸一起手就被截；太極圈內前搖拉長 */
         if (zjIntercept(s, m, team)) { m.cool = MON_CD; continue; }
-        const pick=chooseCombatMove(s,m,foe,()=>rand(s),{distance:near}),action=pick?.move||foeAction(m,near),wind=(practiceWindow(m,action?.id||'fist',action?.wind??MON_CD*CLASH.monWind).wind+(pick?.seconds||0))*zjWindK(s,m.pos,team);
+        const pick=chooseCombatMove(s,m,foe,()=>rand(s),{distance:near}),action=pick?.move||foeAction(m,near),wind=(windOf(m,action?.id,MON_CD)+(pick?.seconds||0))*zjWindK(s,m.pos,team);
         const start = interceptOpening(s, m, foe, () => rand(s), { depth: depthOf(m), move: action?.id, wind, map: true });
         m.cool = MON_CD+(pick?.seconds||0);m.energy=(m.energy??100)-1;
-        if (start.read?.kind === 'read') { m.hp -= start.read.counter; clashFx(s, foe, 'read'); if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); } continue; }
+        if (start.read?.kind === 'read') { m.hp -= start.read.counterDamage; clashFx(s, foe, 'read'); if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); } continue; }
         m.swing = { mv: action?.id, reach: action?.range || MON_REACH, tgt: foe.id, at: s.t + wind, wind, opening: start.opening }; warnFx(s, m, foe, MON_REACH, wind); }
       continue;
     }
@@ -713,7 +708,7 @@ function huntStep(s, dt) {
   }
   for (const d of team) {
     zjRegen(d, dt); /* #426 九陽 */
-    if (d.hp <= 25) { if (d.task?.act === 'hunt') { d.order = null; cancelTask(s, d, '傷重退回院中'); assign(s, d, 'rest', '傷重歇息'); log(s, `${d.name}受傷退下`); think(s, d, 'hurt'); } const bag = (h.why ??= []), tag = qiOf(d) <= 0 ? 'dry' : 'hurt'; if (bag.length < 24 && !bag.includes(tag)) bag.push(tag); continue; }
+    if (d.hp <= 25 || d.faintUntil>s.t) { if (d.task?.act === 'hunt') { d.order = null; cancelTask(s, d, '傷重退回院中'); assign(s, d, 'rest', '傷重歇息'); log(s, `${d.name}受傷退下`); think(s, d, 'hurt'); } const bag = (h.why ??= []), tag = qiOf(d) <= 0 ? 'dry' : 'hurt'; if (bag.length < 24 && !bag.includes(tag)) bag.push(tag); continue; }
     postureRegen(s, d, dt);
     if (d.task?.act!=='hunt'||d.at !== h.post || d.path.length) continue;
     d.cool -= dt;
@@ -869,13 +864,13 @@ export function payday(s) {
 export function temperDaily29(s) { const W = (s.v29n ??= {}), B = (W.baseByTrait ??= { honest: 0, diligent: 0, stubborn: 0, rigid: 0, sect: 0 }); const small = s.ds.length <= TEMPER29.small;
   for (const d of s.ds) { d.small29 = small; if (d.base28 && !d.base29c) { d.base29c = true; const t = ['rigid', 'stubborn', 'honest', 'diligent'].find((x) => (d.personality || []).includes(x)) || 'sect'; B[t]++; } /* loop193 拘謹優先，不讓勤奮／憨厚蓋過 */
     if (d.xiao29 && !d.xiao29c) { d.xiao29c = true; W.xiao = (W.xiao || 0) + 1; } if (d.ling29 && !d.ling29c) { d.ling29c = true; W.ling = (W.ling || 0) + 1; } if (temperOf(d).qing && !d.qing29c) { d.qing29c = true; W.qing = (W.qing || 0) + 1; } } }
-function injuryDaily28(s) { for (const d of s.ds) if (d.part) partHeal(s, d, 'day'); /* #427 部位傷最多三天 */ for (const d of s.ds) { if (!d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuterArt(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
+function injuryDaily(s) { for (const d of [...s.ds,...s.mons,...(s.band?.members||[])]) if (d.part||d.wounds?.length) partHeal(s,d,'day'); /* 新層1–4遊戲日；舊部位傷仍可遷移 */ for (const d of s.ds) { if (!d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuterArt(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
 export function dailyPipeline(s) {
   payday(s); econDaily(s, EH); apprDaily(s); teachDaily(s); threatDaily(s);
   cliqueDaily(s);
   lairDaily(s, EH);
   jhevDaily(s);
-  temperDaily29(s); injuryDaily28(s); siegeDaily27(s); crusadeDaily27(s, EH); /* loop181 經脈內傷每日 */ /* loop179 傾巢討伐（執事自動）；loop178 v2.7 魔教圍山（雜湊擲骰，不吃亂數流） */
+  temperDaily29(s); injuryDaily(s); siegeDaily27(s); crusadeDaily27(s, EH); /* loop181 經脈內傷每日 */ /* loop179 傾巢討伐（執事自動）；loop178 v2.7 魔教圍山（雜湊擲骰，不吃亂數流） */
   if (s.steward) stewardDaily(s, { siteOf, capacity, startBuild, canBuildFac, buildFac, ...({ hire, canHire, laborCap, laborers, stewHireCoin: LABOR23.stewHireCoin }) });
 }
 export { recordDeed, DEED_CAP, CHRON_CAP, tallyAct, bioLine, bioLean } from './util.mjs';
@@ -892,13 +887,14 @@ export function tick(s, dt = 0.25) {
   const seIdx = se.i; if (s.seasonI !== seIdx) { if (s.seasonI !== undefined) log(s, `入${se.name}了。${{ spring: '萬物萌發，菜長得快。', summer: '天長日暖。', autumn: '秋高氣爽，心情開闊。', winter: '天寒地凍，菜長得慢，飯量變大。' }[se.id]}`); s.seasonI = seIdx; }
   for (const d of s.ds) {
     if (d.away) { moodStep(s, d, dt); continue; } // 巡山中：背景模擬，不在地圖上
+    if(!['hunt','trial'].includes(d.task?.act)&&!(d.task?.act==='defend'&&d.task.phase==='do'&&s.band))postureRegen(s,d,dt);
     d.needs.hunger = clamp(d.needs.hunger - 0.35 * se.hunger * dt, 0, 100);
     d.needs.fun = clamp((d.needs.fun ?? 60) - 0.22 * dt * (cotrainNear(s, d) ? 0.5 : 1), 0, 100); /* loop62「有伴解悶」（s.cofun）：與 cotrain 同條件，樂趣下降速度減半 */
     d.needs.social = clamp(d.needs.social - 0.4 * dt * (cotrainNear(s, d) ? 0.5 : 1), 0, 100);
     moodStep(s, d, dt); revealStep(s, d, dt); if (isLabor(d)) coworkStep(s, d, dt); else if (d.role === 'outer' && !d.rootKnown && Math.max(d.cowork || 0, d.together || 0) >= ROOT.revealAt) { d.rootKnown = true; log(s, `相處久了，看出外門${d.name}根骨「${ROOT.names[d.root]}」。`); }
     if (d.task?.act === 'teach' || (d.teachCool > 0 && !d.task && !d.order)) { if (teachStep(s, d, dt)) continue; } /* #417 N13 傳功＝師徒共同任務 */
     if (!d.task) decide(s, d);
-    if (d.task) { moveStep(d, dt); tallyAct(d, d.task.act, dt); doTask(s, d, dt); } // M1 傳記：看得見的行為時間
+    if (d.task) { if(!(d.downUntil>s.t))moveStep(d,dt); tallyAct(d, d.task.act, dt); doTask(s, d, dt); } // M1 傳記：看得見的行為時間
     if (d.anim === 'strike' && d.cool < 0.6) d.anim = null;
   }
   { const em = emergency(s); if (em !== !!s.emergency) { s.emergency = em; if (outers(s).length >= QUOTA.outerMin) log(s, em ? (s.res.food <= 0 ? '斷糧了！內門弟子暫時放下功課回來幫忙。' : '野豬下山！內門弟子暫時回來顧家。') : '危機解除，內門弟子回去練功。'); } }
@@ -927,32 +923,43 @@ function paceStep(s) {
   if (!P.done.includes('firstExp') && s.lastExp) milestone(s, 'firstExp');
   if (!P.done.includes('firstBuild') && Object.values(s.fac).some((f) => f.site || f.stage > 0)) milestone(s, 'firstBuild');
 }
-function trialStep(s, d, dt) {
-  const t = d.task, m = s.mons.find((x) => x.trial);
-  if (!m) { d.task = null; d.anim = null; return; }
-  m.intentTarget=d.id;fretStep(s,m);
-  if(!m.swing&&combatTacticStep(s,m,dt,{exit:a=>{rememberEscape(s,a);a.gone=true;s.mons=s.mons.filter(x=>x!==a);s.pace.trial='done';milestone(s,'trial');d.task=null;}}))return;
-  if(m.gone)return;
-  if (dist(m.pos, d.pos) > MON_REACH && m.path.length) { monWalk(m, MONSTERS[m.k].speed * dt); m.face = (m.path[0] && (typeof m.path[0] === 'string' ? NODES[m.path[0]] : m.path[0])[0] >= m.pos[0]) ? 1 : -1; return; } /* 野豬還在山路上：主角在木樁場等牠衝下來 */
-  if (!m.path.length && dist(m.pos, d.pos) > MON_REACH) { const L = dist(m.pos, d.pos), st = Math.min(L - MON_REACH * 0.8, MONSTERS[m.k].speed * dt); m.pos[0] += (d.pos[0] - m.pos[0]) * st / L; m.pos[1] += (d.pos[1] - m.pos[1]) * st / L; return; }
-  if (d.path.length) return;
-  if(!m.swing&&combatTacticStep(s,d,dt,{speed:speedOf(d),exit:a=>{a.tactics={action:'brace'};}}))return;
-  t.phase = 'do'; t.timer += dt; d.face = m.pos[0] >= d.pos[0] ? 1 : -1;
-  postureRegen(s, d, dt); postureRegen(s, m, dt);
-  /* #418 N14：小野豬也有前搖；主角看破、閃、招架得住就不掉血（試煉保底氣血 30） */
-  m.cool = (m.cool || 0) - dt;
-  if (m.swing && s.t + 1e-9 >= m.swing.at) { const w = m.swing; m.swing = null; const r = resolveSwing(s, m, d, () => rand(s), { depth: depthOf(m), move: w.mv, wind: w.wind });if(r.kind==='dodge'&&r.counter)m.hp-=r.counter;
-    if (r.kind === 'hit') { d.hp = Math.max(30, d.hp - 3 * (r.heavy ? CLASH.heavy : 1)); if (r.heavy) clashFx(s, d, 'heavy'); } else clashFx(s, d, r.kind === 'parry' ? (r.jolt ? 'jolt' : null) : r.kind); }
-  else if (!m.swing && m.cool <= 0) { const action = foeAction(m, dist(m.pos, d.pos)), wind = practiceWindow(m,action?.id || 'fist',action?.wind ?? MON_CD * CLASH.monWind).wind; m.swing = { mv: action?.id, tgt: d.id, at: s.t + wind, wind }; m.cool = MON_CD;m.energy=(m.energy??100)-1; warnFx(s, m, d, MON_REACH, wind); }
-  t.pick??=chooseCombatMove(s,d,m,()=>rand(s));const mv0=t.pick?.move;if(!mv0)return;const decision=t.pick.seconds,wind=windOf(d,mv0.id,mv0.cd)+decision;
-  if (!t.swing && t.timer >= (mv0.cd+decision-wind)) { t.swing = true; if(mv0.consumable)delete d.tools?.[mv0.tool];warnFx(s,d,m,mv0.range||30,wind); d.anim = 'wind'; }
-  if(t.timer>=mv0.cd+decision){t.timer=0;t.swing=false;t.pick=null; const mv = mv0; const r = resolveSwing(s, d, m, () => rand(s), { depth: depthOf(d, mv.id), wind, move:mv.id }); d.anim = 'strike'; d.cool = 1;
-    s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...m.pos], r: 16, ttl: 0.6, tier: visTier(d, mv.id), sprite: d.sprite, face: d.face });
-    if (r.kind === 'dodge') { clashFx(s, m, 'dodge'); return; }
-    const p = landOn(s, d, m, mv, mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t), MONSTERS[m.k].name) * (r.heavy ? CLASH.heavy : 1); if (r.heavy) clashFx(s, m, 'heavy'); m.hp -= p;
-    if (m.hp <= 0) { applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: MONSTERS[m.k].name }); s.mons = s.mons.filter((x) => x !== m); seeEnemy(s, m.k, 'kill', d); resAdd(s, 'food', 2);
-      const r = d.arts.basicFist; if (r && r.xp < 25) { r.xp = 25.5; } const o = gainArt(d, 0, 1, s.t); for (const id of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === id).name}」`);
-      log(s, `${d.name}站穩腳步，終於把來犯的野獸趕回山裡。`); think(s, d, 'learned'); s.pace.trial = 'done'; milestone(s, 'trial'); d.task = null; d.anim = null; } }
+function finishTrial(s,d,m,mv){
+  applyArtOn(s,'kill',d,m,{move:mv?.id,foeName:MONSTERS[m.k].name});s.mons=s.mons.filter(x=>x!==m);seeEnemy(s,m.k,'kill',d);resAdd(s,'food',2);
+  const r=d.arts.basicFist;if(r&&r.xp<25)r.xp=25.5;const learned=gainArt(d,0,1,s.t);for(const id of learned.moves)log(s,`${d.name}練熟了，自悟新招「${MOVES.find(x=>x.id===id).name}」`);
+  log(s,`${d.name}站穩腳步，終於把來犯的野獸趕回山裡。`);think(s,d,'learned');s.pace.trial='done';milestone(s,'trial');d.task=null;d.anim=null;d.swing=null;
+}
+function trialStep(s,d,dt){
+  const task=d.task,m=s.mons.find(x=>x.trial);if(!m){d.task=null;d.anim=null;return;}
+  postureRegen(s,d,dt);postureRegen(s,m,dt);m.intentTarget=d.id;fretStep(s,m);
+  // 兩人的真前搖各自前進；一人倒地不能順便凍住另一人的模擬。
+  if(!(m.downUntil>s.t)){
+    const moved=!m.swing&&combatTacticStep(s,m,dt,{exit:a=>{rememberEscape(s,a);a.gone=true;s.mons=s.mons.filter(x=>x!==a);s.pace.trial='done';milestone(s,'trial');d.task=null;d.swing=null;}});
+    if(m.gone)return;
+    if(!moved){
+      const near=dist(m.pos,d.pos);
+      if(near>MON_REACH){if(m.path?.length)monWalk(m,MONSTERS[m.k].speed*dt);else stepToward(m,d.pos,MONSTERS[m.k].speed*dt,MON_REACH*.8);}
+      m.cool=(m.cool||0)-dt;
+      if(m.swing&&s.t+1e-9>=m.swing.at){const w=m.swing;m.swing=null;if(dist(m.pos,d.pos)<=w.reach*1.3){const r=resolveSwing(s,m,d,()=>rand(s),{move:w.mv,wind:w.wind,opening:w.opening});if(r.counter)m.hp-=r.counterDamage;if(r.kind==='hit')d.hp=Math.max(30,d.hp-3*(r.heavy?CLASH.heavy:1)*r.contact.damageFactor);else clashFx(s,d,r.kind==='parry'?(r.jolt?'jolt':null):r.kind);}}
+      else if(!m.swing&&m.cool<=0&&dist(m.pos,d.pos)<=MON_REACH){const action=foeAction(m,dist(m.pos,d.pos)),wind=windOf(m,action.id,MON_CD);const start=interceptOpening(s,m,d,()=>rand(s),{move:action.id,wind});m.cool=MON_CD;m.energy=(m.energy??100)-1;if(start.read)m.hp-=start.read.counterDamage;else{m.swing={mv:action.id,tgt:d.id,at:s.t+wind,wind,reach:action.range,opening:start.opening};warnFx(s,m,d,action.range,wind);}}
+    }
+  }
+  if(m.hp<=0){finishTrial(s,d,m,null);return;}
+  if(d.downUntil>s.t||d.path.length)return;
+  if(!d.swing&&combatTacticStep(s,d,dt,{speed:speedOf(d),exit:a=>{a.tactics={action:'brace'};}}))return;
+  task.phase='do';task.timer+=dt;d.face=m.pos[0]>=d.pos[0]?1:-1;d.cool=(d.cool||0)-dt;
+  if(d.swing){if(s.t+1e-9<d.swing.at)return;const w=d.swing;d.swing=null;const mv=MOVES.find(x=>x.id===w.mv);if(!mv||dist(m.pos,d.pos)>mv.range*1.3)return;
+    const r=resolveSwing(s,d,m,()=>rand(s),{move:mv.id,wind:w.wind,opening:w.opening});d.anim='strike';
+    if(r.counter)d.hp=Math.max(30,d.hp-r.counterDamage);
+    if(r.kind==='hit'){m.hp-=landOn(s,d,m,mv,mv.dmg*(1+d.skills[mv.skill]/50)*moveMul(d,mv.id,s.t),MONSTERS[m.k].name)*(r.heavy?CLASH.heavy:1)*r.contact.damageFactor;breakWindup(s,d,m,mv.id,w.wind,r.contact);}
+    else clashFx(s,m,r.kind==='parry'?(r.jolt?'jolt':null):r.kind);
+    s.fx.push({kind:'move',mfx:mv.fx,name:mv.name,color:mv.color,from:[...d.pos],to:[...m.pos],r:16,ttl:.6,tier:visTier(d,mv.id),sprite:d.sprite,face:d.face});
+    if(m.hp<=0)finishTrial(s,d,m,mv);return;
+  }
+  if(d.cool>0||(d.busyUntil||0)>s.t)return;
+  const pick=chooseCombatMove(s,d,m,()=>rand(s)),mv=pick?.move;if(!mv||dist(m.pos,d.pos)>mv.range)return;
+  const wind=windOf(d,mv.id,mv.cd)+pick.seconds,start=interceptOpening(s,d,m,()=>rand(s),{move:mv.id,wind});d.cool=mv.cd+pick.seconds;if(mv.consumable)delete d.tools?.[mv.tool];
+  if(start.read){d.hp=Math.max(30,d.hp-start.read.counterDamage);return;}
+  d.swing={mv:mv.id,tgt:m.uid,at:s.t+wind,wind,opening:start.opening};d.anim='wind';warnFx(s,d,m,mv.range,wind);
 }
 // ---- 存檔（v0.95 移到 save.mjs，逐版遷移）----
 export { save, load, migrate, MIGRATIONS } from './save.mjs';

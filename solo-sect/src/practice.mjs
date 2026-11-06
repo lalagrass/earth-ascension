@@ -1,7 +1,9 @@
+import {EVENT_LIMIT,emitPractice} from './practice-events.mjs';
+export {emitPractice} from './practice-events.mjs';
 // N33 共用成長底層：只讀武學資料，不依賴 arts.mjs／DOM。
 import { ARTS, MOVES, ENEMIES, TIERS } from './data.mjs';
 import { FOE_ACTIONS, bodyMove } from './starter-combat.mjs';
-export const PRACTICE = Object.freeze({ halfUses: 50, alpha: Math.log(2) / Math.log(51), bodyScale: 10, reactionFloor: .2, reactionSpan: .4, eyeHalf: 3, ordinaryWu: 3, reactionShape: 2, codexUnit: 1, eventLimit: 512, familyTransfer: .5 });
+export const PRACTICE = Object.freeze({ halfUses: 50, alpha: Math.log(2) / Math.log(51), bodyScale: 10, reactionFloor: .2, reactionSpan: .4, eyeHalf: 3, ordinaryWu: 3, reactionShape: 2, codexUnit: 1, eventLimit: EVENT_LIMIT, familyTransfer: .5 });
 // Each row is a prior history in effective exchanges. Bare actors use tier -1.
 export const TRAINING_HISTORY = Object.freeze([
   { tier: 0, uses: 4 }, { tier: 1, uses: 12 }, { tier: 2, uses: 50 },
@@ -49,11 +51,6 @@ export function practiceWindow(d, move, start, { tier = d?.k ? veteranTier(d) : 
   const floor = start / (1 + body / PRACTICE.bodyScale + Math.max(0, tier));
   const residual = practiceResidual(handUses(d, move));
   return { start, floor, n: handUses(d, move), residual, wind: floor + (start - floor) * residual };
-}
-export function emitPractice(s, row) {
-  if (!s?.captureEvents) return;
-  (s.events ||= []).push({ t: s.t, day: s.day, ...row });
-  if (s.events.length > PRACTICE.eventLimit) s.events.splice(0, s.events.length - PRACTICE.eventLimit);
 }
 export function recordExchange(s, attacker, defender, move, p, result) {
   const w = learningWeight(p), priorHand = handUses(attacker, move), priorEye = familiarUses(defender, attacker, move, s?.codex);

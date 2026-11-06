@@ -1,3 +1,4 @@
+import {bodyOf,contactImpact,usableMove,woundWind,shiftBalance,recoverBody,healWounds,BODY_PARTS,TISSUES} from './contact.mjs';
 import {opponents,allies,loadFromForecast,coverFor,movementSpeed,distance,stepTactic} from './tactics.mjs';
 import {RING} from './combat-space.mjs';
 import {TECHNIQUES,TECHNIQUE_MOVES,learnFromLoss,applyTechnique,matchesTechnique} from './techniques.mjs';
@@ -1212,35 +1213,35 @@ const clamp01 = (x, hi = 1) => Math.max(0, Math.min(hi, x));
 export const windFrac = (tier) => CLASH.windIn + (CLASH.windHua - CLASH.windIn) * Math.max(0, Math.min(4, tier | 0)) / 4;
 /* 一招的前搖秒數：cd × 前搖比例（看這招所屬武學的火候） */
 export function windOf(d, mvId, cd) {
-  const body=bodyMove(mvId)||TECHNIQUE_MOVES.find(m=>m.id===mvId), a = artOfMove(mvId) || artById(mvId), tier = a && d?.arts?.[a.id] ? artTier(d,a.id) : 0;
+  const body=bodyMove(mvId)||TECHNIQUE_MOVES.find(m=>m.id===mvId)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===mvId), a = artOfMove(mvId) || artById(mvId), tier = a && d?.arts?.[a.id] ? artTier(d,a.id) : 0;
   const start = body?.wind ?? cd * windFrac(0) * (a?.tags?.includes('快') ? .75 : 1) * (a?.id === 'kuihua' && zjHas(d,'kuihua') ? .1 : 1);
   const skill = body?.skill === 'strength' || a?.weapon === 'staff' ? 'strength' : 'agility';
-  return practiceWindow(d,mvId,start,{tier,skill}).wind * (d?.part?.where === 'hand' ? PART.hand : 1);
+  return practiceWindow(d,mvId,start,{tier,skill}).wind * woundWind(d,body||MOVES.find(m=>m.id===mvId)||{}) * (d?.part?.where === 'hand'&&!d.part.layer ? PART.hand : 1);
 }
 export function combatMoves(d,distance=0) {
   if(isMon(d)&&FOE_ACTIONS[d.k]){
     const weapon=d.weapon||['blade','staff','fist'][(d.i||0)%3];
-    return [...FOE_ACTIONS[d.k].moves,...TECHNIQUE_MOVES.filter(m=>d.glimmer?.known.includes(m.id)&&moveAvailable(d,m))].filter(m=>(!m.requiresSurvived||d.survived)&&(!m.once||!d.opened)&&(!m.minDistance||distance>=m.minDistance)&&(!m.weapon||m.weapon===weapon)).map(m=>({...m,cd:m.wind+BODY_TIMING.recovery}));
+    return [...FOE_ACTIONS[d.k].moves,...TECHNIQUE_MOVES.filter(m=>d.glimmer?.known.includes(m.id)&&moveAvailable(d,m))].filter(m=>(!m.requiresSurvived||d.survived)&&(!m.once||!d.opened)&&(!m.minDistance||distance>=m.minDistance)&&(!m.weapon||m.weapon===weapon)&&usableMove(d,m)).map(m=>({...m,cd:m.wind+BODY_TIMING.recovery}));
   }
-  return (d.moves||['fist']).map(id=>MOVES.find(m=>m.id===id)).filter(m=>m&&moveAvailable(d,m));
+  return (d.moves||['fist']).map(id=>MOVES.find(m=>m.id===id)).filter(m=>m&&moveAvailable(d,m)&&usableMove(d,m));
 }
 export function chooseCombatMove(s,d,target,rnd,options={}) {
   const distance=options.distance??Math.hypot((d.pos?.[0]||0)-(target.pos?.[0]||0),(d.pos?.[1]||0)-(target.pos?.[1]||0));
   const facts=techniqueFacts(s,d,target);
-  const choices=(options.moves||combatMoves(d,distance)).filter(m=>!m.technique||matchesTechnique(TECHNIQUES.find(r=>r.id===m.id),facts)).map(m=>({...m,actualWind:isMon(d)?practiceWindow(d,m.id,m.wind).wind:windOf(d,m.id,m.cd),force:moveStats(d,m.id).force}));
+  const choices=(options.moves||combatMoves(d,distance)).filter(m=>!m.technique||matchesTechnique(TECHNIQUES.find(r=>r.id===m.id),facts)).map(m=>({...m,actualWind:windOf(d,m.id,m.cd),force:moveStats(d,m.id).force}));
   return selectAction(s,d,target,choices,rnd,{distance,composure:composure(d),postureCapacity:postureMax(d),armor:moveStats(target).armor,...options});
 }
 export function fastestMove(d) {
-  const moves = (d?.moves || []).map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && (!m.tool || d.tools?.[m.tool]));
+  const moves = combatMoves(d);
   return moves.sort((a,b) => windOf(d,a.id,a.cd) - windOf(d,b.id,b.cd))[0] || (d?.arts?.basicFist ? MOVES.find((m) => m.id === 'fist') : bodyMove('bodyPunch'));
 }
 export function timedMoveId(w,move){const declared=w?.swing?.mv||w?.bswing?.mv;return move||(typeof declared==='object'?declared.id:declared)||(isMon(w)?foeAction(w)?.id:fastestMove(w)?.id)||'fist';}
 
 export const isMon = (w) => !!w && w.k != null && !w.arts;
-export const postureMax = (w) => (isMon(w) ? CLASH.post[w.k] ?? CLASH.post.def : CLASH.post.d);
+export const postureMax = (w) => bodyOf(w).balance;
 export function postureOf(w) { if (w.posture == null) w.posture = postureMax(w); return w.posture; }
-export function postureHit(s, w, amt) { postureOf(w); w.posture = Math.max(0, w.posture - amt); w.postT = s?.t ?? 0; return w.posture; }
-export function postureRegen(s, w, dt) { postureOf(w); if ((s?.t ?? 0) - (w.postT ?? -1e9) >= CLASH.regenDelay) w.posture = Math.min(postureMax(w), w.posture + CLASH.regen * dt); }
+export function postureHit(s, w, amt) { return shiftBalance(s||{t:0},w,amt); }
+export function postureRegen(s, w, dt) { recoverBody(s||{t:0},w,dt,{engaged:opponents(s||{},w).some(a=>a.pos&&w.pos&&distance(a.pos,w.pos)<RING.outer)}); }
 /* 招式深淺：弟子＝這招所屬武學火候 + 1；獸看種類 */
 export function depthOf(atk, mvId) { if (isMon(atk)) return CLASH.depth[atk.k] ?? 1; const a = artOfMove(mvId); return (a && atk.arts?.[a.id] ? artTier(atk, a.id) : 0) + 1; }
 const qiPow = (w) => (isMon(w) ? CLASH.monQi[w.k] ?? 6 : (qiOf(w) || 0) + (w.skills?.strength || 0));
@@ -1258,7 +1259,7 @@ export function moveStats(w, moveId, wind = 0.5) {
     if (p) return { force: m.force * (w.raging ? CLASH.fret.force : 1), speed: p.speed, armor: p.armor, type: m.cut ? 'blade' : m.bite ? 'bite' : 'fist' };
     return MOVE.monsters[w.k] || MOVE.monsters.fist;
   }
-  const body=bodyMove(moveId)||TECHNIQUE_MOVES.find(m=>m.id===moveId); if (body) return { force: body.force + (w.skills?.strength || 0) * BODY_TIMING.forceSkill, speed: 1 / body.wind, armor: MOVE.armor, type: body.type };
+  const body=bodyMove(moveId)||TECHNIQUE_MOVES.find(m=>m.id===moveId); if (body) return { force: (body.force + (w.skills?.strength || 0) * BODY_TIMING.forceSkill) * (w.raging ? CLASH.fret.force : 1), speed: 1 / body.wind, armor: MOVE.armor, type: body.type };
   const a = artOfMove(moveId) || artById(moveId), t = a && w?.arts?.[a.id] ? artTier(w, a.id) : 0, tags = a?.tags || [];
   const force = MOVE.force + t * MOVE.tierForce + (w?.skills?.strength || 0) * MOVE.strengthForce + (tags.includes('剛') ? MOVE.hardForce : 0) + (tags.includes('拙') ? MOVE.plainForce : 0);
   const speed = MOVE.speed + t * MOVE.tierSpeed + (tags.includes('快') ? MOVE.quickSpeed : 0) + Math.min(MOVE.windSpeedMax, MOVE.windSpeed / Math.max(MOVE.minWind, wind));
@@ -1268,7 +1269,8 @@ export function moveStats(w, moveId, wind = 0.5) {
 }
 /* 太極借來勁：來招越重，可卸回去的比例越高；人、獸、賊共用。 */
 export const taijiReturn = (atk, moveId, wind) => { const force = moveStats(atk, moveId, wind).force; return force / (force + MOVE.taijiHalfForce); };
-export function breakWindup(s, atk, def, moveId, wind) {
+export function breakWindup(s, atk, def, moveId, wind, contact=null) {
+  if(contact&&!contact.injured)return false; // 低於傷口門檻不能憑畫面停頓打斷真前搖。
   if (!def?.swing && !def?.bswing) return false;
   const strike = moveStats(atk, moveId, wind), guard = moveStats(def, def.swing?.mv || def.bswing?.mv, def.swing?.wind || def.bswing?.wind);
   const observed = artOfMove(moveId)?.id === 'dugu' && isMon(def) && (s?.codex?.[def.k]?.insight || 0) >= ZJ.dugu.insight;
@@ -1289,7 +1291,7 @@ export function assessLoad(s,def,extra=null,ctx={}) {
     return !!target&&target===(def.id||def.uid);
   }).map(a=>{
     const swing=a.swing||a.bswing,move=a===extra?timedMoveId(a,ctx.move):timedMoveId(a),action=FOE_ACTIONS[a.k]?.moves.find(m=>m.id===move)||MOVES.find(m=>m.id===move);
-    const wind=a===extra&&ctx.wind!=null?ctx.wind:swing?.wind??(isMon(a)?practiceWindow(a,move,action?.wind||BODY_TIMING.reaction).wind:windOf(a,move,action?.cd||1));
+    const wind=a===extra&&ctx.wind!=null?ctx.wind:swing?.wind??windOf(a,move,action?.cd||1);
     const travel=Math.max(0,distance(a.pos,def.pos)-(action?.range||RING.engage))/movementSpeed(a);
     const guard=def.bare?BODY_TIMING.guard:CLASH.time.guard;
     return {attacker:a.uid||a.id||a.k,move,need:familiarReaction(def,a,move,s?.codex)+guard+busy,window:Math.max(BODY_TIMING.simple,wind),travel,active:!!swing};
@@ -1306,8 +1308,8 @@ export function clashTimes(s, atk, def, ctx = {}) {
   const agi = isMon(def) ? (def.agi ?? moveStats(def).speed) : (def.skills?.agility || 0);
   const move = timedMoveId(atk,ctx.move), reaction = familiarReaction(def, atk, move, s?.codex);
   const jitter = (1 / PRACTICE.reactionShape) * (1 + (def.fret || 0) * T.fret);
-  const response = isMon(def) ? foeAction(def) : fastestMove(def);
-  const strike = isMon(def) ? practiceWindow(def,response?.id || 'fist',response?.wind || T.strike).wind : windOf(def,response.id,response.cd);
+  const response = fastestMove(def);
+  const strike = windOf(def,response.id,response.cd);
   const step=BODY_TIMING.step/(1+agi/T.agility)*reaction/(PRACTICE.reactionFloor+PRACTICE.reactionSpan);
   const guard = def.bare ? BODY_TIMING.guard : T.guard;
   const busy = Math.max(0, (def.busyUntil || 0) - (s?.t ?? 0), (def.swing?.at || 0) - (s?.t ?? 0), (def.bswing?.at || 0) - (s?.t ?? 0),(def.downUntil||0)-(s?.t??0));
@@ -1381,7 +1383,7 @@ function resolveSwingCore(s, atk, def, rnd, ctx = {}) {
       ? { ...ctx.opening.T, wind: Math.min(ctx.opening.T.wind, Math.max(0, (s?.t ?? 0) - Math.max(ctx.opening.at, def.busyUntil || 0))) }
       : ctx.opening.T)
     : clashTimes(s, atk, def, ctx);
-  if (def.posture <= 0) { def.posture = postureMax(def) * 0.5; def.postT = s?.t ?? 0; return settleDefense(s, def, T, { kind: 'hit', heavy: true, why: 'open' }); }
+  if (def.posture <= 0) { return settleDefense(s, def, T, { kind: 'hit', heavy: true, why: 'open' }); }
   if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return settleDefense(s, def, T, { kind: 'hit', heavy: false, why: ctx.force || 'sure' }); }
   const reaction = ctx.opening?.reaction ?? drawReaction(T,rnd);
   const load=ctx.opening?assessLoad(s,def,atk,ctx).L:T.load,canCounter=load<1;
@@ -1394,7 +1396,8 @@ function resolveSwingCore(s, atk, def, rnd, ctx = {}) {
   if (reaction + T.guard < T.wind) {
     const force = moveStats(atk, ctx.move, ctx.wind).force, guard = isMon(def) ? moveStats(def).force : qiPow(def);
     const jolt = guard > force * 1.4;
-    postureHit(s, def, CLASH.parry.drop * Math.max(0.5, force / Math.max(1, guard))); postureHit(s, atk, CLASH.parry.drop * Math.max(0.5, guard / force) + (jolt ? CLASH.parry.joltDrop : 0));
+    // 接觸衝量在resolveSwing統一扣重心；只有較強招架的反震另作用於攻方。
+    if(jolt)postureHit(s,atk,CLASH.parry.joltDrop);
     return settleDefense(s, def, T, { timing,kind: 'parry', jolt, used: reaction + T.guard });
   }
   return settleDefense(s, def, T, { timing,kind: 'hit', heavy: false });
@@ -1410,6 +1413,9 @@ export function techniqueFacts(s,a,t,move=null){
 }
 function moveParents(move){const m=MOVES.find(m=>m.id===move)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===move);return [move,m?.type,m?.weapon,m?.tool==='stone'?'stone':null].filter(Boolean);}
 function noteDiscoveries(s,d,rows){for(const row of rows){const text=`${d.name||d.k}在吃虧後悟出「${row.name}」`;log(s,text);if(d.id)chronOf(s,d,'glimmer',{chron:text});}}
+function reportContact(s,a,t,m,c){if(!c.layer)return;const row=TISSUES.blunt.find(r=>r.id===c.layer);log(s,`${a.name||a.k}以${m.name||m.id}打在${t.name||t.k}的${c.where==='body'?'':c.side}${BODY_PARTS[c.where].name}，${row.name}${c.layer==='bruise'?'，只痛未失血':''}`);}
+export function transferredDamage(s,a,t,damage,force,move){const action=MOVES.find(m=>m.id===move)||{id:move||'redirect',type:moveStats(a,move).type},contact=contactImpact(s,a,t,{move:action,force,armor:moveStats(t).armor});reportContact(s,a,t,action,contact);return damage*contact.damageFactor;}
+
 export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   const move = timedMoveId(atk,ctx.move), odds = clashOdds(s,atk,def,{ ...ctx, move });
   const initialT=ctx.opening?.T||clashTimes(s,atk,def,ctx),atkFacts=techniqueFacts(s,atk,def,move),defFacts={...techniqueFacts(s,def,atk),opponentWind:true};
@@ -1427,6 +1433,14 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   if(result.kind==='hit')desireTraining(s,def,'timing',{move,wind:T.wind,reaction:T.reaction,deficit:T.reaction+Math.min(T.step,T.guard,T.strike)-T.wind});
   if(result.kind==='hit'&&moveStats(atk,move,ctx.wind).force<=moveStats(def).armor)desireTraining(s,atk,'power',{move,force:moveStats(atk,move,ctx.wind).force,armor:moveStats(def).armor});
   if(result.counter)result.counterLearning = recordExchange(s,def,atk,timedMoveId(def),(ctx.opening?.odds||odds)[result.kind==='read'?'read':'dodgeCounter'],{kind:'counter'});
+  const action=MOVES.find(m=>m.id===move)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===move)||{id:move,type:moveStats(atk,move).type};
+  const nearby=new Set([...(s.ds||[]),...(s.mons||[]),...(s.band?.members||[])].filter(a=>a.hp>0&&!a.gone&&(a===atk||a===def||a.swing||a.bswing||a.intentTarget)&&a.pos&&def.pos&&distance(a.pos,def.pos)<=RING.outer)).size;
+  if(result.kind==='hit'||result.kind==='parry'){
+    const bypass=!!result.technique?.armorBypass,armor=moveStats(def).armor;
+    result.contact=contactImpact(s,atk,def,{move:action,force:moveStats(atk,move,ctx.wind).force,armor,blocked:result.kind==='parry',bypass,nearby});
+    reportContact(s,atk,def,action,result.contact);
+  }
+  if(result.counter){const response=fastestMove(def);result.counterContact=contactImpact(s,def,atk,{move:response,force:result.counter,armor:moveStats(atk).armor,nearby});result.counterDamage=result.counter*result.counterContact.damageFactor;reportContact(s,def,atk,response,result.counterContact);}
   return result;
 }
 
@@ -1522,6 +1536,7 @@ export const PART = { days: 3, hand: 1.3, where: ['eye', 'hand', 'body'], name: 
 const preciseArt = (mvId) => { const a = artOfMove(mvId); return !!a && (a.weapon === 'sword' || a.type === 'finger'); };
 export const partOf = (d, w) => (d?.part && d.part.where === w ? d.part : null);
 export function partHit(s, def, r, ctx = {}) {
+  if(r?.contact)return def?.part||null; // N37真分層已處理，不再隨機疊一份舊傷。
   if (!def || isMon(def) || !r?.heavy || def.part) return null;
   if (!(r.why === 'open' || preciseArt(ctx.move))) return null;
   const rnd = ctx.rnd || Math.random, type = moveStats(ctx.attack, ctx.move).type;
@@ -1535,6 +1550,7 @@ export function partHit(s, def, r, ctx = {}) {
 export function partText(d) { const p = d?.part; if (!p) return ''; const n = ['', '一', '兩', '三'][Math.min(3, p.days)] || p.days; return `${p.side}${PART.name[p.where]}受傷，${n}日內${PART.what[p.where]}`; }
 /* 每日：少一天；療傷（heal）再少一天；doctor＝直接好 */
 export function partHeal(s, d, how) {
+  if(!d)return;healWounds(d,how);
   if (!d?.part) return; if (how === 'doctor') d.part.days = 0; else d.part.days -= 1;
   if (d.part.days <= 0) { d.part = null; if (d.name) log(s, `${d.name}的傷好了`); }
 }
