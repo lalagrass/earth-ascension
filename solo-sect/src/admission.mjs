@@ -25,10 +25,11 @@ export function admissionStatus(s,candidate){
  return {ok:!why,why:why||reason,beds,foodNeed,need,mentor:mentor?.m.id,mentorFree:mentor?.free||0,advantage,utility,reason};
 }
 export function prepareAdmission(s,candidate){const c=admissionStatus(s,candidate);if(!c.ok){if(s.ds.length>=c.beds)s.admissionDemand={candidate:candidate.id,at:s.t,reason:c.why};return c;}candidate.guidanceMentor=c.mentor;candidate.admissionReason=c.reason;return c;}
+export const guidanceIdle=d=>!d.task||['train','leisure'].includes(d.task.act);
 export function clockActor(s,d,dt){
  if(d.timeToday?.day!==s.day){if(d.timeToday)d.timePrev=d.timeToday;d.timeToday={day:s.day,elapsed:0,free:0,guided:0};}
  const c=d.timeToday;c.elapsed+=dt;
- if(!d.away&&!d.order&&!d.path?.length&&(!d.task||['train','meditate','leisure'].includes(d.task.act)||d.task.guidanceFor||d.task.guidanceFrom))c.free+=dt;
+ if(!d.away&&!d.order&&!d.path?.length&&(guidanceIdle(d)||d.task?.guidanceFor||d.task?.guidanceFrom))c.free+=dt;
 }
 export function noteGuidance(s,d,dt){if(!d.task?.guidanceFrom||d.task.phase!=='do')return;const m=s.ds.find(m=>m.id===d.task.guidanceFrom);if(m?.task?.guidanceFor===d.id&&m.task.phase==='do'&&!m.path?.length&&!d.path?.length&&Math.hypot(m.pos[0]-d.pos[0],m.pos[1]-d.pos[1])<=60){d.timeToday.guided+=dt;d.guidanceTotal=(d.guidanceTotal||0)+dt;}}
 export function guidanceLearning(d){if(!d.guidanceMentor||!d.timePrev)return 1;const need=guidanceSeconds(d),miss=Math.max(0,need-d.timePrev.guided);return need/(need+miss);}

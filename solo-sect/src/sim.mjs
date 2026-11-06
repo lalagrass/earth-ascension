@@ -1,5 +1,5 @@
 import {originPeople,ORIGIN_RELATIONS} from './origins.mjs';
-import {HUNGER_PER_SECOND,foodStockTarget,admissionStatus,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
+import {HUNGER_PER_SECOND,foodStockTarget,admissionStatus,mentorFor,guidanceSeconds,guidanceIdle,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
 import {transferredDamage,moveStats} from './arts.mjs';
 import {ringCapacity,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
@@ -372,7 +372,7 @@ function assign(s, d, act, why) {
 }
 function arrangeGuidance(s){
   if(emergency(s)||s.band||phaseOf(s).id==='night')return;
-  const free=d=>!d.away&&!d.teachCool&&!d.teachArt&&!d.task?.teach&&!actorBusy(s,d.id)&&!d.order&&!d.carry&&d.hp>30&&d.needs.energy>45&&d.needs.hunger>30&&!d.path?.length&&(!d.task||['train','leisure','meditate'].includes(d.task.act));
+  const free=d=>!d.away&&!d.teachCool&&!d.teachArt&&!d.task?.teach&&!actorBusy(s,d.id)&&!d.order&&!d.carry&&d.hp>30&&d.needs.energy>45&&d.needs.hunger>30&&!d.path?.length&&guidanceIdle(d);
   for(const p of s.ds){if(p.role==='laborer'||(!p.guidanceMentor&&!p.originRelation)||!free(p)||(p.timeToday?.guided||0)>=guidanceSeconds(p))continue;
     const choice=mentorFor(s,p),m=choice?.m;if(!m||!free(m))continue;p.guidanceMentor=m.id;
     cancelTask(s,m,'騰出時辰指點');cancelTask(s,p,'請師父餵招');const a=bestFac(s,m,'train');if(!a)continue;

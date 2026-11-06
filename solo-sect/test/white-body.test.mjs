@@ -264,7 +264,7 @@ test('N37 共用受力/分層/手側/長破綻，局部hitstop不改模擬',asyn
 
 
 test('N50 兩個普通出身同伴與真床位剩一時第二名俠不入門',async()=>{
- const {admissionStatus,bedCount,foodStockTarget,dailyRations}=await import('../src/admission.mjs'),{join,makeXiaCandidate}=await import('../src/wuxia.mjs');
+ const {admissionStatus,bedCount,foodStockTarget,dailyRations,guidanceIdle,clockActor}=await import('../src/admission.mjs'),{join,makeXiaCandidate}=await import('../src/wuxia.mjs');
  const s=createState(17,{kind:'bare'});assert.equal(s.ds.length,3);assert.ok(s.ds.slice(1).every(d=>d.bare&&d.originRelation&&!Object.keys(d.arts).length));assert.ok(s.ds.every(d=>!['senior','junior'].includes(d.id)));
  // Controlled capacity fixture: hall3+dorm2, four residents, one physical free bed.
  s.fac.dorm.stage=1;s.res.food=100;s.ds.push({...structuredClone(s.ds[1]),id:'resident',companion:false});const master=s.ds[0];master.practice.hands=Object.fromEntries((await import('../src/starter-combat.mjs')).BODY_BASE.map(id=>[id,500]));master.skills.palm=100;master.timePrev={day:0,elapsed:DAY,free:400,guided:0};
@@ -284,6 +284,10 @@ test('N50 兩個普通出身同伴與真床位剩一時第二名俠不入門',as
  assert.ok(startTeachArt(t,m,p,'basicFist'));assert.equal(p.arts.basicFist,undefined,'師父答應不是已經授課');assert.ok(teachStage(t,m,p,'basicFist'));
  for(let i=0;i<400&&!p.arts.basicFist;i++)tick(t,.25);
  assert.ok(p.arts.basicFist,'真師父同場花時後入門');assert.ok(t.events.some(e=>e.type==='lesson'&&e.source.teacher===m.id&&e.seconds>=e.required));
+ const quiet=structuredClone(reader);delete quiet.timeToday;quiet.order=null;quiet.away=false;quiet.path=[];quiet.task={act:'meditate'};
+ assert.equal(guidanceIdle(quiet),false,'閉關不是可中斷的指導空檔');clockActor(c,quiet,.25);assert.equal(quiet.timeToday.free,0);
+ quiet.task={act:'train'};assert.equal(guidanceIdle(quiet),true);clockActor(c,quiet,.25);assert.equal(quiet.timeToday.free,.25);
+ quiet.task={act:'spar',guidanceFrom:'teacher'};clockActor(c,quiet,.25);assert.equal(quiet.timeToday.free,.5,'真正教學也佔用原可指導時辰');
  console.log('N50 source proof '+JSON.stringify({manual:c.events.find(e=>e.type==='lesson'),teacher:t.events.find(e=>e.type==='lesson')}));
 
 });
