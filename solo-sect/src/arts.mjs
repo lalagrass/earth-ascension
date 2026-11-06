@@ -1294,7 +1294,13 @@ export function assessLoad(s,def,extra=null,ctx={}) {
     const wind=a===extra&&ctx.wind!=null?ctx.wind:swing?.wind??windOf(a,move,action?.cd||1);
     const travel=Math.max(0,distance(a.pos,def.pos)-(action?.range||RING.engage))/movementSpeed(a);
     const guard=def.bare?BODY_TIMING.guard:CLASH.time.guard;
-    return {attacker:a.uid||a.id||a.k,move,need:familiarReaction(def,a,move,s?.codex)+guard+busy,window:Math.max(BODY_TIMING.simple,wind),travel,active:!!swing};
+    // Intent is not an extra attack during recovery. Include the real earliest
+    // next start for a waiting opponent; an already incoming/extra strike must
+    // never receive that future cooldown again.
+    const now=s?.t||0,readyIn=!swing&&a!==extra?Math.max(0,(a.next||0)-now,a.cool||0,a.bcool||0,(a.busyUntil||0)-now,(a.downUntil||0)-now):0;
+    // Cooldown elapses during an approach too; do not charge both in series.
+    const readyDelay=Math.max(0,readyIn-travel);
+    return {attacker:a.uid||a.id||a.k,move,need:familiarReaction(def,a,move,s?.codex)+guard+busy,window:Math.max(BODY_TIMING.simple,wind)+readyDelay,wind,readyIn,readyDelay,travel,active:!!swing};
   });
   return loadFromForecast(def,rows);
 }

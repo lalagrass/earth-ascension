@@ -128,6 +128,13 @@ test('N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反�
  // replay the first .7-second reaction/step in the future or reuse it twice.
  const q=createState(41,{kind:'bare',askMajor:false}),v=q.ds[0];q.ds=[v];q.t=0;v.pos=[800,400];
  const pack=[0,1].map(i=>({k:'dog',uid:`clock${i}`,hp:14,max:14,pos:[820+i,400],intentTarget:v.id}));q.mons=pack;
+ pack[0].next=2;
+ assert.equal(assessLoad(q,v).rows.find(r=>r.attacker==='clock0').readyDelay,2,'有目標但冷卻未到，不是可立刻再打一招');
+ pack[0].swing={mv:'dogBite',tgt:v.id,wind:.4,at:.4};
+ assert.equal(assessLoad(q,v).rows.find(r=>r.attacker==='clock0').readyDelay,0,'已發出的來招不可再借未來冷卻延後');
+ pack[0].swing=null;
+ assert.equal(assessLoad(q,v,pack[0],{move:'dogBite',wind:.4}).rows.find(r=>r.attacker==='clock0').readyDelay,0,'正在結算的來招也不能重新收其冷卻');
+ pack[0].next=0;
  const openings=pack.map(a=>interceptOpening(q,a,v,()=>.5,{move:'dogBite',wind:1}));
  assert.ok(openings.every(a=>!a.read));q.t=1;
  const one=resolveSwing(q,pack[0],v,()=>.5,{move:'dogBite',wind:1,opening:openings[0].opening});

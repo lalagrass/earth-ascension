@@ -141,3 +141,5 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 - 指令：`bash solo-sect/test/run.sh smoke`。門檻fail0，預期19/19；原N36唯一測試另驗兩個同刻來招：前搖內完成移步不在落下後再占一次，第二招仍扣掉前招過去區間而中招。沒有第2個N36測試。
 - 指令：`node solo-sect/tools/waves.mjs --seed 17 --trait normal --snapshot-out out/real60.json --log out/full.json`。門檻仍每seed每trait 1/2路各有反擊、所有L≥1拍無反擊；預期有完整起手/落下、r/strike/step/guard/L、busy前後/絕對窗/各攻方next/cool/eyes。無snapshot-in才是修後60日完整歷史；不能用快取冒充最終head。
 - 指令：`node solo-sect/tools/waves.mjs --seed 17 --trait normal --snapshot-in out/real60.json --log out/replay.json`。門檻同上不改；用途只隔離同一真快照的交手，不是新seed或自然成長證明。本次修前真快照的隔離counter1/0/2，**仍FAIL**。命令、逐拍第一反例與修前/後實際busy數字見`docs/evidence/r9-n36-time-root.md`及JSON。
+- N36後續冷卻修正：相同指令現在明列未起手者readyIn/readyDelay，不將仍在冷卻但有目標的人當作立即能再起手；不刪敵人、不延後在途招。唯一N36測試驗等待2秒/在途0額外等待/當下extra0額外等待。最新19/19 fail0。
+- 真正重產60日seed17（未用snapshot-in）eventHash ca5b59a4291a929c0fa0288768a74ed34edbe794317228c1cd0dd2152491f537，counter1/0/2、所有超載counter0、pass=false。兩路50次防守中19架勢破綻、31有timing全L≥1；不能移除L gate造反擊。其他seed/性格尚未驗，不標整輪通過。
