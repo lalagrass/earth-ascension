@@ -1,0 +1,173 @@
+{
+  "sourceRawSha256": "3f96c5b329c4c27ca36ce50acf513fd2272c8b0e0b67f2575a326fac1a956159",
+  "exchanges": 6078,
+  "injured": 4091,
+  "kindCounts": {
+    "hit": 4482,
+    "parry": 1078,
+    "dodge": 518
+  },
+  "injuryKindCounts": {
+    "hit": 4091
+  },
+  "forcedWounds": 242,
+  "timedWounds": 3849,
+  "timedWoundsWithZeroT": 2540,
+  "timedWoundsWithOwnSwing": 1027,
+  "timedWoundsBusyAfterArrival": 1463,
+  "parryCount": 1078,
+  "parryWounds": 0,
+  "parryPostureDecreased": 1078,
+  "parryNewDown": 518,
+  "counterWounds": 0,
+  "nullChoiceTrace": {
+    "seed": 1,
+    "worldFacts": {
+      "t": 503.5,
+      "attacker": "B",
+      "defender": "A",
+      "move": "bodyKick",
+      "decision": 0,
+      "start": 503,
+      "arrival": 503.4466462281034,
+      "readAt": null,
+      "kind": "hit",
+      "T": 0,
+      "r": 0.2343203063825945,
+      "m": 0,
+      "movement": 0.09553249568801553,
+      "L": 0.5133324211083264,
+      "margin": -0.2343203063825945,
+      "counter": false,
+      "forced": false,
+      "why": null,
+      "injured": true,
+      "before": {
+        "posture": 19.14,
+        "downUntil": 502.95,
+        "busyUntil": 503.65,
+        "swing": null,
+        "fret": 0.64
+      },
+      "after": {
+        "posture": 0,
+        "downUntil": 504.95,
+        "busyUntil": 503.85
+      },
+      "contact": {
+        "force": 24,
+        "contactSites": 1,
+        "forcePerSite": 24,
+        "pressure": 19,
+        "where": "body",
+        "side": "右",
+        "layer": "bruise",
+        "depth": 0,
+        "damageFactor": 0,
+        "injured": true,
+        "knock": 30.857142857142858,
+        "balance": 30.857142857142858,
+        "pain": 251.54000000000033
+      },
+      "counterContact": null
+    },
+    "events": [
+      {
+        "t": 503,
+        "day": 1,
+        "type": "choice",
+        "who": "B",
+        "move": "bodyKick",
+        "context": "human:reach:ready:set",
+        "seconds": 0,
+        "stable": true,
+        "habit": false
+      },
+      {
+        "t": 503,
+        "day": 1,
+        "type": "windup",
+        "who": "B",
+        "target": "A",
+        "move": "bodyKick",
+        "start": 503,
+        "arrival": 503.4466462281034,
+        "wind": 0.4466462281034334,
+        "decisionSeconds": 0
+      },
+      {
+        "t": 503.25,
+        "day": 1,
+        "type": "choice",
+        "who": "A",
+        "move": null,
+        "context": "human:reach:wind:offset",
+        "seconds": 0.4,
+        "stable": false,
+        "habit": false
+      },
+      {
+        "t": 503.25,
+        "day": 1,
+        "type": "thinking",
+        "who": "A",
+        "move": null,
+        "from": 503.25,
+        "until": 503.65
+      },
+      {
+        "t": 503.5,
+        "day": 1,
+        "type": "exchange",
+        "attacker": "B",
+        "defender": "A",
+        "move": "bodyKick",
+        "p": 0.043954447587702394,
+        "w": 0.16808981649984928,
+        "kind": "hit",
+        "hand": 57.14772081035571,
+        "eye": 57.14772081035571
+      },
+      {
+        "t": 503.5,
+        "day": 1,
+        "type": "choiceResult",
+        "who": "B",
+        "move": "bodyKick",
+        "context": "human:reach:ready:set",
+        "success": true,
+        "expected": false
+      },
+      {
+        "t": 503.5,
+        "day": 1,
+        "type": "balanceBreak",
+        "who": "A",
+        "until": 504.95,
+        "seconds": 1.45
+      },
+      {
+        "t": 503.5,
+        "day": 1,
+        "type": "contact",
+        "attacker": "B",
+        "defender": "A",
+        "move": "bodyKick",
+        "force": 24,
+        "contactSites": 1,
+        "forcePerSite": 24,
+        "pressure": 19,
+        "where": "body",
+        "side": "右",
+        "layer": "bruise",
+        "depth": 0,
+        "damageFactor": 0,
+        "injured": true,
+        "knock": 30.857142857142858,
+        "balance": 30.857142857142858,
+        "pain": 251.54000000000033
+      }
+    ]
+  },
+  "interpretation": "Overlap counts are not disjoint causes. T=0 means no remaining body interval, not a new hit chance. Parry zero wounds can still consume posture and induce a later down-chain. null choice still pays Hick, but whether this is invalid extra deliberation vs legitimate novice cost is UNRESOLVED; no code/constant/gate changed."
+}
