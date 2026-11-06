@@ -16,7 +16,7 @@ const novice=createState(trainingSeed,{kind:'bare',askMajor:false}).ds[0];
 const master=[aName,bName].includes('day60')?growthSnapshots(trainingSeed,[60]).snapshots[0].hero:null;
 function run(seed,a0,b0){
   const s=createState(seed,{kind:'bare',askMajor:false});s.ds=[clone(a0),clone(b0)];s.fx=[];
-  for(const[d,i]of s.ds.map((d,i)=>[d,i])){d.id=i?'B':'A';d.uid=d.id;d.pos=[100+i*20,100];d.hp=100;d.needs.energy=CORE.wakeAt;d.posture=postureMax(d);d.busyUntil=0;d.fret=0;d.raging=false;d.rageUntil=0;d.swing=null;d.bswing=null;d.next=0;d.task=null;d.away=false;}
+  for(const[d,i]of s.ds.map((d,i)=>[d,i])){d.id=i?'B':'A';d.uid=d.id;d.faction=d.id;d.pos=[100+i*20,100];d.hp=100;d.needs.energy=CORE.wakeAt;d.posture=postureMax(d);d.busyUntil=0;d.fret=0;d.raging=false;d.rageUntil=0;d.swing=null;d.bswing=null;d.next=0;d.task=null;d.away=false;}
   const rows=[],injuries={A:0,B:0},breaths={A:0,B:0},minimal={A:0,B:0},incoming={A:0,B:0},counters={A:0,B:0};let untouched=0;
   for(;s.t<DAY&&s.ds.every(d=>d.hp>25);s.t+=.25){for(const d of s.ds){postureRegen(s,d,.25);fretStep(s,d);const other=s.ds.find(o=>o!==d);
     if(d.resting){d.needs.energy=Math.min(CORE.wakeAt,d.needs.energy+(facStage(s,'hall').restRate||1)*.25);if(d.needs.energy>=CORE.wakeAt)d.resting=false;continue;}
@@ -24,8 +24,8 @@ function run(seed,a0,b0){
       if(result.kind==='hit'){const dmg=w.mv.dmg*(1+(d.skills[w.mv.skill]||0)/50)*(result.heavy?CLASH.heavy:1);other.hp-=dmg;injuries[other.id]++;injured=true;}
       if(result.counter){d.hp-=result.counter;injuries[d.id]++;counters[other.id]++;injured=true;}
       if(!injured)untouched++;incoming[other.id]++;if(result.kind==='dodge'&&(result.timing?.step??Infinity)<=BODY_TIMING.simple/2)minimal[other.id]++;
-      const t=result.timing,m=result.kind==='read'?t?.strike:result.kind==='dodge'?t?.step:result.kind==='parry'?t?.guard:0;
-      rows.push({t:s.t,attacker:d.id,defender:other.id,move:w.mv.id,decision:w.decision,kind:result.kind,T:t?.T??null,r:t?.r??null,m:m??null,margin:t?t.T-t.r-(result.counter&&result.kind==='dodge'?t.step+t.strike:m):null,counter:!!result.counter,forced:!t,injured});
+      const t=result.timing,m=result.kind==='read'?t?.strike:result.kind==='dodge'?(t?.step+(result.counter?t?.strike:0)):result.kind==='parry'?t?.guard:0;
+      rows.push({t:s.t,attacker:d.id,defender:other.id,move:w.mv.id,decision:w.decision,kind:result.kind,T:t?.T??null,r:t?.r??null,m:m??null,movement:t?.step??null,L:t?.L??null,margin:t?t.T-t.r-m:null,counter:!!result.counter,forced:!t,injured});
     }
     if(d.swing||s.t<d.next||(d.busyUntil||0)>s.t)continue;
     if(d.needs.energy<=CORE.sleepAt){d.resting=true;breaths[d.id]++;continue;}

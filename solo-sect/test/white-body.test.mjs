@@ -98,3 +98,27 @@ test('N35 母招/條件/效果全資料化，只有真失手加w，弱敵期望�
   assert.equal(TECHNIQUES.length,6);const enemy={k:'bandit',uid:'bandit',wu:3};
   for(let i=0;i<24;i++)learnFromLoss(s,enemy,['guard'],{hands:2,weapon:'blade',opponentWind:true},.5,{lost:true});assert.ok(enemy.glimmer.known.includes('disarm'));
 });
+
+
+test('N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反擊、倖存者留眼熟',async()=>{
+ const {assessLoad,composure}=await import('../src/arts.mjs');
+ const {COVERS,chooseTactic,stepTactic,rememberEscape,restoreSurvivor,moveToward}=await import('../src/tactics.mjs');
+ const s=createState(41,{kind:'bare',askMajor:false}),d=s.ds[0];s.ds=[d];d.pos=[800,400];
+ const dogs=Array.from({length:4},(_,i)=>({k:'dog',uid:`dog${i}`,hp:14,max:14,pos:[820+i,400],intentTarget:d.id}));
+ // 真20次接法記錄，不直接灌f；此為單元fixture，不是自然玩法存活率。
+ for(let i=0;i<20;i++){d.busyUntil=0;d.posture=100;d.raging=false;d.rageUntil=0;d.fret=0;resolveSwing(s,dogs[0],d,()=>.5,{move:'dogBite',wind:.4});}
+ d.busyUntil=0;d.raging=false;d.rageUntil=0;d.fret=0;s.mons=dogs;
+ assert.ok(assessLoad(s,d).L>=1);
+ assert.equal(assessLoad(s,dogs[0]).L,0,'待命人物沒有宣告攻擊，不虛構連續來招造成死鎖');
+ d.swing={mv:'bodyPunch',tgt:'dog0',wind:.45,at:s.t+.45};assert.ok(assessLoad(s,dogs[0]).L>0);d.swing=null;
+ for(let i=0;i<20;i++){d.busyUntil=0;const r=resolveSwing(s,dogs[i%4],d,()=>.00001,{move:'dogBite',wind:.4});assert.ok(!r.counter);}
+ d.busyUntil=0;d.raging=false;d.rageUntil=0;d.fret=0;
+ d.pos=[...COVERS.find(c=>c.id==='guardTree').stand];dogs.forEach((m,i)=>m.pos=[d.pos[0]+20+i,d.pos[1]]);
+ assert.ok(assessLoad(s,d).L<1);
+ const before=[...d.pos];moveToward(d,[d.pos[0]+100,d.pos[1]],60,.25);assert.equal(d.pos[0]-before[0],15);
+ rememberEscape(s,dogs[0]);const fresh=restoreSurvivor(s,'dog',{k:'dog',uid:'new',hp:14,max:14});assert.equal(fresh.uid,'dog0');assert.deepEqual(fresh.practice,dogs[0].practice);assert.ok(fresh.survived);
+ d.personality=['honest'];const calm=chooseTactic(s,d,{L:1.2},{temper:composure(d),enemies:dogs.slice(0,2),friends:[]});
+ d.personality=['brave'];const rash=chooseTactic(s,d,{L:1.2},{temper:composure(d),enemies:dogs.slice(0,2),friends:[]});
+ assert.ok(rash.morale.reserve>calm.morale.reserve,'急躁不是膽怯，風險承受沿同一N29表');assert.equal(calm.action,'flee');assert.equal(rash.action,'cover');
+ assert.equal(stepTactic(s,d,{L:1.6},.25,{temper:composure(d),enemies:dogs.slice(0,2),friends:[]}),true,'背到掩體仍超載要留時間應接，不另起手');
+});
