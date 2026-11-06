@@ -169,3 +169,7 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 #### N55 零新相依正常UI入口（資料準備不等於影片）
 - 指令：`node solo-sect/tools/blind.mjs --seed <任選> --action train --out out/blind`；也可action chop/water，各次用不同out保留檔案。門檻：A/B各完整等於真1/60日snapshot之一，答案另檔。預期：`videosCreated:0`、`humanBlindTest:NOT_RUN`，沒有自動啟動browser。seed17已執行，只證明準備流程，非最終三seed全部驗收。
 - 正常UI：紀錄頁底部「離線成長盲測驗收」→匯入A.json→播放→錄製10秒下載A.webm；B同做。門檻：實際影片各至少10秒、無日數洩漏，先記三處差異後才開key.txt。預期：同displayPose/drawPoseActor renderer的影片，真人結果另記。**本worker沒有開UI/錄影，尚無A.webm/B.webm**；支援API/下載/真畫面仍需parent正常桌面實驗，不用SVG或JSON宣稱已驗影片。
+
+#### N36 士氣裸人頭重複計數更正
+- 指令：`bash solo-sect/test/run.sh smoke`。門檻：fail0、既有N36四狗/L≥1零反擊斷言維持。預期：19/19；唯一N36小測試也驗謹慎先靠牆而不是因裸人頭直接必逃。
+- 真隔離證據：`docs/evidence/r9-n36-morale-before17.json`與`r9-n36-morale-isolated17.json`。同未改成長snapshot，calm兩路counter0→6、normal仍1，overloadCounter0；**不是整輪通過或新head60日重產**。之後核心已改，前節public60的歷史/數字屬開發中舊head，必須新生成後再驗；N55前表亦需重產。

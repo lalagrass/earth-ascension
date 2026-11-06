@@ -1,0 +1,239 @@
+[
+  {
+    "trait": "normal",
+    "sourceEventHash": "b9a308c9ec9fe2da02adb8cab393cc88404ddf59a5bb6c2fa30b4d8ea5969255",
+    "controlledEntry": "完全沿waves既有入場reset，未動practice或成長",
+    "before": {
+      "pos": [
+        1451,
+        875
+      ],
+      "enemies": [
+        {
+          "uid": "foe0",
+          "pos": [
+            1471,
+            875
+          ],
+          "intentTarget": "hero"
+        },
+        {
+          "uid": "foe1",
+          "pos": [
+            1472,
+            875
+          ],
+          "intentTarget": "hero"
+        }
+      ],
+      "load": {
+        "L": 1.0985439314066807,
+        "rows": [
+          {
+            "attacker": "foe0",
+            "move": "looterBlade",
+            "need": 0.3295631794220042,
+            "window": 0.6,
+            "wind": 0.6,
+            "readyIn": 0,
+            "readyDelay": 0,
+            "travel": 0,
+            "active": false,
+            "share": 0.5492719657033404
+          },
+          {
+            "attacker": "foe1",
+            "move": "looterBlade",
+            "need": 0.3295631794220042,
+            "window": 0.6,
+            "wind": 0.6,
+            "readyIn": 0,
+            "readyDelay": 0,
+            "travel": 0,
+            "active": false,
+            "share": 0.5492719657033404
+          }
+        ],
+        "slots": 2
+      }
+    },
+    "decision": {
+      "action": "cover",
+      "morale": {
+        "reserve": 1.4285714285714286,
+        "pressure": 1.523479120434859,
+        "state": "broken",
+        "health": 0,
+        "fatigue": 0
+      },
+      "L": 1.0985439314066807,
+      "anger": false,
+      "cover": "gate",
+      "at": 0,
+      "helper": "kid1",
+      "destination": [
+        1451,
+        875
+      ]
+    },
+    "gone": false
+  },
+  {
+    "trait": "calm",
+    "sourceEventHash": "b9a308c9ec9fe2da02adb8cab393cc88404ddf59a5bb6c2fa30b4d8ea5969255",
+    "controlledEntry": "完全沿waves既有入場reset，未動practice或成長",
+    "before": {
+      "pos": [
+        1451,
+        875
+      ],
+      "enemies": [
+        {
+          "uid": "foe0",
+          "pos": [
+            1471,
+            875
+          ],
+          "intentTarget": "hero"
+        },
+        {
+          "uid": "foe1",
+          "pos": [
+            1472,
+            875
+          ],
+          "intentTarget": "hero"
+        }
+      ],
+      "load": {
+        "L": 1.0985439314066807,
+        "rows": [
+          {
+            "attacker": "foe0",
+            "move": "looterBlade",
+            "need": 0.3295631794220042,
+            "window": 0.6,
+            "wind": 0.6,
+            "readyIn": 0,
+            "readyDelay": 0,
+            "travel": 0,
+            "active": false,
+            "share": 0.5492719657033404
+          },
+          {
+            "attacker": "foe1",
+            "move": "looterBlade",
+            "need": 0.3295631794220042,
+            "window": 0.6,
+            "wind": 0.6,
+            "readyIn": 0,
+            "readyDelay": 0,
+            "travel": 0,
+            "active": false,
+            "share": 0.5492719657033404
+          }
+        ],
+        "slots": 2
+      }
+    },
+    "decision": {
+      "action": "flee",
+      "morale": {
+        "reserve": 0.6666666666666666,
+        "pressure": 1.523479120434859,
+        "state": "routing",
+        "health": 0,
+        "fatigue": 0
+      },
+      "L": 1.0985439314066807,
+      "anger": false,
+      "cover": null,
+      "at": 0,
+      "helper": "kid1",
+      "destination": [
+        1475,
+        875
+      ]
+    },
+    "gone": true
+  },
+  {
+    "trait": "rash",
+    "sourceEventHash": "b9a308c9ec9fe2da02adb8cab393cc88404ddf59a5bb6c2fa30b4d8ea5969255",
+    "controlledEntry": "完全沿waves既有入場reset，未動practice或成長",
+    "before": {
+      "pos": [
+        1451,
+        875
+      ],
+      "enemies": [
+        {
+          "uid": "foe0",
+          "pos": [
+            1471,
+            875
+          ],
+          "intentTarget": "hero"
+        },
+        {
+          "uid": "foe1",
+          "pos": [
+            1472,
+            875
+          ],
+          "intentTarget": "hero"
+        }
+      ],
+      "load": {
+        "L": 1.0985439314066807,
+        "rows": [
+          {
+            "attacker": "foe0",
+            "move": "looterBlade",
+            "need": 0.3295631794220042,
+            "window": 0.6,
+            "wind": 0.6,
+            "readyIn": 0,
+            "readyDelay": 0,
+            "travel": 0,
+            "active": false,
+            "share": 0.5492719657033404
+          },
+          {
+            "attacker": "foe1",
+            "move": "looterBlade",
+            "need": 0.3295631794220042,
+            "window": 0.6,
+            "wind": 0.6,
+            "readyIn": 0,
+            "readyDelay": 0,
+            "travel": 0,
+            "active": false,
+            "share": 0.5492719657033404
+          }
+        ],
+        "slots": 2
+      }
+    },
+    "decision": {
+      "action": "cover",
+      "morale": {
+        "reserve": 1.4285714285714286,
+        "pressure": 1.523479120434859,
+        "state": "broken",
+        "health": 0,
+        "fatigue": 0
+      },
+      "L": 1.0985439314066807,
+      "anger": false,
+      "cover": "gate",
+      "at": 0,
+      "helper": "kid1",
+      "destination": [
+        1451,
+        875
+      ]
+    },
+    "gone": false
+  }
+]

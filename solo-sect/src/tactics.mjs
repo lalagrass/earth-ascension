@@ -26,7 +26,8 @@ export function loadFromForecast(a,rows){
 export function moraleOf(a,{L,enemies,allies:friends,fallen=0,initialFriends=friends+1,threat=0,tolerance=1}){
  const health=Math.max(0,1-(a.hp??100)/(a.max||100)),fatigue=1-(a.needs?.energy??a.energy??100)/100;
  const profile=FOE_ACTIONS[a.k]||{},reserve=tolerance+(profile.injuryAnger?health:0)+friends/(enemies+1);
- const pressure=health+fatigue+fallen/Math.max(1,friends+1)+Math.max(0,enemies/(friends+1)-1)+L/(1+L)+threat;
+ // 人數/接近距離/站位已在L逐人累加，不再以裸人頭數重收一次必敗壓力。
+ const pressure=health+fatigue+fallen/Math.max(1,friends+1)+L/(1+L)+threat;
  const state=pressure<reserve/2?'steady':pressure<reserve?'shaken':pressure<2*reserve?'broken':'routing';
  return {reserve,pressure,state,health,fatigue};
 }

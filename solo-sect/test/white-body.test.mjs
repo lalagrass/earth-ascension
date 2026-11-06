@@ -122,7 +122,7 @@ test('N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反�
  rememberEscape(s,dogs[0]);const fresh=restoreSurvivor(s,'dog',{k:'dog',uid:'new',hp:14,max:14});assert.equal(fresh.uid,'dog0');assert.deepEqual(fresh.practice,dogs[0].practice);assert.ok(fresh.survived);
  d.personality=['honest'];const calm=chooseTactic(s,d,{L:1.2},{temper:composure(d),enemies:dogs.slice(0,2),friends:[]});
  d.personality=['brave'];const rash=chooseTactic(s,d,{L:1.2},{temper:composure(d),enemies:dogs.slice(0,2),friends:[]});
- assert.ok(rash.morale.reserve>calm.morale.reserve,'急躁不是膽怯，風險承受沿同一N29表');assert.equal(calm.action,'flee');assert.equal(rash.action,'cover');
+ assert.ok(rash.morale.reserve>calm.morale.reserve,'急躁不是膽怯，風險承受沿同一N29表');assert.equal(calm.action,'cover');assert.equal(rash.action,'hold'); // 謹慎先靠牆；不能將兩個人頭再重算成必逃
  assert.equal(stepTactic(s,d,{L:1.6},.25,{temper:composure(d),enemies:dogs.slice(0,2),friends:[]}),true,'背到掩體仍超載要留時間應接，不另起手');
  // Both defenses see the same real [0,1] windup; processing at t=1 cannot
  // replay the first .7-second reaction/step in the future or reuse it twice.
