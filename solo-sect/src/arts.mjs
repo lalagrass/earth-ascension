@@ -511,7 +511,7 @@ export function gainArt(d, amt, mf = 1, now = 0, g = null) {
     else { const next = Math.min(curCap(d, a), r.xp + gx * (1 - r.xp / 130)); r.xp = clampTrainXp(d, a, r.xp, next); out.moves = unlockTechs(d, a); }
     if (g) out.gm = settleGrowth(d, a, r, { src: g.src || 'train', raw: g.raw ?? amt, xp0, xp1: r.xp });
     const feed = !r.guizhen && feedInner31(d, a, gx, g); if (feed) { out.feed = feed; d.growMul.feed = feed.label; } }
-  if (!d.pendingArt) { const next = [...sectUnlock24(d), ...ARTS.filter((a) => artOk(d, a) && !a.deprecated && (!a.secret || yunvOpen24(d, a)) && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a) && !lockedArt24(d, a)).sort((a, b) => ownFirst24(d)(a, b) || ((b.school === d.style) - (a.school === d.style)) || appetiteOrder31(d, a, b))][0]; if (next) { d.pendingArt = next.id; out.next = next; } } /* loop208：本門特許與本門、路數都先於偏好 */
+  if (!d.pendingArt) { const next = [...sectUnlock24(d), ...ARTS.filter((a) => artOk(d, a) && !a.deprecated && (!a.secret || yunvOpen24(d, a) || sectUnlock24(d).some(x=>x.id===a.id)) && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a) && !lockedArt24(d, a)).sort((a, b) => ownFirst24(d)(a, b) || ((b.school === d.style) - (a.school === d.style)) || appetiteOrder31(d, a, b))][0]; if (next) { d.pendingArt = next.id; out.next = next; } } /* loop208：本門特許與本門、路數都先於偏好 */
   return out;
 }
 export function chooseVariant(d, id, v, now = 0) {
@@ -597,7 +597,7 @@ export const COMP = {
   vneed: 80,                                  // loop16 變式領悟門檻（大成後、未選變式的功夫）
 };
 const wm = (d) => COMP.wuMul[Math.max(1, Math.min(5, d.wu ?? d.root ?? 3))];
-const open = (d, a) => a && !a.deprecated && artOk(d, a) && (!a.secret || yunvOpen24(d, a)) && !d.arts?.[a.id] && !reqMissing(d, a).length;
+const open = (d, a) => a && !a.deprecated && artOk(d, a) && (!a.secret || yunvOpen24(d, a) || sectUnlock24(d).some(x=>x.id===a.id)) && !d.arts?.[a.id] && !reqMissing(d, a).length;
 export function compProgress(d) { return Object.entries(d.comp || {}).map(([id, v]) => ({ id, name: artById(id)?.name, v, need: COMP.need(artById(id)) })); }
 function add(s, d, id, amt, how, think, log) {
   const a = artById(id); if (!open(d, a)) return null;
@@ -607,13 +607,34 @@ function add(s, d, id, amt, how, think, log) {
   log(s, how === 'watch' ? `${d.name}看多了別人使「${a.name}」，竟自己悟了出來！` : `${d.name}苦練之間豁然開朗，自悟「${a.name}」！`);
   return a;
 }
-// 自悟目標：等師父教的那門優先；否則本門派可學的下一門，再不然任一門可學的
-export function selfTarget(d) { if(!Object.keys(d.arts||{}).length&&!d.pendingArt)return null; if (d.pendingArt) return d.pendingArt; const u = sectUnlock24(d); if (u.length) return u[0].id; const c = ARTS.filter((a) => open(d, a) && !lockedArt24(d, a));  c.sort((a, b) => ownFirst24(d)(a, b) || appetiteOrder31(d, a, b)); /* loop208：本門特許與本門優先，偏好只排同一層 */ if (c[0] && ownArt24(d, c[0])) return c[0].id; const styled = c.filter((a) => a.school === d.style); return (styled[0] || c[0])?.id || null; }
+// 資格不是內容：只有已會母招的資料路徑或曾當面看見的招式，才有東西可回想。
+export function comprehensionSource(d,a){
+  if(!a)return null;
+  const seen=d.comprehensionSources?.[a.id];if(seen?.kind==='demonstration')return seen;
+  const paths=[a.req,a.alt24,SECTS[d.sectId]?.unlock24?.[a.id]].filter(p=>p?.length);
+  const mother=paths.find(p=>p.every(r=>artTier(d,r.art)>=r.tier));
+  return mother?{kind:'foundation',arts:mother.map(r=>r.art)}:null;
+}
+export function noteDemonstration(s,student,teacher,move){
+  const a=artOfMove(move);if(!a||!teacher.arts?.[a.id]||!teacher.moves?.includes(move))return null;
+  const source={kind:'demonstration',art:a.id,teacher:teacher.id,move,at:s.t};
+  (student.comprehensionSources??={})[a.id]=source;
+  if(student.task?.act==='spar')(student.task.demonstrations??=[]).includes(a.id)||student.task.demonstrations.push(a.id);
+  return source;
+}
+export function selfTarget(d){
+  const eligible=a=>open(d,a)&&!lockedArt24(d,a)&&!!comprehensionSource(d,a);
+  if(d.pendingArt&&eligible(artById(d.pendingArt)))return d.pendingArt;
+  const u=sectUnlock24(d).filter(eligible);if(u.length)return u[0].id;
+  const c=ARTS.filter(eligible);c.sort((a,b)=>ownFirst24(d)(a,b)||appetiteOrder31(d,a,b));
+  if(c[0]&&ownArt24(d,c[0]))return c[0].id;
+  const styled=c.filter(a=>a.school===d.style);return (styled[0]||c[0])?.id||null;
+}
 // 活動完成時呼叫
-export function comprehend(s, d, act, partner, think, log) {
+export function comprehend(s, d, act, partner, think, log, demonstrated = []) {
   if (!COMP.gain[act]) return null;
   const tgt = selfTarget(d); let got = tgt ? add(s, d, tgt, COMP.gain[act], 'self', think, log) : null;
-  if (act === 'spar' && partner) { const seen = ARTS.filter((a) => partner.arts?.[a.id] && open(d, a) && !lockedArt24(d, a)); seen.sort((a, b) => appetiteOrder31(d, a, b)); /* loop208：觀摩只在能看的功夫裡排偏好。傳功與會武偷師不走這裡 */ if (seen[0]) got = add(s, d, seen[0].id, COMP.watch, 'watch', think, log) || got; }
+  if (act === 'spar' && partner) { const seen = ARTS.filter((a) => demonstrated.includes(a.id) && d.comprehensionSources?.[a.id]?.teacher===partner.id && partner.arts?.[a.id] && open(d, a) && !lockedArt24(d, a)); seen.sort((a, b) => appetiteOrder31(d, a, b)); /* loop208：觀摩只在能看的功夫裡排偏好。傳功與會武偷師不走這裡 */ if (seen[0]) got = add(s, d, seen[0].id, COMP.watch, 'watch', think, log) || got; }
   return got;
 }
 

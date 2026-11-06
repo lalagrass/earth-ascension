@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { strikeLedger33, power } from '../src/jianghu.mjs';
 import { dpsOf } from '../src/world.mjs';
-import { mitOf, qiMax, harmonyMul, HARMONY24, QI_SAT31, qiStrikeMul, qiOf, artById, neigongEff31, gainArt, selfTarget, comprehend, appetite31, sectUnlock24 } from '../src/arts.mjs';
+import { mitOf, qiMax, harmonyMul, HARMONY24, QI_SAT31, qiStrikeMul, qiOf, artById, neigongEff31, gainArt, selfTarget, comprehend, noteDemonstration, appetite31, sectUnlock24 } from '../src/arts.mjs';
 import { SECTS } from '../src/data.mjs';
 import { neigongRules2Html } from '../src/panel-ui.mjs';
 
@@ -86,7 +86,7 @@ test('loop208 求學與自悟只在同一層按偏好排，本門特許仍照樹
   assert.equal(lo.pendingArt, 'basicSword');
   assert.equal(mid.pendingArt, 'pushPalm');
   assert.equal(selfTarget(learner(['bold'])), 'wuhuBlade');
-  assert.equal(selfTarget(learner(['quiet'], { pushPalm: { xp: 55, last: 0 } })), 'basicSword');
+  assert.notEqual(selfTarget(learner(['quiet'], { pushPalm: { xp: 55, last: 0 } })), 'basicSword'); // 無來源的空前提只能求學，不能憑資格自悟
   assert.equal(selfTarget(learner([])), 'pushPalm');
   const wd = learner(['bold', 'nimble', 'playful'], { wudangFist: { xp: 55, last: 0 } });
   wd.sectId = 'wudang'; wd.stree = SECTS.wudang.tree;
@@ -100,7 +100,8 @@ test('loop208 切磋觀摩按偏好挑能看的功夫，好練法不把打法排
   const watch = (personality) => {
     const d = learner(personality, { pushPalm: { xp: 55, last: 0 } });
     const s = { wu7: true, t: 0 };
-    comprehend(s, d, 'spar', { arts: { wavePalm: { xp: 10 }, basicSword: { xp: 10 } } }, () => {}, () => {});
+    const teacher={id:'demonstrator',arts:{wavePalm:{xp:10},basicSword:{xp:10}},moves:[artById('wavePalm').tech,artById('basicSword').tech]};for(const move of teacher.moves)noteDemonstration(s,d,teacher,move);
+    comprehend(s,d,'spar',teacher,()=>{},()=>{},['wavePalm','basicSword']);
     return d.comp || {};
   };
   const da = watch(['bold']), calm = watch(['quiet']);

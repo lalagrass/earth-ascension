@@ -152,3 +152,7 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 #### N50/N36 pipeline更正：口糧目標
 - 指令：`bash test/run.sh smoke`。門檻：fail0。預期：19項smoke測試（數量可能隨後續里程碑增加），N50含在家口糧/已聽聞候選14份/未聽聞不備99份斷言。
 - 證據與真前提：[`docs/evidence/r9-n50-pantry-root.md`](docs/evidence/r9-n50-pantry-root.md)。seed17同尺15日修前exchange0、修後57；非任意seed已證明，非N36兩路已通過。
+
+#### 正式武學內容來源（N7/N50共同修正）
+- 指令：`bash test/run.sh smoke`。門檻：fail0；無來源pendingArt不得變成selfTarget。預期：N32原測試含空req教材不能憑資格自悟；N50真書/真師徒8秒證據仍成立。
+- CI另驗既有v33排序：有母招者保留偏好；無來源basicSword只能求學；觀摩測試提供真正已知且已示範招式，不以整個partner.arts作示範。未在本地另跑full suite。
