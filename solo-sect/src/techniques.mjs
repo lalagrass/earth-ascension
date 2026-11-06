@@ -6,10 +6,10 @@ export const TECHNIQUES=[
  {id:'flankStrike',name:'側身打肋',base:'bodyKick',parents:['leg','staff'],conditions:['afterDodge','opponentCharge'],difficulty:72,effects:['armorBypass','interrupt']},
  {id:'staffSweep',name:'掃',base:'toolStaff',parents:['staff'],conditions:['surrounded'],difficulty:72,effects:['area'],area:65},
  {id:'bodyThrow',name:'摔',base:'bodyPush',parents:['push','grapple'],conditions:['hands','opponentUnbalanced'],difficulty:72,effects:['knockdown']},
- {id:'dustCast',name:'撒土',base:'toolStone',parents:['pickup','stone','guard'],conditions:['hands','losing','cornered'],difficulty:96,effects:['blind','dishonor'],noTool:true},
+ {id:'dustCast',name:'撒土',base:'toolStone',parents:['pickup','stone','guard'],conditions:['hands','losing','cornered'],difficulty:96,effects:['blind','dishonor'],medium:'irritant',noTool:true},
  {id:'stoneOpening',name:'擲石開場',base:'toolStone',parents:['stone'],conditions:['approaching'],difficulty:48,effects:['interrupt','lure']},
 ];
-export const TECHNIQUE_MOVES=TECHNIQUES.map(row=>{const base=BODY_MOVES.find(m=>m.id===row.base);return {...base,id:row.id,name:row.name,technique:true,aoe:row.area||0,aoeCenter:row.area?'actor':undefined,...(row.noTool?{tool:null,consumable:false}:{}),effectWords:row.effects};});
+export const TECHNIQUE_MOVES=TECHNIQUES.map(row=>{const base=BODY_MOVES.find(m=>m.id===row.base);return {...base,id:row.id,name:row.name,technique:true,medium:row.medium||base.medium,aoe:row.area||0,aoeCenter:row.area?'actor':undefined,...(row.noTool?{tool:null,consumable:false}:{}),effectWords:row.effects};});
 export const CONDITIONS={hands:f=>f.hands>0,opponentWeapon:f=>!!f.weapon&&f.weapon!=='fist',opponentWind:f=>!!f.opponentWind,afterDodge:f=>!!f.afterDodge,opponentCharge:f=>!!f.opponentCharge,surrounded:f=>f.enemies>=3,opponentUnbalanced:f=>!!f.opponentUnbalanced,losing:f=>!!f.losing,cornered:f=>!!f.cornered,approaching:f=>!!f.approaching};
 export const matchesTechnique=(row,facts)=>row.conditions.every(word=>CONDITIONS[word]?.(facts));
 export const learningRate=p=>learningWeight(p)*(1-p); // 只供期望診斷；真正失手時只加w，不再乘(1-p)。

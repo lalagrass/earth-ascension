@@ -306,3 +306,6 @@ N48 的練功套路及交手畫面共用 `routines.mjs` 的姿勢與 `pose-rende
 **唯讀畫面**：`contact-view.mjs`從contact事件算`base+k×force`，以白拳12→.1秒、成人躯幹骨尺度72→.5秒兩點求k；最多.5秒，附近正在交手者多時除`sqrt(人數−1)`減少反覆視覺凍結。受方最大5px（骨架手寬量級）的震動，攻方一半，80弧度/s是.1秒內約一週的短震。只凍兩人骨架/位置，其他角色與模擬照走；未增加遊戲相依、計時器或物理引擎。`window.__sect.hitstop=false`只切顯示，沒有存入s。contact fx保留1秒供固定步長與插值讀，顯示實際仍受.5秒上限。N37會改玩法golden，**但開/關hitstop不會改模擬**；整輪3.4的golden仍須另重產。
 
 驗收工具`tools/contact.mjs --seed <任選>`輸出真連擋破綻、同腳打狗/豬、8次真tick插入唯讀顯示開關的完整state SHA256；這是受控力學驗收，不是自然成長/盲測影片。`injuryDaily28 → injuryDaily`是本次觸及的輪次名稱整理。N34無傷門檻與N36逐trait反擊必須照實保留FAIL，見REVIEW與r9-n37-contact證據。
+
+### 接觸媒介修正：刺激物不是投石（N35/N37後續）
+#445撒土規格是短暫看不清來招，沒有石擊動量或骨傷。[NHS眼傷指引](https://www.nhs.uk/conditions/eye-injuries/)也區分普通灰塵/洗髮劑刺激，與高速物體/穿刺造成的嚴重損傷；本作只借此機制區分，不模擬醫療數值。`CONTACT_MEDIA`共用schema宣告`momentum/tissue`能力：impact能傳衝量/組織受力，irritant不傳兩者、只由招式效果詞帶短視障。招式資料的medium可覆寫母招，解譯器不認招名；撒土列指定irritant，因此不再繼承投石的深眼傷/推倒/hitstop，力量再高也不把粉塵變成石塊。原#445的blind持續時間與俠義代價不變。這是媒介能力而非隨意減傷倍率。現有唯一N37測試加同媒介10000來源力仍零真衝量/傷層的回歸斷言，未新增第二個N37測試。
