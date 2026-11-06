@@ -34,7 +34,13 @@ N54 僅改顯示、素材及驗收入口；以 `4ebe9e5` 為前版。推進 P1 �
 - 本地僅 smoke 與上述小型驗收，不跑完整 golden 或 bot12 矩陣；完整 quick + golden 在 CI 驗證。
 - 保守字格可多收一些標籤，換取不同離線字型環境仍不相撞。`window.__sect.labels` 可讀當幀真正使用的框；投影縮放是同一仿射轉換，不改交集結果。
 
-## 第九輪：白身演化（進行中）
+## 第九輪 9a：白身、手眼熟與可見成長（#441）
+
+| 指令 | 門檻 | 預期輸出 |
+|---|---|---|
+| `bash solo-sect/test/run.sh quick` | 全部 pass，fail 0 | N14/N16/N22/N27 舊截擊護欄與新 N32/N33/N55 同時通過；N33 不改舊截鼠斷言 |
+| `cd solo-sect && node tools/golden.mjs --check` | quick/full/saves 與已提交 golden 完全相符 | 結束碼 0，所有格 `ok`；3.4 變更回放 hash，須用本輪 golden |
+| `node --test solo-sect/test/rules-upgrade.test.mjs solo-sect/test/v095.test.mjs` | fail 0 | 3.3 舊檔逐版遷移到 3.4、現有武學不消失、同種子可重播 |
 
 ### N32 白身開局與起手表（#442）
 | 指令 | 門檻 | 預期輸出 |
@@ -49,7 +55,7 @@ N54 僅改顯示、素材及驗收入口；以 `4ebe9e5` 為前版。推進 P1 �
 
 | 指令 | 門檻 | 預期輸出 |
 |---|---|---|
-| `bash solo-sect/test/run.sh smoke` | fail=0；本milestone只新增一個N33小測試 | N33 checkpoint共12 tests；目前N55後13（schema10 + N32/N33/N55各1），50有效次gap=.5、人獸皆記n/f |
+| `bash solo-sect/test/run.sh smoke` | fail=0；本milestone只新增一個N33小測試 | 13/13（schema10 + N32/N33/N55各1），50有效次gap=.5、人獸皆記n/f；高手過往初值與同類招折算 |
 | `node solo-sect/tools/practice-probe.mjs --seed <任選整數>` | `pass:true`，before.stand介於.1–.3，after20.stand>.5 | 20筆真resolveSwing事件含p/w，初次stand=.2；after4及after20反應縮短 |
 | 上一指令連跑兩次並比較stdout | byte-identical | 同種子相同20次抽樣及事件，不依賴作者檔案 |
 
@@ -70,3 +76,14 @@ probe是「充分休息、沒有惱羞/在途攻擊」的20次獨立新狗**單�
 盲測預設 train；可另加 `--action chop`／`water`。先記三處差異，才讀 key.txt。輸出同路徑會覆寫前次檔案，請用不同 out。正常頁面透過 File API 匯入、MediaRecorder/canvas.captureStream 下載 WebM；CLI 不啟動瀏覽器。錄影或真人盲測尚未執行；連兩名 reviewer 猜錯依 #479 決策，不自改 3D。
 
 受控日程與各常數理由見[combat.md N55](docs/systems/combat.md#n55成長只改共用骨架的播放474)。數字證據寫在`docs/evidence/r9-n55-growth.md`；桌面與影片驗收不得用這張表、SVG或mock Canvas測試冒充。
+
+本輪本地結果：smoke 13/13；quick 623 passed、0 failed；golden 重產 quick 4 格／full 32 格／舊檔並回報「全部相符」；`check-poses.mjs` 79 組、0 錯；`check-assets.mjs` 168/168。三種子 N55 前五欄均超過 25% 差距，原始資料與 hash 見上述證據文件。N55 影片與真人盲測仍待 reviewer。
+
+| 舊測試與改動 | 為何規則改變，保留的驗收 |
+|---|---|
+| N14 招架抽樣 `.5 → .1` | N33 的 log-logistic 長尾使陌生、悟性 1 的中位反應 `.477` 秒加格架 `.1` 秒大於 `.5` 秒來招；`.1` 分位反應 `.292` 秒加格架能趕上、加移步 `.25` 秒趕不上。測試仍查雙方架勢與氣血，並新增三條時間窗斷言。 |
+| 名功破架勢抽樣 `.99 → .5` | `.99` 分位反應已超過 1 秒玄鐵前搖，無格架可破；`.5` 能格架。新增兩個分位時間窗斷言，仍查玄鐵與降龍的架勢歸零。 |
+| 巡山單種子距離嚴格次序 | N33 交手學習改變遭遇結果與後續亂數路徑，因此 60/90 的一次行程距離不再嚴格排序。仍驗 0 級比 60/90 均短、三檔 `dpsOf` 嚴格遞增、90 級四人隊至少入深谷。 |
+| 撤退線整趟距離次序 | 提早用乾糧療傷與遭遇路徑分岔可使完整行程距離倒轉；改在同一局面、同一氣血與無補給下直接驗 70% 先回頭而 30% 繼續，並保留完整行程的決定性檢查。 |
+
+`round6-n22.test.mjs` 與 `round7-n27.test.mjs` 的高手截鼠原始測試未改；兩者由 quick 原斷言通過。
