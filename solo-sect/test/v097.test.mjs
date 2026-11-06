@@ -18,7 +18,10 @@ test('閃避取最差身法；溜走隊會閃過敵人', () => {
   const r = go(s, ['hero'], 30); assert.equal(r.style, 'slip'); assert.ok(Object.values(r.evaded).reduce((a, b) => a + b, 0) > 0, JSON.stringify(r.evaded));
 });
 test('守關敵一定要打：打不過就回頭，原因寫「被〇〇擋在△△」', () => {
-  let r; for (const l of [20, 40, 60, 80]) { r = go(H('weixiaobao', 'shuanger'), ['hero', 'shuanger'], l); if (r.blocked) break; } assert.ok(r.blocked, r.reason); assert.match(r.reason, /擋在/); assert.match(r.story, /攔下/);
+  const oldHp = ENEMIES.wolfking.hp; let r;
+  try { ENEMIES.wolfking.hp *= 100; r = go(H('weixiaobao', 'shuanger'), ['hero', 'shuanger'], 20); }
+  finally { ENEMIES.wolfking.hp = oldHp; }
+  assert.ok(r.blocked, r.reason); assert.match(r.reason, /擋在/); assert.match(r.story, /攔下/);
   for (const g of ROUTE) assert.ok(ENEMIES[g.gate]);
 });
 test('清場型會追逃兵；戰報有追擊數與敘事行；清場率與清山紀錄', () => {
@@ -33,7 +36,10 @@ test('阿星：重傷覺醒，根骨解封 +8、起手如來神掌', () => {
   assert.equal(Object.values(s.hero.stats).reduce((a, b) => a + b, 0) - sum0, 8);
 });
 test('阿星巡山瀕死也會覺醒', () => {
-  const s = H('axing', 'afang'); const r = go(s, ['hero'], 3); assert.ok(s.hero.awakened, r.reason);
+  const oldHare = ENEMIES.hare.dmg, oldBoar = ENEMIES.boar.dmg; let s, r;
+  try { ENEMIES.hare.dmg *= 1000; ENEMIES.boar.dmg *= 1000; s = H('axing', 'afang'); r = go(s, ['hero'], 3); }
+  finally { ENEMIES.hare.dmg = oldHare; ENEMIES.boar.dmg = oldBoar; }
+  assert.ok(s.hero.awakened, r.reason);
 });
 test('黃蓉精打細算：每日香火錢 +2', () => {
   const a = H('guojing', 'huangrong'), b = H('guojing', 'munianci'); const ca = a.res.coin, cb = b.res.coin; payday(a); payday(b);

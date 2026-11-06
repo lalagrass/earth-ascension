@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { SOURCES, srcOk, NODES, MONSTERS } from '../src/data.mjs';
-import { RING, handleTake, handleCap } from '../src/arts.mjs';
+import { RING, handleTake, handleThroughput } from '../src/arts.mjs';
 import { bandMembers, syncMembers, newBand } from '../src/threat.mjs';
 import { createState, tick, startHunt } from '../src/sim.mjs';
 
@@ -46,16 +46,16 @@ test('N15：第 5 隻不佔近戰位，在外圈繞', () => {
   tick(s, 0.25); assert.ok(dist(out[0].pos, d.pos) > 26, '外圈的不貼身');
 });
 
-test('N15：超出應接的招直接中招，頭上出紅圈', () => {
+test('N28：應接次數只作紀錄，四敵仍佔四個貼身位', () => {
   const s = { t: 10 }, d = { id: 'x', arts: {}, skills: {} };
-  assert.equal(handleCap(d), 1);
-  assert.equal(handleTake(s, d), true); assert.equal(handleTake(s, d), false);
-  assert.equal(d.ring.over, 1);
+  assert.ok(handleThroughput(d) > 0);
+  assert.equal(handleTake(s, d), true); assert.equal(handleTake(s, d), true);
+  assert.equal(d.maxHandled, 2);
   s.t = 10 + RING.win + 0.01; assert.equal(handleTake(s, d), true);
   const { s: s2, ds: [d2] } = onPost(); d2.skills.agility = 0; d2.arts = { basicFist: { xp: 0, last: 0 } };
   for (let k = 0; k < 4; k++) s2.mons.push(rat(s2, [d2.pos[0] + 8, d2.pos[1] + k * 3]));
   for (let i = 0; i < 40; i++) tick(s2, 0.25);
-  assert.ok((s2.hunt?.over || 0) > 0, '四隻同時咬，入門接不來');
+  assert.ok(d2.maxHandled >= 2, '四隻同時咬時留下多招紀錄');
 });
 
 test('N15：山賊每人血量加總＝威脅點數換算', () => {

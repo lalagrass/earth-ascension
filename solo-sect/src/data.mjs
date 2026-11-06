@@ -61,7 +61,7 @@ export const NEW_TRAITS = {
   lazy: { name: '懶散', desc: '能躺就不坐，練功提不起勁', mods: { train: 0.7, leisure: 1.4, rest: 1.15 } },
   glib: { name: '油嘴', desc: '說話好聽，招人、買賣都佔便宜', mods: { chat: 1.3 } },
   drinker: { name: '嗜酒', desc: '有酒心情就好，醉了悟性高、定力差', mods: { leisure: 1.2 }, moodBase: 3 },
-  rigid: { name: '拘謹', desc: '規矩方正，練正統功夫一板一眼；學不來無招之劍', mods: {}, mods24: { train: 1.15, study: 1.15, chat: 0.85, rest: 0.9 } },
+  rigid: { name: '拘謹', desc: '規矩方正，練正統功夫一板一眼；學不來無招之劍', composure: 'steady', mods: {}, mods24: { train: 1.15, study: 1.15, chat: 0.85, rest: 0.9 } },
   bold: { name: '豪爽', desc: '大口喝酒大塊吃肉，出手不拘章法', mods: { chat: 1.1 } },
   hypocrite: { name: '偽君子', desc: '人前君子，人後算計；名望受損時心情大跌', mods: {}, mods24: { chat: 1.25, study: 1.15 } },
   indecisive: { name: '優柔', desc: '重大抉擇總要拖上幾天', mods: {}, mods24: { chat: 1.15, rest: 1.15, defend: 0.85 } },
@@ -270,12 +270,12 @@ export const RECRUIT_POOL = [
 export const TRAITS = {
   diligent: { name: '勤奮', desc: '閒不下來，練功砍柴都起勁', mods: { train: 1.25, chop: 1.15, build: 1.15, farm: 1.1, chat: 0.85 } },
   sociable: { name: '健談', desc: '愛找人說話，聊完心情特別好', mods: { chat: 1.5, spar: 1.1 }, thoughtMul: { social: 1.6 } },
-  playful: { name: '貪玩', desc: '愛往外跑採藥，坐不住練功', mods: { forage: 1.4, train: 0.7, chat: 1.2 } },
-  gentle: { name: '溫和', desc: '愛下廚照顧人，不愛打鬥', mods: { cook: 1.4, farm: 1.15, spar: 0.6 }, thoughtMul: { fight: 1.5 } },
-  brave: { name: '膽大', desc: '受傷不太放在心上，愛切磋', mods: { spar: 1.4 }, thoughtMul: { fight: 0.4 } },
+  playful: { name: '貪玩', desc: '愛往外跑採藥，坐不住練功', composure: 'hot', mods: { forage: 1.4, train: 0.7, chat: 1.2 } },
+  gentle: { name: '溫和', desc: '愛下廚照顧人，不愛打鬥', composure: 'steady', mods: { cook: 1.4, farm: 1.15, spar: 0.6 }, thoughtMul: { fight: 1.5 } },
+  brave: { name: '膽大', desc: '受傷不太放在心上，愛切磋', composure: 'hot', mods: { spar: 1.4 }, thoughtMul: { fight: 0.4 } },
   optimist: { name: '樂天', desc: '天塌下來也笑得出來', moodBase: 8 },
   worrier: { name: '多慮', desc: '小事也掛心', moodBase: -6, thoughtMul: { bad: 1.4 } },
-  honest: { name: '憨厚', desc: '學得慢卻肯下笨功夫，基礎武學練得特別紮實', mods: { train: 1.1, leisure: 0.8 } },
+  honest: { name: '憨厚', desc: '學得慢卻肯下笨功夫，基礎武學練得特別紮實', composure: 'steady', mods: { train: 1.1, leisure: 0.8 } },
   free: { name: '灑脫', desc: '不拘一格，練功隨興，巧變的武學一點就通', mods: { train: 0.9, chat: 1.15, leisure: 1.2 } },
   glutton: { name: '貪吃', desc: '吃得好心情就好，餓了特別煩', mods: { eat: 1.3 }, thoughtMul: { food: 1.8 } },
 };
@@ -296,6 +296,7 @@ export const THOUGHTS = {
   aspDone:   { text: '志向得償', v: 12, ttl: 900, tag: 'good' },
   expHurt:   { text: '巡山掛了彩', v: -8, ttl: 400, tag: 'fight' },
   raidHurt:  { text: '守山門被山賊打成重傷', v: -10, ttl: 500, tag: 'fight' }, // v1.9 I-6
+  rageSpent: { text: '剛才被纏得惱羞，氣息未平', v: -4, ttl: 300, tag: 'fight' },
   btFail:    { text: '衝關失敗，氣血翻湧', v: -5, ttl: 300, tag: 'bad' },
   btWin:     { text: '衝破瓶頸！', v: 18, ttl: 500, tag: 'good' },
   learned:   { text: '學會了新招', v: 15, ttl: 400, tag: 'good' },
@@ -334,7 +335,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '3.1'; /* 第六輪 #428–#433：通用勁速霸體、險招慢動作、同源戰鬥、共同傳授、應接與部位傷 */
+export const RULES_VERSION = '3.2'; /* 第七輪 #435–#440：時間截擊、群戰占用、焦躁與比例勝算 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -435,7 +436,7 @@ export const DERIVED24 = ['hanbingPalm', 'liufengSword', 'fuguFinger', 'qiankunB
 ARTS.push(
   { id: 'hanbingPalm', name: '寒冰神掌', school: 'palm', grade: 3, tags: ['剛', '柔'], attr: 'yin', req: [], techs: ['hb1', 'hb2'], tech: 'hb1', secret: true, derived: true, v24: true, hint: '剛猛掌法與陰柔內功俱大成、拳掌造詣 ≥45 時合參推演', svg: [2, 1], mode: 'lian', qiScale: 0.40, isPublic: false, cats: { quanzhang: 0.7, neigong: 0.3 }},
   { id: 'liufengSword', name: '流風迴雪劍', school: 'palm', grade: 3, tags: ['快', '巧'], weapon: 'sword', attr: 'he', req: [], techs: ['lf1', 'lf2'], tech: 'lf1', secret: true, derived: true, v24: true, hint: '劍法與身法俱大成、劍法造詣 ≥45 時合參推演', svg: [2, 4], mode: 'da', qiScale: 0.08, isPublic: false, cats: { jianfa: 0.7, shenfa: 0.3 }},
-  { id: 'fuguFinger', name: '腐骨抽髓指', school: 'palm', grade: 3, tags: ['巧'], attr: 'yin', req: [], techs: ['fg1', 'fg2'], tech: 'fg1', secret: true, derived: true, v24: true, hint: '點穴指法與毒術俱大成、拳掌造詣 ≥40 時合參推演', svg: [1, 4], mode: 'da', qiScale: 0.08, isPublic: false, cats: { quanzhang: 0.5, dushu: 0.5 }},
+  { id: 'fuguFinger', name: '腐骨抽髓指', school: 'palm', grade: 3, tags: ['巧'], type: 'finger', attr: 'yin', req: [], techs: ['fg1', 'fg2'], tech: 'fg1', secret: true, derived: true, v24: true, hint: '點穴指法與毒術俱大成、拳掌造詣 ≥40 時合參推演', svg: [1, 4], mode: 'da', qiScale: 0.08, isPublic: false, cats: { quanzhang: 0.5, dushu: 0.5 }},
   { id: 'qiankunBlade', name: '乾坤霸刀', school: 'palm', grade: 3, tags: ['剛'], weapon: 'blade', attr: 'yang', req: [], techs: ['qkb1', 'qkb2'], tech: 'qkb1', secret: true, derived: true, v24: true, hint: '刀棍與內功俱大成、棍棒造詣 ≥45 時合參推演', svg: [0, 4], mode: 'da', qiScale: 0.08, isPublic: false, cats: { gunbang: 0.7, neigong: 0.3 }},
 );
 MOVES.push(
@@ -452,7 +453,7 @@ ARTS.push(
   { id: 'emeiSword', name: '峨眉劍法', school: 'palm', grade: 1, tags: ['巧', '柔'], weapon: 'sword', attr: 'yin', req: [], techs: ['em1', 'em2'], tech: 'em1', v24: true, classic: true, own24: 'emei', svg: [0, 9], mode: 'base', qiScale: 0.15, isPublic: false, cats: { jianfa: 1 }},
   { id: 'huifengSword', name: '回風拂柳劍', school: 'palm', grade: 3, tags: ['巧', '柔'], weapon: 'sword', attr: 'he', req: [{ art: 'emeiSword', tier: 2 }], techs: ['hf1', 'hf2'], tech: 'hf1', v24: true, classic: true, own24: 'emei', svg: [2, 9], mode: 'lian', qiScale: 0.40, isPublic: false, cats: { jianfa: 1 }},
   { id: 'jindingPalm', name: '金頂綿掌', school: 'palm', grade: 2, tags: ['柔'], attr: 'yin', req: [], techs: ['jd1', 'jd2'], tech: 'jd1', v24: true, classic: true, own24: 'emei', svg: [1, 10], mode: 'lian', qiScale: 0.40, isPublic: false, cats: { quanzhang: 1 }},
-  { id: 'tiangangFinger', name: '天罡指穴法', school: 'palm', grade: 2, tags: ['巧'], attr: 'he', req: [{ art: 'jindingPalm', tier: 1 }], techs: ['tg1', 'tg2'], tech: 'tg1', v24: true, classic: true, own24: 'emei', svg: [2, 10], mode: 'lian', qiScale: 0.40, isPublic: false, cats: { quanzhang: 0.5, qimen: 0.5 }},
+  { id: 'tiangangFinger', name: '天罡指穴法', school: 'palm', grade: 2, tags: ['巧'], type: 'finger', attr: 'he', req: [{ art: 'jindingPalm', tier: 1 }], techs: ['tg1', 'tg2'], tech: 'tg1', v24: true, classic: true, own24: 'emei', svg: [2, 10], mode: 'lian', qiScale: 0.40, isPublic: false, cats: { quanzhang: 0.5, qimen: 0.5 }},
   { id: 'jiuyinClaw', name: '九陰白骨爪', school: 'palm', grade: 3, tags: ['快', '陰'], attr: 'yin', req: [], techs: ['jy1', 'jy2'], tech: 'jy1', v24: true, classic: true, own24: 'ban', svg: [0, 10], mode: 'da', qiScale: 0.08, isPublic: false, cats: { quanzhang: 1 }},
   { id: 'wudangJiuyang', chiefOnly24: true, name: '純陽無極功', school: 'inner', grade: 3, tags: ['柔', '剛'], attr: 'he', req: [{ art: 'wudangXinfa', tier: 1 }], tech: null, techs: ['純陽', '無極'], effect: 'rest', v24: true, classic: true, own24: 'wudang', svg: [2, 8], isPublic: false, cats: { neigong: 1 }},
   { id: 'wudangFist', name: '武當長拳', school: 'fist', grade: 1, tags: ['柔', '拙'], attr: 'he', req: [], techs: ['wd1', 'wd2'], tech: 'wd1', v24: true, classic: true, own24: 'wudang', svg: [0, 9], mode: 'base', qiScale: 0.15, isPublic: false, cats: { quanzhang: 1 }},
@@ -530,7 +531,7 @@ ARTS.push(
   { id: 'xuanxuBlade', name: '玄虛刀', school: 'palm', grade: 3, tags: ['柔'], weapon: 'blade', attr: 'he', req: [{ art: 'mianPalm', tier: 1 }], alt24: [{ art: 'wudangFist', tier: 1 }], techs: ['n6xd1', 'n6xd2', 'n6xd3'], tech: 'n6xd1', v24: true, classic: true, own24: 'wudang', svg: [1, 23], mode: 'lian', qiScale: 0.40, isPublic: false, cats: { gunbang: 0.7, quanzhang: 0.3 }},
   { id: 'yanhang', name: '雁行刀', school: 'palm', grade: 2, tags: ['快'], weapon: 'blade', attr: 'yang', req: [{ art: 'huifengSword', tier: 1 }], techs: ['n6yh1', 'n6yh2'], tech: 'n6yh1', v24: true, classic: true, own24: 'emei', svg: [0, 24], mode: 'da', qiScale: 0.08, isPublic: false, cats: { gunbang: 0.6, quanzhang: 0.4 }},
   { id: 'jieshou', name: '截手九式', school: 'palm', grade: 3, tags: ['巧'], attr: 'he', req: [{ art: 'tiangangFinger', tier: 1 }], techs: ['n6js1', 'n6js2', 'n6js3'], tech: 'n6js1', v24: true, classic: true, own24: 'emei', svg: [1, 24], mode: 'da', qiScale: 0.08, isPublic: false, cats: { quanzhang: 0.6, qimen: 0.4 }},
-  { id: 'tanzhi', name: '彈指神通', school: 'palm', grade: 3, tags: ['巧'], attr: 'yin', req: [{ art: 'biboXinfa', tier: 1 }], techs: ['n6tz1', 'n6tz2', 'n6tz3'], tech: 'n6tz1', v24: true, classic: true, own24: 'taohua', svg: [2, 24], mode: 'da', qiScale: 0.08, isPublic: false, cats: { quanzhang: 0.7, qimen: 0.3 }},
+  { id: 'tanzhi', name: '彈指神通', school: 'palm', grade: 3, tags: ['巧'], type: 'finger', attr: 'yin', req: [{ art: 'biboXinfa', tier: 1 }], techs: ['n6tz1', 'n6tz2', 'n6tz3'], tech: 'n6tz1', v24: true, classic: true, own24: 'taohua', svg: [2, 24], mode: 'da', qiScale: 0.08, isPublic: false, cats: { quanzhang: 0.7, qimen: 0.3 }},
   { id: 'meinvFist', name: '美女拳', school: 'fist', grade: 2, tags: ['巧', '柔'], attr: 'yin', req: [{ art: 'tianluoPalm', tier: 1 }], techs: ['n6mn1', 'n6mn2'], tech: 'n6mn1', v24: true, classic: true, own24: 'gumu', svg: [0, 25], mode: 'lian', qiScale: 0.40, isPublic: false, cats: { quanzhang: 1 }},
   { id: 'yunvJian', name: '玉女劍法', school: 'palm', grade: 3, tags: ['柔', '巧'], weapon: 'sword', attr: 'yin', req: [{ art: 'basicSword', tier: 1 }], techs: ['n6yj1', 'n6yj2', 'n6yj3'], tech: 'n6yj1', v24: true, classic: true, own24: 'gumu', svg: [1, 25], mode: 'lian', qiScale: 0.40, isPublic: false, cats: { jianfa: 1 }},
   { id: 'changhen', name: '長恨鞭', school: 'palm', grade: 2, tags: ['柔'], weapon: 'whip', attr: 'yin', req: [{ art: 'tianluoPalm', tier: 1 }], techs: ['n6ch1', 'n6ch2'], tech: 'n6ch1', v24: true, classic: true, own24: 'gumu', svg: [2, 25], mode: 'lian', qiScale: 0.40, isPublic: false, cats: { gunbang: 0.6, quanzhang: 0.4 }},
@@ -706,7 +707,7 @@ MOVES.push({ id: 'xx2', skill: 'palm', name: '腐屍毒', req: 0, range: 60, cd:
 // ---- v1.2 華山線：紫霞神功（九層）、辟邪劍法（捷徑）、獨孤九劍（九式，口傳不入秘笈） ----
 ARTS.push({ id: 'zixia', chiefOnly24: true, name: '紫霞神功', school: 'palm', grade: 3, tags: ['柔'], req: [], techs: [], secret: true, hint: '岳不群開局：開局即得第一層，之後在華山劇情中逐層修煉', classic: true, layered: true, mode: 'lian', qiScale: 0.40, isPublic: false, cats: { neigong: 1 }});
 ARTS.push({ id: 'bixie', name: '辟邪劍法', school: 'palm', grade: 4, tags: ['快'], req: [], techs: ['bx1', 'bx2', 'bx3'], tech: 'bx1', secret: true, hint: '岳不群開局：華山劇情中選擇練辟邪劍譜（自宮＋斷情）', classic: true, mode: 'da', qiScale: 0.08, isPublic: false, cats: { jianfa: 1 }});
-ARTS.push({ id: 'dugu', name: '獨孤九劍', school: 'palm', grade: 4, tags: ['巧'], req: [], techs: [], secret: true, hint: '華山劇情「思過崖的老人」：請教風清揚三晚，第四晚過招後得總訣；其餘各式要對該敵人有足夠觀破。破劍一類約在熟其招式，破掌再深，破氣要到看破，狂風卷地還要過了看破', classic: true, forms: true, mode: 'da', qiScale: 0.20, isPublic: false, cats: { jianfa: 1 }});
+ARTS.push({ id: 'dugu', name: '獨孤九劍', school: 'palm', grade: 4, tags: ['巧'], type: 'sword', req: [], techs: [], secret: true, hint: '華山劇情「思過崖的老人」：請教風清揚三晚，第四晚過招後得總訣；其餘各式要對該敵人有足夠觀破。破劍一類約在熟其招式，破掌再深，破氣要到看破，狂風卷地還要過了看破', classic: true, forms: true, mode: 'da', qiScale: 0.20, isPublic: false, cats: { jianfa: 1 }});
 MOVES.push({ id: 'bx1', skill: 'palm', name: '流星飛墮', req: 0, range: 60, cd: 0.45, dmg: 9, aoe: 0, color: '#c03060', fx: 'bixie' });
 MOVES.push({ id: 'bx2', skill: 'palm', name: '群邪辟易', req: 0, range: 60, cd: 0.6, dmg: 13, aoe: 60, color: '#d04070', fx: 'bixie' });
 MOVES.push({ id: 'bx3', skill: 'palm', name: '鍾馗抉目', req: 0, range: 70, cd: 0.7, dmg: 18, aoe: 0, color: '#e05080', fx: 'bixie' });
@@ -746,13 +747,15 @@ A13('tantui', '十二路譚腿', 'leg', 2, ['剛'], [['tt1', '十二路譚腿', 
 A13('tiexian', '洪家鐵線拳', 'palm', 2, ['剛'], [['tx1', '鐵線拳', 1.0, 16, 0, '#808890']], { hint: '深藏不露的雜工身懷此功：斧頭幫上山勒索時讓他出手才會現身', mode: 'da', qiScale: 0.08, isPublic: false, cats: { quanzhang: 1 }});
 A13('bagua', '五郎八卦棍', 'leg', 2, ['剛'], [['bg1', '五郎八卦棍', 1.0, 15, 50, '#8a6a3a']], { hint: '深藏不露的雜工身懷此功：斧頭幫上山勒索時讓他出手才會現身', mode: 'da', qiScale: 0.08, isPublic: false, cats: { gunbang: 1 }});
 A13('hama', '蛤蟆功', 'palm', 4, ['剛', '蓄'], [['hm1', '蛤蟆功', 2.2, 40, 60, '#6a8a3a']], { signature: 'huoyunxieshen', mode: 'da', qiScale: 0.08, isPublic: false, cats: { neigong: 1 }});
+// 每門武學都有動作型別；兵器列繼承既有 weapon，指法與獨孤在資料列明寫。
+for (const art of ARTS) art.type ??= art.weapon === 'sword' ? 'sword' : 'fist';
 export const JH = {
   comedyWeek: 2, comedyDays: 7, morningOpts: 3,
   anranMood: 30, anranMax: 1.5, twin: 1.3, kongming: 1.15, pair: 0.25,
   gambleBase: 2, gambleCap: 6, recruitBonus: 0.4, baoyi: 0.5, reflect: 0.3, jiuyangSta: 30,
   hiddenMax: 3, hiddenP: 0.35, residueXp: 20, dfbbPow: 40, hyPow: 50, diaoFeeds: 3, honeyHeal: 15,
 };
-Object.assign(TRAITS, { quiet: { name: '清冷', desc: '心情起伏減半，不喜熱鬧', mods: { train: 1.05, leisure: 0.9 } }, chi: { name: '癡', desc: '心情隨意中人起伏', mods: {}, mods24: { train: 1.25, study: 1.2, chat: 0.8 } } }); /* loop187 v2.9 mods24：只 d.v24 新局生效（舊局 mods 不動） */
+Object.assign(TRAITS, { quiet: { name: '清冷', desc: '心情起伏減半，不喜熱鬧', composure: 'steady', mods: { train: 1.05, leisure: 0.9 } }, chi: { name: '癡', desc: '心情隨意中人起伏', mods: {}, mods24: { train: 1.25, study: 1.2, chat: 0.8 } } }); /* loop187 v2.9 mods24：只 d.v24 新局生效（舊局 mods 不動） */
 TRAITS.quiet.mods24 = { meditate: 1.35, study: 1.2, chat: 0.75 };
 
 // ---- v1.55a 合併敵人表：家裡用的地圖走速與立繪掛在 ENEMIES[k].home；ring＝牠在巡山第幾環（族群歸屬）----

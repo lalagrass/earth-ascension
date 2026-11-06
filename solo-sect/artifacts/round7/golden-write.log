@@ -1,0 +1,7 @@
+# quick：4 格，4 秒
+寫入 test/golden/quick.json
+# full：32 格，416 秒
+寫入 test/golden/full.json
+寫入 test/golden/saves.json
+
+✓ 全部相符

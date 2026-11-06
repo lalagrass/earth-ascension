@@ -1,7 +1,7 @@
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
 import { NODES, EDGES, DAY, FACILITIES, MOVES, ARTS } from './data.mjs';
-import { breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
-import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuter28, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
+import { noteFret, interceptOpening, breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
+import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuterArt, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
 import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of } from './sect.mjs';
 import { peaceDelay } from './economy.mjs';
@@ -149,8 +149,20 @@ export function syncMembers(b) {
 const bandSum = (b) => b.members.reduce((a, m) => a + Math.max(0, m.hp), 0);
 /* #424 N18 山賊逐一交手：守柵者對自己圈內的人出招（前搖、接法照 N14）；柵在時山賊只撞柵，柵破了才進院和守柵者交手（應接照 N15）。
    cd：一招間隔（守柵者照 defenderDps×cd 出傷害，總輸出與舊版相同，只是會被閃、被招架）；dmg：山賊一招打守柵者的氣血；yardMax：院內纏鬥最久幾秒，過了照舊擲勝率。 */
-export const BAND_CLASH = { agi: [20, 30, 45, 55] /* 山賊的身法（輪流），#425 輕功交錯用 */, cd: 1.5, monCd: 2.5, dmg: { base: 4, per: 0.05 }, yardMax: 40, fleeSpeed: 60, sub: 0.5 };
+const bandCadence = 2.5;
+export const BAND_CLASH = { agi: [20, 30, 45, 55] /* 山賊的身法（輪流），#425 輕功交錯用 */, cd: 1.5, monCd: bandCadence,
+  // 同一守者的四個近戰席可等同伴起手；最多等一個週期內四席的最大錯相距離。
+  syncWait: bandCadence * (BAND_MEMBER.ring - 1) / BAND_MEMBER.ring,
+  dmg: { base: 4, per: 0.05 }, yardMax: 40, fleeSpeed: 60, sub: 0.5 };
+// 已能一起出手就不再等；否則等同一守者近戰圈裡、即將起手的最後一位。
+export function bandSyncDelay(m, nearby) {
+  const allies = nearby.filter((x) => x !== m && x.hp > 0 && x.ring === 1 && x.foe === m.foe && !x.swing);
+  if (allies.some((x) => x.cool <= 0)) return 0;
+  // 提前一個格架後站穩時間起手，讓友軍在自己的前搖末段加入，而非排成同一時間戳。
+  return Math.max(0, ...allies.map((x) => x.cool - CLASH.time.parryRecover).filter((cool) => cool > 1e-9 && cool <= BAND_CLASH.syncWait - CLASH.time.parryRecover));
+}
 function bandHit(s, b, m, dmg, who) {
+  if (who) noteFret(s, who, 'strike');
   const spill = Math.max(0, dmg - m.hp); m.hp = Math.max(0, m.hp - dmg); if (m.hp > 0) return;
   if (spill > 0) { const nx = b.members.filter((x) => x.hp > 0).sort((x, y) => (y.foe === m.foe) - (x.foe === m.foe) || x.hp - y.hp)[0]; if (nx) bandHit(s, b, nx, spill, who); } /* 一招打倒還有餘力，順勢打到旁邊的人（總輸出與舊版相同） */
   m.state = 'down'; m.downT = s.t; m.path = nodePath(FENCE.node, BAND.from).slice(1); (s.fx ||= []).push({ kind: 'clash', word: '退', color: '#c9b37a', pos: [...(m.pos || b.pos)], ttl: 1 });
@@ -163,29 +175,40 @@ function bandClash(s, b, defs, dt) {
       const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, move: w.mv, wind: w.wind, map: true }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
       if (r.kind === 'hit') { breakWindup(s, d, m, w.mv, w.wind); bandHit(s, b, m, w.dmg * (r.heavy ? CLASH.heavy : 1), d); } else (s.fx ||= []).push({ kind: 'clash', word: r.kind === 'dodge' ? '閃' : r.kind === 'parry' ? '架' : '破', color: '#ddd', pos: [...(m.pos || b.pos)], ttl: 0.6 });
       continue; }
-    if (d.bcool > 0) continue;
+    if (d.bcool > 0 || (d.busyUntil || 0) > s.t) continue;
     const mine = live().filter((m) => m.ring === 1 && m.foe === d.id), tgt = (mine.length ? mine : live()).sort((x, y) => x.hp - y.hp)[0]; if (!tgt) break;
     const wind = BAND_CLASH.cd * windFrac(topTierOf(d)); d.bcool = BAND_CLASH.cd;
-    d.bswing = { mv: mainOuter28(d)?.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * def24Of(s) * BAND_CLASH.cd };
+    d.bswing = { mv: mainOuterArt(d)?.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * def24Of(s) * BAND_CLASH.cd };
     (s.fx ||= []).push({ kind: 'warn', from: [...d.pos], to: [...(tgt.pos || b.pos)], r: 30, dur: wind, ttl: wind, t0: s.t });
   }
   if (b.state !== 'yard') return;
+  const ready = [];
   for (const m of live()) { postureRegen(s, m, dt); const d = fight.find((x) => x.id === m.foe) || fight[0]; if (!d) break;
     const wk = witchK(s, m.pos), mdt = dt * wk; if (m.swing && wk < 1) m.swing.at += dt - mdt; /* #425 林克時間圈內的山賊放慢 */ m.cool = (m.cool ?? 0) - mdt;
     if (m.swing && d.bswing && !m.swing.x && d.bswing.tgt === m.uid && lightCross(d.skills?.agility || 0, m.agi || 0, m.swing.at, d.bswing.at, () => R(s))) { /* #425 輕功交錯：兩人同時突進、互相穿過 */
       m.swing = null; d.bswing = null; postureHit(s, m, WITCH.crossDrop); postureHit(s, d, WITCH.crossDrop); b.cross = (b.cross || 0) + 1; s.crossN = (s.crossN || 0) + 1;
       (s.fx ||= []).push({ kind: 'cross', pos: [(m.pos[0] + d.pos[0]) / 2, (m.pos[1] + d.pos[1]) / 2], ttl: 0.6 }); if (b.cross === 1) log(s, `【輕功交錯】${d.name}和一名山賊同時突進，擦身而過，火花一閃，兩人都退了半步`); continue; }
-    if (m.swing) { if (s.t + 1e-9 < m.swing.at) continue; const w = m.swing; m.swing = null; const over = !handleTake(s, d);
-      const r = resolveSwing(s, m, d, () => R(s), { depth: 2, wind: w.wind, force: over ? 'over' : undefined }); (b.cl ??= {})['m' + r.kind] = (b.cl['m' + r.kind] || 0) + 1;
-      if (r.kind === 'dodge' && perfectDodge(s, d, () => R(s), { depth: 2, damage: BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per })) b.witch = (b.witch || 0) + 1;
+    if (m.swing) { if (s.t + 1e-9 < m.swing.at) continue; const w = m.swing; m.swing = null; handleTake(s, d);
+      const r = resolveSwing(s, m, d, () => R(s), { depth: 2, wind: w.wind, opening: w.opening }); (b.cl ??= {})['m' + r.kind] = (b.cl['m' + r.kind] || 0) + 1;
+      if (r.kind === 'dodge' && perfectDodge(s, d, () => R(s), { strain: r.strain })) b.witch = (b.witch || 0) + 1;
+      if (r.kind === 'read') bandHit(s, b, m, r.counter, d);
       if (r.kind === 'hit') { breakWindup(s, m, d, null, w.wind); let incoming = (BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per) * (r.heavy ? CLASH.heavy : 1);
         if (zjHas(d, 'taiji') || zjHas(d, 'taijiSword')) { const share = taijiReturn(m, null, w.wind); bandHit(s, b, m, incoming * share, d); incoming *= 1 - share; zjMark(s, d, zjHas(d, 'taiji') ? 'taiji' : 'taijiSword'); }
         if (zjHas(d, 'jiuyang')) { postureHit(s, m, ZJ.jiuyang.shock); zjMark(s, d, 'jiuyang'); }
         d.hp = Math.max(1, d.hp - incoming); (s.fx ||= []).push({ kind: 'bite', pos: [...d.pos], ttl: 0.4 }); partHit(s, d, r, { attack: m, rnd: () => R(s) }); }
       continue; }
     if (m.cool > 0 || m.ring !== 1) continue;
+    ready.push({ m, d });
+  }
+  // 先讓每個人走完本步的冷卻，再看同伴還需多久；避免陣列順序決定能否合擊。
+  const delays = ready.map(({ m }) => bandSyncDelay(m, live()));
+  for (let i = 0; i < ready.length; i++) {
+    const { m, d } = ready[i];
+    if (delays[i] > 0) { m.cool = delays[i]; continue; }
     if (zjIntercept(s, m, fight)) { m.cool = BAND_CLASH.monCd; continue; }
-    const wind = BAND_CLASH.monCd * CLASH.monWind; m.cool = BAND_CLASH.monCd; m.swing = { at: s.t + wind, wind };
+    const wind = BAND_CLASH.monCd * CLASH.monWind, start = interceptOpening(s, m, d, () => R(s), { depth: 2, wind }); m.cool = BAND_CLASH.monCd;
+    if (start.read?.kind === 'read') { bandHit(s, b, m, start.read.counter, d); (b.cl ??= {}).mread = (b.cl.mread || 0) + 1; continue; }
+    m.swing = { at: s.t + wind, wind, opening: start.opening };
     (s.fx ||= []).push({ kind: 'warn', from: [...(m.pos || b.pos)], to: [...d.pos], r: 26, dur: wind, ttl: wind, t0: s.t });
   }
 }
@@ -254,7 +277,20 @@ export function points(s) {
   return Math.min(RAID.cap, Math.round(baseTerm * daysAndValor * adapt));
 }
 export const defense = (s) => power(s) * def24Of(s); /* loop176 武當紫霄宮 */
-export const winP = (s, pts) => { const d = defense(s), open = Math.max(0.1, Math.min(0.9, d / (d + pts))); const ready = s.ds.some(canDefend); const fence = fenceUp(s) && ready ? 0.1 + 0.8 * Math.min(1, s.fence.hp / Math.max(1, s.fence.max || 60)) : 0; return Math.max(open, fence); };
+export const winP = (s, pts) => {
+  const d = defense(s), open = d + pts > 0 ? d / (d + pts) : 0;
+  const team = s.ds.filter(canDefend);
+  if (!team.length) return open;
+  const dps = team.reduce((sum, x) => sum + defenderDps(x, s), 0) * def24Of(s);
+  const hp = team.reduce((sum, x) => sum + Math.max(0, x.hp), 0);
+  const raiderDps = bandMembers(pts).reduce((sum, m) => sum + (BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per) / BAND_CLASH.monCd, 0);
+  const yardTempo = dps * hp / (dps * hp + pts * raiderDps);
+  if (!fenceUp(s)) return yardTempo;
+  const fenceDps = Math.max(BAND.fenceDmg.min, Math.round(pts * BAND.fenceDmg.k)) / BAND.hitEvery;
+  const tempo = dps * s.fence.hp / (pts * fenceDps);
+  const fence = tempo / (1 + tempo);
+  return 1 - (1 - yardTempo) * (1 - fence);
+};
 export const demandOf = (s, pts) => Math.max(RAID.demand.min, Math.round(Math.min(Math.max(0, s.res.coin) * RAID.demand.coinMax, RAID.demand.base + pts * RAID.demand.k)));
 // 自動決定：比較「勒索金」與「迎戰的預期損失」＝(1−勝率)×(被搶的錢＋糧＋一人重傷折 hurtCost)；勒索金較小且付得起才付
 export const fightLoss = (s, p) => (1 - p) * (Math.max(0, s.res.coin) * RAID.steal.coin + (s.res.food || 0) * RAID.steal.food + RAID.hurtCost);
@@ -420,7 +456,7 @@ export function lairDaily(s, H) {
 export function lairStep(s, H) {
   const L = s.lair, tr = L?.trip; if (!tr || s.t < tr.back) return; L.trip = null;
   const team = tr.ids.map((id) => s.ds.find((d) => d.id === id)).filter(Boolean); for (const d of team) { d.away = false; d.reason = '剿寨歸來'; if (H?.gate) d.pos = [...H.gate]; }
-  const p = Math.max(0.1, Math.min(0.9, tr.pow / (tr.pow + tr.pts))), win = RL(s) < p; let hurt = null;
+  const p = tr.pow / (tr.pow + tr.pts), win = RL(s) < p; let hurt = null;
   if (!win || RL(s) < LAIR.winHurt) { { hurt = team[Math.floor(RL(s) * team.length)]; if (hurt) { hurt.hp = Math.min(hurt.hp, guardHurt(hurt, RAID.hurtHp)); /* loop117 */ hurt.raidHurt = (hurt.raidHurt || 0) + 1; T(s).homeHurt++; H?.think?.(s, hurt, 'raidHurt'); } } }
   const X = T(s); if (win) { L.won++; X.next = Math.max(X.next || 0, s.day) + LAIR.peaceDays; s.rep = (s.rep || 0) + RAID.rep * 2; L.next = X.next; for (const d of team) { tallyAct(d, 'lair', LAIR.dur / 4); recordDeed(s, d, 'lair'); } recordDeed(s, null, 'lair', { chron: `${team.map((d) => d.name).join('、')}大破後山山寨` }); if (!X.taiping && X.boss?.state !== 'wait' && X.boss?.state !== 'on') X.boss = { day: s.day + BOSS.after, state: 'wait' }; log(s, `【剿寨】大破山寨！山賊作鳥獸散，至少 ${LAIR.peaceDays} 日不敢來犯。名聲 +${RAID.rep * 2}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else { L.next = s.day + LAIR.cool; log(s, `【剿寨】寨子太硬，攻不下來${hurt ? `，${hurt.name}重傷` : ''}，只好先撤回。`); }
@@ -443,7 +479,7 @@ const hasAoe27 = (d) => (d.moves || []).some((id) => (MOVES.find((m) => m.id ===
 const eliteArt27 = (d) => Object.keys(d.arts || {}).some((id) => WAVE27.eliteArts.includes(id) || artById(id)?.chiefOnly24);
 const bigSword27 = (d) => Object.keys(d.arts || {}).some((id) => isSwordArt(id) && (artById(id)?.grade || 0) >= 3 && artTier(d, id) >= 0);
 export function aoeCleaveMul(d, w = 0) {
-  const q = (hasAoe27(d) ? 1 : 0) + (eliteArt27(d) ? 1 : 0) + (bigSword27(d) ? 1 : 0), o = mainOuter28(d), add = (d.champ28 || (o && innerDrive28(d, o).tier === 1)) ? CHAMP28.aoe : 0; /* loop183 本門正宗催動或當屆大比首徒 +0.25 */
+  const q = (hasAoe27(d) ? 1 : 0) + (eliteArt27(d) ? 1 : 0) + (bigSword27(d) ? 1 : 0), o = mainOuterArt(d), add = (d.champ28 || (o && innerDrive28(d, o).tier === 1)) ? CHAMP28.aoe : 0; /* loop183 本門正宗催動或當屆大比首徒 +0.25 */
   if (!q) return 1 + add; const m = Math.min(WAVE27.aoeMax, WAVE27.aoeBase + WAVE27.aoeStep * (q - 1)); return (w >= 2 ? 1 + (m - 1) * WAVE27.lateK : m) + add;
 }
 export const crowdSwarmMul = (team) => { const n = team.length; return n < WAVE27.swarmFrom ? 1 : 1 + Math.min(WAVE27.swarmMax, WAVE27.swarmStep * (n - WAVE27.swarmFrom + 1)); };

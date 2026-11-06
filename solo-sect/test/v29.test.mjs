@@ -53,7 +53,7 @@ test('loop193 守正厚積：先有一門外功小成，再把根基練到大成
 test('loop187 靈動跳階：直取最高品；巧/快或二品以上 ×1.12；偷師 +6', () => {
   const [, d] = fresh('emei'); give(d, 'basicFist', 5); give(d, 'linjiZhuang', 5); assert.equal(pick(d, ['clever']), 'linjiZhuang');
   assert.ok(A.artMulParts(d, A.artById('linjiZhuang')).parts.ext.some((x) => x[0] === '靈動跳階' && x[1] === 1.12));
-  assert.equal(A.TEMPER29.steal, 6); assert.ok(A.temper29(d).ling);
+  assert.equal(A.TEMPER29.steal, 6); assert.ok(A.temperOf(d).ling);
 });
 test('loop187 梟雄強練：豪爽／偽君子／重名望者先練他派高品外功（憨厚、拘謹除外）', () => {
   const [, d] = fresh('gaibang'); give(d, 'huntianGong', 60); give(d, 'lianhuaPalm', 10); give(d, 'chousuiPalm', 10); assert.equal(pick(d, ['bold']), 'chousuiPalm'); assert.ok(d.xiao29);
@@ -63,9 +63,9 @@ test('loop187 梟雄強練：豪爽／偽君子／重名望者先練他派高品
   const [, g] = fresh('gaibang'); give(g, 'lianhuaPalm', 10); give(g, 'chousuiPalm', 10); g.personality = ['playful']; g.values = {}; g.style = 'palm'; assert.equal(A.autoFocus(g), 'lianhuaPalm');
 });
 test('loop187 至情清修：癡＋有默契伴侶、清冷＋小門派 ×1.18；舊局不吃 mods24', () => {
-  const [, d] = fresh('emei'); give(d, 'emeiSword', 5); d.personality = ['chi']; d.pairMul = 0; assert.ok(!A.temper29(d).qing); d.pairMul = 0.1; assert.ok(A.temper29(d).qing);
+  const [, d] = fresh('emei'); give(d, 'emeiSword', 5); d.personality = ['chi']; d.pairMul = 0; assert.ok(!A.temperOf(d).qing); d.pairMul = 0.1; assert.ok(A.temperOf(d).qing);
   assert.ok(A.artMulParts(d, A.artById('emeiSword')).parts.ext.some((x) => x[0] === '至情清修' && x[1] === 1.18));
-  d.personality = ['quiet']; d.pairMul = 0; d.small29 = true; assert.ok(A.temper29(d).qing);
+  d.personality = ['quiet']; d.pairMul = 0; d.small29 = true; assert.ok(A.temperOf(d).qing);
 });
 test('loop187 沉睡特質 mods24', async () => {
   const { traitMul } = await import('../src/social.mjs');

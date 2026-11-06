@@ -27,6 +27,7 @@ test('N14：架勢空了之後，下一招是重擊', () => {
 test('N14：看破成立時，攻方架勢下降，守方下一招必中', () => {
   const { s, d } = hero();
   s.codex = { rat: { insight: 60 } }; d.wu = 5;
+  d.arts.basicFist = { xp: 150, bt1: true, bt2: true, bt3: true, bt4: true };
   const rat = { uid: 'r1', k: 'rat', hp: 10, pos: [0, 0] };
   const o = clashOdds(s, rat, d, { wind: 0.5 }); assert.ok(o.read > 0);
   const before = postureOf(rat);
@@ -43,7 +44,7 @@ test('N14：招架雙方都掉架勢；氣血只在中招時掉', () => {
   const rat = { uid: 'r1', k: 'rat', hp: 10, pos: [0, 0] }; d.wu = 1; s.codex = {};
   const o = clashOdds(s, rat, d, { wind: 0.5 }); assert.ok(o.parry > 0);
   const hp = d.hp, pd = postureOf(d), pr = postureOf(rat);
-  const r = resolveSwing(s, rat, d, seq(0.99, 0));
+  const r = resolveSwing(s, rat, d, seq(0.5, 0));
   assert.equal(r.kind, 'parry');
   assert.ok(d.posture < pd && rat.posture < pr);
   assert.equal(d.hp, hp);
