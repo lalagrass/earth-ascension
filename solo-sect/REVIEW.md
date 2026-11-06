@@ -122,3 +122,9 @@ probe是「充分休息、沒有惱羞/在途攻擊」的20次獨立新狗**單�
 待parent正常桌面通路：真交手雙方局部停頓/受方震動較大、旁人持續動；筋/骨傷那隻手不能正常出招；同腳狗/豬退距差。可用既有診斷入口`window.__sect.hitstop=false`切純顯示對照，**本worker沒有開UI/實拍**，不要Shell browser或繞過預覽403。N55影片/真人盲測仍欠；hitstop開關state相同不代表整輪玩法golden相同，3.4收尾還要重產。
 
 N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預期仍17 tests，N37原test包含irritant來源力10000仍無組織傷/推退/偏移；`CONTACT_MEDIA`為通用schema，#445撒土只觸發原blind/dishonor，非按招名判斷。N37上表數字是22e35eb checkpoint，整輪最終量測仍須另跑。
+
+### 第九輪 N50 checkpoint（#464；尚非整輪驗收通過）
+- 指令：`bash solo-sect/test/run.sh smoke`。門檻fail0。預期18 tests（N50唯一新小測試：3床道館+2床寢舍、四個住客，第一位名俠真join成功後第二位因床滿被共用門拒絕；候選查詢不改state；兩個出身同行無ARTS）。此受控容量fixture不是自然bot結果。
+- 指令：`node solo-sect/tools/bot12.mjs --seed 17 --json`（任選整數seed亦可；不帶seed為1001–1012）。門檻輸出recruitment.day10Med≤1、day30Med約2–4作護欄；須與`node solo-sect/tools/bot12.mjs <上一輪solo-sect目錄> --json`並列，兩邊同用本輪工具的.25秒固定步長。預期recruitment.bySeed的兩日常住名俠數、真guided秒數、stepSeconds；**未量齊12seed與上一輪前不標通過，單seed不是任意seed證明**。名俠定義含舊版免費名角同伴、不含主角/短訪師父，與武學famousHeld不同。
+- 正常桌面待驗：新局兩個普通人卡含關係句、名俠欄顯示來往及不能來的精確食宿/師父/處境分項。沒有實拍、不能把HTML/SVG說成已看UI。預覽403未恢復前由parent接續，不Shell驅動browser或換host。
+- 共用公式/常數/世界理由：`docs/systems/combat.md` N50。舊存檔林師姐/堂弟保留；3.4/MIGRATIONS/golden仍待整輪收尾，不說已升版。

@@ -1,3 +1,4 @@
+import {originPeople} from './origins.mjs';
 // v0.96 新局：主角建立畫面（經典模板／自創）、同門選擇、抉擇卡
 import { STATS, VALUES, Q9, HEROES, COMPANIONS, TRAITS, NEW_TRAITS, SECTS, HERO_SECT, SECT_PICK24 } from './data.mjs';
 import { budgetOf, spent, validStats, defaultStats, readHeart, companionsFor, VALUE_NAMES, resolveChoice } from './hero.mjs';
@@ -20,7 +21,7 @@ const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index
 // loop143（v2.2）：33 個工程勾選框轉正為底層規則（sim.mjs BASELINE_V22，新局一律開）；開局「江湖規則」只留 3 個宏觀選項：
 // 執事自動營建（整併 steward＋stewkit＋stewyard）、重大抉擇每次詢問我（st-ask）、名俠池畫風（st-xia）。
 export const RULES = [
-  ['steward', 'steward', 'steward', true, '執事自動營建：有人睡地鋪就擴寢舍、野豬常來就立護山哨、存飯不夠就立膳房、外功場空著就立木樁場（取消則全由你下令）'],
+  ['steward', 'steward', 'steward', true, '執事自動營建：有人睡地鋪或待來者缺床就擴寢舍、野豬常來就立護山哨、存飯不夠就立膳房、外功場空著就立木樁場（取消則全由你下令）'],
 ];
 const STEWARD_KEYS = ['steward', 'stewkit', 'stewyard'];
 export const ruleOn = (st, k, on) => (on ? st[k] !== false : !!st[k]);
@@ -39,12 +40,12 @@ const STAT_DESC = { wu: '領悟與讀譜的能力', gen: '練武的根基與耐�
 const statLine = (s) => STATS.map(([k, n]) => `<span title="${STAT_DESC[k]}">${n}${s?.[k] ?? '—'}</span>`).join(' ');
 const valLine = (v) => Object.entries(v || {}).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, x]) => `${VALUE_NAMES[k]}${x > 0 ? '+' : ''}${x}`).join('・');
 function compCards(heroId) {
-  const ids = companionsFor(heroId); if (!ids.includes(st.comp)) st.comp = ids[0];
-  return `<h3>選一位開局同門（另一位留在江湖，日後或可相遇）</h3><div class="comp">${ids.map((id) => { const c = COMPANIONS[id]; return `<div class="card ${st.comp === id ? 'on' : ''}" data-comp="${id}"><img src="assets/portraits/${id}.png"><b>${c.name}</b><div class="small">悟性${c.wu}・根骨${c.root}・${c.personality.map(tn).join('/')}</div><div class="small">${c.tag}</div></div>`; }).join('')}</div>`;
+  const rows=originPeople(heroId,st.ans[0]);
+  return `<h3>出身同行者（普通人，白身成長）</h3><div class="comp">${rows.map(c=>`<div class="card"><b>${c.name}</b><div class="small">${c.originRelation}</div>${c.invented?'<div class="small">原創背景同行，非額外贈送名俠</div>':''}</div>`).join('')}</div>`;
 }
 function render(el) {
   let h = `<div class="box"><h1>山門紀・新局：誰來開山？</h1><div class="tabs"><button data-tab="bare" class="${st.tab === 'bare' ? 'on' : ''}">白身開局</button><button data-tab="classic" class="${st.tab === 'classic' ? 'on' : ''}">經典人物</button><button data-tab="custom" class="${st.tab === 'custom' ? 'on' : ''}">自創主角（12 點＋九問問心）</button><button data-tab="plain">照舊（無名主角）</button></div>`;
-  if (st.tab === 'bare') h += '<p>不會任何武學，只有揮拳、踢、推抱與做活的工具。第一個對手是沿山路走來的野狗；練過的手熟、見過的眼熟都會留下來。</p>';
+  if (st.tab === 'bare') h += '<p>不會任何武學，只有揮拳、踢、推抱與做活的工具。第一個對手是沿山路走來的野狗；練過的手熟、見過的眼熟都會留下來。</p>'+compCards(null);
   else if (st.tab === 'classic') {
     h += `<div class="cards" style="margin-top:8px">${HEROES.map((x) => `<div class="card ${st.hero === x.id ? 'on' : ''}" data-hero="${x.id}"><img src="assets/portraits/${x.id}.png"><b>${x.name}</b>${x.hard ? ' <b class="hard-tag" style="color:#b33">困難</b>' : ''} <span class="small">難度${'★'.repeat(x.diff)}</span><div class="small">${statLine(x.stats)}</div><div class="small">${x.personality.map(tn).join('/')}・${valLine(x.values)}</div><div class="small">${x.tag}</div><div class="small" style="color:#67451f">門派：${SECTS[HERO_SECT[x.id]].plaque}</div></div>`).join('')}</div>`;
     h += compCards(st.hero);
@@ -56,7 +57,7 @@ function render(el) {
     h += `<h3>九問問心</h3>${Q9.map((q, i) => `<div class="q">${i + 1}. ${q.q}：<select data-q9="${i}">${q.a.map((a, j) => `<option value="${j}" ${st.ans[i] === j ? 'selected' : ''}>${a[0]}</option>`).join('')}</select></div>`).join('')}`;
     h += mbtiBlock(st);
     h += `<div>→ 主價值 <b>${VALUE_NAMES[r.main]}</b>・副 <b>${VALUE_NAMES[r.sub]}</b>　特質 <b>${(st.mbti ? mbtiPersonality(st.mbti, st.stats.wu) : r.visible).map(tn).join('、')}</b>＋一個暗特質（相處後才看得出）</div></div>` + compCards(null);
-  } else h += `<p>沿用 v0.95 的無名主角、林師姐、堂弟開局（不帶價值觀與同門）。</p>`;
+  } else h += `<p>無名主角與兩位出身同行者開局（不帶主角價值觀；舊檔同伴不變）。</p>`+compCards(null);
   const ok = st.tab !== 'custom' || validStats(st.stats, SUHUI);
   h += `<fieldset class="rules"><legend>江湖規則（新局選用，舊局不受影響）</legend>`;
   h += RULES.map(([id, k, , on, label]) => `<div><label><input type="checkbox" id="st-${id}" ${ruleOn(st, k, on) ? 'checked' : ''}> ${label}</label></div>`).join('');
