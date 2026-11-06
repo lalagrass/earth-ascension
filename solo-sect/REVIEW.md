@@ -72,12 +72,12 @@ probe是「充分休息、沒有惱羞/在途攻擊」的20次獨立新狗**單�
 受控日程與各常數理由見[combat.md N55](docs/systems/combat.md#n55成長只改共用骨架的播放474)。數字證據寫在`docs/evidence/r9-n55-growth.md`；桌面與影片驗收不得用這張表、SVG或mock Canvas測試冒充。
 
 
-### N34 選招／輸後心願（#444；無傷交手門檻待N37重驗）
+### N34 選招／輸後心願（#444；N37後樣本通過，非任意seed已證明）
 | 指令 | 門檻 | 預期輸出 |
 |---|---|---|
 | `bash solo-sect/test/run.sh smoke` | fail0；N34僅1個小測試 | 14/14；穩定同情境決策0，三種性格均等觀測下偏好至少2種，真交手產生心願 |
-| `node solo-sect/tools/duel.mjs --a day1 --b day1 --seeds 1-20` | 交手中位≥30、沒人受傷≥70% | 每場次數、兩人受傷、喘氣；目前38/33.3782%，**後者FAIL，待N37真力門檻接入後重驗** |
-| `node solo-sect/tools/duel.mjs --a day60 --b day1 --seeds 1-20` | 最小移步≥baseline3倍且>0；同拍反擊≥5 | 目前.322581對0、31反擊，pass；訓練seed1，非任意seed已證明 |
+| `node solo-sect/tools/duel.mjs --a day1 --b day1 --seeds 1-20` | 交手中位≥30、沒人受傷≥70% | 每場次數、兩人受傷、喘氣；N34原38/33.3782% FAIL；N37後428/75.793184%，樣本pass，沒有降低70% |
+| `node solo-sect/tools/duel.mjs --a day60 --b day1 --seeds 1-20` | 最小移步≥baseline3倍且>0；同拍反擊≥5 | N37後0.311320755對0.081074977、33反擊，樣本pass；訓練seed1，非任意seed已證明 |
 | `node solo-sect/tools/duel.mjs --seed <任選> --log out/duel.json` | reviewer任取3筆成功接法驗r+m≤T | 每拍T/r/m/margin；forced行沒有假抽樣時間，不拿它手算 |
 
 工具不連網、無額外套件。day60會真跑60日；詳combat受控訓練/交手seed的區分。無傷關卡不過先補N37共用受力規則，不調機率湊門檻。完整自然玩法的三個性拿手招另由N38/bot12量，不以均等觀測單元測試冒充。
@@ -97,12 +97,26 @@ probe是「充分休息、沒有惱羞/在途攻擊」的20次獨立新狗**單�
 | 指令 | 門檻 | 預期輸出 |
 |---|---|---|
 | `bash solo-sect/test/run.sh smoke` | fail0，只新增1個N36小測試 | 16/16；同一人四狗空地L≥1、樹邊L<1、超載無反擊、倖存者uid/n保留、一步沒有瞬移 |
-| `node solo-sect/tools/waves.mjs --seed <任選整數> --log out/waves.json` | 所有L≥1的接法counter=false；整個探針的1及2路各至少一個情境有counter；四狗open≥1而cover<1 | `summary.pass`真/假照實；log每拍含L/reaction/counter，所有defense列可獨立重新加總；讀下方測量邊界 |
+| `node solo-sect/tools/waves.mjs --seed <任選整數> --log out/waves.json` | 所有L≥1的接法counter=false；每個指定trait的1及2路各有counter；四狗open≥1而cover<1 | `summary.pass`真/假照實；log每拍含L/reaction/counter，所有defense列可獨立重新加總；讀下方測量邊界 |
 | `node solo-sect/tools/waves.mjs --seed <任選整數> --trait calm,rash --log out/waves-traits.json` | 急躁的N29惱羞搶攻次數與損血多於穩定者；超載仍無反擊 | `personality.calmRush/rashRush`、`calmHpLost/rashHpLost`；總attacks另外列，不能偷換指標 |
 | 相同seed重跑同一條waves指令比較stdout | byte-identical | 不讀作者工作目錄/快取、無新套件，固定.25步 |
 
-預設同列calm/normal/rash三種性格，避免只拿易怒快照要求它在N29惱羞禁制下也一定反擊；`--trait normal`的seed17確實零反擊而FAIL，沒有隱藏。1/2路反擊是整個探針存在的結果，不保證每個性格都反擊。工具真跑受控60日練功/勞動後才入場，不是自然自動玩法。1/2路在真山門兩席、4路在空地，已起手者不會因掩體消失。四狗負荷probe用20次真接法形成眼熟，列receptionHp；未知白身初次反應.6秒，不假稱本來就接得住.4秒狗咬。追擊列是共享移動機制的幾何探針，**不是已驗完整跑/不跑被咬比例**；自然玩法比例仍待整輪bot12/補驗。新工具沿現有60日指派場景，需數分鐘，並非完整suite。
+回查#446原文：「reviewer 檢查所有 L ≥ 1 的拍都沒有反擊；1 到 2 人同時進攻時有反擊。」正文沒有允許aggregate，先前用整包任一性格過的判法不足，已撤回；預設normal，每個指定trait各自檢查1/2路。c23d645的normal seed17零反擊為歷史FAIL；N37後1路2次、2路0，仍未通過，不以別的trait遮過。工具真跑受控60日練功/勞動後才入場，不是自然自動玩法。1/2路在真山門兩席、4路在空地，已起手者不會因掩體消失。四狗負荷probe用20次真接法形成眼熟，列receptionHp；未知白身初次反應.6秒，不假稱本來就接得住.4秒狗咬。追擊列是共享移動機制的幾何探針，**不是已驗完整跑/不跑被咬比例**；自然玩法比例仍待整輪bot12/補驗。新工具沿現有60日指派場景，需數分鐘，並非完整suite。
 
-尚待parent正常桌面：狩獵喊來的同門沿山路到場、靠可見樹/大殿牆改近戰席、狗追跑者、敵退到出口後再來保留疤與假衝。未取得實拍，不把Canvas單元測試或SVG算畫面驗收；N55影片仍未產生。N37受力層未接，這裡損血仍是既有HP，不是分層傷口。
+尚待parent正常桌面：狩獵喊來的同門沿山路到場、靠可見樹/大殿牆改近戰席、狗追跑者、敵退到出口後再來保留疤與假衝。未取得實拍，不把Canvas單元測試或SVG算畫面驗收；N55影片仍未產生。c23d645歷史表在N37前；N37起工具損血經真力層，不以舊數字充當新驗收。
 
 本N36樣本、命令、逐拍JSON雜湊與normal單情境FAIL見[事件量測](docs/evidence/r9-n36-waves.md)。不是CI或自然玩法已驗。
+
+
+### N37 共用真受力／傷口／重心與純顯示停頓（#448）
+| 指令 | 門檻 | 預期輸出 |
+|---|---|---|
+| `bash solo-sect/test/run.sh smoke` | fail0，N37只新增一個小測試 | 17/17；連擋破綻/側別筋骨傷/雙接觸面分力/唯讀顯示皆同一test |
+| `node solo-sect/tools/contact.mjs --seed <任選整數> --log out/contact.json` | `pass=true`；重心0後破綻秒數符合body資料；同腳狗/豬傷層及退距不同；顯示開/關state SHA256相同 | force40三次招架、1.45秒破綻；狗傷筋82.5px、豬無傷16.5px；白拳.1秒/成人骨力尺度.5秒/四人.288675秒 |
+| 同contact命令連跑兩次 | stdout位元相同 | 不讀作者檔案、沒有外部相依；fixture控制招架窗口，不冒充自然勝率 |
+| 上面N34兩條duel指令 | 原始≥30/≥70%、高手≥3倍且>0/≥5次反擊門檻不變 | 見最新證據；只是訓練seed1+20交手seed樣本，不是任意seed都已驗 |
+| 上面N36 normal waves指令 | 每seed/trait的1/2路都須反擊、超載0反擊 | **seed17兩路0反擊，FAIL保留**；不因N34過就宣稱整輪完成 |
+
+程式整合與常數論述見[combat](docs/systems/combat.md#n37-真力分層傷回正與局部停頓448)，最新樣本/失敗/原始JSON雜湊見[證據](docs/evidence/r9-n37-contact.md)。全部真地圖交手、反擊、試煉、範圍、轉勁、山賊與duel/waves共用力層；不是獨立demo。`injuryDaily28 → injuryDaily`為本milestone舊名整理。
+
+待parent正常桌面通路：真交手雙方局部停頓/受方震動較大、旁人持續動；筋/骨傷那隻手不能正常出招；同腳狗/豬退距差。可用既有診斷入口`window.__sect.hitstop=false`切純顯示對照，**本worker沒有開UI/實拍**，不要Shell browser或繞過預覽403。N55影片/真人盲測仍欠；hitstop開關state相同不代表整輪玩法golden相同，3.4收尾還要重產。

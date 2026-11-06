@@ -1,3 +1,4 @@
+import {impactVisual} from './contact-view.mjs';
 import { MOVES } from './data.mjs';
 import { windOf, artTier } from './arts.mjs';
 import { playbackParams, PLAYBACK } from './growth-playback.mjs';
@@ -48,7 +49,8 @@ const ARMS = {
 };
 const mix = (a, b, u) => a + (b - a) * u;
 const mixArray = (a, b, u) => a.map((v, i) => mix(v, b[i], u));
-export function displayPose(s, d, art, move) {
+export function displayPose(s, d, art, move, time=s.t, hitstop=true) {
+  s={...s,t:impactVisual(s,d,time,hitstop).clock};
   // 不會的套路不因main的fallback而憑空顯示；白身即使無ARTS也可練身體招。
   if(!d.arts?.[art?.id])art=null;
   const movement=art?.tech||(d.bare?'bodyPunch':d.moves?.[0])||'bodyPunch';
