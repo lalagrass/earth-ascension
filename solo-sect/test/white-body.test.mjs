@@ -82,6 +82,20 @@ test('N34 情境識別穩定後零決策時間，選招/心願所有人共用',a
   }
   assert.ok(new Set(favorites).size>=2,JSON.stringify(favorites));
   t.busyUntil=0;t.posture=100;resolveSwing(s,d,t,()=>.999,{move:'bodyPunch',wind:.45});assert.ok(t.trainingWish?.evidence);finishTrainingWish(t,'spar');
+  // 公開短史，不指定免費老師/ARTS/n/f：先真砍柴拿刀、真自修，再邀請。
+  const {setOrder}=await import('../src/sim.mjs'),q=createState(17,{kind:'bare',askMajor:false});q.captureEvents=true;
+  for(const a of q.ds)setOrder(q,a.id,'chop');
+  while(q.t<60&&!q.ds.every(a=>a.tools?.knife))tick(q,.25);
+  assert.ok(q.ds.every(a=>a.tools?.knife));for(const a of q.ds)setOrder(q,a.id,'train');
+  while(q.t<70)tick(q,.25);
+  for(const a of q.ds)if(a.id!=='hero')setOrder(q,a.id,null);setOrder(q,'hero','spar');
+  while(q.t<110)tick(q,.25);
+  const hero=q.ds[0],drills=q.events.filter(e=>e.type==='drill'&&e.student==='hero'&&e.move==='toolKnife');
+  assert.ok(drills.some(e=>e.eyeGain>0),'真同時到場/真前搖餵招後才有眼熟');
+  for(const row of drills){assert.ok(row.t>=row.arrival&&row.arrival>row.start);assert.ok(row.eye<=row.source);}
+  assert.ok(hero.practice.eyes['human:toolKnife']>0);assert.equal(hero.practice.eyes['bandit:looterBlade'],undefined,'不能把同門柴刀假充刀賊的砍');
+  assert.ok(q.ds.every(a=>a.hp===100&&!(a.wounds?.length)),'同門放慢安全餵招不套實戰傷口/悟招獎勵');
+
 });
 
 

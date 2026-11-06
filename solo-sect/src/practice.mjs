@@ -1,5 +1,5 @@
 // N33 共用成長底層：此模組不依賴 ARTS／DOM，人物、獸、山賊皆用同一份紀錄。
-export const PRACTICE = Object.freeze({ halfUses: 50, alpha: Math.log(2) / Math.log(51), bodyScale: 10, reactionFloor: .2, reactionSpan: .4, eyeHalf: 3, ordinaryWu: 3, reactionShape: 2, codexUnit: 1, eventLimit: 512 });
+export const PRACTICE = Object.freeze({ halfUses: 50, rehearsalTempo: 2, alpha: Math.log(2) / Math.log(51), bodyScale: 10, reactionFloor: .2, reactionSpan: .4, eyeHalf: 3, ordinaryWu: 3, reactionShape: 2, codexUnit: 1, eventLimit: 512 });
 export const learningWeight = (p) => 4 * p * (1 - p);
 export const practiceResidual = (n = 0) => (1 + n) ** -PRACTICE.alpha;
 export const handUses = (d, move) => d?.practice?.hands?.[move] || 0;
@@ -51,4 +51,13 @@ export function practiceWork(s, d, act, seconds) {
   const p = 2 / 3, w = learningWeight(p);
   hand[key] = (hand[key] || 0) + w;
   emitPractice(s, { type:'work', who:d.id, move:key, seconds, p, w, n:hand[key] });
+}
+
+// 對練不是實戰：真示範/真應接的w，只能累積到夥伴實際會的程度。
+export function recordDrill(s,teacher,student,move,p,result,ctx={}){
+ const w=learningWeight(p),a=ensurePractice(teacher,s?.codex),d=ensurePractice(student,s?.codex),key=eyeKey(teacher,move),source=handUses(teacher,move);
+ const handGain=Math.min(w,Math.max(0,handUses(student,move)-source));
+ const eyeGain=Math.min(w,Math.max(0,source-(d.eyes[key]||0)));
+ a.hands[move]=(a.hands[move]||0)+handGain;d.eyes[key]=(d.eyes[key]||0)+eyeGain;
+ const row={type:'drill',teacher:teacher.id,student:student.id,move,key,start:ctx.opening?.at,wind:ctx.wind,arrival:ctx.opening?.T.windowEnd,p,w,kind:result.kind,source,handGain,eyeGain,eye:d.eyes[key],timing:result.timing};emitPractice(s,row);return row;
 }

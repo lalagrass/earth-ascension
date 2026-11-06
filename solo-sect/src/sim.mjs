@@ -4,10 +4,10 @@ import {transferredDamage,moveStats} from './arts.mjs';
 import {ringCapacity,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
 import {finishTrainingWish,TRAINING_CAUSES} from './decision.mjs';
-import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practice.mjs';
+import { PRACTICE,ensurePractice, rehearse, practiceWork, practiceWindow } from './practice.mjs';
 import { BODY_TIMING, BODY_BASE, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS, commitCombatEffort } from './starter-combat.mjs';
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, noteDemonstration, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
+import { resolveDrill,clashTimes,clashOdds,drawReaction,combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, noteDemonstration, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { SOURCES } from './data.mjs';
 import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
@@ -495,9 +495,22 @@ function doTask(s,d,dt){
     if(t.act==='learn'&&!lessonValid(s,d,t.lesson)){cancelTask(s,d,'教材或真師父來源已不在，沒有學會新武學');return;}
     noteGuidance(s,d,dt);
     if (t.act === 'build') { const site = s.fac[t.fac].site; if (!site || site.paused || !siteReady(site)) { d.task = null; d.anim = null; return; } }
+    if(t.act==='spar'){const p=byId(s,t.partner);if(p?.task?.act!=='spar'||p.task.partner!==d.id){cancelTask(s,d,'對練夥伴已結束或改派');return;}if(p.task.phase!=='do'||p.path.length||p.downUntil>s.t||p.faintUntil>s.t||dist(d.pos,p.pos)>RING.outer+RING.leash)return;}
     t.timer += dt;
     if (t.partner && !byId(s, t.partner)) { cancelTask(s, d, '對手不在了'); return; }
-    if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = byId(s, t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); if(mv&&p.task?.act==='spar'&&p.task.partner===d.id&&p.task.phase==='do'&&!p.path.length&&!(p.downUntil>s.t)&&!(p.faintUntil>s.t)&&dist(d.pos,p.pos)<=RING.outer+RING.leash){noteDemonstration(s,p,d,mv.id);s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 });} d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
+    if(t.act==='spar'&&t.partner){
+      const p=byId(s,t.partner),together=p?.task?.act==='spar'&&p.task.partner===d.id&&p.task.phase==='do'&&!p.path.length&&!(p.downUntil>s.t)&&!(p.faintUntil>s.t)&&dist(d.pos,p.pos)<=RING.outer+RING.leash;
+      if(!together){if(d.swing?.practice)d.swing=null;return;}
+      if(d.swing?.practice){if(s.t+1e-9>=d.swing.at){const w=d.swing;d.swing=null;resolveDrill(s,d,p,()=>rand(s),{move:w.mv,wind:w.wind,opening:w.opening});noteDemonstration(s,p,d,w.mv);t.sparTurn=p.id;p.task.sparTurn=p.id;d.anim='strike';}}
+      else if((t.sparTurn||[d.id,p.id].sort()[0])===d.id&&!p.swing&&!(p.busyUntil>s.t)&&!(d.busyUntil>s.t)&&Math.max(t.timer,p.task.timer||0)<durOf(s,t)){
+        const mv=d.moves.map(id=>MOVES.find(m=>m.id===id)).filter(m=>m&&moveAvailable(d,m)).at(-1);
+        if(mv){const wind=windOf(d,mv.id,mv.cd)*PRACTICE.rehearsalTempo,T=clashTimes(s,d,p,{move:mv.id,wind}),odds=clashOdds(s,d,p,{move:mv.id,wind});
+          d.swing={practice:true,mv:mv.id,tgt:p.id,wind,at:s.t+wind,opening:{T,reaction:drawReaction(T,()=>rand(s)),odds,p:odds.hit,at:s.t}};
+          d.busyUntil=s.t+wind+BODY_TIMING.recovery;d.face=p.pos[0]>=d.pos[0]?1:-1;d.anim='wind';
+          s.fx.push({kind:'warn',from:[...d.pos],to:[...p.pos],r:mv.range,dur:wind,ttl:wind,t0:s.t});
+        }
+      }
+    }
     const effDur = durOf(s, t) / (laborSpeed(s, d, t.act)); /* loop155 幫工專長／清修 */
     if (A.energy && effDur > 0) d.needs.energy = clamp(d.needs.energy + A.energy * dt / effDur, 0, 100);
     if (t.act === 'rest' && d.ng) addQi(d, (restQi(d)) * dt); // loop103 歇息回內力
@@ -505,6 +518,7 @@ function doTask(s,d,dt){
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt, 'labor'); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
     const dur = effDur;
     if (t.timer >= dur) {
+      if(t.act==='spar'&&(d.swing?.practice||byId(s,t.partner)?.swing?.practice))return;
       if (t.act === 'cook') { const st = facStage(s, t.fac); resAdd(s, 'veg', -2); t.phase = 'done'; const wat = s.res.water >= 1 ? 1 : 0; if (wat) { s.res.water -= 1; book(s, 'out', 'water', 1); } const yld = st.cookYield + cookBonus(d) + wat; /* v1.6 有井水多煮一份 */ onCook(s, d); s.res.food += yld; book(s, 'in', 'food', yld); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); grow(s, d, 'cooking', 6); finish(s, d); return; }
       if (t.act === 'farm') { const p = s.plots[t.plot]; t.resv = []; grow(s, d, 'farming', 6); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; book(s, 'out', 'food', 1); }
@@ -512,7 +526,7 @@ function doTask(s,d,dt){
       let trained31 = null;
       acquireWorkTool(d, t.act);
       finishTrainingWish(d,t.act);
-      if (t.act === 'train' || t.act === 'spar') { const moves = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d,m)); rehearse(s,d,moves,effDur*guidanceLearning(d),{partner:t.act === 'spar' ? byId(s,t.partner) : null}); }
+      if (t.act === 'train') { const moves = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d,m)); rehearse(s,d,moves,effDur*guidanceLearning(d),{partner:t.act === 'spar' ? byId(s,t.partner) : null}); }
       else if (['chop','quarry','water','farm','forage'].includes(t.act)) practiceWork(s,d,t.act,effDur);
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) { const o = grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? (facStage(s, 'yard').trainMul || 1)*guidanceLearning(d) : 1), isWorkAct(t.act) ? 'labor' : 'train'); if (t.act === 'train' && o?.trained) trained31 = o.trained; }
       if (A.skill) cliqueTrain(s, d, t.act, A.skill, grow); // loop20 小派同修

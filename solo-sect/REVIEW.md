@@ -187,3 +187,8 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 - 指令：上面公開10日`combat-history --trace`；門檻：空等不當練功扣精力/送style，在途攻擊不因6秒活動周期失去處理者；預期本seedt4217先到者精力80而非67.3333，原N36單測連續8秒守柵/取消不退時間通過。`bash solo-sect/test/run.sh smoke`門檻fail0，實測19/19。
 - 指令：`node solo-sect/tools/waves.mjs --seed 17 --history trained-defend --trait normal,calm,rash --snapshot-out out/snapshot.json --log out/waves.log.json`。門檻仍每trait/seed的1與2路都反擊、L≥1零反擊及人格比較。**最新實測FAIL**：normal0/0/1、calm1/1/7、rash2/0/0；超載counter全0；rashRush8<calm18、HP損155.0476>91.6190，不能合包宣稱通過。
 - 新真60日主角接刀0次、blade f.9797607118僅旁觀；全軍158 exchange不能代主角。不是自然放養、不是充分刀賊訓練、更不是任意seed已證明。完整[命令/前提/原始逐拍與snapshot/SHA](docs/evidence/r9-n36-arrival-root.md)。N35/N38/N50自然與N55最終表/影片仍待。
+
+#### N34/N50 真雙人刀餵招來源
+- 指令：`node solo-sect/tools/spar-history.mjs --seed <任選> --out out/spar.json`。門檻：所有eyeGain都有真同場/真出招到達、eye≤老師實際同招n，不從空老師或8秒完成獎勵得f；不得把human:toolKnife改寫bandit:looterBlade。seed17預期30次對刀、hero f8.7492062916，老師真n14.5454545，其他seed值是實測而非保證相同。
+- 指令：`bash solo-sect/test/run.sh smoke`，門檻fail0，預期19/19。原N34唯一測試延伸公開砍柴/自修/邀請的短史，驗同門不受組織傷、真時間與來源上限；沒有新增第二測試。
+- [完整公開操作、原始事件/位置、SHA與來源差異](docs/evidence/r9-n34-spar-source.md)。這不是N36已過或實拍；正常同門對刀與刀賊經驗分開。

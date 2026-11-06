@@ -3,7 +3,7 @@ import {opponents,allies,loadFromForecast,coverFor,movementSpeed,distance,stepTa
 import {RING} from './combat-space.mjs';
 import {TECHNIQUES,TECHNIQUE_MOVES,learnFromLoss,applyTechnique,matchesTechnique} from './techniques.mjs';
 import {selectAction,recordChoice,desireTraining,witnessExchange} from './decision.mjs';
-import { PRACTICE, familiarReaction, practiceWindow, recordExchange } from './practice.mjs';
+import { PRACTICE, familiarReaction, practiceWindow, recordExchange, recordDrill } from './practice.mjs';
 import { bodyMove, moveAvailable, BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';
 import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST, TRAITS } from './data.mjs';
 import { stampCard, curveMulOf, BRANCHES } from './artcard.mjs';
@@ -1366,7 +1366,7 @@ export function clashOdds(s, atk, def, ctx = {}) {
 }
 /* 前搖起手可用 interceptOpening 立即截擊；未截者在來招結束時用同一反應抽樣接法。
    rnd 是固定種子亂數。ctx.force 只用於架勢崩潰等既有必中規則。 */
-function settleDefense(s, def, T, result) {
+function settleDefense(s, def, T, result, ctx = {}) {
   const now = s?.t ?? 0;
   const recovery = result.kind === 'parry' ? CLASH.time.parryRecover : result.kind === 'hit' ? CLASH.time.hitRecover : 0;
   const used = result.used ?? (result.kind === 'hit' ? 0 : T.guard);
@@ -1375,7 +1375,7 @@ function settleDefense(s, def, T, result) {
   // starts at the actual contact; repeated hits do not queue recovery twice.
   def.busyUntil = Math.max(def.busyUntil || 0, (T.windowStart ?? now) + used, recovery > 0 ? now + recovery : 0);
   def.ring = { intercept: result.kind === 'read', t: now, busy: Math.max(0,def.busyUntil - now) };
-  noteFret(s, def, result.kind);
+  if(!ctx.practice)noteFret(s, def, result.kind);
   return result;
 }
 export function composure(d) {
@@ -1416,24 +1416,24 @@ function resolveSwingCore(s, atk, def, rnd, ctx = {}) {
     const start=Math.max(T.windowStart??ctx.opening.at+T.busy,def.busyUntil||0,def.swing?.at||0,def.bswing?.at||0,def.downUntil||0);
     T={...T,windowStart:start,windowEnd:end,wind:Math.max(0,end-start)};
   }
-  if (def.posture <= 0) { return settleDefense(s, def, T, { kind: 'hit', heavy: true, why: 'open' }); }
-  if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return settleDefense(s, def, T, { kind: 'hit', heavy: false, why: ctx.force || 'sure' }); }
+  if (def.posture <= 0) { return settleDefense(s, def, T, { kind: 'hit', heavy: true, why: 'open' },ctx); }
+  if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return settleDefense(s, def, T, { kind: 'hit', heavy: false, why: ctx.force || 'sure' },ctx); }
   const reaction = ctx.opening?.reaction ?? drawReaction(T,rnd);
   const load=ctx.opening?assessLoad(s,def,atk,ctx).L:T.load,canCounter=load<1;
   const timing={T:T.wind,r:reaction,step:T.step,strike:T.strike,guard:T.guard,L:load,windowStart:T.windowStart,windowEnd:T.windowEnd};
   const zjAtk = ctx.map && !isMon(atk) ? zjOfMove(ctx.move) : null; /* #426 */
   const duguPassive = ctx.map && isMon(atk) && zjHas(def, 'dugu') && (s?.codex?.[atk.k]?.insight || 0) >= ZJ.dugu.insight; /* 獨孤：讀招改成被動截，不再擲讀招 */
-  if(canCounter&&!duguPassive&&def.part?.where!=='eye'&&!(def.visionUntil>(s?.t??0))&&!(def.rageUntil>(s?.t??0))&&reaction+T.step+T.strike<T.wind){advanceAfterDodge(s,atk,def);return settleDefense(s,def,T,{timing,kind:'dodge',used:reaction+T.step+T.strike,counter:moveStats(def,fastestMove(def)?.id).force*CLASH.time.counterForce,strain:(reaction+T.step)/T.wind});}
-  if (canCounter && !duguPassive && def.part?.where!=='eye'&&!(def.visionUntil>(s?.t??0)) && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return settleDefense(s, def, T, { timing,kind: 'read', used: reaction + T.strike, counter: moveStats(def, fastestMove(def)?.id).force * CLASH.time.counterForce }); }
-  if (!(def.rageUntil > (s?.t ?? 0)) && reaction + T.step < T.wind) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi * (reaction + T.step) / Math.max(T.wind, 1e-9)); advanceAfterDodge(s, atk, def); return settleDefense(s, def, T, { timing,kind: 'dodge', used: reaction + T.step, strain: (reaction + T.step) / Math.max(T.wind, 1e-9) }); }
+  if(canCounter&&!duguPassive&&def.part?.where!=='eye'&&!(def.visionUntil>(s?.t??0))&&!(def.rageUntil>(s?.t??0))&&reaction+T.step+T.strike<T.wind){if(!ctx.practice)advanceAfterDodge(s,atk,def);return settleDefense(s,def,T,{timing,kind:'dodge',used:reaction+T.step+T.strike,counter:moveStats(def,fastestMove(def)?.id).force*CLASH.time.counterForce,strain:(reaction+T.step)/T.wind},ctx);}
+  if (canCounter && !duguPassive && def.part?.where!=='eye'&&!(def.visionUntil>(s?.t??0)) && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) { if(!ctx.practice){postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id;} return settleDefense(s, def, T, { timing,kind: 'read', used: reaction + T.strike, counter: moveStats(def, fastestMove(def)?.id).force * CLASH.time.counterForce },ctx); }
+  if (!(def.rageUntil > (s?.t ?? 0)) && reaction + T.step < T.wind) { if (!ctx.practice&&!isMon(def)) spendQi(def, CLASH.dodge.qi * (reaction + T.step) / Math.max(T.wind, 1e-9)); if(!ctx.practice)advanceAfterDodge(s, atk, def); return settleDefense(s, def, T, { timing,kind: 'dodge', used: reaction + T.step, strain: (reaction + T.step) / Math.max(T.wind, 1e-9) },ctx); }
   if (reaction + T.guard < T.wind) {
     const force = moveStats(atk, ctx.move, ctx.wind).force, guard = isMon(def) ? moveStats(def).force : qiPow(def);
     const jolt = guard > force * 1.4;
     // 接觸衝量在resolveSwing統一扣重心；只有較強招架的反震另作用於攻方。
-    if(jolt)postureHit(s,atk,CLASH.parry.joltDrop);
-    return settleDefense(s, def, T, { timing,kind: 'parry', jolt, used: reaction + T.guard });
+    if(jolt&&!ctx.practice)postureHit(s,atk,CLASH.parry.joltDrop);
+    return settleDefense(s, def, T, { timing,kind: 'parry', jolt, used: reaction + T.guard },ctx);
   }
-  return settleDefense(s, def, T, { timing,kind: 'hit', heavy: false });
+  return settleDefense(s, def, T, { timing,kind: 'hit', heavy: false },ctx);
 }
 
 export function techniqueFacts(s,a,t,move=null){
@@ -1449,6 +1449,11 @@ function noteDiscoveries(s,d,rows){for(const row of rows){const text=`${d.name||
 function reportContact(s,a,t,m,c){if(!c.layer)return;const row=TISSUES.blunt.find(r=>r.id===c.layer);log(s,`${a.name||a.k}以${m.name||m.id}打在${t.name||t.k}的${c.where==='body'?'':c.side}${BODY_PARTS[c.where].name}，${row.name}${c.layer==='bruise'?'，只痛未失血':''}`);}
 export function transferredDamage(s,a,t,damage,force,move){const action=MOVES.find(m=>m.id===move)||{id:move||'redirect',type:moveStats(a,move).type},contact=contactImpact(s,a,t,{move:action,force,armor:moveStats(t).armor});reportContact(s,a,t,action,contact);return damage*contact.damageFactor;}
 
+// 安全餵招共用同一時間/抽樣解算；不造成傷口、失衡、實戰悟招或旁觀刷取。
+export function resolveDrill(s,teacher,student,rnd,ctx){
+ const result=resolveSwingCore(s,teacher,student,rnd,{...ctx,practice:true});
+ result.learning=recordDrill(s,teacher,student,ctx.move,1-ctx.opening.p,result,ctx);return result;
+}
 export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   const move = timedMoveId(atk,ctx.move), odds = clashOdds(s,atk,def,{ ...ctx, move });
   const initialT=ctx.opening?.T||clashTimes(s,atk,def,ctx),atkFacts=techniqueFacts(s,atk,def,move),defFacts={...techniqueFacts(s,def,atk),opponentWind:true};
