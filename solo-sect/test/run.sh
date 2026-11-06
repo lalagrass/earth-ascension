@@ -7,7 +7,11 @@
 #   smoke（#402）：玩法 PR 最小驗證，約 30 秒。舊存檔各跑 3 日、兩種子新局各跑 10 日、結構不變量。
 cd "$(dirname "$0")/.." || exit 1
 case "${1:-quick}" in
-  quick) exec node --test test/*.test.mjs ;;
+  quick)
+    node tools/check-assets.mjs || exit 1
+    node tools/label-overlap.mjs --seed 1 --day 10 --phase dawn > /dev/null || exit 1
+    exec node --test test/*.test.mjs
+    ;;
   archive) exec node --test test/archive/*.test.mjs ;;
   accept) SS_DT=${SS_DT:-0.25} exec node --test test/accept/*.test.mjs ;;
   all) SS_DT=${SS_DT:-0.25} exec node --test test/*.test.mjs test/archive/*.test.mjs test/accept/*.test.mjs ;;

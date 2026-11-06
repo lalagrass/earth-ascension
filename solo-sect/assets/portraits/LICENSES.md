@@ -18,4 +18,6 @@
 | `youzhagui.png` | `1.1.0/youzhagui.png` | 同上 |
 | `zhoubotong.png` | `1.1.0/zhoubotong.png` | 同上 |
 
-`old/` 中同名 13 檔是本分支替換前的原始位元組保留稿，來源為上一輪 `assets/portraits/`，不是新取得的第三方素材；權利狀態沿用當時倉庫記錄。
+## N54 瘦身（2026-11-06）
+
+`old/` 的 13 張重複備份已刪除，原圖仍在 git 歷史。全部 122 張 PNG（含 v2 候選與 post）由原始 HEAD 圖縮至長邊至多 512 px，Pillow LANCZOS、96 色量化與 PNG optimize；沒有放大，沒有更換來源或授權。上列來源 hash／PROMPTS.md 的 hash 指瘦身前來源，不是現有壓縮位元組。未列的既有肖像與生成候選／後製詳 PROMPTS.md 及 docs/reports/reviews/PORTRAIT-BACKLOG-2026-10-25.md。完整逐檔清冊在 ../LICENSES.md。

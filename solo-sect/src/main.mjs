@@ -2,8 +2,8 @@ import { BRANCHES } from './artcard.mjs';
 import { chiefLocked24, styleBadges24, lockedArt24, harmonyOf, harmonyMul, affixOf, readwuNote, artsSvg, artHintsHtml, setFocus, focusOf, artById, artMul, artState, topTier, chooseVariant, rechooseBranch, variantOf, stuckAt, breakChance, rustOf, starCost, guizhenOk, compProgress, blowWhy } from './arts.mjs';
 import { HOME, HOME_VIEW, CHUNK, CHUNK_CAP, lruGet, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, styledPos, fogged, inVision, leftovers, FOG_W, FOG_H, WORLD, cellColor, STYLE_PATH, cloudAt, cloudPos, cloudSpots, partyCloud, CLOUD_MAP, ZOOMS, lodOf, TRAIL_END, raidDescent, RINGS, TRAIL, POP, capOf, denDown, raidMul, milestones, styleOf, teamStyle, UNLOCKS, ALL_SECS, secOpen, CHAPTER1, AUTO, autoDue, autosave, autoList, autoGet, suhuiOf, syncLegacy, routeSeg, segIndex, campsOpen, scoutOf, peaceOf, suggestTeam } from './world.mjs';
 import { laborNote, statusHtml, jhuiHtml, archLine, pickModal, pending, isFolded, foldKey, setAll, dsum, growthHtml, teachingBadge } from './panel-ui.mjs';
-import { sideCards, bubbles, bioLine, chronHtml } from './util.mjs';
-import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES, MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS, statusIcon } from './bonds.mjs';
+import { sideCards, bioLine, chronHtml } from './util.mjs';
+import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES, MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS } from './bonds.mjs';
 import { ARC13 } from './jianghu.mjs';
 import { GEN, canSucceed, succeed, heirs, heirArt, canBuildFac, buildFac, artKind, KIND_NAME, sectFac, rivalGate } from './sect.mjs';
 import { SECTS, SECT_K, RULE_LIB, JH, DAY as DAY13, HS, DUGU, ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2, ROUTE, EXP, ENEMIES, CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES, ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, EXP_STYLES, CAMPS, ENDLESS, ROUTINE_MODES, ROUTINE_PERIODS, bindPortraitSet } from './data.mjs';
@@ -18,6 +18,7 @@ import { routineFrame } from './routines.mjs';
 import { displayPose, drawPoseActor } from './pose-render.mjs';
 import { growthSnapshot } from './growth-adapter.mjs';
 import { mountChoiceButtons } from './choice-buttons.mjs';
+import { homeLabelCandidates, layoutLabels } from './label-layout.mjs';
 import { visualSpriteOf } from './visual-gender.mjs';
 function practiceLabel(d, compact = false) {
   if (d.task?.act !== 'train' || d.task.phase !== 'do') return '';
@@ -46,8 +47,7 @@ let S = createState(Date.now() % 100000 | 0), speed = 1, starting = true;
 const newGame = () => { starting = true; openStart((spec) => { S = createState(Date.now() % 100000 | 0, spec); freshGame(); starting = false; panel(); /* loop65：新局重設每局介面狀態（自動存檔計時等） */ }); };
 window.__sect = { get S() { return S; }, set speed(v) { speed = v; }, freeze: false, panel: () => panel(), get starting() { return starting; } };
 const ACT_ICON = { quarry: '⛏', spar: '🤺', cook: '🍲', deliver: '📦', rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔', trial: '⚔' };
-let BUB = {};
-function bubble(msg, x, y) { const m = msg.length > 18 ? msg.slice(0, 17) + '…' : msg; g.font = '12px sans-serif'; const w = g.measureText(m).width + 14; g.fillStyle = 'rgba(255,255,255,.92)'; g.strokeStyle = '#6b4a2a'; g.lineWidth = 1; g.beginPath(); g.roundRect(x - w / 2, y - 20, w, 20, 8); g.fill(); g.stroke(); g.beginPath(); g.moveTo(x - 4, y); g.lineTo(x, y + 6); g.lineTo(x + 4, y); g.fill(); g.fillStyle = '#3a2f24'; g.textAlign = 'center'; g.fillText(m, x, y - 6); g.textAlign = 'left'; }
+let hoveredActor = null;
 // v1.45 B 級＝右側竹簡（可點推鏡）、A 級＝暫停＋推鏡
 function focusOn(id) { const d = S.ds.find((x) => x.id === id); if (!d || d.away) return false; window.__artsOf = id; camFocus(d.pos[0], d.pos[1] - 30, 2.5); panel(); const c = document.querySelector(`[data-dcard="${id}"]`); if (c) { c.open = true; c.scrollIntoView({ block: 'nearest' }); } return true; }
 function feed() { let f = document.getElementById('feed'); if (!f) { f = document.createElement('div'); f.id = 'feed'; document.getElementById('wrap').appendChild(f); }
@@ -58,7 +58,6 @@ function feed() { let f = document.getElementById('feed'); if (!f) { f = documen
 document.addEventListener('click', (e) => { const sl = e.target.closest('.slip'); if (sl && sl.dataset.who) focusOn(sl.dataset.who); });
 window.__sect.focusOn = (id) => focusOn(id);
 function draw() {
-  BUB = bubbles(S);
   const shake = S.fx.find((f) => f.kind === 'shake'); g.save(); if (shake) g.translate((Math.random() - 0.5) * 12 * shake.ttl / 0.35, (Math.random() - 0.5) * 12 * shake.ttl / 0.35);
   { const on = performance.now() < cam.until, k = 0.08; // v1.55a 世界鏡頭：大事件短暫拉近後回到原視角；跟隨模式追巡山隊
     if (on) { if (!cam.prev) cam.prev = { x: cam.ux, y: cam.uy, z: cam.uz }; cam.z += (1.6 - cam.z) * k; cam.x += (cam.tx - cam.x) * k * 2; cam.y += (cam.ty - cam.y) * k * 2; }
@@ -77,8 +76,8 @@ function draw() {
         else if (spot.kind === 'open') { g.strokeStyle = 'rgba(130,90,50,.25)'; g.beginPath(); g.ellipse(dx, dy, 14, 5, 0, 0, 7); g.stroke(); }
       }
       if (f.v16) { if (fs.stage) { g.fillStyle = f.sig ? '#7a2e2e' : '#8a6a44'; g.fillRect(x - 22, y - 18, 44, 22); g.fillStyle = '#3d3f46'; g.beginPath(); g.moveTo(x - 30, y - 16); g.lineTo(x, y - 34); g.lineTo(x + 30, y - 16); g.fill(); } else { g.strokeStyle = 'rgba(120,80,40,.45)'; g.setLineDash([4, 3]); g.strokeRect(x - 22, y - 18, 44, 22); g.setLineDash([]); } } // v1.6 新建築：簡易屋頂佔位
-      if (f.sig && !fs.stage) return; label(`${f.sig ? (sectFac(S)?.name || f.name) : f.name}・${st.name}`, x, y + 22, '#3a2f24');
-      if (fs.site) { const s = fs.site; label(`${s.paused ? '⏸暫停 ' : '工地 '}${MATS.filter((k) => s.need[k]).map((k) => `${RES_NAMES[k]}${s.delivered[k]}/${s.need[k]}`).join(' ')} 工${s.work.toFixed(0)}/${s.workNeed}s`, x, y + 46, '#a0461e');
+      if (f.sig && !fs.stage) return;
+      if (fs.site) { const s = fs.site; /* 工地進度併入設施單行標籤，詳情仍在人物／建造卡。 */
         for (let k = 0; k < s.delivered.wood; k++) { g.fillStyle = '#8b5a2b'; g.fillRect(x - 46 + (k % 6) * 6, y + 52 - Math.floor(k / 6) * 4, 5, 3); }
         for (let k = 0; k < s.delivered.stone; k++) { g.fillStyle = '#8c8c8c'; g.beginPath(); g.arc(x + 16 + (k % 6) * 6, y + 54 - Math.floor(k / 6) * 4, 2.6, 0, 7); g.fill(); } }
       if (f.id === 'quarry') { g.fillStyle = '#9a9a92'; for (let k = 0; k < 7; k++) { g.beginPath(); g.ellipse(x - 30 + k * 10, y + 4 - (k % 3) * 5, 8, 5, 0, 0, 7); g.fill(); } }
@@ -88,15 +87,15 @@ function draw() {
   items.push({ y: NODES.hall[1], f: () => sprite('master', NODES.hall[0] + 30, NODES.hall[1] - 6, SC) });
   for (const w of S.wild) items.push({ y: w.pos[1], f: () => { g.save(); g.globalAlpha = 0.85; g.translate(w.pos[0], w.pos[1]); g.scale(-(w.face || 1), 1); const i = IMG[MONSTERS[w.k].sprite]; g.drawImage(i, -i.width * SC / 2, -i.height * SC, i.width * SC, i.height * SC); g.restore(); } });
   for (const [k, n] of Object.entries(POSTS)) items.push({ y: NODES[k][1], f: () => { g.fillStyle = S.post === k ? '#c0392b' : 'rgba(120,80,40,.5)'; g.beginPath(); g.moveTo(NODES[k][0], NODES[k][1] - 40); g.lineTo(NODES[k][0] + 18, NODES[k][1] - 33); g.lineTo(NODES[k][0], NODES[k][1] - 26); g.fill(); g.fillRect(NODES[k][0] - 1, NODES[k][1] - 40, 2, 40); } });
-  for (const m of S.mons) items.push({ y: m.pos[1], f: () => { sprite(MONSTERS[m.k].sprite, m.pos[0], m.pos[1], SC); if (!m.raid) hp(m.pos[0], m.pos[1] - 30, m.hp / m.max, '#a33'); else label('下山拱菜', m.pos[0], m.pos[1] - 40, '#a33'); } });
-  if (S.band) { const b = S.band; items.push({ y: b.pos[1], f: () => { for (const m of (b.members || [{ hp: 1, max: 1, pos: b.pos }])) { const fled = !(m.hp > 0); if (fled && m.state !== 'down') continue; const p = m.pos || b.pos; g.save(); g.filter = 'grayscale(1) brightness(.55)'; if (fled) g.globalAlpha = 0.45; /* #424 被擊退的人沿山門那條路退走 */ sprite('hero', p[0], p[1], SC); g.restore(); if (b.members && !fled) hp(p[0], p[1] - 30, m.hp / m.max, m.ring === 2 ? '#a86' : '#a33'); } /* #419 一人一個，外圈的血條淡色 */ hp(b.pos[0], b.pos[1] - 34, b.hp / b.max, '#a33'); label(b.state === 'go' ? '山賊逼近' : '山賊撞柵', b.pos[0], b.pos[1] - 44, '#a33'); } }); } // loop3：沿用主角圖、灰暗濾鏡，不新增素材
+  for (const m of S.mons) items.push({ y: m.pos[1], f: () => { sprite(MONSTERS[m.k].sprite, m.pos[0], m.pos[1], SC); if (!m.raid) hp(m.pos[0], m.pos[1] - 30, m.hp / m.max, '#a33');  } });
+  if (S.band) { const b = S.band; items.push({ y: b.pos[1], f: () => { for (const m of (b.members || [{ hp: 1, max: 1, pos: b.pos }])) { const fled = !(m.hp > 0); if (fled && m.state !== 'down') continue; const p = m.pos || b.pos; g.save(); g.filter = 'grayscale(1) brightness(.55)'; if (fled) g.globalAlpha = 0.45; /* #424 被擊退的人沿山門那條路退走 */ sprite('hero', p[0], p[1], SC); g.restore(); if (b.members && !fled) hp(p[0], p[1] - 30, m.hp / m.max, m.ring === 2 ? '#a86' : '#a33'); } /* #419 一人一個，外圈的血條淡色 */ hp(b.pos[0], b.pos[1] - 34, b.hp / b.max, '#a33');  } }); } // loop3：沿用主角圖、灰暗濾鏡，不新增素材
   for (const d of S.ds) if (!d.away) items.push({ y: d.pos[1], f: () => {
     const bob = d.path.length ? Math.sin(S.t * 10) * 2 : 0, [x, y] = d.pos;
     if (d.ring && S.t - d.ring.t < 1.5) { const R = d.ring; g.beginPath(); g.arc(x, y - 70, 4.5, 0, 7); g.lineWidth = 2; g.strokeStyle = R.intercept ? '#e2b53c' : '#d0302a'; g.stroke(); g.fillStyle = R.intercept ? '#f2d06b' : 'rgba(208,48,42,.6)'; g.fill(); } /* N28：金圈＝仍能截擊，紅圈＝只能移步、招架或中招 */
     { const tt = topTier(d); if (tt.t >= 4) { const c = AURA[tt.a.school], gr = g.createRadialGradient(x, y - 20, 4, x, y - 20, 34 + Math.sin(S.t * 4) * 3); gr.addColorStop(0, c + 'aa'); gr.addColorStop(1, c + '00'); g.fillStyle = gr; g.beginPath(); g.ellipse(x, y - 20, 36, 42, 0, 0, 7); g.fill(); } }
     if (d.task?.act === 'meditate' && d.task.phase === 'do') { const A = ACTS2.meditate, pr = Math.min(1, d.task.timer / A.dur);
       for (let k = 0; k < 10; k++) { const an = S.t * 3 + k * 0.63, rr = 26 + 6 * Math.sin(S.t * 2 + k); g.fillStyle = `rgba(120,170,230,${0.35 + 0.4 * ((k % 3) / 3)})`; g.beginPath(); g.arc(x + Math.cos(an) * rr, y - 22 + Math.sin(an) * rr * 0.6, 2.5, 0, 7); g.fill(); }
-      g.strokeStyle = '#0003'; g.lineWidth = 5; g.beginPath(); g.arc(x, y - 70, 12, 0, 7); g.stroke(); g.strokeStyle = '#4a90d9'; g.beginPath(); g.arc(x, y - 70, 12, -Math.PI / 2, -Math.PI / 2 + pr * Math.PI * 2); g.stroke(); label('衝關', x, y - 88, '#2a5a9a'); }
+      g.strokeStyle = '#0003'; g.lineWidth = 5; g.beginPath(); g.arc(x, y - 70, 12, 0, 7); g.stroke(); g.strokeStyle = '#4a90d9'; g.beginPath(); g.arc(x, y - 70, 12, -Math.PI / 2, -Math.PI / 2 + pr * Math.PI * 2); g.stroke(); }
     const art = artById(focusOf(d) || 'basicFist'), mv = MOVES.find((m) => m.id === d.swing?.mv);
     const pose = displayPose(S, d, art, mv);
     g.save(); g.translate(x, y + bob); if (d.face < 0) g.scale(-1, 1); if (d.anim === 'strike' && !pose) g.rotate(0.15);
@@ -104,22 +103,22 @@ function draw() {
     const im = IMG[visualSpriteOf(d)], sc = SC * (d.adult === false && d.child ? 0.62 + 0.03 * ((d.age || 6) - 6) : 1);
     if (pose) { if (d.child && !d.adult) g.scale(sc / SC, sc / SC); drawPoseActor(g, d, pose); }
     else g.drawImage(im, -im.width * sc / 2, -im.height * sc, im.width * sc, im.height * sc);
-    g.restore(); if (d.child && !d.adult) label(`${d.age}歲`, x, y + 14, '#7a4a8a');
+    g.restore();
     if (d.carry?.stone) { g.fillStyle = '#8c8c8c'; g.beginPath(); g.arc(x + 10, y - 26, 6, 0, 7); g.fill(); } else if (d.carry) sprite('wood', x + 10, y - 18, 0.6);
     if (isLabor(d)) { g.fillStyle = '#2f6f9f'; g.fillRect(x - 9, y - IMG[visualSpriteOf(d)].height * SC + 4, 18, 4); }
-    label(`${d.name}${isLabor(d) ? '（工）' : d.role === 'outer' ? '（外門）' : d.role === 'head' ? '（首徒）' : ''} ${statusIcon(d, d.task?.act === 'build' && d.task.phase !== 'do' ? '📦' : ACT_ICON[d.anim || d.task?.act] || '')}`, x, y - (IMG[visualSpriteOf(d)].height * SC + 4), '#222');
-    const levelNotice = GROWTH_NOTICE.get(d.id); if (levelNotice && S.t - levelNotice.t < 4) label(levelNotice.text, x, y - (IMG[visualSpriteOf(d)].height * SC + 22), '#2b713d');
-    if (practiceLabel(d)) label(practiceLabel(d, true), x, y + 15, '#6b3b20');
     if (S.hunt) hp(x, y - IMG[visualSpriteOf(d)].height * SC - 20, d.hp / 100, '#3a7');
-    { const b = BUB[d.id]; if (b) bubble(b, x, y - (IMG[visualSpriteOf(d)].height * SC + 26)); } // v1.45 C 級事件＝頭上氣泡
+    // 氣泡與升級通知留在紀錄／人物卡，不再疊第二行頭上字。
   } });
   // v1.0 庫存畫成地圖上的物件：柴堆、石堆、米袋、藥簍、錢箱（數量越多堆越高）
   { const [bx, by] = NODES.court, R = S.res, piles = [['wood', '#8a5a2b', 'log'], ['stone', '#9a9a9a', 'rock'], ['food', '#e8d9a8', 'sack'], ['herb', '#5f9a3a', 'herb'], ['coin', '#d4a017', 'coin']];
     piles.forEach(([k, c, sh], i) => { const n = Math.min(8, Math.ceil((R[k] || 0) / (k === 'coin' ? 10 : 4))); if (!n) return; const x = bx - 120 + i * 30, y = by + 52;
       items.push({ y, f: () => { for (let j = 0; j < n; j++) { const yy = y - j * 5, xx = x + ((j % 2) * 6 - 3); g.fillStyle = c; g.strokeStyle = '#0006'; g.lineWidth = 1; g.beginPath();
         if (sh === 'log') g.rect(xx - 10, yy - 4, 20, 5); else if (sh === 'sack') g.ellipse(xx, yy - 3, 8, 5, 0, 0, 7); else if (sh === 'coin') g.ellipse(xx, yy - 2, 7, 3, 0, 0, 7); else g.arc(xx, yy - 3, 5.5, 0, 7); g.fill(); g.stroke(); }
-        label(`${{ wood: '木', stone: '石', food: '糧', herb: '藥', coin: '錢' }[k]}${Math.floor(R[k])}`, x, y + 14, '#333'); } }); }); }
+         } }); }); }
   items.sort((a, b) => a.y - b.y).forEach((i) => i.f());
+  const labels = layoutLabels(homeLabelCandidates(S, { selected: hoveredActor || window.__artsOf }));
+  window.__sect.labels = labels;
+  for (const l of labels.shown) label(l.text, l.x, l.y, l.color);
   // 菜畦
   S.plots.forEach((p, i) => { const x = NODES.veg[0] + 10 + i * 18, y = NODES.veg[1] + 30; g.fillStyle = p.st === 'empty' ? '#8a6e4b' : p.st === 'ripe' ? '#5f9a3a' : `rgba(110,150,70,${0.3 + 0.5 * p.g / 90})`; g.fillRect(x, y, 15, 8); });
   // 日夜
@@ -515,7 +514,12 @@ function fightWatch() { const X = S?.exp; if (!X) { fightLog.n = null; fightLog.
 // 捲動：拖曳地圖、滾輪縮放（邊界由 camBounds 決定）
 { let drag = null; const k = () => Math.max(1600 / cv.clientWidth, 900 / cv.clientHeight) / cam.uz;
   cv.addEventListener('pointerdown', (e) => { drag = [e.clientX, e.clientY]; cv.setPointerCapture?.(e.pointerId); });
-  cv.addEventListener('pointermove', (e) => { if (!drag) return; const f = k(); cam.ux -= (e.clientX - drag[0]) * f; cam.uy -= (e.clientY - drag[1]) * f; drag = [e.clientX, e.clientY]; if (cam.follow) { cam.follow = false; refreshCamUI(); } });
+  cv.addEventListener('pointerleave', () => { hoveredActor = null; });
+  cv.addEventListener('pointermove', (e) => { const r = cv.getBoundingClientRect(), c = clampCam({ x: cam.x, y: cam.y, z: cam.z }, camBounds(S));
+    const x = ((e.clientX - r.left) * 1600 / r.width - 800) / c.z + c.x - HOME.x, y = ((e.clientY - r.top) * 900 / r.height - 450) / c.z + c.y - HOME.y;
+    const near = S.ds.filter((d) => !d.away && Math.abs(d.pos[0] - x) <= 24 && y >= d.pos[1] - 74 && y <= d.pos[1] + 8).sort((a, b) => Math.abs(a.pos[0] - x) - Math.abs(b.pos[0] - x));
+    hoveredActor = near[0]?.id || null; cv.title = near[0] ? homeLabelCandidates(S).find((l) => l.id === near[0].id)?.text || '' : '';
+    if (!drag) return; const f = k(); cam.ux -= (e.clientX - drag[0]) * f; cam.uy -= (e.clientY - drag[1]) * f; drag = [e.clientX, e.clientY]; if (cam.follow) { cam.follow = false; refreshCamUI(); } });
   addEventListener('pointerup', () => { drag = null; });
   cv.addEventListener('wheel', (e) => { e.preventDefault(); cam.uz = Math.min(1.6, Math.max(ZOOMS.far, cam.uz * (e.deltaY > 0 ? 0.9 : 1.1))); }, { passive: false }); }
 { const bar = document.createElement('div'); bar.id = 'camui'; bar.innerHTML = '<button id="cam-home">🏯 回山門</button><button id="cam-follow">👣 跟隨隊伍</button><span class="zoom"><button data-zoom="near">近</button><button data-zoom="mid">中</button><button data-zoom="far">遠</button></span><button id="cam-cloud" hidden>☁ 雲海</button>'; $('wrap').append(bar);
