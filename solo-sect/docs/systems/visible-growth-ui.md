@@ -19,4 +19,4 @@
 
 N52 未引入新數值常數。`4` 秒升階提示是畫面顯示時長，不影響 `tick`，以在 1× 模擬速度下可讀完一句為目標。初始右欄可見按鈕／輸入框實拍見 `artifacts/round8/n52-ui-counts.jsonl`；兩份是 N48 head 與 N52 head，同為 1600×900 開局第一日。原需求的 ad4e650 基線為 53／28；N52 head 實拍 9／0，所有開局及右欄原生 `select` 均為 0。純畫面變動不改 golden；N53 的站位與 N52 的作息排序分別會改模擬。`artifacts/round8/golden-n53-write.log` 與 `golden-n52-write.log` 分開記錄兩次重產。
 
-五日連跑的例行彈窗紀錄在 `artifacts/round8/n52-five-days.json`，每日均為 0。CI 迴歸核對：晨課先練功讓求學掌招延至隔日自由時段；岳不群的違心仍發生，後被晨課靜坐消去；每日晨課令已從卡池刪除，舊卡快照其餘條目仍逐項比對。山賊來犯時原先作息排序遮蔽守柵，已修正並用 bot12 的 `fenceHeld` 核對。第十日早課 30 秒 GIF、跨小成門檻且有小卡的 12 秒 GIF 分別在 `round8-day10-morning.gif`、`n52-promotion.gif`。
+五日連跑的例行彈窗紀錄在 `artifacts/round8/n52-five-days.json`，每日均為 0。CI 迴歸核對：晨課先練功讓求學掌招延至隔日自由時段；岳不群的違心仍發生，後被晨課靜坐消去；每日晨課令已從卡池刪除，舊卡快照其餘條目仍逐項比對。阿星巡山測試原本依賴出發前隨機路線，早課改變抽樣後滿血阿星只受輕傷返程；現在以仍准出發的六成氣血進場，核對巡山過程的瀕死覺醒與戰報。山賊來犯時原先作息排序遮蔽守柵，已修正並用 bot12 的 `fenceHeld` 核對。第十日早課 30 秒 GIF、跨小成門檻且有小卡的 12 秒 GIF 分別在 `round8-day10-morning.gif`、`n52-promotion.gif`。
