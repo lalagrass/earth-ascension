@@ -723,8 +723,8 @@ function huntStep(s, dt) {
   const waveClear = !h.queue.length && !s.mons.some((m) => !m.raid);
   const anyFit = team.some((d) => d.hp > 25);
   if (waveClear) { h.gap += dt; if (h.gap >= WAVE_GAP && h.wave + 1 < h.waves && anyFit && (s.eco.dog.n + s.eco.boar.n) > 0) { h.wave++; h.gap = 0; spawnWave(s); } }
-  if ((waveClear && (h.wave + 1 >= h.waves || !anyFit || s.eco.rat.n + s.eco.boar.n === 0) && h.gap >= 1) || (!anyFit && waveClear)) {
-    const rep = `狩獵戰報（${POSTS[h.post]}，${h.wave + 1} 波）：擊退 ${h.kills}、溜走 ${h.escaped}；` + team.map((d) => `${d.name}出手 ${h.hits[d.id] || 0} 次`).join('，') + `｜山中尚餘 鼠${s.eco.rat.n} 豬${s.eco.boar.n}。${boutWhy(h.why)}`;
+  if ((waveClear && (h.wave + 1 >= h.waves || !anyFit || s.eco.dog.n + s.eco.boar.n === 0) && h.gap >= 1) || (!anyFit && waveClear)) {
+    const rep = `狩獵戰報（${POSTS[h.post]}，${h.wave + 1} 波）：擊退 ${h.kills}、溜走 ${h.escaped}；` + team.map((d) => `${d.name}出手 ${h.hits[d.id] || 0} 次`).join('，') + `｜山中尚餘 狗${s.eco.dog.n} 豬${s.eco.boar.n}。${boutWhy(h.why)}`;
     waveCommit(s, h); log(s, rep); s.lastReport = rep; if (h.kills > h.escaped) for (const d of team) if (d.hp > 25) think(s, d, 'wonHunt'); s.rep = (s.rep || 0) + h.kills;
     for (const d of team) { if (d.order === 'hunt') d.order = null; if (d.task?.act === 'hunt') { d.task = null; d.anim = null; } d.reason = '狩獵結束回院'; }
     s.hunt = null;
