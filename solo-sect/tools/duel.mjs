@@ -23,8 +23,9 @@ function run(seed,a0,b0){
     if(d.resting){d.needs.energy=Math.min(CORE.wakeAt,d.needs.energy+(facStage(s,'hall').restRate||1)*.25);if(d.needs.energy>=CORE.wakeAt)d.resting=false;continue;}
     if(d.downUntil>s.t)continue;
     if(d.swing&&s.t+1e-9>=d.swing.at){const w=d.swing;d.swing=null;if(distance(d.pos,other.pos)>w.mv.range*1.3)continue;const result=resolveSwing(s,d,other,()=>rand(s),{move:w.mv.id,wind:w.wind});let injured=false;
-      if(result.kind==='hit'){const dmg=w.mv.dmg*(1+(d.skills[w.mv.skill]||0)/50)*(result.heavy?CLASH.heavy:1);other.hp-=dmg*result.contact.damageFactor;if(result.contact.injured){injuries[other.id]++;injured=true;}}
-      if(result.counter){d.hp-=result.counterDamage;counters[other.id]++;if(result.counterContact.injured){injuries[d.id]++;injured=true;}}
+      // #475：瘀青仍是接觸中招，N34「受傷」只計皮破及更深層。
+      if(result.kind==='hit'){const dmg=w.mv.dmg*(1+(d.skills[w.mv.skill]||0)/50)*(result.heavy?CLASH.heavy:1);other.hp-=dmg*result.contact.damageFactor;if(result.contact.depth>=1){injuries[other.id]++;injured=true;}}
+      if(result.counter){d.hp-=result.counterDamage;counters[other.id]++;if(result.counterContact.depth>=1){injuries[d.id]++;injured=true;}}
       if(!injured)untouched++;incoming[other.id]++;if(result.kind==='dodge'&&(result.timing?.step??Infinity)<=BODY_TIMING.simple/2)minimal[other.id]++;
       const t=result.timing,m=result.kind==='read'?t?.strike:result.kind==='dodge'?(t?.step+(result.counter?t?.strike:0)):result.kind==='parry'?t?.guard:0;
       rows.push({t:s.t,attacker:d.id,defender:other.id,move:w.mv.id,decision:w.decision,kind:result.kind,T:t?.T??null,r:t?.r??null,m:m??null,movement:t?.step??null,L:t?.L??null,margin:t?t.T-t.r-m:null,counter:!!result.counter,forced:!t,injured});
