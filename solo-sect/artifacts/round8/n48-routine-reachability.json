@@ -1,0 +1,13 @@
+{
+  "normalLuohanArts": 0,
+  "normalGenericArts": {
+    "fist": 31,
+    "palm": 47,
+    "leg": 4,
+    "sword": 20,
+    "blade": 6,
+    "staff": 7
+  },
+  "declaredForms": 22,
+  "previewDistinctForms": 22
+}

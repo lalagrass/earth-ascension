@@ -23,7 +23,7 @@ function practiceLabel(d, compact = false) {
   if (d.task?.act !== 'train' || d.task.phase !== 'do') return '';
   const art = artById(focusOf(d) || 'basicFist');
   const f = routineFrame(art, d, S.t);
-  return `${art?.name || '基礎拳'}・第 ${f.form} 式${compact ? '' : `「${f.formName}」${f.routine.generic ? '（通用套路）' : ''}`}`;
+  return `${art?.name || '基礎拳'}・第 ${f.form} 式${compact ? '' : `「${f.formName}」`}${f.routine.generic ? '（通用套路）' : ''}`;
 }
 /* loop142 */
 // loop130
