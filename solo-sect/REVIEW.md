@@ -177,3 +177,8 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 ### 最新0ac263a核心checkpoint（取代前面的開發中表）
 以[`docs/evidence/r9-current-exposure-checkpoint.md`](docs/evidence/r9-current-exposure-checkpoint.md)的完整指令/前提/raw為準：新真60日normal counter1/0/0、calm1/0/0、rash0/0/0，L≥1 counter全0但**整體FAIL**。公開真指派後主角刀實接僅1次，不是假稱充分曝光；舊快照隔離的calm兩路6次不是此新史數字。
 自然ISTJ30日狗/躲/截d8、刀d18，首悟/單獨趕豬null、名俠0；其餘人格/seed及護欄待。N55新seed17五欄差>25%，只準備A/B JSON、無影片/真人結果，最終三seed仍待。後續核心若變，這些數字必重跑；不能以已通過smoke或N54 CI冒充第九輪全綠。
+
+#### N36 公開到場根因A（未宣稱逐trait通過）
+- 指令：`node solo-sect/tools/combat-history.mjs --seed 17 --days 10 --strategy trained-defend --trace-from 4200 --trace-to 4400 --trace out/arrival.json > out/history.json`。門檻：精力不足活動前置條件時真休息，不在[15,20)無限空轉；預期t4204休息出發→t4228.75實到柵邊。任選seed可用trace逐人檢查，時間值僅本seed觀測，不是其他seed保證。
+- 指令：`bash solo-sect/test/run.sh smoke`，門檻fail0，預期19/19。原N36唯一小測試包含普通同伴18.5精力與滿精力低氣血的真休養回歸。
+- [逐拍證據/世界原因](docs/evidence/r9-n36-arrival-root.md)。新10日主角刀仍只1次；尚未重產新60日逐trait，原失敗不撤銷。6秒守柵生命周期根因B待下一獨立修正。

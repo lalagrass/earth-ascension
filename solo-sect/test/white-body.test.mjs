@@ -142,6 +142,18 @@ test('N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反�
  const two=resolveSwing(q,pack[1],v,()=>.5,{move:'dogBite',wind:1,opening:openings[1].opening});
  assert.equal(two.kind,'hit','同時第二招仍扣掉前招真正用去的過去區間，不能一秒用兩次');
  assert.ok(Math.abs(v.busyUntil-1.35)<1e-9,'受擊回復從接觸算，不排到先前反應尾端再算');
+ // 真trace的18.5精力落在舊自理15/守柵20之間；不是只對主角的補丁。
+ const {setOrder}=await import('../src/sim.mjs');
+ const recovery=createState(17,{kind:'bare',askMajor:false}),guard=recovery.ds[1];
+ guard.needs.energy=18.5;setOrder(recovery,guard.id,'defend');tick(recovery,.25);
+ assert.equal(guard.task?.act,'rest');assert.equal(guard.order,'defend');
+ for(let i=0;i<240&&guard.needs.energy<80;i++)tick(recovery,.25);
+ assert.ok(guard.needs.energy>=80,'花真路程與休息時間，不在18.5精力原地失敗');
+ const hurt=createState(17,{kind:'bare',askMajor:false}),patient=hurt.ds[0];patient.hp=18.5;patient.needs.energy=100;
+ setOrder(hurt,patient.id,'defend');tick(hurt,.25);assert.equal(patient.task?.act,'rest');
+ for(let i=0;i<240&&patient.hp<40;i++)tick(hurt,.25);
+ assert.ok(patient.hp>=40,'精力已滿也得真的休養到同一活動氣血門檻');
+
 
 });
 

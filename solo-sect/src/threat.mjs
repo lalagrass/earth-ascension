@@ -5,7 +5,7 @@ import { combatMoves,combatTacticStep,fretStep,chooseCombatMove, fastestMove, wi
 import { practiceWindow } from './practice.mjs';
 import { foeAction } from './starter-combat.mjs';
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
-import { NODES, EDGES, DAY, FACILITIES, MOVES, ARTS } from './data.mjs';
+import { NODES, EDGES, DAY, FACILITIES, MOVES, ARTS, ACTIVITIES } from './data.mjs';
 import { noteFret, interceptOpening, breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
 import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuterArt, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
@@ -129,7 +129,7 @@ export function finishFenceSite(s) {
 // 在柵邊時依武功對山賊造成傷害。山賊血量＝威脅點數；打光＝打退，柵破＝照舊被搶、一人重傷（不死人）。
 // 參考：塔防波次沿路徑前進、RimWorld 襲擊者攻擊建築（設計概念），不引任何套件。
 
-export const BAND = { from: 'gate', speed: 38, hitEvery: 2, fenceDmg: { k: 0.04, min: 3 }, dps: { base: 1, per: 30 }, defendScore: 500, hpMin: 40, energyMin: 20 };
+export const BAND = { from: 'gate', speed: 38, hitEvery: 2, fenceDmg: { k: 0.04, min: 3 }, dps: { base: 1, per: 30 }, defendScore: 500, hpMin: ACTIVITIES.defend.minHp, energyMin: ACTIVITIES.defend.minEnergy };
 export function nodePath(a, b) { // BFS，只走既有邊
   const adj = {}; for (const [x, y] of EDGES) { (adj[x] ||= []).push(y); (adj[y] ||= []).push(x); }
   const prev = { [a]: null }, q = [a]; while (q.length) { const n = q.shift(); if (n === b) break; for (const m of adj[n] || []) if (!(m in prev)) { prev[m] = n; q.push(m); } }

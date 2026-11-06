@@ -1,0 +1,10 @@
+{
+  "r9-n36-arrival-before17.json.gz": {
+    "bytes": 3406400,
+    "sha256": "920ccba3da3d3be2a2da9339548cf6681569200a99621c3645a0bfd7fbb71f1d"
+  },
+  "r9-n36-readiness-arrival17.json.gz": {
+    "bytes": 5495693,
+    "sha256": "14caa4825e1406f86da2d69884557e7468ada0bb111f2cece6face228e936ae3"
+  }
+}

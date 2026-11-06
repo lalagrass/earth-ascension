@@ -7,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 import {createState,tick,clone,resolveRaid,startBuild,canRecruit,recruit,setOrder} from '../src/sim.mjs';
 import {DAY} from '../src/data.mjs';
 import {ALL_ON} from '../test/harness/bot.mjs';
-export function combatSnapshots(seed,days=[60],{mbti='ISTJ',onEvent=null,strategy='defend'}={}){
+export function combatSnapshots(seed,days=[60],{mbti='ISTJ',onEvent=null,onTick=null,strategy='defend'}={}){
  if(!['passive','defend','trained-defend'].includes(strategy))throw Error('strategy需passive/defend/trained-defend');
  const s=createState(seed,{kind:'bare',mbti,askMajor:false,...ALL_ON});s.captureEvents=true;
  const seen=new WeakSet(),digest=createHash('sha256'),snapshots=[],orders=[],counts={},exposure={};let count=0,lastDay=s.day,order=null,lastBuildDay=0;
@@ -22,17 +22,19 @@ export function combatSnapshots(seed,days=[60],{mbti='ISTJ',onEvent=null,strateg
    const act=s.band?'defend':!s.fac.well?.stage?'quarry':['train','chop','water'][Math.floor((s.t%DAY)/(DAY/3))];
    if(act!==order){const result=setOrder(s,'hero',act);orders.push({t:s.t,day:s.day,op:'setOrder',id:'hero',arg:act,result});order=act;}
   }
-  collect();
+  collect();onTick?.(s);
   if(days.includes(s.day)&&s.t===(s.day-1)*DAY+clock){const hero=s.ds.find(d=>d.id==='hero');if(!hero)throw Error('主角不在，不能產生合法主角snapshot');snapshots.push({day:s.day,t:s.t,hero:clone(hero),events:count,eventHash:digest.copy().digest('hex'),exposure:clone(exposure),counts:clone(counts)});}
   if(s.t>=end)break;tick(s,dt);if(s.alert)s.alert=null;
   if(s.day!==lastDay){lastDay=s.day;collect();daily();}
  }
  return {seed,mbti,strategy,clock,dt,scenario:'公開玩家史：換日建舍/可招才招'+(strategy!=='passive'?'；真pending立即迎戰1':'；來犯由原執事自決')+(strategy==='trained-defend'?'；採石建井→每200秒練拳/砍柴/挑水，真來犯改派守柵，結束才復工（受控公開日程，非自然放養）':'')+'；無補血/資源/n/f/新敵人',orders,snapshots};
 }
+// 純讀取逐拍診斷；不是新fixture/另一套模擬。JSON只含公開操作實際跑出的狀態。
+export function combatTraceRow(s){return clone({t:s.t,day:s.day,band:s.band,actors:s.ds.map(d=>({id:d.id,order:d.order,task:d.task,at:d.at,pos:d.pos,path:d.path,carry:d.carry,hp:d.hp,energy:d.needs.energy,reason:d.reason,busy:d.busyUntil,bswing:d.bswing,bcool:d.bcool,eyes:d.practice?.eyes,tactics:d.tactics,away:d.away})),events:(s.events||[]).filter(e=>e.t===s.t)});}
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const a=process.argv.slice(2),get=(k,d)=>{const i=a.indexOf('--'+k);return i>=0?a[i+1]:a.find(x=>x.startsWith('--'+k+'='))?.split('=')[1]??d;};
  const seed=Number(get('seed',17)),days=get('days','60').split(',').map(Number);if(!Number.isSafeInteger(seed)||!days.every(d=>Number.isInteger(d)&&d>0))throw Error('seed需整數/days需正整數');
- const raw=[],events=get('events',null),history=combatSnapshots(seed,days,{mbti:get('mbti','ISTJ'),strategy:get('strategy','defend'),onEvent:events?e=>raw.push(JSON.stringify(e)):null});
- const out=get('snapshot-out',null);for(const [file,data]of [[out,out?JSON.stringify({seed,scenario:history.scenario,snapshot:history.snapshots.at(-1)},null,2):null],[events,events?raw.join('\n')+'\n':null]])if(file){await mkdir(path.dirname(path.resolve(file)),{recursive:true});await writeFile(file,data);}
+ const raw=[],trace=[],events=get('events',null),traceFile=get('trace',null),traceFrom=Number(get('trace-from',0)),traceTo=Number(get('trace-to',Infinity)),history=combatSnapshots(seed,days,{mbti:get('mbti','ISTJ'),strategy:get('strategy','defend'),onEvent:events?e=>raw.push(JSON.stringify(e)):null,onTick:traceFile?s=>{if(s.t>=traceFrom&&s.t<=traceTo&&(s.band||s.ds.some(d=>d.bswing)))trace.push(combatTraceRow(s));}:null});
+ const out=get('snapshot-out',null);for(const [file,data]of [[out,out?JSON.stringify({seed,scenario:history.scenario,snapshot:history.snapshots.at(-1)},null,2):null],[events,events?raw.join('\n')+'\n':null],[traceFile,traceFile?JSON.stringify({seed,strategy:history.strategy,orders:history.orders,trace},null,2):null]])if(file){await mkdir(path.dirname(path.resolve(file)),{recursive:true});await writeFile(file,data);}
  console.log(JSON.stringify(history,null,2));
 }
