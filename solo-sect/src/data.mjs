@@ -1,4 +1,5 @@
 import TREES from './destiny-trees.json' with { type: 'json' };
+import { COMBAT_MOVE_SETS } from './routines.mjs';
 // ==== （原 hero-data.mjs）====
 // v0.96 主角建立：六屬性、六價值觀、九問問心、六位經典模板、開局同門候選
 export const STATS = [['wu', '悟性'], ['gen', '根骨'], ['li', '臂力'], ['shen', '身法'], ['ding', '定力'], ['fu', '福緣']];
@@ -751,7 +752,18 @@ A13('tiexian', '洪家鐵線拳', 'palm', 2, ['剛'], [['tx1', '鐵線拳', 1.0,
 A13('bagua', '五郎八卦棍', 'leg', 2, ['剛'], [['bg1', '五郎八卦棍', 1.0, 15, 50, '#8a6a3a']], { hint: '深藏不露的雜工身懷此功：斧頭幫上山勒索時讓他出手才會現身', mode: 'da', qiScale: 0.08, isPublic: false, cats: { gunbang: 1 }});
 A13('hama', '蛤蟆功', 'palm', 4, ['剛', '蓄'], [['hm1', '蛤蟆功', 2.2, 40, 60, '#6a8a3a']], { signature: 'huoyunxieshen', mode: 'da', qiScale: 0.08, isPublic: false, cats: { neigong: 1 }});
 // 每門武學都有動作型別；兵器列繼承既有 weapon，指法與獨孤在資料列明寫。
-for (const art of ARTS) art.type ??= art.weapon === 'sword' ? 'sword' : 'fist';
+for (const art of ARTS) {
+  art.type ??= art.weapon === 'sword' ? 'sword' : 'fist';
+  art.routine ??= ({ sword: 'sword', 劍: 'sword', blade: 'blade', 刀: 'blade', staff: 'staff', whip: 'staff' })[art.weapon]
+    || (art.cats?.jianfa ? 'sword' : art.cats?.gunbang ? 'staff' : null)
+    || (art.school === 'leg' ? 'leg' : art.school === 'palm' ? 'palm' : 'fist');
+}
+for (const mv of MOVES) {
+  const art = ARTS.find((a) => a.techs?.includes(mv.id));
+  const kind = art?.routine || (mv.skill === 'leg' ? 'leg' : 'fist');
+  const choices = COMBAT_MOVE_SETS[kind] || COMBAT_MOVE_SETS.fist;
+  mv.poses ??= choices[Math.max(0, art?.techs?.indexOf(mv.id) ?? 0) % choices.length];
+}
 export const JH = {
   comedyWeek: 2, comedyDays: 7, morningOpts: 3,
   anranMood: 30, anranMax: 1.5, twin: 1.3, kongming: 1.15, pair: 0.25,

@@ -14,13 +14,13 @@ import { seasonHint, econHtml, marketDo } from './economy.mjs';
 import { openStart, choiceUI, heroCard } from './start-ui.mjs';
 import { SFX, ambient, setMute, isMuted, cuesFrom } from './audio.mjs';
 import { threatHtml, rumorDays, buildFence, upgradeFence, startFenceSite } from './threat.mjs';
-// N53 先以現有已會招式顯示練功式次；N48 會接上有姿勢資料的套路。
+import { routineFrame } from './routines.mjs';
+import { displayPose, drawPoseActor } from './pose-render.mjs';
 function practiceLabel(d, compact = false) {
   if (d.task?.act !== 'train' || d.task.phase !== 'do') return '';
   const art = artById(focusOf(d) || 'basicFist');
-  const known = (art?.techs || []).filter((id) => d.moves?.includes(id));
-  const n = Math.max(1, known.length), form = Math.min(n, Math.floor((d.task.timer || 0) / ACTIVITIES.train.dur * n) + 1);
-  return compact ? `${art?.name || '基礎拳'}・${form}式` : `${art?.name || '基礎拳'}・第 ${form} 式（通用套路）`;
+  const f = routineFrame(art, d, S.t);
+  return `${art?.name || '基礎拳'}・第 ${f.form} 式${compact ? '' : `「${f.formName}」${f.routine.generic ? '（通用套路）' : ''}`}`;
 }
 /* loop142 */
 // loop130
@@ -85,9 +85,14 @@ function draw() {
     if (d.task?.act === 'meditate' && d.task.phase === 'do') { const A = ACTS2.meditate, pr = Math.min(1, d.task.timer / A.dur);
       for (let k = 0; k < 10; k++) { const an = S.t * 3 + k * 0.63, rr = 26 + 6 * Math.sin(S.t * 2 + k); g.fillStyle = `rgba(120,170,230,${0.35 + 0.4 * ((k % 3) / 3)})`; g.beginPath(); g.arc(x + Math.cos(an) * rr, y - 22 + Math.sin(an) * rr * 0.6, 2.5, 0, 7); g.fill(); }
       g.strokeStyle = '#0003'; g.lineWidth = 5; g.beginPath(); g.arc(x, y - 70, 12, 0, 7); g.stroke(); g.strokeStyle = '#4a90d9'; g.beginPath(); g.arc(x, y - 70, 12, -Math.PI / 2, -Math.PI / 2 + pr * Math.PI * 2); g.stroke(); label('衝關', x, y - 88, '#2a5a9a'); }
-    g.save(); g.translate(x, y + bob); if (d.face < 0) g.scale(-1, 1); if (d.anim === 'strike') g.rotate(0.15);
+    const art = artById(focusOf(d) || 'basicFist'), mv = MOVES.find((m) => m.id === d.swing?.mv);
+    const pose = displayPose(S, d, art, mv);
+    g.save(); g.translate(x, y + bob); if (d.face < 0) g.scale(-1, 1); if (d.anim === 'strike' && !pose) g.rotate(0.15);
     if (d.task?.phase === 'do' && d.anim === 'rest') g.rotate(-1.3);
-    const im = IMG[d.sprite], sc = SC * (d.adult === false && d.child ? 0.62 + 0.03 * ((d.age || 6) - 6) : 1); g.drawImage(im, -im.width * sc / 2, -im.height * sc, im.width * sc, im.height * sc); g.restore(); if (d.child && !d.adult) label(`${d.age}歲`, x, y + 14, '#7a4a8a');
+    const im = IMG[d.sprite], sc = SC * (d.adult === false && d.child ? 0.62 + 0.03 * ((d.age || 6) - 6) : 1);
+    if (pose) { if (d.child && !d.adult) g.scale(sc / SC, sc / SC); drawPoseActor(g, d, pose); }
+    else g.drawImage(im, -im.width * sc / 2, -im.height * sc, im.width * sc, im.height * sc);
+    g.restore(); if (d.child && !d.adult) label(`${d.age}歲`, x, y + 14, '#7a4a8a');
     if (d.carry?.stone) { g.fillStyle = '#8c8c8c'; g.beginPath(); g.arc(x + 10, y - 26, 6, 0, 7); g.fill(); } else if (d.carry) sprite('wood', x + 10, y - 18, 0.6);
     if (isLabor(d)) { g.fillStyle = '#2f6f9f'; g.fillRect(x - 9, y - IMG[d.sprite].height * SC + 4, 18, 4); }
     label(`${d.name}${isLabor(d) ? '（工）' : d.role === 'outer' ? '（外門）' : d.role === 'head' ? '（首徒）' : ''} ${statusIcon(d, d.task?.act === 'build' && d.task.phase !== 'do' ? '📦' : ACT_ICON[d.anim || d.task?.act] || '')}`, x, y - (IMG[d.sprite].height * SC + 4), '#222');
