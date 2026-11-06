@@ -150,9 +150,18 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 - 指令：`gzip -dc solo-sect/docs/evidence/r9-n50-source-natural17.events.jsonl.gz | sha256sum`。門檻等於摘要rawSha256，預期8f573b583a9aa779ce30da7453893883462f43cf4b8035980fb58094471459d4。原始保留N7正式自悟另一旁路，不冒充全來源已封。
 
 #### N50/N36 pipeline更正：口糧目標
-- 指令：`bash test/run.sh smoke`。門檻：fail0。預期：19項smoke測試（數量可能隨後續里程碑增加），N50含在家口糧/已聽聞候選14份/未聽聞不備99份斷言。
+- 指令：`bash solo-sect/test/run.sh smoke`。門檻：fail0。預期：19項smoke測試（數量可能隨後續里程碑增加），N50含在家口糧/已聽聞候選14份/未聽聞不備99份斷言。
 - 證據與真前提：[`docs/evidence/r9-n50-pantry-root.md`](docs/evidence/r9-n50-pantry-root.md)。seed17同尺15日修前exchange0、修後57；非任意seed已證明，非N36兩路已通過。
 
 #### 正式武學內容來源（N7/N50共同修正）
-- 指令：`bash test/run.sh smoke`。門檻：fail0；無來源pendingArt不得變成selfTarget。預期：N32原測試含空req教材不能憑資格自悟；N50真書/真師徒8秒證據仍成立。
+- 指令：`bash solo-sect/test/run.sh smoke`。門檻：fail0；無來源pendingArt不得變成selfTarget。預期：N32原測試含空req教材不能憑資格自悟；N50真書/真師徒8秒證據仍成立。
 - CI另驗既有v33排序：有母招者保留偏好；無來源basicSword只能求學；觀摩測試提供真正已知且已示範招式，不以整個partner.arts作示範。未在本地另跑full suite。
+
+#### N36 真曝光史與原勞動反例（不可aggregate）
+| 指令（repo根目錄） | 門檻 | 預期輸出/實況 |
+|---|---|---|
+| `node solo-sect/tools/waves.mjs --seed <任選> --history trained-defend --trait normal,calm,rash --log out/public-waves.json` | 每trait 1/2路各counter>0；所有L≥1列counter=false；rash搶攻/受傷>calm | seed17新真史normal0/1/0、calm0/0/1、rash0/1/0；overload全0，人格比較true，**總pass=false仍待修**，不是已通過 |
+| `node solo-sect/tools/combat-history.mjs --seed <任選> --days 60 --strategy trained-defend --snapshot-out out/public60.json --events out/public60.events.jsonl` | 真公開操作、無n/f/資源/補血/敵人灌入歷史 | orders及原始events、真第60日snapshot/eventHash；seed17刀實接12次、blade f9.3928359742，非N55無曝光史 |
+| `node solo-sect/tools/waves.mjs --seed <任選> --history labor --trait normal --log out/labor.json` | 舊勞動無刀賊暴露的反例必須保留 | 既有seed17兩路counter0 FAIL，不因新史打包成PASS |
+
+先`mkdir -p out`。[`docs/evidence/r9-n36-public60.md`](docs/evidence/r9-n36-public60.md)列歷史/fixture/同一人物不同人格的受控前提、兩次獨立真生成hash及新逐拍T0缺口。不是三種自然人格各60日，更不是任意seed已證明。

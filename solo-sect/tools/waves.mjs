@@ -7,16 +7,19 @@ import {movementSpeed,moveToward,COVERS,ringCapacity,distance,pursueFleeing,reme
 import {foeAction} from '../src/starter-combat.mjs';
 import {practiceWindow} from '../src/practice.mjs';
 import {growthSnapshots} from './growth-scenario.mjs';
+import {combatSnapshots} from './combat-history.mjs';
 const argv=process.argv.slice(2),get=(key,fallback)=>{const i=argv.indexOf('--'+key);return i<0?argv.find(x=>x.startsWith('--'+key+'='))?.split('=')[1]??fallback:argv[i+1];};
 const seed=Number(get('seed',1)),traits=get('trait','normal').split(',');
 const traitMap={calm:['honest'],rash:['brave'],normal:[]};
 if(!Number.isSafeInteger(seed)||!traits.every(t=>traitMap[t]))throw Error('--seed需整數；--trait可calm,rash,normal');
 // Diagnostic cache is an unmodified public-schedule snapshot, not a fixture or a new growth source.
-const snapshotIn=get('snapshot-in',null),snapshotOut=get('snapshot-out',null);
+const snapshotIn=get('snapshot-in',null),snapshotOut=get('snapshot-out',null),history=get('history','labor');
+if(!['labor','defend','trained-defend'].includes(history))throw Error('--history需labor/defend/trained-defend');
 const cached=snapshotIn?JSON.parse(await readFile(snapshotIn,'utf8')):null;
 if(cached&&(cached.seed!==seed||cached.snapshot?.day!==60||!cached.snapshot?.eventHash||cached.snapshot?.hero?.id!=='hero'))throw Error('snapshot需同seed的公開日程第60日原始輸出');
-const snapshot=cached?cached.snapshot:growthSnapshots(seed,[60]).snapshots[0];
-if(snapshotOut){await mkdir(path.dirname(path.resolve(snapshotOut)),{recursive:true});await writeFile(snapshotOut,JSON.stringify({seed,scenario:'growthSnapshots公開受控日程，未改snapshot',snapshot},null,2));}
+const generated=cached?null:history==='labor'?growthSnapshots(seed,[60]):combatSnapshots(seed,[60],{strategy:history});
+const snapshot=cached?cached.snapshot:generated.snapshots[0],training=cached?.scenario||generated.scenario;
+if(snapshotOut){await mkdir(path.dirname(path.resolve(snapshotOut)),{recursive:true});await writeFile(snapshotOut,JSON.stringify({seed,scenario:training,snapshot},null,2));}
 function run(count,trait){
  const s=createState(seed,{kind:'bare',askMajor:false}),hero=clone(snapshot.hero);s.ds=[hero];s.mons=[];s.band=null;s.t=0;s.day=60;s.fx=[];
  hero.id='hero';hero.uid='hero';hero.personality=traitMap[trait];hero.hp=100;hero.max=100;hero.needs.energy=100;hero.posture=100;hero.busyUntil=0;hero.rageUntil=0;hero.raging=false;hero.fret=0;hero.swing=null;hero.bswing=null;hero.path=[];hero.gone=false;hero.downUntil=0;hero.faintUntil=0;hero.balanceOpenUntil=0;hero.wounds=[];hero.part=null;hero.pain=0;hero.painAt=-1e9;
@@ -70,7 +73,7 @@ function coverProbe(){const s=createState(seed,{kind:'bare',askMajor:false}),d=s
 function pursuit(run){const d=clone(createState(seed,{kind:'bare',askMajor:false}).ds[0]);d.pos=[800,400];d.tactics={action:run?'flee':'hold'};const dog={k:'dog',pos:[750,400]};let pursuitHits=0;
  for(let t=0;t<8;t+=.25){if(run){moveToward(d,[1500,400],movementSpeed(d),.25);pursueFleeing(dog,d,.25);if(distance(d.pos,dog.pos)<=foeAction(dog).range)pursuitHits++;}}
  return {running:run,followed:run,pursuitContactBeats:pursuitHits};}
-const runs=traits.flatMap(t=>[1,2,4].map(n=>run(n,t))),cover=coverProbe(),summary={seed,training:'受控公開指派60日；入場回滿HP/精力；無手熟/眼熟灌值',trainingEventHash:snapshot.eventHash,runs:runs.map(r=>r.stats),cover,pursuit:[pursuit(false),pursuit(true)]};
+const runs=traits.flatMap(t=>[1,2,4].map(n=>run(n,t))),cover=coverProbe(),summary={seed,training:training+'；probe沿既有統一入場HP/精力/暫態，成長n/f不改',trainingEventHash:snapshot.eventHash,runs:runs.map(r=>r.stats),cover,pursuit:[pursuit(false),pursuit(true)]};
 summary.pass=runs.every(r=>r.stats.overloadCounters===0)&&runs.some(r=>r.stats.overloadBeats>0)&&traits.every(t=>[1,2].every(n=>runs.some(r=>r.stats.trait===t&&r.stats.count===n&&r.stats.counters>0)))&&cover.open>=1&&cover.cover<1&&cover.sameUid&&cover.sameHands;
 if(traits.includes('calm')&&traits.includes('rash')){const sum=(trait,k)=>runs.filter(r=>r.stats.trait===trait).reduce((n,r)=>n+r.stats[k],0);summary.personality={calmAttacks:sum('calm','attacks'),rashAttacks:sum('rash','attacks'),calmRush:sum('calm','rushAttacks'),rashRush:sum('rash','rushAttacks'),calmHpLost:sum('calm','hpLost'),rashHpLost:sum('rash','hpLost')};summary.personality.pass=summary.personality.rashRush>summary.personality.calmRush&&summary.personality.rashHpLost>summary.personality.calmHpLost;summary.pass&&=summary.personality.pass;}
 console.log(JSON.stringify(summary,null,2));const log=get('log',null);if(log){await mkdir(path.dirname(path.resolve(log)),{recursive:true});await writeFile(log,JSON.stringify({summary,runs},null,2));}if(!summary.pass)process.exitCode=1;
