@@ -149,7 +149,18 @@ export function syncMembers(b) {
 const bandSum = (b) => b.members.reduce((a, m) => a + Math.max(0, m.hp), 0);
 /* #424 N18 山賊逐一交手：守柵者對自己圈內的人出招（前搖、接法照 N14）；柵在時山賊只撞柵，柵破了才進院和守柵者交手（應接照 N15）。
    cd：一招間隔（守柵者照 defenderDps×cd 出傷害，總輸出與舊版相同，只是會被閃、被招架）；dmg：山賊一招打守柵者的氣血；yardMax：院內纏鬥最久幾秒，過了照舊擲勝率。 */
-export const BAND_CLASH = { agi: [20, 30, 45, 55] /* 山賊的身法（輪流），#425 輕功交錯用 */, cd: 1.5, monCd: 2.5, dmg: { base: 4, per: 0.05 }, yardMax: 40, fleeSpeed: 60, sub: 0.5 };
+const bandCadence = 2.5;
+export const BAND_CLASH = { agi: [20, 30, 45, 55] /* 山賊的身法（輪流），#425 輕功交錯用 */, cd: 1.5, monCd: bandCadence,
+  // 同一守者的四個近戰席可等同伴起手；最多等一個週期內四席的最大錯相距離。
+  syncWait: bandCadence * (BAND_MEMBER.ring - 1) / BAND_MEMBER.ring,
+  dmg: { base: 4, per: 0.05 }, yardMax: 40, fleeSpeed: 60, sub: 0.5 };
+// 已能一起出手就不再等；否則等同一守者近戰圈裡、即將起手的最後一位。
+export function bandSyncDelay(m, nearby) {
+  const allies = nearby.filter((x) => x !== m && x.hp > 0 && x.ring === 1 && x.foe === m.foe && !x.swing);
+  if (allies.some((x) => x.cool <= 0)) return 0;
+  // 提前一個格架後站穩時間起手，讓友軍在自己的前搖末段加入，而非排成同一時間戳。
+  return Math.max(0, ...allies.map((x) => x.cool - CLASH.time.parryRecover).filter((cool) => cool > 1e-9 && cool <= BAND_CLASH.syncWait - CLASH.time.parryRecover));
+}
 function bandHit(s, b, m, dmg, who) {
   if (who) noteFret(s, who, 'strike');
   const spill = Math.max(0, dmg - m.hp); m.hp = Math.max(0, m.hp - dmg); if (m.hp > 0) return;
@@ -171,6 +182,7 @@ function bandClash(s, b, defs, dt) {
     (s.fx ||= []).push({ kind: 'warn', from: [...d.pos], to: [...(tgt.pos || b.pos)], r: 30, dur: wind, ttl: wind, t0: s.t });
   }
   if (b.state !== 'yard') return;
+  const ready = [];
   for (const m of live()) { postureRegen(s, m, dt); const d = fight.find((x) => x.id === m.foe) || fight[0]; if (!d) break;
     const wk = witchK(s, m.pos), mdt = dt * wk; if (m.swing && wk < 1) m.swing.at += dt - mdt; /* #425 林克時間圈內的山賊放慢 */ m.cool = (m.cool ?? 0) - mdt;
     if (m.swing && d.bswing && !m.swing.x && d.bswing.tgt === m.uid && lightCross(d.skills?.agility || 0, m.agi || 0, m.swing.at, d.bswing.at, () => R(s))) { /* #425 輕功交錯：兩人同時突進、互相穿過 */
@@ -186,6 +198,13 @@ function bandClash(s, b, defs, dt) {
         d.hp = Math.max(1, d.hp - incoming); (s.fx ||= []).push({ kind: 'bite', pos: [...d.pos], ttl: 0.4 }); partHit(s, d, r, { attack: m, rnd: () => R(s) }); }
       continue; }
     if (m.cool > 0 || m.ring !== 1) continue;
+    ready.push({ m, d });
+  }
+  // 先讓每個人走完本步的冷卻，再看同伴還需多久；避免陣列順序決定能否合擊。
+  const delays = ready.map(({ m }) => bandSyncDelay(m, live()));
+  for (let i = 0; i < ready.length; i++) {
+    const { m, d } = ready[i];
+    if (delays[i] > 0) { m.cool = delays[i]; continue; }
     if (zjIntercept(s, m, fight)) { m.cool = BAND_CLASH.monCd; continue; }
     const wind = BAND_CLASH.monCd * CLASH.monWind, start = interceptOpening(s, m, d, () => R(s), { depth: 2, wind }); m.cool = BAND_CLASH.monCd;
     if (start.read?.kind === 'read') { bandHit(s, b, m, start.read.counter, d); (b.cl ??= {}).mread = (b.cl.mread || 0) + 1; continue; }
