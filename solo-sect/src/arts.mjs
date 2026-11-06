@@ -1,3 +1,5 @@
+import { PRACTICE, familiarReaction, practiceWindow, recordExchange } from './practice.mjs';
+import { bodyMove, BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';
 import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST, TRAITS } from './data.mjs';
 import { stampCard, curveMulOf, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
@@ -493,6 +495,7 @@ export function rustOf(r, now) { const idle = now - (r.last ?? now); return Math
 /* g（loop79 成長分層，s.grow 時才傳）＝ { raw 原始投入, src 'train'|'fight' }：同類加速以結算前造詣計，造詣只吃原始投入 */
 export function gainArt(d, amt, mf = 1, now = 0, g = null) {
   const out = { next: null, moves: [], star: false };
+  if (d.bare && !Object.keys(d.arts || {}).length) return out;
   const id = focusOf(d);
   if (id) { out.trained = id; const a = artById(id), r = d.arts[id]; r.rust = rustOf(r, now); r.last = now; const xp0 = r.xp;
     const acc = g && !r.guizhen ? accelOf(d, a, r.xp) : null; out.acc = acc;
@@ -1204,7 +1207,18 @@ export const CLASH = {
 const clamp01 = (x, hi = 1) => Math.max(0, Math.min(hi, x));
 export const windFrac = (tier) => CLASH.windIn + (CLASH.windHua - CLASH.windIn) * Math.max(0, Math.min(4, tier | 0)) / 4;
 /* 一招的前搖秒數：cd × 前搖比例（看這招所屬武學的火候） */
-export function windOf(d, mvId, cd) { const a = artOfMove(mvId); const t = a && d?.arts?.[a.id] ? artTier(d, a.id) : 0; return cd * windFrac(t) * (a?.tags?.includes('快') ? 0.75 : 1) * (a?.id === 'kuihua' && zjHas(d, 'kuihua') ? 0.1 : 1) * (d?.part?.where === 'hand' ? PART.hand : 1); }
+export function windOf(d, mvId, cd) {
+  const body = bodyMove(mvId), a = artOfMove(mvId) || artById(mvId), tier = a && d?.arts?.[a.id] ? artTier(d,a.id) : 0;
+  const start = body?.wind ?? cd * windFrac(0) * (a?.tags?.includes('快') ? .75 : 1) * (a?.id === 'kuihua' && zjHas(d,'kuihua') ? .1 : 1);
+  const skill = body?.skill === 'strength' || a?.weapon === 'staff' ? 'strength' : 'agility';
+  return practiceWindow(d,mvId,start,{tier,skill}).wind * (d?.part?.where === 'hand' ? PART.hand : 1);
+}
+export function fastestMove(d) {
+  const moves = (d?.moves || []).map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && (!m.tool || d.tools?.[m.tool]));
+  return moves.sort((a,b) => windOf(d,a.id,a.cd) - windOf(d,b.id,b.cd))[0] || (d?.arts?.basicFist ? MOVES.find((m) => m.id === 'fist') : bodyMove('bodyPunch'));
+}
+export function timedMoveId(w, move) { return move || w?.swing?.mv || w?.bswing?.mv || (isMon(w) ? foeAction(w)?.id : fastestMove(w)?.id) || 'fist'; }
+
 export const isMon = (w) => !!w && w.k != null && !w.arts;
 export const postureMax = (w) => (isMon(w) ? CLASH.post[w.k] ?? CLASH.post.def : CLASH.post.d);
 export function postureOf(w) { if (w.posture == null) w.posture = postureMax(w); return w.posture; }
@@ -1223,11 +1237,11 @@ export const MOVE = {
 /* 每招同一套屬性：勁、速（數字越高越快）、霸體。山賊的刀與空手輪流分配。 */
 export function moveStats(w, moveId, wind = 0.5) {
   if (isMon(w)) {
-    if (w.k === 'boar') return MOVE.monsters.boar;
-    if (w.k === 'rat') return MOVE.monsters.rat;
-    const blade = (w.i ?? 0) % 2 === 0;
-    return blade ? MOVE.monsters.blade : MOVE.monsters.fist;
+    const p = FOE_ACTIONS[w.k], m = p?.moves.find((m) => m.id === moveId) || foeAction(w);
+    if (p) return { force: m.force, speed: p.speed, armor: p.armor, type: m.cut ? 'blade' : m.bite ? 'bite' : 'fist' };
+    return MOVE.monsters[w.k] || MOVE.monsters.fist;
   }
+  const body = bodyMove(moveId); if (body) return { force: body.force + (w.skills?.strength || 0) * BODY_TIMING.forceSkill, speed: 1 / body.wind, armor: MOVE.armor, type: body.type };
   const a = artOfMove(moveId) || artById(moveId), t = a && w?.arts?.[a.id] ? artTier(w, a.id) : 0, tags = a?.tags || [];
   const force = MOVE.force + t * MOVE.tierForce + (w?.skills?.strength || 0) * MOVE.strengthForce + (tags.includes('剛') ? MOVE.hardForce : 0) + (tags.includes('拙') ? MOVE.plainForce : 0);
   const speed = MOVE.speed + t * MOVE.tierSpeed + (tags.includes('快') ? MOVE.quickSpeed : 0) + Math.min(MOVE.windSpeedMax, MOVE.windSpeed / Math.max(MOVE.minWind, wind));
@@ -1248,24 +1262,25 @@ export function breakWindup(s, atk, def, moveId, wind) {
 }
 /* 同一組反應時間區間決定截擊、進身閃、招架。面板讀的是各結果的無條件機率。 */
 export function clashTimes(s, atk, def, ctx = {}) {
-  const T = CLASH.time, depth = ctx.depth ?? depthOf(atk, ctx.move);
+  const T = CLASH.time;
   const wind = Math.max(0, ctx.available ?? ctx.wind ?? 0.5);
-  const tier = topTierOf(def), agi = isMon(def) ? (def.agi ?? moveStats(def).speed) : (def.skills?.agility || 0);
-  const insight = isMon(atk) ? (s?.codex?.[atk.k]?.insight || 0) : 0;
-  const wu = isMon(def) ? 1 : (def.wu ?? def.root ?? 3);
-  const reaction = T.reaction * (1 + depth / (depth + T.depthHalf)) / (1 + wu / T.wuHalf + insight / T.insight + tier * T.tier);
-  const jitter = T.jitter * (1 + (def.fret || 0) * T.fret);
-  const strike = T.strike / (1 + tier * T.strikeTier);
-  const step = T.step / (1 + agi / T.agility);
-  const guard = T.guard;
+  const agi = isMon(def) ? (def.agi ?? moveStats(def).speed) : (def.skills?.agility || 0);
+  const move = timedMoveId(atk,ctx.move), reaction = familiarReaction(def, atk, move, s?.codex);
+  const jitter = (1 / PRACTICE.reactionShape) * (1 + (def.fret || 0) * T.fret);
+  const response = isMon(def) ? foeAction(def) : fastestMove(def);
+  const strike = isMon(def) ? practiceWindow(def,response?.id || 'fist',response?.wind || T.strike).wind : windOf(def,response.id,response.cd);
+  const step = BODY_TIMING.step / (1 + agi / T.agility);
+  const guard = def.bare ? BODY_TIMING.guard : T.guard;
   const busy = Math.max(0, (def.busyUntil || 0) - (s?.t ?? 0), (def.swing?.at || 0) - (s?.t ?? 0), (def.bswing?.at || 0) - (s?.t ?? 0));
   return { wind: Math.max(0, wind - busy), reaction, jitter, strike, step, guard, busy };
 }
-const reactionOdds = (T, action) => clamp01((T.wind - action - T.reaction * (1 - T.jitter)) / (2 * T.reaction * T.jitter));
+// 平移 log-logistic：簡單反應 .2 秒為物理下限，其餘有正尾，不造勝率保底。
+export const drawReaction = (T, rnd) => { const u = rnd(); return PRACTICE.reactionFloor + (T.reaction - PRACTICE.reactionFloor) * (u / (1 - u)) ** T.jitter; };
+const reactionOdds = (T, action) => { const available = T.wind - action - PRACTICE.reactionFloor; if (!(available > 0)) return 0; return 1 / (1 + ((T.reaction - PRACTICE.reactionFloor) / available) ** (1 / T.jitter)); };
 /* 起手時先抽反應；截擊立即發生，其餘接法帶同一次抽樣等來招落下。 */
 export function interceptOpening(s, atk, def, rnd, ctx = {}) {
-  const T = clashTimes(s, atk, def, ctx), reaction = T.reaction * (1 - T.jitter + 2 * T.jitter * rnd());
-  const opening = { T, reaction, at: s?.t ?? 0 };
+  const T = clashTimes(s, atk, def, ctx), reaction = drawReaction(T,rnd);
+  const opening = { T, reaction, p: clashOdds(s,atk,def,ctx).hit, at: s?.t ?? 0 };
   if (postureOf(def) > 0 && !(atk.sure && atk.sure === (def.uid || def.id)) && def.part?.where !== 'eye' && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) {
     return { opening, read: resolveSwing(s, atk, def, rnd, { ...ctx, opening }) };
   }
@@ -1276,7 +1291,7 @@ export function clashOdds(s, atk, def, ctx = {}) {
   const read = def.part?.where === 'eye' || def.rageUntil > (s?.t ?? 0) ? 0 : reactionOdds(T, T.strike);
   const dodgeTotal = def.rageUntil > (s?.t ?? 0) ? 0 : reactionOdds(T, T.step);
   const parryTotal = reactionOdds(T, T.guard);
-  return { read, dodge: Math.max(0, dodgeTotal - read), parry: Math.max(0, parryTotal - dodgeTotal), hit: 1 - Math.max(read, dodgeTotal, parryTotal) };
+  return { read, dodge: Math.max(0, dodgeTotal - read), parry: Math.max(0, parryTotal - Math.max(read,dodgeTotal)), hit: 1 - Math.max(read, dodgeTotal, parryTotal) };
 }
 /* 前搖起手可用 interceptOpening 立即截擊；未截者在來招結束時用同一反應抽樣接法。
    rnd 是固定種子亂數。ctx.force 只用於架勢崩潰等既有必中規則。 */
@@ -1317,7 +1332,7 @@ function advanceAfterDodge(s, atk, def) {
   def.pos = [def.pos[0] + dx / dist * step, def.pos[1] + dy / dist * step];
   if (s) (s.fx ||= []).push({ kind: 'dash', from, to: [...def.pos], ttl: 0.35, color: '#cfe0f5' });
 }
-export function resolveSwing(s, atk, def, rnd, ctx = {}) {
+function resolveSwingCore(s, atk, def, rnd, ctx = {}) {
   postureOf(atk); postureOf(def);
   const T = ctx.opening?.T
     ? ((s?.t ?? 0) > ctx.opening.at + 1e-9
@@ -1326,10 +1341,10 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
     : clashTimes(s, atk, def, ctx);
   if (def.posture <= 0) { def.posture = postureMax(def) * 0.5; def.postT = s?.t ?? 0; return settleDefense(s, def, T, { kind: 'hit', heavy: true, why: 'open' }); }
   if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return settleDefense(s, def, T, { kind: 'hit', heavy: false, why: ctx.force || 'sure' }); }
-  const reaction = ctx.opening?.reaction ?? T.reaction * (1 - T.jitter + 2 * T.jitter * rnd());
+  const reaction = ctx.opening?.reaction ?? drawReaction(T,rnd);
   const zjAtk = ctx.map && !isMon(atk) ? zjOfMove(ctx.move) : null; /* #426 */
   const duguPassive = ctx.map && isMon(atk) && zjHas(def, 'dugu') && (s?.codex?.[atk.k]?.insight || 0) >= ZJ.dugu.insight; /* 獨孤：讀招改成被動截，不再擲讀招 */
-  if (!duguPassive && def.part?.where !== 'eye' && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return settleDefense(s, def, T, { kind: 'read', used: reaction + T.strike, counter: moveStats(def, mainOuterArt(def)?.id).force * CLASH.time.counterForce }); }
+  if (!duguPassive && def.part?.where !== 'eye' && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return settleDefense(s, def, T, { kind: 'read', used: reaction + T.strike, counter: moveStats(def, fastestMove(def)?.id).force * CLASH.time.counterForce }); }
   if (!(def.rageUntil > (s?.t ?? 0)) && reaction + T.step < T.wind) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi * (reaction + T.step) / Math.max(T.wind, 1e-9)); advanceAfterDodge(s, atk, def); return settleDefense(s, def, T, { kind: 'dodge', used: reaction + T.step, strain: (reaction + T.step) / Math.max(T.wind, 1e-9) }); }
   if (reaction + T.guard < T.wind) {
     const force = moveStats(atk, ctx.move, ctx.wind).force, guard = isMon(def) ? moveStats(def).force : qiPow(def);
@@ -1338,6 +1353,14 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
     return settleDefense(s, def, T, { kind: 'parry', jolt, used: reaction + T.guard });
   }
   return settleDefense(s, def, T, { kind: 'hit', heavy: false });
+}
+
+export function resolveSwing(s, atk, def, rnd, ctx = {}) {
+  const move = timedMoveId(atk,ctx.move), odds = clashOdds(s,atk,def,{ ...ctx, move });
+  const result = resolveSwingCore(s,atk,def,rnd,{ ...ctx, move });
+  result.learning = recordExchange(s,atk,def,move,ctx.opening?.p ?? odds.hit,result);
+  if (result.kind === 'read') result.counterLearning = recordExchange(s,def,atk,timedMoveId(def),odds.read,{kind:'counter'});
+  return result;
 }
 
 // ==== #419 N15 交戰圈與應接 ====

@@ -1,3 +1,5 @@
+import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practice.mjs';
+import { BODY_TIMING, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
@@ -67,6 +69,8 @@ export function createState(seed = 1, heroSpec = null) {
   for (const d of s.ds) d.pf = 1; /* loop91 */
   for (const d of s.ds) { d.ng = 1; d.qi = 0; d.ng2 = 1; } /* loop103 */
   for (const d of s.ds) d.lg = 1; /* loop127 */
+  if (heroSpec?.kind === 'bare') makeBare(byId(s, 'hero'));
+  for (const d of s.ds) ensurePractice(d,s.codex);
   return s;
 }
 function mkDisciple(d, i, at = 'court', personality = d.personality || [], known = personality.slice(0, 1)) {
@@ -151,7 +155,7 @@ export function mapStage(s) {
 // v0.95 每 tick 建一次 id→弟子 查表（不入存檔；增人時退回線性搜尋、減人時清表）
 const BYID = new WeakMap();
 export function byId(s, id) { const m = BYID.get(s); const d = m?.get(id); if (d && !d.removed) return d; const x = s.ds.find((o) => o.id === id); if (x && m) m.set(id, x); return x; }
-function rand(s) { const r = rng(s.seed * 7919 + s.rngN++); return r(); }
+export function rand(s) { const r = rng(s.seed * 7919 + s.rngN++); return r(); }
 export function phaseOf(s) { const f = (s.t % DAY) / DAY; let p = PHASES[0]; for (const x of PHASES) if (f >= x[0]) p = x; return { id: p[1], name: p[2], day: Math.floor(s.t / DAY) + 1, frac: f }; }
 
 // ---- 建造 ----
@@ -466,6 +470,9 @@ function doTask(s, d, dt) {
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; book(s, 'out', 'food', 1); }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
       let trained31 = null;
+      acquireWorkTool(d, t.act);
+      if (t.act === 'train' || t.act === 'spar') { const moves = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d,m)); rehearse(s,d,moves,effDur,{partner:t.act === 'spar' ? byId(s,t.partner) : null}); }
+      else if (['chop','quarry','water','farm','forage'].includes(t.act)) practiceWork(s,d,t.act,effDur);
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) { const o = grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? facStage(s, 'yard').trainMul || 1 : 1), isWorkAct(t.act) ? 'labor' : 'train'); if (t.act === 'train' && o?.trained) trained31 = o.trained; }
       if (A.skill) cliqueTrain(s, d, t.act, A.skill, grow); // loop20 小派同修
       if (t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
@@ -546,12 +553,12 @@ export function startHunt(s, ids, waves = HUNT_WAVES) {
 const MON_PATH = route('den', 'yard'), GUARD_PATH = route('guard', 'yard');
 function spawnWave(s) {
   const h = s.hunt, i = h.wave, list = []; waveCommit(s, h);
-  const nr = Math.min(s.eco.rat.n, 2 + i), nb = i === h.waves - 1 ? Math.min(1, s.eco.boar.n) : 0;
+  const nr = Math.min(s.eco.dog.n, 3 + i), nb = i === h.waves - 1 ? Math.min(1, s.eco.boar.n) : 0;
   const ns = nr + nb >= 5 ? 3 : nr + nb >= 2 ? 2 : 1, STREAMS = ['den', 'habitat', 'ridge']; /* #419 一波分 2–3 路，都從山那一側 */
-  for (let k = 0; k < nr; k++) list.push({ k: 'rat', t: k * 1.5, src: STREAMS[k % ns] }); for (let k = 0; k < nb; k++) list.push({ k: 'boar', t: nr * 1.5 + 1, src: 'den' });
-  s.eco.rat.n -= nr; s.eco.boar.n -= nb; h.queue = list; h.wt = 0; h.perWave.push({ rat: nr, boar: nb });
-  removeWild(s, 'rat', nr); removeWild(s, 'boar', nb);
-  log(s, list.length ? `第 ${i + 1} 波：山鼠 ${nr}${nb ? '、野豬 ' + nb : ''}` : `第 ${i + 1} 波：山裡沒有獸出來`);
+  for (let k = 0; k < nr; k++) list.push({ k: 'dog', t: k * 1.5, src: STREAMS[k % ns] }); for (let k = 0; k < nb; k++) list.push({ k: 'boar', t: nr * 1.5 + 1, src: 'den' });
+  s.eco.dog.n -= nr; s.eco.boar.n -= nb; h.queue = list; h.wt = 0; h.perWave.push({ dog: nr, boar: nb });
+  removeWild(s, 'dog', nr); removeWild(s, 'boar', nb);
+  log(s, list.length ? `第 ${i + 1} 波：野狗 ${nr}${nb ? '、野豬 ' + nb : ''}` : `第 ${i + 1} 波：山裡沒有獸出來`);
 }
 function ngBreak(d) { const add = Math.max(0, Math.min(NG.btBonus, 0.9 - breakChance(d))); return add > 0 && spendQi(d, NG.btCost) ? add : 0; }
 function knockPos(from, pos, dist) {
@@ -567,6 +574,11 @@ function noteWhy(s, on, inn) {
   if (inn?.line) bag.push('inner');
 }
 function landOn(s, d, tgt, mv, power, foeName) {
+  if (mv.body) {
+    const profile = FOE_ACTIONS[tgt.k], mass = profile?.mass || BODY_TIMING.bodyMass, force = mv.force + (d.skills.strength || 0) * BODY_TIMING.forceSkill;
+    if (mv.impulse) knockPos(d.pos, tgt.pos, mv.impulse * force / mass);
+    if (mv.unbalance && force / mass > (profile?.force || 0) / BODY_TIMING.bodyMass) postureHit(s, tgt, force);
+  }
   const on = applyArtOn(s, 'hit', d, tgt, { power, move: mv.id, foeName, map: true });
   const inn = innerOnHit(s, d, tgt, { power: on.power ?? power, move: mv.id, fired: on.fired });
   if (on.knock) knockPos(d.pos, tgt.pos, on.knock);
@@ -587,7 +599,7 @@ function stepToward(m, p, step, stop) { const L = dist(m.pos, p); if (L <= stop)
 function monStrike(s, h, m, foe, M, zk, w) {
   handleTake(s, foe);
   const incoming0 = M.dmg * (m.psn > s.t ? 1 - SPEC.poisonWeak : 1) * (1 - SPEC.zhenMit * zk);
-  const r = resolveSwing(s, m, foe, () => rand(s), { depth: depthOf(m), wind: w.wind, force: w.force, opening: w.opening, map: true });
+  const r = resolveSwing(s, m, foe, () => rand(s), { depth: depthOf(m), move: w.mv, wind: w.wind, force: w.force, opening: w.opening, map: true });
   if (r.kind === 'read') { m.hp -= r.counter; if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); } clashFx(s, foe, 'read'); return r; }
   if (r.kind === 'dodge') { const on = applyArtOn(s, 'dodge', foe, m, { foeName: M.name, map: true }); clashFx(s, foe, 'dodge'); noteWhy(s, on); if (perfectDodge(s, foe, () => rand(s), { strain: r.strain })) h.witch = (h.witch || 0) + 1; return r; } /* 進身閃吃力才會觸發林克時間 */
   if (r.kind === 'parry') { const on = applyArtOn(s, 'block', foe, m, { foeName: M.name, map: true }); if (r.jolt) clashFx(s, foe, 'jolt'); noteWhy(s, on); return r; }
@@ -661,25 +673,25 @@ function huntStep(s, dt) {
     m.cool -= mdt; if (m.swing && wk < 1) m.swing.at += dt - mdt;
     if (m.psn > s.t) { m.hp -= SPEC.poisonDps * (s.psnK24 || 1) * dt; if (m.hp <= 0) { m.gone = true; h.kills++; log(s, `${M.name}毒發倒地`); continue; } } /* loop151 毒術 */
     postureRegen(s, m, dt);
-    if (m.swing) { /* #418 N14 前搖中站定；前搖結束才判接法 */
+    if (m.swing) { const action = FOE_ACTIONS[m.k]?.moves.find((a) => a.id === m.swing.mv); if (action?.travel && foe) stepToward(m, foe.pos, action.range / action.wind * mdt, MON_REACH * .8); /* #418 N14 前搖中站定；前搖結束才判接法 */
       if (s.t + 1e-9 < m.swing.at) continue;
       const w = m.swing, tgt = team.find((d) => d.id === w.tgt); m.swing = null;
-      if (tgt && tgt.hp > 25 && dist(tgt.pos, m.pos) < MON_REACH * 1.3) monStrike(s, h, m, tgt, M, zk, w);
+      if (tgt && tgt.hp > 25 && dist(tgt.pos, m.pos) < (w.reach || MON_REACH) * 1.3) monStrike(s, h, m, tgt, M, zk, w);
       if (m.gone) continue;
     }
-    const near = foe ? dist(foe.pos, m.pos) : 1e9;
-    if (foe && near < (m.orbit === foe.id ? RING.outer + 10 : m.slot === foe.id ? RING.engage : MON_REACH)) { /* #419 交戰圈：4 個近戰位，第 5 隻起在外圈繞 */
+    const near = foe ? dist(foe.pos, m.pos) : 1e9, actionRange = foeAction(m, near)?.range || MON_REACH;
+    if (foe && near < (m.orbit === foe.id ? RING.outer + 10 : m.slot === foe.id ? Math.max(RING.engage, actionRange) : actionRange)) { /* #419 交戰圈：4 個近戰位，第 5 隻起在外圈繞 */
       if (m.slot !== foe.id) { const held = s.mons.filter((o) => o !== m && !o.gone && o.slot === foe.id).length;
         if (held >= RING.slots) { m.orbit = foe.id; m.slot = null; orbitStep(m, foe, M.speed * mdt); continue; }
         m.slot = foe.id; m.orbit = null; }
-      if (near > MON_REACH * 0.95) { stepToward(m, foe.pos, M.speed * mdt, MON_REACH * 0.8); continue; }
+      if (near > MON_REACH * 0.95 && !foeAction(m, near)?.minDistance) { stepToward(m, foe.pos, M.speed * mdt, MON_REACH * 0.8); continue; }
       if (m.cool <= 0) { /* #426 獨孤：觀破過的獸一起手就被截；太極圈內前搖拉長 */
         if (zjIntercept(s, m, team)) { m.cool = MON_CD; continue; }
-        const wind = MON_CD * CLASH.monWind * zjWindK(s, m.pos, team);
-        const start = interceptOpening(s, m, foe, () => rand(s), { depth: depthOf(m), wind, map: true });
+        const action = foeAction(m, near), wind = practiceWindow(m,action?.id || 'fist',action?.wind ?? MON_CD * CLASH.monWind).wind * zjWindK(s, m.pos, team);
+        const start = interceptOpening(s, m, foe, () => rand(s), { depth: depthOf(m), move: action?.id, wind, map: true });
         m.cool = MON_CD;
         if (start.read?.kind === 'read') { m.hp -= start.read.counter; clashFx(s, foe, 'read'); if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); } continue; }
-        m.swing = { tgt: foe.id, at: s.t + wind, wind, opening: start.opening }; warnFx(s, m, foe, MON_REACH, wind); }
+        m.swing = { mv: action?.id, reach: action?.range || MON_REACH, tgt: foe.id, at: s.t + wind, wind, opening: start.opening }; warnFx(s, m, foe, MON_REACH, wind); }
       continue;
     }
     m.slot = null; m.orbit = null;
@@ -694,13 +706,14 @@ function huntStep(s, dt) {
     const live = s.mons.filter((m) => !m.gone && m.hp > 0 && !m.raid);
     if (d.swing) { if (s.t + 1e-9 >= d.swing.at) { const w = d.swing; d.swing = null; dStrike(s, h, d, live, w); } continue; } /* #418 前搖 → 出手；收招＝冷卻剩下的時間 */
     if (d.cool > 0 || (d.busyUntil || 0) > s.t) continue;
-    const ms = d.moves.map((id) => MOVES.find((m) => m.id === id)).sort((a, b) => b.dmg * (1 + (b.aoe ? 1 : 0)) - a.dmg * (1 + (a.aoe ? 1 : 0)));
+    const ms = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d, m)).sort((a, b) => b.dmg * (1 + (b.aoe ? 1 : 0)) - a.dmg * (1 + (a.aoe ? 1 : 0)));
     for (const mv of ms) {
       const lv = d.skills[mv.skill]; const reach = mv.range * (1 + lv / 200), canDash = mv.range >= FLAIR.dash.minRange && visTier(d, mv.id) >= FLAIR.dash.tier;
       const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach + (canDash ? FLAIR.dash.add : 0)).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
       if (canDash && !dashTo(s, d, tgt, reach, h.post)) continue; /* #420 大成：滑步上前 */
       const cd = mv.cd * cdMul(d, mv.id, s.t), kh = artOfMove(mv.id)?.id === 'kuihua' && zjHas(d, 'kuihua'), wind = kh ? 0 : windOf(d, mv.id, cd); /* #426 葵花：沒有前搖 */
       if (kh) zjMark(s, d, 'kuihua');
+      if (mv.consumable) delete d.tools?.[mv.tool];
       d.swing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, reach }; d.cool = cd; d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'wind';
       warnFx(s, d, tgt, reach, wind);
       break;
@@ -709,9 +722,9 @@ function huntStep(s, dt) {
   s.mons = s.mons.filter((m) => !m.gone);
   const waveClear = !h.queue.length && !s.mons.some((m) => !m.raid);
   const anyFit = team.some((d) => d.hp > 25);
-  if (waveClear) { h.gap += dt; if (h.gap >= WAVE_GAP && h.wave + 1 < h.waves && anyFit && (s.eco.rat.n + s.eco.boar.n) > 0) { h.wave++; h.gap = 0; spawnWave(s); } }
-  if ((waveClear && (h.wave + 1 >= h.waves || !anyFit || s.eco.rat.n + s.eco.boar.n === 0) && h.gap >= 1) || (!anyFit && waveClear)) {
-    const rep = `狩獵戰報（${POSTS[h.post]}，${h.wave + 1} 波）：擊退 ${h.kills}、溜走 ${h.escaped}；` + team.map((d) => `${d.name}出手 ${h.hits[d.id] || 0} 次`).join('，') + `｜山中尚餘 鼠${s.eco.rat.n} 豬${s.eco.boar.n}。${boutWhy(h.why)}`;
+  if (waveClear) { h.gap += dt; if (h.gap >= WAVE_GAP && h.wave + 1 < h.waves && anyFit && (s.eco.dog.n + s.eco.boar.n) > 0) { h.wave++; h.gap = 0; spawnWave(s); } }
+  if ((waveClear && (h.wave + 1 >= h.waves || !anyFit || s.eco.dog.n + s.eco.boar.n === 0) && h.gap >= 1) || (!anyFit && waveClear)) {
+    const rep = `狩獵戰報（${POSTS[h.post]}，${h.wave + 1} 波）：擊退 ${h.kills}、溜走 ${h.escaped}；` + team.map((d) => `${d.name}出手 ${h.hits[d.id] || 0} 次`).join('，') + `｜山中尚餘 狗${s.eco.dog.n} 豬${s.eco.boar.n}。${boutWhy(h.why)}`;
     waveCommit(s, h); log(s, rep); s.lastReport = rep; if (h.kills > h.escaped) for (const d of team) if (d.hp > 25) think(s, d, 'wonHunt'); s.rep = (s.rep || 0) + h.kills;
     for (const d of team) { if (d.order === 'hunt') d.order = null; if (d.task?.act === 'hunt') { d.task = null; d.anim = null; } d.reason = '狩獵結束回院'; }
     s.hunt = null;
@@ -736,9 +749,9 @@ function removeWild(s, k, n) { for (let i = 0; i < n; i++) { const j = s.wild.fi
 const WATCH_WARN = 120; // 秒：有人在哨崗守過，這段時間內下山的野豬會被嚇回
 /* loop67「哨崗久守」（s.longwatch）：示警窗加倍為 240 秒（守哨一趟管得比較久）；不改守哨次數與亂數 */
 function ecoStep(s, dt) {
-  for (const [k, E] of Object.entries(ECO)) { const e = s.eco[k]; if (e.n < E.max) { e.timer += dt; if (e.timer >= E.regen) { e.n++; e.timer = 0; } } }
+  for (const [k, E] of Object.entries(ECO)) { const e = s.eco[k] ??= { n: E.start, timer: 0 }; if (e.n < E.max) { e.timer += dt; if (e.timer >= E.regen) { e.n++; e.timer = 0; } } }
   const R = HABITAT.r;
-  for (const k of Object.keys(ECO)) { let have = s.wild.filter((w) => w.k === k).length; while (have < s.eco[k].n) { s.wild.push({ k, pos: [HABITAT.c[0] + (rand(s) - 0.5) * R, HABITAT.c[1] + (rand(s) - 0.5) * R], tgt: null }); have++; } if (have > s.eco[k].n) removeWild(s, k, have - s.eco[k].n); }
+  for (const k of Object.keys(ECO)) { let have = s.wild.filter((w) => w.k === k).length; while (have < s.eco[k].n) { s.wild.push({ k, pos: [...SOURCES.habitat.pos], tgt: null }); have++; } if (have > s.eco[k].n) removeWild(s, k, have - s.eco[k].n); }
   for (const w of s.wild) { if (!w.tgt || dist(w.pos, w.tgt) < 4) w.tgt = [HABITAT.c[0] + (rand(s) - 0.5) * 2 * R, HABITAT.c[1] + (rand(s) - 0.5) * R]; const L = dist(w.pos, w.tgt), st = MONSTERS[w.k].speed * 0.3 * dt; w.pos[0] += (w.tgt[0] - w.pos[0]) * Math.min(1, st / L); w.pos[1] += (w.tgt[1] - w.pos[1]) * Math.min(1, st / L); w.face = w.tgt[0] >= w.pos[0] ? 1 : -1; }
   s.raidT += dt;
   if (!s.hunt && s.raidT >= RAID_EVERY * raidMul(s) && s.eco.boar.n > 0 && !s.mons.some((m) => m.raid) && s.watch != null && s.t - s.watch < WATCH_WARN * (2)) { s.raidT = 0; s.watched = (s.watched || 0) + 1; log(s, '護山哨示警：野豬剛下山就被鑼聲嚇回去了。'); } // v1.6 哨崗預警
@@ -748,7 +761,7 @@ function ecoStep(s, dt) {
     log(s, '一頭野豬循山路下來，朝菜園去了。'); stewBoar(s);
   }
   for (const m of s.mons) if (m.raid) {
-    if (monWalk(m, MONSTERS.boar.speed * dt)) {
+    if (monWalk(m, MONSTERS[m.k].speed * dt)) {
       if (m.raid === 'go' && fenceUp(s) && boarRam(s)) { m.raid = 'back'; m.path = route('veg', 'den').slice(1); }
       else if (m.raid === 'go') { const p = s.plots.find((x) => x.st === 'ripe') || s.plots.find((x) => x.st === 'grow'); if (p) { p.st = 'empty'; p.g = 0; log(s, '野豬拱壞了一畦菜，吃飽回山。'); cropMood(s); } else log(s, '野豬在菜園沒找到吃的，回山了。'); m.raid = 'back'; m.path = route('veg', 'den').slice(1); }
       else { m.gone = true; s.eco.boar.n = Math.min(ECO.boar.max, s.eco.boar.n + 1); }
@@ -891,33 +904,33 @@ function paceStep(s) {
   const ph = phaseOf(s), P = s.pace, G = s.guide;
   for (const m of PACE) if (ph.day >= m.day && !G.seen.includes(m.id) && !P.done.includes(m.id)) { G.seen.push(m.id); guideSay(s, m.guide); }
   if (ph.day === 1 && ph.frac >= PHASES[2][0] && !P.trial) { const h = byId(s, 'hero'); if (h && !h.away && !s.hunt) {
-    P.trial = 'on'; cancelTask(s, h, '師父命主角試打野豬'); h.order = null; h.task = { act: 'trial', phase: 'go', node: 'yard', timer: 0 }; goto(h, 'yard'); h.reason = '黃昏試煉：木樁場的野豬';
-    s.mons.push({ uid: 'trialBoar', k: 'boar', trial: true, hp: TRIAL_BOAR.hp, max: TRIAL_BOAR.hp, pos: [...SOURCES.den.pos], src: 'den', path: MON_PATH.slice(1), cool: 0 }); log(s, '黃昏，一頭餓瘋的小野豬從獸穴沿山路衝下來，直奔木樁場。師父：「主角，你來。」'); } } /* #419 從 den 下山，不再憑空出現在木樁場 */
+    P.trial = 'on'; cancelTask(s, h, '山路傳來狗吠'); h.order = null; h.task = { act: 'trial', phase: 'go', node: 'yard', timer: 0 }; goto(h, 'yard'); h.reason = '黃昏守院：沿山路走來的野狗';
+    s.mons.push({ uid: 'firstDog', k: 'dog', trial: true, hp: MONSTERS.dog.hp, max: MONSTERS.dog.hp, pos: [...SOURCES.den.pos], src: 'den', path: MON_PATH.slice(1), cool: 0 }); log(s, '黃昏，一隻野狗從獸穴口沿山路走向木樁場。師父：「別轉身跑，站穩看看牠。」'); } } /* #419 從 den 下山，不再憑空出現在木樁場 */
   if (!P.done.includes('firstExp') && s.lastExp) milestone(s, 'firstExp');
   if (!P.done.includes('firstBuild') && Object.values(s.fac).some((f) => f.site || f.stage > 0)) milestone(s, 'firstBuild');
 }
 function trialStep(s, d, dt) {
   const t = d.task, m = s.mons.find((x) => x.trial);
   if (!m) { d.task = null; d.anim = null; return; }
-  if (dist(m.pos, d.pos) > MON_REACH && m.path.length) { monWalk(m, MONSTERS.boar.speed * dt); m.face = (m.path[0] && (typeof m.path[0] === 'string' ? NODES[m.path[0]] : m.path[0])[0] >= m.pos[0]) ? 1 : -1; return; } /* 野豬還在山路上：主角在木樁場等牠衝下來 */
-  if (!m.path.length && dist(m.pos, d.pos) > MON_REACH) { const L = dist(m.pos, d.pos), st = Math.min(L - MON_REACH * 0.8, MONSTERS.boar.speed * dt); m.pos[0] += (d.pos[0] - m.pos[0]) * st / L; m.pos[1] += (d.pos[1] - m.pos[1]) * st / L; return; }
+  if (dist(m.pos, d.pos) > MON_REACH && m.path.length) { monWalk(m, MONSTERS[m.k].speed * dt); m.face = (m.path[0] && (typeof m.path[0] === 'string' ? NODES[m.path[0]] : m.path[0])[0] >= m.pos[0]) ? 1 : -1; return; } /* 野豬還在山路上：主角在木樁場等牠衝下來 */
+  if (!m.path.length && dist(m.pos, d.pos) > MON_REACH) { const L = dist(m.pos, d.pos), st = Math.min(L - MON_REACH * 0.8, MONSTERS[m.k].speed * dt); m.pos[0] += (d.pos[0] - m.pos[0]) * st / L; m.pos[1] += (d.pos[1] - m.pos[1]) * st / L; return; }
   if (d.path.length) return;
   t.phase = 'do'; t.timer += dt; d.face = m.pos[0] >= d.pos[0] ? 1 : -1;
   postureRegen(s, d, dt); postureRegen(s, m, dt);
   /* #418 N14：小野豬也有前搖；主角看破、閃、招架得住就不掉血（試煉保底氣血 30） */
   m.cool = (m.cool || 0) - dt;
-  if (m.swing && s.t + 1e-9 >= m.swing.at) { const w = m.swing; m.swing = null; const r = resolveSwing(s, m, d, () => rand(s), { depth: depthOf(m), wind: w.wind });
+  if (m.swing && s.t + 1e-9 >= m.swing.at) { const w = m.swing; m.swing = null; const r = resolveSwing(s, m, d, () => rand(s), { depth: depthOf(m), move: w.mv, wind: w.wind });
     if (r.kind === 'hit') { d.hp = Math.max(30, d.hp - 3 * (r.heavy ? CLASH.heavy : 1)); if (r.heavy) clashFx(s, d, 'heavy'); } else clashFx(s, d, r.kind === 'parry' ? (r.jolt ? 'jolt' : null) : r.kind); }
-  else if (!m.swing && m.cool <= 0) { const wind = MON_CD * CLASH.monWind; m.swing = { tgt: d.id, at: s.t + wind, wind }; m.cool = MON_CD; warnFx(s, m, d, MON_REACH, wind); }
-  const mv0 = MOVES.find((x) => x.id === d.moves[d.moves.length - 1]);
-  if (!t.swing && t.timer >= TRIAL_BOAR.hit * (1 - windFrac(0))) { t.swing = true; warnFx(s, d, m, mv0.range || 30, TRIAL_BOAR.hit * windFrac(0)); d.anim = 'wind'; }
-  if (t.timer >= TRIAL_BOAR.hit) { t.timer = 0; t.swing = false; const mv = mv0; const r = resolveSwing(s, d, m, () => rand(s), { depth: depthOf(d, mv.id), wind: TRIAL_BOAR.hit * windFrac(0), move: mv.id }); d.anim = 'strike'; d.cool = 1;
+  else if (!m.swing && m.cool <= 0) { const action = foeAction(m, dist(m.pos, d.pos)), wind = practiceWindow(m,action?.id || 'fist',action?.wind ?? MON_CD * CLASH.monWind).wind; m.swing = { mv: action?.id, tgt: d.id, at: s.t + wind, wind }; m.cool = MON_CD; warnFx(s, m, d, MON_REACH, wind); }
+  const mv0 = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d, m)).at(-1);
+  if (!t.swing && t.timer >= (mv0.cd - windOf(d, mv0.id, mv0.cd))) { t.swing = true; warnFx(s, d, m, mv0.range || 30, windOf(d, mv0.id, mv0.cd)); d.anim = 'wind'; }
+  if (t.timer >= mv0.cd) { t.timer = 0; t.swing = false; const mv = mv0; const r = resolveSwing(s, d, m, () => rand(s), { depth: depthOf(d, mv.id), wind: windOf(d, mv0.id, mv0.cd), move: mv.id }); d.anim = 'strike'; d.cool = 1;
     s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...m.pos], r: 16, ttl: 0.6, tier: visTier(d, mv.id), sprite: d.sprite, face: d.face });
     if (r.kind === 'dodge') { clashFx(s, m, 'dodge'); return; }
-    const p = landOn(s, d, m, mv, mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t), '野豬') * (r.heavy ? CLASH.heavy : 1); if (r.heavy) clashFx(s, m, 'heavy'); m.hp -= p;
-    if (m.hp <= 0) { applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: '野豬' }); s.mons = s.mons.filter((x) => x !== m); seeEnemy(s, 'boar', 'kill', d); resAdd(s, 'food', 2);
+    const p = landOn(s, d, m, mv, mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t), MONSTERS[m.k].name) * (r.heavy ? CLASH.heavy : 1); if (r.heavy) clashFx(s, m, 'heavy'); m.hp -= p;
+    if (m.hp <= 0) { applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: MONSTERS[m.k].name }); s.mons = s.mons.filter((x) => x !== m); seeEnemy(s, m.k, 'kill', d); resAdd(s, 'food', 2);
       const r = d.arts.basicFist; if (r && r.xp < 25) { r.xp = 25.5; } const o = gainArt(d, 0, 1, s.t); for (const id of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === id).name}」`);
-      log(s, `${d.name}一拳撂倒野豬！師父點撥：「這一下有了火候。」基礎拳入小成。`); think(s, d, 'learned'); s.pace.trial = 'done'; milestone(s, 'trial'); d.task = null; d.anim = null; } }
+      log(s, `${d.name}站穩腳步，終於把來犯的野獸趕回山裡。`); think(s, d, 'learned'); s.pace.trial = 'done'; milestone(s, 'trial'); d.task = null; d.anim = null; } }
 }
 // ---- 存檔（v0.95 移到 save.mjs，逐版遷移）----
 export { save, load, migrate, MIGRATIONS } from './save.mjs';

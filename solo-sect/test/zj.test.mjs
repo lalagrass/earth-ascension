@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { TIERS } from '../src/data.mjs';
-import { ZJ, zjHas, zjIntercept, resolveSwing, applyArtOn } from '../src/arts.mjs';
+import { ZJ, zjHas, zjIntercept, resolveSwing, applyArtOn, clashTimes, drawReaction } from '../src/arts.mjs';
 
 const xpOf = (t) => TIERS[t][0] + 1;
 const man = (id, arts) => ({ id, name: id, pos: [0, 0], hp: 100, wu: 3, qi: 100, ng: 'x', skills: { agility: 0, strength: 0 }, arts: Object.fromEntries(arts.map(([a, t]) => [a, { xp: xpOf(t) }])) });
@@ -10,9 +10,13 @@ const man = (id, arts) => ({ id, name: id, pos: [0, 0], hp: 100, wu: 3, qi: 100,
 test('名功的極端勁力與獨孤截招；地圖戰只跳過重複的舊 on 效果', () => {
   const s = { t: 10, fx: [], log: [], chron: [], codex: { boar: { insight: ZJ.dugu.insight } } };
   const a = man('a', [['xuantie', 2]]), d = man('d', []);
-  d.wu = 1; d.qi = 0; d.rageUntil = s.t + 1; assert.equal(resolveSwing(s, a, d, () => 0.99, { move: 'xt1', wind: 1, map: true }).kind, 'parry', '玄鐵勁大，對方招架崩潰'); assert.equal(d.posture, 0);
+  d.wu = 1; d.qi = 0; d.rageUntil = s.t + 1;
+  const timing = clashTimes(s, a, d, { move: 'xt1', wind: 1, map: true });
+  assert.ok(drawReaction(timing, () => 0.5) + timing.guard < timing.wind);
+  assert.ok(drawReaction(timing, () => 0.99) + timing.guard >= timing.wind, 'N33 長尾反應在 99% 抽樣趕不上玄鐵');
+  assert.equal(resolveSwing(s, a, d, () => 0.5, { move: 'xt1', wind: 1, map: true }).kind, 'parry', '玄鐵勁大，對方招架崩潰'); assert.equal(d.posture, 0);
   const x = man('x', [['xianglong', 2]]), e = man('e', []); e.wu = 1; e.qi = 0; e.rageUntil = s.t + 1;
-  assert.equal(resolveSwing(s, x, e, () => 0.99, { move: 'jianlong', wind: 1, map: true }).kind, 'parry', '降龍也依勁力破架勢'); assert.equal(e.posture, 0);
+  assert.equal(resolveSwing(s, x, e, () => 0.5, { move: 'jianlong', wind: 1, map: true }).kind, 'parry', '降龍也依勁力破架勢'); assert.equal(e.posture, 0);
   assert.equal(applyArtOn(s, 'hit', a, e, { move: 'xt1', map: true, power: 10 }).power, 12.5, '玄鐵傷害倍率仍保留');
   const g = man('g', []); g.dugu = ['f1']; assert.ok(zjHas(g, 'dugu'));
   const m = { uid: 'b1', k: 'boar', pos: [30, 0], hp: 50 };

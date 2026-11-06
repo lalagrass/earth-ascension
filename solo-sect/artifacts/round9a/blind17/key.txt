@@ -1,0 +1,4 @@
+seed=17 action=train
+A=第1天
+B=第60天
+只準備真snapshot；尚無影片或真人結果。先記三處差異再開本檔。

@@ -1,0 +1,3749 @@
+assets OK: 168/168 licensed; portraits 11387898 bytes <= 12000000; longest side <= 512; old absent
+TAP version 13
+# Subtest: 山賊逐一交手：判接法、整夥血量＝每人加總、倒地者退走、柵破才進院
+ok 1 - 山賊逐一交手：判接法、整夥血量＝每人加總、倒地者退走、柵破才進院
+  ---
+  duration_ms: 116.419278
+  type: 'test'
+  ...
+# Subtest: N14：同一招在入門時的前搖比化境長
+ok 2 - N14：同一招在入門時的前搖比化境長
+  ---
+  duration_ms: 7.752359
+  type: 'test'
+  ...
+# Subtest: N14：架勢空了之後，下一招是重擊
+ok 3 - N14：架勢空了之後，下一招是重擊
+  ---
+  duration_ms: 6.579088
+  type: 'test'
+  ...
+# Subtest: N14：看破成立時，攻方架勢下降，守方下一招必中
+ok 4 - N14：看破成立時，攻方架勢下降，守方下一招必中
+  ---
+  duration_ms: 1.425834
+  type: 'test'
+  ...
+# Subtest: N14：招架雙方都掉架勢；氣血只在中招時掉
+ok 5 - N14：招架雙方都掉架勢；氣血只在中招時掉
+  ---
+  duration_ms: 1.222494
+  type: 'test'
+  ...
+# Subtest: N14：固定種子狩獵重播兩次，結果相同
+ok 6 - N14：固定種子狩獵重播兩次，結果相同
+  ---
+  duration_ms: 506.322542
+  type: 'test'
+  ...
+# Subtest: N14：狩獵中會出現預警扇形
+ok 7 - N14：狩獵中會出現預警扇形
+  ---
+  duration_ms: 170.455263
+  type: 'test'
+  ...
+# Subtest: 對照表有內容（MODULES.md §3）
+ok 8 - 對照表有內容（MODULES.md §3）
+  ---
+  duration_ms: 1.88405
+  type: 'test'
+  ...
+# Subtest: 文件連結：README.md
+ok 9 - 文件連結：README.md
+  ---
+  duration_ms: 4.605396
+  type: 'test'
+  ...
+# Subtest: 文件連結：ROADMAP.md
+ok 10 - 文件連結：ROADMAP.md
+  ---
+  duration_ms: 0.676068
+  type: 'test'
+  ...
+# Subtest: 文件連結：FEATURES.md
+ok 11 - 文件連結：FEATURES.md
+  ---
+  duration_ms: 8.973391
+  type: 'test'
+  ...
+# Subtest: 文件連結：loop/AGENTS-DOC-GUIDE.md
+ok 12 - 文件連結：loop/AGENTS-DOC-GUIDE.md
+  ---
+  duration_ms: 0.379771
+  type: 'test'
+  ...
+# Subtest: 文件連結：loop/DECISIONS.md
+ok 13 - 文件連結：loop/DECISIONS.md
+  ---
+  duration_ms: 0.144373
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/README.md
+ok 14 - 文件連結：docs/README.md
+  ---
+  duration_ms: 0.554288
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/architecture/ASSETS.md
+ok 15 - 文件連結：docs/architecture/ASSETS.md
+  ---
+  duration_ms: 0.324639
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/architecture/DESIGN.md
+ok 16 - 文件連結：docs/architecture/DESIGN.md
+  ---
+  duration_ms: 0.774533
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/architecture/MODULES.md
+ok 17 - 文件連結：docs/architecture/MODULES.md
+  ---
+  duration_ms: 0.594187
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/architecture/PATROL-MAP.md
+ok 18 - 文件連結：docs/architecture/PATROL-MAP.md
+  ---
+  duration_ms: 0.740112
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/architecture/PROTAGONIST.md
+ok 19 - 文件連結：docs/architecture/PROTAGONIST.md
+  ---
+  duration_ms: 0.877555
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/arts-ranking.md
+ok 20 - 文件連結：docs/systems/arts-ranking.md
+  ---
+  duration_ms: 0.347312
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/arts.md
+ok 21 - 文件連結：docs/systems/arts.md
+  ---
+  duration_ms: 0.619103
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/combat.md
+ok 22 - 文件連結：docs/systems/combat.md
+  ---
+  duration_ms: 0.878356
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/evaluations/baozou.md
+ok 23 - 文件連結：docs/systems/evaluations/baozou.md
+  ---
+  duration_ms: 0.323147
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/evaluations/daxia.md
+ok 24 - 文件連結：docs/systems/evaluations/daxia.md
+  ---
+  duration_ms: 0.397727
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/growth-inventory.md
+ok 25 - 文件連結：docs/systems/growth-inventory.md
+  ---
+  duration_ms: 0.168219
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/growth-layers.md
+ok 26 - 文件連結：docs/systems/growth-layers.md
+  ---
+  duration_ms: 0.34574
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/neigong-eval.md
+ok 27 - 文件連結：docs/systems/neigong-eval.md
+  ---
+  duration_ms: 0.402153
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/neigong-rework.md
+ok 28 - 文件連結：docs/systems/neigong-rework.md
+  ---
+  duration_ms: 6.237334
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/neigong.md
+ok 29 - 文件連結：docs/systems/neigong.md
+  ---
+  duration_ms: 0.166556
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/portraits-n49.md
+ok 30 - 文件連結：docs/systems/portraits-n49.md
+  ---
+  duration_ms: 0.221417
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/practice-spots.md
+ok 31 - 文件連結：docs/systems/practice-spots.md
+  ---
+  duration_ms: 0.084795
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/routines.md
+ok 32 - 文件連結：docs/systems/routines.md
+  ---
+  duration_ms: 1.169756
+  type: 'test'
+  ...
+# Subtest: 文件連結：docs/systems/visible-growth-ui.md
+ok 33 - 文件連結：docs/systems/visible-growth-ui.md
+  ---
+  duration_ms: 0.19651
+  type: 'test'
+  ...
+# Subtest: N16：招式名浮字每人每 2 秒最多一次
+ok 34 - N16：招式名浮字每人每 2 秒最多一次
+  ---
+  duration_ms: 171.51865
+  type: 'test'
+  ...
+# Subtest: N16：第一次使出某招記一筆大事記，第二次不記
+ok 35 - N16：第一次使出某招記一筆大事記，第二次不記
+  ---
+  duration_ms: 96.846927
+  type: 'test'
+  ...
+# Subtest: N16：大成以上，遠程招會滑步上前
+ok 36 - N16：大成以上，遠程招會滑步上前
+  ---
+  duration_ms: 77.790517
+  type: 'test'
+  ...
+# Subtest: N16：化境前搖更短；範圍招逐個目標判接法
+ok 37 - N16：化境前搖更短；範圍招逐個目標判接法
+  ---
+  duration_ms: 81.54026
+  type: 'test'
+  ...
+# Subtest: N16：應接最多、單波最多擊退會記下、破紀錄進大事記、人物面板看得到
+ok 38 - N16：應接最多、單波最多擊退會記下、破紀錄進大事記、人物面板看得到
+  ---
+  duration_ms: 118.4739
+  type: 'test'
+  ...
+# Subtest: golden quick：idle-1001-emei
+ok 39 - golden quick：idle-1001-emei
+  ---
+  duration_ms: 8947.643792
+  type: 'test'
+  ...
+# Subtest: golden quick：bot-1001-emei
+ok 40 - golden quick：bot-1001-emei
+  ---
+  duration_ms: 10616.097491
+  type: 'test'
+  ...
+# Subtest: golden quick：farm-1001-emei
+ok 41 - golden quick：farm-1001-emei
+  ---
+  duration_ms: 6694.970479
+  type: 'test'
+  ...
+# Subtest: golden quick：exp-1001-emei
+ok 42 - golden quick：exp-1001-emei
+  ---
+  duration_ms: 8909.613077
+  type: 'test'
+  ...
+# Subtest: golden 存檔回放：v1.0.json
+ok 43 - golden 存檔回放：v1.0.json
+  ---
+  duration_ms: 1847.660241
+  type: 'test'
+  ...
+# Subtest: golden 存檔回放：v1.5.json
+ok 44 - golden 存檔回放：v1.5.json
+  ---
+  duration_ms: 1699.31581
+  type: 'test'
+  ...
+# Subtest: golden 存檔回放：v1.95.json
+ok 45 - golden 存檔回放：v1.95.json
+  ---
+  duration_ms: 1482.636255
+  type: 'test'
+  ...
+# Subtest: golden 存檔回放：v2.2.json
+ok 46 - golden 存檔回放：v2.2.json
+  ---
+  duration_ms: 4305.101015
+  type: 'test'
+  ...
+# Subtest: golden 存檔回放：v2.3.json
+ok 47 - golden 存檔回放：v2.3.json
+  ---
+  duration_ms: 3418.50836
+  type: 'test'
+  ...
+# Subtest: golden 存檔回放：v2.4.json
+ok 48 - golden 存檔回放：v2.4.json
+  ---
+  duration_ms: 3382.727367
+  type: 'test'
+  ...
+# Subtest: golden 檔案與情境表一致（沒有漏跑或多出來的格子）
+ok 49 - golden 檔案與情境表一致（沒有漏跑或多出來的格子）
+  ---
+  duration_ms: 1.024964
+  type: 'test'
+  ...
+# Subtest: 部位傷：觸發條件、三種效果、三日內好
+ok 50 - 部位傷：觸發條件、三種效果、三日內好
+  ---
+  duration_ms: 4.023077
+  type: 'test'
+  ...
+# Subtest: 同種子同指令，兩次重播完全一樣
+ok 51 - 同種子同指令，兩次重播完全一樣
+  ---
+  duration_ms: 3491.093012
+  type: 'test'
+  ...
+# Subtest: N15：SOURCES 每一點都在地圖邊緣 80px 內、離大殿 400px 以上
+ok 52 - N15：SOURCES 每一點都在地圖邊緣 80px 內、離大殿 400px 以上
+  ---
+  duration_ms: 0.777397
+  type: 'test'
+  ...
+# Subtest: N15：狩獵、獸襲、試煉野豬、山賊都從 SOURCES 出來
+ok 53 - N15：狩獵、獸襲、試煉野豬、山賊都從 SOURCES 出來
+  ---
+  duration_ms: 1968.884042
+  type: 'test'
+  ...
+# Subtest: N15：一波分 2–3 路，都從山那一側
+ok 54 - N15：一波分 2–3 路，都從山那一側
+  ---
+  duration_ms: 138.338329
+  type: 'test'
+  ...
+# Subtest: N15：第 5 隻不佔近戰位，在外圈繞
+ok 55 - N15：第 5 隻不佔近戰位，在外圈繞
+  ---
+  duration_ms: 17.2863
+  type: 'test'
+  ...
+# Subtest: N28：應接次數只作紀錄，四敵仍佔四個貼身位
+ok 56 - N28：應接次數只作紀錄，四敵仍佔四個貼身位
+  ---
+  duration_ms: 71.673716
+  type: 'test'
+  ...
+# Subtest: N15：山賊每人血量加總＝威脅點數換算
+ok 57 - N15：山賊每人血量加總＝威脅點數換算
+  ---
+  duration_ms: 0.493539
+  type: 'test'
+  ...
+# Subtest: N22/N27：高手截鼠招，新手沒有截擊優勢
+ok 58 - N22/N27：高手截鼠招，新手沒有截擊優勢
+  ---
+  duration_ms: 8.157747
+  type: 'test'
+  ...
+# Subtest: N23：弱招閃開不放慢
+ok 59 - N23：弱招閃開不放慢
+  ---
+  duration_ms: 27.698478
+  type: 'test'
+  ...
+# Subtest: N24：沒有木柵時山賊仍從山門上地圖
+ok 60 - N24：沒有木柵時山賊仍從山門上地圖
+  ---
+  duration_ms: 186.915688
+  type: 'test'
+  ...
+# Subtest: N25：師父缺席不加速，同場才傳授
+ok 61 - N25：師父缺席不加速，同場才傳授
+  ---
+  duration_ms: 11.062576
+  type: 'test'
+  ...
+# Subtest: N26/N28：單靠內功化境不縮短外功截擊時間
+ok 62 - N26/N28：單靠內功化境不縮短外功截擊時間
+  ---
+  duration_ms: 7.529582
+  type: 'test'
+  ...
+# Subtest: N27：化境高手截鼠招，同級沒有必然截擊
+ok 63 - N27：化境高手截鼠招，同級沒有必然截擊
+  ---
+  duration_ms: 9.536433
+  type: 'test'
+  ...
+# Subtest: N28：沒有接招次數硬上限；前招佔用後招時間
+ok 64 - N28：沒有接招次數硬上限；前招佔用後招時間
+  ---
+  duration_ms: 13.347809
+  type: 'test'
+  ...
+# Subtest: N29：四鼠圍攻時急躁者先惱羞，結束後焦躁歸零
+ok 65 - N29：四鼠圍攻時急躁者先惱羞，結束後焦躁歸零
+  ---
+  duration_ms: 11.192758
+  type: 'test'
+  ...
+# Subtest: N30：險招以移步耗時判定；木柵提高守山預估
+ok 66 - N30：險招以移步耗時判定；木柵提高守山預估
+  ---
+  duration_ms: 45.495531
+  type: 'test'
+  ...
+# Subtest: N31：守山勝算由耗時自然收斂，沒有機率硬夾值
+ok 67 - N31：守山勝算由耗時自然收斂，沒有機率硬夾值
+  ---
+  duration_ms: 43.316776
+  type: 'test'
+  ...
+# Subtest: N31b：各人獨立冷卻後，四名山賊的截擊比例低於單挑
+ok 68 - N31b：各人獨立冷卻後，四名山賊的截擊比例低於單挑
+  ---
+  duration_ms: 81083.724732
+  type: 'test'
+  ...
+# Subtest: N49 所有明寫 fem 的既有女角畫面都用女角小人
+ok 69 - N49 所有明寫 fem 的既有女角畫面都用女角小人
+  ---
+  duration_ms: 2.977044
+  type: 'test'
+  ...
+# Subtest: N52 人物卡第一行從同一成長轉接函式取階段、差額與今日增長
+ok 70 - N52 人物卡第一行從同一成長轉接函式取階段、差額與今日增長
+  ---
+  duration_ms: 8.865994
+  type: 'test'
+  ...
+# Subtest: N53：僅餘一個木人樁時，第二位練功者改去空地
+ok 71 - N53：僅餘一個木人樁時，第二位練功者改去空地
+  ---
+  duration_ms: 10.287122
+  type: 'test'
+  ...
+# Subtest: 新局：沒有規則開關與世代旗標（對照組）
+ok 72 - 新局：沒有規則開關與世代旗標（對照組）
+  ---
+  duration_ms: 1.257646
+  type: 'test'
+  ...
+# Subtest: 舊存檔 v1.0.json 讀入後是現行規則，跑 20 日不出錯
+ok 73 - 舊存檔 v1.0.json 讀入後是現行規則，跑 20 日不出錯
+  ---
+  duration_ms: 20352.709137
+  type: 'test'
+  ...
+# Subtest: 舊存檔 v1.5.json 讀入後是現行規則，跑 20 日不出錯
+ok 74 - 舊存檔 v1.5.json 讀入後是現行規則，跑 20 日不出錯
+  ---
+  duration_ms: 15453.128326
+  type: 'test'
+  ...
+# Subtest: 舊存檔 v1.95.json 讀入後是現行規則，跑 20 日不出錯
+ok 75 - 舊存檔 v1.95.json 讀入後是現行規則，跑 20 日不出錯
+  ---
+  duration_ms: 14375.797737
+  type: 'test'
+  ...
+# Subtest: 舊存檔 v2.2.json 讀入後是現行規則，跑 20 日不出錯
+ok 76 - 舊存檔 v2.2.json 讀入後是現行規則，跑 20 日不出錯
+  ---
+  duration_ms: 30708.025189
+  type: 'test'
+  ...
+# Subtest: 舊存檔 v2.3.json 讀入後是現行規則，跑 20 日不出錯
+ok 77 - 舊存檔 v2.3.json 讀入後是現行規則，跑 20 日不出錯
+  ---
+  duration_ms: 32107.32206
+  type: 'test'
+  ...
+# Subtest: 舊存檔 v2.4.json 讀入後是現行規則，跑 20 日不出錯
+ok 78 - 舊存檔 v2.4.json 讀入後是現行規則，跑 20 日不出錯
+  ---
+  duration_ms: 22313.264778
+  type: 'test'
+  ...
+# Subtest: 現行規則存檔不重複升級
+ok 79 - 現行規則存檔不重複升級
+  ---
+  duration_ms: 239.673896
+  type: 'test'
+  ...
+# Subtest: loop191 normalizeArts：isInner／kind／isPublic／cats 補在原物件上
+ok 80 - loop191 normalizeArts：isInner／kind／isPublic／cats 補在原物件上
+  ---
+  duration_ms: 17.265541
+  type: 'test'
+  ...
+# Subtest: loop191 每派（無名除外）都有普通弟子學得會的內功
+ok 81 - loop191 每派（無名除外）都有普通弟子學得會的內功
+  ---
+  duration_ms: 0.944264
+  type: 'test'
+  ...
+# Subtest: loop191 練滿本門樹可成三才（無名派無本門專屬，除外）
+ok 82 - loop191 練滿本門樹可成三才（無名派無本門專屬，除外）
+  ---
+  duration_ms: 1.171689
+  type: 'test'
+  ...
+# Subtest: loop191 非魁首武學的前置不可是魁首限定或秘密，且前置都存在
+ok 83 - loop191 非魁首武學的前置不可是魁首限定或秘密，且前置都存在
+  ---
+  duration_ms: 0.405678
+  type: 'test'
+  ...
+# Subtest: loop201 外功與身法的 mode、qiScale 合法；純內功不設 mode
+ok 84 - loop201 外功與身法的 mode、qiScale 合法；純內功不設 mode
+  ---
+  duration_ms: 7.256298
+  type: 'test'
+  ...
+# Subtest: loop209 缺 cats、外功缺 mode、純內功帶 mode 時丟出，不改既有表
+ok 85 - loop209 缺 cats、外功缺 mode、純內功帶 mode 時丟出，不改既有表
+  ---
+  duration_ms: 0.841843
+  type: 'test'
+  ...
+# Subtest: loop198 每門武學的 cats 與 ART_CAT 同一份，權重落在已知門類
+ok 86 - loop198 每門武學的 cats 與 ART_CAT 同一份，權重落在已知門類
+  ---
+  duration_ms: 0.666564
+  type: 'test'
+  ...
+# Subtest: loop191 每門武學都有 ART_CAT、合法屬性，招式不是懸空 id
+ok 87 - loop191 每門武學都有 ART_CAT、合法屬性，招式不是懸空 id
+  ---
+  duration_ms: 0.573407
+  type: 'test'
+  ...
+# Subtest: loop191 特質引用都在 TRAITS；價值門檻落在 [-30, 40]
+ok 88 - loop191 特質引用都在 TRAITS；價值門檻落在 [-30, 40]
+  ---
+  duration_ms: 0.67068
+  type: 'test'
+  ...
+# Subtest: loop191 古墓弟子可排上玉女心經，不必是小龍女
+ok 89 - loop191 古墓弟子可排上玉女心經，不必是小龍女
+  ---
+  duration_ms: 10.167796
+  type: 'test'
+  ...
+# Subtest: 長山路比院內路遠（保留通勤距離）
+ok 90 - 長山路比院內路遠（保留通勤距離）
+  ---
+  duration_ms: 8.172741
+  type: 'test'
+  ...
+# Subtest: 建造木料守恆：庫存+在途+工地不超出也不憑空消失
+ok 91 - 建造木料守恆：庫存+在途+工地不超出也不憑空消失
+  ---
+  duration_ms: 1115.130125
+  type: 'test'
+  ...
+# Subtest: 取消搬料歸還木頭
+ok 92 - 取消搬料歸還木頭
+  ---
+  duration_ms: 18.459843
+  type: 'test'
+  ...
+# Subtest: 練掌到門檻後向師父學到新招
+ok 93 - 練掌到門檻後向師父學到新招
+  ---
+  duration_ms: 1195.75838
+  type: 'test'
+  ...
+# Subtest: 聊天提升關係；未成年不會成道侶
+ok 94 - 聊天提升關係；未成年不會成道侶
+  ---
+  duration_ms: 4382.368321
+  type: 'test'
+  ...
+# Subtest: 狩獵波次會結束並產生戰報
+ok 95 - 狩獵波次會結束並產生戰報
+  ---
+  duration_ms: 228.520266
+  type: 'test'
+  ...
+# Subtest: 存檔往返與壞檔拒絕
+ok 96 - 存檔往返與壞檔拒絕
+  ---
+  duration_ms: 35.100265
+  type: 'test'
+  ...
+# Subtest: 菜畦→收菜→煮飯：菜與預約不為負，飯會增加
+ok 97 - 菜畦→收菜→煮飯：菜與預約不為負，飯會增加
+  ---
+  duration_ms: 1129.321103
+  type: 'test'
+  ...
+# Subtest: 入夜多數人去歇息
+ok 98 - 入夜多數人去歇息
+  ---
+  duration_ms: 1121.116614
+  type: 'test'
+  ...
+# Subtest: 膳房可建且升級後每鍋產量提高
+ok 99 - 膳房可建且升級後每鍋產量提高
+  ---
+  duration_ms: 411.32968
+  type: 'test'
+  ...
+# Subtest: 腿法路數練到門檻學到掃堂腿，不會誤學掌法招
+ok 100 - 腿法路數練到門檻學到掃堂腿，不會誤學掌法招
+  ---
+  duration_ms: 627.761402
+  type: 'test'
+  ...
+# Subtest: 木樁場建成後會切磋，並加速練功
+ok 101 - 木樁場建成後會切磋，並加速練功
+  ---
+  duration_ms: 1532.805892
+  type: 'test'
+  ...
+# Subtest: 狩獵取走真個體：擊退的獸從族群扣掉，之後會慢慢繁衍回來
+ok 102 - 狩獵取走真個體：擊退的獸從族群扣掉，之後會慢慢繁衍回來
+  ---
+  duration_ms: 399.335935
+  type: 'test'
+  ...
+# Subtest: 守點設定生效：隊伍站到所選守點
+ok 103 - 守點設定生效：隊伍站到所選守點
+  ---
+  duration_ms: 77.343164
+  type: 'test'
+  ...
+# Subtest: 野豬下山拱菜後回山，族群數不變
+ok 104 - 野豬下山拱菜後回山，族群數不變
+  ---
+  duration_ms: 196.926761
+  type: 'test'
+  ...
+# Subtest: 招收受名聲、床位、存糧三道門檻；成功扣糧且新人從村路上山
+ok 105 - 招收受名聲、床位、存糧三道門檻；成功扣糧且新人從村路上山
+  ---
+  duration_ms: 9.844003
+  type: 'test'
+  ...
+# Subtest: 大廳擴建需名聲；母版階段隨建設 S0→S1→S2
+ok 106 - 大廳擴建需名聲；母版階段隨建設 S0→S1→S2
+  ---
+  duration_ms: 524.773742
+  type: 'test'
+  ...
+# Subtest: 性格乘數：貪玩的人練功分數比勤奮的人低
+ok 107 - 性格乘數：貪玩的人練功分數比勤奮的人低
+  ---
+  duration_ms: 0.484385
+  type: 'test'
+  ...
+# Subtest: 想法疊加進心情目標並隨時間消退；樂天者基線較高
+ok 108 - 想法疊加進心情目標並隨時間消退；樂天者基線較高
+  ---
+  duration_ms: 5.010758
+  type: 'test'
+  ...
+# Subtest: 心情低落時工作分數下降、休閒上升；多慮放大壞事
+ok 109 - 心情低落時工作分數下降、休閒上升；多慮放大壞事
+  ---
+  duration_ms: 0.409705
+  type: 'test'
+  ...
+# Subtest: 舊（v0.5）存檔缺心情欄位也能讀入並補預設
+ok 110 - 舊（v0.5）存檔缺心情欄位也能讀入並補預設
+  ---
+  duration_ms: 0.746422
+  type: 'test'
+  ...
+# Subtest: 決策可解釋：最高分＝（基礎×作息×乘數總和×厭倦＋雜訊）×偏好
+ok 111 - 決策可解釋：最高分＝（基礎×作息×乘數總和×厭倦＋雜訊）×偏好
+  ---
+  duration_ms: 1.094216
+  type: 'test'
+  ...
+# Subtest: 雙向好感：對立性格的人好感長得慢，且兩方向可以不同
+ok 112 - 雙向好感：對立性格的人好感長得慢，且兩方向可以不同
+  ---
+  duration_ms: 0.405269
+  type: 'test'
+  ...
+# Subtest: 鼓勵：心情低落者會被成年同門陪伴並得到「被鼓勵」
+ok 113 - 鼓勵：心情低落者會被成年同門陪伴並得到「被鼓勵」
+  ---
+  duration_ms: 192.594104
+  type: 'test'
+  ...
+# Subtest: 樂趣需求：會衰減，閒坐看雲補回
+ok 114 - 樂趣需求：會衰減，閒坐看雲補回
+  ---
+  duration_ms: 3856.800361
+  type: 'test'
+  ...
+# Subtest: 三問心印：預設答案沿用天性；改答案改變明面性格，天性為暗
+ok 115 - 三問心印：預設答案沿用天性；改答案改變明面性格，天性為暗
+  ---
+  duration_ms: 1.282974
+  type: 'test'
+  ...
+# Subtest: 特質揭露：初始三人第二特質相處 300 秒後才看得出來
+ok 116 - 特質揭露：初始三人第二特質相處 300 秒後才看得出來
+  ---
+  duration_ms: 149.764563
+  type: 'test'
+  ...
+# Subtest: 季節：每季 7 日，冬天菜長得慢、春天心情加成
+ok 117 - 季節：每季 7 日，冬天菜長得慢、春天心情加成
+  ---
+  duration_ms: 0.346582
+  type: 'test'
+  ...
+# Subtest: 心情能回升：10 日平均心情 ≥ 40，低落時間 < 15%
+ok 118 - 心情能回升：10 日平均心情 ≥ 40，低落時間 < 15%
+  ---
+  duration_ms: 5285.534017
+  type: 'test'
+  ...
+# Subtest: 存檔帶規則版本；v0.5 與 v0.6 形狀的舊檔都能讀入並遷移
+ok 119 - 存檔帶規則版本；v0.5 與 v0.6 形狀的舊檔都能讀入並遷移
+  ---
+  duration_ms: 31.510792
+  type: 'test'
+  ...
+# Subtest: 藍圖收集包：大廳要木＋石＋香火錢，香火錢不足不能立藍圖
+ok 120 - 藍圖收集包：大廳要木＋石＋香火錢，香火錢不足不能立藍圖
+  ---
+  duration_ms: 28.012478
+  type: 'test'
+  ...
+# Subtest: 木石搬到工地料堆後才開工，完工；全程守恆不為負
+ok 121 - 木石搬到工地料堆後才開工，完工；全程守恆不為負
+  ---
+  duration_ms: 335.191053
+  type: 'test'
+  ...
+# Subtest: 沒石頭時會有人去後山採石
+ok 122 - 沒石頭時會有人去後山採石
+  ---
+  duration_ms: 577.030398
+  type: 'test'
+  ...
+# Subtest: 暫停工地：在途料退回院倉、料堆保留，總量守恆
+ok 123 - 暫停工地：在途料退回院倉、料堆保留，總量守恆
+  ---
+  duration_ms: 1088.976465
+  type: 'test'
+  ...
+# Subtest: 雇工：沒工寮不能雇；雇了扣香火錢與糧、有名字有性格有隱藏根骨
+ok 124 - 雇工：沒工寮不能雇；雇了扣香火錢與糧、有名字有性格有隱藏根骨
+  ---
+  duration_ms: 5.579055
+  type: 'test'
+  ...
+# Subtest: 雇工只幹活不練武
+ok 125 - 雇工只幹活不練武
+  ---
+  duration_ms: 344.538345
+  type: 'test'
+  ...
+# Subtest: 每日入帳與工錢；付不出兩日雇工離開且關係表清乾淨
+ok 126 - 每日入帳與工錢；付不出兩日雇工離開且關係表清乾淨
+  ---
+  duration_ms: 1.149326
+  type: 'test'
+  ...
+# Subtest: 換日自動結帳：ledger 記入香火錢
+ok 127 - 換日自動結帳：ledger 記入香火錢
+  ---
+  duration_ms: 947.179418
+  type: 'test'
+  ...
+# Subtest: 共事揭露根骨；根骨夠＋好感夠才可邀入外門，入門後成弟子
+ok 128 - 共事揭露根骨；根骨夠＋好感夠才可邀入外門，入門後成弟子
+  ---
+  duration_ms: 2061.837696
+  type: 'test'
+  ...
+# Subtest: 根骨平平的雇工不能邀入門
+ok 129 - 根骨平平的雇工不能邀入門
+  ---
+  duration_ms: 1.112942
+  type: 'test'
+  ...
+# Subtest: 雇工讓施工更快
+ok 130 - 雇工讓施工更快
+  ---
+  duration_ms: 401.038285
+  type: 'test'
+  ...
+# Subtest: v0.7 舊存檔（工地 delivered 為數字、有人揹木中）可讀並繼續完工
+ok 131 - v0.7 舊存檔（工地 delivered 為數字、有人揹木中）可讀並繼續完工
+  ---
+  duration_ms: 1137.813111
+  type: 'test'
+  ...
+# Subtest: 30 日無頭長跑：有雇工、無負數、不卡死
+ok 132 - 30 日無頭長跑：有雇工、無負數、不卡死
+  ---
+  duration_ms: 32505.242781
+  type: 'test'
+  ...
+# Subtest: 創立弟子皆為內門；外門未滿 2 人時內門仍做雜務
+ok 133 - 創立弟子皆為內門；外門未滿 2 人時內門仍做雜務
+  ---
+  duration_ms: 4.212111
+  type: 'test'
+  ...
+# Subtest: 外門 ≥2：內門免雜務，計分裡沒有雜務
+ok 134 - 外門 ≥2：內門免雜務，計分裡沒有雜務
+  ---
+  duration_ms: 5.608544
+  type: 'test'
+  ...
+# Subtest: 斷糧或野豬下山：內門暫時回來做雜務
+ok 135 - 斷糧或野豬下山：內門暫時回來做雜務
+  ---
+  duration_ms: 0.761925
+  type: 'test'
+  ...
+# Subtest: 職司勾選：外門只做勾選的雜務；優先度與未完成日課加權
+ok 136 - 職司勾選：外門只做勾選的雜務；優先度與未完成日課加權
+  ---
+  duration_ms: 2.909897
+  type: 'test'
+  ...
+# Subtest: 日課結算：超額記貢獻、不足扣心情並順延（不罰其他）
+ok 137 - 日課結算：超額記貢獻、不足扣心情並順延（不罰其他）
+  ---
+  duration_ms: 1.224999
+  type: 'test'
+  ...
+# Subtest: 完成雜務會累計日課點數
+ok 138 - 完成雜務會累計日課點數
+  ---
+  duration_ms: 791.130544
+  type: 'test'
+  ...
+# Subtest: 主角自動升首徒：外門 ≥2 且完成率 ≥80%；首徒練功加權
+ok 139 - 主角自動升首徒：外門 ≥2 且完成率 ≥80%；首徒練功加權
+  ---
+  duration_ms: 1.423292
+  type: 'test'
+  ...
+# Subtest: 外門升內門：根骨＋貢獻條件，再經切磋考核
+ok 140 - 外門升內門：根骨＋貢獻條件，再經切磋考核
+  ---
+  duration_ms: 46.22882
+  type: 'test'
+  ...
+# Subtest: 考核失敗：當日冷卻
+ok 141 - 考核失敗：當日冷卻
+  ---
+  duration_ms: 25.299146
+  type: 'test'
+  ...
+# Subtest: v0.8 舊檔可讀：disciple→inner、補日課欄位
+ok 142 - v0.8 舊檔可讀：disciple→inner、補日課欄位
+  ---
+  duration_ms: 301.300554
+  type: 'test'
+  ...
+# Subtest: 20 日長跑：有外門時不斷糧卡死、數值無負
+ok 143 - 20 日長跑：有外門時不斷糧卡死、數值無負
+  ---
+  duration_ms: 20720.079942
+  type: 'test'
+  ...
+# Subtest: 五階門檻：入門0 小成25 大成55 圓滿85 化境100
+ok 144 - 五階門檻：入門0 小成25 大成55 圓滿85 化境100
+  ---
+  duration_ms: 1.822992
+  type: 'test'
+  ...
+# Subtest: 八門武學，前置都指向存在的武學
+ok 145 - 八門武學，前置都指向存在的武學
+  ---
+  duration_ms: 0.669489
+  type: 'test'
+  ...
+# Subtest: 笨功夫：悟性低練凡階快、練高階慢；悟性高相反
+ok 146 - 笨功夫：悟性低練凡階快、練高階慢；悟性高相反
+  ---
+  duration_ms: 1.955948
+  type: 'test'
+  ...
+# Subtest: 憨厚：凡階 ×1.3、高階 ×0.8；灑脫：巧系 +10%；勤奮：拙系 +10%
+ok 147 - 憨厚：凡階 ×1.3、高階 ×0.8；灑脫：巧系 +10%；勤奮：拙系 +10%
+  ---
+  duration_ms: 21.395735
+  type: 'test'
+  ...
+# Subtest: 悟性門檻：風雷掌腿需悟性3，悟性2只能練到小成
+ok 148 - 悟性門檻：風雷掌腿需悟性3，悟性2只能練到小成
+  ---
+  duration_ms: 575.294326
+  type: 'test'
+  ...
+# Subtest: 前置未達：鎖住並說明；達成後成為可求學，學會開出招式
+ok 149 - 前置未達：鎖住並說明；達成後成為可求學，學會開出招式
+  ---
+  duration_ms: 29.563448
+  type: 'test'
+  ...
+# Subtest: 火候威力走該門曲線，不再是圓滿 ×1.3×1.15
+ok 150 - 火候威力走該門曲線，不再是圓滿 ×1.3×1.15
+  ---
+  duration_ms: 1.633493
+  type: 'test'
+  ...
+# Subtest: 模擬中練功：主角掌法學到推山掌，熟練累積；專修可指定
+ok 151 - 模擬中練功：主角掌法學到推山掌，熟練累積；專修可指定
+  ---
+  duration_ms: 3554.795421
+  type: 'test'
+  ...
+# Subtest: 創派三人有根骨；新特質在人才池
+ok 152 - 創派三人有根骨；新特質在人才池
+  ---
+  duration_ms: 0.916764
+  type: 'test'
+  ...
+# Subtest: v0.85 舊檔：招式轉成武學、補根骨，規則 0.9
+ok 153 - v0.85 舊檔：招式轉成武學、補根骨，規則 0.9
+  ---
+  duration_ms: 270.773292
+  type: 'test'
+  ...
+# Subtest: 每門三招：入門、小成、大成各開一招
+ok 154 - 每門三招：入門、小成、大成各開一招
+  ---
+  duration_ms: 13.587104
+  type: 'test'
+  ...
+# Subtest: 瓶頸：未衝關前卡在 54.9 和 99.9
+ok 155 - 瓶頸：未衝關前卡在 54.9 和 99.9
+  ---
+  duration_ms: 269.704367
+  type: 'test'
+  ...
+# Subtest: 衝關成功進大成並開新招；失敗只冷卻一天
+ok 156 - 衝關成功進大成並開新招；失敗只冷卻一天
+  ---
+  duration_ms: 0.567287
+  type: 'test'
+  ...
+# Subtest: 悟性門檻的武學沒有瓶頸可衝（止於小成）
+ok 157 - 悟性門檻的武學沒有瓶頸可衝（止於小成）
+  ---
+  duration_ms: 0.317769
+  type: 'test'
+  ...
+# Subtest: 地圖上打坐衝關：心情精力夠才會去，結果寫入日誌
+ok 158 - 地圖上打坐衝關：心情精力夠才會去，結果寫入日誌
+  ---
+  duration_ms: 705.155307
+  type: 'test'
+  ...
+# Subtest: 失敗想法只是小小扣心情
+ok 159 - 失敗想法只是小小扣心情
+  ---
+  duration_ms: 8.712949
+  type: 'test'
+  ...
+# Subtest: 歸真：悟性低或勤奮、憨厚才能走；星數遞增成本、每星 +4%
+ok 160 - 歸真：悟性低或勤奮、憨厚才能走；星數遞增成本、每星 +4%
+  ---
+  duration_ms: 114.085951
+  type: 'test'
+  ...
+# Subtest: 大成變式：可選、可重選但要等半天
+ok 161 - 大成變式：可選、可重選但要等半天
+  ---
+  duration_ms: 0.579465
+  type: 'test'
+  ...
+# Subtest: 荒疏：久不練只減慢進度、不降階
+ok 162 - 荒疏：久不練只減慢進度、不降階
+  ---
+  duration_ms: 31.060247
+  type: 'test'
+  ...
+# Subtest: v0.9 舊檔：補瓶頸旗標與三招，可續玩
+ok 163 - v0.9 舊檔：補瓶頸旗標與三招，可續玩
+  ---
+  duration_ms: 258.622931
+  type: 'test'
+  ...
+# Subtest: 舊檔回歸 v0.5：可讀、只跑該跑的步驟、續玩 1 日無負值
+ok 164 - 舊檔回歸 v0.5：可讀、只跑該跑的步驟、續玩 1 日無負值
+  ---
+  duration_ms: 1438.037735
+  type: 'test'
+  ...
+# Subtest: 舊檔回歸 v0.6：可讀、只跑該跑的步驟、續玩 1 日無負值
+ok 165 - 舊檔回歸 v0.6：可讀、只跑該跑的步驟、續玩 1 日無負值
+  ---
+  duration_ms: 1044.067046
+  type: 'test'
+  ...
+# Subtest: 舊檔回歸 v0.7：可讀、只跑該跑的步驟、續玩 1 日無負值
+ok 166 - 舊檔回歸 v0.7：可讀、只跑該跑的步驟、續玩 1 日無負值
+  ---
+  duration_ms: 898.411456
+  type: 'test'
+  ...
+# Subtest: 舊檔回歸 v0.8：可讀、只跑該跑的步驟、續玩 1 日無負值
+ok 167 - 舊檔回歸 v0.8：可讀、只跑該跑的步驟、續玩 1 日無負值
+  ---
+  duration_ms: 778.242468
+  type: 'test'
+  ...
+# Subtest: 舊檔回歸 v0.85：可讀、只跑該跑的步驟、續玩 1 日無負值
+ok 168 - 舊檔回歸 v0.85：可讀、只跑該跑的步驟、續玩 1 日無負值
+  ---
+  duration_ms: 616.336886
+  type: 'test'
+  ...
+# Subtest: 舊檔回歸 v0.9：可讀、只跑該跑的步驟、續玩 1 日無負值
+ok 169 - 舊檔回歸 v0.9：可讀、只跑該跑的步驟、續玩 1 日無負值
+  ---
+  duration_ms: 610.068473
+  type: 'test'
+  ...
+# Subtest: 舊檔回歸 v0.92：可讀、只跑該跑的步驟、續玩 1 日無負值
+ok 170 - 舊檔回歸 v0.92：可讀、只跑該跑的步驟、續玩 1 日無負值
+  ---
+  duration_ms: 371.18488
+  type: 'test'
+  ...
+# Subtest: 遷移步驟依版本排序、各有說明；新檔不跑任何步驟
+ok 171 - 遷移步驟依版本排序、各有說明；新檔不跑任何步驟
+  ---
+  duration_ms: 1.816072
+  type: 'test'
+  ...
+# Subtest: 倍率管線：組內相加、組間相乘、每組夾在 0.3–2.0
+ok 172 - 倍率管線：組內相加、組間相乘、每組夾在 0.3–2.0
+  ---
+  duration_ms: 0.430646
+  type: 'test'
+  ...
+# Subtest: 倍率管線：亂數組合的總倍率永遠在 0.3³–2³ 之間
+ok 173 - 倍率管線：亂數組合的總倍率永遠在 0.3³–2³ 之間
+  ---
+  duration_ms: 15.907873
+  type: 'test'
+  ...
+# Subtest: 熟練與決策都走管線，d.why 顯示三組
+ok 174 - 熟練與決策都走管線，d.why 顯示三組
+  ---
+  duration_ms: 194.88146
+  type: 'test'
+  ...
+# Subtest: 同種子 5 日狀態雜湊一致
+ok 175 - 同種子 5 日狀態雜湊一致
+  ---
+  duration_ms: 6154.012087
+  type: 'test'
+  ...
+# Subtest: byId 查表：與線性搜尋一致、不進存檔
+ok 176 - byId 查表：與線性搜尋一致、不進存檔
+  ---
+  duration_ms: 6.418417
+  type: 'test'
+  ...
+# Subtest: 敵人種類齊全；圖鑑未見為？？？，交手累積觀破值
+ok 177 - 敵人種類齊全；圖鑑未見為？？？，交手累積觀破值
+  ---
+  duration_ms: 619.266684
+  type: 'test'
+  ...
+# Subtest: 派遣 1–4 人；雇工、傷者不可；同時只一隊
+ok 178 - 派遣 1–4 人；雇工、傷者不可；同時只一隊
+  ---
+  duration_ms: 0.586556
+  type: 'test'
+  ...
+# Subtest: 戰報：距離、各類擊倒、逃走、傷、帶回、回頭原因；沒有人會死
+ok 179 - 戰報：距離、各類擊倒、逃走、傷、帶回、回頭原因；沒有人會死
+  ---
+  duration_ms: 491.27696
+  type: 'test'
+  ...
+# Subtest: 固定難度：戰力隨能力增加，強者均較零基礎走更遠
+ok 180 - 固定難度：戰力隨能力增加，強者均較零基礎走更遠
+  ---
+  duration_ms: 1343.252058
+  type: 'test'
+  ...
+# Subtest: 撤退線：相同局面 70% 比 30% 先回頭；整趟決定性
+ok 181 - 撤退線：相同局面 70% 比 30% 先回頭；整趟決定性
+  ---
+  duration_ms: 900.289157
+  type: 'test'
+  ...
+# Subtest: 紀錄：個人與本門最遠紀錄，破紀錄全門 +5 心情
+ok 182 - 紀錄：個人與本門最遠紀錄，破紀錄全門 +5 心情
+  ---
+  duration_ms: 257.144478
+  type: 'test'
+  ...
+# Subtest: 戰利品入庫（含殘頁欄位）
+ok 183 - 戰利品入庫（含殘頁欄位）
+  ---
+  duration_ms: 383.066018
+  type: 'test'
+  ...
+# Subtest: 第一天黃昏野豬試煉：主角當天入小成、多一招，記為里程碑
+ok 184 - 第一天黃昏野豬試煉：主角當天入小成、多一招，記為里程碑
+  ---
+  duration_ms: 524.268737
+  type: 'test'
+  ...
+# Subtest: 前三天每天一個里程碑（試煉、第一次巡山、第一次動工）
+ok 185 - 前三天每天一個里程碑（試煉、第一次巡山、第一次動工）
+  ---
+  duration_ms: 830.705289
+  type: 'test'
+  ...
+# Subtest: 導引旁白可略過；關掉後不再出現
+ok 186 - 導引旁白可略過；關掉後不再出現
+  ---
+  duration_ms: 1183.014796
+  type: 'test'
+  ...
+# Subtest: 自創點數：12 點、悟性 1 退 1 點（笨功夫）
+ok 187 - 自創點數：12 點、悟性 1 退 1 點（笨功夫）
+  ---
+  duration_ms: 8.34183
+  type: 'test'
+  ...
+# Subtest: 九問問心：價值主副、兩明一暗特質
+ok 188 - 九問問心：價值主副、兩明一暗特質
+  ---
+  duration_ms: 5.178252
+  type: 'test'
+  ...
+# Subtest: 六模板都有立繪、同門候選 2–3 位且有立繪
+ok 189 - 六模板都有立繪、同門候選 2–3 位且有立繪
+  ---
+  duration_ms: 0.31199
+  type: 'test'
+  ...
+# Subtest: 選郭靖＋黃蓉：同門加入、移出名俠池、默契最多 +25%
+ok 190 - 選郭靖＋黃蓉：同門加入、移出名俠池、默契最多 +25%
+  ---
+  duration_ms: 60.107229
+  type: 'test'
+  ...
+# Subtest: 價值觀進入 autopilot 分數：韋小寶練功低、郭靖練功高
+ok 191 - 價值觀進入 autopilot 分數：韋小寶練功低、郭靖練功高
+  ---
+  duration_ms: 8.875428
+  type: 'test'
+  ...
+# Subtest: 違心最多 3 層，閉關可消一層
+ok 192 - 違心最多 3 層，閉關可消一層
+  ---
+  duration_ms: 206.225204
+  type: 'test'
+  ...
+# Subtest: 專屬主線第一步：第 2 天出抉擇卡，詢問玩家；不問則依價值自動選
+ok 193 - 專屬主線第一步：第 2 天出抉擇卡，詢問玩家；不問則依價值自動選
+  ---
+  duration_ms: 3453.269149
+  type: 'test'
+  ...
+# Subtest: 預設無主角開局不變、v0.95 存檔逐步遷移
+ok 194 - 預設無主角開局不變、v0.95 存檔逐步遷移
+  ---
+  duration_ms: 75.888552
+  type: 'test'
+  ...
+# Subtest: 風格從性格／價值觀／武學推出並附說明：郭靖清場、韋小寶溜走
+ok 195 - 風格從性格／價值觀／武學推出並附說明：郭靖清場、韋小寶溜走
+  ---
+  duration_ms: 10.695976
+  type: 'test'
+  ...
+# Subtest: 閃避取最差身法；溜走隊會閃過敵人
+ok 196 - 閃避取最差身法；溜走隊會閃過敵人
+  ---
+  duration_ms: 934.596683
+  type: 'test'
+  ...
+# Subtest: 守關敵一定要打：打不過就回頭，原因寫「被〇〇擋在△△」
+ok 197 - 守關敵一定要打：打不過就回頭，原因寫「被〇〇擋在△△」
+  ---
+  duration_ms: 389.780818
+  type: 'test'
+  ...
+# Subtest: 清場型會追逃兵；戰報有追擊數與敘事行；清場率與清山紀錄
+ok 198 - 清場型會追逃兵；戰報有追擊數與敘事行；清場率與清山紀錄
+  ---
+  duration_ms: 746.852501
+  type: 'test'
+  ...
+# Subtest: 阿星：重傷覺醒，根骨解封 +8、起手如來神掌
+ok 199 - 阿星：重傷覺醒，根骨解封 +8、起手如來神掌
+  ---
+  duration_ms: 7.668742
+  type: 'test'
+  ...
+# Subtest: 阿星巡山瀕死也會覺醒
+ok 200 - 阿星巡山瀕死也會覺醒
+  ---
+  duration_ms: 98.345182
+  type: 'test'
+  ...
+# Subtest: 黃蓉精打細算：每日香火錢 +2
+ok 201 - 黃蓉精打細算：每日香火錢 +2
+  ---
+  duration_ms: 1.290313
+  type: 'test'
+  ...
+# Subtest: 前期主角心情不再偏低
+ok 202 - 前期主角心情不再偏低
+  ---
+  duration_ms: 1832.053956
+  type: 'test'
+  ...
+# Subtest: v0.96 存檔逐步遷移到 0.97
+ok 203 - v0.96 存檔逐步遷移到 0.97
+  ---
+  duration_ms: 36.854041
+  type: 'test'
+  ...
+# Subtest: 新局只開建造與弟子，10 分鐘內巡山面板必開
+ok 204 - 新局只開建造與弟子，10 分鐘內巡山面板必開
+  ---
+  duration_ms: 1237.808213
+  type: 'test'
+  ...
+# Subtest: 解鎖順序單調、不會再鎖回去
+ok 205 - 解鎖順序單調、不會再鎖回去
+  ---
+  duration_ms: 1728.726844
+  type: 'test'
+  ...
+# Subtest: 第一章三目標達成 → 章節完成、名聲 +5、可繼續
+ok 206 - 第一章三目標達成 → 章節完成、名聲 +5、可繼續
+  ---
+  duration_ms: 29.312107
+  type: 'test'
+  ...
+# Subtest: 自動存檔 3 格輪替、可讀回
+ok 207 - 自動存檔 3 格輪替、可讀回
+  ---
+  duration_ms: 38.365645
+  type: 'test'
+  ...
+# Subtest: 匯出 JSON 再匯入 = 同一局
+ok 208 - 匯出 JSON 再匯入 = 同一局
+  ---
+  duration_ms: 715.65964
+  type: 'test'
+  ...
+# Subtest: 0.97 存檔遷移到 0.98：舊局全面板開放
+ok 209 - 0.97 存檔遷移到 0.98：舊局全面板開放
+  ---
+  duration_ms: 1.990189
+  type: 'test'
+  ...
+# Subtest: 音效提示由紀事推出
+ok 210 - 音效提示由紀事推出
+  ---
+  duration_ms: 0.315456
+  type: 'test'
+  ...
+# Subtest: 路線第五段起：斷崖、古洞、無名絕頂，各有守關敵與 ×1.25 倍率
+ok 211 - 路線第五段起：斷崖、古洞、無名絕頂，各有守關敵與 ×1.25 倍率
+  ---
+  duration_ms: 2.199915
+  type: 'test'
+  ...
+# Subtest: 無盡段：每 200 步一段、段末固定守關、每段再 ×ENDLESS.mul（v1.2 起 1.18）
+ok 212 - 無盡段：每 200 步一段、段末固定守關、每段再 ×ENDLESS.mul（v1.2 起 1.18）
+  ---
+  duration_ms: 4.599374
+  type: 'test'
+  ...
+# Subtest: 營地設在第三段、第五段盡頭；過關設營、可從營地出發
+ok 213 - 營地設在第三段、第五段盡頭；過關設營、可從營地出發
+  ---
+  duration_ms: 71.838895
+  type: 'test'
+  ...
+# Subtest: 強隊一路過關會在山腰設營並補給
+ok 214 - 強隊一路過關會在山腰設營並補給
+  ---
+  duration_ms: 376.269025
+  type: 'test'
+  ...
+# Subtest: 乾糧可選、目標距離可設；體力與耐性會消耗
+ok 215 - 乾糧可選、目標距離可設；體力與耐性會消耗
+  ---
+  duration_ms: 135.088357
+  type: 'test'
+  ...
+# Subtest: 探路者：身法夠才有，先手 +20%
+ok 216 - 探路者：身法夠才有，先手 +20%
+  ---
+  duration_ms: 0.773112
+  type: 'test'
+  ...
+# Subtest: 巡山令：強制風格、不合者心情下降、耐性上限 ×0.7
+ok 217 - 巡山令：強制風格、不合者心情下降、耐性上限 ×0.7
+  ---
+  duration_ms: 6.538956
+  type: 'test'
+  ...
+# Subtest: 較真與懶散同隊：回來吵架、好感下降
+ok 218 - 較真與懶散同隊：回來吵架、好感下降
+  ---
+  duration_ms: 88.655011
+  type: 'test'
+  ...
+# Subtest: 出巡後要歇；快腳（衝刺或深谷最快紀錄）歇一半
+ok 219 - 出巡後要歇；快腳（衝刺或深谷最快紀錄）歇一半
+  ---
+  duration_ms: 207.418894
+  type: 'test'
+  ...
+# Subtest: 清山 3 次的路段：野豬少下山、路走得快
+ok 220 - 清山 3 次的路段：野豬少下山、路走得快
+  ---
+  duration_ms: 0.951755
+  type: 'test'
+  ...
+# Subtest: 秘笈殘章湊成可學的武學
+ok 221 - 秘笈殘章湊成可學的武學
+  ---
+  duration_ms: 20.36911
+  type: 'test'
+  ...
+# Subtest: 喜好：吃喝一套、嗜酒必好酒、合菜單加心情
+ok 222 - 喜好：吃喝一套、嗜酒必好酒、合菜單加心情
+  ---
+  duration_ms: 0.74471
+  type: 'test'
+  ...
+# Subtest: 志向：由主價值觀而來，達成養成特質
+ok 223 - 志向：由主價值觀而來，達成養成特質
+  ---
+  duration_ms: 27.367144
+  type: 'test'
+  ...
+# Subtest: 頭頂只一個狀態圖示，有優先序
+ok 224 - 頭頂只一個狀態圖示，有優先序
+  ---
+  duration_ms: 0.240505
+  type: 'test'
+  ...
+# Subtest: 0.98 存檔遷移到 1.0
+ok 225 - 0.98 存檔遷移到 1.0
+  ---
+  duration_ms: 8.591879
+  type: 'test'
+  ...
+# Subtest: v1.1 版本與招牌武學各三招、帶地圖特效、不入秘笈池
+ok 226 - v1.1 版本與招牌武學各三招、帶地圖特效、不入秘笈池
+  ---
+  duration_ms: 6.054672
+  type: 'test'
+  ...
+# Subtest: 名俠池排除已選主角／同門與已在門中者
+ok 227 - 名俠池排除已選主角／同門與已在門中者
+  ---
+  duration_ms: 35.200502
+  type: 'test'
+  ...
+# Subtest: 名聲觸發郭靖奇遇，一天最多一個；收入門下帶高手底子
+ok 228 - 名聲觸發郭靖奇遇，一天最多一個；收入門下帶高手底子
+  ---
+  duration_ms: 14.043728
+  type: 'test'
+  ...
+# Subtest: 名俠弟子：郭靖、黃蓉、令狐沖（v1.2）；洪七公是師父
+ok 229 - 名俠弟子：郭靖、黃蓉、令狐沖（v1.2）；洪七公是師父
+  ---
+  duration_ms: 0.195909
+  type: 'test'
+  ...
+# Subtest: 婉拒三天內不再出現
+ok 230 - 婉拒三天內不再出現
+  ---
+  duration_ms: 8.149205
+  type: 'test'
+  ...
+# Subtest: 黃蓉下廚食誘→洪七公三段傳降龍，打狗棒法給黃蓉，傳完下山不死
+ok 231 - 黃蓉下廚食誘→洪七公三段傳降龍，打狗棒法給黃蓉，傳完下山不死
+  ---
+  duration_ms: 29.275672
+  type: 'test'
+  ...
+# Subtest: 沒有吃到菜不傳功
+ok 232 - 沒有吃到菜不傳功
+  ---
+  duration_ms: 7.281984
+  type: 'test'
+  ...
+# Subtest: 郭靖＋黃蓉同門默契上限 25%
+ok 233 - 郭靖＋黃蓉同門默契上限 25%
+  ---
+  duration_ms: 4.480266
+  type: 'test'
+  ...
+# Subtest: 名俠心情長期低落就下山（不死）
+ok 234 - 名俠心情長期低落就下山（不死）
+  ---
+  duration_ms: 139.359408
+  type: 'test'
+  ...
+# Subtest: 郭靖模板主線推進到第 4 步
+ok 235 - 郭靖模板主線推進到第 4 步
+  ---
+  duration_ms: 51.081604
+  type: 'test'
+  ...
+# Subtest: 平衡：招牌武學練滿比一般武學走得更遠
+ok 236 - 平衡：招牌武學練滿比一般武學走得更遠
+  ---
+  duration_ms: 266746.585353
+  type: 'test'
+  ...
+# Subtest: 1.0 存檔遷移到 1.1 補上名俠狀態
+ok 237 - 1.0 存檔遷移到 1.1 補上名俠狀態
+  ---
+  duration_ms: 4.238483
+  type: 'test'
+  ...
+# Subtest: v1.2 版本；九劍九式照原著、辟邪三招；都不入秘笈
+ok 238 - v1.2 版本；九劍九式照原著、辟邪三招；都不入秘笈
+  ---
+  duration_ms: 5.507563
+  type: 'test'
+  ...
+# Subtest: 岳不群開局紫霞第一層；1→3 靠閉關、4→6 要祕洞壁刻、7→9 要連續 7 天沒有違心
+ok 239 - 岳不群開局紫霞第一層；1→3 靠閉關、4→6 要祕洞壁刻、7→9 要連續 7 天沒有違心
+  ---
+  duration_ms: 122.190785
+  type: 'test'
+  ...
+# Subtest: 辟邪三卡：林平之上山→暗查劍譜→自宮修練；岳不群自動駕駛照名望走，偽君子添違心
+ok 240 - 辟邪三卡：林平之上山→暗查劍譜→自宮修練；岳不群自動駕駛照名望走，偽君子添違心
+  ---
+  duration_ms: 7735.477194
+  type: 'test'
+  ...
+# Subtest: 辟邪代價：斷情、寧中則好感鎖死、全門心情受衝擊；力量隨斷情天數上升
+ok 241 - 辟邪代價：斷情、寧中則好感鎖死、全門心情受衝擊；力量隨斷情天數上升
+  ---
+  duration_ms: 10.181713
+  type: 'test'
+  ...
+# Subtest: 嵩山派施壓：第 3 天起每 4 天一張
+ok 242 - 嵩山派施壓：第 3 天起每 4 天一張
+  ---
+  duration_ms: 2.743892
+  type: 'test'
+  ...
+# Subtest: 總訣式：灑脫＋悟性 ≥4 必成；拘謹＋正統劍法圓滿互斥；不合性格軟性 5%
+ok 243 - 總訣式：灑脫＋悟性 ≥4 必成；拘謹＋正統劍法圓滿互斥；不合性格軟性 5%
+  ---
+  duration_ms: 6.537312
+  type: 'test'
+  ...
+# Subtest: 思過崖：罰令狐沖面壁→風清揚三晚指點、第四晚對練傳總訣，傳完就走
+ok 244 - 思過崖：罰令狐沖面壁→風清揚三晚指點、第四晚對練傳總訣，傳完就走
+  ---
+  duration_ms: 6.938625
+  type: 'test'
+  ...
+# Subtest: 九劍各式要見過對應敵人（深段）才悟出；破氣式還要化境內功
+ok 245 - 九劍各式要見過對應敵人（深段）才悟出；破氣式還要化境內功
+  ---
+  duration_ms: 2.159047
+  type: 'test'
+  ...
+# Subtest: 嫉令狐沖：首徒學了九劍 → 逐出抉擇；逐出後他離開（不死）
+ok 246 - 嫉令狐沖：首徒學了九劍 → 逐出抉擇；逐出後他離開（不死）
+  ---
+  duration_ms: 6.835122
+  type: 'test'
+  ...
+# Subtest: 令狐沖模板：進洞→風清揚→總訣式；也能以名俠身分在斷崖遇到
+ok 247 - 令狐沖模板：進洞→風清揚→總訣式；也能以名俠身分在斷崖遇到
+  ---
+  duration_ms: 11472.970095
+  type: 'test'
+  ...
+# Subtest: 奇遇卡帶立繪；洪七公立繪已補
+ok 248 - 奇遇卡帶立繪；洪七公立繪已補
+  ---
+  duration_ms: 2.089102
+  type: 'test'
+  ...
+# Subtest: 無盡段體力牆：招牌武學練滿能走得比一般武學更遠
+ok 249 - 無盡段體力牆：招牌武學練滿能走得比一般武學更遠
+  ---
+  duration_ms: 204879.107099
+  type: 'test'
+  ...
+# Subtest: 1.1 存檔遷移到 1.2 補上華山線狀態
+ok 250 - 1.1 存檔遷移到 1.2 補上華山線狀態
+  ---
+  duration_ms: 4.367617
+  type: 'test'
+  ...
+# Subtest: v1.3 版本；新武學齊備且都有招牌主人
+ok 251 - v1.3 版本；新武學齊備且都有招牌主人
+  ---
+  duration_ms: 0.929042
+  type: 'test'
+  ...
+# Subtest: 黯然銷魂掌：心情越低越強，≤30 時 ×1.5
+ok 252 - 黯然銷魂掌：心情越低越強，≤30 時 ×1.5
+  ---
+  duration_ms: 51.976543
+  type: 'test'
+  ...
+# Subtest: 神鵰餵三次結緣 → 斷臂事件：玄鐵劍法、單手、身法 −10%
+ok 253 - 神鵰餵三次結緣 → 斷臂事件：玄鐵劍法、單手、身法 −10%
+  ---
+  duration_ms: 16.117657
+  type: 'test'
+  ...
+# Subtest: 小龍女：玉蜂漿治傷；與楊過雙劍合璧 25%（上限）
+ok 254 - 小龍女：玉蜂漿治傷；與楊過雙劍合璧 25%（上限）
+  ---
+  duration_ms: 12.715955
+  type: 'test'
+  ...
+# Subtest: 周伯通：賭贏才教（先左右互搏給憨厚的，再空明拳），教完就跑；輸了沒損失
+ok 255 - 周伯通：賭贏才教（先左右互搏給憨厚的，再空明拳），教完就跑；輸了沒損失
+  ---
+  duration_ms: 10.365665
+  type: 'test'
+  ...
+# Subtest: 東方不敗：打退拿葵花殘頁 20%，葵花＝斷情＋心情上限 −20；打不贏重傷不死；不能入門
+ok 256 - 東方不敗：打退拿葵花殘頁 20%，葵花＝斷情＋心情上限 −20；打不贏重傷不死；不能入門
+  ---
+  duration_ms: 30.824182
+  type: 'test'
+  ...
+# Subtest: 韋小寶入門：賭坊每日抽頭有上限
+ok 257 - 韋小寶入門：賭坊每日抽頭有上限
+  ---
+  duration_ms: 11.816958
+  type: 'test'
+  ...
+# Subtest: 隱藏高手：具名雜工最多 3 人；斧頭幫勒索才揭露，揭露即大成、不再進步
+ok 258 - 隱藏高手：具名雜工最多 3 人；斧頭幫勒索才揭露，揭露即大成、不再進步
+  ---
+  duration_ms: 2.695079
+  type: 'test'
+  ...
+# Subtest: 喜劇卡每週最多 2 張、不扣血；可關
+ok 259 - 喜劇卡每週最多 2 張、不扣血；可關
+  ---
+  duration_ms: 10.659318
+  type: 'test'
+  ...
+# Subtest: 每日門規作息保留，例行晨課不再產生抉擇卡
+ok 260 - 每日門規作息保留，例行晨課不再產生抉擇卡
+  ---
+  duration_ms: 2.237403
+  type: 'test'
+  ...
+# Subtest: 包租婆帶包租公上山：獅子吼＋太極，夫妻連攜
+ok 261 - 包租婆帶包租公上山：獅子吼＋太極，夫妻連攜
+  ---
+  duration_ms: 2.328027
+  type: 'test'
+  ...
+# Subtest: 張無忌／韋小寶／阿星模板主線自動駕駛能往下走
+ok 262 - 張無忌／韋小寶／阿星模板主線自動駕駛能往下走
+  ---
+  duration_ms: 83920.071964
+  type: 'test'
+  ...
+# Subtest: 存檔遷移到 1.3
+ok 263 - 存檔遷移到 1.3
+  ---
+  duration_ms: 7.379531
+  type: 'test'
+  ...
+# Subtest: v1.35 版本；六位主角各有門派，自創＝無名小派
+ok 264 - v1.35 版本；六位主角各有門派，自創＝無名小派
+  ---
+  duration_ms: 72.127576
+  type: 'test'
+  ...
+# Subtest: 剛柔巧拙偏向夾在 ±15%；外門武學 ×0.7；名俠招牌＝客傳不罰
+ok 265 - 剛柔巧拙偏向夾在 ±15%；外門武學 ×0.7；名俠招牌＝客傳不罰
+  ---
+  duration_ms: 15.343514
+  type: 'test'
+  ...
+# Subtest: 門規違反只加違心（不扣數值）；同條三天冷卻
+ok 266 - 門規違反只加違心（不扣數值）；同條三天冷卻
+  ---
+  duration_ms: 6.987862
+  type: 'test'
+  ...
+# Subtest: 華山氣宗：收魔教中人違規；學辟邪不算叛派、學葵花算叛派
+ok 267 - 華山氣宗：收魔教中人違規；學辟邪不算叛派、學葵花算叛派
+  ---
+  duration_ms: 24.581626
+  type: 'test'
+  ...
+# Subtest: 外門武學練到大成 → 師門質疑卡；收手 −10
+ok 268 - 外門武學練到大成 → 師門質疑卡；收手 −10
+  ---
+  duration_ms: 7.966668
+  type: 'test'
+  ...
+# Subtest: 鎮派設施：要門派聲望與材料；思過崖消違心、打狗棒堂每日糧
+ok 269 - 鎮派設施：要門派聲望與材料；思過崖消違心、打狗棒堂每日糧
+  ---
+  duration_ms: 12.565361
+  type: 'test'
+  ...
+# Subtest: 招人風格：丐幫根骨 +1；天地會油嘴；明教帶傷
+ok 270 - 招人風格：丐幫根骨 +1；天地會油嘴；明教帶傷
+  ---
+  duration_ms: 12.445654
+  type: 'test'
+  ...
+# Subtest: 宿敵守第 2、4… 道關，打贏得門派聲望
+ok 271 - 宿敵守第 2、4… 道關，打贏得門派聲望
+  ---
+  duration_ms: 1.750215
+  type: 'test'
+  ...
+# Subtest: 名俠加權：本派名俠排前面
+ok 272 - 名俠加權：本派名俠排前面
+  ---
+  duration_ms: 2.594783
+  type: 'test'
+  ...
+# Subtest: 舊存檔遷移 1.3 → 1.35 補上門派
+ok 273 - 舊存檔遷移 1.3 → 1.35 補上門派
+  ---
+  duration_ms: 11.797647
+  type: 'test'
+  ...
+# Subtest: v1.4 版本＋舊檔遷移補 gen 與年齡
+ok 274 - v1.4 版本＋舊檔遷移補 gen 與年齡
+  ---
+  duration_ms: 23.105669
+  type: 'test'
+  ...
+# Subtest: 成親要道侶＋雙向相容 ≥1；成親後跳收養卡
+ok 275 - 成親要道侶＋雙向相容 ≥1；成親後跳收養卡
+  ---
+  duration_ms: 7.8527
+  type: 'test'
+  ...
+# Subtest: 收養的孩子承襲養父母性格、價值觀減半、悟性根骨部分承襲；拜師
+ok 276 - 收養的孩子承襲養父母性格、價值觀減半、悟性根骨部分承襲；拜師
+  ---
+  duration_ms: 5.031832
+  type: 'test'
+  ...
+# Subtest: 孩子每 3 天長 1 歲，14 歲成年
+ok 277 - 孩子每 3 天長 1 歲，14 歲成年
+  ---
+  duration_ms: 15.568266
+  type: 'test'
+  ...
+# Subtest: 師承：單有師徒關係不再常駐加速
+ok 278 - 師承：單有師徒關係不再常駐加速
+  ---
+  duration_ms: 4.795343
+  type: 'test'
+  ...
+# Subtest: 衣缽：化境才可傳；傳人得 50% 熟練＋1 星，接掌 hero；老掌門退隱；門派延續；宿慧 +1
+ok 279 - 衣缽：化境才可傳；傳人得 50% 熟練＋1 星，接掌 hero；老掌門退隱；門派延續；宿慧 +1
+  ---
+  duration_ms: 12.468467
+  type: 'test'
+  ...
+# Subtest: 宿慧：自創點數 +bonus（最多 +3）
+ok 280 - 宿慧：自創點數 +bonus（最多 +3）
+  ---
+  duration_ms: 1.438085
+  type: 'test'
+  ...
+# Subtest: 逐出真的移除弟子（含好感鍵與隊伍）
+ok 281 - 逐出真的移除弟子（含好感鍵與隊伍）
+  ---
+  duration_ms: 45.714956
+  type: 'test'
+  ...
+# Subtest: removeDisciple 不能移掌門
+ok 282 - removeDisciple 不能移掌門
+  ---
+  duration_ms: 7.02033
+  type: 'test'
+  ...
+# Subtest: P1-1 倉庫雙重預留：1 木 3 人同時取料，庫存不為負、木料守恆
+ok 283 - P1-1 倉庫雙重預留：1 木 3 人同時取料，庫存不為負、木料守恆
+  ---
+  duration_ms: 100.684984
+  type: 'test'
+  ...
+# Subtest: P1-1 取料原子驗證：倉存被別處用掉時只拿得到現有量，差額釋放
+ok 284 - P1-1 取料原子驗證：倉存被別處用掉時只拿得到現有量，差額釋放
+  ---
+  duration_ms: 5.80845
+  type: 'test'
+  ...
+# Subtest: P1-2 移出切磋中的對手：tick 不拋錯、存活者任務清掉
+ok 285 - P1-2 移出切磋中的對手：tick 不拋錯、存活者任務清掉
+  ---
+  duration_ms: 35.021266
+  type: 'test'
+  ...
+# Subtest: P1-2 移出手上搬 2 木的人：木料退回倉、工地預留歸零、總量守恆
+ok 286 - P1-2 移出手上搬 2 木的人：木料退回倉、工地預留歸零、總量守恆
+  ---
+  duration_ms: 2.649954
+  type: 'test'
+  ...
+# Subtest: P1-3 衣缽傳給一般內門（林師姐）：主角卡可正常投影
+ok 287 - P1-3 衣缽傳給一般內門（林師姐）：主角卡可正常投影
+  ---
+  duration_ms: 32.948508
+  type: 'test'
+  ...
+# Subtest: P2-1 煮飯耗力依灶的實際時長：一拍只扣一點點
+ok 288 - P2-1 煮飯耗力依灶的實際時長：一拍只扣一點點
+  ---
+  duration_ms: 2.449979
+  type: 'test'
+  ...
+# Subtest: P2-2 未來規則版本拒讀、原檔不變
+ok 289 - P2-2 未來規則版本拒讀、原檔不變
+  ---
+  duration_ms: 6.773305
+  type: 'test'
+  ...
+# Subtest: 外觀：堂弟（與所有人）的喜好不會是 undefined
+ok 290 - 外觀：堂弟（與所有人）的喜好不會是 undefined
+  ---
+  duration_ms: 6.209933
+  type: 'test'
+  ...
+# Subtest: v1.45 版本號＋舊檔一步遷移（log 標級、回程隊伍補 ret）
+ok 291 - v1.45 版本號＋舊檔一步遷移（log 標級、回程隊伍補 ret）
+  ---
+  duration_ms: 35.945065
+  type: 'test'
+  ...
+# Subtest: A1 返程驚獸：每段未清段扣耐力 6，固定值
+ok 292 - A1 返程驚獸：每段未清段扣耐力 6，固定值
+  ---
+  duration_ms: 3.198825
+  type: 'test'
+  ...
+# Subtest: A1 反例：沒帶戰利品不引獸；全清場 0 損耗
+ok 293 - A1 反例：沒帶戰利品不引獸；全清場 0 損耗
+  ---
+  duration_ms: 3.015564
+  type: 'test'
+  ...
+# Subtest: A1 耐力見底才掉一半戰利品（只掉一次、不受傷）
+ok 294 - A1 耐力見底才掉一半戰利品（只掉一次、不受傷）
+  ---
+  duration_ms: 3.314596
+  type: 'test'
+  ...
+# Subtest: A1 已平靖段不算未清
+ok 295 - A1 已平靖段不算未清
+  ---
+  duration_ms: 4.980908
+  type: 'test'
+  ...
+# Subtest: A1 整趟巡山端到端：戰報含返程欄位、決定性
+ok 296 - A1 整趟巡山端到端：戰報含返程欄位、決定性
+  ---
+  duration_ms: 915.397387
+  type: 'test'
+  ...
+# Subtest: A3 三級分流：top／mid／low
+ok 297 - A3 三級分流：top／mid／low
+  ---
+  duration_ms: 7.437356
+  type: 'test'
+  ...
+# Subtest: A3 top 事件設 alert（UI 暫停推鏡）；已有 alert 不覆蓋
+ok 298 - A3 top 事件設 alert（UI 暫停推鏡）；已有 alert 不覆蓋
+  ---
+  duration_ms: 4.641746
+  type: 'test'
+  ...
+# Subtest: A3 氣泡過期（8 秒）後消失
+ok 299 - A3 氣泡過期（8 秒）後消失
+  ---
+  duration_ms: 1.744868
+  type: 'test'
+  ...
+# Subtest: A3/A16 里程軸：✔/⚠/▶/·
+ok 300 - A3/A16 里程軸：✔/⚠/▶/·
+  ---
+  duration_ms: 3.505408
+  type: 'test'
+  ...
+# Subtest: A5 現在／原因／下一步，標出決策層
+ok 301 - A5 現在／原因／下一步，標出決策層
+  ---
+  duration_ms: 66.621538
+  type: 'test'
+  ...
+# Subtest: v1.45 存讀檔保留 ret 與 alert
+ok 302 - v1.45 存讀檔保留 ret 與 alert
+  ---
+  duration_ms: 2.239157
+  type: 'test'
+  ...
+# Subtest: 登錄表：設施階段宣告 offers/容量/時長；床位＝beds、灶位 1
+ok 303 - 登錄表：設施階段宣告 offers/容量/時長；床位＝beds、灶位 1
+  ---
+  duration_ms: 5.258898
+  type: 'test'
+  ...
+# Subtest: 統一預約：床位不超收，滿了打地鋪（明確標記）
+ok 304 - 統一預約：床位不超收，滿了打地鋪（明確標記）
+  ---
+  duration_ms: 39.148688
+  type: 'test'
+  ...
+# Subtest: 統一預約：菜畦一格一人；取消即釋放
+ok 305 - 統一預約：菜畦一格一人；取消即釋放
+  ---
+  duration_ms: 4.483072
+  type: 'test'
+  ...
+# Subtest: 工序：搬料途中取消不瞬移，料在手上走回院倉
+ok 306 - 工序：搬料途中取消不瞬移，料在手上走回院倉
+  ---
+  duration_ms: 7.439259
+  type: 'test'
+  ...
+# Subtest: 工序清單：stepsOf 標出 now/next，下一步是真的排著的工序
+ok 307 - 工序清單：stepsOf 標出 now/next，下一步是真的排著的工序
+  ---
+  duration_ms: 0.380101
+  type: 'test'
+  ...
+# Subtest: 需求遲滯：≤30 想睡，到 80 前一直優先歇息
+ok 308 - 需求遲滯：≤30 想睡，到 80 前一直優先歇息
+  ---
+  duration_ms: 10.159637
+  type: 'test'
+  ...
+# Subtest: 厭倦：休閒做完 60 秒內吸引力 ×0.3
+ok 309 - 厭倦：休閒做完 60 秒內吸引力 ×0.3
+  ---
+  duration_ms: 0.632544
+  type: 'test'
+  ...
+# Subtest: 巡山解鎖守門：未解鎖不能派；黃昏試煉後可派（章節不會第一天就記）
+ok 310 - 巡山解鎖守門：未解鎖不能派；黃昏試煉後可派（章節不會第一天就記）
+  ---
+  duration_ms: 0.682118
+  type: 'test'
+  ...
+# Subtest: 巡山召回（A2）：從目前距離往回走、戰利品保留、決定性
+ok 311 - 巡山召回（A2）：從目前距離往回走、戰利品保留、決定性
+  ---
+  duration_ms: 115.372409
+  type: 'test'
+  ...
+# Subtest: 狀態層讀結構化 decision；v1.45 事件誤分級修正
+ok 312 - 狀態層讀結構化 decision；v1.45 事件誤分級修正
+  ---
+  duration_ms: 9.123136
+  type: 'test'
+  ...
+# Subtest: 1.5 版本＋1.45 舊檔一步遷移：菜畦 busy → 預約表；歇息補床位
+ok 313 - 1.5 版本＋1.45 舊檔一步遷移：菜畦 busy → 預約表；歇息補床位
+  ---
+  duration_ms: 35.993942
+  type: 'test'
+  ...
+# Subtest: 長跑：10 日每拍不變式（含床位）
+ok 314 - 長跑：10 日每拍不變式（含床位）
+  ---
+  duration_ms: 8409.980306
+  type: 'test'
+  ...
+# Subtest: 世界 6400×4800、門派在左下、山徑往右上
+ok 315 - 世界 6400×4800、門派在左下、山徑往右上
+  ---
+  duration_ms: 1.928259
+  type: 'test'
+  ...
+# Subtest: 區塊：256px、視窗內塊數合理、同座標同畫
+ok 316 - 區塊：256px、視窗內塊數合理、同座標同畫
+  ---
+  duration_ms: 1.273111
+  type: 'test'
+  ...
+# Subtest: 鏡頭邊界：沒巡過只看門派＋第一環；走到深谷可捲到斷崖
+ok 317 - 鏡頭邊界：沒巡過只看門派＋第一環；走到深谷可捲到斷崖
+  ---
+  duration_ms: 2.509949
+  type: 'test'
+  ...
+# Subtest: 合併敵人表：MONSTERS 由 ENEMIES 產生，數值與舊表一致；每種敵人有所屬環
+ok 318 - 合併敵人表：MONSTERS 由 ENEMIES 產生，數值與舊表一致；每種敵人有所屬環
+  ---
+  duration_ms: 4.463045
+  type: 'test'
+  ...
+# Subtest: 各環族群：無亂數回補、巡山擊倒會扣、存檔增量 < 1KB、舊檔讀入自動補
+ok 319 - 各環族群：無亂數回補、巡山擊倒會扣、存檔增量 < 1KB、舊檔讀入自動補
+  ---
+  duration_ms: 35.749844
+  type: 'test'
+  ...
+# Subtest: 巡山實跑：擊倒數從所屬環族群扣掉
+ok 320 - 巡山實跑：擊倒數從所屬環族群扣掉
+  ---
+  duration_ms: 55.088531
+  type: 'test'
+  ...
+# Subtest: 獸襲下山演出：到點前 20 秒從山腳巢點沿山徑走到 den；不寫狀態
+ok 321 - 獸襲下山演出：到點前 20 秒從山腳巢點沿山徑走到 den；不寫狀態
+  ---
+  duration_ms: 4.246875
+  type: 'test'
+  ...
+# Subtest: 巡山隊世界座標沿山徑往外、回程往回
+ok 322 - 巡山隊世界座標沿山徑往外、回程往回
+  ---
+  duration_ms: 4.550344
+  type: 'test'
+  ...
+# Subtest: 山徑：半徑＝dist×PX，所以每一步所在的環＝模擬的段
+ok 323 - 山徑：半徑＝dist×PX，所以每一步所在的環＝模擬的段
+  ---
+  duration_ms: 1.69219
+  type: 'test'
+  ...
+# Subtest: 山徑是連續的（相鄰取樣點距離有上限，不跳）
+ok 324 - 山徑是連續的（相鄰取樣點距離有上限，不跳）
+  ---
+  duration_ms: 0.220245
+  type: 'test'
+  ...
+# Subtest: 固定怪點＝模擬遭遇點（與 nextAt 同一串：段界前用前一段的 every），都在山腳／林地、不壓到門派
+ok 325 - 固定怪點＝模擬遭遇點（與 nextAt 同一串：段界前用前一段的 every），都在山腳／林地、不壓到門派
+  ---
+  duration_ms: 0.204161
+  type: 'test'
+  ...
+# Subtest: 實跑巡山：遭遇真的發生在怪點的 dist 上（同一串 nextAt）
+ok 326 - 實跑巡山：遭遇真的發生在怪點的 dist 上（同一串 nextAt）
+  ---
+  duration_ms: 442.793909
+  type: 'test'
+  ...
+# Subtest: 召回：回程沿同一條山徑往 den 走，位置單調變近、最後回到 den
+ok 327 - 召回：回程沿同一條山徑往 den 走，位置單調變近、最後回到 den
+  ---
+  duration_ms: 85.762564
+  type: 'test'
+  ...
+# Subtest: 山腳／林地區塊用素材：有給圖就貼地面＋草叢／松竹；沒給圖退回色塊；同座標同畫
+ok 328 - 山腳／林地區塊用素材：有給圖就貼地面＋草叢／松竹；沒給圖退回色塊；同座標同畫
+  ---
+  duration_ms: 2.405284
+  type: 'test'
+  ...
+# Subtest: 七環都有自己的地面疊色（不再是純色塊）
+ok 329 - 七環都有自己的地面疊色（不再是純色塊）
+  ---
+  duration_ms: 8.379762
+  type: 'test'
+  ...
+# Subtest: 區塊繪製是決定性的
+ok 330 - 區塊繪製是決定性的
+  ---
+  duration_ms: 1.249226
+  type: 'test'
+  ...
+# Subtest: 迷霧：開局只開山門＋巢窩旁；存檔欄位小；不用亂數
+ok 331 - 迷霧：開局只開山門＋巢窩旁；存檔欄位小；不用亂數
+  ---
+  duration_ms: 28.746906
+  type: 'test'
+  ...
+# Subtest: 迷霧：隊伍走過就揭開，且讀檔還原同一張圖
+ok 332 - 迷霧：隊伍走過就揭開，且讀檔還原同一張圖
+  ---
+  duration_ms: 8.437127
+  type: 'test'
+  ...
+# Subtest: 相機界線跟著迷霧：揭開越多，能拖越遠
+ok 333 - 相機界線跟著迷霧：揭開越多，能拖越遠
+  ---
+  duration_ms: 7.270603
+  type: 'test'
+  ...
+# Subtest: 四種走法位置各不相同（同一步數）
+ok 334 - 四種走法位置各不相同（同一步數）
+  ---
+  duration_ms: 0.476624
+  type: 'test'
+  ...
+# Subtest: 殘餘怪：只有返程驚獸撞到的那段會追來
+ok 335 - 殘餘怪：只有返程驚獸撞到的那段會追來
+  ---
+  duration_ms: 1.903863
+  type: 'test'
+  ...
+# Subtest: 迷霧不進亂數：同種子跑完一樣
+ok 336 - 迷霧不進亂數：同種子跑完一樣
+  ---
+  duration_ms: 2433.464193
+  type: 'test'
+  ...
+# Subtest: 雲海：絕頂之前不算，之後每 200 步一重，重數＝模擬的段
+ok 337 - 雲海：絕頂之前不算，之後每 200 步一重，重數＝模擬的段
+  ---
+  duration_ms: 2.502775
+  type: 'test'
+  ...
+# Subtest: 雲海圈：頭尾接得上（下一重從同一個入口接著繞），位置在圖內
+ok 338 - 雲海圈：頭尾接得上（下一重從同一個入口接著繞），位置在圖內
+  ---
+  duration_ms: 5.289117
+  type: 'test'
+  ...
+# Subtest: 每重固定 3 個遭遇點＋段末守關（every 50／len 200）
+ok 339 - 每重固定 3 個遭遇點＋段末守關（every 50／len 200）
+  ---
+  duration_ms: 0.29176
+  type: 'test'
+  ...
+# Subtest: 強隊可在雲海連續跑完 3 重（模擬沒有斷點、沒有轉場）
+ok 340 - 強隊可在雲海連續跑完 3 重（模擬沒有斷點、沒有轉場）
+  ---
+  duration_ms: 700.201405
+  type: 'test'
+  ...
+# Subtest: 三段縮放：近／中／遠門檻
+ok 341 - 三段縮放：近／中／遠門檻
+  ---
+  duration_ms: 0.331399
+  type: 'test'
+  ...
+# Subtest: v1.6 九座新建築都是資料：兩階段、有造價或聲望、建成後才登記活動
+ok 342 - v1.6 九座新建築都是資料：兩階段、有造價或聲望、建成後才登記活動
+  ---
+  duration_ms: 54.522448
+  type: 'test'
+  ...
+# Subtest: 預約表：丹房只有 1 個槽，第二人拿不到；釋放後可再拿
+ok 343 - 預約表：丹房只有 1 個槽，第二人拿不到；釋放後可再拿
+  ---
+  duration_ms: 7.077577
+  type: 'test'
+  ...
+# Subtest: 藍圖：一般新建築可建；鎮派地不出現在藍圖、startBuild 拒絕
+ok 344 - 藍圖：一般新建築可建；鎮派地不出現在藍圖、startBuild 拒絕
+  ---
+  duration_ms: 7.714248
+  type: 'test'
+  ...
+# Subtest: 效果：煉丹用藥材 2 得療傷丹 1；醫館先用丹、沒丹用藥、都沒有也能包紮
+ok 345 - 效果：煉丹用藥材 2 得療傷丹 1；醫館先用丹、沒丹用藥、都沒有也能包紮
+  ---
+  duration_ms: 4.665857
+  type: 'test'
+  ...
+# Subtest: 效果：打水封頂於水缸；晨鐘全派加心情；守哨記時；祠堂加名聲
+ok 346 - 效果：打水封頂於水缸；晨鐘全派加心情；守哨記時；祠堂加名聲
+  ---
+  duration_ms: 11.566403
+  type: 'test'
+  ...
+# Subtest: 條件：受傷才看醫館（需求層）；水滿不打水；藥材不足不煉丹
+ok 347 - 條件：受傷才看醫館（需求層）；水滿不打水；藥材不足不煉丹
+  ---
+  duration_ms: 4.810871
+  type: 'test'
+  ...
+# Subtest: 每日上限：祠堂一天 3 次後不再出現，換日重置
+ok 348 - 每日上限：祠堂一天 3 次後不再出現，換日重置
+  ---
+  duration_ms: 2.026822
+  type: 'test'
+  ...
+# Subtest: 七個門派的鎮派活動各自不同、建成鎮派建築才出現、效果照資料
+ok 349 - 七個門派的鎮派活動各自不同、建成鎮派建築才出現、效果照資料
+  ---
+  duration_ms: 61.784382
+  type: 'test'
+  ...
+# Subtest: 長跑：九座新建築＋鎮派建築全開 10 日，每 20 tick 不變式無違反、活動真的被做到
+ok 350 - 長跑：九座新建築＋鎮派建築全開 10 日，每 20 tick 不變式無違反、活動真的被做到
+  ---
+  duration_ms: 8026.064422
+  type: 'test'
+  ...
+# Subtest: 同種子全開建築 → 決定性
+ok 351 - 同種子全開建築 → 決定性
+  ---
+  duration_ms: 1375.60679
+  type: 'test'
+  ...
+# Subtest: 舊存檔（無水／丹／新設施）讀得回且自動補欄位；鎮派已建→鎮派地 stage 1
+ok 352 - 舊存檔（無水／丹／新設施）讀得回且自動補欄位；鎮派已建→鎮派地 stage 1
+  ---
+  duration_ms: 7.872215
+  type: 'test'
+  ...
+# Subtest: 藏經閣讓聽講快 25%；靜室打坐優先於外功場
+ok 353 - 藏經閣讓聽講快 25%；靜室打坐優先於外功場
+  ---
+  duration_ms: 5.332524
+  type: 'test'
+  ...
+# Subtest: 區塊快取 LRU：上限 64、命中移到最新、踢最舊
+ok 354 - 區塊快取 LRU：上限 64、命中移到最新、踢最舊
+  ---
+  duration_ms: 0.435193
+  type: 'test'
+  ...
+# Subtest: 共同記憶：有時地事、每對最多 6 筆、全門最多 80 筆、聊天取最近一筆
+ok 355 - 共同記憶：有時地事、每對最多 6 筆、全門最多 80 筆、聊天取最近一筆
+  ---
+  duration_ms: 63.26903
+  type: 'test'
+  ...
+# Subtest: 自然遊玩 30 日：聊天／切磋寫進記憶帳本，聊天氣泡引用記憶
+ok 356 - 自然遊玩 30 日：聊天／切磋寫進記憶帳本，聊天氣泡引用記憶
+  ---
+  duration_ms: 18618.711091
+  type: 'test'
+  ...
+# Subtest: 巡山歸來：隊員兩兩寫一筆「並肩巡山」
+ok 357 - 巡山歸來：隊員兩兩寫一筆「並肩巡山」
+  ---
+  duration_ms: 312.21026
+  type: 'test'
+  ...
+# Subtest: 名俠池畫風濾鏡：純金庸排包租公婆、純周星馳只剩周星馳角色；開局 spec 帶入
+ok 358 - 名俠池畫風濾鏡：純金庸排包租公婆、純周星馳只剩周星馳角色；開局 spec 帶入
+  ---
+  duration_ms: 7.842571
+  type: 'test'
+  ...
+# Subtest: 傳功：圓滿以上才傳；對方 +15；每門每對一次；好感上升；寫記憶
+ok 359 - 傳功：圓滿以上才傳；對方 +15；每門每對一次；好感上升；寫記憶
+  ---
+  duration_ms: 1.844902
+  type: 'test'
+  ...
+# Subtest: 舊傳功活動不再參與自走評分
+ok 360 - 舊傳功活動不再參與自走評分
+  ---
+  duration_ms: 5.814589
+  type: 'test'
+  ...
+# Subtest: 收徒：內門收好感 ≥30 的外門，一人一徒；徒弟有傳功加成、師父在場練功 ×1.15
+ok 361 - 收徒：內門收好感 ≥30 的外門，一人一徒；徒弟有傳功加成、師父在場練功 ×1.15
+  ---
+  duration_ms: 2.23684
+  type: 'test'
+  ...
+# Subtest: 存檔來回：記憶、師徒、傳功紀錄、畫風保留；同種子決定性
+ok 362 - 存檔來回：記憶、師徒、傳功紀錄、畫風保留；同種子決定性
+  ---
+  duration_ms: 7054.588001
+  type: 'test'
+  ...
+# Subtest: 名俠絕學（secret／classic）不走一般傳功
+ok 363 - 名俠絕學（secret／classic）不走一般傳功
+  ---
+  duration_ms: 5.608796
+  type: 'test'
+  ...
+# Subtest: SCORE 表：每列都對到真活動，述詞都存在；改表就改分數（規則在資料裡）
+ok 364 - SCORE 表：每列都對到真活動，述詞都存在；改表就改分數（規則在資料裡）
+  ---
+  duration_ms: 17.469342
+  type: 'test'
+  ...
+# Subtest: 菜庫預留：煮飯任務握 stock:veg 鍵，vegFree 少 2；取消即釋放；s.vegRes 已不存在
+ok 365 - 菜庫預留：煮飯任務握 stock:veg 鍵，vegFree 少 2；取消即釋放；s.vegRes 已不存在
+  ---
+  duration_ms: 321.46103
+  type: 'test'
+  ...
+# Subtest: 倉庫預留：取料任務握 stock:<料> 鍵，whReserved＝預約表推得的 reservedAmt
+ok 366 - 倉庫預留：取料任務握 stock:<料> 鍵，whReserved＝預約表推得的 reservedAmt
+  ---
+  duration_ms: 252.855749
+  type: 'test'
+  ...
+# Subtest: 舊檔（帶 vegRes、無 stock 鍵）讀入後自動補鍵
+ok 367 - 舊檔（帶 vegRes、無 stock 鍵）讀入後自動補鍵
+  ---
+  duration_ms: 233.18431
+  type: 'test'
+  ...
+# Subtest: 遲滯推廣：餓昏旗 ≤15 亮、到 50 才熄；吃飯第一優先跟著旗走
+ok 368 - 遲滯推廣：餓昏旗 ≤15 亮、到 50 才熄；吃飯第一優先跟著旗走
+  ---
+  duration_ms: 0.567557
+  type: 'test'
+  ...
+# Subtest: 宿慧入存檔：save 帶 legacy；開局取 localStorage／手動檔／自動檔最大；讀檔同步回 localStorage
+ok 369 - 宿慧入存檔：save 帶 legacy；開局取 localStorage／手動檔／自動檔最大；讀檔同步回 localStorage
+  ---
+  duration_ms: 6.575011
+  type: 'test'
+  ...
+# Subtest: 四大武道相剋環：破綻→蓄力→卸力→歸真→破綻，只 ±10%
+ok 370 - 四大武道相剋環：破綻→蓄力→卸力→歸真→破綻，只 ±10%
+  ---
+  duration_ms: 0.472818
+  type: 'test'
+  ...
+# Subtest: log 只留 60 筆：長跑不能用 log 數事件（v1.75 的「傳功 16 次」即此誤差）
+ok 371 - log 只留 60 筆：長跑不能用 log 數事件（v1.75 的「傳功 16 次」即此誤差）
+  ---
+  duration_ms: 2.585204
+  type: 'test'
+  ...
+# Subtest: 糧荒閘：存糧＋菜不足每人 1.5 份 → 種菜升需求層、練功聊天打折
+ok 372 - 糧荒閘：存糧＋菜不足每人 1.5 份 → 種菜升需求層、練功聊天打折
+  ---
+  duration_ms: 9.783685
+  type: 'test'
+  ...
+# Subtest: 糧荒閘：郭靖開局前 5 日斷糧 ≤1 天（v1.75 為 4–5 天）
+ok 373 - 糧荒閘：郭靖開局前 5 日斷糧 ≤1 天（v1.75 為 4–5 天）
+  ---
+  duration_ms: 8199.516032
+  type: 'test'
+  ...
+# Subtest: 資源不變式：seed 3 plain 15 日
+ok 374 - 資源不變式：seed 3 plain 15 日
+  ---
+  duration_ms: 21118.748014
+  type: 'test'
+  ...
+# Subtest: 資源不變式：seed 7 weixiaobao 15 日
+ok 375 - 資源不變式：seed 7 weixiaobao 15 日
+  ---
+  duration_ms: 36032.173008
+  type: 'test'
+  ...
+# Subtest: 資源不變式：seed 11 yuebuqun 15 日
+ok 376 - 資源不變式：seed 11 yuebuqun 15 日
+  ---
+  duration_ms: 51547.815635
+  type: 'test'
+  ...
+# Subtest: 閉關不見客：冥想中的人不會被拉去聊天／切磋／傳功（v1.78 岳不群修正）
+ok 377 - 閉關不見客：冥想中的人不會被拉去聊天／切磋／傳功（v1.78 岳不群修正）
+  ---
+  duration_ms: 37519.613794
+  type: 'test'
+  ...
+# Subtest: 成親：心上人必須互指、好感 ≥ 門檻
+ok 378 - 成親：心上人必須互指、好感 ≥ 門檻
+  ---
+  duration_ms: 6.477968
+  type: 'test'
+  ...
+# Subtest: 成親：上限、冷卻、花費
+ok 379 - 成親：上限、冷卻、花費
+  ---
+  duration_ms: 0.909071
+  type: 'test'
+  ...
+# Subtest: 存檔遷移 1.8：既有夫妻互為心上人、lastWed 補上
+ok 380 - 存檔遷移 1.8：既有夫妻互為心上人、lastWed 補上
+  ---
+  duration_ms: 1.466604
+  type: 'test'
+  ...
+# Subtest: 傳功飽和：當日每傳一次，下一次分數 ×sat
+ok 381 - 傳功飽和：當日每傳一次，下一次分數 ×sat
+  ---
+  duration_ms: 4.471418
+  type: 'test'
+  ...
+# Subtest: A7 領悟線索：未學的列出缺什麼，已學的不列（反例）
+ok 382 - A7 領悟線索：未學的列出缺什麼，已學的不列（反例）
+  ---
+  duration_ms: 1.135105
+  type: 'test'
+  ...
+# Subtest: SCORE_POST 是資料：加一條規則就改變評分
+ok 383 - SCORE_POST 是資料：加一條規則就改變評分
+  ---
+  duration_ms: 12.764415
+  type: 'test'
+  ...
+# Subtest: PB-15/16/18 畫像開關：v2 指向後製檔、小圖用頭像、v1 還原；未知檔不動（反例）
+ok 384 - PB-15/16/18 畫像開關：v2 指向後製檔、小圖用頭像、v1 還原；未知檔不動（反例）
+  ---
+  duration_ms: 0.653764
+  type: 'test'
+  ...
+# Subtest: 月俸比人數長得快（N^1.5）且封頂；外門半價以下、雜工不領
+ok 385 - 月俸比人數長得快（N^1.5）且封頂；外門半價以下、雜工不領
+  ---
+  duration_ms: 9.494029
+  type: 'test'
+  ...
+# Subtest: 寬限：第 10 日前不結算，之後每 5 日
+ok 386 - 寬限：第 10 日前不結算，之後每 5 日
+  ---
+  duration_ms: 5.128207
+  type: 'test'
+  ...
+# Subtest: 欠俸：兩次警告、第三次最多一人離山；付清就歸零（恢復路徑）
+ok 387 - 欠俸：兩次警告、第三次最多一人離山；付清就歸零（恢復路徑）
+  ---
+  duration_ms: 4.646717
+  type: 'test'
+  ...
+# Subtest: 維護：付不出→失修、付清恢復；丹房與祠堂兩倍
+ok 388 - 維護：付不出→失修、付清恢復；丹房與祠堂兩倍
+  ---
+  duration_ms: 0.58973
+  type: 'test'
+  ...
+# Subtest: 市集：每 5 日限量、同一期越買越貴、下一期補貨回原價
+ok 389 - 市集：每 5 日限量、同一期越買越貴、下一期補貨回原價
+  ---
+  duration_ms: 6.569574
+  type: 'test'
+  ...
+# Subtest: 丹藥：可賣（越賣越便宜、有上限），存丹 >10 每 5 日陳化 10%
+ok 390 - 丹藥：可賣（越賣越便宜、有上限），存丹 >10 每 5 日陳化 10%
+  ---
+  duration_ms: 0.654957
+  type: 'test'
+  ...
+# Subtest: A10 下山義學：花錢派人下山一日，帶回的人不看名聲、仍要床位
+ok 391 - A10 下山義學：花錢派人下山一日，帶回的人不看名聲、仍要床位
+  ---
+  duration_ms: 2159.426329
+  type: 'test'
+  ...
+# Subtest: 郭靖：標為困難；前 20 日有降龍衝關標記，出手不吃這段加成
+ok 392 - 郭靖：標為困難；前 20 日有降龍衝關標記，出手不吃這段加成
+  ---
+  duration_ms: 16.009253
+  type: 'test'
+  ...
+# Subtest: 存檔遷移 1.85：補 econ、讀檔後給 5 日寬限
+ok 393 - 存檔遷移 1.85：補 econ、讀檔後給 5 日寬限
+  ---
+  duration_ms: 2.026736
+  type: 'test'
+  ...
+# Subtest: 三階大廳：先卡名聲、再卡稀有料；兩者都夠才立藍圖並扣料
+ok 394 - 三階大廳：先卡名聲、再卡稀有料；兩者都夠才立藍圖並扣料
+  ---
+  duration_ms: 37.313221
+  type: 'test'
+  ...
+# Subtest: 稀有料只在巡山遠段：深谷起鐵木、古洞起靈石
+ok 395 - 稀有料只在巡山遠段：深谷起鐵木、古洞起靈石
+  ---
+  duration_ms: 0.757109
+  type: 'test'
+  ...
+# Subtest: 地塊：開山 4 塊，滿了第 5 座 v1.6 建築要先擴地；擴地每塊 ×1.5、上限 10
+ok 396 - 地塊：開山 4 塊，滿了第 5 座 v1.6 建築要先擴地；擴地每塊 ×1.5、上限 10
+  ---
+  duration_ms: 1.047468
+  type: 'test'
+  ...
+# Subtest: 山賊：全派 <8 人威脅為 0（不來）；≥8 人隨家底與天數漲、封頂
+ok 397 - 山賊：全派 <8 人威脅為 0（不來）；≥8 人隨家底與天數漲、封頂
+  ---
+  duration_ms: 6.177611
+  type: 'test'
+  ...
+# Subtest: 勒索：付錢扣錢；迎戰勝負都只重傷不死、孩子不上陣；半日沒決定自動處置
+ok 398 - 勒索：付錢扣錢；迎戰勝負都只重傷不死、孩子不上陣；半日沒決定自動處置
+  ---
+  duration_ms: 10.727806
+  type: 'test'
+  ...
+# Subtest: A9 因才派巡：排除傷員／雜工；專長優先、附理由；老搭檔加分
+ok 399 - A9 因才派巡：排除傷員／雜工；專長優先、附理由；老搭檔加分
+  ---
+  duration_ms: 1886.383015
+  type: 'test'
+  ...
+# Subtest: 存檔遷移 1.9：補稀有料、地塊至少已蓋數、山賊從讀檔後第 8 日起
+ok 400 - 存檔遷移 1.9：補稀有料、地塊至少已蓋數、山賊從讀檔後第 8 日起
+  ---
+  duration_ms: 5.95731
+  type: 'test'
+  ...
+# Subtest: 搗巢：上限減半 5 日後巢重築；同一巢毀期間不能再搗；不耗亂數
+ok 401 - 搗巢：上限減半 5 日後巢重築；同一巢毀期間不能再搗；不耗亂數
+  ---
+  duration_ms: 30.376984
+  type: 'test'
+  ...
+# Subtest: 擊殺壓力壓低上限（最多 40%），每日衰減
+ok 402 - 擊殺壓力壓低上限（最多 40%），每日衰減
+  ---
+  duration_ms: 4.965928
+  type: 'test'
+  ...
+# Subtest: 族群會回升：打到 0、巢毀也不會永久清空；巢在時回得比巢毀快
+ok 403 - 族群會回升：打到 0、巢毀也不會永久清空；巢在時回得比巢毀快
+  ---
+  duration_ms: 68.969393
+  type: 'test'
+  ...
+# Subtest: 上限掉到現有數以下：族群逐步減少到上限（不瞬間歸零）
+ok 404 - 上限掉到現有數以下：族群逐步減少到上限（不瞬間歸零）
+  ---
+  duration_ms: 24.499222
+  type: 'test'
+  ...
+# Subtest: 環被打到 0：遭遇照常（不採「打空就跳過」，見 BALANCE-v195），族群不會變負數
+ok 405 - 環被打到 0：遭遇照常（不採「打空就跳過」，見 BALANCE-v195），族群不會變負數
+  ---
+  duration_ms: 319.563441
+  type: 'test'
+  ...
+# Subtest: 戰報互斥：遭遇＝擊倒＋驅離＋繞避＋其他；搗巢寫進戰報
+ok 406 - 戰報互斥：遭遇＝擊倒＋驅離＋繞避＋其他；搗巢寫進戰報
+  ---
+  duration_ms: 212.624624
+  type: 'test'
+  ...
+# Subtest: 舊檔 1.9→1.95：回補進度歸零、補 kp／den
+ok 407 - 舊檔 1.9→1.95：回補進度歸零、補 kp／den
+  ---
+  duration_ms: 2.58852
+  type: 'test'
+  ...
+# Subtest: A8：華山／江湖卡文字、選項、價值觀與重構前完全相同，每個選項仍有效果函式
+ok 408 - A8：華山／江湖卡文字、選項、價值觀與重構前完全相同，每個選項仍有效果函式
+  ---
+  duration_ms: 1.825013
+  type: 'test'
+  ...
+# Subtest: A8：主線步驟名稱等同重構前
+ok 409 - A8：主線步驟名稱等同重構前
+  ---
+  duration_ms: 0.269417
+  type: 'test'
+  ...
+# Subtest: A8：每個檢核引用的卡都存在；檢核器語義（區間、日、武學、旗標、then）
+ok 410 - A8：每個檢核引用的卡都存在；檢核器語義（區間、日、武學、旗標、then）
+  ---
+  duration_ms: 0.892306
+  type: 'test'
+  ...
+# Subtest: 無名主線寫在宿命樹：第 15 日才出，兩條都是大成，經典開局不觸發
+ok 411 - 無名主線寫在宿命樹：第 15 日才出，兩條都是大成，經典開局不觸發
+  ---
+  duration_ms: 12.425174
+  type: 'test'
+  ...
+# Subtest: plain 香火：前 10 日更高，之後聲望段更低；有 hero 的開局公式不變
+ok 412 - plain 香火：前 10 日更高，之後聲望段更低；有 hero 的開局公式不變
+  ---
+  duration_ms: 0.633795
+  type: 'test'
+  ...
+# Subtest: 威脅：第 30 日係數與舊線性相同，之後對數更低；重傷把下次上門推後 2 日，不死
+ok 413 - 威脅：第 30 日係數與舊線性相同，之後對數更低；重傷把下次上門推後 2 日，不死
+  ---
+  duration_ms: 1.859584
+  type: 'test'
+  ...
+# Subtest: 丹藥計數：煉出來、治傷、賣出、陳化分開記，庫存算法不變
+ok 414 - 丹藥計數：煉出來、治傷、賣出、陳化分開記，庫存算法不變
+  ---
+  duration_ms: 0.841012
+  type: 'test'
+  ...
+# Subtest: 照舊開局跑過第 15 日：風雷掌腿在身上，而且遊戲日會自己推進
+ok 415 - 照舊開局跑過第 15 日：風雷掌腿在身上，而且遊戲日會自己推進
+  ---
+  duration_ms: 10622.584524
+  type: 'test'
+  ...
+# Subtest: BASELINE_V22 涵蓋擁有人點名的 30 條規則
+ok 416 - BASELINE_V22 涵蓋擁有人點名的 30 條規則
+  ---
+  duration_ms: 1.490913
+  type: 'test'
+  ...
+# Subtest: 開局江湖規則只剩 1 個勾選框（執事自動營建）＋重大抉擇＋名俠池畫風
+ok 417 - 開局江湖規則只剩 1 個勾選框（執事自動營建）＋重大抉擇＋名俠池畫風
+  ---
+  duration_ms: 0.52065
+  type: 'test'
+  ...
+# Subtest: classic：新局底層規則全開、執事三項全開
+ok 418 - classic：新局底層規則全開、執事三項全開
+  ---
+  duration_ms: 6.949991
+  type: 'test'
+  ...
+# Subtest: classic：取消執事自動營建 → 執事三項全關，底層照開
+ok 419 - classic：取消執事自動營建 → 執事三項全關，底層照開
+  ---
+  duration_ms: 0.808645
+  type: 'test'
+  ...
+# Subtest: custom：新局底層規則全開、執事三項全開
+ok 420 - custom：新局底層規則全開、執事三項全開
+  ---
+  duration_ms: 5.015512
+  type: 'test'
+  ...
+# Subtest: custom：取消執事自動營建 → 執事三項全關，底層照開
+ok 421 - custom：取消執事自動營建 → 執事三項全關，底層照開
+  ---
+  duration_ms: 0.483114
+  type: 'test'
+  ...
+# Subtest: 照舊分頁、不帶 spec 也套用現行規則（\#390，擁有人 2026-11-02）
+ok 422 - 照舊分頁、不帶 spec 也套用現行規則（\#390，擁有人 2026-11-02）
+  ---
+  duration_ms: 0.507239
+  type: 'test'
+  ...
+# Subtest: v0.5.json：舊檔讀入升到現行規則（\#390）
+ok 423 - v0.5.json：舊檔讀入升到現行規則（\#390）
+  ---
+  duration_ms: 1299.047892
+  type: 'test'
+  ...
+# Subtest: v0.6.json：舊檔讀入升到現行規則（\#390）
+ok 424 - v0.6.json：舊檔讀入升到現行規則（\#390）
+  ---
+  duration_ms: 963.703437
+  type: 'test'
+  ...
+# Subtest: v0.7.json：舊檔讀入升到現行規則（\#390）
+ok 425 - v0.7.json：舊檔讀入升到現行規則（\#390）
+  ---
+  duration_ms: 676.751032
+  type: 'test'
+  ...
+# Subtest: v0.8.json：舊檔讀入升到現行規則（\#390）
+ok 426 - v0.8.json：舊檔讀入升到現行規則（\#390）
+  ---
+  duration_ms: 552.306881
+  type: 'test'
+  ...
+# Subtest: v0.85.json：舊檔讀入升到現行規則（\#390）
+ok 427 - v0.85.json：舊檔讀入升到現行規則（\#390）
+  ---
+  duration_ms: 786.603408
+  type: 'test'
+  ...
+# Subtest: v0.9.json：舊檔讀入升到現行規則（\#390）
+ok 428 - v0.9.json：舊檔讀入升到現行規則（\#390）
+  ---
+  duration_ms: 697.50436
+  type: 'test'
+  ...
+# Subtest: v0.92.json：舊檔讀入升到現行規則（\#390）
+ok 429 - v0.92.json：舊檔讀入升到現行規則（\#390）
+  ---
+  duration_ms: 429.09525
+  type: 'test'
+  ...
+# Subtest: 新基準 golden-30d-v22（全開規則、郭靖模板、自動抉擇）
+ok 430 - 新基準 golden-30d-v22（全開規則、郭靖模板、自動抉擇）
+  ---
+  duration_ms: 145506.481085
+  type: 'test'
+  ...
+# Subtest: v221 dailyPipeline 可單獨呼叫且不丟錯
+ok 431 - v221 dailyPipeline 可單獨呼叫且不丟錯
+  ---
+  duration_ms: 9.605292
+  type: 'test'
+  ...
+# Subtest: v221 recordDeed 記入弟子並計數、上限截斷
+ok 432 - v221 recordDeed 記入弟子並計數、上限截斷
+  ---
+  duration_ms: 0.903836
+  type: 'test'
+  ...
+# Subtest: v221 recordDeed 帶 chron 才進大事紀，且不耗亂數
+ok 433 - v221 recordDeed 帶 chron 才進大事紀，且不耗亂數
+  ---
+  duration_ms: 0.685684
+  type: 'test'
+  ...
+# Subtest: M1 傳記：樣本不足不臆測；外放／內斂／動靜皆宜
+ok 434 - M1 傳記：樣本不足不臆測；外放／內斂／動靜皆宜
+  ---
+  duration_ms: 9.779259
+  type: 'test'
+  ...
+# Subtest: M1 傳記帶出事蹟次數；大事紀倒序顯示
+ok 435 - M1 傳記帶出事蹟次數；大事紀倒序顯示
+  ---
+  duration_ms: 19.262936
+  type: 'test'
+  ...
+# Subtest: M1 v22 下跑 3 日：弟子有行為記帳、大事紀有落成或入門
+ok 436 - M1 v22 下跑 3 日：弟子有行為記帳、大事紀有落成或入門
+  ---
+  duration_ms: 6265.851783
+  type: 'test'
+  ...
+# Subtest: M2 剿寨後：前一日傳聞、當日餘黨反撲（不談價錢）
+ok 437 - M2 剿寨後：前一日傳聞、當日餘黨反撲（不談價錢）
+  ---
+  duration_ms: 6.804842
+  type: 'test'
+  ...
+# Subtest: M2 撞上別的山賊就順延一日
+ok 438 - M2 撞上別的山賊就順延一日
+  ---
+  duration_ms: 0.732973
+  type: 'test'
+  ...
+# Subtest: M2 撐過＝山道永享太平：威脅大減、武名 +10、大事紀
+ok 439 - M2 撐過＝山道永享太平：威脅大減、武名 +10、大事紀
+  ---
+  duration_ms: 0.857817
+  type: 'test'
+  ...
+# Subtest: M2 沒擋住：記入大事紀、不給太平
+ok 440 - M2 沒擋住：記入大事紀、不給太平
+  ---
+  duration_ms: 0.502892
+  type: 'test'
+  ...
+# Subtest: M3 pairOf：配偶優先
+ok 441 - M3 pairOf：配偶優先
+  ---
+  duration_ms: 4.957052
+  type: 'test'
+  ...
+# Subtest: M3 另一半忙著幹活又餓：送飯過去（扣 1 飯、對方飽食上升、記事蹟）
+ok 442 - M3 另一半忙著幹活又餓：送飯過去（扣 1 飯、對方飽食上升、記事蹟）
+  ---
+  duration_ms: 2.974364
+  type: 'test'
+  ...
+# Subtest: M3 另一半不餓、不忙不傷：不送飯
+ok 443 - M3 另一半不餓、不忙不傷：不送飯
+  ---
+  duration_ms: 14.133804
+  type: 'test'
+  ...
+# Subtest: M3 柵破：膽小或真氣＋氣血都低的躲進屋，不在守柵者之列
+ok 444 - M3 柵破：膽小或真氣＋氣血都低的躲進屋，不在守柵者之列
+  ---
+  duration_ms: 0.774524
+  type: 'test'
+  ...
+# Subtest: M3 避難者走向大廳／院倉，時間到自動回來
+ok 445 - M3 避難者走向大廳／院倉，時間到自動回來
+  ---
+  duration_ms: 7.776097
+  type: 'test'
+  ...
+# Subtest: Batch 3 存檔可來回（新欄位可序列化）
+ok 446 - Batch 3 存檔可來回（新欄位可序列化）
+  ---
+  duration_ms: 893.001794
+  type: 'test'
+  ...
+# Subtest: loop148 市集：錢不夠不能買；舊局沒有稀有料
+ok 447 - loop148 市集：錢不夠不能買；舊局沒有稀有料
+  ---
+  duration_ms: 9.350643
+  type: 'test'
+  ...
+# Subtest: loop148 執事補位：基礎齊、人數 ≥6 → 先藏經閣再工寮；石料差 3 以內也立藍圖
+ok 448 - loop148 執事補位：基礎齊、人數 ≥6 → 先藏經閣再工寮；石料差 3 以內也立藍圖
+  ---
+  duration_ms: 29.811027
+  type: 'test'
+  ...
+# Subtest: loop148 執事補位：膳房沒蓋、人不夠、石料差太多、舊局 → 不立
+ok 449 - loop148 執事補位：膳房沒蓋、人不夠、石料差太多、舊局 → 不立
+  ---
+  duration_ms: 2.398663
+  type: 'test'
+  ...
+# Subtest: loop148 化境暫停：只有本門第一位化境、第一位返璞歸真、掌門本人化境
+ok 450 - loop148 化境暫停：只有本門第一位化境、第一位返璞歸真、掌門本人化境
+  ---
+  duration_ms: 0.660927
+  type: 'test'
+  ...
+# Subtest: loop148 東方不敗／火雲：閉門不出後冷卻 ≥8 日，最多再來 2 次
+ok 451 - loop148 東方不敗／火雲：閉門不出後冷卻 ≥8 日，最多再來 2 次
+  ---
+  duration_ms: 1.370845
+  type: 'test'
+  ...
+# Subtest: loop148 維護寬限：差一點先欠款警告、不失修；下期付清補上，下期再付不清才失修
+ok 452 - loop148 維護寬限：差一點先欠款警告、不失修；下期付清補上，下期再付不清才失修
+  ---
+  duration_ms: 6.018441
+  type: 'test'
+  ...
+# Subtest: loop148 山寨狀態行：探明後才顯示，只寫出征中／破寨次數／太平
+ok 453 - loop148 山寨狀態行：探明後才顯示，只寫出征中／破寨次數／太平
+  ---
+  duration_ms: 1.792187
+  type: 'test'
+  ...
+# Subtest: loop148 婚姻排他：成過親的人（配偶已離山）不再拜堂
+ok 454 - loop148 婚姻排他：成過親的人（配偶已離山）不再拜堂
+  ---
+  duration_ms: 0.991034
+  type: 'test'
+  ...
+# Subtest: loop148 重現：郭靖模板 seed 1 林師姐欠俸離山後，郭靖不會再與令狐沖拜堂（v2.2 第 23 日重婚）
+ok 455 - loop148 重現：郭靖模板 seed 1 林師姐欠俸離山後，郭靖不會再與令狐沖拜堂（v2.2 第 23 日重婚）
+  ---
+  duration_ms: 23311.036354
+  type: 'test'
+  ...
+# Subtest: loop151 六門專長門類啟用為 part（CATS 全域表仍「尚未支援」）
+ok 456 - loop151 六門專長門類啟用為 part（CATS 全域表仍「尚未支援」）
+  ---
+  duration_ms: 69.535776
+  type: 'test'
+  ...
+# Subtest: loop151 活動長專長：煉丹／療傷→醫術、採藥→毒術、守望／讀書／練功→陣法
+ok 457 - loop151 活動長專長：煉丹／療傷→醫術、採藥→毒術、守望／讀書／練功→陣法
+  ---
+  duration_ms: 28.80882
+  type: 'test'
+  ...
+# Subtest: loop151 程瑛／阿紫／程靈素：只在 v23 進池，入門帶招牌
+ok 458 - loop151 程瑛／阿紫／程靈素：只在 v23 進池，入門帶招牌
+  ---
+  duration_ms: 18.685956
+  type: 'test'
+  ...
+# Subtest: loop151 陣法：守柵時柵受傷減少（封頂 25%）
+ok 459 - loop151 陣法：守柵時柵受傷減少（封頂 25%）
+  ---
+  duration_ms: 10.582029
+  type: 'test'
+  ...
+# Subtest: loop152 角色卡門類造詣：v23 顯示專長效果說明，舊局仍標尚未支援
+ok 460 - loop152 角色卡門類造詣：v23 顯示專長效果說明，舊局仍標尚未支援
+  ---
+  duration_ms: 13.042816
+  type: 'test'
+  ...
+# Subtest: loop153 三段腳程：v23 輕功每階 6%；御氣疾行要內功小成以上且內力 >30%，耗氣停在三成
+ok 461 - loop153 三段腳程：v23 輕功每階 6%；御氣疾行要內功小成以上且內力 >30%，耗氣停在三成
+  ---
+  duration_ms: 1624.553474
+  type: 'test'
+  ...
+# Subtest: loop153 打坐 +16（紫霞 +4）、舊局仍 12；真氣出手與劍招只在 v23
+ok 462 - loop153 打坐 +16（紫霞 +4）、舊局仍 12；真氣出手與劍招只在 v23
+  ---
+  duration_ms: 2.245639
+  type: 'test'
+  ...
+# Subtest: loop154 介面：內功被動與 v2.3 內功規則只在 v23 顯示
+ok 463 - loop154 介面：內功被動與 v2.3 內功規則只在 v23 顯示
+  ---
+  duration_ms: 1.786751
+  type: 'test'
+  ...
+# Subtest: loop155 村舍大院只在 v23 可蓋；床位 8
+ok 464 - loop155 村舍大院只在 v23 可蓋；床位 8
+  ---
+  duration_ms: 0.895874
+  type: 'test'
+  ...
+# Subtest: loop155 v23 第 7 位起雇到新幫工，帶專長；舊局只有原六人
+ok 465 - loop155 v23 第 7 位起雇到新幫工，帶專長；舊局只有原六人
+  ---
+  duration_ms: 29.676614
+  type: 'test'
+  ...
+# Subtest: loop155 幫工專長：評分 ×1.35、快 20%；v23 幫工可種菜煮飯挑水修柵採藥
+ok 466 - loop155 幫工專長：評分 ×1.35、快 20%；v23 幫工可種菜煮飯挑水修柵採藥
+  ---
+  duration_ms: 9.327936
+  type: 'test'
+  ...
+# Subtest: loop155 清修山莊：弟子 ≤3 且幫工 ≥2；隱世高人身分已明可守柵、可直接邀入門
+ok 467 - loop155 清修山莊：弟子 ≤3 且幫工 ≥2；隱世高人身分已明可守柵、可直接邀入門
+  ---
+  duration_ms: 6.753491
+  type: 'test'
+  ...
+# Subtest: loop157 專長效果：毒術削敵、醫術解餘毒、陣法減速／先手；強度隨造詣封頂
+ok 468 - loop157 專長效果：毒術削敵、醫術解餘毒、陣法減速／先手；強度隨造詣封頂
+  ---
+  duration_ms: 6.309785
+  type: 'test'
+  ...
+# Subtest: loop157 內功被動：吐納歇息回氣 ×1.5、紫霞打坐 +4／二層起氣宗 ×1.35、範圍半徑、劍招小成以下 +10%
+ok 469 - loop157 內功被動：吐納歇息回氣 ×1.5、紫霞打坐 +4／二層起氣宗 ×1.35、範圍半徑、劍招小成以下 +10%
+  ---
+  duration_ms: 1.668646
+  type: 'test'
+  ...
+# Subtest: loop157 九陽：站定自回氣（舊局不回）
+ok 470 - loop157 九陽：站定自回氣（舊局不回）
+  ---
+  duration_ms: 6.822542
+  type: 'test'
+  ...
+# Subtest: loop157 御氣耗氣：玉女心經耗氣減半；低於三成不再御氣、也不力竭
+ok 471 - loop157 御氣耗氣：玉女心經耗氣減半；低於三成不再御氣、也不力竭
+  ---
+  duration_ms: 1.160585
+  type: 'test'
+  ...
+# Subtest: loop157 幫工活計：v23 評分表確實出現種菜／煮飯／挑水／修柵；高人揭露後仍是幫工並可守柵
+ok 472 - loop157 幫工活計：v23 評分表確實出現種菜／煮飯／挑水／修柵；高人揭露後仍是幫工並可守柵
+  ---
+  duration_ms: 12.818181
+  type: 'test'
+  ...
+# Subtest: loop157 清修 +20%：練功／打坐／讀書三項都加，幫工與非清修局不加
+ok 473 - loop157 清修 +20%：練功／打坐／讀書三項都加，幫工與非清修局不加
+  ---
+  duration_ms: 6.554011
+  type: 'test'
+  ...
+# Subtest: loop157 劍招：辟邪／獨孤九劍真實招式吃 cdMul ×0.82 與 moveMul +10%；掌法不吃；舊局不吃
+ok 474 - loop157 劍招：辟邪／獨孤九劍真實招式吃 cdMul ×0.82 與 moveMul +10%；掌法不吃；舊局不吃
+  ---
+  duration_ms: 2.108976
+  type: 'test'
+  ...
+# Subtest: loop157 以氣御招走 moveMul0：內力越多越重、氣宗再 ×1.35；巡山 dpsOf 同步反映，且巡獵不再重複乘
+ok 475 - loop157 以氣御招走 moveMul0：內力越多越重、氣宗再 ×1.35；巡山 dpsOf 同步反映，且巡獵不再重複乘
+  ---
+  duration_ms: 48.309391
+  type: 'test'
+  ...
+# Subtest: loop157 P7：v23 藏經閣名聲門檻 10；執事有膳房、門人 ≥4、木 ≥5 就立藏經閣
+ok 476 - loop157 P7：v23 藏經閣名聲門檻 10；執事有膳房、門人 ≥4、木 ≥5 就立藏經閣
+  ---
+  duration_ms: 8.128678
+  type: 'test'
+  ...
+# Subtest: loop157 P6：靈石 30 錢、每集限 2
+ok 477 - loop157 P6：靈石 30 錢、每集限 2
+  ---
+  duration_ms: 1.158521
+  type: 'test'
+  ...
+# Subtest: loop159 P5/P6 商隊（市集補貨）：第 12 日前不賣靈石，之後每集 1–2 顆、每顆 28
+ok 478 - loop159 P5/P6 商隊（市集補貨）：第 12 日前不賣靈石，之後每集 1–2 顆、每顆 28
+  ---
+  duration_ms: 53.970529
+  type: 'test'
+  ...
+# Subtest: loop159 P2 山產交割：每次補貨，有菜園／藥園／丹房才 +15；沒有就不給
+ok 479 - loop159 P2 山產交割：每次補貨，有菜園／藥園／丹房才 +15；沒有就不給
+  ---
+  duration_ms: 9.298717
+  type: 'test'
+  ...
+# Subtest: loop159 P5/P6 深谷、斷崖守關首通保底靈石（只列兩段）
+ok 480 - loop159 P5/P6 深谷、斷崖守關首通保底靈石（只列兩段）
+  ---
+  duration_ms: 0.911606
+  type: 'test'
+  ...
+# Subtest: loop159 P7/P8 執事：有人學會 ≥2 門武學且木石夠 → 藏經閣優先於其他藍圖
+ok 481 - loop159 P7/P8 執事：有人學會 ≥2 門武學且木石夠 → 藏經閣優先於其他藍圖
+  ---
+  duration_ms: 21.946872
+  type: 'test'
+  ...
+# Subtest: loop159 isSwordArt：劍法門類、三門經典劍法；掌法不是；swordCdMul 經它作用在真實劍招，dpsOf 吃 cdMul
+ok 482 - loop159 isSwordArt：劍法門類、三門經典劍法；掌法不是；swordCdMul 經它作用在真實劍招，dpsOf 吃 cdMul
+  ---
+  duration_ms: 26.856014
+  type: 'test'
+  ...
+# Subtest: loop160 Batch1：8 門公共武學存在、招式齊全、有門類與屬性
+ok 483 - loop160 Batch1：8 門公共武學存在、招式齊全、有門類與屬性
+  ---
+  duration_ms: 0.463304
+  type: 'test'
+  ...
+# Subtest: loop160 Batch1：舊局看不到也學不到新武學；新局可學
+ok 484 - loop160 Batch1：舊局看不到也學不到新武學；新局可學
+  ---
+  duration_ms: 0.633956
+  type: 'test'
+  ...
+# Subtest: loop160 Batch1.2：藏經閣圖譜——v24 讀書可得抄本；舊局不會
+ok 485 - loop160 Batch1.2：藏經閣圖譜——v24 讀書可得抄本；舊局不會
+  ---
+  duration_ms: 1.095288
+  type: 'test'
+  ...
+# Subtest: loop161 Batch2：陰陽共鳴——陰＋陽 ×1.08、陰陽和 ×1.12；舊局恆為 1
+ok 486 - loop161 Batch2：陰陽共鳴——陰＋陽 ×1.08、陰陽和 ×1.12；舊局恆為 1
+  ---
+  duration_ms: 1.189578
+  type: 'test'
+  ...
+# Subtest: loop161 Batch2：奇門封穴——隊中有奇門造詣才 > 0；舊局為 0
+ok 487 - loop161 Batch2：奇門封穴——隊中有奇門造詣才 > 0；舊局為 0
+  ---
+  duration_ms: 4.730698
+  type: 'test'
+  ...
+# Subtest: loop162 Batch3：頓悟詞綴——大成時依雜湊得字訣，只得一次、可重現；舊局沒有
+ok 488 - loop162 Batch3：頓悟詞綴——大成時依雜湊得字訣，只得一次、可重現；舊局沒有
+  ---
+  duration_ms: 1.381831
+  type: 'test'
+  ...
+# Subtest: loop163 Batch4：五個新門派只在 v2.4 新局可指定；舊局給 sect24 仍走原門派
+ok 489 - loop163 Batch4：五個新門派只在 v2.4 新局可指定；舊局給 sect24 仍走原門派
+  ---
+  duration_ms: 1.919555
+  type: 'test'
+  ...
+# Subtest: loop163 Batch4：古墓寒玉床——門人 ≤5 才 ×1.5
+ok 490 - loop163 Batch4：古墓寒玉床——門人 ≤5 才 ×1.5
+  ---
+  duration_ms: 4.607486
+  type: 'test'
+  ...
+# Subtest: loop164 Batch5：diag-v24-v25 四種策略各跑 1 局 2 日，不崩潰、欄位齊全
+ok 491 - loop164 Batch5：diag-v24-v25 四種策略各跑 1 局 2 日，不崩潰、欄位齊全
+  ---
+  duration_ms: 5689.707541
+  type: 'test'
+  ...
+# Subtest: loop164 Batch4.1⑥：v24 華山劍宗、氣宗補華山劍法線；舊局樹不變
+ok 492 - loop164 Batch4.1⑥：v24 華山劍宗、氣宗補華山劍法線；舊局樹不變
+  ---
+  duration_ms: 1.19827
+  type: 'test'
+  ...
+# Subtest: loop164 Batch4.2：自創無名派依主價值帶家傳三件套並入本門樹；名門掌門帶 T1 根基；舊局不帶
+ok 493 - loop164 Batch4.2：自創無名派依主價值帶家傳三件套並入本門樹；名門掌門帶 T1 根基；舊局不帶
+  ---
+  duration_ms: 0.62943
+  type: 'test'
+  ...
+# Subtest: loop164 Batch4.2 百納海川：無名派 v24 學外門名學不罰 ×0.7；他派照罰
+ok 494 - loop164 Batch4.2 百納海川：無名派 v24 學外門名學不罰 ×0.7；他派照罰
+  ---
+  duration_ms: 0.233465
+  type: 'test'
+  ...
+# Subtest: loop164 Batch4.3 本門傳承鎖：他派專屬名學預設鎖住，主門類造詣 ≥40 且品階 ≤2 解鎖；本門優先排序
+ok 495 - loop164 Batch4.3 本門傳承鎖：他派專屬名學預設鎖住，主門類造詣 ≥40 且品階 ≤2 解鎖；本門優先排序
+  ---
+  duration_ms: 7.166438
+  type: 'test'
+  ...
+# Subtest: loop165 Batch5.1：劍法＋身法大成且劍法造詣 ≥45 → 推演《流風迴雪劍》並入本門樹；條件不足不推演；舊局無
+ok 496 - loop165 Batch5.1：劍法＋身法大成且劍法造詣 ≥45 → 推演《流風迴雪劍》並入本門樹；條件不足不推演；舊局無
+  ---
+  duration_ms: 7.204404
+  type: 'test'
+  ...
+# Subtest: loop165 Batch5.1：一般外門弟子不推演（只限掌門、內門、首徒）
+ok 497 - loop165 Batch5.1：一般外門弟子不推演（只限掌門、內門、首徒）
+  ---
+  duration_ms: 10.095586
+  type: 'test'
+  ...
+# Subtest: loop166 Batch5.2：山門大比第 10、20 日各一次；魁首心情 +15 並得親傳或熟練；舊局沒有
+ok 498 - loop166 Batch5.2：山門大比第 10、20 日各一次；魁首心情 +15 並得親傳或熟練；舊局沒有
+  ---
+  duration_ms: 10.035337
+  type: 'test'
+  ...
+# Subtest: loop166 Batch5.2：會武第 15、26 日出卡；三種排陣；自動挑期望勝場最高；勝方得名聲、賞銀、靈石、稱號
+ok 499 - loop166 Batch5.2：會武第 15、26 日出卡；三種排陣；自動挑期望勝場最高；勝方得名聲、賞銀、靈石、稱號
+  ---
+  duration_ms: 56.257597
+  type: 'test'
+  ...
+# Subtest: loop168 五派專屬武學：classic＋v24、非 secret、ART_CAT 照規格、各派樹照規格
+ok 500 - loop168 五派專屬武學：classic＋v24、非 secret、ART_CAT 照規格、各派樹照規格
+  ---
+  duration_ms: 6.818955
+  type: 'test'
+  ...
+# Subtest: loop168 傳承鎖：他派（含無名派）鎖住、本門可學；九陰白骨爪人人鎖；舊局不見
+ok 501 - loop168 傳承鎖：他派（含無名派）鎖住、本門可學；九陰白骨爪人人鎖；舊局不見
+  ---
+  duration_ms: 77.037908
+  type: 'test'
+  ...
+# Subtest: loop168 武當：武當長拳大成可領悟太極拳；太極拳大成可免柔雲劍法學太極劍（以拳通劍）
+ok 502 - loop168 武當：武當長拳大成可領悟太極拳；太極拳大成可免柔雲劍法學太極劍（以拳通劍）
+  ---
+  duration_ms: 13.836893
+  type: 'test'
+  ...
+# Subtest: loop168 本門專屬可傳功
+ok 503 - loop168 本門專屬可傳功
+  ---
+  duration_ms: 11.872661
+  type: 'test'
+  ...
+# Subtest: loop168 寒玉床：門人 ≤5 打坐回氣與衝關率 ×1.5；神木王鼎：藥材 +1、香火 +1、毒傷 ×1.35
+ok 504 - loop168 寒玉床：門人 ≤5 打坐回氣與衝關率 ×1.5；神木王鼎：藥材 +1、香火 +1、毒傷 ×1.35
+  ---
+  duration_ms: 15.731422
+  type: 'test'
+  ...
+# Subtest: loop169 合參收緊：門檻 52/48、本門樹已有不再推演、每局上限 2
+ok 505 - loop169 合參收緊：門檻 52/48、本門樹已有不再推演、每局上限 2
+  ---
+  duration_ms: 3.676251
+  type: 'test'
+  ...
+# Subtest: loop169 臨陣偷師：機率 0.55；他派專屬優先
+ok 506 - loop169 臨陣偷師：機率 0.55；他派專屬優先
+  ---
+  duration_ms: 4.341454
+  type: 'test'
+  ...
+# Subtest: loop169 執事藏經閣：出征過或有殘頁，木 ≥5 即立（石料暫緩）
+ok 507 - loop169 執事藏經閣：出征過或有殘頁，木 ≥5 即立（石料暫緩）
+  ---
+  duration_ms: 3.319284
+  type: 'test'
+  ...
+# Subtest: loop169 開局門派選單：十個選項、自創主角帶 sect24（無名派不帶）、可開華山／丐幫／明教
+ok 508 - loop169 開局門派選單：十個選項、自創主角帶 sect24（無名派不帶）、可開華山／丐幫／明教
+  ---
+  duration_ms: 7.696361
+  type: 'test'
+  ...
+# Subtest: loop171 chiefOnly24：標記照規格
+ok 509 - loop171 chiefOnly24：標記照規格
+  ---
+  duration_ms: 1.790976
+  type: 'test'
+  ...
+# Subtest: loop171 位階鎖：一般弟子鎖、掌門／首徒／魁首可；顯示線索；不擋已會者
+ok 510 - loop171 位階鎖：一般弟子鎖、掌門／首徒／魁首可；顯示線索；不擋已會者
+  ---
+  duration_ms: 73.999409
+  type: 'test'
+  ...
+# Subtest: loop171 大比魁首得 chief24
+ok 511 - loop171 大比魁首得 chief24
+  ---
+  duration_ms: 22.55295
+  type: 'test'
+  ...
+# Subtest: loop171→181 同門成套：只算本門專屬；公共身法不計；成套傷害改由 innerDrive28；舊局不變
+ok 512 - loop171→181 同門成套：只算本門專屬；公共身法不計；成套傷害改由 innerDrive28；舊局不變
+  ---
+  duration_ms: 9.379989
+  type: 'test'
+  ...
+# Subtest: loop171 同門根基 1.18／一脈相承 1.28
+ok 513 - loop171 同門根基 1.18／一脈相承 1.28
+  ---
+  duration_ms: 14.727709
+  type: 'test'
+  ...
+# Subtest: loop171→182 雜學：跨兩派血統 → 分心；三派大成且造詣 ≥58 → 萬流歸宗
+ok 514 - loop171→182 雜學：跨兩派血統 → 分心；三派大成且造詣 ≥58 → 萬流歸宗
+  ---
+  duration_ms: 10.475256
+  type: 'test'
+  ...
+# Subtest: loop172 華山二宗／武當成長鏈：資料照規格、v24 專屬
+ok 515 - loop172 華山二宗／武當成長鏈：資料照規格、v24 專屬
+  ---
+  duration_ms: 0.538186
+  type: 'test'
+  ...
+# Subtest: loop172 氣宗紫霞：掌門華山心法大成可領悟（第一層），一般弟子不行
+ok 516 - loop172 氣宗紫霞：掌門華山心法大成可領悟（第一層），一般弟子不行
+  ---
+  duration_ms: 12.004025
+  type: 'test'
+  ...
+# Subtest: loop173 丐幫／明教成長鏈：資料、tree24、僅 v24 新局併入；會武可偷
+ok 517 - loop173 丐幫／明教成長鏈：資料、tree24、僅 v24 新局併入；會武可偷
+  ---
+  duration_ms: 32.075819
+  type: 'test'
+  ...
+# Subtest: loop174 天地會／星宿派：資料、樹、開局可選天地會
+ok 518 - loop174 天地會／星宿派：資料、樹、開局可選天地會
+  ---
+  duration_ms: 14.501485
+  type: 'test'
+  ...
+# Subtest: loop175 拜師承襲不越位階鎖：師父的鎮派絕學不直接傳給一般徒弟
+ok 519 - loop175 拜師承襲不越位階鎖：師父的鎮派絕學不直接傳給一般徒弟
+  ---
+  duration_ms: 3.437318
+  type: 'test'
+  ...
+# Subtest: loop176 無名派觸類旁通：造詣 ≥38 可學他派 grade ≤2 專屬；名門仍鎖；禁學／三品不開
+ok 520 - loop176 無名派觸類旁通：造詣 ≥38 可學他派 grade ≤2 專屬；名門仍鎖；禁學／三品不開
+  ---
+  duration_ms: 82.701155
+  type: 'test'
+  ...
+# Subtest: loop176 祖師堂 gain24 1.12（只 v24）、紫霄宮 def24 1.18
+ok 521 - loop176 祖師堂 gain24 1.12（只 v24）、紫霄宮 def24 1.18
+  ---
+  duration_ms: 17.073255
+  type: 'test'
+  ...
+# Subtest: loop176 合參上限分流：名門 1、無名 2
+ok 522 - loop176 合參上限分流：名門 1、無名 2
+  ---
+  duration_ms: 14.20737
+  type: 'test'
+  ...
+# Subtest: loop177 正邪鏡像：明教／星宿對六大派聯軍，其餘對黑木崖魔教
+ok 523 - loop177 正邪鏡像：明教／星宿對六大派聯軍，其餘對黑木崖魔教
+  ---
+  duration_ms: 22.202813
+  type: 'test'
+  ...
+# Subtest: loop177 割草倍率與合圍：1.45–1.85、後段減半；≥7 人每人 +5% 上限 +50%
+ok 524 - loop177 割草倍率與合圍：1.45–1.85、後段減半；≥7 人每人 +5% 上限 +50%
+  ---
+  duration_ms: 11.08707
+  type: 'test'
+  ...
+# Subtest: loop177 連戰結算：不吃山賊亂數、kills 加總、MVP、勝則全波人數
+ok 525 - loop177 連戰結算：不吃山賊亂數、kills 加總、MVP、勝則全波人數
+  ---
+  duration_ms: 9.417784
+  type: 'test'
+  ...
+# Subtest: loop178 魔教圍山：前一日預警、第 18 日 3 波／第 27 日 4 波、不吃山賊亂數、勝利獎勵、敗不死人
+ok 526 - loop178 魔教圍山：前一日預警、第 18 日 3 波／第 27 日 4 波、不吃山賊亂數、勝利獎勵、敗不死人
+  ---
+  duration_ms: 14.252316
+  type: 'test'
+  ...
+# Subtest: loop179 傾巢討伐：解鎖條件、不限人數留 1 人、耗糧、回山結算、獎勵、不吃山賊亂數、按鈕
+ok 527 - loop179 傾巢討伐：解鎖條件、不限人數留 1 人、耗糧、回山結算、獎勵、不吃山賊亂數、按鈕
+  ---
+  duration_ms: 22.658618
+  type: 'test'
+  ...
+# Subtest: loop179 執事自動：只在 13–14、22–23 日；舊局無按鈕
+ok 528 - loop179 執事自動：只在 13–14、22–23 日；舊局無按鈕
+  ---
+  duration_ms: 8.117183
+  type: 'test'
+  ...
+# Subtest: loop181→196 第一階：本門內功催動本門外功 ×1.25，不再另乘三才
+ok 529 - loop181→196 第一階：本門內功催動本門外功 ×1.25，不再另乘三才
+  ---
+  duration_ms: 88.61319
+  type: 'test'
+  ...
+# Subtest: loop181 第三階：只靠吐納催動三品外功 ×0.78；第二階：公共武學內功撐得住 ×1
+ok 530 - loop181 第三階：只靠吐納催動三品外功 ×0.78；第二階：公共武學內功撐得住 ×1
+  ---
+  duration_ms: 17.412405
+  type: 'test'
+  ...
+# Subtest: loop181 第四階：陽內功逆催他派陰掌 ×0.65，練功累積內傷，打坐與醫館化解
+ok 531 - loop181 第四階：陽內功逆催他派陰掌 ×0.65，練功累積內傷，打坐與醫館化解
+  ---
+  duration_ms: 38.931308
+  type: 'test'
+  ...
+# Subtest: loop182 雜學收緊：公共武學不算跨派；兩派血統即分心 ×0.82；三派大成＋造詣 ≥58 才萬流歸宗
+ok 532 - loop182 雜學收緊：公共武學不算跨派；兩派血統即分心 ×0.82；三派大成＋造詣 ≥58 才萬流歸宗
+  ---
+  duration_ms: 9.260993
+  type: 'test'
+  ...
+# Subtest: loop182 造詣門道偷師：造詣不足機率 0，達標或悟性 5 高機率
+ok 533 - loop182 造詣門道偷師：造詣不足機率 0，達標或悟性 5 高機率
+  ---
+  duration_ms: 13.583419
+  type: 'test'
+  ...
+# Subtest: loop183 v2.8：狂風快劍/七傷拳列魁首限定、會武池含天地會豬籠城寨、圍山 E 下修
+ok 534 - loop183 v2.8：狂風快劍/七傷拳列魁首限定、會武池含天地會豬籠城寨、圍山 E 下修
+  ---
+  duration_ms: 4.917916
+  type: 'test'
+  ...
+# Subtest: loop184 四階齊備：同一弟子依內外搭配落在第一至第四階
+ok 535 - loop184 四階齊備：同一弟子依內外搭配落在第一至第四階
+  ---
+  duration_ms: 27.047781
+  type: 'test'
+  ...
+# Subtest: loop184 內傷：第四階練功 +6、≥50 每日扣血扣心情、醫館有藥師清零、離開第四階每日 −6
+ok 536 - loop184 內傷：第四階練功 +6、≥50 每日扣血扣心情、醫館有藥師清零、離開第四階每日 −6
+  ---
+  duration_ms: 7.55366
+  type: 'test'
+  ...
+# Subtest: loop184 一練七傷：無聖火心法小成練七傷拳落第四階
+ok 537 - loop184 一練七傷：無聖火心法小成練七傷拳落第四階
+  ---
+  duration_ms: 10.216684
+  type: 'test'
+  ...
+# Subtest: loop184 執事替武當自動興建紫霄宮
+ok 538 - loop184 執事替武當自動興建紫霄宮
+  ---
+  duration_ms: 2005.927278
+  type: 'test'
+  ...
+# Subtest: loop184 addendum：主修內功取有效分、學新高階內功不掉第一階
+ok 539 - loop184 addendum：主修內功取有效分、學新高階內功不掉第一階
+  ---
+  duration_ms: 27.598907
+  type: 'test'
+  ...
+# Subtest: loop184 addendum：根基渾厚 — 一品本門內功二三四階加速進階內功並加催動
+ok 540 - loop184 addendum：根基渾厚 — 一品本門內功二三四階加速進階內功並加催動
+  ---
+  duration_ms: 8.026927
+  type: 'test'
+  ...
+# Subtest: loop184 addendum：憨厚/勤奮/較真先練根基到二階，聰明人跳階
+ok 541 - loop184 addendum：憨厚/勤奮/較真先練根基到二階，聰明人跳階
+  ---
+  duration_ms: 2.122017
+  type: 'test'
+  ...
+# Subtest: loop186 決定 1：副修第四階外功也累積內傷 +5；主修第四階 +8
+ok 542 - loop186 決定 1：副修第四階外功也累積內傷 +5；主修第四階 +8
+  ---
+  duration_ms: 89.622371
+  type: 'test'
+  ...
+# Subtest: loop196 本門正宗：本門內功大成，再加本門外功或本門輕功小成；公共三類不算
+ok 543 - loop196 本門正宗：本門內功大成，再加本門外功或本門輕功小成；公共三類不算
+  ---
+  duration_ms: 24.847701
+  type: 'test'
+  ...
+# Subtest: loop186 決定 3：無本門一品內功的門派以吐納或本門二品內功為根基
+ok 544 - loop186 決定 3：無本門一品內功的門派以吐納或本門二品內功為根基
+  ---
+  duration_ms: 69.501916
+  type: 'test'
+  ...
+# Subtest: loop186 決定 4：七傷拳前置只要鷹爪小成；聖火心法或九陽大成前皆第四階
+ok 545 - loop186 決定 4：七傷拳前置只要鷹爪小成；聖火心法或九陽大成前皆第四階
+  ---
+  duration_ms: 11.331831
+  type: 'test'
+  ...
+# Subtest: loop193 守正厚積：先有一門外功小成，再把根基練到大成
+ok 546 - loop193 守正厚積：先有一門外功小成，再把根基練到大成
+  ---
+  duration_ms: 36.134797
+  type: 'test'
+  ...
+# Subtest: loop187 靈動跳階：直取最高品；巧/快或二品以上 ×1.12；偷師 +6
+ok 547 - loop187 靈動跳階：直取最高品；巧/快或二品以上 ×1.12；偷師 +6
+  ---
+  duration_ms: 7.203183
+  type: 'test'
+  ...
+# Subtest: loop187 梟雄強練：豪爽／偽君子／重名望者先練他派高品外功（憨厚、拘謹除外）
+ok 548 - loop187 梟雄強練：豪爽／偽君子／重名望者先練他派高品外功（憨厚、拘謹除外）
+  ---
+  duration_ms: 46.10712
+  type: 'test'
+  ...
+# Subtest: loop187 至情清修：癡＋有默契伴侶、清冷＋小門派 ×1.18；舊局不吃 mods24
+ok 549 - loop187 至情清修：癡＋有默契伴侶、清冷＋小門派 ×1.18；舊局不吃 mods24
+  ---
+  duration_ms: 2.767599
+  type: 'test'
+  ...
+# Subtest: loop187 沉睡特質 mods24
+ok 550 - loop187 沉睡特質 mods24
+  ---
+  duration_ms: 5.061418
+  type: 'test'
+  ...
+# Subtest: loop188 相性：拘謹剋灑脫、清冷惜癡、豪爽惜嗜酒
+ok 551 - loop188 相性：拘謹剋灑脫、清冷惜癡、豪爽惜嗜酒
+  ---
+  duration_ms: 1.036892
+  type: 'test'
+  ...
+# Subtest: loop188 俠魅：仁厚可親、風采出塵、威儀服眾
+ok 552 - loop188 俠魅：仁厚可親、風采出塵、威儀服眾
+  ---
+  duration_ms: 0.788725
+  type: 'test'
+  ...
+# Subtest: loop188 第 27 日圍山再降約 5%
+ok 553 - loop188 第 27 日圍山再降約 5%
+  ---
+  duration_ms: 0.672905
+  type: 'test'
+  ...
+# Subtest: loop188 招收：新局約 35% 第二特質換成經典特質
+ok 554 - loop188 招收：新局約 35% 第二特質換成經典特質
+  ---
+  duration_ms: 0.441653
+  type: 'test'
+  ...
+# Subtest: loop194 面板露出主運內功、催動階與習性徽章
+ok 555 - loop194 面板露出主運內功、催動階與習性徽章
+  ---
+  duration_ms: 25.465474
+  type: 'test'
+  ...
+# Subtest: loop193 拘謹計數優先於勤奮
+ok 556 - loop193 拘謹計數優先於勤奮
+  ---
+  duration_ms: 28.966416
+  type: 'test'
+  ...
+# Subtest: loop192 異屬逆催：吐納不沖、無名派不吃虛級、禁術與真陰陽才第四階
+ok 557 - loop192 異屬逆催：吐納不沖、無名派不吃虛級、禁術與真陰陽才第四階
+  ---
+  duration_ms: 47.804137
+  type: 'test'
+  ...
+# Subtest: loop196 神木毒功：二品本門內功，百毒譜不是主修外功
+ok 558 - loop196 神木毒功：二品本門內功，百毒譜不是主修外功
+  ---
+  duration_ms: 34.640369
+  type: 'test'
+  ...
+# Subtest: loop196 四階催動：本門正宗、同源、虛浮、逆催；純內功不催動
+ok 559 - loop196 四階催動：本門正宗、同源、虛浮、逆催；純內功不催動
+  ---
+  duration_ms: 58.816897
+  type: 'test'
+  ...
+# Subtest: loop196 輕功身法的腳程與閃避乘同一催動係數
+ok 560 - loop196 輕功身法的腳程與閃避乘同一催動係數
+  ---
+  duration_ms: 7.656232
+  type: 'test'
+  ...
+# Subtest: loop197 內功十重：同火候不再乘品階，階內重數連續成長
+ok 561 - loop197 內功十重：同火候不再乘品階，階內重數連續成長
+  ---
+  duration_ms: 0.547769
+  type: 'test'
+  ...
+# Subtest: loop197 品階難度：一品略快、二品不加、三四品變慢
+ok 562 - loop197 品階難度：一品略快、二品不加、三四品變慢
+  ---
+  duration_ms: 1.166453
+  type: 'test'
+  ...
+# Subtest: loop198 造詣：內功身法棍棒可加速，三品神功吃三成五底子
+ok 563 - loop198 造詣：內功身法棍棒可加速，三品神功吃三成五底子
+  ---
+  duration_ms: 0.437367
+  type: 'test'
+  ...
+# Subtest: loop198 造詣實戰：內力、回氣、內勁、腳程、冷卻、外功傷害
+ok 564 - loop198 造詣實戰：內力、回氣、內勁、腳程、冷卻、外功傷害
+  ---
+  duration_ms: 1.641805
+  type: 'test'
+  ...
+# Subtest: loop196 本門正宗打坐 ×1.15，未大成不乘
+ok 565 - loop196 本門正宗打坐 ×1.15，未大成不乘
+  ---
+  duration_ms: 11.961602
+  type: 'test'
+  ...
+# Subtest: loop199 劍宗前期快、氣宗後期以氣御劍
+ok 566 - loop199 劍宗前期快、氣宗後期以氣御劍
+  ---
+  duration_ms: 4.685152
+  type: 'test'
+  ...
+# Subtest: loop203 日程改由偏好帶動，不再看守正成材
+ok 567 - loop203 日程改由偏好帶動，不再看守正成材
+  ---
+  duration_ms: 8.37257
+  type: 'test'
+  ...
+# Subtest: loop201 內力低時打法秒傷更高，內力高時練法反超，交叉在 90–130
+ok 568 - loop201 內力低時打法秒傷更高，內力高時練法反超，交叉在 90–130
+  ---
+  duration_ms: 34.027456
+  type: 'test'
+  ...
+# Subtest: loop201 吐納催三陰蜈蚣爪幾乎不掉威力
+ok 569 - loop201 吐納催三陰蜈蚣爪幾乎不掉威力
+  ---
+  duration_ms: 0.316568
+  type: 'test'
+  ...
+# Subtest: loop201 同武學同數值，氣宗、劍宗、無名派倍率相同
+ok 570 - loop201 同武學同數值，氣宗、劍宗、無名派倍率相同
+  ---
+  duration_ms: 0.66962
+  type: 'test'
+  ...
+# Subtest: loop201 內力先乘造詣再封頂 260
+ok 571 - loop201 內力先乘造詣再封頂 260
+  ---
+  duration_ms: 0.227016
+  type: 'test'
+  ...
+# Subtest: loop202 練法回饋主運內功且不破瓶頸，打法不回饋
+ok 572 - loop202 練法回饋主運內功且不破瓶頸，打法不回饋
+  ---
+  duration_ms: 36.031429
+  type: 'test'
+  ...
+# Subtest: loop202 以技入道：外功造詣 50 才加成，內勁有效值吃兩成外功
+ok 573 - loop202 以技入道：外功造詣 50 才加成，內勁有效值吃兩成外功
+  ---
+  duration_ms: 1.75883
+  type: 'test'
+  ...
+# Subtest: loop203 好打法連練練法後改練打法；手動主修與舊檔缺 bore31 都安全
+ok 574 - loop203 好打法連練練法後改練打法；手動主修與舊檔缺 bore31 都安全
+  ---
+  duration_ms: 1.215357
+  type: 'test'
+  ...
+# Subtest: loop203 練功倍率只留一個偏好標籤，靈動不與投其所好疊加
+ok 575 - loop203 練功倍率只留一個偏好標籤，靈動不與投其所好疊加
+  ---
+  duration_ms: 0.589641
+  type: 'test'
+  ...
+# Subtest: loop204 面板寫出類別與內勁，徽章只看主修武學
+ok 576 - loop204 面板寫出類別與內勁，徽章只看主修武學
+  ---
+  duration_ms: 15.209926
+  type: 'test'
+  ...
+# Subtest: loop205 診斷鉤子預設不聽；掛上才記練功與反哺
+ok 577 - loop205 診斷鉤子預設不聽；掛上才記練功與反哺
+  ---
+  duration_ms: 5.6755
+  type: 'test'
+  ...
+# Subtest: loop201 神木毒功退出學習池，已學會的舊檔仍讀得到
+ok 578 - loop201 神木毒功退出學習池，已學會的舊檔仍讀得到
+  ---
+  duration_ms: 82.707875
+  type: 'test'
+  ...
+# Subtest: loop201 面板規則跟上封頂與造詣
+ok 579 - loop201 面板規則跟上封頂與造詣
+  ---
+  duration_ms: 43.150545
+  type: 'test'
+  ...
+# Subtest: loop206 出手是同一批人的 dpsOf 前三名加總，減傷與內力不乘進去
+ok 580 - loop206 出手是同一批人的 dpsOf 前三名加總，減傷與內力不乘進去
+  ---
+  duration_ms: 54.624522
+  type: 'test'
+  ...
+# Subtest: loop206 多一門入門武學會抬門派戰力；共鳴與造詣凍住時出手不變
+ok 581 - loop206 多一門入門武學會抬門派戰力；共鳴與造詣凍住時出手不變
+  ---
+  duration_ms: 6.974416
+  type: 'test'
+  ...
+# Subtest: loop207 內勁飽和維持 1.6，高內力不再往 2.2 長，面板讀同一個常數
+ok 582 - loop207 內勁飽和維持 1.6，高內力不再往 2.2 長，面板讀同一個常數
+  ---
+  duration_ms: 10.627341
+  type: 'test'
+  ...
+# Subtest: loop208 求學與自悟只在同一層按偏好排，本門特許仍照樹序
+ok 583 - loop208 求學與自悟只在同一層按偏好排，本門特許仍照樹序
+  ---
+  duration_ms: 7.929754
+  type: 'test'
+  ...
+# Subtest: loop208 切磋觀摩按偏好挑能看的功夫，好練法不把打法排到前面
+ok 584 - loop208 切磋觀摩按偏好挑能看的功夫，好練法不把打法排到前面
+  ---
+  duration_ms: 1.202257
+  type: 'test'
+  ...
+# Subtest: loop206 診斷把出手記在 v33，pow 仍是 power()
+ok 585 - loop206 診斷把出手記在 v33，pow 仍是 power()
+  ---
+  duration_ms: 1566.042636
+  type: 'test'
+  ...
+# Subtest: N32 白身無武學、起手秒數與野狗從邊緣走來
+ok 586 - N32 白身無武學、起手秒數與野狗從邊緣走來
+  ---
+  duration_ms: 1480.503161
+  type: 'test'
+  ...
+# Subtest: N33 同一底層累積w，手熟縮前搖、眼熟縮反應，人獸都有紀錄
+ok 587 - N33 同一底層累積w，手熟縮前搖、眼熟縮反應，人獸都有紀錄
+  ---
+  duration_ms: 22.038782
+  type: 'test'
+  ...
+# Subtest: N55 只有播放參數變、沒有第二份熟練pose且繪製不回寫模擬
+ok 588 - N55 只有播放參數變、沒有第二份熟練pose且繪製不回寫模擬
+  ---
+  duration_ms: 37.896336
+  type: 'test'
+  ...
+# Subtest: 完美閃避觸發林克時間：只放慢圈內的敵人，1 秒後結束
+ok 589 - 完美閃避觸發林克時間：只放慢圈內的敵人，1 秒後結束
+  ---
+  duration_ms: 98.609715
+  type: 'test'
+  ...
+# Subtest: 每門都有五檔曲線；沒點名的武學與風雷掌腿同一條
+ok 590 - 每門都有五檔曲線；沒點名的武學與風雷掌腿同一條
+  ---
+  duration_ms: 1.924144
+  type: 'test'
+  ...
+# Subtest: 常見段化境倍率落在 1.4–1.8
+ok 591 - 常見段化境倍率落在 1.4–1.8
+  ---
+  duration_ms: 0.367353
+  type: 'test'
+  ...
+# Subtest: 同段入門、小成倍率相同；化境絕頂對入門在四到五倍
+ok 592 - 同段入門、小成倍率相同；化境絕頂對入門在四到五倍
+  ---
+  duration_ms: 0.327685
+  type: 'test'
+  ...
+# Subtest: 同火候，降龍十八掌比同品的風雷掌腿更痛；改悟性或初學標記不改出手
+ok 593 - 同火候，降龍十八掌比同品的風雷掌腿更痛；改悟性或初學標記不改出手
+  ---
+  duration_ms: 7.776647
+  type: 'test'
+  ...
+# Subtest: 太極劍練功不得高過太極拳；沒有太極拳就不漲；劇情給更高的熟練不會被砍掉
+ok 594 - 太極劍練功不得高過太極拳；沒有太極拳就不漲；劇情給更高的熟練不會被砍掉
+  ---
+  duration_ms: 38.352149
+  type: 'test'
+  ...
+# Subtest: 大成開第一招，化境招還沒開
+ok 595 - 大成開第一招，化境招還沒開
+  ---
+  duration_ms: 1.479237
+  type: 'test'
+  ...
+# Subtest: 洪七公三段傳功給三招，已傳的招不受火候限制
+ok 596 - 洪七公三段傳功給三招，已傳的招不受火候限制
+  ---
+  duration_ms: 0.641378
+  type: 'test'
+  ...
+# Subtest: 六門絕活各自觸發；內力不夠就不發動；沒看破的獨孤仍然格擋
+ok 597 - 六門絕活各自觸發；內力不夠就不發動；沒看破的獨孤仍然格擋
+  ---
+  duration_ms: 2.456922
+  type: 'test'
+  ...
+# Subtest: 六門內功被動各自生效；性格挑不同的內功
+ok 598 - 六門內功被動各自生效；性格挑不同的內功
+  ---
+  duration_ms: 22.662584
+  type: 'test'
+  ...
+# Subtest: 戰報與人物面板用一句話說主因，不列係數
+ok 599 - 戰報與人物面板用一句話說主因，不列係數
+  ---
+  duration_ms: 7.870146
+  type: 'test'
+  ...
+# Subtest: 絕活期望進每秒傷害：降龍有內力才加重，辟邪先手攤進數下，七傷扣自己的氣血
+ok 600 - 絕活期望進每秒傷害：降龍有內力才加重，辟邪先手攤進數下，七傷扣自己的氣血
+  ---
+  duration_ms: 1.137752
+  type: 'test'
+  ...
+# Subtest: 拜師關卡擋得住；劍掌五連環要兩門都到大成
+ok 601 - 拜師關卡擋得住；劍掌五連環要兩門都到大成
+  ---
+  duration_ms: 0.725863
+  type: 'test'
+  ...
+# Subtest: 太極爪與玄虛刀不得高過太極拳；臨濟按火候開莊；落英要先看出掌路；百花第三招在大成開
+ok 602 - 太極爪與玄虛刀不得高過太極拳；臨濟按火候開莊；落英要先看出掌路；百花第三招在大成開
+  ---
+  duration_ms: 15.794209
+  type: 'test'
+  ...
+# Subtest: 第二批絕活與內功被動各自觸發；乾坤只開第一層；觀破不靠火候發招
+ok 603 - 第二批絕活與內功被動各自觸發；乾坤只開第一層；觀破不靠火候發招
+  ---
+  duration_ms: 40.664479
+  type: 'test'
+  ...
+# Subtest: 豬籠城寨四門絕活各自生效：如來神掌震退、譚腿踢亂下盤、鐵線拳破架、八卦棍逼退
+ok 604 - 豬籠城寨四門絕活各自生效：如來神掌震退、譚腿踢亂下盤、鐵線拳破架、八卦棍逼退
+  ---
+  duration_ms: 4.895678
+  type: 'test'
+  ...
+# Subtest: 舊存檔讀入後是 2.8
+ok 605 - 舊存檔讀入後是 2.8
+  ---
+  duration_ms: 2.90853
+  type: 'test'
+  ...
+# Subtest: N9：戰力加倍，威脅上升，但不到兩倍
+ok 606 - N9：戰力加倍，威脅上升，但不到兩倍
+  ---
+  duration_ms: 17.539661
+  type: 'test'
+  ...
+# Subtest: N9：落敗後適應係數下降，數日後回到 1
+ok 607 - N9：落敗後適應係數下降，數日後回到 1
+  ---
+  duration_ms: 1.544223
+  type: 'test'
+  ...
+# Subtest: N10：觸發時 s.fx 多一筆；冷卻內不重複觸發；巡山抽象戰鬥不推
+ok 608 - N10：觸發時 s.fx 多一筆；冷卻內不重複觸發；巡山抽象戰鬥不推
+  ---
+  duration_ms: 1.162689
+  type: 'test'
+  ...
+# Subtest: N11：同一門武學選不同分路，觸發條件或效果不同
+ok 609 - N11：同一門武學選不同分路，觸發條件或效果不同
+  ---
+  duration_ms: 0.643461
+  type: 'test'
+  ...
+# Subtest: N11：扇形曲線 curveMulOf 不因分路改變
+ok 610 - N11：扇形曲線 curveMulOf 不因分路改變
+  ---
+  duration_ms: 0.300434
+  type: 'test'
+  ...
+# Subtest: N12：名功只算 secret＋classic
+ok 611 - N12：名功只算 secret＋classic
+  ---
+  duration_ms: 0.119917
+  type: 'test'
+  ...
+# Subtest: N12：傳者未達圓滿不能傳
+ok 612 - N12：傳者未達圓滿不能傳
+  ---
+  duration_ms: 0.448193
+  type: 'test'
+  ...
+# Subtest: N12：師徒「且」好感都要有
+ok 613 - N12：師徒「且」好感都要有
+  ---
+  duration_ms: 0.252513
+  type: 'test'
+  ...
+# Subtest: N12：傳功不直接給檔，師父佔半日，徒弟在傳授時段練得快
+ok 614 - N12：傳功不直接給檔，師父佔半日，徒弟在傳授時段練得快
+  ---
+  duration_ms: 7.593796
+  type: 'test'
+  ...
+# Subtest: N12／\#417：傳授時段師父不接別的活，改去外功場開共同任務
+ok 615 - N12／\#417：傳授時段師父不接別的活，改去外功場開共同任務
+  ---
+  duration_ms: 55.06217
+  type: 'test'
+  ...
+# Subtest: \#417 N13：師父手上有活時，徒弟不加速
+ok 616 - \#417 N13：師父手上有活時，徒弟不加速
+  ---
+  duration_ms: 0.802096
+  type: 'test'
+  ...
+# Subtest: \#417 N13：獨孤九劍限華山一脈——非華山徒弟學不到，華山師徒或劇情走過才行
+ok 617 - \#417 N13：獨孤九劍限華山一脈——非華山徒弟學不到，華山師徒或劇情走過才行
+  ---
+  duration_ms: 0.348926
+  type: 'test'
+  ...
+# Subtest: N12：每位師父每門名功只傳一人；受者上限傳者 − 1
+ok 618 - N12：每位師父每門名功只傳一人；受者上限傳者 − 1
+  ---
+  duration_ms: 0.272032
+  type: 'test'
+  ...
+# Subtest: N12：辟邪要先付代價，獨孤九劍限華山
+ok 619 - N12：辟邪要先付代價，獨孤九劍限華山
+  ---
+  duration_ms: 0.306303
+  type: 'test'
+  ...
+# Subtest: N12：乾坤大挪移要有聖火或九陽打底
+ok 620 - N12：乾坤大挪移要有聖火或九陽打底
+  ---
+  duration_ms: 0.342457
+  type: 'test'
+  ...
+# Subtest: N11：黯然兩條分路效果不同
+ok 621 - N11：黯然兩條分路效果不同
+  ---
+  duration_ms: 0.397317
+  type: 'test'
+  ...
+# Subtest: N11：玩家可選分路，改選已定分路要重練半日
+ok 622 - N11：玩家可選分路，改選已定分路要重練半日
+  ---
+  duration_ms: 0.699554
+  type: 'test'
+  ...
+# Subtest: 名功的極端勁力與獨孤截招；地圖戰只跳過重複的舊 on 效果
+ok 623 - 名功的極端勁力與獨孤截招；地圖戰只跳過重複的舊 on 效果
+  ---
+  duration_ms: 11.630304
+  type: 'test'
+  ...
+1..623
+# tests 623
+# suites 0
+# pass 623
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 361770.889163

@@ -1,5 +1,6 @@
+import { BODY_MOVES } from './starter-combat.mjs';
 import TREES from './destiny-trees.json' with { type: 'json' };
-import { COMBAT_MOVE_SETS } from './routines.mjs';
+import { COMBAT_MOVE_SETS } from './combat-pose-sets.mjs';
 // ==== （原 hero-data.mjs）====
 // v0.96 主角建立：六屬性、六價值觀、九問問心、六位經典模板、開局同門候選
 export const STATS = [['wu', '悟性'], ['gen', '根骨'], ['li', '臂力'], ['shen', '身法'], ['ding', '定力'], ['fu', '福緣']];
@@ -194,6 +195,7 @@ export const ACTIVITIES = {
 
 // 武學：熟練門檻解鎖；範圍/冷卻/傷害由 palm 技能放大
 export const MOVES = [
+  ...BODY_MOVES,
   { id: 'fist', skill: 'palm', name: '基礎拳', req: 0, range: 34, cd: 1.0, dmg: 4, aoe: 0, color: '#8a6a4a' },
   { id: 'push', skill: 'palm', name: '推山掌', req: 25, range: 60, cd: 1.6, dmg: 8, aoe: 0, color: '#b0482e' },
   { id: 'wave', skill: 'palm', name: '迴風掌', req: 60, range: 80, cd: 3.0, dmg: 7, aoe: 70, color: '#3d6b8a' },
@@ -246,7 +248,7 @@ export const PLOT_GROW = 90; // 秒，播種到成熟
 export const HARVEST = 3;    // 每畦收菜
 export const STYLES = { palm: '掌法', leg: '腿法' };
 // v0.4 後山生態：族群有上限與繁衍；狩獵是真的取走個體
-export const ECO = { rat: { start: 6, max: 8, regen: 50 }, boar: { start: 2, max: 3, regen: 150 } };
+export const ECO = { dog: { start: 5, max: 8, regen: 90 }, rat: { start: 6, max: 8, regen: 50 }, boar: { start: 2, max: 3, regen: 150 } };
 export const HABITAT = { c: [1450, 60], r: 70 };
 /* #419 N15 合法出生點：敵人只從這張表出來——離地圖邊緣 ≤ edge、離大殿 ≥ hall。獸從獸穴、棲地、東嶺；山賊從山門。
    via：出生點到守點山路的座標（都在山那一側，不從門派背後冒出來）；接上 guard 之後沿原山路走。 */
@@ -342,7 +344,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '3.3'; /* 第八輪 #468：晨課令改成持續的門規作息 */
+export const RULES_VERSION = '3.4'; /* 第九輪 9a：白身起手、共用手眼熟與唯讀成長播放 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -618,6 +620,7 @@ export const AURA = { fist: '#b08a5a', palm: '#d0582e', leg: '#6b9a3d', inner: '
 // ---- v0.95 敵人種類與圖鑑（觀破值）----
 // kind：獸／人；flee：殘血時逃走機率；loot：整數必得、小數為機率
 export const ENEMIES = {
+  dog: { name: '野狗', kind: '獸', weapon: '利齒', hp: 14, dmg: 3, cd: 1.2, flee: 0.5, loot: {}, home: { sprite: 'dog', speed: 65 } },
   rat:    { name: '山鼠',     kind: '獸', weapon: '利齒', hp: 10,  dmg: 2,  cd: 1.0, flee: 0.5,  loot: {} },
   hare:   { name: '野兔',     kind: '獸', weapon: '牙爪', hp: 8,   dmg: 1,  cd: 1.2, flee: 0.6,  loot: { food: 1 } },
   boar:   { name: '野豬',     kind: '獸', weapon: '獠牙', hp: 40,  dmg: 6,  cd: 1.3, flee: 0.1,  loot: { food: 3, hide: 1 } },
@@ -627,7 +630,7 @@ export const ENEMIES = {
   bandit: { name: '山賊嘍囉', kind: '人', weapon: '刀',   hp: 120,  dmg: 14,  cd: 1.2, flee: 0.3,  loot: { coin: 3, page1: 0.15 } },
   archer: { name: '獵戶暗箭', kind: '人', weapon: '暗器', hp: 75,  dmg: 17, cd: 1.5, flee: 0.45, loot: { coin: 2, page1: 0.1 } },
   bear:   { name: '黑熊',     kind: '獸', weapon: '熊掌', hp: 420, dmg: 28, cd: 1.6, flee: 0.05, loot: { food: 6, gall: 1 } },
-  chief:  { name: '山賊頭目', kind: '人', weapon: '刀／鞭', hp: 360, dmg: 24, cd: 1.1, flee: 0.2, loot: { coin: 12, page2: 0.35 } },
+  chief:  { name: '山賊頭目', kind: '人', weapon: '刀／鞭', hp: 360, dmg: 24, cd: 1.1, flee: 0.2, practiceTier: 3, loot: { coin: 12, page2: 0.35 } },
   // v1.0 第五段以後（基準數值；實戰再乘路段倍率 ×1.25^k）
   vulture:{ name: '禿鷲',     kind: '獸', weapon: '鐵喙', hp: 120, dmg: 12, cd: 1.0, flee: 0.4,  loot: { hide: 1 } },
   ape:    { name: '崖猿',     kind: '獸', weapon: '巨臂', hp: 200, dmg: 15, cd: 1.3, flee: 0.2,  loot: { food: 4, herb: 1 } },

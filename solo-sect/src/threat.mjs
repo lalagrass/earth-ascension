@@ -1,9 +1,12 @@
+import { fastestMove, windOf } from './arts.mjs';
+import { practiceWindow } from './practice.mjs';
+import { foeAction } from './starter-combat.mjs';
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
 import { NODES, EDGES, DAY, FACILITIES, MOVES, ARTS } from './data.mjs';
 import { noteFret, interceptOpening, breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
 import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuterArt, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
-import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of } from './sect.mjs';
+import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of as sectDefenseFactor } from './sect.mjs';
 import { peaceDelay } from './economy.mjs';
 import { mates } from './bonds.mjs';
 import { cancelTask } from './core.mjs';
@@ -177,8 +180,8 @@ function bandClash(s, b, defs, dt) {
       continue; }
     if (d.bcool > 0 || (d.busyUntil || 0) > s.t) continue;
     const mine = live().filter((m) => m.ring === 1 && m.foe === d.id), tgt = (mine.length ? mine : live()).sort((x, y) => x.hp - y.hp)[0]; if (!tgt) break;
-    const wind = BAND_CLASH.cd * windFrac(topTierOf(d)); d.bcool = BAND_CLASH.cd;
-    d.bswing = { mv: mainOuterArt(d)?.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * def24Of(s) * BAND_CLASH.cd };
+    const mv = fastestMove(d), wind = windOf(d,mv.id,mv.cd); d.bcool = BAND_CLASH.cd;
+    d.bswing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * sectDefenseFactor(s) * BAND_CLASH.cd };
     (s.fx ||= []).push({ kind: 'warn', from: [...d.pos], to: [...(tgt.pos || b.pos)], r: 30, dur: wind, ttl: wind, t0: s.t });
   }
   if (b.state !== 'yard') return;
@@ -189,7 +192,7 @@ function bandClash(s, b, defs, dt) {
       m.swing = null; d.bswing = null; postureHit(s, m, WITCH.crossDrop); postureHit(s, d, WITCH.crossDrop); b.cross = (b.cross || 0) + 1; s.crossN = (s.crossN || 0) + 1;
       (s.fx ||= []).push({ kind: 'cross', pos: [(m.pos[0] + d.pos[0]) / 2, (m.pos[1] + d.pos[1]) / 2], ttl: 0.6 }); if (b.cross === 1) log(s, `【輕功交錯】${d.name}和一名山賊同時突進，擦身而過，火花一閃，兩人都退了半步`); continue; }
     if (m.swing) { if (s.t + 1e-9 < m.swing.at) continue; const w = m.swing; m.swing = null; handleTake(s, d);
-      const r = resolveSwing(s, m, d, () => R(s), { depth: 2, wind: w.wind, opening: w.opening }); (b.cl ??= {})['m' + r.kind] = (b.cl['m' + r.kind] || 0) + 1;
+      const r = resolveSwing(s, m, d, () => R(s), { depth: 2, move: w.mv, wind: w.wind, opening: w.opening }); (b.cl ??= {})['m' + r.kind] = (b.cl['m' + r.kind] || 0) + 1;
       if (r.kind === 'dodge' && perfectDodge(s, d, () => R(s), { strain: r.strain })) b.witch = (b.witch || 0) + 1;
       if (r.kind === 'read') bandHit(s, b, m, r.counter, d);
       if (r.kind === 'hit') { breakWindup(s, m, d, null, w.wind); let incoming = (BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per) * (r.heavy ? CLASH.heavy : 1);
@@ -206,9 +209,9 @@ function bandClash(s, b, defs, dt) {
     const { m, d } = ready[i];
     if (delays[i] > 0) { m.cool = delays[i]; continue; }
     if (zjIntercept(s, m, fight)) { m.cool = BAND_CLASH.monCd; continue; }
-    const wind = BAND_CLASH.monCd * CLASH.monWind, start = interceptOpening(s, m, d, () => R(s), { depth: 2, wind }); m.cool = BAND_CLASH.monCd;
+    const action = foeAction(m, Math.hypot(m.pos[0] - d.pos[0], m.pos[1] - d.pos[1])), wind = practiceWindow(m,action.id,action.wind).wind, start = interceptOpening(s, m, d, () => R(s), { depth: 2, move: action.id, wind }); m.cool = BAND_CLASH.monCd;
     if (start.read?.kind === 'read') { bandHit(s, b, m, start.read.counter, d); (b.cl ??= {}).mread = (b.cl.mread || 0) + 1; continue; }
-    m.swing = { at: s.t + wind, wind, opening: start.opening };
+    m.opened = true; m.swing = { mv: action.id, at: s.t + wind, wind, opening: start.opening };
     (s.fx ||= []).push({ kind: 'warn', from: [...(m.pos || b.pos)], to: [...d.pos], r: 26, dur: wind, ttl: wind, t0: s.t });
   }
 }
@@ -276,12 +279,12 @@ export function points(s) {
   const daysAndValor = dayMul(s) * valorThreatMul(s) * (X.taiping ? BOSS.peaceMul : 1);
   return Math.min(RAID.cap, Math.round(baseTerm * daysAndValor * adapt));
 }
-export const defense = (s) => power(s) * def24Of(s); /* loop176 武當紫霄宮 */
+export const defense = (s) => power(s) * sectDefenseFactor(s); /* loop176 武當紫霄宮 */
 export const winP = (s, pts) => {
   const d = defense(s), open = d + pts > 0 ? d / (d + pts) : 0;
   const team = s.ds.filter(canDefend);
   if (!team.length) return open;
-  const dps = team.reduce((sum, x) => sum + defenderDps(x, s), 0) * def24Of(s);
+  const dps = team.reduce((sum, x) => sum + defenderDps(x, s), 0) * sectDefenseFactor(s);
   const hp = team.reduce((sum, x) => sum + Math.max(0, x.hp), 0);
   const raiderDps = bandMembers(pts).reduce((sum, m) => sum + (BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per) / BAND_CLASH.monCd, 0);
   const yardTempo = dps * hp / (dps * hp + pts * raiderDps);
@@ -295,7 +298,7 @@ export const demandOf = (s, pts) => Math.max(RAID.demand.min, Math.round(Math.mi
 // 自動決定：比較「勒索金」與「迎戰的預期損失」＝(1−勝率)×(被搶的錢＋糧＋一人重傷折 hurtCost)；勒索金較小且付得起才付
 export const fightLoss = (s, p) => (1 - p) * (Math.max(0, s.res.coin) * RAID.steal.coin + (s.res.food || 0) * RAID.steal.food + RAID.hurtCost);
 // loop4：有柵時執事先估「守方打光山賊」是否快過「山賊撞破柵」，快就迎戰；否則照舊比較
-export function fenceHolds(s, pts) { if (!fenceUp(s)) return false; const dps = s.ds.filter(canDefend).reduce((a, d) => a + defenderDps(d, s), 0) * def24Of(s); /* loop183 */ if (dps <= 0) return false;
+export function fenceHolds(s, pts) { if (!fenceUp(s)) return false; const dps = s.ds.filter(canDefend).reduce((a, d) => a + defenderDps(d, s), 0) * sectDefenseFactor(s); /* loop183 */ if (dps <= 0) return false;
   const fd = Math.max(BAND.fenceDmg.min, Math.round(pts * BAND.fenceDmg.k)) / BAND.hitEvery; return pts / dps < s.fence.hp / fd; }
 export const raidAuto = (s) => { const P = T(s).pending; if (P?.noPay) return 1; if (P && fenceHolds(s, P.pts)) return 1; return P && s.res.coin >= P.demand && P.demand < fightLoss(s, P.p) ? 0 : 1; };
 // 每日一次（sim 換日時呼叫）：到期就看點數，>0 才上門
@@ -495,7 +498,7 @@ export function waveBattle27(s, team, spec) {
   const kills = new Map(team.map((d) => [d.id, 0])); let tire = 1, won = 0, healed = 0; const heal = team.some((d) => (bestSpec(s, 'yishu', [d]) >= WAVE27.healSpec) || WAVE27.healArts.some((id) => d.arts?.[id]));
   const out = { waves: [], n: team.length }; for (const d of team) { const w = qiInjuryAdd28(s, d); if (w) log(s, `【經脈暗傷】${d.name}強以異種內息催動他派武學《${w.name}》，真氣逆行，經脈隱隱作痛！`); } /* loop181 參戰亦累積逆催內傷 */
   for (let w = 0; w < spec.waves.length; w++) {
-    const W = spec.waves[w], P0 = wavePower27(s, team, w), P = P0.pow * tire * (spec.home ? def24Of(s) : 1); /* loop183 紫霄宮守禦也護圍山 */ let E = W.E;
+    const W = spec.waves[w], P0 = wavePower27(s, team, w), P = P0.pow * tire * (spec.home ? sectDefenseFactor(s) : 1); /* loop183 紫霄宮守禦也護圍山 */ let E = W.E;
     if (spec.home) { if (fenceUp(s)) E *= 1 - WAVE27.fence - WAVE27.fenceLv * ((s.fence.lv || 1) - 1); E *= 1 - SPEC.zhenMit * zhenK(s, team); }
     const p = Math.max(WAVE27.pMin, Math.min(WAVE27.pMax, P * P / (P * P + E * E))), win = hh27(`${s.seed}:${spec.key}:${w}`) < p;
     const tot = win ? W.n : Math.floor(W.n * p * 0.5), sum = P0.parts.reduce((a, [, x]) => a + x, 0) || 1;

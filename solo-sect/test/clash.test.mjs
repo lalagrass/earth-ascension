@@ -1,7 +1,7 @@
 /* 第四輪 #418 N14 見招拆招：三段出招、四種接法、架勢條。 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { CLASH, windOf, windFrac, resolveSwing, postureOf, postureMax, clashOdds } from '../src/arts.mjs';
+import { CLASH, windOf, windFrac, resolveSwing, postureOf, postureMax, clashOdds, clashTimes, drawReaction } from '../src/arts.mjs';
 import { createState, tick, startHunt, save } from '../src/sim.mjs';
 
 const seq = (...v) => { let i = 0; return () => v[Math.min(i++, v.length - 1)]; };
@@ -43,8 +43,12 @@ test('N14：招架雙方都掉架勢；氣血只在中招時掉', () => {
   const { s, d } = hero();
   const rat = { uid: 'r1', k: 'rat', hp: 10, pos: [0, 0] }; d.wu = 1; s.codex = {};
   const o = clashOdds(s, rat, d, { wind: 0.5 }); assert.ok(o.parry > 0);
+  const timing = clashTimes(s, rat, d, { wind: 0.5 });
+  assert.ok(drawReaction(timing, () => 0.1) + timing.guard < timing.wind);
+  assert.ok(drawReaction(timing, () => 0.1) + timing.step >= timing.wind);
+  assert.ok(drawReaction(timing, () => 0.5) + timing.guard >= timing.wind, 'N33 中位反應來不及格架');
   const hp = d.hp, pd = postureOf(d), pr = postureOf(rat);
-  const r = resolveSwing(s, rat, d, seq(0.5, 0));
+  const r = resolveSwing(s, rat, d, seq(0.1, 0)); // N33 長尾反應：選一個來得及格架、來不及移步的抽樣
   assert.equal(r.kind, 'parry');
   assert.ok(d.posture < pd && rat.posture < pr);
   assert.equal(d.hp, hp);
