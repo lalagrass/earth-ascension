@@ -39,6 +39,7 @@ test('N33 同一底層累積w，手熟縮前搖、眼熟縮反應，人獸都有
   assert.ok(windOf(d,'bodyPunch',1)<start);
   const fake={skills:{agility:20},practice:{hands:{bodyPunch:50}}}; const w=practiceWindow(fake,'bodyPunch',.45);
   assert.ok(Math.abs((w.wind-w.floor)/(w.start-w.floor)-.5)<1e-12);
+  const {adopt}=await import('../src/sect.mjs');d.glimmer={known:['disarm'],progress:{disarm:100}};d.timePrev={day:1,elapsed:DAY,free:400,guided:100};const child=adopt(s,d,s.ds[1],()=>.5);assert.deepEqual(child.practice,{hands:{},eyes:{},origin:{}});assert.equal(child.glimmer,undefined);assert.equal(child.timePrev,undefined);assert.ok(child.bare);
 });
 
 
