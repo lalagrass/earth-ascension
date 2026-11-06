@@ -223,7 +223,7 @@ N48 的練功套路及交手畫面共用 `routines.mjs` 的姿勢與 `pose-rende
 
 驗收日程是**明列的受控日程**，不是宣稱任何放生局都會60天自動變強：bare新局、執事開啟、先採石用真資源蓋井，接著每200遊戲秒以公開`setOrder`循環練拳/砍柴/挑水。完整世界照常tick(.25)，需求、路程、工地與來犯都沒跳過，沒有灌n/f、技能、資源或補血。取第1/60日同為開日30秒的snapshot。工具持續讀N33完成事件並核對每招累積n與存檔一致，身體讀同時刻的真snapshot；七欄由遊戲相同的播放函式計算，其中前五欄為issue門檻，後兩欄供盲測對照。seed任選；不得為不過的種子覆寫日60數值。
 
-`growth-preview.html`只是同一遊戲renderer的離線檢視器，唯讀播放真snapshot並把同一動作置中放大；不是另一套原型骨架、不是實拍紀錄AI恰好做了同動作。`blind.mjs`需review環境既有Playwright+Chromium，使用指定正常預覽URL、阻擋跨origin請求，無連線fallback；遊戲本身不新增依賴。每片含至少10秒同動作，A/B按seed打散，答案另檔。**本worker尚未執行錄影、沒有A/B.webm，也沒有真人盲測結果**。parent待正常桌面通路恢復後完成，不繞過目前localhost的連線限制；此項不阻止N34後續程式工作。
+`growth-preview.html`只是同一遊戲renderer的離線檢視器，唯讀播放真snapshot並把同一動作置中放大；不是另一套原型骨架、不是實拍紀錄AI恰好做了同動作。依擁有人後續要求，`blind.mjs`現為零新相依、只準備真snapshot/seed打散A/B JSON及答案另檔的CLI，不啟動或控制瀏覽器。正常紀錄頁的連結可開啟同renderer檢視器，使用File API匯入JSON，真人按MediaRecorder/canvas.captureStream錄10秒並下載WebM。10秒來自#474；captureStream的60fps是常見螢幕呈現取樣上限，不改模擬固定.25秒步長或成長。頁面只把真人物copy指定為同一展示動作，不改能力或主局，畫布只標A/B。尚須正常桌面實驗API/下載/影片，這不是第二套renderer或另一份骨架；沒有網路/預覽繞路。**本worker尚未執行錄影、沒有A/B.webm，也沒有真人盲測結果**。parent待正常桌面通路恢復後完成，不繞過目前localhost的連線限制；此項不阻止N34後續程式工作。
 
 
 ## N34 情境決策、輸後想練（#444）

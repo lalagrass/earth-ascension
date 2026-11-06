@@ -1,27 +1,17 @@
-// 作者不得在目前預覽連線阻擋下改host或啟動此工具繞過；由parent於桌面通路恢復後執行。
+// 零相依、只準備真資料。此CLI不啟動或操控瀏覽器；錄影由正常頁面中的真人操作。
 import {mkdir,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import path from 'node:path';
 import {options,growthSnapshots} from './growth-scenario.mjs';
-const {seed,get}=options(), url=get('url','http://localhost:8814/solo-sect/tools/growth-preview.html'),action=get('action','train');
+if(process.argv.some(a=>a==='--url'||a.startsWith('--url=')))throw Error('--url不再使用：CLI只準備資料，請在正常UI匯入A/B並由真人按錄影。');
+const {seed,get}=options(),action=get('action','train'),out=path.resolve(get('out','out/blind'));
 if(!['train','chop','water'].includes(action))throw Error('--action需train/chop/water');
-const out=path.resolve('out/blind');await mkdir(out,{recursive:true});
-let chromium;try{({chromium}=await import('playwright'));}catch{throw Error('需要review環境既有Playwright與Chromium；不在遊戲新增依賴。請由parent處理正常測試工具環境，不改host重試。');}
+await mkdir(out,{recursive:true});
 const result=growthSnapshots(seed,[1,60]),swap=createHash('sha256').update('solo-sect-blind:'+seed).digest()[0]%2;
 await writeFile(path.join(out,'metrics.json'),JSON.stringify(result,null,2));
-// 本機Playwright是issue明列驗收工具，不屬遊戲依賴；目前worker僅提供程式，未執行錄影。
-const browser=await chromium.launch({headless:true});
-try{for(let i=0;i<2;i++){
-  const which=i^swap,ctx=await browser.newContext({viewport:{width:640,height:480},recordVideo:{dir:path.join(out,'raw'),size:{width:640,height:480}}});
-  const page=await ctx.newPage();
-  try{
-    await page.addInitScript(value=>{window.growthInput=value;},{hero:result.snapshots[which].hero,clock:result.clock,action});
-    await page.route('**/*',route=>new URL(route.request().url()).origin===new URL(url).origin?route.continue():route.abort());
-    await page.goto(url);await page.waitForFunction(()=>window.previewReady===true);
-    await page.evaluate(()=>window.startGrowthPreview());await page.waitForTimeout(10_000);
-    const video=page.video();await ctx.close();await video.saveAs(path.join(out,i?'B.webm':'A.webm'));
-  }catch(e){await ctx.close();throw e;}
+for(let i=0;i<2;i++){
+ const snapshot=result.snapshots[i^swap],label=i?'B':'A';
+ await writeFile(path.join(out,label+'.json'),JSON.stringify({format:'solo-sect-growth-input-v1',label,action,clock:result.clock,hero:snapshot.hero,provenance:{seed,eventHash:snapshot.eventHash,events:snapshot.events}},null,2));
 }
-await writeFile(path.join(out,'key.txt'),`seed=${seed} action=${action}\nA=第${result.snapshots[swap].day}天\nB=第${result.snapshots[1^swap].day}天\n先記三處差異再開此檔。\n`);
-console.log('已錄A.webm/B.webm，各含至少10秒同一動作；key.txt另檔。需真人盲測，不代表已通過。');
-}finally{await browser.close();}
+await writeFile(path.join(out,'key.txt'),`seed=${seed} action=${action}\nA=第${result.snapshots[swap].day}天\nB=第${result.snapshots[1^swap].day}天\n只準備真snapshot；尚無影片或真人結果。先記三處差異再開本檔。\n`);
+console.log(JSON.stringify({seed,action,out,prepared:['A.json','B.json','metrics.json','key.txt'],videosCreated:0,humanBlindTest:'NOT_RUN',next:'正常UI紀錄→離線成長盲測驗收，匯入A.json/B.json各按錄製10秒下載WebM；不要開key給受測者。'},null,2));

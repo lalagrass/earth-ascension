@@ -48,3 +48,8 @@
 **未完成**：真A/B.webm與真人判讀；未執行blind.mjs（預覽連線仍被阻擋），沒有遊戲實拍。表格、Canvas mock測試、離線檢視器均不算影片或盲測通過。parent處理正常桌面通路後錄影驗收；不因此等review/合併或停止N34。
 
 原始stdout暫存在工作機 `/workspace/specs/t200u-live/n55-growth-{17,904,20261106}.json`，此表保留所有量測欄與hash；乾淨clone用上述命令可自行產生，不依賴這個絕對路徑。
+
+## 零新依賴入口更新（2026-11-07 台北時間）
+`node solo-sect/tools/blind.mjs --seed 17 --action train --out /workspace/specs/t200u-live/n55-offline17`已真執行；只產A.json/B.json、metrics.json、key.txt，videosCreated0、NOT_RUN。Node核對兩份hero/eventHash皆逐字相符真snapshot。正常遊戲紀錄底部新增匯入/播放/錄10秒WebM入口，同pose-render，沒有啟動browser；舊Playwright前提已移除。
+
+此head seed17受控公開日程（非自然放養）：day1→60斧停.5→.1790472583秒、水桶傾15→.9202085004度、重心17→11.1604576661、套路6.9→2.4797652842秒、拳前搖.45→.1678573586秒。對應eventHash e741d84cd5f5519fb4c20257752cccdae9b26e59767e259ff3bfe7a894cb14d5 / 0a07b9b2abc51d801df28adcc079fd6ea7bed951e537725125191ca9327046f2。只有seed17準備驗證；後續核心若再改，最終三seed仍必須重跑。**WebM、實拍、正常UI使用、真人盲測全部仍未完成**，不能把這些數字/準備檔當影片。

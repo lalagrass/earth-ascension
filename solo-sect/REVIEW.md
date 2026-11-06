@@ -65,9 +65,9 @@ probe是「充分休息、沒有惱羞/在途攻擊」的20次獨立新狗**單�
 | 上一指令同seed連跑兩次，至少另換兩種seed | stdout完全相同、三種seed皆pass | 不依賴作者的snapshot；每次真跑60日，需等待約數分鐘，非完整測試矩陣 |
 | `node solo-sect/tools/check-poses.mjs` | errors空、pass=true | 列出79組序列，熟練不產生第二份，所有姿勢都存在 |
 | `node solo-sect/tools/check-assets.mjs` | missing=0，168/168 | 全素材授權仍可離線查；此milestone無新asset |
-| **由parent於正常桌面通路恢復後** `node solo-sect/tools/blind.mjs --seed <任選整數> --url http://localhost:8814/solo-sect/tools/growth-preview.html` | 真A/B.webm各含至少10秒同動作；真人猜對，寫出至少三處差異對得上量測 | `out/blind/A.webm`、`B.webm`、`key.txt`另檔；`metrics.json`供數字對照。工具尚未執行，不是已驗收影片 |
+| `node solo-sect/tools/blind.mjs --seed <任選整數> --out out/blind`，接著**真人於正常UI紀錄→離線成長盲測驗收**匯入A.json/B.json各按錄製10秒 | 真A/B.webm各至少10秒同動作；真人猜對且三處差異對得上表；CLI準備不算錄影成功 | CLI只產A.json/B.json、metrics.json、答案key.txt另檔，明印videosCreated=0/NOT_RUN；正常瀏覽器MediaRecorder/canvas.captureStream下載WebM後仍須實際開檔確認。**影片/真人仍未驗** |
 
-盲測預設train；可另加`--action chop`/`water`。預設片應觀察式間停頓、重心、整套速度（晃動另有對照數字），不要以影片檔名/日數UI洩漏答案。輸出同路徑會覆寫先前同名驗收檔，請先保留已猜的結果。若preview連線阻擋，停止錄影嘗試交parent，不換host、不Shell CDP/Playwright迴避；目前正是此狀態。工具需要review環境既有Playwright/Chromium，沒有把套件加進遊戲。連兩名reviewer猜錯依#479決策，不自改3D。
+盲測預設train；可另加`--action chop`/`water`。預設片應觀察式間停頓、重心、整套速度（晃動另有對照數字），不要以影片檔名/日數UI洩漏答案。輸出同路徑會覆寫先前同名驗收檔，請先保留已猜的結果。若preview連線阻擋，停止錄影嘗試交parent，不換host、不Shell CDP/Playwright迴避；目前正是此狀態。依擁有人後續要求，CLI已改只準備真資料，不使用Playwright或啟動瀏覽器；正常頁面需支援MediaRecorder/canvas.captureStream/WebM的瀏覽器，純ES modules可由既有正常HTTP預覽載入。禁止在受阻時換host或以Shell操控browser。#474的10秒影片產出與真人門檻仍未完成，沒有因改入口就宣稱通過。連兩名reviewer猜錯依#479決策，不自改3D。
 
 受控日程與各常數理由見[combat.md N55](docs/systems/combat.md#n55成長只改共用骨架的播放474)。數字證據寫在`docs/evidence/r9-n55-growth.md`；桌面與影片驗收不得用這張表、SVG或mock Canvas測試冒充。
 
@@ -165,3 +165,7 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 | `node solo-sect/tools/waves.mjs --seed <任選> --history labor --trait normal --log out/labor.json` | 舊勞動無刀賊暴露的反例必須保留 | 既有seed17兩路counter0 FAIL，不因新史打包成PASS |
 
 先`mkdir -p out`。[`docs/evidence/r9-n36-public60.md`](docs/evidence/r9-n36-public60.md)列歷史/fixture/同一人物不同人格的受控前提、兩次獨立真生成hash及新逐拍T0缺口。不是三種自然人格各60日，更不是任意seed已證明。
+
+#### N55 零新相依正常UI入口（資料準備不等於影片）
+- 指令：`node solo-sect/tools/blind.mjs --seed <任選> --action train --out out/blind`；也可action chop/water，各次用不同out保留檔案。門檻：A/B各完整等於真1/60日snapshot之一，答案另檔。預期：`videosCreated:0`、`humanBlindTest:NOT_RUN`，沒有自動啟動browser。seed17已執行，只證明準備流程，非最終三seed全部驗收。
+- 正常UI：紀錄頁底部「離線成長盲測驗收」→匯入A.json→播放→錄製10秒下載A.webm；B同做。門檻：實際影片各至少10秒、無日數洩漏，先記三處差異後才開key.txt。預期：同displayPose/drawPoseActor renderer的影片，真人結果另記。**本worker沒有開UI/錄影，尚無A.webm/B.webm**；支援API/下載/真畫面仍需parent正常桌面實驗，不用SVG或JSON宣稱已驗影片。
