@@ -6,7 +6,7 @@ import { sideCards, bubbles, bioLine, chronHtml } from './util.mjs';
 import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES, MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS, statusIcon } from './bonds.mjs';
 import { ARC13 } from './jianghu.mjs';
 import { GEN, canSucceed, succeed, heirs, heirArt, canBuildFac, buildFac, artKind, KIND_NAME, sectFac, rivalGate } from './sect.mjs';
-import { SECTS, SECT_K, RULE_LIB, JH, DAY as DAY13, HS, DUGU, ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2, ROUTE, EXP, ENEMIES, CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES, ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, EXP_STYLES, CAMPS, ENDLESS, bindPortraitSet } from './data.mjs';
+import { SECTS, SECT_K, RULE_LIB, JH, DAY as DAY13, HS, DUGU, ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2, ROUTE, EXP, ENEMIES, CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES, ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, EXP_STYLES, CAMPS, ENDLESS, ROUTINE_MODES, ROUTINE_PERIODS, bindPortraitSet } from './data.mjs';
 import { zxGate, XIA, xiaPool, pickStudent } from './wuxia.mjs';
 import { crusade27, isEliteHermit, startExpedition, recallExpedition, canExpedition, codexRows, reportText, segAt, ROUTE_END, skipGuide, outers, skipsChores, emergency, quotaOf, setDuty, setPrio, canPromote, startTrial, isLabor, disciples, laborers, laborCap, canHire, hire, canInvite, invite, avgAff, togglePause, MATS, moodLabel, moodParts, seasonOf, aff, compat, defaultAnswers, personalityFrom, capacity, canRecruit, recruit, recruitNeed, mapStage, setPost, phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf, incenseOf, startSchoolTrip, buildWhy, lotsUsed, lotsOf, lotCost, lotWhy, buyLot, resolveRaid } from './sim.mjs';
 import { nearestType, typeLabel, archLabel, think as think10 } from './social.mjs';
@@ -16,6 +16,8 @@ import { SFX, ambient, setMute, isMuted, cuesFrom } from './audio.mjs';
 import { threatHtml, rumorDays, buildFence, upgradeFence, startFenceSite } from './threat.mjs';
 import { routineFrame } from './routines.mjs';
 import { displayPose, drawPoseActor } from './pose-render.mjs';
+import { growthSnapshot } from './growth-adapter.mjs';
+import { mountChoiceButtons } from './choice-buttons.mjs';
 function practiceLabel(d, compact = false) {
   if (d.task?.act !== 'train' || d.task.phase !== 'do') return '';
   const art = artById(focusOf(d) || 'basicFist');
@@ -37,7 +39,7 @@ const ACT_ICON = { quarry: '⛏', spar: '🤺', cook: '🍲', deliver: '📦', r
 let BUB = {};
 function bubble(msg, x, y) { const m = msg.length > 18 ? msg.slice(0, 17) + '…' : msg; g.font = '12px sans-serif'; const w = g.measureText(m).width + 14; g.fillStyle = 'rgba(255,255,255,.92)'; g.strokeStyle = '#6b4a2a'; g.lineWidth = 1; g.beginPath(); g.roundRect(x - w / 2, y - 20, w, 20, 8); g.fill(); g.stroke(); g.beginPath(); g.moveTo(x - 4, y); g.lineTo(x, y + 6); g.lineTo(x + 4, y); g.fill(); g.fillStyle = '#3a2f24'; g.textAlign = 'center'; g.fillText(m, x, y - 6); g.textAlign = 'left'; }
 // v1.45 B 級＝右側竹簡（可點推鏡）、A 級＝暫停＋推鏡
-function focusOn(id) { const d = S.ds.find((x) => x.id === id); if (!d || d.away) return false; camFocus(d.pos[0], d.pos[1] - 30, 2.5); const c = document.querySelector(`[data-dcard="${id}"]`); if (c) { c.open = true; c.scrollIntoView({ block: 'nearest' }); } return true; }
+function focusOn(id) { const d = S.ds.find((x) => x.id === id); if (!d || d.away) return false; window.__artsOf = id; camFocus(d.pos[0], d.pos[1] - 30, 2.5); panel(); const c = document.querySelector(`[data-dcard="${id}"]`); if (c) { c.open = true; c.scrollIntoView({ block: 'nearest' }); } return true; }
 function feed() { let f = document.getElementById('feed'); if (!f) { f = document.createElement('div'); f.id = 'feed'; document.getElementById('wrap').appendChild(f); }
   const html = sideCards(S, 5).map((e) => `<div class="slip ${e.tier}" data-who="${e.who || ''}" title="點一下推鏡到相關人物">${e.tier === 'top' ? '★ ' : ''}[${e.t}s] ${e.msg}</div>`).join(''); if (f.__h !== html) { f.innerHTML = html; f.__h = html; }
   let a = document.getElementById('alert');
@@ -96,6 +98,7 @@ function draw() {
     if (d.carry?.stone) { g.fillStyle = '#8c8c8c'; g.beginPath(); g.arc(x + 10, y - 26, 6, 0, 7); g.fill(); } else if (d.carry) sprite('wood', x + 10, y - 18, 0.6);
     if (isLabor(d)) { g.fillStyle = '#2f6f9f'; g.fillRect(x - 9, y - IMG[d.sprite].height * SC + 4, 18, 4); }
     label(`${d.name}${isLabor(d) ? '（工）' : d.role === 'outer' ? '（外門）' : d.role === 'head' ? '（首徒）' : ''} ${statusIcon(d, d.task?.act === 'build' && d.task.phase !== 'do' ? '📦' : ACT_ICON[d.anim || d.task?.act] || '')}`, x, y - (IMG[d.sprite].height * SC + 4), '#222');
+    const levelNotice = GROWTH_NOTICE.get(d.id); if (levelNotice && S.t - levelNotice.t < 4) label(levelNotice.text, x, y - (IMG[d.sprite].height * SC + 22), '#2b713d');
     if (practiceLabel(d)) label(practiceLabel(d, true), x, y + 15, '#6b3b20');
     if (S.hunt) hp(x, y - IMG[d.sprite].height * SC - 20, d.hp / 100, '#3a7');
     { const b = BUB[d.id]; if (b) bubble(b, x, y - (IMG[d.sprite].height * SC + 26)); } // v1.45 C 級事件＝頭上氣泡
@@ -202,6 +205,7 @@ function label(t, x, y, c) { g.font = '13px sans-serif'; g.textAlign = 'center';
 function hp(x, y, r, c) { g.fillStyle = '#0006'; g.fillRect(x - 20, y, 40, 5); g.fillStyle = c; g.fillRect(x - 20, y, 40 * Math.max(0, r), 5); }
 const $ = (id) => document.getElementById(id);
 const bar = (v, c) => `<div class="bar"><i style="width:${v}%;background:${c}"></i></div>`;
+const resItem = (icon, name, value) => `<span class="res-icon"><img src="assets/ui/icons/${icon}.svg" alt="">${name} ${value}</span>`;
 const ORD = [['', '自主'], ...['train', 'spar', 'chop', 'farm', 'cook', 'forage', 'build', 'rest', 'eat'].map((k) => [k, ACTIVITIES[k].name])];
 let lastPanel = 0;
 // loop35：面板每 ~400ms 重建，<details> 的展開／收合要記住（外部審查 P2）。data-keep＝鍵；值存 localStorage（純介面偏好）
@@ -209,20 +213,43 @@ const KEEP_KEY = 'solo-sect-keep';
 function keepState() { try { return (window.__keep ??= JSON.parse(localStorage.getItem(KEEP_KEY) || '{}')); } catch { return (window.__keep ??= {}); } }
 function restoreKeep() { const K = keepState(); for (const el of document.querySelectorAll('details[data-keep]')) { const k = el.dataset.keep; if (k in K) el.open = !K[k]; } }
 document.addEventListener('toggle', (e) => { const el = e.target; if (!el.matches?.('details[data-keep]') || el.dataset.restoring) return; const K = keepState(); K[el.dataset.keep] = !el.open; try { localStorage.setItem(KEEP_KEY, JSON.stringify(K)); } catch {} }, true);
-const foldIds = () => [...document.querySelectorAll('#panel > h2')].map((h) => h.nextElementSibling?.id).filter(Boolean);
-function applyFold() { const K = keepState(); for (const h of document.querySelectorAll('#panel > h2')) { const id = h.nextElementSibling?.id; if (!id) continue; const f = isFolded(K, id); h.classList.add('fold'); h.classList.toggle('shut', f); h.dataset.sec = id; h.nextElementSibling.classList.toggle('folded', f); } }
+const foldIds = () => [...document.querySelectorAll('#panel h2')].map((h) => h.nextElementSibling?.id).filter(Boolean);
+function applyFold() { const K = keepState(); for (const h of document.querySelectorAll('#panel h2')) { const id = h.nextElementSibling?.id; if (!id) continue; const f = isFolded(K, id); h.classList.add('fold'); h.classList.toggle('shut', f); h.dataset.sec = id; h.nextElementSibling.classList.toggle('folded', f); } }
 function saveKeep() { try { localStorage.setItem(KEEP_KEY, JSON.stringify(keepState())); } catch {} }
-document.addEventListener('click', (e) => { const h = e.target.closest('#panel > h2.fold'); if (h) { const K = keepState(); K[foldKey(h.dataset.sec)] = !isFolded(K, h.dataset.sec); saveKeep(); applyFold(); return; }
+document.addEventListener('click', (e) => { const h = e.target.closest('#panel h2.fold'); if (h) { const K = keepState(); K[foldKey(h.dataset.sec)] = !isFolded(K, h.dataset.sec); saveKeep(); applyFold(); return; }
   const b = e.target.closest('[data-foldall]'); if (b) { setAll(keepState(), foldIds(), b.dataset.foldall === '1'); saveKeep(); applyFold(); } });
+const GROWTH_MEMO = new Map(), GROWTH_NOTICE = new Map();
+let lastGrowth = '', activeRail = 'person';
+function growthView(d) {
+  const current = growthSnapshot(d), prior = GROWTH_MEMO.get(d.id);
+  if (!prior || prior.art !== current.art || prior.day !== S.day) {
+    if (prior && prior.day !== S.day && current.xp > prior.start) lastGrowth = `${d.name}的${current.title}成長了 ${(current.xp - prior.start).toFixed(1)}`;
+    GROWTH_MEMO.set(d.id, { day: S.day, art: current.art, start: current.xp || 0, tier: current.tier });
+  } else if (current.tier > prior.tier) {
+    const why = d.task?.act === 'train' ? '在場上反覆練習' : d.task?.act === 'spar' || d.task?.act === 'hunt' ? '從交手中學會' : '累積實戰與練習';
+    GROWTH_NOTICE.set(d.id, { text: `${current.title}！`, detail: `${d.name}學會了${current.title}，因為${why}。`, t: S.t });
+    prior.tier = current.tier;
+  }
+  return growthSnapshot(d, GROWTH_MEMO.get(d.id).start);
+}
+document.addEventListener('click', (e) => { const tab = e.target.closest('[data-rail]'); if (!tab) return; activeRail = tab.dataset.rail; for (const x of document.querySelectorAll('[data-rail-tab]')) x.classList.toggle('active', x.dataset.railTab === activeRail); for (const x of document.querySelectorAll('[data-rail]')) x.classList.toggle('on', x === tab); });
 // loop156 v2.3 清修山莊徽記（弟子 ≤3、幫工 ≥2；練功／打坐／讀書快 20%）
 const hermitBadge = (S) => (isEliteHermit(S) ? `<b class="hermit-badge" title="清修：弟子少、幫工多，練功／打坐／讀書快 20%">【清修山莊・弟子 ${S.ds.filter((d) => d.role !== 'laborer').length}／幫工 ${S.ds.filter((d) => d.role === 'laborer').length}】</b>　` : '');
 function panel() {
   const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×${rumorDays(S) ? `・⚠ 山賊傳聞：約 ${rumorDays(S)} 日` : ''}`; /* loop120 角落倒數 */ $('clock').title = seasonHint(S); /* loop73 季節說明（滑鼠移到時鐘） */
-  $('res').innerHTML = `${hermitBadge(S)}木 ${S.res.wood}/${S.cap.wood}　石 ${S.res.stone}/${S.cap.stone}　香火錢 ${S.res.coin}　菜 ${S.res.veg}　飯 ${S.res.food}　藥 ${S.res.herb}　水 ${S.res.water}/${S.cap.water}　療傷丹 ${S.res.pill}　鐵木 ${S.res.tiemu || 0}　靈石 ${S.res.lingshi || 0}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
-  $('build').innerHTML = FACILITIES.filter((f) => f.stages.length > 1 && !f.sig).map((f) => { const st = S.fac[f.id], nx0 = f.stages[st.stage + 1], nx = nx0; /* loop155 村舍大院只在 v23 */
+  const levels = new Map(S.ds.map((d) => [d.id, growthView(d)]));
+  const selected = S.ds.find((d) => d.id === window.__artsOf) || S.ds.find((d) => d.id === 'hero') || S.ds[0];
+  const level = levels.get(selected?.id), latest = GROWTH_NOTICE.get(selected?.id);
+  $('urgent').textContent = S.alert?.msg || (S.threat?.pending ? '今日要事：山賊已到，守住山門' : rumorDays(S) ? `今日要事：山賊約 ${rumorDays(S)} 日後到` : lastGrowth ? `今日要事：${lastGrowth}` : '今日要事：山中暫安');
+  $('focuscard').innerHTML = selected ? `<div class="focus-level" title="階段與熟練從現有武學資料計算；N42 後轉接新成長底層">${level.firstLine}</div>${bar(level.progress, '#6f8a4c')}<div class="k">${selected.name}・${selected.reason || '待命'}　<button data-focus-actor="${selected.id}" title="鏡頭移到此人">看他</button></div>${latest && S.t - latest.t < 4 ? `<div class="level-card">${latest.detail}</div>` : ''}` : '';
+  $('routine').innerHTML = `<h2>門規作息</h2><p class="k">設定一次，之後每日照做；心情低於現有低落門檻時先靜坐。</p>${Object.entries(ROUTINE_PERIODS).map(([part, name]) => `<div class="routine-row"><b>${name}</b><div class="choice-row">${Object.entries(ROUTINE_MODES).map(([mode, label]) => `<button data-routine="${part}|${mode}" class="${(S.routine?.[part] || 'free') === mode ? 'on' : ''}">${label}</button>`).join('')}</div></div>`).join('')}`;
+  $('res').innerHTML = `${hermitBadge(S)}${resItem('wood-pile', '木', `${S.res.wood}/${S.cap.wood}`)}${resItem('falling-rocks', '石', `${S.res.stone}/${S.cap.stone}`)}${resItem('coins', '香火錢', S.res.coin)}${resItem('herbs-bundle', '菜', S.res.veg)}${resItem('meal', '飯', S.res.food)}${resItem('herbs-bundle', '藥', S.res.herb)}${resItem('medicines', '療傷丹', S.res.pill)}${resItem('full-wood-bucket', '水', `${S.res.water}/${S.cap.water}`)}${resItem('wood-beam', '鐵木', S.res.tiemu || 0)}${resItem('crystal-shrine', '靈石', S.res.lingshi || 0)}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
+  const blueprints = FACILITIES.filter((f) => f.stages.length > 1 && !f.sig && f.stages[S.fac[f.id].stage + 1]);
+  const availableBlueprints = blueprints.filter((f) => S.fac[f.id].site || !buildWhy(S, f.id));
+  $('build').innerHTML = availableBlueprints.map((f) => { const st = S.fac[f.id], nx0 = f.stages[st.stage + 1], nx = nx0; /* loop155 村舍大院只在 v23 */
     const cost = nx ? Object.entries({ ...nx.cost, ...(nx.rare || {}) }).map(([k, v]) => `${RES_NAMES[k]}${v}`).join('・') : ''; const why = nx ? buildWhy(S, f.id) : null;
     const bundle = st.site ? `<div class="k">收集包：${MATS.filter((k) => st.site.need[k]).map((k) => `${RES_NAMES[k]} ${st.site.delivered[k]}/${st.site.need[k]}${st.site.reserved[k] ? `（在途${st.site.reserved[k]}）` : ''}`).join('　')}｜工時 ${st.site.work.toFixed(0)}/${st.site.workNeed}s</div>${bar(100 * MATS.reduce((a, k) => a + st.site.delivered[k], 0) / Math.max(1, MATS.reduce((a, k) => a + st.site.need[k], 0)), '#a0461e')}` : '';
-    return `<div>${f.name}：${f.stages[st.stage].name} ${nx ? (st.site ? `<button data-pause="${f.id}">${st.site.paused ? '復工' : '暫停'}</button>` : `<button data-build="${f.id}" ${why ? `disabled title="${why}"` : ''}>藍圖：${nx.name}（${cost}${nx.rep ? '・名聲' + nx.rep : ''}）</button>${why && why !== '施工中' ? `<span class="k why">${why}</span>` : ''}`) : '✓'}${bundle}</div>`; }).join('') + `<div class="lots" data-lots>地塊 ${lotsUsed(S)}/${lotsOf(S).n} <button data-lot ${lotWhy(S) ? 'disabled' : ''}>擴地（${lotCost(S)} 錢）</button> <span class="k">${lotWhy(S) || ''}</span></div>`;
+    return `<div>${f.name}：${f.stages[st.stage].name} ${nx ? (st.site ? `<button data-pause="${f.id}">${st.site.paused ? '復工' : '暫停'}</button>` : `<button data-build="${f.id}" ${why ? `disabled title="${why}"` : ''}>藍圖：${nx.name}（${cost}${nx.rep ? '・名聲' + nx.rep : ''}）</button>${why && why !== '施工中' ? `<span class="k why">${why}</span>` : ''}`) : '✓'}${bundle}</div>`; }).join('') + `<details class="k"><summary>還有 ${blueprints.length - availableBlueprints.length} 項，條件未到</summary>${blueprints.filter((f) => !availableBlueprints.includes(f)).map((f) => `<div>${f.name}：${buildWhy(S, f.id)}</div>`).join('')}</details><div class="lots" data-lots>地塊 ${lotsUsed(S)}/${lotsOf(S).n} <button data-lot ${lotWhy(S) ? 'disabled' : ''}>擴地（${lotCost(S)} 錢）</button> <span class="k">${lotWhy(S) || ''}</span></div>`;
   { const c = canHire(S);
     $('labor').innerHTML = `<button id="hire-go" ${c.ok ? '' : 'disabled'}>雇工（香火錢 ${ECON.hireCoin}、糧 ${ECON.hireFood}；日薪 ${ECON.wage}）</button> <span class="k">${c.ok ? `應徵：${c.next.name}` : c.why}</span>` +
       laborers(S).map((d) => { const iv = canInvite(S, d.id);
@@ -299,7 +326,18 @@ function panel() {
   if ($('jhui')) { $('jhui').innerHTML = jhuiHtml(S, keepState()); $('jhui-wrap').hidden = false; }
   restoreKeep(); applyFold();
   $('log').innerHTML = S.log.slice(0, 30).map((l) => `<li>[${l.t}s] ${l.msg}</li>`).join('');
+  mountChoiceButtons(document);
+  for (const x of document.querySelectorAll('[data-rail-tab]')) x.classList.toggle('active', x.dataset.railTab === activeRail);
+  for (const x of document.querySelectorAll('[data-rail]')) x.classList.toggle('on', x.dataset.rail === activeRail);
 }
+document.addEventListener('click', (e) => {
+  const view = e.target.closest('[data-focus-actor]'); if (view) { focusOn(view.dataset.focusActor); return; }
+  const mode = e.target.closest('[data-routine]'); if (!mode) return;
+  const [part, act] = mode.dataset.routine.split('|');
+  if (!(part in ROUTINE_PERIODS) || !(act in ROUTINE_MODES)) return;
+  S.routine ??= {}; S.routine[part] = act;
+  toast(`${ROUTINE_PERIODS[part]}改為${ROUTINE_MODES[act]}，往後每日照做`); panel();
+});
 document.addEventListener('click', (e) => { const b = e.target.closest('[data-build],[data-speed],[data-pause],[data-invite],[data-promote],[data-pupil]'); if (!b) return; if (b.dataset.pupil) { const [m, d] = b.dataset.pupil.split('|').map((id) => S.ds.find((x) => x.id === id)); takePupil(S, m, d); } if (b.dataset.promote) startTrial(S, b.dataset.promote); if (b.dataset.pause) togglePause(S, b.dataset.pause); if (b.dataset.invite) invite(S, b.dataset.invite); if (b.dataset.build) startBuild(S, b.dataset.build); if (b.dataset.speed) speed = +b.dataset.speed; panel(); });
 document.addEventListener('change', (e) => { if (e.target.dataset.branch) { const [id, art] = e.target.dataset.branch.split('|'); const d = S.ds.find((x) => x.id === id); if (d && e.target.value) rechooseBranch(d, art, e.target.value, S.t); panel(); return; } if (e.target.dataset.variant) { const [id, art] = e.target.dataset.variant.split('|'); const d = S.ds.find((x) => x.id === id); if (d && e.target.value) chooseVariant(d, art, e.target.value, S.t); panel(); return; } if ('artsof' in e.target.dataset) { window.__artsOf = e.target.value; panel(); return; } if (e.target.dataset.focus) { setFocus(S, e.target.dataset.focus, e.target.value || null); panel(); return; } if (e.target.dataset.q) { window.__ans[+e.target.dataset.q] = +e.target.value; panel(); return; } if (e.target.dataset.duty) { setDuty(S, e.target.dataset.duty, e.target.value, e.target.checked); panel(); return; } if (e.target.dataset.prio) { setPrio(S, e.target.dataset.prio, e.target.value); panel(); return; } if (e.target.dataset.style) setStyle(S, e.target.dataset.style, e.target.value); if (e.target.dataset.ord) { setOrder(S, e.target.dataset.ord, e.target.value || null); panel(); } });
 // review fix：存讀檔改用非阻斷提示（原本 alert() 會卡住瀏覽器自動化與遊戲迴圈）
@@ -363,7 +401,7 @@ function jhHtml() {
   if (J.poison) out.push('☠ 慢性化骨綿掌（三天自癒）');
   if (S.hero && ARC13[S.hero.id]) out.push(`📜 主線：${ARC13[S.hero.id].map((x, i) => (i < (S.hero.arcStep || 0) ? `<b>${x}</b>` : `<span style="opacity:.45">${x}</span>`)).join(' → ')}`);
   const wk = J.comedy.filter((t) => S.t - t < 7 * DAY13).length;
-  out.push(`<label><input type="checkbox" data-jhopt="morningOn" ${J.morningOn ? 'checked' : ''}> 晨課令</label>　<label><input type="checkbox" data-jhopt="comedyOn" ${J.comedyOn ? 'checked' : ''}> 喜劇卡（本週 ${wk}/${JH.comedyWeek}）</label>`);
+  out.push(`<label><input type="checkbox" data-jhopt="comedyOn" ${J.comedyOn ? 'checked' : ''}> 喜劇卡（本週 ${wk}/${JH.comedyWeek}）</label>`);
   return `<div class="k"><b>江湖群像</b><br>${out.join('<br>')}</div>`;
 }
 document.addEventListener('change', (e) => { const k = e.target?.dataset?.jhopt; if (k && S.jh) S.jh[k] = e.target.checked; });
@@ -505,7 +543,7 @@ function chapterModal() {
 }
 let lastAuto = 0; const cue = {};
 /* loop65：換局／讀檔時重設只屬於上一局的介面狀態：自動存檔計時、音效佇列（log 頂端）、巡山提示 */
-function freshGame() { lastAuto = S.t; for (const k of Object.keys(cue)) delete cue[k]; lastExpT = null; }
+function freshGame() { lastAuto = S.t; for (const k of Object.keys(cue)) delete cue[k]; lastExpT = null; GROWTH_MEMO.clear(); GROWTH_NOTICE.clear(); lastGrowth = ''; }
 function audioStep() { for (const c of cuesFrom(cue, S)) { SFX[c]?.(); const p = c === 'breakthrough' ? (S.fx.find((f) => f.kind === 'break')?.pos || NODES.yard) : c === 'record' ? NODES.gate : c === 'chapter' ? NODES.hall : null; if (p) camFocus(p[0], p[1]); }
   const rd = S.mons.find((m) => m.raid === 'go'); if (rd && cue.raid !== rd.uid) { cue.raid = rd.uid; camFocus(rd.pos[0], rd.pos[1], 2); } }
 setInterval(() => { if (!S || starting || !autoDue(S.t, lastAuto)) return; /* loop65：用 autoDue，時間倒退也算到期；開局畫面不存 */ lastAuto = S.t; autosave(localStorage, save(S), { day: Math.floor(S.t / 600) + 1, name: S.hero?.name, suhui: suhuiOf(S), at: Date.now() }); }, 1000);

@@ -15,7 +15,7 @@ test('登錄表：設施階段宣告 offers/容量/時長；床位＝beds、灶�
   const s = createState(1); const R = registry(s);
   const hallRest = R.find((r) => r.fac === 'hall' && r.act === 'rest'); assert.equal(hallRest.cap, 3);
   const cook = R.find((r) => r.act === 'cook'); assert.equal(cook.cap, 1); assert.equal(cook.dur, 12);
-  assert.equal(R.find((r) => r.act === 'train').cap, Infinity); assert.equal(slotCap(s, 'dorm', 'rest'), 1);
+  assert.equal(R.find((r) => r.fac === 'yard' && r.act === 'train').cap, 12); assert.equal(slotCap(s, 'dorm', 'rest'), 1);
 });
 test('統一預約：床位不超收，滿了打地鋪（明確標記）', () => {
   const s = createState(2); run(s, 4);
@@ -64,9 +64,9 @@ test('狀態層讀結構化 decision；v1.45 事件誤分級修正', async () =>
   const { tierOf } = await import('../src/util.mjs'); assert.equal(tierOf('本門新紀錄 300 步'), 'mid'); assert.equal(tierOf('重傷倒地'), 'mid'); assert.equal(tierOf('名俠來訪'), 'top');
 });
 test('1.5 版本＋1.45 舊檔一步遷移：菜畦 busy → 預約表；歇息補床位', () => {
-  assert.ok(['1.5', '1.8', '1.85', '1.9', '1.95', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '3.0', '3.1', '3.2'].includes(RULES_VERSION)); const s = createState(10); run(s, 20); const o = JSON.parse(save(s)); o.rules = '1.45'; delete o.resv;
+  assert.ok(['1.5', '1.8', '1.85', '1.9', '1.95', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '3.0', '3.1', '3.2', '3.3'].includes(RULES_VERSION)); const s = createState(10); run(s, 20); const o = JSON.parse(save(s)); o.rules = '1.45'; delete o.resv;
   const d = o.ds[1]; d.task = { act: 'farm', fac: 'veg', phase: 'go', plot: 2 }; o.plots[2].busy = d.id; const e = o.ds[2]; e.task = { act: 'rest', fac: 'hall', phase: 'do' }; delete d.tired;
-  migrate(o); assert.deepEqual(o.migSteps, ['1.5', '1.8', '1.85', '1.9', '1.95', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '3.0', '3.1', '3.2']); assert.equal(o.resv['plot:2'], d.id); assert.ok(!('busy' in o.plots[2])); assert.ok(e.task.resv.length); assert.equal(typeof d.tired, 'boolean');
+  migrate(o); assert.deepEqual(o.migSteps, ['1.5', '1.8', '1.85', '1.9', '1.95', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '3.0', '3.1', '3.2', '3.3']); assert.equal(o.resv['plot:2'], d.id); assert.ok(!('busy' in o.plots[2])); assert.ok(e.task.resv.length); assert.equal(typeof d.tired, 'boolean');
   const r = load(JSON.stringify({ ...o, rules: '1.45' })); assert.ok(r.ok);
 });
 test('長跑：10 日每拍不變式（含床位）', () => {

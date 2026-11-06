@@ -53,9 +53,9 @@ test('喜劇卡每週最多 2 張、不扣血；可關', () => {
   const s = st(); s.jh.hai = 1; let n = 0; for (const k of ['paicuo', 'zhabo', 'bao']) if (card(s, k)) n++; assert.equal(n, 2); assert.ok(!comedyOk(s));
   s.t += 7 * DAY; assert.ok(comedyOk(s)); s.jh.comedyOn = false; assert.ok(!comedyOk(s)); for (const k of Object.keys(CARDS)) if (CARDS[k].comedy) assert.ok(CARDS[k].opts.length >= 2);
 });
-test('晨課令：每日一張 3 選 1，可關', () => {
-  const s = st(); s.jh.morningOn = true; s.day++; s.choices = []; jhStep(s, 0.25); const ch = s.choices.find((c) => c.jh === 'morning'); assert.equal(ch.opts.length, 3);
-  s.jh.morningOn = false; s.day++; s.choices = []; jhStep(s, 0.25); assert.ok(!s.choices.some((c) => c.jh === 'morning'));
+test('每日門規作息保留，例行晨課不再產生抉擇卡', () => {
+  const s = st(); assert.equal(s.routine.dawn, 'train');
+  for (let i = 0; i < 5; i++) { s.day++; jhStep(s, 0.25); assert.ok(!s.choices.some((c) => c.jh === 'morning')); }
 });
 test('包租婆帶包租公上山：獅子吼＋太極，夫妻連攜', () => {
   const s = st(); join(s, 'baozupo'); const g = s.ds.find((d) => d.xia === 'baozugong'); assert.ok(g && artTier(g, 'taiji') >= 2); assert.equal(XIA_PAIRS['baozugong+baozupo'], 0.25);

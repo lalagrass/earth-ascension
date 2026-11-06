@@ -10,8 +10,8 @@ import { xidOf, present, join } from './wuxia.mjs';
 // v1.3 江湖群像（ROADMAP §13.8–13.11）：楊過（黯然銷魂掌、神鵰、斷臂）、小龍女（玉女心經、玉蜂、雙劍合璧）、周伯通（賭贏才教左右互搏／空明拳）、
 // 東方不敗（反派，葵花＝斷情）、韋小寶（賭坊收益有上限）、海大富（1992 電影版：化骨綿掌與喜劇卡）、張無忌／韋小寶／阿星模板主線、
 // 《功夫》：包租公婆（獅子吼＋太極，夫妻連攜）、具名雜工裡的隱藏高手（每圖最多 3 人，揭露即大成、不再進步）、火雲邪神（反派，蛤蟆功）、
-// 喜劇卡每週最多 2 張（不造成永久損失）、晨課令（每日 2–3 選 1，可關）
-export const jhInit = () => ({ cards: {}, comedy: [], comedyOn: true, morningOn: true, morningDay: -1, morning: null, diao: 0, armLost: false, honey: 0, zbt: null, dfbb: 0, hy: 0, hidden: 0, gambleDay: -1, gambleSum: 0, poison: null, arcs: {}, residue: {} });
+// 喜劇卡每週最多 2 張（不造成永久損失）；每天例行作息由門規表決定。
+export const jhInit = () => ({ cards: {}, comedy: [], comedyOn: true, diao: 0, armLost: false, honey: 0, zbt: null, dfbb: 0, hy: 0, hidden: 0, gambleDay: -1, gambleSum: 0, poison: null, arcs: {}, residue: {} });
 const P = (k) => `assets/portraits/${k}.png`;
 const find = (s, x) => s.ds.find((d) => xidOf(s, d) === x);
 const heroD = (s) => s.ds.find((d) => d.id === 'hero');
@@ -58,7 +58,6 @@ const FX = {
   wxb4: [(s) => { heroD(s).takeMul = JH.baoyi; arc(s, 'weixiaobao', 4, '寶衣護身'); }],
   wxb5: [(s) => { s.rep = (s.rep || 0) + 10; arc(s, 'weixiaobao', 5, '皇上的朋友'); }],
   ax3: [(s) => { const d = heroD(s); d.hp = Math.min(d.hp, 4); arc(s, 'axing', 3, '火雲邪神'); }, () => {}],
-  morning: [(s) => { for (const d of fighters(s)) for (const k of ['palm', 'leg', 'strength']) d.skills[k] = Math.min(100, d.skills[k] + 1); }, (s) => { for (const d of fighters(s)) mood(d, 5); }, (s) => { resAdd(s, 'coin', 3); }],
   // v2.1 無名主線：兩條都把本門風雷掌腿教到大成。照舊開局無人值守時走第一條。
   wuming: [
     (s) => { const d = heroD(s); if (d) teachJ(s, d, 'fengLei', DA); s.jh.wuming = s.t || 1; log(s, '主角在木樁前把風雷掌腿悟到了大成。'); },
@@ -68,12 +67,12 @@ const FX = {
 export const CARDS = buildCards(TREES.cards.jianghu, FX);
 const once = (s, k) => { if (s.jh.cards[k]) return false; s.jh.cards[k] = true; return true; };
 export function card(s, id, force) {
-  const C = CARDS[id]; if (!force && !C.comedy && !C.morning && !once(s, id)) return null;
+  const C = CARDS[id]; if (!C) return null; if (!force && !C.comedy && !once(s, id)) return null;
   if (C.comedy && !force) { if (!comedyOk(s)) return null; s.jh.comedy.push(s.t); }
   const ch = { id: `jh-${id}-${Math.floor(s.t)}`, jh: id, tone: C.comedy ? 'comedy' : 'serious', title: `【${C.comedy ? '喜劇・' : ''}${C.title}】`, text: C.text, opts: C.opts.map((o) => o[0]), portrait: C.who ? P(C.who) : null, at: s.t };
-  s.choices ??= []; s.choices.push(ch); log(s, `【${C.morning ? '晨課' : '抉擇'}】${C.title}：${C.text}`); if (!s.hero?.askMajor) s.autoAt = s.t; return ch;
+  s.choices ??= []; s.choices.push(ch); log(s, `【抉擇】${C.title}：${C.text}`); if (!s.hero?.askMajor) s.autoAt = s.t; return ch;
 }
-export const jhAutoPick = (s, ch) => (ch.jh === 'zwj5' ? ({ qing: 2, free: 0, sect: 1, xia: 3 })[Object.entries(s.hero?.values || {}).filter(([k]) => ['free', 'sect', 'qing', 'xia'].includes(k)).sort((a, b) => b[1] - a[1])[0]?.[0]] ?? 0 : ch.jh === 'morning' ? (s.day % 3) : 0);
+export const jhAutoPick = (s, ch) => (ch.jh === 'zwj5' ? ({ qing: 2, free: 0, sect: 1, xia: 3 })[Object.entries(s.hero?.values || {}).filter(([k]) => ['free', 'sect', 'qing', 'xia'].includes(k)).sort((a, b) => b[1] - a[1])[0]?.[0]] ?? 0 : 0);
 export function jhResolve(s, ch, i, H) { const C = CARDS[ch.jh]; s.choices = s.choices.filter((c) => c !== ch); const o = C.opts[Math.min(i, C.opts.length - 1)]; log(s, `決定：${o[0]}`); o[1](s, H); return true; }
 // ---- 機制 ----
 function armLoss(s) { const y = find(s, 'yangguo'); if (!y) return; s.jh.armLost = true; y.oneArm = true; y.skills.agility = Math.round(y.skills.agility * 0.9); teachJ(s, y, 'xuantie', DA); log(s, '【斷臂】楊過單手提起玄鐵重劍——重劍無鋒，大巧不工。（雙手兵器失效、身法 −10%）'); }
@@ -135,8 +134,6 @@ export function jhStep(s, dt, H) {
   if (s.day !== J.gambleDay) { J.gambleDay = s.day;
     if (J.bees) { J.honey++; const h = s.ds.filter((d) => d.hp < 100).sort((a, b) => a.hp - b.hp)[0]; if (h && J.honey > 0) { J.honey--; h.hp = Math.min(100, h.hp + JH.honeyHeal); } }
     if (J.casino && (present(s, 'weixiaobao'))) { const g = Math.min(JH.gambleCap, JH.gambleBase + Math.floor((s.rep || 0) / 10)); resAdd(s, 'coin', g); J.gambleSum += g; }
-    // 晨課令
-    if (J.morningOn && !s.choices?.some((c) => c.jh === 'morning')) J.morning = card(s, 'morning', true)?.id || null;
   }
   // 隱藏高手：新雇的具名雜工擲一次（每圖最多 3）
   const NAMES = [['kulijiang', '苦力強', 'tantui'], ['caifeng', '裁縫', 'tiexian'], ['youzhagui', '油炸鬼', 'bagua']];
@@ -147,7 +144,7 @@ export function jhStep(s, dt, H) {
     if (ch) jhResolve(s, ch, jhAutoPick(s, ch), H);
     return;
   }
-  if (s.choices?.some((c) => c.jh && c.jh !== 'morning')) return; // 一次一張
+  if (s.choices?.some((c) => c.jh)) return; // 一次一張
   const d0 = heroD(s);
   // 楊過：神鵰（三次餵食）→ 斷臂；小龍女：玉蜂
   if (yg && J.diao < JH.diaoFeeds && s.t - (s.xia?.joinT?.yangguo ?? s.t) > DAY * 0.5 && !J.cards['diao' + J.diao]) { J.cards['diao' + J.diao] = true; card(s, 'diao', true); return; }

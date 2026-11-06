@@ -2,7 +2,7 @@
 import { fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { SOURCES } from './data.mjs';
-import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
+import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
 import { chronOf, clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, fogStep, unlockStep, chapterStep } from './world.mjs';
@@ -49,7 +49,7 @@ export function createState(seed = 1, heroSpec = null) {
   // #390：每個新局都用現行規則（含「照舊」開局 spec＝null，擁有人 2026-11-02 決定）。spec 只決定主角與玩家選項。
   const withHero = !!heroSpec;
   const s = {
-    v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
+    v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), routine: { ...ROUTINE_DEFAULT }, res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
     ds: DISCIPLES.map((d, i) => mkDisciple(d, i)),
     rel: {}, aff: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
@@ -294,6 +294,9 @@ export function scoreActs(s, d) {
   { const rs = repairScore(s, d); if (rs > 0) out.push({ act: 'repair', score: rs, why: s.fence.hp <= 0 ? '柵被撞破了，得趕快補上' : '柵有破損，去補一補' }); } // loop2 修柵廣告
   demandBoost(s, d, out); repairDamp(s, out); // loop9 缺料需求／loop10 不急修
   const ph = c.ph, sch = SCHEDULE[ph] || {}, n = d.needs;
+  const routine = s.routine?.[ph] || ROUTINE_DEFAULT[ph] || 'free';
+  const chosen = routine === 'train' && d.mood < MOOD.low ? 'meditate' : routine;
+  if (chosen === 'meditate' && !out.some((o) => o.act === 'meditate') && offered(s, 'meditate').length) out.push({ act: 'meditate', score: 0, why: '心情低落，照早課門規先靜坐', layer: 'sched' });
   const plotWork = s.plots.some((p) => p.st === 'empty' || p.st === 'ripe');
   // v0.95 統一倍率管線：作息是時段閘門（管線外），性格→天賦組、心情→狀態組、職責/首徒/雇工→外部組
   const tparts = (act) => { const r = (d.personality || []).map((p) => [TRAITS[p]?.name || p, (TRAITS[p]?.mods24?.[act]) || TRAITS[p]?.mods?.[act] || 1]).filter(([, v]) => v !== 1); const vm = valueMul(d, act); if (vm !== 1) r.push(['價值觀', vm]); return r; };
@@ -304,7 +307,9 @@ export function scoreActs(s, d) {
   { const bt = c.bt && PRED.btOk(c); for (const o of out) if (o.act === 'meditate' && o.f) o.f.btOk = bt; btBoost(s, out); } // loop25
   liftBoost(s, d, out); // loop28
   for (const o of out) { const m = appetiteActMul31(d, o.act); if (m !== 1) o.score *= m; } /* loop203：偏好帶日程，不另抽 rand。遠征不在評分動作裡 */
-  return out.sort((a, b) => b.score - a.score);
+  const wanted = (o) => chosen === 'work' ? CHORE_ACTS.includes(o.act) : o.act === chosen;
+  for (const o of out) if (chosen !== 'free' && wanted(o) && o.layer !== 'need') { o.why = `門規作息：${ROUTINE_MODES[routine]}${chosen !== routine ? '，心情低落先靜坐' : ''}`; o.layer = 'sched'; }
+  return out.sort((a, b) => (b.layer === 'need') - (a.layer === 'need') || (chosen !== 'free' ? Number(wanted(b)) - Number(wanted(a)) : 0) || b.score - a.score);
 }
 
 function assign(s, d, act, why) {

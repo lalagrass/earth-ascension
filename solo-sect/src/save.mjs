@@ -1,5 +1,5 @@
 import { tierOf, affKey } from './util.mjs';
-import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY, ARTS } from './data.mjs';
+import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY, ARTS, ROUTINE_DEFAULT } from './data.mjs';
 import { seedArts, growInit } from './arts.mjs';
 import { sectOf, genInit } from './sect.mjs';
 import { suhuiOf } from './world.mjs';
@@ -51,6 +51,7 @@ export const MIGRATIONS = [
   { to: '3.0', note: '第五輪（#423–#427）：林克時間、絕學改規則、部位傷；舊檔讀入補空欄位、清掉半途的林克時間', up(o) { for (const d of o.ds || []) { d.part ??= null; d.zjUsed ??= []; d.witchT = undefined; } o.witch = undefined; } },
   { to: '3.1', note: '第六輪（#428–#433）：舊傳功與師承名冊換算到共同傳授，清理舊活動與半途出招', up(o) { teachLegacy31(o); for (const d of o.ds || []) { d.bswing = null; d.swing = null; d.teachArt = null; } for (const m of o.mons || []) m.swing = null; if (o.band) for (const m of o.band.members || []) m.swing = null; o.witch = undefined; } },
   { to: '3.2', note: '第七輪（#435–#440）：補焦躁並清除舊應接次數與半途出招，改由秒數逐招判定', up(o) { for (const d of o.ds || []) { d.fret ??= 0; d.raging = false; d.rageUntil = 0; d.busyUntil = 0; d.handled = []; d.ring = null; d.swing = null; d.bswing = null; } for (const m of o.mons || []) m.swing = null; if (o.band) for (const m of o.band.members || []) m.swing = null; } },
+  { to: '3.3', note: '第八輪（#468）：晨課令改成持續門規作息，已給過的舊加成保留', up(o) { o.jh ??= {}; delete o.jh.morning; delete o.jh.morningOn; delete o.jh.morningDay; if (o.jh.cards) delete o.jh.cards.morning; o.choices = (o.choices || []).filter((c) => c.jh !== 'morning'); o.routine = { ...ROUTINE_DEFAULT }; } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

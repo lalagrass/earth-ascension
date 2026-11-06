@@ -1,0 +1,2 @@
+{"label":"base","start":{"selects":1,"buttons":4,"inputs":2},"rail":{"selects":16,"visibleButtons":12,"visibleInputs":0,"routine":false,"tabs":0}}
+{"label":"head","start":{"selects":0,"buttons":7,"inputs":2},"rail":{"selects":0,"visibleButtons":9,"visibleInputs":0,"routine":true,"tabs":4}}

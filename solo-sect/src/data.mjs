@@ -239,6 +239,9 @@ export const SCHEDULE = {
   dusk: { eat: 1.4, chat: 1.6, cook: 1.3, leisure: 1.5, encourage: 1.4 },
   night: { rest: 2.2, train: 0.3, chop: 0.2, quarry: 0.2, farm: 0.2, forage: 0.2, build: 0.3, chat: 0.6, leisure: 0.4, encourage: 0.5 },
 };
+export const ROUTINE_MODES = { train: '練功', meditate: '靜坐', work: '幹活', free: '自由' };
+export const ROUTINE_PERIODS = { dawn: '早課', day: '白天', dusk: '晚上' };
+export const ROUTINE_DEFAULT = { dawn: 'train', day: 'free', dusk: 'free' };
 export const PLOT_GROW = 90; // 秒，播種到成熟
 export const HARVEST = 3;    // 每畦收菜
 export const STYLES = { palm: '掌法', leg: '腿法' };
@@ -339,7 +342,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '3.2'; /* 第七輪 #435–#440：時間截擊、群戰占用、焦躁與比例勝算 */
+export const RULES_VERSION = '3.3'; /* 第八輪 #468：晨課令改成持續的門規作息 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -765,7 +768,7 @@ for (const mv of MOVES) {
   mv.poses ??= choices[Math.max(0, art?.techs?.indexOf(mv.id) ?? 0) % choices.length];
 }
 export const JH = {
-  comedyWeek: 2, comedyDays: 7, morningOpts: 3,
+  comedyWeek: 2, comedyDays: 7,
   anranMood: 30, anranMax: 1.5, twin: 1.3, kongming: 1.15, pair: 0.25,
   gambleBase: 2, gambleCap: 6, recruitBonus: 0.4, baoyi: 0.5, reflect: 0.3, jiuyangSta: 30,
   hiddenMax: 3, hiddenP: 0.35, residueXp: 20, dfbbPow: 40, hyPow: 50, diaoFeeds: 3, honeyHeal: 15,
