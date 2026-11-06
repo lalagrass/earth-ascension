@@ -88,14 +88,7 @@ export const COMBAT_POSES = {
   hit: ['ready', 'rightStep', 'crouch'],
 };
 
-export const COMBAT_MOVE_SETS = {
-  fist: [['ready', 'leftStep', 'rightFist'], ['ready', 'rightStep', 'leftFist'], ['block', 'sink', 'doubleFist'], ['ready', 'leftElbow', 'rightFist']],
-  palm: [['ready', 'leftStep', 'rightPalm'], ['block', 'rightStep', 'leftPalm'], ['sink', 'wing', 'doublePalm'], ['ready', 'lowPalm', 'highPalm']],
-  leg: [['ready', 'wing', 'rightKick'], ['ready', 'leftStep', 'leftKick'], ['block', 'rightStep', 'rightKick'], ['ready', 'crouch', 'leftKick']],
-  sword: [['swordReady', 'leftStep', 'swordCut'], ['swordReady', 'rightStep', 'swordThrust'], ['swordReady', 'wing', 'swordCut'], ['swordReady', 'block', 'swordThrust']],
-  blade: [['bladeReady', 'rightStep', 'bladeCut'], ['bladeReady', 'leftStep', 'bladeCut'], ['bladeReady', 'wing', 'bladeCut'], ['bladeReady', 'block', 'bladeCut']],
-  staff: [['staffReady', 'leftStep', 'staffThrust'], ['staffReady', 'rightStep', 'staffThrust'], ['staffReady', 'wing', 'staffThrust'], ['staffReady', 'block', 'staffThrust']],
-};
+export { COMBAT_MOVE_SETS } from './combat-pose-sets.mjs';
 
 // 每種動作只有此一序列；初學/熟練只讀不同的播放參數。
 export const WORK_POSES = {chop:['axeReady','axeReady','axeSwing','axeReady'],water:['carry','carry']};

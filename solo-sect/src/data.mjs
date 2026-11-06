@@ -1,6 +1,6 @@
 import { BODY_MOVES } from './starter-combat.mjs';
 import TREES from './destiny-trees.json' with { type: 'json' };
-import { COMBAT_MOVE_SETS } from './routines.mjs';
+import { COMBAT_MOVE_SETS } from './combat-pose-sets.mjs';
 // ==== （原 hero-data.mjs）====
 // v0.96 主角建立：六屬性、六價值觀、九問問心、六位經典模板、開局同門候選
 export const STATS = [['wu', '悟性'], ['gen', '根骨'], ['li', '臂力'], ['shen', '身法'], ['ding', '定力'], ['fu', '福緣']];
