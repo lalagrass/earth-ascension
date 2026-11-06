@@ -1,6 +1,7 @@
 // N36 受控交戰：真60日公開指派史、共用選招/接法/士氣/移動。不是自然放生存活率。
 import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import path from 'node:path';
+import {createHash} from 'node:crypto';
 import {createState,clone,rand} from '../src/sim.mjs';
 import {assessLoad,combatTacticStep,chooseCombatMove,interceptOpening,resolveSwing,postureRegen,fretStep,windOf,CLASH} from '../src/arts.mjs';
 import {movementSpeed,moveToward,COVERS,ringCapacity,distance,pursueFleeing,rememberEscape,restoreSurvivor} from '../src/tactics.mjs';
@@ -14,19 +15,20 @@ const traitMap={calm:['honest'],rash:['brave'],normal:[]};
 if(!Number.isSafeInteger(seed)||!traits.every(t=>traitMap[t]))throw Error('--seed需整數；--trait可calm,rash,normal');
 // Diagnostic cache is an unmodified public-schedule snapshot, not a fixture or a new growth source.
 const snapshotIn=get('snapshot-in',null),snapshotOut=get('snapshot-out',null),history=get('history','labor');
-if(!['labor','defend','trained-defend'].includes(history))throw Error('--history需labor/defend/trained-defend');
+if(!['labor','defend','trained-defend','prepared-defend'].includes(history))throw Error('--history需labor/defend/trained-defend/prepared-defend');
 const cached=snapshotIn?JSON.parse(await readFile(snapshotIn,'utf8')):null;
 if(cached&&(cached.seed!==seed||cached.snapshot?.day!==60||!cached.snapshot?.eventHash||cached.snapshot?.hero?.id!=='hero'))throw Error('snapshot需同seed的公開日程第60日原始輸出');
 const generated=cached?null:history==='labor'?growthSnapshots(seed,[60]):combatSnapshots(seed,[60],{strategy:history});
 const snapshot=cached?cached.snapshot:generated.snapshots[0],training=cached?.scenario||generated.scenario;
-if(snapshotOut){await mkdir(path.dirname(path.resolve(snapshotOut)),{recursive:true});await writeFile(snapshotOut,JSON.stringify({seed,scenario:training,snapshot},null,2));}
+if(snapshotOut){await mkdir(path.dirname(path.resolve(snapshotOut)),{recursive:true});await writeFile(snapshotOut,JSON.stringify({seed,scenario:training,creationOptions:cached?.creationOptions||generated?.creationOptions||null,snapshot},null,2));}
 function run(count,trait){
  const s=createState(seed,{kind:'bare',askMajor:false}),hero=clone(snapshot.hero);s.ds=[hero];s.mons=[];s.band=null;s.t=0;s.day=60;s.fx=[];
  hero.id='hero';hero.uid='hero';hero.personality=traitMap[trait];hero.hp=100;hero.max=100;hero.needs.energy=100;hero.posture=100;hero.busyUntil=0;hero.rageUntil=0;hero.raging=false;hero.fret=0;hero.swing=null;hero.bswing=null;hero.path=[];hero.gone=false;hero.downUntil=0;hero.faintUntil=0;hero.balanceOpenUntil=0;hero.wounds=[];hero.part=null;hero.pain=0;hero.painAt=-1e9;
  // 1/2路在真山門的兩席，4路在空地；不是替四路刪掉已發出的攻擊。
  hero.pos=count<3?[...COVERS.find(c=>c.id==='gate').stand]:[800,400];
  for(let i=0;i<count;i++)s.mons.push({k:'bandit',uid:`foe${i}`,hp:40,max:40,pos:[hero.pos[0]+20+i,hero.pos[1]],agi:20,weapon:'blade',energy:100,next:0,intentTarget:hero.id});
- const rows=[],stats={count,trait,location:count<3?'gate(two slots)':'open',attacks:0,rushAttacks:0,hits:0,hpLost:0,counters:0,overloadBeats:0,overloadCounters:0};
+ const initialActorFingerprint=createHash('sha256').update(JSON.stringify({...hero,personality:undefined})).digest('hex');
+ const rows=[],stats={count,trait,initialActorFingerprint,location:count<3?'gate(two slots)':'open',attacks:0,rushAttacks:0,hits:0,hpLost:0,counters:0,overloadBeats:0,overloadCounters:0};
  const actors=[hero,...s.mons];
  const capture=(t,a,w)=>({attack:{...w},actors:actors.map(u=>({who:u.uid||u.id,busyUntil:u.busyUntil||0,next:u.next||0,cool:u.cool||u.bcool||0,swing:u.swing?{...u.swing}:null,intentTarget:u.intentTarget||null})),busyUntil:t.busyUntil||0,swing:t.swing?{...t.swing}:null,downUntil:t.downUntil||0,posture:t.posture,fret:t.fret,rageUntil:t.rageUntil||0,part:t.part,eyes:{...t.practice?.eyes},forecast:assessLoad(s,t,a,{move:w.id,wind:w.wind})});
  const finish=(a,t,w,r,before,phase)=>{
@@ -73,7 +75,7 @@ function coverProbe(){const s=createState(seed,{kind:'bare',askMajor:false}),d=s
 function pursuit(run){const d=clone(createState(seed,{kind:'bare',askMajor:false}).ds[0]);d.pos=[800,400];d.tactics={action:run?'flee':'hold'};const dog={k:'dog',pos:[750,400]};let pursuitHits=0;
  for(let t=0;t<8;t+=.25){if(run){moveToward(d,[1500,400],movementSpeed(d),.25);pursueFleeing(dog,d,.25);if(distance(d.pos,dog.pos)<=foeAction(dog).range)pursuitHits++;}}
  return {running:run,followed:run,pursuitContactBeats:pursuitHits};}
-const runs=traits.flatMap(t=>[1,2,4].map(n=>run(n,t))),cover=coverProbe(),summary={seed,training:training+'；probe沿既有統一入場HP/精力/暫態，成長n/f不改',trainingEventHash:snapshot.eventHash,runs:runs.map(r=>r.stats),cover,pursuit:[pursuit(false),pursuit(true)]};
+const runs=traits.flatMap(t=>[1,2,4].map(n=>run(n,t))),cover=coverProbe(),summary={seed,trainingCreationOptions:cached?.creationOptions||generated?.creationOptions||null,pairedComparison:'同一snapshot/裝備/ARTS/n/f；只改personality資料（同時影響選招與定力），不是只改定力；相同路數initialActorFingerprint須一致',training:training+'；probe沿既有統一入場HP/精力/暫態，成長n/f不改',trainingEventHash:snapshot.eventHash,runs:runs.map(r=>r.stats),cover,pursuit:[pursuit(false),pursuit(true)]};
 summary.pass=runs.every(r=>r.stats.overloadCounters===0)&&runs.some(r=>r.stats.overloadBeats>0)&&traits.every(t=>[1,2].every(n=>runs.some(r=>r.stats.trait===t&&r.stats.count===n&&r.stats.counters>0)))&&cover.open>=1&&cover.cover<1&&cover.sameUid&&cover.sameHands;
 if(traits.includes('calm')&&traits.includes('rash')){const sum=(trait,k)=>runs.filter(r=>r.stats.trait===trait).reduce((n,r)=>n+r.stats[k],0);summary.personality={calmAttacks:sum('calm','attacks'),rashAttacks:sum('rash','attacks'),calmRush:sum('calm','rushAttacks'),rashRush:sum('rash','rushAttacks'),calmHpLost:sum('calm','hpLost'),rashHpLost:sum('rash','hpLost')};summary.personality.pass=summary.personality.rashRush>summary.personality.calmRush&&summary.personality.rashHpLost>summary.personality.calmHpLost;summary.pass&&=summary.personality.pass;}
 console.log(JSON.stringify(summary,null,2));const log=get('log',null);if(log){await mkdir(path.dirname(path.resolve(log)),{recursive:true});await writeFile(log,JSON.stringify({summary,runs},null,2));}if(!summary.pass)process.exitCode=1;

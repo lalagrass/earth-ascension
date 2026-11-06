@@ -1,0 +1,22 @@
+{
+  "r9-n36-prepared60-public17.events.jsonl.gz": {
+    "bytes": 3230468,
+    "gzipBytes": 297686,
+    "sha256": "1d090070e1968fa61aa634a40c80e9a74e6b356b0bc4e5869c5d0939ffe64e84"
+  },
+  "r9-n36-prepared60-public17.history.json.gz": {
+    "bytes": 141415,
+    "gzipBytes": 11705,
+    "sha256": "bedd9de02370b552c8a5dab456ec9778f2e80c9bb0eca4a69699265d9cdd8be8"
+  },
+  "r9-n36-prepared60-public17.snapshot.json.gz": {
+    "bytes": 12235,
+    "gzipBytes": 3859,
+    "sha256": "18324971962f8aa535c316772ce3e8fbb8ff42dd05dc3e24d78b816c3ce69d08"
+  },
+  "r9-n36-prepared60-waves17.log.json.gz": {
+    "bytes": 3188056,
+    "gzipBytes": 148994,
+    "sha256": "eb8c0144c79a158915afd509e97d7154d3bc6345671475f638658da2f57774c0"
+  }
+}

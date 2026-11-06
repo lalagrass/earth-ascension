@@ -19,3 +19,5 @@ seed17：第一次origin-2→hero刀餵招，start203.25、wind.8752627037386106
 **human:toolKnife不是bandit:looterBlade**。#443明列哪種敵人的哪一招，因此沒有為N36門檻把同門柴刀眼熟搬給刀賊。此結果證明正常雙人對練通路可用，不是刀賊反擊護欄已過。N36原刀0次史及逐trait FAIL保留，需用真正對賊曝光/可行選招再驗，不能灌f或調反應公式。
 
 raw `r9-n34-spar-public17.json.gz` 解壓SHA256 `f0213fb1a086b4d98c0da2d2d6a3546ce1b1711d66eab28da5f77302c9dade34`、868331 bytes，含完整指令、drill、原始事件與逐拍位置/動作。這是程式真狀態，不是實拍或影片。任選seed可重產，當前seed樣本不能冒充普遍成立。參考#444的LPMud同伴上限、RPD實際當面餵招、#443的w；未搬其他遊戲資料/程式。
+
+caller options含jhev不代表另一工具把規則關掉：#390後jhevDaily/jhStep已無條件執行。兩種設定跨換日的真核對與完整creationOptions見[r9-n36-prepared-exposure.md](r9-n36-prepared-exposure.md)。這裡不把舊選項字串當作用中的開關。

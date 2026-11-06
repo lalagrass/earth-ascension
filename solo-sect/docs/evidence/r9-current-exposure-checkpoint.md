@@ -1,3 +1,7 @@
+# 最新來源指向（第九輪尚未驗收完成）
+現在以[r9-n36-prepared-exposure.md](r9-n36-prepared-exposure.md)及[r9-n34-spar-source.md](r9-n34-spar-source.md)的真來源與FAIL為準。下列0ac263a數據全部是歷史反例，**不是目前head最終量測**；N55也仍須最終重產。
+
+## 歷史0ac263a checkpoint（原文留作對照）
 # 0ac263a 核心的最新checkpoint（不是第九輪驗收完成）
 
 本節取代較早b9a308...公開史/0a07b9...成長表作為**目前**觀測；舊檔保留前後因果，不冒充新head。只有seed17，不是任選種子普遍證明。
