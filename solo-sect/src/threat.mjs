@@ -1,9 +1,9 @@
 import {transferredDamage} from './arts.mjs';
 import {RING} from './combat-space.mjs';
 import {movementSpeed,moveToward,ringCapacity,rememberEscape,restoreSurvivor,distance} from './tactics.mjs';
-import { combatMoves,combatTacticStep,fretStep,chooseCombatMove, fastestMove, windOf } from './arts.mjs';
+import { combatMoves,combatTacticStep,fretStep,prepareCombatMove,beginCombatFrame,declareCombatSwing,flushCombatSwings,combatSwingReady,delayCombatSwing, fastestMove, windOf } from './arts.mjs';
 import { practiceWindow } from './practice.mjs';
-import { foeAction, commitCombatEffort } from './starter-combat.mjs';
+import { foeAction } from './starter-combat.mjs';
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
 import { NODES, EDGES, DAY, FACILITIES, MOVES, ARTS, ACTIVITIES } from './data.mjs';
 import { noteFret, interceptOpening, breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
@@ -175,10 +175,11 @@ function bandHit(s, b, m, dmg, who) {
   b.downN = (b.downN || 0) + 1; if (who) log(s, `${who.name}擊退一名山賊（${b.downN}/${b.members.length}）`);
 }
 function bandClash(s, b, defs, dt) {
+  beginCombatFrame(s);
   const fight = defs.filter((d) => d.hp > 0 && d.pos), live = () => b.members.filter((m) => m.hp > 0&&!m.gone);
   for(const d of fight){fretStep(s,d);postureRegen(s,d,dt);if(d.downUntil>s.t)continue; d.bcool = (d.bcool ?? 0) - dt; /* 冷卻含前搖（收招＝冷卻剩下的時間） */
-    if (d.bswing) { if (s.t + 1e-9 < d.bswing.at) continue; const w = d.bswing; d.bswing = null; const m = b.members.find((x) => x.uid === w.tgt && x.hp > 0); if (!m) continue;
-      const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, move: w.mv, wind: w.wind, map: true }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
+    if (d.bswing) { if (!combatSwingReady(s,d,b.members.find(x=>x.uid===d.bswing.tgt),d.bswing)) continue; const w = d.bswing; d.bswing = null; const m = b.members.find((x) => x.uid === w.tgt && x.hp > 0); if (!m) continue;
+      const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, move: w.mv, wind: w.wind, opening:w.opening, map: true }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
       if(r.counter)d.hp=Math.max(1,d.hp-r.counterDamage);
       if (r.kind === 'hit') { breakWindup(s, d, m, w.mv, w.wind, r.contact); bandHit(s, b, m, w.dmg * (r.heavy ? CLASH.heavy : 1) * r.contact.damageFactor, d); } else (s.fx ||= []).push({ kind: 'clash', word: r.kind === 'dodge' ? '閃' : r.kind === 'parry' ? '架' : '破', color: '#ddd', pos: [...(m.pos || b.pos)], ttl: 0.6 });
       continue; }
@@ -186,21 +187,20 @@ function bandClash(s, b, defs, dt) {
     if(combatTacticStep(s,d,dt,{help:(a,id)=>{const h=s.ds.find(x=>x.id===id);if(h&&h.order!=='defend'&&h.task?.act!=='defend'){h.order='defend';cancelTask(s,h,`${a.name}喊援`);h.reason=`${a.name}喊援`; }}}))continue;
     if (d.bcool > 0 || (d.busyUntil || 0) > s.t) continue;
     const mine = live().filter((m) => m.ring === 1 && m.foe === d.id), tgt = (mine.length ? mine : live()).sort((x, y) => x.hp - y.hp)[0]; if (!tgt) break;if(distance(d.pos,tgt.pos)>Math.max(...combatMoves(d).map(m=>m.range||26)))continue;
-    const pick=chooseCombatMove(s,d,tgt,()=>R(s)),mv=pick?.move||fastestMove(d),wind=windOf(d,mv.id,mv.cd)+(pick?.seconds||0);d.bcool=BAND_CLASH.cd+(pick?.seconds||0);
-    commitCombatEffort(d);
-    d.bswing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * def24Of(s) * BAND_CLASH.cd };
-    (s.fx ||= []).push({ kind: 'warn', from: [...d.pos], to: [...(tgt.pos || b.pos)], r: 30, dur: wind, ttl: wind, t0: s.t });
+    const pick=prepareCombatMove(s,d,tgt,()=>R(s));if(!pick)continue;const mv=pick.move,wind=windOf(d,mv.id,mv.cd);
+    declareCombatSwing(s,d,tgt,()=>R(s),{ mv: mv.id, tgt: tgt.uid, wind,decisionSeconds:pick.decisionSeconds, dmg: defenderDps(d, s) * def24Of(s) * BAND_CLASH.cd },{slot:'bswing',clock:'bcool',cooldown:BAND_CLASH.cd});
+
   }
   if (b.state !== 'yard') return;
   const ready = [];
   for(const m of live()){postureRegen(s,m,dt);if(m.downUntil>s.t)continue; fretStep(s,m);const d = fight.find((x) => x.id === m.foe) || fight[0]; if (!d) break;
     m.intentTarget=d.id;
     if(!m.swing&&combatTacticStep(s,m,dt,{exit:a=>{rememberEscape(s,a);a.gone=true;a.state='gone';}}))continue;
-    const wk = witchK(s, m.pos), mdt = dt * wk; if (m.swing && wk < 1) m.swing.at += dt - mdt; /* #425 林克時間圈內的山賊放慢 */ m.cool = (m.cool ?? 0) - mdt;
+    const wk = witchK(s, m.pos), mdt = dt * wk; if (m.swing && wk < 1) delayCombatSwing(m.swing,dt-mdt); /* #425 林克時間圈內的山賊放慢 */ m.cool = (m.cool ?? 0) - mdt;
     if (m.swing && d.bswing && !m.swing.x && d.bswing.tgt === m.uid && lightCross(d.skills?.agility || 0, m.agi || 0, m.swing.at, d.bswing.at, () => R(s))) { /* #425 輕功交錯：兩人同時突進、互相穿過 */
       m.swing = null; d.bswing = null; postureHit(s, m, WITCH.crossDrop); postureHit(s, d, WITCH.crossDrop); b.cross = (b.cross || 0) + 1; s.crossN = (s.crossN || 0) + 1;
       (s.fx ||= []).push({ kind: 'cross', pos: [(m.pos[0] + d.pos[0]) / 2, (m.pos[1] + d.pos[1]) / 2], ttl: 0.6 }); if (b.cross === 1) log(s, `【輕功交錯】${d.name}和一名山賊同時突進，擦身而過，火花一閃，兩人都退了半步`); continue; }
-    if (m.swing) { if (s.t + 1e-9 < m.swing.at) continue; const w = m.swing; m.swing = null; handleTake(s, d);
+    if (m.swing) { if (!combatSwingReady(s,m,d,m.swing)) continue; const w = m.swing; m.swing = null; handleTake(s, d);
       const r = resolveSwing(s, m, d, () => R(s), { depth: 2, move: w.mv, wind: w.wind, opening: w.opening }); (b.cl ??= {})['m' + r.kind] = (b.cl['m' + r.kind] || 0) + 1;
       if (r.kind === 'dodge' && perfectDodge(s, d, () => R(s), { strain: r.strain })) b.witch = (b.witch || 0) + 1;
       if(r.counter)bandHit(s, b, m, r.counterDamage, d);
@@ -217,12 +217,10 @@ function bandClash(s, b, defs, dt) {
   for (let i = 0; i < ready.length; i++) {
     const { m, d } = ready[i];
     if (delays[i] > 0) { m.cool = delays[i]; continue; }
-    if (zjIntercept(s, m, fight)) { m.cool = BAND_CLASH.monCd; continue; }
-    const pick=chooseCombatMove(s,m,d,()=>R(s)),action=pick?.move||foeAction(m,Math.hypot(m.pos[0]-d.pos[0],m.pos[1]-d.pos[1])),wind=practiceWindow(m,action.id,action.wind).wind+(pick?.seconds||0), start = interceptOpening(s, m, d, () => R(s), { depth: 2, move: action.id, wind }); m.cool=BAND_CLASH.monCd+(pick?.seconds||0);commitCombatEffort(m);
-    if (start.read?.kind === 'read') { bandHit(s, b, m, start.read.counterDamage, d); (b.cl ??= {}).mread = (b.cl.mread || 0) + 1; continue; }
-    m.opened = true; m.swing = { mv: action.id,tgt:d.id, at: s.t + wind, wind, opening: start.opening };
-    (s.fx ||= []).push({ kind: 'warn', from: [...(m.pos || b.pos)], to: [...d.pos], r: 26, dur: wind, ttl: wind, t0: s.t });
+    const pick=prepareCombatMove(s,m,d,()=>R(s));if(!pick)continue;if(zjIntercept(s,m,fight)){m.cool=BAND_CLASH.monCd;continue;}const action=pick.move,wind=windOf(m,action.id,action.cd);
+    m.opened = true;declareCombatSwing(s,m,d,()=>R(s),{mv:action.id,tgt:d.id,wind,decisionSeconds:pick.decisionSeconds},{ctx:{depth:2},cooldown:BAND_CLASH.monCd});
   }
+  flushCombatSwings(s);
 }
 /* 倒地的人沿山門那條路退走，走到盡頭就不畫了 */
 function fleeStep(b, dt) { for (const m of b.members) { if (m.state !== 'down' || !m.pos) continue; let left = BAND_CLASH.fleeSpeed * dt; while (left > 0 && m.path?.length) { const t = NODES[m.path[0]], dx = t[0] - m.pos[0], dy = t[1] - m.pos[1], L = Math.hypot(dx, dy); if (L <= left) { m.pos = [...t]; m.path.shift(); left -= L; } else { m.pos[0] += dx * left / L; m.pos[1] += dy * left / L; left = 0; } } if (!m.path?.length) m.state = 'gone'; } }

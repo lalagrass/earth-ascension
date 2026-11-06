@@ -1,10 +1,12 @@
+import {beginCombatFrame,observedActor,queueCombatStart,queueCombatDecision,flushCombatStarts} from './combat-timing.mjs';
+export {beginCombatFrame};
 import {bodyOf,contactImpact,usableMove,woundWind,shiftBalance,recoverBody,healWounds,BODY_PARTS,TISSUES} from './contact.mjs';
 import {opponents,allies,loadFromForecast,coverFor,movementSpeed,distance,stepTactic} from './tactics.mjs';
 import {RING} from './combat-space.mjs';
 import {TECHNIQUES,TECHNIQUE_MOVES,learnFromLoss,applyTechnique,matchesTechnique} from './techniques.mjs';
 import {selectAction,recordChoice,desireTraining,witnessExchange} from './decision.mjs';
-import { PRACTICE, familiarReaction, practiceWindow, recordExchange, recordDrill } from './practice.mjs';
-import { bodyMove, moveAvailable, BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';
+import { PRACTICE, familiarReaction, practiceWindow, recordExchange, recordDrill, emitPractice } from './practice.mjs';
+import { bodyMove, moveAvailable, BODY_TIMING, FOE_ACTIONS, foeAction, commitCombatEffort } from './starter-combat.mjs';
 import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST, TRAITS } from './data.mjs';
 import { stampCard, curveMulOf, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
@@ -1248,9 +1250,47 @@ export function combatMoves(d,distance=0) {
 }
 export function chooseCombatMove(s,d,target,rnd,options={}) {
   const distance=options.distance??Math.hypot((d.pos?.[0]||0)-(target.pos?.[0]||0),(d.pos?.[1]||0)-(target.pos?.[1]||0));
-  const facts=techniqueFacts(s,d,target);
+  const seen=observedActor(s,target),facts=techniqueFacts(s,d,seen);
   const choices=(options.moves||combatMoves(d,distance)).filter(m=>!m.technique||matchesTechnique(TECHNIQUES.find(r=>r.id===m.id),facts)).map(m=>({...m,actualWind:windOf(d,m.id,m.cd),force:moveStats(d,m.id).force}));
-  return selectAction(s,d,target,choices,rnd,{distance,composure:composure(d),postureCapacity:postureMax(d),armor:moveStats(target).armor,...options});
+  const available=observableWindow(s,d);
+  return selectAction(s,d,seen,choices,rnd,{distance,available,composure:composure(d),postureCapacity:postureMax(d),armor:moveStats(target).armor,...options});
+}
+// Only declared, currently visible attacks have deadlines; intent alone is not
+// clairvoyance about which move will be selected later in this fixed step.
+export function observableWindow(s,d){return Math.min(Infinity,...opponents(s||{},d).map(a=>observedActor(s,a)).map(a=>a.swing||a.bswing).filter(w=>w&&w.tgt===(d.uid||d.id)&&w.at>(s?.t||0)).map(w=>w.at-(s?.t||0)));}
+export function prepareCombatMove(s,d,target,rnd,options={}){
+  if((d.busyUntil||0)>s.t)return null;
+  const plan=d.combatDecision;
+  if(plan){
+    if(s.t+1e-9<plan.readyAt)return null;
+    delete d.combatDecision;
+    const move=combatMoves(d,options.distance??distance(d.pos,target.pos)).find(m=>m.id===plan.move);
+    if(!move||plan.target!==(target.uid||target.id||target.k)||(!d.raging&&windOf(d,move.id,move.cd)>observableWindow(s,d))){emitPractice(s,{type:'choiceAbandoned',who:d.uid||d.id||d.k,move:plan.move,reason:'可觀測情境已變或剩餘時間不足',seconds:plan.seconds});return null;}
+    return {...plan,move,seconds:0,decisionSeconds:plan.seconds};
+  }
+  const pick=chooseCombatMove(s,d,target,rnd,options);if(!pick)return null;
+  if(pick.seconds>0){d.anim='idle';d.combatDecision={...pick,move:pick.move?.id||null,readyAt:s.t+pick.seconds};const pending=d.combatDecision;queueCombatDecision(s,d,pending,()=>emitPractice(s,{type:'thinking',who:d.uid||d.id||d.k,move:pending.move,from:pending.startedAt,until:pending.readyAt}));return null;}
+  return pick.move?{...pick,decisionSeconds:0}:null;
+}
+export function declareCombatSwing(s,atk,def,rnd,w,{slot='swing',ctx={},warn=true,cooldown=0,clock='cool',absolute=false}={}){
+  w={...w,startedAt:s.t,at:s.t+w.wind};
+  queueCombatStart(s,atk,slot,w,()=>{
+    if(atk.gone||atk.hp<=0||def.gone||def.hp<=0||atk[slot]||(atk.busyUntil||0)>s.t||(atk.downUntil||0)>s.t)return false;
+    atk[clock]=absolute?s.t+cooldown:cooldown;commitCombatEffort(atk);
+    const move=typeof w.mv==='object'?w.mv:MOVES.find(m=>m.id===w.mv);if(move?.consumable)delete atk.tools?.[move.tool];
+    if(warn)(s.fx??=[]).push({kind:'warn',from:[...atk.pos],to:[...def.pos],r:w.reach||w.range||26,dur:w.wind,ttl:w.wind,t0:s.t});
+    emitPractice(s,{type:'windup',who:atk.uid||atk.id||atk.k,target:def.uid||def.id||def.k,move:w.mv?.id||w.mv,start:s.t,arrival:w.at,wind:w.wind,decisionSeconds:w.decisionSeconds||0});return true;
+  },()=>{const start=interceptOpening(s,atk,def,rnd,{...ctx,move:w.mv?.id||w.mv,wind:w.wind,deferRead:true});w.opening=start.opening;w.readAt=start.readAt??null;});
+  return w;
+}
+export const flushCombatSwings=s=>flushCombatStarts(s);
+export function delayCombatSwing(w,seconds){if(!w)return;w.at+=seconds;w.wind+=seconds;if(w.opening){w.opening.T.windowEnd+=seconds;w.opening.T.wind+=seconds;}}
+export function combatSwingReady(s,atk,def,w){
+  if(s.t+1e-9>=w.at)return true;
+  const o=w.opening;if(w.readAt==null||!o||!def)return false;
+  const start=Math.max(o.T.windowStart,def.busyUntil||0,def.swing?.at||0,def.bswing?.at||0,def.downUntil||0),due=start+o.reaction+o.T.strike;
+  w.readAt=due;
+  return due<o.T.windowEnd&&s.t+1e-9>=due&&assessLoad(s,def,atk,{move:w.mv?.id||w.mv,wind:w.wind}).L<1&&postureOf(def)>0&&!(def.rageUntil>s.t)&&def.part?.where!=='eye'&&!(def.visionUntil>s.t);
 }
 export function fastestMove(d) {
   const moves = combatMoves(d);
@@ -1304,7 +1344,7 @@ export function breakWindup(s, atk, def, moveId, wind, contact=null) {
 // N36 預測包含走近的對手；已起手者不能藉靠牆刪掉來招。
 export function assessLoad(s,def,extra=null,ctx={}) {
   const busy=Math.max(0,(def.busyUntil||0)-(s?.t||0),(def.swing?.at||0)-(s?.t||0),(def.bswing?.at||0)-(s?.t||0),(def.downUntil||0)-(s?.t||0));
-  const rows=opponents(s||{},def,extra).filter(a=>a.pos&&def.pos).filter(a=>{
+  const rows=opponents(s||{},def,extra).map(a=>ctx.observed&&a!==extra?observedActor(s,a):a).filter(a=>a.pos&&def.pos).filter(a=>{
     const target=a.swing?.tgt||a.bswing?.tgt||a.intentTarget||a.foe;
     if(a===extra)return true;
     if(!a.swing&&!a.bswing&&a.tactics?.action==='flee')return false;
@@ -1326,7 +1366,8 @@ export function assessLoad(s,def,extra=null,ctx={}) {
   return loadFromForecast(def,rows);
 }
 export function combatTacticStep(s,d,dt,H={}){
-  return stepTactic(s,d,assessLoad(s,d),dt,{temper:composure(d),normalTemper:CLASH.fret.normal,anger:a=>{a.raging=true;a.rageUntil=s.t+CLASH.fret.rageTime;},...H});
+  if(d.combatDecision&&(d.busyUntil||0)>s.t)return true;
+  return stepTactic(s,d,assessLoad(s,d,null,{observed:true}),dt,{temper:composure(d),normalTemper:CLASH.fret.normal,anger:a=>{a.raging=true;a.rageUntil=s.t+CLASH.fret.rageTime;},...H});
 }
 /* 同一組反應時間區間決定截擊、進身閃、招架。面板讀的是各結果的無條件機率。 */
 export function clashTimes(s, atk, def, ctx = {}) {
@@ -1351,6 +1392,7 @@ export function interceptOpening(s, atk, def, rnd, ctx = {}) {
   const T = clashTimes(s, atk, def, ctx), reaction = drawReaction(T,rnd);
   const opening = { T, reaction, odds:clashOdds(s,atk,def,ctx), p: clashOdds(s,atk,def,ctx).hit, at: s?.t ?? 0 };
   if (T.canCounter && postureOf(def) > 0 && !(atk.sure && atk.sure === (def.uid || def.id)) && def.part?.where!=='eye'&&!(def.visionUntil>(s?.t??0)) && !(def.rageUntil > (s?.t ?? 0)) && reaction+T.strike<T.wind && !(reaction+T.step+T.strike<T.wind)) {
+    if(ctx.deferRead)return {opening,read:null,readAt:T.windowStart+reaction+T.strike};
     return { opening, read: resolveSwing(s, atk, def, rnd, { ...ctx, opening }) };
   }
   return { opening, read: null };

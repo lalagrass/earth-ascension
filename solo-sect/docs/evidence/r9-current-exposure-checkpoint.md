@@ -1,3 +1,6 @@
+# 最新根因修正
+以[r9-n34-timing.md](r9-n34-timing.md)的共用時序與新短回歸FAIL為準：normal2/0/0、calm0/0/1、rash1/0/0；舊prepared60只用作同人物前後診斷，不能當新規則final成長史。N34 day1 20seed無傷33.971% FAIL。整輪尚未完成。
+
 # 最新來源指向（第九輪尚未驗收完成）
 現在以[r9-n36-prepared-exposure.md](r9-n36-prepared-exposure.md)及[r9-n34-spar-source.md](r9-n34-spar-source.md)的真來源與FAIL為準。下列0ac263a數據全部是歷史反例，**不是目前head最終量測**；N55也仍須最終重產。
 

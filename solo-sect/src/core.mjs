@@ -90,6 +90,7 @@ const find = (s, id) => s.ds.find((o) => o.id === id && !o.removed);
 export const whReserved = (s, k, except = null) => stockReserved(s, k, except); // v1.7 由預約表推得
 export const whAvail = (s, k, except = null) => (s.res[k] || 0) - whReserved(s, k, except);
 export function cancelTask(s, d, why) {
+  delete d.combatDecision;
   // 改派/退出交手取消在途攻擊，但已花精力/冷卻/應接時間不退還。
   d.swing = null; d.bswing = null;
   const t = d.task; if (!t) return;

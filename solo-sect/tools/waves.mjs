@@ -3,9 +3,9 @@ import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {createState,clone,rand} from '../src/sim.mjs';
-import {assessLoad,combatTacticStep,chooseCombatMove,interceptOpening,resolveSwing,postureRegen,fretStep,windOf,CLASH} from '../src/arts.mjs';
+import {assessLoad,combatTacticStep,prepareCombatMove,beginCombatFrame,declareCombatSwing,flushCombatSwings,combatSwingReady,interceptOpening,resolveSwing,postureRegen,fretStep,windOf,CLASH} from '../src/arts.mjs';
 import {movementSpeed,moveToward,COVERS,ringCapacity,distance,pursueFleeing,rememberEscape,restoreSurvivor} from '../src/tactics.mjs';
-import {foeAction,commitCombatEffort} from '../src/starter-combat.mjs';
+import {foeAction} from '../src/starter-combat.mjs';
 import {practiceWindow} from '../src/practice.mjs';
 import {growthSnapshots} from './growth-scenario.mjs';
 import {combatSnapshots} from './combat-history.mjs';
@@ -22,8 +22,8 @@ const generated=cached?null:history==='labor'?growthSnapshots(seed,[60]):combatS
 const snapshot=cached?cached.snapshot:generated.snapshots[0],training=cached?.scenario||generated.scenario;
 if(snapshotOut){await mkdir(path.dirname(path.resolve(snapshotOut)),{recursive:true});await writeFile(snapshotOut,JSON.stringify({seed,scenario:training,creationOptions:cached?.creationOptions||generated?.creationOptions||null,snapshot},null,2));}
 function run(count,trait){
- const s=createState(seed,{kind:'bare',askMajor:false}),hero=clone(snapshot.hero);s.ds=[hero];s.mons=[];s.band=null;s.t=0;s.day=60;s.fx=[];
- hero.id='hero';hero.uid='hero';hero.personality=traitMap[trait];hero.hp=100;hero.max=100;hero.needs.energy=100;hero.posture=100;hero.busyUntil=0;hero.rageUntil=0;hero.raging=false;hero.fret=0;hero.swing=null;hero.bswing=null;hero.path=[];hero.gone=false;hero.downUntil=0;hero.faintUntil=0;hero.balanceOpenUntil=0;hero.wounds=[];hero.part=null;hero.pain=0;hero.painAt=-1e9;
+ const s=createState(seed,{kind:'bare',askMajor:false}),hero=clone(snapshot.hero);s.ds=[hero];s.mons=[];s.band=null;s.t=0;s.day=60;s.fx=[];s.captureEvents=true;s.events=[];
+ hero.id='hero';hero.uid='hero';hero.personality=traitMap[trait];hero.hp=100;hero.max=100;hero.needs.energy=100;hero.posture=100;hero.busyUntil=0;hero.rageUntil=0;hero.raging=false;hero.fret=0;hero.swing=null;hero.bswing=null;hero.path=[];hero.gone=false;hero.downUntil=0;hero.faintUntil=0;hero.balanceOpenUntil=0;hero.wounds=[];hero.part=null;hero.pain=0;hero.painAt=-1e9;delete hero.combatDecision;
  // 1/2路在真山門的兩席，4路在空地；不是替四路刪掉已發出的攻擊。
  hero.pos=count<3?[...COVERS.find(c=>c.id==='gate').stand]:[800,400];
  for(let i=0;i<count;i++)s.mons.push({k:'bandit',uid:`foe${i}`,hp:40,max:40,pos:[hero.pos[0]+20+i,hero.pos[1]],agi:20,weapon:'blade',energy:100,next:0,intentTarget:hero.id});
@@ -38,29 +38,29 @@ function run(count,trait){
    rows.push({t:s.t,who:t.uid||t.id,L:load,reaction:r.kind,counter:!!r.counter,type:'defense',phase,T:r.timing?.T??null,r:r.timing?.r??null,timing:r.timing??null,before,after:{busyUntil:t.busyUntil||0,posture:t.posture,fret:t.fret},attacker:a.uid||a.id,move:w.id});
    if(load>=1&&r.counter)stats.overloadCounters++;
  };
- for(;s.t<40&&hero.hp>25&&!hero.gone&&s.mons.some(m=>m.hp>0&&!m.gone);s.t+=.25){for(const a of actors){
+ for(;s.t<40&&hero.hp>25&&!hero.gone&&s.mons.some(m=>m.hp>0&&!m.gone);s.t+=.25){beginCombatFrame(s);for(const a of actors){
    if(a.hp<=0||a.gone)continue;postureRegen(s,a,.25);fretStep(s,a);
    const candidates=a===hero?s.mons.filter(m=>m.hp>0&&!m.gone):[hero],target=candidates.sort((a,b)=>distance(a.pos,hero.pos)-distance(b.pos,hero.pos))[0];if(!target)continue;
    const L=assessLoad(s,a).L;let reaction='idle',counter=false;
-   if(a.swing&&s.t+1e-9>=a.swing.at){const w=a.swing;a.swing=null;const t=actors.find(x=>(x.uid||x.id)===w.tgt);
-     if(t?.hp>0&&distance(a.pos,t.pos)<=w.range*1.3){const before=capture(t,a,w);const r=resolveSwing(s,a,t,()=>rand(s),{move:w.id,wind:w.wind,opening:w.opening});reaction=r.kind;counter=!!r.counter;finish(a,t,w,r,before,'impact');
+   if(a.swing&&combatSwingReady(s,a,actors.find(x=>(x.uid||x.id)===a.swing.tgt),a.swing)){const w=a.swing;a.swing=null;const t=actors.find(x=>(x.uid||x.id)===w.tgt);
+     if(t?.hp>0&&distance(a.pos,t.pos)<=w.range*1.3){const before=capture(t,a,w);const r=resolveSwing(s,a,t,()=>rand(s),{move:w.id,wind:w.wind,opening:w.opening});reaction=r.kind;counter=!!r.counter;finish(a,t,w,r,before,s.t+1e-9<w.at?'intercept':'impact');
      }
    }
    if(!a.swing){const moved=combatTacticStep(s,a,.25,{exit:unit=>{rememberEscape(s,unit);unit.gone=true;}});reaction=moved?a.tactics.action:reaction;
      if(!moved&&(a.busyUntil||0)<=s.t&&!(a.downUntil>s.t)&&s.t>=(a.next||0)){
        if(a!==hero){const index=s.mons.filter(m=>m.hp>0&&!m.gone).indexOf(a);if(index>=ringCapacity(hero)){moveToward(a,[hero.pos[0]+50+index*4,hero.pos[1]],movementSpeed(a),.25);reaction='outer';rows.push({t:s.t,who:a.uid,L,reaction,counter:false,type:'beat'});continue;}}
-       const pick=chooseCombatMove(s,a,target,()=>rand(s),{distance:distance(a.pos,target.pos)});
+       const pick=prepareCombatMove(s,a,target,()=>rand(s),{distance:distance(a.pos,target.pos)});
        if(pick){const m=pick.move;if(distance(a.pos,target.pos)>m.range){moveToward(a,target.pos,movementSpeed(a),.25);reaction='approach';}
-         else{const wind=(windOf(a,m.id,m.cd))+pick.seconds;
-           const w={mv:m.id,id:m.id,wind,range:m.range,dmg:m.dmg,skill:m.skill,tgt:target.uid||target.id,at:s.t+wind};const before=capture(target,a,w),start=interceptOpening(s,a,target,()=>rand(s),{move:m.id,wind});if(start.read)finish(a,target,w,start.read,before,'opening');else a.swing={...w,opening:start.opening};a.next=s.t+m.cd+pick.seconds;
-           if(a===hero){stats.attacks++;if(a.raging)stats.rushAttacks++;commitCombatEffort(a);}else commitCombatEffort(a);reaction='wind';}
+         else{const wind=(windOf(a,m.id,m.cd));
+           declareCombatSwing(s,a,target,()=>rand(s),{mv:m.id,id:m.id,wind,range:m.range,dmg:m.dmg,skill:m.skill,tgt:target.uid||target.id,decisionSeconds:pick.decisionSeconds},{clock:'next',absolute:true,cooldown:m.cd});
+           reaction='wind';}
        }
      }
    }
    rows.push({t:s.t,who:a.uid||a.id,L,reaction,counter:false,type:'beat',tactic:a.tactics?.action||null});if(a===hero&&L>=1)stats.overloadBeats++;
- }}
+ }flushCombatSwings(s);if(hero.swing?.startedAt===s.t){stats.attacks++;if(hero.raging)stats.rushAttacks++;}}
  stats.hpLost=100-hero.hp; // 真正終局HP差，包含被反擊，不只主動挨打列的加總。
- stats.seconds=s.t;stats.escaped=actors.filter(a=>a.gone).map(a=>a.uid||a.id);return {stats,rows};
+ stats.seconds=s.t;stats.escaped=actors.filter(a=>a.gone).map(a=>a.uid||a.id);return {stats,rows,events:s.events};
 }
 // 同一人物用真來招累積眼熟後，量四狗空地／牆邊；治療重置只在probe入場，不灌手熟眼熟。
 function coverProbe(){const s=createState(seed,{kind:'bare',askMajor:false}),d=s.ds[0];s.ds=[d];d.pos=[800,400];const dog={k:'dog',uid:'trainedDog',hp:14,max:14,pos:[820,400]};

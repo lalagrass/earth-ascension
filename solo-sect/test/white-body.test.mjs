@@ -82,6 +82,25 @@ test('N34 情境識別穩定後零決策時間，選招/心願所有人共用',a
   }
   assert.ok(new Set(favorites).size>=2,JSON.stringify(favorites));
   t.busyUntil=0;t.posture=100;resolveSwing(s,d,t,()=>.999,{move:'bodyPunch',wind:.45});assert.ok(t.trainingWish?.evidence);finishTrainingWish(t,'spar');
+  const {prepareCombatMove,beginCombatFrame,declareCombatSwing,flushCombatSwings,combatSwingReady,windOf,delayCombatSwing}=await import('../src/arts.mjs');
+  const clock=createState(83,{kind:'bare',askMajor:false}),body=clock.ds[0];clock.ds=[body];body.pos=[0,0];
+  const blade={k:'bandit',uid:'blade',hp:40,pos:[20,0],weapon:'blade'};clock.mons=[blade];clock.captureEvents=true;
+  beginCombatFrame(clock);assert.equal(prepareCombatMove(clock,body,blade,()=>rand(clock)),null);
+  flushCombatSwings(clock);const paid=body.combatDecision.seconds,ready=body.combatDecision.readyAt;
+  assert.ok(paid>0&&body.busyUntil===ready);assert.ok(!body.swing&&!body.bswing,'思考不是已露起手');
+  assert.equal(clock.fx.filter(x=>x.kind==='warn').length,0);
+  // Deadline is not visible until the next common observation frame.
+  const incoming=declareCombatSwing(clock,blade,body,()=>.5,{mv:'looterBlade',tgt:body.id,wind:.8});
+  assert.equal(chooseCombatMove(clock,body,blade,()=>.5).available,null,'不預知同拍後宣告來招');flushCombatSwings(clock);
+  assert.equal(incoming.opening.at,clock.t);assert.equal(incoming.at,clock.t+.8);assert.ok(body.hp===100);
+  assert.equal(combatSwingReady(clock,blade,body,incoming),false,'起手同刻不得瞬移反擊');
+  clock.t+=.25;beginCombatFrame(clock);assert.equal(chooseCombatMove(clock,body,blade,()=>.5).available,.55);
+  assert.equal(prepareCombatMove(clock,body,blade,()=>.5),null);assert.equal(body.busyUntil,ready,'未到期不能重抽/退費');
+  delayCombatSwing(incoming,.25);assert.equal(incoming.at,1.05);assert.equal(incoming.opening.T.windowEnd,1.05,'放慢須同步絕對來招期限');
+  // Same published body actions must produce the same load/busy windows in either declaration order.
+  function simultaneous(reverse){const q=createState(90,{kind:'bare',askMajor:false}),a=q.ds[0];q.ds=[a];a.pos=[0,0];const b={k:'bandit',uid:'b',hp:40,pos:[20,0],weapon:'blade'};q.mons=[b];beginCombatFrame(q);
+    const jobs=[()=>declareCombatSwing(q,a,b,()=>.5,{mv:'bodyPunch',tgt:'b',wind:windOf(a,'bodyPunch',1)}),()=>declareCombatSwing(q,b,a,()=>.5,{mv:'looterBlade',tgt:a.id,wind:.8})];if(reverse)jobs.reverse();jobs.forEach(f=>f());flushCombatSwings(q);return [a.swing.opening.T,b.swing.opening.T];}
+  assert.deepEqual(simultaneous(false),simultaneous(true),'先發佈全體，再計算所有起手反應');
   // 公開短史，不指定免費老師/ARTS/n/f：先真砍柴拿刀、真自修，再邀請。
   const {setOrder}=await import('../src/sim.mjs'),q=createState(17,{kind:'bare',askMajor:false});q.captureEvents=true;
   for(const a of q.ds)setOrder(q,a.id,'chop');

@@ -197,3 +197,8 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 - 指令：`node solo-sect/tools/combat-history.mjs --seed <任選> --days 60 --strategy prepared-defend --events out/history.events.jsonl --snapshot-out out/history.snapshot.json`。門檻：每筆迎戰前置均真休養/走路/交回負重，沒有n/f/HP/怪率更改；預期seed17首迎戰t4214.75在veg，真17次刀接法、blade f9.1438516999。其他seed須實測，非保證同日數/次數。
 - 指令：`node solo-sect/tools/waves.mjs --seed 17 --history prepared-defend --trait normal,calm,rash --snapshot-in out/history.snapshot.json --log out/waves.log.json`。門檻不變：每seed/trait 1/2路各有反擊、L≥1零反擊、人格比較；**本次FAIL** normal0/1/0、calm0/10/10、rash0/1/0，超載counter全0；rush14<15、HP損158.57>56.38，所以不能稱通過。每路數三trait的initialActorFingerprint相同，固定同一ARTS/n/f來源；personality還影響選招，不是純定力測試。
 - 指令：`bash solo-sect/test/run.sh smoke`，門檻fail0，預期19/19。完整[來源差異/舊jhev旗標語義更正/真事件與SHA](docs/evidence/r9-n36-prepared-exposure.md)。原無刀曝光FAIL不刪；後續Hick/可見前搖與同拍提交問題仍待修。
+
+#### N34 共用決策／前搖／提交邊界（驗收未通過）
+- 指令：`bash solo-sect/test/run.sh smoke`。門檻fail0，預期19/19；只延伸原N34 test，覆蓋真Hick busy/不能提前起手、同拍後發不可知、全體發佈後才算opening、截擊不在0秒瞬移、慢動作絕對期限一致。
+- 指令：`gzip -dc solo-sect/docs/evidence/r9-n36-prepared60-public17.snapshot.json.gz > out/prepared.json; node solo-sect/tools/waves.mjs --seed 17 --history prepared-defend --trait normal,calm,rash --snapshot-in out/prepared.json --log out/waves.json`。原門檻每seed/trait 1/2路都有反擊且L≥1零反擊不變。**短回歸FAIL**：normal2/0/0、calm0/0/1、rash1/0/0，超載counter全0；人格15>9、HP損88.095>77.524本樣本成立但不是整體pass。舊snapshot只作同人前後根因診斷，final須新規則公開重產，不代表任意seed。
+- 指令：`node solo-sect/tools/duel.mjs --a day1 --b day1 --seeds 1-20 --log out/duel.json`。門檻中位≥30、無傷≥70%。**FAIL**：288／33.9713743749%，平均喘氣6.1；舊75.793%不可代表此head。原始資料/手算與world理由見[時序根因](docs/evidence/r9-n34-timing.md)。day60/day1、其他自然護欄及N55 final/影片仍未完成。
