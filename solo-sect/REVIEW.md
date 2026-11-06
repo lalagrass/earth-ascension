@@ -128,3 +128,11 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 - 指令：`node solo-sect/tools/bot12.mjs --seed 17 --json`（任選整數seed亦可；不帶seed為1001–1012）。門檻輸出recruitment.day10Med≤1、day30Med約2–4作護欄；須與`node solo-sect/tools/bot12.mjs <上一輪solo-sect目錄> --json`並列，兩邊同用本輪工具的.25秒固定步長。預期recruitment.bySeed的兩日常住名俠數、真guided秒數、stepSeconds；**未量齊12seed與上一輪前不標通過，單seed不是任意seed證明**。名俠定義含舊版免費名角同伴、不含主角/短訪師父，與武學famousHeld不同。
 - 正常桌面待驗：新局兩個普通人卡含關係句、名俠欄顯示來往及不能來的精確食宿/師父/處境分項。沒有實拍、不能把HTML/SVG說成已看UI。預覽403未恢復前由parent接續，不Shell驅動browser或換host。
 - 共用公式/常數/世界理由：`docs/systems/combat.md` N50。舊存檔林師姐/堂弟保留；3.4/MIGRATIONS/golden仍待整輪收尾，不說已升版。
+
+### 第九輪 N38 checkpoint（#449；工程已接，護欄未全過）
+- 指令：`bash solo-sect/test/run.sh smoke`。門檻fail0。預期19 tests（N38唯一小測試：機率變、名稱立刻變，不存level/XP，查詢不改主局/不消耗逃敵），本次19/19。不是完整suite。
+- 指令：`node solo-sect/tools/white-body.mjs --seed 17 --days 30 --check > out/body.json`（seed可任選整數）。門檻：狗d3–5、進身閃/自己趕豬d10–15、刀賊d20–30、三公開人格拿手招≥2。預期完整每日分項/敵人uid與來源/reached/favorite/firstSoloBoarEscapeDay；`--check`有任一護欄不符就exit1，無此flag只報數。**本次exit1**，不是全綠；詳細真表`docs/evidence/r9-n38-levels.md`，原始/摘要JSON在同目錄。
+- 指令：`node solo-sect/tools/white-body.mjs --seed 17 --days 30 --types ISTJ > out/source.json`。門檻：每次正式武學初得要能回查formalAcquisitions/context；預期d8舊東方不敗殘頁、d9老頑童教拳等真來源，不把它們列為N35土招。其後舊learn單人師父來源稽核仍未完成。這是診斷，不是「第一本譜/師父時間全部過」的證明。
+- 指令：`node solo-sect/tools/bot12.mjs --seed 17 --json`（完整不帶seed）。門檻/預期：recruitment.bySeed額外含逐日接法概率/敵人來源/各級首次過線日及最常用招；對舊版只讀舊版自身模型，沒有N38模組則等級欄不填，不能把新規則套在base冒充base實測。12seed與上一輪同尺對照仍待整輪收尾。
+- 指令：`node solo-sect/tools/waves.mjs --seed 17 --trait normal --log out/waves.json`。門檻照[446追加原文](https://github.com/lalagrass/earth-ascension/issues/446)：所有L≥1拍零反擊，1到2人同時進攻有反擊；每個seed/trait分別檢，**無aggregate授權**。本次1/2/4路counter2/0/0，pass=false；不能用其他性格遮normal兩路。原始r9-n38-waves-normal17.json。
+- 正常桌面待驗：白身新局人格欄、出身兩同行關係、人物卡即時級名、名俠不能來原因。沒有實拍、影片或真人盲測；N55仍欠A/B.webm，最終成長三seed亦待重跑。RULES_VERSION仍3.3，3.4/MIGRATIONS/golden尚未收尾。
