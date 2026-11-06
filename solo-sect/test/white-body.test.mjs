@@ -28,6 +28,7 @@ test('N33 同一底層累積w，手熟縮前搖、眼熟縮反應，人獸都有
   assert.equal(learningWeight(.5),1); assert.ok(Math.abs(learningWeight(.9)-.36)<1e-12);
   assert.ok(learningWeight(.99)>0); assert.equal(practiceResidual(50),.5);
   const s = createState(39,{kind:'bare',askMajor:false}), d=s.ds[0], dog={k:'dog',uid:'testdog',pos:[800,400],hp:14};
+  assert.ok(s.ds.every(a=>a.best===0&&a.insight&&a.away===false),'所有新出身經共同初始化就有存檔基準欄，不等load才補');
   ensurePractice(dog); const before=clashTimes(s,dog,d,{move:'dogBite',wind:.4}).reaction;
   const hitBefore=clashOdds(s,dog,d,{move:'dogBite',wind:.4}).hit;
   for(let i=0;i<20;i++) { d.busyUntil=0; d.raging=false; d.rageUntil=0; d.fret=0; d.posture=100; dog.posture=30; resolveSwing(s,dog,d,()=>.5,{move:'dogBite',wind:.4}); }

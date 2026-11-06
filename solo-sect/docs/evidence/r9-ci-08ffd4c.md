@@ -17,3 +17,6 @@ head08ffd4c9a833f9e4e3d7692c8895b535d5b68f30，台北時間2026-11-07 01:42開�
 - #318唯一數值diff為80 vs28，須查狗的共同追及尺度與原資料表前提，不未讀issue就把80直接改回28或反向改斷言。
 
 f9d1c77的新run42266926080也已completed/failure，其他5job成功；不是本次5106f72的CI。下一輪push後另核實head。
+
+### N33 已修#79來源缺欄（仍交CI判定）
+`mkDisciple`共同建構器現在一律建立best:0/insight:{}/away:false，讓兩個新出身同行與後續一般招收者在出生就符合save.ensure的既有基準，不在load才增欄。只補空戰史/在場狀態，不灌能力/成長。原N33唯一小測試延伸檢查全體初始欄位，smoke仍19/19；未改rules-upgrade.test的深比較、沒有把load冪等測試刪掉，未本地跑整套或另開長probe。
