@@ -24,7 +24,7 @@ test('N32 白身無武學、起手秒數與野狗從邊緣走來', () => {
 
 
 test('N33 同一底層累積w，手熟縮前搖、眼熟縮反應，人獸都有紀錄', async () => {
-  const { learningWeight, practiceWindow, practiceResidual, ensurePractice, rehearse } = await import('../src/practice.mjs');
+  const { learningWeight, practiceWindow, practiceResidual, ensurePractice, rehearse, handUses, familiarUses, recordExchange } = await import('../src/practice.mjs');
   assert.equal(learningWeight(.5),1); assert.ok(Math.abs(learningWeight(.9)-.36)<1e-12);
   assert.ok(learningWeight(.99)>0); assert.equal(practiceResidual(50),.5);
   const s = createState(39,{kind:'bare',askMajor:false}), d=s.ds[0], dog={k:'dog',uid:'testdog',pos:[800,400],hp:14};
@@ -39,6 +39,16 @@ test('N33 同一底層累積w，手熟縮前搖、眼熟縮反應，人獸都有
   assert.ok(windOf(d,'bodyPunch',1)<start);
   const fake={skills:{agility:20},practice:{hands:{bodyPunch:50}}}; const w=practiceWindow(fake,'bodyPunch',.45);
   assert.ok(Math.abs((w.wind-w.floor)/(w.start-w.floor)-.5)<1e-12);
+  const veteran=createState(3).ds[0], rat={k:'rat'};
+  veteran.arts.basicFist={xp:150,bt1:true,bt2:true};
+  assert.equal(handUses(veteran,'fist'),250);
+  assert.ok(familiarUses(veteran,rat,'fist')>=250);
+  assert.ok(clashOdds(s,rat,veteran,{wind:.54}).read>.9,'已練過的高手認得短招');
+  assert.equal(familiarUses(d,{k:'dog'},'dogBite'),d.practice.eyes['dog:dogBite']);
+  const novice=createState(4,{kind:'bare',askMajor:false}).ds[0];
+  assert.equal(familiarUses(novice,{k:'dog'},'dogBite'),0,'白身初遇野狗仍陌生');
+  recordExchange(s,{k:'boar',uid:'sample'},novice,'boarCharge',.5,{kind:'hit'});
+  assert.ok(familiarUses(novice,{k:'boar'},'boarToss')>0,'同類衝撞可折算眼熟');
 });
 
 

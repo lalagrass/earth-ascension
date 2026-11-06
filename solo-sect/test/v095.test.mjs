@@ -1,9 +1,9 @@
-import { openExp } from "../src/world.mjs";
+import { openExp, checkRetreat } from "../src/world.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import { createState, tick, save, load, MIGRATIONS, scoreActs, startExpedition, canExpedition, codexRows, byId, skipGuide, startBuild } from '../src/sim.mjs';
+import { createState, tick, save, load, MIGRATIONS, scoreActs, startExpedition, canExpedition, codexRows, byId, skipGuide, startBuild, dpsOf } from '../src/sim.mjs';
 import { RULES_VERSION, ROUTE, ENEMIES, DAY, PHASES } from '../src/data.mjs';
 import { pipeline, MUL_CLAMP } from '../src/util.mjs';
 import { artMulParts, artById, seedArts, gainArt } from '../src/arts.mjs';
@@ -75,11 +75,16 @@ test('戰報：距離、各類擊倒、逃走、傷、帶回、回頭原因；�
   assert.ok(s.ds.every((d) => d.hp > 0 && !d.away)); assert.ok(s.log.some((l) => /巡山戰報/.test(l.msg)));
 });
 test('固定難度：綜合能力越強走得越遠（同種子）', () => {
-  const d = [0, 60, 90].map((l) => expRun(11, l, 1).rep.dist); assert.ok(d[0] <= d[1] && d[1] <= d[2] && d[0] < d[2], d.join()); // 單人隊伍尚未抵達路線終點，可比較實際距離
+  const d = [0, 60, 90].map((l) => expRun(11, l, 1).rep.dist); assert.ok(d[0] < d[1] && d[0] < d[2], d.join()); // N33 交手學習會分岔後續遭遇，單種子中段與高段距離非嚴格單調
+  const power = [0, 60, 90].map((l) => { const s = createState(11), hero = s.ds[0]; hero.skills.palm = hero.skills.leg = Math.max(hero.skills.palm,l); hero.skills.agility = hero.skills.strength = l / 2; return dpsOf(s,hero); });
+  assert.ok(power[0] < power[1] && power[1] < power[2], power.join());
   assert.ok(expRun(11, 90, 4).rep.dist >= ROUTE[3].from, '強隊至少進深谷');
 });
 test('撤退線：70% 比 30% 早回頭；決定性', () => {
-  const a = expRun(8, 30, 2, 0.7).rep, b = expRun(8, 30, 2, 0.3).rep; assert.ok(a.dist <= b.dist, `${a.dist} ${b.dist}`); assert.match(a.reason, /70%|心情|重傷|擋在/); // v1.5 RNG 串流改變：此種子先撞守關
+  const s = createState(8), hero = s.ds[0]; hero.hp = 50; s.exp = { thr: .7, supplies: 0, sta: 100, pat: 100, dist: 0, target: 1000 };
+  assert.match(checkRetreat(s,[hero]), /70%/); s.exp.thr = .3; assert.equal(checkRetreat(s,[hero]), null, '相同局面且無乾糧時低撤退線繼續');
+  const a = expRun(8, 30, 2, 0.7).rep, b = expRun(8, 30, 2, 0.3).rep;
+  assert.ok(a.dist > 0 && b.dist > 0); // 高撤退線可較早用乾糧療傷，完整隨機行程不保證距離次序
   assert.deepEqual(expRun(8, 30, 2, 0.5).rep, expRun(8, 30, 2, 0.5).rep);
 });
 test('紀錄：個人與本門最遠紀錄，破紀錄全門 +5 心情', () => {

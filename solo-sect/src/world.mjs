@@ -419,7 +419,7 @@ function encounter(s, e, seg, team, H) {
 }
 
 function pickEnemy(s, seg, H) { const tot = seg.roster.reduce((a, [, w]) => a + w, 0); let r = H.rand(s) * tot; for (const [k, w] of seg.roster) { r -= w; if (r < 0) return k; } return seg.roster[0][0]; }
-function checkRetreat(s, team) {
+export function checkRetreat(s, team) {
   const X = s.exp;
   for (const d of team) if (d.hp <= 0) { if (awaken(s, d)) { d.hp = 60; X.events.push(`${d.name}瀕死覺醒`); continue; } d.hp = 10; return `${d.name}重傷倒地，眾人抬回`; }
   for (const d of team) if (d.hp < X.thr * 100) { if (X.supplies > 0) { X.supplies--; d.hp = Math.min(100, d.hp + EXP.supplyHeal); } if (d.hp < X.thr * 100) return `${d.name}氣血低於 ${X.thr * 100}%`; }

@@ -1215,7 +1215,7 @@ export function windOf(d, mvId, cd) {
 }
 export function fastestMove(d) {
   const moves = (d?.moves || []).map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && (!m.tool || d.tools?.[m.tool]));
-  return moves.sort((a,b) => windOf(d,a.id,a.cd) - windOf(d,b.id,b.cd))[0] || bodyMove('bodyPunch');
+  return moves.sort((a,b) => windOf(d,a.id,a.cd) - windOf(d,b.id,b.cd))[0] || (d?.arts?.basicFist ? MOVES.find((m) => m.id === 'fist') : bodyMove('bodyPunch'));
 }
 export function timedMoveId(w, move) { return move || w?.swing?.mv || w?.bswing?.mv || (isMon(w) ? foeAction(w)?.id : fastestMove(w)?.id) || 'fist'; }
 

@@ -344,7 +344,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '3.3'; /* 第八輪 #468：晨課令改成持續的門規作息 */
+export const RULES_VERSION = '3.4'; /* 第九輪 9a：白身起手、共用手眼熟與唯讀成長播放 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -630,7 +630,7 @@ export const ENEMIES = {
   bandit: { name: '山賊嘍囉', kind: '人', weapon: '刀',   hp: 120,  dmg: 14,  cd: 1.2, flee: 0.3,  loot: { coin: 3, page1: 0.15 } },
   archer: { name: '獵戶暗箭', kind: '人', weapon: '暗器', hp: 75,  dmg: 17, cd: 1.5, flee: 0.45, loot: { coin: 2, page1: 0.1 } },
   bear:   { name: '黑熊',     kind: '獸', weapon: '熊掌', hp: 420, dmg: 28, cd: 1.6, flee: 0.05, loot: { food: 6, gall: 1 } },
-  chief:  { name: '山賊頭目', kind: '人', weapon: '刀／鞭', hp: 360, dmg: 24, cd: 1.1, flee: 0.2, loot: { coin: 12, page2: 0.35 } },
+  chief:  { name: '山賊頭目', kind: '人', weapon: '刀／鞭', hp: 360, dmg: 24, cd: 1.1, flee: 0.2, practiceTier: 3, loot: { coin: 12, page2: 0.35 } },
   // v1.0 第五段以後（基準數值；實戰再乘路段倍率 ×1.25^k）
   vulture:{ name: '禿鷲',     kind: '獸', weapon: '鐵喙', hp: 120, dmg: 12, cd: 1.0, flee: 0.4,  loot: { hide: 1 } },
   ape:    { name: '崖猿',     kind: '獸', weapon: '巨臂', hp: 200, dmg: 15, cd: 1.3, flee: 0.2,  loot: { food: 4, herb: 1 } },
