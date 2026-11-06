@@ -1,0 +1,36 @@
+{
+  "runtime": "0ac263a",
+  "seed": 17,
+  "scenario": "合法指派：採石蓋井→每200秒練拳/砍柴/挑水；完整模擬，無灌值",
+  "snapshotsMatch": true,
+  "videosCreated": 0,
+  "humanBlindTest": "NOT_RUN",
+  "snapshots": [
+    {
+      "day": 1,
+      "eventHash": "e741d84cd5f5519fb4c20257752cccdae9b26e59767e259ff3bfe7a894cb14d5",
+      "metrics": {
+        "chopPause": 0.5,
+        "waterTilt": 15,
+        "hipHeight": 17,
+        "routineSeconds": 6.8999999999999995,
+        "combatWind": 0.45,
+        "routinePause": 0.5,
+        "sway": 2
+      }
+    },
+    {
+      "day": 60,
+      "eventHash": "1987e1748c54fe4edd53894221b279a58481902df0f57bc6338cb8e5a9a1b973",
+      "metrics": {
+        "chopPause": 0.17879994415320669,
+        "waterTilt": 0.9157264374356413,
+        "hipHeight": 11.197416191557753,
+        "routineSeconds": 2.507395957005888,
+        "combatWind": 0.16962101853229072,
+        "routinePause": 0.15731457820613312,
+        "sway": 0.11539748413081301
+      }
+    }
+  ]
+}

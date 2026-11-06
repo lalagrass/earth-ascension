@@ -173,3 +173,7 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 #### N36 士氣裸人頭重複計數更正
 - 指令：`bash solo-sect/test/run.sh smoke`。門檻：fail0、既有N36四狗/L≥1零反擊斷言維持。預期：19/19；唯一N36小測試也驗謹慎先靠牆而不是因裸人頭直接必逃。
 - 真隔離證據：`docs/evidence/r9-n36-morale-before17.json`與`r9-n36-morale-isolated17.json`。同未改成長snapshot，calm兩路counter0→6、normal仍1，overloadCounter0；**不是整輪通過或新head60日重產**。之後核心已改，前節public60的歷史/數字屬開發中舊head，必須新生成後再驗；N55前表亦需重產。
+
+### 最新0ac263a核心checkpoint（取代前面的開發中表）
+以[`docs/evidence/r9-current-exposure-checkpoint.md`](docs/evidence/r9-current-exposure-checkpoint.md)的完整指令/前提/raw為準：新真60日normal counter1/0/0、calm1/0/0、rash0/0/0，L≥1 counter全0但**整體FAIL**。公開真指派後主角刀實接僅1次，不是假稱充分曝光；舊快照隔離的calm兩路6次不是此新史數字。
+自然ISTJ30日狗/躲/截d8、刀d18，首悟/單獨趕豬null、名俠0；其餘人格/seed及護欄待。N55新seed17五欄差>25%，只準備A/B JSON、無影片/真人結果，最終三seed仍待。後續核心若變，這些數字必重跑；不能以已通過smoke或N54 CI冒充第九輪全綠。
