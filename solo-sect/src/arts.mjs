@@ -1,3 +1,4 @@
+import { bodyMove, BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';
 import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST, TRAITS } from './data.mjs';
 import { stampCard, curveMulOf, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
@@ -493,6 +494,7 @@ export function rustOf(r, now) { const idle = now - (r.last ?? now); return Math
 /* g（loop79 成長分層，s.grow 時才傳）＝ { raw 原始投入, src 'train'|'fight' }：同類加速以結算前造詣計，造詣只吃原始投入 */
 export function gainArt(d, amt, mf = 1, now = 0, g = null) {
   const out = { next: null, moves: [], star: false };
+  if (d.bare && !Object.keys(d.arts || {}).length) return out;
   const id = focusOf(d);
   if (id) { out.trained = id; const a = artById(id), r = d.arts[id]; r.rust = rustOf(r, now); r.last = now; const xp0 = r.xp;
     const acc = g && !r.guizhen ? accelOf(d, a, r.xp) : null; out.acc = acc;
@@ -1204,7 +1206,7 @@ export const CLASH = {
 const clamp01 = (x, hi = 1) => Math.max(0, Math.min(hi, x));
 export const windFrac = (tier) => CLASH.windIn + (CLASH.windHua - CLASH.windIn) * Math.max(0, Math.min(4, tier | 0)) / 4;
 /* 一招的前搖秒數：cd × 前搖比例（看這招所屬武學的火候） */
-export function windOf(d, mvId, cd) { const a = artOfMove(mvId); const t = a && d?.arts?.[a.id] ? artTier(d, a.id) : 0; return cd * windFrac(t) * (a?.tags?.includes('快') ? 0.75 : 1) * (a?.id === 'kuihua' && zjHas(d, 'kuihua') ? 0.1 : 1) * (d?.part?.where === 'hand' ? PART.hand : 1); }
+export function windOf(d, mvId, cd) { const body = bodyMove(mvId); if (body) return body.wind * (d?.part?.where === 'hand' ? PART.hand : 1); const a = artOfMove(mvId); const t = a && d?.arts?.[a.id] ? artTier(d, a.id) : 0; return cd * windFrac(t) * (a?.tags?.includes('快') ? 0.75 : 1) * (a?.id === 'kuihua' && zjHas(d, 'kuihua') ? 0.1 : 1) * (d?.part?.where === 'hand' ? PART.hand : 1); }
 export const isMon = (w) => !!w && w.k != null && !w.arts;
 export const postureMax = (w) => (isMon(w) ? CLASH.post[w.k] ?? CLASH.post.def : CLASH.post.d);
 export function postureOf(w) { if (w.posture == null) w.posture = postureMax(w); return w.posture; }
@@ -1223,11 +1225,11 @@ export const MOVE = {
 /* 每招同一套屬性：勁、速（數字越高越快）、霸體。山賊的刀與空手輪流分配。 */
 export function moveStats(w, moveId, wind = 0.5) {
   if (isMon(w)) {
-    if (w.k === 'boar') return MOVE.monsters.boar;
-    if (w.k === 'rat') return MOVE.monsters.rat;
-    const blade = (w.i ?? 0) % 2 === 0;
-    return blade ? MOVE.monsters.blade : MOVE.monsters.fist;
+    const p = FOE_ACTIONS[w.k], m = p?.moves.find((m) => m.id === moveId) || foeAction(w);
+    if (p) return { force: m.force, speed: p.speed, armor: p.armor, type: m.cut ? 'blade' : m.bite ? 'bite' : 'fist' };
+    return MOVE.monsters[w.k] || MOVE.monsters.fist;
   }
+  const body = bodyMove(moveId); if (body) return { force: body.force + (w.skills?.strength || 0) * BODY_TIMING.forceSkill, speed: 1 / body.wind, armor: MOVE.armor, type: body.type };
   const a = artOfMove(moveId) || artById(moveId), t = a && w?.arts?.[a.id] ? artTier(w, a.id) : 0, tags = a?.tags || [];
   const force = MOVE.force + t * MOVE.tierForce + (w?.skills?.strength || 0) * MOVE.strengthForce + (tags.includes('剛') ? MOVE.hardForce : 0) + (tags.includes('拙') ? MOVE.plainForce : 0);
   const speed = MOVE.speed + t * MOVE.tierSpeed + (tags.includes('快') ? MOVE.quickSpeed : 0) + Math.min(MOVE.windSpeedMax, MOVE.windSpeed / Math.max(MOVE.minWind, wind));
@@ -1253,11 +1255,11 @@ export function clashTimes(s, atk, def, ctx = {}) {
   const tier = topTierOf(def), agi = isMon(def) ? (def.agi ?? moveStats(def).speed) : (def.skills?.agility || 0);
   const insight = isMon(atk) ? (s?.codex?.[atk.k]?.insight || 0) : 0;
   const wu = isMon(def) ? 1 : (def.wu ?? def.root ?? 3);
-  const reaction = T.reaction * (1 + depth / (depth + T.depthHalf)) / (1 + wu / T.wuHalf + insight / T.insight + tier * T.tier);
+  const reaction = def.bare ? BODY_TIMING.reaction : T.reaction * (1 + depth / (depth + T.depthHalf)) / (1 + wu / T.wuHalf + insight / T.insight + tier * T.tier);
   const jitter = T.jitter * (1 + (def.fret || 0) * T.fret);
-  const strike = T.strike / (1 + tier * T.strikeTier);
-  const step = T.step / (1 + agi / T.agility);
-  const guard = T.guard;
+  const strike = def.bare ? Math.min(...def.moves.map(bodyMove).filter(Boolean).map((m) => m.wind)) : T.strike / (1 + tier * T.strikeTier);
+  const step = def.bare ? BODY_TIMING.step : T.step / (1 + agi / T.agility);
+  const guard = def.bare ? BODY_TIMING.guard : T.guard;
   const busy = Math.max(0, (def.busyUntil || 0) - (s?.t ?? 0), (def.swing?.at || 0) - (s?.t ?? 0), (def.bswing?.at || 0) - (s?.t ?? 0));
   return { wind: Math.max(0, wind - busy), reaction, jitter, strike, step, guard, busy };
 }

@@ -8,7 +8,7 @@ export const LABEL_METRICS = Object.freeze({ glyph: 14, height: 22, pad: 4, acto
 export function practiceText(s, d) {
   if (d.task?.act !== 'train' || d.task.phase !== 'do') return '';
   const art = artById(focusOf(d) || 'basicFist'), f = routineFrame(art, d, s.t);
-  return `${art?.name || '基礎拳'}・第 ${f.form} 式${f.routine.generic ? '（通用套路）' : ''}`;
+  return `${d.bare && !Object.keys(d.arts || {}).length ? '土招・揮拳' : art?.name || '基礎拳'}・第 ${f.form} 式${f.routine.generic ? '（通用套路）' : ''}`;
 }
 export function homeLabelCandidates(s, { selected = null, hovered = null } = {}) {
   const rows = s.ds.filter((d) => !d.away).map((d) => {

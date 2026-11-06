@@ -24,7 +24,7 @@ function practiceLabel(d, compact = false) {
   if (d.task?.act !== 'train' || d.task.phase !== 'do') return '';
   const art = artById(focusOf(d) || 'basicFist');
   const f = routineFrame(art, d, S.t);
-  return `${art?.name || '基礎拳'}・第 ${f.form} 式${compact ? '' : `「${f.formName}」`}${f.routine.generic ? '（通用套路）' : ''}`;
+  return `${d.bare && !Object.keys(d.arts || {}).length ? '土招・揮拳' : art?.name || '基礎拳'}・第 ${f.form} 式${compact ? '' : `「${f.formName}」`}${f.routine.generic ? '（通用套路）' : ''}`;
 }
 /* loop142 */
 // loop130
@@ -34,6 +34,14 @@ const GMEMO = {};
 const cv = document.getElementById('map'), g = cv.getContext('2d');
 const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile', 'kitchen_s1', 'map_s0', 'map_s1', 'map_s2'];
 await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i.onload = r; i.onerror = r; i.src = `assets/${n}.${n === 'ground' || n.startsWith('map_') ? 'jpg' : 'png'}`; IMG[n] = i; })));
+// 野狗：本倉程式繪製的側面輪廓，不取用外部或野豬圖。
+{ const c = document.createElement('canvas'); c.width = 96; c.height = 72; const p = c.getContext('2d');
+  p.fillStyle = '#8b6846'; p.strokeStyle = '#3a2b20'; p.lineWidth = 3;
+  p.beginPath(); p.ellipse(48, 37, 26, 12, 0, 0, Math.PI * 2); p.fill(); p.stroke();
+  p.beginPath(); p.moveTo(66, 34); p.lineTo(71, 13); p.lineTo(79, 24); p.lineTo(94, 29); p.lineTo(90, 38); p.lineTo(69, 43); p.closePath(); p.fill(); p.stroke();
+  for (const x of [30,43,59,68]) { p.beginPath(); p.moveTo(x,43); p.lineTo(x-3,65); p.lineTo(x+5,65); p.stroke(); }
+  p.beginPath(); p.moveTo(24,34); p.lineTo(9,16); p.lineTo(5,22); p.stroke(); p.fillStyle = '#16120f'; p.beginPath(); p.arc(80,27,2,0,7); p.fill(); IMG.dog = c;
+}
 // N49 暫用：從本倉 senior 小人合成女角輪廓，待正式 sprite 美術交付後只替換此圖。
 { const src = IMG.senior, canvas = document.createElement('canvas'); canvas.width = src.width; canvas.height = src.height;
   const c = canvas.getContext('2d'); c.drawImage(src, 0, 0);
