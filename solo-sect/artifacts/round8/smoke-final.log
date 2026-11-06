@@ -1,0 +1,27 @@
+save v1.0.json 3 日 ok
+save v1.5.json 3 日 ok
+save v1.95.json 3 日 ok
+save v2.2.json 3 日 ok
+save v2.3.json 3 日 ok
+save v2.4.json 3 日 ok
+seed 1001 10 日 ok（第 11 日）
+seed 1002 10 日 ok（第 11 日）
+smoke 模擬 ok
+✔ loop191 normalizeArts：isInner／kind／isPublic／cats 補在原物件上 (12.404041ms)
+✔ loop191 每派（無名除外）都有普通弟子學得會的內功 (0.525761ms)
+✔ loop191 練滿本門樹可成三才（無名派無本門專屬，除外） (0.773626ms)
+✔ loop191 非魁首武學的前置不可是魁首限定或秘密，且前置都存在 (0.310857ms)
+✔ loop201 外功與身法的 mode、qiScale 合法；純內功不設 mode (0.436761ms)
+✔ loop209 缺 cats、外功缺 mode、純內功帶 mode 時丟出，不改既有表 (2.197716ms)
+✔ loop198 每門武學的 cats 與 ART_CAT 同一份，權重落在已知門類 (2.437108ms)
+✔ loop191 每門武學都有 ART_CAT、合法屬性，招式不是懸空 id (0.353939ms)
+✔ loop191 特質引用都在 TRAITS；價值門檻落在 [-30, 40] (0.404794ms)
+✔ loop191 古墓弟子可排上玉女心經，不必是小龍女 (3.591072ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 302.428993

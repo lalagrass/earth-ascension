@@ -26,17 +26,17 @@ export const XIA = {
     need: (s) => present(s, 'huangrong') && (s.xia.cooks || 0) >= (s.hero?.flags?.hong ? 1 : 2) && (kitchenLv(s) >= 1 || s.hero?.flags?.hong), why: '黃蓉在門中且下過廚（膳房或郭靖主線）' },
 };
 // v1.3 第二組名俠（客卿）：楊過、小龍女、周伯通（師父，賭贏才教）、韋小寶（喜劇非戰鬥）、包租公／包租婆（功夫）
-const T13 = (name, stats, personality, skills) => ({ name, stats, personality, skills });
+const T13 = (name, stats, personality, skills, fem = false) => ({ name, stats, personality, skills, fem });
 export const XIA_T = {
   yangguo: T13('楊過', { wu: 5, gen: 4, li: 3 }, ['free', 'brave', 'sociable'], { leg: 20, palm: 40, strength: 26, farming: 2, herbal: 2, agility: 28, cooking: 2 }),
-  xiaolongnv: T13('小龍女', { wu: 5, gen: 4, li: 2 }, ['quiet', 'kind'], { leg: 24, palm: 32, strength: 10, farming: 4, herbal: 16, agility: 40, cooking: 4 }),
+  xiaolongnv: T13('小龍女', { wu: 5, gen: 4, li: 2 }, ['quiet', 'kind'], { leg: 24, palm: 32, strength: 10, farming: 4, herbal: 16, agility: 40, cooking: 4 }, true),
   weixiaobao: T13('韋小寶', { wu: 1, gen: 1, li: 1 }, ['glib', 'lazy', 'optimist'], { leg: 6, palm: 4, strength: 4, farming: 2, herbal: 2, agility: 30, cooking: 10 }),
-  baozupo: T13('包租婆', { wu: 3, gen: 4, li: 4 }, ['stubborn', 'brave'], { leg: 26, palm: 40, strength: 36, farming: 4, herbal: 2, agility: 22, cooking: 8 }),
+  baozupo: T13('包租婆', { wu: 3, gen: 4, li: 4 }, ['stubborn', 'brave'], { leg: 26, palm: 40, strength: 36, farming: 4, herbal: 2, agility: 22, cooking: 8 }, true),
   baozugong: T13('包租公', { wu: 4, gen: 4, li: 2 }, ['lazy', 'gentle'], { leg: 30, palm: 38, strength: 16, farming: 4, herbal: 2, agility: 34, cooking: 2 }),
   /* loop150 v2.3 專長三人（擁有人規格；stats 的 shen／ding／fu 照錄，join 只用 wu／gen） */
-  chengying: T13('程瑛', { wu: 5, gen: 3, li: 2, shen: 4, ding: 4, fu: 3 }, ['clever', 'gentle', 'quiet'], { leg: 18, palm: 24, strength: 6, farming: 4, herbal: 14, agility: 26, cooking: 12 }),
-  azi: T13('阿紫', { wu: 4, gen: 2, li: 2, shen: 4, ding: 2, fu: 3 }, ['playful', 'rascal', 'brave'], { leg: 14, palm: 22, strength: 4, farming: 2, herbal: 28, agility: 24, cooking: 2 }),
-  chenglingsu: T13('程靈素', { wu: 5, gen: 2, li: 1, shen: 3, ding: 4, fu: 3 }, ['kind', 'diligent', 'clever'], { leg: 10, palm: 14, strength: 4, farming: 16, herbal: 36, agility: 8, cooking: 16 }),
+  chengying: T13('程瑛', { wu: 5, gen: 3, li: 2, shen: 4, ding: 4, fu: 3 }, ['clever', 'gentle', 'quiet'], { leg: 18, palm: 24, strength: 6, farming: 4, herbal: 14, agility: 26, cooking: 12 }, true),
+  azi: T13('阿紫', { wu: 4, gen: 2, li: 2, shen: 4, ding: 2, fu: 3 }, ['playful', 'rascal', 'brave'], { leg: 14, palm: 22, strength: 4, farming: 2, herbal: 28, agility: 24, cooking: 2 }, true),
+  chenglingsu: T13('程靈素', { wu: 5, gen: 2, li: 1, shen: 3, ding: 4, fu: 3 }, ['kind', 'diligent', 'clever'], { leg: 10, palm: 14, strength: 4, farming: 16, herbal: 36, agility: 8, cooking: 16 }, true),
 };
 // loop150 v2.3：只在 s.v23 新局進名俠池（舊局與 v2.2／v2.25 舊檔的池子不變）
 const facLv = (s, id) => s.fac?.[id]?.stage || 0;

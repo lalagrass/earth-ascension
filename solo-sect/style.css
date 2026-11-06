@@ -38,7 +38,7 @@ label.btn { border:1px solid #888; padding:2px 8px; border-radius:4px; cursor:po
 #camui .zoom{display:inline-flex;gap:2px;margin:0 4px}#camui .zoom button{min-width:30px}
 
 /* loop37 右欄可收合 */
-#panel > h2.fold{cursor:pointer;user-select:none}#panel > h2.fold::before{content:'▾ ';color:#8a7a5a}#panel > h2.fold.shut::before{content:'▸ '}.folded{display:none!important}
+#panel h2.fold{cursor:pointer;user-select:none}#panel h2.fold::before{content:'▾ ';color:#8a7a5a}#panel h2.fold.shut::before{content:'▸ '}.folded{display:none!important}
 /* loop81 成長分層 */
 .grow-power,.grow-cat,.grow-arts{border:1px solid #ddd;border-radius:6px;padding:4px 6px;margin:4px 0}
 .gbar{display:inline-block;width:80px;height:6px;background:#eee;margin:0 4px;vertical-align:middle}.gbar>span{display:block;height:100%}
@@ -47,3 +47,52 @@ label.btn { border:1px solid #888; padding:2px 8px; border-radius:4px; cursor:po
 @keyframes polyOut{from{transform:scale(.9)}to{transform:scale(1)}}
 @media (prefers-reduced-motion: reduce){.poly-grow .poly-shape{animation:none}}
 .chron{margin:2px 0 6px 18px;padding:0;font-size:13px;line-height:1.5}.bio{margin-top:2px;color:#6b5a3a}
+
+/* N52: Kenney CC0 parchment controls, with only display text in the subset WenKai. */
+@font-face{font-family:WenKaiSubset;src:url('assets/ui/LXGWWenKai-subset.ttf') format('truetype');font-display:swap}
+#panel{box-sizing:border-box;width:var(--pw);padding:0 12px 14px;background:#e6d7b6 url('assets/ui/kenney/panel_beige.png') center/100% 100% no-repeat;scrollbar-color:#a7834e #e6d7b6;scrollbar-width:thin}
+#rail-head{position:sticky;top:0;z-index:4;padding:10px 5px 7px;background:#e9dbba;border-bottom:2px solid #a48353;box-shadow:0 3px 7px #65482b35}
+#rail-head h1,#panel h2,.focus-level,.level-card{font-family:WenKaiSubset,'Noto Serif TC',serif}
+#rail-head h1{font-size:22px;margin:0 0 2px}
+#rail-head #clock{font-size:12px;line-height:1.35}
+#rail-head .row{margin:5px 0}
+#urgent{font-size:12px;font-weight:bold;color:#8b3d27;padding:3px 5px;background:#fff2d5;border-left:3px solid #aa6940}
+#focuscard{margin:5px 0;padding:6px 8px;border:10px solid transparent;border-image:url('assets/ui/kenney/panelInset_beige.png') 16 fill / 10px / 0 stretch;background:#f0e2c2}
+.focus-level{font-size:15px;font-weight:bold;color:#4b3926}
+.level-card{margin:5px 0;padding:5px 7px;background:#fff5d5;color:#54713d;border-left:3px solid #698243}
+#rail-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+#rail-tabs button{min-width:0;padding:5px 0}
+#panel [data-rail-tab]{display:none;padding:7px 4px}
+#panel [data-rail-tab].active{display:block}
+#panel button,.choice-option{border:9px solid transparent;border-image:url('assets/ui/kenney/buttonLong_beige.png') 13 fill / 9px / 0 stretch;background:#dbc49a;color:#473220;border-radius:0;min-height:29px;padding:1px 7px;font:inherit;white-space:normal}
+#panel button:hover,.choice-option:hover{filter:brightness(1.07)}
+#panel button.on,.choice-option.on{border-image-source:url('assets/ui/kenney/buttonLong_brown.png');color:#fff8e9;background:#78572e}
+#panel button:disabled{opacity:.48}
+#panel .card,#panel .qa,#panel .guide{border:10px solid transparent;border-image:url('assets/ui/kenney/panel_beige.png') 16 fill / 10px / 0 stretch;background:#d9c699}
+#panel .card.labor{border-left:5px solid #627c93}
+#panel .card.outer{border-left:5px solid #5a8f79}
+#panel .bar{height:9px;background:#c9ae78 url('assets/ui/kenney/barBack_horizontalMid.png') center/auto 100% repeat-x}
+#panel .bar i{background:#688947 url('assets/ui/kenney/barGreen_horizontalMid.png') center/auto 100% repeat-x!important}
+#panel .choice-set{display:inline-block;vertical-align:middle;max-width:100%}
+#panel .choice-row,.choice-row{display:inline-flex;flex-wrap:wrap;gap:2px;max-width:100%}
+#panel .choice-grid,.choice-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;max-width:100%}
+.choice-grid .choice-option{font-size:12px;min-width:0}
+.choice-more{display:inline-block;vertical-align:top;max-width:100%}
+.choice-more summary{cursor:pointer;background:#d7bc8f;padding:3px 8px;border:1px solid #a88b5d}
+.choice-more[open]{display:block}
+.routine-row{margin:5px 0;padding:5px;background:#e9dabb}
+.routine-row b{display:block;margin-bottom:3px}
+.res-icon{display:inline-flex;align-items:center;gap:2px;margin:1px 4px 1px 0;white-space:nowrap}
+.res-icon img{width:17px;height:17px;vertical-align:middle;filter:sepia(.8) saturate(.8)}
+#panel::-webkit-scrollbar{width:10px}#panel::-webkit-scrollbar-track{background:#e6d7b6}#panel::-webkit-scrollbar-thumb{background:#a7834e;border:2px solid #e6d7b6;border-radius:8px}
+#start .box{background:#e1cea6 url('assets/ui/kenney/panel_beige.png') center/100% 100%;color:#372b20;border:8px solid transparent;border-image:url('assets/ui/kenney/panel_beige.png') 16 fill / 8px / 0 stretch}
+#start h1,#start h3{font-family:WenKaiSubset,'Noto Serif TC',serif}
+#start .card{background:#d7c295;color:#3d301f;border:10px solid transparent;border-image:url('assets/ui/kenney/panel_beige.png') 16 fill / 10px / 0 stretch}
+#start .card.on{outline:3px solid #8c6831;box-shadow:0 0 12px #8c683177}
+#start .card .small{opacity:1}
+#start button{border:9px solid transparent;border-image:url('assets/ui/kenney/buttonLong_beige.png') 13 fill / 9px / 0 stretch;background:#dbc49a;color:#473220;min-height:29px;padding:2px 8px;font:inherit;cursor:pointer}
+#start button.on,#start .tabs .on{border-image-source:url('assets/ui/kenney/buttonLong_brown.png');background:#78572e;color:#fff8e9}
+#start fieldset{border:1px solid #a18354}
+#start input[type=text],#start input:not([type]){background:#fff2d4;border:1px solid #9e8051;color:#3d301f;padding:4px}
+#start .choice-more[open]{display:block;margin:5px 0}
+#start .choice-grid{width:min(640px,100%)}

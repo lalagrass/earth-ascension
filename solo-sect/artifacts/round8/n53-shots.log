@@ -1,0 +1,2 @@
+{"image":"artifacts/round8/n53-base.png","day":10,"time":24,"training":[{"name":"林師姐","pos":[1175,419]},{"name":"黃蓉","pos":[1175,419]},{"name":"令狐沖","pos":[1175,419]},{"name":"石頭","pos":[1175,419]},{"name":"小石","pos":[1175,419]},{"name":"程瑛","pos":[1175,419]}]}
+{"image":"artifacts/round8/n53-head.png","day":10,"time":84,"training":[{"name":"黃蓉","pos":[1100,499],"spot":"open4"},{"name":"石頭","pos":[1250,459],"spot":"open3"},{"name":"程瑛","pos":[1200,499],"spot":"open6"},{"name":"小石","pos":[1250,499],"spot":"open7"}]}

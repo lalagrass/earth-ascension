@@ -2,11 +2,11 @@ import { BRANCHES } from './artcard.mjs';
 import { chiefLocked24, styleBadges24, lockedArt24, harmonyOf, harmonyMul, affixOf, readwuNote, artsSvg, artHintsHtml, setFocus, focusOf, artById, artMul, artState, topTier, chooseVariant, rechooseBranch, variantOf, stuckAt, breakChance, rustOf, starCost, guizhenOk, compProgress, blowWhy } from './arts.mjs';
 import { HOME, HOME_VIEW, CHUNK, CHUNK_CAP, lruGet, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, styledPos, fogged, inVision, leftovers, FOG_W, FOG_H, WORLD, cellColor, STYLE_PATH, cloudAt, cloudPos, cloudSpots, partyCloud, CLOUD_MAP, ZOOMS, lodOf, TRAIL_END, raidDescent, RINGS, TRAIL, POP, capOf, denDown, raidMul, milestones, styleOf, teamStyle, UNLOCKS, ALL_SECS, secOpen, CHAPTER1, AUTO, autoDue, autosave, autoList, autoGet, suhuiOf, syncLegacy, routeSeg, segIndex, campsOpen, scoutOf, peaceOf, suggestTeam } from './world.mjs';
 import { laborNote, statusHtml, jhuiHtml, archLine, pickModal, pending, isFolded, foldKey, setAll, dsum, growthHtml, teachingBadge } from './panel-ui.mjs';
-import { sideCards, bubbles, bioLine, chronHtml } from './util.mjs';
-import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES, MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS, statusIcon } from './bonds.mjs';
+import { sideCards, bioLine, chronHtml } from './util.mjs';
+import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES, MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS } from './bonds.mjs';
 import { ARC13 } from './jianghu.mjs';
 import { GEN, canSucceed, succeed, heirs, heirArt, canBuildFac, buildFac, artKind, KIND_NAME, sectFac, rivalGate } from './sect.mjs';
-import { SECTS, SECT_K, RULE_LIB, JH, DAY as DAY13, HS, DUGU, ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2, ROUTE, EXP, ENEMIES, CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES, ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, EXP_STYLES, CAMPS, ENDLESS, bindPortraitSet } from './data.mjs';
+import { SECTS, SECT_K, RULE_LIB, JH, DAY as DAY13, HS, DUGU, ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2, ROUTE, EXP, ENEMIES, CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES, ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, EXP_STYLES, CAMPS, ENDLESS, ROUTINE_MODES, ROUTINE_PERIODS, bindPortraitSet } from './data.mjs';
 import { zxGate, XIA, xiaPool, pickStudent } from './wuxia.mjs';
 import { crusade27, isEliteHermit, startExpedition, recallExpedition, canExpedition, codexRows, reportText, segAt, ROUTE_END, skipGuide, outers, skipsChores, emergency, quotaOf, setDuty, setPrio, canPromote, startTrial, isLabor, disciples, laborers, laborCap, canHire, hire, canInvite, invite, avgAff, togglePause, MATS, moodLabel, moodParts, seasonOf, aff, compat, defaultAnswers, personalityFrom, capacity, canRecruit, recruit, recruitNeed, mapStage, setPost, phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf, incenseOf, startSchoolTrip, buildWhy, lotsUsed, lotsOf, lotCost, lotWhy, buyLot, resolveRaid } from './sim.mjs';
 import { nearestType, typeLabel, archLabel, think as think10 } from './social.mjs';
@@ -14,6 +14,18 @@ import { seasonHint, econHtml, marketDo } from './economy.mjs';
 import { openStart, choiceUI, heroCard } from './start-ui.mjs';
 import { SFX, ambient, setMute, isMuted, cuesFrom } from './audio.mjs';
 import { threatHtml, rumorDays, buildFence, upgradeFence, startFenceSite } from './threat.mjs';
+import { routineFrame } from './routines.mjs';
+import { displayPose, drawPoseActor } from './pose-render.mjs';
+import { growthSnapshot } from './growth-adapter.mjs';
+import { mountChoiceButtons } from './choice-buttons.mjs';
+import { homeLabelCandidates, layoutLabels } from './label-layout.mjs';
+import { visualSpriteOf } from './visual-gender.mjs';
+function practiceLabel(d, compact = false) {
+  if (d.task?.act !== 'train' || d.task.phase !== 'do') return '';
+  const art = artById(focusOf(d) || 'basicFist');
+  const f = routineFrame(art, d, S.t);
+  return `${art?.name || '基礎拳'}・第 ${f.form} 式${compact ? '' : `「${f.formName}」`}${f.routine.generic ? '（通用套路）' : ''}`;
+}
 /* loop142 */
 // loop130
 /* loop73 */
@@ -22,14 +34,22 @@ const GMEMO = {};
 const cv = document.getElementById('map'), g = cv.getContext('2d');
 const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile', 'kitchen_s1', 'map_s0', 'map_s1', 'map_s2'];
 await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i.onload = r; i.onerror = r; i.src = `assets/${n}.${n === 'ground' || n.startsWith('map_') ? 'jpg' : 'png'}`; IMG[n] = i; })));
+// N49 暫用：從本倉 senior 小人合成女角輪廓，待正式 sprite 美術交付後只替換此圖。
+{ const src = IMG.senior, canvas = document.createElement('canvas'); canvas.width = src.width; canvas.height = src.height;
+  const c = canvas.getContext('2d'); c.drawImage(src, 0, 0);
+  c.fillStyle = '#65506a'; c.beginPath(); c.moveTo(29, 35); c.lineTo(43, 34); c.lineTo(51, 60); c.lineTo(20, 60); c.closePath(); c.fill();
+  c.strokeStyle = '#342d37'; c.lineWidth = 2; c.stroke();
+  c.fillStyle = '#2b2524'; c.beginPath(); c.ellipse(31, 10, 11, 8, -0.2, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.moveTo(22, 13); c.quadraticCurveTo(17, 28, 22, 42); c.lineTo(26, 40); c.quadraticCurveTo(24, 24, 28, 17); c.fill();
+  c.beginPath(); c.moveTo(40, 13); c.quadraticCurveTo(49, 28, 46, 43); c.lineTo(42, 42); c.quadraticCurveTo(43, 26, 35, 17); c.fill();
+  c.fillStyle = '#2b2524'; c.beginPath(); c.arc(39, 6, 5, 0, Math.PI * 2); c.fill(); IMG.sister = canvas; }
 let S = createState(Date.now() % 100000 | 0), speed = 1, starting = true;
 const newGame = () => { starting = true; openStart((spec) => { S = createState(Date.now() % 100000 | 0, spec); freshGame(); starting = false; panel(); /* loop65：新局重設每局介面狀態（自動存檔計時等） */ }); };
 window.__sect = { get S() { return S; }, set speed(v) { speed = v; }, freeze: false, panel: () => panel(), get starting() { return starting; } };
 const ACT_ICON = { quarry: '⛏', spar: '🤺', cook: '🍲', deliver: '📦', rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔', trial: '⚔' };
-let BUB = {};
-function bubble(msg, x, y) { const m = msg.length > 18 ? msg.slice(0, 17) + '…' : msg; g.font = '12px sans-serif'; const w = g.measureText(m).width + 14; g.fillStyle = 'rgba(255,255,255,.92)'; g.strokeStyle = '#6b4a2a'; g.lineWidth = 1; g.beginPath(); g.roundRect(x - w / 2, y - 20, w, 20, 8); g.fill(); g.stroke(); g.beginPath(); g.moveTo(x - 4, y); g.lineTo(x, y + 6); g.lineTo(x + 4, y); g.fill(); g.fillStyle = '#3a2f24'; g.textAlign = 'center'; g.fillText(m, x, y - 6); g.textAlign = 'left'; }
+let hoveredActor = null;
 // v1.45 B 級＝右側竹簡（可點推鏡）、A 級＝暫停＋推鏡
-function focusOn(id) { const d = S.ds.find((x) => x.id === id); if (!d || d.away) return false; camFocus(d.pos[0], d.pos[1] - 30, 2.5); const c = document.querySelector(`[data-dcard="${id}"]`); if (c) { c.open = true; c.scrollIntoView({ block: 'nearest' }); } return true; }
+function focusOn(id) { const d = S.ds.find((x) => x.id === id); if (!d || d.away) return false; window.__artsOf = id; camFocus(d.pos[0], d.pos[1] - 30, 2.5); panel(); const c = document.querySelector(`[data-dcard="${id}"]`); if (c) { c.open = true; c.scrollIntoView({ block: 'nearest' }); } return true; }
 function feed() { let f = document.getElementById('feed'); if (!f) { f = document.createElement('div'); f.id = 'feed'; document.getElementById('wrap').appendChild(f); }
   const html = sideCards(S, 5).map((e) => `<div class="slip ${e.tier}" data-who="${e.who || ''}" title="點一下推鏡到相關人物">${e.tier === 'top' ? '★ ' : ''}[${e.t}s] ${e.msg}</div>`).join(''); if (f.__h !== html) { f.innerHTML = html; f.__h = html; }
   let a = document.getElementById('alert');
@@ -38,7 +58,6 @@ function feed() { let f = document.getElementById('feed'); if (!f) { f = documen
 document.addEventListener('click', (e) => { const sl = e.target.closest('.slip'); if (sl && sl.dataset.who) focusOn(sl.dataset.who); });
 window.__sect.focusOn = (id) => focusOn(id);
 function draw() {
-  BUB = bubbles(S);
   const shake = S.fx.find((f) => f.kind === 'shake'); g.save(); if (shake) g.translate((Math.random() - 0.5) * 12 * shake.ttl / 0.35, (Math.random() - 0.5) * 12 * shake.ttl / 0.35);
   { const on = performance.now() < cam.until, k = 0.08; // v1.55a 世界鏡頭：大事件短暫拉近後回到原視角；跟隨模式追巡山隊
     if (on) { if (!cam.prev) cam.prev = { x: cam.ux, y: cam.uy, z: cam.uz }; cam.z += (1.6 - cam.z) * k; cam.x += (cam.tx - cam.x) * k * 2; cam.y += (cam.ty - cam.y) * k * 2; }
@@ -52,11 +71,13 @@ function draw() {
   for (const f of FACILITIES) {
     const st = facStage(S, f.id), [x, y] = NODES[f.node], fs = S.fac[f.id];
     items.push({ y: y - 1, f: () => {
-      if (f.id === 'yard') { g.fillStyle = 'rgba(180,150,100,.35)'; if (st.dummies) { g.beginPath(); g.ellipse(x, y, 45, 20, 0, 0, 7); g.fill(); }
-        for (let k = 0; k < (st.dummies || 0); k++) { const dx = x - 30 + k * 26, dy = y + 4; g.fillStyle = '#6b4a2a'; g.fillRect(dx - 2, dy - 24, 5, 24); g.fillRect(dx - 8, dy - 19, 16, 3); g.fillRect(dx - 7, dy - 12, 14, 3); } }
+      for (const spot of st.spots || []) { const dx = x + spot.offset[0], dy = y + spot.offset[1];
+        if (spot.kind === 'dummy') { g.fillStyle = '#6b4a2a'; g.fillRect(dx - 2, dy - 24, 5, 24); g.fillRect(dx - 8, dy - 19, 16, 3); g.fillRect(dx - 7, dy - 12, 14, 3); }
+        else if (spot.kind === 'open') { g.strokeStyle = 'rgba(130,90,50,.25)'; g.beginPath(); g.ellipse(dx, dy, 14, 5, 0, 0, 7); g.stroke(); }
+      }
       if (f.v16) { if (fs.stage) { g.fillStyle = f.sig ? '#7a2e2e' : '#8a6a44'; g.fillRect(x - 22, y - 18, 44, 22); g.fillStyle = '#3d3f46'; g.beginPath(); g.moveTo(x - 30, y - 16); g.lineTo(x, y - 34); g.lineTo(x + 30, y - 16); g.fill(); } else { g.strokeStyle = 'rgba(120,80,40,.45)'; g.setLineDash([4, 3]); g.strokeRect(x - 22, y - 18, 44, 22); g.setLineDash([]); } } // v1.6 新建築：簡易屋頂佔位
-      if (f.sig && !fs.stage) return; label(`${f.sig ? (sectFac(S)?.name || f.name) : f.name}・${st.name}`, x, y + 22, '#3a2f24');
-      if (fs.site) { const s = fs.site; label(`${s.paused ? '⏸暫停 ' : '工地 '}${MATS.filter((k) => s.need[k]).map((k) => `${RES_NAMES[k]}${s.delivered[k]}/${s.need[k]}`).join(' ')} 工${s.work.toFixed(0)}/${s.workNeed}s`, x, y + 46, '#a0461e');
+      if (f.sig && !fs.stage) return;
+      if (fs.site) { const s = fs.site; /* 工地進度併入設施單行標籤，詳情仍在人物／建造卡。 */
         for (let k = 0; k < s.delivered.wood; k++) { g.fillStyle = '#8b5a2b'; g.fillRect(x - 46 + (k % 6) * 6, y + 52 - Math.floor(k / 6) * 4, 5, 3); }
         for (let k = 0; k < s.delivered.stone; k++) { g.fillStyle = '#8c8c8c'; g.beginPath(); g.arc(x + 16 + (k % 6) * 6, y + 54 - Math.floor(k / 6) * 4, 2.6, 0, 7); g.fill(); } }
       if (f.id === 'quarry') { g.fillStyle = '#9a9a92'; for (let k = 0; k < 7; k++) { g.beginPath(); g.ellipse(x - 30 + k * 10, y + 4 - (k % 3) * 5, 8, 5, 0, 0, 7); g.fill(); } }
@@ -66,31 +87,38 @@ function draw() {
   items.push({ y: NODES.hall[1], f: () => sprite('master', NODES.hall[0] + 30, NODES.hall[1] - 6, SC) });
   for (const w of S.wild) items.push({ y: w.pos[1], f: () => { g.save(); g.globalAlpha = 0.85; g.translate(w.pos[0], w.pos[1]); g.scale(-(w.face || 1), 1); const i = IMG[MONSTERS[w.k].sprite]; g.drawImage(i, -i.width * SC / 2, -i.height * SC, i.width * SC, i.height * SC); g.restore(); } });
   for (const [k, n] of Object.entries(POSTS)) items.push({ y: NODES[k][1], f: () => { g.fillStyle = S.post === k ? '#c0392b' : 'rgba(120,80,40,.5)'; g.beginPath(); g.moveTo(NODES[k][0], NODES[k][1] - 40); g.lineTo(NODES[k][0] + 18, NODES[k][1] - 33); g.lineTo(NODES[k][0], NODES[k][1] - 26); g.fill(); g.fillRect(NODES[k][0] - 1, NODES[k][1] - 40, 2, 40); } });
-  for (const m of S.mons) items.push({ y: m.pos[1], f: () => { sprite(MONSTERS[m.k].sprite, m.pos[0], m.pos[1], SC); if (!m.raid) hp(m.pos[0], m.pos[1] - 30, m.hp / m.max, '#a33'); else label('下山拱菜', m.pos[0], m.pos[1] - 40, '#a33'); } });
-  if (S.band) { const b = S.band; items.push({ y: b.pos[1], f: () => { for (const m of (b.members || [{ hp: 1, max: 1, pos: b.pos }])) { const fled = !(m.hp > 0); if (fled && m.state !== 'down') continue; const p = m.pos || b.pos; g.save(); g.filter = 'grayscale(1) brightness(.55)'; if (fled) g.globalAlpha = 0.45; /* #424 被擊退的人沿山門那條路退走 */ sprite('hero', p[0], p[1], SC); g.restore(); if (b.members && !fled) hp(p[0], p[1] - 30, m.hp / m.max, m.ring === 2 ? '#a86' : '#a33'); } /* #419 一人一個，外圈的血條淡色 */ hp(b.pos[0], b.pos[1] - 34, b.hp / b.max, '#a33'); label(b.state === 'go' ? '山賊逼近' : '山賊撞柵', b.pos[0], b.pos[1] - 44, '#a33'); } }); } // loop3：沿用主角圖、灰暗濾鏡，不新增素材
+  for (const m of S.mons) items.push({ y: m.pos[1], f: () => { sprite(MONSTERS[m.k].sprite, m.pos[0], m.pos[1], SC); if (!m.raid) hp(m.pos[0], m.pos[1] - 30, m.hp / m.max, '#a33');  } });
+  if (S.band) { const b = S.band; items.push({ y: b.pos[1], f: () => { for (const m of (b.members || [{ hp: 1, max: 1, pos: b.pos }])) { const fled = !(m.hp > 0); if (fled && m.state !== 'down') continue; const p = m.pos || b.pos; g.save(); g.filter = 'grayscale(1) brightness(.55)'; if (fled) g.globalAlpha = 0.45; /* #424 被擊退的人沿山門那條路退走 */ sprite('hero', p[0], p[1], SC); g.restore(); if (b.members && !fled) hp(p[0], p[1] - 30, m.hp / m.max, m.ring === 2 ? '#a86' : '#a33'); } /* #419 一人一個，外圈的血條淡色 */ hp(b.pos[0], b.pos[1] - 34, b.hp / b.max, '#a33');  } }); } // loop3：沿用主角圖、灰暗濾鏡，不新增素材
   for (const d of S.ds) if (!d.away) items.push({ y: d.pos[1], f: () => {
     const bob = d.path.length ? Math.sin(S.t * 10) * 2 : 0, [x, y] = d.pos;
     if (d.ring && S.t - d.ring.t < 1.5) { const R = d.ring; g.beginPath(); g.arc(x, y - 70, 4.5, 0, 7); g.lineWidth = 2; g.strokeStyle = R.intercept ? '#e2b53c' : '#d0302a'; g.stroke(); g.fillStyle = R.intercept ? '#f2d06b' : 'rgba(208,48,42,.6)'; g.fill(); } /* N28：金圈＝仍能截擊，紅圈＝只能移步、招架或中招 */
     { const tt = topTier(d); if (tt.t >= 4) { const c = AURA[tt.a.school], gr = g.createRadialGradient(x, y - 20, 4, x, y - 20, 34 + Math.sin(S.t * 4) * 3); gr.addColorStop(0, c + 'aa'); gr.addColorStop(1, c + '00'); g.fillStyle = gr; g.beginPath(); g.ellipse(x, y - 20, 36, 42, 0, 0, 7); g.fill(); } }
     if (d.task?.act === 'meditate' && d.task.phase === 'do') { const A = ACTS2.meditate, pr = Math.min(1, d.task.timer / A.dur);
       for (let k = 0; k < 10; k++) { const an = S.t * 3 + k * 0.63, rr = 26 + 6 * Math.sin(S.t * 2 + k); g.fillStyle = `rgba(120,170,230,${0.35 + 0.4 * ((k % 3) / 3)})`; g.beginPath(); g.arc(x + Math.cos(an) * rr, y - 22 + Math.sin(an) * rr * 0.6, 2.5, 0, 7); g.fill(); }
-      g.strokeStyle = '#0003'; g.lineWidth = 5; g.beginPath(); g.arc(x, y - 70, 12, 0, 7); g.stroke(); g.strokeStyle = '#4a90d9'; g.beginPath(); g.arc(x, y - 70, 12, -Math.PI / 2, -Math.PI / 2 + pr * Math.PI * 2); g.stroke(); label('衝關', x, y - 88, '#2a5a9a'); }
-    g.save(); g.translate(x, y + bob); if (d.face < 0) g.scale(-1, 1); if (d.anim === 'strike') g.rotate(0.15);
+      g.strokeStyle = '#0003'; g.lineWidth = 5; g.beginPath(); g.arc(x, y - 70, 12, 0, 7); g.stroke(); g.strokeStyle = '#4a90d9'; g.beginPath(); g.arc(x, y - 70, 12, -Math.PI / 2, -Math.PI / 2 + pr * Math.PI * 2); g.stroke(); }
+    const art = artById(focusOf(d) || 'basicFist'), mv = MOVES.find((m) => m.id === d.swing?.mv);
+    const pose = displayPose(S, d, art, mv);
+    g.save(); g.translate(x, y + bob); if (d.face < 0) g.scale(-1, 1); if (d.anim === 'strike' && !pose) g.rotate(0.15);
     if (d.task?.phase === 'do' && d.anim === 'rest') g.rotate(-1.3);
-    const im = IMG[d.sprite], sc = SC * (d.adult === false && d.child ? 0.62 + 0.03 * ((d.age || 6) - 6) : 1); g.drawImage(im, -im.width * sc / 2, -im.height * sc, im.width * sc, im.height * sc); g.restore(); if (d.child && !d.adult) label(`${d.age}歲`, x, y + 14, '#7a4a8a');
+    const im = IMG[visualSpriteOf(d)], sc = SC * (d.adult === false && d.child ? 0.62 + 0.03 * ((d.age || 6) - 6) : 1);
+    if (pose) { if (d.child && !d.adult) g.scale(sc / SC, sc / SC); drawPoseActor(g, d, pose); }
+    else g.drawImage(im, -im.width * sc / 2, -im.height * sc, im.width * sc, im.height * sc);
+    g.restore();
     if (d.carry?.stone) { g.fillStyle = '#8c8c8c'; g.beginPath(); g.arc(x + 10, y - 26, 6, 0, 7); g.fill(); } else if (d.carry) sprite('wood', x + 10, y - 18, 0.6);
-    if (isLabor(d)) { g.fillStyle = '#2f6f9f'; g.fillRect(x - 9, y - IMG[d.sprite].height * SC + 4, 18, 4); }
-    label(`${d.name}${isLabor(d) ? '（工）' : d.role === 'outer' ? '（外門）' : d.role === 'head' ? '（首徒）' : ''} ${statusIcon(d, d.task?.act === 'build' && d.task.phase !== 'do' ? '📦' : ACT_ICON[d.anim || d.task?.act] || '')}`, x, y - (IMG[d.sprite].height * SC + 4), '#222');
-    if (S.hunt) hp(x, y - IMG[d.sprite].height * SC - 20, d.hp / 100, '#3a7');
-    { const b = BUB[d.id]; if (b) bubble(b, x, y - (IMG[d.sprite].height * SC + 26)); } // v1.45 C 級事件＝頭上氣泡
+    if (isLabor(d)) { g.fillStyle = '#2f6f9f'; g.fillRect(x - 9, y - IMG[visualSpriteOf(d)].height * SC + 4, 18, 4); }
+    if (S.hunt) hp(x, y - IMG[visualSpriteOf(d)].height * SC - 20, d.hp / 100, '#3a7');
+    // 氣泡與升級通知留在紀錄／人物卡，不再疊第二行頭上字。
   } });
   // v1.0 庫存畫成地圖上的物件：柴堆、石堆、米袋、藥簍、錢箱（數量越多堆越高）
   { const [bx, by] = NODES.court, R = S.res, piles = [['wood', '#8a5a2b', 'log'], ['stone', '#9a9a9a', 'rock'], ['food', '#e8d9a8', 'sack'], ['herb', '#5f9a3a', 'herb'], ['coin', '#d4a017', 'coin']];
     piles.forEach(([k, c, sh], i) => { const n = Math.min(8, Math.ceil((R[k] || 0) / (k === 'coin' ? 10 : 4))); if (!n) return; const x = bx - 120 + i * 30, y = by + 52;
       items.push({ y, f: () => { for (let j = 0; j < n; j++) { const yy = y - j * 5, xx = x + ((j % 2) * 6 - 3); g.fillStyle = c; g.strokeStyle = '#0006'; g.lineWidth = 1; g.beginPath();
         if (sh === 'log') g.rect(xx - 10, yy - 4, 20, 5); else if (sh === 'sack') g.ellipse(xx, yy - 3, 8, 5, 0, 0, 7); else if (sh === 'coin') g.ellipse(xx, yy - 2, 7, 3, 0, 0, 7); else g.arc(xx, yy - 3, 5.5, 0, 7); g.fill(); g.stroke(); }
-        label(`${{ wood: '木', stone: '石', food: '糧', herb: '藥', coin: '錢' }[k]}${Math.floor(R[k])}`, x, y + 14, '#333'); } }); }); }
+         } }); }); }
   items.sort((a, b) => a.y - b.y).forEach((i) => i.f());
+  const labels = layoutLabels(homeLabelCandidates(S, { selected: hoveredActor || window.__artsOf }));
+  window.__sect.labels = labels;
+  for (const l of labels.shown) label(l.text, l.x, l.y, l.color);
   // 菜畦
   S.plots.forEach((p, i) => { const x = NODES.veg[0] + 10 + i * 18, y = NODES.veg[1] + 30; g.fillStyle = p.st === 'empty' ? '#8a6e4b' : p.st === 'ripe' ? '#5f9a3a' : `rgba(110,150,70,${0.3 + 0.5 * p.g / 90})`; g.fillRect(x, y, 15, 8); });
   // 日夜
@@ -186,6 +214,7 @@ function label(t, x, y, c) { g.font = '13px sans-serif'; g.textAlign = 'center';
 function hp(x, y, r, c) { g.fillStyle = '#0006'; g.fillRect(x - 20, y, 40, 5); g.fillStyle = c; g.fillRect(x - 20, y, 40 * Math.max(0, r), 5); }
 const $ = (id) => document.getElementById(id);
 const bar = (v, c) => `<div class="bar"><i style="width:${v}%;background:${c}"></i></div>`;
+const resItem = (icon, name, value) => `<span class="res-icon"><img src="assets/ui/icons/${icon}.svg" alt="">${name} ${value}</span>`;
 const ORD = [['', '自主'], ...['train', 'spar', 'chop', 'farm', 'cook', 'forage', 'build', 'rest', 'eat'].map((k) => [k, ACTIVITIES[k].name])];
 let lastPanel = 0;
 // loop35：面板每 ~400ms 重建，<details> 的展開／收合要記住（外部審查 P2）。data-keep＝鍵；值存 localStorage（純介面偏好）
@@ -193,20 +222,46 @@ const KEEP_KEY = 'solo-sect-keep';
 function keepState() { try { return (window.__keep ??= JSON.parse(localStorage.getItem(KEEP_KEY) || '{}')); } catch { return (window.__keep ??= {}); } }
 function restoreKeep() { const K = keepState(); for (const el of document.querySelectorAll('details[data-keep]')) { const k = el.dataset.keep; if (k in K) el.open = !K[k]; } }
 document.addEventListener('toggle', (e) => { const el = e.target; if (!el.matches?.('details[data-keep]') || el.dataset.restoring) return; const K = keepState(); K[el.dataset.keep] = !el.open; try { localStorage.setItem(KEEP_KEY, JSON.stringify(K)); } catch {} }, true);
-const foldIds = () => [...document.querySelectorAll('#panel > h2')].map((h) => h.nextElementSibling?.id).filter(Boolean);
-function applyFold() { const K = keepState(); for (const h of document.querySelectorAll('#panel > h2')) { const id = h.nextElementSibling?.id; if (!id) continue; const f = isFolded(K, id); h.classList.add('fold'); h.classList.toggle('shut', f); h.dataset.sec = id; h.nextElementSibling.classList.toggle('folded', f); } }
+const foldIds = () => [...document.querySelectorAll('#panel h2')].map((h) => h.nextElementSibling?.id).filter(Boolean);
+function applyFold() { const K = keepState(); for (const h of document.querySelectorAll('#panel h2')) { const id = h.nextElementSibling?.id; if (!id) continue; const f = isFolded(K, id); h.classList.add('fold'); h.classList.toggle('shut', f); h.dataset.sec = id; h.nextElementSibling.classList.toggle('folded', f); } }
 function saveKeep() { try { localStorage.setItem(KEEP_KEY, JSON.stringify(keepState())); } catch {} }
-document.addEventListener('click', (e) => { const h = e.target.closest('#panel > h2.fold'); if (h) { const K = keepState(); K[foldKey(h.dataset.sec)] = !isFolded(K, h.dataset.sec); saveKeep(); applyFold(); return; }
+document.addEventListener('click', (e) => { const h = e.target.closest('#panel h2.fold'); if (h) { const K = keepState(); K[foldKey(h.dataset.sec)] = !isFolded(K, h.dataset.sec); saveKeep(); applyFold(); return; }
   const b = e.target.closest('[data-foldall]'); if (b) { setAll(keepState(), foldIds(), b.dataset.foldall === '1'); saveKeep(); applyFold(); } });
+const GROWTH_MEMO = new Map(), GROWTH_NOTICE = new Map();
+let lastGrowth = '', activeRail = 'person';
+function growthView(d) {
+  const current = growthSnapshot(d), prior = GROWTH_MEMO.get(d.id);
+  if (!prior || prior.art !== current.art || prior.day !== S.day) {
+    if (prior && prior.day !== S.day && current.xp > prior.start) lastGrowth = `${d.name}的${current.title}成長了 ${(current.xp - prior.start).toFixed(1)}`;
+    GROWTH_MEMO.set(d.id, { day: S.day, art: current.art, start: current.xp || 0, tier: current.tier });
+  } else if (current.tier < prior.tier) {
+    // 舊存檔、荒疏或換焦點後可能回到較低階；以當下階段重新觀察。
+    prior.tier = current.tier;
+  } else if (current.tier > prior.tier) {
+    const why = d.task?.act === 'train' ? '在場上反覆練習' : d.task?.act === 'spar' || d.task?.act === 'hunt' ? '從交手中學會' : '累積實戰與練習';
+    GROWTH_NOTICE.set(d.id, { text: `${current.title}！`, detail: `${d.name}學會了${current.title}，因為${why}。`, t: S.t });
+    prior.tier = current.tier;
+  }
+  return growthSnapshot(d, GROWTH_MEMO.get(d.id).start);
+}
+document.addEventListener('click', (e) => { const tab = e.target.closest('[data-rail]'); if (!tab) return; activeRail = tab.dataset.rail; for (const x of document.querySelectorAll('[data-rail-tab]')) x.classList.toggle('active', x.dataset.railTab === activeRail); for (const x of document.querySelectorAll('[data-rail]')) x.classList.toggle('on', x === tab); });
 // loop156 v2.3 清修山莊徽記（弟子 ≤3、幫工 ≥2；練功／打坐／讀書快 20%）
 const hermitBadge = (S) => (isEliteHermit(S) ? `<b class="hermit-badge" title="清修：弟子少、幫工多，練功／打坐／讀書快 20%">【清修山莊・弟子 ${S.ds.filter((d) => d.role !== 'laborer').length}／幫工 ${S.ds.filter((d) => d.role === 'laborer').length}】</b>　` : '');
 function panel() {
   const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×${rumorDays(S) ? `・⚠ 山賊傳聞：約 ${rumorDays(S)} 日` : ''}`; /* loop120 角落倒數 */ $('clock').title = seasonHint(S); /* loop73 季節說明（滑鼠移到時鐘） */
-  $('res').innerHTML = `${hermitBadge(S)}木 ${S.res.wood}/${S.cap.wood}　石 ${S.res.stone}/${S.cap.stone}　香火錢 ${S.res.coin}　菜 ${S.res.veg}　飯 ${S.res.food}　藥 ${S.res.herb}　水 ${S.res.water}/${S.cap.water}　療傷丹 ${S.res.pill}　鐵木 ${S.res.tiemu || 0}　靈石 ${S.res.lingshi || 0}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
-  $('build').innerHTML = FACILITIES.filter((f) => f.stages.length > 1 && !f.sig).map((f) => { const st = S.fac[f.id], nx0 = f.stages[st.stage + 1], nx = nx0; /* loop155 村舍大院只在 v23 */
+  const levels = new Map(S.ds.map((d) => [d.id, growthView(d)]));
+  const selected = S.ds.find((d) => d.id === window.__artsOf) || S.ds.find((d) => d.id === 'hero') || S.ds[0];
+  const level = levels.get(selected?.id), latest = GROWTH_NOTICE.get(selected?.id);
+  $('urgent').textContent = S.alert?.msg || (S.threat?.pending ? '今日要事：山賊已到，守住山門' : rumorDays(S) ? `今日要事：山賊約 ${rumorDays(S)} 日後到` : lastGrowth ? `今日要事：${lastGrowth}` : '今日要事：山中暫安');
+  $('focuscard').innerHTML = selected ? `<div class="focus-level" title="階段與熟練從現有武學資料計算；N42 後轉接新成長底層">${level.firstLine}</div>${bar(level.progress, '#6f8a4c')}<div class="k">${selected.name}・${selected.reason || '待命'}　<button data-focus-actor="${selected.id}" title="鏡頭移到此人">看他</button></div>${latest && S.t - latest.t < 4 ? `<div class="level-card">${latest.detail}</div>` : ''}` : '';
+  $('routine').innerHTML = `<h2>門規作息</h2><p class="k">設定一次，之後每日照做；心情低於現有低落門檻時先靜坐。</p>${Object.entries(ROUTINE_PERIODS).map(([part, name]) => `<div class="routine-row"><b>${name}</b><div class="choice-row">${Object.entries(ROUTINE_MODES).map(([mode, label]) => `<button data-routine="${part}|${mode}" class="${(S.routine?.[part] || 'free') === mode ? 'on' : ''}">${label}</button>`).join('')}</div></div>`).join('')}`;
+  $('res').innerHTML = `${hermitBadge(S)}${resItem('wood-pile', '木', `${S.res.wood}/${S.cap.wood}`)}${resItem('falling-rocks', '石', `${S.res.stone}/${S.cap.stone}`)}${resItem('coins', '香火錢', S.res.coin)}${resItem('herbs-bundle', '菜', S.res.veg)}${resItem('meal', '飯', S.res.food)}${resItem('herbs-bundle', '藥', S.res.herb)}${resItem('medicines', '療傷丹', S.res.pill)}${resItem('full-wood-bucket', '水', `${S.res.water}/${S.cap.water}`)}${resItem('wood-beam', '鐵木', S.res.tiemu || 0)}${resItem('crystal-shrine', '靈石', S.res.lingshi || 0)}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
+  const blueprints = FACILITIES.filter((f) => f.stages.length > 1 && !f.sig && f.stages[S.fac[f.id].stage + 1]);
+  const availableBlueprints = blueprints.filter((f) => S.fac[f.id].site || !buildWhy(S, f.id));
+  $('build').innerHTML = availableBlueprints.map((f) => { const st = S.fac[f.id], nx0 = f.stages[st.stage + 1], nx = nx0; /* loop155 村舍大院只在 v23 */
     const cost = nx ? Object.entries({ ...nx.cost, ...(nx.rare || {}) }).map(([k, v]) => `${RES_NAMES[k]}${v}`).join('・') : ''; const why = nx ? buildWhy(S, f.id) : null;
     const bundle = st.site ? `<div class="k">收集包：${MATS.filter((k) => st.site.need[k]).map((k) => `${RES_NAMES[k]} ${st.site.delivered[k]}/${st.site.need[k]}${st.site.reserved[k] ? `（在途${st.site.reserved[k]}）` : ''}`).join('　')}｜工時 ${st.site.work.toFixed(0)}/${st.site.workNeed}s</div>${bar(100 * MATS.reduce((a, k) => a + st.site.delivered[k], 0) / Math.max(1, MATS.reduce((a, k) => a + st.site.need[k], 0)), '#a0461e')}` : '';
-    return `<div>${f.name}：${f.stages[st.stage].name} ${nx ? (st.site ? `<button data-pause="${f.id}">${st.site.paused ? '復工' : '暫停'}</button>` : `<button data-build="${f.id}" ${why ? `disabled title="${why}"` : ''}>藍圖：${nx.name}（${cost}${nx.rep ? '・名聲' + nx.rep : ''}）</button>${why && why !== '施工中' ? `<span class="k why">${why}</span>` : ''}`) : '✓'}${bundle}</div>`; }).join('') + `<div class="lots" data-lots>地塊 ${lotsUsed(S)}/${lotsOf(S).n} <button data-lot ${lotWhy(S) ? 'disabled' : ''}>擴地（${lotCost(S)} 錢）</button> <span class="k">${lotWhy(S) || ''}</span></div>`;
+    return `<div>${f.name}：${f.stages[st.stage].name} ${nx ? (st.site ? `<button data-pause="${f.id}">${st.site.paused ? '復工' : '暫停'}</button>` : `<button data-build="${f.id}" ${why ? `disabled title="${why}"` : ''}>藍圖：${nx.name}（${cost}${nx.rep ? '・名聲' + nx.rep : ''}）</button>${why && why !== '施工中' ? `<span class="k why">${why}</span>` : ''}`) : '✓'}${bundle}</div>`; }).join('') + `<details class="k"><summary>還有 ${blueprints.length - availableBlueprints.length} 項，條件未到</summary>${blueprints.filter((f) => !availableBlueprints.includes(f)).map((f) => `<div>${f.name}：${buildWhy(S, f.id)}</div>`).join('')}</details><div class="lots" data-lots>地塊 ${lotsUsed(S)}/${lotsOf(S).n} <button data-lot ${lotWhy(S) ? 'disabled' : ''}>擴地（${lotCost(S)} 錢）</button> <span class="k">${lotWhy(S) || ''}</span></div>`;
   { const c = canHire(S);
     $('labor').innerHTML = `<button id="hire-go" ${c.ok ? '' : 'disabled'}>雇工（香火錢 ${ECON.hireCoin}、糧 ${ECON.hireFood}；日薪 ${ECON.wage}）</button> <span class="k">${c.ok ? `應徵：${c.next.name}` : c.why}</span>` +
       laborers(S).map((d) => { const iv = canInvite(S, d.id);
@@ -216,7 +271,7 @@ function panel() {
         <button data-invite="${d.id}" ${iv.ok ? '' : 'disabled'}>邀入外門</button> <span class="k">${iv.ok ? '可以邀請了！' : iv.why}</span></div>`; }).join('');
     $('hire-go').onclick = () => { hire(S); panel(); }; }
   { const ds = disciples(S), cur = ds.find((d) => d.id === window.__artsOf) || ds[0];
-    if (cur) $('arts').innerHTML = `<select data-artsof>${ds.map((d) => `<option value="${d.id}" ${d.id === cur.id ? 'selected' : ''}>${d.name}</option>`).join('')}</select>
+    if (cur) $('arts').innerHTML = `<select data-artsof>${ds.map((d) => `<option value="${d.id}" ${d.id === cur.id ? 'selected' : ''}>${d.name}</option>`).join('')}</select>${practiceLabel(cur) ? `<div class="k">正在練：${practiceLabel(cur)}</div>` : ''}
       <select data-focus="${cur.id}"><option value="">專修：自動（${artById(focusOf(cur) || 'basicFist').name}）</option>${Object.keys(cur.arts).map((id) => `<option value="${id}" ${cur.focus === id ? 'selected' : ''}>專修：${artById(id).name}</option>`).join('')}</select>
       <div class="k">悟性 ${cur.rootKnown ? `${cur.wu ?? cur.root}（${ROOT.names[cur.wu ?? cur.root]}）` : '未明'}${readwuNote(S, cur)}｜${ARTS.filter((a) => cur.arts[a.id]).map((a) => `${a.name}×${artMul(cur, a).toFixed(2)}`).join('・')}</div>${growthHtml(cur, GMEMO, S.day, S.t, true)}${styleBadges24(cur).length ? `<div class="k">${styleBadges24(cur).join('')}</div>` : ''}${harmonyOf(cur) ? `<div class="k">陰陽共鳴：${harmonyOf(cur) === 'all' ? '陰陽和三屬皆備' : '陰陽相濟'}，出手 ×${harmonyMul(cur).toFixed(2)}</div>` : ''}${artsSvg(cur)}${artHintsHtml(cur, (k) => XIA[k]?.name || k)}
       ${ARTS.filter((a) => cur.arts[a.id]).map((a) => { const r = cur.arts[a.id], st = stuckAt(cur, a, S.t), t = artState(cur, a).tier, va = variantOf(cur, a.id, S.t), rust = rustOf(r, S.t);
@@ -283,7 +338,18 @@ function panel() {
   if ($('jhui')) { $('jhui').innerHTML = jhuiHtml(S, keepState()); $('jhui-wrap').hidden = false; }
   restoreKeep(); applyFold();
   $('log').innerHTML = S.log.slice(0, 30).map((l) => `<li>[${l.t}s] ${l.msg}</li>`).join('');
+  mountChoiceButtons(document);
+  for (const x of document.querySelectorAll('[data-rail-tab]')) x.classList.toggle('active', x.dataset.railTab === activeRail);
+  for (const x of document.querySelectorAll('[data-rail]')) x.classList.toggle('on', x.dataset.rail === activeRail);
 }
+document.addEventListener('click', (e) => {
+  const view = e.target.closest('[data-focus-actor]'); if (view) { focusOn(view.dataset.focusActor); return; }
+  const mode = e.target.closest('[data-routine]'); if (!mode) return;
+  const [part, act] = mode.dataset.routine.split('|');
+  if (!(part in ROUTINE_PERIODS) || !(act in ROUTINE_MODES)) return;
+  S.routine ??= {}; S.routine[part] = act;
+  toast(`${ROUTINE_PERIODS[part]}改為${ROUTINE_MODES[act]}，往後每日照做`); panel();
+});
 document.addEventListener('click', (e) => { const b = e.target.closest('[data-build],[data-speed],[data-pause],[data-invite],[data-promote],[data-pupil]'); if (!b) return; if (b.dataset.pupil) { const [m, d] = b.dataset.pupil.split('|').map((id) => S.ds.find((x) => x.id === id)); takePupil(S, m, d); } if (b.dataset.promote) startTrial(S, b.dataset.promote); if (b.dataset.pause) togglePause(S, b.dataset.pause); if (b.dataset.invite) invite(S, b.dataset.invite); if (b.dataset.build) startBuild(S, b.dataset.build); if (b.dataset.speed) speed = +b.dataset.speed; panel(); });
 document.addEventListener('change', (e) => { if (e.target.dataset.branch) { const [id, art] = e.target.dataset.branch.split('|'); const d = S.ds.find((x) => x.id === id); if (d && e.target.value) rechooseBranch(d, art, e.target.value, S.t); panel(); return; } if (e.target.dataset.variant) { const [id, art] = e.target.dataset.variant.split('|'); const d = S.ds.find((x) => x.id === id); if (d && e.target.value) chooseVariant(d, art, e.target.value, S.t); panel(); return; } if ('artsof' in e.target.dataset) { window.__artsOf = e.target.value; panel(); return; } if (e.target.dataset.focus) { setFocus(S, e.target.dataset.focus, e.target.value || null); panel(); return; } if (e.target.dataset.q) { window.__ans[+e.target.dataset.q] = +e.target.value; panel(); return; } if (e.target.dataset.duty) { setDuty(S, e.target.dataset.duty, e.target.value, e.target.checked); panel(); return; } if (e.target.dataset.prio) { setPrio(S, e.target.dataset.prio, e.target.value); panel(); return; } if (e.target.dataset.style) setStyle(S, e.target.dataset.style, e.target.value); if (e.target.dataset.ord) { setOrder(S, e.target.dataset.ord, e.target.value || null); panel(); } });
 // review fix：存讀檔改用非阻斷提示（原本 alert() 會卡住瀏覽器自動化與遊戲迴圈）
@@ -347,7 +413,7 @@ function jhHtml() {
   if (J.poison) out.push('☠ 慢性化骨綿掌（三天自癒）');
   if (S.hero && ARC13[S.hero.id]) out.push(`📜 主線：${ARC13[S.hero.id].map((x, i) => (i < (S.hero.arcStep || 0) ? `<b>${x}</b>` : `<span style="opacity:.45">${x}</span>`)).join(' → ')}`);
   const wk = J.comedy.filter((t) => S.t - t < 7 * DAY13).length;
-  out.push(`<label><input type="checkbox" data-jhopt="morningOn" ${J.morningOn ? 'checked' : ''}> 晨課令</label>　<label><input type="checkbox" data-jhopt="comedyOn" ${J.comedyOn ? 'checked' : ''}> 喜劇卡（本週 ${wk}/${JH.comedyWeek}）</label>`);
+  out.push(`<label><input type="checkbox" data-jhopt="comedyOn" ${J.comedyOn ? 'checked' : ''}> 喜劇卡（本週 ${wk}/${JH.comedyWeek}）</label>`);
   return `<div class="k"><b>江湖群像</b><br>${out.join('<br>')}</div>`;
 }
 document.addEventListener('change', (e) => { const k = e.target?.dataset?.jhopt; if (k && S.jh) S.jh[k] = e.target.checked; });
@@ -414,7 +480,7 @@ function drawCloud() { const on = cloudOn(), now = performance.now(); if (on !==
   const [ex, ey] = cloudPos(0, C.k); g.fillStyle = '#6b4f30'; g.fillRect(ex - 30, ey - 8, 60, 16); label(`入口（第${C.k}重起點）`, ex, ey + 30, '#4a3a2a');
   for (const p of cloudSpots(C.k)) { const done = C.f >= p.f, [x, y] = p.pos; g.save(); g.globalAlpha = a * (done ? 0.35 : 1); g.fillStyle = p.gate ? '#8a1a10' : '#5a4a6a'; g.beginPath(); g.arc(x, y - 10, p.gate ? 18 : 12, 0, 7); g.fill(); label(done ? '✕' : p.gate ? `守關・第${C.k}重無名高手` : '雲中異獸', x, y + 16, p.gate ? '#b0301a' : '#4a3a5a'); g.restore(); }
   if (S.exp) { const X = S.exp, back = X.phase === 'back', team = X.team.map((id) => S.ds.find((d) => d.id === id)).filter(Boolean);
-    team.forEach((d, i) => { const [x, y] = cloudPos(Math.max(0, C.f - i * 0.012), C.k), im = IMG[d.sprite]; if (!im?.width) return; g.save(); g.translate(x, y + Math.sin(now / 90 + i) * 2); if (back) g.scale(-1, 1); g.drawImage(im, -im.width * SC * 0.35, -im.height * SC * 0.7, im.width * SC * 0.7, im.height * SC * 0.7); g.restore(); });
+    team.forEach((d, i) => { const [x, y] = cloudPos(Math.max(0, C.f - i * 0.012), C.k), im = IMG[visualSpriteOf(d)]; if (!im?.width) return; g.save(); g.translate(x, y + Math.sin(now / 90 + i) * 2); if (back) g.scale(-1, 1); g.drawImage(im, -im.width * SC * 0.35, -im.height * SC * 0.7, im.width * SC * 0.7, im.height * SC * 0.7); g.restore(); });
     const [x, y] = cloudPos(C.f, C.k); label(`巡山隊・絕頂之上第${C.k}重 ${Math.round(C.f * 100)}%${back ? '・回程' : ''}`, x, y - 80, '#7a1a10'); }
   for (const [x, y, r, sp] of PUFF.slice(17)) { const xx = ((x + now / 1000 * sp * 1.5) % 1800) - 100; g.fillStyle = 'rgba(255,255,255,.35)'; g.beginPath(); g.ellipse(xx, y, r * 2, r * 0.5, 0, 0, 7); g.fill(); }
   g.font = 'bold 34px serif'; g.textAlign = 'left'; g.fillStyle = '#3a4a6a'; g.fillText(`☁ 雲海・第${C.k}重`, 40, 860); g.restore();
@@ -426,7 +492,7 @@ function drawFog() { // v1.55c 迷霧：未探＝雲霧遮住；已探但不在�
 function drawWorldTop() { drawFog(); const rd = raidDescent(S, raidMul(S)); // 獸襲下山（演出）
   if (rd) { const [x, y] = rd.pos; sprite(MONSTERS[rd.k].sprite, x, y, SC); label(`${MONSTERS[rd.k].name}下山中`, x, y - 40, '#a33'); }
   const pd = partyDist(S); if (pd != null) { const X = S.exp, team = X.team.map((id) => S.ds.find((d) => d.id === id)).filter(Boolean), back = X.phase === 'back', walking = !(X.busy > 0) && !fightLog.cur;
-    const sty = back ? 'steady' : X.style; team.forEach((d, i) => { const [x, y] = styledPos(Math.max(0, pd + (back ? 1 : -1) * i * (sty === 'dash' ? 2 : 4)), sty), bob = walking ? Math.sin(performance.now() / 90 + i) * 2 : 0, im = IMG[d.sprite]; if (drawWorld.lod !== 'near') { const r = drawWorld.lod === 'far' ? 34 : 12; g.fillStyle = '#d0281c'; g.strokeStyle = '#fff'; g.lineWidth = r / 4; g.beginPath(); g.arc(x + i * r * 1.6, y, r, 0, 7); g.fill(); g.stroke(); if (drawWorld.lod === 'mid') label(d.name, x + i * r * 1.6, y - 18, '#7a1a10'); return; } if (!im?.width) return;
+    const sty = back ? 'steady' : X.style; team.forEach((d, i) => { const [x, y] = styledPos(Math.max(0, pd + (back ? 1 : -1) * i * (sty === 'dash' ? 2 : 4)), sty), bob = walking ? Math.sin(performance.now() / 90 + i) * 2 : 0, im = IMG[visualSpriteOf(d)]; if (drawWorld.lod !== 'near') { const r = drawWorld.lod === 'far' ? 34 : 12; g.fillStyle = '#d0281c'; g.strokeStyle = '#fff'; g.lineWidth = r / 4; g.beginPath(); g.arc(x + i * r * 1.6, y, r, 0, 7); g.fill(); g.stroke(); if (drawWorld.lod === 'mid') label(d.name, x + i * r * 1.6, y - 18, '#7a1a10'); return; } if (!im?.width) return;
       g.save(); g.translate(x + (i % 2 ? 10 : -10), y + bob); if (back) g.scale(-1, 1); g.drawImage(im, -im.width * SC * 0.7 / 2, -im.height * SC * 0.7, im.width * SC * 0.7, im.height * SC * 0.7); g.restore(); });
     const [x, y] = trailAt(pd); if (drawWorld.lod === 'far') { g.font = 'bold 90px sans-serif'; g.textAlign = 'center'; g.lineWidth = 14; g.strokeStyle = '#fff'; g.strokeText('巡山隊', x, y - 70); g.fillStyle = '#b0201a'; g.fillText('巡山隊', x, y - 70); } else label(`巡山隊 ${Math.round(pd)} 步${back ? '・回程' : `・${STYLE_PATH[X.style] || ''}`}`, x, y - 70, '#7a1a10');
     for (const L of leftovers(S, fightLog.evaded)) { if (!L.chasing) continue; const t0 = (fightLog.chase[L.i] ??= performance.now()), k = Math.min(1, (performance.now() - t0) / 3000), [px, py] = styledPos(pd, 'steady'), lx = L.pos[0] + (px + 30 - L.pos[0]) * k, ly = L.pos[1] + (py - L.pos[1]) * k; // 溜走的殘餘怪追上來（＝返程驚獸）
@@ -448,7 +514,12 @@ function fightWatch() { const X = S?.exp; if (!X) { fightLog.n = null; fightLog.
 // 捲動：拖曳地圖、滾輪縮放（邊界由 camBounds 決定）
 { let drag = null; const k = () => Math.max(1600 / cv.clientWidth, 900 / cv.clientHeight) / cam.uz;
   cv.addEventListener('pointerdown', (e) => { drag = [e.clientX, e.clientY]; cv.setPointerCapture?.(e.pointerId); });
-  cv.addEventListener('pointermove', (e) => { if (!drag) return; const f = k(); cam.ux -= (e.clientX - drag[0]) * f; cam.uy -= (e.clientY - drag[1]) * f; drag = [e.clientX, e.clientY]; if (cam.follow) { cam.follow = false; refreshCamUI(); } });
+  cv.addEventListener('pointerleave', () => { hoveredActor = null; });
+  cv.addEventListener('pointermove', (e) => { const r = cv.getBoundingClientRect(), c = clampCam({ x: cam.x, y: cam.y, z: cam.z }, camBounds(S));
+    const x = ((e.clientX - r.left) * 1600 / r.width - 800) / c.z + c.x - HOME.x, y = ((e.clientY - r.top) * 900 / r.height - 450) / c.z + c.y - HOME.y;
+    const near = S.ds.filter((d) => !d.away && Math.abs(d.pos[0] - x) <= 24 && y >= d.pos[1] - 74 && y <= d.pos[1] + 8).sort((a, b) => Math.abs(a.pos[0] - x) - Math.abs(b.pos[0] - x));
+    hoveredActor = near[0]?.id || null; cv.title = near[0] ? homeLabelCandidates(S).find((l) => l.id === near[0].id)?.text || '' : '';
+    if (!drag) return; const f = k(); cam.ux -= (e.clientX - drag[0]) * f; cam.uy -= (e.clientY - drag[1]) * f; drag = [e.clientX, e.clientY]; if (cam.follow) { cam.follow = false; refreshCamUI(); } });
   addEventListener('pointerup', () => { drag = null; });
   cv.addEventListener('wheel', (e) => { e.preventDefault(); cam.uz = Math.min(1.6, Math.max(ZOOMS.far, cam.uz * (e.deltaY > 0 ? 0.9 : 1.1))); }, { passive: false }); }
 { const bar = document.createElement('div'); bar.id = 'camui'; bar.innerHTML = '<button id="cam-home">🏯 回山門</button><button id="cam-follow">👣 跟隨隊伍</button><span class="zoom"><button data-zoom="near">近</button><button data-zoom="mid">中</button><button data-zoom="far">遠</button></span><button id="cam-cloud" hidden>☁ 雲海</button>'; $('wrap').append(bar);
@@ -489,7 +560,7 @@ function chapterModal() {
 }
 let lastAuto = 0; const cue = {};
 /* loop65：換局／讀檔時重設只屬於上一局的介面狀態：自動存檔計時、音效佇列（log 頂端）、巡山提示 */
-function freshGame() { lastAuto = S.t; for (const k of Object.keys(cue)) delete cue[k]; lastExpT = null; }
+function freshGame() { lastAuto = S.t; for (const k of Object.keys(cue)) delete cue[k]; lastExpT = null; GROWTH_MEMO.clear(); GROWTH_NOTICE.clear(); lastGrowth = ''; }
 function audioStep() { for (const c of cuesFrom(cue, S)) { SFX[c]?.(); const p = c === 'breakthrough' ? (S.fx.find((f) => f.kind === 'break')?.pos || NODES.yard) : c === 'record' ? NODES.gate : c === 'chapter' ? NODES.hall : null; if (p) camFocus(p[0], p[1]); }
   const rd = S.mons.find((m) => m.raid === 'go'); if (rd && cue.raid !== rd.uid) { cue.raid = rd.uid; camFocus(rd.pos[0], rd.pos[1], 2); } }
 setInterval(() => { if (!S || starting || !autoDue(S.t, lastAuto)) return; /* loop65：用 autoDue，時間倒退也算到期；開局畫面不存 */ lastAuto = S.t; autosave(localStorage, save(S), { day: Math.floor(S.t / 600) + 1, name: S.hero?.name, suhui: suhuiOf(S), at: Date.now() }); }, 1000);

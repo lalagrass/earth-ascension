@@ -37,9 +37,10 @@ test('阿星：重傷覺醒，根骨解封 +8、起手如來神掌', () => {
 });
 test('阿星巡山瀕死也會覺醒', () => {
   const oldHare = ENEMIES.hare.dmg, oldBoar = ENEMIES.boar.dmg; let s, r;
-  try { ENEMIES.hare.dmg *= 1000; ENEMIES.boar.dmg *= 1000; s = H('axing', 'afang'); r = go(s, ['hero'], 3); }
+  // 晨課改變出發前的亂數路徑；以仍准出發的受傷狀態，固定驗證巡山中瀕死覺醒。
+  try { ENEMIES.hare.dmg *= 1000; ENEMIES.boar.dmg *= 1000; s = H('axing', 'afang'); hero(s).hp = 60; r = go(s, ['hero'], 3); }
   finally { ENEMIES.hare.dmg = oldHare; ENEMIES.boar.dmg = oldBoar; }
-  assert.ok(s.hero.awakened, r.reason);
+  assert.ok(s.hero.awakened, r.reason); assert.match(r.story, /阿星瀕死覺醒/);
 });
 test('黃蓉精打細算：每日香火錢 +2', () => {
   const a = H('guojing', 'huangrong'), b = H('guojing', 'munianci'); const ca = a.res.coin, cb = b.res.coin; payday(a); payday(b);

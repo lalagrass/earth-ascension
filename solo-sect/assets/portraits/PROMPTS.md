@@ -51,3 +51,25 @@ Style clauses: inkpretty = "clear dark ink linework, light flat watercolor wash 
 
 ### Reference change (2026-10-25)
 黃蓉 locked reference is now `assets/portraits/v2/huangrong-v2-ref.png` (copy of `artifacts/portrait-review/style2-inkpretty-huangrong.png`, the "inkpretty" round-2 prompt: wink + grin, roast drumstick, bamboo staff, peach-blossom hairpin). Owner: 俏皮有英氣. `huangrong-v2-a` (tongue-out) kept, not a reference: read as 嫵媚. Future female prompts: playful/heroic; avoid tongue-out, sultry eyes, coy poses.
+
+## N49 dev 1.1.0 導入（2026-11-06）
+
+來源固定提交 `e1b6a7bad0b6e0bd157a7bda2513ce55dfbf6258` 的 `sect-chronicle/assets/shared/portraits/1.1.0/{id}.png`。與 `gemini-1.1.0.mjs` 凍結 manifest 的 SHA-256 逐一核對 13/13；原檔原位保存在 `old/{id}.png`，未轉碼。李莫愁本輪未用，不帶入。這是本倉既有研究圖的再利用，權利狀態沿上游文件：`repository-research-reuse; third-party-rights-unverified`，不可視為已完成第三方商用授權清查。
+
+| id | 新檔 SHA-256 |
+|---|---|
+| `axing.png` | `3d12c5faf14dcb7fc0b2dbe0b1bc39e9991e1f50984f26d2263a73f96ea1b808` |
+| `baozugong.png` | `127092424534d359d8a6c5ed3890e4add566338c2d6cda98e7569aaaf2a91946` |
+| `baozupo.png` | `b743a09c4c40eb48b7bf64216d98442508f120dfdc2f24fae2b3d30c102d89a4` |
+| `caifeng.png` | `be4afadb90fb882eb2b2238b328e9b5cd71d4bcb81584572a397caf689bdeef5` |
+| `dongfangbubai.png` | `c949f97be663c5b4c67919100403a495864cc95ba384d21a1397c6e657b2b76c` |
+| `guojing.png` | `9ca10bf0686f8efcb1f6a446025d47ed2a1622127403b655cc43a99cde1f326c` |
+| `huangrong.png` | `36098c393bbf8e05357a6dd40df4b9a62517a4d8d80d3e1415e3c86d68b9a08a` |
+| `huoyunxieshen.png` | `c21a4067f3df6056b1bdd906e644c63b0c25abedc2e67ccc4ae27411b63ce6f4` |
+| `kulijiang.png` | `9607070c742d7c91b34f4edde595c7d4c8c82240be6ce5a2a42fc2ca9a5f831f` |
+| `linghuchong.png` | `55a3e9e6abd9562bbe065b9dd0fe49613b73aa729f3dee36c268ad5401ad11e2` |
+| `xiaolongnv.png` | `342fb503ecac118608a041c1aa040d60d9fdde33403f9b8854475cdb7637f75b` |
+| `youzhagui.png` | `b92d61a6e4604b903d92b4846e5046ca592a0e409c08f4dd400c81a71dc69d39` |
+| `zhoubotong.png` | `22d3c1900f1c248d5d75161649572b0095606dc292eedf62b91ba0393974eef0` |
+
+資料層的 `fem` 僅供 `visualSpriteOf` 選小人，既有存檔中的 `sprite` 保留以維持第八輪 N49 純畫面 golden。正式女角小人待後續美術交付。

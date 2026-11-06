@@ -1,4 +1,4 @@
-import { FACILITIES, ACTIVITIES, SIG_ACTS } from './data.mjs';
+import { FACILITIES, ACTIVITIES, SIG_ACTS, NODES } from './data.mjs';
 import { log, resAdd } from './util.mjs';
 // ==== （原 core.mjs）====
 // v1.5 新模擬核心（ROADMAP §19、DESIGN-REVIEW-SCENE-PATROL-CORE §3）
@@ -15,6 +15,7 @@ const stageOf = (s, id) => facDef(id).stages[s.fac[id]?.stage || 0];
 export const SLOT_RULE = { rest: 'beds', cook: 1, farm: 'plots', spar: 'dummies', meditate: null, train: null, learn: null, eat: null, chop: null, quarry: null, forage: null, chat: null, leisure: null, encourage: null };
 export function slotCap(s, fid, act) {
   const st = stageOf(s, fid); const r = st.slots?.[act] ?? SLOT_RULE[act];
+  if (st.spots?.some((p) => p.acts.includes(act))) return st.spots.filter((p) => p.acts.includes(act)).length;
   if (r == null) return Infinity; if (typeof r === 'number') return r; return st[r] ?? 1;
 }
 // 登錄表：哪裡提供什麼（含容量、時長、廣告需求）。純資料推導，UI／測試可直接讀
@@ -29,8 +30,21 @@ export const resvOf = (s) => (s.resv ??= {});
 export const holder = (s, key) => resvOf(s)[key] ?? null;
 export function reserve(s, d, key) { const R = resvOf(s); if (R[key] && R[key] !== d.id) return false; R[key] = d.id; return true; }
 export function freeSlot(s, fid, act, d) {
+  if (stageOf(s, fid).spots?.some((p) => p.acts.includes(act))) return freeSpot(s, fid, act, d)?.key || null;
   const cap = slotCap(s, fid, act); if (cap === Infinity) return `${fid}:${act}:*`;
   for (let i = 0; i < cap; i++) { const k = `${fid}:${act}:${i}`, h = holder(s, k); if (!h || h === d?.id) return k; }
+  return null;
+}
+// 設施上的實體使用點：不同活動共用同一把 spot key，避免練功與打坐站在同一格。
+export function freeSpot(s, fid, act, d) {
+  const spots = stageOf(s, fid).spots;
+  if (!spots) return null;
+  const node = facDef(fid).node;
+  for (let i = 0; i < spots.length; i++) {
+    const p = spots[i], key = `${fid}:spot:${p.id}`;
+    if (p.acts.includes(act) && (!holder(s, key) || holder(s, key) === d?.id))
+      return { key, spot: p.id, spotKind: p.kind, xy: [NODES[node][0] + p.offset[0], NODES[node][1] + p.offset[1]] };
+  }
   return null;
 }
 export const slotFree = (s, fid, act, d) => freeSlot(s, fid, act, d) != null;

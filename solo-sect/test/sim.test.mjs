@@ -18,7 +18,9 @@ test('取消搬料歸還木頭', () => {
 });
 test('練掌到門檻後向師父學到新招', () => {
   const s = createState(5); const h = s.ds[0]; setOrder(s, 'hero', 'train'); s.res.food = 50; run(s, 400);
-  assert.ok(h.skills.palm >= 25); setOrder(s, 'hero', null); run(s, 120); assert.ok(h.moves.includes('push'), h.moves.join());
+  assert.ok(h.skills.palm >= 25); setOrder(s, 'hero', null);
+  // 第八輪晨課會讓弟子先練功，隔天自由時段仍須向師父學會掌招。
+  run(s, 360); assert.ok(h.moves.includes('push'), h.moves.join());
 });
 test('聊天提升關係；未成年不會成道侶', () => {
   const s = createState(6); s.res.food = 999; run(s, 3000);
