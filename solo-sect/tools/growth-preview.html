@@ -1,0 +1,19 @@
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><title>山門紀：共用骨架盲測</title>
+<style>body{margin:0;background:#ddd4bf}canvas{display:block;width:640px;height:480px}</style><canvas width="640" height="480"></canvas>
+<script type="module">
+import {displayPose,drawPoseActor} from '../src/pose-render.mjs';
+const g=document.querySelector('canvas').getContext('2d');
+// 只讀blind工具注入的真模擬snapshot；不寫模擬、無日數/數字/答案標示。
+const input=window.growthInput;
+if(!input)throw Error('請由blind.mjs載入已量測的snapshot，不用手填能力值');
+const d=structuredClone(input.hero), action=input.action||'train';d.task={act:action,phase:'do'};d.anim=null;d.ring=null;
+let start=null;
+function frame(now){if(start===null)start=now;const t=input.clock+(now-start)/1000;
+  g.fillStyle='#ddd4bf';g.fillRect(0,0,640,480);g.fillStyle='#b9af94';g.fillRect(0,380,640,100);
+  g.strokeStyle='#8d8168';g.beginPath();g.moveTo(80,380);g.lineTo(560,380);g.stroke();
+  if(action==='chop'){g.fillStyle='#806340';g.fillRect(320,335,45,45);}
+  g.save();g.translate(310,380);g.scale(4,4);const v=displayPose({t,fx:[]},d,null,null);if(v)drawPoseActor(g,d,v);g.restore();
+  requestAnimationFrame(frame);
+}
+window.previewReady=true;window.startGrowthPreview=()=>requestAnimationFrame(frame);
+</script></html>

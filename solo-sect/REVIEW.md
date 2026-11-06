@@ -49,8 +49,24 @@ N54 僅改顯示、素材及驗收入口；以 `4ebe9e5` 為前版。推進 P1 �
 
 | 指令 | 門檻 | 預期輸出 |
 |---|---|---|
-| `bash solo-sect/test/run.sh smoke` | fail=0；本milestone只新增一個N33小測試 | 共12 tests（schema10 + N32/N33各1），50有效次gap=.5、人獸皆記n/f |
+| `bash solo-sect/test/run.sh smoke` | fail=0；本milestone只新增一個N33小測試 | N33 checkpoint共12 tests；目前N55後13（schema10 + N32/N33/N55各1），50有效次gap=.5、人獸皆記n/f |
 | `node solo-sect/tools/practice-probe.mjs --seed <任選整數>` | `pass:true`，before.stand介於.1–.3，after20.stand>.5 | 20筆真resolveSwing事件含p/w，初次stand=.2；after4及after20反應縮短 |
 | 上一指令連跑兩次並比較stdout | byte-identical | 同種子相同20次抽樣及事件，不依賴作者檔案 |
 
 probe是「充分休息、沒有惱羞/在途攻擊」的20次獨立新狗**單招**診斷，刻意隔離眼熟；不是宣稱20場完整戰鬥存活率或已驗N36嚇退。畫面尚未桌面驗證。完整戰鬥/平衡由第九輪收尾bot12與CI驗，不以工具對照取代遊戲整合。
+
+
+### N55 共用骨架真成長播放（#474；影片／真人盲測待補）
+
+| 指令 | 門檻 | 預期輸出 |
+|---|---|---|
+| `bash solo-sect/test/run.sh smoke` | fail=0；只新增一個N55小測試 | 13/13，參數唯讀、同動作同序列、Canvas座標因真參數改變 |
+| `node solo-sect/tools/growth-metrics.mjs --seed <任選整數> --days 1,60` | 前五欄每欄朝合理方向減少≥25%，`pass=true` | 劈柴停頓、挑水傾角、髖高、三式秒數、直拳前搖；另列式間停頓/晃動、事件數與SHA256 |
+| 上一指令同seed連跑兩次，至少另換兩種seed | stdout完全相同、三種seed皆pass | 不依賴作者的snapshot；每次真跑60日，需等待約數分鐘，非完整測試矩陣 |
+| `node solo-sect/tools/check-poses.mjs` | errors空、pass=true | 列出79組序列，熟練不產生第二份，所有姿勢都存在 |
+| `node solo-sect/tools/check-assets.mjs` | missing=0，168/168 | 全素材授權仍可離線查；此milestone無新asset |
+| **由parent於正常桌面通路恢復後** `node solo-sect/tools/blind.mjs --seed <任選整數> --url http://localhost:8814/solo-sect/tools/growth-preview.html` | 真A/B.webm各含至少10秒同動作；真人猜對，寫出至少三處差異對得上量測 | `out/blind/A.webm`、`B.webm`、`key.txt`另檔；`metrics.json`供數字對照。工具尚未執行，不是已驗收影片 |
+
+盲測預設train；可另加`--action chop`/`water`。預設片應觀察式間停頓、重心、整套速度（晃動另有對照數字），不要以影片檔名/日數UI洩漏答案。輸出同路徑會覆寫先前同名驗收檔，請先保留已猜的結果。若preview連線阻擋，停止錄影嘗試交parent，不換host、不Shell CDP/Playwright迴避；目前正是此狀態。工具需要review環境既有Playwright/Chromium，沒有把套件加進遊戲。連兩名reviewer猜錯依#479決策，不自改3D。
+
+受控日程與各常數理由見[combat.md N55](docs/systems/combat.md#n55成長只改共用骨架的播放474)。數字證據寫在`docs/evidence/r9-n55-growth.md`；桌面與影片驗收不得用這張表、SVG或mock Canvas測試冒充。

@@ -40,3 +40,25 @@ test('N33 同一底層累積w，手熟縮前搖、眼熟縮反應，人獸都有
   const fake={skills:{agility:20},practice:{hands:{bodyPunch:50}}}; const w=practiceWindow(fake,'bodyPunch',.45);
   assert.ok(Math.abs((w.wind-w.floor)/(w.start-w.floor)-.5)<1e-12);
 });
+
+
+test('N55 只有播放參數變、沒有第二份熟練pose且繪製不回寫模擬', async () => {
+  const {routineFrame,WORK_POSES}=await import('../src/routines.mjs');
+  const {playbackParams}=await import('../src/growth-playback.mjs');
+  const {displayPose,drawPoseActor}=await import('../src/pose-render.mjs');
+  const s=createState(17,{kind:'bare',askMajor:false}),d=s.ds[0];
+  const master=structuredClone(d);for(const id of ['bodyPunch','bodyPush','work:chop','work:water'])master.practice.hands[id]=500;
+  master.skills.agility=40;
+  const a=playbackParams(d),b=playbackParams(master);
+  for(const k of ['pause','wind','hipHeight','sway','chopPause','waterTilt','formSeconds'])assert.ok(b[k]<a[k],k);
+  assert.equal(routineFrame(null,d,a.formSeconds*.5).poses,routineFrame(null,master,b.formSeconds*.5).poses);
+  for(const act of ['train','chop','water']) {
+    d.task={act,phase:'do'};master.task={act,phase:'do'};
+    const before=JSON.stringify([d,master]),v=displayPose({t:3,fx:[]},d,null,null),w=displayPose({t:3,fx:[]},master,null,null);
+    if(WORK_POSES[act])assert.equal(v.poses,w.poses);
+    // 僅驗證共用Canvas指令會產生不同座標；不是遊戲實拍或真人盲測。
+    const calls=[],ctx=new Proxy({}, {get:(_,k)=>(...args)=>calls.push([k,...args]),set:()=>true});
+    drawPoseActor(ctx,d,v);const first=JSON.stringify(calls);calls.length=0;drawPoseActor(ctx,master,w);
+    assert.notEqual(JSON.stringify(calls),first);assert.equal(JSON.stringify([d,master]),before);
+  }
+});
