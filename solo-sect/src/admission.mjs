@@ -1,11 +1,13 @@
 // N50：所有人相同的食宿/真指導時間/處境比較；不儲存名俠容量或第二份好感。
-import {DAY,FACILITIES,ACTIVITIES,PHASES} from './data.mjs';
+import {DAY,FACILITIES,ACTIVITIES,PHASES,FOOD_SEC} from './data.mjs';
 import {BODY_BASE,BODY_TIMING} from './starter-combat.mjs';
 import {PRACTICE,handUses,practiceResidual} from './practice.mjs';
 import {seasonOf} from './economy.mjs';
 export const HUNGER_PER_SECOND=.35;
 export const bedCount=s=>FACILITIES.reduce((n,f)=>n+(f.stages[s.fac?.[f.id]?.stage||0]?.beds||0),0);
 export const dailyRations=s=>DAY*HUNGER_PER_SECOND*seasonOf(s).hunger/ACTIVITIES.eat.need.hunger;
+// 舊灶十份底線與一日真口糧取較大者；執事已聽見候選需求才備其口糧。
+export const foodStockTarget=(s,waiting=null)=>Math.max(FOOD_SEC.cookFloor,s.ds.filter(d=>!d.away).length*dailyRations(s),waiting?.heard?waiting.foodNeed:0);
 export const bodyExperience=d=>BODY_BASE.reduce((n,id)=>n+handUses(d,id),0)/BODY_BASE.length;
 export const guidanceSeconds=d=>PRACTICE.halfUses*BODY_TIMING.reaction*practiceResidual(bodyExperience(d));
 export const competence=d=>Math.max(0,...['palm','leg','sword','staff','blade','fist'].map(k=>d.skills?.[k]||0),PRACTICE.bodyScale*(1/practiceResidual(bodyExperience(d))-1));

@@ -1,0 +1,16 @@
+{
+  "orders": [],
+  "counts": {
+    "practice": 7096,
+    "tactic": 60,
+    "escape": 50,
+    "work": 34,
+    "choice": 127
+  },
+  "hero": {
+    "hp": 100,
+    "eyes": {}
+  },
+  "exchanges": [],
+  "end": 9000
+}

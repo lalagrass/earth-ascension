@@ -148,3 +148,7 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 - 指令：`bash solo-sect/test/run.sh smoke`。門檻fail0；預期19/19，原N50唯一測試輸出`N50 source proof`：書manual-1與hero→origin-1真課均seconds8/required8，按鈕/答應當下尚未知。無教材或師父的pending不得授藝，改派/中斷不吞書。N12/v100原測試已更新但未另在本地執行。
 - 指令：`node solo-sect/tools/white-body.mjs --seed 17 --types ISTJ --days 30 --events out/source.events.jsonl > out/source.json`。門檻：每個lesson有真來源/秒數；預期lessonEvents/exposure/finalEyes及全量raw可追。這次真exchange0、lesson0、eyes{}、首悟/趕豬null/名俠0，**自然護欄仍未過**。單人格只是根因診斷，不是三人格/12seed/任意seed已證明。REVIEW不再以被動放置當已練過刀賊的前提。
 - 指令：`gzip -dc solo-sect/docs/evidence/r9-n50-source-natural17.events.jsonl.gz | sha256sum`。門檻等於摘要rawSha256，預期8f573b583a9aa779ce30da7453893883462f43cf4b8035980fb58094471459d4。原始保留N7正式自悟另一旁路，不冒充全來源已封。
+
+#### N50/N36 pipeline更正：口糧目標
+- 指令：`bash test/run.sh smoke`。門檻：fail0。預期：19項smoke測試（數量可能隨後續里程碑增加），N50含在家口糧/已聽聞候選14份/未聽聞不備99份斷言。
+- 證據與真前提：[`docs/evidence/r9-n50-pantry-root.md`](docs/evidence/r9-n50-pantry-root.md)。seed17同尺15日修前exchange0、修後57；非任意seed已證明，非N36兩路已通過。

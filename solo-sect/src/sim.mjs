@@ -1,5 +1,5 @@
 import {originPeople,ORIGIN_RELATIONS} from './origins.mjs';
-import {HUNGER_PER_SECOND,admissionStatus,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
+import {HUNGER_PER_SECOND,foodStockTarget,admissionStatus,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
 import {transferredDamage,moveStats} from './arts.mjs';
 import {ringCapacity,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
@@ -258,7 +258,7 @@ function scoreCtx(s, d) {
   const short = (k) => !!(site0 && site0.need[k] > site0.delivered[k] + site0.reserved[k] + whAvail(s, k));
   const low = d.adult && d.mood >= 45 ? others.filter((o) => o.mood < 35).sort((a, b) => a.mood - b.mood)[0] : null, site = siteOf(s);
   const haul = !!site && MATS.some((k) => missingOf(site[1], k) > 0 && s.res[k] > 0);
-  return { s, d, n, tr: d.traits, others, pp, low, bt, fun: n.fun ?? 60, food: s.res.food, negWexin: -(d.wexin || 0), ph: phaseOf(s).id,
+  return { s, d, n, tr: d.traits, others, pp, low, bt, fun: n.fun ?? 60, food: s.res.food, cookTarget: foodStockTarget(s,s.steward?canRecruit(s):null), negWexin: -(d.wexin || 0), ph: phaseOf(s).id,
     shortWood: short('wood'), shortStone: short('stone'), haul, site, PASS, FS: FOOD_SEC, passScore: pp ? passScore(s) : 0,
     wood: s.res.wood + s.ds.reduce((a, o) => a + (o.task?.act === 'chop' ? 1 : 0), 0), stone: s.res.stone + s.ds.reduce((a, o) => a + (o.task?.act === 'quarry' ? 1 : 0), 0),
     passWhy: pp ? `${PASS.why}：帶${pp.p.name}練「${artById(pp.art).name}」` : '', pendingName: d.pendingArt ? artById(d.pendingArt).name : '', btName: bt ? artById(bt).name : '', buildWhy: haul ? '把料搬到工地料堆' : '料齊了，去施工' };
@@ -270,11 +270,11 @@ export const PRED = {
   sparOk: (c) => /* loop15：空地也能徒手過招 */ c.n.energy > 45 && c.others.some((o) => o.needs.energy > 45),
   woodRoom: (c) => c.wood < c.s.cap.wood, stoneRoom: (c) => c.stone < c.s.cap.stone, shortWood: (c) => c.shortWood, shortStone: (c) => c.shortStone,
   ripe: (c) => c.s.plots.some((p) => p.st === 'ripe'), siteWork: (c) => !!c.site && (c.haul || siteReady(c.site[1])),
-  nightRest: (c) => c.ph === 'night' && c.n.energy < 95, cookable: (c) => vegFree(c.s) >= 2 && c.s.res.food < 10,
+  nightRest: (c) => c.ph === 'night' && c.n.energy < 95, cookable: (c) => vegFree(c.s) >= 2 && c.s.res.food < c.cookTarget,
 };
 const path = (c, p) => { if (p === true) return true; const v = String(p).split('.').reduce((o, k) => o?.[k], c); return String(p).startsWith('tr.') ? v || 1 : v; };
 export function valOf(v, c) { if (typeof v === 'number') return v; if (typeof v === 'string') return path(c, v);
-  let x = v.pick ? (path(c, v.pick[0]) ? v.pick[1] : v.pick[2]) : v.lin[1] - path(c, v.lin[0]);
+  let x = v.pick ? (path(c, v.pick[0]) ? v.pick[1] : v.pick[2]) : (typeof v.lin[1] === 'string' ? path(c, v.lin[1]) : v.lin[1]) - path(c, v.lin[0]);
   for (const m of v.mul || []) x *= typeof m === 'number' ? m : typeof m === 'string' ? path(c, m) : valOf(m, c);
   return v.plus != null ? v.plus + x : x; }
 export const foodLow = (s) => s.res.food + s.res.veg < FOOD_SEC.perHead * s.ds.filter((d) => !d.away).length; // v1.76 糧食安全

@@ -839,7 +839,7 @@ export const DAO = { tagOf: { 巧: '破綻', 剛: '蓄力', 柔: '卸力', 拙: 
     boar: '蓄力', boars: '蓄力', bear: '蓄力', bandit: '蓄力', chief: '蓄力', ape: '蓄力', whiteape: '蓄力',
     wolfking: '破綻', post: '蓄力', python: '卸力', pythonking: '卸力', swordtomb: '歸真', peakguard: '歸真' } };
 // ---- v1.76 糧食安全閘（BALANCE-REPORT-v175 P0）：存糧＋菜 < 每人 perHead 份 → 種菜升為需求層、其餘非必要活動 ×gateMul ----
-export const FOOD_SEC = { perHead: 1.5, farm: 75, gateMul: 0.35, keep: ['eat', 'rest', 'farm', 'cook', 'heal', 'watch', 'trial', 'build', 'deliver'] };
+export const FOOD_SEC = { cookFloor: 10, perHead: 1.5, farm: 75, gateMul: 0.35, keep: ['eat', 'rest', 'farm', 'cook', 'heal', 'watch', 'trial', 'build', 'deliver'] };
 
 // ==== （原 sect-data.mjs）====
 // v1.35 門派身分（ROADMAP §18）：主角＝門派。純資料，無 import（arts.mjs 也會用）
@@ -934,7 +934,7 @@ export const SCORE = [
   { gen: true }, // v1.6 建築活動（ACTIVITIES[].gen）在這個位置展開
   { act: 'build', when: ['siteWork'], v: { pick: [true, 55, 55], mul: [{ pick: ['d.adult', 1, 0.6] }] }, why: '{buildWhy}' },
   { act: 'rest', when: ['nightRest'], v: 60, why: '入夜歇息' },
-  { act: 'cook', when: ['cookable'], v: { lin: ['food', 10], mul: [4], plus: 30 }, why: '灶上該煮飯了' },
+  { act: 'cook', when: ['cookable'], v: { lin: ['food', 'cookTarget'], mul: [4], plus: 30 }, why: '灶上該煮飯了' },
 ];
 // v1.8 打分後處理＝純資料（原 scoreActs 內的 if）：依序套用；sim.mjs 的 postRows() 是唯一解讀器。
 // who：labor／notLabor；if：前提（POST_PRED 名，「!」開頭取反）；acts／except：作用範圍（陣列或 K.* 常數名）；
