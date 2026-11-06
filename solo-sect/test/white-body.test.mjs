@@ -98,6 +98,18 @@ test('N34 情境識別穩定後零決策時間，選招/心願所有人共用',a
   clock.t+=.25;beginCombatFrame(clock);assert.equal(chooseCombatMove(clock,body,blade,()=>.5).available,.55);
   assert.equal(prepareCombatMove(clock,body,blade,()=>.5),null);assert.equal(body.busyUntil,ready,'未到期不能重抽/退費');
   delayCombatSwing(incoming,.25);assert.equal(incoming.at,1.05);assert.equal(incoming.opening.T.windowEnd,1.05,'放慢須同步絕對來招期限');
+  // First infeasible comparison is paid in full; only its completed result may be reused.
+  const guardState=createState(83,{kind:'bare',askMajor:false}),guard=guardState.ds[0];guardState.ds=[guard];guard.pos=[0,0];
+  const visitor={k:'bandit',uid:'visitor',hp:40,pos:[20,0],weapon:'blade'};guardState.mons=[visitor];
+  beginCombatFrame(guardState);declareCombatSwing(guardState,visitor,guard,()=>.5,{mv:'looterBlade',tgt:guard.id,wind:.8});flushCombatSwings(guardState);
+  guardState.t=.25;beginCombatFrame(guardState);assert.equal(prepareCombatMove(guardState,guard,visitor,()=>rand(guardState)),null);flushCombatSwings(guardState);
+  const guardPlan=guard.combatDecision;assert.equal(guardPlan.mode,'defend');assert.ok(guardPlan.seconds>0);assert.equal(guard.busyUntil,guardPlan.readyAt,'null首比較仍付真Hick');
+  guardState.t=.5;beginCombatFrame(guardState);prepareCombatMove(guardState,guard,visitor,()=>rand(guardState));assert.equal(guard.busyUntil,guardPlan.readyAt,'未到期不得重收或退款');
+  guardState.t=.75;beginCombatFrame(guardState);prepareCombatMove(guardState,guard,visitor,()=>rand(guardState));assert.equal(guard.combatDecision,undefined);const previous=guard.busyUntil,rng=guardState.rngN;
+  prepareCombatMove(guardState,guard,visitor,()=>rand(guardState));flushCombatSwings(guardState);assert.equal(guard.selection.last.reused,true);assert.equal(guard.selection.last.seconds,0);assert.equal(guard.busyUntil,previous,'已比較守勢不重新占用');assert.equal(guardState.rngN,rng,'重用不是偷偷再Thompson抽樣');
+  const changed=structuredClone(visitor);changed.uid='another';guardState.mons.push(changed);assert.notEqual(chooseCombatMove(guardState,guard,visitor,()=>rand(guardState),{preview:true}).reused,true,'新可見第二來招不能重用舊證據');guardState.mons.pop();
+  guardState.t=1;visitor.swing.at=2;beginCombatFrame(guardState);const wider=chooseCombatMove(guardState,guard,visitor,()=>rand(guardState),{preview:true});assert.notEqual(wider.reused,true,'可用時間變寬不沿用較窄的不可能證據');
+  guardState.t=1.25;visitor.swing=null;beginCombatFrame(guardState);prepareCombatMove(guardState,guard,visitor,()=>rand(guardState));flushCombatSwings(guardState);assert.ok(guard.combatDecision?.seconds>0,'沒有可見來招時不永久守勢，重新選招仍付時間');
   // Same published body actions must produce the same load/busy windows in either declaration order.
   function simultaneous(reverse){const q=createState(90,{kind:'bare',askMajor:false}),a=q.ds[0];q.ds=[a];a.pos=[0,0];const b={k:'bandit',uid:'b',hp:40,pos:[20,0],weapon:'blade'};q.mons=[b];beginCombatFrame(q);
     const jobs=[()=>declareCombatSwing(q,a,b,()=>.5,{mv:'bodyPunch',tgt:'b',wind:windOf(a,'bodyPunch',1)}),()=>declareCombatSwing(q,b,a,()=>.5,{mv:'looterBlade',tgt:a.id,wind:.8})];if(reverse)jobs.reverse();jobs.forEach(f=>f());flushCombatSwings(q);return [a.swing.opening.T,b.swing.opening.T];}

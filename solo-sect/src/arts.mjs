@@ -4,7 +4,7 @@ import {bodyOf,contactImpact,usableMove,woundWind,shiftBalance,recoverBody,healW
 import {opponents,allies,loadFromForecast,coverFor,movementSpeed,distance,stepTactic} from './tactics.mjs';
 import {RING} from './combat-space.mjs';
 import {TECHNIQUES,TECHNIQUE_MOVES,learnFromLoss,applyTechnique,matchesTechnique} from './techniques.mjs';
-import {selectAction,recordChoice,desireTraining,witnessExchange} from './decision.mjs';
+import {selectAction,completeDecision,recordChoice,desireTraining,witnessExchange} from './decision.mjs';
 import { PRACTICE, familiarReaction, practiceWindow, recordExchange, recordDrill, emitPractice } from './practice.mjs';
 import { bodyMove, moveAvailable, BODY_TIMING, FOE_ACTIONS, foeAction, commitCombatEffort } from './starter-combat.mjs';
 import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST, TRAITS } from './data.mjs';
@@ -1252,8 +1252,8 @@ export function chooseCombatMove(s,d,target,rnd,options={}) {
   const distance=options.distance??Math.hypot((d.pos?.[0]||0)-(target.pos?.[0]||0),(d.pos?.[1]||0)-(target.pos?.[1]||0));
   const seen=observedActor(s,target),facts=techniqueFacts(s,d,seen);
   const choices=(options.moves||combatMoves(d,distance)).filter(m=>!m.technique||matchesTechnique(TECHNIQUES.find(r=>r.id===m.id),facts)).map(m=>({...m,actualWind:windOf(d,m.id,m.cd),force:moveStats(d,m.id).force}));
-  const available=observableWindow(s,d);
-  return selectAction(s,d,seen,choices,rnd,{distance,available,composure:composure(d),postureCapacity:postureMax(d),armor:moveStats(target).armor,...options});
+  const available=observableWindow(s,d),observation=JSON.stringify(opponents(s||{},d).map(a=>observedActor(s,a)).filter(a=>(a.swing||a.bswing)?.tgt===(d.uid||d.id)).map(a=>[a.uid||a.id||a.k,(a.swing||a.bswing).mv?.id||(a.swing||a.bswing).mv]).sort((a,b)=>String(a[0]).localeCompare(String(b[0]))));
+  return selectAction(s,d,seen,choices,rnd,{distance,available,observation,composure:composure(d),postureCapacity:postureMax(d),armor:moveStats(target).armor,...options});
 }
 // Only declared, currently visible attacks have deadlines; intent alone is not
 // clairvoyance about which move will be selected later in this fixed step.
@@ -1264,12 +1264,14 @@ export function prepareCombatMove(s,d,target,rnd,options={}){
   if(plan){
     if(s.t+1e-9<plan.readyAt)return null;
     delete d.combatDecision;
+    if(plan.mode==='defend'){completeDecision(s,d,plan);return null;}
     const move=combatMoves(d,options.distance??distance(d.pos,target.pos)).find(m=>m.id===plan.move);
     if(!move||plan.target!==(target.uid||target.id||target.k)||(!d.raging&&windOf(d,move.id,move.cd)>observableWindow(s,d))){emitPractice(s,{type:'choiceAbandoned',who:d.uid||d.id||d.k,move:plan.move,reason:'可觀測情境已變或剩餘時間不足',seconds:plan.seconds});return null;}
     return {...plan,move,seconds:0,decisionSeconds:plan.seconds};
   }
   const pick=chooseCombatMove(s,d,target,rnd,options);if(!pick)return null;
   if(pick.seconds>0){d.anim='idle';d.combatDecision={...pick,move:pick.move?.id||null,readyAt:s.t+pick.seconds};const pending=d.combatDecision;queueCombatDecision(s,d,pending,()=>emitPractice(s,{type:'thinking',who:d.uid||d.id||d.k,move:pending.move,from:pending.startedAt,until:pending.readyAt}));return null;}
+  if(!pick.move&&!pick.reused)completeDecision(s,d,{...pick,startedAt:s.t,readyAt:s.t});
   return pick.move?{...pick,decisionSeconds:0}:null;
 }
 export function declareCombatSwing(s,atk,def,rnd,w,{slot='swing',ctx={},warn=true,cooldown=0,clock='cool',absolute=false,interceptors=null}={}){

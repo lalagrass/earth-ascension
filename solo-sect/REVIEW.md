@@ -212,3 +212,9 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 - 指令：照[完整指令/原始SHA/手算三筆](docs/evidence/r9-n34-deadline.md)從repo舊prepared60快照跑waves。原門檻每seed/trait 1/2路反擊、L≥1零反擊不變；本樣本normal0/2/0、calm0/0/0、rash0/1/0 **FAIL**。calm一路incomingResolved0，不將缺來招當反應慢，也不改gate。唯讀timeLoadFits不含所有身體條件，不能稱完整反擊機會。
 - 指令：`node solo-sect/tools/duel.mjs --a day1 --b day1 --seeds 1-20 --log out/duel.json`。原門檻中位≥30、無傷≥70%；本次308／**32.6916748931% FAIL**、meanBreaths6.05，反擊傷0；普通踢3416次瘀青是主要傷源，不刪瘀青或縮力湊門檻。
 - 到期時刻只排序、世界仍原.25秒處理拍；resolvedDeadline/processedAt分列，不倒退恢復時鐘。上面是未改舊能力的短因果隔離，不冒充新head最終60日；其他自然護欄及N55最終三seed/影片/真人仍欠。
+
+#### N34 已付比較的守勢結果（仍未過70%／N36）
+- 指令：`bash solo-sect/test/run.sh smoke`。門檻fail0；預期19/19，只延伸原N34唯一test，首null比較完整付Hick、未到期不得重收、完成後才重用，更寬窗口/新可見攻意須失效，不預知新招。
+- 指令：照[守勢根因／同未改快照雙側重播／全部T0分類](docs/evidence/r9-n34-guard.md)。門檻：同byte快照同r/L/精力、已付守勢不再新收Hick；預期t30.75舊busy31.15/T0，新busy30.4、r+m=.4633558733<T.5283647471；而無守勢證據的舊t503.25首比較仍.4秒/T0，不能免費抹掉。
+- 指令：`node solo-sect/tools/duel.mjs --a day1 --b day1 --seeds 1-20 --log out/duel.json`。原≥30/≥70%門檻不變；最新302／**39.0699983452% FAIL**／喘氣6.2。短waves同prepared60：normal0/0/0、calm0/0/0、rash0/1/0 **FAIL**，超載counter全0；舊normal兩路2次不是新結果。
+- 1078舊parry精確扣一次contact.balance、518次新倒地；dodge零contact，未證有接化被當硬擋，不調踢力/架勢/瘀青定義。真資料／原始SHA入同證據；任選seed、新核心60日、自然與影片驗收仍未完成。

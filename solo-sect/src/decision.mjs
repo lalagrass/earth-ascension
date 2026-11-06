@@ -16,7 +16,13 @@ const stats=(r={})=>{const a=(r.win||0)+1,b=(r.loss||0)+1,mean=a/(a+b),sd=Math.s
 function gamma(shape,rnd){const d=shape-1/3,c=1/Math.sqrt(9*d);for(;;){const x=Math.sqrt(-2*Math.log(1-rnd()))*Math.cos(2*Math.PI*rnd()),v=(1+c*x)**3;if(v<=0)continue;const u=1-rnd();if(Math.log(u)<x*x/2+d*(1-v+Math.log(v)))return d*v;}}
 export function betaSample(a,b,rnd){const x=gamma(a,rnd),y=gamma(b,rnd);return x/(x+y);}
 function utility(d,m,distance,armor){const f=DECISION_STYLE[decisionTemper(d)].feature;return f==='speed'?1/(m.actualWind||m.wind||m.cd):f==='force'?Math.max(0,(m.force||m.dmg||1)-armor):(m.range||1)/((m.range||1)+distance);}
-export function selectAction(s,d,target,moves,rnd,{distance,composure=Infinity,preview=false,armor=0,postureCapacity=DECISION.postureReference,available=Infinity}={}){
+export function completeDecision(s,d,plan){
+ if(plan.mode!=='defend'||plan.available==null)return;
+ const S=ensureSelection(d),key=plan.context,prior=S.defenses?.[key];
+ (S.defenses??={})[key]={target:plan.target,comparison:plan.comparison,available:prior?.target===plan.target&&prior?.comparison===plan.comparison?Math.max(prior.available,plan.available):plan.available,seconds:plan.seconds,startedAt:plan.startedAt,completedAt:s.t};
+ emitPractice(s,{type:'decisionCompleted',who:d.uid||d.id||d.k,mode:'defend',context:plan.context,seconds:plan.seconds,startedAt:plan.startedAt,readyAt:plan.readyAt});
+}
+export function selectAction(s,d,target,moves,rnd,{distance,composure=Infinity,preview=false,armor=0,postureCapacity=DECISION.postureReference,available=Infinity,observation=''}={}){
   if(!moves.length)return null;
   distance??=Math.hypot((d.pos?.[0]||0)-(target.pos?.[0]||0),(d.pos?.[1]||0)-(target.pos?.[1]||0));
   const key=contextKey(d,target,s?.t||0,distance,postureCapacity), state=d.selection||{contexts:{},habits:{}}, rows=state.contexts[key]||{};
@@ -24,16 +30,18 @@ export function selectAction(s,d,target,moves,rnd,{distance,composure=Infinity,p
   ranked.sort((a,b)=>b.mean*b.value-a.mean*a.value||a.move.id.localeCompare(b.move.id));
   const stable=ranked.length===1||ranked[0].lo>Math.max(...ranked.slice(1).map(r=>r.hi));
   const habit=d.raging||(d.fret||0)>=composure;
-  let best=ranked[0];
-  if(habit)best=[...ranked].sort((a,b)=>(state.habits[b.move.id]||0)-(state.habits[a.move.id]||0)||a.move.id.localeCompare(b.move.id))[0];
-  else if(!stable&&!preview){for(const r of ranked)r.sample=betaSample(r.a,r.b,rnd)*r.value;best=[...ranked].sort((a,b)=>b.sample-a.sample)[0];}
   const seconds=stable||habit?0:DECISION.informationSecond*Math.log2(moves.length);
-  // A visible deadline is a constraint, not an accuracy bonus. Raging habits
-  // can still press an infeasible attack; ordinary actors reserve defense time.
+  const comparison=JSON.stringify([observation,seconds,moves.map(m=>[m.id,m.actualWind??m.wind??m.cd]).sort((a,b)=>a[0].localeCompare(b[0]))]);
+  const remembered=state.defenses?.[key];
+  const reused=!habit&&Number.isFinite(available)&&remembered?.target===(target.uid||target.id||target.k)&&remembered?.comparison===comparison&&available<=remembered.available;
+  let best=ranked[0];
+  if(reused)best=null;
+  else if(habit)best=[...ranked].sort((a,b)=>(state.habits[b.move.id]||0)-(state.habits[a.move.id]||0)||a.move.id.localeCompare(b.move.id))[0];
+  else if(!stable&&!preview){for(const r of ranked)r.sample=betaSample(r.a,r.b,rnd)*r.value;best=[...ranked].sort((a,b)=>b.sample-a.sample)[0];}
   const feasible=ranked.filter(r=>(r.move.actualWind??r.move.wind??r.move.cd)+seconds<=available);
-  if(!habit&&available<Infinity){if(!feasible.length)best=null;else if(!feasible.some(r=>r.move.id===best.move.id))best=[...feasible].sort((a,b)=>(b.sample??b.mean*b.value)-(a.sample??a.mean*a.value))[0];}
-  const result={move:best?.move||null,context:key,seconds,stable,habit,available:Number.isFinite(available)?available:null,target:target.uid||target.id||target.k,at:s?.t||0};
-  if(!preview){const store=ensureSelection(d);store.last={...result,move:best?.move?.id||null};emitPractice(s,{type:'choice',who:d.id||d.uid||d.k,move:best?.move?.id||null,context:key,seconds,stable,habit});}
+  if(!reused&&!habit&&available<Infinity){if(!feasible.length)best=null;else if(!feasible.some(r=>r.move.id===best.move.id))best=[...feasible].sort((a,b)=>(b.sample??b.mean*b.value)-(a.sample??a.mean*a.value))[0];}
+  const result={move:best?.move||null,mode:best?'attack':'defend',context:key,seconds:reused?0:seconds,stable,habit,comparison,available:Number.isFinite(available)?available:null,target:target.uid||target.id||target.k,at:s?.t||0,...(reused?{reused:true,paidAt:remembered.completedAt,paidSeconds:remembered.seconds}:{})};
+  if(!preview){const store=ensureSelection(d);store.last={...result,move:best?.move?.id||null};emitPractice(s,{type:'choice',who:d.id||d.uid||d.k,move:best?.move?.id||null,context:key,seconds:result.seconds,stable,habit,mode:result.mode,reused:!!reused,...(reused?{paidAt:remembered.completedAt,paidSeconds:remembered.seconds}:{})});}
   return result;
 }
 export function recordChoice(s,d,target,move,success,{expected=false}={}){
