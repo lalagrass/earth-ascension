@@ -26,7 +26,9 @@ export function loadFromForecast(a,rows){
 export function moraleOf(a,{L,enemies,allies:friends,fallen=0,initialFriends=friends+1,threat=0,tolerance=1}){
  const health=Math.max(0,1-(a.hp??100)/(a.max||100)),fatigue=1-(a.needs?.energy??a.energy??100)/100;
  const profile=FOE_ACTIONS[a.k]||{},reserve=tolerance+(profile.injuryAnger?health:0)+friends/(enemies+1);
- const pressure=health+fatigue+fallen/Math.max(1,friends+1)+Math.max(0,enemies/(friends+1)-1)+L/(1+L)+threat;
+ // 寡不敵眾用多出的人數佔交戰總人數的比例；兩人對一人仍有壓力，四人包圍更大。
+ const surplus=Math.max(0,enemies-(friends+1))/(enemies+friends+1);
+ const pressure=health+fatigue+fallen/Math.max(1,friends+1)+surplus+L/(1+L)+threat;
  const state=pressure<reserve/2?'steady':pressure<reserve?'shaken':pressure<2*reserve?'broken':'routing';
  return {reserve,pressure,state,health,fatigue};
 }

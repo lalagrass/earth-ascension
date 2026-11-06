@@ -2,8 +2,9 @@
 import {mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {createState,clone,rand} from '../src/sim.mjs';
-import {assessLoad,combatTacticStep,chooseCombatMove,resolveSwing,postureRegen,fretStep,windOf,CLASH} from '../src/arts.mjs';
+import {assessLoad,combatTacticStep,chooseCombatMove,interceptOpening,resolveSwing,postureRegen,fretStep,windOf,CLASH} from '../src/arts.mjs';
 import {movementSpeed,moveToward,COVERS,ringCapacity,distance,pursueFleeing,rememberEscape,restoreSurvivor} from '../src/tactics.mjs';
+import {RING} from '../src/combat-space.mjs';
 import {foeAction} from '../src/starter-combat.mjs';
 import {practiceWindow} from '../src/practice.mjs';
 import {growthSnapshots} from './growth-scenario.mjs';
@@ -17,21 +18,24 @@ function run(count,trait){
  hero.id='hero';hero.uid='hero';hero.personality=traitMap[trait];hero.hp=100;hero.max=100;hero.needs.energy=100;hero.posture=100;hero.busyUntil=0;hero.rageUntil=0;hero.raging=false;hero.fret=0;hero.swing=null;hero.bswing=null;hero.path=[];hero.gone=false;hero.downUntil=0;hero.faintUntil=0;hero.balanceOpenUntil=0;hero.wounds=[];hero.part=null;hero.pain=0;hero.painAt=-1e9;
  // 1/2路在真山門的兩席，4路在空地；不是替四路刪掉已發出的攻擊。
  hero.pos=count<3?[...COVERS.find(c=>c.id==='gate').stand]:[800,400];
- for(let i=0;i<count;i++)s.mons.push({k:'bandit',uid:`foe${i}`,hp:40,max:40,pos:[hero.pos[0]+20+i,hero.pos[1]],agi:20,weapon:'blade',energy:100,next:0,intentTarget:hero.id});
+ for(let i=0;i<count;i++)s.mons.push({k:'bandit',uid:`foe${i}`,hp:40,max:40,pos:[hero.pos[0]+20+i*RING.step,hero.pos[1]],agi:20,weapon:'blade',energy:100,next:0,intentTarget:hero.id});
  const rows=[],stats={count,trait,location:count<3?'gate(two slots)':'open',attacks:0,rushAttacks:0,hits:0,hpLost:0,counters:0,overloadBeats:0,overloadCounters:0};
- const actors=[hero,...s.mons];
+ // 正常 tick 先跑 bandStep，再輪到守山弟子；探針同序，不能讓主角先免費起手。
+ const actors=[...s.mons,hero];
+ function settle(a,t,r,w){
+   if(r.kind==='hit'){const dmg=a===hero?w.dmg*(1+(a.skills?.[w.skill]||0)/50):6;t.hp-=dmg*r.contact.damageFactor;if(t===hero){stats.hits++;stats.hpLost+=dmg*r.contact.damageFactor;}}
+   if(r.counter){a.hp-=r.counterDamage;if(t===hero)stats.counters++;}
+   const load=r.timing?.L??assessLoad(s,t,a,{move:w.id,wind:w.wind}).L;
+   rows.push({t:s.t,who:t.uid||t.id,L:load,reaction:r.kind,counter:!!r.counter,type:'defense',T:r.timing?.T??null,r:r.timing?.r??null});
+   if(load>=1&&r.counter)stats.overloadCounters++;
+   return r.kind;
+ }
  for(;s.t<40&&hero.hp>25&&!hero.gone&&s.mons.some(m=>m.hp>0&&!m.gone);s.t+=.25){for(const a of actors){
    if(a.hp<=0||a.gone)continue;postureRegen(s,a,.25);fretStep(s,a);
    const candidates=a===hero?s.mons.filter(m=>m.hp>0&&!m.gone):[hero],target=candidates.sort((a,b)=>distance(a.pos,hero.pos)-distance(b.pos,hero.pos))[0];if(!target)continue;
-   const L=assessLoad(s,a).L;let reaction='idle',counter=false;
+   const L=assessLoad(s,a).L;let reaction='idle';
    if(a.swing&&s.t+1e-9>=a.swing.at){const w=a.swing;a.swing=null;const t=actors.find(x=>(x.uid||x.id)===w.tgt);
-     if(t?.hp>0&&distance(a.pos,t.pos)<=w.range*1.3){const r=resolveSwing(s,a,t,()=>rand(s),{move:w.id,wind:w.wind});reaction=r.kind;counter=!!r.counter;
-       if(r.kind==='hit'){const dmg=a===hero?w.dmg*(1+(a.skills?.[w.skill]||0)/50):6;t.hp-=dmg*r.contact.damageFactor;if(t===hero){stats.hits++;stats.hpLost+=dmg*r.contact.damageFactor;}}
-       if(r.counter){a.hp-=r.counterDamage;if(t===hero)stats.counters++;}
-       const load=r.timing?.L??assessLoad(s,t,a,{move:w.id,wind:w.wind}).L;
-       rows.push({t:s.t,who:t.uid||t.id,L:load,reaction:r.kind,counter:!!r.counter,type:'defense',T:r.timing?.T??null,r:r.timing?.r??null});
-       if(load>=1&&r.counter)stats.overloadCounters++;
-     }
+     if(t?.hp>0&&distance(a.pos,t.pos)<=w.range*1.3)reaction=settle(a,t,resolveSwing(s,a,t,()=>rand(s),{move:w.id,wind:w.wind,opening:w.opening}),w);
    }
    if(!a.swing){const moved=combatTacticStep(s,a,.25,{exit:unit=>{rememberEscape(s,unit);unit.gone=true;}});reaction=moved?a.tactics.action:reaction;
      if(!moved&&(a.busyUntil||0)<=s.t&&!(a.downUntil>s.t)&&s.t>=(a.next||0)){
@@ -39,7 +43,10 @@ function run(count,trait){
        const pick=chooseCombatMove(s,a,target,()=>rand(s),{distance:distance(a.pos,target.pos)});
        if(pick){const m=pick.move;if(distance(a.pos,target.pos)>m.range){moveToward(a,target.pos,movementSpeed(a),.25);reaction='approach';}
          else{const wind=(windOf(a,m.id,m.cd))+pick.seconds;
-           a.swing={mv:m.id,id:m.id,wind,range:m.range,dmg:m.dmg,skill:m.skill,tgt:target.uid||target.id,at:s.t+wind};a.next=s.t+m.cd+pick.seconds;
+           const w={mv:m.id,id:m.id,wind,range:m.range,dmg:m.dmg,skill:m.skill,tgt:target.uid||target.id,at:s.t+wind};
+           const start=interceptOpening(s,a,target,()=>rand(s),{move:m.id,wind});
+           if(start.read)reaction=settle(a,target,start.read,w);else a.swing={...w,opening:start.opening};
+           a.next=s.t+m.cd+pick.seconds;
            if(a===hero){stats.attacks++;if(a.raging)stats.rushAttacks++;a.needs.energy--;}else a.energy--;reaction='wind';}
        }
      }

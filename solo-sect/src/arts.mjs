@@ -1293,8 +1293,10 @@ export function assessLoad(s,def,extra=null,ctx={}) {
     const swing=a.swing||a.bswing,move=a===extra?timedMoveId(a,ctx.move):timedMoveId(a),action=FOE_ACTIONS[a.k]?.moves.find(m=>m.id===move)||MOVES.find(m=>m.id===move);
     const wind=a===extra&&ctx.wind!=null?ctx.wind:swing?.wind??windOf(a,move,action?.cd||1);
     const travel=Math.max(0,distance(a.pos,def.pos)-(action?.range||RING.engage))/movementSpeed(a);
+    // 未出手者可在冷卻時靠近；最早來招取兩者較久者，已出手的招不再算冷卻。
+    const ready=swing?0:Math.max(0,(a.next||0)-(s?.t||0),a.cool||0,a.bcool||0);
     const guard=def.bare?BODY_TIMING.guard:CLASH.time.guard;
-    return {attacker:a.uid||a.id||a.k,move,need:familiarReaction(def,a,move,s?.codex)+guard+busy,window:Math.max(BODY_TIMING.simple,wind),travel,active:!!swing};
+    return {attacker:a.uid||a.id||a.k,move,need:familiarReaction(def,a,move,s?.codex)+guard+busy,window:Math.max(BODY_TIMING.simple,wind),travel:Math.max(travel,ready),active:!!swing};
   });
   return loadFromForecast(def,rows);
 }
