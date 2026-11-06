@@ -26,6 +26,6 @@ export const EFFECTS={
 };
 export function applyTechnique(s,a,t,move,facts){const row=TECHNIQUES.find(r=>r.id===move);if(!row||!a.glimmer?.known.includes(move)||!matchesTechnique(row,facts))return null;const effects={};for(const word of row.effects)effects[word]=EFFECTS[word](s,a,t,facts)!==false;emitPractice(s,{type:'technique',who:a.id||a.uid||a.k,move,effects});return effects;}
 
-export function pickupDrop(s,a,hands=2){if(!hands||(a.busyUntil||0)>s.t)return false;const drop=(s.drops||[]).find(d=>!d.taken&&a.pos&&Math.hypot(d.pos[0]-a.pos[0],d.pos[1]-a.pos[1])<=BODY_MOVES.find(m=>m.id==='bodyGrab').range);if(!drop)return false;
+export function pickupDrop(s,a,hands=2){if(!hands||a.swing||a.bswing||(a.busyUntil||0)>s.t)return false;const drop=(s.drops||[]).find(d=>!d.taken&&a.pos&&Math.hypot(d.pos[0]-a.pos[0],d.pos[1]-a.pos[1])<=BODY_MOVES.find(m=>m.id==='bodyGrab').range);if(!drop)return false;
   drop.taken=true;(a.tools??={})[drop.tool]=true;const move=BODY_MOVES.find(m=>m.tool===drop.tool);if(move&&!(a.moves||[]).includes(move.id))(a.moves??=[]).push(move.id);a.weapon={knife:'blade',staff:'staff',pole:'staff',hoe:'staff'}[drop.tool]||a.weapon;a.busyUntil=s.t+BODY_TIMING.simple;emitPractice(s,{type:'pickup',who:a.id||a.uid||a.k,tool:drop.tool});return true;
 }

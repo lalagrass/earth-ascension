@@ -1,4 +1,6 @@
-import { chooseCombatMove, fastestMove, windOf } from './arts.mjs';
+import {RING} from './combat-space.mjs';
+import {movementSpeed,moveToward,ringCapacity,rememberEscape,restoreSurvivor,distance} from './tactics.mjs';
+import { combatMoves,combatTacticStep,fretStep,chooseCombatMove, fastestMove, windOf } from './arts.mjs';
 import { practiceWindow } from './practice.mjs';
 import { foeAction } from './starter-combat.mjs';
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
@@ -132,7 +134,7 @@ export function nodePath(a, b) { // BFS，只走既有邊
   const prev = { [a]: null }, q = [a]; while (q.length) { const n = q.shift(); if (n === b) break; for (const m of adj[n] || []) if (!(m in prev)) { prev[m] = n; q.push(m); } }
   if (!(b in prev)) return []; const out = []; for (let n = b; n != null; n = prev[n]) out.unshift(n); return out;
 }
-export function newBand(P, to) { const path = nodePath(BAND.from, to); return { n: P.n, pts: P.pts, day: P.day, hp: P.pts, max: P.pts, pos: [...NODES[BAND.from]], path: path.slice(1), state: 'go', clock: 0, fenceDealt: 0, defDealt: 0, members: bandMembers(P.pts) }; }
+export function newBand(P,to,s=null){const path=nodePath(BAND.from,to),members=bandMembers(P.pts).map((m,i)=>restoreSurvivor(s,'bandit',{...m,uid:`raid${P.n}-bd${i}`,pos:[...NODES[BAND.from]]}));return {n:P.n,pts:P.pts,day:P.day,hp:members.reduce((n,m)=>n+m.hp,0),max:P.pts,pos:[...NODES[BAND.from]],path:path.slice(1),state:'go',clock:0,fenceDealt:0,defDealt:0,members};}
 /* #419 N15 山賊拆成個人：人數照威脅點數（每 BAND_MEMBER.pts 一人，2–8 人），每人血量＝點數／人數，加總恰等於點數（威脅公式不變）。
    守柵的總傷害照舊算在整夥上，再從最前面的人扣起，所以打退時間與勝負不變。 */
 export const BAND_MEMBER = { pts: 40, min: 2, max: 8, ring: 4, gap: 16, outer: 64 };
@@ -145,11 +147,11 @@ export function bandMembers(pts) {
 export function syncMembers(b) {
   if (!b.members) b.members = bandMembers(b.max);
   for (const m of b.members) { m.uid ??= `bd${m.i}`; m.k ??= 'bandit'; }
-  const sum = b.members.reduce((a, m) => a + Math.max(0, m.hp), 0);
-  if (Math.abs(sum - Math.max(0, b.hp)) > 1e-6) { let rest = Math.max(0, b.hp); for (let i = b.members.length - 1; i >= 0; i--) { const m = b.members[i]; m.hp = Math.min(m.max, rest); rest -= m.hp; } }
+  const sum = b.members.reduce((a, m) => a + (m.gone?0:Math.max(0, m.hp)), 0);
+  if (Math.abs(sum - Math.max(0, b.hp)) > 1e-6) { let rest = Math.max(0, b.hp); for (let i = b.members.length - 1; i >= 0; i--) { const m = b.members[i]; if(m.gone)continue;m.hp = Math.min(m.max, rest); rest -= m.hp; } }
   return b.members;
 }
-const bandSum = (b) => b.members.reduce((a, m) => a + Math.max(0, m.hp), 0);
+const bandSum = (b) => b.members.reduce((a, m) => a + (m.gone?0:Math.max(0, m.hp)), 0);
 /* #424 N18 山賊逐一交手：守柵者對自己圈內的人出招（前搖、接法照 N14）；柵在時山賊只撞柵，柵破了才進院和守柵者交手（應接照 N15）。
    cd：一招間隔（守柵者照 defenderDps×cd 出傷害，總輸出與舊版相同，只是會被閃、被招架）；dmg：山賊一招打守柵者的氣血；yardMax：院內纏鬥最久幾秒，過了照舊擲勝率。 */
 const bandCadence = 2.5;
@@ -172,22 +174,25 @@ function bandHit(s, b, m, dmg, who) {
   b.downN = (b.downN || 0) + 1; if (who) log(s, `${who.name}擊退一名山賊（${b.downN}/${b.members.length}）`);
 }
 function bandClash(s, b, defs, dt) {
-  const fight = defs.filter((d) => d.hp >= BAND.hpMin && d.pos), live = () => b.members.filter((m) => m.hp > 0);
-  for(const d of fight){postureRegen(s,d,dt);if(d.downUntil>s.t)continue; d.bcool = (d.bcool ?? 0) - dt; /* 冷卻含前搖（收招＝冷卻剩下的時間） */
+  const fight = defs.filter((d) => d.hp >= BAND.hpMin && d.pos), live = () => b.members.filter((m) => m.hp > 0&&!m.gone);
+  for(const d of fight){fretStep(s,d);postureRegen(s,d,dt);if(d.downUntil>s.t)continue; d.bcool = (d.bcool ?? 0) - dt; /* 冷卻含前搖（收招＝冷卻剩下的時間） */
     if (d.bswing) { if (s.t + 1e-9 < d.bswing.at) continue; const w = d.bswing; d.bswing = null; const m = b.members.find((x) => x.uid === w.tgt && x.hp > 0); if (!m) continue;
       const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, move: w.mv, wind: w.wind, map: true }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
       if(r.counter)d.hp=Math.max(1,d.hp-r.counter);
       if (r.kind === 'hit') { breakWindup(s, d, m, w.mv, w.wind); bandHit(s, b, m, w.dmg * (r.heavy ? CLASH.heavy : 1), d); } else (s.fx ||= []).push({ kind: 'clash', word: r.kind === 'dodge' ? '閃' : r.kind === 'parry' ? '架' : '破', color: '#ddd', pos: [...(m.pos || b.pos)], ttl: 0.6 });
       continue; }
+    if(combatTacticStep(s,d,dt,{help:(a,id)=>{const h=s.ds.find(x=>x.id===id);if(h){h.order='defend';cancelTask(s,h,`${a.name}喊援`);h.reason=`${a.name}喊援`; }}}))continue;
     if (d.bcool > 0 || (d.busyUntil || 0) > s.t) continue;
-    const mine = live().filter((m) => m.ring === 1 && m.foe === d.id), tgt = (mine.length ? mine : live()).sort((x, y) => x.hp - y.hp)[0]; if (!tgt) break;
+    const mine = live().filter((m) => m.ring === 1 && m.foe === d.id), tgt = (mine.length ? mine : live()).sort((x, y) => x.hp - y.hp)[0]; if (!tgt) break;if(distance(d.pos,tgt.pos)>Math.max(...combatMoves(d).map(m=>m.range||26)))continue;
     const pick=chooseCombatMove(s,d,tgt,()=>R(s)),mv=pick?.move||fastestMove(d),wind=windOf(d,mv.id,mv.cd)+(pick?.seconds||0);d.bcool=BAND_CLASH.cd+(pick?.seconds||0);
     d.bswing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * sectDefenseFactor(s) * BAND_CLASH.cd };
     (s.fx ||= []).push({ kind: 'warn', from: [...d.pos], to: [...(tgt.pos || b.pos)], r: 30, dur: wind, ttl: wind, t0: s.t });
   }
   if (b.state !== 'yard') return;
   const ready = [];
-  for(const m of live()){postureRegen(s,m,dt);if(m.downUntil>s.t)continue; const d = fight.find((x) => x.id === m.foe) || fight[0]; if (!d) break;
+  for(const m of live()){postureRegen(s,m,dt);if(m.downUntil>s.t)continue; fretStep(s,m);const d = fight.find((x) => x.id === m.foe) || fight[0]; if (!d) break;
+    m.intentTarget=d.id;
+    if(!m.swing&&combatTacticStep(s,m,dt,{exit:a=>{rememberEscape(s,a);a.gone=true;a.state='gone';}}))continue;
     const wk = witchK(s, m.pos), mdt = dt * wk; if (m.swing && wk < 1) m.swing.at += dt - mdt; /* #425 林克時間圈內的山賊放慢 */ m.cool = (m.cool ?? 0) - mdt;
     if (m.swing && d.bswing && !m.swing.x && d.bswing.tgt === m.uid && lightCross(d.skills?.agility || 0, m.agi || 0, m.swing.at, d.bswing.at, () => R(s))) { /* #425 輕功交錯：兩人同時突進、互相穿過 */
       m.swing = null; d.bswing = null; postureHit(s, m, WITCH.crossDrop); postureHit(s, d, WITCH.crossDrop); b.cross = (b.cross || 0) + 1; s.crossN = (s.crossN || 0) + 1;
@@ -201,7 +206,7 @@ function bandClash(s, b, defs, dt) {
         if (zjHas(d, 'jiuyang')) { postureHit(s, m, ZJ.jiuyang.shock); zjMark(s, d, 'jiuyang'); }
         d.hp = Math.max(1, d.hp - incoming); (s.fx ||= []).push({ kind: 'bite', pos: [...d.pos], ttl: 0.4 }); partHit(s, d, r, { attack: m, rnd: () => R(s) }); }
       continue; }
-    if (m.cool > 0 || m.ring !== 1) continue;
+    if (m.cool > 0 || m.ring !== 1||distance(m.pos,d.pos)>Math.max(26,foeAction(m,distance(m.pos,d.pos)).range)*1.3) continue;
     ready.push({ m, d });
   }
   // 先讓每個人走完本步的冷卻，再看同伴還需多久；避免陣列順序決定能否合擊。
@@ -210,20 +215,27 @@ function bandClash(s, b, defs, dt) {
     const { m, d } = ready[i];
     if (delays[i] > 0) { m.cool = delays[i]; continue; }
     if (zjIntercept(s, m, fight)) { m.cool = BAND_CLASH.monCd; continue; }
-    const pick=chooseCombatMove(s,m,d,()=>R(s)),action=pick?.move||foeAction(m,Math.hypot(m.pos[0]-d.pos[0],m.pos[1]-d.pos[1])),wind=practiceWindow(m,action.id,action.wind).wind+(pick?.seconds||0), start = interceptOpening(s, m, d, () => R(s), { depth: 2, move: action.id, wind }); m.cool=BAND_CLASH.monCd+(pick?.seconds||0);
+    const pick=chooseCombatMove(s,m,d,()=>R(s)),action=pick?.move||foeAction(m,Math.hypot(m.pos[0]-d.pos[0],m.pos[1]-d.pos[1])),wind=practiceWindow(m,action.id,action.wind).wind+(pick?.seconds||0), start = interceptOpening(s, m, d, () => R(s), { depth: 2, move: action.id, wind }); m.cool=BAND_CLASH.monCd+(pick?.seconds||0);m.energy=(m.energy??100)-1;
     if (start.read?.kind === 'read') { bandHit(s, b, m, start.read.counter, d); (b.cl ??= {}).mread = (b.cl.mread || 0) + 1; continue; }
-    m.opened = true; m.swing = { mv: action.id, at: s.t + wind, wind, opening: start.opening };
+    m.opened = true; m.swing = { mv: action.id,tgt:d.id, at: s.t + wind, wind, opening: start.opening };
     (s.fx ||= []).push({ kind: 'warn', from: [...(m.pos || b.pos)], to: [...d.pos], r: 26, dur: wind, ttl: wind, t0: s.t });
   }
 }
 /* 倒地的人沿山門那條路退走，走到盡頭就不畫了 */
 function fleeStep(b, dt) { for (const m of b.members) { if (m.state !== 'down' || !m.pos) continue; let left = BAND_CLASH.fleeSpeed * dt; while (left > 0 && m.path?.length) { const t = NODES[m.path[0]], dx = t[0] - m.pos[0], dy = t[1] - m.pos[1], L = Math.hypot(dx, dy); if (L <= left) { m.pos = [...t]; m.path.shift(); left -= L; } else { m.pos[0] += dx * left / L; m.pos[1] += dy * left / L; left = 0; } } if (!m.path?.length) m.state = 'gone'; } }
 /* 站位（只影響畫面）：行軍時排成一列；圍柵時每個守柵者身邊最多 ring 人，其餘在外圈繞。 */
-function placeMembers(s, b, defs) {
-  const live = syncMembers(b).filter((m) => m.hp > 0), c = b.pos;
-  if (b.state === 'go' || !defs.length) { live.forEach((m, k) => { m.pos = [c[0] + ((k % 3) - 1) * BAND_MEMBER.gap, c[1] + Math.floor(k / 3) * 8 + (k % 3 === 1 ? 6 : 0)]; m.ring = 0; }); return; }
-  live.forEach((m, k) => { if (k < BAND_MEMBER.ring * defs.length) { const d = defs[k % defs.length], a = Math.PI * (0.25 + 0.5 * Math.floor(k / defs.length)), r = b.state === 'yard' ? 22 : 34; m.pos = [d.pos[0] + Math.cos(a) * r, d.pos[1] - Math.sin(a) * r * 0.55]; m.ring = 1; m.foe = d.id; }
-    else { const a = s.t * 0.6 + k; m.pos = [c[0] + Math.cos(a) * BAND_MEMBER.outer, c[1] + Math.sin(a) * BAND_MEMBER.outer * 0.5]; m.ring = 2; m.foe = null; } });
+function placeMembers(s,b,defs,dt){
+ const live=syncMembers(b).filter(m=>m.hp>0&&!m.gone),c=b.pos;
+ if(b.state==='go'||!defs.length){live.forEach((m,k)=>{if(!m.pos)m.pos=[...c];if(!m.swing&&!['flee','cover'].includes(m.tactics?.action))moveToward(m,[c[0]+((k%3)-1)*BAND_MEMBER.gap,c[1]+Math.floor(k/3)*8],movementSpeed(m),dt);m.ring=0;});return;}
+ const held={};
+ for(const[k,m]of live.entries()){
+   const d=defs[k%defs.length],capacity=ringCapacity(d),slot=held[d.id]||0;held[d.id]=slot+1;
+   if(m.tactics?.action==='flee'||m.tactics?.action==='cover')continue;
+   const near=slot<capacity,angle=Math.PI*(.25+.5*slot),radius=near?(b.state==='yard'?22:34):BAND_MEMBER.outer;
+   const target=[d.pos[0]+Math.cos(angle)*radius,d.pos[1]-Math.sin(angle)*radius*.55];
+   if(!m.pos)m.pos=[...c];if(!m.swing)moveToward(m,target,movementSpeed(m),dt);
+   m.ring=near&&distance(m.pos,d.pos)<=RING.engage?1:2;m.foe=near?d.id:null;
+ }
 }
 export const defenderDps = (d, s = { t: 0 }) => dpsOf(s, d, 'bandit');
 export const canDefend = (d) => d.adult !== false && !d.away && (d.role !== 'laborer' || !!(d.hidden?.shown)) && /* loop155 隱世高人仍是幫工，但可守柵 */ d.hp >= BAND.hpMin && d.needs.energy >= BAND.energyMin;
@@ -372,13 +384,13 @@ function raidLose(s, H, who) {
 // loop3：地圖上的山賊；每 tick 呼叫。守柵者＝task.act 'defend' 且已在柵邊動手
 export function bandStep(s, dt, H) {
   const b = s.band; if (!b) return; const X = T(s); if (b.kind || X.cur) X.cur = b.kind;
-  if (b.state === 'go') { if (bandWalk(b, dt)) { b.state = fenceUp(s) ? 'siege' : 'yard'; b.yardT = 0; log(s, b.state === 'siege' ? '山賊圍住了菜園木柵，開始撞柵！' : '山賊從山門闖進院裡，和守門弟子交手！'); } placeMembers(s, b, []); return; }
+  if (b.state === 'go') { if (bandWalk(b, dt)) { b.state = fenceUp(s) ? 'siege' : 'yard'; b.yardT = 0; log(s, b.state === 'siege' ? '山賊圍住了菜園木柵，開始撞柵！' : '山賊從山門闖進院裡，和守門弟子交手！'); } for(const m of b.members)if(m.hp>0&&!m.gone&&!m.swing){m.intentTarget=s.ds.filter(canDefend).sort((a,b)=>distance(a.pos,m.pos)-distance(b.pos,m.pos))[0]?.id;combatTacticStep(s,m,dt,{exit:a=>{rememberEscape(s,a);a.gone=true;a.state='gone';}});}placeMembers(s,b,[],dt);b.hp=bandSum(b);return; }
   const defs = s.ds.filter((d) => d.task?.act === 'defend' && d.task.phase === 'do');
   if (hasPoison(s, defs)) b.psn = s.t + SPEC.poisonT; /* loop151 毒術：守柵者中有毒術者，山賊中毒 */
-  syncMembers(b); const hp0 = bandSum(b);
-  for (let left = dt; left > 1e-9; left -= BAND_CLASH.sub) { const st = Math.min(BAND_CLASH.sub, left); placeMembers(s, b, defs.filter((d) => d.hp >= BAND.hpMin)); bandClash(s, b, defs, st); fleeStep(b, st); } /* #424 N18 逐一交手（loop183 紫霄宮守柵在 bandClash 的傷害裡） */
+  syncMembers(b); const hp0 = bandSum(b),fledHp0=b.members.filter(m=>m.gone).reduce((n,m)=>n+m.hp,0);
+  for (let left = dt; left > 1e-9; left -= BAND_CLASH.sub) { const st = Math.min(BAND_CLASH.sub, left); placeMembers(s, b, defs.filter((d) => d.hp >= BAND.hpMin),st); bandClash(s, b, defs, st); fleeStep(b, st); } /* #424 N18 逐一交手（loop183 紫霄宮守柵在 bandClash 的傷害裡） */
   if (b.psn > s.t) { const f = b.members.find((m) => m.hp > 0); if (f) bandHit(s, b, f, SPEC.poisonDps * (s.psnK24 || 1) * dt, null); }
-  b.hp = bandSum(b); b.defDealt += hp0 - b.hp;
+  b.hp = bandSum(b); b.defDealt += hp0 - b.hp-(b.members.filter(m=>m.gone).reduce((n,m)=>n+m.hp,0)-fledHp0);
   if (b.state === 'yard') { b.yardT = (b.yardT || 0) + dt; const fit = defs.some((d) => d.hp >= BAND.hpMin), ready = s.ds.some(canDefend);
     if (b.hp > 0 && b.yardT < BAND_CLASH.yardMax && (fit || ready)) return;
     s.band = null; const win = b.hp <= 0 || (!ready && R(s) < winP(s, Math.max(1, b.hp))); let hurt = null; qiInjuryFight28(s, defs, log);
@@ -412,7 +424,7 @@ export function raidResolve(s, i, H, auto = false) {
   const X = T(s), P = X.pending; if (!P) return { ok: false, why: '沒有山賊上門' };
   X.pending = null; const who = auto ? '執事代為決定：' : ''; if (P.kind || X.cur) X.cur = P.kind;
   if (i === 0 && !P.noPay && s.res.coin >= P.demand) { resAdd(s, 'coin', -P.demand); X.paid++; valorAdd(s, VALOR.pay); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), n: P.n, day: P.day, pts: P.pts, pay: P.demand }); log(s, `${who}付了 ${P.demand} 兩，山賊點完錢下山去了。`); return { ok: true, paid: P.demand }; }
-  if (s.ds.some(canDefend)) { X.fought++; valorAdd(s, VALOR.fight); s.band = newBand(P, FENCE.node); if (P.kind) s.band.kind = P.kind; if (P.wave) s.band.wave = P.wave; if (P.boss) s.band.boss = true; log(s, `${who}決定迎戰：一夥山賊（${P.pts}）從山門朝${fenceUp(s) ? '菜園木柵' : '院裡'}殺來！`); return { ok: true, band: true }; }
+  if (s.ds.some(canDefend)) { X.fought++; valorAdd(s, VALOR.fight); s.band = newBand(P, FENCE.node,s); if (P.kind) s.band.kind = P.kind; if (P.wave) s.band.wave = P.wave; if (P.boss) s.band.boss = true; log(s, `${who}決定迎戰：一夥山賊（${P.pts}）從山門朝${fenceUp(s) ? '菜園木柵' : '院裡'}殺來！`); return { ok: true, band: true }; }
   X.fought++; valorAdd(s, VALOR.fight); const win = R(s) < P.p; let hurt = null; qiInjuryFight28(s, s.ds.filter(canDefend), log); /* loop186 迎戰實戰 */
   if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `${who}迎戰山賊——打退了！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else hurt = raidLose(s, H, who);

@@ -110,3 +110,18 @@ N33「高手認得短招」沿用原門檻 .9；N34 將同拍移步反擊從截�
 | N37共用力層接入後對豬重驗 | 側擊前後完整勝率提高 | **待做**；現在只驗繞霸體/打斷，不將其說成勝率已量出 |
 
 新招與詞彙表見combat N35。掉落武器已進主畫面Canvas繪製、可真撿起；本worker沒有桌面實拍。PR最沒把握處需保留difficulty72/96/48的初始練習量假設與自然玩法尚待校準，不造達標日。
+
+
+### N36 共用負荷／士氣／走位（#446）
+| 指令 | 門檻 | 預期輸出 |
+|---|---|---|
+| `bash solo-sect/test/run.sh smoke` | fail0，只新增1個N36小測試 | 16/16；同一人四狗空地L≥1、樹邊L<1、超載無反擊、倖存者uid/n保留、一步沒有瞬移 |
+| `node solo-sect/tools/waves.mjs --seed <任選整數> --log out/waves.json` | 所有L≥1的接法counter=false；整個探針的1及2路各至少一個情境有counter；四狗open≥1而cover<1 | `summary.pass`真/假照實；log每拍含L/reaction/counter，所有defense列可獨立重新加總；讀下方測量邊界 |
+| `node solo-sect/tools/waves.mjs --seed <任選整數> --trait calm,rash --log out/waves-traits.json` | 急躁的N29惱羞搶攻次數與損血多於穩定者；超載仍無反擊 | `personality.calmRush/rashRush`、`calmHpLost/rashHpLost`；總attacks另外列，不能偷換指標 |
+| 相同seed重跑同一條waves指令比較stdout | byte-identical | 不讀作者工作目錄/快取、無新套件，固定.25步 |
+
+預設同列calm/normal/rash三種性格，避免只拿易怒快照要求它在N29惱羞禁制下也一定反擊；`--trait normal`的seed17確實零反擊而FAIL，沒有隱藏。1/2路反擊是整個探針存在的結果，不保證每個性格都反擊。工具真跑受控60日練功/勞動後才入場，不是自然自動玩法。1/2路在真山門兩席、4路在空地，已起手者不會因掩體消失。四狗負荷probe用20次真接法形成眼熟，列receptionHp；未知白身初次反應.6秒，不假稱本來就接得住.4秒狗咬。追擊列是共享移動機制的幾何探針，**不是已驗完整跑/不跑被咬比例**；自然玩法比例仍待整輪bot12/補驗。新工具沿現有60日指派場景，需數分鐘，並非完整suite。
+
+尚待parent正常桌面：狩獵喊來的同門沿山路到場、靠可見樹/大殿牆改近戰席、狗追跑者、敵退到出口後再來保留疤與假衝。未取得實拍，不把Canvas單元測試或SVG算畫面驗收；N55影片仍未產生。N37受力層未接，這裡損血仍是既有HP，不是分層傷口。
+
+本N36樣本、命令、逐拍JSON雜湊與normal單情境FAIL見[事件量測](docs/evidence/r9-n36-waves.md)。不是CI或自然玩法已驗。
