@@ -1,3 +1,4 @@
+import { BODY_MOVES } from './starter-combat.mjs';
 import TREES from './destiny-trees.json' with { type: 'json' };
 import { COMBAT_MOVE_SETS } from './routines.mjs';
 // ==== （原 hero-data.mjs）====
@@ -194,6 +195,7 @@ export const ACTIVITIES = {
 
 // 武學：熟練門檻解鎖；範圍/冷卻/傷害由 palm 技能放大
 export const MOVES = [
+  ...BODY_MOVES,
   { id: 'fist', skill: 'palm', name: '基礎拳', req: 0, range: 34, cd: 1.0, dmg: 4, aoe: 0, color: '#8a6a4a' },
   { id: 'push', skill: 'palm', name: '推山掌', req: 25, range: 60, cd: 1.6, dmg: 8, aoe: 0, color: '#b0482e' },
   { id: 'wave', skill: 'palm', name: '迴風掌', req: 60, range: 80, cd: 3.0, dmg: 7, aoe: 70, color: '#3d6b8a' },
@@ -246,7 +248,7 @@ export const PLOT_GROW = 90; // 秒，播種到成熟
 export const HARVEST = 3;    // 每畦收菜
 export const STYLES = { palm: '掌法', leg: '腿法' };
 // v0.4 後山生態：族群有上限與繁衍；狩獵是真的取走個體
-export const ECO = { rat: { start: 6, max: 8, regen: 50 }, boar: { start: 2, max: 3, regen: 150 } };
+export const ECO = { dog: { start: 5, max: 8, regen: 90 }, rat: { start: 6, max: 8, regen: 50 }, boar: { start: 2, max: 3, regen: 150 } };
 export const HABITAT = { c: [1450, 60], r: 70 };
 /* #419 N15 合法出生點：敵人只從這張表出來——離地圖邊緣 ≤ edge、離大殿 ≥ hall。獸從獸穴、棲地、東嶺；山賊從山門。
    via：出生點到守點山路的座標（都在山那一側，不從門派背後冒出來）；接上 guard 之後沿原山路走。 */
@@ -618,6 +620,7 @@ export const AURA = { fist: '#b08a5a', palm: '#d0582e', leg: '#6b9a3d', inner: '
 // ---- v0.95 敵人種類與圖鑑（觀破值）----
 // kind：獸／人；flee：殘血時逃走機率；loot：整數必得、小數為機率
 export const ENEMIES = {
+  dog: { name: '野狗', kind: '獸', weapon: '利齒', hp: 14, dmg: 3, cd: 1.2, flee: 0.5, loot: {}, home: { sprite: 'dog', speed: 65 } },
   rat:    { name: '山鼠',     kind: '獸', weapon: '利齒', hp: 10,  dmg: 2,  cd: 1.0, flee: 0.5,  loot: {} },
   hare:   { name: '野兔',     kind: '獸', weapon: '牙爪', hp: 8,   dmg: 1,  cd: 1.2, flee: 0.6,  loot: { food: 1 } },
   boar:   { name: '野豬',     kind: '獸', weapon: '獠牙', hp: 40,  dmg: 6,  cd: 1.3, flee: 0.1,  loot: { food: 3, hide: 1 } },

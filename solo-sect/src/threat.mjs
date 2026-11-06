@@ -1,3 +1,4 @@
+import { foeAction } from './starter-combat.mjs';
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
 import { NODES, EDGES, DAY, FACILITIES, MOVES, ARTS } from './data.mjs';
 import { noteFret, interceptOpening, breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
@@ -189,7 +190,7 @@ function bandClash(s, b, defs, dt) {
       m.swing = null; d.bswing = null; postureHit(s, m, WITCH.crossDrop); postureHit(s, d, WITCH.crossDrop); b.cross = (b.cross || 0) + 1; s.crossN = (s.crossN || 0) + 1;
       (s.fx ||= []).push({ kind: 'cross', pos: [(m.pos[0] + d.pos[0]) / 2, (m.pos[1] + d.pos[1]) / 2], ttl: 0.6 }); if (b.cross === 1) log(s, `【輕功交錯】${d.name}和一名山賊同時突進，擦身而過，火花一閃，兩人都退了半步`); continue; }
     if (m.swing) { if (s.t + 1e-9 < m.swing.at) continue; const w = m.swing; m.swing = null; handleTake(s, d);
-      const r = resolveSwing(s, m, d, () => R(s), { depth: 2, wind: w.wind, opening: w.opening }); (b.cl ??= {})['m' + r.kind] = (b.cl['m' + r.kind] || 0) + 1;
+      const r = resolveSwing(s, m, d, () => R(s), { depth: 2, move: w.mv, wind: w.wind, opening: w.opening }); (b.cl ??= {})['m' + r.kind] = (b.cl['m' + r.kind] || 0) + 1;
       if (r.kind === 'dodge' && perfectDodge(s, d, () => R(s), { strain: r.strain })) b.witch = (b.witch || 0) + 1;
       if (r.kind === 'read') bandHit(s, b, m, r.counter, d);
       if (r.kind === 'hit') { breakWindup(s, m, d, null, w.wind); let incoming = (BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per) * (r.heavy ? CLASH.heavy : 1);
@@ -206,9 +207,9 @@ function bandClash(s, b, defs, dt) {
     const { m, d } = ready[i];
     if (delays[i] > 0) { m.cool = delays[i]; continue; }
     if (zjIntercept(s, m, fight)) { m.cool = BAND_CLASH.monCd; continue; }
-    const wind = BAND_CLASH.monCd * CLASH.monWind, start = interceptOpening(s, m, d, () => R(s), { depth: 2, wind }); m.cool = BAND_CLASH.monCd;
+    const action = foeAction(m, Math.hypot(m.pos[0] - d.pos[0], m.pos[1] - d.pos[1])), wind = action.wind, start = interceptOpening(s, m, d, () => R(s), { depth: 2, move: action.id, wind }); m.cool = BAND_CLASH.monCd;
     if (start.read?.kind === 'read') { bandHit(s, b, m, start.read.counter, d); (b.cl ??= {}).mread = (b.cl.mread || 0) + 1; continue; }
-    m.swing = { at: s.t + wind, wind, opening: start.opening };
+    m.opened = true; m.swing = { mv: action.id, at: s.t + wind, wind, opening: start.opening };
     (s.fx ||= []).push({ kind: 'warn', from: [...(m.pos || b.pos)], to: [...d.pos], r: 26, dur: wind, ttl: wind, t0: s.t });
   }
 }
