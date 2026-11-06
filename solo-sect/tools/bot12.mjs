@@ -19,6 +19,15 @@ const T = await import(root + '/src/threat.mjs');
 if (fanArg > 0) { const AC = await import(root + '/src/artcard.mjs'); const D = await import(root + '/src/data.mjs'); if (!AC.setFanBase) throw new Error('此目錄的 artcard 沒有 setFanBase'); AC.setFanBase(fanArg, D.ARTS); }
 const { fanRank } = await import(pathToFileURL(here).href + '/src/artcard.mjs');
 const med = (v) => { v = [...v].sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : NaN; };
+let practiceOverlap = 0;
+function countPracticeOverlap(s) {
+  const cells = new Map();
+  for (const d of s.ds) if (!d.away && ['train', 'teach', 'meditate'].includes(d.task?.act) && d.task?.phase === 'do') {
+    const key = `${Math.round(d.pos[0] / 10)},${Math.round(d.pos[1] / 10)}`;
+    const list = cells.get(key) || []; list.push({ name: d.name, act: d.task.act, spot: d.task.spot, fac: d.task.fac, pos: d.pos, path: d.path.length }); cells.set(key, list);
+  }
+  for (const [cell, list] of cells) if (list.length > 1) { practiceOverlap++; if (trace && practiceOverlap <= 10) console.error(JSON.stringify({ practiceOverlap, seed: s.seed, day: s.day, t: s.t, cell, list })); }
+}
 /* 第四輪護欄（#418、#419）：第 10／20／30 日各複製一份局面，派戰力前三上「山頂守點」打一輪狩獵（遊戲步長 0.25），
    獸數補滿以免各局山中存量不同；記擊退、溜走、重傷（氣血 ≤25）。原局不受影響。 */
 const HUNT = { kills: [], escaped: [], hurt: [], witch: [], rage: [], breaks: [] };
@@ -54,7 +63,7 @@ for (const seed of (seedArg ? [seedArg] : Array.from({ length: 12 }, (_, i) => 1
   const sect = sectOfSeed(seed);
   const s = createState(seed, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...ALL_ON, v22: true, ...(sect ? { sect24: sect } : {}) });
   let dayB = s.day, lastWitch = s.witchN || 0; const P = [], seenPending = new Set();
-  for (let i = 1; i <= 30 * DAY / 6; i++) { if (s.band) for (let j = 0; j < 24; j++) tick(s, 0.25); else tick(s, 6); if (s.day <= 10) witchFirst10 += (s.witchN || 0) - lastWitch; lastWitch = s.witchN || 0; if (s.alert) s.alert = null; const pending = T.T(s).pending; if (pending && !seenPending.has(pending.n)) { seenPending.add(pending.n); RAIDS.predictions.push(pending.p); if (trace) console.error(JSON.stringify({ seed, day: s.day, pts: pending.pts, p: pending.p, defense: T.defense(s), fenceHp: s.fence?.hp ?? null })); } if (s.day !== dayB) { dayB = s.day; botDaily(s); P.push(T.points(s)); if (s.day === 4 || s.day === 11 || s.day === 21) { huntProbe(s); if (s.day <= 10) witchFirst10 += HUNT.witch.at(-1) + HUNT1.witch.at(-1); } if (s.day >= 9 && s.day % 3 === 0) bandProbe(s); } }
+  for (let i = 1; i <= 30 * DAY / 6; i++) { if (s.band) for (let j = 0; j < 24; j++) tick(s, 0.25); else tick(s, 6); countPracticeOverlap(s); if (s.day <= 10) witchFirst10 += (s.witchN || 0) - lastWitch; lastWitch = s.witchN || 0; if (s.alert) s.alert = null; const pending = T.T(s).pending; if (pending && !seenPending.has(pending.n)) { seenPending.add(pending.n); RAIDS.predictions.push(pending.p); if (trace) console.error(JSON.stringify({ seed, day: s.day, pts: pending.pts, p: pending.p, defense: T.defense(s), fenceHp: s.fence?.hp ?? null })); } if (s.day !== dayB) { dayB = s.day; botDaily(s); P.push(T.points(s)); if (s.day === 4 || s.day === 11 || s.day === 21) { huntProbe(s); if (s.day <= 10) witchFirst10 += HUNT.witch.at(-1) + HUNT1.witch.at(-1); } if (s.day >= 9 && s.day % 3 === 0) bandProbe(s); } }
   huntProbe(s);
   for (const r of T.T(s).hist || []) { RAIDS.n++; if (r.fight) { RAIDS.fights++; if (r.fight === 'win') RAIDS.won++; if (r.map) RAIDS.map++; } if (r.hurt) RAIDS.hurt++; }
   const p = med(P.slice(-10)); const bd = T.threatBreakdown ? T.threatBreakdown(s) : null; (out0.cShare ??= []).push(bd ? bd.cPct : 0);
@@ -66,7 +75,7 @@ for (const seed of (seedArg ? [seedArg] : Array.from({ length: 12 }, (_, i) => 1
   for (const d of s.ds) { if (d.role === 'laborer') continue; const a = (A.mainOuterArt || A.mainOuter28)(d); const k = a ? fanRank(a.id).fanTier : 'none'; (by[k] ??= []).push(dpsOf(s, d)); }
 }
 const sum = (v) => v.reduce((a, b) => a + b, 0);
-const out = { solo: { probes: HUNT1.kills.length, kills: sum(HUNT1.kills), escaped: sum(HUNT1.escaped), hurt: sum(HUNT1.hurt), hpLost: Math.round(sum(HUNT1.hpLost)) }, band: { n: BANDP.n, oddsMed: +med(BANDP.odds).toFixed(3), winPMed: +med(BANDP.winP).toFixed(3), won: BANDP.won, fenceHeld: BANDP.fenceHeld, hurt: BANDP.hurt, hurtPerRaid: BANDP.n ? +(BANDP.hurt / BANDP.n).toFixed(3) : 0 }, witch: sum(HUNT.witch) + sum(HUNT1.witch) + sum(BANDP.witch), witchFirst10, rage: sum(HUNT.rage) + sum(HUNT1.rage) + sum(BANDP.rage), breaks: sum(HUNT.breaks) + sum(HUNT1.breaks) + sum(BANDP.breaks), hunt: { probes: HUNT.kills.length, kills: sum(HUNT.kills), escaped: sum(HUNT.escaped), hurt: sum(HUNT.hurt) }, raids: { n: RAIDS.n, fights: RAIDS.fights, won: RAIDS.won, hurt: RAIDS.hurt, map: RAIDS.map, winPMed: +med(RAIDS.predictions).toFixed(3), hurtPerRaid: RAIDS.n ? +(RAIDS.hurt / RAIDS.n).toFixed(3) : 0 }, cShareMed: med(out0.cShare), threat: med(pts), winP: +med(wp).toFixed(3), famousHeld: med(held), threatNoFamous: med(famousBy.no), threatFamous: med(famousBy.yes), nNoFamous: famousBy.no.length, tiers: {} };
+const out = { solo: { probes: HUNT1.kills.length, kills: sum(HUNT1.kills), escaped: sum(HUNT1.escaped), hurt: sum(HUNT1.hurt), hpLost: Math.round(sum(HUNT1.hpLost)) }, band: { n: BANDP.n, oddsMed: +med(BANDP.odds).toFixed(3), winPMed: +med(BANDP.winP).toFixed(3), won: BANDP.won, fenceHeld: BANDP.fenceHeld, hurt: BANDP.hurt, hurtPerRaid: BANDP.n ? +(BANDP.hurt / BANDP.n).toFixed(3) : 0 }, practiceOverlap, witch: sum(HUNT.witch) + sum(HUNT1.witch) + sum(BANDP.witch), witchFirst10, rage: sum(HUNT.rage) + sum(HUNT1.rage) + sum(BANDP.rage), breaks: sum(HUNT.breaks) + sum(HUNT1.breaks) + sum(BANDP.breaks), hunt: { probes: HUNT.kills.length, kills: sum(HUNT.kills), escaped: sum(HUNT.escaped), hurt: sum(HUNT.hurt) }, raids: { n: RAIDS.n, fights: RAIDS.fights, won: RAIDS.won, hurt: RAIDS.hurt, map: RAIDS.map, winPMed: +med(RAIDS.predictions).toFixed(3), hurtPerRaid: RAIDS.n ? +(RAIDS.hurt / RAIDS.n).toFixed(3) : 0 }, cShareMed: med(out0.cShare), threat: med(pts), winP: +med(wp).toFixed(3), famousHeld: med(held), threatNoFamous: med(famousBy.no), threatFamous: med(famousBy.yes), nNoFamous: famousBy.no.length, tiers: {} };
 for (const [k, v] of Object.entries(by)) out.tiers[k] = { n: v.length, dps: +med(v).toFixed(1) };
 if (json) console.log(JSON.stringify(out));
 else { console.log('band', JSON.stringify(out.band)); console.log('solo', JSON.stringify(out.solo)); console.log('hunt', JSON.stringify(out.hunt), 'raids', JSON.stringify(out.raids)); console.log('threat', out.threat, 'winP', out.winP.toFixed(2), 'famousHeld', out.famousHeld); for (const [k, v] of Object.entries(out.tiers)) console.log(k, v.n, v.dps); }

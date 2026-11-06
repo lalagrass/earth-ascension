@@ -13,7 +13,7 @@ import { jhStep, jhInit, jhevDaily } from './jianghu.mjs';
 import { sectStep, sectInit, sectRecruit, genStep, genInit, removeDisciple, canBuildFac, buildFac } from './sect.mjs';
 import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus, awaken, econCoin, cookBonus } from './hero.mjs';
 import { SAVE_VERSION, freshV095 } from './save.mjs';
-import { cancelTask, removeActor, whAvail, freeSlot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE, STOCK_RESV, stockKey, stockReserved } from './core.mjs';
+import { cancelTask, removeActor, whAvail, freeSlot, freeSpot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE, STOCK_RESV, stockKey, stockReserved } from './core.mjs';
 /* loop140 */
 export { canExpedition, codexRows, reportText, segAt, ROUTE_END, dpsOf };
 const H = { rand: (s) => rand(s), cancelTask: (s, d, w) => cancelTask(s, d, w), grow: (s, d, k, a, src) => grow(s, d, k, a, src), think: (s, d, id) => think(s, d, id), gate: NODES.gate };
@@ -217,7 +217,7 @@ function bestFac(s, d, act) {
   const fs = offered(s, act).filter((f) => !facStage(s, f.id).laborOnly || isLabor(d)); if (!fs.length) return null;
   if (act === 'rest') fs.sort((a, b) => (facStage(s, b.id).restRate || 0) - (facStage(s, a.id).restRate || 0));
   if (act === 'meditate') fs.sort((a, b) => (facStage(s, b.id).medEase || 1) - (facStage(s, a.id).medEase || 1)); // v1.6 靜室優先，滿了才回外功場
-  for (const f of fs) { const key = freeSlot(s, f.id, act, d); if (key) return { f, key }; }
+  for (const f of fs) { const key = freeSlot(s, f.id, act, d); if (key) return { f, key, ...freeSpot(s, f.id, act, d) }; }
   if (act === 'rest') { const f = facDef('hall'); return { f, key: `hall:floor:${d.id}`, floor: true }; }
   return null;
 }
@@ -333,12 +333,12 @@ function assign(s, d, act, why) {
   if (act === 'eat' && !d.noPairMeal) mealInvite(s, d);
   if (act === 'cook' && vegFree(s) < STOCK_RESV.cook.amt) return false;
   let plot; if (act === 'farm') { plot = s.plots.findIndex((p, i) => (p.st === 'ripe' || p.st === 'empty') && !holder(s, `plot:${i}`)); if (plot < 0) return false; }
-  const b = bestFac(s, d, act); if (!b) return false; const f = b.f;
+  const b = bestFac(s, d, act); if (!b) { if (act === 'train' || act === 'meditate') d.reason = `${ACTIVITIES[act].name}的站位都有人，先在附近等或改做別的事`; return false; } const f = b.f;
   const resv = [b.key]; if (act === 'cook') resv.push(stockKey('veg', d)); if (act === 'farm') resv.push(`plot:${plot}`); for (const k of resv) reserve(s, d, k);
   if (ACTIVITIES[act]?.gen) dayUse(s, act);
-  d.task = { act, fac: f.id, node: f.node, phase: 'go', plot, resv, floor: b.floor || undefined }; goto(d, f.node); d.reason = why; return true;
+  d.task = { act, fac: f.id, node: f.node, phase: 'go', plot, resv, floor: b.floor || undefined, spot: b.spot, spotKind: b.spotKind }; goto(d, f.node, b.xy); d.reason = why; return true;
 }
-function goto(d, node) { const p = route(d.at, node); d.path = p.slice(1).map((n) => ({ n, xy: NODES[n] })); if (!d.path.length) d.path = [{ n: node, xy: NODES[node] }]; }
+function goto(d, node, xy = null) { const p = route(d.at, node); d.path = p.slice(1).map((n) => ({ n, xy: NODES[n] })); if (!d.path.length) d.path = [{ n: node, xy: NODES[node] }]; if (xy) d.path.push({ n: node, xy }); }
 
 // ---- M3（loop148）結伴吃飯、送飯給忙碌／受傷的另一半；柵破避難 ----
 export const PAIR = { mealSocial: 6, mealRel: 1, hungry: 30, hurt: 50, feedHunger: 35, feedRel: 3, inviteMax: 70 };
@@ -391,11 +391,15 @@ function decide(s, d) {
   if (d.order) {
     const o = d.order; if (o !== 'hunt' && (d.needs.energy < 15 || (o !== 'eat' && d.needs.hunger < 10 && s.res.food > 0))) { const a = d.needs.energy < 15 ? 'rest' : 'eat'; d.decision = { layer: 'need', act: a, why: '指派中先自理' }; return assign(s, d, a, '指派中先自理'); }
     if (assign(s, d, o, '玩家指派')) { onAssign(s, d, o, true); d.decision = { layer: 'order', act: o, why: '玩家指派' }; return true; }
-    d.reason = `指派「${o === 'hunt' ? '狩獵' : ACTIVITIES[o].name}」暫不可行`; return false;
+    if (!d.reason?.includes('站位都有人')) d.reason = `指派「${o === 'hunt' ? '狩獵' : ACTIVITIES[o].name}」暫不可行`; return false;
   }
   if ((shelterGo(s, d) || feedGo(s, d))) return true; // M3
   const sc = scoreActs(s, d); d.why = sc.slice(0, 3).map((c) => ({ act: c.act, score: Math.round(c.score), f: c.f, why: c.why }));
-  for (const c of sc) if (assign(s, d, c.act, c.why)) { d.picked = c.act; d.decision = { layer: c.layer, act: c.act, why: c.why }; return true; }
+  let noPracticeSpot = '';
+  for (const c of sc) {
+    if (assign(s, d, c.act, c.why)) { if (noPracticeSpot) d.reason = `${noPracticeSpot}；${d.reason}`; d.picked = c.act; d.decision = { layer: c.layer, act: c.act, why: d.reason }; return true; }
+    if ((c.act === 'train' || c.act === 'meditate') && d.reason?.includes('站位都有人')) noPracticeSpot = d.reason;
+  }
   return false;
 }
 
@@ -509,11 +513,12 @@ export const TEACH_JOIN = { node: 'yard', wait: DAY / 8 };
 function teachStep(s, m, dt) {
   const p = m.teaching && byId(s, m.teaching.pupil);
   if (!p || p.away || !(m.teachCool > 0)) { if (p) p.teachArt = null; if (m.task?.act === 'teach') m.task = null; m.teachCool = 0; return false; }
-  if (!m.task) { m.task = { act: 'teach', node: TEACH_JOIN.node, phase: 'go', partner: p.id, wait: 0 }; goto(m, TEACH_JOIN.node); m.reason = `到外功場傳授${p.name}`; }
+  if (!m.task) { const b = bestFac(s, m, 'train'); if (!b) { m.reason = `傳功站位都有人，等有人練完`; return true; }
+    reserve(s, m, b.key); m.task = { act: 'teach', node: TEACH_JOIN.node, phase: 'go', partner: p.id, wait: 0, resv: [b.key], spot: b.spot, spotKind: b.spotKind }; goto(m, TEACH_JOIN.node, b.xy); m.reason = `到外功場傳授${p.name}`; }
   const t = m.task;
   if (m.path.length) { moveStep(m, dt); return true; }
   t.phase = 'do';
-  if (!p.task && !p.order) { p.task = { act: 'train', fac: 'yard', node: TEACH_JOIN.node, phase: 'go', teach: m.id }; goto(p, TEACH_JOIN.node); p.reason = `${m.name}要傳授武學`; }
+  if (!p.task && !p.order) { const b = bestFac(s, p, 'train'); if (b) { reserve(s, p, b.key); p.task = { act: 'train', fac: b.f.id, node: b.f.node, phase: 'go', teach: m.id, resv: [b.key], spot: b.spot, spotKind: b.spotKind }; goto(p, b.f.node, b.xy); p.reason = `${m.name}要傳授武學`; } else p.reason = '傳功時練功站位都有人，暫在旁等候'; }
   const near = p.task?.teach === m.id && !p.path.length && dist(p.pos, m.pos) <= 60;
   if (!near) { p.teachArt = null; t.wait += dt; if (t.wait >= TEACH_JOIN.wait) { m.teachCool = 0; m.task = null; m.reason = `${p.name}沒來，今日傳授作罷`; } return true; }
   p.teachArt = m.teaching.art;

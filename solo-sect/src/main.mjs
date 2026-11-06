@@ -14,6 +14,14 @@ import { seasonHint, econHtml, marketDo } from './economy.mjs';
 import { openStart, choiceUI, heroCard } from './start-ui.mjs';
 import { SFX, ambient, setMute, isMuted, cuesFrom } from './audio.mjs';
 import { threatHtml, rumorDays, buildFence, upgradeFence, startFenceSite } from './threat.mjs';
+// N53 先以現有已會招式顯示練功式次；N48 會接上有姿勢資料的套路。
+function practiceLabel(d, compact = false) {
+  if (d.task?.act !== 'train' || d.task.phase !== 'do') return '';
+  const art = artById(focusOf(d) || 'basicFist');
+  const known = (art?.techs || []).filter((id) => d.moves?.includes(id));
+  const n = Math.max(1, known.length), form = Math.min(n, Math.floor((d.task.timer || 0) / ACTIVITIES.train.dur * n) + 1);
+  return compact ? `${art?.name || '基礎拳'}・${form}式` : `${art?.name || '基礎拳'}・第 ${form} 式（通用套路）`;
+}
 /* loop142 */
 // loop130
 /* loop73 */
@@ -52,8 +60,10 @@ function draw() {
   for (const f of FACILITIES) {
     const st = facStage(S, f.id), [x, y] = NODES[f.node], fs = S.fac[f.id];
     items.push({ y: y - 1, f: () => {
-      if (f.id === 'yard') { g.fillStyle = 'rgba(180,150,100,.35)'; if (st.dummies) { g.beginPath(); g.ellipse(x, y, 45, 20, 0, 0, 7); g.fill(); }
-        for (let k = 0; k < (st.dummies || 0); k++) { const dx = x - 30 + k * 26, dy = y + 4; g.fillStyle = '#6b4a2a'; g.fillRect(dx - 2, dy - 24, 5, 24); g.fillRect(dx - 8, dy - 19, 16, 3); g.fillRect(dx - 7, dy - 12, 14, 3); } }
+      for (const spot of st.spots || []) { const dx = x + spot.offset[0], dy = y + spot.offset[1];
+        if (spot.kind === 'dummy') { g.fillStyle = '#6b4a2a'; g.fillRect(dx - 2, dy - 24, 5, 24); g.fillRect(dx - 8, dy - 19, 16, 3); g.fillRect(dx - 7, dy - 12, 14, 3); }
+        else if (spot.kind === 'open') { g.strokeStyle = 'rgba(130,90,50,.25)'; g.beginPath(); g.ellipse(dx, dy, 14, 5, 0, 0, 7); g.stroke(); }
+      }
       if (f.v16) { if (fs.stage) { g.fillStyle = f.sig ? '#7a2e2e' : '#8a6a44'; g.fillRect(x - 22, y - 18, 44, 22); g.fillStyle = '#3d3f46'; g.beginPath(); g.moveTo(x - 30, y - 16); g.lineTo(x, y - 34); g.lineTo(x + 30, y - 16); g.fill(); } else { g.strokeStyle = 'rgba(120,80,40,.45)'; g.setLineDash([4, 3]); g.strokeRect(x - 22, y - 18, 44, 22); g.setLineDash([]); } } // v1.6 新建築：簡易屋頂佔位
       if (f.sig && !fs.stage) return; label(`${f.sig ? (sectFac(S)?.name || f.name) : f.name}・${st.name}`, x, y + 22, '#3a2f24');
       if (fs.site) { const s = fs.site; label(`${s.paused ? '⏸暫停 ' : '工地 '}${MATS.filter((k) => s.need[k]).map((k) => `${RES_NAMES[k]}${s.delivered[k]}/${s.need[k]}`).join(' ')} 工${s.work.toFixed(0)}/${s.workNeed}s`, x, y + 46, '#a0461e');
@@ -81,6 +91,7 @@ function draw() {
     if (d.carry?.stone) { g.fillStyle = '#8c8c8c'; g.beginPath(); g.arc(x + 10, y - 26, 6, 0, 7); g.fill(); } else if (d.carry) sprite('wood', x + 10, y - 18, 0.6);
     if (isLabor(d)) { g.fillStyle = '#2f6f9f'; g.fillRect(x - 9, y - IMG[d.sprite].height * SC + 4, 18, 4); }
     label(`${d.name}${isLabor(d) ? '（工）' : d.role === 'outer' ? '（外門）' : d.role === 'head' ? '（首徒）' : ''} ${statusIcon(d, d.task?.act === 'build' && d.task.phase !== 'do' ? '📦' : ACT_ICON[d.anim || d.task?.act] || '')}`, x, y - (IMG[d.sprite].height * SC + 4), '#222');
+    if (practiceLabel(d)) label(practiceLabel(d, true), x, y + 15, '#6b3b20');
     if (S.hunt) hp(x, y - IMG[d.sprite].height * SC - 20, d.hp / 100, '#3a7');
     { const b = BUB[d.id]; if (b) bubble(b, x, y - (IMG[d.sprite].height * SC + 26)); } // v1.45 C 級事件＝頭上氣泡
   } });
@@ -216,7 +227,7 @@ function panel() {
         <button data-invite="${d.id}" ${iv.ok ? '' : 'disabled'}>邀入外門</button> <span class="k">${iv.ok ? '可以邀請了！' : iv.why}</span></div>`; }).join('');
     $('hire-go').onclick = () => { hire(S); panel(); }; }
   { const ds = disciples(S), cur = ds.find((d) => d.id === window.__artsOf) || ds[0];
-    if (cur) $('arts').innerHTML = `<select data-artsof>${ds.map((d) => `<option value="${d.id}" ${d.id === cur.id ? 'selected' : ''}>${d.name}</option>`).join('')}</select>
+    if (cur) $('arts').innerHTML = `<select data-artsof>${ds.map((d) => `<option value="${d.id}" ${d.id === cur.id ? 'selected' : ''}>${d.name}</option>`).join('')}</select>${practiceLabel(cur) ? `<div class="k">正在練：${practiceLabel(cur)}</div>` : ''}
       <select data-focus="${cur.id}"><option value="">專修：自動（${artById(focusOf(cur) || 'basicFist').name}）</option>${Object.keys(cur.arts).map((id) => `<option value="${id}" ${cur.focus === id ? 'selected' : ''}>專修：${artById(id).name}</option>`).join('')}</select>
       <div class="k">悟性 ${cur.rootKnown ? `${cur.wu ?? cur.root}（${ROOT.names[cur.wu ?? cur.root]}）` : '未明'}${readwuNote(S, cur)}｜${ARTS.filter((a) => cur.arts[a.id]).map((a) => `${a.name}×${artMul(cur, a).toFixed(2)}`).join('・')}</div>${growthHtml(cur, GMEMO, S.day, S.t, true)}${styleBadges24(cur).length ? `<div class="k">${styleBadges24(cur).join('')}</div>` : ''}${harmonyOf(cur) ? `<div class="k">陰陽共鳴：${harmonyOf(cur) === 'all' ? '陰陽和三屬皆備' : '陰陽相濟'}，出手 ×${harmonyMul(cur).toFixed(2)}</div>` : ''}${artsSvg(cur)}${artHintsHtml(cur, (k) => XIA[k]?.name || k)}
       ${ARTS.filter((a) => cur.arts[a.id]).map((a) => { const r = cur.arts[a.id], st = stuckAt(cur, a, S.t), t = artState(cur, a).tier, va = variantOf(cur, a.id, S.t), rust = rustOf(r, S.t);

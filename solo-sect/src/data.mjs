@@ -129,6 +129,9 @@ export const NODES = {
 export const EDGES = [['hall', 'court'], ['court', 'yard'], ['court', 'dormP'], ['dormP', 'dorm'], ['court', 'mid'], ['mid', 'kitchen'], ['mid', 'south'], ['south', 's1'], ['s1', 's2'], ['s2', 's3'], ['s3', 'g1'], ['g1', 'g2'], ['g2', 'g3'], ['g3', 'forest'], ['forest', 'g4'], ['g4', 'g5'], ['g5', 'g6'], ['g6', 'herb'], ['forest', 'forest2'], ['s1', 'e1'], ['e1', 'e2'], ['e2', 'e3'], ['e3', 'e4'], ['e4', 'e5'], ['e5', 'v1'], ['v1', 'v2'], ['v2', 'gate'], ['e2', 'veg'], ['e5', 'e6'], ['e6', 'trail1'], ['trail1', 't2a'], ['t2a', 'trail2'], ['trail2', 't3'], ['t3', 't4'], ['t4', 'guard'], ['guard', 't5'], ['t5', 't6'], ['t6', 'den'], ['g3', 'quarry'], ['south', 'shed']];
 
 // 設施：每階段宣告提供的活動（smart object）。stage 0 = 荒廢/空地。
+// N53：使用點相對設施節點，間隔約一個人物寬；樁位與空地共用預約表，不得雙占。
+const YARD_OPEN_SPOTS = [40, 80, 120].flatMap((y, row) => [-75, -25, 25, 75].map((x, col) => ({ id: `open${row * 4 + col}`, offset: [x, y], acts: ['train', 'meditate'], kind: 'open' })));
+const YARD_DUMMY_SPOTS = [-60, 0, 60, -90, 90].map((x, i) => ({ id: `dummy${i}`, offset: [x, -25], acts: ['train'], kind: 'dummy' }));
 export const FACILITIES = [
   { id: 'hall', name: '大廳', node: 'hall', stages: [
     { name: '破道館', sprite: 'hall_s0', offers: ['rest', 'learn'], restRate: 3, beds: 3, learnDur: 8 },
@@ -137,10 +140,10 @@ export const FACILITIES = [
     { name: '大殿', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 6, beds: 3, learnDur: 2, cost: { wood: 20, stone: 14, coin: 120 }, rare: { tiemu: 3, lingshi: 2 }, work: 50, rep: 70 },
   ] },
   { id: 'yard', name: '外功場', node: 'yard', stages: [
-    { name: '空地', sprite: null, offers: ['train', 'meditate'], trainMul: 1 },
-    { name: '木樁場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 1.6, dummies: 3, cost: { wood: 6 }, work: 15 },
-    { name: '演武場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 1.8, dummies: 4, cost: { wood: 12, stone: 8, coin: 40 }, rare: { tiemu: 2 }, work: 30, rep: 30 },
-    { name: '演武廣場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 2.0, dummies: 5, cost: { wood: 14, stone: 12, coin: 90 }, rare: { tiemu: 2, lingshi: 1 }, work: 40, rep: 60 },
+    { name: '空地', sprite: null, offers: ['train', 'meditate'], trainMul: 1, spots: YARD_OPEN_SPOTS },
+    { name: '木樁場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 1.6, dummies: 3, spots: [...YARD_DUMMY_SPOTS.slice(0, 3), ...YARD_OPEN_SPOTS], cost: { wood: 6 }, work: 15 },
+    { name: '演武場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 1.8, dummies: 4, spots: [...YARD_DUMMY_SPOTS.slice(0, 4), ...YARD_OPEN_SPOTS], cost: { wood: 12, stone: 8, coin: 40 }, rare: { tiemu: 2 }, work: 30, rep: 30 },
+    { name: '演武廣場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 2.0, dummies: 5, spots: [...YARD_DUMMY_SPOTS, ...YARD_OPEN_SPOTS], cost: { wood: 14, stone: 12, coin: 90 }, rare: { tiemu: 2, lingshi: 1 }, work: 40, rep: 60 },
   ] },
   { id: 'dorm', name: '宿舍', node: 'dorm', stages: [
     { name: '破寢舍', sprite: 'dorm_s0', offers: [] },
@@ -772,7 +775,7 @@ EDGES.push(['hall', 'library'], ['yard', 'quiet'], ['hall', 'shrine'], ['kitchen
 const B = (id, name, node, built, cost, work, offers, extra = {}, rep = 0) => ({ id, name, node, v16: true, stages: [{ name: '空地', sprite: null, offers: [] }, { name: built, sprite: null, offers, cost, work, rep: rep || undefined, ...extra }] });
 FACILITIES.push(
   B('library', '藏經閣', 'library', '藏經閣', { wood: 10, stone: 6, coin: 6 }, 26, ['study'], { slots: { study: 2 } }, 15),
-  B('quiet', '靜室', 'quiet', '靜室', { wood: 6, stone: 4 }, 18, ['meditate'], { slots: { meditate: 2 }, medEase: 2 }),
+  B('quiet', '靜室', 'quiet', '靜室', { wood: 6, stone: 4 }, 18, ['meditate'], { spots: [{ id: 'mat0', offset: [-18, 0], acts: ['meditate'], kind: 'mat' }, { id: 'mat1', offset: [18, 0], acts: ['meditate'], kind: 'mat' }], medEase: 2 }),
   B('shrine', '祠堂', 'shrine', '祠堂', { wood: 8, stone: 6, coin: 4 }, 22, ['worship'], { slots: { worship: 2 } }, 10),
   B('alchemy', '丹房', 'alchemy', '丹房', { wood: 6, stone: 8, coin: 6 }, 24, ['brew'], { slots: { brew: 1 } }, 12),
   B('clinic', '醫館', 'clinic', '醫館', { wood: 8, stone: 4, coin: 4 }, 20, ['heal'], { slots: { heal: 2 } }),
