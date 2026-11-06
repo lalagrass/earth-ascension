@@ -1,5 +1,6 @@
+import {selectAction,recordChoice,desireTraining,witnessExchange} from './decision.mjs';
 import { PRACTICE, familiarReaction, practiceWindow, recordExchange } from './practice.mjs';
-import { bodyMove, BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';
+import { bodyMove, moveAvailable, BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';
 import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST, TRAITS } from './data.mjs';
 import { stampCard, curveMulOf, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
@@ -1213,6 +1214,18 @@ export function windOf(d, mvId, cd) {
   const skill = body?.skill === 'strength' || a?.weapon === 'staff' ? 'strength' : 'agility';
   return practiceWindow(d,mvId,start,{tier,skill}).wind * (d?.part?.where === 'hand' ? PART.hand : 1);
 }
+export function combatMoves(d,distance=0) {
+  if(isMon(d)&&FOE_ACTIONS[d.k]){
+    const weapon=d.weapon||['blade','staff','fist'][(d.i||0)%3];
+    return FOE_ACTIONS[d.k].moves.filter(m=>(!m.once||!d.opened)&&(!m.minDistance||distance>=m.minDistance)&&(!m.weapon||m.weapon===weapon)).map(m=>({...m,cd:m.wind+BODY_TIMING.recovery}));
+  }
+  return (d.moves||['fist']).map(id=>MOVES.find(m=>m.id===id)).filter(m=>m&&moveAvailable(d,m));
+}
+export function chooseCombatMove(s,d,target,rnd,options={}) {
+  const distance=options.distance??Math.hypot((d.pos?.[0]||0)-(target.pos?.[0]||0),(d.pos?.[1]||0)-(target.pos?.[1]||0));
+  const choices=(options.moves||combatMoves(d,distance)).map(m=>({...m,actualWind:isMon(d)?practiceWindow(d,m.id,m.wind).wind:windOf(d,m.id,m.cd),force:moveStats(d,m.id).force}));
+  return selectAction(s,d,target,choices,rnd,{distance,composure:composure(d),postureCapacity:postureMax(d),armor:moveStats(target).armor,...options});
+}
 export function fastestMove(d) {
   const moves = (d?.moves || []).map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && (!m.tool || d.tools?.[m.tool]));
   return moves.sort((a,b) => windOf(d,a.id,a.cd) - windOf(d,b.id,b.cd))[0] || bodyMove('bodyPunch');
@@ -1269,7 +1282,7 @@ export function clashTimes(s, atk, def, ctx = {}) {
   const jitter = (1 / PRACTICE.reactionShape) * (1 + (def.fret || 0) * T.fret);
   const response = isMon(def) ? foeAction(def) : fastestMove(def);
   const strike = isMon(def) ? practiceWindow(def,response?.id || 'fist',response?.wind || T.strike).wind : windOf(def,response.id,response.cd);
-  const step = BODY_TIMING.step / (1 + agi / T.agility);
+  const step=BODY_TIMING.step/(1+agi/T.agility)*reaction/(PRACTICE.reactionFloor+PRACTICE.reactionSpan);
   const guard = def.bare ? BODY_TIMING.guard : T.guard;
   const busy = Math.max(0, (def.busyUntil || 0) - (s?.t ?? 0), (def.swing?.at || 0) - (s?.t ?? 0), (def.bswing?.at || 0) - (s?.t ?? 0));
   return { wind: Math.max(0, wind - busy), reaction, jitter, strike, step, guard, busy };
@@ -1280,18 +1293,20 @@ const reactionOdds = (T, action) => { const available = T.wind - action - PRACTI
 /* 起手時先抽反應；截擊立即發生，其餘接法帶同一次抽樣等來招落下。 */
 export function interceptOpening(s, atk, def, rnd, ctx = {}) {
   const T = clashTimes(s, atk, def, ctx), reaction = drawReaction(T,rnd);
-  const opening = { T, reaction, p: clashOdds(s,atk,def,ctx).hit, at: s?.t ?? 0 };
-  if (postureOf(def) > 0 && !(atk.sure && atk.sure === (def.uid || def.id)) && def.part?.where !== 'eye' && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) {
+  const opening = { T, reaction, odds:clashOdds(s,atk,def,ctx), p: clashOdds(s,atk,def,ctx).hit, at: s?.t ?? 0 };
+  if (postureOf(def) > 0 && !(atk.sure && atk.sure === (def.uid || def.id)) && def.part?.where !== 'eye' && !(def.rageUntil > (s?.t ?? 0)) && reaction+T.strike<T.wind && !(reaction+T.step+T.strike<T.wind)) {
     return { opening, read: resolveSwing(s, atk, def, rnd, { ...ctx, opening }) };
   }
   return { opening, read: null };
 }
 export function clashOdds(s, atk, def, ctx = {}) {
   const T = clashTimes(s, atk, def, ctx);
-  const read = def.part?.where === 'eye' || def.rageUntil > (s?.t ?? 0) ? 0 : reactionOdds(T, T.strike);
-  const dodgeTotal = def.rageUntil > (s?.t ?? 0) ? 0 : reactionOdds(T, T.step);
-  const parryTotal = reactionOdds(T, T.guard);
-  return { read, dodge: Math.max(0, dodgeTotal - read), parry: Math.max(0, parryTotal - Math.max(read,dodgeTotal)), hit: 1 - Math.max(read, dodgeTotal, parryTotal) };
+  const canRead=def.part?.where!=='eye'&&!(def.rageUntil>(s?.t??0));
+  const readTotal=canRead?reactionOdds(T,T.strike):0;
+  const dodgeCounter=canRead?reactionOdds(T,T.step+T.strike):0;
+  const dodgeTotal=def.rageUntil>(s?.t??0)?0:reactionOdds(T,T.step);
+  const parryTotal=reactionOdds(T,T.guard);
+  return {read:Math.max(0,readTotal-dodgeCounter),dodge:dodgeCounter+Math.max(0,dodgeTotal-readTotal),dodgeCounter,parry:Math.max(0,parryTotal-Math.max(readTotal,dodgeTotal)),hit:1-Math.max(readTotal,dodgeTotal,parryTotal)};
 }
 /* 前搖起手可用 interceptOpening 立即截擊；未截者在來招結束時用同一反應抽樣接法。
    rnd 是固定種子亂數。ctx.force 只用於架勢崩潰等既有必中規則。 */
@@ -1342,24 +1357,32 @@ function resolveSwingCore(s, atk, def, rnd, ctx = {}) {
   if (def.posture <= 0) { def.posture = postureMax(def) * 0.5; def.postT = s?.t ?? 0; return settleDefense(s, def, T, { kind: 'hit', heavy: true, why: 'open' }); }
   if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return settleDefense(s, def, T, { kind: 'hit', heavy: false, why: ctx.force || 'sure' }); }
   const reaction = ctx.opening?.reaction ?? drawReaction(T,rnd);
+  const timing={T:T.wind,r:reaction,step:T.step,strike:T.strike,guard:T.guard};
   const zjAtk = ctx.map && !isMon(atk) ? zjOfMove(ctx.move) : null; /* #426 */
   const duguPassive = ctx.map && isMon(atk) && zjHas(def, 'dugu') && (s?.codex?.[atk.k]?.insight || 0) >= ZJ.dugu.insight; /* 獨孤：讀招改成被動截，不再擲讀招 */
-  if (!duguPassive && def.part?.where !== 'eye' && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return settleDefense(s, def, T, { kind: 'read', used: reaction + T.strike, counter: moveStats(def, fastestMove(def)?.id).force * CLASH.time.counterForce }); }
-  if (!(def.rageUntil > (s?.t ?? 0)) && reaction + T.step < T.wind) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi * (reaction + T.step) / Math.max(T.wind, 1e-9)); advanceAfterDodge(s, atk, def); return settleDefense(s, def, T, { kind: 'dodge', used: reaction + T.step, strain: (reaction + T.step) / Math.max(T.wind, 1e-9) }); }
+  if(!duguPassive&&def.part?.where!=='eye'&&!(def.rageUntil>(s?.t??0))&&reaction+T.step+T.strike<T.wind){advanceAfterDodge(s,atk,def);return settleDefense(s,def,T,{timing,kind:'dodge',used:reaction+T.step+T.strike,counter:moveStats(def,fastestMove(def)?.id).force*CLASH.time.counterForce,strain:(reaction+T.step)/T.wind});}
+  if (!duguPassive && def.part?.where !== 'eye' && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return settleDefense(s, def, T, { timing,kind: 'read', used: reaction + T.strike, counter: moveStats(def, fastestMove(def)?.id).force * CLASH.time.counterForce }); }
+  if (!(def.rageUntil > (s?.t ?? 0)) && reaction + T.step < T.wind) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi * (reaction + T.step) / Math.max(T.wind, 1e-9)); advanceAfterDodge(s, atk, def); return settleDefense(s, def, T, { timing,kind: 'dodge', used: reaction + T.step, strain: (reaction + T.step) / Math.max(T.wind, 1e-9) }); }
   if (reaction + T.guard < T.wind) {
     const force = moveStats(atk, ctx.move, ctx.wind).force, guard = isMon(def) ? moveStats(def).force : qiPow(def);
     const jolt = guard > force * 1.4;
     postureHit(s, def, CLASH.parry.drop * Math.max(0.5, force / Math.max(1, guard))); postureHit(s, atk, CLASH.parry.drop * Math.max(0.5, guard / force) + (jolt ? CLASH.parry.joltDrop : 0));
-    return settleDefense(s, def, T, { kind: 'parry', jolt, used: reaction + T.guard });
+    return settleDefense(s, def, T, { timing,kind: 'parry', jolt, used: reaction + T.guard });
   }
-  return settleDefense(s, def, T, { kind: 'hit', heavy: false });
+  return settleDefense(s, def, T, { timing,kind: 'hit', heavy: false });
 }
 
 export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   const move = timedMoveId(atk,ctx.move), odds = clashOdds(s,atk,def,{ ...ctx, move });
+  const initialT=ctx.opening?.T||clashTimes(s,atk,def,ctx);
   const result = resolveSwingCore(s,atk,def,rnd,{ ...ctx, move });
   result.learning = recordExchange(s,atk,def,move,ctx.opening?.p ?? odds.hit,result);
-  if (result.kind === 'read') result.counterLearning = recordExchange(s,def,atk,timedMoveId(def),odds.read,{kind:'counter'});
+  recordChoice(s,atk,def,move,result.kind==='hit');
+  witnessExchange(s,atk,def,move,result.learning.p);
+  const T=initialT;
+  if(result.kind==='hit')desireTraining(s,def,'timing',{move,wind:T.wind,reaction:T.reaction,deficit:T.reaction+Math.min(T.step,T.guard,T.strike)-T.wind});
+  if(result.kind==='hit'&&moveStats(atk,move,ctx.wind).force<=moveStats(def).armor)desireTraining(s,atk,'power',{move,force:moveStats(atk,move,ctx.wind).force,armor:moveStats(def).armor});
+  if(result.counter)result.counterLearning = recordExchange(s,def,atk,timedMoveId(def),(ctx.opening?.odds||odds)[result.kind==='read'?'read':'dodgeCounter'],{kind:'counter'});
   return result;
 }
 

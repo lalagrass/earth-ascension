@@ -1,4 +1,4 @@
-import { fastestMove, windOf } from './arts.mjs';
+import { chooseCombatMove, fastestMove, windOf } from './arts.mjs';
 import { practiceWindow } from './practice.mjs';
 import { foeAction } from './starter-combat.mjs';
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
@@ -176,11 +176,12 @@ function bandClash(s, b, defs, dt) {
   for (const d of fight) { postureRegen(s, d, dt); d.bcool = (d.bcool ?? 0) - dt; /* 冷卻含前搖（收招＝冷卻剩下的時間） */
     if (d.bswing) { if (s.t + 1e-9 < d.bswing.at) continue; const w = d.bswing; d.bswing = null; const m = b.members.find((x) => x.uid === w.tgt && x.hp > 0); if (!m) continue;
       const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, move: w.mv, wind: w.wind, map: true }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
+      if(r.counter)d.hp=Math.max(1,d.hp-r.counter);
       if (r.kind === 'hit') { breakWindup(s, d, m, w.mv, w.wind); bandHit(s, b, m, w.dmg * (r.heavy ? CLASH.heavy : 1), d); } else (s.fx ||= []).push({ kind: 'clash', word: r.kind === 'dodge' ? '閃' : r.kind === 'parry' ? '架' : '破', color: '#ddd', pos: [...(m.pos || b.pos)], ttl: 0.6 });
       continue; }
     if (d.bcool > 0 || (d.busyUntil || 0) > s.t) continue;
     const mine = live().filter((m) => m.ring === 1 && m.foe === d.id), tgt = (mine.length ? mine : live()).sort((x, y) => x.hp - y.hp)[0]; if (!tgt) break;
-    const mv = fastestMove(d), wind = windOf(d,mv.id,mv.cd); d.bcool = BAND_CLASH.cd;
+    const pick=chooseCombatMove(s,d,tgt,()=>R(s)),mv=pick?.move||fastestMove(d),wind=windOf(d,mv.id,mv.cd)+(pick?.seconds||0);d.bcool=BAND_CLASH.cd+(pick?.seconds||0);
     d.bswing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * def24Of(s) * BAND_CLASH.cd };
     (s.fx ||= []).push({ kind: 'warn', from: [...d.pos], to: [...(tgt.pos || b.pos)], r: 30, dur: wind, ttl: wind, t0: s.t });
   }
@@ -194,7 +195,7 @@ function bandClash(s, b, defs, dt) {
     if (m.swing) { if (s.t + 1e-9 < m.swing.at) continue; const w = m.swing; m.swing = null; handleTake(s, d);
       const r = resolveSwing(s, m, d, () => R(s), { depth: 2, move: w.mv, wind: w.wind, opening: w.opening }); (b.cl ??= {})['m' + r.kind] = (b.cl['m' + r.kind] || 0) + 1;
       if (r.kind === 'dodge' && perfectDodge(s, d, () => R(s), { strain: r.strain })) b.witch = (b.witch || 0) + 1;
-      if (r.kind === 'read') bandHit(s, b, m, r.counter, d);
+      if(r.counter)bandHit(s, b, m, r.counter, d);
       if (r.kind === 'hit') { breakWindup(s, m, d, null, w.wind); let incoming = (BAND_CLASH.dmg.base + m.max * BAND_CLASH.dmg.per) * (r.heavy ? CLASH.heavy : 1);
         if (zjHas(d, 'taiji') || zjHas(d, 'taijiSword')) { const share = taijiReturn(m, null, w.wind); bandHit(s, b, m, incoming * share, d); incoming *= 1 - share; zjMark(s, d, zjHas(d, 'taiji') ? 'taiji' : 'taijiSword'); }
         if (zjHas(d, 'jiuyang')) { postureHit(s, m, ZJ.jiuyang.shock); zjMark(s, d, 'jiuyang'); }
@@ -209,7 +210,7 @@ function bandClash(s, b, defs, dt) {
     const { m, d } = ready[i];
     if (delays[i] > 0) { m.cool = delays[i]; continue; }
     if (zjIntercept(s, m, fight)) { m.cool = BAND_CLASH.monCd; continue; }
-    const action = foeAction(m, Math.hypot(m.pos[0] - d.pos[0], m.pos[1] - d.pos[1])), wind = practiceWindow(m,action.id,action.wind).wind, start = interceptOpening(s, m, d, () => R(s), { depth: 2, move: action.id, wind }); m.cool = BAND_CLASH.monCd;
+    const pick=chooseCombatMove(s,m,d,()=>R(s)),action=pick?.move||foeAction(m,Math.hypot(m.pos[0]-d.pos[0],m.pos[1]-d.pos[1])),wind=practiceWindow(m,action.id,action.wind).wind+(pick?.seconds||0), start = interceptOpening(s, m, d, () => R(s), { depth: 2, move: action.id, wind }); m.cool=BAND_CLASH.monCd+(pick?.seconds||0);
     if (start.read?.kind === 'read') { bandHit(s, b, m, start.read.counter, d); (b.cl ??= {}).mread = (b.cl.mread || 0) + 1; continue; }
     m.opened = true; m.swing = { mv: action.id, at: s.t + wind, wind, opening: start.opening };
     (s.fx ||= []).push({ kind: 'warn', from: [...(m.pos || b.pos)], to: [...d.pos], r: 26, dur: wind, ttl: wind, t0: s.t });

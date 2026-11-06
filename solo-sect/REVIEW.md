@@ -70,3 +70,14 @@ probe是「充分休息、沒有惱羞/在途攻擊」的20次獨立新狗**單�
 盲測預設train；可另加`--action chop`/`water`。預設片應觀察式間停頓、重心、整套速度（晃動另有對照數字），不要以影片檔名/日數UI洩漏答案。輸出同路徑會覆寫先前同名驗收檔，請先保留已猜的結果。若preview連線阻擋，停止錄影嘗試交parent，不換host、不Shell CDP/Playwright迴避；目前正是此狀態。工具需要review環境既有Playwright/Chromium，沒有把套件加進遊戲。連兩名reviewer猜錯依#479決策，不自改3D。
 
 受控日程與各常數理由見[combat.md N55](docs/systems/combat.md#n55成長只改共用骨架的播放474)。數字證據寫在`docs/evidence/r9-n55-growth.md`；桌面與影片驗收不得用這張表、SVG或mock Canvas測試冒充。
+
+
+### N34 選招／輸後心願（#444；無傷交手門檻待N37重驗）
+| 指令 | 門檻 | 預期輸出 |
+|---|---|---|
+| `bash solo-sect/test/run.sh smoke` | fail0；N34僅1個小測試 | 14/14；穩定同情境決策0，三種性格均等觀測下偏好至少2種，真交手產生心願 |
+| `node solo-sect/tools/duel.mjs --a day1 --b day1 --seeds 1-20` | 交手中位≥30、沒人受傷≥70% | 每場次數、兩人受傷、喘氣；目前38/33.3782%，**後者FAIL，待N37真力門檻接入後重驗** |
+| `node solo-sect/tools/duel.mjs --a day60 --b day1 --seeds 1-20` | 最小移步≥baseline3倍且>0；同拍反擊≥5 | 目前.322581對0、31反擊，pass；訓練seed1，非任意seed已證明 |
+| `node solo-sect/tools/duel.mjs --seed <任選> --log out/duel.json` | reviewer任取3筆成功接法驗r+m≤T | 每拍T/r/m/margin；forced行沒有假抽樣時間，不拿它手算 |
+
+工具不連網、無額外套件。day60會真跑60日；詳combat受控訓練/交手seed的區分。無傷關卡不過先補N37共用受力規則，不調機率湊門檻。完整自然玩法的三個性拿手招另由N38/bot12量，不以均等觀測單元測試冒充。

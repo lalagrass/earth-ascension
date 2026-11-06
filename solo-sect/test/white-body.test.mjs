@@ -62,3 +62,23 @@ test('N55 只有播放參數變、沒有第二份熟練pose且繪製不回寫模
     assert.notEqual(JSON.stringify(calls),first);assert.equal(JSON.stringify([d,master]),before);
   }
 });
+
+
+test('N34 情境識別穩定後零決策時間，選招/心願所有人共用',async()=>{
+  const {chooseCombatMove,resolveSwing}=await import('../src/arts.mjs');
+  const {contextKey,recordChoice,finishTrainingWish}=await import('../src/decision.mjs');
+  const {rand}=await import('../src/sim.mjs');
+  const s=createState(17,{kind:'bare',askMajor:false}),d=s.ds[0],t=structuredClone(d);t.id='target';d.pos=[0,0];t.pos=[20,0];
+  const initial=chooseCombatMove(s,d,t,()=>rand(s));assert.ok(initial.seconds>0);
+  const key=initial.context;d.selection.contexts[key]=Object.fromEntries(BODY_MOVES.filter(m=>!m.tool).map(m=>[m.id,{win:m.id==='bodyPunch'?1000:0,loss:m.id==='bodyPunch'?0:1000}]));
+  const known=chooseCombatMove(s,d,t,()=>rand(s));assert.equal(known.move.id,'bodyPunch');assert.equal(known.seconds,0);
+  // 相同世界種子/身體/均等觀測，性格的通用效用目標應能產生不同偏好。
+  const favorites=[];
+  for(const trait of ['honest','bold','clever']){
+    const q=createState(71,{kind:'bare',askMajor:false}),a=q.ds[0];a.personality=[trait];a.pos=[0,0];const b=structuredClone(t);const counts={};
+    for(let i=0;i<160;i++){const pick=chooseCombatMove(q,a,b,()=>rand(q));recordChoice(q,a,b,pick.move.id,.5,{expected:true});counts[pick.move.id]=(counts[pick.move.id]||0)+1;}
+    favorites.push(Object.keys(counts).sort((x,y)=>counts[y]-counts[x])[0]);
+  }
+  assert.ok(new Set(favorites).size>=2,JSON.stringify(favorites));
+  t.busyUntil=0;t.posture=100;resolveSwing(s,d,t,()=>.999,{move:'bodyPunch',wind:.45});assert.ok(t.trainingWish?.evidence);finishTrainingWish(t,'spar');
+});
