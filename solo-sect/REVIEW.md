@@ -65,8 +65,8 @@ probe是「充分休息、沒有惱羞/在途攻擊」的20次獨立新狗**單�
 | 上一指令同seed連跑兩次，至少另換兩種seed | stdout完全相同、三種seed皆pass | 不依賴作者的snapshot；每次真跑60日，需等待約數分鐘，非完整測試矩陣 |
 | `node solo-sect/tools/check-poses.mjs` | errors空、pass=true | 列出79組序列，熟練不產生第二份，所有姿勢都存在 |
 | `node solo-sect/tools/check-assets.mjs` | missing=0，168/168 | 全素材授權仍可離線查；此milestone無新asset |
-| **由parent於正常桌面通路恢復後** `node solo-sect/tools/blind.mjs --seed <任選整數> --url http://localhost:8814/solo-sect/tools/growth-preview.html` | 真A/B.webm各含至少10秒同動作；真人猜對，寫出至少三處差異對得上量測 | `out/blind/A.webm`、`B.webm`、`key.txt`另檔；`metrics.json`供數字對照。工具尚未執行，不是已驗收影片 |
+| `node solo-sect/tools/blind.mjs --seed <任選整數> --out out/blind`，再由真人於正常 UI 匯入 A/B 各錄製 10 秒 | 真 A/B.webm 各至少 10 秒同動作；真人猜對且三處差異對得上量測 | CLI 只產 A.json/B.json、metrics.json、key.txt，明印 videosCreated=0/NOT_RUN；影片與真人結果須另驗 |
 
-盲測預設train；可另加`--action chop`/`water`。預設片應觀察式間停頓、重心、整套速度（晃動另有對照數字），不要以影片檔名/日數UI洩漏答案。輸出同路徑會覆寫先前同名驗收檔，請先保留已猜的結果。若preview連線阻擋，停止錄影嘗試交parent，不換host、不Shell CDP/Playwright迴避；目前正是此狀態。工具需要review環境既有Playwright/Chromium，沒有把套件加進遊戲。連兩名reviewer猜錯依#479決策，不自改3D。
+盲測預設 train；可另加 `--action chop`／`water`。先記三處差異，才讀 key.txt。輸出同路徑會覆寫前次檔案，請用不同 out。正常頁面透過 File API 匯入、MediaRecorder/canvas.captureStream 下載 WebM；CLI 不啟動瀏覽器。錄影或真人盲測尚未執行；連兩名 reviewer 猜錯依 #479 決策，不自改 3D。
 
 受控日程與各常數理由見[combat.md N55](docs/systems/combat.md#n55成長只改共用骨架的播放474)。數字證據寫在`docs/evidence/r9-n55-growth.md`；桌面與影片驗收不得用這張表、SVG或mock Canvas測試冒充。
