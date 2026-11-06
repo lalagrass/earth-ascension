@@ -1,0 +1,219 @@
+{
+  "format": "solo-sect-growth-input-v1",
+  "label": "A",
+  "action": "train",
+  "clock": 30,
+  "hero": {
+    "id": "hero",
+    "name": "主角",
+    "root": 2,
+    "rootKnown": true,
+    "style": "palm",
+    "personality": [
+      "diligent",
+      "brave",
+      "sociable"
+    ],
+    "known": [
+      "diligent",
+      "brave"
+    ],
+    "together": 30,
+    "mood": 64,
+    "thoughts": [],
+    "why": [],
+    "adult": true,
+    "sprite": "hero",
+    "traits": {
+      "diligent": 1.2
+    },
+    "skills": {
+      "leg": 0,
+      "palm": 0,
+      "strength": 12.105501538461539,
+      "farming": 5,
+      "herbal": 5,
+      "agility": 10,
+      "cooking": 3
+    },
+    "moves": [
+      "bodyPunch",
+      "bodyPush",
+      "bodyGrab",
+      "bodyKick",
+      "toolStone"
+    ],
+    "needs": {
+      "energy": 71.00000000000023,
+      "hunger": 59.49999999999969,
+      "social": 38.049999999999834,
+      "fun": 53.42750000000003
+    },
+    "hp": 100,
+    "fret": 0,
+    "raging": false,
+    "rageUntil": 0,
+    "busyUntil": 0,
+    "at": "g2",
+    "pos": [
+      805.6679856236277,
+      696.9822135155516
+    ],
+    "path": [
+      {
+        "n": "g1",
+        "xy": [
+          862,
+          700
+        ]
+      },
+      {
+        "n": "s3",
+        "xy": [
+          894,
+          681
+        ]
+      },
+      {
+        "n": "s2",
+        "xy": [
+          931,
+          631
+        ]
+      },
+      {
+        "n": "s1",
+        "xy": [
+          965,
+          569
+        ]
+      },
+      {
+        "n": "south",
+        "xy": [
+          960,
+          506
+        ]
+      },
+      {
+        "n": "mid",
+        "xy": [
+          950,
+          431
+        ]
+      },
+      {
+        "n": "court",
+        "xy": [
+          1038,
+          394
+        ]
+      }
+    ],
+    "role": "inner",
+    "duties": [
+      "chop",
+      "quarry",
+      "farm",
+      "cook",
+      "build",
+      "forage"
+    ],
+    "prio": "normal",
+    "chore": 0,
+    "choreDebt": 0,
+    "contrib": 0,
+    "task": {
+      "act": "quarry",
+      "fac": "quarry",
+      "node": "quarry",
+      "phase": "return",
+      "resv": [
+        "quarry:quarry:*"
+      ],
+      "timer": 10,
+      "walkStart": 763.9777756515797
+    },
+    "order": "quarry",
+    "reason": "玩家指派",
+    "carry": {
+      "stone": 1
+    },
+    "cool": 0,
+    "walked": 1081.6027756515798,
+    "face": 1,
+    "anim": null,
+    "arts": {},
+    "pendingArt": null,
+    "focus": null,
+    "best": 0,
+    "insight": {},
+    "away": false,
+    "wu": 2,
+    "ding": 2,
+    "values": {
+      "xia": 50,
+      "sect": 24,
+      "qing": 8,
+      "free": 0,
+      "wu": 50,
+      "fame": 0
+    },
+    "wexin": 0,
+    "gInit": true,
+    "pf": 1,
+    "ng": 1,
+    "qi": 0,
+    "ng2": 1,
+    "lg": 1,
+    "bare": true,
+    "tools": {
+      "stone": true
+    },
+    "pendingMove": null,
+    "practice": {
+      "hands": {
+        "work:quarry": 0.888888888888889
+      },
+      "eyes": {},
+      "origin": {},
+      "families": {}
+    },
+    "sectId": "wuming",
+    "gdr": 1,
+    "decision": {
+      "layer": "order",
+      "act": "quarry",
+      "why": "玩家指派"
+    },
+    "acts": {
+      "craft": 30
+    },
+    "powMul": 1,
+    "yunvLink": false,
+    "jhMul": 1,
+    "sbias": {
+      "剛": 0.15
+    },
+    "stree": [
+      "wuhuBlade",
+      "pushPalm",
+      "breath"
+    ],
+    "sgain": 1,
+    "medK24": 1,
+    "age": 22,
+    "pairMul": 0.05,
+    "asp": {
+      "id": "xia",
+      "done": false
+    },
+    "lgDay": 0,
+    "lgGot": 2.1055015384615388
+  },
+  "provenance": {
+    "seed": 17,
+    "eventHash": "e741d84cd5f5519fb4c20257752cccdae9b26e59767e259ff3bfe7a894cb14d5",
+    "events": 1
+  }
+}

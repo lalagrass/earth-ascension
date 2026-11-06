@@ -34,7 +34,7 @@
 | 904 | 1 / `e741d84cd5f5519fb4c20257752cccdae9b26e59767e259ff3bfe7a894cb14d5` | 10266 / `c5dd8655a8ac8dc7f7986bf11d14f6e52c97ecd7c1d27c6d8cc96e50fa2911cf` |
 | 20261106 | 1 / `e741d84cd5f5519fb4c20257752cccdae9b26e59767e259ff3bfe7a894cb14d5` | 10096 / `e80c086e72b6a2295f9fe942cd3f930a165ec41432c723a21fb2e16658a91e41` |
 
-種子 17 另以 `growth-metrics.mjs` 獨立重跑一次；其第 1／60 日的完整 snapshot、事件數、hash 與盲測準備命令的結果逐位元組相同。 `check-poses.mjs` 為 79 組、0 錯；`check-assets.mjs` 為 168/168。
+種子 17 另以 `growth-metrics.mjs` 獨立重跑兩次；兩份完整 JSON 用 `cmp` 比較為 byte-identical，且第 1／60 日的完整 snapshot、事件數、hash 與盲測準備命令一致。 `check-poses.mjs` 為 79 組、0 錯；`check-assets.mjs` 為 168/168。
 
 ## 可重跑命令與原始檔
 

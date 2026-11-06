@@ -1,0 +1,14 @@
+{
+  "seed": 17,
+  "action": "train",
+  "out": "/workspace/earth-ascension-r9a/solo-sect/artifacts/round9a/blind17",
+  "prepared": [
+    "A.json",
+    "B.json",
+    "metrics.json",
+    "key.txt"
+  ],
+  "videosCreated": 0,
+  "humanBlindTest": "NOT_RUN",
+  "next": "正常UI紀錄→離線成長盲測驗收，匯入A.json/B.json各按錄製10秒下載WebM；不要開key給受測者。"
+}
