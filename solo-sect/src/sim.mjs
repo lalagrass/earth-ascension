@@ -1,3 +1,4 @@
+import {pickupDrop} from './techniques.mjs';
 import {finishTrainingWish,TRAINING_CAUSES} from './decision.mjs';
 import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practice.mjs';
 import { BODY_TIMING, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
@@ -435,7 +436,9 @@ function grow(s, d, sk, amt, src = 'train') {
   if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt * (d.arts ? teachMul(s, d, focusOf(d)) : 1), focusMul(d), s.t, { raw, src }); /* #415 N12 師父傳授時段：這門名功練得快 */ if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === m).name}」`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); return o; }
 }
 
-function doTask(s, d, dt) {
+function doTask(s,d,dt){
+  if(d.downUntil>s.t){d.anim='down';return;}
+  if(pickupDrop(s,d))return;
   const t = d.task, A = actDef(s, t.act) || {};
   if (t.act === 'hunt') return;
   if (t.act === 'trial') return trialStep(s, d, dt);
@@ -647,7 +650,7 @@ function dStrike(s, h, d, live, w) {
   if (!mv || !tgt || dist(tgt.pos, d.pos) > w.reach * 1.25) { d.anim = null; return null; } /* 目標走遠或已倒：招落空 */
   const lv = d.skills[mv.skill];
   let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t); /* #410 玉女合擊、蛤蟆蓄勢改走內功被動與 on，避免和出手再乘一次 */
-  const ar = mv.aoe ? mv.aoe + qiAoeAdd(d, mv) : 0, hitList = mv.aoe ? live.filter((m) => dist(m.pos, tgt.pos) <= ar) : [tgt];
+  const ar = mv.aoe ? mv.aoe + qiAoeAdd(d, mv) : 0, hitList = mv.aoe ? live.filter(m=>dist(m.pos,mv.aoeCenter==='actor'?d.pos:tgt.pos)<=ar) : [tgt];
   const huaAoe = mv.aoe && visTier(d, mv.id) >= FLAIR.hua; /* #420 化境：範圍招逐個目標判接法 */
   const r = resolveSwing(s, d, tgt, () => rand(s), { depth: depthOf(d, mv.id), wind: w.wind, move: mv.id, force: w.force, map: true });
   if(r.counter){d.hp=Math.max(0,d.hp-r.counter);clashFx(s,tgt,'read');}
@@ -678,7 +681,7 @@ function huntStep(s, dt) {
     const wk = witchK(s, m.pos), mdt = dt * wk; /* #425 林克時間：圈內的獸前搖、冷卻、移動都慢下來（不改全域 dt） */
     m.cool -= mdt; if (m.swing && wk < 1) m.swing.at += dt - mdt;
     if (m.psn > s.t) { m.hp -= SPEC.poisonDps * (s.psnK24 || 1) * dt; if (m.hp <= 0) { m.gone = true; h.kills++; log(s, `${M.name}毒發倒地`); continue; } } /* loop151 毒術 */
-    postureRegen(s, m, dt);
+    postureRegen(s,m,dt);if(m.downUntil>s.t)continue;
     if (m.swing) { const action = FOE_ACTIONS[m.k]?.moves.find((a) => a.id === m.swing.mv); if (action?.travel && foe) stepToward(m, foe.pos, action.range / action.wind * mdt, MON_REACH * .8); /* #418 N14 前搖中站定；前搖結束才判接法 */
       if (s.t + 1e-9 < m.swing.at) continue;
       const w = m.swing, tgt = team.find((d) => d.id === w.tgt); m.swing = null;
@@ -691,7 +694,7 @@ function huntStep(s, dt) {
         if (held >= RING.slots) { m.orbit = foe.id; m.slot = null; orbitStep(m, foe, M.speed * mdt); continue; }
         m.slot = foe.id; m.orbit = null; }
       if (near > MON_REACH * 0.95 && !foeAction(m, near)?.minDistance) { stepToward(m, foe.pos, M.speed * mdt, MON_REACH * 0.8); continue; }
-      if (m.cool <= 0) { /* #426 獨孤：觀破過的獸一起手就被截；太極圈內前搖拉長 */
+      if(m.cool<=0&&!(m.downUntil>s.t)){ /* #426 獨孤：觀破過的獸一起手就被截；太極圈內前搖拉長 */
         if (zjIntercept(s, m, team)) { m.cool = MON_CD; continue; }
         const pick=chooseCombatMove(s,m,foe,()=>rand(s),{distance:near}),action=pick?.move||foeAction(m,near),wind=(practiceWindow(m,action?.id||'fist',action?.wind??MON_CD*CLASH.monWind).wind+(pick?.seconds||0))*zjWindK(s,m.pos,team);
         const start = interceptOpening(s, m, foe, () => rand(s), { depth: depthOf(m), move: action?.id, wind, map: true });
@@ -711,7 +714,7 @@ function huntStep(s, dt) {
     d.cool -= dt;
     const live = s.mons.filter((m) => !m.gone && m.hp > 0 && !m.raid);
     if (d.swing) { if (s.t + 1e-9 >= d.swing.at) { const w = d.swing; d.swing = null; dStrike(s, h, d, live, w); } continue; } /* #418 前搖 → 出手；收招＝冷卻剩下的時間 */
-    if (d.cool > 0 || (d.busyUntil || 0) > s.t) continue;
+    if(d.cool>0||(d.busyUntil||0)>s.t||(d.downUntil||0)>s.t) continue;
     const aim=live.sort((a,b)=>dist(a.pos,d.pos)-dist(b.pos,d.pos))[0];if(!aim)continue;
     const candidates=d.moves.map(id=>MOVES.find(m=>m.id===id)).filter(m=>m&&moveAvailable(d,m)&&dist(aim.pos,d.pos)<=m.range*(1+(d.skills[m.skill]||0)/200)+(m.range>=FLAIR.dash.minRange&&visTier(d,m.id)>=FLAIR.dash.tier?FLAIR.dash.add:0));
     const pick=chooseCombatMove(s,d,aim,()=>rand(s),{moves:candidates});const ms=pick?[pick.move]:[];
