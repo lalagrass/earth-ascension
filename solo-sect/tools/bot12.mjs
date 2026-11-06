@@ -4,6 +4,7 @@
 // --fan=N 覆寫扇形基準（只供 tools/calib-fan.mjs 掃描；遊戲程式本身不讀環境變數）。
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import path from 'node:path';
+import {existsSync} from 'node:fs';
 const here = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = pathToFileURL(path.resolve(process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : here)).href;
 const json = process.argv.includes('--json');
@@ -18,6 +19,7 @@ const { sectOfSeed } = await import(root + '/test/golden/scenarios.mjs');
 const A = await import(root + '/src/arts.mjs');
 const T = await import(root + '/src/threat.mjs');
 const W=await import(root+'/src/wuxia.mjs');
+const L=existsSync(fileURLToPath(root+'/src/body-level.mjs'))?await import(root+'/src/body-level.mjs'):null;
 if (fanArg > 0) { const AC = await import(root + '/src/artcard.mjs'); const D = await import(root + '/src/data.mjs'); if (!AC.setFanBase) throw new Error('此目錄的 artcard 沒有 setFanBase'); AC.setFanBase(fanArg, D.ARTS); }
 const { fanRank } = await import(pathToFileURL(here).href + '/src/artcard.mjs');
 const med = (v) => { v = [...v].sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : NaN; };
@@ -66,9 +68,10 @@ const FAMOUS = new Set(ARTS.filter((a) => a.secret && a.classic && !a.derived).m
 for (const seed of (seedArg ? [seedArg] : Array.from({ length: 12 }, (_, i) => 1001 + i))) {
   const sect = sectOfSeed(seed);
   const s = createState(seed, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...ALL_ON, v22: true, ...(sect ? { sect24: sect } : {}) });
-  const recruitmentRow={seed,day10:null,day30:null};
+  const recruitmentRow={seed,day10:null,day30:null,levelReached:{},levels:[]};
   let dayB = s.day, lastWitch = s.witchN || 0; const P = [], seenPending = new Set();
-  for (let i = 1; i <= 30 * DAY / 6; i++) { for(let j=0;j<24;j++)tick(s,.25); countPracticeOverlap(s); if (s.day <= 10) witchFirst10 += (s.witchN || 0) - lastWitch; lastWitch = s.witchN || 0; if (s.alert) s.alert = null; const pending = T.T(s).pending; if (pending && !seenPending.has(pending.n)) { seenPending.add(pending.n); RAIDS.predictions.push(pending.p); if (trace) console.error(JSON.stringify({ seed, day: s.day, pts: pending.pts, p: pending.p, defense: T.defense(s), fenceHp: s.fence?.hp ?? null })); } if (s.day !== dayB) { dayB = s.day; if(s.day===11)recruitmentRow.day10=famousResidents(s);if(s.day===31)recruitmentRow.day30=famousResidents(s);botDaily(s); P.push(T.points(s)); if (s.day === 4 || s.day === 11 || s.day === 21) { huntProbe(s); if (s.day <= 10) witchFirst10 += HUNT.witch.at(-1) + HUNT1.witch.at(-1); } if (s.day >= 9 && s.day % 3 === 0) bandProbe(s); } }
+  for (let i = 1; i <= 30 * DAY / 6; i++) { for(let j=0;j<24;j++)tick(s,.25); countPracticeOverlap(s); if (s.day <= 10) witchFirst10 += (s.witchN || 0) - lastWitch; lastWitch = s.witchN || 0; if (s.alert) s.alert = null; const pending = T.T(s).pending; if (pending && !seenPending.has(pending.n)) { seenPending.add(pending.n); RAIDS.predictions.push(pending.p); if (trace) console.error(JSON.stringify({ seed, day: s.day, pts: pending.pts, p: pending.p, defense: T.defense(s), fenceHp: s.fence?.hp ?? null })); } if (s.day !== dayB) { dayB = s.day; if(L){const h=s.ds.find(d=>d.id==='hero'),report=L.bodyAssessment(s,h),day=s.day-1;recruitmentRow.levels.push({day,...report});for(const row of report.rows)if(row.probability>.5)recruitmentRow.levelReached[row.level]??=day;}if(s.day===11)recruitmentRow.day10=famousResidents(s);if(s.day===31)recruitmentRow.day30=famousResidents(s);botDaily(s); P.push(T.points(s)); if (s.day === 4 || s.day === 11 || s.day === 21) { huntProbe(s); if (s.day <= 10) witchFirst10 += HUNT.witch.at(-1) + HUNT1.witch.at(-1); } if (s.day >= 9 && s.day % 3 === 0) bandProbe(s); } }
+  recruitmentRow.favorite=L?L.favoriteMove(s.ds.find(d=>d.id==='hero')):null;
   recruitmentRow.blocked=W.xiaAdmission?W.xiaPool(s).filter(k=>W.XIA[k].role!=='teacher'&&W.XIA[k].need(s)).map(k=>({id:k,...W.xiaAdmission(s,k)})):null;
   recruitmentRow.guidance=s.ds.filter(d=>d.guidanceMentor).map(d=>({id:d.id,mentor:d.guidanceMentor,day:d.timePrev?.day,received:d.timePrev?.guided||0,totalReceived:d.guidanceTotal||0}));recruitment.push(recruitmentRow);
   huntProbe(s);

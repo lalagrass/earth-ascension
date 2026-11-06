@@ -1,0 +1,70 @@
+{
+  "seed": 17,
+  "training": "受控公開指派60日；入場回滿HP/精力；無手熟/眼熟灌值",
+  "trainingEventHash": "9180d6f130d7a6a18ba7f9c57f5c1a1bcaf86254a6cd3bb710aaa695b8f0c7c4",
+  "runs": [
+    {
+      "count": 1,
+      "trait": "normal",
+      "location": "gate(two slots)",
+      "attacks": 8,
+      "rushAttacks": 1,
+      "hits": 4,
+      "hpLost": 3.5238095238095184,
+      "counters": 2,
+      "overloadBeats": 37,
+      "overloadCounters": 0,
+      "seconds": 16.5,
+      "escaped": []
+    },
+    {
+      "count": 2,
+      "trait": "normal",
+      "location": "gate(two slots)",
+      "attacks": 2,
+      "rushAttacks": 0,
+      "hits": 26,
+      "hpLost": 77.52380952380949,
+      "counters": 0,
+      "overloadBeats": 80,
+      "overloadCounters": 0,
+      "seconds": 20,
+      "escaped": []
+    },
+    {
+      "count": 4,
+      "trait": "normal",
+      "location": "open",
+      "attacks": 9,
+      "rushAttacks": 6,
+      "hits": 48,
+      "hpLost": 0,
+      "counters": 0,
+      "overloadBeats": 158,
+      "overloadCounters": 0,
+      "seconds": 40,
+      "escaped": []
+    }
+  ],
+  "cover": {
+    "open": 2.281938223489237,
+    "cover": 0.7417592887863003,
+    "eyes": 14.113555750396468,
+    "receptionHp": 100,
+    "sameUid": true,
+    "sameHands": true
+  },
+  "pursuit": [
+    {
+      "running": false,
+      "followed": false,
+      "pursuitContactBeats": 0
+    },
+    {
+      "running": true,
+      "followed": true,
+      "pursuitContactBeats": 11
+    }
+  ],
+  "pass": false
+}

@@ -215,3 +215,7 @@ N34 的 `duel.mjs --log` 仍輸出每拍的 `T/r/m/margin` 供 reviewer 任取�
 ### 第九輪 9c：N50 出身同伴與共用招募（#464，施工中）
 
 `bash solo-sect/test/run.sh smoke` 要 fail 0；唯一 N50 小測試排出四住客／五床，一人真入門後第二人因床位不足被共用招募拒絕，候選查詢不改 state。`node solo-sect/tools/bot12.mjs solo-sect --json` 加入 `recruitment.day10Med/day30Med/bySeed` 及真指導時數，與上一輪 head 同命令對照。d10、d30 數字依 #441 新 A/B/C 改寫只列 C 報告，原始單種子 checkpoint 不能冒充 bot12 中位數。人物卡須顯示同伴關係句與名俠不能來的食宿／師父／處境原因；尚待正常桌面驗證。舊存檔同伴保留，3.6 遷移與 golden 在收尾處核對。
+
+### 第九輪 9c：N38 即時白身等級（#449，施工中）
+
+`bash solo-sect/test/run.sh smoke` 要 fail 0，唯一 N38 小測試驗「同一接法機率一改即改級名」、不存 level/XP、不消耗逃敵。`node solo-sect/tools/white-body.mjs --seed 17 --days 30` 應輸出每人格每日各級機率、首次過線日與真交手最常用招；第3–5日狗、第10–15日豬、第20–30日刀賊是新版 #441 C 平衡數字，不能以固定日數決定 `--check` 退出碼。`node solo-sect/tools/bot12.mjs solo-sect --json` 對 12 種子統計各級日數與三人格拿手招，並與上一輪同尺對照。白身即時級名須由正常人物卡可見；受控工具 JSON 不是畫面實拍。原 seed17 自然日程 checkpoint 見 [證據](docs/evidence/r9-n38-levels.md)，其中舊版 `--check` FAIL 是舊 C 門檻，尚待按新驗收修正；不將它冒充新 A/B 失敗。

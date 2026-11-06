@@ -28,7 +28,7 @@ export const ruleOn = (st, k, on) => (on ? st[k] !== false : !!st[k]);
 export const ruleSpec = (st) => ({ v22: true, ...Object.fromEntries(STEWARD_KEYS.map((k) => [k, ruleOn(st, 'steward', true)])) });
 export function buildSpec(st, bonus = 0) {
   const R = ruleSpec(st);
-  if (st.tab === 'bare') return { kind: 'bare', name: st.name || '無名', stats: st.stats, answers: st.ans, ...R, askMajor: st.ask };
+  if (st.tab === 'bare') return { kind: 'bare', name: st.name || '無名', stats: st.stats, answers: st.ans, ...(st.mbti?{mbti:st.mbti}:{}), ...R, askMajor: st.ask };
   if (st.tab === 'classic') return { kind: 'template', id: st.hero, companion: st.comp, askMajor: st.ask, xiaStyle: st.xia || 'all', ...R };
   if (st.tab === 'custom') return { kind: 'custom', name: st.name, ...(st.sect24 && st.sect24 !== 'wuming' ? { sect24: st.sect24 } : {}), stats: st.stats, answers: st.ans, ...(st.mbti ? { mbti: st.mbti } : {}), ...(st.arch ? { arch: st.arch } : {}), ...R, companion: st.comp, askMajor: st.ask, bonus, xiaStyle: st.xia || 'all' };
   return null;
@@ -45,7 +45,7 @@ function compCards(heroId) {
 }
 function render(el) {
   let h = `<div class="box"><h1>山門紀・新局：誰來開山？</h1><div class="tabs"><button data-tab="bare" class="${st.tab === 'bare' ? 'on' : ''}">白身開局</button><button data-tab="classic" class="${st.tab === 'classic' ? 'on' : ''}">經典人物</button><button data-tab="custom" class="${st.tab === 'custom' ? 'on' : ''}">自創主角（12 點＋九問問心）</button><button data-tab="plain">照舊（無名主角）</button></div>`;
-  if (st.tab === 'bare') h += '<p>不會任何武學，只有揮拳、踢、推抱與做活的工具。第一個對手是沿山路走來的野狗；練過的手熟、見過的眼熟都會留下來。</p>'+compCards(null);
+  if (st.tab === 'bare') h += '<p>不會任何武學，只有揮拳、踢、推抱與做活的工具。第一個對手是沿山路走來的野狗；練過的手熟、見過的眼熟都會留下來。</p>'+compCards(null)+mbtiBlock(st);
   else if (st.tab === 'classic') {
     h += `<div class="cards" style="margin-top:8px">${HEROES.map((x) => `<div class="card ${st.hero === x.id ? 'on' : ''}" data-hero="${x.id}"><img src="assets/portraits/${x.id}.png"><b>${x.name}</b>${x.hard ? ' <b class="hard-tag" style="color:#b33">困難</b>' : ''} <span class="small">難度${'★'.repeat(x.diff)}</span><div class="small">${statLine(x.stats)}</div><div class="small">${x.personality.map(tn).join('/')}・${valLine(x.values)}</div><div class="small">${x.tag}</div><div class="small" style="color:#67451f">門派：${SECTS[HERO_SECT[x.id]].plaque}</div></div>`).join('')}</div>`;
     h += compCards(st.hero);

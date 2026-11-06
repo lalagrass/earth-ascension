@@ -174,3 +174,10 @@ test('N50 兩個普通出身同伴與真床位剩一時第二名俠不入門',as
  const first=makeXiaCandidate(s,'guojing'),before=JSON.stringify(s),preview=admissionStatus(s,first);assert.equal(JSON.stringify(s),before);assert.equal(bedCount(s)-s.ds.length,1);assert.equal(preview.ok,true,preview.why);
  assert.ok(join(s,'guojing'));assert.equal(s.ds.length,bedCount(s));assert.equal(join(s,'linghuchong'),null);assert.equal(s.ds.length,5);assert.match(admissionStatus(s,makeXiaCandidate(s,'linghuchong')).why,/床位已滿/);
 });
+
+
+test('N38 接法機率改變即改名稱，不存level/XP且不消耗逃敵',async()=>{
+ const {rankFromProbabilities,bodyAssessment}=await import('../src/body-level.mjs');
+ const p={1:.51,2:.51,3:.51,4:.51,5:.51};assert.equal(rankFromProbabilities(p).name,'好手');p[5]=.5;p[4]=.5;assert.equal(rankFromProbabilities(p).name,'會截');for(const k in p)p[k]=.5;assert.equal(rankFromProbabilities(p).name,'挨打');
+ const s=createState(17,{kind:'bare'});s.survivors={returnDog:{k:'dog',uid:'returnDog',hp:12,max:14,escapedAt:0,practice:{hands:{dogBite:2},eyes:{},origin:{}}}};const before=JSON.stringify(s),report=bodyAssessment(s,s.ds[0]);assert.equal(report.rows[0].sources[0].uid,'returnDog');assert.equal(report.rows[0].sources[0].source,'returned survivor');assert.equal(JSON.stringify(s),before);assert.equal(s.ds[0].level,undefined);assert.equal(s.ds[0].xp,undefined);
+});
