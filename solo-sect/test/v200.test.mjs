@@ -11,7 +11,8 @@ const strip = (C) => Object.fromEntries(Object.entries(C).map(([k, c]) => [k, { 
 test('A8：華山／江湖卡文字、選項、價值觀與重構前完全相同，每個選項仍有效果函式', () => {
   assert.deepEqual(strip(HC), snap.huashan);
   const gotJ = strip(JC);
-  for (const k of Object.keys(snap.jianghu)) assert.deepEqual(gotJ[k], snap.jianghu[k], k);
+  for (const k of Object.keys(snap.jianghu).filter((k) => k !== 'morning')) assert.deepEqual(gotJ[k], snap.jianghu[k], k);
+  assert.equal(gotJ.morning, undefined, '第八輪由持續門規作息取代每日晨課令');
   assert.deepEqual(Object.keys(gotJ).filter((k) => !snap.jianghu[k]), ['wuming'], 'v2.1 只加無名主線，舊卡文字不變');
 });
 test('A8：主線步驟名稱等同重構前', () => {

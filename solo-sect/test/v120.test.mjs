@@ -27,7 +27,9 @@ test('岳不群開局紫霞第一層；1→3 靠閉關、4→6 要祕洞壁刻�
 test('辟邪三卡：林平之上山→暗查劍譜→自宮修練；岳不群自動駕駛照名望走，偽君子添違心', () => {
   const s = yue(false); run(s, DAY * 3.2);
   assert.ok(s.ds.some((d) => d.id === 'linpingzhi')); assert.ok(s.hs.bixie === 3, `bixie ${s.hs.bixie}`); const d = hero(s);
-  assert.ok(artTier(d, 'bixie') >= 2); assert.ok(d.duanqing != null); assert.ok(d.wexin >= 1); assert.ok(s.hero.arcStep >= 3);
+  assert.ok(artTier(d, 'bixie') >= 2); assert.ok(d.duanqing != null);
+  // 晨課靜坐可消去違心；仍要確認違心確實發生過。
+  assert.ok(d.lastWexinT > 0 && d.lastWexinT <= s.t); assert.ok(s.hero.arcStep >= 3);
 });
 test('辟邪代價：斷情、寧中則好感鎖死、全門心情受衝擊；力量隨斷情天數上升', () => {
   const s = createState(7, { kind: 'template', id: 'yuebuqun', companion: 'ningzhongze' }); tick(s); const d = hero(s), n = s.ds.find((x) => x.id === 'ningzhongze');

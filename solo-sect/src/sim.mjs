@@ -295,7 +295,8 @@ export function scoreActs(s, d) {
   demandBoost(s, d, out); repairDamp(s, out); // loop9 缺料需求／loop10 不急修
   const ph = c.ph, sch = SCHEDULE[ph] || {}, n = d.needs;
   const routine = s.routine?.[ph] || ROUTINE_DEFAULT[ph] || 'free';
-  const chosen = routine === 'train' && d.mood < MOOD.low ? 'meditate' : routine;
+  // 來犯時回到原本的危機評分；門規作息只安排平日，不使守山者離開柵邊。
+  const chosen = s.band ? 'free' : routine === 'train' && d.mood < MOOD.low ? 'meditate' : routine;
   if (chosen === 'meditate' && !out.some((o) => o.act === 'meditate') && offered(s, 'meditate').length) out.push({ act: 'meditate', score: 0, why: '心情低落，照早課門規先靜坐', layer: 'sched' });
   const plotWork = s.plots.some((p) => p.st === 'empty' || p.st === 'ripe');
   // v0.95 統一倍率管線：作息是時段閘門（管線外），性格→天賦組、心情→狀態組、職責/首徒/雇工→外部組

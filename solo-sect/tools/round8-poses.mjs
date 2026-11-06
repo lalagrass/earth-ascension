@@ -25,7 +25,7 @@ try {
   await page.waitForSelector('#start');
   await page.click('[data-tab=classic]'); await page.click('[data-hero=guojing]'); await page.click('[data-comp=huangrong]'); await page.click('#st-go');
   await page.waitForFunction(() => !!window.__sect?.S);
-  const actor = await page.evaluate(async () => {
+  const actor = await page.evaluate(async (promotion) => {
     const { createState, tick } = await import('/src/sim.mjs');
     const { ALL_ON, botDaily } = await import('/test/harness/bot.mjs');
     const s = window.__sect.S; window.__sect.speed = 0;
@@ -43,13 +43,33 @@ try {
     }
     if (best) Object.assign(s, best);
     const d = s.ds.find((x) => x.task?.act === 'train' && x.task.phase === 'do');
+    if (promotion) { const { focusOf } = await import('/src/arts.mjs'); const id = focusOf(d) || Object.keys(d.arts)[0]; d.focus = id; d.arts[id].xp = 24.99; d.task.timer = 9.5; window.__sect.freeze = true; }
     window.__sect.panel();
     return { id: d.id, name: d.name, day: s.day, t: s.t };
-  });
+  }, process.argv.includes('--promotion'));
   await page.evaluate((id) => window.__sect.focusOn(id), actor.id);
   await page.waitForTimeout(1500);
   const out = (name) => path.join(root, 'artifacts/round8', name);
   await page.screenshot({ path: out('n48-yard.png') });
+  if (process.argv.includes('--promotion')) {
+    const frames = fs.mkdtempSync(path.join(os.tmpdir(), 'round8-promotion-'));
+    try {
+      const xp = [], cards = [];
+      for (let i = 0; i < 24; i++) {
+        const v = await page.evaluate(async ({ id, advance }) => {
+          const s = window.__sect.S; if (advance) { const { tick } = await import('/src/sim.mjs'); tick(s, 0.5); if (s.alert) s.alert = null; }
+          const { focusOf } = await import('/src/arts.mjs'); const d = s.ds.find((x) => x.id === id); window.__sect.panel(); return { xp: d.arts[focusOf(d) || Object.keys(d.arts)[0]].xp, card: !!document.querySelector('#focuscard .level-card') };
+        }, { id: actor.id, advance: i >= 2 });
+        xp.push(v.xp); cards.push(v.card); await page.waitForTimeout(30); await page.screenshot({ path: path.join(frames, `frame-${String(i).padStart(3, '0')}.png`) });
+      }
+      if (!(Math.min(...xp) < 25 && Math.max(...xp) >= 25)) throw new Error(`promotion threshold not crossed: ${Math.min(...xp)}..${Math.max(...xp)}`);
+      if (!cards.some(Boolean)) throw new Error('promotion card was not visible');
+      const palette = path.join(frames, 'palette.png'), gif = out('n52-promotion.gif');
+      let run = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', '2', '-i', path.join(frames, 'frame-%03d.png'), '-vf', 'fps=2,scale=1280:-1:flags=lanczos,palettegen=stats_mode=diff', palette], { encoding: 'utf8' }); if (run.status) throw new Error(run.stderr);
+      run = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', '2', '-i', path.join(frames, 'frame-%03d.png'), '-i', palette, '-lavfi', 'fps=2,scale=1280:-1:flags=lanczos[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=3', gif], { encoding: 'utf8' }); if (run.status) throw new Error(run.stderr);
+      console.log(JSON.stringify({ gif: path.relative(root, gif), seconds: 12, frames: 24, xpMin: Math.min(...xp), xpMax: Math.max(...xp), cardFrames: cards.filter(Boolean).length }));
+    } finally { fs.rmSync(frames, { recursive: true, force: true }); }
+  }
   if (process.argv.includes('--gif')) {
     const frames = fs.mkdtempSync(path.join(os.tmpdir(), 'round8-poses-'));
     try {

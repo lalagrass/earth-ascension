@@ -1,0 +1,34 @@
+{
+  "counts": [
+    {
+      "day": 1,
+      "regular": 0,
+      "total": 0
+    },
+    {
+      "day": 2,
+      "regular": 0,
+      "total": 0
+    },
+    {
+      "day": 3,
+      "regular": 0,
+      "total": 0
+    },
+    {
+      "day": 4,
+      "regular": 0,
+      "total": 0
+    },
+    {
+      "day": 5,
+      "regular": 0,
+      "total": 0
+    }
+  ],
+  "routine": {
+    "dawn": "train",
+    "day": "free",
+    "dusk": "free"
+  }
+}
