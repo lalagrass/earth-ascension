@@ -6,7 +6,7 @@ import {createState,rand,clone,facStage} from '../src/sim.mjs';
 import {chooseCombatMove,resolveSwing,postureRegen,postureMax,fretStep,CLASH,windOf} from '../src/arts.mjs';
 import {DAY} from '../src/data.mjs';
 import {CORE} from '../src/core.mjs';
-import {BODY_TIMING} from '../src/starter-combat.mjs';
+import {BODY_TIMING,commitCombatEffort} from '../src/starter-combat.mjs';
 import {growthSnapshots} from './growth-scenario.mjs';
 const argv=process.argv.slice(2),get=(k,f)=>{const i=argv.indexOf('--'+k);return i>=0?argv[i+1]:argv.find(x=>x.startsWith('--'+k+'='))?.split('=')[1]??f;};
 const seed=Number(get('seed',1)),range=get('seeds',String(seed)).split('-').map(Number),seeds=range.length===2?Array.from({length:range[1]-range[0]+1},(_,i)=>range[0]+i):[range[0]],aName=get('a','day1'),bName=get('b','day1');
@@ -32,7 +32,7 @@ function run(seed,a0,b0){
     if(d.swing||s.t<d.next||(d.busyUntil||0)>s.t)continue;
     if(d.needs.energy<=CORE.sleepAt){d.resting=true;breaths[d.id]++;continue;}
     const pick=chooseCombatMove(s,d,other,()=>rand(s));if(!pick)continue;const mv=pick.move;if(distance(d.pos,other.pos)>mv.range){moveToward(d,other.pos,movementSpeed(d),.25);continue;}const wind=windOf(d,mv.id,mv.cd)+pick.seconds;
-    d.swing={mv,wind,decision:pick.seconds,at:s.t+wind};d.next=s.t+mv.cd+pick.seconds;d.needs.energy--;
+    d.swing={mv,wind,decision:pick.seconds,at:s.t+wind};d.next=s.t+mv.cd+pick.seconds;commitCombatEffort(d);
   }}
   return {seed,exchanges:rows.length,injuries,breaths,uninjured:untouched/Math.max(1,rows.length),minimal,incoming,counters,rows};
 }

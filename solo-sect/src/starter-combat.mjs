@@ -1,5 +1,8 @@
 // N32：身體／工具／敵人皆為資料，不以角色名稱分支。秒數與尺度詳 combat.md。
 export const BODY_TIMING = { reaction: 0.6, simple: 0.2, step: 0.3, guard: 0, recovery: 0.55, bodyMass: 70, forceSkill: 0.2 };
+// 同一真起手的既有耗能單位（原狩獵/敵人/duel/waves皆為1），待命不扣。
+export const COMBAT_EFFORT = { strike: 1 };
+export function commitCombatEffort(d) { const pool=d.needs||d;pool.energy=Math.max(0,(pool.energy??100)-COMBAT_EFFORT.strike); }
 const action = (id, name, wind, skill, range, dmg, force, type, poses, extra = {}) => ({ id, name, wind, skill, range, dmg, force, type, poses, cd: wind + BODY_TIMING.recovery, req: 999, aoe: 0, color: '#8a6a4a', body: true, ...extra });
 export const BODY_MOVES = [
   action('bodyPunch', '揮拳', .45, 'palm', 28, 4, 12, 'fist', ['ready','leftStep','rightFist']),

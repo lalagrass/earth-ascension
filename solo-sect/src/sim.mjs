@@ -5,7 +5,7 @@ import {ringCapacity,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} fr
 import {pickupDrop} from './techniques.mjs';
 import {finishTrainingWish,TRAINING_CAUSES} from './decision.mjs';
 import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practice.mjs';
-import { BODY_TIMING, BODY_BASE, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
+import { BODY_TIMING, BODY_BASE, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS, commitCombatEffort } from './starter-combat.mjs';
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, noteDemonstration, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
@@ -470,6 +470,7 @@ function doTask(s,d,dt){
   if(d.downUntil>s.t){d.anim='down';if(d.task?.act==='trial')trialStep(s,d,dt);return;}
   if(pickupDrop(s,d))return;
   const t = d.task, A = actDef(s, t.act) || {};
+  if(A.encounter&&!s[A.encounter]){cancelTask(s,d,'交手已結束');return;}
   if (t.act === 'hunt') return;
   if (t.act === 'trial') return trialStep(s, d, dt);
   if (t.act === 'feed') return feedStep(s, d);
@@ -489,6 +490,8 @@ function doTask(s,d,dt){
     t.phase = 'do'; t.timer = 0; d.anim = t.act;
   }
   if (t.phase === 'do') {
+    // 交手是持續任務，不每6秒站起重派；在途招由bandStep真落下後才可退下。
+    if(A.encounter){t.timer=(t.timer||0)+dt;if((d.hp<(A.minHp||0)||d.needs.energy<(A.minEnergy||0))&&!d.bswing)cancelTask(s,d,'交手體力不足，退下自理');return;}
     if(t.act==='learn'&&!lessonValid(s,d,t.lesson)){cancelTask(s,d,'教材或真師父來源已不在，沒有學會新武學');return;}
     noteGuidance(s,d,dt);
     if (t.act === 'build') { const site = s.fac[t.fac].site; if (!site || site.paused || !siteReady(site)) { d.task = null; d.anim = null; return; } }
@@ -684,7 +687,7 @@ function dStrike(s, h, d, live, w) {
   if(r.counter){d.hp=Math.max(0,d.hp-r.counterDamage);clashFx(s,tgt,'read');}
   flairName(s, d, mv);
   h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5, 'fight');
-  d.anim = 'strike'; d.needs.energy = clamp(d.needs.energy - 1, 0, 100);
+  d.anim = 'strike'; commitCombatEffort(d);
   { const tier = visTier(d, mv.id), a = artOfMove(mv.id), va = a && variantOf(d, a.id, s.t); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...tgt.pos], r: mv.aoe || 16, ttl: tier >= 3 ? 1.0 : 0.6, tier, vcolor: va?.color || null, sprite: d.sprite, face: d.face }); if (tier >= 3) s.fx.push({ kind: 'shake', ttl: 0.35 }); }
   const each = mv.aoe ? new Map(hitList.map((m) => [m.uid, m === tgt ? r : resolveSwing(s, d, m, () => rand(s), { depth: depthOf(d, mv.id), wind: w.wind, move: mv.id, map: true })])) : null;
   if (each) h.aoeEach = (h.aoeEach || 0) + hitList.length;
@@ -729,7 +732,7 @@ function huntStep(s, dt) {
         if (zjIntercept(s, m, team)) { m.cool = MON_CD; continue; }
         const pick=chooseCombatMove(s,m,foe,()=>rand(s),{distance:near}),action=pick?.move||foeAction(m,near),wind=(windOf(m,action?.id,MON_CD)+(pick?.seconds||0))*zjWindK(s,m.pos,team);
         const start = interceptOpening(s, m, foe, () => rand(s), { depth: depthOf(m), move: action?.id, wind, map: true });
-        m.cool = MON_CD+(pick?.seconds||0);m.energy=(m.energy??100)-1;
+        m.cool = MON_CD+(pick?.seconds||0);commitCombatEffort(m);
         if (start.read?.kind === 'read') { m.hp -= start.read.counterDamage; clashFx(s, foe, 'read'); if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); } continue; }
         m.swing = { mv: action?.id, reach: action?.range || MON_REACH, tgt: foe.id, at: s.t + wind, wind, opening: start.opening }; warnFx(s, m, foe, MON_REACH, wind); }
       continue;
@@ -975,7 +978,7 @@ function trialStep(s,d,dt){
       if(near>MON_REACH){if(m.path?.length)monWalk(m,MONSTERS[m.k].speed*dt);else stepToward(m,d.pos,MONSTERS[m.k].speed*dt,MON_REACH*.8);}
       m.cool=(m.cool||0)-dt;
       if(m.swing&&s.t+1e-9>=m.swing.at){const w=m.swing;m.swing=null;if(dist(m.pos,d.pos)<=w.reach*1.3){const r=resolveSwing(s,m,d,()=>rand(s),{move:w.mv,wind:w.wind,opening:w.opening});if(r.counter)m.hp-=r.counterDamage;if(r.kind==='hit')d.hp=Math.max(30,d.hp-3*(r.heavy?CLASH.heavy:1)*r.contact.damageFactor);else clashFx(s,d,r.kind==='parry'?(r.jolt?'jolt':null):r.kind);}}
-      else if(!m.swing&&m.cool<=0&&dist(m.pos,d.pos)<=MON_REACH){const action=foeAction(m,dist(m.pos,d.pos)),wind=windOf(m,action.id,MON_CD);const start=interceptOpening(s,m,d,()=>rand(s),{move:action.id,wind});m.cool=MON_CD;m.energy=(m.energy??100)-1;if(start.read)m.hp-=start.read.counterDamage;else{m.swing={mv:action.id,tgt:d.id,at:s.t+wind,wind,reach:action.range,opening:start.opening};warnFx(s,m,d,action.range,wind);}}
+      else if(!m.swing&&m.cool<=0&&dist(m.pos,d.pos)<=MON_REACH){const action=foeAction(m,dist(m.pos,d.pos)),wind=windOf(m,action.id,MON_CD);const start=interceptOpening(s,m,d,()=>rand(s),{move:action.id,wind});m.cool=MON_CD;commitCombatEffort(m);if(start.read)m.hp-=start.read.counterDamage;else{m.swing={mv:action.id,tgt:d.id,at:s.t+wind,wind,reach:action.range,opening:start.opening};warnFx(s,m,d,action.range,wind);}}
     }
   }
   if(m.hp<=0){finishTrial(s,d,m,null);return;}
@@ -992,7 +995,7 @@ function trialStep(s,d,dt){
   }
   if(d.cool>0||(d.busyUntil||0)>s.t)return;
   const pick=chooseCombatMove(s,d,m,()=>rand(s)),mv=pick?.move;if(!mv||dist(m.pos,d.pos)>mv.range)return;
-  const wind=windOf(d,mv.id,mv.cd)+pick.seconds,start=interceptOpening(s,d,m,()=>rand(s),{move:mv.id,wind});d.cool=mv.cd+pick.seconds;if(mv.consumable)delete d.tools?.[mv.tool];
+  const wind=windOf(d,mv.id,mv.cd)+pick.seconds,start=interceptOpening(s,d,m,()=>rand(s),{move:mv.id,wind});d.cool=mv.cd+pick.seconds;commitCombatEffort(d);if(mv.consumable)delete d.tools?.[mv.tool];
   if(start.read){d.hp=Math.max(30,d.hp-start.read.counterDamage);return;}
   d.swing={mv:mv.id,tgt:m.uid,at:s.t+wind,wind,opening:start.opening};d.anim='wind';warnFx(s,d,m,mv.range,wind);
 }

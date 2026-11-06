@@ -182,3 +182,8 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 - 指令：`node solo-sect/tools/combat-history.mjs --seed 17 --days 10 --strategy trained-defend --trace-from 4200 --trace-to 4400 --trace out/arrival.json > out/history.json`。門檻：精力不足活動前置條件時真休息，不在[15,20)無限空轉；預期t4204休息出發→t4228.75實到柵邊。任選seed可用trace逐人檢查，時間值僅本seed觀測，不是其他seed保證。
 - 指令：`bash solo-sect/test/run.sh smoke`，門檻fail0，預期19/19。原N36唯一小測試包含普通同伴18.5精力與滿精力低氣血的真休養回歸。
 - [逐拍證據/世界原因](docs/evidence/r9-n36-arrival-root.md)。新10日主角刀仍只1次；尚未重產新60日逐trait，原失敗不撤銷。6秒守柵生命周期根因B待下一獨立修正。
+
+#### N36 持續交手根因B／新60日FAIL
+- 指令：上面公開10日`combat-history --trace`；門檻：空等不當練功扣精力/送style，在途攻擊不因6秒活動周期失去處理者；預期本seedt4217先到者精力80而非67.3333，原N36單測連續8秒守柵/取消不退時間通過。`bash solo-sect/test/run.sh smoke`門檻fail0，實測19/19。
+- 指令：`node solo-sect/tools/waves.mjs --seed 17 --history trained-defend --trait normal,calm,rash --snapshot-out out/snapshot.json --log out/waves.log.json`。門檻仍每trait/seed的1與2路都反擊、L≥1零反擊及人格比較。**最新實測FAIL**：normal0/0/1、calm1/1/7、rash2/0/0；超載counter全0；rashRush8<calm18、HP損155.0476>91.6190，不能合包宣稱通過。
+- 新真60日主角接刀0次、blade f.9797607118僅旁觀；全軍158 exchange不能代主角。不是自然放養、不是充分刀賊訓練、更不是任意seed已證明。完整[命令/前提/原始逐拍與snapshot/SHA](docs/evidence/r9-n36-arrival-root.md)。N35/N38/N50自然與N55最終表/影片仍待。

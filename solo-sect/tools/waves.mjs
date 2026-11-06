@@ -4,7 +4,7 @@ import path from 'node:path';
 import {createState,clone,rand} from '../src/sim.mjs';
 import {assessLoad,combatTacticStep,chooseCombatMove,interceptOpening,resolveSwing,postureRegen,fretStep,windOf,CLASH} from '../src/arts.mjs';
 import {movementSpeed,moveToward,COVERS,ringCapacity,distance,pursueFleeing,rememberEscape,restoreSurvivor} from '../src/tactics.mjs';
-import {foeAction} from '../src/starter-combat.mjs';
+import {foeAction,commitCombatEffort} from '../src/starter-combat.mjs';
 import {practiceWindow} from '../src/practice.mjs';
 import {growthSnapshots} from './growth-scenario.mjs';
 import {combatSnapshots} from './combat-history.mjs';
@@ -51,7 +51,7 @@ function run(count,trait){
        if(pick){const m=pick.move;if(distance(a.pos,target.pos)>m.range){moveToward(a,target.pos,movementSpeed(a),.25);reaction='approach';}
          else{const wind=(windOf(a,m.id,m.cd))+pick.seconds;
            const w={mv:m.id,id:m.id,wind,range:m.range,dmg:m.dmg,skill:m.skill,tgt:target.uid||target.id,at:s.t+wind};const before=capture(target,a,w),start=interceptOpening(s,a,target,()=>rand(s),{move:m.id,wind});if(start.read)finish(a,target,w,start.read,before,'opening');else a.swing={...w,opening:start.opening};a.next=s.t+m.cd+pick.seconds;
-           if(a===hero){stats.attacks++;if(a.raging)stats.rushAttacks++;a.needs.energy--;}else a.energy--;reaction='wind';}
+           if(a===hero){stats.attacks++;if(a.raging)stats.rushAttacks++;commitCombatEffort(a);}else commitCombatEffort(a);reaction='wind';}
        }
      }
    }

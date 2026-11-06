@@ -153,6 +153,22 @@ test('N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反�
  setOrder(hurt,patient.id,'defend');tick(hurt,.25);assert.equal(patient.task?.act,'rest');
  for(let i=0;i<240&&patient.hp<40;i++)tick(hurt,.25);
  assert.ok(patient.hp>=40,'精力已滿也得真的休養到同一活動氣血門檻');
+ const {newBand,FENCE}=await import('../src/threat.mjs'),{NODES}=await import('../src/data.mjs');
+ const watch=createState(17,{kind:'bare',askMajor:false}),watcher=watch.ds[0];watch.ds=[watcher];
+ watcher.pos=[...NODES[FENCE.node]];watcher.at=FENCE.node;watcher.needs.energy=100;
+ watch.band=newBand({pts:57,n:1,day:8},FENCE.node,watch);setOrder(watch,watcher.id,'defend');
+ const skill=watcher.skills[watcher.style];
+ for(let i=0;i<32;i++)tick(watch,.25);
+ assert.equal(watcher.task?.act,'defend');assert.equal(watcher.task?.phase,'do');
+ assert.ok(watcher.task.timer>6,'守柵不每6秒丟失守者/重排走位');
+ assert.equal(watcher.needs.energy,100,'敵人未進攻，等候不能當8精力的練功');
+ assert.equal(watcher.skills[watcher.style],skill,'空等也不能憑6秒周期練出武藝');
+ watcher.bswing={mv:'bodyPunch',tgt:watch.band.members[0].uid,at:watch.t+1,wind:1};watcher.needs.energy=19;
+ tick(watch,.25);assert.equal(watcher.task?.act,'defend','已起手的動作不能因活動周期/耗能先移出結算者');
+ assert.ok(watcher.bswing);watcher.bcool=2;watcher.busyUntil=watch.t+2;
+ setOrder(watch,watcher.id,'rest');assert.equal(watcher.bswing,null,'明確改派取消在途招，不留下過期攻擊');
+ assert.equal(watcher.bcool,2);assert.equal(watcher.busyUntil,watch.t+2,'取消不退回已占用時間');
+
 
 
 });

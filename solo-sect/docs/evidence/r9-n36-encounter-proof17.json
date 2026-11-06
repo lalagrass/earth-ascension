@@ -1,0 +1,14 @@
+{
+  "r9-n36-encounter-arrival17.json.gz": {
+    "bytes": 1432441,
+    "sha256": "2005d02e1a8172d2fec92e9f78544425ba32c41831403580ea6ab47e75d81a08"
+  },
+  "r9-n36-encounter-waves17.log.json.gz": {
+    "bytes": 2803243,
+    "sha256": "38a1a3898cf7ebbf3ca37b5d0a7484cf66d0bd8fd0f6dc33e6cb12f77e7c619d"
+  },
+  "r9-n36-encounter-snapshot17.json.gz": {
+    "bytes": 11215,
+    "sha256": "8a0eaa02380377baa1edc4ea15ee81ba285b2437118701f5aeaa968805624f24"
+  }
+}
