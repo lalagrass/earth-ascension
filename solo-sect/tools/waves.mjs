@@ -3,7 +3,7 @@ import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {createState,clone,rand} from '../src/sim.mjs';
-import {assessLoad,combatTacticStep,prepareCombatMove,beginCombatFrame,declareCombatSwing,flushCombatSwings,combatSwingReady,interceptOpening,resolveSwing,postureRegen,fretStep,windOf,CLASH} from '../src/arts.mjs';
+import {assessLoad,combatTacticStep,prepareCombatMove,beginCombatFrame,declareCombatSwing,flushCombatSwings,combatSwingReady,settleCombatSwing,interceptOpening,resolveSwing,postureRegen,fretStep,windOf,CLASH} from '../src/arts.mjs';
 import {movementSpeed,moveToward,COVERS,ringCapacity,distance,pursueFleeing,rememberEscape,restoreSurvivor} from '../src/tactics.mjs';
 import {foeAction} from '../src/starter-combat.mjs';
 import {practiceWindow} from '../src/practice.mjs';
@@ -28,37 +28,35 @@ function run(count,trait){
  hero.pos=count<3?[...COVERS.find(c=>c.id==='gate').stand]:[800,400];
  for(let i=0;i<count;i++)s.mons.push({k:'bandit',uid:`foe${i}`,hp:40,max:40,pos:[hero.pos[0]+20+i,hero.pos[1]],agi:20,weapon:'blade',energy:100,next:0,intentTarget:hero.id});
  const initialActorFingerprint=createHash('sha256').update(JSON.stringify({...hero,personality:undefined})).digest('hex');
- const rows=[],stats={count,trait,initialActorFingerprint,location:count<3?'gate(two slots)':'open',attacks:0,rushAttacks:0,hits:0,hpLost:0,counters:0,overloadBeats:0,overloadCounters:0};
+ const rows=[],stats={count,trait,initialActorFingerprint,location:count<3?'gate(two slots)':'open',attacks:0,rushAttacks:0,incomingResolved:0,timedIncoming:0,timeLoadFits:0,hits:0,hpLost:0,counters:0,overloadBeats:0,overloadCounters:0};
  const actors=[hero,...s.mons];
  const capture=(t,a,w)=>({attack:{...w},actors:actors.map(u=>({who:u.uid||u.id,busyUntil:u.busyUntil||0,next:u.next||0,cool:u.cool||u.bcool||0,swing:u.swing?{...u.swing}:null,intentTarget:u.intentTarget||null})),busyUntil:t.busyUntil||0,swing:t.swing?{...t.swing}:null,downUntil:t.downUntil||0,posture:t.posture,fret:t.fret,rageUntil:t.rageUntil||0,part:t.part,eyes:{...t.practice?.eyes},forecast:assessLoad(s,t,a,{move:w.id,wind:w.wind})});
  const finish=(a,t,w,r,before,phase)=>{
+   if(t===hero){stats.incomingResolved++;if(r.timing){stats.timedIncoming++;if(r.timing.L<1&&r.timing.r+r.timing.strike<r.timing.T)stats.timeLoadFits++;}}
    if(r.kind==='hit'){const dmg=a===hero?w.dmg*(1+(a.skills?.[w.skill]||0)/50):6;t.hp-=dmg*r.contact.damageFactor;if(t===hero){stats.hits++;stats.hpLost+=dmg*r.contact.damageFactor;}}
    if(r.counter){a.hp-=r.counterDamage;if(t===hero)stats.counters++;}
    const load=r.timing?.L??before.forecast.L;
    rows.push({t:s.t,who:t.uid||t.id,L:load,reaction:r.kind,counter:!!r.counter,type:'defense',phase,T:r.timing?.T??null,r:r.timing?.r??null,timing:r.timing??null,before,after:{busyUntil:t.busyUntil||0,posture:t.posture,fret:t.fret},attacker:a.uid||a.id,move:w.id});
    if(load>=1&&r.counter)stats.overloadCounters++;
  };
- for(;s.t<40&&hero.hp>25&&!hero.gone&&s.mons.some(m=>m.hp>0&&!m.gone);s.t+=.25){beginCombatFrame(s);for(const a of actors){
-   if(a.hp<=0||a.gone)continue;postureRegen(s,a,.25);fretStep(s,a);
+ for(;s.t<40&&hero.hp>25&&!hero.gone&&s.mons.some(m=>m.hp>0&&!m.gone);s.t+=.25){beginCombatFrame(s);
+  for(const a of actors)if(a.hp>0&&!a.gone){postureRegen(s,a,.25);fretStep(s,a);if(a.swing){const w=a.swing,t=actors.find(x=>(x.uid||x.id)===w.tgt);if(t)settleCombatSwing(s,a,t,w,()=>rand(s),()=>{if(distance(a.pos,t.pos)<=w.range*1.3){const before=capture(t,a,w),r=resolveSwing(s,a,t,()=>rand(s),{move:w.id,wind:w.wind,opening:w.opening});finish(a,t,w,r,before,s.t+1e-9<w.at?'intercept':'impact');}});}}
+  flushCombatSwings(s);
+  for(const a of actors){if(a.hp<=0||a.gone)continue;
    const candidates=a===hero?s.mons.filter(m=>m.hp>0&&!m.gone):[hero],target=candidates.sort((a,b)=>distance(a.pos,hero.pos)-distance(b.pos,hero.pos))[0];if(!target)continue;
-   const L=assessLoad(s,a).L;let reaction='idle',counter=false;
-   if(a.swing&&combatSwingReady(s,a,actors.find(x=>(x.uid||x.id)===a.swing.tgt),a.swing)){const w=a.swing;a.swing=null;const t=actors.find(x=>(x.uid||x.id)===w.tgt);
-     if(t?.hp>0&&distance(a.pos,t.pos)<=w.range*1.3){const before=capture(t,a,w);const r=resolveSwing(s,a,t,()=>rand(s),{move:w.id,wind:w.wind,opening:w.opening});reaction=r.kind;counter=!!r.counter;finish(a,t,w,r,before,s.t+1e-9<w.at?'intercept':'impact');
-     }
-   }
+   const L=assessLoad(s,a).L;let reaction='idle';
    if(!a.swing){const moved=combatTacticStep(s,a,.25,{exit:unit=>{rememberEscape(s,unit);unit.gone=true;}});reaction=moved?a.tactics.action:reaction;
-     if(!moved&&(a.busyUntil||0)<=s.t&&!(a.downUntil>s.t)&&s.t>=(a.next||0)){
-       if(a!==hero){const index=s.mons.filter(m=>m.hp>0&&!m.gone).indexOf(a);if(index>=ringCapacity(hero)){moveToward(a,[hero.pos[0]+50+index*4,hero.pos[1]],movementSpeed(a),.25);reaction='outer';rows.push({t:s.t,who:a.uid,L,reaction,counter:false,type:'beat'});continue;}}
-       const pick=prepareCombatMove(s,a,target,()=>rand(s),{distance:distance(a.pos,target.pos)});
-       if(pick){const m=pick.move;if(distance(a.pos,target.pos)>m.range){moveToward(a,target.pos,movementSpeed(a),.25);reaction='approach';}
-         else{const wind=(windOf(a,m.id,m.cd));
-           declareCombatSwing(s,a,target,()=>rand(s),{mv:m.id,id:m.id,wind,range:m.range,dmg:m.dmg,skill:m.skill,tgt:target.uid||target.id,decisionSeconds:pick.decisionSeconds},{clock:'next',absolute:true,cooldown:m.cd});
-           reaction='wind';}
-       }
-     }
+    if(!moved&&(a.busyUntil||0)<=s.t&&!(a.downUntil>s.t)&&s.t>=(a.next||0)){
+     if(a!==hero){const index=s.mons.filter(m=>m.hp>0&&!m.gone).indexOf(a);if(index>=ringCapacity(hero)){moveToward(a,[hero.pos[0]+50+index*4,hero.pos[1]],movementSpeed(a),.25);reaction='outer';rows.push({t:s.t,who:a.uid,L,reaction,counter:false,type:'beat'});continue;}}
+     const pick=prepareCombatMove(s,a,target,()=>rand(s),{distance:distance(a.pos,target.pos)});
+     if(pick){const m=pick.move;if(distance(a.pos,target.pos)>m.range){moveToward(a,target.pos,movementSpeed(a),.25);reaction='approach';}
+      else{const wind=windOf(a,m.id,m.cd);declareCombatSwing(s,a,target,()=>rand(s),{mv:m.id,id:m.id,wind,range:m.range,dmg:m.dmg,skill:m.skill,tgt:target.uid||target.id,decisionSeconds:pick.decisionSeconds},{clock:'next',absolute:true,cooldown:m.cd});reaction='wind';}}
+    }
    }
    rows.push({t:s.t,who:a.uid||a.id,L,reaction,counter:false,type:'beat',tactic:a.tactics?.action||null});if(a===hero&&L>=1)stats.overloadBeats++;
- }flushCombatSwings(s);if(hero.swing?.startedAt===s.t){stats.attacks++;if(hero.raging)stats.rushAttacks++;}}
+  }
+  flushCombatSwings(s);if(hero.swing?.startedAt===s.t){stats.attacks++;if(hero.raging)stats.rushAttacks++;}
+ }
  stats.hpLost=100-hero.hp; // 真正終局HP差，包含被反擊，不只主動挨打列的加總。
  stats.seconds=s.t;stats.escaped=actors.filter(a=>a.gone).map(a=>a.uid||a.id);return {stats,rows,events:s.events};
 }

@@ -102,6 +102,14 @@ test('N34 情境識別穩定後零決策時間，選招/心願所有人共用',a
   function simultaneous(reverse){const q=createState(90,{kind:'bare',askMajor:false}),a=q.ds[0];q.ds=[a];a.pos=[0,0];const b={k:'bandit',uid:'b',hp:40,pos:[20,0],weapon:'blade'};q.mons=[b];beginCombatFrame(q);
     const jobs=[()=>declareCombatSwing(q,a,b,()=>.5,{mv:'bodyPunch',tgt:'b',wind:windOf(a,'bodyPunch',1)}),()=>declareCombatSwing(q,b,a,()=>.5,{mv:'looterBlade',tgt:a.id,wind:.8})];if(reverse)jobs.reverse();jobs.forEach(f=>f());flushCombatSwings(q);return [a.swing.opening.T,b.swing.opening.T];}
   assert.deepEqual(simultaneous(false),simultaneous(true),'先發佈全體，再計算所有起手反應');
+  const {settleCombatSwing}=await import('../src/arts.mjs');const {shiftBalance}=await import('../src/contact.mjs');
+  function deadlineOrder(reverse,seed,tied=false){const q=createState(seed,{kind:'bare',askMajor:false});q.t=1.25;const a={id:'a',hp:100,swing:{at:1.1}},b={id:'b',hp:100,swing:{at:tied?1.1:1.2}};const trace=[];
+    const jobs=[[a,b],[b,a]];if(reverse)jobs.reverse();for(const[x,y]of jobs){const w=x.swing;settleCombatSwing(q,x,y,w,()=>rand(q),()=>{trace.push({who:x.id,t:q.t,deadline:w.resolvedDeadline});shiftBalance(q,y,100);});}flushCombatSwings(q);assert.equal(q.t,1.25,'到期事件不推進/倒退外層固定步時鐘');return trace;}
+  assert.deepEqual(deadlineOrder(false,17),[{who:'a',t:1.25,deadline:1.1}]);assert.deepEqual(deadlineOrder(true,17),deadlineOrder(false,17),'後入列但先到期者仍先打斷對手');
+  const winners=new Set(),tieProof=[];for(let seed=1;seed<=32;seed++){const x=deadlineOrder(false,seed,true);tieProof.push({seed,winner:x[0].who});assert.deepEqual(deadlineOrder(true,seed,true),x,'完全同時仲裁依種子，不依陣列');winners.add(x[0].who);}assert.equal(winners.size,2,'固定種子回播但沒有永遠id/主角優先');console.log('N34 deadline proof',JSON.stringify({forward:deadlineOrder(false,17),reverse:deadlineOrder(true,17),ties:tieProof}));
+  const distant={k:'bandit',hp:40,pos:[100,0]},viewer=createState(19,{kind:'bare',askMajor:false}).ds[0];viewer.pos=[0,0];
+  assert.equal(clashTimes({t:0,ds:[viewer],mons:[distant]},distant,viewer,{move:'looterStone',wind:1}).canCounter,false,'出手秒數夠也不能隔百步用拳截石');distant.pos=[20,0];assert.equal(clashTimes({t:0,ds:[viewer],mons:[distant]},distant,viewer,{move:'looterStone',wind:1}).canCounter,true);
+
   // 公開短史，不指定免費老師/ARTS/n/f：先真砍柴拿刀、真自修，再邀請。
   const {setOrder}=await import('../src/sim.mjs'),q=createState(17,{kind:'bare',askMajor:false});q.captureEvents=true;
   for(const a of q.ds)setOrder(q,a.id,'chop');

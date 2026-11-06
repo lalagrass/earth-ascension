@@ -1,4 +1,4 @@
-import {beginCombatFrame,observedActor,queueCombatStart,queueCombatDecision,flushCombatStarts} from './combat-timing.mjs';
+import {beginCombatFrame,observedActor,queueCombatStart,queueCombatDecision,flushCombatStarts,queueCombatImpact,flushCombatImpacts} from './combat-timing.mjs';
 export {beginCombatFrame};
 import {bodyOf,contactImpact,usableMove,woundWind,shiftBalance,recoverBody,healWounds,BODY_PARTS,TISSUES} from './contact.mjs';
 import {opponents,allies,loadFromForecast,coverFor,movementSpeed,distance,stepTactic} from './tactics.mjs';
@@ -1272,25 +1272,29 @@ export function prepareCombatMove(s,d,target,rnd,options={}){
   if(pick.seconds>0){d.anim='idle';d.combatDecision={...pick,move:pick.move?.id||null,readyAt:s.t+pick.seconds};const pending=d.combatDecision;queueCombatDecision(s,d,pending,()=>emitPractice(s,{type:'thinking',who:d.uid||d.id||d.k,move:pending.move,from:pending.startedAt,until:pending.readyAt}));return null;}
   return pick.move?{...pick,decisionSeconds:0}:null;
 }
-export function declareCombatSwing(s,atk,def,rnd,w,{slot='swing',ctx={},warn=true,cooldown=0,clock='cool',absolute=false}={}){
-  w={...w,startedAt:s.t,at:s.t+w.wind};
+export function declareCombatSwing(s,atk,def,rnd,w,{slot='swing',ctx={},warn=true,cooldown=0,clock='cool',absolute=false,interceptors=null}={}){
+  w={...w,startedAt:s.t,at:s.t+w.wind,map:!!ctx.map};
   queueCombatStart(s,atk,slot,w,()=>{
     if(atk.gone||atk.hp<=0||def.gone||def.hp<=0||atk[slot]||(atk.busyUntil||0)>s.t||(atk.downUntil||0)>s.t)return false;
-    atk[clock]=absolute?s.t+cooldown:cooldown;commitCombatEffort(atk);
+    atk[clock]=absolute?s.t+cooldown:cooldown;if(interceptors&&zjIntercept(s,atk,interceptors))return false;commitCombatEffort(atk);
     const move=typeof w.mv==='object'?w.mv:MOVES.find(m=>m.id===w.mv);if(move?.consumable)delete atk.tools?.[move.tool];
     if(warn)(s.fx??=[]).push({kind:'warn',from:[...atk.pos],to:[...def.pos],r:w.reach||w.range||26,dur:w.wind,ttl:w.wind,t0:s.t});
     emitPractice(s,{type:'windup',who:atk.uid||atk.id||atk.k,target:def.uid||def.id||def.k,move:w.mv?.id||w.mv,start:s.t,arrival:w.at,wind:w.wind,decisionSeconds:w.decisionSeconds||0});return true;
   },()=>{const start=interceptOpening(s,atk,def,rnd,{...ctx,move:w.mv?.id||w.mv,wind:w.wind,deferRead:true});w.opening=start.opening;w.readAt=start.readAt??null;});
   return w;
 }
-export const flushCombatSwings=s=>flushCombatStarts(s);
+export const flushCombatSwings=s=>{flushCombatImpacts(s);flushCombatStarts(s);};
 export function delayCombatSwing(w,seconds){if(!w)return;w.at+=seconds;w.wind+=seconds;if(w.opening){w.opening.T.windowEnd+=seconds;w.opening.T.wind+=seconds;}}
-export function combatSwingReady(s,atk,def,w){
-  if(s.t+1e-9>=w.at)return true;
-  const o=w.opening;if(w.readAt==null||!o||!def)return false;
-  const start=Math.max(o.T.windowStart,def.busyUntil||0,def.swing?.at||0,def.bswing?.at||0,def.downUntil||0),due=start+o.reaction+o.T.strike;
-  w.readAt=due;
-  return due<o.T.windowEnd&&s.t+1e-9>=due&&assessLoad(s,def,atk,{move:w.mv?.id||w.mv,wind:w.wind}).L<1&&postureOf(def)>0&&!(def.rageUntil>s.t)&&def.part?.where!=='eye'&&!(def.visionUntil>s.t);
+export function combatSwingDueAt(s,atk,def,w){
+ const o=w.opening;if(w.readAt==null||!o||!def)return w.at;
+ const start=Math.max(o.T.windowStart,def.busyUntil||0,def.swing?.at||0,def.bswing?.at||0,def.downUntil||0),due=start+o.reaction+o.T.strike;
+ w.readAt=due;if(!(due<o.T.windowEnd)||distance(atk.pos,def.pos)>(fastestMove(def).range||0))return w.at;
+ const can=assessLoad(s,def,atk,{move:w.mv?.id||w.mv,wind:w.wind}).L<1&&postureOf(def)>0&&!(def.rageUntil>s.t)&&def.part?.where!=='eye'&&!(def.visionUntil>s.t)&&atk.sure!==(def.uid||def.id)&&!(w.map&&isMon(atk)&&zjHas(def,'dugu'));
+ return can?due:w.at;
+}
+export const combatSwingReady=(s,atk,def,w)=>s.t+1e-9>=combatSwingDueAt(s,atk,def,w);
+export function settleCombatSwing(s,atk,def,w,rnd,settle,{slot='swing'}={}){
+ queueCombatImpact(s,{id:String(atk.uid||atk.id||atk.k),rnd,owned:()=>atk[slot]===w&&!atk.gone&&atk.hp>0,dueAt:()=>combatSwingDueAt(s,atk,def,w),settle:deadline=>{w.resolvedDeadline=deadline;w.processedAt=s.t;atk[slot]=null;if(def&&!def.gone&&def.hp>0)settle(w);}});
 }
 export function fastestMove(d) {
   const moves = combatMoves(d);
@@ -1382,7 +1386,7 @@ export function clashTimes(s, atk, def, ctx = {}) {
   const guard = def.bare ? BODY_TIMING.guard : T.guard;
   const busy = Math.max(0, (def.busyUntil || 0) - (s?.t ?? 0), (def.swing?.at || 0) - (s?.t ?? 0), (def.bswing?.at || 0) - (s?.t ?? 0),(def.downUntil||0)-(s?.t??0));
   const load=assessLoad(s,def,atk,ctx).L;
-  return { wind: Math.max(0, wind - busy), windowStart:(s?.t??0)+busy, windowEnd:(s?.t??0)+wind, reaction, jitter, strike, step, guard, busy,load,canCounter:load<1 };
+  return { wind: Math.max(0, wind - busy), windowStart:(s?.t??0)+busy, windowEnd:(s?.t??0)+wind, reaction, jitter, strike, step, guard, busy,load,responseReach:response.range,canCounter:load<1&&distance(atk.pos,def.pos)<=(response.range||0) };
 }
 // 平移 log-logistic：簡單反應 .2 秒為物理下限，其餘有正尾，不造勝率保底。
 export const drawReaction = (T, rnd) => { const u = rnd(); return PRACTICE.reactionFloor + (T.reaction - PRACTICE.reactionFloor) * (u / (1 - u)) ** T.jitter; };
@@ -1461,7 +1465,7 @@ function resolveSwingCore(s, atk, def, rnd, ctx = {}) {
   if (def.posture <= 0) { return settleDefense(s, def, T, { kind: 'hit', heavy: true, why: 'open' },ctx); }
   if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return settleDefense(s, def, T, { kind: 'hit', heavy: false, why: ctx.force || 'sure' },ctx); }
   const reaction = ctx.opening?.reaction ?? drawReaction(T,rnd);
-  const load=ctx.opening?assessLoad(s,def,atk,ctx).L:T.load,canCounter=load<1;
+  const load=ctx.opening?assessLoad(s,def,atk,ctx).L:T.load,canCounter=load<1&&distance(atk.pos,def.pos)<=(fastestMove(def).range||0);
   const timing={T:T.wind,r:reaction,step:T.step,strike:T.strike,guard:T.guard,L:load,windowStart:T.windowStart,windowEnd:T.windowEnd};
   const zjAtk = ctx.map && !isMon(atk) ? zjOfMove(ctx.move) : null; /* #426 */
   const duguPassive = ctx.map && isMon(atk) && zjHas(def, 'dugu') && (s?.codex?.[atk.k]?.insight || 0) >= ZJ.dugu.insight; /* 獨孤：讀招改成被動截，不再擲讀招 */

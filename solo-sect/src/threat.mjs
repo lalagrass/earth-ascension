@@ -1,7 +1,7 @@
 import {transferredDamage} from './arts.mjs';
 import {RING} from './combat-space.mjs';
 import {movementSpeed,moveToward,ringCapacity,rememberEscape,restoreSurvivor,distance} from './tactics.mjs';
-import { combatMoves,combatTacticStep,fretStep,prepareCombatMove,beginCombatFrame,declareCombatSwing,flushCombatSwings,combatSwingReady,delayCombatSwing, fastestMove, windOf } from './arts.mjs';
+import { combatMoves,combatTacticStep,fretStep,prepareCombatMove,beginCombatFrame,declareCombatSwing,flushCombatSwings,combatSwingReady,settleCombatSwing,delayCombatSwing, fastestMove, windOf } from './arts.mjs';
 import { practiceWindow } from './practice.mjs';
 import { foeAction } from './starter-combat.mjs';
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
@@ -178,11 +178,11 @@ function bandClash(s, b, defs, dt) {
   beginCombatFrame(s);
   const fight = defs.filter((d) => d.hp > 0 && d.pos), live = () => b.members.filter((m) => m.hp > 0&&!m.gone);
   for(const d of fight){fretStep(s,d);postureRegen(s,d,dt);if(d.downUntil>s.t)continue; d.bcool = (d.bcool ?? 0) - dt; /* 冷卻含前搖（收招＝冷卻剩下的時間） */
-    if (d.bswing) { if (!combatSwingReady(s,d,b.members.find(x=>x.uid===d.bswing.tgt),d.bswing)) continue; const w = d.bswing; d.bswing = null; const m = b.members.find((x) => x.uid === w.tgt && x.hp > 0); if (!m) continue;
+    if (d.bswing) { if (!combatSwingReady(s,d,b.members.find(x=>x.uid===d.bswing.tgt),d.bswing)) continue; const w = d.bswing; const m = b.members.find((x) => x.uid === w.tgt && x.hp > 0); if (!m) {d.bswing=null;continue;}settleCombatSwing(s,d,m,w,()=>R(s),()=>{
       const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, move: w.mv, wind: w.wind, opening:w.opening, map: true }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
       if(r.counter)d.hp=Math.max(1,d.hp-r.counterDamage);
       if (r.kind === 'hit') { breakWindup(s, d, m, w.mv, w.wind, r.contact); bandHit(s, b, m, w.dmg * (r.heavy ? CLASH.heavy : 1) * r.contact.damageFactor, d); } else (s.fx ||= []).push({ kind: 'clash', word: r.kind === 'dodge' ? '閃' : r.kind === 'parry' ? '架' : '破', color: '#ddd', pos: [...(m.pos || b.pos)], ttl: 0.6 });
-      continue; }
+      },{slot:'bswing'});continue; }
     if(!canDefend(d))continue; // 已起手者先結算，低於門檻不能再起手；任務層再真走去休養。
     if(combatTacticStep(s,d,dt,{help:(a,id)=>{const h=s.ds.find(x=>x.id===id);if(h&&h.order!=='defend'&&h.task?.act!=='defend'){h.order='defend';cancelTask(s,h,`${a.name}喊援`);h.reason=`${a.name}喊援`; }}}))continue;
     if (d.bcool > 0 || (d.busyUntil || 0) > s.t) continue;
@@ -200,7 +200,7 @@ function bandClash(s, b, defs, dt) {
     if (m.swing && d.bswing && !m.swing.x && d.bswing.tgt === m.uid && lightCross(d.skills?.agility || 0, m.agi || 0, m.swing.at, d.bswing.at, () => R(s))) { /* #425 輕功交錯：兩人同時突進、互相穿過 */
       m.swing = null; d.bswing = null; postureHit(s, m, WITCH.crossDrop); postureHit(s, d, WITCH.crossDrop); b.cross = (b.cross || 0) + 1; s.crossN = (s.crossN || 0) + 1;
       (s.fx ||= []).push({ kind: 'cross', pos: [(m.pos[0] + d.pos[0]) / 2, (m.pos[1] + d.pos[1]) / 2], ttl: 0.6 }); if (b.cross === 1) log(s, `【輕功交錯】${d.name}和一名山賊同時突進，擦身而過，火花一閃，兩人都退了半步`); continue; }
-    if (m.swing) { if (!combatSwingReady(s,m,d,m.swing)) continue; const w = m.swing; m.swing = null; handleTake(s, d);
+    if (m.swing) { if (!combatSwingReady(s,m,d,m.swing)) continue; const w = m.swing;settleCombatSwing(s,m,d,w,()=>R(s),()=>{handleTake(s, d);
       const r = resolveSwing(s, m, d, () => R(s), { depth: 2, move: w.mv, wind: w.wind, opening: w.opening }); (b.cl ??= {})['m' + r.kind] = (b.cl['m' + r.kind] || 0) + 1;
       if (r.kind === 'dodge' && perfectDodge(s, d, () => R(s), { strain: r.strain })) b.witch = (b.witch || 0) + 1;
       if(r.counter)bandHit(s, b, m, r.counterDamage, d);
@@ -208,7 +208,7 @@ function bandClash(s, b, defs, dt) {
         if (zjHas(d, 'taiji') || zjHas(d, 'taijiSword')) { const share = taijiReturn(m, null, w.wind); bandHit(s,b,m,transferredDamage(s,d,m,incoming*share,r.contact.force*share),d); incoming *= 1 - share; zjMark(s, d, zjHas(d, 'taiji') ? 'taiji' : 'taijiSword'); }
         if (zjHas(d, 'jiuyang')) { postureHit(s, m, ZJ.jiuyang.shock); zjMark(s, d, 'jiuyang'); }
         d.hp = Math.max(1, d.hp - incoming); (s.fx ||= []).push({ kind: 'bite', pos: [...d.pos], ttl: 0.4 }); partHit(s, d, r, { attack: m, rnd: () => R(s) }); }
-      continue; }
+      });continue; }
     if (m.cool > 0 || m.ring !== 1||distance(m.pos,d.pos)>Math.max(26,foeAction(m,distance(m.pos,d.pos)).range)*1.3) continue;
     ready.push({ m, d });
   }
@@ -217,8 +217,8 @@ function bandClash(s, b, defs, dt) {
   for (let i = 0; i < ready.length; i++) {
     const { m, d } = ready[i];
     if (delays[i] > 0) { m.cool = delays[i]; continue; }
-    const pick=prepareCombatMove(s,m,d,()=>R(s));if(!pick)continue;if(zjIntercept(s,m,fight)){m.cool=BAND_CLASH.monCd;continue;}const action=pick.move,wind=windOf(m,action.id,action.cd);
-    m.opened = true;declareCombatSwing(s,m,d,()=>R(s),{mv:action.id,tgt:d.id,wind,decisionSeconds:pick.decisionSeconds},{ctx:{depth:2},cooldown:BAND_CLASH.monCd});
+    const pick=prepareCombatMove(s,m,d,()=>R(s));if(!pick)continue;const action=pick.move,wind=windOf(m,action.id,action.cd);
+    m.opened = true;declareCombatSwing(s,m,d,()=>R(s),{mv:action.id,tgt:d.id,wind,decisionSeconds:pick.decisionSeconds},{ctx:{depth:2},cooldown:BAND_CLASH.monCd,interceptors:fight});
   }
   flushCombatSwings(s);
 }

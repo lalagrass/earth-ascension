@@ -3,7 +3,7 @@ import {distance,moveToward,movementSpeed} from '../src/tactics.mjs';
 import {mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {createState,rand,clone,facStage} from '../src/sim.mjs';
-import {prepareCombatMove,beginCombatFrame,declareCombatSwing,flushCombatSwings,combatSwingReady,resolveSwing,postureRegen,postureMax,fretStep,CLASH,windOf} from '../src/arts.mjs';
+import {prepareCombatMove,beginCombatFrame,declareCombatSwing,flushCombatSwings,combatSwingReady,settleCombatSwing,resolveSwing,postureRegen,postureMax,fretStep,CLASH,windOf} from '../src/arts.mjs';
 import {DAY} from '../src/data.mjs';
 import {CORE} from '../src/core.mjs';
 import {BODY_TIMING} from '../src/starter-combat.mjs';
@@ -19,21 +19,26 @@ function run(seed,a0,b0){
   const s=createState(seed,{kind:'bare',askMajor:false});s.ds=[clone(a0),clone(b0)];s.fx=[];s.captureEvents=true;s.events=[];
   for(const[d,i]of s.ds.map((d,i)=>[d,i])){d.id=i?'B':'A';d.uid=d.id;d.faction=d.id;d.pos=[100+i*20,100];d.hp=100;d.needs.energy=CORE.wakeAt;d.posture=postureMax(d);d.busyUntil=0;d.fret=0;d.raging=false;d.rageUntil=0;d.swing=null;d.bswing=null;d.next=0;d.downUntil=0;d.faintUntil=0;d.balanceOpenUntil=0;d.wounds=[];d.part=null;d.pain=0;d.painAt=-1e9;d.task=null;d.away=false;delete d.combatDecision;}
   const rows=[],injuries={A:0,B:0},breaths={A:0,B:0},minimal={A:0,B:0},incoming={A:0,B:0},counters={A:0,B:0};let untouched=0;
-  for(;s.t<DAY&&s.ds.every(d=>d.hp>25);s.t+=.25){beginCombatFrame(s);for(const d of s.ds){postureRegen(s,d,.25);fretStep(s,d);const other=s.ds.find(o=>o!==d);
-    if(d.resting){d.needs.energy=Math.min(CORE.wakeAt,d.needs.energy+(facStage(s,'hall').restRate||1)*.25);if(d.needs.energy>=CORE.wakeAt)d.resting=false;continue;}
-    if(d.downUntil>s.t)continue;
-    if(d.swing&&combatSwingReady(s,d,other,d.swing)){const w=d.swing,before={posture:other.posture,downUntil:other.downUntil||0,busyUntil:other.busyUntil||0,swing:other.swing&&{...other.swing},fret:other.fret||0};d.swing=null;if(distance(d.pos,other.pos)>w.mv.range*1.3)continue;const result=resolveSwing(s,d,other,()=>rand(s),{move:w.mv.id,wind:w.wind,opening:w.opening});let injured=false;
+  for(;s.t<DAY&&s.ds.every(d=>d.hp>25);s.t+=.25){beginCombatFrame(s);
+   for(const d of s.ds){postureRegen(s,d,.25);fretStep(s,d);const other=s.ds.find(o=>o!==d);
+    if(d.swing){const w=d.swing;settleCombatSwing(s,d,other,w,()=>rand(s),()=>{const before={posture:other.posture,downUntil:other.downUntil||0,busyUntil:other.busyUntil||0,swing:other.swing&&{...other.swing},fret:other.fret||0};if(distance(d.pos,other.pos)>w.mv.range*1.3)return;const result=resolveSwing(s,d,other,()=>rand(s),{move:w.mv.id,wind:w.wind,opening:w.opening});let injured=false;
       if(result.kind==='hit'){const dmg=w.mv.dmg*(1+(d.skills[w.mv.skill]||0)/50)*(result.heavy?CLASH.heavy:1);other.hp-=dmg*result.contact.damageFactor;if(result.contact.injured){injuries[other.id]++;injured=true;}}
       if(result.counter){d.hp-=result.counterDamage;counters[other.id]++;if(result.counterContact.injured){injuries[d.id]++;injured=true;}}
       if(!injured)untouched++;incoming[other.id]++;if(result.kind==='dodge'&&(result.timing?.step??Infinity)<=BODY_TIMING.simple/2)minimal[other.id]++;
       const t=result.timing,m=result.kind==='read'?t?.strike:result.kind==='dodge'?(t?.step+(result.counter?t?.strike:0)):result.kind==='parry'?t?.guard:0;
       rows.push({t:s.t,attacker:d.id,defender:other.id,move:w.mv.id,decision:w.decision,start:w.startedAt,arrival:w.at,readAt:w.readAt,kind:result.kind,T:t?.T??null,r:t?.r??null,m:m??null,movement:t?.step??null,L:t?.L??null,margin:t?t.T-t.r-m:null,counter:!!result.counter,forced:!t,why:result.why||null,injured,before,after:{posture:other.posture,downUntil:other.downUntil||0,busyUntil:other.busyUntil||0},contact:result.contact||null,counterContact:result.counterContact||null});
-    }
+    });}
+   }
+   flushCombatSwings(s);
+   for(const d of s.ds){const other=s.ds.find(o=>o!==d);
+    if(d.resting){d.needs.energy=Math.min(CORE.wakeAt,d.needs.energy+(facStage(s,'hall').restRate||1)*.25);if(d.needs.energy>=CORE.wakeAt)d.resting=false;continue;}
+    if(d.downUntil>s.t)continue;
     if(d.swing||s.t<d.next||(d.busyUntil||0)>s.t)continue;
     if(d.needs.energy<=CORE.sleepAt){d.resting=true;breaths[d.id]++;continue;}
     const pick=prepareCombatMove(s,d,other,()=>rand(s));if(!pick)continue;const mv=pick.move;if(distance(d.pos,other.pos)>mv.range){moveToward(d,other.pos,movementSpeed(d),.25);continue;}const wind=windOf(d,mv.id,mv.cd);
     declareCombatSwing(s,d,other,()=>rand(s),{mv,tgt:other.id,wind,range:mv.range,decision:pick.decisionSeconds,decisionSeconds:pick.decisionSeconds},{clock:'next',absolute:true,cooldown:mv.cd});
-  }flushCombatSwings(s);}
+   }flushCombatSwings(s);
+  }
   return {seed,exchanges:rows.length,injuries,breaths,uninjured:untouched/Math.max(1,rows.length),minimal,incoming,counters,rows,events:s.events};
 }
 const results=seeds.map(n=>run(n,aName==='day60'?master:novice,bName==='day60'?master:novice)),baseline=aName==='day60'?seeds.map(n=>run(n,novice,novice)):results;

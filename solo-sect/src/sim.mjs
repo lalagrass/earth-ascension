@@ -7,7 +7,7 @@ import {finishTrainingWish,TRAINING_CAUSES} from './decision.mjs';
 import { PRACTICE,ensurePractice, rehearse, practiceWork, practiceWindow } from './practice.mjs';
 import { BODY_TIMING, BODY_BASE, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { resolveDrill,clashTimes,clashOdds,drawReaction,combatTacticStep, prepareCombatMove,beginCombatFrame,declareCombatSwing,flushCombatSwings,combatSwingReady,delayCombatSwing, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, noteDemonstration, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
+import { resolveDrill,clashTimes,clashOdds,drawReaction,combatTacticStep, prepareCombatMove,beginCombatFrame,declareCombatSwing,flushCombatSwings,combatSwingReady,settleCombatSwing,delayCombatSwing, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, noteDemonstration, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { SOURCES } from './data.mjs';
 import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
@@ -734,8 +734,8 @@ function huntStep(s, dt) {
     if(!m.swing&&combatTacticStep(s,m,mdt,{exit:a=>{rememberEscape(s,a);a.gone=true;h.escaped++;s.eco[a.k].n++;}}))continue;
     if (m.swing) { const action = FOE_ACTIONS[m.k]?.moves.find((a) => a.id === m.swing.mv); if (action?.travel && foe) stepToward(m, foe.pos, action.range / action.wind * mdt, MON_REACH * .8); /* #418 N14 前搖中站定；前搖結束才判接法 */
       if (!combatSwingReady(s,m,team.find(d=>d.id===m.swing.tgt),m.swing)) continue;
-      const w = m.swing, tgt = team.find((d) => d.id === w.tgt); m.swing = null;
-      if (!action?.feint&&tgt && tgt.hp > 25 && dist(tgt.pos, m.pos) < (w.reach || MON_REACH) * 1.3) monStrike(s, h, m, tgt, M, zk, w);
+      const w = m.swing, tgt = team.find((d) => d.id === w.tgt);
+      if(tgt)settleCombatSwing(s,m,tgt,w,()=>rand(s),()=>{if(!action?.feint&&tgt.hp>25&&dist(tgt.pos,m.pos)<(w.reach||MON_REACH)*1.3)monStrike(s,h,m,tgt,M,zk,w);});else m.swing=null;
       if (m.gone) continue;
     }
     const near = foe ? dist(foe.pos, m.pos) : 1e9, actionRange = foeAction(m, near)?.range || MON_REACH;
@@ -745,10 +745,10 @@ function huntStep(s, dt) {
         m.slot = foe.id; m.orbit = null; }
       if (near > MON_REACH * 0.95 && !foeAction(m, near)?.minDistance) { stepToward(m, foe.pos, M.speed * mdt, MON_REACH * 0.8); continue; }
       if(m.cool<=0&&!(m.downUntil>s.t)){ /* #426 獨孤：觀破過的獸一起手就被截；太極圈內前搖拉長 */
-        const pick=prepareCombatMove(s,m,foe,()=>rand(s),{distance:near});if(!pick)continue;if(zjIntercept(s,m,team)){m.cool=MON_CD;continue;}const action=pick.move,wind=(windOf(m,action?.id,MON_CD))*zjWindK(s,m.pos,team);
+        const pick=prepareCombatMove(s,m,foe,()=>rand(s),{distance:near});if(!pick)continue;const action=pick.move,wind=(windOf(m,action?.id,MON_CD))*zjWindK(s,m.pos,team);
 
 
-        declareCombatSwing(s,m,foe,()=>rand(s),{mv:action.id,reach:action.range||MON_REACH,tgt:foe.id,wind,decisionSeconds:pick.decisionSeconds},{ctx:{depth:depthOf(m),map:true},cooldown:MON_CD}); }
+        declareCombatSwing(s,m,foe,()=>rand(s),{mv:action.id,reach:action.range||MON_REACH,tgt:foe.id,wind,decisionSeconds:pick.decisionSeconds},{ctx:{depth:depthOf(m),map:true},cooldown:MON_CD,interceptors:team}); }
       continue;
     }
     m.slot = null; m.orbit = null;
@@ -762,7 +762,7 @@ function huntStep(s, dt) {
     if (d.task?.act!=='hunt'||d.at !== h.post || d.path.length) continue;
     d.cool -= dt;
     const live = s.mons.filter((m) => !m.gone && m.hp > 0 && !m.raid);
-    if (d.swing) { if (combatSwingReady(s,d,s.mons.find(m=>m.uid===d.swing.tgt),d.swing)) { const w = d.swing; d.swing = null; dStrike(s, h, d, live, w); } continue; } /* #418 前搖 → 出手；收招＝冷卻剩下的時間 */
+    if (d.swing) { if (combatSwingReady(s,d,s.mons.find(m=>m.uid===d.swing.tgt),d.swing)) { const w = d.swing,tgt=s.mons.find(m=>m.uid===w.tgt);if(tgt)settleCombatSwing(s,d,tgt,w,()=>rand(s),()=>dStrike(s,h,d,s.mons.filter(m=>!m.gone&&m.hp>0&&!m.raid),w));else d.swing=null; } continue; } /* #418 前搖 → 出手；收招＝冷卻剩下的時間 */
     if(combatTacticStep(s,d,dt,{speed:speedOf(d),help:(a,id)=>{const helper=byId(s,id);if(helper&&!h.team.includes(id)){h.team.push(id);helper.order='hunt';cancelTask(s,helper,`${a.name}喊來幫手`);assign(s,helper,'hunt','同門喊援，沿山路趕去');}},exit:a=>{a.order=null;cancelTask(s,a,'不敵先退');assign(s,a,'rest','退到山門後歇息');}}))continue;
     if(d.cool>0||(d.busyUntil||0)>s.t||(d.downUntil||0)>s.t) continue;
     const aim=live.sort((a,b)=>dist(a.pos,d.pos)-dist(b.pos,d.pos))[0];if(!aim)continue;
@@ -992,7 +992,7 @@ function trialStep(s,d,dt){
       const near=dist(m.pos,d.pos);
       if(near>MON_REACH){if(m.path?.length)monWalk(m,MONSTERS[m.k].speed*dt);else stepToward(m,d.pos,MONSTERS[m.k].speed*dt,MON_REACH*.8);}
       m.cool=(m.cool||0)-dt;
-      if(m.swing&&combatSwingReady(s,m,d,m.swing)){const w=m.swing;m.swing=null;if(dist(m.pos,d.pos)<=w.reach*1.3){const r=resolveSwing(s,m,d,()=>rand(s),{move:w.mv,wind:w.wind,opening:w.opening});if(r.counter)m.hp-=r.counterDamage;if(r.kind==='hit')d.hp=Math.max(30,d.hp-3*(r.heavy?CLASH.heavy:1)*r.contact.damageFactor);else clashFx(s,d,r.kind==='parry'?(r.jolt?'jolt':null):r.kind);}}
+      if(m.swing&&combatSwingReady(s,m,d,m.swing)){const w=m.swing;settleCombatSwing(s,m,d,w,()=>rand(s),()=>{if(dist(m.pos,d.pos)<=w.reach*1.3){const r=resolveSwing(s,m,d,()=>rand(s),{move:w.mv,wind:w.wind,opening:w.opening});if(r.counter)m.hp-=r.counterDamage;if(r.kind==='hit')d.hp=Math.max(30,d.hp-3*(r.heavy?CLASH.heavy:1)*r.contact.damageFactor);else clashFx(s,d,r.kind==='parry'?(r.jolt?'jolt':null):r.kind);}if(m.hp<=0)finishTrial(s,d,m,null);});}
       else if(!m.swing&&m.cool<=0&&dist(m.pos,d.pos)<=MON_REACH){const pick=prepareCombatMove(s,m,d,()=>rand(s));if(pick){const action=pick.move,wind=windOf(m,action.id,action.cd);declareCombatSwing(s,m,d,()=>rand(s),{mv:action.id,tgt:d.id,wind,reach:action.range,decisionSeconds:pick.decisionSeconds},{cooldown:MON_CD});}}
     }
   }
@@ -1000,13 +1000,13 @@ function trialStep(s,d,dt){
   if(d.downUntil>s.t||d.path.length)return;
   if(!d.swing&&combatTacticStep(s,d,dt,{speed:speedOf(d),exit:a=>{a.tactics={action:'brace'};}}))return;
   task.phase='do';task.timer+=dt;d.face=m.pos[0]>=d.pos[0]?1:-1;d.cool=(d.cool||0)-dt;
-  if(d.swing){if(!combatSwingReady(s,d,m,d.swing))return;const w=d.swing;d.swing=null;const mv=MOVES.find(x=>x.id===w.mv);if(!mv||dist(m.pos,d.pos)>mv.range*1.3)return;
+  if(d.swing){if(!combatSwingReady(s,d,m,d.swing))return;const w=d.swing;settleCombatSwing(s,d,m,w,()=>rand(s),()=>{const mv=MOVES.find(x=>x.id===w.mv);if(!mv||dist(m.pos,d.pos)>mv.range*1.3)return;
     const r=resolveSwing(s,d,m,()=>rand(s),{move:mv.id,wind:w.wind,opening:w.opening});d.anim='strike';
     if(r.counter)d.hp=Math.max(30,d.hp-r.counterDamage);
     if(r.kind==='hit'){m.hp-=landOn(s,d,m,mv,mv.dmg*(1+d.skills[mv.skill]/50)*moveMul(d,mv.id,s.t),MONSTERS[m.k].name)*(r.heavy?CLASH.heavy:1)*r.contact.damageFactor;breakWindup(s,d,m,mv.id,w.wind,r.contact);}
     else clashFx(s,m,r.kind==='parry'?(r.jolt?'jolt':null):r.kind);
     s.fx.push({kind:'move',mfx:mv.fx,name:mv.name,color:mv.color,from:[...d.pos],to:[...m.pos],r:16,ttl:.6,tier:visTier(d,mv.id),sprite:d.sprite,face:d.face});
-    if(m.hp<=0)finishTrial(s,d,m,mv);return;
+    if(m.hp<=0)finishTrial(s,d,m,mv);});return;
   }
   if(d.cool>0||(d.busyUntil||0)>s.t)return;
   const pick=prepareCombatMove(s,d,m,()=>rand(s)),mv=pick?.move;if(!mv||dist(m.pos,d.pos)>mv.range)return;

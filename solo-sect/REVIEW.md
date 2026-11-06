@@ -206,3 +206,9 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 #### N36 busy需求重收修復／N34傷分類
 - 指令：`bash solo-sect/test/run.sh smoke`；門檻fail0，預期19/19，原N36唯一test加入同busy不乘敵人數、T仍真扣占用、L≥1禁反擊對照。
 - 指令同[busy根因證據](docs/evidence/r9-n36-busy-rate.md)。原門檻不變，waves本seed normal2/0/0、calm0/0/2、rash1/0/0 **FAIL**；duel20無傷33.9713743749% **FAIL**。新contact/前後架勢/事件只是唯讀分類，不改受傷定義，不將calm沒有真來招當反應缺陷；後續排序修復仍待。
+
+#### N34 舊在途真到期排序／固定拍公平仲裁（仍未驗收通過）
+- 指令：`bash solo-sect/test/run.sh smoke`。門檻fail0，預期19/19；只延伸原N34唯一test，`N34 deadline proof` forward/reverse均先1.10到期招在1.25處理、真打斷1.20招；exact tie同seed逆序不變，無角色優先。
+- 指令：照[完整指令/原始SHA/手算三筆](docs/evidence/r9-n34-deadline.md)從repo舊prepared60快照跑waves。原門檻每seed/trait 1/2路反擊、L≥1零反擊不變；本樣本normal0/2/0、calm0/0/0、rash0/1/0 **FAIL**。calm一路incomingResolved0，不將缺來招當反應慢，也不改gate。唯讀timeLoadFits不含所有身體條件，不能稱完整反擊機會。
+- 指令：`node solo-sect/tools/duel.mjs --a day1 --b day1 --seeds 1-20 --log out/duel.json`。原門檻中位≥30、無傷≥70%；本次308／**32.6916748931% FAIL**、meanBreaths6.05，反擊傷0；普通踢3416次瘀青是主要傷源，不刪瘀青或縮力湊門檻。
+- 到期時刻只排序、世界仍原.25秒處理拍；resolvedDeadline/processedAt分列，不倒退恢復時鐘。上面是未改舊能力的短因果隔離，不冒充新head最終60日；其他自然護欄及N55最終三seed/影片/真人仍欠。
