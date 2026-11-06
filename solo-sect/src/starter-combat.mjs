@@ -16,9 +16,9 @@ export const BODY_BASE = BODY_MOVES.filter((m) => !m.tool).map((m) => m.id);
 export const INSTINCTS = { guard: { name: '抬手擋', action: 0 }, back: { name: '退', action: BODY_TIMING.step }, shout: { name: '喊', action: 0 } };
 export const WORK_TOOLS = { chop: 'knife', farm: 'hoe', water: 'pole', quarry: 'stone', forage: 'staff' };
 export const FOE_ACTIONS = {
-  dog: { mass: 24, armor: 2, force: 10, speed: 38, chase: true, circle: true, threat: { stone: 'back', staff: 'anger' }, moves: [{ id:'dogBite', name:'撲咬', family:'bite', wind:.4, force:10, range:26, bite:true }] },
-  boar: { mass: 120, armor: 32, force: 40, speed: 18, moves: [{ id:'boarCharge',name:'衝撞',family:'charge',wind:1,force:40,range:80,minDistance:40,travel:true }, { id:'boarToss',name:'拱挑',family:'charge',wind:.5,force:32,range:26 }] },
-  bandit: { mass:70, armor:8, force:14, speed:28, moves:[{ id:'looterStone',name:'丟石頭',family:'throw',wind:.5,force:18,range:120,minDistance:60,once:true }, { id:'looterBlade',name:'砍',family:'cut',wind:.6,force:25,range:32,weapon:'blade',cut:true }, { id:'looterStaff',name:'棍',family:'thrust',wind:.5,force:24,range:60,weapon:'staff' }, { id:'looterFist',name:'空手拳',family:'punch',wind:.5,force:14,range:28 }] },
+  dog: { hands:0,mass: 24, armor: 2, force: 10, speed: 38, chase: true, circle: true, threat: { stone: 'back', staff: 'anger' }, moves: [{ id:'dogBite', name:'撲咬', family:'bite', wind:.4, force:10, range:26, bite:true }] },
+  boar: { hands:0,mass: 120, armor: 32, force: 40, speed: 18, moves: [{ id:'boarCharge',name:'衝撞',family:'charge',wind:1,force:40,range:80,minDistance:40,travel:true }, { id:'boarToss',name:'拱挑',family:'charge',wind:.5,force:32,range:26 }] },
+  bandit: { hands:2,mass:70, armor:8, force:14, speed:28, moves:[{ id:'looterStone',type:'stone',name:'丟石頭',family:'throw',wind:.5,force:18,range:120,minDistance:60,once:true }, { id:'looterBlade',type:'blade',name:'砍',family:'cut',wind:.6,force:25,range:32,weapon:'blade',cut:true }, { id:'looterStaff',type:'staff',name:'棍',family:'thrust',wind:.5,force:24,range:60,weapon:'staff' }, { id:'looterFist',type:'fist',name:'空手拳',family:'punch',wind:.5,force:14,range:28 }] },
 };
 export const bodyMove = (id) => BODY_MOVES.find((m) => m.id === id);
 export function foeAction(w, distance = 0) {

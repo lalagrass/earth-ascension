@@ -173,7 +173,7 @@ function bandHit(s, b, m, dmg, who) {
 }
 function bandClash(s, b, defs, dt) {
   const fight = defs.filter((d) => d.hp >= BAND.hpMin && d.pos), live = () => b.members.filter((m) => m.hp > 0);
-  for (const d of fight) { postureRegen(s, d, dt); d.bcool = (d.bcool ?? 0) - dt; /* 冷卻含前搖（收招＝冷卻剩下的時間） */
+  for(const d of fight){postureRegen(s,d,dt);if(d.downUntil>s.t)continue; d.bcool = (d.bcool ?? 0) - dt; /* 冷卻含前搖（收招＝冷卻剩下的時間） */
     if (d.bswing) { if (s.t + 1e-9 < d.bswing.at) continue; const w = d.bswing; d.bswing = null; const m = b.members.find((x) => x.uid === w.tgt && x.hp > 0); if (!m) continue;
       const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, move: w.mv, wind: w.wind, map: true }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
       if(r.counter)d.hp=Math.max(1,d.hp-r.counter);
@@ -187,7 +187,7 @@ function bandClash(s, b, defs, dt) {
   }
   if (b.state !== 'yard') return;
   const ready = [];
-  for (const m of live()) { postureRegen(s, m, dt); const d = fight.find((x) => x.id === m.foe) || fight[0]; if (!d) break;
+  for(const m of live()){postureRegen(s,m,dt);if(m.downUntil>s.t)continue; const d = fight.find((x) => x.id === m.foe) || fight[0]; if (!d) break;
     const wk = witchK(s, m.pos), mdt = dt * wk; if (m.swing && wk < 1) m.swing.at += dt - mdt; /* #425 林克時間圈內的山賊放慢 */ m.cool = (m.cool ?? 0) - mdt;
     if (m.swing && d.bswing && !m.swing.x && d.bswing.tgt === m.uid && lightCross(d.skills?.agility || 0, m.agi || 0, m.swing.at, d.bswing.at, () => R(s))) { /* #425 輕功交錯：兩人同時突進、互相穿過 */
       m.swing = null; d.bswing = null; postureHit(s, m, WITCH.crossDrop); postureHit(s, d, WITCH.crossDrop); b.cross = (b.cross || 0) + 1; s.crossN = (s.crossN || 0) + 1;

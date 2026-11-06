@@ -93,3 +93,19 @@ test('N34 情境識別穩定後零決策時間，選招/心願所有人共用',a
   assert.ok(new Set(favorites).size>=2,JSON.stringify(favorites));
   t.busyUntil=0;t.posture=100;resolveSwing(s,d,t,()=>.999,{move:'bodyPunch',wind:.45});assert.ok(t.trainingWish?.evidence);finishTrainingWish(t,'spar');
 });
+
+
+test('N35 母招/條件/效果全資料化，只有真失手加w，弱敵期望慢逾10倍',async()=>{
+  const {TECHNIQUES,learnFromLoss,applyTechnique,learningRate}=await import('../src/techniques.mjs');
+  const {breakWindup}=await import('../src/arts.mjs');
+  const s=createState(17,{kind:'bare',askMajor:false}),d=s.ds[0],boar={k:'boar',uid:'boar',hp:100,pos:[20,0],posture:70,swing:{at:1,mv:'boarCharge',wind:1}};
+  d.wu=3;const facts={hands:2,afterDodge:true,opponentCharge:true,force:24,opponentForce:40};
+  assert.equal(learningRate(.5)/learningRate(.9)>10,true);
+  for(let i=0;i<60;i++)learnFromLoss(s,d,['leg'],facts,.99,{lost:false});assert.equal(d.glimmer,undefined);
+  for(let i=0;i<24;i++)learnFromLoss(s,d,['leg'],facts,.5,{lost:true});
+  assert.ok(d.glimmer.known.includes('flankStrike'));assert.ok(d.moves.includes('flankStrike'));
+  assert.equal(breakWindup(s,d,boar,'bodyKick',.6),false);
+  const out=applyTechnique(s,d,boar,'flankStrike',facts);assert.equal(out.armorBypass,true);assert.equal(out.interrupt,true);assert.equal(boar.swing,null);
+  assert.equal(TECHNIQUES.length,6);const enemy={k:'bandit',uid:'bandit',wu:3};
+  for(let i=0;i<24;i++)learnFromLoss(s,enemy,['guard'],{hands:2,weapon:'blade',opponentWind:true},.5,{lost:true});assert.ok(enemy.glimmer.known.includes('disarm'));
+});

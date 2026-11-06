@@ -242,3 +242,29 @@ N48 的練功套路及交手畫面共用 `routines.mjs` 的姿勢與 `pose-rende
 `duel.mjs`用真選招/resolveSwing、固定.25秒。day60取growth-scenario合法公開指派的完整60日主角，不灌n/f/技能；同台前恢復HP/精力/架勢，屬受控休息後交手，不是野外生存率。`--seeds`為交手亂數；同一命令共用一段`--training-seed`（預設--seed或1）的真訓練史，換--seed會重跑該訓練史，乾淨clone可重現，不載作者快取。
 
 目前N34 commit前20交手種子：day1/day1中位38次，無傷接觸33.3782%（**尚未達70%**），平均喘氣0；day60/day1最小移步32.2581%對baseline0，同拍反擊31次。後者通過工具關卡，前者的未傷門檻要在N37同張力/傷口門檻接到全實戰與duel後重驗；現階段仍以每次HP扣減當傷，不調低傷害/加保底來湊數。N37未完成前不得宣稱duel全通過。
+
+
+## N35 吃虧後悟招（#445定案）
+
+理由：順手的舊辦法沒有改動誘因；在同一困境用母招沒得手，才把問題記成可累積的嘗試。`learnFromLoss`只接真resolveSwing的失手/挨打，預覽與巡山expected不冒充真失手。一次失手加`w=4p(1-p)`，**不再乘一次(1-p)**；平均速率是`4p(1-p)^2`，p=.9的.036對p=.5的.5，慢13.8889倍。沒有p截斷或專屬主角倍率。門檻=difficulty/悟性；普通複合技巧difficulty72代表普通悟性3需24份有效困境，撒土96需32份（還要承受不光彩的選擇），擲石開場48需16份。這是起始困境練習量假設，以自然玩法第一招約d7–10為校準目標，**尚未以bot12確認達標，不能把單元fixture當日數證據**。
+
+每一招只有`母招tags+條件詞+效果詞`資料列，程式不認招名。人與山賊共用，物種能否握物只看hands資料。悟到即加入真MOVES可選招池並記大事記；仍須同情境才使得出效果，不能任意連控。側擊不加傷害/命中係數，僅讓這次側面的接觸繞過霸體並可打斷；分層損傷效果與完整對豬勝率由N37受力機制接入後重驗。掃的範圍中心是出招者，不是遠處目標。
+
+來源：SaGa閃光只借母招概念；[CDDA貢獻指南](https://github.com/CleverRaven/Cataclysm-DDA/wiki/New-Contributor-Guide-Martial-Arts)與欄位定義（issue舊MARTIALART_JSON網址現回404）借固定條件/效果組合；[DF摔角](https://dwarffortresswiki.org/index.php/Wrestle)借抓出招手中斷/奪械。沒有複製CDDA的程式、JSON招式/數值或文字。詞彙對照如下，標「延伸」者是本作事件語義，不假稱CDDA原欄位：
+
+| 本作詞 | CDDA相近欄位／差異 |
+|---|---|
+| hands、opponentWeapon | unarmed_allowed/condition、disarms的持械條件 |
+| opponentWind | block_counter＋condition（本作時間窗口延伸） |
+| afterDodge | dodge_counter／OnDodge buff |
+| opponentCharge | condition/required_buffs；本作讀來招travel標記，不認敵人名字 |
+| surrounded | aoe/condition；本作以身邊敵數≥3，來自#445資料列 |
+| opponentUnbalanced | stunned_target/downed_target的條件思路；本作讀半架勢以下 |
+| losing、cornered | condition、wall_adjacent；讀HP半數或N36掩體狀態 |
+| approaching | reach_tec/condition的距離條件思路；本作有路徑且尚未起手 |
+| interrupt、disarm | stun/tech_effects、disarms；實際打斷/奪械仍比雙方勁 |
+| armorBypass、area | penetration類bonus、aoe；不搬其數值 |
+| knockdown | down_dur；起身=.55收招+.3移步=.85秒，固定步長內不能走或出手 |
+| blind、dishonor、lure | tech_effects；本作短視障=.55+.6=1.15秒、一次不光彩行為xia−1；石誘導N36行走接入 |
+
+刀掉在真地面`drops`，原持有者變空手；人物接近到N32抱的伸及20px可花.2秒撿拾，畫面畫同一份Canvas地面刀，不加素材。屬復用通用詞彙的效果，不是六個具名特例。N35小測試只證明失手/權重/資料效果、人敵共用；60日12seed弱敵不悟、首悟日與完整對豬勝率都仍待第九輪收尾bot12/N37，不可提前打勾。

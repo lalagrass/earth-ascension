@@ -1,3 +1,4 @@
+import {TECHNIQUE_MOVES} from './technique-data.mjs';
 import { BODY_MOVES } from './starter-combat.mjs';
 import TREES from './destiny-trees.json' with { type: 'json' };
 import { COMBAT_MOVE_SETS } from './combat-pose-sets.mjs';
@@ -196,6 +197,7 @@ export const ACTIVITIES = {
 // 武學：熟練門檻解鎖；範圍/冷卻/傷害由 palm 技能放大
 export const MOVES = [
   ...BODY_MOVES,
+  ...TECHNIQUE_MOVES,
   { id: 'fist', skill: 'palm', name: '基礎拳', req: 0, range: 34, cd: 1.0, dmg: 4, aoe: 0, color: '#8a6a4a' },
   { id: 'push', skill: 'palm', name: '推山掌', req: 25, range: 60, cd: 1.6, dmg: 8, aoe: 0, color: '#b0482e' },
   { id: 'wave', skill: 'palm', name: '迴風掌', req: 60, range: 80, cd: 3.0, dmg: 7, aoe: 70, color: '#3d6b8a' },
