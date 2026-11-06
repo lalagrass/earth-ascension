@@ -3,6 +3,8 @@ import { fanRank, CEILING, SPECIALS, BRANCHES } from './artcard.mjs';
 import { ARTS, TRAITS, DAY } from './data.mjs';
 import { aff, relAdd } from './social.mjs';
 import { log, resAdd } from './util.mjs';
+import {cancelTask,durOf} from './core.mjs';
+import {emitPractice} from './practice.mjs';
 // ==== （原 bonds.mjs）====
 // v1.65 人物與門派運作：共同記憶帳本、名俠池畫風濾鏡、傳功、收徒（資料表＋小解讀器）
 
@@ -113,9 +115,9 @@ export function canTeachArt(s, m, d, artId) {
 export function startTeachArt(s, m, d, artId) {
   if (!canTeachArt(s, m, d, artId)) return false;
   const id = typeof artId === 'string' ? artId : artId.id;
-  m.teaching = { pupil: d.id, art: id };
+  m.teaching = { pupil: d.id, art: id, introSeconds:0 };
   if (isFamousArt(id)) (m.taught28 ||= {})[id] = d.id;
-  if (!d.arts?.[id]) { learnArt(d, id, s.t); growEnsure(d); log(s, `【傳授】${m.name}開始教${d.name}《${artById(id).name}》`); addMem(s, m, d, 'pass', artById(id).name); }
+  if (!d.arts?.[id]) log(s, `【傳授預約】${m.name}將當面教${d.name}《${artById(id).name}》，尚未入門`);
   return true;
 }
 
@@ -153,8 +155,8 @@ export function teachStage(s, m, d, artId) {
 export const TEACH_NEAR = 60;
 export function teachMul(s, d, artId) {
   const m = s?.ds?.find((o) => o.teaching?.pupil === d.id);
-  if (!m || m.away || !(m.teachCool > 0) || (artId && m.teaching.art !== artId)) return 1;
-  if (artTier(d, m.teaching.art) >= artTier(m, m.teaching.art) - 1) return 1;
+  if (!m || m.away || (m.busyUntil>s.t)||(d.busyUntil>s.t)||(m.downUntil>s.t)||(d.downUntil>s.t)||!(m.teachCool > 0) || (artId && m.teaching.art !== artId)) return 1;
+  if (!d.arts?.[m.teaching.art] || artTier(d, m.teaching.art) >= artTier(m, m.teaching.art) - 1) return 1;
   if (m.task?.act !== 'teach' || m.task.phase !== 'do' || d.task?.teach !== m.id) return 1;
   if (!m.pos || !d.pos || Math.hypot(m.pos[0] - d.pos[0], m.pos[1] - d.pos[1]) > TEACH_NEAR) return 1;
   return TEACH_ART.mul;
@@ -216,11 +218,42 @@ export function assemble(s, k) {
   resAdd(s, k, -MANUALS[k].need); (s.manuals ??= []).push({ k, art: art.id });
   log(s, `【秘笈】${MANUALS[k].need} 張${k === 'page1' ? '凡階' : '精階'}殘頁湊成《${art.name}》${MANUALS[k].name}，可指定弟子研讀`); return { ok: true, art: art.id };
 }
-export function learnManual(s, i, did, think) {
-  const m = s.manuals?.[i], d = s.ds.find((x) => x.id === did); if (!m || !d) return { ok: false, why: '查無' };
-  const a = artById(m.art); if (d.arts?.[a.id]) return { ok: false, why: `${d.name}已會${a.name}` };
-  const miss = reqMissing(d, a); if (miss.length) return { ok: false, why: `${d.name}還差：${miss.join('、')}` };
-  learnArt(d, a.id, s.t); s.manuals.splice(i, 1); think?.(s, d, 'learned'); log(s, `${d.name}研讀秘笈，學會了${a.name}`); return { ok: true };
+// Pure source query: being eligible for an art is not possessing its material.
+const bookClaimed=(s,m,d)=>m.uid&&s.ds.some(o=>o!==d&&(o.task?.lesson?.manualId===m.uid||o.lessonRequest?.manualId===m.uid));
+const teacherFree=(s,m,d)=>m.teaching?.pupil===d.id&&m.teachCool>0||(!m.order&&!m.path?.length&&!m.teachCool&&!m.task?.teach&&!m.task?.partner&&!s.resv?.[`actor:${m.id}`]&&!(m.downUntil>s.t)&&(!m.task||['train','meditate','leisure'].includes(m.task.act)));
+export function lessonSource(s,d,artId=d.lessonRequest?.art||d.pendingArt){
+ const a=ARTS.find(a=>a.id===artId);if(!a||d.arts?.[artId]||reqMissing(d,a).length||gated(d,a))return null;
+ const books=s.manuals||[],i=books.findIndex(m=>m.art===artId&&(!d.lessonRequest?.manualId||d.lessonRequest.manualId===m.uid)&&!bookClaimed(s,m,d));
+ if(i>=0)return {kind:'manual',art:artId,index:i,manualId:books[i].uid||null};
+ if(d.lessonRequest?.manualId)return null;
+ const m=s.ds.filter(m=>canTeachArt(s,m,d,a)&&teacherFree(s,m,d)).sort((x,y)=>x.id.localeCompare(y.id))[0];
+ return m?{kind:'teacher',art:artId,teacher:m.id}:null;
+}
+export function identifyManual(s,m){if(!m.uid){do{m.uid=`manual-${s.manualSerial=(s.manualSerial||0)+1}`;}while(s.manuals.some(o=>o!==m&&o.uid===m.uid));}return m.uid;}
+export function lessonValid(s,d,source){
+ if(!source||d.away||d.hp<=25||d.path?.length)return false;
+ const a=ARTS.find(a=>a.id===source.art);if(!a||d.arts?.[a.id]||reqMissing(d,a).length||gated(d,a))return false;
+ if(source.kind==='manual')return d.task?.act==='learn'&&d.task.phase==='do'&&d.task.lesson?.manualId===source.manualId&&(s.manuals||[]).some(m=>m.uid===source.manualId&&m.art===source.art);
+ const m=s.ds.find(m=>m.id===source.teacher);
+ return !!m&&canTeachArt(s,m,d,a)&&m.task?.act==='teach'&&m.task.phase==='do'&&d.task?.teach===m.id&&d.task.phase==='do'&&!m.path?.length&&Math.hypot(m.pos[0]-d.pos[0],m.pos[1]-d.pos[1])<=60;
+}
+export function completeLesson(s,d,source,seconds){
+ const required=durOf(s,{act:'learn',fac:'hall'});if(!(seconds>=required)||!lessonValid(s,d,source))return false;
+ const a=learnArt(d,source.art,s.t);growEnsure(d);
+ if(source.kind==='manual'){const i=s.manuals.findIndex(m=>m.uid===source.manualId);s.manuals.splice(i,1);}
+ if(d.order==='learn')d.order=d.lessonRequest?.returnOrder||null;delete d.lessonRequest;
+ emitPractice(s,{type:'lesson',who:d.id,art:a.id,source:{...source},seconds,required});
+ log(s,source.kind==='manual'?`${d.name}花${seconds.toFixed(2)}秒研讀真秘笈，學會「${a.name}」`:`${s.ds.find(m=>m.id===source.teacher).name}當面傳授${d.name}「${a.name}」（共同${seconds.toFixed(2)}秒）`);
+ return true;
+}
+export function learnManual(s,i,did){
+ const m=s.manuals?.[i],d=s.ds.find(x=>x.id===did);if(!m||!d)return {ok:false,why:'查無'};
+ const a=artById(m.art);if(d.arts?.[a.id])return {ok:false,why:`${d.name}已會${a.name}`};
+ const miss=reqMissing(d,a);if(miss.length||gated(d,a))return {ok:false,why:`${d.name}尚不符合前提：${miss.join('、')}`};
+ if(bookClaimed(s,m,d))return {ok:false,why:'這本教材正有人研讀'};
+ const manualId=identifyManual(s,m),returnOrder=d.order==='learn'?d.lessonRequest?.returnOrder:d.order;
+ cancelTask(s,d,'安排研讀真秘笈');d.pendingArt=a.id;d.lessonRequest={art:a.id,manualId,returnOrder:returnOrder||null};d.order='learn';
+ log(s,`${d.name}準備研讀《${a.name}》，須到場花真時辰，不是按鈕即學會`);return {ok:true,queued:true};
 }
 // ---- 喜好：吃與喝合成一套；嗜酒者必好酒 ----
 export const FOODS = ['紅燒肉', '叫化雞', '陽春麵', '饅頭鹹菜'], DRINKS = ['女兒紅', '竹葉青', '清茶'];

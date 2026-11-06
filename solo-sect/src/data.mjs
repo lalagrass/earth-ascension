@@ -1,3 +1,6 @@
+import {completeContactMove} from './contact.mjs';
+import {TECHNIQUE_MOVES} from './techniques.mjs';
+import { BODY_MOVES } from './starter-combat.mjs';
 import TREES from './destiny-trees.json' with { type: 'json' };
 import { COMBAT_MOVE_SETS } from './routines.mjs';
 // ==== （原 hero-data.mjs）====
@@ -182,18 +185,20 @@ export const ACTIVITIES = {
   train:  { name: '練功', dur: 10, energy: -10, skill: { style: 5 } }, // style＝弟子主修路數
   meditate: { name: '打坐衝關', dur: 12, energy: -8 },
   spar:   { name: '切磋', dur: 8, energy: -10, skill: { style: 4 } },
-  learn:  { name: '聽師父講武', dur: 8, energy: -2, skill: { palm: 3 }, social: 10 },
+  learn:  { name: '研讀或聽講', dur: 8, energy: -2, skill: { palm: 3 }, social: 10 },
   build:  { name: '施工', dur: 6, energy: -6, skill: { strength: 2 } },
   chat:   { name: '聊天', dur: 6, social: 35, fun: 20 },
   encourage: { name: '鼓勵同門', dur: 6, social: 20 },
   leisure: { name: '閒坐看雲', dur: 8, fun: 45, energy: 3 },
   deliver: { name: '送回院倉', dur: 0 },
-  defend: { name: '守柵迎敵', dur: 6, energy: -8, skill: { style: 1 } }, // loop3：只有山賊在地圖上時出現
+  defend: { name: '守柵迎敵', dur: 6, encounter: 'band', minHp: 40, minEnergy: 20 }, // loop3：只有山賊在地圖上時出現
   repair: { name: '修柵', dur: 8, energy: -6, skill: { strength: 2 } }, // loop2：只有築了木柵且受損時才會出現
 };
 
 // 武學：熟練門檻解鎖；範圍/冷卻/傷害由 palm 技能放大
 export const MOVES = [
+  ...BODY_MOVES,
+  ...TECHNIQUE_MOVES,
   { id: 'fist', skill: 'palm', name: '基礎拳', req: 0, range: 34, cd: 1.0, dmg: 4, aoe: 0, color: '#8a6a4a' },
   { id: 'push', skill: 'palm', name: '推山掌', req: 25, range: 60, cd: 1.6, dmg: 8, aoe: 0, color: '#b0482e' },
   { id: 'wave', skill: 'palm', name: '迴風掌', req: 60, range: 80, cd: 3.0, dmg: 7, aoe: 70, color: '#3d6b8a' },
@@ -246,7 +251,7 @@ export const PLOT_GROW = 90; // 秒，播種到成熟
 export const HARVEST = 3;    // 每畦收菜
 export const STYLES = { palm: '掌法', leg: '腿法' };
 // v0.4 後山生態：族群有上限與繁衍；狩獵是真的取走個體
-export const ECO = { rat: { start: 6, max: 8, regen: 50 }, boar: { start: 2, max: 3, regen: 150 } };
+export const ECO = { dog: { start: 5, max: 8, regen: 90 }, rat: { start: 6, max: 8, regen: 50 }, boar: { start: 2, max: 3, regen: 150 } };
 export const HABITAT = { c: [1450, 60], r: 70 };
 /* #419 N15 合法出生點：敵人只從這張表出來——離地圖邊緣 ≤ edge、離大殿 ≥ hall。獸從獸穴、棲地、東嶺；山賊從山門。
    via：出生點到守點山路的座標（都在山那一側，不從門派背後冒出來）；接上 guard 之後沿原山路走。 */
@@ -618,6 +623,7 @@ export const AURA = { fist: '#b08a5a', palm: '#d0582e', leg: '#6b9a3d', inner: '
 // ---- v0.95 敵人種類與圖鑑（觀破值）----
 // kind：獸／人；flee：殘血時逃走機率；loot：整數必得、小數為機率
 export const ENEMIES = {
+  dog: { name: '野狗', kind: '獸', weapon: '利齒', hp: 14, dmg: 3, cd: 1.2, flee: 0.5, loot: {}, home: { sprite: 'dog', speed: 65 } },
   rat:    { name: '山鼠',     kind: '獸', weapon: '利齒', hp: 10,  dmg: 2,  cd: 1.0, flee: 0.5,  loot: {} },
   hare:   { name: '野兔',     kind: '獸', weapon: '牙爪', hp: 8,   dmg: 1,  cd: 1.2, flee: 0.6,  loot: { food: 1 } },
   boar:   { name: '野豬',     kind: '獸', weapon: '獠牙', hp: 40,  dmg: 6,  cd: 1.3, flee: 0.1,  loot: { food: 3, hide: 1 } },
@@ -756,7 +762,7 @@ A13('bagua', '五郎八卦棍', 'leg', 2, ['剛'], [['bg1', '五郎八卦棍', 1
 A13('hama', '蛤蟆功', 'palm', 4, ['剛', '蓄'], [['hm1', '蛤蟆功', 2.2, 40, 60, '#6a8a3a']], { signature: 'huoyunxieshen', mode: 'da', qiScale: 0.08, isPublic: false, cats: { neigong: 1 }});
 // 每門武學都有動作型別；兵器列繼承既有 weapon，指法與獨孤在資料列明寫。
 for (const art of ARTS) {
-  art.type ??= art.weapon === 'sword' ? 'sword' : 'fist';
+  art.type ??= ({sword:'sword',blade:'blade',staff:'staff',finger:'finger'})[art.weapon]||'fist';
   art.routine ??= ({ sword: 'sword', 劍: 'sword', blade: 'blade', 刀: 'blade', staff: 'staff', whip: 'staff' })[art.weapon]
     || (art.cats?.jianfa ? 'sword' : art.cats?.gunbang ? 'staff' : null)
     || (art.school === 'leg' ? 'leg' : art.school === 'palm' ? 'palm' : 'fist');
@@ -764,6 +770,7 @@ for (const art of ARTS) {
 for (const mv of MOVES) {
   const art = ARTS.find((a) => a.techs?.includes(mv.id));
   const kind = art?.routine || (mv.skill === 'leg' ? 'leg' : 'fist');
+  mv.type ??= kind==='leg'?'leg':art?.type||kind;
   const choices = COMBAT_MOVE_SETS[kind] || COMBAT_MOVE_SETS.fist;
   mv.poses ??= choices[Math.max(0, art?.techs?.indexOf(mv.id) ?? 0) % choices.length];
 }
@@ -777,7 +784,7 @@ Object.assign(TRAITS, { quiet: { name: '清冷', desc: '心情起伏減半，不
 TRAITS.quiet.mods24 = { meditate: 1.35, study: 1.2, chat: 0.75 };
 
 // ---- v1.55a 合併敵人表：家裡用的地圖走速與立繪掛在 ENEMIES[k].home；ring＝牠在巡山第幾環（族群歸屬）----
-Object.assign(ENEMIES.rat, { home: { speed: 40, sprite: 'rat' } }); Object.assign(ENEMIES.boar, { home: { speed: 28, sprite: 'boar' } });
+Object.assign(ENEMIES.rat, { home: { speed: 40, sprite: 'rat' } }); Object.assign(ENEMIES.boar, { home: { speed: 80, sprite: 'boar' } });
 for (const [k, e] of Object.entries(ENEMIES)) { const i = ROUTE.findIndex((g) => g.roster.some(([x]) => x === k)); e.ring = i >= 0 ? ROUTE[i].id : null; }
 ENEMIES.rat.ring = 'foot'; // 山鼠不在巡山名單，棲在山腳
 for (const [k, e] of Object.entries(ENEMIES)) if (e.home) MONSTERS[k] = { name: e.name, hp: e.hp, speed: e.home.speed, dmg: e.dmg, sprite: e.home.sprite, ring: e.ring };
@@ -832,7 +839,7 @@ export const DAO = { tagOf: { 巧: '破綻', 剛: '蓄力', 柔: '卸力', 拙: 
     boar: '蓄力', boars: '蓄力', bear: '蓄力', bandit: '蓄力', chief: '蓄力', ape: '蓄力', whiteape: '蓄力',
     wolfking: '破綻', post: '蓄力', python: '卸力', pythonking: '卸力', swordtomb: '歸真', peakguard: '歸真' } };
 // ---- v1.76 糧食安全閘（BALANCE-REPORT-v175 P0）：存糧＋菜 < 每人 perHead 份 → 種菜升為需求層、其餘非必要活動 ×gateMul ----
-export const FOOD_SEC = { perHead: 1.5, farm: 75, gateMul: 0.35, keep: ['eat', 'rest', 'farm', 'cook', 'heal', 'watch', 'trial', 'build', 'deliver'] };
+export const FOOD_SEC = { cookFloor: 10, perHead: 1.5, farm: 75, gateMul: 0.35, keep: ['eat', 'rest', 'farm', 'cook', 'heal', 'watch', 'trial', 'build', 'deliver'] };
 
 // ==== （原 sect-data.mjs）====
 // v1.35 門派身分（ROADMAP §18）：主角＝門派。純資料，無 import（arts.mjs 也會用）
@@ -916,7 +923,7 @@ export const SCORE = [
   { act: 'chat', when: ['others'], v: { lin: ['n.social', 100], mul: [0.6, 'tr.social', 'tr.playful', 0.8] }, why: '想找人說話' },
   { act: 'leisure', tiers: [{ if: 'dull', v: { lin: ['fun', 100], mul: [0.55] }, why: '悶得慌，想偷閒' }, { v: { lin: ['fun', 100], mul: [0.55] }, why: '想坐坐看雲' }] },
   { act: 'encourage', when: ['encourageOk'], v: { lin: ['low.mood', 35], mul: [1.5], plus: 40 }, why: '{low.name}心情低落，去打打氣' },
-  { act: 'learn', when: ['pending'], v: 80, why: '師父能傳「{pendingName}」' },
+  { act: 'learn', when: ['pending'], v: 80, why: '有真教材或師父可學「{pendingName}」' },
   { act: 'meditate', tiers: [{ if: 'btOk', v: 75, why: '「{btName}」卡在瓶頸，打坐衝關' }, { if: 'wexin', v: { lin: ['negWexin', 0], mul: [20], plus: 30 }, why: '心中違心，閉關靜坐' }] },
   { act: 'train', v: { pick: ['d.adult', 40, 18], mul: ['tr.diligent'] }, why: '練功變強' },
   { act: 'spar', when: ['sparOk'], v: { pick: [true, 34, 34], mul: ['tr.diligent'] }, why: '找人切磋' },
@@ -927,7 +934,7 @@ export const SCORE = [
   { gen: true }, // v1.6 建築活動（ACTIVITIES[].gen）在這個位置展開
   { act: 'build', when: ['siteWork'], v: { pick: [true, 55, 55], mul: [{ pick: ['d.adult', 1, 0.6] }] }, why: '{buildWhy}' },
   { act: 'rest', when: ['nightRest'], v: 60, why: '入夜歇息' },
-  { act: 'cook', when: ['cookable'], v: { lin: ['food', 10], mul: [4], plus: 30 }, why: '灶上該煮飯了' },
+  { act: 'cook', when: ['cookable'], v: { lin: ['food', 'cookTarget'], mul: [4], plus: 30 }, why: '灶上該煮飯了' },
 ];
 // v1.8 打分後處理＝純資料（原 scoreActs 內的 if）：依序套用；sim.mjs 的 postRows() 是唯一解讀器。
 // who：labor／notLabor；if：前提（POST_PRED 名，「!」開頭取反）；acts／except：作用範圍（陣列或 K.* 常數名）；
@@ -985,3 +992,6 @@ export function destinyStep(s, id, ctx) {
   }
   return false;
 }
+
+// 共用接觸資料補全：招式可逐列覆寫肢側、部位、偏移衝量。
+for(const m of MOVES)completeContactMove(m);

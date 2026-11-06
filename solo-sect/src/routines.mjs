@@ -1,3 +1,4 @@
+import { playbackParams } from './growth-playback.mjs';
 // N48：只供畫面使用的動作資料。招序採釋德建系的 22 段（含起收），
 // 姿勢由本專案自行擺出，沒有複製任何現代圖解或授權不明的舊插圖。
 // source: https://alphabethankakueisuj.livedoor.blog/archives/1642688.html
@@ -38,6 +39,9 @@ export const POSTURES = {
   bladeCut: { legs: 'rightBow', arms: 'bladeCut', lean: 6, weapon: 'blade' },
   staffReady: { legs: 'horse', arms: 'staffReady', lean: 0, weapon: 'staff' },
   staffThrust: { legs: 'leftBow', arms: 'staffThrust', lean: -5, weapon: 'staff' },
+  axeReady: { legs:'horse',arms:'bladeReady',lean:0,weapon:'axe' },
+  axeSwing: { legs:'horse',arms:'bladeCut',lean:4,weapon:'axe' },
+  carry: { legs:'stand',arms:'carry',lean:0 },
 };
 
 const form = (name, poses) => ({ name, poses });
@@ -93,17 +97,14 @@ export const COMBAT_MOVE_SETS = {
   staff: [['staffReady', 'leftStep', 'staffThrust'], ['staffReady', 'rightStep', 'staffThrust'], ['staffReady', 'wing', 'staffThrust'], ['staffReady', 'block', 'staffThrust']],
 };
 
-export function routineFrame(art, d, t) {
-  const routine = ROUTINES[art?.routine] || ROUTINES.fist;
-  const skill = Math.min(1, Math.max(0, (d?.arts?.[art?.id]?.xp || 0) / 100));
-  // 一式約 2 秒，讓 30 秒早課能辨出換式；新手每式停半秒再接。
-  const formSeconds = 2 + (1 - skill) * 0.5;
-  const f = Math.floor(t / formSeconds) % routine.forms.length;
-  const u = t / formSeconds % 1;
-  const poses = routine.forms[f].poses;
-  const wrong = skill < 0.35 && f % 5 === 3 && u < 0.22;
-  const phase = Math.max(0, (u - (1 - skill) * 0.18) / (1 - (1 - skill) * 0.18));
-  return { routine, form: f + 1, formName: routine.forms[f].name, poses, phase, wrong };
+// 每種動作只有此一序列；初學/熟練只讀不同的播放參數。
+export const WORK_POSES = {chop:['axeReady','axeReady','axeSwing','axeReady'],water:['carry','carry']};
+export function routineFrame(art, d, t, suppliedPlayback=null) {
+  const routine=ROUTINES[art?.routine]||ROUTINES.fist, playback=suppliedPlayback||playbackParams(d,art);
+  const f=Math.floor(t/playback.formSeconds)%routine.forms.length;
+  const seconds=t%playback.formSeconds;
+  const phase=Math.max(0,(seconds-playback.pause)/(playback.formSeconds-playback.pause));
+  return {routine,form:f+1,formName:routine.forms[f].name,poses:routine.forms[f].poses,phase,wrong:false,playback};
 }
 
 export function lerpPose(a, b, u) {

@@ -1,0 +1,169 @@
+{
+  "seed": 17,
+  "training": "公開玩家史：換日建舍/可招才招；真pending立即迎戰1；採石建井→每200秒練拳/砍柴/挑水，真來犯改派守柵，結束才復工（受控公開日程，非自然放養）；無補血/資源/n/f/新敵人；probe沿既有統一入場HP/精力/暫態，成長n/f不改",
+  "trainingEventHash": "e2a92f3b637e18f2114bac726a6a8ac84b13a24fb09a00bae82a062f2857015a",
+  "runs": [
+    {
+      "count": 1,
+      "trait": "normal",
+      "location": "gate(two slots)",
+      "attacks": 14,
+      "rushAttacks": 2,
+      "hits": 18,
+      "hpLost": 35.238095238095184,
+      "counters": 0,
+      "overloadBeats": 71,
+      "overloadCounters": 0,
+      "seconds": 33.5,
+      "escaped": []
+    },
+    {
+      "count": 2,
+      "trait": "normal",
+      "location": "gate(two slots)",
+      "attacks": 11,
+      "rushAttacks": 4,
+      "hits": 40,
+      "hpLost": 77.52380952380949,
+      "counters": 0,
+      "overloadBeats": 121,
+      "overloadCounters": 0,
+      "seconds": 30.75,
+      "escaped": []
+    },
+    {
+      "count": 4,
+      "trait": "normal",
+      "location": "open",
+      "attacks": 20,
+      "rushAttacks": 9,
+      "hits": 24,
+      "hpLost": 37.50187476565424,
+      "counters": 1,
+      "overloadBeats": 92,
+      "overloadCounters": 0,
+      "seconds": 40,
+      "escaped": [
+        "foe0",
+        "foe1",
+        "foe2"
+      ]
+    },
+    {
+      "count": 1,
+      "trait": "calm",
+      "location": "gate(two slots)",
+      "attacks": 23,
+      "rushAttacks": 0,
+      "hits": 0,
+      "hpLost": 0,
+      "counters": 1,
+      "overloadBeats": 5,
+      "overloadCounters": 0,
+      "seconds": 14.5,
+      "escaped": []
+    },
+    {
+      "count": 2,
+      "trait": "calm",
+      "location": "gate(two slots)",
+      "attacks": 4,
+      "rushAttacks": 4,
+      "hits": 37,
+      "hpLost": 77.52380952380949,
+      "counters": 1,
+      "overloadBeats": 128,
+      "overloadCounters": 0,
+      "seconds": 33.75,
+      "escaped": []
+    },
+    {
+      "count": 4,
+      "trait": "calm",
+      "location": "open",
+      "attacks": 14,
+      "rushAttacks": 14,
+      "hits": 14,
+      "hpLost": 14.095238095238074,
+      "counters": 7,
+      "overloadBeats": 85,
+      "overloadCounters": 0,
+      "seconds": 40,
+      "escaped": []
+    },
+    {
+      "count": 1,
+      "trait": "rash",
+      "location": "gate(two slots)",
+      "attacks": 7,
+      "rushAttacks": 0,
+      "hits": 2,
+      "hpLost": 0,
+      "counters": 2,
+      "overloadBeats": 16,
+      "overloadCounters": 0,
+      "seconds": 12.75,
+      "escaped": []
+    },
+    {
+      "count": 2,
+      "trait": "rash",
+      "location": "gate(two slots)",
+      "attacks": 6,
+      "rushAttacks": 3,
+      "hits": 31,
+      "hpLost": 77.52380952380949,
+      "counters": 0,
+      "overloadBeats": 94,
+      "overloadCounters": 0,
+      "seconds": 23.5,
+      "escaped": []
+    },
+    {
+      "count": 4,
+      "trait": "rash",
+      "location": "open",
+      "attacks": 5,
+      "rushAttacks": 5,
+      "hits": 60,
+      "hpLost": 77.52380952380949,
+      "counters": 0,
+      "overloadBeats": 139,
+      "overloadCounters": 0,
+      "seconds": 35,
+      "escaped": [
+        "foe2"
+      ]
+    }
+  ],
+  "cover": {
+    "open": 2.281938223489237,
+    "cover": 0.7417592887863003,
+    "eyes": 14.113555750396468,
+    "receptionHp": 100,
+    "sameUid": true,
+    "sameHands": true
+  },
+  "pursuit": [
+    {
+      "running": false,
+      "followed": false,
+      "pursuitContactBeats": 0
+    },
+    {
+      "running": true,
+      "followed": true,
+      "pursuitContactBeats": 11
+    }
+  ],
+  "pass": false,
+  "personality": {
+    "calmAttacks": 41,
+    "rashAttacks": 18,
+    "calmRush": 18,
+    "rashRush": 8,
+    "calmHpLost": 91.61904761904756,
+    "rashHpLost": 155.04761904761898,
+    "pass": false
+  }
+}

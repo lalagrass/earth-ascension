@@ -1,3 +1,7 @@
+import {chooseCombatMove} from './arts.mjs';
+import {recordChoice} from './decision.mjs';
+import { FOE_ACTIONS, foeAction, moveAvailable } from './starter-combat.mjs';
+import { recordExchange, practiceWindow } from './practice.mjs';
 import { ROUTE, NODES, ENEMIES, RAID_EVERY, DAY, ENDLESS, CAMPS, INSIGHT, EXP, MOVES, EXP_STYLES as STYLES, STYLE_TRAIT, EVADE, TRAITS, ARTS as ARTS_ALL, HS, DAO } from './data.mjs';
 import { log, affKey, resAdd } from './util.mjs';
 import { addMem } from './bonds.mjs';
@@ -237,7 +241,7 @@ export const LS_FIRST24 = ['gorge', 'cliff'];
 function moveDps(s, d, mv) {
   return mv.dmg * (1 + d.skills[mv.skill] / 50) * moveMul(d, mv.id, s.t) * (mv.aoe ? 1.3 : 1) / (mv.cd * (cdMul(d, mv.id, s.t)));
 }
-const abstractFoe = (e = 'bandit') => ({ k: ['rat', 'hare', 'bat'].includes(e) ? 'rat' : ['bandit', 'archer', 'chief', 'hermit'].includes(e) ? 'bandit' : 'boar', i: 0 });
+const abstractFoe = (e = 'bandit') => ({ k: FOE_ACTIONS[e] ? e : ['rat', 'hare', 'bat'].includes(e) ? 'rat' : ['bandit', 'archer', 'chief', 'hermit'].includes(e) ? 'bandit' : 'boar', i: 0 });
 export function expectedDps(s, d, mv, e = 'bandit') {
   const base = moveDps(s, d, mv), ex = expectOf(d, mv, s.t), foe = abstractFoe(e);
   const cd = mv.cd * cdMul(d, mv.id, s.t), wind = windOf(d, mv.id, cd);
@@ -245,21 +249,16 @@ export function expectedDps(s, d, mv, e = 'bandit') {
   const landed = o.hit, cut = moveStats(d, mv.id, wind).force > moveStats(foe).armor ? 0.08 : 0;
   return Math.max(0, base * ex.mul * landed * (1 + cut) * (1 + ex.reflect * 0.5) - ex.selfPerSec);
 }
-function bestSwing(s, d, e = 'bandit') {
-  let best = 0, mv = null;
-  for (const id of d.moves || []) {
-    const m = MOVES.find((x) => x.id === id);
-    if (!m || !(m.cd > 0)) continue;
-    const p = expectedDps(s, d, m, e);
-    if (p > best) { best = p; mv = m; }
-  }
-  return { mv, dps: best };
+function bestSwing(s,d,e='bandit',rnd=null) {
+  const pick=chooseCombatMove(s,d,abstractFoe(e),rnd||(()=>.5),{preview:!rnd,distance:0});
+  const mv=pick?.move;if(!mv)return {mv:null,dps:0,seconds:0};
+  return {mv,dps:expectedDps(s,d,mv,e)*mv.cd/(mv.cd+pick.seconds),seconds:pick.seconds};
 }
 export function dpsOf(s, d, e = 'bandit') {
   let best = 0;
   for (const id of d.moves || []) {
     const mv = MOVES.find((m) => m.id === id);
-    if (!mv || !(mv.cd > 0)) continue;
+    if(!mv||!(mv.cd>0)||!moveAvailable(d,mv))continue;
     const p = expectedDps(s, d, mv, e);
     if (p > best) best = p;
   }
@@ -339,7 +338,7 @@ function fight(s, e, team, H, gate = false, scale = 1) {
   const bonus = (s.codex[e]?.insight || 0) >= INSIGHT.dmgAt ? 1 + INSIGHT.dmg : 1;
   const zk = zhenK(s, team), psn = hasPoison(s, team); if (psn) E.dmg *= 1 - SPEC.poisonWeak; /* loop151 陣法先手、毒術削敵 */
   { const fk = fengxueK(s, team), N = (s.v24n ??= {}); if (fk > 0) { E.cd *= 1 + HARMONY24.fengCd * fk; cd = E.cd; N.fengxue = (N.fengxue || 0) + 1; } if (zk > 0 && team.length >= 2) N.formation = (N.formation || 0) + 1; } /* loop161 Batch 2 奇門封穴、多人陣法觸發計數 */
-  const foe = { onOpened: false };
+  const foe = { onOpened: false }, learningFoe = abstractFoe(e);
   const swingAt = new Map();
   const said = new Set();
   const noteOnce = (key, line) => { if (!line || said.has(key)) return; said.add(key); (X.events ??= []).push(line); };
@@ -347,12 +346,14 @@ function fight(s, e, team, H, gate = false, scale = 1) {
     const alive = team.filter((d) => d.hp > 0); if (!alive.length) break;
     t += 0.5; if (psn && t <= SPEC.poisonT) hp -= SPEC.poisonDps * (s.psnK24 || 1) * 0.5; const fs = (X.scout && t <= EXP.scoutT ? 1 + EXP.scoutBonus : 1) * (zk && t <= EXP.scoutT ? 1 + SPEC.zhenScout * zk : 1);
     for (const d of alive) {
-      const pick = bestSwing(s, d, e);
+      const due=(swingAt.get(d.id)??0)-.5;swingAt.set(d.id,due);
+      const pick=bestSwing(s,d,e,due<=0?()=>H.rand(s):null);
       hp -= pick.dps * 0.5 * bonus * fs * counterMul(daoOf(d), DAO.enemy[e]);
       if (d.dugu?.length) d.hp = Math.min(100, d.hp + HS.duguHeal); // v1.2 九劍只攻不守：不格擋，但料敵機先回氣血
       if (!pick.mv) continue;
-      const due = (swingAt.get(d.id) ?? 0) - 0.5;
-      if (due > 0) { swingAt.set(d.id, due); continue; }
+      if(due>0)continue;
+      const wind = windOf(d,pick.mv.id,pick.mv.cd * cdMul(d,pick.mv.id,s.t)), odds = clashOdds(s,d,learningFoe,{move:pick.mv.id,wind});
+      recordExchange(s,d,learningFoe,pick.mv.id,odds.hit,{kind:'expected'});recordChoice(s,d,learningFoe,pick.mv.id,odds.hit,{expected:true});
       const quiet = said.has(`${d.id}:hit`);
       const on = applyArtOn(s, 'hit', d, foe, { power: 1, move: pick.mv.id, foeName: E.name, silent: quiet });
       const inn = innerOnHit(s, d, foe, { power: on.power, move: pick.mv.id, fired: on.fired, silent: quiet });
@@ -360,7 +361,7 @@ function fight(s, e, team, H, gate = false, scale = 1) {
       if (on.knock) cd += 0.35;
       if (on.trip) cd += on.trip;
       if (on.disturb) cd += on.disturb;
-      swingAt.set(d.id, pick.mv.cd * cdMul(d, pick.mv.id, s.t));
+      swingAt.set(d.id,pick.mv.cd*cdMul(d,pick.mv.id,s.t)+pick.seconds);
     }
     if (gate && hp > E.hp * 0.4 && alive.some((d) => d.hp < 100 * EXP.gateBail)) { X.events.push(`見勢不妙，在${E.name}前及早撤退`); return { t, won: false, fled: false, bail: true }; } // v0.98 守關敵打不過：及早撤退
     if (!gate && hp > 0 && hp < E.hp * 0.35 && !fled) { fled = true; if (H.rand(s) < E.flee) { add(X.escaped, e, 1); seeEnemy(s, e, 'fled'); return { t, won: false, fled: true }; } }
@@ -372,7 +373,9 @@ function fight(s, e, team, H, gate = false, scale = 1) {
         noteOnce(`${d.id}:dodge`, dodge.line);
         continue;
       }
-      const o = clashOdds(s, abstractFoe(e), d, { wind: E.cd * CLASH.monWind });
+      const action = foeAction(learningFoe), move = action?.id || e, wind = practiceWindow(learningFoe,move,action?.wind || E.cd * CLASH.monWind).wind;
+      const o = clashOdds(s, learningFoe, d, { move, wind });
+      recordExchange(s,learningFoe,d,move,o.hit,{kind:'expected'});
       const avoid = o.hit;
       if (o.dodge) spendQi(d, Math.min(CLASH.dodge.qi, CLASH.dodge.qi * o.dodge));
       const def = guardOf(d);

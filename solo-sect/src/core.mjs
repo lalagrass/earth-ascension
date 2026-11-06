@@ -90,6 +90,9 @@ const find = (s, id) => s.ds.find((o) => o.id === id && !o.removed);
 export const whReserved = (s, k, except = null) => stockReserved(s, k, except); // v1.7 由預約表推得
 export const whAvail = (s, k, except = null) => (s.res[k] || 0) - whReserved(s, k, except);
 export function cancelTask(s, d, why) {
+  delete d.combatDecision;
+  // 改派/退出交手取消在途攻擊，但已花精力/冷卻/應接時間不退還。
+  d.swing = null; d.bswing = null;
   const t = d.task; if (!t) return;
   const site = t.act === 'build' && t.fac ? s.fac[t.fac]?.site : null;
   // v1.5 不瞬移：搬運途中被取消，料留在手上，下一拍由 decide 走回院倉（act deliver）；只有移出門派時才直接入庫

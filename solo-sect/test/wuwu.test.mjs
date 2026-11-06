@@ -9,7 +9,7 @@ import { artById, artTier, moveMul, gainArt, learnArt, openSpecials, unlockTechs
 import { powerHtml, teachingBadge } from '../src/panel-ui.mjs';
 import { curveMulOf, BRANCHES } from '../src/artcard.mjs';
 import { createState, load, tick } from '../src/sim.mjs';
-import { canTeachArt, startTeachArt, stopTeachArt, teachCandidates, teachStage, teachDaily, isFamousArt, teachMul, TEACH_ART } from '../src/bonds.mjs';
+import { canTeachArt, startTeachArt, stopTeachArt, teachCandidates, teachStage, teachDaily, isFamousArt, teachMul, TEACH_ART, completeLesson } from '../src/bonds.mjs';
 import { affKey } from '../src/util.mjs';
 import { points, T, raidResolve, threatDaily, threatBreakdown } from '../src/threat.mjs';
 import { teach, TEACH, formReady } from '../src/wuxia.mjs';
@@ -784,12 +784,13 @@ test('N12：傳功不直接給檔，師父佔半日，徒弟在傳授時段練�
   const { s, m, d } = teachPair();
   teachDaily(s);
   assert.equal(m.teaching?.pupil, d.id);
-  assert.ok(d.arts.xianglong, '收為傳人時先入門');
-  assert.ok((d.arts.xianglong.xp || 0) < 15, '火候不會直接跳檔');
-  assert.equal(artTier(d, 'xianglong'), 0);
+  assert.equal(d.arts.xianglong,undefined,'預約傳人尚未到場授課');
+  assert.equal(artTier(d,'xianglong'),-1);
   assert.equal(m.teachCool, TEACH_ART.session, '師父預約半日');
   assert.equal(teachMul(s, d, 'xianglong'), 1, '#417 師徒還沒在外功場碰頭，不加速');
   m.task = { act: 'teach', phase: 'do', node: 'yard', partner: d.id }; d.task = { act: 'train', node: 'yard', teach: m.id }; d.pos = [...m.pos];
+  d.task.phase='do';m.path=[];d.path=[];assert.ok(completeLesson(s,d,{kind:'teacher',art:'xianglong',teacher:m.id},8),'完成共同入門講解才學會');
+  assert.equal(artTier(d,'xianglong'),0);
   assert.equal(teachMul(s, d, 'xianglong'), TEACH_ART.mul, '共同任務進行中才 ×2');
   assert.equal(teachMul(s, d, 'tantui'), 1, '只加速被教的那門');
   m.teachCool = 0;

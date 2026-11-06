@@ -1,0 +1,3721 @@
+{
+  "seed": 17,
+  "days": 30,
+  "dt": 0.25,
+  "scenario": "自然bot，無指派輪替/補血/補資源/灌n/f；只換日botDaily，真主模擬",
+  "runs": [
+    {
+      "mbti": "ISTJ",
+      "personality": [
+        "rigid",
+        "diligent",
+        "sociable"
+      ],
+      "reached": {
+        "1": 8,
+        "2": 8,
+        "3": 8,
+        "4": 18
+      },
+      "levels": [
+        {
+          "day": 0,
+          "level": 0,
+          "name": "挨打",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0,
+              "firstHit": 0,
+              "proactive": 0,
+              "reactive": 0,
+              "proactiveMove": "bodyPunch",
+              "proactiveWind": 0.8500000000000001,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "reference-dog-body-0",
+                  "source": "generated reference",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.27924926488174795,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "reference-boar-body-0",
+                  "source": "generated reference",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0,
+              "actualRead": 0,
+              "alsoFitsStep": 0,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.12328767123287661,
+              "dodge": 0.12328767123287661,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 2.0000000000000004,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 1,
+          "level": 0,
+          "name": "挨打",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0,
+              "firstHit": 0,
+              "proactive": 0,
+              "reactive": 0,
+              "proactiveMove": "bodyPunch",
+              "proactiveWind": 0.7466714507557595,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.3097340876398564,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0,
+              "actualRead": 0,
+              "alsoFitsStep": 0,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.13083847500644824,
+              "dodge": 0.13083847500644824,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 2.0000000000000004,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 2,
+          "level": 0,
+          "name": "挨打",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0,
+              "firstHit": 0,
+              "proactive": 0,
+              "reactive": 0,
+              "proactiveMove": "bodyPunch",
+              "proactiveWind": 0.7250805834298804,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.3219482508505567,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0,
+              "actualRead": 0,
+              "alsoFitsStep": 0,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.13083847500644824,
+              "dodge": 0.13083847500644824,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 2.0000000000000004,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 3,
+          "level": 0,
+          "name": "挨打",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0,
+              "firstHit": 0,
+              "proactive": 0,
+              "reactive": 0,
+              "proactiveMove": "bodyPunch",
+              "proactiveWind": 0.7674125619731471,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.3672115734228828,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0,
+              "actualRead": 0,
+              "alsoFitsStep": 0,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.1503383509586326,
+              "dodge": 0.1503383509586326,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 2.0000000000000004,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 4,
+          "level": 0,
+          "name": "挨打",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0,
+              "firstHit": 0,
+              "proactive": 0,
+              "reactive": 0,
+              "proactiveMove": "bodyPunch",
+              "proactiveWind": 0.7589992974022336,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.3831807424940591,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "reference-boar-body-0",
+                  "source": "generated reference",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0,
+              "actualRead": 0,
+              "alsoFitsStep": 0,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.15716137552230183,
+              "dodge": 0.15716137552230183,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 2.0000000000000004,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 5,
+          "level": 0,
+          "name": "挨打",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0,
+              "firstHit": 0,
+              "proactive": 0,
+              "reactive": 0,
+              "proactiveMove": "bodyPunch",
+              "proactiveWind": 0.7490915641258604,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.3995777382516541,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0,
+              "actualRead": 0,
+              "alsoFitsStep": 0,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.1637884215550306,
+              "dodge": 0.1637884215550306,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 2.0000000000000004,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 6,
+          "level": 0,
+          "name": "挨打",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0,
+              "firstHit": 0,
+              "proactive": 0,
+              "reactive": 0,
+              "proactiveMove": "bodyPunch",
+              "proactiveWind": 0.7451774597024798,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.4020946561723303,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0,
+              "actualRead": 0,
+              "alsoFitsStep": 0,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.1637884215550306,
+              "dodge": 0.1637884215550306,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 2.0000000000000004,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 7,
+          "level": 0,
+          "name": "挨打",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0,
+              "firstHit": 0,
+              "proactive": 0,
+              "reactive": 0,
+              "proactiveMove": "bodyPunch",
+              "proactiveWind": 0.7266312804045851,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.44811972803212946,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0,
+              "actualRead": 0,
+              "alsoFitsStep": 0,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.1877859539399724,
+              "dodge": 0.1877859539399724,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 2.0000000000000004,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.6000000000000001,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 1.0000000000000002
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 8,
+          "level": 3,
+          "name": "會截",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.8851275399473394,
+              "firstHit": 0.8851275399473394,
+              "proactive": 0,
+              "reactive": 0.8851275399473394,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6080942157148351,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808529177751695,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "reference-boar-body-0",
+                  "source": "generated reference",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.6235075471467191,
+              "actualRead": 0.33575659590399903,
+              "alsoFitsStep": 0.28775095124272004,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.27336013797323166,
+              "dodge": 0.27336013797323166,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.7877280265339968,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 9,
+          "level": 3,
+          "name": "會截",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.8851275399473394,
+              "firstHit": 0.8851275399473394,
+              "proactive": 0,
+              "reactive": 0.8851275399473394,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6080942157148351,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808529177751695,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.6235075471467191,
+              "actualRead": 0.33575659590399903,
+              "alsoFitsStep": 0.28775095124272004,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.27336013797323166,
+              "dodge": 0.27336013797323166,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.7877280265339968,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 10,
+          "level": 3,
+          "name": "會截",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.8851275399473394,
+              "firstHit": 0.8851275399473394,
+              "proactive": 0,
+              "reactive": 0.8851275399473394,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6080942157148351,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808529177751695,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.6235075471467191,
+              "actualRead": 0.33575659590399903,
+              "alsoFitsStep": 0.28775095124272004,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.27336013797323166,
+              "dodge": 0.27336013797323166,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.7877280265339968,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 11,
+          "level": 3,
+          "name": "會截",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.8851275399473394,
+              "firstHit": 0.8851275399473394,
+              "proactive": 0,
+              "reactive": 0.8851275399473394,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6080942157148351,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808529177751695,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.6235075471467191,
+              "actualRead": 0.33575659590399903,
+              "alsoFitsStep": 0.28775095124272004,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.27336013797323166,
+              "dodge": 0.27336013797323166,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.7877280265339968,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 12,
+          "level": 3,
+          "name": "會截",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.8851275399473394,
+              "firstHit": 0.8851275399473394,
+              "proactive": 0,
+              "reactive": 0.8851275399473394,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6080942157148351,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808529177751695,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "reference-boar-body-0",
+                  "source": "generated reference",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.6235075471467191,
+              "actualRead": 0.33575659590399903,
+              "alsoFitsStep": 0.28775095124272004,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.27336013797323166,
+              "dodge": 0.27336013797323166,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.7877280265339968,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 13,
+          "level": 3,
+          "name": "會截",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.8851275399473394,
+              "firstHit": 0.8851275399473394,
+              "proactive": 0,
+              "reactive": 0.8851275399473394,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6420792160032975,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808529177751695,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.6235075471467191,
+              "actualRead": 0.33575659590399903,
+              "alsoFitsStep": 0.28775095124272004,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.27336013797323166,
+              "dodge": 0.27336013797323166,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.7877280265339968,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 14,
+          "level": 3,
+          "name": "會截",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.8851275399473394,
+              "firstHit": 0.8851275399473394,
+              "proactive": 0,
+              "reactive": 0.8851275399473394,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6420792160032975,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808529177751695,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.6235075471467191,
+              "actualRead": 0.33575659590399903,
+              "alsoFitsStep": 0.28775095124272004,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.27336013797323166,
+              "dodge": 0.27336013797323166,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.7877280265339968,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 15,
+          "level": 3,
+          "name": "會截",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.8851275399473394,
+              "firstHit": 0.8851275399473394,
+              "proactive": 0,
+              "reactive": 0.8851275399473394,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6420792160032975,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808529177751695,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.6235075471467191,
+              "actualRead": 0.33575659590399903,
+              "alsoFitsStep": 0.28775095124272004,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.27336013797323166,
+              "dodge": 0.27336013797323166,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.7877280265339968,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 16,
+          "level": 3,
+          "name": "會截",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.8851275399473394,
+              "firstHit": 0.8851275399473394,
+              "proactive": 0,
+              "reactive": 0.8851275399473394,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6420792160032975,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808529177751695,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "reference-boar-body-0",
+                  "source": "generated reference",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.6235075471467191,
+              "actualRead": 0.33575659590399903,
+              "alsoFitsStep": 0.28775095124272004,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.27336013797323166,
+              "dodge": 0.27336013797323166,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.7877280265339968,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 17,
+          "level": 3,
+          "name": "會截",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.8851275399473394,
+              "firstHit": 0.8851275399473394,
+              "proactive": 0,
+              "reactive": 0.8851275399473394,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6420792160032975,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808529177751695,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.6235075471467191,
+              "actualRead": 0.33575659590399903,
+              "alsoFitsStep": 0.28775095124272004,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.27336013797323166,
+              "dodge": 0.27336013797323166,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.7877280265339968,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.536318407960199,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.8938640132669984
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 18,
+          "level": 4,
+          "name": "莊稼把式",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.885159492991817,
+              "firstHit": 0.885159492991817,
+              "proactive": 0,
+              "reactive": 0.885159492991817,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.642049055732774,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808753513707752,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.8224711047793647,
+              "actualRead": 0.195681419827184,
+              "alsoFitsStep": 0.6267896849521807,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.6479921962213864,
+              "dodge": 0.6479921962213864,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.2983661509037963,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 19,
+          "level": 4,
+          "name": "莊稼把式",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.885159492991817,
+              "firstHit": 0.885159492991817,
+              "proactive": 0,
+              "reactive": 0.885159492991817,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.642049055732774,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808753513707752,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.8224711047793647,
+              "actualRead": 0.195681419827184,
+              "alsoFitsStep": 0.6267896849521807,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.6479921962213864,
+              "dodge": 0.6479921962213864,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.2983661509037963,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 20,
+          "level": 4,
+          "name": "莊稼把式",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.885159492991817,
+              "firstHit": 0.885159492991817,
+              "proactive": 0,
+              "reactive": 0.885159492991817,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.642049055732774,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808753513707752,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "reference-boar-body-0",
+                  "source": "generated reference",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.8224711047793647,
+              "actualRead": 0.195681419827184,
+              "alsoFitsStep": 0.6267896849521807,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.6479921962213864,
+              "dodge": 0.6479921962213864,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.2983661509037963,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 21,
+          "level": 4,
+          "name": "莊稼把式",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.885159492991817,
+              "firstHit": 0.885159492991817,
+              "proactive": 0,
+              "reactive": 0.885159492991817,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.642049055732774,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808753513707752,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.8224711047793647,
+              "actualRead": 0.195681419827184,
+              "alsoFitsStep": 0.6267896849521807,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.6479921962213864,
+              "dodge": 0.6479921962213864,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.2983661509037963,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 22,
+          "level": 4,
+          "name": "莊稼把式",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.885159492991817,
+              "firstHit": 0.885159492991817,
+              "proactive": 0,
+              "reactive": 0.885159492991817,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.642049055732774,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808753513707752,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.8224711047793647,
+              "actualRead": 0.195681419827184,
+              "alsoFitsStep": 0.6267896849521807,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.6479921962213864,
+              "dodge": 0.6479921962213864,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.2983661509037963,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 23,
+          "level": 4,
+          "name": "莊稼把式",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.885159492991817,
+              "firstHit": 0.885159492991817,
+              "proactive": 0,
+              "reactive": 0.885159492991817,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.642049055732774,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808753513707752,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.8224711047793647,
+              "actualRead": 0.195681419827184,
+              "alsoFitsStep": 0.6267896849521807,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.6479921962213864,
+              "dodge": 0.6479921962213864,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.2983661509037963,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 24,
+          "level": 4,
+          "name": "莊稼把式",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.885159492991817,
+              "firstHit": 0.885159492991817,
+              "proactive": 0,
+              "reactive": 0.885159492991817,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.642049055732774,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6808753513707752,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "reference-boar-body-0",
+                  "source": "generated reference",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.8224711047793647,
+              "actualRead": 0.195681419827184,
+              "alsoFitsStep": 0.6267896849521807,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.6479921962213864,
+              "dodge": 0.6479921962213864,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.2983661509037963,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.38950984527113885,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6491830754518981
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 25,
+          "level": 4,
+          "name": "莊稼把式",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.885297429662695,
+              "firstHit": 0.885297429662695,
+              "proactive": 0,
+              "reactive": 0.885297429662695,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6419187198653975,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6809722739131507,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.9471290973944392,
+              "actualRead": 0.05450441309325316,
+              "alsoFitsStep": 0.892624684301186,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.703252632321378,
+              "dodge": 0.703252632321378,
+              "disarm": 0,
+              "wind": 0.5543997569698682,
+              "sources": [
+                {
+                  "uid": "raid3-bd0",
+                  "source": "returned survivor",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.2043615942373718,
+              "parts": [
+                {
+                  "attacker": "raid3-bd0",
+                  "move": "looterBlade",
+                  "need": 0.347036338729827,
+                  "window": 0.5543997569698682,
+                  "wind": 0.5543997569698682,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6259676963543267
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.347036338729827,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.578393897883045
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "raid3-bd0",
+                  "source": "returned survivor",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 26,
+          "level": 4,
+          "name": "莊稼把式",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.885297429662695,
+              "firstHit": 0.885297429662695,
+              "proactive": 0,
+              "reactive": 0.885297429662695,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6419187198653975,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6809722739131507,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.9471290973944392,
+              "actualRead": 0.05450441309325316,
+              "alsoFitsStep": 0.892624684301186,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.703252632321378,
+              "dodge": 0.703252632321378,
+              "disarm": 0,
+              "wind": 0.5543997569698682,
+              "sources": [
+                {
+                  "uid": "raid3-bd0",
+                  "source": "returned survivor",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.2043615942373718,
+              "parts": [
+                {
+                  "attacker": "raid3-bd0",
+                  "move": "looterBlade",
+                  "need": 0.347036338729827,
+                  "window": 0.5543997569698682,
+                  "wind": 0.5543997569698682,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6259676963543267
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.347036338729827,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.578393897883045
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "raid3-bd0",
+                  "source": "returned survivor",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 27,
+          "level": 4,
+          "name": "莊稼把式",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.885297429662695,
+              "firstHit": 0.885297429662695,
+              "proactive": 0,
+              "reactive": 0.885297429662695,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6419187198653975,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6809722739131507,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.9471290973944392,
+              "actualRead": 0.05450441309325316,
+              "alsoFitsStep": 0.892624684301186,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.703252632321378,
+              "dodge": 0.703252632321378,
+              "disarm": 0,
+              "wind": 0.5543997569698682,
+              "sources": [
+                {
+                  "uid": "raid3-bd0",
+                  "source": "returned survivor",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.2043615942373718,
+              "parts": [
+                {
+                  "attacker": "raid3-bd0",
+                  "move": "looterBlade",
+                  "need": 0.347036338729827,
+                  "window": 0.5543997569698682,
+                  "wind": 0.5543997569698682,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6259676963543267
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.347036338729827,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.578393897883045
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "raid3-bd0",
+                  "source": "returned survivor",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 28,
+          "level": 4,
+          "name": "莊稼把式",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.885297429662695,
+              "firstHit": 0.885297429662695,
+              "proactive": 0,
+              "reactive": 0.885297429662695,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6419187198653975,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.6809722739131507,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "reference-boar-body-0",
+                  "source": "generated reference",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.9471290973944392,
+              "actualRead": 0.05450441309325316,
+              "alsoFitsStep": 0.892624684301186,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.703252632321378,
+              "dodge": 0.703252632321378,
+              "disarm": 0,
+              "wind": 0.5543997569698682,
+              "sources": [
+                {
+                  "uid": "raid3-bd0",
+                  "source": "returned survivor",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.2043615942373718,
+              "parts": [
+                {
+                  "attacker": "raid3-bd0",
+                  "move": "looterBlade",
+                  "need": 0.347036338729827,
+                  "window": 0.5543997569698682,
+                  "wind": 0.5543997569698682,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.6259676963543267
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.347036338729827,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.578393897883045
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "raid3-bd0",
+                  "source": "returned survivor",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 29,
+          "level": 4,
+          "name": "莊稼把式",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.8854016003256999,
+              "firstHit": 0.8854016003256999,
+              "proactive": 0,
+              "reactive": 0.8854016003256999,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6418201401945178,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.681045556633406,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.95199335380012,
+              "actualRead": 0.04894479154960618,
+              "alsoFitsStep": 0.9030485622505138,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.8428028022311987,
+              "dodge": 0.8428028022311987,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.071115643090839,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.3213346929272517,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.5355578215454195
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.3213346929272517,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.5355578215454195
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        },
+        {
+          "day": 30,
+          "level": 4,
+          "name": "莊稼把式",
+          "rows": [
+            {
+              "level": 1,
+              "probability": 0.8854016003256999,
+              "firstHit": 0.8854016003256999,
+              "proactive": 0,
+              "reactive": 0.8854016003256999,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6418201401945178,
+              "frightened": false,
+              "wind": 0.4,
+              "sources": [
+                {
+                  "uid": "firstDog",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 2,
+              "probability": 0.681045556633406,
+              "wind": 1,
+              "sources": [
+                {
+                  "uid": "raid1809",
+                  "source": "returned survivor",
+                  "weapon": null
+                }
+              ]
+            },
+            {
+              "level": 3,
+              "probability": 0.95199335380012,
+              "actualRead": 0.04894479154960618,
+              "alsoFitsStep": 0.9030485622505138,
+              "wind": 0.5,
+              "sources": [
+                {
+                  "uid": "reference-bandit-fist-0",
+                  "source": "generated reference",
+                  "weapon": "fist"
+                }
+              ]
+            },
+            {
+              "level": 4,
+              "probability": 0.8428028022311987,
+              "dodge": 0.8428028022311987,
+              "disarm": 0,
+              "wind": 0.6,
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            },
+            {
+              "level": 5,
+              "probability": 0,
+              "L": 1.071115643090839,
+              "parts": [
+                {
+                  "attacker": "reference-bandit-blade-0",
+                  "move": "looterBlade",
+                  "need": 0.3213346929272517,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.5355578215454195
+                },
+                {
+                  "attacker": "reference-bandit-blade-1",
+                  "move": "looterBlade",
+                  "need": 0.3213346929272517,
+                  "window": 0.6,
+                  "wind": 0.6,
+                  "readyIn": 0,
+                  "readyDelay": 0,
+                  "travel": 0,
+                  "active": true,
+                  "share": 0.5355578215454195
+                }
+              ],
+              "sources": [
+                {
+                  "uid": "reference-bandit-blade-0",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                },
+                {
+                  "uid": "reference-bandit-blade-1",
+                  "source": "generated reference",
+                  "weapon": "blade"
+                }
+              ]
+            }
+          ],
+          "conditions": "休息/無占用的標準接法能力；保留真n/f/筋骨/工具，非自然整場勝率"
+        }
+      ],
+      "formalAcquisitions": [
+        {
+          "id": "kuihua",
+          "day": 8,
+          "t": 4200.25,
+          "context": [
+            {
+              "t": 4200,
+              "msg": "【抉擇】葵花寶典殘頁：東方不敗遺下的殘頁上寫著：「欲練神功，必先自宮。」練了就斷情：不能結義、不能配對，心情上限 −20。",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 4200,
+              "msg": "【擊退東方不敗】紅影一閃即逝，留下一頁殘譜（葵花寶典 20%，主角）。",
+              "tier": "low",
+              "who": "hero"
+            },
+            {
+              "t": 4200,
+              "msg": "決定：全派迎戰",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 4200,
+              "msg": "【抉擇】日月神教：東方不敗：一襲紅衣落在山門前，指間一根繡花針：「聽說你們門派最近很囂張？」",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 4200,
+              "msg": "輸了。全派陪周伯通抓了一下午蟋蟀（心情 +2，沒有損失）。",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 4200,
+              "msg": "決定：陪他捉迷藏（看福緣）",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 4200,
+              "msg": "【抉擇】老頑童的賭約：「捉迷藏！比耐力！猜拳！贏了我就教一招，輸了你們幫我抓蟋蟀！」",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 4200,
+              "msg": "入夏了。天長日暖。",
+              "tier": "low",
+              "who": null
+            }
+          ]
+        },
+        {
+          "id": "kongming",
+          "day": 9,
+          "t": 4800,
+          "context": [
+            {
+              "t": 4800,
+              "msg": "周伯通：「好玩的都教完啦！」一溜煙跑了。",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 4800,
+              "msg": "【老頑童輸了】周伯通耍賴三次才認輸，把空明拳教給了主角。",
+              "tier": "low",
+              "who": "hero"
+            },
+            {
+              "t": 4800,
+              "msg": "決定：陪他捉迷藏（看福緣）",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 4800,
+              "msg": "主角心中違心（違反門規「同門有難，不得見死不救」：阿青重傷無人照料）：違心 1/3",
+              "tier": "low",
+              "who": "hero"
+            },
+            {
+              "t": 4800,
+              "msg": "【抉擇】老頑童的賭約：「捉迷藏！比耐力！猜拳！贏了我就教一招，輸了你們幫我抓蟋蟀！」",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 4800,
+              "msg": "一頭野豬循山路下來，朝菜園去了。",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 4800,
+              "msg": "第 9 日晨，香火錢入帳 9。",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 4800,
+              "msg": "外門阿青日課差 2，順延到今日。",
+              "tier": "mid",
+              "who": "aqing"
+            }
+          ]
+        },
+        {
+          "id": "breath",
+          "day": 10,
+          "t": 5400,
+          "context": [
+            {
+              "t": 5400,
+              "msg": "【山門大比】第 10 日，3 名弟子在演武場同門切磋，主角技壓同儕，奪得演武魁首（心情 +15、掌門親傳《吐納》）；全派比武印證，修練 +10。",
+              "tier": "low",
+              "who": "hero"
+            },
+            {
+              "t": 5400,
+              "msg": "【失修】付不出建築維護 24，各處失修（全派心情受影響），付清就恢復。",
+              "tier": "warn",
+              "who": null
+            },
+            {
+              "t": 5400,
+              "msg": "【月俸】發給 3 人共 30 香火錢。",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 5400,
+              "msg": "第 10 日晨，香火錢入帳 9。",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 5400,
+              "msg": "外門阿青日課差 5，順延到今日。",
+              "tier": "mid",
+              "who": "aqing"
+            },
+            {
+              "t": 5295,
+              "msg": "野豬在菜園沒找到吃的，回山了。",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 5280,
+              "msg": "一頭野豬循山路下來，朝菜園去了。",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 5135,
+              "msg": "野豬在菜園沒找到吃的，回山了。",
+              "tier": "low",
+              "who": null
+            }
+          ]
+        },
+        {
+          "id": "basicSword",
+          "day": 14,
+          "t": 7800,
+          "context": [
+            {
+              "t": 7800,
+              "msg": "【過路高人】臨別前，高人傳了主角一套「基礎劍法」！",
+              "tier": "low",
+              "who": "hero"
+            },
+            {
+              "t": 7800,
+              "msg": "【過路高人】一位雲遊高人借宿一晚，指點了主角的「空明拳」幾招。",
+              "tier": "low",
+              "who": "hero"
+            },
+            {
+              "t": 7800,
+              "msg": "第 14 日晨，香火錢入帳 9。",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 7800,
+              "msg": "外門阿青日課差 7，順延到今日。",
+              "tier": "mid",
+              "who": "aqing"
+            },
+            {
+              "t": 7695,
+              "msg": "野豬在菜園沒找到吃的，回山了。",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 7680,
+              "msg": "一頭野豬循山路下來，朝菜園去了。",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 7535,
+              "msg": "野豬在菜園沒找到吃的，回山了。",
+              "tier": "low",
+              "who": null
+            },
+            {
+              "t": 7520,
+              "msg": "一頭野豬循山路下來，朝菜園去了。",
+              "tier": "low",
+              "who": null
+            }
+          ]
+        }
+      ],
+      "lessonEvents": [],
+      "exposure": {
+        "dogBite": {
+          "attempts": 44,
+          "hits": 30,
+          "w": 21.53630832691692
+        },
+        "looterFist": {
+          "attempts": 36,
+          "hits": 12,
+          "w": 22.126527194650446
+        },
+        "looterBlade": {
+          "attempts": 19,
+          "hits": 8,
+          "w": 10.334998602413087
+        },
+        "looterStaff": {
+          "attempts": 26,
+          "hits": 18,
+          "w": 14.533316872306585
+        }
+      },
+      "finalEyes": {
+        "dog:dogBite": 21.53630832691692,
+        "human:bodyPush": 0.8448320257246154,
+        "human:bodyKick": 1.4146324559056216,
+        "bandit:looterFist": 22.935368615979918,
+        "human:toolStone": 0.3612670282775036,
+        "bandit:looterStaff": 15.340067061168197,
+        "bandit:looterBlade": 10.334998602413087
+      },
+      "firstDiscoveryDay": null,
+      "firstSoloBoarEscapeDay": null,
+      "favorite": {
+        "move": "kh1",
+        "definition": "真交手最常使用；同次數按得手次數，無交手則null",
+        "counts": [
+          {
+            "move": "kh1",
+            "uses": 17,
+            "wins": 15
+          },
+          {
+            "move": "bodyKick",
+            "uses": 4,
+            "wins": 2
+          },
+          {
+            "move": "bodyPush",
+            "uses": 3,
+            "wins": 1
+          },
+          {
+            "move": "bodyPunch",
+            "uses": 2,
+            "wins": 0
+          }
+        ]
+      },
+      "pursuit": {
+        "running": {
+          "attempts": 0,
+          "hits": 0
+        },
+        "holding": {
+          "attempts": 44,
+          "hits": 30
+        }
+      },
+      "guidance": [
+        {
+          "id": "origin-1",
+          "mentor": "hero",
+          "totalReceived": 139.5
+        },
+        {
+          "id": "origin-2",
+          "mentor": "hero",
+          "totalReceived": 124
+        },
+        {
+          "id": "aqing",
+          "mentor": "hero",
+          "totalReceived": 85.25
+        }
+      ],
+      "famous": 0
+    }
+  ],
+  "specialtyKinds": 1,
+  "guards": {
+    "dog3to5": false,
+    "dodge10to15": false,
+    "soloBoar10to15": false,
+    "farmer20to30": false,
+    "specialtiesAtLeast2": false
+  }
+}

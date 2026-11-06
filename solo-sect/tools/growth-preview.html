@@ -1,0 +1,33 @@
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><title>山門紀：共用骨架盲測</title>
+<style>body{margin:0;background:#ddd4bf;color:#302817;font:16px sans-serif}canvas{display:block;width:min(100%,640px);height:auto}section{max-width:640px;padding:12px;box-sizing:border-box}button,input{font:inherit;margin:4px}#status{white-space:pre-wrap}</style>
+<section><a href="../index.html">回遊戲</a><h1>成長盲測離線展示</h1><p>先用 Node CLI 準備真資料，再匯入 A.json 或 B.json。頁面只讀真 snapshot，以遊戲同一 renderer 播放；不連外、不修改主局。不要向受測者出示答案檔。</p>
+<label>真資料 <input id="file" type="file" accept="application/json,.json"></label><button id="play" disabled>從頭播放</button><button id="record" disabled>錄製10秒並下載 WebM</button><p id="status" role="status">尚未載入資料；影片與真人盲測尚未完成。</p></section>
+<canvas width="640" height="480" aria-label="A/B盲測共用骨架畫面"></canvas>
+<script type="module">
+import {displayPose,drawPoseActor} from '../src/pose-render.mjs';
+const canvas=document.querySelector('canvas'),g=canvas.getContext('2d'),status=document.querySelector('#status'),play=document.querySelector('#play'),record=document.querySelector('#record');
+let input=null,d=null,start=null,frameId=null,recorder=null,recordStart=null;
+function render(now){if(start===null)start=now;const t=input.clock+(now-start)/1000;
+ g.fillStyle='#ddd4bf';g.fillRect(0,0,640,480);g.fillStyle='#b9af94';g.fillRect(0,380,640,100);g.strokeStyle='#8d8168';g.beginPath();g.moveTo(80,380);g.lineTo(560,380);g.stroke();
+ if(input.action==='chop'){g.fillStyle='#806340';g.fillRect(320,335,45,45);}
+ g.save();g.translate(310,380);g.scale(4,4);const v=displayPose({t,fx:[]},d,null,null);if(v)drawPoseActor(g,d,v);g.restore();
+ // 文字也在captureStream內，只有A/B與動作，不顯示日數/能力/答案。
+ g.fillStyle='#302817';g.font='20px sans-serif';g.fillText(input.label||'展示',16,28);
+ if(recorder?.state==='recording'&&now-recordStart>=10000)recorder.stop();
+ frameId=requestAnimationFrame(render);
+}
+function restart(){if(frameId!==null)cancelAnimationFrame(frameId);start=null;frameId=requestAnimationFrame(render);}
+function load(value){if(!value||value.format!=='solo-sect-growth-input-v1'||!['A','B'].includes(value.label)||!value.hero||value.hero.id!=='hero'||!Number.isFinite(value.clock)||!['train','chop','water'].includes(value.action)||!value.provenance?.eventHash)throw Error('請匯入blind.mjs產生的A.json/B.json，不手填能力值');
+ input=value;d=structuredClone(value.hero);d.task={act:value.action,phase:'do'};d.anim=null;d.ring=null;play.disabled=false;record.disabled=false;status.textContent=value.label+' 已載入；可播放或錄影。未宣稱盲測通過。';restart();}
+document.querySelector('#file').addEventListener('change',async e=>{try{if(recorder?.state==='recording')throw Error('請等錄影完成再匯入');const file=e.target.files[0];if(file)load(JSON.parse(await file.text()));}catch(error){status.textContent=error.message;}});
+play.addEventListener('click',restart);
+record.addEventListener('click',()=>{try{if(!input||recorder?.state==='recording')return;if(!canvas.captureStream||!window.MediaRecorder)throw Error('此瀏覽器不支援canvas.captureStream/MediaRecorder，尚未產生影片；請用支援WebM的正常瀏覽器。');
+ const mime=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(m=>MediaRecorder.isTypeSupported(m));if(!mime)throw Error('此瀏覽器不支援WebM，沒有產生影片。');
+ const stream=canvas.captureStream(60),chunks=[];recorder=new MediaRecorder(stream,{mimeType:mime});record.disabled=true;play.disabled=true;document.querySelector('#file').disabled=true;
+ recorder.addEventListener('dataavailable',e=>{if(e.data.size)chunks.push(e.data);});
+ recorder.addEventListener('stop',()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(chunks,{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=input.label+'.webm';a.textContent='再次下載 '+input.label+'.webm';status.replaceChildren(document.createTextNode(input.label+' 錄影已結束（'+blob.size+' bytes）；請實際開啟影片確認10秒與畫面。真人結果仍待驗。 '),a);a.click();record.disabled=false;play.disabled=false;document.querySelector('#file').disabled=false;});
+ recorder.addEventListener('error',e=>{status.textContent='錄影失敗：'+(e.error?.message||'MediaRecorder錯誤')+'；不得宣稱影片完成。';});
+ restart();recordStart=performance.now();recorder.start();status.textContent='正在錄製 '+input.label+' 10秒；請保持此分頁在前景。';
+ }catch(error){status.textContent=error.message;}});
+window.previewReady=true;
+</script></html>

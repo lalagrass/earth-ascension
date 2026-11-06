@@ -1,0 +1,77 @@
+test	category	status	name	location	actualFailure
+1	combat	本輪改動相關、未解；不可稱舊fixture已合法	山賊逐一交手：判接法、整夥血量＝每人加總、倒地者退走、柵破才進院	test/band.test.mjs:8:1	The expression evaluated to a falsy value: / assert.ok(Object.values(b.cl || {}).reduce((a, n) => a + n, 0) >= 2, JSON.stringify(b.cl))
+2	practice-art-provenance	舊fixture只覆寫ARTS.xp但新N33按真手熟n插值，n0故wind0.5=0.5；需核真授藝/舊檔n來源，不直接放寬單調性斷言	N14：同一招在入門時的前搖比化境長	test/clash.test.mjs:10:1	'0.5 > 0.5'
+3	posture-model-update	N37#448要求重心空有長破綻；舊立即回半架勢斷言與現恢復語義不同，須改驗資料秒數而非刪架勢護欄，尚未重驗	N14：架勢空了之後，下一招是重擊	test/clash.test.mjs:18:1	'挨過重擊架勢回一半'
+4	combat-reception-unresolved	舊只改codex/ARTS/指定抽樣的接法fixture與新眼熟/射程/串行/力層皆有差；尚未證是合法更新或真缺陷，原斷言保留	N14：看破成立時，攻方架勢下降，守方下一招必中	test/clash.test.mjs:27:1	The expression evaluated to a falsy value: / assert.ok(o.read > 0)
+5	combat-reception-unresolved	舊只改codex/ARTS/指定抽樣的接法fixture與新眼熟/射程/串行/力層皆有差；尚未證是合法更新或真缺陷，原斷言保留	N14：招架雙方都掉架勢；氣血只在中招時掉	test/clash.test.mjs:42:1	Expected values to be strictly equal: / 'hit' !== 'parry'
+37	practice-art-provenance	舊fixture只覆寫ARTS.xp但新N33按真手熟n插值，n0故wind0.5=0.5；需核真授藝/舊檔n來源，不直接放寬單調性斷言	N16：化境前搖更短；範圍招逐個目標判接法	test/flair.test.mjs:38:1	The expression evaluated to a falsy value: / assert.ok(w0 > windOf(d, 'wave', 1))
+39	golden	本輪核心已改的預期快照差異；待3.4/遷移後重產及舊檔回放，不能用更新golden代替其餘斷言	golden quick：idle-1001-emei	test/golden.test.mjs:12:35	Expected values to be strictly deep-equal: / + actual - expected / { / +   '10': 'f69940ee298c11a0', / +   '5': '566c02ec59e2883f' / -   '10': 'c9fa29bb4ca6f432', / -   '5': '7fd6c1a33e0ec6c4' / }
+40	golden	本輪核心已改的預期快照差異；待3.4/遷移後重產及舊檔回放，不能用更新golden代替其餘斷言	golden quick：bot-1001-emei	test/golden.test.mjs:12:35	Expected values to be strictly deep-equal: / + actual - expected / { / +   '10': '2323032df9bab3be', / +   '5': 'a0a68b79f3bfe893' / -   '10': 'a39d85121695608f', / -   '5': 'b83f9e0001e28ad8' / }
+41	golden	本輪核心已改的預期快照差異；待3.4/遷移後重產及舊檔回放，不能用更新golden代替其餘斷言	golden quick：farm-1001-emei	test/golden.test.mjs:12:35	Expected values to be strictly deep-equal: / + actual - expected / { / +   '10': '2323032df9bab3be', / +   '5': 'a0a68b79f3bfe893' / -   '10': 'a39d85121695608f', / -   '5': 'b83f9e0001e28ad8' / }
+42	golden	本輪核心已改的預期快照差異；待3.4/遷移後重產及舊檔回放，不能用更新golden代替其餘斷言	golden quick：exp-1001-emei	test/golden.test.mjs:12:35	Expected values to be strictly deep-equal: / + actual - expected / { / +   '10': 'b1ea117b0c648b7b', / +   '5': '6c6ead786db6dc7c' / -   '10': '85c7070d9584516f', / -   '5': '7bf08e5db9b27097' / }
+43	golden	本輪核心已改的預期快照差異；待3.4/遷移後重產及舊檔回放，不能用更新golden代替其餘斷言	golden 存檔回放：v1.0.json	test/golden.test.mjs:14:37	Expected values to be strictly deep-equal: / + actual - expected / { / +   after: 'e59ef1e470d2756b', / -   after: '837c1c1db3dc45ed', / loaded: '91c391fc17adbd37', / ok: true / }
+44	golden	本輪核心已改的預期快照差異；待3.4/遷移後重產及舊檔回放，不能用更新golden代替其餘斷言	golden 存檔回放：v1.5.json	test/golden.test.mjs:14:37	Expected values to be strictly deep-equal: / + actual - expected / { / +   after: '7bec64ddc20444c1', / -   after: '87eb51f8dd3dc1a4', / loaded: '101d652a03b19e87', / ok: true / }
+45	golden	本輪核心已改的預期快照差異；待3.4/遷移後重產及舊檔回放，不能用更新golden代替其餘斷言	golden 存檔回放：v1.95.json	test/golden.test.mjs:14:37	Expected values to be strictly deep-equal: / + actual - expected / { / +   after: 'e4c58f7e1e033061', / -   after: '556dcfccf6b7b210', / loaded: '33d1fd0bf6726fdf', / ok: true / }
+46	golden	本輪核心已改的預期快照差異；待3.4/遷移後重產及舊檔回放，不能用更新golden代替其餘斷言	golden 存檔回放：v2.2.json	test/golden.test.mjs:14:37	Expected values to be strictly deep-equal: / + actual - expected / { / +   after: '1e8208c208b932e6', / -   after: '60b41bd299589b36', / loaded: 'c956654a7102384d', / ok: true / }
+47	golden	本輪核心已改的預期快照差異；待3.4/遷移後重產及舊檔回放，不能用更新golden代替其餘斷言	golden 存檔回放：v2.3.json	test/golden.test.mjs:14:37	Expected values to be strictly deep-equal: / + actual - expected / { / +   after: '6e15c92d3de131a4', / -   after: '1436992fc27755ff', / loaded: 'e3e7b03b36152c7e', / ok: true / }
+48	golden	本輪核心已改的預期快照差異；待3.4/遷移後重產及舊檔回放，不能用更新golden代替其餘斷言	golden 存檔回放：v2.4.json	test/golden.test.mjs:14:37	Expected values to be strictly deep-equal: / + actual - expected / { / +   after: 'cea220ee988664d5', / -   after: 'c40f58a852ae870c', / loaded: 'b60a4bec67833c3c', / ok: true / }
+50	combat-reception-unresolved	舊只改codex/ARTS/指定抽樣的接法fixture與新眼熟/射程/串行/力層皆有差；尚未證是合法更新或真缺陷，原斷言保留	部位傷：觸發條件、三種效果、三日內好	test/part.test.mjs:6:1	The expression evaluated to a falsy value: / assert.ok(clashOdds(s, m, ok, { wind: 0.54 }).read > 0)
+55	combat	本輪改動相關、未解；不可稱舊fixture已合法	N15：第 5 隻不佔近戰位，在外圈繞	test/ring.test.mjs:39:1	Expected values to be strictly equal: / 1 !== 4
+56	combat	本輪改動相關、未解；不可稱舊fixture已合法	N28：應接次數只作紀錄，四敵仍佔四個貼身位	test/ring.test.mjs:49:1	'四隻同時咬時留下多招紀錄'
+58	combat-reception-unresolved	舊只改codex/ARTS/指定抽樣的接法fixture與新眼熟/射程/串行/力層皆有差；尚未證是合法更新或真缺陷，原斷言保留	N22/N27：高手截鼠招，新手沒有截擊優勢	test/round6-n22.test.mjs:6:1	The expression evaluated to a falsy value: / assert.ok(clashOdds(s, rat, fighter, { wind: 0.54 }).read > 0.9)
+63	combat-reception-unresolved	舊只改codex/ARTS/指定抽樣的接法fixture與新眼熟/射程/串行/力層皆有差；尚未證是合法更新或真缺陷，原斷言保留	N27：化境高手截鼠招，同級沒有必然截擊	test/round7-n27.test.mjs:6:1	The expression evaluated to a falsy value: / assert.ok(clashOdds(s, rat, d, { wind: 0.54 }).read > 0.9)
+68	combat	本輪改動相關、未解；不可稱舊fixture已合法	N31b：各人獨立冷卻後，四名山賊的截擊比例低於單挑	test/round7-n31b.test.mjs:5:1	'第 20 日郭靖尚未會亢龍，請檢查固定情境'
+94	world-social	本輪改動相關、未解；不可稱舊fixture已合法	聊天提升關係；未成年不會成道侶	test/sim.test.mjs:25:1	The expression evaluated to a falsy value: / assert.ok(s.rel[relKey('hero', 'senior')] > 10)
+95	world-social	本輪改動相關、未解；不可稱舊fixture已合法	狩獵波次會結束並產生戰報	test/sim.test.mjs:30:1	Expected values to be strictly equal: / + actual - expected / + { / +   escaped: 4, / +   gap: 0, / +   hits: { / +     hero: 28 / +   }, / +   kills: 5, / +   perWave: [ / +     { / +       boar: 0, / +       dog: 3 / +     }, / +     { / +       boar: 0, / +       dog: 3 / +     }, / +     { / +       boar: 1, / +       dog: 3 / +     } / +   ], / +   post: 'guard', / +   queue: [], / +   started: true, / +   t: 177.75, / +   team: [ / +     'hero' / +   ], / +   wave: 2, / +   waves: 3, / +
+100	verified-origin-fixture	sim.test第58行向已移除senior下train，後驗ds[1]正式kick；公開指派目標已失效且新白身正式武學需來源；不可憑改期望去掉招式來源斷言	腿法路數練到門檻學到掃堂腿，不會誤學掌法招	test/sim.test.mjs:57:1	'bodyPunch,bodyPush,bodyGrab,bodyKick'
+101	new-spar-regression	比舊78fail新增；yard已建成但1500秒無切磋紀錄，需真雙人來源/同場排程，不可當golden或無條件豁免	木樁場建成後會切磋，並加速練功	test/sim.test.mjs:61:1	The expression evaluated to a falsy value: / assert.ok(s.log.some((l) => /切磋/.test(l.msg)))
+102	world-social	本輪改動相關、未解；不可稱舊fixture已合法	狩獵取走真個體：擊退的獸從族群扣掉，之後會慢慢繁衍回來	test/sim.test.mjs:68:1	Expected values to be strictly equal: / + actual - expected / + { / +   aoeEach: 7, / +   escaped: 4, / +   gap: 0, / +   hits: { / +     hero: 12 / +   }, / +   kills: 1, / +   perWave: [ / +     { / +       boar: 0, / +       dog: 3 / +     }, / +     { / +       boar: 0, / +       dog: 4 / +     } / +   ], / +   post: 'guard', / +   queue: [], / +   started: true, / +   t: 577.75, / +   team: [ / +     'hero' / +   ], / +   wave: 1, / +   waves: 3, / +   why: [ / +     'dry' / +   ], / +   wk
+104	world-social	本輪改動相關、未解；不可稱舊fixture已合法	野豬下山拱菜後回山，族群數不變	test/sim.test.mjs:78:1	Expected values to be strictly equal: / 3 !== 2
+105	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	招收受名聲、床位、存糧三道門檻；成功扣糧且新人從村路上山	test/sim.test.mjs:86:1	The expression evaluated to a falsy value: / assert.ok(r.ok)
+107	world-social	本輪改動相關、未解；不可稱舊fixture已合法	性格乘數：貪玩的人練功分數比勤奮的人低	test/sim.test.mjs:100:1	The expression evaluated to a falsy value: / assert.ok(traitMul(hero, 'train') > 1 && traitMul(cousin, 'train') < 1)
+112	world-social	本輪改動相關、未解；不可稱舊fixture已合法	雙向好感：對立性格的人好感長得慢，且兩方向可以不同	test/sim.test.mjs:124:1	The expression evaluated to a falsy value: / assert.ok(compat(hero, cousin) < 1 && compat(hero, senior) > 1)
+115	world-social	本輪改動相關、未解；不可稱舊fixture已合法	三問心印：預設答案沿用天性；改答案改變明面性格，天性為暗	test/sim.test.mjs:141:1	The expression evaluated to a falsy value: / assert.ok(o.ok)
+118	new-mood-regression	比舊78fail新增；真10日avg33.6156944444<40，未解，保留>=40與低落<15%	心情能回升：10 日平均心情 ≥ 40，低落時間 < 15%	test/sim.test.mjs:153:1	'avg 33.61569444444444'
+133	verified-origin-fixture	確認v085 mkOuter第4行查cousin為undefined，N50新局已改origin同行；須更新真角色fixture但原非負/日課/資源斷言全部保留，尚未改或重驗	創立弟子皆為內門；外門未滿 2 人時內門仍做雜務	test/v085.test.mjs:7:1	'"undefined" is not valid JSON'
+134	verified-origin-fixture	確認v085 mkOuter第4行查cousin為undefined，N50新局已改origin同行；須更新真角色fixture但原非負/日課/資源斷言全部保留，尚未改或重驗	外門 ≥2：內門免雜務，計分裡沒有雜務	test/v085.test.mjs:11:1	'"undefined" is not valid JSON'
+135	verified-origin-fixture	確認v085 mkOuter第4行查cousin為undefined，N50新局已改origin同行；須更新真角色fixture但原非負/日課/資源斷言全部保留，尚未改或重驗	斷糧或野豬下山：內門暫時回來做雜務	test/v085.test.mjs:16:1	'"undefined" is not valid JSON'
+136	verified-origin-fixture	確認v085 mkOuter第4行查cousin為undefined，N50新局已改origin同行；須更新真角色fixture但原非負/日課/資源斷言全部保留，尚未改或重驗	職司勾選：外門只做勾選的雜務；優先度與未完成日課加權	test/v085.test.mjs:20:1	'"undefined" is not valid JSON'
+137	verified-origin-fixture	確認v085 mkOuter第4行查cousin為undefined，N50新局已改origin同行；須更新真角色fixture但原非負/日課/資源斷言全部保留，尚未改或重驗	日課結算：超額記貢獻、不足扣心情並順延（不罰其他）	test/v085.test.mjs:27:1	'"undefined" is not valid JSON'
+138	verified-origin-fixture	確認v085 mkOuter第4行查cousin為undefined，N50新局已改origin同行；須更新真角色fixture但原非負/日課/資源斷言全部保留，尚未改或重驗	完成雜務會累計日課點數	test/v085.test.mjs:34:1	'"undefined" is not valid JSON'
+139	verified-origin-fixture	確認v085 mkOuter第4行查cousin為undefined，N50新局已改origin同行；須更新真角色fixture但原非負/日課/資源斷言全部保留，尚未改或重驗	主角自動升首徒：外門 ≥2 且完成率 ≥80%；首徒練功加權	test/v085.test.mjs:39:1	'"undefined" is not valid JSON'
+140	verified-origin-fixture	確認v085 mkOuter第4行查cousin為undefined，N50新局已改origin同行；須更新真角色fixture但原非負/日課/資源斷言全部保留，尚未改或重驗	外門升內門：根骨＋貢獻條件，再經切磋考核	test/v085.test.mjs:45:1	'"undefined" is not valid JSON'
+141	verified-origin-fixture	確認v085 mkOuter第4行查cousin為undefined，N50新局已改origin同行；須更新真角色fixture但原非負/日課/資源斷言全部保留，尚未改或重驗	考核失敗：當日冷卻	test/v085.test.mjs:53:1	'"undefined" is not valid JSON'
+143	verified-origin-fixture	確認v085 mkOuter第4行查cousin為undefined，N50新局已改origin同行；須更新真角色fixture但原非負/日課/資源斷言全部保留，尚未改或重驗	20 日長跑：有外門時不斷糧卡死、數值無負	test/v085.test.mjs:65:1	'"undefined" is not valid JSON'
+152	world-social	本輪改動相關、未解；不可稱舊fixture已合法	創派三人有根骨；新特質在人才池	test/v09.test.mjs:51:1	Expected values to be strictly deep-equal: / + actual - expected / [ / 3, / +   3, / +   3 / -   4, / -   2 / ]
+177	world-social	本輪改動相關、未解；不可稱舊fixture已合法	敵人種類齊全；圖鑑未見為？？？，交手累積觀破值	test/v095.test.mjs:56:1	The expression evaluated to a falsy value: / assert.ok(seen.length >= 1)
+185	world-social	本輪改動相關、未解；不可稱舊fixture已合法	前三天每天一個里程碑（試煉、第一次巡山、第一次動工）	test/v095.test.mjs:96:1	The expression evaluated to a falsy value: / assert.ok(s.pace.done.includes('firstExp'))
+190	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	選郭靖＋黃蓉：同門加入、移出名俠池、默契最多 +25%	test/v096.test.mjs:29:1	The expression evaluated to a falsy value: / assert.ok(r)
+194	new-origin-vs-old-save	v096第59行新建template+免費xiaozhao再load；N50新局改origin但舊存檔須留同伴，兩前提須分開驗，不能稱舊檔兼容已壞或已過	預設無主角開局不變、v0.95 存檔逐步遷移	test/v096.test.mjs:55:1	Expected values to be strictly equal: / + actual - expected / + 'origin-1' / - 'xiaozhao'
+196	world-social	本輪改動相關、未解；不可稱舊fixture已合法	閃避取最差身法；溜走隊會閃過敵人	test/v097.test.mjs:15:1	"Cannot read properties of undefined (reading 'skills')"
+197	world-social	本輪改動相關、未解；不可稱舊fixture已合法	守關敵一定要打：打不過就回頭，原因寫「被〇〇擋在△△」	test/v097.test.mjs:20:1	"Cannot read properties of null (reading 'blocked')"
+198	world-social	本輪改動相關、未解；不可稱舊fixture已合法	清場型會追逃兵；戰報有追擊數與敘事行；清場率與清山紀錄	test/v097.test.mjs:27:1	"Cannot read properties of null (reading 'chase')"
+201	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	黃蓉精打細算：每日香火錢 +2	test/v097.test.mjs:45:1	Expected values to be strictly equal: / 0 !== 2
+227	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	名俠池排除已選主角／同門與已在門中者	test/v110.test.mjs:20:1	The expression evaluated to a falsy value: / assert.ok(!xiaPool(s).includes('guojing'))
+228	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	名聲觸發郭靖奇遇，一天最多一個；收入門下帶高手底子	test/v110.test.mjs:24:1	The expression evaluated to a falsy value: / assert.ok(g && g.skills.palm >= 30 && dragonFit(g))
+231	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	黃蓉下廚食誘→洪七公三段傳降龍，打狗棒法給黃蓉，傳完下山不死	test/v110.test.mjs:36:1	"Cannot read properties of undefined (reading 'id')"
+233	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	郭靖＋黃蓉同門默契上限 25%	test/v110.test.mjs:48:1	"Cannot read properties of null (reading 'id')"
+234	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	名俠心情長期低落就下山（不死）	test/v110.test.mjs:52:1	"Cannot set properties of null (setting 'mood')"
+235	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	郭靖模板主線推進到第 4 步	test/v110.test.mjs:55:1	The expression evaluated to a falsy value: / assert.ok(hr)
+240	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	辟邪三卡：林平之上山→暗查劍譜→自宮修練；岳不群自動駕駛照名望走，偽君子添違心	test/v120.test.mjs:27:1	The expression evaluated to a falsy value: / assert.ok(s.ds.some((d) => d.id === 'linpingzhi'))
+241	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	辟邪代價：斷情、寧中則好感鎖死、全門心情受衝擊；力量隨斷情天數上升	test/v120.test.mjs:34:1	"Cannot read properties of undefined (reading 'id')"
+243	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	總訣式：灑脫＋悟性 ≥4 必成；拘謹＋正統劍法圓滿互斥；不合性格軟性 5%	test/v120.test.mjs:42:1	"Cannot read properties of undefined (reading 'personality')"
+244	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	思過崖：罰令狐沖面壁→風清揚三晚指點、第四晚對練傳總訣，傳完就走	test/v120.test.mjs:46:1	The expression evaluated to a falsy value: / assert.ok(sg)
+245	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	九劍各式要見過對應敵人（深段）才悟出；破氣式還要化境內功	test/v120.test.mjs:53:1	"Cannot read properties of undefined (reading 'dugu')"
+246	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	嫉令狐沖：首徒學了九劍 → 逐出抉擇；逐出後他離開（不死）	test/v120.test.mjs:59:1	"Cannot read properties of undefined (reading 'dugu')"
+252	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	黯然銷魂掌：心情越低越強，≤30 時 ×1.5	test/v130.test.mjs:16:1	"Cannot read properties of null (reading 'arts')"
+253	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	神鵰餵三次結緣 → 斷臂事件：玄鐵劍法、單手、身法 −10%	test/v130.test.mjs:20:1	'card diao'
+254	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	小龍女：玉蜂漿治傷；與楊過雙劍合璧 25%（上限）	test/v130.test.mjs:26:1	"Cannot read properties of null (reading 'arts')"
+257	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	韋小寶入門：賭坊每日抽頭有上限	test/v130.test.mjs:43:1	Expected values to be strictly equal: / 0 !== 6
+261	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	包租婆帶包租公上山：獅子吼＋太極，夫妻連攜	test/v130.test.mjs:60:1	The expression evaluated to a falsy value: / assert.ok(g && artTier(g, 'taiji') >= 2)
+287	admission-origin	本輪改動相關、未解；不可稱舊fixture已合法	P1-3 衣缽傳給一般內門（林師姐）：主角卡可正常投影	test/v145-review.test.mjs:40:1	The expression evaluated to a falsy value: / assert.ok(heirs(s).includes(lin))
+318	enemy-data-audit	實際dog.speed80 vs舊28；N36狗追及世界資料已改，仍需對來源/物種相對速度核實，未擅改期望	合併敵人表：MONSTERS 由 ENEMIES 產生，數值與舊表一致；每種敵人有所屬環	test/v155a.test.mjs:27:1	Expected values to be strictly deep-equal: / + actual - expected / [ / 10, / 40, / 2, / 40, / +   80, / -   28, / 6 / ]
+377	world-social	本輪改動相關、未解；不可稱舊fixture已合法	閉關不見客：冥想中的人不會被拉去聊天／切磋／傳功（v1.78 岳不群修正）	test/v178.test.mjs:29:1	Expected values to be strictly equal: / 3 !== 0
+391	admission-source-defect-candidate	真義學來源在rep0被聽聞8門檻擋；應查已到訪學生的heard來源而不是改出現率或刪招募食宿/師父限制，尚未修	A10 下山義學：花錢派人下山一日，帶回的人不看名聲、仍要床位	test/v185.test.mjs:45:1	'反例：不看名聲，只會卡床位或糧'
+430	golden	本輪核心已改的預期快照差異；待3.4/遷移後重產及舊檔回放，不能用更新golden代替其餘斷言	新基準 golden-30d-v22（全開規則、郭靖模板、自動抉擇）	test/v220.test.mjs:51:1	規則有意改變時以 UPDATE_GOLDEN_V22=1 重產（舊 golden-30d.txt 不動） / + actual - expected / + 'a12028878115ac90' / - '62959b339d42576e'
+455	world-social	本輪改動相關、未解；不可稱舊fixture已合法	loop148 重現：郭靖模板 seed 1 林師姐欠俸離山後，郭靖不會再與令狐沖拜堂（v2.2 第 23 日重婚）	test/v225.test.mjs:70:1	'有人成親'
+629	combat-reception-unresolved	舊只改codex/ARTS/指定抽樣的接法fixture與新眼熟/射程/串行/力層皆有差；尚未證是合法更新或真缺陷，原斷言保留	名功的極端勁力與獨孤截招；地圖戰只跳過重複的舊 on 效果	test/zj.test.mjs:10:1	玄鐵勁大，對方招架崩潰 / 'hit' !== 'parry'

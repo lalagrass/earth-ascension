@@ -1,0 +1,5355 @@
+{
+  "seed": 17,
+  "mbti": "ISTJ",
+  "strategy": "trained-defend",
+  "clock": 30,
+  "dt": 0.25,
+  "scenario": "公開玩家史：換日建舍/可招才招；真pending立即迎戰1；採石建井→每200秒練拳/砍柴/挑水，真來犯改派守柵，結束才復工（受控公開日程，非自然放養）；無補血/資源/n/f/新敵人",
+  "orders": [
+    {
+      "t": 0,
+      "day": 1,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "quarry",
+      "result": true
+    },
+    {
+      "t": 253.5,
+      "day": 1,
+      "op": "startBuild",
+      "arg": "well",
+      "result": true
+    },
+    {
+      "t": 332.75,
+      "day": 1,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 400,
+      "day": 1,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 600,
+      "day": 2,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 600,
+      "day": 2,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "床位已滿（3/3）",
+        "beds": 3,
+        "foodNeed": 14,
+        "need": 30,
+        "mentor": "origin-1",
+        "mentorFree": 116.08585088964568,
+        "advantage": 2.533471117369837,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 1.533471117369837,
+          "safety": 0,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 2.53（食1.00、住1.00、功夫1.53、安全0.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 600,
+      "day": 2,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 800,
+      "day": 2,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 1000,
+      "day": 2,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 1200,
+      "day": 3,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": true
+    },
+    {
+      "t": 1200,
+      "day": 3,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（8.0/14.0）",
+        "beds": 5,
+        "foodNeed": 14,
+        "need": 30,
+        "mentor": "origin-2",
+        "mentorFree": 108.42451490184305,
+        "advantage": 3.688086424427315,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 2.6880864244273144,
+          "safety": 0,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 3.69（食1.00、住1.00、功夫2.69、安全0.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 1200,
+      "day": 3,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 1400,
+      "day": 3,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 1600,
+      "day": 3,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 1800,
+      "day": 4,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 1800,
+      "day": 4,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（13.0/14.0）",
+        "beds": 5,
+        "foodNeed": 14,
+        "need": 30,
+        "mentor": "origin-1",
+        "mentorFree": 94.96245132807692,
+        "advantage": 4.799448518081501,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 3.799448518081501,
+          "safety": 0,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 4.80（食1.00、住1.00、功夫3.80、安全0.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 1800,
+      "day": 4,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 2000,
+      "day": 4,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 2200,
+      "day": 4,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 2400,
+      "day": 5,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 2400,
+      "day": 5,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（13.0/14.0）",
+        "beds": 9,
+        "foodNeed": 14,
+        "need": 30,
+        "mentor": "origin-1",
+        "mentorFree": 107.97856284253338,
+        "advantage": 6.409404880712346,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 5.409404880712346,
+          "safety": 0,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 6.41（食1.00、住1.00、功夫5.41、安全0.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 2400,
+      "day": 5,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 2600,
+      "day": 5,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 2800,
+      "day": 5,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 3000,
+      "day": 6,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 3000,
+      "day": 6,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（11.0/14.0）",
+        "beds": 9,
+        "foodNeed": 14,
+        "need": 30,
+        "mentor": "origin-1",
+        "mentorFree": 166.43542455141164,
+        "advantage": 8.84199150857808,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 6.8419915085780785,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 8.84（食1.00、住1.00、功夫6.84、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 3000,
+      "day": 6,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 3200,
+      "day": 6,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 3400,
+      "day": 6,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 3600,
+      "day": 7,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 3600,
+      "day": 7,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（4.0/14.0）",
+        "beds": 9,
+        "foodNeed": 14,
+        "need": 30,
+        "mentor": "origin-1",
+        "mentorFree": 195.52011615463633,
+        "advantage": 10.199982753233751,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 8.199982753233751,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 10.20（食1.00、住1.00、功夫8.20、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 3600,
+      "day": 7,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 3800,
+      "day": 7,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 4000,
+      "day": 7,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 4200,
+      "day": 8,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 4200,
+      "day": 8,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（15.0/17.5）",
+        "beds": 9,
+        "foodNeed": 17.5,
+        "need": 30,
+        "mentor": "origin-1",
+        "mentorFree": 185.6041950352582,
+        "advantage": 11.132423737270337,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 9.132423737270337,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 11.13（食1.00、住1.00、功夫9.13、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 4200,
+      "day": 8,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 4400,
+      "day": 8,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 4600,
+      "day": 8,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 4800,
+      "day": 9,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 4800,
+      "day": 9,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（8.0/17.5）",
+        "beds": 9,
+        "foodNeed": 17.5,
+        "need": 30,
+        "mentor": "origin-2",
+        "mentorFree": 245.93046883658266,
+        "advantage": 11.937316007486963,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 9.937316007486963,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 11.94（食1.00、住1.00、功夫9.94、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 4800,
+      "day": 9,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 5000,
+      "day": 9,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 5200,
+      "day": 9,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 5400,
+      "day": 10,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 5400,
+      "day": 10,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（8.0/17.5）",
+        "beds": 9,
+        "foodNeed": 17.5,
+        "need": 30,
+        "mentor": "yangguo",
+        "mentorFree": 114,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 5400,
+      "day": 10,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 5600,
+      "day": 10,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 5800,
+      "day": 10,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 6000,
+      "day": 11,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 6000,
+      "day": 11,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（19.0/21.0）",
+        "beds": 9,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "origin-1",
+        "mentorFree": 153.4817665191606,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 6000,
+      "day": 11,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 6200,
+      "day": 11,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 6400,
+      "day": 11,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 6600,
+      "day": 12,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 6600,
+      "day": 12,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（2.0/21.0）",
+        "beds": 9,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "origin-2",
+        "mentorFree": 209.76135503744578,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 6600,
+      "day": 12,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 6800,
+      "day": 12,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 7000,
+      "day": 12,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 7200,
+      "day": 13,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 7200,
+      "day": 13,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（20.0/21.0）",
+        "beds": 9,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "yangguo",
+        "mentorFree": 170.5,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 7200,
+      "day": 13,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 7400,
+      "day": 13,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 7600,
+      "day": 13,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 7800,
+      "day": 14,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": true
+    },
+    {
+      "t": 7800,
+      "day": 14,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（23.0/24.5）",
+        "beds": 9,
+        "foodNeed": 24.5,
+        "need": 30,
+        "mentor": "xiaolongnv",
+        "mentorFree": 192,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 7800,
+      "day": 14,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 8000,
+      "day": 14,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 8200,
+      "day": 14,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 8400,
+      "day": 15,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 8400,
+      "day": 15,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（22.0/24.5）",
+        "beds": 13,
+        "foodNeed": 24.5,
+        "need": 30,
+        "mentor": "xiaolongnv",
+        "mentorFree": 167.49564186390052,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 8400,
+      "day": 15,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 8600,
+      "day": 15,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 8800,
+      "day": 15,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 9000,
+      "day": 16,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 9000,
+      "day": 16,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（18.0/24.5）",
+        "beds": 13,
+        "foodNeed": 24.5,
+        "need": 30,
+        "mentor": "origin-2",
+        "mentorFree": 203.77649793111638,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 9000,
+      "day": 16,
+      "op": "resolveRaid",
+      "arg": 1,
+      "pending": {
+        "n": 1,
+        "pts": 118,
+        "demand": 10,
+        "p": 1,
+        "at": 9000,
+        "until": 9300,
+        "day": 16,
+        "kind": "liukou"
+      },
+      "result": {
+        "ok": true,
+        "band": true
+      }
+    },
+    {
+      "t": 9000,
+      "day": 16,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "defend",
+      "result": true
+    },
+    {
+      "t": 9024.5,
+      "day": 16,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 9084.5,
+      "day": 16,
+      "op": "resolveRaid",
+      "arg": 1,
+      "pending": {
+        "n": 1,
+        "pts": 212,
+        "demand": 0,
+        "p": 0.99,
+        "at": 9084.5,
+        "until": 9159.5,
+        "day": 16,
+        "kind": "liukou",
+        "noPay": true,
+        "wave": 2
+      },
+      "result": {
+        "ok": true,
+        "band": true
+      }
+    },
+    {
+      "t": 9084.5,
+      "day": 16,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "defend",
+      "result": true
+    },
+    {
+      "t": 9111.75,
+      "day": 16,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 9200,
+      "day": 16,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 9400,
+      "day": 16,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 9600,
+      "day": 17,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 9600,
+      "day": 17,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（14.0/24.5）",
+        "beds": 13,
+        "foodNeed": 24.5,
+        "need": 30,
+        "mentor": "yangguo",
+        "mentorFree": 135.45534018791852,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 9600,
+      "day": 17,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 9800,
+      "day": 17,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 10000,
+      "day": 17,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 10200,
+      "day": 18,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 10200,
+      "day": 18,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（13.0/24.5）",
+        "beds": 13,
+        "foodNeed": 24.5,
+        "need": 30,
+        "mentor": "yangguo",
+        "mentorFree": 118.85860615548617,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 10200,
+      "day": 18,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 10400,
+      "day": 18,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 10600,
+      "day": 18,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 10800,
+      "day": 19,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 10800,
+      "day": 19,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（19.0/24.5）",
+        "beds": 13,
+        "foodNeed": 24.5,
+        "need": 30,
+        "mentor": "yangguo",
+        "mentorFree": 87.69309993663212,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 10800,
+      "day": 19,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 11000,
+      "day": 19,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 11200,
+      "day": 19,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 11400,
+      "day": 20,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 11400,
+      "day": 20,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（6.0/24.5）",
+        "beds": 13,
+        "foodNeed": 24.5,
+        "need": 30,
+        "mentor": "yangguo",
+        "mentorFree": 142.28272444247852,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 11400,
+      "day": 20,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 11600,
+      "day": 20,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 11800,
+      "day": 20,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 12000,
+      "day": 21,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 12000,
+      "day": 21,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（20.0/24.5）",
+        "beds": 13,
+        "foodNeed": 24.5,
+        "need": 30,
+        "mentor": "xiaolongnv",
+        "mentorFree": 119.85087497653655,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 12000,
+      "day": 21,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 12200,
+      "day": 21,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 12400,
+      "day": 21,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 12600,
+      "day": 22,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 12600,
+      "day": 22,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（10.0/29.4）",
+        "beds": 13,
+        "foodNeed": 29.400000000000002,
+        "need": 30,
+        "mentor": "yangguo",
+        "mentorFree": 119.23501843593311,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 12600,
+      "day": 22,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 12800,
+      "day": 22,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 13000,
+      "day": 22,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 13200,
+      "day": 23,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 13200,
+      "day": 23,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（13.0/29.4）",
+        "beds": 13,
+        "foodNeed": 29.400000000000002,
+        "need": 30,
+        "mentor": "yangguo",
+        "mentorFree": 109.27865445241775,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 13200,
+      "day": 23,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 13400,
+      "day": 23,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 13600,
+      "day": 23,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 13800,
+      "day": 24,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 13800,
+      "day": 24,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（5.0/33.6）",
+        "beds": 13,
+        "foodNeed": 33.6,
+        "need": 30,
+        "mentor": "yangguo",
+        "mentorFree": 156.39871667746806,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 13800,
+      "day": 24,
+      "op": "resolveRaid",
+      "arg": 1,
+      "pending": {
+        "n": 2,
+        "pts": 300,
+        "demand": 44,
+        "p": 0.99,
+        "at": 13800,
+        "until": 14100,
+        "day": 24,
+        "kind": "hanfei"
+      },
+      "result": {
+        "ok": true,
+        "band": true
+      }
+    },
+    {
+      "t": 13800,
+      "day": 24,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "defend",
+      "result": true
+    },
+    {
+      "t": 13835,
+      "day": 24,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 13895,
+      "day": 24,
+      "op": "resolveRaid",
+      "arg": 1,
+      "pending": {
+        "n": 2,
+        "pts": 540,
+        "demand": 0,
+        "p": 0.96,
+        "at": 13895,
+        "until": 13970,
+        "day": 24,
+        "kind": "hanfei",
+        "noPay": true,
+        "wave": 2
+      },
+      "result": {
+        "ok": true,
+        "band": true
+      }
+    },
+    {
+      "t": 13895,
+      "day": 24,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "defend",
+      "result": true
+    },
+    {
+      "t": 13941.75,
+      "day": 24,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 14000,
+      "day": 24,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 14200,
+      "day": 24,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 14400,
+      "day": 25,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 14400,
+      "day": 25,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/33.6）",
+        "beds": 13,
+        "foodNeed": 33.6,
+        "need": 30,
+        "mentor": "yangguo",
+        "mentorFree": 7.903396829380467,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 14400,
+      "day": 25,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 14600,
+      "day": 25,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 14800,
+      "day": 25,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 15000,
+      "day": 26,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 15000,
+      "day": 26,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/25.2）",
+        "beds": 13,
+        "foodNeed": 25.200000000000003,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 15000,
+      "day": 26,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 15200,
+      "day": 26,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 15400,
+      "day": 26,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 15600,
+      "day": 27,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 15600,
+      "day": 27,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/25.2）",
+        "beds": 13,
+        "foodNeed": 25.200000000000003,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 15600,
+      "day": 27,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 15800,
+      "day": 27,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 16000,
+      "day": 27,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 16200,
+      "day": 28,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 16200,
+      "day": 28,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/25.2）",
+        "beds": 13,
+        "foodNeed": 25.200000000000003,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 16200,
+      "day": 28,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 16400,
+      "day": 28,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 16600,
+      "day": 28,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 16800,
+      "day": 29,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 16800,
+      "day": 29,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 16800,
+      "day": 29,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 17000,
+      "day": 29,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 17200,
+      "day": 29,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 17400,
+      "day": 30,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 17400,
+      "day": 30,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 17400,
+      "day": 30,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 17600,
+      "day": 30,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 17800,
+      "day": 30,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 18000,
+      "day": 31,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 18000,
+      "day": 31,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 18000,
+      "day": 31,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 18200,
+      "day": 31,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 18400,
+      "day": 31,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 18600,
+      "day": 32,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 18600,
+      "day": 32,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 18600,
+      "day": 32,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 18800,
+      "day": 32,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 19000,
+      "day": 32,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 19200,
+      "day": 33,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 19200,
+      "day": 33,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 19200,
+      "day": 33,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 19400,
+      "day": 33,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 19600,
+      "day": 33,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 19800,
+      "day": 34,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 19800,
+      "day": 34,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 19800,
+      "day": 34,
+      "op": "resolveRaid",
+      "arg": 1,
+      "pending": {
+        "n": 3,
+        "pts": 187,
+        "demand": 37,
+        "p": 0.64,
+        "at": 19800,
+        "until": 20100,
+        "day": 34,
+        "kind": "liukou"
+      },
+      "result": {
+        "ok": true,
+        "band": true
+      }
+    },
+    {
+      "t": 19800,
+      "day": 34,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "defend",
+      "result": true
+    },
+    {
+      "t": 19828,
+      "day": 34,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 20000,
+      "day": 34,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 20200,
+      "day": 34,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 20400,
+      "day": 35,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 20400,
+      "day": 35,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 20400,
+      "day": 35,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 20600,
+      "day": 35,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 20800,
+      "day": 35,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 21000,
+      "day": 36,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 21000,
+      "day": 36,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 21000,
+      "day": 36,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 21200,
+      "day": 36,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 21400,
+      "day": 36,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 21600,
+      "day": 37,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 21600,
+      "day": 37,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 21600,
+      "day": 37,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 21800,
+      "day": 37,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 22000,
+      "day": 37,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 22200,
+      "day": 38,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 22200,
+      "day": 38,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 22200,
+      "day": 38,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 22400,
+      "day": 38,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 22600,
+      "day": 38,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 22800,
+      "day": 39,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 22800,
+      "day": 39,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 22800,
+      "day": 39,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 23000,
+      "day": 39,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 23200,
+      "day": 39,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 23400,
+      "day": 40,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 23400,
+      "day": 40,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 23400,
+      "day": 40,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 23600,
+      "day": 40,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 23800,
+      "day": 40,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 24000,
+      "day": 41,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 24000,
+      "day": 41,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 24000,
+      "day": 41,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 24200,
+      "day": 41,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 24400,
+      "day": 41,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 24600,
+      "day": 42,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 24600,
+      "day": 42,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 24600,
+      "day": 42,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 24800,
+      "day": 42,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 25000,
+      "day": 42,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 25200,
+      "day": 43,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 25200,
+      "day": 43,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 25200,
+      "day": 43,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 25400,
+      "day": 43,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 25600,
+      "day": 43,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 25800,
+      "day": 44,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 25800,
+      "day": 44,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 25800,
+      "day": 44,
+      "op": "resolveRaid",
+      "arg": 1,
+      "pending": {
+        "n": 4,
+        "pts": 335,
+        "demand": 65,
+        "p": 0.8,
+        "at": 25800,
+        "until": 26100,
+        "day": 44,
+        "kind": "hanfei"
+      },
+      "result": {
+        "ok": true,
+        "band": true
+      }
+    },
+    {
+      "t": 25800,
+      "day": 44,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "defend",
+      "result": true
+    },
+    {
+      "t": 25857.25,
+      "day": 44,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 26000,
+      "day": 44,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 26200,
+      "day": 44,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 26400,
+      "day": 45,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 26400,
+      "day": 45,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 26400,
+      "day": 45,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 26600,
+      "day": 45,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 26800,
+      "day": 45,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 27000,
+      "day": 46,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 27000,
+      "day": 46,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 27000,
+      "day": 46,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 27200,
+      "day": 46,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 27400,
+      "day": 46,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 27600,
+      "day": 47,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 27600,
+      "day": 47,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 27600,
+      "day": 47,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 27800,
+      "day": 47,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 28000,
+      "day": 47,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 28200,
+      "day": 48,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 28200,
+      "day": 48,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 28200,
+      "day": 48,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 28400,
+      "day": 48,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 28600,
+      "day": 48,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 28800,
+      "day": 49,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 28800,
+      "day": 49,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 28800,
+      "day": 49,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 29000,
+      "day": 49,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 29200,
+      "day": 49,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 29400,
+      "day": 50,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 29400,
+      "day": 50,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/25.2）",
+        "beds": 13,
+        "foodNeed": 25.200000000000003,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 29400,
+      "day": 50,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 29600,
+      "day": 50,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 29800,
+      "day": 50,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 30000,
+      "day": 51,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 30000,
+      "day": 51,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/25.2）",
+        "beds": 13,
+        "foodNeed": 25.200000000000003,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 30000,
+      "day": 51,
+      "op": "resolveRaid",
+      "arg": 1,
+      "pending": {
+        "n": 5,
+        "pts": 154,
+        "demand": 18,
+        "p": 0.21,
+        "at": 30000,
+        "until": 30300,
+        "day": 51,
+        "kind": "liukou"
+      },
+      "result": {
+        "ok": true,
+        "band": true
+      }
+    },
+    {
+      "t": 30000,
+      "day": 51,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "defend",
+      "result": true
+    },
+    {
+      "t": 30038.75,
+      "day": 51,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 30098.75,
+      "day": 51,
+      "op": "resolveRaid",
+      "arg": 1,
+      "pending": {
+        "n": 5,
+        "pts": 277,
+        "demand": 0,
+        "p": 0.71,
+        "at": 30098.75,
+        "until": 30173.75,
+        "day": 51,
+        "kind": "liukou",
+        "noPay": true,
+        "wave": 2
+      },
+      "result": {
+        "ok": true,
+        "band": true
+      }
+    },
+    {
+      "t": 30098.75,
+      "day": 51,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "defend",
+      "result": true
+    },
+    {
+      "t": 30118.5,
+      "day": 51,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 30200,
+      "day": 51,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 30400,
+      "day": 51,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 30600,
+      "day": 52,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 30600,
+      "day": 52,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/25.2）",
+        "beds": 13,
+        "foodNeed": 25.200000000000003,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 30600,
+      "day": 52,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 30800,
+      "day": 52,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 31000,
+      "day": 52,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 31200,
+      "day": 53,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 31200,
+      "day": 53,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/25.2）",
+        "beds": 13,
+        "foodNeed": 25.200000000000003,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 31200,
+      "day": 53,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 31400,
+      "day": 53,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 31600,
+      "day": 53,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 31800,
+      "day": 54,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 31800,
+      "day": 54,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/25.2）",
+        "beds": 13,
+        "foodNeed": 25.200000000000003,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 31800,
+      "day": 54,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 32000,
+      "day": 54,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 32200,
+      "day": 54,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 32400,
+      "day": 55,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 32400,
+      "day": 55,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/25.2）",
+        "beds": 13,
+        "foodNeed": 25.200000000000003,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 32400,
+      "day": 55,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 32600,
+      "day": 55,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 32800,
+      "day": 55,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 33000,
+      "day": 56,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 33000,
+      "day": 56,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/25.2）",
+        "beds": 13,
+        "foodNeed": 25.200000000000003,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 33000,
+      "day": 56,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 33200,
+      "day": 56,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 33400,
+      "day": 56,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 33600,
+      "day": 57,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 33600,
+      "day": 57,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 33600,
+      "day": 57,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 33800,
+      "day": 57,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 34000,
+      "day": 57,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 34200,
+      "day": 58,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 34200,
+      "day": 58,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 34200,
+      "day": 58,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 34400,
+      "day": 58,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 34600,
+      "day": 58,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 34800,
+      "day": 59,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 34800,
+      "day": 59,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 34800,
+      "day": 59,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    },
+    {
+      "t": 35000,
+      "day": 59,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "chop",
+      "result": true
+    },
+    {
+      "t": 35200,
+      "day": 59,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "water",
+      "result": true
+    },
+    {
+      "t": 35400,
+      "day": 60,
+      "op": "startBuild",
+      "arg": "dorm",
+      "result": false
+    },
+    {
+      "t": 35400,
+      "day": 60,
+      "op": "canRecruit",
+      "result": {
+        "ok": false,
+        "why": "存糧不足全門一日（0.0/21.0）",
+        "beds": 13,
+        "foodNeed": 21,
+        "need": 30,
+        "mentor": "hero",
+        "mentorFree": 0,
+        "advantage": 12,
+        "utility": {
+          "food": 1,
+          "bed": 1,
+          "status": 10,
+          "safety": 1,
+          "opinion": 0,
+          "autonomy": -1
+        },
+        "reason": "在村路討生活；本門/現況差 12.00（食1.00、住1.00、功夫10.00、安全1.00、交情0.00、牽掛-1.00）",
+        "next": {
+          "id": "aqing",
+          "name": "阿青",
+          "adult": true,
+          "sprite": "hero",
+          "style": "palm",
+          "skills": {
+            "leg": 3,
+            "palm": 6,
+            "strength": 8,
+            "farming": 6,
+            "herbal": 4,
+            "agility": 9,
+            "cooking": 4
+          },
+          "traits": {
+            "diligent": 1.3
+          },
+          "personality": [
+            "diligent",
+            "brave"
+          ]
+        },
+        "heard": true
+      }
+    },
+    {
+      "t": 35400,
+      "day": 60,
+      "op": "setOrder",
+      "id": "hero",
+      "arg": "train",
+      "result": true
+    }
+  ],
+  "snapshots": [
+    {
+      "day": 60,
+      "t": 35430,
+      "hero": {
+        "id": "hero",
+        "name": "主角",
+        "root": 2,
+        "rootKnown": true,
+        "style": "palm",
+        "personality": [
+          "rigid",
+          "diligent",
+          "sociable"
+        ],
+        "known": [
+          "rigid",
+          "diligent",
+          "sociable"
+        ],
+        "together": 35430,
+        "mood": 31,
+        "thoughts": [
+          {
+            "id": "bedSleep",
+            "text": "睡在床上",
+            "v": 5,
+            "left": 174.75
+          }
+        ],
+        "why": [],
+        "adult": true,
+        "sprite": "hero",
+        "traits": {
+          "diligent": 1.2
+        },
+        "skills": {
+          "leg": 0,
+          "palm": 100,
+          "strength": 100,
+          "farming": 5,
+          "herbal": 5,
+          "agility": 100,
+          "cooking": 3
+        },
+        "moves": [
+          "bodyPunch",
+          "bodyPush",
+          "bodyGrab",
+          "bodyKick",
+          "toolStone",
+          "toolPole",
+          "toolKnife",
+          "kh1",
+          "km1",
+          "km2",
+          "bs1"
+        ],
+        "needs": {
+          "energy": 75.75,
+          "hunger": 0,
+          "social": 0,
+          "fun": 0
+        },
+        "hp": 100,
+        "fret": 0,
+        "raging": false,
+        "rageUntil": 0,
+        "busyUntil": 30118.85,
+        "at": "yard",
+        "pos": [
+          1115,
+          394
+        ],
+        "path": [],
+        "role": "inner",
+        "duties": [
+          "chop",
+          "quarry",
+          "farm",
+          "cook",
+          "build",
+          "forage"
+        ],
+        "prio": "normal",
+        "chore": 0,
+        "choreDebt": 0,
+        "contrib": 0,
+        "task": {
+          "act": "train",
+          "fac": "yard",
+          "node": "yard",
+          "phase": "do",
+          "resv": [
+            "yard:spot:dummy0"
+          ],
+          "spot": "dummy0",
+          "spotKind": "dummy",
+          "timer": 4.25
+        },
+        "order": "train",
+        "reason": "玩家指派",
+        "carry": null,
+        "cool": 0,
+        "walked": 1271792.9181596865,
+        "face": -1,
+        "anim": "train",
+        "arts": {
+          "kuihua": {
+            "xp": 56,
+            "last": 4394,
+            "rust": 0,
+            "gm": {
+              "e": 4.7957929376009,
+              "ms": 1
+            },
+            "bt1": true,
+            "affix": "mian",
+            "variant": "gang"
+          },
+          "kongming": {
+            "xp": 99.9,
+            "last": 35424.75,
+            "bt1": true,
+            "affix": "mian",
+            "rust": 0,
+            "gm": {
+              "e": 14.421169199165227,
+              "ms": 0
+            },
+            "variant": "gang"
+          },
+          "basicSword": {
+            "xp": 0,
+            "last": 7800
+          }
+        },
+        "pendingArt": "breath",
+        "focus": null,
+        "best": 0,
+        "insight": {},
+        "away": false,
+        "wu": 2,
+        "ding": 2,
+        "values": {
+          "xia": 50,
+          "sect": 24,
+          "qing": 8,
+          "free": 0,
+          "wu": 50,
+          "fame": 0
+        },
+        "wexin": 1,
+        "mbti": "ISTJ",
+        "gInit": true,
+        "pf": 1,
+        "ng": 1,
+        "qi": 0,
+        "ng2": 1,
+        "lg": 1,
+        "bare": true,
+        "tools": {
+          "stone": true,
+          "pole": true,
+          "knife": true
+        },
+        "pendingMove": null,
+        "practice": {
+          "hands": {
+            "work:quarry": 7.1111111111111125,
+            "work:water": 396.44444444444764,
+            "bodyPunch": 722.9148629148754,
+            "bodyPush": 688.4903456331875,
+            "bodyGrab": 688.4903456331875,
+            "bodyKick": 628.6216199259726,
+            "toolStone": 535.492491048049,
+            "toolPole": 578.3318903318973,
+            "work:chop": 323.5555555555567,
+            "toolKnife": 645.0741178013864,
+            "kh1": 1784.6205705662844,
+            "km1": 675.1964085297359,
+            "km2": 506.39730639731215,
+            "bs1": 545.4545454545524
+          },
+          "eyes": {
+            "human:bodyGrab": 1.5578303527731174,
+            "human:bodyPunch": 0.7941323215407192,
+            "human:yn1": 0.6796471772051604,
+            "human:hg1": 0.5378555839538718,
+            "human:xt1": 0.21789104214919738,
+            "human:bodyKick": 1.84766522513153,
+            "human:toolKnife": 0.9424055631853683,
+            "bandit:looterFist": 23.84008545362181,
+            "bandit:looterBlade": 9.392835974155627,
+            "human:toolStone": 1.186330541344008,
+            "human:bodyPush": 0.4640147448547452,
+            "bandit:looterStaff": 14.02701607370552,
+            "human:fist2": 0.36994089449516204
+          },
+          "origin": {}
+        },
+        "sectId": "wuming",
+        "gdr": 1,
+        "timeToday": {
+          "day": 60,
+          "elapsed": 30.25,
+          "free": 0,
+          "guided": 0
+        },
+        "posture": 100,
+        "pain": 0,
+        "decision": {
+          "layer": "order",
+          "act": "train",
+          "why": "玩家指派"
+        },
+        "acts": {
+          "craft": 11311.25,
+          "cult": 9904.5,
+          "combat": 170.5
+        },
+        "powMul": 1.6,
+        "yunvLink": false,
+        "jhMul": 1.15,
+        "sbias": {
+          "剛": 0.15
+        },
+        "stree": [
+          "wuhuBlade",
+          "pushPalm",
+          "breath",
+          "hanbingPalm"
+        ],
+        "sgain": 1,
+        "medK24": 1,
+        "age": 24,
+        "pairMul": 0,
+        "asp": {
+          "id": "xia",
+          "done": false
+        },
+        "lgDay": 19,
+        "lgGot": 1.2017351747207812,
+        "likes": {
+          "food": "紅燒肉",
+          "drink": "清茶"
+        },
+        "small29": true,
+        "timePrev": {
+          "day": 59,
+          "elapsed": 600,
+          "free": 0,
+          "guided": 0
+        },
+        "mates": {
+          "origin-1": 59,
+          "origin-2": 59,
+          "yangguo": 76,
+          "xiaolongnv": 57,
+          "weixiaobao": 8
+        },
+        "growMul": {
+          "art": "kongming",
+          "total": 0.70686,
+          "talent": 0.85,
+          "state": 0.924,
+          "ext": 0.9000000000000001,
+          "gate": 1
+        },
+        "bore31": 0,
+        "duanqing": 4800,
+        "moodCap": 80,
+        "bcool": -3.5,
+        "tactics": {
+          "action": "flee",
+          "morale": {
+            "reserve": 1.0416666666666665,
+            "pressure": 2.673231984530126,
+            "state": "routing",
+            "health": 0.5725,
+            "fatigue": 0.6581249999999965
+          },
+          "L": 2.253164352063865,
+          "anger": false,
+          "cover": null,
+          "at": 30118.5,
+          "helper": "kid1",
+          "destination": [
+            1200.9012506489246,
+            515.4956878569085
+          ]
+        },
+        "selection": {
+          "contexts": {
+            "bandit:touch:ready:set": {
+              "kh1": {
+                "win": 7,
+                "loss": 0
+              }
+            },
+            "bandit:reach:ready:set": {
+              "kh1": {
+                "win": 0,
+                "loss": 1
+              }
+            },
+            "bandit:touch:ready:offset": {
+              "kh1": {
+                "win": 4,
+                "loss": 0
+              }
+            }
+          },
+          "habits": {
+            "kh1": 12
+          },
+          "failures": {
+            "timing": 0
+          },
+          "last": {
+            "move": "kh1",
+            "context": "bandit:touch:ready:offset",
+            "seconds": 0,
+            "stable": true,
+            "habit": true,
+            "target": "raid4-bd3",
+            "at": 25852
+          },
+          "evidence": {
+            "timing": {
+              "move": "looterBlade",
+              "wind": 0.8,
+              "reaction": 0.33120860805751773,
+              "deficit": -0.4687913919424823
+            }
+          }
+        },
+        "bswing": null,
+        "lastCombatMove": "kh1",
+        "lastHelpAt": 13818.25,
+        "handled": [
+          30117.75,
+          30118,
+          30118,
+          30118.5
+        ],
+        "maxHandled": 4,
+        "ring": {
+          "intercept": false,
+          "t": 30118.5,
+          "busy": 0.3499999999985448
+        },
+        "glimmer": {
+          "progress": {
+            "disarm": 21.891492683805158
+          },
+          "known": [],
+          "firstDay": null
+        },
+        "trainingWish": null,
+        "postT": 30118.5,
+        "lastDodge": {
+          "target": "raid5-bd0",
+          "move": "looterFist",
+          "charging": false,
+          "until": 30119.05
+        },
+        "flightSeen": {
+          "bandit": true
+        },
+        "wounds": [],
+        "painAt": 30118.5,
+        "scarred": true,
+        "part": null,
+        "lastWexinT": 14400,
+        "balanceOpenUntil": 0,
+        "downUntil": 25857.45,
+        "swing": null,
+        "faintUntil": 25857.45,
+        "raidHurt": 1
+      },
+      "events": 23608,
+      "eventHash": "b9a308c9ec9fe2da02adb8cab393cc88404ddf59a5bb6c2fa30b4d8ea5969255",
+      "exposure": {
+        "looterFist": {
+          "attempts": 35,
+          "hits": 21,
+          "w": 22.60795074071311
+        },
+        "looterStaff": {
+          "attempts": 20,
+          "hits": 17,
+          "w": 12.732140004025181
+        },
+        "looterBlade": {
+          "attempts": 12,
+          "hits": 10,
+          "w": 7.418298837848805
+        }
+      },
+      "counts": {
+        "practice": 20447,
+        "work": 881,
+        "tactic": 535,
+        "escape": 227,
+        "choice": 244,
+        "exchange": 234,
+        "choiceResult": 218,
+        "observe": 505,
+        "contact": 173,
+        "glimmerProgress": 104,
+        "balanceBreak": 40
+      }
+    }
+  ]
+}

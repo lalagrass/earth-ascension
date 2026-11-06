@@ -1,0 +1,31 @@
+{
+  "manual": {
+    "t": 19.75,
+    "day": 1,
+    "type": "lesson",
+    "who": "hero",
+    "art": "basicFist",
+    "source": {
+      "kind": "manual",
+      "art": "basicFist",
+      "index": 0,
+      "manualId": "manual-1"
+    },
+    "seconds": 8,
+    "required": 8
+  },
+  "teacher": {
+    "t": 22.75,
+    "day": 1,
+    "type": "lesson",
+    "who": "origin-1",
+    "art": "basicFist",
+    "source": {
+      "kind": "teacher",
+      "art": "basicFist",
+      "teacher": "hero"
+    },
+    "seconds": 8,
+    "required": 8
+  }
+}

@@ -1,0 +1,495 @@
+{
+  "snapshotSha256": "18324971962f8aa535c316772ce3e8fbb8ff42dd05dc3e24d78b816c3ce69d08",
+  "deadlineProof": {
+    "forward": [
+      {
+        "who": "a",
+        "t": 1.25,
+        "deadline": 1.1
+      }
+    ],
+    "reverse": [
+      {
+        "who": "a",
+        "t": 1.25,
+        "deadline": 1.1
+      }
+    ],
+    "ties": [
+      {
+        "seed": 1,
+        "winner": "a"
+      },
+      {
+        "seed": 2,
+        "winner": "a"
+      },
+      {
+        "seed": 3,
+        "winner": "a"
+      },
+      {
+        "seed": 4,
+        "winner": "b"
+      },
+      {
+        "seed": 5,
+        "winner": "b"
+      },
+      {
+        "seed": 6,
+        "winner": "b"
+      },
+      {
+        "seed": 7,
+        "winner": "a"
+      },
+      {
+        "seed": 8,
+        "winner": "a"
+      },
+      {
+        "seed": 9,
+        "winner": "a"
+      },
+      {
+        "seed": 10,
+        "winner": "b"
+      },
+      {
+        "seed": 11,
+        "winner": "b"
+      },
+      {
+        "seed": 12,
+        "winner": "a"
+      },
+      {
+        "seed": 13,
+        "winner": "a"
+      },
+      {
+        "seed": 14,
+        "winner": "b"
+      },
+      {
+        "seed": 15,
+        "winner": "a"
+      },
+      {
+        "seed": 16,
+        "winner": "a"
+      },
+      {
+        "seed": 17,
+        "winner": "b"
+      },
+      {
+        "seed": 18,
+        "winner": "b"
+      },
+      {
+        "seed": 19,
+        "winner": "b"
+      },
+      {
+        "seed": 20,
+        "winner": "a"
+      },
+      {
+        "seed": 21,
+        "winner": "b"
+      },
+      {
+        "seed": 22,
+        "winner": "a"
+      },
+      {
+        "seed": 23,
+        "winner": "b"
+      },
+      {
+        "seed": 24,
+        "winner": "a"
+      },
+      {
+        "seed": 25,
+        "winner": "a"
+      },
+      {
+        "seed": 26,
+        "winner": "a"
+      },
+      {
+        "seed": 27,
+        "winner": "a"
+      },
+      {
+        "seed": 28,
+        "winner": "b"
+      },
+      {
+        "seed": 29,
+        "winner": "a"
+      },
+      {
+        "seed": 30,
+        "winner": "a"
+      },
+      {
+        "seed": 31,
+        "winner": "b"
+      },
+      {
+        "seed": 32,
+        "winner": "a"
+      }
+    ]
+  },
+  "waves": {
+    "seed": 17,
+    "trainingCreationOptions": {
+      "kind": "bare",
+      "mbti": "ISTJ",
+      "askMajor": false,
+      "readwu": true,
+      "valormid": true,
+      "valor": true,
+      "laborgrow": true,
+      "neigong": true,
+      "ngshield": true,
+      "rumor": true,
+      "growdr": true,
+      "draw": true,
+      "comprehend": true,
+      "mentor": true,
+      "peace": true,
+      "jhev": true,
+      "bt25": true,
+      "lift": true,
+      "lairpow": true,
+      "steward": true,
+      "jhui": true,
+      "qshare": true,
+      "jhrefuse": true,
+      "mfit": true,
+      "cropcare": true,
+      "letterask": true,
+      "mpool": true,
+      "cotrain": true,
+      "masterask": true,
+      "stewkit": true,
+      "cofun": true,
+      "longwatch": true,
+      "paypill": true,
+      "grow": true,
+      "prof": true,
+      "stewyard": true
+    },
+    "pairedComparison": "同一snapshot/裝備/ARTS/n/f；只改personality資料（同時影響選招與定力），不是只改定力；相同路數initialActorFingerprint須一致",
+    "training": "公開玩家史：換日建舍/可招才招；真pending先整備再公開迎戰1；採石建井→每200秒練拳/砍柴/挑水，真來犯改派守柵，結束才復工（受控公開日程，非自然放養）；警報期限內先公開休息/吃飯/去菜園工作，真到場且交回負重才迎戰，期限與自動處置不改；無補血/資源/n/f/新敵人；probe沿既有統一入場HP/精力/暫態，成長n/f不改",
+    "trainingEventHash": "1d090070e1968fa61aa634a40c80e9a74e6b356b0bc4e5869c5d0939ffe64e84",
+    "runs": [
+      {
+        "count": 1,
+        "trait": "normal",
+        "initialActorFingerprint": "103da5f736c1aa1def420d027b95f0a709984fd3e8c1ebd7cc5a18afe88a6c5c",
+        "location": "gate(two slots)",
+        "attacks": 6,
+        "rushAttacks": 1,
+        "incomingResolved": 5,
+        "timedIncoming": 5,
+        "timeLoadFits": 0,
+        "hits": 5,
+        "hpLost": 7.047619047619037,
+        "counters": 0,
+        "overloadBeats": 2,
+        "overloadCounters": 0,
+        "seconds": 17.5,
+        "escaped": []
+      },
+      {
+        "count": 2,
+        "trait": "normal",
+        "initialActorFingerprint": "103da5f736c1aa1def420d027b95f0a709984fd3e8c1ebd7cc5a18afe88a6c5c",
+        "location": "gate(two slots)",
+        "attacks": 19,
+        "rushAttacks": 12,
+        "incomingResolved": 28,
+        "timedIncoming": 24,
+        "timeLoadFits": 3,
+        "hits": 24,
+        "hpLost": 35.238095238095184,
+        "counters": 2,
+        "overloadBeats": 23,
+        "overloadCounters": 0,
+        "seconds": 40,
+        "escaped": []
+      },
+      {
+        "count": 4,
+        "trait": "normal",
+        "initialActorFingerprint": "67a0037bfb4cdba34d8c0612fc514f2d97c1eccdd5860bbf5b2f95da5aeae6d0",
+        "location": "open",
+        "attacks": 7,
+        "rushAttacks": 7,
+        "incomingResolved": 70,
+        "timedIncoming": 38,
+        "timeLoadFits": 0,
+        "hits": 65,
+        "hpLost": 3.5238095238095184,
+        "counters": 0,
+        "overloadBeats": 65,
+        "overloadCounters": 0,
+        "seconds": 40,
+        "escaped": [
+          "foe3"
+        ]
+      },
+      {
+        "count": 1,
+        "trait": "calm",
+        "initialActorFingerprint": "103da5f736c1aa1def420d027b95f0a709984fd3e8c1ebd7cc5a18afe88a6c5c",
+        "location": "gate(two slots)",
+        "attacks": 23,
+        "rushAttacks": 0,
+        "incomingResolved": 0,
+        "timedIncoming": 0,
+        "timeLoadFits": 0,
+        "hits": 0,
+        "hpLost": 0,
+        "counters": 0,
+        "overloadBeats": 0,
+        "overloadCounters": 0,
+        "seconds": 13.75,
+        "escaped": []
+      },
+      {
+        "count": 2,
+        "trait": "calm",
+        "initialActorFingerprint": "103da5f736c1aa1def420d027b95f0a709984fd3e8c1ebd7cc5a18afe88a6c5c",
+        "location": "gate(two slots)",
+        "attacks": 1,
+        "rushAttacks": 1,
+        "incomingResolved": 32,
+        "timedIncoming": 25,
+        "timeLoadFits": 0,
+        "hits": 30,
+        "hpLost": 77.52380952380949,
+        "counters": 0,
+        "overloadBeats": 59,
+        "overloadCounters": 0,
+        "seconds": 25.25,
+        "escaped": []
+      },
+      {
+        "count": 4,
+        "trait": "calm",
+        "initialActorFingerprint": "67a0037bfb4cdba34d8c0612fc514f2d97c1eccdd5860bbf5b2f95da5aeae6d0",
+        "location": "open",
+        "attacks": 4,
+        "rushAttacks": 4,
+        "incomingResolved": 54,
+        "timedIncoming": 35,
+        "timeLoadFits": 2,
+        "hits": 50,
+        "hpLost": 0,
+        "counters": 0,
+        "overloadBeats": 52,
+        "overloadCounters": 0,
+        "seconds": 40,
+        "escaped": [
+          "foe3"
+        ]
+      },
+      {
+        "count": 1,
+        "trait": "rash",
+        "initialActorFingerprint": "103da5f736c1aa1def420d027b95f0a709984fd3e8c1ebd7cc5a18afe88a6c5c",
+        "location": "gate(two slots)",
+        "attacks": 6,
+        "rushAttacks": 0,
+        "incomingResolved": 1,
+        "timedIncoming": 1,
+        "timeLoadFits": 0,
+        "hits": 1,
+        "hpLost": 0,
+        "counters": 0,
+        "overloadBeats": 0,
+        "overloadCounters": 0,
+        "seconds": 12.25,
+        "escaped": []
+      },
+      {
+        "count": 2,
+        "trait": "rash",
+        "initialActorFingerprint": "103da5f736c1aa1def420d027b95f0a709984fd3e8c1ebd7cc5a18afe88a6c5c",
+        "location": "gate(two slots)",
+        "attacks": 7,
+        "rushAttacks": 5,
+        "incomingResolved": 30,
+        "timedIncoming": 22,
+        "timeLoadFits": 1,
+        "hits": 29,
+        "hpLost": 77.52380952380949,
+        "counters": 1,
+        "overloadBeats": 47,
+        "overloadCounters": 0,
+        "seconds": 29.5,
+        "escaped": []
+      },
+      {
+        "count": 4,
+        "trait": "rash",
+        "initialActorFingerprint": "67a0037bfb4cdba34d8c0612fc514f2d97c1eccdd5860bbf5b2f95da5aeae6d0",
+        "location": "open",
+        "attacks": 7,
+        "rushAttacks": 7,
+        "incomingResolved": 83,
+        "timedIncoming": 42,
+        "timeLoadFits": 0,
+        "hits": 80,
+        "hpLost": 31.714285714285666,
+        "counters": 0,
+        "overloadBeats": 113,
+        "overloadCounters": 0,
+        "seconds": 40,
+        "escaped": []
+      }
+    ],
+    "cover": {
+      "open": 2.281938223489237,
+      "cover": 0.7417592887863003,
+      "eyes": 14.113555750396468,
+      "receptionHp": 100,
+      "sameUid": true,
+      "sameHands": true
+    },
+    "pursuit": [
+      {
+        "running": false,
+        "followed": false,
+        "pursuitContactBeats": 0
+      },
+      {
+        "running": true,
+        "followed": true,
+        "pursuitContactBeats": 11
+      }
+    ],
+    "pass": false,
+    "personality": {
+      "calmAttacks": 28,
+      "rashAttacks": 20,
+      "calmRush": 5,
+      "rashRush": 12,
+      "calmHpLost": 77.52380952380949,
+      "rashHpLost": 109.23809523809516,
+      "pass": true
+    }
+  },
+  "duel": {
+    "a": "day1",
+    "b": "day1",
+    "trainingSeed": 1,
+    "combatSeeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20
+    ],
+    "medianExchanges": 308,
+    "uninjured": 0.32691674893056927,
+    "meanBreaths": 6.05,
+    "minimalA": 0.03289315726290516,
+    "baselineMinimalA": 0.03289315726290516,
+    "sameBeatCountersA": 0,
+    "pass": false
+  },
+  "injuries": [
+    {
+      "move": "bodyKick",
+      "layer": "bruise",
+      "why": null,
+      "count": 3416
+    },
+    {
+      "move": "bodyKick",
+      "layer": "skin",
+      "why": null,
+      "count": 428
+    },
+    {
+      "move": "bodyKick",
+      "layer": "bruise",
+      "why": "open",
+      "count": 198
+    },
+    {
+      "move": "bodyKick",
+      "layer": "skin",
+      "why": "open",
+      "count": 44
+    },
+    {
+      "move": "bodyPunch",
+      "layer": "bruise",
+      "why": null,
+      "count": 5
+    }
+  ],
+  "handParries": [
+    {
+      "t": 155,
+      "T": 0.49796457853227594,
+      "r": 0.4565409846553482,
+      "m": 0,
+      "margin": 0.04142359387692773,
+      "arrival": 154.99796457853228
+    },
+    {
+      "t": 158.5,
+      "T": 0.4946225028205333,
+      "r": 0.4432508402514789,
+      "m": 0,
+      "margin": 0.051371662569054455,
+      "arrival": 158.49462250282053
+    },
+    {
+      "t": 162,
+      "T": 0.49134238771475225,
+      "r": 0.43992503238362746,
+      "m": 0,
+      "margin": 0.05141735533112479,
+      "arrival": 161.99134238771475
+    }
+  ],
+  "raw": [
+    {
+      "file": "r9-n34-deadline17.waves.log.json.gz",
+      "rawSha256": "3e017b5f70ee7b88faddb20a5605b928c43261a0df19605a55ffa2f6c39134e2",
+      "rawBytes": 3928925
+    },
+    {
+      "file": "r9-n34-deadline.duel20.json.gz",
+      "rawSha256": "3f96c5b329c4c27ca36ce50acf513fd2272c8b0e0b67f2575a326fac1a956159",
+      "rawBytes": 13342642
+    }
+  ]
+}

@@ -1,0 +1,5555 @@
+{
+  "runtime": "0ac263a",
+  "sourceEventHash": "673b380679634a83d7c12e0f1a15fab265f6f47f9bae8f131ef260278f8faf9c",
+  "stats": {
+    "count": 2,
+    "trait": "normal",
+    "location": "gate(two slots)",
+    "attacks": 5,
+    "rushAttacks": 0,
+    "hits": 33,
+    "hpLost": 77.52380952380949,
+    "counters": 0,
+    "overloadBeats": 96,
+    "overloadCounters": 0,
+    "seconds": 24,
+    "escaped": []
+  },
+  "defenses": [
+    {
+      "t": 1,
+      "who": "hero",
+      "L": 1.7234056507506172,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.6054657322328996,
+      "timing": {
+        "T": 0,
+        "r": 0.6054657322328996,
+        "step": 0.08938640132669981,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 1.7234056507506172,
+        "windowStart": 1.153043852340048,
+        "windowEnd": 0.8
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.8,
+          "range": 32,
+          "tgt": "hero",
+          "at": 0.8,
+          "opening": {
+            "T": {
+              "wind": 0.8,
+              "windowStart": 0,
+              "windowEnd": 0.8,
+              "reaction": 0.536318407960199,
+              "jitter": 0.5,
+              "strike": 0.004274922586168704,
+              "step": 0.08938640132669981,
+              "guard": 0,
+              "busy": 0,
+              "load": 1.564262023217247,
+              "canCounter": false
+            },
+            "reaction": 0.6054657322328996,
+            "odds": {
+              "read": 0,
+              "dodge": 0.6974342355730238,
+              "dodgeCounter": 0,
+              "parry": 0.06348805642890998,
+              "hit": 0.23907770799806627
+            },
+            "p": 0.23907770799806627,
+            "at": 0
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 0,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": {
+              "mv": "toolKnife",
+              "id": "toolKnife",
+              "wind": 0.9030438523400479,
+              "range": 32,
+              "dmg": 7,
+              "skill": "strength",
+              "tgt": "foe0",
+              "at": 1.153043852340048,
+              "opening": {
+                "T": {
+                  "wind": 0.35304385234004787,
+                  "windowStart": 0.8,
+                  "windowEnd": 1.153043852340048,
+                  "reaction": 0.6000000000000001,
+                  "jitter": 0.5,
+                  "strike": 0.5,
+                  "step": 0.21428571428571427,
+                  "guard": 0.1,
+                  "busy": 0.55,
+                  "load": 1.384207418898748,
+                  "canCounter": false
+                },
+                "reaction": 0.54857335442135,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0.01728141508029751,
+                  "hit": 0.9827185849197025
+                },
+                "p": 0.9827185849197025,
+                "at": 0.25
+              }
+            },
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 1.3499999999999999,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 1.3499999999999999,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.8,
+              "range": 32,
+              "tgt": "hero",
+              "at": 0.8,
+              "opening": {
+                "T": {
+                  "wind": 0.8,
+                  "windowStart": 0,
+                  "windowEnd": 0.8,
+                  "reaction": 0.536318407960199,
+                  "jitter": 0.5,
+                  "strike": 0.004274922586168704,
+                  "step": 0.08938640132669981,
+                  "guard": 0,
+                  "busy": 0,
+                  "load": 1.3407960199004976,
+                  "canCounter": false
+                },
+                "reaction": 0.8633474198661553,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0.6974342355730238,
+                  "dodgeCounter": 0,
+                  "parry": 0.06348805642890998,
+                  "hit": 0.23907770799806627
+                },
+                "p": 0.23907770799806627,
+                "at": 0
+              }
+            },
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 0,
+        "swing": {
+          "mv": "toolKnife",
+          "id": "toolKnife",
+          "wind": 0.9030438523400479,
+          "range": 32,
+          "dmg": 7,
+          "skill": "strength",
+          "tgt": "foe0",
+          "at": 1.153043852340048,
+          "opening": {
+            "T": {
+              "wind": 0.35304385234004787,
+              "windowStart": 0.8,
+              "windowEnd": 1.153043852340048,
+              "reaction": 0.6000000000000001,
+              "jitter": 0.5,
+              "strike": 0.5,
+              "step": 0.21428571428571427,
+              "guard": 0.1,
+              "busy": 0.55,
+              "load": 1.384207418898748,
+              "canCounter": false
+            },
+            "reaction": 0.54857335442135,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0.01728141508029751,
+              "hit": 0.9827185849197025
+            },
+            "p": 0.9827185849197025,
+            "at": 0.25
+          }
+        },
+        "downUntil": 0,
+        "posture": 100,
+        "fret": 0,
+        "rageUntil": 0,
+        "part": null,
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 0.85207100591716,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.7234056507506172,
+          "rows": [
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 0.6893622603002469,
+              "window": 0.8,
+              "wind": 0.8,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 0.8617028253753086
+            },
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.6893622603002469,
+              "window": 0.8,
+              "wind": 0.8,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 0.8617028253753086
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 1.35,
+        "posture": 75,
+        "fret": 0.32
+      },
+      "attacker": "foe0",
+      "move": "looterBlade"
+    },
+    {
+      "t": 1,
+      "who": "hero",
+      "L": 1.9840209918068357,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.8633474198661553,
+      "timing": {
+        "T": 0,
+        "r": 0.8633474198661553,
+        "step": 0.08938640132669981,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 1.9840209918068357,
+        "windowStart": 1.35,
+        "windowEnd": 0.8
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.8,
+          "range": 32,
+          "tgt": "hero",
+          "at": 0.8,
+          "opening": {
+            "T": {
+              "wind": 0.8,
+              "windowStart": 0,
+              "windowEnd": 0.8,
+              "reaction": 0.536318407960199,
+              "jitter": 0.5,
+              "strike": 0.004274922586168704,
+              "step": 0.08938640132669981,
+              "guard": 0,
+              "busy": 0,
+              "load": 1.3407960199004976,
+              "canCounter": false
+            },
+            "reaction": 0.8633474198661553,
+            "odds": {
+              "read": 0,
+              "dodge": 0.6974342355730238,
+              "dodgeCounter": 0,
+              "parry": 0.06348805642890998,
+              "hit": 0.23907770799806627
+            },
+            "p": 0.23907770799806627,
+            "at": 0
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 1.35,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": {
+              "mv": "toolKnife",
+              "id": "toolKnife",
+              "wind": 0.9030438523400479,
+              "range": 32,
+              "dmg": 7,
+              "skill": "strength",
+              "tgt": "foe0",
+              "at": 1.153043852340048,
+              "opening": {
+                "T": {
+                  "wind": 0.35304385234004787,
+                  "windowStart": 0.8,
+                  "windowEnd": 1.153043852340048,
+                  "reaction": 0.6000000000000001,
+                  "jitter": 0.5,
+                  "strike": 0.5,
+                  "step": 0.21428571428571427,
+                  "guard": 0.1,
+                  "busy": 0.55,
+                  "load": 1.384207418898748,
+                  "canCounter": false
+                },
+                "reaction": 0.54857335442135,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0.01728141508029751,
+                  "hit": 0.9827185849197025
+                },
+                "p": 0.9827185849197025,
+                "at": 0.25
+              }
+            },
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 1.3499999999999999,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 1.3499999999999999,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 1.35,
+        "swing": {
+          "mv": "toolKnife",
+          "id": "toolKnife",
+          "wind": 0.9030438523400479,
+          "range": 32,
+          "dmg": 7,
+          "skill": "strength",
+          "tgt": "foe0",
+          "at": 1.153043852340048,
+          "opening": {
+            "T": {
+              "wind": 0.35304385234004787,
+              "windowStart": 0.8,
+              "windowEnd": 1.153043852340048,
+              "reaction": 0.6000000000000001,
+              "jitter": 0.5,
+              "strike": 0.5,
+              "step": 0.21428571428571427,
+              "guard": 0.1,
+              "busy": 0.55,
+              "load": 1.384207418898748,
+              "canCounter": false
+            },
+            "reaction": 0.54857335442135,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0.01728141508029751,
+              "hit": 0.9827185849197025
+            },
+            "p": 0.9827185849197025,
+            "at": 0.25
+          }
+        },
+        "downUntil": 0,
+        "posture": 75,
+        "fret": 0.32,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 1.5797492360629906,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.9840209918068357,
+          "rows": [
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 0.8460648424976176,
+              "window": 0.8,
+              "wind": 0.8,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.057581053122022
+            },
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.8460648424976176,
+              "window": 0.9132430578270432,
+              "wind": 0.5632430578270433,
+              "readyIn": 0.34999999999999987,
+              "readyDelay": 0.34999999999999987,
+              "travel": 0,
+              "active": false,
+              "share": 0.9264399386848137
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 1.35,
+        "posture": 50,
+        "fret": 0.64
+      },
+      "attacker": "foe1",
+      "move": "looterBlade"
+    },
+    {
+      "t": 2.25,
+      "who": "hero",
+      "L": 1.7930311154559782,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.76817899378431,
+      "timing": {
+        "T": 0,
+        "r": 0.76817899378431,
+        "step": 0.07429315917974949,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 1.7930311154559782,
+        "windowStart": 2.45,
+        "windowEnd": 2.2
+      },
+      "before": {
+        "attack": {
+          "mv": "looterFist",
+          "id": "looterFist",
+          "wind": 0.7,
+          "range": 28,
+          "tgt": "hero",
+          "at": 2.2,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 2.45,
+              "windowEnd": 2.2,
+              "reaction": 0.445758955078497,
+              "jitter": 0.692,
+              "strike": 0.004274922586168704,
+              "step": 0.07429315917974949,
+              "guard": 0,
+              "busy": 0.9500000000000002,
+              "load": 4.505143316546092,
+              "canCounter": false
+            },
+            "reaction": 0.76817899378431,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 1.5
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 1.35,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 2.75,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 2.85,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.7632430578270433,
+              "range": 32,
+              "tgt": "hero",
+              "at": 2.2632430578270433,
+              "opening": {
+                "T": {
+                  "wind": 0,
+                  "windowStart": 2.45,
+                  "windowEnd": 2.2632430578270433,
+                  "reaction": 0.4644170663492141,
+                  "jitter": 0.692,
+                  "strike": 0.004274922586168704,
+                  "step": 0.07740284439153566,
+                  "guard": 0,
+                  "busy": 0.9500000000000002,
+                  "load": 3.8471086508138828,
+                  "canCounter": false
+                },
+                "reaction": 0.530718230091669,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0,
+                  "hit": 1
+                },
+                "p": 1,
+                "at": 1.5
+              }
+            },
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 1.35,
+        "swing": null,
+        "downUntil": 2.45,
+        "posture": 50,
+        "fret": 0.64,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 2.307427466208821,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.7930311154559782,
+          "rows": [
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 0.6644170663492143,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 0.8705183224866964
+            },
+            {
+              "attacker": "foe0",
+              "move": "looterFist",
+              "need": 0.6457589550784972,
+              "window": 0.7,
+              "wind": 0.7,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 0.9225127929692818
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 2.6,
+        "posture": 36,
+        "fret": 0.7
+      },
+      "attacker": "foe0",
+      "move": "looterFist"
+    },
+    {
+      "t": 2.5,
+      "who": "hero",
+      "L": 1.4335309038418373,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.530718230091669,
+      "timing": {
+        "T": 0,
+        "r": 0.530718230091669,
+        "step": 0.07740284439153566,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 1.4335309038418373,
+        "windowStart": 2.6,
+        "windowEnd": 2.2632430578270433
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7632430578270433,
+          "range": 32,
+          "tgt": "hero",
+          "at": 2.2632430578270433,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 2.45,
+              "windowEnd": 2.2632430578270433,
+              "reaction": 0.4644170663492141,
+              "jitter": 0.692,
+              "strike": 0.004274922586168704,
+              "step": 0.07740284439153566,
+              "guard": 0,
+              "busy": 0.9500000000000002,
+              "load": 3.8471086508138828,
+              "canCounter": false
+            },
+            "reaction": 0.530718230091669,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 1.5
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 2.6,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 2.75,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 2.85,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 2.6,
+        "swing": null,
+        "downUntil": 2.45,
+        "posture": 36,
+        "fret": 0.7,
+        "rageUntil": 5.25,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 2.307427466208821,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.4335309038418373,
+          "rows": [
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 0.5644170663492142,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 0.7394984606294518
+            },
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.5644170663492142,
+              "window": 0.8132430578270433,
+              "wind": 0.5632430578270433,
+              "readyIn": 0.25,
+              "readyDelay": 0.25,
+              "travel": 0,
+              "active": false,
+              "share": 0.6940324432123856
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 2.85,
+        "posture": 11,
+        "fret": 0.7
+      },
+      "attacker": "foe1",
+      "move": "looterBlade"
+    },
+    {
+      "t": 3.75,
+      "who": "hero",
+      "L": 1.7410366449733927,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.5995393433626854,
+      "timing": {
+        "T": 0,
+        "r": 0.5995393433626854,
+        "step": 0.07740284439153566,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 1.7410366449733927,
+        "windowStart": 3.95,
+        "windowEnd": 3.5132430578270433
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7632430578270433,
+          "range": 32,
+          "tgt": "hero",
+          "at": 3.5132430578270433,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 3.95,
+              "windowEnd": 3.5132430578270433,
+              "reaction": 0.4644170663492141,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.07740284439153566,
+              "guard": 0,
+              "busy": 1.2000000000000002,
+              "load": 4.69022992684489,
+              "canCounter": false
+            },
+            "reaction": 0.5995393433626854,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 2.75
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 2.85,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 4.1,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 4.6000000000000005,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.7632430578270433,
+              "range": 32,
+              "tgt": "hero",
+              "at": 4.013243057827044,
+              "opening": {
+                "T": {
+                  "wind": 0.06324305782704309,
+                  "windowStart": 3.95,
+                  "windowEnd": 4.013243057827044,
+                  "reaction": 0.4644170663492141,
+                  "jitter": 0.71,
+                  "strike": 0.004274922586168704,
+                  "step": 0.07740284439153566,
+                  "guard": 0,
+                  "busy": 0.7000000000000002,
+                  "load": 3.051235263545837,
+                  "canCounter": false
+                },
+                "reaction": 0.38962769963664856,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0,
+                  "hit": 1
+                },
+                "p": 1,
+                "at": 3.25
+              }
+            },
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 2.85,
+        "swing": null,
+        "downUntil": 3.95,
+        "posture": 11,
+        "fret": 0.7,
+        "rageUntil": 5.25,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 2.307427466208821,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.7410366449733927,
+          "rows": [
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 0.6644170663492143,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 0.8705183224866964
+            },
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.6644170663492143,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 0.8705183224866964
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 4.1,
+        "posture": 0,
+        "fret": 0.7
+      },
+      "attacker": "foe0",
+      "move": "looterBlade"
+    },
+    {
+      "t": 4.25,
+      "who": "hero",
+      "L": 4.364369238564268,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": null,
+      "r": null,
+      "timing": null,
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7632430578270433,
+          "range": 32,
+          "tgt": "hero",
+          "at": 4.013243057827044,
+          "opening": {
+            "T": {
+              "wind": 0.06324305782704309,
+              "windowStart": 3.95,
+              "windowEnd": 4.013243057827044,
+              "reaction": 0.4644170663492141,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.07740284439153566,
+              "guard": 0,
+              "busy": 0.7000000000000002,
+              "load": 3.051235263545837,
+              "canCounter": false
+            },
+            "reaction": 0.38962769963664856,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 3.25
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 4.1,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 4.1,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 4.6000000000000005,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 4.1,
+        "swing": null,
+        "downUntil": 5.2,
+        "posture": 0,
+        "fret": 0.7,
+        "rageUntil": 5.25,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 2.307427466208821,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 4.364369238564268,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.4144170663492144,
+              "window": 0.5632430578270433,
+              "wind": 0.5632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 2.5112019521482387
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 1.4144170663492144,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.8531672864160293
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 5.2,
+        "posture": 0,
+        "fret": 0.7
+      },
+      "attacker": "foe1",
+      "move": "looterBlade"
+    },
+    {
+      "t": 5.5,
+      "who": "hero",
+      "L": 1.7930311154559782,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.2936666635214008,
+      "timing": {
+        "T": 0,
+        "r": 0.2936666635214008,
+        "step": 0.07740284439153566,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 1.7930311154559782,
+        "windowStart": 5.7,
+        "windowEnd": 5.263243057827044
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7632430578270433,
+          "range": 32,
+          "tgt": "hero",
+          "at": 5.263243057827044,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 5.7,
+              "windowEnd": 5.263243057827044,
+              "reaction": 0.4644170663492141,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.07740284439153566,
+              "guard": 0,
+              "busy": 1.2000000000000002,
+              "load": 4.690229926844888,
+              "canCounter": false
+            },
+            "reaction": 0.2936666635214008,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 4.5
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 5.2,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 5.8500000000000005,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 6,
+            "cool": 0,
+            "swing": {
+              "mv": "looterFist",
+              "id": "looterFist",
+              "wind": 0.7,
+              "range": 28,
+              "tgt": "hero",
+              "at": 5.45,
+              "opening": {
+                "T": {
+                  "wind": 0,
+                  "windowStart": 5.7,
+                  "windowEnd": 5.45,
+                  "reaction": 0.445758955078497,
+                  "jitter": 0.71,
+                  "strike": 0.004274922586168704,
+                  "step": 0.07429315917974949,
+                  "guard": 0,
+                  "busy": 0.9500000000000002,
+                  "load": 3.8471086508138828,
+                  "canCounter": false
+                },
+                "reaction": 0.33442684041496284,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0,
+                  "hit": 1
+                },
+                "p": 1,
+                "at": 4.75
+              }
+            },
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 5.2,
+        "swing": null,
+        "downUntil": 5.7,
+        "posture": 34.8,
+        "fret": 0,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 2.307427466208821,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.7930311154559782,
+          "rows": [
+            {
+              "attacker": "foe1",
+              "move": "looterFist",
+              "need": 0.6457589550784972,
+              "window": 0.7,
+              "wind": 0.7,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 0.9225127929692818
+            },
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.6644170663492143,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 0.8705183224866964
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 5.85,
+        "posture": 9.799999999999997,
+        "fret": 0.32
+      },
+      "attacker": "foe0",
+      "move": "looterBlade"
+    },
+    {
+      "t": 5.5,
+      "who": "hero",
+      "L": 4.804511359129507,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.33442684041496284,
+      "timing": {
+        "T": 0,
+        "r": 0.33442684041496284,
+        "step": 0.07429315917974949,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 4.804511359129507,
+        "windowStart": 6.95,
+        "windowEnd": 5.45
+      },
+      "before": {
+        "attack": {
+          "mv": "looterFist",
+          "id": "looterFist",
+          "wind": 0.7,
+          "range": 28,
+          "tgt": "hero",
+          "at": 5.45,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 5.7,
+              "windowEnd": 5.45,
+              "reaction": 0.445758955078497,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.07429315917974949,
+              "guard": 0,
+              "busy": 0.9500000000000002,
+              "load": 3.8471086508138828,
+              "canCounter": false
+            },
+            "reaction": 0.33442684041496284,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 4.75
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 5.85,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 5.8500000000000005,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 6,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 5.85,
+        "swing": null,
+        "downUntil": 6.95,
+        "posture": 9.799999999999997,
+        "fret": 0.32,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 2.307427466208821,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 4.804511359129507,
+          "rows": [
+            {
+              "attacker": "foe1",
+              "move": "looterFist",
+              "need": 1.8957589550784972,
+              "window": 0.7,
+              "wind": 0.7,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 2.7082270786835676
+            },
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.9144170663492144,
+              "window": 0.9132430578270438,
+              "wind": 0.5632430578270433,
+              "readyIn": 0.35000000000000053,
+              "readyDelay": 0.35000000000000053,
+              "travel": 0,
+              "active": false,
+              "share": 2.0962842804459396
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 6.95,
+        "posture": 0,
+        "fret": 0.64
+      },
+      "attacker": "foe1",
+      "move": "looterFist"
+    },
+    {
+      "t": 6.75,
+      "who": "hero",
+      "L": 1.7930311154559782,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": null,
+      "r": null,
+      "timing": null,
+      "before": {
+        "attack": {
+          "mv": "looterFist",
+          "id": "looterFist",
+          "wind": 0.7,
+          "range": 28,
+          "tgt": "hero",
+          "at": 6.7,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 6.95,
+              "windowEnd": 6.7,
+              "reaction": 0.445758955078497,
+              "jitter": 0.692,
+              "strike": 0.004274922586168704,
+              "step": 0.07429315917974949,
+              "guard": 0,
+              "busy": 0.9500000000000002,
+              "load": 3.8471086508138828,
+              "canCounter": false
+            },
+            "reaction": 1.0116277145145072,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 6
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 6.95,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 7.3500000000000005,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.7632430578270433,
+              "range": 32,
+              "tgt": "hero",
+              "at": 6.763243057827044,
+              "opening": {
+                "T": {
+                  "wind": 0,
+                  "windowStart": 6.95,
+                  "windowEnd": 6.763243057827044,
+                  "reaction": 0.4644170663492141,
+                  "jitter": 0.692,
+                  "strike": 0.004274922586168704,
+                  "step": 0.07740284439153566,
+                  "guard": 0,
+                  "busy": 0.9500000000000002,
+                  "load": 4.364369238564268,
+                  "canCounter": false
+                },
+                "reaction": 0.30736359916603595,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0,
+                  "hit": 1
+                },
+                "p": 1,
+                "at": 6
+              }
+            },
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 7.25,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 6.95,
+        "swing": null,
+        "downUntil": 6.95,
+        "posture": 0,
+        "fret": 0.64,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 2.307427466208821,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.7930311154559782,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.6644170663492143,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 0.8705183224866964
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterFist",
+              "need": 0.6457589550784972,
+              "window": 0.7,
+              "wind": 0.7,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 0.9225127929692818
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 7.1,
+        "posture": 0,
+        "fret": 0.7
+      },
+      "attacker": "foe1",
+      "move": "looterFist"
+    },
+    {
+      "t": 7,
+      "who": "hero",
+      "L": 1.4335309038418362,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.30736359916603595,
+      "timing": {
+        "T": 0,
+        "r": 0.30736359916603595,
+        "step": 0.07740284439153566,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 1.4335309038418362,
+        "windowStart": 7.1,
+        "windowEnd": 6.763243057827044
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7632430578270433,
+          "range": 32,
+          "tgt": "hero",
+          "at": 6.763243057827044,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 6.95,
+              "windowEnd": 6.763243057827044,
+              "reaction": 0.4644170663492141,
+              "jitter": 0.692,
+              "strike": 0.004274922586168704,
+              "step": 0.07740284439153566,
+              "guard": 0,
+              "busy": 0.9500000000000002,
+              "load": 4.364369238564268,
+              "canCounter": false
+            },
+            "reaction": 0.30736359916603595,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 6
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 7.1,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 7.3500000000000005,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 7.25,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 7.1,
+        "swing": null,
+        "downUntil": 6.95,
+        "posture": 34.8,
+        "fret": 0.7,
+        "rageUntil": 9.75,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 2.307427466208821,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.4335309038418362,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.5644170663492137,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 0.7394984606294512
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 0.5644170663492137,
+              "window": 0.8132430578270433,
+              "wind": 0.5632430578270433,
+              "readyIn": 0.25,
+              "readyDelay": 0.25,
+              "travel": 0,
+              "active": false,
+              "share": 0.694032443212385
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 7.35,
+        "posture": 9.799999999999997,
+        "fret": 0.7
+      },
+      "attacker": "foe0",
+      "move": "looterBlade"
+    },
+    {
+      "t": 8.25,
+      "who": "hero",
+      "L": 1.7410366449733903,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.3261120310920702,
+      "timing": {
+        "T": 0,
+        "r": 0.3261120310920702,
+        "step": 0.07740284439153566,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 1.7410366449733903,
+        "windowStart": 8.45,
+        "windowEnd": 8.013243057827044
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7632430578270433,
+          "range": 32,
+          "tgt": "hero",
+          "at": 8.013243057827044,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 8.45,
+              "windowEnd": 8.013243057827044,
+              "reaction": 0.4644170663492141,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.07740284439153566,
+              "guard": 0,
+              "busy": 1.1999999999999993,
+              "load": 4.690229926844886,
+              "canCounter": false
+            },
+            "reaction": 0.3261120310920702,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 7.25
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 7.35,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 8.85,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.7632430578270433,
+              "range": 32,
+              "tgt": "hero",
+              "at": 8.263243057827044,
+              "opening": {
+                "T": {
+                  "wind": 0,
+                  "windowStart": 8.45,
+                  "windowEnd": 8.263243057827044,
+                  "reaction": 0.4644170663492141,
+                  "jitter": 0.71,
+                  "strike": 0.004274922586168704,
+                  "step": 0.07740284439153566,
+                  "guard": 0,
+                  "busy": 0.9499999999999993,
+                  "load": 3.7063345728320565,
+                  "canCounter": false
+                },
+                "reaction": 0.23682345061565574,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0,
+                  "hit": 1
+                },
+                "p": 1,
+                "at": 7.5
+              }
+            },
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 8.6,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 7.35,
+        "swing": null,
+        "downUntil": 8.45,
+        "posture": 9.799999999999997,
+        "fret": 0.7,
+        "rageUntil": 9.75,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 2.307427466208821,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.7410366449733903,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.6644170663492134,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 0.8705183224866951
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 0.6644170663492134,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 0.8705183224866951
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 8.6,
+        "posture": 0,
+        "fret": 0.7
+      },
+      "attacker": "foe1",
+      "move": "looterBlade"
+    },
+    {
+      "t": 8.5,
+      "who": "hero",
+      "L": 4.690229926844889,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": null,
+      "r": null,
+      "timing": null,
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7632430578270433,
+          "range": 32,
+          "tgt": "hero",
+          "at": 8.263243057827044,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 8.45,
+              "windowEnd": 8.263243057827044,
+              "reaction": 0.4644170663492141,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.07740284439153566,
+              "guard": 0,
+              "busy": 0.9499999999999993,
+              "load": 3.7063345728320565,
+              "canCounter": false
+            },
+            "reaction": 0.23682345061565574,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 7.5
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 8.6,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 8.85,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 8.6,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 8.6,
+        "swing": null,
+        "downUntil": 9.7,
+        "posture": 0,
+        "fret": 0.7,
+        "rageUntil": 9.75,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 2.307427466208821,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 4.690229926844889,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.6644170663492135,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 2.1807169410591394
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 1.6644170663492135,
+              "window": 0.663243057827043,
+              "wind": 0.5632430578270433,
+              "readyIn": 0.09999999999999964,
+              "readyDelay": 0.09999999999999964,
+              "travel": 0,
+              "active": false,
+              "share": 2.5095129857857503
+            }
+          ],
+          "slots": 4
+        }
+      },
+      "after": {
+        "busyUntil": 9.7,
+        "posture": 0,
+        "fret": 0.7
+      },
+      "attacker": "foe0",
+      "move": "looterBlade"
+    },
+    {
+      "t": 9.75,
+      "who": "hero",
+      "L": 1.8450255859385611,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.37669700938981815,
+      "timing": {
+        "T": 0,
+        "r": 0.37669700938981815,
+        "step": 0.07429315917974949,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 1.8450255859385611,
+        "windowStart": 9.95,
+        "windowEnd": 9.7
+      },
+      "before": {
+        "attack": {
+          "mv": "looterFist",
+          "id": "looterFist",
+          "wind": 0.7,
+          "range": 28,
+          "tgt": "hero",
+          "at": 9.7,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 9.95,
+              "windowEnd": 9.7,
+              "reaction": 0.445758955078497,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.07429315917974949,
+              "guard": 0,
+              "busy": 0.9499999999999993,
+              "load": 4.505143316546089,
+              "canCounter": false
+            },
+            "reaction": 0.37669700938981815,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 9
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 9.7,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 10.5,
+            "cool": 0,
+            "swing": {
+              "mv": "looterFist",
+              "id": "looterFist",
+              "wind": 0.7,
+              "range": 28,
+              "tgt": "hero",
+              "at": 9.95,
+              "opening": {
+                "T": {
+                  "wind": 6.661338147750939e-16,
+                  "windowStart": 9.95,
+                  "windowEnd": 9.95,
+                  "reaction": 0.445758955078497,
+                  "jitter": 0.71,
+                  "strike": 0.004274922586168704,
+                  "step": 0.07429315917974949,
+                  "guard": 0,
+                  "busy": 0.6999999999999993,
+                  "load": 3.2735970145099897,
+                  "canCounter": false
+                },
+                "reaction": 0.37907655607786256,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0,
+                  "hit": 1
+                },
+                "p": 1,
+                "at": 9.25
+              }
+            },
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 10.25,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 9.7,
+        "swing": null,
+        "downUntil": 9.95,
+        "posture": 34.8,
+        "fret": 0,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 2.307427466208821,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.8450255859385611,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterFist",
+              "need": 0.6457589550784963,
+              "window": 0.7,
+              "wind": 0.7,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 0.9225127929692806
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterFist",
+              "need": 0.6457589550784963,
+              "window": 0.7,
+              "wind": 0.7,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 0.9225127929692806
+            }
+          ],
+          "slots": 4
+        }
+      },
+      "after": {
+        "busyUntil": 10.1,
+        "posture": 20.799999999999997,
+        "fret": 0.32
+      },
+      "attacker": "foe1",
+      "move": "looterFist"
+    },
+    {
+      "t": 10,
+      "who": "hero",
+      "L": 1.4736880933245233,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.37907655607786256,
+      "timing": {
+        "T": 0,
+        "r": 0.37907655607786256,
+        "step": 0.07429315917974949,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 1.4736880933245233,
+        "windowStart": 10.1,
+        "windowEnd": 9.95
+      },
+      "before": {
+        "attack": {
+          "mv": "looterFist",
+          "id": "looterFist",
+          "wind": 0.7,
+          "range": 28,
+          "tgt": "hero",
+          "at": 9.95,
+          "opening": {
+            "T": {
+              "wind": 6.661338147750939e-16,
+              "windowStart": 9.95,
+              "windowEnd": 9.95,
+              "reaction": 0.445758955078497,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.07429315917974949,
+              "guard": 0,
+              "busy": 0.6999999999999993,
+              "load": 3.2735970145099897,
+              "canCounter": false
+            },
+            "reaction": 0.37907655607786256,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 9.25
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 10.1,
+            "next": 2.04188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 10.5,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 10.25,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 10.1,
+        "swing": null,
+        "downUntil": 9.95,
+        "posture": 20.799999999999997,
+        "fret": 0.32,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 2.307427466208821,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.4736880933245233,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterFist",
+              "need": 0.5457589550784967,
+              "window": 0.7,
+              "wind": 0.7,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 0.7796556501121382
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 0.5644170663492137,
+              "window": 0.8132430578270433,
+              "wind": 0.5632430578270433,
+              "readyIn": 0.25,
+              "readyDelay": 0.25,
+              "travel": 0,
+              "active": false,
+              "share": 0.694032443212385
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 10.35,
+        "posture": 6.799999999999997,
+        "fret": 0.64
+      },
+      "attacker": "foe0",
+      "move": "looterFist"
+    },
+    {
+      "t": 11.25,
+      "who": "hero",
+      "L": 3.008165214770929,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.9572467543006085,
+      "timing": {
+        "T": 0,
+        "r": 0.9572467543006085,
+        "step": 0.07740284439153566,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 3.008165214770929,
+        "windowStart": 11.93356354213614,
+        "windowEnd": 11.013243057827044
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7632430578270433,
+          "range": 32,
+          "tgt": "hero",
+          "at": 11.013243057827044,
+          "opening": {
+            "T": {
+              "wind": 0.6632430578270436,
+              "windowStart": 10.35,
+              "windowEnd": 11.013243057827044,
+              "reaction": 0.4644170663492141,
+              "jitter": 0.692,
+              "strike": 0.004274922586168704,
+              "step": 0.07740284439153566,
+              "guard": 0,
+              "busy": 0.09999999999999964,
+              "load": 1.4335309038418362,
+              "canCounter": false
+            },
+            "reaction": 0.9572467543006085,
+            "odds": {
+              "read": 0,
+              "dodge": 0.6332284346450512,
+              "dodgeCounter": 0,
+              "parry": 0.05894395525266216,
+              "hit": 0.30782761010228665
+            },
+            "p": 0.30782761010228665,
+            "at": 10.25
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 10.35,
+            "next": 12.791886323727459,
+            "cool": 1.6,
+            "swing": {
+              "mv": "toolStone",
+              "id": "toolStone",
+              "wind": 1.1835635421361403,
+              "range": 120,
+              "dmg": 5,
+              "skill": "strength",
+              "tgt": "foe1",
+              "at": 11.93356354213614,
+              "opening": {
+                "T": {
+                  "wind": 0.9203204843090966,
+                  "windowStart": 11.013243057827044,
+                  "windowEnd": 11.93356354213614,
+                  "reaction": 0.6000000000000001,
+                  "jitter": 0.5,
+                  "strike": 0.5,
+                  "step": 0.21428571428571427,
+                  "guard": 0.1,
+                  "busy": 0.2632430578270437,
+                  "load": 0.8138498893676179,
+                  "canCounter": true
+                },
+                "reaction": 0.44024179050631707,
+                "odds": {
+                  "read": 0.2325376426143554,
+                  "dodge": 0.38291277925370426,
+                  "dodgeCounter": 0.0002275635107809292,
+                  "parry": 0.09086247596187302,
+                  "hit": 0.2936871021700673
+                },
+                "p": 0.2936871021700673,
+                "at": 10.75
+              }
+            },
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 11.85,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.7632430578270433,
+              "range": 32,
+              "tgt": "hero",
+              "at": 11.263243057827044,
+              "opening": {
+                "T": {
+                  "wind": 0.7632430578270433,
+                  "windowStart": 10.5,
+                  "windowEnd": 11.263243057827044,
+                  "reaction": 0.4644170663492141,
+                  "jitter": 0.692,
+                  "strike": 0.004274922586168704,
+                  "step": 0.07740284439153566,
+                  "guard": 0,
+                  "busy": 0,
+                  "load": 1.2169571975444147,
+                  "canCounter": false
+                },
+                "reaction": 0.23830344677795057,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0.7066401590762549,
+                  "dodgeCounter": 0,
+                  "parry": 0.04225921489583151,
+                  "hit": 0.2511006260279136
+                },
+                "p": 0.2511006260279136,
+                "at": 10.5
+              }
+            },
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 11.6,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 10.35,
+        "swing": {
+          "mv": "toolStone",
+          "id": "toolStone",
+          "wind": 1.1835635421361403,
+          "range": 120,
+          "dmg": 5,
+          "skill": "strength",
+          "tgt": "foe1",
+          "at": 11.93356354213614,
+          "opening": {
+            "T": {
+              "wind": 0.9203204843090966,
+              "windowStart": 11.013243057827044,
+              "windowEnd": 11.93356354213614,
+              "reaction": 0.6000000000000001,
+              "jitter": 0.5,
+              "strike": 0.5,
+              "step": 0.21428571428571427,
+              "guard": 0.1,
+              "busy": 0.2632430578270437,
+              "load": 0.8138498893676179,
+              "canCounter": true
+            },
+            "reaction": 0.44024179050631707,
+            "odds": {
+              "read": 0.2325376426143554,
+              "dodge": 0.38291277925370426,
+              "dodgeCounter": 0.0002275635107809292,
+              "parry": 0.09086247596187302,
+              "hit": 0.2936871021700673
+            },
+            "p": 0.2936871021700673,
+            "at": 10.75
+          }
+        },
+        "downUntil": 9.95,
+        "posture": 6.799999999999997,
+        "fret": 0.64,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 2.307427466208821,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 3.008165214770929,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.147980608485354,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 1.5040826073854645
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 1.147980608485354,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.5040826073854645
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 11.93356354213614,
+        "posture": 0,
+        "fret": 0.7
+      },
+      "attacker": "foe1",
+      "move": "looterBlade"
+    },
+    {
+      "t": 11.5,
+      "who": "hero",
+      "L": 4.703047390539867,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": null,
+      "r": null,
+      "timing": null,
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7632430578270433,
+          "range": 32,
+          "tgt": "hero",
+          "at": 11.263243057827044,
+          "opening": {
+            "T": {
+              "wind": 0.7632430578270433,
+              "windowStart": 10.5,
+              "windowEnd": 11.263243057827044,
+              "reaction": 0.4644170663492141,
+              "jitter": 0.692,
+              "strike": 0.004274922586168704,
+              "step": 0.07740284439153566,
+              "guard": 0,
+              "busy": 0,
+              "load": 1.2169571975444147,
+              "canCounter": false
+            },
+            "reaction": 0.23830344677795057,
+            "odds": {
+              "read": 0,
+              "dodge": 0.7066401590762549,
+              "dodgeCounter": 0,
+              "parry": 0.04225921489583151,
+              "hit": 0.2511006260279136
+            },
+            "p": 0.2511006260279136,
+            "at": 10.5
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 11.93356354213614,
+            "next": 12.791886323727459,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 11.85,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 11.6,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 11.93356354213614,
+        "swing": null,
+        "downUntil": 12.7,
+        "posture": 0,
+        "fret": 0.7,
+        "rageUntil": 14.25,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 3.159706556452826,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 4.703047390539867,
+          "rows": [
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 1.6349959475253797,
+              "window": 0.6384513334412208,
+              "wind": 0.5384513334412212,
+              "readyIn": 0.09999999999999964,
+              "readyDelay": 0.09999999999999964,
+              "travel": 0,
+              "active": false,
+              "share": 2.56087795872057
+            },
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.6349959475253797,
+              "window": 0.7632430578270433,
+              "wind": 0.7632430578270433,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 2.1421694318192963
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 12.7,
+        "posture": 0,
+        "fret": 0.7
+      },
+      "attacker": "foe0",
+      "move": "looterBlade"
+    },
+    {
+      "t": 12.5,
+      "who": "hero",
+      "L": 2.4459068158229504,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": null,
+      "r": null,
+      "timing": null,
+      "before": {
+        "attack": {
+          "mv": "looterFist",
+          "id": "looterFist",
+          "wind": 0.7,
+          "range": 28,
+          "tgt": "hero",
+          "at": 12.45,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 12.95,
+              "windowEnd": 12.45,
+              "reaction": 0.445758955078497,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.07429315917974949,
+              "guard": 0,
+              "busy": 1.1999999999999993,
+              "load": 4.869703851108399,
+              "canCounter": false
+            },
+            "reaction": 0.5084083858119475,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 11.75
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 12.7,
+            "next": 12.791886323727459,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 13.35,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.7408202643971138,
+              "range": 32,
+              "tgt": "hero",
+              "at": 12.740820264397113,
+              "opening": {
+                "T": {
+                  "wind": 0,
+                  "windowStart": 12.95,
+                  "windowEnd": 12.740820264397113,
+                  "reaction": 0.41398249693532746,
+                  "jitter": 0.71,
+                  "strike": 0.004274922586168704,
+                  "step": 0.06899708282255457,
+                  "guard": 0,
+                  "busy": 0.9499999999999993,
+                  "load": 3.8351200719556804,
+                  "canCounter": false
+                },
+                "reaction": 2.108187223363303,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0,
+                  "hit": 1
+                },
+                "p": 1,
+                "at": 12
+              }
+            },
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 13,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 12.7,
+        "swing": null,
+        "downUntil": 12.95,
+        "posture": 0,
+        "fret": 0.7,
+        "rageUntil": 14.25,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 3.91190296299804,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 2.4459068158229504,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.8639824969353267,
+              "window": 0.7408202643971138,
+              "wind": 0.7408202643971138,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 1.166251165710813
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterFist",
+              "need": 0.8957589550784963,
+              "window": 0.7,
+              "wind": 0.7,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.2796556501121377
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 12.95,
+        "posture": 0,
+        "fret": 0.7
+      },
+      "attacker": "foe1",
+      "move": "looterFist"
+    },
+    {
+      "t": 12.75,
+      "who": "hero",
+      "L": 1.607506982026229,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 2.108187223363303,
+      "timing": {
+        "T": 0,
+        "r": 2.108187223363303,
+        "step": 0.06899708282255457,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 1.607506982026229,
+        "windowStart": 12.95,
+        "windowEnd": 12.740820264397113
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7408202643971138,
+          "range": 32,
+          "tgt": "hero",
+          "at": 12.740820264397113,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 12.95,
+              "windowEnd": 12.740820264397113,
+              "reaction": 0.41398249693532746,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.06899708282255457,
+              "guard": 0,
+              "busy": 0.9499999999999993,
+              "load": 3.8351200719556804,
+              "canCounter": false
+            },
+            "reaction": 2.108187223363303,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 12
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 12.95,
+            "next": 12.791886323727459,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 13.35,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 13,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 12.95,
+        "swing": null,
+        "downUntil": 12.95,
+        "posture": 34.8,
+        "fret": 0.7,
+        "rageUntil": 14.25,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 3.91190296299804,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.607506982026229,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.6139824969353267,
+              "window": 0.7408202643971138,
+              "wind": 0.7408202643971138,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 0.8287873947873053
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 0.6139824969353267,
+              "window": 0.7884513334412212,
+              "wind": 0.5384513334412212,
+              "readyIn": 0.25,
+              "readyDelay": 0.25,
+              "travel": 0,
+              "active": false,
+              "share": 0.7787195872389236
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 13.1,
+        "posture": 9.799999999999997,
+        "fret": 0.7
+      },
+      "attacker": "foe0",
+      "move": "looterBlade"
+    },
+    {
+      "t": 13.75,
+      "who": "hero",
+      "L": 2.4459068158229504,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 1.0410598938574929,
+      "timing": {
+        "T": 0,
+        "r": 1.0410598938574929,
+        "step": 0.07429315917974949,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 2.4459068158229504,
+        "windowStart": 14.2,
+        "windowEnd": 13.7
+      },
+      "before": {
+        "attack": {
+          "mv": "looterFist",
+          "id": "looterFist",
+          "wind": 0.7,
+          "range": 28,
+          "tgt": "hero",
+          "at": 13.7,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 14.2,
+              "windowEnd": 13.7,
+              "reaction": 0.445758955078497,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.07429315917974949,
+              "guard": 0,
+              "busy": 1.1999999999999993,
+              "load": 4.162877869979582,
+              "canCounter": false
+            },
+            "reaction": 1.0410598938574929,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 13
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 13.1,
+            "next": 12.791886323727459,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 14.85,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.7408202643971138,
+              "range": 32,
+              "tgt": "hero",
+              "at": 14.240820264397113,
+              "opening": {
+                "T": {
+                  "wind": 0.0408202643971145,
+                  "windowStart": 14.2,
+                  "windowEnd": 14.240820264397113,
+                  "reaction": 0.41398249693532746,
+                  "jitter": 0.71,
+                  "strike": 0.004274922586168704,
+                  "step": 0.06899708282255457,
+                  "guard": 0,
+                  "busy": 0.6999999999999993,
+                  "load": 3.140513443889316,
+                  "canCounter": false
+                },
+                "reaction": 0.762637988307491,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0,
+                  "hit": 1
+                },
+                "p": 1,
+                "at": 13.5
+              }
+            },
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 14.25,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 13.1,
+        "swing": null,
+        "downUntil": 14.2,
+        "posture": 9.799999999999997,
+        "fret": 0.7,
+        "rageUntil": 14.25,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 3.91190296299804,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 2.4459068158229504,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.8639824969353267,
+              "window": 0.7408202643971138,
+              "wind": 0.7408202643971138,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 1.166251165710813
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterFist",
+              "need": 0.8957589550784963,
+              "window": 0.7,
+              "wind": 0.7,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.2796556501121377
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 14.2,
+        "posture": 0,
+        "fret": 0.7
+      },
+      "attacker": "foe1",
+      "move": "looterFist"
+    },
+    {
+      "t": 14.25,
+      "who": "hero",
+      "L": 4.374337067883856,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": null,
+      "r": null,
+      "timing": null,
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7408202643971138,
+          "range": 32,
+          "tgt": "hero",
+          "at": 14.240820264397113,
+          "opening": {
+            "T": {
+              "wind": 0.0408202643971145,
+              "windowStart": 14.2,
+              "windowEnd": 14.240820264397113,
+              "reaction": 0.41398249693532746,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.06899708282255457,
+              "guard": 0,
+              "busy": 0.6999999999999993,
+              "load": 3.140513443889316,
+              "canCounter": false
+            },
+            "reaction": 0.762637988307491,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 13.5
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 14.2,
+            "next": 12.791886323727459,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 14.85,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 14.25,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 14.2,
+        "swing": null,
+        "downUntil": 15.2,
+        "posture": 0,
+        "fret": 0,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 3.91190296299804,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 4.374337067883856,
+          "rows": [
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 1.3639824969353267,
+              "window": 0.5384513334412212,
+              "wind": 0.5384513334412212,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 2.533158360326027
+            },
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.3639824969353267,
+              "window": 0.7408202643971138,
+              "wind": 0.7408202643971138,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.8411787075578283
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 15.2,
+        "posture": 0,
+        "fret": 0.32
+      },
+      "attacker": "foe0",
+      "move": "looterBlade"
+    },
+    {
+      "t": 15,
+      "who": "hero",
+      "L": 3.140513443889316,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": null,
+      "r": null,
+      "timing": null,
+      "before": {
+        "attack": {
+          "mv": "looterFist",
+          "id": "looterFist",
+          "wind": 0.7,
+          "range": 28,
+          "tgt": "hero",
+          "at": 14.95,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 15.7,
+              "windowEnd": 14.95,
+              "reaction": 0.445758955078497,
+              "jitter": 0.596,
+              "strike": 0.004274922586168704,
+              "step": 0.07429315917974949,
+              "guard": 0,
+              "busy": 1.4499999999999993,
+              "load": 4.342123806421289,
+              "canCounter": false
+            },
+            "reaction": 0.9211817454596494,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 14.25
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 15.2,
+            "next": 12.791886323727459,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 16.349999999999998,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.7408202643971138,
+              "range": 32,
+              "tgt": "hero",
+              "at": 15.740820264397113,
+              "opening": {
+                "T": {
+                  "wind": 0.0408202643971145,
+                  "windowStart": 15.7,
+                  "windowEnd": 15.740820264397113,
+                  "reaction": 0.41398249693532746,
+                  "jitter": 0.596,
+                  "strike": 0.004274922586168704,
+                  "step": 0.06899708282255457,
+                  "guard": 0,
+                  "busy": 0.6999999999999993,
+                  "load": 3.140513443889316,
+                  "canCounter": false
+                },
+                "reaction": 0.5807168895756334,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0,
+                  "hit": 1
+                },
+                "p": 1,
+                "at": 15
+              }
+            },
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 15.5,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 15.2,
+        "swing": null,
+        "downUntil": 15.7,
+        "posture": 0,
+        "fret": 0.32,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 3.91190296299804,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 3.140513443889316,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.1139824969353267,
+              "window": 0.7408202643971138,
+              "wind": 0.7408202643971138,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 1.5037149366343208
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterFist",
+              "need": 1.1457589550784963,
+              "window": 0.7,
+              "wind": 0.7,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.6367985072549949
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 15.7,
+        "posture": 0,
+        "fret": 0.64
+      },
+      "attacker": "foe1",
+      "move": "looterFist"
+    },
+    {
+      "t": 15.75,
+      "who": "hero",
+      "L": 3.6959023665965054,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.5807168895756334,
+      "timing": {
+        "T": 0,
+        "r": 0.5807168895756334,
+        "step": 0.06899708282255457,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 3.6959023665965054,
+        "windowStart": 16.702824847650106,
+        "windowEnd": 15.740820264397113
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7408202643971138,
+          "range": 32,
+          "tgt": "hero",
+          "at": 15.740820264397113,
+          "opening": {
+            "T": {
+              "wind": 0.0408202643971145,
+              "windowStart": 15.7,
+              "windowEnd": 15.740820264397113,
+              "reaction": 0.41398249693532746,
+              "jitter": 0.596,
+              "strike": 0.004274922586168704,
+              "step": 0.06899708282255457,
+              "guard": 0,
+              "busy": 0.6999999999999993,
+              "load": 3.140513443889316,
+              "canCounter": false
+            },
+            "reaction": 0.5807168895756334,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 15
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 15.7,
+            "next": 17.341886323727458,
+            "cool": 1.6,
+            "swing": {
+              "mv": "km1",
+              "id": "km1",
+              "wind": 0.9528248476501072,
+              "range": 60,
+              "dmg": 13,
+              "skill": "palm",
+              "tgt": "foe1",
+              "at": 16.702824847650106,
+              "opening": {
+                "T": {
+                  "wind": 0.4643735142088846,
+                  "windowStart": 16.238451333441223,
+                  "windowEnd": 16.702824847650106,
+                  "reaction": 0.6000000000000001,
+                  "jitter": 0.5,
+                  "strike": 0.5,
+                  "step": 0.21428571428571427,
+                  "guard": 0.1,
+                  "busy": 0.4884513334412226,
+                  "load": 1.2472925494882154,
+                  "canCounter": false
+                },
+                "reaction": 0.5008414246914294,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0.015437858694492521,
+                  "dodgeCounter": 0,
+                  "parry": 0.12903250219940565,
+                  "hit": 0.8555296391061018
+                },
+                "p": 0.8555296391061018,
+                "at": 15.75
+              }
+            },
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 16.349999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 16.849999999999998,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.7384513334412213,
+              "range": 32,
+              "tgt": "hero",
+              "at": 16.238451333441223,
+              "opening": {
+                "T": {
+                  "wind": 0.538451333441222,
+                  "windowStart": 15.7,
+                  "windowEnd": 16.238451333441223,
+                  "reaction": 0.41398249693532746,
+                  "jitter": 0.692,
+                  "strike": 0.004274922586168704,
+                  "step": 0.06899708282255457,
+                  "guard": 0,
+                  "busy": 0.1999999999999993,
+                  "load": 1.6602335160559023,
+                  "canCounter": false
+                },
+                "reaction": 0.3979048224101217,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0.5825131809339534,
+                  "dodgeCounter": 0,
+                  "parry": 0.0773202798076954,
+                  "hit": 0.34016653925835116
+                },
+                "p": 0.34016653925835116,
+                "at": 15.5
+              }
+            },
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 15.7,
+        "swing": {
+          "mv": "km1",
+          "id": "km1",
+          "wind": 0.9528248476501072,
+          "range": 60,
+          "dmg": 13,
+          "skill": "palm",
+          "tgt": "foe1",
+          "at": 16.702824847650106,
+          "opening": {
+            "T": {
+              "wind": 0.4643735142088846,
+              "windowStart": 16.238451333441223,
+              "windowEnd": 16.702824847650106,
+              "reaction": 0.6000000000000001,
+              "jitter": 0.5,
+              "strike": 0.5,
+              "step": 0.21428571428571427,
+              "guard": 0.1,
+              "busy": 0.4884513334412226,
+              "load": 1.2472925494882154,
+              "canCounter": false
+            },
+            "reaction": 0.5008414246914294,
+            "odds": {
+              "read": 0,
+              "dodge": 0.015437858694492521,
+              "dodgeCounter": 0,
+              "parry": 0.12903250219940565,
+              "hit": 0.8555296391061018
+            },
+            "p": 0.8555296391061018,
+            "at": 15.75
+          }
+        },
+        "downUntil": 15.7,
+        "posture": 34.8,
+        "fret": 0.64,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 3.91190296299804,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 3.6959023665965054,
+          "rows": [
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 1.3668073445854336,
+              "window": 0.7384513334412213,
+              "wind": 0.7384513334412213,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 1.850910524077519
+            },
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.3668073445854336,
+              "window": 0.7408202643971138,
+              "wind": 0.7408202643971138,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.8449918425189864
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 16.702824847650106,
+        "posture": 9.799999999999997,
+        "fret": 0.7
+      },
+      "attacker": "foe0",
+      "move": "looterBlade"
+    },
+    {
+      "t": 16.25,
+      "who": "hero",
+      "L": 3.97557979506872,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.3979048224101217,
+      "timing": {
+        "T": 0,
+        "r": 0.3979048224101217,
+        "step": 0.06899708282255457,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 3.97557979506872,
+        "windowStart": 17.2,
+        "windowEnd": 16.238451333441223
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7384513334412213,
+          "range": 32,
+          "tgt": "hero",
+          "at": 16.238451333441223,
+          "opening": {
+            "T": {
+              "wind": 0.538451333441222,
+              "windowStart": 15.7,
+              "windowEnd": 16.238451333441223,
+              "reaction": 0.41398249693532746,
+              "jitter": 0.692,
+              "strike": 0.004274922586168704,
+              "step": 0.06899708282255457,
+              "guard": 0,
+              "busy": 0.1999999999999993,
+              "load": 1.6602335160559023,
+              "canCounter": false
+            },
+            "reaction": 0.3979048224101217,
+            "odds": {
+              "read": 0,
+              "dodge": 0.5825131809339534,
+              "dodgeCounter": 0,
+              "parry": 0.0773202798076954,
+              "hit": 0.34016653925835116
+            },
+            "p": 0.34016653925835116,
+            "at": 15.5
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 16.702824847650106,
+            "next": 17.341886323727458,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 16.349999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 16.849999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 16.702824847650106,
+        "swing": null,
+        "downUntil": 17.2,
+        "posture": 9.799999999999997,
+        "fret": 0.7,
+        "rageUntil": 18.75,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 3.91190296299804,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 3.97557979506872,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.3639824969353267,
+              "window": 0.6408202643971116,
+              "wind": 0.5408202643971137,
+              "readyIn": 0.09999999999999787,
+              "readyDelay": 0.09999999999999787,
+              "travel": 0,
+              "active": false,
+              "share": 2.1284946383812806
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 1.3639824969353267,
+              "window": 0.7384513334412213,
+              "wind": 0.7384513334412213,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.8470851566874393
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 17.2,
+        "posture": 0,
+        "fret": 0.7
+      },
+      "attacker": "foe1",
+      "move": "looterBlade"
+    },
+    {
+      "t": 17.5,
+      "who": "hero",
+      "L": 1.7453538229277044,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": null,
+      "r": null,
+      "timing": null,
+      "before": {
+        "attack": {
+          "mv": "looterFist",
+          "id": "looterFist",
+          "wind": 0.7,
+          "range": 28,
+          "tgt": "hero",
+          "at": 17.45,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 17.7,
+              "windowEnd": 17.45,
+              "reaction": 0.445758955078497,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.07429315917974949,
+              "guard": 0,
+              "busy": 0.9499999999999993,
+              "load": 4.156809869988031,
+              "canCounter": false
+            },
+            "reaction": 0.3883991265083132,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 16.75
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 17.2,
+            "next": 17.341886323727458,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 18,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 18.349999999999998,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.7210948044953087,
+              "range": 32,
+              "tgt": "hero",
+              "at": 17.72109480449531,
+              "opening": {
+                "T": {
+                  "wind": 0.021094804495309427,
+                  "windowStart": 17.7,
+                  "windowEnd": 17.72109480449531,
+                  "reaction": 0.39334639162858875,
+                  "jitter": 0.71,
+                  "strike": 0.004274922586168704,
+                  "step": 0.06555773193809811,
+                  "guard": 0,
+                  "busy": 0.6999999999999993,
+                  "load": 3.1530296391570154,
+                  "canCounter": false
+                },
+                "reaction": 0.4671355247246693,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0,
+                  "hit": 1
+                },
+                "p": 1,
+                "at": 17
+              }
+            },
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 17.2,
+        "swing": null,
+        "downUntil": 17.7,
+        "posture": 0,
+        "fret": 0.7,
+        "rageUntil": 18.75,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 4.809716022307431,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.7453538229277044,
+          "rows": [
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 0.593346391628588,
+              "window": 0.7210948044953087,
+              "wind": 0.7210948044953087,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 0.8228410299584238
+            },
+            {
+              "attacker": "foe0",
+              "move": "looterFist",
+              "need": 0.6457589550784963,
+              "window": 0.7,
+              "wind": 0.7,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 0.9225127929692806
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 17.85,
+        "posture": 0,
+        "fret": 0.7
+      },
+      "attacker": "foe0",
+      "move": "looterFist"
+    },
+    {
+      "t": 17.75,
+      "who": "hero",
+      "L": 1.291334368588604,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.4671355247246693,
+      "timing": {
+        "T": 0,
+        "r": 0.4671355247246693,
+        "step": 0.06555773193809811,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 1.291334368588604,
+        "windowStart": 17.85,
+        "windowEnd": 17.72109480449531
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7210948044953087,
+          "range": 32,
+          "tgt": "hero",
+          "at": 17.72109480449531,
+          "opening": {
+            "T": {
+              "wind": 0.021094804495309427,
+              "windowStart": 17.7,
+              "windowEnd": 17.72109480449531,
+              "reaction": 0.39334639162858875,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.06555773193809811,
+              "guard": 0,
+              "busy": 0.6999999999999993,
+              "load": 3.1530296391570154,
+              "canCounter": false
+            },
+            "reaction": 0.4671355247246693,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 17
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 17.85,
+            "next": 17.341886323727458,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 18,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 18.349999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 17.85,
+        "swing": null,
+        "downUntil": 17.7,
+        "posture": 34.8,
+        "fret": 0.7,
+        "rageUntil": 18.75,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 4.809716022307431,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 1.291334368588604,
+          "rows": [
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 0.4933463916285902,
+              "window": 0.7210948044953087,
+              "wind": 0.7210948044953087,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0.018008658008670176,
+              "active": false,
+              "share": 0.6674930055897746
+            },
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.4933463916285902,
+              "window": 0.7908202643971137,
+              "wind": 0.5408202643971137,
+              "readyIn": 0.25,
+              "readyDelay": 0.25,
+              "travel": 0,
+              "active": false,
+              "share": 0.6238413629988295
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 18.1,
+        "posture": 9.799999999999997,
+        "fret": 0.7
+      },
+      "attacker": "foe1",
+      "move": "looterBlade"
+    },
+    {
+      "t": 18.75,
+      "who": "hero",
+      "L": 2.756808002998997,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.2593722412535875,
+      "timing": {
+        "T": 0,
+        "r": 0.2593722412535875,
+        "step": 0.06555773193809811,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 2.756808002998997,
+        "windowStart": 19.2,
+        "windowEnd": 18.740820264397115
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7408202643971138,
+          "range": 32,
+          "tgt": "hero",
+          "at": 18.740820264397115,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 19.2,
+              "windowEnd": 18.740820264397115,
+              "reaction": 0.39334639162858875,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.06555773193809811,
+              "guard": 0,
+              "busy": 1.1999999999999993,
+              "load": 3.979917589971495,
+              "canCounter": false
+            },
+            "reaction": 0.2593722412535875,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 18
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 18.1,
+            "next": 17.341886323727458,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 19.349999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 18.349999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 18.1,
+        "swing": null,
+        "downUntil": 19.2,
+        "posture": 9.799999999999997,
+        "fret": 0,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 4.809716022307431,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 2.756808002998997,
+          "rows": [
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 0.843346391628588,
+              "window": 0.5210948044953088,
+              "wind": 0.5210948044953088,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.6184125889441303
+            },
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.843346391628588,
+              "window": 0.7408202643971138,
+              "wind": 0.7408202643971138,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.1383954140548664
+            }
+          ],
+          "slots": 2
+        }
+      },
+      "after": {
+        "busyUntil": 19.2,
+        "posture": 0,
+        "fret": 0.32
+      },
+      "attacker": "foe0",
+      "move": "looterBlade"
+    },
+    {
+      "t": 19.5,
+      "who": "hero",
+      "L": 3.1126576922333693,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": null,
+      "r": null,
+      "timing": null,
+      "before": {
+        "attack": {
+          "mv": "looterFist",
+          "id": "looterFist",
+          "wind": 0.7,
+          "range": 28,
+          "tgt": "hero",
+          "at": 19.45,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 20.2,
+              "windowEnd": 19.45,
+              "reaction": 0.445758955078497,
+              "jitter": 0.596,
+              "strike": 0.004274922586168704,
+              "step": 0.07429315917974949,
+              "guard": 0,
+              "busy": 1.4499999999999993,
+              "load": 4.324034975120908,
+              "canCounter": false
+            },
+            "reaction": 0.27629381362238653,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 18.75
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 19.2,
+            "next": 17.341886323727458,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 20.849999999999998,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.7408202643971138,
+              "range": 32,
+              "tgt": "hero",
+              "at": 20.240820264397115,
+              "opening": {
+                "T": {
+                  "wind": 0.0408202643971145,
+                  "windowStart": 20.2,
+                  "windowEnd": 20.240820264397115,
+                  "reaction": 0.39334639162858875,
+                  "jitter": 0.596,
+                  "strike": 0.004274922586168704,
+                  "step": 0.06555773193809811,
+                  "guard": 0,
+                  "busy": 0.6999999999999993,
+                  "load": 3.1126576922333693,
+                  "canCounter": false
+                },
+                "reaction": 0.6495999066244454,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0,
+                  "hit": 1
+                },
+                "p": 1,
+                "at": 19.5
+              }
+            },
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 20,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 19.2,
+        "swing": null,
+        "downUntil": 20.2,
+        "posture": 0,
+        "fret": 0.32,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 4.809716022307431,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 3.1126576922333693,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.0933463916285882,
+              "window": 0.7408202643971138,
+              "wind": 0.7408202643971138,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 1.4758591849783744
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterFist",
+              "need": 1.1457589550784963,
+              "window": 0.7,
+              "wind": 0.7,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.6367985072549949
+            }
+          ],
+          "slots": 4
+        }
+      },
+      "after": {
+        "busyUntil": 20.2,
+        "posture": 0,
+        "fret": 0.64
+      },
+      "attacker": "foe1",
+      "move": "looterFist"
+    },
+    {
+      "t": 20.25,
+      "who": "hero",
+      "L": 3.604618925907255,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.6495999066244454,
+      "timing": {
+        "T": 0,
+        "r": 0.6495999066244454,
+        "step": 0.06555773193809811,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 3.604618925907255,
+        "windowStart": 21.173825444262338,
+        "windowEnd": 20.240820264397115
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7408202643971138,
+          "range": 32,
+          "tgt": "hero",
+          "at": 20.240820264397115,
+          "opening": {
+            "T": {
+              "wind": 0.0408202643971145,
+              "windowStart": 20.2,
+              "windowEnd": 20.240820264397115,
+              "reaction": 0.39334639162858875,
+              "jitter": 0.596,
+              "strike": 0.004274922586168704,
+              "step": 0.06555773193809811,
+              "guard": 0,
+              "busy": 0.6999999999999993,
+              "load": 3.1126576922333693,
+              "canCounter": false
+            },
+            "reaction": 0.6495999066244454,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 19.5
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 20.2,
+            "next": 22.14188632372746,
+            "cool": 1.6,
+            "swing": {
+              "mv": "km2",
+              "id": "km2",
+              "wind": 0.9238254442623393,
+              "range": 85,
+              "dmg": 19,
+              "skill": "palm",
+              "tgt": "foe1",
+              "at": 21.173825444262338,
+              "opening": {
+                "T": {
+                  "wind": 0.45273063976703076,
+                  "windowStart": 20.72109480449531,
+                  "windowEnd": 21.173825444262338,
+                  "reaction": 0.6000000000000001,
+                  "jitter": 0.5,
+                  "strike": 0.5,
+                  "step": 0.21428571428571427,
+                  "guard": 0.1,
+                  "busy": 0.4710948044953085,
+                  "load": 1.2676580968501148,
+                  "canCounter": false
+                },
+                "reaction": 0.44631605474237734,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0.009153025072920875,
+                  "dodgeCounter": 0,
+                  "parry": 0.11808787818335553,
+                  "hit": 0.8727590967437235
+                },
+                "p": 0.8727590967437235,
+                "at": 20.25
+              }
+            },
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 20.849999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 21.349999999999998,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.7210948044953087,
+              "range": 32,
+              "tgt": "hero",
+              "at": 20.72109480449531,
+              "opening": {
+                "T": {
+                  "wind": 0.5210948044953094,
+                  "windowStart": 20.2,
+                  "windowEnd": 20.72109480449531,
+                  "reaction": 0.39334639162858875,
+                  "jitter": 0.692,
+                  "strike": 0.004274922586168704,
+                  "step": 0.06555773193809811,
+                  "guard": 0,
+                  "busy": 0.1999999999999993,
+                  "load": 1.6237726730897826,
+                  "canCounter": false
+                },
+                "reaction": 1.4736481246700344,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0.5994110535687005,
+                  "dodgeCounter": 0,
+                  "parry": 0.07605760870476008,
+                  "hit": 0.3245313377265394
+                },
+                "p": 0.3245313377265394,
+                "at": 20
+              }
+            },
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 20.2,
+        "swing": {
+          "mv": "km2",
+          "id": "km2",
+          "wind": 0.9238254442623393,
+          "range": 85,
+          "dmg": 19,
+          "skill": "palm",
+          "tgt": "foe1",
+          "at": 21.173825444262338,
+          "opening": {
+            "T": {
+              "wind": 0.45273063976703076,
+              "windowStart": 20.72109480449531,
+              "windowEnd": 21.173825444262338,
+              "reaction": 0.6000000000000001,
+              "jitter": 0.5,
+              "strike": 0.5,
+              "step": 0.21428571428571427,
+              "guard": 0.1,
+              "busy": 0.4710948044953085,
+              "load": 1.2676580968501148,
+              "canCounter": false
+            },
+            "reaction": 0.44631605474237734,
+            "odds": {
+              "read": 0,
+              "dodge": 0.009153025072920875,
+              "dodgeCounter": 0,
+              "parry": 0.11808787818335553,
+              "hit": 0.8727590967437235
+            },
+            "p": 0.8727590967437235,
+            "at": 20.25
+          }
+        },
+        "downUntil": 20.2,
+        "posture": 34.8,
+        "fret": 0.64,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 4.809716022307431,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 3.604618925907255,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.3171718358909268,
+              "window": 0.7408202643971138,
+              "wind": 0.7408202643971138,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.777991098775967
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 1.3171718358909268,
+              "window": 0.7210948044953087,
+              "wind": 0.7210948044953087,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 1.8266278271312881
+            }
+          ],
+          "slots": 4
+        }
+      },
+      "after": {
+        "busyUntil": 21.173825444262338,
+        "posture": 9.799999999999997,
+        "fret": 0.7
+      },
+      "attacker": "foe0",
+      "move": "looterBlade"
+    },
+    {
+      "t": 20.75,
+      "who": "hero",
+      "L": 3.9592181796514465,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 1.4736481246700344,
+      "timing": {
+        "T": 0,
+        "r": 1.4736481246700344,
+        "step": 0.06555773193809811,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 3.9592181796514465,
+        "windowStart": 21.7,
+        "windowEnd": 20.72109480449531
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7210948044953087,
+          "range": 32,
+          "tgt": "hero",
+          "at": 20.72109480449531,
+          "opening": {
+            "T": {
+              "wind": 0.5210948044953094,
+              "windowStart": 20.2,
+              "windowEnd": 20.72109480449531,
+              "reaction": 0.39334639162858875,
+              "jitter": 0.692,
+              "strike": 0.004274922586168704,
+              "step": 0.06555773193809811,
+              "guard": 0,
+              "busy": 0.1999999999999993,
+              "load": 1.6237726730897826,
+              "canCounter": false
+            },
+            "reaction": 1.4736481246700344,
+            "odds": {
+              "read": 0,
+              "dodge": 0.5994110535687005,
+              "dodgeCounter": 0,
+              "parry": 0.07605760870476008,
+              "hit": 0.3245313377265394
+            },
+            "p": 0.3245313377265394,
+            "at": 20
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 21.173825444262338,
+            "next": 22.14188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 20.849999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 21.349999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 21.173825444262338,
+        "swing": null,
+        "downUntil": 21.7,
+        "posture": 9.799999999999997,
+        "fret": 0.7,
+        "rageUntil": 23.25,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 4.809716022307431,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 3.9592181796514465,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.3433463916285882,
+              "window": 0.6408202643971116,
+              "wind": 0.5408202643971137,
+              "readyIn": 0.09999999999999787,
+              "readyDelay": 0.09999999999999787,
+              "travel": 0,
+              "active": false,
+              "share": 2.0962919967776275
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 1.3433463916285882,
+              "window": 0.7210948044953087,
+              "wind": 0.7210948044953087,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.8629261828738188
+            }
+          ],
+          "slots": 4
+        }
+      },
+      "after": {
+        "busyUntil": 21.7,
+        "posture": 0,
+        "fret": 0.7
+      },
+      "attacker": "foe1",
+      "move": "looterBlade"
+    },
+    {
+      "t": 21.75,
+      "who": "hero",
+      "L": 2.741327375796449,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": null,
+      "r": null,
+      "timing": null,
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7408202643971138,
+          "range": 32,
+          "tgt": "hero",
+          "at": 21.740820264397115,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 22.2,
+              "windowEnd": 21.740820264397115,
+              "reaction": 0.3767034380379124,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.06278390633965206,
+              "guard": 0,
+              "busy": 1.1999999999999993,
+              "load": 3.9646521329316773,
+              "canCounter": false
+            },
+            "reaction": 0.24976042608085064,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 21
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 21.7,
+            "next": 22.14188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 22.349999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 21.349999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 21.7,
+        "swing": null,
+        "downUntil": 22.2,
+        "posture": 0,
+        "fret": 0.7,
+        "rageUntil": 23.25,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 5.68655901654728,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 2.741327375796449,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 0.8267034380379117,
+              "window": 0.7408202643971138,
+              "wind": 0.7408202643971138,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.1159298385428083
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 0.8267034380379117,
+              "window": 0.5086161502586956,
+              "wind": 0.5086161502586956,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.6253975372536411
+            }
+          ],
+          "slots": 4
+        }
+      },
+      "after": {
+        "busyUntil": 22.2,
+        "posture": 0,
+        "fret": 0.7
+      },
+      "attacker": "foe0",
+      "move": "looterBlade"
+    },
+    {
+      "t": 22.5,
+      "who": "hero",
+      "L": 3.6276696134591617,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 3.497252249997665,
+      "timing": {
+        "T": 0,
+        "r": 3.497252249997665,
+        "step": 0.07429315917974949,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 3.6276696134591617,
+        "windowStart": 23.2,
+        "windowEnd": 22.45
+      },
+      "before": {
+        "attack": {
+          "mv": "looterFist",
+          "id": "looterFist",
+          "wind": 0.7,
+          "range": 28,
+          "tgt": "hero",
+          "at": 22.45,
+          "opening": {
+            "T": {
+              "wind": 0,
+              "windowStart": 23.2,
+              "windowEnd": 22.45,
+              "reaction": 0.445758955078497,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.07429315917974949,
+              "guard": 0,
+              "busy": 1.4499999999999993,
+              "load": 4.309446389951033,
+              "canCounter": false
+            },
+            "reaction": 3.497252249997665,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0,
+              "hit": 1
+            },
+            "p": 1,
+            "at": 21.75
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 22.2,
+            "next": 22.14188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 22.349999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 23,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 22.2,
+        "swing": null,
+        "downUntil": 23.2,
+        "posture": 34.8,
+        "fret": 0.7,
+        "rageUntil": 23.25,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 5.68655901654728,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 3.6276696134591617,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.0767034380379117,
+              "window": 0.5408202643971137,
+              "wind": 0.5408202643971137,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.9908711062041666
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterFist",
+              "need": 1.1457589550784963,
+              "window": 0.7,
+              "wind": 0.7,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.6367985072549949
+            }
+          ],
+          "slots": 4
+        }
+      },
+      "after": {
+        "busyUntil": 23.2,
+        "posture": 20.799999999999997,
+        "fret": 0.7
+      },
+      "attacker": "foe1",
+      "move": "looterFist"
+    },
+    {
+      "t": 23.5,
+      "who": "hero",
+      "L": 2.9005694286285184,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": 0,
+      "r": 0.34703649284352966,
+      "timing": {
+        "T": 0,
+        "r": 0.34703649284352966,
+        "step": 0.06278390633965206,
+        "strike": 0.004274922586168704,
+        "guard": 0,
+        "L": 2.9005694286285184,
+        "windowStart": 24.173825444262338,
+        "windowEnd": 23.490820264397115
+      },
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7408202643971138,
+          "range": 32,
+          "tgt": "hero",
+          "at": 23.490820264397115,
+          "opening": {
+            "T": {
+              "wind": 0.2908202643971145,
+              "windowStart": 23.2,
+              "windowEnd": 23.490820264397115,
+              "reaction": 0.3767034380379124,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.06278390633965206,
+              "guard": 0,
+              "busy": 0.4499999999999993,
+              "load": 2.205681800395977,
+              "canCounter": false
+            },
+            "reaction": 0.34703649284352966,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0.2814154622642219,
+              "hit": 0.718584537735778
+            },
+            "p": 0.718584537735778,
+            "at": 22.75
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 23.2,
+            "next": 25.14188632372746,
+            "cool": 1.6,
+            "swing": {
+              "mv": "km2",
+              "id": "km2",
+              "wind": 0.9238254442623393,
+              "range": 85,
+              "dmg": 19,
+              "skill": "palm",
+              "tgt": "foe1",
+              "at": 24.173825444262338,
+              "opening": {
+                "T": {
+                  "wind": 0.46520929400364386,
+                  "windowStart": 23.708616150258695,
+                  "windowEnd": 24.173825444262338,
+                  "reaction": 0.6000000000000001,
+                  "jitter": 0.5,
+                  "strike": 0.5,
+                  "step": 0.21428571428571427,
+                  "guard": 0.1,
+                  "busy": 0.4586161502586954,
+                  "load": 1.2541505080365405,
+                  "canCounter": false
+                },
+                "reaction": 0.5080872735191325,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0.0159490728782412,
+                  "dodgeCounter": 0,
+                  "parry": 0.12977953922242622,
+                  "hit": 0.8542713878993325
+                },
+                "p": 0.8542713878993325,
+                "at": 23.25
+              }
+            },
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 24.099999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 24.349999999999998,
+            "cool": 0,
+            "swing": {
+              "mv": "looterBlade",
+              "id": "looterBlade",
+              "wind": 0.7086161502586956,
+              "range": 32,
+              "tgt": "hero",
+              "at": 23.708616150258695,
+              "opening": {
+                "T": {
+                  "wind": 0.5086161502586963,
+                  "windowStart": 23.2,
+                  "windowEnd": 23.708616150258695,
+                  "reaction": 0.3767034380379124,
+                  "jitter": 0.71,
+                  "strike": 0.004274922586168704,
+                  "step": 0.06278390633965206,
+                  "guard": 0,
+                  "busy": 0.1999999999999993,
+                  "load": 1.5923106826868143,
+                  "canCounter": false
+                },
+                "reaction": 0.7050770817014522,
+                "odds": {
+                  "read": 0,
+                  "dodge": 0,
+                  "dodgeCounter": 0,
+                  "parry": 0.6868401747112419,
+                  "hit": 0.3131598252887581
+                },
+                "p": 0.3131598252887581,
+                "at": 23
+              }
+            },
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 23.2,
+        "swing": {
+          "mv": "km2",
+          "id": "km2",
+          "wind": 0.9238254442623393,
+          "range": 85,
+          "dmg": 19,
+          "skill": "palm",
+          "tgt": "foe1",
+          "at": 24.173825444262338,
+          "opening": {
+            "T": {
+              "wind": 0.46520929400364386,
+              "windowStart": 23.708616150258695,
+              "windowEnd": 24.173825444262338,
+              "reaction": 0.6000000000000001,
+              "jitter": 0.5,
+              "strike": 0.5,
+              "step": 0.21428571428571427,
+              "guard": 0.1,
+              "busy": 0.4586161502586954,
+              "load": 1.2541505080365405,
+              "canCounter": false
+            },
+            "reaction": 0.5080872735191325,
+            "odds": {
+              "read": 0,
+              "dodge": 0.0159490728782412,
+              "dodgeCounter": 0,
+              "parry": 0.12977953922242622,
+              "hit": 0.8542713878993325
+            },
+            "p": 0.8542713878993325,
+            "at": 23.25
+          }
+        },
+        "downUntil": 23.2,
+        "posture": 20.799999999999997,
+        "fret": 0,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 5.68655901654728,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 2.9005694286285184,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.0505288823002503,
+              "window": 0.7408202643971138,
+              "wind": 0.7408202643971138,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 1.4180617523404009
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 1.0505288823002503,
+              "window": 0.7086161502586956,
+              "wind": 0.7086161502586956,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": true,
+              "share": 1.4825076762881175
+            }
+          ],
+          "slots": 4
+        }
+      },
+      "after": {
+        "busyUntil": 24.173825444262338,
+        "posture": 0,
+        "fret": 0.32
+      },
+      "attacker": "foe0",
+      "move": "looterBlade"
+    },
+    {
+      "t": 23.75,
+      "who": "hero",
+      "L": 3.99527649154145,
+      "reaction": "hit",
+      "counter": false,
+      "type": "defense",
+      "phase": "impact",
+      "T": null,
+      "r": null,
+      "timing": null,
+      "before": {
+        "attack": {
+          "mv": "looterBlade",
+          "id": "looterBlade",
+          "wind": 0.7086161502586956,
+          "range": 32,
+          "tgt": "hero",
+          "at": 23.708616150258695,
+          "opening": {
+            "T": {
+              "wind": 0.5086161502586963,
+              "windowStart": 23.2,
+              "windowEnd": 23.708616150258695,
+              "reaction": 0.3767034380379124,
+              "jitter": 0.71,
+              "strike": 0.004274922586168704,
+              "step": 0.06278390633965206,
+              "guard": 0,
+              "busy": 0.1999999999999993,
+              "load": 1.5923106826868143,
+              "canCounter": false
+            },
+            "reaction": 0.7050770817014522,
+            "odds": {
+              "read": 0,
+              "dodge": 0,
+              "dodgeCounter": 0,
+              "parry": 0.6868401747112419,
+              "hit": 0.3131598252887581
+            },
+            "p": 0.3131598252887581,
+            "at": 23
+          }
+        },
+        "actors": [
+          {
+            "who": "hero",
+            "busyUntil": 24.173825444262338,
+            "next": 25.14188632372746,
+            "cool": 1.6,
+            "swing": null,
+            "intentTarget": null
+          },
+          {
+            "who": "foe0",
+            "busyUntil": 0,
+            "next": 24.099999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          },
+          {
+            "who": "foe1",
+            "busyUntil": 0,
+            "next": 24.349999999999998,
+            "cool": 0,
+            "swing": null,
+            "intentTarget": "hero"
+          }
+        ],
+        "busyUntil": 24.173825444262338,
+        "swing": null,
+        "downUntil": 24.95,
+        "posture": 0,
+        "fret": 0.32,
+        "rageUntil": 0,
+        "part": {
+          "where": "hand",
+          "side": "右",
+          "days": 3,
+          "layer": "tendon"
+        },
+        "eyes": {
+          "human:bodyPunch": 0.9153904703464061,
+          "human:toolStone": 0.49924835273986745,
+          "human:hg1": 0.8796379213766927,
+          "human:bodyKick": 0.42518976314584184,
+          "bandit:looterStaff": 0.49598183454371775,
+          "bandit:looterFist": 2.824249891219908,
+          "bandit:looterBlade": 6.495442215998625,
+          "human:bodyPush": 0.9714288972245484,
+          "human:toolKnife": 0.4229544532530796,
+          "human:bodyGrab": 0.3491788672529966
+        },
+        "forecast": {
+          "L": 3.99527649154145,
+          "rows": [
+            {
+              "attacker": "foe0",
+              "move": "looterBlade",
+              "need": 1.5637041934867295,
+              "window": 0.8742736774780131,
+              "wind": 0.5242736774780152,
+              "readyIn": 0.34999999999999787,
+              "readyDelay": 0.34999999999999787,
+              "travel": 0,
+              "active": false,
+              "share": 1.7885751724763037
+            },
+            {
+              "attacker": "foe1",
+              "move": "looterBlade",
+              "need": 1.5637041934867295,
+              "window": 0.7086161502586956,
+              "wind": 0.7086161502586956,
+              "readyIn": 0,
+              "readyDelay": 0,
+              "travel": 0,
+              "active": false,
+              "share": 2.206701319065146
+            }
+          ],
+          "slots": 4
+        }
+      },
+      "after": {
+        "busyUntil": 24.95,
+        "posture": 0,
+        "fret": 0.64
+      },
+      "attacker": "foe1",
+      "move": "looterBlade"
+    }
+  ]
+}
