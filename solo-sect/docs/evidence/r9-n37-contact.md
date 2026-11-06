@@ -46,3 +46,8 @@ N50→N38、RULES_VERSION3.4/MIGRATIONS/golden、最終指定文檔/bot12/PR/CI�
 - `n37-duel-final-day1.json`：`eb469f987b67d5a391738a6a2b46f16534688ffa1ca65abfd911e7233cbf9e17`
 - `n37-duel-final-day60.json`：`0ada52dbf39834a112093ff8653d31b4269786619bf5e20d0deae85dd75e7119`
 - `n37-waves-final-normal17.json`：`7ec6020d5b912ad9e991c3968f0bd594756231a1667b40a3cb7a16cad43e9d7b`
+
+## 9b 收尾續記
+本檔上方的N36 seed17兩路零反擊是先前探針錯序與漏起手截擊的歷史數字。實際 `tick` 為 bandStep 先於弟子，最終探針也照此順序；完整結果與仍失敗的人格門檻見 `REVIEW.md`。N37 `contact.mjs --seed 29` 真招架3次、破綻1.45秒，狗傷筋退82.5px、豬無傷退16.5px，顯示開/關SHA256相同。9b規則3.5的Node22 golden已重產；原始輸出在 `artifacts/round9b/`。
+
+N34 最終工具按 #475 明定以皮破以上為受傷（瘀青算中招）。原75.793%把瘀青也計為受傷，屬較嚴的歷史值；同一20種子重算為90.588%，原始輸出見 `artifacts/round9b/duel-day1-final.json`。

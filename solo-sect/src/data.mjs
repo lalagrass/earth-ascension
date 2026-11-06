@@ -347,7 +347,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '3.4'; /* 第九輪 9a：白身起手、共用手眼熟與唯讀成長播放 */
+export const RULES_VERSION = '3.5'; /* 第九輪 9b：情境選招、失手悟招、負荷士氣與分層受力 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [

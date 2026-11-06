@@ -141,3 +141,25 @@ N33「高手認得短招」沿用原門檻 .9；N34 將同拍移步反擊從截�
 待parent正常桌面通路：真交手雙方局部停頓/受方震動較大、旁人持續動；筋/骨傷那隻手不能正常出招；同腳狗/豬退距差。可用既有診斷入口`window.__sect.hitstop=false`切純顯示對照，**本worker沒有開UI/實拍**，不要Shell browser或繞過預覽403。N55影片/真人盲測仍欠；hitstop開關state相同不代表整輪玩法golden相同，3.4收尾還要重產。
 
 N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預期仍17 tests，N37原test包含irritant來源力10000仍無組織傷/推退/偏移；`CONTACT_MEDIA`為通用schema，#445撒土只觸發原blind/dishonor，非按招名判斷。N37上表數字是22e35eb checkpoint，整輪最終量測仍須另跑。
+
+## 第九輪 9b 最終可重跑狀態（規則 3.5；#444/#445/#446/#448）
+
+這節取代上方 N34/N36/N37 開工時的 checkpoint 數字。資料使用 9a head `79e5c96` 為 base，9b 當前程式為 head；受控探針與自然 bot12 分開，不將失敗寫成通過。所有命令從 repo 根目錄執行；golden 須 Node 22（CI runtime）。
+
+| 指令 | 原門檻 | 本輪結果／原始輸出 |
+|---|---|---|
+| `bash solo-sect/test/run.sh smoke` | fail0 | 17/17；N34–N37 每步至多一個新增小測試。 |
+| `node solo-sect/tools/duel.mjs --a day1 --b day1 --seeds 1-20` | 中位交手≥30；無皮破以上接觸≥70% | 中位428；無皮破以上90.588%；喘氣10；[原始輸出](artifacts/round9b/duel-day1-final.json)。瘀青計為中招、不計受傷；上方75.793%是舊工具把瘀青也計入受傷的較嚴歷史值。 |
+| `node solo-sect/tools/duel.mjs --a day60 --b day1 --seeds 1-20` | 最小進身閃≥day1三倍且>0；同拍反擊≥5 | 0.596491對0.081075（7.36倍），反擊34；[原始輸出](artifacts/round9b/duel-day60-final.json)。此為訓練seed1，未證明任意seed。 |
+| `node solo-sect/tools/duel.mjs --seed <任選整數> --log out/duel.json` | 任取3筆成功接法驗 `r+m≤T` | 每拍輸出T/r/m/margin，forced行不冒充真抽樣；reviewer仍須任意seed複核。 |
+| `node solo-sect/tools/waves.mjs --seed 17 --trait normal --log out/waves.json` | `L≥1` 拍反擊0；1、2路各有反擊 | 依正常tick山賊先起手、同一`interceptOpening`起手截擊的修正後，1路1次、2路2次、超載反擊0；[原始摘要](artifacts/round9b/waves-normal-17-summary.json)、[完整逐拍JSON](artifacts/round9b/waves-normal-17.json)。seed23為1路2次、2路5次、超載反擊0；[摘要](artifacts/round9b/waves-normal-23-summary.json)、[逐拍](artifacts/round9b/waves-normal-23.json)。 |
+| `node solo-sect/tools/waves.mjs --seed 17 --trait calm,rash --log out/waves.json` | 兩者1/2路各有反擊；急躁搶攻與受傷均較多 | seed17冷靜1/2路1/13次、急躁2/4次，超載反擊皆0；急躁失血84.57>14.10，但搶攻5<11，**未達人格搶攻門檻**。[原始摘要](artifacts/round9b/r9b-waves17-traits2-summary.json)、[逐拍](artifacts/round9b/r9b-waves17-traits2.json)。seed23亦搶攻7<8且失血相等，未達兩項；[摘要](artifacts/round9b/r9b-waves23-traits2-summary.json)。 |
+| `node solo-sect/tools/contact.mjs --seed 29` | 破架長破綻、狗/豬不同傷與退距、hitstop開關state hash相同 | 3次真招架、1.45秒破綻；狗傷筋退82.5px、豬無傷退16.5px；兩hash相同，pass=true；[原始輸出](artifacts/round9b/r9b-contact29.json)。 |
+| `node solo-sect/tools/glimmer-metrics.mjs --days=60` | 普通悟性首招約第7–10日；只打p≥.9者12種子60日不悟 | 沿 bot12 真日程，12種子主角悟性均2，全部60日未悟（首次日 null、最大進度0.623）。[原始輸出](artifacts/round9b/glimmer-bot12-60.json)。這個自然日程不是普通悟性3或弱敵限定，因此**不能宣稱兩條驗收通過**；固定種子的母招/失手/效果小測試及 `w(1−p)` 14倍差通過。 |
+| `docker run --rm -v "$PWD":/repo -w /repo node:22-bookworm-slim node solo-sect/tools/golden.mjs --write --tier all` | 重產 quick/full/舊檔，回報相符 | quick4、full32、saves已重產且相符；[輸出](artifacts/round9b/golden-write-node22.log)。 |
+
+`waves.mjs`原本將主角排在 bandit 前面，並漏掉起手截擊，與遊戲 `tick` 的 bandStep→弟子及 `interceptOpening` 不同；修正這兩個探針錯誤後再按 N36 原門檻量。負荷式另外把未出手者的剩餘冷卻與靠近時間並行計算；士氣人數劣勢改為佔交戰總人數比例，避免健康的冷靜者在兩敵入場當拍就憑空恐慌退場。兩次修正後仍有上述人格門檻未達；按新版附件停止額外調數字，交給 reviewer 看逐拍資料。
+
+N35 的 firstDay 目標在自然 bot12 日程沒有達到：主要是該日程沒有足夠「特定母招＋情境＋失手」的事件，而非門檻只差一點。保留門檻72/96/48及失手才加原w的世界規則，不為表格直接降低難度或讓成功刷悟招。弱敵限定60日需另作真實交戰日程；不以這份自然bot12冒充。
+
+畫面：`PW=/path/to/playwright-core/index.mjs node solo-sect/tools/round9b-shots.mjs` 在正常遊戲頁面開局，使用真Canvas renderer與 `contactImpact` 取得[靠樹](artifacts/round9b/cover.png)及[受力傷筋](artifacts/round9b/contact.png)截圖；其受控佈局／傷層見[輸出](artifacts/round9b/shots.json)。圖片是受控局面，不是自然玩法或真人盲測影片。N55 的真人盲測仍由 #484 reviewer 核對。

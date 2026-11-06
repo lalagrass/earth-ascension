@@ -1,0 +1,1 @@
+{"setup":{"actor":"林師姐","position":[1368,148],"cover":"guardTree","dogs":[[1388,148],[1389,160],[1390,172],[1391,184]]},"contact":{"layer":"tendon","pressure":20,"knock":82.5,"wound":{"where":"body","side":"","layer":"tendon","depth":2,"force":20,"threshold":19.594557445287762,"days":3,"at":20},"fx":"contact"},"images":["cover.png","contact.png"]}
