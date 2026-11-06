@@ -165,7 +165,7 @@ export function practiceLuoying(d, now = 0) {
 }
 export function artState(d, a) {
   if (d.arts?.[a.id]) return { st: 'learned', tier: artTier(d, a.id), why: gated(d, a) ? `悟性不足（需 ${a.wuxingMin}），止於小成` : '' };
-  if (d.pendingArt === a.id) return { st: 'pending', why: '可向師父求學' };
+  if (d.pendingArt === a.id) return { st: 'pending', why: '已到求學前提，仍需真教材或師父' };
   if (chiefLocked24(d, a)) return { st: 'locked', why: CHIEF24_WHY }; /* loop171 */
   const miss = reqMissing(d, a); if (miss.length) return { st: 'locked', why: `需${miss.join('、')}` };
   return { st: 'open', why: '條件已足，等師父有空' };

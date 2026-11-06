@@ -143,3 +143,8 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 - 指令：`node solo-sect/tools/waves.mjs --seed 17 --trait normal --snapshot-in out/real60.json --log out/replay.json`。門檻同上不改；用途只隔離同一真快照的交手，不是新seed或自然成長證明。本次修前真快照的隔離counter1/0/2，**仍FAIL**。命令、逐拍第一反例與修前/後實際busy數字見`docs/evidence/r9-n36-time-root.md`及JSON。
 - N36後續冷卻修正：相同指令現在明列未起手者readyIn/readyDelay，不將仍在冷卻但有目標的人當作立即能再起手；不刪敵人、不延後在途招。唯一N36測試驗等待2秒/在途0額外等待/當下extra0額外等待。最新19/19 fail0。
 - 真正重產60日seed17（未用snapshot-in）eventHash ca5b59a4291a929c0fa0288768a74ed34edbe794317228c1cd0dd2152491f537，counter1/0/2、所有超載counter0、pass=false。兩路50次防守中19架勢破綻、31有timing全L≥1；不能移除L gate造反擊。其他seed/性格尚未驗，不標整輪通過。
+
+#### N50 正式learn來源checkpoint
+- 指令：`bash solo-sect/test/run.sh smoke`。門檻fail0；預期19/19，原N50唯一測試輸出`N50 source proof`：書manual-1與hero→origin-1真課均seconds8/required8，按鈕/答應當下尚未知。無教材或師父的pending不得授藝，改派/中斷不吞書。N12/v100原測試已更新但未另在本地執行。
+- 指令：`node solo-sect/tools/white-body.mjs --seed 17 --types ISTJ --days 30 --events out/source.events.jsonl > out/source.json`。門檻：每個lesson有真來源/秒數；預期lessonEvents/exposure/finalEyes及全量raw可追。這次真exchange0、lesson0、eyes{}、首悟/趕豬null/名俠0，**自然護欄仍未過**。單人格只是根因診斷，不是三人格/12seed/任意seed已證明。REVIEW不再以被動放置當已練過刀賊的前提。
+- 指令：`gzip -dc solo-sect/docs/evidence/r9-n50-source-natural17.events.jsonl.gz | sha256sum`。門檻等於摘要rawSha256，預期8f573b583a9aa779ce30da7453893883462f43cf4b8035980fb58094471459d4。原始保留N7正式自悟另一旁路，不冒充全來源已封。

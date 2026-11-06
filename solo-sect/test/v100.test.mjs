@@ -59,7 +59,7 @@ test('秘笈殘章湊成可學的武學', () => {
   const s = createState(2); tick(s); s.res.page1 = 4; assert.equal(assemble(s, 'page1').ok, false); s.res.page1 = 5;
   const r = assemble(s, 'page1'); assert.ok(r.ok); assert.equal(s.res.page1, 0); assert.equal(s.manuals.length, 1);
   const d = s.ds.find((x) => !x.arts?.[r.art] && learnManual({ ...s, manuals: [...s.manuals], ds: [structuredClone(x)] }, 0, x.id).ok);
-  if (d) { assert.ok(learnManual(s, 0, d.id, () => {}).ok); assert.ok(d.arts[r.art]); assert.equal(s.manuals.length, 0); }
+  if (d) { assert.ok(learnManual(s, 0, d.id, () => {}).ok); assert.equal(d.arts[r.art],undefined,'真教材先排研讀，不即時授藝'); for(let j=0;j<480&&!d.arts[r.art];j++)tick(s,.25); assert.ok(d.arts[r.art]); assert.equal(s.manuals.length, 0); }
   assert.equal(MANUALS.page2.need, 3);
 });
 test('喜好：吃喝一套、嗜酒必好酒、合菜單加心情', () => {

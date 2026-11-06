@@ -181,6 +181,21 @@ test('N50 兩個普通出身同伴與真床位剩一時第二名俠不入門',as
  s.fac.dorm.stage=1;s.res.food=100;s.ds.push({...structuredClone(s.ds[1]),id:'resident',companion:false});const master=s.ds[0];master.practice.hands=Object.fromEntries((await import('../src/starter-combat.mjs')).BODY_BASE.map(id=>[id,500]));master.skills.palm=100;master.timePrev={day:0,elapsed:DAY,free:400,guided:0};
  const first=makeXiaCandidate(s,'guojing'),before=JSON.stringify(s),preview=admissionStatus(s,first);assert.equal(JSON.stringify(s),before);assert.equal(bedCount(s)-s.ds.length,1);assert.equal(preview.ok,true,preview.why);
  assert.ok(join(s,'guojing'));assert.equal(s.ds.length,bedCount(s));assert.equal(join(s,'linghuchong'),null);assert.equal(s.ds.length,5);assert.match(admissionStatus(s,makeXiaCandidate(s,'linghuchong')).why,/床位已滿/);
+ const {setOrder}=await import('../src/sim.mjs'),{learnManual,startTeachArt,teachStage}=await import('../src/bonds.mjs');
+ const c=createState(17,{kind:'bare',askMajor:false}),reader=c.ds[0];c.ds=[reader];c.captureEvents=true;reader.pendingArt='basicFist';setOrder(c,reader.id,'learn');
+ for(let i=0;i<40;i++)tick(c,.25);assert.equal(reader.arts.basicFist,undefined,'資格不是教材，不可讓單人learn召喚師父');
+ c.manuals=[{k:'page1',art:'basicFist'}];assert.ok(learnManual(c,0,reader.id).ok);assert.equal(reader.arts.basicFist,undefined,'按秘笈只排研讀，不立即學會');
+ for(let i=0;i<120&&!reader.arts.basicFist;i++)tick(c,.25);
+ assert.ok(reader.arts.basicFist,'須真到場研讀');assert.equal(c.manuals.length,0);
+ assert.ok(c.events.some(e=>e.type==='lesson'&&e.source.kind==='manual'&&e.seconds>=e.required));
+ const t=createState(17,{kind:'bare',askMajor:false}),m=t.ds[0],p=t.ds[1];t.ds=[m,p];t.captureEvents=true;
+ (await import('../src/arts.mjs')).learnArt(m,'basicFist',t.t);Object.assign(m.arts.basicFist,{xp:85,bt1:true,bt2:true});p.master=m.id;
+ (await import('../src/social.mjs')).initPair(t,m,p,70);
+ assert.ok(startTeachArt(t,m,p,'basicFist'));assert.equal(p.arts.basicFist,undefined,'師父答應不是已經授課');assert.ok(teachStage(t,m,p,'basicFist'));
+ for(let i=0;i<400&&!p.arts.basicFist;i++)tick(t,.25);
+ assert.ok(p.arts.basicFist,'真師父同場花時後入門');assert.ok(t.events.some(e=>e.type==='lesson'&&e.source.teacher===m.id&&e.seconds>=e.required));
+ console.log('N50 source proof '+JSON.stringify({manual:c.events.find(e=>e.type==='lesson'),teacher:t.events.find(e=>e.type==='lesson')}));
+
 });
 
 

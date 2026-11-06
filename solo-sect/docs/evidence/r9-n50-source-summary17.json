@@ -1,0 +1,385 @@
+{
+  "seed": 17,
+  "days": 30,
+  "scenario": "自然bot，無指派輪替/補血/補資源/灌n/f；只換日botDaily，真主模擬",
+  "mbti": "ISTJ",
+  "reached": {
+    "2": 8
+  },
+  "favorite": {
+    "move": null,
+    "definition": "真交手最常使用；同次數按得手次數，無交手則null",
+    "counts": []
+  },
+  "firstDiscoveryDay": null,
+  "firstSoloBoarEscapeDay": null,
+  "famous": 0,
+  "formal": [
+    {
+      "id": "kuihua",
+      "day": 8,
+      "context": [
+        {
+          "t": 4200,
+          "msg": "【抉擇】葵花寶典殘頁：東方不敗遺下的殘頁上寫著：「欲練神功，必先自宮。」練了就斷情：不能結義、不能配對，心情上限 −20。",
+          "tier": "low",
+          "who": null
+        },
+        {
+          "t": 4200,
+          "msg": "【擊退東方不敗】紅影一閃即逝，留下一頁殘譜（葵花寶典 20%，主角）。",
+          "tier": "low",
+          "who": "hero"
+        }
+      ]
+    },
+    {
+      "id": "kongming",
+      "day": 9,
+      "context": [
+        {
+          "t": 4800,
+          "msg": "周伯通：「好玩的都教完啦！」一溜煙跑了。",
+          "tier": "low",
+          "who": null
+        },
+        {
+          "t": 4800,
+          "msg": "【老頑童輸了】周伯通耍賴三次才認輸，把空明拳教給了主角。",
+          "tier": "low",
+          "who": "hero"
+        }
+      ]
+    },
+    {
+      "id": "breath",
+      "day": 9,
+      "context": [
+        {
+          "t": 4995,
+          "msg": "主角苦練之間豁然開朗，自悟「吐納」！",
+          "tier": "mid",
+          "who": "hero"
+        },
+        {
+          "t": 4995,
+          "msg": "阿禾在露天灶煮好 3 份飯",
+          "tier": "low",
+          "who": "origin-1"
+        }
+      ]
+    },
+    {
+      "id": "basicSword",
+      "day": 11,
+      "context": [
+        {
+          "t": 6023,
+          "msg": "主角與阿禾在空地上徒手切磋",
+          "tier": "low",
+          "who": "hero"
+        },
+        {
+          "t": 6023,
+          "msg": "主角苦練之間豁然開朗，自悟「基礎劍法」！",
+          "tier": "mid",
+          "who": "hero"
+        }
+      ]
+    },
+    {
+      "id": "basicFist",
+      "day": 12,
+      "context": [
+        {
+          "t": 6759,
+          "msg": "主角苦練之間豁然開朗，自悟「基礎拳」！",
+          "tier": "mid",
+          "who": "hero"
+        },
+        {
+          "t": 6759,
+          "msg": "主角【築基培元】內功《吐納》長進 0.13",
+          "tier": "low",
+          "who": "hero"
+        }
+      ]
+    },
+    {
+      "id": "pushPalm",
+      "day": 13,
+      "context": [
+        {
+          "t": 7575,
+          "msg": "主角苦練之間豁然開朗，自悟「推山掌」！",
+          "tier": "mid",
+          "who": "hero"
+        },
+        {
+          "t": 7575,
+          "msg": "主角【築基培元】內功《吐納》長進 0.11",
+          "tier": "low",
+          "who": "hero"
+        }
+      ]
+    },
+    {
+      "id": "huashanSword",
+      "day": 14,
+      "context": [
+        {
+          "t": 7800,
+          "msg": "【門規】七日無違，主角派門風整肅（門派聲望 +1）。",
+          "tier": "low",
+          "who": "hero"
+        },
+        {
+          "t": 7800,
+          "msg": "【過路高人】臨別前，高人傳了主角一套「華山劍法」！",
+          "tier": "low",
+          "who": "hero"
+        }
+      ]
+    },
+    {
+      "id": "wuhuBlade",
+      "day": 15,
+      "context": [
+        {
+          "t": 8581,
+          "msg": "主角苦練之間豁然開朗，自悟「五虎斷門刀」！",
+          "tier": "mid",
+          "who": "hero"
+        },
+        {
+          "t": 8573,
+          "msg": "石生在露天灶煮好 3 份飯",
+          "tier": "low",
+          "who": "origin-2"
+        }
+      ]
+    },
+    {
+      "id": "wavePalm",
+      "day": 17,
+      "context": [
+        {
+          "t": 9640,
+          "msg": "主角與阿禾在空地上徒手切磋",
+          "tier": "low",
+          "who": "hero"
+        },
+        {
+          "t": 9640,
+          "msg": "主角苦練之間豁然開朗，自悟「迴風掌」！",
+          "tier": "mid",
+          "who": "hero"
+        }
+      ]
+    },
+    {
+      "id": "tuinaHand",
+      "day": 18,
+      "context": [
+        {
+          "t": 10509,
+          "msg": "主角苦練之間豁然開朗，自悟「分筋錯骨手」！",
+          "tier": "mid",
+          "who": "hero"
+        },
+        {
+          "t": 10470,
+          "msg": "阿禾【築基培元】內功《吐納》長進 0.07",
+          "tier": "low",
+          "who": "origin-1"
+        }
+      ]
+    },
+    {
+      "id": "jindingPalm",
+      "day": 20,
+      "context": [
+        {
+          "t": 11611,
+          "msg": "主角苦練之間豁然開朗，自悟「金頂綿掌」！",
+          "tier": "mid",
+          "who": "hero"
+        },
+        {
+          "t": 11603,
+          "msg": "郭靖這回先做客：存糧不足全門一日（8.0/14.0）",
+          "tier": "low",
+          "who": null
+        }
+      ]
+    },
+    {
+      "id": "hanbingPalm",
+      "day": 21,
+      "context": [
+        {
+          "t": 12312,
+          "msg": "【開宗立派】主角融會貫通，將兩門絕藝合參推演出「《寒冰神掌》」，納入本門傳承！",
+          "tier": "low",
+          "who": "hero"
+        },
+        {
+          "t": 12312,
+          "msg": "主角打坐衝關成功：「金頂綿掌」踏入大成！",
+          "tier": "low",
+          "who": "hero"
+        }
+      ]
+    },
+    {
+      "id": "lianhuaPalm",
+      "day": 22,
+      "context": [
+        {
+          "t": 12681,
+          "msg": "主角苦練之間豁然開朗，自悟「蓮花掌」！",
+          "tier": "mid",
+          "who": "hero"
+        },
+        {
+          "t": 12664,
+          "msg": "阿禾【築基培元】內功《吐納》長進 0.12",
+          "tier": "low",
+          "who": "origin-1"
+        }
+      ]
+    },
+    {
+      "id": "tiangangFinger",
+      "day": 23,
+      "context": [
+        {
+          "t": 13593,
+          "msg": "主角苦練之間豁然開朗，自悟「天罡指穴法」！",
+          "tier": "mid",
+          "who": "hero"
+        },
+        {
+          "t": 13585,
+          "msg": "阿禾【築基培元】內功《吐納》長進 0.10",
+          "tier": "low",
+          "who": "origin-1"
+        }
+      ]
+    },
+    {
+      "id": "sanxianSword",
+      "day": 25,
+      "context": [
+        {
+          "t": 14875,
+          "msg": "主角苦練之間豁然開朗，自悟「奪命連環三仙劍」！",
+          "tier": "mid",
+          "who": "hero"
+        },
+        {
+          "t": 14872,
+          "msg": "阿禾練熟了，自悟新招「掃葉腿」",
+          "tier": "mid",
+          "who": "origin-1"
+        }
+      ]
+    },
+    {
+      "id": "baihuaFist",
+      "day": 26,
+      "context": [
+        {
+          "t": 15000,
+          "msg": "【臨陣偷師】主角在場邊看出天地會招式精要，竟學會了《百花錯拳》！",
+          "tier": "mid",
+          "who": "hero"
+        },
+        {
+          "t": 15000,
+          "msg": "【天下論劍】以「田忌賽馬」排陣，先鋒石生勝、中堅主角勝、主將阿禾負——2 勝，力挫天地會！名聲 +15、賞銀 +45、靈石 +1，得【論劍魁首】。",
+          "tier": "low",
+          "who": "origin-2"
+        }
+      ]
+    },
+    {
+      "id": "tianluoPalm",
+      "day": 28,
+      "context": [
+        {
+          "t": 16254,
+          "msg": "主角與阿禾在空地上徒手切磋",
+          "tier": "low",
+          "who": "hero"
+        },
+        {
+          "t": 16254,
+          "msg": "主角苦練之間豁然開朗，自悟「天羅地網勢」！",
+          "tier": "mid",
+          "who": "hero"
+        }
+      ]
+    },
+    {
+      "id": "sweepLeg",
+      "day": 28,
+      "context": [
+        {
+          "t": 16311,
+          "msg": "主角與阿禾在空地上徒手切磋",
+          "tier": "low",
+          "who": "hero"
+        },
+        {
+          "t": 16311,
+          "msg": "主角看多了別人使「掃堂腿」，竟自己悟了出來！",
+          "tier": "low",
+          "who": "hero"
+        }
+      ]
+    },
+    {
+      "id": "shexingHand",
+      "day": 29,
+      "context": [
+        {
+          "t": 17282,
+          "msg": "主角苦練之間豁然開朗，自悟「蛇形刁手」！",
+          "tier": "mid",
+          "who": "hero"
+        },
+        {
+          "t": 17280,
+          "msg": "石生端了一碗飯給正忙的主角",
+          "tier": "low",
+          "who": "origin-2"
+        }
+      ]
+    }
+  ],
+  "lessons": [],
+  "exposure": {},
+  "finalEyes": {},
+  "guidance": [
+    {
+      "id": "origin-1",
+      "mentor": "hero",
+      "totalReceived": 418.5
+    },
+    {
+      "id": "origin-2",
+      "mentor": "origin-1",
+      "totalReceived": 441.75
+    }
+  ],
+  "rawBytes": 6867492,
+  "rawSha256": "8f573b583a9aa779ce30da7453893883462f43cf4b8035980fb58094471459d4",
+  "eventCounts": {
+    "practice": 35300,
+    "tactic": 121,
+    "escape": 99,
+    "work": 56,
+    "choice": 127
+  }
+}

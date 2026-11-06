@@ -185,7 +185,7 @@ export const ACTIVITIES = {
   train:  { name: '練功', dur: 10, energy: -10, skill: { style: 5 } }, // style＝弟子主修路數
   meditate: { name: '打坐衝關', dur: 12, energy: -8 },
   spar:   { name: '切磋', dur: 8, energy: -10, skill: { style: 4 } },
-  learn:  { name: '聽師父講武', dur: 8, energy: -2, skill: { palm: 3 }, social: 10 },
+  learn:  { name: '研讀或聽講', dur: 8, energy: -2, skill: { palm: 3 }, social: 10 },
   build:  { name: '施工', dur: 6, energy: -6, skill: { strength: 2 } },
   chat:   { name: '聊天', dur: 6, social: 35, fun: 20 },
   encourage: { name: '鼓勵同門', dur: 6, social: 20 },
@@ -923,7 +923,7 @@ export const SCORE = [
   { act: 'chat', when: ['others'], v: { lin: ['n.social', 100], mul: [0.6, 'tr.social', 'tr.playful', 0.8] }, why: '想找人說話' },
   { act: 'leisure', tiers: [{ if: 'dull', v: { lin: ['fun', 100], mul: [0.55] }, why: '悶得慌，想偷閒' }, { v: { lin: ['fun', 100], mul: [0.55] }, why: '想坐坐看雲' }] },
   { act: 'encourage', when: ['encourageOk'], v: { lin: ['low.mood', 35], mul: [1.5], plus: 40 }, why: '{low.name}心情低落，去打打氣' },
-  { act: 'learn', when: ['pending'], v: 80, why: '師父能傳「{pendingName}」' },
+  { act: 'learn', when: ['pending'], v: 80, why: '有真教材或師父可學「{pendingName}」' },
   { act: 'meditate', tiers: [{ if: 'btOk', v: 75, why: '「{btName}」卡在瓶頸，打坐衝關' }, { if: 'wexin', v: { lin: ['negWexin', 0], mul: [20], plus: 30 }, why: '心中違心，閉關靜坐' }] },
   { act: 'train', v: { pick: ['d.adult', 40, 18], mul: ['tr.diligent'] }, why: '練功變強' },
   { act: 'spar', when: ['sparOk'], v: { pick: [true, 34, 34], mul: ['tr.diligent'] }, why: '找人切磋' },

@@ -340,3 +340,6 @@ N32自然成長修正：N38自然量測發現空ARTS的人仍會被舊selfTarget
 世界理由：從敵人起手到落下已完成的反應/移步，不能在落下後再收同一段時間；兩個同刻來招也不能重用同一段過去時間。參考仍是#437/N28的一次只做一件事及#446時間負荷，不是另借勝率公式。clashTimes記絕對windowStart/windowEnd；落下用真正宣告到達時刻扣除先前占用，settleDefense預約開始+實用秒數，不再now+整段反應。受擊/招架回復仍既有.35/.20秒，自真接觸算，不在尚未結束的前動作尾端另排一份同時恢復。過去終點必須保留給同刻第二招扣除，不能硬拉到處理tick或抹掉。waves同步真地圖的interceptOpening單次起手抽樣，未變fixture。r+m≤T而L≥1仍無反擊，這正是#446要求；詳見docs/evidence/r9-n36-time-root.md，兩路FAIL保留。
 
 N36攻意預測另修「待命冷卻不是現在又起手」：未起手者從真next/cool/bcool/busyUntil/downUntil取最晚readyIn；來招時間＝原wind＋max(走近時間,readyIn)。冷卻會在走近時流逝，不能把重疊等待收兩次，也不能憑保持目標就把尚未能出的招提早；在途/當下extra來招不受其未來冷卻影響。這是同一時間世界的資料欄位換算，無新增常數，不刪任何敵人或改fixture。新生成60日seed17仍counter1/0/2、FAIL，原始表與殘餘50次防守分項見r9-n36-time-root.md。
+
+### N50 舊正式learn也必須有來源與真時間
+資格只代表學得動，不代表憑空知道整部拳譜。參考#464的師父真空檔及既有#417/N13雙人共同任務：lessonSource純查真秘笈庫存或canTeachArt許可的真師父，lessonValid/completeLesson統一驗到場與durOf(learn)秒數。書按鈕和師父答應都只是預約；書到真正讀完才消耗，師父到共同場地才開始入門講解。時長沿hall.learnDur/library係數（初始8秒）、距離沿N13的60px，健康/火候/好感/師徒限制沿N12；無新魔法常數。不以N50身體guidance真的花時間去掩蓋舊單人learn的假師父。來源事件、真秒數和未過護欄見r9-n50-learning-sources.md。既有N7無來源正式自悟另列後續獨立修正，江湖真殘頁/具名名師事件不刪。

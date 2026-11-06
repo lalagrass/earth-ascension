@@ -15,7 +15,7 @@ import { chronOf, clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNot
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, fogStep, unlockStep, chapterStep } from './world.mjs';
 import { BAND, canDefend, boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE, FENCE_FAC, finishFenceSite, threatDaily, threatStep, raidResolve, bandStep, lairDaily, lairStep, siegeDaily27, crusadeDaily27, crusadeStep27, startCrusade27 } from './threat.mjs';
-import { addMem, chatLine, passPick, passDo, PASS, passScore, passReserve, apprDaily, apprMul, aspStep, likeMeal, likesOf, cliqueDaily, cliqueTrain, teachDaily, teachMul } from './bonds.mjs';
+import { addMem, chatLine, passPick, passDo, PASS, passScore, passReserve, apprDaily, apprMul, aspStep, likeMeal, likesOf, cliqueDaily, cliqueTrain, teachDaily, teachMul, lessonSource, identifyManual, lessonValid, completeLesson, startTeachArt, teachStage } from './bonds.mjs';
 import { xiaStep, onCook, xiaInit, hsStep, hsInit } from './wuxia.mjs';
 import { jhStep, jhInit, jhevDaily } from './jianghu.mjs';
 import { sectStep, sectInit, sectRecruit, genStep, genInit, removeDisciple, canBuildFac, buildFac } from './sect.mjs';
@@ -217,6 +217,7 @@ export function setStyle(s, id, st) { const d = byId(s, id); if (d && (st === 'p
 export function setOrder(s, id, order) {
   const d = byId(s, id); if (!d) return false;
   if (order && order !== 'hunt' && !ACTIVITIES[order]) return false;
+  if(order!=='learn')delete d.lessonRequest;
   d.order = order || null; cancelTask(s, d, '玩家改派');
   return true;
 }
@@ -264,7 +265,7 @@ function scoreCtx(s, d) {
 }
 export const PRED = {
   tired: (c) => c.d.tired, wake: (c) => c.n.energy < CORE.wakeAt, hurt: (c) => c.d.hp < 40, hasFood: (c) => c.s.res.food > 0, foodLow: (c) => foodLow(c.s), starving: (c) => !!c.d.famished || c.n.hunger < 15, /* v1.7 遲滯：餓昏後吃到 50 才解除 */ hungry: (c) => c.n.hunger < 30,
-  others: (c) => c.others.length > 0, pp: (c) => !!c.pp, dull: (c) => c.fun < 25, encourageOk: (c) => !!c.low, pending: (c) => !!c.d.pendingArt,
+  others: (c) => c.others.length > 0, pp: (c) => !!c.pp, dull: (c) => c.fun < 25, encourageOk: (c) => !!c.low, pending: (c) => !!lessonSource(c.s,c.d),
   btOk: (c) => !!c.bt && c.d.mood >= BREAK.moodMin && c.n.energy >= BREAK.energyMin, wexin: (c) => c.d.wexin > 0,
   sparOk: (c) => /* loop15：空地也能徒手過招 */ c.n.energy > 45 && c.others.some((o) => o.needs.energy > 45),
   woodRoom: (c) => c.wood < c.s.cap.wood, stoneRoom: (c) => c.stone < c.s.cap.stone, shortWood: (c) => c.shortWood, shortStone: (c) => c.shortStone,
@@ -328,6 +329,16 @@ export function scoreActs(s, d) {
 }
 
 function assign(s, d, act, why) {
+  let lesson=null;
+  if(act==='learn'){
+    lesson=lessonSource(s,d);if(!lesson){d.reason='尚無可當面教這門的真師父或可讀教材';return false;}
+    if(lesson.kind==='teacher'){
+      const m=byId(s,lesson.teacher);
+      if(m.teaching?.pupil!==d.id||!(m.teachCool>0)){if(m.task)cancelTask(s,m,'騰出實際時辰教學');if(!startTeachArt(s,m,d,lesson.art)||!teachStage(s,m,d,lesson.art))return false;}
+      d.reason=`等待${m.name}到外功場當面教學`;return true;
+    }
+    lesson.manualId=identifyManual(s,s.manuals[lesson.index]);
+  }
   if (act === 'hunt') { const post = s.hunt?.post || s.post; d.task = { act: 'hunt', node: post, phase: 'go' }; goto(d, post); d.reason = why || '後山守點'; return true; }
   if (act === 'build') {
     const site = siteOf(s); if (!site) return false; const [fid, v] = site;
@@ -354,13 +365,13 @@ function assign(s, d, act, why) {
   if (act === 'cook' && vegFree(s) < STOCK_RESV.cook.amt) return false;
   let plot; if (act === 'farm') { plot = s.plots.findIndex((p, i) => (p.st === 'ripe' || p.st === 'empty') && !holder(s, `plot:${i}`)); if (plot < 0) return false; }
   const b = bestFac(s, d, act); if (!b) { if (act === 'train' || act === 'meditate') d.reason = `${ACTIVITIES[act].name}的站位都有人，先在附近等或改做別的事`; return false; } const f = b.f;
-  const resv = [b.key]; if (act === 'cook') resv.push(stockKey('veg', d)); if (act === 'farm') resv.push(`plot:${plot}`); for (const k of resv) reserve(s, d, k);
+  const resv = [b.key]; if(lesson){const key=`manual:${lesson.manualId}`;if(!reserve(s,d,key))return false;resv.push(key);} if (act === 'cook') resv.push(stockKey('veg', d)); if (act === 'farm') resv.push(`plot:${plot}`); for (const k of resv) reserve(s, d, k);
   if (ACTIVITIES[act]?.gen) dayUse(s, act);
-  d.task = { act, fac: f.id, node: f.node, phase: 'go', plot, resv, floor: b.floor || undefined, spot: b.spot, spotKind: b.spotKind }; goto(d, f.node, b.xy); d.reason = why; return true;
+  d.task = { act, fac: f.id, node: f.node, phase: 'go', plot, resv, ...(lesson?{lesson}:{}), floor: b.floor || undefined, spot: b.spot, spotKind: b.spotKind }; goto(d, f.node, b.xy); d.reason = lesson?`研讀真教材《${artById(lesson.art).name}》`:why; return true;
 }
 function arrangeGuidance(s){
   if(emergency(s)||s.band||phaseOf(s).id==='night')return;
-  const free=d=>!d.away&&!d.order&&!d.carry&&d.hp>30&&d.needs.energy>45&&d.needs.hunger>30&&!d.path?.length&&(!d.task||['train','leisure','meditate'].includes(d.task.act));
+  const free=d=>!d.away&&!d.teachCool&&!d.teachArt&&!d.task?.teach&&!actorBusy(s,d.id)&&!d.order&&!d.carry&&d.hp>30&&d.needs.energy>45&&d.needs.hunger>30&&!d.path?.length&&(!d.task||['train','leisure','meditate'].includes(d.task.act));
   for(const p of s.ds){if(p.role==='laborer'||(!p.guidanceMentor&&!p.originRelation)||!free(p)||(p.timeToday?.guided||0)>=guidanceSeconds(p))continue;
     const choice=mentorFor(s,p),m=choice?.m;if(!m||!free(m))continue;p.guidanceMentor=m.id;
     cancelTask(s,m,'騰出時辰指點');cancelTask(s,p,'請師父餵招');const a=bestFac(s,m,'train');if(!a)continue;
@@ -478,6 +489,7 @@ function doTask(s,d,dt){
     t.phase = 'do'; t.timer = 0; d.anim = t.act;
   }
   if (t.phase === 'do') {
+    if(t.act==='learn'&&!lessonValid(s,d,t.lesson)){cancelTask(s,d,'教材或真師父來源已不在，沒有學會新武學');return;}
     noteGuidance(s,d,dt);
     if (t.act === 'build') { const site = s.fac[t.fac].site; if (!site || site.paused || !siteReady(site)) { d.task = null; d.anim = null; return; } }
     t.timer += dt;
@@ -514,7 +526,7 @@ function doTask(s,d,dt){
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
       if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) for (let i = 0; i < (facStage(s, t.fac).medEase || 1); i++) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s) - ngBreak(d)); /* loop105 內力衝關：成功率 +btBonus，仍封頂 0.9；loop108 已達 0.9 不扣 */ if (r?.ok && r.stage <= 2) { growEnsure(d); settleGrowth(d, r.art, d.arts[r.art.id], { src: 'break', stage: r.stage }); } /* loop79 突破里程碑 */ const bTier = r?.ok && breakTier(s, d, r); if (r?.ok) breakDeed(s, d, r); if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`, bTier || undefined); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
       if (t.act === 'meditate' && d.ng) addQi(d, medQi(d)); // loop103 打坐一次回內力（衝關扣用在前）
-      if (t.act === 'learn' && d.pendingArt) { const m = learnArt(d, d.pendingArt, s.t); s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
+      if (t.act === 'learn' && completeLesson(s,d,t.lesson,t.timer)) {s.rep=(s.rep||0)+REP.learn;think(s,d,'learned');}
       if ((t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) { const c = (s.cnt ??= { chat: 0, spar: 0 }); c[t.act]++; } // loop22 完成場次計數（opt-in）
       if (t.act === 'chat' && t.partner) { const p = byId(s, t.partner); d.together += 20; if (isLabor(d) && !isLabor(p)) d.cowork = (d.cowork || 0) + 30;
         if (t.encouragedBy) { think(s, d, 'encouraged', `（${p.name}）`); }
@@ -554,14 +566,16 @@ function teachStep(s, m, dt) {
   const p = m.teaching && byId(s, m.teaching.pupil);
   if (!p || p.away || !(m.teachCool > 0)) { if (p) p.teachArt = null; if (m.task?.act === 'teach') m.task = null; m.teachCool = 0; return false; }
   if (!m.task) { const b = bestFac(s, m, 'train'); if (!b) { m.reason = `傳功站位都有人，等有人練完`; return true; }
-    reserve(s, m, b.key); m.task = { act: 'teach', node: TEACH_JOIN.node, phase: 'go', partner: p.id, wait: 0, resv: [b.key], spot: b.spot, spotKind: b.spotKind }; goto(m, TEACH_JOIN.node, b.xy); m.reason = `到外功場傳授${p.name}`; }
+    reserve(s, m, b.key); m.task = { act: 'teach', node: TEACH_JOIN.node, phase: 'go', partner: p.id, wait: 0, resv: [b.key,`actor:${p.id}`], spot: b.spot, spotKind: b.spotKind }; reserve(s,m,`actor:${p.id}`); goto(m, TEACH_JOIN.node, b.xy); m.reason = `到外功場傳授${p.name}`; }
   const t = m.task;
   if (m.path.length) { moveStep(m, dt); return true; }
   t.phase = 'do';
-  if (!p.task && !p.order) { const b = bestFac(s, p, 'train'); if (b) { reserve(s, p, b.key); p.task = { act: 'train', fac: b.f.id, node: b.f.node, phase: 'go', teach: m.id, resv: [b.key], spot: b.spot, spotKind: b.spotKind }; goto(p, b.f.node, b.xy); p.reason = `${m.name}要傳授武學`; } else p.reason = '傳功時練功站位都有人，暫在旁等候'; }
-  const near = p.task?.teach === m.id && !p.path.length && dist(p.pos, m.pos) <= 60;
+  if (!p.task && (!p.order||p.order==='learn')) { const b = bestFac(s, p, 'train'); if (b) { reserve(s, p, b.key); p.task = { act: 'train', fac: b.f.id, node: b.f.node, phase: 'go', teach: m.id, resv: [b.key,`actor:${m.id}`], spot: b.spot, spotKind: b.spotKind }; goto(p, b.f.node, b.xy); reserve(s,p,`actor:${m.id}`); p.reason = `${m.name}要傳授武學`; } else p.reason = '傳功時練功站位都有人，暫在旁等候'; }
+  const near = p.task?.teach === m.id && p.task.phase==='do' && !p.path.length && dist(p.pos, m.pos) <= 60 && p.hp>25 && m.hp>25 && !(p.downUntil>s.t) && !(m.downUntil>s.t) && !(p.busyUntil>s.t) && !(m.busyUntil>s.t);
   if (!near) { p.teachArt = null; t.wait += dt; if (t.wait >= TEACH_JOIN.wait) { m.teachCool = 0; m.task = null; m.reason = `${p.name}沒來，今日傳授作罷`; } return true; }
-  p.teachArt = m.teaching.art;
+  if(!p.arts?.[m.teaching.art]){m.teaching.introSeconds=(m.teaching.introSeconds||0)+dt;const source={kind:'teacher',art:m.teaching.art,teacher:m.id};if(completeLesson(s,p,source,m.teaching.introSeconds)){s.rep=(s.rep||0)+REP.learn;think(s,p,'learned');addMem(s,m,p,'pass',artById(source.art).name);}}
+  p.teachArt = p.arts?.[m.teaching.art]?m.teaching.art:null;
+  tallyAct(m,'teach',dt);
   m.teachCool = Math.max(0, m.teachCool - dt); m.reason = `傳授${p.name}`;
   if (m.teachCool <= 0) { m.task = null; p.teachArt = null; if (p.task?.teach === m.id) p.task.teach = null; }
   return true;
