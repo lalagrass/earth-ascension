@@ -136,6 +136,13 @@ test('N34 情境識別穩定後零決策時間，選招/心願所有人共用',a
   assert.ok(hero.practice.eyes['human:toolKnife']>0);assert.equal(hero.practice.eyes['bandit:looterBlade'],undefined,'不能把同門柴刀假充刀賊的砍');
   assert.ok(q.ds.every(a=>a.hp===100&&!(a.wounds?.length)),'同門放慢安全餵招不套實戰傷口/悟招獎勵');
 
+ const {startTrial}=await import('../src/sim.mjs'),{CHORE_ACTS,PROMOTE}=await import('../src/data.mjs');
+ for(const reversed of [false,true]){
+  const tr=createState(3),o=structuredClone(tr.ds.find(d=>d.originRelation));Object.assign(o,{id:'o1',uid:'o1',name:'o1',role:'outer',root:5,rootKnown:true,adult:true,duties:[...CHORE_ACTS],prio:'normal',chore:0,choreDebt:0,contrib:PROMOTE.contrib,task:null,path:[]});tr.ds.push(o);
+  assert.ok(startTrial(tr,o.id).ok);if(reversed)tr.ds.reverse();for(let i=0;i<120&&!o.trialScore;i++)tick(tr,.25);
+  assert.ok(o.trialScore>0,'真共同切磋完成後才考核，不因先處理主考就丟考生結果');assert.ok(!o.task?.trial);const score=o.trialScore;for(let i=0;i<4;i++)tick(tr,.25);assert.equal(o.trialScore,score,'考核只結算一次');
+ }
+
 });
 
 

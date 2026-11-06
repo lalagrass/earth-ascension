@@ -496,7 +496,7 @@ function doTask(s,d,dt){
     if(t.act==='learn'&&!lessonValid(s,d,t.lesson)){cancelTask(s,d,'教材或真師父來源已不在，沒有學會新武學');return;}
     noteGuidance(s,d,dt);
     if (t.act === 'build') { const site = s.fac[t.fac].site; if (!site || site.paused || !siteReady(site)) { d.task = null; d.anim = null; return; } }
-    if(t.act==='spar'){const p=byId(s,t.partner);if(p?.task?.act!=='spar'||p.task.partner!==d.id){cancelTask(s,d,'對練夥伴已結束或改派');return;}if(p.task.phase!=='do'||p.path.length||p.downUntil>s.t||p.faintUntil>s.t||dist(d.pos,p.pos)>RING.outer+RING.leash)return;}
+    if(t.act==='spar'){const p=byId(s,t.partner);if(p?.task?.act!=='spar'||p.task.partner!==d.id){cancelTask(s,d,'對練夥伴已結束或改派');return;}if(t.completed)return;if(p.task.phase!=='do'||p.path.length||p.downUntil>s.t||p.faintUntil>s.t||dist(d.pos,p.pos)>RING.outer+RING.leash)return;}
     t.timer += dt;
     if (t.partner && !byId(s, t.partner)) { cancelTask(s, d, '對手不在了'); return; }
     if(t.act==='spar'&&t.partner){
@@ -567,6 +567,11 @@ function doTask(s,d,dt){
         if (t.act === 'brew' && (s.res.pill || 0) > pill0 && specM(d, 'yishu') > 0) { d.brewN = (d.brewN || 0) + 1; if (d.brewN % SPEC.brewEvery === 0) { resAdd(s, 'pill', 1); log(s, `${d.name}依醫書配伍，多煉出一顆丹藥。`); } }
       if (A.carry && t.act === 'forage' && specM(d, 'dushu') > 0) { d.carry = { ...A.carry, herb: (A.carry.herb || 0) + 1 }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; }
       if (A.carry) { d.carry = { ...A.carry }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; }
+      if(t.act==='spar'&&t.partner){
+        t.completed=true;const p=byId(s,t.partner);
+        if(p?.task?.act==='spar'&&p.task.partner===d.id&&p.task.completed){finish(s,p);finish(s,d);}
+        return;
+      }
       finish(s, d);
     }
   }
