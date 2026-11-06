@@ -1314,7 +1314,7 @@ export function clashTimes(s, atk, def, ctx = {}) {
   const guard = def.bare ? BODY_TIMING.guard : T.guard;
   const busy = Math.max(0, (def.busyUntil || 0) - (s?.t ?? 0), (def.swing?.at || 0) - (s?.t ?? 0), (def.bswing?.at || 0) - (s?.t ?? 0),(def.downUntil||0)-(s?.t??0));
   const load=assessLoad(s,def,atk,ctx).L;
-  return { wind: Math.max(0, wind - busy), reaction, jitter, strike, step, guard, busy,load,canCounter:load<1 };
+  return { wind: Math.max(0, wind - busy), windowStart:(s?.t??0)+busy, windowEnd:(s?.t??0)+wind, reaction, jitter, strike, step, guard, busy,load,canCounter:load<1 };
 }
 // 平移 log-logistic：簡單反應 .2 秒為物理下限，其餘有正尾，不造勝率保底。
 export const drawReaction = (T, rnd) => { const u = rnd(); return PRACTICE.reactionFloor + (T.reaction - PRACTICE.reactionFloor) * (u / (1 - u)) ** T.jitter; };
@@ -1343,8 +1343,11 @@ function settleDefense(s, def, T, result) {
   const now = s?.t ?? 0;
   const recovery = result.kind === 'parry' ? CLASH.time.parryRecover : result.kind === 'hit' ? CLASH.time.hitRecover : 0;
   const used = result.used ?? (result.kind === 'hit' ? 0 : T.guard);
-  def.busyUntil = Math.max(def.busyUntil || 0, now) + used + recovery;
-  def.ring = { intercept: result.kind === 'read', t: now, busy: def.busyUntil - now };
+  // Reaction/movement already occurred inside the incoming windup. Reserve their
+  // absolute interval once, not the entire action again after impact. Recovery
+  // starts at the actual contact; repeated hits do not queue recovery twice.
+  def.busyUntil = Math.max(def.busyUntil || 0, (T.windowStart ?? now) + used, recovery > 0 ? now + recovery : 0);
+  def.ring = { intercept: result.kind === 'read', t: now, busy: Math.max(0,def.busyUntil - now) };
   noteFret(s, def, result.kind);
   return result;
 }
@@ -1378,16 +1381,19 @@ function advanceAfterDodge(s, atk, def) {
 }
 function resolveSwingCore(s, atk, def, rnd, ctx = {}) {
   postureOf(atk); postureOf(def);
-  const T = ctx.opening?.T
-    ? ((s?.t ?? 0) > ctx.opening.at + 1e-9
-      ? { ...ctx.opening.T, wind: Math.min(ctx.opening.T.wind, Math.max(0, (s?.t ?? 0) - Math.max(ctx.opening.at, def.busyUntil || 0))) }
-      : ctx.opening.T)
-    : clashTimes(s, atk, def, ctx);
+  let T = ctx.opening?.T || clashTimes(s, atk, def, ctx);
+  if(ctx.opening && (s?.t??0)>ctx.opening.at+1e-9){
+    // Use the declared arrival time, not the later fixed-step processing tick.
+    // Another defense (or own attack) may have occupied part of that interval.
+    const end=T.windowEnd??ctx.opening.at+T.wind+T.busy;
+    const start=Math.max(T.windowStart??ctx.opening.at+T.busy,def.busyUntil||0,def.swing?.at||0,def.bswing?.at||0,def.downUntil||0);
+    T={...T,windowStart:start,windowEnd:end,wind:Math.max(0,end-start)};
+  }
   if (def.posture <= 0) { return settleDefense(s, def, T, { kind: 'hit', heavy: true, why: 'open' }); }
   if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return settleDefense(s, def, T, { kind: 'hit', heavy: false, why: ctx.force || 'sure' }); }
   const reaction = ctx.opening?.reaction ?? drawReaction(T,rnd);
   const load=ctx.opening?assessLoad(s,def,atk,ctx).L:T.load,canCounter=load<1;
-  const timing={T:T.wind,r:reaction,step:T.step,strike:T.strike,guard:T.guard,L:load};
+  const timing={T:T.wind,r:reaction,step:T.step,strike:T.strike,guard:T.guard,L:load,windowStart:T.windowStart,windowEnd:T.windowEnd};
   const zjAtk = ctx.map && !isMon(atk) ? zjOfMove(ctx.move) : null; /* #426 */
   const duguPassive = ctx.map && isMon(atk) && zjHas(def, 'dugu') && (s?.codex?.[atk.k]?.insight || 0) >= ZJ.dugu.insight; /* 獨孤：讀招改成被動截，不再擲讀招 */
   if(canCounter&&!duguPassive&&def.part?.where!=='eye'&&!(def.visionUntil>(s?.t??0))&&!(def.rageUntil>(s?.t??0))&&reaction+T.step+T.strike<T.wind){advanceAfterDodge(s,atk,def);return settleDefense(s,def,T,{timing,kind:'dodge',used:reaction+T.step+T.strike,counter:moveStats(def,fastestMove(def)?.id).force*CLASH.time.counterForce,strain:(reaction+T.step)/T.wind});}

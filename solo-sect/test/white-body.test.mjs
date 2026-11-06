@@ -102,7 +102,7 @@ test('N35 母招/條件/效果全資料化，只有真失手加w，弱敵期望�
 
 
 test('N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反擊、倖存者留眼熟',async()=>{
- const {assessLoad,composure}=await import('../src/arts.mjs');
+ const {assessLoad,composure,interceptOpening}=await import('../src/arts.mjs');
  const {COVERS,chooseTactic,stepTactic,rememberEscape,restoreSurvivor,moveToward}=await import('../src/tactics.mjs');
  const s=createState(41,{kind:'bare',askMajor:false}),d=s.ds[0];s.ds=[d];d.pos=[800,400];
  const dogs=Array.from({length:4},(_,i)=>({k:'dog',uid:`dog${i}`,hp:14,max:14,pos:[820+i,400],intentTarget:d.id}));
@@ -124,6 +124,18 @@ test('N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反�
  d.personality=['brave'];const rash=chooseTactic(s,d,{L:1.2},{temper:composure(d),enemies:dogs.slice(0,2),friends:[]});
  assert.ok(rash.morale.reserve>calm.morale.reserve,'急躁不是膽怯，風險承受沿同一N29表');assert.equal(calm.action,'flee');assert.equal(rash.action,'cover');
  assert.equal(stepTactic(s,d,{L:1.6},.25,{temper:composure(d),enemies:dogs.slice(0,2),friends:[]}),true,'背到掩體仍超載要留時間應接，不另起手');
+ // Both defenses see the same real [0,1] windup; processing at t=1 cannot
+ // replay the first .7-second reaction/step in the future or reuse it twice.
+ const q=createState(41,{kind:'bare',askMajor:false}),v=q.ds[0];q.ds=[v];q.t=0;v.pos=[800,400];
+ const pack=[0,1].map(i=>({k:'dog',uid:`clock${i}`,hp:14,max:14,pos:[820+i,400],intentTarget:v.id}));q.mons=pack;
+ const openings=pack.map(a=>interceptOpening(q,a,v,()=>.5,{move:'dogBite',wind:1}));
+ assert.ok(openings.every(a=>!a.read));q.t=1;
+ const one=resolveSwing(q,pack[0],v,()=>.5,{move:'dogBite',wind:1,opening:openings[0].opening});
+ assert.equal(one.kind,'dodge');assert.ok(v.busyUntil<q.t,'已在前搖內完成的移步不能在落下後再占一次');
+ const two=resolveSwing(q,pack[1],v,()=>.5,{move:'dogBite',wind:1,opening:openings[1].opening});
+ assert.equal(two.kind,'hit','同時第二招仍扣掉前招真正用去的過去區間，不能一秒用兩次');
+ assert.ok(Math.abs(v.busyUntil-1.35)<1e-9,'受擊回復從接觸算，不排到先前反應尾端再算');
+
 });
 
 test('N37 共用受力/分層/手側/長破綻，局部hitstop不改模擬',async()=>{

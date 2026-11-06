@@ -136,3 +136,8 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 - 指令：`node solo-sect/tools/bot12.mjs --seed 17 --json`（完整不帶seed）。門檻/預期：recruitment.bySeed額外含逐日接法概率/敵人來源/各級首次過線日及最常用招；對舊版只讀舊版自身模型，沒有N38模組則等級欄不填，不能把新規則套在base冒充base實測。12seed與上一輪同尺對照仍待整輪收尾。
 - 指令：`node solo-sect/tools/waves.mjs --seed 17 --trait normal --log out/waves.json`。門檻照[446追加原文](https://github.com/lalagrass/earth-ascension/issues/446)：所有L≥1拍零反擊，1到2人同時進攻有反擊；每個seed/trait分別檢，**無aggregate授權**。本次1/2/4路counter2/0/0，pass=false；不能用其他性格遮normal兩路。原始r9-n38-waves-normal17.json。
 - 正常桌面待驗：白身新局人格欄、出身兩同行關係、人物卡即時級名、名俠不能來原因。沒有實拍、影片或真人盲測；N55仍欠A/B.webm，最終成長三seed亦待重跑。RULES_VERSION仍3.3，3.4/MIGRATIONS/golden尚未收尾。
+
+#### N36 根因修正checkpoint（不覆蓋上面的FAIL）
+- 指令：`bash solo-sect/test/run.sh smoke`。門檻fail0，預期19/19；原N36唯一測試另驗兩個同刻來招：前搖內完成移步不在落下後再占一次，第二招仍扣掉前招過去區間而中招。沒有第2個N36測試。
+- 指令：`node solo-sect/tools/waves.mjs --seed 17 --trait normal --snapshot-out out/real60.json --log out/full.json`。門檻仍每seed每trait 1/2路各有反擊、所有L≥1拍無反擊；預期有完整起手/落下、r/strike/step/guard/L、busy前後/絕對窗/各攻方next/cool/eyes。無snapshot-in才是修後60日完整歷史；不能用快取冒充最終head。
+- 指令：`node solo-sect/tools/waves.mjs --seed 17 --trait normal --snapshot-in out/real60.json --log out/replay.json`。門檻同上不改；用途只隔離同一真快照的交手，不是新seed或自然成長證明。本次修前真快照的隔離counter1/0/2，**仍FAIL**。命令、逐拍第一反例與修前/後實際busy數字見`docs/evidence/r9-n36-time-root.md`及JSON。
