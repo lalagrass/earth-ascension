@@ -1,3 +1,5 @@
+import { fastestMove, windOf } from './arts.mjs';
+import { practiceWindow } from './practice.mjs';
 import { foeAction } from './starter-combat.mjs';
 import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
 import { NODES, EDGES, DAY, FACILITIES, MOVES, ARTS } from './data.mjs';
@@ -178,8 +180,8 @@ function bandClash(s, b, defs, dt) {
       continue; }
     if (d.bcool > 0 || (d.busyUntil || 0) > s.t) continue;
     const mine = live().filter((m) => m.ring === 1 && m.foe === d.id), tgt = (mine.length ? mine : live()).sort((x, y) => x.hp - y.hp)[0]; if (!tgt) break;
-    const wind = BAND_CLASH.cd * windFrac(topTierOf(d)); d.bcool = BAND_CLASH.cd;
-    d.bswing = { mv: mainOuterArt(d)?.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * def24Of(s) * BAND_CLASH.cd };
+    const mv = fastestMove(d), wind = windOf(d,mv.id,mv.cd); d.bcool = BAND_CLASH.cd;
+    d.bswing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * def24Of(s) * BAND_CLASH.cd };
     (s.fx ||= []).push({ kind: 'warn', from: [...d.pos], to: [...(tgt.pos || b.pos)], r: 30, dur: wind, ttl: wind, t0: s.t });
   }
   if (b.state !== 'yard') return;
@@ -207,7 +209,7 @@ function bandClash(s, b, defs, dt) {
     const { m, d } = ready[i];
     if (delays[i] > 0) { m.cool = delays[i]; continue; }
     if (zjIntercept(s, m, fight)) { m.cool = BAND_CLASH.monCd; continue; }
-    const action = foeAction(m, Math.hypot(m.pos[0] - d.pos[0], m.pos[1] - d.pos[1])), wind = action.wind, start = interceptOpening(s, m, d, () => R(s), { depth: 2, move: action.id, wind }); m.cool = BAND_CLASH.monCd;
+    const action = foeAction(m, Math.hypot(m.pos[0] - d.pos[0], m.pos[1] - d.pos[1])), wind = practiceWindow(m,action.id,action.wind).wind, start = interceptOpening(s, m, d, () => R(s), { depth: 2, move: action.id, wind }); m.cool = BAND_CLASH.monCd;
     if (start.read?.kind === 'read') { bandHit(s, b, m, start.read.counter, d); (b.cl ??= {}).mread = (b.cl.mread || 0) + 1; continue; }
     m.opened = true; m.swing = { mv: action.id, at: s.t + wind, wind, opening: start.opening };
     (s.fx ||= []).push({ kind: 'warn', from: [...(m.pos || b.pos)], to: [...d.pos], r: 26, dur: wind, ttl: wind, t0: s.t });

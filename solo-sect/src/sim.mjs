@@ -1,3 +1,4 @@
+import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practice.mjs';
 import { BODY_TIMING, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
@@ -69,6 +70,7 @@ export function createState(seed = 1, heroSpec = null) {
   for (const d of s.ds) { d.ng = 1; d.qi = 0; d.ng2 = 1; } /* loop103 */
   for (const d of s.ds) d.lg = 1; /* loop127 */
   if (heroSpec?.kind === 'bare') makeBare(byId(s, 'hero'));
+  for (const d of s.ds) ensurePractice(d,s.codex);
   return s;
 }
 function mkDisciple(d, i, at = 'court', personality = d.personality || [], known = personality.slice(0, 1)) {
@@ -153,7 +155,7 @@ export function mapStage(s) {
 // v0.95 每 tick 建一次 id→弟子 查表（不入存檔；增人時退回線性搜尋、減人時清表）
 const BYID = new WeakMap();
 export function byId(s, id) { const m = BYID.get(s); const d = m?.get(id); if (d && !d.removed) return d; const x = s.ds.find((o) => o.id === id); if (x && m) m.set(id, x); return x; }
-function rand(s) { const r = rng(s.seed * 7919 + s.rngN++); return r(); }
+export function rand(s) { const r = rng(s.seed * 7919 + s.rngN++); return r(); }
 export function phaseOf(s) { const f = (s.t % DAY) / DAY; let p = PHASES[0]; for (const x of PHASES) if (f >= x[0]) p = x; return { id: p[1], name: p[2], day: Math.floor(s.t / DAY) + 1, frac: f }; }
 
 // ---- 建造 ----
@@ -469,6 +471,8 @@ function doTask(s, d, dt) {
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
       let trained31 = null;
       acquireWorkTool(d, t.act);
+      if (t.act === 'train' || t.act === 'spar') { const moves = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d,m)); rehearse(s,d,moves,effDur,{partner:t.act === 'spar' ? byId(s,t.partner) : null}); }
+      else if (['chop','quarry','water','farm','forage'].includes(t.act)) practiceWork(s,d,t.act,effDur);
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) { const o = grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? facStage(s, 'yard').trainMul || 1 : 1), isWorkAct(t.act) ? 'labor' : 'train'); if (t.act === 'train' && o?.trained) trained31 = o.trained; }
       if (A.skill) cliqueTrain(s, d, t.act, A.skill, grow); // loop20 小派同修
       if (t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
@@ -683,7 +687,7 @@ function huntStep(s, dt) {
       if (near > MON_REACH * 0.95 && !foeAction(m, near)?.minDistance) { stepToward(m, foe.pos, M.speed * mdt, MON_REACH * 0.8); continue; }
       if (m.cool <= 0) { /* #426 獨孤：觀破過的獸一起手就被截；太極圈內前搖拉長 */
         if (zjIntercept(s, m, team)) { m.cool = MON_CD; continue; }
-        const action = foeAction(m, near), wind = (action?.wind ?? MON_CD * CLASH.monWind) * zjWindK(s, m.pos, team);
+        const action = foeAction(m, near), wind = practiceWindow(m,action?.id || 'fist',action?.wind ?? MON_CD * CLASH.monWind).wind * zjWindK(s, m.pos, team);
         const start = interceptOpening(s, m, foe, () => rand(s), { depth: depthOf(m), move: action?.id, wind, map: true });
         m.cool = MON_CD;
         if (start.read?.kind === 'read') { m.hp -= start.read.counter; clashFx(s, foe, 'read'); if (m.hp <= 0) { m.gone = true; h.kills++; seeEnemy(s, m.k, 'kill', foe); } continue; }
@@ -917,7 +921,7 @@ function trialStep(s, d, dt) {
   m.cool = (m.cool || 0) - dt;
   if (m.swing && s.t + 1e-9 >= m.swing.at) { const w = m.swing; m.swing = null; const r = resolveSwing(s, m, d, () => rand(s), { depth: depthOf(m), move: w.mv, wind: w.wind });
     if (r.kind === 'hit') { d.hp = Math.max(30, d.hp - 3 * (r.heavy ? CLASH.heavy : 1)); if (r.heavy) clashFx(s, d, 'heavy'); } else clashFx(s, d, r.kind === 'parry' ? (r.jolt ? 'jolt' : null) : r.kind); }
-  else if (!m.swing && m.cool <= 0) { const action = foeAction(m, dist(m.pos, d.pos)), wind = action?.wind ?? MON_CD * CLASH.monWind; m.swing = { mv: action?.id, tgt: d.id, at: s.t + wind, wind }; m.cool = MON_CD; warnFx(s, m, d, MON_REACH, wind); }
+  else if (!m.swing && m.cool <= 0) { const action = foeAction(m, dist(m.pos, d.pos)), wind = practiceWindow(m,action?.id || 'fist',action?.wind ?? MON_CD * CLASH.monWind).wind; m.swing = { mv: action?.id, tgt: d.id, at: s.t + wind, wind }; m.cool = MON_CD; warnFx(s, m, d, MON_REACH, wind); }
   const mv0 = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d, m)).at(-1);
   if (!t.swing && t.timer >= (mv0.cd - windOf(d, mv0.id, mv0.cd))) { t.swing = true; warnFx(s, d, m, mv0.range || 30, windOf(d, mv0.id, mv0.cd)); d.anim = 'wind'; }
   if (t.timer >= mv0.cd) { t.timer = 0; t.swing = false; const mv = mv0; const r = resolveSwing(s, d, m, () => rand(s), { depth: depthOf(d, mv.id), wind: windOf(d, mv0.id, mv0.cd), move: mv.id }); d.anim = 'strike'; d.cool = 1;
