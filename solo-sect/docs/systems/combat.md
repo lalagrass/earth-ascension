@@ -369,3 +369,6 @@ N36攻意預測另修「待命冷卻不是現在又起手」：未起手者從�
 依#444的Hick/RPD，新手比較招式占用真時間，但比較本身不是揮拳。現在sim首狗/狩獵、threat守柵、duel/waves同用prepareCombatMove：思考另存combatDecision，busyUntil真預留，仍會被打、不退費；只有完成後可用招才排身體動作。一般選招須在可觀測來招剩餘窗容得下Hick+實際前搖，否則保留防守；惱羞可照舊習慣硬搶。不知道敵人同拍將選哪招，僅讀共同上一狀態；不穩定時可行集合仍用同批Thompson樣本，不改勝率。若思考完情境改變就放棄，不免費換招。
 
 固定步模擬採read/compute/commit：舊落招先處理、新思考占用後提交、全體新身體起手一起發佈才抽opening。此為通用同步更新機制，沒有角色/招名分支、沒有新時間常數。先結算舊防守而無法新起手者不再耗第二次精力/丟工具/掛冷卻。真起手只付原1精力一次；狩獵以前另在落招扣一次，現移除重複。Hick仍完整另付，原冷卻長度不變。截擊只有到windowStart+r+strike後才可扣狀態，否則原招依arrival結算；同一L gate全程保留。慢動作同時平移at/wind/windowEnd，不把思考加進可見warn。取消新任務也不退已預留思考秒數，收養新人不帶父母計畫。機制/引用及修前t0不可能反擊的真反例見[時序證據](../evidence/r9-n34-timing.md)；單seed及day1 probe仍FAIL，不以正確分階段當作驗收全過。
+
+### N36 有限忙碌與連續應接率（推導先於程式修復）
+#446的每人「接住他要的時間/他的來招時間」是各來招本身的反應+抬手需求；手上已占用的同一段busy不是每個敵人各自創造的新需求。現行`need=r+guard+busy`在N人時把同一busy段加N次，且clashTimes又以單一busyEnd扣可用窗，混淆連續負荷率與有限初始占用。修正方向：L只加各人的r+guard需求/來招窗口（含原ready/travel），單一busy保留在可用時間T的絕對區間一次；L≥1禁反擊不動，L<1也仍必須r+m≤T才可出手。這是排隊/單處理器利用率和初始backlog分離的通用機制，不是為某seed降低門檻；Liu/Layland (1973) Scheduling Algorithms for Multiprogramming in a Hard-Real-Time Environment作為時間需求/占用分離參考，不聲稱其週期獨立性定理完整適用此遊戲。忙碌仍不能同時做第二件身體動作，實際防守逐筆串接busyUntil，沒有免費反應/移步。接續用單純有理數對照及真人物snapshot回歸檢查。

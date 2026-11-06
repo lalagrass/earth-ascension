@@ -202,3 +202,7 @@ N35/N37媒介後續修正：`bash solo-sect/test/run.sh smoke`門檻fail0，預�
 - 指令：`bash solo-sect/test/run.sh smoke`。門檻fail0，預期19/19；只延伸原N34 test，覆蓋真Hick busy/不能提前起手、同拍後發不可知、全體發佈後才算opening、截擊不在0秒瞬移、慢動作絕對期限一致。
 - 指令：`gzip -dc solo-sect/docs/evidence/r9-n36-prepared60-public17.snapshot.json.gz > out/prepared.json; node solo-sect/tools/waves.mjs --seed 17 --history prepared-defend --trait normal,calm,rash --snapshot-in out/prepared.json --log out/waves.json`。原門檻每seed/trait 1/2路都有反擊且L≥1零反擊不變。**短回歸FAIL**：normal2/0/0、calm0/0/1、rash1/0/0，超載counter全0；人格15>9、HP損88.095>77.524本樣本成立但不是整體pass。舊snapshot只作同人前後根因診斷，final須新規則公開重產，不代表任意seed。
 - 指令：`node solo-sect/tools/duel.mjs --a day1 --b day1 --seeds 1-20 --log out/duel.json`。門檻中位≥30、無傷≥70%。**FAIL**：288／33.9713743749%，平均喘氣6.1；舊75.793%不可代表此head。原始資料/手算與world理由見[時序根因](docs/evidence/r9-n34-timing.md)。day60/day1、其他自然護欄及N55 final/影片仍未完成。
+
+#### N36 busy需求重收修復／N34傷分類
+- 指令：`bash solo-sect/test/run.sh smoke`；門檻fail0，預期19/19，原N36唯一test加入同busy不乘敵人數、T仍真扣占用、L≥1禁反擊對照。
+- 指令同[busy根因證據](docs/evidence/r9-n36-busy-rate.md)。原門檻不變，waves本seed normal2/0/0、calm0/0/2、rash1/0/0 **FAIL**；duel20無傷33.9713743749% **FAIL**。新contact/前後架勢/事件只是唯讀分類，不改受傷定義，不將calm沒有真來招當反應缺陷；後續排序修復仍待。

@@ -139,11 +139,18 @@ test('N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反�
  const {assessLoad,composure,interceptOpening}=await import('../src/arts.mjs');
  const {COVERS,chooseTactic,stepTactic,rememberEscape,restoreSurvivor,moveToward}=await import('../src/tactics.mjs');
  const s=createState(41,{kind:'bare',askMajor:false}),d=s.ds[0];s.ds=[d];d.pos=[800,400];
+ const {loadFromForecast}=await import('../src/tactics.mjs');
+ // 同一段.2秒不能在兩個.8秒窗口各收一次：每人真工作.25秒，率=.625。
+ const rate=loadFromForecast(d,[{need:.25,window:.8,travel:0},{need:.25,window:.8,travel:0}]);assert.equal(rate.L,.625);
+ assert.equal(2*(.25+.2)/.8,1.125,'舊算式會把同一初始busy乘兩次');
+
  const dogs=Array.from({length:4},(_,i)=>({k:'dog',uid:`dog${i}`,hp:14,max:14,pos:[820+i,400],intentTarget:d.id}));
  // 真20次接法記錄，不直接灌f；此為單元fixture，不是自然玩法存活率。
  for(let i=0;i<20;i++){d.busyUntil=0;d.posture=100;d.raging=false;d.rageUntil=0;d.fret=0;resolveSwing(s,dogs[0],d,()=>.5,{move:'dogBite',wind:.4});}
  d.busyUntil=0;d.raging=false;d.rageUntil=0;d.fret=0;s.mons=dogs;
  assert.ok(assessLoad(s,d).L>=1);
+ const base=assessLoad(s,d);d.busyUntil=s.t+.2;const occupied=assessLoad(s,d);assert.equal(base.L,occupied.L,'busy不是額外週期性敵人需求');assert.equal(occupied.busy,.2);const T=clashTimes(s,dogs[0],d,{move:'dogBite',wind:.4});assert.equal(T.windowStart,s.t+.2);assert.equal(T.wind,.2,'忙碌仍真扣實際可用窗一次');d.busyUntil=0;
+
  assert.equal(assessLoad(s,dogs[0]).L,0,'待命人物沒有宣告攻擊，不虛構連續來招造成死鎖');
  d.swing={mv:'bodyPunch',tgt:'dog0',wind:.45,at:s.t+.45};assert.ok(assessLoad(s,dogs[0]).L>0);d.swing=null;
  for(let i=0;i<20;i++){d.busyUntil=0;const r=resolveSwing(s,dogs[i%4],d,()=>.00001,{move:'dogBite',wind:.4});assert.ok(!r.counter);}

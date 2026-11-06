@@ -1361,9 +1361,9 @@ export function assessLoad(s,def,extra=null,ctx={}) {
     const now=s?.t||0,readyIn=!swing&&a!==extra?Math.max(0,(a.next||0)-now,a.cool||0,a.bcool||0,(a.busyUntil||0)-now,(a.downUntil||0)-now):0;
     // Cooldown elapses during an approach too; do not charge both in series.
     const readyDelay=Math.max(0,readyIn-travel);
-    return {attacker:a.uid||a.id||a.k,move,need:familiarReaction(def,a,move,s?.codex)+guard+busy,window:Math.max(BODY_TIMING.simple,wind)+readyDelay,wind,readyIn,readyDelay,travel,active:!!swing};
+    return {attacker:a.uid||a.id||a.k,move,need:familiarReaction(def,a,move,s?.codex)+guard,window:Math.max(BODY_TIMING.simple,wind)+readyDelay,wind,readyIn,readyDelay,travel,active:!!swing};
   });
-  return loadFromForecast(def,rows);
+  return {...loadFromForecast(def,rows),busy};
 }
 export function combatTacticStep(s,d,dt,H={}){
   if(d.combatDecision&&(d.busyUntil||0)>s.t)return true;
