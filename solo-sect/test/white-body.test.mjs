@@ -161,4 +161,5 @@ test('N37 共用受力/分層/手側/長破綻，局部hitstop不改模擬',asyn
   const victim=s.fx.at(-1),before=JSON.stringify(s),time=victim.at+.02;
   const va=impactVisual(s,a,time),vt=impactVisual(s,target,time),stranger=impactVisual(s,{uid:'uninvolved',pos:[80,80]},time);
   assert.ok(va.paused&&vt.paused);assert.ok(Math.abs(vt.shake)>Math.abs(va.shake));assert.equal(stranger.paused,false);assert.equal(impactVisual(s,target,time,false).paused,false);assert.equal(JSON.stringify(s),before);
+  const dust=(await import('../src/techniques.mjs')).TECHNIQUE_MOVES.find(m=>m.id==='dustCast'),unhurt=structuredClone(a);unhurt.pos=[20,0];unhurt.wounds=[];unhurt.pain=0;const beforePos=[...unhurt.pos],irritant=contactImpact(s,a,unhurt,{move:dust,force:10000});assert.equal(irritant.force,0);assert.equal(irritant.injured,false);assert.equal(irritant.balance,0);assert.deepEqual(unhurt.pos,beforePos);
 });

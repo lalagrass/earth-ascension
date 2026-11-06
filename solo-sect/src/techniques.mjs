@@ -3,6 +3,7 @@ import {BODY_MOVES,BODY_TIMING} from './starter-combat.mjs';
 import {learningWeight,emitPractice} from './practice.mjs';
 export {TECHNIQUES,TECHNIQUE_MOVES} from './technique-data.mjs';
 import {TECHNIQUES} from './technique-data.mjs';
+
 export const CONDITIONS={hands:f=>f.hands>0,opponentWeapon:f=>!!f.weapon&&f.weapon!=='fist',opponentWind:f=>!!f.opponentWind,afterDodge:f=>!!f.afterDodge,opponentCharge:f=>!!f.opponentCharge,surrounded:f=>f.enemies>=3,opponentUnbalanced:f=>!!f.opponentUnbalanced,losing:f=>!!f.losing,cornered:f=>!!f.cornered,approaching:f=>!!f.approaching};
 export const matchesTechnique=(row,facts)=>row.conditions.every(word=>CONDITIONS[word]?.(facts));
 export const learningRate=p=>learningWeight(p)*(1-p); // 只供期望診斷；真正失手時只加w，不再乘(1-p)。
