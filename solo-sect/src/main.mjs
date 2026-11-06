@@ -18,6 +18,7 @@ import { routineFrame } from './routines.mjs';
 import { displayPose, drawPoseActor } from './pose-render.mjs';
 import { growthSnapshot } from './growth-adapter.mjs';
 import { mountChoiceButtons } from './choice-buttons.mjs';
+import { visualSpriteOf } from './visual-gender.mjs';
 function practiceLabel(d, compact = false) {
   if (d.task?.act !== 'train' || d.task.phase !== 'do') return '';
   const art = artById(focusOf(d) || 'basicFist');
@@ -32,6 +33,15 @@ const GMEMO = {};
 const cv = document.getElementById('map'), g = cv.getContext('2d');
 const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile', 'kitchen_s1', 'map_s0', 'map_s1', 'map_s2'];
 await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i.onload = r; i.onerror = r; i.src = `assets/${n}.${n === 'ground' || n.startsWith('map_') ? 'jpg' : 'png'}`; IMG[n] = i; })));
+// N49 暫用：從本倉 senior 小人合成女角輪廓，待正式 sprite 美術交付後只替換此圖。
+{ const src = IMG.senior, canvas = document.createElement('canvas'); canvas.width = src.width; canvas.height = src.height;
+  const c = canvas.getContext('2d'); c.drawImage(src, 0, 0);
+  c.fillStyle = '#65506a'; c.beginPath(); c.moveTo(29, 35); c.lineTo(43, 34); c.lineTo(51, 60); c.lineTo(20, 60); c.closePath(); c.fill();
+  c.strokeStyle = '#342d37'; c.lineWidth = 2; c.stroke();
+  c.fillStyle = '#2b2524'; c.beginPath(); c.ellipse(31, 10, 11, 8, -0.2, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.moveTo(22, 13); c.quadraticCurveTo(17, 28, 22, 42); c.lineTo(26, 40); c.quadraticCurveTo(24, 24, 28, 17); c.fill();
+  c.beginPath(); c.moveTo(40, 13); c.quadraticCurveTo(49, 28, 46, 43); c.lineTo(42, 42); c.quadraticCurveTo(43, 26, 35, 17); c.fill();
+  c.fillStyle = '#2b2524'; c.beginPath(); c.arc(39, 6, 5, 0, Math.PI * 2); c.fill(); IMG.sister = canvas; }
 let S = createState(Date.now() % 100000 | 0), speed = 1, starting = true;
 const newGame = () => { starting = true; openStart((spec) => { S = createState(Date.now() % 100000 | 0, spec); freshGame(); starting = false; panel(); /* loop65：新局重設每局介面狀態（自動存檔計時等） */ }); };
 window.__sect = { get S() { return S; }, set speed(v) { speed = v; }, freeze: false, panel: () => panel(), get starting() { return starting; } };
@@ -91,17 +101,17 @@ function draw() {
     const pose = displayPose(S, d, art, mv);
     g.save(); g.translate(x, y + bob); if (d.face < 0) g.scale(-1, 1); if (d.anim === 'strike' && !pose) g.rotate(0.15);
     if (d.task?.phase === 'do' && d.anim === 'rest') g.rotate(-1.3);
-    const im = IMG[d.sprite], sc = SC * (d.adult === false && d.child ? 0.62 + 0.03 * ((d.age || 6) - 6) : 1);
+    const im = IMG[visualSpriteOf(d)], sc = SC * (d.adult === false && d.child ? 0.62 + 0.03 * ((d.age || 6) - 6) : 1);
     if (pose) { if (d.child && !d.adult) g.scale(sc / SC, sc / SC); drawPoseActor(g, d, pose); }
     else g.drawImage(im, -im.width * sc / 2, -im.height * sc, im.width * sc, im.height * sc);
     g.restore(); if (d.child && !d.adult) label(`${d.age}歲`, x, y + 14, '#7a4a8a');
     if (d.carry?.stone) { g.fillStyle = '#8c8c8c'; g.beginPath(); g.arc(x + 10, y - 26, 6, 0, 7); g.fill(); } else if (d.carry) sprite('wood', x + 10, y - 18, 0.6);
-    if (isLabor(d)) { g.fillStyle = '#2f6f9f'; g.fillRect(x - 9, y - IMG[d.sprite].height * SC + 4, 18, 4); }
-    label(`${d.name}${isLabor(d) ? '（工）' : d.role === 'outer' ? '（外門）' : d.role === 'head' ? '（首徒）' : ''} ${statusIcon(d, d.task?.act === 'build' && d.task.phase !== 'do' ? '📦' : ACT_ICON[d.anim || d.task?.act] || '')}`, x, y - (IMG[d.sprite].height * SC + 4), '#222');
-    const levelNotice = GROWTH_NOTICE.get(d.id); if (levelNotice && S.t - levelNotice.t < 4) label(levelNotice.text, x, y - (IMG[d.sprite].height * SC + 22), '#2b713d');
+    if (isLabor(d)) { g.fillStyle = '#2f6f9f'; g.fillRect(x - 9, y - IMG[visualSpriteOf(d)].height * SC + 4, 18, 4); }
+    label(`${d.name}${isLabor(d) ? '（工）' : d.role === 'outer' ? '（外門）' : d.role === 'head' ? '（首徒）' : ''} ${statusIcon(d, d.task?.act === 'build' && d.task.phase !== 'do' ? '📦' : ACT_ICON[d.anim || d.task?.act] || '')}`, x, y - (IMG[visualSpriteOf(d)].height * SC + 4), '#222');
+    const levelNotice = GROWTH_NOTICE.get(d.id); if (levelNotice && S.t - levelNotice.t < 4) label(levelNotice.text, x, y - (IMG[visualSpriteOf(d)].height * SC + 22), '#2b713d');
     if (practiceLabel(d)) label(practiceLabel(d, true), x, y + 15, '#6b3b20');
-    if (S.hunt) hp(x, y - IMG[d.sprite].height * SC - 20, d.hp / 100, '#3a7');
-    { const b = BUB[d.id]; if (b) bubble(b, x, y - (IMG[d.sprite].height * SC + 26)); } // v1.45 C 級事件＝頭上氣泡
+    if (S.hunt) hp(x, y - IMG[visualSpriteOf(d)].height * SC - 20, d.hp / 100, '#3a7');
+    { const b = BUB[d.id]; if (b) bubble(b, x, y - (IMG[visualSpriteOf(d)].height * SC + 26)); } // v1.45 C 級事件＝頭上氣泡
   } });
   // v1.0 庫存畫成地圖上的物件：柴堆、石堆、米袋、藥簍、錢箱（數量越多堆越高）
   { const [bx, by] = NODES.court, R = S.res, piles = [['wood', '#8a5a2b', 'log'], ['stone', '#9a9a9a', 'rock'], ['food', '#e8d9a8', 'sack'], ['herb', '#5f9a3a', 'herb'], ['coin', '#d4a017', 'coin']];
@@ -225,6 +235,9 @@ function growthView(d) {
   if (!prior || prior.art !== current.art || prior.day !== S.day) {
     if (prior && prior.day !== S.day && current.xp > prior.start) lastGrowth = `${d.name}的${current.title}成長了 ${(current.xp - prior.start).toFixed(1)}`;
     GROWTH_MEMO.set(d.id, { day: S.day, art: current.art, start: current.xp || 0, tier: current.tier });
+  } else if (current.tier < prior.tier) {
+    // 舊存檔、荒疏或換焦點後可能回到較低階；以當下階段重新觀察。
+    prior.tier = current.tier;
   } else if (current.tier > prior.tier) {
     const why = d.task?.act === 'train' ? '在場上反覆練習' : d.task?.act === 'spar' || d.task?.act === 'hunt' ? '從交手中學會' : '累積實戰與練習';
     GROWTH_NOTICE.set(d.id, { text: `${current.title}！`, detail: `${d.name}學會了${current.title}，因為${why}。`, t: S.t });
@@ -468,7 +481,7 @@ function drawCloud() { const on = cloudOn(), now = performance.now(); if (on !==
   const [ex, ey] = cloudPos(0, C.k); g.fillStyle = '#6b4f30'; g.fillRect(ex - 30, ey - 8, 60, 16); label(`入口（第${C.k}重起點）`, ex, ey + 30, '#4a3a2a');
   for (const p of cloudSpots(C.k)) { const done = C.f >= p.f, [x, y] = p.pos; g.save(); g.globalAlpha = a * (done ? 0.35 : 1); g.fillStyle = p.gate ? '#8a1a10' : '#5a4a6a'; g.beginPath(); g.arc(x, y - 10, p.gate ? 18 : 12, 0, 7); g.fill(); label(done ? '✕' : p.gate ? `守關・第${C.k}重無名高手` : '雲中異獸', x, y + 16, p.gate ? '#b0301a' : '#4a3a5a'); g.restore(); }
   if (S.exp) { const X = S.exp, back = X.phase === 'back', team = X.team.map((id) => S.ds.find((d) => d.id === id)).filter(Boolean);
-    team.forEach((d, i) => { const [x, y] = cloudPos(Math.max(0, C.f - i * 0.012), C.k), im = IMG[d.sprite]; if (!im?.width) return; g.save(); g.translate(x, y + Math.sin(now / 90 + i) * 2); if (back) g.scale(-1, 1); g.drawImage(im, -im.width * SC * 0.35, -im.height * SC * 0.7, im.width * SC * 0.7, im.height * SC * 0.7); g.restore(); });
+    team.forEach((d, i) => { const [x, y] = cloudPos(Math.max(0, C.f - i * 0.012), C.k), im = IMG[visualSpriteOf(d)]; if (!im?.width) return; g.save(); g.translate(x, y + Math.sin(now / 90 + i) * 2); if (back) g.scale(-1, 1); g.drawImage(im, -im.width * SC * 0.35, -im.height * SC * 0.7, im.width * SC * 0.7, im.height * SC * 0.7); g.restore(); });
     const [x, y] = cloudPos(C.f, C.k); label(`巡山隊・絕頂之上第${C.k}重 ${Math.round(C.f * 100)}%${back ? '・回程' : ''}`, x, y - 80, '#7a1a10'); }
   for (const [x, y, r, sp] of PUFF.slice(17)) { const xx = ((x + now / 1000 * sp * 1.5) % 1800) - 100; g.fillStyle = 'rgba(255,255,255,.35)'; g.beginPath(); g.ellipse(xx, y, r * 2, r * 0.5, 0, 0, 7); g.fill(); }
   g.font = 'bold 34px serif'; g.textAlign = 'left'; g.fillStyle = '#3a4a6a'; g.fillText(`☁ 雲海・第${C.k}重`, 40, 860); g.restore();
@@ -480,7 +493,7 @@ function drawFog() { // v1.55c 迷霧：未探＝雲霧遮住；已探但不在�
 function drawWorldTop() { drawFog(); const rd = raidDescent(S, raidMul(S)); // 獸襲下山（演出）
   if (rd) { const [x, y] = rd.pos; sprite(MONSTERS[rd.k].sprite, x, y, SC); label(`${MONSTERS[rd.k].name}下山中`, x, y - 40, '#a33'); }
   const pd = partyDist(S); if (pd != null) { const X = S.exp, team = X.team.map((id) => S.ds.find((d) => d.id === id)).filter(Boolean), back = X.phase === 'back', walking = !(X.busy > 0) && !fightLog.cur;
-    const sty = back ? 'steady' : X.style; team.forEach((d, i) => { const [x, y] = styledPos(Math.max(0, pd + (back ? 1 : -1) * i * (sty === 'dash' ? 2 : 4)), sty), bob = walking ? Math.sin(performance.now() / 90 + i) * 2 : 0, im = IMG[d.sprite]; if (drawWorld.lod !== 'near') { const r = drawWorld.lod === 'far' ? 34 : 12; g.fillStyle = '#d0281c'; g.strokeStyle = '#fff'; g.lineWidth = r / 4; g.beginPath(); g.arc(x + i * r * 1.6, y, r, 0, 7); g.fill(); g.stroke(); if (drawWorld.lod === 'mid') label(d.name, x + i * r * 1.6, y - 18, '#7a1a10'); return; } if (!im?.width) return;
+    const sty = back ? 'steady' : X.style; team.forEach((d, i) => { const [x, y] = styledPos(Math.max(0, pd + (back ? 1 : -1) * i * (sty === 'dash' ? 2 : 4)), sty), bob = walking ? Math.sin(performance.now() / 90 + i) * 2 : 0, im = IMG[visualSpriteOf(d)]; if (drawWorld.lod !== 'near') { const r = drawWorld.lod === 'far' ? 34 : 12; g.fillStyle = '#d0281c'; g.strokeStyle = '#fff'; g.lineWidth = r / 4; g.beginPath(); g.arc(x + i * r * 1.6, y, r, 0, 7); g.fill(); g.stroke(); if (drawWorld.lod === 'mid') label(d.name, x + i * r * 1.6, y - 18, '#7a1a10'); return; } if (!im?.width) return;
       g.save(); g.translate(x + (i % 2 ? 10 : -10), y + bob); if (back) g.scale(-1, 1); g.drawImage(im, -im.width * SC * 0.7 / 2, -im.height * SC * 0.7, im.width * SC * 0.7, im.height * SC * 0.7); g.restore(); });
     const [x, y] = trailAt(pd); if (drawWorld.lod === 'far') { g.font = 'bold 90px sans-serif'; g.textAlign = 'center'; g.lineWidth = 14; g.strokeStyle = '#fff'; g.strokeText('巡山隊', x, y - 70); g.fillStyle = '#b0201a'; g.fillText('巡山隊', x, y - 70); } else label(`巡山隊 ${Math.round(pd)} 步${back ? '・回程' : `・${STYLE_PATH[X.style] || ''}`}`, x, y - 70, '#7a1a10');
     for (const L of leftovers(S, fightLog.evaded)) { if (!L.chasing) continue; const t0 = (fightLog.chase[L.i] ??= performance.now()), k = Math.min(1, (performance.now() - t0) / 3000), [px, py] = styledPos(pd, 'steady'), lx = L.pos[0] + (px + 30 - L.pos[0]) * k, ly = L.pos[1] + (py - L.pos[1]) * k; // 溜走的殘餘怪追上來（＝返程驚獸）

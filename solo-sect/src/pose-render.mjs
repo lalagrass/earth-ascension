@@ -1,4 +1,5 @@
 import { POSTURES, COMBAT_POSES, routineFrame } from './routines.mjs';
+import { isFemaleVisual } from './visual-gender.mjs';
 
 // 同一個骨架與補間器套在每名人物，人物只提供外觀色與朝向。
 const LEGS = {
@@ -64,12 +65,14 @@ export function drawPoseActor(g, d, view) {
   const n = view.poses.length, k = Math.min(n - 1, view.u * (n - 1)), i = Math.floor(k), u = k - i;
   const a = POSTURES[view.poses[i]] || POSTURES.ready, b = POSTURES[view.poses[Math.min(n - 1, i + 1)]] || POSTURES.ready;
   const lean = mix(a.lean, b.lean, u), legsA = LEGS[a.legs], legsB = LEGS[b.legs], armsA = ARMS[a.arms], armsB = ARMS[b.arms];
-  const color = d.sprite === 'senior' ? '#796d91' : d.sprite === 'cousin' ? '#718963' : d.sprite === 'hero' ? '#647f92' : '#6a755e';
+  const female = isFemaleVisual(d);
+  const color = female ? '#806375' : d.sprite === 'senior' ? '#796d91' : d.sprite === 'cousin' ? '#718963' : d.sprite === 'hero' ? '#647f92' : '#6a755e';
   g.save(); g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = '#332b25';
   for (let j = 0; j < 2; j++) {
     const [kx, ky, fx, fy] = mixArray(legsA[j], legsB[j], u);
     g.lineWidth = 6; g.beginPath(); g.moveTo(lean * 0.45 + (j ? 5 : -5), -17); g.lineTo(kx, ky); g.lineTo(fx, fy); g.stroke();
   }
+  if (female) { g.fillStyle = color; g.strokeStyle = '#372e2b'; g.lineWidth = 2; g.beginPath(); g.moveTo(lean - 7, -28); g.lineTo(lean + 7, -28); g.lineTo(lean + 17, -4); g.lineTo(lean - 17, -4); g.closePath(); g.fill(); g.stroke(); }
   g.fillStyle = color; g.strokeStyle = '#372e2b'; g.lineWidth = 2;
   g.beginPath(); g.moveTo(lean - 9, -42); g.lineTo(lean + 9, -42); g.lineTo(lean * 0.5 + 8, -18); g.lineTo(lean * 0.5 - 8, -18); g.closePath(); g.fill(); g.stroke();
   for (let j = 0; j < 2; j++) {
@@ -83,6 +86,7 @@ export function drawPoseActor(g, d, view) {
     }
   }
   g.fillStyle = '#e7bf91'; g.strokeStyle = '#372e2b'; g.lineWidth = 2; g.beginPath(); g.arc(lean, -49, 8, 0, Math.PI * 2); g.fill(); g.stroke();
+  if (female) { g.fillStyle = '#292529'; g.beginPath(); g.arc(lean + 6, -57, 5, 0, Math.PI * 2); g.fill(); g.beginPath(); g.moveTo(lean - 7, -53); g.lineTo(lean - 9, -38); g.lineTo(lean - 4, -40); g.lineTo(lean - 3, -53); g.fill(); g.beginPath(); g.moveTo(lean + 6, -53); g.lineTo(lean + 9, -39); g.lineTo(lean + 13, -41); g.lineTo(lean + 10, -56); g.fill(); }
   g.fillStyle = '#2f2929'; g.beginPath(); g.arc(lean + 3, -50, 1, 0, Math.PI * 2); g.fill();
   g.restore();
 }

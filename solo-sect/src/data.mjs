@@ -38,19 +38,19 @@ export const HEROES = [
 ];
 // 開局同門候選（也是名俠池的一部分；被選中就移出名俠池）
 export const COMPANIONS = {
-  huangrong: { name: '黃蓉', sprite: 'senior', style: 'palm', root: 2, wu: 5, personality: ['clever', 'nimble', 'picky'], skills: { leg: 6, palm: 10, strength: 4, farming: 6, herbal: 12, agility: 18, cooking: 30 }, tag: '巧：悟性高、根骨低；廚藝引洪七公、精打細算', lore: ['落英神劍掌（之後）', '打狗棒法（之後）'], econ: 1, pair: { guojing: 0.25 } },
-  munianci: { name: '穆念慈', sprite: 'senior', style: 'leg', root: 3, wu: 3, personality: ['honest', 'gentle'], skills: { leg: 10, palm: 6, strength: 8, farming: 8, herbal: 6, agility: 10, cooking: 10 }, tag: '踏實：楊家槍，忠厚可靠' },
-  shuanger: { name: '雙兒', sprite: 'senior', style: 'leg', root: 4, wu: 3, personality: ['gentle', 'diligent'], skills: { leg: 14, palm: 8, strength: 8, farming: 8, herbal: 6, agility: 14, cooking: 12 }, tag: '忠心：武功好、任勞任怨，替主角打架' },
-  ake: { name: '阿珂', sprite: 'senior', style: 'palm', root: 3, wu: 4, personality: ['brave', 'picky'], skills: { leg: 6, palm: 12, strength: 6, farming: 2, herbal: 4, agility: 12, cooking: 2 }, tag: '高傲：劍法不錯，但對主角好感很低' },
-  yuelingshan: { name: '岳靈珊', sprite: 'senior', style: 'palm', root: 3, wu: 3, personality: ['playful', 'sociable'], skills: { leg: 6, palm: 10, strength: 5, farming: 4, herbal: 4, agility: 12, cooking: 6 }, tag: '小師妹：玉女劍法，情義牽絆' },
-  renyingying: { name: '任盈盈', sprite: 'senior', style: 'palm', root: 4, wu: 4, personality: ['clever', 'worrier'], skills: { leg: 6, palm: 12, strength: 5, farming: 2, herbal: 10, agility: 12, cooking: 6 }, tag: '聖姑：琴音療傷、黑木崖人脈' },
+  huangrong: { name: '黃蓉', fem: true, sprite: 'senior', style: 'palm', root: 2, wu: 5, personality: ['clever', 'nimble', 'picky'], skills: { leg: 6, palm: 10, strength: 4, farming: 6, herbal: 12, agility: 18, cooking: 30 }, tag: '巧：悟性高、根骨低；廚藝引洪七公、精打細算', lore: ['落英神劍掌（之後）', '打狗棒法（之後）'], econ: 1, pair: { guojing: 0.25 } },
+  munianci: { name: '穆念慈', fem: true, sprite: 'senior', style: 'leg', root: 3, wu: 3, personality: ['honest', 'gentle'], skills: { leg: 10, palm: 6, strength: 8, farming: 8, herbal: 6, agility: 10, cooking: 10 }, tag: '踏實：楊家槍，忠厚可靠' },
+  shuanger: { name: '雙兒', fem: true, sprite: 'senior', style: 'leg', root: 4, wu: 3, personality: ['gentle', 'diligent'], skills: { leg: 14, palm: 8, strength: 8, farming: 8, herbal: 6, agility: 14, cooking: 12 }, tag: '忠心：武功好、任勞任怨，替主角打架' },
+  ake: { name: '阿珂', fem: true, sprite: 'senior', style: 'palm', root: 3, wu: 4, personality: ['brave', 'picky'], skills: { leg: 6, palm: 12, strength: 6, farming: 2, herbal: 4, agility: 12, cooking: 2 }, tag: '高傲：劍法不錯，但對主角好感很低' },
+  yuelingshan: { name: '岳靈珊', fem: true, sprite: 'senior', style: 'palm', root: 3, wu: 3, personality: ['playful', 'sociable'], skills: { leg: 6, palm: 10, strength: 5, farming: 4, herbal: 4, agility: 12, cooking: 6 }, tag: '小師妹：玉女劍法，情義牽絆' },
+  renyingying: { name: '任盈盈', fem: true, sprite: 'senior', style: 'palm', root: 4, wu: 4, personality: ['clever', 'worrier'], skills: { leg: 6, palm: 12, strength: 5, farming: 2, herbal: 10, agility: 12, cooking: 6 }, tag: '聖姑：琴音療傷、黑木崖人脈' },
   tianboguang: { name: '田伯光', sprite: 'hero', style: 'leg', root: 4, wu: 3, personality: ['brave', 'drinker'], skills: { leg: 14, palm: 8, strength: 12, farming: 2, herbal: 2, agility: 20, cooking: 2 }, tag: '浪子：輕功快刀，巡山疾行；名聲差' },
-  ningzhongze: { name: '寧中則', sprite: 'senior', style: 'palm', root: 4, wu: 4, personality: ['gentle', 'brave'], skills: { leg: 8, palm: 14, strength: 8, farming: 8, herbal: 8, agility: 10, cooking: 10 }, tag: '寧氏一劍：正直，看穿偽君子會失望' },
+  ningzhongze: { name: '寧中則', fem: true, sprite: 'senior', style: 'palm', root: 4, wu: 4, personality: ['gentle', 'brave'], skills: { leg: 8, palm: 14, strength: 8, farming: 8, herbal: 8, agility: 10, cooking: 10 }, tag: '寧氏一劍：正直，看穿偽君子會失望' },
   linghuchong: { name: '令狐沖', sprite: 'hero', style: 'palm', root: 3, wu: 5, personality: ['free', 'drinker', 'sociable'], skills: { leg: 6, palm: 12, strength: 6, farming: 2, herbal: 2, agility: 12, cooking: 2 }, tag: '首徒：灑脫，九劍伏筆；會不會被逐出看你' },
   linpingzhi: { name: '林平之', sprite: 'hero', style: 'palm', root: 3, wu: 3, personality: ['stubborn', 'worrier'], skills: { leg: 6, palm: 10, strength: 6, farming: 2, herbal: 2, agility: 10, cooking: 2 }, tag: '福威鏢局少鏢頭：滅門之恨，家傳劍譜' },
-  zhaomin: { name: '趙敏', sprite: 'senior', style: 'palm', root: 3, wu: 5, personality: ['clever', 'brave'], skills: { leg: 6, palm: 10, strength: 4, farming: 2, herbal: 6, agility: 12, cooking: 4 }, tag: '郡主：謀略與資源，正派名俠好感 −' },
-  xiaozhao: { name: '小昭', sprite: 'senior', style: 'leg', root: 3, wu: 4, personality: ['gentle', 'diligent'], skills: { leg: 8, palm: 6, strength: 4, farming: 8, herbal: 8, agility: 10, cooking: 14 }, tag: '溫柔：照顧人、心情加成，身世之謎' },
-  afang: { name: '阿芳', sprite: 'senior', style: 'leg', root: 2, wu: 3, personality: ['gentle', 'optimist'], skills: { leg: 4, palm: 2, strength: 2, farming: 8, herbal: 6, agility: 8, cooking: 8 }, tag: '啞女：善良，喚起阿星的良心（俠義 +）' },
+  zhaomin: { name: '趙敏', fem: true, sprite: 'senior', style: 'palm', root: 3, wu: 5, personality: ['clever', 'brave'], skills: { leg: 6, palm: 10, strength: 4, farming: 2, herbal: 6, agility: 12, cooking: 4 }, tag: '郡主：謀略與資源，正派名俠好感 −' },
+  xiaozhao: { name: '小昭', fem: true, sprite: 'senior', style: 'leg', root: 3, wu: 4, personality: ['gentle', 'diligent'], skills: { leg: 8, palm: 6, strength: 4, farming: 8, herbal: 8, agility: 10, cooking: 14 }, tag: '溫柔：照顧人、心情加成，身世之謎' },
+  afang: { name: '阿芳', fem: true, sprite: 'senior', style: 'leg', root: 2, wu: 3, personality: ['gentle', 'optimist'], skills: { leg: 4, palm: 2, strength: 2, farming: 8, herbal: 6, agility: 8, cooking: 8 }, tag: '啞女：善良，喚起阿星的良心（俠義 +）' },
   feizaicong: { name: '肥仔聰', sprite: 'hero', style: 'palm', root: 2, wu: 2, personality: ['glutton', 'lazy'], skills: { leg: 2, palm: 6, strength: 10, farming: 4, herbal: 2, agility: 4, cooking: 6 }, tag: '跟班：一起詐騙賺錢，打架只會壯聲勢' },
 };
 export const CUSTOM_COMPANIONS = ['huangrong', 'shuanger', 'xiaozhao', 'yuelingshan'];
@@ -223,7 +223,7 @@ export const WAVES = [
 
 export const DISCIPLES = [
   { id: 'hero', name: '主角', root: 3, adult: true, sprite: 'hero', style: 'palm', skills: { leg: 2, palm: 10, strength: 10, farming: 5, herbal: 5, agility: 10, cooking: 3 }, traits: { diligent: 1.2 }, personality: ['diligent', 'worrier'] },
-  { id: 'senior', name: '林師姐', root: 4, adult: true, sprite: 'senior', style: 'leg', skills: { leg: 10, palm: 5, strength: 5, farming: 15, herbal: 10, agility: 12, cooking: 10 }, traits: { social: 1.3 }, personality: ['gentle', 'optimist'] },
+  { id: 'senior', name: '林師姐', root: 4, adult: true, fem: true, sprite: 'senior', style: 'leg', skills: { leg: 10, palm: 5, strength: 5, farming: 15, herbal: 10, agility: 12, cooking: 10 }, traits: { social: 1.3 }, personality: ['gentle', 'optimist'] },
   { id: 'cousin', name: '堂弟', root: 2, adult: false, sprite: 'cousin', style: 'leg', skills: { leg: 3, palm: 0, strength: 2, farming: 3, herbal: 8, agility: 15, cooking: 2 }, traits: { playful: 1.4 }, personality: ['playful', 'glutton'] },
 ];
 
@@ -268,7 +268,7 @@ export const RECRUIT = { baseRep: 8, stepRep: 6, food: 3 };
 export const RECRUIT_POOL = [
   { id: 'aqing', name: '阿青', adult: true, sprite: 'hero', style: 'palm', skills: { leg: 3, palm: 6, strength: 8, farming: 6, herbal: 4, agility: 9, cooking: 4 }, traits: { diligent: 1.3 }, personality: ['diligent', 'brave'] },
   { id: 'shitou', name: '石頭', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {}, personality: ['honest', 'brave'] },
-  { id: 'xiaomei', name: '小梅', adult: true, sprite: 'senior', style: 'palm', skills: { leg: 2, palm: 4, strength: 4, farming: 10, herbal: 14, agility: 11, cooking: 12 }, traits: { social: 1.4 }, personality: ['gentle', 'sociable'] },
+  { id: 'xiaomei', name: '小梅', adult: true, fem: true, sprite: 'senior', style: 'palm', skills: { leg: 2, palm: 4, strength: 4, farming: 10, herbal: 14, agility: 11, cooking: 12 }, traits: { social: 1.4 }, personality: ['gentle', 'sociable'] },
   { id: 'laoqi', name: '老七', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 6, palm: 6, strength: 10, farming: 12, herbal: 6, agility: 7, cooking: 8 }, traits: { diligent: 1.1 }, personality: ['gentle', 'optimist'] },
 ];
 
@@ -384,15 +384,15 @@ export const LABOR23 = { specMul: 1.35, specSpeed: 1.2, hermitMaxD: 3, hermitMin
 export const ROOT = { revealAt: 240, inviteMin: 3, inviteAff: 18, names: ['', '平平', '尚可', '中上', '良材', '奇才'] };
 export const LABOR_POOL = [
   { id: 'dazhu', name: '大柱', adult: true, sprite: 'hero', style: 'palm', root: 4, skills: { leg: 2, palm: 3, strength: 14, farming: 4, herbal: 1, agility: 7, cooking: 2 }, traits: {}, personality: ['diligent', 'honest'] },
-  { id: 'erya', name: '二丫', adult: true, sprite: 'senior', style: 'leg', root: 2, skills: { leg: 3, palm: 1, strength: 7, farming: 9, herbal: 6, agility: 10, cooking: 8 }, traits: { social: 1.2 }, personality: ['sociable', 'optimist'] },
+  { id: 'erya', name: '二丫', adult: true, fem: true, sprite: 'senior', style: 'leg', root: 2, skills: { leg: 3, palm: 1, strength: 7, farming: 9, herbal: 6, agility: 10, cooking: 8 }, traits: { social: 1.2 }, personality: ['sociable', 'optimist'] },
   { id: 'laohuang', name: '老黃', adult: true, sprite: 'hero', style: 'palm', root: 1, skills: { leg: 1, palm: 2, strength: 11, farming: 8, herbal: 3, agility: 5, cooking: 5 }, traits: {}, personality: ['gentle', 'worrier'] },
   { id: 'xiaoliu', name: '小六', adult: true, sprite: 'cousin', style: 'leg', root: 5, skills: { leg: 6, palm: 2, strength: 6, farming: 3, herbal: 4, agility: 14, cooking: 1 }, traits: { playful: 1.2 }, personality: ['free', 'brave'] },
-  { id: 'achun', name: '阿春', adult: true, sprite: 'senior', style: 'palm', root: 3, skills: { leg: 2, palm: 4, strength: 8, farming: 7, herbal: 9, agility: 9, cooking: 9 }, traits: {}, personality: ['gentle', 'diligent'] },
+  { id: 'achun', name: '阿春', adult: true, fem: true, sprite: 'senior', style: 'palm', root: 3, skills: { leg: 2, palm: 4, strength: 8, farming: 7, herbal: 9, agility: 9, cooking: 9 }, traits: {}, personality: ['gentle', 'diligent'] },
   { id: 'tiezi', name: '鐵子', adult: true, sprite: 'hero', style: 'leg', root: 2, skills: { leg: 5, palm: 3, strength: 13, farming: 2, herbal: 1, agility: 8, cooking: 2 }, traits: {}, personality: ['brave', 'worrier'] },
 ];
 export const LABOR_POOL23 = [ /* loop155 v2.3：只在 s.v23 接在原六人之後 */
   { id: 'shibo', name: '石伯', adult: true, sprite: 'hero', style: 'palm', root: 1, skills: { leg: 1, palm: 2, strength: 12, farming: 3, herbal: 1, agility: 4, cooking: 3 }, traits: {}, personality: ['honest', 'diligent'] },
-  { id: 'axiu', name: '阿秀', adult: true, sprite: 'senior', style: 'leg', root: 2, skills: { leg: 2, palm: 1, strength: 5, farming: 6, herbal: 5, agility: 8, cooking: 12 }, traits: {}, personality: ['gentle', 'sociable'] },
+  { id: 'axiu', name: '阿秀', adult: true, fem: true, sprite: 'senior', style: 'leg', root: 2, skills: { leg: 2, palm: 1, strength: 5, farming: 6, herbal: 5, agility: 8, cooking: 12 }, traits: {}, personality: ['gentle', 'sociable'] },
   { id: 'shuisheng', name: '水生', adult: true, sprite: 'cousin', style: 'leg', root: 3, skills: { leg: 4, palm: 2, strength: 10, farming: 5, herbal: 2, agility: 9, cooking: 2 }, traits: {}, personality: ['optimist', 'diligent'] },
   { id: 'caogen', name: '草根', adult: true, sprite: 'hero', style: 'palm', root: 2, skills: { leg: 2, palm: 2, strength: 8, farming: 12, herbal: 4, agility: 6, cooking: 4 }, traits: {}, personality: ['honest', 'worrier'] },
 ];
