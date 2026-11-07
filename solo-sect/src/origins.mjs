@@ -9,4 +9,4 @@ export const CLASSIC_ORIGINS={
  axing:[['肥仔聰','village',false],['街坊鞋匠','work',true]],
 };
 const CUSTOM_ORIGINS=[ [['阿禾','village'],['石生','debt']], [['小滿','rescued'],['阿青','work']], [['阿墨','work'],['小遠','village']] ];
-export function originPeople(heroId=null,origin=0){return (CLASSIC_ORIGINS[heroId]||CUSTOM_ORIGINS[origin]||CUSTOM_ORIGINS[0]).map(([name,relation,invented=true],i)=>({id:`origin-${i+1}`,name,relation,invented,originRelation:ORIGIN_RELATIONS[relation].text,personality:i?['honest','gentle']:['diligent','kind'],root:3,wu:3,style:'palm',adult:true,sprite:i?'junior':'senior',traits:{},skills:{leg:0,palm:0,strength:10,agility:10,farming:4,herbal:4,cooking:4}}));}
+export function originPeople(heroId=null,origin=0){return (CLASSIC_ORIGINS[heroId]||CUSTOM_ORIGINS[origin]||CUSTOM_ORIGINS[0]).map(([name,relation,invented=true],i)=>({id:`origin-${i+1}`,name,relation,invented,originRelation:ORIGIN_RELATIONS[relation].text,personality:i?['honest','gentle']:['diligent','kind'],root:3,wu:3,style:'palm',adult:true,sprite:i?'cousin':'senior',traits:{},skills:{leg:0,palm:0,strength:10,agility:10,farming:4,herbal:4,cooking:4}}));}
