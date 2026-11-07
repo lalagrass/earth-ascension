@@ -74,6 +74,9 @@ export const MIGRATIONS = [
   { to: '3.8', note: 'N58（#489）：收徒三層；舊局的已收門人與庫存不動，人口方針按讀檔時人數起算，自產成績不倒推', up(o) {
     o.recruitment ??= recruitmentInit(discipleCount(o));
   } },
+  { to: '3.81', note: 'N58 小修（#488）：未預約工作格；舊局補空的當日抵食宿工作預約，不改已收人與其糧錢', up(o) {
+    if (o.recruitment) o.recruitment.workBooked ??= { day: o.day, slots: [] };
+  } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

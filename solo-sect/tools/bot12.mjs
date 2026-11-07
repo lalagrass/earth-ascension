@@ -74,6 +74,7 @@ for (const seed of (seedArg ? [seedArg] : Array.from({ length: 12 }, (_, i) => 1
   recruitmentRow.favorite=L?L.favoriteMove(s.ds.find(d=>d.id==='hero')):null;
   recruitmentRow.blocked=W.xiaAdmission?W.xiaPool(s).filter(k=>W.XIA[k].role!=='teacher'&&W.XIA[k].need(s)).map(k=>({id:k,...W.xiaAdmission(s,k)})):null;
   recruitmentRow.guidance=s.ds.filter(d=>d.guidanceMentor).map(d=>({id:d.id,mentor:d.guidanceMentor,day:d.timePrev?.day,received:d.timePrev?.guided||0,totalReceived:d.guidanceTotal||0}));recruitment.push(recruitmentRow);
+  recruitmentRow.workDepartures=s.recruitment?.departures||0;
   huntProbe(s);
   naturalWitch += s.witchN || 0;
   for (const r of T.T(s).hist || []) { RAIDS.n++; if (r.fight) { RAIDS.fights++; if (r.fight === 'win') RAIDS.won++; if (r.map) RAIDS.map++; } if (r.hurt) RAIDS.hurt++; }
