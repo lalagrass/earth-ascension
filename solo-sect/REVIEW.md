@@ -581,6 +581,8 @@ CI 第三輪 quick 與 golden 全過，accept 296/301。五項逐項處置：
 
 首輪山門紀 golden 曾在 `bot-1007-emei` 第 10 日單格不符，第 20／30 日相同。重現為同一進程連跑 30 日兩局時，第二局郭靖的 `child.grown` 提早出現在第 10 日；`mkDisciple` 原本把可變的 `RECRUIT_POOL` 子物件直接借入人物，前一局成年時污染模板。現在建角複製 `child` 和 `parents`，同一進程兩局的第 10／20／30 日雜湊逐格一致。這是跨局隔離修復，沒有調整成年日或招式規則。
 
+最新 CI quick 364/364、矩陣 golden 通過後，accept 300/301 唯一失敗為 `v220.test.mjs` 的另一份三十日完整存檔 fixture：4.2 的人際／設施狀態和規則版本改了序列化內容。Node 22 依測試內建 `UPDATE_GOLDEN_V22=1 node --test solo-sect/test/accept/v220.test.mjs` 更新 `golden-30d-v22.txt`，`319f067b152f751c` → `715ea2352faf60a6`；不改情境、相等斷言或舊 `golden-30d.txt`，再以無更新旗標跑同一檔 15/15。
+
 守點補核對：現有柵欄在菜園 `NODES.veg`，不是地圖邊緣的 `NODES.gate`。因此窄處貼在菜園，階段容量直接讀 `FENCE_FAC.stages[].coverSlots`；破牆不提供遮擋。它沿用現有站位負荷，沒有寫門派勝率倍率。
 
 | C 指標（Node 22 bot12） | #505 head | 本輪 head |
