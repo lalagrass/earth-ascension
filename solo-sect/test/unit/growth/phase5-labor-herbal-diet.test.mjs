@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, setOrder, tick } from '../../../src/sim.mjs';
+import { createState, scoreActs, setOrder, tick } from '../../../src/sim.mjs';
 import { BODY_CONDITION, stepWorkCondition, restBodyCondition, ensureBodyCondition, cookMedicatedMeal, applyMedicatedMeal } from '../../../src/economy.mjs';
 import { choreFluencyTier, ergonomicFrame } from '../../../src/growth-playback.mjs';
 import { renderMicroStage } from '../../../src/pose-render.mjs';
@@ -44,6 +44,24 @@ test('Phase 5：黃蓉煮飯和用飯走真任務，藥膳消疲勞、四週期�
   assert.ok(d.bodyGainToday <= BODY_CONDITION.dailyGain * 4);
   const ordinary = createState(19, { hermitage: true }), cook = ordinary.ds[0]; ordinary.res.herb = 1;
   cookMedicatedMeal(ordinary, cook); assert.equal(applyMedicatedMeal(cook, ordinary).cycles, 3);
+  const batch = createState(19, { hermitage: true }); batch.res.food = 1; batch.res.herb = 1;
+  assert.ok(cookMedicatedMeal(batch, batch.ds[0]));
+  assert.equal(batch.res.food, 0); assert.equal(batch.res.medFood, 1); assert.equal(batch.res.herb, 0);
+  assert.equal(batch.ledger.out.food, 1); assert.equal(batch.ledger.out.herb, 1); assert.equal(batch.ledger.in.medFood, 1);
+  for (const plainFood of [0, 1]) {
+    const mealState = createState(17, { hermitage: true, partner: 'huangrong' }), eater = mealState.ds[0], chef = mealState.ds[1];
+    mealState.res.food = plainFood; mealState.res.medFood = 1; mealState.res.veg = 0; mealState.res.herb = 0;
+    mealState.medFoodBatches = [{ name: '桃花歸元藥膳', chef: chef.id, rong: true }]; chef.away = true;
+    eater.needs.hunger = 10; eater.muscleFatigue = 100; eater.soreness = true;
+    assert.equal(scoreActs(mealState, eater).some(x => x.act === 'eat'), true, `普通飯 ${plainFood} 時藥膳可用`);
+    assert.equal(setOrder(mealState, eater.id, 'eat'), true);
+    for (let i = 0; i < 300 && !eater.herbalDietUntil; i++) tick(mealState);
+    assert.ok(eater.herbalDietUntil > mealState.t); assert.ok(eater.needs.hunger > 10); assert.equal(eater.muscleFatigue, 35);
+    assert.equal(mealState.res.food, plainFood); assert.equal(mealState.res.medFood, 0);
+    assert.equal(mealState.ledger.out.medFood, 1); assert.equal(mealState.ledger.out.food || 0, 0, '一餐只扣藥膳，不雙扣普通飯');
+  }
+  const oldMeal = createState(19); oldMeal.res.food = 0; oldMeal.res.medFood = 1;
+  assert.equal(scoreActs(oldMeal, oldMeal.ds[0]).some(x => x.act === 'eat'), false, '舊局不啟用藥膳庫存');
   const plain = createState(17, { hermitage: true }).ds[0], warmed = createState(17, { hermitage: true }).ds[0];
   warmed.herbalDietUntil = 600;
   gainArt(plain, 5, 1, 0, { raw: 5, src: 'train' });

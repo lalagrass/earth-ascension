@@ -14,3 +14,7 @@
 ## Golden 與重現
 
 規則 4.3 遷移只補已在隱居的舊檔欄位。舊局 golden 在雜湊前只將 `rules` 正規化為 4.2 並略去空的 4.3 遷移步，其他每一個存檔欄位仍比對；既有 quick、full、saves 檔應逐格保持原雜湊。新模式另用 `test/golden/hermitage.json` 鎖小龍女／黃蓉兩線的第 1、3、5 日。以 Node 22 執行 `node tools/golden.mjs --check`。
+
+## Phase 5：一份藥膳是一份飯
+
+[Phase 5 規格](../plans/PHASE5-LABOR-FATIGUE-HERBAL-DIET.md)把藥膳定義為「該鍋飯升級」而非加料後多出一份飯。灶房完成一鍋普通飯後，有草藥時把其中一份 `food` 轉為一份 `medFood`，帳本記廚房 `food` 出 1、`herb` 出 1、`medFood` 入 1。角色有藥膳即可選用飯；用餐優先消耗一份 `medFood`，增加原用飯飽足並獲溫養，不再同時扣普通 `food`。沒有藥膳時沿用原飯菜與原帳本；舊開局不啟用這個庫存。
