@@ -398,6 +398,22 @@ export const guardOf = (d) => (ARTS_ALL.some((a) => a.classic && !a.layered && !
 // v1.2 二度氣：無盡段每過一重，有招牌武學在身的人回一口真氣（體力回補，依比例）
 export const secondWind = (team) => team.filter((d) => guardOf(d) < 0.95 || d.dugu?.length).length / Math.max(1, team.length);
 // 遭遇：可繞就閃（隊伍取最差身法）；逃兵依風格追擊；記入該段清場率
+function chaseEscape(s, X, seg, e, team, H, sg) {
+  const E = ENEMIES[e], S = STYLES[X.style]; let t = 0;
+  const stub = team.some((d) => (d.personality || []).includes('stubborn'));
+  if (S.chase >= 1 || (S.chase > 0 && stub && H.rand(s) < S.chase)) {
+    const ag = Math.max(...team.map((d) => d.skills.agility));
+    for (let k = 0; k < (S.chase >= 1 ? 2 : 1); k++) {
+      X.chase.n++; t += EVADE.chaseTime;
+      if (H.rand(s) < expOdds(ag, E.speed)) {
+        X.chase.got++; X.escaped[e]--; if (!X.escaped[e]) delete X.escaped[e];
+        add(X.kills, e, 1); sg.kill++; popKill(s, seg.id); seeEnemy(s, e, 'kill', team[0]);
+        lootRoll(s, X.loot, E.loot, H); break;
+      }
+    }
+  }
+  return t;
+}
 function encounter(s, e, seg, team, H) {
   // v1.95：試過「環被打到 0 就沒有遭遇」，郭靖 30 日 1600 掉到 0–1/5（深谷小環常被清空，少了熊／寨主的歷練），故不採；族群只回饋上限與地圖
   const X = s.exp;  const sca = seg.scale || 1, E = { ...ENEMIES[e], hp: ENEMIES[e].hp * sca }, S = STYLES[X.style], sg = (X.seg[seg.id] ??= { enc: 0, kill: 0 }); sg.enc++; X.encN = (X.encN || 0) + 1;
@@ -417,10 +433,7 @@ function encounter(s, e, seg, team, H) {
     return 0;
   }
   const r = fight(s, e, team, H, false, sca); let t = r.t; if (r.won) { sg.kill++; popKill(s, seg.id); }
-  if (r.fled) { const stub = team.some((d) => (d.personality || []).includes('stubborn'));
-    if (S.chase >= 1 || (S.chase > 0 && stub && H.rand(s) < S.chase)) {
-      const ag = Math.max(...team.map((d) => d.skills.agility)); for (let k = 0; k < (S.chase >= 1 ? 2 : 1); k++) { X.chase.n++; t += EVADE.chaseTime;
-        if (H.rand(s) < expOdds(ag, E.speed)) { X.chase.got++; X.escaped[e]--; if (!X.escaped[e]) delete X.escaped[e]; add(X.kills, e, 1); sg.kill++; popKill(s, seg.id); seeEnemy(s, e, 'kill', team[0]); lootRoll(s, X.loot, E.loot, H); break; } } } }
+  if (r.fled) t += chaseEscape(s, X, seg, e, team, H, sg);
   if (sg.kill >= ECO2.denAt && denRaze(s, seg.id)) { (X.razed ??= []).push(seg.name); X.events.push(`搗毀${seg.name}獸巢`); log(s, `巡山隊搗毀了${seg.name}的獸巢：該區族群上限減半五日`); }
   return t;
 }
@@ -456,9 +469,15 @@ export function expStep(s, dt, H) {
       for (const d of team.filter(d => d.hp > 0)) H.grow(s, d, 'style', 3, 'fight');
       if (gate) { X.gates.push(gate.gateName); rivalWon(s, gate); const cp = CAMPS.find(c => c.seg === X.gateI - 1); if (cp) campAt(s, X, cp, team); }
     } else if (gate) {
-      X.reason = `被${gate.gateName}擋在${gate.name}`; X.blocked = gate.gateName;
+      if (team.some(d => d.hp <= 0 && awaken(s, d))) {
+        for (const d of team) d.hp = Math.max(d.hp, 60);
+        X.gateI--; X.events.push(`${team.find(d => d.awakened)?.name || ''}瀕死覺醒`);
+      } else { X.reason = `被${gate.gateName}擋在${gate.name}`; X.blocked = gate.gateName; }
+    } else if (r.fled) {
+      add(X.escaped, r.key, 1); seeEnemy(s, r.key, 'fled');
+      X.busy = chaseEscape(s, X, ROUTE.find(g => g.id === r.seg), r.key, team, H, sg);
     } else if (r.timedOut) { add(X.escaped, r.key, 1); seeEnemy(s, r.key, 'fled'); X.events.push(`${ENEMIES[r.key].name}沿地圖邊緣脫身`); }
-    X.busy = 0;
+    if (!r.fled) X.busy = 0;
     const why = X.reason || checkRetreat(s, team);
     if (why) { X.reason = why; X.phase = 'back'; X.backLeft = X.dist / EXP.back; X.backPos = X.dist; X.ret = returnPlan(s, X); }
     return;

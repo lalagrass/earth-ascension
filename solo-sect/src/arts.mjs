@@ -1232,7 +1232,16 @@ export function combatMoves(d,distance=0) {
 export function chooseCombatMove(s,d,target,rnd,options={}) {
   const distance=options.distance??Math.hypot((d.pos?.[0]||0)-(target.pos?.[0]||0),(d.pos?.[1]||0)-(target.pos?.[1]||0));
   const facts=techniqueFacts(s,d,target);
-  const choices=(options.moves||combatMoves(d,distance)).filter(m=>!m.technique||matchesTechnique(TECHNIQUES.find(r=>r.id===m.id),facts)).map(m=>({...m,actualWind:windOf(d,m.id,m.cd,s?.t),force:moveStats(d,m.id).force}));
+  let choices=(options.moves||combatMoves(d,distance)).filter(m=>!m.technique||matchesTechnique(TECHNIQUES.find(r=>r.id===m.id),facts)).map(m=>({...m,actualWind:windOf(d,m.id,m.cd,s?.t),force:moveStats(d,m.id).force}));
+  // 地圖上的敵人有真實硬皮；若已會破皮的招，別仍選只會擦過的快拳。
+  if (options.contactAware) {
+    const armor=moveStats(target).armor;
+    const capable=choices.filter(m=>contactImpact({t:s?.t||0,fx:[]},
+      {id:d.id,uid:d.uid,k:d.k,pos:[...(d.pos||[0,0])]},
+      {...target,pos:[...(target.pos||[0,0])],wounds:target.wounds?.map(w=>({...w}))},
+      {move:m,force:m.force,armor}).damageFactor>0);
+    if (capable.length) choices=capable;
+  }
   return selectAction(s,d,target,choices,rnd,{distance,composure:composure(d),postureCapacity:postureMax(d),armor:moveStats(target).armor,...options});
 }
 export function fastestMove(d) {

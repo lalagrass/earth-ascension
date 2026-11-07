@@ -6,7 +6,7 @@ import { movementSpeed, moveToward, distance, restoreSurvivor, rememberEscape, r
 import { practiceWindow } from './practice.mjs';
 import { RING } from './combat-space.mjs';
 
-export const EXP_BOUT = { maxSeconds: 90, halfWidth: 150, halfHeight: 100 };
+export const EXP_BOUT = { maxSeconds: 90, halfWidth: 150, halfHeight: 100, fleeAt: .35 };
 const alive = (a) => a && a.hp > 0 && !a.gone;
 const idOf = (a) => a.uid || a.id;
 const closest = (a, rows) => rows.filter(alive).sort((x, y) => distance(a.pos, x.pos) - distance(a.pos, y.pos) || String(idOf(x)).localeCompare(String(idOf(y))))[0];
@@ -27,7 +27,7 @@ export function startMapBout(s, owner, key, seg, team, anchor, source, options =
     pos: [entry[0] + i * RING.step / 2, entry[1] + i * RING.step / 2], cool: 0, energy: 100, weapon: foeKey === 'archer' ? 'arrow' : foeKey === 'bandit' ? 'blade' : null,
     agi: E.speed || FOE_ACTIONS[foeKey]?.speed || 20,
   }));
-  owner.bout = { key, seg: seg.id, scale: seg.scale || 1, near, left, top, anchor: center, source: [...entry], started: s.t, elapsed: 0, foes, team: team.map((d) => d.id), exchanges: 0, strikes: [] };
+  owner.bout = { key, seg: seg.id, scale: seg.scale || 1, near, left, top, anchor: center, source: [...entry], started: s.t, elapsed: 0, foes, team: team.map((d) => d.id), exchanges: 0, strikes: [], fled: 0 };
   return owner.bout;
 }
 
@@ -49,6 +49,16 @@ export function stepMapBout(s, owner, dt, H) {
   for (const a of [...foes, ...team]) {
     if (!alive(a)) continue;
     postureRegen(s, a, dt); fretStep(s, a);
+    if (a.k && !owner.pendingGate && !a.fleeAttempted && a.hp < a.max * EXP_BOUT.fleeAt) {
+      a.fleeAttempted = true;
+      if (H.rand(s) < (ENEMIES[B.key]?.flee || 0)) a.fleeing = true;
+    }
+    if (a.fleeing) {
+      a.swing = null;
+      moveToward(a, B.source, FOE_ACTIONS[a.k]?.speed || movementSpeed(a), dt);
+      if (distance(a.pos, B.source) <= RING.step) { a.gone = true; B.fled++; }
+      continue;
+    }
     if (a.swing?.travel) { const runningAt = [...team, ...foes].find(x => idOf(x) === a.swing.target); if (alive(runningAt)) moveToward(a, runningAt.pos, a.k ? FOE_ACTIONS[a.k]?.speed || movementSpeed(a) : movementSpeed(a), dt); }
     if (a.swing && s.t + 1e-9 >= a.swing.at) {
       const swing = a.swing; a.swing = null;
@@ -62,7 +72,7 @@ export function stepMapBout(s, owner, dt, H) {
       const limit = attackTokenLimit(source.organization ?? SOURCES.den.organization, ringCapacity(target, s));
       if (foes.filter(x => x !== a && x.swing?.target === idOf(target)).length >= limit) continue;
     }
-    const dist = distance(a.pos, target.pos), pick = chooseCombatMove(s, a, target, () => H.rand(s), { distance: dist });
+    const dist = distance(a.pos, target.pos), pick = chooseCombatMove(s, a, target, () => H.rand(s), { distance: dist, contactAware: true });
     const move = pick?.move || (a.k ? foeAction(a, dist) : combatMoves(a).find(m => m.range >= dist));
     if (!move || dist > move.range) { moveToward(a, target.pos, a.k ? FOE_ACTIONS[a.k]?.speed || movementSpeed(a) : movementSpeed(a), dt); continue; }
     const wind = a.k ? practiceWindow(a, move.id, move.wind).wind + (pick?.seconds || 0) : windOf(a, move.id, move.cd, s.t) + (pick?.seconds || 0);
@@ -75,10 +85,10 @@ export function stepMapBout(s, owner, dt, H) {
     if (a.k) a.opened = true; // 一次性假衝／投石在起手就用掉，不能靠落空重刷。
     a.cool = s.t + (move.cd || move.wind + BODY_TIMING.recovery) * (a.k ? 1 : cdMul(a, move.id, s.t)) + (pick?.seconds || 0);
   }
-  const lost = !team.some(alive), won = !foes.some(alive), timedOut = B.elapsed >= EXP_BOUT.maxSeconds;
-  if (!lost && !won && !timedOut) return null;
-  const result = { t: B.elapsed, won, fled: false, lost, timedOut, key: B.key, seg: B.seg, exchanges: B.exchanges };
-  if (timedOut && !won) for (const m of foes.filter(alive)) rememberEscape(s, m);
+  const lost = !team.some(alive), cleared = !foes.some(alive), won = cleared && !B.fled, timedOut = B.elapsed >= EXP_BOUT.maxSeconds;
+  if (!lost && !cleared && !timedOut) return null;
+  const result = { t: B.elapsed, won, fled: cleared && !!B.fled, lost, timedOut, key: B.key, seg: B.seg, exchanges: B.exchanges };
+  if (timedOut && !cleared) for (const m of foes.filter(alive)) rememberEscape(s, m);
   owner.bout = null;
   return result;
 }
