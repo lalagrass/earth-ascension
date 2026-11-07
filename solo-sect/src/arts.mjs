@@ -1248,7 +1248,7 @@ export function postureHit(s, w, amt) { return shiftBalance(s||{t:0},w,amt); }
 export function postureRegen(s, w, dt) { recoverBody(s||{t:0},w,dt,{engaged:opponents(s||{},w).some(a=>a.pos&&w.pos&&distance(a.pos,w.pos)<RING.outer)}); }
 /* 招式深淺：弟子＝這招所屬武學火候 + 1；獸看種類 */
 export function depthOf(atk, mvId) { if (isMon(atk)) return CLASH.depth[atk.k] ?? 1; const a = artOfMove(mvId); return (a && atk.arts?.[a.id] ? artTier(atk, a.id) : 0) + 1; }
-const qiPow = (w) => (isMon(w) ? CLASH.monQi[w.k] ?? 6 : (qiOf(w) || 0) + (w.skills?.strength || 0));
+export const qiPow = (w) => (isMon(w) ? CLASH.monQi[w.k] ?? 6 : (qiOf(w) || 0) + (w?.skills?.strength || 0));
 export const MOVE = {
   force: 14, tierForce: 6, strengthForce: 0.2, hardForce: 12, plainForce: 10,
   speed: 20, tierSpeed: 5, quickSpeed: 18, windSpeed: 5, minWind: 0.1, windSpeedMax: 18,

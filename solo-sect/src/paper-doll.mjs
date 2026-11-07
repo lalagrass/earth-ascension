@@ -79,46 +79,103 @@ function held(g, weapon, x, y) {
 export function drawPaperDoll(g, d, view, geometry) {
   const { hip, sink, lean, legs, arms, female, ergo } = geometry, p = dollProfile(d,female);
   const bp = ergo?.buildProfile;
+  const duel = ergo?.combatDetail || ergo?.duel || view?.ergo?.combatDetail || view?.ergo?.duel;
   const waistDelta = bp?.waistDelta || 0;
   const shoulderDelta = bp?.shoulderDelta || 0;
+  const isRaging = Boolean(duel?.isRaging);
+  const effectiveLean = isRaging ? lean + 4 : lean;
+
   for (const [j,[kx,ky,fx,fy]] of legs.entries()) {
     const x=j?5:-5, y=-hip, kneeY=ky*hip/geometry.uprightHip;
-    segment(g,piece('thigh',p),lean*.45+x,y,kx,kneeY,9);
+    segment(g,piece('thigh',p),effectiveLean*.45+x,y,kx,kneeY,9);
     segment(g,piece('shin',p),kx,kneeY,fx,fy,8);
   }
   g.save();g.translate(0,sink);g.imageSmoothingEnabled=false;
+
+  if (isRaging && g.strokeRect) {
+    g.strokeStyle = 'rgba(192, 57, 43, 0.45)';
+    g.lineWidth = 3;
+    g.strokeRect(effectiveLean - 18, -65, 36, 75);
+  }
+
   if (waistDelta || shoulderDelta) {
-    g.drawImage(piece('torso',p),lean-10-waistDelta/2,-43,20+waistDelta,25);
+    g.drawImage(piece('torso',p),effectiveLean-10-waistDelta/2,-43,20+waistDelta,25);
   } else {
-    g.drawImage(piece('torso',p),lean-10,-43);
+    g.drawImage(piece('torso',p),effectiveLean-10,-43);
   }
   if (bp && bp.breathRate > 1.2) {
     const breath = Math.sin((view.clock || 0) * 5 * bp.breathRate) * 0.8;
     g.fillStyle = 'rgba(255,255,255,0.15)';
-    g.fillRect(lean - 8, -40 + breath, 16, 8);
+    g.fillRect(effectiveLean - 8, -40 + breath, 16, 8);
   }
   for (const [j,[ex,ey,hx,hy]] of arms.entries()) {
-    const x=lean+(j?8:-8)+(j?shoulderDelta/2:-shoulderDelta/2);
-    segment(g,piece('upperArm',p),x,-39,ex,ey,8);
-    segment(g,piece('foreArm',p),ex,ey,hx,hy,7);
-    if(j)held(g,geometry.weapon,hx,hy);
-    if(view.work==='water') { g.fillStyle='#6b4d30';g.fillRect(hx-5,hy+6,11,15);g.fillStyle='#9cb8bd';g.fillRect(hx-3,hy+8,7,3); }
+    const x=effectiveLean+(j?8:-8)+(j?shoulderDelta/2:-shoulderDelta/2);
+    let armEx = ex, armEy = ey, armHx = hx, armHy = hy;
+    if (duel?.instantCounterPalm && j === 1) {
+      armEx = effectiveLean + 16;
+      armEy = -32;
+      armHx = effectiveLean + 28;
+      armHy = -32;
+    }
+    segment(g,piece('upperArm',p),x,-39,armEx,armEy,8);
+    segment(g,piece('foreArm',p),armEx,armEy,armHx,armHy,7);
+    if(j)held(g,geometry.weapon,armHx,armHy);
+    if(view.work==='water') { g.fillStyle='#6b4d30';g.fillRect(armHx-5,armHy+6,11,15);g.fillStyle='#9cb8bd';g.fillRect(armHx-3,armHy+8,7,3); }
+
+    if (duel?.instantCounterPalm && j === 1 && g.beginPath && g.arc && g.stroke) {
+      g.strokeStyle = 'rgba(255, 235, 140, 0.85)';
+      g.lineWidth = 2.5;
+      g.beginPath();
+      g.arc(armHx + 6, armHy, 9, -Math.PI / 2, Math.PI / 2);
+      g.stroke();
+      g.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+      g.lineWidth = 1.5;
+      g.beginPath();
+      g.arc(armHx + 12, armHy, 14, -Math.PI / 2, Math.PI / 2);
+      g.stroke();
+    }
   }
   if (view.work === 'water' && ergo?.laborDetail?.poleBend) {
     const bend = ergo.laborDetail.poleBend;
     g.strokeStyle = '#856d46';
     g.lineWidth = 2.5;
     g.beginPath();
-    g.moveTo(lean - 22, -38);
-    g.quadraticCurveTo(lean, -38 + bend, lean + 22, -38);
+    g.moveTo(effectiveLean - 22, -38);
+    g.quadraticCurveTo(effectiveLean, -38 + bend, effectiveLean + 22, -38);
     g.stroke();
   }
-  g.drawImage(piece('head',p),lean-9,-59);
-  g.drawImage(piece('hair',p),lean-9,-59);
+
+  const isHeadSlip = duel?.dodgeTier === 'headSlip' && Boolean(duel?.opponent);
+  if (isHeadSlip && g.save && g.restore) {
+    g.save();
+    const rad = -((duel.headTiltDeg || 15) * Math.PI) / 180;
+    if (g.translate) g.translate(effectiveLean - 4, -49);
+    if (g.rotate) g.rotate(rad);
+    g.drawImage(piece('head', p), -5, -10);
+    g.drawImage(piece('hair', p), -5, -10);
+    if (isRaging && g.fillRect) {
+      g.fillStyle = '#c0392b';
+      g.fillRect(0, -6, 2, 2);
+      g.fillRect(4, -6, 2, 2);
+    }
+    g.restore();
+  } else {
+    g.drawImage(piece('head',p),effectiveLean-9,-59);
+    g.drawImage(piece('hair',p),effectiveLean-9,-59);
+    if (isRaging && g.fillRect) {
+      g.fillStyle = '#c0392b';
+      g.fillRect(effectiveLean - 3, -50, 2, 2);
+      g.fillRect(effectiveLean + 2, -50, 2, 2);
+      g.fillStyle = '#962d22';
+      g.fillRect(effectiveLean - 1, -55, 3, 1);
+      g.fillRect(effectiveLean, -56, 1, 3);
+    }
+  }
+
   if (bp && bp.sweatLevel > 0) {
     g.fillStyle = '#6cb7db';
-    g.fillRect(lean + 8, -55, 2, 3);
-    if (bp.sweatLevel > 0.3) g.fillRect(lean - 10, -52, 2, 2);
+    g.fillRect(effectiveLean + 8, -55, 2, 3);
+    if (bp.sweatLevel > 0.3) g.fillRect(effectiveLean - 10, -52, 2, 2);
   }
   g.restore();
 }

@@ -2,6 +2,7 @@
 import { handUses, practiceResidual, practiceWindow, familiarUses, familiarReaction } from './practice.mjs';
 import { bodyMove, FOE_ACTIONS } from './starter-combat.mjs';
 import { opponents } from './tactics.mjs';
+import { composure, assessLoad, postureMax, qiPow, topTier } from './arts.mjs';
 
 export const PLAYBACK = Object.freeze({ pause: .5, uprightHip: 17, deepHipRatio: .5, tilt: 30, sway: 4, bodyScale: 10, legacyStart: .5 });
 export function playbackParams(d, art=null, timing={}) {
@@ -18,6 +19,260 @@ export function playbackParams(d, art=null, timing={}) {
     sway:PLAYBACK.sway*stance/(1+agility/PLAYBACK.bodyScale),
     chopPause:PLAYBACK.pause*practiceResidual(handUses(d,'work:chop')),
     waterTilt:PLAYBACK.tilt*practiceResidual(handUses(d,'work:water'))/(1+agility/PLAYBACK.bodyScale)};
+}
+
+export function duelExchangeFrame(d, s = {}, view = {}) {
+  // 1. 基本對手與圍攻負載（Opponent & Spatial Angle Lock）
+  let opponent = view.opponent !== undefined ? view.opponent : null;
+  if (opponent === null && s && d) {
+    try {
+      const opps = opponents(s, d);
+      if (opps && opps.length) opponent = opps[0];
+    } catch {}
+  }
+
+  let allOpponents = [];
+  if (view.opponents) {
+    allOpponents = view.opponents;
+  } else if (s && d) {
+    try {
+      const opps = opponents(s, d);
+      allOpponents = opps && opps.length ? opps : (opponent ? [opponent] : []);
+    } catch {
+      allOpponents = opponent ? [opponent] : [];
+    }
+  } else if (opponent) {
+    allOpponents = [opponent];
+  }
+
+  const angleLockCount = view.angleLockCount ?? allOpponents.length;
+
+  let loadL = view.loadL ?? view.L;
+  if (loadL == null) {
+    if (s?.ds) {
+      try {
+        const al = assessLoad(s, d);
+        loadL = al?.L != null ? al.L : Math.min(1.2, angleLockCount * 0.35);
+      } catch {
+        loadL = Math.min(1.2, angleLockCount * 0.35);
+      }
+    } else {
+      loadL = Math.min(1.2, angleLockCount * 0.35);
+    }
+  }
+  loadL = Math.max(0, Math.min(1.5, Number(loadL) || 0));
+
+  // 2. 閃避代價與原地擺頭反擊（Dodge Cost & Head-Slip Counter）
+  const agility = d?.skills?.agility || 0;
+  let usedRatio = view.usedRatio;
+  if (usedRatio == null) {
+    if (opponent) {
+      try {
+        const foeWind = opponent?.swing?.wind || FOE_ACTIONS[opponent?.k]?.moves?.[0]?.wind || 0.45;
+        const foeMove = opponent?.swing?.mv || 'bodyPunch';
+        const reaction = familiarReaction(d, opponent, foeMove, s?.codex || {});
+        usedRatio = reaction / (foeWind || 0.45);
+      } catch {
+        usedRatio = 0.5;
+      }
+    } else {
+      usedRatio = 0.5;
+    }
+  }
+
+  let dodgeTier;
+  if (view.dodgeTier && loadL < 0.8) {
+    dodgeTier = view.dodgeTier;
+  } else if (loadL >= 0.8 || angleLockCount >= 3) {
+    dodgeTier = 'scramble';
+  } else if (loadL >= 0.4 || angleLockCount === 2) {
+    dodgeTier = 'sideStep';
+  } else if (loadL < 0.4 && (usedRatio < 0.4 || agility >= 25)) {
+    dodgeTier = 'headSlip';
+  } else {
+    dodgeTier = 'sideStep';
+  }
+
+  const headTiltDeg = dodgeTier === 'headSlip' ? 15 : (dodgeTier === 'sideStep' ? 6 : -12);
+  const footShiftPx = dodgeTier === 'headSlip' ? 0 : (dodgeTier === 'sideStep' ? -8 : -18);
+
+  // 3. 四維武道遙測（Four-Dimensional Combat Telemetry）
+  let postureRatio = view.postureRatio;
+  if (postureRatio == null) {
+    try {
+      const pMax = postureMax(d);
+      const pCur = d?.posture != null ? d.posture : pMax;
+      postureRatio = pMax > 0 ? Math.max(0, Math.min(1, pCur / pMax)) : 1;
+    } catch {
+      postureRatio = 1;
+    }
+  }
+
+  let oppPostureRatio = 1;
+  if (opponent) {
+    try {
+      const oppPMax = postureMax(opponent);
+      const oppPCur = opponent?.posture != null ? opponent.posture : oppPMax;
+      oppPostureRatio = oppPMax > 0 ? Math.max(0, Math.min(1, oppPCur / oppPMax)) : 1;
+    } catch {
+      oppPostureRatio = 1;
+    }
+  }
+
+  let qiRatio = view.qiRatio;
+  if (qiRatio == null) {
+    try {
+      const qp = qiPow(d);
+      qiRatio = Math.max(0, Math.min(1, (d?.neigong?.level || 0) / 10 + (qp > 1 ? (qp - 1) * 0.5 : 0)));
+    } catch {
+      qiRatio = 0;
+    }
+  }
+
+  const contact = view.contact || null;
+  const depth = view.depth ?? contact?.depth;
+  const blocked = view.blocked ?? contact?.blocked ?? (d?.ring && !d.ring.intercept && s?.t && (s.t - d.ring.t < 1.5));
+  const shallowOrBlocked = (blocked === true) || (depth !== undefined && depth < 0) || (contact && !contact.injured);
+
+  let microShiverPx = 0;
+  if (shallowOrBlocked) {
+    microShiverPx = 3.0;
+  }
+
+  const reboundShock = Boolean(
+    view.rebound === true ||
+    (view.guard && view.force && view.guard > view.force * 1.4) ||
+    (d?.arts?.jiuyang && (view.blocked || view.shallow)) ||
+    (Array.isArray(s?.fx) && s.fx.some((fx) => (fx.word === '震' || (typeof fx.text === 'string' && fx.text.includes('震')))))
+  );
+
+  let composureMax = 1.0;
+  try {
+    composureMax = composure(d) || 1.0;
+  } catch {
+    composureMax = 1.0;
+  }
+
+  const rawFret = view.fret ?? d?.fret ?? 0;
+  const fretRatio = Math.max(0, Math.min(1, rawFret / (composureMax || 1)));
+
+  const isRaging = Boolean(
+    view.isRaging ||
+    d?.raging ||
+    (d?.rageUntil && s?.t != null && d.rageUntil > s.t) ||
+    fretRatio >= 1
+  );
+
+  const instantCounterPalm = !isRaging && Boolean(
+    dodgeTier === 'headSlip' &&
+    loadL < 0.5 &&
+    view.canCounter !== false &&
+    (view.canCounter === true || (Boolean(opponent) && (usedRatio < 0.35 || (view.usedRatio == null && agility >= 28 && (opponent?.skills?.agility || 0) < 20 && !opponent?.arts))))
+  );
+
+  let flawWindow;
+  if (view.flawWindow) {
+    flawWindow = { open: false, part: null, progress: 0, ...view.flawWindow };
+  } else {
+    let swingProgress = 0;
+    const foeSwing = opponent?.swing || opponent?.bswing;
+    if (foeSwing) {
+      if (foeSwing.t != null && foeSwing.wind) {
+        swingProgress = foeSwing.t / foeSwing.wind;
+      } else if (foeSwing.at != null && foeSwing.wind && s?.t != null) {
+        swingProgress = Math.max(0, Math.min(1, (s.t - (foeSwing.at - foeSwing.wind)) / foeSwing.wind));
+      }
+    }
+    let agilityOk = false;
+    try {
+      agilityOk = agility >= 20 || (d?.arts ? topTier(d).t >= 2 : false) || (d?.dugu?.length || 0) > 0;
+    } catch {
+      agilityOk = agility >= 20;
+    }
+    const isOpen = Boolean(
+      d?.sure ||
+      d?.ring?.intercept ||
+      view.flawOpen ||
+      (foeSwing && (foeSwing.wind || 0) > 0 && swingProgress >= 0.7 && agilityOk)
+    );
+    const part = isOpen ? (view.flawPart || (d?.dugu?.length ? 'hand' : 'eye')) : null;
+    const progress = isOpen ? (view.flawProgress ?? (swingProgress > 0 ? swingProgress : 1)) : 0;
+    flawWindow = { open: isOpen, part, progress };
+  }
+
+  // 4. 五大交鋒模式與絕學異象分類（Exchange Mode & Signature Flair）
+  const clashSparks = view.clashSparks != null ? Boolean(view.clashSparks) : Boolean(microShiverPx > 0 || view.blocked);
+
+  let exchangeMode;
+  if (view.exchangeMode) {
+    exchangeMode = view.exchangeMode;
+  } else if (!opponent) {
+    exchangeMode = 'idle';
+  } else if (isRaging) {
+    exchangeMode = 'rageAllOut';
+  } else if (dodgeTier === 'scramble') {
+    exchangeMode = 'scrambleDefense';
+  } else if (flawWindow.open) {
+    exchangeMode = 'flawStrike';
+  } else if (instantCounterPalm) {
+    exchangeMode = 'headSlipCounter';
+  } else {
+    let isMaster = false;
+    try {
+      const selfTop = d?.arts ? topTier(d).t : -1;
+      const oppTop = opponent?.arts ? topTier(opponent).t : -1;
+      isMaster = selfTop >= 2 || agility >= 22 || oppTop >= 2 || ((opponent?.skills?.agility || 0) >= 22);
+    } catch {
+      isMaster = agility >= 22 || ((opponent?.skills?.agility || 0) >= 22);
+    }
+    if (isMaster) {
+      exchangeMode = 'masterStandoff';
+    } else {
+      exchangeMode = 'rookiePecking';
+    }
+  }
+
+  const witchSlowMo = Boolean(view.witch || (s?.witch && (Array.isArray(s.witch) ? s.witch.length > 0 : true)));
+
+  let zjEffect;
+  if (view.zjEffect) {
+    zjEffect = view.zjEffect;
+  } else if ((d?.dugu && d.dugu.length > 0) || Boolean(d?.arts?.dugu)) {
+    zjEffect = 'dugu';
+  } else if (Boolean(d?.arts?.kuihua || d?.arts?.bixie || s?.hs?.bixie === 3)) {
+    zjEffect = 'kuihua';
+  } else if (Boolean(d?.arts?.taiji || d?.arts?.taijiSword)) {
+    zjEffect = 'taiji';
+  } else if (Boolean(d?.arts?.jiuyang || reboundShock)) {
+    zjEffect = 'jiuyang';
+  } else {
+    zjEffect = 'none';
+  }
+
+  return {
+    opponent,
+    allOpponents,
+    angleLockCount,
+    loadL,
+    usedRatio,
+    dodgeTier,
+    headTiltDeg,
+    footShiftPx,
+    instantCounterPalm,
+    postureRatio,
+    oppPostureRatio,
+    qiRatio,
+    reboundShock,
+    composureMax,
+    fretRatio,
+    isRaging,
+    flawWindow,
+    clashSparks,
+    microShiverPx,
+    exchangeMode,
+    witchSlowMo,
+    zjEffect
+  };
 }
 
 export function ergonomicFrame(d, s = {}, view = {}) {
@@ -107,55 +362,18 @@ export function ergonomicFrame(d, s = {}, view = {}) {
   };
 
   // 4. Combat Detail
-  let opponent = view.opponent || null;
-  if (!opponent && s && d) {
-    const opps = opponents(s, d);
-    if (opps && opps.length) opponent = opps[0];
-  }
-
-  // Micro shiver:
-  let microShiverPx = 0;
-  const contact = view.contact || null;
-  const depth = view.depth ?? contact?.depth;
-  const blocked = view.blocked ?? contact?.blocked ?? (d?.ring && !d.ring.intercept && s?.t && (s.t - d.ring.t < 1.5));
-  const shallowOrBlocked = (blocked === true) || (depth !== undefined && depth < 0) || (contact && !contact.injured);
-  if (shallowOrBlocked) {
-    microShiverPx = 3.0;
-  }
-
-  // Dodge tier:
-  let dodgeTier = 'sideStep';
-  const L = view.L ?? (view.opponents ? view.opponents.length * 0.33 : (s ? opponents(s, d).length * 0.33 : 0));
-  if (L >= 0.8) {
-    dodgeTier = 'scramble';
-  } else if (view.dodgeTier) {
-    dodgeTier = view.dodgeTier;
-  } else if (view.usedRatio !== undefined) {
-    dodgeTier = view.usedRatio < 0.4 ? 'headSlip' : 'sideStep';
-  } else if (opponent) {
-    const foeWind = opponent?.swing?.wind || FOE_ACTIONS[opponent?.k]?.moves?.[0]?.wind || 0.45;
-    const reaction = familiarReaction(d, opponent, opponent?.swing?.mv || 'bodyPunch', s?.codex || {});
-    const usedRatio = reaction / (foeWind || 0.45);
-    if (usedRatio < 0.4 || (agility >= 25 && familiarUses(d, opponent, opponent?.swing?.mv || 'bodyPunch', s?.codex || {}) >= 3)) {
-      dodgeTier = 'headSlip';
-    } else {
-      dodgeTier = 'sideStep';
-    }
-  } else if (agility >= 25) {
-    dodgeTier = 'headSlip';
-  }
-
-  const combatDetail = {
-    dodgeTier,
-    microShiverPx,
-    opponent
-  };
+  const combatDetail = duelExchangeFrame(d, s, {
+    ...view,
+    move,
+    playback: p
+  });
 
   return {
     buildProfile,
     jointSpring,
     laborDetail,
     combatDetail,
+    duel: combatDetail,
     playback: p
   };
 }

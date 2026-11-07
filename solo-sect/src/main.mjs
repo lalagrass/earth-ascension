@@ -22,7 +22,8 @@ import { openStart, choiceUI, heroCard } from './start-ui.mjs';
 import { SFX, ambient, setMute, isMuted, cuesFrom } from './audio.mjs';
 import { threatHtml, rumorDays, buildFence, upgradeFence, startFenceSite } from './threat.mjs';
 import { routineFrame } from './routines.mjs';
-import { displayPose, dailyPose, drawPoseActor, renderMicroStage } from './pose-render.mjs';
+import { displayPose, dailyPose, drawPoseActor, renderMicroStage, selectMicroStageFocal } from './pose-render.mjs';
+export { selectMicroStageFocal };
 import { growthSnapshot, battleMetrics, recordAxisHistory, earlierAxisHistory } from './growth-adapter.mjs';
 import { mountChoiceButtons } from './choice-buttons.mjs';
 import { homeLabelCandidates, layoutLabels } from './label-layout.mjs';
@@ -408,15 +409,34 @@ function drawMicroStage() {
   const c = $('micro-stage'), wrap = $('micro-stage-wrap');
   if (!c || !wrap || wrap.classList.contains('collapsed') || !S) return;
   const ctx = c.getContext('2d');
-  const focal = S.ds.find((d) => d.id === window.__artsOf) || S.ds.find((d) => d.id === 'hero') || S.ds[0];
+  const pinned = typeof window !== 'undefined' && Boolean(window.__microPinned);
+  const preferredId = typeof window !== 'undefined' ? window.__artsOf : null;
+  const { actor: focal, autoDirected } = selectMicroStageFocal(S, preferredId, pinned);
   if (!focal) return;
   const ergo = renderMicroStage(ctx, S, focal);
   const cap = $('micro-caption');
   if (cap && ergo) {
-    const act = focal.task ? (ACTIVITIES[focal.task.act]?.name || focal.task.act) : '待命';
-    const form = focal.task?.act === 'train' ? (focal.swing?.mv || '練武') : act;
-    const balance = ergo.jointSpring.isStumbling ? '⚠ 重心失衡' : '重心平穩';
-    cap.textContent = `【${focal.name}・${form}】${balance}・力氣 ${focal.skills?.strength?.toFixed(0) || 0}・身法 ${focal.skills?.agility?.toFixed(0) || 0}`;
+    const duel = ergo.combatDetail || ergo.duel;
+    if (duel && duel.opponent) {
+      const modeText = duel.exchangeMode === 'headSlipCounter'
+        ? '原地擺頭避刃・隨手一掌反震'
+        : (duel.exchangeMode === 'flawStrike'
+          ? '看破破綻・一擊必殺'
+          : (duel.exchangeMode === 'scrambleDefense'
+            ? '眾敵合圍・狼狽避閃'
+            : (duel.exchangeMode === 'rageAllOut'
+              ? '久守心浮・惱羞硬拼'
+              : (duel.exchangeMode === 'masterStandoff'
+                ? '凝神對峙・意在劍先'
+                : '菜雞互啄・毫髮無傷'))));
+      const prefix = autoDirected ? '🎬 自動導播特寫' : '微距交鋒';
+      cap.textContent = `${prefix}【${focal.name} vs ${duel.opponent.name || duel.opponent.k || '敵人'}】${modeText}`;
+    } else {
+      const act = focal.task ? (ACTIVITIES[focal.task.act]?.name || focal.task.act) : '待命';
+      const form = focal.task?.act === 'train' ? (focal.swing?.mv || '練武') : act;
+      const balance = ergo.jointSpring.isStumbling ? '⚠ 重心失衡' : '重心平穩';
+      cap.textContent = `【${focal.name}・${form}】${balance}・力氣 ${focal.skills?.strength?.toFixed(0) || 0}・身法 ${focal.skills?.agility?.toFixed(0) || 0}`;
+    }
   }
 }
 function rbar(n, v, max, c) { const p = Math.max(0, Math.min(1, (v ?? 0) / (max || 1))); return `${n} <span style="display:inline-block;width:80px;height:8px;background:#ddd;vertical-align:middle"><span style="display:block;height:8px;width:${p * 80}px;background:${c}"></span></span> ${Math.max(0, Math.round(v ?? 0))}`; }

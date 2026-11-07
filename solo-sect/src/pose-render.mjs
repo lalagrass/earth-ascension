@@ -85,8 +85,9 @@ export function displayPose(s, d, art, move, time=s.t, hitstop=true) {
 }
 
 export function drawPoseActor(g, d, view) {
-  const n = view.poses.length, k = Math.min(n - 1, view.u * (n - 1)), i = Math.floor(k), u = k - i;
-  const a = POSTURES[view.poses[i]] || POSTURES.ready, b = POSTURES[view.poses[Math.min(n - 1, i + 1)]] || POSTURES.ready;
+  const poses = view?.poses || ['ready', 'ready'];
+  const n = poses.length, k = Math.min(n - 1, (view?.u || 0) * (n - 1)), i = Math.floor(k), u = k - i;
+  const a = POSTURES[poses[i]] || POSTURES.ready, b = POSTURES[poses[Math.min(n - 1, i + 1)]] || POSTURES.ready;
   const p=view.playback||playbackParams(d), hip=p.hipHeight, sink=PLAYBACK.uprightHip-hip;
   const lean = mix(a.lean, b.lean, u)+Math.sin((view.clock||0)*Math.PI*2)*p.sway, legsA = LEGS[a.legs], legsB = LEGS[b.legs], armsA = ARMS[a.arms], armsB = ARMS[b.arms];
   const female = isFemaleVisual(d);
@@ -95,35 +96,79 @@ export function drawPoseActor(g, d, view) {
     return;
   }
   const color = female ? '#806375' : d.sprite === 'senior' ? '#796d91' : d.sprite === 'cousin' ? '#718963' : d.sprite === 'hero' ? '#647f92' : '#6a755e';
+  const duel = view?.ergo?.combatDetail || view?.ergo?.duel;
+  const isHeadSlip = duel?.dodgeTier === 'headSlip' && Boolean(duel?.opponent);
+  const isRaging = Boolean(duel?.isRaging);
+  const effectiveLean = isRaging ? lean + 4 : lean;
+
   g.save(); g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = '#332b25';
+  if (isRaging && g.strokeRect) {
+    g.strokeStyle = 'rgba(192, 57, 43, 0.45)';
+    g.lineWidth = 3;
+    g.strokeRect(effectiveLean - 18, -65, 36, 75);
+    g.strokeStyle = '#332b25';
+  }
   for (let j = 0; j < 2; j++) {
     const [kx, ky, fx, fy] = mixArray(legsA[j], legsB[j], u);
-    g.lineWidth = 6; g.beginPath(); g.moveTo(lean * 0.45 + (j ? 5 : -5), -hip); g.lineTo(kx, ky*hip/PLAYBACK.uprightHip); g.lineTo(fx, fy); g.stroke();
+    g.lineWidth = 6; g.beginPath(); g.moveTo(effectiveLean * 0.45 + (j ? 5 : -5), -hip); g.lineTo(kx, ky*hip/PLAYBACK.uprightHip); g.lineTo(fx, fy); g.stroke();
   }
   g.translate(0,sink);
-  if (female) { g.fillStyle = color; g.strokeStyle = '#372e2b'; g.lineWidth = 2; g.beginPath(); g.moveTo(lean - 7, -28); g.lineTo(lean + 7, -28); g.lineTo(lean + 17, -4); g.lineTo(lean - 17, -4); g.closePath(); g.fill(); g.stroke(); }
+  if (female) { g.fillStyle = color; g.strokeStyle = '#372e2b'; g.lineWidth = 2; g.beginPath(); g.moveTo(effectiveLean - 7, -28); g.lineTo(effectiveLean + 7, -28); g.lineTo(effectiveLean + 17, -4); g.lineTo(effectiveLean - 17, -4); g.closePath(); g.fill(); g.stroke(); }
   g.fillStyle = color; g.strokeStyle = '#372e2b'; g.lineWidth = 2;
-  g.beginPath(); g.moveTo(lean - 9, -42); g.lineTo(lean + 9, -42); g.lineTo(lean * 0.5 + 8, -18); g.lineTo(lean * 0.5 - 8, -18); g.closePath(); g.fill(); g.stroke();
+  g.beginPath(); g.moveTo(effectiveLean - 9, -42); g.lineTo(effectiveLean + 9, -42); g.lineTo(effectiveLean * 0.5 + 8, -18); g.lineTo(effectiveLean * 0.5 - 8, -18); g.closePath(); g.fill(); g.stroke();
   for (let j = 0; j < 2; j++) {
     const [ex, ey, hx, hy] = mixArray(armsA[j], armsB[j], u);
-    g.strokeStyle = '#46362c'; g.lineWidth = 7; g.beginPath(); g.moveTo(lean + (j ? 8 : -8), -39); g.lineTo(ex, ey); g.lineTo(hx, hy); g.stroke();
-    g.fillStyle = '#e7bf91'; g.beginPath(); g.arc(hx, hy, 3, 0, Math.PI * 2); g.fill();
+    let armEx = ex, armEy = ey, armHx = hx, armHy = hy;
+    if (duel?.instantCounterPalm && j === 1) {
+      armEx = effectiveLean + 16;
+      armEy = -32;
+      armHx = effectiveLean + 28;
+      armHy = -32;
+    }
+    g.strokeStyle = '#46362c'; g.lineWidth = 7; g.beginPath(); g.moveTo(effectiveLean + (j ? 8 : -8), -39); g.lineTo(armEx, armEy); g.lineTo(armHx, armHy); g.stroke();
+    g.fillStyle = '#e7bf91'; g.beginPath(); g.arc(armHx, armHy, 3, 0, Math.PI * 2); g.fill();
+    if (duel?.instantCounterPalm && j === 1 && g.beginPath && g.arc && g.stroke) {
+      g.strokeStyle = 'rgba(255, 235, 140, 0.85)';
+      g.lineWidth = 2.5;
+      g.beginPath();
+      g.arc(armHx + 6, armHy, 9, -Math.PI / 2, Math.PI / 2);
+      g.stroke();
+    }
     if (j && (a.weapon || b.weapon)) {
       const weapon = b.weapon || a.weapon, reach = weapon === 'staff' ? 39 : weapon === 'sword' ? 25 : 20;
       g.strokeStyle = weapon === 'staff' ? '#7e4c24' : '#b8c5c9'; g.lineWidth = weapon === 'staff' ? 3 : 2;
-      g.beginPath(); g.moveTo(hx - 4, hy + 6); g.lineTo(hx + 7, hy - reach); g.stroke();
-      if(weapon==='axe'){g.fillStyle='#9babb0';g.fillRect(hx+4,hy-reach,12,8);}
+      g.beginPath(); g.moveTo(armHx - 4, armHy + 6); g.lineTo(armHx + 7, armHy - reach); g.stroke();
+      if(weapon==='axe'){g.fillStyle='#9babb0';g.fillRect(armHx+4,armHy-reach,12,8);}
     }
     if(view.work==='water') {
-      g.save();g.translate(hx,hy+6);g.rotate(Math.sin((view.clock||0)*4)*p.waterTilt*Math.PI/180);
+      g.save();g.translate(armHx,armHy+6);g.rotate(Math.sin((view.clock||0)*4)*p.waterTilt*Math.PI/180);
       g.strokeStyle='#694f36';g.fillStyle='#9b784e';g.lineWidth=2;g.strokeRect(-5,0,10,7);g.fillRect(-6,7,12,13);
       g.fillStyle='#8ab5c6';g.fillRect(-4,8,8,2);g.restore();
     }
   }
-  g.fillStyle = '#e7bf91'; g.strokeStyle = '#372e2b'; g.lineWidth = 2; g.beginPath(); g.arc(lean, -49, 8, 0, Math.PI * 2); g.fill(); g.stroke();
-  if (female) { g.fillStyle = '#292529'; g.beginPath(); g.arc(lean + 6, -57, 5, 0, Math.PI * 2); g.fill(); g.beginPath(); g.moveTo(lean - 7, -53); g.lineTo(lean - 9, -38); g.lineTo(lean - 4, -40); g.lineTo(lean - 3, -53); g.fill(); g.beginPath(); g.moveTo(lean + 6, -53); g.lineTo(lean + 9, -39); g.lineTo(lean + 13, -41); g.lineTo(lean + 10, -56); g.fill(); }
-  g.fillStyle = '#2f2929'; g.beginPath(); g.arc(lean + 3, -50, 1, 0, Math.PI * 2); g.fill();
+  const headX = isHeadSlip ? effectiveLean - 4 : effectiveLean;
+  const headY = isHeadSlip ? -49 : -49;
+  g.fillStyle = '#e7bf91'; g.strokeStyle = '#372e2b'; g.lineWidth = 2; g.beginPath(); g.arc(headX, headY, 8, 0, Math.PI * 2); g.fill(); g.stroke();
+  if (female) { g.fillStyle = '#292529'; g.beginPath(); g.arc(headX + 6, headY - 8, 5, 0, Math.PI * 2); g.fill(); g.beginPath(); g.moveTo(headX - 7, headY - 4); g.lineTo(headX - 9, headY + 11); g.lineTo(headX - 4, headY + 9); g.lineTo(headX - 3, headY - 4); g.fill(); g.beginPath(); g.moveTo(headX + 6, headY - 4); g.lineTo(headX + 9, headY + 10); g.lineTo(headX + 13, headY + 8); g.lineTo(headX + 10, headY - 7); g.fill(); }
+  g.fillStyle = isRaging ? '#c0392b' : '#2f2929'; g.beginPath(); g.arc(headX + 3, headY - 1, 1, 0, Math.PI * 2); g.fill();
   g.restore();
+}
+
+export function selectMicroStageFocal(S, preferredId = null, pinned = false) {
+  if (!S?.ds || !S.ds.length) return { actor: null, autoDirected: false };
+  const preferred = (preferredId && S.ds.find((d) => d.id === preferredId)) || S.ds.find((d) => d.id === 'hero') || S.ds[0];
+  const isCombatant = (d) => !d.away && Boolean(d.swing || d.bswing || d.raging || (d.ring && S.t != null && S.t - d.ring.t < 1.5));
+  if (pinned) {
+    return { actor: preferred, autoDirected: false };
+  }
+  if (isCombatant(preferred)) {
+    return { actor: preferred, autoDirected: false };
+  }
+  const combatDisciple = S.ds.find(isCombatant);
+  if (combatDisciple) {
+    return { actor: combatDisciple, autoDirected: true };
+  }
+  return { actor: preferred, autoDirected: false };
 }
 
 export function renderMicroStage(g, s = {}, focalActor = null, customView = null) {
@@ -135,7 +180,8 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
 
   const focalArt = artById(focusOf(focalActor) || Object.keys(focalActor.arts || {})[0]);
   const focalMove = MOVES.find((m) => m.id === (focalActor.swing?.mv || focalArt?.tech));
-  const baseView = customView || displayPose(s, focalActor, focalArt, focalMove);
+  const defaultView = displayPose(s, focalActor, focalArt, focalMove);
+  const baseView = customView ? { ...defaultView, ...customView } : defaultView;
   const view = (focalActor?.carry?.water || focalActor?.task?.act === 'water') && baseView.work !== 'water'
     ? { ...baseView, work: 'water' }
     : baseView;
@@ -274,12 +320,24 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
   }
 
   const scale = 2.4;
+  const duel = ergo.combatDetail || ergo.duel;
   let focalActorX = opponent ? 110 : 180;
-  if (ergo.combatDetail.dodgeTier === 'scramble') {
-    focalActorX -= 25;
+  if (opponent) {
+    focalActorX = 110 + (duel.footShiftPx || 0);
+    if (duel.dodgeTier === 'sideStep') {
+      focalActorX += Math.sin((view.clock || 0) * 4) * 2;
+    }
   }
-  if (ergo.combatDetail.microShiverPx > 0) {
-    focalActorX += Math.sin((view.clock || 0) * 50) * ergo.combatDetail.microShiverPx;
+  if (duel.microShiverPx > 0) {
+    focalActorX += Math.sin((view.clock || 0) * 50) * duel.microShiverPx;
+  }
+  if (duel.dodgeTier === 'scramble' && g.beginPath && g.fill) {
+    g.fillStyle = '#6cb7db';
+    for (let k = 0; k < 3; k++) {
+      g.beginPath();
+      if (g.arc) g.arc(focalActorX - 8 + k * 8, groundY - 80 - k * 5, 2, 0, Math.PI * 2);
+      g.fill();
+    }
   }
 
   // 3. Ghost Silhouette (宗師淡墨重影)
@@ -326,32 +384,194 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
   }
 
   // 5. Opponent in Duel
+  const oppX = 250;
   if (opponent && g.save && g.restore) {
     g.save();
-    const oppX = 250;
     if (g.translate) g.translate(oppX, groundY);
     if (g.scale) g.scale(-scale, scale); // face left
     const oppPose = displayPose(s, opponent, null, null, s?.t || 0, false);
     drawPoseActor(g, opponent, oppPose);
     g.restore();
+  }
 
-    if (ergo.combatDetail.dodgeTier === 'headSlip' && g.beginPath && g.stroke) {
-      g.strokeStyle = '#c0392b88';
-      g.lineWidth = 1.5;
+  // 6. Signature Combat Scenarios Canvas Overlays
+  // Scenario A: Rookie Pecking & Clash Sparks
+  if (opponent && (duel.exchangeMode === 'rookiePecking' || duel.clashSparks)) {
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = '#f39c12';
+      g.lineWidth = 1.8;
+      const sparkX = 180, sparkY = groundY - 75;
+      const angles = [0.2, 1.1, 2.3, 3.6, 4.8];
+      for (const a of angles) {
+        g.beginPath();
+        g.moveTo(sparkX, sparkY);
+        g.lineTo(sparkX + Math.cos(a) * 12, sparkY + Math.sin(a) * 12);
+        g.stroke();
+      }
+      g.strokeStyle = '#ffe27a';
+      g.lineWidth = 1;
+      for (const a of [0.6, 1.8, 3.0, 4.2]) {
+        g.beginPath();
+        g.moveTo(sparkX, sparkY);
+        g.lineTo(sparkX + Math.cos(a) * 7, sparkY + Math.sin(a) * 7);
+        g.stroke();
+      }
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#d35400';
+      g.font = 'bold 11px sans-serif';
+      g.fillText('噹！兵刃交擊・毫髮無傷', 130, groundY - 95);
+    }
+  }
+
+  // Scenario B: Master Standoff & Flaw Strike
+  if (opponent && duel.exchangeMode === 'masterStandoff') {
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = '#5dade2';
+      g.lineWidth = 1.2;
+      if (g.setLineDash) g.setLineDash([4, 4]);
       g.beginPath();
-      g.moveTo(210, groundY - 95);
-      g.lineTo(135, groundY - 105);
+      g.moveTo(focalActorX + 15, groundY - 95);
+      g.lineTo(oppX - 15, groundY - 95);
       g.stroke();
+      if (g.setLineDash) g.setLineDash([]);
+      if (g.restore) g.restore();
+    }
+    if (g.fillRect) {
+      g.fillStyle = '#6b8e23';
+      g.fillRect(160, groundY - 30, 6, 2);
+      g.fillRect(195, groundY - 50, 5, 2);
+      g.fillRect(220, groundY - 25, 6, 2);
+    }
+    if (g.fillText) {
+      g.fillStyle = '#2980b9';
+      g.font = 'bold 11px sans-serif';
+      g.fillText('⚡ 凝神對峙・意在劍先', 135, groundY - 110);
+    }
+  }
+
+  if (opponent && (duel.exchangeMode === 'flawStrike' || duel.flawWindow?.open)) {
+    const part = duel.flawWindow?.part || 'body';
+    const flawY = part === 'eye' ? groundY - 95 : (part === 'hand' ? groundY - 68 : groundY - 75);
+    const targetX = oppX;
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = '#e74c3c';
+      g.lineWidth = 2;
+      if (g.arc) {
+        g.beginPath();
+        g.arc(targetX, flawY, 8, 0, Math.PI * 2);
+        g.stroke();
+      }
+      g.beginPath();
+      g.moveTo(targetX - 12, flawY);
+      g.lineTo(targetX + 12, flawY);
+      g.moveTo(targetX, flawY - 12);
+      g.lineTo(targetX, flawY + 12);
+      g.stroke();
+
+      g.strokeStyle = '#ffffff';
+      g.lineWidth = 2.5;
+      g.beginPath();
+      g.moveTo(focalActorX + 25, groundY - 75);
+      g.lineTo(targetX - 8, flawY);
+      g.stroke();
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#c0392b';
+      g.font = 'bold 12px sans-serif';
+      g.fillText('⚡ 看破破綻・一擊必殺！', 130, groundY - 115);
+    }
+  }
+
+  // Scenario C: Head-slip & Instant Counter Palm
+  if (opponent && duel.dodgeTier === 'headSlip' && g.beginPath && g.stroke) {
+    g.strokeStyle = '#c0392b88';
+    g.lineWidth = 1.5;
+    g.beginPath();
+    g.moveTo(210, groundY - 95);
+    g.lineTo(135, groundY - 105);
+    g.stroke();
+    if (g.fillText) {
+      g.fillStyle = '#c0392b';
+      g.font = 'bold 11px sans-serif';
+      g.fillText('原地擺頭避刃！', focalActorX - 20, groundY - 120);
+    }
+
+    if (duel.instantCounterPalm) {
+      if (g.save) g.save();
+      g.strokeStyle = '#f1c40f';
+      g.lineWidth = 3;
+      if (g.arc) {
+        g.beginPath();
+        g.arc(focalActorX + 35, groundY - 75, 14, -Math.PI / 3, Math.PI / 3);
+        g.stroke();
+        g.strokeStyle = '#ffffff';
+        g.lineWidth = 1.5;
+        g.beginPath();
+        g.arc(focalActorX + 42, groundY - 75, 20, -Math.PI / 3, Math.PI / 3);
+        g.stroke();
+      }
+      if (g.restore) g.restore();
       if (g.fillText) {
-        g.fillStyle = '#c0392b';
+        g.fillStyle = '#b7950b';
         g.font = 'bold 11px sans-serif';
-        g.fillText('原地擺頭避刃！', focalActorX - 20, groundY - 120);
+        g.fillText('✋ 隨手一掌反震！', focalActorX + 45, groundY - 90);
       }
     }
   }
 
-  // 6. Witch Time Golden Frame
-  if (s?.witch) {
+  // Scenario D: Multi-attacker Threat Arcs & Composure Rage
+  if (duel.angleLockCount >= 2 || duel.loadL >= 0.4) {
+    const threats = Math.min(4, duel.angleLockCount || 2);
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = 'rgba(231, 76, 60, 0.7)';
+      g.lineWidth = 2.5;
+      for (let k = 0; k < threats; k++) {
+        const yArc = 50 + k * 30;
+        g.beginPath();
+        if (g.arc) g.arc(350, yArc, 18, Math.PI * 0.75, Math.PI * 1.25);
+        g.stroke();
+        g.beginPath();
+        g.moveTo(335, yArc);
+        g.lineTo(325, yArc);
+        g.stroke();
+      }
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#c0392b';
+      g.font = 'bold 11px sans-serif';
+      g.fillText(`⚠ 眾敵鎖角 ×${duel.angleLockCount}`, 265, 24);
+    }
+  }
+
+  if (duel.isRaging) {
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = 'rgba(192, 57, 43, 0.6)';
+      g.lineWidth = 3;
+      if (g.ellipse) {
+        g.beginPath();
+        g.ellipse(focalActorX, groundY - 50, 26, 46, 0, 0, Math.PI * 2);
+        g.stroke();
+      }
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#962d22';
+      g.font = 'bold 12px sans-serif';
+      g.fillText('💢 久守心浮・惱羞硬拼！', focalActorX - 45, groundY - 110);
+    }
+  }
+
+  // Scenario E: Witch Time Slow-Mo & Signature Art Flair
+  if (duel.witchSlowMo) {
     if (g.strokeRect) {
       g.strokeStyle = '#e2b53c';
       g.lineWidth = 3;
@@ -361,6 +581,89 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
       g.fillStyle = '#e2b53c';
       g.font = 'bold 11px sans-serif';
       g.fillText('⚡ 林克時間・慢動作特寫', 12, 16);
+    }
+  }
+
+  if (duel.zjEffect === 'jiuyang' || duel.reboundShock) {
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = 'rgba(242, 194, 58, 0.85)';
+      g.lineWidth = 3;
+      if (g.ellipse) {
+        g.beginPath();
+        g.ellipse(focalActorX, groundY - 50, 32, 52, 0, 0, Math.PI * 2);
+        g.stroke();
+      }
+      if (g.arc) {
+        g.strokeStyle = '#ffffff';
+        g.lineWidth = 2;
+        g.beginPath();
+        g.arc(focalActorX + 30, groundY - 50, 16, -Math.PI / 2, Math.PI / 2);
+        g.stroke();
+      }
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#b7950b';
+      g.font = 'bold 11px sans-serif';
+      g.fillText('🔔 九陽護體・反震敵手', focalActorX - 35, groundY - 108);
+    }
+  } else if (duel.zjEffect === 'taiji') {
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = '#16a085';
+      g.lineWidth = 2;
+      if (g.arc) {
+        g.beginPath();
+        g.arc(focalActorX + 28, groundY - 55, 18, 0, Math.PI * 2);
+        g.stroke();
+        g.strokeStyle = '#7f8c8d';
+        g.beginPath();
+        g.arc(focalActorX + 28, groundY - 45, 9, 0, Math.PI);
+        g.stroke();
+      }
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#117864';
+      g.font = 'bold 11px sans-serif';
+      g.fillText('☯ 四兩撥千斤', focalActorX + 15, groundY - 80);
+    }
+  } else if (duel.zjEffect === 'kuihua') {
+    if (g.beginPath && g.fill) {
+      if (g.save) g.save();
+      g.fillStyle = 'rgba(208, 64, 112, 0.6)';
+      for (let k = 1; k <= 3; k++) {
+        const px = focalActorX + (oppX - focalActorX) * (k / 4);
+        const py = groundY - 50 - (k % 2) * 12;
+        g.beginPath();
+        if (g.arc) g.arc(px, py, 6, 0, Math.PI * 2);
+        g.fill();
+      }
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#a52852';
+      g.font = 'bold 11px sans-serif';
+      g.fillText('🪡 來去無蹤', 170, groundY - 70);
+    }
+  } else if (duel.zjEffect === 'dugu') {
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = '#5dade2';
+      g.lineWidth = 1.5;
+      for (let k = 0; k < 4; k++) {
+        g.beginPath();
+        g.moveTo(focalActorX + 10 + k * 18, groundY - 85 + k * 8);
+        g.lineTo(oppX - 30 + k * 10, groundY - 60 - k * 8);
+        g.stroke();
+      }
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#2471a3';
+      g.font = 'bold 11px sans-serif';
+      g.fillText('🗡 無招勝有招', 165, groundY - 85);
     }
   }
 
@@ -379,7 +682,21 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
     subText = ergo.laborDetail.isAxeStuck ? '手生砍偏・卡斧拔斧甩手中' : (ergo.laborDetail.woodSplit ? '腰馬合一・一斧兩斷！' : '劈柴修整');
   } else if (opponent) {
     headerText = `微距對決・${focalActor.name || '弟子'} vs ${opponent.name || '敵人'}`;
-    subText = ergo.combatDetail.dodgeTier === 'headSlip' ? '眼疾手快・原地擺頭避刃' : (ergo.combatDetail.dodgeTier === 'scramble' ? '眾敵合圍・狼狽避閃' : '靈巧身法・側步避讓');
+    if (duel.exchangeMode === 'flawStrike') {
+      subText = '看破破綻・瞬息截擊！';
+    } else if (duel.exchangeMode === 'headSlipCounter') {
+      subText = '原地擺頭避刃・隨手一掌反震';
+    } else if (duel.exchangeMode === 'rageAllOut') {
+      subText = '久守心浮・惱羞硬拼！';
+    } else if (duel.exchangeMode === 'masterStandoff') {
+      subText = '宗師對峙・虛實莫測';
+    } else if (duel.exchangeMode === 'scrambleDefense') {
+      subText = '眾敵合圍・狼狽避閃';
+    } else if (duel.exchangeMode === 'rookiePecking') {
+      subText = '菜雞互啄・毫髮無傷';
+    } else {
+      subText = duel.dodgeTier === 'headSlip' ? '眼疾手快・原地擺頭避刃' : (duel.dodgeTier === 'scramble' ? '眾敵合圍・狼狽避閃' : '靈巧身法・側步避讓');
+    }
   } else {
     headerText = `弟子日常・${focalActor.name || '弟子'}`;
     subText = `力氣 ${strength.toFixed(0)}・身法 ${agility.toFixed(0)}・氣息 ${ergo.buildProfile.breathRate.toFixed(1)}×`;
@@ -396,7 +713,38 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
     g.fillText(subText, 12, 36);
   }
 
-  // 8. Balance & Posture Bar (重心平衡儀)
+  // 8. Dual Combat Telemetry Bar (定力真氣護體條 + 重心平衡儀)
+  const inDuel = opponent != null || duel.isRaging || duel.reboundShock;
+  if (inDuel) {
+    const cBarX = 80, cBarY = 180, cBarW = 200, cBarH = 8;
+    if (g.fillText) {
+      g.font = '10px sans-serif';
+      g.fillStyle = '#5c4532';
+      g.fillText('定力真氣', 12, 187);
+    }
+    if (g.fillRect) {
+      g.fillStyle = '#d1c0a0';
+      g.fillRect(cBarX, cBarY, cBarW, cBarH);
+      const fretFillW = Math.max(0, Math.min(cBarW, cBarW * (duel.fretRatio || 0)));
+      g.fillStyle = duel.isRaging ? '#c0392b' : (duel.fretRatio > 0.6 ? '#e67e22' : '#27ae60');
+      g.fillRect(cBarX, cBarY, fretFillW, cBarH);
+    }
+    if (g.strokeRect) {
+      g.strokeStyle = '#624b33';
+      g.lineWidth = 1;
+      g.strokeRect(cBarX, cBarY, cBarW, cBarH);
+    }
+    if (g.fillText) {
+      const fretStatus = duel.isRaging
+        ? '怒火硬拼！'
+        : (duel.fretRatio > 0.6 ? '心浮氣躁' : `定力穩健 (${((1 - duel.fretRatio) * 100).toFixed(0)}%)`);
+      g.fillStyle = duel.isRaging ? '#c0392b' : '#3b6140';
+      g.font = 'bold 10px sans-serif';
+      g.fillText(fretStatus, cBarX + cBarW + 8, 187);
+    }
+  }
+
+  // 9. Balance & Posture Bar (重心平衡儀)
   const barX = 80, barY = 194, barW = 200, barH = 10;
   if (g.fillText) {
     g.font = '11px sans-serif';
