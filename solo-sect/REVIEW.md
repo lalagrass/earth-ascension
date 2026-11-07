@@ -1,5 +1,18 @@
 # 可重跑驗收
 
+## N59：日常人物共用骨架（#490，純畫面）
+
+實際主筆 grass／Codex Cloud。原問題是 `hero.png` 5×6 動作表在非練功時被當單張人物畫；現在活動資料選站、走、蹲、坐、劈、挑，缺資料回站姿。角色、出身同行與近景山賊／遠行人物都共用骨架；沒有模擬變更、RULES_VERSION 仍 3.7，`test/golden` 三檔與 30 日 fixture 均不變。
+
+| 類 | 指令（repo 根目錄） | 門檻／預期輸出 |
+|---|---|---|
+| A 真畫布一日 | `PW=/path/to/playwright-core/index.mjs node solo-sect/tools/n59-visual-check.mjs --seed=17` | 換任意正整數 seed：白身開局跑到第 2 日，每個觀測到的主角 `task.act/phase` 截一張真地圖畫面，所有在場人物每步 `displayPose` 非空；整張 `hero.png`／`cousin.png` 的 map `drawImage` 次數 0。seed 17 實測 16 種、7200 次姿勢檢查、0 次整張圖。seed 777 同為 16 種、7200 次、0 次。 |
+| A 盲板 | `git worktree add --detach /tmp/n59-base e0c4cf6`；以同一 seed 對舊樹執行上條工具，加 `--root=/tmp/n59-base/solo-sect --out=/tmp/n59-base-shots --baseline`；再執行 `PW=… node solo-sect/tools/n59-blind-board.mjs --base=/tmp/n59-base-shots --seed=17` | 先只看 [A/B 盲板](artifacts/n59/blind-board.png)，逐行辨認一致骨架，再讀獨立[答案](artifacts/n59/blind-answers.json)。seed 17 舊版 6015/7200 次無姿勢、96 次整張圖；本版 0／0。工具同樣接受任意 seed。 |
+| B | 無新的抽樣公式。 | 無公式門檻。 |
+| C bot12 | `node solo-sect/tools/bot12.mjs solo-sect --json` | [N57 base](artifacts/n59/bot12-base.json) 與 [N59 head](artifacts/n59/bot12-head.json) 原始輸出逐位相同；名俠第 10／30 日中位 0／0、自然山賊 5 場。畫面 PR 不拿 C 數字調參。 |
+
+[第 1 日 16 種 task/phase 對照板](artifacts/n59/contact-sheet.png)與[每種原圖](artifacts/n59/states/)；[原始 Playwright 統計](artifacts/n59/visual-check.json)。A/B 的左右標籤只寫 A／B，答案另存，不在板上揭露。`white-body.test.mjs` 只把 N55 原共用姿勢表名稱 `WORK_POSES` 更新為擴充後的 `DAILY_POSES`；熟練畫面差異斷言保留，沒有放寬。
+
 ## N57：糧食收支查因（#487，規則 3.7）
 
 實際主筆 grass／Codex Cloud。N57 只在原帳本標糧食來源，沒有改產出、消耗、招募機率或門檻。舊檔 3.6→3.7 把未標來源的原總額列為 `legacy`；庫存不變。世界內理由：灶房烹出的飯要供日常三餐，送飯和來客同席是額外真消耗；三人小門派的產出因而很難存到下一位入門的一日份。詳 [逐日原帳與機制](docs/systems/food-ledger.md)。

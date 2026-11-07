@@ -175,24 +175,24 @@ export const FACILITIES = [
 
 // 活動：時間、需求變化、技能經驗、產出
 export const ACTIVITIES = {
-  rest:   { name: '歇息', dur: 10, need: { energy: 'rate' } },
-  eat:    { name: '用飯', dur: 5, use: { food: 1 }, need: { hunger: 60 } },
-  farm:   { name: '種菜', dur: 8, energy: -8, skill: { farming: 6 } }, // 播種或收成，見 sim plots
-  cook:   { name: '煮飯', dur: 0, energy: -3, skill: { cooking: 6 } }, // dur 由灶階段決定
-  forage: { name: '採藥', dur: 8, energy: -6, skill: { herbal: 6 }, carry: { herb: 1 } },
-  quarry: { name: '採石', dur: 10, energy: -9, skill: { strength: 6 }, carry: { stone: 1 } },
-  chop:   { name: '砍柴', dur: 8, energy: -8, skill: { strength: 5 }, carry: { wood: 1 } },
-  train:  { name: '練功', dur: 10, energy: -10, skill: { style: 5 } }, // style＝弟子主修路數
-  meditate: { name: '打坐衝關', dur: 12, energy: -8 },
-  spar:   { name: '切磋', dur: 8, energy: -10, skill: { style: 4 } },
-  learn:  { name: '聽師父講武', dur: 8, energy: -2, skill: { palm: 3 }, social: 10 },
-  build:  { name: '施工', dur: 6, energy: -6, skill: { strength: 2 } },
-  chat:   { name: '聊天', dur: 6, social: 35, fun: 20 },
-  encourage: { name: '鼓勵同門', dur: 6, social: 20 },
-  leisure: { name: '閒坐看雲', dur: 8, fun: 45, energy: 3 },
-  deliver: { name: '送回院倉', dur: 0 },
-  defend: { name: '守柵迎敵', dur: 6, energy: -8, skill: { style: 1 } }, // loop3：只有山賊在地圖上時出現
-  repair: { name: '修柵', dur: 8, energy: -6, skill: { strength: 2 } }, // loop2：只有築了木柵且受損時才會出現
+  rest:   { name: '歇息', dur: 10, pose: 'sit', need: { energy: 'rate' } },
+  eat:    { name: '用飯', dur: 5, pose: 'sit', use: { food: 1 }, need: { hunger: 60 } },
+  farm:   { name: '種菜', dur: 8, pose: 'crouch', energy: -8, skill: { farming: 6 } }, // 播種或收成，見 sim plots
+  cook:   { name: '煮飯', dur: 0, pose: 'sit', energy: -3, skill: { cooking: 6 } }, // dur 由灶階段決定
+  forage: { name: '採藥', dur: 8, pose: 'pick', energy: -6, skill: { herbal: 6 }, carry: { herb: 1 } },
+  quarry: { name: '採石', dur: 10, pose: 'chop', energy: -9, skill: { strength: 6 }, carry: { stone: 1 } },
+  chop:   { name: '砍柴', dur: 8, pose: 'chop', energy: -8, skill: { strength: 5 }, carry: { wood: 1 } },
+  train:  { name: '練功', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // style＝弟子主修路數；做功時由 routineFrame 覆蓋
+  meditate: { name: '打坐衝關', dur: 12, pose: 'sit', energy: -8 },
+  spar:   { name: '切磋', dur: 8, pose: 'stand', energy: -10, skill: { style: 4 } },
+  learn:  { name: '聽師父講武', dur: 8, pose: 'sit', energy: -2, skill: { palm: 3 }, social: 10 },
+  build:  { name: '施工', dur: 6, pose: 'carry', energy: -6, skill: { strength: 2 } },
+  chat:   { name: '聊天', dur: 6, pose: 'sit', social: 35, fun: 20 },
+  encourage: { name: '鼓勵同門', dur: 6, pose: 'stand', social: 20 },
+  leisure: { name: '閒坐看雲', dur: 8, pose: 'sit', fun: 45, energy: 3 },
+  deliver: { name: '送回院倉', dur: 0, pose: 'carry' },
+  defend: { name: '守柵迎敵', dur: 6, pose: 'stand', energy: -8, skill: { style: 1 } }, // loop3：只有山賊在地圖上時出現
+  repair: { name: '修柵', dur: 8, pose: 'chop', energy: -6, skill: { strength: 2 } }, // loop2：只有築了木柵且受損時才會出現
 };
 
 // 武學：熟練門檻解鎖；範圍/冷卻/傷害由 palm 技能放大

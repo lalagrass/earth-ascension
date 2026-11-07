@@ -1,6 +1,8 @@
 # FEATURES.md：codex/solo-sect-grok（山門紀 solo-sect）
 
-> N57（#487；實際主筆 grass／Codex Cloud）：原糧食帳增加來源分類，逐日工具可重播 9b／9c 倉存守恆與住民／來犯的 C 類差異；舊帳遷移標為 legacy。規則 3.7，招募與糧食數量未改；詳 `docs/systems/food-ledger.md`、REVIEW。
+> N59（#490；實際主筆 grass／Codex Cloud）：日常人物使用共用骨架的站／走／蹲／坐／劈／挑資料姿勢，出身同行、山賊與遠行近景統一畫法；未知狀態退站姿。純畫面，規則 3.7 與 golden 不變；可換 seed 的首日 Playwright 與 A/B 盲板見 REVIEW。
+
+> N57（#487；已合併 PR #491；實際主筆 grass／Codex Cloud）：原糧食帳增加來源分類，逐日工具可重播 9b／9c 倉存守恆與住民／來犯的 C 類差異；舊帳遷移標為 legacy。規則 3.7，招募與糧食數量未改；詳 `docs/systems/food-ledger.md`、REVIEW。
 
 > 第九輪 9c（#441；施工中，實際主筆 grass／Codex Cloud）：N50 出身普通同行、共用食宿／指導時間／處境招募，N38 依真接法機率即時命名白身級別；依 #445 追加讓側擊、撒土、擲石的真戰鬥情境可達，並修正 N33 新個體經驗與 N32 正式招式知識來源。規則 3.6；自然日數與名俠人頭依新驗收列 C 報告，詳 REVIEW。
 
