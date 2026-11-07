@@ -26,6 +26,7 @@
 * [`plans/ARTS-REFERENCES.md`](plans/ARTS-REFERENCES.md)：名功榜三方交叉與各派武學樹參考（金群名次、北大俠客行、社群、金X）。
 * [`plans/PHASE1-ERGONOMIC-MICRO-STAGE.md`](plans/PHASE1-ERGONOMIC-MICRO-STAGE.md)：Phase 1 微距武道與生活實況窗（Micro-Stage Viewport）× 人體工學物理演繹設計與交接規格書。
 * [`plans/PHASE2-COMBAT-EXCHANGE-DUEL-STAGE.md`](plans/PHASE2-COMBAT-EXCHANGE-DUEL-STAGE.md)：Phase 2 硬核武俠接招拆招 × 微距交鋒特寫（菜雞互啄、高手看破、原地擺頭反掌、多敵鎖角與心性崩潰）設計與交接規格書。
+* [`plans/PHASE3-CROWD-SYNERGY-WAVE-GAUNTLET.md`](plans/PHASE3-CROWD-SYNERGY-WAVE-GAUNTLET.md)：Phase 3 群戰無雙割草、雙劍合璧／陣法合擊 × 闖關波次與 MBTI 人格演繹設計與交接規格書。
 
 ---
 
