@@ -608,7 +608,7 @@ function add(s, d, id, amt, how, think, log) {
   return a;
 }
 // 自悟目標：等師父教的那門優先；否則本門派可學的下一門，再不然任一門可學的
-export function selfTarget(d) { if(!Object.keys(d.arts||{}).length&&!d.pendingArt)return null; if (d.pendingArt) return d.pendingArt; const u = sectUnlock24(d); if (u.length) return u[0].id; const c = ARTS.filter((a) => open(d, a) && !lockedArt24(d, a));  c.sort((a, b) => ownFirst24(d)(a, b) || appetiteOrder31(d, a, b)); /* loop208：本門特許與本門優先，偏好只排同一層 */ if (c[0] && ownArt24(d, c[0])) return c[0].id; const styled = c.filter((a) => a.school === d.style); return (styled[0] || c[0])?.id || null; }
+export function selfTarget(d) { if(d.bare)return d.pendingArt||null; if(!Object.keys(d.arts||{}).length&&!d.pendingArt)return null; if (d.pendingArt) return d.pendingArt; const u = sectUnlock24(d); if (u.length) return u[0].id; const c = ARTS.filter((a) => open(d, a) && !lockedArt24(d, a));  c.sort((a, b) => ownFirst24(d)(a, b) || appetiteOrder31(d, a, b)); /* loop208：本門特許與本門、路數都先於偏好 */ if (c[0] && ownArt24(d, c[0])) return c[0].id; const styled = c.filter((a) => a.school === d.style); return (styled[0] || c[0])?.id || null; }
 // 活動完成時呼叫
 export function comprehend(s, d, act, partner, think, log) {
   if (!COMP.gain[act]) return null;

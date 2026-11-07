@@ -8,7 +8,7 @@ import { MONSTERS, SOURCES, DAY } from '../src/data.mjs';
 test('N32 白身無武學、起手秒數與野狗從邊緣走來', () => {
   const s = createState(27, { kind: 'bare', askMajor: false }), d = s.ds.find((d) => d.id === 'hero');
   assert.deepEqual(d.arts, {}); assert.equal(selfTarget(d),null); assert.ok(d.moves.includes('bodyKick')); assert.ok(!d.moves.includes('fist'));
-  const learner=structuredClone(d);learnArt(learner,'basicFist');gainArt(learner,600,1,s.t);assert.equal(learner.pendingArt,null,'即使從真教材學會一門，白身不能憑熟練憑空取得下一本正式譜');
+  const learner=structuredClone(d);learnArt(learner,'basicFist');gainArt(learner,600,1,s.t);assert.equal(learner.pendingArt,null,'即使從真教材學會一門，白身不能憑熟練憑空取得下一本正式譜');assert.equal(selfTarget(learner),null,'已學一本也不等於憑空知道其他正式招式');
   assert.equal(windOf(d, 'bodyPunch', 1), .45);
   assert.ok(windOf(d,'bodyPunch',1) < windOf(d,'bodyPush',1) && windOf(d,'bodyPush',1) < windOf(d,'bodyKick',1));
   const charge = foeAction({ k: 'boar' }, 70), T = clashTimes(s, { k:'boar' }, d, { move:charge.id, wind:charge.wind });
