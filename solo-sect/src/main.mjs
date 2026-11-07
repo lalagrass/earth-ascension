@@ -417,8 +417,9 @@ function drawMicroStage() {
   const cap = $('micro-caption');
   if (cap && ergo) {
     const duel = ergo.combatDetail || ergo.duel;
-    if (duel && duel.opponent) {
-      const modeText = duel.exchangeMode === 'headSlipCounter'
+    const syn = ergo.crowdDetail || ergo.synergy;
+    if (duel && (duel.opponent || (syn && syn.multiFoeCount >= 2))) {
+      let modeText = duel.exchangeMode === 'headSlipCounter'
         ? '原地擺頭避刃・隨手一掌反震'
         : (duel.exchangeMode === 'flawStrike'
           ? '看破破綻・一擊必殺'
@@ -429,8 +430,35 @@ function drawMicroStage() {
               : (duel.exchangeMode === 'masterStandoff'
                 ? '凝神對峙・意在劍先'
                 : '菜雞互啄・毫髮無傷'))));
+
+      if (syn) {
+        if (syn.crowdMode === 'walkPastKnockdown') {
+          modeText = '走過倒一片・錯身輕拂';
+        } else if (syn.crowdMode === 'blindAllEyes') {
+          modeText = '一劍破盡・盡奪敵目';
+        } else if (syn.crowdMode === 'whirlwindSweep') {
+          modeText = '橫掃千軍・群戰破圍';
+        }
+      }
+
+      let extraTag = '';
+      if (syn?.combinedArtName) {
+        extraTag += `｜${syn.combinedArtName}`;
+      } else if (syn?.synergyMode === 'twinSwordsCouple') {
+        extraTag += '｜雙劍合璧';
+      } else if (syn?.synergyMode === 'zhenwuArray') {
+        extraTag += '｜真武七截陣';
+      }
+      if (syn?.guardianShield) {
+        extraTag += '・捨身護侶';
+      }
+      if (syn?.waveGauntlet?.active && syn.waveGauntlet.bannerText) {
+        extraTag += `［${syn.waveGauntlet.bannerText}］`;
+      }
+
       const prefix = autoDirected ? '🎬 自動導播特寫' : '微距交鋒';
-      cap.textContent = `${prefix}【${focal.name} vs ${duel.opponent.name || duel.opponent.k || '敵人'}】${modeText}`;
+      const oppLabel = duel.opponent ? (duel.opponent.name || duel.opponent.k || '敵人') : `群敵(${syn?.multiFoeCount || 2})`;
+      cap.textContent = `${prefix}【${focal.name} vs ${oppLabel}】${modeText}${extraTag}`;
     } else {
       const act = focal.task ? (ACTIVITIES[focal.task.act]?.name || focal.task.act) : '待命';
       const form = focal.task?.act === 'train' ? (focal.swing?.mv || '練武') : act;

@@ -1,7 +1,7 @@
 // 純顯示轉接：只讀N33手熟、既有身體／需求，不產生或回寫成長。
 import { handUses, practiceResidual, practiceWindow, familiarUses, familiarReaction } from './practice.mjs';
 import { bodyMove, FOE_ACTIONS } from './starter-combat.mjs';
-import { opponents } from './tactics.mjs';
+import { opponents, allies, backToBackPartner, coverFor } from './tactics.mjs';
 import { composure, assessLoad, postureMax, qiPow, topTier } from './arts.mjs';
 
 export const PLAYBACK = Object.freeze({ pause: .5, uprightHip: 17, deepHipRatio: .5, tilt: 30, sway: 4, bodyScale: 10, legacyStart: .5 });
@@ -275,6 +275,352 @@ export function duelExchangeFrame(d, s = {}, view = {}) {
   };
 }
 
+export function crowdSynergyFrame(d, s = {}, view = {}) {
+  // 0. Base duel info
+  const duel = view.duel || duelExchangeFrame(d, s, view);
+
+  // 1. 實力差距與群攻割草（Power Gap & Crowd Mow-Down）
+  let selfPower = view.selfPower;
+  if (selfPower == null) {
+    let tierBonus = 0;
+    try {
+      if (d?.arts) {
+        const tt = topTier(d);
+        if (tt && tt.t >= 0) tierBonus = (tt.t + 1) * 22;
+      }
+    } catch {}
+    let qp = 0;
+    try {
+      qp = qiPow(d) || 0;
+    } catch {}
+    selfPower = (d?.skills?.strength || 10) + (d?.skills?.agility || 10) + tierBonus + qp;
+  }
+
+  const multiFoeCount = Math.max(
+    duel.angleLockCount || 0,
+    duel.allOpponents?.length || 0,
+    view.multiFoeCount || 0
+  );
+
+  let avgFoePower = view.avgFoePower;
+  if (avgFoePower == null) {
+    const enemies = duel.allOpponents && duel.allOpponents.length > 0
+      ? duel.allOpponents
+      : (duel.opponent ? [duel.opponent] : []);
+    if (enemies.length === 0) {
+      avgFoePower = selfPower;
+    } else {
+      let sum = 0;
+      for (const foe of enemies) {
+        let foeTierBonus = 0;
+        try {
+          if (foe?.arts) {
+            const tt = topTier(foe);
+            if (tt && tt.t >= 0) foeTierBonus = (tt.t + 1) * 20;
+          }
+        } catch {}
+        const defaultBase = foe?.k === 'rat' ? 8 : (foe?.k === 'bandit' ? 18 : 25);
+        const artOrBase = foe?.arts ? foeTierBonus : defaultBase;
+        sum += (foe?.skills?.strength || 10) + (foe?.skills?.agility || 10) + artOrBase;
+      }
+      avgFoePower = sum / enemies.length;
+    }
+  }
+
+  const powerGapRatio = view.powerGapRatio ?? (avgFoePower > 0 ? selfPower / avgFoePower : 1);
+
+  let crowdMode;
+  if (view.crowdMode) {
+    crowdMode = view.crowdMode;
+  } else if (!duel.opponent && multiFoeCount === 0) {
+    crowdMode = 'none';
+  } else if (
+    view.blindAllEyes === true ||
+    (multiFoeCount >= 2 && powerGapRatio >= 1.8 && (duel.zjEffect === 'dugu' || duel.zjEffect === 'kuihua'))
+  ) {
+    crowdMode = 'blindAllEyes';
+  } else if (view.mowDown === true || powerGapRatio >= 2.2) {
+    crowdMode = 'walkPastKnockdown';
+  } else if (multiFoeCount >= 2 && powerGapRatio >= 1.35) {
+    crowdMode = 'whirlwindSweep';
+  } else {
+    crowdMode = 'none';
+  }
+
+  const knockedDownCount = (crowdMode === 'walkPastKnockdown' || crowdMode === 'blindAllEyes')
+    ? Math.max(1, multiFoeCount || 3)
+    : 0;
+
+  // 2. 伴侶雙劍合璧、陣法合擊與地形掩體（Partner, Formation & Cover Synergy）
+  let allyList = [];
+  if (view.allies) {
+    allyList = view.allies;
+  } else if (s && d) {
+    try {
+      allyList = allies(s, d) || [];
+    } catch {
+      allyList = [];
+    }
+  }
+
+  let partner = null;
+  if (view.partner !== undefined) {
+    partner = view.partner;
+  } else {
+    if (s?.gen?.couples && d?.id) {
+      const couplePair = s.gen.couples.find((c) => Array.isArray(c) && c.includes(d.id));
+      if (couplePair) {
+        const otherId = couplePair.find((id) => id !== d.id);
+        partner = allyList.find((a) => a.id === otherId)
+          || (s.ds || []).find((x) => x.id === otherId && !x.gone && !x.away && (x.hp ?? 1) > 0)
+          || null;
+      }
+    }
+    if (!partner && d?.arts?.yunv) {
+      partner = allyList.find((a) => a?.arts?.yunv) || null;
+    }
+    if (!partner && s && d) {
+      try {
+        partner = backToBackPartner(s, d) || null;
+      } catch {}
+    }
+    if (!partner && allyList.length > 0) {
+      partner = allyList[0];
+    }
+  }
+
+  let cover = null;
+  if (view.cover) {
+    if (typeof view.cover === 'object') {
+      cover = view.cover;
+    } else {
+      const coverStr = String(view.cover);
+      cover = {
+        id: coverStr,
+        kind: coverStr.includes('Tree') || view.cover === 'tree' ? 'tree' : 'gate',
+        slots: 1
+      };
+    }
+  } else if (d) {
+    try {
+      cover = coverFor(d) || null;
+    } catch {
+      cover = null;
+    }
+  }
+
+  let synergyMode;
+  const isCoupleSynergy = Boolean(
+    view.isCouple ||
+    (s?.gen?.couples || []).some((c) => Array.isArray(c) && c.includes(d?.id) && c.includes(partner?.id)) ||
+    (d?.arts?.yunv && partner?.arts?.yunv) ||
+    partner?.xia === 'xiaolongnv' ||
+    d?.xia === 'xiaolongnv' ||
+    partner?.xia === 'yangguo' ||
+    d?.xia === 'yangguo'
+  );
+
+  let isBackToBack = false;
+  if (partner && (view.backToBack || view.synergyMode === 'backToBack')) {
+    isBackToBack = true;
+  } else if (partner && s && d) {
+    try {
+      isBackToBack = Boolean(backToBackPartner(s, d));
+    } catch {
+      isBackToBack = false;
+    }
+  }
+
+  if (view.synergyMode) {
+    synergyMode = view.synergyMode;
+  } else if (partner && isCoupleSynergy) {
+    synergyMode = 'twinSwordsCouple';
+  } else if (allyList.length >= 2 || Boolean(view.formation)) {
+    synergyMode = 'zhenwuArray';
+  } else if (isBackToBack) {
+    synergyMode = 'backToBack';
+  } else if (Boolean(cover)) {
+    synergyMode = 'terrainCover';
+  } else {
+    synergyMode = 'none';
+  }
+
+  let combinedArtName = null;
+  if (synergyMode === 'twinSwordsCouple') {
+    combinedArtName = '雙劍合璧・玉女素心';
+  } else if (synergyMode === 'zhenwuArray') {
+    combinedArtName = '真武七截陣・天罡合擊';
+  } else if (synergyMode === 'backToBack') {
+    combinedArtName = '背靠背・守望相助';
+  } else if (synergyMode === 'terrainCover') {
+    combinedArtName = '借勢卡位・一夫當關';
+  }
+
+  let synergyBonus = 1.0;
+  if (synergyMode === 'twinSwordsCouple') {
+    synergyBonus = 1.35;
+  } else if (synergyMode === 'zhenwuArray') {
+    synergyBonus = 1.5;
+  } else if (synergyMode === 'backToBack') {
+    synergyBonus = 1.2;
+  } else if (synergyMode === 'terrainCover') {
+    synergyBonus = 1.15;
+  }
+
+  const baseLoad = duel.loadL != null ? duel.loadL : 0;
+  let effectiveLoadL = baseLoad;
+  if (synergyMode === 'zhenwuArray') {
+    effectiveLoadL = baseLoad * 0.5;
+  } else if (synergyMode === 'backToBack') {
+    effectiveLoadL = baseLoad * 0.6;
+  } else if (synergyMode === 'terrainCover') {
+    effectiveLoadL = Math.min(baseLoad, 0.35);
+  } else if (synergyMode === 'twinSwordsCouple') {
+    effectiveLoadL = baseLoad * 0.65;
+  }
+
+  // 3. 16 型人格（MBTI）自主戰鬥演繹（MBTI Combat Persona）
+  let mbtiCode = view.mbti || d?.mbti;
+  if (!mbtiCode) {
+    const rawP = d?.personality;
+    const traits = Array.isArray(rawP) ? rawP : (typeof rawP === 'string' ? [rawP] : []);
+    const e = traits.some((t) => ['social', 'bold', 'playful'].includes(t)) ? 'E' : 'I';
+    const n = traits.some((t) => ['clever', 'free', 'nimble'].includes(t)) ? 'N' : 'S';
+    const f = traits.some((t) => ['kind', 'gentle', 'chi', 'brave'].includes(t)) ? 'F' : 'T';
+    const j = traits.some((t) => ['diligent', 'rigid', 'honest', 'stubborn'].includes(t)) ? 'J' : 'P';
+    mbtiCode = `${e}${n}${f}${j}`;
+  }
+
+  const rawTraits = Array.isArray(d?.personality) ? d.personality : (typeof d?.personality === 'string' ? [d.personality] : []);
+  const isF = mbtiCode.includes('F') || rawTraits.some((t) => ['brave', 'chi', 'kind'].includes(t));
+  const isPartnerHurt = Boolean(
+    view.partnerHurt === true ||
+    (partner && partner.hp != null && (partner.hp / (partner.max || 100)) < 0.6)
+  );
+  const guardianShield = Boolean(isF && partner && isPartnerHurt);
+
+  let personaStyle;
+  if (guardianShield) {
+    personaStyle = 'bondGuardian';
+  } else if (mbtiCode.startsWith('E') && (multiFoeCount >= 2 || partner)) {
+    personaStyle = 'crowdSurge';
+  } else if (mbtiCode.startsWith('I') && !partner && multiFoeCount <= 1) {
+    personaStyle = 'loneWolfFocus';
+  } else if (mbtiCode.includes('N')) {
+    personaStyle = 'intuitiveFlash';
+  } else if (mbtiCode.includes('T')) {
+    personaStyle = 'tacticalCull';
+  } else {
+    personaStyle = 'solidStance';
+  }
+
+  let personaLabel;
+  if (personaStyle === 'bondGuardian') {
+    personaLabel = '捨身護侶';
+  } else if (personaStyle === 'crowdSurge') {
+    personaLabel = '人來瘋・戰意高昂';
+  } else if (personaStyle === 'loneWolfFocus') {
+    personaLabel = '孤狼・心如止水';
+  } else if (personaStyle === 'intuitiveFlash') {
+    personaLabel = '頓悟・靈光破招';
+  } else if (personaStyle === 'tacticalCull') {
+    personaLabel = '冷靜・專攻弱點';
+  } else {
+    personaLabel = '沉穩・硬橋硬馬';
+  }
+
+  // 4. 闖關波次進度（Wave Gauntlet Telemetry）
+  let waveGauntlet;
+  if (view.waveGauntlet) {
+    waveGauntlet = {
+      active: true,
+      kind: 'none',
+      wave: 1,
+      totalWaves: 1,
+      defeatedCount: 0,
+      bannerText: '',
+      ...view.waveGauntlet
+    };
+  } else if (s?.siege27 || s?.crusade27 || view.waveKind === 'demonSiege') {
+    const wave = s?.siege27?.wave || s?.crusade27?.wave || view.wave || 1;
+    const totalWaves = s?.siege27?.totalWaves || s?.crusade27?.totalWaves || view.totalWaves || 4;
+    const defeatedCount = s?.siege27?.kills || s?.crusade27?.kills || view.defeatedCount || 0;
+    waveGauntlet = {
+      active: true,
+      kind: 'demonSiege',
+      wave,
+      totalWaves,
+      defeatedCount,
+      bannerText: `🏯 迎戰魔教・第 ${wave}/${totalWaves} 波`
+    };
+  } else if (s?.hunt || view.waveKind === 'huntWave') {
+    const wave = s?.hunt?.wave != null ? s.hunt.wave + 1 : (view.wave || 1);
+    const totalWaves = s?.hunt?.waves || view.totalWaves || 3;
+    const defeatedCount = s?.hunt?.kills || view.defeatedCount || 0;
+    waveGauntlet = {
+      active: true,
+      kind: 'huntWave',
+      wave,
+      totalWaves,
+      defeatedCount,
+      bannerText: `🔥 守山迎戰・第 ${wave}/${totalWaves} 波（擊退 ${defeatedCount}）`
+    };
+  } else if (s?.exp || view.waveKind === 'expeditionGauntlet') {
+    const wave = s?.exp?.fights != null ? s.exp.fights + 1 : (view.wave || 1);
+    const totalWaves = Math.max(wave, view.totalWaves || 5);
+    const defeatedCount = s?.exp?.kills
+      ? Object.values(s.exp.kills).reduce((a, b) => a + b, 0)
+      : (view.defeatedCount || 0);
+    waveGauntlet = {
+      active: true,
+      kind: 'expeditionGauntlet',
+      wave,
+      totalWaves,
+      defeatedCount,
+      bannerText: `⛰ 巡山闖關・第 ${wave} 陣（連破 ${defeatedCount} 敵）`
+    };
+  } else if (multiFoeCount >= 2) {
+    waveGauntlet = {
+      active: true,
+      kind: 'crowdBout',
+      wave: 1,
+      totalWaves: 1,
+      defeatedCount: view.defeatedCount || 0,
+      bannerText: `⚔ 獨戰群雄・以一敵 ${multiFoeCount}`
+    };
+  } else {
+    waveGauntlet = {
+      active: false,
+      kind: 'none',
+      wave: 0,
+      totalWaves: 0,
+      defeatedCount: 0,
+      bannerText: ''
+    };
+  }
+
+  return {
+    selfPower,
+    avgFoePower,
+    powerGapRatio,
+    multiFoeCount,
+    crowdMode,
+    knockedDownCount,
+    allyList,
+    partner,
+    cover,
+    synergyMode,
+    combinedArtName,
+    synergyBonus,
+    effectiveLoadL,
+    mbtiCode,
+    guardianShield,
+    personaStyle,
+    personaLabel,
+    waveGauntlet
+  };
+}
+
 export function ergonomicFrame(d, s = {}, view = {}) {
   const p = view.playback || playbackParams(d, view.art, view.timing || {});
   const strength = d?.skills?.strength || 0;
@@ -368,12 +714,44 @@ export function ergonomicFrame(d, s = {}, view = {}) {
     playback: p
   });
 
+  // 5. Crowd & Synergy Detail
+  const crowdDetail = crowdSynergyFrame(d, s, {
+    ...view,
+    duel: combatDetail,
+    opponent: combatDetail.opponent,
+    opponents: combatDetail.allOpponents
+  });
+
+  // Merge crowd & synergy fields onto combatDetail without overwriting existing Phase 1 / Phase 2 fields
+  Object.assign(combatDetail, {
+    selfPower: crowdDetail.selfPower,
+    avgFoePower: crowdDetail.avgFoePower,
+    powerGapRatio: crowdDetail.powerGapRatio,
+    multiFoeCount: crowdDetail.multiFoeCount,
+    crowdMode: crowdDetail.crowdMode,
+    knockedDownCount: crowdDetail.knockedDownCount,
+    allyList: crowdDetail.allyList,
+    partner: crowdDetail.partner,
+    cover: crowdDetail.cover,
+    synergyMode: crowdDetail.synergyMode,
+    combinedArtName: crowdDetail.combinedArtName,
+    synergyBonus: crowdDetail.synergyBonus,
+    effectiveLoadL: crowdDetail.effectiveLoadL,
+    mbtiCode: crowdDetail.mbtiCode,
+    guardianShield: crowdDetail.guardianShield,
+    personaStyle: crowdDetail.personaStyle,
+    personaLabel: crowdDetail.personaLabel,
+    waveGauntlet: crowdDetail.waveGauntlet
+  });
+
   return {
     buildProfile,
     jointSpring,
     laborDetail,
     combatDetail,
     duel: combatDetail,
+    crowdDetail,
+    synergy: crowdDetail,
     playback: p
   };
 }

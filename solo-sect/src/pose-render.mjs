@@ -97,6 +97,9 @@ export function drawPoseActor(g, d, view) {
   }
   const color = female ? '#806375' : d.sprite === 'senior' ? '#796d91' : d.sprite === 'cousin' ? '#718963' : d.sprite === 'hero' ? '#647f92' : '#6a755e';
   const duel = view?.ergo?.combatDetail || view?.ergo?.duel;
+  const synergy = view?.ergo?.crowdDetail || view?.ergo?.synergy || duel;
+  const isWalkPast = synergy?.crowdMode === 'walkPastKnockdown';
+  const isGuardianShield = Boolean(synergy?.guardianShield);
   const isHeadSlip = duel?.dodgeTier === 'headSlip' && Boolean(duel?.opponent);
   const isRaging = Boolean(duel?.isRaging);
   const effectiveLean = isRaging ? lean + 4 : lean;
@@ -124,6 +127,23 @@ export function drawPoseActor(g, d, view) {
       armEy = -32;
       armHx = effectiveLean + 28;
       armHy = -32;
+    } else if (isGuardianShield && j === 1) {
+      armEx = effectiveLean + 18;
+      armEy = -34;
+      armHx = effectiveLean + 28;
+      armHy = -34;
+    } else if (isWalkPast) {
+      if (j === 0) {
+        armEx = effectiveLean - 16;
+        armEy = -28;
+        armHx = effectiveLean - 24;
+        armHy = -24;
+      } else {
+        armEx = effectiveLean + 14;
+        armEy = -32;
+        armHx = effectiveLean + 24;
+        armHy = -26;
+      }
     }
     g.strokeStyle = '#46362c'; g.lineWidth = 7; g.beginPath(); g.moveTo(effectiveLean + (j ? 8 : -8), -39); g.lineTo(armEx, armEy); g.lineTo(armHx, armHy); g.stroke();
     g.fillStyle = '#e7bf91'; g.beginPath(); g.arc(armHx, armHy, 3, 0, Math.PI * 2); g.fill();
@@ -132,6 +152,29 @@ export function drawPoseActor(g, d, view) {
       g.lineWidth = 2.5;
       g.beginPath();
       g.arc(armHx + 6, armHy, 9, -Math.PI / 2, Math.PI / 2);
+      g.stroke();
+    }
+    if (isGuardianShield && j === 1 && g.beginPath && g.stroke) {
+      g.strokeStyle = 'rgba(231, 76, 60, 0.9)';
+      g.lineWidth = 3;
+      if (g.arc) {
+        g.beginPath();
+        g.arc(armHx + 8, armHy, 18, -Math.PI / 2, Math.PI / 2);
+        g.stroke();
+        g.strokeStyle = 'rgba(241, 196, 15, 0.95)';
+        g.lineWidth = 1.5;
+        g.beginPath();
+        g.arc(armHx + 12, armHy, 22, -Math.PI / 2, Math.PI / 2);
+        g.stroke();
+      }
+    }
+    if (isWalkPast && j === 1 && g.beginPath && g.stroke) {
+      g.strokeStyle = 'rgba(255, 235, 140, 0.75)';
+      g.lineWidth = 2;
+      g.beginPath();
+      g.moveTo(armHx, armHy);
+      if (g.quadraticCurveTo) g.quadraticCurveTo(armHx - 15, armHy - 12, armHx - 30, armHy - 6);
+      else g.lineTo(armHx - 30, armHy - 6);
       g.stroke();
     }
     if (j && (a.weapon || b.weapon)) {
@@ -321,12 +364,16 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
 
   const scale = 2.4;
   const duel = ergo.combatDetail || ergo.duel;
+  const synergy = ergo.crowdDetail || ergo.synergy || duel;
   let focalActorX = opponent ? 110 : 180;
   if (opponent) {
     focalActorX = 110 + (duel.footShiftPx || 0);
     if (duel.dodgeTier === 'sideStep') {
       focalActorX += Math.sin((view.clock || 0) * 4) * 2;
     }
+  }
+  if (synergy?.guardianShield && synergy?.partner) {
+    focalActorX += 18;
   }
   if (duel.microShiverPx > 0) {
     focalActorX += Math.sin((view.clock || 0) * 50) * duel.microShiverPx;
@@ -338,6 +385,66 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
       if (g.arc) g.arc(focalActorX - 8 + k * 8, groundY - 80 - k * 5, 2, 0, Math.PI * 2);
       g.fill();
     }
+  }
+
+  // Terrain Cover (synergyMode === 'terrainCover' || synergy.cover)
+  if (synergy?.synergyMode === 'terrainCover' || synergy?.cover) {
+    const coverKind = synergy?.cover?.kind || 'tree';
+    if (g.save && g.restore) {
+      g.save();
+      if (coverKind === 'gate') {
+        if (g.fillRect) {
+          g.fillStyle = '#7a6855';
+          g.fillRect(focalActorX + 18, groundY - 85, 12, 85);
+          g.fillStyle = '#4a3825';
+          g.fillRect(focalActorX + 16, groundY - 88, 16, 6);
+        }
+        if (g.strokeRect) {
+          g.strokeStyle = '#32251a';
+          g.lineWidth = 1.5;
+          g.strokeRect(focalActorX + 18, groundY - 85, 12, 85);
+        }
+      } else {
+        if (g.fillRect) {
+          g.fillStyle = '#5c4028';
+          g.fillRect(focalActorX + 18, groundY - 75, 10, 75);
+        }
+        if (g.beginPath && g.fill) {
+          g.fillStyle = '#2d5a27';
+          g.beginPath();
+          g.moveTo(focalActorX + 8, groundY - 50);
+          g.lineTo(focalActorX + 23, groundY - 95);
+          g.lineTo(focalActorX + 38, groundY - 50);
+          g.fill();
+          g.beginPath();
+          g.moveTo(focalActorX + 11, groundY - 30);
+          g.lineTo(focalActorX + 23, groundY - 65);
+          g.lineTo(focalActorX + 35, groundY - 30);
+          g.fill();
+        }
+      }
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#1e5a22';
+      g.font = 'bold 11px sans-serif';
+      g.fillText('🌲 借樹卡位・一夫當關', focalActorX + 32, groundY - 80);
+    }
+  }
+
+  // Partner rendering (partnerX = focalActorX - 32)
+  const partnerX = focalActorX - 32;
+  if (synergy?.partner && g.save && g.restore) {
+    g.save();
+    if (g.translate) g.translate(partnerX, groundY);
+    if (synergy.synergyMode === 'backToBack') {
+      if (g.scale) g.scale(-scale, scale);
+    } else {
+      if (g.scale) g.scale(scale, scale);
+    }
+    const partnerPose = displayPose(s, synergy.partner, null, null, s?.t || 0, false);
+    drawPoseActor(g, synergy.partner, partnerPose);
+    g.restore();
   }
 
   // 3. Ghost Silhouette (宗師淡墨重影)
@@ -388,10 +495,33 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
   if (opponent && g.save && g.restore) {
     g.save();
     if (g.translate) g.translate(oppX, groundY);
+    if (synergy?.crowdMode === 'walkPastKnockdown' && g.rotate) g.rotate(0.65);
     if (g.scale) g.scale(-scale, scale); // face left
     const oppPose = displayPose(s, opponent, null, null, s?.t || 0, false);
     drawPoseActor(g, opponent, oppPose);
     g.restore();
+  }
+
+  // Multi-Foe Crowd Silhouettes (multiFoeCount >= 2)
+  if (synergy?.multiFoeCount >= 2 || (duel.allOpponents && duel.allOpponents.length >= 2)) {
+    const extraOppXs = [282, 312];
+    const extraCount = Math.min(2, Math.max(1, (synergy?.multiFoeCount || 2) - 1));
+    for (let k = 0; k < extraCount; k++) {
+      const extraX = extraOppXs[k];
+      const extraFoe = duel.allOpponents?.[k + 1] || opponent || { name: '敵眾', k: 'bandit' };
+      if (g.save && g.restore) {
+        g.save();
+        if (g.translate) g.translate(extraX, groundY);
+        if (synergy?.crowdMode === 'walkPastKnockdown') {
+          if (g.rotate) g.rotate(0.65);
+        }
+        if (g.scale) g.scale(-scale * 0.9, scale * 0.9);
+        g.globalAlpha = 0.75 - k * 0.2;
+        const extraPose = displayPose(s, extraFoe, null, null, s?.t || 0, false);
+        drawPoseActor(g, extraFoe, extraPose);
+        g.restore();
+      }
+    }
   }
 
   // 6. Signature Combat Scenarios Canvas Overlays
@@ -667,6 +797,199 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
     }
   }
 
+  // Phase 3 Scenario: Partner & Formation Synergy Overlays
+  if (synergy?.synergyMode === 'twinSwordsCouple') {
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = '#ffffff';
+      g.lineWidth = 2.5;
+      g.beginPath();
+      g.moveTo(focalActorX + 10, groundY - 60);
+      if (g.quadraticCurveTo) {
+        g.quadraticCurveTo(180, groundY - 95, oppX - 10, groundY - 65);
+      } else {
+        g.lineTo(oppX - 10, groundY - 65);
+      }
+      g.stroke();
+
+      g.strokeStyle = '#5dade2';
+      g.lineWidth = 2.5;
+      g.beginPath();
+      g.moveTo(partnerX + 10, groundY - 55);
+      if (g.quadraticCurveTo) {
+        g.quadraticCurveTo(180, groundY - 35, oppX - 10, groundY - 65);
+      } else {
+        g.lineTo(oppX - 10, groundY - 65);
+      }
+      g.stroke();
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#2980b9';
+      g.font = 'bold 12px sans-serif';
+      g.fillText('☯ 雙劍合璧・玉女素心！', 120, groundY - 120);
+    }
+  }
+
+  if (synergy?.synergyMode === 'zhenwuArray') {
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = 'rgba(241, 196, 15, 0.85)';
+      g.lineWidth = 2;
+      if (g.ellipse) {
+        g.beginPath();
+        g.ellipse(focalActorX + 20, groundY - 6, 65, 18, 0, 0, Math.PI * 2);
+        g.stroke();
+      }
+      const stars = [
+        [focalActorX - 25, groundY - 8],
+        [focalActorX - 10, groundY - 14],
+        [focalActorX + 8, groundY - 12],
+        [focalActorX + 25, groundY - 5],
+        [focalActorX + 42, groundY - 10],
+        [focalActorX + 60, groundY - 7]
+      ];
+      g.strokeStyle = '#f9e79f';
+      g.lineWidth = 1.5;
+      g.beginPath();
+      g.moveTo(stars[0][0], stars[0][1]);
+      for (let k = 1; k < stars.length; k++) {
+        g.lineTo(stars[k][0], stars[k][1]);
+      }
+      g.stroke();
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#b7950b';
+      g.font = 'bold 12px sans-serif';
+      g.fillText('⚔ 真武七截陣・天罡合擊！', 115, groundY - 120);
+    }
+  }
+
+  if (synergy?.synergyMode === 'backToBack' && g.fillText) {
+    g.fillStyle = '#2c3e50';
+    g.font = 'bold 12px sans-serif';
+    g.fillText('🛡 背靠背禦敵・死角封鎖', focalActorX - 35, groundY - 110);
+  }
+
+  if (synergy?.guardianShield) {
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = 'rgba(231, 76, 60, 0.9)';
+      g.lineWidth = 3.5;
+      if (g.arc) {
+        g.beginPath();
+        g.arc(focalActorX + 20, groundY - 50, 24, -Math.PI / 2, Math.PI / 2);
+        g.stroke();
+        g.strokeStyle = '#f1c40f';
+        g.lineWidth = 1.8;
+        g.beginPath();
+        g.arc(focalActorX + 24, groundY - 50, 28, -Math.PI / 2, Math.PI / 2);
+        g.stroke();
+      }
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#c0392b';
+      g.font = 'bold 12px sans-serif';
+      g.fillText('❤️ 捨身護侶・寸步不讓！', focalActorX - 25, groundY - 115);
+    }
+  }
+
+  // Phase 3 Scenario: Crowd Mow-Down & Blind-All-Eyes Overlays
+  if (synergy?.crowdMode === 'walkPastKnockdown') {
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = 'rgba(255, 235, 140, 0.85)';
+      g.lineWidth = 2.5;
+      g.beginPath();
+      g.moveTo(focalActorX - 25, groundY - 60);
+      if (g.quadraticCurveTo) {
+        g.quadraticCurveTo(focalActorX + 40, groundY - 75, 290, groundY - 50);
+      } else {
+        g.lineTo(290, groundY - 50);
+      }
+      g.stroke();
+      g.strokeStyle = '#ffffff';
+      g.lineWidth = 1.5;
+      g.beginPath();
+      g.moveTo(focalActorX - 15, groundY - 45);
+      if (g.quadraticCurveTo) {
+        g.quadraticCurveTo(focalActorX + 50, groundY - 60, 310, groundY - 40);
+      } else {
+        g.lineTo(310, groundY - 40);
+      }
+      g.stroke();
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#b7950b';
+      g.font = 'bold 12px sans-serif';
+      g.fillText('🍃 錯身輕拂・走過倒一片！', 120, groundY - 110);
+    }
+  }
+
+  if (synergy?.crowdMode === 'blindAllEyes') {
+    const eyeXs = [oppX, 282, 312];
+    const eyeY = groundY - 95;
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = '#e74c3c';
+      g.lineWidth = 2;
+      for (const ex of eyeXs) {
+        if (g.arc) {
+          g.beginPath();
+          g.arc(ex, eyeY, 6, 0, Math.PI * 2);
+          g.stroke();
+        }
+        g.beginPath();
+        g.moveTo(ex - 8, eyeY);
+        g.lineTo(ex + 8, eyeY);
+        g.moveTo(ex, eyeY - 8);
+        g.lineTo(ex + 8, eyeY);
+        g.stroke();
+      }
+      g.strokeStyle = '#ffffff';
+      g.lineWidth = 3;
+      g.beginPath();
+      g.moveTo(focalActorX + 20, eyeY);
+      for (const ex of eyeXs) {
+        g.lineTo(ex, eyeY);
+      }
+      g.stroke();
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#c0392b';
+      g.font = 'bold 12px sans-serif';
+      g.fillText('🗡 一劍破盡・盡奪敵目！', 125, groundY - 120);
+    }
+  }
+
+  if (synergy?.crowdMode === 'whirlwindSweep') {
+    if (g.beginPath && g.stroke) {
+      if (g.save) g.save();
+      g.strokeStyle = '#5dade2';
+      g.lineWidth = 3.5;
+      if (g.arc) {
+        g.beginPath();
+        g.arc(focalActorX + 30, groundY - 60, 45, -Math.PI * 0.45, Math.PI * 0.45);
+        g.stroke();
+        g.strokeStyle = '#ffffff';
+        g.lineWidth = 1.8;
+        g.beginPath();
+        g.arc(focalActorX + 35, groundY - 60, 48, -Math.PI * 0.4, Math.PI * 0.4);
+        g.stroke();
+      }
+      if (g.restore) g.restore();
+    }
+    if (g.fillText) {
+      g.fillStyle = '#2980b9';
+      g.font = 'bold 12px sans-serif';
+      g.fillText('🌪 橫掃千軍・群戰破圍！', 125, groundY - 115);
+    }
+  }
+
   // 7. Top-Left Stance Stamp / Labor Status Badge
   let headerText = '';
   let subText = '';
@@ -713,8 +1036,28 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
     g.fillText(subText, 12, 36);
   }
 
+  // Wave Gauntlet banner (top-right at x = 200, y = 16)
+  if (synergy?.waveGauntlet?.active && synergy.waveGauntlet.bannerText && g.fillText) {
+    if (g.save) g.save();
+    if (g.fillRect) {
+      g.fillStyle = 'rgba(40, 30, 20, 0.65)';
+      g.fillRect(195, 4, 155, 18);
+    }
+    g.fillStyle = '#f39c12';
+    g.font = 'bold 11px sans-serif';
+    g.fillText(synergy.waveGauntlet.bannerText, 200, 16);
+    if (g.restore) g.restore();
+  }
+
+  // MBTI Persona badge when in combat
+  const inDuel = opponent != null || duel.isRaging || duel.reboundShock || ((synergy?.multiFoeCount || 0) >= 2);
+  if (inDuel && synergy?.mbtiCode && synergy?.personaLabel && g.fillText) {
+    g.fillStyle = '#8e44ad';
+    g.font = 'bold 10px sans-serif';
+    g.fillText(`【${synergy.mbtiCode}・${synergy.personaLabel}】`, 12, 50);
+  }
+
   // 8. Dual Combat Telemetry Bar (定力真氣護體條 + 重心平衡儀)
-  const inDuel = opponent != null || duel.isRaging || duel.reboundShock;
   if (inDuel) {
     const cBarX = 80, cBarY = 180, cBarW = 200, cBarH = 8;
     if (g.fillText) {

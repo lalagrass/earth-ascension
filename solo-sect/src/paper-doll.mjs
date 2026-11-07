@@ -80,6 +80,9 @@ export function drawPaperDoll(g, d, view, geometry) {
   const { hip, sink, lean, legs, arms, female, ergo } = geometry, p = dollProfile(d,female);
   const bp = ergo?.buildProfile;
   const duel = ergo?.combatDetail || ergo?.duel || view?.ergo?.combatDetail || view?.ergo?.duel;
+  const synergy = ergo?.crowdDetail || ergo?.synergy || view?.ergo?.crowdDetail || view?.ergo?.synergy || duel;
+  const isWalkPast = synergy?.crowdMode === 'walkPastKnockdown';
+  const isGuardianShield = Boolean(synergy?.guardianShield);
   const waistDelta = bp?.waistDelta || 0;
   const shoulderDelta = bp?.shoulderDelta || 0;
   const isRaging = Boolean(duel?.isRaging);
@@ -116,6 +119,23 @@ export function drawPaperDoll(g, d, view, geometry) {
       armEy = -32;
       armHx = effectiveLean + 28;
       armHy = -32;
+    } else if (isGuardianShield && j === 1) {
+      armEx = effectiveLean + 18;
+      armEy = -34;
+      armHx = effectiveLean + 28;
+      armHy = -34;
+    } else if (isWalkPast) {
+      if (j === 0) {
+        armEx = effectiveLean - 16;
+        armEy = -28;
+        armHx = effectiveLean - 24;
+        armHy = -24;
+      } else {
+        armEx = effectiveLean + 14;
+        armEy = -32;
+        armHx = effectiveLean + 24;
+        armHy = -26;
+      }
     }
     segment(g,piece('upperArm',p),x,-39,armEx,armEy,8);
     segment(g,piece('foreArm',p),armEx,armEy,armHx,armHy,7);
@@ -132,6 +152,29 @@ export function drawPaperDoll(g, d, view, geometry) {
       g.lineWidth = 1.5;
       g.beginPath();
       g.arc(armHx + 12, armHy, 14, -Math.PI / 2, Math.PI / 2);
+      g.stroke();
+    }
+    if (isGuardianShield && j === 1 && g.beginPath && g.stroke) {
+      g.strokeStyle = 'rgba(231, 76, 60, 0.9)';
+      g.lineWidth = 3;
+      if (g.arc) {
+        g.beginPath();
+        g.arc(armHx + 8, armHy, 18, -Math.PI / 2, Math.PI / 2);
+        g.stroke();
+        g.strokeStyle = 'rgba(241, 196, 15, 0.95)';
+        g.lineWidth = 1.5;
+        g.beginPath();
+        g.arc(armHx + 12, armHy, 22, -Math.PI / 2, Math.PI / 2);
+        g.stroke();
+      }
+    }
+    if (isWalkPast && j === 1 && g.beginPath && g.stroke) {
+      g.strokeStyle = 'rgba(255, 235, 140, 0.75)';
+      g.lineWidth = 2;
+      g.beginPath();
+      g.moveTo(armHx, armHy);
+      if (g.quadraticCurveTo) g.quadraticCurveTo(armHx - 15, armHy - 12, armHx - 30, armHy - 6);
+      else g.lineTo(armHx - 30, armHy - 6);
       g.stroke();
     }
   }
