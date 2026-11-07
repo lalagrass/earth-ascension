@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, scoreActs, setOrder, tick } from '../../../src/sim.mjs';
+import { createState, emergency, foodLow, scoreActs, setOrder, tick } from '../../../src/sim.mjs';
 import { BODY_CONDITION, stepWorkCondition, restBodyCondition, ensureBodyCondition, cookMedicatedMeal, applyMedicatedMeal } from '../../../src/economy.mjs';
 import { choreFluencyTier, ergonomicFrame } from '../../../src/growth-playback.mjs';
 import { renderMicroStage } from '../../../src/pose-render.mjs';
@@ -62,6 +62,19 @@ test('Phase 5：黃蓉煮飯和用飯走真任務，藥膳消疲勞、四週期�
   }
   const oldMeal = createState(19); oldMeal.res.food = 0; oldMeal.res.medFood = 1;
   assert.equal(scoreActs(oldMeal, oldMeal.ds[0]).some(x => x.act === 'eat'), false, '舊局不啟用藥膳庫存');
+  oldMeal.res.veg = 0; oldMeal.res.medFood = 8;
+  assert.equal(emergency(oldMeal), true); assert.equal(foodLow(oldMeal), true, '舊局只計原本可用的存糧');
+  const stores = createState(17, { hermitage: true }); stores.res.food = 0; stores.res.veg = 0; stores.res.medFood = 8; stores.mons = [];
+  stores.ds.forEach((member) => { member.role = 'outer'; member.needs.hunger = 95; }); stores.emergency = false;
+  assert.equal(emergency(stores), false); assert.equal(foodLow(stores), false);
+  assert.notEqual(scoreActs(stores, stores.ds[0]).find((a) => a.act === 'farm')?.why, '存糧見底，先顧菜畦');
+  tick(stores); assert.equal(stores.emergency, false); assert.equal(stores.log.some((entry) => entry.msg.includes('斷糧了')), false);
+  stores.res.medFood = 0; tick(stores);
+  assert.equal(stores.emergency, true); assert.equal(stores.log.filter((entry) => entry.msg.includes('斷糧了')).length, 1);
+  stores.res.medFood = 8; tick(stores);
+  assert.equal(stores.emergency, false); assert.equal(stores.log.filter((entry) => entry.msg.includes('危機解除')).length, 1);
+  stores.res.veg = 2; stores.res.medFood = 10;
+  assert.equal(scoreActs(stores, stores.ds[0]).some((a) => a.act === 'cook'), false, '足夠藥膳已是備好的飯，不應再因普通飯為零而排煮飯');
   const plain = createState(17, { hermitage: true }).ds[0], warmed = createState(17, { hermitage: true }).ds[0];
   warmed.herbalDietUntil = 600;
   gainArt(plain, 5, 1, 0, { raw: 5, src: 'train' });

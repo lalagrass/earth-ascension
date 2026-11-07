@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, canRecruit, canFoundHermitageSect, queueHermitageFounding, foundHermitageSect, setOrder } from '../../../src/sim.mjs';
+import { createState, canRecruit, canFoundHermitageSect, queueHermitageFounding, foundHermitageSect, setOrder, emergency, foodLow, scoreActs, skipsChores, tick } from '../../../src/sim.mjs';
 import { artById, ownLineageArt } from '../../../src/arts.mjs';
 import { sectBiasMul, DAY } from '../../../src/data.mjs';
 import { E as econOf, UPKEEP } from '../../../src/economy.mjs';
@@ -80,4 +80,12 @@ test('Phase 7：正宗立匾只讓掌門、伴侶、首徒使用秘傳；無名�
   assert.equal(foundHermitageSect(w, 'dualHall').sect.id, 'longrong');
   const n = hermit(); assert.equal(foundHermitageSect(n, 'wuming', '山林自創派').sect.plaque, '山林自創派');
   assert.equal(n.sect.id, 'wuming');
+  const post = hermit(); assert.equal(foundHermitageSect(post).ok, true);
+  const hero = post.ds[0], outer = { ...structuredClone(hero), id: 'outer-a', role: 'outer', task: null, order: null, path: [], needs: { ...hero.needs, hunger: 95 } };
+  post.ds.push(outer, { ...structuredClone(outer), id: 'outer-b' });
+  post.res.food = 0; post.res.veg = 0; post.res.medFood = 8; post.mons = []; post.emergency = false;
+  assert.equal(post.hermitage.active, false); assert.equal(post.herbalDiet, true);
+  assert.equal(emergency(post), false); assert.equal(foodLow(post), false); assert.equal(skipsChores(post, hero), true);
+  assert.notEqual(scoreActs(post, hero).find((a) => a.act === 'farm')?.why, '存糧見底，先顧菜畦');
+  tick(post); assert.equal(post.emergency, false); assert.equal(post.log.some((entry) => entry.msg.includes('斷糧了')), false);
 });
