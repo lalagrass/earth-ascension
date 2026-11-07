@@ -1,7 +1,7 @@
 # 模組地圖（src/ 現況）
 
 > 量測於 `27aebd6`（#389）。loop144 把 63 個檔合併成下表 19 個；舊文件、LOG 與決策裡的舊模組名，用本頁最後的對照表找到現在的位置。
-> 分層與依賴方向的整理見 #392（C3）；完成後本頁同步更新。`test/docs-links.test.mjs` 會檢查常青文件裡的 `.mjs` 引用都存在。
+> 分層與依賴方向的整理見 #392（C3）；完成後本頁同步更新。`test/unit/interface/docs-links.test.mjs` 會檢查常青文件裡的 `.mjs` 引用都存在。
 
 ## 1. 模組與職責
 
@@ -33,10 +33,11 @@
 
 | 位置 | 內容 |
 |---|---|
-| `test/*.test.mjs` | 快速套件（`bash test/run.sh quick`），依版本命名；依系統重組見 #393 |
+| `test/unit/<系統>/*.test.mjs` | 快速套件（`bash test/run.sh quick`），按系統找測試；#393 搬移清單見 `docs/evidence/t1-moves.tsv` |
 | `test/archive/` | loop 歷史回歸（`run.sh archive`） |
 | `test/accept/` | 長跑驗收（`run.sh accept`） |
-| `test/harness/` | 長跑與診斷腳本（`bot.mjs`、`diag-*.mjs`），平衡報告用 |
+| `test/harness/` | 共用測試／報告輔助函式（`bot.mjs` 等） |
+| `tools/diag/` | 長跑診斷腳本與用途索引，僅按需執行 |
 | `test/fixtures/` | 舊存檔樣本與 golden 雜湊 |
 | `shoot.mjs` | 截圖腳本（需 playwright-core，非遊戲依賴） |
 

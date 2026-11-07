@@ -1,5 +1,5 @@
 // R0（#388）行為鎖定：固定種子情境矩陣。只讀模擬、不改規則；重構 PR 以這裡的雜湊 0 差異為合格條件。
-// 情境與 test/harness/diag-v24-v25.mjs 的 idle／bot／farm／exp 相同（平衡報告用的 40 局），門派依種子輪替。
+// 情境與 tools/diag/diag-v24-v25.mjs 的 idle／bot／farm／exp 相同（平衡報告用的 40 局），門派依種子輪替。
 // farm／exp 的操作邏輯照抄該檔（T1 #393 再合併成共用模組）。
 import crypto from 'node:crypto';
 import { createState, tick, startBuild, buildWhy, facDef, startExpedition, canExpedition } from '../../src/sim.mjs';

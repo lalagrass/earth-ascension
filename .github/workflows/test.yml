@@ -121,6 +121,9 @@ jobs:
       - name: Quick tests
         if: steps.paths.outputs.run == 'true'
         run: bash solo-sect/test/run.sh quick
+      - name: Full solo-sect tests
+        if: steps.paths.outputs.run == 'true'
+        run: bash solo-sect/test/run.sh all
       - name: Golden check
         if: steps.paths.outputs.run == 'true'
         run: node solo-sect/tools/golden.mjs --check

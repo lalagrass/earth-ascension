@@ -1,0 +1,106 @@
+old	new	reason
+test/band.test.mjs	test/unit/threat/band.test.mjs	threat 系統測試
+test/clash.test.mjs	test/unit/threat/clash.test.mjs	threat 系統測試
+test/docs-links.test.mjs	test/unit/interface/docs-links.test.mjs	interface 系統測試
+test/flair.test.mjs	test/unit/growth/flair.test.mjs	growth 系統測試
+test/golden.test.mjs	test/accept/golden.test.mjs	長跑，完整套件保留
+test/n57-food-ledger.test.mjs	test/unit/economy/n57-food-ledger.test.mjs	economy 系統測試
+test/part.test.mjs	test/unit/growth/part.test.mjs	growth 系統測試
+test/replay.test.mjs	test/accept/replay.test.mjs	長跑，完整套件保留
+test/ring.test.mjs	test/unit/growth/ring.test.mjs	growth 系統測試
+test/round6-n22.test.mjs	test/unit/growth/round6-n22.test.mjs	growth 系統測試
+test/round6-n23.test.mjs	test/unit/growth/round6-n23.test.mjs	growth 系統測試
+test/round6-n24.test.mjs	test/unit/growth/round6-n24.test.mjs	growth 系統測試
+test/round6-n25.test.mjs	test/unit/growth/round6-n25.test.mjs	growth 系統測試
+test/round6-n26.test.mjs	test/unit/growth/round6-n26.test.mjs	growth 系統測試
+test/round7-n27.test.mjs	test/unit/growth/round7-n27.test.mjs	growth 系統測試
+test/round7-n28.test.mjs	test/unit/growth/round7-n28.test.mjs	growth 系統測試
+test/round7-n29.test.mjs	test/unit/growth/round7-n29.test.mjs	growth 系統測試
+test/round7-n30.test.mjs	test/unit/growth/round7-n30.test.mjs	growth 系統測試
+test/round7-n31.test.mjs	test/unit/growth/round7-n31.test.mjs	growth 系統測試
+test/round7-n31b.test.mjs	test/accept/round7-n31b.test.mjs	長跑，完整套件保留
+test/round8-n49.test.mjs	test/unit/interface/round8-n49.test.mjs	interface 系統測試
+test/round8-n52.test.mjs	test/unit/growth/round8-n52.test.mjs	growth 系統測試
+test/round8-n53.test.mjs	test/unit/threat/round8-n53.test.mjs	threat 系統測試
+test/rules-upgrade.test.mjs	test/unit/save/rules-upgrade.test.mjs	save 系統測試
+test/schema-invariants.test.mjs	test/unit/save/schema-invariants.test.mjs	save 系統測試
+test/sim.test.mjs	test/unit/social/sim.test.mjs	social 系統測試
+test/v08.test.mjs	test/unit/economy/v08.test.mjs	economy 系統測試
+test/v085.test.mjs	test/unit/interface/v085.test.mjs	interface 系統測試
+test/v09.test.mjs	test/unit/growth/v09.test.mjs	growth 系統測試
+test/v092.test.mjs	test/unit/growth/v092.test.mjs	growth 系統測試
+test/v095.test.mjs	test/accept/v095.test.mjs	長跑，完整套件保留
+test/v096.test.mjs	test/accept/v096.test.mjs	長跑，完整套件保留
+test/v097.test.mjs	test/accept/v097.test.mjs	長跑，完整套件保留
+test/v098.test.mjs	test/accept/v098.test.mjs	長跑，完整套件保留
+test/v100.test.mjs	test/unit/threat/v100.test.mjs	threat 系統測試
+test/v110.test.mjs	test/accept/v110.test.mjs	長跑，完整套件保留
+test/v120.test.mjs	test/accept/v120.test.mjs	長跑，完整套件保留
+test/v130.test.mjs	test/accept/v130.test.mjs	長跑，完整套件保留
+test/v135.test.mjs	test/unit/social/v135.test.mjs	social 系統測試
+test/v140.test.mjs	test/accept/v140.test.mjs	長跑，完整套件保留
+test/v145-review.test.mjs	test/unit/save/v145-review.test.mjs	save 系統測試
+test/v145.test.mjs	test/accept/v145.test.mjs	長跑，完整套件保留
+test/v150.test.mjs	test/unit/economy/v150.test.mjs	economy 系統測試
+test/v155a.test.mjs	test/unit/economy/v155a.test.mjs	economy 系統測試
+test/v155b.test.mjs	test/unit/economy/v155b.test.mjs	economy 系統測試
+test/v155c.test.mjs	test/unit/economy/v155c.test.mjs	economy 系統測試
+test/v155d.test.mjs	test/unit/economy/v155d.test.mjs	economy 系統測試
+test/v160.test.mjs	test/unit/economy/v160.test.mjs	economy 系統測試
+test/v165.test.mjs	test/unit/social/v165.test.mjs	social 系統測試
+test/v170.test.mjs	test/unit/economy/v170.test.mjs	economy 系統測試
+test/v176.test.mjs	test/accept/v176.test.mjs	長跑，完整套件保留
+test/v178.test.mjs	test/unit/economy/v178.test.mjs	economy 系統測試
+test/v180.test.mjs	test/unit/economy/v180.test.mjs	economy 系統測試
+test/v185.test.mjs	test/unit/economy/v185.test.mjs	economy 系統測試
+test/v190.test.mjs	test/unit/economy/v190.test.mjs	economy 系統測試
+test/v195.test.mjs	test/accept/v195.test.mjs	長跑，完整套件保留
+test/v200.test.mjs	test/unit/social/v200.test.mjs	social 系統測試
+test/v210.test.mjs	test/unit/threat/v210.test.mjs	threat 系統測試
+test/v220.test.mjs	test/accept/v220.test.mjs	長跑，完整套件保留
+test/v221.test.mjs	test/unit/economy/v221.test.mjs	economy 系統測試
+test/v222.test.mjs	test/unit/social/v222.test.mjs	social 系統測試
+test/v225.test.mjs	test/accept/v225.test.mjs	長跑，完整套件保留
+test/v23.test.mjs	test/unit/growth/v23.test.mjs	growth 系統測試
+test/v24.test.mjs	test/unit/economy/v24.test.mjs	economy 系統測試
+test/v255.test.mjs	test/unit/economy/v255.test.mjs	economy 系統測試
+test/v26.test.mjs	test/unit/threat/v26.test.mjs	threat 系統測試
+test/v27.test.mjs	test/unit/threat/v27.test.mjs	threat 系統測試
+test/v28.test.mjs	test/unit/threat/v28.test.mjs	threat 系統測試
+test/v29.test.mjs	test/unit/threat/v29.test.mjs	threat 系統測試
+test/v31.test.mjs	test/unit/growth/v31.test.mjs	growth 系統測試
+test/v32.test.mjs	test/unit/growth/v32.test.mjs	growth 系統測試
+test/v33.test.mjs	test/unit/growth/v33.test.mjs	growth 系統測試
+test/white-body.test.mjs	test/unit/growth/white-body.test.mjs	growth 系統測試
+test/witch.test.mjs	test/unit/systems/witch.test.mjs	systems 系統測試
+test/wuwu.test.mjs	test/unit/growth/wuwu.test.mjs	growth 系統測試
+test/zj.test.mjs	test/unit/growth/zj.test.mjs	growth 系統測試
+test/harness/diag-8p.mjs	tools/diag/diag-8p.mjs	診斷腳本，不屬測試入口
+test/harness/diag-ab-sum.mjs	tools/diag/diag-ab-sum.mjs	診斷腳本，不屬測試入口
+test/harness/diag-ab.mjs	tools/diag/diag-ab.mjs	診斷腳本，不屬測試入口
+test/harness/diag-boar.mjs	tools/diag/diag-boar.mjs	診斷腳本，不屬測試入口
+test/harness/diag-coin-first.mjs	tools/diag/diag-coin-first.mjs	診斷腳本，不屬測試入口
+test/harness/diag-combo.mjs	tools/diag/diag-combo.mjs	診斷腳本，不屬測試入口
+test/harness/diag-grow-macro.mjs	tools/diag/diag-grow-macro.mjs	診斷腳本，不屬測試入口
+test/harness/diag-grow.mjs	tools/diag/diag-grow.mjs	診斷腳本，不屬測試入口
+test/harness/diag-hunger.mjs	tools/diag/diag-hunger.mjs	診斷腳本，不屬測試入口
+test/harness/diag-hurt.mjs	tools/diag/diag-hurt.mjs	診斷腳本，不屬測試入口
+test/harness/diag-lair-calib.mjs	tools/diag/diag-lair-calib.mjs	診斷腳本，不屬測試入口
+test/harness/diag-letter.mjs	tools/diag/diag-letter.mjs	診斷腳本，不屬測試入口
+test/harness/diag-master.mjs	tools/diag/diag-master.mjs	診斷腳本，不屬測試入口
+test/harness/diag-mfit.mjs	tools/diag/diag-mfit.mjs	診斷腳本，不屬測試入口
+test/harness/diag-moodcap.mjs	tools/diag/diag-moodcap.mjs	診斷腳本，不屬測試入口
+test/harness/diag-need.mjs	tools/diag/diag-need.mjs	診斷腳本，不屬測試入口
+test/harness/diag-ng-hunt.mjs	tools/diag/diag-ng-hunt.mjs	診斷腳本，不屬測試入口
+test/harness/diag-prof-hunt.mjs	tools/diag/diag-prof-hunt.mjs	診斷腳本，不屬測試入口
+test/harness/diag-readwu.mjs	tools/diag/diag-readwu.mjs	診斷腳本，不屬測試入口
+test/harness/diag-routes.mjs	tools/diag/diag-routes.mjs	診斷腳本，不屬測試入口
+test/harness/diag-toggle-sum.mjs	tools/diag/diag-toggle-sum.mjs	診斷腳本，不屬測試入口
+test/harness/diag-toggle.mjs	tools/diag/diag-toggle.mjs	診斷腳本，不屬測試入口
+test/harness/diag-v22.mjs	tools/diag/diag-v22.mjs	診斷腳本，不屬測試入口
+test/harness/diag-v225.mjs	tools/diag/diag-v225.mjs	診斷腳本，不屬測試入口
+test/harness/diag-v23.mjs	tools/diag/diag-v23.mjs	診斷腳本，不屬測試入口
+test/harness/diag-v24-v25.mjs	tools/diag/diag-v24-v25.mjs	診斷腳本，不屬測試入口
+test/harness/diag-wage.mjs	tools/diag/diag-wage.mjs	診斷腳本，不屬測試入口
+test/harness/par-8p.mjs	tools/diag/par-8p.mjs	diag-8p 的分段啟動器
+test/accept/v225.test.mjs#loop148 marriage replay	test/archive/loop148-marriage-replay.test.mjs	固定舊 seed 26 日 bug 重現退出 quick，完整 all 保留原斷言
